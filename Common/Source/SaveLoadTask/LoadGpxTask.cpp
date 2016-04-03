@@ -26,34 +26,31 @@ bool LoadGpxTask(LPCTSTR szFileName) {
         fseek(stream, 0, SEEK_SET); // seek back to beginning of file
         char * buff = (char*) calloc(size + 1, sizeof (char));
         long nRead = fread(buff, sizeof (char), size, stream);
+        fclose(stream);
         if(nRead != size) {
-            fclose(stream);
             free(buff);
             UnlockTaskData();
             return false;
         }
-        fclose(stream);
         TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
         utf2TCHAR(buff, szXML, size + 1);
         free(buff);
         XMLNode rootNode = XMLNode::parseString(szXML, _T("gpx"));
+        free(szXML);
         if(rootNode) {
             if(rootNode.isEmpty()) {
-                free(szXML);
                 UnlockTaskData();
                 return false;
             }
             //TODO: here we load just the first route may be there are others routes in the GPX file...
             XMLNode routeNode=rootNode.getChildNode(TEXT("rte"));
             if(routeNode.isEmpty()) { //ERROR no route found in GPX file
-                free(szXML);
                 UnlockTaskData();
                 return false;
             }
             int numWPnodes=routeNode.nChildNode(); //count number of XML nodes inside <rte> </rte>
             int numOfWPs=routeNode.nChildNode(TEXT("rtept")); //count number of WPs in the route
             if(numOfWPs<1 || numOfWPs>MAXTASKPOINTS) { //ERROR: no WPs at all or too many WPs found in route in GPX file
-                free(szXML);
                 UnlockTaskData();
                 return false;
             }
@@ -67,7 +64,6 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                 if(_tcscmp(WPnode.getName(),TEXT("rtept"))==0) {
                     dataStr=WPnode.getAttribute(TEXT("lat"));
                     if(!dataStr) { //ERROR: WP without latitude
-                        free(szXML);
                         ClearTask();
                         UnlockTaskData();
                         return false;
@@ -75,7 +71,6 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                     lat=_tcstod(dataStr,NULL);
                     dataStr=WPnode.getAttribute(TEXT("lon"));
                     if(!dataStr) { //ERROR: WP without longitude
-                        free(szXML);
                         ClearTask();
                         UnlockTaskData();
                         return false;
@@ -141,7 +136,6 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                 } //if(rtept)
             } //for(each node in rtept)
         } //if(rootNode)
-        free(szXML);
     } //if(stream)
     if(ISGAAIRCRAFT) { //Set task options for GA aircraft
         StartLine=1; //Line

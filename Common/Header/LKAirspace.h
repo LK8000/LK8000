@@ -17,6 +17,7 @@
 #include "Screen/LKSurface.h"
 
 class ScreenProjection;
+struct XMLNode;
 
 // changed by AlphaLima since we have a second airspace view to next waypoint,
 // the waypoint can be much more far away (e.g.  167km for a 500km FAI triangle)
@@ -544,6 +545,9 @@ private:
   bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
   bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
   void CorrectGeoPoints(CPoint2DArray &points);
+
+  bool FillAirspacesFromOpenAIP(TCHAR* aipFile);
+  bool ReadAltitudeOpenAIP(XMLNode& node, AIRSPACE_ALT* Alt) const;
 
   //Airspace setting save/restore functions
   void SaveSettings() const;

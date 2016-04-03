@@ -2097,6 +2097,8 @@ DataField* dfe = wp->GetDataField();
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _stprintf(tsuf,_T("*%s"),_T(LKS_AIRSPACES));
     dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_OPENAIP));
+    dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
   }
@@ -2108,6 +2110,8 @@ DataField* dfe = wp->GetDataField();
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _stprintf(tsuf,_T("*%s"),_T(LKS_AIRSPACES));
+    dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_OPENAIP));
     dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();

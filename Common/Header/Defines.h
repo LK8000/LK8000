@@ -151,6 +151,7 @@
 #define LKS_LANGUAGE	".LNG"
 #define LKS_INPUT	".xci"
 #define LKS_IGC		".igc"
+#define LKS_OPENAIP ".aip"
 
 #ifdef OLDTASK_COMPAT
     #define LKS_OLD_TSK		".tsk"

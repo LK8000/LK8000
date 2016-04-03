@@ -10,9 +10,9 @@
 #include "RasterTerrain.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-
+#include "xmlParser.h"
 #include <ctype.h>
- #include <utility>
+#include <utility>
 
 #include <Point2D.h>
 #include "md5.h"
@@ -1497,7 +1497,6 @@ void CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points) {
 }
 
 // Reading and parsing OpenAir airspace file
-
 void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     TCHAR *Comment;
     int nSize;
@@ -1809,52 +1808,296 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
 }
 
+bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode& node, AIRSPACE_ALT* Alt) const {
+    Alt->Altitude = 0;
+    Alt->FL = 0;
+    Alt->AGL = 0;
+    Alt->Base = abUndef;
+    if(node.isEmpty()) return false;
+    XMLNode subNode=node.getChildNode(TEXT("ALT"),0);
+    if(subNode.isEmpty()) return false;
+    LPCTSTR dataStr=subNode.getAttribute(TEXT("UNIT"));
+    if(dataStr==nullptr) return false;
+    double conversion = -1;
+    switch(_tcslen(dataStr)) {
+    case 1: // F
+        if(dataStr[0]=='F') conversion=TOFEET;
+        //else if(dataStr[0]=='M') conversion=1; //TODO: meters not yet supported by OpenAIP
+        break;
+    case 2: //FL
+        if(dataStr[0]=='F' && dataStr[1]=='L') conversion=TOFEET/100;
+        break;
+    default:
+        break;
+    }
+    if(conversion<0) return false;
+    dataStr=subNode.getText(0);
+    if(dataStr==nullptr) return false;
+    Alt->Altitude=_tcstod(dataStr,nullptr);
+    dataStr=node.getAttribute(TEXT("REFERENCE"));
+    if(dataStr!=nullptr && _tcslen(dataStr)==3) {
+        switch(dataStr[0]) {
+        case 'M': // MSL Main sea level
+            if(dataStr[1]=='S' && dataStr[2]=='L') {
+                Alt->Base=abMSL;
+            }
+            break;
+        case 'S': //STD Standard atmosphere
+            if(dataStr[1]=='T' && dataStr[2]=='D') {
+                Alt->Base=abFL;
+                Alt->FL = Alt->Altitude;
+                Alt->Altitude = AltitudeToQNHAltitude(Alt->FL/conversion);
+            }
+            break;
+        case 'G': // GND Ground
+            if(dataStr[1]=='N' && dataStr[2]=='D') {
+                Alt->Base=abAGL;
+                Alt->AGL = Alt->Altitude;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    if(Alt->Base == abUndef) return false;
+    return true;
+}
+
+// Reads airspaces from an OpenAIP file
+bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
+    StartupStore(TEXT(". Reading OpenAIP airspace file%s"), NEWLINE);
+
+    FILE* fp = _tfopen(aipFile, TEXT("rb"));
+    if(fp == nullptr) return false;
+
+    fseek(fp, 0, SEEK_END); // seek to end of file
+    long size = ftell(fp); // get current file pointer
+    fseek(fp, 0, SEEK_SET); // seek back to beginning of file
+    char* buff = (char*) calloc(size + 1, sizeof (char));
+    if(buff==nullptr) return false; ////////////////////////////////////////
+    long nRead = fread(buff, sizeof (char), size, fp);
+    fclose(fp);
+    if(nRead != size) {
+        printf("ERRORE File non letto tutto!\n");
+        free(buff);
+        return false;
+    }
+    TCHAR* szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
+    if(szXML==nullptr) {
+        free(buff);
+        return false; //////////////////////////////////////////
+    }
+    utf2TCHAR(buff, szXML, size + 1);
+    free(buff);
+    XMLNode rootNode = XMLNode::parseString(szXML, _T("OPENAIP"));
+    free(szXML);
+    if(rootNode.isEmpty()) {
+        printf("OPENAIP not found\n");
+        return false;
+    }
+
+    //LPCTSTR version=rootNode.getAttribute(TEXT("VERSION"));
+    //TODO: do something with the version
+
+    XMLNode airspacesNode=rootNode.getChildNode(TEXT("AIRSPACES"));
+    if(airspacesNode.isEmpty()) { //ERROR no AIRSPACES tag found in AIP file
+        printf("ERROR no AIRSPACES tag found in AIP file\n");
+        return false;
+    }
+    int numOfAirspaces=airspacesNode.nChildNode(TEXT("ASP")); //count number of WPs in the route
+    if(numOfAirspaces<1 || numOfAirspaces!=airspacesNode.nChildNode()) {
+        printf("ERRORE all'interno di AIRSPACES ci devono essere solo ASP! ed almeno uno\n");
+        return false;
+    }
+    LPCTSTR dataStr=nullptr;
+    XMLNode ASPnode;
+    for(int i=0;i<numOfAirspaces;i++) {
+        ASPnode=airspacesNode.getChildNode(i);
+        if(_tcscmp(ASPnode.getName(),TEXT("ASP"))==0) {
+            dataStr=ASPnode.getAttribute(TEXT("CATEGORY"));
+            if(!dataStr) { //ERROR: ASP without required parameter CATEGORY
+                printf("ERROR: ASP without required parameter CATEGORY\n");
+                return false;
+            }
+            size_t len=_tcslen(dataStr);
+            int Type=-1;
+            if(len>0) switch(dataStr[0]) {
+            case 'A':
+                if(len==1) Type=CLASSA; // A class airspace
+                break;
+            case 'B':
+                if(len==1) Type=CLASSB; // B class airspace
+                break;
+            case 'C':
+                if(len==1) Type=CLASSC; // C class airspace
+                else if (_tcsicmp(dataStr,_T("CTR"))==0) Type=CTR; // CTR airspace
+                break;
+            case 'D':
+                if(len==1) Type=CLASSD; // D class airspace
+                else if (_tcsicmp(dataStr,_T("DANGER"))==0) Type=DANGER; // Dangerous area
+                break;
+            case 'E':
+                if(len==1) Type=CLASSE; // E class airspace
+                break;
+            case 'F':
+                if(len==1) Type=CLASSF; // F class airspace
+                else if (_tcsicmp(dataStr,_T("FIR"))==0) Type=OTHER; //TODO: FIR missing in LK8000
+                break;
+            case 'G':
+                if(len==1) Type=CLASSG; // G class airspace
+                else if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=OTHER; //TODO: GLIDING missing in LK8000
+                break;
+            case 'O':
+                if (_tcsicmp(dataStr,_T("OTH"))==0) Type=OTHER; //TODO: OTH missing in LK8000
+                break;
+            case 'P':
+                if (_tcsicmp(dataStr,_T("PROHIBITED"))==0) Type=PROHIBITED; // Prohibited area
+                break;
+            case 'R':
+                if (_tcsicmp(dataStr,_T("RESTRICTED"))==0) Type=RESTRICT; // Restricted area
+                else if (_tcsicmp(dataStr,_T("RMZ"))==0) Type=OTHER; //TODO: RMZ missing in LK8000
+                break;
+            case 'T':
+                if(len==3 && dataStr[1]=='M') {
+                    if(dataStr[2]=='A') Type=OTHER; //TODO: TMA missing in LK8000
+                    else if(dataStr[2]=='Z') Type=CLASSTMZ; //TMZ
+                }
+                break;
+            case 'W':
+                if (_tcsicmp(dataStr,_T("WAVE"))==0) Type=WAVE; //WAVE
+                break;
+            case 'U':
+                if (_tcsicmp(dataStr,_T("UIR"))==0) Type=OTHER; //TODO: UIR missing in LK8000
+                break;
+            default:
+                break;
+            } else {
+                printf("ERROR: Airspace CATEGORY empty\n");
+                return false;
+            }
+            if(Type<0) {
+                printf("ERROR: Unknown airspace CATEGORY: %s\n", dataStr);
+                return false;
+            }
+
+            XMLNode node;
+            //node=ASPnode.getChildNode(TEXT("COUNTRY"));
+
+            // Airspace Name
+            node=ASPnode.getChildNode(TEXT("NAME"),0);
+            if(node.isEmpty()) {
+                printf("Airspace NAME not found\n");
+                return false;
+            }
+            dataStr=node.getText(0);
+            TCHAR Name[NAME_SIZE + 1] = {0};
+            LK_tcsncpy(Name, dataStr, NAME_SIZE);
+
+            // Airspace top altitude
+            AIRSPACE_ALT Top;
+            node=ASPnode.getChildNode(TEXT("ALTLIMIT_TOP"),0);
+            if(!ReadAltitudeOpenAIP(node, &Top)) {
+                printf("Error while reading top altitude\n");
+                return false;
+            }
+
+            // Airspace bottom altitude
+            AIRSPACE_ALT Base;
+            node=ASPnode.getChildNode(TEXT("ALTLIMIT_BOTTOM"),0);
+            if(!ReadAltitudeOpenAIP(node, &Base)) {
+                printf("Error while reading bottom altitude\n");
+                return false;
+            }
+
+            //Geometry
+            node=ASPnode.getChildNode(TEXT("GEOMETRY"),0);
+            if(node.isEmpty()) {
+                printf("Geometry not found\n");
+                return false;
+            }
+
+            // Polygon
+            XMLNode subNode=node.getChildNode(TEXT("POLYGON"),0);
+            if(subNode.isEmpty()) {
+                printf("Polygon not found\n");
+                return false;
+            }
+
+            // Coordinates list
+            CPoint2DArray points;
+            TCHAR* remaining;
+            TCHAR* point = _tcstok_r((TCHAR*)subNode.getText(0),TEXT(","),&remaining);
+            bool error = (point==nullptr);
+            while(point!=nullptr && !error) {
+                TCHAR* other;
+                TCHAR* coord=_tcstok_r(point,TEXT(" "),&other);
+                if ((error=(coord==nullptr))) break;
+                double lat=_tcstod(coord,nullptr);
+                coord=_tcstok_r(nullptr,TEXT(" "),&other);
+                if ((error=(coord==nullptr))) break;
+                double lon=_tcstod(coord,nullptr);
+                //TODO: verify if the coordinates make sense
+                points.push_back(CPoint2D(lat, lon));
+                point = _tcstok_r(nullptr,TEXT(","),&remaining);
+            }
+            if(error) {
+                printf("Failed parsing coordinates.\n");
+                return false;
+            }
+
+            //Build the new airspace
+            CorrectGeoPoints(points); //necessary?
+            if (points.size() > 3) { // Skip it if we don't have minimum 3 points
+                CAirspace* newairspace = new CAirspace_Area(std::move(points));
+                if(newairspace!=nullptr) {
+                    //bool flyzone=true;
+                    newairspace->Init(Name, Type, Base, Top, false);
+
+                    // Add the new airspace
+                    ScopeLock guard(_csairspaces);
+                    _airspaces.push_back(newairspace);
+                }
+            }
+
+//_stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+//if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return false;
+
+
+        } // ASP node
+    } // for each ASP
+
+
+    ScopeLock guard(_csairspaces);
+    StartupStore(TEXT(". Now we have %u airspaces%s"), (unsigned)_airspaces.size(), NEWLINE);
+
+    return true;
+}
+
 void CAirspaceManager::ReadAirspaces() {
-    TCHAR szFile1[MAX_PATH] = TEXT("\0");
-    TCHAR szFile2[MAX_PATH] = TEXT("\0");
-
-    ZZIP_FILE *fp = NULL;
-    ZZIP_FILE *fp2 = NULL;
-
-    _tcscpy(szFile1, szAirspaceFile);
-    _tcscpy(szFile2, szAdditionalAirspaceFile);
-    ExpandLocalPath(szFile1);
-    ExpandLocalPath(szFile2);
-
-    if (_tcslen(szFile1) > 0) {
-        fp = openzip(szFile1, "rt");
-    } else {
-    }
-
-    if (_tcslen(szFile2) > 0) {
-        fp2 = openzip(szFile2, "rt");
-    }
-
-    _tcscpy(szAirspaceFile, _T(""));
-    _tcscpy(szAdditionalAirspaceFile, _T(""));
-
-    if (fp != NULL) {
-        FillAirspacesFromOpenAir(fp);
-        zzip_fclose(fp);
-
-        // file 1 was OK, so save it
-        ContractLocalPath(szFile1);
-        _tcscpy(szAirspaceFile, szFile1);
-
-    } else {
-        StartupStore(TEXT("... No airspace file 1%s"), NEWLINE);
-    }
-
-    // also read any additional airspace
-    if (fp2 != NULL) {
-        FillAirspacesFromOpenAir(fp2);
-        zzip_fclose(fp2);
-
-        // file 2 was OK, so save it
-        ContractLocalPath(szFile2);
-        _tcscpy(szAdditionalAirspaceFile, szFile2);
-    } else {
-        StartupStore(TEXT(". No airspace file 2%s"), NEWLINE);
+    int fileCounter(0);
+    for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
+        TCHAR szFile[MAX_PATH] = TEXT("\0");
+        _tcscpy(szFile, airSpaceFile);
+        _tcscpy(airSpaceFile, _T(""));
+        bool readOk=false;
+        ExpandLocalPath(szFile);
+        if (_tcslen(szFile) > 0) {
+            LPCTSTR wextension = _tcsrchr(szFile, _T('.'));
+            if (wextension != nullptr) {
+                if(_tcsicmp(wextension,_T(".txt"))==0) {
+                    ZZIP_FILE* fp = openzip(szFile, "rt");
+                    if (fp != nullptr) {
+                        FillAirspacesFromOpenAir(fp);
+                        zzip_fclose(fp);
+                        readOk=true;
+                    } else readOk=false;
+                } else if(_tcsicmp(wextension,_T(".aip"))==0) readOk=FillAirspacesFromOpenAIP(szFile);
+            }
+        }
+        if(readOk) { // if file was OK remember otherwise forget it
+            ContractLocalPath(szFile);
+            _tcscpy(airSpaceFile, szFile);
+        } else StartupStore(TEXT("... No airspace file %d%s"),++fileCounter, NEWLINE);
     }
 
 #if ASPWAVEOFF
