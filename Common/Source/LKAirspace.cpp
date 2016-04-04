@@ -1833,26 +1833,27 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode& node, AIRSPACE_ALT* Alt) con
     if(conversion<0) return false;
     dataStr=subNode.getText(0);
     if(dataStr==nullptr) return false;
-    Alt->Altitude=_tcstod(dataStr,nullptr);
+    double value=_tcstod(dataStr,nullptr);
     dataStr=node.getAttribute(TEXT("REFERENCE"));
     if(dataStr!=nullptr && _tcslen(dataStr)==3) {
         switch(dataStr[0]) {
         case 'M': // MSL Main sea level
             if(dataStr[1]=='S' && dataStr[2]=='L') {
                 Alt->Base=abMSL;
+                Alt->Altitude=value/conversion;
             }
             break;
         case 'S': //STD Standard atmosphere
             if(dataStr[1]=='T' && dataStr[2]=='D') {
                 Alt->Base=abFL;
-                Alt->FL = Alt->Altitude;
+                Alt->FL = value;
                 Alt->Altitude = AltitudeToQNHAltitude(Alt->FL/conversion);
             }
             break;
         case 'G': // GND Ground
             if(dataStr[1]=='N' && dataStr[2]=='D') {
                 Alt->Base=abAGL;
-                Alt->AGL = Alt->Altitude;
+                Alt->AGL = value > 0 ? value : -1;
             }
             break;
         default:
@@ -1904,6 +1905,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
     //LPCTSTR version=rootNode.getAttribute(TEXT("VERSION"));
     //TODO: do something with the version
 
+    // Look for the 'root' AIRSPACES tag
     XMLNode airspacesNode=rootNode.getChildNode(TEXT("AIRSPACES"));
     if(airspacesNode.isEmpty()) { //ERROR no AIRSPACES tag found in AIP file
         StartupStore(TEXT(".. AIRSPACES tag not found.%s"), NEWLINE);
@@ -2038,7 +2040,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
             continue;
         }
 
-        // Points list
+        // Polygon point list
         CPoint2DArray points;
         TCHAR* remaining;
         TCHAR* point = _tcstok_r((TCHAR*)subNode.getText(0),TEXT(","),&remaining);
@@ -2047,11 +2049,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
             TCHAR* other;
             TCHAR* coord=_tcstok_r(point,TEXT(" "),&other);
             if ((error=(coord==nullptr))) break;
-            double lat=_tcstod(coord,nullptr);
+            double lon=_tcstod(coord,nullptr); // Beware that here the longitude comes first!
+            if ((error=(lon<-180 || lon>180))) break;
             coord=_tcstok_r(nullptr,TEXT(" "),&other);
             if ((error=(coord==nullptr))) break;
-            double lon=_tcstod(coord,nullptr);
-            //TODO: verify if the coordinates make sense
+            double lat=_tcstod(coord,nullptr);
+            if ((error=(lat<-90 || lat>90))) break;
             points.push_back(CPoint2D(lat, lon));
             point = _tcstok_r(nullptr,TEXT(","),&remaining);
         }
@@ -2060,23 +2063,16 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
             continue;
         }
 
-        //CorrectGeoPoints(points); //necessary?
-
-        // Verify that polygon is closed
-        CPoint2D first = points.front();
-        CPoint2D last = points.back();
-        if ((first.Latitude() != last.Latitude()) || (first.Longitude() != last.Longitude())) {
-            StartupStore(TEXT(".. Skipping ASP with POLYGON not closed.%s"), NEWLINE);
-            continue;
-        }
+        // Ensure that the polygon is closed (it should be already)
+        CorrectGeoPoints(points);
 
         // Skip it if we don't have minimum 3 points
-        if (points.size() > 3) {
+        if (points.size() < 4) { // 4 because first and last are the same to close the polygon
             StartupStore(TEXT(".. Skipping ASP with POLYGON with less than 3 points.%s"), NEWLINE);
             continue;
         }
 
-        //Build the new airspace
+        // Build the new airspace
         CAirspace* newairspace = new CAirspace_Area(std::move(points));
         if(newairspace==nullptr) {
             StartupStore(TEXT(".. Failed to allocate new airspace.%s"), NEWLINE);
