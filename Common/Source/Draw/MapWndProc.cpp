@@ -452,6 +452,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             tsDownTime.Reset(); // otherwise we shall get a fake click passthrough
             return;
         }
+        // This means that there was no buttondown, in practice, or that we have to ignore it
         if (ignorenext || (!tsDownTime.IsDefined())) {
             ignorenext = false;
             #ifdef TRACEKEY
@@ -460,12 +461,21 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             return;
         }
 
+        int dwInterval = tsDownTime.Elapsed();
+        tsDownTime.Reset(); // do it once forever
+
+        // This happens expecially with fake doubleclicks or loosy touch screen: buttondow/up immediate
+        if (dwInterval == 0) {
+           #ifdef TRACEKEY
+           StartupStore(_T("... ButtonUp Debounced dwInterval==0%s"),NEWLINE);
+           #endif
+           return;
+        }
+
         // we save these flags for the entire processing, just in case they change
         // while processing a virtual key for example, and also for acceleration.
         bool dontdrawthemap = (DONTDRAWTHEMAP);
 
-        int dwInterval = tsDownTime.Elapsed();
-        tsDownTime.Reset(); // do it once forever
 
         // LK v6: check we are not out of MapRect bounds.
         if (Pos.x<MapWindow::MapRect.left||Pos.x>MapWindow::MapRect.right||Pos.y<MapWindow::MapRect.top||Pos.y>MapWindow::MapRect.bottom) {
@@ -698,8 +708,16 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                     return;
                 }
 
+#if 0 // NO MORE NEEDED BUT PLEASE DO NOT REMOVE
                 // We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or 
                 // navbox operations including center key.
+                if (dwInterval == 0) {
+                   #ifdef TRACEKEY
+                   StartupStore(_T("... Debounced in dontdrawthemap or NOTANYPAN dwInterval==0%s"),NEWLINE);
+                   #endif
+                   return; // should be impossible. It happens because of strange event buttonup/down after dblck
+                }
+#endif
                 int wParam = ProcessVirtualKey(Pos.x, Pos.y, dwInterval, LKGESTURE_NONE);
 #ifdef DEBUG_MAPINPUT
                 DoStatusMessage(_T("DBG-035 navboxes"));
@@ -726,12 +744,14 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         }
 
 
+#if 0 // NO MORE NEEDED BUT PLEASE DO NOT REMOVE
         if (dwInterval == 0) {
             #ifdef TRACEKEY
-            StartupStore(_T("... dwInterval == 0 !%s"),NEWLINE);
+            StartupStore(_T("... Debounced, dwInterval == 0 !%s"),NEWLINE);
             #endif
-            return; // should be impossible
+            return; // should be impossible. It happens because of strange event buttonup/down after dblck
         }
+#endif
 
         // we need to calculate it here only if needed
         if (gestDist >= 0) {
