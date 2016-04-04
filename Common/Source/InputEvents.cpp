@@ -752,6 +752,12 @@ bool InputEvents::processKey(int KeyID) {
     int lastMode = mode;
     const TCHAR *pLabelText = NULL;
 
+    #if 0 // REMINDER> WE WERE DEBOUNCING HARDWARE KEYS HERE ON PPC2003 AND PNA DEVICES
+    if (!Debounce()) {
+       return true;
+    }
+    #endif
+
     for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
       if ((ModeLabel[mode][i].event == event_id)) {
         MenuId = ModeLabel[mode][i].MenuId;
