@@ -1853,7 +1853,7 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode& node, AIRSPACE_ALT* Alt) con
         case 'G': // GND Ground
             if(dataStr[1]=='N' && dataStr[2]=='D') {
                 Alt->Base=abAGL;
-                Alt->AGL = value > 0 ? value : -1;
+                Alt->AGL = value > 0 ? value/conversion : -1;
             }
             break;
         default:
