@@ -29,7 +29,7 @@
 
 #ifdef TESTBENCH
 // USE ONLY FOR DEBUGGING PURPOSES! Normally disabled.
-// #define TRACE_KEYMISSES
+// #define TRACEKEY
 #endif
 
 #define KEYDEBOUNCE 100
@@ -347,7 +347,9 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
 #define WM_USER_LONGTIME_CLICK_TIMER  50
 
 void MapWindow::_OnLButtonDown(const POINT& Pos) {
-
+#ifdef TRACEKEY
+StartupStore(_T("BUTTON DOWN ")); // no CR
+#endif
     if (!LockModeStatus) {
         pressed = true;
         tsDownTime.Update();
@@ -379,7 +381,7 @@ void MapWindow::_OnLButtonDown(const POINT& Pos) {
             LKevent = LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
         }
     }
-    #ifdef TRACE_KEYMISSES
+    #ifdef TRACEKEY
     else StartupStore(_T(".... OnButtonDown in LockMode, keypress ignored  (pressed=%d)%s"),pressed,NEWLINE);
     #endif
 }
@@ -390,6 +392,9 @@ void MapWindow::_OnLButtonDown(const POINT& Pos) {
  *   otherwise, call OnLButtonDown ( this is probably useless )
  */
 void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
+#ifdef TRACEKEY
+    StartupStore(_T("BUTTON DOUBLE CLICK "));
+#endif
     // WINDOWS: Attention please: a DBLCLK is followed by a simple BUTTONUP with NO buttondown.
     // LINUX: a DBLCLK is preceded by buttondown-up (two times), then DblClick. 
     //        Sometimes a single down-up, dlblclk, down-up
@@ -418,13 +423,16 @@ void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
 
             }
         }
-        #ifdef TRACE_KEYMISSES
+        #ifdef TRACEKEY
         else StartupStore(_T(".... DoubleClick out of range, ignored. Screen is locked, pressed=%d%s"),pressed,NEWLINE);
         #endif
     }
 }
 
 void MapWindow::_OnLButtonUp(const POINT& Pos) {
+#ifdef TRACEKEY
+    StartupStore(_T("BUTTON UP "));
+#endif
     if (!LockModeStatus && pressed) {
         
         const ScreenProjection _Proj;
@@ -446,6 +454,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         }
         if (ignorenext || (!tsDownTime.IsDefined())) {
             ignorenext = false;
+            #ifdef TRACEKEY
+            StartupStore(_T("... ButtonUp with tsDownTime==0, ignored%s"),NEWLINE);
+            #endif
             return;
         }
 
@@ -554,11 +565,11 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         if (!CustomKeyHandler(CKI_BOTTOMICON)) {
                             ShowMenu();
                         }
-                        #ifdef TRACE_KEYMISSES
+                        #ifdef TRACEKEY
                         else StartupStore(_T(".... CustomKeyHandler is CKI_BOTTOMICON%s"),NEWLINE);
                         #endif
                     }
-                    #ifdef TRACE_KEYMISSES
+                    #ifdef TRACEKEY
                     else StartupStore(_T(".... dwInterval<VKLONGCLICK%s"),NEWLINE);
                     #endif
                     return;
@@ -600,7 +611,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         MapWindow::zoom.EventScaleZoom(1);
                         return;
                     }
-                    #ifdef TRACE_KEYMISSES
+                    #ifdef TRACEKEY
                     else StartupStore(_T(".... CustomKeyHandler is CKI TOPLEFT%s"),NEWLINE);
                     #endif
                     MapWindow::RefreshMap();
@@ -647,7 +658,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         MapWindow::zoom.EventScaleZoom(1);
                         return;
                     }
-                    #ifdef TRACE_KEYMISSES
+                    #ifdef TRACEKEY
                     else StartupStore(_T(".... CustomKeyHandler is CKI TOPRIGHT%s"),NEWLINE);
                     #endif
                     MapWindow::RefreshMap();
@@ -716,7 +727,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
 
         if (dwInterval == 0) {
-            #ifdef TRACE_KEYMISSES
+            #ifdef TRACEKEY
             StartupStore(_T("... dwInterval == 0 !%s"),NEWLINE);
             #endif
             return; // should be impossible
@@ -748,9 +759,15 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 return;
             }
             // do not process click on the underneath window
+            #ifdef TRACEKEY
+            StartupStore(_T("... ButtonUp ignored, underneath window%s"),NEWLINE);
+            #endif
             return;
         }
         if (dontdrawthemap) {
+            #ifdef TRACEKEY
+            StartupStore(_T("... ButtonUp ignored, dontdrawthemap%s"),NEWLINE);
+            #endif
             return;
         }
 
@@ -811,7 +828,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         } else {
                             // process center key, do nothing 
                             // v5 obsoleted, should not happen
-                            #ifdef TRACE_KEYMISSES
+                            #ifdef TRACEKEY
                             StartupStore(_T(".... ignored process center key%s"),NEWLINE);
                             #endif
                             return;
@@ -830,15 +847,18 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 
                 if (!mode.AnyPan()) {
                     // match only center screen
-                    #ifdef TRACE_KEYMISSES
+                    #ifdef TRACEKEY
                     StartupStore(_T(".... not mode anyPan! ignored%s"),NEWLINE);
                     #endif
                 }
+                #ifdef TRACEKEY
+                else StartupStore(_T("... ButtonUp ignored, long click in mode AnyPan%s"),NEWLINE);
+                #endif
                 return;
             }
         } // !TargetPan
     }
-    #ifdef TRACE_KEYMISSES
+    #ifdef TRACEKEY
     else StartupStore(_T(".... OnButtonUp ignored! LockModeStatus=%d pressed=%d%s"),LockModeStatus,pressed,NEWLINE);
     #endif
 }
@@ -1801,6 +1821,9 @@ void MapWindow::key_next_page() {
 }
 
 void MapWindow::key_down() {
+#ifdef TRACEKEY
+    StartupStore(_T("KEY DOWN "));
+#endif
 
     if (!MapWindow::mode.AnyPan() && MapSpaceMode != 1) { // dontdrawthemap
         if (MapSpaceMode <= MSM_MAP) {
@@ -1820,6 +1843,9 @@ void MapWindow::key_down() {
 }
 
 void MapWindow::key_up() {
+#ifdef TRACEKEY
+    StartupStore(_T("KEY UP"));
+#endif
     //
     // UP
     //
