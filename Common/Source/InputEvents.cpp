@@ -2976,33 +2976,25 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("reset")) == 0){
 	MapWindow::GliderScreenPositionX=50;
 	MapWindow::GliderScreenPositionY=MapWindow::GliderScreenPosition;
-	return; 
-  }
-  if (_tcscmp(misc, TEXT("down")) == 0){
+  } else if (_tcscmp(misc, TEXT("down")) == 0){
 	i=MapWindow::GliderScreenPositionY - 10; 
 	// 20 is 20%, to avoid positioning on the bottom bar
 	if (i <20) i=90;
 	MapWindow::GliderScreenPositionY=i;
-	return; 
-  }
-  if (_tcscmp(misc, TEXT("up")) == 0){
+  } else if (_tcscmp(misc, TEXT("up")) == 0){
 	i=MapWindow::GliderScreenPositionY + 10; 
 	if (i >90) i=20;
 	MapWindow::GliderScreenPositionY=i;
-	return; 
-  }
-  if (_tcscmp(misc, TEXT("left")) == 0){
+  } else if (_tcscmp(misc, TEXT("left")) == 0){
 	i=MapWindow::GliderScreenPositionX - 10; 
 	if (i <10) i=90;
 	MapWindow::GliderScreenPositionX=i;
-	return; 
-  }
-  if (_tcscmp(misc, TEXT("right")) == 0){
+  } else if (_tcscmp(misc, TEXT("right")) == 0){
 	i=MapWindow::GliderScreenPositionX + 10; 
 	if (i >90) i=10;
 	MapWindow::GliderScreenPositionX=i;
-	return; 
   }
+  MapWindow::RefreshMap();
 
 }
 
