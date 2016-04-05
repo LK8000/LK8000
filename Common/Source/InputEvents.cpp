@@ -1245,13 +1245,6 @@ void InputEvents::eventZoom(const TCHAR* misc) {
 	// LKTOKEN  _@M172_ = "Circling Zoom OFF" 
       DoStatusMessage(gettext(TEXT("_@M172_")));
   }
-
-  ForceRenderMap=true; // needed to force refresh!
-  #if USEBIGZOOM
-  MapWindow::zoom.BigZoom(true);
-  #endif
-  MapWindow::RefreshMap();
-
 }
 
 // Pan
