@@ -1230,13 +1230,10 @@ void InputEvents::eventZoom(const TCHAR* misc) {
 
   else if (_tcscmp(misc, TEXT("circlezoom toggle")) == 0) {
     MapWindow::zoom.CircleZoom(!MapWindow::zoom.CircleZoom());
-    MapWindow::zoom.SwitchMode();
   } else if (_tcscmp(misc, TEXT("circlezoom on")) == 0) {
     MapWindow::zoom.CircleZoom(true);
-    MapWindow::zoom.SwitchMode();
   } else if (_tcscmp(misc, TEXT("circlezoom off")) == 0) {
     MapWindow::zoom.CircleZoom(false);
-    MapWindow::zoom.SwitchMode();
   } else if (_tcscmp(misc, TEXT("circlezoom show")) == 0) {
     if (MapWindow::zoom.CircleZoom())
 	// LKTOKEN  _@M173_ = "Circling Zoom ON" 
