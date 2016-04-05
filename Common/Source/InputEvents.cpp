@@ -645,7 +645,9 @@ void InputEvents::drawButtons(int Mode) {
         }
     }
 
+#ifdef USE_GDI
     MapWindow::RequestFastRefresh();
+#endif
 
 }
 
@@ -1386,8 +1388,10 @@ void InputEvents::eventMode(const TCHAR *misc) {
   LKASSERT(misc != NULL);
   InputEvents::setMode(misc);
   
+#ifdef USE_GDI
   // trigger redraw of screen to reduce blank area under windows
   MapWindow::RequestFastRefresh();
+#endif
 }
 
 
