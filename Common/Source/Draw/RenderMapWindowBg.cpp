@@ -34,7 +34,7 @@ void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc) {
         RECT newRect = {0, 0, ScreenSizeX, ScreenSizeY};
         MapWindow::ChangeDrawRect(newRect);
     } else {
-        RECT newRect = {0, 0, ScreenSizeX, ScreenSizeY - BottomSize - (ScreenSizeY-MapRect.bottom)};
+        RECT newRect = {0, 0, ScreenSizeX, ScreenSizeY - BottomSize - (ScreenSizeY-MapRect.bottom)-1};
         MapWindow::ChangeDrawRect(newRect);
     }
 
