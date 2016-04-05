@@ -1777,7 +1777,9 @@ int WndForm::ShowModal(void) {
     }
     MainWindow.UnGhost();
 
+#ifdef USE_GDI    
     MapWindow::RequestFastRefresh();
+#endif
     Message::BlockRender(false);
 
     return (mModalResult);
