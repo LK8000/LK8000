@@ -16,7 +16,6 @@
 // It will NOT update the map or calculations, only repaint
 // an old bitmap image of the screen.
 void MapWindow::RequestFastRefresh() {
-  MapDirty = false;
 
 #ifdef ENABLE_OPENGL
   MainWindow.Invalidate();
