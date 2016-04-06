@@ -150,27 +150,30 @@ goto_bearing:
 
 		// B04
 		case LK_LD_INST:
-            _stprintf(BufferValue,_T(NULLLONG));
+                        _stprintf(BufferValue,_T(NULLLONG));
+
 			if (lktitle)
 				// LKTOKEN  _@M1009_ = "Eff.last 20 sec", _@M1010_ = "E.20\""
 				_tcscpy(BufferTitle, MsgToken(1010));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if (DerivedDrawInfo.Flying)
+                        if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) { 
+			   if (DerivedDrawInfo.Flying)
 				value=DerivedDrawInfo.LD;
-			else
+			   else
 				value=0;
-			if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
+			   if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
 				_stprintf(BufferValue, TEXT(INFINVAL));
 				valid=true;
-			} else {
+			   } else {
 				if (value==0) _stprintf(BufferValue, TEXT(NULLMEDIUM));
 				else {
 					_stprintf(BufferValue, TEXT("%.1f"),value);
 					valid=true;
 				}
-            }
+                           }
+                        }
 			break;
 
 
