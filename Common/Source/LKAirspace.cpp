@@ -1902,8 +1902,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
         return false;
     }
 
-    //LPCTSTR version=rootNode.getAttribute(TEXT("VERSION"));
-    //TODO: do something with the version
+    // Check version of OpenAIP format
+    LPCTSTR dataStr=rootNode.getAttribute(TEXT("DATAFORMAT"));
+    if(dataStr==nullptr || _tcstod(dataStr,nullptr) != 1.1) {
+        StartupStore(TEXT(".. DATAFORMAT attribute missing or not at the expected version: 1.1.%s"), NEWLINE);
+        return false;
+    }
 
     // Look for the 'root' AIRSPACES tag
     XMLNode airspacesNode=rootNode.getChildNode(TEXT("AIRSPACES"));
@@ -1920,7 +1924,6 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
         StartupStore(TEXT(".. Expected to find only ASP tags inside AIRSPACES tag.%s"), NEWLINE);
         return false;
     } else StartupStore(TEXT(".. OpenAIP airspace file contains: %u airspaces.%s"), (unsigned)numOfAirspaces, NEWLINE);
-    LPCTSTR dataStr=nullptr;
     XMLNode ASPnode;
     for(int i=0;i<numOfAirspaces;i++) {
         ASPnode=airspacesNode.getChildNode(i);
@@ -1957,25 +1960,25 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
             break;
         case 'F':
             if(len==1) Type=CLASSF; // F class airspace
-            else if (_tcsicmp(dataStr,_T("FIR"))==0) Type=OTHER; //TODO: FIR missing in LK8000
+            else if (_tcsicmp(dataStr,_T("FIR"))==0) continue; //TODO: FIR missing in LK8000
             break;
         case 'G':
             if(len==1) Type=CLASSG; // G class airspace
-            else if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=OTHER; //TODO: GLIDING missing in LK8000
+            else if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDING;
             break;
         case 'O':
-            if (_tcsicmp(dataStr,_T("OTH"))==0) Type=OTHER; //TODO: OTH missing in LK8000
+            if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
             break;
         case 'P':
             if (_tcsicmp(dataStr,_T("PROHIBITED"))==0) Type=PROHIBITED; // Prohibited area
             break;
         case 'R':
             if (_tcsicmp(dataStr,_T("RESTRICTED"))==0) Type=RESTRICT; // Restricted area
-            else if (_tcsicmp(dataStr,_T("RMZ"))==0) Type=OTHER; //TODO: RMZ missing in LK8000
+            else if (_tcsicmp(dataStr,_T("RMZ"))==0) Type=CLASSRMZ; //RMZ
             break;
         case 'T':
             if(len==3 && dataStr[1]=='M') {
-                if(dataStr[2]=='A') Type=OTHER; //TODO: TMA missing in LK8000
+                if(dataStr[2]=='A') continue; //TODO: TMA missing in LK8000
                 else if(dataStr[2]=='Z') Type=CLASSTMZ; //TMZ
             }
             break;
@@ -1983,7 +1986,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
             if (_tcsicmp(dataStr,_T("WAVE"))==0) Type=WAVE; //WAVE
             break;
         case 'U':
-            if (_tcsicmp(dataStr,_T("UIR"))==0) Type=OTHER; //TODO: UIR missing in LK8000
+            if (_tcsicmp(dataStr,_T("UIR"))==0) continue; //TODO: UIR missing in LK8000
             break;
         default:
             break;
