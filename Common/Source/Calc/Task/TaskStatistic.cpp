@@ -191,7 +191,9 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                     ActiveTaskPoint);
     }
 
-  CheckTransitionFinalGlide(Basic, Calculated);
+  // If it is not a glider, or if it is a glider and it is freeflying with take off since 5 minutes
+  if (!(ISGLIDER||ISPARAGLIDER) || (Calculated->FreeFlying && Calculated->FlightTime>(60*5)))
+     CheckTransitionFinalGlide(Basic, Calculated);
 
   // accumulators
   double TaskAltitudeRequired = 0;
