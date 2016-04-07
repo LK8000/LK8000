@@ -22,6 +22,11 @@ extern void InsertCommonList(int newwp);
 extern void InsertRecentList(int newwp);
 extern void RemoveRecentList(int newwp);
 
+// #define LOGBEST 1 // DEBUG inside Runtime log. 
+
+#ifdef LOGBEST
+#define STS StartupStore(_T
+#endif
 
 /*
  * Search for the best landing option
@@ -62,7 +67,9 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   }
 
   // We are not considering total energy here, forbidden for safety reasons
-  double searchrange=(Calculated->NavAltitude-(SAFETYALTITUDEARRIVAL/10))* GlidePolar::bestld /1000;
+  // V5: double searchrange=(Calculated->NavAltitude-(SAFETYALTITUDEARRIVAL/10))* GlidePolar::bestld /1000;
+  // V6: we enlarge preliminar search range because of possible tail wind for some destinations
+  double searchrange=(Calculated->NavAltitude)* 1.2 * GlidePolar::bestld /1000;
   if (searchrange <= 0) 
 	searchrange=2; // lock to home airport at once
   if (searchrange > ALTERNATE_MAXRANGE) 
@@ -79,6 +86,9 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 	sortApproxIndex[i]= -1;
 	sortApproxDistance[i] = 0;
   }
+  #ifdef LOGBEST
+  STS("\n\nNEW SEARCH\n\n"));
+  #endif
   for (j=0; j<RangeLandableNumber; j++) {
 	i=RangeLandableIndex[j];
 
@@ -105,9 +115,15 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 
 			sortApproxDistance[k] = approx_distance;
 			sortApproxIndex[k] = i;
+                        #ifdef LOGBEST
+                        STS("INSERT FROM RANGELANDABLE: [%d] %d %s\n"),k,sortApproxIndex[k],WayPointList[sortApproxIndex[k]].Name);
+                        #endif
 			k=MAXBEST*2;
 		}
 	} // for k
+  #ifdef LOGBEST
+  STS("------------\n"));
+  #endif
   } // for all waypoints, or the reduced list by Range
 
   #ifdef DEBUG_BESTALTERNATE
@@ -140,26 +156,41 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 
 
   for (int scan_airports_slot=0; scan_airports_slot<2; scan_airports_slot++) {
-
+  #ifdef LOGBEST
+  STS("SCAN SLOT= %d\n"),scan_airports_slot);
+  #endif
 	for (i=0; i<MAXBEST*2; i++) {
 		if (sortApproxIndex[i]<0) { // ignore invalid points
 			continue;
 		}
+                #ifdef LOGBEST
+                STS("Examine: [%d] %d %s\n"),i,sortApproxIndex[i],WayPointList[sortApproxIndex[i]].Name);
+                #endif
 
 		if ((scan_airports_slot==0) && 
 			(!WayPointCalc[sortApproxIndex[i]].IsAirport))
 		{
 			// we are in the first scan, looking for airports only
+                        // In second scan we accept again airports and also outlandings
+                        #ifdef LOGBEST
+                        STS("... scanning only for airports, this one is not an airport\n"));
+                        #endif
 			continue;
 		}
 
 		arrival_altitude = CalculateWaypointArrivalAltitude(Basic, Calculated, sortApproxIndex[i]);
+                #ifdef LOGBEST
+                STS("...... arrival altitude is %f\n"),arrival_altitude);
+                #endif
 
 		WayPointCalc[sortApproxIndex[i]].AltArriv[AltArrivMode] = arrival_altitude; 
 		// This is holding the real arrival value
 
 		if (scan_airports_slot==0) {
 			if (arrival_altitude<0) {
+                                #ifdef LOGBEST
+                                STS("... scanning only for airports, and this is unreachable (%f), continue\n"),arrival_altitude);
+                                #endif
 				// in first scan, this airport is unreachable, so ignore it.
 				continue;
 			} 
@@ -191,11 +222,15 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 			#endif
 					NULL, NULL, wp_distance, &out_of_range, NULL);
             
-				if ((distance_soarable>= wp_distance)||(arrival_altitude<0)) {
+				// V5 bug: if ((distance_soarable>= wp_distance)||(arrival_altitude<0)) {
+				if ((distance_soarable>= wp_distance)) {
 					// only put this in the index if it is reachable
 					// and doesn't go through terrain, OR, if it is unreachable
 					// it doesn't matter if it goes through terrain because
 					// pilot has to climb first anyway
+                                        // 160407: THE ^^ ABOVE WAS A BUG. Because we were inserting a waypoint
+                                        // if it had no obstacles, OR if it had an obstacle but with a NEGATIVE arrival
+                                        // altitude. We were thus including negative arrival altitudes wp.
               
 					// ok, got new biggest, put it into the slot.
 					for (l=MAXBEST-1; l>k; l--) {
@@ -207,12 +242,18 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 
 					sortedArrivalAltitude[k] = arrival_altitude;
 					sortedLandableIndex[k] = sortApproxIndex[i];
+                                        #ifdef LOGBEST
+                                        STS("INSERT INTO LANDABLES: [%d] %d %s\n"),k,sortedLandableIndex[k],WayPointList[sortedLandableIndex[k]].Name);
+                                        #endif
 					k=MAXBEST;
 				} 
 			} // if (((arrival_altitude > sortedArrivalAltitude[k]) ...
 		} // for (k=0; k< MAXBEST; k++) {
 	} // for i
   }
+  #ifdef LOGBEST
+  STS("------------\n"));
+  #endif
 
   #ifdef DEBUG_BESTALTERNATE
   if ( (fp=_tfopen(_T("DEBUG.TXT"),_T("a"))) != NULL )  {
