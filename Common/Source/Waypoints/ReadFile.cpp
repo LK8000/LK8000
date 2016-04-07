@@ -43,6 +43,10 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 	// We do NOT return, because first we analyze the content.
   }
 
+  if (fileformat==LKW_OPENAIP) {
+      ParseOpenAIP(fp);
+      return LKW_OPENAIP;
+  }
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 

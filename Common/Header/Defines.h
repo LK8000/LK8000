@@ -771,6 +771,7 @@
 #define LKW_GARMIN	6
 #define LKW_LK8000	7	// mixed format
 #define LKW_VIRTUAL	8	// temporary, cannot save them
+#define LKW_OPENAIP 9   // OpenAIP format
 
 // ComPort diagnostics: ComPortStatus
 #define CPS_UNUSED	0	// init to zero at startup

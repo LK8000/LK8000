@@ -2131,6 +2131,8 @@ DataField* dfe = wp->GetDataField();
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     _stprintf(tsuf,_T("*%s"),_T(LKS_WP_COMPE));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_OPENAIP));
+    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
   }
@@ -2148,6 +2150,8 @@ DataField* dfe = wp->GetDataField();
     _stprintf(tsuf,_T("*%s"),_T(LKS_WP_CUP));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     _stprintf(tsuf,_T("*%s"),_T(LKS_WP_COMPE));
+    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
+    _stprintf(tsuf,_T("*%s"),_T(LKS_OPENAIP));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();

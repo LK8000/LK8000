@@ -236,14 +236,17 @@ int GetWaypointFileFormatType(const TCHAR* wfilename) {
   TCHAR wextension[MAX_PATH];
   LK_tsplitpath(wfilename, nullptr,nullptr,nullptr,wextension);
 
-  if ( _tcsicmp(wextension,_T(".cup"))==0) {
+  if ( _tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
        return LKW_CUP;
   }
-  if ( _tcsicmp(wextension,_T(".dat"))==0 ) {
+  if ( _tcsicmp(wextension,_T(LKS_WP_WINPILOT))==0 ) {
        return LKW_DAT;
   }
-  if ( _tcsicmp(wextension,_T(".wpt"))==0 ) {
+  if ( _tcsicmp(wextension,_T(LKS_WP_COMPE))==0 ) {
        return LKW_COMPE;
+  }
+  if ( _tcsicmp(wextension,_T(LKS_OPENAIP))==0 ) {
+       return LKW_OPENAIP;
   }
 
   return -1;

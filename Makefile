@@ -734,6 +734,7 @@ WAYPT	:=\
 	$(WPT)/ParseCUP.cpp\
 	$(WPT)/ParseDAT.cpp\
 	$(WPT)/ParseOZI.cpp\
+	$(WPT)/ParseOpenAIP.cpp\
 	$(WPT)/Read.cpp\
 	$(WPT)/ReadAltitude.cpp\
 	$(WPT)/ReadFile.cpp\

@@ -48,6 +48,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp);
 bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool WaypointInTerrainRange(WAYPOINT *List);
+bool ParseOpenAIP(ZZIP_FILE *fp);
 
 
 
