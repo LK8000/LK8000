@@ -1191,9 +1191,8 @@ static  int dwDeviceIndex2=0;
 static  TCHAR temptext[MAX_PATH];
 
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
-    if(COMMPort.empty()) {
-        RefreshComPortList();
-    }
+    RefreshComPortList();
+    
     if (wp) {
         DataFieldEnum* dfe = (DataFieldEnum*) wp->GetDataField();
         if(dfe) {
