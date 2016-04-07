@@ -1985,6 +1985,11 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSetSystemTimeFromGPS"));
   if (wp) {
+#ifndef PPC2003   // PNA is also PPC2003
+    wp->SetVisible(false);
+#else
+    wp->SetVisible(true);
+#endif
     wp->GetDataField()->Set(SetSystemTimeFromGPS);
     wp->RefreshDisplay();
   }
@@ -2768,16 +2773,21 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBacklight")); // VENTA4
   if (wp) {
-    wp->SetVisible(true); // 091115 changed to true
+#ifndef PPC2003   // PNA is also PPC2003
+    wp->SetVisible(false);
+#else
+    wp->SetVisible(true);
+#endif
     wp->GetDataField()->Set(EnableAutoBacklight);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoSoundVolume")); // VENTA4
   if (wp) {
-    wp->SetVisible(true); // 091115 changed to true
-#if ( WINDOWSPC==0 )
-    	wp->SetVisible(true);
+#ifndef PPC2003   // PNA is also PPC2003
+    	wp->SetVisible(false);
+#else
+        wp->SetVisible(true);
 #endif
     wp->GetDataField()->Set(EnableAutoSoundVolume);
     wp->RefreshDisplay();
