@@ -700,6 +700,30 @@ void LoggerHeader(void)
 
   #endif
 
+  #ifdef __linux__
+    	#ifndef LKCOMPETITION
+    sprintf(temp,"HFFTYFRTYPE:%s LINUX\r\n", LKFORK);
+	#else
+    sprintf(temp,"HFFTYFRTYPE:%sC LINUX\r\n", LKFORK);
+	#endif
+  #endif
+// Kobo AFTER __linux__
+  #ifdef KOBO
+    	#ifndef LKCOMPETITION
+    sprintf(temp,"HFFTYFRTYPE:%s KOBO\r\n", LKFORK);
+	#else
+    sprintf(temp,"HFFTYFRTYPE:%sC KOBO\r\n", LKFORK);
+	#endif
+  #endif
+  #ifdef WINDOWSPC
+    	#ifndef LKCOMPETITION
+    sprintf(temp,"HFFTYFRTYPE:%s WINDOWSPC\r\n", LKFORK);
+	#else
+    sprintf(temp,"HFFTYFRTYPE:%sC WINDOWSPC\r\n", LKFORK);
+	#endif
+  #endif
+
+
   IGCWriteRecord(temp);
 
   #ifndef LKCOMPETITION
