@@ -546,8 +546,8 @@ private:
   bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
   void CorrectGeoPoints(CPoint2DArray &points);
 
-  bool FillAirspacesFromOpenAIP(TCHAR* aipFile);
-  bool ReadAltitudeOpenAIP(XMLNode& node, AIRSPACE_ALT* Alt) const;
+  bool FillAirspacesFromOpenAIP(ZZIP_FILE *fp);
+  bool ReadAltitudeOpenAIP(XMLNode &node, AIRSPACE_ALT *Alt) const;
 
   //Airspace setting save/restore functions
   void SaveSettings() const;

@@ -1523,7 +1523,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
 
-    StartupStore(TEXT(". Reading airspace file%s"), NEWLINE);
+    StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
     charset cs = charset::unknown;
     while (ReadString(fp, READLINE_LENGTH, Text, cs)) {
@@ -1808,7 +1808,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
 }
 
-bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode& node, AIRSPACE_ALT* Alt) const {
+bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode &node, AIRSPACE_ALT *Alt) const {
     Alt->Altitude = 0;
     Alt->FL = 0;
     Alt->AGL = 0;
@@ -1865,28 +1865,28 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode& node, AIRSPACE_ALT* Alt) con
 }
 
 // Reads airspaces from an OpenAIP file
-bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
-    StartupStore(TEXT(". Reading OpenAIP airspace file: %s%s"), aipFile, NEWLINE);
-    FILE* fp = _tfopen(aipFile, TEXT("rb"));
-    if(fp == nullptr) {
-        StartupStore(TEXT(".. Failed to open OpenAIP airspace file%.s"), NEWLINE);
-        return false;
-    }
-    fseek(fp, 0, SEEK_END); // seek to end of file
-    long size = ftell(fp); // get current file pointer
-    fseek(fp, 0, SEEK_SET); // seek back to beginning of file
+bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
+    StartupStore(TEXT(". Reading OpenAIP airspace file%s"), NEWLINE);
+
+    // Allocate buffer to read the file
+    zzip_seek(fp, 0, SEEK_END); // seek to end of file
+    long size = zzip_tell(fp); // get current file pointer
+    zzip_seek(fp, 0, SEEK_SET); // seek back to beginning of file
     char* buff = (char*) calloc(size + 1, sizeof(char));
     if(buff==nullptr) {
         StartupStore(TEXT(".. Failed to allocate buffer to read airspace file.%s"), NEWLINE);
         return false;
     }
-    long nRead = fread(buff, sizeof (char), size, fp);
-    fclose(fp);
+
+    // Read the file
+    long nRead = zzip_fread(buff, sizeof (char), size, fp);
     if(nRead != size) {
-        StartupStore(TEXT(".. Not able to read all airspace file.%s"), NEWLINE);
+        StartupStore(TEXT(".. Not able to buffer all airspace file.%s"), NEWLINE);
         free(buff);
         return false;
     }
+
+    // Convert from UTF8
     TCHAR* szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
     if(szXML==nullptr) {
         StartupStore(TEXT(".. Not able to allocate memory to convert from UTF8.%s"), NEWLINE);
@@ -1895,6 +1895,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(TCHAR* aipFile) {
     }
     utf2TCHAR(buff, szXML, size + 1);
     free(buff);
+
+    // Get 'root' node OPENAIP
     XMLNode rootNode = XMLNode::parseString(szXML, _T("OPENAIP"));
     free(szXML);
     if(rootNode.isEmpty()) {
@@ -2103,35 +2105,35 @@ void CAirspaceManager::ReadAirspaces() {
         _tcscpy(szFile, airSpaceFile);
         _tcscpy(airSpaceFile, _T(""));
         ExpandLocalPath(szFile);
-        if (_tcslen(szFile) > 0) {
-            bool readOk=false;
+
+        if(_tcslen(szFile) > 0) { // Check if there is a filename present
             LPCTSTR wextension = _tcsrchr(szFile, _T('.'));
-            if (wextension != nullptr) {
-                if(_tcsicmp(wextension,_T(".txt"))==0) {
-                    ZZIP_FILE* fp = openzip(szFile, "rt");
-                    if (fp != nullptr) {
+
+            if(wextension != nullptr) { // Check if we have a file extension
+                ZZIP_FILE* fp = openzip(szFile, "rt");
+
+                if(fp != nullptr) { // Check if it possible to open the file
+                    bool readOk=false;
+
+                    if(_tcsicmp(wextension,_T(".txt"))==0) { // TXT file: should be an OpenAir
                         FillAirspacesFromOpenAir(fp);
-                        zzip_fclose(fp);
                         readOk=true;
-                    } else readOk=false;
-                } else if(_tcsicmp(wextension,_T(".aip"))==0) {
-                    readOk=FillAirspacesFromOpenAIP(szFile);
-                    //if(readOk) LoadSettings();
-                }
-            }
-            if(readOk) { // if file was OK remember otherwise forget it
-                ContractLocalPath(szFile);
-                _tcscpy(airSpaceFile, szFile);
-            } else StartupStore(TEXT("... Failed to read airspace file %d%s"),fileCounter, NEWLINE);
+                    } else if(_tcsicmp(wextension,_T(".aip"))==0) readOk=FillAirspacesFromOpenAIP(fp); // AIP file: should be an OpenAIP
+                    else StartupStore(TEXT("... Unknown airspace file %d extension: %s%s"), fileCounter, wextension, NEWLINE);
+
+                    if(readOk) { // if file was OK remember otherwise forget it
+                        ContractLocalPath(szFile);
+                        _tcscpy(airSpaceFile, szFile);
+                    } else StartupStore(TEXT("... Failed to parse airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
+                    zzip_fclose(fp);
+                } else StartupStore(TEXT("... Unable to open airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
+            } else StartupStore(TEXT("... Airspace file %d without extension.%s"), fileCounter, NEWLINE);
         } else StartupStore(TEXT("... No airspace file %d%s"),fileCounter, NEWLINE);
-
     }
-
 #if ASPWAVEOFF
     AirspaceDisableWaveSectors();
 #endif
-    if (AspPermanentChanged > 0)
-        LoadSettings();
+    if (AspPermanentChanged > 0) LoadSettings();
 }
 
 void CAirspaceManager::CloseAirspaces() {
