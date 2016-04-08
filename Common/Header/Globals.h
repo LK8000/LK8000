@@ -894,7 +894,6 @@ GEXTERN TCHAR CompetitionID_Config[50];
 GEXTERN bool LockSettingsInFlight;
 GEXTERN bool LoggerShortName;
 
-GEXTERN short TouchContext;
 GEXTERN bool UseHiresBitmap;
 GEXTERN bool UseUngestures;
 GEXTERN bool UseWindRose;

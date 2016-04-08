@@ -593,7 +593,6 @@ void Globals_Init(void) {
   ICOSTABLE[4096];
    */
 
-  TouchContext=0;
   BUGS_Config = 1; // equivalent saved in system config and set by default on startup
 
   // Load and use higher resolution bitmaps
