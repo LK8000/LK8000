@@ -44,6 +44,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
   }
 
   if (fileformat==LKW_OPENAIP) {
+      StartupStore(_T(". Waypoint file %d format: OpenAIP%s"),globalFileNum+1,NEWLINE);
       ParseOpenAIP(fp);
       return LKW_OPENAIP;
   }
