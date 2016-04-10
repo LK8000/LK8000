@@ -53,7 +53,9 @@
 // eink screens.
 //
 #ifdef DITHER
+#ifdef GREYSCALE
 #define UNDITHER 1
+#endif
 #endif
 
 #ifdef PNA

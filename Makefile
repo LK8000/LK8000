@@ -281,6 +281,13 @@ ifeq ($(CONFIG_LINUX),y)
 # by default use OpenGL if available
  OPENGL  ?=$(shell $(PKG_CONFIG) --exists gl && echo y)
 
+# Do you want LINUX greyscaled? Uncomment the following 3 lines
+# and remove Distrib folder . Then make TARGET=LINUX install
+# to replace correct bitmaps 
+#GREYSCALE:=y
+#DITHER:=y
+#OPENGL:=n
+
  ifneq ($(OPENGL),y)
  #no OpenGL or explicitly disabled,
   GLES2   ?=n
