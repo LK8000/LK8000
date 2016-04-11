@@ -12,8 +12,6 @@
 #include "CalcTask.h"
 
 
-extern int FastLogNum; // number of points to log at high rate
-
 void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
   if (ActiveTaskPoint == 0) {
     InputEvents::processGlideComputer(GCE_TASK_START); // 101014
@@ -34,8 +32,6 @@ void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
 
   // set waypoint detail to active task WP
 
-  // start logging data at faster rate
-  FastLogNum = 5;
 }
 
 

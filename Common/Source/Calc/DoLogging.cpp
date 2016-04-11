@@ -13,8 +13,6 @@
 
 extern void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
-int FastLogNum = 0; // number of points to log at high rate
-
 #define LOGINTERVAL  1  // seconds between IGC log lines
 
 //
@@ -76,9 +74,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     dtSnail = 1.0;
   } else {
     dtSnail = 5.0;
-  }
-  if (FastLogNum) {
-    ///dtLog = 1.0;
   }
 
   double distance;
