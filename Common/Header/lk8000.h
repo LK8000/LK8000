@@ -172,7 +172,6 @@ typedef struct {
 } NearestTopoItem;
 
 typedef struct{
-  int DefaultMapWidth;
   BestCruiseTrack_t BestCruiseTrack;
   IndLandable_t IndLandable;	// landable icon style
   bool InverseInfoBox;		// InfoBox black or white inverted, used also by LK styles

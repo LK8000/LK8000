@@ -2716,12 +2716,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppDefaultMapWidth"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(Appearance.DefaultMapWidth);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpGliderScreenPosition"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(MapWindow::GliderScreenPosition);
@@ -4044,15 +4038,6 @@ int ival;
 	wp->GetDataField()->GetAsInteger()) {
       MapWindow::GliderScreenPosition = wp->GetDataField()->GetAsInteger();
 	MapWindow::GliderScreenPositionY=MapWindow::GliderScreenPosition;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppDefaultMapWidth"));
-  if (wp) {
-    if ((int)(Appearance.DefaultMapWidth) != 
-	wp->GetDataField()->GetAsInteger()) {
-      Appearance.DefaultMapWidth = wp->GetDataField()->GetAsInteger();
-      requirerestart = true;
     }
   }
 

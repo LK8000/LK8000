@@ -257,7 +257,6 @@ void LKProfileResetDefault(void) {
 
   DeviceNeedClipping=false;
 
-  Appearance.DefaultMapWidth=206;
   // Landables style
   Appearance.IndLandable=wpLandableDefault;
   // White/Black inversion

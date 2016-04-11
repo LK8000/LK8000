@@ -107,7 +107,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAlternate1, Alternate1); // these are not part of configuration, but saved all the same
   rprintf(szRegistryAlternate2, Alternate2);
   rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
-  rprintf(szRegistryAppDefaultMapWidth, Appearance.DefaultMapWidth);
   rprintf(szRegistryAppIndLandable,Appearance.IndLandable);
 //  rprintf(szRegistryAppInfoBoxModel,GlobalModelType); // We save GlobalModelType, not InfoBoxModel
   rprintf(szRegistryAppInverseInfoBox,InverseInfoBox_Config);

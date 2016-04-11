@@ -58,7 +58,7 @@ double MapWindow::StepMapScale(int Step){
   LKASSERT(DrawRect.right!=0);
   ScaleCurrent = max(0,min(ScaleListCount-1, ScaleCurrent));
   return((ScaleList[ScaleCurrent]*GetMapResolutionFactor())
-         /(IBLSCALE(/*Appearance.DefaultMapWidth*/ DrawRect.right)));
+         /(IBLSCALE(DrawRect.right)));
 }
 
 
@@ -72,7 +72,7 @@ double MapWindow::FindMapScale(double Value){
   LKASSERT(DrawRect.right!=0);
   LKASSERT(GetMapResolutionFactor()!=0);
   double DesiredScale = 
-    (Value*IBLSCALE(/*Appearance.DefaultMapWidth*/ DrawRect.right))/GetMapResolutionFactor();
+    (Value*IBLSCALE(DrawRect.right))/GetMapResolutionFactor();
 
   LKASSERT(DesiredScale!=0);
   for (i=0; i<ScaleListCount; i++){
@@ -86,7 +86,7 @@ double MapWindow::FindMapScale(double Value){
   if (BestFitIdx != -1){
     ScaleCurrent = BestFitIdx;
     return((ScaleList[ScaleCurrent]*GetMapResolutionFactor())
-           /IBLSCALE(/*Appearance.DefaultMapWidth*/ DrawRect.right));
+           /IBLSCALE(DrawRect.right));
   }
   return(Value);
 }
@@ -179,6 +179,6 @@ void MapWindow::FillScaleListForEngineeringUnits(void)
       break;
   } //sw units
   
-  double scalefactor = (double)GetMapResolutionFactor() / (double)IBLSCALE(/*Appearance.DefaultMapWidth*/ DrawRect.right) * 1.4;
+  double scalefactor = (double)GetMapResolutionFactor() / (double)IBLSCALE(DrawRect.right) * 1.4;
   for (i=0; i<ScaleListCount; i++) ScaleList[i] /= scalefactor;
 }

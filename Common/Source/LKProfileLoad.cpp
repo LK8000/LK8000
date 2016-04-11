@@ -242,7 +242,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryAlternate1,&Alternate1);
   PREAD(sname,svalue,szRegistryAlternate2,&Alternate2);
   PREAD(sname,svalue,szRegistryAltitudeUnitsValue,&AltitudeUnit_Config);
-  PREAD(sname,svalue,szRegistryAppDefaultMapWidth,&Appearance.DefaultMapWidth);
 
   if (!strcmp(szRegistryAppIndLandable,sname)) {
 	ival=strtol(svalue, NULL, 10);

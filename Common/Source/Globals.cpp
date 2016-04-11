@@ -514,8 +514,6 @@ void Globals_Init(void) {
 
   BallastSecsToEmpty = 120;
 
-  // TODO: cancel Appearance struct and reorganize
-  Appearance.DefaultMapWidth=206;
   // Only used in MapWindow2, can be de-configured
   Appearance.BestCruiseTrack=ctBestCruiseTrackAltA;
   // Landables style
