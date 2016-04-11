@@ -516,7 +516,5 @@
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
     </WndFrame>
-    <WndFrame Name="frmEngineering2" X="70" Y="0" Width="-1" Height="222" Font="1">
-    </WndFrame>
   </WndForm>
 </PMML>

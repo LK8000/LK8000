@@ -54,8 +54,9 @@ short config_page[4]={0,0,0,0}; // remember last page we were using, for each pr
 
 static WndForm *wf=NULL;
 
+#define NUMOFCONFIGPAGES 22
 
-static WndFrame *wConfig[25]={};
+static WndFrame *wConfig[NUMOFCONFIGPAGES]={};
 
 typedef struct {
     const TCHAR* szName;
@@ -67,7 +68,7 @@ typedef struct {
  * carefull : if order change, check all "config_page" array use...
  *    like "OnInfoBoxHelp", "page2mode" and "InfoBoxPropName" function
  */
-const ConfigPageNames_t ConfigPageNames[4][25] = {
+const ConfigPageNames_t ConfigPageNames[4][NUMOFCONFIGPAGES] = {
     { // config system
       /*0 */  { _T("frmSite"),                _T("_@M10_"), false },  // "1 Site"
       /*1 */  { _T("frmAirspace"),            _T("_@M22_"), false },  // "2 Airspace"
@@ -90,8 +91,7 @@ const ConfigPageNames_t ConfigPageNames[4][25] = {
       /*18*/  { _T("frmWaypointEdit"),        _T("_@M25_"), false },  // "21 Waypoint Edit" 
       /*19*/  { _T("frmSpecials1"),           _T("_@M26_"), false },  // "22 System" 
       /*20*/  { _T("frmSpecials2"),           _T("_@M27_"), false },  // "23 Paragliders/Delta specials" 
-      /*21*/  { _T("frmEngineering1"),        _T("24 Engineering Menu 1"), false },
-      /*22*/  { _T("frmEngineering2"),        _T("25 Engineering Menu 1"), false },
+      /*21*/  { _T("frmEngineering1"),        _T("24 Engineering Menu"), false },
     }, 
     { // config Pilot
       /*0 */  { _T("frmPilot"),                _T("_@M1785_"), false }, // pilot configuration
