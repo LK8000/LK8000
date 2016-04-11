@@ -145,7 +145,11 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
               ptmpBitmap = &hLoggerDisabled;
       }
   }
+  #ifdef DITHER
+  if ( (!DisableAutoLogger && (LoggerActive || !flip)) && ptmpBitmap)
+  #else
   if (ptmpBitmap)
+  #endif
       ptmpBitmap->Draw(Surface, loggerPoint.x, loggerPoint.y, loggerNewSize.cx, loggerNewSize.cy);
  
   // 
