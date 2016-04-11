@@ -232,29 +232,99 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
             else continue;
         } else continue;
 
-        //TODO: can be more radio tags
-        node=AirportNode.getChildNode(TEXT("RADIO"));
-        if(!node.isEmpty() && (dataStr=node.getAttribute(TEXT("CATEGORY")))!=nullptr) {
-            switch(dataStr[0]) {
-            case 'C': //COMMUNICATION Frequency used for communication
-                break;
-            case 'I': //INFORMATION Frequency to automated information service
-                break;
-            case 'N': //NAVIGATION Frequency used for navigation
-                break;
-            case 'O': //OHER Other frequency purpose
-                break;
-            default:
-                continue;
+        //Radio frequencies: if more than one just take the first "communication"
+        bool found=false;
+        int numOfNodes=AirportNode.nChildNode(TEXT("RADIO"));
+        for(int i=0;i<numOfNodes && !found;i++) {
+            node=AirportNode.getChildNode(TEXT("RADIO"),i);
+            if(!node.isEmpty() && (dataStr=node.getAttribute(TEXT("CATEGORY")))!=nullptr) {
+                if(numOfNodes==1) found=true;
+                else switch(dataStr[0]) {
+                case 'C': //COMMUNICATION Frequency used for communication
+                    found=true;
+                    break;
+                case 'I': //INFORMATION Frequency to automated information service
+                    break;
+                case 'N': //NAVIGATION Frequency used for navigation
+                    break;
+                case 'O': //OHER Other frequency purpose
+                    break;
+                default:
+                    break;
+                }
+                if(found) {
+                    XMLNode subNode=node.getChildNode(TEXT("FREQUENCY"));
+                    if(!subNode.isEmpty() && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
+                        LK_tcsncpy(new_waypoint.Freq, dataStr, CUPSIZE_FREQ);
+                        if (_tcslen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
+                    }
+                }
             }
-
         }
 
+        //Runways: take the longest one
+        double maxlength=0;
+        short maxstyle=-1;
+        double maxdir=-1;
 
+        // For each runway...
+        numOfNodes=AirportNode.nChildNode(TEXT("RWY"));
+        for(int i=0;i<numOfNodes;i++) {
+            double length=0;
+            short style=-1;
+            double dir=-1;
 
+            node=AirportNode.getChildNode(TEXT("RWY"),i);
 
-//TODO: parse all the rest!!!!!
+            // Take only active runways
+            if(!node.isEmpty() && (dataStr=node.getAttribute(TEXT("OPERATIONS")))!=nullptr && dataStr[0]!='\0' && _tcsicmp(dataStr,_T("ACTIVE"))==0) {
 
+                // Surface : for now only if is not already a gliding site we just check if is "solid" surface or not...
+                if(new_waypoint.Style!=4) {
+                    XMLNode subNode=node.getChildNode(TEXT("SFC"));
+
+                    /* Possible SFC values:
+                    ASPH Asphalt
+                    CONC Concrete
+                    GRAS Grass
+                    GRVL Gravel
+                    ICE ICE
+                    SAND Sand
+                    SNOW Snow
+                    SOIL Soil
+                    UNKN Unknown
+                    WATE Water */
+
+                    if(!subNode.isEmpty() && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
+                        if((dataStr[0]=='A' || dataStr[0]=='C') && (_tcsicmp(dataStr,_T("ASPH"))==0 || _tcsicmp(dataStr,_T("CONC"))==0)) style=5;
+                        else style=2;
+                    }
+                }
+
+                // Runway length
+                XMLNode subNode=node.getChildNode(TEXT("LENGTH"));
+                if(!subNode.isEmpty() && (dataStr=subNode.getAttribute(TEXT("UNIT")))!=nullptr && dataStr[0]=='M') {
+                    if((dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') length=_tcstod(dataStr,nullptr);
+                }
+
+                // Runway direction
+                subNode=node.getChildNode(TEXT("DIRECTION"),0);
+                if(!subNode.isEmpty() && (dataStr=subNode.getAttribute(TEXT("TC")))!=nullptr && dataStr[0]!='\0') dir=_tcstod(dataStr,nullptr);
+
+                // Check if we found the longest one
+                if(length>maxlength) {
+                    maxlength=length;
+                    maxdir=dir;
+                    maxstyle=style;
+                }
+            } // if active runway
+        } // for each runway
+
+        if(maxlength>0) {
+            new_waypoint.RunwayLen=maxlength;
+            new_waypoint.RunwayDir=maxdir;
+            if(maxstyle!=-1) new_waypoint.Style=maxstyle;
+        }
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
