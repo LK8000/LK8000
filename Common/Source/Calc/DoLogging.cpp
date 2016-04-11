@@ -54,7 +54,10 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (Basic->NAVWarning) return;
 
-  if(Basic->Time <= LogLastTime) {
+  // If we dont wait enough, when we are doing a fallback we can receive from second source a duplicated
+  // time fix. It is better to wait for 3-4 seconds
+  if((Basic->Time - LogLastTime) < -3) {
+    StartupStore(_T(". DoLogging: BasicTime=%f LogLastTime=%f : time is in the past. Reset.%s"),Basic->Time,LogLastTime,NEWLINE);
     LogLastTime = Basic->Time;
   }
   if(Basic->Time <= SnailLastTime)  {
@@ -109,8 +112,10 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   //
   // If time has advanced enough, add point to IGC
+  // Reminder: Basic Time is counted in seconds and accounts for crossing UTC 00:00 so it goes over 86400
   //
   if (Basic->Time - LogLastTime >= LOGINTERVAL) {
+    LogLastTime = Basic->Time;
     double balt = -1;
     if (Basic->BaroAltitudeAvailable) {
       balt = AltitudeToQNEAltitude(Basic->BaroAltitude);
@@ -144,10 +149,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     // Remarks: LogPoint is also checking that there is a valid fix to proceed
 
-    LogLastTime += LOGINTERVAL;
-    if (LogLastTime< Basic->Time-LOGINTERVAL) {
-      LogLastTime = Basic->Time-LOGINTERVAL;
-    }
   } // time has advanced enough: >= LOGINTERVAL
 
   #if LOGFRECORD
