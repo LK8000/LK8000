@@ -1314,7 +1314,9 @@ endif
 ####### compilation outputs
 
 ifeq ($(TARGET_IS_KOBO), y)
-DISTRIB_OUTPUT := KoboRoot.tgz
+DISTRIB_OUTPUT := \
+	Kobo-install-otg.zip \
+	Kobo-install.zip
 
 # temporary still we don't have kobo menu.	
 SRC_FILES += \
@@ -1361,6 +1363,7 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 
 
 ####### targets
+.DEFAULT_GOAL := all
 .PHONY: FORCE all clean cleani tags rebuild cppcheck install
 
 all:	$(DISTRIB_OUTPUT) $(PNG) $(MASKED_PNG) $(OUTPUTS)
@@ -1375,7 +1378,8 @@ clean: cleani
 	$(Q)$(RM) $(OUTPUTS_NS)
 	$(Q)$(RM) $(OUTPUTS)
 	$(Q)$(RM) $(PNG)
-	$(Q)$(RM) $(MASKED_PNG)
+	$(Q)$(RM) $(MASKED_PNG) 
+	$(Q)$(RM) $(DISTRIB_OUTPUT)
 
 cleani:
 	@$(NQ)echo "  CLEANI"

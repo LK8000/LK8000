@@ -26,9 +26,9 @@ All other model are not compatible, so don't try if you don't want brick your de
 How To install
 =======================================
 
-for kobo Mini ( Glo and touch ) :
+for kobo Mini :
 
-  - copy "uImage-mx50-ntx"  in the folder "LK8000/kobo/" of your device
+  - copy "uImage-E50610"  in the folder "LK8000/kobo/" of your device
   - reboot your device
   - connect USB/rs232 converter and external battery to usb port using OTG Y cable.
   - go to Device Config, choose ttyUSB0 ComPort and the right Speed for your external device.
@@ -36,7 +36,7 @@ for kobo Mini ( Glo and touch ) :
 
 for kobo GloHD and kobo Touch 2 : 
 
-  - copy "uImage-mx6sl-ntx" file in the folder "LK8000/kobo/" of your device
+  - copy "uImage-E60Q90" file in the folder "LK8000/kobo/" of your device
   - reboot your device
   - connect USB/rs232 converter and external battery to usb port using OTG Y cable.
   - go to Device Config, choose ttyUSB0 ComPort and the right Speed for your external device.

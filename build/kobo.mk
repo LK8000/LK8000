@@ -25,7 +25,7 @@ KOBO_SYS_LIB_NAMES = \
 	libgcc_s.so.1 \
 	librt.so.1 \
 	libpthread.so.0	\
-	
+
 KOBO_SYS_LIB_PATHS = $(addprefix $(SYSROOT)/lib/,$(KOBO_SYS_LIB_NAMES))
 
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libzzip-0.so.13
@@ -48,21 +48,38 @@ KOBO_POWER_OFF_OBJ     = \
     $(BIN)/poco.a 
 
 
-Kobo.zip: $(BIN)/.kobo/KoboRoot.tgz
-	cd $(BIN) && \
-	zip $@ .kobo/KoboRoot.tgz 
-	mv $(BIN)/$@ $@
+KOBO_KERNEL_SOURCES = \
+    kobo/kernel/uImage-E50610 \
+    kobo/kernel/uImage-E60Q90 \
+
+
+KOBO_KERNEL = \
+ $(patsubst kobo/kernel/%, LK8000/kobo/%, $(KOBO_KERNEL_SOURCES))
+
+
+Kobo-install-otg.zip: $(BIN)/.kobo/KoboRoot.tgz
+	@$(NQ)echo "  Zip     $@"
+	$(Q)cd $(BIN) && zip -q $@ .kobo/KoboRoot.tgz $(KOBO_KERNEL)
+	$(Q)cp $(BIN)/$@ $@
+
+
+Kobo-install.zip: $(BIN)/.kobo/KoboRoot.tgz
+	@$(NQ)echo "  Zip     $@"
+	$(Q)cd $(BIN) && zip -q $@ .kobo/KoboRoot.tgz
+	$(Q)cp $(BIN)/$@ $@
 
 
 # /mnt/onboard/.kobo/KoboRoot.tgz is a file that is picked up by
 # /etc/init.d/rcS, extracted to / on each boot; we can use it to
 # install LK8000
-KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
+$(BIN)/.kobo/KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(SYSTEM_FILES) $(BITMAP_FILES) \
 	$(FONTS_FILES) $(POLAR_FILES) $(LANGUAGE_FILES) \
-	$(CONFIG_FILES)  kobo/inittab kobo/rcS
+	$(CONFIG_FILES)  kobo/inittab kobo/rcS $(KOBO_KERNEL_SOURCES)
 	@$(NQ)echo "  TAR     $@"
 	$(Q)rm -rf $(BIN)/KoboRoot
+	$(Q)rm -rf $(BIN)/LK8000/kobo
+
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers	
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers/mx6sl-ntx
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/drivers/mx6sl-ntx/usb
@@ -75,17 +92,17 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0644 kobo/modules/mx50-ntx/usb/gadget/g_serial.ko $(BIN)/KoboRoot/drivers/mx50-ntx/usb/gadget
 
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/etc
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/bin 
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/lib/
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/bin
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/lib
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/lib/kernel
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/fonts 
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/_System/_Bitmaps 
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Airspaces 
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Configuration 
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Language 
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Logger 
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/fonts
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/opt/LK8000/share/_System/_Bitmaps
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Airspaces
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Configuration
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Language
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Logger
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Maps
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Polars 
+	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Polars
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Tasks
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Waypoints
 	$(Q)install -m 0644 kobo/inittab $(BIN)/KoboRoot/etc
@@ -98,16 +115,12 @@ KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0644 $(LANGUAGE_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Language
 	$(Q)install -m 0644 $(CONFIG_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Configuration
 	$(Q)install -m 0644 $(WAYPOINT_FILES) $(BIN)/KoboRoot/mnt/onboard/LK8000/_Waypoints
-	
-ifeq ($(KERNEL),y)
-	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/kobo
-	$(Q)install -m 0644 kobo/kernel/uImage-mx50-ntx $(BIN)/KoboRoot/mnt/onboard/LK8000/kobo
-	$(Q)install -m 0644 kobo/kernel/uImage-mx6sl-ntx $(BIN)/KoboRoot/mnt/onboard/LK8000/kobo
-endif
 
+	$(Q)install -m 0755 -d  $(BIN)/LK8000/kobo
+	$(Q)install -m 0644 $(KOBO_KERNEL_SOURCES) $(BIN)/LK8000/kobo
+
+	$(Q)install -m 0755 -d  $(BIN)/.kobo
 	$(Q)fakeroot tar czfC $@ $(BIN)/KoboRoot .
-
-endif
 
 
 $(KOBO_POWER_OFF_BIN) : $(KOBO_POWER_OFF_BIN)_ns
@@ -118,3 +131,5 @@ $(KOBO_POWER_OFF_BIN) : $(KOBO_POWER_OFF_BIN)_ns
 $(KOBO_POWER_OFF_BIN)_ns : $(KOBO_POWER_OFF_OBJ)
 	@$(NQ)echo "  LINK    $@"
 	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+endif

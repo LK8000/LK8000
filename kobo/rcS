@@ -75,6 +75,10 @@ if [ ! -n "${PLATFORM}" ] ; then
 	if dd if="/dev/mmcblk0" bs=512 skip=1024 count=1 | grep -q "HW CONFIG" ; then
 		CPU="$(ntx_hwconfig -s -p /dev/mmcblk0 CPU)"
 		PLATFORM="${CPU}-ntx"
+        PCB="$(ntx_hwconfig -s -p /dev/mmcblk0 PCB)"
+        RAM="$(ntx_hwconfig -s -p /dev/mmcblk0 RAMType)"
+        RAM_SIZE="$(ntx_hwconfig -s -p /dev/mmcblk0 RamSize)"
+        RAM_SIZE="$(echo $RAM_SIZE | awk '{print $RAM_SIZE-MB}')"
 	fi
 
 	if [ "${PLATFORM}" == "freescale" ] ; then
@@ -87,17 +91,10 @@ if [ ! -n "${PLATFORM}" ] ; then
 		PLATFORM="ntx508"
 	fi
 
-    if [ $CPU ]; then
-        PCB="$(ntx_hwconfig -s -p /dev/mmcblk0 PCB)"
-        RAM="$(ntx_hwconfig -s -p /dev/mmcblk0 RAMType)"
-        RAM_SIZE="$(ntx_hwconfig -s -p /dev/mmcblk0 RamSize)"
-        RAM_SIZE="$(echo $RAM_SIZE | awk '{print $RAM_SIZE-MB}')"
-    
-        echo "${CPU}" > /mnt/onboard/LK8000/kobo/CPU
-        echo "${PCB}" > /mnt/onboard/LK8000/kobo/PCB
-        echo "${RAM}" > /mnt/onboard/LK8000/kobo/RAM
-        echo "${RAM_SIZE}" > /mnt/onboard/LK8000/kobo/RAM_SIZE
-    fi
+    echo "${CPU}" > /mnt/onboard/LK8000/kobo/CPU
+    echo "${PCB}" > /mnt/onboard/LK8000/kobo/PCB
+    echo "${RAM}" > /mnt/onboard/LK8000/kobo/RAM
+    echo "${RAM_SIZE}" > /mnt/onboard/LK8000/kobo/RAM_SIZE
 fi
 # end of value check of PLATFORM
 
@@ -117,7 +114,7 @@ MODEL=`dd if=/dev/mmcblk0 bs=8 count=1 skip=64`
 echo "${MODEL}" > /mnt/onboard/LK8000/kobo/MODEL
 
 # install OTG_kernel if available and not already installed.
-if [ "${OTG_kernel}" == "N" -a -f /mnt/onboard/LK8000/kobo/uImage-${PLATFORM} ]; then
+if [ "${OTG_kernel}" == "N" -a -f /mnt/onboard/LK8000/kobo/uImage-${PCB} ]; then
     /bin/mount -t tmpfs none /dev
     /bin/mknod /dev/mmcblk0 b 179 0
 
@@ -126,7 +123,7 @@ if [ "${OTG_kernel}" == "N" -a -f /mnt/onboard/LK8000/kobo/uImage-${PLATFORM} ];
     dd if=/dev/mmcblk0 bs=512 skip=2048 count=6000 of=/opt/LK8000/lib/kernel/uImage.kobo
 	
     # "Switch to OTG_kernel and reboot"
-    dd if=/mnt/onboard/LK8000/kobo/uImage-${PLATFORM} of=/dev/mmcblk0 bs=512 seek=2048 
+    dd if=/mnt/onboard/LK8000/kobo/uImage-${PCB} of=/dev/mmcblk0 bs=512 seek=2048 
     sync 
     exec reboot
 fi
@@ -197,5 +194,9 @@ echo " " > /mnt/onboard/LK8000/kobo/start_nickel
 # finally, launch LK8000-KOBO
 /opt/LK8000/bin/LK8000-KOBO
 
-# this is in case of abnormal termination : fill screen black.
-zcat /etc/images/$PREFIX\reboot.raw.gz | /usr/local/Kobo/pickel showpic
+
+# this is in case of abnormal termination : fill blank black.
+PRODUCT=`/bin/kobo_config.sh`;
+[ $PRODUCT != trilogy ] && PREFIX=$PRODUCT-
+
+zcat /etc/images/$PREFIX\ghostbuster.raw.gz | /usr/local/Kobo/pickel showpic
