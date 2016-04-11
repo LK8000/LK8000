@@ -148,7 +148,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (LogLastTime< Basic->Time-LOGINTERVAL) {
       LogLastTime = Basic->Time-LOGINTERVAL;
     }
-    if (FastLogNum) FastLogNum--;
   } // time has advanced enough: >= LOGINTERVAL
 
   #if LOGFRECORD

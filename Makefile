@@ -284,9 +284,9 @@ ifeq ($(CONFIG_LINUX),y)
 # Do you want LINUX greyscaled? Uncomment the following 3 lines
 # and remove Distrib folder . Then make TARGET=LINUX install
 # to replace correct bitmaps 
-#GREYSCALE:=y
-#DITHER:=y
-#OPENGL:=n
+GREYSCALE:=y
+DITHER:=y
+OPENGL:=n
 
  ifneq ($(OPENGL),y)
  #no OpenGL or explicitly disabled,
