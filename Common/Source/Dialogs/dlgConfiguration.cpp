@@ -1648,7 +1648,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpDebounceTimeout"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(debounceTimeout);
+    wp->GetDataField()->SetAsInteger(debounceTimeout);
     wp->RefreshDisplay();
   }
 
