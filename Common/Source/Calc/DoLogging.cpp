@@ -15,6 +15,8 @@ extern void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 int FastLogNum = 0; // number of points to log at high rate
 
+#define LOGINTERVAL  1  // seconds between IGC log lines
+
 //
 // Logger activity, and also add snailpoints
 //
@@ -32,7 +34,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double Longitude_snailed = 10;
   static double Latitude_snailed = 10;
 
-  double dtLog = 5.0;
   double dtSnail = 2.0;
   double dtStats = 60.0;
 
@@ -72,14 +73,12 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   // draw snail points more often in circling mode
   if (Calculated->Circling) {
-    dtLog = LoggerTimeStepCircling;
     dtSnail = 1.0;
   } else {
-    dtLog = LoggerTimeStepCruise;
     dtSnail = 5.0;
   }
   if (FastLogNum) {
-    dtLog = 1.0;
+    ///dtLog = 1.0;
   }
 
   double distance;
@@ -116,7 +115,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   //
   // If time has advanced enough, add point to IGC
   //
-  if (Basic->Time - LogLastTime >= dtLog) {
+  if (Basic->Time - LogLastTime >= LOGINTERVAL) {
     double balt = -1;
     if (Basic->BaroAltitudeAvailable) {
       balt = AltitudeToQNEAltitude(Basic->BaroAltitude);
@@ -150,12 +149,12 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     // Remarks: LogPoint is also checking that there is a valid fix to proceed
 
-    LogLastTime += dtLog;
-    if (LogLastTime< Basic->Time-dtLog) {
-      LogLastTime = Basic->Time-dtLog;
+    LogLastTime += LOGINTERVAL;
+    if (LogLastTime< Basic->Time-LOGINTERVAL) {
+      LogLastTime = Basic->Time-LOGINTERVAL;
     }
     if (FastLogNum) FastLogNum--;
-  } // time has advanced enough: >=dtLog
+  } // time has advanced enough: >= LOGINTERVAL
 
   #if LOGFRECORD
   if (Basic->Time - GetFRecordLastTime() >= dtFRecord) 

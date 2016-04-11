@@ -449,8 +449,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryLiftUnitsValue,&LiftUnit_Config );
   PREAD(sname,svalue,szRegistryLockSettingsInFlight,&LockSettingsInFlight);
   PREAD(sname,svalue,szRegistryLoggerShort,&LoggerShortName);
-  PREAD(sname,svalue,szRegistryLoggerTimeStepCircling,&LoggerTimeStepCircling);
-  PREAD(sname,svalue,szRegistryLoggerTimeStepCruise,&LoggerTimeStepCruise);
   PREAD(sname,svalue,szRegistryMapBox,&MapBox);
   PREAD(sname,svalue,szRegistryMapFile,&*szMapFile, array_size(szMapFile));
   PREAD(sname,svalue,szRegistryMenuTimeout,&MenuTimeout_Config);

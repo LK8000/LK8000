@@ -588,8 +588,6 @@ GEXTERN int TrailLock;
 
 // Logger
 GEXTERN bool LoggerActive;
-GEXTERN int LoggerTimeStepCruise;
-GEXTERN int LoggerTimeStepCircling;
 GEXTERN bool IGCWriteLock;
 
 // user controls/parameters

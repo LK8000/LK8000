@@ -515,12 +515,6 @@
       <WndProperty Name="prpInputFile" Caption="_@M268_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H222_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpLoggerTimeStepCruise" Caption="_@M719_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H226_">
-        <DataField Name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min="1" Max="30" Step="1"/>
-      </WndProperty>
-      <WndProperty Name="prpLoggerTimeStepCircling" Caption="_@M718_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H227_">
-        <DataField Name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min="1" Max="30" Step="1"/>
-      </WndProperty>
     </WndFrame>
     <WndFrame Name="frmEngineering2" X="70" Y="0" Width="-1" Height="222" Font="1">
       <WndProperty Name="prpAppDefaultMapWidth" Caption="_@M226_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2">

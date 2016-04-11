@@ -2869,18 +2869,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLoggerTimeStepCruise"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(LoggerTimeStepCruise);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLoggerTimeStepCircling"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(LoggerTimeStepCircling);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpSnailWidthScale"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(MapWindow::SnailWidthScale);
@@ -4164,22 +4152,6 @@ int ival;
     if (AutoAdvance_Config != wp->GetDataField()->GetAsInteger()) {
       AutoAdvance_Config = wp->GetDataField()->GetAsInteger();
       AutoAdvance=AutoAdvance_Config;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLoggerTimeStepCruise"));
-  if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger());
-    if (LoggerTimeStepCruise != ival) {
-      LoggerTimeStepCruise = ival;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLoggerTimeStepCircling"));
-  if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger());
-    if (LoggerTimeStepCircling != ival) {
-      LoggerTimeStepCircling = ival;
     }
   }
 

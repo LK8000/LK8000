@@ -485,9 +485,6 @@ void Globals_Init(void) {
   
   IGCWriteLock=false; // workaround, but not a real solution
 
-  LoggerTimeStepCruise=2;     // 111221 using 2 seconds
-  LoggerTimeStepCircling=1;
-
   AutoWindMode_Config= D_AUTOWIND_CIRCLING;
   AutoWindMode= AutoWindMode_Config;
   EnableTrailDrift_Config = false;

@@ -245,8 +245,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryLiftUnitsValue,LiftUnit_Config );
   rprintf(szRegistryLockSettingsInFlight,LockSettingsInFlight);
   rprintf(szRegistryLoggerShort,LoggerShortName);
-  rprintf(szRegistryLoggerTimeStepCircling,LoggerTimeStepCircling);
-  rprintf(szRegistryLoggerTimeStepCruise,LoggerTimeStepCruise);
   rprintf(szRegistryMapBox,MapBox);
   rprintf(szRegistryMapFile,szMapFile);
   rprintf(szRegistryMenuTimeout,MenuTimeout_Config);

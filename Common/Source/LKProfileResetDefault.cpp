@@ -371,10 +371,6 @@ void LKProfileResetDefault(void) {
   ConfIP32 = 1;
   ConfIP33 = 1;
 
-  LoggerTimeStepCruise = 1;
-
-  LoggerTimeStepCircling = 1;
-
   GlidePolar::SafetyMacCready = 0.5; // This is saved *10 and loaded /10 in Adjust! 
 
   DisableAutoLogger = false;
