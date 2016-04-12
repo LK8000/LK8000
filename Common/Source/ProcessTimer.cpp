@@ -18,7 +18,7 @@ extern void CommonProcessTimer(void);
 
 //
 // This is called at 2Hz from WndProc TIMER, which is set to 500ms by WndProc CREATE
-// This is only for FLY mode. 
+// This is only for FLY mode.  THIS IS NOT CALLED FOR SIM MODE, remember.
 //
 void ProcessTimer(void)
 {
@@ -124,7 +124,7 @@ void CommonProcessTimer()
 
 
 
-// Running at 0.1hz every 10 seconds
+// Running at 0.2hz every 5 seconds
 // (this part should be rewritten)
 int ConnectionProcessTimer(int itimeout) {
   LockComm();
