@@ -127,7 +127,10 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         posXTKy=centerY+radius-NIBLSCALE(5);
 
         //Initialize position of Vertical speed indication
-        VertSpeedX=centerX+radius+NIBLSCALE(ScreenLandscape?((ScreenSize==ss800x480 || ScreenSize==ss480x272)?100:78):47);
+        if (ScreenSize==ss800x480 || ScreenSize==ss480x272) VertSpeedX=centerX+radius+NIBLSCALE(100);
+        else
+        VertSpeedX=rc.right-RIGHTLIMITER;
+
         VertSpeedLabelY=centerY-NIBLSCALE(28);
         VertSpeedValueY=centerY-NIBLSCALE(19);
         VertSpeedUnitY=centerY+NIBLSCALE(9);
