@@ -54,9 +54,10 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (Basic->NAVWarning) return;
 
-  // If we dont wait enough, when we are doing a fallback we can receive from second source a duplicated
-  // time fix. It is better to wait for 3-4 seconds
-  if((Basic->Time - LogLastTime) < -3) {
+  // We do not want of course any duplicate timestamps, but in case something has gone wrong from gps,
+  // we have to reset LogLastTime and start back accepting fixes. We declare that a difference back in
+  // time of 10 minutes is enough to declare forfait
+  if((Basic->Time - LogLastTime) < -600) {
     StartupStore(_T(". DoLogging: BasicTime=%f LogLastTime=%f : time is in the past. Reset.%s"),Basic->Time,LogLastTime,NEWLINE);
     LogLastTime = Basic->Time;
   }
