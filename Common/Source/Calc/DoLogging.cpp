@@ -141,11 +141,11 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if (maxerrlog>0) StartupStore(_T("..... LogPoint failed, IGCWriteLock %s!%s"),WhatTimeIsIt(),NEWLINE);
 	} else {
 		if (maxerrlog>0) StartupStore(_T("..... LogPoint delayed by IGCWriteLock, ok.%s"),NEWLINE);
-		LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt);
+		LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt, Basic->Hour, Basic->Minute, Basic->Second);
 	}
 	maxerrlog--;
     } else
-	LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt);
+	LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt, Basic->Hour, Basic->Minute, Basic->Second);
 
     // Remarks: LogPoint is also checking that there is a valid fix to proceed
 

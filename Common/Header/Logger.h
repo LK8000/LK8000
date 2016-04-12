@@ -8,8 +8,8 @@
 
 void DoLogger(TCHAR *strAssetNumber);
 void StartLogger(void);
-void LogPoint(double Lattitude, double Longditude, double Altitude,
-              double BaroAltitude);
+void LogPoint(double Latitude, double Longitude, double Altitude,
+              double BaroAltitude, int iHour, int iMin, int iSec);
 void AddDeclaration(double Lattitude, double Longditude, TCHAR *ID);
 void StartDeclaration(int numturnpoints);
 void EndDeclaration(void);

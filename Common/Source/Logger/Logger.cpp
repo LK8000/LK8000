@@ -18,6 +18,10 @@
 #include <time.h>
 // #define DEBUG_LOGGER	1
 
+//
+// v6 NOTICE: WE DO NOT USE LOGFRECORD AT ALL
+//
+
 #ifdef _UNICODE
     #define A_RECORD                "A%s%C%C%C\r\n"
     #define HFPLTPILOT              "HFPLTPILOT:%S\r\n"
@@ -354,16 +358,16 @@ void LogPointToFile(double Latitude, double Longitude, double Altitude,
 }
 
 
-void LogPoint(double Latitude, double Longitude, double Altitude,
-              double BaroAltitude) {
+void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAltitude,
+              int iHour, int iMin, int iSec) {
   if (!LoggerActive) {
     if (!GPS_INFO.NAVWarning) {
       #if LOGFRECORD
       LogPointToBuffer(Latitude, Longitude, Altitude, BaroAltitude,
-                       GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second,
-                       GPS_INFO.SatelliteIDs);
+                       iHour, iMin, iSec,
+                       GPS_INFO.SatelliteIDs); // no problem for wrong sats in case
       #else
-      LogPointToBuffer(Latitude, Longitude, Altitude, BaroAltitude, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+      LogPointToBuffer(Latitude, Longitude, Altitude, BaroAltitude, iHour, iMin, iSec);
       #endif
     }
   } else if (NumLoggerBuffered && !GPS_INFO.NAVWarning) { 
@@ -390,11 +394,13 @@ void LogPoint(double Latitude, double Longitude, double Altitude,
   } 
   if (LoggerActive && !GPS_INFO.NAVWarning) {
     LogPointToFile(Latitude, Longitude, Altitude, BaroAltitude,
-                   GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+                   iHour, iMin, iSec);
   }
 }
 
-
+//
+// v6 NOTICE: WE DO NOT USE LOGFRECORD AT ALL
+//
 #if LOGFRECORD
 bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second, bool bAlways)
 { // bAlways forces write when completing header for restart
