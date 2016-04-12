@@ -534,7 +534,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             // Altitude difference with current MC
             if (!Overlay_RightBottom) goto _skip_para_RightBottom;
             if (Overlay_RightBottom==OAUX)
-                LKFormatValue(GetInfoboxType(2), true, BufferValue, BufferUnit, BufferTitle);
+                LKFormatValue(GetInfoboxType(3), true, BufferValue, BufferUnit, BufferTitle);
             else
             switch (OvertargetMode) {
                 case OVT_TASK:
