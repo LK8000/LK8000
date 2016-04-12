@@ -176,7 +176,7 @@ bool LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
 bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
-    double alt, airspeed;
+    double alt=0, airspeed=0;
 
     if (ParToDouble(sentence, 5, &airspeed)) {
         info->IndicatedAirspeed = airspeed;
@@ -185,7 +185,7 @@ bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 
     if (ParToDouble(sentence, 6, &alt)) {
 	UpdateBaroSource( info, 0, d, AltitudeToQNHAltitude(alt));
-        info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
+        if (airspeed>0) info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
     }
 
     if (ParToDouble(sentence, 4, &info->Vario)) {

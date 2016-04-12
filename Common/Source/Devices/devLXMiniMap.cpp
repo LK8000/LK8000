@@ -297,7 +297,7 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
   TICKER.Update();
 
-  double alt, airspeed;
+  double alt=0, airspeed=0;
 
   if (ParToDouble(sentence, 1, &airspeed))
   {
@@ -310,7 +310,7 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
   if (ParToDouble(sentence, 2, &alt))
   {
-    info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
+    if (airspeed>0) info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
 
     if (d == pDevPrimaryBaroSource)
     {

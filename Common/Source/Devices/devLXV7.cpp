@@ -631,7 +631,7 @@ bool DevLXV7::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
 bool DevLXV7::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
-  double alt, airspeed;
+  double alt=0, airspeed=0;
 
 
   if (ParToDouble(sentence, 1, &info->AccelX))
@@ -650,7 +650,7 @@ bool DevLXV7::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
   if (ParToDouble(sentence, 6, &alt))
   {
 	UpdateBaroSource( info, 0, d, AltitudeToQNHAltitude(alt));
-    info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
+    if (airspeed>0) info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
   }
 
   if (ParToDouble(sentence, 4, &info->Vario))
