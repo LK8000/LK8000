@@ -39,8 +39,10 @@ int GetMMNorthUp(int iPage) {
 int SetSplitScreenSize(int iPercent) {
     LKASSERT(iPercent >= 0 && iPercent <= 100);
     int iOld = (int) (fSplitFact * 100.0);
+#if 0
     if (iPercent >= 90)
     	iPercent =90;
+#endif
     if (iPercent == 100)
         fSplitFact = 1;
     else
