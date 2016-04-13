@@ -10,58 +10,93 @@
 Podešavanje nivoa detalja u konfiguracionom podešavanju.
 [Basic]: Samo osnovno podešavanje će biti pokazano.
 [Expert]: Osnovno i napredno porešavanje je pokazano u konfiguracionom podešavanju.
+
 @101
-Ime fajla koje sadrži TOPOLOGIJU, i samo opciono kao terene "terain", tačke "waypoints"-e i vazduzni prostor "airspaće". LKM je zapravo ZIP fajl sa promenjenim imenom. Ako promenite nastavak fajla .ZIP možete otvoriti isto i menjati sadržaj. Fajlovi mape su locirani u podfolderu _Maps.
+Ime fajla koje sadrži TOPOLOGIJU, i samo opciono kao terene "terain", tačke "waypoints"-e i vazduzni prostor "airspaće". 
+LKM je zapravo ZIP fajl sa promenjenim imenom. Ako promenite nastavak fajla .ZIP možete otvoriti isto i menjati sadržaj. 
+Fajlovi mape su locirani u podfolderu _Maps.
+
 @102
-Ime fajla sadrži digitalnu visinu terena, normalno .DEM dajl. Takođe .DAT i .JP2 fajlovi su validni. Zapamćen teren takođe može biti ucitan interno iz fajlova .LKM mape. U ovom slucaju teren je izabran preko prekonfigurisane .LKM. Ovaj fajl je u podfolderu _Maps
+Ime fajla sadrži digitalnu visinu terena, normalno .DEM dajl. 
+Ovaj fajl je u podfolderu _Maps
+
 @103
-Primarni faj sa tačkama "waypoint"-s.  Faj tačaka "Waypoint" je lociran u podfolderu _Waypoints.Takođe možete koristiti Winpilot .DAT fajlove, SeeYou CUP fajlove, COMPEgps WPT fajlove.
+Primarni faj sa tačkama "waypoint"-s.  Faj tačaka "Waypoint" je lociran u podfolderu _Waypoints.
+Takođe možete koristiti Winpilot .DAT fajlove, SeeYou CUP fajlove, COMPEgps WPT fajlove.
 UPOZORENJE: Kada keirate NOVU tačku "waypoint", on će biti snimljen u fajlu 1, sa odgovarajućim formatom.
+
 @104
-Drugi fajl tačaka "waypoint"-a.  Fajl tačaka "waypoint" je lociran u podfolderu _Waypoints.Takođe možete koristiti Winpilot .DAT fajlove, SeeYou CUP fajlove, COMPEgps WPT fajlove.
+Drugi fajl WP "waypoint" tačaka.  Fajl tačaka "waypoint" je lociran u podfolderu _Waypoints.
+Takođe možete koristiti Winpilot .DAT fajlove, SeeYou CUP fajlove, COMPEgps WPT fajlove.
+
 @105
-Ime fajla za primarni vazdušni prostor.Fajlovi vazdušnog prostora su smešteni u podfolderu _Airspaćes.
+Ime fajla za primarni vazdušni prostor.
+Fajlovi vazdušnog prostora su smešteni u podfolderu _Airspaćes.
+
 @106
 Ime drugog fajla sa vazdušnim prostorom.
+
 @107
-Za svako aeorodromsko polje, možete dodati informacije u fajl lociran u poddfolderu _Waypoints. Na istom mestu možete promeniti isti 'default' ime fajla u nesto drugo.
+Za svako aeorodromsko polje, možete dodati informacije u fajl lociran u poddfolderu _Waypoints. 
+Na istom mestu možete promeniti isti 'default' ime fajla u nesto drugo.
+
+# 108 OBSOLETED BY 1250 in 2.3
 @108
 Kontrole filtriranjem vazušnog prostora za ekran i upozorenja. Dugme vazušnog prostora 'airspaće' takođe dozvoljava filtriranje ekrana i upozorenja nezavisno za svaku klasu vazušnog prostora.
 [SVE UKLJ.'ALL ON'] Sve je prikazano
 [Clip] Samo vazušni prostor ispod odsečene visine.
 [Auto] Sve sa marginom glajdera.
 [Sve ispod / All below] Kompletan vazušni prostor ispod glajdera.
+
 @109
 Za odsečeni vazušni prostor, to je visina ispod koje je vazušni prostor prikazan,
+
+# 110 OBSOLETED BY 1251 in 2.3
 @110
 Za automatski mod vazušnog prostora, to je visina iznad / ispod koje je vazušni prostor uključen.
+
 @111
 Omogućavanje / Onemogućavanje svih upozorenja o vazušnom prostoru.
+
 @112
 Ovo je vreme pre naleta u vazušnom prostoru koje je procenjenao na koje će sistem alarmirati pilota.
+
 @113
 Ovo je vremenski period koji je dopušten vazušni prostor a upozorenje neće biti ponovljeno.
+
 @114
 Crtanje crne spoljne linije oko svakog vazušnog prostora tačnije to je boja vazušnog prostora.
+
 @115
 Crta digitalnu visinu terena na mapi.
 Ovo je senčenje po smeru vetra: Gornji vetar je svetliji a donji vetar je tamniji.
+
 @116
 Crta topografske pojmove (puteve, reke, jezera itd.) na mapi. Zahteva da topografski fajl bude naznaćen.
+
 @117
-Definiše vrednosti zasenčenosti na izvođenju (rendering-u) terena. Koristi velike vrednosti za akćenat na padini terena, manje vrednosti ako letite na ostrim padinama planina (jedrite).
+Definiše vrednosti zasenčenosti na izvođenju (rendering-u) terena. Koristi velike vrednosti za akćenat na padini terena, 
+manje vrednosti ako letite na ostrim padinama planina (jedrite).
+
 @118
 Definisanje osvetljenja (beline) na izvođenju (renderingu) terena. Ova kontrola je prosečna za osvetljenje terena.
+
 @119
 Definise boju ispada korišćenu u izvođenju (renderingu) terena.
+
 @120
-Omogućavanje ili onemogućavanje pomeranja mape efekat senčenja.
+Omogućavanje ili onemogućavanje pomeranja mape efekat senčenja. You can also enable/disable shading from the Screen View menu buttons.
+However, if you disable shading here it will be disabled forever, and you will not be able to enable it from Screen View.
+
 @121
 Ako se TEREN NE koristi, ova boja će se koristiti kao pozadinska. 
-BEČEŠKA: Ista boja je pogodna kada se ne koristi topologija, ostale su pogodne za topologiju.
+BELEŠKA: Ista boja je pogodna kada se ne koristi topologija, ostale su pogodne za topologiju.
+
 @122
 Podešavanje limita koliko je dozvoljeno prikazivanje nalepnica, uključujuci topologiju, sletiste/landables i tačka/waypoints, može biti prikazano na mapi.
-Program za prikazivanje mapa već vodi računa da ne bude preklapanja nalepica. Ovo podešavanje je korisno za ubrzavanje prikaza mape kada  imate veliki broj topografskih pojmova i spor proćesor na Vasem GPS uređaju. Normalno Vi možete ostaviti isto na podrazumevanoj vrednosti 70.
+Program za prikazivanje mapa već vodi računa da ne bude preklapanja nalepica. Ovo podešavanje je korisno za ubrzavanje prikaza mape kada  imate 
+veliki broj topografskih pojmova i spor proćesor na Vasem GPS uređaju. Normalno Vi možete ostaviti isto na podrazumevanoj vrednosti 70.
+
 @123
 Određuje kako su nalepnice prikazane za svaku tačku 'waypoint':
 [Imena] Puno ime za svaku tačku 'waypoint' koja je prikazana na mapi.
@@ -70,30 +105,40 @@ Određuje kako su nalepnice prikazane za svaku tačku 'waypoint':
 [Ime u zadatku] Imena su prikazana samo za tačke 'waypoint'-e koji su u aktivnim zadacima kao i 'HOME' vazušno polje.
 [Prva Tri] Prve tri oznake tačke 'waypoint'-a su prikazane.
 [Prvih pet] Prvih pet oznaka tačke 'waypoint'-a su prikazane.
+
 @124
 Određuje da li je i koliko dugo trag staza biti nacrtan iza glajdera.
+
 @125
 Oređuje kako će se ekran rotirati sa glajderom:
-[Zapis Gore/(Track up)] Ekran pomeranja mape će biti rotiran kako je zapis glajdera orjentisan Gore ili napred.
 [Sever Gore/(North Up)] Ekransko pomeranje mape će uvek biti orjentisano sa sever ka jugu i ikona glajdera će biti rotirana da pokaže Vaš kurs.
+[Pametni sever/(North smart)] Je kao i (Sever gore/ North Up), ali ikona glajdera se repozicionirta automatski da napravi više prostora za prednju mapu. 
+Ovaj model radi samo u pejzaznom/Landscape modu. Za model portreta/Portrait, on je identican kao i Sever Gore/ North Up,  
+U Pametnom Severu/North Smart nije moguće repozicionirati glajder rucno iz meni dugmadi.
+[Zapis Gore/(Track up)] Ekran pomeranja mape će biti rotiran kako je zapis glajdera orjentisan Gore ili napred.
 [Sever Gore sa kruzenjem/(North up when circling)] Zapis Gore/Track-up u krstarenju i Sever Gore/North-up kada kruzite.
 [Cilj Gore sa kruzenjem/(Target up when circling)] Cilj Gore/Track-up u krstarenju i pravac do sledećeg 'waypoint'-a u kruženju Gore.
 [Sever/Zapis(North/track)] Sever gore u krstarenju, zapis glajder u kruzenju.
-[Pametni sever/(North smart)] Je kao i (Sever gore/ North Up), ali ikona glajdera se repozicionirta automatski da napravi više prostora za prednju mapu. Ovaj model radi samo u pejzaznom/Landscape modu. Za model portreta/Portrait, on je identican kao i Sever Gore/ North Up,  U Pametnom Severu/North Smart nije moguće repozicionirati glajder rucno iz meni dugmadi.
+
 @126
 Kada je nivo zoom-a veći ili jednak sa ovom vrednosti, orjentacija mape će biti promenjena u Sever Gore/North Up. 
 Ako je vrednost ispod, podešavanje Orjentisanja će biti korisćeno kao normalno.
 Podešena veća vrednost je kao rezultat u opciji NE TREBA KORISTITI apsolutno nikada. Podrazumevana vrednost je 10.
+
 @127
 Autoomatsko-Povećanje / Auto-zoom menja nivo povećanja tokom leta tako da je povećanje mape u kao kada je pristupljena aktivna tačka "waypoint".
 Posle prolaza kroz tačku 'waypoint', povećanje mape izlazi do sledeće tačke 'waypointa'.
 Ručna promena povećanja će deaktivirati Automatsko-povećanje/ Auto-zoom.
+
 @128
 Određuje da li je se Trag Staze pomera sa vetrom kada se prikazuje u kružnom režimu.
+
 @129
 Podešavanje širine lenje trase (snail trail) koja se prikazuje.
+
 @130
 Ako je osposobljeno, onda će mapa biti povećana automatski kada ulazite u kružni mod i povećanje će se autoamtski vratiti kada izađete iz kružnog moda.
+
 @131
 Tačke "Waypoints" nalepnice imaju prioritet ispred topografskih nalepnica, tako da mnogo tačaka "waypoint"-a na mapi će isključiti nalepnice topografskih pojmova u prikazu.
 Ovde možete definisati koliko želite tačaka "waypoint"-a nalepnica da zatvore za sve ostalo, koristi LK8000 otvorena mašina.
@@ -101,34 +146,44 @@ DEAKTIVNO će pokazati sve tačke 'waypoint'-e na mapi i takođe prepisati sve o
 NISKO/LOW neće prikazati prepisane imena 'waypoint'-a, ali će popuniti mapu koliko je god izvodljivo,
 SREDNJE/MIDLE i VISOKO/HEIGHT će ostaviti više prostora između nalepnica tačaka 'watpoint'-a, tj. ostaviti više prostora za nalepnice topografske pojmove,
 VEOMA VISOKO/VERZ HEIGHT će odvojenu tačke 'waypoint' nalepnice malo više, skoro do davanja prioriteta topografskim nalepnicama.
+
 @132
 ONEMOGUĆENO će prikazati informacije za sva dostupna `reachable' i sletišta 'landable' tačke'waypoints' koje su vidljive na mapi,
 NISKI  neće polazati izvan sletanja ako postoji bolji aerodrom,
 VISOKI će pokušati da izbegne prikazivanje AERODROMA ZATVORENIM do ostalih boljih aerodromam,
+
 @133
 Visina iznad terena na kojoj glajder prikazuje prilazak za sigurno sletanje. Ne POSTAVLJAJETE isto za nulu! Dobra vrednost je 300m.
+
 @134
 Traži sigurnu visinu za tačku sletanja, ili takođe za okretnu tacku "turnpoint". Ako je samo sletiste/landables, onda prilazna visina iznad okretne tacke "turnpoints" NECE se uzimati u obzir nijednu posebnu marginu.
 [Samo sletište/Landables only] Dodavanje ekstra visine za sletišta 'Landables' samo. Ovo je podrazumevana vrednost.
 [Sletiste i okretna tacka/Landables and turnpoints] Primenjuje ekstra visinu za dodavanje za sve tačke 'waypoint'-e.">
+
 @135
 Visina iznad terena na kojoj glajder mora ocistiti tokom finalnog glajda, i proći poteskoće. Dobra vrednoje je 50m.
+
 @136
 'MacCready' podešavanje se koristi za zaključenje pristupne visine na uzletištu. Dobra vrednost je 0.5ms
+
 @137
 Ako je tačka sletišta 'landable waypoints' raspoloživa, Najbolja alternativa će Vas upozoriti kada ste opušteni i dostupani mestu za sletanje, i kada je Vasa najbolja opcija promenjena.  Upozorenja se NECE događati ispod kritične visine, iz razloga da vas ne bi ometala.
+
 @138
 Ovi određena konfiguraciona podešavanja su dostupna tokom leta.
+
 @139
 Ovo dozvoljava uključenje ili iskljućenje automatskog algoritma vetra. Kada je algoritam isključen, pilot je obavezan da podesi određenu vrednost.
 [Kruženje] Zahteva samo GPS signal.
 [ZigZag] Zahteva inteligentan vario sa izlazom za brzinu vetra.
 [Both] Koristi obadva metoda ZigZag i kruženje.
+
 @140
 Ovo je INDIKATIVNA VAZDUSNA BRZINA za zadržavanje u pravoliniskom letu pre pitanja za racunanje Pravog Vetra/TrueWind.
 Drzite zaglavlje na NSWE gledajuci u Vas kompass, i odrzavajte brzinu na Vasem anemometru neku sekundu, onda pritisnite rezervisano PraviVetar/TrueWind dugme. Posto nemate vazušnu sondu recite LK8000 koja je Vasa Indicativna Vazdusna Brzina, LK će prihvatiti da koristi ovu vrednost.
 AKO VAS UREĐAJ IMA sondu Vazdusne Brzine, ova vrednost neće biti korisćena posto vetar će biti automatski kalkulisan korisćenjem IAS.
 Minimalna brzina je 5 knota ili 10kmh, podrazumevana vrednost je 100kmh ili 54 knota.
+
 @141
 Za računanje vetra tokom pravoliniskog leta, Vi morate podneti zaglavlje i brzinu za nekoliko sekundi.
 Rešenje za koliko mnogo sekundi Vam je potrebno održavati ravnomernu vrednost. Podrazumevana vrednost je 10 sekundi.
@@ -1066,6 +1121,54 @@ Zbir OLC klasičnih rezultata i FAI triangle rezultata.
 [OLC PLUS] Predviđeni rezultat
 Zbir OLC klasično predviđenih rezultata i FAI triangle predviđenih rezultata.
 
+@913
+[FLAP SETTINGS]
+Show current optimum flap setting based on extended polar file and current wing loading.
+See the example polar file inside _Polars folder, for help on how to create an extended polar.
+
+@914
+[Airspace Vertical Distance]
+Vertical distance to the SELECTED airspace. To SELECT an airspace go inside 2.4 airspace page and pull details,
+there is a button for selection. Once selected the airspace will be monitored for distance in this infobox.
+Negative values means that airspace altitude is below, positive means that is above you. (Like arrival altitudes)
+If no airspace is selected, OR if you are already INSIDE the airspace for this distance, --- is shown.
+In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
+
+@915
+[Home Altitude Arrival]
+Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt and safetyMC.
+
+@916
+@917
+@918
+[Alternate bearing]
+Bearing to the selected alternate
+
+@919
+@920
+@921
+[Alternate distance]
+Distance to the selected alternate
+
+@922
+[Max Altitude Reached]
+Max altitude reached during the current flight.
+It is reset at takeoff.
+
+@923
+[Max Height Gained]
+This height is calculated using the min height detected AFTER the start of free flight.
+This value is normally used for badges.
+
+@924
+[Head Wind Speed]
+This is the wind component relative to your current track.
+It is the difference between the TAS true airspeed and GS ground speed.
+A positive value indicates a HEAD WIND, and a negative value indicates a TAIL WIND.
+If true airspeed is not available, estimated TAS is used. 
+In this case the value is only guessed against the current wind set.
+
+
 #
 # END INFOBOXES 800 - 1199
 #
@@ -1134,9 +1237,256 @@ Polara mora biti smeštena u folder '_Polars'.
 Kreiranje fajla polare nije beznačajno, zato što Vam je neophodna vrednost propadanja i precizna 
 Creating a polar file is not trivial, because you need actual sink rate values and a precizna težina vazduhoplova. Pročitajte uputstvo da biste saznali više o istome.
 
+@1208
+[Aircraft type]
+Ovdje se bira zrakoplov i krila različitih performansi.
+
+@1209
+[Airspace warning message repeat time]
+Ovo je vrijeme nakon kojeg se upozoravajuće poruke ponavljaju ukliko nisu potvrđene. Ukoliko letite u zabranjenom zr.prostoru bez potvrde poruke upozorenja, nakon tog vremena poruka će se ponoviti.
+
+@1210
+[Airspace vertical distance margin]
+Ukoliko se vertikalna udaljenost od baze ili vrha zračnog prostora smanji ispod ovog limita, prikazat će se dijalog žutog upozorenja (yellow warning).
+Time je uvjetovan i način na koji se ikonica upozorenja prikazuje na karti.
+Ukoliko se vertikalna udaljenost od baze ili vrha zračnog prostora smanji ispod ovog limita, ikonica upozorenja prikazuje se odmah ispod simbola zrakopolova.
+
+@1211
+[Airspace warning dialog timeout]
+Nakon isteka ovog vremena dijalog poruke upozoranja automatski se gasi bez pritiska na tipku Izađi. U dijalogu upozorenja o zračnom prostoru na tipki izađi možeš vidjeti brojač koji se smanjuje prikazujući vrijeme do automatskog zatvaranja dijaloga. 
+
+@1212
+[Airspace warning map labels]
+Ako je ON, na karti se prikazuje ikonica upozorenja sa labelom na kojoj je prikazano ime zračnog prostora te vertikalna udaljenost od njega.
+
+@1213
+[PG autozoom threshold]
+Kada se koristi autozum u PG modu, autozum se aktivira kada se idućoj okretnoj točki približimo više od ovog limita.
+Npr. ako odabereš 5km, to znaći da će autozum počet raditi na 5km od točke.
+Nakon dostizanja točke vraća se zum koji je bio u preskoku do točke. Kada se idućoj točki približiš na 5km autozum će ponovo proraditi.
+
+@1220
+[Bottom Bar configuration]
+Aktivira ili deaktivira pojedinu grupu vrijednosti na BottomBaru, tako da se  prilikom cikličkog mijenjanja grupa prikazuju grupe označene sa ON. Ukoliko su sve grupe isključene, automatski će se prikazati samo grupa NAV1. Za vrijeme kruženja u termičkom stupu automatski se prikazuje grupa THR 0.
+
+@1221
+[InfoPages rotation configuration]
+Aktivira ili deaktivira pojedinu stranicu u InfoStranicama. Ukoliko su sve stranice deaktivirane ova stranica se ne prikazije. Pojedina stranica može se pozvati Mapiranim tipkama bez obzira što je ovdje deaktivirana.
+Upozorenje: Kod zrakoplova koji nije jedrilica PG/HG i GA deaktiviranjem InfoStranice 1.5 Contest isklučuju se svi Contest proračuni. Ukoliko želiš Contest proračune stranica 1.5 mora biti aktivna.
+Ukoliko koristiš Jedrilicu (glider) stranica 1.5 može se isključiti zato što se proračuni obavljaju u svakom slučaju. 
+
+@1250
+Filtriranje zračnih prostora za ekran i upozorenja. Filter mogućava neovisno filtriranje prikaza i upozorenja za svaku klasu zračnog prostora. 
+[Sve uključeno] Sve se prikazuje.
+[Odsjeci] Samo zr.prostor ispod visine odsjecanja.
+[Auto] Sve u okvirima visine zrakoplova.
+[Sve ispod] Sav zr.prostor ispod zrakoplova i do margine po visini iznad. 
+
+@1251
+Margina visine koja se koristi za kontrolu filtriranja zr.prostora na karti u slučaju kada su aktivni modovi [Auto] ili [Sve ispod]. Za AUTO ona određuje visinu iznad i ispod zrakoplova za koju će zr.prostor biti prikazan. U modu [Sve ispod] prikazat će se zr.prostor do specificirane visine iznad zrakoplova i sav zračni prostor ispod zrakoplova.
+
+@1252
+Iako ste potvrdili upozorenje o zračnom prostoru, nakon ovog vremena upozorenje će se ponovo aktivirati. 
+Npr. ukoliko ste jutros proletjeli kroz zračni prostor, bit ćete upozoreni na njega i kada se popodne vraćate kući.
+Inicijalno (def.) vrijeme ponovne aktivacije upozorenja je 15 min.
+
+@1253
+[Alarm Max Altitude] Svaki puta kada se dostigne i prijeđe definirana visina prikazat će se upozorenje i oglasiti alarm o probijanju definirane visine.
+Alarm se neće ponavljati u idućih 60 sekundi. Ukoliko je u zadnjoj minuti visina bila ispod maximalne te je ponovo probijena max visina, alarm će se ponovo oglasiti. Alarm se može isključiti postavkom na 0.
+Visina koja se koristi za alarm je visina koja je odabrana u konfiguracijskom meniju 5 "Koristi baro visinu". Podešavanje više alarma na istu vrijednost aktivira samo 1 alarm.
+Pilot mora biti pažljiv da alarme ne postavi ispod sigurne visine, da ge ne ometaju u kritičnoj fazi leta.
+Svaki alarm može se ponoviti max 30 puta. Nakon 30 ponavljanja, alarm se u tekućem letu više neće aktivirati.
+Alarmna poruka automatski se gasi nakon 12 sekundi.
+Svaki alarm ima svoj zvuk. Datoteka sa zvukom nalazi se u direktoriju _System _Sounds i može se zmjeniti. Ime datoteke je LK_ALARM_ALTx.WAV (x je broj alarma).
+Inicijalna vrijednost je 0 (bez alarma). 
+
+# ex 195
+@1254
+Pokazivač doleta (glide bar) može pokazivati visinu dolata u odnosu na sljedeću točku ili na cilj ili može biti isključen. Pokazivać se iscrtava na lijevoj strani ekrana.
+Kada se koristi sljedeća točka ili točka zadatka sa finalnom točkom tada će prikazana vrijednost biti jednaka vrijednosti prikazanoj na overlay-u sa desne strane. 
+
+@1255
+Automatski Mac Cready (Mc) može biti uključen ili isključen. On se može uključivati i isključivati tokom leta.
+
+@1256
+[Total Energy] 
+Kada se koristi TotalEnergy LK će računati visinu koju možeš ostvariti povlačenjem palice na trenutnoj brzini leta do brzine koja je u tom trenutku optimalna brzina najbolje finese.
+Npr. ako letiš 200kmh sa discus-om bez balasta, energija brzine izračunat će se kao da navućeš palicu i usporiš na 100kmh i pri tom se popneš na veću visinu od trenutne.
+Tako dobivena brzina biti će dodana u sve proračune dolazbne visine.  Standardno ova mogućnost je isključena zbog sigurnosnih razloga.
+Ukoliko si u nedoumisi ostavi ovu opciju na OFF.
+
+@1257
+[Efikasnost / Efficiency]
+Koliko je jedrilica čista. Postavka 100% je za potpuno čistu jedrilicu, a manje brojke u slučaju kada su za krila zalijepljene mušice ili kada su krila mokra. 50% znači da se prosječno propadanje jedrilice dvostruko veće od normalnog.
+Ovo je standardna vrijednost koja se koristi za Efikasnost u meniju "Osnove postavke", koja se učitava na početku.
+Uobičajeno je da se ova vrijednost postaviti na 100%.  
+
+@1258
+[Interval u sekundama za pisanje polozaja uzivo / Live tracker log interval in seconds]
+Podesite ovu vrednost (>0), ako želite da upalite slanje o Vasoj tenutnu poziciji Leonardo pratioc servisu UŽIVO preko interneta. (http://www.livetrack24.com)
+Ovo zahteva da Vaš telefon ima GPRS / HSDPA  i da je ukljucena opcija za prenos podataka putem TCP/IP internet konekcije na servis za uživo praćenje. LK korisnici moraju dati serveru, korisničko ime i lozinku za pristup serveru. A takodje i tip vazduhoplova. Ako niste sigurni unesite vrednost 0, što znači da je servis izgašen.
+
+@1259
+[Izborni meni / Custom Menu]
+
+@1260
+[Brti pokreti / Quick gestures]
+Radi samo u modu za paraglajdere i zmajeve: omogućeni / onemogućeni brzi pokreti.
+Po podrazumevanoj vrednosti, brzi pokreti su omogućeni. Brzi pokreti pilotu dozvoljavaju da izabere (klikne) na desno ili levo najbliže info stranice da bi promenio sledeću / prezthodnu sa promenom.
+Korišćenje rukavica tokom leta će zahtevati ovu opciju omogućenom.
+
+@1261
+[Bezbedno sletanje / Takeoff safety]
+Tokom faze poletanje, ovaj alarm će vas obavestiti zvukom kada je jednom dostupna izabrana bezbednosna visina preko zemlje (QFE).
+Za glajdere ovo je normalno visina iznad koje je moguće napraviti okret 180 stepeni i vratiti se na poletište, u slučaju da je vitlovanje prekinuto.
+Podesite ovu vrednost na 0 ako želite da onemogućite ovaj alarm.
+Ovaj alarm će biti omogućen ponovo samo posle ponovnog poletanja.
+
+@1262
+[Opcije Visestrukih mapa / Multimap options]
+
+@1263
+[Automatski Donji panel - Bottom Bar AUTO]
+Ako je omogućen, termički donji panel će se automatski aktivirati kada kružite u termalu, i biće onemogućen kada izađete iz termala, čak i ako je TERMO onemogućen u rotaciji donjeg panela.
+
+@1264
+[Grupa potvrde / Group Ack]
+Potvrda za jedan validan vazdušni prostor za sve vazdušne prostore sa istim imenom i istom klasom.
+
+@1265
+[Promena vazdušnog prostora / Airspace changes]
+"Uporan" onemogućen vazdušni prostor ostaje onemogućen sve do sledećeg startovanja programa.
+"samo ovaj put" svi vazdušni prostori će biti ponovo omogućeni posle sledećeg pokretanja programa
+
+@1266
+[Vreme kapije / Time Gate]
+U zadatku trke sa najmanje 1 vremenom kapije, podesite kraj lokalnog vremena za poslenju kapiju.
+Ako je vrednost kapije 0, ova vrednost će biti ignorisana.
+
+@1268
+[Prag FAI tougla / FAI Triangle Threshold]
+Podesiti prag velikog FAI trougla 28%/45% 
+500km za DMSt i OLC regulaciju pravila
+750km za FAI regulaciju pravila
+
+@1269
+[Upozorenje opreme / Gear Warning]
+Izgašeno:
+Nema upozorenja opreme 
+
+Landables:  (preporučljiv u planinskim predelima)
+Upozorenje opreme ako je visina manja nego što je visina podešena ispod najbolje alternatice u visini polja. Upozorenje samo ako je pozicija u 2 nautičke milje (3.7 km) ili bliža najboljoj alternativi za sletanje.
+
+Uvek / Always:  (Preporučljivo u ravničarskim predelima)
+Upozorenje opreme će biti uvek ako je visina iznad nivoa zemlje (AGL) i ako je manja od podešene visine.
+
+Upozorenje će biti prikazano samo jedanput ako ispod upozorenja opreme je podešena visina, i biće ponovo upaljeno posle penanja 100 met (300 ft) iznad podešene visine.
+
+@1270
+[Upozorenje visine opreme / Gear Warning Altitude]
+Prag visine za upozorenje opreme.
+
+@1271 
+[Izlazni QNH / Output QNH]
+QNH (u Pa), koristi se za izlaznu visinu za pojedine modele (podrazumevano 101325)
+
+@1272 
+[Prag zvuka lifta / Lift Threshold]
+Vrednost u m/s za zvuk lift-a kada će biper početi da se oglašava.
+
+@1273 
+[Prag gašenja zvuka lifta / Lift Off Threshold]
+Vrednost u m/2 kada će biper - zvuk lifta  prestati da se oglašava.
+
+@1274 
+[Prag propadanja / Sink Threshold]
+Vrednost u -m/s za propadanje kada će prestati da se javlja ton ropadanja.
+
+@1275 
+[Prag isključivanja tona propadanja / Sink Off Threshold]
+Vrednost u -m/s za ton propadanja kada će prestati da se oglašava vario za propadanje.
+
+@1276 
+[Pozicija oglašavanja biper-a / Position Noise]
+Filter potivije oglašavanja biper-a.
+
+@1277 
+[Osnovna frekfrencija lifta / Lift Freq. Base]
+Zvučna frekfrencija za biper lifta u hercima Hz na 0 m/s.
+
+@1278 
+[Frekfrencija povećanja zvuka lifta / Lift Freq. Increment]
+Povećanje audio frekfrencije za biper lift-a u hercima Hz za sveki 1 m/s.
+
+@1279 
+[Osnovna frekfrencija zvuka propadanja / Sink Freq. Base]
+Audio frekfrencija za ton propadanja u hercima Hz za 0 m/s
+
+@1280 
+[Frekfrencija zvuka povećanja propadanja / Sink Freq. Increment]
+Smanjenje audio frekfrencije za ton propadanja u hercima Hz za svaki -1m-s.
+
+@1281 
+[Jačina Zvuka / Volume]
+Jačina biper-a -> 0.1 je samo oko pola jačine od 1.0.
+
+@1282 
+[Vrednost množioca / Rate Multiplier]
+Ritam biper-a -> 0.5 = biper radi duplo brže od normalnog rada.
+
+@1283 
+[Zvuk konektovan / Audio Connected]
+Check to enable hardware audio when connected.
+
+@1284 
+[Zvuk nije konektovan / Audio Disconnected]
+Proveriti uključenog hardwera audio signala kada nije konektovan.
+
+@1285 
+[Bluetooth čekanje / Bluetooth Wait]
+Vreme koje će Vašem hardveru biti potrebno da uspostavi bluetooth konekciju od kada je ukljućena.
+
+@1286 
+[Izlazni mod / Output Mode]
+0-BlueFlyVario (podrazumevana vrednost) "Nije podržan" 
+1-LK8EX1  
+2-LX "Nije podržan"
+3-FlyNet
+
+@1287 
+[Izlazna frekfrencija / Output Frequency]
+Izlazna frekfrencija -> 1 - svakih 20ms ... 50 - svakih 20ms x 50 = 1000 ms
+
+@1288
+[Conical ESS Slope]
+
+@1289
+[Conical ESS Base]
+
+@1290
+[Sonar Vazdušnog prostora / Airspace Sonar]
+Zvučni signal sonar će biti označen kada prilazite kontrolisanom Vazdušnom prostoru, i to sve brže što ste sve bliži.
+Ova konfiguracija se koristi za postavljanje sonar moda po startovanju. Promena sonar mode sa dugmetom neće uticati na ovo podeđavanje.
+
+@1291
+[Conical ESS Base Radius]
+
+@1292
+[Koristi Dve linije]
+Samo u portret modu: info stranice 2.1 2.2 itd. prikazuje stavku u dve linije, umesto u jednoj, da biste dobili bolje čitanje sa većim fontom.
+
+
+@1293
+[Preklapanje mape/Overlays]
+Možete izabrati koje vrednosti će biti prikazane na ekranu kada je aktivno preklapanje mape.
+Možete izgasiti pojedina preklapanja, ili upaliti korišćenjem podrazumevanog podešavanja 'default set' (uvek je isto u LK V5)
+Ili možete izabrati pojedine Pomoćne izabrane informacije PII - AUX vrednosti. U tom slučaju, preklapanje pojedinih vrednosti će biti identično kao i isto u poljima izabranih - auxiliaty vrednosti.
+Na primer, ako izaberete PII-4 /AUX-4 za Gornje levo prepisivanje, za preklapanje mape će biti korišćen izbor iz Info-kutije Pomoćne izabrane informacije PII (sistemska konfiguraciona stranica 19)
+To je tačno kao i u Donjoj Bar Liniji DBI / Bottom bar (Sistemska konfiguraciona stranica 9)
+Imajte na umu da će samo na levoj strani preklapanja mape će biti pokazane jedinici mere, a na dasnoj NEĆE.
+Prva tri preklapanja mape na Vrhu ekrana ne mogu biti promenjena samo mogu biti iskljucena
+
+
 @9999
-Nije raposloživa pomoć za ovo polje!
-
-
-
+Pomoćna poruka nije dostupna za izabranu opciju !!!
 
