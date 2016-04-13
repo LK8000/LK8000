@@ -28,7 +28,6 @@
 #define DEBUG_AIRSPACE
 #endif
 
-extern	  double  ExtractFrequency(TCHAR*);
 
 static const int k_nAreaCount = 15;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
@@ -1525,7 +1524,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
 
     StartupStore(TEXT(". Reading airspace file%s"), NEWLINE);
-#define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
+
     charset cs = charset::unknown;
     while (ReadString(fp, READLINE_LENGTH, Text, cs)) {
         ++linecount;
@@ -1566,7 +1565,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                     // Last one was an area
                                     CorrectGeoPoints(points);
                                     // Skip it if we dont have minimum 3 points
-                                    if (points.size() > MIN_AS_SIZE) {
+                                    if (points.size() > 3) {
                                         newairspace = new CAirspace_Area(std::move(points));
                                     }
                                 }
@@ -1627,16 +1626,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                         //OpenAir non standard field - AF - define a fly zone
                     case _T('F'): // AF - Fly zone, no parameter
-						if ((parsing_state == 10) &&  (  ExtractFrequency(p) > 100.0))
-						{
-							if(((int)(ExtractFrequency(p)*1000+0.5))  != ((int)(ExtractFrequency(Name)*1000+0.5)))
-							{
-							  _stprintf(sTmp, TEXT("%s %s"),  Name, p );
-						  	  LK_tcsncpy(Name, sTmp, NAME_SIZE);
-							}
-						}
-						else
-                          flyzone = true;
+                        flyzone = true;
                         continue;
 
                     case _T('T'): // AT
@@ -1644,11 +1634,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         // TODO: adding airspace labels
                         continue;
 
-                    case _T('G'): //AG - Ground station name
-						if (parsing_state == 10) {
-							_stprintf(sTmp, TEXT("%s %s"),  Name, p );
-							LK_tcsncpy(Name, sTmp, NAME_SIZE);
-						}
+                    case _T('G'): // AG
+                        // ignore 
                         continue;
 
                     case _T('Y'): // AY
@@ -3090,19 +3077,16 @@ void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POIN
     screenpoints_picto.clear();
 
     const double dlon = _bounds.maxx - _bounds.minx;
-    const double dlat = _bounds.maxy - _bounds.miny;
-#if (MIN_AS_SIZE > 2) // for this check an airspace must habe an area => at least three points
     if (dlon == 0.) {
         LKASSERT(FALSE); // wrong aispaces shape
         return;
     }
 
-
+    const double dlat = _bounds.maxy - _bounds.miny;
     if (dlat == 0.) {
         LKASSERT(FALSE); // wrong aispaces shape
         return;
     }
-#endif
 
     const double PanLatitudeCenter = _bounds.miny + dlat / 2.;
     if (fastcosine(PanLatitudeCenter) == 0) {
