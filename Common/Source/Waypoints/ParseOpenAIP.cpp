@@ -12,6 +12,7 @@
 #include "Waypointparser.h"
 #include "utils/stringext.h"
 #include "xmlParser.h"
+#include <sstream>
 
 extern int globalFileNum;
 
@@ -103,26 +104,12 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
     } else StartupStore(TEXT(".. OpenAIP waypoints file contains: %u airports.%s"), (unsigned)numOfAirports, NEWLINE);
 
     XMLNode AirportNode;
+    LPCTSTR dataStr=nullptr;
     for(int i=0;i<numOfAirports;i++) {
         AirportNode=airportsNode.getChildNode(i);
-        if(AirportNode.isEmpty()) {
-            StartupStore(TEXT(".. Skipping empty AIRPORT tag.%s"), NEWLINE);
-            continue;
-        }
 
-        // Airport type
-        LPCTSTR dataStr=AirportNode.getAttribute(TEXT("TYPE"));
-        if(dataStr==nullptr) {
-            StartupStore(TEXT(".. Skipping AIRPORT with no TYPE attribute.%s"), NEWLINE);
-            continue;
-        }
-
-        size_t len=_tcslen(dataStr);
-        int Type=-1;
-        if(len==0) {
-            StartupStore(TEXT(".. Skipping AIRPORT with empty TYPE attribute.%s"), NEWLINE);
-            continue;
-        }
+        // Skip not valid AIRPORT tags and TYPE attributes
+        if(AirportNode.isEmpty() || (dataStr=AirportNode.getAttribute(TEXT("TYPE")))==nullptr || dataStr[0]=='\0') continue;
 
         // Prepare the new waypoint
         WAYPOINT new_waypoint;
@@ -133,67 +120,43 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
         new_waypoint.Format = LKW_CUP;
         new_waypoint.Number = WayPointList.size();
         new_waypoint.FileNum = globalFileNum;
-        new_waypoint.Style = -1; // -1: style unknown
-        bool isClosed=false;
-        bool isMilitary=false;
-        bool isHeliport=false;
-        bool isWaterField=false;
+        new_waypoint.Style = 5; // default style: solid
+        new_waypoint.Flags = AIRPORT + LANDPOINT;
 
-
-        /*
-        AD_CLOSED Aerodrome Closed
-        AD_MIL Military Aerodrome
-        AF_CIVIL Airfield Civil
-        AF_MIL_CIVIL Airfield (civil/military)
-        AF_WATER Water Airfield
-        APT Airport resp. Airfield IFR
-        GLIDING Glider Site
-        HELI_CIVIL Heliport Civil
-        HELI_MIL Heliport Military
-        INTL_APT International Airport
-        LIGHT_AIRCRAFT Ultra Light Flying Site
-        */
-        /*
+        /* CUP: types
         1 - Normal
         2 - AirfieldGrass
         3 - Outlanding
         4 - GliderSite
-        5 - AirfieldSolid
-        6 - MtPass
-        7 - MtTop
-        8 - Sender
-        9 - Vor
-        10 - Ndb
-        11 - CoolTower
-        12 - Dam
-        13 - Tunnel
-        14 - Bridge
-        15 - PowerPlant
-        16 - Castle
-        17 - Intersection*/
+        5 - AirfieldSolid*/
+        std::basic_stringstream<TCHAR> comments;
 
-        //TODO: here
         switch(dataStr[0]) {
         case 'A':
-            if (_tcsicmp(dataStr,_T("AF_CIVIL"))==0 || _tcsicmp(dataStr,_T("AF_MIL_CIVIL"))==0 || _tcsicmp(dataStr,_T("APT"))==0) new_waypoint.Style=5; //Airfield solid
-            else if(_tcsicmp(dataStr,_T("AD_CLOSED"))==0) { new_waypoint.Style=5; isClosed=true; }
-            else if(_tcsicmp(dataStr,_T("AD_MIL"))==0) { new_waypoint.Style=5; isMilitary=true; }
-            else if(_tcsicmp(dataStr,_T("AF_WATER"))==0) { new_waypoint.Style=2; isWaterField=true; }
+            if (_tcsicmp(dataStr,_T("AF_CIVIL"))==0)            comments<<"Civil Airfield"<<std::endl;
+            else if(_tcsicmp(dataStr,_T("AF_MIL_CIVIL"))==0)    comments<<"Civil and Military Airport"<<std::endl;
+            else if(_tcsicmp(dataStr,_T("APT"))==0)             comments<<"Airport resp. Airfield IFR"<<std::endl;
+            else if(_tcsicmp(dataStr,_T("AD_CLOSED"))==0)       comments<<"CLOSED Airport"<<std::endl;
+            else if(_tcsicmp(dataStr,_T("AD_MIL"))==0)          comments<<"Military Airport"<<std::endl;
+            else if(_tcsicmp(dataStr,_T("AF_WATER"))==0)        { new_waypoint.Style=2; comments<<"Waterfield"<<std::endl; }
             break;
         case 'G':
-            if(_tcsicmp(dataStr,_T("GLIDING"))==0) new_waypoint.Style=4; //Glider site
+            if(_tcsicmp(dataStr,_T("GLIDING"))==0)              { new_waypoint.Style=4; comments<<"Glider site"<<std::endl; }
             break;
         case 'H':
-            if (_tcsicmp(dataStr,_T("HELI_CIVIL"))==0) { new_waypoint.Style=5; isHeliport=true; }
-            else if(_tcsicmp(dataStr,_T("HELI_MIL"))==0) { new_waypoint.Style=5; isHeliport=true; isMilitary=true; }
-            break;
+            continue; // For now skip heliports
+            //if (_tcsicmp(dataStr,_T("HELI_CIVIL"))==0) { new_waypoint.Style=5; }
+            //else if(_tcsicmp(dataStr,_T("HELI_MIL"))==0) { new_waypoint.Style=5; }
+            //break;
         case 'I':
-            if(_tcsicmp(dataStr,_T("INTL_APT"))==0) new_waypoint.Style=5;
+            if(_tcsicmp(dataStr,_T("INTL_APT"))==0)             comments<<"International Airport"<<std::endl;
             break;
         case 'L':
-            if(_tcsicmp(dataStr,_T("LIGHT_AIRCRAFT"))==0) new_waypoint.Style=2; //Airfield Grass
+            if(_tcsicmp(dataStr,_T("LIGHT_AIRCRAFT"))==0)       { new_waypoint.Style=2; comments<<"Ultralight site"<<std::endl; }
             break;
         }
+
+        // Skip unknown waypoints
         if(new_waypoint.Style==-1) continue;
 
         XMLNode node=AirportNode.getChildNode(TEXT("COUNTRY"));
@@ -215,8 +178,9 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
         }
 
         node=AirportNode.getChildNode(TEXT("GEOLOCATION"));
+        XMLNode subNode;
         if(!node.isEmpty()) {
-            XMLNode subNode=node.getChildNode(TEXT("LAT"));
+            subNode=node.getChildNode(TEXT("LAT"));
             if(!subNode.isEmpty() && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
                 new_waypoint.Latitude=_tcstod(dataStr,nullptr);
                 if (new_waypoint.Latitude<-90 || new_waypoint.Latitude>90) continue;
@@ -233,31 +197,37 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
         } else continue;
 
         //Radio frequencies: if more than one just take the first "communication"
-        bool found=false;
         int numOfNodes=AirportNode.nChildNode(TEXT("RADIO"));
-        for(int i=0;i<numOfNodes && !found;i++) {
+        bool found=false, toWrite(numOfNodes==1);
+        for(int i=0;i<numOfNodes;i++) {
             node=AirportNode.getChildNode(TEXT("RADIO"),i);
-            if(!node.isEmpty() && (dataStr=node.getAttribute(TEXT("CATEGORY")))!=nullptr) {
-                if(numOfNodes==1) found=true;
-                else switch(dataStr[0]) {
+            LPCTSTR type=nullptr;
+            if(!node.isEmpty() && (dataStr=node.getAttribute(TEXT("CATEGORY")))!=nullptr && !(subNode=node.getChildNode(TEXT("TYPE"))).isEmpty() && (type=subNode.getText(0))!=nullptr && type[0]!='\0') {
+                subNode=node.getChildNode(TEXT("FREQUENCY"));
+                LPCTSTR freq=nullptr;
+                if(subNode.isEmpty() || (freq=subNode.getText(0))==nullptr || freq[0]=='\0') continue;
+                switch(dataStr[0]) {
                 case 'C': //COMMUNICATION Frequency used for communication
-                    found=true;
+                    comments<<"Comm "<<type<<": "<<freq<<" MHz "<<std::endl;
+                    if(!found) toWrite=true;
                     break;
                 case 'I': //INFORMATION Frequency to automated information service
+                    comments<<"Info "<<type<<": "<<freq<<" MHz "<<std::endl;
                     break;
                 case 'N': //NAVIGATION Frequency used for navigation
+                    comments<<"Nav "<<type<<": "<<freq<<" MHz "<<std::endl;
                     break;
                 case 'O': //OHER Other frequency purpose
+                    comments<<"Other "<<type<<": "<<freq<<" MHz "<<std::endl;
                     break;
                 default:
-                    break;
+                    continue;
                 }
-                if(found) {
-                    XMLNode subNode=node.getChildNode(TEXT("FREQUENCY"));
-                    if(!subNode.isEmpty() && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
-                        LK_tcsncpy(new_waypoint.Freq, dataStr, CUPSIZE_FREQ);
-                        if (_tcslen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
-                    }
+                if(toWrite) {
+                    LK_tcsncpy(new_waypoint.Freq, freq, CUPSIZE_FREQ);
+                    if (_tcslen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
+                    toWrite=false;
+                    found=true;
                 }
             }
         }
@@ -270,70 +240,93 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
         // For each runway...
         numOfNodes=AirportNode.nChildNode(TEXT("RWY"));
         for(int i=0;i<numOfNodes;i++) {
-            double length=0;
-            short style=-1;
-            double dir=-1;
-
             node=AirportNode.getChildNode(TEXT("RWY"),i);
 
-            // Take only active runways
-            if(!node.isEmpty() && (dataStr=node.getAttribute(TEXT("OPERATIONS")))!=nullptr && dataStr[0]!='\0' && _tcsicmp(dataStr,_T("ACTIVE"))==0) {
+            // Consider only active runways
+            if(node.isEmpty() || (dataStr=node.getAttribute(TEXT("OPERATIONS")))==nullptr || dataStr[0]=='\0' || _tcsicmp(dataStr,_T("ACTIVE"))!=0) continue;
 
-                // Surface : for now only if is not already a gliding site we just check if is "solid" surface or not...
-                if(new_waypoint.Style!=4) {
-                    XMLNode subNode=node.getChildNode(TEXT("SFC"));
+            // Get runway name
+            subNode=node.getChildNode(TEXT("NAME"));
+            if(subNode.isEmpty() || (dataStr=subNode.getText(0))==nullptr || dataStr[0]=='\0') continue;
+            LPCTSTR name=dataStr;
 
-                    /* Possible SFC values:
-                    ASPH Asphalt
-                    CONC Concrete
-                    GRAS Grass
-                    GRVL Gravel
-                    ICE ICE
-                    SAND Sand
-                    SNOW Snow
-                    SOIL Soil
-                    UNKN Unknown
-                    WATE Water */
+            // Get surface type
+            subNode=node.getChildNode(TEXT("SFC"));
+            if(subNode.isEmpty() || (dataStr=subNode.getText(0))==nullptr || dataStr[0]=='\0') continue;
+            short style=2; // Default grass
+            LPCTSTR surface=nullptr;
+            switch(dataStr[0]) {
+            case 'A': // ASPH Asphalt
+                style=5;
+                surface=TEXT("asphalt");
+                break;
+            case 'C': // CONC Concrete
+                style=5;
+                surface=TEXT("concrete");
+                break;
+            case 'G': //GRAS Grass GRVL Gravel
+                if(_tcsicmp(dataStr,_T("GRAS"))==0) surface=TEXT("grass");
+                else if(_tcsicmp(dataStr,_T("GRVL"))==0) surface=TEXT("gravel");
+                else continue;
+                break;
+            case 'I': // ICE
+                comments<<"ice";
+                break;
+            case 'S': //SAND SNOW SOIL
+                if(_tcsicmp(dataStr,_T("SAND"))!=0) surface=TEXT("sand");
+                else if(_tcsicmp(dataStr,_T("SNOW"))==0) surface=TEXT("snow");
+                else if(_tcsicmp(dataStr,_T("SOIL"))==0) surface=TEXT("soil");
+                else continue;
+                break;
+            case 'U': //UNKN Unknown
+                surface=TEXT("unknown");
+                break;
+            case 'W': //WATE Water
+                surface=TEXT("water");
+                break;
+            default:
+                continue;
+            }
+            if(surface==nullptr) continue;
 
-                    if(!subNode.isEmpty() && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
-                        if((dataStr[0]=='A' || dataStr[0]=='C') && (_tcsicmp(dataStr,_T("ASPH"))==0 || _tcsicmp(dataStr,_T("CONC"))==0)) style=5;
-                        else style=2;
-                    }
-                }
+            // Runway length
+            XMLNode subNode=node.getChildNode(TEXT("LENGTH"));
+            if(subNode.isEmpty() || (dataStr=subNode.getAttribute(TEXT("UNIT")))==nullptr || dataStr[0]!='M' || (dataStr=subNode.getText(0))==nullptr || dataStr[0]=='\0') continue;
+            double length=_tcstod(dataStr,nullptr);
 
-                // Runway length
-                XMLNode subNode=node.getChildNode(TEXT("LENGTH"));
-                if(!subNode.isEmpty() && (dataStr=subNode.getAttribute(TEXT("UNIT")))!=nullptr && dataStr[0]=='M') {
-                    if((dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') length=_tcstod(dataStr,nullptr);
-                }
+            // Runway direction
+            subNode=node.getChildNode(TEXT("DIRECTION"),0);
+            if(subNode.isEmpty() || (dataStr=subNode.getAttribute(TEXT("TC")))==nullptr || dataStr[0]=='\0') continue;
+            double dir=_tcstod(dataStr,nullptr);
 
-                // Runway direction
-                subNode=node.getChildNode(TEXT("DIRECTION"),0);
-                if(!subNode.isEmpty() && (dataStr=subNode.getAttribute(TEXT("TC")))!=nullptr && dataStr[0]!='\0') dir=_tcstod(dataStr,nullptr);
+            // Add runway to comments
+            comments<<name<<" "<<surface<<" "<<length<<"m "<<dir<<gettext(_T("_@M2179_"))<<std::endl;
 
-                // Check if we found the longest one
-                if(length>maxlength) {
-                    maxlength=length;
-                    maxdir=dir;
-                    maxstyle=style;
-                }
-            } // if active runway
+            // Check if we found the longest one
+            if(length>maxlength) {
+                maxlength=length;
+                maxdir=dir;
+                maxstyle=style;
+            }
         } // for each runway
 
         if(maxlength>0) {
             new_waypoint.RunwayLen=maxlength;
             new_waypoint.RunwayDir=maxdir;
-            if(maxstyle!=-1) new_waypoint.Style=maxstyle;
+            if(new_waypoint.Style!=4) new_waypoint.Style=maxstyle; //if is not already a gliding site we just check if is "solid" surface or not...
+        }
+
+        // Add the comments
+        std::basic_string<TCHAR> str(comments.str());
+        new_waypoint.Comment = new TCHAR[str.length()+1];
+        if (new_waypoint.Comment != nullptr) {
+            std::copy(str.begin(),str.end(),new_waypoint.Comment);
+            new_waypoint.Comment[str.length()]='\0';
         }
 
         // Add the new waypoint
-        if (WaypointInTerrainRange(&new_waypoint)) {
-            if(!AddWaypoint(new_waypoint)) {
-                return false; // failed to allocate
-            }
-        }
-
-
+        if (WaypointInTerrainRange(&new_waypoint))
+            if(!AddWaypoint(new_waypoint)) return false; // failed to allocate
     }
     return true;
 }
@@ -341,6 +334,26 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
 bool ParseNavAids(ZZIP_FILE *fp, XMLNode &navAidsNode)
 {
     //TODO:....
+
+    /*
+    1 - Normal
+    2 - AirfieldGrass
+    3 - Outlanding
+    4 - GliderSite
+    5 - AirfieldSolid
+    6 - MtPass
+    7 - MtTop
+    8 - Sender
+    9 - Vor
+    10 - Ndb
+    11 - CoolTower
+    12 - Dam
+    13 - Tunnel
+    14 - Bridge
+    15 - PowerPlant
+    16 - Castle
+    17 - Intersection*/
+
     return false;
 }
 
