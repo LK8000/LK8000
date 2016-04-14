@@ -13,6 +13,7 @@
 #include "utils/stringext.h"
 #include "xmlParser.h"
 #include <sstream>
+#include "LKStyle.h"
 
 extern int globalFileNum;
 
@@ -120,15 +121,9 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
         new_waypoint.Format = LKW_CUP;
         new_waypoint.Number = WayPointList.size();
         new_waypoint.FileNum = globalFileNum;
-        new_waypoint.Style = 5; // default style: solid
+        new_waypoint.Style = STYLE_AIRFIELDSOLID; // default style: solid
         new_waypoint.Flags = AIRPORT + LANDPOINT;
 
-        /* CUP: types
-        1 - Normal
-        2 - AirfieldGrass
-        3 - Outlanding
-        4 - GliderSite
-        5 - AirfieldSolid*/
         std::basic_stringstream<TCHAR> comments;
 
         switch(dataStr[0]) {
@@ -138,21 +133,21 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
             else if(_tcsicmp(dataStr,_T("APT"))==0)             comments<<"Airport resp. Airfield IFR"<<std::endl;
             else if(_tcsicmp(dataStr,_T("AD_CLOSED"))==0)       comments<<"CLOSED Airport"<<std::endl;
             else if(_tcsicmp(dataStr,_T("AD_MIL"))==0)          comments<<"Military Airport"<<std::endl;
-            else if(_tcsicmp(dataStr,_T("AF_WATER"))==0)        { new_waypoint.Style=2; comments<<"Waterfield"<<std::endl; }
+            else if(_tcsicmp(dataStr,_T("AF_WATER"))==0)        { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Waterfield"<<std::endl; }
             break;
         case 'G':
-            if(_tcsicmp(dataStr,_T("GLIDING"))==0)              { new_waypoint.Style=4; comments<<"Glider site"<<std::endl; }
+            if(_tcsicmp(dataStr,_T("GLIDING"))==0)              { new_waypoint.Style=STYLE_GLIDERSITE; comments<<"Glider site"<<std::endl; }
             break;
         case 'H':
             continue; // For now skip heliports
-            //if (_tcsicmp(dataStr,_T("HELI_CIVIL"))==0) { new_waypoint.Style=5; }
-            //else if(_tcsicmp(dataStr,_T("HELI_MIL"))==0) { new_waypoint.Style=5; }
+            //if (_tcsicmp(dataStr,_T("HELI_CIVIL"))==0) { new_waypoint.Style=STYLE_AIRFIELDSOLID; }
+            //else if(_tcsicmp(dataStr,_T("HELI_MIL"))==0) { new_waypoint.Style=STYLE_AIRFIELDSOLID; }
             //break;
         case 'I':
             if(_tcsicmp(dataStr,_T("INTL_APT"))==0)             comments<<"International Airport"<<std::endl;
             break;
         case 'L':
-            if(_tcsicmp(dataStr,_T("LIGHT_AIRCRAFT"))==0)       { new_waypoint.Style=2; comments<<"Ultralight site"<<std::endl; }
+            if(_tcsicmp(dataStr,_T("LIGHT_AIRCRAFT"))==0)       { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Ultralight site"<<std::endl; }
             break;
         }
 
@@ -232,10 +227,9 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
             }
         }
 
-        //Runways: take the longest one
-        double maxlength=0;
-        short maxstyle=-1;
-        double maxdir=-1;
+        // Runways: take the longest one
+        double maxlength=0, maxdir=0;
+        short maxstyle=STYLE_AIRFIELDGRASS;
 
         // For each runway...
         numOfNodes=AirportNode.nChildNode(TEXT("RWY"));
@@ -253,15 +247,15 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
             // Get surface type
             subNode=node.getChildNode(TEXT("SFC"));
             if(subNode.isEmpty() || (dataStr=subNode.getText(0))==nullptr || dataStr[0]=='\0') continue;
-            short style=2; // Default grass
+            short style=STYLE_AIRFIELDGRASS; // Default grass
             LPCTSTR surface=nullptr;
             switch(dataStr[0]) {
             case 'A': // ASPH Asphalt
-                style=5;
+                style=STYLE_AIRFIELDSOLID;
                 surface=TEXT("asphalt");
                 break;
             case 'C': // CONC Concrete
-                style=5;
+                style=STYLE_AIRFIELDSOLID;
                 surface=TEXT("concrete");
                 break;
             case 'G': //GRAS Grass GRVL Gravel
@@ -313,7 +307,7 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
         if(maxlength>0) {
             new_waypoint.RunwayLen=maxlength;
             new_waypoint.RunwayDir=maxdir;
-            if(new_waypoint.Style!=4) new_waypoint.Style=maxstyle; //if is not already a gliding site we just check if is "solid" surface or not...
+            if(new_waypoint.Style!=STYLE_GLIDERSITE) new_waypoint.Style=maxstyle; //if is not already a gliding site we just check if is "solid" surface or not...
         }
 
         // Add the comments
@@ -333,33 +327,36 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
 
 bool ParseNavAids(ZZIP_FILE *fp, XMLNode &navAidsNode)
 {
-    //TODO:....
+    //TODO:
 
     /*
-    1 - Normal
-    2 - AirfieldGrass
-    3 - Outlanding
-    4 - GliderSite
-    5 - AirfieldSolid
-    6 - MtPass
-    7 - MtTop
-    8 - Sender
-    9 - Vor
-    10 - Ndb
-    11 - CoolTower
-    12 - Dam
-    13 - Tunnel
-    14 - Bridge
-    15 - PowerPlant
-    16 - Castle
-    17 - Intersection*/
+    #define STYLE_NORMAL      1
+    #define STYLE_AIRFIELDGRASS 2
+    #define STYLE_OUTLANDING    3
+    #define STYLE_GLIDERSITE    4
+    #define STYLE_AIRFIELDSOLID 5
+    #define STYLE_MTPASS        6
+    #define STYLE_MTTOP     7
+    #define STYLE_SENDER        8
+    #define STYLE_VOR       9
+    #define STYLE_NDB       10
+    #define STYLE_COOLTOWER     11
+    #define STYLE_DAM       12
+    #define STYLE_TUNNEL        13
+    #define STYLE_BRIDGE        14
+    #define STYLE_POWERPLANT    15
+    #define STYLE_CASTLE        16
+    #define STYLE_INTERSECTION  17
+    */
 
+    StartupStore(TEXT(".. OpenAIP NavAids not yet supported in LK8000.%s"), NEWLINE);
     return false;
 }
 
 bool ParseHotSpots(ZZIP_FILE *fp, XMLNode &hotSpotsNode)
 {
     //TODO:...
+    StartupStore(TEXT(".. OpenAIP HotSpots not yet supported in LK8000.%s"), NEWLINE);
     return false;
 }
 

@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-
+#include "LKStyle.h"
 
 
 extern int globalFileNum;
@@ -189,13 +189,13 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   
   Temp->Style = (int)_tcstol(pToken,NULL,10);
   switch(Temp->Style) {
-	case 2:				// airfield grass
-	case 4:				// glider site
-	case 5:				// airfield solid
+	case STYLE_AIRFIELDGRASS:	// airfield grass
+	case STYLE_GLIDERSITE:		// glider site
+	case STYLE_AIRFIELDSOLID:	// airfield solid
 		flags = AIRPORT;
 		flags += LANDPOINT;
 		break;
-	case 3:				// outlanding
+	case STYLE_OUTLANDING:		// outlanding
 		flags = LANDPOINT;
 		break;
 	default:
