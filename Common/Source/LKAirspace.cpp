@@ -23,6 +23,8 @@
 #include "utils/openzip.h"
 #include "Draw/ScreenProjection.h"
 
+#define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
+
 #if TESTBENCH
 //#define DEBUG_NEAR_POINTS	1
 #define DEBUG_AIRSPACE
@@ -1520,11 +1522,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     double CenterY = 0;
     double lat = 0, lon = 0;
     bool flyzone = false;
-
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
 
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
-#define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
     charset cs = charset::unknown;
     while (ReadString(fp, READLINE_LENGTH, Text, cs)) {
         ++linecount;
@@ -2072,7 +2072,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         CorrectGeoPoints(points);
 
         // Skip it if we don't have minimum 3 points
-        if (points.size() < 4) { // 4 because first and last are the same to close the polygon
+        if (points.size() < MIN_AS_SIZE+1) { // +1 because first and last are the same to close the polygon
             StartupStore(TEXT(".. Skipping ASP with POLYGON with less than 3 points.%s"), NEWLINE);
             continue;
         }
