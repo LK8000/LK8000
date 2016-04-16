@@ -123,7 +123,7 @@ bool ParseAirports(XMLNode &airportsNode)
         new_waypoint.Comment = nullptr;
         new_waypoint.Visible = true; // default all waypoints visible at start
         new_waypoint.FarVisible = true;
-        new_waypoint.Format = LKW_CUP;
+        new_waypoint.Format = LKW_OPENAIP;
         new_waypoint.Number = WayPointList.size();
         new_waypoint.FileNum = globalFileNum;
         new_waypoint.Style = STYLE_AIRFIELDSOLID; // default style: solid
@@ -154,6 +154,8 @@ bool ParseAirports(XMLNode &airportsNode)
         case 'L':
             if(_tcsicmp(dataStr,_T("LIGHT_AIRCRAFT"))==0)       { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Ultralight site"<<std::endl; }
             break;
+        default:
+            continue;
         }
         // Skip unknown waypoints
         if(new_waypoint.Style==-1) continue;
@@ -183,8 +185,8 @@ bool ParseAirports(XMLNode &airportsNode)
         int numOfNodes=AirportNode.nChildNode(TEXT("RADIO"));
         XMLNode node, subNode;
         bool found=false, toWrite(numOfNodes==1);
-        for(int i=0;i<numOfNodes;i++) {
-            node=AirportNode.getChildNode(TEXT("RADIO"),i);
+        for(int j=0;j<numOfNodes;j++) {
+            node=AirportNode.getChildNode(TEXT("RADIO"),j);
             LPCTSTR type=nullptr;
             if(GetAttribute(node,TEXT("CATEGORY"),dataStr) && GetContent(node,TEXT("TYPE"),type)) {
                 LPCTSTR freq=nullptr;
@@ -208,7 +210,7 @@ bool ParseAirports(XMLNode &airportsNode)
                 }
                 if(toWrite) {
                     LK_tcsncpy(new_waypoint.Freq, freq, CUPSIZE_FREQ);
-                    if (_tcslen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
+                    if (_tcslen(freq)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
                     toWrite=false;
                     found=true;
                 }
@@ -221,8 +223,8 @@ bool ParseAirports(XMLNode &airportsNode)
 
         // For each runway...
         numOfNodes=AirportNode.nChildNode(TEXT("RWY"));
-        for(int i=0;i<numOfNodes;i++) {
-            node=AirportNode.getChildNode(TEXT("RWY"),i);
+        for(int k=0;k<numOfNodes;k++) {
+            node=AirportNode.getChildNode(TEXT("RWY"),k);
 
             // Consider only active runways
             if(!GetAttribute(node,TEXT("OPERATIONS"),dataStr) || _tcsicmp(dataStr,_T("ACTIVE"))!=0) continue;
@@ -299,8 +301,123 @@ bool ParseAirports(XMLNode &airportsNode)
 
 bool ParseNavAids(XMLNode &navAidsNode)
 {
-    //TODO:
 
+
+
+    int numOfNavAids=navAidsNode.nChildNode(TEXT("NAVAID")); //count number of navaids in the file
+    if(numOfNavAids<1) {
+        StartupStore(TEXT(".. Expected to find at least one NAVAID tag inside NAVAIDS tag.%s"), NEWLINE);
+        return false;
+    }
+    if(numOfNavAids!=navAidsNode.nChildNode()) {
+        StartupStore(TEXT(".. Expected to find only NAVAID tags inside NAVAIDS tag.%s"), NEWLINE);
+        return false;
+    } else StartupStore(TEXT(".. OpenAIP nav aids file contains: %u nav aidss.%s"), (unsigned)numOfNavAids, NEWLINE);
+
+    XMLNode NavAidNode;
+    LPCTSTR dataStr=nullptr;
+    for(int i=0;i<numOfNavAids;i++) {
+        NavAidNode=navAidsNode.getChildNode(i);
+
+        // Skip not valid NAVAID tags and TYPE attributes
+        if(!GetAttribute(NavAidNode,TEXT("TYPE"),dataStr)) continue;
+
+        // Prepare the new waypoint
+        WAYPOINT new_waypoint;
+        new_waypoint.Details = nullptr;
+        new_waypoint.Comment = nullptr;
+        new_waypoint.Visible = true; // default all waypoints visible at start
+        new_waypoint.FarVisible = true;
+        new_waypoint.Format = LKW_OPENAIP;
+        new_waypoint.Number = WayPointList.size();
+        new_waypoint.FileNum = globalFileNum;
+        new_waypoint.Style = STYLE_NORMAL; // default style: normal
+
+        std::basic_stringstream<TCHAR> comments;
+
+        switch(dataStr[0]) {
+        case 'D': //STYLE_VOR //
+            if(_tcsicmp(dataStr,_T("DME"))==0 || _tcsicmp(dataStr,_T("DVOR"))==0 || _tcsicmp(dataStr,_T("DVOR-DME"))==0 || _tcsicmp(dataStr,_T("DVORTAC"))==0) new_waypoint.Style=STYLE_VOR;
+            break;
+        case 'N':
+            if(_tcsicmp(dataStr,_T("NDB"))==0) new_waypoint.Style=STYLE_NDB;
+            break;
+        case 'V':
+            if(_tcsicmp(dataStr,_T("VOR"))==0 || _tcsicmp(dataStr,_T("VOR-DME"))==0 || _tcsicmp(dataStr,_T("VORTAC"))==0) new_waypoint.Style=STYLE_VOR;
+            break;
+        case 'T':
+            if(_tcsicmp(dataStr,_T("TACAN"))==0) new_waypoint.Style=STYLE_VOR;
+            break;
+        default:
+            continue;
+        }
+        // Skip unknown waypoints
+        if(new_waypoint.Style==STYLE_NORMAL) continue;
+
+        // Write down in the comments what it is
+        comments<<dataStr<<std::endl;
+
+        // Country
+        if(GetContent(NavAidNode, TEXT("COUNTRY"), dataStr)) {
+            LK_tcsncpy(new_waypoint.Country, dataStr, CUPSIZE_COUNTRY);
+            if (_tcslen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
+        }
+
+        // Name
+        if(GetContent(NavAidNode, TEXT("NAME"), dataStr)) {
+            LK_tcsncpy(new_waypoint.Name, dataStr, NAME_SIZE);
+            if (_tcslen(dataStr)>NAME_SIZE) new_waypoint.Name[NAME_SIZE]= _T('\0');
+        } else continue;
+
+        // Navigational aid ID
+        if(GetContent(NavAidNode, TEXT("ID"), dataStr)) {
+            LK_tcsncpy(new_waypoint.Code, dataStr, CUPSIZE_CODE);
+            if(_tcslen(dataStr)>CUPSIZE_CODE) new_waypoint.Code[CUPSIZE_CODE]=_T('\0');
+        }
+
+        // Geolocation
+        if(!GetGeolocation(NavAidNode, new_waypoint.Latitude, new_waypoint.Longitude, new_waypoint.Altitude)) continue;
+
+        //Radio frequency
+        XMLNode node=NavAidNode.getChildNode(TEXT("RADIO"));
+        if(node.isEmpty()) continue;
+        if(!GetContent(node, TEXT("FREQUENCY"), dataStr)) continue;
+        comments<<"Frequency: "<<dataStr<<" MHz";
+        LK_tcsncpy(new_waypoint.Freq, dataStr, CUPSIZE_FREQ);
+        if (_tcslen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
+        if(GetContent(node, TEXT("CHANNEL"), dataStr)) comments<<" Channel: "<<dataStr;
+        comments<<std::endl;
+
+        // Parameters
+        node=NavAidNode.getChildNode(TEXT("PARAMS"));
+        if(node.isEmpty()) continue;
+        double value=0;
+        if(GetValue(node,TEXT("RANGE"),value)) comments<<"Range: "<<value<<" NM ";
+        if(GetValue(node,TEXT("DECLINATION"),value)) comments<<"Declination: "<<value<<gettext(_T("_@M2179_"));
+        if(GetContent(node,TEXT("ALIGNEDTOTRUENORTH"),dataStr)) {
+            if(_tcsicmp(dataStr,_T("TRUE"))==0) comments<<" True north";
+            else if(_tcsicmp(dataStr,_T("TRUE"))==0) comments<<" Magnetic north";
+        }
+
+        // Add the comments
+        std::basic_string<TCHAR> str(comments.str());
+        new_waypoint.Comment = new TCHAR[str.length()+1];
+        if (new_waypoint.Comment != nullptr) {
+            std::copy(str.begin(),str.end(),new_waypoint.Comment);
+            new_waypoint.Comment[str.length()]='\0';
+        }
+
+        // Add the new waypoint
+        if (WaypointInTerrainRange(&new_waypoint))
+            if(!AddWaypoint(new_waypoint)) return false; // failed to allocate
+
+    } // end of for each nav aid
+
+    return false;
+}
+
+bool ParseHotSpots(XMLNode &hotSpotsNode) {
+    //TODO:...
     /*
     #define STYLE_NORMAL      1
     #define STYLE_AIRFIELDGRASS 2
@@ -320,13 +437,6 @@ bool ParseNavAids(XMLNode &navAidsNode)
     #define STYLE_CASTLE        16
     #define STYLE_INTERSECTION  17
     */
-
-    StartupStore(TEXT(".. OpenAIP NavAids not yet supported in LK8000.%s"), NEWLINE);
-    return false;
-}
-
-bool ParseHotSpots(XMLNode &hotSpotsNode) {
-    //TODO:...
     StartupStore(TEXT(".. OpenAIP HotSpots not yet supported in LK8000.%s"), NEWLINE);
     return false;
 }
