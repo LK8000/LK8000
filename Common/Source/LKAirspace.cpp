@@ -1595,7 +1595,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         // New AC
                         p++; //Skip space
                         Type = OTHER;
-                        for (int i = k_nAreaCount-1; i >=0 ; --i) {
+                        for (int i = k_nAreaCount-1; i >=0 ; i--) {
                             if (StartsWith(p, k_strAreaStart[i])) {
                                 Type = k_nAreaType[i];
                                 break;
