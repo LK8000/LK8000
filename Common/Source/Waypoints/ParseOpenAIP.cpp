@@ -17,9 +17,14 @@
 
 extern int globalFileNum;
 
-bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode);
-bool ParseNavAids(ZZIP_FILE *fp, XMLNode &navAidsNode);
-bool ParseHotSpots(ZZIP_FILE *fp, XMLNode &hotSpotsNode);
+bool ParseAirports(XMLNode &airportsNode);
+bool ParseNavAids(XMLNode &navAidsNode);
+bool ParseHotSpots(XMLNode &hotSpotsNode);
+bool GetGeolocation(XMLNode &parentNode, double &lat, double &lon, double &alt);
+bool GetContent(XMLNode &parentNode, LPCTSTR tagName, LPCTSTR &outputString);
+bool GetAttribute(XMLNode &node, LPCTSTR attributeName, LPCTSTR &outputString);
+bool GetValue(XMLNode &parentNode, LPCTSTR tagName, double &value);
+bool GetMeasurement(XMLNode &parentNode, LPCTSTR tagName, char expectedUnit, double &value);
 
 bool ParseOpenAIP(ZZIP_FILE *fp)
 {
@@ -71,28 +76,28 @@ bool ParseOpenAIP(ZZIP_FILE *fp)
     XMLNode node=rootNode.getChildNode(TEXT("WAYPOINTS"));
     if(!node.isEmpty()) {
         StartupStore(TEXT(".. Found airports waypoints.%s"), NEWLINE);
-        wptFound=ParseAirports(fp,node);
+        wptFound=ParseAirports(node);
     }
 
     // Look for the 'root' of navigation aids: NAVAIDS tag
     node=rootNode.getChildNode(TEXT("NAVAIDS"));
     if(!node.isEmpty()) {
         StartupStore(TEXT(".. Found navigation aids waypoints.%s"), NEWLINE);
-        wptFound=wptFound || ParseNavAids(fp,node);
+        wptFound=wptFound || ParseNavAids(node);
     }
 
     // Look for the 'root' of hot spots: HOTSPOTS tag
     node=rootNode.getChildNode(TEXT("HOTSPOTS"));
     if(!node.isEmpty()) {
         StartupStore(TEXT(".. Found hot spots waypoints.%s"), NEWLINE);
-        wptFound=wptFound || ParseHotSpots(fp,node);
+        wptFound=wptFound || ParseHotSpots(node);
     }
 
     if(!wptFound) StartupStore(TEXT(".. Waypoints of any kind not found in this OpenAIP file.%s"), NEWLINE);
     return wptFound;
 }
 
-bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
+bool ParseAirports(XMLNode &airportsNode)
 {
     int numOfAirports=airportsNode.nChildNode(TEXT("AIRPORT")); //count number of airports in the file
     if(numOfAirports<1) {
@@ -110,7 +115,7 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
         AirportNode=airportsNode.getChildNode(i);
 
         // Skip not valid AIRPORT tags and TYPE attributes
-        if(AirportNode.isEmpty() || (dataStr=AirportNode.getAttribute(TEXT("TYPE")))==nullptr || dataStr[0]=='\0') continue;
+        if(!GetAttribute(AirportNode,TEXT("TYPE"),dataStr)) continue;
 
         // Prepare the new waypoint
         WAYPOINT new_waypoint;
@@ -150,57 +155,40 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
             if(_tcsicmp(dataStr,_T("LIGHT_AIRCRAFT"))==0)       { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Ultralight site"<<std::endl; }
             break;
         }
-
         // Skip unknown waypoints
         if(new_waypoint.Style==-1) continue;
 
-        XMLNode node=AirportNode.getChildNode(TEXT("COUNTRY"));
-        if(!node.isEmpty() && (dataStr=node.getText(0))!=nullptr && dataStr[0]!='\0') {
+        // Country
+        if(GetContent(AirportNode, TEXT("COUNTRY"), dataStr)) {
             LK_tcsncpy(new_waypoint.Country, dataStr, CUPSIZE_COUNTRY);
             if (_tcslen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
         }
 
-        node=AirportNode.getChildNode(TEXT("NAME"));
-        if(!node.isEmpty() && (dataStr=node.getText(0))!=nullptr && dataStr[0]!='\0') {
+        // Name
+        if(GetContent(AirportNode, TEXT("NAME"), dataStr)) {
             LK_tcsncpy(new_waypoint.Name, dataStr, NAME_SIZE);
             if (_tcslen(dataStr)>NAME_SIZE) new_waypoint.Name[NAME_SIZE]= _T('\0');
         } else continue;
 
-        node=AirportNode.getChildNode(TEXT("ICAO"));
-        if(!node.isEmpty() && (dataStr=node.getText(0))!=nullptr && dataStr[0]!='\0') {
+        // ICAO code
+        if(GetContent(AirportNode, TEXT("ICAO"), dataStr)) {
             LK_tcsncpy(new_waypoint.Code, dataStr, CUPSIZE_CODE);
             if(_tcslen(dataStr)>CUPSIZE_CODE) new_waypoint.Code[CUPSIZE_CODE]=_T('\0');
         }
 
-        node=AirportNode.getChildNode(TEXT("GEOLOCATION"));
-        XMLNode subNode;
-        if(!node.isEmpty()) {
-            subNode=node.getChildNode(TEXT("LAT"));
-            if(!subNode.isEmpty() && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
-                new_waypoint.Latitude=_tcstod(dataStr,nullptr);
-                if (new_waypoint.Latitude<-90 || new_waypoint.Latitude>90) continue;
-            } else continue;
-            subNode=node.getChildNode(TEXT("LON"));
-            if(!subNode.isEmpty() && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
-                new_waypoint.Longitude=_tcstod(dataStr,nullptr);
-                if (new_waypoint.Longitude<-180 || new_waypoint.Longitude>180) continue;
-            } else continue;
-            subNode=node.getChildNode(TEXT("ELEV"));
-            if(!subNode.isEmpty() && (dataStr=subNode.getAttribute(TEXT("UNIT")))!=nullptr && _tcslen(dataStr)==1 && dataStr[0]=='M' && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0')
-                new_waypoint.Altitude=_tcstod(dataStr,nullptr);
-            else continue;
-        } else continue;
+        // Geolocation
+        if(!GetGeolocation(AirportNode, new_waypoint.Latitude, new_waypoint.Longitude, new_waypoint.Altitude)) continue;
 
         //Radio frequencies: if more than one just take the first "communication"
         int numOfNodes=AirportNode.nChildNode(TEXT("RADIO"));
+        XMLNode node, subNode;
         bool found=false, toWrite(numOfNodes==1);
         for(int i=0;i<numOfNodes;i++) {
             node=AirportNode.getChildNode(TEXT("RADIO"),i);
             LPCTSTR type=nullptr;
-            if(!node.isEmpty() && (dataStr=node.getAttribute(TEXT("CATEGORY")))!=nullptr && !(subNode=node.getChildNode(TEXT("TYPE"))).isEmpty() && (type=subNode.getText(0))!=nullptr && type[0]!='\0') {
-                subNode=node.getChildNode(TEXT("FREQUENCY"));
+            if(GetAttribute(node,TEXT("CATEGORY"),dataStr) && GetContent(node,TEXT("TYPE"),type)) {
                 LPCTSTR freq=nullptr;
-                if(subNode.isEmpty() || (freq=subNode.getText(0))==nullptr || freq[0]=='\0') continue;
+                if(!GetContent(node, TEXT("FREQUENCY"), freq)) continue;
                 switch(dataStr[0]) {
                 case 'C': //COMMUNICATION Frequency used for communication
                     comments<<"Comm "<<type<<": "<<freq<<" MHz "<<std::endl;
@@ -237,60 +225,44 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
             node=AirportNode.getChildNode(TEXT("RWY"),i);
 
             // Consider only active runways
-            if(node.isEmpty() || (dataStr=node.getAttribute(TEXT("OPERATIONS")))==nullptr || dataStr[0]=='\0' || _tcsicmp(dataStr,_T("ACTIVE"))!=0) continue;
+            if(!GetAttribute(node,TEXT("OPERATIONS"),dataStr) || _tcsicmp(dataStr,_T("ACTIVE"))!=0) continue;
 
             // Get runway name
-            subNode=node.getChildNode(TEXT("NAME"));
-            if(subNode.isEmpty() || (dataStr=subNode.getText(0))==nullptr || dataStr[0]=='\0') continue;
-            LPCTSTR name=dataStr;
+            LPCTSTR name=nullptr;
+            if(!GetContent(node, TEXT("NAME"), name)) continue;
 
             // Get surface type
-            subNode=node.getChildNode(TEXT("SFC"));
-            if(subNode.isEmpty() || (dataStr=subNode.getText(0))==nullptr || dataStr[0]=='\0') continue;
-            short style=STYLE_AIRFIELDGRASS; // Default grass
             LPCTSTR surface=nullptr;
-            switch(dataStr[0]) {
+            if(!GetContent(node, TEXT("SFC"), surface)) continue;
+            short style=surface[0]=='A' || surface[0]=='C' ? STYLE_AIRFIELDSOLID : STYLE_AIRFIELDGRASS; // Default grass
+            /*switch(surface[0]) {
             case 'A': // ASPH Asphalt
                 style=STYLE_AIRFIELDSOLID;
-                surface=TEXT("asphalt");
                 break;
             case 'C': // CONC Concrete
                 style=STYLE_AIRFIELDSOLID;
-                surface=TEXT("concrete");
                 break;
             case 'G': //GRAS Grass GRVL Gravel
-                if(_tcsicmp(dataStr,_T("GRAS"))==0) surface=TEXT("grass");
-                else if(_tcsicmp(dataStr,_T("GRVL"))==0) surface=TEXT("gravel");
-                else continue;
                 break;
             case 'I': // ICE
-                comments<<"ice";
                 break;
             case 'S': //SAND SNOW SOIL
-                if(_tcsicmp(dataStr,_T("SAND"))!=0) surface=TEXT("sand");
-                else if(_tcsicmp(dataStr,_T("SNOW"))==0) surface=TEXT("snow");
-                else if(_tcsicmp(dataStr,_T("SOIL"))==0) surface=TEXT("soil");
-                else continue;
                 break;
             case 'U': //UNKN Unknown
-                surface=TEXT("unknown");
                 break;
             case 'W': //WATE Water
-                surface=TEXT("water");
                 break;
             default:
                 continue;
-            }
-            if(surface==nullptr) continue;
+            }*/
 
             // Runway length
-            XMLNode subNode=node.getChildNode(TEXT("LENGTH"));
-            if(subNode.isEmpty() || (dataStr=subNode.getAttribute(TEXT("UNIT")))==nullptr || dataStr[0]!='M' || (dataStr=subNode.getText(0))==nullptr || dataStr[0]=='\0') continue;
-            double length=_tcstod(dataStr,nullptr);
+            double length=0;
+            if(!GetMeasurement(node,TEXT("LENGTH"),'M',length)) continue;
 
             // Runway direction
             subNode=node.getChildNode(TEXT("DIRECTION"),0);
-            if(subNode.isEmpty() || (dataStr=subNode.getAttribute(TEXT("TC")))==nullptr || dataStr[0]=='\0') continue;
+            if(!GetAttribute(subNode,TEXT("TC"),dataStr)) continue;
             double dir=_tcstod(dataStr,nullptr);
 
             // Add runway to comments
@@ -325,7 +297,7 @@ bool ParseAirports(ZZIP_FILE *fp, XMLNode &airportsNode)
     return true;
 }
 
-bool ParseNavAids(ZZIP_FILE *fp, XMLNode &navAidsNode)
+bool ParseNavAids(XMLNode &navAidsNode)
 {
     //TODO:
 
@@ -353,10 +325,47 @@ bool ParseNavAids(ZZIP_FILE *fp, XMLNode &navAidsNode)
     return false;
 }
 
-bool ParseHotSpots(ZZIP_FILE *fp, XMLNode &hotSpotsNode)
-{
+bool ParseHotSpots(XMLNode &hotSpotsNode) {
     //TODO:...
     StartupStore(TEXT(".. OpenAIP HotSpots not yet supported in LK8000.%s"), NEWLINE);
     return false;
 }
 
+bool GetGeolocation(XMLNode &parentNode, double &lat, double &lon, double &alt) {
+    XMLNode node=parentNode.getChildNode(TEXT("GEOLOCATION"));
+    if(!node.isEmpty()) {
+        if(!GetValue(node,TEXT("LAT"),lat) || lat<-90  || lat>90 ) return false;
+        if(!GetValue(node,TEXT("LON"),lon) || lon<-180 || lon>180) return false;
+        if(!GetMeasurement(node,TEXT("ELEV"),'M',alt)) return false;
+        return true;
+    }
+    return false;
+}
+
+bool GetContent(XMLNode &parentNode, LPCTSTR tagName, LPCTSTR &outputString) {
+    XMLNode node=parentNode.getChildNode(tagName);
+    return (!node.isEmpty() && (outputString=node.getText(0))!=nullptr && outputString[0]!='\0');
+}
+
+bool GetAttribute(XMLNode &node, LPCTSTR attributeName, LPCTSTR &outputString) {
+    return (!node.isEmpty() && (outputString=node.getAttribute(attributeName))!=nullptr && outputString[0]!='\0');
+}
+
+bool GetValue(XMLNode &parentNode, LPCTSTR tagName, double &value) {
+    LPCTSTR dataStr=nullptr;
+    if(GetContent(parentNode, tagName, dataStr)) {
+        value=_tcstod(dataStr,nullptr);
+        return true;
+    }
+    return false;
+}
+
+bool GetMeasurement(XMLNode &parentNode, LPCTSTR tagName, char expectedUnit, double &value) {
+    XMLNode node=parentNode.getChildNode(tagName);
+    LPCTSTR dataStr = nullptr;
+    if(GetAttribute(node,TEXT("UNIT"),dataStr) && _tcslen(dataStr)==1 && dataStr[0]==expectedUnit && (dataStr=node.getText(0))!=nullptr && dataStr[0]!='\0') {
+        value = _tcstod(dataStr,nullptr);
+        return true;
+    }
+    return false;
+}
