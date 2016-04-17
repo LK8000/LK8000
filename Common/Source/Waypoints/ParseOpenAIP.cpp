@@ -430,19 +430,7 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
         // Skip not valid HOTSPOT tags and TYPE attributes
         if(!GetAttribute(HotSpotNode,TEXT("TYPE"),dataStr)) continue;
 
-        // Prepare the new waypoint
-        WAYPOINT new_waypoint;
-        new_waypoint.Details = nullptr;
-        new_waypoint.Comment = nullptr;
-        new_waypoint.Visible = true; // default all waypoints visible at start
-        new_waypoint.FarVisible = true;
-        new_waypoint.Format = LKW_OPENAIP;
-        new_waypoint.Number = WayPointList.size();
-        new_waypoint.FileNum = globalFileNum;
-        new_waypoint.Style = STYLE_THERMAL; // default style: thermal
-
-        std::basic_stringstream<TCHAR> comments;
-
+        // Thermal type
         switch(dataStr[0]) {
         case 'A':
             if(_tcsicmp(dataStr,_T("ARTIFICIAL"))!=0) continue;
@@ -454,8 +442,37 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
             continue;
         }
 
-        // Write down in the comments what it is
-        comments<<dataStr<<std::endl;
+        // Write type down in the comments
+        std::basic_stringstream<TCHAR> comments;
+        comments<<dataStr;
+
+        // Aircraftcategories: if glider ignore small thermals for paragliders
+        XMLNode node=HotSpotNode.getChildNode(TEXT("AIRCRAFTCATEGORIES"));
+        if(!node.isEmpty()) {
+            int numOfCategories=node.nChildNode(TEXT("AIRCRAFTCATEGORY"));
+            if(numOfCategories!=node.nChildNode()) continue;
+            bool gliders=false, hangGliders=false /*, paraGliders=false*/;
+            for(int j=0;j<numOfCategories;j++) {
+                XMLNode subNode=node.getChildNode(j);
+                if(!subNode.isEmpty()  && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
+                    if(_tcsicmp(dataStr,_T("GLIDER"))==0) gliders=true;
+                    else if(_tcsicmp(dataStr,_T("HANG_GLIDER"))==0) hangGliders=true;
+                    //else if(_tcsicmp(dataStr,_T("PARAGLIDER"))==0) paraGliders=true;
+                }
+            }
+            if((ISGLIDER || ISGAAIRCRAFT) && !gliders && !hangGliders) continue;
+        }
+
+        // Prepare the new waypoint
+        WAYPOINT new_waypoint;
+        new_waypoint.Details = nullptr;
+        new_waypoint.Comment = nullptr;
+        new_waypoint.Visible = true; // default all waypoints visible at start
+        new_waypoint.FarVisible = true;
+        new_waypoint.Format = LKW_OPENAIP;
+        new_waypoint.Number = WayPointList.size();
+        new_waypoint.FileNum = globalFileNum;
+        new_waypoint.Style = STYLE_THERMAL; // default style: thermal
 
         // Country
         if(GetContent(HotSpotNode, TEXT("COUNTRY"), dataStr)) {
@@ -477,7 +494,12 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
         if(!GetValue(HotSpotNode,TEXT("RELIABILITY"),reliability)) continue;
         comments<<" "<<reliability*100<<"% ";
 
-        //TODO: continue with other data...
+        // Occourrence
+        if(!GetContent(HotSpotNode,TEXT("OCCURRENCE"),dataStr)) continue;
+        comments<<dataStr<<std::endl;
+
+        // Comment
+        if(GetContent(HotSpotNode,TEXT("COMMENT"),dataStr)) comments<<dataStr;
 
         // Add the comments
         std::basic_string<TCHAR> str(comments.str());
