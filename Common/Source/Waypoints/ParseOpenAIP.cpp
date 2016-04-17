@@ -301,9 +301,6 @@ bool ParseAirports(XMLNode &airportsNode)
 
 bool ParseNavAids(XMLNode &navAidsNode)
 {
-
-
-
     int numOfNavAids=navAidsNode.nChildNode(TEXT("NAVAID")); //count number of navaids in the file
     if(numOfNavAids<1) {
         StartupStore(TEXT(".. Expected to find at least one NAVAID tag inside NAVAIDS tag.%s"), NEWLINE);
@@ -312,7 +309,7 @@ bool ParseNavAids(XMLNode &navAidsNode)
     if(numOfNavAids!=navAidsNode.nChildNode()) {
         StartupStore(TEXT(".. Expected to find only NAVAID tags inside NAVAIDS tag.%s"), NEWLINE);
         return false;
-    } else StartupStore(TEXT(".. OpenAIP nav aids file contains: %u nav aidss.%s"), (unsigned)numOfNavAids, NEWLINE);
+    } else StartupStore(TEXT(".. OpenAIP nav aids file contains: %u nav aids.%s"), (unsigned)numOfNavAids, NEWLINE);
 
     XMLNode NavAidNode;
     LPCTSTR dataStr=nullptr;
@@ -410,35 +407,91 @@ bool ParseNavAids(XMLNode &navAidsNode)
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint))
             if(!AddWaypoint(new_waypoint)) return false; // failed to allocate
-
     } // end of for each nav aid
-
-    return false;
+    return true;
 }
 
 bool ParseHotSpots(XMLNode &hotSpotsNode) {
-    //TODO:...
-    /*
-    #define STYLE_NORMAL      1
-    #define STYLE_AIRFIELDGRASS 2
-    #define STYLE_OUTLANDING    3
-    #define STYLE_GLIDERSITE    4
-    #define STYLE_AIRFIELDSOLID 5
-    #define STYLE_MTPASS        6
-    #define STYLE_MTTOP     7
-    #define STYLE_SENDER        8
-    #define STYLE_VOR       9
-    #define STYLE_NDB       10
-    #define STYLE_COOLTOWER     11
-    #define STYLE_DAM       12
-    #define STYLE_TUNNEL        13
-    #define STYLE_BRIDGE        14
-    #define STYLE_POWERPLANT    15
-    #define STYLE_CASTLE        16
-    #define STYLE_INTERSECTION  17
-    */
-    StartupStore(TEXT(".. OpenAIP HotSpots not yet supported in LK8000.%s"), NEWLINE);
-    return false;
+    int numOfHotSpots=hotSpotsNode.nChildNode(TEXT("HOTSPOT")); //count number of hotspots in the file
+    if(numOfHotSpots<1) {
+        StartupStore(TEXT(".. Expected to find at least one HOTSPOT tag inside HOTSPOTS tag.%s"), NEWLINE);
+        return false;
+    }
+    if(numOfHotSpots!=hotSpotsNode.nChildNode()) {
+        StartupStore(TEXT(".. Expected to find only HOTSPOT tags inside HOTSPOTS tag.%s"), NEWLINE);
+        return false;
+    } else StartupStore(TEXT(".. OpenAIP hot spots file contains: %u hot spots.%s"), (unsigned)numOfHotSpots, NEWLINE);
+
+    XMLNode HotSpotNode;
+    LPCTSTR dataStr=nullptr;
+    for(int i=0;i<numOfHotSpots;i++) {
+        HotSpotNode=hotSpotsNode.getChildNode(i);
+
+        // Skip not valid HOTSPOT tags and TYPE attributes
+        if(!GetAttribute(HotSpotNode,TEXT("TYPE"),dataStr)) continue;
+
+        // Prepare the new waypoint
+        WAYPOINT new_waypoint;
+        new_waypoint.Details = nullptr;
+        new_waypoint.Comment = nullptr;
+        new_waypoint.Visible = true; // default all waypoints visible at start
+        new_waypoint.FarVisible = true;
+        new_waypoint.Format = LKW_OPENAIP;
+        new_waypoint.Number = WayPointList.size();
+        new_waypoint.FileNum = globalFileNum;
+        new_waypoint.Style = STYLE_THERMAL; // default style: thermal
+
+        std::basic_stringstream<TCHAR> comments;
+
+        switch(dataStr[0]) {
+        case 'A':
+            if(_tcsicmp(dataStr,_T("ARTIFICIAL"))!=0) continue;
+            break;
+        case 'N':
+            if(_tcsicmp(dataStr,_T("NATURAL"))!=0) continue;
+            break;
+        default:
+            continue;
+        }
+
+        // Write down in the comments what it is
+        comments<<dataStr<<std::endl;
+
+        // Country
+        if(GetContent(HotSpotNode, TEXT("COUNTRY"), dataStr)) {
+            LK_tcsncpy(new_waypoint.Country, dataStr, CUPSIZE_COUNTRY);
+            if (_tcslen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
+        }
+
+        // Name
+        if(GetContent(HotSpotNode, TEXT("NAME"), dataStr)) {
+            LK_tcsncpy(new_waypoint.Name, dataStr, NAME_SIZE);
+            if (_tcslen(dataStr)>NAME_SIZE) new_waypoint.Name[NAME_SIZE]= _T('\0');
+        } else continue;
+
+        // Geolocation
+        if(!GetGeolocation(HotSpotNode, new_waypoint.Latitude, new_waypoint.Longitude, new_waypoint.Altitude)) continue;
+
+        // Reliability
+        double reliability=0;
+        if(!GetValue(HotSpotNode,TEXT("RELIABILITY"),reliability)) continue;
+        comments<<" "<<reliability*100<<"% ";
+
+        //TODO: continue with other data...
+
+        // Add the comments
+        std::basic_string<TCHAR> str(comments.str());
+        new_waypoint.Comment = new TCHAR[str.length()+1];
+        if (new_waypoint.Comment != nullptr) {
+            std::copy(str.begin(),str.end(),new_waypoint.Comment);
+            new_waypoint.Comment[str.length()]='\0';
+        }
+
+        // Add the new waypoint
+        if (WaypointInTerrainRange(&new_waypoint))
+            if(!AddWaypoint(new_waypoint)) return false; // failed to allocate
+    } // end of for each nav aid
+    return true;
 }
 
 bool GetGeolocation(XMLNode &parentNode, double &lat, double &lon, double &alt) {
