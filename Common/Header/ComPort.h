@@ -73,7 +73,7 @@ protected:
     void AddStatErrRx(unsigned dwBytes);
     void AddStatTx(unsigned dwBytes);
     void AddStatErrTx(unsigned dwBytes);
-    void AddStatErrors(unsigned dwBytes);
+
     void SetPortStatus(int Status);
 
     virtual unsigned RxThread() = 0;

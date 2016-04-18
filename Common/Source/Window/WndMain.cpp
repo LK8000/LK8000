@@ -195,8 +195,8 @@ void Shutdown(void) {
 
   for (i=0;i<NUMDEV;i++) {
 	if (ComPortStatus[i]!=0) {
-		StartupStore(_T(". ComPort %d: status=%d Rx=%ld Tx=%ld ErrRx=%ld + ErrTx=%ld (==%ld)%s"), i,
-		ComPortStatus[i], ComPortRx[i],ComPortTx[i], ComPortErrRx[i],ComPortErrTx[i],ComPortErrors[i],NEWLINE);
+		StartupStore(_T(". ComPort %d: status=%d Rx=%ld Tx=%ld ErrRx=%ld + ErrTx=%ld" NEWLINE), i,
+		ComPortStatus[i], ComPortRx[i],ComPortTx[i], ComPortErrRx[i],ComPortErrTx[i]);
 	}
   }
   StartupStore(_T(". Finished shutdown %s%s"), WhatTimeIsIt(),NEWLINE);

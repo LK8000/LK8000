@@ -245,7 +245,6 @@ bool TTYPort::Write(const void *data, size_t length) {
 
     if (iResult == -1) {
         AddStatErrTx(1);
-        AddStatErrors(1);
         close(_tty);
         _tty = -1;
 

@@ -371,7 +371,6 @@ bool SerialPort::Write(const void *data, size_t length) {
     if (!WriteFile(hPort, data, length, &written, NULL) || written != length) {
         // WriteFile failed, report error
         AddStatErrTx(1);
-        AddStatErrors(1);
         return (false);
     }
 

@@ -187,12 +187,6 @@ void ComPort::AddStatErrTx(unsigned dwBytes) {
     }
 }
 
-void ComPort::AddStatErrors(unsigned dwBytes) {
-    if (GetPortIndex() < NUMDEV) {
-        ComPortErrors[GetPortIndex()] += dwBytes;
-    }
-}
-
 void ComPort::SetPortStatus(int nStatus) {
     if (GetPortIndex() < NUMDEV) {
         ComPortStatus[GetPortIndex()] = nStatus;

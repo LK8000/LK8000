@@ -152,7 +152,6 @@ bool SocketPort::Write(const void *data, size_t length) {
     
     if (iResult == SOCKET_ERROR) {
         AddStatErrTx(1);
-        AddStatErrors(1);
         StartupStore(_T("ComPort %u : socket was forcefully disconnected.%s"), (unsigned)GetPortIndex() + 1, NEWLINE);
         closesocket(mSocket);
         mSocket = INVALID_SOCKET;

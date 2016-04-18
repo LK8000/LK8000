@@ -352,7 +352,6 @@ BOOL devInit(LPCTSTR CommandLine) {
             ComPortTx[i] = 0;
             ComPortErrTx[i] = 0;
             ComPortErrRx[i] = 0;
-            ComPortErrors[i] = 0;
 
             doinit = false;
         }

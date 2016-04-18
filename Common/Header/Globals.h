@@ -478,7 +478,6 @@ GEXTERN long ComPortRx[NUMDEV+1];
 GEXTERN long ComPortErrRx[NUMDEV+1];
 GEXTERN long ComPortTx[NUMDEV+1];
 GEXTERN long ComPortErrTx[NUMDEV+1];
-GEXTERN long ComPortErrors[NUMDEV+1];
 // Com ports hearth beats, based on LKHearthBeats
 GEXTERN unsigned ComPortHB[NUMDEV+1];
 
