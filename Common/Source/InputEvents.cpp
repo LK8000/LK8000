@@ -2964,8 +2964,10 @@ void InputEvents::eventWifi(const TCHAR *misc) {
 #ifdef KOBO
       if(IsKoboWifiOn()) {
           KoboWifiOff();
+          DoStatusMessage(_T("Wifi OFF"));
       } else {
           KoboWifiOn();
+          DoStatusMessage(_T("Wifi ON"));
       }
 #endif
   }
