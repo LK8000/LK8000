@@ -101,7 +101,7 @@ int numlegs=0;
 
     for(int i= 0 ; i < min(numlegs,2); i++)
     {
-        #ifndef UNDITHER
+        #ifndef DITHER
             LKColor rgbCol = RGB_BLUE;
             switch(i)
             {

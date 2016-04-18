@@ -517,7 +517,7 @@ bool bInvCol =  INVERTCOLORS;
  *********************************************************************************/
 if(bInvCol)
 {
-#ifdef UNDITHER
+#ifdef DITHER
   rgbDrawColor = RGB_WHITENOREV;
   rgbGridColor = RGB_WHITENOREV;
 #else
@@ -532,7 +532,7 @@ if(bInvCol)
 }
 else
 {
-#ifdef UNDITHER
+#ifdef DITHER
   rgbDrawColor = RGB_BLACK;
   rgbGridColor = RGB_BLACK;
 #else
@@ -818,7 +818,7 @@ DiagrammStruct sDia;
    * draw sky
    *******************************************************/
 
-#ifndef UNDITHER
+#ifndef DITHER
    if(!bInvCol)
      RenderSky( Surface, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 #endif

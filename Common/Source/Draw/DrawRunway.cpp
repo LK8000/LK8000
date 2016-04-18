@@ -214,7 +214,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	};
 	if(!bOutland)
 	{
-            #ifndef UNDITHER
+            #ifndef DITHER
 	    if(solid)
 	  	  Surface.SelectObject(LKBrush_DarkGrey );
 	    else
@@ -280,7 +280,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
                                                 ? LK8PanelUnitFont
                                                 : LK8GenericVar02Font);
-        #ifndef UNDITHER
+        #ifndef DITHER
 	if (INVERTCOLORS)
 		Surface.SelectObject(LKBrush_Petrol);
 	else

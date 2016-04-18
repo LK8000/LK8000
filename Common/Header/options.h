@@ -48,16 +48,6 @@
 
 #endif
 
-//
-// Lite dithering: adjust lite color brushes to be white, etc. for better rendering on 
-// eink screens.
-//
-#ifdef DITHER
-#ifdef GREYSCALE
-#define UNDITHER 1
-#endif
-#endif
-
 #ifdef PNA
 #define NOLINETO
 #endif

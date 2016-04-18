@@ -351,7 +351,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   /********************************************************************
    * draw polygon
    ********************************************************************/
-  #ifndef UNDITHER
+  #ifndef DITHER
   LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), RGB_GREEN);
   #else
   LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), RGB_RED);
@@ -434,7 +434,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
-  #ifndef UNDITHER
+  #ifndef DITHER
   hpSectorPen.Create(PEN_SOLID, (1), RGB_GREY );
   #else
   hpSectorPen.Create(PEN_SOLID, (1), RGB_DARKGREY );
@@ -466,7 +466,7 @@ int iCnt = 0;
       _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
     bFirstUnit = false;
     Surface.GetTextSize(text, &tsize);
-    #ifndef UNDITHER
+    #ifndef DITHER
     Surface.SetTextColor(RGB_GREY);
     #else
     Surface.SetTextColor(RGB_DARKGREY);

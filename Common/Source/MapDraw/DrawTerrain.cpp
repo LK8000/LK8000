@@ -567,7 +567,7 @@ public:
                 uint8_t r, g, b;
                 // i=255 means TERRAIN_INVALID. Water is colored in Slope
                 if (i == 255) {
-                    #ifdef UNDITHER
+                    #ifdef DITHER
                     colorBuf[i + (mag + 64)*256] = BGRColor(255, 255, 255); // LCD green terrain invalid
                     #else
                     colorBuf[i + (mag + 64)*256] = BGRColor(194, 223, 197); // LCD green terrain invalid

@@ -34,7 +34,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 #endif
 
 
-#ifndef UNDITHER
+#ifndef DITHER
   if (MapSpaceMode==MSM_WELCOME) {
 	if (INVERTCOLORS)
 		hB=LKBrush_Petrol;

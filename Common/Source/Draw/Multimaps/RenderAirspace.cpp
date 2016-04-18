@@ -774,7 +774,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
 
         Surface.SelectObject(LK_BLACK_PEN);
-        #ifndef UNDITHER
+        #ifndef DITHER
         Surface.SelectObject(INVERTCOLORS?LKBrush_Petrol:LKBrush_LightCyan);
         #else
         Surface.SelectObject(INVERTCOLORS?LKBrush_Black:LKBrush_White);
@@ -814,7 +814,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         y -= (int) (1.3 * tsize.cy);
         // We don't know if there are obstacles for mc0
         Surface.SelectObject(LK_BLACK_PEN);
-        #ifndef UNDITHER
+        #ifndef DITHER
         Surface.SelectObject(LKBrush_Nlight);
         #else
         Surface.SelectObject(LKBrush_White);
@@ -862,7 +862,7 @@ _skip_mc0:
         if (ValidWayPoint(overindex) && WayPointList[overindex].Reachable) {
             Surface.SelectObject(LKBrush_LightGreen);
         } else {
-            #ifndef UNDITHER
+            #ifndef DITHER
             Surface.SelectObject(LKBrush_Orange);
             #else
             Surface.SelectObject(LKBrush_White);
@@ -875,7 +875,7 @@ _skip_mc0:
         if (wpt_altarriv == wpt_altarriv_mc0)
             y -= tsize.cy / 2;
 
-        #ifndef UNDITHER
+        #ifndef DITHER
         MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
         #else
         MapWindow::LKWriteBoxedText(Surface, rc, text, x, y, WTALIGN_LEFT, RGB_BLACK, RGB_RED);
@@ -960,7 +960,7 @@ _skip_mc0:
                 y += (int) (1.2 * tsize.cy);
 
             Surface.SelectObject(LK_BLACK_PEN);
-            #ifndef UNDITHER
+            #ifndef DITHER
             Surface.SelectObject(LKBrush_Nlight);
             #else
             Surface.SelectObject(LKBrush_White);
@@ -995,7 +995,7 @@ _after_additionals:
 
         // Print current AGL
         if (calc_altitudeagl - hmin > 0) {
-            #ifndef UNDITHER
+            #ifndef DITHER
             Surface.SetTextColor(LIGHTBLUE_COL);
             #else
             Surface.SetTextColor(RGB_BLACK);

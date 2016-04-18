@@ -116,7 +116,7 @@ void RenderPlaneSideview(LKSurface& Surface, double fDist, double fAltitude,doub
   PolygonRotateShift(AircraftWingL, 7,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftWingR, 7,   Start.x, Start.y,  0);
 
-  #ifndef UNDITHER
+  #ifndef DITHER
   LKBrush GreenBrush(RGB_GREEN);
   LKBrush RedBrush(RGB_RED);
   #else

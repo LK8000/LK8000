@@ -94,7 +94,7 @@ const bool terrain_minalt[NUMRAMPS] = {
 const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = { 
   {
 
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
     {250,         0xff, 0xff, 0xff},
 #else
@@ -116,7 +116,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
   },
   // LK Mountain 101016
   {
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
     {350,         0xff, 0xff, 0xff},
 #else
@@ -211,7 +211,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {2500,        255, 255, 255} 
   },
   { // LKoogle lowlands
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
     {250,         0xff, 0xff, 0xff},
 #else
@@ -231,7 +231,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {4000,        240, 240, 240},
   },
   { // LKoogle mountains
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
     {500,         0xff, 0xff, 0xff},
 #else
@@ -251,7 +251,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {7000,        240, 240, 240}
   },
   { // Low Alps
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
     {250,         0xff, 0xff, 0xff},
 #else
@@ -271,7 +271,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {4000,        240, 240, 240},
   },
   { // Alps
-#ifdef UNDITHER
+#ifdef DITHER
     {150,           0xff, 0xff, 0xff},
     {350,         0xff, 0xff, 0xff},
     {500,         0xff, 0xff, 0xff},
@@ -292,7 +292,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {4000,        255, 255, 255},
   },
   { // YouSee
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
 #else
     {0,         112,191,170},
@@ -328,7 +328,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
   } 
 */
   {
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
 #else
     {0,       235,255,235 },
@@ -348,7 +348,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
   },
 
   {	// Obstacles
-#ifdef UNDITHER
+#ifdef DITHER
     {0,       0xff, 0xff, 0xff},
 #else
     {0,       227,255,224 },
@@ -367,7 +367,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {3500,    100,0,0}
   },
   {  // LiteAlps
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
     {250,         0xff, 0xff, 0xff},
 #else
@@ -387,7 +387,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {6000,        0xef, 0xef, 0xff},
   },
   {  // Low Hills
-#ifdef UNDITHER
+#ifdef DITHER
     {0,           0xff, 0xff, 0xff},
     {50,         0xff, 0xff, 0xff},
 #else

@@ -722,7 +722,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     else {
         cursortbox = SortedMode[curmapspace];
         Surface.FillRect(&s_sortBox[cursortbox],
-#ifndef UNDITHER
+#ifndef DITHER
                 INVERTCOLORS ? LKBrush_LightGreen : LKBrush_DarkGreen);
 #else
                 INVERTCOLORS ? LKBrush_White : LKBrush_Black);
@@ -734,7 +734,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     Surface.SelectObject(LK8PanelMediumFont);
     _stprintf(Buffer, TEXT("%d.%d"), ModeIndex, CURTYPE + 1);
     LKWriteText(Surface, Buffer, rc.left + LEFTLIMITER, rc.top + TOPLIMITER, WTMODE_NORMAL, WTALIGN_LEFT,
-#ifndef UNDITHER
+#ifndef DITHER
             RGB_LIGHTGREEN, false);
 #else
             RGB_WHITE, false);
@@ -745,7 +745,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     Surface.SelectObject(LK8InfoNearestFont);
 
     _stprintf(Buffer, TEXT("%s %d/%d"), MsgToken(headertoken[0]), curpage + 1, Numpages);
-#ifndef UNDITHER
+#ifndef DITHER
     tmpcolor = cursortbox == 0 ? RGB_BLACK : RGB_LIGHTGREEN;
 #else
     tmpcolor = cursortbox == 0 ? RGB_BLACK : RGB_WHITE;
@@ -1274,7 +1274,7 @@ _KeepOldAirspacesValues:
         // HIGHLIGHT user selection. Bordering will not be the same, under the sun not visible!
         // TO BE CHECKED CAREFULLY
 #ifdef ENABLE_OPENGL
-#ifdef UNDITHER
+#ifdef DITHER
         LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_WHITE : RGB_BLACK));
 #else
         LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN));

@@ -208,7 +208,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     }
 
     //Draw true heading mark on the top of the compass rose
-    #ifndef UNDITHER
+    #ifndef DITHER
     Surface.SelectObject(LKPen_Red_N1);
     Surface.SelectObject(LKBrush_Red);
     #else
@@ -221,7 +221,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     TCHAR Buffer[LKSIZEBUFFERVALUE];
     Surface.SelectObject(LK8InfoSmallFont);
     _stprintf(Buffer, TEXT("%03d%s"),(int)round(DrawInfo.TrackBearing),gettext(_T("_@M2179_")));
-    #ifndef UNDITHER
+    #ifndef DITHER
     LKWriteText(Surface,Buffer,posTRKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
     #else
     LKWriteText(Surface,Buffer,posTRKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
@@ -265,7 +265,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             //Print vertical speed in Ft/min
             _tcscpy(Buffer,gettext(TEXT("_@M784_"))); //"Vario"
             Surface.SelectObject(LK8PanelSmallFont);
-            #ifndef UNDITHER
+            #ifndef DITHER
             LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);
             #else
             LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
@@ -295,7 +295,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                     for(int i=0,isBig=1;i<=12;i++,isBig=!isBig) {
                         internal.y=external.y=gssStart+gssIncrement*i;
                         internal.x=isBig?gssLeftBigMarkX:gssLeftSmallMarkX;
-                        #ifndef UNDITHER
+                        #ifndef DITHER
                         Surface.DrawLine(PEN_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_LIGHTGREY:RGB_BLACK,rc);
                         #else
                         Surface.DrawLine(PEN_SOLID,isBig?NIBLSCALE(1):1,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
@@ -322,7 +322,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                         isOutOfScale=false;
                     }
                     if(isOutOfScale) {
-                        #ifndef UNDITHER
+                        #ifndef DITHER
                         Surface.SelectObject(LKPen_Red_N1);
                         Surface.SelectObject(LKBrush_Red);
                         #else
@@ -343,14 +343,14 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                     if (ScreenLandscape) {
                         for(int i=0;i<=6;i++) {
                             _stprintf(Buffer, TEXT("%d"),i);
-                            #ifndef UNDITHER
+                            #ifndef DITHER
                             LKWriteText(Surface,Buffer,gssLabelX,gssStart+gssIncrementX2*i,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
                             #else
                             LKWriteText(Surface,Buffer,gssLabelX,gssStart+gssIncrementX2*i,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_WHITE:RGB_WHITE,false);
                             #endif
                         }
                     } else {
-                        #ifndef UNDITHER
+                        #ifndef DITHER
                         _stprintf(Buffer, TEXT("0"));
                         LKWriteText(Surface,Buffer,gssLabelX,gssStart,WTMODE_NORMAL,WTALIGN_CENTER,isOutOfScale?RGB_LIGHTRED:RGB_WHITE,false);
                         _stprintf(Buffer, TEXT("6"));
@@ -378,7 +378,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         //Print the desired course
         Surface.SelectObject(LK8InfoSmallFont);
         _stprintf(Buffer, TEXT("%03d%s"),(int)round(course),gettext(_T("_@M2179_")));
-        #ifndef UNDITHER
+        #ifndef DITHER
         LKWriteText(Surface,Buffer,posDTKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
         #else
         LKWriteText(Surface,Buffer,posDTKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
@@ -399,7 +399,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         up.y=centerY-labelsRadiusXcos;
         down.x=centerX+cdiRadiusXsin;
         down.y=centerY-cdiRadiusXcos;
-        #ifndef UNDITHER
+        #ifndef DITHER
         Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
         #else
         Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),up,down,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
@@ -415,7 +415,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                 {centerX+labelsRadiusXsin+arrowXcos,centerY-labelsRadiusXcos+arrowXsin}, //right
                 {centerX+labelsRadiusXsin-arrowXcos,centerY-labelsRadiusXcos-arrowXsin}, //left
                 {topX,topY}}; //top
-        #ifndef UNDITHER
+        #ifndef DITHER
         Surface.SelectObject(LKPen_Green_N1);
         Surface.SelectObject(LKBrush_Green);
         #else
@@ -429,7 +429,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         up.y=centerY+innerradiusXcos;
         down.x=centerX-cdiRadiusXsin;
         down.y=centerY+cdiRadiusXcos;
-        #ifndef UNDITHER
+        #ifndef DITHER
         Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
         #else
         Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),up,down,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
@@ -438,7 +438,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         //Course Deviation Indicator
         if(currentWP>0 || returnStruct.usingQFU) { //we are flying on a predefined routeline or we have the info for landing: draw CDI
             int dev; //deviation in pixel
-            #ifndef UNDITHER
+            #ifndef DITHER
             LKColor cdiColor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW; //color of CDI
             #else
             LKColor cdiColor=INVERTCOLORS?RGB_WHITE:RGB_BLACK; //color of CDI
@@ -462,14 +462,14 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                 }
                 if(deviation>fiveNauticalMiles) { //The larger CDI scale is of 5 nautical miles
                     dev=-cdiFullScale;
-                    #ifndef UNDITHER
+                    #ifndef DITHER
                     cdiColor=RGB_RED;
                     #else
                     cdiColor=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
                     #endif
                 } else if(deviation<-fiveNauticalMiles) {
                     dev=cdiFullScale;
-                    #ifndef UNDITHER
+                    #ifndef DITHER
                     cdiColor=RGB_RED;
                     #else
                     cdiColor=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
@@ -499,7 +499,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
                 else if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f %s"),xtk,Units::GetDistanceName());
                 else _stprintf(Buffer,TEXT("%d %s"),(int)round(xtk),Units::GetDistanceName());
             }
-            #ifndef UNDITHER
+            #ifndef DITHER
             LKWriteText(Surface,Buffer,posXTKx,posXTKy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,cdiColor,false);
             #else
             LKWriteText(Surface,Buffer,posXTKx,posXTKy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
@@ -523,7 +523,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             triangle[2].y=centerY-innerradiusXcos-arrowXsin; //left
             triangle[3].x=topX;
             triangle[3].y=topY;
-            #ifndef UNDITHER
+            #ifndef DITHER
             LKPen PenViola(PEN_SOLID,NIBLSCALE(1),RGB_MAGENTA);
             LKBrush BrushViola(RGB_MAGENTA);
             #else
@@ -539,7 +539,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             //Print the actual bearing to next WayPoint
             Surface.SelectObject(LK8InfoSmallFont);
             _stprintf(Buffer, TEXT("%03d%s"),(int)round(DerivedDrawInfo.WaypointBearing),gettext(_T("_@M2179_")));
-            #ifndef UNDITHER
+            #ifndef DITHER
             LKWriteText(Surface,Buffer,posDTKx,posBRGy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
             #else
             LKWriteText(Surface,Buffer,posDTKx,posBRGy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE,false);
@@ -561,7 +561,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             up.y=centerY-cdiRadiusXcos;
             down.x=centerX-cdiRadiusXsin;
             down.y=centerY+cdiRadiusXcos;
-            #ifndef UNDITHER
+            #ifndef DITHER
             Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),up,down,RGB_GREEN,rc);
             #else
             Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),up,down,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
@@ -570,7 +570,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     }
 
     //Draw airplane symbol in the center of HSI
-    #ifndef UNDITHER
+    #ifndef DITHER
     Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),fusA,fusB,RGB_ORANGE,rc);
     Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),winA,winB,RGB_ORANGE,rc);
     Surface.DrawLine(PEN_SOLID,NIBLSCALE(2),taiA,taiB,RGB_ORANGE,rc);
@@ -651,7 +651,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         Surface.SelectObject(LK8SmallFont);
         if(scale<10000) _stprintf(Buffer, TEXT("+%.0fft"),scale);
         else _stprintf(Buffer, TEXT("+%.0ff"),scale);
-        #ifndef UNDITHER
+        #ifndef DITHER
         LKWriteText(Surface,Buffer,VSIlabelX,VSIlabelUpY, WTMODE_NORMAL,WTALIGN_CENTER,outOfScale?RGB_LIGHTRED:RGB_WHITE,false);
         if(scale<10000) _stprintf(Buffer, TEXT("-%.0fft"),scale);
         else _stprintf(Buffer, TEXT("-%.0ff"),scale);
@@ -683,7 +683,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             triangle[2].y=triangle[0].y+NIBLSCALE(3);
         }
         if(outOfScale) {
-            #ifndef UNDITHER
+            #ifndef DITHER
             Surface.SelectObject(LKPen_Red_N1);
             Surface.SelectObject(LKBrush_Red);
             #else

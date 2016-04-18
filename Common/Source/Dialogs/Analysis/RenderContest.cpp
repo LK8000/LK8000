@@ -167,7 +167,7 @@ double  yp = (lat_p-lat_c);
   DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 
   Surface.SelectObject(hfOldU);
-  #ifndef UNDITHER
+  #ifndef DITHER
   Surface.SetTextColor(RGB_MAGENTA);
   #else
   Surface.SetTextColor(RGB_BLACK);
@@ -278,7 +278,7 @@ ResetScale();
       {
 		if(fDist > 5000)
 		{
-                  #ifndef UNDITHER
+                  #ifndef DITHER
 		  LKColor rgbCol = RGB_BLUE;
 		  switch(ui)
 		  {
@@ -349,7 +349,7 @@ ResetScale();
 		  fTotalPercent -= fDist/result.Distance();
 		  _stprintf(text, TEXT("%3.1f%%"), (fDist/result.Distance()*100.0));
 		  Surface.GetTextSize(text, &tsize);
-                  #ifndef UNDITHER
+                  #ifndef DITHER
 		  Surface.SetTextColor(RGB_BLUE);
                   #else
 		  Surface.SetTextColor(RGB_BLACK);
@@ -395,7 +395,7 @@ ResetScale();
 	    SIZE tsize;
 	    _stprintf(text, TEXT("%3.1f%%"), (fTotalPercent*100.0));
 	    Surface.GetTextSize(text, &tsize);
-            #ifndef UNDITHER
+            #ifndef DITHER
 	    Surface.SetTextColor(RGB_LIGHTBLUE);
             #else
 	    Surface.SetTextColor(RGB_RED);
@@ -418,7 +418,7 @@ ResetScale();
 DrawXGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 Surface.SetBackgroundTransparent();
-#ifndef UNDITHER
+#ifndef DITHER
 Surface.SetTextColor(RGB_MAGENTA);
 #else
 Surface.SetTextColor(RGB_BLACK);

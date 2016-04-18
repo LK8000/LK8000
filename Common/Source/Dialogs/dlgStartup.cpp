@@ -21,7 +21,7 @@
 #include "Draw/LoadSplash.h"
 
 
-#ifdef UNDITHER
+#ifdef DITHER
 #define RGBDARKWHITE RGB_WHITENOREV
 #define RGBLIGHTGREY RGB_WHITENOREV
 #define RGBICEWHITE  RGB_WHITENOREV

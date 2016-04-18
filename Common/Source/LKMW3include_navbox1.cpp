@@ -9,7 +9,7 @@
   if (showunit==true)
 	LKWriteText(Surface, BufferValue, rcx, yRow1Value, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
   else
-        #ifdef UNDITHER
+        #ifdef DITHER
 	LKWriteText(Surface, BufferValue, rcx, yRow1Value, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
 	#else
 	LKWriteText(Surface, BufferValue, rcx, yRow1Value, WTMODE_NORMAL,WTALIGN_CENTER,RGB_AMBER, false);

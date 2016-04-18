@@ -27,7 +27,7 @@ void LKObjects_Create() {
 
   // CUSTOM BRUSHES
   LKBrush_Petrol.Create(RGB_PETROL);
-  #ifdef UNDITHER
+  #ifdef DITHER
   LKBrush_LightGreen.Create(RGB_WHITE);
   LKBrush_Petrol.Create(RGB_BLACK);
   #else
@@ -36,7 +36,7 @@ void LKObjects_Create() {
   #endif
   LKBrush_DarkGreen.Create(RGB_DARKGREEN);
   LKBrush_Ndark.Create(RGB_NDARK);
-  #ifdef UNDITHER
+  #ifdef DITHER
   LKBrush_Nlight.Create(RGB_WHITE);
   #else
   LKBrush_Nlight.Create(RGB_NLIGHT);
@@ -45,14 +45,14 @@ void LKObjects_Create() {
   LKBrush_Mlight.Create(RGB_MLIGHT);
   LKBrush_Red.Create(RGB_RED);
   LKBrush_Yellow.Create(RGB_YELLOW);
-  #ifdef UNDITHER
+  #ifdef DITHER
   LKBrush_LightYellow.Create(RGB_WHITE);
   #else
   LKBrush_LightYellow.Create(RGB_LIGHTYELLOW);
   #endif
   LKBrush_Green.Create(RGB_GREEN);
   LKBrush_DarkYellow2.Create(RGB_DARKYELLOW2);
-  #ifdef UNDITHER
+  #ifdef DITHER
   LKBrush_Orange.Create(RGB_GREY);
   #else
   LKBrush_Orange.Create(RGB_ORANGE);
@@ -143,7 +143,7 @@ void LKObjects_Create() {
 
   int iwidth;
   iwidth=IBLSCALE(MapWindow::SnailWidthScale);
-  #ifndef UNDITHER
+  #ifndef DITHER
   MapWindow::hSnailColours[0] = RGB_BLACK;
   MapWindow::hSnailColours[1] = RGB_INDIGO;
   MapWindow::hSnailColours[2] = RGB_INDIGO;

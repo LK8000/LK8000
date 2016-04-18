@@ -13,7 +13,7 @@
 #include "DoInits.h"
 #include "ScreenGeometry.h"
 
-#ifdef UNDITHER
+#ifdef DITHER
 #define AMBERCOLOR RGB_WHITE
 #else
 #define AMBERCOLOR RGB_AMBER
@@ -218,7 +218,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 	}
         LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], WTMODE_NORMAL, WTALIGN_LEFT,
-            #ifndef UNDITHER
+            #ifndef DITHER
             RGB_LIGHTGREEN, false);
             #else
             RGB_WHITE, false);
@@ -928,7 +928,7 @@ label_HSI:
 	if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 		if(showVFRlanding) {
 			_stprintf(Buffer,TEXT("VFR %s"),gettext(TEXT("_@M931_"))); //TODO: toupper()
-			#ifndef UNDITHER
+			#ifndef DITHER
 			icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
 			#else
 			icolor=RGB_WHITE;
@@ -936,7 +936,7 @@ label_HSI:
 		}
 		if(showQFU) {
 			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,gettext(_T("_@M2179_")));
-			#ifndef UNDITHER
+			#ifndef DITHER
 			icolor=RGB_GREEN;
 			#else
 			icolor=RGB_WHITE;
@@ -1148,7 +1148,7 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
         LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
   }
   Surface.SelectObject(LK8PanelSmallFont);
-  #ifndef UNDITHER
+  #ifndef DITHER
   LKWriteText(Surface, BufferTitle, *columntitle,*row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
   #else
   LKWriteText(Surface, BufferTitle, *columntitle,*row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
