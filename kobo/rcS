@@ -172,6 +172,13 @@ echo "dc 0" > /sys/devices/platform/pmic_light.1/lit
 /sbin/udevd -d
 /sbin/udevadm trigger 
 
+# enable crash dump : "core.[filename].[signal number].[pid].[UNIX time]"
+if [ ! -d "/mnt/onboard/LK8000/kobo/crash" ] ; then
+    /bin/mkdir -p /mnt/onboard/LK8000/kobo/crash
+fi
+echo "/mnt/onboard/LK8000/kobo/crash/core.%e.%s.%p.%t" > /proc/sys/kernel/core_pattern
+ulimit -c unlimited
+
 # launch user script
 if [ -f /mnt/onboard/LK8000/kobo/init.sh ]; then
     source /mnt/onboard/LK8000/kobo/init.sh
@@ -188,4 +195,7 @@ fi
 echo " " > /mnt/onboard/LK8000/kobo/start_nickel
 
 # finally, launch LK8000-KOBO
-exec /opt/LK8000/bin/LK8000-KOBO >> /mnt/onboard/LK8000/error.log 2>&1
+/opt/LK8000/bin/LK8000-KOBO
+
+# this is in case of abnormal termination : fill screen black.
+zcat /etc/images/$PREFIX\reboot.raw.gz | /usr/local/Kobo/pickel showpic
