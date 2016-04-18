@@ -13,6 +13,7 @@
 #include "Waypointparser.h"
 #include "xmlParser.h"
 #include "utils/stringext.h"
+#include "LKStyle.h"
 #include <string>
 
 bool LoadGpxTask(LPCTSTR szFileName) {
@@ -106,25 +107,16 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                         }
                     }
 #else
-                    newPoint.Details=NULL;
+                    newPoint.Details=nullptr;
 #endif
-                    /*TODO: other possible data to get somehow from the GPX file:
-                    newPoint.Code
-                    newPoint.Flags
-                    newPoint.Format
-                    newPoint.Freq
-                    newPoint.RunwayLen
-                    newPoint.RunwayDir
-                    newPoint.Country
-                    newPoint.Style */
-                    if(ISGAAIRCRAFT && (idx==0 || idx==numOfWPs-1)) {
-                        int ix =FindOrAddWaypoint(&newPoint,true); 
-                        //if GA check widely if we have already depart and dest airports
-                        if (ix>=0) Task[idx++].Index=ix;
-                    } else {
-                        int ix =FindOrAddWaypoint(&newPoint,false); 
-                        if (ix>=0) Task[idx++].Index=ix; //else add WP normally
-                    }
+                    newPoint.Format=LKW_GPX;
+                    newPoint.Style=STYLE_NORMAL;
+                    if (idx==0) newPoint.Flags = START;
+                    else if (idx==numOfWPs-1) newPoint.Flags = FINISH;
+                    else newPoint.Flags = TURNPOINT + WAYPOINTFLAG;
+
+                    int ix =FindOrAddWaypoint(&newPoint,ISGAAIRCRAFT && (idx==0 || idx==numOfWPs-1)); //if GA check widely if we have already depart and dest airports
+                    if (ix>=0) Task[idx++].Index=ix;
 #ifdef TASK_DETAILS
                     if (newPoint.Details) {
                         free(newPoint.Details);
