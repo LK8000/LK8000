@@ -24,9 +24,9 @@ BIN=Bin/$(TARGET)
 # enable/disable heap checking (dmalloc.h libdmalloc.a must be in ../dmalloc)
 DMALLOC=n
 
-OPTIMIZE    := -O2
+OPTIMIZE    := -O2 -g
 PROFILE	    :=
-REMOVE_NS   := y
+REMOVE_NS   := n
 
 ifeq ($(DEBUG),y)
  OPTIMIZE  := -O0
