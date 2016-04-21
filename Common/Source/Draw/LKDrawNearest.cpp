@@ -1161,7 +1161,7 @@ _KeepOldAirspacesValues:
                     else
                         _stprintf(Buffer3[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
                 } else {
-                    _stprintf(Buffer3[i][curpage], _T("%2.0fxB0"), LKTraffic[rli].Bearing);
+                    _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), LKTraffic[rli].Bearing, MsgToken(2179));
                 }
 
 
