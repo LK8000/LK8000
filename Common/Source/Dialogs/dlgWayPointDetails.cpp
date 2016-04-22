@@ -13,6 +13,8 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
+#include "TeamCodeCalculation.h"
+#include "NavFunctions.h"
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
 #include "resource.h"
@@ -322,12 +324,9 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   LKASSERT(SelectedWaypoint>=0);
 
-  // if SeeYou waypoint
-  if (WPLSEL.Format == LKW_CUP) { 
-	TCHAR ttmp[50];
-	// and it is landable
-	if ((WPLSEL.Style >= STYLE_AIRFIELDGRASS) && (WPLSEL.Style <= STYLE_AIRFIELDSOLID) ) {
-
+  // if SeeYou waypoint and it is landable
+  if (WPLSEL.Format == LKW_CUP && WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
+     TCHAR ttmp[50];
 		_stprintf(sTmp, TEXT("%s "), WPLSEL.Name);
 		// ICAO name probably, let's print it
 		if ( _tcslen(WPLSEL.Code)==4 ) {
@@ -349,18 +348,25 @@ void dlgWayPointDetailsShowModal(short mypage){
 			_stprintf(ttmp,_T("%.0f%s"),Units::ToUserAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
 			_tcscat(sTmp, ttmp);
 		}
-
-		wf->SetCaption(sTmp);
-	} else {
-		_stprintf(sTmp, TEXT("%s: "), wf->GetCaption());
-		_tcscat(sTmp, WayPointList[SelectedWaypoint].Name);
-		wf->SetCaption(sTmp);
-	}
   } else {
-	_stprintf(sTmp, TEXT("%s: "), wf->GetCaption());
-	_tcscat(sTmp, WayPointList[SelectedWaypoint].Name);
-	wf->SetCaption(sTmp);
+     TCHAR code[20];
+     double wpdistance = 0;
+     double wpbearing = 0;
+        
+     if (TeamCodeRefWaypoint >= 0) {
+        LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude, 
+                  WayPointList[TeamCodeRefWaypoint].Longitude,
+                  WayPointList[SelectedWaypoint].Latitude, 
+                  WayPointList[SelectedWaypoint].Longitude, 
+                  &wpbearing, &wpdistance);
+
+        GetTeamCode(code,wpbearing, wpdistance);
+	_stprintf(sTmp, TEXT("%s: %s  (%s)"), wf->GetCaption(), WayPointList[SelectedWaypoint].Name, code);
+     } else {
+	_stprintf(sTmp, TEXT("%s: %s"), wf->GetCaption(), WayPointList[SelectedWaypoint].Name);
+     }
   }
+  wf->SetCaption(sTmp);
 
 
   wComment=(WndListFrame *)NULL;

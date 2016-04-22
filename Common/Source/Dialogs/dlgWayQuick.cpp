@@ -13,6 +13,8 @@
 #include "Bitmaps.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
+#include "TeamCodeCalculation.h"
+#include "NavFunctions.h"
 #include "resource.h"
 #include "LKStyle.h"
 
@@ -130,10 +132,8 @@ short dlgWayQuickShowModal(void){
   if (!wf) return 0;
 
   retStatus=0;
-  if (WPLSEL.Format == LKW_CUP) {
+  if (WPLSEL.Format == LKW_CUP && WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
         TCHAR ttmp[50];
-        // and it is landable
-        if ((WPLSEL.Style >= STYLE_AIRFIELDGRASS) && (WPLSEL.Style <= STYLE_AIRFIELDSOLID) ) {
 
                 _stprintf(sTmp, TEXT("%s "), WPLSEL.Name);
 		if (_tcslen(sTmp)>9) {
@@ -155,12 +155,23 @@ short dlgWayQuickShowModal(void){
                         _stprintf(ttmp,_T("%.0f%s"),Units::ToUserAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
                         _tcscat(sTmp, ttmp);
                 }
-
-        } else {
-		_stprintf(sTmp, _T(" %s"),WayPointList[SelectedWaypoint].Name);
-        }
   } else {
-	_stprintf(sTmp, _T(" %s"),WayPointList[SelectedWaypoint].Name);
+     TCHAR code[20];
+     double wpdistance = 0;
+     double wpbearing = 0;
+
+     if (TeamCodeRefWaypoint >= 0) {
+        LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude, 
+                  WayPointList[TeamCodeRefWaypoint].Longitude,
+                  WayPointList[SelectedWaypoint].Latitude,
+                  WayPointList[SelectedWaypoint].Longitude,
+                  &wpbearing, &wpdistance);
+
+        GetTeamCode(code,wpbearing, wpdistance);
+        _stprintf(sTmp, TEXT(" %s  (%s)"), WayPointList[SelectedWaypoint].Name, code);
+     } else {
+        _stprintf(sTmp, TEXT(" %s"), WayPointList[SelectedWaypoint].Name);
+     }
   }
   wf->SetCaption(sTmp);
 
