@@ -254,6 +254,8 @@ bool Message::Acknowledge(int type) {
         if (type == 0 || msgIt->type == type) {
             messagesHistory.splice(messagesHistory.begin(), messages, msgIt++);
             ret = true;
+        } else {
+            ++msgIt;
         }
     }
 
