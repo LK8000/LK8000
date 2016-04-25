@@ -54,7 +54,8 @@ short config_page[4]={0,0,0,0}; // remember last page we were using, for each pr
 
 static WndForm *wf=NULL;
 
-#define NUMOFCONFIGPAGES 22
+#define NUMOFCONFIGPAGES 22 // total number of config pages including engineering
+#define NUMENGPAGES 1       // number of engineering hidden pages, part of NUMOFCONFIGPAGES
 
 static WndFrame *wConfig[NUMOFCONFIGPAGES]={};
 
@@ -293,8 +294,8 @@ static void NextPage(int Step){
     config_page[configMode] += Step;
 
     if (configMode==0 && !EngineeringMenu) { 
-        if (config_page[configMode]>=(numPages-2)) { config_page[configMode]=0; }
-        if (config_page[configMode]<0) { config_page[configMode]=numPages-3; } 
+        if (config_page[configMode]>=(numPages-NUMENGPAGES)) { config_page[configMode]=0; }
+        if (config_page[configMode]<0) { config_page[configMode]=numPages-(NUMENGPAGES+1); } 
     } else {
         if (config_page[configMode]>=numPages) { config_page[configMode]=0; }
         if (config_page[configMode]<0) { config_page[configMode]=numPages-1; }
