@@ -194,7 +194,7 @@ size_t TTYPort::Read(void *szString, size_t size) {
         }
     }
 
-    if (iResult == -1) {
+    if (iResult <= 0) {
         AddStatErrRx(1);
         close(_tty);
         _tty = -1;
