@@ -4227,8 +4227,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComBit2"));
   if (wp) {
-    if ((int)dwBit1Index != wp->GetDataField()->GetAsInteger()) {
-      dwBit1Index = wp->GetDataField()->GetAsInteger();
+    if ((int)dwBit2Index != wp->GetDataField()->GetAsInteger()) {
+      dwBit2Index = wp->GetDataField()->GetAsInteger();
       COMPORTCHANGED = true;
     }
   }
