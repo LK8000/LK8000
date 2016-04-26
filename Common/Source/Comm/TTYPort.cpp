@@ -89,7 +89,7 @@ bool TTYPort::Initialize() {
 
     bzero(&newtio, sizeof (newtio));
 
-    newtio.c_cflag = ((_dwPortBit == bit8N1) ? CS8 : CS7) | CLOCAL | CREAD;
+    newtio.c_cflag = ((_dwPortBit == bit8N1) ? CS8 : CS7|PARENB) | CLOCAL | CREAD | CRTSCTS;
     newtio.c_iflag = IGNBRK | IGNPAR; // no break & no parity
 
     cfsetospeed(&newtio, DecodeBaudrate(_dwPortSpeed));
