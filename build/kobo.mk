@@ -107,7 +107,7 @@ $(BIN)/.kobo/KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(Q)install -m 0755 -d  $(BIN)/KoboRoot/mnt/onboard/LK8000/_Waypoints
 	$(Q)install -m 0644 kobo/inittab $(BIN)/KoboRoot/etc
 	$(Q)install -m 0755 $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) kobo/rcS $(BIN)/KoboRoot/opt/LK8000/bin
-	$(Q)install -m 0755 $(KOBO_SYS_LIB_PATHS) $(BIN)/KoboRoot/opt/LK8000/lib
+	$(Q)install --strip --strip-program=$(STRIP) -m 0755 $(KOBO_SYS_LIB_PATHS) $(BIN)/KoboRoot/opt/LK8000/lib
 	$(Q)install -m 0644 $(FONTS_FILES) $(BIN)/KoboRoot/opt/LK8000/share/fonts
 	$(Q)install -m 0644 $(SYSTEM_FILES) $(BIN)/KoboRoot/opt/LK8000/share/_System
 	$(Q)install -m 0644 $(BITMAP_FILES) $(BIN)/KoboRoot/opt/LK8000/share/_System/_Bitmaps
