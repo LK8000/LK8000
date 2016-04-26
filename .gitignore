@@ -37,3 +37,6 @@ output.map
 /LK8000-PC_debug.exe
 /LK8000-PI_debug
 /LK8000-PI_debug-ns
+/PowerOff
+/PowerOff_ns
+/LK8000-KOBO-ns

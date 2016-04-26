@@ -33,6 +33,26 @@ KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libz.so.1
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libpng16.so.16
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libfreetype.so.6
 
+KOBO_POWER_OFF_BIN = PowerOff
+
+KOBO_POWER_OFF_SOURCES = \
+    $(SRC)/kobo/PowerOff.cpp \
+    $(SRC)/xcs/Kobo/Model.cpp \
+    $(LIB)/MathFunctions.cpp	\
+    $(XCS_SCREEN) \
+    $(XCS_EVENT) \
+    $(XCS_OS)
+
+KOBO_POWER_OFF_OBJ     = \
+    $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(KOBO_POWER_OFF_SOURCES)) \
+    $(BIN)/poco.a 
+
+
+Kobo.zip: $(BIN)/.kobo/KoboRoot.tgz
+	cd $(BIN) && \
+	zip $@ .kobo/KoboRoot.tgz 
+	mv $(BIN)/$@ $@
+
 
 # /mnt/onboard/.kobo/KoboRoot.tgz is a file that is picked up by
 # /etc/init.d/rcS, extracted to / on each boot; we can use it to
@@ -88,3 +108,13 @@ endif
 	$(Q)fakeroot tar czfC $@ $(BIN)/KoboRoot .
 
 endif
+
+
+$(KOBO_POWER_OFF_BIN) : $(KOBO_POWER_OFF_BIN)_ns
+	@$(NQ)echo "  STRIP   $@"
+	$(Q)$(STRIP) $< -o $@
+	$(Q)$(SIZE) $@
+
+$(KOBO_POWER_OFF_BIN)_ns : $(KOBO_POWER_OFF_OBJ)
+	@$(NQ)echo "  LINK    $@"
+	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
