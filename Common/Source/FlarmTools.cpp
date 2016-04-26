@@ -48,7 +48,7 @@ void OpenFLARMDetails() {
   _tcscat(filename,_T(LKF_FLARMIDS));
 
   #if TESTBENCH  
-  StartupStore(TEXT(". OpenFLARMDetails: <%s>%s"),filename,NEWLINE);
+  StartupStore(TEXT("... OpenFLARMDetails: <%s>%s"),filename,NEWLINE);
   #endif
 
   FILE * stream = _tfopen(filename, _T("rt"));
@@ -75,7 +75,7 @@ void OpenFLARMDetails() {
   }
 
   if (NumberOfFLARMNames>0) {
-    StartupStore(_T(". Local FLARM IDs found: %d%s"),NumberOfFLARMNames,NEWLINE);
+    StartupStore(_T(". Local IDFLARM, found %d IDs%s"),NumberOfFLARMNames,NEWLINE);
   }
 
   fclose(stream);
