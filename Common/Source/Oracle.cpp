@@ -53,6 +53,10 @@ TCHAR *WhatTimeIsIt(void) {
   Units::TimeToTextS(tlocal, (int)TimeLocal((int)(GPS_INFO.Time))),
   Units::TimeToText(tutc, (int)GPS_INFO.Time);
   _stprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
+  if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0)) 
+     _stprintf(time_temp, _T("h%s (NO FIX)"), tlocal);
+  else
+     _stprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
 
   return (time_temp);
 }
