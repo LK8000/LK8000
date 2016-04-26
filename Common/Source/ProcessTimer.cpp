@@ -179,7 +179,8 @@ int ConnectionProcessTimer(int itimeout) {
 		// that will not provide NMEA stream, for example during a binary conversation for task declaration
 		// or during a restart. Very careful, it shall be set to zero by the same function who
 		// set it to true.
-		if ((itimeout % 90 == 0) && !LKDoNotResetComms ) { 
+                // V6: do not reset comports while inside configuration
+		if ((itimeout % 90 == 0) && !LKDoNotResetComms && !MenuActive) { 
 			// no activity for 90/2 seconds (running at 2Hz), then reset.
 			// This is needed only for virtual com ports..
 			extGPSCONNECT = FALSE;
