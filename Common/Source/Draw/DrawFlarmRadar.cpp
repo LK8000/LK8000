@@ -517,8 +517,13 @@ bool bInvCol =  INVERTCOLORS;
  *********************************************************************************/
 if(bInvCol)
 {
+#ifdef UNDITHER
+  rgbDrawColor = RGB_WHITENOREV;
+  rgbGridColor = RGB_WHITENOREV;
+#else
   rgbDrawColor = RGB_GREY;
   rgbGridColor = RGB_GREY;
+#endif
   rgb_targetlinecol = RGB_LIGHTBLUE;
   hDrawPen   = LKPen_Grey_N0;
   hDrawBrush = LKBrush_White;
@@ -527,8 +532,13 @@ if(bInvCol)
 }
 else
 {
+#ifdef UNDITHER
+  rgbDrawColor = RGB_BLACK;
+  rgbGridColor = RGB_BLACK;
+#else
   rgbDrawColor = RGB_DARKGREY;
   rgbGridColor = RGB_DARKGREY;
+#endif
   rgb_targetlinecol = RGB_BLUE;
   hDrawPen   = LKPen_Grey_N0; // GetStockObject( WHITE_PEN );
   hDrawBrush = LKBrush_Black;
@@ -808,8 +818,10 @@ DiagrammStruct sDia;
    * draw sky
    *******************************************************/
 
+#ifndef UNDITHER
    if(!bInvCol)
      RenderSky( Surface, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
+#endif
 
 
   double xtick = 0.001;
