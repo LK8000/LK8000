@@ -206,14 +206,22 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 #else
         _stprintf(mes, _T("%sC v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), gettext(_T("_@M2054_")));
 #endif
+        #ifdef DITHER
+        RawWrite(Surface, mes, 1, 1, RGBLIGHTGREY, WTMODE_OUTLINED);
+        #else
         RawWrite(Surface, mes, 1, 1, RGBLIGHTGREY, WTMODE_NORMAL);
+        #endif
 
         size_t freeram = CheckFreeRam() / 1024;
         TCHAR buffer[MAX_PATH];
         LocalPath(buffer);
         size_t freestorage = FindFreeSpace(buffer);
         _stprintf(mes, _T("free ram %.1uM  storage %.1uM"), (unsigned int) freeram / 1024, (unsigned int) freestorage / 1024);
+        #ifdef DITHER
+        RawWrite(Surface, mes, 3, 0, RGBLIGHTGREY, WTMODE_OUTLINED);
+        #else
         RawWrite(Surface, mes, 3, 0, RGBLIGHTGREY, WTMODE_NORMAL);
+        #endif
 
         if (ScreenSize != ss320x240 && ScreenLandscape)
             RawWrite(Surface, _T("_______________________"), 2, 2, RGBLIGHTGREY, WTMODE_NORMAL);
