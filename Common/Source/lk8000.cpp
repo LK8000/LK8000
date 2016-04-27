@@ -187,7 +187,11 @@ int main(int argc, char *argv[]) {
   _tcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
   #ifdef __linux__
+  #ifdef KOBO
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("KOBO"),NEWLINE);
+  #else
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
+  #endif
  
   struct utsname sysinfo = {};
   if(uname(&sysinfo) == 0) {
