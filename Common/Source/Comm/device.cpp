@@ -22,6 +22,7 @@
 
 #ifdef KOBO
   #include "Kobo/System.hpp"
+  #include "Kobo/Kernel.hpp"
 #endif // KOBO
 
 #endif // __linux__
@@ -212,7 +213,7 @@ void RefreshComPortList() {
   free(namelist);
 
 #ifdef KOBO
-  if(KoboExportSerialAvailable()) {
+  if(KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
     if(std::find_if(COMMPort.begin(), COMMPort.end(), std::bind(&COMMPortItem_t::IsSamePort, _1, _T("/dev/ttyGS0"))) == COMMPort.end()) {
       COMMPort.push_back(_T("/dev/ttyGS0"));
     }
