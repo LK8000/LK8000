@@ -20,6 +20,17 @@
 #include "Asset.hpp"
 #include "Draw/LoadSplash.h"
 
+
+#ifdef UNDITHER
+#define RGBDARKWHITE RGB_WHITENOREV
+#define RGBLIGHTGREY RGB_WHITENOREV
+#define RGBICEWHITE  RGB_WHITENOREV
+#else
+#define RGBDARKWHITE RGB_DARKWHITE
+#define RGBLIGHTGREY RGB_LIGHTGREY
+#define RGBICEWHITE  RGB_ICEWHITE
+#endif
+
 #ifdef KOBO
 #warning "Temporary : remove when we have KoboMenu"  
 bool RestartToNickel = true; // default to true, mandatory for avoid to brick device in case of abnormal termination.
@@ -174,14 +185,14 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
         }
         if (FullResetAsked) {
             _stprintf(mes, _T("*** %s ***"), gettext(_T("_@M1757_")));
-            RawWrite(Surface, mes, pos, 1, RGB_DARKWHITE, WTMODE_NORMAL);
+            RawWrite(Surface, mes, pos, 1, RGBDARKWHITE, WTMODE_NORMAL);
         } else {
 #ifndef LKCOMPETITION
             _stprintf(mes, _T("Version %s.%s (%s)"), _T(LKVERSION), _T(LKRELEASE), _T(__DATE__));
 #else
             _stprintf(mes, _T("V%s.%s (%s) COMPETITION"), _T(LKVERSION), _T(LKRELEASE), _T(__DATE__));
 #endif
-            RawWrite(Surface, mes, pos, 1, RGB_DARKWHITE, WTMODE_NORMAL);
+            RawWrite(Surface, mes, pos, 1, RGBDARKWHITE, WTMODE_NORMAL);
         }
     }
 
@@ -195,26 +206,26 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 #else
         _stprintf(mes, _T("%sC v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), gettext(_T("_@M2054_")));
 #endif
-        RawWrite(Surface, mes, 1, 1, RGB_LIGHTGREY, WTMODE_NORMAL);
+        RawWrite(Surface, mes, 1, 1, RGBLIGHTGREY, WTMODE_NORMAL);
 
         size_t freeram = CheckFreeRam() / 1024;
         TCHAR buffer[MAX_PATH];
         LocalPath(buffer);
         size_t freestorage = FindFreeSpace(buffer);
         _stprintf(mes, _T("free ram %.1uM  storage %.1uM"), (unsigned int) freeram / 1024, (unsigned int) freestorage / 1024);
-        RawWrite(Surface, mes, 3, 0, RGB_LIGHTGREY, WTMODE_NORMAL);
+        RawWrite(Surface, mes, 3, 0, RGBLIGHTGREY, WTMODE_NORMAL);
 
         if (ScreenSize != ss320x240 && ScreenLandscape)
-            RawWrite(Surface, _T("_______________________"), 2, 2, RGB_LIGHTGREY, WTMODE_NORMAL);
+            RawWrite(Surface, _T("_______________________"), 2, 2, RGBLIGHTGREY, WTMODE_NORMAL);
 
         if (FullResetAsked) {
             _stprintf(mes, _T("%s"), gettext(_T("_@M1757_"))); // LK8000 PROFILES RESET
-            RawWrite(Surface, mes, 5, 2, RGB_ICEWHITE, WTMODE_OUTLINED);
+            RawWrite(Surface, mes, 5, 2, RGBICEWHITE, WTMODE_OUTLINED);
             _stprintf(mes, _T("%s"), gettext(_T("_@M1759_"))); // SELECTED IN SYSTEM
-            RawWrite(Surface, mes, 6, 2, RGB_ICEWHITE, WTMODE_OUTLINED);
+            RawWrite(Surface, mes, 6, 2, RGBICEWHITE, WTMODE_OUTLINED);
         } else {
             _stprintf(mes, _T("%s"), PilotName_Config);
-            RawWrite(Surface, mes, 4, 2, RGB_ICEWHITE, WTMODE_OUTLINED);
+            RawWrite(Surface, mes, 4, 2, RGBICEWHITE, WTMODE_OUTLINED);
 
             _stprintf(mes, _T("%s"), AircraftRego_Config);
             RawWrite(Surface, mes, 5, 2, RGB_AMBER, WTMODE_OUTLINED);
@@ -232,7 +243,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
             LKASSERT(startProfileFile[0]);
             LK_tsplitpath(startProfileFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
             _stprintf(mes, _T("%s: %s"), MsgToken(1746), srcfile);
-            RawWrite(Surface, mes, 11, 1, RGB_ICEWHITE, WTMODE_NORMAL);
+            RawWrite(Surface, mes, 11, 1, RGBICEWHITE, WTMODE_NORMAL);
         }
 
 
