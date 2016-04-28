@@ -25,10 +25,12 @@
 #define RGBDARKWHITE RGB_WHITENOREV
 #define RGBLIGHTGREY RGB_WHITENOREV
 #define RGBICEWHITE  RGB_WHITENOREV
+#define RGBAMBER     RGB_WHITENOREV
 #else
 #define RGBDARKWHITE RGB_DARKWHITE
 #define RGBLIGHTGREY RGB_LIGHTGREY
 #define RGBICEWHITE  RGB_ICEWHITE
+#define RGBAMBER     RGB_AMBER
 #endif
 
 #ifdef KOBO
@@ -236,17 +238,17 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
             RawWrite(Surface, mes, 4, 2, RGBICEWHITE, WTMODE_OUTLINED);
 
             _stprintf(mes, _T("%s"), AircraftRego_Config);
-            RawWrite(Surface, mes, 5, 2, RGB_AMBER, WTMODE_OUTLINED);
+            RawWrite(Surface, mes, 5, 2, RGBAMBER, WTMODE_OUTLINED);
 
             _stprintf(mes, _T("%s"), AircraftType_Config);
-            RawWrite(Surface, mes, 6, 2, RGB_AMBER, WTMODE_OUTLINED);
+            RawWrite(Surface, mes, 6, 2, RGBAMBER, WTMODE_OUTLINED);
 
             LKASSERT(szPolarFile[0]);
             extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR * ext);
             LK_tsplitpath(szPolarFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
 
             _stprintf(mes, _T("%s %s"), gettext(_T("_@M528_")), srcfile); // polar file
-            RawWrite(Surface, mes, 7, 2, RGB_AMBER, WTMODE_OUTLINED);
+            RawWrite(Surface, mes, 7, 2, RGBAMBER, WTMODE_OUTLINED);
 
             LKASSERT(startProfileFile[0]);
             LK_tsplitpath(startProfileFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
