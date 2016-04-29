@@ -683,7 +683,7 @@ int DevLXNano::Decl::ToStream(void* buf)
   crc = DevLXNano::CalcCrc(dst - (byte*) buf, buf);
   LX_ADD_TO_STREAM(crc);
   #ifdef TESTBENCH
-  StartupStore(_T("... LXNANO DECL SIZE=%d%s"),dst-(byte*)buf,NEWLINE);
+  StartupStore(_T("... LXNANO DECL CRC=%d SIZE=%d%s"),crc,dst-(byte*)buf,NEWLINE);
   #endif
 
   return(dst - (byte*) buf);
