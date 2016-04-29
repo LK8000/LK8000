@@ -457,7 +457,7 @@ byte DevLXNano::CalcCrc(int length, void* data)
     char d = *pc++;
     for (int count = 8; --count >= 0; d <<= 1)
     {
-      char tmp = crcVal ^ d;
+      signed char tmp = crcVal ^ d;
       crcVal <<= 1;
       if (tmp < 0)
         crcVal ^= LX_CRC_POLY;
