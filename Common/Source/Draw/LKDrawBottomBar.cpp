@@ -785,7 +785,7 @@ _afterautotrm:
 		showunit=LKFormatValue(LK_HOME_ARRIVAL, true, BufferValue, BufferUnit, BufferTitle); 
 		break;
 	case BM_SYS:
-		showunit=LKFormatValue(LK_EXTBATT1VOLT, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		showunit=LKFormatValue(LK_EXTBATT2VOLT, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_CRUISE);
