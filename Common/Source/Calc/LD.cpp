@@ -84,7 +84,7 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       if (ISCAR) {
          if (DistanceFlown<300) Calculated->Odometer += DistanceFlown;
       } else {
-         if (DistanceFlown >3 && DistanceFlown<300) Calculated->Odometer += DistanceFlown;
+         if (!Calculated->Circling && DistanceFlown >3 && DistanceFlown<300) Calculated->Odometer += DistanceFlown;
       }
 
       if (LKSW_ResetOdometer) {
