@@ -242,7 +242,7 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
 } // AddChecklistLine
 
 
-#ifndef __linux__
+#if 0
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads checklist from file encoded in system code page.
 ///
@@ -326,13 +326,36 @@ static bool LoadUtfChecklist(const TCHAR* fileName) {
   Details[0]= 0;
   Name[0]= 0;
   TempString[0]=0;
+  bool firstline=true;
 
   while (file.ReadLn(TempString, MAXNOTETITLE)) {
     // skip comment lines
-    if (TempString[0] == _T('#'))
+    if (TempString[0] == _T('#')) {
+      firstline=false;
       continue;
-    
-    AddChecklistLine(TempString, Details, Name, inDetails);
+    }
+
+    // Skip BOMs, if existing. Just to be sure, we only check the very first line of the file.
+    // UTF8 BOM: 0xef 0xbb 0xbf
+    // Unicode l.e. BOM: 0xff 0xfe (not supported)
+    // Unicode b.e. BOM: 0xfe 0xff (not supported)
+
+    if (firstline && (byte)TempString[0]==0xef && (byte)TempString[1]==0xbb && (byte)TempString[2]==0xbf) {
+       #ifdef TESTBENCH
+       StartupStore(_T("... LoadUtfChecklist, ignoring UTF8 BOM%s\n"),NEWLINE);
+       #endif
+       AddChecklistLine(&TempString[3], Details, Name, inDetails);
+    } else {
+       if (firstline && ((unsigned)TempString[0]==0xffef || (unsigned)TempString[0]==0xfeff)) {
+          #ifdef TESTBENCH
+          StartupStore(_T("... LoadUtfChecklist, ignoring UNICODE BOM%s\n"),NEWLINE);
+          #endif
+          AddChecklistLine(&TempString[1], Details, Name, inDetails);
+       } else {
+          AddChecklistLine(TempString, Details, Name, inDetails);
+       }
+    }
+    firstline=false;
   } // while
   
   if (inDetails) {
@@ -355,11 +378,7 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M878_")));  // notepad
-		#ifdef __linux__
    		return LoadUtfChecklist(filename);
-		#else
-                return LoadAsciiChecklist(filename);
-		#endif
 	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS));
@@ -380,11 +399,7 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CREDITS));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("Credits")));
-		#ifdef __linux__
    		return LoadUtfChecklist(filename);
-		#else
-                return LoadAsciiChecklist(filename);
-		#endif
 		break;
   default:
     StartupStore(_T("... Invalid checklist mode (%d)%s"),checklistmode,NEWLINE);
