@@ -1,13 +1,50 @@
-[Welcome]
-Welcome to the LK8000 NotePad
-This file is located inside the 
-directory :
-LK8000\_Configuration
-and it is called NOTEPAD.txt 
-You can add many pages to this file,
-each one with a different title. 
-Try moving to the next page for
-another example..
+﻿[Welcome]
+Welcome to the LK8000 NotePad file
+LK8000\_Configuration\NOTEPAD.TXT 
+
+This file must be encoded in UTF8 format. For example, using Windows' Notepad be sure that "Save as" will use UTF8 and not other encodings.
+If you choose an incorrect encoding, international characters would not appear, or the whole file may not appear at all.
+UTF8 encoding can be made with or without BOM header, it does not matter to LK. 
+
+You can add many pages to this file, each one with a different title.
+Each title is enclosed in squared brackets at the beginning of a new line.
+Lines starting with # are comments. 
+# For example this line will not appear in the notepad.
+
+Try moving to the next page for another example.
+
+International characters test 
+
+Test: °çòàù§èé^ì
+
+Russian:
+"Разл"
+"Дист"
+"Скор"
+"Рег"
+"Вар"
+"< Наз"
+"(пустой)"
+"(финиш)"
+"(недейств)"
+"Местность"
+"Настройки экрана"
+"Внешний вид"
+"Шрифты"
+
+Greek:
+Διαφορά
+Αποσταση
+Διακ
+< Προηγ
+(Κενό)
+(Τέλος)
+(Άκυρο)
+Τοποθεσία
+Εμφάνιση
+Γραμματοσειρά
+Δεδομένα Χάρτη 
+Αγώνας
 
 
 [Radio Frequency]
@@ -50,52 +87,11 @@ Example for a DG300:
 
 etc.etc.
 
+
 [Thank You]
 
 Thanks for reading this notepad example.
-You can now close this page, it is over.
+This is the last page. Next page will take you back to the beginning.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-I said it is over!
 
 
