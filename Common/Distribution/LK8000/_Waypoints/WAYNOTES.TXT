@@ -1,4 +1,4 @@
-# WAYNOTES.txt
+# WAYNOTES.TXT
 # For any waypoint, you can add additional full screen notes with long text descriptions.
 # The only constraint is that in order to be correlated to a waypoint, you need to specify
 # its name as-it-is in the waypoint file.  
