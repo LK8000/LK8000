@@ -684,10 +684,7 @@ bool InputEvents::processButton(unsigned MenuId) {
 
     int lastMode = thismode;
 
-    #if (WINDOWSPC>0)
-    #else
     if (!Debounce()) return true;
-    #endif
 
     // 101212 moved here so that an internal resource played will not stop LKsound running
 	PlayResource(TEXT("IDR_WAV_CLICK"));
