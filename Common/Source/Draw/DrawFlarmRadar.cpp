@@ -520,30 +520,32 @@ if(bInvCol)
 #ifdef DITHER
   rgbDrawColor = RGB_WHITENOREV;
   rgbGridColor = RGB_WHITENOREV;
+  hGreenPen.Create(PEN_SOLID, 1,RGB_WHITENOREV);
 #else
   rgbDrawColor = RGB_GREY;
   rgbGridColor = RGB_GREY;
+  hGreenPen.Create(PEN_SOLID, NIBLSCALE (1),RGB_GREEN);
 #endif
   rgb_targetlinecol = RGB_LIGHTBLUE;
   hDrawPen   = LKPen_Grey_N0;
   hDrawBrush = LKBrush_White;
   hOrangePen.Create(PEN_SOLID, NIBLSCALE (1),RGB_ORANGE);
-  hGreenPen.Create(PEN_SOLID, NIBLSCALE (1),RGB_GREEN);
 }
 else
 {
 #ifdef DITHER
   rgbDrawColor = RGB_BLACK;
   rgbGridColor = RGB_BLACK;
+  hGreenPen.Create(PEN_SOLID, 1,RGB_SBLACK);
 #else
   rgbDrawColor = RGB_DARKGREY;
   rgbGridColor = RGB_DARKGREY;
+  hGreenPen.Create(PEN_SOLID, NIBLSCALE (1),RGB_DARKGREY);
 #endif
   rgb_targetlinecol = RGB_BLUE;
   hDrawPen   = LKPen_Grey_N0; // GetStockObject( WHITE_PEN );
   hDrawBrush = LKBrush_Black;
   hOrangePen.Create(PEN_SOLID, NIBLSCALE (1),RGB_LIGHTORANGE);
-  hGreenPen.Create(PEN_SOLID, NIBLSCALE (1),RGB_DARKGREY);
 }
 
 Surface.SetTextColor(rgbDrawColor);
