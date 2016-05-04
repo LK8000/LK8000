@@ -20,6 +20,9 @@
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
+extern void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col);
+
+
 // Approx.size of the bottom-right icon corner on the bottom bar
 #define BB_ICONSIZE NIBLSCALE(26)
 
@@ -168,6 +171,9 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
     } else {
         barTextColor = RGB_WHITE;
         Surface.FillRect(&nrc, brush_bar);
+        #ifdef DITHER
+        VDrawLine(Surface,rc, rc.left,rc.bottom-BottomSize,rc.right,rc.bottom-BottomSize,INVERTCOLORS?RGB_WHITE:RGB_BLACK);
+        #endif
     }
 
   // NAVBOXES

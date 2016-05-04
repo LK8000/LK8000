@@ -64,10 +64,16 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
       Surface.FillRect(&rc, hB);
   }
 
-  // Paint borders in green, but only in nearest pages and welcome
+  // Paint borders in green, but only in nearest pages and welcome, and not in DITHER mode
+  // In case we want it in dithered mode, some changes are ready to be used.
+  #ifndef DITHER
   if (MapSpaceMode==MSM_WELCOME || (!IsMultiMap() && MapSpaceMode!=MSM_MAP) )
   {
+     #ifdef DITHER
+     LKPen BorderPen(PEN_SOLID, 1, INVERTCOLORS?RGB_WHITE:RGB_BLACK);
+     #else
      LKPen BorderPen(PEN_SOLID, NIBLSCALE(1), INVERTCOLORS?RGB_GREEN:RGB_DARKGREEN);
+     #endif
      auto OldPen = Surface.SelectObject(BorderPen);
      auto OldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
      
@@ -76,6 +82,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
      Surface.SelectObject(OldPen);
      Surface.SelectObject(OldBrush);
   }
+  #endif
 
 
 #ifdef DRAWLKSTATUS 

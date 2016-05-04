@@ -708,7 +708,11 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
     }
 
+    #ifdef DITHER
+    Surface.DrawLine(PEN_SOLID, 1, p1, p2, (INVERTCOLORS ? RGB_WHITE : RGB_BLACK), rc);
+    #else
     Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p1, p2, (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN), rc);
+    #endif
     Surface.SelectObject(LK8InfoNearestFont); // Heading line
 
     //

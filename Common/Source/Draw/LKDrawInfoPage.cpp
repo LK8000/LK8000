@@ -24,7 +24,11 @@ int InfoPageTopLineSeparator=0;
 void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col) {
     const POINT p0({ x1, y1 });
     const POINT p1({ x2, y2 });
+    #ifdef DITHER
+    Surface.DrawLine(PEN_SOLID, 1, p0, p1, col, rc);
+    #else
     Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p0, p1, col, rc);
+    #endif
 }
 
 void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit )
@@ -323,8 +327,18 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	if (curtype == IM_TRI) goto label_TRI;
 	if (curtype == IM_HSI) goto label_HSI;
 
+        #ifdef DITHER
+        if (INVERTCOLORS) {
+	   VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_WHITE);
+           VDrawLine(Surface,rc, qcolumn[0],qrow[8],qcolumn[16],qrow[8],RGB_WHITE);
+        } else {
+	   VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_BLACK);
+           VDrawLine(Surface,rc, qcolumn[0],qrow[8],qcolumn[16],qrow[8],RGB_BLACK);
+        }
+        #else
 	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
 	VDrawLine(Surface,rc, qcolumn[0],qrow[8],qcolumn[16],qrow[8],RGB_DARKGREEN);
+        #endif
 
 	// R1 C1
 	showunit=false;
@@ -846,7 +860,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	//
 label_TRI:
 #ifndef LKCOMPETITION
+        #ifdef DITHER
+	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],INVERTCOLORS?RGB_WHITE:RGB_BLACK);
+        #else
 	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
+        #endif
 	DrawTRI(Surface, rc);
 	showunit=true; // 091219
 	if (ScreenLandscape) {
@@ -911,7 +929,11 @@ label_TRI:
 
 	// This is the HSI page
 label_HSI:
+        #ifdef DITHER
+	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],INVERTCOLORS?RGB_WHITE:RGB_BLACK);
+        #else
 	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
+        #endif
 	static bool showQFU=false;
 	static bool showVFRlanding=false;
 	HSIreturnStruct HSI;
@@ -1029,7 +1051,11 @@ label_HSI:
 	// Traffic Target page
 	
 label_Target:
+        #ifdef DITHER
+	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],INVERTCOLORS?RGB_WHITE:RGB_BLACK);
+        #else
 	VDrawLine(Surface, rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
+        #endif
 	// pass the sight rectangle to use on the screen. Warning: DrawTarget will cache these values
 	// and will not use them after the first run time anymore...
 	DrawTarget(Surface, rc, qrow[3],qrow[15],qcolumn[3],qcolumn[13]);
