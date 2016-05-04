@@ -684,11 +684,10 @@ bool InputEvents::processButton(unsigned MenuId) {
 
     int lastMode = thismode;
 
-    // JMW need a debounce method here..
-#if (WINDOWSPC>0)
-#else
+    #if (WINDOWSPC>0)
+    #else
     if (!Debounce()) return true;
-#endif
+    #endif
 
     // 101212 moved here so that an internal resource played will not stop LKsound running
 	PlayResource(TEXT("IDR_WAV_CLICK"));

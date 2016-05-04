@@ -253,7 +253,7 @@ void LKProfileResetDefault(void) {
   else
       BgMapColor_Config = 2; // LCD green
 
-  debounceTimeout = 250; // 250ms;
+  debounceTimeout = 180; // 180ms;
 
   DeviceNeedClipping=false;
 
