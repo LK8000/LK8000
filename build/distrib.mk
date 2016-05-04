@@ -4,7 +4,7 @@ SOUND_FILES += Common/Distribution/LK8000/_System/_Sounds/_SOUNDS
 
 SYSTEM_FILES = $(wildcard Common/Distribution/LK8000/_Configuration/_System/*.TXT)
 SYSTEM_FILES += Common/Distribution/LK8000/_System/_SYSTEM
-SYSTEM_FILES += Common/Distribution/LK8000/_System/CREDITS.txt
+SYSTEM_FILES += Common/Distribution/LK8000/_System/CREDITS.TXT
 SYSTEM_FILES += Common/Data/Language/DEFAULT_MENU.TXT
 
 BITMAP_FILES = $(PNG) 
@@ -21,6 +21,6 @@ LANGUAGE_FILES += Common/Data/Language/ENG_MSG.TXT
 LANGUAGE_FILES += Common/Data/Language/ENG_HELP.TXT
 LANGUAGE_FILES += Common/Data/Language/_LANGUAGE
 
-CONFIG_FILES = Common/Distribution/LK8000/_Configuration/NOTEPAD.txt
+CONFIG_FILES = Common/Distribution/LK8000/_Configuration/NOTEPAD.TXT
 
-WAYPOINT_FILES = Common/Distribution/LK8000/_Waypoints/WAYNOTES.txt
+WAYPOINT_FILES = Common/Distribution/LK8000/_Waypoints/WAYNOTES.TXT
