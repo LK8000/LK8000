@@ -33,6 +33,11 @@ protected:
     bool _EnableMenu;
     bool _LButtonDown;
 
+    virtual bool OnLButtonDblClick(const POINT& Pos) {
+        _LButtonDown = true;
+        return true;
+    }
+
     virtual bool OnLButtonDown(const POINT& Pos) {
         _LButtonDown = true;
         return true;
