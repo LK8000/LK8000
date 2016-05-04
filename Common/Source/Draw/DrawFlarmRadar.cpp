@@ -524,7 +524,7 @@ if(bInvCol)
 #else
   rgbDrawColor = RGB_GREY;
   rgbGridColor = RGB_GREY;
-  hGreenPen.Create(PEN_SOLID, NIBLSCALE (1),RGB_GREEN);
+  hGreenPen.Create(PEN_SOLID,1,RGB_GREEN);
 #endif
   rgb_targetlinecol = RGB_LIGHTBLUE;
   hDrawPen   = LKPen_Grey_N0;
@@ -903,7 +903,8 @@ double scl = xtick;
 	}
 
 
-	Surface.Rectangle(rct.left , rct.bottom ,rct.right, rct.top);
+        // Borders in green not used in v6 for the flarm radar multimap page.
+        // Surface.Rectangle(rct.left , rct.bottom ,rct.right, rct.top);
 
 	Surface.SelectObject(hOrangePen);
 	fRing = xtick/2;
@@ -1300,7 +1301,7 @@ if(bSideview)
    *****************************************/
   Surface.SelectObject(hGreenPen);
   Surface.SelectObject(LKBrush_Hollow);
-  Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom+5);
+  Surface.Rectangle(rc.left,rc.top,rc.right,rc.bottom+4);
 }
 
   const LKIcon* pBmpTemp = NULL;
