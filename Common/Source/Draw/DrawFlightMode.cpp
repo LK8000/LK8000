@@ -248,52 +248,89 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   #endif
 
   if ((PDABatteryPercent==0 || PDABatteryPercent>100) && PDABatteryStatus==Battery::ONLINE && PDABatteryFlag!=Battery::CHARGING) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_BatteryFullC; else
+#endif
 	ptmpBitmap = &hBatteryFullC;
 	goto _drawbattery;
   }
 
   if (PDABatteryPercent<=6) {
 	if (flip) return;
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery12; else
+#endif
 	ptmpBitmap = &hBattery12;
 	goto _drawbattery;
   }
 
   if (PDABatteryPercent<=12) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery12; else
+#endif
 	ptmpBitmap = &hBattery12;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=24) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery24; else
+#endif
 	ptmpBitmap = &hBattery24;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=36) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery36; else
+#endif
 	ptmpBitmap = &hBattery36;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=48) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery48; else
+#endif
 	ptmpBitmap = &hBattery48;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=60) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery60; else
+#endif
 	ptmpBitmap = &hBattery60;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=72) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery72; else
+#endif
 	ptmpBitmap = &hBattery72;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=84) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery84; else
+#endif
 	ptmpBitmap = &hBattery84;
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=96) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery96; else
+#endif
 	ptmpBitmap = &hBattery96;
 	goto _drawbattery;
   }
-  if (PDABatteryStatus==Battery::ONLINE)
+  if (PDABatteryStatus==Battery::ONLINE) {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_BatteryFullC; else
+#endif
 	ptmpBitmap = &hBatteryFullC;
-  else
+  } else {
+#ifdef DITHER
+        if (!INVERTCOLORS) ptmpBitmap = &hKB_BatteryFull; else
+#endif
 	ptmpBitmap = &hBatteryFull;
+  }
 
 _drawbattery:
     if(ptmpBitmap) {

@@ -75,6 +75,28 @@ void LKLoadFixedBitmaps(void) {
   _stprintf(srcfile,_T("%sTPOINT_SML_INV%s." IMG_EXT),sDir,hires_suffix);
   hInvSmall=LKLoadBitmap(srcfile);
 
+#ifdef DITHER
+  _stprintf(srcfile,_T("%sKB_BATTERY_FULL." IMG_EXT),sDir);
+  hKB_BatteryFull=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_FULLC." IMG_EXT),sDir);
+  hKB_BatteryFullC=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_96." IMG_EXT),sDir);
+  hKB_Battery96=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_84." IMG_EXT),sDir);
+  hKB_Battery84=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_72." IMG_EXT),sDir);
+  hKB_Battery72=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_60." IMG_EXT),sDir);
+  hKB_Battery60=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_48." IMG_EXT),sDir);
+  hKB_Battery48=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_36." IMG_EXT),sDir);
+  hKB_Battery36=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_24." IMG_EXT),sDir);
+  hKB_Battery24=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%sKB_BATTERY_12." IMG_EXT),sDir);
+  hKB_Battery12=LKLoadBitmap(srcfile);
+#endif
   _stprintf(srcfile,_T("%sBATTERY_FULL." IMG_EXT),sDir);
   hBatteryFull=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%sBATTERY_FULLC." IMG_EXT),sDir);
@@ -268,6 +290,18 @@ void LKUnloadFixedBitmaps(void) {
     hLoggerOff.Release();
     hLoggerDisabled.Release();
     hFLARMTraffic.Release();
+#ifdef DITHER
+    hKB_BatteryFull.Release();
+    hKB_BatteryFullC.Release();
+    hKB_Battery96.Release();
+    hKB_Battery84.Release();
+    hKB_Battery72.Release();
+    hKB_Battery60.Release();
+    hKB_Battery48.Release();
+    hKB_Battery36.Release();
+    hKB_Battery24.Release();
+    hKB_Battery12.Release();
+#endif
     hBatteryFull.Release();
     hBatteryFullC.Release();
     hBattery96.Release();

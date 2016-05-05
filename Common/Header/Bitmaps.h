@@ -48,6 +48,18 @@ BEXTMODE LKIcon hBattery48;
 BEXTMODE LKIcon hBattery36;
 BEXTMODE LKIcon hBattery24;
 BEXTMODE LKIcon hBattery12;
+#ifdef DITHER
+BEXTMODE LKIcon hKB_BatteryFull;
+BEXTMODE LKIcon hKB_BatteryFullC;
+BEXTMODE LKIcon hKB_Battery96;
+BEXTMODE LKIcon hKB_Battery84;
+BEXTMODE LKIcon hKB_Battery72;
+BEXTMODE LKIcon hKB_Battery60;
+BEXTMODE LKIcon hKB_Battery48;
+BEXTMODE LKIcon hKB_Battery36;
+BEXTMODE LKIcon hKB_Battery24;
+BEXTMODE LKIcon hKB_Battery12;
+#endif
 
 BEXTMODE LKIcon hNoTrace;
 BEXTMODE LKIcon hFullTrace;
