@@ -144,10 +144,10 @@ bool ParseAirports(XMLNode &airportsNode)
             if(_tcsicmp(dataStr,_T("GLIDING"))==0)              { new_waypoint.Style=STYLE_GLIDERSITE; comments<<"Glider site"<<std::endl; }
             break;
         case 'H':
-            continue; // For now skip heliports
-            //if (_tcsicmp(dataStr,_T("HELI_CIVIL"))==0) { new_waypoint.Style=STYLE_AIRFIELDSOLID; }
-            //else if(_tcsicmp(dataStr,_T("HELI_MIL"))==0) { new_waypoint.Style=STYLE_AIRFIELDSOLID; }
-            //break;
+            if(!ISGAAIRCRAFT) continue; // Consider heliports only for GA aircraft
+            if (_tcsicmp(dataStr,_T("HELI_CIVIL"))==0)          { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<"Civil Heliport"<<std::endl; }
+            else if(_tcsicmp(dataStr,_T("HELI_MIL"))==0)        { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<"Military Heliport"<<std::endl; }
+            break;
         case 'I':
             if(_tcsicmp(dataStr,_T("INTL_APT"))==0)             comments<<"International Airport"<<std::endl;
             break;
