@@ -131,8 +131,9 @@ else ifeq ($(CONFIG_WINE),y)
  CPU    :=i586
  MCPU   := -mcpu=$(CPU)
 else ifeq ($(TARGET_IS_KOBO),y)
+ OPTIMIZE := -O3 -g
  TCPATH := arm-unknown-linux-gnueabi-
- MCPU   := -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -ffast-math -funsafe-loop-optimizations
+ MCPU   := -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations
 else ifeq ($(TARGET_IS_PI),y)
  TCPATH := arm-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
