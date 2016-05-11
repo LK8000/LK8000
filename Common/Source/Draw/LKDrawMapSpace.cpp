@@ -70,9 +70,9 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
   if (MapSpaceMode==MSM_WELCOME || (!IsMultiMap() && MapSpaceMode!=MSM_MAP) )
   {
      #ifdef DITHER
-     LKPen BorderPen(PEN_SOLID, 1, INVERTCOLORS?RGB_WHITE:RGB_BLACK);
+     LKPen BorderPen(PEN_SOLID, ScreenThinSize, INVERTCOLORS?RGB_WHITE:RGB_BLACK);
      #else
-     LKPen BorderPen(PEN_SOLID, 1, INVERTCOLORS?RGB_GREEN:RGB_DARKGREEN);
+     LKPen BorderPen(PEN_SOLID, ScreenThinSize, INVERTCOLORS?RGB_GREEN:RGB_DARKGREEN);
      #endif
      auto OldPen = Surface.SelectObject(BorderPen);
      auto OldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);

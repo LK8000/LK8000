@@ -172,16 +172,16 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	if (notraffic) {
 		if (Appearance.InverseInfoBox) {
                         #ifdef DITHER
-			Surface.DrawLine(PEN_SOLID, 1, cross_left, cross_right, RGB_WHITE,rc);
-			Surface.DrawLine(PEN_SOLID, 1, cross_top, cross_bottom, RGB_WHITE,rc);
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_WHITE,rc);
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_WHITE,rc);
                         #else
 			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_GREY,rc);
 			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_GREY,rc);
                         #endif
 		} else {
                         #ifdef DITHER
-			Surface.DrawLine(PEN_SOLID, 1, cross_left, cross_right, RGB_BLACK,rc);
-			Surface.DrawLine(PEN_SOLID, 1, cross_top, cross_bottom, RGB_BLACK,rc);
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_BLACK,rc);
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_BLACK,rc);
                         #else
 			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
 			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
@@ -196,8 +196,8 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
                 #endif
 	} else {
                 #ifdef DITHER
-		Surface.DrawLine(PEN_SOLID, 1, cross_left, cross_right, RGB_DARKGREY,rc);
-		Surface.DrawLine(PEN_SOLID, 1, cross_top, cross_bottom, RGB_DARKGREY,rc);
+		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_DARKGREY,rc);
+		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_DARKGREY,rc);
 		hscalecol=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
 		vscalecol=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
                 #else
@@ -210,8 +210,8 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   } else {
 	if (Appearance.InverseInfoBox) {
                 #ifdef DITHER
-		Surface.DrawLine(PEN_SOLID, 1, cross_left, cross_right, RGB_WHITE,rc);
-		Surface.DrawLine(PEN_SOLID, 1, cross_top, cross_bottom, RGB_WHITE,rc);
+		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_WHITE,rc);
+		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_WHITE,rc);
 		hscalecol=RGB_WHITE;
 		vscalecol=RGB_WHITE;
                 #else
@@ -222,8 +222,8 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
                 #endif
 	} else {
                 #ifdef DITHER
-		Surface.DrawLine(PEN_SOLID, 1, cross_left, cross_right, RGB_BLACK,rc);
-		Surface.DrawLine(PEN_SOLID, 1, cross_top, cross_bottom, RGB_BLACK,rc);
+		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_BLACK,rc);
+		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_BLACK,rc);
 		hscalecol=RGB_BLACK;
 		vscalecol=RGB_BLACK;
                 #else
@@ -238,7 +238,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 
   // Then we draw the scales, degrees on horizontal line
   #ifdef DITHER
-  #define SCALESIZE  1
+  #define SCALESIZE  ScreenThinSize
   #else
   #define SCALESIZE  NIBLSCALE(1)
   #endif

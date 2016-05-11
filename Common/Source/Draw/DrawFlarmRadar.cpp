@@ -520,11 +520,11 @@ if(bInvCol)
 #ifdef DITHER
   rgbDrawColor = RGB_WHITENOREV;
   rgbGridColor = RGB_WHITENOREV;
-  hGreenPen.Create(PEN_SOLID, 1,RGB_WHITENOREV);
+  hGreenPen.Create(PEN_SOLID, ScreenThinSize,RGB_WHITENOREV);
 #else
   rgbDrawColor = RGB_GREY;
   rgbGridColor = RGB_GREY;
-  hGreenPen.Create(PEN_SOLID,1,RGB_GREEN);
+  hGreenPen.Create(PEN_SOLID,ScreenThinSize,RGB_GREEN);
 #endif
   rgb_targetlinecol = RGB_LIGHTBLUE;
   hDrawPen   = LKPen_Grey_N0;
@@ -536,7 +536,7 @@ else
 #ifdef DITHER
   rgbDrawColor = RGB_BLACK;
   rgbGridColor = RGB_BLACK;
-  hGreenPen.Create(PEN_SOLID, 1,RGB_SBLACK);
+  hGreenPen.Create(PEN_SOLID, ScreenThinSize,RGB_SBLACK);
 #else
   rgbDrawColor = RGB_DARKGREY;
   rgbGridColor = RGB_DARKGREY;

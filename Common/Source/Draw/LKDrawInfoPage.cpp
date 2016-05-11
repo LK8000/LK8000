@@ -25,7 +25,7 @@ void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y
     const POINT p0({ x1, y1 });
     const POINT p1({ x2, y2 });
     #ifdef DITHER
-    Surface.DrawLine(PEN_SOLID, 1, p0, p1, col, rc);
+    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p0, p1, col, rc);
     #else
     Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p0, p1, col, rc);
     #endif
