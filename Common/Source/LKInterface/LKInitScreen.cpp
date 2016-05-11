@@ -124,6 +124,18 @@ void InitLKScreen() {
 	else
 		ScreenLandscape=false;
   }
+  ScreenDensity=GetScreenDensity();
+  #ifdef __linux__
+  if (ScreenDensity>200)
+     ScreenThinSize=NIBLSCALE(1);
+  else
+     ScreenThinSize=1;
+  #else
+  ScreenThinSize=1;
+  #endif
+  #ifdef TESTBENCH
+  StartupStore(_T("... ScreenDensity= %d  ThinSize=%d%s"),ScreenDensity,ScreenThinSize,NEWLINE);
+  #endif
 
   if (ScreenLandscape) {
 	GestureSize=50;
@@ -251,6 +263,18 @@ double GetScreen0Ratio(void) {
   return ratio;
 }
 
+//
+// Quick and dirty PPI estimation
+//
+unsigned short GetScreenDensity(void) {
 
+  #ifdef KOBO
+  #define DEFAULT_SCREEN_SIZE 6
+  #else
+  #define DEFAULT_SCREEN_SIZE 5
+  #endif
 
+  return sqrt(ScreenSizeX*ScreenSizeX + ScreenSizeY*ScreenSizeY)/DEFAULT_SCREEN_SIZE;
+
+}
 

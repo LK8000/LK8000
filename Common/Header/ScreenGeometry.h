@@ -32,6 +32,7 @@
 
 extern unsigned short GetScreenGeometry(unsigned int x, unsigned int y);
 extern double GetScreen0Ratio(void);
+extern unsigned short GetScreenDensity(void);
 
 
 #endif
