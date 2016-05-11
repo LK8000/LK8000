@@ -2360,8 +2360,64 @@ olc_score:
 			break;
 
 
-
 		// B131
+		case LK_ALTERN1_DISTNM:
+		// B132
+		case LK_ALTERN2_DISTNM:
+			_stprintf(BufferValue,_T(NULLMEDIUM));
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			switch(lkindex) {
+				case LK_ALTERN1_DISTNM:
+					index=Alternate1;
+					break;
+				case LK_ALTERN2_DISTNM:
+					index=Alternate2;
+					break;
+				default:
+					index=0;
+					break;
+			}
+
+			if(ValidWayPoint(index))
+			{
+				if ( DisplayTextType == DISPLAYFIRSTTHREE)
+				{
+					LK_tcsncpy(BufferTitle,WayPointList[index].Name,3);
+				}
+				else if( DisplayTextType == DISPLAYNUMBER) {
+					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
+				} else {
+					LK_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
+					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
+					if (lktitle)
+						BufferTitle[12] = '\0'; // FIX TUNING
+					else
+						BufferTitle[8] = '\0';  // FIX TUNING
+				}
+				value=TONAUTICALMILES*WayPointCalc[index].Distance;
+				valid=true;
+			}
+
+
+			if (valid) {
+				if (value>99 || value==0)
+					_stprintf(BufferValue, TEXT("%.0f"),value);
+				else {
+					if (ISPARAGLIDER) {
+						if (value>10)
+							_stprintf(BufferValue, TEXT("%.1f"),value);
+						else
+							_stprintf(BufferValue, TEXT("%.2f"),value);
+					} else {
+							_stprintf(BufferValue, TEXT("%.1f"),value);
+					}
+				}
+			}
+			_stprintf(BufferUnit, TEXT("nm"));
+			break;
+
+
+		// B141
 		case LK_WIND:
 			// LKTOKEN  _@M1185_ = "Wind"
 			_tcscpy(BufferTitle, MsgToken(1185));
@@ -2387,7 +2443,7 @@ olc_score:
 
 
 
-		// B132 Final arrival with MC 0 , no totaly energy.
+		// B142 Final arrival with MC 0 , no totaly energy.
 		case LK_FIN_ALTDIFF0:
 			_stprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
@@ -2409,7 +2465,7 @@ olc_score:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B133  091222 using old ETE corrected now
+		// B143  091222 using old ETE corrected now
 		case LK_LKFIN_ETE:
 lkfin_ete:
 			_stprintf(BufferValue,_T(NULLTIME)); // 091222
@@ -2465,7 +2521,7 @@ lkfin_ete:
             UnlockTaskData();
 			break;
 
-		// B134
+		// B144
 		// Using MC=0!  total energy disabled
 		case LK_NEXT_ALTDIFF0:
 			_stprintf(BufferValue,_T(NULLLONG));
@@ -2486,7 +2542,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B135
+		// B145
 		case LK_TIME_LOCALSEC:
 			Units::TimeToTextS(BufferValue, (int)DetectCurrentTime());
 			valid=true;
@@ -2494,7 +2550,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1080));
 			break;
 
-		// B136
+		// B146
 		case LK_TARGET_DIST:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2517,7 +2573,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1024));
 			break;
 
-		// B137
+		// B147
 		case LK_TARGET_TO:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2551,7 +2607,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1096));
 			break;
 
-		// B138
+		// B148
 		case LK_TARGET_BEARING:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2571,7 +2627,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1008));
 			break;
 
-		// B139
+		// B149
 		case LK_TARGET_SPEED:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 			    _stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2589,7 +2645,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1014));
 			break;
 
-		// B140
+		// B150
 		case LK_TARGET_ALT:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2607,7 +2663,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B141
+		// B151
 		// DO NOT USE RELATIVE ALTITUDE: when not real time, it won't change in respect to our position!!!
 		// This is negative when target is below us because it represent a remote position
 		case LK_TARGET_ALTDIFF:
@@ -2627,7 +2683,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B142
+		// B152
 		case LK_TARGET_VARIO:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2647,7 +2703,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1194));
 			break;
 
-		// B143
+		// B153
 		case LK_TARGET_AVGVARIO:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2667,7 +2723,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1189));
 			break;
 
-		// B144
+		// B154
 		case LK_TARGET_ALTARRIV:
 			_stprintf(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1188_ = "Arr"
@@ -2691,7 +2747,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B145
+		// B155
 		case LK_TARGET_GR:
 			_stprintf(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1187_ = "ReqE"
@@ -2715,7 +2771,7 @@ lkfin_ete:
 			}
 			break;
 
-		// B146
+		// B156
 		case LK_TARGET_EIAS:
 			// LKTOKEN  _@M1186_ = "eIAS"
 			_tcscpy(BufferTitle, MsgToken(1186));
@@ -2731,7 +2787,7 @@ lkfin_ete:
 			break;
 
 
-		// B147 Distance from the start sector, always available also after start
+		// B157 Distance from the start sector, always available also after start
 		case LK_START_DIST:
 			if ( ValidTaskPoint(0) && ValidTaskPoint(1) ) { // if real task
 				if((ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())&& ActiveTaskPoint == 0) {
@@ -2771,7 +2827,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1192));
 			break;
 
-		// B156
+		// B166
 		case LK_NEXT_CENTER_ALTDIFF:
 			_stprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
@@ -2796,7 +2852,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B157
+		// B167
 		case LK_NEXT_CENTER_GR:
 			_stprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
@@ -2821,7 +2877,7 @@ lkfin_ete:
 			}
             UnlockTaskData();
 			break;
-        // B158
+        // B168
         case LK_START_SPEED:
             valid = false;
             value = 0;

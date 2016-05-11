@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  150702
+# MASTER UPDATED:  160511
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1874,6 +1874,8 @@ _@M1840_ "BestAlternate:"
 #infobox
 _@M1841_ "Alternate1 radial"
 _@M1842_ "Alternate2 radial"
+_@M1843_ "Alternate1 dist.nm"
+_@M1844_ "Alternate2 dist.nm"
 
 # Reverse task
 _@M1850_ "Reverse\nTask"

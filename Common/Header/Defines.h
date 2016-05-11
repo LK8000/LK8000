@@ -671,42 +671,44 @@
 #define LK_ALTERN1_RAD                  128
 #define LK_ALTERN2_RAD                  129
 #define LK_HEADING                      130
+#define LK_ALTERN1_DISTNM		131
+#define LK_ALTERN2_DISTNM		132
 
 // The following values are not available for custom configuration
 
-#define LK_WIND			131		//
-#define LK_FIN_ALTDIFF0		132		// final (task) altitude difference at MC=0
-#define LK_LKFIN_ETE		133		// real ETE 
-#define LK_NEXT_ALTDIFF0	134		// 
-#define LK_TIME_LOCALSEC	135		// with seconds displayed
+#define LK_WIND			141		//
+#define LK_FIN_ALTDIFF0		142		// final (task) altitude difference at MC=0
+#define LK_LKFIN_ETE		143		// real ETE 
+#define LK_NEXT_ALTDIFF0	144		// 
+#define LK_TIME_LOCALSEC	145		// with seconds displayed
 // Target infos
-#define LK_TARGET_DIST		136		//
-#define LK_TARGET_TO		137		//
-#define LK_TARGET_BEARING	138		//
-#define LK_TARGET_SPEED		139		//
-#define LK_TARGET_ALT		140		//
-#define LK_TARGET_ALTDIFF	141		//
-#define LK_TARGET_VARIO		142		//
-#define LK_TARGET_AVGVARIO	143		//
-#define LK_TARGET_ALTARRIV	144		//
-#define LK_TARGET_GR		145		//
-#define LK_TARGET_EIAS		146		//
+#define LK_TARGET_DIST		146		//
+#define LK_TARGET_TO		147		//
+#define LK_TARGET_BEARING	148		//
+#define LK_TARGET_SPEED		149		//
+#define LK_TARGET_ALT		150		//
+#define LK_TARGET_ALTDIFF	151		//
+#define LK_TARGET_VARIO		152		//
+#define LK_TARGET_AVGVARIO	153		//
+#define LK_TARGET_ALTARRIV	154		//
+#define LK_TARGET_GR		155		//
+#define LK_TARGET_EIAS		156		//
 // Time gates
-#define LK_START_DIST		147		//
+#define LK_START_DIST		157		//
 
 // overtarget values  UNUSED 
-// #define LK_ALT1_DIST		148		//
-// #define LK_ALT2_DIST		149		//
-// #define LK_BALT_DIST		150		//
-// #define LK_ALT1_BRGDIFF		151		//
-// #define LK_ALT2_BRGDIFF		152		//
-// #define LK_BALT_BRGDIFF		153		//
-// #define LK_LASTTHERMAL_DIST	154		//
-// #define LK_LASTTHERMAL_BRGDIFF	155		//
+// #define LK_ALT1_DIST		158		//
+// #define LK_ALT2_DIST		159		//
+// #define LK_BALT_DIST		160		//
+// #define LK_ALT1_BRGDIFF		161		//
+// #define LK_ALT2_BRGDIFF		162		//
+// #define LK_BALT_BRGDIFF		163		//
+// #define LK_LASTTHERMAL_DIST	164		//
+// #define LK_LASTTHERMAL_BRGDIFF	165		//
 
-#define LK_NEXT_CENTER_ALTDIFF 156  // Same As  LK_NEXT_ALTDIFF but always with Waypoint center
-#define LK_NEXT_CENTER_GR	157	// Same as LK_NEXT_GR but always with Waypoint center
-#define LK_START_SPEED		158	// Requiered speed for reach Start of task at Gate Time !
+#define LK_NEXT_CENTER_ALTDIFF 166  // Same As  LK_NEXT_ALTDIFF but always with Waypoint center
+#define LK_NEXT_CENTER_GR	167	// Same as LK_NEXT_GR but always with Waypoint center
+#define LK_START_SPEED		168	// Requiered speed for reach Start of task at Gate Time !
 
 
 // Service values
