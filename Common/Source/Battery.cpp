@@ -70,6 +70,10 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
 #if defined(__linux__)
 #ifdef KOBO
 #include "OS/FileUtil.hpp"
+#include "Hardware/CPU.hpp"
+#include "utils/make_unique.h"
+
+std::unique_ptr<ScopeLockCPU> cpu;
 
 bool GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 {
@@ -101,8 +105,12 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo)
         ptr += n;
         if (!strcmp(field, "POWER_SUPPLY_STATUS")) {
             if (!strcmp(value, "Not charging") || !strcmp(value, "Charging")) {
+                if(!cpu) {
+                    cpu = std::make_unique<ScopeLockCPU>();
+                }
                 pBatteryInfo->acStatus = Battery::ONLINE;
             } else if (!strcmp(value, "Discharging")) {
+                cpu = nullptr;
                 pBatteryInfo->acStatus = Battery::OFFLINE;
             }
         } else if (!strcmp(field, "POWER_SUPPLY_CAPACITY")) {
@@ -110,6 +118,7 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo)
             int rem = atoi(value);
             pBatteryInfo->BatteryLifePercent = rem;
             if (pBatteryInfo->acStatus == Battery::OFFLINE) {
+                cpu = nullptr;
                 if (rem > 30) {
                     pBatteryInfo->chargeStatus = Battery::HIGH;
                 } else if (rem >= 10) {
@@ -118,6 +127,9 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo)
                     pBatteryInfo->chargeStatus = Battery::CRITICAL;
                 }
             } else {
+                if(!cpu) {
+                    cpu = std::make_unique<ScopeLockCPU>();
+                }
                 pBatteryInfo->chargeStatus = Battery::CHARGING;
             }
         }
