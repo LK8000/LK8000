@@ -610,7 +610,7 @@ void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot) {
         if (!UseExtSound1 && !UseExtSound2) LKSound(_T("TARGVISIBLE.WAV"));
   } else {
 	// otherwise a simple sound
-	PlayResource(TEXT("IDR_WAV_DRIP"));
+	if (!UseExtSound1 && !UseExtSound2) PlayResource(TEXT("IDR_WAV_DRIP"));
   }
 }
 
