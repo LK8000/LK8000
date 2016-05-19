@@ -24,9 +24,9 @@ void MapWindow::DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT
   o2.y = Orig.y;
 
   if (BlackScreen)
-	  Surface.DrawLine(PEN_SOLID, 1, o1, o2, RGB_INVDRAW, rc);
+	  Surface.DrawLine(PEN_SOLID, ScreenThinSize, o1, o2, RGB_INVDRAW, rc);
   else
-	  Surface.DrawLine(PEN_SOLID, 1, o1, o2, RGB_DARKGREY, rc);
+	  Surface.DrawLine(PEN_SOLID, ScreenThinSize, o1, o2, RGB_DARKGREY, rc);
 
   Surface.SetPixel(o1.x,o1.y,RGB_YELLOW);
   Surface.SetPixel(o2.x,o2.y,RGB_YELLOW);
@@ -37,9 +37,9 @@ void MapWindow::DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT
   o2.y = Orig.y-NIBLSCALE(20);
 
   if (BlackScreen)
-	  Surface.DrawLine(PEN_SOLID, 1, o1, o2, RGB_INVDRAW, rc); // 091219
+	  Surface.DrawLine(PEN_SOLID, ScreenThinSize, o1, o2, RGB_INVDRAW, rc); // 091219
   else
-	  Surface.DrawLine(PEN_SOLID, 1, o1, o2, RGB_DARKGREY, rc); // 091219
+	  Surface.DrawLine(PEN_SOLID, ScreenThinSize, o1, o2, RGB_DARKGREY, rc); // 091219
 
   Surface.SetPixel(o1.x,o1.y,RGB_YELLOW);
   Surface.SetPixel(o2.x,o2.y,RGB_YELLOW);

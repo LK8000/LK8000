@@ -435,9 +435,9 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
    * calc round leg grid
    ********************************************************************/
   #ifndef DITHER
-  hpSectorPen.Create(PEN_SOLID, (1), RGB_GREY );
+  hpSectorPen.Create(PEN_SOLID, ScreenThinSize, RGB_GREY );
   #else
-  hpSectorPen.Create(PEN_SOLID, (1), RGB_DARKGREY );
+  hpSectorPen.Create(PEN_SOLID, ScreenThinSize, RGB_DARKGREY );
   #endif
   Surface.SelectObject(hpSectorPen);
 

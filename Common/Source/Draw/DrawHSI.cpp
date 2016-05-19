@@ -643,7 +643,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         Surface.DrawLine(PEN_SOLID,NIBLSCALE(1),internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
         internal.x=external.x=internal.x+(external.x-internal.x)/2;
         external.y=VSIairplaneSymTail;
-        Surface.DrawLine(PEN_SOLID,1,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
+        Surface.DrawLine(PEN_SOLID,ScreenThinSize,internal,external,INVERTCOLORS?RGB_WHITE:RGB_BLACK,rc);
         Surface.SelectObject(INVERTCOLORS?LKPen_White_N1:LKPen_Black_N1);
         Surface.DrawCircle(internal.x,centerY,NIBLSCALE(1),false);
 

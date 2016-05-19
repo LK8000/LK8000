@@ -85,14 +85,14 @@ void LKObjects_Create() {
   LKBrush_FormBackGround.Create(RGB_WINBACKGROUND);
   
   // CUSTOM PENS
-  LKPen_Black_N0.Create(PEN_SOLID,1,RGB_BLACK);
+  LKPen_Black_N0.Create(PEN_SOLID,ScreenThinSize,RGB_BLACK);
   LKPen_Black_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_BLACK);
   LKPen_Black_N2.Create(PEN_SOLID,NIBLSCALE(2),RGB_BLACK);
   LKPen_Black_N3.Create(PEN_SOLID,NIBLSCALE(3),RGB_BLACK);
   LKPen_Black_N4.Create(PEN_SOLID,NIBLSCALE(4),RGB_BLACK);
   LKPen_Black_N5.Create(PEN_SOLID,NIBLSCALE(5),RGB_BLACK);
 
-  LKPen_White_N0.Create(PEN_SOLID,1,RGB_WHITE);
+  LKPen_White_N0.Create(PEN_SOLID,ScreenThinSize,RGB_WHITE);
   LKPen_White_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_WHITE);
   LKPen_White_N2.Create(PEN_SOLID,NIBLSCALE(2),RGB_WHITE);
   LKPen_White_N3.Create(PEN_SOLID,NIBLSCALE(3),RGB_WHITE);
@@ -105,7 +105,7 @@ void LKObjects_Create() {
   LKPen_Red_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_RED);
   LKPen_Blue_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_BLUE);
 
-  LKPen_Grey_N0.Create(PEN_SOLID,1,RGB_GREY);
+  LKPen_Grey_N0.Create(PEN_SOLID,ScreenThinSize,RGB_GREY);
   LKPen_Grey_N1.Create(PEN_SOLID,NIBLSCALE(1),RGB_GREY);
   LKPen_Grey_N2.Create(PEN_SOLID,NIBLSCALE(2),RGB_GREY);
 
@@ -203,7 +203,7 @@ void LKObjects_Create() {
   MapWindow::hSnailPens[5].Create(PEN_DASH,  iwidth/NIBLSCALE(6), MapWindow::hSnailColours[5]);
   MapWindow::hSnailPens[6].Create(PEN_DASH,  iwidth/NIBLSCALE(7), MapWindow::hSnailColours[6]);
 
-  MapWindow::hSnailPens[7].Create(PEN_SOLID,  1, MapWindow::hSnailColours[7]); // white on white
+  MapWindow::hSnailPens[7].Create(PEN_SOLID,  ScreenThinSize, MapWindow::hSnailColours[7]); // white on white
 
   MapWindow::hSnailPens[8].Create(PEN_SOLID,  iwidth/NIBLSCALE(7), MapWindow::hSnailColours[8]);
   MapWindow::hSnailPens[9].Create(PEN_SOLID,  iwidth/NIBLSCALE(6), MapWindow::hSnailColours[9]);
@@ -259,7 +259,7 @@ void LKObjects_Create() {
   MapWindow::hpThermalBandGlider.Create(PEN_SOLID, NIBLSCALE(2), LKColor(0x00,0x00,0x30));
   MapWindow::hpFinalGlideBelow.Create(PEN_SOLID, NIBLSCALE(1), LKColor(0xFF,0xA0,0xA0)); // another light red
   MapWindow::hpFinalGlideAbove.Create(PEN_SOLID, NIBLSCALE(1), LKColor(0xA0,0xFF,0xA0)); // another light green
-  MapWindow::hpTerrainLine.Create(PEN_DASH, (1), LKColor(0x30,0x30,0x30)); // shade
+  MapWindow::hpTerrainLine.Create(PEN_DASH, ScreenThinSize, LKColor(0x30,0x30,0x30)); // shade
   MapWindow::hpTerrainLineBg.Create(PEN_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
 
 

@@ -554,7 +554,7 @@ if (iOpposite >0)
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
-  hpSectorPen.Create(PEN_SOLID, (1), RGB_BLACK );
+  hpSectorPen.Create(PEN_SOLID, ScreenThinSize, RGB_BLACK );
   Surface.SelectObject(hpSectorPen);
   Surface.SetTextColor(RGB_BLACK);
   double fTic= 1/DISTANCEMODIFY;

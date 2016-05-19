@@ -21,7 +21,7 @@ void MapWindow::DrawMultimap_SideTopSeparator(LKSurface& Surface, const RECT& rc
             { rci.left, rci.bottom - 1}, 
             { rci.right, rci.bottom - 1}
         };
-        Surface.DrawLine(PEN_SOLID, 1, line[0], line[1], RGB_BLACK, rci);
+        Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1], RGB_BLACK, rci);
     }
 }
 
