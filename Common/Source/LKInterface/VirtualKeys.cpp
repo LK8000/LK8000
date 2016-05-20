@@ -81,6 +81,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	// 120602 fix
 	// TopSize is dynamically assigned by DrawNearest,Drawcommon, DrawXX etc. so we cannot make static yups
+        // v5 bug fix: TopSize is available only after DrawNearest is executed. So it is now reset at 0 
+        // on ChangeScreen, but it is a mistake. Really we dont need TopSize, it was used for Long center key
+        // press which is no more in use.
 	//
 	longpress_yup=(short)((MapWindow::Y_BottomBar-TopSize)/3.7)+TopSize;
 	longpress_ydown=(short)(MapWindow::Y_BottomBar-(MapWindow::Y_BottomBar/3.7));

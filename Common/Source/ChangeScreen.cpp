@@ -139,6 +139,10 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
   Reset_Single_DoInits(MDI_DRAWTASK);
 
+  // Some parameters need to be reset in advance, otherwise they will be retuned only when the 
+  // relative DoInit is accomplished. This is a mistake of course.
+  TopSize=0; // requires a DrawNearest. 0 is Ok on startup.
+
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
   #endif
