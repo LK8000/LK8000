@@ -51,6 +51,7 @@ KOBO_POWER_OFF_OBJ     = \
 KOBO_KERNEL_SOURCES = \
     kobo/kernel/uImage-E50610 \
     kobo/kernel/uImage-E60Q90 \
+    kobo/kernel/uImage-E606B0 \
 
 
 KOBO_KERNEL = \
