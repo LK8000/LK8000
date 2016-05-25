@@ -51,13 +51,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-  // LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-  // LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->Set(PGOptimizeRoute);
     wp->RefreshDisplay();
   }
@@ -122,8 +116,8 @@ void dlgTimeGatesShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
-    if (PGOptimizeRoute != (wp->GetDataField()->GetAsInteger())) {
-      PGOptimizeRoute = (wp->GetDataField()->GetAsInteger());
+    if (PGOptimizeRoute != (wp->GetDataField()->GetAsBoolean())) {
+      PGOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
       changed = true;
 
       if (ISPARAGLIDER) {
