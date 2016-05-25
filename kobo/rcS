@@ -192,7 +192,7 @@ fi
 echo " " > /mnt/onboard/LK8000/kobo/start_nickel
 
 # finally, launch LK8000-KOBO
-/opt/LK8000/bin/LK8000-KOBO
+/opt/LK8000/bin/LK8000-KOBO >> /mnt/onboard/LK8000/kobo/error.log 2>&1
 
 
 # this is in case of abnormal termination : fill blank black.
