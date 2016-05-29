@@ -35,7 +35,6 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("R"),
     _T("Q"),
     _T("P"),
-    _T("CTR"),
     _T("A"),
     _T("B"),
     _T("C"),
@@ -45,6 +44,7 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("E"),
     _T("F"),
     _T("G"),
+    _T("CTR"),
     _T("TMZ"),
     _T("RMZ")
 };
@@ -52,7 +52,6 @@ static const int k_nAreaType[k_nAreaCount] = {
     RESTRICT,
     DANGER,
     PROHIBITED,
-    CTR,
     CLASSA,
     CLASSB,
     CLASSC,
@@ -62,6 +61,7 @@ static const int k_nAreaType[k_nAreaCount] = {
     CLASSE,
     CLASSF,
     CLASSG,
+    CTR,
     CLASSTMZ,
     CLASSRMZ
 };
