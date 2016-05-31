@@ -978,6 +978,11 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 // TASMAN instruments support for Tasman Flight Pack model Fp10
 BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 4) {
+    // max index used is 3...
+    return FALSE;
+  }
+  
   double wnet,baralt,vtas;
 
   wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
