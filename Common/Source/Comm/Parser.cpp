@@ -1005,6 +1005,11 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 BOOL NMEAParser::HCHDG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 1) {
+    // max index used is 0...
+    return FALSE;
+  }
+  
   (void)pGPS;
   double mag=0;
   mag=StrToDouble(params[0],NULL);
