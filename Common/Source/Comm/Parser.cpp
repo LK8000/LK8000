@@ -928,6 +928,11 @@ BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 {
   (void)pGPS;
 
+  if(nparams < 1) {
+    // max index used is 0...
+    return FALSE;
+  }
+  
   double vias=StrToDouble(params[0],NULL)/10.0;
   if (vias >1) {
     pGPS->TrueAirspeed = vias*AirDensityRatio(pGPS->Altitude);
