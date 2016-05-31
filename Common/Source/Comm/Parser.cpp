@@ -947,6 +947,11 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 {
   (void)pGPS;
 
+  if(nparams < 2) {
+    // max index used is 1...
+    return FALSE;
+  }
+  
   // We want to wait for a couple of run so we are sure we are receiving RMC GGA etc.
   if (RMZDelayed--) {
 	#if DEBUGBARO
