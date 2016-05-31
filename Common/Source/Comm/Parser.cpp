@@ -517,6 +517,11 @@ BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 5) {
+    // max index used is 4...
+    return FALSE;
+  }
+  
   // GPSCONNECT = TRUE; // 121127  NO! VTG gives no position fix
   if (!activeGPS) return TRUE;
 
