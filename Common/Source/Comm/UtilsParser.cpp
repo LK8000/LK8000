@@ -53,9 +53,9 @@ size_t NMEAParser::ExtractParameters(const TCHAR *src, TCHAR *dst, TCHAR **arr, 
  */
 size_t NMEAParser::ValidateAndExtract(const TCHAR *src, TCHAR *dst, size_t dstsz, TCHAR **arr, size_t arrsz)
 {
-  int len = _tcslen(src);
+  size_t len = _tcslen(src);
 
-  if (len <= 6 || len >= (int) dstsz)
+  if (len <= 6 || len >= dstsz)
     return 0;
   if (!NMEAChecksum(src))
     return 0;
