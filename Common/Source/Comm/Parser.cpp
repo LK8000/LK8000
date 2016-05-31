@@ -441,7 +441,11 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 // followed by values with no data, ex. altitude, vario, etc.
 BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-
+  if(nparams < 6) {
+    // max index used is 5...
+    return FALSE;
+  }
+  
   gpsValid = !NAVWarn(params[5][0]);
   GPSCONNECT=TRUE;
 
