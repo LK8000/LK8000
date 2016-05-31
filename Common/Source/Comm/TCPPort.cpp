@@ -12,6 +12,16 @@
 #include "TCPPort.h"
 #include "utils/stringext.h"
 
+#ifdef __linux__
+// Optionally disable the tcp/ip optimization, to reduce latencies
+// This has effect only on write operations.
+// Only for Linux based systems
+// #define DISABLE_NAGLE
+#ifdef DISABLE_NAGLE
+#include <netinet/tcp.h>
+#endif
+#endif
+
 #ifdef linux
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -52,6 +62,13 @@ bool TCPClientPort::Connect() {
 
         return false;
     }
+
+#ifdef __linux__
+#ifdef DISABLE_NAGLE
+  int nodelay_flag = 1;
+  setsockopt(mSocket, IPPROTO_TCP, TCP_NODELAY, (void*) &nodelay_flag, sizeof(int));
+#endif
+#endif
 
 #ifdef UNICODE    
     char szaddr[16];
