@@ -571,8 +571,7 @@ void dlgTarget(int TaskPoint) {
 
   WndProperty *wp;
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskPoint"));
-  DataFieldEnum* dfe;
-  dfe = (DataFieldEnum*)wp->GetDataField();
+  DataField* dfe = wp->GetDataField();
   TCHAR tp_label[80];
   TCHAR tp_short[21];
   LockTaskData();

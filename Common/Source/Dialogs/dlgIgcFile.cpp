@@ -77,9 +77,9 @@ namespace DlgIgcFile {
                     StartHourglassCursor();
                 } else {
                     WndProperty* wp = (WndProperty*)wfDlg->FindByName(TEXT("prpDeviceList"));
-                    DataFieldEnum* dfe = NULL;
+                    DataField* dfe = NULL;
                     if (wp) {
-                        dfe = (DataFieldEnum*)wp->GetDataField();
+                        dfe = wp->GetDataField();
                     }
                     if(dfe) {
                         dfe->Clear();

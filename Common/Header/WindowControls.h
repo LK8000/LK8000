@@ -121,11 +121,11 @@ class DataField{
   virtual void GetData(void);
   virtual void SetData(void);
 
-  virtual bool GetAsBoolean(void){return(false);};
-  virtual int GetAsInteger(void){return(0);};
-  virtual double GetAsFloat(void){return(0);};
-  virtual TCHAR *GetAsString(void){return(NULL);};
-  virtual TCHAR *GetAsDisplayString(void){return(NULL);};
+  virtual bool GetAsBoolean(void) { assert(false); return(false); }
+  virtual int GetAsInteger(void) { assert(false); return(0);}
+  virtual double GetAsFloat(void) { assert(false); return(0);}
+  virtual TCHAR *GetAsString(void) { assert(false); return(NULL);}
+  virtual TCHAR *GetAsDisplayString(void) { assert(false); return(NULL); }
 
   virtual bool SetAsBoolean(bool Value){ (void)Value;
 	  return(false);};
@@ -135,10 +135,11 @@ class DataField{
 	  return(0.0);};
   virtual TCHAR *SetAsString(const TCHAR *Value){(void)Value; return(NULL);};
 
-  virtual void Set(bool Value){ (void)Value; };
-  virtual void Set(int Value){ (void)Value;};
-  virtual void Set(double Value){ (void)Value; };
-  virtual void Set(const TCHAR *Value){ (void)Value; };
+  virtual void Set(bool Value) { assert(false); }
+  virtual void Set(int Value) { assert(false); }
+  virtual void Set(double Value) { assert(false); }
+  virtual void Set(const TCHAR *Value) { assert(false); }
+  virtual void Set(unsigned Value) { assert(false); }
 
   virtual int SetMin(int Value){(void)Value; return(0);};
   virtual double SetMin(double Value){(void)Value; return(false);};
@@ -149,6 +150,11 @@ class DataField{
   void SetUnits(const TCHAR *text) { _tcscpy(mUnits, text); }
   const TCHAR* GetUnits() const { return mUnits; }
 
+  
+  virtual void addEnumText(const TCHAR *Text) { assert(false); }
+  virtual void addEnumTextNoLF(const TCHAR *Text) { assert(false); }
+  virtual void Sort(int startindex=0) { assert(false); }
+  
   void Use(void){
     mUsageCounter++;
   }
@@ -289,13 +295,10 @@ class DataFieldEnum: public DataField {
     return(GetAsString());
   };
 
-  #if defined(__BORLANDC__)
-  #pragma warn -hid
-  #endif
-  void Set(int Value);
-  #if defined(__BORLANDC__)
-  #pragma warn +hid
-  #endif
+  void Set(unsigned Value);
+  void Set(int Value) { Set((unsigned)Value); }
+  void Set(bool Value) { Set(Value?1:0); }
+
   int SetAsInteger(int Value);
   void Sort(int startindex=0);
 };

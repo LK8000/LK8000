@@ -68,8 +68,7 @@ static void SetValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(gettext(TEXT("_@M210_")));
@@ -91,8 +90,7 @@ static void SetValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(gettext(TEXT("_@M210_")));
@@ -119,8 +117,7 @@ static void SetValues(bool first=false) {
     // 110223 CAN ANYONE PLEASE CHECK WHAT THE HACK IS A BOOL FOR BILL GATES? BECAUSE IF FALSE IS -1 THEN
     // WE HAVE MANY PROBLEMS! I THINK IT IS TIME TO GO BACK TO bool AND GET RID OF MS BOOLS!!
   //  wp->SetVisible((AATEnabled==0) || (twItemIndex >0) );
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(gettext(TEXT("_@M210_")));
@@ -146,8 +143,7 @@ static void SetValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoAdvance"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M418_ = "Manual" 
       dfe->addEnumText(gettext(TEXT("_@M418_")));
@@ -280,8 +276,7 @@ static void SetWaypointValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATType"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(gettext(TEXT("_@M210_")));
@@ -341,8 +336,7 @@ static void SetWaypointValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOutCircle"));
   if (wp) {
-	  DataFieldEnum* dfe;
-	  dfe = (DataFieldEnum*)wp->GetDataField();
+	  DataField* dfe = wp->GetDataField();
 	  if (dfe) {
 		  if (first) {
 			  // LKTOKEN  _@M2226_ = "Enter" 

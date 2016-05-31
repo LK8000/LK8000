@@ -24,8 +24,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap1"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 
 	dfe->addEnumText(MsgToken(239)); // Disabled
 	dfe->addEnumText(MsgToken(259)); // Enabled
@@ -36,8 +35,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap2"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 
 	dfe->addEnumText(MsgToken(239)); // Disabled
 	dfe->addEnumText(MsgToken(259)); // Enabled
@@ -48,8 +46,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap3"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 
 	dfe->addEnumText(MsgToken(239)); // Disabled
 	dfe->addEnumText(MsgToken(259)); // Enabled
@@ -60,8 +57,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap4"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 
 	dfe->addEnumText(MsgToken(239)); // Disabled
 	dfe->addEnumText(MsgToken(259)); // Enabled
@@ -86,29 +82,25 @@ static void OnResetClicked(WndButton* pWnd){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap1"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap2"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap2);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap3"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap3);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap4"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap4);
 	wp->RefreshDisplay();
   }

@@ -538,16 +538,16 @@ TCHAR *DataFieldEnum::GetAsString(void){
 }
 
 
-void DataFieldEnum::Set(int Value){
+void DataFieldEnum::Set(unsigned Value){
   // first look it up
-  if (Value<0) {
+  if (Value >= nEnums) {
     Value = 0;
   }
   for (unsigned int i=0; i<nEnums; i++) {
-    if (mEntries[i].index == (unsigned int) Value) {
-      int lastValue = mValue;
+    if (mEntries[i].index == Value) {
+      unsigned lastValue = mValue;
       mValue = i;
-      if (mValue != (unsigned int) lastValue){
+      if (mValue != lastValue){
         if (!GetDetachGUI())(mOnDataAccess)(this, daChange); 
       }
       return;

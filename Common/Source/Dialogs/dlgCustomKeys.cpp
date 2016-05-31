@@ -15,7 +15,7 @@
 #include "WindowControls.h"
 #include "resource.h"
 
-extern void AddCustomKeyList( DataFieldEnum* dfe);
+extern void AddCustomKeyList( DataField* dfe);
 
 static bool changed = false;
 static WndForm *wf=NULL;
@@ -51,16 +51,14 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeLeftUpCorner"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeLeftUpCorner);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeRightUpCorner"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeRightUpCorner);
 	dfe->Set(CustomKeyModeRightUpCorner);
@@ -71,8 +69,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeCenter"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeCenter);
 	wp->RefreshDisplay();
@@ -80,8 +77,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeCenterScreen"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeCenterScreen);
 	wp->RefreshDisplay();
@@ -89,24 +85,21 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeLeft"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeLeft);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeRight"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeRight);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeAircraftIcon"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeAircraftIcon);
 	wp->RefreshDisplay();

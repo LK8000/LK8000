@@ -12,7 +12,7 @@
 #include "WindowControls.h"
 #include "resource.h"
 
-extern void AddCustomKeyList( DataFieldEnum* dfe);
+extern void AddCustomKeyList( DataField* dfe);
 
 static WndForm *wf=NULL;
 
@@ -26,8 +26,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
 
@@ -36,8 +35,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
 	dfe->Set(Overlay_TopMid);
@@ -45,8 +43,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
 	dfe->Set(Overlay_TopRight);
@@ -54,8 +51,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopDown"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
 	dfe->Set(Overlay_TopDown);
@@ -63,8 +59,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
         dfe->addEnumText(_T("AUX 4"));
@@ -73,8 +68,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
         dfe->addEnumText(_T("AUX 5"));
@@ -83,8 +77,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
         dfe->addEnumText(_T("AUX 6"));
@@ -93,8 +86,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
         dfe->addEnumText(_T("AUX 7"));
@@ -103,8 +95,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
         dfe->addEnumText(_T("AUX 1"));
@@ -113,8 +104,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
         dfe->addEnumText(_T("AUX 2"));
@@ -123,8 +113,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
         dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
         dfe->addEnumText(_T("AUX 3"));
@@ -142,78 +131,67 @@ static void OnResetClicked(WndButton* pWnd){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopDown"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }

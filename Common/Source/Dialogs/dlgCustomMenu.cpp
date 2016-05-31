@@ -12,7 +12,7 @@
 #include "WindowControls.h"
 #include "resource.h"
 
-extern void AddCustomKeyList( DataFieldEnum* dfe);
+extern void AddCustomKeyList( DataField* dfe);
 
 static WndForm *wf=NULL;
 
@@ -26,71 +26,61 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu1"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu2"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu2);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu3"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu3);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu4"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu4);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu5"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu5);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu6"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu6);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu7"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu7);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu8"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu8);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu9"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu9);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu10"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	AddCustomKeyList(dfe); dfe->Set(CustomMenu10);
 	wp->RefreshDisplay();
   }
@@ -105,71 +95,61 @@ static void OnResetClicked(WndButton* pWnd){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu1"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu1);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu2"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu2);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu3"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu3);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu4"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu4);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu5"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu5);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu6"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu6);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu7"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu7);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu8"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu8);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu9"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu9);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu10"));
   if (wp) {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->Set(CustomMenu10);
 	wp->RefreshDisplay();
   }

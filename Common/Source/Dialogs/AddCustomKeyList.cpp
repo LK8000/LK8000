@@ -10,7 +10,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 
-void AddCustomKeyList( DataFieldEnum* dfe) {
+void AddCustomKeyList( DataField* dfe) {
 
 	// Careful, order must respect the enum list in LKInterface.h CustomKeyMode_t
 
