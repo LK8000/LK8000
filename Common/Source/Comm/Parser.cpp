@@ -551,6 +551,11 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 9) {
+    // max index used is 8...
+    return FALSE;
+  }
+  
   TCHAR *Stop;
   static bool logbaddate=true;
   double speed=0;
