@@ -745,6 +745,10 @@ force_advance:
 
 BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 11) {
+    // max index used is 10...
+    return FALSE;
+  }
 
   GGAAvailable = TRUE;
   GPSCONNECT = TRUE;     // 091208
