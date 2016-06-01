@@ -30,67 +30,67 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB0);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB1"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB1);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB2"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB2);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB3"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB3);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB4"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB4);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB5"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB5);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB6"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB6);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB7"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB7);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB8"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB8);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB9"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB9);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0Auto"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfBB0Auto);
     wp->RefreshDisplay();
   }
