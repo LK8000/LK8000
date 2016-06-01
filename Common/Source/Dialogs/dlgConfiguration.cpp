@@ -4044,15 +4044,15 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBacklight")); // VENTA4
   if (wp) {
-    if (EnableAutoBacklight != (wp->GetDataField()->GetAsBoolean()!=0)) {
-      EnableAutoBacklight = (wp->GetDataField()->GetAsBoolean() != 0);
+    if (EnableAutoBacklight != wp->GetDataField()->GetAsBoolean()) {
+      EnableAutoBacklight = wp->GetDataField()->GetAsBoolean();
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoSoundVolume")); // VENTA4
   if (wp) {
-    if (EnableAutoSoundVolume != (wp->GetDataField()->GetAsBoolean()!=0)) {
-      EnableAutoSoundVolume = (wp->GetDataField()->GetAsBoolean() != 0);
+    if (EnableAutoSoundVolume != wp->GetDataField()->GetAsBoolean()) {
+      EnableAutoSoundVolume = wp->GetDataField()->GetAsBoolean();
     }
   }
 
