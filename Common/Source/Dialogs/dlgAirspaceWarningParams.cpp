@@ -175,22 +175,22 @@ void dlgAirspaceWarningParamsShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
   if (wp) {
-    if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsInteger()) {
-      AirspaceWarningMapLabels = wp->GetDataField()->GetAsInteger();
+    if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsBoolean()) {
+      AirspaceWarningMapLabels = wp->GetDataField()->GetAsBoolean();
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAckAllSame"));
   if (wp) {
-    if (AirspaceAckAllSame != wp->GetDataField()->GetAsInteger()) {
-      AirspaceAckAllSame = wp->GetDataField()->GetAsInteger();
+    if (AirspaceAckAllSame != wp->GetDataField()->GetAsBoolean()) {
+      AirspaceAckAllSame = wp->GetDataField()->GetAsBoolean();
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
   if (wp) {
-    if (AIRSPACEWARNINGS != wp->GetDataField()->GetAsInteger()) {
-      AIRSPACEWARNINGS = wp->GetDataField()->GetAsInteger();
+    if (AIRSPACEWARNINGS != wp->GetDataField()->GetAsBoolean()) {
+      AIRSPACEWARNINGS = wp->GetDataField()->GetAsBoolean();
     }
   }
 

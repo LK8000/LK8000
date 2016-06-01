@@ -393,7 +393,7 @@ static void ReadValues(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATEnabled"));
   if (wp) {
     CHECK_CHANGED(AATEnabled,
-                  wp->GetDataField()->GetAsInteger());
+                  wp->GetDataField()->GetAsBoolean());
 	if (DoOptimizeRoute()) AATEnabled=true; // force it on
   }
 

@@ -3451,8 +3451,8 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcStatus"));
   if (wp) {
-    if (AutoMacCready_Config != wp->GetDataField()->GetAsInteger()) {
-      AutoMacCready_Config = wp->GetDataField()->GetAsInteger();
+    if (AutoMacCready_Config != wp->GetDataField()->GetAsBoolean()) {
+      AutoMacCready_Config = wp->GetDataField()->GetAsBoolean();
       CALCULATED_INFO.AutoMacCready=AutoMacCready_Config;
     }
   }
@@ -3767,8 +3767,8 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpHideUnits"));
   if (wp) {
-      if (HideUnits != (HideUnits_t) (wp->GetDataField()->GetAsInteger())) {
-          HideUnits = (HideUnits_t) (wp->GetDataField()->GetAsInteger());
+      if (HideUnits != (HideUnits_t) (wp->GetDataField()->GetAsBoolean())) {
+          HideUnits = (HideUnits_t) (wp->GetDataField()->GetAsBoolean());
           Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
           Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
       }
@@ -3784,21 +3784,21 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBestWarning"));
   if (wp) {
-    if (BestWarning != (wp->GetDataField()->GetAsInteger())) {
-      BestWarning = (wp->GetDataField()->GetAsInteger());
+    if (BestWarning != (wp->GetDataField()->GetAsBoolean())) {
+      BestWarning = (wp->GetDataField()->GetAsBoolean());
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseTotalEnergy"));
   if (wp) {
-    if (UseTotalEnergy_Config != (wp->GetDataField()->GetAsInteger())) {
-      UseTotalEnergy_Config = (wp->GetDataField()->GetAsInteger());
+    if (UseTotalEnergy_Config != (wp->GetDataField()->GetAsBoolean())) {
+      UseTotalEnergy_Config = (wp->GetDataField()->GetAsBoolean());
       UseTotalEnergy=UseTotalEnergy_Config;
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseUngestures"));
   if (wp) {
-    if (UseUngestures != (wp->GetDataField()->GetAsInteger())) {
-      UseUngestures = (wp->GetDataField()->GetAsInteger());
+    if (UseUngestures != (wp->GetDataField()->GetAsBoolean())) {
+      UseUngestures = (wp->GetDataField()->GetAsBoolean());
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpThermalBar"));
@@ -3815,14 +3815,14 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrackBar"));
   if (wp) {
-    if (TrackBar != (wp->GetDataField()->GetAsInteger())) {
-      TrackBar = (wp->GetDataField()->GetAsInteger());
+    if (TrackBar != (wp->GetDataField()->GetAsBoolean())) {
+      TrackBar = (wp->GetDataField()->GetAsBoolean());
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
-    if (PGOptimizeRoute_Config != (wp->GetDataField()->GetAsInteger())) {
-      PGOptimizeRoute_Config = (wp->GetDataField()->GetAsInteger());
+    if (PGOptimizeRoute_Config != (wp->GetDataField()->GetAsBoolean())) {
+      PGOptimizeRoute_Config = (wp->GetDataField()->GetAsBoolean());
       PGOptimizeRoute = PGOptimizeRoute_Config;
 
       if (ISPARAGLIDER) {
@@ -3907,8 +3907,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseGeoidSeparation"));
   if (wp) {
-	if (UseGeoidSeparation != (wp->GetDataField()->GetAsInteger())) {
-		UseGeoidSeparation = (wp->GetDataField()->GetAsInteger());
+	if (UseGeoidSeparation != (wp->GetDataField()->GetAsBoolean())) {
+		UseGeoidSeparation = (wp->GetDataField()->GetAsBoolean());
 	}
   }
 
@@ -4044,15 +4044,15 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBacklight")); // VENTA4
   if (wp) {
-    if (EnableAutoBacklight != (wp->GetDataField()->GetAsInteger()!=0)) {
-      EnableAutoBacklight = (wp->GetDataField()->GetAsInteger() != 0);
+    if (EnableAutoBacklight != (wp->GetDataField()->GetAsBoolean()!=0)) {
+      EnableAutoBacklight = (wp->GetDataField()->GetAsBoolean() != 0);
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoSoundVolume")); // VENTA4
   if (wp) {
-    if (EnableAutoSoundVolume != (wp->GetDataField()->GetAsInteger()!=0)) {
-      EnableAutoSoundVolume = (wp->GetDataField()->GetAsInteger() != 0);
+    if (EnableAutoSoundVolume != (wp->GetDataField()->GetAsBoolean()!=0)) {
+      EnableAutoSoundVolume = (wp->GetDataField()->GetAsBoolean() != 0);
     }
   }
 
@@ -4153,8 +4153,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
   if (wp) {
-	if (UseExtSound1 != (wp->GetDataField()->GetAsInteger())) {
-		UseExtSound1 = (wp->GetDataField()->GetAsInteger());
+	if (UseExtSound1 != (wp->GetDataField()->GetAsBoolean())) {
+		UseExtSound1 = (wp->GetDataField()->GetAsBoolean());
 	}
   }
   
@@ -4212,8 +4212,8 @@ int ival;
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound2"));
   if (wp) {
-	if (UseExtSound2 != (wp->GetDataField()->GetAsInteger())) {
-		UseExtSound2 = (wp->GetDataField()->GetAsInteger());
+	if (UseExtSound2 != (wp->GetDataField()->GetAsBoolean())) {
+		UseExtSound2 = (wp->GetDataField()->GetAsBoolean());
 	}
   }
 
@@ -4268,7 +4268,7 @@ int ival;
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu")); // VENTA9
-  if (wp) EngineeringMenu = wp->GetDataField()->GetAsInteger();
+  if (wp) EngineeringMenu = wp->GetDataField()->GetAsBoolean();
 
 
  UpdateAircraftConfig();
