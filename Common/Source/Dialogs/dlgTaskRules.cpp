@@ -141,8 +141,8 @@ bool dlgTaskRules(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
   if (wp) {
-    if (EnableFAIFinishHeight != (wp->GetDataField()->GetAsInteger()>0)) {
-      EnableFAIFinishHeight = (wp->GetDataField()->GetAsInteger()>0);
+    if (EnableFAIFinishHeight != (wp->GetDataField()->GetAsBoolean()>0)) {
+      EnableFAIFinishHeight = (wp->GetDataField()->GetAsBoolean()>0);
       changed = true;
     }
   }
