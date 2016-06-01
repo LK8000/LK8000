@@ -288,7 +288,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     Surface.DrawText(x+1, y-1, Value);
     Surface.DrawText(x+1, y+1, Value);
 
-    if (OutlinedTp && 1) {
+    if (OutlinedTp) {
         Surface.DrawText(x-2, y, Value);
         Surface.DrawText(x+2, y, Value);
         Surface.DrawText(x, y-2, Value);

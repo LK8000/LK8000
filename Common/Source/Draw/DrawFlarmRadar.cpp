@@ -1262,7 +1262,7 @@ if(bSideview)
 			break;
 	  }
 	  _tcscpy(lbuffer,_T(""));
-	  if (LKTraffic[i].Cn && LKTraffic[i].Cn[0]!=_T('?')) { // 100322
+	  if (LKTraffic[i].Cn[0]!=_T('?')) { // 100322
 	    _stprintf(lbuffer,_T("%s: %s"),asFLARMPos[i].szGliderType,LKTraffic[i].Cn);
 	  }
 

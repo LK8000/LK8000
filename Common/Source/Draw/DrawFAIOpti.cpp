@@ -653,7 +653,7 @@ int iCnt = 0;
           Surface.DrawText(line[0].x, line[0].y, text);
 
       if(iCnt > 2)
-        if((i== (FAI_SECTOR_STEPS/2)))
+        if(i== (FAI_SECTOR_STEPS/2))
           Surface.DrawText(line[0].x, line[0].y, text);
 
       line[1] =  line[0];

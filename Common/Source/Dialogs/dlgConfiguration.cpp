@@ -134,7 +134,7 @@ void reset_wConfig(void) {
     std::fill(std::begin(wConfig), std::end(wConfig), nullptr);
 }
 
-void FontSetEnums( DataFieldEnum* dfe) {
+void FontSetEnums( DataField* dfe) {
 
     dfe->addEnumText(TEXT("-10"));
     dfe->addEnumText(TEXT("-9"));
@@ -159,7 +159,7 @@ void FontSetEnums( DataFieldEnum* dfe) {
     dfe->addEnumText(TEXT("+10"));
 }
 /*
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("-5"));
 */
 
@@ -1108,8 +1108,7 @@ static void SetInfoBoxSelector(int item, int mode)
   WndProperty *wp;
   wp = (WndProperty*)wf->FindByName(name);
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(gettext(Data_Options[i].Description));
     }
@@ -1195,13 +1194,13 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
     RefreshComPortList();
     
     if (wp) {
-        DataFieldEnum* dfe = (DataFieldEnum*) wp->GetDataField();
+        DataField* dfe =  wp->GetDataField();
         if(dfe) {
             dfe->Clear();
             std::for_each(
             	COMMPort.begin(),
             	COMMPort.end(),
-            	std::bind(&DataFieldEnum::addEnumText, dfe, std::bind(&COMMPortItem_t::GetLabel, _1))
+            	std::bind(&DataField::addEnumText, dfe, std::bind(&COMMPortItem_t::GetLabel, _1))
             );
             COMMPort_t::iterator It = std::find_if(
                 COMMPort.begin(), 
@@ -1209,7 +1208,7 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
                 std::bind(&COMMPortItem_t::IsSamePort, _1, szPort)
             );
             if(It != COMMPort.end()) {
-                dfe->Set(std::distance(COMMPort.begin(), It));
+                dfe->Set((unsigned)std::distance(COMMPort.begin(), It));
             } else {
                 dfe->Set(0);
             }
@@ -1282,9 +1281,8 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataFieldEnum::addEnumText, dfe, _1));
+    DataField* dfe = wp->GetDataField();
+    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1));
     
     dfe->Set(dwSpeedIndex1);
     wp->SetReadOnly(false);
@@ -1292,8 +1290,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("8bit"));
     dfe->addEnumText(TEXT("7bit"));
     dfe->Set(dwBit1Index);
@@ -1327,8 +1324,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     for (int i=0; i<DeviceRegisterCount; i++) {
       LPCTSTR DeviceName = devRegisterGetName(i);
       dfe->addEnumText(DeviceName);
@@ -1348,9 +1344,8 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed2"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataFieldEnum::addEnumText, dfe, _1));
+    DataField* dfe = wp->GetDataField();
+    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1));
 
     dfe->Set(dwSpeedIndex2);
     wp->RefreshDisplay();
@@ -1358,8 +1353,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComBit2"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("8bit"));
     dfe->addEnumText(TEXT("7bit"));
     dfe->Set(dwBit2Index);
@@ -1386,8 +1380,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice2"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     for (int i=0; i<DeviceRegisterCount; i++) {
       LPCTSTR DeviceName = devRegisterGetName(i);
       dfe->addEnumText(DeviceName);
@@ -1402,8 +1395,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M79_ = "All on" 
     dfe->addEnumText(gettext(TEXT("_@M79_")));
 	// LKTOKEN  _@M184_ = "Clip" 
@@ -1422,7 +1414,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFillType"));
   if (wp) {
-    DataFieldEnum* dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     if(dfe) {
         dfe->addEnumText(gettext(TEXT("_@M941_")));
 #ifdef HAVE_HATCHED_BRUSH
@@ -1441,8 +1433,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOpacity"));
   if (wp) {
     wp->SetVisible(true);
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("0 %"));
     dfe->addEnumText(TEXT("10 %"));
     dfe->addEnumText(TEXT("20 %"));
@@ -1463,8 +1454,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpBarOpacity"));
   if (wp) {
     wp->SetVisible(true);
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("0 %"));
     dfe->addEnumText(TEXT("5 %"));
     dfe->addEnumText(TEXT("10 %"));
@@ -1500,8 +1490,7 @@ static void setVariables(void) {
   //
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapWaypoint"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
     dfe->Set(FontMapWaypoint);
     wp->RefreshDisplay();
@@ -1509,8 +1498,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapTopology"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
     dfe->Set(FontMapTopology);
     wp->RefreshDisplay();
@@ -1518,8 +1506,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontInfopage1L"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
     dfe->Set(FontInfopage1L);
     wp->RefreshDisplay();
@@ -1527,8 +1514,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontBottomBar"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
     dfe->Set(FontBottomBar);
     wp->RefreshDisplay();
@@ -1536,8 +1522,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontVisualGlide"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
     dfe->Set(FontVisualGlide);
     wp->RefreshDisplay();
@@ -1545,8 +1530,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayTarget"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
     dfe->Set(FontOverlayMedium);
     wp->RefreshDisplay();
@@ -1554,8 +1538,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayValues"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
     dfe->Set(FontOverlayBig);
     wp->RefreshDisplay();
@@ -1571,8 +1554,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontRenderer"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 
     dfe->addEnumText(gettext(TEXT("_@M955_"))); // Clear Type Compatible
     dfe->addEnumText(gettext(TEXT("_@M956_"))); // Anti Aliasing
@@ -1587,8 +1569,7 @@ static void setVariables(void) {
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpAspPermDisable"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("_@M968_"))); // _@M968_ "for this time only"
     dfe->addEnumText(gettext(TEXT("_@M969_"))); // _@M969_ "permanent"
     dfe->Set(AspPermanentChanged);
@@ -1598,8 +1579,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeMode"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M382_ = "Landables only" 
     dfe->addEnumText(gettext(TEXT("_@M382_")));
 	// LKTOKEN  _@M380_ = "Landables and Turnpoints" 
@@ -1655,21 +1635,19 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableFLARMMap"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("_@M239_"))); // Disabled
     dfe->addEnumText(gettext(TEXT("_@M259_"))); // Enabled
     // dfe->addEnumText(gettext(TEXT("_@M959_"))); // OFF
     // dfe->addEnumText(gettext(TEXT("_@M496_"))); // ON fixed
     // dfe->addEnumText(gettext(TEXT("_@M497_"))); // ON scaled
-    dfe->Set(EnableFLARMMap);
+    dfe->Set((int)EnableFLARMMap);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointLabels"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M454_ = "Names" 
     dfe->addEnumText(gettext(TEXT("_@M454_")));
 
@@ -1706,8 +1684,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOrientation"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M737_ = "Track up" 
     dfe->addEnumText(gettext(TEXT("_@M737_")));
 	// LKTOKEN  _@M483_ = "North up" 
@@ -1746,8 +1723,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinalGlideTerrain"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M959_ = "OFF" 
     dfe->addEnumText(gettext(TEXT("_@M959_")));
 	// LKTOKEN  _@M393_ = "Line" 
@@ -1792,8 +1768,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoWind"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M418_ = "Manual" 
     dfe->addEnumText(gettext(TEXT("_@M418_")));
 	// LKTOKEN  _@M175_ = "Circling" 
@@ -1809,8 +1784,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcMode"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("_@M290_")));  // Final Glide
     dfe->addEnumText(gettext(TEXT("_@M1684_"))); // Average thermal
     dfe->addEnumText(gettext(TEXT("_@M1685_"))); // Final + Average
@@ -1821,8 +1795,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointsOutOfRange"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M100_ = "Ask" 
     dfe->addEnumText(gettext(TEXT("_@M100_")));
 	// LKTOKEN  _@M350_ = "Include" 
@@ -1849,8 +1822,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGClimbZoom"));
   if (wp) {
     TCHAR buf1[32];
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     for (int i=0; i<=5; ++i) {
       MapWindow::zoom.GetPgClimbInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]));
       dfe->addEnumText(buf1);
@@ -1862,8 +1834,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGCruiseZoom"));
   if (wp) {
     TCHAR buf1[32];
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     for (int i=0; i<=9; ++i) {
       if (MapWindow::zoom.GetPgCruiseInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
 	dfe->addEnumText(buf1);
@@ -1891,22 +1862,20 @@ static void setVariables(void) {
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsSpeed"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
     dfe->addEnumText(gettext(TEXT("_@M667_")));
 	// LKTOKEN  _@M455_ = "Nautical" 
     dfe->addEnumText(gettext(TEXT("_@M455_")));
 	// LKTOKEN  _@M436_ = "Metric" 
     dfe->addEnumText(gettext(TEXT("_@M436_")));
-    dfe->Set(SpeedUnit_Config);
+    dfe->Set((int)SpeedUnit_Config);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLatLon"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("DDMMSS"));
     dfe->addEnumText(TEXT("DDMMSS.ss"));
     dfe->addEnumText(TEXT("DDMM.mmm"));
@@ -1918,8 +1887,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsTaskSpeed"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
     dfe->addEnumText(gettext(TEXT("_@M667_")));
 	// LKTOKEN  _@M455_ = "Nautical" 
@@ -1932,8 +1900,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsDistance"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
     dfe->addEnumText(gettext(TEXT("_@M667_")));
 	// LKTOKEN  _@M455_ = "Nautical" 
@@ -1946,8 +1913,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsAltitude"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("feet")));
     dfe->addEnumText(gettext(TEXT("meters")));
     dfe->Set(AltitudeUnit_Config);
@@ -1956,8 +1922,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLift"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("knots")));
     dfe->addEnumText(gettext(TEXT("m/s")));
     dfe->Set(LiftUnit_Config);
@@ -1972,8 +1937,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpThermalLocator"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M959_ = "OFF" 
     dfe->addEnumText(gettext(TEXT("_@M959_")));
 	// LKTOKEN  _@M427_ = "Mark center" 
@@ -2023,8 +1987,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrail"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M499_ = "Off" 
     dfe->addEnumText(gettext(TEXT("_@M499_")));
 	// LKTOKEN  _@M410_ = "Long" 
@@ -2257,8 +2220,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("Generic"));
     dfe->addEnumText(TEXT("HP31x"));
     dfe->addEnumText(TEXT("MedionP5"));
@@ -2282,8 +2244,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftCategory"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M328_ = "Glider" 
     dfe->addEnumText(gettext(TEXT("_@M328_")));
 	// LKTOKEN  _@M520_ = "Paraglider/Delta" 
@@ -2292,7 +2253,6 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M2148_")));
 	// LKTOKEN  _@M313_ = "GA Aircraft" 
     dfe->addEnumText(gettext(TEXT("_@M313_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(AircraftCategory);
     wp->RefreshDisplay();
   }
@@ -2302,7 +2262,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltArrivMode"));
   if (wp) {
     DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe = wp->GetDataField();
 	// LKTOKEN  _@M768_ = "Use MacCready" 
      dfe->addEnumText(gettext(TEXT("_@M768_")));
 	// LKTOKEN  _@M90_ = "Always use MC=0" 
@@ -2311,7 +2271,6 @@ static void setVariables(void) {
      dfe->addEnumText(gettext(TEXT("_@M91_")));
 	// LKTOKEN  _@M769_ = "Use aver.efficiency" 
      dfe->addEnumText(gettext(TEXT("_@M769_")));
-     dfe = (DataFieldEnum*)wp->GetDataField();
      dfe->Set(AltArrivMode);
     wp->RefreshDisplay();
   }
@@ -2319,48 +2278,41 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCheckSum"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
 	// LKTOKEN  _@M259_ = "Enabled" 
     dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(CheckSum);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpIphoneGestures"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M364_ = "Inverted" 
     dfe->addEnumText(gettext(TEXT("_@M364_")));
 	// LKTOKEN  _@M480_ = "Normal" 
     dfe->addEnumText(gettext(TEXT("_@M480_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(IphoneGestures);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPollingMode"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M480_ = "Normal" 
     dfe->addEnumText(gettext(TEXT("_@M480_")));
 	// LKTOKEN  _@M529_ = "Polling" 
     dfe->addEnumText(gettext(TEXT("_@M529_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(PollingMode);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioBar"));
   if (wp) {
-    DataFieldEnum* dfe;
     TCHAR newtoken[150];
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
 	// LKTOKEN  _@M782_ = "Vario rainbow" 
@@ -2381,19 +2333,16 @@ static void setVariables(void) {
     _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M781_")) );
     dfe->addEnumText(newtoken);
 
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(LKVarioBar);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioVal"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("_@M1425_"))); // vario in thermal and cruise
     dfe->addEnumText(gettext(TEXT("_@M1426_")));  // vario in thermal, netto in cruise
     dfe->addEnumText(gettext(TEXT("_@M1427_")));  // vario in thermal, sollfahr in cruise
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(LKVarioVal);
     wp->RefreshDisplay();
   }
@@ -2409,8 +2358,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpDeclutterMode"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
 	// LKTOKEN  _@M414_ = "Low" 
@@ -2421,7 +2369,6 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M339_")));
 	// LKTOKEN  _@M786_ = "Very High" 
     dfe->addEnumText(gettext(TEXT("_@M786_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(DeclutterMode);
     wp->RefreshDisplay();
   }
@@ -2454,8 +2401,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpThermalBar")); // 091122
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
 	// LKTOKEN  +_@M2149_ = "in thermal"
@@ -2463,20 +2409,17 @@ static void setVariables(void) {
 	// LKTOKEN  +_@M2150_ = "in thermal and cruise"
     dfe->addEnumText(gettext(TEXT("_@M2150_")));
     dfe->addEnumText(gettext(TEXT("_@M1833_"))); // Always
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(ThermalBar);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayClock"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     // LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
     // LKTOKEN  _@M259_ = "Enabled" 
     dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(OverlayClock);
     wp->RefreshDisplay();
   }
@@ -2501,38 +2444,33 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOutlinedTp"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M78_ = "All black" 
     dfe->addEnumText(gettext(TEXT("_@M78_")));
 	// LKTOKEN  _@M778_ = "Values white" 
     dfe->addEnumText(gettext(TEXT("_@M778_")));
 	// LKTOKEN  _@M81_ = "All white" 
     dfe->addEnumText(gettext(TEXT("_@M81_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(OutlinedTp_Config);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTpFilter"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M473_ = "No landables" 
     dfe->addEnumText(gettext(TEXT("_@M473_")));
 	// LKTOKEN  _@M80_ = "All waypoints" 
     dfe->addEnumText(gettext(TEXT("_@M80_")));
 	// LKTOKEN  _@M211_ = "DAT Turnpoints" 
     dfe->addEnumText(gettext(TEXT("_@M211_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(TpFilter);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverColor"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M816_ = "White" 
     dfe->addEnumText(gettext(TEXT("_@M816_")));
 	// LKTOKEN  _@M144_ = "Black" 
@@ -2561,15 +2499,13 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M391_")));
 	// LKTOKEN  _@M522_ = "Petrol" 
     dfe->addEnumText(gettext(TEXT("_@M522_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(OverColor);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapBox"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M763_ = "Unboxed, no units" 
     dfe->addEnumText(gettext(TEXT("_@M763_")));
 	// LKTOKEN  _@M764_ = "Unboxed, with units" 
@@ -2578,71 +2514,62 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M152_")));
 	// LKTOKEN  _@M153_ = "Boxed, with units" 
     dfe->addEnumText(gettext(TEXT("_@M153_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(MapBox);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlaySize"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M842_ = "Big font " 
     dfe->addEnumText(gettext(TEXT("_@M842_")));
 	// LKTOKEN  _@M843_ = "Small font " 
     dfe->addEnumText(gettext(TEXT("_@M843_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe = wp->GetDataField();
     dfe->Set(OverlaySize);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpGlideBarMode"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
 	// LKTOKEN  _@M461_ = "Next turnpoint" 
     dfe->addEnumText(gettext(TEXT("_@M461_")));
 	// LKTOKEN  _@M299_ = "Finish" 
     dfe->addEnumText(gettext(TEXT("_@M299_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(GlideBarMode);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpArrivalValue"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M98_ = "ArrivalAltitude" 
     dfe->addEnumText(gettext(TEXT("_@M98_")));
 	// LKTOKEN  _@M254_ = "EfficiencyReq" 
     dfe->addEnumText(gettext(TEXT("_@M254_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(ArrivalValue);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpNewMapDeclutter"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
 	// LKTOKEN  _@M414_ = "Low" 
     dfe->addEnumText(gettext(TEXT("_@M414_")));
 	// LKTOKEN  _@M339_ = "High" 
     dfe->addEnumText(gettext(TEXT("_@M339_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(NewMapDeclutter);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAverEffTime"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(1775)); // 3 sec
     dfe->addEnumText(MsgToken(1776)); // 5 sec
     dfe->addEnumText(MsgToken(1777)); // 10 sec
@@ -2659,15 +2586,13 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M23_")));
 	// LKTOKEN  _@M29_ = "3 minutes" 
     dfe->addEnumText(gettext(TEXT("_@M29_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(AverEffTime);
     wp->RefreshDisplay();
  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBgMapcolor"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M816_ = "White" 
     dfe->addEnumText(gettext(TEXT("_@M816_")));
 	// LKTOKEN  _@M392_ = "Light grey" 
@@ -2688,7 +2613,6 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M567_")));
 	// LKTOKEN  _@M144_ = "Black" 
     dfe->addEnumText(gettext(TEXT("_@M144_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(BgMapColor_Config);
     wp->RefreshDisplay();
  }
@@ -2696,8 +2620,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndLandable"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(1797)); // Vector
 	// LKTOKEN  _@M87_ = "Alternate" 
     dfe->addEnumText(gettext(TEXT("_@M87_")));
@@ -2707,8 +2630,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInverseInfoBox"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M958_ = "ON" 
     dfe->addEnumText(gettext(TEXT("_@M958_")));
 	// LKTOKEN  _@M959_ = "OFF" 
@@ -2737,8 +2659,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainRamp"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M413_ = "Low lands" 
     dfe->addEnumText(gettext(TEXT("_@M413_")));
 	// LKTOKEN  _@M439_ = "Mountainous" 
@@ -2790,8 +2711,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M210_ = "Cylinder" 
     dfe->addEnumText(gettext(TEXT("_@M210_")));
 	// LKTOKEN  _@M393_ = "Line" 
@@ -2811,8 +2731,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M210_ = "Cylinder" 
     dfe->addEnumText(gettext(TEXT("_@M210_")));
 	// LKTOKEN  _@M393_ = "Line" 
@@ -2832,8 +2751,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M210_ = "Cylinder" 
     dfe->addEnumText(gettext(TEXT("_@M210_")));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
@@ -2854,8 +2772,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoAdvance"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(418)); // Manual
     dfe->addEnumText(MsgToken(897)); // Auto
     dfe->addEnumText(MsgToken(97)); // Arm
@@ -2905,8 +2822,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearWarning"));
   if (wp)
   {
-	DataFieldEnum* dfe;
-	dfe = (DataFieldEnum*)wp->GetDataField();
+	DataField* dfe = wp->GetDataField();
 	dfe->addEnumText(gettext(TEXT("_@M1831_")));	// LKTOKEN  _@M1831_ "Off"
 	dfe->addEnumText(gettext(TEXT("_@M1832_")));	// LKTOKEN  _@M1832_ "Near landables"
 	dfe->addEnumText(gettext(TEXT("_@M1833_")));	// LKTOKEN   _@M1833_ "Allways"
@@ -2951,8 +2867,7 @@ wp->RefreshDisplay();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPressureHg"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("hPa"));
     dfe->addEnumText(TEXT("inHg"));
     dfe->Set(PressureHg);

@@ -28,85 +28,85 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP11"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP11);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP12"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP12);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP13"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP13);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP14"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP14);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP15"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP15);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP16"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP16);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP17"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP17);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP21"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP21);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP22"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP22);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP23"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP23);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP24"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP24);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP31"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP31);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP32"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP32);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpIP33"));
   if (wp) {
-    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP33);
     wp->RefreshDisplay();
   }

@@ -433,6 +433,11 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, long Id)
 
 BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 6) {
+    // max index used is 5...
+    return FALSE;
+  }
+  
   int flarm_slot = 0;
 
   isFlarm = true;

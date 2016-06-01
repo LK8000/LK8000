@@ -441,7 +441,11 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 // followed by values with no data, ex. altitude, vario, etc.
 BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-
+  if(nparams < 6) {
+    // max index used is 5...
+    return FALSE;
+  }
+  
   gpsValid = !NAVWarn(params[5][0]);
   GPSCONNECT=TRUE;
 
@@ -513,6 +517,11 @@ BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 5) {
+    // max index used is 4...
+    return FALSE;
+  }
+  
   // GPSCONNECT = TRUE; // 121127  NO! VTG gives no position fix
   if (!activeGPS) return TRUE;
 
@@ -547,6 +556,11 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 9) {
+    // max index used is 8...
+    return FALSE;
+  }
+  
   TCHAR *Stop;
   static bool logbaddate=true;
   double speed=0;
@@ -745,6 +759,10 @@ force_advance:
 
 BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 11) {
+    // max index used is 10...
+    return FALSE;
+  }
 
   GGAAvailable = TRUE;
   GPSCONNECT = TRUE;     // 091208
@@ -910,6 +928,11 @@ BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 {
   (void)pGPS;
 
+  if(nparams < 1) {
+    // max index used is 0...
+    return FALSE;
+  }
+  
   double vias=StrToDouble(params[0],NULL)/10.0;
   if (vias >1) {
     pGPS->TrueAirspeed = vias*AirDensityRatio(pGPS->Altitude);
@@ -929,6 +952,11 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 {
   (void)pGPS;
 
+  if(nparams < 2) {
+    // max index used is 1...
+    return FALSE;
+  }
+  
   // We want to wait for a couple of run so we are sure we are receiving RMC GGA etc.
   if (RMZDelayed--) {
 	#if DEBUGBARO
@@ -955,6 +983,11 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 // TASMAN instruments support for Tasman Flight Pack model Fp10
 BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 4) {
+    // max index used is 3...
+    return FALSE;
+  }
+  
   double wnet,baralt,vtas;
 
   wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
@@ -977,6 +1010,11 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 BOOL NMEAParser::HCHDG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+  if(nparams < 1) {
+    // max index used is 0...
+    return FALSE;
+  }
+  
   (void)pGPS;
   double mag=0;
   mag=StrToDouble(params[0],NULL);

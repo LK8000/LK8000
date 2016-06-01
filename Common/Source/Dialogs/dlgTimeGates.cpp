@@ -87,8 +87,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGStartOut"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M343_ = "IN (Exit)" 
     dfe->addEnumText(gettext(TEXT("_@M343_")));
 	// LKTOKEN  _@M498_ = "OUT (Enter)" 

@@ -60,8 +60,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("AGL")));
     dfe->addEnumText(gettext(TEXT("MSL")));
     dfe->Set(StartHeightRef);
@@ -106,8 +105,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAI28_45Threshold"));
   if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
+    DataField* dfe = wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("500km (DMSt/OLC)")));
     dfe->addEnumText(gettext(TEXT("750km (FAI)")));
     if(FAI28_45Threshold > FAI_BIG_THRESHOLD)

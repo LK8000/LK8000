@@ -121,7 +121,7 @@ static int	iRectangleSize = 4;
 		sc_av = sc_name;
 
 		_tcscpy(lbuffer,_T(""));
-		if (DrawInfo.FLARM_Traffic[i].Cn && DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
+		if (DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
 			_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
 		}
 		if (DrawInfo.FLARM_Traffic[i].Average30s>=0.1) {

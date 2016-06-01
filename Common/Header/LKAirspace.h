@@ -514,8 +514,9 @@ public:
 
 private:
   static CAirspaceManager _instance;
-  CAirspaceManager(const CAirspaceManager&) { _selected_airspace = NULL; _sideview_nearest = NULL; }
-  CAirspaceManager& operator=(const CAirspaceManager&);
+  CAirspaceManager() { _selected_airspace = NULL; _sideview_nearest = NULL; }
+  CAirspaceManager(const CAirspaceManager&) = delete;
+  CAirspaceManager& operator=(const CAirspaceManager&) = delete;
   ~CAirspaceManager() { CloseAirspaces(); }
   
   // Airspaces data

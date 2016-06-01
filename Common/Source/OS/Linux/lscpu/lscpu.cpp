@@ -150,7 +150,7 @@ path_getnum(const char *path, ...)
 {
 	FILE *fd;
 	va_list ap;
-	int result;
+	int result = 0;
 
 	va_start(ap, path);
 	fd = path_vfopen("r", 1, path, ap);

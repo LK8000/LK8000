@@ -380,7 +380,7 @@ namespace dlgBlueFlyConfig {
             // Init Enum WndProperty
             WndProperty* pWnd = (WndProperty*)wfDlg->FindByName(_T("BOM"));
             if(pWnd) {
-                DataFieldEnum* pData =(DataFieldEnum*)pWnd->GetDataField();
+                DataField* pData = pWnd->GetDataField();
                 if(pData) {
                     pData->addEnumText(_T("BlueFlyVario"));
                     pData->addEnumText(_T("LK8EX1"));
