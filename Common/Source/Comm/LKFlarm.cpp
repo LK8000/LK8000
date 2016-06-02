@@ -434,6 +434,7 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, long Id)
 BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 6) {
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PFLAA sentence, nparams=%d%s"),nparams,NEWLINE));
     // max index used is 5...
     return FALSE;
   }
