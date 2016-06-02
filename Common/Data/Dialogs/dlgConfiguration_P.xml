@@ -516,6 +516,9 @@
       <WndProperty Name="prpInputFile" Caption="_@M268_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H222_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
+      <WndProperty Name="prpCheckSum" Caption="_@M449_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H161_">
+        <DataField Name="" DataType="enum"  Min="0" Max="1" Step="1"/>
+      </WndProperty>
     </WndFrame>
   </WndForm>
 </PMML>

@@ -59,9 +59,6 @@
       <WndProperty Name="prpPollingMode" Caption="_@M596_" X="0" Y="-1" Width="-1" Height="21" CaptionWidth="115" Font="2" Help="_@H160_">
         <DataField Name="" DataType="enum"  Min="0" Max="1" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpCheckSum" Caption="_@M449_" X="0" Y="-1" Width="-1" Height="21" CaptionWidth="115" Font="2" Help="_@H161_">
-        <DataField Name="" DataType="enum"  Min="0" Max="1" Step="1"/>
-      </WndProperty>
       <WndProperty Name="prpAppInfoBoxModel" Caption="_@M234_" X="0" Y="-1" Width="-1" Height="21" CaptionWidth="115" Font="2" Help="_@H209_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
