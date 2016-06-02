@@ -360,7 +360,7 @@ class DataFieldFileReader: public DataField {
   #endif
   int SetAsInteger(int Value);
 
-  void Sort();
+  void Sort(int startindex=0);
   void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
 
  protected:
