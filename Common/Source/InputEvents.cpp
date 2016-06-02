@@ -266,7 +266,6 @@ void InputEvents::readFile() {
       // General checks before continue...
       if (
 	  some_data
-	  && (d_mode != NULL)						// We have a mode
 	  && (_tcscmp(d_mode, TEXT("")) != 0)		//
 	  ) {
 
