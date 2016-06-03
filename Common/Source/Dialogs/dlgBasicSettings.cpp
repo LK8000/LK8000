@@ -150,7 +150,7 @@ static void SetBallast(bool updateDevices) {
 
 //int BallastSecsToEmpty = 120;
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
   // devices are updates by BallastDump() method when dumping water ballast
   SetBallast(false); 
 

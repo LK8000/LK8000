@@ -23,15 +23,10 @@ CAirspaceBase airspace_copy;
 AirspaceWarningMessage msg;
 int timer_counter;
 
-WndForm *dlg=NULL;
-
-void dlgLKAirspaceFill();
+static void dlgLKAirspaceFill(WndForm* dlg);
 
 static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface) {
-    (void) Sender;
-
-    WndFrame *wPicto = ((WndFrame *) dlg->FindByName(TEXT("frmAirspacePicto")));
-    if (wPicto) {
+    if (Sender) {
         Surface.SetBkColor(RGB_LIGHTGREY);
         /****************************************************************
          * for drawing the airspace pictorial, we need the original data.
@@ -39,35 +34,33 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface) {
          * original data are shared ressources !
          * for that we need to grant all called methods are thread safe
          ****************************************************************/
-        msg.originator->DrawPicto(Surface, wPicto->GetClientRect());
+        msg.originator->DrawPicto(Surface, Sender->GetClientRect());
     }
 }
 
+static void OnCloseClicked(WndButton* pWnd) {
+  if(pWnd && pWnd->GetTopOwner()) {
+      static_cast<WndForm*>(pWnd->GetTopOwner())->SetModalResult(mrOK);
+  }
+}
+
 static void OnAckForTimeClicked(WndButton* pWnd) {
-  (void)pWnd;
-  if (dlg == NULL) return;
   if (msg.originator == NULL) return;
   CAirspaceManager::Instance().AirspaceSetAckLevel(*msg.originator, msg.warnlevel);
-  dlg->SetModalResult(mrOK);
+  OnCloseClicked(pWnd);
 }
 
-static void OnCloseClicked(WndButton* pWnd) {
-  (void)pWnd;
-  if (dlg==NULL) return;
-  dlg->SetModalResult(mrOK);
-}
-
-static bool OnTimer(){
+static bool OnTimer(WndForm* pWnd){
   // Auto close dialog after some time
   if (!(--timer_counter)) {
-    dlg->SetModalResult(mrOK);
+    pWnd->SetModalResult(mrOK);
     return true;
   }
   
   //Get a new copy with current values from airspacemanager
   if (msg.originator) {
   	airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
-  	dlgLKAirspaceFill();
+  	dlgLKAirspaceFill(pWnd);
   }
   return true;
 }
@@ -94,7 +87,7 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void dlgLKAirspaceFill()
+static void dlgLKAirspaceFill(WndForm* dlg)
 {
   if (msg.warnlevel != airspace_copy.WarningLevel()) {
     // we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
@@ -342,8 +335,7 @@ void dlgLKAirspaceFill()
 short ShowAirspaceWarningsToUser()
 {
 
-  if (msg.originator != NULL) return 0;        // Dialog already open
-
+  if (msg.originator != NULL) return 0; // Warning in progress
 
   bool there_is_message = CAirspaceManager::Instance().PopWarningMessage(&msg);
 
@@ -401,7 +393,7 @@ short ShowAirspaceWarningsToUser()
 
   // show dialog to user if needed
   if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
-    dlg = dlgLoadFromXML(CallBackTable, NULL, ScreenLandscape ? IDR_XML_LKAIRSPACEWARNING_L : IDR_XML_LKAIRSPACEWARNING_P);
+    WndForm * dlg = dlgLoadFromXML(CallBackTable, NULL, ScreenLandscape ? IDR_XML_LKAIRSPACEWARNING_L : IDR_XML_LKAIRSPACEWARNING_P);
     if (dlg==NULL) {
       StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027
       return 0;
@@ -418,17 +410,16 @@ short ShowAirspaceWarningsToUser()
       wb->SetCaption(stmp2);
     }    
 
-    dlgLKAirspaceFill();
+    dlgLKAirspaceFill(dlg);
 
     LKSound(_T("LK_AIRSPACE.WAV")); // 100819
 
-          if( _tcsnicmp( airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
+    if( _tcsnicmp( airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0) {
 			_stprintf(msgbuf,TEXT("%s"),airspace_copy.Name());
-		  else
+    } else {
 		    _stprintf(msgbuf,TEXT("%s %s"),airspace_copy.TypeName(),airspace_copy.Name());
-//    _stprintf(msgbuf,_T("%s: %s %s"),gettext(_T("_@M68_")),airspace_copy.TypeName(),airspace_copy.Name());
+    }
     dlg->SetCaption(msgbuf);
-
     dlg->ShowModal();
 
     delete dlg;

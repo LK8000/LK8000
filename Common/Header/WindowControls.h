@@ -822,7 +822,7 @@ extern WindowControl *LastFocusControl;
 
 class WndForm:public WindowControl{
 
-    typedef bool (*OnTimerNotify_t)();
+    typedef bool (*OnTimerNotify_t)(WndForm* pWnd);
     typedef bool (*OnKeyDownNotify_t)(WndForm* pWnd, unsigned KeyCode);
     typedef bool (*OnKeyUpNotify_t)(WndForm* pWnd, unsigned KeyCode);
 
@@ -851,7 +851,7 @@ class WndForm:public WindowControl{
     virtual void Destroy(void);
 
     virtual WindowControl* GetClientArea() { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
-	virtual WindowControl* GetTopOwner(void) { return (this);}
+	  virtual WindowControl* GetTopOwner(void) { return (this);}
 
     void AddClient(WindowControl *Client);
 
@@ -906,7 +906,7 @@ protected:
 
     virtual void OnTimer() {
         if(mOnTimerNotify) {
-            mOnTimerNotify();
+            mOnTimerNotify(this);
         }
     }
     

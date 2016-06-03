@@ -398,7 +398,7 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 	return TRUE;
 }
 
-bool CDevCProbe::OnTimer(){
+bool CDevCProbe::OnTimer(WndForm* pWnd){
   Update();
   return true;
 }

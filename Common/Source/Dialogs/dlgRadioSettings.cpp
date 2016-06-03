@@ -530,7 +530,7 @@ static void OnVolDownButton(WndButton* pWnd){
 
 
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
 
 
 

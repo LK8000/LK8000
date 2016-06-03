@@ -76,7 +76,7 @@ private:
 	static void OnCalGyroClicked(WndButton* pWnd);
 	static void OnZeroDeltaPressClicked(WndButton* pWnd);
 
-	static bool OnTimer();
+	static bool OnTimer(WndForm* pWnd);
 
 	static void Update();
 

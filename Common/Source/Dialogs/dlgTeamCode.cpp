@@ -117,7 +117,7 @@ static void OnCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrOK);
 }
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
   Update();
   return true;
 }

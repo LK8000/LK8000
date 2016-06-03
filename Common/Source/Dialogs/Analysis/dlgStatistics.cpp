@@ -53,7 +53,7 @@ void Statistics::Reset() {
   }
 }
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
     UpdateAnalysis();
     return true;
 }

@@ -53,7 +53,7 @@ void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, cons
 // LoadNewTask is called by event manager at start of normal run
 bool FullResetAsked = false;
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
     // Do we have a premature shutdown request from system quit?
     if (RUN_MODE == RUN_SHUTDOWN) {
 #if TESTBENCH

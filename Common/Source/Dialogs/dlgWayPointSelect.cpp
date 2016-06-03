@@ -739,7 +739,7 @@ static void OnWPSCloseClicked(WndButton* pWnd) {
     wf->SetModalResult(mrCancel);
 }
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
   if (DirectionFilterIdx == 1){
     const int a = (lastHeading - iround(CALCULATED_INFO.Heading));
     if (abs(a) > 0){
