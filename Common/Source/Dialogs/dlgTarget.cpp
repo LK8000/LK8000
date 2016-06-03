@@ -354,7 +354,7 @@ static void RefreshCalculator(void) {
 
 }
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
     double lon, lat;
 
     if (MapWindow::TargetMoved(lon, lat)) {

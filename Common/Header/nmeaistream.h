@@ -27,7 +27,9 @@ public:
         }
 		TCHAR* szOut = m_szString;
 		if(*(m_szString)) {
-			for( ;(*m_szString != 0) && (*m_szString != 10) && (*m_szString != L','); ++m_szString);
+			while((*m_szString != 0) && (*m_szString != 10) && (*m_szString != L',')) {
+                ++m_szString;
+            }
             m_Char = *(m_szString);
 			*(m_szString++) = 0;
 		}

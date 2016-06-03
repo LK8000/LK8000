@@ -709,7 +709,7 @@ static void UpdateValuesTask(void) {
   }
 }
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
 
     UpdateValuesSystem();
     UpdateValuesFlight();

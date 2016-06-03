@@ -2461,22 +2461,13 @@ inline bool warning_queue_sorter(const AirspaceWarningMessage& a, const Airspace
 // Gets an airspace warning message to show
 
 bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
-    /*  CAirspace *res = NULL;
-      ScopeLock guard(_csairspaces);
-      if (_user_warning_queue.size() == 0) return NULL;
-      res = _user_warning_queue.front();
-      _user_warning_queue.pop_front();            // remove message from fifo
-      return res;*/
-
     if (msg == NULL) return false;
+    
     ScopeLock guard(_csairspaces);
-    int size;
-
-    //Sort warning messages
-    size = _user_warning_queue.size();
-    if (size == 0) return false;
-    if (size > 1) std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter);
-
+    if(_user_warning_queue.empty()) {
+      return false;
+    }
+    std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter);
     *msg = _user_warning_queue.front();
     _user_warning_queue.pop_front(); // remove message from fifo
     return true;

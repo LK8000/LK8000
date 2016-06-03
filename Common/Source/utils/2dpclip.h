@@ -197,11 +197,10 @@ namespace LKGeom {
         void ClipPolygon(const polygon_in& inPoly, polygon_out& outPoly) {
             typedef typename polygon_in::const_iterator const_iterator;
             
-            register unsigned j;
-            register Upoint *pt_Cp_start = &Cp_start;
-            register Upoint *pt_Cp_end = &Cp_end;
+            Upoint *pt_Cp_start = &Cp_start;
+            Upoint *pt_Cp_end = &Cp_end;
 
-            register const Upoint *pt_lastTp = NULL;
+            const Upoint *pt_lastTp = NULL;
             /*
              * Temporary data used in the case of a 2-2 bit.
              */
@@ -243,7 +242,7 @@ namespace LKGeom {
                 *pt_Cp_end = (*in);
 
                 N_Code = D_code = CP_space_code(pt_Cp_end);
-                j = Cp_end_clip();
+                unsigned j = Cp_end_clip();
                 /*
                  * If the line is visible, then store the computed point(s), and
                  * jump to the basic turning point test.

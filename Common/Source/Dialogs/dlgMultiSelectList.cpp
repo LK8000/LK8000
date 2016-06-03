@@ -48,7 +48,7 @@ static int DrawListIndex = 0;
 
 // Keep the dialog list updated every second
 
-static bool OnTimer() {
+static bool OnTimer(WndForm* pWnd) {
     wMultiSelectListList->Redraw();
     return true;
 }

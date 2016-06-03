@@ -25,7 +25,7 @@ static TCHAR tmps[100];
 
 #define INTERLINE NIBLSCALE(2);
 
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
     wTTYList->Redraw();
     return true;
 }

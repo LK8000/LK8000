@@ -279,8 +279,8 @@ static int DataFieldFileReaderCompare(const void *elem1,
 }
 
 
-void DataFieldFileReader::Sort(void){
-  qsort(fields+1, nFiles-1, sizeof(DataFieldFileReaderEntry), 
+void DataFieldFileReader::Sort(int startindex){
+  qsort(fields+1+startindex, nFiles-1, sizeof(DataFieldFileReaderEntry), 
         DataFieldFileReaderCompare);
 }
 
@@ -1166,12 +1166,9 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 
   mOwner = Owner?Owner->GetClientArea():NULL;
   // setup Master Window (the owner of all)
-  mTopOwner = NULL;
+  mParentWndForm = NULL;
   if(Owner) {
-    mTopOwner = Owner->GetTopOwner();
-  }
-  if(!mTopOwner) {
-    mTopOwner = Owner;
+    mParentWndForm = Owner->GetParentWndForm();
   }
     
   // todo

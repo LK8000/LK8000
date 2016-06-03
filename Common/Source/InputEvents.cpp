@@ -266,7 +266,6 @@ void InputEvents::readFile() {
       // General checks before continue...
       if (
 	  some_data
-	  && (d_mode != NULL)						// We have a mode
 	  && (_tcscmp(d_mode, TEXT("")) != 0)		//
 	  ) {
 
@@ -559,7 +558,7 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
   int i = 0;
   
   // Better checks !
-  if ((mode == NULL))
+  if (mode == NULL)
     return -1;
   
   for (i = 0; i < mode_map_count; i++) {
@@ -757,7 +756,7 @@ bool InputEvents::processKey(int KeyID) {
     #endif
 
     for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
-      if ((ModeLabel[mode][i].event == event_id)) {
+      if (ModeLabel[mode][i].event == event_id) {
         MenuId = ModeLabel[mode][i].MenuId;
 #ifdef LXMINIMAP
         SelectedButtonId = MenuId;

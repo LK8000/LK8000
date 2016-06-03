@@ -30,8 +30,8 @@ int DLGSCALE(int x) {
 
 
 static void OnButtonClick(WndButton* pWnd){
-    if(pWnd && pWnd->GetTopOwner()) {
-        static_cast<WndForm*>(pWnd->GetTopOwner())->SetModalResult(pWnd->GetTag());
+    if(pWnd && pWnd->GetParentWndForm()) {
+        pWnd->GetParentWndForm()->SetModalResult(pWnd->GetTag());
     }
 }
 

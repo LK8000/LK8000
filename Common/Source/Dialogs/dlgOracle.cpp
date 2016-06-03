@@ -34,7 +34,7 @@ short WaitToCallForce=0;
 WhereAmI _WhereAmI;
 
 // Remember that this function is called at 10hz
-static bool OnTimerNotify() {
+static bool OnTimerNotify(WndForm* pWnd) {
 
   if(!_WhereAmI.IsDone()) {
     return false;

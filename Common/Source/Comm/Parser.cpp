@@ -442,7 +442,7 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 6) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GLL sentence, nparams=%d%s"),nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GLL sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 5...
     return FALSE;
   }
@@ -519,7 +519,7 @@ BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 5) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid VTG sentence, nparams=%d%s"),nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid VTG sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 4...
     return FALSE;
   }
@@ -559,7 +559,7 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 9) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid RMC sentence, nparams=%d%s"),nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid RMC sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 8...
     return FALSE;
   }
@@ -763,7 +763,7 @@ force_advance:
 BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 11) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GGA sentence, nparams=%d%s"),nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GGA sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 10...
     return FALSE;
   }
@@ -933,7 +933,7 @@ BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   (void)pGPS;
 
   if(nparams < 1) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PLKAS sentence, nparams=%d%s"),nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PLKAS sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 0...
     return FALSE;
   }
@@ -958,7 +958,7 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   (void)pGPS;
 
   if(nparams < 2) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid RMZ sentence, nparams=%d%s"),nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid RMZ sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 1...
     return FALSE;
   }
@@ -990,7 +990,7 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 4) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PTAS1 sentence, nparams=%d%s"),nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PTAS1 sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 3...
     return FALSE;
   }
@@ -1018,7 +1018,7 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 BOOL NMEAParser::HCHDG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 1) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid HCHDG sentence, nparams=%d%s"),nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid HCHDG sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 0...
     return FALSE;
   }
