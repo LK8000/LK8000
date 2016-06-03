@@ -524,6 +524,8 @@ typedef enum{
   bkLeft
 }BorderKind_t;
 
+class WndForm;
+
 class WindowControl : public WndCtrlBase {
     friend class WndForm;
     friend class WndProperty;
@@ -533,7 +535,7 @@ class WindowControl : public WndCtrlBase {
   private:
 
     WindowControl *mOwner;
-    WindowControl *mTopOwner;
+    WndForm *mParentWndForm;
 
     int  mBorderKind;
 
@@ -630,7 +632,7 @@ class WindowControl : public WndCtrlBase {
     virtual WindowControl* GetClientArea(void) { return (this); }
 
     virtual WindowControl *GetParent(void) const {return(mOwner);};
-    virtual WindowControl *GetTopOwner(void) {return(mTopOwner);}
+    virtual WndForm *GetParentWndForm(void) {return(mParentWndForm);}
 
     int GetTag(void){return(mTag);};
     int SetTag(int Value){mTag = Value; return(mTag);};
@@ -851,7 +853,7 @@ class WndForm:public WindowControl{
     virtual void Destroy(void);
 
     virtual WindowControl* GetClientArea() { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
-	  virtual WindowControl* GetTopOwner(void) { return (this);}
+	  virtual WndForm* GetParentWndForm(void) { return (this);}
 
     void AddClient(WindowControl *Client);
 

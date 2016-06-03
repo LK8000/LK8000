@@ -1166,12 +1166,9 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 
   mOwner = Owner?Owner->GetClientArea():NULL;
   // setup Master Window (the owner of all)
-  mTopOwner = NULL;
+  mParentWndForm = NULL;
   if(Owner) {
-    mTopOwner = Owner->GetTopOwner();
-  }
-  if(!mTopOwner) {
-    mTopOwner = Owner;
+    mParentWndForm = Owner->GetParentWndForm();
   }
     
   // todo

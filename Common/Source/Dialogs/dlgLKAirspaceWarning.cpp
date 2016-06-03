@@ -39,8 +39,8 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface) {
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
-  if(pWnd && pWnd->GetTopOwner()) {
-      static_cast<WndForm*>(pWnd->GetTopOwner())->SetModalResult(mrOK);
+  if(pWnd && pWnd->GetParentWndForm()) {
+      pWnd->GetParentWndForm()->SetModalResult(mrOK);
   }
 }
 
