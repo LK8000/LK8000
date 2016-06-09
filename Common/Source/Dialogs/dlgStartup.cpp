@@ -19,6 +19,7 @@
 #include "ScreenGeometry.h"
 #include "Asset.hpp"
 #include "Draw/LoadSplash.h"
+#include "InfoBoxLayout.h"
 
 
 #ifdef DITHER
@@ -832,6 +833,8 @@ short dlgStartupShowModal(void) {
                         LKProfileLoad(startProfileFile);
                         extern void InitLKFonts();
                         InitLKFonts();
+                        // We are sure that buttons have been created already
+                        ButtonLabel::SetFont(MapWindowBoldFont);
                         FullResetAsked = false;
                     }
                 }
