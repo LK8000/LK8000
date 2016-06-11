@@ -220,7 +220,7 @@ namespace {
     const unsigned TASK_NAME_LENGTH = 64;
     TCHAR tskName[TASK_NAME_LENGTH + 1];
     TaskFileName(TASK_NAME_LENGTH + 1, tskName);
-    _tcsncat(tskName, TEXT("_LK8000"), TASK_NAME_LENGTH + 1);
+    _tcscat(tskName, TEXT("_LK8000"));
     
     // prepare and send command
     TCHAR buffer[128];
