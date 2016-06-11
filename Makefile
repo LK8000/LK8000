@@ -1033,6 +1033,7 @@ DEVS	:=\
 	$(DEV)/devPVCOM.cpp \
 	$(DEV)/devKRT2.cpp \
 	$(DEV)/devLXNano3.cpp \
+	$(DEV)/devXCTracer.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \

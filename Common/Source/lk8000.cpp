@@ -50,6 +50,7 @@
 #include "devFlyNet.h"
 #include "devKRT2.h"
 #include "devLXNano3.h"
+#include "devXCTracer.h"
 #include "InputEvents.h"
 #include "Geoid.h"
 #include "RasterTerrain.h"
@@ -589,6 +590,7 @@ int main(int argc, char *argv[]) {
   BlueFlyRegister();
   LXV7easyRegister();
   DevLXNanoIII::Register();  
+  XCTracerRegister();
 #ifdef RADIO_ACTIVE  
   PVCOMRegister();
   KRT2Register();
