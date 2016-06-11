@@ -37,9 +37,9 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
 cd ..
 
 # install boostlib ( 1.60.0 - 2015-12-17 )
-wget http://netcologne.dl.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.gz
-tar xzf boost_1_60_0.tar.gz
-cd boost_1_60_0
+wget http://netcologne.dl.sourceforge.net/project/boost/boost/1.61.0/boost_1_61_0.tar.gz
+tar xzf boost_1_61_0.tar.gz
+cd boost_1_61_0
 ./bootstrap.sh
 echo "using gcc : arm : arm-unknown-linux-gnueabi-g++ : cxxflags=-march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize ;" > user-config.jam
 sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
@@ -47,11 +47,11 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
 cd ..
 
 # install libpng ( 1.6.21 - 2016-01-15 )
-wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.21/libpng-1.6.21.tar.gz
-tar xzf libpng-1.6.21.tar.gz
+wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.22/libpng-1.6.22.tar.gz
+tar xzf libpng-1.6.22.tar.gz
 mkdir libpng-build
 cd libpng-build
-../libpng-1.6.21/configure \
+../libpng-1.6.22/configure \
     --host=arm-unknown-linux-gnueabi \
     CC=arm-unknown-linux-gnueabi-gcc \
     AR=arm-unknown-linux-gnueabi-ar \
