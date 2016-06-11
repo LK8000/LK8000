@@ -1034,6 +1034,7 @@ DEVS	:=\
 	$(DEV)/devKRT2.cpp \
 	$(DEV)/devLXNano3.cpp \
 	$(DEV)/devXCTracer.cpp \
+	$(DEV)/devGPSBip.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \

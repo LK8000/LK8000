@@ -12,9 +12,9 @@
 #define	NUMDEV		 2
 
 #ifdef RADIO_ACTIVE
-#define	NUMREGDEV	 38 // Max number of registered devices
+#define	NUMREGDEV	 39 // Max number of registered devices
 #else
-#define	NUMREGDEV	 36 // Max number of registered devices
+#define	NUMREGDEV	 37 // Max number of registered devices
 #endif // RADIO_ACTIVE
 
 #define	devA()	    (&DeviceList[0])
@@ -131,6 +131,7 @@ void RefreshComPortList();
 
 BOOL devRegister(const TCHAR *Name,	int	Flags, BOOL (*Installer)(PDeviceDescriptor_t d));
 LPCTSTR devRegisterGetName(int Index);
+bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName);
 
 void RestartCommPorts();
 

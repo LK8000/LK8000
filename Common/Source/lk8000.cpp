@@ -51,6 +51,7 @@
 #include "devKRT2.h"
 #include "devLXNano3.h"
 #include "devXCTracer.h"
+#include "devGPSBip.h"
 #include "InputEvents.h"
 #include "Geoid.h"
 #include "RasterTerrain.h"
@@ -591,6 +592,7 @@ int main(int argc, char *argv[]) {
   LXV7easyRegister();
   DevLXNanoIII::Register();  
   XCTracerRegister();
+  GPSBipRegister ();
 #ifdef RADIO_ACTIVE  
   PVCOMRegister();
   KRT2Register();
