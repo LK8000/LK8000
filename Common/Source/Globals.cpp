@@ -636,6 +636,17 @@ void Globals_Init(void) {
   Overlay_RightMid=1;
   Overlay_RightBottom=1;
 
+  FontMapWaypoint=MAXFONTRESIZE;
+  FontMapTopology=MAXFONTRESIZE;
+  FontInfopage1L=MAXFONTRESIZE;
+  FontInfopage2L=MAXFONTRESIZE;
+  FontBottomBar=MAXFONTRESIZE;
+  FontCustom1=MAXFONTRESIZE;
+  FontOverlayBig=MAXFONTRESIZE;
+  FontOverlayMedium=MAXFONTRESIZE;
+  FontVisualGlide=MAXFONTRESIZE;
+
+
 
   // ^ ADD NEW GLOBALS up here ^ 
   // ---------------------------
