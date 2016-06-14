@@ -575,6 +575,7 @@ int main(int argc, char *argv[]) {
   DevLXNano::Register();
   zanderRegister();
   flymasterf1Register();
+  flymasterGPSRegister();
   CompeoRegister();
   xcom760Register();
   condorRegister();

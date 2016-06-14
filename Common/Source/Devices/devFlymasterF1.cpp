@@ -33,13 +33,6 @@ static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO
 
 }
 
-/*
-static BOOL FlymasterF1IsLogger(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);
-}
-*/
-
 static BOOL FlymasterF1IsGPSSource(PDeviceDescriptor_t d){
   (void)d;
   return(TRUE); 
@@ -52,11 +45,35 @@ static BOOL FlymasterF1IsBaroSource(PDeviceDescriptor_t d){
 }
 
 
-static BOOL FlymasterF1LinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
+    
+/*
+ * http://luftigduk.mamutweb.com/Resource/File/0/FLYMASTER%20F1%20KOMMANDOER%20V%206.0.PDF
+ * 
+ * Switching navigation mode on and off
+ *  During normal operation F1 will continuously send data to the port, this is navigation and altimeter
+ *  data which is used by the navigation application (NAV+ etc).To stop F1 from sending navigation data,
+ *  send the following command:
+ *  $PFMDNL,*1D
+ * 
+ *  On receiving this command the F1 stop sending NMEA navigation sentences.
+ *  To return to navigation mode, i.e. tell F1 to start sending navigation data again send:
+ *  $PFMNAV,*02 
+ */
+static BOOL Open(PDeviceDescriptor_t d,	int	Port) {
+  if(d && d->Com) {
+    const char szNmeaOn[] = "$PFMNAV,*2E\r\n";
+    return d->Com->Write(szNmeaOn, strlen(szNmeaOn));
+  }
+  return FALSE;
 }
 
+static BOOL Close(PDeviceDescriptor_t d) {
+  if(d && d->Com) {
+    const char szNmeaOff[] = "$PFMSNP,*3A\r\n";
+    return d->Com->Write(szNmeaOff, strlen(szNmeaOff));
+  }
+  return FALSE;
+}
 
 static BOOL flymasterf1Install(PDeviceDescriptor_t d){
 
@@ -64,14 +81,6 @@ static BOOL flymasterf1Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("FlymasterF1"));
   d->ParseNMEA = FlymasterF1ParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
-  d->LinkTimeout = FlymasterF1LinkTimeout;
-  d->Declare = NULL;
   d->IsGPSSource = FlymasterF1IsGPSSource;
   d->IsBaroSource = FlymasterF1IsBaroSource;
 
@@ -90,6 +99,30 @@ BOOL flymasterf1Register(void){
   ));
 }
 
+static BOOL flymasterInstall(PDeviceDescriptor_t d){
+
+  StartupStore(_T(". Flymaster GPS device installed%s"),NEWLINE);
+
+  _tcscpy(d->Name, TEXT("Flymaster GPS"));
+  d->ParseNMEA = FlymasterF1ParseNMEA;
+  d->Open = Open;
+  d->Close = Close;
+  d->IsGPSSource = FlymasterF1IsGPSSource;
+  d->IsBaroSource = FlymasterF1IsBaroSource;
+
+  return(TRUE);
+
+}
+
+BOOL flymasterGPSRegister(void){
+  return(devRegister(
+    TEXT("Flymaster GPS"),
+    (1l << dfGPS)
+    | (1l << dfBaroAlt)
+    | (1l << dfVario),
+    flymasterInstall
+  ));
+}
 
 // *****************************************************************************
 // local stuff
