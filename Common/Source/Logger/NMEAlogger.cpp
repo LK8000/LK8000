@@ -8,7 +8,6 @@
 */
 
 #include "externs.h"
-#include "utils/stringext.h"
 
 
 
@@ -100,7 +99,11 @@ static bool wasWriting=false;
   LKASSERT(_tcslen(text)<sizeof(snmea));
   if (_tcslen(text)>=sizeof(snmea)) return;
 
-  TCHAR2usascii(text, snmea, LKSIZENMEA);
+#ifdef UNICODE
+  sprintf(snmea,"%S",text);
+#else
+  strcpy(snmea,text);
+#endif
 
   short l=strlen(snmea);
   if (l<6) return;
