@@ -504,7 +504,7 @@ bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
                    IMIBYTE msgID, const void *payload /* =0 */, IMIWORD payloadSize /* =0 */,
                    IMIBYTE parameter1 /* =0 */, IMIWORD parameter2 /* =0 */, IMIWORD parameter3 /* =0 */)
 {
-  if(payloadSize > COMM_MAX_PAYLOAD_SIZE)
+  if(!payload || payloadSize > COMM_MAX_PAYLOAD_SIZE)
     return false;
   
   TMsg msg;
