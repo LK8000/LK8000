@@ -1410,9 +1410,11 @@ void WindowControl::SetHelpText(const TCHAR *Value) {
 
 void WindowControl::SetCaption(const TCHAR *Value) {
     const TCHAR* szCaption = GetWndText();
-    if (Value == NULL && szCaption[0] != _T('\0')) {
-        SetWndText(_T(""));
-        Redraw();
+    if (Value == NULL) {
+        if(szCaption[0] != _T('\0')) {
+            SetWndText(_T(""));
+            Redraw();
+        }
     } else if (_tcscmp(szCaption, Value) != 0) {
         SetWndText(Value);
         Redraw();
@@ -1814,9 +1816,11 @@ void WndForm::Paint(LKSurface& Surface){
 void WndForm::SetCaption(const TCHAR *Value) {
     const TCHAR* szCaption = GetWndText();
     bool bRedraw = false;
-    if (Value == NULL && szCaption[0] != _T('\0')) {
-        SetWndText(_T(""));
-        bRedraw = true;
+    if (Value == NULL) {
+        if(szCaption[0] != _T('\0')) {
+            SetWndText(_T(""));
+            bRedraw = true;
+        }
     } else if (_tcscmp(szCaption, Value) != 0) {
         SetWndText(Value);
         bRedraw = true;
