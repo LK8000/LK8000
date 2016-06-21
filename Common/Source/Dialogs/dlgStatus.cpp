@@ -239,15 +239,13 @@ static void UpdateValuesSystem() {
      {
     	  TCHAR sDevice[32]={0};
  		if((pDevSecondaryBaroSource != NULL))
-           if(!(pDevSecondaryBaroSource->Disabled) &&
-              (pDevSecondaryBaroSource->Name != NULL))
+           if(!(pDevSecondaryBaroSource->Disabled))
            {
              _stprintf(sDevice, TEXT("%s"), pDevSecondaryBaroSource->Name  );
            }
 
  		if((pDevPrimaryBaroSource != NULL))
-           if(!(pDevPrimaryBaroSource->Disabled) &&
-              (pDevPrimaryBaroSource->Name != NULL))
+           if(!(pDevPrimaryBaroSource->Disabled))
            {
              _stprintf(sDevice, TEXT("%s"), pDevPrimaryBaroSource->Name );
            }
@@ -467,16 +465,14 @@ static void UpdateValuesFlight(void) {
 
 		if((pDevSecondaryBaroSource != NULL))
           if((! pDevSecondaryBaroSource->Disabled) &&
-             (pDevSecondaryBaroSource->IsBaroSource)&&
-             pDevSecondaryBaroSource->Name != NULL)
+             (pDevSecondaryBaroSource->IsBaroSource))
           {
             _stprintf(sBaroDevice, TEXT("%s"), pDevSecondaryBaroSource->Name );
           }
 
 		if((pDevPrimaryBaroSource != NULL))
           if((! pDevPrimaryBaroSource->Disabled) &&
-             (pDevPrimaryBaroSource->IsBaroSource)&&
-             pDevPrimaryBaroSource->Name != NULL)
+             (pDevPrimaryBaroSource->IsBaroSource))
           {
             _stprintf(sBaroDevice, TEXT("%s"), pDevPrimaryBaroSource->Name );
           }
