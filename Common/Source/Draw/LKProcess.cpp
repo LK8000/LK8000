@@ -1000,11 +1000,12 @@ goto_bearing:
 		// B48 091216  OAT Outside Air Temperature
 		case LK_OAT:
                   _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+                  value = DrawInfo.OutsideAirTemperature
                   if (!DrawInfo.TemperatureAvailable || value<-50||value>100) {
                     _stprintf(BufferValue, TEXT("---"));
                   }
                   else {
-                    _stprintf(BufferValue, TEXT("%.0lf"), DrawInfo.OutsideAirTemperature);
+                    _stprintf(BufferValue, TEXT("%.0lf"), value);
                     _stprintf(BufferUnit,  TEXT("%s"), MsgToken(2179));
                     valid = true;
                   }
