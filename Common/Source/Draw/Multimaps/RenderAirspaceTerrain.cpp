@@ -151,8 +151,17 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         RECT rcd = Sideview_pHandeled[iSizeIdx].rc;
         LKColor FrameColor;
         double fFrameColFact;
+        int Framewidth = FRAMEWIDTH;
         if (Sideview_pHandeled[iSizeIdx].bEnabled) {
-            Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
+            if (MapWindow::GetAirSpaceFillType() == MapWindow::asp_fill_border_only)
+            {
+        	  Surface.SelectObject(LKBrush_Hollow);
+        	  Framewidth *=3;
+            }
+        	else
+        	{
+        	  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
+        	}
             Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
             fFrameColFact = 0.8;
             FrameColor = MapWindow::GetAirspaceColourByClass(type);
@@ -167,7 +176,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         else
             fFrameColFact *= 1.2;
         LKColor Color = FrameColor.ChangeBrightness(fFrameColFact);
-        LKPen mpen2(PEN_SOLID, FRAMEWIDTH, Color);
+        LKPen mpen2(PEN_SOLID, Framewidth, Color);
         const auto oldpen2 = Surface.SelectObject(mpen2);
 
         if (Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
