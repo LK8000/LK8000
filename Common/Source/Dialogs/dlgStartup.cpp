@@ -21,6 +21,10 @@
 #include "Draw/LoadSplash.h"
 #include "InfoBoxLayout.h"
 
+#ifdef KOBO
+  #include "Kobo/Kernel.hpp"
+#endif
+
 
 #ifdef DITHER
 #define RGBDARKWHITE RGB_WHITENOREV
@@ -196,6 +200,11 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
             _stprintf(mes, _T("V%s.%s (%s) COMPETITION"), _T(LKVERSION), _T(LKRELEASE), _T(__DATE__));
 #endif
             RawWrite(Surface, mes, pos, 1, RGBDARKWHITE, WTMODE_NORMAL);
+#ifdef KOBO
+            if(IsKoboOTGKernel()) {
+                RawWrite(Surface, _T("- USB host kernel -"), pos+1, 1, RGBDARKWHITE, WTMODE_NORMAL);
+            }
+#endif
         }
     }
 
