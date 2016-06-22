@@ -219,10 +219,12 @@ void RefreshComPortList() {
     }
   }
 #elif TESTBENCH
-  COMMPort.push_back(_T("/lk/ptycom1"));
-  COMMPort.push_back(_T("/lk/ptycom2"));
-  COMMPort.push_back(_T("/lk/ptycom3"));
-  COMMPort.push_back(_T("/lk/ptycom4"));
+  if(lk::filesystem::exist(_T("/lk"))) {
+    COMMPort.push_back(_T("/lk/ptycom1"));
+    COMMPort.push_back(_T("/lk/ptycom2"));
+    COMMPort.push_back(_T("/lk/ptycom3"));
+    COMMPort.push_back(_T("/lk/ptycom4"));
+  }
 #endif
 
 #endif
