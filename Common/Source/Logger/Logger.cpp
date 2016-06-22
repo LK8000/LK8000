@@ -367,7 +367,7 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
                        iHour, iMin, iSec,
                        GPS_INFO.SatelliteIDs); // no problem for wrong sats in case
       #else
-      LogPointToBuffer(Latitude, Longitude, Altitude, BaroAltitude, iHour, iMin, iSec);
+      LogPointToBuffer(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude, iHour, iMin, iSec);
       #endif
     }
   } else if (NumLoggerBuffered && !GPS_INFO.NAVWarning) { 
@@ -393,7 +393,7 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
     NumLoggerBuffered = 0;
   } 
   if (LoggerActive && !GPS_INFO.NAVWarning) {
-    LogPointToFile(Latitude, Longitude, Altitude, BaroAltitude,
+    LogPointToFile(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude,
                    iHour, iMin, iSec);
   }
 }
@@ -740,6 +740,12 @@ void LoggerHeader(void)
   IGCWriteRecord(temp);
 
   IGCWriteRecord(datum);
+
+  if (GPSAltitudeOffset != 0) {
+     sprintf(temp,"HFGPSALTITUDEOFFSET: %+.0f\r\n", GPSAltitudeOffset);
+     IGCWriteRecord(temp);
+  }
+
 
   extern void AdditionalHeaders(void);
   AdditionalHeaders();
