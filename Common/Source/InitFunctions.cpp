@@ -84,6 +84,8 @@ void PreloadInitialisation(bool ask) {
 	DoStatusMessage(gettext(_T("_@M1757_"))); // LK8000 PROFILES RESET
 	LKProfileResetDefault();
 	LKProfileInitRuntime();
+        InitLKFonts(); // v6: not sure about why we need this, but otherwise fonts are not reset to defaults.
+
 	// Notice: this is also resetting the default Aircraft and Pilot profiles to demo settings
     } else  {
 	if (!LKProfileLoad(startPilotFile)) {
