@@ -22,6 +22,8 @@
 
 
 extern void RenameIfVirtual(const unsigned int i);
+extern bool FullResetAsked;
+
 
 LPTSTR AllocFormat(LPCTSTR fmt, ...) {
     int n;
@@ -174,10 +176,24 @@ CTaskFileHelper::~CTaskFileHelper() {
 bool CTaskFileHelper::Load(const TCHAR* szFileName) {
     CScopeLock LockTask(LockTaskData, UnlockTaskData);
     StartupStore(_T(". LoadTask : <%s>%s"), szFileName, NEWLINE);
+    TCHAR taskFileName[MAX_PATH];
 
     ClearTask();
+    if (FullResetAsked) {
+        #if TESTBENCH
+        StartupStore(_T("... LoadTask detected FullResetAsked, attempt to load DEMO.lkt\n"));
+        #endif
+        // Clear the flag, forever.
+        FullResetAsked=false;
+        _tcscpy(taskFileName,_T("%LOCAL_PATH%\\\\_Tasks\\DEMO.lkt"));
+        ExpandLocalPath(taskFileName);
+    } else {
+       _tcscpy(taskFileName,szFileName);
+    }
 
-    FILE* stream = _tfopen(szFileName, TEXT("rb"));
+
+
+    FILE* stream = _tfopen(taskFileName, TEXT("rb"));
     if (stream) {
         fseek(stream, 0, SEEK_END); // seek to end of file
         long size = ftell(stream); // get current file pointer
@@ -235,6 +251,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
 
     TaskModified = false;
     TargetModified = false;
+    // We are not using the DEMO.lkt forced by FULL RESET. We use the original task filename.
     _tcscpy(LastTaskFileName, szFileName);
 
     return true;
