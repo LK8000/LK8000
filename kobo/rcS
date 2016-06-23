@@ -167,7 +167,10 @@ echo "dc 0" > /sys/devices/platform/pmic_light.1/lit
 
 #start udev deamon & trigger
 /sbin/udevd -d
-/sbin/udevadm trigger 
+/sbin/udevadm control --env=STARTUP=1
+/sbin/udevadm trigger
+/sbin/udevadm settle --timeout=2
+/sbin/udevadm control --env=STARTUP=
 
 # enable crash dump : "core.[filename].[signal number].[pid].[UNIX time]"
 if [ ! -d "/mnt/onboard/LK8000/kobo/crash" ] ; then
