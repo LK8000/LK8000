@@ -209,8 +209,8 @@ void RefreshComPortList() {
       }
       free(namelist[i]);
     } 
+    free(namelist);
   }    
-  free(namelist);
   
   // scan usb serial by id
   n = scandir("/dev/serial/by-id", &namelist, 0, alphasort);
@@ -224,8 +224,8 @@ void RefreshComPortList() {
       }
       free(namelist[i]);
     }      
+    free(namelist);
   }
-  free(namelist);
 
 #ifdef KOBO
   if(KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
