@@ -14,6 +14,7 @@
 extern void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 #define LOGINTERVAL  1  // seconds between IGC log lines
+#define MAXERRDOLOG  30 
 
 //
 // Logger activity, and also add snailpoints
@@ -23,7 +24,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double SnailLastTime=0;
   static double LogLastTime=0;
   static double StatsLastTime=0;
-  static short maxerrlog=30;
+  static short maxerrlog=MAXERRDOLOG;
 
   // prevent bad fixes from being logged or added to OLC store
   static double Time_last=0;
@@ -43,7 +44,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	SnailLastTime=0;
 	LogLastTime=0;
 	StatsLastTime=0;
-	maxerrlog=30;
+	maxerrlog=MAXERRDOLOG;
 	Time_last=0;
 	Longitude_last = 10;
 	Latitude_last = 10;
@@ -101,7 +102,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (timepassed>0 && ((distance/timepassed)>300.0) ) {
 	if (maxerrlog>0) {
-		StartupStore(_T("... DoLogging: at %s distance jumped too much, %f in %fs!\n"),WhatTimeIsIt(),distance,timepassed);
+                if (SIMMODE && maxerrlog<MAXERRDOLOG)
+		   StartupStore(_T("... DoLogging: at %s distance jumped too much, %f in %fs!\n"),WhatTimeIsIt(),distance,timepassed);
 		maxerrlog--;
 	}
 	return;
