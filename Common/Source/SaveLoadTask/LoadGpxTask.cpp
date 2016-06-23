@@ -17,7 +17,7 @@
 
 bool LoadGpxTask(LPCTSTR szFileName) {
     LockTaskData();
-    StartupStore(_T(". LoadTask : <%s>%s"), szFileName, NEWLINE);
+    StartupStore(_T(". LoadGpxTask : <%s>%s"), szFileName, NEWLINE);
     ClearTask();
     FILE* stream = _tfopen(szFileName, TEXT("rb"));
     if(stream) {
