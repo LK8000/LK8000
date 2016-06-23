@@ -76,7 +76,12 @@ bool TTYPort::Initialize() {
     }
 #endif
 
-    _tty = open(GetPortName(), O_RDWR | O_NOCTTY);
+    std::tstring szPath = GetPortName();
+    if(szPath.compare(0, 3, _T("id:")) == 0) {
+        szPath.replace(szPath.begin(), std::next(szPath.begin(), 3), _T("/dev/serial/by-id/"));
+    }
+    
+    _tty = open(szPath.c_str(), O_RDWR | O_NOCTTY);
     if (_tty < 0 || !isatty(_tty)) {
         StartupStore(_T("... ComPort %u Init failed, error=%u%s"), (unsigned)(GetPortIndex() + 1), errno, NEWLINE); // 091117
         StatusMessage(mbOk, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
@@ -150,11 +155,15 @@ unsigned long TTYPort::GetBaudrate() const {
 }
 
 void TTYPort::Flush() {
-    tcflush(_tty, TCIOFLUSH);
+    if(_tty != -1) {
+        tcflush(_tty, TCIOFLUSH);
+    }
 }
 
 void TTYPort::Purge() {
-    tcdrain(_tty);
+    if(_tty != -1) {
+        tcdrain(_tty);
+    }
 }
 
 void TTYPort::CancelWaitEvent() {
