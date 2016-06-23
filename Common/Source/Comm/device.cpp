@@ -211,6 +211,21 @@ void RefreshComPortList() {
     } 
   }    
   free(namelist);
+  
+  // scan usb serial by id
+  n = scandir("/dev/serial/by-id", &namelist, 0, alphasort);
+  if(n != -1) {
+    for (int i = 0; i < n; ++i) {
+      char path[1024];
+      snprintf(path, sizeof(path), "/dev/serial/by-id/%s", namelist[i]->d_name);
+      if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
+        snprintf(path, sizeof(path), "id:%s", namelist[i]->d_name);
+        COMMPort.push_back(path);
+      }
+      free(namelist[i]);
+    }      
+  }
+  free(namelist);
 
 #ifdef KOBO
   if(KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
