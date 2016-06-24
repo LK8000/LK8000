@@ -591,7 +591,10 @@ _afterautotrm:
 			showunit=LKFormatValue(LK_HEADWINDSPEED, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_HGH:
-		showunit=LKFormatValue(LK_AQNH, true, BufferValue, BufferUnit, BufferTitle); // 100221
+                if (AltitudeUnit_Config==1) // meters
+                   showunit=LKFormatValue(LK_AQNH, true, BufferValue, BufferUnit, BufferTitle);
+                else
+		   showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
 		if (ISCAR) {
@@ -700,7 +703,10 @@ _afterautotrm:
 			showunit=LKFormatValue(LK_LD_INST, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_HGH:
-		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
+                if (AltitudeUnit_Config==1) // meters
+		   showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
+                else
+                   showunit=LKFormatValue(LK_AQNH, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
 		if (ISCAR)
