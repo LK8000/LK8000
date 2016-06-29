@@ -1378,6 +1378,7 @@ rebuild:
 clean: cleani
 	@$(NQ)echo "  CLEAN   $(BIN)"
 	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' -o -name '*.min.*'  -o -name '*.png' \) -type f -print | xargs -r $(RM)
+	$(Q)$(RM) -rf $(BIN)
 	$(Q)$(RM) $(OUTPUTS_NS)
 	$(Q)$(RM) $(OUTPUTS)
 	$(Q)$(RM) $(PNG)
