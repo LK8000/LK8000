@@ -32,7 +32,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
      * this array define vario Value for each brick, ( positive value )
      *  Number of brick for positive value is defined by this array size.
      */
-    static double positive_vario_step[] = {0.05, 0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00, 3.50, 4.50, 5.00, 6.00, 7.00};
+    static const double positive_vario_step[] = {0.05, 0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00, 3.50, 4.50, 5.00, 6.00, 7.00};
     static const unsigned positive_brick_count = array_size(positive_vario_step);
 
     static BrushReference positiveBrush[positive_brick_count];
@@ -42,7 +42,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
      * this array define vario Value for each brick, ( negative value )
      *  Number of brick for negative value is defined by this array size.
      */
-    static double negative_vario_step[] = {-0.05, -0.25, -0.50, -0.75, -1.00, -1.25, -1.50, -1.75, -2.00, -2.50, -3.00, -3.50, -4.50, -5.00, -6.00, -7.00};
+    static const double negative_vario_step[] = {-0.05, -0.25, -0.50, -0.75, -1.00, -1.25, -1.50, -1.75, -2.00, -2.50, -3.00, -3.50, -4.50, -5.00, -6.00, -7.00};
     static const unsigned negative_brick_count = array_size(negative_vario_step);
 
     static BrushReference negativeBrush[negative_brick_count];
