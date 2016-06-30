@@ -84,7 +84,6 @@ void PreloadInitialisation(bool ask) {
 	DoStatusMessage(gettext(_T("_@M1757_"))); // LK8000 PROFILES RESET
 	LKProfileResetDefault();
 	LKProfileInitRuntime();
-        InitLKFonts(); // v6: not sure about why we need this, but otherwise fonts are not reset to defaults.
 
 	// Notice: this is also resetting the default Aircraft and Pilot profiles to demo settings
     } else  {
@@ -105,7 +104,9 @@ void PreloadInitialisation(bool ask) {
 	}
 	LKProfileLoad(startProfileFile); // this is calling adjust and InitRuntime itself
     }
-
+    InitLKFonts();
+    // We are sure that buttons have been created already
+    ButtonLabel::SetFont(MapWindowBoldFont);
     // LKTOKEN _@M1206_ "Initialising..."
 	CreateProgressDialog(gettext(TEXT("_@M1206_"))); 
   }
@@ -194,13 +195,7 @@ BOOL InitInstance()
   LKLoadProfileBitmaps();
   LKObjects_Create(); 
 
-
   ButtonLabel::CreateButtonLabels(rc);
-
-  extern void InitLKFonts();
-  // reload updating LK fonts after loading profile for fontquality
-  InitLKFonts();	
-
   ButtonLabel::SetFont(MapWindowBoldFont);
 
   Message::Initialize(rc); // creates window, sets fonts

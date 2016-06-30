@@ -177,7 +177,7 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 }
 
 
-void InitLKFonts(void) {
+void InitLKFonts() {
   Init_Fonts_1();
   Init_Fonts_2();
 }
@@ -485,7 +485,7 @@ void Init_Fonts_1(void)
 //
 // REMINDER> DO NOT FORGET TO UPDATE THIS WHEN A FONT IS ADDED!!
 //
-void DeInitLKFonts(void) {
+void DeInitLKFonts() {
 
   TitleWindowFont.Release();
   MapWindowFont.Release();

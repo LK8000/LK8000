@@ -20,6 +20,7 @@
 #include "Asset.hpp"
 #include "Draw/LoadSplash.h"
 #include "InfoBoxLayout.h"
+#include "LKInterface.h"
 
 #ifdef KOBO
   #include "Kobo/Kernel.hpp"
@@ -832,18 +833,12 @@ short dlgStartupShowModal(void) {
 #if TESTBENCH
                         StartupStore(_T("... Selected FULL RESET virtual profile\n"));
 #endif
-                        if (MessageBoxX(gettext(TEXT("_@M1758_")),
-                                gettext(TEXT("_@M1757_")), mbOk));
+                        MessageBoxX(gettext(TEXT("_@M1758_")), gettext(TEXT("_@M1757_")), mbOk);
                         FullResetAsked = true;
                     } else {
 #if TESTBENCH
                         StartupStore(_T("... Selected new profile, preloading..\n"));
 #endif
-                        LKProfileLoad(startProfileFile);
-                        extern void InitLKFonts();
-                        InitLKFonts();
-                        // We are sure that buttons have been created already
-                        ButtonLabel::SetFont(MapWindowBoldFont);
                         FullResetAsked = false;
                     }
                 }
@@ -856,7 +851,6 @@ short dlgStartupShowModal(void) {
 #if TESTBENCH
                     StartupStore(_T("... Selected new aircraft, preloading..\n"));
 #endif
-                    LKProfileLoad(startAircraftFile);
                 }
             }
         }
@@ -867,7 +861,6 @@ short dlgStartupShowModal(void) {
 #if TESTBENCH
                     StartupStore(_T("... Selected new device, preloading..\n"));
 #endif
-                    LKProfileLoad(startDeviceFile);
                 }
             }
         }
@@ -878,7 +871,6 @@ short dlgStartupShowModal(void) {
 #if TESTBENCH
                     StartupStore(_T("... Selected new pilot, preloading..\n"));
 #endif
-                    LKProfileLoad(startPilotFile);
                 }
             }
         }

@@ -102,9 +102,9 @@ void ReinitScreen(void) {
   ButtonLabel::Destroy();
   ButtonLabel::CreateButtonLabels(rc);
 
-  extern void InitLKFonts();
   InitLKFonts();
   ButtonLabel::SetFont(MapWindowBoldFont);
+
   Message::Destroy();
   Message::Initialize(rc); // creates window, sets fonts
 

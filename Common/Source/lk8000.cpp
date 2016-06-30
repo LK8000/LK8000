@@ -726,8 +726,6 @@ _Shutdown:
   else return 111;
 }
 
-extern void DeInitLKFonts(void);
-
 void CleanupForShutdown(void) {
 
   MainWindow.Destroy();

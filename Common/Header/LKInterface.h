@@ -9,6 +9,8 @@
 #define LK8000_LKINTERFACE_H
 
 void    InitLKFonts();
+void    DeInitLKFonts();
+
 void    InitLKScreen();
 void    InitLK8000();
 void    InitModeTable();
