@@ -69,7 +69,7 @@ GLShapeRenderer::~GLShapeRenderer() {
     gluDeleteTess(tess);
 }
 
-void GLShapeRenderer::renderPolygon(LKSurface& Surface, const XShape& shape, Brush& brush, const ScreenProjection& _Proj) {
+void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, Brush& brush, const ScreenProjection& _Proj) {
   /*
    OpenGL cannot draw complex polygons so we need to use a Tessallator to draw the polygon using a GL_TRIANGLE_FAN
    */  
@@ -104,7 +104,7 @@ void GLShapeRenderer::renderPolygon(LKSurface& Surface, const XShape& shape, Bru
   gluTessEndPolygon(tess);
   
   if(shape.HasLabel() && clipRect.IsInside(curr_LabelPos)) {
-    shape.renderSpecial(Surface, curr_LabelPos.x, curr_LabelPos.y, clipRect);
+    shape.renderSpecial(renderer, Surface, curr_LabelPos.x, curr_LabelPos.y, clipRect);
   }
   
   pointers.clear();

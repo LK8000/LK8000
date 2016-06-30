@@ -19,6 +19,7 @@
 #include <Poco/TextConverter.h>
 
 #include "../Draw/ScreenProjection.h"
+#include "ShapeSpecialRenderer.h"
 
 #ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"
@@ -501,7 +502,7 @@ void Topology::removeShape(const int i) {
 
 // This is checking boundaries based on lat/lon values. 
 // It is not enough for screen overlapping verification.
-bool Topology::checkVisible(const shapeObj& shape, rectObj &screenRect) {
+bool Topology::checkVisible(const shapeObj& shape, const rectObj &screenRect) {
   return (msRectOverlap(&shape.bounds, &screenRect) == MS_TRUE);
 }
 
@@ -515,7 +516,7 @@ static RasterPoint shape2Screen(const lineObj& line, int iskip, const ScreenProj
   points.clear();
   points.reserve((line.numpoints/iskip)+1);
 
-  // first point is insertes before loop fore avoid to check "if(first)" inside loop
+  // first point is inserted before loop for avoid to check "if(first)" inside loop
   points.push_back(_Proj.LonLat2Screen(line.point[0]));
   
   for(int i = 1; i < last; i+=iskip) {
@@ -537,7 +538,7 @@ static RasterPoint shape2Screen(const lineObj& line, int iskip, const ScreenProj
 }
 // Paint a single topology element
 
-void Topology::Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
+void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
 
   if (!shapefileopen) return;
   bool nolabels=false;
@@ -553,9 +554,9 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection&
   if (MapWindow::zoom.RealScale() > scaleThreshold) return;
 
 #ifdef ENABLE_OPENGL
-  static GLShapeRenderer renderer;
-  renderer.setClipRect(rc);
-  renderer.setNoLabel(nolabels);
+  static GLShapeRenderer shape_renderer;
+  shape_renderer.setClipRect(rc);
+  shape_renderer.setNoLabel(nolabels);
 #endif
   
   
@@ -595,7 +596,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection&
 #endif
 
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
-  rectObj screenRect = MapWindow::screenbounds_latlon;
+  const rectObj screenRect = MapWindow::screenbounds_latlon;
 
   static std::vector<RasterPoint> points;
 
@@ -621,11 +622,11 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection&
 				const POINT sc = _Proj.LonLat2Screen(shape->line[tt].point[jj]);
 				if (dobitmap) {
 					// bugfix 101212 missing case for scaleCategory 0 (markers)
-					if (scaleCategory==0||cshape->renderSpecial(Surface, sc.x, sc.y, rc)) {
+					if (scaleCategory==0||cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
 						MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
 					}
 				} else {
-					cshape->renderSpecial(Surface, sc.x, sc.y, rc);
+					cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc);
 				}
 			}
 		}
@@ -638,13 +639,13 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection&
         for (int tt = 0; tt < shape->numlines; ++tt) {
           const RasterPoint ptLabel = shape2Screen(shape->line[tt], 1, _Proj, points);
           Surface.Polyline(points.data(), points.size(), rc);
-          cshape->renderSpecial(Surface,ptLabel.x,ptLabel.y,rc);
+          cshape->renderSpecial(renderer, Surface,ptLabel.x,ptLabel.y,rc);
         }
       break;
       
     case(MS_SHAPE_POLYGON):
 #ifdef ENABLE_OPENGL
-      renderer.renderPolygon(Surface, *cshape, hbBrush, _Proj);
+      shape_renderer.renderPolygon(renderer, Surface, *cshape, hbBrush, _Proj);
 #else
 
 	  // if it's a water area (nolabels), print shape up to defaultShape, but print
@@ -654,7 +655,7 @@ void Topology::Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection&
           const RasterPoint ptLabel = shape2Screen(shape->line[tt], iskip, _Proj, points);
           Surface.Polygon(points.data(), points.size(), rc);
           if (!nolabels ) {
-            cshape->renderSpecial(Surface,ptLabel.x,ptLabel.y,rc);
+            cshape->renderSpecial(renderer, Surface,ptLabel.x,ptLabel.y,rc);
           }
         }
       }
@@ -754,7 +755,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 }
 
 // Print topology labels
-bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) const {
+bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const {
   if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
 
     //Do not waste time with null labels
@@ -762,8 +763,6 @@ bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& Cl
     if(size <= 0) {
         return false;
     }
-
-	Surface.SetBackgroundTransparent();
 
 	SIZE tsize;
 	RECT brect;
@@ -787,13 +786,7 @@ bool XShapeLabel::renderSpecial(LKSurface& Surface, int x, int y, const RECT& Cl
 		brect.left<=ClipRect.left ||
 		brect.right>=ClipRect.right) return false;
 
-        #ifdef DITHER
-	Surface.SetTextColor(LKColor(0,0,0));
-        #else
-	Surface.SetTextColor(LKColor(0,50,50)); // PETROL too light at 66
-        #endif
-    
-	Surface.DrawText(x, y, label);
+    renderer.Add({x, y}, label);
 	return true; // 101016
   }
   return false; // 101016

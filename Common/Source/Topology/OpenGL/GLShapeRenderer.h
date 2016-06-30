@@ -19,6 +19,7 @@
 #include "mapshape.h"
 #include "Screen/Point.hpp"
 #include "Screen/LKSurface.h"
+#include "../ShapeSpecialRenderer.h"
 
 class Brush;
 class XShape;
@@ -37,7 +38,7 @@ public:
         noLabel = b;
     }
     
-    void renderPolygon(LKSurface& Surface, const XShape& shape, Brush& brush, const ScreenProjection& _Proj);
+    void renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, Brush& brush, const ScreenProjection& _Proj);
     
 private:
     GLUtesselator* tess;

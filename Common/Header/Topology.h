@@ -12,6 +12,7 @@
 #include "mapshape.h"
 #include "Poco/Thread.h"
 
+class ShapeSpecialRenderer;
 
 class XShape {
  public:
@@ -33,7 +34,7 @@ class XShape {
   virtual void load(shapefileObj* shpfile, int i);
   virtual void clear();
 
-  virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) const { (void)x; (void)y; (void)Surface; return false;};
+  virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const { (void)x; (void)y; (void)Surface; return false;};
   virtual bool nearestItem(int category, double lon, double lat) { (void)category; (void)lon; (void)lat; return(true);};
 
   bool hide;
@@ -53,7 +54,7 @@ class XShapeLabel: public XShape {
   virtual void clear();
   void setlabel(const char* src);
   
-  virtual bool renderSpecial(LKSurface& Surface, int x, int y, const RECT& ClipRect) const;
+  virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const;
   virtual bool nearestItem(int category, double lon, double lat);
 
 
@@ -78,7 +79,7 @@ class Topology {
   void Close();
 
   void updateCache(rectObj thebounds, bool purgeonly=false);
-  void Paint(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
+  void Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   
   void SearchNearest(const rectObj& bounds);
 
@@ -94,7 +95,7 @@ class Topology {
 
   XShape** shpCache;
 
-  bool checkVisible(const shapeObj& shape, rectObj &screenRect);
+  bool checkVisible(const shapeObj& shape, const rectObj &screenRect);
 
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);

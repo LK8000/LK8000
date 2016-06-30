@@ -10,7 +10,7 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 #include "RGB.h"
-
+#include "Topology/ShapeSpecialRenderer.h"
 
 
 
@@ -19,26 +19,18 @@ extern Topology* TopoStore[MAXTOPOLOGY];
 
 void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const bool wateronly)
 {
-    LockTerrainDataGraphics();
-
-	if (wateronly) {
-		for (int z=0; z<MAXTOPOLOGY; z++) {
-			if (TopoStore[z]) {
-				if (	TopoStore[z]->scaleCategory == 5 ||
-			     		TopoStore[z]->scaleCategory == 10 ||
-			     		TopoStore[z]->scaleCategory == 20 
-				) {
-					TopoStore[z]->Paint(Surface,rc, _Proj);
-				}
-			}
-		}
-	} else {
-		for (int z=0; z<MAXTOPOLOGY; z++) {
-			if (TopoStore[z]) {
-				TopoStore[z]->Paint(Surface,rc, _Proj);
-			}
-		}
-	}
-    UnlockTerrainDataGraphics();
+  LockTerrainDataGraphics();
+  ShapeSpecialRenderer renderer;
+  for(Topology* topo: TopoStore) {
+    if(!topo) {
+      continue;
+    }
+    if(!wateronly || topo->scaleCategory == 5 || topo->scaleCategory == 10 || topo->scaleCategory == 20) {
+      topo->Paint(renderer, Surface,rc, _Proj);
+    }
+  }
+  renderer.Render(Surface);
+  renderer.Clear();
+  UnlockTerrainDataGraphics();
 }
 

@@ -948,6 +948,7 @@ TERRAIN	:=\
 
 TOPOL	:=\
 	$(TOP)/Topology.cpp		\
+	$(TOP)/ShapeSpecialRenderer.cpp	\
 	
 ifeq ($(OPENGL),y)
 TOPOL	+=\
