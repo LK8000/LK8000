@@ -521,7 +521,7 @@ private:
   ~CAirspaceManager() { CloseAirspaces(); }
   
   // Airspaces data
-  mutable Mutex _csairspaces;
+  mutable Mutex _csairspaces; // recursive mutex is needed.
   CAirspaceList _airspaces;             // ALL
   CAirspaceList _airspaces_near;        // Near, in reachable range for warnings
   CAirspaceList _airspaces_page24;      // Airspaces for nearest 2.4 page

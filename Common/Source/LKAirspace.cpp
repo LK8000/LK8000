@@ -3286,17 +3286,17 @@ void dlgAirspaceDetails();
 // show details for each airspaces queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
 void CAirspaceManager::ProcessAirspaceDetailQueue() {
 
-    _csairspaces.Lock();
+    ScopeLock Lock(_csairspaces);
     while(!_detail_queue.empty()) {
         _detail_current = _detail_queue.front();
         _detail_queue.pop_front(); // remove Airspace from fifo
         
-        _csairspaces.Unlock(); 
-        dlgAirspaceDetails();
-        _csairspaces.Lock();
+        {
+            ScopeUnlock Unlock(_csairspaces);
+            dlgAirspaceDetails();
+        }
     }
     _detail_current = nullptr;
-    _csairspaces.Unlock();
 }
 
 
