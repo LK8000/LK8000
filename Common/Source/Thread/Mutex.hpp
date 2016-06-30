@@ -1,6 +1,10 @@
-/* 
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ * 
  * File:   Mutex.hpp
- * Author: user
+ * Author: Bruno de Lacheisserie
  *
  * Created on March 3, 2015, 2:20 PM
  */
