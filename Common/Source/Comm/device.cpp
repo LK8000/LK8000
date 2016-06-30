@@ -46,7 +46,27 @@ using namespace std::placeholders;
 //  Thankfully WinCE "critical sections" are recursive locks.
 
 // this lock is used for protect DeviceList array.
-Mutex  CritSec_Comm;
+#if USELKASSERT
+class DeviceMutex : public Poco::Mutex {
+public:
+    inline void Lock() {
+        Poco::Mutex::lock();
+        // Check if we are not inside RXThread, otherwise, we can have deadlock when we stop RxThread.
+        for(DeviceDescriptor_t device : DeviceList) {
+            if(device.Com) {
+                LKASSERT(!device.Com->IsCurrentThread());
+            }
+        }
+    }
+    
+    inline void Unlock() { 
+        Poco::Mutex::unlock(); 
+    }    
+};
+#else
+typedef Mutex DeviceMutex;
+#endif
+static DeviceMutex  CritSec_Comm;        
 
 COMMPort_t COMMPort;
 
@@ -315,33 +335,45 @@ void RestartCommPorts() {
 
     StartupStore(TEXT(". RestartCommPorts begin @%s%s"), WhatTimeIsIt(), NEWLINE);
 
-    LockComm();
-    /* 29/10/2013 : 
-     * if RxThread wait for LockComm, It never can terminate -> Dead Lock
-     *  can appen at many time when reset comport is called ....
-     *    devRequestFlarmVersion called by NMEAParser::PFLAU is first exemple
-     * 
-     * in fact if it appens, devClose() kill RxThread after 20s timeout...
-     *  that solve the deadlock, but thread is not terminated correctly ...
-     * 
-     * Bruno.
-     */
-    devClose(devA());
-    devClose(devB());
+    devCloseAll();
 
     NMEAParser::Reset();
 
-    devInit(TEXT(""));
+    devInit();
 
-    UnlockComm();
 #if TESTBENCH
     StartupStore(TEXT(". RestartCommPorts end @%s%s"), WhatTimeIsIt(), NEWLINE);
 #endif
 
 }
 
+// Only called from devInit() above which
+// is in turn called with LockComm
+static BOOL devOpen(PDeviceDescriptor_t d, int Port){
+  BOOL res = TRUE;
 
-BOOL devInit(LPCTSTR CommandLine) {
+  if (d != NULL && d->Open != NULL)
+    res = d->Open(d, Port);
+
+  if (res == TRUE) {
+    d->Port = Port;
+    
+  }       
+  return res;
+}
+
+// Only called from devInit() above which
+// is in turn called with LockComm
+static BOOL devInit(PDeviceDescriptor_t d){
+  if (d != NULL && d->Init != NULL)
+    return ((d->Init)(d));
+  else
+    return(TRUE);
+}
+
+BOOL devInit() {
+    LockComm();
+    
     TCHAR DeviceName[DEVNAMESIZE + 1];
     PDeviceDescriptor_t pDevNmeaOut = NULL;
 
@@ -494,17 +526,49 @@ BOOL devInit(LPCTSTR CommandLine) {
         }
     }
 
+    UnlockComm();
     return (TRUE);
 }
 
+// Tear down methods should always succeed.
+// Called from devInit() above under LockComm
+// Also called when shutting down via devCloseAll()
+static BOOL devClose(PDeviceDescriptor_t d)
+{
+  if (d != NULL) {
+    if (d->Close != NULL) {
+      d->Close(d);
+    }
+    
+    ComPort *Com = d->Com;
+    if (Com) {
+      Com->Close();
+      d->Com = NULL; // if we do that before Stop RXThread , Crash ....
+      delete Com;
+    }    
+  }
+
+  return TRUE;
+}
 
 BOOL devCloseAll(void){
-  int i;
-
-  for (i=0; i<NUMDEV; i++){
+    /* 29/10/2013 : 
+     * if RxThread wait for LockComm, It never can terminate -> Dead Lock
+     *  can appen at many time when reset comport is called ....
+     *    devRequestFlarmVersion called by NMEAParser::PFLAU is first exemple
+     * 
+     * in fact if it appens, devClose() kill RxThread after 20s timeout...
+     *  that solve the deadlock, but thread is not terminated correctly ...
+     * 
+     * Bruno.
+     */
+  LockComm();
+  for (unsigned i=0; i<NUMDEV; i++){
     devClose(&DeviceList[i]);
     ComPortStatus[i]=CPS_CLOSED; // 100210
   }
+  UnlockComm();
+  
   return(TRUE);
 }
 
@@ -656,51 +720,6 @@ BOOL devPutBallast(PDeviceDescriptor_t d, double Ballast)
   return result;
 }
 
-// Only called from devInit() above which
-// is in turn called with LockComm
-BOOL devOpen(PDeviceDescriptor_t d, int Port){
-  BOOL res = TRUE;
-
-  if (d != NULL && d->Open != NULL)
-    res = d->Open(d, Port);
-
-  if (res == TRUE) {
-    d->Port = Port;
-    
-  }       
-  return res;
-}
-
-// Tear down methods should always succeed.
-// Called from devInit() above under LockComm
-// Also called when shutting down via devCloseAll()
-BOOL devClose(PDeviceDescriptor_t d)
-{
-  if (d != NULL) {
-    if (d->Close != NULL) {
-      d->Close(d);
-    }
-    
-    ComPort *Com = d->Com;
-    if (Com) {
-      Com->Close();
-      d->Com = NULL; // if we do that before Stop RXThread , Crash ....
-      delete Com;
-    }    
-  }
-
-  return TRUE;
-}
-
-// Only called from devInit() above which
-// is in turn called with LockComm
-BOOL devInit(PDeviceDescriptor_t d){
-  if (d != NULL && d->Init != NULL)
-    return ((d->Init)(d));
-  else
-    return(TRUE);
-}
-
 BOOL devLinkTimeout(PDeviceDescriptor_t d)
 {
   BOOL result = FALSE;
@@ -744,11 +763,10 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M571_")));
   CreateProgressDialog(buffer);
 
+  LockComm();
   /***********************************************************/
   devDirectLink(d,true);
   /***********************************************************/
-  LockComm();
-
   if ((d != NULL) && (d->Declare != NULL))
 	result = d->Declare(d, decl, errBufferLen, errBuffer);
   else {
@@ -756,12 +774,11 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
 		result |= FlarmDeclare(d, decl, errBufferLen, errBuffer);
 	}
   }
-
-
-  UnlockComm();
   /***********************************************************/
   devDirectLink(d,false);
   /***********************************************************/
+  UnlockComm();
+  
   CloseProgressDialog();
   
   return result;
@@ -883,7 +900,6 @@ static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
 // NOTICE V5: this function is used only by LXMiniMap device driver .
 // The problem is that it is locking Comm from RXThread and this is 
 // creating a possible deadlock situation.
-//
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 {
   if(d != NULL)
@@ -893,12 +909,13 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 	  TCHAR tmp[512];
       devFormatNMEAString(tmp, 512, text);
 
+      LockComm();      
       devDirectLink(d,true);
-      LockComm();
-      if (d->Com)
+      if (d->Com) {
         d->Com->WriteString(tmp);
-      UnlockComm();
+      }
       devDirectLink(d,false);
+      UnlockComm();
     }
   }
 }

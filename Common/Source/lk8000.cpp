@@ -597,21 +597,8 @@ int main(int argc, char *argv[]) {
   // or you get an assertion error in device.cpp 
 
   ComCheck_Init();
-
-// WINDOWSPC _SIM_ devInit called twice missing devA name
-// on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
-
-#if 110530
   // we need devInit for all devices. Missing initialization otherwise.
-  LockComm();
-  devInit(TEXT("")); 
-  UnlockComm();
-#else
-  // I dont remember anymore WHY! Probably it has been fixed already! paolo
-  #if (WINDOWSPC>0)
-  if (SIMMODE) devInit(TEXT(""));      
-  #endif
-#endif
+  devInit(); 
 
   LiveTrackerInit();
 

@@ -103,7 +103,6 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 
   if(bLinkEnable)
   {
-	LockComm();
 	#if TESTBENCH
 	StartupStore(TEXT("V7: enable LX V7 direct Link %s"), NEWLINE);
 	#endif
@@ -143,7 +142,6 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 	Poco::Thread::sleep(CHANGE_DELAY);
-	UnlockComm();
 	Poco::Thread::sleep(CHANGE_DELAY);
 
   }

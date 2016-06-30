@@ -125,7 +125,6 @@ BOOL DevLX16xx::LX16xxDirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
 TCHAR  szTmp[254];
   if(bLinkEnable)
   {
-	LockComm();
 	StartupStore(TEXT("enable LX 16xx direct Link %s"), NEWLINE);
 	_stprintf(szTmp, TEXT("$PFLX0,COLIBRI"));
 	LX16xxNMEAddCheckSumStrg(szTmp);
@@ -157,7 +156,6 @@ TCHAR  szTmp[254];
 	Poco::Thread::sleep(100);
 	d->Com->WriteString(szTmp);
 	Poco::Thread::sleep(100);
-	UnlockComm();
   }
   return true;
 }

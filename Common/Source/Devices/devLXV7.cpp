@@ -98,7 +98,6 @@ BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable) {
     }
 
     if(bLinkEnable) {
-        LockComm();
 	#if TESTBENCH
 	StartupStore(TEXT("enable LX V7 direct Link %s"), NEWLINE);
 	#endif
@@ -135,7 +134,6 @@ BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable) {
 	LXV7NMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 	Poco::Thread::sleep(CHANGE_DELAY);
-	UnlockComm();
 	Poco::Thread::sleep(CHANGE_DELAY);
 
     }
