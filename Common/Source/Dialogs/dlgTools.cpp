@@ -258,9 +258,7 @@ extern HINSTANCE _hInstance;
 #endif
 
 XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResults) {
-    const char *lpRes = NULL;
-    int l = 0;
-    TCHAR * szXML = NULL;
+    const TCHAR * szXML = NULL;
 
 #ifdef WIN32_RESOURCE
   HRSRC hResInfo;
@@ -293,79 +291,27 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName, LPCTSTR tag, XMLResults *pResul
   }
 
     // Retrieves a pointer to the xml resource in memory 
-    lpRes = (const char*) LockResource(hRes);
-    if (lpRes) {
-        l = SizeofResource(_hInstance, hResInfo);
-    }
+    szXML = (const TCHAR*) LockResource(hRes);
 
+    // win32 ressource are not null terminated, we need to do copy for add leading '\0'
+    const size_t len = SizeofResource(_hInstance, hResInfo)/sizeof(TCHAR);
+    const tstring szTmp(szXML, len);
+    szXML = szTmp.c_str();
+    
 #else
-    lpRes = GetNamedResourceString(lpName);
-    if(lpRes) {
-        l = strlen(lpRes);
-    }
+    szXML = GetNamedResourceString(lpName); // always null terminated
 #endif
 
-    if (lpRes && l > 0) {
-#ifdef _UNICODE
-        char *buf = NULL;
-        if(lpRes[l] != '\0') {
-            buf = (char*) malloc(l + 2);
-            if (!buf) {
-                //StartupStore(_T("------ LoadFromRes malloc error%s"),NEWLINE); // 100101
-                goto _errmem;
-            }
-            strncpy(buf, lpRes , l);
-            buf[l] = 0; // need to explicitly null-terminate.
-            buf[l + 1] = 0;
-            lpRes = buf;
-        }
-        szXML = (TCHAR*) calloc(l + 2, sizeof (TCHAR));
-        if (!szXML) {
-            //StartupStore(_T("------ LoadFromRes malloc2 error%s"),NEWLINE); // 100101
-            goto _errmem;
-        }
-        int nSize = utf2unicode(lpRes, szXML, l + 1);
-        if(buf) {
-            free(buf);
-        }
-#else
-      int nSize = l;
-      szXML= (char*)malloc(l+2);
-      if (!szXML) {
-        //StartupStore(_T("------ LoadFromRes malloc2 error%s"),NEWLINE); // 100101
-          goto _errmem;
-      }      
-      strncpy(szXML,(char*)lpRes,l);
-      szXML[l]=0; // need to explicitly null-terminate.
-#endif
-      if(nSize <=0) {
-          free(szXML);
-          
-          MessageBoxX(
-                        TEXT("Invalid dialog template"),
-                        TEXT("Dialog error"),
-                        mbOk);
-          
-          return XMLNode::emptyXMLNode;
-      }
+    if(szXML && _tcslen(szXML) > 0) {
       XMLNode x=XMLNode::parseString(szXML,tag,pResults);
-
-      free(szXML);
       return x;
     }
+    
   MessageBoxX(
-              TEXT("Can't lock resource"),
+              TEXT("Invalid Resource"),
               TEXT("Dialog error"),
               mbOk);
   return XMLNode::emptyXMLNode;
-  
-_errmem:
-    MessageBoxX(
-                TEXT("Can't allocate memory"),
-                TEXT("Dialog error"),
-                mbOk);
-    // unable to allocate memory
-    return XMLNode::emptyXMLNode;
 }
 
 

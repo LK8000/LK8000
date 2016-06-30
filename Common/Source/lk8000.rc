@@ -6,67 +6,46 @@
 #include "windows.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
+
 #include "newres.h"
 
 #undef APSTUDIO_READONLY_SYMBOLS
 
-// Neutral (Default) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEUD)
-#ifdef _WIN32
-#ifndef WINDOWSPC
-#ifndef _MINGW32_
-LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
-#endif
-#endif
-#pragma code_page(1252)
-#endif //_WIN32
-
+/////////////////////////////////////////////////////////////////////////////
 //
-// WAVE
+// WAVE 
 //
 
-IDR_WAV_DRIP            WAVE    DISCARDABLE	"../Data/Sounds/LKbeep-drip.wav"
-IDR_WAV_CLICK		WAVE	DISCARDABLE	"../Data/Sounds/LK_SHORTERCLICKM.WAV"
-IDR_WAV_HIGHCLICK	WAVE	DISCARDABLE	"../Data/Sounds/LK_CLICKH.WAV"
-IDR_WAV_OVERTONE0	WAVE	DISCARDABLE	"../Data/Sounds/LK_S0.WAV"
-IDR_WAV_OVERTONE1	WAVE	DISCARDABLE	"../Data/Sounds/LK_S1.WAV"
-IDR_WAV_OVERTONE2	WAVE	DISCARDABLE	"../Data/Sounds/LK_S2.WAV"
-IDR_WAV_OVERTONE3	WAVE	DISCARDABLE	"../Data/Sounds/LK_S3.WAV"
-IDR_WAV_OVERTONE4	WAVE	DISCARDABLE	"../Data/Sounds/LK_S4d.WAV"
-IDR_WAV_OVERTONE5	WAVE	DISCARDABLE	"../Data/Sounds/LK_S5.WAV"
-IDR_WAV_OVERTONE6	WAVE	DISCARDABLE	"../Data/Sounds/LK_S6.WAV"
-IDR_WAV_OVERTONE7	WAVE	DISCARDABLE	"../Data/Sounds/LK_S6b.WAV"
-//IDR_WAV_OVERTONE8	WAVE	DISCARDABLE	"../Data/Sounds/LK_S7.WAV"
-IDR_WAV_TONE1		WAVE	DISCARDABLE	"../Data/Sounds/LK_T1.WAV"
-IDR_WAV_TONE2		WAVE	DISCARDABLE	"../Data/Sounds/LK_T2.WAV"
-IDR_WAV_TONE3		WAVE	DISCARDABLE	"../Data/Sounds/LK_T3.WAV"
-IDR_WAV_TONE4		WAVE	DISCARDABLE	"../Data/Sounds/LK_T4.WAV"
-//IDR_WAV_TONE5		WAVE	DISCARDABLE	"../Data/Sounds/LK_T5.WAV"
-IDR_WAV_TONE7		WAVE	DISCARDABLE	"../Data/Sounds/LK_T8.WAV"
-IDR_WAV_BTONE2		WAVE	DISCARDABLE	"../Data/Sounds/LK_B2b.wav"
-IDR_WAV_BTONE4		WAVE	DISCARDABLE	"../Data/Sounds/LK_B4.wav"
-IDR_WAV_BTONE5		WAVE	DISCARDABLE	"../Data/Sounds/LK_B5.wav"
-IDR_WAV_BTONE6		WAVE	DISCARDABLE	"../Data/Sounds/LK_B5b.wav"
-IDR_WAV_BTONE7		WAVE	DISCARDABLE	"../Data/Sounds/LK_B8.wav"
-IDR_WAV_MM0		WAVE	DISCARDABLE	"../Data/Sounds/MM0.WAV"
-IDR_WAV_MM1		WAVE	DISCARDABLE	"../Data/Sounds/MM1.WAV"
-IDR_WAV_MM2		WAVE	DISCARDABLE	"../Data/Sounds/MM2.WAV"
-IDR_WAV_MM3		WAVE	DISCARDABLE	"../Data/Sounds/MM3.WAV"
-IDR_WAV_MM4		WAVE	DISCARDABLE	"../Data/Sounds/MM4.WAV"
-IDR_WAV_MM5		WAVE	DISCARDABLE	"../Data/Sounds/MM5.WAV"
-IDR_WAV_MM6		WAVE	DISCARDABLE	"../Data/Sounds/MM6.WAV"
+IDR_WAV_DRIP            WAVE                     "../Data/Sounds/LKbeep-drip.wav"
+IDR_WAV_CLICK           WAVE                     "../Data/Sounds/LK_SHORTERCLICKM.WAV"
+IDR_WAV_HIGHCLICK       WAVE                     "../Data/Sounds/LK_CLICKH.WAV"
+IDR_WAV_OVERTONE0       WAVE                     "../Data/Sounds/LK_S0.WAV"
+IDR_WAV_OVERTONE1       WAVE                     "../Data/Sounds/LK_S1.WAV"
+IDR_WAV_OVERTONE2       WAVE                     "../Data/Sounds/LK_S2.WAV"
+IDR_WAV_OVERTONE3       WAVE                     "../Data/Sounds/LK_S3.WAV"
+IDR_WAV_OVERTONE4       WAVE                     "../Data/Sounds/LK_S4d.WAV"
+IDR_WAV_OVERTONE5       WAVE                     "../Data/Sounds/LK_S5.WAV"
+IDR_WAV_OVERTONE6       WAVE                     "../Data/Sounds/LK_S6.WAV"
+IDR_WAV_OVERTONE7       WAVE                     "../Data/Sounds/LK_S6b.WAV"
+IDR_WAV_TONE1           WAVE                     "../Data/Sounds/LK_T1.WAV"
+IDR_WAV_TONE2           WAVE                     "../Data/Sounds/LK_T2.WAV"
+IDR_WAV_TONE3           WAVE                     "../Data/Sounds/LK_T3.WAV"
+IDR_WAV_TONE4           WAVE                     "../Data/Sounds/LK_T4.WAV"
+IDR_WAV_TONE7           WAVE                     "../Data/Sounds/LK_T8.WAV"
+IDR_WAV_BTONE2          WAVE                     "../Data/Sounds/LK_B2b.wav"
+IDR_WAV_BTONE4          WAVE                     "../Data/Sounds/LK_B4.wav"
+IDR_WAV_BTONE5          WAVE                     "../Data/Sounds/LK_B5.wav"
+IDR_WAV_BTONE6          WAVE                     "../Data/Sounds/LK_B5b.wav"
+IDR_WAV_BTONE7          WAVE                     "../Data/Sounds/LK_B8.wav"
+IDR_WAV_MM0             WAVE                     "../Data/Sounds/MM0.WAV"
+IDR_WAV_MM1             WAVE                     "../Data/Sounds/MM1.WAV"
+IDR_WAV_MM2             WAVE                     "../Data/Sounds/MM2.WAV"
+IDR_WAV_MM3             WAVE                     "../Data/Sounds/MM3.WAV"
+IDR_WAV_MM4             WAVE                     "../Data/Sounds/MM4.WAV"
+IDR_WAV_MM5             WAVE                     "../Data/Sounds/MM5.WAV"
+IDR_WAV_MM6             WAVE                     "../Data/Sounds/MM6.WAV"
 
-//
-// Icon
-//
-
-#endif    // Neutral (Default) resources
-
-
+/////////////////////////////////////////////////////////////////////////////
 //
 // CEUX
 // Added by Paolo Ventafridda 090702
@@ -77,179 +56,130 @@ BEGIN
 END
 
 
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-#ifndef WINDOWSPC
-#ifndef _MINGW32_
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#endif
-#endif
-#pragma code_page(1252)
-#endif //_WIN32
-
-
-
+/////////////////////////////////////////////////////////////////////////////
 //
-// XMLDIALOG
+// XMLDIALOG 
 //
 #ifdef WIN32_RESOURCE
-IDR_XML_AIRSPACE_P        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspace_P.xml"
-IDR_XML_AIRSPACECOLOURS_P XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceColours_P.xml"
-IDR_XML_MULTISELECTLIST_P XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgMultiSelectList_P.xml"
-IDR_XML_MULTISELECTLIST_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgMultiSelectList_L.xml"
-IDR_XML_AIRSPACEPATTERNS_P XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspacePatterns_P.xml"
-IDR_XML_ANALYSIS_P        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAnalysis_P.xml"
-IDR_XML_BASICSETTINGS_P   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSettings_P.xml"
-IDR_XML_BASICSETTINGS_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSettings_L.xml"
-IDR_XML_CHECKLIST_P       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgChecklist_P.xml"
-IDR_XML_LOGGERREPLAY    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLoggerReplay.xml"
-IDR_XML_STARTUP_P         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartup_P.xml"
-IDR_XML_DUALPROFILE_P     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgDualProfile_P.xml"
-IDR_XML_ORACLE_P         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgOracle_P.xml"
-IDR_XML_ORACLE_L       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgOracle_L.xml"
-IDR_XML_FLYSIM_P         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFlySim_P.xml"
-IDR_XML_FLYSIM_L         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFlySim_L.xml"
-IDR_XML_STATUS          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStatus.xml"
-IDR_XML_TASKCALCULATOR  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskCalculator.xml"
-IDR_XML_TASKOVERVIEW_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskOverview_P.xml"
-IDR_XML_TASKWAYPOINT_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskWaypoint_P.xml"
-IDR_XML_WAYPOINTDETAILS_P XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointDetails_P.xml"
-IDR_XML_WAYPOINTSELECT_P  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointSelect_P.xml"
-IDR_XML_WAYPOINTQUICK_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayQuick_L.xml"
-IDR_XML_WAYPOINTQUICK_P  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayQuick_P.xml"
-IDR_XML_WINDSETTINGS    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWindSettings.xml"
-IDR_XML_STARTTASK       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartTask.xml"
-IDR_XML_TIMEGATES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTimeGates.xml"
-IDR_XML_TOPOLOGY       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTopology.xml"
-IDR_XML_CUSTOMKEYS       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgCustomKeys.xml"
-IDR_XML_BOTTOMBAR       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBottomBar.xml"
-IDR_XML_INFOPAGES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgInfoPages.xml"
 
-IDR_XML_WAYPOINTTERRAIN XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWaypointOutOfTerrain.xml"
-IDR_XML_LKAIRSPACEWARNING_P XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspaceWarning_P.xml"
-IDR_XML_LKAIRSPACEWARNING_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspaceWarning_L.xml"
-IDR_XML_HELP_P            XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgHelp_P.xml"
-IDR_XML_TEXTENTRY_KEYBOARD_P XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTextEntry_Keyboard_P.xml"
-IDR_XML_TEXTENTRY_KEYBOARD_L XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTextEntry_Keyboard_L.xml"
-IDR_XML_TEAMCODE        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTeamCode.xml"
-IDR_XML_STARTPOINT_P      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartPoint_P.xml"
-IDR_XML_WAYPOINTEDIT_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWaypointEdit_P.xml"
-IDR_XML_TARGET_P          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTarget_P.xml"
-IDR_XML_TASKRULES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskRules.xml"
-IDR_XML_AIRSPACEDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceDetails.xml"
-IDR_XML_LKTRAFFICDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKTraffic.xml"
-IDR_XML_THERMALDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgThermalDetails.xml"
+IDR_XML_WINDSETTINGS    XMLDIALOG                "../Data/Dialogs/dlgWindSettings.xml"
+IDR_XML_AIRSPACE_L      XMLDIALOG                "../Data/Dialogs/dlgAirspace_L.xml"
+IDR_XML_AIRSPACE_P      XMLDIALOG                "../Data/Dialogs/dlgAirspace_P.xml"
+IDR_XML_AIRSPACECOLOURS_P XMLDIALOG                "../Data/Dialogs/dlgAirspaceColours_P.xml"
+IDR_XML_MULTISELECTLIST_P XMLDIALOG                "../Data/Dialogs/dlgMultiSelectList_P.xml"
+IDR_XML_MULTISELECTLIST_L XMLDIALOG                "../Data/Dialogs/dlgMultiSelectList_L.xml"
+IDR_XML_AIRSPACEPATTERNS_P XMLDIALOG                "../Data/Dialogs/dlgAirspacePatterns_P.xml"
+IDR_XML_ANALYSIS_P      XMLDIALOG                "../Data/Dialogs/dlgAnalysis_P.xml"
+IDR_XML_BASICSETTINGS_P XMLDIALOG                "../Data/Dialogs/dlgBasicSettings_P.xml"
+IDR_XML_BASICSETTINGS_L XMLDIALOG                "../Data/Dialogs/dlgBasicSettings_L.xml"
+IDR_XML_CHECKLIST_P     XMLDIALOG                "../Data/Dialogs/dlgChecklist_P.xml"
+IDR_XML_LOGGERREPLAY    XMLDIALOG                "../Data/Dialogs/dlgLoggerReplay.xml"
+IDR_XML_STARTUP_P       XMLDIALOG                "../Data/Dialogs/dlgStartup_P.xml"
+IDR_XML_DUALPROFILE_P   XMLDIALOG                "../Data/Dialogs/dlgDualProfile_P.xml"
+IDR_XML_ORACLE_P        XMLDIALOG                "../Data/Dialogs/dlgOracle_P.xml"
+IDR_XML_ORACLE_L        XMLDIALOG                "../Data/Dialogs/dlgOracle_L.xml"
+IDR_XML_FLYSIM_P        XMLDIALOG                "../Data/Dialogs/dlgFlySim_P.xml"
+IDR_XML_FLYSIM_L        XMLDIALOG                "../Data/Dialogs/dlgFlySim_L.xml"
+IDR_XML_STATUS          XMLDIALOG                "../Data/Dialogs/dlgStatus.xml"
+IDR_XML_TASKCALCULATOR  XMLDIALOG                "../Data/Dialogs/dlgTaskCalculator.xml"
+IDR_XML_TASKOVERVIEW_P  XMLDIALOG                "../Data/Dialogs/dlgTaskOverview_P.xml"
+IDR_XML_TASKWAYPOINT_P  XMLDIALOG                "../Data/Dialogs/dlgTaskWaypoint_P.xml"
+IDR_XML_WAYPOINTDETAILS_P XMLDIALOG                "../Data/Dialogs/dlgWayPointDetails_P.xml"
+IDR_XML_WAYPOINTSELECT_P XMLDIALOG                "../Data/Dialogs/dlgWayPointSelect_P.xml"
+IDR_XML_WAYPOINTQUICK_L XMLDIALOG                "../Data/Dialogs/dlgWayQuick_L.xml"
+IDR_XML_WAYPOINTQUICK_P XMLDIALOG                "../Data/Dialogs/dlgWayQuick_P.xml"
+IDR_XML_STARTTASK       XMLDIALOG                "../Data/Dialogs/dlgStartTask.xml"
+IDR_XML_TIMEGATES       XMLDIALOG                "../Data/Dialogs/dlgTimeGates.xml"
+IDR_XML_TOPOLOGY        XMLDIALOG                "../Data/Dialogs/dlgTopology.xml"
+IDR_XML_CUSTOMKEYS      XMLDIALOG                "../Data/Dialogs/dlgCustomKeys.xml"
+IDR_XML_BOTTOMBAR       XMLDIALOG                "../Data/Dialogs/dlgBottomBar.xml"
+IDR_XML_INFOPAGES       XMLDIALOG                "../Data/Dialogs/dlgInfoPages.xml"
+IDR_XML_WAYPOINTTERRAIN XMLDIALOG                "../Data/Dialogs/dlgWaypointOutOfTerrain.xml"
+IDR_XML_LKAIRSPACEWARNING_P XMLDIALOG                "../Data/Dialogs/dlgLKAirspaceWarning_P.xml"
+IDR_XML_LKAIRSPACEWARNING_L XMLDIALOG                "../Data/Dialogs/dlgLKAirspaceWarning_L.xml"
+IDR_XML_HELP_P          XMLDIALOG                "../Data/Dialogs/dlgHelp_P.xml"
+IDR_XML_TEXTENTRY_KEYBOARD_P XMLDIALOG                "../Data/Dialogs/dlgTextEntry_Keyboard_P.xml"
+IDR_XML_TEXTENTRY_KEYBOARD_L XMLDIALOG                "../Data/Dialogs/dlgTextEntry_Keyboard_L.xml"
+IDR_XML_TEAMCODE        XMLDIALOG                "../Data/Dialogs/dlgTeamCode.xml"
+IDR_XML_STARTPOINT_P    XMLDIALOG                "../Data/Dialogs/dlgStartPoint_P.xml"
+IDR_XML_WAYPOINTEDIT_P  XMLDIALOG                "../Data/Dialogs/dlgWaypointEdit_P.xml"
+IDR_XML_TARGET_P        XMLDIALOG                "../Data/Dialogs/dlgTarget_P.xml"
+IDR_XML_TASKRULES       XMLDIALOG                "../Data/Dialogs/dlgTaskRules.xml"
+IDR_XML_AIRSPACEDETAILS XMLDIALOG                "../Data/Dialogs/dlgAirspaceDetails.xml"
+IDR_XML_LKTRAFFICDETAILS XMLDIALOG                "../Data/Dialogs/dlgLKTraffic.xml"
+IDR_XML_THERMALDETAILS  XMLDIALOG                "../Data/Dialogs/dlgThermalDetails.xml"
+IDR_XML_CHECKLIST_L     XMLDIALOG                "../Data/Dialogs/dlgChecklist_L.xml"
+IDR_XML_WAYPOINTDETAILS_L XMLDIALOG                "../Data/Dialogs/dlgWayPointDetails_L.xml"
+IDR_XML_ANALYSIS_L      XMLDIALOG                "../Data/Dialogs/dlgAnalysis_L.xml"
+IDR_XML_HELP_L          XMLDIALOG                "../Data/Dialogs/dlgHelp_L.xml"
+IDR_XML_AIRSPACECOLOURS_L XMLDIALOG                "../Data/Dialogs/dlgAirspaceColours_L.xml"
+IDR_XML_AIRSPACEPATTERNS_L XMLDIALOG                "../Data/Dialogs/dlgAirspacePatterns_L.xml"
+IDR_XML_STARTPOINT_L    XMLDIALOG                "../Data/Dialogs/dlgStartPoint_L.xml"
+IDR_XML_WAYPOINTSELECT_L XMLDIALOG                "../Data/Dialogs/dlgWayPointSelect_L.xml"
+IDR_XML_TASKOVERVIEW_L  XMLDIALOG                "../Data/Dialogs/dlgTaskOverview_L.xml"
+IDR_XML_TASKWAYPOINT_L  XMLDIALOG                "../Data/Dialogs/dlgTaskWaypoint_L.xml"
+IDR_XML_STARTUP_L       XMLDIALOG                "../Data/Dialogs/dlgStartup_L.xml"
+IDR_XML_DUALPROFILE_L   XMLDIALOG                "../Data/Dialogs/dlgDualProfile_L.xml"
+IDR_XML_WAYPOINTEDIT_L  XMLDIALOG                "../Data/Dialogs/dlgWaypointEdit_L.xml"
+IDR_XML_AIRSPACESELECT_P XMLDIALOG                "../Data/Dialogs/dlgAirspaceSelect_P.xml"
+IDR_XML_AIRSPACESELECT_L XMLDIALOG                "../Data/Dialogs/dlgAirspaceSelect_L.xml"
+IDR_XML_TARGET_L        XMLDIALOG                "../Data/Dialogs/dlgTarget_L.xml"
+IDR_XML_COMBOPICKER_L   XMLDIALOG                "../Data/Dialogs/dlgComboPicker_L.xml"
+IDR_XML_COMBOPICKER_P   XMLDIALOG                "../Data/Dialogs/dlgComboPicker_P.xml"
+IDR_XML_PROFILES        XMLDIALOG                "../Data/Dialogs/dlgProfiles.xml"
+IDR_XML_AIRSPACEWARNINGPARAMS XMLDIALOG                "../Data/Dialogs/dlgAirspaceWarningParams.xml"
+IDR_XML_CONFIGURATION_P XMLDIALOG                "../Data/Dialogs/dlgConfiguration_P.xml"
+IDR_XML_CONFIGURATION_L XMLDIALOG                "../Data/Dialogs/dlgConfiguration_L.xml"
+IDR_XML_CONFIGAIRCRAFT_P XMLDIALOG                "../Data/Dialogs/dlgConfigAircraft_P.xml"
+IDR_XML_CONFIGAIRCRAFT_L XMLDIALOG                "../Data/Dialogs/dlgConfigAircraft_L.xml"
+IDR_XML_CONFIGPILOT_P   XMLDIALOG                "../Data/Dialogs/dlgConfigPilot_P.xml"
+IDR_XML_CONFIGPILOT_L   XMLDIALOG                "../Data/Dialogs/dlgConfigPilot_L.xml"
+IDR_XML_CONFIGDEVICE_P  XMLDIALOG                "../Data/Dialogs/dlgConfigDevice_P.xml"
+IDR_XML_CONFIGDEVICE_L  XMLDIALOG                "../Data/Dialogs/dlgConfigDevice_L.xml"
+IDR_XML_NUMENTRY_KEYBOARD_L XMLDIALOG                "../Data/Dialogs/dlgNumEntry_Keyboard_L.xml"
+IDR_XML_NUMENTRY_KEYBOARD_P XMLDIALOG                "../Data/Dialogs/dlgNumEntry_Keyboard_P.xml"
+IDR_XML_WAYPOINTEDITUTM_P XMLDIALOG                "../Data/Dialogs/dlgWaypointEditUTM_P.xml"
+IDR_XML_WAYPOINTEDITUTM_L XMLDIALOG                "../Data/Dialogs/dlgWaypointEditUTM_L.xml"
+IDR_XML_CUSTOMMENU      XMLDIALOG                "../Data/Dialogs/dlgCustomMenu.xml"
+IDR_XML_OVERLAYS        XMLDIALOG                "../Data/Dialogs/dlgOverlays.xml"
+IDR_XML_MULTIMAPS       XMLDIALOG                "../Data/Dialogs/dlgMultimaps.xml"
+IDR_XML_DEVCPROBE       XMLDIALOG                "../Data/Dialogs/dlgDevCProbe.xml"
+IDR_XML_BLUETOOTH_P     XMLDIALOG                "../Data/Dialogs/dlgBluetooth_P.xml"
+IDR_XML_BLUETOOTH_L     XMLDIALOG                "../Data/Dialogs/dlgBluetooth_L.xml"
+IDR_XML_IGCFILE_P       XMLDIALOG                "../Data/Dialogs/dlgIgcFile_P.xml"
+IDR_XML_IGCFILE_L       XMLDIALOG                "../Data/Dialogs/dlgIgcFile_L.xml"
+IDR_XML_BLUEFLYCONFIG_L XMLDIALOG                "../Data/Dialogs/dlgBlueFlyConfig_L.xml"
+IDR_XML_BLUEFLYCONFIG_P XMLDIALOG                "../Data/Dialogs/dlgBlueFlyConfig_P.xml"
+IDR_XML_TERMINAL_L      XMLDIALOG                "../Data/Dialogs/dlgTerminal_L.xml"
+IDR_XML_TERMINAL_P      XMLDIALOG                "../Data/Dialogs/dlgTerminal_P.xml"
+IDR_XML_PROGRESS_P      XMLDIALOG                "../Data/Dialogs/dlgProgress_L.xml"
+IDR_XML_PROGRESS_L      XMLDIALOG                "../Data/Dialogs/dlgProgress_P.xml"
+IDR_XML_RADIOSETTINGS   XMLDIALOG                "../Data/Dialogs/dlgRadioSettings.xml"
 
-IDR_XML_CHECKLIST_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgChecklist_L.xml"
-IDR_XML_WAYPOINTDETAILS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointDetails_L.xml"
-IDR_XML_ANALYSIS_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAnalysis_L.xml"
+/////////////////////////////////////////////////////////////////////////////
+//
+// RASTERDATA 
+//
 
-IDR_XML_HELP_L          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgHelp_L.xml"
-IDR_XML_AIRSPACE_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspace_L.xml"
-IDR_XML_AIRSPACECOLOURS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceColours_L.xml"
-IDR_XML_AIRSPACEPATTERNS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspacePatterns_L.xml"
-IDR_XML_STARTPOINT_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartPoint_L.xml"
-IDR_XML_WAYPOINTSELECT_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointSelect_L.xml"
-IDR_XML_TASKOVERVIEW_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskOverview_L.xml"
-IDR_XML_TASKWAYPOINT_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskWaypoint_L.xml"
-IDR_XML_STARTUP_L       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartup_L.xml"
-IDR_XML_DUALPROFILE_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgDualProfile_L.xml"
-IDR_XML_WAYPOINTEDIT_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWaypointEdit_L.xml"
-IDR_XML_AIRSPACESELECT_P  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceSelect_P.xml"
-IDR_XML_AIRSPACESELECT_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceSelect_L.xml"
-IDR_XML_TARGET_L        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTarget_L.xml"
-IDR_XML_COMBOPICKER_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgComboPicker_L.xml"
-IDR_XML_COMBOPICKER_P     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgComboPicker_P.xml"
-IDR_XML_PROFILES     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProfiles.xml"
-IDR_XML_AIRSPACEWARNINGPARAMS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceWarningParams.xml"
+IDR_RASTER_EGM96S       RASTERDATA               "../Data/Bitmaps/egm96s.dem"
 
-IDR_XML_CONFIGURATION_P   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_P.xml"
-IDR_XML_CONFIGURATION_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.xml"
-IDR_XML_CONFIGAIRCRAFT_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigAircraft_P.xml"
-IDR_XML_CONFIGAIRCRAFT_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigAircraft_L.xml"
-IDR_XML_CONFIGPILOT_P       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigPilot_P.xml"
-IDR_XML_CONFIGPILOT_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigPilot_L.xml"
-IDR_XML_CONFIGDEVICE_P       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigDevice_P.xml"
-IDR_XML_CONFIGDEVICE_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfigDevice_L.xml"
-
-IDR_XML_NUMENTRY_KEYBOARD_L	XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgNumEntry_Keyboard_L.xml"
-IDR_XML_NUMENTRY_KEYBOARD_P	XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgNumEntry_Keyboard_P.xml"
-
-IDR_XML_WAYPOINTEDITUTM_P	XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgWaypointEditUTM_P.xml"
-IDR_XML_WAYPOINTEDITUTM_L	XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgWaypointEditUTM_L.xml"
-
-IDR_XML_CUSTOMMENU     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgCustomMenu.xml"
-IDR_XML_OVERLAYS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgOverlays.xml"
-IDR_XML_MULTIMAPS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgMultimaps.xml"
-
-IDR_XML_DEVCPROBE	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgDevCProbe.xml"
-
-IDR_XML_BLUETOOTH_P	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBluetooth_P.xml"
-IDR_XML_BLUETOOTH_L	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBluetooth_L.xml"
-
-IDR_XML_IGCFILE_P		XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgIgcFile_P.xml"
-IDR_XML_IGCFILE_L	XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgIgcFile_L.xml"
-
-IDR_XML_BLUEFLYCONFIG_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig_L.xml"
-IDR_XML_BLUEFLYCONFIG_P XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBlueFlyConfig_P.xml"
-
-IDR_XML_TERMINAL_L  XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTerminal_L.xml"
-IDR_XML_TERMINAL_P  XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTerminal_P.xml"
-
-IDR_XML_PROGRESS_P    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_L.xml"
-IDR_XML_PROGRESS_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProgress_P.xml"
-
-IDR_XML_RADIOSETTINGS    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgRadioSettings.xml"
-
-IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 #endif
 
-#endif    // English (U.S.) resources
-
-
-// English (U.K.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
-#ifdef _WIN32
-#ifndef WINDOWSPC
-#ifndef _MINGW32_
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
-#endif
-#endif
-#pragma code_page(1252)
-#endif //_WIN32
-
-
-#endif    // English (U.K.) resources
-
-
-// English (Australia) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENA)
-#ifdef _WIN32
-#ifndef WINDOWSPC
-#ifndef _MINGW32_
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_AUS
-#endif
-#endif
-#pragma code_page(1252)
-#endif //_WIN32
-
-
+/////////////////////////////////////////////////////////////////////////////
 //
 // Icon
 //
 
-IDI_LK8000SWIFT         ICON    DISCARDABLE     "../Data/Bitmaps/LKicon.ico"
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_LK8000SWIFT         ICON                     "../Data/Bitmaps/LKicon.ico"
 
-// Bitmaps
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
 
-IDB_EMPTY               BITMAP  DISCARDABLE     "../Data/Bitmaps/Empty.bmp"
-IDB_TOWN                BITMAP  DISCARDABLE     "../Data/Bitmaps/town.bmp"
-IDB_LKSMALLTOWN         BITMAP  DISCARDABLE     "../Data/Bitmaps/smalltown.bmp"
-IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.bmp"
-
-
-#endif    // English (Australia) resources
+IDB_EMPTY               BITMAP                   "../Data/Bitmaps/Empty.bmp"
+IDB_TOWN                BITMAP                   "../Data/Bitmaps/town.bmp"
+IDB_LKSMALLTOWN         BITMAP                   "../Data/Bitmaps/smalltown.bmp"
+IDB_LKVERYSMALLTOWN     BITMAP                   "../Data/Bitmaps/verysmalltown.bmp"

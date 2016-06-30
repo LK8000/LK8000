@@ -24,6 +24,7 @@
     since it is not counted in \p_&size
     */
     .byte 0
+    .byte 0
 \p&_size:
     .int (\p&_end - \p&_begin)
     /* add alias for "_" decorated symname for avoid link error. */

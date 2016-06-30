@@ -52,6 +52,7 @@ CONFIG_ANDROID	:=n
 MINIMAL		:=n
 XSCALE		:=n
 GTARGET		:=$(TARGET)
+DLG-ENCODING    := UTF-8
 	
 ifeq ($(TARGET),PPC2002)
   CONFIG_PPC2002 :=y
@@ -427,7 +428,9 @@ ifeq ($(CONFIG_WIN32),y)
  CE_DEFS += -DUSE_GDI
  #all win32 Targe are unicode
  CE_DEFS += -DUNICODE -D_UNICODE
-
+ #use UNICODE for xml dialog template, avoid runtime convertion from utf8 to unicode.
+ DLG-ENCODING := UTF-16LE
+ 	
  ifeq ($(CONFIG_PC),y)
   CE_DEFS +=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
   CE_DEFS +=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 -DMSOFT
@@ -1535,7 +1538,7 @@ $(BIN)/%.min.rc: $(SRC)/%.rc $(patsubst Common/Data/Dialogs/%.xml,$(BIN)/Data/Di
 
 $(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
 	@$(NQ)echo "  minimize $@"
-	$(Q)xsltproc --output $@ build/dialogtemplate.xsl $<
+	$(Q)xsltproc --output $@ build/dialogtemplate-$(DLG-ENCODING).xsl $<
 
 $(MASKED_PNG) : $(patsubst $(PNG_TARGET)/%.PNG, $(BITMAP_DIR)/%.BMP, $@)
 	@$(NQ)echo "  Convert Image	  $@"
