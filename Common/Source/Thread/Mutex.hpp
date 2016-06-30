@@ -13,9 +13,12 @@
 #define	MUTEX_HPP
 
 #include "Poco/Mutex.h"
+#include "Poco/ScopedLock.h"
+#include "Poco/ScopedUnlock.h"
 
 class Mutex : protected Poco::Mutex {
     friend class Poco::ScopedLock<Mutex>;
+    friend class Poco::ScopedUnlock<Mutex>;
 public:
     Mutex() {} 
 
@@ -31,6 +34,12 @@ public:
 class ScopeLock : public Poco::ScopedLock<Mutex> {
 public:
     ScopeLock(Mutex& m) : Poco::ScopedLock<Mutex>(m) { }
+
+};
+
+class ScopeUnlock : public Poco::ScopedUnlock<Mutex> {
+public:
+    ScopeUnlock(Mutex& m) : Poco::ScopedUnlock<Mutex>(m) { }
 
 };
 
