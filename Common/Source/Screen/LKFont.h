@@ -17,12 +17,12 @@
 #include "Screen/Custom/Cache.hpp"
 #endif
 
-class LKFont : public Font {
+class LKFont final : public Font {
 public:
     LKFont() {};
     LKFont(LKFont&& Font) = delete;
     LKFont(const LKFont& Font) = delete;
-    virtual ~LKFont() {};
+    ~LKFont() { }
 
     LKFont& operator=(LKFont&& Font) = delete;
     LKFont& operator=(const LKFont& Font) = delete;
