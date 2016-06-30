@@ -11,9 +11,6 @@
 #include "utils/openzip.h"
 #include "OS/Memory.h"
 
-#ifdef __MINGW32__
-#define int_fast8_t jas_int_fast8_t
-#endif
 
 ////// Field access ////////////////////////////////////////////////////
 

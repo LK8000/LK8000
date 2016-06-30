@@ -11,10 +11,6 @@
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"
 
-#ifdef __MINGW32__
-#define int_fast8_t jas_int_fast8_t
-#endif
-
 // Set the followings inside options:
 // #define LKMTERRAIN	1	// load terrain DEM also from topology maps, NOT in LKMAPS
 
