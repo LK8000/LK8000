@@ -83,10 +83,11 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
         }; 
         
         SIZE tsize;
-        Surface.SelectObject(MapScaleFont);
+        const auto oldFont = Surface.SelectObject(MapScaleFont);
         Surface.GetTextSize(_T("M"),&tsize);
         int ofs=(MAPSCALE_VSIZE - (tsize.cy + tsize.cy))/2;
         ytext=ScaleLine[0].y+ofs;
+        Surface.SelectObject(oldFont);
 
 
         prevmode = inpanmode;
