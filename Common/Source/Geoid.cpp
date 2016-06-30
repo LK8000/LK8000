@@ -17,12 +17,11 @@
 
 
 #ifdef WIN32_RESOURCE
-unsigned char* egm96data = NULL;
 extern HINSTANCE _hInstance;
 #else
 #include "resource_data.h"
-const unsigned char* egm96data = NULL;
 #endif
+const unsigned char* egm96data = NULL;
 
 void OpenGeoid(void) {
 #ifdef WIN32_RESOURCE
@@ -33,16 +32,11 @@ void OpenGeoid(void) {
             HGLOBAL hRes = LoadResource(_hInstance, hResInfo);
             if (hRes) {
                 // Retrieves a pointer to the resource in memory 
-                const BYTE* lpRes = (BYTE*) LockResource(hRes);
+                const unsigned char* lpRes = static_cast<const unsigned char*>(LockResource(hRes));
                 if (lpRes) {
                     const size_t len = SizeofResource(_hInstance, hResInfo);
                     if (len == EGM96SIZE) {
-                        egm96data = (unsigned char*) malloc(len);
-                        if (!egm96data) {
-                           StartupStore(_T(". EGM96DATA MALLOC FAILED%s"),NEWLINE);
-                        } else {
-                           memcpy((char*) egm96data, (char*) lpRes, len);
-                        }
+                        egm96data = lpRes;
                     } else {
                         StartupStore(_T(". EGM96SIZE error%s"),NEWLINE);
                     }
@@ -63,9 +57,6 @@ void OpenGeoid(void) {
 
 void CloseGeoid(void) {
   if (egm96data) {
-#ifdef WIN32_RESSOURCE
-    free(egm96data);
-#endif
     egm96data = NULL;
   }
 }
