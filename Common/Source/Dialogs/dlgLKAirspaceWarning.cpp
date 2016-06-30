@@ -39,8 +39,11 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface) {
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
-  if(pWnd && pWnd->GetParentWndForm()) {
-      pWnd->GetParentWndForm()->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
   }
 }
 
@@ -53,7 +56,9 @@ static void OnAckForTimeClicked(WndButton* pWnd) {
 static bool OnTimer(WndForm* pWnd){
   // Auto close dialog after some time
   if (!(--timer_counter)) {
-    pWnd->SetModalResult(mrOK);
+    if(pWnd) {
+      pWnd->SetModalResult(mrOK);
+    }
     return true;
   }
   
@@ -91,7 +96,9 @@ static void dlgLKAirspaceFill(WndForm* dlg)
 {
   if (msg.warnlevel != airspace_copy.WarningLevel()) {
     // we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
-    dlg->SetModalResult(mrOK);
+    if(dlg) {
+      dlg->SetModalResult(mrOK);
+    }
   }
   
     //Fill up dialog data

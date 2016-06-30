@@ -101,8 +101,12 @@ static void OnAcknowledgeClicked(WndButton* pWnd){
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-	(void)pWnd;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static bool OnTimer(WndForm* pWnd){
@@ -167,7 +171,12 @@ TCHAR Tmp[255];
     }
   }
 #endif  // RADIO_ACTIVE        
-wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 } 
 
 static CallBackTableEntry_t CallBackTable[]={

@@ -404,8 +404,12 @@ bool CDevCProbe::OnTimer(WndForm* pWnd){
 }
 
 void CDevCProbe::OnCloseClicked(WndButton* pWnd){
-	(void)pWnd;
-  m_wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 void CDevCProbe::OnCompassCalClicked(WndButton* pWnd){

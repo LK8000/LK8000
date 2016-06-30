@@ -164,7 +164,12 @@ static void OnPrevClicked(WndButton* pWnd){
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
@@ -200,7 +205,12 @@ static void OnReplaceClicked(WndButton* pWnd){
   RefreshTask();
   UnlockTaskData();
   MapWindow::RefreshMap();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnNewHomeClicked(WndButton* pWnd){
@@ -227,12 +237,22 @@ static void OnNewHomeClicked(WndButton* pWnd){
   #endif
   RefreshTask();
   UnlockTaskData();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnTeamCodeClicked(WndButton* pWnd){
-    TeamCodeRefWaypoint = SelectedWaypoint;
-    wf->SetModalResult(mrOK);
+  TeamCodeRefWaypoint = SelectedWaypoint;
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 
@@ -241,7 +261,12 @@ static void OnInserInTaskClicked(WndButton* pWnd){
   InsertWaypoint(SelectedWaypoint);
   RefreshTask();
   UnlockTaskData();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnAppendInTask1Clicked(WndButton* pWnd){
@@ -249,7 +274,12 @@ static void OnAppendInTask1Clicked(WndButton* pWnd){
   InsertWaypoint(SelectedWaypoint, 1); // append before finish
   RefreshTask();
   UnlockTaskData();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnAppendInTask2Clicked(WndButton* pWnd){
@@ -257,7 +287,12 @@ static void OnAppendInTask2Clicked(WndButton* pWnd){
   InsertWaypoint(SelectedWaypoint, 2); // append after finish
   RefreshTask();
   UnlockTaskData();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 
@@ -266,7 +301,12 @@ static void OnRemoveFromTaskClicked(WndButton* pWnd){
   RemoveWaypoint(SelectedWaypoint);
   RefreshTask();
   UnlockTaskData();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

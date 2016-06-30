@@ -22,14 +22,22 @@ extern bool UpdateQNH(const double newqnh);
 // static bool BallastTimerActive = false;
 
 static void OnCloseClicked(WndButton* pWnd) {
-    (void) pWnd;
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnBallastDump(WndButton* pWnd) {
-    (void) pWnd;
-    BallastTimerActive = !BallastTimerActive;
-    wf->SetModalResult(mrOK);
+  BallastTimerActive = !BallastTimerActive;
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

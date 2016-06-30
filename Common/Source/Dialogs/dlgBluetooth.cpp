@@ -25,7 +25,12 @@ namespace DlgBluetooth {
     size_t ItemIndex = 0;
 
     void OnClose(WndButton* pWnd) {
-        wfBth->SetModalResult(mrOK);
+      if(pWnd) {
+        WndForm * pForm = pWnd->GetParentWndForm();
+        if(pForm) {
+          pForm->SetModalResult(mrOK);
+        }
+      }
     }
 
     void OnPair(WndButton* pWnd) {

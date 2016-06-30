@@ -51,7 +51,12 @@ static void OnTargetClicked(WndButton* pWnd) {
 	WayPointList[RESWP_FLARMTARGET].Altitude   = RESWP_INVALIDNUMBER;
 	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name,_T(RESWP_FLARMTARGET_NAME) );
 	DoStatusMessage(gettext(TEXT("_@M882_"))); // TARGET RELEASED
-	wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 	return;
   }
 #if 0
@@ -90,7 +95,12 @@ static void OnTargetClicked(WndButton* pWnd) {
 		_stprintf(WayPointList[RESWP_FLARMTARGET].Name,_T("%s"),GPS_INFO.FLARM_Traffic[LKTargetIndex].Name);
 	}
 	SetModeType(LKMODE_TRF, IM_TARGET);
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 
 }
 
@@ -169,7 +179,12 @@ static void OnRenameClicked(WndButton* pWnd){
 }
 
 static void OnCloseClicked(WndButton * pWnd) {
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static CallBackTableEntry_t CallBackTable[]={

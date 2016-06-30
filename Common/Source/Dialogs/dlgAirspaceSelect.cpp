@@ -73,7 +73,12 @@ static void OnAirspaceListEnter(WindowControl * Sender,
       }
     }
   } else {
-    wf->SetModalResult(mrCancel);
+    if(Sender) {
+      WndForm * pForm = Sender->GetParentWndForm();
+      if(pForm) {
+        pForm->SetModalResult(mrCancel);
+      }
+    }    
   }
 }
 
@@ -566,9 +571,13 @@ static void OnWpListInfo(WindowControl * Sender,
 
 
 static void OnWPSCloseClicked(WndButton* pWnd){
-	(void)pWnd;
   ItemIndex = -1;
-  wf->SetModalResult(mrCancel);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrCancel);
+    }
+  }
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {

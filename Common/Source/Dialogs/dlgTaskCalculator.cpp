@@ -22,11 +22,21 @@ static double emc= 0.0;
 static double cruise_efficiency= 1.0;
 
 static void OnCancelClicked(WndButton* pWnd) {
-    wf->SetModalResult(mrCancel);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrCancel);
+    }
+  }
 }
 
 static void OnOKClicked(WndButton* pWnd) {
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static double Range = 0;

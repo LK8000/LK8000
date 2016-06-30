@@ -85,20 +85,32 @@ static void OnHelpClicked(WindowControl * Sender){
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-  (void)pWnd;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnComboPopupListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo)
 { // double-click on item -- NOT in callback table because added manually
-  (void)Sender; 
-  wf->SetModalResult(mrOK);
+  if(Sender) {
+    WndForm * pForm = Sender->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnCancelClicked(WndButton* pWnd){
-	(void)pWnd;
   ComboListPopup->ComboPopupItemIndex= -1;
-  wf->SetModalResult(mrCancel);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrCancel);
+    }
+  }
 }
 
 

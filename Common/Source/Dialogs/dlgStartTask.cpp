@@ -20,7 +20,12 @@ static WndForm *wf=NULL;
 bool startIsValid = false;
 
 static void OnCloseClicked(WndButton* pWnd) {
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void StartTaskAnyway(bool valid) {

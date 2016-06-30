@@ -125,21 +125,22 @@ _stprintf(szFreq,  _T("%7.3f"),Freq);
 
 
 static void OnCancelClicked(WndButton* pWnd){
-	(void)pWnd;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 
-/*
-static void OnCloseClicked(WindowControl * Sender){
-	(void)Sender;
-
-  wf->SetModalResult(mrOK);
-}
-*/
 static void OnCloseClicked(WndButton* pWnd){
-    (void)pWnd;
-	wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

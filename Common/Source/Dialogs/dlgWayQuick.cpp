@@ -41,9 +41,12 @@ static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
 }
 
 static void OnCancelClicked(WndButton* pWnd) {
-    if (wf) {
-        wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
     }
+  }
 }
 
 static void OnSetAlt1Clicked(WndButton* pWnd){
@@ -54,7 +57,12 @@ static void OnSetAlt1Clicked(WndButton* pWnd){
   if (ValidWayPoint(Alternate1))
   	DoStatusMessage(_T("Altern.1="),WayPointList[Alternate1].Name);
   retStatus=3;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnSetAlt2Clicked(WndButton* pWnd){
@@ -65,23 +73,43 @@ static void OnSetAlt2Clicked(WndButton* pWnd){
   if (ValidWayPoint(Alternate2))
   	DoStatusMessage(_T("Altern.2="),WayPointList[Alternate2].Name);
   retStatus=4;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnGotoClicked(WndButton* pWnd){
   GotoWaypoint(SelectedWaypoint);
   retStatus=2;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnDetailsClicked(WndButton* pWnd){
   retStatus=1;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnTaskClicked(WndButton* pWnd){
   retStatus=5;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 
@@ -103,7 +131,12 @@ static void OnRadioFrequencyClicked(WndButton* pWnd){
   DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );  
   DoStatusMessage(_T("RADIO:"), szFreq );
   retStatus=3;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 #endif  // RADIO_ACTIVE        
 }
 

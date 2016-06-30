@@ -29,7 +29,12 @@ static unsigned dlgSize = 0;
 bool TargetDialogOpen = false;
 
 static void OnOKClicked(WndButton* pWnd) {
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void MoveTarget(double adjust_angle) {

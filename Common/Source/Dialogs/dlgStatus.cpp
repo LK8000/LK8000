@@ -91,7 +91,12 @@ static void NextPage(int Step){
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {

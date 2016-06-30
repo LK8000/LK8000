@@ -14,22 +14,40 @@
 #include "resource.h"
 
 
-static WndForm *wf=NULL;
-
 static void OnYesClicked(WndButton* pWnd){
-    wf->SetModalResult(wpTerrainBoundsYes);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(wpTerrainBoundsYes);
+    }
+  }  
 }
 
 static void OnYesAllClicked(WndButton* pWnd){
-    wf->SetModalResult(wpTerrainBoundsYesAll);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(wpTerrainBoundsYesAll);
+    }
+  }  
 }
 
 static void OnNoClicked(WndButton* pWnd){
-    wf->SetModalResult(wpTerrainBoundsNo);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(wpTerrainBoundsNo);
+    }
+  }
 }
 
 static void OnNoAllClicked(WndButton* pWnd){
-    wf->SetModalResult(wpTerrainBoundsNoAll);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(wpTerrainBoundsNoAll);
+    }
+  }  
 }
 
 
@@ -46,7 +64,7 @@ int dlgWaypointOutOfTerrain(TCHAR *Message){
   WndFrame* wfrm;
   int res = 0;
 
-    wf = dlgLoadFromXML(CallBackTable, IDR_XML_WAYPOINTTERRAIN);
+    WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_WAYPOINTTERRAIN);
     if (wf) {
 
     

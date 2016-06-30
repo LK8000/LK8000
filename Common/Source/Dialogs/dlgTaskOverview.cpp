@@ -305,7 +305,6 @@ static void OnTaskListEnter(WindowControl * Sender,
             Task[ItemIndex].PGConeBase = WayPointList[res].Altitude;
 
 			UnlockTaskData();
-//			wf->SetModalResult(mrOK);
 			if (ItemIndex==0) {
 				dlgTaskWaypointShowModal(ItemIndex, 0, true); // start waypoint
 			} else if (isfinish) {
@@ -328,7 +327,6 @@ static void OnTaskListEnter(WindowControl * Sender,
 
   if (ItemIndex<UpLimit) {
 
-//		wf->SetModalResult(mrOK);
 	if (ItemIndex==0) {
 		dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
 	} else {
@@ -358,8 +356,13 @@ static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
-    ItemIndex = -1; // to stop FormDown bringing up task details
-    wf->SetModalResult(mrOK);
+  ItemIndex = -1; // to stop FormDown bringing up task details
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 
@@ -560,7 +563,12 @@ static void OnDeleteClicked(WndButton* pWnd){
     lk::filesystem::deleteFile(dfe->GetPathFile());
     // Cannot update dfe list, so we force exit.
     ItemIndex = -1; 
-    wf->SetModalResult(mrOK);
+    if(pWnd) {
+      WndForm * pForm = pWnd->GetParentWndForm();
+      if(pForm) {
+        pForm->SetModalResult(mrOK);
+      }
+    }
     return;
   }
 }

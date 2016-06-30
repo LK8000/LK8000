@@ -39,7 +39,12 @@ static void OnTopoActiveData(DataField *Sender, DataField::DataAccessKind_t Mode
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void setVariables(void) {

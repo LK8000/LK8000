@@ -50,7 +50,12 @@ static void OnAirspacePatternsListEnter(WindowControl * Sender,
     ItemIndex = NUMAIRSPACEBRUSHES-1;
   }
   if (ItemIndex>=0) {
-    wf->SetModalResult(mrOK);
+    if(Sender) {
+      WndForm * pForm = Sender->GetParentWndForm();
+      if(pForm) {
+        pForm->SetModalResult(mrOK);
+      }
+    }
   }
 }
 
@@ -67,9 +72,13 @@ static void OnAirspacePatternsListInfo(WindowControl * Sender,
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-  (void)pWnd;
   ItemIndex = -1;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

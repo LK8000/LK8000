@@ -55,12 +55,21 @@ static void OnSelectClicked(WndButton* pWnd) {
   OvertargetMode=OVT_THER;
   SetModeType(LKMODE_MAP,MP_MOVING);
 
-  wf->SetModalResult(mrOK);
-
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static CallBackTableEntry_t CallBackTable[]={

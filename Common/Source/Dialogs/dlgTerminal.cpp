@@ -134,9 +134,13 @@ static void OnStopClicked(WndButton* pWnd) {
 }
 
 static void OnTTYCloseClicked(WndButton* pWnd) {
-
   ComCheck_ActivePort=-1; 
-  wf->SetModalResult(mrCancel);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrCancel);
+    }
+  }
 }
 
 

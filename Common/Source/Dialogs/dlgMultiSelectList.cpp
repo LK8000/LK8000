@@ -434,7 +434,12 @@ static void OnMultiSelectListListEnter(WindowControl * Sender,
         ItemIndex = iNO_ELEMENTS - 1;
     }
     if (ItemIndex >= 0) {
-        wf->SetModalResult(mrOK);
+      if(Sender) {
+        WndForm * pForm = Sender->GetParentWndForm();
+        if(pForm) {
+          pForm->SetModalResult(mrOK);
+        }
+      }
     }
 
 
@@ -451,7 +456,12 @@ static void OnEnterClicked(WndButton* pWnd) {
         ItemIndex = iNO_ELEMENTS - 1;
     }
     if (ItemIndex >= 0) {
-        wf->SetModalResult(mrOK);
+      if(pWnd) {
+        WndForm * pForm = pWnd->GetParentWndForm();
+        if(pForm) {
+          pForm->SetModalResult(mrOK);
+        }
+      }
     }
 
     if ((ItemIndex >= 0) && (ItemIndex < iNO_ELEMENTS)) {
@@ -473,11 +483,13 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
-    (void) pWnd;
-    ItemIndex = -1;
-
-    wf->SetModalResult(mrCancel);
-
+  ItemIndex = -1;
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrCancel);
+    }
+  }
 }
 
 

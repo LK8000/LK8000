@@ -20,8 +20,12 @@ static bool changed = false;
 static WndForm *wf=NULL;
 
 static void OnCloseClicked(WndButton* pWnd) {
-    (void) pWnd;
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

@@ -133,8 +133,12 @@ static void OnAirspaceListInfo(WindowControl * Sender,
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-    (void)pWnd;
-	wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

@@ -254,8 +254,12 @@ namespace dlgBlueFlyConfig {
     }
 
     void OnClose(WndButton* pWnd) {
-        (void)pWnd;
-        wfDlg->SetModalResult(mrOK);
+      if(pWnd) {
+        WndForm * pForm = pWnd->GetParentWndForm();
+        if(pForm) {
+          pForm->SetModalResult(mrOK);
+        }
+      }
     }
 
     void OnNextClicked(WndButton* pWnd) {

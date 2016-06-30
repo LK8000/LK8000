@@ -65,11 +65,13 @@ static int SelectedWayPointFileIdx = 0;
 static void OnWaypointListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender; (void)ListInfo;
-  if (ItemIndex != -1) {
-    wf->SetModalResult(mrOK);
-  }
-  else
-    wf->SetModalResult(mrCancel);
+  
+  if(Sender) {
+    WndForm * pForm = Sender->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult((ItemIndex != -1) ? mrOK : mrCancel);
+    }
+  }  
 }
 
 
@@ -735,8 +737,13 @@ static void OnWPSSelectClicked(WndButton* pWnd) {
 }
 
 static void OnWPSCloseClicked(WndButton* pWnd) {
-    ItemIndex = -1;
-    wf->SetModalResult(mrCancel);
+  ItemIndex = -1;
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrCancel);
+    }
+  }
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {

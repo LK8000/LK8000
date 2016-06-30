@@ -488,12 +488,22 @@ static void OnSelectClicked(WndButton* pWnd){
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnMoveClicked(WndButton* pWnd){
-    wf->SetModalResult(mrOK);
-    MapWindow::SetPanTaskEdit(twItemIndex);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
+  MapWindow::SetPanTaskEdit(twItemIndex);
 }
 
 static void OnStartPointClicked(WndButton* pWnd){
@@ -506,7 +516,12 @@ static void OnMoveAfterClicked(WndButton* pWnd){
   SwapWaypoint(twItemIndex);
   SetWaypointValues();
   UnlockTaskData();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnMoveBeforeClicked(WndButton* pWnd){
@@ -514,7 +529,12 @@ static void OnMoveBeforeClicked(WndButton* pWnd){
   SwapWaypoint(twItemIndex-1);
   SetWaypointValues();
   UnlockTaskData();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void OnDetailsClicked(WndButton* pWnd){
@@ -534,7 +554,12 @@ static void OnRemoveClicked(WndButton* pWnd) {
     ActiveTaskPoint= -1;
   }
   UnlockTaskData();
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

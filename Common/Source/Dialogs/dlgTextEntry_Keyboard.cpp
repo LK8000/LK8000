@@ -186,7 +186,12 @@ static void OnDate(WndButton* pWnd)
 static void OnOk(WndButton* pWnd)
 {
   PlayResource(TEXT("IDR_WAV_CLICK"));
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

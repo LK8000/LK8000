@@ -175,7 +175,12 @@ static void OnPrevClicked(WndButton* pWnd){
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-    wfa->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {

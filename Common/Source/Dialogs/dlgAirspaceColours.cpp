@@ -46,13 +46,18 @@ static void OnAirspaceColoursPaintListItem(WindowControl * Sender, LKSurface& Su
 
 static void OnAirspaceColoursListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo) {
-  (void)Sender;
+
   ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
   if (ItemIndex>=NUMAIRSPACECOLORS) {
     ItemIndex = NUMAIRSPACECOLORS-1;
   }
   if (ItemIndex>=0) {
-    wf->SetModalResult(mrOK);
+    if(Sender) {
+      WndForm * pForm = Sender->GetParentWndForm();
+      if(pForm) {
+        pForm->SetModalResult(mrOK);
+      }
+    }    
   }
 }
 
@@ -69,9 +74,13 @@ static void OnAirspaceColoursListInfo(WindowControl * Sender,
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-  (void)pWnd;
   ItemIndex = -1;
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

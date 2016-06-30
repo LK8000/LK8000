@@ -16,7 +16,12 @@
 static WndForm *wf=NULL;
 
 static void OnCancelClicked(WndButton* pWnd){
-  wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 static void UpdateWind(bool set) {
@@ -42,8 +47,13 @@ static void UpdateWind(bool set) {
 
 
 static void OnCloseClicked(WndButton* pWnd){
-    UpdateWind(true);
-    wf->SetModalResult(mrOK);
+  UpdateWind(true);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 

@@ -57,7 +57,12 @@ namespace DlgIgcFile {
     }
 
     void OnClose(WndButton* pWnd) {
-        wfDlg->SetModalResult(mrOK);
+      if(pWnd) {
+        WndForm * pForm = pWnd->GetParentWndForm();
+        if(pForm) {
+          pForm->SetModalResult(mrOK);
+        }
+      }
     }
 
     void OnSend(WndButton* pWnd) {

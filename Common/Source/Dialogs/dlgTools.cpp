@@ -30,9 +30,12 @@ int DLGSCALE(int x) {
 
 
 static void OnButtonClick(WndButton* pWnd){
-    if(pWnd && pWnd->GetParentWndForm()) {
-        pWnd->GetParentWndForm()->SetModalResult(pWnd->GetTag());
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(pWnd->GetTag());
     }
+  }
 }
 
 static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode){

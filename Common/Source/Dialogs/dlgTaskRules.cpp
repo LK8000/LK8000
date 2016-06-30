@@ -37,7 +37,12 @@ static void OnRulesActiveData(DataField *Sender,
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
-    wf->SetModalResult(mrOK);
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
 }
 
 
