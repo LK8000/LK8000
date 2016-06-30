@@ -42,6 +42,16 @@ class Message {
 
   static void BlockRender(bool doblock);
 
+  class ScopeBlockRender {
+  public:
+    ScopeBlockRender() {
+        BlockRender(true);
+    }
+    ~ScopeBlockRender() {
+        BlockRender(false);
+    }
+  };
+  
  private:
   typedef std::list<Message_t> messages_t;
 

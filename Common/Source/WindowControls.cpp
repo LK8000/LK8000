@@ -1702,7 +1702,7 @@ int WndForm::ShowModal(void) {
 
     enterTime.Update();
 
-    Message::BlockRender(true);
+    Message::ScopeBlockRender BlockRender;
 
     SetVisible(true);
 
@@ -1779,7 +1779,6 @@ int WndForm::ShowModal(void) {
 #ifdef USE_GDI    
     MapWindow::RequestFastRefresh();
 #endif
-    Message::BlockRender(false);
 
     return (mModalResult);
 }

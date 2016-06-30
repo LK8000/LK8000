@@ -46,7 +46,7 @@ protected:
 
 */
 
-Mutex  CritSec_Messages;
+Mutex  CritSec_Messages; // Recusive Mutex Needed
 
 RECT Message::rcmsg;
 WndMessage Message::WndMsg;
@@ -163,6 +163,7 @@ void Message::BlockRender(bool doblock) {
   } else {
     block_ref--;
   }
+  assert(block_ref>=0);
   // TODO code: add blocked time to messages' timers so they come
   // up once unblocked.
   //Unlock();
