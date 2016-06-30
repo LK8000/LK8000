@@ -261,13 +261,15 @@ void AddReservedWaypoints()
 }
 
 
-// Must be called BEFORE ReadWaypoints()!! 
+/**
+ *  Must be called BEFORE ReadWaypoints()!! 
+ *  #LockTaskData() Needed for call this.
+ */
 void InitVirtualWaypoints()	// 091102
 {
   #if TESTBENCH
   StartupStore(_T(". InitVirtualWaypoints: start%s"),NEWLINE);
   #endif
-  LockTaskData();
 
   // if first load, reserve space
   if (WayPointList.size()<=NUMRESWP) {
@@ -280,7 +282,4 @@ void InitVirtualWaypoints()	// 091102
 	StartupStore(_T(".. InitVirtualWaypoints: already done, skipping.%s"),NEWLINE);
         #endif
   }
-
-    UnlockTaskData();
-
 }
