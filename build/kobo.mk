@@ -127,11 +127,13 @@ $(BIN)/std/.kobo/KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN)
 $(BIN)/otg/.kobo/KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
 	$(SYSTEM_FILES) $(BITMAP_FILES) \
 	$(FONTS_FILES) $(POLAR_FILES) $(LANGUAGE_FILES) \
-	$(CONFIG_FILES)  kobo/inittab kobo/rcS $(KOBO_KERNEL_SOURCES)
+	$(CONFIG_FILES)  kobo/inittab kobo/rcS kobo/60-persistent-serial.rules $(KOBO_KERNEL_SOURCES)
 	@$(NQ)echo "  TAR     $@"
 	
 	$(call build-kobofs,otg)
 
+	$(Q)install -m 0755 -d  $(BIN)/otg/KoboRoot/lib/udev/rules.d
+	$(Q)install -m 0644 kobo/60-persistent-serial.rules $(BIN)/otg/KoboRoot/lib/udev/rules.d
 	$(Q)install -m 0755 -d  $(BIN)/otg/KoboRoot/mnt/onboard/LK8000/kobo
 	$(Q)install -m 0644 $(KOBO_KERNEL_SOURCES) $(BIN)/otg/KoboRoot/mnt/onboard/LK8000/kobo
 
