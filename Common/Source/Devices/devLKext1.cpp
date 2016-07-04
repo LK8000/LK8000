@@ -127,6 +127,7 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   if (ps!=999999) {
 	ps/=100;
 	UpdateBaroSource( pGPS, 0,d, (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69);
+    havebaro = true;
   }
 
   // QNE
