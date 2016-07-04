@@ -1319,7 +1319,9 @@ endif
 ifeq ($(TARGET_IS_KOBO), y)
 DISTRIB_OUTPUT := \
 	Kobo-install-otg.zip \
-	Kobo-install.zip
+	Kobo-install.zip \
+	Kobo-update-otg.zip \
+	Kobo-update.zip
 
 # temporary still we don't have kobo menu.	
 SRC_FILES += \
