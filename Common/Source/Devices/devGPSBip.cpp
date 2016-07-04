@@ -38,7 +38,7 @@ BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *GPS_INFO) {
 }
 
 static
-BOOL True(DeviceDescriptor_t *d) {
+BOOL GetTrue(DeviceDescriptor_t *d) {
   return TRUE;
 }
 
@@ -69,8 +69,8 @@ BOOL Install(PDeviceDescriptor_t d){
   d->LinkTimeout = NULL;
   d->Declare = NULL;
   d->IsLogger = NULL;
-  d->IsGPSSource = True;
-  d->IsBaroSource = True;
+  d->IsGPSSource = GetTrue;
+  d->IsBaroSource = GetTrue;
   d->PutQNH = NULL;
   d->OnSysTicker = NULL;
 
