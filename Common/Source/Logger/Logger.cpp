@@ -352,7 +352,7 @@ void LogPointToFile(double Latitude, double Longitude, double Altitude,
   sprintf(szBRecord,"B%02d%02d%02d%02d%05.0f%c%03d%05.0f%cA%05d%05d\r\n",
           Hour, Minute, Second,
           DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-          (int)BaroAltitude,(int)Altitude);
+          (int)BaroAltitude,clamp<int>(Altitude,0,99999));
 
   IGCWriteRecord(szBRecord);
 }
