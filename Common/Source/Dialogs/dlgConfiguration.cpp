@@ -324,7 +324,7 @@ static void NextPage(int Step){
     }
 } // NextPage
 
-static void UpdateDeviceSetupButton(size_t idx, TCHAR *Name) {
+static void UpdateDeviceSetupButton(size_t idx, const TCHAR *Name) {
     const TCHAR * DevicePropName[] = {_T("prpComPort1"), _T("prpComPort2")};
 
     // check if all array have same size ( compil time check );

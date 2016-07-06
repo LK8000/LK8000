@@ -159,17 +159,22 @@ public:
       return GetTop() + GetHeight();
     }    
  
-    void Close() {
+    virtual void Close() {
         ::SendMessage(_hWnd, WM_CLOSE, 0, 0);
     }
 
-    void Destroy() {
+    virtual void Destroy() {
         ::DestroyWindow(_hWnd);
         _hWnd = NULL;
     }
 
-    void SetFont(FontReference Font) {
-        ::SendMessage(_hWnd, WM_SETFONT, (WPARAM)(HFONT)Font, MAKELPARAM(TRUE,0));
+    virtual FontReference GetFont() const {
+        return _Font;
+    }
+    
+    virtual void SetFont(FontReference Font) {
+      _Font = Font;
+        ::SendMessage(_hWnd, WM_SETFONT, (WPARAM)(HFONT)_Font, MAKELPARAM(TRUE,0));
     }
 
     void SetFocus() {
@@ -211,6 +216,10 @@ public:
     static Window* GetFocusedWindow() {
         return Window::GetObjectFromWindow(::GetFocus());
     }
+    
+    virtual void Show() {
+        SetVisible(true);
+    }
 
 protected:
 
@@ -224,14 +233,18 @@ protected:
     tstring _szWindowText;
     tstring _szWindowName;
 
+    FontReference _Font;
+            
     WNDPROC _OriginalWndProc;
     
     //contructor
-    Window(CONST WNDCLASS* wcx = NULL) : _hWnd(), _dwStyles(), _OriginalWndProc() {
+    Window(CONST WNDCLASS* wcx = NULL) : _hWnd(), _dwStyles(), _Font(), _OriginalWndProc() {
         if (wcx != NULL) {
             RegisterWindow(wcx);
         }
     }
+    
+    virtual ~Window() { }
     
     void SetHandle(HWND hwnd) {
         _hWnd = hwnd;

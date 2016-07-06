@@ -48,5 +48,7 @@ public:
 #endif
 };
 
+static_assert(sizeof(LKFont) == sizeof(Font), "not same size");
+
 #endif	/* LKFONT_H */
 

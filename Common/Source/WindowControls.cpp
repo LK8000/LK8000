@@ -226,23 +226,13 @@ void DataFieldFileReader::addFile(const TCHAR *Text,
 }
 
 
-TCHAR *DataFieldFileReader::GetAsString(void){
+const TCHAR *DataFieldFileReader::GetAsString(void) {
   if (mValue<nFiles) {
     return(fields[mValue].mTextFile);
   } else {
     return NULL;
   }
 }
-
-
-TCHAR *DataFieldFileReader::GetAsDisplayString(void){
-  if (mValue<nFiles) {
-    return(fields[mValue].mTextFile);
-  } else {
-    return NULL;
-  }
-}
-
 
 void DataFieldFileReader::Set(int Value){
   if (Value<=(int)nFiles) {
@@ -423,7 +413,7 @@ double DataFieldBoolean::GetAsFloat(void){
     return(0.0);
 }
 
-TCHAR *DataFieldBoolean::GetAsString(void){
+const TCHAR *DataFieldBoolean::GetAsString(void) {
   if (mValue)
     return(mTextTrue);
   else
@@ -460,8 +450,8 @@ double DataFieldBoolean::SetAsFloat(double Value){
   return(res);
 }
 
-TCHAR *DataFieldBoolean::SetAsString(const TCHAR *Value){
-  TCHAR *res = GetAsString();
+const TCHAR *DataFieldBoolean::SetAsString(const TCHAR *Value){
+  const TCHAR *res = GetAsString();
   if (_tcscmp(res, Value) != 0){
     SetAsBoolean(_tcscmp(Value, mTextTrue) == 0);
   }
@@ -529,7 +519,7 @@ void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
   }
 }
 
-TCHAR *DataFieldEnum::GetAsString(void){
+const TCHAR *DataFieldEnum::GetAsString(void) {
   if (mValue<nEnums) {
     return(mEntries[mValue].mText);
   } else {
@@ -767,12 +757,12 @@ double DataFieldInteger::GetAsFloat(void){
   return(mValue);
 }
 
-TCHAR *DataFieldInteger::GetAsString(void){
+const TCHAR *DataFieldInteger::GetAsString(void){
   _stprintf(mOutBuf, mEditFormat, mValue);
   return(mOutBuf);
 }
 
-TCHAR *DataFieldInteger::GetAsDisplayString(void){
+const TCHAR *DataFieldInteger::GetAsDisplayString(void){
   _stprintf(mOutBuf, mDisplayFormat, mValue, mUnits);
   return(mOutBuf);
 }
@@ -810,8 +800,8 @@ double DataFieldInteger::SetAsFloat(double Value){
   return(res);
 }
 
-TCHAR *DataFieldInteger::SetAsString(const TCHAR *Value){
-  TCHAR *res = GetAsString();
+const TCHAR *DataFieldInteger::SetAsString(const TCHAR *Value){
+  const TCHAR *res = GetAsString();
   SetAsInteger(_tcstol(Value, NULL, 10));
   return(res);
 }
@@ -888,12 +878,12 @@ double DataFieldFloat::GetAsFloat(void){
   return(mValue);
 }
 
-TCHAR *DataFieldFloat::GetAsString(void){
+const TCHAR *DataFieldFloat::GetAsString(void){
   _stprintf(mOutBuf, mEditFormat, mValue);
   return(mOutBuf);
 }
 
-TCHAR *DataFieldFloat::GetAsDisplayString(void){
+const TCHAR *DataFieldFloat::GetAsDisplayString(void) {
   _stprintf(mOutBuf, mDisplayFormat, mValue, mUnits);
   return(mOutBuf);
 }
@@ -948,8 +938,8 @@ double DataFieldFloat::SetAsFloat(double Value){
   return(res);
 }
 
-TCHAR *DataFieldFloat::SetAsString(const TCHAR *Value){
-  TCHAR *res = GetAsString();
+const TCHAR *DataFieldFloat::SetAsString(const TCHAR *Value){
+  const TCHAR *res = GetAsString();
   SetAsFloat(_tcstod(Value, NULL));
   return(res);
 }
@@ -1033,8 +1023,8 @@ int DataFieldFloat::CreateComboList(void) {
 //----------------------------------------------------------
 
 
-TCHAR *DataFieldString::SetAsString(const TCHAR *Value){
-  _tcscpy(mValue, Value);
+const TCHAR *DataFieldString::SetAsString(const TCHAR *Value){
+  Set(Value);
   return(mValue);
 }
 
@@ -1042,11 +1032,7 @@ void DataFieldString::Set(const TCHAR *Value){
   _tcscpy(mValue, Value);
 }
 
-TCHAR *DataFieldString::GetAsString(void){
-  return(mValue);
-}
-
-TCHAR *DataFieldString::GetAsDisplayString(void){
+const TCHAR *DataFieldString::GetAsString(void){
   return(mValue);
 }
 
@@ -1171,8 +1157,6 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
     mParentWndForm = Owner->GetParentWndForm();
   }
     
-  // todo
-  mhFont = MapWindowFont;
   mDontPaintSelector = false;
 
   InitWindowControlModule();
@@ -1197,7 +1181,7 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   
   Create(WndOnwer,(RECT){X, Y, X+Width, Y+Height});
   SetTopWnd();
-
+  SetFont(MapWindowFont);
   if (mOwner != NULL)
     mOwner->AddClient(this);  
 
@@ -1218,7 +1202,7 @@ WindowControl::~WindowControl(void){
   }
 }
 
-void WindowControl::Destroy(void){
+void WindowControl::Destroy(){
     for(WindowControl* pCtrl : mClients) {
         pCtrl->Destroy();
         delete pCtrl;
@@ -1438,10 +1422,6 @@ int WindowControl::SetBorderKind(int Value){
     Redraw();
   }
   return(res);
-}
-
-void WindowControl::SetFont(FontReference Value){
-  mhFont = Value;
 }
 
 bool WindowControl::SetReadOnly(bool Value){

@@ -16,7 +16,7 @@
 class WndCtrlBase :public WndPaint {
 public:
     WndCtrlBase(const TCHAR* szName);
-    virtual ~WndCtrlBase();
+    ~WndCtrlBase();
     
     const TCHAR* GetWndName() const {
         return _szWindowName.c_str();

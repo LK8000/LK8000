@@ -32,7 +32,7 @@ class LKWindow : public _Base,
 {
 public:
     LKWindow() = default;
-    virtual ~LKWindow() {
+    ~LKWindow() {
         StopTimer();
     }
     
@@ -50,8 +50,12 @@ public:
     void Enable(bool Enable) {
         this->SetEnabled(Enable);
     }
+
+    virtual FontReference GetFont() const {
+        return static_cast<FontReference>(&(_Base::GetFont()));
+    }
     
-    void SetFont(FontReference Font) {
+    virtual void SetFont(FontReference Font) {
         assert(Font);
         if(Font && Font->IsDefined()) {
             _Base::SetFont(*Font);
@@ -150,6 +154,7 @@ public:
 
     virtual bool OnSize(int cx, int cy) { return false; }
     
+    virtual bool OnClose() { return false; }
 protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) { return false; }
     

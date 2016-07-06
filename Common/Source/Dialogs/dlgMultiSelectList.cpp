@@ -106,7 +106,7 @@ void dlgAddMultiSelectListDetailsDialog(int Index) {
                 else {
                     if ((AATEnabled) && (CALCULATED_INFO.Flying) && (!IsMultiMapNoMain())) {
                         wf->SetModalResult(mrOK);
-                        wf->Close();
+                        wf->SetVisible(false);
                         dlgTarget(Elements[Index].iIdx);
                     } else {
                         dlgTaskWaypointShowModal(Elements[Index].iIdx, 1, false, true);

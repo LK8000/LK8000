@@ -234,9 +234,9 @@ namespace dlgBlueFlyConfig {
 
     void NextPage(int Step) {
         if( ((CurrentPage+Step) >= 0) && ((CurrentPage+Step) < lstPageWnd.size()) ) {
-            lstPageWnd[CurrentPage]->Close();
+            lstPageWnd[CurrentPage]->SetVisible(false);
             CurrentPage+=Step;
-            lstPageWnd[CurrentPage]->Show();
+            lstPageWnd[CurrentPage]->SetVisible(true);
             
             WindowControl * pWnd = wfDlg->FindByName(_T("cmdNext"));
             if(pWnd) {
@@ -374,7 +374,7 @@ namespace dlgBlueFlyConfig {
                 NextPage(0);
 
                 // Hide All Next Page
-                std::for_each(++lstPageWnd.begin(), lstPageWnd.end(), std::bind(&WindowControl::Close, _1));
+                std::for_each(++lstPageWnd.begin(), lstPageWnd.end(), std::bind(&WindowControl::SetVisible, _1, false));
             }
 
             // Init Enum WndProperty

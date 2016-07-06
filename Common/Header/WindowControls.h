@@ -124,16 +124,13 @@ class DataField{
   virtual bool GetAsBoolean(void) { assert(false); return(false); }
   virtual int GetAsInteger(void) { assert(false); return(0);}
   virtual double GetAsFloat(void) { assert(false); return(0);}
-  virtual TCHAR *GetAsString(void) { assert(false); return(NULL);}
-  virtual TCHAR *GetAsDisplayString(void) { assert(false); return(NULL); }
+  virtual const TCHAR *GetAsString(void) { assert(false); return(NULL);}
+  virtual const TCHAR *GetAsDisplayString(void) { return GetAsString(); }
 
-  virtual bool SetAsBoolean(bool Value){ (void)Value;
-	  return(false);};
-	  virtual int SetAsInteger(int Value){ (void)Value;
-	  return(0);};
-	  virtual double SetAsFloat(double Value){ (void) Value;
-	  return(0.0);};
-  virtual TCHAR *SetAsString(const TCHAR *Value){(void)Value; return(NULL);};
+  virtual bool SetAsBoolean(bool Value){ assert(false); return(false);}
+  virtual int SetAsInteger(int Value){ assert(false); return(0);}
+  virtual double SetAsFloat(double Value){ assert(false); return(0.0);}
+  virtual const TCHAR *SetAsString(const TCHAR *Value){ assert(false); return(NULL);}
 
   virtual void Set(bool Value) { assert(false); }
   virtual void Set(int Value) { assert(false); }
@@ -141,12 +138,12 @@ class DataField{
   virtual void Set(const TCHAR *Value) { assert(false); }
   virtual void Set(unsigned Value) { assert(false); }
 
-  virtual int SetMin(int Value){(void)Value; return(0);};
-  virtual double SetMin(double Value){(void)Value; return(false);};
-  virtual int SetStep(int Value){(void)Value; return(0);};
-  virtual double SetStep(double Value){(void)Value; return(false);};
-  virtual int SetMax(int Value){(void)Value; return(0);};
-  virtual double SetMax(double Value){(void)Value; return(0);};
+  virtual int SetMin(int Value) { assert(false); return(0);};
+  virtual double SetMin(double Value) { assert(false); return(false);};
+  virtual int SetStep(int Value){ assert(false); return(0);};
+  virtual double SetStep(double Value){ assert(false); return(false);};
+  virtual int SetMax(int Value){ assert(false); return(0);};
+  virtual double SetMax(double Value){ assert(false); return(0);};
   void SetUnits(const TCHAR *text) { _tcscpy(mUnits, text); }
   const TCHAR* GetUnits() const { return mUnits; }
 
@@ -190,7 +187,7 @@ class DataField{
     int mUsageCounter;
     bool mDisableSpeedup;
     bool mDetachGUI;
-
+    
 };
 
 class DataFieldBoolean:public DataField{
@@ -212,36 +209,29 @@ class DataFieldBoolean:public DataField{
 
     };
 
-  void Inc(void);
-  void Dec(void);
-  int CreateComboList(void);
+  void Inc(void) override;
+  void Dec(void) override;
+  int CreateComboList(void) override;
 
-  bool GetAsBoolean(void);
-  int GetAsInteger(void);
-  double GetAsFloat(void);
-  TCHAR *GetAsString(void);
-  TCHAR *GetAsDisplayString(void){
-    return(GetAsString());
-  };
+  bool GetAsBoolean(void) override;
+  int GetAsInteger(void) override;
+  double GetAsFloat(void) override;
+  const TCHAR *GetAsString(void) override;
 
-  virtual void Set(int Value){ 
+  void Set(int Value) override { 
     if (Value>0) 
       Set(true); 
     else 
       Set(false);
   };
 
-  #if defined(__BORLANDC__)
-  #pragma warn -hid
-  #endif
-  void Set(bool Value);
-  #if defined(__BORLANDC__)
-  #pragma warn +hid
-  #endif
-  bool SetAsBoolean(bool Value);
-  int SetAsInteger(int Value);
-  double SetAsFloat(double Value);
-  TCHAR *SetAsString(const TCHAR *Value);
+
+  void Set(bool Value) override;
+
+  bool SetAsBoolean(bool Value) override;
+  int SetAsInteger(int Value) override;
+  double SetAsFloat(double Value) override;
+  const TCHAR *SetAsString(const TCHAR *Value) override;
 
 };
 
@@ -281,26 +271,23 @@ class DataFieldEnum: public DataField {
     };
       ~DataFieldEnum();
 
-  void Clear();
-  void Inc(void);
-  void Dec(void);
-  int CreateComboList(void);
+  void Clear() override;
+  void Inc(void) override;
+  void Dec(void) override;
+  int CreateComboList(void) override;
 
-  void addEnumText(const TCHAR *Text);
-  void addEnumTextNoLF(const TCHAR *Text);
+  void addEnumText(const TCHAR *Text) override;
+  void addEnumTextNoLF(const TCHAR *Text) override;
 
-  int GetAsInteger(void);
-  TCHAR *GetAsString(void);
-  TCHAR *GetAsDisplayString(void){
-    return(GetAsString());
-  };
+  int GetAsInteger(void) override;
+  const TCHAR *GetAsString(void) override;
 
-  void Set(unsigned Value);
-  void Set(int Value) { Set((unsigned)Value); }
-  void Set(bool Value) { Set(Value?1:0); }
+  void Set(unsigned Value) override;
+  void Set(int Value) override { Set((unsigned)Value); }
+  void Set(bool Value) override { Set(Value?1:0); }
 
-  int SetAsInteger(int Value);
-  void Sort(int startindex=0);
+  int SetAsInteger(int Value) override;
+  void Sort(int startindex=0) override;
 };
 
 #define DFE_MAX_FILES 300
@@ -335,32 +322,27 @@ class DataFieldFileReader: public DataField {
 		Clear();
 	}
 	
-	void Clear();
+	void Clear() override;
     
-  void Inc(void);
-  void Dec(void);
-  int CreateComboList(void);
+  void Inc(void) override;
+  void Dec(void) override;
+  int CreateComboList(void) override;
 
   void addFile(const TCHAR *fname, const TCHAR *fpname);
   bool checkFilter(const TCHAR *fname, const TCHAR* filter);
   int GetNumFiles(void);
 
-  int GetAsInteger(void);
-  TCHAR *GetAsString(void);
-  TCHAR *GetAsDisplayString(void);
+  int GetAsInteger(void) override;
+  const TCHAR *GetAsString(void) override;
+  
   bool Lookup(const TCHAR* text);
   const TCHAR* GetPathFile(void) const;
 
-  #if defined(__BORLANDC__)
-  #pragma warn -hid
-  #endif
-  void Set(int Value);
-  #if defined(__BORLANDC__)
-  #pragma warn +hid
-  #endif
-  int SetAsInteger(int Value);
+  void Set(int Value) override;
 
-  void Sort(int startindex=0);
+  int SetAsInteger(int Value) override;
+
+  void Sort(int startindex=0) override;
   void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
 
  protected:
@@ -398,30 +380,25 @@ class DataFieldInteger:public DataField{
 
     };
 
-  void Inc(void);
-  void Dec(void);
-  int CreateComboList(void);
-  bool CreateKeyboard(void);
+  void Inc(void) override;
+  void Dec(void) override;
+  int CreateComboList(void) override;
+  bool CreateKeyboard(void) override;
   
-  bool GetAsBoolean(void);
-  int GetAsInteger(void);
-  double GetAsFloat(void);
-  TCHAR *GetAsString(void);
-  TCHAR *GetAsDisplayString(void);
+  bool GetAsBoolean(void) override;
+  int GetAsInteger(void) override;
+  double GetAsFloat(void) override;
+  const TCHAR *GetAsString(void) override;
+  const TCHAR *GetAsDisplayString(void) override;
 
-  #if defined(__BORLANDC__)
-  #pragma warn -hid
-  #endif
-  void Set(int Value);
-  int SetMin(int Value){mMin=Value; return(mMin);};
-  int SetMax(int Value){mMax=Value; return(mMax);};
-  #if defined(__BORLANDC__)
-  #pragma warn +hid
-  #endif
-  bool SetAsBoolean(bool Value);
-  int SetAsInteger(int Value);
-  double SetAsFloat(double Value);
-  TCHAR *SetAsString(const TCHAR *Value);
+  void Set(int Value) override;
+  int SetMin(int Value) override {mMin=Value; return(mMin);}
+  int SetMax(int Value) override {mMax=Value; return(mMax);}
+
+  bool SetAsBoolean(bool Value) override;
+  int SetAsInteger(int Value) override;
+  double SetAsFloat(double Value) override;
+  const TCHAR *SetAsString(const TCHAR *Value) override;
 
 };
 
@@ -456,34 +433,30 @@ class DataFieldFloat:public DataField{
 
     };
 
-  void Inc(void);
-  void Dec(void);
-  int CreateComboList(void);
-  bool CreateKeyboard(void);
-  int SetFromCombo(int iDataFieldIndex, TCHAR *sValue);
+  void Inc(void) override;
+  void Dec(void) override;
+  int CreateComboList(void) override;
+  bool CreateKeyboard(void) override;
+  int SetFromCombo(int iDataFieldIndex, TCHAR *sValue) override;
 
-  bool GetAsBoolean(void);
-  int GetAsInteger(void);
-  double GetAsFloat(void);
-  TCHAR *GetAsString(void);
-  TCHAR *GetAsDisplayString(void);
+  bool GetAsBoolean(void) override;
+  int GetAsInteger(void) override;
+  double GetAsFloat(void) override;
+  const TCHAR *GetAsString(void) override;
+  const TCHAR *GetAsDisplayString(void) override;
 
-  virtual void Set(int Value){ Set((double)Value); };
+  virtual void Set(int Value) override { Set((double)Value); };
 
-  #if defined(__BORLANDC__)
-  #pragma warn -hid
-  #endif
-  void Set(double Value);
-  double SetMin(double Value);
-  double SetMax(double Value);
-  double SetStep(double Value);
-  #if defined(__BORLANDC__)
-  #pragma warn +hid
-  #endif
-  bool SetAsBoolean(bool Value);
-  int SetAsInteger(int Value);
-  double SetAsFloat(double Value);
-  TCHAR *SetAsString(const TCHAR *Value);
+
+  void Set(double Value) override;
+  double SetMin(double Value) override;
+  double SetMax(double Value) override;
+  double SetStep(double Value) override;
+
+  bool SetAsBoolean(bool Value) override;
+  int SetAsInteger(int Value) override;
+  double SetAsFloat(double Value) override;
+  const TCHAR *SetAsString(const TCHAR *Value) override;
 
 };
 
@@ -501,16 +474,10 @@ class DataFieldString:public DataField{
       SupportCombo=false;
     };
 
-  TCHAR *SetAsString(const TCHAR *Value);
-  #if defined(__BORLANDC__)
-  #pragma warn -hid
-  #endif
-  void Set(const TCHAR *Value);
-  #if defined(__BORLANDC__)
-  #pragma warn +hid
-  #endif
-  TCHAR *GetAsString(void);
-  TCHAR *GetAsDisplayString(void);
+  const TCHAR *SetAsString(const TCHAR *Value) override;
+  void Set(const TCHAR *Value) override;
+
+  const TCHAR *GetAsString(void);
   
   bool CreateKeyboard();
 
@@ -546,7 +513,6 @@ class WindowControl : public WndCtrlBase {
 
     PenReference mhPenSelector;
 
-    FontReference mhFont;
     TCHAR *mHelpText;
 
     OnHelpCallback_t mOnHelpCallback;
@@ -582,13 +548,6 @@ class WindowControl : public WndCtrlBase {
 
     virtual int OnHelp();
 
-    virtual void Close(void){
-      SetVisible(false);
-    };
-    virtual void Show(void){
-      SetVisible(true);
-    };
-
     void SetOnHelpCallback(OnHelpCallback_t Function){
       mOnHelpCallback = Function;
     }
@@ -601,9 +560,6 @@ class WindowControl : public WndCtrlBase {
 
     int  GetBorderKind(void);
     virtual int  SetBorderKind(int Value);
-
-    FontReference GetFont(void) const {return(mhFont);};
-    virtual void SetFont(FontReference Value);
 
     virtual LKColor SetForeColor(const LKColor& Value);
     const LKColor& GetForeColor(void) const {return(mColorFore);};
@@ -646,9 +602,9 @@ class WindowControl : public WndCtrlBase {
     WindowControl *FocusPrev(WindowControl *Sender);
 
     WindowControl(WindowControl *Owner, const TCHAR *Name, int X, int Y, int Width, int Height, bool Visible=true);
-    virtual ~WindowControl(void);
+    ~WindowControl(void);
 
-    virtual void Destroy(void);
+    void Destroy() override;
 
     void PaintSelector(bool Value){mDontPaintSelector = Value;};
 
@@ -658,11 +614,11 @@ class WindowControl : public WndCtrlBase {
 
 protected:
 
-    virtual void OnSetFocus();
-    virtual void OnKillFocus();
+    virtual void OnSetFocus() override;
+    virtual void OnKillFocus() override;
 
-    virtual bool OnClose() {
-        Close();
+    bool OnClose() override{
+        SetVisible(false);
         return true;
     }
 
@@ -850,16 +806,17 @@ class WndForm:public WindowControl{
 
     WndForm(const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, bool Modal = true);
     ~WndForm(void);
-    virtual void Destroy(void);
+    void Destroy(void) override;
 
-    virtual WindowControl* GetClientArea() { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
-	  virtual WndForm* GetParentWndForm(void) { return (this);}
+    virtual WindowControl* GetClientArea() override { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
+	  virtual WndForm* GetParentWndForm(void) override { return (this);}
 
-    void AddClient(WindowControl *Client);
+    void AddClient(WindowControl *Client) override;
 
-    void Close(void){
+    bool OnClose(void) override {
       mModalResult = mrCancel;
-      WindowControl::Close();
+      WindowControl::OnClose();
+      return true;
     }
 
     PeriodClock enterTime;
@@ -870,15 +827,15 @@ class WndForm:public WindowControl{
     FontReference SetTitleFont(FontReference Value);
 
     int ShowModal(void);
-    void Show();
+    void Show() override;
 
-    void SetCaption(const TCHAR *Value);
+    void SetCaption(const TCHAR *Value) override;
 
-    int  SetBorderKind(int Value);
+    int  SetBorderKind(int Value) override;
 
-    LKColor SetForeColor(const LKColor& Value);
-    LKColor SetBackColor(const LKColor& Value);
-    void SetFont(FontReference Value);
+    LKColor SetForeColor(const LKColor& Value) override;
+    LKColor SetBackColor(const LKColor& Value) override;
+    void SetFont(FontReference Value) override;
 
     void SetKeyDownNotify(OnKeyDownNotify_t KeyDownNotify) {
         mOnKeyDownNotify = KeyDownNotify;
@@ -900,19 +857,19 @@ class WndForm:public WindowControl{
     void ReinitialiseLayout(const RECT& Rect) { }
 
 protected:
-    virtual bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode);
+    bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode);
 
-    virtual bool OnKeyUpNotify(Window* pWnd, unsigned KeyCode) {
+    bool OnKeyUpNotify(Window* pWnd, unsigned KeyCode) {
         return (mOnKeyUpNotify && (mOnKeyUpNotify)(this, KeyCode));
     }
 
-    virtual void OnTimer() {
+    void OnTimer() override {
         if(mOnTimerNotify) {
             mOnTimerNotify(this);
         }
     }
     
-    virtual void OnDestroy() {
+    virtual void OnDestroy() override {
         mModalResult = mrCancel;
         WndCtrlBase::OnDestroy();
     }
@@ -924,7 +881,7 @@ class WndButton:public WindowControl{
 
   private:
 
-    virtual void Paint(LKSurface& Surface);
+    virtual void Paint(LKSurface& Surface) override;
     bool mDown;
     bool mDefault;
     int mLastDrawTextHeight;
@@ -934,12 +891,12 @@ class WndButton:public WindowControl{
   
     WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t Function = NULL);
 
-    virtual bool OnLButtonDown(const POINT& Pos);
-    virtual bool OnLButtonUp(const POINT& Pos);
-    virtual bool OnLButtonDblClick(const POINT& Pos);
+    virtual bool OnLButtonDown(const POINT& Pos) override;
+    virtual bool OnLButtonUp(const POINT& Pos) override;
+    virtual bool OnLButtonDblClick(const POINT& Pos) override;
 
-    virtual bool OnKeyDown(unsigned KeyCode);
-    virtual bool OnKeyUp(unsigned KeyCode);
+    virtual bool OnKeyDown(unsigned KeyCode) override;
+    virtual bool OnKeyUp(unsigned KeyCode) override;
 
     void SetOnClickNotify(ClickNotifyCallback_t Function){
       mOnClickNotify = Function;
@@ -968,7 +925,7 @@ class WndProperty:public WindowControl{
     bool mUseKeyboard;
     bool mMultiLine;
 
-    virtual void Paint(LKSurface& Surface);
+    virtual void Paint(LKSurface& Surface) override;
 
     DataChangeCallback_t mOnDataChangeNotify;
 
@@ -986,20 +943,20 @@ class WndProperty:public WindowControl{
 
     WndProperty(WindowControl *Parent, TCHAR *Name, TCHAR *Caption, int X, int Y, int Width, int Height, int CaptionWidth, DataChangeCallback_t DataChangeNotify, int MultiLine=false);
     ~WndProperty(void);
-    virtual void Destroy(void);
+    virtual void Destroy(void) override;
 
-    bool SetReadOnly(bool Value);
+    bool SetReadOnly(bool Value) override;
     bool SetUseKeyboard(bool Value);
 
     void RefreshDisplay(void);
 
-    void SetFont(FontReference Value);
+    void SetFont(FontReference Value) override;
 
-    bool OnKeyDown(unsigned KeyCode);
-    bool OnKeyUp(unsigned KeyCode);
-    bool OnLButtonDown(const POINT& Pos);
-    bool OnLButtonUp(const POINT& Pos);
-    bool OnLButtonDblClick(const POINT& Pos);
+    bool OnKeyDown(unsigned KeyCode) override;
+    bool OnKeyUp(unsigned KeyCode) override;
+    bool OnLButtonDown(const POINT& Pos) override;
+    bool OnLButtonUp(const POINT& Pos) override;
+    bool OnLButtonDblClick(const POINT& Pos) override;
 
     DataField *GetDataField(void){return(mDataField);};
     DataField *SetDataField(DataField *Value);

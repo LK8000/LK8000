@@ -375,7 +375,7 @@ public:
   void Created(HWND _hWnd);
 #endif
 
-  void Destroy();
+  virtual void Destroy();
 
   /**
    * Determines the root owner window of this Window.  This is
@@ -576,7 +576,7 @@ public:
   }
 
 #ifndef USE_GDI
-  void Show();
+  virtual void Show();
   void Hide();
 #else
   void Show() {

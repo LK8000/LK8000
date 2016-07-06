@@ -65,7 +65,7 @@ protected:
   }
 
 public:
-  ~Timer() {
+  virtual ~Timer() {
     /* timer must be cleaned up explicitly */
     assert(!IsActive());
 
