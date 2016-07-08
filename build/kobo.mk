@@ -58,7 +58,7 @@ KOBO_KERNEL = \
  $(patsubst kobo/kernel/%, LK8000/kobo/%, $(KOBO_KERNEL_SOURCES))
 
 
-define build-kobofs = 
+define build-kobofs
 $(Q)rm -rf $(BIN)/$(1)/KoboRoot
 
 $(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/drivers	
