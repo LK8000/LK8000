@@ -54,7 +54,7 @@ Copyright_License {
 
 extern FT_Library ft_library;
 #include <algorithm>
-
+#include <functional>
 #include <assert.h>
 
 /*
