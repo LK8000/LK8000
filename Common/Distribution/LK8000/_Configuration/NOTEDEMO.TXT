@@ -1,6 +1,9 @@
 ﻿[Welcome]
 Welcome to the LK8000 NotePad file
-LK8000\_Configuration\NOTEPAD.TXT 
+LK8000\_Configuration\NOTEDEMO.TXT 
+
+PLEASE COPY AND RENAME THIS FILE TO NOTEPAD.TXT and then you can change the content. Every update-upgrade of LK8000 will overwrite NOTEDEMO.TXT!
+LK8000 WILL LOAD NOTEPAD.TXT if existing, otherwise the NOTEDEMO.TXT will be selected.
 
 This file must be encoded in UTF8 format. For example, using Windows' Notepad be sure that "Save as" will use UTF8 and not other encodings.
 If you choose an incorrect encoding, international characters would not appear, or the whole file may not appear at all.

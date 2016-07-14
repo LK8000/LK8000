@@ -24,6 +24,8 @@
 #define MAXNOTELIMITER 50	// character reserved for last line comment on note oversized
 #define NOTECONTINUED		"\r\n          >>>>>\r\n"
 
+#define LKF_CHECKLISTDEMO "NOTEDEMO.TXT"
+
 #define ENDOFLINE  "\n"         // \r\n  in v5
 
 int page=0;
@@ -307,10 +309,10 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
 /// @retval true  data loaded 
 /// @retval false data load error
 ///
-static bool LoadUtfChecklist(const TCHAR* fileName) {
+static bool LoadUtfChecklist(const TCHAR* fileName, bool warn) {
   Utf8File file;
   if (!file.Open(fileName, Utf8File::io_read)) {
-    StartupStore(_T("... Not found notes <%s>%s"),fileName,NEWLINE);
+    if (warn) StartupStore(_T("... Not found notes <%s>%s"),fileName,NEWLINE);
     return(false);
   }
 
@@ -378,28 +380,34 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M878_")));  // notepad
-   		return LoadUtfChecklist(filename);
+
+   		if (LoadUtfChecklist(filename,false)) return true;
+                // if no user file, look for demo file
+		LocalPath(filename, TEXT(LKD_CONF));
+		_tcscat(filename,_T(DIRSEP));
+		_tcscat(filename,_T(LKF_CHECKLISTDEMO));
+   		return LoadUtfChecklist(filename,true);
 	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_LOGBOOKTXT));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
-   		 return LoadUtfChecklist(filename);
+   		 return LoadUtfChecklist(filename,true);
 	// logbook LST
 	case 2:
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_LOGBOOKLST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
-		return LoadUtfChecklist(filename);
+		return LoadUtfChecklist(filename,true);
 		break;
 	case 3:
 		SystemPath(filename, TEXT(LKD_SYSTEM));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CREDITS));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("Credits")));
-   		return LoadUtfChecklist(filename);
+   		return LoadUtfChecklist(filename,true);
 		break;
   default:
     StartupStore(_T("... Invalid checklist mode (%d)%s"),checklistmode,NEWLINE);
