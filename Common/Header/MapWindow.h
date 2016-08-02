@@ -162,7 +162,6 @@ typedef struct _LONG_SNAIL_POINT
 {
   float Latitude;
   float Longitude;
-  POINT Screen;
   bool FarVisible;
 } LONG_SNAIL_POINT;
 
@@ -598,7 +597,7 @@ class MapWindow {
 
 
   static void LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
-  static double LKDrawLongTrail(LKSurface& Surface, const POINT& Orig, const RECT& rc);
+  static void LKDrawLongTrail(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawTeammate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawOffTrackIndicator(LKSurface& Surface, const RECT& rc);
   static void DrawProjectedTrack(LKSurface& Surface, const RECT& rc, const POINT& Orig);

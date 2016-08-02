@@ -256,8 +256,7 @@ _skip_stuff:
         DrawWaypointsNew(Surface, DrawRect);
     }
     if (TrailActive) {
-        LKDrawLongTrail(Surface, Orig_Aircraft, DrawRect);
-        // NEED REWRITING
+        LKDrawLongTrail(Surface, DrawRect, _Proj);
         LKDrawTrail(Surface, DrawRect, _Proj);
     }
     if (DONTDRAWTHEMAP) {

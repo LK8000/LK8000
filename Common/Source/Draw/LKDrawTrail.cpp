@@ -14,9 +14,6 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
     static RasterPoint snail_polyline[array_size(SnailTrail)];
     
     if (!TrailActive) return;
-    if (iSnailNext < 2 ) return; // no snail trail 
-
-    
 
     const double display_time = DrawInfo.Time;
     const bool use_colors = (MapWindow::zoom.RealScale() < 2); // 1.5 is also quite good;
@@ -31,8 +28,14 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
         num_trail_max /= TRAILSHRINK; // ( 2 min for short track ? )
     }    
     
-    const SNAIL_POINT* end_iterator = &SnailTrail[iSnailNext];
-    const SNAIL_POINT* cur_iterator = std::prev(end_iterator); 
+    const SNAIL_POINT* end_iterator = std::next(SnailTrail,iSnailNext);
+    const SNAIL_POINT* cur_iterator = end_iterator;
+    if(cur_iterator != std::begin(SnailTrail)) {
+        cur_iterator = std::prev(cur_iterator);
+    } else {
+        cur_iterator = std::prev(std::end(SnailTrail));
+    }
+        
     RasterPoint* polyline_iterator = &snail_polyline[0];
 
     unsigned short prev_color = 2;
@@ -90,4 +93,3 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
 }
 
 #include "LKDrawLongTrail.cpp"
-
