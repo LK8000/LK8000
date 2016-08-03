@@ -507,8 +507,8 @@ void ScreenClosestPoint(const POINT &p1, const POINT &p2,
     f = min(1.0,max(0.0,(double)proj/mag12));
 
     // location of 'closest' point 
-    p4->x = lround(v12x*f)+p1.x;
-    p4->y = lround(v12y*f)+p1.y;
+    p4->x = iround(v12x*f)+p1.x;
+    p4->y = iround(v12y*f)+p1.y;
   } else {
     p4->x = p1.x;
     p4->y = p1.y;

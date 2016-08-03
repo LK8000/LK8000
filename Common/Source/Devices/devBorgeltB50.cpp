@@ -148,7 +148,7 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
   
 
   #if USESWITCHES
-  int climb = lround(StrToDouble(ctemp,NULL));
+  int climb = iround(StrToDouble(ctemp,NULL));
   pGPS->SwitchState.VarioCircling = (climb==1);
   #endif
 

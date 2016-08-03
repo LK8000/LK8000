@@ -299,7 +299,7 @@ public:
         _Proj.Screen2LonLat(Pt, X, Y);
         double xmiddle = X;
         double ymiddle = Y;
-        int dd = (int) lround(dtquant * rfact);
+        int dd = iround(dtquant * rfact);
 
         Pt.x = (X0 + X1) / 2 + dd;
         Pt.y = (Y0 + Y1) / 2;

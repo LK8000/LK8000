@@ -73,43 +73,12 @@ double LowPassFilter(double y_last, double x_in, double fact);
 
 int _MulDiv(int nNumber, int nNumerator, int nDenominator);
 
-
-//2^36 * 1.5,  (52-_shiftamt=36) uses limited precisicion to floor
-//16.16 fixed point representation,
-
-// =================================================================================
-// Real2Int
-// =================================================================================
-inline int Real2Int(double val)
-{
-#if (WINDOWS_PC>0)
-  val += 68719476736.0*1.5;
-  return *((long*)&val) >> 16; 
-#else
-  return (int)val;
-#endif
-}
-
-
-// =================================================================================
-// Real2Int
-// =================================================================================
-inline int Real2Int(float val)
-{
-#if (WINDOWS_PC>0)
-  return Real2Int ((double)val);
-#else
-  return (int)val;
-#endif
-}
-
-
 inline int iround(double i) {
-    return Real2Int(floor(i+0.5));
+    return lround(i);
 }
 
-inline long lround(double i) {
-    return (long)(floor(i+0.5));
+inline int64_t _lround(double i) {
+    return (sizeof(long)==4) ? lround(i) : llround(i);
 }
 
 inline unsigned int CombinedDivAndMod(unsigned int &lx) {

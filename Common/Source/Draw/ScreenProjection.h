@@ -18,8 +18,8 @@ public:
     
     inline
     RasterPoint LonLat2Screen(double lon, double lat) const {
-        const int64_t Y = Real2Int((_PanLat - lat) * _Zoom);
-        const int64_t X = Real2Int((_PanLon - lon) * fastcosine(lat) * _Zoom);
+        const int64_t Y = _lround((_PanLat - lat) * _Zoom);
+        const int64_t X = _lround((_PanLon - lon) * fastcosine(lat) * _Zoom);
 
         return RasterPoint{
             static_cast<PixelScalar>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024),

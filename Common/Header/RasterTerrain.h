@@ -88,13 +88,8 @@ short RasterMap::GetField(const double &Latitude, const double &Longitude) const
         return _GetFieldAtXY((int) (Longitude * fXroundingFine) - xlleft,
                 xlltop - (int) (Latitude * fYroundingFine));
     } else {
-#if (WINDOWSPC>0)
-        const unsigned int ix = Real2Int((Longitude - TerrainInfo.Left) * fXrounding) * Xrounding;
-        const unsigned int iy = Real2Int((TerrainInfo.Top - Latitude) * fYrounding) * Yrounding;
-#else
-        const unsigned int ix = ((int) ((Longitude - TerrainInfo.Left) * fXrounding)) * Xrounding;
-        const unsigned int iy = ((int) ((TerrainInfo.Top - Latitude) * fYrounding)) * Yrounding;
-#endif
+        const unsigned int ix = iround((Longitude - TerrainInfo.Left) * fXrounding) * Xrounding;
+        const unsigned int iy = iround((TerrainInfo.Top - Latitude) * fYrounding) * Yrounding;
 
         return _GetFieldAtXY(ix << 8, iy << 8);
     }

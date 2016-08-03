@@ -3382,8 +3382,8 @@ void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POIN
     POINT tmpPnt;
     screenpoints_picto.reserve(_geopoints.size());
     for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-        tmpPnt.x = xoff - Real2Int((PanLongitudeCenter - it->Longitude()) * ((double) fastcosine(it->Latitude())) * scale);
-        tmpPnt.y = yoff + Real2Int((PanLatitudeCenter - it->Latitude()) * scale);
+        tmpPnt.x = xoff - iround((PanLongitudeCenter - it->Longitude()) * ((double) fastcosine(it->Latitude())) * scale);
+        tmpPnt.y = yoff + iround((PanLatitudeCenter - it->Latitude()) * scale);
         screenpoints_picto.push_back(tmpPnt);
     }
 }
