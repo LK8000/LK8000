@@ -72,7 +72,6 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     Calculated->AverageThermal = 0;
     Calculated->Average30s = 0;
-    Calculated->NettoAverage30s = 0;
     Calculated->ThermalGain = 0;
     Calculated->LastThermalAverage = 0;
     Calculated->LastThermalGain = 0;

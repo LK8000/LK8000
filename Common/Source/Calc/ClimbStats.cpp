@@ -15,7 +15,6 @@ ClimbAverageCalculator climbAverageCalculator;
 void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
 	Calculated->Average30s = climbAverageCalculator.GetAverage(Basic->Time, Calculated->NavAltitude, 30);	
-	Calculated->NettoAverage30s = Calculated->Average30s;
 }
 
 #endif
@@ -25,7 +24,6 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   static double LastTime = 0;
   static double Altitude[30];
   static double Vario[30];
-  static double NettoVario[30];
   int Elapsed, i;
   long index = 0; 
   double Gain;
@@ -55,11 +53,6 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
           index %= 30;
 
           Altitude[index] = Calculated->NavAltitude;
-	  if (Basic->NettoVarioAvailable) {
-	    NettoVario[index] = Basic->NettoVario;
-	  } else {
-	    NettoVario[index] = Calculated->NettoVario;
-	  }
 	  if (Basic->VarioAvailable) {
 	    Vario[index] = Basic->Vario;
 	  } else {
@@ -73,7 +66,6 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         }
 
       double Vave = 0;
-      double NVave = 0;
       int j;
       for (i=0; i< num_samples; i++) {
         j = (index - i) % 30;
@@ -81,11 +73,9 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
           j += 30;
         }
         Vave += Vario[j];
-	NVave += NettoVario[j];
       }
       if (num_samples) {
         Vave /= num_samples;
-        NVave /= num_samples;
       }
 
       if (!Basic->VarioAvailable) {
@@ -99,9 +89,6 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       }
       Calculated->Average30s = 
         LowPassFilter(Calculated->Average30s,Vave,0.8);
-      Calculated->NettoAverage30s = 
-        LowPassFilter(Calculated->NettoAverage30s,NVave,0.8);
-
     }
   else
     {
@@ -110,7 +97,6 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	for (i=0; i<30; i++) {
 	  Altitude[i]= 0;
 	  Vario[i]=0;
-	  NettoVario[i]=0;
 	}
       }
     }
