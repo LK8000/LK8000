@@ -9,10 +9,11 @@
 #include "externs.h"
 #include "ClimbAverageCalculator.h"
 
-ClimbAverageCalculator climbAverageCalculator;
 void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
-	Calculated->Average30s = climbAverageCalculator.GetAverage(Basic->Time, Calculated->NavAltitude, 30);	
+  static ClimbAverageCalculator<30,5> climbAverageCalculator;
+  
+	Calculated->Average30s = climbAverageCalculator.GetAverage(Basic->Time, Calculated->NavAltitude);	
 }
 
 void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
