@@ -12,7 +12,7 @@ public:
   ~FlarmCalculations(void);
   double Average30s(long flarmId, double curTime, double curAltitude);
 private:
-  typedef std::map<long, ClimbAverageCalculator*> AverageCalculatorMap;
+  typedef std::map<long, ClimbAverageCalculator<30> > AverageCalculatorMap;
   AverageCalculatorMap averageCalculatorMap;
 };
 
