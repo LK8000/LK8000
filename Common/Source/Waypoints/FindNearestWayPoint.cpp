@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
+#include "LKStyle.h"
 
 
 
@@ -24,6 +25,11 @@ int FindNearestWayPoint(double X, double Y, double MaxRange)
 
       // Consider only valid markers
       if ( (i<NUMRESWP)  &&  (WayPointCalc[i].WpType!=WPT_TURNPOINT) ) continue;
+      
+      // Ignore Thermal Hotspot
+      if (WayPointList[i].Style == STYLE_THERMAL) {
+          continue;
+      }
 
       DistanceBearing(Y,X,
                       WayPointList[i].Latitude, 
