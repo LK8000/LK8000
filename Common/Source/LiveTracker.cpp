@@ -36,6 +36,10 @@
 #include "Poco/Event.h"
 #include "Poco/ThreadTarget.h"
 
+#ifdef KOBO
+#include "Kobo/System.hpp"
+#endif
+
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1
 
@@ -165,6 +169,13 @@ void LiveTrackerInit()
     #endif
     return;
   }
+  
+#ifdef KOBO
+  if(!IsKoboWifiOn()) {
+    KoboWifiOn();
+  }
+#endif // KOBO
+  
   //Init winsock if available
   if (InitWinsock()) {
     _ws_inited = true;
