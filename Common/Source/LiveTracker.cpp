@@ -18,12 +18,13 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 #define SOCKET int
 #define SOCKET_ERROR -1
 #define INVALID_SOCKET -1
 #define closesocket close
-
+#define ioctlsocket ioctl
 
 #endif
 
@@ -316,7 +317,78 @@ static SOCKET EstablishConnection(const char *servername, int serverport)
     closesocket(s);
     return INVALID_SOCKET;
   }
+
+  //-------------------------
+  // Set the socket I/O mode: In this case FIONBIO
+  // enables or disables the blocking mode for the 
+  // socket based on the numerical value of iMode.
+  // If iMode = 0, blocking is enabled; 
+  // If iMode != 0, non-blocking mode is enabled.
+
+  u_long iMode = 1;
+  int iResult = ioctlsocket(s, FIONBIO, &iMode);
+  if (iResult == SOCKET_ERROR) {
+    StartupStore(_T(".... ioctlsocket failed with error: %d%s"), iResult, NEWLINE);
+    // if failed, socket still in blocking mode, it's big problem
+  }
+  
   return s;
+}
+
+
+static int ReadData(SOCKET s, void *szString, size_t size) {
+
+    struct timeval timeout;
+    timeout.tv_sec = 10;
+    timeout.tv_usec = 0;
+
+    fd_set readfs;
+    FD_ZERO(&readfs);
+    FD_SET(s, &readfs);
+    
+    // wait for received data
+    int iResult = select(s + 1, &readfs, NULL, NULL, &timeout); 
+    if (iResult == 0) {
+        return SOCKET_ERROR; // timeout
+    }
+    
+    if ((iResult != SOCKET_ERROR) && FD_ISSET(s, &readfs)) {
+        // Data ready to read 
+        iResult = recv(s, (char*) szString, size, 0);
+    }
+
+    return iResult;
+}
+
+static int WriteData(SOCKET s, const void *data, size_t length) {
+    
+    struct timeval timeout;
+    timeout.tv_sec = 10;
+    timeout.tv_usec = 0;
+
+    fd_set writefs;
+    FD_ZERO(&writefs);
+    FD_SET(s, &writefs);
+    
+    // wait for socket ready to write
+    int iResult = select(s + 1, NULL, &writefs, NULL, &timeout); 
+    if (iResult == 0) {
+        return SOCKET_ERROR; // timeout
+    }
+    
+    if ((iResult != SOCKET_ERROR) && FD_ISSET(s, &writefs)) {
+        // socket ready, Write data.
+        
+#ifdef __linux        
+        const int flags = MSG_NOSIGNAL; // avoid SIGPIPE if socket is closed by peer.
+#else
+        const int flags = 0;
+#endif
+        
+        iResult = send(s, (const char*) data, length, flags);
+    }
+    
+    return iResult;
 }
 
 // Do a transaction with server
@@ -336,7 +408,7 @@ static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf
 
   //Send the query to the server
   while(sent < txbuflen) {
-    tmpres = send(s, txbuf+sent, txbuflen-sent, 0);
+    tmpres = WriteData(s, txbuf+sent, txbuflen-sent);
     if( tmpres == SOCKET_ERROR ) {
       rxlen = -1;
       goto cleanup;
@@ -345,7 +417,7 @@ static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf
   }
 
   //Receive the page
-  while( (tmpres = recv(s, recvbuf, BUFSIZ, 0)) > 0) {
+  while( (tmpres = ReadData(s, recvbuf, BUFSIZ)) > 0) {
     for (int i=0; i<tmpres; i++) {
       cdata = recvbuf[i];
       switch (rxfsm) {
@@ -382,7 +454,7 @@ static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf
   rxbuf[rxlen]=0;
   #ifdef LT_DEBUG
   TCHAR urxbuf[500];
-  ascii2unicode(rxbuf,urxbuf,400);
+  ascii2TCHAR(rxbuf,urxbuf,400);
   StartupStore(TEXT("Livetracker recv len=%d: %s%s"), rxlen, urxbuf, NEWLINE);
   #endif
 cleanup:
