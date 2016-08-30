@@ -27,11 +27,6 @@ void ProcessTimer(void)
   static int p_twohzcounter = 0;
   p_twohzcounter++;
 
-  if (!GPSCONNECT) {
-	// Update screen when no GPS every second
-	if (p_twohzcounter % 2 == 0) TriggerGPSUpdate();
-  }
-
   // The ordinary timed stuff..
   CommonProcessTimer();
 
@@ -153,12 +148,14 @@ int ConnectionProcessTimer(int itimeout) {
 	UnlockFlightData();
   }
 
+  bool DoTriggerUpdate = false;
+  
   GPSCONNECT = FALSE;
   bool navwarning = GPS_INFO.NAVWarning;
 
   if((gpsconnect == false) && (s_lastGpsConnect == false)) {
 	// re-draw screen every five seconds even if no GPS
-	TriggerGPSUpdate();
+    DoTriggerUpdate = true;
       
 	devLinkTimeout(devAll());
 
@@ -210,24 +207,28 @@ int ConnectionProcessTimer(int itimeout) {
 	s_firstcom=false;
       
 	if(s_connectWait) {
-		TriggerGPSUpdate();
+		DoTriggerUpdate = true;
 		s_connectWait = false;
 	}
   }
   
   if((gpsconnect == true) && (s_lastGpsConnect == true)) {
 	if((navwarning == true) && (s_lockWait == false)) {
-		TriggerGPSUpdate();
+		DoTriggerUpdate = true;
 	  
 		s_lockWait = true;
 		LKSound(TEXT("LK_GPSNOFIX.WAV"));
 		FullScreen();
 	} else {
 		if((navwarning == false) && (s_lockWait == true)) {
-			TriggerGPSUpdate();
+            DoTriggerUpdate = true;
 			s_lockWait = false;
 		}
 	}
+  }
+  
+  if(DoTriggerUpdate) {
+	TriggerGPSUpdate();
   }
   
   s_lastGpsConnect = gpsconnect;
