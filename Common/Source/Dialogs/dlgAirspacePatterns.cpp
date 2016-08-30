@@ -87,9 +87,7 @@ int dlgAirspacePatternsShowModal(void){
 
   ItemIndex = -1;
 
-    wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgAirspacePatterns_L.xml") : TEXT("dlgAirspacePatterns_P.xml"), 
-                        ScreenLandscape ? IDR_XML_AIRSPACEPATTERNS_L : IDR_XML_AIRSPACEPATTERNS_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACEPATTERNS_L : IDR_XML_AIRSPACEPATTERNS_P);
 
   if (!wf) return -1;
 

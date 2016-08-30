@@ -66,9 +66,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgLoggerReplayShowModal(void){
 
   TCHAR tsuf[10];
-  wf = dlgLoadFromXML(CallBackTable, 
-                    TEXT("dlgLoggerReplay.xml"), 
-                    IDR_XML_LOGGERREPLAY);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_LOGGERREPLAY);
 
   WndProperty* wp;
 

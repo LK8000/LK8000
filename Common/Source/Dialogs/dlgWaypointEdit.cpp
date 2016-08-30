@@ -564,16 +564,13 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt) {
 
   global_wpt = wpt;
 
-  const TCHAR* szXmlFileName = ScreenLandscape?TEXT("dlgWaypointEdit_L.xml"):TEXT("dlgWaypointEdit_P.xml");
   unsigned XmlResID = ScreenLandscape?IDR_XML_WAYPOINTEDIT_L:IDR_XML_WAYPOINTEDIT_P;
 
   if(Units::CoordinateFormat == cfUTM) {
-	  szXmlFileName = ScreenLandscape?TEXT("dlgWaypointEditUTM_L.xml"):TEXT("dlgWaypointEditUTM_P.xml");
 	  XmlResID = ScreenLandscape?IDR_XML_WAYPOINTEDITUTM_L:IDR_XML_WAYPOINTEDITUTM_P;
   }
 
-  wf = dlgLoadFromXML(CallBackTable, szXmlFileName, XmlResID);
-
+  wf = dlgLoadFromXML(CallBackTable, XmlResID);
   if (wf) {
 
     buttonName = ((WndButton *)wf->FindByName(TEXT("cmdName")));

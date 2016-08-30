@@ -303,9 +303,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgBasicSettingsShowModal(void){
     WndProperty* wp = nullptr;
 
-    wf = dlgLoadFromXML(CallBackTable, 
-            ScreenLandscape ? TEXT("dlgBasicSettings_L.xml") : TEXT("dlgBasicSettings_P.xml"),
-            ScreenLandscape ? IDR_XML_BASICSETTINGS_L : IDR_XML_BASICSETTINGS_P);
+    wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_BASICSETTINGS_L : IDR_XML_BASICSETTINGS_P);
 
 
 //  BallastTimerActive = false;

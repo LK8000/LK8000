@@ -125,9 +125,7 @@ short dlgWayQuickShowModal(void){
 
   TCHAR sTmp[128];
 
-  wf = dlgLoadFromXML(CallBackTable, 
-            ScreenLandscape ? TEXT("dlgWayQuick_L.xml") : TEXT("dlgWayQuick_P.xml"),
-            ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P);
 
   if (!wf) return 0;
 

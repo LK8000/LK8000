@@ -333,9 +333,7 @@ static void SetValues(int indexid) {
 void dlgLKTrafficDetails(int indexid) {
 
   TCHAR status[80], tpas[30];
-  wf = dlgLoadFromXML(CallBackTable,
-		      TEXT("dlgLKTraffic.xml"), 
-		      IDR_XML_LKTRAFFICDETAILS);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_LKTRAFFICDETAILS);
 
   if (!wf) return;
 

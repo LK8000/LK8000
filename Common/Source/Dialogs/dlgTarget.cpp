@@ -544,9 +544,7 @@ void dlgTarget(int TaskPoint) {
   }
   target_point = TaskPoint;
 
-  wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgTarget_L.xml") : TEXT("dlgTarget_P.xml"), 
-                        ScreenLandscape ? IDR_XML_TARGET_L : IDR_XML_TARGET_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_TARGET_L : IDR_XML_TARGET_P);
 
   if (!wf) return;
 

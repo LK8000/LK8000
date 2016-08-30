@@ -121,9 +121,7 @@ bool dlgTaskRules(void){
 
   WndProperty *wp;
 
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgTaskRules.xml"), 
-		      IDR_XML_TASKRULES);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_TASKRULES);
 
   if (!wf) return false;
   

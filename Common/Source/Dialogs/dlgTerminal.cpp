@@ -150,9 +150,7 @@ void dlgTerminal(int portnumber) {
 
   SHOWTHREAD(_T("dlgTerminal"));
 
-  wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgTerminal_L.xml") : TEXT("dlgTerminal_P.xml"), 
-                        ScreenLandscape ? IDR_XML_TERMINAL_L : IDR_XML_TERMINAL_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_TERMINAL_L : IDR_XML_TERMINAL_P);
 
   if (!wf) return;
 

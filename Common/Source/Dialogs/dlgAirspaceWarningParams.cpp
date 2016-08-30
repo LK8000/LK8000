@@ -133,9 +133,7 @@ void dlgAirspaceWarningParamsShowModal(void){
   WndProperty *wp;
   int ival;
   
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgAirspaceWarningParams.xml"), 
-		      IDR_XML_AIRSPACEWARNINGPARAMS);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_AIRSPACEWARNINGPARAMS);
 
   if (!wf) return;
 

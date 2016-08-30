@@ -157,11 +157,7 @@ bool dlgAirspaceShowModal(bool coloredit){
 
   colormode = coloredit;
 
-  ItemIndex = -1;
-
-  wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgAirspace_L.xml") : TEXT("dlgAirspace_P.xml"), 
-                        ScreenLandscape ? IDR_XML_AIRSPACE_L : IDR_XML_AIRSPACE_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACE_L : IDR_XML_AIRSPACE_P);
   if (!wf) return false;
 
   wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));

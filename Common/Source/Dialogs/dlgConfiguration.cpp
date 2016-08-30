@@ -2905,22 +2905,21 @@ void dlgConfigurationShowModal(short mode){
   configMode=mode;
 
   typedef struct {
-      const TCHAR * filename;
       const unsigned resid;
   }  dlgTemplate_t;
   
   static const dlgTemplate_t dlgTemplate_L [] = { 
-      { TEXT("dlgConfiguration_L.xml"),  IDR_XML_CONFIGURATION_L },
-      { TEXT("dlgConfigPilot_L.xml"), IDR_XML_CONFIGPILOT_L },
-      { TEXT("dlgConfigAircraft_L.xml"), IDR_XML_CONFIGAIRCRAFT_L },
-      { TEXT("dlgConfigDevice_L.xml"), IDR_XML_CONFIGDEVICE_L }
+      { IDR_XML_CONFIGURATION_L },
+      { IDR_XML_CONFIGPILOT_L },
+      { IDR_XML_CONFIGAIRCRAFT_L },
+      { IDR_XML_CONFIGDEVICE_L }
   };
   
   static const dlgTemplate_t dlgTemplate_P [] = { 
-      { TEXT("dlgConfiguration_P.xml"),  IDR_XML_CONFIGURATION_P },
-      { TEXT("dlgConfigPilot_P.xml"), IDR_XML_CONFIGPILOT_P },
-      { TEXT("dlgConfigAircraft_P.xml"), IDR_XML_CONFIGAIRCRAFT_P },
-      { TEXT("dlgConfigDevice_P.xml"), IDR_XML_CONFIGDEVICE_P }
+      { IDR_XML_CONFIGURATION_P },
+      { IDR_XML_CONFIGPILOT_P },
+      { IDR_XML_CONFIGAIRCRAFT_P },
+      { IDR_XML_CONFIGDEVICE_P }
   };
   
   static_assert(array_size(dlgTemplate_L) == array_size(dlgTemplate_P), "check array size");
@@ -2931,7 +2930,7 @@ void dlgConfigurationShowModal(short mode){
     
     auto dlgTemplate = (ScreenLandscape ? dlgTemplate_L[configMode] : dlgTemplate_P[configMode]);
   
-    wf = dlgLoadFromXML(CallBackTable, dlgTemplate.filename, dlgTemplate.resid);
+    wf = dlgLoadFromXML(CallBackTable, dlgTemplate.resid);
     
   } else {
       wf = nullptr;

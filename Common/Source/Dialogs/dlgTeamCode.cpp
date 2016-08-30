@@ -134,9 +134,7 @@ void dlgTeamCodeShowModal(void)
   WndProperty* wp = NULL;
   WndButton *buttonCode = NULL;
 
-  wf = dlgLoadFromXML(CallBackTable, 
-            TEXT("dlgTeamCode.xml"), 
-            IDR_XML_TEAMCODE);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_TEAMCODE);
   if (!wf) return;
 
   TCHAR sTmp[32] = { 0 };

@@ -304,8 +304,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgTaskCalculatorShowModal(void){
 
-  wf = dlgLoadFromXML(CallBackTable, 
-                      TEXT("dlgTaskCalculator.xml"), IDR_XML_TASKCALCULATOR);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_TASKCALCULATOR);
   if (!wf) return;
 
   double MACCREADY_enter = MACCREADY;

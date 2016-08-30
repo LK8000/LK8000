@@ -73,9 +73,7 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   }
   InitHelp();
 
-  wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgHelp_L.xml") : TEXT("dlgHelp_P.xml"),
-                        ScreenLandscape ? IDR_XML_HELP_L : IDR_XML_HELP_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_HELP_L : IDR_XML_HELP_P);
 
   LKASSERT(wf);
   if (!wf) goto _getout;

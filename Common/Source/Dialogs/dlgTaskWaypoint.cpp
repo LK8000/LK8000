@@ -589,9 +589,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Moveallowed){
 
-    wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgTaskWaypoint_L.xml") : TEXT("dlgTaskWaypoint_P.xml"), 
-                        ScreenLandscape ? IDR_XML_TASKWAYPOINT_L : IDR_XML_TASKWAYPOINT_P);
+    wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_TASKWAYPOINT_L : IDR_XML_TASKWAYPOINT_P);
 
   if (ISPARAGLIDER) {
     if(DoOptimizeRoute()) 

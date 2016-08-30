@@ -291,9 +291,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   int sunsetmins;
   WndProperty *wp;
 
-  wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgWayPointDetails_L.xml") : TEXT("dlgWayPointDetails_P.xml"), 
-                        ScreenLandscape ? IDR_XML_WAYPOINTDETAILS_L : IDR_XML_WAYPOINTDETAILS_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTDETAILS_L : IDR_XML_WAYPOINTDETAILS_P);
 
 
   if (!wf) return;

@@ -144,42 +144,6 @@ void GetPath(TCHAR* buffer, const TCHAR* file, const TCHAR* lkPath) {
   lk::filesystem::fixPath(buffer);
 }
 
-// This is used by LoadFromXML function only
-void LocalPathS(TCHAR *buffer, const TCHAR* file) {
-
-  SystemPath(buffer, TEXT(LKD_DIALOGS));
-  TCHAR* ptr = buffer + _tcslen(buffer) -1;
-  if(*ptr != _T('\\')) {
-      _tcscat(buffer, _T(DIRSEP));
-  }
-
-  switch(AircraftCategory) {
-	case umGlider:
-		_tcscat(buffer,_T("GLIDER\\"));
-		break;
-	case umParaglider:
-		_tcscat(buffer,_T("PARAGLIDER\\"));
-		break;
-	case umCar:
-		_tcscat(buffer,_T("CAR\\"));
-		break;
-	case umGAaircraft:
-		_tcscat(buffer,_T("GA\\"));
-		break;
-	default:
-		break;
-  }
-
-  const TCHAR* ptr2 = file;
-  while( (*ptr2) == _T('\\') && (*ptr2) ) {
-      ++ptr2;
-  }
-
-  _tcscat(buffer,ptr2);
-  lk::filesystem::fixPath(buffer);  
-}
-
-
 void ExpandLocalPath(TCHAR* filein) {
   // Convert %LOCALPATH% to Local Path
 

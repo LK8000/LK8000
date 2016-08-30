@@ -152,9 +152,7 @@ void dlgStartPointShowModal(void) {
 
   ItemIndex = -1;
 
-   wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgStartPoint_L.xml") : TEXT("dlgStartPoint_P.xml"),
-                        ScreenLandscape ? IDR_XML_STARTPOINT_L : IDR_XML_STARTPOINT_P);
+   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_STARTPOINT_L : IDR_XML_STARTPOINT_P);
   if (!wf) return;
 
   //ASSERT(wf!=NULL);

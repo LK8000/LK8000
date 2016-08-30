@@ -365,7 +365,7 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 		return FALSE;
 	}
 
-	m_wf = dlgLoadFromXML(CallBackTable, TEXT("dlgDevCProbe.xml"), IDR_XML_DEVCPROBE);
+	m_wf = dlgLoadFromXML(CallBackTable, IDR_XML_DEVCPROBE);
 
     WndButton *wBt = NULL;
             

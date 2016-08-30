@@ -134,9 +134,7 @@ int dlgComboPicker(WndProperty* theProperty){
     LKASSERT(theProperty!=NULL);
     wComboPopupWndProperty = theProperty;
 
-    wf = dlgLoadFromXML(CallBackTable, 
-                          ScreenLandscape ? TEXT("dlgComboPicker_L.xml") : TEXT("dlgComboPicker_P.xml"),
-                          ScreenLandscape ? IDR_XML_COMBOPICKER_L : IDR_XML_COMBOPICKER_P);
+    wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_COMBOPICKER_L : IDR_XML_COMBOPICKER_P);
 
     if (!wf) return -1;
 

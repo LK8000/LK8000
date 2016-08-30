@@ -313,9 +313,7 @@ unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode
   wCalc=NULL;
   entered = true;
 
-  wfa = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgAnalysis_L.xml") : TEXT("dlgAnalysis_P.xml"), 
-                        ScreenLandscape ? IDR_XML_ANALYSIS_L : IDR_XML_ANALYSIS_P);
+  wfa = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ANALYSIS_L : IDR_XML_ANALYSIS_P);
 
   if (!wfa) return;
 

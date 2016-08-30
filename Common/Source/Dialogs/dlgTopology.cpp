@@ -192,9 +192,7 @@ void dlgTopologyShowModal(void){
   }
 
   WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgTopology.xml"), 
-		      IDR_XML_TOPOLOGY);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_TOPOLOGY);
 
   if (!wf) return;
 

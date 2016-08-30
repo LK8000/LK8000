@@ -356,9 +356,7 @@ namespace dlgBlueFlyConfig {
         pDevice = d;
         Init = true;
 
-        wfDlg = dlgLoadFromXML(CallBackTable, 
-                ScreenLandscape ? TEXT("dlgBlueFlyConfig_L.xml") : TEXT("dlgBlueFlyConfig_P.xml"), 
-                ScreenLandscape ? IDR_XML_BLUEFLYCONFIG_L : IDR_XML_BLUEFLYCONFIG_P);
+        wfDlg = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_BLUEFLYCONFIG_L : IDR_XML_BLUEFLYCONFIG_P);
         
         if (wfDlg) {
             // build list of page WindowConrol*

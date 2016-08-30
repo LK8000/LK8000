@@ -421,9 +421,7 @@ void dlgChecklistShowModal(short checklistmode){
   InitNotepad();
   LoadChecklist(checklistmode); // check if loaded really something
 
-  wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgChecklist_L.xml") : TEXT("dlgChecklist_P.xml"), 
-                        ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P);
 
   aTextLine.clear();
 

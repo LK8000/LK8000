@@ -108,9 +108,7 @@ void dlgBottomBarShowModal(void){
 
   WndProperty *wp;
   
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgBottomBar.xml"), 
-		      IDR_XML_BOTTOMBAR);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_BOTTOMBAR);
 
   if (!wf) return;
 

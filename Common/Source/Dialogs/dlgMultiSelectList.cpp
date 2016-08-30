@@ -502,9 +502,7 @@ ListElement* dlgMultiSelectListShowModal(void) {
         return NULL;
     }
 
-    wf = dlgLoadFromXML(CallBackTable,
-                            ScreenLandscape ? TEXT("dlgMultiSelectList_L.xml") : TEXT("dlgMultiSelectList_P.xml"),
-                            ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
+    wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
     if (!wf) return NULL;
 

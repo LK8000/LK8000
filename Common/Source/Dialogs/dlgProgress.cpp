@@ -85,9 +85,7 @@ private:
 
 dlgProgress::dlgProgress() {
     
-    _WndForm = dlgLoadFromXML(CallBackTable, 
-            ScreenLandscape ? TEXT("dlgProgress_L.xml") : TEXT("dlgProgress_P.xml"),
-            ScreenLandscape ? IDR_XML_PROGRESS_L : IDR_XML_PROGRESS_P);
+    _WndForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_PROGRESS_L : IDR_XML_PROGRESS_P);
     LKASSERT(_WndForm);
     if(_WndForm) {
         WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 

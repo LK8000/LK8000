@@ -101,7 +101,7 @@ static void setVariables(void) {
 void dlgTimeGatesShowModal(void){
 
   WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable, TEXT("dlgTimeGates.xml"),  IDR_XML_TIMEGATES);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_TIMEGATES);
 
   if (!wf) return;
   

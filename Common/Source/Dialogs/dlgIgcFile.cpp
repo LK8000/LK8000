@@ -177,9 +177,7 @@ using DlgIgcFile::wfDlg;
 
 void dlgIgcFileShowModal() {
 
-    wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, 
-            ScreenLandscape ? TEXT("dlgIgcFile_L.xml") : TEXT("dlgIgcFile_P.xml"), 
-            ScreenLandscape ? IDR_XML_IGCFILE_L : IDR_XML_IGCFILE_P);
+    wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, ScreenLandscape ? IDR_XML_IGCFILE_L : IDR_XML_IGCFILE_P);
     if (wfDlg) {
 
         WndListFrame* wndFileList = (WndListFrame*) wfDlg->FindByName(TEXT("frmIgcFileList"));

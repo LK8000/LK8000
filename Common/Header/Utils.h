@@ -127,7 +127,6 @@ TCHAR* StringMallocParse(const TCHAR* old_string);
 void LocalPath(TCHAR* buf, const TCHAR* file = TEXT(""));
 void SystemPath(TCHAR* buf, const TCHAR* file = TEXT(""));
 void GetPath(TCHAR* buffer, const TCHAR* file, const TCHAR* lkPath);
-void LocalPathS(TCHAR* buf, const TCHAR* file = TEXT(""));
 const TCHAR *LKGetLocalPath(void);
 const TCHAR *LKGetSystemPath(void);
 const TCHAR *LKGetPath(TCHAR *localpath, const TCHAR *fileToSearch);

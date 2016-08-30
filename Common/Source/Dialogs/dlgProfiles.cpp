@@ -201,7 +201,7 @@ void dlgProfilesShowModal(short mode){
   wf = NULL;
   profilemode=mode;
 
-  wf = dlgLoadFromXML(CallBackTable, TEXT("dlgProfiles.xml"), IDR_XML_PROFILES);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_PROFILES);
 
   if (!wf) return;
 

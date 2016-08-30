@@ -115,7 +115,6 @@
 #define LKD_SOUNDS	"_System\\_Sounds"
 #endif
 #define LKD_BITMAPS	"_System\\_Bitmaps"
-#define LKD_DIALOGS     "_System\\_Dialogs"
 #define LKD_CONF	"_Configuration"
 #define LKD_TASKS	"_Tasks"
 #define LKD_WAYPOINTS	"_Waypoints"

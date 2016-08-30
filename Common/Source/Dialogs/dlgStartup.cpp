@@ -364,9 +364,7 @@ static CallBackTableEntry_t CallBackTable[] = {
 
 static WndForm* InitFlySim() {
     
-    WndForm* pWndForm = dlgLoadFromXML(CallBackTable,
-                ScreenLandscape ? TEXT("dlgFlySim_L.xml") : TEXT("dlgFlySim_P.xml"),
-                ScreenLandscape ? IDR_XML_FLYSIM_L : IDR_XML_FLYSIM_P);
+    WndForm* pWndForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_FLYSIM_L : IDR_XML_FLYSIM_P);
     if(pWndForm) {
     
         WindowControl * pWnd = nullptr;
@@ -484,9 +482,7 @@ static WndForm* InitFlySim() {
 
 static WndForm* InitDualProfile() {
 
-    WndForm* pWndForm = dlgLoadFromXML(CallBackTable,
-                ScreenLandscape ? TEXT("dlgDualProfile_L.xml") : TEXT("dlgDualProfile_P.xml"),
-                ScreenLandscape ? IDR_XML_DUALPROFILE_L : IDR_XML_DUALPROFILE_P);
+    WndForm* pWndForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DUALPROFILE_L : IDR_XML_DUALPROFILE_P);
 
     if(pWndForm) {
         WindowControl * pWnd = nullptr;
@@ -583,9 +579,7 @@ static WndForm* InitDualProfile() {
 }
 
 static WndForm* InitStartup(BYTE mode) {
-    WndForm * pWndForm = dlgLoadFromXML(CallBackTable,
-                ScreenLandscape ? TEXT("dlgStartup_L.xml") : TEXT("dlgStartup_P.xml"),
-                ScreenLandscape ? IDR_XML_STARTUP_L : IDR_XML_STARTUP_P);
+    WndForm * pWndForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_STARTUP_L : IDR_XML_STARTUP_P);
     if(pWndForm) {
         
         WindowControl * pWndClose = pWndForm->FindByName(TEXT("cmdClose"));

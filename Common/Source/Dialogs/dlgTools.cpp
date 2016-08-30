@@ -342,28 +342,11 @@ static XMLNode xmlOpenResourceHelper(const TCHAR *lpszXML, LPCTSTR tag)
 
 
 
-WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const TCHAR *tfilename, unsigned resID) {
+WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, unsigned resID) {
 
   WndForm *theForm = nullptr;
-  XMLNode xMainNode;
 
-
-  // StartupStore(_T("... xmlOpen <%s>\n"),tfilename);
-  if(tfilename) {
-    TCHAR filepath[MAX_PATH];
-    LocalPathS(filepath, tfilename);
-
-    xMainNode=XMLNode::openFileHelper(filepath ,TEXT("PMML"));
-  }
-  //
-  // If nothing available in filesystem, load from internal resources
-  // This is going to be removed in future LK versions.
-  //
-  if (xMainNode.isEmpty()) {
-      xMainNode =xmlOpenResourceHelper(MAKEINTRESOURCE(resID), TEXT("PMML"));
-  }
-
-
+  XMLNode xMainNode =xmlOpenResourceHelper(MAKEINTRESOURCE(resID), TEXT("PMML"));
   // TODO code: put in error checking here and get rid of exits in xmlParser
   if (xMainNode.isEmpty()) {
 

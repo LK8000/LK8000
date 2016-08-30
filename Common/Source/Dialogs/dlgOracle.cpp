@@ -67,9 +67,7 @@ void dlgOracleShowModal(void){
 
   wf=NULL;
  
-  wf = dlgLoadFromXML(CallBackTable, 
-            ScreenLandscape ? TEXT("dlgOracle_L.xml") : TEXT("dlgOracle_P.xml"),
-            ScreenLandscape ? IDR_XML_ORACLE_L : IDR_XML_ORACLE_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ORACLE_L : IDR_XML_ORACLE_P);
 
   if (!wf) return;
   MapWindow::SuspendDrawingThread();  

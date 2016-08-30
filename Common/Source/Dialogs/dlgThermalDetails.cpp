@@ -139,9 +139,7 @@ static void SetValues(int indexid) {
 
 void dlgThermalDetails(int indexid) {
 
-  wf = dlgLoadFromXML(CallBackTable,
-		      TEXT("dlgThermalDetails.xml"), 
-		      IDR_XML_THERMALDETAILS);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_THERMALDETAILS);
 
   if (!wf) return;
 

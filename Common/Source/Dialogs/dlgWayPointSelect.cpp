@@ -828,9 +828,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
     DistanceFilterIdx = FilterNear;
   }
 
-  wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgWayPointSelect_L.xml") : TEXT("dlgWayPointSelect_P.xml"), 
-                        ScreenLandscape ? IDR_XML_WAYPOINTSELECT_L : IDR_XML_WAYPOINTSELECT_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTSELECT_L : IDR_XML_WAYPOINTSELECT_P);
 
   if (!wf) return -1;
 

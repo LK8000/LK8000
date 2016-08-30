@@ -118,9 +118,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgMultimapsShowModal(void){
   WndProperty *wp;
 
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgMultimaps.xml"), 
-		      IDR_XML_MULTIMAPS);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_MULTIMAPS);
 
   if (!wf) return;
 

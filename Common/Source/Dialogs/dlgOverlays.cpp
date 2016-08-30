@@ -209,9 +209,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgOverlaysShowModal(void){
 
   WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgOverlays.xml"), 
-		      IDR_XML_OVERLAYS);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_OVERLAYS);
 
   if (!wf) return;
 

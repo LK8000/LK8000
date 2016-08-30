@@ -727,7 +727,7 @@ void dlgStatusShowModal(int start_page){
 
   first = true;
 
-  wf = dlgLoadFromXML(CallBackTable, TEXT("dlgStatus.xml"), IDR_XML_STATUS);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_STATUS);
 
   if (!wf) return;
 

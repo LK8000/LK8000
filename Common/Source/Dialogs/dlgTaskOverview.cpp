@@ -599,9 +599,7 @@ void dlgTaskOverviewShowModal(int Idx){
 
   showAdvanced = false;
 
-  wf = dlgLoadFromXML(CallBackTable, 
-                        ScreenLandscape ? TEXT("dlgTaskOverview_L.xml") : TEXT("dlgTaskOverview_P.xml"), 
-                        ScreenLandscape ? IDR_XML_TASKOVERVIEW_L : IDR_XML_TASKOVERVIEW_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_TASKOVERVIEW_L : IDR_XML_TASKOVERVIEW_P);
 
   if (!wf) return;
 

@@ -119,9 +119,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgCustomKeysShowModal(void){
 
   WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgCustomKeys.xml"), 
-		      IDR_XML_CUSTOMKEYS);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_CUSTOMKEYS);
 
   if (!wf) return;
 

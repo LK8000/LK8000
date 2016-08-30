@@ -167,9 +167,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgCustomMenuShowModal(void){
 
   WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgCustomMenu.xml"), 
-		      IDR_XML_CUSTOMMENU);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_CUSTOMMENU);
 
   if (!wf) return;
 

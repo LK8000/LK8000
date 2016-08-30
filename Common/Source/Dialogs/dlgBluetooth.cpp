@@ -126,9 +126,7 @@ namespace DlgBluetooth {
 
     void Show() {
 
-        wfBth = dlgLoadFromXML(CallBackTable, 
-                ScreenLandscape ? TEXT("dlgBluetooth_L.xml") : TEXT("dlgBluetooth_P.xml"),
-                ScreenLandscape ? IDR_XML_BLUETOOTH_L : IDR_XML_BLUETOOTH_P);
+        wfBth = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_BLUETOOTH_L : IDR_XML_BLUETOOTH_P);
         if (wfBth) {
 
             WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));

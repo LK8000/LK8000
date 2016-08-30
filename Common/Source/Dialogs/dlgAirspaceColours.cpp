@@ -87,9 +87,7 @@ int dlgAirspaceColoursShowModal(void){
 
   ItemIndex = -1;
 
-    wf = dlgLoadFromXML(CallBackTable, 
-                       ScreenLandscape ? TEXT("dlgAirspaceColours_L.xml") : TEXT("dlgAirspaceColours_P.xml"), 
-                       ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P);
+  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P);
   
   if (!wf) return -1;
 

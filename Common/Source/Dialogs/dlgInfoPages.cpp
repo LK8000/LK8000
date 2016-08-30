@@ -123,9 +123,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgInfoPagesShowModal(void){
 
   WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgInfoPages.xml"), 
-		      IDR_XML_INFOPAGES);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_INFOPAGES);
 
   if (!wf) return;
 

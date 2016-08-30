@@ -396,9 +396,7 @@ static void SetValues(void) {
  */
 void dlgAirspaceDetails() {
 
-  wf = dlgLoadFromXML(CallBackTable,
-		      TEXT("dlgAirspaceDetails.xml"), 
-		      IDR_XML_AIRSPACEDETAILS);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_AIRSPACEDETAILS);
 
   if (!wf) return;
   wf->SetTimerNotify(1000, OnTimer);

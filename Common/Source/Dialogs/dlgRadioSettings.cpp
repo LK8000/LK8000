@@ -572,9 +572,7 @@ void dlgRadioSettingsShowModal(void){
 //  WndProperty *wp;
 //  int ival;
 
-    wf = dlgLoadFromXML(CallBackTable,                        
-		      TEXT("dlgRadioSettings.xml"), 
-		           IDR_XML_RADIOSETTINGS );
+    wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOSETTINGS );
   if (!wf) return;
   
   VolMode = VOL; // start with volume
