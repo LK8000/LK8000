@@ -326,9 +326,6 @@ GEXTERN LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
 // Number of asps (items) of existing airspaces updated from DoAirspaces
 GEXTERN int LKNumAirspaces;
 
-// Pointer to ASP struct, ordered by DoAirspaces, from 0 to LKNumAirspaces-1
-GEXTERN int LKSortedAirspaces[MAXNEARAIRSPACES+1];
-
 // The Thermal History internal database
 GEXTERN THERMAL_HISTORY	ThermalHistory[MAX_THERMAL_HISTORY+1];
 // Copy of runtime thermal history structure for instant use

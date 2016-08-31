@@ -495,7 +495,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
 
     int *pSortedNumber;
-    int *pSortedIndex;
+    int *pSortedIndex=nullptr;
     unsigned int headertoken[5];
     double *pLastDoNearest;
     bool *pNearestDataReady;
@@ -559,7 +559,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             headertoken[4] = compact_headers ? 1303 : 1307;
             break;
         case MSM_AIRSPACES:
-            pSortedIndex = LKSortedAirspaces;
+            pSortedIndex = nullptr;
             pSortedNumber = &LKNumAirspaces;
             pLastDoNearest = NULL;
             pNearestDataReady = NULL;
@@ -625,7 +625,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         case LKEVENT_ENTER:
             LKevent = LKEVENT_NONE;
 
-            i = pSortedIndex[SelectedRaw[curmapspace] + (curpage * numraws / lincr)];
+            i = SelectedRaw[curmapspace] + (curpage * numraws / lincr);
+            i = pSortedIndex?pSortedIndex[i]:i;
 
             if (MSMCOMMONS) {
                 if (!ValidWayPoint(i)) {
@@ -798,7 +799,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         }
         if (curraw >= MAXNEAREST) break;
 
-        rli = *(pSortedIndex + curraw);
+        rli = pSortedIndex?pSortedIndex[curraw]:curraw;
 
         if (!ndr) {
             if (MSMCOMMONS) goto _KeepOldCommonsValues;

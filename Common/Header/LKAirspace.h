@@ -496,7 +496,7 @@ public:
   //Nearest page 2.4
   void SelectAirspacesForPage24(const double latitude, const double longitude, const double interest_radius);
   void CalculateDistancesForPage24();
-  CAirspaceList GetAirspacesForPage24();
+  CAirspaceList GetAirspacesForPage24() const { return _airspaces_page24; }
 
   //Sideview
   CAirspace* GetNearestAirspaceForSideview() { return _sideview_nearest; }     // Get nearest instace for sideview drawing (use instance ptr as key only to asp manager (mutex!))

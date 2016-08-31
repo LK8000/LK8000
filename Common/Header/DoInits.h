@@ -23,7 +23,6 @@
 	MDI_DOCALCULATIONSSLOW,		// force recalc bestalt, optimizer, validFix check
 	MDI_HEADING,			// time change
 	MDI_DOAUTOQNH,			// force qnh search for 10 s
-	MDI_DOAIRSPACES,		// asp file change
 	MDI_DOCOMMON,			// generic reset
 	MDI_DOTRAFFIC,			// FLARM trigger
 	MDI_DETECTFREEFLYING,		// force detect FF 

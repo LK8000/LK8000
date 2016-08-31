@@ -2137,7 +2137,6 @@ void CAirspaceManager::ReadAirspaces() {
 }
 
 void CAirspaceManager::CloseAirspaces() {
-    CAirspaceList::iterator it;
     ScopeLock guard(_csairspaces);
     if (_airspaces.size() == 0) return;
     SaveSettings();
@@ -2146,6 +2145,7 @@ void CAirspaceManager::CloseAirspaces() {
     _detail_current = nullptr;
     
     // need to cleanup, otherwise "Item.Pointer" still not null but invalid
+    LKNumAirspaces = 0;
     for (LKAirspace_Nearest_Item& Item : LKAirspaces) {
         Item.Valid = false;
         Item.Pointer = NULL;
@@ -2155,13 +2155,13 @@ void CAirspaceManager::CloseAirspaces() {
     // after Step 1 and before step 2 of multicalc inside AirspacesWarning
     CAirspace::ResetSideviewNearestInstance();
 
-    _selected_airspace = NULL;
-    _sideview_nearest = NULL;
+    _selected_airspace = nullptr;
+    _sideview_nearest = nullptr;
     _user_warning_queue.clear();
     _airspaces_near.clear();
     _airspaces_of_interest.clear();
     _airspaces_page24.clear();
-    for (it = _airspaces.begin(); it != _airspaces.end(); ++it) delete *it;
+    std::for_each(_airspaces.begin(), _airspaces.end(), std::default_delete<CAirspace>());
     _airspaces.clear();
     StartupStore(TEXT(". CloseLKAirspace%s"), NEWLINE);
 }
@@ -3049,7 +3049,7 @@ void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, co
 // in this case not need to have a notifier facility if airspace list changed during calculations
 
 void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const double longitude, const double interest_radius) {
-    double lon, lat, bearing;
+    double lon, lat;
     rectObj bounds;
 
     ScopeLock guard(_csairspaces);
@@ -3063,33 +3063,33 @@ void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const dou
     bounds.miny = lat;
     bounds.maxy = lat;
 
-    bearing = 0;
+
     {
-        FindLatitudeLongitude(latitude, longitude, bearing, interest_radius, &lat, &lon);
+        FindLatitudeLongitude(latitude, longitude, 0, interest_radius, &lat, &lon);
         bounds.minx = min(lon, bounds.minx);
         bounds.maxx = max(lon, bounds.maxx);
         bounds.miny = min(lat, bounds.miny);
         bounds.maxy = max(lat, bounds.maxy);
     }
-    bearing = 90;
+
     {
-        FindLatitudeLongitude(latitude, longitude, bearing, interest_radius, &lat, &lon);
+        FindLatitudeLongitude(latitude, longitude, 90, interest_radius, &lat, &lon);
         bounds.minx = min(lon, bounds.minx);
         bounds.maxx = max(lon, bounds.maxx);
         bounds.miny = min(lat, bounds.miny);
         bounds.maxy = max(lat, bounds.maxy);
     }
-    bearing = 180;
+
     {
-        FindLatitudeLongitude(latitude, longitude, bearing, interest_radius, &lat, &lon);
+        FindLatitudeLongitude(latitude, longitude, 180, interest_radius, &lat, &lon);
         bounds.minx = min(lon, bounds.minx);
         bounds.maxx = max(lon, bounds.maxx);
         bounds.miny = min(lat, bounds.miny);
         bounds.maxy = max(lat, bounds.maxy);
     }
-    bearing = 270;
+
     {
-        FindLatitudeLongitude(latitude, longitude, bearing, interest_radius, &lat, &lon);
+        FindLatitudeLongitude(latitude, longitude, 270, interest_radius, &lat, &lon);
         bounds.minx = min(lon, bounds.minx);
         bounds.maxx = max(lon, bounds.maxx);
         bounds.miny = min(lat, bounds.miny);
@@ -3098,9 +3098,7 @@ void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const dou
 
     // JMW detect airspace that wraps across 180
     if ((bounds.minx< -90) && (bounds.maxx > 90)) {
-        double tmp = bounds.minx;
-        bounds.minx = bounds.maxx;
-        bounds.maxx = tmp;
+        std::swap(bounds.minx, bounds.maxx);
     }
 
     // Select nearest ones (based on bounds)
@@ -3117,13 +3115,7 @@ void CAirspaceManager::CalculateDistancesForPage24() {
     }
 }
 
-CAirspaceList CAirspaceManager::GetAirspacesForPage24() {
-    ScopeLock guard(_csairspaces);
-    return _airspaces_page24;
-}
-
 // Set or change or deselect selected airspace
-
 void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace) {
     ScopeLock guard(_csairspaces);
     // Deselect if we get the same asp

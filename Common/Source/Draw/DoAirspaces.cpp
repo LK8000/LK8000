@@ -8,82 +8,112 @@
 
 #include "externs.h"
 #include "DoInits.h"
+#include <functional>
 
 
 
 // Comparer to sort airspaces based on distance
-static bool airspace_distance_sorter( CAirspace *a, CAirspace *b )
-{
-  int da = a->LastCalculatedHDistance();
-  int db = b->LastCalculatedHDistance();
-  return da<db;     //nearest first
-}
+struct airspace_distance_sorter {
+
+  bool operator()( const CAirspace *a, const CAirspace *b ) const {
+    //nearest first
+    return ( a->LastCalculatedHDistance() < b->LastCalculatedHDistance() ); 
+  }
+};
 
 // Comparer to sort airspaces based on name
-static bool airspace_name_sorter( CAirspace *a, CAirspace *b )
-{
-  int res = _tcscmp(a->Name(), b->Name());
-  if (res) return res < 0;
-  
-  // if name is the same, get closer first
-  int da = a->LastCalculatedHDistance();
-  int db = b->LastCalculatedHDistance();
-  return da<db;
-}
+struct airspace_name_sorter {
+
+  bool operator()( const CAirspace *a, const CAirspace *b ) const {
+    const int res = _tcscmp(a->Name(), b->Name());
+    if (res) {
+        return res < 0;
+    }
+    // if name is the same, get closer first
+    return ( a->LastCalculatedHDistance() < b->LastCalculatedHDistance() ); 
+  }
+};
 
 // Comparer to sort airspaces based on type
-static bool airspace_type_sorter( CAirspace *a, CAirspace *b )
-{
-  if (a->Type() != b->Type()) return a->Type() < b->Type();
-  
-  // if type is the same, get closer first
-  int da = a->LastCalculatedHDistance();
-  int db = b->LastCalculatedHDistance();
-  return da<db;
-}
+struct airspace_type_sorter {
+
+  bool operator()( const CAirspace *a, const CAirspace *b ) const {
+    if (a->Type() != b->Type()) {
+      return a->Type() < b->Type();
+    }
+
+    // if type is the same, get closer first
+    return ( a->LastCalculatedHDistance() < b->LastCalculatedHDistance() ); 
+  }
+};
 
 // Comparer to sort airspaces based on enabled
-static bool airspace_enabled_sorter( CAirspace *a, CAirspace *b )
-{
+struct airspace_enabled_sorter {
+    
+  bool operator()( const CAirspace *a, const CAirspace *b ) const {
+    if (a->Enabled() != b->Enabled()) {
+        return a->Enabled() < b->Enabled();
+    }
 
-  if (a->Enabled() != b->Enabled()) return a->Enabled() < b->Enabled();
-
-  // if enabled is the same, get closer first
-  int da = a->LastCalculatedHDistance();
-  int db = b->LastCalculatedHDistance();
-  return da<db;
-}
+    // if enabled is the same, get closer first
+    return ( a->LastCalculatedHDistance() < b->LastCalculatedHDistance() ); 
+  }
+};
 
 // Comparer to sort airspaces based on bearing
-// During cruise, we sort bearing diff and use bearing diff in DrawAsp
-static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
-{
-  int beara = a->LastCalculatedBearing();
-  int bearb = b->LastCalculatedBearing();
-  int beardiffa,beardiffb;
-  int da = a->LastCalculatedHDistance();
-  int db = b->LastCalculatedHDistance();
+struct airspace_bearing_sorter {
+    
+  bool operator()( CAirspace *a, CAirspace *b ) const {
+    int beara = a->LastCalculatedBearing();
+    int bearb = b->LastCalculatedBearing();
+    int da = a->LastCalculatedHDistance();
+    int db = b->LastCalculatedHDistance();
 
-  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-    if (beara != bearb) return beara < bearb;
+    if (beara != bearb) {
+        return beara < bearb;
+    }
     // if bearing is the same, get closer first
     return da<db;
   }
+};
+
+// During cruise, we sort bearing diff and use bearing diff in DrawAsp
+struct airspace_bearing_diff_sorter {
+    
+  bool operator()( CAirspace *a, CAirspace *b ) const {
+    int beara = a->LastCalculatedBearing();
+    int bearb = b->LastCalculatedBearing();
+    int da = a->LastCalculatedHDistance();
+    int db = b->LastCalculatedHDistance();
  
-  beardiffa = beara - a->LastTrackBearing();
-  if (beardiffa < -180) beardiffa += 360;
-    else if (beardiffa > 180) beardiffa -= 360;
-  if (beardiffa<0) beardiffa*=-1;
+    int beardiffa = beara - a->LastTrackBearing();
+    if (beardiffa < -180) {
+      beardiffa += 360;
+    } else if (beardiffa > 180) {
+      beardiffa -= 360;
+    }
+    if (beardiffa<0) {
+      beardiffa*=-1;
+    }
   
-  beardiffb = bearb - b->LastTrackBearing();
-  if (beardiffb < -180) beardiffb += 360;
-    else if (beardiffb > 180) beardiffb -= 360;
-  if (beardiffb<0) beardiffb*=-1;
+    int beardiffb = bearb - b->LastTrackBearing();
+    if (beardiffb < -180) {
+      beardiffb += 360;
+    } else if (beardiffb > 180) { 
+      beardiffb -= 360;
+    }
+    if (beardiffb<0) {
+      beardiffb*=-1;
+    }
  
-  if (beardiffa != beardiffb) return beardiffa < beardiffb; 
-  // if bearing difference is the same, get closer first
-  return da<db;
-}
+    if (beardiffa != beardiffb) {
+      return beardiffa < beardiffb; 
+    }
+  
+    // if bearing difference is the same, get closer first
+    return da<db;
+  }
+};
 
 
 // OBSOLETED comment..
@@ -97,18 +127,6 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    static int step = 0;
    bool ret = false;
-   
-   if (DoInit[MDI_DOAIRSPACES]) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-	LKNumAirspaces=0;
-	memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
-    for (int i=0; i<MAXNEARAIRSPACES; i++) {
-      LKAirspaces[i].Valid = false;
-      LKAirspaces[i].Pointer = NULL;
-    }
-	DoInit[MDI_DOAIRSPACES]=false;
-	return true;
-   }
 
    // DoAirspaces is called from MapWindow, in real time. We have enough CPU power there now
    // Consider replay mode...
@@ -141,24 +159,23 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         // Lock airspace instances externally
         ScopeLock guard(CAirspaceManager::Instance().MutexRef());
         // Get selected list from airspacemanager
-        CAirspaceList airspaces = CAirspaceManager::Instance().GetAirspacesForPage24();
+        CAirspaceList nearest_airspaces = CAirspaceManager::Instance().GetAirspacesForPage24();
         // Sort selected airspaces by distance first
-        std::sort(airspaces.begin(), airspaces.end(), airspace_distance_sorter);
+        std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_distance_sorter());
         // get first MAXNEARAIRSPACES to a new list
-        CAirspaceList nearest_airspaces;
-        CAirspaceList::iterator it = airspaces.begin();
-        for (int i=0; (i<MAXNEARAIRSPACES) && (it!=airspaces.end()); ++i, ++it) nearest_airspaces.push_back(*it);
-        airspaces.clear();
+        if(nearest_airspaces.size() > MAXNEARAIRSPACES) {
+            nearest_airspaces.resize(MAXNEARAIRSPACES);
+        }
 
         //sort by given key
           switch (SortedMode[MSM_AIRSPACES]) {
               case 0: 
                   // ASP NAME
-                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_name_sorter);
+                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_name_sorter());
                   break;
               case 1:
                   // ASP TYPE
-                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_type_sorter);
+                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_type_sorter());
                   break;
                   
               default:
@@ -168,78 +185,68 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                   break;
               case 3:
                   // ASP BEARING
-                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_bearing_sorter);
+                  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+                    std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_bearing_sorter());
+                  } else {
+                    std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_bearing_diff_sorter());
+                  }
                   break;
               case 4:
                   // ACTIVE / NOT ACTIVE
-                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_enabled_sorter);
+                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_enabled_sorter());
                   break;
           } //sw
 
           // Clear results
-          memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
           LKNumAirspaces=0;
-          for (int i=0; i<MAXNEARAIRSPACES; i++) {
-              LKAirspaces[i].Valid = false;
-              LKAirspaces[i].Pointer = NULL;
-          }
           //copy result data to interface structs
           // we dont need LKSortedAirspaces[] array, every item will be
           // in correct order in airspaces list, thanks to std::sort,
           // we just fill up LKAirspaces[] array in the right order.
-          int i = 0;
-          for (it=nearest_airspaces.begin(); it!=nearest_airspaces.end(); ++it) {
-              // sort key not used, iterator goes in right order after std::sort
-              LKSortedAirspaces[i] = i;
+
+          std::transform(nearest_airspaces.begin(), nearest_airspaces.end(), std::begin(LKAirspaces), [](CAirspace* pAsp) {
+              LKAirspace_Nearest_Item OutItem = {};
+
               // copy name
-              LK_tcsncpy(LKAirspaces[i].Name, (*it)->Name(), NAME_SIZE);
+              LK_tcsncpy(OutItem.Name, pAsp->Name(), NAME_SIZE);
               // copy type string (type string comes from centralized type->str conversion function of CAirspaceManager)
-              LK_tcsncpy(LKAirspaces[i].Type, CAirspaceManager::Instance().GetAirspaceTypeShortText((*it)->Type()), 4);
+              LK_tcsncpy(OutItem.Type, CAirspaceManager::Instance().GetAirspaceTypeShortText(pAsp->Type()), 4);
 
               // copy distance
-              LKAirspaces[i].Distance = max((*it)->LastCalculatedHDistance(),0);
+              OutItem.Distance = max(pAsp->LastCalculatedHDistance(),0);
               // copy bearing
-              LKAirspaces[i].Bearing = (*it)->LastCalculatedBearing();
+              OutItem.Bearing = pAsp->LastCalculatedBearing();
               // copy Enabled()
-              LKAirspaces[i].Enabled = (*it)->Enabled();
+              OutItem.Enabled = pAsp->Enabled();
               // copy Selected()
-              LKAirspaces[i].Selected = (*it)->Selected();
+              OutItem.Selected = pAsp->Selected();
               // copy Flyzone()
-              LKAirspaces[i].Flyzone = (*it)->Flyzone();
+              OutItem.Flyzone = pAsp->Flyzone();
               // copy WarningLevel()
-              LKAirspaces[i].WarningLevel = (*it)->WarningLevel();
+              OutItem.WarningLevel = pAsp->WarningLevel();
               // copy WarningAckLevel()
-              LKAirspaces[i].WarningAckLevel = (*it)->WarningAckLevel();
-              
+              OutItem.WarningAckLevel = pAsp->WarningAckLevel();
+
               // copy pointer
-              LKAirspaces[i].Pointer = (*it);
-              
+              OutItem.Pointer = pAsp;
+
               // Record is valid now.
-              LKAirspaces[i].Valid = true;
-              
-              i++;
-              if (i>=MAXNEARAIRSPACES) break;
-          }
-          LKNumAirspaces=i;
+              OutItem.Valid = true;
+
+              LKNumAirspaces++;
+
+              return OutItem;
+          });
+
+          std::for_each(std::next(LKAirspaces, LKNumAirspaces), std::end(LKAirspaces), [](LKAirspace_Nearest_Item& Item) {
+              Item.Valid = false;
+              Item.Pointer = nullptr;
+          });
+
           ret = true;       // ok to use new values.
           step = 0;
           break;
    } //sw step
-   
-   #ifdef DEBUG_LKT
-   StartupStore(_T("... DoAirspaces finished, LKNumAirspaces=%d :\n"), LKNumAirspaces);
-   // For sorting debug only
-   /*for (i=0; i<MAXNEARAIRSPACES; i++) {
-	if (LKSortedAirspaces[i]>=0)
-		StartupStore(_T("... LKSortedAirspaces[%d]=LKAirspaces[%d] Name=<%s> Type=<%s> Dist=%2.0f beardiff=%2.0f enabled=%s\n"), i, 
-			LKSortedAirspaces[i],
-			LKAirspaces[LKSortedAirspaces[i]].Name,
-			LKAirspaces[LKSortedAirspaces[i]].Type,
-            LKAirspaces[LKSortedAirspaces[i]].Distance,
-            LKAirspaces[LKSortedAirspaces[i]].Bearing_difference,
-            LKAirspaces[LKSortedAirspaces[i]].Enabled ? _TEXT("true"):_TEXT("false"));
-   }*/
-   #endif
 
    return ret;
 }
