@@ -93,7 +93,7 @@ static void OnAltitudeData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		}
 		wp->RefreshDisplay();
 	}
-    CAirspaceManager::Instance().QnhChangeNotify(QNH);
+    UpdateQNH(QNH);
 	break;
   case DataField::daInc:
   case DataField::daDec:

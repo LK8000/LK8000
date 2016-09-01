@@ -2167,17 +2167,9 @@ void CAirspaceManager::CloseAirspaces() {
 }
 
 void CAirspaceManager::QnhChangeNotify(const double &newQNH) {
-    static double lastQNH;
-    static bool first = true;
-
-    if ((newQNH != lastQNH) || first) {
-        CAirspaceList::iterator i;
-        ScopeLock guard(_csairspaces);
-
-        for (i = _airspaces.begin(); i != _airspaces.end(); ++i) (*i)->QnhChangeNotify();
-
-        first = false;
-        lastQNH = newQNH;
+    ScopeLock guard(_csairspaces);
+    for (CAirspace* pAsp : _airspaces) {
+        pAsp->QnhChangeNotify();
     }
 }
 
