@@ -578,9 +578,9 @@ static void SetDirectionData(DataField *Sender){
     if (a <=0)
       a += 360;
 	//LKTOKEN _@M1229_ "HDG"
-    _stprintf(sTmp, TEXT("%s(%d%s)"), gettext(TEXT("_@M1229_")), a, gettext(_T("_@M2179_")));
+    _stprintf(sTmp, TEXT("%s(%d%s)"), MsgToken(1229), a, MsgToken(2179));
   }else
-    _stprintf(sTmp, TEXT("%d%s"), DirectionFilter[DirectionFilterIdx],gettext(_T("_@M2179_")));
+    _stprintf(sTmp, TEXT("%d%s"), DirectionFilter[DirectionFilterIdx],MsgToken(2179));
 
   Sender->Set(sTmp);
 
@@ -686,7 +686,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
         const int w0 = LineHeight; // Picto Width
         const int w2 = Surface.GetTextWidth(TEXT(" 000km")); // distance Width
-        _stprintf(sTmp, _T(" 000%s "), gettext(_T("_@M2179_")));
+        _stprintf(sTmp, _T(" 000%s "), MsgToken(2179));
         const int w3 = Surface.GetTextWidth(sTmp); // bearing width
 
         const int w1 = width - w0 - w2 - w3; // Max Name width
@@ -710,13 +710,13 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         Surface.DrawText(x2, TextPos, sTmp);
 
         // Draw Bearing right justified after distance
-        _stprintf(sTmp, TEXT("%d%s"), iround(WayPointSelectInfo[i].Direction), gettext(_T("_@M2179_")));
+        _stprintf(sTmp, TEXT("%d%s"), iround(WayPointSelectInfo[i].Direction), MsgToken(2179));
         const int x3 = width - Surface.GetTextWidth(sTmp);
         Surface.DrawText(x3, TextPos, sTmp);
     } else {
         if (DrawListIndex == 0) {
             // LKTOKEN  _@M466_ = "No Match!" 
-            _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
+            _stprintf(sTmp, TEXT("%s"), MsgToken(466));
             Surface.DrawText(IBLSCALE(2), TextPos, sTmp);
         }
     }
@@ -810,15 +810,15 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 	//If you add more items don't forget to change TYPEFILTERSNUM and UpdateList() also
 	TypeFilter[0] = gettext(TEXT("*"));
 	// LKTOKEN _@M1224_ "Airport"
-	TypeFilter[1] = gettext(TEXT("_@M1224_"));
+	TypeFilter[1] = MsgToken(1224);
 	// LKTOKEN _@M1225_ "Landable"
-	TypeFilter[2] = gettext(TEXT("_@M1225_"));
+	TypeFilter[2] = MsgToken(1225);
 	// LKTOKEN _@M1226_ "Turnpoint"
-	TypeFilter[3] = gettext(TEXT("_@M1226_"));
+	TypeFilter[3] = MsgToken(1226);
 	// LKTOKEN _@M1227_ "File 1"
-	TypeFilter[4] = gettext(TEXT("_@M1227_"));
+	TypeFilter[4] = MsgToken(1227);
 	// LKTOKEN _@M1228_ "File 2"
-	TypeFilter[5] = gettext(TEXT("_@M1228_"));
+	TypeFilter[5] = MsgToken(1228);
 
 
   if (lon==0.0 && lat==90.0) {

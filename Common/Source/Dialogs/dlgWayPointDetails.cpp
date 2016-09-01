@@ -489,10 +489,10 @@ void dlgWayPointDetailsShowModal(short mypage){
   ((WndProperty *)wf->FindByName(TEXT("prpDistance")))->SetText(DistanceText);
 
   if (ScreenLandscape) {
-      _stprintf(sTmp, TEXT("%d%s  (R:%d%s)"),iround(bearing), gettext(_T("_@M2179_")),
-         iround(AngleLimit360(bearing+180)), gettext(_T("_@M2179_")));
+      _stprintf(sTmp, TEXT("%d%s  (R:%d%s)"),iround(bearing), MsgToken(2179),
+         iround(AngleLimit360(bearing+180)), MsgToken(2179));
   } else {
-      _stprintf(sTmp, TEXT("%d%s"), iround(bearing),gettext(_T("_@M2179_")));
+      _stprintf(sTmp, TEXT("%d%s"), iround(bearing),MsgToken(2179));
   }
   ((WndProperty *)wf->FindByName(TEXT("prpBearing")))->SetText(sTmp);
 

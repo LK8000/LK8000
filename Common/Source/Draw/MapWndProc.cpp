@@ -411,7 +411,7 @@ void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
         if ((startScreen.x >= P_Doubleclick_bottomright.x)
                 && (startScreen.y >= P_Doubleclick_bottomright.y)) {
             LockMode(2);
-            DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
+            DoStatusMessage(MsgToken(964)); // SCREEN IS UNLOCKED
 
             // Careful! If you ignorenext, any event timed as double click of course will be affected.
             // and this means also fast clicking on bottombar!!

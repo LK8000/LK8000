@@ -220,9 +220,7 @@ const TCHAR *MsgToken(const unsigned int inumber) {
   if (inumber<=MAX_MESSAGES && LKMessages[inumber]) {
     return LKMessages[inumber];
   }
-  static TCHAR terr[30];
-  _stprintf(terr,_T("_@M%u_"),inumber);
-  return(terr);
+  return _T("");
 }
 
 

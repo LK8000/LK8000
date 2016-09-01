@@ -42,16 +42,16 @@ static void NextPage(int Step){
   switch(status_page) {
   case 0:
 	// LKTOKEN  _@M661_ = "Status: Aircraft" 
-    wf->SetCaption(gettext(TEXT("_@M661_")));
+    wf->SetCaption(MsgToken(661));
     break;
   case 1:
     if (SIMMODE) {
 	TCHAR sysmode[100];
-	_stprintf(sysmode,_T("%s (%s)"),gettext(TEXT("_@M664_")),gettext(TEXT("_@M1211_")) );
+	_stprintf(sysmode,_T("%s (%s)"),MsgToken(664),MsgToken(1211) );
     	wf->SetCaption(sysmode);
     } else {
 	// LKTOKEN  _@M664_ = "Status: System" 
-    	wf->SetCaption(gettext(TEXT("_@M664_")));
+    	wf->SetCaption(MsgToken(664));
 #if FLARMDEADLOCK
     	if( GPS_INFO.FLARM_SW_Version  < 0.01)
     	{
@@ -66,19 +66,19 @@ static void NextPage(int Step){
     break;
   case 2:
 	// LKTOKEN  _@M665_ = "Status: Task" 
-    wf->SetCaption(gettext(TEXT("_@M665_")));
+    wf->SetCaption(MsgToken(665));
     break;
   case 3:
 	// LKTOKEN  _@M663_ = "Status: Rules" 
-    wf->SetCaption(gettext(TEXT("_@M663_")));
+    wf->SetCaption(MsgToken(663));
     break;
   case 4:
 	// LKTOKEN  _@M666_ = "Status: Times" 
-    wf->SetCaption(gettext(TEXT("_@M666_")));
+    wf->SetCaption(MsgToken(666));
     break;
   case 5:
 	// LKTOKEN  _@M662_ = "Status: Ext.Device" 
-    wf->SetCaption(gettext(TEXT("_@M662_")));
+    wf->SetCaption(MsgToken(662));
     break;
   }
   wStatus0->SetVisible(status_page == 0);
@@ -202,14 +202,14 @@ static void UpdateValuesSystem() {
     if (extGPSCONNECT) {
       if (GPS_INFO.NAVWarning) {
 	// LKTOKEN  _@M303_ = "Fix invalid" 
-        wp->SetText(gettext(TEXT("_@M303_")));
+        wp->SetText(MsgToken(303));
       } else {
         if (GPS_INFO.SatellitesUsed==0) {
 	// LKTOKEN  _@M471_ = "No fix" 
-          wp->SetText(gettext(TEXT("_@M471_")));
+          wp->SetText(MsgToken(471));
         } else {
 	// LKTOKEN  _@M31_ = "3D fix" 
-          wp->SetText(gettext(TEXT("_@M31_")));
+          wp->SetText(MsgToken(31));
         }
       }
       wp->RefreshDisplay();
@@ -230,7 +230,7 @@ static void UpdateValuesSystem() {
       }
     } else {
 	// LKTOKEN  _@M240_ = "Disconnected" 
-      wp->SetText(gettext(TEXT("_@M240_")));
+      wp->SetText(MsgToken(240));
       wp->RefreshDisplay();
     }
   }
@@ -260,10 +260,10 @@ static void UpdateValuesSystem() {
      }
      else
 #endif     
-	   wp->SetText(gettext(TEXT("_@M199_")));
+	   wp->SetText(MsgToken(199));
     } else {
 	// LKTOKEN  _@M240_ = "Disconnected" 
-      wp->SetText(gettext(TEXT("_@M240_")));
+      wp->SetText(MsgToken(240));
     }
     wp->RefreshDisplay();
   }
@@ -282,10 +282,10 @@ static void UpdateValuesSystem() {
       }
       else
 #endif
-        wp->SetText(gettext(TEXT("_@M199_")));
+        wp->SetText(MsgToken(199));
     } else {
 	// LKTOKEN  _@M240_ = "Disconnected" 
-      wp->SetText(gettext(TEXT("_@M240_")));
+      wp->SetText(MsgToken(240));
     }
     wp->RefreshDisplay();
   }
@@ -295,19 +295,19 @@ static void UpdateValuesSystem() {
     if (LoggerGActive()) {
       if (LoggerActive) {
 	// LKTOKEN  _@M494_ = "ON (G)" 
-        wp->SetText(gettext(TEXT("_@M494_")));
+        wp->SetText(MsgToken(494));
       } else {
 	// LKTOKEN  _@M489_ = "OFF (G)" 
-        wp->SetText(gettext(TEXT("_@M489_")));
+        wp->SetText(MsgToken(489));
       }
     }
     else { // no G Record
       if (LoggerActive) {
 	// LKTOKEN  _@M495_ = "ON (no G)" 
-        wp->SetText(gettext(TEXT("_@M495_")));
+        wp->SetText(MsgToken(495));
       } else {
 	// LKTOKEN  _@M490_ = "OFF (no G)" 
-        wp->SetText(gettext(TEXT("_@M490_")));
+        wp->SetText(MsgToken(490));
       }
     }
     wp->RefreshDisplay();
@@ -317,9 +317,9 @@ static void UpdateValuesSystem() {
   if (wp) {
     if (DeclaredToDevice) {
 	// LKTOKEN  _@M827_ = "Yes" 
-      wp->SetText(gettext(TEXT("_@M827_")));
+      wp->SetText(MsgToken(827));
     } else {
-      wp->SetText(gettext(TEXT("_@M890_"))); // No
+      wp->SetText(MsgToken(890)); // No
     }
     wp->RefreshDisplay();
   }
@@ -516,7 +516,7 @@ static void UpdateValuesFlight(void) {
 
     wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
     if (wp) {
-      _stprintf(Temp, TEXT("%d%s"), iround(bearing),gettext(_T("_@M2179_")));
+      _stprintf(Temp, TEXT("%d%s"), iround(bearing),MsgToken(2179));
       wp->SetText(Temp);
     }
 
@@ -553,20 +553,20 @@ static void UpdateValuesRules(void) {
   if (wp) {
     if (CALCULATED_INFO.ValidStart) {
 	// LKTOKEN  _@M677_ = "TRUE" 
-      wp->SetText(gettext(TEXT("_@M677_")));
+      wp->SetText(MsgToken(677));
     } else {
 	// LKTOKEN  _@M278_ = "FALSE" 
-      wp->SetText(gettext(TEXT("_@M278_")));
+      wp->SetText(MsgToken(278));
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpValidFinish"));
   if (wp) {
     if (CALCULATED_INFO.ValidFinish) {
 	// LKTOKEN  _@M677_ = "TRUE" 
-      wp->SetText(gettext(TEXT("_@M677_")));
+      wp->SetText(MsgToken(677));
     } else {
 	// LKTOKEN  _@M278_ = "FALSE" 
-      wp->SetText(gettext(TEXT("_@M278_")));
+      wp->SetText(MsgToken(278));
     }
   }
 

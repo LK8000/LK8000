@@ -161,12 +161,12 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
   // Must have at least two, max 12 waypoints
   if(decl->num_waypoints < 2) {
     // LKTOKEN  _@M1412_ = "Not enough waypoints!" 
-    _tcsncpy(errBuffer, gettext(_T("_@M1412_")), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken(1412), errBufferLen);
     return FALSE;
   }
   if(decl->num_waypoints > 12) {
     // LKTOKEN  _@M1413_ = "Too many waypoints!" 
-    _tcsncpy(errBuffer, gettext(_T("_@M1413_")), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken(1413), errBufferLen);
     return FALSE;
   }
   
@@ -179,17 +179,17 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
 
   // LKTOKEN  _@M1400_ = "Task declaration" 
   // LKTOKEN  _@M1405_ = "Testing connection" 
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1405_")));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1405));
   CreateProgressDialog(buffer);
   if (!EWMicroRecorderTryConnect(d)) {
     // LKTOKEN  _@M1411_ = "Device not connected!" 
-    _tcsncpy(errBuffer, gettext(_T("_@M1411_")), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken(1411), errBufferLen);
     return FALSE;
   }
   
   // LKTOKEN  _@M1400_ = "Task declaration" 
   // LKTOKEN  _@M1403_ = "Sending  declaration"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1403_")));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
   CreateProgressDialog(buffer);
   d->Com->WriteString(TEXT("\x18"));         // start to upload file
   d->Com->WriteString(user_data);
@@ -227,13 +227,13 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
   if (!ExpectStringWait(d, TEXT("uploaded successfully"))) {
     // error!
     // LKTOKEN  _@M1415_ = "Declaration not accepted!" 
-    _tcsncpy(errBuffer, gettext(_T("_@M1415_")), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken(1415), errBufferLen);
     nDeclErrorCode = 1;
   }
 
   // LKTOKEN  _@M1400_ = "Task declaration" 
   // LKTOKEN  _@M1402_ = "Disabling declaration mode" 
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1402_")));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1402));
   CreateProgressDialog(buffer);
   d->Com->WriteString(TEXT("!!\r\n"));         // go back to NMEA mode
 

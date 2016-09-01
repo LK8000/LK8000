@@ -46,7 +46,7 @@ void AddReservedWaypoints()
 		WayPointList[RESWP_LASTTHERMAL].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1320_ "LAST GOOD THERMAL"
 	if (WayPointList[RESWP_LASTTHERMAL].Comment!=NULL) 
-		_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_")));		
+		_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, MsgToken(1320));		
 	WayPointList[RESWP_LASTTHERMAL].Reachable=FALSE;
 	WayPointList[RESWP_LASTTHERMAL].AltArivalAGL=0.0;
 	WayPointList[RESWP_LASTTHERMAL].Visible=TRUE; // careful! 100929
@@ -72,7 +72,7 @@ void AddReservedWaypoints()
 		WayPointList[RESWP_TEAMMATE].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1321_ "TEAM MATE"
 	if (WayPointList[RESWP_TEAMMATE].Comment!=NULL) 
-		_tcscpy(WayPointList[RESWP_TEAMMATE].Comment, gettext(TEXT("_@M1321_")));
+		_tcscpy(WayPointList[RESWP_TEAMMATE].Comment, MsgToken(1321));
 	WayPointList[RESWP_TEAMMATE].Reachable=FALSE;
 	WayPointList[RESWP_TEAMMATE].AltArivalAGL=0.0;
 	WayPointList[RESWP_TEAMMATE].Visible=FALSE;
@@ -97,7 +97,7 @@ void AddReservedWaypoints()
 		WayPointList[RESWP_FLARMTARGET].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1322_ "FLARM TARGET"
 	if (WayPointList[RESWP_FLARMTARGET].Comment!=NULL) 
-		_tcscpy(WayPointList[RESWP_FLARMTARGET].Comment, gettext(TEXT("_@M1322_")));
+		_tcscpy(WayPointList[RESWP_FLARMTARGET].Comment, MsgToken(1322));
 	WayPointList[RESWP_FLARMTARGET].Reachable=FALSE;
 	WayPointList[RESWP_FLARMTARGET].AltArivalAGL=0.0;
 	WayPointList[RESWP_FLARMTARGET].Visible=FALSE;

@@ -78,7 +78,7 @@ bool DSXSwitchDeclareMode(PDeviceDescriptor_t d, bool enable, unsigned errBuffer
   // all NMEA sequences that are incomming before declaration mode is enabled.
   if(!DSXPromptWait(d, enable ? PROMPT_WAIT_CHARS_LONG : PROMPT_WAIT_CHARS)) {
     // LKTOKEN  _@M1411_ = "Device not connected!" 
-    _tcsncpy(errBuffer, gettext(_T("_@M1411_")), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken(1411), errBufferLen);
     return false;
   }
   return true;
@@ -97,7 +97,7 @@ bool DSXSwitchDeclareMode(PDeviceDescriptor_t d, bool enable, unsigned errBuffer
     d->Com->WriteString(buffer);                                 \
     if(!DSXPromptWait(d, PROMPT_WAIT_CHARS)) {                   \
       _sntprintf(errBuffer, errBufferLen, _T("%s '%s'!"),        \
-                 gettext(_T("_@M1420_")), gettext(TEXT(TOKEN))); \
+                 MsgToken(1420), LKGetText(TEXT(TOKEN))); \
       return false;                                              \
     }                                                            \
   }
@@ -191,7 +191,7 @@ bool DSXT1Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBuf
   if(!DSXPromptWait(d, PROMPT_WAIT_CHARS)) {
     // LKTOKEN  _@M1420_ = "Error while declaring!"
     // LKTOKEN  _@M1421_ = "Task description"
-    _sntprintf(errBuffer, errBufferLen, _T("%s '%s'!"), gettext(_T("_@M1420_")), gettext(_T("_@M1421_")));
+    _sntprintf(errBuffer, errBufferLen, _T("%s '%s'!"), MsgToken(1420), MsgToken(1421));
     return false;
   }
 
@@ -314,7 +314,7 @@ bool DSXT2Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBuf
   if(!DSXPromptWait(d, PROMPT_WAIT_CHARS)) {
     // LKTOKEN  _@M1420_ = "Error while declaring!"
     // LKTOKEN  _@M1422_ = "Start and Finish"
-    _sntprintf(errBuffer, errBufferLen, _T("%s '%s'!"), gettext(_T("_@M1420_")), gettext(_T("_@M1422_")));
+    _sntprintf(errBuffer, errBufferLen, _T("%s '%s'!"), MsgToken(1420), MsgToken(1422));
     return false;
   }
 
@@ -377,7 +377,7 @@ bool DSXT3Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned tpIdx,
   if(!DSXPromptWait(d, PROMPT_WAIT_CHARS)) {
     // LKTOKEN  _@M1420_ = "Error while declaring!"
     // LKTOKEN  _@M749_ = "Turnpoint"
-    _sntprintf(errBuffer, errBufferLen, _T("%s '%s %u'!"), gettext(_T("_@M1420_")), gettext(_T("_@M749_")), tpIdx + 1);
+    _sntprintf(errBuffer, errBufferLen, _T("%s '%s %u'!"), MsgToken(1420), MsgToken(749), tpIdx + 1);
     return false;
   }
   
@@ -390,12 +390,12 @@ BOOL DSXDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   // Must have at least two, max 12 waypoints
   if(decl->num_waypoints < 2) {
     // LKTOKEN  _@M1412_ = "Not enough waypoints!" 
-    _tcsncpy(errBuffer, gettext(_T("_@M1412_")), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken(1412), errBufferLen);
     return FALSE;
   }
   if(decl->num_waypoints > 12) {
     // LKTOKEN  _@M1413_ = "Too many waypoints!" 
-    _tcsncpy(errBuffer, gettext(_T("_@M1413_")), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken(1413), errBufferLen);
     return FALSE;
   }
   
@@ -411,7 +411,7 @@ BOOL DSXDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   // Enable DSX declaration mode
   // LKTOKEN  _@M1400_ = "Task declaration" 
   // LKTOKEN  _@M1401_ = "Enabling declaration mode" 
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1401_")));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1401));
   CreateProgressDialog(buffer);
   status = DSXSwitchDeclareMode(d, true, errBufferLen, errBuffer);
   
@@ -419,7 +419,7 @@ BOOL DSXDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
     // Send user, glider and competition data
     // LKTOKEN  _@M1400_ = "Task declaration" 
     // LKTOKEN  _@M1403_ = "Sending  declaration"
-    _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1403_")));
+    _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
     CreateProgressDialog(buffer);
     status = status && DSXHSend(d, *decl, errBufferLen, errBuffer);
     
@@ -438,7 +438,7 @@ BOOL DSXDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   // Disable DSX declaration mode
   // LKTOKEN  _@M1400_ = "Task declaration" 
   // LKTOKEN  _@M1402_ = "Disabling declaration mode" 
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1402_")));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1402));
   CreateProgressDialog(buffer);
   status = DSXSwitchDeclareMode(d, false, errBufferLen, errBuffer) && status; // always do that step otherwise NMEA will not be send
   

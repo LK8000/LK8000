@@ -187,35 +187,35 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	Surface.SelectObject(LK8PanelMediumFont);
 	switch(curtype) {
 		case IM_THERMAL:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M905_"))); // Thermal
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken(905)); // Thermal
 			break;
 		case IM_CRUISE:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M906_"))); // Cruise
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken(906)); // Cruise
 			break;
 		case IM_TASK:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M907_"))); // Task
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken(907)); // Task
 			break;
 		case IM_AUX:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M908_"))); // Custom
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken(908)); // Custom
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M909_"))); // Turn
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken(909)); // Turn
 #else
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M1600_"))); // DISABLED
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken(1600)); // DISABLED
 #endif
 			break;
 		case IM_HSI:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M1860_"))); // HSI
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken(1860)); // HSI
 			break;
 		case IM_CONTEST:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M957_"))); // Contest
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken(957)); // Contest
 			break;
 		case IM_TRF+IM_TOP:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, gettext(TEXT("_@M910_"))); // Target
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, MsgToken(910)); // Target
 			break;
 		case IM_TARGET+IM_TOP:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, gettext(TEXT("_@M911_"))); // Sight
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, MsgToken(911)); // Sight
 			break;
 		default:
 			_stprintf(Buffer,_T("error"));
@@ -240,24 +240,24 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				if ( index >=0 ) {
 					_tcscpy(Buffer, WayPointList[index].Name);
 				} else {
-					_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+					_tcscpy(Buffer,MsgToken(912)); // [no dest]
 					icolor=AMBERCOLOR;
 				}
 			} else {
-				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+				_tcscpy(Buffer,MsgToken(912)); // [no dest]
 				icolor=AMBERCOLOR;
 			}
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			_tcscpy(Buffer,gettext(TEXT("_@M913_"))); // Experimental
+			_tcscpy(Buffer,MsgToken(913)); // Experimental
 #else
 			_tcscpy(Buffer,_T("---"));
 #endif
 			break;
 		case IM_CONTEST:
 		case IM_HSI: //for the HSI the title text is computed in his section down
-			_tcscpy(Buffer,gettext(TEXT("")));
+			_tcscpy(Buffer,TEXT(""));
 			break;
 		case IM_TRF+IM_TOP:
 		case IM_TARGET+IM_TOP:
@@ -281,7 +281,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				}
 
 			} else {
-				_tcscpy(Buffer,gettext(TEXT("_@M914_"))); // [no target]
+				_tcscpy(Buffer,MsgToken(914)); // [no target]
 				icolor=AMBERCOLOR;
 			}
 
@@ -921,7 +921,7 @@ label_TRI:
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 #endif
-	_tcscpy(BufferTitle, gettext(TEXT("_@M915_"))); // NOT FOR IFR USAGE
+	_tcscpy(BufferTitle, MsgToken(915)); // NOT FOR IFR USAGE
 	Surface.SelectObject(LK8PanelSmallFont);
 	LKWriteText(Surface,  BufferTitle, qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
 #endif // not in LKCOMPETITION 
@@ -949,7 +949,7 @@ label_HSI:
 	}
 	if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 		if(showVFRlanding) {
-			_stprintf(Buffer,TEXT("VFR %s"),gettext(TEXT("_@M931_"))); //TODO: toupper()
+			_stprintf(Buffer,TEXT("VFR %s"),MsgToken(931)); //TODO: toupper()
 			#ifndef DITHER
 			icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
 			#else
@@ -957,7 +957,7 @@ label_HSI:
 			#endif
 		}
 		if(showQFU) {
-			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,gettext(_T("_@M2179_")));
+			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken(2179));
 			#ifndef DITHER
 			icolor=RGB_GREEN;
 			#else
@@ -969,11 +969,11 @@ label_HSI:
 		if(ValidTaskPoint(ActiveTaskPoint)) {
 			if(Task[ActiveTaskPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveTaskPoint].Index].Name);
 			else {
-				_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+				_tcscpy(Buffer,MsgToken(912)); // [no dest]
 				icolor=AMBERCOLOR;
 			}
 		} else {
-			_tcscpy(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
+			_tcscpy(Buffer,MsgToken(912)); // [no dest]
 			icolor=AMBERCOLOR;
 		}
 	}

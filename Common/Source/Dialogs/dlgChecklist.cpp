@@ -91,7 +91,7 @@ static void NextPage(WndForm* pForm, int Step){
 
   switch(nLists) {
 	case 0:
-		_stprintf(buffer, _T("%s %s"),NoteModeTitle,gettext(TEXT("_@M1750_"))); // empty
+		_stprintf(buffer, _T("%s %s"),NoteModeTitle,MsgToken(1750)); // empty
 		break;
 	case 1:
 		_stprintf(buffer, _T("%s"),NoteModeTitle); 
@@ -391,7 +391,7 @@ bool LoadChecklist(short checklistmode) {
 		LocalPath(filename, TEXT(LKD_CONF));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CHECKLIST));
-		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M878_")));  // notepad
+		_stprintf(NoteModeTitle,_T("%s"),MsgToken(878));  // notepad
 
    		if (LoadUtfChecklist(filename,false)) return true;
                 // if no user file, look for demo file
@@ -404,14 +404,14 @@ bool LoadChecklist(short checklistmode) {
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_LOGBOOKTXT));
-		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
+		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
    		 return LoadUtfChecklist(filename,true);
 	// logbook LST
 	case 2:
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_LOGBOOKLST));
-		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
+		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
 		return LoadUtfChecklist(filename,true);
 		break;
 	case 3:

@@ -38,16 +38,16 @@ void UpdateAnalysis(WndForm* pForm){
     case ANALYSIS_PAGE_BAROGRAPH:
       _stprintf(sTmp, TEXT("%s: %s"),
 	// LKTOKEN  _@M93_ = "Analysis" 
-                gettext(TEXT("_@M93_")), 
+                MsgToken(93), 
 	// LKTOKEN  _@M127_ = "Barograph" 
-                gettext(TEXT("_@M127_")));
+                MsgToken(127));
       pForm->SetCaption(sTmp);
       if (flightstats.Altitude_Ceiling.sum_n<2) {
         _tcscpy(sTmp, TEXT("\0"));
       } else if (flightstats.Altitude_Ceiling.sum_n<4) {
         _stprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s"),
 	// LKTOKEN  _@M823_ = "Working band" 
-                  gettext(TEXT("_@M823_")),
+                  MsgToken(823),
                   flightstats.Altitude_Base.y_ave*ALTITUDEMODIFY,
                   flightstats.Altitude_Ceiling.y_ave*ALTITUDEMODIFY,
                   Units::GetAltitudeName());
@@ -56,12 +56,12 @@ void UpdateAnalysis(WndForm* pForm){
 
         _stprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s\r\n\r\n%s:\r\n  %.0f %s/hr"),
 	// LKTOKEN  _@M823_ = "Working band" 
-                  gettext(TEXT("_@M823_")),
+                  MsgToken(823),
                   flightstats.Altitude_Base.y_ave*ALTITUDEMODIFY,
                   flightstats.Altitude_Ceiling.y_ave*ALTITUDEMODIFY,
                   Units::GetAltitudeName(),
 	// LKTOKEN  _@M165_ = "Ceiling trend" 
-                  gettext(TEXT("_@M165_")),
+                  MsgToken(165),
                   flightstats.Altitude_Ceiling.m*ALTITUDEMODIFY,
                   Units::GetAltitudeName());
       }
@@ -71,9 +71,9 @@ void UpdateAnalysis(WndForm* pForm){
     case ANALYSIS_PAGE_CLIMB:
       _stprintf(sTmp, TEXT("%s: %s"), 
 	// LKTOKEN  _@M93_ = "Analysis" 
-                gettext(TEXT("_@M93_")),
+                MsgToken(93),
 	// LKTOKEN  _@M182_ = "Climb" 
-                gettext(TEXT("_@M182_")));
+                MsgToken(182));
       pForm->SetCaption(sTmp);
 
       if (flightstats.ThermalAverage.sum_n==0) {
@@ -81,18 +81,18 @@ void UpdateAnalysis(WndForm* pForm){
       } else if (flightstats.ThermalAverage.sum_n==1) {
         _stprintf(sTmp, TEXT("%s:\r\n  %3.1f %s"),
 	// LKTOKEN  _@M116_ = "Av climb" 
-                  gettext(TEXT("_@M116_")),
+                  MsgToken(116),
                   flightstats.ThermalAverage.y_ave*LIFTMODIFY,
                   Units::GetVerticalSpeedName()
                   );
       } else {
         _stprintf(sTmp, TEXT("%s:\r\n  %3.1f %s\r\n\r\n%s:\r\n  %3.2f %s"),
 	// LKTOKEN  _@M116_ = "Av climb" 
-                  gettext(TEXT("_@M116_")),
+                  MsgToken(116),
                   flightstats.ThermalAverage.y_ave*LIFTMODIFY,
                   Units::GetVerticalSpeedName(),                    
 	// LKTOKEN  _@M181_ = "Climb trend" 
-                  gettext(TEXT("_@M181_")),
+                  MsgToken(181),
                   flightstats.ThermalAverage.m*LIFTMODIFY,
                   Units::GetVerticalSpeedName()
                   );
@@ -104,9 +104,9 @@ void UpdateAnalysis(WndForm* pForm){
     case ANALYSIS_PAGE_WIND:
       _stprintf(sTmp, TEXT("%s: %s"), 
 	// LKTOKEN  _@M93_ = "Analysis" 
-                gettext(TEXT("_@M93_")),
+                MsgToken(93),
 	// LKTOKEN  _@M820_ = "Wind at Altitude" 
-                gettext(TEXT("_@M820_")));
+                MsgToken(820));
       pForm->SetCaption(sTmp);
       _stprintf(sTmp, TEXT(" "));
       waInfo->SetCaption(sTmp);
@@ -134,18 +134,18 @@ void UpdateAnalysis(WndForm* pForm){
   case ANALYSIS_PAGE_TEMPTRACE:
     _stprintf(sTmp, TEXT("%s: %s"), 
 	// LKTOKEN  _@M93_ = "Analysis" 
-              gettext(TEXT("_@M93_")),
+              MsgToken(93),
 	// LKTOKEN  _@M701_ = "Temp trace" 
-              gettext(TEXT("_@M701_")));
+              MsgToken(701));
     pForm->SetCaption(sTmp);
 
     _stprintf(sTmp, TEXT("%s:\r\n  %5.0f %s\r\n\r\n%s:\r\n  %5.0f %s\r\n"),
 	// LKTOKEN  _@M714_ = "Thermal height" 
-	      gettext(TEXT("_@M714_")),
+	      MsgToken(714),
 	      CuSonde::thermalHeight*ALTITUDEMODIFY,
 	      Units::GetAltitudeName(),
 	// LKTOKEN  _@M187_ = "Cloud base" 
-	      gettext(TEXT("_@M187_")),
+	      MsgToken(187),
 	      CuSonde::cloudBase*ALTITUDEMODIFY,
 	      Units::GetAltitudeName());
 
@@ -154,9 +154,9 @@ void UpdateAnalysis(WndForm* pForm){
   case ANALYSIS_PAGE_TASK_SPEED:
     _stprintf(sTmp, TEXT("%s: %s"), 
 	// LKTOKEN  _@M93_ = "Analysis" 
-              gettext(TEXT("_@M93_")),
+              MsgToken(93),
 	// LKTOKEN  _@M697_ = "Task speed" 
-              gettext(TEXT("_@M697_")));
+              MsgToken(697));
     pForm->SetCaption(sTmp);
     waInfo->SetCaption(TEXT(""));
     break;
@@ -169,9 +169,9 @@ void UpdateAnalysis(WndForm* pForm){
 
     _stprintf(sTmp, TEXT("%s: %s %.0f%s %s"),
 	// LKTOKEN  _@M93_ = "Analysis" 
-              gettext(TEXT("_@M93_")),
+              MsgToken(93),
 	// LKTOKEN  _@M699_ = "Task" 
-              gettext(TEXT("_@M699_")),
+              MsgToken(699),
        		  DISTANCEMODIFY*CALCULATED_INFO.TaskTotalDistance,
         	  Units::GetDistanceName(),
         	  FAI);
@@ -181,7 +181,7 @@ void UpdateAnalysis(WndForm* pForm){
 
     if (!ValidTaskPoint(ActiveTaskPoint)) {
 	// LKTOKEN  _@M476_ = "No task" 
-      _tcscpy(sTmp, gettext(TEXT("_@M476_")));
+      _tcscpy(sTmp, MsgToken(476));
     } else 
    {
       TCHAR timetext1[100];
@@ -194,17 +194,17 @@ void UpdateAnalysis(WndForm* pForm){
           _stprintf(sTmp, 
                     TEXT("%s:\r\n  %s\r\n%s:\r\n  %s\r\n%s:\r\n  %5.0f %s\r\n%s%.0f %s\r\n"), // 100429
 	// LKTOKEN  _@M698_ = "Task to go" 
-                    gettext(TEXT("_@M698_")),
+                    MsgToken(698),
                     timetext1,
 	// LKTOKEN  _@M42_ = "AAT to go" 
-                    gettext(TEXT("_@M42_")),
+                    MsgToken(42),
                     timetext2,
 	// LKTOKEN  _@M242_ = "Dist to go" 
-                    gettext(TEXT("_@M242_")),
+                    MsgToken(242),
                     DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance,
                     Units::GetDistanceName(),
 	// LKTOKEN  _@M626_ = "Sp " 
-                    gettext(TEXT("_@M626_")),
+                    MsgToken(626),
                     TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed,
                     Units::GetTaskSpeedName()		
                     );
@@ -212,17 +212,17 @@ void UpdateAnalysis(WndForm* pForm){
           _stprintf(sTmp, 
                     TEXT("%s: %s\r\n%s: %s\r\n%s: %5.0f %s\r\n%s: %5.0f %s \r\n"),
 	// LKTOKEN  _@M698_ = "Task to go" 
-                    gettext(TEXT("_@M698_")),
+                    MsgToken(698),
                     timetext1,
 	// LKTOKEN  _@M42_ = "AAT to go" 
-                    gettext(TEXT("_@M42_")),
+                    MsgToken(42),
                     timetext2,
 	// LKTOKEN  _@M242_ = "Dist to go" 
-                    gettext(TEXT("_@M242_")),
+                    MsgToken(242),
                     DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance,
                     Units::GetDistanceName(),
 	// LKTOKEN  _@M681_ = "Targ.speed" 
-                    gettext(TEXT("_@M681_")),
+                    MsgToken(681),
                     TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed,
                     Units::GetTaskSpeedName()		
                     );
@@ -234,10 +234,10 @@ void UpdateAnalysis(WndForm* pForm){
         		  Units::GetDistanceName(),
         		  FAI ,
 	// LKTOKEN  _@M698_ = "Task to go" 
-                  gettext(TEXT("_@M698_")),
+                  MsgToken(698),
                   timetext1,
 	// LKTOKEN  _@M242_ = "Dist to go" 
-                  gettext(TEXT("_@M242_")),
+                  MsgToken(242),
                   DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceToGo,
                   Units::GetDistanceName()
         );
@@ -248,9 +248,9 @@ void UpdateAnalysis(WndForm* pForm){
   case ANALYSIS_PAGE_CONTEST:
     _stprintf(sTmp, TEXT("%s: %s - %s"), 
               // LKTOKEN  _@M93_ = "Analysis" 
-              gettext(TEXT("_@M93_")),
+              MsgToken(93),
               // LKTOKEN  _@M1450_ = "Contest" 
-              gettext(TEXT("_@M1450_")),
+              MsgToken(1450),
               CContestMgr::TypeToString(contestType));
     pForm->SetCaption(sTmp);
     
@@ -294,7 +294,7 @@ void UpdateAnalysis(WndForm* pForm){
           _stprintf(distStr, _T("%.1f %s\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
 
         if(typeFAITriangle && bFAI )
-          _stprintf(speedStr, _T("%s%-.1f %s\r\n(%.1f %%)\r\n"),gettext(TEXT("_@M1508_")),  DISTANCEMODIFY * fCPDist, Units::GetDistanceName(),fCPDist/fDist*100.0);
+          _stprintf(speedStr, _T("%s%-.1f %s\r\n(%.1f %%)\r\n"),MsgToken(1508),  DISTANCEMODIFY * fCPDist, Units::GetDistanceName(),fCPDist/fDist*100.0);
         else
           _stprintf(speedStr, TEXT("%.1f %s\r\n"),TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
         TCHAR timeTempStr[50];
@@ -302,7 +302,7 @@ void UpdateAnalysis(WndForm* pForm){
         TCHAR timeStr[50];
 
         if( typeFAITriangle && bFAI && ISPARAGLIDER)
-          _stprintf(timeStr, _T("\r\n%s%-.1f %s\r\n(%.1f %%)\r\n"),gettext(TEXT("_@M1511_")), DISTANCEMODIFY * fB_CPDist, Units::GetDistanceName(), fB_CPDist/fDist*100.0); //_@M1511_ = "B:"
+          _stprintf(timeStr, _T("\r\n%s%-.1f %s\r\n(%.1f %%)\r\n"),MsgToken(1511), DISTANCEMODIFY * fB_CPDist, Units::GetDistanceName(), fB_CPDist/fDist*100.0); //_@M1511_ = "B:"
         else
           _stprintf(timeStr, _T("%s\r\n"), timeTempStr);
 
@@ -340,7 +340,7 @@ void UpdateAnalysis(WndForm* pForm){
       else {
         _stprintf(sTmp, TEXT("%s\r\n"),
                   // LKTOKEN  _@M477_ = "No valid path" 
-                  gettext(TEXT("_@M477_")));
+                  MsgToken(477));
       }
       waInfo->SetCaption(sTmp);
     }

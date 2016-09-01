@@ -220,7 +220,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     //Print the current track indication
     TCHAR Buffer[LKSIZEBUFFERVALUE];
     Surface.SelectObject(LK8InfoSmallFont);
-    _stprintf(Buffer, TEXT("%03d%s"),(int)round(DrawInfo.TrackBearing),gettext(_T("_@M2179_")));
+    _stprintf(Buffer, TEXT("%03d%s"),(int)round(DrawInfo.TrackBearing),MsgToken(2179));
     #ifndef DITHER
     LKWriteText(Surface,Buffer,posTRKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_RED,false);
     #else
@@ -263,7 +263,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             const double varioFtMin=DerivedDrawInfo.Vario*TOFEETPERMINUTE; //Convert vertical speed to Ft/min
 
             //Print vertical speed in Ft/min
-            _tcscpy(Buffer,gettext(TEXT("_@M784_"))); //"Vario"
+            _tcscpy(Buffer,MsgToken(784)); //"Vario"
             Surface.SelectObject(LK8PanelSmallFont);
             #ifndef DITHER
             LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);
@@ -377,7 +377,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
 
         //Print the desired course
         Surface.SelectObject(LK8InfoSmallFont);
-        _stprintf(Buffer, TEXT("%03d%s"),(int)round(course),gettext(_T("_@M2179_")));
+        _stprintf(Buffer, TEXT("%03d%s"),(int)round(course),MsgToken(2179));
         #ifndef DITHER
         LKWriteText(Surface,Buffer,posDTKx,posTRKy,WTMODE_NORMAL,WTALIGN_CENTER,RGB_GREEN,false);
         #else
@@ -538,7 +538,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
 
             //Print the actual bearing to next WayPoint
             Surface.SelectObject(LK8InfoSmallFont);
-            _stprintf(Buffer, TEXT("%03d%s"),(int)round(DerivedDrawInfo.WaypointBearing),gettext(_T("_@M2179_")));
+            _stprintf(Buffer, TEXT("%03d%s"),(int)round(DerivedDrawInfo.WaypointBearing),MsgToken(2179));
             #ifndef DITHER
             LKWriteText(Surface,Buffer,posDTKx,posBRGy+NIBLSCALE(2),WTMODE_NORMAL,WTALIGN_CENTER,RGB_MAGENTA,false);
             #else

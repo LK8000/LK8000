@@ -215,9 +215,9 @@ static void SetValues(WndForm* wf) {
 	TCHAR capbuffer[250];
 	_stprintf(capbuffer,_T("%s ("),airspace_copy.Name());
         if (airspace_copy.Enabled()) {
-        	_tcscat(capbuffer,gettext(TEXT("_@M1643_"))); // ENABLED
+        	_tcscat(capbuffer,MsgToken(1643)); // ENABLED
         } else {
-        	_tcscat(capbuffer,gettext(TEXT("_@M1600_"))); // DISABLED
+        	_tcscat(capbuffer,MsgToken(1600)); // DISABLED
         }
         _tcscat(capbuffer,_T(")")); // DISABLED
 	wf->SetCaption(capbuffer);
@@ -226,7 +226,7 @@ static void SetValues(WndForm* wf) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
-	  _stprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("FLY")));
+	  _stprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), TEXT("FLY"));
 /*
 	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
 		_stprintf(buffer,TEXT("%s"),airspace_copy.Name());
@@ -235,7 +235,7 @@ static void SetValues(WndForm* wf) {
 			                          ,airspace_copy.Name());     // NAME_SIZE          30   => max. 30 char
 */
 	} else {
-	  _stprintf(buffer,TEXT("%s %s"), gettext(TEXT("NOFLY")), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()));
+	  _stprintf(buffer,TEXT("%s %s"), TEXT("NOFLY"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()));
 	}
 
 	wp->SetText( buffer );
@@ -263,14 +263,14 @@ static void SetValues(WndForm* wf) {
     Units::FormatUserDistance(abs(hdist), buffer, 20);
     if (inside) {
 	  // LKTOKEN  _@M359_ = "Inside" 
-      wp->SetCaption(gettext(TEXT("_@M359_")));
+      wp->SetCaption(MsgToken(359));
     }
     if (hdist < 0) {
 	  // LKTOKEN _@M1257_ "to leave"
-	  _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), gettext(_T("_@M2179_")), gettext(TEXT("_@M1257_")));
+	  _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken(2179), MsgToken(1257));
     } else {
 	  // LKTOKEN _@M1258_ "to enter"
-	  _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), gettext(_T("_@M2179_")), gettext(TEXT("_@M1258_")));
+	  _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken(2179), MsgToken(1258));
 	}
     wp->SetText(buffer2);
     wp->RefreshDisplay();
@@ -304,22 +304,22 @@ static void SetValues(WndForm* wf) {
 	  switch (airspace_copy.WarningLevel()) {
 		default:
 		  // LKTOKEN _@M765_ "Unknown"
-		  wp->SetText(gettext(TEXT("_@M765_")));
+		  wp->SetText(MsgToken(765));
 		  break;
 		  
 		case awNone:
 		  // LKTOKEN _@M479_ "None"
-  		  wp->SetText(gettext(TEXT("_@M479_")));
+  		  wp->SetText(MsgToken(479));
 		  break;
 
 		case awYellow:
 			// LKTOKEN _@M1255_ "YELLOW WARNING"
-			wp->SetText(gettext(TEXT("_@M1255_")));
+			wp->SetText(MsgToken(1255));
 		  break;
 		
 		case awRed:
 			// LKTOKEN _@M1256_ "RED WARNING"
-			wp->SetText(gettext(TEXT("_@M1256_")));
+			wp->SetText(MsgToken(1256));
 		  break;
 	  }//sw
 	  wp->RefreshDisplay();
@@ -331,28 +331,28 @@ static void SetValues(WndForm* wf) {
         switch (airspace_copy.WarningAckLevel()) {
           default:
             // LKTOKEN _@M765_ "Unknown"
-            wp->SetText(gettext(TEXT("_@M765_")));
+            wp->SetText(MsgToken(765));
             break;
             
           case awNone:
             // LKTOKEN _@M479_ "None"
-            wp->SetText(gettext(TEXT("_@M479_")));
+            wp->SetText(MsgToken(479));
             break;
 
           case awYellow:
               // LKTOKEN _@M1267_ "Yellow acknowledged"
-              wp->SetText(gettext(TEXT("_@M1267_")));
+              wp->SetText(MsgToken(1267));
             break;
           
           case awRed:
               // LKTOKEN _@M1268_ "Red acknowledged"
-              wp->SetText(gettext(TEXT("_@M1268_")));
+              wp->SetText(MsgToken(1268));
             break;
 
         }//sw
       } else {
           // LKTOKEN _@M1269_ "Disabled"
-          wp->SetText(gettext(TEXT("_@M1269_")));
+          wp->SetText(MsgToken(1269));
       }
 	  wp->RefreshDisplay();
   }
@@ -362,10 +362,10 @@ static void SetValues(WndForm* wf) {
   if (wb) {
 	if (airspace_copy.Flyzone()) {
 	  // LKTOKEN _@M1271_ "NOFLY"
-	  wb->SetCaption(gettext(TEXT("_@M1271_")));
+	  wb->SetCaption(MsgToken(1271));
 	} else {
 	  // LKTOKEN _@M1270_ "FLY"
-	  wb->SetCaption(gettext(TEXT("_@M1270_")));
+	  wb->SetCaption(MsgToken(1270));
 	}
 	wb->Redraw();
   }
@@ -373,9 +373,9 @@ static void SetValues(WndForm* wf) {
   wb = (WndButton*)wf->FindByName(TEXT("cmdSelect"));
   if (wb) {
 	if (airspace_copy.Selected()) {
-	  wb->SetCaption(gettext(TEXT("_@M1656_"))); // SELECTED!
+	  wb->SetCaption(MsgToken(1656)); // SELECTED!
 	} else {
-	  wb->SetCaption(gettext(TEXT("_@M1654_"))); // SELECT
+	  wb->SetCaption(MsgToken(1654)); // SELECT
 	}
 	wb->Redraw();
   }
@@ -384,10 +384,10 @@ static void SetValues(WndForm* wf) {
   if (wb) {
     if (airspace_copy.Enabled()) {
       // LKTOKEN _@M1283_ "Disable"
-      wb->SetCaption(gettext(TEXT("_@M1283_")));
+      wb->SetCaption(MsgToken(1283));
     } else {
       // LKTOKEN _@M1282_ "Enable"
-      wb->SetCaption(gettext(TEXT("_@M1282_")));
+      wb->SetCaption(MsgToken(1282));
     }
     wb->Redraw();
   }

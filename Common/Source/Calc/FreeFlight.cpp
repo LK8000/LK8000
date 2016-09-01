@@ -129,7 +129,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
           if(!nowGearWarning) {
               if(dist < 3700) { // show gear warning if 2Nautical Miles close to landable
 	          LKSound(_T("LK_GEARWARNING.WAV"));
-		  DoStatusMessage(gettext(TEXT("_@M1834_")),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
+		  DoStatusMessage(MsgToken(1834),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
 		  nowGearWarning=true;
 		  noMessages++;
 
@@ -329,7 +329,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   #if ( WINDOWSPC==0 )
   if (SIMMODE)
   #endif
-  DoStatusMessage(gettext(TEXT("_@M1452_")),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
+  DoStatusMessage(MsgToken(1452),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
 
   confirmbacktrue:
   // Always sound
@@ -362,7 +362,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 #endif
         if (WayPointList[RESWP_FREEFLY].Comment) {
             _sntprintf(WayPointList[RESWP_FREEFLY].Comment, 99, _T("%s: %s  @%.0f%s QNH"),
-                    gettext(_T("_@M1754_")), // Free flight start
+                    MsgToken(1754), // Free flight start
                     Temp,
                     ALTITUDEMODIFY * Calculated->FreeFlightStartQNH,
                     Units::GetAltitudeName());

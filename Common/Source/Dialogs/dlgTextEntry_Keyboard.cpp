@@ -55,7 +55,7 @@ static void UpdateTextboxProp(void)
     wp->SetText(edittext);
 
     if(WaypointKeyRed)
-      wp->SetCaption(gettext(TEXT("_@M949_")));
+      wp->SetCaption(MsgToken(949));
     else
       wp->SetCaption(TEXT("Text"));
   }
@@ -407,7 +407,7 @@ IdenticalIndex = -1;
   wp = (WndProperty*)wf->FindByName(TEXT("prpMatch"));
   if (wp)
   {
-    _stprintf(Found,_T("%s:%i"),gettext(TEXT("_@M948_")),EqCnt); /* _@M948_ Found */
+    _stprintf(Found,_T("%s:%i"),MsgToken(948),EqCnt); /* _@M948_ Found */
     wp->SetCaption(Found);
   }
 }

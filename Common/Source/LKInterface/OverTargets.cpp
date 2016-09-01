@@ -118,23 +118,23 @@ TCHAR *GetOvertargetHeader(void) {
 
   if (DoInit[MDI_GETOVERTARGETHEADER]) {
 	// LKTOKEN _@M1323_ "T>"
-	LK_tcsncpy(targetheader[OVT_TASK], gettext(TEXT("_@M1323_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_TASK], MsgToken(1323), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1323_ "T>"
-	LK_tcsncpy(targetheader[OVT_TASKCENTER], gettext(TEXT("_@M1323_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_TASKCENTER], MsgToken(1323), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1324_ "B>"
-	LK_tcsncpy(targetheader[OVT_BALT], gettext(TEXT("_@M1324_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_BALT], MsgToken(1324), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1325_ "1>"
-	LK_tcsncpy(targetheader[OVT_ALT1], gettext(TEXT("_@M1325_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_ALT1], MsgToken(1325), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1326_ "2>"
-	LK_tcsncpy(targetheader[OVT_ALT2], gettext(TEXT("_@M1326_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_ALT2], MsgToken(1326), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1327_ "H>"
-	LK_tcsncpy(targetheader[OVT_HOME], gettext(TEXT("_@M1327_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_HOME], MsgToken(1327), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1328_ "L>"
-	LK_tcsncpy(targetheader[OVT_THER], gettext(TEXT("_@M1328_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_THER], MsgToken(1328), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1329_ "M"
-	LK_tcsncpy(targetheader[OVT_MATE], gettext(TEXT("_@M1329_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_MATE], MsgToken(1329), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1330_ "F>"
-	LK_tcsncpy(targetheader[OVT_FLARM], gettext(TEXT("_@M1330_")), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_FLARM], MsgToken(1330), OVERTARGETHEADER_MAX);
 
 	for (int i=0; i<OVT_MAXMODE+1; i++) targetheader[i][OVERTARGETHEADER_MAX]='\0';
 	DoInit[MDI_GETOVERTARGETHEADER]=false;

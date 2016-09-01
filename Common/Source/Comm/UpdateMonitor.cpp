@@ -114,7 +114,7 @@ void NMEAParser::UpdateMonitor(void)
 	{
 		MessageCnt++;
 		StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
-		DoStatusMessage(gettext(TEXT("_@M947_"))); // _@M947_ "FLARM SIGNAL LOST"
+		DoStatusMessage(MsgToken(947)); // _@M947_ "FLARM SIGNAL LOST"
 	}
 	GPS_INFO.FLARM_Available = false;
 	GPS_INFO.FLARM_HW_Version =0.0;

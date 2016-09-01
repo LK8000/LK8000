@@ -268,7 +268,7 @@ bool ParseAirports(XMLNode &airportsNode)
             double dir=_tcstod(dataStr,nullptr);
 
             // Add runway to comments
-            comments<<name<<" "<<surface<<" "<<length<<"m "<<dir<<gettext(_T("_@M2179_"))<<std::endl;
+            comments<<name<<" "<<surface<<" "<<length<<"m "<<dir<<MsgToken(2179)<<std::endl;
 
             // Check if we found the longest one
             if(length>maxlength) {
@@ -390,7 +390,7 @@ bool ParseNavAids(XMLNode &navAidsNode)
         if(node.isEmpty()) continue;
         double value=0;
         if(GetValue(node,TEXT("RANGE"),value)) comments<<"Range: "<<value<<" NM ";
-        if(GetValue(node,TEXT("DECLINATION"),value)) comments<<"Declination: "<<value<<gettext(_T("_@M2179_"));
+        if(GetValue(node,TEXT("DECLINATION"),value)) comments<<"Declination: "<<value<<MsgToken(2179);
         if(GetContent(node,TEXT("ALIGNEDTOTRUENORTH"),dataStr)) {
             if(_tcsicmp(dataStr,_T("TRUE"))==0) comments<<" True north";
             else if(_tcsicmp(dataStr,_T("TRUE"))==0) comments<<" Magnetic north";

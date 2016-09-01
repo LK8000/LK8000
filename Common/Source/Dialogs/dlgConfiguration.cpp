@@ -229,50 +229,50 @@ static void UpdateButtons(void) {
     _tcscpy(val,PilotName_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, MsgToken(7));
     }
 	// LKTOKEN  _@M524_ = "Pilot name" 
-    _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M524_")), val);
+    _stprintf(text,TEXT("%s: %s"), MsgToken(524), val);
     buttonPilotName->SetCaption(text);
   }
   if (buttonAircraftType) {
     _tcscpy(val,AircraftType_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, MsgToken(7));
     }
 	// LKTOKEN  _@M59_ = "Aircraft type" 
-    _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M59_")), val);
+    _stprintf(text,TEXT("%s: %s"), MsgToken(59), val);
     buttonAircraftType->SetCaption(text);
   }
   if (buttonAircraftRego) {
     _tcscpy(val,AircraftRego_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, MsgToken(7));
     }
 	// LKTOKEN  _@M57_ = "Aircraft Reg" 
-    _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M57_")), val);
+    _stprintf(text,TEXT("%s: %s"), MsgToken(57), val);
     buttonAircraftRego->SetCaption(text);
   }
   if (buttonCompetitionClass) {
     _tcscpy(val,CompetitionClass_Config);
     if (_tcslen(val)<=0) {
       // LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, MsgToken(7));
     }
 	// LKTOKEN  _@M936_ = "Competition Class" 
-    _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M936_")), val);
+    _stprintf(text,TEXT("%s: %s"), MsgToken(936), val);
     buttonCompetitionClass->SetCaption(text);
   }
   if (buttonCompetitionID) {
     _tcscpy(val,CompetitionID_Config);
     if (_tcslen(val)<=0) {
       // LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, gettext(TEXT("_@M7_")));
+      _tcscpy(val, MsgToken(7));
     }
 	// LKTOKEN  _@M938_ = "Competition ID" 
-    _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M938_")), val);
+    _stprintf(text,TEXT("%s: %s"), MsgToken(938), val);
     buttonCompetitionID->SetCaption(text);
   }
 
@@ -305,7 +305,7 @@ static void NextPage(int Step){
     LKASSERT((size_t)config_page[configMode] < array_size(ConfigPageNames[0]));
     
     const ConfigPageNames_t* current = ConfigPageNames[configMode];
-    const TCHAR* szCaption = gettext(current[config_page[configMode]].szCpation);
+    const TCHAR* szCaption = LKGetText(current[config_page[configMode]].szCpation);
     if (!szCaption || (_tcslen(szCaption) <= 0)) {
         szCaption = current[config_page[configMode]].szCpation;
     }
@@ -703,9 +703,9 @@ static void OnPaste(WndButton* pWnd) {
 
   if(MessageBoxX(
 	// LKTOKEN  _@M510_ = "Overwrite?" 
-		 gettext(TEXT("_@M510_")),
+		 MsgToken(510),
 	// LKTOKEN  _@M354_ = "InfoBox paste" 
-		 gettext(TEXT("_@M354_")),
+		 MsgToken(354),
 		 mbYesNo) == IdYes) {
 
     for (int item=0; item<8; item++) {
@@ -785,9 +785,9 @@ static void OnWaypointNewClicked(WndButton* pWnd){
   if ( WayPointList.size()<=NUMRESWP) {
 	MessageBoxX(
 	// LKTOKEN  _@M478_ = "No waypoint file selected, cannot save." 
-	gettext(TEXT("_@M478_")),
+	MsgToken(478),
 	// LKTOKEN  _@M457_ = "New Waypoint" 
-               gettext(TEXT("_@M457_")),
+               MsgToken(457),
                mbOk);
 
 	return; 
@@ -862,9 +862,9 @@ static void OnWaypointEditClicked(WndButton* pWnd){
 	if ( WayPointList[res].Format == LKW_COMPE) {      // 100212
 		MessageBoxX(
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
-		gettext(TEXT("_@M716_")),
+		MsgToken(716),
 	// LKTOKEN  _@M194_ = "CompeGPS Waypoint" 
-                gettext(TEXT("_@M194_")),
+                MsgToken(194),
                 mbOk);
 
 		return;
@@ -874,9 +874,9 @@ static void OnWaypointEditClicked(WndButton* pWnd){
 	if ( WayPointList[res].Format == LKW_VIRTUAL) {      // 100212
 		MessageBoxX(
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
-		gettext(TEXT("_@M716_")),
+		MsgToken(716),
 	// LKTOKEN  _@M775_ = "VIRTUAL Waypoint" 
-                gettext(TEXT("_@M775_")),
+                MsgToken(775),
                 mbOk);
 
 		return;
@@ -893,9 +893,9 @@ static void AskWaypointSave(void) {
 
     if(MessageBoxX(
 	// LKTOKEN  _@M810_ = "Waypoints excluded, save anyway?" 
-                   gettext(TEXT("_@M810_")),
+                   MsgToken(810),
 	// LKTOKEN  _@M811_ = "Waypoints outside terrain" 
-                   gettext(TEXT("_@M811_")),
+                   MsgToken(811),
                    mbYesNo) == IdYes) {
       
       WaypointWriteFiles();
@@ -927,23 +927,23 @@ static void OnWaypointDeleteClicked(WndButton* pWnd){
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE ) { // 100212
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
-		MessageBoxX(gettext(TEXT("_@M716_")),
+		MessageBoxX(MsgToken(716),
 	// LKTOKEN  _@M194_ = "CompeGPS Waypoint" 
-			gettext(TEXT("_@M194_")),
+			MsgToken(194),
 			mbOk);
 		return;
 	} else 
 	#endif
 		if ( WayPointList[res].Format == LKW_VIRTUAL ) { // 100212
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
-			MessageBoxX(gettext(TEXT("_@M716_")),
+			MessageBoxX(MsgToken(716),
 	// LKTOKEN  _@M775_ = "VIRTUAL Waypoint" 
-				gettext(TEXT("_@M775_")),
+				MsgToken(775),
 				mbOk);
 			return;
 		} else 
 	// LKTOKEN  _@M229_ = "Delete Waypoint?" 
-	if(MessageBoxX(WayPointList[res].Name, gettext(TEXT("_@M229_")), 
+	if(MessageBoxX(WayPointList[res].Name, MsgToken(229), 
 	mbYesNo) == IdYes) {
 		LockTaskData();
 		WayPointList[res].FileNum = -1;
@@ -1115,7 +1115,7 @@ static void SetInfoBoxSelector(int item, int mode)
   if (wp) {
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(gettext(Data_Options[i].Description));
+      dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
     dfe->Sort(0);
 
@@ -1402,12 +1402,12 @@ static void setVariables(void) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M79_ = "All on" 
-    dfe->addEnumText(gettext(TEXT("_@M79_")));
+    dfe->addEnumText(MsgToken(79));
 	// LKTOKEN  _@M184_ = "Clip" 
-    dfe->addEnumText(gettext(TEXT("_@M184_")));
-    dfe->addEnumText(gettext(TEXT("Auto")));
+    dfe->addEnumText(MsgToken(184));
+    dfe->addEnumText(TEXT("Auto"));
 	// LKTOKEN  _@M77_ = "All below" 
-    dfe->addEnumText(gettext(TEXT("_@M77_")));
+    dfe->addEnumText(MsgToken(77));
     dfe->Set(AltitudeMode_Config);
     wp->RefreshDisplay();
       wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
@@ -1421,14 +1421,14 @@ static void setVariables(void) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
-        dfe->addEnumText(gettext(TEXT("_@M941_")));
+        dfe->addEnumText(MsgToken(941));
 #ifdef HAVE_HATCHED_BRUSH
-        dfe->addEnumText(gettext(TEXT("_@M942_")));
-        dfe->addEnumText(gettext(TEXT("_@M945_")));
+        dfe->addEnumText(MsgToken(942));
+        dfe->addEnumText(MsgToken(945));
 #endif
         if (LKSurface::AlphaBlendSupported()) {
-            dfe->addEnumText(gettext(TEXT("_@M943_")));
-            dfe->addEnumText(gettext(TEXT("_@M946_")));
+            dfe->addEnumText(MsgToken(943));
+            dfe->addEnumText(MsgToken(946));
         }
     }
     dfe->Set((int)MapWindow::GetAirSpaceFillType());
@@ -1561,10 +1561,10 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 
-    dfe->addEnumText(gettext(TEXT("_@M955_"))); // Clear Type Compatible
-    dfe->addEnumText(gettext(TEXT("_@M956_"))); // Anti Aliasing
-    dfe->addEnumText(gettext(TEXT("_@M480_"))); // Normal
-    dfe->addEnumText(gettext(TEXT("_@M479_"))); // None
+    dfe->addEnumText(MsgToken(955)); // Clear Type Compatible
+    dfe->addEnumText(MsgToken(956)); // Anti Aliasing
+    dfe->addEnumText(MsgToken(480)); // Normal
+    dfe->addEnumText(MsgToken(479)); // None
     dfe->Set(FontRenderer);
     #ifdef __linux__
     wp->SetVisible(false);
@@ -1575,8 +1575,8 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpAspPermDisable"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("_@M968_"))); // _@M968_ "for this time only"
-    dfe->addEnumText(gettext(TEXT("_@M969_"))); // _@M969_ "permanent"
+    dfe->addEnumText(MsgToken(968)); // _@M968_ "for this time only"
+    dfe->addEnumText(MsgToken(969)); // _@M969_ "permanent"
     dfe->Set(AspPermanentChanged);
     wp->RefreshDisplay();
   }
@@ -1586,9 +1586,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M382_ = "Landables only" 
-    dfe->addEnumText(gettext(TEXT("_@M382_")));
+    dfe->addEnumText(MsgToken(382));
 	// LKTOKEN  _@M380_ = "Landables and Turnpoints" 
-    dfe->addEnumText(gettext(TEXT("_@M380_")));
+    dfe->addEnumText(MsgToken(380));
     dfe->Set(SafetyAltitudeMode);
     wp->RefreshDisplay();
   }
@@ -1641,11 +1641,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableFLARMMap"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("_@M239_"))); // Disabled
-    dfe->addEnumText(gettext(TEXT("_@M259_"))); // Enabled
-    // dfe->addEnumText(gettext(TEXT("_@M959_"))); // OFF
-    // dfe->addEnumText(gettext(TEXT("_@M496_"))); // ON fixed
-    // dfe->addEnumText(gettext(TEXT("_@M497_"))); // ON scaled
+    dfe->addEnumText(MsgToken(239)); // Disabled
+    dfe->addEnumText(MsgToken(259)); // Enabled
+    // dfe->addEnumText(MsgToken(959)); // OFF
+    // dfe->addEnumText(MsgToken(496)); // ON fixed
+    // dfe->addEnumText(MsgToken(497)); // ON scaled
     dfe->Set((int)EnableFLARMMap);
     wp->RefreshDisplay();
   }
@@ -1654,29 +1654,29 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M454_ = "Names" 
-    dfe->addEnumText(gettext(TEXT("_@M454_")));
+    dfe->addEnumText(MsgToken(454));
 
 	// LKTOKEN  _@M488_ = "Numbers" 
-    dfe->addEnumText(gettext(TEXT("_@M488_")));
+    dfe->addEnumText(MsgToken(488));
 
 	// LKTOKEN  _@M453_ = "Names in task" 
-    dfe->addEnumText(gettext(TEXT("_@M453_")));
+    dfe->addEnumText(MsgToken(453));
 
 	// LKTOKEN  _@M301_ = "First 3" 
-    dfe->addEnumText(gettext(TEXT("_@M301_")));
+    dfe->addEnumText(MsgToken(301));
 
 	// LKTOKEN  _@M302_ = "First 5" 
-    dfe->addEnumText(gettext(TEXT("_@M302_")));
+    dfe->addEnumText(MsgToken(302));
 
 	// LKTOKEN  _@M838_ = "First 8" 
-    dfe->addEnumText(gettext(TEXT("_@M838_")));
+    dfe->addEnumText(MsgToken(838));
 	// LKTOKEN  _@M839_ = "First 10" 
-    dfe->addEnumText(gettext(TEXT("_@M839_")));
+    dfe->addEnumText(MsgToken(839));
 	// LKTOKEN  _@M840_ = "First 12" 
-    dfe->addEnumText(gettext(TEXT("_@M840_")));
+    dfe->addEnumText(MsgToken(840));
 
 	// LKTOKEN  _@M479_ = "None" 
-    dfe->addEnumText(gettext(TEXT("_@M479_")));
+    dfe->addEnumText(MsgToken(479));
     dfe->Set(DisplayTextType);
     wp->RefreshDisplay();
   }
@@ -1691,17 +1691,17 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M737_ = "Track up" 
-    dfe->addEnumText(gettext(TEXT("_@M737_")));
+    dfe->addEnumText(MsgToken(737));
 	// LKTOKEN  _@M483_ = "North up" 
-    dfe->addEnumText(gettext(TEXT("_@M483_")));
+    dfe->addEnumText(MsgToken(483));
 	// LKTOKEN  _@M482_ = "North circling" 
-    dfe->addEnumText(gettext(TEXT("_@M482_")));
+    dfe->addEnumText(MsgToken(482));
 	// LKTOKEN  _@M682_ = "Target circling" 
-    dfe->addEnumText(gettext(TEXT("_@M682_")));
+    dfe->addEnumText(MsgToken(682));
 	// LKTOKEN  _@M484_ = "North/track" 
-    dfe->addEnumText(gettext(TEXT("_@M484_")));
+    dfe->addEnumText(MsgToken(484));
 	// LKTOKEN  _@M481_ = "North Smart" 
-    dfe->addEnumText(gettext(TEXT("_@M481_"))); // 100417
+    dfe->addEnumText(MsgToken(481)); // 100417
     dfe->Set(DisplayOrientation_Config);
     wp->RefreshDisplay();
   }
@@ -1730,16 +1730,16 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M959_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M959_")));
+    dfe->addEnumText(MsgToken(959));
 	// LKTOKEN  _@M393_ = "Line" 
-    dfe->addEnumText(gettext(TEXT("_@M393_")));
+    dfe->addEnumText(MsgToken(393));
 	// LKTOKEN  _@M609_ = "Shade" 
-    dfe->addEnumText(gettext(TEXT("_@M609_")));
+    dfe->addEnumText(MsgToken(609));
     #ifdef GTL2
         // "Line+NextWP"
-    dfe->addEnumText(gettext(TEXT("_@M1805_")));
+    dfe->addEnumText(MsgToken(1805));
         // "Shade+NextWP"
-    dfe->addEnumText(gettext(TEXT("_@M1806_")));
+    dfe->addEnumText(MsgToken(1806));
     #endif
     dfe->Set(FinalGlideTerrain);
     wp->RefreshDisplay();
@@ -1775,12 +1775,12 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M418_ = "Manual" 
-    dfe->addEnumText(gettext(TEXT("_@M418_")));
+    dfe->addEnumText(MsgToken(418));
 	// LKTOKEN  _@M175_ = "Circling" 
-    dfe->addEnumText(gettext(TEXT("_@M175_")));
-    dfe->addEnumText(gettext(TEXT("ZigZag")));
+    dfe->addEnumText(MsgToken(175));
+    dfe->addEnumText(TEXT("ZigZag"));
 	// LKTOKEN  _@M149_ = "Both" 
-    dfe->addEnumText(gettext(TEXT("_@M149_")));
+    dfe->addEnumText(MsgToken(149));
     dfe->addEnumText(MsgToken(1793)); // External
 
     wp->GetDataField()->Set(AutoWindMode_Config);
@@ -1790,10 +1790,10 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("_@M290_")));  // Final Glide
-    dfe->addEnumText(gettext(TEXT("_@M1684_"))); // Average thermal
-    dfe->addEnumText(gettext(TEXT("_@M1685_"))); // Final + Average
-    dfe->addEnumText(gettext(TEXT("_@M262_")));  // Equivalent
+    dfe->addEnumText(MsgToken(290));  // Final Glide
+    dfe->addEnumText(MsgToken(1684)); // Average thermal
+    dfe->addEnumText(MsgToken(1685)); // Final + Average
+    dfe->addEnumText(MsgToken(262));  // Equivalent
     wp->GetDataField()->Set(AutoMcMode_Config);
     wp->RefreshDisplay();
   }
@@ -1802,11 +1802,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M100_ = "Ask" 
-    dfe->addEnumText(gettext(TEXT("_@M100_")));
+    dfe->addEnumText(MsgToken(100));
 	// LKTOKEN  _@M350_ = "Include" 
-    dfe->addEnumText(gettext(TEXT("_@M350_")));
+    dfe->addEnumText(MsgToken(350));
 	// LKTOKEN  _@M269_ = "Exclude" 
-    dfe->addEnumText(gettext(TEXT("_@M269_")));
+    dfe->addEnumText(MsgToken(269));
     wp->GetDataField()->Set(WaypointsOutOfRange);
     wp->RefreshDisplay();
   }
@@ -1869,11 +1869,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
-    dfe->addEnumText(gettext(TEXT("_@M667_")));
+    dfe->addEnumText(MsgToken(667));
 	// LKTOKEN  _@M455_ = "Nautical" 
-    dfe->addEnumText(gettext(TEXT("_@M455_")));
+    dfe->addEnumText(MsgToken(455));
 	// LKTOKEN  _@M436_ = "Metric" 
-    dfe->addEnumText(gettext(TEXT("_@M436_")));
+    dfe->addEnumText(MsgToken(436));
     dfe->Set((int)SpeedUnit_Config);
     wp->RefreshDisplay();
   }
@@ -1894,11 +1894,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
-    dfe->addEnumText(gettext(TEXT("_@M667_")));
+    dfe->addEnumText(MsgToken(667));
 	// LKTOKEN  _@M455_ = "Nautical" 
-    dfe->addEnumText(gettext(TEXT("_@M455_")));
+    dfe->addEnumText(MsgToken(455));
 	// LKTOKEN  _@M436_ = "Metric" 
-    dfe->addEnumText(gettext(TEXT("_@M436_")));
+    dfe->addEnumText(MsgToken(436));
     dfe->Set(TaskSpeedUnit_Config);
     wp->RefreshDisplay();
   }
@@ -1907,11 +1907,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
-    dfe->addEnumText(gettext(TEXT("_@M667_")));
+    dfe->addEnumText(MsgToken(667));
 	// LKTOKEN  _@M455_ = "Nautical" 
-    dfe->addEnumText(gettext(TEXT("_@M455_")));
+    dfe->addEnumText(MsgToken(455));
 	// LKTOKEN  _@M436_ = "Metric" 
-    dfe->addEnumText(gettext(TEXT("_@M436_")));
+    dfe->addEnumText(MsgToken(436));
     dfe->Set(DistanceUnit_Config);
     wp->RefreshDisplay();
   }
@@ -1919,8 +1919,8 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsAltitude"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("feet")));
-    dfe->addEnumText(gettext(TEXT("meters")));
+    dfe->addEnumText(TEXT("feet"));
+    dfe->addEnumText(TEXT("meters"));
     dfe->Set(AltitudeUnit_Config);
     wp->RefreshDisplay();
   }
@@ -1928,8 +1928,8 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLift"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("knots")));
-    dfe->addEnumText(gettext(TEXT("m/s")));
+    dfe->addEnumText(TEXT("knots"));
+    dfe->addEnumText(TEXT("m/s"));
     dfe->Set(LiftUnit_Config);
     wp->RefreshDisplay();
   }
@@ -1944,11 +1944,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M959_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M959_")));
+    dfe->addEnumText(MsgToken(959));
 	// LKTOKEN  _@M427_ = "Mark center" 
-    dfe->addEnumText(gettext(TEXT("_@M427_")));
+    dfe->addEnumText(MsgToken(427));
 	// LKTOKEN  _@M518_ = "Pan to center" 
-    dfe->addEnumText(gettext(TEXT("_@M518_")));
+    dfe->addEnumText(MsgToken(518));
     dfe->Set(EnableThermalLocator);
     wp->RefreshDisplay();
   }
@@ -1994,13 +1994,13 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M499_ = "Off" 
-    dfe->addEnumText(gettext(TEXT("_@M499_")));
+    dfe->addEnumText(MsgToken(499));
 	// LKTOKEN  _@M410_ = "Long" 
-    dfe->addEnumText(gettext(TEXT("_@M410_")));
+    dfe->addEnumText(MsgToken(410));
 	// LKTOKEN  _@M612_ = "Short" 
-    dfe->addEnumText(gettext(TEXT("_@M612_")));
+    dfe->addEnumText(MsgToken(612));
 	// LKTOKEN  _@M312_ = "Full" 
-    dfe->addEnumText(gettext(TEXT("_@M312_")));
+    dfe->addEnumText(MsgToken(312));
     dfe->Set(TrailActive_Config);
     wp->RefreshDisplay();
   }
@@ -2255,13 +2255,13 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M328_ = "Glider" 
-    dfe->addEnumText(gettext(TEXT("_@M328_")));
+    dfe->addEnumText(MsgToken(328));
 	// LKTOKEN  _@M520_ = "Paraglider/Delta" 
-    dfe->addEnumText(gettext(TEXT("_@M520_")));
+    dfe->addEnumText(MsgToken(520));
 	// LKTOKEN  _@M163_ = "Car" 
-    dfe->addEnumText(gettext(TEXT("_@M2148_")));
+    dfe->addEnumText(MsgToken(2148));
 	// LKTOKEN  _@M313_ = "GA Aircraft" 
-    dfe->addEnumText(gettext(TEXT("_@M313_")));
+    dfe->addEnumText(MsgToken(313));
     dfe->Set(AircraftCategory);
     wp->RefreshDisplay();
   }
@@ -2273,13 +2273,13 @@ DataField* dfe = wp->GetDataField();
     DataFieldEnum* dfe;
     dfe = wp->GetDataField();
 	// LKTOKEN  _@M768_ = "Use MacCready" 
-     dfe->addEnumText(gettext(TEXT("_@M768_")));
+     dfe->addEnumText(MsgToken(768));
 	// LKTOKEN  _@M90_ = "Always use MC=0" 
-     dfe->addEnumText(gettext(TEXT("_@M90_")));
+     dfe->addEnumText(MsgToken(90));
 	// LKTOKEN  _@M91_ = "Always use safety MC" 
-     dfe->addEnumText(gettext(TEXT("_@M91_")));
+     dfe->addEnumText(MsgToken(91));
 	// LKTOKEN  _@M769_ = "Use aver.efficiency" 
-     dfe->addEnumText(gettext(TEXT("_@M769_")));
+     dfe->addEnumText(MsgToken(769));
      dfe->Set(AltArrivMode);
     wp->RefreshDisplay();
   }
@@ -2289,9 +2289,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
+    dfe->addEnumText(MsgToken(239));
 	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
+    dfe->addEnumText(MsgToken(259));
     dfe->Set(CheckSum);
     wp->RefreshDisplay();
   }
@@ -2300,9 +2300,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M364_ = "Inverted" 
-    dfe->addEnumText(gettext(TEXT("_@M364_")));
+    dfe->addEnumText(MsgToken(364));
 	// LKTOKEN  _@M480_ = "Normal" 
-    dfe->addEnumText(gettext(TEXT("_@M480_")));
+    dfe->addEnumText(MsgToken(480));
     dfe->Set(IphoneGestures);
     wp->RefreshDisplay();
   }
@@ -2311,9 +2311,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M480_ = "Normal" 
-    dfe->addEnumText(gettext(TEXT("_@M480_")));
+    dfe->addEnumText(MsgToken(480));
 	// LKTOKEN  _@M529_ = "Polling" 
-    dfe->addEnumText(gettext(TEXT("_@M529_")));
+    dfe->addEnumText(MsgToken(529));
     dfe->Set(PollingMode);
     wp->RefreshDisplay();
   }
@@ -2323,23 +2323,23 @@ DataField* dfe = wp->GetDataField();
     TCHAR newtoken[150];
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
+    dfe->addEnumText(MsgToken(239));
 	// LKTOKEN  _@M782_ = "Vario rainbow" 
-    dfe->addEnumText(gettext(TEXT("_@M782_")));
+    dfe->addEnumText(MsgToken(782));
 	// LKTOKEN  _@M780_ = "Vario black" 
-    dfe->addEnumText(gettext(TEXT("_@M780_")));
+    dfe->addEnumText(MsgToken(780));
 	// LKTOKEN  _@M783_ = "Vario red+blue" 
-    dfe->addEnumText(gettext(TEXT("_@M783_")));
+    dfe->addEnumText(MsgToken(783));
 	// LKTOKEN  _@M781_ = "Vario green+red" 
-    dfe->addEnumText(gettext(TEXT("_@M781_")));
+    dfe->addEnumText(MsgToken(781));
 
-    _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M782_")) );
+    _stprintf(newtoken,_T("%s %s"),MsgToken(953),MsgToken(782) );
     dfe->addEnumText(newtoken);
-    _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M780_")) );
+    _stprintf(newtoken,_T("%s %s"),MsgToken(953),MsgToken(780) );
     dfe->addEnumText(newtoken);
-    _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M783_")) );
+    _stprintf(newtoken,_T("%s %s"),MsgToken(953),MsgToken(783) );
     dfe->addEnumText(newtoken);
-    _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M781_")) );
+    _stprintf(newtoken,_T("%s %s"),MsgToken(953),MsgToken(781) );
     dfe->addEnumText(newtoken);
 
     dfe->Set(LKVarioBar);
@@ -2349,9 +2349,9 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioVal"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("_@M1425_"))); // vario in thermal and cruise
-    dfe->addEnumText(gettext(TEXT("_@M1426_")));  // vario in thermal, netto in cruise
-    dfe->addEnumText(gettext(TEXT("_@M1427_")));  // vario in thermal, sollfahr in cruise
+    dfe->addEnumText(MsgToken(1425)); // vario in thermal and cruise
+    dfe->addEnumText(MsgToken(1426));  // vario in thermal, netto in cruise
+    dfe->addEnumText(MsgToken(1427));  // vario in thermal, sollfahr in cruise
     dfe->Set(LKVarioVal);
     wp->RefreshDisplay();
   }
@@ -2369,15 +2369,15 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
+    dfe->addEnumText(MsgToken(239));
 	// LKTOKEN  _@M414_ = "Low" 
-    dfe->addEnumText(gettext(TEXT("_@M414_")));
+    dfe->addEnumText(MsgToken(414));
 	// LKTOKEN  _@M433_ = "Medium" 
-    dfe->addEnumText(gettext(TEXT("_@M433_")));
+    dfe->addEnumText(MsgToken(433));
 	// LKTOKEN  _@M339_ = "High" 
-    dfe->addEnumText(gettext(TEXT("_@M339_")));
+    dfe->addEnumText(MsgToken(339));
 	// LKTOKEN  _@M786_ = "Very High" 
-    dfe->addEnumText(gettext(TEXT("_@M786_")));
+    dfe->addEnumText(MsgToken(786));
     dfe->Set(DeclutterMode);
     wp->RefreshDisplay();
   }
@@ -2412,12 +2412,12 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
+    dfe->addEnumText(MsgToken(239));
 	// LKTOKEN  +_@M2149_ = "in thermal"
-    dfe->addEnumText(gettext(TEXT("_@M2149_")));
+    dfe->addEnumText(MsgToken(2149));
 	// LKTOKEN  +_@M2150_ = "in thermal and cruise"
-    dfe->addEnumText(gettext(TEXT("_@M2150_")));
-    dfe->addEnumText(gettext(TEXT("_@M1833_"))); // Always
+    dfe->addEnumText(MsgToken(2150));
+    dfe->addEnumText(MsgToken(1833)); // Always
     dfe->Set(ThermalBar);
     wp->RefreshDisplay();
   }
@@ -2426,9 +2426,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
     // LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
+    dfe->addEnumText(MsgToken(239));
     // LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
+    dfe->addEnumText(MsgToken(259));
     dfe->Set(OverlayClock);
     wp->RefreshDisplay();
   }
@@ -2445,11 +2445,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGGliderSymbol"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("_@M2317_"))); // _@M2317_ "Triangle"
-    dfe->addEnumText(gettext(TEXT("_@M2318_"))); // _@M2318_ "Paraglider"
-    dfe->addEnumText(gettext(TEXT("_@M2319_"))); // _@M2319_ "Hangglider"
-    dfe->addEnumText(gettext(TEXT("_@M2320_"))); // _@M2320_ "Glider"
-    dfe->addEnumText(gettext(TEXT("_@M2321_"))); // _@M2322_ "Aircraft"
+    dfe->addEnumText(MsgToken(2317)); // _@M2317_ "Triangle"
+    dfe->addEnumText(MsgToken(2318)); // _@M2318_ "Paraglider"
+    dfe->addEnumText(MsgToken(2319)); // _@M2319_ "Hangglider"
+    dfe->addEnumText(MsgToken(2320)); // _@M2320_ "Glider"
+    dfe->addEnumText(MsgToken(2321)); // _@M2322_ "Aircraft"
     dfe->Set(PGGliderSymbol);
     wp->RefreshDisplay();
   }
@@ -2467,11 +2467,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M78_ = "All black" 
-    dfe->addEnumText(gettext(TEXT("_@M78_")));
+    dfe->addEnumText(MsgToken(78));
 	// LKTOKEN  _@M778_ = "Values white" 
-    dfe->addEnumText(gettext(TEXT("_@M778_")));
+    dfe->addEnumText(MsgToken(778));
 	// LKTOKEN  _@M81_ = "All white" 
-    dfe->addEnumText(gettext(TEXT("_@M81_")));
+    dfe->addEnumText(MsgToken(81));
     dfe->Set(OutlinedTp_Config);
     wp->RefreshDisplay();
   }
@@ -2480,11 +2480,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M473_ = "No landables" 
-    dfe->addEnumText(gettext(TEXT("_@M473_")));
+    dfe->addEnumText(MsgToken(473));
 	// LKTOKEN  _@M80_ = "All waypoints" 
-    dfe->addEnumText(gettext(TEXT("_@M80_")));
+    dfe->addEnumText(MsgToken(80));
 	// LKTOKEN  _@M211_ = "DAT Turnpoints" 
-    dfe->addEnumText(gettext(TEXT("_@M211_")));
+    dfe->addEnumText(MsgToken(211));
     dfe->Set(TpFilter);
     wp->RefreshDisplay();
   }
@@ -2493,33 +2493,33 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M816_ = "White" 
-    dfe->addEnumText(gettext(TEXT("_@M816_")));
+    dfe->addEnumText(MsgToken(816));
 	// LKTOKEN  _@M144_ = "Black" 
-    dfe->addEnumText(gettext(TEXT("_@M144_")));
+    dfe->addEnumText(MsgToken(144));
 	// LKTOKEN  _@M218_ = "DarkBlue" 
-    dfe->addEnumText(gettext(TEXT("_@M218_")));
+    dfe->addEnumText(MsgToken(218));
 	// LKTOKEN  _@M825_ = "Yellow" 
-    dfe->addEnumText(gettext(TEXT("_@M825_")));
+    dfe->addEnumText(MsgToken(825));
 	// LKTOKEN  _@M331_ = "Green" 
-    dfe->addEnumText(gettext(TEXT("_@M331_")));
+    dfe->addEnumText(MsgToken(331));
 	// LKTOKEN  _@M505_ = "Orange" 
-    dfe->addEnumText(gettext(TEXT("_@M505_")));
+    dfe->addEnumText(MsgToken(505));
 	// LKTOKEN  _@M209_ = "Cyan" 
-    dfe->addEnumText(gettext(TEXT("_@M209_")));
+    dfe->addEnumText(MsgToken(209));
 	// LKTOKEN  _@M417_ = "Magenta" 
-    dfe->addEnumText(gettext(TEXT("_@M417_")));
+    dfe->addEnumText(MsgToken(417));
 	// LKTOKEN  _@M332_ = "Grey" 
-    dfe->addEnumText(gettext(TEXT("_@M332_")));
+    dfe->addEnumText(MsgToken(332));
 	// LKTOKEN  _@M215_ = "Dark Grey" 
-    dfe->addEnumText(gettext(TEXT("_@M215_")));
+    dfe->addEnumText(MsgToken(215));
 	// LKTOKEN  _@M216_ = "Dark White" 
-    dfe->addEnumText(gettext(TEXT("_@M216_")));
+    dfe->addEnumText(MsgToken(216));
 	// LKTOKEN  _@M92_ = "Amber" 
-    dfe->addEnumText(gettext(TEXT("_@M92_")));
+    dfe->addEnumText(MsgToken(92));
 	// LKTOKEN  _@M391_ = "Light Green" 
-    dfe->addEnumText(gettext(TEXT("_@M391_")));
+    dfe->addEnumText(MsgToken(391));
 	// LKTOKEN  _@M522_ = "Petrol" 
-    dfe->addEnumText(gettext(TEXT("_@M522_")));
+    dfe->addEnumText(MsgToken(522));
     dfe->Set(OverColor);
     wp->RefreshDisplay();
   }
@@ -2528,13 +2528,13 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M763_ = "Unboxed, no units" 
-    dfe->addEnumText(gettext(TEXT("_@M763_")));
+    dfe->addEnumText(MsgToken(763));
 	// LKTOKEN  _@M764_ = "Unboxed, with units" 
-    dfe->addEnumText(gettext(TEXT("_@M764_")));
+    dfe->addEnumText(MsgToken(764));
 	// LKTOKEN  _@M152_ = "Boxed, no units" 
-    dfe->addEnumText(gettext(TEXT("_@M152_")));
+    dfe->addEnumText(MsgToken(152));
 	// LKTOKEN  _@M153_ = "Boxed, with units" 
-    dfe->addEnumText(gettext(TEXT("_@M153_")));
+    dfe->addEnumText(MsgToken(153));
     dfe->Set(MapBox);
     wp->RefreshDisplay();
   }
@@ -2543,9 +2543,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M842_ = "Big font " 
-    dfe->addEnumText(gettext(TEXT("_@M842_")));
+    dfe->addEnumText(MsgToken(842));
 	// LKTOKEN  _@M843_ = "Small font " 
-    dfe->addEnumText(gettext(TEXT("_@M843_")));
+    dfe->addEnumText(MsgToken(843));
     dfe = wp->GetDataField();
     dfe->Set(OverlaySize);
     wp->RefreshDisplay();
@@ -2555,11 +2555,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
+    dfe->addEnumText(MsgToken(239));
 	// LKTOKEN  _@M461_ = "Next turnpoint" 
-    dfe->addEnumText(gettext(TEXT("_@M461_")));
+    dfe->addEnumText(MsgToken(461));
 	// LKTOKEN  _@M299_ = "Finish" 
-    dfe->addEnumText(gettext(TEXT("_@M299_")));
+    dfe->addEnumText(MsgToken(299));
     dfe->Set(GlideBarMode);
     wp->RefreshDisplay();
   }
@@ -2568,9 +2568,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M98_ = "ArrivalAltitude" 
-    dfe->addEnumText(gettext(TEXT("_@M98_")));
+    dfe->addEnumText(MsgToken(98));
 	// LKTOKEN  _@M254_ = "EfficiencyReq" 
-    dfe->addEnumText(gettext(TEXT("_@M254_")));
+    dfe->addEnumText(MsgToken(254));
     dfe->Set(ArrivalValue);
     wp->RefreshDisplay();
   }
@@ -2579,11 +2579,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
+    dfe->addEnumText(MsgToken(239));
 	// LKTOKEN  _@M414_ = "Low" 
-    dfe->addEnumText(gettext(TEXT("_@M414_")));
+    dfe->addEnumText(MsgToken(414));
 	// LKTOKEN  _@M339_ = "High" 
-    dfe->addEnumText(gettext(TEXT("_@M339_")));
+    dfe->addEnumText(MsgToken(339));
     dfe->Set(NewMapDeclutter);
     wp->RefreshDisplay();
   }
@@ -2595,18 +2595,18 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(1776)); // 5 sec
     dfe->addEnumText(MsgToken(1777)); // 10 sec
 	// LKTOKEN  _@M17_ = "15 seconds" 
-    dfe->addEnumText(gettext(TEXT("_@M17_")));
+    dfe->addEnumText(MsgToken(17));
 	// LKTOKEN  _@M30_ = "30 seconds" 
-    dfe->addEnumText(gettext(TEXT("_@M30_")));
+    dfe->addEnumText(MsgToken(30));
     dfe->addEnumText(MsgToken(1778)); // 45 sec
 	// LKTOKEN  _@M35_ = "60 seconds" 
-    dfe->addEnumText(gettext(TEXT("_@M35_")));
+    dfe->addEnumText(MsgToken(35));
 	// LKTOKEN  _@M39_ = "90 seconds" 
-    dfe->addEnumText(gettext(TEXT("_@M39_")));
+    dfe->addEnumText(MsgToken(39));
 	// LKTOKEN  _@M23_ = "2 minutes" 
-    dfe->addEnumText(gettext(TEXT("_@M23_")));
+    dfe->addEnumText(MsgToken(23));
 	// LKTOKEN  _@M29_ = "3 minutes" 
-    dfe->addEnumText(gettext(TEXT("_@M29_")));
+    dfe->addEnumText(MsgToken(29));
     dfe->Set(AverEffTime);
     wp->RefreshDisplay();
  }
@@ -2615,25 +2615,25 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M816_ = "White" 
-    dfe->addEnumText(gettext(TEXT("_@M816_")));
+    dfe->addEnumText(MsgToken(816));
 	// LKTOKEN  _@M392_ = "Light grey" 
-    dfe->addEnumText(gettext(TEXT("_@M392_")));
+    dfe->addEnumText(MsgToken(392));
 	// LKTOKEN  _@M374_ = "LCD green" 
-    dfe->addEnumText(gettext(TEXT("_@M374_")));
+    dfe->addEnumText(MsgToken(374));
 	// LKTOKEN  _@M373_ = "LCD darkgreen" 
-    dfe->addEnumText(gettext(TEXT("_@M373_")));
+    dfe->addEnumText(MsgToken(373));
 	// LKTOKEN  _@M332_ = "Grey" 
-    dfe->addEnumText(gettext(TEXT("_@M332_")));
+    dfe->addEnumText(MsgToken(332));
 	// LKTOKEN  _@M147_ = "Blue lake" 
-    dfe->addEnumText(gettext(TEXT("_@M147_")));
+    dfe->addEnumText(MsgToken(147));
 	// LKTOKEN  _@M256_ = "Emerald green" 
-    dfe->addEnumText(gettext(TEXT("_@M256_")));
+    dfe->addEnumText(MsgToken(256));
 	// LKTOKEN  _@M217_ = "Dark grey" 
-    dfe->addEnumText(gettext(TEXT("_@M217_")));
+    dfe->addEnumText(MsgToken(217));
 	// LKTOKEN  _@M567_ = "Rifle grey" 
-    dfe->addEnumText(gettext(TEXT("_@M567_")));
+    dfe->addEnumText(MsgToken(567));
 	// LKTOKEN  _@M144_ = "Black" 
-    dfe->addEnumText(gettext(TEXT("_@M144_")));
+    dfe->addEnumText(MsgToken(144));
     dfe->Set(BgMapColor_Config);
     wp->RefreshDisplay();
  }
@@ -2644,7 +2644,7 @@ DataField* dfe = wp->GetDataField();
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(1797)); // Vector
 	// LKTOKEN  _@M87_ = "Alternate" 
-    dfe->addEnumText(gettext(TEXT("_@M87_")));
+    dfe->addEnumText(MsgToken(87));
     dfe->Set(Appearance.IndLandable);
     wp->RefreshDisplay();
   }
@@ -2653,9 +2653,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M958_ = "ON" 
-    dfe->addEnumText(gettext(TEXT("_@M958_")));
+    dfe->addEnumText(MsgToken(958));
 	// LKTOKEN  _@M959_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M959_")));
+    dfe->addEnumText(MsgToken(959));
     dfe->Set(InverseInfoBox_Config);
     wp->RefreshDisplay();
   }
@@ -2682,25 +2682,25 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M413_ = "Low lands" 
-    dfe->addEnumText(gettext(TEXT("_@M413_")));
+    dfe->addEnumText(MsgToken(413));
 	// LKTOKEN  _@M439_ = "Mountainous" 
-    dfe->addEnumText(gettext(TEXT("_@M439_")));
+    dfe->addEnumText(MsgToken(439));
     dfe->addEnumText(TEXT("Imhof 7"));
     dfe->addEnumText(TEXT("Imhof 4"));
     dfe->addEnumText(TEXT("Imhof 12"));
     dfe->addEnumText(TEXT("Imhof Atlas"));
     dfe->addEnumText(TEXT("ICAO")); 
 	// LKTOKEN  _@M377_ = "LKoogle lowlands" 
-    dfe->addEnumText(gettext(TEXT("_@M377_"))); 
+    dfe->addEnumText(MsgToken(377)); 
 	// LKTOKEN  _@M378_ = "LKoogle mountains" 
-    dfe->addEnumText(gettext(TEXT("_@M378_")));
+    dfe->addEnumText(MsgToken(378));
 	// LKTOKEN  _@M412_ = "Low Alps" 
-    dfe->addEnumText(gettext(TEXT("_@M412_")));
+    dfe->addEnumText(MsgToken(412));
 	// LKTOKEN  _@M338_ = "High Alps" 
-    dfe->addEnumText(gettext(TEXT("_@M338_")));
+    dfe->addEnumText(MsgToken(338));
     dfe->addEnumText(TEXT("YouSee"));
 	// LKTOKEN  _@M340_ = "HighContrast" 
-    dfe->addEnumText(gettext(TEXT("_@M340_")));
+    dfe->addEnumText(MsgToken(340));
     dfe->addEnumText(TEXT("GA Relative"));
     dfe->addEnumText(TEXT("LiteAlps"));
     dfe->addEnumText(TEXT("Low Hills"));
@@ -2734,11 +2734,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M210_ = "Cylinder" 
-    dfe->addEnumText(gettext(TEXT("_@M210_")));
+    dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M393_ = "Line" 
-    dfe->addEnumText(gettext(TEXT("_@M393_")));
+    dfe->addEnumText(MsgToken(393));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
-    dfe->addEnumText(gettext(TEXT("_@M274_")));
+    dfe->addEnumText(MsgToken(274));
     dfe->Set(FinishLine);
     wp->RefreshDisplay();
   }
@@ -2754,11 +2754,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M210_ = "Cylinder" 
-    dfe->addEnumText(gettext(TEXT("_@M210_")));
+    dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M393_ = "Line" 
-    dfe->addEnumText(gettext(TEXT("_@M393_")));
+    dfe->addEnumText(MsgToken(393));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
-    dfe->addEnumText(gettext(TEXT("_@M274_")));
+    dfe->addEnumText(MsgToken(274));
     dfe->Set(StartLine);
     wp->RefreshDisplay();
   }
@@ -2774,11 +2774,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M210_ = "Cylinder" 
-    dfe->addEnumText(gettext(TEXT("_@M210_")));
+    dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
-    dfe->addEnumText(gettext(TEXT("_@M274_")));
+    dfe->addEnumText(MsgToken(274));
     dfe->addEnumText(gettext(TEXT("DAe 0.5/10")));
-    dfe->addEnumText(gettext(TEXT("_@M393_")));
+    dfe->addEnumText(MsgToken(393));
     
     dfe->Set(SectorType);
     wp->RefreshDisplay();
@@ -2844,9 +2844,9 @@ DataField* dfe = wp->GetDataField();
   if (wp)
   {
 	DataField* dfe = wp->GetDataField();
-	dfe->addEnumText(gettext(TEXT("_@M1831_")));	// LKTOKEN  _@M1831_ "Off"
-	dfe->addEnumText(gettext(TEXT("_@M1832_")));	// LKTOKEN  _@M1832_ "Near landables"
-	dfe->addEnumText(gettext(TEXT("_@M1833_")));	// LKTOKEN   _@M1833_ "Allways"
+	dfe->addEnumText(MsgToken(1831));	// LKTOKEN  _@M1831_ "Off"
+	dfe->addEnumText(MsgToken(1832));	// LKTOKEN  _@M1832_ "Near landables"
+	dfe->addEnumText(MsgToken(1833));	// LKTOKEN   _@M1833_ "Allways"
     dfe->Set(GearWarningMode);
     wp->RefreshDisplay();
   }
@@ -4224,9 +4224,9 @@ int ival;
   if (waypointneedsave) {
     if(MessageBoxX(
     // LKTOKEN  _@M581_ = "Save changes to waypoint file?" 
-                   gettext(TEXT("_@M581_")),
+                   MsgToken(581),
 	// LKTOKEN  _@M809_ = "Waypoints edited" 
-                   gettext(TEXT("_@M809_")),
+                   MsgToken(809),
                    mbYesNo) == IdYes) {
     
       AskWaypointSave();
@@ -4256,7 +4256,7 @@ int ival;
     if (requirerestart) {
       MessageBoxX (
 	// LKTOKEN  _@M561_ = "Restart LK8000 to apply changes." 
-		   gettext(TEXT("_@M561_")), 
+		   MsgToken(561), 
 		   TEXT("Configuration"), mbOk);
     }
 

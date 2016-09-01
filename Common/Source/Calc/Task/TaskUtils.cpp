@@ -331,5 +331,5 @@ void ReverseTask() {
 	}
 	ResetTask(false); // Reset the task without showing the message about task reset
 	RefreshTask(); //Recalculate the task
-	DoStatusMessage(gettext(TEXT("_@M1853_"))); // LKTOKEN  _@M1853_ "TASK REVERSED"
+	DoStatusMessage(MsgToken(1853)); // LKTOKEN  _@M1853_ "TASK REVERSED"
 }

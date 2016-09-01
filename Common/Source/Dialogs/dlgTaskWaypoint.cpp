@@ -37,21 +37,21 @@ static void UpdateCaption(void) {
     switch (twType) {
     case 0:
 	// LKTOKEN  _@M657_ = "Start" 
-      _tcscpy(title, gettext(TEXT("_@M657_")));
+      _tcscpy(title, MsgToken(657));
       break;
     case 1:
 	// LKTOKEN  _@M749_ = "Turnpoint" 
-      _tcscpy(title, gettext(TEXT("_@M749_")));
+      _tcscpy(title, MsgToken(749));
       break;
     case 2:
 	// LKTOKEN  _@M299_ = "Finish" 
-      _tcscpy(title, gettext(TEXT("_@M299_")));
+      _tcscpy(title, MsgToken(299));
       break;
     };
 
     TCHAR landableStr[5] = TEXT(" [X]");
     // LKTOKEN _@M1238_ "L"
-    landableStr[2] = gettext(TEXT("_@M1238_"))[0];
+    landableStr[2] = MsgToken(1238)[0];
     
     _stprintf(sTmp, TEXT("%s: %s%s"), title,
               WayPointList[Task[twItemIndex].Index].Name,
@@ -59,7 +59,7 @@ static void UpdateCaption(void) {
     wf->SetCaption(sTmp);
   } else {
 	// LKTOKEN  _@M9_ = "(invalid)" 
-    wf->SetCaption(gettext(TEXT("_@M9_")));
+    wf->SetCaption(MsgToken(9));
   }
 }
 
@@ -71,11 +71,11 @@ static void SetValues(bool first=false) {
     DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M210_ = "Cylinder" 
-      dfe->addEnumText(gettext(TEXT("_@M210_")));
+      dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M393_ = "Line" 
-      dfe->addEnumText(gettext(TEXT("_@M393_")));
+      dfe->addEnumText(MsgToken(393));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
-      dfe->addEnumText(gettext(TEXT("_@M274_")));
+      dfe->addEnumText(MsgToken(274));
     }
     dfe->Set(FinishLine);
     wp->RefreshDisplay();
@@ -93,11 +93,11 @@ static void SetValues(bool first=false) {
     DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M210_ = "Cylinder" 
-      dfe->addEnumText(gettext(TEXT("_@M210_")));
+      dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M393_ = "Line" 
-      dfe->addEnumText(gettext(TEXT("_@M393_")));
+      dfe->addEnumText(MsgToken(393));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
-      dfe->addEnumText(gettext(TEXT("_@M274_")));
+      dfe->addEnumText(MsgToken(274));
     }
     dfe->SetDetachGUI(true); // disable call to OnAATEnabled
     dfe->Set(StartLine);
@@ -120,12 +120,12 @@ static void SetValues(bool first=false) {
     DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M210_ = "Cylinder" 
-      dfe->addEnumText(gettext(TEXT("_@M210_")));
+      dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
-      dfe->addEnumText(gettext(TEXT("_@M274_")));
+      dfe->addEnumText(MsgToken(274));
       dfe->addEnumText(gettext(TEXT("DAe 0.5/10")));
       	// LKTOKEN  _@M393_ = "Line" 
-      dfe->addEnumText(gettext(TEXT("_@M393_")));
+      dfe->addEnumText(MsgToken(393));
     }
     dfe->SetDetachGUI(true); // disable call to OnAATEnabled
     dfe->Set(SectorType);
@@ -146,15 +146,15 @@ static void SetValues(bool first=false) {
     DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M418_ = "Manual" 
-      dfe->addEnumText(gettext(TEXT("_@M418_")));
+      dfe->addEnumText(MsgToken(418));
 	// LKTOKEN _@M897_ "Auto"
-      dfe->addEnumText(gettext(TEXT("_@M897_")));
+      dfe->addEnumText(MsgToken(897));
 	// LKTOKEN  _@M97_ = "Arm" 
-      dfe->addEnumText(gettext(TEXT("_@M97_")));
+      dfe->addEnumText(MsgToken(97));
 	// LKTOKEN  _@M96_ = "Arm start" 
-      dfe->addEnumText(gettext(TEXT("_@M96_")));
+      dfe->addEnumText(MsgToken(96));
 	// LKTOKEN  _@M1798_ = "Arm TPs" 
-      dfe->addEnumText(gettext(TEXT("_@M1798_")));
+      dfe->addEnumText(MsgToken(1798));
     }
     dfe->Set(AutoAdvance);
     wp->RefreshDisplay();
@@ -279,14 +279,14 @@ static void SetWaypointValues(bool first=false) {
     DataField* dfe = wp->GetDataField();
     if (first) {
 	// LKTOKEN  _@M210_ = "Cylinder" 
-      dfe->addEnumText(gettext(TEXT("_@M210_")));
+      dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M590_ = "Sector" 
-      dfe->addEnumText(gettext(TEXT("_@M590_")));
+      dfe->addEnumText(MsgToken(590));
       if(DoOptimizeRoute()) {
         // Conical ESS
-        dfe->addEnumText(gettext(TEXT("_@M2175_")));
+        dfe->addEnumText(MsgToken(2175));
         // Circle ESS
-        dfe->addEnumText(gettext(TEXT("_@M2189_")));
+        dfe->addEnumText(MsgToken(2189));
       }
     }
     dfe->SetDetachGUI(true); // disable call to OnAATEnabled
@@ -342,9 +342,9 @@ static void SetWaypointValues(bool first=false) {
 	  if (dfe) {
 		  if (first) {
 			  // LKTOKEN  _@M2226_ = "Enter" 
-			  dfe->addEnumText(gettext(TEXT("_@M2145_")));
+			  dfe->addEnumText(MsgToken(2145));
 			  // LKTOKEN  _@M2227_ = "Exit" 
-			  dfe->addEnumText(gettext(TEXT("_@M2146_")));
+			  dfe->addEnumText(MsgToken(2146));
 		  }
 		  dfe->Set(Task[twItemIndex].OutCircle);
 	  }

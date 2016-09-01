@@ -98,9 +98,9 @@ void GotoWaypoint(const int wpnum) {
 
 	if (MessageBoxX(
 	// LKTOKEN  _@M158_ = "CONFIRM GOTO, ABORTING TASK?" 
-	gettext(TEXT("_@M158_")),
+	MsgToken(158),
 	// LKTOKEN  _@M40_ = "A task is running!" 
-	gettext(TEXT("_@M40_")),
+	MsgToken(40),
 	mbYesNo) == IdYes) {
 		LockTaskData();
 		FlyDirectTo(wpnum);
@@ -348,18 +348,18 @@ void TaskStartMessage(void) {
   TCHAR TempAll[300];
   _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
   // Altitude
-  gettext(TEXT("_@M89_")),
+  MsgToken(89),
   TempAlt,
   // Speed
-  gettext(TEXT("_@M632_")),
+  MsgToken(632),
   TempSpeed,
   // Time
-  gettext(TEXT("_@M720_")),
+  MsgToken(720),
   TempTime);
 
   // ALWAYS issue DoStatusMessage BEFORE sounds, if possible.
   // LKTOKEN  _@M692_ = "Task Start"
-  DoStatusMessage(gettext(TEXT("_@M692_")), TempAll);
+  DoStatusMessage(MsgToken(692), TempAll);
 }
 
 void TaskFinishMessage(void) {
@@ -378,20 +378,20 @@ void TaskFinishMessage(void) {
 
   _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s\r\n%s: %s"),
   // Altitude
-  gettext(TEXT("_@M89_")),
+  MsgToken(89),
   TempAlt,
   // Speed
-  gettext(TEXT("_@M632_")),
+  MsgToken(632),
   TempSpeed,
   // Time
-  gettext(TEXT("_@M720_")),
+  MsgToken(720),
   TempTime,
   // task speed
-  gettext(TEXT("_@M697_")),
+  MsgToken(697),
   TempTskSpeed);
 
   // LKTOKEN  _@M687_ = "Task Finish"
-  DoStatusMessage(gettext(TEXT("_@M687_")), TempAll);
+  DoStatusMessage(MsgToken(687), TempAll);
 
 }
 

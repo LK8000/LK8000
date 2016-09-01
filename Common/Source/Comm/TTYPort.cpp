@@ -84,7 +84,7 @@ bool TTYPort::Initialize() {
     _tty = open(szPath.c_str(), O_RDWR | O_NOCTTY);
     if (_tty < 0 || !isatty(_tty)) {
         StartupStore(_T("... ComPort %u Init failed, error=%u%s"), (unsigned)(GetPortIndex() + 1), errno, NEWLINE); // 091117
-        StatusMessage(mbOk, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), GetPortName());
+        StatusMessage(mbOk, NULL, TEXT("%s %s"), MsgToken(762), GetPortName());
         goto failed;
     }
     

@@ -41,9 +41,9 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
       w0 = 225*ScreenScale;
     }
 	// LKTOKEN  _@M789_ = "Warn" 
-    w1 = Surface.GetTextWidth(gettext(TEXT("_@M789_")))+ScreenScale*10;
+    w1 = Surface.GetTextWidth(MsgToken(789))+ScreenScale*10;
 	// LKTOKEN  _@M241_ = "Display" 
-    w2 = Surface.GetTextWidth(gettext(TEXT("_@M241_")))+ScreenScale*10;
+    w2 = Surface.GetTextWidth(MsgToken(241))+ScreenScale*10;
     x0 = w0-w1-w2;
 
     Surface.SetTextColor(RGB_BLACK);
@@ -69,12 +69,12 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
       isdisplay = ((MapWindow::iAirspaceMode[i]%2)>0);
       if (iswarn) {
 	// LKTOKEN  _@M789_ = "Warn" 
-        _tcscpy(label, gettext(TEXT("_@M789_")));
+        _tcscpy(label, MsgToken(789));
         Surface.DrawText(w0-w1-w2, 2*ScreenScale, label);
       }
       if (isdisplay) {
 	// LKTOKEN  _@M241_ = "Display" 
-        _tcscpy(label, gettext(TEXT("_@M241_")));
+        _tcscpy(label, MsgToken(241));
         Surface.DrawText(w0-w2, 2*ScreenScale, label);
       }
 
