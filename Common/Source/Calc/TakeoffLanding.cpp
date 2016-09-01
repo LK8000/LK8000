@@ -215,6 +215,8 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	}
 
   }
+  
+  if (LockModeStatus) LockMode(9); // check if unlock is now possible 
 }
 
 

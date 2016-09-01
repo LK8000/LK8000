@@ -87,8 +87,6 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 
   MapWindow::UpdateTimeStats(true);
 
-  if (LockModeStatus) LockMode(9); // check if unlock is now possible 
-  
   SetAutoOrientation(false); // false for no reset Old values
 
   //
