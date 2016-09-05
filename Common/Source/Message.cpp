@@ -228,8 +228,20 @@ void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
 
     Lock();
 
+    auto It = std::find_if(messages.begin(), messages.end(), [&](const Message_t& Item){
+      return (Item.type == type && Item.text.compare(Text)==0);
+    });
+
     unsigned fpsTime = startTime.Elapsed();
-    messages.emplace_back((Message_t){Text, type, fpsTime, fpsTime, tshow});
+    if(It != messages.end()) {
+      // this message is already visible, move it to end and update start and expiry
+      It->tstart = fpsTime;
+      It->texpiry = fpsTime;
+      It->tshow = tshow;
+      messages.splice(messages.end(), messages, It);
+    } else {
+      messages.emplace_back((Message_t){Text, type, fpsTime, fpsTime, tshow});
+    }
 
     Unlock();
 }
