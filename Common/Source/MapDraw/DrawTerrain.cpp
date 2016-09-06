@@ -248,7 +248,7 @@ private:
     unsigned short *hBuf;
     BGRColor *colorBuf;
     bool do_shading;
-    static constexpr int interp_levels = 2;
+    static constexpr int interp_levels = 8;
     const COLORRAMP* color_ramp;
     static constexpr unsigned int height_scale = 4;
    
