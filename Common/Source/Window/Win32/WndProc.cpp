@@ -90,5 +90,5 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
         default:
             break;
     }
-    return Window::WinMsgHandler(hWnd, uMsg, wParam, lParam);
+    return WndPaint::WinMsgHandler(hWnd, uMsg, wParam, lParam);
 }
