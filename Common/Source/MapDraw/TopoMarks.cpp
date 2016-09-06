@@ -18,7 +18,6 @@
  */
 
 #include "Terrain.h"
-#include "RasterTerrain.h"
 #include "STScreenBuffer.h"
 #include "LKProcess.h"
 #include "Waypointparser.h"

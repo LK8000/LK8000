@@ -9,7 +9,6 @@
 #include "externs.h"
 #include <ctype.h>
 #include "Terrain.h"
-#include "RasterTerrain.h"
 #include "RGB.h"
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"

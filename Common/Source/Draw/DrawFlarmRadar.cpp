@@ -6,7 +6,6 @@
    $Id$
 */
 #include "externs.h"
-#include "RasterTerrain.h"
 #include "RGB.h"
 #include "Sideview.h"
 #include "NavFunctions.h"

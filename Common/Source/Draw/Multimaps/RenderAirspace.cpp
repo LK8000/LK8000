@@ -10,7 +10,6 @@
 #include "McReady.h"
 #include "Dialogs.h"
 #include "Atmosphere.h"
-#include "RasterTerrain.h"
 #include "LKInterface.h"
 #include "LKAirspace.h"
 #include "RGB.h"

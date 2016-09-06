@@ -22,9 +22,7 @@ class RasterMap final {
     terrain_valid = false;
     max_field_value = 0;
     DirectFine = false;
-    DirectAccess = true;
-    Paged = false;
-    
+   
     TerrainMem = NULL;
   }
   ~RasterMap() {};
@@ -33,10 +31,8 @@ class RasterMap final {
     return terrain_valid;
   }
 
-  short max_field_value;
-  TERRAIN_INFO TerrainInfo;
-
-  bool GetMapCenter(double *lon, double *lat) const;
+  bool GetMapCenter(double *lat, double *lon) const;
+  bool IsInside(double lat, double lon) const;
 
   float GetFieldStepSize() const;
 
@@ -57,16 +53,14 @@ class RasterMap final {
   void Lock() { CritSec_TerrainFile.Lock(); }
   void Unlock() { CritSec_TerrainFile.Unlock(); }
   
-  bool IsDirectAccess(void) const { return DirectAccess; };
-  bool IsPaged(void) const { return Paged; };
-
  protected:
+  short max_field_value;
+  TERRAIN_INFO TerrainInfo;
+   
   int xlleft;
   int xlltop;
   bool terrain_valid;
   bool DirectFine;
-  bool Paged;
-  bool DirectAccess;
   double fXrounding, fYrounding;
   double fXroundingFine, fYroundingFine;
   int Xrounding, Yrounding;
@@ -134,8 +128,6 @@ public:
     terrain_initialised = false;
   }
 
-  static void SetViewCenter(const double &Latitude, 
-                            const double &Longitude);
   static void OpenTerrain();
   static void CloseTerrain();
   static bool terrain_initialised;
@@ -150,11 +142,9 @@ public:
   static void Unlock(void);
   static short GetTerrainHeight(const double &Latitude,
                                 const double &Longitude);
-  static bool IsDirectAccess(void);
-  static bool IsPaged(void);
+
   static void SetTerrainRounding(double x, double y);
-  static void ServiceCache();
-  static void ServiceTerrainCenter(double latitude, double longitude);
+
   static int GetEffectivePixelSize(double *pixel_D, 
                                    double latitude, double longitude);
   static bool WaypointIsInTerrainRange(double latitude, double longitude);

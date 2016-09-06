@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "LKProcess.h"
 #include "McReady.h"
-#include "RasterTerrain.h"
 #include "Calculations2.h"
 #include "Message.h"
 #include "Sound/Sound.h"

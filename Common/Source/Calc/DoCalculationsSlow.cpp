@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "Logger.h"
 #include "InputEvents.h"
-#include "RasterTerrain.h"
 #include "DoInits.h"
 #include "MathFunctions.h"
 

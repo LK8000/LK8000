@@ -13,13 +13,20 @@
 RasterMap* RasterTerrain::TerrainMap = NULL;
 
 
-bool RasterMap::GetMapCenter(double *lon, double *lat) const {
+bool RasterMap::GetMapCenter(double *lat, double *lon) const {
   if(!isMapLoaded())
     return false;
 
-  *lon = (TerrainInfo.Left + TerrainInfo.Right)/2;
-  *lat = (TerrainInfo.Top + TerrainInfo.Bottom)/2;
+  *lon = (TerrainInfo.Left + TerrainInfo.Right)/2.0;
+  *lat = (TerrainInfo.Top + TerrainInfo.Bottom)/2.0;
   return true;
+}
+
+bool RasterMap::IsInside(double lat, double lon) const {
+  return ((lat <= TerrainInfo.Top) &&
+          (lat >= TerrainInfo.Bottom) &&
+          (lon <= TerrainInfo.Right) &&
+          (lon >= TerrainInfo.Left));
 }
 
 
@@ -128,23 +135,6 @@ short RasterTerrain::GetTerrainHeight(const double &Latitude,
   }
 }
 
-bool RasterTerrain::IsDirectAccess(void) {
-  if (TerrainMap) {
-    return TerrainMap->IsDirectAccess();
-  } else {
-    return false;
-  }
-}
-
-
-bool RasterTerrain::IsPaged(void) {
-  if (TerrainMap) {
-    return TerrainMap->IsPaged();
-  } else {
-    return false;
-  }
-}
-
 void RasterTerrain::SetTerrainRounding(double x, double y) {
   if (TerrainMap) {
     TerrainMap->SetFieldRounding(x, y);
@@ -164,14 +154,7 @@ int RasterTerrain::GetEffectivePixelSize(double *pixel_D,
 bool RasterTerrain::WaypointIsInTerrainRange(double latitude, 
                                              double longitude) {
   if (TerrainMap) {
-    if ((latitude<= TerrainMap->TerrainInfo.Top)&&
-        (latitude>= TerrainMap->TerrainInfo.Bottom)&&
-        (longitude<= TerrainMap->TerrainInfo.Right)&&
-        (longitude>= TerrainMap->TerrainInfo.Left)) {
-      return true;
-    } else {
-      return false;
-    }
+    return TerrainMap->IsInside(latitude, longitude);
   } else {
     return true;
   }
@@ -181,10 +164,7 @@ bool RasterTerrain::WaypointIsInTerrainRange(double latitude,
 bool RasterTerrain::GetTerrainCenter(double *latitude,
                                      double *longitude) {
   if (TerrainMap) {
-    *latitude = (TerrainMap->TerrainInfo.Top+
-                 TerrainMap->TerrainInfo.Bottom)/2.0;
-    *longitude = (TerrainMap->TerrainInfo.Left+
-                  TerrainMap->TerrainInfo.Right)/2.0;
+    TerrainMap->GetMapCenter(latitude, longitude);
     return true;
   } else {
     return false;

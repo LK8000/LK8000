@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "Terrain.h"
-#include "RasterTerrain.h"
 #include "RGB.h"
 #include "Multimap.h"
 
