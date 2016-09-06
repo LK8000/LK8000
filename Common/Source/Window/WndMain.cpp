@@ -262,7 +262,6 @@ bool WndMain::OnSize(int cx, int cy) {
     return true;
 }
 
-#ifndef USE_GDI
 extern StartupState_t ProgramStarted;
 bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
 #ifdef ENABLE_OPENGL
@@ -291,7 +290,6 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
 #endif
     return true;
 }
-#endif
 
 void WndMain::OnKillFocus() { 
     _MouseButtonDown = false;
