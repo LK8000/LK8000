@@ -18,7 +18,7 @@ typedef struct _TERRAIN_INFO
 class RasterMap final {
  public:
   RasterMap() {
-    DirectFine = false;
+    Interpolate = false;
 
     TerrainMem = nullptr;
     TerrainInfo = nullptr;
@@ -50,13 +50,21 @@ class RasterMap final {
   
   void Lock() { CritSec_TerrainFile.Lock(); }
   void Unlock() { CritSec_TerrainFile.Unlock(); }
-  
- protected:
+
+protected:
+  friend class TerrainRenderer;
+
+  inline bool interpolate() const { return Interpolate; }
+  inline short GetFieldInterpolate(const double &Latitude, const double &Longitude) const;
+  inline short GetFieldFine(const double &Latitude, const double &Longitude) const;
+
+ private:
 
   int xlleft;
   int xlltop;
 
-  bool DirectFine;
+  bool Interpolate;
+
   double fXrounding, fYrounding;
   double fXroundingFine, fYroundingFine;
   int Xrounding, Yrounding;
@@ -71,45 +79,51 @@ class RasterMap final {
   Mutex  CritSec_TerrainFile;
 
   memory_mapped_file::read_only_mmf TerrainFile;
-
-  inline short _GetFieldAtXY(unsigned int lx, unsigned int ly) const;
 };
 /**
  * JMW rounding further reduces data as required to speed up terrain display on low zoom levels
  * 
  * Attention ! allways check if Terrain IsValid before call this.
  */
-inline 
-short RasterMap::GetField(const double &Latitude, const double &Longitude) const {
-    if (DirectFine) {
-        return _GetFieldAtXY((int) (Longitude * fXroundingFine) - xlleft,
-                xlltop - (int) (Latitude * fYroundingFine));
-    } else {
-        const unsigned int ix = iround((Longitude - TerrainInfo->Left) * fXrounding) * Xrounding;
-        const unsigned int iy = iround((TerrainInfo->Top - Latitude) * fYrounding) * Yrounding;
-
-        return _GetFieldAtXY(ix << 8, iy << 8);
-    }
-}
 
 /**
  * @brief return terrain elevation with piecewise linear interpolation
  * @optimization : return invalid terrain for right&bottom line.
  */
 inline
-short RasterMap::_GetFieldAtXY(unsigned int lx, unsigned int ly) const {
+short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longitude) const {
+    assert(Interpolate);
+
+    unsigned int lx = (Longitude * fXroundingFine) - xlleft;
+    unsigned int ly = xlltop - (int) (Latitude * fYroundingFine);
 
     const unsigned ix = CombinedDivAndMod(lx);
-    if (lx + 1 >= TerrainInfo->Columns) {
-        return TERRAIN_INVALID;
-    }
-
     const unsigned iy = CombinedDivAndMod(ly);
-    if (ly + 1 >= TerrainInfo->Rows) {
+
+    if (gcc_unlikely(lx + 1 >= TerrainInfo->Columns || ly + 1 >= TerrainInfo->Rows)) {
         return TERRAIN_INVALID;
     }
-
     const short *tm = TerrainMem + ly * TerrainInfo->Columns + lx;
+
+#ifdef _BILINEAR_INTERP
+    // load the four neighboring pixels
+    const short& h1 = tm[0];                        // (x  ,y)
+    const short& h2 = tm[1];                        // (x+1,y)
+    const short& h3 = tm[TerrainInfo->Columns];     // (x  ,y+1)
+    const short& h4 = tm[1 + TerrainInfo->Columns]; // (x+1,y+1)
+
+    // Calculate the weights for each pixel
+    const unsigned ix1 = 0x0ff - ix;
+    const unsigned iy1 = 0x0ff - iy;
+
+    const unsigned w1 = ix1 * iy1;
+    const unsigned w2 = ix  * iy1;
+    const unsigned w3 = ix1 * iy;
+    const unsigned w4 = ix  * iy;
+
+    // Calculate the weighted sum of pixels (for each color channel)
+    return (h1 * w1 + h2 * w2 + h3 * w3 + h4 * w4) >> 16;
+#else
     // perform piecewise linear interpolation
     const short &h1 = tm[0]; // (x,y)
     const short &h3 = tm[TerrainInfo->Columns+1]; // (x+1,y+1)
@@ -121,6 +135,31 @@ short RasterMap::_GetFieldAtXY(unsigned int lx, unsigned int ly) const {
         // upper triangle
         const short &h4 = tm[TerrainInfo->Columns]; // (x,y+1)
         return (short) (h1 + ((iy * (h4 - h1) - ix * (h4 - h3)) >> 8));
+    }
+#endif
+}
+
+/**
+ * @brief return terrain elevation without interpolation
+ * @optimization : return invalid terrain for right&bottom line.
+ */
+inline 
+short RasterMap::GetFieldFine(const double &Latitude, const double &Longitude) const {
+    const unsigned int lx = iround((Longitude - TerrainInfo->Left) * fXrounding) * Xrounding;
+    const unsigned int ly = iround((TerrainInfo->Top - Latitude) * fYrounding) * Yrounding;
+
+    if (gcc_unlikely(lx >= (TerrainInfo->Columns-1) || ly >= (TerrainInfo->Rows-1))) {
+        return TERRAIN_INVALID;
+    }
+    return *(TerrainMem + ly * TerrainInfo->Columns + lx);
+}
+
+inline 
+short RasterMap::GetField(const double &Latitude, const double &Longitude) const {
+    if (interpolate()) {
+        return GetFieldInterpolate(Latitude, Longitude);
+    } else {
+        return GetFieldFine(Latitude, Longitude);
     }
 }
 

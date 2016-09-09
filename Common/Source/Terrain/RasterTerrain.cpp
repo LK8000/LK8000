@@ -82,28 +82,18 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
     return;
   }
 
-  Xrounding = iround(xr/TerrainInfo->StepSize);
-  Yrounding = iround(yr/TerrainInfo->StepSize);
-  if (Xrounding<1) {
-    Xrounding = 1;
-  }
-  
+  Xrounding = std::max(iround(xr/TerrainInfo->StepSize), 1);
   fXrounding = 1.0/(Xrounding*TerrainInfo->StepSize);
   fXroundingFine = fXrounding*256.0;
-  if (Yrounding<1) {
-    Yrounding = 1;
-  }
-  
+
+  Yrounding = std::max(iround(yr/TerrainInfo->StepSize), 1);
   fYrounding = 1.0/(Yrounding*TerrainInfo->StepSize);
   fYroundingFine = fYrounding*256.0;
 
-  if ((Xrounding==1)&&(Yrounding==1)) {
-    DirectFine = true;
-    xlleft = (int)(TerrainInfo->Left*fXroundingFine)+128;
-    xlltop  = (int)(TerrainInfo->Top*fYroundingFine)-128;
-  } else {
-    DirectFine = false;
-  }
+  xlleft = (int)(TerrainInfo->Left*fXroundingFine)+128;
+  xlltop  = (int)(TerrainInfo->Top*fYroundingFine)-128;
+  
+  Interpolate = ((Xrounding==1)&&(Yrounding==1));
 }
 
 

@@ -269,6 +269,7 @@ public:
         if(!DisplayMap) {
             return;
         }
+        LKASSERT(DisplayMap->isMapLoaded());
 
         double X, Y;
 
@@ -276,8 +277,6 @@ public:
         const int Y0 = (unsigned int) (dtquant / 2);
         const int X1 = (unsigned int) (X0 + dtquant * ixs);
         const int Y1 = (unsigned int) (Y0 + dtquant * iys);
-
-        unsigned int rfact = 1;
 
         double pixelDX, pixelDY;
 
@@ -288,16 +287,18 @@ public:
         _Proj.Screen2LonLat(Pt, X, Y);
         double xmiddle = X;
         double ymiddle = Y;
-        int dd = iround(dtquant * rfact);
 
-        Pt.x = (X0 + X1) / 2 + dd;
+        Pt.x = (X0 + X1) / 2 + dtquant;
         Pt.y = (Y0 + Y1) / 2;
         _Proj.Screen2LonLat(Pt, X, Y);
+        
+        double dX = std::abs(xmiddle - X);
         DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDX, NULL);
 
         Pt.x = (X0 + X1) / 2;
-        Pt.y = (Y0 + Y1) / 2 + dd;
+        Pt.y = (Y0 + Y1) / 2 + dtquant;
         _Proj.Screen2LonLat(Pt, X, Y);
+        double dY = std::abs(ymiddle - Y);
         DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDY, NULL);
 
         pixelsize_d = sqrt((pixelDX * pixelDX + pixelDY * pixelDY) / 2.0);
@@ -307,7 +308,7 @@ public:
         DisplayMap->Lock();
 
         // set resolution
-        DisplayMap->SetFieldRounding(0, 0);
+        DisplayMap->SetFieldRounding(dX/3, dY/3);
         epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d, ymiddle, xmiddle);
 
         /*
@@ -334,19 +335,32 @@ public:
         orig.x -= offset.x;
         orig.y -= offset.y;
         
-        FillHeightBuffer(DisplayMap, X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y);
+        if(DisplayMap->interpolate()) {
+            
+            FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y, 
+                    [DisplayMap](const double &X, const double &Y){ 
+                        return DisplayMap->GetFieldInterpolate(X,Y); 
+                    });
+        } else {
+            
+            FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y, 
+                    [DisplayMap](const double &X, const double &Y){
+                        return DisplayMap->GetFieldFine(X,Y); 
+                    });
+        }
 
         DisplayMap->Unlock();
     }
 
     /**
      * Attention ! never call this without check if map is loaded.
+     * 
+     * template is needed for avoid to test if interpolation is needed for each pixel.
      */
-    gcc_noinline
-    void FillHeightBuffer(RasterMap* DisplayMap, const int X0, const int Y0, const int X1, const int Y1) {
+    template<typename GetHeight_t>
+    void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1, GetHeight_t GetHeight) {
         // fill the buffer
         LKASSERT(hBuf != NULL);
-        LKASSERT(DisplayMap->isMapLoaded());
 
         const double PanLatitude = MapWindow::GetPanLatitude();
         const double PanLongitude = MapWindow::GetPanLongitude();
@@ -373,7 +387,7 @@ public:
                 unsigned short& hDst = hBuf[iy*ixs+ix];
                 // this is setting to 0 any negative terrain value and can be a problem for dutch people
                 // myhbuf cannot load negative values!
-                hDst = std::max(DisplayMap->GetField(Y, X),(short)0);
+                hDst = std::max<short>(GetHeight(Y, X),0);
             }
         }
 
