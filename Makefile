@@ -560,7 +560,7 @@ endif
 LDFLAGS		+=$(PROFILE)
 
 ifeq ($(CONFIG_LINUX),y)
- LDLIBS += -lstdc++ -pthread -march=native -lrt -lm
+ LDLIBS += -lstdc++ -pthread -march=native -lrt -lm -lGeographic
  LDLIBS += $(PNG_LDLIBS)
  LDLIBS += $(FREETYPE_LDLIBS)
  LDLIBS += $(ZZIP_LDLIBS)

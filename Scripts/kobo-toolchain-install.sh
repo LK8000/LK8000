@@ -82,3 +82,19 @@ make
 sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     make install
 cd ..
+
+# install Geographiclib ( 1.46 - 2016-02-15 )
+wget http://freefr.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.46.tar.gz
+tar xzf GeographicLib-1.46.tar.gz
+mkdir GeographicLib-build
+cd GeographicLib-build
+CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
+LDFLAGS="-L/opt/kobo/arm-unknown-linux-gnueabi/lib"  \
+../GeographicLib-1.46/configure \
+    --host=arm-unknown-linux-gnueabi \
+    --prefix=/opt/kobo/arm-unknown-linux-gnueabi \
+    PKG_CONFIG_LIBDIR=/opt/kobo/arm-unknown-linux-gnueabi/lib/pkgconfig
+make
+sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
+    make install
+cd ..

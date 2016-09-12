@@ -13,6 +13,14 @@
 #include <vector>
 #include <memory>
 
+#ifdef _WGS84
+#include <GeographicLib/Geocentric.hpp>
+#include <GeographicLib/Geodesic.hpp>
+
+using GeographicLib::Geocentric;
+using GeographicLib::Geodesic;
+#endif
+
 #ifndef DEG_TO_RAD
 #define DEG_TO_RAD  (PI / 180)
 #define RAD_TO_DEG  (180 / PI)
@@ -33,23 +41,43 @@ class CPoint2D {
   
 public:
   //static const double EARTH_RADIUS  = 6371000.0;
+#ifndef _WGS84
   #define EARTH_RADIUS 6371000.0
-  
+#endif
+
   CPoint2D(double lat, double lon):
     _lat(lat), _lon(lon)
   {
+#ifdef _WGS84
+
+    const Geocentric& earth = Geocentric::WGS84();
+    const double h = 0.;
+    double x, y, z;
+    earth.Forward(lat, lon, h, x, y, z);
+    _x = x;
+    _y = y;
+    _z = z;
+
+#else
     lat *= DEG_TO_RAD;
     lon *= DEG_TO_RAD;
     double clat = cos(lat);
     _x = static_cast<int>(-EARTH_RADIUS * clat * cos(lon));
     _y = static_cast<int>(EARTH_RADIUS * clat * sin(lon));
     _z = static_cast<int>(EARTH_RADIUS * sin(lat));
+#endif
   }
   
   CPoint2D(unsigned x, unsigned y, unsigned z):
     _x(x), _y(y), _z(z)
   {
+#ifdef _WGS84
+
+    const Geocentric& earth = Geocentric::WGS84();
+    double h = 0.; // unused
+    earth.Reverse(_x, _y, _z, _lat, _lon, h);
     
+#else
     _lat = asin(_z / EARTH_RADIUS) * RAD_TO_DEG;
     if(_y == 0)
       _lon = 0;
@@ -57,6 +85,7 @@ public:
       _lon = atan(float(_x) / _y) * RAD_TO_DEG;
       _lon += (_y>=0) ? 90 : -90;
     }
+#endif
   }
   
   double Latitude() const    { return _lat; }
@@ -64,7 +93,7 @@ public:
   
   unsigned Distance(double lat, double lon) const;
   unsigned Distance(const CPoint2D &ref) const;
-  unsigned Distance(const CPoint2D &seg1, const CPoint2D &seg2) const;
+
   unsigned DistanceXYZ(int x, int y, int z) const;
   unsigned DistanceXYZ(const CPoint2D &ref) const;
   unsigned DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, int *nearest_x = 0, int *nearest_y = 0, int *nearest_z = 0) const;
@@ -84,6 +113,16 @@ typedef std::vector<CPoint2D> CPoint2DArray;
  */
 inline unsigned CPoint2D::Distance(double lat, double lon) const
 {
+#ifdef _WGS84
+  assert(_lat >= -90 && _lat <= 90);
+  assert(lat >= -90 && lat <= 90);
+
+  double s12 = 0.;
+  const Geodesic& geod = Geodesic::WGS84();
+  geod.Inverse(_lat, _lon, lat, lon, s12);
+  return s12;
+
+#else
   lat *= DEG_TO_RAD;
   double lat2 = _lat * DEG_TO_RAD;
   lon *= DEG_TO_RAD;
@@ -97,7 +136,8 @@ inline unsigned CPoint2D::Distance(double lat, double lon) const
   double s2 = sin(dlon/2);
   double a= std::max(0.0, std::min(1.0,s1*s1+clat1*clat2*s2*s2));
   
-  return static_cast<unsigned>(6371000.0*2.0*atan2(sqrt(a),sqrt(1.0-a)));
+  return static_cast<unsigned>(EARTH_RADIUS*2.0*atan2(sqrt(a),sqrt(1.0-a)));
+#endif
 }
 
 
@@ -111,44 +151,6 @@ inline unsigned CPoint2D::Distance(double lat, double lon) const
 inline unsigned CPoint2D::Distance(const CPoint2D &ref) const
 {
   return Distance(ref._lat, ref._lon);
-}
-
-
-/** 
- * @brief Calculates approximated distance of point from a line segment
- * 
- * @param seg1 First end of line segment
- * @param seg2 Second end of line segment
- * 
- * @return Calculated distance
- */
-inline unsigned CPoint2D::Distance(const CPoint2D &seg1, const CPoint2D &seg2) const
-{
-  double A = _lon - seg1._lon;
-  double B = _lat - seg1._lat;
-  double C = seg2._lon - seg1._lon;
-  double D = seg2._lat - seg1._lat;
-  
-  double dot = A * C + B * D;
-  double len_sq = C * C + D * D;
-  double param = dot / len_sq;
-  
-  double lon, lat;
-  
-  if(param < 0) {
-    lon = seg1._lon;
-    lat = seg1._lat;
-  }
-  else if(param > 1) {
-    lon = seg2._lon;
-    lat = seg2._lat;
-  }
-  else {
-    lon = seg1._lon + param * C;
-    lat = seg1._lat + param * D;
-  }
-  
-  return Distance(lat, lon);
 }
 
 

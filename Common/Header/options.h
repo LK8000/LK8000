@@ -179,7 +179,9 @@
 // PWC Scoring use WGS84 earth model, but LK8000 use FAISphere
 // PG optimise can Work with WGS84 but Wapoint validation not..
 // we need change Waypoint validation before use it
-// #define _WGS84
+#ifdef __linux__
+#define _WGS84
+#endif
 
 // #define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
                       // enough to warrant detection of the start of free flight)
