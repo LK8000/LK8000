@@ -674,6 +674,8 @@
 #define LK_ALTERN1_DISTNM		131
 #define LK_ALTERN2_DISTNM		132
 
+#define LK_SPEED_ME     133		// Maximum efficiency speed to fly
+
 // The following values are not available for custom configuration
 
 #define LK_WIND			141		//

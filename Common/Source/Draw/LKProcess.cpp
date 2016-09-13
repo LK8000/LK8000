@@ -870,6 +870,15 @@ goto_bearing:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
+
+		// Speed of maximum efficiency
+		case LK_SPEED_ME:
+			value=SPEEDMODIFY*DerivedDrawInfo.Vme;
+			if (value<0||value>999) value=0; else valid=true;
+			_stprintf(BufferValue, TEXT("%d"),(int)value);
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			break;
 				
 		// B44
 		case LK_NETTO:
