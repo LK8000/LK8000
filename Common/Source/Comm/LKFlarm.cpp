@@ -11,6 +11,8 @@
 #include "FlarmRadar.h"
 #include "Sound/Sound.h"
 #include "FlarmCalculations.h"
+#include "NavFunctions.h"
+
 FlarmCalculations flarmCalculations;
 
 

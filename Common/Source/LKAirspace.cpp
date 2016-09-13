@@ -22,6 +22,7 @@
 #include "utils/stringext.h"
 #include "utils/openzip.h"
 #include "Draw/ScreenProjection.h"
+#include "NavFunctions.h"
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
@@ -1414,10 +1415,8 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, doub
 
     ReadCoords(&Comma[1], &EndLon, &EndLat);
 
-    DistanceBearing(CenterY, CenterX, StartLat, StartLon,
-            &Radius, &StartBearing);
-    DistanceBearing(CenterY, CenterX, EndLat, EndLon,
-            NULL, &EndBearing);
+    DistanceBearing(CenterY, CenterX, StartLat, StartLon, &Radius, &StartBearing);
+    DistanceBearing(CenterY, CenterX, EndLat, EndLon, NULL, &EndBearing);
     _geopoints->push_back(CPoint2D(StartLat, StartLon));
 
     if (Rotation > 0) arc_bearing_range = EndBearing - StartBearing;

@@ -130,11 +130,11 @@ static void SetValues(int indexid) {
 
 	double distance=0, bearing=0;
 
-	LL_to_BearRange( WayPointList[TeamCodeRefWaypoint].Latitude,
+	DistanceBearing( WayPointList[TeamCodeRefWaypoint].Latitude,
            WayPointList[TeamCodeRefWaypoint].Longitude,
            ThermalHistory[indexid].Latitude,
            ThermalHistory[indexid].Longitude,
-           &bearing, &distance);
+           &distance, &bearing);
 
 	GetTeamCode(buffer, bearing, distance);
 

@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "NavFunctions.h"
 
 extern void InsertLDRotary(ldrotary_s *buf, double distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void InsertWindRotary(windrotary_s *wbuf, double speed, double track, double altitude);

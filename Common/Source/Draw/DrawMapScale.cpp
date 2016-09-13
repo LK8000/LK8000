@@ -13,7 +13,7 @@
 #include "RasterTerrain.h"
 #include "LKObjects.h"
 #include "utils/stl_utils.h"
-
+#include "NavFunctions.h"
 //
 // SCALE SIZE: NIBLSCALE(42+4)
 //

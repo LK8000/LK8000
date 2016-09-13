@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
+#include "NavFunctions.h"
 
 
 

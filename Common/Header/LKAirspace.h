@@ -562,9 +562,6 @@ int dlgAirspaceWarningDeInit(void);
 
 short ShowAirspaceWarningsToUser();
 
-void ScreenClosestPoint(const POINT &p1, const POINT &p2,
-             const POINT &p3, POINT *p4, int offset);
-
 
 //Data struct for nearest airspace pages
 typedef struct {

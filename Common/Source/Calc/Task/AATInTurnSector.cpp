@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "PGTask/PGConeTaskPt.h"
+#include "NavFunctions.h"
 
 
 

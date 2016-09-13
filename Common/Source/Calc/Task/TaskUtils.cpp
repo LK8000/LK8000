@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include <iterator>
+#include "NavFunctions.h"
 
 bool TaskModified = false;
 bool TargetModified = false;

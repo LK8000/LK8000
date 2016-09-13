@@ -14,6 +14,7 @@
 #include "Topology.h"
 #include "LKObjects.h"
 #include "ScreenProjection.h"
+#include "NavFunctions.h"
 
 #ifdef PNA
   #define FAI_SECTOR_STEPS 11

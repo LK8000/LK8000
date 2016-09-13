@@ -12,6 +12,7 @@
 
 #include "McReady.h"
 #include "Asset.hpp"
+#include "NavFunctions.h"
 
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated

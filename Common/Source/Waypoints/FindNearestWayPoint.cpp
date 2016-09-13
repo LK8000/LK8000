@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "LKStyle.h"
-
+#include "NavFunctions.h"
 
 
 

@@ -17,6 +17,7 @@
 #include "dlgTools.h"
 #include "Event/Event.h"
 #include "resource.h"
+#include "NavFunctions.h"
 
 extern BOOL extGPSCONNECT;
 extern NMEAParser nmeaParser1;

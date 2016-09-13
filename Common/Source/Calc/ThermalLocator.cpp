@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "ThermalLocator.h"
 #include "RasterTerrain.h"
+#include "NavFunctions.h"
 
 
 #define SFACT 111195

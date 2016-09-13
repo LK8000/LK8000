@@ -12,6 +12,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "Util/tstring.hpp"
+#include "NavFunctions.h"
 
 
 typedef std::map<tstring, WAYPOINT> mapCode2Waypoint_t;

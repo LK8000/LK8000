@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "NavFunctions.h"
 
 
 void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {

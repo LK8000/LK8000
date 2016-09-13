@@ -85,11 +85,11 @@ void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	Basic->Longitude);
   */
 
-  LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude,
+  DistanceBearing(WayPointList[TeamCodeRefWaypoint].Latitude,
                   WayPointList[TeamCodeRefWaypoint].Longitude,
                   Basic->Latitude,
                   Basic->Longitude,
-                  &bearing, &distance);
+                  &distance, &bearing);
 
   GetTeamCode(code, bearing, distance);
 
@@ -139,11 +139,11 @@ void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                           );
   */
 
-  LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude,
+  DistanceBearing(WayPointList[TeamCodeRefWaypoint].Latitude,
                   WayPointList[TeamCodeRefWaypoint].Longitude,
                   Basic->Latitude,
                   Basic->Longitude,
-                  &ownBearing, &ownDistance);
+                  &ownDistance, &ownBearing);
 
   if (TeammateCodeValid)
     {

@@ -949,7 +949,7 @@ double scl = xtick;
 		fLat          =  LKTraffic[i].Latitude;
 		fFlarmBearing =  LKTraffic[i].TrackBearing;
 		fFlarmAlt     =  LKTraffic[i].RelativeAltitude;
-		LL_to_BearRange( GPSlat, GPSlon, fLat,  fLon, &fDistBearing, &fFlarmDist);
+		DistanceBearing( GPSlat, GPSlon, fLat,  fLon, &fFlarmDist, &fDistBearing);
 
 		fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
 		asFLARMPos[i].fFlarmBearing= (fFlarmBearing - GPSbrg + RADAR_TURN);
@@ -1390,7 +1390,7 @@ iStep = 1;
 	for(i= 0; i < iTo; i=i+iStep)
 	{
 	  LKASSERT(iIdx>=0 && iIdx<MAX_FLARM_TRACES);
-      LL_to_BearRange( GPSlat, GPSlon, DrawInfo.FLARM_RingBuf[iIdx].fLat ,DrawInfo.FLARM_RingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
+      DistanceBearing( GPSlat, GPSlon, DrawInfo.FLARM_RingBuf[iIdx].fLat ,DrawInfo.FLARM_RingBuf[iIdx].fLon, &fFlarmDist, &fDistBearing);
 
 	  fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
 

@@ -11,6 +11,7 @@
 
 #include "ContestMgr.h"
 #include <memory>
+#include "NavFunctions.h"
 
 //#define MAX_EARTH_DIST_IN_M   40000000.0
 CContestMgr CContestMgr::_instance;

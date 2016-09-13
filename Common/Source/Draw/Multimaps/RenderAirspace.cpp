@@ -19,6 +19,7 @@
 #include "Topology.h"
 #include "InputEvents.h"
 #include "utils/2dpclip.h"
+#include "NavFunctions.h"
 
 extern int Sideview_iNoHandeldSpaces;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];

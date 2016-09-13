@@ -8,10 +8,9 @@
 
 #include "externs.h"
 #include "DoInits.h"
+#include "NavFunctions.h"
 
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
-extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
-
 
 
 // This was introduced in december 2010, updated in october 2011

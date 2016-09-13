@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "NavFunctions.h"
 
 
 

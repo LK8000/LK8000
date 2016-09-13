@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "RasterTerrain.h"
 #include "Dialogs.h"
+#include "NavFunctions.h"
 
 bool RasterMap::GetMapCenter(double *lat, double *lon) const {
   if(!isMapLoaded())

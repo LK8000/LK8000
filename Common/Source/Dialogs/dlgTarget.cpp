@@ -13,6 +13,7 @@
 #include "WindowControls.h"
 #include "Event/Event.h"
 #include "resource.h"
+#include "NavFunctions.h"
 
 static WndForm *wf=NULL;
 static WindowControl *btnMove = NULL;

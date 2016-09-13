@@ -12,6 +12,7 @@
 #include "WindowControls.h"
 #include "Multimap.h"
 #include "resource.h"
+#include "NavFunctions.h"
 
 #define MAX_LIST_ITEMS 50
 ListElement* pResult = NULL;

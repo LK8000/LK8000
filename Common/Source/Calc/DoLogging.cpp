@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Logger.h"
 #include "DoInits.h"
-
+#include "NavFunctions.h"
 
 extern void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 

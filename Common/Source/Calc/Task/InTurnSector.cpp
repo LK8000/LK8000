@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "NavFunctions.h"
 
 
 bool InTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int the_turnpoint) {

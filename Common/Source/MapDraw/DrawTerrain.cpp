@@ -13,6 +13,7 @@
 #include "RGB.h"
 #include "Multimap.h"
 #include "../Draw/ScreenProjection.h"
+#include "NavFunctions.h"
 
 // #define TDEBUG 1
 

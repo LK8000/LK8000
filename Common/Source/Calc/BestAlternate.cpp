@@ -13,8 +13,8 @@
 #include "Message.h"
 #include "Sound/Sound.h"
 #include "CriticalSection.h"
+#include "NavFunctions.h"
 
-extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
 
 extern void InsertCommonList(int newwp);

@@ -17,6 +17,7 @@
 #include "InputEvents.h"
 #include "Dialogs.h"
 #include "resource.h"
+#include "NavFunctions.h"
 
 #ifdef RADIO_ACTIVE
 //extern HWND   hWndMainWindow;

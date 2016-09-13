@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "NavFunctions.h"
 
 
 // Fill Calculated values for waypoint, assuming that DistanceBearing has already been performed!

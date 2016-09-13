@@ -392,11 +392,11 @@ void dlgWayPointDetailsShowModal(short mypage){
      double wpbearing = 0;
 
      if (TeamCodeRefWaypoint >= 0) {
-        LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude,
+        DistanceBearing(WayPointList[TeamCodeRefWaypoint].Latitude,
                   WayPointList[TeamCodeRefWaypoint].Longitude,
                   WayPointList[SelectedWaypoint].Latitude,
                   WayPointList[SelectedWaypoint].Longitude,
-                  &wpbearing, &wpdistance);
+                  &wpdistance, &wpbearing);
 
         GetTeamCode(code,wpbearing, wpdistance);
 	_stprintf(sTmp, TEXT("%s: %s  (%s)"), wf->GetCaption(), WayPointList[SelectedWaypoint].Name, code);

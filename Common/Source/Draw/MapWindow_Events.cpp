@@ -12,6 +12,8 @@
 #include "Dialogs.h"
 #include "Sound/Sound.h"
 #include "ScreenProjection.h"
+#include "NavFunctions.h"
+
 
 bool MapWindow::Event_NearestWaypointDetails(double lon, double lat) {
 

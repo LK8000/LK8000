@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Calculations2.h"
+#include "NavFunctions.h"
 
 BOOL CheckFAILeg(double leg, double total)
 {

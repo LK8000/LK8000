@@ -15,6 +15,7 @@ $Id$
 #include "utils/2dpclip.h"
 #include "CriticalSection.h"
 #include "ScreenProjection.h"
+#include "NavFunctions.h"
 
 extern int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
 extern LKColor taskcolor;

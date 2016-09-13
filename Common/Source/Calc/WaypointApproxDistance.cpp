@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "NavFunctions.h"
 
 int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft,
                                     int i) {

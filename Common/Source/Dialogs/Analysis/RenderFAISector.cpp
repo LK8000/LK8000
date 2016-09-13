@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Defines.h"
 #include "LKObjects.h"
+#include "NavFunctions.h"
 
 #ifdef PNA
 #define FAI_SECTOR_STEPS 11

@@ -12,6 +12,7 @@
 #include "DoInits.h"
 #include "Sound/Sound.h"
 #include "CriticalSection.h"
+#include "NavFunctions.h"
 
 /* 
  * Detect start of free flight (FF) for both towing and winching.

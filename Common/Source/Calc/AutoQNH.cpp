@@ -10,6 +10,8 @@
 #include "DoInits.h"
 #include "Logger.h"
 #include "Waypointparser.h"
+#include "NavFunctions.h"
+
 extern bool UpdateQNH(const double newqnh);
 
 void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {

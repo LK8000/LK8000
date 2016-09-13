@@ -8,6 +8,7 @@
 #include "externs.h"
 #include "MathFunctions.h"
 #include "ScreenProjection.h"
+#include "NavFunctions.h"
 
 ScreenProjection::ScreenProjection() :
     _PanLat(MapWindow::GetPanLatitude()),

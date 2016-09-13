@@ -11,7 +11,7 @@
 #ifdef GTL2
 #include "Waypointparser.h"
 #endif
-
+#include "NavFunctions.h"
 
 /*
  * Used by Alternates and BestAlternate

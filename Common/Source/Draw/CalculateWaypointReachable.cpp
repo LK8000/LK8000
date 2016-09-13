@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "LKInterface.h"
 #include "LKStyle.h"
-
+#include "NavFunctions.h"
 // #define DEBUGCW 1
 
 bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated,

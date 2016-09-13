@@ -14,7 +14,7 @@
 #include "Terrain.h"
 #include "Draw/ScreenProjection.h"
 #include "LKStyle.h"
-
+#include "NavFunctions.h"
 
 const TCHAR *DegreesToText(double brg) {
   if (brg<23||brg>=338) { return MsgToken(1703); } // North

@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "ContestMgr.h"
 #include "LKObjects.h"
+#include "NavFunctions.h"
 
 CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
 

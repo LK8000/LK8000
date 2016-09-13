@@ -10,6 +10,7 @@
 #include "McReady.h"
 #include "RasterTerrain.h"
 #include "LKProcess.h"
+#include "NavFunctions.h"
 
 
 

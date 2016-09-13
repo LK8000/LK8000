@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Sound/Sound.h"
+#include "NavFunctions.h"
 
 #define LKTH_LAT		Calculated->ThermalEstimate_Latitude
 #define LKTH_LON		Calculated->ThermalEstimate_Longitude

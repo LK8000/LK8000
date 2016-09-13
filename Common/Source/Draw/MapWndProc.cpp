@@ -22,6 +22,7 @@
 #include "Sound/Sound.h"
 #include "TunedParameter.h"
 #include "ScreenProjection.h"
+#include "NavFunctions.h"
 
 #ifndef ENABLE_OPENGL
 #include "Screen/LKBitmapSurface.h"

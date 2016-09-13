@@ -11,6 +11,7 @@
 #include "McReady.h"
 #include "Waypointparser.h"
 #include "DoInits.h"
+#include "NavFunctions.h"
 
 
 // 

@@ -28,11 +28,6 @@ BOOL GetFontPath(TCHAR *pPos);
 void StoreType(int Index,int InfoType);
 
 
-void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
-                     double *Distance, double *Bearing);
-double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
-		      double lat3, double lon3);
-
 void SectorEndPoint(double StartLat, double StartLon, double  Radial, double Dist, double *EndLat, double *EndLon);
 void CalculateNewPolarCoef(void);
 void FindLatitudeLongitude(double Lat, double Lon,
@@ -70,8 +65,6 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String, charset& cs);
 
 bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
 
-
-void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 
 double StrToDouble(TCHAR *Source, TCHAR **Stop);
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, int DesiredFieldNumber);

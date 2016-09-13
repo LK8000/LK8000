@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "AATDistance.h"
 #include "CalcTask.h"
+#include "NavFunctions.h"
 
 
 bool InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i)

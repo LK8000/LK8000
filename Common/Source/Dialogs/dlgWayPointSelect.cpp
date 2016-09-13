@@ -15,6 +15,7 @@
 #include "dlgTools.h"
 #include "Event/Event.h"
 #include "resource.h"
+#include "NavFunctions.h"
 
 
 typedef struct{

@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "DoInits.h"
-
+#include "NavFunctions.h"
 
 
 //

@@ -20,6 +20,7 @@
 
 #include "../Draw/ScreenProjection.h"
 #include "ShapeSpecialRenderer.h"
+#include "NavFunctions.h"
 
 #ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"

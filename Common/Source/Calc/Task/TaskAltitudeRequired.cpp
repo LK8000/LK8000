@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "McReady.h"
+#include "NavFunctions.h"
 
 extern double CRUISE_EFFICIENCY;
 
