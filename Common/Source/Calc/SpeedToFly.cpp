@@ -51,8 +51,6 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->Vme = LowPassFilter(Calculated->Vme, Vme, 0.6);
 
     HeadWind = 0;
-
-    HeadWind = 0;
     if (Calculated->FinalGlide && ValidTaskPoint(ActiveTaskPoint)) {
         // according to MC theory STF take account of wind only if on final Glide
         // TODO : for the future add config parameter for always use wind.
