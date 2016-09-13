@@ -461,6 +461,9 @@ ifeq ($(CONFIG_LINUX),y)
  INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
  INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
+ ifneq ($(CONFIG_PC),y)
+  INCLUDES	+= -I$(HDR)/mingw32compat/WinCE
+ endif
 endif
 
 INCLUDES	+=  -I$(SRC)/xcs
@@ -1340,9 +1343,11 @@ OBJS	+= $(BIN)/resource.a
 endif
 
 ifneq ($(CONFIG_LINUX),y)
-OBJS	+= $(BIN)/zzip.a 
-OBJS	+= $(BIN)/compat.a
-OBJS	+= $(BIN)/lk8000.rsc
+ OBJS	+= $(BIN)/zzip.a 
+ OBJS	+= $(BIN)/lk8000.rsc
+ ifneq ($(CONFIG_PC),y)
+  OBJS	+= $(BIN)/compat.a
+ endif
 endif
 
 ifeq ($(OPENGL),y)

@@ -19,7 +19,6 @@
 #include <math.h>
 #include <malloc.h>
 #include <commctrl.h>
-#include <aygshell.h>
 #include <stdlib.h>
 
 #ifndef ASSERT
