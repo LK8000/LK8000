@@ -174,7 +174,6 @@ BOOL InitInstance()
 #endif
 
 
-  if (!goInstallSystem) Poco::Thread::sleep(50); // 091119
   #if TESTBENCH
   StartupStore(TEXT(". Create main window%s"),NEWLINE);
   #endif

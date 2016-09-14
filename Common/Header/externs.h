@@ -59,7 +59,7 @@
 //
 // Common Functions
 //
-extern short	InstallSystem();
+extern void 	InstallSystem();
 extern bool		CheckRootDir();
 extern bool		CheckDataDir();
 extern bool		CheckLanguageDir();

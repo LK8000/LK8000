@@ -356,19 +356,7 @@ int main(int argc, char *argv[]) {
   StartupStore(_T(". Program data directory is <%s>") NEWLINE,LKGetLocalPath());
   #endif
 
-  #if ( WINDOWSPC==0 )
-  #if TESTBENCH
-  StartupStore(TEXT(". Install/copy system objects in device memory%s"),NEWLINE);
-  short didsystem;
-  didsystem=InstallSystem(); 
-  #else
-  InstallSystem();
-  #endif
-  goInstallSystem=true;
-  #if TESTBENCH
-  StartupStore(_T(". InstallSystem ended, code=%d%s"),didsystem,NEWLINE);
-  #endif
-  #endif
+  InstallSystem(); 
 
   // These directories are needed if missing, as LK can run also with no maps and no waypoints..
   CreateDirectoryIfAbsent(TEXT(LKD_LOGS));

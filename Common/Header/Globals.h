@@ -74,7 +74,6 @@ GEXTERN Poco::Event dataTriggerEvent;
 
 // System boot specific flags
 // Give me a go/no-go
-GEXTERN bool goInstallSystem GEXTFALSE;
 GEXTERN bool goCalculationThread GEXTFALSE;
 
 

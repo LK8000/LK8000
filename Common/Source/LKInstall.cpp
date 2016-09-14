@@ -19,7 +19,7 @@
 
 
 // This will NOT be called from PC versions
-short InstallSystem() {
+void InstallSystem() {
 
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
@@ -58,7 +58,6 @@ short InstallSystem() {
 
   if (  failure ) {
 	StartupStore(_T("------ WARNING: NO font will be installed on device (and thus wrong text size displayed)%s"),NEWLINE);
-	return 5; // 091109
   } else {
 
 #if defined(PNA) && defined(UNDER_CE)
@@ -138,7 +137,7 @@ short InstallSystem() {
 
   }
 
-#ifdef WIN32
+#ifdef UNDER_CE
   // search for the main system directory on the real device
   // Remember that SHGetSpecialFolder works differently on CE platforms, and you cannot check for result.
   // We need to verify if directory does really exist.
@@ -237,9 +236,6 @@ short InstallSystem() {
   #if TESTBENCH
   StartupStore(_T(". InstallSystem completed OK%s"),NEWLINE);
   #endif
-
-  return 0;
-
 }
 
 
