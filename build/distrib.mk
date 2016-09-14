@@ -21,6 +21,6 @@ LANGUAGE_FILES += Common/Data/Language/ENG_MSG.TXT
 LANGUAGE_FILES += Common/Data/Language/ENG_HELP.TXT
 LANGUAGE_FILES += Common/Data/Language/_LANGUAGE
 
-CONFIG_FILES = Common/Distribution/LK8000/_Configuration/NOTEPAD.TXT
+CONFIG_FILES = Common/Distribution/LK8000/_Configuration/NOTEDEMO.TXT
 
 WAYPOINT_FILES = Common/Distribution/LK8000/_Waypoints/WAYNOTES.TXT
