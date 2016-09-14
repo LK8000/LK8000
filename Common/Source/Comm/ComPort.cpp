@@ -199,7 +199,9 @@ void ComPort::StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *f
     LKASSERT(fmt!=NULL);
 
     va_start(ap, fmt);
+#ifdef TESTBENCH
     int n = _vsntprintf(tmp, 127, fmt, ap);
+#endif
     va_end(ap);
 
 #ifdef TESTBENCH

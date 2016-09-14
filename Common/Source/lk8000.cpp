@@ -359,9 +359,11 @@ int main(int argc, char *argv[]) {
   #if ( WINDOWSPC==0 )
   #if TESTBENCH
   StartupStore(TEXT(". Install/copy system objects in device memory%s"),NEWLINE);
-  #endif
   short didsystem;
   didsystem=InstallSystem(); 
+  #else
+  InstallSystem();
+  #endif
   goInstallSystem=true;
   #if TESTBENCH
   StartupStore(_T(". InstallSystem ended, code=%d%s"),didsystem,NEWLINE);

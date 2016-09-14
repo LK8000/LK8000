@@ -377,7 +377,9 @@ if(szCommand == NULL) return 0;
 if(len == 0)          return 0;
 //char szAnswer[180];
 TCHAR szTempStr[180] = _T("");
+#ifdef TESTBENCH
 TCHAR szMessage[180] = _T("");
+#endif
 double  fTmp  =0.0;
 int processed=0;
 static int iDetected = 0;
