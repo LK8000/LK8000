@@ -201,6 +201,8 @@ void ComPort::StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *f
     va_start(ap, fmt);
 #ifdef TESTBENCH
     int n = _vsntprintf(tmp, 127, fmt, ap);
+#else
+    _vsntprintf(tmp, 127, fmt, ap);
 #endif
     va_end(ap);
 
