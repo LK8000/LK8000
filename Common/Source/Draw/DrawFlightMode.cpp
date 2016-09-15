@@ -244,7 +244,12 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=1; if (PDABatteryPercent<0) PDABatteryPercent=100; }
   #else
   // If we are not in testbench, no matter simmode is active we shall represent the real battery (as in v5).
+  // Exception: PC version. 
+  #if (WINDOWSPC>0)
+  if (!SIMMODE) return;
+  #else
   if (!HaveBatteryInfo) return;
+  #endif
   #endif
 
   if ((PDABatteryPercent==0 || PDABatteryPercent>100) && PDABatteryStatus==Battery::ONLINE && PDABatteryFlag!=Battery::CHARGING) {

@@ -213,7 +213,7 @@ void Shutdown(void) {
 	    );
   StartupStore(foop);
 #endif
-  StartupStore(_T("Destroy MainWindow" NEWLINE));
+  StartupStore(_T(". Destroy MainWindow" NEWLINE));
   
   #if TESTBENCH
   StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
