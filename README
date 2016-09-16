@@ -1,36 +1,13 @@
-*** WELCOME TO THE LK8000 DEVELOPMENT HUB ***
+WELCOME TO THE LK8000 DEVELOPMENT HUB
 
-THIS IS THE V6.0 BRANCH. ONLY BUG FIXES WILL BE COMMITTED TO THIS BRANCH,
-AND EVENTUALLY MINOR ENHANCEMENTS THAT DO NOT REQUIRE BETA TESTING.
+THIS IS THE MASTER BRANCH, V6.1 CURRENTLY UNDER DEVELOPMENT
 
-V6.0a was released on September, 16th 2016
+Development of master started on September 16, 2016
+(Current branch for production versions is v60)
 
-HISTORY OF V6.0 THROUGH ALL BETA VERSIONS 5.3
-(Development of master started on March, 24 2014)
+HISTORY OF MASTER BRANCH
 
-5.3b    Jun  8, 2015
-5.3c    Jun 22, 2015
-5.3d    Jul  4, 2015
-5.3e    Aug 26, 2015
-5.3f    Nov 13, 2015
-5.3g    Feb  6, 2016
-5.3h    Feb 12, 2016
-5.3i    Feb 20, 2016
-5.3j    Feb 26, 2016
-5.3k    Mar  4, 2016
-5.3l    Mar 11, 2016
-5.3m    Mar 18, 2016
-5.3n    Apr  1, 2016
-5.3o    Apr  8, 2016
-5.3p    Apr 15, 2016
-5.3q    Apr 29, 2016
-5.3r    May  6, 2016
-5.3s    May 13, 2016
-5.3t    May 27, 2016
-5.3u    Jun  3, 2016
-5.3v    Jun 24, 2016
-5.3w    Jul  8, 2016
-v6.0 released on September 16th 2016
+
 
 ================================================================================
 = Build Target                                                                 =
