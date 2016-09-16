@@ -517,7 +517,7 @@ ifeq ($(INT_OVERFLOW), y)
 endif
 
 CXXFLAGS	:= -std=gnu++0x $(OPTIMIZE) $(PROFILE)
-CFLAGS		:= $(OPTIMIZE) $(PROFILE)
+CFLAGS		:= -std=gnu89 $(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration
 LDLIBS :=
