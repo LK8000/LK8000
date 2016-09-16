@@ -1783,6 +1783,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
     // Push last one to the list
     if (parsing_state == 10) {
+        assert(!newairspace);
         if (Radius > 0) {
             // Last one was a circle
             newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
@@ -1790,13 +1791,15 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             // Last one was an area
             CorrectGeoPoints(points);
             // Skip it if we dont have minimum 3 points
-            if (points.size() < 3) {
+            if (points.size() > MIN_AS_SIZE) {
+              newairspace = new CAirspace_Area(std::move(points));
             }
-            newairspace = new CAirspace_Area(std::move(points));
         }
-        newairspace->Init(Name, Type, Base, Top, flyzone);
-        ScopeLock guard(_csairspaces);
-        _airspaces.push_back(newairspace);
+        if(newairspace) {
+          newairspace->Init(Name, Type, Base, Top, flyzone);
+          ScopeLock guard(_csairspaces);
+          _airspaces.push_back(newairspace);
+        }
     }
 
     ScopeLock guard(_csairspaces);
