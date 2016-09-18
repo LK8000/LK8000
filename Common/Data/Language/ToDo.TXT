@@ -384,3 +384,26 @@ _@M2307_  "Radio Settings"
 
 #statup poweroff button label for kobo
 _@M1901_ "POWER OFF"
+
+----------- after v6 ---------
+
+MSG FILE
+
+ +_@M2312_ "Speed of maximum efficiency"
+ +_@M2313_ "SpMe"
++_@M2314_ "Target Req. Efficicency"
+ +_@M2315_ "E.Tar"
+
+HELP FILE
+
++@933
+ +[Maximum efficiency speed to fly]
+ +This is the speed to fly for maximizing distance in the current wind and netto vario conditions.
+ +This is not MacCready STF (neither MC=0) that on the contrary tend to minimize task time and does not depend on current head wind conditions (except that on final glide). 
+ +Use this speed if you want to maximize efficiency and glide distance
+ +
+ +@934
+ +[Target Req. Efficicency]
+ +Required efficiency to the current target
+
+
