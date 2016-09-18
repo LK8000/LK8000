@@ -40,7 +40,17 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
     }
 
+    double netto; if (Basic->NettoVarioAvailable) netto=Basic->NettoVario; else netto=Calculated->NettoVario;
+
+    // calculate maximum efficiency speed to fly
     double HeadWind = 0;
+    if ( Calculated->HeadWind != -999 ) {
+        HeadWind = Calculated->HeadWind;
+    }
+    double Vme = GlidePolar::STF(0, netto, HeadWind);
+    Calculated->Vme = LowPassFilter(Calculated->Vme, Vme, 0.6);
+
+    HeadWind = 0;
     if (Calculated->FinalGlide && ValidTaskPoint(ActiveTaskPoint)) {
         // according to MC theory STF take account of wind only if on final Glide
         // TODO : for the future add config parameter for always use wind.
@@ -49,7 +59,6 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
     }
 
-    double netto; if (Basic->NettoVarioAvailable) netto=Basic->NettoVario; else netto=Calculated->NettoVario;
 
     // this is IAS for best Ground Glide ratio acounting current air mass ( wind / Netto vario )
     double VOptnew = GlidePolar::STF(MACCREADY, netto, HeadWind);

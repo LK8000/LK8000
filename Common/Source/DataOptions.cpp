@@ -302,9 +302,12 @@ void FillDataOptions()
 	SetDataOption(130, ugNone, TEXT("_@M1287_"), TEXT("HDG")); // Heading, text is changed in lkprocess
 	SetDataOption(131, ugDistance, TEXT("_@M1843_"), TEXT("Atn1 nm")); // Alternate1 distance NMiles
 	SetDataOption(132, ugDistance, TEXT("_@M1844_"), TEXT("Atn2 nm")); // Alternate2 distance NMiles
+	SetDataOption(133, ugHorizontalSpeed,TEXT("_@M2312_"), TEXT("_@M2313_")); // Speed of maximum efficiency
+	SetDataOption(134, ugNone,TEXT("_@M2314_"), TEXT("_@M2315_"));  // Target Req. Efficicency
+
 
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
-    static_assert(132 < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
+    static_assert(134 < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
 
     
     // Fill all null string pointer with empty string, avoid to check all time is used.

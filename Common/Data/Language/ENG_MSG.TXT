@@ -2197,3 +2197,9 @@ _@M2308_  "Frequency"
 _@M2309_  "RADIO"
 _@M2310_  "Vol"
 _@M2311_  "Sqw"
+
+# New infoboxes
+_@M2312_ "Speed of maximum efficiency"
+_@M2313_ "SpMe"
+_@M2314_ "Target Req. Efficicency"
+_@M2315_ "E.Tar"

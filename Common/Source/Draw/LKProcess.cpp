@@ -870,7 +870,8 @@ goto_bearing:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
-				
+
+
 		// B44
 		case LK_NETTO:
 			value=LIFTMODIFY*DerivedDrawInfo.NettoVario;
@@ -2417,6 +2418,51 @@ olc_score:
 			_stprintf(BufferUnit, TEXT("nm"));
 			break;
 
+		// B133 Speed of maximum efficiency
+		case LK_SPEED_ME:
+			value=SPEEDMODIFY*DerivedDrawInfo.Vme;
+			if (value<0||value>999) value=0; else valid=true;
+			_stprintf(BufferValue, TEXT("%d"),(int)value);
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			break;
+
+		// B134 Target Req. Efficicency
+		case LK_TARGET_RE: // Target Req. Efficicency
+			switch (OvertargetMode) {
+				case OVT_TASK:
+					LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
+					break;
+				case OVT_TASKCENTER:
+					LKFormatValue(LK_NEXT_CENTER_GR, false, BufferValue, BufferUnit, BufferTitle);
+					break;
+				case OVT_BALT:
+					LKFormatValue(LK_BESTALTERN_GR, false, BufferValue, BufferUnit, BufferTitle);
+					break;
+				case OVT_ALT1:
+					LKFormatValue(LK_ALTERN1_GR, false, BufferValue, BufferUnit, BufferTitle);
+					break;
+				case OVT_ALT2:
+					LKFormatValue(LK_ALTERN2_GR, false, BufferValue, BufferUnit, BufferTitle);
+					break;
+				case OVT_HOME:
+					LKFormatGR(HomeWaypoint, false, BufferValue, BufferUnit);
+					break;
+				case OVT_THER:
+					LKFormatGR(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
+					break;
+				case OVT_MATE:
+					LKFormatGR(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
+					break;
+				case OVT_FLARM:
+					LKFormatGR(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
+					break;
+				default:
+					LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
+					break;
+			}
+			_stprintf(BufferTitle, TEXT("E.Tar"));
+			break;
 
 		// B141
 		case LK_WIND:

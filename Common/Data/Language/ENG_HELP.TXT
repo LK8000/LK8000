@@ -1504,6 +1504,16 @@ A positive value indicates a HEAD WIND, and a negative value indicates a TAIL WI
 If true airspeed is not available, estimated TAS is used. 
 In this case the value is only guessed against the current wind set.
 
+@933
+[Maximum efficiency speed to fly]
+This is the speed to fly for maximizing distance in the current wind and netto vario conditions.
+This is not MacCready STF (neither MC=0) that on the contrary tend to minimize task time and does not depend on current head wind conditions (except that on final glide). 
+Use this speed if you want to maximize efficiency and glide distance
+
+@934
+[Target Req. Efficicency]
+Required efficiency to the current target
+
 #
 # END INFOBOXES 800 - 1199
 #

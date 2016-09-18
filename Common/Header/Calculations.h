@@ -157,6 +157,9 @@ typedef struct _DERIVED_INFO
   // optimum speed to fly instantaneously
   double VOpt; 
 
+  // Maximum efficiency speed to fly
+  double Vme;
+
   // JMW estimated track bearing at next time step
   double NextTrackBearing;
 
