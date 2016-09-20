@@ -2183,7 +2183,7 @@ int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], dou
     ScopeLock guard(_csairspaces);
 
     airspacetype[0].psAS = NULL;
-    for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+    for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
         LKASSERT((*it)->Type() < AIRSPACECLASSCOUNT);
         LKASSERT((*it)->Type() >= 0);
 
