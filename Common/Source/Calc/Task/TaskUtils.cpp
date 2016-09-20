@@ -68,6 +68,9 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
             case 2:
                 *SecType = CONE;
                 break;
+            case 3:
+                *SecType = ESS_CIRCLE;
+                break;
         }
       }
       else

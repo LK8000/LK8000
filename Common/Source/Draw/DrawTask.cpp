@@ -74,6 +74,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
 
     switch (SecType)
     {
+        case ESS_CIRCLE:
         case CIRCLE:
             Surface.DrawCircle(center_x, center_y, width-2, true);
             break;
@@ -184,6 +185,7 @@ DoInit[MDI_DRAWTASK]=false;
             double Radius = 0.;
             GetTaskSectorParameter(i, &Type, &Radius);
             switch (Type) {
+                case ESS_CIRCLE:
                 case CIRCLE:
                     tmp = Radius * zoom.ResScaleOverDistanceModify();
                     Surface.DrawCircle(

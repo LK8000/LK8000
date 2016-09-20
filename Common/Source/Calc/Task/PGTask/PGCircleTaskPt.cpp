@@ -10,7 +10,7 @@
  */
 
 #include "PGTaskPt.h"
-#include "PGCicrcleTaskPt.h"
+#include "PGCircleTaskPt.h"
 #include "Library/newuoa.h"
 
 PGCicrcleTaskPt::PGCicrcleTaskPt() : m_Radius(0), m_bExit(false) {

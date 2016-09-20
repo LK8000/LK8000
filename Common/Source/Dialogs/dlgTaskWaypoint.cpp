@@ -285,6 +285,8 @@ static void SetWaypointValues(bool first=false) {
       if(DoOptimizeRoute()) {
         // Conical ESS
         dfe->addEnumText(gettext(TEXT("_@M2175_")));
+        // Circle ESS
+        dfe->addEnumText(gettext(TEXT("_@M2189_")));
       }
     }
     dfe->SetDetachGUI(true); // disable call to OnAATEnabled
@@ -295,7 +297,7 @@ static void SetWaypointValues(bool first=false) {
 
   WindowControl* pFrm = wf->FindByName(_T("frmCircle"));
   if(pFrm) {
-    pFrm->SetVisible(Task[twItemIndex].AATType==0);
+    pFrm->SetVisible((Task[twItemIndex].AATType==0) || (Task[twItemIndex].AATType==3));
   }
   pFrm = wf->FindByName(_T("frmSector"));
   if(pFrm) {

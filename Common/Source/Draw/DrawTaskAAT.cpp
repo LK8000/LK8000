@@ -39,6 +39,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
             double Radius = 0.;
             GetTaskSectorParameter(maxTp, &Type, &Radius);
             switch (Type) {
+                case ESS_CIRCLE:
                 case CONE:
                 case CIRCLE:
                     tmp1 = Task[maxTp].AATCircleRadius * zoom.ResScaleOverDistanceModify();
@@ -111,6 +112,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
             GetTaskSectorParameter(i, &Type, &Radius);
 
             switch (Type) {
+                case ESS_CIRCLE:
                 case CONE:
                 case CIRCLE:
                     tmp1 = Radius * zoom.ResScaleOverDistanceModify();

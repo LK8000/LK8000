@@ -2120,6 +2120,8 @@ _@M2186_ "*"
 _@M2187_ "Speed Opt."
 _@M2188_ "Thermal Min"
 
+_@M2189_ "Circle ESS"
+
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"

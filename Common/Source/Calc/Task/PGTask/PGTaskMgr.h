@@ -35,6 +35,7 @@ protected:
     void AddLine(int TpIndex);
     void AddSector(int TpIndex);
     void AddCone(int TpIndex);
+    void AddEssCircle(int TpIndex);
 
     void Grid2LatLon(double N, double E, double& lat, double& lon) const;
     void LatLon2Grid(double lat, double lon, double& N, double& E) const;

@@ -469,6 +469,9 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
                 case CONE:
                     Task[i].AATType = 2;
                     break;
+                case ESS_CIRCLE:
+                    Task[i].AATType = 3;
+                    break;
             }
         }
     }
@@ -550,6 +553,10 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
                 GetAttribute(node, _T("radius"), Task[idx].PGConeBaseRadius);
                 GetAttribute(node, _T("slope"), Task[idx].PGConeSlope);
                 Task[idx].OutCircle = false;
+            } else if (_tcscmp(szType, _T("ess_circle")) == 0) {
+                Task[idx].AATType = ESS_CIRCLE;
+                GetAttribute(node, _T("radius"), Task[idx].AATCircleRadius);
+                GetAttribute(node, _T("Exit"), Task[idx].OutCircle);
             }
         }
         GetAttribute(node, _T("lock"), Task[idx].AATTargetLocked);
@@ -982,6 +989,17 @@ bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const
                 SetAttribute(node, _T("base"), TaskPt.PGConeBase);
                 SetAttribute(node, _T("radius"), TaskPt.PGConeBaseRadius);
                 SetAttribute(node, _T("slope"), TaskPt.PGConeSlope);
+                break;
+            case ESS_CIRCLE:
+                SetAttribute(node, _T("type"), _T("ess_circle"));
+                SetAttribute(node, _T("radius"), Radius);
+                if (DoOptimizeRoute()) {
+                    if(idx==0) {
+                        SetAttribute(node, _T("Exit"), PGStartOut?_T("false"):_T("true"));
+                    } else {
+                        SetAttribute(node, _T("Exit"), TaskPt.OutCircle?_T("true"):_T("false"));
+                    }
+                }    
                 break;
             default:
                 LKASSERT(false);

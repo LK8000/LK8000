@@ -18,10 +18,12 @@
 #include "algorithm"
 #include "utils/stl_utils.h"
 #include "math.h"
-#include "PGCicrcleTaskPt.h"
+#include "PGCircleTaskPt.h"
 #include "PGLineTaskPt.h"
 #include "PGSectorTaskPt.h"
 #include "PGConeTaskPt.h"
+#include "PGEssCircleTaskPt.h"
+#include "NavFunctions.h"
 
 inline double rad2deg(double rad) {
     return (rad * 180 / PI);
@@ -105,12 +107,36 @@ void PGTaskMgr::Initialize() {
             case CONE:
                 AddCone(curwp);
                 break;
+            case ESS_CIRCLE:
+                AddEssCircle(curwp);
+                break;
         }
     }
 }
 
 void PGTaskMgr::AddCircle(int TskIdx) {
     PGCicrcleTaskPt *pTskPt = new PGCicrcleTaskPt;
+
+    LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
+            deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
+            pTskPt->m_Center.m_Y,
+            pTskPt->m_Center.m_X);
+
+    if (TskIdx == 0) {
+        pTskPt->m_Radius = StartRadius;
+    } else if (ValidTaskPoint(TskIdx + 1)) {
+        pTskPt->m_Radius = (Task[TskIdx].AATCircleRadius);
+    } else {
+        pTskPt->m_Radius = FinishRadius;
+    }
+
+    pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
+
+    m_Task.push_back(pTskPt);
+}
+
+void PGTaskMgr::AddEssCircle(int TskIdx) {
+    PGCicrcleTaskPt *pTskPt = new PGEssCicrcleTaskPt;
 
     LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
             deg2rad(WayPointList[Task[TskIdx].Index].Longitude),

@@ -11,6 +11,7 @@
 #define DAe    2 // only Exist for not AAT and Not PGTask.
 #define LINE   3 // only Used for Save Start and Finish Type in xml file.
 #define CONE   4 // Only Used In PG Optimized Task
+#define ESS_CIRCLE   5 // Only Used In PG Optimized Task
 
 typedef struct _START_POINT
 {

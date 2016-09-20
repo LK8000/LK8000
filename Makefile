@@ -939,11 +939,12 @@ TASK	:=\
 	$(TSK)/RefreshTask/CalculateTaskSectors.cpp\
 	$(TSK)/RefreshTask/RefreshTask.cpp\
 	$(TSK)/PGTask/PGTaskPt.cpp\
-	$(TSK)/PGTask/PGCicrcleTaskPt.cpp\
+	$(TSK)/PGTask/PGCircleTaskPt.cpp\
 	$(TSK)/PGTask/PGLineTaskPt.cpp\
 	$(TSK)/PGTask/PGTaskMgr.cpp\
 	$(TSK)/PGTask/PGSectorTaskPt.cpp\
 	$(TSK)/PGTask/PGConeTaskPt.cpp\
+	$(TSK)/PGTask/PGEssCircleTaskPt.cpp\
 
 TERRAIN	:=\
 	$(TER)/OpenCreateClose.cpp	\

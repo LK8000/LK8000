@@ -12,7 +12,7 @@
 #ifndef PGCONETASKPT_H
 #define	PGCONETASKPT_H
 
-#include "PGCicrcleTaskPt.h"
+#include "PGCircleTaskPt.h"
 
 class PGConeTaskPt : public PGCicrcleTaskPt {
     friend class PGTaskMgr;

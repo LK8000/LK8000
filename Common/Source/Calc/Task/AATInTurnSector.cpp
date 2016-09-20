@@ -31,6 +31,7 @@ bool InAATTurnSector(const double longitude, const double latitude,
   int Type; double Radius;
   GetTaskSectorParameter(the_turnpoint, &Type, &Radius);
   switch(Type) {
+      case ESS_CIRCLE:
       case CIRCLE:
           retval = (distance < Radius);
           break;
