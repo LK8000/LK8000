@@ -11,10 +11,6 @@
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"
 
-// Set the followings inside options:
-// #define LKMTERRAIN	1	// load terrain DEM also from topology maps, NOT in LKMAPS
-
-
 
 bool RasterTerrain::terrain_initialised = false;
 
@@ -27,67 +23,21 @@ void RasterTerrain::OpenTerrain(void)
   CreateProgressDialog(gettext(TEXT("_@M900_"))); // Loading Terrain File...
 
   TCHAR szFile[MAX_PATH] = _T("\0");
-
   _tcscpy(szFile,szTerrainFile);
 
-  TCHAR szOrigFile[MAX_PATH] = _T("\0");
   ExpandLocalPath(szFile);
-  _tcscpy(szOrigFile, szFile);
-  ContractLocalPath(szOrigFile);
-
-  // If no terrain will be found, the registry will be invalid on next run
-  _tcscpy(szTerrainFile,_T(""));
-
-
-#ifdef LKMTERRAIN
-  static TCHAR  szMFile[MAX_PATH] = TEXT("\0");
-  if (_tcslen(szFile)==0) {
-    StartupStore(_T(". NO TERRAIN file configured%s"),NEWLINE);
-    _tcscpy(szMFile,szMapFile);
-    ExpandLocalPath(szMFile);
-    _tcscpy(szFile,szMFile);
-
-     _tcscpy(szFile,szMFile);
-     _tcscat(szFile, _T("/terrain.dem")); 
-     StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
-  }
-
-  if (CreateTerrainMap(szFile)) {
-	_tcscpy(szTerrainFile,szOrigFile);
-	terrain_initialised = true;
-	return;
-  } else {
-	_tcscpy(szFile,szMFile);
-	_tcscat(szFile, _T("/terrain.dat")); 
-	StartupStore(_T(". Attempting to use DAT <%s> inside mapfile%s"),szFile,NEWLINE);
-
-	if (CreateTerrainMap(szFile)) {
-		_tcscpy(szTerrainFile,szOrigFile);
-		terrain_initialised = true;
-		return;
-	}
-   }
-#else
 
   if ( (_tcslen(szFile)>0) && ( _tcsstr(szFile, _T(".DEM")) || _tcsstr(szFile, _T(".dem")) ) ) {
 	if (CreateTerrainMap(szFile)) {
-		_tcscpy(szterrainFile,szOrigFile);
-		terrain_initialised = true;
-		return;
-	} else {
-		StartupStore(_T("... INVALID TERRAIN file <%s>%s"),szFile,NEWLINE);
+      terrain_initialised = true;
+    } else {
+      // If no terrain will be found, the registry will be invalid on next run
+      _tcscpy(szTerrainFile,_T(""));
+      StartupStore(_T("... INVALID TERRAIN file <%s>%s"),szFile,NEWLINE);
 	}
+  } else {
+    StartupStore(_T(". NO TERRAIN file available.%s"),NEWLINE);
   }
-
-#endif
-
-  if (TerrainMap) {
-	TerrainMap->Close();
-	delete TerrainMap;
-	TerrainMap = NULL;
-  }
-  terrain_initialised = false;
-  StartupStore(_T(". NO TERRAIN file available.%s"),NEWLINE);
 }
 
 

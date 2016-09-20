@@ -111,10 +111,6 @@
 
 // #define LKCOMPETITION	1	// Will disable TRI 
 
-// This stuff will be permanently removed shortly
-#define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
-
-
 // Draws a glide terrain line around the next (active) task waypoint.
 // Includes addition of MSG tokens "Line+NextWP" & "Shade+NextWP"
 // and change in HELP message 194 (for "Glide Terrain Line" setting).

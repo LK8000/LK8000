@@ -2184,10 +2184,6 @@ DataField* dfe = wp->GetDataField();
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _stprintf(tsuf,_T("*%s"),_T(LKS_TERRAINDEM));
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
-#if LKMTERRAIN
-    _stprintf(tsuf,_T("*%s"),_T(LKS_TERRAINDAT));
-    dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
-#endif
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
   }
@@ -3518,9 +3514,6 @@ int ival;
     if (_tcscmp(temptext,szMapFile)) {
       _tcscpy(szMapFile,temptext);
       MAPFILECHANGED= true;
-      #if LKMTERRAIN
-      TERRAINFILECHANGED= true; //for .xcm
-      #endif
     }
   }
 
