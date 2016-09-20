@@ -14,16 +14,16 @@ bool RasterMap::GetMapCenter(double *lat, double *lon) const {
   if(!isMapLoaded())
     return false;
 
-  *lon = (TerrainInfo.Left + TerrainInfo.Right)/2.0;
-  *lat = (TerrainInfo.Top + TerrainInfo.Bottom)/2.0;
+  *lon = (TerrainInfo->Left + TerrainInfo->Right)/2.0;
+  *lat = (TerrainInfo->Top + TerrainInfo->Bottom)/2.0;
   return true;
 }
 
 bool RasterMap::IsInside(double lat, double lon) const {
-  return ((lat <= TerrainInfo.Top) &&
-          (lat >= TerrainInfo.Bottom) &&
-          (lon <= TerrainInfo.Right) &&
-          (lon >= TerrainInfo.Left));
+  return ((lat <= TerrainInfo->Top) &&
+          (lat >= TerrainInfo->Bottom) &&
+          (lon <= TerrainInfo->Right) &&
+          (lon >= TerrainInfo->Left));
 }
 
 
@@ -32,7 +32,7 @@ float RasterMap::GetFieldStepSize() const {
     return 0;
   }
   // this is approximate of course..
-  float fstepsize = (float)(250.0/0.0025*TerrainInfo.StepSize);
+  float fstepsize = (float)(250.0/0.0025*TerrainInfo->StepSize);
   return fstepsize;
 }
 
@@ -42,7 +42,7 @@ int RasterMap::GetEffectivePixelSize(double *pixel_D,
                                      double latitude, double longitude) const
 {
   double terrain_step_x, terrain_step_y;
-  double step_size = TerrainInfo.StepSize*sqrt(2.0);
+  double step_size = TerrainInfo->StepSize*sqrt(2.0);
 
   if ((*pixel_D<=0) || (step_size==0)) {
     *pixel_D = 1.0;
@@ -82,25 +82,25 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
     return;
   }
 
-  Xrounding = iround(xr/TerrainInfo.StepSize);
-  Yrounding = iround(yr/TerrainInfo.StepSize);
+  Xrounding = iround(xr/TerrainInfo->StepSize);
+  Yrounding = iround(yr/TerrainInfo->StepSize);
   if (Xrounding<1) {
     Xrounding = 1;
   }
   
-  fXrounding = 1.0/(Xrounding*TerrainInfo.StepSize);
+  fXrounding = 1.0/(Xrounding*TerrainInfo->StepSize);
   fXroundingFine = fXrounding*256.0;
   if (Yrounding<1) {
     Yrounding = 1;
   }
   
-  fYrounding = 1.0/(Yrounding*TerrainInfo.StepSize);
+  fYrounding = 1.0/(Yrounding*TerrainInfo->StepSize);
   fYroundingFine = fYrounding*256.0;
 
   if ((Xrounding==1)&&(Yrounding==1)) {
     DirectFine = true;
-    xlleft = (int)(TerrainInfo.Left*fXroundingFine)+128;
-    xlltop  = (int)(TerrainInfo.Top*fYroundingFine)-128;
+    xlleft = (int)(TerrainInfo->Left*fXroundingFine)+128;
+    xlltop  = (int)(TerrainInfo->Top*fYroundingFine)-128;
   } else {
     DirectFine = false;
   }

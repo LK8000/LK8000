@@ -8,8 +8,8 @@
 
 #include "externs.h"
 #include "RasterTerrain.h"
-#include "utils/openzip.h"
 #include "OS/Memory.h"
+#include "utils/make_unique.h"
 
 
 ////// Field access ////////////////////////////////////////////////////
@@ -17,72 +17,64 @@
 
 bool RasterMap::Open(const TCHAR* zfilename) {
 
-  terrain_valid = false;
-
-  if (_tcslen(zfilename)<=0) 
-    return false;
-
-  StartupStore(_T(". Terrain Open RasterMapRaw <%s>%s"),zfilename,NEWLINE);
-
-  ZZIP_FILE* fpTerrain = openzip(zfilename, "rb");
-  if (fpTerrain == NULL) {
-	StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE);
-	return false;
-  }
-
-  zzip_size_t dwBytesRead = zzip_fread(&TerrainInfo, 1, sizeof(TERRAIN_INFO), fpTerrain);
-    
-  if (dwBytesRead != sizeof(TERRAIN_INFO)) {
-	StartupStore(_T("------ Terrain read first failed, invalid header%s"),NEWLINE);
-	zzip_fclose(fpTerrain);
-	return false;
-  }
-    
-  size_t nsize = TerrainInfo.Rows*TerrainInfo.Columns;
-  #ifdef HC_DMALLOC
-  StartupStore(_T(". Terrain size is %ld, max hblock %lu %s"),
-    (long)nsize*sizeof(short), CheckMaxHeapBlock(), NEWLINE);
-  #else
-  StartupStore(_T(". Terrain size is %ld%s"),
-    (long)nsize*sizeof(short), NEWLINE);
-  #endif
-
-  if (CheckFreeRam()>(nsize*sizeof(short)+5000000U)) {
-    // make sure there is 5 meg of ram left after allocating space
-    TerrainMem = (short*)malloc(sizeof(short)*nsize);
-  } else {
-    zzip_fclose(fpTerrain);
-    StartupStore(_T(".... Load Terrain FAILED: Not enough memory (free=%u need=%u+5M)!\n"),
-            (unsigned int)CheckFreeRam(), (unsigned int)(nsize*sizeof(short)));
-    TerrainMem = NULL;
+  if (_tcslen(zfilename)<=0) {
     return false;
   }
+
+  StartupStore(_T(". Terrain Open RasterMapRaw <%s>\n"),zfilename);
+
+  TerrainFile.open(zfilename, true);
+  if(TerrainFile.is_open()) {
     
-  if (!TerrainMem) {
-    OutOfMemory(_T(__FILE__),__LINE__);
-    zzip_fclose(fpTerrain);
-    terrain_valid = false;
-  } else {
-    dwBytesRead = zzip_fread(TerrainMem, 1, nsize*sizeof(short), fpTerrain);
-    
-    zzip_fclose(fpTerrain);
-    terrain_valid = true;
-  }
+    TerrainInfo = reinterpret_cast<const TERRAIN_INFO*>(TerrainFile.data());
+    TerrainMem = reinterpret_cast<const short*>(TerrainFile.data() + sizeof(TERRAIN_INFO));
+
+    const size_t nsize = TerrainInfo->Rows*TerrainInfo->Columns;
+    if(sizeof(TERRAIN_INFO) + (nsize*sizeof(short)) != TerrainFile.mapped_size()) {
+      StartupStore(_T("... ERROR Terrain : Invalide file size\n"));
+      Close();
+    } else if (!TerrainInfo->StepSize) {
+      StartupStore(_T("... ERROR Terrain StepSize failure\n"));
+      Close();
+    } else {
+      StartupStore(_T(". Terrain size is %ld\n"), (long)nsize*sizeof(short));
       
-  if (!TerrainInfo.StepSize) {
-    StartupStore(_T("... ERROR Terrain StepSize failure\n"));
-    terrain_valid = false;
-    zzip_fclose(fpTerrain);
-    Close();
+#ifdef UNDER_CE
+      // head memory are faster than memory mapped file,
+      // if filesize are not to huge, store DEM data into heap memory.
+      
+      if (CheckFreeRam()>(nsize*sizeof(short)+5000000U)) {
+        // make sure there is 5 meg of ram left after allocating space
+        pTerrainMem.reset(new(std::nothrow) short[nsize]);
+        if(pTerrainMem) {
+            std::copy_n(TerrainMem, nsize, pTerrainMem.get());
+            TerrainMem = pTerrainMem.get();
+
+            TerrainFile.map(0, sizeof(TERRAIN_INFO));
+            TerrainInfo = reinterpret_cast<const TERRAIN_INFO*>(TerrainFile.data());
+        }
+      }
+#endif
+      
+    }
+  } else {
+    StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE);
   }
-  return terrain_valid;
+  
+  return isMapLoaded();
 }
 
 
 void RasterMap::Close(void) {
-  terrain_valid = false;
-  if (TerrainMem) {
-    free(TerrainMem); TerrainMem = NULL;
+  TerrainMem = nullptr;
+  TerrainInfo = nullptr;
+  
+#ifdef UNDER_CE
+  pTerrainMem = nullptr;
+#endif
+  
+  if(TerrainFile.is_open()) {
+    TerrainFile.close();
   }
 }
 

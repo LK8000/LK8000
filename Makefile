@@ -721,6 +721,7 @@ LIBRARY	:=\
 	$(LIB)/TimeFunctions.cpp\
 	$(LIB)/Utm.cpp \
 	$(LIB)/xmlParser.cpp \
+	$(LIB)/cpp-mmf/memory_mapped_file.cpp \
 
 
 WAYPT	:=\
