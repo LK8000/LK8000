@@ -69,9 +69,14 @@ double LowPassFilter(double y_last, double x_in, double fact);
 
 #ifndef MulDiv
     #define MulDiv _MulDiv
-#endif
 
-int _MulDiv(int nNumber, int nNumerator, int nDenominator);
+inline int _MulDiv(int nNumber, int nNumerator, int nDenominator) {
+    int64_t res = nNumber;
+    res *= nNumerator;
+    res /= nDenominator;
+    return res;
+}
+#endif
 
 inline int iround(double i) {
     return lround(i);
