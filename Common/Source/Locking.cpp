@@ -41,13 +41,6 @@ void CheckAndUnlockFlightData() {
 }
 
 
-void LockTerrainDataCalculations() {
-  CritSec_TerrainDataCalculations.Lock();
-}
-
-void UnlockTerrainDataCalculations() {
-  CritSec_TerrainDataCalculations.Unlock();
-}
 
 void LockTerrainDataGraphics() {
   CritSec_TerrainDataGraphics.Lock();

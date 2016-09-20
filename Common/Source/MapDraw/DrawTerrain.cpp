@@ -43,8 +43,7 @@ static void ColorRampLookup(const short h,
 
     for (unsigned int i = numramp - 1; i--;) {
         if (h >= ramp_colors[i].h) {
-            const unsigned short f = (unsigned short)(h - ramp_colors[i].h) * is /
-                    (unsigned short)(ramp_colors[i + 1].h - ramp_colors[i].h);
+            const unsigned short f = (h - ramp_colors[i].h) * is / (ramp_colors[i + 1].h - ramp_colors[i].h);
             
             const unsigned short of = is - f;
 
@@ -102,6 +101,7 @@ class TerrainRenderer {
 public:
 
     TerrainRenderer(const RECT& rc) : _dirty(true),  sbuf(), hBuf(), colorBuf()  {
+        terrain_ready = false;
 
 #if (WINDOWSPC>0) && TESTBENCH
         StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"), rc.left, rc.top, rc.right, rc.bottom);
@@ -248,31 +248,14 @@ private:
     unsigned short *hBuf;
     BGRColor *colorBuf;
     bool do_shading;
-    RasterMap *DisplayMap;
-    bool is_terrain;
     static constexpr int interp_levels = 2;
     const COLORRAMP* color_ramp;
     static constexpr unsigned int height_scale = 4;
    
 public:
 
-    bool SetMap() {
-        if (hBuf == NULL || colorBuf == NULL) return false;
-        is_terrain = true;
-        DisplayMap = RasterTerrain::TerrainMap;
-        color_ramp = &terrain_colors[TerrainRamp][0];
-
-        if (is_terrain) {
-            do_shading = true;
-        } else {
-            do_shading = false;
-        }
-
-        return (DisplayMap);
-    }
-
     void SetShading() {
-        do_shading = (is_terrain && Shading && terrain_doshading[TerrainRamp]);
+        do_shading = (Shading && terrain_doshading[TerrainRamp]);
     }
 
     /**
@@ -280,6 +263,12 @@ public:
      * @offset : {top, left} coordinate of Terrain Rendering Rect relative to DrawRect
      */
     void Height(const POINT& offset, const ScreenProjection& _Proj) {
+
+        RasterMap* DisplayMap = RasterTerrain::TerrainMap;
+        assert(DisplayMap);
+        if(!DisplayMap) {
+            return;
+        }
 
         double X, Y;
 
@@ -345,7 +334,7 @@ public:
         orig.x -= offset.x;
         orig.y -= offset.y;
         
-        FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y);
+        FillHeightBuffer(DisplayMap, X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y);
 
         DisplayMap->Unlock();
     }
@@ -354,7 +343,7 @@ public:
      * Attention ! never call this without check if map is loaded.
      */
     gcc_noinline
-    void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
+    void FillHeightBuffer(RasterMap* DisplayMap, const int X0, const int Y0, const int X1, const int Y1) {
         // fill the buffer
         LKASSERT(hBuf != NULL);
         LKASSERT(DisplayMap->isMapLoaded());
@@ -556,6 +545,7 @@ public:
     };
 
     void ColorTable() {
+        color_ramp = &terrain_colors[TerrainRamp][0];
         if (color_ramp == lastColorRamp) {
             // no need to update the color table
             return;
@@ -614,6 +604,7 @@ void CloseTerrainRenderer() {
         delete trenderer;
         trenderer = NULL;
     }
+    terrain_ready = false;
 }
 
 /**
@@ -691,11 +682,11 @@ _redo:
     // We paint full screen, so we resize it.
     if (LKSW_ResetTerrainRenderer || (rc.bottom != oldrc.bottom) || (rc.right != oldrc.right)
             || (rc.left != oldrc.left) || (rc.top != oldrc.top)) {
-#if (WINDOWSPC>0) && TESTBENCH
+#if TESTBENCH
         if (LKSW_ResetTerrainRenderer) {
             StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
         } else {
-            StartupStore(_T("... Change vertical resolution from %ld,%ld,%ld,%ld  to %ld,%ld,%ld,%ld\n"),
+            StartupStore(_T("... Change vertical resolution from %d,%d,%d,%d  to %d,%d,%d,%d\n"),
                     oldrc.left, oldrc.top, oldrc.right, oldrc.bottom, rc.left, rc.top, rc.right, rc.bottom);
         }
 #endif
@@ -710,9 +701,6 @@ _redo:
     }
 
     if(trenderer->IsDirty()) {
-        if (!trenderer->SetMap()) {
-            return false;
-        }
 
         // load terrain shading parameters
         // Make them instead dynamically calculated based on previous average terrain illumination

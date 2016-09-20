@@ -510,7 +510,9 @@ int main(int argc, char *argv[]) {
 	CreateProgressDialog(gettext(TEXT("_@M1215_")));
 
 
+  LockTerrainDataGraphics();
   RasterTerrain::OpenTerrain();
+  UnlockTerrainDataGraphics();
 
   ReadWayPoints();
   StartupStore(_T(". LOADED %d WAYPOINTS + %u virtuals%s"),(unsigned)WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);

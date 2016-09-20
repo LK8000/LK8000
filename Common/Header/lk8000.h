@@ -24,8 +24,6 @@ extern void UnlockFlightData();
 extern void LockFlightData();
 extern void UnlockTaskData();
 extern void LockTaskData();
-extern void UnlockTerrainDataCalculations();
-extern void LockTerrainDataCalculations();
 extern void UnlockTerrainDataGraphics();
 extern void LockTerrainDataGraphics();
 extern void TriggerGPSUpdate();

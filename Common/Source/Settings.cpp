@@ -70,8 +70,10 @@ void SettingsLeave() {
 	#if TESTBENCH
 	StartupStore(_T(".... TERRAINFILECHANGED from configuration\n"));
 	#endif
+    LockTerrainDataGraphics();
 	RasterTerrain::CloseTerrain();
 	RasterTerrain::OpenTerrain();
+    UnlockTerrainDataGraphics();
 	// NO! We dont reload waypoints on terrain change.
 	// SetHome(WAYPOINTFILECHANGED==TRUE);
 	MapWindow::ForceVisibilityScan = true;

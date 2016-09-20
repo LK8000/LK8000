@@ -20,12 +20,11 @@ class RasterMap final {
  public:
   RasterMap() {
     terrain_valid = false;
-    max_field_value = 0;
     DirectFine = false;
    
     TerrainMem = NULL;
   }
-  ~RasterMap() {};
+  ~RasterMap() { Close(); }
 
   inline bool isMapLoaded() const {
     return terrain_valid;
@@ -54,7 +53,6 @@ class RasterMap final {
   void Unlock() { CritSec_TerrainFile.Unlock(); }
   
  protected:
-  short max_field_value;
   TERRAIN_INFO TerrainInfo;
    
   int xlleft;
@@ -124,32 +122,28 @@ short RasterMap::_GetFieldAtXY(unsigned int lx, unsigned int ly) const {
 class RasterTerrain {
 public:
 
-  RasterTerrain() {
-    terrain_initialised = false;
-  }
-
   static void OpenTerrain();
   static void CloseTerrain();
-  static bool terrain_initialised;
   static bool isTerrainLoaded() {
-    return terrain_initialised;
+    return TerrainMap;
   }
   static RasterMap* TerrainMap;
-  static bool CreateTerrainMap(const TCHAR *zfilename);
 
- public:
+public:
   static void Lock(void);
   static void Unlock(void);
-  static short GetTerrainHeight(const double &Latitude,
-                                const double &Longitude);
+  
+  static short GetTerrainHeight(const double &Latitude, const double &Longitude);
 
   static void SetTerrainRounding(double x, double y);
 
-  static int GetEffectivePixelSize(double *pixel_D, 
-                                   double latitude, double longitude);
+  static int GetEffectivePixelSize(double *pixel_D, double latitude, double longitude);
   static bool WaypointIsInTerrainRange(double latitude, double longitude);
-  static bool GetTerrainCenter(double *latitude,
-                               double *longitude);
+  static bool GetTerrainCenter(double *latitude, double *longitude);
+  
+protected:
+  static bool CreateTerrainMap(const TCHAR *zfilename);
+
 };
 
 

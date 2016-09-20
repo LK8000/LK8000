@@ -11,12 +11,10 @@
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"
 
-
-bool RasterTerrain::terrain_initialised = false;
-
+RasterMap* RasterTerrain::TerrainMap = nullptr;
+        
 void RasterTerrain::OpenTerrain(void)
 {
-  terrain_initialised = false;
   #if TESTBENCH
   StartupStore(TEXT(". Loading Terrain... %s"),NEWLINE);
   #endif
@@ -24,13 +22,10 @@ void RasterTerrain::OpenTerrain(void)
 
   TCHAR szFile[MAX_PATH] = _T("\0");
   _tcscpy(szFile,szTerrainFile);
-
   ExpandLocalPath(szFile);
 
   if ( (_tcslen(szFile)>0) && ( _tcsstr(szFile, _T(".DEM")) || _tcsstr(szFile, _T(".dem")) ) ) {
-	if (CreateTerrainMap(szFile)) {
-      terrain_initialised = true;
-    } else {
+	if (!CreateTerrainMap(szFile)) {
       // If no terrain will be found, the registry will be invalid on next run
       _tcscpy(szTerrainFile,_T(""));
       StartupStore(_T("... INVALID TERRAIN file <%s>%s"),szFile,NEWLINE);
@@ -44,16 +39,15 @@ void RasterTerrain::OpenTerrain(void)
 bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
   LKASSERT(!TerrainMap); // memory leak;
   
-  TerrainMap = new RasterMap();
+  TerrainMap = new(std::nothrow) RasterMap();
   if (!TerrainMap) {
     return false;
   }
   if (!TerrainMap->Open(zfilename)) {
     delete TerrainMap;
     TerrainMap = nullptr;  
-    return false;
   } 
-  return true;
+  return isTerrainLoaded();
 }
 
 ///////// Specialised open/close routines /////////////////// 
@@ -67,14 +61,7 @@ void RasterTerrain::CloseTerrain(void)
 
   // TODO code: lock it first?
 
-  if (terrain_initialised) {
-
-    if (TerrainMap) {
-      TerrainMap->Close();
-      delete TerrainMap; 
-      TerrainMap = NULL;
-    }
-    terrain_initialised = false;
-  }
+  delete TerrainMap; 
+  TerrainMap = nullptr;
 }
 

@@ -10,9 +10,6 @@
 #include "RasterTerrain.h"
 #include "Dialogs.h"
 
-RasterMap* RasterTerrain::TerrainMap = NULL;
-
-
 bool RasterMap::GetMapCenter(double *lat, double *lon) const {
   if(!isMapLoaded())
     return false;

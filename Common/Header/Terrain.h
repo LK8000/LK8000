@@ -8,7 +8,7 @@
 
 typedef struct _COLORRAMP
 {
-  short h;
+  unsigned short h;
   unsigned char r;
   unsigned char g;
   unsigned char b;

@@ -16,9 +16,7 @@
 
 
 bool RasterMap::Open(const TCHAR* zfilename) {
-  ZZIP_FILE *fpTerrain;
 
-  max_field_value = 0;
   terrain_valid = false;
 
   if (_tcslen(zfilename)<=0) 
@@ -26,7 +24,7 @@ bool RasterMap::Open(const TCHAR* zfilename) {
 
   StartupStore(_T(". Terrain Open RasterMapRaw <%s>%s"),zfilename,NEWLINE);
 
-  fpTerrain = openzip(zfilename, "rb");
+  ZZIP_FILE* fpTerrain = openzip(zfilename, "rb");
   if (fpTerrain == NULL) {
 	StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE);
 	return false;
@@ -67,9 +65,6 @@ bool RasterMap::Open(const TCHAR* zfilename) {
   } else {
     dwBytesRead = zzip_fread(TerrainMem, 1, nsize*sizeof(short), fpTerrain);
     
-    for (size_t i=0; i< nsize; ++i) {
-      max_field_value = max(TerrainMem[i], max_field_value);
-    }
     zzip_fclose(fpTerrain);
     terrain_valid = true;
   }

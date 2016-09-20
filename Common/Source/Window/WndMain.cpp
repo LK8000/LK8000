@@ -136,13 +136,14 @@ void Shutdown(void) {
   StartupStore(TEXT(".... CloseTerrainTopology%s"),NEWLINE);
   #endif
 
-  RasterTerrain::CloseTerrain();
-
+  LockTerrainDataGraphics();
   CloseTopology();
   #if USETOPOMARKS
   TopologyCloseMarks();
   #endif
   CloseTerrainRenderer();
+  RasterTerrain::CloseTerrain();
+  UnlockTerrainDataGraphics();
 
   LiveTrackerShutdown();
 
