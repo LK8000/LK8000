@@ -13,7 +13,7 @@
 #define CLASSB                          5
 #define CLASSC                          6
 #define CLASSD                          7
-#define GLIDING                         8
+#define NOGLIDER                        8
 #define CTR                             9
 #define WAVE                            10
 #define AATASK                          11

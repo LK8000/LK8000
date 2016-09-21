@@ -1962,15 +1962,15 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             break;
         case 'F':
             if(len==1) Type=CLASSF; // F class airspace
-            else if (_tcsicmp(dataStr,_T("FIR"))==0) continue; //TODO: FIR missing in LK8000
+            //else if (_tcsicmp(dataStr,_T("FIR"))==0) continue; //TODO: FIR missing in LK8000
             break;
         case 'G':
             if(len==1) Type=CLASSG; // G class airspace
-            else if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDING;
+            //else if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDING; //TODO: GLIDING missing in LK8000
             break;
-        case 'O':
-            if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
-            break;
+        //case 'O':
+            //if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
+            //break;
         case 'P':
             if (_tcsicmp(dataStr,_T("PROHIBITED"))==0) Type=PROHIBITED; // Prohibited area
             break;
@@ -1980,8 +1980,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             break;
         case 'T':
             if(len==3 && dataStr[1]=='M') {
-                if(dataStr[2]=='A') continue; //TODO: TMA missing in LK8000
-                else if(dataStr[2]=='Z') Type=CLASSTMZ; //TMZ
+                //if(dataStr[2]=='A') continue; //TODO: TMA missing in LK8000
+                /*else*/ if(dataStr[2]=='Z') Type=CLASSTMZ; //TMZ
             }
             break;
         case 'W':
