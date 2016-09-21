@@ -287,6 +287,8 @@ void WhereAmI::run(void) {
     double dist_unknown = std::numeric_limits<double>::max();
 
     for(unsigned i=NUMRESWP; i<WayPointList.size(); ++i) {
+        
+        if(WayPointList[i].Style == STYLE_THERMAL) continue;
 
         DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, 
                       WayPointList[i].Latitude, WayPointList[i].Longitude, 
