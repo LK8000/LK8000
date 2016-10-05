@@ -29,13 +29,9 @@ bool   Statistics::unscaled_y;
 LKPen penThinSignal;
 
 int analysis_page=ANALYSYS_PAGE_DEFAULT;
-WndForm *wfa=NULL;
-WndOwnerDrawFrame *waGrid=NULL;
-WndOwnerDrawFrame *waInfo=NULL;
-static WndButton *wCalc=NULL;
 
 extern CContestMgr::TType contestType;
-extern void UpdateAnalysis(void);
+extern void UpdateAnalysis(WndForm* wfa);
 
 
 
@@ -54,7 +50,7 @@ void Statistics::Reset() {
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {
-    UpdateAnalysis();
+    UpdateAnalysis(pWnd);
     return true;
 }
 
@@ -67,18 +63,10 @@ void Statistics::FormatTicText(TCHAR *text, const double val, const double step)
   }
 }
 
-
-
-static void SetCalcCaption(const TCHAR* caption) {
-  if (wCalc) {
-    wCalc->SetCaption(gettext(caption));
-  }
-}
-
-
-
 static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
 
+  WndForm* pForm = Sender->GetParentWndForm();
+  
   const RECT rcgfx = Sender->GetClientRect();
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
@@ -97,37 +85,38 @@ static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
 
     Surface.SetBackgroundTransparent();
 
-
-  switch (analysis_page) {
+  
+const TCHAR* CalcCaption = NULL;    
+switch (analysis_page) {
   case ANALYSIS_PAGE_BAROGRAPH:
-    SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
+    CalcCaption = TEXT("_@M885_"); // Settings
     Statistics::RenderBarograph(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_CLIMB:
-    SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
+    CalcCaption = TEXT("_@M886_"); // Task calc
     Statistics::RenderClimb(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_WIND:
-    SetCalcCaption(gettext(TEXT("_@M887_"))); // Set wind
+    CalcCaption = TEXT("_@M887_"); // Set wind
     Statistics::RenderWind(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_POLAR:
-    SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
+    CalcCaption = TEXT("_@M885_"); // Settings
     Statistics::RenderGlidePolar(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_TEMPTRACE:
-    SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
+    CalcCaption = TEXT("_@M885_"); // Settings
     Statistics::RenderTemperature(Surface, rcgfx);
     break;
   case ANALYSIS_PAGE_TASK:
-    SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
+    CalcCaption = TEXT("_@M886_"); // Task calc
     LockTaskData();
     Statistics::RenderTask(Surface, rcgfx, false);
     UnlockTaskData();
     break;
 
   case ANALYSIS_PAGE_CONTEST:
-    SetCalcCaption(gettext(TEXT("_@M1451_"))); // Change
+    CalcCaption = TEXT("_@M1451_"); // Change
     LockTaskData();
     Statistics::RenderContest(Surface, rcgfx);
     UnlockTaskData();
@@ -135,7 +124,7 @@ static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
 
 
   case ANALYSIS_PAGE_TASK_SPEED:
-    SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
+    CalcCaption = TEXT("_@M886_"); // Task calc
     LockTaskData();
     Statistics::RenderSpeed(Surface, rcgfx);
     UnlockTaskData();
@@ -144,12 +133,20 @@ static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
     // should never get here!
     break;
   }
+
+  if(CalcCaption) {
+    WindowControl *wCalc = pForm->FindByName(TEXT("cmdCalc"));
+    if (wCalc) {
+      wCalc->SetCaption(gettext(CalcCaption));
+    }  
+  }
+  
   Surface.SelectObject(hfOld);
 
 }
 
 
-static void NextPage(int Step){
+static void NextPage(WndForm* pForm, int Step){
   analysis_page += Step;
 
 LockFlightData(); /* skip Temperature Page if no OAT available */
@@ -162,16 +159,16 @@ UnlockFlightData();
     analysis_page = 0;
   if (analysis_page < 0)
     analysis_page = MAXPAGE;
-  UpdateAnalysis();
+  UpdateAnalysis(pForm);
 }
 
 
 static void OnNextClicked(WndButton* pWnd){
-    NextPage(+1);
+    NextPage(pWnd->GetParentWndForm(), +1);
 }
 
 static void OnPrevClicked(WndButton* pWnd){
-    NextPage(-1);
+    NextPage(pWnd->GetParentWndForm(), -1);
 }
 
 static void OnCloseClicked(WndButton* pWnd){
@@ -184,7 +181,7 @@ static void OnCloseClicked(WndButton* pWnd){
 }
 
 static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
-    WindowControl* pGrid = wfa->FindByName(TEXT("frmGrid"));
+    WindowControl* pGrid = pWnd->FindByName(TEXT("frmGrid"));
     if (pGrid->HasFocus())
         return false;
 
@@ -194,12 +191,12 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
         case KEY_LEFT:
         case '6':
             pBtn = pWnd->FindByName(TEXT("cmdPrev"));
-            NextPage(-1);
+            NextPage(pWnd, -1);
             break;
         case KEY_RIGHT:
         case '7':
             pBtn = pWnd->FindByName(TEXT("cmdNext"));
-            NextPage(+1);
+            NextPage(pWnd, +1);
             break;;
     }
     if (pBtn) {
@@ -211,13 +208,15 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
 }
 
 static void OnCalcClicked(WndButton* pWnd){
+  WndForm* pForm = pWnd->GetParentWndForm();
+
   if (analysis_page==ANALYSIS_PAGE_BAROGRAPH) {
     dlgBasicSettingsShowModal();
   }
   if (analysis_page==ANALYSIS_PAGE_CLIMB) {
-    wfa->SetVisible(false);
+    pForm->SetVisible(false);
     dlgTaskCalculatorShowModal();
-    wfa->SetVisible(true);
+    pForm->SetVisible(true);
   }
   if (analysis_page==ANALYSIS_PAGE_WIND) {
     dlgWindSettingsShowModal();
@@ -229,9 +228,9 @@ static void OnCalcClicked(WndButton* pWnd){
     dlgBasicSettingsShowModal();
   }
   if ((analysis_page==ANALYSIS_PAGE_TASK) || (analysis_page==ANALYSIS_PAGE_TASK_SPEED)) {
-    wfa->SetVisible(false);
+    pForm->SetVisible(false);
     dlgTaskCalculatorShowModal();
-    wfa->SetVisible(true);
+    pForm->SetVisible(true);
   }
   if (analysis_page==ANALYSIS_PAGE_CONTEST) {
     // Rotate presented contest
@@ -282,11 +281,11 @@ static void OnCalcClicked(WndButton* pWnd){
     }
   }
 
-  UpdateAnalysis();
+  UpdateAnalysis(pForm);
 }
 
 static void OnAspBearClicked(WndButton* pWnd){
-    UpdateAnalysis();
+    UpdateAnalysis(pWnd->GetParentWndForm());
 }
 
 
@@ -312,15 +311,10 @@ if (entered == true) /* prevent re entrance */
 	return;
 
 unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode of main map */
-  wfa=NULL;
-  waGrid=NULL;
-  waInfo=NULL;
-  wCalc=NULL;
   entered = true;
 
-  wfa = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ANALYSIS_L : IDR_XML_ANALYSIS_P);
-
-  if (!wfa) return;
+  WndForm* pForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ANALYSIS_L : IDR_XML_ANALYSIS_P);
+  if (!pForm) return;
 
   LKColor COL = LKColor(50,243,45);
   if(INVERTCOLORS || IsDithered())
@@ -328,30 +322,18 @@ unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode
   penThinSignal.Create(PEN_SOLID, IBLSCALE(2) , COL);
 
 
-  wfa->SetKeyDownNotify(FormKeyDown);
+  pForm->SetKeyDownNotify(FormKeyDown);
 
-  waGrid = (WndOwnerDrawFrame*)wfa->FindByName(TEXT("frmGrid"));
-  LKASSERT(waGrid);
-  if (!waGrid) return;
-
-  waInfo = (WndOwnerDrawFrame*)wfa->FindByName(TEXT("frmInfo"));
-  LKASSERT(waInfo);
-  if (!waInfo) return;
-
-  wCalc = ((WndButton *)wfa->FindByName(TEXT("cmdCalc")));
-  LKASSERT(wCalc);
-  if (!wCalc) return;
-
-  WndButton *wClose = (WndButton *)wfa->FindByName(TEXT("cmdClose"));
+  WndButton *wClose = (WndButton *)pForm->FindByName(TEXT("cmdClose"));
   LKASSERT(wClose);
   if (!wClose) return;
   wClose->SetOnClickNotify(OnCloseClicked);
 
-  WndButton *wNext = (WndButton *)wfa->FindByName(TEXT("cmdNext"));
+  WndButton *wNext = (WndButton *)pForm->FindByName(TEXT("cmdNext"));
   LKASSERT(wNext);
   if (!wNext) return;
 
-  WndButton *wPrev = (WndButton *)wfa->FindByName(TEXT("cmdPrev"));
+  WndButton *wPrev = (WndButton *)pForm->FindByName(TEXT("cmdPrev"));
   LKASSERT(wPrev);
   if (!wPrev) return;
 
@@ -360,20 +342,22 @@ unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode
   // < >
   // CLOSE
   if (!ScreenLandscape) {
-	int ytop=wCalc->GetTop();
-	int ysize=ScreenSizeY-ytop-NIBLSCALE(20);
-	int sep=NIBLSCALE(1);
-	int hei=(ysize-sep*2)/3;
-	wCalc->SetHeight(hei);
-	wNext->SetHeight(hei);
-	wPrev->SetHeight(hei);
-	wClose->SetHeight(hei);
+    WindowControl *wCalc = pForm->FindByName(TEXT("cmdCalc"));
+    if(wCalc) {
+      int ytop=wCalc->GetTop();
+      int ysize=ScreenSizeY-ytop-NIBLSCALE(20);
+      int sep=NIBLSCALE(1);
+      int hei=(ysize-sep*2)/3;
+      wCalc->SetHeight(hei);
+      wNext->SetHeight(hei);
+      wPrev->SetHeight(hei);
+      wClose->SetHeight(hei);
 
-	wNext->SetTop(ytop+hei+sep);
-	wPrev->SetTop(ytop+hei+sep);
+      wNext->SetTop(ytop+hei+sep);
+      wPrev->SetTop(ytop+hei+sep);
 
-	wClose->SetTop(ytop+hei+hei+sep+sep);
-
+      wClose->SetTop(ytop+hei+hei+sep+sep);
+    }
   }
 
   /*
@@ -390,18 +374,18 @@ unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode
   }
   */
 
-  wfa->SetTimerNotify(5000, OnTimerNotify);
+  pForm->SetTimerNotify(5000, OnTimerNotify);
 
 //  UpdateAnalysis();
 
   if (inPage!=ANALYSYS_PAGE_DEFAULT) analysis_page=inPage;
-  UpdateAnalysis();
+  UpdateAnalysis(pForm);
 
-  wfa->ShowModal();
+  pForm->ShowModal();
 
-  delete wfa;
+  delete pForm;
 
-  wfa = NULL;
+  pForm = NULL;
 
   penThinSignal.Release();
 

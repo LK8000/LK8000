@@ -16,12 +16,18 @@
 extern CContestMgr::TType contestType;
 
 extern int analysis_page;
-extern WndForm *wfa;
-extern WndOwnerDrawFrame *waGrid;
-extern WndOwnerDrawFrame *waInfo;
 
+void UpdateAnalysis(WndForm* pForm){
+  
+  WndOwnerDrawFrame *waGrid = (WndOwnerDrawFrame*)pForm->FindByName(TEXT("frmGrid"));
+  LKASSERT(waGrid);
+  if (!waGrid) return;
 
-void UpdateAnalysis(void){
+  WndOwnerDrawFrame *waInfo = (WndOwnerDrawFrame*)pForm->FindByName(TEXT("frmInfo"));
+  LKASSERT(waInfo);
+  if (!waInfo) return;
+  
+  
   TCHAR sTmp[1000];
 
   TCHAR szPolarName[80];
@@ -35,7 +41,7 @@ void UpdateAnalysis(void){
                 gettext(TEXT("_@M93_")), 
 	// LKTOKEN  _@M127_ = "Barograph" 
                 gettext(TEXT("_@M127_")));
-      wfa->SetCaption(sTmp);
+      pForm->SetCaption(sTmp);
       if (flightstats.Altitude_Ceiling.sum_n<2) {
         _tcscpy(sTmp, TEXT("\0"));
       } else if (flightstats.Altitude_Ceiling.sum_n<4) {
@@ -68,7 +74,7 @@ void UpdateAnalysis(void){
                 gettext(TEXT("_@M93_")),
 	// LKTOKEN  _@M182_ = "Climb" 
                 gettext(TEXT("_@M182_")));
-      wfa->SetCaption(sTmp);
+      pForm->SetCaption(sTmp);
 
       if (flightstats.ThermalAverage.sum_n==0) {
         _tcscpy(sTmp, TEXT("\0"));
@@ -101,7 +107,7 @@ void UpdateAnalysis(void){
                 gettext(TEXT("_@M93_")),
 	// LKTOKEN  _@M820_ = "Wind at Altitude" 
                 gettext(TEXT("_@M820_")));
-      wfa->SetCaption(sTmp);
+      pForm->SetCaption(sTmp);
       _stprintf(sTmp, TEXT(" "));
       waInfo->SetCaption(sTmp);
     break;
@@ -121,7 +127,7 @@ void UpdateAnalysis(void){
 	                GlidePolar::GetAUW());
 
 	}
-      wfa->SetCaption(sTmp);
+      pForm->SetCaption(sTmp);
       _stprintf(sTmp, TEXT(" "));
       waInfo->SetCaption(sTmp);
     break;
@@ -131,7 +137,7 @@ void UpdateAnalysis(void){
               gettext(TEXT("_@M93_")),
 	// LKTOKEN  _@M701_ = "Temp trace" 
               gettext(TEXT("_@M701_")));
-    wfa->SetCaption(sTmp);
+    pForm->SetCaption(sTmp);
 
     _stprintf(sTmp, TEXT("%s:\r\n  %5.0f %s\r\n\r\n%s:\r\n  %5.0f %s\r\n"),
 	// LKTOKEN  _@M714_ = "Thermal height" 
@@ -151,7 +157,7 @@ void UpdateAnalysis(void){
               gettext(TEXT("_@M93_")),
 	// LKTOKEN  _@M697_ = "Task speed" 
               gettext(TEXT("_@M697_")));
-    wfa->SetCaption(sTmp);
+    pForm->SetCaption(sTmp);
     waInfo->SetCaption(TEXT(""));
     break;
   case ANALYSIS_PAGE_TASK:
@@ -169,7 +175,7 @@ void UpdateAnalysis(void){
        		  DISTANCEMODIFY*CALCULATED_INFO.TaskTotalDistance,
         	  Units::GetDistanceName(),
         	  FAI);
-    wfa->SetCaption(sTmp);
+    pForm->SetCaption(sTmp);
 
     RefreshTaskStatistics();
 
@@ -246,7 +252,7 @@ void UpdateAnalysis(void){
               // LKTOKEN  _@M1450_ = "Contest" 
               gettext(TEXT("_@M1450_")),
               CContestMgr::TypeToString(contestType));
-    wfa->SetCaption(sTmp);
+    pForm->SetCaption(sTmp);
     
     {
       bool typeFAITriangle = false;
