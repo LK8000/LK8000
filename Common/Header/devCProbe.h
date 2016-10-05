@@ -78,10 +78,9 @@ private:
 
 	static bool OnTimer(WndForm* pWnd);
 
-	static void Update();
+	static void Update(WndForm* pWnd);
 
 	static CallBackTableEntry_t CallBackTable[];
-	static WndForm *m_wf;
 	static PDeviceDescriptor_t m_pDevice;
 };
 #endif // devCProbe_h__

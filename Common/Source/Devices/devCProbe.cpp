@@ -17,7 +17,6 @@ extern bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDevi
 
 PDeviceDescriptor_t CDevCProbe::m_pDevice=NULL;
 BOOL CDevCProbe::m_bCompassCalOn=FALSE;
-WndForm *CDevCProbe::m_wf=NULL;
 Mutex* CDevCProbe::m_pCritSec_DeviceData=NULL;
 double CDevCProbe::m_abs_press=0.0;
 double CDevCProbe::m_delta_press=0.0;
@@ -365,41 +364,41 @@ BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
 		return FALSE;
 	}
 
-	m_wf = dlgLoadFromXML(CallBackTable, IDR_XML_DEVCPROBE);
+	WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_DEVCPROBE);
+	if(wf) {
 
-    WndButton *wBt = NULL;
-            
-	wBt = (WndButton *)m_wf->FindByName(TEXT("cmdClose"));
-    if(wBt){
-        wBt->SetOnClickNotify(OnCloseClicked);
-    }
-	wBt = (WndButton *)m_wf->FindByName(TEXT("cmdSetCompassCal"));
-    if(wBt){
-        wBt->SetOnClickNotify(OnCompassCalClicked);
-    }
-	wBt = (WndButton *)m_wf->FindByName(TEXT("cmdSetCalGyro"));
-    if(wBt){
-        wBt->SetOnClickNotify(OnCalGyroClicked);
-    }
-	wBt = (WndButton *)m_wf->FindByName(TEXT("cmdZeroDeltaPress"));
-    if(wBt){
-        wBt->SetOnClickNotify(OnZeroDeltaPressClicked);
-    }
+    	WndButton *wBt = NULL;
 
-	GetFirmwareVersion(m_pDevice);
+    	wBt = (WndButton *)wf->FindByName(TEXT("cmdClose"));
+    	if(wBt){
+        	wBt->SetOnClickNotify(OnCloseClicked);
+    	}
+    	wBt = (WndButton *)wf->FindByName(TEXT("cmdSetCompassCal"));
+    	if(wBt){
+        	wBt->SetOnClickNotify(OnCompassCalClicked);
+    	}
+    	wBt = (WndButton *)wf->FindByName(TEXT("cmdSetCalGyro"));
+    	if(wBt){
+        	wBt->SetOnClickNotify(OnCalGyroClicked);
+    	}
+    	wBt = (WndButton *)wf->FindByName(TEXT("cmdZeroDeltaPress"));
+    	if(wBt){
+        	wBt->SetOnClickNotify(OnZeroDeltaPressClicked);
+    	}
 
-	if(m_wf) {
-		m_wf->SetTimerNotify(1000, OnTimer);
-		m_wf->ShowModal();
+    	GetFirmwareVersion(m_pDevice);
 
-		delete m_wf;
-		m_wf=NULL;
+		wf->SetTimerNotify(1000, OnTimer);
+		wf->ShowModal();
+
+		delete wf;
+		wf=NULL;
 	}
 	return TRUE;
 }
 
 bool CDevCProbe::OnTimer(WndForm* pWnd){
-  Update();
+  Update(pWnd);
   return true;
 }
 
@@ -441,7 +440,7 @@ void CDevCProbe::OnZeroDeltaPressClicked(WndButton* pWnd) {
 	}
 }
 
-void CDevCProbe::Update() {
+void CDevCProbe::Update(WndForm* pWnd) {
 	TCHAR Temp[50] = {0};
 
 	LockFlightData();
@@ -452,52 +451,52 @@ void CDevCProbe::Update() {
 	_stprintf(Temp, TEXT("C-Probe - Version: %s"), m_szVersion);
 	UnlockDeviceData();
 
-	m_wf->SetCaption(Temp);
+	pWnd->SetCaption(Temp);
 
 	WndProperty* wp;
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpPitch"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpPitch"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Pitch, gettext(_T("_@M2179_")));
 		wp->SetText(Temp);
 	}
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpHeading"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpHeading"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f%s"), _INFO.MagneticHeading, gettext(_T("_@M2179_")));
 		wp->SetText(Temp);
 	}
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRoll"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpRoll"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Roll, gettext(_T("_@M2179_")));
 		wp->SetText(Temp);
 	}
 
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpGx"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpGx"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelX);
 		wp->SetText(Temp);
 	}
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpGy"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpGy"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelY);
 		wp->SetText(Temp);
 	}
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpGz"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpGz"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelZ);
 		wp->SetText(Temp);
 	}
 
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpTemp"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpTemp"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature, gettext(_T("_@M2179_")));
 		wp->SetText(Temp);
 	}
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRh"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpRh"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f %%"), _INFO.RelativeHumidity);
 		wp->SetText(Temp);
 	}
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpDeltaPress"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpDeltaPress"));
 	if(wp){
 		LockDeviceData();
 		_stprintf(Temp, TEXT("%.2f Pa"), m_delta_press);
@@ -505,7 +504,7 @@ void CDevCProbe::Update() {
 
 		wp->SetText(Temp);
 	}
-	wp = (WndProperty*)m_wf->FindByName(TEXT("prpAbsPress"));
+	wp = (WndProperty*)pWnd->FindByName(TEXT("prpAbsPress"));
 	if(wp){
 		LockDeviceData();
 		_stprintf(Temp, TEXT("%.2f hPa"), m_abs_press);
