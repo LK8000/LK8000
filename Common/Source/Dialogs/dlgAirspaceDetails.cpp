@@ -19,9 +19,8 @@
 #include "resource.h"
 
 static CAirspaceBase airspace_copy;
-static WndForm *wf=NULL;
 
-static void SetValues(void);
+static void SetValues(WndForm* wf);
 
 static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
 
@@ -45,9 +44,6 @@ static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
 
 static void OnFlyClicked(WndButton* pWnd) {
     (void) pWnd;
-
-    if (wf == NULL) return;
-    
    {
       ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
@@ -55,7 +51,7 @@ static void OnFlyClicked(WndButton* pWnd) {
         CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
       }
    }
-    SetValues();
+    SetValues(pWnd->GetParentWndForm());
     PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
@@ -69,16 +65,13 @@ static void OnSelectClicked(WndButton* pWnd) {
         CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
       }
    }
-    SetValues();
+    SetValues(pWnd->GetParentWndForm());
     PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
 
 static void OnAcknowledgeClicked(WndButton* pWnd){
   (void)pWnd;
-
-  if (wf == NULL) return;
-
   {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
@@ -91,12 +84,14 @@ static void OnAcknowledgeClicked(WndButton* pWnd){
     }
   }
 
-
-  WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
-  if(wPicto) {
-    wPicto->Redraw();
+  WndForm* wf = pWnd->GetParentWndForm();
+  if(wf) {
+    WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
+    if(wPicto) {
+      wPicto->Redraw();
+    }
+    SetValues(wf);
   }
-  SetValues();
   PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
@@ -110,7 +105,7 @@ static void OnCloseClicked(WndButton* pWnd){
 }
 
 static bool OnTimer(WndForm* pWnd){
-  SetValues();
+  SetValues(pWnd);
   return true;
 }
 
@@ -189,7 +184,7 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-static void SetValues(void) {
+static void SetValues(WndForm* wf) {
 
   
   WndProperty* wp;
@@ -405,12 +400,12 @@ static void SetValues(void) {
  */
 void dlgAirspaceDetails() {
 
-  wf = dlgLoadFromXML(CallBackTable, IDR_XML_AIRSPACEDETAILS);
+  WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_AIRSPACEDETAILS);
 
   if (!wf) return;
   wf->SetTimerNotify(1000, OnTimer);
   
-  SetValues();
+  SetValues(wf);
 
   wf->ShowModal();
 
