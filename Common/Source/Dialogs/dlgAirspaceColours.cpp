@@ -12,16 +12,14 @@
 #include "LKObjects.h"
 #include "resource.h"
 
-static WndForm *wf=NULL;
-static WndListFrame *wAirspaceColoursList=NULL;
-static WndOwnerDrawFrame *wAirspaceColoursListEntry = NULL;
-
 static int ItemIndex = -1;
 
 
-static void UpdateList(void){
-  wAirspaceColoursList->ResetList();
-  wAirspaceColoursList->Redraw();
+static void UpdateList(WndListFrame* pWnd){
+  if(pWnd) {
+    pWnd->ResetList();
+    pWnd->Redraw();
+  }
 }
 
 static int DrawListIndex=0;
@@ -96,28 +94,26 @@ int dlgAirspaceColoursShowModal(void){
 
   ItemIndex = -1;
 
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P);
+  WndForm*  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P);
   
   if (!wf) return -1;
 
-  wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));
+  WndListFrame *wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));
   if(wAirspaceColoursList) {
     wAirspaceColoursList->SetEnterCallback(OnAirspaceColoursListEnter);
   }
 
-  wAirspaceColoursListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceColoursListEntry"));
+  WndOwnerDrawFrame *wAirspaceColoursListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceColoursListEntry"));
   if(wAirspaceColoursListEntry) {
     wAirspaceColoursListEntry->SetCanFocus(true);
   }
 
-  UpdateList();
+  UpdateList(wAirspaceColoursList);
 
   wf->ShowModal();
 
   delete wf;
-
-  wf = NULL;
-
+  
   return ItemIndex;
 }
 
