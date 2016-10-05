@@ -22,14 +22,12 @@ using namespace std::placeholders;
 extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
 extern void UtmToLatLonWGS84 (int utmXZone, char utmYZone, double easting, double northing, double& lat, double& lon);
 
-static WndForm *wf=NULL;
 static WAYPOINT *global_wpt=NULL;
 
-static WndButton *buttonName = NULL;
-static WndButton *buttonComment = NULL;
-
-static void UpdateButtons(void) {
+static void UpdateButtons(WndForm* pForm) {
   TCHAR text[MAX_PATH];
+
+  WndButton* buttonName = ((WndButton *)pForm->FindByName(TEXT("cmdName")));
   if (buttonName) {
 	if (_tcslen(global_wpt->Name)<=0) {
 		// LKTOKEN  _@M451_ = "Name" 
@@ -43,6 +41,9 @@ static void UpdateButtons(void) {
 	}
 	buttonName->SetCaption(text);
   }
+  
+  
+  WndButton* buttonComment = ((WndButton *)pForm->FindByName(TEXT("cmdComment")));
   if (buttonComment) {
 	if ((global_wpt->Comment==NULL) || (_tcslen(global_wpt->Comment)<=0) ) {
 		// LKTOKEN  _@M190_ = "Comment" 
@@ -59,20 +60,20 @@ static void UpdateButtons(void) {
 }
 
 static void OnNameClicked(WndButton* pWnd) {
-    if (buttonName) {
-        dlgTextEntryShowModal(global_wpt->Name, NAME_SIZE);
-    }
-    UpdateButtons();
+  dlgTextEntryShowModal(global_wpt->Name, NAME_SIZE);
+  if(pWnd) {
+    UpdateButtons(pWnd->GetParentWndForm());
+  }
 }
 
 static void OnCommentClicked(WndButton* pWnd) {
-  if (buttonComment) {
 	//@ 101219
 	TCHAR comment[COMMENT_SIZE*2];
 	if (global_wpt->Comment != NULL) {
 		LK_tcsncpy(comment,global_wpt->Comment, COMMENT_SIZE);
-	} else
+	} else {
 		_tcscpy(comment,_T(""));
+	}
 	dlgTextEntryShowModal(comment, COMMENT_SIZE);
 
 	// in any case free the space
@@ -89,12 +90,14 @@ static void OnCommentClicked(WndButton* pWnd) {
 			_tcscpy(global_wpt->Comment,comment);
 		}
 	}
+  
+  if(pWnd) {
+    UpdateButtons(pWnd->GetParentWndForm());
   }
-  UpdateButtons();
 }
 
 
-static void SetUnits(void) {
+static void SetUnits(WndForm* wf) {
   WndProperty* wp;
   switch (Units::CoordinateFormat) {
   case 0: // ("DDMMSS");
@@ -185,7 +188,7 @@ int YZoneToenum(char c){
 }
 
 
-static void SetValues(void) {
+static void SetValues(WndForm* wf) {
   WndProperty* wp;
   if(Units::CoordinateFormat==4) {
 	  int utmXZone;
@@ -363,7 +366,7 @@ static void SetValues(void) {
 }
 
 
-static void GetValues(void) {
+static void GetValues(WndForm* wf) {
   WndProperty* wp;
   double num=0, mm = 0, ss = 0; // mm,ss are numerators (division) so don't want to lose decimals
 
@@ -575,37 +578,32 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt) {
 	  XmlResID = ScreenLandscape?IDR_XML_WAYPOINTEDITUTM_L:IDR_XML_WAYPOINTEDITUTM_P;
   }
 
-  wf = dlgLoadFromXML(CallBackTable, XmlResID);
+  WndForm* wf = dlgLoadFromXML(CallBackTable, XmlResID);
   if (wf) {
 
-    buttonName = ((WndButton *)wf->FindByName(TEXT("cmdName")));
+    WndButton* buttonName = ((WndButton *)wf->FindByName(TEXT("cmdName")));
     if (buttonName) {
       buttonName->SetOnClickNotify(OnNameClicked);
     }
 
-    buttonComment = ((WndButton *)wf->FindByName(TEXT("cmdComment")));
+    WndButton* buttonComment = ((WndButton *)wf->FindByName(TEXT("cmdComment")));
     if (buttonComment) {
       buttonComment->SetOnClickNotify(OnCommentClicked);
     }
 
-    UpdateButtons();
+    UpdateButtons(wf);
 
-    SetUnits();
-
-    SetValues();
-
-    wf->SetModalResult(mrCancel);
+    SetUnits(wf);
+    SetValues(wf);
 
     if (wf->ShowModal()==mrOK) {
 
       ////
-      GetValues();
+      GetValues(wf);
 
     }
     delete wf;
   }
-  wf = NULL;
-
 }
 
 

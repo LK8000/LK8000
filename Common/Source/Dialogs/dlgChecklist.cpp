@@ -29,9 +29,6 @@
 #define ENDOFLINE  "\n"         // \r\n  in v5
 
 int page=0;
-WndForm *wf=NULL;
-WndListFrame *wDetails=NULL;
-WndOwnerDrawFrame *wDetailsEntry = NULL;
 
 int DrawListIndex=0;
 static TextWrapArray aTextLine;
@@ -44,9 +41,6 @@ TCHAR NoteModeTitle[50];
 
 static void InitNotepad(void) {
   page=0;
-  wf=(WndForm *)NULL;
-  wDetails=(WndListFrame *)NULL;
-  wDetailsEntry = (WndOwnerDrawFrame *)NULL;
   DrawListIndex=0;
   aTextLine.clear();
   
@@ -72,7 +66,11 @@ static void DeinitNotepad(void) {
 }
 
 
-static void NextPage(int Step){
+static void NextPage(WndForm* pForm, int Step){
+  if(!pForm) {
+    return;
+  }
+  
   TCHAR buffer[200];
   page += Step;
   if (page>=nLists) {
@@ -82,6 +80,11 @@ static void NextPage(int Step){
     page= nLists-1;
   }
 
+  WndOwnerDrawFrame* wDetailsEntry = (WndOwnerDrawFrame*)pForm->FindByName(TEXT("frmDetailsEntry"));
+  if(!wDetailsEntry) {
+    return;
+  }
+  
   LKWindowSurface Surface(*wDetailsEntry);
   Surface.SelectObject(wDetailsEntry->GetFont());
   aTextLine.update(Surface, wDetailsEntry->GetWidth(), ChecklistText[page]);
@@ -104,11 +107,14 @@ static void NextPage(int Step){
 	_tcscat(buffer, TEXT(": ")); 
 	_tcscat(buffer, ChecklistTitle[page]); 
   }
-  wf->SetCaption(buffer);
+  
+  pForm->SetCaption(buffer);
 
-  wDetails->ResetList();
-  wDetails->Redraw();
-
+  WndListFrame* wDetails = (WndListFrame*)pForm->FindByName(TEXT("frmDetails"));
+  if(wDetails) {
+    wDetails->ResetList();
+    wDetails->Redraw();
+  }
 }
 
 
@@ -133,13 +139,15 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 }
 
 static void OnNextClicked(WndButton* pWnd) {
-    (void) pWnd;
-    NextPage(+1);
+    if(pWnd) {
+      NextPage(pWnd->GetParentWndForm(), +1);
+    }
 }
 
 static void OnPrevClicked(WndButton* pWnd) {
-    (void) pWnd;
-    NextPage(-1);
+    if(pWnd) {
+      NextPage(pWnd->GetParentWndForm(), -1);
+    }
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
@@ -158,12 +166,12 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
         case KEY_LEFT:
         case '6':
             pBtn = pWnd->FindByName(TEXT("cmdPrev"));
-            NextPage(-1);
+            NextPage(pWnd, -1);
             break;
         case KEY_RIGHT:
         case '7':
             pBtn = pWnd->FindByName(TEXT("cmdNext"));
-            NextPage(+1);
+            NextPage(pWnd, +1);
             break;;
     }
     if (pBtn) {
@@ -422,10 +430,13 @@ bool LoadChecklist(short checklistmode) {
 // checklistmode: 0=notepad 1=logbook 2=...
 void dlgChecklistShowModal(short checklistmode){
 
+  WndListFrame* wDetails = NULL;
+  WndOwnerDrawFrame* wDetailsEntry = NULL;
+  
   InitNotepad();
   LoadChecklist(checklistmode); // check if loaded really something
 
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P);
+  WndForm* wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P);
 
   aTextLine.clear();
 
@@ -436,28 +447,25 @@ void dlgChecklistShowModal(short checklistmode){
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
-  //ASSERT(wDetails!=NULL);
   if (wDetails==NULL) {
-	StartupStore(_T("..... NOTEPAD ERROR NULL frmDetails!\n"));
-	goto deinit;
+    StartupStore(_T("..... NOTEPAD ERROR NULL frmDetails!\n"));
+    goto deinit;
   }
   wDetails->SetBorderKind(BORDERLEFT);
 
   wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
-  //ASSERT(wDetailsEntry!=NULL);
-  if (wDetailsEntry==NULL) {
-	StartupStore(_T("..... NOTEPAD ERROR NULL frmDetailsEntry!\n"));
-	goto deinit;
+  if (wDetailsEntry) {
+    StartupStore(_T("..... NOTEPAD ERROR NULL frmDetailsEntry!\n"));
+    goto deinit;
   }
   wDetailsEntry->SetCanFocus(true);
 
   page = 0;
-  NextPage(0);
+  NextPage(wf, 0);
 
   wf->ShowModal();
 
   delete wf;
-  wf = NULL;
 
 deinit:
 
