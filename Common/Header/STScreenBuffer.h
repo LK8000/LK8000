@@ -25,7 +25,7 @@ public:
 	// initialize the buffer.
 	CSTScreenBuffer(int nWidth, int nHeight);
 
-	virtual ~CSTScreenBuffer();
+	~CSTScreenBuffer();
 
 #ifdef USE_TERRAIN_BLUR
     void Blur(unsigned int boxw);
@@ -35,10 +35,6 @@ public:
 	void DrawStretch(LKSurface& Surface, const RECT& rcDest, int scale);
 	
 protected:
-	// Returns minimum width that is greater then the given width and
-	// that is acceptable as image width (not all numbers are acceptable)
-	static int CorrectedWidth(int nWidth);
-
 #ifdef USE_TERRAIN_BLUR
 	void HorizontalBlur(unsigned int boxw, BGRColor* src, BGRColor* dst);
 	void VerticalBlur(unsigned int boxh, BGRColor* src, BGRColor* dst);
