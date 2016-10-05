@@ -15,16 +15,14 @@
 
 #ifdef HAVE_HATCHED_BRUSH
 
-static WndForm *wf=NULL;
-static WndListFrame *wAirspacePatternsList=NULL;
-static WndOwnerDrawFrame *wAirspacePatternsListEntry = NULL;
-
 static int ItemIndex = -1;
 
 
-static void UpdateList(void){
-  wAirspacePatternsList->ResetList();
-  wAirspacePatternsList->Redraw();
+static void UpdateList(WndListFrame* pWnd){
+  if(pWnd) {
+    pWnd->ResetList();
+    pWnd->Redraw();
+  }
 }
 
 static int DrawListIndex=0;
@@ -96,32 +94,28 @@ int dlgAirspacePatternsShowModal(void){
 
   ItemIndex = -1;
 
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACEPATTERNS_L : IDR_XML_AIRSPACEPATTERNS_P);
+  WndForm* wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACEPATTERNS_L : IDR_XML_AIRSPACEPATTERNS_P);
 
   if (!wf) return -1;
 
   //ASSERT(wf!=NULL);
 
-  wAirspacePatternsList = (WndListFrame*)wf->FindByName(TEXT("frmAirspacePatternsList"));
-  //ASSERT(wAirspacePatternsList!=NULL);
-  wAirspacePatternsList->SetBorderKind(BORDERLEFT);
-  wAirspacePatternsList->SetEnterCallback(OnAirspacePatternsListEnter);
+  WndListFrame* wAirspacePatternsList = (WndListFrame*)wf->FindByName(TEXT("frmAirspacePatternsList"));
+  if(wAirspacePatternsList) {
+    wAirspacePatternsList->SetBorderKind(BORDERLEFT);
+    wAirspacePatternsList->SetEnterCallback(OnAirspacePatternsListEnter);
+    UpdateList(wAirspacePatternsList);
+  }
 
-  wAirspacePatternsListEntry = (WndOwnerDrawFrame*)wf->
-    FindByName(TEXT("frmAirspacePatternsListEntry"));
-  //ASSERT(wAirspacePatternsListEntry!=NULL);
-  wAirspacePatternsListEntry->SetCanFocus(true);
-
-  UpdateList();
-
+  WndOwnerDrawFrame* wAirspacePatternsListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspacePatternsListEntry"));
+  if(wAirspacePatternsListEntry) {
+    wAirspacePatternsListEntry->SetCanFocus(true);
+  }
   wf->ShowModal();
 
   // now retrieve back the properties...
 
   delete wf;
-
-  wf = NULL;
-
   return ItemIndex;
 }
 
