@@ -13,19 +13,16 @@
 #include "LKObjects.h"
 #include "resource.h"
 
-static WndForm *wf=NULL;
-static WndListFrame *wAirspaceList=NULL;
-static WndOwnerDrawFrame *wAirspaceListEntry = NULL;
-
-static int ItemIndex = -1;
 static bool colormode = false;
 
 int dlgAirspaceColoursShowModal(void);
 
 
-static void UpdateList(void){
-  wAirspaceList->ResetList();
-  wAirspaceList->Redraw();
+static void UpdateList(WndListFrame* pWnd){
+  if(pWnd) {
+    pWnd->ResetList();
+    pWnd->Redraw();
+  }
 }
 
 static int DrawListIndex=0;
@@ -92,7 +89,7 @@ static bool changed = false;
 static void OnAirspaceListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo) {
   (void)Sender;
-  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+  int ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
   if (ItemIndex>=AIRSPACECLASSCOUNT) {
     ItemIndex = AIRSPACECLASSCOUNT-1;
   }
@@ -128,7 +125,6 @@ static void OnAirspaceListInfo(WindowControl * Sender,
     ListInfo->ItemCount = AIRSPACECLASSCOUNT;
   } else {
     DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
-    ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
   }
 }
 
@@ -161,29 +157,26 @@ bool dlgAirspaceShowModal(bool coloredit){
 
   colormode = coloredit;
 
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACE_L : IDR_XML_AIRSPACE_P);
+  WndForm *wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACE_L : IDR_XML_AIRSPACE_P);
   if (!wf) return false;
 
-  wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));
+  WndListFrame* wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));
   LKASSERT(wAirspaceList!=NULL);
   wAirspaceList->SetBorderKind(BORDERLEFT);
   wAirspaceList->SetEnterCallback(OnAirspaceListEnter);
 
-  wAirspaceListEntry = (WndOwnerDrawFrame*)wf->
-  FindByName(TEXT("frmAirspaceListEntry"));
-  LKASSERT(wAirspaceListEntry!=NULL);
-  wAirspaceListEntry->SetCanFocus(true);
+  WndOwnerDrawFrame* wAirspaceListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceListEntry"));
+  if(wAirspaceListEntry) {
+    wAirspaceListEntry->SetCanFocus(true);
+  }
 
-  UpdateList();
+  UpdateList(wAirspaceList);
 
   changed = false;
 
   wf->ShowModal();
 
-
   delete wf;
-
-  wf = NULL;
 
   return changed;
 }
