@@ -17,7 +17,6 @@
 #include "resource.h"
 
 static bool changed = false;
-static WndForm *wf=NULL;
 
 static void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
@@ -29,7 +28,7 @@ static void OnCloseClicked(WndButton* pWnd) {
 }
 
 
-static void setVariables(void) {
+static void setVariables(WndForm* wf) {
   WndProperty *wp;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0"));
@@ -112,11 +111,11 @@ void dlgBottomBarShowModal(void){
 
   WndProperty *wp;
   
-  wf = dlgLoadFromXML(CallBackTable, IDR_XML_BOTTOMBAR);
+  WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_BOTTOMBAR);
 
   if (!wf) return;
 
-  setVariables();
+  setVariables(wf);
 
   changed = false;
 
@@ -231,8 +230,6 @@ void dlgBottomBarShowModal(void){
 
 
   delete wf;
-  wf = NULL;
-
 }
 
 
