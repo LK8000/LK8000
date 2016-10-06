@@ -38,7 +38,7 @@
 
 extern int ScreenThinSize;
 
-#ifdef WIN32
+#ifdef USE_GDI
 
 LKSurface::LKSurface() : _OutputDC(), _AttribDC(), _TempDC() {
 
@@ -127,7 +127,7 @@ LKSurface::~LKSurface() {
 }
 
 LKColor LKSurface::SetTextColor(const LKColor& Color) {
-#ifdef WIN32
+#ifdef USE_GDI
     return LKColor(::SetTextColor(*this, Color));
 #else
     if(_pCanvas) {
@@ -138,7 +138,7 @@ LKColor LKSurface::SetTextColor(const LKColor& Color) {
 }
 
 LKColor LKSurface::SetBkColor(const LKColor& Color) {
-#ifdef WIN32
+#ifdef USE_GDI
     return LKColor(::SetBkColor(*this, Color));
 #else
     if(_pCanvas) {
@@ -149,7 +149,7 @@ LKColor LKSurface::SetBkColor(const LKColor& Color) {
 }
 
 void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
-#ifdef WIN32
+#ifdef USE_GDI
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
 
     if (cxSrc != cx || cySrc != cy) {
@@ -171,7 +171,7 @@ void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int
 }
 
 void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap, const int cxSrc, const int cySrc) {
-#ifdef WIN32
+#ifdef USE_GDI
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
 
     if (cxSrc != cx || cySrc != cy) {
@@ -197,7 +197,7 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
 }
 
 void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap) {
-#ifdef WIN32
+#ifdef USE_GDI
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
     ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCCOPY);
     ::SelectObject(GetTempDC(), old);
@@ -209,7 +209,7 @@ void LKSurface::DrawBitmapCopy(const int x, const int y, const int cx, const int
 }
 
 void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap) {
-#ifdef WIN32
+#ifdef USE_GDI
     HGDIOBJ old = ::SelectObject(GetTempDC(), (HBITMAP) Bitmap);
     ::BitBlt(*this, x, y, cx, cy, GetTempDC(), 0, 0, SRCPAINT);
     ::SelectObject(GetTempDC(), old);
@@ -226,7 +226,7 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
 
 void LKSurface::Polygon(const POINT *apt, int cpt) {
     assert(apt[0] == apt[cpt-1]);
-#ifdef WIN32
+#ifdef USE_GDI
     ::Polygon(*this, apt, cpt);
 #else
     if(_pCanvas) {
@@ -255,7 +255,7 @@ void LKSurface::Polygon(const POINT *apt, int cpt, const RECT& ClipRect) {
 
 
 void LKSurface::Polyline(const POINT *apt, int cpt) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::Polyline(*this, apt, cpt);
 #else
     if(_pCanvas) {
@@ -311,7 +311,7 @@ void LKSurface::DrawDashPoly(const int width, const LKColor& color, const POINT 
 }
 
 void LKSurface::Blackness(const int x, const int y, const int cx, const int cy) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::BitBlt(*this, x, y, cx, cy, NULL, 0, 0, BLACKNESS);
 #else
     if(_pCanvas) {
@@ -321,7 +321,7 @@ void LKSurface::Blackness(const int x, const int y, const int cx, const int cy) 
 }
 
 void LKSurface::Whiteness(const int x, const int y, const int cx, const int cy) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::BitBlt(*this, x, y, cx, cy, NULL, 0, 0, WHITENESS);
 #else
     if(_pCanvas) {
@@ -393,7 +393,7 @@ void LKSurface::DrawDashLine(const int width, const POINT& ptStart, const POINT&
 }
 
 void LKSurface::FillRect(const RECT *lprc, const BrushReference Brush) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::FillRect(*this, lprc, Brush);
 #else
     if(_pCanvas && Brush && lprc) {
@@ -404,7 +404,7 @@ void LKSurface::FillRect(const RECT *lprc, const BrushReference Brush) {
 
 #ifndef ENABLE_OPENGL
 bool LKSurface::Copy(int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, const LKSurface& Surface, int nXOriginSrc, int nYOriginSrc) {
-#ifdef WIN32
+#ifdef USE_GDI
     return ::BitBlt(*this, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, Surface, nXOriginSrc, nYOriginSrc, SRCCOPY);
 #else
     if(_pCanvas && Surface.IsDefined()) {
@@ -436,7 +436,7 @@ TransparentImage is not defined in arm-mingw32ce
 
 #ifndef ENABLE_OPENGL
 bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc) {
-#ifdef WIN32
+#ifdef USE_GDI
 #ifdef UNDER_CE
     return ::TransparentImage(*this, xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc, wDest, hDest, COLOR_WHITE);
 #else
@@ -453,7 +453,7 @@ bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int
 
 // for each white pixel in the mask, do nothing (NOP), and for each black pixel, do a Copy.
 bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask) {
-#ifdef WIN32
+#ifdef USE_GDI
     return ::MaskBlt(*this, nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc, bmpMask, xMask, yMask, MAKEROP4(SRCAND,  0x00AA0029));
 #else
     Canvas& buffer = hdcSrc;
@@ -488,7 +488,7 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
         return false;
     }
 
-#ifdef WIN32
+#ifdef USE_GDI
 #ifdef UNDER_CE
 
     extern BOOL DoAlphaBlend_internal(HDC,int,int,int,int,HDC,int,int,int,int, DWORD);
@@ -559,7 +559,7 @@ void LKSurface::AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface
 #endif    
 
 bool LKSurface::GetTextSize(const TCHAR* lpString, SIZE* lpSize) {
-#ifdef WIN32
+#ifdef USE_GDI
     return ::GetTextExtentPoint(*this, lpString, _tcslen(lpString), lpSize);
 #else
     if(_pCanvas) {
@@ -571,7 +571,7 @@ bool LKSurface::GetTextSize(const TCHAR* lpString, SIZE* lpSize) {
 }
 
 void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, RECT* ClipRect) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::ExtTextOut(*this, X, Y,ETO_CLIPPED, ClipRect, lpString, _tcslen(lpString), NULL);
 #else
     if(_pCanvas) {
@@ -586,7 +586,7 @@ void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, RECT* ClipRect) {
 }
 
 void LKSurface::DrawPushButton(const RECT& rc, bool bPushed) {
-#ifdef WIN32
+#ifdef USE_GDI
     const UINT Style = bPushed? DFCS_BUTTONPUSH | DFCS_PUSHED : DFCS_BUTTONPUSH;
     RECT Rect = rc;
     ::DrawFrameControl(*this, &Rect, DFC_BUTTON, Style);
@@ -599,7 +599,7 @@ void LKSurface::DrawPushButton(const RECT& rc, bool bPushed) {
 
 int LKSurface::DrawText(const TCHAR* lpchText, RECT *lpRect, UINT uFormat) {
     assert(lpRect);
-#ifdef WIN32
+#ifdef USE_GDI
     return ::DrawText(*this, lpchText, _tcslen(lpchText), lpRect, uFormat);
 #else
     if(_pCanvas) {
@@ -619,7 +619,7 @@ int LKSurface::DrawText(const TCHAR* lpchText, RECT *lpRect, UINT uFormat) {
 void LKSurface::DrawTextClip(int x, int y, const TCHAR *text, PixelScalar width) {
     int len = _tcslen(text);
     if (len > 0) {
-#ifdef WIN32
+#ifdef USE_GDI
         const RECT rc = {x, 0, x + width, std::numeric_limits<PixelScalar>::max()};
         ::ExtTextOut(*this, x, y, ETO_CLIPPED, &rc, text, len, NULL);
 #else
@@ -644,7 +644,7 @@ int LKSurface::GetTextHeight(const TCHAR *text) {
 }
 
 void LKSurface::SetPixel(int X, int Y, const LKColor& Color) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::SetPixel(*this, X, Y, Color);
 #else
     if(_pCanvas) {
@@ -654,7 +654,7 @@ void LKSurface::SetPixel(int X, int Y, const LKColor& Color) {
 }
 
 void LKSurface::Rectangle(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::Rectangle(*this, nLeftRect, nTopRect, nRightRect, nBottomRect);
 #else
     if(_pCanvas) {
@@ -667,7 +667,7 @@ void LKSurface::Rectangle(int nLeftRect, int nTopRect, int nRightRect, int nBott
 #ifndef ENABLE_OPENGL
 // Do not use InvertRect with OPENGL, yet
 bool LKSurface::InvertRect(const RECT& rc) {
-#ifdef WIN32
+#ifdef USE_GDI
     return ::InvertRect(*this, &rc);
 #elif !defined(ENABLE_OPENGL)
     if(_pCanvas) {
@@ -685,7 +685,7 @@ bool LKSurface::InvertRect(const RECT& rc) {
 
 
 bool LKSurface::RoundRect(const RECT& rc, int nWidth, int nHeight) {
-#ifdef WIN32
+#ifdef USE_GDI
     return ::RoundRect(*this, rc.left, rc.top, rc.right, rc.bottom, nWidth, nHeight);
 #else
     if(_pCanvas) {
@@ -697,7 +697,7 @@ bool LKSurface::RoundRect(const RECT& rc, int nWidth, int nHeight) {
 }
 
 void LKSurface::ExcludeClipRect(const RECT& rc) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::ExcludeClipRect(*this, rc.left, rc.top, rc.right, rc.bottom);
 #else
     // only used in WndForm, Not really needed...
@@ -705,7 +705,7 @@ void LKSurface::ExcludeClipRect(const RECT& rc) {
 }
 
 int LKSurface::SaveState() {
-#ifdef WIN32
+#ifdef USE_GDI
     return ::SaveDC(*this);
 #else
     // Not Needed...
@@ -714,7 +714,7 @@ int LKSurface::SaveState() {
 }
 
 void LKSurface::RestoreState(int nSaved) {
-#ifdef WIN32
+#ifdef USE_GDI
     ::RestoreDC(*this, nSaved);
 #else
     // Not Needed...

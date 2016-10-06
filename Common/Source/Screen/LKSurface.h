@@ -211,7 +211,7 @@ public:
 
     virtual void Release();
     
-#ifdef WIN32
+#ifdef USE_GDI
     virtual void SetAttribDC(HDC hDC);
     virtual void SetOutputDC(HDC hDC);
 
