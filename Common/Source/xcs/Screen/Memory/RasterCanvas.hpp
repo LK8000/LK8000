@@ -847,6 +847,18 @@ public:
       src_size &= 0xf;
       dest_size = src_size * 2;
     }
+    
+    if (dest_size == src_size * 4) {
+      /* NEON-optimised special case */
+      NEONBytesQuad neon;
+      neon.CopyPixels(dest, src, src_size);
+
+      /* use the portable version for the remainder */
+      src += src_size & ~0xf;
+      dest += (src_size & ~0xf) * 4;
+      src_size &= 0xf;
+      dest_size = src_size * 4;
+    }    
 #endif
 
     unsigned j = 0;

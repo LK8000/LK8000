@@ -203,4 +203,32 @@ struct NEONBytesTwice {
   }
 };
 
+/**
+ * Read bytes and emit each byte twice.  This class reads 16 bytes at
+ * a time, and writes 64 bytes at a time.
+ */
+struct NEONBytesQuad {
+  static void Copy16(uint8_t *gcc_restrict p, const uint8_t *gcc_restrict q) {
+    const uint8x16_t a1 = vld1q_u8(q);
+    const uint8x16x4_t a2 = {{ a1, a1, a1, a1 }};
+
+    /* vst4 interleaves the 4 parts, which is exactly what we need
+       here */
+    vst4q_u8(p, a2);
+  }
+
+  gcc_flatten
+  void CopyPixels(uint8_t *gcc_restrict p,
+                  const uint8_t *gcc_restrict q, unsigned n) const {
+    for (unsigned i = 0; i < n / 16; ++i, p += 64, q += 16)
+      Copy16(p, q);
+  }
+
+  /**
+   * @param n the number of source pixels (multiple of 16)
+   */
+  void CopyPixels(Luminosity8 *p, const Luminosity8 *q, unsigned n) const {
+    CopyPixels((uint8_t *)p, (const uint8_t *)q, n);
+  }
+};
 #endif
