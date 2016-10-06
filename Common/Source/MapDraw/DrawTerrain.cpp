@@ -17,6 +17,7 @@
 // #define TDEBUG 1
 
 #include "./ColorRamps.h"
+#include "Kobo/Model.hpp"
 
 
 unsigned short minalt = TERRAIN_INVALID;
@@ -126,7 +127,29 @@ public:
         // scale dtquant so resolution is not too high on large displays
         dtquant *= ScreenScale; // lower resolution a bit.. (no need for CPU >800mHz)
 
-#ifndef KOBO
+#ifdef KOBO
+        /**
+         * dtquand for each kobo model
+         * for faster terrain redraw, dtquant need to be 2 or 4 ...
+         */
+        KoboModel model = DetectKoboModel();
+        switch(model) {
+          case KoboModel::GLO:
+          case KoboModel::GLOHD:
+            dtquant = 4;
+            break;
+          case KoboModel::MINI:
+          case KoboModel::TOUCH:
+          case KoboModel::TOUCH2:
+            dtquant = 2;
+            break;
+          case KoboModel::UNKNOWN:
+          default:
+            if (dtquant > 4) dtquant = 4; // .. but not too much
+            break;
+        };
+        
+#else
         if (ScreenSize != ss640x480) {
             if (dtquant > 3) dtquant = 3; // .. but not too much
         }
@@ -149,6 +172,8 @@ public:
            5    3    2    192    144     64  48     3072        27648
          */
 
+
+        
 
         LKASSERT(ScreenScale != 0);
         const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
