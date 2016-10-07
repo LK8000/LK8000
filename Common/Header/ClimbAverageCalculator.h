@@ -7,9 +7,7 @@
 #include <functional>
 #include <assert.h>
 
-using namespace std::placeholders; // adds visibility of _1, _2, _3,...
-
-template<unsigned average_time, int unsigned max_data_rate = 1>
+template<unsigned average_time, unsigned max_data_rate = 1>
 class ClimbAverageCalculator {
 
   ClimbAverageCalculator(const ClimbAverageCalculator& ) = delete;
@@ -18,7 +16,7 @@ class ClimbAverageCalculator {
   static_assert(average_time > 0, "invalide average_time");
 
 public:
-  ClimbAverageCalculator(): next_history(history.begin()) { }
+  ClimbAverageCalculator(): next_history() { }
   ~ClimbAverageCalculator() {};
 
   ClimbAverageCalculator(ClimbAverageCalculator&& ) = default;
@@ -55,7 +53,7 @@ private:
   };
 
   history_t history;
-  iterator next_history;
+  size_t next_history;
 };
 
 
@@ -65,10 +63,10 @@ double ClimbAverageCalculator<average_time, max_data_rate>::GetAverage(double cu
 
   const AltHistoryItem new_history(curTime, curAltitude);
   // add the new sample
-  *(next_history++) = new_history;
+  history[next_history] = new_history;
 
-  if(next_history == history.end()) {
-    next_history = history.begin();
+  if(next_history >= history.size()) {
+    next_history = 0;
   }  
 
   const_iterator bestHistory = std::min_element(history.begin(), history.end(), compare_time(curTime));
