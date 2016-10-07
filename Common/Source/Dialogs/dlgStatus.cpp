@@ -688,10 +688,11 @@ static void UpdateValuesTask(void) {
     wp->SetText(Temp);
   }
 
-  double d1 = 
-    (CALCULATED_INFO.TaskDistanceToGo
-     +CALCULATED_INFO.TaskDistanceCovered)/dd;
-  // TODO bug: this fails for OLC
+  double d1=0;
+  if (dd>0) {
+    d1 = (CALCULATED_INFO.TaskDistanceToGo +CALCULATED_INFO.TaskDistanceCovered)/dd;
+    // TODO bug: this fails for OLC
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEstimatedSpeed"));
   if (wp) {
