@@ -176,10 +176,10 @@ KoboWifiOn()
   }
 
 
-  Run("/sbin/ifconfig", "eth0", "up");
-  Run("/sbin/iwconfig", "eth0", "power", "off");
-  Run("/bin/wlarm_le", "-i", "eth0", "up");
-  Run("/bin/wpa_supplicant", "-i", "eth0",
+  Run("/sbin/ifconfig", szInterface, "up");
+  Run("/sbin/iwconfig", szInterface, "power", "off");
+  Run("/bin/wlarm_le", "-i", szInterface, "up");
+  Run("/bin/wpa_supplicant", "-i", szInterface,
       "-c", "/etc/wpa_supplicant/wpa_supplicant.conf",
       "-C", "/var/run/wpa_supplicant", "-B");
 
