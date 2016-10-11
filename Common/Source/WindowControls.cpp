@@ -321,8 +321,7 @@ void DataField::SetData(void){
     (void) Mode;
   }
 
-DataField::DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, 
-		     void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)){
+DataField::DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess){
   mUsageCounter=0;
   mOnDataAccess = OnDataAccess;
   _tcscpy(mEditFormat, EditFormat);

@@ -19,8 +19,7 @@ static bool changed = false;
 static WndForm *wf=NULL;
 
 
-static void OnRulesActiveData(DataField *Sender, 
-			      DataField::DataAccessKind_t Mode){
+static void OnRulesActiveData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
   switch(Mode){
     case DataField::daGet:

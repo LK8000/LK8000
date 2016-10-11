@@ -108,8 +108,7 @@ class DataField{
 
     typedef void (*DataAccessCallback_t)(DataField * Sender, DataAccessKind_t Mode);
 
-    DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, 
-	      void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)=NULL);
+    DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
     virtual ~DataField(void){};
 
 	virtual void Clear();
@@ -198,7 +197,7 @@ class DataFieldBoolean:public DataField{
     TCHAR mTextFalse[FORMATSIZE+1];
 
   public:
-    DataFieldBoolean(const TCHAR *EditFormat, const TCHAR *DisplayFormat, int Default, const TCHAR *TextTrue, const TCHAR *TextFalse, void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
+    DataFieldBoolean(const TCHAR *EditFormat, const TCHAR *DisplayFormat, int Default, const TCHAR *TextTrue, const TCHAR *TextFalse, DataAccessCallback_t OnDataAccess):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
 		  if (Default) {mValue=true;} else {mValue=false;}
       _tcscpy(mTextTrue, TextTrue);
@@ -255,8 +254,7 @@ class DataFieldEnum: public DataField {
     DataFieldEnum(const TCHAR *EditFormat, 
 		  const TCHAR *DisplayFormat, 
 		  int Default, 
-		  void(*OnDataAccess)(DataField *Sender, 
-				      DataAccessKind_t Mode)):
+		  DataAccessCallback_t OnDataAccess = nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       SupportCombo=true;
 
@@ -305,9 +303,7 @@ class DataFieldFileReader: public DataField {
   DataFieldFileReaderEntry fields[DFE_MAX_FILES];
 
   public:
-  DataFieldFileReader(const TCHAR *EditFormat, 
-		      const TCHAR *DisplayFormat, 
-		      void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
+  DataFieldFileReader(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       mValue = 0;
       fields[0].mTextFile= NULL;
@@ -368,7 +364,7 @@ class DataFieldInteger:public DataField{
   protected:
     int SpeedUp(bool keyup);
   public:
-    DataFieldInteger(TCHAR *EditFormat, TCHAR *DisplayFormat, int Min, int Max, int Default, int Step, void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
+    DataFieldInteger(TCHAR *EditFormat, TCHAR *DisplayFormat, int Min, int Max, int Default, int Step, DataAccessCallback_t OnDataAccess=nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       mMin = Min;
       mMax = Max;
@@ -420,7 +416,7 @@ class DataFieldFloat:public DataField{
 
 
   public:
-    DataFieldFloat(TCHAR *EditFormat, TCHAR *DisplayFormat, double Min, double Max, double Default, double Step, int Fine, void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
+    DataFieldFloat(TCHAR *EditFormat, TCHAR *DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t OnDataAccess=nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       mMin = Min;
       mMax = Max;
@@ -468,7 +464,7 @@ class DataFieldString:public DataField{
     TCHAR mValue[EDITSTRINGSIZE];
 
   public:
-    DataFieldString(const TCHAR *EditFormat, const TCHAR *DisplayFormat, const TCHAR *Default, void(*OnDataAccess)(DataField *Sender, DataAccessKind_t Mode)):
+    DataFieldString(const TCHAR *EditFormat, const TCHAR *DisplayFormat, const TCHAR *Default, DataAccessCallback_t OnDataAccess=nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       _tcscpy(mValue, Default);
       SupportCombo=false;
