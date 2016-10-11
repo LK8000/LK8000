@@ -12,35 +12,12 @@ compatible device
 
 officially tested and supported:
     - kobo Mini
+    - kobo Glo
     - kobo GloHD
     - kobo Touch 2.0
+    - kobo Aura 2 edition
 
 not tested and not officially supported, but probably compatible:
-    - kobo Glo
     - kobo Touch
 
-All other model are not compatible, so don't try if you don't want brick your device.
-
-
-=======================================
-How To install
-=======================================
-
-for kobo Mini :
-
-  - copy "uImage-E50610"  in the folder "LK8000/kobo/" of your device
-  - reboot your device
-  - connect USB/rs232 converter and external battery to usb port using OTG Y cable.
-  - go to Device Config, choose ttyUSB0 ComPort and the right Speed for your external device.
-
-
-for kobo GloHD and kobo Touch 2 : 
-
-  - copy "uImage-E60Q90" file in the folder "LK8000/kobo/" of your device
-  - reboot your device
-  - connect USB/rs232 converter and external battery to usb port using OTG Y cable.
-  - go to Device Config, choose ttyUSB0 ComPort and the right Speed for your external device.
-
-
-kernel binary are available here ( click on "View Raw" for download file ) :
-  https://github.com/LK8000/LK8000/tree/master/kobo/kernel
+All other model are not compatible
