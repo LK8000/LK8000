@@ -32,7 +32,7 @@ Copyright_License {
 #include <sys/stat.h>
 
 #ifdef KOBO
-
+#include <cstdlib>
 #include <sys/mount.h>
 #include <errno.h>
 
@@ -142,7 +142,15 @@ bool
 IsKoboWifiOn()
 {
 #ifdef KOBO
-  return Directory::Exists("/sys/class/net/eth0");
+  const char* szInterface = std::getenv("INTERFACE");
+  if(!szInterface) {
+    szInterface = "eth0";
+  }
+  
+  char szPath[250];
+  sprintf(szPath, "/sys/class/net/%s", szInterface);
+  
+  return Directory::Exists(szPath);
 #else
   return false;
 #endif
@@ -153,9 +161,20 @@ KoboWifiOn()
 {
 #ifdef KOBO
   InsMod("/drivers/current/wifi/sdio_wifi_pwr.ko");
-  InsMod("/drivers/current/wifi/dhd.ko");
+
+  const char * szModule = std::getenv("WIFI_MODULE_PATH");
+  if(!szModule) {
+    szModule = "/drivers/current/wifi/dhd.ko";
+  }
+  InsMod(szModule);
 
   Sleep(2000);
+  
+  const char* szInterface = std::getenv("INTERFACE");
+  if(!szInterface) {
+    szInterface = "eth0";
+  }
+
 
   Run("/sbin/ifconfig", "eth0", "up");
   Run("/bin/wlarm_le", "-i", "eth0", "up");
@@ -165,7 +184,7 @@ KoboWifiOn()
 
   Sleep(2000);
 
-  Start("/sbin/udhcpc", "-S", "-i", "eth0",
+  Start("/sbin/udhcpc", "-S", "-i", szInterface,
         "-s", "/etc/udhcpc.d/default.script",
         "-t15", "-T10", "-A3", "-f", "-q");
 
@@ -179,11 +198,20 @@ bool
 KoboWifiOff()
 {
 #ifdef KOBO
+  const char* szInterface = std::getenv("INTERFACE");
+  if(!szInterface) {
+    szInterface = "eth0";
+  }
+    
   Run("/usr/bin/killall", "wpa_supplicant", "udhcpc");
-  Run("/bin/wlarm_le", "-i", "eth0", "down");
-  Run("/sbin/ifconfig", "eth0", "down");
-
-  RmMod("dhd");
+  Run("/bin/wlarm_le", "-i", szInterface, "down");
+  Run("/sbin/ifconfig", szInterface, "down");
+  
+  const char * szModule = std::getenv("WIFI_MODULE");
+  if(!szModule) {
+      szModule = "dhd";
+  } 
+  RmMod(szModule);
   RmMod("sdio_wifi_pwr");
 
   return true;
