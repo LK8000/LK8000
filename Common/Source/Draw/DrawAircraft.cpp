@@ -21,10 +21,12 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
 		case 0:  // Triangle
 		{
-			POINT AircraftInner[] =
-					{ { 0, -5 }, { 5, 9 }, { -5, 9 }, { 0, -5 } };
-			POINT AircraftOuter[] = { { 0, -6 }, { 6, 10 }, { -6, 10 },
-					{ 0, -6 } };
+			POINT AircraftInner[] = { 
+				{ 0, -5 }, { 5, 9 }, { -5, 9 }, { 0, -5 } 
+			};
+			POINT AircraftOuter[] = { 
+				{ 0, -6 }, { 6, 10 }, { -6, 10 }, { 0, -6 } 
+			};
 
 			BrushReference hbPAircraftSolid;
 			BrushReference hbPAircraftSolidBg;
@@ -42,9 +44,9 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 			PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x,
 					Orig.y, angle);
 
-			const auto oldPen = Surface.SelectObject(LK_NULL_PEN);
-
+			const auto oldPen = Surface.SelectObject(LK_WHITE_PEN);
 			const auto hbOld = Surface.SelectObject(hbPAircraftSolid);
+
 			Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
 
 			Surface.SelectObject(hbPAircraftSolidBg);
@@ -57,18 +59,18 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
 		case 1: // Paraglider
 		{
-			POINT AircraftInner[] = { { -5, 3 }, { -11, 2 }, { -14, 1 }, { -14,
-					-1 }, { -11, -2 }, { -5, -3 }, { 5, -3 }, { 11, -2 }, { 14,
-					-1 }, { 14, 1 }, { 11, 2 }, { 5, 3 }, };
+			POINT AircraftInner[] = { 
+				{ -5, 3 }, { -11, 2 }, { -14, 1 }, { -14, -1 }, { -11, -2 }, 
+				{ -5, -3 }, { 5, -3 }, { 11, -2 }, { 14, -1 }, { 14, 1 }, 
+				{ 11, 2 }, { 5, 3 }, { -5, 3 } 
+			};
 
 			PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x,
 					Orig.y, angle);
 
-			const auto oldPen = Surface.SelectObject(LK_NULL_PEN);
-
+			const auto oldPen = Surface.SelectObject(LK_WHITE_PEN);
 			const auto hbOld = Surface.SelectObject(LK_BLACK_BRUSH);
 
-			Surface.SelectObject(LK_BLACK_BRUSH);
 			Surface.Polygon(AircraftInner, array_size(AircraftInner));
 
 			Surface.SelectObject(oldPen);
@@ -79,18 +81,18 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
 		case 2: // hanglider
 		{
-			POINT AircraftInner[] = { { 1, -3 }, { 7, 0 }, { 13, 4 }, { 13, 6 },
-					{ 6, 3 }, { 1, 2 }, { -1, 2 }, { -6, 3 }, { -13, 6 }, { -13,
-							4 }, { -7, 0 }, { -1, -3 }, };
+			POINT AircraftInner[] = { 
+				{ 1, -3 }, { 7, 0 }, { 13, 4 }, { 13, 6 }, { 6, 3 }, { 1, 2 }, 
+				{ -1, 2 }, { -6, 3 }, { -13, 6 }, { -13, 4 }, { -7, 0 }, 
+				{ -1, -3 }, { 1, -3 }
+			};
 
 			PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x,
 					Orig.y, angle);
 
-			const auto oldPen = Surface.SelectObject(LK_NULL_PEN);
-
+			const auto oldPen = Surface.SelectObject(LK_WHITE_PEN);
 			const auto hbOld = Surface.SelectObject(LK_BLACK_BRUSH);
 
-			Surface.SelectObject(LK_BLACK_BRUSH);
 			Surface.Polygon(AircraftInner, array_size(AircraftInner));
 
 			Surface.SelectObject(oldPen);
@@ -101,19 +103,19 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
 		case 3: // Glider
 		{
-			POINT AircraftInner[] = { { 2, -6 }, { 2, -1 }, { 15, -1 },
-					{ 15, 2 }, { 2, 2 }, { 2, 7 }, { 5, 7 }, { 5, 10 },
-					{ -4, 10 }, { -4, 7 }, { -1, 7 }, { -1, 2 }, { -14, 2 }, {
-							-14, -1 }, { -1, -1 }, { -1, -6 }, { 2, -6 }, };
+			POINT AircraftInner[] = { 
+				{ 2, -6 }, { 2, -1 }, { 15, -1 },{ 15, 2 }, { 2, 2 }, { 2, 7 }, 
+				{ 5, 7 }, { 5, 10 }, { -4, 10 }, { -4, 7 }, { -1, 7 }, 
+				{ -1, 2 }, { -14, 2 }, { -14, -1 }, { -1, -1 }, { -1, -6 }, 
+				{ 2, -6 }
+			};
 
 			PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x,
 					Orig.y, angle);
 
-			const auto oldPen = Surface.SelectObject(LK_NULL_PEN);
-
+			const auto oldPen = Surface.SelectObject(LK_WHITE_PEN);
 			const auto hbOld = Surface.SelectObject(LK_BLACK_BRUSH);
 
-			Surface.SelectObject(LK_BLACK_BRUSH);
 			Surface.Polygon(AircraftInner, array_size(AircraftInner));
 
 			Surface.SelectObject(oldPen);
@@ -123,11 +125,11 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
 		case 4: // Aircraft
 		{
-			POINT Aircraft[] = { { 1, -6 }, { 2, -1 }, { 15, 0 }, { 15, 2 }, {
-					1, 2 }, { 0, 10 }, { 4, 11 }, { 4, 12 }, { -4, 12 }, { -4,
-					11 }, { 0, 10 }, { -1, 2 }, { -15, 2 }, { -15, 0 },
-					{ -2, -1 }, { -1, -6 }, { 1, -6 }
-
+			POINT Aircraft[] = { 
+				{ 1, -6 }, { 2, -1 }, { 15, 0 }, { 15, 2 }, { 1, 2 }, { 0, 10 }, 
+				{ 4, 11 }, { 4, 12 }, { -4, 12 }, { -4, 11 }, { 0, 10 }, 
+				{ -1, 2 }, { -15, 2 }, { -15, 0 }, { -2, -1 }, { -1, -6 }, 
+				{ 1, -6 }
 			};
 
 			BrushReference hbAircraftSolid = LKBrush_Black;
@@ -164,11 +166,10 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
 	} else if (ISGAAIRCRAFT) {
 
-		POINT Aircraft[] = { { 1, -6 }, { 2, -1 }, { 15, 0 }, { 15, 2 },
-				{ 1, 2 }, { 0, 10 }, { 4, 11 }, { 4, 12 }, { -4, 12 },
-				{ -4, 11 }, { 0, 10 }, { -1, 2 }, { -15, 2 }, { -15, 0 }, { -2,
-						-1 }, { -1, -6 }, { 1, -6 }
-
+		POINT Aircraft[] = { 
+			{ 1, -6 }, { 2, -1 }, { 15, 0 }, { 15, 2 }, { 1, 2 }, { 0, 10 }, 
+			{ 4, 11 }, { 4, 12 }, { -4, 12 }, { -4, 11 }, { 0, 10 }, { -1, 2 }, 
+			{ -15, 2 }, { -15, 0 },  { -2, -1 }, { -1, -6 }, { 1, -6 }
 		};
 
 		BrushReference hbAircraftSolid = LKBrush_Black;
@@ -196,20 +197,20 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 		Surface.SelectObject(hpOld);
 		Surface.SelectObject(hbOld);
 
-		return;
-
 	} else {
 
 		// GLIDER AICRAFT NORMAL ICON
 
-		POINT AircraftInner[] = { { 1, -5 }, { 1, 0 }, { 14, 0 }, { 14, 1 }, {
-				1, 1 }, { 1, 8 }, { 4, 8 }, { 4, 9 }, { -3, 9 }, { -3, 8 }, { 0,
-				8 }, { 0, 1 }, { -13, 1 }, { -13, 0 }, { 0, 0 }, { 0, -5 }, { 1,
-				-5 }, };
-		POINT AircraftOuter[] = { { 2, -6 }, { 2, -1 }, { 15, -1 }, { 15, 2 }, {
-				2, 2 }, { 2, 7 }, { 5, 7 }, { 5, 10 }, { -4, 10 }, { -4, 7 }, {
-				-1, 7 }, { -1, 2 }, { -14, 2 }, { -14, -1 }, { -1, -1 }, { -1,
-				-6 }, { 2, -6 }, };
+		POINT AircraftInner[] = { 
+			{ 1, -5 }, { 1, 0 }, { 14, 0 }, { 14, 1 }, { 1, 1 }, { 1, 8 }, 
+			{ 4, 8 }, { 4, 9 }, { -3, 9 }, { -3, 8 }, { 0, 8 }, { 0, 1 }, 
+			{ -13, 1 }, { -13, 0 }, { 0, 0 }, { 0, -5 }, { 1, -5 }
+		};
+		POINT AircraftOuter[] = { 
+			{ 2, -6 }, { 2, -1 }, { 15, -1 }, { 15, 2 }, { 2, 2 }, { 2, 7 }, 
+			{ 5, 7 }, { 5, 10 }, { -4, 10 }, { -4, 7 }, { -1, 7 }, { -1, 2 }, 
+			{ -14, 2 }, { -14, -1 }, { -1, -1 }, { -1, -6 }, { 2, -6 }
+		};
 
 		PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x,
 				Orig.y, angle);
@@ -217,8 +218,8 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 				Orig.y, angle);
 
 		const auto oldPen = Surface.SelectObject(LK_NULL_PEN);
-
 		const auto hbOld = Surface.SelectObject(LK_BLACK_BRUSH);
+
 		Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
 
 		Surface.SelectObject(LK_WHITE_BRUSH);
