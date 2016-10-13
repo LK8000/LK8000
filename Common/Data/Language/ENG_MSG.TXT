@@ -2205,3 +2205,11 @@ _@M2312_ "Speed of maximum efficiency"
 _@M2313_ "SpMe"
 _@M2314_ "Target Req. Efficicency"
 _@M2315_ "E.Tar"
+
+_@M2316_ "Aircraft symbol"
+_@M2317_ "Triangle"
+_@M2318_ "Paraglider"
+_@M2319_ "Hangglider"
+_@M2320_ "Glider"
+_@M2321_ "Aircraft"
+

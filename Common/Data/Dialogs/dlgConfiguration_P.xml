@@ -508,6 +508,9 @@
       <WndProperty Name="prpPGOptimizeRoute" Caption="_@M1686_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H9999_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
+     <WndProperty Name="prpPGGliderSymbol" Caption="_@M2316_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H9999_">
+        <DataField Name="" DataType="enum"/>
+      </WndProperty>
     </WndFrame>
     <WndFrame Name="frmEngineering1" X="1" Y="0" Width="-1" Height="222" Font="1">
       <WndProperty Name="prpDebounceTimeout" Caption="_@M220_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H221_">

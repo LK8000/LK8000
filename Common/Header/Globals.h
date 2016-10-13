@@ -232,6 +232,7 @@ GEXTERN int LKVarioVal;
 
 GEXTERN bool PGOptimizeRoute;
 GEXTERN bool PGOptimizeRoute_Config;
+GEXTERN short  PGGliderSymbol;
 
 GEXTERN short OverlaySize;
 GEXTERN short BarOpacity;

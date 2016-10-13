@@ -1840,7 +1840,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
-    for (int i=0; i<=9; ++i) {
+    for (int i=0; i<=14; ++i) {
       if (MapWindow::zoom.GetPgCruiseInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
 	dfe->addEnumText(buf1);
       } else {
@@ -2439,6 +2439,18 @@ DataField* dfe = wp->GetDataField();
     if(dfe) {
         dfe->Set(PGOptimizeRoute_Config);
     }
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGGliderSymbol"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+    dfe->addEnumText(gettext(TEXT("_@M2317_"))); // _@M2317_ "Triangle"
+    dfe->addEnumText(gettext(TEXT("_@M2318_"))); // _@M2318_ "Paraglider"
+    dfe->addEnumText(gettext(TEXT("_@M2319_"))); // _@M2319_ "Hangglider"
+    dfe->addEnumText(gettext(TEXT("_@M2320_"))); // _@M2320_ "Glider"
+    dfe->addEnumText(gettext(TEXT("_@M2321_"))); // _@M2322_ "Aircraft"
+    dfe->Set(PGGliderSymbol);
     wp->RefreshDisplay();
   }
 
@@ -3752,6 +3764,15 @@ int ival;
         ClearOptimizedTargetPos();
 	  }
 	}
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGGliderSymbol"));
+  if (wp) {
+    if (PGGliderSymbol != wp->GetDataField()->GetAsInteger() )
+    {
+    	PGGliderSymbol = wp->GetDataField()->GetAsInteger();
+      //requirerestart = true;
+    }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOutlinedTp"));

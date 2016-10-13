@@ -119,6 +119,11 @@ double MapWindow::Zoom::GetPgCruiseZoomInitValue(int parameter_number) const
     case 7: return 0.75; 
     case 8: return 1.00; 
     case 9: return 1.50;
+    case 10: return 2.00;
+    case 11: return 3.50;
+    case 12: return 5.00;
+    case 13: return 7.50;
+    case 14: return 10.00;
     default: return 0.35; 
   }
 }

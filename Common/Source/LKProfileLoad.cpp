@@ -468,6 +468,9 @@ void LKParseProfileString(const char *sname, const char *svalue) {
  // PREAD(sname,svalue,szRegistryPGOpenTimeH,&PGOpenTimeH);
  // PREAD(sname,svalue,szRegistryPGOpenTimeM,&PGOpenTimeM);
   PREAD(sname,svalue,szRegistryPGOptimizeRoute,&PGOptimizeRoute_Config);
+  PREAD(sname,svalue,szRegistryPGGliderSymbol,&PGGliderSymbol);
+
+
  // PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);
   PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config, array_size(PilotName_Config));
   PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config, array_size(LiveTrackersrv_Config));
