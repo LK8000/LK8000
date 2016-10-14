@@ -414,4 +414,6 @@ HELP FILE
  +[Target Req. Efficicency]
  +Required efficiency to the current target
 
-
++@1294
++[Aircraft symbol]
++Choose the symbol you want to see on the main map

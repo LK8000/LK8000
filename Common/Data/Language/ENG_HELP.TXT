@@ -1862,6 +1862,9 @@ It is exactly the same as for the bottom bar stripe n. 9.
 Be careful that only left overlays can show the units, not those on the right.
 The first three overlays on top cannot be changed, only disabled.
 
+@1294
+[Aircraft symbol]
+Choose the symbol you want to see on the main map
 
 @9999
 No help available on this item!
