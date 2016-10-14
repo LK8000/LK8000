@@ -171,7 +171,7 @@ public:
   CContestMgr();
   
   void Reset(unsigned handicap);
-  void Add(const CPointGPSSmart &gps);
+  void Add(unsigned time, double lat, double lon, int alt);
 
   CResult Result(TType type, bool fillArray) const;
   void Trace(CPointGPSArray &array) const;
