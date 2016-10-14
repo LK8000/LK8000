@@ -1,6 +1,6 @@
 #include "tstring.hpp"
-
 #include <tchar.h>
+#include "ConvertString.hpp"
 
 #define WHITESPACE _T(" \r\t")
 
@@ -19,3 +19,16 @@ trim_inplace(tstring &s)
 
   return s;
 }
+
+#ifdef _UNICODE
+tstring to_tstring(const char* sz) {
+  tstring tsz;
+  const ACPToWideConverter converter(sz);
+  if(converter.IsValid()) {
+    tsz = converter;
+  }
+  return tsz;
+//  return static_cast<TCHAR*>(converter);
+}
+#endif
+ 

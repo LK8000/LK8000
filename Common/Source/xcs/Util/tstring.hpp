@@ -7,8 +7,17 @@
 #ifdef _UNICODE
 #include <tchar.h>
 typedef std::wstring tstring;
+
+tstring to_tstring( const char* sz);
+
 #else
 typedef std::string tstring;
+
+inline
+tstring to_tstring( const char* sz) {
+  return sz;
+}
+
 #endif
 
 tstring &
