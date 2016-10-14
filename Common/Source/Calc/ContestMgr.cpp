@@ -359,7 +359,7 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
     }
     
     // add predicted point
-    traceResult.Push(new CPointGPS(time, start.Latitude(), start.Longitude(), start.Altitude()));
+    traceResult.Push(make_CPointGPSSmart(time, start.Latitude(), start.Longitude(), start.Altitude()));
   }
   
   // compress trace to obtain the result
@@ -669,11 +669,13 @@ void CContestMgr::SolveOLCPlus(bool predicted)
  * 
  * @param gps New GPS fix to use in analysis
  */
-void CContestMgr::Add(const CPointGPSSmart &gps)
+void CContestMgr::Add(unsigned time, double lat, double lon, int alt)
 {
   static CPointGPS lastGps(0, 0, 0, 0);
   static unsigned step = 0;
   const unsigned STEPS_NUM = 7;
+  
+  const CPointGPSSmart gps = make_CPointGPSSmart(time, lat, lon, alt);
   
   // filter out GPS fix repeats
   if(lastGps == *gps)

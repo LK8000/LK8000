@@ -33,9 +33,13 @@ public:
   bool operator>(const CPointGPS &ref) const  { return TimeDelta(ref) > 0; }
 };
 
-typedef CSmartPtr<const CPointGPS> CPointGPSSmart;
+typedef std::shared_ptr<const CPointGPS> CPointGPSSmart;
 typedef std::vector<CPointGPS> CPointGPSArray;
 
+inline
+CPointGPSSmart make_CPointGPSSmart(unsigned time, double lat, double lon, int alt) {
+  return std::make_shared<CPointGPSSmart::element_type>(time, lat, lon, alt);
+}
 
 /** 
  * @brief Calculates time difference between 2 GPS fixes

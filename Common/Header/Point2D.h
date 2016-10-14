@@ -9,9 +9,9 @@
 #ifndef __POINT2D_H__
 #define __POINT2D_H__
 
-#include "SmartPtr.h"
 #include <cmath>
 #include <vector>
+#include <memory>
 
 #ifndef DEG_TO_RAD
 #define DEG_TO_RAD  (PI / 180)
@@ -70,7 +70,7 @@ public:
   unsigned DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, int *nearest_x = 0, int *nearest_y = 0, int *nearest_z = 0) const;
 };
 
-typedef CSmartPtr<const CPoint2D> CPoint2DSmart;
+typedef std::shared_ptr<const CPoint2D> CPoint2DSmart;
 typedef std::vector<CPoint2D> CPoint2DArray;
 
 

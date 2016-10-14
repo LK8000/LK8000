@@ -26,7 +26,7 @@ public:
   int Altitude() const { return _alt; }
 };
 
-typedef CSmartPtr<const CPoint3D> CPoint3DSmart;
+typedef std::shared_ptr<const CPoint3D> CPoint3DSmart;
 typedef std::vector<CPoint3D> CPoint3DArray;
 
 

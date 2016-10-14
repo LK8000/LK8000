@@ -242,9 +242,9 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 #endif
 
     if (UseContestEngine()) {
-      CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Calculated->ClimbStartTime),
-	Calculated->ClimbStartLat, Calculated->ClimbStartLong,
-	static_cast<unsigned>(Calculated->ClimbStartAlt)));
+      CContestMgr::Instance().Add(static_cast<unsigned>(Calculated->ClimbStartTime),
+                                  Calculated->ClimbStartLat, Calculated->ClimbStartLong,
+                                  static_cast<unsigned>(Calculated->ClimbStartAlt));
     }
 
     #if DEBUG_DFF
