@@ -22,7 +22,8 @@ bool AddWaypoint(WAYPOINT& Waypoint) {
         Waypoint = {0};
 
     } catch (std::exception& e) {
-        StartupStore(_T("FAILED! <%s>%s"), e.what(), NEWLINE);
+        const tstring what = to_tstring(e.what());
+        StartupStore(_T("FAILED! <%s>%s" NEWLINE), what.c_str());
         MessageBoxX(MsgToken(486), // "Not Enough Memory For Waypoints"
                 MsgToken(266) /* "Error" */, mbOk);
         return false;
@@ -31,7 +32,8 @@ bool AddWaypoint(WAYPOINT& Waypoint) {
     try {
         WayPointCalc.resize(WayPointList.size());
     } catch (std::exception& e) {
-        StartupStore(_T("FAILED! <%s>%s"), e.what(), NEWLINE);
+        const tstring what = to_tstring(e.what());
+        StartupStore(_T("FAILED! <%s>%s" NEWLINE), what.c_str());
         MessageBoxX(MsgToken(486), // "Not Enough Memory For Waypoints"
                 MsgToken(266) /* "Error" */, mbOk);
         return false;
