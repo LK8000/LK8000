@@ -56,7 +56,7 @@ _skip_calcs:
             mode.Special(Mode::MODE_SPECIAL_PANORAMA, true);
             LastZoomTrigger = DrawInfo.Time;
 
-            Message::AddMessage(1000, 3, gettext(TEXT("_@M872_"))); // LANDSCAPE ZOOM FOR 20s
+            Message::AddMessage(1000, 3, MsgToken(872)); // LANDSCAPE ZOOM FOR 20s
             LKSound(TEXT("LK_TONEUP.WAV"));
         } else {
             // previously called, see if time has passed
@@ -65,7 +65,7 @@ _skip_calcs:
                 LastZoomTrigger = 0; // just for safety
                 mode.Special(Mode::MODE_SPECIAL_PANORAMA, false);
                 PGZoomTrigger = false;
-                Message::AddMessage(1500, 3, gettext(TEXT("_@M873_"))); // BACK TO NORMAL ZOOM
+                Message::AddMessage(1500, 3, MsgToken(873)); // BACK TO NORMAL ZOOM
                 LKSound(TEXT("LK_TONEDOWN.WAV"));
             }
         }

@@ -431,9 +431,9 @@ void ReplayLogger::Start(void) {
   if (!UpdateInternal()) {
     MessageBoxX(
 	// LKTOKEN  _@M201_ = "Could not open IGC file!" 
-		gettext(TEXT("_@M201_")),
+		MsgToken(201),
 	// LKTOKEN  _@M305_ = "Flight replay" 
-		gettext(TEXT("_@M305_")),
+		MsgToken(305),
 		mbOk);
   }
 }

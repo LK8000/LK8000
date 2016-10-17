@@ -407,9 +407,9 @@ static void SetDirectionData(DataField *Sender){
     int a = iround(CALCULATED_INFO.Heading);
     if (a <=0)
       a += 360;
-    _stprintf(sTmp, TEXT("HDG(%d%s)"), a, gettext(_T("_@M2179_")));
+    _stprintf(sTmp, TEXT("HDG(%d%s)"), a, MsgToken(2179));
   }else
-    _stprintf(sTmp, TEXT("%d%s"), DirectionFilter[DirectionFilterIdx], gettext(_T("_@M2179_")));
+    _stprintf(sTmp, TEXT("%d%s"), DirectionFilter[DirectionFilterIdx], MsgToken(2179));
 
   Sender->Set(sTmp);
 
@@ -515,7 +515,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
       }
       w1 = Surface.GetTextWidth(TEXT("XXX"));
       w2 = Surface.GetTextWidth(TEXT(" 000km"));
-      _stprintf(sTmp, _T(" 000%s"), gettext(_T("_@M2179_")));
+      _stprintf(sTmp, _T(" 000%s"), MsgToken(2179));
       w3 = Surface.GetTextWidth(sTmp);
       
       x1 = w0-w1-w2-w3;
@@ -538,7 +538,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
       Surface.DrawText(x2, 2*ScreenScale, sTmp);
       
       // right justified after distance
-      _stprintf(sTmp, TEXT("%d%s"),  iround(AirspaceSelectInfo[i].Direction), gettext(_T("_@M2179_")));
+      _stprintf(sTmp, TEXT("%d%s"),  iround(AirspaceSelectInfo[i].Direction), MsgToken(2179));
       x3 = w0-Surface.GetTextWidth(sTmp);
       Surface.DrawText(x3, 2*ScreenScale, sTmp);
     } else {
@@ -548,7 +548,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
     if (DrawListIndex == 0){
       Surface.SetTextColor(RGB_BLACK);
 	// LKTOKEN  _@M466_ = "No Match!" 
-      _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
+      _stprintf(sTmp, TEXT("%s"), MsgToken(466));
       Surface.DrawText(2*ScreenScale, 2*ScreenScale, sTmp);
     }
   }

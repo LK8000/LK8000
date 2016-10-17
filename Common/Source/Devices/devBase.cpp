@@ -110,7 +110,7 @@ void DevBase::ShowProgress(DeclDlg dlgType)
 
   TCHAR buffer[max_dlg_msg_sz];
 
-  _sntprintf(buffer, max_dlg_msg_sz, _T("%s..."), gettext(msgId));
+  _sntprintf(buffer, max_dlg_msg_sz, _T("%s..."), LKGetText(msgId));
 
   CreateProgressDialog(buffer);
 
@@ -141,7 +141,7 @@ bool DevBase::CheckWPCount(const Declaration_t& decl,
     #endif
     if (errBuf==NULL) return(false);
     // LKTOKEN  _@M1412_ = "Not enough waypoints!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1412_")));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(1412));
     return(false);
   }
 
@@ -152,7 +152,7 @@ bool DevBase::CheckWPCount(const Declaration_t& decl,
     #endif
     if (errBuf==NULL) return(false);
     // LKTOKEN  _@M1413_ = "Too many waypoints!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1413_")));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(1413));
     return(false);
   }
 
@@ -180,7 +180,7 @@ bool DevBase::StopRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR err
     #endif
     if (errBuf==NULL) return(false);
     // LKTOKEN  _@M951_ = "Cannot stop RX thread!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M951_")));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(951));
     return(false);
   }
 
@@ -208,7 +208,7 @@ bool DevBase::StartRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR er
     #endif
     if (errBuf==NULL) return(false);
     // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M761_")));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(761));
     return(false);
   }
 
@@ -241,7 +241,7 @@ bool DevBase::SetRxTimeout(PDeviceDescriptor_t d,
     #endif
     if (errBuf==NULL) return(false);
     // LKTOKEN  _@M759_ = "Unable to Change Settings on Port"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M759_")));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(759));
     return(false);
   }
 
@@ -273,7 +273,7 @@ bool DevBase::ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsi
     #endif
     if (errBuf==NULL) return(false);
     // LKTOKEN  _@M952_ = "Cannot write data to Port!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M952_")));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(952));
     res = false;
   }
   else
@@ -386,7 +386,7 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
 #endif
 
   // LKTOKEN  _@M1414_ = "Device not responsive!"
-  _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
+  _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(1414));
 
   return(false);
 } // ComExpect()

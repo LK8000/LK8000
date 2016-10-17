@@ -70,22 +70,22 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 			// now check for special alerts on countdown, only on current armed start
 			if (gatetimediff==3600 && ((PGGateIntervalTime>=70)||ActiveGate==0) ) { 
 				//  850  FIRST GATE OPEN IN 1 HOUR
-				DoStatusMessage(gettext(TEXT("_@M850_")));
+				DoStatusMessage(MsgToken(850));
 				LKSound(_T("LK_DINGDONG.WAV"));
 			}
 			if (gatetimediff==1800 && ((PGGateIntervalTime>=45)||ActiveGate==0) ) { 
 				//  851  FIRST GATE OPEN IN 30 MINUTES
-				DoStatusMessage(gettext(TEXT("_@M851_")));
+				DoStatusMessage(MsgToken(851));
 				LKSound(_T("LK_DINGDONG.WAV"));
 			}
 			if (gatetimediff==600 && ((PGGateIntervalTime>=15)||ActiveGate==0) ) { // 10 minutes to go
 				//  852  10 MINUTES TO GO
-				DoStatusMessage(gettext(TEXT("_@M852_")));
+				DoStatusMessage(MsgToken(852));
 				LKSound(_T("LK_HITONE.WAV"));
 			}
 			if (gatetimediff==300 && ((PGGateIntervalTime>=10)||ActiveGate==0)) { // 5 minutes to go
 				//  853  5 MINUTES TO GO
-				DoStatusMessage(gettext(TEXT("_@M853_")));
+				DoStatusMessage(MsgToken(853));
 				LKSound(_T("LK_HITONE.WAV"));
 			}
 			if (gatetimediff==60) { // 1 minute to go

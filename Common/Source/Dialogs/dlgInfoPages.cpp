@@ -252,7 +252,7 @@ void dlgInfoPagesShowModal(void){
 
   if (changed) {
     UpdateConfIP();
-    MessageBoxX (gettext(TEXT("_@M1608_")), // infopages config saved
+    MessageBoxX (MsgToken(1608), // infopages config saved
                  TEXT(""), mbOk);
   }
 

@@ -137,7 +137,7 @@ switch (analysis_page) {
   if(CalcCaption) {
     WindowControl *wCalc = pForm->FindByName(TEXT("cmdCalc"));
     if (wCalc) {
-      wCalc->SetCaption(gettext(CalcCaption));
+      wCalc->SetCaption(LKGetText(CalcCaption));
     }  
   }
   

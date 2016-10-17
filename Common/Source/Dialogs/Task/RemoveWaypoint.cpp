@@ -77,14 +77,14 @@ void RemoveWaypoint(int index) {
 	TCHAR tlkbuf[100];
 	_stprintf(tlkbuf,_T("%s\n%s"),
 	// LKTOKEN  _@M169_ = "Chosen Waypoint not in current task." 
-        gettext(TEXT("_@M169_")),
+        MsgToken(169),
 	// LKTOKEN  _@M551_ = "Remove active Waypoint?" 
-	gettext(TEXT("_@M551_")));
+	MsgToken(551));
 
       int ret = MessageBoxX(
         tlkbuf,
 	// LKTOKEN  _@M550_ = "Remove Waypoint" 
-        gettext(TEXT("_@M550_")),
+        MsgToken(550),
         mbYesNo);
       LockTaskData();
       

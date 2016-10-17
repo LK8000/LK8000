@@ -66,7 +66,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("cmd>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!" 
-      _tcsncpy(errBuf, gettext(_T("_@M1414_")), errBufSize);
+      _tcsncpy(errBuf, MsgToken(1414), errBufSize);
       return false;
     }
     return true;
@@ -98,7 +98,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("up>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!" 
-      _tcsncpy(errBuf, gettext(_T("_@M1414_")), errBufSize);
+      _tcsncpy(errBuf, MsgToken(1414), errBufSize);
       return false;
     }
     return true;
@@ -118,7 +118,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("dn>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!" 
-      _tcsncpy(errBuf, gettext(_T("_@M1414_")), errBufSize);
+      _tcsncpy(errBuf, MsgToken(1414), errBufSize);
       return false;
     }
     return true;
@@ -361,7 +361,7 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
   TCHAR buffer[BUFF_LEN];
   // LKTOKEN  _@M1400_ = "Task declaration" 
   // LKTOKEN  _@M1404_ = "Opening connection" 
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1404_")));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1404));
   CreateProgressDialog(buffer);
 
   // prepare communication
@@ -377,7 +377,7 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
   
   // LKTOKEN  _@M1400_ = "Task declaration" 
   // LKTOKEN  _@M1403_ = "Sending declaration" 
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1403_")));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
   CreateProgressDialog(buffer);
   
   if(status) {
@@ -406,7 +406,7 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
   
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1406_ = "Closing connection"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1406_")));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1406));
   CreateProgressDialog(buffer);
   
   // restore NMEA mode

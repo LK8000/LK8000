@@ -50,7 +50,7 @@ void Shutdown(void) {
   int i;
 
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
-  CreateProgressDialog(gettext(TEXT("_@M1219_")));
+  CreateProgressDialog(MsgToken(1219));
 
   LKSound(_T("LK_DISCONNECT.WAV")); Poco::Thread::sleep(500); // real WAV length is 410+ms
   if (!GlobalRunning) { // shutdown on startup (before sim/fly or clicking on the window X)
@@ -75,7 +75,7 @@ void Shutdown(void) {
   GlobalRunning = false;
 
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
-  CreateProgressDialog(gettext(TEXT("_@M1220_")));
+  CreateProgressDialog(MsgToken(1220));
 
   // In case we quit while are still flying
   UpdateLogBook(false); // false=only log if still flying
@@ -83,7 +83,7 @@ void Shutdown(void) {
   guiStopLogger(true);
 
   // LKTOKEN _@M1221_ "Shutdown, saving profile..."
-  CreateProgressDialog(gettext(TEXT("_@M1221_")));
+  CreateProgressDialog(MsgToken(1221));
   extern void LKAircraftSave(const TCHAR *szFile);
   extern void LKPilotSave(const TCHAR *szFile);
   extern void LKDeviceSave(const TCHAR *szFile);
@@ -100,7 +100,7 @@ void Shutdown(void) {
 
   // Stop drawing
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
-  CreateProgressDialog(gettext(TEXT("_@M1219_")));
+  CreateProgressDialog(MsgToken(1219));
  
   // 100526 this is creating problem in SIM mode when quit is called from X button, and we are in waypoint details
   // or probably in other menu related screens. However it cannot happen from real PNA or PDA because we don't have
@@ -112,7 +112,7 @@ void Shutdown(void) {
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
-  CreateProgressDialog(gettext(TEXT("_@M1222_")));
+  CreateProgressDialog(MsgToken(1222));
 
   #if TESTBENCH
   StartupStore(TEXT(".... Save default task%s"),NEWLINE);
@@ -131,7 +131,7 @@ void Shutdown(void) {
   UnlockTaskData();
 
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
-  CreateProgressDialog(gettext(TEXT("_@M1219_")));
+  CreateProgressDialog(MsgToken(1219));
   #if TESTBENCH
   StartupStore(TEXT(".... CloseTerrainTopology%s"),NEWLINE);
   #endif
@@ -240,7 +240,7 @@ bool WndMain::OnClose() {
     if(!_isRunning) {
         return WndMainBase::OnClose();
     }
-    if (MessageBoxX(gettext(TEXT("_@M198_")), // LKTOKEN  _@M198_ = "Confirm Exit?"
+    if (MessageBoxX(MsgToken(198), // LKTOKEN  _@M198_ = "Confirm Exit?"
                     TEXT("LK8000"),
                     mbYesNo) == IdYes) {
 

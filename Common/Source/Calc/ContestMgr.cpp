@@ -481,13 +481,13 @@ else*/
 	#endif
 
 	  if(needfilling_yestriangle) {
-	    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),_uiFAIDist *DISTANCEMODIFY,Units::GetDistanceName(), gettext(TEXT("_@M1816_"))); // FAI triangle closing point
+	    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),_uiFAIDist *DISTANCEMODIFY,Units::GetDistanceName(), MsgToken(1816)); // FAI triangle closing point
 		needfilling_yestriangle=false;
 	  }
 
 	#if 0 // THIS CANNOT HAPPEN
 	  else
-		_stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),fDist      *DISTANCEMODIFY,Units::GetDistanceName(), gettext(TEXT("_@M1817_"))); // JoJo closing point
+		_stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),fDist      *DISTANCEMODIFY,Units::GetDistanceName(), MsgToken(1817)); // JoJo closing point
 	#endif
 
 

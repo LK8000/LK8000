@@ -280,7 +280,7 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	if(MessageCnt < 10)
 	{
 	  MessageCnt++;
-	  DoStatusMessage(gettext(TEXT("_@M279_"))); // FLARM DETECTED
+	  DoStatusMessage(MsgToken(279)); // FLARM DETECTED
 	}
 	sayflarmavailable=false;
 #if FLARMDEADLOCK
@@ -612,7 +612,7 @@ void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot) {
   // if more than 15 minutes ago, warn pilot with full message and sound
   if ( (pGPS->Time - pGPS->FLARM_Traffic[flarmslot].Time_Fix) >=900) {
 	// LKTOKEN  _@M674_ = "TARGET BACK VISIBLE" 
-	DoStatusMessage(gettext(TEXT("_@M674_")));
+	DoStatusMessage(MsgToken(674));
         if (!UseExtSound1 && !UseExtSound2) LKSound(_T("TARGVISIBLE.WAV"));
   } else {
 	// otherwise a simple sound

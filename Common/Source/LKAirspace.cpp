@@ -1662,7 +1662,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                 _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
                             // LKTOKEN  _@M68_ = "Airspace" 
-                            if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
 			} 
                         break;
                 } //sw
@@ -1677,7 +1677,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
                             _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace" 
-                            if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
 
@@ -1687,7 +1687,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
                             _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace" 
-                            if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
 
@@ -1708,7 +1708,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         } else {
                             _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace" 
-                            if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
 
@@ -1723,7 +1723,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 			    maxwarning--;
 
                             // LKTOKEN  _@M68_ = "Airspace" 
-                            if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
 			}
                         break;
                 } //sw
@@ -1755,7 +1755,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                 _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                 // LKTOKEN  _@M68_ = "Airspace" 
-                if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return;
+                if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                 break;
 
             case _T('S'): // ignore the SB,SP ...
@@ -1773,7 +1773,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                     maxwarning--;
                     // LKTOKEN  _@M68_ = "Airspace" 
-                    if (MessageBoxX(sTmp, gettext(TEXT("_@M68_")), mbOkCancel) == IdCancel) return;
+                    if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
 		}
                 break;
         }//sw
@@ -2872,13 +2872,13 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
     switch (type) {
         case RESTRICT:
             // LKTOKEN  _@M565_ = "Restricted" 
-            return gettext(TEXT("_@M565_"));
+            return MsgToken(565);
         case PROHIBITED:
             // LKTOKEN  _@M537_ = "Prohibited" 
-            return gettext(TEXT("_@M537_"));
+            return MsgToken(537);
         case DANGER:
             // LKTOKEN  _@M213_ = "Danger Area" 
-            return gettext(TEXT("_@M213_"));
+            return MsgToken(213);
         case CLASSA:
             return TEXT("Class A");
         case CLASSB:
@@ -2895,12 +2895,12 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
             return TEXT("Class G");
         case NOGLIDER:
             // LKTOKEN  _@M464_ = "No Glider" 
-            return gettext(TEXT("_@M464_"));
+            return MsgToken(464);
         case CTR:
             return TEXT("CTR");
         case WAVE:
             // LKTOKEN  _@M794_ = "Wave" 
-            return gettext(TEXT("_@M794_"));
+            return MsgToken(794);
         case AATASK:
             return TEXT("AAT");
         case CLASSTMZ:
@@ -2909,7 +2909,7 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
 	    return TEXT("RMZ");
         case OTHER:
             // LKTOKEN  _@M765_ = "Unknown" 
-            return gettext(TEXT("_@M765_"));
+            return MsgToken(765);
         default:
             return TEXT("");
     }

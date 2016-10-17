@@ -123,12 +123,12 @@ void dlgWindSettingsShowModal(void){
     if (wp) {
       DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M418_ = "Manual" 
-      dfe->addEnumText(gettext(TEXT("_@M418_")));
+      dfe->addEnumText(MsgToken(418));
 	// LKTOKEN  _@M175_ = "Circling" 
-      dfe->addEnumText(gettext(TEXT("_@M175_")));
+      dfe->addEnumText(MsgToken(175));
       dfe->addEnumText(gettext(TEXT("ZigZag")));
 	// LKTOKEN  _@M149_ = "Both" 
-      dfe->addEnumText(gettext(TEXT("_@M149_")));
+      dfe->addEnumText(MsgToken(149));
       dfe->addEnumText(MsgToken(1793)); // External
 
       wp->GetDataField()->Set(AutoWindMode);

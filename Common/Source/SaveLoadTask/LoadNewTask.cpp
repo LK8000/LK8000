@@ -299,14 +299,14 @@ goEnd:
   if (TaskInvalid && TaskLoaded) {
 	if (oldversion) {
 	// LKTOKEN  _@M360_ = "Invalid old task format!" 
-		MessageBoxX(gettext(TEXT("_@M360_")), 
+		MessageBoxX(MsgToken(360), 
 	// LKTOKEN  _@M396_ = "Load task" 
-			gettext(TEXT("_@M396_")), mbOk);
+			MsgToken(396), mbOk);
 	} else {
 	// LKTOKEN  _@M264_ = "Error in task file!" 
-		MessageBoxX(gettext(TEXT("_@M264_")), 
+		MessageBoxX(MsgToken(264), 
 	// LKTOKEN  _@M396_ = "Load task" 
-			gettext(TEXT("_@M396_")), mbOk);
+			MsgToken(396), mbOk);
 	}
   } else {
 	#if TESTBENCH

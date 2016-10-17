@@ -286,7 +286,7 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
      mode.Special() == Mode::MODE_SPECIAL_NONE &&
      !(_circleZoom && mode.Is(Mode::MODE_CIRCLING))) {
     // Disable Auto Zoom only if not in Special or Circling Zoom
-    DoStatusMessage(gettext(TEXT("_@M857_"))); // AutoZoom OFF
+    DoStatusMessage(MsgToken(857)); // AutoZoom OFF
     _autoZoom = false;
   }
   

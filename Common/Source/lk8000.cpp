@@ -464,7 +464,7 @@ int main(int argc, char *argv[]) {
 #if ( WINDOWSPC==0 )
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
-    CreateProgressDialog(gettext(TEXT("_@M1208_")));
+    CreateProgressDialog(MsgToken(1208));
     Poco::Thread::sleep(ERRDELAY);
   }
 #endif
@@ -474,7 +474,7 @@ int main(int argc, char *argv[]) {
   if ( !datadir ) {
     Poco::Thread::sleep(ERRDELAY);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
-	CreateProgressDialog(gettext(TEXT("_@M1209_")));
+	CreateProgressDialog(MsgToken(1209));
     Poco::Thread::sleep(ERRDELAY);
   }
 #endif
@@ -483,31 +483,31 @@ int main(int argc, char *argv[]) {
 // TODO until startup graphics are settled, no need to delay PC start
     if (AircraftCategory == (AircraftCategory_t) umParaglider) {
         // LKTOKEN _@M1210_ "PARAGLIDING MODE"
-        CreateProgressDialog(gettext(TEXT("_@M1210_")));
+        CreateProgressDialog(MsgToken(1210));
         Poco::Thread::sleep(MSGDELAY);
     }
     if (SIMMODE) {
         // LKTOKEN _@M1211_ "SIMULATION"
-        CreateProgressDialog(gettext(TEXT("_@M1211_")));
+        CreateProgressDialog(MsgToken(1211));
         Poco::Thread::sleep(MSGDELAY);
     }
 
 #ifdef PNA
   if ( SetBacklight() == true ) 
 	// LKTOKEN _@M1212_ "AUTOMATIC BACKLIGHT CONTROL"
-	CreateProgressDialog(gettext(TEXT("_@M1212_")));
+	CreateProgressDialog(MsgToken(1212));
   else
 	// LKTOKEN _@M1213_ "NO BACKLIGHT CONTROL"
-	CreateProgressDialog(gettext(TEXT("_@M1213_")));
+	CreateProgressDialog(MsgToken(1213));
 #endif
   
   // this should work ok for all pdas as well
   if ( SetSoundVolume() == true ) 
 	// LKTOKEN _@M1214_ "AUTOMATIC SOUND LEVEL CONTROL"
-	CreateProgressDialog(gettext(TEXT("_@M1214_")));
+	CreateProgressDialog(MsgToken(1214));
   else
 	// LKTOKENS _@M1215_ "NO SOUND LEVEL CONTROL"
-	CreateProgressDialog(gettext(TEXT("_@M1215_")));
+	CreateProgressDialog(MsgToken(1215));
 
 
   LockTerrainDataGraphics();
@@ -525,7 +525,7 @@ int main(int argc, char *argv[]) {
   LKReadLanguageFile(szLanguageFile);
   LKLanguageReady=true;
 
-  CreateProgressDialog(gettext(TEXT("_@M399_")));
+  CreateProgressDialog(MsgToken(399));
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
   OpenTopology();
@@ -540,7 +540,7 @@ int main(int argc, char *argv[]) {
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // LKTOKEN _@M1217_ "Starting devices"
   // Please check that the number of devices is not exceeding NUMREGDEV in device.h
-  CreateProgressDialog(gettext(TEXT("_@M1217_")));
+  CreateProgressDialog(MsgToken(1217));
   #if TESTBENCH
   StartupStore(TEXT(". Register serial devices%s"),NEWLINE);
   #endif
@@ -613,7 +613,7 @@ int main(int argc, char *argv[]) {
   GlidePolar::SetBallast();
 
   // LKTOKEN _@M1218_ "Initialising display"
-  CreateProgressDialog(gettext(TEXT("_@M1218_")));
+  CreateProgressDialog(MsgToken(1218));
 
   // just about done....
 
@@ -654,7 +654,7 @@ int main(int argc, char *argv[]) {
         TCHAR nopath[MAX_PATH];
         LocalPath(nopath, _T(""));
         // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
-        MessageBoxX(nopath, gettext(TEXT("_@M1209_")), mbOk);
+        MessageBoxX(nopath, MsgToken(1209), mbOk);
         WarningHomeDir = false;
     }
 #ifdef UNDER_CE
@@ -663,7 +663,7 @@ int main(int argc, char *argv[]) {
         DWORD counts = GetTickCount();
         if (counts > (unsigned) 2073600000l) {
             // LKTOKEN  _@M527_ = "Please exit LK8000 and reset your device.\n"
-            MessageBoxX(gettext(TEXT("_@M527_")),
+            MessageBoxX(MsgToken(527),
                     TEXT("Device need reset!"),
                     mbOk);
         }
@@ -673,7 +673,7 @@ int main(int argc, char *argv[]) {
     if (!ISPARAGLIDER && !ISCAR) { // 100925
         if (SAFETYALTITUDEARRIVAL < 500) { // SAFETY is *10, so we check <50 really
             // LKTOKEN  _@M155_ = "CHECK safety arrival altitude\n"
-            MessageBoxX(gettext(TEXT("_@M155_")),
+            MessageBoxX(MsgToken(155),
                     TEXT("Warning!"),
                     mbOk);
         }

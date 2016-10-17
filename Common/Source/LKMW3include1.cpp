@@ -47,8 +47,8 @@
 
 	Surface.SelectObject(LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("%s123%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2179_")));
-	_stprintf(Buffer, TEXT("123%s%s"), gettext(_T("_@M2179_")),gettext(_T("_@M2183_")));
+	//_stprintf(Buffer, TEXT("%s123%s"), MsgToken(2182), MsgToken(2179));
+	_stprintf(Buffer, TEXT("123%s%s"), MsgToken(2179),MsgToken(2183));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;
@@ -113,8 +113,8 @@
 
 	Surface.SelectObject(LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("%s123%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2179_")));
-	_stprintf(Buffer, TEXT("056%s"), gettext(_T("_@M2179_")));
+	//_stprintf(Buffer, TEXT("%s123%s"), MsgToken(2182), MsgToken(2179));
+	_stprintf(Buffer, TEXT("056%s"), MsgToken(2179));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;
@@ -164,8 +164,8 @@
 
 	Surface.SelectObject(LK8PanelBigFont);
 	TextDisplayMode.AsFlag.Color = TEXTWHITE;
-	//_stprintf(Buffer, TEXT("%s123%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2179_")));
-	_stprintf(Buffer, TEXT("251%s"), gettext(_T("_@M2179_")));
+	//_stprintf(Buffer, TEXT("%s123%s"), MsgToken(2182), MsgToken(2179));
+	_stprintf(Buffer, TEXT("251%s"), MsgToken(2179));
 	TextDisplayMode.AsFlag.AlligneCenter = 0;
 	TextDisplayMode.AsFlag.AlligneRight = 1;
 	TextDisplayMode.AsFlag.WhiteBold = 0;

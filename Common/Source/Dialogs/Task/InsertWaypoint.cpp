@@ -39,9 +39,9 @@ void InsertWaypoint(int index, unsigned short append) {
     // No room for any more task points!
     MessageBoxX(
 	// LKTOKEN  _@M727_ = "Too many waypoints in task!" 
-      gettext(TEXT("_@M727_")),
+      MsgToken(727),
 	// LKTOKEN  _@M357_ = "Insert Waypoint" 
-      gettext(TEXT("_@M357_")),
+      MsgToken(357),
       mbOk);
     
     UnlockTaskData();

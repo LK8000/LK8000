@@ -217,7 +217,7 @@ void StopLogger(void) {
       MessageBoxX(
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
-		gettext(TEXT("_@M404_")), mbOk);
+		MsgToken(404), mbOk);
       StartupStore(_T("%s") NEWLINE, szMessage);
       break;
 
@@ -227,7 +227,7 @@ void StopLogger(void) {
       MessageBoxX(
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
-		gettext(TEXT("_@M404_")), mbOk);
+		MsgToken(404), mbOk);
       StartupStore(_T("%s") NEWLINE, szMessage);
       break;
 
@@ -238,7 +238,7 @@ void StopLogger(void) {
       MessageBoxX(
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
-		gettext(TEXT("_@M404_")), mbOk);
+		MsgToken(404), mbOk);
       StartupStore(_T("%s") NEWLINE, szMessage);
       break;
 
@@ -248,7 +248,7 @@ void StopLogger(void) {
       MessageBoxX(
 		gettext(szMessage),
 	// LKTOKEN  _@M404_ = "Logger Error" 
-		gettext(TEXT("_@M404_")), mbOk);
+		MsgToken(404), mbOk);
       StartupStore(_T("%s") NEWLINE, szMessage);
       break;
 } // error handler
@@ -894,7 +894,7 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
   LKDoNotResetComms=true;
 
   // LKTOKEN  _@M221_ = "Declare Task?" 
-  if (MessageBoxX(gettext(TEXT("_@M221_")), 
+  if (MessageBoxX(MsgToken(221), 
 	dev->Name, mbYesNo) == IdYes) {
 
 	const unsigned ERROR_BUFFER_LEN = 64;
@@ -902,7 +902,7 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 
 	if (devDeclare(dev, decl, ERROR_BUFFER_LEN, errorBuffer)) {
 		// LKTOKEN  _@M686_ = "Task Declared!" 
-		MessageBoxX(gettext(TEXT("_@M686_")),
+		MessageBoxX(MsgToken(686),
 			dev->Name, mbOk);
 
 		DeclaredToDevice = true;
@@ -913,14 +913,14 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 
 		if(errorBuffer[0] == '\0') {
 			// LKTOKEN  _@M1410_ = "Unknown error" 
-			_tcsncpy(errorBuffer, gettext(_T("_@M1410_")), ERROR_BUFFER_LEN);
+			_tcsncpy(errorBuffer, MsgToken(1410), ERROR_BUFFER_LEN);
 		} else {
 			// do it just to be sure
 			errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';
 		}
 
 		// LKTOKEN  _@M265_ = "Error! Task NOT declared!" 
-		_sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), gettext(_T("_@M265_")), errorBuffer);
+		_sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), MsgToken(265), errorBuffer);
 		MessageBoxX(buffer, dev->Name, mbOk);
       
 		DeclaredToDevice = false;
@@ -939,7 +939,7 @@ void LoggerDeviceDeclare() {
   #if 0
   if (CALCULATED_INFO.Flying) {
     // LKTOKEN  _@M1423_ = "Forbidden during flight!"
-    MessageBoxX(gettext(TEXT("_@M1423_")), _T(""), mbOk);
+    MessageBoxX(MsgToken(1423), _T(""), mbOk);
     return;
   }
   #endif
@@ -967,7 +967,7 @@ void LoggerDeviceDeclare() {
 
   if (!found_logger) {
 	// LKTOKEN  _@M474_ = "No logger connected" 
-    MessageBoxX(gettext(TEXT("_@M474_")),
+    MessageBoxX(MsgToken(474),
 		devB()->Name, mbOk);
     DeclaredToDevice = true; // testing only
   }
@@ -981,9 +981,9 @@ bool CheckDeclaration(void) {
   } else {
     if(MessageBoxX(
 	// LKTOKEN  _@M492_ = "OK to invalidate declaration?" 
-		   gettext(TEXT("_@M492_")),
+		   MsgToken(492),
 	// LKTOKEN  _@M694_ = "Task declared" 
-		   gettext(TEXT("_@M694_")),
+		   MsgToken(694),
 		   mbYesNo) == IdYes){
       DeclaredToDevice = false;
       return true;

@@ -94,9 +94,9 @@ static void setVariables(void) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M343_ = "IN (Exit)" 
-    dfe->addEnumText(gettext(TEXT("_@M343_")));
+    dfe->addEnumText(MsgToken(343));
 	// LKTOKEN  _@M498_ = "OUT (Enter)" 
-    dfe->addEnumText(gettext(TEXT("_@M498_")));
+    dfe->addEnumText(MsgToken(498));
     dfe->Set(PGStartOut);
     wp->RefreshDisplay();
   }

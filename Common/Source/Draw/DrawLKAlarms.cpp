@@ -63,7 +63,7 @@ void MapWindow::DrawLKAlarms(LKSurface& Surface, const RECT& rc) {
 		case 1:
 		case 2:
 			_stprintf(textalarm,_T("%s %d: %s %d"),
-			gettext(_T("_@M1650_")), currentalarm+1, gettext(_T("_@M1651_")),  // ALARM ALTITUDE
+			MsgToken(1650), currentalarm+1, MsgToken(1651),  // ALARM ALTITUDE
 			((int)((double)LKalarms[currentalarm].triggervalue*ALTITUDEMODIFY)));
 			break;
 		default:

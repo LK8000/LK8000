@@ -32,8 +32,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
 
 	dfe->Set(Overlay_TopLeft);
 	wp->RefreshDisplay();
@@ -41,32 +41,32 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
 	dfe->Set(Overlay_TopMid);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
 	dfe->Set(Overlay_TopRight);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
 	dfe->Set(Overlay_TopDown);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
         dfe->addEnumText(_T("AUX 4"));
 	dfe->Set(Overlay_LeftTop);
 	wp->RefreshDisplay();
@@ -74,8 +74,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
         dfe->addEnumText(_T("AUX 5"));
 	dfe->Set(Overlay_LeftMid);
 	wp->RefreshDisplay();
@@ -83,8 +83,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
         dfe->addEnumText(_T("AUX 6"));
 	dfe->Set(Overlay_LeftBottom);
 	wp->RefreshDisplay();
@@ -92,8 +92,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
         dfe->addEnumText(_T("AUX 7"));
 	dfe->Set(Overlay_LeftDown);
 	wp->RefreshDisplay();
@@ -101,8 +101,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
         dfe->addEnumText(_T("AUX 1"));
 	dfe->Set(Overlay_RightTop);
 	wp->RefreshDisplay();
@@ -110,8 +110,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
         dfe->addEnumText(_T("AUX 2"));
 	dfe->Set(Overlay_RightMid);
 	wp->RefreshDisplay();
@@ -119,8 +119,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(gettext(TEXT("_@M491_"))); // OFF
-        dfe->addEnumText(gettext(TEXT("_@M894_"))); // ON
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
         dfe->addEnumText(_T("AUX 3"));
 	dfe->Set(Overlay_RightBottom);
 	wp->RefreshDisplay();

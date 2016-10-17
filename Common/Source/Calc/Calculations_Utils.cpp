@@ -52,7 +52,7 @@ void ResetTask(bool showConfirmMsg) {
   }
 
 	// LKTOKEN  _@M676_ = "TASK RESTART RESET" 
-  if(showConfirmMsg) DoStatusMessage(gettext(TEXT("_@M676_")));
+  if(showConfirmMsg) DoStatusMessage(MsgToken(676));
 
 }
 

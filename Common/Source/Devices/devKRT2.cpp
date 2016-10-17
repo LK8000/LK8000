@@ -486,12 +486,12 @@ LKASSERT(d !=NULL);
                 if(RadioPara.Volume != (int)szCommand[2])
                 {
                   RadioPara.Volume = (int)szCommand[2];
-                  _stprintf(szTempStr,_T("%s %i "),  gettext(TEXT("_@M2310_")), RadioPara.Volume );  // _@M2310_ Vol
+                  _stprintf(szTempStr,_T("%s %i "),  MsgToken(2310), RadioPara.Volume );  // _@M2310_ Vol
                 }
                 if( RadioPara.Squelch != (int)szCommand[3])
                 {
                   RadioPara.Squelch  = (int)szCommand[3];
-                  _stprintf(szTempStr,_T("%s %i "),  gettext(TEXT("_@M2311_")), RadioPara.Squelch );  //_@M2311_ Sqw
+                  _stprintf(szTempStr,_T("%s %i "),  MsgToken(2311), RadioPara.Squelch );  //_@M2311_ Sqw
                 }
                 if(RadioPara.Vox != (int)szCommand[4])
                 {
@@ -622,7 +622,7 @@ LKASSERT(d !=NULL);
 if(processed> 0)
 {    
         TCHAR szMessage[180] = _T("");    
-        _stprintf(szMessage,_T("%s:%s "),gettext(TEXT("_@M2309_")),szTempStr);
+        _stprintf(szMessage,_T("%s:%s "), MsgToken(2309),szTempStr);
         StartupStore(_T(" %s %s%s"), szMessage,WhatTimeIsIt(),NEWLINE);
   //      DoStatusMessage(szMessage);
 }

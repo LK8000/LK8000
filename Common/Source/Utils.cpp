@@ -189,7 +189,7 @@ bool CheckClubVersion() {
 void ClubForbiddenMsg() {
     MessageBoxX(
             // LKTOKEN  _@M503_ = "Operation forbidden on CLUB devices" 
-            gettext(TEXT("_@M503_")),
+            MsgToken(503),
             _T("CLUB DEVICE"),
             mbOk);
     return;
