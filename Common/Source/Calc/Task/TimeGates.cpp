@@ -147,14 +147,14 @@ void AlertGateOpen(int gate) {
   TCHAR tag[100] ={0};
   if (gate == (PGNumberOfGates-1)) {
 	// LKTOKEN  _@M372_ = "LAST GATE IS OPEN"
-	_tcsncpy(tag,gettext(TEXT("_@M372_")), array_size(tag)-1);
+	_tcsncpy(tag,MsgToken(372), array_size(tag)-1);
   } else {
 	_sntprintf(tag, array_size(tag)-1, _T("%s %d of %d %s"),
 	// LKTOKEN  _@M315_ = "GATE" 
-		gettext(TEXT("_@M315_")),
+		MsgToken(315),
 		gate+1, PGNumberOfGates,
 	// LKTOKEN  _@M347_ = "IS OPEN" 
-		gettext(TEXT("_@M347_")));
+		MsgToken(347));
   }
   DoStatusMessage(tag);
   LKSound(_T("LK_GATEOPEN.WAV"));

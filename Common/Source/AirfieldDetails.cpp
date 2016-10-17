@@ -211,7 +211,7 @@ void ReadAirfieldFile() {
   #endif
 
 	// LKTOKEN  _@M400_ = "Loading Waypoint Notes File..." 
-  CreateProgressDialog(gettext(TEXT("_@M400_")));
+  CreateProgressDialog(MsgToken(400));
 
   {
     OpenAirfieldDetails();

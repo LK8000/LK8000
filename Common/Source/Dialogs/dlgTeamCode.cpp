@@ -36,10 +36,10 @@ static void Update()
 			Value -= 360.0;
       
 	if (Value > 1)
-		_stprintf(Text, TEXT("%2.0f%s>"), Value, gettext(_T("_@M2179_")));
+		_stprintf(Text, TEXT("%2.0f%s>"), Value, MsgToken(2179));
 	else
 		if (Value < -1)
-			_stprintf(Text, TEXT("<%2.0f%s"), -Value, gettext(_T("_@M2179_")));
+			_stprintf(Text, TEXT("<%2.0f%s"), -Value, MsgToken(2179));
 		else
 			_tcscpy(Text, TEXT("<>"));
       
@@ -145,11 +145,11 @@ void dlgTeamCodeShowModal(void)
   TCHAR sTmp[32] = { 0 };
   if( ValidWayPoint(TeamCodeRefWaypoint)) {
 	// LKTOKEN _@M1230_ "Team Ref.: "
-	LK_tcsncpy(sTmp, gettext(TEXT("_@M1230_")), 20);
+	LK_tcsncpy(sTmp, MsgToken(1230), 20);
 	_tcsncat(sTmp, WayPointList[TeamCodeRefWaypoint].Name,10);
   } else {
 	// LKTOKEN _@M1231_ "Team code: SET REF!"
-	LK_tcsncpy(sTmp, gettext(TEXT("_@M1231_")), 30);
+	LK_tcsncpy(sTmp, MsgToken(1231), 30);
   }
   wf->SetCaption(sTmp);
 

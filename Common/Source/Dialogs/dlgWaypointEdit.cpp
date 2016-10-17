@@ -31,12 +31,12 @@ static void UpdateButtons(WndForm* pForm) {
   if (buttonName) {
 	if (_tcslen(global_wpt->Name)<=0) {
 		// LKTOKEN  _@M451_ = "Name" 
-		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M451_")),
+		_stprintf(text,TEXT("%s: %s"), MsgToken(451),
 		// LKTOKEN  _@M7_ = "(blank)" 
-		gettext(TEXT("_@M7_")));
+		MsgToken(7));
 	} else {
 		// LKTOKEN  _@M451_ = "Name" 
-		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M451_")),
+		_stprintf(text,TEXT("%s: %s"), MsgToken(451),
 		global_wpt->Name);
 	}
 	buttonName->SetCaption(text);
@@ -47,12 +47,12 @@ static void UpdateButtons(WndForm* pForm) {
   if (buttonComment) {
 	if ((global_wpt->Comment==NULL) || (_tcslen(global_wpt->Comment)<=0) ) {
 		// LKTOKEN  _@M190_ = "Comment" 
-		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
+		_stprintf(text,TEXT("%s: %s"), MsgToken(190),
 		// LKTOKEN  _@M7_ = "(blank)" 
-		gettext(TEXT("_@M7_")));
+		MsgToken(7));
 	} else {
 		// LKTOKEN  _@M190_ = "Comment" 
-		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
+		_stprintf(text,TEXT("%s: %s"), MsgToken(190),
 		global_wpt->Comment);
 	}
 	buttonComment->SetCaption(text);
@@ -348,11 +348,11 @@ static void SetValues(WndForm* wf) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN _@M1226_ "Turnpoint"
-    dfe->addEnumText(gettext(TEXT("_@M1226_")));
+    dfe->addEnumText(MsgToken(1226));
 	// LKTOKEN _@M1224_ "Airport"
-    dfe->addEnumText(gettext(TEXT("_@M1224_")));
+    dfe->addEnumText(MsgToken(1224));
 	// LKTOKEN _@M1225_ "Landable"
-    dfe->addEnumText(gettext(TEXT("_@M1225_")));
+    dfe->addEnumText(MsgToken(1225));
     dfe->Set(0);
     if ((global_wpt->Flags & LANDPOINT)==LANDPOINT) {
       dfe->Set(2);

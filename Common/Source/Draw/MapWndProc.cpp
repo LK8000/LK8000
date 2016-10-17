@@ -67,8 +67,8 @@ POINT MapWindow::Orig_Screen;
 RECT MapWindow::MapRect; // the entire screen area in use
 RECT MapWindow::DrawRect; // the portion of MapRect for drawing terrain, topology etc. (the map)
 
-
 #ifndef ENABLE_OPENGL
+LKWindowSurface MapWindow::WindowSurface;
 LKBitmapSurface MapWindow::TempSurface;
 
 LKMaskBitmapSurface MapWindow::hdcMask;
@@ -192,9 +192,7 @@ void MapWindow::_OnSize(int cx, int cy) {
     ScopeLock Lock(Surface_Mutex);
 #endif
 
-#ifndef USE_GDI
     BackBufferSurface.Resize(cx, cy);
-#endif
 
 #ifndef ENABLE_OPENGL    
     DrawSurface.Resize(cx, cy);
@@ -231,20 +229,17 @@ void MapWindow::UpdateActiveScreenZone(RECT rc) {
 }
 
 void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
-#ifdef USE_GDI
-    BackBufferSurface.Create(Wnd);
-    LKWindowSurface& WindowSurface = BackBufferSurface;
-#else
-    LKWindowSurface WindowSurface(Wnd);
-    BackBufferSurface.Create(WindowSurface, cx, cy);
-#endif
-
-#ifndef ENABLE_OPENGL    
+#ifndef ENABLE_OPENGL
+    WindowSurface.Create(Wnd);
     DrawSurface.Create(WindowSurface, cx, cy);
     TempSurface.Create(WindowSurface, cx, cy);
     hdcbuffer.Create(WindowSurface, cx, cy);
     hdcMask.Create(WindowSurface, cx, cy);
+#else
+    LKWindowSurface WindowSurface(Wnd);
 #endif
+    
+    BackBufferSurface.Create(WindowSurface, cx, cy);
 }
 
 void MapWindow::_OnDestroy() {
@@ -411,7 +406,7 @@ void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
         if ((startScreen.x >= P_Doubleclick_bottomright.x)
                 && (startScreen.y >= P_Doubleclick_bottomright.y)) {
             LockMode(2);
-            DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
+            DoStatusMessage(MsgToken(964)); // SCREEN IS UNLOCKED
 
             // Careful! If you ignorenext, any event timed as double click of course will be affected.
             // and this means also fast clicking on bottombar!!

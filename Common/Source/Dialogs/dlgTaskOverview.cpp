@@ -57,12 +57,12 @@ static void UpdateCaption (void) {
   if (_tcslen(name)>0) {
     _stprintf(title, TEXT("%s: %s"),
 	// LKTOKEN  _@M688_ = "Task Overview" 
-              gettext(TEXT("_@M688_")),
+              MsgToken(688),
               name);
   } else {
     _stprintf(title, TEXT("%s"),
 	// LKTOKEN  _@M688_ = "Task Overview" 
-              gettext(TEXT("_@M688_")));
+              MsgToken(688));
   }
 
   if (TaskModified) {
@@ -79,12 +79,12 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
   TCHAR wpName[120];
   TCHAR landableStr[5] = TEXT(" [X]");
   // LKTOKEN _@M1238_ "L"
-  landableStr[2] = gettext(TEXT("_@M1238_"))[0];
+  landableStr[2] = MsgToken(1238)[0];
   LockTaskData();
 
   int w0 = Sender->GetWidth()-1;
   int w1 = Surface.GetTextWidth(TEXT(" 000km"));
-  _stprintf(sTmp, _T("  000%s"), gettext(_T("_@M2179_")));
+  _stprintf(sTmp, _T("  000%s"), MsgToken(2179));
   int w2 = Surface.GetTextWidth(sTmp);
   
   int TextMargin = (Sender->GetHeight() - Surface.GetTextHeight(TEXT("A"))) / 2;
@@ -129,7 +129,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 		Units::GetDistanceName());
       Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
-      _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),gettext(_T("_@M2179_")));
+      _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),MsgToken(2179));
       Surface.DrawText(Sender->GetHeight()+p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
       
     }
@@ -142,13 +142,13 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
      if (DrawListIndex==n && UpLimit < MAXTASKPOINTS) { // patch 091126
 
 	// LKTOKEN  _@M832_ = "add waypoint" 
-      _stprintf(sTmp, TEXT("  (%s)"), gettext(TEXT("_@M832_")));
+      _stprintf(sTmp, TEXT("  (%s)"), MsgToken(832));
       Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
     } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
 
       if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
-	_tcscpy(sTmp, gettext(TEXT("_@M735_")));
+	_tcscpy(sTmp, MsgToken(735));
 	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
       
 	if (fai_ok) {
@@ -173,7 +173,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
 	_stprintf(sTmp, TEXT("%s %.0f min %.0f (%.0f) %s"), 
 	// LKTOKEN  _@M735_ = "Total:" 
-                  gettext(TEXT("_@M735_")),
+                  MsgToken(735),
                   AATTaskLength*1.0,
 		  DISTANCEMODIFY*lengthtotal,
 		  DISTANCEMODIFY*d1,
@@ -272,9 +272,9 @@ static void OnTaskListEnter(WindowControl * Sender,
 #ifdef LAST_TASKPOINT_QUESTION
 			if (MessageBoxX(
 			// LKTOKEN  _@M817_ = "Will this be the finish?" 
-			gettext(TEXT("_@M817_")),
+			MsgToken(817),
 			// LKTOKEN  _@M54_ = "Add Waypoint" 
-			gettext(TEXT("_@M54_")),
+			MsgToken(54),
 			mbYesNo) == IdYes)
 #else
 		    if(0)
@@ -369,9 +369,9 @@ static void OnCloseClicked(WndButton* pWnd) {
 static void OnClearClicked(WndButton* pWnd){
   if (MessageBoxX(
 	// LKTOKEN  _@M179_ = "Clear the task?" 
-                  gettext(TEXT("_@M179_")),
+                  MsgToken(179),
 	// LKTOKEN  _@M178_ = "Clear task" 
-                  gettext(TEXT("_@M178_")),
+                  MsgToken(178),
                   mbYesNo) == IdYes) {
     if (CheckDeclaration()) {
       ClearTask();
@@ -456,13 +456,13 @@ static void OnSaveClicked(WndButton* pWnd){
 	// file already exists! ask if want to overwrite
 	_stprintf(file_name, TEXT("%s: '%s'"), 
 	// LKTOKEN  _@M696_ = "Task file already exists" 
-		gettext(TEXT("_@M696_")),
+		MsgToken(696),
 		dfe->GetAsString());
 
 		if(MessageBoxX(
 			file_name,
 			// LKTOKEN  _@M510_ = "Overwrite?" 
-			gettext(TEXT("_@M510_")),
+			MsgToken(510),
 			mbYesNo) != IdYes) {
 
 			return;
@@ -491,14 +491,14 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
   int file_index = dfe->GetAsInteger();
   if (file_index>0) {
 	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
-		_stprintf(file_name, TEXT("%s '%s' ?"), gettext(TEXT("_@M891_")), dfe->GetAsString()); // Clear old task and load
+		_stprintf(file_name, TEXT("%s '%s' ?"), MsgToken(891), dfe->GetAsString()); // Clear old task and load
 		if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
 			return;
 		}
 	}
   } else {
 	// LKTOKEN  _@M467_ = "No Task to load" 
-	MessageBoxX(gettext(TEXT("_@M467_")),_T(" "), mbOk);
+	MessageBoxX(MsgToken(467),_T(" "), mbOk);
 	return;
   }
 
@@ -523,7 +523,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
               bOK = LoadGpxTask(szFileName);
           }
           if(!bOK) {
-              MessageBoxX(gettext(TEXT("_@M467_")),_T(" "), mbOk);
+              MessageBoxX(MsgToken(467),_T(" "), mbOk);
               return;
           }
           OverviewRefreshTask();

@@ -827,14 +827,14 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                         value -= 360.0;
 
                     if (value > 1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
                     else
                         if (value < -1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
                     else
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
                 } else
-                    _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s"), WayPointCalc[rli].Bearing, gettext(_T("_@M2179_"))); // 101219
+                    _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s"), WayPointCalc[rli].Bearing, MsgToken(2179)); // 101219
 
                 value = WayPointCalc[rli].GR;
                 if (value < 1 || value >= MAXEFFICIENCYSHOW) {
@@ -957,13 +957,13 @@ _KeepOldCommonsValues:
                         value -= 360.0;
 
                     if (value > 1)
-                        _stprintf(Buffer4[i][curpage], TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+                        _stprintf(Buffer4[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
                     else if (value < -1)
-                        _stprintf(Buffer4[i][curpage], TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
+                        _stprintf(Buffer4[i][curpage], TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
                     else
-                        _stprintf(Buffer4[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
+                        _stprintf(Buffer4[i][curpage], TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
                 } else
-                    _stprintf(Buffer4[i][curpage], TEXT("%2.0f%s"), LKAirspaces[rli].Bearing, gettext(_T("_@M2179_")));
+                    _stprintf(Buffer4[i][curpage], TEXT("%2.0f%s"), LKAirspaces[rli].Bearing, MsgToken(2179));
 
 
                 //
@@ -1046,14 +1046,14 @@ _KeepOldAirspacesValues:
                         value -= 360.0;
 
                     if (value > 1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
                     else
                         if (value < -1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
                     else
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
                 } else {
-                    _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), CopyThermalHistory[rli].Bearing, gettext(_T("_@M2179_")));
+                    _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), CopyThermalHistory[rli].Bearing, MsgToken(2179));
                 }
 
 
@@ -1159,12 +1159,12 @@ _KeepOldAirspacesValues:
                         value -= 360.0;
 
                     if (value > 1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
                     else
                         if (value < -1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -value, gettext(_T("_@M2179_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
                     else
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
+                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
                 } else {
                     _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), LKTraffic[rli].Bearing, MsgToken(2179));
                 }

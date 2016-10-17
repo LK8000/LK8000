@@ -15,7 +15,8 @@ XCS_OS_LINUX := \
 	$(SRC)/xcs/IO/LineSplitter.cpp \
 
 XCS_UTIL := \
-	$(SRC)/xcs/Util/tstring.cpp\
+	$(SRC)/xcs/Util/tstring.cpp \
+	$(SRC)/xcs/Util/ConvertString.cpp \
 
 XCS_OS := \
 	$(XCS_UTIL) \

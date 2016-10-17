@@ -86,7 +86,7 @@ void dlgOracleShowModal(void){
     pWndText->SetFont(MapWindowBoldFont);
     pWndText->SetCaptionStyle(DT_EXPANDTABS | DT_CENTER | DT_NOCLIP | DT_WORDBREAK);
     TCHAR szText[200] = {};
-    _stprintf(szText, _T("\n\n%s\n\n%s"), gettext(_T("_@M1691_")), gettext(_T("_@M1692_")));
+    _stprintf(szText, _T("\n\n%s\n\n%s"), MsgToken(1691), MsgToken(1692));
     pWndText->SetCaption(szText);
   }
 

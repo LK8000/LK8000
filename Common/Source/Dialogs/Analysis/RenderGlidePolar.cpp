@@ -114,9 +114,9 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 
       auto hfOldU = Surface.SelectObject(LK8InfoSmallFont);
       TCHAR text[3][80]; TCHAR value[3][80];
-      _stprintf(text[0],TEXT("%s"), gettext(TEXT("_@M2175_"))); // Conical ESS
-      _stprintf(text[1],TEXT("  %s"), gettext(TEXT("_@M2187_")));  // Speed Opt.
-      _stprintf(text[2],TEXT("  %s"), gettext(TEXT("_@M2188_")));  // "Thermal Min"
+      _stprintf(text[0],TEXT("%s"), MsgToken(2175)); // Conical ESS
+      _stprintf(text[1],TEXT("  %s"), MsgToken(2187));  // Speed Opt.
+      _stprintf(text[2],TEXT("  %s"), MsgToken(2188));  // "Thermal Min"
 
       _stprintf(value[0],TEXT(" : %.1f"), ConeSlope); // Conical ESS
       _stprintf(value[1],TEXT(" : %.0f %s"), VOpt*SPEEDMODIFY, Units::GetHorizontalSpeedName()); // Speed
@@ -178,7 +178,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   auto hfOldU = Surface.SelectObject(LK8InfoNormalFont);
   if( GlidePolar::WingArea>0.1 ) {
     _stprintf(text,TEXT("%s %.1f kg/m2"),
-	             gettext(TEXT("_@M821_")), // Wing load
+	             MsgToken(821), // Wing load
 	             GlidePolar::WingLoading);
     Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(90), text);
   }

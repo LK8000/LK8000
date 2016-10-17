@@ -28,12 +28,8 @@ BOOL MapWindow::Initialised = FALSE;
 Mutex MapWindow::Surface_Mutex;
 Poco::Event MapWindow::drawTriggerEvent;
 
-#ifdef USE_GDI
-LKWindowSurface MapWindow::BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
-#else
 LKBitmapSurface MapWindow::BackBufferSurface;
 Mutex MapWindow::BackBuffer_Mutex;
-#endif
 LKBitmapSurface MapWindow::DrawSurface;
 #else
 LKBitmapSurface MapWindow::BackBufferSurface;   

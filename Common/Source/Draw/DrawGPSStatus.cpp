@@ -37,7 +37,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
     TextInBoxMode.WhiteBorder = 1;
     TextInBoxMode.Border = 1;
     if (ComPortStatus[0]==CPS_OPENKO) {
-      TextInBox(Surface, &rc, gettext(_T("_@M971_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode); // No ComPort
+      TextInBox(Surface, &rc, MsgToken(971), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode); // No ComPort
     } else {
     	if (ComPortStatus[0]==CPS_OPENOK) {
 		if ((ComPortRx[0]>0) && !firstrun) {
@@ -89,10 +89,10 @@ goto_DrawLockModeStatus:
     TextInBoxModeL.WhiteBorder = 1;
     TextInBoxModeL.Border = 1;
     if (ISPARAGLIDER){
-        TextInBox(Surface, &rc,gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), &TextInBoxModeL);
+        TextInBox(Surface, &rc,MsgToken(962), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), &TextInBoxModeL);
     }
     Surface.SelectObject(LK8MapFont);
-    TextInBox(Surface, &rc, gettext(_T("_@M1601_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), &TextInBoxModeL);
+    TextInBox(Surface, &rc, MsgToken(1601), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), &TextInBoxModeL);
   }
 
   Surface.SelectObject(oldfont);

@@ -649,12 +649,8 @@ public:
   static Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
 
 protected:
-#ifdef USE_GDI
-  static LKWindowSurface BackBufferSurface; // used as AttribDC for Bitmap Surface.& by Draw thread for Draw directly on MapWindow
-#else
   static LKBitmapSurface BackBufferSurface; 
   static Mutex BackBuffer_Mutex;
-#endif
 #else
 protected:
   void Render(LKSurface& Surface, const PixelRect& Rect);
@@ -667,6 +663,7 @@ private:
   static int iLongSnailNext;
 
 #ifndef ENABLE_OPENGL
+  static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
   static LKBitmapSurface TempSurface;
   
   static LKMaskBitmapSurface hdcMask; // Only used For Airspaces drawing "Transparent Border" or "Paterns Borders"

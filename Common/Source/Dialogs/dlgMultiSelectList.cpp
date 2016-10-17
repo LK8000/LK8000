@@ -369,7 +369,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
                 if (iTaskIdx == 0) {
                     // _@M2301_  "S"    # S = Start Task point
-                    _stprintf(text1, TEXT("%s: (%s)"), gettext(_T("_@M2301_")), WayPointList[idx].Name);
+                    _stprintf(text1, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
                     _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"), StartRadius*DISTANCEMODIFY
                               , Units::GetDistanceName()
                               , (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY)
@@ -377,14 +377,14 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                 } else {
                     if (iTaskIdx == iLastTaskPoint) {
                         //	_@M2303_  "F"                 // max 30         30 => max 60 char
-                        _stprintf(text1, TEXT("%s: (%s) "), gettext(_T("_@M2303_")), WayPointList[idx].Name);
+                        _stprintf(text1, TEXT("%s: (%s) "), MsgToken(2303), WayPointList[idx].Name);
                         _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"), FinishRadius*DISTANCEMODIFY
                                   , Units::GetDistanceName()
                                   , (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY)
                                   , Units::GetAltitudeName());
                     } else {
                         //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
-                        _stprintf(text1, TEXT("%s%i: (%s) "), gettext(_T("_@M2302_")), iTaskIdx, WayPointList[idx].Name);
+                        _stprintf(text1, TEXT("%s%i: (%s) "), MsgToken(2302), iTaskIdx, WayPointList[idx].Name);
                         double SecRadius = 0;
 
                         SecRadius = SectorRadius;

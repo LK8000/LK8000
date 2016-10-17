@@ -267,12 +267,12 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   TCHAR tbear[10];
   if (disabled && !notraffic) {
 	if (tangle > 1) {
-		_stprintf(tbear, TEXT("%2.0f%s%s"), tangle, gettext(_T("_@M2179_")),gettext(_T("_@M2183_")));
+		_stprintf(tbear, TEXT("%2.0f%s%s"), tangle, MsgToken(2179),MsgToken(2183));
 	} else {
 		if (tangle < -1) {
-			_stprintf(tbear, TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -tangle, gettext(_T("_@M2179_")));
+			_stprintf(tbear, TEXT("%s%2.0f%s"), MsgToken(2182), -tangle, MsgToken(2179));
 		} else {
-			_stprintf(tbear, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
+			_stprintf(tbear, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
 		}
 	}
 	Surface.SelectObject(LK8PanelBigFont);
@@ -292,9 +292,9 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	#if 0
 	double tbearing = LKTraffic[LKTargetIndex].Bearing;
 	if (tbearing != 360) {
-		_stprintf(tbear, TEXT("%2.0f%s"), tbearing, gettext(_T("_@M2179_")));
+		_stprintf(tbear, TEXT("%2.0f%s"), tbearing, MsgToken(2179));
 	} else {
-		_stprintf(tbear, TEXT("0%s"), gettext(_T("_@M2179_")));
+		_stprintf(tbear, TEXT("0%s"), MsgToken(2179));
 	}
 	LKWriteText(Surface,  tbear, ncenterx,ncentery, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 	#endif
@@ -405,12 +405,12 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   // always paint the bearing difference, cleverly
   if (!disabled && !notraffic) {
 	if (tangle > 1) {
-		_stprintf(tbear, TEXT("%2.0f%s%s"), tangle, gettext(_T("_@M2179_")), gettext(_T("_@M2183_")));
+		_stprintf(tbear, TEXT("%2.0f%s%s"), tangle, MsgToken(2179), MsgToken(2183));
 	} else {
 		if (tangle < -1) {
-			_stprintf(tbear, TEXT("%s%2.0f%s"), gettext(_T("_@M2182_")), -tangle, gettext(_T("_@M2179_")));
+			_stprintf(tbear, TEXT("%s%2.0f%s"), MsgToken(2182), -tangle, MsgToken(2179));
 		} else {
-			_stprintf(tbear, TEXT("%s%s"), gettext(_T("_@M2182_")), gettext(_T("_@M2183_")));
+			_stprintf(tbear, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
 		}
 	}
 	Surface.SelectObject(LK8PanelBigFont);

@@ -18,7 +18,7 @@ void RasterTerrain::OpenTerrain(void)
   #if TESTBENCH
   StartupStore(TEXT(". Loading Terrain... %s"),NEWLINE);
   #endif
-  CreateProgressDialog(gettext(TEXT("_@M900_"))); // Loading Terrain File...
+  CreateProgressDialog(MsgToken(900)); // Loading Terrain File...
 
   TCHAR szFile[MAX_PATH] = _T("\0");
   _tcscpy(szFile,szTerrainFile);

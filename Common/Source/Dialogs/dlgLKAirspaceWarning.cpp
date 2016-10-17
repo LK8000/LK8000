@@ -111,79 +111,79 @@ static void dlgLKAirspaceFill(WndForm* dlg)
         default:
           // Normally not show
           // LKTOKEN _@M765_ "Unknown"
-          wp->SetText(gettext(TEXT("_@M765_")));
+          wp->SetText(MsgToken(765));
           break;
           
         case aweNone:
           // LKTOKEN _@M479_ "None"
-            wp->SetText(gettext(TEXT("_@M479_")));
+            wp->SetText(MsgToken(479));
           break;
 
         case aweMovingInsideFly:
             // LKTOKEN _@M1242_ "Flying inside FLY zone"
-            wp->SetText(gettext(TEXT("_@M1242_")));
+            wp->SetText(MsgToken(1242));
           break;
         
         case awePredictedLeavingFly:
             // LKTOKEN _@M1243_ "Predicted leaving FLY zone"
-            wp->SetText(gettext(TEXT("_@M1243_")));
+            wp->SetText(MsgToken(1243));
           break;
         
         case aweNearOutsideFly:
             // LKTOKEN _@M1244_ "Near leaving FLY zone"
-            wp->SetText(gettext(TEXT("_@M1244_")));
+            wp->SetText(MsgToken(1244));
           break;
           
         case aweLeavingFly:
             // LKTOKEN _@M1245_ "Leaving FLY zone"
-            wp->SetText(gettext(TEXT("_@M1245_")));
+            wp->SetText(MsgToken(1245));
           break;
 
         case awePredictedEnteringFly:
             // LKTOKEN _@M1246_ "Predicted entering FLY zone"
-            wp->SetText(gettext(TEXT("_@M1246_")));
+            wp->SetText(MsgToken(1246));
           break;
           
         case aweEnteringFly:
             // LKTOKEN _@M1247_ "Entering FLY zone"
-            wp->SetText(gettext(TEXT("_@M1247_")));
+            wp->SetText(MsgToken(1247));
           break;
           
         case aweMovingOutsideFly:
             // LKTOKEN _@M1248_ "Flying outside FLY zone"
-            wp->SetText(gettext(TEXT("_@M1248_")));
+            wp->SetText(MsgToken(1248));
           break;
           
                 
         // Events for NON-FLY zones
         case aweMovingOutsideNonfly:
             // LKTOKEN _@M1249_ "Flying outside NOFLY zone"
-            wp->SetText(gettext(TEXT("_@M1249_")));
+            wp->SetText(MsgToken(1249));
           break;
           
         case awePredictedEnteringNonfly:
             // LKTOKEN _@M1250_ "Predicted entering NOFLY zone"
-            wp->SetText(gettext(TEXT("_@M1250_")));
+            wp->SetText(MsgToken(1250));
           break;
 
         case aweNearInsideNonfly:
             // LKTOKEN _@M1251_ "Near entering NOFLY zone"
-            wp->SetText(gettext(TEXT("_@M1251_")));
+            wp->SetText(MsgToken(1251));
           break;
 
         case aweEnteringNonfly:
             // LKTOKEN _@M1252_ "Entering NOFLY zone"
-            wp->SetText(gettext(TEXT("_@M1252_")));
+            wp->SetText(MsgToken(1252));
           break;
 
         case aweMovingInsideNonfly:
             // LKTOKEN _@M1253_ "Flying inside NOFLY zone"
-            wp->SetText(gettext(TEXT("_@M1253_")));
+            wp->SetText(MsgToken(1253));
           break;
 
         case aweLeavingNonFly:
             // LKTOKEN _@M1254_ "Leaving NOFLY zone"
-            wp->SetText(gettext(TEXT("_@M1254_")));
+            wp->SetText(MsgToken(1254));
           break;
 
       }//sw
@@ -207,24 +207,24 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       switch (airspace_copy.WarningLevel()) {
         default:
           // LKTOKEN _@M765_ "Unknown"
-          wp->SetText(gettext(TEXT("_@M765_")));
+          wp->SetText(MsgToken(765));
           break;
           
         case awNone:
           // LKTOKEN _@M479_ "None"
-            wp->SetText(gettext(TEXT("_@M479_")));
+            wp->SetText(MsgToken(479));
           break;
 
         case awYellow:
             // LKTOKEN _@M1255_ "YELLOW WARNING"
-            wp->SetText(gettext(TEXT("_@M1255_")));
+            wp->SetText(MsgToken(1255));
             wp->SetBackColor(RGB_YELLOW);
             wp->SetForeColor(RGB_BLACK);
           break;
         
         case awRed:
             // LKTOKEN _@M1256_ "RED WARNING"
-            wp->SetText(gettext(TEXT("_@M1256_")));
+            wp->SetText(MsgToken(1256));
             wp->SetBackColor(RGB_RED);
           break;
       }//sw
@@ -252,9 +252,9 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     wp = (WndProperty*)dlg->FindByName(TEXT("prpType"));
     if (wp) {
   	if (airspace_copy.Flyzone()) {
-  	  _stprintf(buffer,TEXT("%s %s"), gettext(TEXT("FLY")), airspace_copy.TypeName());
+  	  _stprintf(buffer,TEXT("%s %s"), TEXT("FLY"), airspace_copy.TypeName());
   	} else {
-  	  _stprintf(buffer,TEXT("%s %s"), gettext(TEXT("NOFLY")), airspace_copy.TypeName());
+  	  _stprintf(buffer,TEXT("%s %s"), TEXT("NOFLY"), airspace_copy.TypeName());
   	}
 
   	  wp->SetText( buffer );
@@ -276,15 +276,15 @@ static void dlgLKAirspaceFill(WndForm* dlg)
         Units::FormatUserDistance((double)abs(hdist),stmp, 10);
         if (hdist<0) {
           // LKTOKEN _@M1257_ "to leave"
-          _stprintf(stmp2, TEXT("%s %s"), stmp, gettext(TEXT("_@M1257_")));
+          _stprintf(stmp2, TEXT("%s %s"), stmp, MsgToken(1257));
         } else {
           // LKTOKEN _@M1258_ "to enter"
-          _stprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1258_")));
+          _stprintf(stmp2,TEXT("%s %s"), stmp, MsgToken(1258));
         }
       } else {
         // no distance info calculated
         // LKTOKEN _@M1259_ "Too far, not calculated"
-        _tcscpy(stmp2,gettext(TEXT("_@M1259_")));
+        _tcscpy(stmp2,MsgToken(1259));
       }
       wp->SetText(stmp2);
       wp->RefreshDisplay();
@@ -297,15 +297,15 @@ static void dlgLKAirspaceFill(WndForm* dlg)
         Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
         if (vdist<0) {
           // LKTOKEN _@M1260_ "below"
-          _stprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1260_")));
+          _stprintf(stmp2,TEXT("%s %s"), stmp, MsgToken(1260));
         } else {
           // LKTOKEN _@M1261_ "above"
-          _stprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1261_")));
+          _stprintf(stmp2,TEXT("%s %s"), stmp, MsgToken(1261));
         }
       } else {
         // no distance info calculated
         // LKTOKEN _@M1259_ "Too far, not calculated"
-        _tcscpy(stmp2,gettext(TEXT("_@M1259_")));
+        _tcscpy(stmp2,MsgToken(1259));
       }
       wp->SetText(stmp2);
       wp->RefreshDisplay();
@@ -330,7 +330,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     wb = (WndButton*)dlg->FindByName(TEXT("cmdClose"));
     if (wb) {
       TCHAR stmp2[40];
-      _stprintf(stmp2,TEXT("%s (%d)"), gettext(TEXT("_@M186_")), timer_counter);
+      _stprintf(stmp2,TEXT("%s (%d)"), MsgToken(186), timer_counter);
       wb->SetCaption(stmp2);
     }    
 
@@ -380,18 +380,18 @@ short ShowAirspaceWarningsToUser()
     case aweEnteringFly:
       // LKTOKEN _@M1240_ "Entering"
 	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
-		_stprintf(msgbuf,TEXT("%s %s"),gettext(TEXT("_@M1240_")),airspace_copy.Name());
+		_stprintf(msgbuf,TEXT("%s %s"),MsgToken(1240),airspace_copy.Name());
 	  else
-		_stprintf(msgbuf,TEXT("%s %s %s"),gettext(TEXT("_@M1240_")),airspace_copy.TypeName(),airspace_copy.Name());
+		_stprintf(msgbuf,TEXT("%s %s %s"),MsgToken(1240),airspace_copy.TypeName(),airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
 
     case aweLeavingNonFly:
       // LKTOKEN _@M1241_ "Leaving"
   	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
-  		_stprintf(msgbuf,TEXT("%s %s"),gettext(TEXT("_@M1241_")),airspace_copy.Name());
+  		_stprintf(msgbuf,TEXT("%s %s"),MsgToken(1241),airspace_copy.Name());
   	  else
-  		_stprintf(msgbuf,TEXT("%s %s %s"),gettext(TEXT("_@M1241_")),airspace_copy.TypeName(),airspace_copy.Name());
+  		_stprintf(msgbuf,TEXT("%s %s %s"),MsgToken(1241),airspace_copy.TypeName(),airspace_copy.Name());
       DoStatusMessage(msgbuf);
       break;
       
@@ -413,7 +413,7 @@ short ShowAirspaceWarningsToUser()
     WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));
     if (wb) {
       TCHAR stmp2[40];
-      _stprintf(stmp2,TEXT("%s (%dmin)"), gettext(TEXT("_@M46_")), AcknowledgementTime/60);
+      _stprintf(stmp2,TEXT("%s (%dmin)"), MsgToken(46), AcknowledgementTime/60);
       wb->SetCaption(stmp2);
     }    
 

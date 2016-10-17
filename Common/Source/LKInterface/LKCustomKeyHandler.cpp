@@ -195,13 +195,13 @@ passthrough:
 		if (ValidWayPoint(HomeWaypoint)) {
 			if ( (ValidTaskPoint(ActiveTaskPoint)) && (Task[ActiveTaskPoint].Index == HomeWaypoint )) {
 	// LKTOKEN  _@M82_ = "Already going home" 
-				DoStatusMessage(gettext(TEXT("_@M82_")));
+				DoStatusMessage(MsgToken(82));
 			} else {
 				GotoWaypoint(HomeWaypoint);
 			}
 		} else
 	// LKTOKEN  _@M465_ = "No Home to go!" 
-			DoStatusMessage(gettext(TEXT("_@M465_")));
+			DoStatusMessage(MsgToken(465));
 		return true;
 	case ckPanorama:
 		if (PGZoomTrigger==false)
@@ -448,12 +448,12 @@ passthrough:
 	      MapWindow::SetAutoOrientation(true); // 101008 reset it
 	      switch(DisplayOrientation)
 	      {
-            case TRACKUP     : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M737_"))) ; break;  // _@M737_ "Track up"
-            case NORTHUP     : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M483_"))) ; break;  // _@M483_ "North up"
-            case NORTHCIRCLE : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M482_"))) ; break;  // _@M482_ "North circling"
-            case TRACKCIRCLE : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M682_"))) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
-            case NORTHTRACK  : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M484_"))) ; break;  // _@M484_ "North/track"
-            case NORTHSMART  : _stprintf(MapOrientMsg,_T("%s"),gettext(TEXT("_@M481_"))) ; break;  // _@M481_ "North Smart"
+            case TRACKUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken(737)) ; break;  // _@M737_ "Track up"
+            case NORTHUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken(483)) ; break;  // _@M483_ "North up"
+            case NORTHCIRCLE : _stprintf(MapOrientMsg,_T("%s"),MsgToken(482)) ; break;  // _@M482_ "North circling"
+            case TRACKCIRCLE : _stprintf(MapOrientMsg,_T("%s"),MsgToken(682)) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
+            case NORTHTRACK  : _stprintf(MapOrientMsg,_T("%s"),MsgToken(484)) ; break;  // _@M484_ "North/track"
+            case NORTHSMART  : _stprintf(MapOrientMsg,_T("%s"),MsgToken(481)) ; break;  // _@M481_ "North Smart"
 	      }
 	      DoStatusMessage(MapOrientMsg,NULL,false);
 	    }

@@ -218,9 +218,9 @@ _afteriscar:
     }
 
     if(UseContestEngine() && Calculated->FreeFlying)
-      CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Basic->Time),
-                                                Basic->Latitude, Basic->Longitude,
-                                                static_cast<unsigned>(Basic->Altitude)));
+      CContestMgr::Instance().Add(static_cast<unsigned>(Basic->Time),
+                                  Basic->Latitude, Basic->Longitude,
+                                  static_cast<unsigned>(Basic->Altitude));
   }
 }
 

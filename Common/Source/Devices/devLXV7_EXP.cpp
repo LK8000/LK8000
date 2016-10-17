@@ -103,7 +103,6 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 
   if(bLinkEnable)
   {
-	LockComm();
 	#if TESTBENCH
 	StartupStore(TEXT("V7: enable LX V7 direct Link %s"), NEWLINE);
 	#endif
@@ -143,7 +142,6 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 	Poco::Thread::sleep(CHANGE_DELAY);
-	UnlockComm();
 	Poco::Thread::sleep(CHANGE_DELAY);
 
   }
@@ -373,7 +371,7 @@ MinLon *=60;
 #ifdef NO_RMB_BUT_PLXVTARG
 	                     //  $GPRMB,A,0.66,L,003,004 ,4917.24   ,N ,12309.57  ,W ,01.3,52.5,00.5,V*20
     _stprintf( szTmp,  TEXT("$GPRMB,A,0.00,R,XXX,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%.1f,%.1f,%.1f,V"),
-               gettext(TEXT("_@M1323_")), // LKTOKEN _@M1323_ "T>"
+               MsgToken(1323), // LKTOKEN _@M1323_ "T>"
 	           WayPointList[overindex].Name,
                DegLat, MinLat, NoS, DegLon, MinLon, EoW,
                WayPointCalc[overindex].Distance * TONAUTICALMILES,
@@ -387,7 +385,7 @@ MinLon *=60;
 #endif
 #else
     _stprintf( szTmp,  TEXT("$PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%i "),
-               gettext(TEXT("_@M1323_")), // LKTOKEN _@M1323_ "T>"
+               MsgToken(1323), // LKTOKEN _@M1323_ "T>"
 	           WayPointList[overindex].Name,
                DegLat, MinLat, NoS, DegLon, MinLon, EoW,
                (int) (WayPointList[overindex].Altitude +0.5)

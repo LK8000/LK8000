@@ -81,7 +81,7 @@ void PreloadInitialisation(bool ask) {
 
     if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
 	StartupStore(_T(". USER ASKED FOR PROFILE FULL RESET!%s"),NEWLINE);
-	DoStatusMessage(gettext(_T("_@M1757_"))); // LK8000 PROFILES RESET
+	DoStatusMessage(MsgToken(1757)); // LK8000 PROFILES RESET
 	LKProfileResetDefault();
 	LKProfileInitRuntime();
 
@@ -107,8 +107,12 @@ void PreloadInitialisation(bool ask) {
     InitLKFonts();
     // We are sure that buttons have been created already
     ButtonLabel::SetFont(MapWindowBoldFont);
+    
+    // font change, we need to reset "Messge
+    Message::InitFont();
+  
     // LKTOKEN _@M1206_ "Initialising..."
-	CreateProgressDialog(gettext(TEXT("_@M1206_"))); 
+	CreateProgressDialog(MsgToken(1206)); 
   }
 
   // Interface (before interface)

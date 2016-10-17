@@ -21,13 +21,13 @@ void guiStartLogger(bool noAsk) {
 		return;
 	}
 	TCHAR TaskMessage[1024];
-	_tcscpy(TaskMessage,gettext(TEXT("_@M876_"))); // Start Logger With Declaration\r\n")); 
+	_tcscpy(TaskMessage,MsgToken(876)); // Start Logger With Declaration\r\n")); 
 	_tcscat(TaskMessage,_T("\r\n"));
 	for(i=0;i<MAXTASKPOINTS;i++)
 	{
 		if(Task[i].Index == -1)
 		{
-			if(i==0) _tcscat(TaskMessage,gettext(TEXT("_@M479_"))); // None
+			if(i==0) _tcscat(TaskMessage,MsgToken(479)); // None
 			Debounce(); 
 			break;
 		}
@@ -40,7 +40,7 @@ void guiStartLogger(bool noAsk) {
 	}
 
 	// LKTOKEN  _@M637_ = "Start Logger" 
-	if(noAsk || (MessageBoxX(TaskMessage,gettext(TEXT("_@M637_")), mbYesNo) == IdYes))
+	if(noAsk || (MessageBoxX(TaskMessage,MsgToken(637), mbYesNo) == IdYes))
 	{
 		IGCWriteLock=true; // Lock ASAP
 		if (LoggerClearFreeSpace()) {
@@ -77,9 +77,9 @@ void guiStartLogger(bool noAsk) {
 		} else {
 
 	// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!" 
-			MessageBoxX(gettext(TEXT("_@M408_")),
+			MessageBoxX(MsgToken(408),
 	// LKTOKEN  _@M404_ = "Logger Error" 
-			gettext(TEXT("_@M404_")), mbOk);
+			MsgToken(404), mbOk);
 			StartupStore(TEXT("------ Logger not started: Insufficient Storage%s"),NEWLINE);
 		}
 		IGCWriteLock=false; 
@@ -93,9 +93,9 @@ void guiStopLogger(bool noAsk) {
   if (LoggerActive) {
     if(noAsk || 
 	// LKTOKEN  _@M669_ = "Stop Logger" 
-       (MessageBoxX(gettext(TEXT("_@M669_")),
+       (MessageBoxX(MsgToken(669),
 	// LKTOKEN  _@M669_ = "Stop Logger" 
-		    gettext(TEXT("_@M669_")),
+		    MsgToken(669),
 		    mbYesNo) == IdYes)) {
       StopLogger();
       if (!noAsk) {

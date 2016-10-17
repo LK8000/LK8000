@@ -74,7 +74,11 @@ void Message::Initialize(RECT rc) {
     rcmsg = rc; // default; message window can be full size of screen
 
     WndMsg.Create(&MainWindow, rc);
+    
+    InitFont();
+}
 
+void Message::InitFont() {
     // change message font for different resolutions
     // Caution, remember to set font also in Resize..
     WndMsg.SetFont(ScreenLandscape ? LK8InfoBigFont : MapWindowBoldFont);

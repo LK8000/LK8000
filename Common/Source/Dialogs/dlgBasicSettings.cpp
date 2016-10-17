@@ -179,7 +179,7 @@ static float  flastBugs=BUGS;
   {
     if(wf)
     {
-      wp = (WndProperty*)wf->FindByName(gettext(TEXT("prpBugs")));
+      wp = (WndProperty*)wf->FindByName(TEXT("prpBugs"));
 	  if (wp)
 	  {
 		wp->GetDataField()->SetAsFloat(BUGS*100);

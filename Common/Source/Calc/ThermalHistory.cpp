@@ -109,7 +109,7 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
   if (j>0)
   	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment,ThermalHistory[i].Name);
   else
-	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_"))); // last good thermal
+	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, MsgToken(1320)); // last good thermal
 
   UnlockTaskData();
 

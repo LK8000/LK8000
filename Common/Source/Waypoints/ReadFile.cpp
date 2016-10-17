@@ -25,7 +25,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
   int nLineNumber=0;
   short fileformat=LKW_DAT;
 
-  CreateProgressDialog(gettext(TEXT("_@M903_"))); // Loading Waypoints File...
+  CreateProgressDialog(MsgToken(903)); // Loading Waypoints File...
 
 #ifdef WIN32
   // zzip_file_size only exist in private version of zziplib

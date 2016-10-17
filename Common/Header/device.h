@@ -135,7 +135,7 @@ bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName);
 
 void RestartCommPorts();
 
-BOOL devInit(LPCTSTR CommandLine);
+BOOL devInit();
 BOOL devCloseAll(void);
 PDeviceDescriptor_t devGetDeviceOnPort(int Port);
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
@@ -156,9 +156,6 @@ BOOL devPutVolume(PDeviceDescriptor_t	d, int Volume);
 BOOL devPutSquelch(PDeviceDescriptor_t d, int Volume);
 BOOL devPutFreqActive(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);
 BOOL devPutFreqStandby(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);
-BOOL devOpen(PDeviceDescriptor_t d,	int	Port);
-BOOL devClose(PDeviceDescriptor_t	d);
-BOOL devInit(PDeviceDescriptor_t d);
 BOOL devLinkTimeout(PDeviceDescriptor_t	d);
 BOOL devDeclare(PDeviceDescriptor_t	d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(PDeviceDescriptor_t d);
