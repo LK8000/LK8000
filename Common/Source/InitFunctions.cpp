@@ -107,6 +107,10 @@ void PreloadInitialisation(bool ask) {
     InitLKFonts();
     // We are sure that buttons have been created already
     ButtonLabel::SetFont(MapWindowBoldFont);
+    
+    // font change, we need to reset "Messge
+    Message::InitFont();
+  
     // LKTOKEN _@M1206_ "Initialising..."
 	CreateProgressDialog(MsgToken(1206)); 
   }
