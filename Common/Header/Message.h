@@ -25,6 +25,8 @@ class WndMessage;
 class Message {
  public:
   static void Initialize(RECT rc);
+  static void InitFont();
+  
   static void Destroy();
   static bool Render(); // returns true if messages have changed
 
