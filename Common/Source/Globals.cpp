@@ -646,6 +646,9 @@ void Globals_Init(void) {
   FontOverlayMedium=MAXFONTRESIZE;
   FontVisualGlide=MAXFONTRESIZE;
 
+#ifdef _WGS84
+  earth_model_wgs84 = true;
+#endif
 
 
   // ^ ADD NEW GLOBALS up here ^

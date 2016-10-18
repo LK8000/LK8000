@@ -21,24 +21,25 @@ void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
                      double *Distance, double *Bearing) {
 
 #ifdef _WGS84
-  double t;
-  unsigned outmask = 0;
-  const Geodesic& geod = Geodesic::WGS84();
-  if(Distance) {
-    outmask |= Geodesic::DISTANCE;
-  } else {
-    Distance = &t;
+  if(earth_model_wgs84) {
+    double t;
+    unsigned outmask = 0;
+    const Geodesic& geod = Geodesic::WGS84();
+    if(Distance) {
+      outmask |= Geodesic::DISTANCE;
+    } else {
+      Distance = &t;
+    }
+    if(Bearing) {
+      outmask |= Geodesic::AZIMUTH;
+    } else {
+      Bearing = &t;
+    }
+    geod.GenInverse(lat1, lon1, lat2, lon2, outmask, *Distance, *Bearing, t, t, t, t, t);
+    return;
   }
-  if(Bearing) {
-    outmask |= Geodesic::AZIMUTH;
-  } else {
-    Bearing = &t;
-  }
-  geod.GenInverse(lat1, lon1, lat2, lon2, outmask, *Distance, *Bearing, t, t, t, t, t);
 
-
-#else
-
+#endif
 
   lat1 *= DEG_TO_RAD;
   lat2 *= DEG_TO_RAD;
@@ -60,22 +61,21 @@ void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
     double x = clat1*sin(lat2)-sin(lat1)*clat2*cos(dlon);
     *Bearing = (x==0 && y==0) ? 0:AngleLimit360(atan2(y,x)*RAD_TO_DEG);
   }
-#endif
 }
 
 
 double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
 		      double lat3, double lon3) {
 #ifdef _WGS84
+  if(earth_model_wgs84) {
+    const Geodesic& geod = Geodesic::WGS84();
+    double s12, s23;
+    geod.Inverse(lat1, lon1, lat2, lon2, s12);
+    geod.Inverse(lat2, lon2, lat3, lon3, s23);
 
-  const Geodesic& geod = Geodesic::WGS84();
-  double s12, s23;
-  geod.Inverse(lat1, lon1, lat2, lon2, s12);
-  geod.Inverse(lat2, lon2, lat3, lon3, s23);
-
-  return (s12 + s23);
-
-#else
+    return (s12 + s23);
+  }
+#endif
   lat1 *= DEG_TO_RAD;
   lat2 *= DEG_TO_RAD;
   lat3 *= DEG_TO_RAD;
@@ -98,7 +98,6 @@ double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
   double a23 = max(0.0,min(1.0,s32*s32+clat2*clat3*sl32*sl32));
   return 6371000.0*2.0*(atan2(sqrt(a12),sqrt(1.0-a12))
 			+atan2(sqrt(a23),sqrt(1.0-a23)));
-#endif
 }
 
 
@@ -110,12 +109,12 @@ void FindLatitudeLongitude(double Lat, double Lon,
 {
     assert(lat_out && lon_out);
 #ifdef _WGS84
-
-  const Geodesic& geod = Geodesic::WGS84();
-  geod.Direct(Lat, Lon, Bearing, Distance, *lat_out, *lon_out);
-
-#else
-
+  if(earth_model_wgs84) {
+    const Geodesic& geod = Geodesic::WGS84();
+    geod.Direct(Lat, Lon, Bearing, Distance, *lat_out, *lon_out);
+    return;
+  }
+#endif
   double ResultLat;
   double ResultLon;
 
@@ -143,7 +142,6 @@ void FindLatitudeLongitude(double Lat, double Lon,
     }
     *lon_out = ResultLon*RAD_TO_DEG;
   }
-#endif
 }
 
 void xXY_Brg_Rng(double X_1, double Y_1, double X_2, double Y_2, double *Bearing, double *Range)
@@ -180,10 +178,6 @@ static void IntermediatePoint(double lon1, double lat1,
 		       double dthis,
 		       double dtotal,
 		       double *lon3, double *lat3) {
-
-#ifdef _WGS84
-    #warning "need to rewrite for WGS84 elipsoid"
-#endif
 
   double A, B, x, y, z, d, f;
   /*
@@ -230,10 +224,6 @@ double CrossTrackError(double lon1, double lat1,
                        double lon2, double lat2,
                        double lon3, double lat3,
                        double *lon4, double *lat4) {
-
-#ifdef _WGS84
-    #warning "need to rewrite for WGS84 elipsoid"
-#endif
 
   double dist_AD, crs_AD;
   DistanceBearing(lat1, lon1, lat3, lon3, &dist_AD, &crs_AD);

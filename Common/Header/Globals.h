@@ -208,6 +208,10 @@ GEXTERN short Overlay_RightTop;
 GEXTERN short Overlay_RightMid;
 GEXTERN short Overlay_RightBottom;
 
+#ifdef _WGS84
+GEXTERN bool earth_model_wgs84;
+#endif
+
 // coordinates of the sort boxes. Each mapspace can have a different layout
 GEXTERN short SortBoxY[MSM_TOP+1];
 GEXTERN short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];

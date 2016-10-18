@@ -760,6 +760,11 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryOverlay_RightBottom,&Overlay_RightBottom);
   if (matchedstring) return;
 
+#ifdef _WGS84
+  PREAD(sname,svalue,szRegistry_earth_model_wgs84,&earth_model_wgs84);
+  if (matchedstring) return;
+#endif
+
 
   if (SaveRuntime) if(!IsEmbedded()) {
     extern bool CommandResolution;

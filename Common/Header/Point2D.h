@@ -14,6 +14,9 @@
 #include <memory>
 
 #ifdef _WGS84
+
+extern bool earth_model_wgs84;
+
 #include <GeographicLib/Geocentric.hpp>
 #include <GeographicLib/Geodesic.hpp>
 
@@ -38,46 +41,45 @@ class CPoint2D {
   int _x;
   int _y;
   int _z;
-  
+
 public:
   //static const double EARTH_RADIUS  = 6371000.0;
-#ifndef _WGS84
   #define EARTH_RADIUS 6371000.0
-#endif
 
   CPoint2D(double lat, double lon):
     _lat(lat), _lon(lon)
   {
 #ifdef _WGS84
-
-    const Geocentric& earth = Geocentric::WGS84();
-    const double h = 0.;
-    double x, y, z;
-    earth.Forward(lat, lon, h, x, y, z);
-    _x = x;
-    _y = y;
-    _z = z;
-
-#else
+    if(earth_model_wgs84) {
+      const Geocentric& earth = Geocentric::WGS84();
+      const double h = 0.;
+      double x, y, z;
+      earth.Forward(lat, lon, h, x, y, z);
+      _x = x;
+      _y = y;
+      _z = z;
+      return;
+    }
+#endif
     lat *= DEG_TO_RAD;
     lon *= DEG_TO_RAD;
     double clat = cos(lat);
     _x = static_cast<int>(-EARTH_RADIUS * clat * cos(lon));
     _y = static_cast<int>(EARTH_RADIUS * clat * sin(lon));
     _z = static_cast<int>(EARTH_RADIUS * sin(lat));
-#endif
   }
-  
+
   CPoint2D(unsigned x, unsigned y, unsigned z):
     _x(x), _y(y), _z(z)
   {
 #ifdef _WGS84
-
-    const Geocentric& earth = Geocentric::WGS84();
-    double h = 0.; // unused
-    earth.Reverse(_x, _y, _z, _lat, _lon, h);
-    
-#else
+    if(earth_model_wgs84) {
+      const Geocentric& earth = Geocentric::WGS84();
+      double h = 0.; // unused
+      earth.Reverse(_x, _y, _z, _lat, _lon, h);
+      return;
+    }
+#endif
     _lat = asin(_z / EARTH_RADIUS) * RAD_TO_DEG;
     if(_y == 0)
       _lon = 0;
@@ -85,7 +87,6 @@ public:
       _lon = atan(float(_x) / _y) * RAD_TO_DEG;
       _lon += (_y>=0) ? 90 : -90;
     }
-#endif
   }
   
   double Latitude() const    { return _lat; }
@@ -114,15 +115,16 @@ typedef std::vector<CPoint2D> CPoint2DArray;
 inline unsigned CPoint2D::Distance(double lat, double lon) const
 {
 #ifdef _WGS84
-  assert(_lat >= -90 && _lat <= 90);
-  assert(lat >= -90 && lat <= 90);
+  if(earth_model_wgs84) {
+    assert(_lat >= -90 && _lat <= 90);
+    assert(lat >= -90 && lat <= 90);
 
-  double s12 = 0.;
-  const Geodesic& geod = Geodesic::WGS84();
-  geod.Inverse(_lat, _lon, lat, lon, s12);
-  return s12;
-
-#else
+    double s12 = 0.;
+    const Geodesic& geod = Geodesic::WGS84();
+    geod.Inverse(_lat, _lon, lat, lon, s12);
+    return s12;
+  }
+#endif
   lat *= DEG_TO_RAD;
   double lat2 = _lat * DEG_TO_RAD;
   lon *= DEG_TO_RAD;
@@ -137,7 +139,6 @@ inline unsigned CPoint2D::Distance(double lat, double lon) const
   double a= std::max(0.0, std::min(1.0,s1*s1+clat1*clat2*s2*s2));
   
   return static_cast<unsigned>(EARTH_RADIUS*2.0*atan2(sqrt(a),sqrt(1.0-a)));
-#endif
 }
 
 

@@ -2979,6 +2979,22 @@ void dlgConfigurationShowModal(short mode){
 #endif
   }
 
+  wp = static_cast<WndProperty*>(wf->FindByName(_T("prpEarthModel")));
+  if(wp) {
+#ifdef _WGS84
+    DataField* pDataField = wp->GetDataField();
+    if(pDataField) {
+      pDataField->addEnumText(_T("FAI Sphere"));
+      pDataField->addEnumText(_T("WGS84 Ellipsoid"));
+      pDataField->Set(earth_model_wgs84);
+    }
+    wp->RefreshDisplay();
+#else
+    wp->SetVisible(false);
+#endif
+  }
+
+
   NextPage(0);
 
   taskchanged = false;
@@ -2989,7 +3005,18 @@ void dlgConfigurationShowModal(short mode){
   StopHourglassCursor();
   wf->ShowModal();
 
-
+#ifdef _WGS84
+  wp = static_cast<WndProperty*>(wf->FindByName(_T("prpEarthModel")));
+  if(wp) {
+    DataField* pDataField = wp->GetDataField();
+    if(pDataField) {
+      if(pDataField->GetAsBoolean() != earth_model_wgs84) {
+        earth_model_wgs84 = pDataField->GetAsBoolean();
+        requirerestart = true;
+      }
+    }
+  }
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpDisableAutoLogger"));
   if (wp) {

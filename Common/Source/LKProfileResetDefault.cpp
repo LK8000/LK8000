@@ -470,6 +470,9 @@ void LKProfileResetDefault(void) {
   Overlay_RightBottom=1;
 
 
+#ifdef _WGS84
+  earth_model_wgs84 = true;
+#endif
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 
 }
