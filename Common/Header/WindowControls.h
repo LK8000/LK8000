@@ -279,6 +279,7 @@ class DataFieldEnum: public DataField {
 
   int GetAsInteger(void) override;
   const TCHAR *GetAsString(void) override;
+  bool GetAsBoolean() override;
 
   void Set(unsigned Value) override;
   void Set(int Value) override { Set((unsigned)Value); }

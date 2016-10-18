@@ -493,6 +493,14 @@ int DataFieldEnum::GetAsInteger(void){
   }
 }
 
+bool DataFieldEnum::GetAsBoolean() {
+  assert(nEnums == 2);
+  if (mValue<nEnums) {
+    return mEntries[mValue].index;
+  }
+  return false;
+}
+
 void DataFieldEnum::addEnumText(const TCHAR *Text) {
   if (nEnums<DFE_MAX_ENUMS-1) {
     mEntries[nEnums].mText = (TCHAR*)malloc((_tcslen(Text)+1)*sizeof(TCHAR));
