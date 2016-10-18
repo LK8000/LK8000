@@ -473,9 +473,9 @@ class DataFieldString:public DataField{
   const TCHAR *SetAsString(const TCHAR *Value) override;
   void Set(const TCHAR *Value) override;
 
-  const TCHAR *GetAsString(void);
+  const TCHAR *GetAsString(void) override;
   
-  bool CreateKeyboard();
+  bool CreateKeyboard() override;
 
 };
 
@@ -530,7 +530,7 @@ class WindowControl : public WndCtrlBase {
     virtual void PaintBorder(LKSurface& Surface);
     virtual void PaintSelector(LKSurface& Surface);
 
-    virtual bool OnPaint(LKSurface& Surface, const RECT& Rect);
+    virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) override;
 
   public:
     const TCHAR* GetCaption(void) const { return GetWndText(); }
@@ -796,7 +796,7 @@ class WndForm:public WindowControl{
     OnKeyDownNotify_t mOnKeyDownNotify;
     OnKeyUpNotify_t mOnKeyUpNotify;
 
-    virtual void Paint(LKSurface& Surface);
+    virtual void Paint(LKSurface& Surface) override;
 
   public:
 
