@@ -84,10 +84,6 @@
 #include <sys/utsname.h>
 #endif
 
-#ifdef INT_OVERFLOW
-	#include <signal.h>
-#endif
-
 using std::min;
 using std::max;
 
@@ -109,14 +105,7 @@ extern void PreloadInitialisation(bool ask);
 extern bool LoadModelFromProfile(void);
 #endif
 
-void CleanupForShutdown(void);
 Poco::NamedMutex Mutex("LOCK8000");
-
-#ifdef INT_OVERFLOW
-void handler(int /*signal*/) {
-    LKASSERT(FALSE);
-}
-#endif
 
 //
 // WINMAIN RETURNS CODE ARE:
@@ -146,26 +135,20 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     (void)hPrevInstance;
     
     _hInstance = hInstance; // this need to be first, always !
-    #if (WINDOWSPC >0)
+#ifndef UNDER_CE
     const TCHAR* szCmdLine = GetCommandLine();
-    #endif
+#endif
     
 #else
 int main(int argc, char *argv[]) {
-    
+  
+  std::string strCmdLine("");
+  for (int i=1;i<argc;i++) {
+    strCmdLine.append(std::string(argv[i]).append(" "));
+  }
+  const TCHAR* szCmdLine = strCmdLine.c_str();
+  
 #endif
-
-#ifdef INT_OVERFLOW
-  SetErrorMode(SEM_NOGPFAULTERRORBOX|SEM_NOOPENFILEERRORBOX);
-  // when we get a SIGABRT, call handler
-  signal(SIGABRT, &handler);
-#endif
-#if (WINDOWSPC>0)
-#if _DEBUG
-	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CRTDBG_ALLOC_MEM_DF);
-#endif
-#endif
-
 
   // use mutex to avoid multiple instances of lk8000 be running
   #if (!((WINDOWSPC>0) && TESTBENCH))
@@ -181,12 +164,10 @@ int main(int argc, char *argv[]) {
   _stprintf(LK8000_Version,_T("%s v%s.%s "), _T(LKFORK), _T(LKVERSION),_T(LKRELEASE));
   _tcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
-  #ifdef __linux__
-  #ifdef KOBO
+#ifdef KOBO
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("KOBO"),NEWLINE);
-  #else
+#elif defined(__linux__)
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
-  #endif
  
   struct utsname sysinfo = {};
   if(uname(&sysinfo) == 0) {
@@ -196,22 +177,15 @@ int main(int argc, char *argv[]) {
     StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
   }
   
-  #else
-  #ifdef PNA
+#elif defined(PNA)
   StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PNA"),NEWLINE);
-  #else
-  #if (WINDOWSPC>0)
-  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PC"),NEWLINE);
-  #else
+#elif defined(UNDER_CE)
   StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PDA"),NEWLINE);
-  #endif
-  #endif
-  #endif
+#elif defined(WIN32)
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PC"),NEWLINE);
+#endif
 
   #if TESTBENCH
-    #ifdef _MSC_VER
-      StartupStore(TEXT(". Built with MSVC ver : %d %s"), _MSC_VER, NEWLINE);
-    #endif
     #ifdef __GNUC__
         #ifdef __MINGW32__
           StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"), 
@@ -274,9 +248,6 @@ int main(int argc, char *argv[]) {
     #endif
     #ifdef POCO_STATIC
     StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
-    #endif
-    #ifdef INT_OVERFLOW
-    StartupStore(_T("    + INT_OVERFLOW%s"),NEWLINE);
     #endif
 
     StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
@@ -341,12 +312,10 @@ int main(int argc, char *argv[]) {
     }
   #endif
   
-  bool datadir;
-  datadir=CheckDataDir();
-
+  bool datadir = CheckDataDir();
   if (!datadir) {
-	// we cannot call startupstore, no place to store log!
-	WarningHomeDir=true;
+    // we cannot call startupstore, no place to store log!
+    WarningHomeDir=true;
   }
 
   #if TESTBENCH
@@ -365,38 +334,33 @@ int main(int argc, char *argv[]) {
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
 
-  _stprintf(defaultProfileFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKPROFILE));
+  _stprintf(defaultProfileFile,_T("%s" LKD_CONF DIRSEP LKPROFILE), LKGetLocalPath());
   _tcscpy(startProfileFile, defaultProfileFile);
-  _stprintf(defaultAircraftFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKAIRCRAFT));
+  _stprintf(defaultAircraftFile,_T("%s" LKD_CONF DIRSEP LKAIRCRAFT), LKGetLocalPath());
   _tcscpy(startAircraftFile, defaultAircraftFile);
-  _stprintf(defaultPilotFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKPILOT));
+  _stprintf(defaultPilotFile,_T("%s" LKD_CONF DIRSEP LKPILOT),LKGetLocalPath());
   _tcscpy(startPilotFile, defaultPilotFile);
-  _stprintf(defaultDeviceFile,_T("%s%s%s%s"),LKGetLocalPath(), _T(LKD_CONF), _T(DIRSEP), _T(LKDEVICE));
+  _stprintf(defaultDeviceFile,_T("%s" LKD_CONF DIRSEP LKDEVICE),LKGetLocalPath());
   _tcscpy(startDeviceFile, defaultDeviceFile);
 
-  #ifdef __linux__
-  extern void LKCmdLineArguments(int argc, char *argv[]);
-  LKCmdLineArguments(argc,argv);
-  #else
-  #if (WINDOWSPC >0)
+#if !defined(UNDER_CE) || defined(__linux__)
   LK8000GetOpts(szCmdLine);
-  #endif
-  #endif
+#endif
+
   InitSineTable();
 
   // Perform application initialization: also ScreenGeometry and LKIBLSCALE, and Objects
-  if (!InitInstance ())
-    {
-	StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
-	return -1;
-    }
+  if (!InitInstance ()) {
+    StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
+    return -1;
+  }
   
 #ifdef RADIO_ACTIVE
   memset( &(RadioPara), 0, sizeof(Radio_t));
   RadioPara.Volume = 6;
   RadioPara.Squelch = 3;
   RadioPara.Vox = 5;
-   RadioPara.Enabled = false; //devIsRadio(devA()) || devIsRadio(devB());
+  RadioPara.Enabled = false; //devIsRadio(devA()) || devIsRadio(devB());
 #endif  // RADIO_ACTIVE        
   
   // Initialise main blackboard data
@@ -415,8 +379,8 @@ int main(int argc, char *argv[]) {
 
   PreloadInitialisation(false); // calls dlgStartup
   if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {
-	realexitforced=true;
-	goto _Shutdown;
+    realexitforced=true;
+    goto _Shutdown;
   }
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
@@ -449,35 +413,21 @@ int main(int argc, char *argv[]) {
   GPS_INFO.Second = pda_time->tm_sec;  
 
   CalculateNewPolarCoef();
-  #if TESTBENCH
-  StartupStore(TEXT(". GlidePolar::SetBallast%s"),NEWLINE);
-  #endif
   GlidePolar::SetBallast();
 
 #ifdef PNA // VENTA-ADDON
     TCHAR sTmp[250];
 	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
 	CreateProgressDialog(sTmp); 
-#else
-  TCHAR sTmpA[MAX_PATH], sTmpB[MAX_PATH];
-  LocalPath(sTmpA,_T(""));
-#if ( WINDOWSPC==0 )
+
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
     CreateProgressDialog(MsgToken(1208));
     Poco::Thread::sleep(ERRDELAY);
-  }
-#endif
-  _stprintf(sTmpB, TEXT("Conf=%s"),sTmpA);
-  CreateProgressDialog(sTmpB); 
-#if ( WINDOWSPC==0 )
-  if ( !datadir ) {
-    Poco::Thread::sleep(ERRDELAY);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
-	CreateProgressDialog(MsgToken(1209));
+    CreateProgressDialog(MsgToken(1209));
     Poco::Thread::sleep(ERRDELAY);
   }
-#endif
 #endif // non PNA
 
 // TODO until startup graphics are settled, no need to delay PC start
@@ -493,22 +443,23 @@ int main(int argc, char *argv[]) {
     }
 
 #ifdef PNA
-  if ( SetBacklight() == true ) 
-	// LKTOKEN _@M1212_ "AUTOMATIC BACKLIGHT CONTROL"
-	CreateProgressDialog(MsgToken(1212));
-  else
-	// LKTOKEN _@M1213_ "NO BACKLIGHT CONTROL"
-	CreateProgressDialog(MsgToken(1213));
+  if ( SetBacklight() == true ) {
+    // LKTOKEN _@M1212_ "AUTOMATIC BACKLIGHT CONTROL"
+    CreateProgressDialog(MsgToken(1212));
+  } else {
+    // LKTOKEN _@M1213_ "NO BACKLIGHT CONTROL"
+    CreateProgressDialog(MsgToken(1213));
+  }
 #endif
   
   // this should work ok for all pdas as well
-  if ( SetSoundVolume() == true ) 
-	// LKTOKEN _@M1214_ "AUTOMATIC SOUND LEVEL CONTROL"
-	CreateProgressDialog(MsgToken(1214));
-  else
-	// LKTOKENS _@M1215_ "NO SOUND LEVEL CONTROL"
-	CreateProgressDialog(MsgToken(1215));
-
+  if ( SetSoundVolume() == true ) {
+    // LKTOKEN _@M1214_ "AUTOMATIC SOUND LEVEL CONTROL"
+    CreateProgressDialog(MsgToken(1214));
+  } else {
+    // LKTOKENS _@M1215_ "NO SOUND LEVEL CONTROL"
+    CreateProgressDialog(MsgToken(1215));
+  }
 
   LockTerrainDataGraphics();
   RasterTerrain::OpenTerrain();
@@ -523,7 +474,6 @@ int main(int argc, char *argv[]) {
   ReadAirfieldFile();
   SetHome(false);
   LKReadLanguageFile(szLanguageFile);
-  LKLanguageReady=true;
 
   CreateProgressDialog(MsgToken(399));
   CAirspaceManager::Instance().ReadAirspaces();
@@ -607,9 +557,6 @@ int main(int argc, char *argv[]) {
 #endif
 
   // re-set polar in case devices need the data
-  #if TESTBENCH
-  StartupStore(TEXT(".... GlidePolar::SetBallast%s"),NEWLINE);
-  #endif
   GlidePolar::SetBallast();
 
   // LKTOKEN _@M1218_ "Initialising display"
@@ -631,7 +578,6 @@ int main(int argc, char *argv[]) {
   StartupStore(TEXT(".... CreateCalculationThread%s"),NEWLINE);
   #endif
   CreateCalculationThread();
-  while(!(goCalculationThread)) Poco::Thread::sleep(50);
 
   // find unique ID of this PDA or create a new one
   // Currently disabled in LK, we use a dummy ID
@@ -643,12 +589,6 @@ int main(int argc, char *argv[]) {
   ProgramStarted = psInitDone;
 
   GlobalRunning = true;
-
-#if _DEBUG
- // _crtBreakAlloc = -1;     // Set this to the number in {} brackets to
-                           // break on a memory leak
-#endif
-
 
     if (WarningHomeDir) {
         TCHAR nopath[MAX_PATH];
@@ -673,9 +613,7 @@ int main(int argc, char *argv[]) {
     if (!ISPARAGLIDER && !ISCAR) { // 100925
         if (SAFETYALTITUDEARRIVAL < 500) { // SAFETY is *10, so we check <50 really
             // LKTOKEN  _@M155_ = "CHECK safety arrival altitude\n"
-            MessageBoxX(MsgToken(155),
-                    TEXT("Warning!"),
-                    mbOk);
+            MessageBoxX(MsgToken(155), TEXT("Warning!"), mbOk);
         }
     }
 
@@ -685,16 +623,24 @@ int main(int argc, char *argv[]) {
   MainWindow.RunModalLoop();
 
 _Shutdown:
-  CleanupForShutdown();
+  
+  MainWindow.Destroy();
+  Message::Destroy();
+
+  DeInitLKFonts();  
+  LKObjects_Delete();
+  LKUnloadProfileBitmaps();
+  LKUnloadFixedBitmaps();
+
+  LKUnloadMessage();
+  InputEvents::UnloadString();
+  // This is freeing char *slot in TextInBox
+  MapWindow::FreeSlot();
+  
+  Mutex.unlock();
+  
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated, realexitforced=%d%s"),realexitforced,NEWLINE);
-  #endif
-
-  #if (WINDOWSPC>0)
-  #if _DEBUG
-  _CrtCheckMemory();
-  //  _CrtDumpMemoryLeaks(); generate False positive, use _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CRTDBG_ALLOC_MEM_DF); instead
-  #endif
   #endif
 
   pSaveScreen = nullptr;
@@ -714,22 +660,3 @@ _Shutdown:
   if (realexitforced) return 222;
   else return 111;
 }
-
-void CleanupForShutdown(void) {
-
-  MainWindow.Destroy();
-  Message::Destroy();
-
-  DeInitLKFonts();  
-  LKObjects_Delete();
-  LKUnloadProfileBitmaps();
-  LKUnloadFixedBitmaps();
-
-  LKUnloadMessage();
-  InputEvents::UnloadString();
-  // This is freeing char *slot in TextInBox
-  MapWindow::FreeSlot();
-  
-  Mutex.unlock();
-}
-

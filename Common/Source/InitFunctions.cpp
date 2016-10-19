@@ -52,7 +52,6 @@ extern void StartupLogFreeRamAndStorage();
 extern bool ScreenHasChanged(void);
 
 void PreloadInitialisation(bool ask) {
-  LKLanguageReady=false;
   LKReadLanguageFile(szLanguageFile);
 
   if (ask) {

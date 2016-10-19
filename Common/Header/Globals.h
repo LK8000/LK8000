@@ -72,11 +72,6 @@ typedef struct _Radio_t
 GEXTERN bool MenuActive GEXTFALSE;
 GEXTERN Poco::Event dataTriggerEvent;
 
-// System boot specific flags
-// Give me a go/no-go
-GEXTERN bool goCalculationThread GEXTFALSE;
-
-
 GEXTERN unsigned short HaveSystemInfo GEXTZERO; // Normally only on linux
 GEXTERN bool HaveBatteryInfo GEXTFALSE;
 
@@ -741,8 +736,6 @@ GEXTERN int LiveTrackerInterval;
 // Interface Globals
 GEXTERN StatusMessageSTRUCT StatusMessageData[MAXSTATUSMESSAGECACHE];
 GEXTERN int StatusMessageData_Size;
-
-GEXTERN bool LKLanguageReady;
 
 GEXTERN short TerrainContrast;
 GEXTERN short TerrainBrightness;

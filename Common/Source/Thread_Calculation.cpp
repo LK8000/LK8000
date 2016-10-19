@@ -39,6 +39,9 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
 #endif
 }
 
+// System boot specific flags
+// Give me a go/no-go
+static bool goCalculationThread = false;
 
 class CalculationThread : public Poco::Runnable {
 public:
@@ -154,6 +157,8 @@ void CreateCalculationThread() {
     // Create a read thread for performing calculations
     _CalculationThread.start(_CalculationThreadRun);
     _CalculationThread.setPriority(Poco::Thread::PRIO_NORMAL);
+
+    while(!(goCalculationThread)) Poco::Thread::sleep(50);
 }
 
 void WaitThreadCalculation() {

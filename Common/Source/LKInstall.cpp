@@ -60,7 +60,7 @@ void InstallSystem() {
 	StartupStore(_T("------ WARNING: NO font will be installed on device (and thus wrong text size displayed)%s"),NEWLINE);
   } else {
 
-#if defined(PNA) && defined(UNDER_CE)
+#ifdef PNA
 	if (GlobalModelType == MODELTYPE_PNA_HP31X) { // 091109
 
 		StartupStore(_T(". InstallSystem checking desktop links for HP31X%s"),NEWLINE);

@@ -141,9 +141,9 @@ int propGetScaleList(double *List, size_t Size);
 
 long GetUTCOffset(void);
 
-void RestoreRegistry(void);
-void StoreRegistry(void);
+#if !defined(UNDER_CE) || defined(__linux__)
 void LK8000GetOpts(const TCHAR *MyCommandLine);
+#endif
 
 bool CheckRectOverlap(const RECT *rc1, const RECT *rc2);
 int MeasureCPULoad();

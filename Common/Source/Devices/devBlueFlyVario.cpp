@@ -233,7 +233,7 @@ namespace dlgBlueFlyConfig {
     DataField2Parameter_t AssocFieldParam;
 
     void NextPage(int Step) {
-        if( ((CurrentPage+Step) >= 0) && ((CurrentPage+Step) < lstPageWnd.size()) ) {
+        if( (CurrentPage+Step) < lstPageWnd.size() )  {
             lstPageWnd[CurrentPage]->SetVisible(false);
             CurrentPage+=Step;
             lstPageWnd[CurrentPage]->SetVisible(true);

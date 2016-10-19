@@ -524,10 +524,6 @@ endif
 
 CPPFLAGS += -DPOCO_STATIC
 
-ifeq ($(INT_OVERFLOW), y)
- CPPFLAGS += -ftrapv -DINT_OVERFLOW
-endif
-
 CXXFLAGS	:= -std=gnu++0x $(OPTIMIZE) $(PROFILE)
 CFLAGS		:= -std=gnu89 $(OPTIMIZE) $(PROFILE)
 

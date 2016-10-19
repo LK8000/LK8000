@@ -17,12 +17,9 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
 
   LKSurface::OldFont oldfont = LKSurface::OldFont();
   if ((MapSpaceMode==MSM_WELCOME)||(mode.AnyPan()) ) return; // 100210
-
-  if (!LKLanguageReady) return;
-
   if (extGPSCONNECT && !(DrawInfo.NAVWarning) && (DrawInfo.SatellitesUsed != 0)) {
-	if (LockModeStatus) goto goto_DrawLockModeStatus;
-	return;
+    if (LockModeStatus) goto goto_DrawLockModeStatus;
+    return;
   }
 
   static bool firstrun=true;
