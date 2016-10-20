@@ -103,7 +103,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
                 (WayPointList[Task[i].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
       
       if (AATEnabled && ValidTaskPoint(i+1) && (i>0)) {
-        if (Task[i].AATType==0) {
+        if (Task[i].AATType==0 || Task[i].AATType==3) {
           _stprintf(sTmp, TEXT("%s %.1f"), 
                     wpName, Task[i].AATCircleRadius*DISTANCEMODIFY);
         } else {
