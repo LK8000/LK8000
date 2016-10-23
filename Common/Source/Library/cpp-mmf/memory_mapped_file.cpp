@@ -120,9 +120,8 @@ namespace memory_mapped_file
         size_t real_offset = offset / granularity_ * granularity_;
     #if defined(_WIN32)
         file_mapping_handle_ = ::CreateFileMapping(
-            file_handle_, 0, PAGE_READONLY, (offset + mapping_size) >> 32,
-            (offset + mapping_size) & 0xFFFFFFFF, 0);
-        if (file_mapping_handle_ == INVALID_HANDLE_VALUE) return;
+            file_handle_, 0, PAGE_READONLY, 0, 0, 0);
+        if (file_mapping_handle_ == NULL) return;
         char* real_data = static_cast<char*>(::MapViewOfFile(
             file_mapping_handle_, FILE_MAP_READ, real_offset >> 32,
             real_offset & 0xFFFFFFFF, offset - real_offset + mapping_size));
@@ -212,9 +211,8 @@ namespace memory_mapped_file
         size_t real_offset = offset / granularity_ * granularity_;
     #if defined(_WIN32)
         file_mapping_handle_ = ::CreateFileMapping(
-            file_handle_, 0, PAGE_READWRITE, (offset + mapping_size) >> 32,
-            (offset + mapping_size) & 0xFFFFFFFF, 0);
-        if (file_mapping_handle_ == INVALID_HANDLE_VALUE) return;
+            file_handle_, 0, PAGE_READWRITE, 0, 0, 0);
+        if (file_mapping_handle_ == NULL) return;
         char* real_data = static_cast<char*>(::MapViewOfFile(
             file_mapping_handle_, FILE_MAP_WRITE, real_offset >> 32,
             real_offset & 0xFFFFFFFF, offset - real_offset + mapping_size));

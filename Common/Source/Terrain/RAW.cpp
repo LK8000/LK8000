@@ -24,7 +24,7 @@ bool RasterMap::Open(const TCHAR* zfilename) {
   StartupStore(_T(". Terrain Open RasterMapRaw <%s>\n"),zfilename);
 
   TerrainFile.open(zfilename, true);
-  if(TerrainFile.is_open()) {
+  if(TerrainFile.is_open() && TerrainFile.data()) {
     
     TerrainInfo = reinterpret_cast<const TERRAIN_INFO*>(TerrainFile.data());
     TerrainMem = reinterpret_cast<const short*>(TerrainFile.data() + sizeof(TERRAIN_INFO));
