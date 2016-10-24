@@ -24,11 +24,13 @@ public:
   double GetAverage(double curTime, double curAltitude);
 
 private:
-  #define PRECISION 1000
+  constexpr static unsigned precision = 1000;
+  constexpr static unsigned time_period = precision * average_time;
+  
 
   struct AltHistoryItem {
     AltHistoryItem() : time(), altitude() { }
-    explicit AltHistoryItem(double T, double A ) : time(T*PRECISION), altitude(A*PRECISION) { }
+    explicit AltHistoryItem(double T, double A ) : time(T*precision), altitude(A*precision) { }
     
     unsigned time;
     int altitude;
@@ -43,10 +45,10 @@ private:
    * return true if Item1 is inside periode and if Item1 is older then Item2 
    */
   struct compare_time {
-    explicit compare_time(double curTime) : _curTime(curTime*PRECISION) {}
+    explicit compare_time(double curTime) : _curTime(curTime*precision) {}
     
     bool operator()(const AltHistoryItem& Item1, const AltHistoryItem& Item2 ) {
-      return ((Item1.time + average_time) >= _curTime) && Item1.time < Item2.time;
+      return ((Item1.time + time_period) >= _curTime) && Item1.time < Item2.time;
     }
     
     unsigned _curTime;
@@ -63,7 +65,7 @@ double ClimbAverageCalculator<average_time, max_data_rate>::GetAverage(double cu
 
   const AltHistoryItem new_history(curTime, curAltitude);
   // add the new sample
-  history[next_history] = new_history;
+  history[next_history++] = new_history;
 
   if(next_history >= history.size()) {
     next_history = 0;
