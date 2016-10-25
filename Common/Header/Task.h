@@ -17,12 +17,6 @@ typedef struct _START_POINT
 {
   int Index;
   double OutBound;
-  double SectorStartLat;
-  double SectorStartLon;
-  double SectorEndLat;
-  double SectorEndLon;
-  POINT	 Start;
-  POINT	 End;
   bool Active;
   bool InSector;
 } START_POINT;
@@ -35,23 +29,11 @@ typedef struct _TASK_POINT
   double OutBound;
   double Bisector;
   double Leg;
-  double SectorStartLat;
-  double SectorStartLon;
-  double SectorEndLat;
-  double SectorEndLon;
-  POINT	 Start;
-  POINT	 End;
   int	 AATType;
   double AATCircleRadius;
   double AATSectorRadius;
   double AATStartRadial;
   double AATFinishRadial;
-  double AATStartLat;
-  double AATStartLon;
-  double AATFinishLat;
-  double AATFinishLon;
-  POINT	 AATStart;
-  POINT	 AATFinish;
   double AATTargetOffsetRadius;
   double AATTargetOffsetRadial;
   double AATTargetLat;

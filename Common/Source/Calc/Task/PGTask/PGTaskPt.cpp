@@ -19,6 +19,6 @@ PGTaskPt::~PGTaskPt() {
 
 }
 
-void PGTaskPt::UpdateTaskPoint(TASK_POINT& TskPt ) const {
-
+bool PGTaskPt::UpdateTaskPoint(TASK_POINT& TskPt ) const {
+	return false;
 }

@@ -17,10 +17,9 @@ extern bool TargetDialogOpen;
 
 void CalculateAATTaskSectors()
 {
-  int i;
   int awp = ActiveTaskPoint;
 
-  if(AATEnabled == FALSE || DoOptimizeRoute())
+  if(!AATEnabled || DoOptimizeRoute())
     return;
 
   double latitude = GPS_INFO.Latitude;
@@ -36,29 +35,13 @@ void CalculateAATTaskSectors()
     Task[0].AATTargetLon = WayPointList[Task[0].Index].Longitude;
   }
 
-  for(i=1;i<MAXTASKPOINTS;i++) {
+  for(int i=1;i<MAXTASKPOINTS;i++) {
     if(ValidTaskPoint(i)) {
       if (!ValidTaskPoint(i+1)) {
         // This must be the final waypoint, so it's not an AAT OZ
         Task[i].AATTargetLat = WayPointList[Task[i].Index].Latitude;
         Task[i].AATTargetLon = WayPointList[Task[i].Index].Longitude;
         continue;
-      }
-
-      if(Task[i].AATType == SECTOR) {
-        FindLatitudeLongitude (WayPointList[Task[i].Index].Latitude,
-                                 WayPointList[Task[i].Index].Longitude,
-                               Task[i].AATStartRadial ,
-                               Task[i].AATSectorRadius ,
-                               &Task[i].AATStartLat,
-                               &Task[i].AATStartLon);
-
-        FindLatitudeLongitude (WayPointList[Task[i].Index].Latitude,
-                               WayPointList[Task[i].Index].Longitude,
-                               Task[i].AATFinishRadial ,
-                               Task[i].AATSectorRadius,
-                               &Task[i].AATFinishLat,
-                               &Task[i].AATFinishLon);
       }
 
       // JMWAAT: if locked, don't move it

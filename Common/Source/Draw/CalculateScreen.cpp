@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Multimap.h"
 #include "ScreenProjection.h"
+#include "Task/TaskRendererMgr.h"
 
 using std::placeholders::_1;
 
@@ -242,54 +243,28 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
     // this and the screen updates
   }
 
-  if (EnableMultipleStartPoints) {
-    for(i=0;i<MAXSTARTPOINTS-1;i++) {
-      if (StartPoints[i].Active && ValidWayPointFast(StartPoints[i].Index)) {
-        StartPoints[i].End = _Proj.LonLat2Screen(StartPoints[i].SectorEndLon, StartPoints[i].SectorEndLat);
-        StartPoints[i].Start = _Proj.LonLat2Screen(StartPoints[i].SectorStartLon, StartPoints[i].SectorStartLat);
-      }
-    }
-  }
-  
-  for(i=0;i<MAXTASKPOINTS-1;i++)
-  {
-    bool this_valid = ValidTaskPointFast(i);
-    bool next_valid = ValidTaskPointFast(i+1);
-    if (AATEnabled && this_valid) {
-      Task[i].Target = _Proj.LonLat2Screen(Task[i].AATTargetLon, Task[i].AATTargetLat);
-    }
+  gStartSectorRenderer.CalculateScreenPosition(screenbounds_latlon, _Proj);
+  gTaskSectorRenderer.CalculateScreenPosition(screenbounds_latlon, _Proj);
 
-    if(this_valid && !next_valid)
-    {
-      // finish
-      Task[i].End = _Proj.LonLat2Screen(Task[i].SectorEndLon, Task[i].SectorEndLat);
-      Task[i].Start = _Proj.LonLat2Screen(Task[i].SectorStartLon, Task[i].SectorStartLat);
+  if (AATEnabled && !DoOptimizeRoute()) {
+		if(ValidTaskPoint(ActiveTaskPoint)) {
+			TASKSTATS_POINT& StatPt =  TaskStats[ActiveTaskPoint];
+			for (int j=0; j<MAXISOLINES; j++) {
+				if (StatPt.IsoLine_valid[j]) {
+					StatPt.IsoLine_Screen[j] = _Proj.LonLat2Screen(StatPt.IsoLine_Longitude[j], StatPt.IsoLine_Latitude[j]);
+				}
+			}
+		}
 
-   	  // No need to continue.
-      break;
-    }
-    if(this_valid && next_valid)
-    {
-      Task[i].End = _Proj.LonLat2Screen(Task[i].SectorEndLon, Task[i].SectorEndLat);
-      Task[i].Start = _Proj.LonLat2Screen(Task[i].SectorStartLon, Task[i].SectorStartLat);
-
-      if((AATEnabled) && (Task[i].AATType == SECTOR))
-      {
-        Task[i].AATStart = _Proj.LonLat2Screen(Task[i].AATStartLon, Task[i].AATStartLat);
-        Task[i].AATFinish = _Proj.LonLat2Screen(Task[i].AATFinishLon, Task[i].AATFinishLat);
-      }
-      if (AATEnabled && (((int)i==ActiveTaskPoint) || 
-			 (mode.Is(Mode::MODE_TARGET_PAN) && ((int)i==TargetPanIndex)))) {
-
-	for (int j=0; j<MAXISOLINES; j++) {
-	  if (TaskStats[i].IsoLine_valid[j]) {
-	    TaskStats[i].IsoLine_Screen[j] = _Proj.LonLat2Screen(TaskStats[i].IsoLine_Longitude[j], TaskStats[i].IsoLine_Latitude[j]);
-	  }
+		if ((mode.Is(Mode::MODE_TARGET_PAN) && ValidTaskPoint(TargetPanIndex))) {
+			TASKSTATS_POINT& StatPt =  TaskStats[TargetPanIndex];
+			for (int j=0; j<MAXISOLINES; j++) {
+				if (StatPt.IsoLine_valid[j]) {
+					StatPt.IsoLine_Screen[j] = _Proj.LonLat2Screen(StatPt.IsoLine_Longitude[j], StatPt.IsoLine_Latitude[j]);
+				}
+			}
+		}
 	}
-      }
-    }
-  }
-
   UnlockTaskData();
 
   return _Proj;

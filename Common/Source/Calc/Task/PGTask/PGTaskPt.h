@@ -105,7 +105,7 @@ public:
      */
     virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) = 0;
     
-    virtual void UpdateTaskPoint(TASK_POINT& TskPt ) const;
+    virtual bool UpdateTaskPoint(TASK_POINT& TskPt ) const;
 
 protected:
     ProjPt m_Center;

@@ -601,9 +601,6 @@ class MapWindow {
   static void DrawTeammate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawOffTrackIndicator(LKSurface& Surface, const RECT& rc);
   static void DrawProjectedTrack(LKSurface& Surface, const RECT& rc, const POINT& Orig);
-  static void DrawStartEndSector(LKSurface& Surface, const RECT& rc,
-                                    const POINT &Start, const POINT &End, int Index,
-                                    int Type, double Radius);
   static void DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft);
   static void DrawTaskSectors(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) ;
   static void DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft) ;
@@ -724,6 +721,7 @@ private:
   static      LKPen hpTerrainLine;
   static      LKPen hpTerrainLineBg;
   static      LKPen hpStartFinishThick;
+  static      LKPen hpStartFinishThin;
 
  private:
 

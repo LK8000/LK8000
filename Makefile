@@ -789,7 +789,6 @@ DRAW	:=\
 	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
 	$(DRW)/DrawRunway.cpp \
-	$(DRW)/DrawStartSector.cpp \
 	$(DRW)/DrawTRI.cpp \
 	$(DRW)/DrawTask.cpp \
 	$(DRW)/DrawTaskAAT.cpp \
@@ -843,6 +842,13 @@ DRAW	:=\
 	$(DRW)/Sonar.cpp \
 	$(DRW)/TextInBox.cpp \
 	$(DRW)/UpdateAndRefresh.cpp \
+	$(DRW)/Task/TaskRenderer.cpp \
+	$(DRW)/Task/TaskRendererCircle.cpp \
+	$(DRW)/Task/TaskRendererLine.cpp \
+	$(DRW)/Task/TaskRendererDae.cpp \
+	$(DRW)/Task/TaskRendererSector.cpp \
+	$(DRW)/Task/TaskRendererStartSector.cpp \
+	$(DRW)/Task/TaskRendererMgr.cpp \
 
 CALC	:=\
 	$(CLC)/AddSnailPoint.cpp 		\

@@ -34,7 +34,7 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const Scree
 
   const auto whitecolor = RGB_WHITE;
   const auto origcolor = Surface.SetTextColor(whitecolor);
-  const auto oldpen = Surface.SelectObject(hpStartFinishThick);
+  const auto oldpen = Surface.SelectObject(hpStartFinishThin);
   const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
 /********************************************************************/

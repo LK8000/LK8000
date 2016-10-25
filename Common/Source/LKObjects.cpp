@@ -253,7 +253,8 @@ void LKObjects_Create() {
 
 
   extern LKColor taskcolor;
-  MapWindow::hpStartFinishThick.Create(PEN_SOLID, NIBLSCALE(2)+1, taskcolor);
+  MapWindow::hpStartFinishThick.Create(PEN_SOLID, NIBLSCALE(4), taskcolor);
+  MapWindow::hpStartFinishThin.Create(PEN_SOLID, NIBLSCALE(2), taskcolor);
   MapWindow::hpWindThick.Create(PEN_SOLID, NIBLSCALE(4), LKColor(255,220,220));
   MapWindow::hpThermalBand.Create(PEN_SOLID, NIBLSCALE(2), LKColor(0x40,0x40,0xFF));
   MapWindow::hpThermalBandGlider.Create(PEN_SOLID, NIBLSCALE(2), LKColor(0x00,0x00,0x30));
@@ -350,6 +351,7 @@ void LKObjects_Delete() {
 #endif
   
   MapWindow::hpStartFinishThick.Release();
+  MapWindow::hpStartFinishThin.Release();
   MapWindow::hpWindThick.Release();
   MapWindow::hpThermalBand.Release();
   MapWindow::hpThermalBandGlider.Release();

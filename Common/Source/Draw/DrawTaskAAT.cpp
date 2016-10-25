@@ -10,6 +10,7 @@
 #include "LKInterface.h"
 #include "RGB.h"
 #include "LKObjects.h"
+#include "Task/TaskRendererMgr.h"
 
 #ifdef HAVE_HATCHED_BRUSH
     constexpr uint8_t AlphaLevel = 255*35/100;
@@ -19,8 +20,6 @@
 
 
 void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
-    int i;
-    double tmp1 = 0.0;
 
     if (WayPointList.empty()) return;
     if (!AATEnabled) return;
@@ -30,39 +29,23 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     /* Check if not Validated Waypoint is visible */
     bool bDraw = false;
     int maxTp = 1;
-    rectObj rcrect = (rectObj){(double) rc.left, (double) rc.top, (double) rc.right, (double) rc.bottom};
     RECT rcDraw = (RECT){rc.right, rc.bottom, rc.left, rc.top};
 
     for (maxTp = std::max(1, ActiveTaskPoint); ValidTaskPoint(maxTp + 1); ++maxTp) {
         if (ValidTaskPoint(maxTp)) {
-            int Type = 0;
-            double Radius = 0.;
-            GetTaskSectorParameter(maxTp, &Type, &Radius);
-            switch (Type) {
-                case ESS_CIRCLE:
-                case CONE:
-                case CIRCLE:
-                    tmp1 = Task[maxTp].AATCircleRadius * zoom.ResScaleOverDistanceModify();
-                    break;
-                case SECTOR:
-                    tmp1 = Task[maxTp].AATSectorRadius * zoom.ResScaleOverDistanceModify();
-                    break;
-                default:
-                    tmp1 = 0.0;
-                    break;
-            }
-        }
 
-        PixelScalar x = WayPointList[Task[maxTp].Index].Screen.x;
-        PixelScalar y = WayPointList[Task[maxTp].Index].Screen.y;
-        rectObj rect = (rectObj){x - tmp1, y - tmp1, x + tmp1, y + tmp1};
+					const TaskRenderer* pItem = gTaskSectorRenderer.GetRenderer(maxTp);
+					if(pItem) {
+						PixelRect rect = pItem->GetScreenBounds();
 
-        if (msRectOverlap(&rect, &rcrect) == MS_TRUE) {
-            rcDraw.top = std::min((PixelScalar)rect.miny, rcDraw.top);
-            rcDraw.bottom = std::max((PixelScalar) rect.maxy, rcDraw.bottom);
-            rcDraw.left = std::min((PixelScalar) rect.minx, rcDraw.left);
-            rcDraw.right = std::max((PixelScalar) rect.maxx, rcDraw.right);
-            bDraw = true;
+						if (CheckRectOverlap(&rect, &rc)) {
+							rcDraw.top = std::min(rect.top, rcDraw.top);
+							rcDraw.bottom = std::max(rect.bottom, rcDraw.bottom);
+							rcDraw.left = std::min(rect.left, rcDraw.left);
+							rcDraw.right = std::max(rect.right, rcDraw.right);
+							bDraw = true;
+						}
+					}
         }
     }
     /**********************************************/
@@ -105,32 +88,13 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         LKSurface & AliasSurface = Surface;
         Surface.SelectObject(LKBrush(LKColor(255U,255U,0U).WithAlpha(AlphaLevel)));
 #endif
-        for (i = maxTp - 1; i > std::max(0, ActiveTaskPoint - 1); i--) {
-        if (ValidTaskPoint(i)) {
-            int Type = 0;
-            double Radius = 0.;
-            GetTaskSectorParameter(i, &Type, &Radius);
-
-            switch (Type) {
-                case ESS_CIRCLE:
-                case CONE:
-                case CIRCLE:
-                    tmp1 = Radius * zoom.ResScaleOverDistanceModify();
-                    AliasSurface.DrawCircle(
-                            WayPointList[Task[i].Index].Screen.x,
-                            WayPointList[Task[i].Index].Screen.y,
-                            (int) tmp1, rc, true);
-                    break;
-                case SECTOR:
-                    tmp1 = Radius * zoom.ResScaleOverDistanceModify();
-                    AliasSurface.Segment(
-                            WayPointList[Task[i].Index].Screen.x,
-                            WayPointList[Task[i].Index].Screen.y, (int) tmp1, rc,
-                            Task[i].AATStartRadial - DisplayAngle,
-                            Task[i].AATFinishRadial - DisplayAngle);
-                    break;
-            }
-        }
+        for (int i = maxTp - 1; i > std::max(0, ActiveTaskPoint - 1); i--) {
+					if (ValidTaskPoint(i)) {
+						const TaskRenderer* pItem = gTaskSectorRenderer.GetRenderer(i);
+						if(pItem) {
+							pItem->Draw(AliasSurface, rc, true);
+						}
+					}
         }
 #ifdef USE_GDI
         // restore original color

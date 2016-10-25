@@ -7,108 +7,112 @@
 */
 
 #include "externs.h"
+#include "Draw/Task/TaskRendererMgr.h"
+#include "Geographic/GeoPoint.h"
 
-
-void CalculateTaskSectors(void)
-{
-  int i;
-  double SectorAngle, SectorSize, SectorBearing;
+void CalculateTaskSectors(void) {
+	double SectorBearing = 0.;
 
   LockTaskData();
 
   if (EnableMultipleStartPoints) {
-    for(i=0;i<MAXSTARTPOINTS-1;i++) {
-      if (StartPoints[i].Active && ValidWayPoint(StartPoints[i].Index)) {
+		for (int i = 0; i < MAXSTARTPOINTS - 1; i++) {
+			const START_POINT& StartPt = StartPoints[i];
+			if (StartPt.Active && ValidWayPoint(StartPt.Index)) {
+				const WAYPOINT& StartWpt = WayPointList[StartPt.Index];
+				const GeoPoint center(StartWpt.Latitude, StartWpt.Longitude);
+
 	if (StartLine==2) {
-          SectorAngle = 45+90;
+					gStartSectorRenderer.SetStartSector(i, center, StartRadius, StartPt.OutBound + 45, StartPt.OutBound - 45);
         } else {
-          SectorAngle = 90;
+					gStartSectorRenderer.SetLine(i, center, StartRadius, StartPt.OutBound);
         }
-        SectorSize = StartRadius;
-        SectorBearing = StartPoints[i].OutBound;
-
-        FindLatitudeLongitude(WayPointList[StartPoints[i].Index].Latitude,
-                              WayPointList[StartPoints[i].Index].Longitude,
-                              SectorBearing + SectorAngle, SectorSize,
-                              &StartPoints[i].SectorStartLat,
-                              &StartPoints[i].SectorStartLon);
-
-        FindLatitudeLongitude(WayPointList[StartPoints[i].Index].Latitude,
-                              WayPointList[StartPoints[i].Index].Longitude,
-                              SectorBearing - SectorAngle, SectorSize,
-                              &StartPoints[i].SectorEndLat,
-                              &StartPoints[i].SectorEndLon);
       }
     }
   }
 
-  for(i=0;i<=MAXTASKPOINTS-1;i++)
-    {
-      if((Task[i].Index >=0))
-	{
-	  if ((Task[i+1].Index >=0)||(i==MAXTASKPOINTS-1)) {
+	for (int i = 0; i <= MAXTASKPOINTS - 1; i++) {
+		const TASK_POINT& TaskPt = Task[i];
+		if (ValidWayPoint(TaskPt.Index)) {
+			const WAYPOINT& TaskWpt = WayPointList[TaskPt.Index];
+			const GeoPoint center(TaskWpt.Latitude, TaskWpt.Longitude);
 
-	    if(i == 0)
-	      {
-		// start line
-		if (StartLine==2) {
-		  SectorAngle = 45+90;
-		} else {
-		  SectorAngle = 90;
-		}
-		SectorSize = StartRadius;
-		SectorBearing = Task[i].OutBound;
+			if (i == 0) {
+				SectorBearing = TaskPt.OutBound + 180;
+
+				// start turnpoint sector
+				switch (StartLine) {
+					case 0:
+						gTaskSectorRenderer.SetCircle(i, center, StartRadius);
+						break;
+					case 1:
+						gTaskSectorRenderer.SetLine(i, center, StartRadius, SectorBearing);
+						break;
+					case 2:
+						gTaskSectorRenderer.SetStartSector(i, center, StartRadius, SectorBearing - 45, SectorBearing + 45);
+						break;
+					default:
+						assert(false);
 	      }
-	    else
-	      {
+			} else if (ValidTaskPointFast(i + 1)) {
+				if(!AATEnabled && !DoOptimizeRoute()) {
 		// normal turnpoint sector
-                if(SectorType==LINE) {
-                   SectorAngle = 90;
-                } else {
-                   SectorAngle = 45;
+					SectorBearing = TaskPt.Bisector;
+
+					switch (SectorType) {
+						case CIRCLE:
+							gTaskSectorRenderer.SetCircle(i, center, SectorRadius);
+							break;
+						case SECTOR:
+							gTaskSectorRenderer.SetSector(i, center, SectorRadius, SectorBearing - 45, SectorBearing + 45);
+							break;
+						case DAe:
+							gTaskSectorRenderer.SetDae(i, center, SectorBearing - 45, SectorBearing + 45);
+							break;
+						case LINE:
+							gTaskSectorRenderer.SetLine(i, center, SectorRadius, SectorBearing + 90);
+							break;
+						default:
+							assert(false);
                 }
-		if (SectorType == DAe) {
-		  SectorSize = 10000; // German DAe 0.5/10
 		} else {
-		  SectorSize = SectorRadius;  // FAI sector
-		}
-		SectorBearing = Task[i].Bisector;
-                if(SectorType==LINE) {
-                    SectorBearing += 90;
+					switch(TaskPt.AATType) {
+						case CIRCLE : // CIRCLE
+						case 2 : // CONE
+						case 3 : // ESS_CIRCLE
+							gTaskSectorRenderer.SetCircle(i, center, TaskPt.AATCircleRadius);
+							break;
+						case SECTOR : // SECTOR
+							gTaskSectorRenderer.SetSector(i, center, TaskPt.AATSectorRadius, TaskPt.AATStartRadial, TaskPt.AATFinishRadial);
+							break;
+						default:
+							assert(false);
                 }
 	      }
 	  } else {
-	    // finish line
-	    if (FinishLine==2) {
-	      SectorAngle = 45;
-	    } else {
-	      SectorAngle = 90;
-	    }
-	    SectorSize = FinishRadius;
-	    SectorBearing = Task[i].InBound;
+				SectorBearing = TaskPt.InBound;
 
-	  }
-
-          FindLatitudeLongitude(WayPointList[Task[i].Index].Latitude,
-                                WayPointList[Task[i].Index].Longitude,
-                                SectorBearing + SectorAngle, SectorSize,
-                                &Task[i].SectorStartLat,
-                                &Task[i].SectorStartLon);
-
-          FindLatitudeLongitude(WayPointList[Task[i].Index].Latitude,
-                                WayPointList[Task[i].Index].Longitude,
-                                SectorBearing - SectorAngle, SectorSize,
-                                &Task[i].SectorEndLat,
-                                &Task[i].SectorEndLon);
-
-          if (!AATEnabled)
-          {
-            Task[i].AATStartRadial  =
-              AngleLimit360(SectorBearing - SectorAngle);
-            Task[i].AATFinishRadial =
-              AngleLimit360(SectorBearing + SectorAngle);
+				switch (FinishLine) {
+					case 0:
+						gTaskSectorRenderer.SetCircle(i, center, StartRadius);
+						break;
+					case 1:
+						gTaskSectorRenderer.SetLine(i, center, StartRadius, SectorBearing);
+						break;
+					case 2:
+						gTaskSectorRenderer.SetStartSector(i, center, StartRadius, SectorBearing - 45, SectorBearing + 45);
+						break;
+					default:
+						assert(false);
+				}
+			}
+			if (!AATEnabled) {
+				/** this initialise AAT sector
+				 * maybe bad idea, because if you disable/enable AAT that override previous Values ...
+				 */
+				Task[i].AATStartRadial = AngleLimit360(SectorBearing - 45);
+				Task[i].AATFinishRadial = AngleLimit360(SectorBearing + 45);
           }
-
 	}
     }
   UnlockTaskData();

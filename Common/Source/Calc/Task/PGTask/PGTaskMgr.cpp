@@ -24,6 +24,8 @@
 #include "PGConeTaskPt.h"
 #include "PGEssCircleTaskPt.h"
 #include "NavFunctions.h"
+#include "Geographic/GeoPoint.h"
+#include "Draw/Task/TaskRendererMgr.h"
 
 inline double rad2deg(double rad) {
     return (rad * 180 / PI);
@@ -322,7 +324,13 @@ void PGTaskMgr::getOptimized(const int i, double& lat, double& lon) const {
 void PGTaskMgr::UpdateTaskPoint(const int i, TASK_POINT& TskPt ) const {
     getOptimized(i, TskPt.AATTargetLat, TskPt.AATTargetLon);
     UpdateTargetAltitude(TskPt);
-    m_Task[i]->UpdateTaskPoint(TskPt);
+    if(m_Task[i]->UpdateTaskPoint(TskPt)) {
+
+		const WAYPOINT& TaskWpt = WayPointList[TskPt.Index];
+		const GeoPoint center(TaskWpt.Latitude, TaskWpt.Longitude);
+
+		gTaskSectorRenderer.SetCircle(i, center, TskPt.AATCircleRadius);
+	}
 }
 
 //====================================

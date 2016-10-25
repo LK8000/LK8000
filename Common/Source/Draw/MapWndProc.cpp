@@ -143,6 +143,7 @@ LKPen MapWindow::hpFinalGlideBelow;
 LKPen MapWindow::hpTerrainLine;
 LKPen MapWindow::hpTerrainLineBg;
 LKPen MapWindow::hpStartFinishThick;
+LKPen MapWindow::hpStartFinishThin;
 
 bool MapWindow::MapDirty = true;
 bool PanRefreshed=false;
