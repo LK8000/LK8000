@@ -116,9 +116,6 @@ template<typename P, typename RT=typename P::scalar_type>
 static inline RT
 ManhattanDistance(P a, P b)
 {
-  static_assert(std::is_base_of<Point2D<typename P::scalar_type>, P>::value,
-                "Must be Point2D");
-
   return std::abs(a.x - b.x) + std::abs(a.y - b.y);
 }
 

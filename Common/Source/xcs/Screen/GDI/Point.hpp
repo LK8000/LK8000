@@ -30,6 +30,9 @@ typedef LONG PixelScalar;
 typedef ULONG UPixelScalar;
 
 struct RasterPoint : public tagPOINT {
+
+  typedef LONG scalar_type;
+
   RasterPoint() = default;
 
   constexpr RasterPoint(PixelScalar _x, PixelScalar _y)
@@ -44,7 +47,7 @@ struct RasterPoint : public tagPOINT {
   constexpr RasterPoint operator-(RasterPoint other) const {
     return { x - other.x, y - other.y };
   }
-
+  
   RasterPoint &operator+=(const RasterPoint& other) {
     x += other.x;
     y += other.y;
@@ -55,7 +58,7 @@ struct RasterPoint : public tagPOINT {
     x -= other.x;
     y -= other.y;
     return *this;
-  }
+  }  
 };
 
 inline bool operator==(const tagPOINT &first, const tagPOINT &second) {
@@ -161,7 +164,7 @@ struct PixelRect : public tagRECT {
   constexpr RasterPoint GetBottomRight() const {
     return { right, bottom };
   }
-
+  
   bool IsInside(RasterPoint pt) const {
     return ::PtInRect(this, pt);
   }
