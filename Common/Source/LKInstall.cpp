@@ -24,7 +24,7 @@ void InstallSystem() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
 
-#if defined(PNA) && defined(UNDER_CE)
+#ifdef UNDER_CE
   TCHAR dstdir[MAX_PATH];
   TCHAR maindir[MAX_PATH];
   TCHAR dstfile[MAX_PATH];
