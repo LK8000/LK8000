@@ -1,0 +1,36 @@
+----------------
+- Version 6.1A -
+----------------
+
+:: New ::
+
+	- Infobox : Speed of maximum efficiency
+	- Infobox : Target Req. Efficicency
+	- Device Support : Kobo Aura Edition 2
+	- Kobo : auto start wifi if livetracking is enabled
+	- OpenAIP : support Airspace, Waypoint, NavAids, Hotspots
+	- PG/HG Mode : new ESS cylinder turpoint type
+	- PG/HG Mode : configurable aircraft symbol
+	- configurable earth model for distance calculation { WGS84, FAI Sphere }
+		Only FAI Sphere is available on WinCE
+
+:: Change ::
+
+	- Support for terrain file bigger than available physical memory
+	- optimized terrain rendering
+	- optimized airspace side view rendering
+	- AutoQNH : Ignore Thermal hotspot waypoint type
+	- Oracle : Ignore Thermal hotspot waypoint type
+	- always draw Topology Label over topology shape
+
+:: Fix ::
+
+	- Vario Average 30s with GPS data rate > 1Hz
+	- IGC Logger : clamp negative GNSS Altitude to 0
+	- livetracker freeze if wifi is disconected
+	- Kobo : disable Wifi power management
+	- segfault if last airspace loaded have no point
+	- Full snail trail drawing artefact
+	- Fonts size after profile load from startup screen
+	- Fix task sector drawing for compatibility with small screen scale factor,
+		build shape in geographic coordinate and converted to screen projection
