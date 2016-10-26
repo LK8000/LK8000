@@ -205,9 +205,9 @@ BOOL NMEAParser::NMEAChecksum(const TCHAR *String)
   if(_istdigit(c2))
     v2 = (unsigned char)(c2 - '0');
   if(_istalpha(c1))
-    v1 = (unsigned char)(c1 - 'A' + 10);
+    v1 = (unsigned char)(_toupper(c1) - 'A' + 10);
   if(_istalpha(c2))
-    v2 = (unsigned char)(c2 - 'A' + 10);
+    v2 = (unsigned char)(_toupper(c2) - 'A' + 10);
 
   ReadCheckSum = (unsigned char)((v1<<4) + v2);          
 
