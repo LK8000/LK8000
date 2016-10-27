@@ -180,7 +180,13 @@
 // PG optimise can Work with WGS84 but Wapoint validation not..
 // we need change Waypoint validation before use it
 #ifndef UNDER_CE
-#define _WGS84
+    #define _WGS84
+    #ifdef __cplusplus
+        #include <GeographicLib/Constants.hpp>
+        #if !(GEOGRAPHICLIB_VERSION >= GEOGRAPHICLIB_VERSION_NUM(1,37,0))
+            #error "GeographicLib version >= 1.37 are required"
+        #endif
+    #endif
 #endif
 
 // #define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
