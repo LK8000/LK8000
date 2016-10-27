@@ -6,7 +6,7 @@
    $Id: Globals.h,v 1.1 2011/12/21 10:35:29 root Exp root $
 
    PLEASE USE COMMENTS ALSO HERE TO DESCRIBE YOUR GLOBALS!
-   YOU CAN INITIALIZE VALUES TO true,false,zero and NULL, 
+   YOU CAN INITIALIZE VALUES TO true,false,zero and NULL,
    or you can do it also inside Globals_Init.
 
 */
@@ -25,7 +25,7 @@
   #undef  GEXTZERO
 
 #if defined(STATIC_GLOBALS)
-  #define GEXTERN 
+  #define GEXTERN
 
   #define GEXTTRUE       = true
   #define GEXTFALSE      = false
@@ -34,10 +34,10 @@
 
 #else
   #define GEXTERN extern
-  #define GEXTTRUE  
-  #define GEXTFALSE 
-  #define GEXTNULL 
-  #define GEXTZERO 
+  #define GEXTTRUE
+  #define GEXTFALSE
+  #define GEXTNULL
+  #define GEXTZERO
 
   extern void Globals_Init(void);
 #endif
@@ -67,7 +67,7 @@ typedef struct _Radio_t
 	BOOL lowBAT;               // Battery low flag                  (TRUE = Batt low)
 	BOOL TXtimeout;            // Timeout while transmission (2Min)
 }Radio_t;
-#endif  // RADIO_ACTIVE        
+#endif  // RADIO_ACTIVE
 
 GEXTERN bool MenuActive GEXTFALSE;
 GEXTERN Poco::Event dataTriggerEvent;
@@ -81,7 +81,7 @@ GEXTERN StartupState_t ProgramStarted;
 
 GEXTERN int UTCOffset;
 
-GEXTERN int	GlobalModelType; 
+GEXTERN int	GlobalModelType;
 GEXTERN TCHAR	GlobalModelName[MAX_PATH];
 
 
@@ -115,7 +115,7 @@ GEXTERN bool DisableBestAlternate;
 GEXTERN int ActiveAlternate;
 
 GEXTERN int  WaypointsOutOfRange;
-GEXTERN int  RangeLandableIndex[MAXRANGELANDABLE+1]; 
+GEXTERN int  RangeLandableIndex[MAXRANGELANDABLE+1];
 GEXTERN int  RangeAirportIndex[MAXRANGELANDABLE+1];
 GEXTERN int  RangeTurnpointIndex[MAXRANGETURNPOINT+1];
 
@@ -186,7 +186,7 @@ GEXTERN int  OverColor;
 GEXTERN LKColor OverColorRef;
 GEXTERN int TpFilter;
 GEXTERN short MapBox;
-GEXTERN short GlideBarMode; 
+GEXTERN short GlideBarMode;
 GEXTERN short ArrivalValue;
 GEXTERN short NewMapDeclutter;
 GEXTERN short AverEffTime;
@@ -251,7 +251,7 @@ GEXTERN short GestureSize;
 GEXTERN bool IphoneGestures;
 
 // moving map is all black and need white painting - not much used 091109
-GEXTERN bool BlackScreen; // white on black.. 
+GEXTERN bool BlackScreen; // white on black..
 // if true, LK specific text on map is painted black, otherwise white
 GEXTERN bool LKTextBlack;
 
@@ -287,7 +287,7 @@ GEXTERN bool RepeatWindCalc;
 GEXTERN int LKTime_Real, LKTime_Ghost, LKTime_Zombie;
 
 // type of file format for waypoints files
-GEXTERN int WpFileType[3]; 
+GEXTERN int WpFileType[3];
 
 GEXTERN TCHAR WpHome_Name[NAME_SIZE+1];
 GEXTERN double WpHome_Lat;
@@ -491,7 +491,7 @@ Start_t StartPoints;
 TaskStats_t TaskStats;
 #ifdef RADIO_ACTIVE
 Radio_t RadioPara ;
-#endif  // RADIO_ACTIVE        
+#endif  // RADIO_ACTIVE
 Task_t Task = {{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0
 ,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0}};
 
@@ -505,7 +505,7 @@ extern Task_t Task;
 extern TaskStats_t TaskStats;
 #ifdef RADIO_ACTIVE
 extern Radio_t RadioPara ;
-#endif  // RADIO_ACTIVE        
+#endif  // RADIO_ACTIVE
 extern std::vector<WAYPOINT> WayPointList;
 extern std::vector<WPCALC> WayPointCalc;
 #endif
@@ -553,7 +553,7 @@ GEXTERN BOOL VARIOCONNECT;
 GEXTERN double SPEEDMODIFY;
 GEXTERN double LIFTMODIFY;
 GEXTERN double DISTANCEMODIFY;
-GEXTERN double ALTITUDEMODIFY; 
+GEXTERN double ALTITUDEMODIFY;
 GEXTERN double TASKSPEEDMODIFY;
 
 // polar info
@@ -705,7 +705,7 @@ GEXTERN bool EnableExternalTriggerCruise;
 // statistics
 GEXTERN Statistics flightstats;
 
-// used in settings dialog 
+// used in settings dialog
 GEXTERN BOOL COMPORTCHANGED;
 GEXTERN BOOL AIRSPACEFILECHANGED;
 GEXTERN BOOL WAYPOINTFILECHANGED;
@@ -961,4 +961,3 @@ inline bool ValidTaskPointFast(int i) {
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
-

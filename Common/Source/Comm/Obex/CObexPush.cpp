@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   CObexPush.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 1 novembre 2013, 20:04
  */
 
@@ -24,14 +24,14 @@ CObexPush::~CObexPush() {
 }
 
 bool CObexPush::Startup() {
-    
+
     // Save state and Start Bt
     CBtHandler* pBtHandler = CBtHandler::Get();
     if(pBtHandler) {
         _SavedBtState = pBtHandler->GetHWState();
         pBtHandler->StartHW();
     }
-    
+
     CoInitializeEx(NULL, COINIT_MULTITHREADED);
     HRESULT hr = CoCreateInstance(CLSID_Obex, NULL, CLSCTX_INPROC_SERVER, IID_IObex, (void **) &_pObex);
     if (FAILED(hr) || (_pObex == NULL)) {
@@ -49,13 +49,13 @@ bool CObexPush::Startup() {
 void CObexPush::Shutdown() {
     ClearDeviceList();
     if (_pObex) {
-#if TESTBENCH             
+#if TESTBENCH
         StartupStore(_T("Obex : Shutdown Obex%s"), NEWLINE);
-#endif        
+#endif
         _pObex->Shutdown();
     }
     CoUninitialize();
-    
+
     // restore previous Bt state
     CBtHandler* pBtHandler = CBtHandler::Get();
     if(pBtHandler && HCI_HARDWARE_SHUTDOWN == _SavedBtState) {
@@ -65,9 +65,9 @@ void CObexPush::Shutdown() {
 
 void ReleaseInterface(IUnknown* pUnk) {
     if (pUnk) {
-#if TESTBENCH             
+#if TESTBENCH
         StartupStore(_T("Obex : Release IUnknown%s"), NEWLINE);
-#endif        
+#endif
         pUnk->Release();
     }
 }
@@ -137,7 +137,7 @@ void CObexPush::DumpsDeviceProperty(size_t DeviceIdx){
     std::advance(ItDevice, DeviceIdx);
 
     IPropertyBag *pDeviceBag = NULL;
-    if (SUCCEEDED((*ItDevice)->EnumProperties(IID_IPropertyBag, (LPVOID *) & pDeviceBag))) {    
+    if (SUCCEEDED((*ItDevice)->EnumProperties(IID_IPropertyBag, (LPVOID *) & pDeviceBag))) {
         VARIANT var;
         VariantInit (&var);
 
@@ -147,7 +147,7 @@ void CObexPush::DumpsDeviceProperty(size_t DeviceIdx){
         VariantClear(&var);
 
         if (SUCCEEDED(pDeviceBag->Read(_T("Address"), &var, NULL))) {
-            if (var.vt == VT_BSTR) 
+            if (var.vt == VT_BSTR)
                 StartupStore(_T("..Obex Device <%d> Adress : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
             else if (var.vt == VT_I4)
                 StartupStore(_T("..Obex Device <%d> Adress : %08x%s"), DeviceIdx, var.ulVal, NEWLINE);
@@ -155,7 +155,7 @@ void CObexPush::DumpsDeviceProperty(size_t DeviceIdx){
         VariantClear(&var);
 
         if (SUCCEEDED(pDeviceBag->Read(_T("Port"), &var, NULL))) {
-            if (var.vt == VT_BSTR) 
+            if (var.vt == VT_BSTR)
                 StartupStore(_T("..Obex Device <%d> Port : %s%s"), DeviceIdx, var.bstrVal, NEWLINE);
             else if (var.vt == VT_I4)
                 StartupStore(_T("..Obex Device <%d> Port : %08x%s"), DeviceIdx, var.ulVal, NEWLINE);
@@ -184,7 +184,7 @@ void CObexPush::DumpsDeviceProperty(size_t DeviceIdx){
 bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
     ObexDeviceList_t::iterator ItDevice = _LstDevice.begin();
     std::advance(ItDevice, DeviceIdx);
-    
+
     IObexDevice* pObexDevice = *ItDevice;
     IHeaderCollection *pHeaderCollection = NULL;
     //get a header collection
@@ -194,22 +194,22 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
         pObexDevice->Release();
         return false;
     }
-    
+
     //now, using the object, connect up
     hr = pObexDevice->Connect(0, 0, pHeaderCollection);
     if(SUCCEEDED(hr)) {
         pHeaderCollection->Release();
         pHeaderCollection = NULL;
     }
-    
+
     if(FAILED(hr)) {
         TCHAR szDeviceName[100] = _T("");
         GetDeviceName(DeviceIdx, szDeviceName, 100);
         StartupStore(_T("Obex <%d> failed to connect <%s>%s"), DeviceIdx, szDeviceName, NEWLINE);
         return false;
     }
-    
-#if TESTBENCH       
+
+#if TESTBENCH
     DumpsDeviceProperty(DeviceIdx);
 #endif
 
@@ -226,7 +226,7 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
             pHeaderCollection->Release();
             pHeaderCollection = NULL;
         }
-        
+
         StartupStore(_T("Obex <%d> Failed to open file <%s>%s"), DeviceIdx, szFileName, NEWLINE);
         return false;
     }
@@ -254,7 +254,7 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
                 StartupStore(_T("Obex <%d> Failed to read File shunck%s"), DeviceIdx, NEWLINE);
                 break;
             }
-#if TESTBENCH             
+#if TESTBENCH
             StartupStore(_T("Obex <%d> Write File shunck%s"), DeviceIdx, NEWLINE);
 #endif
             hr = myStream->Write(inBuf, cbJustRead, &written);
@@ -269,11 +269,11 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
     } else {
         StartupStore(_T("Obex <%d> Failed to put File Name header%s"), DeviceIdx, NEWLINE);
     }
-#if TESTBENCH    
+#if TESTBENCH
     StartupStore(_T("Obex <%d> Close File%s"), DeviceIdx, NEWLINE);
 #endif
     CloseHandle(hFile);
-    
+
     bool bSendOK = false;
     if(hr == S_OK) {
         bSendOK = true;
@@ -303,7 +303,7 @@ bool CObexPush::SendFile(size_t DeviceIdx, const TCHAR* szFileName) {
     if (pHeaderCollection) {
 #if TESTBENCH
         StartupStore(_T("Obex <%d> Release Header Collection%s"), DeviceIdx, NEWLINE);
-#endif        
+#endif
         pHeaderCollection->Release();
         pHeaderCollection = NULL;
     }

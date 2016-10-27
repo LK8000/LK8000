@@ -27,12 +27,12 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
 	DoInit[MDI_MAPTEST]=false;
   }
 
-  // 
+  //
   // X,Y coordinates of last clicked point on screen
   // These coordinates are related to any point clicked, even for a page flip, for bottom bar etc.
-  // In some cases, you will read old coordinates because for example after clicking in the center of 
-  // bottom bar, the page changed out of multimap and entered nearest pages.  
-  // 
+  // In some cases, you will read old coordinates because for example after clicking in the center of
+  // bottom bar, the page changed out of multimap and entered nearest pages.
+  //
   int X=startScreen.x;
   int Y=startScreen.y;
 
@@ -81,7 +81,7 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
   DrawAirSpace(Surface, rct, _Proj);
 
   // ResetLabelDeclutter();	// If you saturated labels for topology, now you can reset the declutter to allow
-				// printing only waypoints, 
+				// printing only waypoints,
 
   DrawWaypointsNew(Surface,rct);
 
@@ -92,11 +92,11 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
 
 
   TCHAR ttext[100];
-  
+
   switch(LKevent) {
 	//
 	// USABLE EVENTS
-	// 
+	//
 	case LKEVENT_NEWRUN:
 		// CALLED ON ENTRY: when we select this page coming from another mapspace
 		_tcscpy(ttext,_T("Event = NEW RUN"));
@@ -131,7 +131,7 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
 
 	//
 	// THESE EVENTS ARE NOT AVAILABLE IN MULTIMAPS!
-	//	
+	//
 	case LKEVENT_ENTER:
 		// click longer on center, like to confirm a selection
 		_tcscpy(ttext,_T("Event = ENTER"));
@@ -177,7 +177,7 @@ Surface.SelectObject(oldpen);
 }
 
 
-#else 
+#else
 void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc) {
 }
 #endif // NOT TESTBENCH

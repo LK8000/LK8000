@@ -17,7 +17,7 @@ bool Valid_DoInit_Position(int position) {
 	return false;
   else
 	return true;
-}  
+}
 
 
 //
@@ -48,5 +48,3 @@ void Reset_Single_DoInits(int position) {
  DoInit[position]=true;
 
 }
-
-

@@ -23,47 +23,47 @@ extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDevic
 // $PGCS,1,0EC0,FFFA,0C6E,03*18
 BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
-    
+
   TCHAR ctemp[80];
   double InternalAltitude;
-  
-  NMEAParser::ExtractParameter(String,ctemp,2); 
+
+  NMEAParser::ExtractParameter(String,ctemp,2);
   // four characers, hex, barometric altitude
   InternalAltitude = HexStrToDouble(ctemp,NULL);
   double fBaroAltitude =0;
 
     if(InternalAltitude > 60000)
 	fBaroAltitude =
-        AltitudeToQNHAltitude(InternalAltitude - 65535);  
+        AltitudeToQNHAltitude(InternalAltitude - 65535);
     // Assuming that altitude has wrapped around.  60 000 m occurs at
     // QNH ~2000 hPa
     else
 	fBaroAltitude =
-        AltitudeToQNHAltitude(InternalAltitude);  
+        AltitudeToQNHAltitude(InternalAltitude);
     // typo corrected 21.04.07
     // Else the altitude is good enough.
     UpdateBaroSource( pGPS, 0,d,  fBaroAltitude);
-	
-  // ExtractParameter(String,ctemp,3);		
+
+  // ExtractParameter(String,ctemp,3);
   // four characters, hex, constant.  Value 1371 (dec)
 
   // nSatellites = (int)(min(12,HexStrToDouble(ctemp, NULL)));
-  
+
   if (pGPS->SatellitesUsed <= 0) {
-    pGPS->SatellitesUsed = 4; 
+    pGPS->SatellitesUsed = 4;
   }
-  
+
   return FALSE;
 }
 
 
 BOOL VLParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
-  
+
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
-  
+
   if(_tcsstr(String,TEXT("$PGCS,")) == String){
     return vl_PGCS1(d, &String[6], pGPS);
   }
@@ -84,57 +84,57 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
 {
   vl.set_device(d);
   nturnpoints = 0;
-  
+
   const unsigned BUFF_LEN = 128;
   TCHAR buffer[BUFF_LEN];
   int err = VLA_ERR_NOERR;
-  
-  // LKTOKEN  _@M1400_ = "Task declaration" 
-  // LKTOKEN  _@M1404_ = "Opening connection" 
+
+  // LKTOKEN  _@M1400_ = "Task declaration"
+  // LKTOKEN  _@M1404_ = "Opening connection"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1404));
   CreateProgressDialog(buffer);
   if((err = vl.open(1, 20, 1, 38400L)) != VLA_ERR_NOERR) {
-    // LKTOKEN  _@M1411_ = "Device not connected!" 
+    // LKTOKEN  _@M1411_ = "Device not connected!"
     _tcsncpy(errBuffer, MsgToken(1411), errBufferLen);
     return FALSE;
   }
-  
-  // LKTOKEN  _@M1400_ = "Task declaration" 
-  // LKTOKEN  _@M1405_ = "Testing connection" 
+
+  // LKTOKEN  _@M1400_ = "Task declaration"
+  // LKTOKEN  _@M1405_ = "Testing connection"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1405));
   CreateProgressDialog(buffer);
   if((err = vl.read_info()) != VLA_ERR_NOERR) {
-    // LKTOKEN  _@M1414_ = "Device not responsive!" 
+    // LKTOKEN  _@M1414_ = "Device not responsive!"
     _tcsncpy(errBuffer, MsgToken(1414), errBufferLen);
     return FALSE;
   }
-  
+
   TCHAR2usascii(decl->PilotName, vl.declaration.flightinfo.pilot, 66);
   vl.declaration.flightinfo.pilot[64]='\0';
-  
+
   TCHAR2usascii(decl->AircraftRego, vl.declaration.flightinfo.gliderid, 8);
-  vl.declaration.flightinfo.gliderid[7]='\0'; 
+  vl.declaration.flightinfo.gliderid[7]='\0';
 
   TCHAR2usascii(decl->AircraftType, vl.declaration.flightinfo.glidertype, 13);
-  vl.declaration.flightinfo.glidertype[12]='\0'; 
+  vl.declaration.flightinfo.glidertype[12]='\0';
 
   TCHAR2usascii(decl->CompetitionID, vl.declaration.flightinfo.competitionid, 4);
   vl.declaration.flightinfo.competitionid[3]='\0'; // BUGFIX 100331
- 
+
   TCHAR2usascii(decl->CompetitionClass, vl.declaration.flightinfo.competitionclass, 13);
   vl.declaration.flightinfo.competitionclass[12]='\0'; // BUGFIX 100331
-  
+
   if (ValidWayPoint(HomeWaypoint)) {
-   
+
     TCHAR2usascii(WayPointList[HomeWaypoint].Name, vl.declaration.flightinfo.homepoint.name, 7);
     vl.declaration.flightinfo.homepoint.name[6]='\0'; // BUGFIX 100331
 
-    vl.declaration.flightinfo.homepoint.lon = 
+    vl.declaration.flightinfo.homepoint.lon =
       WayPointList[HomeWaypoint].Longitude;
-    vl.declaration.flightinfo.homepoint.lat = 
+    vl.declaration.flightinfo.homepoint.lat =
       WayPointList[HomeWaypoint].Latitude;
   }
-  
+
   int i;
   for (i = 0; i < decl->num_waypoints; i++)
     VLDeclAddWayPoint(d, decl->waypoint[i]);
@@ -215,24 +215,24 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
     break;
   }
   vl.declaration.task.finishpoint.ws = 360;
-  
+
   UnlockTaskData();
-  
-  // LKTOKEN  _@M1400_ = "Task declaration" 
+
+  // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1403_ = "Sending  declaration"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
   CreateProgressDialog(buffer);
   if((err = vl.write_db_and_declaration()) != VLA_ERR_NOERR) {
-    // LKTOKEN  _@M1415_ = "Declaration not accepted!" 
+    // LKTOKEN  _@M1415_ = "Declaration not accepted!"
     _tcsncpy(errBuffer, MsgToken(1415), errBufferLen);
   }
-  
-  // LKTOKEN  _@M1400_ = "Task declaration" 
-  // LKTOKEN  _@M1406_ = "Closing connection" 
+
+  // LKTOKEN  _@M1400_ = "Task declaration"
+  // LKTOKEN  _@M1406_ = "Closing connection"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1406));
   CreateProgressDialog(buffer);
   vl.close(1);
-  
+
   return err == VLA_ERR_NOERR;
 }
 
@@ -242,27 +242,27 @@ BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
   if (nturnpoints == 0) {
     TCHAR2usascii(wp->Name, vl.declaration.task.startpoint.name, 7);
     vl.declaration.task.startpoint.name[6] ='\0';
-            
-    vl.declaration.task.startpoint.lon = 
+
+    vl.declaration.task.startpoint.lon =
       wp->Longitude;
-    vl.declaration.task.startpoint.lat = 
+    vl.declaration.task.startpoint.lat =
       wp->Latitude;
     nturnpoints++;
   } else {
     TCHAR2usascii(wp->Name, vl.declaration.task.turnpoints[nturnpoints-1].name, 7);
     vl.declaration.task.turnpoints[nturnpoints-1].name[6]='\0';
 
-    vl.declaration.task.turnpoints[nturnpoints-1].lon = 
+    vl.declaration.task.turnpoints[nturnpoints-1].lon =
       wp->Longitude;
-    vl.declaration.task.turnpoints[nturnpoints-1].lat = 
+    vl.declaration.task.turnpoints[nturnpoints-1].lat =
       wp->Latitude;
     nturnpoints++;
   }
   TCHAR2usascii(wp->Name, vl.declaration.task.finishpoint.name, 7);
   vl.declaration.task.finishpoint.name[6]='\0';
-  vl.declaration.task.finishpoint.lon = 
+  vl.declaration.task.finishpoint.lon =
     wp->Longitude;
-  vl.declaration.task.finishpoint.lat = 
+  vl.declaration.task.finishpoint.lat =
     wp->Latitude;
 
   return(TRUE);
@@ -315,11 +315,10 @@ BOOL vlInstall(PDeviceDescriptor_t d){
 
 BOOL vlRegister(void){
   return(devRegister(
-    TEXT("Volkslogger"), 
+    TEXT("Volkslogger"),
     (1l << dfGPS)
     | (1l << dfBaroAlt)
     | (1l << dfLogger),
     vlInstall
   ));
 }
-

@@ -27,7 +27,7 @@ static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO
   if(_tcsncmp(TEXT("$VARIO"), String, 6)==0)
     {
       return VARIO(d, &String[7], pGPS);
-    } 
+    }
 
   return FALSE;
 
@@ -35,7 +35,7 @@ static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO
 
 static BOOL FlymasterF1IsGPSSource(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE); 
+  return(TRUE);
 }
 
 
@@ -45,19 +45,19 @@ static BOOL FlymasterF1IsBaroSource(PDeviceDescriptor_t d){
 }
 
 
-    
+
 /*
  * http://luftigduk.mamutweb.com/Resource/File/0/FLYMASTER%20F1%20KOMMANDOER%20V%206.0.PDF
- * 
+ *
  * Switching navigation mode on and off
  *  During normal operation F1 will continuously send data to the port, this is navigation and altimeter
  *  data which is used by the navigation application (NAV+ etc).To stop F1 from sending navigation data,
  *  send the following command:
  *  $PFMDNL,*1D
- * 
+ *
  *  On receiving this command the F1 stop sending NMEA navigation sentences.
  *  To return to navigation mode, i.e. tell F1 to start sending navigation data again send:
- *  $PFMNAV,*02 
+ *  $PFMNAV,*02
  */
 static BOOL Open(PDeviceDescriptor_t d,	int	Port) {
   if(d && d->Com) {

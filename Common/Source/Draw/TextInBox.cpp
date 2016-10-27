@@ -104,7 +104,7 @@ bool TextInBoxMoveInView(const RECT *clipRect, POINT *offset, RECT *brect){
 
 
 
-bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR* Value, int x, int y, 
+bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR* Value, int x, int y,
                           TextInBoxMode_t *Mode, bool noOverlap) {
 
   SIZE tsize;
@@ -112,11 +112,11 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
   LKSurface::OldFont oldFont {};
   bool drawn=false;
 
-  if ((x<clipRect->left-WPCIRCLESIZE) || 
-      (x>clipRect->right+(WPCIRCLESIZE*3)) || 
+  if ((x<clipRect->left-WPCIRCLESIZE) ||
+      (x>clipRect->right+(WPCIRCLESIZE*3)) ||
       (y<clipRect->top-WPCIRCLESIZE) ||
       (y>clipRect->bottom+WPCIRCLESIZE)) {
-    return drawn; 
+    return drawn;
   }
 
   if (Mode == NULL) return false;
@@ -133,7 +133,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
       }
   }
 
-  // landable waypoint label inside white box 
+  // landable waypoint label inside white box
   if (!Mode->NoSetFont) {
     if (Mode->Border || Mode->WhiteBold){
       oldFont = Surface.SelectObject(MapWaypointBoldFont);
@@ -141,12 +141,12 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
       oldFont = Surface.SelectObject(MapWaypointFont);
     }
   }
-  
+
   Surface.GetTextSize(Value, &tsize);
 
   if (Mode->AlligneRight){
     x -= tsize.cx;
-  } else 
+  } else
     if (Mode->AlligneCenter){
       x -= tsize.cx/2;
       y -= tsize.cy/2;
@@ -175,9 +175,9 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     if (y>=clipRect->bottom || brect.bottom>=clipRect->bottom ) return false;
     #endif
 
-	notoverlapping = checkLabelBlock(&brect); 
+	notoverlapping = checkLabelBlock(&brect);
 
-  
+
     if (!noOverlap || notoverlapping) {
       LKSurface::OldPen oldPen;
       if (Mode->Border) {
@@ -202,7 +202,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     POINT offset;
 
     brect.left = x-1;
-    brect.right = brect.left+tsize.cx+1;  
+    brect.right = brect.left+tsize.cx+1;
     brect.top = y+((tsize.cy+4)>>3);
     brect.bottom = brect.top+tsize.cy-((tsize.cy+4)>>3);
 
@@ -218,8 +218,8 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     if (y>=clipRect->bottom || brect.bottom>=clipRect->bottom ) return false;
     #endif
 
-	notoverlapping = checkLabelBlock(&brect); 
-  
+	notoverlapping = checkLabelBlock(&brect);
+
     if (!noOverlap || notoverlapping) {
       LKColor oldColor = Surface.SetBkColor(RGB_WHITE);
       Surface.DrawText(x, y, Value);
@@ -265,9 +265,9 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     if (brect.bottom >= clipRect->bottom) return false;
     #endif
 
-	notoverlapping = checkLabelBlock(&brect); 
-  
-    if (!noOverlap || notoverlapping) { 
+	notoverlapping = checkLabelBlock(&brect);
+
+    if (!noOverlap || notoverlapping) {
       if (OutlinedTp)
 	Surface.SetTextColor(RGB_BLACK);
       else
@@ -345,8 +345,8 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     if (brect.bottom >= clipRect->bottom) return false;
     #endif
 
-	notoverlapping = checkLabelBlock(&brect); 
-  
+	notoverlapping = checkLabelBlock(&brect);
+
     if (!noOverlap || notoverlapping) {
       Surface.SetTextColor(Mode->Color);
       Surface.DrawText(x, y, Value);
@@ -355,7 +355,7 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     }
 
   }
- 
+
   if (oldFont) Surface.SelectObject(oldFont); // VENTA5
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);
@@ -371,7 +371,7 @@ int MapWindow::nLabelBlocks;
 int MapWindow::nVLabelBlocks[SCREENVSLOTS+1];
 RECT MapWindow::LabelBlockCoords[SCREENVSLOTS+1][MAXVLABELBLOCKS+1];
 
-// this slots char array is simply loading the slot number. 
+// this slots char array is simply loading the slot number.
 // A nibble should be enough, but no problems to use 8 bits.
 char * MapWindow::slot=NULL;
 
@@ -479,7 +479,7 @@ bool MapWindow::checkLabelBlock(RECT *rc) {
   return true;
 }
 
-// This is used only on shutdown, to free the malloc. 
+// This is used only on shutdown, to free the malloc.
 void MapWindow::FreeSlot(){
 	free(slot);
 	slot=NULL;
@@ -543,4 +543,3 @@ void MapWindow::SetDeclutterIcon(RECT *drect) {
     }
 }
 #endif
-

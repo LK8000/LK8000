@@ -30,28 +30,28 @@ static void UpdateButtons(WndForm* pForm) {
   WndButton* buttonName = ((WndButton *)pForm->FindByName(TEXT("cmdName")));
   if (buttonName) {
 	if (_tcslen(global_wpt->Name)<=0) {
-		// LKTOKEN  _@M451_ = "Name" 
+		// LKTOKEN  _@M451_ = "Name"
 		_stprintf(text,TEXT("%s: %s"), MsgToken(451),
-		// LKTOKEN  _@M7_ = "(blank)" 
+		// LKTOKEN  _@M7_ = "(blank)"
 		MsgToken(7));
 	} else {
-		// LKTOKEN  _@M451_ = "Name" 
+		// LKTOKEN  _@M451_ = "Name"
 		_stprintf(text,TEXT("%s: %s"), MsgToken(451),
 		global_wpt->Name);
 	}
 	buttonName->SetCaption(text);
   }
-  
-  
+
+
   WndButton* buttonComment = ((WndButton *)pForm->FindByName(TEXT("cmdComment")));
   if (buttonComment) {
 	if ((global_wpt->Comment==NULL) || (_tcslen(global_wpt->Comment)<=0) ) {
-		// LKTOKEN  _@M190_ = "Comment" 
+		// LKTOKEN  _@M190_ = "Comment"
 		_stprintf(text,TEXT("%s: %s"), MsgToken(190),
-		// LKTOKEN  _@M7_ = "(blank)" 
+		// LKTOKEN  _@M7_ = "(blank)"
 		MsgToken(7));
 	} else {
-		// LKTOKEN  _@M190_ = "Comment" 
+		// LKTOKEN  _@M190_ = "Comment"
 		_stprintf(text,TEXT("%s: %s"), MsgToken(190),
 		global_wpt->Comment);
 	}
@@ -90,7 +90,7 @@ static void OnCommentClicked(WndButton* pWnd) {
 			_tcscpy(global_wpt->Comment,comment);
 		}
 	}
-  
+
   if(pWnd) {
     UpdateButtons(pWnd->GetParentWndForm());
   }
@@ -154,7 +154,7 @@ static void SetUnits(WndForm* wf) {
     if (wp) {
       wp->SetVisible(false);
     }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpLongitudemmm")); 
+    wp = (WndProperty*)wf->FindByName(TEXT("prpLongitudemmm"));
     // hide this field for DD.dddd format
     if (wp) {
       wp->SetVisible(false);
@@ -199,27 +199,27 @@ static void SetValues(WndForm* wf) {
 
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMzoneX"));
       if (wp) {
-      	wp->GetDataField()->SetAsInteger(utmXZone);
+	wp->GetDataField()->SetAsInteger(utmXZone);
 		wp->RefreshDisplay();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMzoneY"));
       if (wp) {
-    	  DataField* dfe = wp->GetDataField();
-    	  if(dfe){
-    		  std::for_each(std::begin(cYZone), std::end(cYZone), std::bind(&DataField::addEnumText, dfe, _1));
-    		  dfe->Set(YZoneToenum(utmYZone));
-    	  }
-    	  wp->RefreshDisplay();
+	  DataField* dfe = wp->GetDataField();
+	  if(dfe){
+		  std::for_each(std::begin(cYZone), std::end(cYZone), std::bind(&DataField::addEnumText, dfe, _1));
+		  dfe->Set(YZoneToenum(utmYZone));
+	  }
+	  wp->RefreshDisplay();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMeast"));
       if (wp) {
-    	  wp->GetDataField()->SetAsFloat(easting);
-    	  wp->RefreshDisplay();
+	  wp->GetDataField()->SetAsFloat(easting);
+	  wp->RefreshDisplay();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMnorth"));
       if (wp) {
-    	  wp->GetDataField()->SetAsFloat(northing);
-    	  wp->RefreshDisplay();
+	  wp->GetDataField()->SetAsFloat(northing);
+	  wp->RefreshDisplay();
       }
   } else {
 	  bool sign;
@@ -279,7 +279,7 @@ static void SetValues(WndForm* wf) {
 	  case 4:
 		  break;
 	  }
-  
+
 	  Units::LatitudeToDMS(global_wpt->Latitude,
 				   &dd, &mm, &ss, &sign);
 
@@ -343,7 +343,7 @@ static void SetValues(WndForm* wf) {
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFlags"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -356,11 +356,11 @@ static void SetValues(WndForm* wf) {
     dfe->Set(0);
     if ((global_wpt->Flags & LANDPOINT)==LANDPOINT) {
       dfe->Set(2);
-    } 
+    }
     if ((global_wpt->Flags & AIRPORT)==AIRPORT) {
       dfe->Set(1);
     }
-    
+
     wp->RefreshDisplay();
   }
 }
@@ -377,22 +377,22 @@ static void GetValues(WndForm* wf) {
 
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMzoneX"));
       if (wp) {
-    	utmXZone = wp->GetDataField()->GetAsInteger();
+	utmXZone = wp->GetDataField()->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMzoneY"));
       if (wp) {
-    	  DataField* dfe = wp->GetDataField();
-    	  if(dfe){
-    		  utmYZone = enumToYZone(dfe->GetAsInteger());
-    	  }
+	  DataField* dfe = wp->GetDataField();
+	  if(dfe){
+		  utmYZone = enumToYZone(dfe->GetAsInteger());
+	  }
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMeast"));
       if (wp) {
-    	  easting = wp->GetDataField()->GetAsFloat();
+	  easting = wp->GetDataField()->GetAsFloat();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMnorth"));
       if (wp) {
-    	  northing = wp->GetDataField()->GetAsFloat();
+	  northing = wp->GetDataField()->GetAsFloat();
       }
       UtmToLatLonWGS84(utmXZone, utmYZone, easting, northing, global_wpt->Latitude, global_wpt->Longitude );
 
@@ -498,7 +498,7 @@ static void GetValues(WndForm* wf) {
 
 	  global_wpt->Latitude = num;
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
   if (wp) {
     ss = wp->GetDataField()->GetAsFloat();
@@ -508,7 +508,7 @@ static void GetValues(WndForm* wf) {
       global_wpt->Altitude = ss/ALTITUDEMODIFY;
     }
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFlags"));
   if (wp) {
     int myflag = wp->GetDataField()->GetAsInteger();
@@ -605,5 +605,3 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt) {
     delete wf;
   }
 }
-
-

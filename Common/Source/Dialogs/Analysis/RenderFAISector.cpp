@@ -5,7 +5,7 @@
 
    $Id$
 */
- 
+
 #include "externs.h"
 #include "Defines.h"
 #include "LKObjects.h"
@@ -370,7 +370,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
 
   /********************************************************************
    * calc 2nd sectors if needed
-   ********************************************************************/  
+   ********************************************************************/
   if((fDistMax < FAI28_45Threshold) && (fDist_c/FAI_BIG_PERCENTAGE > FAI28_45Threshold))
   {
   iPolyPtr = 0;
@@ -541,5 +541,3 @@ Surface.SelectObject(hfOld);
 Surface.SelectObject(hpOldPen);
 return 0;
 }
-
-

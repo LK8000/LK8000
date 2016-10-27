@@ -65,7 +65,7 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
   switch (ioMode) {
     case io_read:   fmode = _T("rb"); break;
     case io_append: fmode = _T("a+t"); break;
-    case io_create: fmode = _T("w+t"); break; 
+    case io_create: fmode = _T("w+t"); break;
     default:
       return(false);
   }
@@ -75,13 +75,13 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
   fp = _tfopen(fileName, fmode);
   if (fp) return true;
 
-  // 
+  //
   // Windows has case-insensitive file system. We try alternatives only for unix
   //
   #ifdef __linux__
   TCHAR stmp[MAX_PATH+1], tdrive[255], tdir[255], tname[255], text[255];
 
-  _tcscpy(stmp,fileName); 
+  _tcscpy(stmp,fileName);
   LK_tsplitpath(stmp, tdrive, tdir, tname, text);
 
   // Try ???.EXT
@@ -120,7 +120,7 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
       LK_tcsncpy(path, stmp, countof(path)-1);
       return(true);
   }
-#endif  
+#endif
 
   return(false);
 } // Open()

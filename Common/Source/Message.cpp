@@ -15,7 +15,7 @@
 class WndMessage : public WndTextEdit {
 public:
     WndMessage() : WndTextEdit() { }
-    
+
 protected:
     virtual bool OnLButtonDown(const POINT& Pos) {
         // requiered otherwise on Win32 this windows capture all event and never release.
@@ -67,14 +67,14 @@ int Message::block_ref = 0;
 void Message::Initialize(RECT rc) {
 
     startTime.Update();
-    
+
     block_ref = 0;
     hidden = true;
     nvisible = 0;
     rcmsg = rc; // default; message window can be full size of screen
 
     WndMsg.Create(&MainWindow, rc);
-    
+
     InitFont();
 }
 
@@ -114,11 +114,11 @@ void Message::Resize() {
         WndMsg.SetVisible(false);
 #ifndef USE_GDI
         MainWindow.Refresh();
-#endif        
+#endif
     }
     hidden = true;
   } else {
-    
+
     WndMsg.SetWndText(msgText.c_str());
 
     LKWindowSurface Surface(WndMsg);
@@ -150,10 +150,10 @@ void Message::Resize() {
     WndMsg.Move(rthis);
     WndMsg.SetVisible(true);
     hidden = false;
-    
+
 #ifndef USE_GDI
     MainWindow.Refresh();
-#endif     
+#endif
 
   }
 
@@ -268,4 +268,3 @@ bool Message::Acknowledge(int type) {
     //  Render(); NO! this can cause crashes
     return ret;
 }
-

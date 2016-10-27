@@ -261,5 +261,3 @@ void dlgInfoPagesShowModal(void){
   wf = NULL;
 
 }
-
-

@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   BtHandler.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Adapted from original code provided by Naviter
  */
 
@@ -31,7 +31,7 @@ BT_ADDR StrToBTAddr(const TCHAR* szAddr) {
     tstring csS, csTmp(szAddr);
     int iLen = csTmp.length();
     BT_ADDR ba = 0;
-    
+
     if(iLen>=12) {
         csS = csTmp.substr(0, 4);
         nap = _tcstoul(csS.c_str(), nullptr, 16);

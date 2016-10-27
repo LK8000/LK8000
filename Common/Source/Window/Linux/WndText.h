@@ -20,7 +20,7 @@
 template<class _Base>
 class WndText : public WndPaint<_Base> {
 public:
-    WndText(const LKColor& TextColor, const LKColor& BkColor) 
+    WndText(const LKColor& TextColor, const LKColor& BkColor)
         : _TextColor(TextColor)
         , _BkColor(BkColor)
         , _BkBrush(BkColor)
@@ -28,20 +28,20 @@ public:
         , _Dirty(true)
 #endif
     {
-        
+
     }
 
-#ifdef ENABLE_OPENGL        
+#ifdef ENABLE_OPENGL
     virtual void OnCreate() {
         WndPaint<_Base>::OnCreate();
         _canvas.Create(this->GetSize());
     }
-    
+
     virtual void OnDestroy() {
         WndPaint<_Base>::OnDestroy();
         _canvas.Destroy();
     }
-    
+
     virtual void OnResize(PixelSize new_size) {
         WndPaint<_Base>::OnResize(new_size);
         _canvas.Resize(new_size);
@@ -52,7 +52,7 @@ public:
         _Dirty = true;
         WndPaint<_Base>::Invalidate();
     }
-    
+
 #endif
 
 
@@ -66,11 +66,11 @@ public:
         _BkBrush.Create(_BkColor);
         this->Invalidate();
     }
-    
+
     const LKColor& GetBkColor() const {
         return _BkColor;
     }
-    
+
     virtual void SetWndText(const TCHAR* lpszText) {
         _Text = lpszText?lpszText:_T("");
         this->Invalidate();
@@ -79,13 +79,13 @@ public:
     virtual const TCHAR* GetWndText() const {
         return _Text.c_str();
     }
-    
+
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) {
-        
-#ifdef ENABLE_OPENGL        
+
+#ifdef ENABLE_OPENGL
         if (_Dirty) {
             this->Setup(_canvas);
-            
+
             _canvas.Begin(Surface);
 #else
             Canvas& _canvas = Surface;
@@ -104,7 +104,7 @@ public:
                 _canvas.SetBackgroundTransparent();
                 _canvas.SetTextColor(this->_TextColor);
 
-                _canvas.DrawFormattedText(&rc, this->_Text.c_str(), this->GetTextStyle());        
+                _canvas.DrawFormattedText(&rc, this->_Text.c_str(), this->GetTextStyle());
             }
 
 #ifdef ENABLE_OPENGL
@@ -114,9 +114,9 @@ public:
             _canvas.CopyTo(Surface);
         }
 #endif
-        
+
         return true;
-    }    
+    }
 
 protected:
     LKColor _TextColor;
@@ -124,7 +124,7 @@ protected:
     LKBrush _BkBrush;
 
     tstring _Text;
-    
+
 #ifdef ENABLE_OPENGL
     BufferCanvas _canvas;
     bool _Dirty;

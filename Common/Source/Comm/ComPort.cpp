@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   ComPort.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 28 juillet 2013, 16:15
  */
 #include "externs.h"
@@ -15,7 +15,7 @@
 #include <algorithm>
 #include "Dialogs.h"
 #include <functional>
-#include <stdarg.h> 
+#include <stdarg.h>
 #include <stdio.h>
 #include "Poco/RunnableAdapter.h"
 #include "ComCheck.h"
@@ -107,7 +107,7 @@ bool ComPort::StopRxThread() {
 bool ComPort::StartRxThread() {
     StopEvt.reset();
 
-    
+
     // Create a read thread for reading data from the communication port.
     ReadThread.start(*this);
     ReadThread.setPriority(Poco::Thread::PRIO_NORMAL); //THREAD_PRIORITY_ABOVE_NORMAL

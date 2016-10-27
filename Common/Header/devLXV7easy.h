@@ -11,6 +11,3 @@
 bool LXV7easyRegister(void);
 
 #endif // __DEVLXV7EASY_H_
-
-
-

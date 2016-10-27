@@ -23,7 +23,7 @@ void ClearStatusMessages(void) {
 // Defaults for each message include:
 //	- Text to display (including multiple languages)
 //	- Text to display extra - NOT multiple language
-//		(eg: If Airspace Warning - what details - airfield name is in data file, already 
+//		(eg: If Airspace Warning - what details - airfield name is in data file, already
 //		covers multiple languages).
 //	- ShowStatusMessage - including font size and delay
 //	- Sound to play - What sound to play
@@ -51,20 +51,20 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound)
     }
   }
 
-  // doSound always true, to be removed the StatusFile entirely 
+  // doSound always true, to be removed the StatusFile entirely
   if (LocalMessage.doSound && playsound)
     PlayResource(LocalMessage.sound);
-  
+
   // TODO code: consider what is a sensible size?
   TCHAR msgcache[1024];
   if (LocalMessage.doStatus) {
-    
+
     LK_tcsncpy(msgcache,gettext(text),800);
     if (data != NULL) {
       _tcscat(msgcache, TEXT(" "));
       _tcscat(msgcache, data);
     }
-    
+
     Message::AddMessage(LocalMessage.delay_ms, 1, msgcache);
   }
 

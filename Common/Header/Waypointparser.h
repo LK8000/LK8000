@@ -55,4 +55,3 @@ bool ParseOpenAIP(ZZIP_FILE *fp);
 
 
 #endif
-

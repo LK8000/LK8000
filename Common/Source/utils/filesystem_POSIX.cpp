@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   filesystem.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 11 juillet 2014, 13:45
  */
 
@@ -59,7 +59,7 @@ bool lk::filesystem::createDirectory(const TCHAR* szPath) {
             }
         }
         if (mkdir(szPath, S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
-            // if Fails because Already Exists return true ! 
+            // if Fails because Already Exists return true !
             return false;
         }
     }

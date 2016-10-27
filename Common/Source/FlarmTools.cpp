@@ -7,9 +7,9 @@
 */
 
 #include "externs.h"
-#include "FlarmIdFile.h" 
+#include "FlarmIdFile.h"
 
-FlarmIdFile *file=NULL; 
+FlarmIdFile *file=NULL;
 
 int NumberOfFLARMNames = 0;
 
@@ -39,7 +39,7 @@ void OpenFLARMDetails() {
   StartupStore(_T(". FLARMNET database, found %d IDs%s"),FlarmNetCount,NEWLINE);
 
   if (NumberOfFLARMNames) {
-    CloseFLARMDetails(); 
+    CloseFLARMDetails();
   }
 
   TCHAR filename[MAX_PATH];
@@ -47,7 +47,7 @@ void OpenFLARMDetails() {
   _tcscat(filename,_T(DIRSEP));
   _tcscat(filename,_T(LKF_FLARMIDS));
 
-  #if TESTBENCH  
+  #if TESTBENCH
   StartupStore(TEXT("... OpenFLARMDetails: <%s>%s"),filename,NEWLINE);
   #endif
 
@@ -89,10 +89,10 @@ void SaveFLARMDetails(void)
   LocalPath(filename,TEXT(LKD_CONF)); // 091103
   _tcscat(filename,_T(DIRSEP));
   _tcscat(filename,_T(LKF_FLARMIDS));
-  
+
   FILE * stream = _tfopen(filename,_T("wt"));
   if(stream) {
-    for (int z = 0; z < NumberOfFLARMNames; z++) {   
+    for (int z = 0; z < NumberOfFLARMNames; z++) {
       _ftprintf(stream, TEXT("%lx=%s\n"), FLARM_Names[z].ID,FLARM_Names[z].Name);
     }
     fclose(stream);
@@ -105,9 +105,9 @@ void SaveFLARMDetails(void)
 
 int LookupSecondaryFLARMId(int id)
 {
-  for (int i=0; i<NumberOfFLARMNames; i++) 
+  for (int i=0; i<NumberOfFLARMNames; i++)
     {
-      if (FLARM_Names[i].ID == id) 
+      if (FLARM_Names[i].ID == id)
 	{
 	  return i;
 	}
@@ -117,9 +117,9 @@ int LookupSecondaryFLARMId(int id)
 
 int LookupSecondaryFLARMId(TCHAR *cn)
 {
-  for (int i=0; i<NumberOfFLARMNames; i++) 
+  for (int i=0; i<NumberOfFLARMNames; i++)
     {
-      if (_tcscmp(FLARM_Names[i].Name, cn) == 0) 
+      if (_tcscmp(FLARM_Names[i].Name, cn) == 0)
 	{
 	  return i;
 	}
@@ -129,14 +129,14 @@ int LookupSecondaryFLARMId(TCHAR *cn)
 
 // returns Name or Cn to be used
 TCHAR* LookupFLARMCn(long id) {
-  
+
   // try to find flarm from userFile
   int index = LookupSecondaryFLARMId(id);
   if (index != -1)
     {
       return FLARM_Names[index].Name;
     }
-  
+
   // try to find flarm from FLARMNet.org File
   FlarmId* flarmId = file->GetFlarmIdItem(id);
   if (flarmId != NULL)
@@ -147,14 +147,14 @@ TCHAR* LookupFLARMCn(long id) {
 }
 
 TCHAR* LookupFLARMDetails(long id) {
-  
+
   // try to find flarm from userFile
   int index = LookupSecondaryFLARMId(id);
   if (index != -1)
     {
       return FLARM_Names[index].Name;
     }
-  
+
   // try to find flarm from FLARMNet.org File
   FlarmId* flarmId = file->GetFlarmIdItem(id);
   if (flarmId != NULL)
@@ -166,7 +166,7 @@ TCHAR* LookupFLARMDetails(long id) {
 }
 
 // Used by TeamCode, to select a CN and get back the Id
-int LookupFLARMDetails(TCHAR *cn) 
+int LookupFLARMDetails(TCHAR *cn)
 {
   // try to find flarm from userFile
   int index = LookupSecondaryFLARMId(cn);
@@ -174,7 +174,7 @@ int LookupFLARMDetails(TCHAR *cn)
     {
       return FLARM_Names[index].ID;
     }
-  
+
   // try to find flarm from FLARMNet.org File
   FlarmId* flarmId = file->GetFlarmIdItem(cn);
   if (flarmId != NULL)
@@ -192,22 +192,20 @@ bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile) {
     StartupStore(_T("... LookupSecondary id=%d result index=%d\n"), id, index);
 #endif
     if (index == -1) {
-        if (NumberOfFLARMNames < MAXFLARMLOCALS) { // 100322 
+        if (NumberOfFLARMNames < MAXFLARMLOCALS) { // 100322
             // create new record
             index = NumberOfFLARMNames++;
         }
-    } 
-    
+    }
+
     if(index != -1) {
         FLARM_Names[index].ID = id;
         LK_tcsncpy(FLARM_Names[index].Name, name, MAXFLARMNAME);
         bRet = true;
     }
-    
+
     if (bRet && saveFile) {
         SaveFLARMDetails();
     }
     return bRet;
 }
-
-

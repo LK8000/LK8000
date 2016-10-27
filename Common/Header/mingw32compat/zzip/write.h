@@ -9,17 +9,17 @@
  */
 #define ZZIP_NO_CREAT 1
 
-ZZIP_DIR*    zzip_dir_creat_ext_io(zzip_char_t* name, int o_mode, 
+ZZIP_DIR*    zzip_dir_creat_ext_io(zzip_char_t* name, int o_mode,
                                    zzip_strings_t* ext, zzip_plugin_io_t io);
 ZZIP_DIR*    zzip_dir_creat(zzip_char_t* name, int o_mode);
 int          zzip_file_mkdir(ZZIP_DIR* dir, zzip_char_t* name, int o_mode);
 ZZIP_FILE*   zzip_file_creat(ZZIP_DIR* dir, zzip_char_t* name, int o_mode);
-zzip_ssize_t zzip_file_write(ZZIP_FILE* file, 
+zzip_ssize_t zzip_file_write(ZZIP_FILE* file,
                              const void* ptr, zzip_size_t len);
 
 ZZIP_DIR*    zzip_createdir(zzip_char_t* name, int o_mode);
 zzip_ssize_t zzip_write(ZZIP_FILE* file, const void* ptr, zzip_size_t len);
-zzip_size_t  zzip_fwrite(const void* ptr, zzip_size_t len, 
+zzip_size_t  zzip_fwrite(const void* ptr, zzip_size_t len,
                          zzip_size_t multiply, ZZIP_FILE* file);
 #ifndef zzip_savefile
 #define zzip_savefile 0
@@ -34,7 +34,7 @@ zzip_size_t  zzip_fwrite(const void* ptr, zzip_size_t len,
 #define zzip_sync() \
       { zzip_closedir((zzip_savefile)); (zzip_savefile) = 0; }
 #define zzip_start(_name_,_mode_,_ext_) \
-      { if ((zzip_savefile)) zzip_closedir((zzip_savefile)); 
+      { if ((zzip_savefile)) zzip_closedir((zzip_savefile));
          zzip_savefile = zzip_dir_creat(_name_, _mode_,_ext_); }
 
 #else

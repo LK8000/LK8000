@@ -43,8 +43,8 @@ static double Range = 0;
 
 
 static void GetCruiseEfficiency(void) {
-  if ((CALCULATED_INFO.Flying) && (CALCULATED_INFO.TaskStartTime>0) && 
-      !(CALCULATED_INFO.FinalGlide && 
+  if ((CALCULATED_INFO.Flying) && (CALCULATED_INFO.TaskStartTime>0) &&
+      !(CALCULATED_INFO.FinalGlide &&
 	(CALCULATED_INFO.TaskAltitudeDifference>0))) {
 
     cruise_efficiency = EffectiveCruiseEfficiency(&GPS_INFO, &CALCULATED_INFO);
@@ -79,7 +79,7 @@ static void RefreshCalculator(void) {
     } else {
       wp->GetDataField()->SetAsFloat(AATTaskLength);
     }
-      wp->RefreshDisplay();    
+      wp->RefreshDisplay();
   }
 
   double d1 = (CALCULATED_INFO.TaskDistanceToGo
@@ -232,7 +232,7 @@ static void OnMacCreadyData(DataField *Sender, DataField::DataAccessKind_t Mode)
   case DataField::daGet:
     Sender->Set(MACCREADY*LIFTMODIFY);
     break;
-  case DataField::daPut: 
+  case DataField::daPut:
   case DataField::daChange:
     CheckSetMACCREADY(Sender->GetAsFloat()/LIFTMODIFY);
     RefreshCalculator();
@@ -253,7 +253,7 @@ static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode){
   case DataField::daGet:
     //      Sender->Set(Range*100.0);
     break;
-  case DataField::daPut: 
+  case DataField::daPut:
   case DataField::daChange:
     rthis = Sender->GetAsFloat()/100.0;
     if (fabs(Range-rthis)>0.01) {
@@ -281,7 +281,7 @@ static void OnCruiseEfficiencyData(DataField *Sender, DataField::DataAccessKind_
       RefreshCalculator();
     }
     break;
-  case DataField::daPut: 
+  case DataField::daPut:
   case DataField::daChange:
     cruise_efficiency = Sender->GetAsFloat()/100.0;
     CRUISE_EFFICIENCY = cruise_efficiency;
@@ -343,4 +343,3 @@ void dlgTaskCalculatorShowModal(void){
   delete wf;
   wf = NULL;
 }
-

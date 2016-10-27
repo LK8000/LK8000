@@ -80,4 +80,3 @@ using std::min;
 using std::max;
 
 #endif
-

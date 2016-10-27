@@ -10,7 +10,7 @@
 #include "LKProfiles.h"
 
 
-// 
+//
 // This is useless, because we are not using configurable statusmessages due to lack
 // of language support. We should remove all of this, and get rid of StatusMessageData
 //
@@ -22,11 +22,9 @@ void StatusFileInit() {
   // DEFAULT - 0 is loaded as default, and assumed to exist
   StatusMessageData[0].key = TEXT("DEFAULT");
   StatusMessageData[0].doStatus = true;
-  StatusMessageData[0].doSound = true; 
+  StatusMessageData[0].doSound = true;
   StatusMessageData[0].sound = TEXT("IDR_WAV_DRIP");
   StatusMessageData_Size=1;
   StatusMessageData[0].delay_ms = 1500; // 1.5 s default timing for a status message
 
 }
-
-

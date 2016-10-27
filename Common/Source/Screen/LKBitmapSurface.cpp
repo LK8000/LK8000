@@ -5,7 +5,7 @@
  *
  * File:   LKBitmapSurface.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 16 octobre 2014, 21:49
  */
 
@@ -18,7 +18,7 @@
 
 LKBitmapSurface::LKBitmapSurface() : LKSurface()
 #ifdef USE_GDI
-    , _hBitmap(), _oldBitmap() 
+    , _hBitmap(), _oldBitmap()
 #endif
 {
 }
@@ -27,9 +27,9 @@ LKBitmapSurface::~LKBitmapSurface() {
     Release();
 }
 
-LKBitmapSurface::LKBitmapSurface(LKSurface& Surface, unsigned width, unsigned height) : LKSurface() 
+LKBitmapSurface::LKBitmapSurface(LKSurface& Surface, unsigned width, unsigned height) : LKSurface()
 #ifdef USE_GDI
-    , _hBitmap(), _oldBitmap() 
+    , _hBitmap(), _oldBitmap()
 #endif
 {
     Create(Surface, width, height);
@@ -45,7 +45,7 @@ void LKBitmapSurface::Create(const LKSurface& Surface, unsigned width, unsigned 
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
 #else
     _pCanvas = new BufferCanvas(Surface, {width, height});
-#endif    
+#endif
 }
 
 void LKBitmapSurface::Resize(unsigned width, unsigned height) {
@@ -89,9 +89,9 @@ void LKBitmapSurface::CopyTo(LKSurface &other) {
 #ifdef USE_GDI
     other.Copy(0,0, _Size.cx, _Size.cy, *this, 0, 0);
 #else
-    
+
     if(IsDefined() && other.IsDefined()) {
-    
+
 #if defined(ENABLE_OPENGL)
         static_cast<BufferCanvas*>(_pCanvas)->CopyTo(other);
 #else
@@ -121,7 +121,7 @@ void LKMaskBitmapSurface::Create(const LKSurface& Surface, unsigned width, unsig
 
     _hBitmap = LKBitmap(::CreateBitmap(width, height, 1, 1, NULL));
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
-#else 
+#else
     LKBitmapSurface::Create(Surface, width, height);
 #endif
 }

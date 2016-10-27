@@ -16,7 +16,7 @@
 // LoadCupTask.cpp
 // LoadNewTask.cpp
 // LoadGpxTask.cpp
-// 
+//
 // It is supposed that calling function has its own structure.
 // The problem is that Comment and Details are always pointers, and in this case
 // the calling function should allocate it and loose control.
@@ -38,7 +38,7 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
     // lat/lon within 1km , and having flags set as airfieldsolid or grass.
     // We dont look at anything else for matching.
 
-    if (look_for_airfield) 
+    if (look_for_airfield)
         waypoint_index = FindMatchingAirfield(read_waypoint);
     else
         waypoint_index = FindMatchingWaypoint(read_waypoint);
@@ -68,4 +68,3 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
     }
     return waypoint_index;
 }
-

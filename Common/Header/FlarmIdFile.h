@@ -5,9 +5,9 @@
 #include <stdio.h>
 
 #define FLARMID_SIZE_ID		7
-#define FLARMID_SIZE_NAME	22 
-#define FLARMID_SIZE_AIRFIELD	22 
-#define FLARMID_SIZE_TYPE	22 
+#define FLARMID_SIZE_NAME	22
+#define FLARMID_SIZE_AIRFIELD	22
+#define FLARMID_SIZE_TYPE	22
 #define FLARMID_SIZE_REG	8
 #define FLARMID_SIZE_FREQ	8
 
@@ -42,4 +42,3 @@ public:
 };
 
 #endif
-

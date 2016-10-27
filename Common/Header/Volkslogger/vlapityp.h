@@ -46,7 +46,7 @@ typedef unsigned char
 	boolean;
 
 
-//typedef int 
+//typedef int
 //	error;
 
 // 8-bit unsigned

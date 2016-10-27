@@ -538,7 +538,7 @@ if (iOpposite >0)
         }
         LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
         apSectorPolygon[iPolyPtr++] = apSectorPolygon[0] ; // close the polygon
-        /********************************************/                                        
+        /********************************************/
         #ifdef FILL_FAI_SECTORS
         Surface.Polygon(apSectorPolygon,iPolyPtr,rc);
        #else
@@ -619,7 +619,7 @@ int iCnt = 0;
 
 
     for(i =0 ;i < FAI_SECTOR_STEPS; i++)
-    {   
+    {
       LKASSERT(fDist_c*fDist_b!=0);
       cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
       alpha = acos(cos_alpha)*180/PI * dir;
@@ -663,7 +663,7 @@ int iCnt = 0;
       fDist_a -= fDelta_Dist;
       fDist_b += fDelta_Dist;
     }
-    }  
+    }
     fDistTri+=fTic;iCnt++;
  //   if((iCnt %2) ==0)
   //    DrawText(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
@@ -674,5 +674,3 @@ Surface.SelectObject(hpOldPen);
 
 return 0;
 }
-
-

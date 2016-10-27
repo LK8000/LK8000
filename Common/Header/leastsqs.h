@@ -29,9 +29,9 @@
 #define _LEASTSQS_H
 
 
-#ifndef __cplusplus                                                          
+#ifndef __cplusplus
 # error This library requires C++
-#endif                                   
+#endif
 
 #define MAX_STATISTICS 1000
 
@@ -118,5 +118,3 @@ Classical least squares fit:
 };
 
 #endif // _LEASTSQS_H
-
-

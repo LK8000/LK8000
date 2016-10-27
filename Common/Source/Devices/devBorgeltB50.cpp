@@ -96,7 +96,7 @@ BOOL b50Register(void){
  NOBODY KNOWS HOW IT WORKS, THE DOCS ARE WRONG, THE NMEA LOG PROVE INCONSISTENT VALUES.
  NO HOPE TO EVER FIX IT.
 
-Sentence has following format: 
+Sentence has following format:
 
 $PBB50,AAA,BBB.B,C.C,DDDDD,EE,F.FF,G,HH*CHK crlf
 
@@ -118,7 +118,7 @@ $PBB50,14,-.1,3.3,196,0,1.05,0,1*59
 
 7 HH = Outside airtemp in degrees celcius ( may have leading negative sign ) 1
 
-CHK = standard NMEA checksum 
+CHK = standard NMEA checksum
 
 */
 
@@ -145,7 +145,7 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
 
   // inclimb/incruise 1=cruise,0=climb, OAT
   NMEAParser::ExtractParameter(String,ctemp,6);
-  
+
 
   #if USESWITCHES
   int climb = iround(StrToDouble(ctemp,NULL));

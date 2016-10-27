@@ -5,7 +5,7 @@
 template <class T> class List
 {
 public:
-  struct Node 
+  struct Node
   {
     Node(const T& thedata, Node* next=0):next(next),data(thedata) {}
     Node* next;
@@ -51,11 +51,11 @@ public:
 
   bool empty() { return !head; }
 
-  void push_front(const T& x) { 
-    Node* tmp = new Node(x,head); head = tmp; 
+  void push_front(const T& x) {
+    Node* tmp = new Node(x,head); head = tmp;
   }
 
-  void pop_front() { 
+  void pop_front() {
     if (head) { Node* tmp = head; head=head->next; delete tmp; }
   }
 

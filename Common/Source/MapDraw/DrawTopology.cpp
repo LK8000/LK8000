@@ -32,4 +32,3 @@ void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _P
   renderer.Clear();
   UnlockTerrainDataGraphics();
 }
-

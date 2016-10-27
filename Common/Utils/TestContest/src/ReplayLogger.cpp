@@ -36,16 +36,16 @@ class CReplayLogger::CCatmullRomInterpolator {
     double alt;
     double t;
   };
-  
+
   int _num;
   double _tzero;
   TInterpPoint _p[4];
-  
+
   bool Ready() const { return _num == 4; }
-  
+
 public:
   CCatmullRomInterpolator() { Reset(); }
-  
+
   void Reset();
   bool Update(double t, double lon, double lat, double alt);
 
@@ -72,8 +72,8 @@ bool CReplayLogger::CCatmullRomInterpolator::Update(double t, double lon, double
 {
   if(_num<4)
     _num++;
-  
-  if(_p[3].t > t) { 
+
+  if(_p[3].t > t) {
     for(int i=0; i<4; i++) {
       _p[i].lat = lat;
       _p[i].lon = lon;
@@ -197,7 +197,7 @@ bool CReplayLogger::ReadLine(unsigned bufferLen, TCHAR buffer[]) const
   if (fp==NULL) {
     return false;
   }
-  
+
   if (fgetws(buffer, bufferLen, fp)==NULL) {
     _tcscat(buffer,TEXT("\0"));
     return false;
@@ -228,7 +228,7 @@ bool CReplayLogger::ScanBuffer(const TCHAR *line, double &time,
 	       &degLat, &minLat, &NoS, &degLon, &minLon,
 	       &EoW, &iAltitude, &bAltitude
 	       )) != EOF) {
-    
+
     if (lfound==11) {
       latitude = degLat+minLat/60000.0;
       if (NoS==_T('S')) {
@@ -336,7 +336,7 @@ bool CReplayLogger::UpdateInternal()
     finished = !ReadPoint(t1, lat1, lon1, alt1);
 
     if (!finished && (t1>0)) {
-	if (!cli.Update(t1, lon1, lat1, alt1)) { 
+	if (!cli.Update(t1, lon1, lat1, alt1)) {
 		break;
 	}
         _updated = true;
@@ -415,9 +415,9 @@ void CReplayLogger::Start()
   //  flightstats.Reset();
   if(!UpdateInternal()) {
     // MessageBoxX(
-    //     // LKTOKEN  _@M201_ = "Could not open IGC file!" 
+    //     // LKTOKEN  _@M201_ = "Could not open IGC file!"
     //     	MsgToken(201),
-    //     // LKTOKEN  _@M305_ = "Flight replay" 
+    //     // LKTOKEN  _@M305_ = "Flight replay"
     //     	MsgToken(305),
     //     	MB_OK| MB_ICONINFORMATION);
   }

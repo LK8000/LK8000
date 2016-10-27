@@ -36,11 +36,11 @@ void LKSimulator(void) {
 
   LockFlightData();
 
-  // 
+  //
   GPS_INFO.NAVWarning = false;
   GPS_INFO.SatellitesUsed = 6;
   // Even on ground, we can turn the glider in the hangar
-  BEARING += SimTurn; 
+  BEARING += SimTurn;
   if (BEARING<0) BEARING+=360;
   else if (BEARING>359) BEARING-=360;
 
@@ -163,28 +163,28 @@ void LKSimulator(void) {
 		// update relative altitude for ghost/zombie traffic
 		extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
 		int flarmslot=FLARM_FindSlot(&GPS_INFO, 0xdd8a42);
-		if (flarmslot>=0) 
+		if (flarmslot>=0)
 			GPS_INFO.FLARM_Traffic[flarmslot].RelativeAltitude = GPS_INFO.FLARM_Traffic[flarmslot].Altitude - GPS_INFO.Altitude;
 
 	}
   }
 
   if (ISPARAGLIDER || ISGLIDER) {
- 
+
     // SetBallast is calculating sinkratecache for values starting from 4 to MAXSPEED, in m/s .
     // ONLY during flight, we will sink in the air
     if (FLYING && (IASMS>3) && (IASMS<MAXSPEED) ) {
 
 	double sinkias=-1*AirDensitySinkRate(IASMS, GPS_INFO.Altitude);
 	if (sinkias>10) sinkias=10; // set a limiter for sink rate
-	// StartupStore(_T(".... ias=%.1f sinkias=%.3f oldAlt=%.3f newAlt=%.3f\n"), 
+	// StartupStore(_T(".... ias=%.1f sinkias=%.3f oldAlt=%.3f newAlt=%.3f\n"),
 	// CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH, sinkias, GPS_INFO.Altitude, GPS_INFO.Altitude-sinkias);
 	double simlift=0;
 	if (THERMALLING == TRUE) {
 		// entering the thermal mode right now
 		if (!circling) {
 			circling=true;
-			
+
 			DistanceBearing(GPS_INFO.Latitude,GPS_INFO.Longitude,ThLatitude,ThLongitude,&tdistance,&tbearing);
 			if (tdistance>1000) {
 				// a new thermal
@@ -229,7 +229,7 @@ void LKSimulator(void) {
 		simlift+=0.1; // adjust rounding errors
 		//StartupStore(_T(".. climbing zone:  dist=%.1f  climb=%.1f\n"), tdistance,simlift);
 	}
-	// Update altitude with the lift or sink, 
+	// Update altitude with the lift or sink,
 	ALTITUDE+=simlift;
 	// Update the new altitude with the natural sink, but not going lower than 0
 	ALTITUDE-=sinkias;
@@ -239,10 +239,10 @@ void LKSimulator(void) {
 	if (CALCULATED_INFO.TerrainValid && (CALCULATED_INFO.AltitudeAGL <=20) ) {
 		if (IAS <= (MINSPEED+3)) landing=true;
 		else {
-			// we dont simulate crashing. LK8000 pilots never crash. 
+			// we dont simulate crashing. LK8000 pilots never crash.
 			crashed=true;
 		}
-	} 
+	}
 	if (CALCULATED_INFO.TerrainValid && (CALCULATED_INFO.AltitudeAGL >100) ) {
 		landing=false;
 	}
@@ -256,8 +256,8 @@ void LKSimulator(void) {
 		}
 	} else landedwarn=true;
 	#endif
-		
-    } 
+
+    }
   } // Glider/Paragliders
 
   if (FLYING) {
@@ -289,7 +289,7 @@ void LKSimulator(void) {
 
 
   if (GS>0) {
-      FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
+      FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude,
                           GPS_INFO.TrackBearing, GPS_INFO.Speed,
                           &GPS_INFO.Latitude,
                           &GPS_INFO.Longitude);
@@ -308,7 +308,7 @@ void SimFastForward() {
     if(HasKeyboard()) {
         double gs=GPS_INFO.Speed*10.0;
         if (gs<100) gs=100;
-        FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
+        FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude,
                           GPS_INFO.TrackBearing, gs,
                           &GPS_INFO.Latitude,
                           &GPS_INFO.Longitude);

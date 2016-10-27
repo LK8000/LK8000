@@ -87,7 +87,7 @@ public:
   {
     char lat_sgn = ((lat>=0) ? 'N' : 'S');
     char lon_sgn = ((lon>=0) ? 'E' : 'W');
-    
+
     unsigned long t = labs(lat);
     if (t >= 5400000L)
       t = 5400000L;
@@ -493,7 +493,7 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
  float          ftz = 0;
  // Flag, ob ftz aus gültiger Position stammt
  int		tzset = 0;
-  
+
 	// Initialize firsttime structure to fix compiler warning
 	firsttime.tm_sec   = 0;
 	firsttime.tm_hour  = 0;
@@ -1142,5 +1142,3 @@ int conv_dir(DIRENTRY* flights, lpb p, int countonly) {
   }
   return -1;
 }
-
-

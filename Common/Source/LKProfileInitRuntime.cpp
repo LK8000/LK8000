@@ -19,10 +19,10 @@
 // LK8000 is (normally!) separating config values from runtime values.
 // For example, ActiveMap can be configured disabled by default in System Config,
 // but enabled at runtime with a button or a customkey. However the configuration
-// will still be "disabled" and saved as disabled in profile. 
+// will still be "disabled" and saved as disabled in profile.
 // It is important to keep runtime and config variables separated, if a config
 // variable can be changed with a button out of System Config!
-// 
+//
 // Be careful, like AdjustVariables this function is called twice or more times on startup
 //
 void LKProfileInitRuntime(void) {
@@ -144,7 +144,7 @@ void LKProfileInitRuntime(void) {
   if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
 	DeviceNeedClipping=true;
 	// key transcoding for this one
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". Loading HP31X settings%s"),NEWLINE);
 	#endif
   }
@@ -154,76 +154,76 @@ void LKProfileInitRuntime(void) {
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_MIO ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". Loading MIO settings%s"),NEWLINE);
 	#endif
 	// currently no special settings from MIO but need to handle hw keys
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_NOKIA_500 ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". Loading Nokia500 settings%s"),NEWLINE);
 	#endif
 	// key transcoding is made
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_MEDION_P5 ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(".Loading Medion settings%s"),NEWLINE);
 	#endif
 	DeviceNeedClipping=true;
   }
   if (GlobalModelType == MODELTYPE_PNA_NAVIGON ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(".Loading Navigon settings%s"),NEWLINE);
 	#endif
 	DeviceNeedClipping=true;
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_PNA ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". Loading default PNA settings%s"),NEWLINE);
 	#endif
-		
+
   }
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKA ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". USING KEYBOARD MODE A%s"),NEWLINE);
 	#endif
-		
+
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKB ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". USING KEYBOARD MODE B%s"),NEWLINE);
 	#endif
-		
+
   }
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKC ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". USING KEYBOARD MODE C%s"),NEWLINE);
 	#endif
-		
+
   }
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1 ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". USING KEYBOARD TYPE 1%s"),NEWLINE);
 	#endif
-		
+
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2 ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". USING KEYBOARD TYPE 2%s"),NEWLINE);
 	#endif
-		
+
   }
   else
   if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3 ) {
-  	#if TESTBENCH
+	#if TESTBENCH
 	StartupStore(TEXT(". USING KEYBOARD TYPE 3%s"),NEWLINE);
 	#endif
-		
+
   }
   #if TESTBENCH
   else
@@ -243,5 +243,3 @@ void LKProfileInitRuntime(void) {
   UpdateMultimapOrient();
 
 }
-
-

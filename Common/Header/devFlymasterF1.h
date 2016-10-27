@@ -7,4 +7,3 @@ BOOL flymasterf1Register(void);
 BOOL flymasterGPSRegister(void);
 
 #endif
-

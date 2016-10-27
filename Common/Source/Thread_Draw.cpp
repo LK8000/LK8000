@@ -32,7 +32,7 @@ LKBitmapSurface MapWindow::BackBufferSurface;
 Mutex MapWindow::BackBuffer_Mutex;
 LKBitmapSurface MapWindow::DrawSurface;
 #else
-LKBitmapSurface MapWindow::BackBufferSurface;   
+LKBitmapSurface MapWindow::BackBufferSurface;
 #endif
 
 // #define TESTMAPRECT 1
@@ -77,7 +77,7 @@ void MapWindow::Initialize() {
     hdcMask.SetBackgroundOpaque();
     BackBufferSurface.Blackness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 #endif
-    
+
     // This is just here to give fully rendered start screen
     UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
     MapDirty = true;
@@ -85,10 +85,10 @@ void MapWindow::Initialize() {
     FillScaleListForEngineeringUnits();
     zoom.RequestedScale(zoom.Scale());
     zoom.ModifyMapScale();
-    
+
     LKUnloadFixedBitmaps();
     LKUnloadProfileBitmaps();
-    
+
 	LKLoadFixedBitmaps();
 	LKLoadProfileBitmaps();
 
@@ -126,14 +126,14 @@ void MapWindow::DrawThread ()
 
   // THREADRUNNING = FALSE;
   THREADEXIT = FALSE;
-  
+
   bool lastdrawwasbitblitted=false;
-  
-  // 
+
+  //
   // Big LOOP
   //
 
-  while (!CLOSETHREAD) 
+  while (!CLOSETHREAD)
   {
 	if(drawTriggerEvent.tryWait(5000))
 	if (CLOSETHREAD) break; // drop out without drawing
@@ -143,11 +143,11 @@ void MapWindow::DrawThread ()
 		continue;
 	}
     drawTriggerEvent.reset();
-    
+
 #ifdef HAVE_CPU_FREQUENCY
     const ScopeLockCPU cpu;
 #endif
-  
+
     ScopeLock Lock(Surface_Mutex);
 
 	// Until MapDirty is set true again, we shall only repaint the screen. No Render, no calculations, no updates.
@@ -165,7 +165,7 @@ void MapWindow::DrawThread ()
 	// unless a timeout was triggered by MapWndProc itself.
 	if (OnFastPanning) {
 		MapDirty=false;
-	} 
+	}
 
 	// We must check if we are on FastPanning, because we may be in pan mode even while
 	// the menu buttons are active and we are using them, accessing other functions.
@@ -175,13 +175,13 @@ void MapWindow::DrawThread ()
 	// Notice: we could be !MapDirty without OnFastPanning, of course!
 	//
 	if (!MapDirty && !ForceRenderMap && OnFastPanning && !first_run) {
-		
+
 		if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
 			const int fromX=startScreen.x-targetScreen.x;
 			const int fromY=startScreen.y-targetScreen.y;
 
-            PixelRect  clipSourceArea(MapRect); // Source Rectangle 
+            PixelRect  clipSourceArea(MapRect); // Source Rectangle
             RasterPoint clipDestPoint(clipSourceArea.GetOrigin()); // destination origin position
             PixelRect  WhiteRectV(MapRect); // vertical White band (left or right)
             PixelRect  WhiteRectH(MapRect); // horizontal White band (top or bottom)
@@ -215,7 +215,7 @@ void MapWindow::DrawThread ()
             BackBufferSurface.Copy(clipDestPoint.x,clipDestPoint.y,
                 clipSourceArea.GetSize().cx,
                 clipSourceArea.GetSize().cy,
-                DrawSurface, 
+                DrawSurface,
                 clipSourceArea.left,clipSourceArea.top);
 
 
@@ -227,7 +227,7 @@ void MapWindow::DrawThread ()
 			// THIS IS NOT GOING TO HAPPEN!
 			//
 			// The map was not dirty, and we are not in fastpanning mode.
-			// FastRefresh!  We simply redraw old bitmap. 
+			// FastRefresh!  We simply redraw old bitmap.
 			//
 #ifndef USE_GDI
             ScopeLock Lock(BackBuffer_Mutex);
@@ -271,7 +271,7 @@ void MapWindow::DrawThread ()
 			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
             MainWindow.Redraw(MapRect);
 			continue;
-		} 
+		}
 		#endif // --------------------------
 _dontbitblt:
 		MapDirty = false;
@@ -290,7 +290,7 @@ _dontbitblt:
             DrawSurface.CopyTo(BackBufferSurface);
         }
 
-        // Draw cross sight for pan mode, in the screen center, 
+        // Draw cross sight for pan mode, in the screen center,
         // after a full repaint while not fastpanning
         if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
             POINT centerscreen;
@@ -337,7 +337,7 @@ void MapWindow::CreateDrawingThread(void)
   CLOSETHREAD = FALSE;
   THREADEXIT = FALSE;
 
-#ifndef ENABLE_OPENGL  
+#ifndef ENABLE_OPENGL
   MapWindowThread.start(MapWindowThreadRun);
   MapWindowThread.setPriority(Poco::Thread::PRIO_NORMAL);
 #endif
@@ -363,14 +363,14 @@ void MapWindow::ResumeDrawingThread(void)
 
 void MapWindow::CloseDrawingThread(void)
 {
-#ifndef ENABLE_OPENGL    
+#ifndef ENABLE_OPENGL
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread started\n"));
   #endif
   CLOSETHREAD = TRUE;
   drawTriggerEvent.set(); // wake self up
   SuspendDrawingThread();
-  
+
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread waitforsingleobject\n"));
   #endif
@@ -379,7 +379,7 @@ void MapWindow::CloseDrawingThread(void)
   drawTriggerEvent.reset(); // on linux this is delaying 5000
   #endif
   MapWindowThread.join();
-          
+
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));
   #endif
@@ -395,7 +395,7 @@ void MapWindow::CloseDrawingThread(void)
 
 //
 // Change resolution of terrain,topology,airspace
-// 
+//
 bool MapWindow::ChangeDrawRect(const RECT rectarea)
 {
   LKASSERT(rectarea.right>0);
@@ -416,7 +416,7 @@ void TestChangeRect(void) {
   if (--flipper==0) {
 	if (testflip)
 		MapWindow::ChangeDrawRect(MapWindow::MapRect);
-  	else
+	else
 		MapWindow::ChangeDrawRect(testRect);
 	testflip=!testflip;
 	flipper=2;
@@ -424,4 +424,3 @@ void TestChangeRect(void) {
   }
 }
 #endif
-

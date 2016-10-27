@@ -162,7 +162,7 @@ double fXY_Scale = 1.5;
 		  x2 = (lon2-lon_c)*fastcosine(lat2);
 		  y2 = (lat2-lat_c);
 
-#ifdef HAVE_HATCHED_BRUSH 
+#ifdef HAVE_HATCHED_BRUSH
 		  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(AATASK));
 #else
                   Surface.SelectObject(LKBrush_Yellow);
@@ -282,9 +282,9 @@ double fXY_Scale = 1.5;
 		}
 	  }
 	}
-	
+
 	// draw aat task line
-	
+
 	if (AATEnabled)
 	{
 	  for (i=MAXTASKPOINTS-1; i>0; i--)
@@ -303,7 +303,7 @@ double fXY_Scale = 1.5;
 		  }
 		  lat2 = Task[i].AATTargetLat;
 		  lon2 = Task[i].AATTargetLon;
-	
+
 		  x1 = (lon1-lon_c)*fastcosine(lat1);
 		  y1 = (lat1-lat_c);
 		  x2 = (lon2-lon_c)*fastcosine(lat2);
@@ -327,4 +327,3 @@ double fXY_Scale = 1.5;
   Surface.SetBackgroundTransparent();
   DrawLabel(Surface, rc, TEXT("+"), x1, y1);
 }
-

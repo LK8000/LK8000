@@ -5,14 +5,14 @@
  *
  * File:   WndCtrlBase.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 2 décembre 2014
  */
 
 #include "WndCtrlBase.h"
 
 WndCtrlBase::WndCtrlBase(const TCHAR* szName) : _szWindowName(szName?szName:_T("")) {
-    
+
     static BOOL bRegister = FALSE;
     if(!bRegister) {
         bRegister = RegisterWindow(CS_SAVEBITS|CS_VREDRAW|CS_HREDRAW|CS_DBLCLKS, NULL, NULL, NULL, NULL, _T("LKWndCtrl"));
@@ -24,4 +24,3 @@ WndCtrlBase::WndCtrlBase(const TCHAR* szName) : _szWindowName(szName?szName:_T("
 
 WndCtrlBase::~WndCtrlBase() {
 }
-

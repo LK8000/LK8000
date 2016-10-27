@@ -17,7 +17,7 @@
 void MapWindow::DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc)
 {
   POINT o1, o2;
-  
+
   o1.x = Orig.x+NIBLSCALE(20);
   o2.x = Orig.x-NIBLSCALE(20);
   o1.y = Orig.y;
@@ -46,5 +46,3 @@ void MapWindow::DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT
 
 
 }
-
-

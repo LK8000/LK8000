@@ -40,7 +40,7 @@ static int rescale(int n) {
 //
 void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 {
-  static bool flip= true; 
+  static bool flip= true;
   static PixelSize loggerIconSize,mmIconSize, batteryIconSize;
   static POINT loggerPoint, mmPoint, batteryPoint;
   static PixelSize loggerNewSize, mmNewSize, batteryNewSize;
@@ -100,7 +100,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
       // precalculate positions and sizes
       //
 
-      loggerPoint.x=rc.right-rescale(loggerIconSize.cx)-HSEPAR; 
+      loggerPoint.x=rc.right-rescale(loggerIconSize.cx)-HSEPAR;
       // center the logger icon in respect of battery icon which is bigger
       loggerPoint.y=rc.bottom - BottomSize + rescale((batteryIconSize.cy-loggerIconSize.cy)/2) + vsepar;
       loggerNewSize.cx= rescale(loggerIconSize.cx);
@@ -151,11 +151,11 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   if (ptmpBitmap)
   #endif
       ptmpBitmap->Draw(Surface, loggerPoint.x, loggerPoint.y, loggerNewSize.cx, loggerNewSize.cy);
- 
-  // 
+
+  //
   // Big icon
   //
- 
+
   if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) {
       ptmpBitmap = &hClimb;
   } else {
@@ -237,14 +237,14 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 
   //
   // Battery indicator
-  // 
+  //
 
   #if TESTBENCH && !defined(KOBO)
   // Battery test in Simmode will be available in testbench mode only
   if (SIMMODE && !(QUICKDRAW)) {; PDABatteryPercent-=1; if (PDABatteryPercent<0) PDABatteryPercent=100; }
   #else
   // If we are not in testbench, no matter simmode is active we shall represent the real battery (as in v5).
-  // Exception: PC version. 
+  // Exception: PC version.
   #if (WINDOWSPC>0)
   if (!SIMMODE) return;
   #else

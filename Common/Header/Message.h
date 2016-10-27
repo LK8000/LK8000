@@ -26,7 +26,7 @@ class Message {
  public:
   static void Initialize(RECT rc);
   static void InitFont();
-  
+
   static void Destroy();
   static bool Render(); // returns true if messages have changed
 
@@ -53,7 +53,7 @@ class Message {
         BlockRender(false);
     }
   };
-  
+
  private:
   typedef std::list<Message_t> messages_t;
 

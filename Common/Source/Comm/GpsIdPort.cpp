@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   GpsIdPort.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 2 octobre 2013, 01:52
  */
 #include "externs.h"
@@ -35,7 +35,7 @@ bool GpsIdPort::Initialize() {
     _hState = ::CreateEvent(NULL, FALSE, FALSE, NULL);
     _hGPS = ::GPSOpenDevice(_hLoc, _hState, NULL, 0);
     if (0 == _hGPS) {
-        StartupStore(_T("Unable to Open GPS Intermediate driver %s"), NEWLINE);    
+        StartupStore(_T("Unable to Open GPS Intermediate driver %s"), NEWLINE);
         return false;
     }
     SetPortStatus(CPS_OPENOK);
@@ -59,7 +59,7 @@ bool GpsIdPort::Initialize() {
 bool GpsIdPort::Close() {
     ComPort::Close();
 
-    
+
     if(_hGPS) ::GPSCloseDevice(_hGPS);
     if(_hLoc) ::CloseHandle(_hLoc);
     if(_hState) ::CloseHandle(_hState);

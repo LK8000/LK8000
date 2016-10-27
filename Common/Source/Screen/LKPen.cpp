@@ -5,7 +5,7 @@
  *
  * File:   LKPen.cpp
  * Author: bruno de Lacheisserie
- * 
+ *
  * Created on 16 octobre 2014
  */
 
@@ -15,7 +15,7 @@
 #include <utility>
 
 #ifdef USE_GDI
-    
+
 const LKPen LK_NULL_PEN((HPEN)GetStockObject(NULL_PEN));
 const LKPen LK_BLACK_PEN((HPEN)GetStockObject(BLACK_PEN));
 const LKPen LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));

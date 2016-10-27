@@ -36,4 +36,3 @@ int LocalTime() {
   }
   return localtime;
 }
-

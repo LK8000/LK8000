@@ -25,22 +25,22 @@ using std::placeholders::_1;
 
 
 // airspace drawing type
-//static 
+//static
 #ifdef HAVE_HATCHED_BRUSH
 MapWindow::EAirspaceFillType MapWindow::AirspaceFillType = MapWindow::asp_fill_patterns_full;
 #else
 MapWindow::EAirspaceFillType MapWindow::AirspaceFillType = MapWindow::asp_fill_ablend_borders;
 #endif
 // alpha blended airspace opacity (0..100)
-//static 
+//static
 BYTE MapWindow::AirspaceOpacity = 30;
 
   // solid brushes for airspace drawing (initialized in InitAirSpaceSldBrushes())
-//static 
+//static
 LKBrush MapWindow::hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
 
 // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
-//static 
+//static
 void MapWindow::InitAirSpaceSldBrushes(const LKColor colours[]) {
   // initialize solid color brushes for airspace drawing
   for (int i = 0; i < NUMAIRSPACECOLORS; i++) {
@@ -55,7 +55,7 @@ void MapWindow::InitAirSpaceSldBrushes(const LKColor colours[]) {
 
 #ifndef ENABLE_OPENGL
 // draw airspace using alpha blending
-//static 
+//static
 void MapWindow::ClearTptAirSpace(LKSurface& Surface, const RECT& rc) {
   // copy original bitmap into temp (for saving fully transparent areas)
   int width  = rc.right - rc.left;
@@ -66,25 +66,25 @@ void MapWindow::ClearTptAirSpace(LKSurface& Surface, const RECT& rc) {
     // Prepare layers
     hdcbuffer.FillRect(&rc, LKBrush_White);
     hdcbuffer.SelectObject(LK_NULL_PEN);
-  
+
     hdcMask.FillRect(&rc, LKBrush_Black);
     hdcMask.SelectObject(hAirspaceBorderPen);
     hdcMask.SelectObject(LKBrush_Hollow);
-  }  
+  }
 } // ClearTptAirSpace()
 
 
 // TODO code: optimise airspace drawing (same as DrawAirSpace())
 // draw airspace using alpha blending
-//static 
+//static
 void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
-  // since standard GDI functions (brushes, pens...) ignore alpha octet in ARGB 
+  // since standard GDI functions (brushes, pens...) ignore alpha octet in ARGB
   // color value and don't set it in the resulting bitmap, we cannot use
-  // perpixel alpha blending, instead we use global opacity for alpha blend 
-  // (same opacity for all pixels); for fully "transparent" areas (without 
-  // airspace) we must copy destination bitmap into source bitmap first so that 
-  // alpha blending of such areas results in the same pixels as origin pixels 
-  // in destination 
+  // perpixel alpha blending, instead we use global opacity for alpha blend
+  // (same opacity for all pixels); for fully "transparent" areas (without
+  // airspace) we must copy destination bitmap into source bitmap first so that
+  // alpha blending of such areas results in the same pixels as origin pixels
+  // in destination
   CAirspaceList::const_iterator it;
   CAirspaceList::const_reverse_iterator itr;
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
@@ -98,7 +98,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
 
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
-   
+
   int nDC1 = hdcbuffer.SaveState();
   int nDC2 = hdcMask.SaveState();
   int nDC3 = TempSurface.SaveState();
@@ -158,9 +158,9 @@ DrawAirSpaceBorders(Surface, rc);
     Surface.AlphaBlend(rc, TempSurface, rc, (255 * GetAirSpaceOpacity()) / 100);
 #endif
   }
-  
+
   // draw it again, just the outlines
-  
+
   // we will be drawing directly into given hdc, so store original PEN object
   const auto hOrigPen = Surface.SelectObject(LK_WHITE_PEN);
 #ifdef AIRSPACE_BORDER
@@ -192,26 +192,26 @@ if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_sel
 
   // restore original PEN
   Surface.SelectObject(hOrigPen);
-  
+
   hdcbuffer.RestoreState(nDC1);
-  hdcMask.RestoreState(nDC2);    
-  TempSurface.RestoreState(nDC3);    
+  hdcMask.RestoreState(nDC2);
+  TempSurface.RestoreState(nDC3);
 } // DrawTptAirSpace()
 #else
-void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {  
-    
+void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
+
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
 
     const bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
 
     static bool asp_selected_flash = false;
-    asp_selected_flash = !asp_selected_flash;    
-    
+    asp_selected_flash = !asp_selected_flash;
+
     for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         const int airspace_type = (*it)->Type();
 
-        std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil; 
+        std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil;
         if(borders_only) {
             stencil = std::make_unique<const GLEnable<GL_STENCIL_TEST>>();
 
@@ -232,7 +232,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
             glStencilMask(0x00);
             // draw where stencil's value is not 0
             glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-        }            
+        }
 
         // Draw Airspaces
 
@@ -242,7 +242,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
             Surface.SelectObject(LKPen_Grey_N2);
         } else {
             Surface.SelectObject(hAirspacePens[airspace_type]);
-        }            
+        }
 
 
         if ((*it)->DrawStyle() == adsFilled) {

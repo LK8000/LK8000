@@ -15,7 +15,7 @@
 
 static BOOL XCOM760IsRadio(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE); 
+  return(TRUE);
 }
 
 
@@ -64,7 +64,7 @@ BOOL xcom760Register(void){
 }
 
 
-/* Commands 
+/* Commands
 
   $TOGG: return to main screen or toggle active and standby
   $DUAL=on/off

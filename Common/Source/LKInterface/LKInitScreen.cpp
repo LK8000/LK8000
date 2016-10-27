@@ -14,10 +14,10 @@
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
 // resolution has its own tuned settings. This is thought for real devices, not for PC emulations.
-// Attention: after InitLKScreen, also InitLKFonts should be called. 
+// Attention: after InitLKScreen, also InitLKFonts should be called.
 void InitLKScreen() {
 
-  const PixelRect Rect(MainWindow.GetClientRect()); 
+  const PixelRect Rect(MainWindow.GetClientRect());
   int iWidth=0, iHeight=0;
 
 #if (WINDOWSPC>0) || defined(__linux__)
@@ -43,7 +43,7 @@ void InitLKScreen() {
 
   ScreenDScale = max(1.0,minsize/240.0); // always start w/ shortest dimension
 
-  if (maxsize == minsize) 
+  if (maxsize == minsize)
   {
     ScreenDScale *= 240.0 / 320.0;
   }
@@ -146,7 +146,7 @@ void InitLKScreen() {
   }
 
   // Override defaults for custom settings
-  switch (ScreenSize) { 
+  switch (ScreenSize) {
 	case (ScreenSize_t)ss600x800:
 		LKVarioSize=45;
 		break;
@@ -183,11 +183,11 @@ unsigned short GetScreenGeometry(unsigned int x, unsigned int y) {
 
   //
   // Table of internally tuned ratios in LK8000
-  // 
-  // Ratio   Aspect     Examples 
+  //
+  // Ratio   Aspect     Examples
   // -----   ------     --------
   // 1,333    4:3        320x240 640x480 800x600
-  // 1,666    5:3        800x480 
+  // 1,666    5:3        800x480
   // 1,777    16:9       480x272 960x540 1280x720 1920x1080
   // 2,05     2:1        480x234
   //
@@ -277,4 +277,3 @@ unsigned short GetScreenDensity(void) {
   return sqrt(ScreenSizeX*ScreenSizeX + ScreenSizeY*ScreenSizeY)/DEFAULT_SCREEN_SIZE;
 
 }
-

@@ -49,4 +49,3 @@ void LockTerrainDataGraphics() {
 void UnlockTerrainDataGraphics() {
   CritSec_TerrainDataGraphics.Unlock();
 }
-

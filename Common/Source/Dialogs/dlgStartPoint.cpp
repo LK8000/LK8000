@@ -58,7 +58,7 @@ static void OnStartPointPaintListItem(WindowControl * Sender, LKSurface& Surface
 
 static bool changed = false;
 
-static void OnStartPointListEnter(WindowControl * Sender, 
+static void OnStartPointListEnter(WindowControl * Sender,
 				WndListFrame::ListInfo_t *ListInfo) {
   (void)Sender;
   ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
@@ -82,7 +82,7 @@ static void OnStartPointListEnter(WindowControl * Sender,
 }
 
 
-static void OnStartPointListInfo(WindowControl * Sender, 
+static void OnStartPointListInfo(WindowControl * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender;
   if (ListInfo->DrawIndex == -1){
@@ -161,7 +161,7 @@ void dlgStartPointShowModal(void) {
   if (!wf) return;
 
   //ASSERT(wf!=NULL);
-  
+
   CheckStartPointInTask();
 
   wStartPointList = (WndListFrame*)wf->FindByName(TEXT("frmStartPointList"));
@@ -195,4 +195,3 @@ void dlgStartPointShowModal(void) {
   wf = NULL;
 
 }
-

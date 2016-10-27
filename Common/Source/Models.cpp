@@ -12,15 +12,15 @@
 
 #ifdef PNA
 
-// Parse a MODELTYPE value and set the equivalent model name. 
+// Parse a MODELTYPE value and set the equivalent model name.
 // If the modeltype is invalid or not yet handled, assume that
-// the user changed it in the registry or in the profile, and 
+// the user changed it in the registry or in the profile, and
 // correct the error returning false: this will force a Generic Type.
 
 bool SetModelName(DWORD Temp) {
   switch (Temp) {
   case MODELTYPE_PNA_PNA:
-    _tcscpy(GlobalModelName,_T("GENERIC")); 
+    _tcscpy(GlobalModelName,_T("GENERIC"));
     return true;
     break;
   case MODELTYPE_PNA_HP31X:
@@ -78,7 +78,7 @@ bool SetModelName(DWORD Temp) {
 
 
 //
-// A special case for preloading a modeltype directly from 
+// A special case for preloading a modeltype directly from
 // Default profile, at the very beginning of runtime.
 //
 bool LoadModelFromProfile()
@@ -129,7 +129,7 @@ bool SetModelType() {
   DWORD Temp=0;
 
   Temp=Appearance.InfoBoxModel;
-  
+
   if ( SetModelName(Temp) != true ) {
 	GlobalModelType=MODELTYPE_PNA_PNA;
 	_tcscpy(GlobalModelName,_T("GENERIC"));
@@ -137,7 +137,7 @@ bool SetModelType() {
   } else {
 	GlobalModelType = Temp;
   }
-  
+
   StartupStore(_T(". SetModelType: Name=<%s> Type=%d%s"),GlobalModelName, GlobalModelType,NEWLINE);
   return true;
 }
@@ -145,6 +145,3 @@ bool SetModelType() {
 
 
 #endif // PNA
-
-
-

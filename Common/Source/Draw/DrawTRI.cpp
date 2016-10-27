@@ -27,12 +27,12 @@ void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc)
   Pos.x = (rc.right - rc.left)/2 + (int)(DrawInfo.AccelY * ScaleX);
   Pos.y = (rc.bottom - rc.top)/2 - (int)((DrawInfo.AccelZ - 1) * ScaleY);
   const double radius = NIBLSCALE(15) + (int)(DrawInfo.AccelX * ScaleZ);
-  
+
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
   const auto oldBrush = Surface.SelectObject(LKBrush_Red);
-  
+
   Surface.DrawCircle(Pos.x, Pos.y - static_cast<PixelScalar>(radius/2), static_cast<PixelScalar>(radius), rc, true);
-  
+
   Surface.SelectObject(oldBrush);
   Surface.SelectObject(oldPen);
 }
@@ -46,7 +46,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
 #endif
 
   POINT Start;
-  
+
   static short top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
 
   Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
@@ -67,7 +67,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   double beta=0.0;
   bool disabled=false;
 
-   if (DoInit[MDI_DRAWTRI]) 
+   if (DoInit[MDI_DRAWTRI])
   {
 
   top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
@@ -164,7 +164,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   //if (!CALCULATED_INFO.Flying) {
   // speed is in m/s
   if(DrawInfo.Speed <5.5 && !DrawInfo.GyroscopeAvailable)
-    disabled=true; 
+    disabled=true;
 
   if (disabled) {
 	hpBlack = LKPen_Grey_N1;
@@ -219,7 +219,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   a1.y = Start.y - (long)(planesize * beta_sine);
   a2.x = Start.x + (long)(planesize * beta_cosine);
   a2.y = Start.y + (long)(planesize * beta_sine);
-    if (disabled) 
+    if (disabled)
 	Surface.DrawLine(PEN_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
     else
 	Surface.DrawLine(PEN_SOLID, NIBLSCALE(4), a1, a2, RGB_BLACK,rc);
@@ -228,7 +228,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   a1.y = Start.y;
   a2.x = Start.x + (long)(tailsize * beta_sine);
   a2.y = Start.y - (long)(tailsize * beta_cosine);
-  if (disabled) 
+  if (disabled)
 	Surface.DrawLine(PEN_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
   else
 	Surface.DrawLine(PEN_SOLID, NIBLSCALE(4), a1, a2, RGB_BLACK,rc);
@@ -305,7 +305,7 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
 
   PenReference hpBlack;
   BrushReference hbBlack;
-  
+
   // gauge size radius
   static int radius = NIBLSCALE(75);
   static int planesize = radius-NIBLSCALE(10);
@@ -570,18 +570,18 @@ double vscale = 0.25;
     a2.x = Start.x + (long)(planesize*vscale );
     a2.y = Start.y ;
     if (disabled)
- 	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
+	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
     else
- 	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
+	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
 
      a1.x = Start.x ;
      a1.y = Start.y + (long)(planesize*vscale );
      a2.x = Start.x + (long)(planesize*vscale );
      a2.y = Start.y ;
      if (disabled)
-  	   Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
+	   Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
      else
-  	   Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
+	   Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
 
      a1.x = Start.x ;
      a1.y = Start.y + (long)(planesize*vscale );
@@ -640,7 +640,7 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc) {
 #endif // AHRS
 
 #else
-	// LK COMPETITION VERSION HAS NO TRI 
+	// LK COMPETITION VERSION HAS NO TRI
 void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
 
 }

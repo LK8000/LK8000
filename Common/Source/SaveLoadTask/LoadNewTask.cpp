@@ -34,7 +34,7 @@ typedef struct _OLD_TASK_POINT
   double SectorEndLat;
   double SectorEndLon;
   POINT	 Start;
-  POINT	 End;		
+  POINT	 End;
   int	 AATType;
   double AATCircleRadius;
   double AATSectorRadius;
@@ -60,13 +60,13 @@ typedef struct _OLD_TASK_POINT
 bool LoadTaskWaypoints(FILE* stream) {
   WAYPOINT read_waypoint;
   for(unsigned i=0;i<OLD_MAXTASKPOINTS;i++) {
-      
+
     if(fread(&read_waypoint, 1, sizeof(read_waypoint), stream) != sizeof(read_waypoint)) {
       return false;
     }
-    if (Task[i].Index != -1) { 
+    if (Task[i].Index != -1) {
       // WE SHOULD NOT HAVE ANY VALID Details or Comment here.
-      // In case of old tsk, we shall have still non-null data, but it is a mistake 
+      // In case of old tsk, we shall have still non-null data, but it is a mistake
       // and this is why we set it to NULL here, the pointer is fake, saved from old session.
       read_waypoint.Comment = NULL;
       read_waypoint.Details = NULL;
@@ -79,7 +79,7 @@ bool LoadTaskWaypoints(FILE* stream) {
     }
     if (StartPoints[i].Index != -1) {
       // WE SHOULD NOT HAVE ANY VALID Details or Comment here.
-      // In case of old tsk, we shall have still non-null data, but it is a mistake 
+      // In case of old tsk, we shall have still non-null data, but it is a mistake
       // and this is why we set it to NULL here, the pointer is fake, saved from old session.
       read_waypoint.Comment = NULL;
       read_waypoint.Details = NULL;
@@ -116,14 +116,14 @@ void LoadNewTask(LPCTSTR szFileName)
 	StartupStore(_T("... LoadNewTask detected FullResetAsked, attempt to load DEMO.TSK\n"));
 	#endif
 	// Clear the flag, forever.
-  	FullResetAsked=false;
+	FullResetAsked=false;
 	_tcscpy(taskFileName,_T("%LOCAL_PATH%\\\\_Tasks\\DEMO.TSK"));
 	ExpandLocalPath(taskFileName);
 
   } else {
 	_tcscpy(taskFileName,szFileName);
   }
-  
+
   StartupStore(_T(". LoadNewTask <%s>%s"),taskFileName,NEWLINE);
 
   FILE* stream = _tfopen(taskFileName, _T("rb"));
@@ -148,7 +148,7 @@ void LoadNewTask(LPCTSTR szFileName)
       }
 
 	// task version check
-	if ( (taskinfo[0]!= 'L') || (taskinfo[1]!= 'K') || (taskinfo[2]!=LKTASKVERSION) ) { 
+	if ( (taskinfo[0]!= 'L') || (taskinfo[1]!= 'K') || (taskinfo[2]!=LKTASKVERSION) ) {
 		TaskInvalid = true;
 		oldversion = true;
 		goto goEnd;
@@ -166,8 +166,8 @@ void LoadNewTask(LPCTSTR szFileName)
                 // Task is only invalid here if the index is out of range
                 // of the waypoints and not equal to -1.
                 // (Because -1 indicates a null task item)
-                WaypointInvalid = true; 
-       	    }
+                WaypointInvalid = true;
+	    }
           }
         }
 
@@ -178,7 +178,7 @@ void LoadNewTask(LPCTSTR szFileName)
         TaskInvalid = fread(&AATTaskLength, 1, sizeof(double), stream) != sizeof(double);
       }
 	// ToDo review by JW
-	
+
 	// 20060521:sgi added additional task parameters
       if (!TaskInvalid) {
         TaskInvalid = fread(&FinishRadius, 1, sizeof(FinishRadius), stream) != sizeof(FinishRadius);
@@ -209,7 +209,7 @@ void LoadNewTask(LPCTSTR szFileName)
             TaskInvalid = true;
             break;
         }
-	  
+
           if( ValidNotResWayPoint(STemp.Index) || (STemp.Index==-1) ) { // 091213
             memcpy(&StartPoints[i],&STemp, sizeof(START_POINT));
           } else {
@@ -230,10 +230,10 @@ void LoadNewTask(LPCTSTR szFileName)
         // TimeGate config
         if (!TaskInvalid) {
             TaskInvalid = fread(&PGOpenTimeH, 1, sizeof(PGOpenTimeH), stream) != sizeof(PGOpenTimeH);
-        }  
+        }
         if (!TaskInvalid) {
             TaskInvalid = fread(&PGOpenTimeM, 1, sizeof(PGOpenTimeM), stream) != sizeof(PGOpenTimeM);
-        }  
+        }
         if (!TaskInvalid) {
             InitActiveGate();
 
@@ -255,7 +255,7 @@ void LoadNewTask(LPCTSTR szFileName)
         }
         if (!TaskInvalid) {
             TaskInvalid = fread(&PGStartOut, 1, sizeof(PGStartOut), stream) != sizeof(PGStartOut);
-        }    
+        }
 
 goEnd:
 
@@ -283,13 +283,13 @@ goEnd:
     StartupStore(_T("... LoadNewTask: file <%s> not found%s"),taskFileName,NEWLINE); // 091213
     TaskInvalid = true;
   }
-  
+
   if (TaskInvalid) {
     ClearTask();
-  } 
+  }
 
   RefreshTask();
-  
+
   if (!ValidTaskPoint(0)) {
     ActiveTaskPoint = 0;
   }
@@ -298,21 +298,21 @@ goEnd:
 
   if (TaskInvalid && TaskLoaded) {
 	if (oldversion) {
-	// LKTOKEN  _@M360_ = "Invalid old task format!" 
-		MessageBoxX(MsgToken(360), 
-	// LKTOKEN  _@M396_ = "Load task" 
+	// LKTOKEN  _@M360_ = "Invalid old task format!"
+		MessageBoxX(MsgToken(360),
+	// LKTOKEN  _@M396_ = "Load task"
 			MsgToken(396), mbOk);
 	} else {
-	// LKTOKEN  _@M264_ = "Error in task file!" 
-		MessageBoxX(MsgToken(264), 
-	// LKTOKEN  _@M396_ = "Load task" 
+	// LKTOKEN  _@M264_ = "Error in task file!"
+		MessageBoxX(MsgToken(264),
+	// LKTOKEN  _@M396_ = "Load task"
 			MsgToken(396), mbOk);
 	}
   } else {
 	#if TESTBENCH
 	StartupStore(_T("------ Task is Loaded%s"),NEWLINE);
 	#endif
-	TaskModified = false; 
+	TaskModified = false;
 	TargetModified = false;
 	_tcscpy(LastTaskFileName, taskFileName);
   }

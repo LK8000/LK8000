@@ -5,7 +5,7 @@
  *
  * File:   LKBrush.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 23 octobre 2014, 20:28
  */
 #ifdef USE_GDI
@@ -45,6 +45,6 @@ LKBrush& LKBrush::operator= (LKBrush&& Brush) {
     std::swap(brush, Brush.brush);
 #else
     std::swap(color, Brush.color);
-#endif    
+#endif
     return *this;
 }

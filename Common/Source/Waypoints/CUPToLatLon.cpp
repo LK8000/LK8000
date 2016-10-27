@@ -29,7 +29,7 @@ double CUPToLat(TCHAR *temp)
 
   _tcscpy(tsec,dot);
   slen=_tcslen(tsec);
-  
+
   // seconds are 0X minimum including the letter
   if (slen<2 || slen>4) return -9999;
   td= tsec[slen-1];
@@ -54,7 +54,7 @@ double CUPToLat(TCHAR *temp)
   // if seconds are only a decimal, for example 3 , they really are 300
   switch (slen) {
 	case 2:
-		// 3X 
+		// 3X
 		secs*=100;
 		break;
 	case 3:
@@ -69,7 +69,7 @@ double CUPToLat(TCHAR *temp)
   degrees += mins / 60.0;
 
   if (!north) degrees *= -1;
-        
+
   return degrees;
 }
 
@@ -117,7 +117,7 @@ double CUPToLon(TCHAR *temp)
   // if seconds are only a decimal, for example 3 , they really are 300
   switch (slen) {
 	case 2:
-		// 3X 
+		// 3X
 		secs*=100;
 		break;
 	case 3:
@@ -132,8 +132,6 @@ double CUPToLon(TCHAR *temp)
   degrees += mins / 60.0;
 
   if (!east) degrees *= -1;
-        
+
   return degrees;
 }
-
-

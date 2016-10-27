@@ -39,7 +39,7 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double t
 #define ADDITIONAL_INFO_THRESHOLD 0.7
 
 //#define USE_TCOLORS 1
-//#define SHOWLD	// optional 
+//#define SHOWLD	// optional
 
 void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
@@ -178,7 +178,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                         if (ValidWayPoint(Sideview_VGWpt[i])) {
                             /*
                              * we can't show dialog from Draw thread
-                             * instead, new event is queued, dialog will be popup by main thread 
+                             * instead, new event is queued, dialog will be popup by main thread
                              */
                             InputEvents::processPopupDetails(InputEvents::PopupWaypoint, Sideview_VGWpt[i]);
                         }
@@ -197,7 +197,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                 if (bShow) {
                     /*
                      * we can't show dialog from Draw thread
-                     * instead, new event is queued, dialog will be popup by main thread 
+                     * instead, new event is queued, dialog will be popup by main thread
                      */
                     InputEvents::processGlideComputer(GCE_POPUP_MULTISELECT);
 
@@ -326,7 +326,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     wpt_altarriv_mc0 = 0.0;
     wpt_altitude = 0.0;
     fMC0 = 0.0;
-#ifdef SHOWLD 
+#ifdef SHOWLD
     fLD = 0.0;
 #endif
 
@@ -425,7 +425,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
     // This is tricky and bad, a lot misleading in fact.
     // We manage the long click belonging to the PREVIOUS drawvisualglide.
-    // It is reset here before a possible recalculation, otherwise we risk to 
+    // It is reset here before a possible recalculation, otherwise we risk to
     // check for long clicks on no more drawn areas.
     Sideview_VGBox_Number = 0;
 
@@ -1069,9 +1069,3 @@ _after_additionals:
     Surface.SelectObject(hfOld/* Sender->GetFont()*/);
     zoom.SetLimitMapScale(true);
 }
-
-
-
-
-
-

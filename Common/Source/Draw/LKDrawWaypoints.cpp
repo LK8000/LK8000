@@ -16,8 +16,8 @@
 #include "Multimap.h"
 #include <string.h>
 
-MapWaypointLabel_t MapWaypointLabelList[200]; 
-MapWaypointLabel_t* SortedWaypointLabelList[200]; 
+MapWaypointLabel_t MapWaypointLabelList[200];
+MapWaypointLabel_t* SortedWaypointLabelList[200];
 
 size_t MapWaypointLabelListCount=0;
 
@@ -28,9 +28,9 @@ inline bool MapWaypointLabelListCompare(const MapWaypointLabel_t* elem1, const M
 }
 
 
-void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y, 
-			 const TextInBoxMode_t *Mode, 
-			 const int AltArivalAGL, const bool inTask, const bool isLandable, const bool isAirport, 
+void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y,
+			 const TextInBoxMode_t *Mode,
+			 const int AltArivalAGL, const bool inTask, const bool isLandable, const bool isAirport,
 			 const bool isExcluded,  const int index, const short style){
 
   if (MapWaypointLabelListCount >= array_size(MapWaypointLabelList)-1) return;
@@ -61,7 +61,7 @@ void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y,
 
 void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 {
-  unsigned int i; 
+  unsigned int i;
   int bestwp=-1;
   TCHAR Buffer[LKSIZEBUFFER];
   TCHAR Buffer2[LKSIZEBUFFER];
@@ -86,8 +86,8 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
   // setting decluttericons will not paint outlanding, and use minrunway to declutter even more
   bool decluttericons=false;
-  // inrange : max scale allowed to print non-landable waypoints 
-  bool inrange=true; 
+  // inrange : max scale allowed to print non-landable waypoints
+  bool inrange=true;
   // minimal size of a runway to paint it while decluttering
   int minrunway=0;
 
@@ -140,7 +140,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
   if (MapWindow::zoom.RealScale() <=20) for(i=0;i<WayPointList.size();i++) {
 	if (WayPointList[i].Visible != TRUE )	continue; // false may not be FALSE?
 
-    if(Appearance.IndLandable == wpLandableDefault) 
+    if(Appearance.IndLandable == wpLandableDefault)
     {
       double fScaleFact =MapWindow::zoom.RealScale();
       if(fScaleFact < 0.1)  fScaleFact = 0.1; // prevent division by zero
@@ -224,13 +224,13 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
 	islandable=WayPointCalc[i].IsLandable;
 
- 	    // always in range if MapScale <=10 
+	    // always in range if MapScale <=10
 	    irange = inrange;
 
-	    if(MapWindow::zoom.RealScale() > 20) { 
+	    if(MapWindow::zoom.RealScale() > 20) {
 	      irange=false;
 	      goto NiklausWirth; // with compliments
-	    } 
+	    }
 	    if (decluttericons) {
 		if (! (WayPointCalc[i].IsAirport && (WayPointList[i].RunwayLen>minrunway || WayPointList[i].RunwayLen==0))) {
 		      irange=false;
@@ -238,14 +238,14 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		}
             }
 
-	    if( islandable ) { 
+	    if( islandable ) {
 
 	      if(WayPointList[i].Reachable){
 
 		TextDisplayMode.Reachable = 1;
 
 
-		if ((GetMultimap_Labels()<MAPLABELS_ALLOFF)||intask) { 
+		if ((GetMultimap_Labels()<MAPLABELS_ALLOFF)||intask) {
 
 		  dowrite = true;
 		  // exclude outlandings worst than visible airports, only when there are visible reachable airports!
@@ -261,7 +261,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 			  if ( foundairport >0 ) {
 			    if ( (int)WayPointList[i].AltArivalAGL <= arrivalcutoff ) {
 			      excluded=true;
-			    } 
+			    }
 			  }
 			}
 		    }
@@ -269,7 +269,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		  }  else
 		    // do not display airport arrival if close to the best so far.
 		    // ex: best arrival is 1200m, include onlye below 1200/4  (prevent division by zero)
-		    // This way we only display far points, and skip closer points 
+		    // This way we only display far points, and skip closer points
 		    // WE NEED MORE INFO ABOUT LANDING POINTS: THE .CUP FORMAT WILL LET US KNOW WHAT IS
 		    // BEST TO SHOW AND WHAT IS NOT. Winpilot format is useless here.
 		    {
@@ -280,20 +280,20 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 			  excluded=true;
 			}
 		      }
-		    } 
+		    }
 		}
 
 
 	      }
-	    } 
+	    }
 
 	  NiklausWirth:
 
-	    if (intask || (OutlinedTp==(OutlinedTp_t)otAll) ) { 
+	    if (intask || (OutlinedTp==(OutlinedTp_t)otAll) ) {
 	      TextDisplayMode.WhiteBold = 1;
-	      TextDisplayMode.Color=RGB_WHITE; 
+	      TextDisplayMode.Color=RGB_WHITE;
 	    }
-	
+
 
 	// No matter of how we thought to draw it, let it up to the user..
 	switch(NewMapDeclutter) {
@@ -309,7 +309,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
 
 	    // here come both turnpoints and landables..
-	    if( intask || irange || dowrite) {  // irange always set when MapScale <=10 
+	    if( intask || irange || dowrite) {  // irange always set when MapScale <=10
 
 	      bool draw_alt = TextDisplayMode.Reachable && ((GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask); // 100711 reachable landing point!
 
@@ -327,7 +327,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
 		if ( (islandable && !isairport) && MapWindow::zoom.RealScale() >=10 ) dowrite=0; // FIX then no need to go further
 
-		// 101215 
+		// 101215
 		if (DisplayTextType == DISPLAYNAME) {
 			_tcscpy(Buffer2,WayPointList[i].Name);
 		} else {
@@ -337,10 +337,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-		  		_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+				_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
-		  		_stprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
-		  } else 
+				_stprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+		  } else
 			_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)WayPointCalc[i].GR);
 
 
@@ -348,114 +348,114 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
 		  } else
-		  	TextDisplayMode.WhiteBold = 1; // outlined 
-		  	TextDisplayMode.Color=RGB_WHITE; 
+			TextDisplayMode.WhiteBold = 1; // outlined
+			TextDisplayMode.Color=RGB_WHITE;
 		} else {
 			//_stprintf(Buffer, TEXT("%s"),Buffer2);
 			_tcscpy(Buffer,Buffer2);
 			if (islandable && isairport) {
-				TextDisplayMode.WhiteBold = 1; // outlined 
-				TextDisplayMode.Color=RGB_WHITE; 
+				TextDisplayMode.WhiteBold = 1; // outlined
+				TextDisplayMode.Color=RGB_WHITE;
 			}
 		}
-				  
+
 		break;
 	      case DISPLAYNUMBER:
-		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable; 
+		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable;
 		if ( (islandable && !isairport) && MapWindow::zoom.RealScale() >=10 ) dowrite=0; // FIX then no need to go further
 
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-		  		_stprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+				_stprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
-		  		_stprintf(Buffer, TEXT("%d:%d%s"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+				_stprintf(Buffer, TEXT("%d:%d%s"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
 		  } else
-		  	_stprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
+			_stprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
 		  } else
-		  	TextDisplayMode.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.Color=RGB_WHITE; 
+			TextDisplayMode.WhiteBold = 1; // outlined
+			TextDisplayMode.Color=RGB_WHITE;
 		} else {
 		  _stprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
 		  if (islandable && isairport) {
-		    TextDisplayMode.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.Color=RGB_WHITE; 
+		    TextDisplayMode.WhiteBold = 1; // outlined
+			TextDisplayMode.Color=RGB_WHITE;
 		  }
 		}
 		break;
-				  
-				  
 
-	      case DISPLAYNAMEIFINTASK: 
+
+
+	      case DISPLAYNAMEIFINTASK:
 		dowrite = intask;
 		if (intask) {
 		  if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
 			    _stprintf(Buffer, TEXT("%s:%d"),
-				     WayPointList[i].Name, 
+				     WayPointList[i].Name,
 				     (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
 			    _stprintf(Buffer, TEXT("%s:%d%s"),
-				     WayPointList[i].Name, 
-				     (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
+				     WayPointList[i].Name,
+				     (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
 				     sAltUnit);
 
 
 		  } else
 			    _stprintf(Buffer, TEXT("%s:%d"),
-				     WayPointList[i].Name, 
-				     (int)(WayPointCalc[i].GR)); 
+				     WayPointList[i].Name,
+				     (int)(WayPointCalc[i].GR));
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
 		  } else
-		  	TextDisplayMode.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.Color=RGB_WHITE; 
+			TextDisplayMode.WhiteBold = 1; // outlined
+			TextDisplayMode.Color=RGB_WHITE;
 
 		  }
 		  else {
 		    _stprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
 		    // TODO CHECK THIS, UNTESTED..
                     if (islandable && isairport) {
-		       TextDisplayMode.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.Color=RGB_WHITE; 
+		       TextDisplayMode.WhiteBold = 1; // outlined
+			TextDisplayMode.Color=RGB_WHITE;
 		    }
 		  }
 		}
 			else {
-		  		_stprintf(Buffer, TEXT(" "));
+				_stprintf(Buffer, TEXT(" "));
 				dowrite=true;
 			}
 		break;
 	      case DISPLAYNONE:
-		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable; 
+		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable;
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-			  _stprintf(Buffer, TEXT("%d"), 
+			  _stprintf(Buffer, TEXT("%d"),
 				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
-			  _stprintf(Buffer, TEXT("%d%s"), 
-				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
+			  _stprintf(Buffer, TEXT("%d%s"),
+				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
 				   sAltUnit);
 		  } else
-			  _stprintf(Buffer, TEXT("%d"), 
+			  _stprintf(Buffer, TEXT("%d"),
 				   (int)(WayPointCalc[i].GR) );
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
 		  } else
-		  	TextDisplayMode.WhiteBold = 1; // outlined 
-	      	    TextDisplayMode.Color=RGB_WHITE; 
+			TextDisplayMode.WhiteBold = 1; // outlined
+		    TextDisplayMode.Color=RGB_WHITE;
 		}
 		else {
-		  	_stprintf(Buffer, TEXT(" "));
+			_stprintf(Buffer, TEXT(" "));
 		}
 		break;
 
@@ -469,7 +469,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
       dowrite=false; // do not pass it along
     }
 
-		// Do not show takeoff for gliders, check TakeOffWayPoint 
+		// Do not show takeoff for gliders, check TakeOffWayPoint
 		if (i==RESWP_TAKEOFF) {
 			if (TakeOffWayPoint) {
 				intask=false; // 091031 let TAKEOFF be decluttered
@@ -503,11 +503,11 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
             }
           }
 	    } // end if intask
-      
+
 	     { ; }
 	} // if visible
     } // for all waypoints
- 
+
   std::sort( &SortedWaypointLabelList[0], &SortedWaypointLabelList[MapWaypointLabelListCount], MapWaypointLabelListCompare );
 
   // now draw task/landable waypoints in order of range (closest last)
@@ -519,7 +519,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
     // draws if they are in task unconditionally,
     // otherwise, does comparison
-    if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
+    if ( E->inTask || (E->isLandable && !E->isExcluded) ) {
     const LKIcon* pWptBmp = NULL;
 
 	TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y, &(E->Mode), false);
@@ -529,10 +529,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
     // If we are at low zoom, use a dot for icons, so we dont clutter the screen
     if(MapWindow::zoom.RealScale() > 1) {
-	if (BlackScreen) 
- 		pWptBmp = &hInvSmall;
+	if (BlackScreen)
+		pWptBmp = &hInvSmall;
 	else
- 		pWptBmp = &hSmall;
+		pWptBmp = &hSmall;
     } else {
 	if (BlackScreen)
 		pWptBmp = &hInvTurnPoint;
@@ -557,10 +557,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
 	// If we are at low zoom, use a dot for icons, so we dont clutter the screen
 	if(MapWindow::zoom.RealScale() > 4) {
-		if (BlackScreen) 
-	 		pWptBmp = &hInvSmall;
+		if (BlackScreen)
+			pWptBmp = &hInvSmall;
 		else
-	 		pWptBmp = &hSmall;
+			pWptBmp = &hSmall;
 	} else {
 		// We switch all styles in the correct order, to force a jump table by the compiler
 		// It would be much better to use an array of bitmaps, but no time to do it for 3.0
@@ -665,7 +665,7 @@ turnpoint:
 
 //
 // WARNING THESE FUNCTIONS ARE CALLED BY DIALOG MAIN THREAD, not from DRAW THREAD
-// 
+//
 
 void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
     if (!hLKPictori)
@@ -683,14 +683,14 @@ void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
     const int cxSrc = hLKPictori.GetWidth();
     const int cySrc = hLKPictori.GetHeight();
 #endif
-    
+
     Surface.DrawBitmapCopy(x, y, cx, cy, hLKPictori, cxSrc, cySrc);
 }
 
 void MapWindow::DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
 {
     const LKIcon* pWptBmp = NULL;
-    
+
 switch(wp->Style) {
 	case STYLE_NORMAL:
 		goto turnpoint;

@@ -61,4 +61,3 @@ inline const _Tp& clamp(const _Tp& __val, const _Tp& __min, const _Tp& __max) {
 }
 
 #endif // stl_utils_h__
-

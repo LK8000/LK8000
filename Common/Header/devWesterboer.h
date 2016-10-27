@@ -6,4 +6,3 @@
 BOOL WesterboerRegister(void);
 
 #endif
-

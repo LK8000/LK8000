@@ -6,4 +6,3 @@
 BOOL xcom760Register(void);
 
 #endif
-

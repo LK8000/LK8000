@@ -37,4 +37,3 @@ enum VLA_ERROR {
 };
 
 #endif
-

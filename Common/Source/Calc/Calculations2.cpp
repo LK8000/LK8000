@@ -10,7 +10,7 @@
 #include "McReady.h"
 #include "TeamCodeCalculation.h"
 #include "InputEvents.h"
-#include "NavFunctions.h" 
+#include "NavFunctions.h"
 #include "Time/PeriodClock.hpp"
 
 
@@ -30,24 +30,24 @@ double MacCreadyTimeLimit(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   const double windspeed =   Calculated->WindSpeed;
   const double windbearing = Calculated->WindBearing;
   const double navaltitude = Calculated->NavAltitude;
-  
+
   for (mc=0; mc<10.0; mc+= 0.1) {
 
-    double h_unit = GlidePolar::MacCreadyAltitude(mc, 
+    double h_unit = GlidePolar::MacCreadyAltitude(mc,
 						 1.0, // unit distance
-						 this_bearing, 
-						 windspeed, 
+						 this_bearing,
+						 windspeed,
 						 windbearing,
 						 NULL,
 						 NULL,
 						 1, // final glide
 						 &time_to_go);
     if (time_to_go>0) {
-      double p = time_remaining/time_to_go;    
-      double h_spent = h_unit*p;    
-      double dh = navaltitude-h_spent-h_final;    
+      double p = time_remaining/time_to_go;
+      double h_spent = h_unit*p;
+      double dh = navaltitude-h_spent-h_final;
       double d = 1.0*p;
-      
+
       if ((d>d_best) && (dh>=0)) {
 	mc_best = mc;
       }
@@ -59,42 +59,42 @@ double MacCreadyTimeLimit(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
 PeriodClock lastTeamCodeUpdateTime;
 
-void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
+void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   if (WayPointList.empty()) return;
   if (TeamCodeRefWaypoint < 0) return;
 
   unsigned TimeOut(10 * 1000); // 10s
-  // only calculate each 10s  
+  // only calculate each 10s
   if(!lastTeamCodeUpdateTime.CheckUpdate(TimeOut)) return;
-	
+
   double distance = 0;
   double bearing = 0;
   TCHAR code[10];
-	
+
 
   /*
-  distance =  Distance(WayPointList[TeamCodeRefWaypoint].Latitude, 
-  	WayPointList[TeamCodeRefWaypoint].Longitude,
-  	Basic->Latitude, 
-  	Basic->Longitude);
-  	
-  bearing = Bearing(WayPointList[TeamCodeRefWaypoint].Latitude, 
-  	WayPointList[TeamCodeRefWaypoint].Longitude,
-  	Basic->Latitude, 
-  	Basic->Longitude);
+  distance =  Distance(WayPointList[TeamCodeRefWaypoint].Latitude,
+	WayPointList[TeamCodeRefWaypoint].Longitude,
+	Basic->Latitude,
+	Basic->Longitude);
+
+  bearing = Bearing(WayPointList[TeamCodeRefWaypoint].Latitude,
+	WayPointList[TeamCodeRefWaypoint].Longitude,
+	Basic->Latitude,
+	Basic->Longitude);
   */
-	
-  LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude, 
+
+  LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude,
                   WayPointList[TeamCodeRefWaypoint].Longitude,
-                  Basic->Latitude, 
+                  Basic->Latitude,
                   Basic->Longitude,
                   &bearing, &distance);
 
   GetTeamCode(code, bearing, distance);
 
   Calculated->TeammateBearing = bearing;
-  Calculated->TeammateRange = distance;	
+  Calculated->TeammateRange = distance;
 
   //double teammateBearing = GetTeammateBearingFromRef(TeammateCode);
   //double teammateRange = GetTeammateRangeFromRef(TeammateCode);
@@ -105,7 +105,7 @@ void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 }
 
 
-void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
+void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static bool InTeamSector = false;
 
@@ -116,43 +116,43 @@ void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double ownBearing = 0;
   double mateDistance = 0;
   double mateBearing = 0;
-	
+
   //ownBearing = Bearing(Basic->Latitude, Basic->Longitude,
-  //	WayPointList[TeamCodeRefWaypoint].Latitude, 
-  //	WayPointList[TeamCodeRefWaypoint].Longitude);	
+  //	WayPointList[TeamCodeRefWaypoint].Latitude,
+  //	WayPointList[TeamCodeRefWaypoint].Longitude);
   //
   //ownDistance =  Distance(Basic->Latitude, Basic->Longitude,
-  //	WayPointList[TeamCodeRefWaypoint].Latitude, 
+  //	WayPointList[TeamCodeRefWaypoint].Latitude,
   //	WayPointList[TeamCodeRefWaypoint].Longitude);
-		
+
   /*
-  ownBearing = Bearing(WayPointList[TeamCodeRefWaypoint].Latitude, 
+  ownBearing = Bearing(WayPointList[TeamCodeRefWaypoint].Latitude,
                        WayPointList[TeamCodeRefWaypoint].Longitude,
-                       Basic->Latitude, 
+                       Basic->Latitude,
                        Basic->Longitude
-                       );	
+                       );
   //
-  ownDistance =  Distance(WayPointList[TeamCodeRefWaypoint].Latitude, 
+  ownDistance =  Distance(WayPointList[TeamCodeRefWaypoint].Latitude,
                           WayPointList[TeamCodeRefWaypoint].Longitude,
-                          Basic->Latitude, 
+                          Basic->Latitude,
                           Basic->Longitude
-                          );	
+                          );
   */
 
-  LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude, 
+  LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude,
                   WayPointList[TeamCodeRefWaypoint].Longitude,
-                  Basic->Latitude, 
+                  Basic->Latitude,
                   Basic->Longitude,
                   &ownBearing, &ownDistance);
 
   if (TeammateCodeValid)
     {
-	
+
       //mateBearing = Bearing(Basic->Latitude, Basic->Longitude, TeammateLatitude, TeammateLongitude);
       //mateDistance = Distance(Basic->Latitude, Basic->Longitude, TeammateLatitude, TeammateLongitude);
 
-      CalcTeammateBearingRange(ownBearing, ownDistance, 
-                               TeammateCode, 
+      CalcTeammateBearingRange(ownBearing, ownDistance,
+                               TeammateCode,
                                &mateBearing, &mateDistance);
 
       // TODO code ....change the result of CalcTeammateBearingRange to do this !
@@ -169,10 +169,10 @@ void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       Calculated->TeammateBearing = mateBearing;
       Calculated->TeammateRange = mateDistance;
 
-      FindLatitudeLongitude(Basic->Latitude, 
+      FindLatitudeLongitude(Basic->Latitude,
                             Basic->Longitude,
                             mateBearing,
-                            mateDistance, 
+                            mateDistance,
                             &TeammateLatitude,
                             &TeammateLongitude);
 
@@ -212,7 +212,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
   if (!Calculated->ValidStart) return 0;
   if (Calculated->TaskStartTime<0) return 0;
 
-  if (!ValidTaskPoint(ActiveTaskPoint) 
+  if (!ValidTaskPoint(ActiveTaskPoint)
       || !ValidTaskPoint(ActiveTaskPoint-1)) return 0;
   if (Calculated->TaskDistanceToGo<=0) {
     return 0;
@@ -222,12 +222,12 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
 
   double start_speed = Calculated->TaskStartSpeed;
   double V_bestld = GlidePolar::Vbestld();
-  double energy_height_start = 
+  double energy_height_start =
     max(0.0, start_speed*start_speed-V_bestld*V_bestld)/(9.81*2.0);
 
   double telapsed = Basic->Time-Calculated->TaskStartTime;
-  double height_below_start = 
-    Calculated->TaskStartAltitude + energy_height_start 
+  double height_below_start =
+    Calculated->TaskStartAltitude + energy_height_start
     - Calculated->NavAltitude - Calculated->EnergyHeight;
 
   double LegDistances[MAXTASKPOINTS];
@@ -248,14 +248,14 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
         w0lon = Task[i].AATTargetLon;
       }
     }
-    DistanceBearing(w0lat, 
+    DistanceBearing(w0lat,
                     w0lon,
-                    w1lat, 
+                    w1lat,
                     w1lon,
                     &LegDistances[i], &LegBearings[i]);
 
     if (i==ActiveTaskPoint-1) {
-    
+
       double leg_covered = ProjectedDistance(w0lon, w0lat,
                                              w1lon, w1lat,
                                              Basic->Longitude,
@@ -305,7 +305,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
     // Now add times from start to this waypoint,
     // allowing for final glide where possible if aircraft height is below
     // start
-    
+
     for(int i=ActiveTaskPoint-1;i>=0; i--) {
 
       LKASSERT(i>=0);
@@ -313,35 +313,35 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
 
       double time_this;
 
-      double height_used_this = 
+      double height_used_this =
         GlidePolar::MacCreadyAltitude(mc_effective,
                                       LegDistances[i],
                                       LegBearings[i],
                                       Calculated->WindSpeed,
                                       Calculated->WindBearing,
-                                      0, NULL, 
-                                      (height_remaining>0), 
+                                      0, NULL,
+                                      (height_remaining>0),
                                       &time_this,
-                                      height_remaining, 
+                                      height_remaining,
 				      cruise_efficiency);
 
       height_remaining -= height_used_this;
-            
-      if (time_this>=0) { 
+
+      if (time_this>=0) {
         time_total += time_this;
       } else {
         // invalid! break out of loop early
         time_total= time_this;
         i= -1;
         continue;
-      }     
+      }
     }
 
     if (time_total<0) {
       // invalid
       continue;
     }
-    if (time_total>telapsed) { 
+    if (time_total>telapsed) {
       // already too slow
       continue;
     }
@@ -355,7 +355,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
       time_total -= height_below_start/mc_effective;
     }
     // now check time..
-    if (time_total<telapsed) {       
+    if (time_total<telapsed) {
       if (cruise_efficiency_mode) {
 	value_found = cruise_efficiency;
       } else {

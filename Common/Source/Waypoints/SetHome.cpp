@@ -28,16 +28,16 @@ void SetHome(bool reset)
 	HomeWaypoint = -1;
   }
 
-  // If one of the alternates is no longer valid, we reset both of them 
+  // If one of the alternates is no longer valid, we reset both of them
   if (Alternate1 !=-1 ) {
- 	 if (!ValidNotResWayPoint(Alternate1) ) {
+	 if (!ValidNotResWayPoint(Alternate1) ) {
 	     resetalternates=true;
- 	 }
+	 }
   }
   if (Alternate2 !=-1 ) {
- 	 if (!ValidNotResWayPoint(Alternate2) ) {
+	 if (!ValidNotResWayPoint(Alternate2) ) {
 	     resetalternates=true;
- 	 }
+	 }
   }
   if (reset || resetalternates) {
       Alternate1= -1; Alternate2= -1;

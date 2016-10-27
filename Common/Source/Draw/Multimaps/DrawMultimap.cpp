@@ -18,10 +18,9 @@
 void MapWindow::DrawMultimap_SideTopSeparator(LKSurface& Surface, const RECT& rci) {
     if (rci.bottom > 0 && Current_Multimap_SizeY < SIZE4) {
         const POINT line[2] = {
-            { rci.left, rci.bottom - 1}, 
+            { rci.left, rci.bottom - 1},
             { rci.right, rci.bottom - 1}
         };
         Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1], RGB_BLACK, rci);
     }
 }
-

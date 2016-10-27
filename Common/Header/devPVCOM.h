@@ -50,4 +50,3 @@ BOOL PVCOMParseString(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info);
 
 
 #endif
-

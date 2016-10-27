@@ -48,18 +48,18 @@ void WaypointFlagsToString(int FlagsNum,
   }
 }
 
-void LongitudeToCUPString(double Longitude, 
+void LongitudeToCUPString(double Longitude,
                                TCHAR *Buffer) {
   TCHAR EW[] = TEXT("WE");
   double dd, mm, ss;
   double lon;
   int idd,imm,iss;
-  
+
   int sign = Longitude<0 ? 0 : 1;
   lon=fabs(Longitude);
- 
+
   dd = (int)lon;
-  mm = (lon-dd) * 60.0; 
+  mm = (lon-dd) * 60.0;
   ss = (mm-(int)mm)*1000;
 
   idd = (int)dd;
@@ -100,10 +100,10 @@ void WaypointLongitudeToString(double Longitude,
                                TCHAR *Buffer) {
   TCHAR EW[] = TEXT("WE");
   int dd, mm, ss;
-  
+
   int sign = Longitude<0 ? 0 : 1;
   Longitude = fabs(Longitude);
-  
+
   dd = (int)Longitude;
   Longitude = (Longitude - dd) * 60.0;
   mm = (int)(Longitude);
@@ -146,4 +146,3 @@ void WaypointLatitudeToString(double Latitude,
   }
   _stprintf(Buffer, TEXT("%02d:%02d:%02d%c"), dd, mm, ss, EW[sign]);
 }
-

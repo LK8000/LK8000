@@ -19,31 +19,30 @@ public:
     WndCtrlBase(const TCHAR * szName) {
         _szWndName = szName?szName:_T("");
     }
-    
+
     virtual void SetWndText(const TCHAR* lpszText) {
         _szWndText = lpszText?lpszText:_T("");
     }
-    
+
     virtual const TCHAR* GetWndText() const {
         return _szWndText.c_str();
-    }    
-    
+    }
+
     const TCHAR* GetWndName() const {
         return _szWndName.c_str();
     }
-    
+
     void SetWndName(const TCHAR * szName) {
         _szWndName = szName?szName:_T("");
     }
-    
+
     virtual bool OnLButtonDown(const POINT& Pos) { return true; }
-    virtual bool OnLButtonUp(const POINT& Pos) { return true; }    
-    
+    virtual bool OnLButtonUp(const POINT& Pos) { return true; }
+
 protected:
     tstring _szWndName;
     tstring _szWndText;
-        
+
 };
 
 #endif	/* _LINUX_WNDCTRLBASE_H */
-

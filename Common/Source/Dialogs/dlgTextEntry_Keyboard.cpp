@@ -1,4 +1,4 @@
-﻿/*
+/*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
@@ -319,7 +319,7 @@ IdenticalIndex = -1;
       NameLen =  _tcslen(WayPointList[i].Name);
       Offset = 0;
       if(cursor > NameLen)
-     	CharEqual = false;
+	CharEqual = false;
       else
       {
         do
@@ -348,7 +348,7 @@ IdenticalIndex = -1;
       if(CharEqual)
       {
 
-    	if(Offset < IdenticalOffset)
+	if(Offset < IdenticalOffset)
         {
           IdenticalIndex = i; /* remember first found equal name */
           IdenticalOffset = Offset; /* remember first found equal name */
@@ -365,7 +365,7 @@ IdenticalIndex = -1;
      //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
           LKASSERT(j<MAX_SEL_LIST_SIZE);
           if(SelList[j] == (unsigned char)newChar)
-        	existing = true;
+		existing = true;
           j++;
         }
 
@@ -386,7 +386,7 @@ IdenticalIndex = -1;
     {
       if(EqCnt ==1)
       {
-    	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
+	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
 	    wp->SetText(WayPointList[IdenticalIndex].Name);
       }
       else
@@ -396,8 +396,8 @@ IdenticalIndex = -1;
           LKASSERT(cursor < NAME_SIZE);
           LKASSERT(IdenticalIndex<=(int)WayPointList.size());
           _stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
-    	  for( i = 0; i < cursor; i++)
-    	     Found[i+IdenticalOffset] = toupper(WayPointList[IdenticalIndex].Name[i+IdenticalOffset]);
+	  for( i = 0; i < cursor; i++)
+	     Found[i+IdenticalOffset] = toupper(WayPointList[IdenticalIndex].Name[i+IdenticalOffset]);
           wp->SetText(Found);
         }
       }

@@ -57,8 +57,8 @@ static void MoveTarget(double adjust_angle) {
 
   bearing = AngleLimit360(MapWindow::GetDisplayAngle() + adjust_angle);
   FindLatitudeLongitude (Task[target_point].AATTargetLat,
-                         Task[target_point].AATTargetLon, 
-                         bearing, 
+                         Task[target_point].AATTargetLon,
+                         bearing,
                          distance,
                          &target_latitude,
                          &target_longitude);
@@ -72,9 +72,9 @@ static void MoveTarget(double adjust_angle) {
                       GPS_INFO.Latitude,
                       GPS_INFO.Longitude,
                       NULL, &course_bearing);
-      
+
       DistanceBearing(GPS_INFO.Latitude,
-                      GPS_INFO.Longitude, 
+                      GPS_INFO.Longitude,
                       target_latitude,
                       target_longitude,
                       &distance, &target_bearing);
@@ -85,10 +85,10 @@ static void MoveTarget(double adjust_angle) {
         Task[target_point].AATTargetLon = target_longitude;
         Radial = bearing;
         Task[target_point].AATTargetOffsetRadial = Radial;
-        Range = 
+        Range =
           FindInsideAATSectorRange(GPS_INFO.Latitude,
                                    GPS_INFO.Longitude,
-                                   target_point, 
+                                   target_point,
                                    target_bearing,
                                    distance);
         Task[target_point].AATTargetOffsetRadius = Range;
@@ -102,7 +102,7 @@ static void MoveTarget(double adjust_angle) {
 
       // set range/radial for outside sector
       DistanceBearing(WayPointList[Task[target_point].Index].Latitude,
-                      WayPointList[Task[target_point].Index].Longitude, 
+                      WayPointList[Task[target_point].Index].Longitude,
                       Task[target_point].AATTargetLat,
                       Task[target_point].AATTargetLon,
                       &distance, &bearing);
@@ -147,9 +147,9 @@ static void MoveTarget(double target_longitude, double target_latitude) {
                       GPS_INFO.Latitude,
                       GPS_INFO.Longitude,
                       NULL, &course_bearing);
-      
+
       DistanceBearing(GPS_INFO.Latitude,
-                      GPS_INFO.Longitude, 
+                      GPS_INFO.Longitude,
                       target_latitude,
                       target_longitude,
                       &distance, &target_bearing);
@@ -160,10 +160,10 @@ static void MoveTarget(double target_longitude, double target_latitude) {
         Task[target_point].AATTargetLon = target_longitude;
         Radial = bearing;
         Task[target_point].AATTargetOffsetRadial = Radial;
-        Range = 
+        Range =
           FindInsideAATSectorRange(GPS_INFO.Latitude,
                                    GPS_INFO.Longitude,
-                                   target_point, 
+                                   target_point,
                                    target_bearing,
                                    distance);
         Task[target_point].AATTargetOffsetRadius = Range;
@@ -177,7 +177,7 @@ static void MoveTarget(double target_longitude, double target_latitude) {
 
       // set range/radial for outside sector
       DistanceBearing(WayPointList[Task[target_point].Index].Latitude,
-                      WayPointList[Task[target_point].Index].Longitude, 
+                      WayPointList[Task[target_point].Index].Longitude,
                       Task[target_point].AATTargetLat,
                       Task[target_point].AATTargetLon,
                       &distance, &bearing);
@@ -247,8 +247,8 @@ static void RefreshCalculator(void) {
   RefreshTaskStatistics();
   target_point = max(target_point,ActiveTaskPoint);
 
-  bool nodisplay = !AATEnabled 
-    || (target_point==0) 
+  bool nodisplay = !AATEnabled
+    || (target_point==0)
     || !ValidTaskPoint(target_point+1);
 
   if (btnMove) {
@@ -258,7 +258,7 @@ static void RefreshCalculator(void) {
     } else {
       btnMove->SetVisible(true);
     }
-  } 
+  }
 
   nodisplay = nodisplay || TargetMoveMode;
 
@@ -390,7 +390,7 @@ static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
     case DataField::daGet:
       //      Sender->Set(Range*100.0);
     break;
-    case DataField::daPut: 
+    case DataField::daPut:
     case DataField::daChange:
       LockTaskData();
       if (target_point>=ActiveTaskPoint) {
@@ -398,7 +398,7 @@ static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
         if (RangeNew != Range) {
           Task[target_point].AATTargetOffsetRadius = RangeNew;
           Range = RangeNew;
-          updated = true;          
+          updated = true;
         }
       }
       UnlockTaskData();
@@ -424,7 +424,7 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
     case DataField::daGet:
       //      Sender->Set(Range*100.0);
     break;
-    case DataField::daPut: 
+    case DataField::daPut:
     case DataField::daChange:
       LockTaskData();
       if (target_point>=ActiveTaskPoint) {
@@ -437,7 +437,7 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
             RadialNew = AngleLimit180(RadialNew+180);
             // flip!
             Range = -Range;
-            Task[target_point].AATTargetOffsetRadius = 
+            Task[target_point].AATTargetOffsetRadius =
               -Task[target_point].AATTargetOffsetRadius;
             updated = true;
           } else {
@@ -486,12 +486,12 @@ static void OnLockedData(DataField *Sender, DataField::DataAccessKind_t Mode) {
   switch(Mode){
     case DataField::daGet:
     break;
-    case DataField::daPut: 
+    case DataField::daPut:
     case DataField::daChange:
       {
       bool lockedthis = Sender->GetAsBoolean();
       if (ValidTaskPoint(target_point)) {
-        if (Task[target_point].AATTargetLocked != 
+        if (Task[target_point].AATTargetLocked !=
             lockedthis) {
           TaskModified = true;
           TargetModified = true;
@@ -513,7 +513,7 @@ static void OnTaskPointData(DataField *Sender, DataField::DataAccessKind_t Mode)
   switch(Mode){
     case DataField::daGet:
     break;
-    case DataField::daPut: 
+    case DataField::daPut:
     case DataField::daChange:
       target_point = Sender->GetAsInteger() + ActiveWayPointOnEntry;
       target_point = max(target_point,ActiveTaskPoint);
@@ -558,7 +558,7 @@ void dlgTarget(int TaskPoint) {
 
   WndFrame *wf2 = (WndFrame*)wf->FindByName(TEXT("frmTarget"));
   if (wf2) {
-    if (ScreenLandscape) 
+    if (ScreenLandscape)
     {// make flush right in landscape mode (at top in portrait mode)
       dlgSize = wf2->GetWidth();
       wf->SetLeft(MainWindow.GetRight() - dlgSize);

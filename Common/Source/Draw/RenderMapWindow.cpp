@@ -20,7 +20,7 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
   ONEHZLIMITER;
 
   DrawLKAlarms(Surface, rc);
-#ifndef NO_DATARECORDER  
+#ifndef NO_DATARECORDER
   DrawFDRAlarms(Surface, rc);
 #endif
   #if (WINDOWSPC<1)
@@ -70,19 +70,19 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 		//if (ZoomDelayTimes >0) {
 		//	ZoomDelayTimes--;
 		if (!fastzoomStart.Check(debounceTimeout)) {
-			#if (WINDOWSPC>0)	
+			#if (WINDOWSPC>0)
 			  #if TESTBENCH
 			  FastZoom=true;
 			  #endif
 			#else
 			  FastZoom=true;
 			#endif
-			// 
+			//
 			return;
 		} else {
 			fastzoomStart.Reset();
 		}
-	} 
+	}
   }
 
   MapWindow::UpdateTimeStats(true);
@@ -94,7 +94,7 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
   //
   if (!QUICKDRAW) {
     //
-    // this is calculating waypoint visible, and must be executed before rendermapwindowbg which calls   
+    // this is calculating waypoint visible, and must be executed before rendermapwindowbg which calls
     // CalculateWayPointReachable new, setting values for visible wps!
     // This is also calculating CalculateScreenBounds 0.0  and placing it inside MapWindow::screenbounds_latlon
     //
@@ -107,8 +107,8 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 
   // No reason to check for bigzoom here, because we are not drawing the map
   if (DONTDRAWTHEMAP) {
-  	DrawFlightMode(Surface, rc);
-  	DrawGPSStatus(Surface, rc);
+	DrawFlightMode(Surface, rc);
+	DrawGPSStatus(Surface, rc);
 	DrawFunctions1HZ(Surface,rc);
 	return;
   }
@@ -125,7 +125,7 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 	MapWindow::RefreshMap();
 	return;
   }
-  
+
   // GPS FIX warnings
   DrawGPSStatus(Surface, rc);
 
@@ -133,5 +133,3 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
   DrawFunctions1HZ(Surface,rc);
 
 }
-
-

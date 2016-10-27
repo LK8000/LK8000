@@ -27,7 +27,7 @@ static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
   if(_tcsncmp(TEXT("$VMVABD"), String, 7)==0)
     {
       return VMVABD(d, &String[8], pGPS);
-    } 
+    }
 
   return FALSE;
 
@@ -36,7 +36,7 @@ static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
 static BOOL CompeoIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE); 
+  return(TRUE);
 }
 
 
@@ -89,7 +89,7 @@ BOOL CompeoRegister(void){
 static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
-	$VMVABD,  
+	$VMVABD,
 	0000.0 gps altitude,		0
 	M,				1
 	0000.0 bari altitude,		2
@@ -131,9 +131,9 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 	vtas = vias*AirDensityRatio(palt);
 	pGPS->TrueAirspeed = vtas;
 
-	if (pGPS->IndicatedAirspeed >0) 
+	if (pGPS->IndicatedAirspeed >0)
 		pGPS->AirspeedAvailable = TRUE;
-	else 
+	else
 		pGPS->AirspeedAvailable = FALSE;
   } else
 		pGPS->AirspeedAvailable = FALSE;

@@ -24,11 +24,11 @@ void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
   ScaleYFromData(rc, &flightstats.Task_Speed);
   ScaleYFromValue(rc, 0);
   ScaleXFromValue(rc, flightstats.Task_Speed.x_min+1.0); // in case no data
-  ScaleXFromValue(rc, flightstats.Task_Speed.x_min); 
+  ScaleXFromValue(rc, flightstats.Task_Speed.x_min);
 
   for(int j=1;j<MAXTASKPOINTS;j++) {
     if (ValidTaskPoint(j) && (flightstats.LegStartTime[j]>=0)) {
-      double xx = 
+      double xx =
         (flightstats.LegStartTime[j]-CALCULATED_INFO.TaskStartTime)/3600.0;
       if (xx>=0) {
         DrawLine(Surface, rc,
@@ -73,5 +73,3 @@ void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
 //  DrawYLabel(hdc, rc, TEXT("V"));
 
 }
-
-

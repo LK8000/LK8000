@@ -11,7 +11,7 @@ template<unsigned average_time, unsigned max_data_rate = 1>
 class ClimbAverageCalculator {
 
   ClimbAverageCalculator(const ClimbAverageCalculator& ) = delete;
-  ClimbAverageCalculator& operator=( const ClimbAverageCalculator& ) = delete;    
+  ClimbAverageCalculator& operator=( const ClimbAverageCalculator& ) = delete;
 
   static_assert(average_time > 0, "invalide average_time");
 
@@ -26,31 +26,31 @@ public:
 private:
   constexpr static unsigned precision = 1000;
   constexpr static unsigned time_period = precision * average_time;
-  
+
 
   struct AltHistoryItem {
     AltHistoryItem() : time(), altitude() { }
     explicit AltHistoryItem(double T, double A ) : time(T*precision), altitude(A*precision) { }
-    
+
     unsigned time;
     int altitude;
   };
-  
+
   typedef std::array<AltHistoryItem, average_time * max_data_rate + 1> history_t;
 
   typedef typename history_t::const_iterator const_iterator;
   typedef typename history_t::iterator iterator;
 
-  /** 
-   * return true if Item1 is inside periode and if Item1 is older then Item2 
+  /**
+   * return true if Item1 is inside periode and if Item1 is older then Item2
    */
   struct compare_time {
     explicit compare_time(double curTime) : _curTime(curTime*precision) {}
-    
+
     bool operator()(const AltHistoryItem& Item1, const AltHistoryItem& Item2 ) {
       return ((Item1.time + time_period) >= _curTime) && Item1.time < Item2.time;
     }
-    
+
     unsigned _curTime;
   };
 
@@ -69,7 +69,7 @@ double ClimbAverageCalculator<average_time, max_data_rate>::GetAverage(double cu
 
   if(next_history >= history.size()) {
     next_history = 0;
-  }  
+  }
 
   const_iterator bestHistory = std::min_element(history.begin(), history.end(), compare_time(curTime));
   if (bestHistory->time < new_history.time) {

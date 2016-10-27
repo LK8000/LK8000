@@ -30,5 +30,3 @@ char *ltoa(long value, char *digits, int base);
 char *strupr(char *str);
 
 #endif
-
-

@@ -182,10 +182,10 @@ void dlgCustomMenuShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu1"));
   if (wp) CustomMenu1 = (wp->GetDataField()->GetAsInteger());
- 
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu2"));
   if (wp) CustomMenu2 = (wp->GetDataField()->GetAsInteger());
- 
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu3"));
   if (wp) CustomMenu3 = (wp->GetDataField()->GetAsInteger());
 
@@ -214,4 +214,3 @@ void dlgCustomMenuShowModal(void){
   wf = NULL;
 
 }
-

@@ -46,14 +46,14 @@ class XShapeLabel: public XShape {
  public:
   XShapeLabel() : label() { }
   virtual ~XShapeLabel();
-  
-  virtual bool HasLabel() const { 
-      return ( label && ( label[0] != TEXT('\0'))); 
+
+  virtual bool HasLabel() const {
+      return ( label && ( label[0] != TEXT('\0')));
   }
 
   virtual void clear();
   void setlabel(const char* src);
-  
+
   virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const;
   virtual bool nearestItem(int category, double lon, double lat);
 
@@ -72,15 +72,15 @@ class Topology {
   Topology(const TCHAR* shpname);
 #endif
   Topology() {};
-  
+
   virtual ~Topology();
-  
+
   void Open();
   void Close();
 
   void updateCache(rectObj thebounds, bool purgeonly=false);
   void Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
-  
+
   void SearchNearest(const rectObj& bounds);
 
   double scaleThreshold;
@@ -104,7 +104,7 @@ class Topology {
 
   virtual void removeShape(const int i);
   virtual XShape* addShape(const int i);
-  
+
  protected:
 
   void flushCache();
@@ -123,7 +123,7 @@ class Topology {
   rectObj* shpBounds;
   rectObj lastBounds;
   bool in_scale_last;
- 
+
 };
 
 #if USETOPOMARKS
@@ -131,7 +131,7 @@ class TopologyWriter: public Topology {
  public:
   TopologyWriter(const TCHAR *shpname);
   virtual ~TopologyWriter();
-  
+
   void addPoint(double x, double y);
   void Reset(void);
   void CreateFiles(void);

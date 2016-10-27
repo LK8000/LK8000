@@ -14,15 +14,15 @@
                 #define OLDPPC
 
 		// App keys
-		#define VK_APP1     0xC1 
-		#define VK_APP2     0xC2 
+		#define VK_APP1     0xC1
+		#define VK_APP2     0xC2
 		#define VK_APP3     0xC3
 		#define VK_APP4     0xC4
 		#define VK_APP5     0xC5
 		#define VK_APP6     0xC6
 		// #define VK_APP7     0xC7
 		// #define VK_APP8     0xC8
- 
+
 		#ifndef NOCLEARTYPE
 		#define NOCLEARTYPE
 		#endif
@@ -39,7 +39,7 @@
 		#ifndef NOCLEARTYPE
 		#define NOCLEARTYPE
 		#endif
-  	#ifndef NOLINETO
+	#ifndef NOLINETO
         #define NOLINETO
 		#endif
 
@@ -55,7 +55,7 @@
 	#else
 	// Some other Pocket PC
 #include <assert.h>
-		
+
 	// NOT EXPLICITLY SUPPORTED
 	// 110106 apply cleartype on CE 5 as well
 	#ifndef NOCLEARTYPE

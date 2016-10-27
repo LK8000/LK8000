@@ -78,7 +78,7 @@ bool CDevEye::PEYA(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
         data.cloudTemp = value;
     if(ParToDouble(sentence, fieldIdx++, &value))
         data.groundTemp = value;
-  
+
     UpdateBaroSource( info, 0,d, AltitudeToQNHAltitude(data.pAlt));
 
     info->AirspeedAvailable = true;
@@ -107,7 +107,7 @@ bool CDevEye::PEYA(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
 
     info->HumidityAvailable = true;
     info->RelativeHumidity = data.humidity;
-  
+
     return true;
 }
 
@@ -118,7 +118,7 @@ bool CDevEye::PEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
   unsigned fieldIdx = 0;
   bool status = true;
   double value;
-  
+
   if(status &= ParToDouble(sentence, fieldIdx++, &value))
     data.eulerRoll = value;
   if(status &= ParToDouble(sentence, fieldIdx++, &value))
@@ -143,23 +143,23 @@ bool CDevEye::PEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info
     data.magneticHeading = value;
   if(status &= ParToDouble(sentence, fieldIdx++, &value))
     data.localDeclination = value;
-  
+
   if(status) {
     #if 0 // NOT WORKING CORRECTLY
     info->GyroscopeAvailable = true;
     info->Pitch = data.eulerPitch;
     info->Roll = data.eulerRoll;
     #endif
-    
+
     info->MagneticHeadingAvailable = true;
     info->MagneticHeading = data.magneticHeading;
-    
+
     info->AccelerationAvailable = true;
     info->AccelX = data.accelX;
     info->AccelY = data.accelY;
     info->AccelZ = data.accelZ;
   }
-  
+
   return status;
 }
 
@@ -176,7 +176,7 @@ BOOL CDevEye::ParseNMEA(PDeviceDescriptor_t d, TCHAR *sentence, NMEA_INFO *info)
 
     if(_tcsncmp(_T("$PEYI"), sentence, 5) == 0)
         return PEYI(d, sentence + 6, info);
-  
+
     return FALSE;
 }
 
@@ -196,7 +196,7 @@ BOOL CDevEye::Install(PDeviceDescriptor_t d) {
     d->IsLogger     = NULL;
     d->IsGPSSource  = GetTrue;
     d->IsBaroSource = GetTrue;
-  
+
     return TRUE;
 }
 

@@ -15,7 +15,7 @@
 // 3: normal operation
 typedef enum {psInitInProgress=0, psInitDone=1, psFirstDrawDone=2, psNormalOp=3} StartupState_t;
 
-// This could be also used for PDA in landscape.. 
+// This could be also used for PDA in landscape..
 typedef enum{
   ssnone=0,
   ss240x320,
@@ -25,7 +25,7 @@ typedef enum{
   ss480x800,
   ss600x800,
   sslandscape, //  <landscape=portrait modes, >landscape=landscape modes
-  ss320x240, 
+  ss320x240,
   ss400x240,
   ss480x234,
   ss480x272,
@@ -79,7 +79,7 @@ typedef enum{
 	apImPnaGenericBTKC,
 	apImPnaGenericBTK1,
 	apImPnaGenericBTK2,
-	apImPnaGenericBTK3 
+	apImPnaGenericBTK3
 }InfoBoxModelAppearance_t;
 
 typedef enum{
@@ -210,7 +210,7 @@ typedef enum {
 } MsgType_t;
 
 typedef enum {
-    IdOk = 1, 
+    IdOk = 1,
     IdCancel,
     IdYes,
     IdNo,

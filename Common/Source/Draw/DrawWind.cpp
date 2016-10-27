@@ -14,11 +14,11 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   POINT Start;
   TCHAR sTmp[12];
   static SIZE tsize = {0,0};
-  
+
   if (DerivedDrawInfo.WindSpeed<1) {
     return; // JMW don't bother drawing it if not significant
   }
-  
+
   if (tsize.cx == 0){
 
     const auto oldFont = Surface.SelectObject(MapWindowBoldFont);
@@ -28,21 +28,21 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   }
 
   int wmag = iround(4.0*DerivedDrawInfo.WindSpeed);
-  
+
   Start.y = Orig.y;
   Start.x = Orig.x;
 
   int kx = tsize.cx/ScreenScale/2;
 
-  POINT Arrow[7] = { {0,-20}, {-6,-26}, {0,-20}, 
-                     {6,-26}, {0,-20}, 
-                     {8+kx, -24}, 
+  POINT Arrow[7] = { {0,-20}, {-6,-26}, {0,-20},
+                     {6,-26}, {0,-20},
+                     {8+kx, -24},
                      {-8-kx, -24}};
 
   for (i=1;i<4;i++)
     Arrow[i].y -= wmag;
 
-  PolygonRotateShift(Arrow, 7, Start.x, Start.y, 
+  PolygonRotateShift(Arrow, 7, Start.x, Start.y,
 		     DerivedDrawInfo.WindBearing-DisplayAngle);
 
   //
@@ -81,4 +81,3 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);
 }
-

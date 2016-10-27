@@ -28,7 +28,7 @@ UnitDescriptor_t Units::UnitDescriptors[] ={
   {TEXT("kt"),   0.001944,   0},
   {TEXT("mh"),  0.002237,   0},
   {TEXT("ms"),  1.0,        0},
-  {TEXT("fm"),  3.281*60.0, 0}, 
+  {TEXT("fm"),  3.281*60.0, 0},
   {TEXT("m"),    1.0,        0},
   {TEXT("ft"),   3.281,      0},
   {TEXT("K"),    1,          0},
@@ -72,7 +72,7 @@ void Units::LongitudeToDMS(double Longitude,
 }
 
 
-void Units::LatitudeToDMS(double Latitude, 
+void Units::LatitudeToDMS(double Latitude,
                           int *dd,
                           int *mm,
                           int *ss,
@@ -228,7 +228,7 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
 }
 
 const TCHAR *Units::GetUnitName(Units_t Unit) {
-    //  return(gettext(UnitDescriptors[Unit].Name)); 
+    //  return(gettext(UnitDescriptors[Unit].Name));
     // JMW adjusted this because units are pretty standard internationally
     // so don't need different names in different languages.
     if (!UnitDescriptors[Unit].Name) {
@@ -246,7 +246,7 @@ const TCHAR *Units::GetUnitName(Units_t Unit) {
             case unFeet:
             case unFligthLevel:
             case unKelvin:
-                break;          
+                break;
             case unGradCelcius:
                 UnitDescriptors[Unit].Name = MsgToken(2180);
                 break;
@@ -449,7 +449,7 @@ bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
 
   int prec;
   TCHAR sTmp[32];
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit]; 
+  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
 
   Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
 
@@ -481,7 +481,7 @@ bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t s
   else
 	useUnit=unMeter;
 
-  UnitDescriptor_t *pU = &UnitDescriptors[useUnit]; 
+  UnitDescriptor_t *pU = &UnitDescriptors[useUnit];
   Altitude = Altitude * pU->ToUserFact;
   _stprintf(sTmp, TEXT("%.*f%s"), 0, Altitude, GetUnitName(useUnit));
 
@@ -560,7 +560,7 @@ bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
       pU = &UnitDescriptors[unMeter];
       value = Distance * pU->ToUserFact;
     }
-    if (UserDistanceUnit == unNauticalMiles 
+    if (UserDistanceUnit == unNauticalMiles
             || UserDistanceUnit == unStatuteMiles) {
 
       Unit = unFeet;
@@ -613,7 +613,7 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
       UnitIdx = unFeet;
     }
   }
-  
+
   if (Unit != NULL) {
     *Unit = UnitIdx;
   }
@@ -638,7 +638,7 @@ double Units::ToUserAltitude(double Altitude){
   UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
 
   Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
-  
+
   return(Altitude);
 }
 
@@ -646,7 +646,7 @@ double Units::ToSysAltitude(double Altitude){
   UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
 
   Altitude = Altitude / pU->ToUserFact; // + pU->ToUserOffset;
-  
+
   return(Altitude);
 }
 
@@ -655,7 +655,7 @@ double Units::ToUserDistance(double Distance){
   UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
 
   Distance = Distance * pU->ToUserFact; // + pU->ToUserOffset;
-  
+
   return(Distance);
 }
 
@@ -663,7 +663,7 @@ double Units::ToSysDistance(double Distance){
   UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
 
   Distance = Distance / pU->ToUserFact; // + pU->ToUserOffset;
-  
+
   return(Distance);
 }
 
@@ -675,10 +675,10 @@ void Units::TimeToText(TCHAR* text, int d) {
   mins = (dd/60-hours*60);
   hours = hours % 24;
   if (negative) {
-    _stprintf(text, TEXT("-%02d:%02d"),		  
+    _stprintf(text, TEXT("-%02d:%02d"),
               hours, mins);
   } else {
-    _stprintf(text, TEXT("%02d:%02d"),		  
+    _stprintf(text, TEXT("%02d:%02d"),
               hours, mins);
   }
 }
@@ -691,17 +691,17 @@ void Units::TimeToTextSimple(TCHAR* text, int d) {
   mins = (dd/60-hours*60);
   hours = hours % 24;
   if (negative) {
-    _stprintf(text, TEXT("-%02d%02d"),		  
+    _stprintf(text, TEXT("-%02d%02d"),
               hours, mins);
   } else {
-    _stprintf(text, TEXT("%02d%02d"),		  
+    _stprintf(text, TEXT("%02d%02d"),
               hours, mins);
   }
 }
 
 // Not for displaying a clock time, good for a countdown
 // will display either
-// Returns true if hours, false if minutes 
+// Returns true if hours, false if minutes
 bool Units::TimeToTextDown(TCHAR* text, int d) {
   int hours, mins, seconds;
   bool negative = (d<0);
@@ -722,14 +722,14 @@ bool Units::TimeToTextDown(TCHAR* text, int d) {
 
   if (negative) {
 	TCHAR t[20];
-	_stprintf(t,TEXT("-%s"),text); 
+	_stprintf(t,TEXT("-%s"),text);
 	_tcscpy(text,t);
   }
   return ishours;
 
 }
 
-// LK8000 
+// LK8000
 void Units::TimeToTextS(TCHAR* text, int d) {
   int hours, mins, seconds;
   bool negative = (d<0);
@@ -751,4 +751,3 @@ void Units::TimeToTextS(TCHAR* text, int d) {
 	_stprintf(text, TEXT("%d:%02d:%02d"),  hours, mins, seconds);
   }
 }
-

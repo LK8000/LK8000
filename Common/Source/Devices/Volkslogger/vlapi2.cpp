@@ -44,9 +44,9 @@ void VLAPI::set_device(PDeviceDescriptor_t	d) {
 }
 
 
-// ------------------------------------------------------------ 
+// ------------------------------------------------------------
 //                        VLA_XFR
-// ------------------------------------------------------------ 
+// ------------------------------------------------------------
 
 int32 VLA_XFR::commandbaud = 9600L;
 
@@ -220,7 +220,7 @@ int32 VLA_XFR::readlog(lpb puffer, int32 maxlen) {
   int16 ende  = 0;
 //  int32 i;
   lpb p;
-  int pp = 0; 
+  int pp = 0;
   progress_reset();
 
   memset(puffer, 0xff, maxlen);
@@ -230,7 +230,7 @@ int32 VLA_XFR::readlog(lpb puffer, int32 maxlen) {
   while(!ende) {
     // Zeichen anfordern und darauf warten
     serial_out(ACK);
-    
+
     pp++;
     serial_in(&c);
     if ((gcs_counter>=maxlen) && (crc16==0)) {
@@ -250,7 +250,7 @@ int32 VLA_XFR::readlog(lpb puffer, int32 maxlen) {
     // oder aber das empfangene Zeichen wird ausgewertet
     else {
       switch (c) {
-      case DLE: 
+      case DLE:
         if (dle_r == 0) {             //!DLE, DLE -> Achtung!
           dle_r = 1;
         }
@@ -264,7 +264,7 @@ int32 VLA_XFR::readlog(lpb puffer, int32 maxlen) {
           }
         }
         break;
-      case ETX: 
+      case ETX:
         if (dle_r == 0) {             //!DLE, ETX -> Zeichen
           if (start) {
             if(gcs_counter < maxlen) {
@@ -281,7 +281,7 @@ int32 VLA_XFR::readlog(lpb puffer, int32 maxlen) {
           }
         }
         break;
-      case STX: 
+      case STX:
         if (dle_r == 0) {	         //!DLE, STX -> Zeichen
           if (start) {
             if(gcs_counter < maxlen)
@@ -297,7 +297,7 @@ int32 VLA_XFR::readlog(lpb puffer, int32 maxlen) {
           progress_set(VLS_TXT_XFERRING);
         }
         break;
-      default: 
+      default:
         if (start) {
           if(gcs_counter < maxlen)
             *p++ = c;
@@ -377,7 +377,7 @@ VLA_ERROR VLA_XFR::dbbput(lpb dbbbuffer, int32 dbbsize) {
     c = dbbbuffer[i];
     crc16 = UpdateCRC(c,crc16);
     serial_out(c);
-    if((i%step)==0) 
+    if((i%step)==0)
       progress_set(VLS_TXT_WDB);
   }
 
@@ -468,7 +468,7 @@ long VLA_XFR::flightget(lpb buffer, int32 buffersize, int16 flightnr, int16 secm
   serial_set_baudrate(databaud); // DATA-Baudrate einstellen
 
   groesse = readlog(buffer,buffersize);
-	
+
   if (groesse <= 0)
     return 0;
 
@@ -476,7 +476,7 @@ long VLA_XFR::flightget(lpb buffer, int32 buffersize, int16 flightnr, int16 secm
   serial_set_baudrate(commandbaud); // CMD-Baudrate einstellen
   wait_ms(300);
   cret = sendcommand(cmd_SIG, 0,0);
-	
+
   if (cret)
     return 0;
 
@@ -491,7 +491,7 @@ long VLA_XFR::flightget(lpb buffer, int32 buffersize, int16 flightnr, int16 secm
 // wait a specified amount of seconds (waittime) for connection of the
 // VL to the serial port
 //
-VLA_ERROR VLA_XFR::connect(int32 waittime, int quietmode ) { 
+VLA_ERROR VLA_XFR::connect(int32 waittime, int quietmode ) {
   int16 l_count = 0;
   int16 timeout = 0;
   int32 stoptime;
@@ -501,7 +501,7 @@ VLA_ERROR VLA_XFR::connect(int32 waittime, int quietmode ) {
 
   if(!quietmode)
     show(VLS_TXT_CONNECT);
-  
+
   serial_empty_io_buffers();
   // eventuell noch laufende Aktion im Logger abbrechen
   for (i=0; i<10; i++) {
@@ -519,7 +519,7 @@ VLA_ERROR VLA_XFR::connect(int32 waittime, int quietmode ) {
     if (get_timer_s() >= stoptime)
       timeout = 1;
   } while ( (!timeout) && (serial_in(&c) || c != 'L' ));
-  
+
   if (timeout)
     rc = VLA_ERR_NOANSWER;
   else { // Ab dann:
@@ -563,17 +563,17 @@ VLA_ERROR VLA_XFR::readinfo(lpb buffer, int32 buffersize) {
 
   if(sendcommand(cmd_INF,0,0) != 0)
     return VLA_ERR_MISC;
-	
+
   if((readlog(buffer, buffersize)) <= 0)
-    return VLA_ERR_NODATA; 
+    return VLA_ERR_NODATA;
 
   return VLA_ERR_NOERR;
 }
 
 
-// ------------------------------------------------------------ 
+// ------------------------------------------------------------
 //                          VLAPI
-// ------------------------------------------------------------ 
+// ------------------------------------------------------------
 
 // constructor
 VLAPI::VLAPI() {
@@ -593,7 +593,7 @@ VLAPI::~VLAPI() {
 // 0  : logger not present
 // >0 : logger present
 //
-VLA_ERROR VLAPI::open(boolean connectit, int timeout, 
+VLA_ERROR VLAPI::open(boolean connectit, int timeout,
                       boolean quiet, int32 sbaudrate) {
   noninteractive = quiet;
   VLA_ERROR err;
@@ -667,7 +667,7 @@ VLA_ERROR VLAPI::read_db_and_declaration() {
   VLA_ERROR err = stillconnect();
   if(err != VLA_ERR_NOERR)
     return err;
-	
+
   err = dbbget(dbbbuffer,sizeof(dbbbuffer));
   if(err != VLA_ERR_NOERR)
     return err;
@@ -679,7 +679,7 @@ VLA_ERROR VLAPI::read_db_and_declaration() {
 
   // convert and write list of waypoints
   if (dbb1.header[0].dsfirst != 0xffff) {
-    database.nwpts = 1 + (dbb1.header[0].dslast - dbb1.header[0].dsfirst) 
+    database.nwpts = 1 + (dbb1.header[0].dslast - dbb1.header[0].dsfirst)
       / dbb1.header[0].dslaenge;
     if(database.wpts != 0) {
       delete[] database.wpts;
@@ -687,7 +687,7 @@ VLA_ERROR VLAPI::read_db_and_declaration() {
     }
     database.wpts = new WPT[database.nwpts];
     for (int i=0; i<database.nwpts; i++) {
-      database.wpts[i].get(dbb1.block + dbb1.header[0].dsfirst + 
+      database.wpts[i].get(dbb1.block + dbb1.header[0].dsfirst +
                            i*dbb1.header[0].dslaenge);
     }
   }
@@ -695,7 +695,7 @@ VLA_ERROR VLAPI::read_db_and_declaration() {
 
   // convert and write list of routes
   if (dbb1.header[3].dsfirst != 0xffff) {
-    database.nroutes = 1 + (dbb1.header[3].dslast - dbb1.header[3].dsfirst) 
+    database.nroutes = 1 + (dbb1.header[3].dslast - dbb1.header[3].dsfirst)
       / dbb1.header[3].dslaenge ;
     if(database.routes != 0) {
       delete[] database.routes;
@@ -703,14 +703,14 @@ VLA_ERROR VLAPI::read_db_and_declaration() {
     }
     database.routes = new ROUTE[database.nroutes];
     for (int i=0; i<database.nroutes; i++) {
-      database.routes[i].get(dbb1.block + dbb1.header[3].dsfirst + 
+      database.routes[i].get(dbb1.block + dbb1.header[3].dsfirst +
                              i*dbb1.header[3].dslaenge);
     }
   }
 
   // convert and write list of pilots
   if (dbb1.header[1].dsfirst != 0xffff) {
-    database.npilots = 1 + (dbb1.header[1].dslast - dbb1.header[1].dsfirst) 
+    database.npilots = 1 + (dbb1.header[1].dslast - dbb1.header[1].dsfirst)
       / dbb1.header[1].dslaenge;
     if(database.pilots != 0) {
       delete[] database.pilots;
@@ -718,12 +718,12 @@ VLA_ERROR VLAPI::read_db_and_declaration() {
     }
     database.pilots = new PILOT[database.npilots];
     for (int i=0; i<database.npilots; i++) {
-      database.pilots[i].get(dbb1.block + dbb1.header[1].dsfirst + 
+      database.pilots[i].get(dbb1.block + dbb1.header[1].dsfirst +
                              i*dbb1.header[1].dslaenge);
     }
   }
 
-  declaration.get(&dbb1);	
+  declaration.get(&dbb1);
 
   return VLA_ERR_NOERR;
 }
@@ -757,7 +757,7 @@ VLA_ERROR VLAPI::write_db_and_declaration() {
   }
   dbb1.close_db(3);
 
-  declaration.put(&dbb1);	
+  declaration.put(&dbb1);
 
   // copy dbb1 blocks into buffer
   byte dbbbuffer[VLAPI_DBB_MEMSIZE];
@@ -775,7 +775,7 @@ VLA_ERROR VLAPI::read_directory() {
   VLA_ERROR err = stillconnect();
   if(err != VLA_ERR_NOERR)
     return err;
-	
+
   byte dirbuffer[VLAPI_LOG_MEMSIZE];
   err = readdir(dirbuffer, sizeof(dirbuffer));
 
@@ -796,7 +796,7 @@ VLA_ERROR VLAPI::read_directory() {
       err = VLA_ERR_NOFLIGHTS;
     }
   }
-	
+
   return err;
 
 }
@@ -805,7 +805,7 @@ VLA_ERROR VLAPI::read_igcfile(TCHAR *filename, int index, int secmode) {
   FILE *outfile = _tfopen(filename, _T("wt"));
   if(!outfile)
     return VLA_ERR_FILE;
-	
+
   VLA_ERROR err = stillconnect();
   if(err != VLA_ERR_NOERR) {
     fclose(outfile);
@@ -815,7 +815,7 @@ VLA_ERROR VLAPI::read_igcfile(TCHAR *filename, int index, int secmode) {
   byte logbuffer[VLAPI_LOG_MEMSIZE];
   if (flightget(logbuffer, sizeof(logbuffer), index, secmode)>0)
     err = VLA_ERR_NOERR;
-	
+
   word serno; long sp;
   long r;
   if(err == VLA_ERR_NOERR) {
@@ -911,12 +911,12 @@ void VLAPI_DATA::DCLWPT::put(lpb p) {
       if(lw/i <= 15000) {
         int w1 = i;
         int w2 = max(lw/i/1000, 1);
-        
+
         if(w1Best == 0 || (w1*w2 > w1Best*w2Best && w1*w2*1000 <= lw)) {
           w1Best = w1;
           w2Best = w2;
         }
-        
+
         if((lw/1000)%i==0)
           break;
       }
@@ -1019,7 +1019,7 @@ void VLAPI_DATA::DECLARATION::put(DBB *dbb) {
   strupr(flightinfo.gliderid);
   strupr(flightinfo.competitionclass);
   strupr(flightinfo.competitionid);
-	
+
   char name[65];
   char name2[17];
   strncpy(name,flightinfo.pilot,sizeof(name));
@@ -1032,11 +1032,11 @@ void VLAPI_DATA::DECLARATION::put(DBB *dbb) {
 
   dbb->add_fdf(FLDGTY, strlen(flightinfo.glidertype)+1, flightinfo.glidertype);
   dbb->add_fdf(FLDGID, strlen(flightinfo.gliderid)+1, flightinfo.gliderid);
-  dbb->add_fdf(FLDCCL, strlen(flightinfo.competitionclass)+1, 
+  dbb->add_fdf(FLDCCL, strlen(flightinfo.competitionclass)+1,
                flightinfo.competitionclass);
   dbb->add_fdf(FLDCID, strlen(flightinfo.competitionid)+1,
                flightinfo.competitionid);
-  
+
   byte fdfwpt[16]; // temporary space for data conversions
   flightinfo.homepoint.put(fdfwpt);
   dbb->add_fdf(FLDTKF,sizeof(fdfwpt),&fdfwpt);

@@ -27,7 +27,7 @@ static void InitHelp(void) {
   wHelp=(WndListFrame *)NULL;
   wHelpEntry = (WndOwnerDrawFrame *)NULL;
   DrawListIndex=0;
-  
+
   aTextLine.clear();
 }
 
@@ -95,7 +95,7 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   if (!wHelp) goto _getout;
 
   wHelp->SetBorderKind(BORDERLEFT);
-  
+
   wHelpEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   LKASSERT(wHelpEntry);
   if (!wHelpEntry) goto _getout;
@@ -111,13 +111,11 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   wHelp->Redraw();
   wf->ShowModal();
   delete wf;
-  
+
   aTextLine.clear();
-  
+
 
 _getout:
   wf = NULL;
 
 }
-
-

@@ -2,7 +2,7 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   SerialPort.h
  * Author: Bruno de Lacheisserie
  *
@@ -39,10 +39,10 @@ public:
 
 protected:
     virtual unsigned RxThread();
-    
+
 private:
     HANDLE hPort;
-            
+
     DWORD _dwPortSpeed;
     BitIndex_t _dwPortBit;
     unsigned short valid_frames;
@@ -59,4 +59,3 @@ private:
 #endif
 
 #endif	/* SERIALPORT_H */
-

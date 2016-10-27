@@ -14,11 +14,11 @@ extern "C" {
 typedef struct shape_tree_node {
   // area covered by this node
   rectObj rect;
-  
+
   // list of shapes stored at this node.
   int numshapes;
   int *ids;
-  
+
   int numsubnodes;
   struct shape_tree_node *subnode[MAX_SUBNODES];
 } treeNodeObj;

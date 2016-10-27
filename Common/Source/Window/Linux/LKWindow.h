@@ -35,18 +35,18 @@ public:
     ~LKWindow() {
         StopTimer();
     }
-    
+
     virtual void SetWndText(const TCHAR* lpszText) = 0;
     virtual const TCHAR* GetWndText() const = 0;
-    
-    void SetVisible(bool Visible) { 
+
+    void SetVisible(bool Visible) {
         if(Visible) {
-            this->Show(); 
+            this->Show();
         } else {
             this->Hide();
         }
     }
-    
+
     void Enable(bool Enable) {
         this->SetEnabled(Enable);
     }
@@ -54,7 +54,7 @@ public:
     virtual FontReference GetFont() const {
         return static_cast<FontReference>(&(_Base::GetFont()));
     }
-    
+
     virtual void SetFont(FontReference Font) {
         assert(Font);
         if(Font && Font->IsDefined()) {
@@ -62,14 +62,14 @@ public:
         }
     }
 
-    virtual void Redraw(const RECT& Rect) { 
+    virtual void Redraw(const RECT& Rect) {
         this->Invalidate();
     }
-    
+
     virtual void Redraw() {
         this->Invalidate();
     }
-    
+
     void SetToForeground() {
         if(this->GetParent()) {
             this->BringToTop();
@@ -80,40 +80,40 @@ public:
             this->BringToTop();
         }
     }
-    
+
     static Window* GetFocus();
 
     void StartTimer(unsigned uTime /*millisecond*/) {
         Schedule(uTime);
     }
-    
+
     void StopTimer() {
         Cancel();
     }
-    
+
     void AddChild(Window* pWnd);
     void RemoveChild(Window* pWnd);
-    
+
     virtual void OnTimer() {}
-    
+
     virtual bool OnTimer(WindowTimer &timer) {
         return _Base::OnTimer(timer);
     }
 
     virtual void OnPaint(Canvas &canvas) {
-        LKSurface Surface; 
+        LKSurface Surface;
         Surface.Attach(&canvas);
         OnPaint(Surface, this->GetClientRect());
         _Base::OnPaint(canvas);
     }
-    
+
     virtual void OnPaint(Canvas &canvas, const PixelRect &dirty) {
-        LKSurface Surface; 
+        LKSurface Surface;
         Surface.Attach(&canvas);
         OnPaint(Surface, dirty);
         _Base::OnPaint(canvas);
     }
-    
+
     virtual bool OnMouseMove(PixelScalar x, PixelScalar y, unsigned keys) {
         bool bRet = _Base::OnMouseMove(x,y,keys);
         if(!bRet) {
@@ -121,7 +121,7 @@ public:
         }
         return bRet;
     }
-    
+
     virtual bool OnMouseDown(PixelScalar x, PixelScalar y) {
         bool bRet = _Base::OnMouseDown(x,y);
         if(!bRet) {
@@ -129,7 +129,7 @@ public:
         }
         return bRet;
     }
-    
+
     virtual bool OnMouseUp(PixelScalar x, PixelScalar y) {
         bool bRet = _Base::OnMouseUp(x,y);
         if(!bRet) {
@@ -149,19 +149,19 @@ public:
         _Base::OnResize(new_size);
         OnSize(new_size.cx, new_size.cy);
     }
-    
+
     virtual bool OnMouseMove(const POINT& Pos) { return false; }
     virtual bool OnLButtonDown(const POINT& Pos) { return false; }
     virtual bool OnLButtonUp(const POINT& Pos) { return false; }
-    
+
     virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
 
     virtual bool OnSize(int cx, int cy) { return false; }
-    
+
     virtual bool OnClose() { return false; }
 protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) { return false; }
-    
+
 private:
     tstring _szWndName;
 };

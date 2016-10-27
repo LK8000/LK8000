@@ -80,7 +80,7 @@ void SetProfileVariable(const char *curname, const char *curvalue, const char *l
 
 void SetProfileVariable(const char *curname, const char *curvalue, const char *lookupname, TCHAR* lookupvalue, size_t size) {
   if (strcmp(curname,lookupname)) return;
-#ifdef UNICODE  
+#ifdef UNICODE
   utf2unicode(curvalue, lookupvalue, size);
   // REMEMBER TO CONVERT FROM UTF8 to UNICODE!!
   // char stmp[MAX_PATH];
@@ -89,7 +89,7 @@ void SetProfileVariable(const char *curname, const char *curvalue, const char *l
 #else
   strncpy(lookupvalue, curvalue, size);
 #endif
-  #if DEBUGPROF 
+  #if DEBUGPROF
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> tchar=<%s>\n"),
   curname,curvalue,lookupname,lookupvalue);
   #endif
@@ -117,7 +117,7 @@ bool LKProfileLoad(const TCHAR *szFile)
        isDefaultProfile=false;
     }
   }
-  
+
   bool found = false;
   FILE *fp=NULL;
   int j;
@@ -153,7 +153,7 @@ bool LKProfileLoad(const TCHAR *szFile)
 			LKParseProfileString(name, "");
 			found = true;
 		}
-	} 
+	}
 	// else crlf, or comment, or invalid line
 	// else StartupStore(_T("...... PARSE INVALID: <%S>\n"),inval);
   }
@@ -176,10 +176,10 @@ using std::max;
 // Important: some parameters are saved multiplied by 10 or 1000, so they must
 // be adjusted here. Example SafetyMacCready
 // Notice that we must check that we are not getting a matchedstring of another match!
-// This is why we do it twice, before and after the PREAD. 
+// This is why we do it twice, before and after the PREAD.
 // Another approach is to use for example  if (!_tcscmp(szRegistryCircleZoom,sname)) {
 // We shall make PREAD return a bool to tell us, next time, and get rid of this terrible stuff.
-// 
+//
 void LKParseProfileString(const char *sname, const char *svalue) {
 
   //#if DEBUGPROF
@@ -187,9 +187,9 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   //#endif
 
   int ival;
-  // 
+  //
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
-  // 
+  //
   // -- USE _CONFIG VARIABLES WHEN A RUNTIME VALUE CAN BE CHANGED --
   // WE DONT WANT TO SAVE RUNTIME TEMPORARY CONFIGURATIONS, ONLY SYSTEM CONFIG!
   // FOR EXAMPLE: ActiveMap can be set by default in system config, but also changed
@@ -207,7 +207,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryAircraftCategory, &AircraftCategory);
   PREAD(sname,svalue,szRegistryAircraftRego, &*AircraftRego_Config, array_size(AircraftRego_Config));
   PREAD(sname,svalue,szRegistryAircraftType, &*AircraftType_Config, array_size(AircraftType_Config));
-  PREAD(sname,svalue,szRegistryAirfieldFile, &*szAirfieldFile, array_size(szAirfieldFile)); 
+  PREAD(sname,svalue,szRegistryAirfieldFile, &*szAirfieldFile, array_size(szAirfieldFile));
   PREAD(sname,svalue,szRegistryAirspaceFile, &*szAirspaceFile, array_size(szAirspaceFile));
   if (matchedstring) return; // every 10 or so PREADs we check for quick return
 
@@ -399,7 +399,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryHideUnits,&HideUnits);
   PREAD(sname,svalue,szRegistryHomeWaypoint,&HomeWaypoint);
 
-  // InfoType 
+  // InfoType
   for (int i=0;i<MAXINFOWINDOWS;i++) {
         PREAD(sname,svalue,&*szRegistryDisplayType[i], &InfoType[i]);
 	if (matchedstring) return;
@@ -480,7 +480,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile, array_size(szPolarFile));
   PREAD(sname,svalue,szRegistryPollingMode,&PollingMode);
   if (matchedstring) return;
-  
+
   /***************************************************/
   /* for compatibilty with old file                  */
   unsigned dwIdxPort;
@@ -494,7 +494,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
         }
         return;
     }
-  
+
   PREAD(sname,svalue,szRegistryPort2Index,&dwIdxPort);
     if(matchedstring) {
         if(COMMPort.size() == 0) {
@@ -710,7 +710,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) return;
 
   PREAD(sname,svalue,szRegistryMMNorthUp1 ,&MMNorthUp_Runtime[0]);
-  if (matchedstring) return;  
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMMNorthUp2 ,&MMNorthUp_Runtime[1]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMMNorthUp3 ,&MMNorthUp_Runtime[2]);
@@ -821,5 +821,3 @@ void ReadPort2Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Inde
         *Bit1Index = static_cast<BitIndex_t>(dwBit2Index);
     }
 }
-
-

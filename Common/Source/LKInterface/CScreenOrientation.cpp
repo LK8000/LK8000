@@ -5,7 +5,7 @@
  *
  * File:   CScreenOrientation.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 13 février 2014, 23:03
  */
 #include "externs.h"
@@ -24,7 +24,7 @@ CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPat
     }
     mOSFilePath += TEXT(LKD_CONF);
     mOSFilePath += TEXT(DIRSEP ".OSScreen");
-    
+
     // if we have OS saved state, previous don't shutdown correctly
     // so don't save current state.
     if(GetSavedSetting(mOSFilePath.c_str()) == invalid) {
@@ -33,13 +33,13 @@ CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPat
         }
     }
 
-    
+
     if(!mLKFilePath.empty() && (*mLKFilePath.rbegin()) != L'\\') {
         mLKFilePath += _T(DIRSEP);
     }
     mLKFilePath += TEXT(LKD_CONF);
     mLKFilePath += TEXT(DIRSEP ".LKScreen");
-    
+
     if(!Restore(mLKFilePath.c_str())) {
         // TODO : Log Error;
     }
@@ -99,7 +99,7 @@ unsigned short CScreenOrientation::GetScreenSetting() {
         return devMode.dmDisplayOrientation;
     }
 #elif defined(KOBO)
-    
+
     char szLine[100] = {};
     if(File::ReadString("/sys/class/graphics/fb0/rotate", szLine, sizeof(szLine))) {
         int tmp = strtol(szLine, nullptr, 10);

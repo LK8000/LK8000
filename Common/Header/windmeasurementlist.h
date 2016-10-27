@@ -35,7 +35,7 @@ struct WindMeasurement {
 //maximum number of windmeasurements in the list. No idea what a sensible value would be...
 
 class WindMeasurementList {
-public: 
+public:
   WindMeasurementList();
   virtual ~WindMeasurementList();
 

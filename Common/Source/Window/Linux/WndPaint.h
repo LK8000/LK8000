@@ -25,4 +25,3 @@ protected:
 };
 
 #endif	/* WNDPAINT_H */
-

@@ -32,7 +32,7 @@ bool ScreenHasChanged(void) {
 
   const PixelRect rc(MainWindow.GetClientRect());
   if (doinit) {
-      
+
 #if (WINDOWSPC>0) || defined(__linux__)
 	oldSCREENWIDTH=rc.GetSize().cx;
 	oldSCREENHEIGHT=rc.GetSize().cy;
@@ -41,7 +41,7 @@ bool ScreenHasChanged(void) {
 	oldSCREENHEIGHT=GetSystemMetrics(SM_CYSCREEN);
 #endif
 
-        #ifdef TESTBENCH 
+        #ifdef TESTBENCH
         StartupStore(_T("... First ScreenHasChanged: %d x %d\n"),oldSCREENWIDTH, oldSCREENHEIGHT);
         #endif
 	doinit=false;
@@ -80,12 +80,12 @@ void ReinitScreen(void) {
   StartupStore(_T("... ChangeScreen suspending Draw Thread\n"));
   #endif
 
-#ifndef ENABLE_OPENGL  
+#ifndef ENABLE_OPENGL
   MapWindow::SuspendDrawingThread();
   ScopeLock Lock(MapWindow::Surface_Mutex);
 #endif
 
-  // MapWndProc will get a WM_SIZE 
+  // MapWndProc will get a WM_SIZE
 
   //
   // Detect the current screen geometry
@@ -93,7 +93,7 @@ void ReinitScreen(void) {
   const PixelRect rc(MainWindow.GetClientRect());
   ScreenSizeX = rc.GetSize().cx;
   ScreenSizeY = rc.GetSize().cy;
-  
+
   InitLKScreen();
 
   LKObjects_Delete();
@@ -139,7 +139,7 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
   Reset_Single_DoInits(MDI_DRAWTASK);
 
-  // Some parameters need to be reset in advance, otherwise they will be retuned only when the 
+  // Some parameters need to be reset in advance, otherwise they will be retuned only when the
   // relative DoInit is accomplished. This is a mistake of course.
   TopSize=0; // requires a DrawNearest. 0 is Ok on startup.
 
@@ -154,5 +154,3 @@ void ReinitScreen(void) {
 
   return;
 }
-
-

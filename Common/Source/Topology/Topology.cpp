@@ -25,7 +25,7 @@
 #include "OpenGL/GLShapeRenderer.h"
 #endif
 
-//#define DEBUG_TFC 
+//#define DEBUG_TFC
 
 XShape::XShape() : hide(false) {
   msInitShape(&shape);
@@ -154,7 +154,7 @@ Topology::Topology(const TCHAR* shpname) {
   in_scale = false;
 
   // filename aleady points to _MAPS subdirectory!
-  _tcscpy( filename, shpname ); 
+  _tcscpy( filename, shpname );
   Open();
 }
 
@@ -179,7 +179,7 @@ void Topology::initCache()
   shpBounds = NULL;
   shps = NULL;
   in_scale_last = false;
-  
+
   for (int i=0; i<shpfile.numshapes; i++) shpCache[i] = NULL;
 
   //StartupStore(_T("... Topology InitCache mode: %d  (free_size=%ld  bounds_size=%ld)\n"),cache_mode,free_size,bounds_size);
@@ -340,7 +340,7 @@ void Topology::flushCache() {
 			shpCache[i] = NULL;
 		}
 		break;
-  }//sw		
+  }//sw
   shapes_visible_count = 0;
 #ifdef DEBUG_TFC
   StartupStore(TEXT("   flushCache() ends (%dms)%s"),starttick.Elapsed(),NEWLINE);
@@ -390,7 +390,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   int shapes_loaded = 0;
   shapes_visible_count = 0;
   in_scale_last = in_scale;
-  
+
   switch (cache_mode) {
     case 0: // Original code plus one special case
       smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
@@ -403,7 +403,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
             } else shapes_visible_count++;
           }
         }//for
-      } else { 
+      } else {
         //In this case we have to run the original algoritm
         msSHPWhichShapes(&shpfile, thebounds, 0);
         shapes_visible_count = 0;
@@ -443,7 +443,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
             removeShape(i);
           } else shapes_visible_count++;
         }//for
-      } else { 
+      } else {
         //Otherwise we have to search the all array
         for (int i=0; i<shpfile.numshapes; i++) {
           if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
@@ -460,7 +460,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
       }
       break;
 
-    case 2: // All shapes in memory	
+    case 2: // All shapes in memory
       XShape *pshp;
       shapes_visible_count = 0;
       for (int i=0; i<shpfile.numshapes; i++) {
@@ -500,14 +500,14 @@ void Topology::removeShape(const int i) {
 }
 
 
-// This is checking boundaries based on lat/lon values. 
+// This is checking boundaries based on lat/lon values.
 // It is not enough for screen overlapping verification.
 bool Topology::checkVisible(const shapeObj& shape, const rectObj &screenRect) {
   return (msRectOverlap(&shape.bounds, &screenRect) == MS_TRUE);
 }
 
 static RasterPoint shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _Proj, std::vector<RasterPoint>& points) {
-    
+
   RasterPoint leftPoint = {
     std::numeric_limits<PixelScalar>::max(),
     std::numeric_limits<PixelScalar>::max()
@@ -518,7 +518,7 @@ static RasterPoint shape2Screen(const lineObj& line, int iskip, const ScreenProj
 
   // first point is inserted before loop for avoid to check "if(first)" inside loop
   points.push_back(_Proj.LonLat2Screen(line.point[0]));
-  
+
   for(int i = 1; i < last; i+=iskip) {
     const RasterPoint pt = _Proj.LonLat2Screen(line.point[i]);
     if (pt.x<=leftPoint.x) {
@@ -533,7 +533,7 @@ static RasterPoint shape2Screen(const lineObj& line, int iskip, const ScreenProj
     leftPoint = pt;
   }
   points.push_back(std::move(pt));
-  
+
   return leftPoint;
 }
 // Paint a single topology element
@@ -550,7 +550,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 	}
 	// since we just checked category 10, if we are over scale we set nolabels
 	if ( MapWindow::zoom.RealScale()>scaleThreshold) nolabels=true;
-  } else 
+  } else
   if (MapWindow::zoom.RealScale() > scaleThreshold) return;
 
 #ifdef ENABLE_OPENGL
@@ -558,8 +558,8 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   shape_renderer.setClipRect(rc);
   shape_renderer.setNoLabel(nolabels);
 #endif
-  
-  
+
+
   // TODO code: only draw inside screen!
   // this will save time with rendering pixmaps especially
   // checkVisible does only check lat lon , not screen pixels..
@@ -578,14 +578,14 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 #ifndef ENABLE_OPENGL
   // get drawing info
   int iskip = 1;
- 
+
   // attempt to bugfix 100615 polyline glitch with zoom over 33Km
   // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
   // != 5 and != 10
-  if (scaleCategory>10) { 
+  if (scaleCategory>10) {
     if (MapWindow::zoom.RealScale()>0.25*scaleThreshold) {
       iskip = 2;
-    } 
+    }
     if (MapWindow::zoom.RealScale()>0.5*scaleThreshold) {
       iskip = 3;
     }
@@ -601,10 +601,10 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   static std::vector<RasterPoint> points;
 
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
-    
+
     XShape *cshape = shpCache[ixshp];
 
-    if (!cshape || cshape->hide) continue;    
+    if (!cshape || cshape->hide) continue;
 
     shapeObj *shape = &(cshape->shape);
 
@@ -642,7 +642,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
           cshape->renderSpecial(renderer, Surface,ptLabel.x,ptLabel.y,rc);
         }
       break;
-      
+
     case(MS_SHAPE_POLYGON):
 #ifdef ENABLE_OPENGL
       shape_renderer.renderPolygon(renderer, Surface, *cshape, hbBrush, _Proj);
@@ -662,7 +662,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 
 #endif
 	break;
-      
+
     default:
       break;
     }
@@ -674,9 +674,9 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   Surface.SelectObject(hfOld);
 }
 
-TopologyLabel::TopologyLabel(const TCHAR* shpname, int field1):Topology(shpname) 
+TopologyLabel::TopologyLabel(const TCHAR* shpname, int field1):Topology(shpname)
 {
-  setField(max(0,field1)); 
+  setField(max(0,field1));
 };
 
 TopologyLabel::~TopologyLabel()
@@ -735,7 +735,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 	GPS_INFO.Latitude, GPS_INFO.Longitude, distance/1000);
   #endif
 
-  // If first time, use it 
+  // If first time, use it
   if (!item->Valid || (item->Distance > distance)) {
 	item->Latitude=lat;
 	item->Longitude=lon;
@@ -769,7 +769,7 @@ bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surfa
 	Surface.GetTextSize(label, &tsize);
 
 	// shift label from center point of shape
-	x+= NIBLSCALE(2); 
+	x+= NIBLSCALE(2);
 	y+= NIBLSCALE(2);
 	brect.left = x-NIBLSCALE(3);
 	brect.right = brect.left+tsize.cx+NIBLSCALE(3);
@@ -795,7 +795,7 @@ bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surfa
 
 void XShapeLabel::setlabel(const char* src) {
   // Case1 : NULL or not informative label, we show the shape without label
-  if ( 
+  if (
       (src == NULL) ||
       (strcmp(src,"NULL") == 0) ||
       (strcmp(src,"UNK") == 0)
@@ -852,7 +852,7 @@ void XShapeLabel::setlabel(const char* src) {
         strcpy(label, utf8String.c_str());
     }
 #endif
-  
+
   hide=false;
 }
 
@@ -918,7 +918,7 @@ void TopologyWriter::CreateFiles(void) {
   } else {
     TCHAR dbfname[100];
     _tcscpy(dbfname, filename);
-    _tcscat(dbfname, _T(".dbf")); 
+    _tcscat(dbfname, _T(".dbf"));
     shpfile.hDBF = msDBFCreate(dbfname);
     if (shpfile.hDBF == NULL)
 	StartupStore(_T("------ TopologyWriter: msDBFCreate error%s"),NEWLINE);
@@ -957,9 +957,9 @@ void Topology::SearchNearest(const rectObj& bounds) {
   if(msRectOverlap(&shpfile.bounds, &bounds) != MS_TRUE) {
       return;
   }
-  
+
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
-    
+
     std::unique_ptr<XShape> shape_tmp;
 	XShape *cshape = shpCache[ixshp];
     if(!cshape) {
@@ -970,10 +970,10 @@ void Topology::SearchNearest(const rectObj& bounds) {
       shape_tmp.reset(addShape(ixshp));
       cshape = shape_tmp.get();
     }
-    
-	if (!cshape || cshape->hide || !cshape->HasLabel()) continue;    
+
+	if (!cshape || cshape->hide || !cshape->HasLabel()) continue;
 	const shapeObj& shape = cshape->shape;
-    
+
     if(msRectOverlap(&(cshape->shape.bounds), &bounds) != MS_TRUE) {
         continue;
     }
@@ -992,7 +992,7 @@ void Topology::SearchNearest(const rectObj& bounds) {
 	   case(MS_SHAPE_LINE):
 /*
 			for (int tt = 0; tt < shape->numlines; tt ++) {
-          
+
 				int minx = rc.right;
 				int miny = rc.bottom;
 				int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
@@ -1009,22 +1009,21 @@ void Topology::SearchNearest(const rectObj& bounds) {
 			}
 */
 		break;
-      
+
 	   case(MS_SHAPE_POLYGON):
 
 			for (int tt = 0; tt < shape.numlines; tt ++) {
-                // TODO : check if that is good 
+                // TODO : check if that is good
                 //  it's surprising distance to Polygon are not distance to first point but
                 //  distance to nearest vertex.
                 //  right implementation is in #msDistancePointToShape, but this don't use great circle ditance.
-	  			cshape->nearestItem(scaleCategory, shape.line[tt].point[0].x, shape.line[tt].point[0].y);
+				cshape->nearestItem(scaleCategory, shape.line[tt].point[0].x, shape.line[tt].point[0].y);
 			}
         break;
-      
+
 	   default:
 		break;
 
     } // switch type of shape
   } // for all shapes in this category
 } // Topology SearchNearest
-

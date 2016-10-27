@@ -96,13 +96,13 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
             Surface.SetTextColor(It->second.first);
             moreoutline = It->second.second;
         } else {
-            // this is the default also for white text. Normally we are writing on a 
-            // not-too-light background                
+            // this is the default also for white text. Normally we are writing on a
+            // not-too-light background
             Surface.SetTextColor(RGB_BLACK);
             moreoutline = true;
         }
 
-        // 
+        //
         // Simplified, shadowing better and faster
         // ETO_OPAQUE not necessary since we pass a NULL rect
         //
@@ -145,7 +145,7 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
 // Clip region is normally MapRect for forcing writing on any part of the screen.
 // Or DrawRect for the current terrain area.
 // Or, of course, anything else.
-// A note about DrawRect: in main moving map, DrawRect is the part of screen excluding BottomBar, 
+// A note about DrawRect: in main moving map, DrawRect is the part of screen excluding BottomBar,
 // when the bottom bar is opaque. So choose carefully.
 //
 void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align ,
@@ -174,7 +174,7 @@ void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const
 		if (vy>=clipRect.bottom) return;
 		Surface.Rectangle(x-(tsize.cx/2)-NIBLSCALE(4),
 			y-(tsize.cy/2)-NIBLSCALE(1)-1,
-			x+(tsize.cx/2)+NIBLSCALE(4), 
+			x+(tsize.cx/2)+NIBLSCALE(4),
 			vy);
 		x -= (tsize.cx/2);
 		// just a trick to avoid calculating:
@@ -183,7 +183,7 @@ void MapWindow::LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const
 		break;
   }
   #ifdef __linux__
-  y += NIBLSCALE(1)+1; 
+  y += NIBLSCALE(1)+1;
   #else
   y += NIBLSCALE(1);
   #endif

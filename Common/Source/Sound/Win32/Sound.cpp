@@ -27,15 +27,15 @@ SoundGlobalInit::SoundGlobalInit() {
     } else {
         StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
         StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
-    }    
+    }
 }
-  
+
 SoundGlobalInit::~SoundGlobalInit() {
- 
+
 }
 
 bool IsSoundInit() {
-    
+
     return(bSoundFile);
 }
 
@@ -46,7 +46,7 @@ void PlayResource(const TCHAR* lpName) {
     if(!EnableSoundModes) {
         return;
     }
-    
+
 #if defined(PNA) && defined(UNDER_CE)
     if (DeviceIsGM130) {
         MessageBeep(0xffffffff);
@@ -63,10 +63,10 @@ void PlayResource(const TCHAR* lpName) {
         // Find the wave resource.
         HRSRC hResInfo = FindResource(_hInstance, lpName, TEXT("WAVE"));
         if (hResInfo) {
-            // Load the wave resource. 
+            // Load the wave resource.
             HGLOBAL hRes = LoadResource(_hInstance, hResInfo);
             if (hRes) {
-                // Lock the wave resource and play it. 
+                // Lock the wave resource and play it.
                 LPCTSTR lpRes = (LPCTSTR) LockResource(hRes);
                 if (lpRes) {
                     bRtn = sndPlaySound(lpRes, SND_MEMORY | SND_ASYNC | SND_NODEFAULT);
@@ -84,14 +84,14 @@ void PlayResource(const TCHAR* lpName) {
 // Play a sound from filesystem
 void LKSound(const TCHAR *lpName) {
     if(!EnableSoundModes) return;
-    
+
   #if defined(PNA) && defined(UNDER_CE)
   if (DeviceIsGM130) {
 	MessageBeep(0xffffffff); // default
 	return;
   }
-  #endif   
-    
+  #endif
+
   if (!bSoundFile) return;
   TCHAR sndfile[MAX_PATH];
   _stprintf(sndfile,_T("%s%s%s"),szSoundPath, _T(DIRSEP), lpName);
@@ -99,7 +99,7 @@ void LKSound(const TCHAR *lpName) {
 }
 
 bool SetSoundVolume() {
-    
+
 #if defined(PNA) && defined(UNDER_CE)
   if (EnableAutoSoundVolume == false ) return false;
 
@@ -122,8 +122,8 @@ bool SetSoundVolume() {
 		hRes = RegSetValueEx(hKey, _T("Key"),0,REG_DWORD, (LPBYTE)&Disp, sizeof(DWORD));
 		Disp=7;
 		hRes = RegSetValueEx(hKey, _T("Mute"),0,REG_DWORD, (LPBYTE)&Disp, sizeof(DWORD));
-		SendMessage(HWND_BROADCAST, WM_WININICHANGE, 0xF2, 0); 
-	        RegCloseKey(hKey); 
+		SendMessage(HWND_BROADCAST, WM_WININICHANGE, 0xF2, 0);
+	        RegCloseKey(hKey);
 		break;
 	#endif // disabled code for HP314
 

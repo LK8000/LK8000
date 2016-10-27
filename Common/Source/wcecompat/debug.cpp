@@ -14,4 +14,3 @@ void debug(const TCHAR *fmt, ...)
 
   StartupStore(buf);
 }
-

@@ -51,7 +51,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	// hoffset is the position of vertical green lines on the horizon, each one representing
 	// 20 degrees shift. The [0] and [5] are for 10 to 20 degrees target's offset
 	// The 9th line on extreme position is not drawn
-	int deg10=(nleft-ncenterx)/9; 
+	int deg10=(nleft-ncenterx)/9;
 	// height of the vertical line
 	int hdeg=(ncentery-ntop)/7;
 
@@ -73,7 +73,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	degline_top[6].y		=	ncentery-hdeg;
 	degline_bottom[6].x		=	ncenterx+(deg10*2);
 	degline_bottom[6].y		=	ncentery+hdeg;
-	
+
 	degline_top[2].x		=	ncenterx-(deg10*4);
 	degline_top[2].y		=	ncentery-hdeg;
 	degline_bottom[2].x		=	ncenterx-(deg10*4);
@@ -138,7 +138,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	altline_right[5].y		=	ncentery+(alth*3);
 
 	DoInit[MDI_DRAWTARGET]=false;
-  } 
+  }
 
   // The flag "disabled" will force no plane to be painted
 
@@ -304,7 +304,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   // Target wing size, half of it
   #define TWINGSIZE	NIBLSCALE(53)
   POINT tcenter;
-  
+
 	int tailsize= (TWINGSIZE/4) +NIBLSCALE(2);
     tcenter.x= (int)(ncenterx+(((ncenterx-nleft)/80)*tangle));
 
@@ -318,7 +318,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
             tcenter.y=ncentery+ (int) (((ncentery-ntop)/300.0)*LKTraffic[LKTargetIndex].AltArriv);
         }
     }
-  
+
   // Paint the airplane only if within 160 deg sight angle
   if (!disabled) {
 
@@ -401,7 +401,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	Surface.SelectObject(hbOld);
 	Surface.SelectObject(hpOld);
   }
-  
+
   // always paint the bearing difference, cleverly
   if (!disabled && !notraffic) {
 	if (tangle > 1) {
@@ -435,4 +435,3 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   }
 
 }
-

@@ -20,7 +20,7 @@ static void OnYesClicked(WndButton* pWnd){
     if(pForm) {
       pForm->SetModalResult(wpTerrainBoundsYes);
     }
-  }  
+  }
 }
 
 static void OnYesAllClicked(WndButton* pWnd){
@@ -29,7 +29,7 @@ static void OnYesAllClicked(WndButton* pWnd){
     if(pForm) {
       pForm->SetModalResult(wpTerrainBoundsYesAll);
     }
-  }  
+  }
 }
 
 static void OnNoClicked(WndButton* pWnd){
@@ -47,7 +47,7 @@ static void OnNoAllClicked(WndButton* pWnd){
     if(pForm) {
       pForm->SetModalResult(wpTerrainBoundsNoAll);
     }
-  }  
+  }
 }
 
 
@@ -67,7 +67,7 @@ int dlgWaypointOutOfTerrain(TCHAR *Message){
     WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_WAYPOINTTERRAIN);
     if (wf) {
 
-    
+
       wfrm = (WndFrame*)wf->FindByName(TEXT("frmWaypointOutOfTerrainText"));
 
       wfrm->SetCaption(Message);
@@ -89,4 +89,3 @@ int dlgWaypointOutOfTerrain(TCHAR *Message){
   return(res);
 
 }
-

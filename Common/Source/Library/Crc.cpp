@@ -38,5 +38,3 @@ WORD crcCalc(void *Buffer, size_t size){
 
   return((WORD)crc);
 }
-
-

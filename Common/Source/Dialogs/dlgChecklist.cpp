@@ -43,7 +43,7 @@ static void InitNotepad(void) {
   page=0;
   DrawListIndex=0;
   aTextLine.clear();
-  
+
   nLists=0;
   for (int i=0; i<MAXNOTES; i++) {
 	ChecklistText[i]=(TCHAR *)NULL;
@@ -70,7 +70,7 @@ static void NextPage(WndForm* pForm, int Step){
   if(!pForm) {
     return;
   }
-  
+
   TCHAR buffer[200];
   page += Step;
   if (page>=nLists) {
@@ -84,7 +84,7 @@ static void NextPage(WndForm* pForm, int Step){
   if(!wDetailsEntry) {
     return;
   }
-  
+
   LKWindowSurface Surface(*wDetailsEntry);
   Surface.SelectObject(wDetailsEntry->GetFont());
   aTextLine.update(Surface, wDetailsEntry->GetWidth(), ChecklistText[page]);
@@ -94,20 +94,20 @@ static void NextPage(WndForm* pForm, int Step){
 		_stprintf(buffer, _T("%s %s"),NoteModeTitle,MsgToken(1750)); // empty
 		break;
 	case 1:
-		_stprintf(buffer, _T("%s"),NoteModeTitle); 
+		_stprintf(buffer, _T("%s"),NoteModeTitle);
 		break;
 	default:
-		_stprintf(buffer, _T("%s %d/%d"),NoteModeTitle,page+1,nLists); 
+		_stprintf(buffer, _T("%s %d/%d"),NoteModeTitle,page+1,nLists);
 		break;
   }
 
   if (ChecklistTitle[page] &&
-      (_tcslen(ChecklistTitle[page])>0) 
+      (_tcslen(ChecklistTitle[page])>0)
       && (_tcslen(ChecklistTitle[page])<60)) {
-	_tcscat(buffer, TEXT(": ")); 
-	_tcscat(buffer, ChecklistTitle[page]); 
+	_tcscat(buffer, TEXT(": "));
+	_tcscat(buffer, ChecklistTitle[page]);
   }
-  
+
   pForm->SetCaption(buffer);
 
   WndListFrame* wDetails = (WndListFrame*)pForm->FindByName(TEXT("frmDetails"));
@@ -212,16 +212,16 @@ void addChecklist(TCHAR* name, TCHAR* details) {
 /// Add a line pointed to by TempString into checklist.
 static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Name, bool& inDetails) {
   size_t len = _tcslen(TempString);
-  
+
   // check that we are not over the limit of the note details size
   if ((_tcslen(Details) + len) > (MAXNOTEDETAILS-MAXNOTELIMITER-1)) {
     // unfortunately, yes. So we need to split the note right now.
     // And we keep the same Name also for next splitted note.
     _tcscat(Details, TEXT(NOTECONTINUED));
-    
+
     if (_tcslen(Name)>0 && _tcslen(Details)>0) {
          addChecklist(Name, Details);
-    } 
+    }
     Details[0]= 0;
     inDetails=true;
   }
@@ -260,7 +260,7 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads checklist from file encoded in system code page.
 ///
-/// @retval true  data loaded 
+/// @retval true  data loaded
 /// @retval false data load error
 ///
 static bool LoadAsciiChecklist(const TCHAR* fileName) {
@@ -283,7 +283,7 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
   Name[0]= 0;
   TempString[0]=0;
 
-  charset cs = charset::unknown;  
+  charset cs = charset::unknown;
   while (ReadStringX(stream, MAXNOTETITLE, TempString, cs)) {
 /*
     size_t len = _tcslen(TempString);
@@ -300,25 +300,25 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
       }
     }
 */
-  
+
     AddChecklistLine(TempString, Details, Name, inDetails);
   } // while
-  
+
   if (inDetails) {
     _tcscat(Details,TEXT(ENDOFLINE));
     addChecklist(Name, Details);
   }
-  
+
   fclose(stream);
-  
+
   return(true);
-} // LoadAsciiChecklist 
+} // LoadAsciiChecklist
 #endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads checklist from file encoded in UTF-8.
 ///
-/// @retval true  data loaded 
+/// @retval true  data loaded
 /// @retval false data load error
 ///
 static bool LoadUtfChecklist(const TCHAR* fileName, bool warn) {
@@ -371,14 +371,14 @@ static bool LoadUtfChecklist(const TCHAR* fileName, bool warn) {
     }
     firstline=false;
   } // while
-  
+
   if (inDetails) {
     _tcscat(Details,TEXT(ENDOFLINE));
     addChecklist(Name, Details);
   }
- 
+
   return(true);
-} // LoadUtfChecklist 
+} // LoadUtfChecklist
 
 
 // return true if loaded file, false if not loaded
@@ -393,19 +393,19 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),MsgToken(878));  // notepad
 
-   		if (LoadUtfChecklist(filename,false)) return true;
+		if (LoadUtfChecklist(filename,false)) return true;
                 // if no user file, look for demo file
 		LocalPath(filename, TEXT(LKD_CONF));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CHECKLISTDEMO));
-   		return LoadUtfChecklist(filename,true);
+		return LoadUtfChecklist(filename,true);
 	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_LOGBOOKTXT));
 		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
-   		 return LoadUtfChecklist(filename,true);
+		 return LoadUtfChecklist(filename,true);
 	// logbook LST
 	case 2:
 		LocalPath(filename, TEXT(LKD_LOGS));
@@ -419,7 +419,7 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CREDITS));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("Credits")));
-   		return LoadUtfChecklist(filename,true);
+		return LoadUtfChecklist(filename,true);
 		break;
   default:
     StartupStore(_T("... Invalid checklist mode (%d)%s"),checklistmode,NEWLINE);
@@ -432,7 +432,7 @@ void dlgChecklistShowModal(short checklistmode){
 
   WndListFrame* wDetails = NULL;
   WndOwnerDrawFrame* wDetailsEntry = NULL;
-  
+
   InitNotepad();
   LoadChecklist(checklistmode); // check if loaded really something
 
@@ -473,4 +473,3 @@ deinit:
   return;
 
 }
-

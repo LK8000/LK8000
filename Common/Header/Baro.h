@@ -24,8 +24,7 @@
 #define BARO__END               8       // marking the limit
 
 // Verbose debugging test
-// #define DEBUGBARO    1       
+// #define DEBUGBARO    1
 
 
 #endif
-

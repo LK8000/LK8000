@@ -10,9 +10,9 @@
 #include "Asset.hpp"
 
 void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
-			   const double tic_step, 
+			   const double tic_step,
 			   const double zero,
-                           const int Style, 
+                           const int Style,
 			   const double unit_step, bool draw_units) {
 
   if(INVERTCOLORS || IsDithered())
@@ -42,7 +42,7 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
     line[1].y = ymax-BORDER_Y;
 
     // STYLE_THINDASHPAPER
-    if ((xval< x_max) 
+    if ((xval< x_max)
         && (xmin>=rc.left+BORDER_X) && (xmin<=rc.right)) {
       StyleLine(Surface, line[0], line[1], Style, rc);
 
@@ -73,7 +73,7 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 
     // STYLE_THINDASHPAPER
 
-    if ((xval> x_min) 
+    if ((xval> x_min)
         && (xmin>=rc.left+BORDER_X) && (xmin<=rc.right)) {
 
       StyleLine(Surface, line[0], line[1], Style, rc);
@@ -96,9 +96,9 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 
 
 void Statistics::DrawYGrid(LKSurface& Surface, const RECT& rc,
-			   const double tic_step, 
+			   const double tic_step,
 			   const double zero,
-                           const int Style, 
+                           const int Style,
 			   const double unit_step, bool draw_units) {
 
   POINT line[2];
@@ -125,7 +125,7 @@ void Statistics::DrawYGrid(LKSurface& Surface, const RECT& rc,
     line[1].y = ymax;
 
     // STYLE_THINDASHPAPER
-    if ((yval< y_max) && 
+    if ((yval< y_max) &&
         (ymin>=rc.top) && (ymin<=rc.bottom-BORDER_Y)) {
 
       StyleLine(Surface, line[0], line[1], Style, rc);
@@ -247,4 +247,3 @@ void Statistics::DrawYGrid_cor(LKSurface& Surface, const RECT& rc,
     }
   }
 }
-

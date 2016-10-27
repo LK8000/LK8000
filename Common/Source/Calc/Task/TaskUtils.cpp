@@ -37,24 +37,24 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
     {
       *SecType = FinishLine;
       if(FinishLine ==0)
-    	*SecType = CIRCLE;
-  	  if(FinishLine ==1)
-  		*SecType = LINE;
-  	  if(FinishLine ==2)
-     	*SecType = SECTOR;
+	*SecType = CIRCLE;
+	  if(FinishLine ==1)
+		*SecType = LINE;
+	  if(FinishLine ==2)
+	*SecType = SECTOR;
 
       if(SecRadius)
-  	    *SecRadius  = (double)FinishRadius;
+	    *SecRadius  = (double)FinishRadius;
     }
     else
     {
       if(AATEnabled || DoOptimizeRoute())
       {
         LKASSERT(ValidTaskPoint(TskIdx)); // could be -1
-    	*SecType = Task[TskIdx].AATType;
+	*SecType = Task[TskIdx].AATType;
 
         if(SecRadius)
-    	  *SecRadius  = Task[TskIdx].AATCircleRadius;
+	  *SecRadius  = Task[TskIdx].AATCircleRadius;
 
         switch(Task[TskIdx].AATType) {
             case 0:
@@ -75,19 +75,19 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
       }
       else
       {
-    	*SecType = SectorType;
-/*        
-    	if(SectorType ==0)
-    	  *SecType = CIRCLE;
-    	if(SectorType ==1)
-    	  *SecType = SECTOR;
-    	if(SectorType ==2)
-    	  *SecType = DAe;
-    	if(SectorType ==3)
-    	  *SecType = LINE;
+	*SecType = SectorType;
+/*
+	if(SectorType ==0)
+	  *SecType = CIRCLE;
+	if(SectorType ==1)
+	  *SecType = SECTOR;
+	if(SectorType ==2)
+	  *SecType = DAe;
+	if(SectorType ==3)
+	  *SecType = LINE;
 */
         if(SecRadius)
-    	  *SecRadius = SectorRadius;
+	  *SecRadius = SectorRadius;
       }
     }
   }
@@ -132,25 +132,25 @@ void ResetStartPoint(START_POINT& StartPt) {
 
 void RefreshTaskWaypoint(int i) {
   if(i==0)
-    { 
+    {
       Task[i].Leg = 0;
-      Task[i].InBound = 0; 
+      Task[i].InBound = 0;
     }
   else
     {
       if (Task[i-1].Index == Task[i].Index) {
         // Leg is Always 0 !
         Task[i].Leg = 0;
-        
+
         // InBound need calculated with previous not same as current.
         int j = i-1;
         while(j>=0 && Task[j].Index == Task[i].Index) {
             --j;
         }
         if(j>=0) {
-            DistanceBearing(WayPointList[Task[i].Index].Latitude, 
+            DistanceBearing(WayPointList[Task[i].Index].Latitude,
                             WayPointList[Task[i].Index].Longitude,
-                            WayPointList[Task[j].Index].Latitude,   
+                            WayPointList[Task[j].Index].Latitude,
                             WayPointList[Task[j].Index].Longitude,
                             NULL,
                             &Task[i].InBound);
@@ -160,23 +160,23 @@ void RefreshTaskWaypoint(int i) {
                 j++;
             }
             if(ValidWayPoint(Task[j].Index)) {
-                DistanceBearing(WayPointList[Task[j].Index].Latitude, 
+                DistanceBearing(WayPointList[Task[j].Index].Latitude,
                                 WayPointList[Task[j].Index].Longitude,
-                                WayPointList[Task[i].Index].Latitude,   
+                                WayPointList[Task[i].Index].Latitude,
                                 WayPointList[Task[i].Index].Longitude,
                                 NULL,
-                                &Task[i].InBound);                
+                                &Task[i].InBound);
             }
         }
       } else {
-            DistanceBearing(WayPointList[Task[i].Index].Latitude,   
+            DistanceBearing(WayPointList[Task[i].Index].Latitude,
                       WayPointList[Task[i].Index].Longitude,
                       WayPointList[Task[i-1].Index].Latitude,
                       WayPointList[Task[i-1].Index].Longitude,
                       &Task[i].Leg,
-                      &Task[i].InBound);          
+                      &Task[i].InBound);
       }
-           
+
       Task[i].InBound += 180;
       if (Task[i].InBound >= 360)
         Task[i].InBound -= 360;
@@ -187,9 +187,9 @@ void RefreshTaskWaypoint(int i) {
         if (EnableMultipleStartPoints) {
           for (int j=0; j<MAXSTARTPOINTS; j++) {
             if ((StartPoints[j].Index != -1)&&(StartPoints[j].Active)) {
-              DistanceBearing(WayPointList[StartPoints[j].Index].Latitude,   
+              DistanceBearing(WayPointList[StartPoints[j].Index].Latitude,
                               WayPointList[StartPoints[j].Index].Longitude,
-                              WayPointList[Task[i].Index].Latitude, 
+                              WayPointList[Task[i].Index].Latitude,
                               WayPointList[Task[i].Index].Longitude,
                               NULL, &StartPoints[j].OutBound);
             }
@@ -203,7 +203,7 @@ void RefreshTaskWaypoint(int i) {
 
 double FindInsideAATSectorDistance_old(double latitude,
                                        double longitude,
-                                       int taskwaypoint, 
+                                       int taskwaypoint,
                                        double course_bearing,
                                        double p_found) {
   bool t_in_sector;
@@ -224,11 +224,11 @@ double FindInsideAATSectorDistance_old(double latitude,
     t_distance_inside = t_distance;
     t_distance += delta;
 
-    FindLatitudeLongitude(latitude, longitude, 
+    FindLatitudeLongitude(latitude, longitude,
                           course_bearing, t_distance,
                           &t_lat,
                           &t_lon);
-    
+
     t_in_sector = InAATTurnSector(t_lon,
                                   t_lat,
                                   taskwaypoint, 0);
@@ -241,7 +241,7 @@ double FindInsideAATSectorDistance_old(double latitude,
 
 double FindInsideAATSectorDistance(double latitude,
                                    double longitude,
-                                   int taskwaypoint, 
+                                   int taskwaypoint,
                                    double course_bearing,
                                    double p_found) {
 
@@ -261,7 +261,7 @@ double FindInsideAATSectorDistance(double latitude,
   do {
 
     double t_lat, t_lon;
-    FindLatitudeLongitude(latitude, longitude, 
+    FindLatitudeLongitude(latitude, longitude,
                           course_bearing, t_distance,
                           &t_lat, &t_lon);
 
@@ -281,13 +281,13 @@ double FindInsideAATSectorDistance(double latitude,
 
 double FindInsideAATSectorRange(double latitude,
                                 double longitude,
-                                int taskwaypoint, 
+                                int taskwaypoint,
                                 double course_bearing,
                                 double p_found) {
 
   double t_distance = FindInsideAATSectorDistance(latitude, longitude, taskwaypoint,
                                                   course_bearing, p_found);
-  return (p_found / 
+  return (p_found /
           max(1.0,t_distance))*2-1;
 }
 
@@ -302,7 +302,7 @@ double DoubleLegDistance(int taskwaypoint,
 			  latitude,
 			  longitude,
 			  Task[taskwaypoint+1].AATTargetLat,
-			  Task[taskwaypoint+1].AATTargetLon);    
+			  Task[taskwaypoint+1].AATTargetLon);
   } else {
     double d1;
     DistanceBearing(latitude,

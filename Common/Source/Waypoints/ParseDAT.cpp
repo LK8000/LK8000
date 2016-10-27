@@ -25,7 +25,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
   TCHAR *pToken;
   TCHAR TempString[READLINE_LENGTH];
 
-  _tcscpy(TempString, String);  
+  _tcscpy(TempString, String);
   // 20060513:sgi added wor on a copy of the string, do not modify the
   // source string, needed on error messages
 
@@ -39,7 +39,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
   if ((pToken = _tcstok_r(TempString, TEXT(","), &pWClast)) == NULL)
     return FALSE;
   Temp->Number = _tcstol(pToken, &Number, 10);
-        
+
   //ExtractParameter(TempString,ctemp,1); //Latitude
   if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
     return FALSE;
@@ -110,7 +110,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 
   if(Temp->Altitude <= 0) {
     WaypointAltitudeFromTerrain(Temp);
-  } 
+  }
 
   if (Temp->Details) {
     free(Temp->Details);
@@ -182,7 +182,7 @@ static double CalculateAngle(TCHAR *temp)
   }
 
   Degrees += (Mins/60);
-        
+
   if((*Stop == 'N') || (*Stop == 'E'))
     {
     }
@@ -194,7 +194,7 @@ static double CalculateAngle(TCHAR *temp)
     {
       return -9999;
     }
-        
+
   return Degrees;
 }
 

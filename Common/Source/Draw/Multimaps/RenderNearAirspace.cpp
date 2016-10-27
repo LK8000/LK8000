@@ -124,7 +124,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
                 if (bShow) {
                     /*
                      * we can't show dialog from Draw thread
-                     * instead, new event is queued, dialog will be popup by main thread 
+                     * instead, new event is queued, dialog will be popup by main thread
                      */
                     InputEvents::processGlideComputer(GCE_POPUP_MULTISELECT);
 
@@ -595,5 +595,3 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     Surface.SetBackgroundTransparent();
     Surface.SelectObject(hfOldFnt/* Sender->GetFont()*/);
 }
-
-

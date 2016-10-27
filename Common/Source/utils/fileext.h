@@ -32,7 +32,7 @@ class Utf8File
       io_append,  ///< open for appending to file end
       io_create // orverride existing file if exist
     };
-    
+
     Utf8File();
     ~Utf8File();
 
@@ -42,8 +42,8 @@ class Utf8File
     void WriteLn(const TCHAR* unicode = NULL);
 
     static bool Exists(const TCHAR* fileName);
-  protected:    
-    
+  protected:
+
     TCHAR path[MAX_PATH];
     FILE* fp;
     bool  convErReported;

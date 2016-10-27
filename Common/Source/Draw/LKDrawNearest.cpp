@@ -23,7 +23,7 @@ bool ValidAirspace(int i) {
 
 // shortcuts
 #define MSMCOMMONS   (curmapspace==MSM_LANDABLE||curmapspace==MSM_AIRPORTS||curmapspace==MSM_NEARTPS|| \
-                      curmapspace==MSM_COMMON||curmapspace==MSM_RECENT) 
+                      curmapspace==MSM_COMMON||curmapspace==MSM_RECENT)
 #define MSMAIRSPACES (curmapspace==MSM_AIRSPACES)
 #define MSMTHERMALS  (curmapspace==MSM_THERMALS)
 #define MSMTRAFFIC  (curmapspace==MSM_TRAFFIC)
@@ -49,7 +49,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
     // Vertical and horizontal spaces
 #define INTERRAW	1
-#define HEADRAW	NIBLSCALE(6)	
+#define HEADRAW	NIBLSCALE(6)
 
     RECT invsel;
     TCHAR Buffer[LKSIZEBUFFERLARGE];
@@ -265,7 +265,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
 
         // CALCULATE THE BEST POSSIBLE SIZE FOR THE ITEM NAME
-        // 
+        //
         if (usetwolines) {
             // TODO: CALCULATE AVAILABLE SPACE AND SIZE CORRECTLY
             for (n = 0; n < MSM_TOP; n++) {
@@ -373,7 +373,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             TopSize += cs / 2 - 1;
         }
 
-#define HMARGIN NIBLSCALE(2) // left and right margins for header selection 
+#define HMARGIN NIBLSCALE(2) // left and right margins for header selection
 
         //
         // HEADER SORTBOXES, used by VirtualKeys
@@ -638,7 +638,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                 }
                 /*
                  * we can't show dialog from Draw thread
-                 * instead, new event is queued, dialog will be popup by main thread 
+                 * instead, new event is queued, dialog will be popup by main thread
                  */
                 InputEvents::processPopupDetails(InputEvents::PopupWaypoint, i);
                 // SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
@@ -718,7 +718,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
     //
     // DRAW HEADER ROW WITH SORTBOXES
-    // 
+    //
 
     short cursortbox;
     // Highlighted header sorting selection. Not available for commons.
@@ -980,7 +980,7 @@ _KeepOldCommonsValues:
 
             } else {
                 _stprintf(Buffer1[i][curpage], _T("----------------------------")); // max 30
-                Buffer1[i][curpage][s_maxnlname[curmapspace] + 7] = '\0'; // some more dashes 
+                Buffer1[i][curpage][s_maxnlname[curmapspace] + 7] = '\0'; // some more dashes
                 _stprintf(Buffer2[i][curpage], _T("----"));
                 _stprintf(Buffer3[i][curpage], _T("----"));
                 _stprintf(Buffer4[i][curpage], _T("----"));
@@ -1271,7 +1271,7 @@ _KeepOldAirspacesValues:
         invsel.bottom = TopSize + (s_rawspace * (SelectedRaw[curmapspace] * lincr + 1)) - NIBLSCALE(1);
         if (usetwolines) invsel.bottom += s_rawspace;
 
-#ifdef __linux__  
+#ifdef __linux__
         invsel.top -= (HEADRAW / 2 - NIBLSCALE(2));
         invsel.bottom -= NIBLSCALE(1); // interline
 #endif
@@ -1297,4 +1297,3 @@ _KeepOldAirspacesValues:
     LKevent = LKEVENT_NONE;
     return;
 }
-

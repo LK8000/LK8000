@@ -56,7 +56,7 @@ protected:
 	// Timer functions
   void wait_ms(const int32 t);
   int32 get_timer_s();
-  
+
 	// serial port functions
 	VLA_ERROR serial_open_port();
   VLA_ERROR serial_close_port();
@@ -82,9 +82,9 @@ protected:
 	This class contains target system independent base functions
 	for communication with the VOLKSLOGGER.
 	These functions are critical and normally don't need to be changed
-	by the user. If you think that something has to be changed here, 
+	by the user. If you think that something has to be changed here,
 	contact GARRECHT for comments on your intended changes.
-*/ 
+*/
 class VLA_XFR : protected VLA_SYS {
 protected:
 	// flow- and format- control
@@ -111,7 +111,7 @@ protected:
 		cmd_ERO = 0x09,// Emergency readout (Memorydump lesen)
 		cmd_RST = 0x0c // Restart Logger
 	};
-	
+
 	static int32 commandbaud;    // baudrate for commands
 
   int32 databaud; // Baudrate as integer (e.g. 115200)
@@ -127,7 +127,7 @@ protected:
 
   VLA_XFR();
   void set_databaud(int32 db);
-  
+
 	// establish connection with VL within specified time
   VLA_ERROR connect(int32, int quietmode = 0);
 

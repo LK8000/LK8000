@@ -14,8 +14,8 @@
 #define SNEWLINE        "\r\n"
 #define NEWLINE         _T(SNEWLINE)
 
-/* 
- * General defines for LK8000 
+/*
+ * General defines for LK8000
  */
 
 #define INVALID_GR	999
@@ -38,7 +38,7 @@
 #define ALTDIFFLIMIT	(-3000*ALTITUDEMODIFY)
 
 
-/* 
+/*
  * Normally GlidePolar::bestld * 0.7 makes an efficiency 40 become 28 as a safety margin
  */
 #define SAFELD_FACTOR	0.7
@@ -53,7 +53,7 @@
 #define ALTERNATE_MAXRANGE    100 // km - bestalternate search is within this maximum limit
 #define DYNABOXTIME 3.0  // seconds between infobox dynamic flipping
 
-/* 
+/*
  * This is required because water labels (category 05 and 10 in topology) are special.
  * They are reset differently. This is the default in km zoom.
  */
@@ -65,19 +65,19 @@
  *
  * No miracles. Couldn't do it any better.
  *
- * Max interval in ms between two clicks for getting a double click 
+ * Max interval in ms between two clicks for getting a double click
  * Very careful changing this value. It is used by virtual keys also!
  * This is the timing sequence for virtual keys:
  *
  * 0 - VKSHORTCLICK   single click on the waypoint
  * 0 - DCI/2+30		double click detected and VK disabled
  * DCI/2+30 - DCI        airspace click and double click conflict?
- * <DCI			possible double click 
+ * <DCI			possible double click
  * >DCI 		virtual key
  *
  */
 
-#define DOUBLECLICKINTERVAL 350 
+#define DOUBLECLICKINTERVAL 350
 #define VKSHORTCLICK 120 // must be < than DCI/2 to have a chance to make airspace click recon!!!
 #define VKLONGCLICK 1500  // triggers circling/cruis switch on aircraft icon
 #define AIRSPACECLICK CustomKeyTime // interval to look only for airspace and not WP (IF NOT USING VK)
@@ -203,7 +203,7 @@
 // inside MAXRANGE array, and it will grow the DST when space is available.
 #define MAXRANGELANDABLE        500
 #define DSTRANGELANDABLE        150
-// Same for nearest turnpoints . 
+// Same for nearest turnpoints .
 #define MAXRANGETURNPOINT	500
 #define DSTRANGETURNPOINT	100
 
@@ -221,10 +221,10 @@
 // Max number of thermals in the Nearest Thermals page (out of MAX_THERMAL_HISTORY, normally much larger)
 #define MAXTHISTORY		MAXNEAREST
 
-// Max number of pages in mapspacemode. 
+// Max number of pages in mapspacemode.
 // Large enough to contain MAXNEAREST/numrows (numraws min 5 on some devices)
 // Counting only real pages, 1-x , add 1 for safety
-// It only matters dimensional space, so you can enlarge at a memory cost. 
+// It only matters dimensional space, so you can enlarge at a memory cost.
 // If it is too low, visible waypoints will be limited to this number automatically.
 #define MAXNUMPAGES		9	// the nearest
 #define MAXCOMMONNUMPAGES	MAXNUMPAGES
@@ -320,7 +320,7 @@
 #define WPT_OUTLANDING		2
 #define WPT_TURNPOINT		3
 
-// Number of reserved waypoints at the beginning of WP struct. 
+// Number of reserved waypoints at the beginning of WP struct.
 // All loops with NumberOfWayPoints should start from NUMRESWP in place of the old 0
 // Position 0 is takeoff, etc
 // moving waypoints will have assigned fixed slots and positions
@@ -350,7 +350,7 @@
 #define RESWP_FIRST_MARKER	9
 #define RESWP_LAST_MARKER	(RESWP_FIRST_MARKER+NUMRESMARKERS-1)	// 18
 #define RESWP_END		RESWP_LAST_MARKER
-// WayPointList .Number int identifier 
+// WayPointList .Number int identifier
 #define RESWP_ID		9999
 
 
@@ -419,13 +419,13 @@
 #define MSM_VISUALGLIDE		22	// multimapped, work in progress
 #define MSM_MAPTEST		23	// multimapped, for testing purposes
 #define MSM_INFO_HSI		24
-// turnaround point is TOP 
+// turnaround point is TOP
 // remember that arrays must count from zero, so MSM_TOP+1
 #define MSM_TOP			24
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
-// 
+//
 // Modes
 #define LKMODE_MAP		0
 #define LKMODE_INFOMODE		1
@@ -463,7 +463,7 @@
 #define WP_AIRSPACES		3
 #define WP_TOP			3
 //
-// InfoMode 
+// InfoMode
 //
 #define IM_CRUISE		0
 #define IM_THERMAL		1
@@ -480,9 +480,9 @@
 #define NV_HISTORY		1
 #define NV_THERMALS		2
 #define NV_TOP			2
-// 
+//
 // Traffic mode
-// 
+//
 #define TF_LIST			0
 #define IM_TRF			1
 #define IM_TARGET		2
@@ -505,7 +505,7 @@
 #define LKEVENT_TOPRIGHT	7
 //
 #define LKEVENT_NEWRUN		9
-#define LKEVENT_NEWPAGE		10	// this is for both up and now, out of multimap 
+#define LKEVENT_NEWPAGE		10	// this is for both up and now, out of multimap
 #define LKEVENT_LONGCLICK	11
 #define LKEVENT_SHORTCLICK	12	// Only in multimaps, as of 121009
 
@@ -524,7 +524,7 @@
 // LKValues aka InfoBox/Navbox/InfoPage index
 #define LK_HNAV			0		// nav altitude
 #define LK_HAGL			1		// height above ground level
-#define LK_TC_30S		2		// current thermal 30s 
+#define LK_TC_30S		2		// current thermal 30s
 #define LK_BRG			3		// bearing
 #define LK_LD_INST		4		// ld instantaneous
 #define LK_LD_CRUISE		5		// ld cruise
@@ -560,7 +560,7 @@
 #define LK_PRCCLIMB		35		//
 #define LK_TIMEFLIGHT		36		//
 #define LK_GLOAD		37		//
-#define LK_MTG_BRG		38		// 
+#define LK_MTG_BRG		38		//
 #define LK_TIME_LOCAL		39		//
 #define LK_TIME_UTC		40		//
 #define LK_FIN_ETE		41		//
@@ -577,16 +577,16 @@
 #define LK_AA_TARG_SPEED	52		//
 #define LK_LD_VARIO		53		//
 #define LK_TAS			54		//
-#define LK_TEAM_CODE		55		// 
-#define LK_TEAM_BRG		56		// 
-#define LK_TEAM_BRGDIFF		57		// 
-#define LK_TEAM_DIST		58		// 
+#define LK_TEAM_CODE		55		//
+#define LK_TEAM_BRG		56		//
+#define LK_TEAM_BRGDIFF		57		//
+#define LK_TEAM_DIST		58		//
 #define LK_SPEEDTASK_INST	59		//
 #define LK_HOME_DIST		60		//
 #define LK_SPEEDTASK_ACH	61		//
 #define LK_AA_DELTATIME		62		//
 #define LK_TC_ALL		63		// Average of all thermals so far
-#define LK_LOGGER		64		// 
+#define LK_LOGGER		64		//
 #define LK_BATTERY		65		//
 #define LK_FIN_GR		66		//
 #define LK_ALTERNATESGR		67		// not a mistake: let it here before the alternates GR
@@ -620,32 +620,32 @@
 
 // Non-infobox values - since 2.1 all values are no more available on Infoboxes (IBOX mode)
 
-#define LK_OLC_CLASSIC_DIST		90		//  not for ibox 
-#define LK_OLC_FAI_DIST			91		//  not for ibox 
-#define LK_OLC_LEAGUE_DIST		92		//  not for ibox 
-#define LK_OLC_3TPS_DIST		93		//  not for ibox 
-#define LK_OLC_CLASSIC_PREDICTED_DIST	94		//  not for ibox 
-#define LK_OLC_FAI_PREDICTED_DIST	95		//  not for ibox 
-#define LK_OLC_3TPS_PREDICTED_DIST	96		//  not for ibox 
+#define LK_OLC_CLASSIC_DIST		90		//  not for ibox
+#define LK_OLC_FAI_DIST			91		//  not for ibox
+#define LK_OLC_LEAGUE_DIST		92		//  not for ibox
+#define LK_OLC_3TPS_DIST		93		//  not for ibox
+#define LK_OLC_CLASSIC_PREDICTED_DIST	94		//  not for ibox
+#define LK_OLC_FAI_PREDICTED_DIST	95		//  not for ibox
+#define LK_OLC_3TPS_PREDICTED_DIST	96		//  not for ibox
 
-#define LK_OLC_CLASSIC_SPEED		97		//  not for ibox 
-#define LK_OLC_FAI_SPEED		98		//  not for ibox 
-#define LK_OLC_LEAGUE_SPEED		99		//  not for ibox 
-#define LK_OLC_3TPS_SPEED		100		//  not for ibox 
-#define LK_OLC_CLASSIC_PREDICTED_SPEED	101		//  not for ibox 
-#define LK_OLC_FAI_PREDICTED_SPEED	102		//  not for ibox 
-#define LK_OLC_3TPS_PREDICTED_SPEED	103		//  not for ibox 
+#define LK_OLC_CLASSIC_SPEED		97		//  not for ibox
+#define LK_OLC_FAI_SPEED		98		//  not for ibox
+#define LK_OLC_LEAGUE_SPEED		99		//  not for ibox
+#define LK_OLC_3TPS_SPEED		100		//  not for ibox
+#define LK_OLC_CLASSIC_PREDICTED_SPEED	101		//  not for ibox
+#define LK_OLC_FAI_PREDICTED_SPEED	102		//  not for ibox
+#define LK_OLC_3TPS_PREDICTED_SPEED	103		//  not for ibox
 
-#define LK_OLC_CLASSIC_SCORE		104		//  not for ibox 
-#define LK_OLC_FAI_SCORE		105		//  not for ibox 
-#define LK_OLC_LEAGUE_SCORE		106		//  not for ibox 
-#define LK_OLC_3TPS_SCORE		107		//  not for ibox 
-#define LK_OLC_CLASSIC_PREDICTED_SCORE	108		//  not for ibox 
-#define LK_OLC_FAI_PREDICTED_SCORE	109		//  not for ibox 
-#define LK_OLC_3TPS_PREDICTED_SCORE	110		//  not for ibox 
+#define LK_OLC_CLASSIC_SCORE		104		//  not for ibox
+#define LK_OLC_FAI_SCORE		105		//  not for ibox
+#define LK_OLC_LEAGUE_SCORE		106		//  not for ibox
+#define LK_OLC_3TPS_SCORE		107		//  not for ibox
+#define LK_OLC_CLASSIC_PREDICTED_SCORE	108		//  not for ibox
+#define LK_OLC_FAI_PREDICTED_SCORE	109		//  not for ibox
+#define LK_OLC_3TPS_PREDICTED_SCORE	110		//  not for ibox
 
-#define LK_OLC_PLUS_SCORE		111		//  not for ibox 
-#define LK_OLC_PLUS_PREDICTED_SCORE	112		//  not for ibox 
+#define LK_OLC_PLUS_SCORE		111		//  not for ibox
+#define LK_OLC_PLUS_PREDICTED_SCORE	112		//  not for ibox
 #define LK_FLAPS			113   		// not for ibox
 #define LK_AIRSPACEVDIST		114		// not for ibox
 
@@ -681,8 +681,8 @@
 
 #define LK_WIND			141		//
 #define LK_FIN_ALTDIFF0		142		// final (task) altitude difference at MC=0
-#define LK_LKFIN_ETE		143		// real ETE 
-#define LK_NEXT_ALTDIFF0	144		// 
+#define LK_LKFIN_ETE		143		// real ETE
+#define LK_NEXT_ALTDIFF0	144		//
 #define LK_TIME_LOCALSEC	145		// with seconds displayed
 // Target infos
 #define LK_TARGET_DIST		146		//
@@ -699,7 +699,7 @@
 // Time gates
 #define LK_START_DIST		157		//
 
-// overtarget values  UNUSED 
+// overtarget values  UNUSED
 // #define LK_ALT1_DIST		158		//
 // #define LK_ALT2_DIST		159		//
 // #define LK_BALT_DIST		160		//
@@ -781,7 +781,7 @@
 
 // Overtargets Modes
 #define OVT_TASK        0
-#define OVT_TASKCENTER  1   // Active Waypoint Center for PG optimized Task 
+#define OVT_TASKCENTER  1   // Active Waypoint Center for PG optimized Task
 #define OVT_BALT        2
 #define OVT_ALT1        3
 #define OVT_ALT2        4
@@ -792,7 +792,7 @@
 #define OVT_MARK        9	// marked location
 #define OVT_PASS        10	// closer mountain pass
 // this is not the number of modes, because 0 is not accounted, remember
-// Also, this is used for dimensioning array. 
+// Also, this is used for dimensioning array.
 #define OVT_MAXMODE	OVT_PASS
 // This is used for limiting rotate
 #define OVT_ROTATE	OVT_FLARM
@@ -893,7 +893,7 @@ static const double PI = (4*atan(1));
 
 //
 // TextInBox and LKDrawWaypoint
-#define WPCIRCLESIZE        2 
+#define WPCIRCLESIZE        2
 
 
 #define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))

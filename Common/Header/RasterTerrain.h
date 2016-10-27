@@ -38,16 +38,16 @@ class RasterMap final {
   int GetEffectivePixelSize(double pixelsize) const;
 
   // accurate method
-  int GetEffectivePixelSize(double *pixel_D, 
+  int GetEffectivePixelSize(double *pixel_D,
                             double latitude, double longitude) const;
-  
+
   void SetFieldRounding(double xr, double yr);
 
   inline short GetField(const double &Latitude, const double &Longitude) const;
 
   bool Open(const TCHAR* filename);
   void Close();
-  
+
   void Lock() { CritSec_TerrainFile.Lock(); }
   void Unlock() { CritSec_TerrainFile.Unlock(); }
 
@@ -82,7 +82,7 @@ protected:
 };
 /**
  * JMW rounding further reduces data as required to speed up terrain display on low zoom levels
- * 
+ *
  * Attention ! allways check if Terrain IsValid before call this.
  */
 
@@ -128,7 +128,7 @@ short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longi
     const short &h1 = tm[0]; // (x,y)
     const short &h3 = tm[TerrainInfo->Columns+1]; // (x+1,y+1)
     if (ix > iy) {
-        // lower triangle 
+        // lower triangle
         const short &h2 = tm[1]; // (x+1,y)
         return (short) (h1 + ((ix * (h2 - h1) - iy * (h2 - h3)) >> 8));
     } else {
@@ -143,7 +143,7 @@ short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longi
  * @brief return terrain elevation without interpolation
  * @optimization : return invalid terrain for right&bottom line.
  */
-inline 
+inline
 short RasterMap::GetFieldFine(const double &Latitude, const double &Longitude) const {
     const unsigned int lx = iround((Longitude - TerrainInfo->Left) * fXrounding) * Xrounding;
     const unsigned int ly = iround((TerrainInfo->Top - Latitude) * fYrounding) * Yrounding;
@@ -154,7 +154,7 @@ short RasterMap::GetFieldFine(const double &Latitude, const double &Longitude) c
     return *(TerrainMem + ly * TerrainInfo->Columns + lx);
 }
 
-inline 
+inline
 short RasterMap::GetField(const double &Latitude, const double &Longitude) const {
     if (interpolate()) {
         return GetFieldInterpolate(Latitude, Longitude);

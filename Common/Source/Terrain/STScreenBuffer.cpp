@@ -66,7 +66,7 @@ void CSTScreenBuffer::HorizontalBlur(unsigned int boxw, BGRColor* src, BGRColor*
             tot_g += c->value.Green();
             tot_b += c->value.Blue();
         }
-        
+
         for (x = 0; x < GetCorrectedWidth(); ++x) {
             unsigned int acc = muli;
             if (x > boxw) {
@@ -141,4 +141,4 @@ void CSTScreenBuffer::VerticalBlur(unsigned int boxh, BGRColor* src, BGRColor* d
         }
     }
 }
-#endif       
+#endif

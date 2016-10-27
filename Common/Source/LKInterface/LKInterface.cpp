@@ -33,7 +33,7 @@ void NextModeType() {
 redo:
 	if ( CURTYPE >= ModeTableTop[ModeIndex] ) {
 		// point to first
-		CURTYPE=0; 
+		CURTYPE=0;
 	} else {
 		CURTYPE++;
 	}
@@ -80,7 +80,7 @@ void PreviousModeType() {
 redo:
 	if ( CURTYPE <= 0 ) {
 		// point to last
-		CURTYPE=ModeTableTop[ModeIndex]; 
+		CURTYPE=ModeTableTop[ModeIndex];
 	} else {
 		CURTYPE--;
 
@@ -121,7 +121,7 @@ finish:
 }
 
 
-// Advance inside Mode Table between map, wp, infopages 
+// Advance inside Mode Table between map, wp, infopages
 // and reselect previous state for that mode
 // Notice: does NOT advance inside modes through types
 //
@@ -217,7 +217,7 @@ void UnselectMapSpace(short i) {
 
 
 void SelectMapSpace(short i) {
-	
+
 	LKForceDoNearest=false;
 	LKForceDoCommon=false;
 	LKForceDoRecent=false;
@@ -246,7 +246,7 @@ void SelectMapSpace(short i) {
 		case MSM_VISUALGLIDE:
 			// direction sorting! It is set by LKInit, also.
 			// It should not be necessary, unless someone changes it after init.
-			SortedMode[MapSpaceMode]=2; 
+			SortedMode[MapSpaceMode]=2;
 			LKForceDoNearest=true;
 			LKevent=LKEVENT_NEWRUN;
 			break;
@@ -265,9 +265,9 @@ void SelectMapSpace(short i) {
 	// If we are showing special menus for special pages, here we disable them.
 	//
 	if (IsMultimapConfigShown &&
-		MapSpaceMode!=MSM_MAPTRK && 
-		MapSpaceMode!=MSM_MAPWPT && 
-		MapSpaceMode!=MSM_MAPASP && 
+		MapSpaceMode!=MSM_MAPTRK &&
+		MapSpaceMode!=MSM_MAPWPT &&
+		MapSpaceMode!=MSM_MAPASP &&
 		MapSpaceMode!=MSM_VISUALGLIDE) {
 		InputEvents::setMode(TEXT("default"));
 	}
@@ -292,7 +292,7 @@ void BottomBarChange(bool advance) {
 			wanted=BM_FIRST;
 			continue;
 		}
-    	}
+	}
 	if (ConfBB[wanted]) break;
 	wanted++;
   } // while
@@ -303,7 +303,7 @@ void BottomBarChange(bool advance) {
 bbc_previous:
   wanted=BottomMode-1;
   while (true) {
-    	if (wanted == BM_TRM) {
+	if (wanted == BM_TRM) {
 		if ( ConfBB[BM_TRM] || (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && ConfBB0Auto)) {
 			break;
 		} else {
@@ -374,6 +374,3 @@ ipc_previous:
   return;
 
 }
-
-
-

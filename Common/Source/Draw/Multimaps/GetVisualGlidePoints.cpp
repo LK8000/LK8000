@@ -50,7 +50,7 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots) {
 
     int i;
 
-    // RESET COMMAND by passing 0, normally by EVENT_NEWRUN 
+    // RESET COMMAND by passing 0, normally by EVENT_NEWRUN
     if (numslots == 0) {
 #if DEBUG_GVG
         StartupStore(_T("...... GVGP: RESET\n"));
@@ -127,7 +127,7 @@ short MapWindow::GetVisualGlidePoints(unsigned short numslots) {
     // WE USE THE 2.3 PAGE (Nearest turnpoints) sorted by DIRECTION
     //
 
-    // We do this in several passes. 
+    // We do this in several passes.
 #define MAXPHASES	4
     unsigned short phase = 1;
 
@@ -192,7 +192,7 @@ _tryagain:
             if (abrgdiff < 0) abrgdiff *= -1;
 
 #if 0
-            // do we already have a wp with same bearing? 
+            // do we already have a wp with same bearing?
             for (int j = 0; j < numslots; j++) {
                 if ((int) tmpSlotBrgDiff[j] == (int) brgdiff) {
                     //StartupStore(_T("%s with bdiff=%d already used\n"),WayPointList[wpindex].Name,(int)brgdiff);
@@ -212,7 +212,7 @@ _tryagain:
             // accepted from +-45 deg, but only if they are not absolutely unreachable
             if (phase == 1) {
                 if (abrgdiff > 45) continue;
-                // if we are practically over the waypoint, skip it 
+                // if we are practically over the waypoint, skip it
                 if (distance < maxdistance) continue;
 
                 // Consider only Mt.Passes and task points not below us...
@@ -340,7 +340,7 @@ _takeit:
 
                 if (invalid || !ValidWayPoint(slotWpIndex[k])) continue;
 
-                // We do have a valid choice 
+                // We do have a valid choice
                 g = k;
                 minim = tmpSlotBrgDiff[k];
 #if DEBUGSORT
@@ -370,6 +370,3 @@ _takeit:
 
     return currentFilledNumber;
 }
-
-
-

@@ -33,11 +33,11 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
   TCHAR cupFreq[CUPSIZE_FREQ*2];
   TCHAR cupCode[CUPSIZE_CODE*2];
   // TCHAR cupCountry[CUPSIZE_COUNTRY*2];
-  
+
   int filemode;
-  
+
   flags[0]=0;
- 
+
   if (globalFileNum<0 || globalFileNum>1) {
 	StartupStore(_T("++++++ WriteWayPoint error: impossible file index!%s"),NEWLINE);
 	return;
@@ -46,11 +46,11 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
   filemode=WpFileType[globalFileNum+1];
 
   if (filemode == LKW_DAT) {
- 
+
 	WaypointLatitudeToString(wpt->Latitude, latitude);
 	WaypointLongitudeToString(wpt->Longitude, longitude);
 	WaypointFlagsToString(wpt->Flags, flags);
- 
+
 	if (wpt->Comment!=NULL) {
 		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
 	} else
@@ -63,7 +63,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 		iround(wpt->Altitude),
 		flags,
 		wpt->Name,
-		comment);  
+		comment);
 
 	return;
   } // DAT
@@ -94,16 +94,16 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	return;
   }
 
-  if (filemode == LKW_CUP) {  
+  if (filemode == LKW_CUP) {
 
 	LatitudeToCUPString(wpt->Latitude, latitude);
 	LongitudeToCUPString(wpt->Longitude, longitude);
 
-	if (wpt->RunwayDir >= 0)	
+	if (wpt->RunwayDir >= 0)
 		_stprintf(rwdirection,_T("%d"),wpt->RunwayDir);
 	else
 		_tcscpy(rwdirection,_T(""));
-	if (wpt->RunwayLen > 0)	
+	if (wpt->RunwayLen > 0)
 		_stprintf(rwlen,_T("%d.0m"),wpt->RunwayLen);
 	else
 		_tcscpy(rwlen,_T(""));
@@ -182,7 +182,7 @@ void WriteWayPointFile(FILE *fp) {
       }
     }
   }
-  // Write specific format header 
+  // Write specific format header
   if (globalFileNum>=0 && globalFileNum<2) { // 100208
 	if ( WpFileType[globalFileNum+1] == LKW_CUP ) {
 	 fprintf(fp,"name,code,country,lat,lon,elev,style,rwdir,rwlen,freq,desc\r\n");
@@ -193,10 +193,10 @@ void WriteWayPointFile(FILE *fp) {
 	}
 	if ( WpFileType[globalFileNum+1] == LKW_OZI ) {
 		//Always Use V1.1 file format
-	 	fprintf(fp,"OziExplorer Waypoint File Version 1.1\r\n");
-	 	fprintf(fp,"WGS 84\r\n");
-	 	fprintf(fp,"Reserved 2\r\n");
-	 	fprintf(fp,"Reserved 3\r\n");
+		fprintf(fp,"OziExplorer Waypoint File Version 1.1\r\n");
+		fprintf(fp,"WGS 84\r\n");
+		fprintf(fp,"Reserved 2\r\n");
+		fprintf(fp,"Reserved 3\r\n");
 	}
   } else {
 	StartupStore(_T("... WriteWayPointFile: invalid globalFileNum%s"),NEWLINE);
@@ -224,7 +224,7 @@ void WaypointWriteFiles(void) {
 
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
   TCHAR szFile2[MAX_PATH] = TEXT("\0");
-        
+
   FILE *fp=NULL;
   _tcscpy(szFile1,szWaypointFile);
   ExpandLocalPath(szFile1);
@@ -245,7 +245,7 @@ void WaypointWriteFiles(void) {
     fprintf(fp,"\r\n");
     fclose(fp);
     fp = NULL;
-  } 
+  }
   _tcscpy(szFile2,szAdditionalWaypointFile);
   ExpandLocalPath(szFile2);
 
@@ -258,7 +258,7 @@ void WaypointWriteFiles(void) {
 
 	fp = _tfopen(szFile2, TEXT("wb"));
   }
-  
+
   if(fp != NULL) {
     globalFileNum = 1;
     WriteWayPointFile(fp);
@@ -268,4 +268,3 @@ void WaypointWriteFiles(void) {
   }
   UnlockTaskData();
 }
-

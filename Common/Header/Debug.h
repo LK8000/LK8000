@@ -1,6 +1,6 @@
 #ifndef LK8000_DEBUG_H
 #define LK8000_DEBUG_H
-/* 
+/*
  * Use this place to activate DEBUG options, please explain their usage
  *
  * This file is included automatically by options.h.

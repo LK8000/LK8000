@@ -1,7 +1,7 @@
 /**
  ****************************************************************************
- * <P> XML.c - implementation file for basic XML parser written in ANSI C++ 
- * for portability. It works by using recursion and a node tree for breaking 
+ * <P> XML.c - implementation file for basic XML parser written in ANSI C++
+ * for portability. It works by using recursion and a node tree for breaking
  * down the elements of an XML document.  </P>
  *
  * @version     V1.08
@@ -9,20 +9,20 @@
  * @author      Frank Vanden Berghen
  * based on original implementation by Martyn C Brown
  *
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License version 2.1 as published by the Free Software Foundation
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  ****************************************************************************
  */
 #ifndef __INCLUDE_XML_NODE__
@@ -60,7 +60,7 @@
 #ifndef FALSE
     #define FALSE 0
 #endif /* FALSE */
-#ifndef TRUE    
+#ifndef TRUE
     #define TRUE 1
 #endif /* TRUE */
 
@@ -89,7 +89,7 @@ typedef enum XMLError
 typedef enum XMLElementType
 {
     eNodeChild=0,
-    eNodeAttribute=1,    
+    eNodeAttribute=1,
     eNodeText=2,
     eNodeClear=3,
     eNodeNULL=4
@@ -122,22 +122,22 @@ typedef struct XMLNode
     typedef struct // to allow shallow copy and "intelligent/smart" pointers (automatic delete):
     {
         LPTSTR       lpszName;        // Element name (=NULL if root)
-        int           nChild,          // Num of child nodes       
+        int           nChild,          // Num of child nodes
                       nText,           // Num of text fields
                       nClear,          // Num of Clear fields (comments)
                       nAttribute,      // Num of attributes
-                      isDeclaration;   // Whether node is an XML declaration - '<?xml ?>'  
+                      isDeclaration;   // Whether node is an XML declaration - '<?xml ?>'
         XMLNode       *pParent;        // Pointer to parent element (=NULL if root)
-        XMLNode       *pChild;         // Array of child nodes      
+        XMLNode       *pChild;         // Array of child nodes
         LPTSTR       *pText;          // Array of text fields
         XMLClear      *pClear;         // Array of clear fields
         XMLAttribute  *pAttribute;     // Array of attributes
-        int           *pOrder;         // order in which the child_nodes,text_fields,clear_fields and 
+        int           *pOrder;         // order in which the child_nodes,text_fields,clear_fields and
         int  ref_count;
     } XMLNodeData;
     XMLNodeData *d;
 
-    // protected constructor: use "parse" functions to get your first instance of XMLNode 
+    // protected constructor: use "parse" functions to get your first instance of XMLNode
     XMLNode(XMLNode *pParent, LPTSTR lpszName, int isDeclaration);
 
   public:
@@ -184,7 +184,7 @@ typedef struct XMLNode
     LPTSTR createXMLString(int nFormat, int *pnSize); // create XML string starting from current XMLNode
     XMLNodeContents enumContents(int i);              // enumerate all the different contents (child,text,
                                                       //     clear,attribute) of the current XMLNode. The order
-                                                      //     is reflecting the order of the original file/string    
+                                                      //     is reflecting the order of the original file/string
     int nElement();                                   // nbr of different contents for current node
     char isEmpty();                                   // is this node Empty?
     char isDeclaration();
@@ -205,8 +205,8 @@ typedef struct XMLNode
     XMLAttribute *AddAttribute(LPTSTR lpszName, LPTSTR lpszValuev);
     LPCTSTR AddText(LPTSTR lpszValue);
     XMLClear *AddClear(LPTSTR lpszValue, LPCTSTR lpszOpen, LPCTSTR lpszClose);
-    
-    
+
+
     operator bool () { return d != NULL; }
 
 private:
@@ -225,7 +225,7 @@ private:
 // This structure is given by the function "enumContents".
 typedef struct XMLNodeContents
 {
-    // This dictates what's the content of the XMLNodeContent  
+    // This dictates what's the content of the XMLNodeContent
     enum XMLElementType type;
     // should be an union to access the appropriate data.
     // compiler does not allow union of object with constructor... too bad.
@@ -236,12 +236,12 @@ typedef struct XMLNodeContents
 
 } XMLNodeContents;
 
-// The 2 following functions are processing strings so that all the characters 
+// The 2 following functions are processing strings so that all the characters
 // &,",',<,> are replaced by their XML equivalent: &amp;, &quot;, &apos;, &lt;, &gt;.
-// The second function ("toXMLStringFast") allows you to re-use the same output 
+// The second function ("toXMLStringFast") allows you to re-use the same output
 // buffer for all the conversions so that only a few memory allocations are performed.
 // If the output buffer is too small to contain the resulting string, it will
-// be enlarged. These 2 functions are useful when creating from scratch an 
+// be enlarged. These 2 functions are useful when creating from scratch an
 // XML file using printf.
 LPTSTR toXMLString(LPCTSTR source);
 LPTSTR toXMLStringFast(LPTSTR *destBuffer,int *destSz, LPCTSTR source);

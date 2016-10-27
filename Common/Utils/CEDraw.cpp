@@ -1,8 +1,8 @@
 /* ---------------------------------------------------------------------------------------------------
- *  
+ *
  *                          Windows CE Graphics Libary v1.00.0000
- *  
- *        
+ *
+ *
  *    Written by James.
  *    Bug report : jiet@msn.com
  *                                                             Copyright 2001
@@ -80,12 +80,12 @@ int CCEDraw::MulDiv(int a, int b, int c)
 //
 inline VOID CCEDraw::DrawPixel( DWORD dwX, DWORD dwY, unsigned short Color )
 {
-	if( IsPointOutside( dwX, dwY ) ) 
+	if( IsPointOutside( dwX, dwY ) )
 		return;
-	
-	if( m_gxdp.cBPP == 8 ) 
+
+	if( m_gxdp.cBPP == 8 )
 		*( m_pVB + dwY*m_cbyPitch + m_cbxPitch*dwX ) = (BYTE)Color;
-	
+
 	*(unsigned short*)( m_pVB + dwY*m_cbyPitch + m_cbxPitch*dwX ) = Color;
 }
 
@@ -113,7 +113,7 @@ inline BOOL CCEDraw::IsAllPointOutside( POINT* ptPoint, int nNumber )
 	if( NULL == ptPoint ) return FALSE;
 	for( int nIndex = 0 ; nIndex < nNumber ; nIndex ++ )
 	{
-		if( ptPoint[nIndex].x < (LONG)m_gxdp.cxWidth && ptPoint[nIndex].y < (LONG)m_gxdp.cyHeight 
+		if( ptPoint[nIndex].x < (LONG)m_gxdp.cxWidth && ptPoint[nIndex].y < (LONG)m_gxdp.cyHeight
 			&& ptPoint[nIndex].x >= 0 && ptPoint[nIndex].y >= 0 ) return FALSE;
 	}
 	return TRUE;
@@ -128,35 +128,35 @@ inline unsigned short CCEDraw::GetBitmapPointColor( unsigned char * pBuffer ) {
 	unsigned char nColorRed   = *(pBuffer+2);
 	unsigned char nColorGreen = *(pBuffer+1);
 	unsigned char nColorBlue  = *pBuffer;
-	
+
 	switch( m_gxdp.cBPP ) {
 		case 16:
 			if ( m_gxdp.ffFormat & kfDirect555 ) {
 				nColorRed >>= 3;
 				nColorGreen >>= 3;
 				nColorBlue >>= 3;
-				Color = (unsigned short)( ( nColorRed & 0xff ) << 10 | 
-										  ( nColorGreen & 0xff ) << 5 | 
+				Color = (unsigned short)( ( nColorRed & 0xff ) << 10 |
+										  ( nColorGreen & 0xff ) << 5 |
 										  ( nColorBlue & 0xff ) );
 			}
 			else if( m_gxdp.ffFormat & kfDirect565) {
 				nColorRed >>= 3;
 				nColorGreen >>= 2;
 				nColorBlue >>= 3;
-				Color = (unsigned short)( ( nColorRed & 0xff ) << 11 | 
-										  ( nColorGreen & 0xff ) << 5 | 
+				Color = (unsigned short)( ( nColorRed & 0xff ) << 11 |
+										  ( nColorGreen & 0xff ) << 5 |
 										  ( nColorBlue & 0xff ) );
-	                  
-			} 
+
+			}
 			else if( m_gxdp.ffFormat & kfDirect444 ) {
 				nColorRed >>= 4;
 				nColorGreen >>= 4;
 				nColorBlue >>= 4;
-				Color = (unsigned short)( ( nColorRed & 0xf0 ) << 8 | 
-										  ( nColorGreen & 0xf0 ) << 4 | 
+				Color = (unsigned short)( ( nColorRed & 0xf0 ) << 8 |
+										  ( nColorGreen & 0xf0 ) << 4 |
 										  ( nColorBlue & 0xf0 ) );
-	                  
-			} 
+
+			}
 			break;
 		case 8:
 			Color = (unsigned short)( ( nColorRed & 0xf ) << 5 |
@@ -179,7 +179,7 @@ BOOL CCEDraw::DrawLine( POINT &ptOrig, POINT &ptDes )
 
 BOOL CCEDraw::DrawHLine( LONG lOrigX, LONG lOrigY, LONG lDestX, LONG lDestY, short nColor )
 {
-	if( lOrigY != lDestY ) return TRUE;  // Because Draw H Line...	
+	if( lOrigY != lDestY ) return TRUE;  // Because Draw H Line...
 	if( lOrigY < 0 || lOrigY >= (LONG)m_gxdp.cyHeight ) return TRUE;
 	if( ( lOrigX < 0 && lDestX < 0 ) || ( lOrigX >= (LONG)m_gxdp.cxWidth && lDestX >= (LONG)m_gxdp.cxWidth ) ) return TRUE;
 
@@ -193,7 +193,7 @@ BOOL CCEDraw::DrawHLine( LONG lOrigX, LONG lOrigY, LONG lDestX, LONG lDestY, sho
 	if( lOrigX < 0 ) lOrigX = 0;
 	if( lDestX >= (LONG)m_gxdp.cxWidth ) lDestX = m_gxdp.cxWidth - 1;
 	if( nColor == -1 && m_pPen != NULL ) nColor = m_pPen->m_Color;
-	
+
 	unsigned char* pBuffer = ( m_pVB + lOrigY*m_cbyPitch + m_cbxPitch*lOrigX );
 	if( m_gxdp.cBPP == 8 )
 	{
@@ -230,7 +230,7 @@ BOOL CCEDraw::DrawVLine( LONG lOrigX, LONG lOrigY, LONG lDestX, LONG lDestY, sho
 	if( lOrigY < 0 ) lOrigY = 0;
 	if( lDestY >= (LONG)m_gxdp.cyHeight ) lDestY = m_gxdp.cyHeight - 1;
 	if( nColor == -1 && m_pPen != NULL ) nColor = m_pPen->m_Color;
-	
+
 	unsigned char* pBuffer = ( m_pVB + lOrigY*m_cbyPitch + m_cbxPitch*lOrigX );
 	if( m_gxdp.cBPP == 8 )
 	{
@@ -258,7 +258,7 @@ BOOL CCEDraw::DrawLine( LONG lOrigX, LONG lOrigY, LONG lDestX, LONG lDestY )
 	int dX, dY;
 	int CurrentX = lOrigX;		// store the starting point (just point A)
 	int CurrentY = lOrigY;
-	
+
 	// Draw none if all point outside the screen...
 	if( IsPointOutside( lOrigX, lOrigY ) && IsPointOutside( lDestX, lDestY ) ) return TRUE;
 
@@ -267,49 +267,49 @@ BOOL CCEDraw::DrawLine( LONG lOrigX, LONG lOrigY, LONG lDestX, LONG lDestY )
 	if( lOrigY > lDestY ) { Yincr=-1; dY = lOrigY - lDestY; } else { Yincr=1; dY = lDestY - lOrigY; }	// which direction in Y?
 
 	if( dX >= dY )	// if X is the independent variable
-	{           
-		int dPr 	= dY << 1;   						
-		int dPru 	= dPr - ( dX << 1 );				
-		int P 		= dPr - dX;					
-
-		for ( ; dX >= 0; dX -- )							
-		{
-			DrawPixel( CurrentX, CurrentY, m_pPen->m_Color );
-			if (P > 0)                              
-			{ 
-				CurrentX += Xincr;					
-				CurrentY += Yincr; 					
-				P += dPru;							
-			}
-			else									
-			{
-				CurrentX += Xincr;					
-				P += dPr;								
-			}
-		}		
-	}
-	else			
 	{
-		int dPr 	= dX << 1;   						
-		int dPru 	= dPr - ( dY << 1 );    				
-		int P 		= dPr - dY;					
+		int dPr 	= dY << 1;
+		int dPru 	= dPr - ( dX << 1 );
+		int P 		= dPr - dX;
 
-		for( ; dY >= 0; dY -- )							
+		for ( ; dX >= 0; dX -- )
 		{
 			DrawPixel( CurrentX, CurrentY, m_pPen->m_Color );
-			if ( P > 0 )                              
-			{ 
-				CurrentX += Xincr; 					
-				CurrentY += Yincr;					
-				P += dPru;							
-			}
-			else									
+			if (P > 0)
 			{
-				CurrentY += Yincr;					
-				P += dPr;								
+				CurrentX += Xincr;
+				CurrentY += Yincr;
+				P += dPru;
 			}
-		}		
-	}		
+			else
+			{
+				CurrentX += Xincr;
+				P += dPr;
+			}
+		}
+	}
+	else
+	{
+		int dPr 	= dX << 1;
+		int dPru 	= dPr - ( dY << 1 );
+		int P 		= dPr - dY;
+
+		for( ; dY >= 0; dY -- )
+		{
+			DrawPixel( CurrentX, CurrentY, m_pPen->m_Color );
+			if ( P > 0 )
+			{
+				CurrentX += Xincr;
+				CurrentY += Yincr;
+				P += dPru;
+			}
+			else
+			{
+				CurrentY += Yincr;
+				P += dPr;
+			}
+		}
+	}
 	return TRUE;
 }
 
@@ -327,35 +327,35 @@ inline unsigned short CCEDraw::ConvertColor( COLORREF crColor )
 	switch( m_gxdp.cBPP )
     {
 	case 16:
-        if ( m_gxdp.ffFormat & kfDirect555 ) 
+        if ( m_gxdp.ffFormat & kfDirect555 )
 		{
 			nColorRed >>= 3;
 			nColorGreen >>= 3;
 			nColorBlue >>= 3;
-            Color = (unsigned short)( ( nColorRed & 0xff ) << 10 | 
-                                      ( nColorGreen & 0xff ) << 5 | 
+            Color = (unsigned short)( ( nColorRed & 0xff ) << 10 |
+                                      ( nColorGreen & 0xff ) << 5 |
                                       ( nColorBlue & 0xff ) );
 		}
-		else if( m_gxdp.ffFormat & kfDirect565) 
+		else if( m_gxdp.ffFormat & kfDirect565)
 		{
 			nColorRed >>= 3;
 			nColorGreen >>= 2;
 			nColorBlue >>= 3;
-			Color = (unsigned short)( ( nColorRed & 0xff ) << 11 | 
-                                      ( nColorGreen & 0xff ) << 5 | 
+			Color = (unsigned short)( ( nColorRed & 0xff ) << 11 |
+                                      ( nColorGreen & 0xff ) << 5 |
                                       ( nColorBlue & 0xff ) );
-                  
-        } 
-		else if( m_gxdp.ffFormat & kfDirect444 ) 
+
+        }
+		else if( m_gxdp.ffFormat & kfDirect444 )
 		{
 			nColorRed >>= 4;
 			nColorGreen >>= 4;
 			nColorBlue >>= 4;
-			Color = (unsigned short)( ( nColorRed & 0xf0 ) << 8 | 
-                                      ( nColorGreen & 0xf0 ) << 4 | 
+			Color = (unsigned short)( ( nColorRed & 0xf0 ) << 8 |
+                                      ( nColorGreen & 0xf0 ) << 4 |
                                       ( nColorBlue & 0xf0 ) );
-                  
-        } 
+
+        }
 		break;
 	case 8:
 		Color = (unsigned short)( ( nColorRed & 0xf ) << 5 |
@@ -378,35 +378,35 @@ unsigned short CCEDraw::ConvertColor( int nColorRed, int nColorGreen, int nColor
 	switch( m_gxdp.cBPP )
     {
 	case 16:
-        if ( m_gxdp.ffFormat & kfDirect555 ) 
+        if ( m_gxdp.ffFormat & kfDirect555 )
 		{
 			nColorRed >>= 3;
 			nColorGreen >>= 3;
 			nColorBlue >>= 3;
-            Color = (unsigned short)( ( nColorRed & 0xff ) << 10 | 
-                                      ( nColorGreen & 0xff ) << 5 | 
+            Color = (unsigned short)( ( nColorRed & 0xff ) << 10 |
+                                      ( nColorGreen & 0xff ) << 5 |
                                       ( nColorBlue & 0xff ) );
 		}
-		else if( m_gxdp.ffFormat & kfDirect565) 
+		else if( m_gxdp.ffFormat & kfDirect565)
 		{
 			nColorRed >>= 3;
 			nColorGreen >>= 2;
 			nColorBlue >>= 3;
-			Color = (unsigned short)( ( nColorRed & 0xff ) << 11 | 
-                                      ( nColorGreen & 0xff ) << 5 | 
+			Color = (unsigned short)( ( nColorRed & 0xff ) << 11 |
+                                      ( nColorGreen & 0xff ) << 5 |
                                       ( nColorBlue & 0xff ) );
-                  
-        } 
-		else if( m_gxdp.ffFormat & kfDirect444 ) 
+
+        }
+		else if( m_gxdp.ffFormat & kfDirect444 )
 		{
 			nColorRed >>= 4;
 			nColorGreen >>= 4;
 			nColorBlue >>= 4;
-			Color = (unsigned short)( ( nColorRed & 0xf0 ) << 8 | 
-                                      ( nColorGreen & 0xf0 ) << 4 | 
+			Color = (unsigned short)( ( nColorRed & 0xf0 ) << 8 |
+                                      ( nColorGreen & 0xf0 ) << 4 |
                                       ( nColorBlue & 0xf0 ) << 0 );
-                  
-        } 
+
+        }
 		break;
 	case 8:
 		Color = (unsigned short)( ( nColorRed & 0xf ) << 5 |
@@ -424,7 +424,7 @@ unsigned short CCEDraw::ConvertColor( int nColorRed, int nColorGreen, int nColor
 BOOL CCEDraw::Clear( CCEPen* pPen )
 {
 	if ( NULL == pPen )	pPen = m_pPen;
-	if ( NULL == pPen ) 
+	if ( NULL == pPen )
 	{
 		m_dwLastError = CEG_DRAW_PEN_NULL;
 		return FALSE;     // Not Select Pen Object;
@@ -432,10 +432,10 @@ BOOL CCEDraw::Clear( CCEPen* pPen )
 
 	unsigned char * pusLine = (unsigned char*)m_pVB;
 	if( m_gxdp.cBPP == 8 ) {
-		for( unsigned int y = 0; y < m_gxdp.cyHeight - 1; y ++ ) 
+		for( unsigned int y = 0; y < m_gxdp.cyHeight - 1; y ++ )
 		{
 			unsigned char * pusDest = pusLine;
-			for( unsigned int x = 0; x < m_gxdp.cxWidth - 1; x ++ ) 
+			for( unsigned int x = 0; x < m_gxdp.cxWidth - 1; x ++ )
 			{
 				*pusDest = (BYTE)pPen->m_Color;
 				pusDest += m_cbxPitch;
@@ -443,14 +443,14 @@ BOOL CCEDraw::Clear( CCEPen* pPen )
 			pusLine += m_cbyPitch;
 		}
 	}
-	else if( m_gxdp.cBPP == 16 ) 
+	else if( m_gxdp.cBPP == 16 )
 	{
-		for( unsigned int y = 0; y < m_gxdp.cyHeight - 1; y ++ ) 
+		for( unsigned int y = 0; y < m_gxdp.cyHeight - 1; y ++ )
 		{
 			unsigned char * pusDest = pusLine;
-			for( unsigned int x = 0; x < m_gxdp.cxWidth - 1; x ++ ) 
+			for( unsigned int x = 0; x < m_gxdp.cxWidth - 1; x ++ )
 			{
-				
+
 				//*(unsigned short*)pusDest = pPen->m_Color;
 				DrawPixel( x, y, pPen->m_Color);
 				pusDest += m_cbxPitch;
@@ -484,7 +484,7 @@ VOID CCEDraw::FadeOut( DWORD dwStep )
 	register unsigned char step=(unsigned char) dwStep;
 	register unsigned short Color;
 	register bool allPixelsBlack;
-	
+
 	// Set drawmode to directdraw for faster execution
 	//SetDrawMode(CEG_DRAWMODE_DIRECTDRAW);
 	do {
@@ -494,7 +494,7 @@ VOID CCEDraw::FadeOut( DWORD dwStep )
 		pusLine = m_pVB;
 		for( unsigned int y = 0; y < m_gxdp.cyHeight; y ++ ) {
 			register unsigned char *pusDest = pusLine;
-			for( register unsigned short x = 0; x < m_gxdp.cxWidth; x ++ ) 
+			for( register unsigned short x = 0; x < m_gxdp.cxWidth; x ++ )
 			{
 				if( m_gxdp.cBPP == 8 ) {
 					if(*pusDest > step) {
@@ -516,9 +516,9 @@ VOID CCEDraw::FadeOut( DWORD dwStep )
 						if( ColorR < 0 ) ColorR = 0;
 						if( ColorG < 0 ) ColorG = 0;
 						if( ColorB < 0 ) ColorB = 0;
-						
-						Color = (unsigned short)( ( ColorR & 0xff ) << 11 | 
-										  ( ColorG & 0xff ) << 5 | 
+
+						Color = (unsigned short)( ( ColorR & 0xff ) << 11 |
+										  ( ColorG & 0xff ) << 5 |
 										  ( ColorB & 0xff ) );
 						*(unsigned short*)pusDest = Color;
 
@@ -535,9 +535,9 @@ VOID CCEDraw::FadeOut( DWORD dwStep )
 						if( ColorR < 0 ) ColorR = 0;
 						if( ColorG < 0 ) ColorG = 0;
 						if( ColorB < 0 ) ColorB = 0;
-						
-						Color = (unsigned short)( ( ColorR & 0xff ) << 11 | 
-										  ( ColorG & 0xff ) << 5 | 
+
+						Color = (unsigned short)( ( ColorR & 0xff ) << 11 |
+										  ( ColorG & 0xff ) << 5 |
 										  ( ColorB & 0xff ) );
 						*(unsigned short*)pusDest = Color;
 
@@ -590,7 +590,7 @@ CCEGDIObject* CCEDraw::SetGDIObject( CCEGDIObject* pGDIObject )
 {
 	CCEGDIObject* pOldObject = NULL;
 	// Cannot be null
-	if( NULL == pGDIObject ) 
+	if( NULL == pGDIObject )
 	{
 		m_dwLastError = CEG_DRAW_OBJECT_NULL;
 		return NULL;
@@ -646,7 +646,7 @@ CCEGDIObject* CCEDraw::GetGDIObject( DWORD dwType )
 
 //
 // Function : Polygon()
-// This method draws a polygon consisting of two or more points connected by lines. 
+// This method draws a polygon consisting of two or more points connected by lines.
 // The system closes the polygon automatically by drawing a line from the last vertex to the first.
 //
 BOOL CCEDraw::DrawPolygon( LPPOINT lpPoints, int nCount )
@@ -667,8 +667,8 @@ BOOL CCEDraw::DrawPolygon( LPPOINT lpPoints, int nCount )
 }
 
 //
-// Function : Polyline()		
-// This method draws a polygon consisting of two or more points connected by lines. 
+// Function : Polyline()
+// This method draws a polygon consisting of two or more points connected by lines.
 //
 BOOL CCEDraw::DrawPolyline( LPPOINT lpPoints, int nCount )
 {
@@ -687,7 +687,7 @@ BOOL CCEDraw::DrawPolyline( LPPOINT lpPoints, int nCount )
 
 //
 // Function : FillPolygon()
-// This method draws a polygon with the brush fill. 
+// This method draws a polygon with the brush fill.
 // The system closes the polygon automatically by drawing a line from the last vertex to the first.
 //
 BOOL CCEDraw::FillPolygon( LPPOINT lpPoints, int nCount, int nOffsetX, int nOffsetY )
@@ -709,8 +709,8 @@ BOOL CCEDraw::FillPolygon( FLOATPOINT* lpPoints, int nCount, int nOffsetX, int n
 	BOOL bIn = FALSE;
 	for( int nIndex = 0 ; nIndex < nCount ; nIndex ++ )
 	{
-		if( (lpPoints[nIndex].x+nOffsetX) < (LONG)m_gxdp.cxWidth && (lpPoints[nIndex].y + nOffsetY) < (LONG)m_gxdp.cyHeight 
-			&& (lpPoints[nIndex].x+nOffsetX) >= 0 && (lpPoints[nIndex].y + nOffsetY) >= 0 ) 
+		if( (lpPoints[nIndex].x+nOffsetX) < (LONG)m_gxdp.cxWidth && (lpPoints[nIndex].y + nOffsetY) < (LONG)m_gxdp.cyHeight
+			&& (lpPoints[nIndex].x+nOffsetX) >= 0 && (lpPoints[nIndex].y + nOffsetY) >= 0 )
 		{
 			bIn = TRUE;
 			break;
@@ -742,7 +742,7 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPCTSTR lpString, int nCount, UINT uFor
 	unsigned short nColor = 0;
 	LPBYTE      pBitmap;
 	LPRECT      lpRect;
-	
+
 	// Get the windows device content...
 	hWindowDC = GetDC( NULL );
 	CCEFont font;
@@ -776,7 +776,7 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPCTSTR lpString, int nCount, UINT uFor
 	::ReleaseDC( NULL, hWindowDC );
 
 	memset( pBitmap, 0xff, BitmapInfo.bmiHeader.biHeight * BitmapInfo.bmiHeader.biWidth * 3 );
-	
+
 	hWindowDC = CreateCompatibleDC( NULL );
 
 	if( IsPointOutside( lpPoint->x, lpPoint->y ) &&
@@ -789,7 +789,7 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPCTSTR lpString, int nCount, UINT uFor
 
 	// Draw the text to the dib section...
 	::DrawText( hWindowDC, lpString, nCount, &rectText, DT_CENTER | DT_VCENTER | DT_SINGLELINE );
-	
+
 	unsigned char* pVideoBuffer = m_pVB;
 	// Copy it to the back buffer...
 	// Set the font...
@@ -800,14 +800,14 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPCTSTR lpString, int nCount, UINT uFor
 		for( int nY = 1; nY < BitmapInfo.bmiHeader.biHeight ; nY ++ )
 		{
 			if( GetBitmapPointColor( pBitmap +  ( nX ) * 3 +
-											    ( BitmapInfo.bmiHeader.biHeight - nY ) * 
-											     BitmapInfo.bmiHeader.biWidth * 3 
-								   ) == crTransparent 
+											    ( BitmapInfo.bmiHeader.biHeight - nY ) *
+											     BitmapInfo.bmiHeader.biWidth * 3
+								   ) == crTransparent
 			  ) continue;
-			  
+
 			DrawPixel( nX + lpPoint->x, nY + lpPoint->y, nColor );
 		}
-	
+
 	// cleanup
 	::SelectObject( hWindowDC, hOldBitmap );
 	SelectObject(hWindowDC, oldFont);
@@ -836,7 +836,7 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPSTR lpString, int nCount, UINT uForma
 	unsigned int n=0;
 	char zw[256];
 
-	if( NULL == m_pFontFile ) 
+	if( NULL == m_pFontFile )
 	{
 		m_dwLastError = CEG_DRAW_FONTFILE_NULL;
 		return FALSE;
@@ -845,7 +845,7 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPSTR lpString, int nCount, UINT uForma
 		 IsPointOutside( lpPoint->x + nCount* 16, lpPoint->y + 16 ) &&
 		 IsPointOutside( lpPoint->x + nCount* 16, lpPoint->y ) &&
 		 IsPointOutside( lpPoint->x, lpPoint->y + 16 ) ) return TRUE;
-	
+
 	strcpy( zw, lpString );
     while( n != strlen( zw ) )
 	{   register int i,j;
@@ -853,11 +853,11 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPSTR lpString, int nCount, UINT uForma
 		register int yy=0;
 		char wm[32];
 		long num;
-		
+
 		if((zw[n]&0x80)==0)
 		{
 			num=188+zw[n]-33;
-			memcpy( wm, (m_pFontFile + num*32), 32 ); 
+			memcpy( wm, (m_pFontFile + num*32), 32 );
 			for(i=0;i<32;i++)
 			{
 				for(j=1;j<=8;j++)
@@ -867,11 +867,11 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPSTR lpString, int nCount, UINT uForma
 					   DrawPixel((xx)+X,Y+yy,m_pPen->m_Color);xx++;
 				   }
 				   if( (i+1)%2==0 )
-				   { 
+				   {
 					   xx=0;
 					   yy++;
 				   }
-						  
+
 			}
 			X=X+16;
 			n=n+1;
@@ -883,7 +883,7 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPSTR lpString, int nCount, UINT uForma
 			zw[n]=zw[n]-0x20;
 			zw[n+1]=zw[n+1]-0x20;
 			num=(zw[n]-1)*94+(zw[n+1]-1);
-			memcpy( wm, (m_pFontFile + num*32), 32 ); 
+			memcpy( wm, (m_pFontFile + num*32), 32 );
 			for(i=0;i<32;i++)
 			{
 				for(j=1;j<=8;j++)
@@ -901,7 +901,7 @@ BOOL CCEDraw::DrawText( LPPOINT lpPoint, LPSTR lpString, int nCount, UINT uForma
 			}
 			X=X+16;n=n+2;
 		}
-	}	
+	}
    return TRUE;
 }
 
@@ -913,7 +913,7 @@ BOOL CCEDraw::DrawBitmap( CCEBitmap* pBitmap, int nXDest, int nYDest, int nWidth
 {
 	return pBitmap->BitBlt( this, nXDest, nYDest, nWidth, nHeight, nXSrc, nYSrc, dwRop, fAlpha );
 }
-	
+
 //
 // Function : DrawRect()
 // Draw the rectangle
@@ -941,7 +941,7 @@ BOOL CCEDraw::DrawRect( LONG lStartX, LONG lStartY, LONG lEndX, LONG lEndY )
 	// Draw v line
 	DrawVLine( lStartX, lStartY, lStartX, lEndY );
 	DrawVLine( lEndX, lStartY, lEndX, lEndY );
-	
+
 	return TRUE;
 }
 
@@ -974,12 +974,12 @@ BOOL CCEDraw::FillRect( LONG lStartX, LONG lStartY, LONG lEndX, LONG lEndY, FLOA
 	if( lEndY >= (LONG)m_gxdp.cyHeight ) lEndY = (LONG)m_gxdp.cyHeight - 1;
 	if( lStartX < 0 ) lStartX = 0;
 	if( lEndX >= (LONG)m_gxdp.cxWidth ) lEndX = m_gxdp.cxWidth - 1;
-	
+
 	unsigned char* pBuffer = ( m_pVB + lStartY*m_cbyPitch + m_cbxPitch*lStartX );
 	unsigned char* pTempBuffer = pBuffer;
 	unsigned short ColorR, ColorG, ColorB, Color;
 	// First draw if the color deepth is 8
-	if( m_gxdp.cBPP == 8 ) 
+	if( m_gxdp.cBPP == 8 )
 	{
 		for( int nY = lStartY ; nY < lEndY ; nY ++ )
 		{
@@ -1010,8 +1010,8 @@ BOOL CCEDraw::FillRect( LONG lStartX, LONG lStartY, LONG lEndX, LONG lEndY, FLOA
 					ColorR = (unsigned short)(((Color >> 11)&0x1f) * fAlpha + ColorR);
 					ColorG = (unsigned short)(((Color >> 5)&0x3f) * fAlpha + ColorG);
 					ColorB = (unsigned short)((Color & 0x1f)* fAlpha + ColorB);
-					Color  = (unsigned short)( ( ColorR & 0xff ) << 11 | 
-											  ( ColorG & 0xff ) << 5 | 
+					Color  = (unsigned short)( ( ColorR & 0xff ) << 11 |
+											  ( ColorG & 0xff ) << 5 |
 											  ( ColorB & 0xff ) );
 					*(unsigned short*)pBuffer = Color;
 					pBuffer += m_cbxPitch;
@@ -1035,8 +1035,8 @@ BOOL CCEDraw::FillRect( LONG lStartX, LONG lStartY, LONG lEndX, LONG lEndY, FLOA
 					ColorR = (unsigned short)(((Color >> 10)&0x1f) * fAlpha + ColorR);
 					ColorG = (unsigned short)(((Color >> 5)&0x1f) * fAlpha + ColorG);
 					ColorB = (unsigned short)((Color & 0x1f)* fAlpha + ColorB);
-					Color  = (unsigned short)( ( ColorR & 0xff ) << 10 | 
-											  ( ColorG & 0xff ) << 5 | 
+					Color  = (unsigned short)( ( ColorR & 0xff ) << 10 |
+											  ( ColorG & 0xff ) << 5 |
 											  ( ColorB & 0xff ) );
 					*(unsigned short*)pBuffer = Color;
 					pBuffer += m_cbxPitch;
@@ -1058,10 +1058,10 @@ BOOL CCEDraw::FillRect( LONG lStartX, LONG lStartY, LONG lEndX, LONG lEndY, FLOA
 			}
 		}
 	}
-	return TRUE;	
+	return TRUE;
 }
 
 BOOL CCEDraw::FillRect( RECT &rectDraw, FLOAT fAlpha )
-{	
+{
 	return FillRect( rectDraw.left, rectDraw.top , rectDraw.right, rectDraw.bottom, fAlpha );
 }

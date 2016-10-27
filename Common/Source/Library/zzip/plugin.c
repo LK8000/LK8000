@@ -1,5 +1,5 @@
 /*
- * Author: 
+ * Author:
  *	Guido Draheim <guidod@gmx.de>
  *      Mike Nordell <tamlin-@-algonet-se>
  *
@@ -7,7 +7,7 @@
  * 	    All rights reserved,
  *	    use under the restrictions of the
  *	    Lesser GNU General Public License
- *          or alternatively the restrictions 
+ *          or alternatively the restrictions
  *          of the Mozilla Public License 1.1
  */
 
@@ -43,7 +43,7 @@ zzip_filesize(int fd)
 
 # if defined DEBUG && ! defined _WIN32
   if (! st.st_size && st.st_blocks > 1) /* seen on some darwin 10.1 machines */
-      fprintf(stderr, "broken fstat(2) ?? st_size=%ld st_blocks=%ld\n", 
+      fprintf(stderr, "broken fstat(2) ?? st_size=%ld st_blocks=%ld\n",
 	      (long) st.st_size, (long) st.st_blocks);
 # endif
   return st.st_size;
@@ -62,11 +62,11 @@ int wince_open (const char *path, int oflag, ...)
     DWORD filecreate;
     DWORD fileattrib;
     HANDLE hnd;
-    
+
     size_t path_len = strlen (path);
     if (path_len >= MAX_PATH)
 	return -1;
-    
+
     switch (oflag & (O_RDONLY | O_WRONLY | O_RDWR))
     {
     case O_RDONLY:
@@ -81,7 +81,7 @@ int wince_open (const char *path, int oflag, ...)
     default:
 	return -1;
     }
-    
+
     switch (oflag & (O_CREAT | O_EXCL | O_TRUNC))
     {
     case 0:
@@ -95,7 +95,7 @@ int wince_open (const char *path, int oflag, ...)
     case O_CREAT | O_TRUNC | O_EXCL:
 	filecreate = CREATE_NEW;
 	break;
-	
+
     case O_TRUNC:
     case O_TRUNC | O_EXCL:     /* ignore EXCL w/o CREAT */
 	filecreate = TRUNCATE_EXISTING;
@@ -107,32 +107,32 @@ int wince_open (const char *path, int oflag, ...)
 	/* this can't happen ... all cases are covered */
 	return -1;
     }
-    
+
     utf2unicode(path, wpath, MAX_PATH);
     //mbstowcs (wpath, path, path_len + 1);
-    
+
     fileshare = FILE_SHARE_READ | FILE_SHARE_WRITE;
     fileattrib = FILE_ATTRIBUTE_NORMAL;
-    
+
     hnd = CreateFileW (wpath, fileaccess, fileshare, NULL, filecreate,
 		       fileattrib, NULL);
     if (hnd == INVALID_HANDLE_VALUE)
 	return -1;
-    
+
     if (oflag & O_APPEND)
 	SetFilePointer (hnd, 0, NULL, FILE_END);
-    
+
     return (int) hnd;
 }
 
-#else 
+#else
 
 // on PC Windows we must convert UTF8 filename into WCHAR* and use _wopen
 int winpc_open(zzip_char_t* filename, int flags, ...)
 {
   TCHAR wpath[MAX_PATH];
   utf2TCHAR(filename, wpath, MAX_PATH);
-  
+
   return(_topen(wpath, flags));
 }
 
@@ -165,7 +165,7 @@ zzip_get_default_io()
 }
 
 /**
- * This function initializes the users handler struct to default values 
+ * This function initializes the users handler struct to default values
  * being the posix io functions in default configured environments.
  */
 int zzip_init_io(zzip_plugin_io_handlers_t io, int flags)
@@ -178,7 +178,7 @@ int zzip_init_io(zzip_plugin_io_handlers_t io, int flags)
     return 0;
 }
 
-/* 
+/*
  * Local variables:
  * c-file-style: "stroustrup"
  * End:

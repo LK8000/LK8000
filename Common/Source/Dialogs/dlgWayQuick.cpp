@@ -55,7 +55,7 @@ static void OnSetAlt1Clicked(WndButton* pWnd){
   RefreshTask();
   UnlockTaskData();
   if (ValidWayPoint(Alternate1))
-  	DoStatusMessage(_T("Altern.1="),WayPointList[Alternate1].Name);
+	DoStatusMessage(_T("Altern.1="),WayPointList[Alternate1].Name);
   retStatus=3;
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -71,7 +71,7 @@ static void OnSetAlt2Clicked(WndButton* pWnd){
   RefreshTask();
   UnlockTaskData();
   if (ValidWayPoint(Alternate2))
-  	DoStatusMessage(_T("Altern.2="),WayPointList[Alternate2].Name);
+	DoStatusMessage(_T("Altern.2="),WayPointList[Alternate2].Name);
   retStatus=4;
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -128,7 +128,7 @@ static void OnRadioFrequencyClicked(WndButton* pWnd){
 
   _stprintf(szFreq,_T(" %6.3fMHz ") ,Ferquency);
 
-  DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );  
+  DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );
   DoStatusMessage(_T("RADIO:"), szFreq );
   retStatus=3;
   if(pWnd) {
@@ -137,7 +137,7 @@ static void OnRadioFrequencyClicked(WndButton* pWnd){
       pForm->SetModalResult(mrOK);
     }
   }
-#endif  // RADIO_ACTIVE        
+#endif  // RADIO_ACTIVE
 }
 
 
@@ -192,7 +192,7 @@ short dlgWayQuickShowModal(void){
      double wpbearing = 0;
 
      if (TeamCodeRefWaypoint >= 0) {
-        LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude, 
+        LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude,
                   WayPointList[TeamCodeRefWaypoint].Longitude,
                   WayPointList[SelectedWaypoint].Latitude,
                   WayPointList[SelectedWaypoint].Longitude,
@@ -210,8 +210,8 @@ short dlgWayQuickShowModal(void){
     const bool bRadioFreq = (_tcstol(WayPointList[SelectedWaypoint].Freq, nullptr, 10) > 0) && RadioPara.Enabled;
 #else
     const bool bRadioFreq = false;
-#endif // RADIO_ACTIVE       
-  
+#endif // RADIO_ACTIVE
+
   if (ScreenLandscape) {
     PixelScalar left = 0;
     WindowControl* pWnd = wf->FindByName(TEXT("cmdGoto"));
@@ -278,7 +278,7 @@ short dlgWayQuickShowModal(void){
           pWndFreq->SetVisible(false);
       }
     }
-  } 
+  }
 
   wf->ShowModal();
 

@@ -145,7 +145,7 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
   if (ParToDouble(sentence, 8, &info->Vario)) /* take the last value to be more recent */
     info->VarioAvailable = TRUE;
 
-  if (ParToDouble(sentence, 9, &info->MagneticHeading)) 
+  if (ParToDouble(sentence, 9, &info->MagneticHeading))
       info->MagneticHeadingAvailable=TRUE;
 
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&

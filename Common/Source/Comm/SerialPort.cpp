@@ -2,7 +2,7 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   SerialPort.cpp
  * Author: Bruno de Lacheisserie
  *
@@ -18,7 +18,7 @@
 
 using namespace std::placeholders;
 
-SerialPort::SerialPort(int idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) : 
+SerialPort::SerialPort(int idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) :
         ComPort(idx, sName),
         hPort(INVALID_HANDLE_VALUE),
         _dwPortSpeed(dwSpeed),
@@ -70,26 +70,26 @@ bool SerialPort::Initialize() {
     PortDCB.DCBlength = sizeof (DCB);
     // Get the default port setting information.
     if (GetCommState(hPort, &PortDCB)==0) {
-    	StartupStore(_T("... ComPort %u GetCommState failed, error=%lu%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
+	StartupStore(_T("... ComPort %u GetCommState failed, error=%lu%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
         // @M759 = Unable to Change Settings on Port
         StatusMessage(mbOk, NULL, TEXT("%s %s"), MsgToken(759), GetPortName());
         goto failed;
     }
     // Change the DCB structure settings.
-    PortDCB.BaudRate = _dwPortSpeed; // Current baud 
-    PortDCB.fBinary = TRUE; // Binary mode; no EOF check 
-    PortDCB.fParity = TRUE; // Enable parity checking  
+    PortDCB.BaudRate = _dwPortSpeed; // Current baud
+    PortDCB.fBinary = TRUE; // Binary mode; no EOF check
+    PortDCB.fParity = TRUE; // Enable parity checking
     PortDCB.fOutxCtsFlow = FALSE; // CTS output flow control: when TRUE, and CTS off, output suspended
-    PortDCB.fOutxDsrFlow = FALSE; // DSR output flow control 
-    PortDCB.fDtrControl = DTR_CONTROL_ENABLE; 
-    
-    PortDCB.fDsrSensitivity = FALSE; // DSR sensitivity 
-    PortDCB.fTXContinueOnXoff = TRUE; // XOFF continues Tx 
-    PortDCB.fOutX = FALSE; // No XON/XOFF out flow control 
-    PortDCB.fInX = FALSE; // No XON/XOFF in flow control 
-    PortDCB.fErrorChar = FALSE; // Disable error replacement 
+    PortDCB.fOutxDsrFlow = FALSE; // DSR output flow control
+    PortDCB.fDtrControl = DTR_CONTROL_ENABLE;
+
+    PortDCB.fDsrSensitivity = FALSE; // DSR sensitivity
+    PortDCB.fTXContinueOnXoff = TRUE; // XOFF continues Tx
+    PortDCB.fOutX = FALSE; // No XON/XOFF out flow control
+    PortDCB.fInX = FALSE; // No XON/XOFF in flow control
+    PortDCB.fErrorChar = FALSE; // Disable error replacement
     PortDCB.fNull = FALSE; // Disable null removal
-    PortDCB.fRtsControl = RTS_CONTROL_ENABLE; // RTS flow control 
+    PortDCB.fRtsControl = RTS_CONTROL_ENABLE; // RTS flow control
 
     PortDCB.fAbortOnError = FALSE;
     switch (_dwPortBit) {
@@ -111,7 +111,7 @@ bool SerialPort::Initialize() {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
 		// @M759 = Unable to Change Settings on Port
-    	StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(759), GetPortName());
+	StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(759), GetPortName());
 
         goto failed;
     }
@@ -119,8 +119,8 @@ bool SerialPort::Initialize() {
     if (SetRxTimeout(RXTIMEOUT) == -1) {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
-        // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
-        StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(760), GetPortName());        
+        // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers"
+        StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(760), GetPortName());
 
         goto failed;
     }
@@ -129,7 +129,7 @@ bool SerialPort::Initialize() {
 
     // Direct the port to perform extended functions SETDTR and SETRTS
     // SETDTR: Sends the DTR (data-terminal-ready) signal.
-    // SETRTS: Sends the RTS (request-to-send) signal. 
+    // SETRTS: Sends the RTS (request-to-send) signal.
     EscapeCommFunction(hPort, SETDTR);
     EscapeCommFunction(hPort, SETRTS);
 
@@ -140,7 +140,7 @@ bool SerialPort::Initialize() {
 
     StartupStore(_T(". ComPort %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
     return true;
-        
+
 failed:
     if(hPort != INVALID_HANDLE_VALUE) {
         if (!CloseHandle(hPort)) {
@@ -275,7 +275,7 @@ bool SerialPort::Close() {
 #endif
 #if !(WINDOWSPC>0)
             if (_PollingMode) Poco::Thread::sleep(2000);
-#endif            
+#endif
             hPort = INVALID_HANDLE_VALUE;
             StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
             Ret = true;
@@ -309,7 +309,7 @@ void SerialPort::DirtyPurge() {
 void SerialPort::CancelWaitEvent() {
 #if (WINDOWSPC>0) || NEWCOMM  // 091206
 
-#else    
+#else
     if(hPort != INVALID_HANDLE_VALUE) {
 	#if 0
         Flush();
@@ -457,7 +457,7 @@ unsigned SerialPort::RxThread() {
         Poco::Thread::sleep(5);
 
         // Retrieve modem control-register values.
-#if ((WINDOWSPC == 0)) 
+#if ((WINDOWSPC == 0))
         if (!_PollingMode) {
             // this is causing problems on PC BT, apparently. Setting Polling will not call this, but it is a bug
             GetCommModemStatus(hPort, &dwCommModemStatus);

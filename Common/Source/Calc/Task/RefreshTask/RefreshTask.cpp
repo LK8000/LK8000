@@ -163,5 +163,3 @@ void RefreshTask(void) {
   IsFAI_Task();
   ClearOptimizedTargetPos();
 }
-
-

@@ -28,27 +28,26 @@ public:
     LKFont& operator=(const LKFont& Font) = delete;
 
     void Create(LOGFONT* pLogFont) { Load(*pLogFont); }
-    void Release() { 
+    void Release() {
 #ifndef USE_GDI
         TextCache::Flush(); // for compat with resolution change
 #endif
-        Destroy(); 
+        Destroy();
     }
 
     operator bool() const { return IsDefined(); }
-    
-#ifdef WIN32        
+
+#ifdef WIN32
 public:
     explicit LKFont(HFONT Font) {  font = Font; }
-    
+
     operator HFONT() const { return Native(); }
 #else
     operator const LKFont*() const { return this; }
-    
+
 #endif
 };
 
 static_assert(sizeof(LKFont) == sizeof(Font), "not same size");
 
 #endif	/* LKFONT_H */
-

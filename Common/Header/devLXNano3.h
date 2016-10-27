@@ -76,7 +76,7 @@ class DevLXNanoIII : public DevLX
     static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
 
 
-    
+
   //----------------------------------------------------------------------------
   //private:
 
@@ -145,11 +145,11 @@ class DevLXNanoIII::Decl
 
     /// Constructor - sets all data to 0.
     Decl();
-    
-    // Format waypoint 
+
+    // Format waypoint
     void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type);
 
-    
+
 }; // DevLXNanoIII::Decl
 
 
@@ -173,7 +173,7 @@ class DevLXNanoIII::Class
 
     /// competition class name
     char  name[9];
- 
+
     //..........................................................................
 
     /// Constructor - sets all data to 0.

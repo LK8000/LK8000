@@ -110,7 +110,7 @@ int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] = {0,0,0,0,0,0,0,0,0,0,0,1
 #ifdef HAVE_HATCHED_BRUSH
 int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3,3};
 #endif
-    
+
 LKPen MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
 LKPen MapWindow::hBigAirspacePens[AIRSPACECLASSCOUNT];
 LKPen MapWindow::hAirspaceBorderPen;
@@ -157,12 +157,12 @@ extern void ShowMenu();
 
 // Values to be remembered
 bool MapWindow::pressed = false;
-double MapWindow::Xstart = 0.; 
+double MapWindow::Xstart = 0.;
 double MapWindow::Ystart = 0.;
 
 PeriodClock MapWindow::tsDownTime;
 
-double MapWindow::Xlat = 0.; 
+double MapWindow::Xlat = 0.;
 double MapWindow::Ylat = 0.;
 double MapWindow::distance = 0.;
 
@@ -194,14 +194,14 @@ void MapWindow::_OnSize(int cx, int cy) {
 
     BackBufferSurface.Resize(cx, cy);
 
-#ifndef ENABLE_OPENGL    
+#ifndef ENABLE_OPENGL
     DrawSurface.Resize(cx, cy);
 
     TempSurface.Resize(cx, cy);
     hdcbuffer.Resize(cx, cy);
     hdcMask.Resize(cx, cy);
 
-#endif    
+#endif
 }
 
 void MapWindow::UpdateActiveScreenZone(RECT rc) {
@@ -224,7 +224,7 @@ void MapWindow::UpdateActiveScreenZone(RECT rc) {
     Y_Up = Y_BottomBar / 2;
     Y_Down = Y_BottomBar - Y_Up;
     X_Left = (rc.right+rc.left)/2 - (rc.right-rc.left)/3;
-    X_Right = (rc.right+rc.left)/2 + (rc.right-rc.left)/3;    
+    X_Right = (rc.right+rc.left)/2 + (rc.right-rc.left)/3;
 
 }
 
@@ -238,7 +238,7 @@ void MapWindow::_OnCreate(Window& Wnd, int cx, int cy) {
 #else
     LKWindowSurface WindowSurface(Wnd);
 #endif
-    
+
     BackBufferSurface.Create(WindowSurface, cx, cy);
 }
 
@@ -252,7 +252,7 @@ void MapWindow::_OnDestroy() {
     TempSurface.Release();
     hdcbuffer.Release();
     hdcMask.Release();
-#endif    
+#endif
 }
 
 /*
@@ -274,7 +274,7 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
             // NO! This is causing false clicks passing underneath CANCEL button!
             // dwDownTime.update();
         } else {
-#endif            
+#endif
             // set a min mouse move to trigger panning
             if ((abs(startScreen.x - Pos.x) + abs(startScreen.y - Pos.y))
                     > (ScreenScale + 1)) {
@@ -301,14 +301,14 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
                 RefreshMap();
             }
 #else
-                
+
                 // With OnFastPanning we are saying: Since we are dragging the bitmap around,
                 // forget the Redraw requests from other parts of LK, which would cause PanRefreshed.
                 // We have no control on those requests issued for example by Calc thread.
                 // However we force full map refresh after some time in ms
 
                 // If time has passed  then force a MapDirty and redraw the whole screen.
-                // This was previously not working in v3 because ThreadCalculations was forcing MapDirty 
+                // This was previously not working in v3 because ThreadCalculations was forcing MapDirty
                 // in the background each second, and we were loosing control!
                 if (tsDownTime.CheckUpdate(TunedParameter_Fastpanning() )) {
                     OnFastPanning = false;
@@ -356,7 +356,7 @@ StartupStore(_T("BUTTON DOWN ")); // no CR
         // When we have buttondown these flags should be set off.
         MouseWasPanMoving = false;
 
-#ifndef ENABLE_OPENGL        
+#ifndef ENABLE_OPENGL
         OnFastPanning = false;
 #endif
 
@@ -391,7 +391,7 @@ void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
     StartupStore(_T("BUTTON DOUBLE CLICK "));
 #endif
     // WINDOWS: Attention please: a DBLCLK is followed by a simple BUTTONUP with NO buttondown.
-    // LINUX: a DBLCLK is preceded by buttondown-up (two times), then DblClick. 
+    // LINUX: a DBLCLK is preceded by buttondown-up (two times), then DblClick.
     //        Sometimes a single down-up, dlblclk, down-up
     //
     // 111110 there is no need to process buttondblclick if the map is unlocked.
@@ -429,9 +429,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
     StartupStore(_T("BUTTON UP "));
 #endif
     if (!LockModeStatus && pressed) {
-        
+
         const ScreenProjection _Proj;
-        
+
         pressed = false;
         // Mouse released DURING panning, full redraw requested.
         // Otherwise process virtual keys etc. as usual
@@ -581,7 +581,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 }
             }
 
-            // end aircraft icon check				
+            // end aircraft icon check
         }
 
         // MultiMap custom specials, we use same geometry of MSM_MAP
@@ -653,7 +653,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 } // End compass icon check
             } // PARAGLIDERs special buttons
             // else not a paraglider key, process it for gliders
-            // else { 
+            // else {
             // change in 2.3q: we let paragliders use the CK as well
             {
                 if ((Pos.x > P_UngestureRight.x) && (Pos.y <= P_UngestureRight.y)) {
@@ -704,7 +704,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 }
 
 #if 0 // NO MORE NEEDED BUT PLEASE DO NOT REMOVE
-                // We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or 
+                // We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or
                 // navbox operations including center key.
                 if (dwInterval == 0) {
                    #ifdef TRACEKEY
@@ -762,7 +762,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         // Process faster clicks here and no precision, but let DBLCLK pass through
         // VK are used in the bottom line in this case, forced on for this situation.
         if (DrawBottom && (Pos.y >= Y_BottomBar)) {
-            // DoStatusMessage(_T("Click on hidden map ignored")); 
+            // DoStatusMessage(_T("Click on hidden map ignored"));
 
             // do not process virtual key if it is timed as a DBLCLK
             // we want users to get used to double clicking only on infoboxes
@@ -841,7 +841,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                             MapWindow::zoom.EventScaleZoom(-1);
                             PlayResource(TEXT("IDR_WAV_CLICK"));
                         } else {
-                            // process center key, do nothing 
+                            // process center key, do nothing
                             // v5 obsoleted, should not happen
                             #ifdef TRACEKEY
                             StartupStore(_T(".... ignored process center key%s"),NEWLINE);
@@ -892,7 +892,7 @@ static bool GetShiftKeyState() {
     return (keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT]);
 #endif
 #elif defined(WIN32)
-    short nVirtKey = GetKeyState(VK_SHIFT); 
+    short nVirtKey = GetKeyState(VK_SHIFT);
     return (nVirtKey & 0x8000);
 #else
     return false;
@@ -997,7 +997,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
 
 #ifdef UNDER_CE
     if (GlobalModelType == MODELTYPE_PNA_HP31X) {
-        //		if (wParam == 0x7b) wParam=0xc1;  // VK_APP1 	
+        //		if (wParam == 0x7b) wParam=0xc1;  // VK_APP1
         if (KeyCode == 0x7b) KeyCode = 0x1b; // VK_ESCAPE
         //		if (wParam == 0x7b) wParam=0x27;  // VK_RIGHT
         //		if (wParam == 0x7b) wParam=0x25;  // VK_LEFT
@@ -1060,7 +1060,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     //    C		button Zoom ent
     //    D		button Zoom sel
     //    E		rotary knob Esc
-    // 
+    //
     // THIS IS AN ALTERNATE LXMINIMAP USAGE, will not work for official release
 #ifndef LXMINIMAP
     if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
@@ -1903,7 +1903,7 @@ void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
         UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
         RenderMapWindow(Surface, Rect);
 
-        // Draw cross sight for pan mode, in the screen center, 
+        // Draw cross sight for pan mode, in the screen center,
         if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
             const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
             DrawMapScale(Surface,Rect,false);

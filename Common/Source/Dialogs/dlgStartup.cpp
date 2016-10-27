@@ -40,7 +40,7 @@
 #endif
 
 #ifdef KOBO
-#warning "Temporary : remove when we have KoboMenu"  
+#warning "Temporary : remove when we have KoboMenu"
 bool RestartToNickel = true; // default to true, mandatory for avoid to brick device in case of abnormal termination.
 #endif
 
@@ -74,7 +74,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
 
 
 
-// Syntax  hdc _Text linenumber fontsize 
+// Syntax  hdc _Text linenumber fontsize
 // lines are: 0 - 9
 // fsize 0 small 1 normal 2 big
 
@@ -124,7 +124,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
             DrawSplash(Surface, ProfileBitmap);
         }
     }
-    
+
     if (RUN_MODE == RUN_WELCOME) {
         TCHAR mes[100];
         int pos = 0;
@@ -213,7 +213,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 
     if (RUN_MODE != RUN_WELCOME) {
 
-        // FillRect(hDC,&ScreenSizeR, LKBrush_Black); // REMOVE 
+        // FillRect(hDC,&ScreenSizeR, LKBrush_Black); // REMOVE
 
         TCHAR mes[100];
 #ifndef LKCOMPETITION
@@ -285,7 +285,7 @@ static void OnCloseClicked(WndButton* pWnd) {
       RUN_MODE = RUN_WELCOME;
       break;
   }
-  
+
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -416,21 +416,21 @@ static CallBackTableEntry_t CallBackTable[] = {
 
 
 static WndForm* InitFlySim() {
-    
+
     WndForm* pWndForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_FLYSIM_L : IDR_XML_FLYSIM_P);
     if(pWndForm) {
-    
+
         WindowControl * pWnd = nullptr;
 
         if (ScreenLandscape) {
-            
+
 #ifdef KOBO
             const unsigned int SPACEBORDER = 1;
             const unsigned int w = (ScreenSizeX - (SPACEBORDER * 6)) / 5;
 #else
             const unsigned int SPACEBORDER = NIBLSCALE(2);
             const unsigned int w = (ScreenSizeX - (SPACEBORDER * 5)) / 4;
-#endif                        
+#endif
             unsigned int lx = SPACEBORDER - 1; // count from 0
 
             pWnd = pWndForm->FindByName(TEXT("cmdFLY"));
@@ -443,9 +443,9 @@ static WndForm* InitFlySim() {
             lx += w + SPACEBORDER;
             WndButton* pWndNickel = new WndButton(pWndForm, _T("cmdNICKEL"), _T("KOBO"), lx , IBLSCALE(205), w, IBLSCALE(30), &OnNickelClick );
             if(pWndNickel) {
-                
+
             }
-#endif            
+#endif
             lx += w + SPACEBORDER;
             pWnd = pWndForm->FindByName(TEXT("cmdDUALPROFILE"));
             if(pWnd) {
@@ -482,7 +482,7 @@ static WndForm* InitFlySim() {
                 pWnd->SetHeight(IBLSCALE(40));
                 pWnd->SetWidth(w);
             }
-            
+
             lx += w + SPACEBORDER;
             pWnd = pWndForm->FindByName(TEXT("cmdSIM"));
             if(pWnd) {
@@ -492,10 +492,10 @@ static WndForm* InitFlySim() {
                 pWnd->SetWidth(w);
             }
 
-            
+
 #ifdef KOBO
             lx = SPACEBORDER - 1; // count from 0
-            
+
             WndButton* pWndNickel = new WndButton(pWndForm, _T("cmdNICKEL"), _T("KOBO"), lx , h, w, IBLSCALE(40), &OnNickelClick );
             if(pWndNickel) {
                 w = (ScreenSizeX - (SPACEBORDER * 4)) / 3;
@@ -504,11 +504,11 @@ static WndForm* InitFlySim() {
                 pWndNickel->SetHeight(IBLSCALE(40));
                 pWndNickel->SetWidth(w);
             }
- 
+
             lx += w + SPACEBORDER;
 #else
             lx = SPACEBORDER - 1; // count from 0
-#endif            
+#endif
             pWnd = pWndForm->FindByName(TEXT("cmdDUALPROFILE"));
             if(pWnd) {
                 pWnd->SetTop(h);
@@ -516,7 +516,7 @@ static WndForm* InitFlySim() {
                 pWnd->SetHeight(IBLSCALE(40));
                 pWnd->SetWidth(w);
             }
-            
+
             lx += w + SPACEBORDER;
             pWnd = pWndForm->FindByName(TEXT("cmdEXIT"));
             if(pWnd) {
@@ -529,7 +529,7 @@ static WndForm* InitFlySim() {
 #endif
             }
         }
-    }    
+    }
     return pWndForm;
 }
 
@@ -634,10 +634,10 @@ static WndForm* InitDualProfile() {
 static WndForm* InitStartup(BYTE mode) {
     WndForm * pWndForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_STARTUP_L : IDR_XML_STARTUP_P);
     if(pWndForm) {
-        
+
         WindowControl * pWndClose = pWndForm->FindByName(TEXT("cmdClose"));
         WndProperty* pWndProfile = static_cast<WndProperty*>(pWndForm->FindByName(TEXT("prpProfile")));
-        
+
         if (ScreenLandscape) {
             const int PROFWIDTH = IBLSCALE(256);
             const int PROFACCEPTWIDTH = NIBLSCALE(60);
@@ -649,18 +649,18 @@ static WndForm* InitStartup(BYTE mode) {
                 pWndClose->SetLeft((((ScreenSizeX - PROFWIDTH - PROFSEPARATOR - PROFACCEPTWIDTH) / 2) + PROFSEPARATOR + PROFWIDTH) - NIBLSCALE(2));
                 pWndClose->SetHeight(PROFHEIGHT - NIBLSCALE(4));
             }
-            
+
             if(pWndProfile) {
                 pWndProfile->SetLeft(((ScreenSizeX - PROFWIDTH - PROFSEPARATOR - PROFACCEPTWIDTH) / 2) - NIBLSCALE(2));
                 pWndProfile->SetHeight(PROFHEIGHT);
                 pWndProfile->SetWidth(PROFWIDTH);
             }
 
-            
+
         } else {
             const int PROFWIDTH = IBLSCALE(236);
             const int PROFHEIGHT = NIBLSCALE(25);
-            int h = ScreenSizeY - IBLSCALE(65); // 
+            int h = ScreenSizeY - IBLSCALE(65); //
 
             if(pWndClose) {
                 pWndClose->SetWidth(ScreenSizeX - NIBLSCALE(6));
@@ -705,8 +705,8 @@ static WndForm* InitStartup(BYTE mode) {
                 }
             }
             pWndProfile->RefreshDisplay();
-        }        
-        
+        }
+
     }
     return pWndForm;
 }
@@ -743,7 +743,7 @@ short dlgStartupShowModal(void) {
 
     wf->SetHeight(ScreenSizeY);
     wf->SetWidth(ScreenSizeX);
-    
+
     WindowControl* wSplash = wf->FindByName(TEXT("frmSplash"));
     if(wSplash) {
         wSplash->SetWidth(ScreenSizeX);
@@ -929,7 +929,7 @@ short dlgStartupShowModal(void) {
 #endif
         LKSound(_T("LK_SLIDE.WAV"));
         if (MessageBoxX(
-                // LKTOKEN  _@M198_ = "Confirm Exit?" 
+                // LKTOKEN  _@M198_ = "Confirm Exit?"
                 MsgToken(198),
                 TEXT("LK8000"), mbYesNo) == IdYes) {
             Shutdown();
@@ -960,4 +960,3 @@ _exit:
         return 1; // repeat dialog
 
 }
-

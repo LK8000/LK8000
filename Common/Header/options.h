@@ -43,7 +43,7 @@
  // temporary disable, need to be port...
  #define NO_DATARECORDER
 
-// Cpu load : use averaged number of processes in the system run queue instead of real cpu usage 
+// Cpu load : use averaged number of processes in the system run queue instead of real cpu usage
 // #define USE_LOADAVG_CPU
 
 #endif
@@ -61,10 +61,10 @@
 
 
  // USING NDEBUG
- // NDEBUG is set by Makefile, conventionally, when not using DEBUG. 
+ // NDEBUG is set by Makefile, conventionally, when not using DEBUG.
  // Within LK, all functional options are kept inside options.h, not inside Makefile.
  // We deliberately keep full control of YDEBUG despite of NDEBUG set, to be 100% sure.
- // YDEBUG WILL: 
+ // YDEBUG WILL:
  //              . use assert() instead of our own LKASSERT (NOT GOOD FOR BETA, no feedback from users!)
  //              . accept in Comm/Parser.cpp any fix also simulated.
  //              (add here new things performed by YDEBUG please)
@@ -79,14 +79,14 @@
  #define YDEBUG  1
  #endif
 
- //#define YDEBUG       1       // Force using assert() instead of LKASSERT even if DEBUG is off. 
+ //#define YDEBUG       1       // Force using assert() instead of LKASSERT even if DEBUG is off.
                                 // See above. Should not be necessary, but it is a reminder.
 
  #define BUGSTOP	1	// STOP by LKASSERT even if the condition was managed, to show
-				// the problem during alpha stages. 
+				// the problem during alpha stages.
 				// Normally these conditions should not exist
 
- #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD 
+ #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD
 				// FOR DEVELOPMENT VERSIONS. CAN BE USED FOR SPECIAL BETAs,
 				// but normally should not be used for public releases.
  #define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
@@ -109,17 +109,17 @@
 
 
 
-// #define LKCOMPETITION	1	// Will disable TRI 
+// #define LKCOMPETITION	1	// Will disable TRI
 
 // Draws a glide terrain line around the next (active) task waypoint.
 // Includes addition of MSG tokens "Line+NextWP" & "Shade+NextWP"
 // and change in HELP message 194 (for "Glide Terrain Line" setting).
 // Eric Carden, September 13, 2012
-#define GTL2 
+#define GTL2
 
 // Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
 // In v5 this is practically unused. Should be removed asap.
-#define USEBIGZOOM	1	
+#define USEBIGZOOM	1
 
 // Gyroscope based AHRS in TRI function - EXPERIMENTAL
 #define USE_AHRS
@@ -130,7 +130,7 @@
 // Usability of task definition needed to be refactoring before remove that.
 
 #define COM_DISCARD 0
-// en-/disable Com Port discard for Testbench on PC 
+// en-/disable Com Port discard for Testbench on PC
 
 // ----------------------------------------------------------------------------------------
 //
@@ -152,7 +152,7 @@
 
 
 /*
- * MULTISELECT OPTIONS 
+ * MULTISELECT OPTIONS
  */
 //
 // Team, Own and Oracle are introducing buttons for actions inside dialog.
@@ -163,7 +163,7 @@
 //  #define TEAM_CODE_MS		// button to trigger team code
 //  #define OWN_POS_MS		// button to trigger basic settings
 //  #define ORACLE_MS		// button to trigger oracle
-  
+
 
 // Use F Record in IGC log files- not needed really
 // #define LOGFRECORD	1
@@ -203,9 +203,9 @@
 
 // TopologyWriter for adding topo labels dynamically, previously used for markers
 // May be sill used for custom user's topology, so let's keep it for a while.
-// #define USETOPOMARKS	1	
+// #define USETOPOMARKS	1
 
-// LKAIRSPACE OPTIM STUFF 
+// LKAIRSPACE OPTIM STUFF
 // Recalculate airspace positions only if the draw area has changed by more than 2 pixels
 // There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.
 // So there is no more instant view of what is happening, and for this reason the option is disabled.

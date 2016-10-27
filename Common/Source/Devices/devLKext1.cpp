@@ -26,7 +26,7 @@ BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   if(_tcsncmp(TEXT("$LK8EX1"), String, 7)==0)
     {
       return LK8EX1(d, &String[8], pGPS);
-    } 
+    }
 
   return FALSE;
 
@@ -80,7 +80,7 @@ BOOL LK8EX1Register(void){
 	LK8EX1,pressure,altitude,vario,temperature,battery,*checksum
 
 	Field 0, raw pressure in hPascal:
-		hPA*100 (example for 1013.25 becomes  101325) 
+		hPA*100 (example for 1013.25 becomes  101325)
 		no padding (987.25 becomes 98725, NOT 098725)
 		If no pressure available, send 999999 (6 times 9)
 		If pressure is available, field 1 altitude will be ignored
@@ -108,7 +108,7 @@ BOOL LK8EX1Register(void){
 	Field 4, battery voltage or charge percentage
 		Cannot be negative
 		If not available, send 999 (3 times 9)
-		Voltage is sent as float value like: 0.1 1.4 2.3  11.2 
+		Voltage is sent as float value like: 0.1 1.4 2.3  11.2
 		To send percentage, add 1000. Example 0% = 1000
 		14% = 1014 .  Do not send float values for percentages.
 		Percentage should be 0 to 100, with no decimals, added by 1000!

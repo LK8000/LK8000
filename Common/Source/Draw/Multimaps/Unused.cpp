@@ -122,5 +122,3 @@ RECT rc	= psDia->rc;
 	DrawText(hdc, x-tsize.cx/2, y, ETO_OPAQUE, NULL, szOvtname, _tcslen(szOvtname), NULL);
   }
 }
-
-

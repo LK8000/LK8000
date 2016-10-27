@@ -2,7 +2,7 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- *  
+ *
  * File:   BthPort.h
  * Author: Bruno de Lacheisserie
  *
@@ -18,7 +18,7 @@
 class BthPort : public SocketPort {
 public:
     BthPort(int idx, const tstring& sName) : SocketPort(idx, sName) { }
-    
+
 protected:
     virtual bool Connect();
 };
@@ -27,4 +27,3 @@ protected:
 typedef NullComPort BthPort;
 #endif
 #endif	/* BTHPORT_H */
-

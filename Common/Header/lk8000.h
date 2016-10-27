@@ -111,7 +111,7 @@ typedef struct
 
 
 bool GetBatteryInfo(BATTERYINFO* pBatteryInfo);
-void UpdateBatteryInfos(void);      
+void UpdateBatteryInfos(void);
 void SwitchToMapWindow(void);
 
 #if 0
@@ -179,4 +179,4 @@ typedef struct{
 
 bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size);
 
-#endif 
+#endif

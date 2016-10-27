@@ -37,7 +37,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	#endif
 	return false;
   }
-  LK_tcsncpy(tString, String,READLINE_LENGTH);  
+  LK_tcsncpy(tString, String,READLINE_LENGTH);
 
   // only handle W field, format:  W__NAME
   if (tString[0] != 'W') {
@@ -66,7 +66,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 		return false;
 	}
 	startpoint=3; // fourth char
-  } 
+  }
 
   Temp->Visible = true; // default all waypoints visible at start
   Temp->FarVisible = true;
@@ -101,20 +101,20 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   #ifdef COMPEDEBUG
   StartupStore(_T("WP NAME size=%d: <%s>%s"),j,tName,NEWLINE);
   #endif
- 
-  if (tString[++i] != _T('A')) { 
+
+  if (tString[++i] != _T('A')) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Missing A field! %s"),NEWLINE);
 	#endif
 	return false;
   }
-  if (tString[++i] != _T(' ')) { 
+  if (tString[++i] != _T(' ')) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Missing space after A field! %s"),NEWLINE);
 	#endif
 	return false;
   }
-  i++; 
+  i++;
 
   // we are now on the first digit of latitude
 
@@ -159,7 +159,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   bool north=false;
   TCHAR tNS = tString[i];
   TCHAR NS[]=_T("NS");
-  if ( (tNS != NS[0]) && (tNS != NS[1])) { 
+  if ( (tNS != NS[0]) && (tNS != NS[1])) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Wrong NS latitude! %s"),NEWLINE);
 	#endif
@@ -171,13 +171,13 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   #endif
 
   // We are now on the space after latitude
-  if (tString[++i] != _T(' ')) { 
+  if (tString[++i] != _T(' ')) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Missing space after latitude %s"),NEWLINE);
 	#endif
 	return false;
   }
-  i++; 
+  i++;
   // we are now on the first digit of longitude
   // search for cDeg delimiter
   for (p=i, ok=false; p<(i+20);p++) {
@@ -208,7 +208,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   bool east=false;
   TCHAR tEW = tString[i];
   TCHAR EW[]=_T("EW");
-  if ( (tEW != EW[0]) && (tEW != EW[1])) { 
+  if ( (tEW != EW[0]) && (tEW != EW[1])) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Wrong EW longitude! %s"),NEWLINE);
 	#endif
@@ -220,7 +220,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   #endif
 
   // We are now on the space after longitude
-  if (tString[++i] != _T(' ')) { 
+  if (tString[++i] != _T(' ')) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Missing space after longitude %s"),NEWLINE);
 	#endif
@@ -244,8 +244,8 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   }
   // p points to space after DATE
   // i points to the presumed first character of TIME
-  i = p+1; 
-  if (i>=slen || tString[i] == _T(' ')) { 
+  i = p+1;
+  if (i>=slen || tString[i] == _T(' ')) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("No TIME found%s"),NEWLINE);
 	#endif
@@ -267,8 +267,8 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   }
   // p points to space after TIME
   // i points to the presumed first character of ALTITUDE
-  i = p+1; 
-  if (i>=slen || tString[i] == _T(' ')) { 
+  i = p+1;
+  if (i>=slen || tString[i] == _T(' ')) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("No ALTITUDE found%s"),NEWLINE);
 	#endif
@@ -308,7 +308,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	return false;
   }
   LK_tcsncpy(tAltitude,&tString[i-1],p-i);
-  
+
   #ifdef COMPEDEBUG
   StartupStore(_T("WP ALTITUDE : <%s>%s"),tAltitude,NEWLINE);
   #endif
@@ -318,7 +318,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   // search for line termination
   for (p=i, ok=false; p<slen;p++) {
 	if ( (tString[p] == _T('\n')) ||
-	     (tString[p] == _T('\r')) 
+	     (tString[p] == _T('\r'))
         ) {
 		ok=true;
 		break;
@@ -331,12 +331,12 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	return false;
   }
   // p points to CR or LF after comment
-  if ( (p-i)>((COMMENT_SIZE*2)-1) ) { 
+  if ( (p-i)>((COMMENT_SIZE*2)-1) ) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Comment too long%s"),NEWLINE);
 	#endif
 	return false;
-  } 
+  }
   LK_tcsncpy(tComment,&tString[i],p-i);
 
   #ifdef COMPEDEBUG
@@ -353,7 +353,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	return false;
   }
   Temp->Longitude = _tcstod(tLongitude,NULL);
-  if (!east) Temp->Longitude *= -1; 
+  if (!east) Temp->Longitude *= -1;
   if((Temp->Longitude > 180) || (Temp->Longitude < -180)) {
 	return false;
   }
@@ -379,5 +379,3 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
  return true;
 
  }
-
-

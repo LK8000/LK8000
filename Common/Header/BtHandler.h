@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   BtHandler.h
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Adapted from original code provided by Naviter
  */
 
@@ -30,7 +30,7 @@ class CBtDevice {
     friend class CBtHandler;
 public:
     CBtDevice(const BT_ADDR& ba, const tstring& csName );
-    
+
     BT_ADDR m_ba;
     BYTE m_src;
 
@@ -50,7 +50,7 @@ typedef std::list<CBtDevice*> BtDeviceList_t;
 class CBtHandler {
 public:
 	static void Release();
-    static CBtHandler * Get();  
+    static CBtHandler * Get();
 
     virtual bool StartHW();
     virtual bool StopHW();
@@ -85,9 +85,9 @@ protected:
 
     CBtHandler();
     virtual ~CBtHandler();
-    
+
     CBtHandler( const CBtHandler& ) = delete;
-    CBtHandler& operator=( const CBtHandler& ) = delete;    
+    CBtHandler& operator=( const CBtHandler& ) = delete;
 
     static CBtHandler* m_pBtHandler;
 };

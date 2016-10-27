@@ -39,10 +39,10 @@
 
 /// LOGBOOK
 /// Reading logbook info (number of flights)
-//  Query : "$PLXVC,LOGBOOK,R*<checksum><cr><lf>" 
+//  Query : "$PLXVC,LOGBOOK,R*<checksum><cr><lf>"
 //  Answer: "$PLXVC,LOGBOOK,A,<number_of_flights>*<checksum><cr><lf>"
 /// Reading logbook (number of flights)
-//  Query : "$PLXVC,LOGBOOK,R,<startflight>,<endflight>*<checksum><cr><lf>" 
+//  Query : "$PLXVC,LOGBOOK,R,<startflight>,<endflight>*<checksum><cr><lf>"
 //  Answer: "$PLXVC,LOGBOOK,A,<fl>,<n>,<name>,<date>,<takeoff>,<landing>*<checksum><cr><lf>"
 //  fl      : flight number
 //  n       : number of flights in logbook
@@ -54,13 +54,13 @@
 
 /// FLIGHT
 /// Reading flight
-//  Query : "$PLXVC,FLIGHT,R,<filename>,<startrow>,<endrow>*<checksum><cr><lf>" 
+//  Query : "$PLXVC,FLIGHT,R,<filename>,<startrow>,<endrow>*<checksum><cr><lf>"
 //  Answer: "$PLXVC,FLIGHT,A,<filename>,<row>,<number of rows>,<content of row>*<checksum><cr><lf>"
 //  This line is repeated for n times, where n==(endrow-startrow)
 
 /// DECL
 /// Reading declaration
-//  Query : "$PLXVC,DECL,R,<startrow>,<endrow>*<checksum><cr><lf>" 
+//  Query : "$PLXVC,DECL,R,<startrow>,<endrow>*<checksum><cr><lf>"
 //  Answer: "$PLXVC,DECL,A,<row>,<number of rows>,<content of row>*<checksum><cr><lf>"
 //  This line is repeated for n times, where n==(endrow-startrow)
 /// Writing declaration
@@ -158,7 +158,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
   // we will use text-defined class
   lxClass.SetName(lkDecl->CompetitionClass);
   // stop RX thread
-  if (!StopRxThread(d, errBufSize, errBuf)) 
+  if (!StopRxThread(d, errBufSize, errBuf))
     return(false);
 
   // set new Rx timeout
@@ -180,7 +180,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
       // to declared Start, TPs, and Finish we will add Takeoff and Landing,
       // so maximum NB of declared TPs is Decl::max_wp_count - 2
       if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)){
-           SetRxTimeout(d, orgRxTimeout,orgRxTimeout, status ? errBufSize : 0, errBuf);        
+           SetRxTimeout(d, orgRxTimeout,orgRxTimeout, status ? errBufSize : 0, errBuf);
            StartRxThread(d, status ? errBufSize : 0, errBuf);
         return(false);
       }
@@ -207,34 +207,34 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
         t_DD = utc->tm_mday;   t_MM = utc->tm_mon + 1;  t_YY = utc->tm_year % 100;
         t_hh = utc->tm_hour;   t_mm = utc->tm_min;      t_ss = utc->tm_sec;
       }
-      _stprintf(DeclStrings[i++], TEXT("C%02d%02d%02d%02d%02d%02d000000%04d%02d"), 
+      _stprintf(DeclStrings[i++], TEXT("C%02d%02d%02d%02d%02d%02d000000%04d%02d"),
 	                // DD    MM    YY    HH    MM    SS (DD MM YY) IIII  TT
 	                 t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,              1, wpCount-2);
-	    
+
 	    // TakeOff point
       if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
-        decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff); 
+        decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_takeoff);
       }
-	    
+
       // TurnPoints
       for (int ii = 0; ii < wpCount; ii++) {
-        decl.WpFormat(DeclStrings[i++], lkDecl->waypoint[ii], Decl::tp_regular); 
-      }  
+        decl.WpFormat(DeclStrings[i++], lkDecl->waypoint[ii], Decl::tp_regular);
+      }
 
       // Landing point
       if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
-        decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing); 
+        decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_landing);
       }
-      
+
       // Send complete declaration to logger
       for (int ii = 0; ii < i ; ii++){
         _stprintf(buffer, TEXT(" %s "),DeclStrings[ii]);
         if (status)
-          status = status && DevLXNanoIII::SendDecl(d, ii+1, totalLines, 
+          status = status && DevLXNanoIII::SendDecl(d, ii+1, totalLines,
                                    DeclStrings[ii], errBufSize, errBuf);
         Poco::Thread::sleep(50);
       }
@@ -342,7 +342,7 @@ void DevLXNanoIII::Decl::WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type){
       default:         wpName = _T("");        break;
     }
   }
-  _stprintf(buf, TEXT("C%02d%05.0f%c%03d%05.0f%c%s"), 
+  _stprintf(buf, TEXT("C%02d%05.0f%c%03d%05.0f%c%s"),
              DegLat, MinLat*60000,NS,DegLon, MinLon*60000, EW, wpName);
 } // WpFormat()
 
@@ -394,14 +394,14 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, TCHAR buf[], unsigned errBufS
   unsigned int i;
   char asciibuf[256];
   DevLXNanoIII::Wide2LxAscii(buf, 256, asciibuf);
-  for(i = 0; i < strlen(asciibuf); i++) chksum ^= asciibuf[i]; 
+  for(i = 0; i < strlen(asciibuf); i++) chksum ^= asciibuf[i];
   //sprintf(asciibuf, "%s*%02X\r\n", asciibuf, chksum);
   if (!ComWrite(d, '$', errBufSize, errBuf))  return (false);
-  for(i = 0; i < strlen(asciibuf); i++) 
-  	  if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) return (false);
+  for(i = 0; i < strlen(asciibuf); i++)
+	  if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) return (false);
   sprintf(asciibuf, "*%02X\r\n",chksum);
-  for(i = 0; i < strlen(asciibuf); i++) 
-  	  if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) return (false);
+  for(i = 0; i < strlen(asciibuf); i++)
+	  if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) return (false);
   return (true);
 } // SendNmea()
 
@@ -421,7 +421,7 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, TCHAR buf[], unsigned errBufS
 /// @retval false error (description in @p errBuf)
 ///
 // static
-bool DevLXNanoIII::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, 
+bool DevLXNanoIII::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows,
                    TCHAR content[], unsigned errBufSize, TCHAR errBuf[]){
   TCHAR buffer[256];
   char retstr[20];
@@ -433,4 +433,3 @@ bool DevLXNanoIII::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows
   }
   return status;
 } // SendDecl()
-

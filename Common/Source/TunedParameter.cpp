@@ -23,10 +23,10 @@
 */
 
 /*
- * The reference system for LK historically is a PNA running at 400Mhz on ARM cpu, with 
+ * The reference system for LK historically is a PNA running at 400Mhz on ARM cpu, with
  * an optimistic rate of 800 bogomips, which we call the Reference Hardware (RH)
  * We compare it to the number of bogomips multiplied by the number of available CPUS.
- * Not accurate, we should consider RISC vs CISC as well, hyperthreads etc. but bogomips 
+ * Not accurate, we should consider RISC vs CISC as well, hyperthreads etc. but bogomips
  * themselves are bogus, so it is a rule of thumb only.
  *
  * Here we retune custom parameters based upon cpu speed.
@@ -67,6 +67,3 @@ unsigned int TunedParameter_Fastpanning(void) {
     doinit=false;
     return fastpanning;
 }
-
-
-

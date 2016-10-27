@@ -19,4 +19,3 @@ BOOL KRT2ParseString(PDeviceDescriptor_t d, char  *String, int len, NMEA_INFO *i
 
 
 #endif
-

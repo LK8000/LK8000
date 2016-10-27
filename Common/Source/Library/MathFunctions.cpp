@@ -172,7 +172,7 @@ void irotate(int &xin, int &yin, const double &angle)
 }
 
 
-void rotatescale(double &xin, double &yin, 
+void rotatescale(double &xin, double &yin,
 		 const double &angle, const double &scale)
 {
   double x= xin;
@@ -407,5 +407,3 @@ int roundupdivision(int a, int b) {
 double LowPassFilter(double y_last, double x_in, double fact) {
   return (1.0-fact)*y_last+(fact)*x_in;
 }
-
-

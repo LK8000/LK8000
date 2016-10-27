@@ -25,14 +25,14 @@ int FindNearestWayPoint(double X, double Y, double MaxRange)
 
       // Consider only valid markers
       if ( (i<NUMRESWP)  &&  (WayPointCalc[i].WpType!=WPT_TURNPOINT) ) continue;
-      
+
       // Ignore Thermal Hotspot
       if (WayPointList[i].Style == STYLE_THERMAL) {
           continue;
       }
 
       DistanceBearing(Y,X,
-                      WayPointList[i].Latitude, 
+                      WayPointList[i].Latitude,
                       WayPointList[i].Longitude, &Dist, NULL);
       if(Dist < NearestDistance) {
         NearestIndex = i;
@@ -42,7 +42,7 @@ int FindNearestWayPoint(double X, double Y, double MaxRange)
    if(NearestIndex == -1) {
        return -1;
    }
-   
+
 	// now look at TAKEOFF... TODO check all virtuals too
 	// Takeoff can be normally very closed to actual airport, but not the same point!
 	DistanceBearing(Y,X, WayPointList[RESWP_TAKEOFF].Latitude, WayPointList[RESWP_TAKEOFF].Longitude, &Dist, NULL);
@@ -65,5 +65,3 @@ int FindNearestWayPoint(double X, double Y, double MaxRange)
     return -1;
   }
 }
-
-

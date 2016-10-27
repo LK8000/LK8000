@@ -39,7 +39,7 @@ void MarkLocation(const double lon, const double lat, const double altitude)
   bool dopreambol=false;
   TCHAR fname[MAX_PATH];
   LocalPath(fname,TEXT(LKD_WAYPOINTS));
-  _tcscat(fname,_T(DIRSEP)); 
+  _tcscat(fname,_T(DIRSEP));
   _stprintf(tstring,_T("LK%04d%02d%02d.cup"), GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day);
   _tcscat(fname,tstring);
 
@@ -106,8 +106,7 @@ void MarkLocation(const double lon, const double lat, const double altitude)
 
 	// Force updating DoRange otherwise it will pass up to 3 minutes
 	// before this marker appears in the 2.3 tps page
-	LastDoRangeWaypointListTime=0; 
+	LastDoRangeWaypointListTime=0;
   }
 
 }
-

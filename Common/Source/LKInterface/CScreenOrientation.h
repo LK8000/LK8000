@@ -30,14 +30,13 @@ private:
 
     static bool Save(const TCHAR* szFileName);
     static bool Restore(const TCHAR* szFileName);
-    
+
     static bool SetScreenSetting(unsigned short);
 
     tstring mLKFilePath; // file used for save screen orientation of LK.
     tstring mOSFilePath; // file used for save screen orientation at startup and restore it at shutdown.
-    
+
     static const unsigned short invalid = (~0);
 };
 
 #endif	/* CSCREENORIENTATION_H */
-

@@ -28,15 +28,15 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 	DoInit[MDI_MAPASP]=false;
   }
 
-  // 
+  //
   // X,Y coordinates of last clicked point on screen
   // These coordinates are related to any point clicked, even for a page flip, for bottom bar etc.
-  // In some cases, you will read old coordinates because for example after clicking in the center of 
-  // bottom bar, the page changed out of multimap and entered nearest pages.  
-  // 
+  // In some cases, you will read old coordinates because for example after clicking in the center of
+  // bottom bar, the page changed out of multimap and entered nearest pages.
+  //
   // Beware that they are by no means a trigger: they are always set!
   // If you want to know if user has touched the screen, you need to check for an event!
-  // 
+  //
   int X=startScreen.x;
   int Y=startScreen.y;
 
@@ -48,20 +48,20 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 
 
   TCHAR ttext[100];
- 
+
   //
   // Attention! Some events are NOT AVAILABLE in "shared" multimaps.
   // Shared multimaps are sharing events and customkeys with the main map.
   // They are hardconfigured in Multimap.cpp
   //
- 
+
   switch(LKevent) {
 	//
 	// USABLE EVENTS
-	// 
+	//
 	case LKEVENT_NEWRUN:
 		// CALLED ON ENTRY: when we select this page coming from another mapspace
-		// After the first run on entry, this will be no more passed until next time 
+		// After the first run on entry, this will be no more passed until next time
 		// you enter a new mapspace again.
 		_tcscpy(ttext,_T("Event = NEW RUN"));
 		break;
@@ -77,12 +77,12 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		_stprintf(ttext,_T("Event = LONG CLICK"));
 		break;
 	case LKEVENT_SHORTCLICK:
-		// 
+		//
 		// NOT AVAILABLE IN SHARED MULTIMAPS
 		//
 		// This is triggered when a click was detected not part of anything else.
 		// OR, if you have ActiveMap enabled, anywhere, since UP and DOWN are disabled.
-		// Even in this last case, TOPRIGHT, TOPLEFT are managed all the way and SHORTCLICK 
+		// Even in this last case, TOPRIGHT, TOPLEFT are managed all the way and SHORTCLICK
 		// will not be sent.
 		_stprintf(ttext,_T("Event = SHORT CLICK"));
 		break;
@@ -93,13 +93,13 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		_tcscpy(ttext,_T("Event = PAGE DOWN"));
 		break;
 	case LKEVENT_TOPLEFT:
-		// 
+		//
 		// NOT AVAILABLE IN SHARED MULTIMAPS
 		//
 		_tcscpy(ttext,_T("Event = TOP LEFT"));
 	break;
 	case LKEVENT_TOPRIGHT:
-		// 
+		//
 		// NOT AVAILABLE IN SHARED MULTIMAPS
 		//
 		_tcscpy(ttext,_T("Event = TOP RIGHT"));
@@ -109,7 +109,7 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 
 	//
 	// THESE EVENTS ARE NOT AVAILABLE IN MULTIMAPS!
-	//	
+	//
 	case LKEVENT_ENTER:
 		// WORKING ONLY in nearest pages
 		// click longer on center, like to confirm a selection
@@ -154,4 +154,3 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 
 
 }
-

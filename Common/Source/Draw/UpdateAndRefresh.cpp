@@ -21,7 +21,7 @@ void MapWindow::RequestFastRefresh() {
   MainWindow.Invalidate();
 #else
   drawTriggerEvent.set();
-#endif  
+#endif
 }
 
 
@@ -31,7 +31,7 @@ void MapWindow::RefreshMap() {
   MainWindow.Invalidate();
 #else
   drawTriggerEvent.set();
-#endif  
+#endif
 }
 
 
@@ -45,7 +45,7 @@ void MapWindow::UpdateInfo(NMEA_INFO *nmea_info,
   LockFlightData();
   memcpy(&DrawInfo,nmea_info,sizeof(NMEA_INFO));
   memcpy(&DerivedDrawInfo,derived_info,sizeof(DERIVED_INFO));
-  zoom.UpdateMapScale(); // done here to avoid double latency due to locks 
+  zoom.UpdateMapScale(); // done here to avoid double latency due to locks
   UnlockFlightData();
 }
 
@@ -66,5 +66,3 @@ void MapWindow::UpdateCaches(const ScreenProjection& _Proj, bool force) {
   //
   MapWindow::ForceVisibilityScan = false; // and no problem if it was already false
 }
-
-

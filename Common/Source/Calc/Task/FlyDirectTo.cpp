@@ -25,4 +25,3 @@ void FlyDirectTo(int index) {
   RefreshTask();
   UnlockTaskData();
 }
-

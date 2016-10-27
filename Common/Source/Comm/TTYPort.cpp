@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   TTYPort.cpp
  * Author: blc
- * 
+ *
  * Created on 11 août 2014, 10:42
  */
 #ifdef __linux__
@@ -32,7 +32,7 @@ TTYPort::TTYPort(int idx, const tstring& sName, unsigned dwSpeed, BitIndex_t Bit
         valid_frames(0U),
         _tty(-1),
         _oldtio(),
-        _Timeout() 
+        _Timeout()
 {
 }
 
@@ -80,14 +80,14 @@ bool TTYPort::Initialize() {
     if(szPath.compare(0, 3, _T("id:")) == 0) {
         szPath.replace(szPath.begin(), std::next(szPath.begin(), 3), _T("/dev/serial/by-id/"));
     }
-    
+
     _tty = open(szPath.c_str(), O_RDWR | O_NOCTTY);
     if (_tty < 0 || !isatty(_tty)) {
         StartupStore(_T("... ComPort %u Init failed, error=%u%s"), (unsigned)(GetPortIndex() + 1), errno, NEWLINE); // 091117
         StatusMessage(mbOk, NULL, TEXT("%s %s"), MsgToken(762), GetPortName());
         goto failed;
     }
-    
+
     struct termios newtio;
 
     tcgetattr(_tty, &_oldtio); // save current port settings
@@ -107,9 +107,9 @@ bool TTYPort::Initialize() {
     tcsetattr(_tty, TCSANOW, &newtio);
 
     StartupStore(_T(". ComPort %u Init <%s> end OK%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
-    
+
     return ComPort::Initialize();
-    
+
 failed:
     if (_tty >= 0) {
         tcsetattr(_tty, TCSANOW, &_oldtio);
@@ -195,7 +195,7 @@ size_t TTYPort::Read(void *szString, size_t size) {
     }
 
     if ((iResult != -1) && FD_ISSET(_tty, &readfs)) {
-        // Data ready to read 
+        // Data ready to read
         iResult = read(_tty, (char*) szString, size);
         if (iResult > 0) {
             AddStatRx(iResult);
@@ -223,7 +223,7 @@ bool TTYPort::Close() {
         KoboUnexportSerial();
     }
 #endif
-  
+
     return true;
 }
 

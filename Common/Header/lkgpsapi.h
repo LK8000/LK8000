@@ -54,21 +54,21 @@ GPS_FIX_QUALITY;
 //
 // GPS_DATA_FLAGS_XXX bit flags set in GPS_POSITION dwFlags field
 // provide additional information about the state of the query.
-// 
+//
 
-// Set when GPS hardware is not connected to GPSID and we 
+// Set when GPS hardware is not connected to GPSID and we
 // are returning cached data.
 #define GPS_DATA_FLAGS_HARDWARE_OFF                        0x00000001
 
 //
-// GPS_POSITION contains our latest physical coordinates, the time, 
+// GPS_POSITION contains our latest physical coordinates, the time,
 // and satellites used in determining these coordinates.
-// 
+//
 typedef struct _GPS_POSITION {
 	DWORD dwVersion;             // Current version of GPSID client is using.
 	DWORD dwSize;                // sizeof(_GPS_POSITION)
 
-	// Not all fields in the structure below are guaranteed to be valid.  
+	// Not all fields in the structure below are guaranteed to be valid.
 	// Which fields are valid depend on GPS device being used, how stale the API allows
 	// the data to be, and current signal.
 	// Valid fields are specified in dwValidFields, based on GPS_VALID_XXX flags.
@@ -76,10 +76,10 @@ typedef struct _GPS_POSITION {
 
 	// Additional information about this location structure (GPS_DATA_FLAGS_XXX)
 	DWORD dwFlags;
-	
+
 	//** Time related
 	SYSTEMTIME stUTCTime; 	//  UTC according to GPS clock.
-	
+
 	//** Position + heading related
 	double dblLatitude;            // Degrees latitude.  North is positive
 	double dblLongitude;           // Degrees longitude.  East is positive
@@ -113,11 +113,11 @@ typedef struct _GPS_POSITION {
 // GPS_DEVICE contains information about the device driver and the
 // service itself and is returned on a call to GPSGetDeviceState().
 // States are indicated with SERVICE_STATE_XXX flags defined in service.h
-// 
+//
 typedef struct _GPS_DEVICE {
 	DWORD    dwVersion;                                 // Current version of GPSID client is using.
 	DWORD    dwSize;                                    // sizeof this structure
-	DWORD    dwServiceState;                            // State of the GPS Intermediate Driver service.  
+	DWORD    dwServiceState;                            // State of the GPS Intermediate Driver service.
 	DWORD    dwDeviceState;                             // Status of the actual GPS device driver.
 	FILETIME ftLastDataReceived;                        // Last time that the actual GPS device sent information to the intermediate driver.
 	WCHAR    szGPSDriverPrefix[GPS_MAX_PREFIX_NAME];    // Prefix name we are using to communicate to the base GPS driver

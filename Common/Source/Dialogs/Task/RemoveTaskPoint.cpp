@@ -20,13 +20,13 @@ extern void ResetTaskWaypoint(int j);
 void RemoveTaskPoint(int index) {
   if (!CheckDeclaration())
     return;
-  
+
   int i;
-  
+
   if (index < 0 || index >= MAXTASKPOINTS) {
     return; // index out of bounds
   }
-  
+
   LockTaskData();
   TaskModified = true;
   TargetModified = true;
@@ -35,16 +35,15 @@ void RemoveTaskPoint(int index) {
     UnlockTaskData();
     return; // There's no WP at this location
   }
-  
+
   // Shuffle all later taskpoints to the left to
   // fill the gap
   for (i=index; i<MAXTASKPOINTS-1; ++i) {
     Task[i] = Task[i+1];
   }
   ResetTaskWaypoint(MAXTASKPOINTS-1);
-  
+
   RefreshTask();
   UnlockTaskData();
-  
-}
 
+}

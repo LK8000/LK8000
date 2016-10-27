@@ -49,7 +49,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
     }
 
   // get the item index number, quick conversion from unicode
- 
+
   #if DEBUG_GETTEXT
   StartupStore(_T(".... Help item TextIn=<%s> number=%d \n"),TextIn, inumber);
   #endif
@@ -65,7 +65,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 
 	// Help File, dynamically handled
 	#if DEBUG_GETTEXT
-  	StartupStore(_T("... Open Language file type <%C>: <%s>%s"),ttype,sFile,NEWLINE);
+	StartupStore(_T("... Open Language file type <%C>: <%s>%s"),ttype,sFile,NEWLINE);
 	#endif
 
 	TCHAR sNum[10];
@@ -89,7 +89,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 			#endif
 			continue;
 		}
-		
+
 		if (sTmp[0]=='#') {
 			#if DEBUG_GETTEXT
 			StartupStore(_T("... skip remark: %s\n"),sTmp);
@@ -149,7 +149,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 			if (sTmp[0]=='@') {
 				if (hlen==0)
 					continue; // multihelp section, continue loading help
-				else 
+				else
 					break; // another marker, close the help
 			}
 		}
@@ -191,7 +191,7 @@ static TCHAR * LKMessages[MAX_MESSAGES+1];
 
 //  Tokenized Language support for LK8000
 //  gettext is now a definition for LKGetText
-//  101208 
+//  101208
 
 const TCHAR *LKGetText(const TCHAR *TextIn) {
     // quick preliminar checks
@@ -283,9 +283,9 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
 	_tcscpy(LKLangSuffix,mylang);
   }
 
-  if (_tcscmp(oldLang,LKLangSuffix)!=0) { 
+  if (_tcscmp(oldLang,LKLangSuffix)!=0) {
 
-	if ( !LKLoadMessages(false) ) { 
+	if ( !LKLoadMessages(false) ) {
 		// force reload of english
 		if (_tcscmp(_T("ENG"),LKLangSuffix) == 0 ) {
 			StartupStore(_T("... CRITICAL, no english langauge available!%s"),NEWLINE);
@@ -295,7 +295,7 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
 			LKLoadMessages(false);
 		}
 	} else  {
-	  	_tcscpy(oldLang,mylang);
+		_tcscpy(oldLang,mylang);
 		// Now overload english messages filling gaps in translations
 		// only if current lang is not english of course: no reason to load it twice
 		if (_tcscmp(_T("ENG"),LKLangSuffix) != 0 ) {
@@ -357,7 +357,7 @@ bool LKLoadMessages(bool fillup) {
 		StartupStore(_T(". Language load file: <%s>%s"),sFile,NEWLINE);
   }
 
-  // search for beginning of code index, in the range _@M1_  _@M9999_ 
+  // search for beginning of code index, in the range _@M1_  _@M9999_
   TCHAR sTmp[300];
   TCHAR scapt[MAX_MESSAGE_SIZE+1];
   TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
@@ -478,16 +478,16 @@ bool LKLoadMessages(bool fillup) {
 	}
 	#if TESTBENCH
 	#if (WINDOWSPC>0)
-	// CAUTION, on a PNA this would freeze the device if language file is not updated! 
+	// CAUTION, on a PNA this would freeze the device if language file is not updated!
 	// StartupStore is locking and unlocking threads at each run!!
 	if (fillup)
 		StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
 	#endif
-	#endif	
+	#endif
 
 #ifndef UNICODE
     LKASSERT(ValidateUTF8(scapt));
-#endif	
+#endif
 
 	LKMessages[inumber] = (TCHAR *)malloc((_tcslen(scapt)+1)*sizeof(TCHAR));
 	LKASSERT(LKMessages[inumber]!=NULL);

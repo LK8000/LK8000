@@ -14,7 +14,7 @@
 extern void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 #define LOGINTERVAL  1  // seconds between IGC log lines
-#define MAXERRDOLOG  30 
+#define MAXERRDOLOG  30
 
 //
 // Logger activity, and also add snailpoints
@@ -83,7 +83,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   double distance;
 
-  DistanceBearing(Basic->Latitude, Basic->Longitude, 
+  DistanceBearing(Basic->Latitude, Basic->Longitude,
 		  Latitude_last, Longitude_last,
 		  &distance, NULL);
 
@@ -155,12 +155,12 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   } // time has advanced enough: >= LOGINTERVAL
 
   #if LOGFRECORD
-  if (Basic->Time - GetFRecordLastTime() >= dtFRecord) 
-  { 
+  if (Basic->Time - GetFRecordLastTime() >= dtFRecord)
+  {
     if (LogFRecord(Basic->SatelliteIDs,false))
     {  // need F record every 5 minutes
        // so if write fails or constellation is invalid, don't update timer and try again next cycle
-      SetFRecordLastTime(GetFRecordLastTime() + dtFRecord);  
+      SetFRecordLastTime(GetFRecordLastTime() + dtFRecord);
       // the FRecordLastTime is reset when the logger restarts so it is always at the start of the file
       if (GetFRecordLastTime() < Basic->Time-dtFRecord)
         SetFRecordLastTime(Basic->Time-dtFRecord);
@@ -204,12 +204,12 @@ _afteriscar:
 
       flightstats.Altitude_Terrain.
         least_squares_update(max(0.0,
-                                 Basic->Time-Calculated->TakeOffTime)/3600.0, 
+                                 Basic->Time-Calculated->TakeOffTime)/3600.0,
                              Calculated->TerrainAlt);
 
       flightstats.Altitude.
         least_squares_update(max(0.0,
-                                 Basic->Time-Calculated->TakeOffTime)/3600.0, 
+                                 Basic->Time-Calculated->TakeOffTime)/3600.0,
                              Calculated->NavAltitude);
       StatsLastTime += dtStats;
       if (StatsLastTime< Basic->Time-dtStats) {
@@ -223,4 +223,3 @@ _afteriscar:
                                   static_cast<unsigned>(Basic->Altitude));
   }
 }
-

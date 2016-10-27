@@ -7,4 +7,3 @@
 BOOL CompeoRegister(void);
 
 #endif
-

@@ -43,7 +43,7 @@ bool MapWindow::PointInRect(const double &lon, const double &lat,
   if ((lon> bounds.minx) &&
       (lon< bounds.maxx) &&
       (lat> bounds.miny) &&
-      (lat< bounds.maxy)) 
+      (lat< bounds.maxy))
     return true;
   else
     return false;
@@ -54,7 +54,7 @@ bool MapWindow::PointVisible(const double &lon, const double &lat) {
   if ((lon> screenbounds_latlon.minx) &&
       (lon< screenbounds_latlon.maxx) &&
       (lat> screenbounds_latlon.miny) &&
-      (lat< screenbounds_latlon.maxy)) 
+      (lat< screenbounds_latlon.maxy))
     return true;
   else
     return false;
@@ -63,13 +63,13 @@ bool MapWindow::PointVisible(const double &lon, const double &lat) {
 
 bool MapWindow::PointVisible(const POINT &P)
 {
-  if(( P.x >= DrawRect.left ) 
+  if(( P.x >= DrawRect.left )
      &&
-     ( P.x <= DrawRect.right ) 
+     ( P.x <= DrawRect.right )
      &&
-     ( P.y >= DrawRect.top  ) 
+     ( P.y >= DrawRect.top  )
      &&
-     ( P.y <= DrawRect.bottom  ) 
+     ( P.y <= DrawRect.bottom  )
      )
     return TRUE;
   else
@@ -100,7 +100,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
   // If boundaries are inside old boundaries we dont immediately recalculate everything.
   // The drawback is that after many zoom in, we still have "Visible" all waypoints calculated for a low zoom.
   // This is expecially true while swapping multimaps that can have different zoom level saved individually.
-  // 
+  //
 
   // first we check that some time has passed and we are not debouncing calculations
   if ( (LKHearthBeats-30) >lasthere ) {
@@ -114,7 +114,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
   diffscale=oldzoomscale-MapWindow::zoom.Scale();
   if (diffscale>3) {
 	// scale has lowered by more than 3, so it is a significant zoom
-	// notice that while zoomin out we dont have the problem, because 
+	// notice that while zoomin out we dont have the problem, because
 	// boundaries are going to expand.
 	#if DEBUG_SCANVIS
 	StartupStore(_T("... scale diff=%f  >3, normal run\n\n"),diffscale);
@@ -225,20 +225,20 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
           const double ys = fastcosine(start);
           const double xf = fastsine(finish);
           const double yf = fastcosine(finish);
-          
+
           // calculate rectangle area taken by the sector
           const double top    = AngleInRange(start, finish, 0,   true) ?  1 : max(max(ys, yf), 0.0);
           const double right  = AngleInRange(start, finish, 90,  true) ?  1 : max(max(xs, xf), 0.0);
           const double bottom = AngleInRange(start, finish, 180, true) ? -1 : min(min(ys, yf), 0.0);
           const double left   = AngleInRange(start, finish, 270, true) ? -1 : min(min(xs, xf), 0.0);
-          
+
           // get area center
           const double radius = Task[target_point].AATSectorRadius;
           const double x = (left + right) / 2;
           const double y = (top + bottom) / 2;
           double bearing, range;
           xXY_Brg_Rng(0, 0, x, y, &bearing, &range);
-          
+
           // find area center geographic data
           FindLatitudeLongitude(WayPointList[Task[target_point].Index].Latitude,
                                 WayPointList[Task[target_point].Index].Longitude,
@@ -320,7 +320,7 @@ bool HaveGauges(void) {
   return (GlideBarMode||LKVarioBar||ThermalBar);
 }
 
-// 
+//
 // Same as above, but we also look if the gauges were drawn in the current run.
 // Notice that we are assuming all gauges were drawn before calling this function.
 //
@@ -329,4 +329,3 @@ bool HaveGaugesDrawn(void) {
   if (ISGAAIRCRAFT) return true;
   return (GlideBarMode||LKVarioBar||(ThermalBar&&MapWindow::ThermalBarDrawn));
 }
-

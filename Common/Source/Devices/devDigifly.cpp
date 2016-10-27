@@ -31,8 +31,8 @@ static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pG
   if(_tcsncmp(TEXT("$PDGFTL1"), String, 8)==0)
     {
       return PDGFTL1(d, &String[9], pGPS);
-    } 
-  
+    }
+
   if(_tcsncmp(TEXT("$D"), String, 2) == 0) {
       return D(d, &String[3], pGPS);
   }
@@ -49,7 +49,7 @@ static BOOL DigiflyIsLogger(PDeviceDescriptor_t d){
 
 static BOOL DigiflyIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE); 
+  return(TRUE);
 }
 
 
@@ -116,7 +116,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 	100209 Paolo Ventafridda
 	netto and ias optionals
-	
+
 */
 
   TCHAR ctemp[80];
@@ -175,7 +175,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 		pGPS->TrueAirspeed = vtas;
 		pGPS->IndicatedAirspeed = vias;
 		pGPS->AirspeedAvailable = TRUE;
-  	}
+	}
   } else {
 	pGPS->AirspeedAvailable = FALSE;
   }
@@ -206,7 +206,7 @@ static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
  * 10 : effic to ground     in tenth
  * 11 : effic to goal       in tenth
  *
- *   $D,+0,100554,+25,18,+31,,0,-356,+25,+11,115,96*6A    
+ *   $D,+0,100554,+25,18,+31,,0,-356,+25,+11,115,96*6A
  */
     TCHAR ctemp[80];
 
@@ -218,7 +218,7 @@ static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     } else {
         pGPS->VarioAvailable = FALSE;
     }
-    
+
     // Pressure
     NMEAParser::ExtractParameter(String,ctemp,1);
     if (ctemp[0] != '\0') {

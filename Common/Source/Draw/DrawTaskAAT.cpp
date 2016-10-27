@@ -11,13 +11,13 @@
 #include "RGB.h"
 #include "LKObjects.h"
 
-#ifdef HAVE_HATCHED_BRUSH          
+#ifdef HAVE_HATCHED_BRUSH
     constexpr uint8_t AlphaLevel = 255*35/100;
 #else
     constexpr uint8_t AlphaLevel = 255*17/100;
-#endif  
-        
-        
+#endif
+
+
 void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     int i;
     double tmp1 = 0.0;
@@ -83,23 +83,23 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         if(LKSurface::AlphaBlendSupported()) {
             // copy original bitmap into temp (for saving fully transparent areas)
             TempSurface.Copy(rcDraw.left, rcDraw.top,
-                    rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, 
+                    rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top,
                     Surface, rcDraw.left, rcDraw.top);
         } else {
             TempSurface.Rectangle(rcDraw.left, rcDraw.top, rcDraw.right, rcDraw.bottom);
         }
-        
+
         TempSurface.SelectObject(LK_NULL_PEN);
-#ifdef HAVE_HATCHED_BRUSH          
+#ifdef HAVE_HATCHED_BRUSH
         TempSurface.SelectObject(hAirspaceBrushes[iAirspaceBrush[AATASK]]);
 #else
         TempSurface.SelectObject(LKBrush_Yellow);
-#endif  
+#endif
         // this color is used as the black bit
         TempSurface.SetTextColor(Colours[iAirspaceColour[AATASK]]);
         // this color is the transparent bit
         TempSurface.SetBkColor(whitecolor);
-        
+
         LKSurface & AliasSurface = TempSurface;
 #else
         LKSurface & AliasSurface = Surface;
@@ -137,7 +137,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         TempSurface.SetTextColor(origcolor);
         TempSurface.SelectObject(oldpen);
         TempSurface.SelectObject(oldbrush);
-        
+
         if(!Surface.AlphaBlend(rcDraw, TempSurface,rcDraw, AlphaLevel)) {
             // if AlphaBlend is not supported, use TransparentBld
             Surface.TransparentCopy(
@@ -148,7 +148,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         }
 #endif
 	}
-    
+
     {
         UnlockTaskData();
     }

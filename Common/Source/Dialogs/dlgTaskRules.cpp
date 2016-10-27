@@ -128,7 +128,7 @@ bool dlgTaskRules(void){
   wf = dlgLoadFromXML(CallBackTable, IDR_XML_TASKRULES);
 
   if (!wf) return false;
-  
+
   setVariables();
 
   changed = false;
@@ -158,7 +158,7 @@ bool dlgTaskRules(void){
      {
        if(FAI28_45Threshold >FAI_BIG_THRESHOLD)
        {
-      	  FAI28_45Threshold =FAI_BIG_THRESHOLD;
+	  FAI28_45Threshold =FAI_BIG_THRESHOLD;
           changed = true;
        }
      }
@@ -232,4 +232,3 @@ bool dlgTaskRules(void){
   wf = NULL;
   return changed;
 }
-

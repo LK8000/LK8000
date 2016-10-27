@@ -112,7 +112,7 @@ class DataField{
     virtual ~DataField(void){};
 
 	virtual void Clear();
-        
+
   virtual void Special(void);
   virtual void Inc(void);
   virtual void Dec(void);
@@ -146,11 +146,11 @@ class DataField{
   void SetUnits(const TCHAR *text) { _tcscpy(mUnits, text); }
   const TCHAR* GetUnits() const { return mUnits; }
 
-  
+
   virtual void addEnumText(const TCHAR *Text) { assert(false); }
   virtual void addEnumTextNoLF(const TCHAR *Text) { assert(false); }
   virtual void Sort(int startindex=0) { assert(false); }
-  
+
   void Use(void){
     mUsageCounter++;
   }
@@ -186,7 +186,7 @@ class DataField{
     int mUsageCounter;
     bool mDisableSpeedup;
     bool mDetachGUI;
-    
+
 };
 
 class DataFieldBoolean:public DataField{
@@ -217,10 +217,10 @@ class DataFieldBoolean:public DataField{
   double GetAsFloat(void) override;
   const TCHAR *GetAsString(void) override;
 
-  void Set(int Value) override { 
-    if (Value>0) 
-      Set(true); 
-    else 
+  void Set(int Value) override {
+    if (Value>0)
+      Set(true);
+    else
       Set(false);
   };
 
@@ -251,16 +251,16 @@ class DataFieldEnum: public DataField {
     DataFieldEnumEntry mEntries[DFE_MAX_ENUMS];
 
   public:
-    DataFieldEnum(const TCHAR *EditFormat, 
-		  const TCHAR *DisplayFormat, 
-		  int Default, 
+    DataFieldEnum(const TCHAR *EditFormat,
+		  const TCHAR *DisplayFormat,
+		  int Default,
 		  DataAccessCallback_t OnDataAccess = nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       SupportCombo=true;
 
-      if (Default>=0) 
-	{ mValue = Default; } 
-      else 
+      if (Default>=0)
+	{ mValue = Default; }
+      else
 	{mValue = 0;}
       nEnums = 0;
       if (mOnDataAccess) {
@@ -312,14 +312,14 @@ class DataFieldFileReader: public DataField {
 
       SupportCombo=true;
       (mOnDataAccess)(this, daGet);
-      
+
     };
     ~DataFieldFileReader() {
 		Clear();
 	}
-	
+
 	void Clear() override;
-    
+
   void Inc(void) override;
   void Dec(void) override;
   int CreateComboList(void) override;
@@ -330,7 +330,7 @@ class DataFieldFileReader: public DataField {
 
   int GetAsInteger(void) override;
   const TCHAR *GetAsString(void) override;
-  
+
   bool Lookup(const TCHAR* text);
   const TCHAR* GetPathFile(void) const;
 
@@ -380,7 +380,7 @@ class DataFieldInteger:public DataField{
   void Dec(void) override;
   int CreateComboList(void) override;
   bool CreateKeyboard(void) override;
-  
+
   bool GetAsBoolean(void) override;
   int GetAsInteger(void) override;
   double GetAsFloat(void) override;
@@ -474,7 +474,7 @@ class DataFieldString:public DataField{
   void Set(const TCHAR *Value) override;
 
   const TCHAR *GetAsString(void) override;
-  
+
   bool CreateKeyboard() override;
 
 };
@@ -536,7 +536,7 @@ class WindowControl : public WndCtrlBase {
     const TCHAR* GetCaption(void) const { return GetWndText(); }
 
     virtual void CalcChildRect(int& x, int& y, int& cx, int& cy) const;
-    
+
 	// only Call by final contructor or overwrite
     virtual void AddClient(WindowControl *Client);
 
@@ -624,7 +624,7 @@ class WndFrame:public WindowControl{
 
   public:
 
-    WndFrame(WindowControl *Owner, const TCHAR *Name, 
+    WndFrame(WindowControl *Owner, const TCHAR *Name,
              int X, int Y, int Width, int Height):
       WindowControl(Owner, Name, X, Y, Width, Height)
     {
@@ -682,9 +682,9 @@ class WndListFrame:public WndFrame{
 
     typedef void (*OnListCallback_t)(WindowControl * Sender, ListInfo_t *ListInfo);
 
-    WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, 
-                 int Width, int Height, 
-                 void (*OnListCallback)(WindowControl * Sender, 
+    WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
+                 int Width, int Height,
+                 void (*OnListCallback)(WindowControl * Sender,
                                         ListInfo_t *ListInfo));
 
     virtual bool OnMouseMove(const POINT& Pos);
@@ -704,21 +704,21 @@ class WndListFrame:public WndFrame{
     void SetItemIndexPos(int iValue);
     void SetItemIndex(int iValue);
     void SelectItemFromScreen(int xPos, int yPos, RECT *rect);
-    
+
     void CalcChildRect(int& x, int& y, int& cx, int& cy) const;
-    
-protected:    
+
+protected:
     int GetScrollBarWidth();
     int GetScrollBarHeight (void);
 
     int GetScrollBarTop() { return GetScrollBarWidth(); }
-    
+
     int GetScrollIndexFromScrollBarTop(int iScrollBarTop);
     int GetScrollBarTopFromScrollIndex();
-    
+
 
     void DrawScrollBar(LKSurface& Surface);
-    
+
     virtual void Paint(LKSurface& Surface);
 
     virtual bool OnLButtonDown(const POINT& Pos);
@@ -727,8 +727,8 @@ protected:
 private:
     constexpr static int ScrollbarWidthInitial = 32;
     int ScrollbarWidth;
-    
-    
+
+
     OnListCallback_t mOnListCallback;
     OnListCallback_t mOnListEnterCallback;
     ListInfo_t mListInfo;
@@ -789,7 +789,7 @@ class WndForm:public WindowControl{
     WindowControl *mClientWindow;
     RECT mClientRect;
     RECT mTitleRect;
-    
+
     bool mModal;
 
     OnTimerNotify_t mOnTimerNotify;
@@ -849,7 +849,7 @@ class WndForm:public WindowControl{
             StopTimer();
         }
     }
-    
+
     void ReinitialiseLayout(const RECT& Rect) { }
 
 protected:
@@ -864,7 +864,7 @@ protected:
             mOnTimerNotify(this);
         }
     }
-    
+
     virtual void OnDestroy() override {
         mModalResult = mrCancel;
         WndCtrlBase::OnDestroy();
@@ -884,7 +884,7 @@ class WndButton:public WindowControl{
     ClickNotifyCallback_t mOnClickNotify;
 
   public:
-  
+
     WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t Function = NULL);
 
     virtual bool OnLButtonDown(const POINT& Pos) override;
@@ -906,7 +906,7 @@ class WndButton:public WindowControl{
 class WndProperty:public WindowControl{
   public:
     typedef int (*DataChangeCallback_t)(WindowControl * Sender, int Mode, int Value);
-    
+
   private:
 
     RECT mEditRect;
@@ -964,4 +964,3 @@ class WndProperty:public WindowControl{
 int dlgComboPicker(WndProperty* theProperty);
 
 #endif
-

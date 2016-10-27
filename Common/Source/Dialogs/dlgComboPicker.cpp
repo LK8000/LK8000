@@ -21,7 +21,7 @@ static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface
 
 WndProperty * wComboPopupWndProperty;
 WindowControl * wComboPopupListEntry;
-WndListFrame *wComboPopupListFrame; 
+WndListFrame *wComboPopupListFrame;
 DataField * ComboPopupDataField = NULL;
 ComboList * ComboListPopup=NULL;
 
@@ -64,7 +64,7 @@ static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_
     ListInfo->ScrollIndex = 0;
     ListInfo->ItemIndex = ComboListPopup->ComboPopupItemSavedIndex;
 
-  } 
+  }
   else {
     ComboListPopup->ComboPopupDrawListIndex = ListInfo->DrawIndex + ListInfo->ScrollIndex;
     ComboListPopup->ComboPopupItemIndex=ListInfo->ItemIndex + ListInfo->ScrollIndex;
@@ -77,7 +77,7 @@ static void OnHelpClicked(WindowControl * Sender){
   if (ComboListPopup->ComboPopupItemIndex >=0) {
 
     int iDataIndex = ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemIndex]->DataFieldIndex;
-    ComboPopupDataField->SetFromCombo(iDataIndex, 
+    ComboPopupDataField->SetFromCombo(iDataIndex,
       ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemIndex]->StringValue);
   }
 
@@ -133,7 +133,7 @@ int dlgComboPicker(WndProperty* theProperty){
 
   static bool bInComboPicker=false;
   bool bInitialPage=true;
-  bool bOpenCombo=true; // used to exit loop (optionally reruns combo with 
+  bool bOpenCombo=true; // used to exit loop (optionally reruns combo with
                         //lower/higher index of items for int/float
 
   if (bInComboPicker) // prevents multiple instances
@@ -174,7 +174,7 @@ int dlgComboPicker(WndProperty* theProperty){
       iSavedInitialDataIndex=ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemSavedIndex]->DataFieldIndex;
       ComboPopupDataField->CopyString(sSavedInitialValue,false);
     }
-   
+
     WindowControl* pBtHelp = wf->FindByName(TEXT("cmdHelp"));
     if(pBtHelp) {
        pBtHelp->SetVisible(wComboPopupWndProperty->HasHelpText());
@@ -199,13 +199,13 @@ int dlgComboPicker(WndProperty* theProperty){
       }
       else if (ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemIndex]->DataFieldIndex
                           ==ComboPopupReopenLESSDataIndex) // same as above but lower items needed
-      { 
-        ComboPopupDataField->SetDetachGUI(true); 
+      {
+        ComboPopupDataField->SetDetachGUI(true);
         ComboListPopup->ComboPopupItemIndex++;
-        bOpenCombo=true; 
+        bOpenCombo=true;
       }
       int iDataIndex = ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemIndex]->DataFieldIndex;
-      ComboPopupDataField->SetFromCombo(iDataIndex, 
+      ComboPopupDataField->SetFromCombo(iDataIndex,
         ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemIndex]->StringValue);
     }
     else // Cancel
@@ -218,12 +218,12 @@ int dlgComboPicker(WndProperty* theProperty){
       // value on entry, and we check on exit if it is still empty. In such case, a no/action is performed, either
       // because the user did not select anything with Select (click on empty field at the top) or because he really
       // clicked on Cancel and we returned again the initial empty value.
-      // BUT, in some cases, like on TaskOverview, we set the initial item of the list to Default.task, 
+      // BUT, in some cases, like on TaskOverview, we set the initial item of the list to Default.task,
       // and in this case a Cancel will return correctly Default.tsk!
       // This is why we get the confirmation message for loading default task, instead of a quiet return.
       // Solution: either use a WindowControl variable, or a more simple global for ComboCancel.
       // This would be an hack, but quick and dirty solution with no disde effects.
-      // Set ComboCancel true if we are here, otherwise false, and check that after 
+      // Set ComboCancel true if we are here, otherwise false, and check that after
       // dfe = (DataFieldFileReader*) wp->GetDataField()
       // If ever we want to manage this Cancel button correctly, we should use one of these approaches.
 
@@ -244,6 +244,6 @@ int dlgComboPicker(WndProperty* theProperty){
   } // loop reopen combo if <<More>> << LESS>> picked
 
   bInComboPicker=false;
-  return 1;  
+  return 1;
 
 }

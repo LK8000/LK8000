@@ -34,7 +34,7 @@ static void OnAirspaceColoursPaintListItem(WindowControl * Sender, LKSurface& Su
     Surface.SelectObject(MapWindow::GetAirspaceSldBrush(i)); // this is the solid brush
     Surface.SetTextColor(MapWindow::GetAirspaceColour(i));
     Surface.Rectangle(
-              100*ScreenScale, 
+              100*ScreenScale,
               2*ScreenScale,
               180*ScreenScale,
               22*ScreenScale);
@@ -42,7 +42,7 @@ static void OnAirspaceColoursPaintListItem(WindowControl * Sender, LKSurface& Su
 }
 
 
-static void OnAirspaceColoursListEnter(WindowControl * Sender, 
+static void OnAirspaceColoursListEnter(WindowControl * Sender,
 				WndListFrame::ListInfo_t *ListInfo) {
 
   ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
@@ -55,12 +55,12 @@ static void OnAirspaceColoursListEnter(WindowControl * Sender,
       if(pForm) {
         pForm->SetModalResult(mrOK);
       }
-    }    
+    }
   }
 }
 
 
-static void OnAirspaceColoursListInfo(WindowControl * Sender, 
+static void OnAirspaceColoursListInfo(WindowControl * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
   (void)Sender;
   if (ListInfo->DrawIndex == -1){
@@ -95,7 +95,7 @@ int dlgAirspaceColoursShowModal(void){
   ItemIndex = -1;
 
   WndForm*  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P);
-  
+
   if (!wf) return -1;
 
   WndListFrame *wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));
@@ -113,8 +113,6 @@ int dlgAirspaceColoursShowModal(void){
   wf->ShowModal();
 
   delete wf;
-  
+
   return ItemIndex;
 }
-
-

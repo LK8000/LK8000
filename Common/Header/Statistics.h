@@ -61,9 +61,9 @@ class Statistics {
                          const int Style);
 
   static void DrawLine(LKSurface& Surface, const RECT& rc,
-		       const double xmin, 
+		       const double xmin,
 		       const double ymin,
-                       const double xmax, 
+                       const double xmax,
 		       const double ymax, const int Style);
 
   static int ScaleX(const RECT& rc, double x);
@@ -90,15 +90,15 @@ class Statistics {
 
   static void FormatTicText(TCHAR *text, const double val, const double step);
   static void DrawXGrid(LKSurface& Surface, const RECT& rc,
-			const double tic_step, 
+			const double tic_step,
 			const double zero,
-                        const int Style, 
-			const double unit_step, 
+                        const int Style,
+			const double unit_step,
 			bool draw_units=false);
   static void DrawYGrid(LKSurface& Surface, const RECT& rc,
-			const double tic_step, 
+			const double tic_step,
 			const double zero,
-                        const int Style, 
+                        const int Style,
 			const double unit_step, bool draw_units=false);
   static void DrawYGrid_cor(LKSurface& Surface, const RECT& rc,
 			const double tic_step,
@@ -112,7 +112,7 @@ class Statistics {
   static void DrawNoData(LKSurface& Surface, const RECT& rc);
 
   ///
-    
+
 
     static void RenderBarograph(LKSurface& Surface, const RECT& rc);
     static void RenderClimb(LKSurface& Surface, const RECT& rc);

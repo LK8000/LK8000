@@ -19,7 +19,7 @@
 
 extern bool HaveGauges(void);
 
-static void ReplaceInString(TCHAR *String, const TCHAR *ToReplace, 
+static void ReplaceInString(TCHAR *String, const TCHAR *ToReplace,
                             const TCHAR *ReplaceWith, size_t Size){
   TCHAR TmpBuf[MAX_PATH];
   int   iR;
@@ -34,8 +34,8 @@ static void ReplaceInString(TCHAR *String, const TCHAR *ToReplace,
 
 }
 
-static void CondReplaceInString(bool Condition, TCHAR *Buffer, 
-                                const TCHAR *Macro, const TCHAR *TrueText, 
+static void CondReplaceInString(bool Condition, TCHAR *Buffer,
+                                const TCHAR *Macro, const TCHAR *TrueText,
                                 const TCHAR *FalseText, size_t Size){
   if (Condition)
     ReplaceInString(Buffer, Macro, TrueText, Size);
@@ -214,7 +214,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			else
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2080),MsgToken(894)); // ON
 			break;
- 
+
 		case 15:
 			if (EnableSoundModes)
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2055),MsgToken(491)); // OFF
@@ -223,7 +223,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 16: // ActiveMap no more used now Radio Button
-                        #ifdef RADIO_ACTIVE  
+                        #ifdef RADIO_ACTIVE
 			if (RadioPara.Enabled) {
 			   _stprintf(OutBuffer,_T("%s\n"),MsgToken(2306)); // TEXT
 			   invalid=false;
@@ -231,7 +231,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			  _stprintf(OutBuffer,_T("%s\n"),MsgToken(2306)); // TEXT
 			  invalid=true;
 			}
-				
+
                         #else
                                 invalid=true;
                         #endif
@@ -277,7 +277,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 20:
 			if (MapWindow::zoom.AutoZoom() )
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2009),MsgToken(418)); 
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2009),MsgToken(418));
 			else
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2009),MsgToken(897));
 			break;
@@ -427,7 +427,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 				_tcscpy(OutBuffer,_T(""));
 			break;
 
-		case 36: // 
+		case 36: //
 			// Order is:  ALL ON, TASK ONLY, FAI ONLY, ALL OFF
 			if (Flags_DrawTask&&Flags_DrawFAI) {
 				_tcscpy(OutBuffer,MsgToken(2238)); // Draw Task
@@ -479,7 +479,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	}
 	goto label_ret;
   } // ACcelerator
-	
+
   // No accelerator? First check if we have a second macro embedded in string
 
   a =_tcsstr(OutBuffer, TEXT("&("));
@@ -505,7 +505,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     case 2:
       if (ActiveTaskPoint>0) {
         if (ValidTaskPoint(ActiveTaskPoint+1)) {
-          CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
+          CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"),
 		MsgToken(161),  // Cancel
 		MsgToken(678), Size); // TURN
         } else {
@@ -513,18 +513,18 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
           invalid = true;
         }
       } else {
-        CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
+        CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"),
 		MsgToken(161),  // Cancel
 		MsgToken(571), Size); // START
       }
       break;
     case 3:
       if (ActiveTaskPoint==0) {
-        CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
+        CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"),
 		MsgToken(161),  // Cancel
 		MsgToken(571), Size); // START
       } else if (ActiveTaskPoint==1) {
-        CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
+        CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"),
 		MsgToken(161),  // Cancel
 		MsgToken(539), Size); // RESTART
       } else {
@@ -536,7 +536,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     case 4:
       if (ActiveTaskPoint>0) {
         if (ValidTaskPoint(ActiveTaskPoint+1)) {
-          CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
+          CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"),
 		MsgToken(161),  // Cancel
 		MsgToken(678), Size); // TURN
         } else {
@@ -561,13 +561,13 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckFlying)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; 
+	if (--items<=0) goto label_ret;
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(NotInReplay)"))) {
     if (ReplayLogger::IsEnabled()) {
       invalid = true;
-    } 
+    }
     ReplaceInString(OutBuffer, TEXT("$(NotInReplay)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -674,8 +674,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 
   if (_tcsstr(OutBuffer, TEXT("$(FinalForceToggleActionName)"))) {
-    CondReplaceInString(ForceFinalGlide, OutBuffer, 
-                        TEXT("$(FinalForceToggleActionName)"), 
+    CondReplaceInString(ForceFinalGlide, OutBuffer,
+                        TEXT("$(FinalForceToggleActionName)"),
                         MsgToken(896), // Unforce
                         MsgToken(895), // Force
 			Size);
@@ -712,7 +712,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
     if (--items<=0) goto label_ret;
   }
-  
+
   if (_tcsstr(OutBuffer, TEXT("$(SCREENROTATE)"))) {
       if(CanRotateScreen()) {
         ReplaceInString(OutBuffer, TEXT("$(SCREENROTATE)"), TEXT(""), Size);
@@ -737,42 +737,42 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	// test mode only
 	switch(i) {
 	      case 1:
-  	              ckeymode=CustomMenu1;
-  	              break;
-  	      case 2:
-  	              ckeymode=CustomMenu2;
-  	              break;
-  	      case 3:
-  	              ckeymode=CustomMenu3;
-  	              break;
-  	      case 4:
-  	              ckeymode=CustomMenu4;
-  	              break;
-  	      case 5:
-  	              ckeymode=CustomMenu5;
-  	              break;
-  	      case 6:
-  	              ckeymode=CustomMenu6;
-  	              break;
-  	      case 7:
-  	              ckeymode=CustomMenu7;
-  	              break;
-  	      case 8:
-  	              ckeymode=CustomMenu8;
-  	              break;
-  	      case 9:
-  	              ckeymode=CustomMenu9;
-  	              break;
-  	      case 0:
-  	              ckeymode=CustomMenu10;
-  	              break;
-  	      default:
-        	        ckeymode=0;
-        	        break;
+	              ckeymode=CustomMenu1;
+	              break;
+	      case 2:
+	              ckeymode=CustomMenu2;
+	              break;
+	      case 3:
+	              ckeymode=CustomMenu3;
+	              break;
+	      case 4:
+	              ckeymode=CustomMenu4;
+	              break;
+	      case 5:
+	              ckeymode=CustomMenu5;
+	              break;
+	      case 6:
+	              ckeymode=CustomMenu6;
+	              break;
+	      case 7:
+	              ckeymode=CustomMenu7;
+	              break;
+	      case 8:
+	              ckeymode=CustomMenu8;
+	              break;
+	      case 9:
+	              ckeymode=CustomMenu9;
+	              break;
+	      case 0:
+	              ckeymode=CustomMenu10;
+	              break;
+	      default:
+		        ckeymode=0;
+		        break;
 	}
 	if (ckeymode==0 || ckeymode>=ckTOP) {
 		invalid=true;			// non selectable
-		
+
 		// _stprintf(OutBuffer,_T("Key\n%d"),i);
 		 _tcscpy(OutBuffer,_T(""));	// make it invisible
 	} else {
@@ -780,11 +780,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	}
 
   } // MM
-	
+
 
 label_ret:
 
   return invalid;
 }
-
-

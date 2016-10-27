@@ -36,8 +36,8 @@ typedef unsigned char byte;
 #define VK_APP5     0x35
 #define VK_APP6     0x36
 #else
-#define VK_APP1     0xC1 
-#define VK_APP2     0xC2 
+#define VK_APP1     0xC1
+#define VK_APP2     0xC2
 #define VK_APP3     0xC3
 #define VK_APP4     0xC4
 #define VK_APP5     0xC5

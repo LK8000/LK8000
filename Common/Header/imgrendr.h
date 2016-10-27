@@ -59,71 +59,71 @@ EXTERN_C const IID IID_IImageRender;
     IImageRender : public IUnknown
     {
     public:
-        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE Draw( 
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE Draw(
             HDC hdc,
             RECT __RPC_FAR *lpRect) = 0;
-        
-        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetBitmap( 
+
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetBitmap(
             HBITMAP __RPC_FAR *phBitmap,
             BOOL fTake) = 0;
-        
-        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetOrigWidth( 
+
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetOrigWidth(
             int __RPC_FAR *piWidth) = 0;
-        
-        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetOrigHeight( 
+
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetOrigHeight(
             int __RPC_FAR *piHeight) = 0;
-        
-        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetBits( 
+
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetBits(
             unsigned char __RPC_FAR *__RPC_FAR *ppbBits) = 0;
-        
-        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE ImageFail( 
+
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE ImageFail(
             BOOL __RPC_FAR *pbFail) = 0;
-        
+
     };
-    
+
 #else 	/* C style interface */
 $
     typedef struct IImageRenderVtbl
     {
         BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )( 
+
+        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )(
             IImageRender __RPC_FAR * This,
             /* [in] */ REFIID riid,
             /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )( 
+
+        ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )(
             IImageRender __RPC_FAR * This);
-        
-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *Release )( 
+
+        ULONG ( STDMETHODCALLTYPE __RPC_FAR *Release )(
             IImageRender __RPC_FAR * This);
-        
-        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Draw )( 
+
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Draw )(
             IImageRender __RPC_FAR * This,
             HDC hdc,
             RECT __RPC_FAR *lpRect);
-        
-        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetBitmap )( 
+
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetBitmap )(
             IImageRender __RPC_FAR * This,
             HBITMAP __RPC_FAR *phBitmap,
             BOOL fTake);
-        
-        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetOrigWidth )( 
+
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetOrigWidth )(
             IImageRender __RPC_FAR * This,
             int __RPC_FAR *piWidth);
-        
-        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetOrigHeight )( 
+
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetOrigHeight )(
             IImageRender __RPC_FAR * This,
             int __RPC_FAR *piHeight);
-        
-        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetBits )( 
+
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetBits )(
             IImageRender __RPC_FAR * This,
             unsigned char __RPC_FAR *__RPC_FAR *ppbBits);
-        
-        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *ImageFail )( 
+
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *ImageFail )(
             IImageRender __RPC_FAR * This,
             BOOL __RPC_FAR *pbFail);
-        
+
         END_INTERFACE
     } IImageRenderVtbl;
 
@@ -132,7 +132,7 @@ $
         CONST_VTBL struct IImageRenderVtbl __RPC_FAR *lpVtbl;
     };
 
-    
+
 
 #ifdef COBJMACROS
 
@@ -172,7 +172,7 @@ $
 
 
 
-/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_Draw_Proxy( 
+/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_Draw_Proxy(
     IImageRender __RPC_FAR * This,
     HDC hdc,
     RECT __RPC_FAR *lpRect);
@@ -185,7 +185,7 @@ void __RPC_STUB IImageRender_Draw_Stub(
     DWORD *_pdwStubPhase);
 
 
-/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_GetBitmap_Proxy( 
+/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_GetBitmap_Proxy(
     IImageRender __RPC_FAR * This,
     HBITMAP __RPC_FAR *phBitmap,
     BOOL fTake);
@@ -198,7 +198,7 @@ void __RPC_STUB IImageRender_GetBitmap_Stub(
     DWORD *_pdwStubPhase);
 
 
-/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_GetOrigWidth_Proxy( 
+/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_GetOrigWidth_Proxy(
     IImageRender __RPC_FAR * This,
     int __RPC_FAR *piWidth);
 
@@ -210,7 +210,7 @@ void __RPC_STUB IImageRender_GetOrigWidth_Stub(
     DWORD *_pdwStubPhase);
 
 
-/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_GetOrigHeight_Proxy( 
+/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_GetOrigHeight_Proxy(
     IImageRender __RPC_FAR * This,
     int __RPC_FAR *piHeight);
 
@@ -222,7 +222,7 @@ void __RPC_STUB IImageRender_GetOrigHeight_Stub(
     DWORD *_pdwStubPhase);
 
 
-/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_GetBits_Proxy( 
+/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_GetBits_Proxy(
     IImageRender __RPC_FAR * This,
     unsigned char __RPC_FAR *__RPC_FAR *ppbBits);
 
@@ -234,7 +234,7 @@ void __RPC_STUB IImageRender_GetBits_Stub(
     DWORD *_pdwStubPhase);
 
 
-/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_ImageFail_Proxy( 
+/* [helpstring] */ HRESULT STDMETHODCALLTYPE IImageRender_ImageFail_Proxy(
     IImageRender __RPC_FAR * This,
     BOOL __RPC_FAR *pbFail);
 
@@ -252,15 +252,15 @@ void __RPC_STUB IImageRender_ImageFail_Stub(
 
 /* Additional Prototypes for ALL interfaces */
 
-unsigned long             __RPC_USER  HBITMAP_UserSize(     unsigned long __RPC_FAR *, unsigned long            , HBITMAP __RPC_FAR * ); 
-unsigned char __RPC_FAR * __RPC_USER  HBITMAP_UserMarshal(  unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, HBITMAP __RPC_FAR * ); 
-unsigned char __RPC_FAR * __RPC_USER  HBITMAP_UserUnmarshal(unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, HBITMAP __RPC_FAR * ); 
-void                      __RPC_USER  HBITMAP_UserFree(     unsigned long __RPC_FAR *, HBITMAP __RPC_FAR * ); 
+unsigned long             __RPC_USER  HBITMAP_UserSize(     unsigned long __RPC_FAR *, unsigned long            , HBITMAP __RPC_FAR * );
+unsigned char __RPC_FAR * __RPC_USER  HBITMAP_UserMarshal(  unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, HBITMAP __RPC_FAR * );
+unsigned char __RPC_FAR * __RPC_USER  HBITMAP_UserUnmarshal(unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, HBITMAP __RPC_FAR * );
+void                      __RPC_USER  HBITMAP_UserFree(     unsigned long __RPC_FAR *, HBITMAP __RPC_FAR * );
 
-unsigned long             __RPC_USER  HDC_UserSize(     unsigned long __RPC_FAR *, unsigned long            , HDC __RPC_FAR * ); 
-unsigned char __RPC_FAR * __RPC_USER  HDC_UserMarshal(  unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, HDC __RPC_FAR * ); 
-unsigned char __RPC_FAR * __RPC_USER  HDC_UserUnmarshal(unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, HDC __RPC_FAR * ); 
-void                      __RPC_USER  HDC_UserFree(     unsigned long __RPC_FAR *, HDC __RPC_FAR * ); 
+unsigned long             __RPC_USER  HDC_UserSize(     unsigned long __RPC_FAR *, unsigned long            , HDC __RPC_FAR * );
+unsigned char __RPC_FAR * __RPC_USER  HDC_UserMarshal(  unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, HDC __RPC_FAR * );
+unsigned char __RPC_FAR * __RPC_USER  HDC_UserUnmarshal(unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, HDC __RPC_FAR * );
+void                      __RPC_USER  HDC_UserFree(     unsigned long __RPC_FAR *, HDC __RPC_FAR * );
 
 /* end of Additional Prototypes */
 

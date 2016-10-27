@@ -15,10 +15,10 @@
 // LK8000: important!  ALL values in WPCALC must be initialized here!
 // There is no other init of this structure elsewhere!
 void InitWayPointCalc() {
-  
+
   DisableBestAlternate = true;
   WayPointCalc.resize(WayPointList.size());
-          
+
   for (unsigned int i=0; i< WayPointList.size(); i++) {
 
 	WayPointCalc[i].Preferred = false;
@@ -33,7 +33,7 @@ void InitWayPointCalc() {
 		WayPointCalc[i].IsLandable=true;
 		WayPointCalc[i].IsOutlanding=false;
 		WayPointCalc[i].WpType=WPT_AIRPORT;
-        
+
         DisableBestAlternate = false;
 	} else {
 		if ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT) {
@@ -41,7 +41,7 @@ void InitWayPointCalc() {
 			WayPointCalc[i].IsLandable=true;
 			WayPointCalc[i].IsOutlanding=true;
 			WayPointCalc[i].WpType=WPT_OUTLANDING;
-            
+
             DisableBestAlternate = false;
 		} else {
 			WayPointCalc[i].IsAirport=false;
@@ -57,4 +57,3 @@ void InitWayPointCalc() {
 
   }
 }
-

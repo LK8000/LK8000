@@ -16,7 +16,7 @@ PGTaskMgr gPGTask; // This Is Shared ressource, never use without Locking Task D
 
 void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
-	if (!DoOptimizeRoute()) 
+	if (!DoOptimizeRoute())
 		return;
 
 	LockTaskData();
@@ -26,7 +26,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	for(size_t i=0; i<gPGTask.Count(); ++i) {
         gPGTask.UpdateTaskPoint(i, Task[i]);
 	}
-		
+
 	int stdwp=Task[ActiveTaskPoint].Index;
 
 	WayPointList[RESWP_OPTIMIZED].Latitude = Task[ActiveTaskPoint].AATTargetLat;
@@ -38,7 +38,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	UnlockTaskData();
 }
 
-// Clear PG 
+// Clear PG
 void ClearOptimizedTargetPos() {
 
 	if (!DoOptimizeRoute())
@@ -63,4 +63,3 @@ void ClearOptimizedTargetPos() {
 
 	UnlockTaskData();
 }
-

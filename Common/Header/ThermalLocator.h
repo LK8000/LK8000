@@ -37,7 +37,7 @@ class ThermalLocator {
 
   void Reset();
   void AddPoint(double t, double longitude, double latitude, double w);
-  void Update(double t_0, 
+  void Update(double t_0,
 	      double longitude_0, double latitude_0,
 	      double wind_speed, double wind_bearing,
 	      double trackbearing,
@@ -52,7 +52,7 @@ class ThermalLocator {
 			   double Thermal_Latitude,
 			   double altitude,
 			   double wthermal,
-			   double wind_speed, 
+			   double wind_speed,
 			   double wind_bearing,
 			   double *ground_longitude,
 			   double *ground_latitude,
@@ -66,7 +66,7 @@ class ThermalLocator {
   double est_longitude;
  private:
 
-  void Update_Internal(double t_0, 
+  void Update_Internal(double t_0,
                        double longitude_0, double latitude_0,
                        double traildrift_lon, double traildrift_lat,
                        double trackbearing,
@@ -76,10 +76,10 @@ class ThermalLocator {
                        double *Thermal_W,
                        double *Thermal_R);
 
-  void Drift(double t_0, 
+  void Drift(double t_0,
 	     double longitude_0, double latitude_0,
 	     double wind_lon, double wind_lat, double decay);
-  ThermalLocator_Point points[TLOCATOR_NMAX]; 
+  ThermalLocator_Point points[TLOCATOR_NMAX];
   LeastSquares ols;
   bool initialised;
   int nindex;

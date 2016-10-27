@@ -30,7 +30,7 @@ void OpenAirfieldDetails() {
   } else {
 	#if 0
 	LocalPath(zfilename, _T(KD_WAYPOINTS));
-	_tcscat(zfilename, _T(DIRSEP)); 
+	_tcscat(zfilename, _T(DIRSEP));
 	_tcscat(zfilename, _T(LKF_AIRFIELDS));
 	#else
 	_tcscpy(zfilename, _T(""));
@@ -79,7 +79,7 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
 
 	isHome=false;
 	isPreferred=false;
-    isLandable = (((WayPointList[i].Flags & AIRPORT) == AIRPORT) || 
+    isLandable = (((WayPointList[i].Flags & AIRPORT) == AIRPORT) ||
                  ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT));
 
 	_stprintf(TmpName,TEXT("%s=HOME"),UName);
@@ -115,7 +115,7 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
 	      }
 	      WayPointList[i].Details = (TCHAR*)malloc((_tcslen(Details)+1)*sizeof(TCHAR));
 	      if (WayPointList[i].Details != NULL) _tcscpy(WayPointList[i].Details, Details);
-	    } 
+	    }
 	    return;
 	  }
     }
@@ -210,7 +210,7 @@ void ReadAirfieldFile() {
   StartupStore(TEXT(". ReadAirfieldFile%s"),NEWLINE);
   #endif
 
-	// LKTOKEN  _@M400_ = "Loading Waypoint Notes File..." 
+	// LKTOKEN  _@M400_ = "Loading Waypoint Notes File..."
   CreateProgressDialog(MsgToken(400));
 
   {
@@ -220,4 +220,3 @@ void ReadAirfieldFile() {
   }
 
 }
-

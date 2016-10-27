@@ -66,7 +66,7 @@ void Statistics::FormatTicText(TCHAR *text, const double val, const double step)
 static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
 
   WndForm* pForm = Sender->GetParentWndForm();
-  
+
   const RECT rcgfx = Sender->GetClientRect();
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont/* Sender->GetFont()*/);
 
@@ -85,8 +85,8 @@ static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
 
     Surface.SetBackgroundTransparent();
 
-  
-const TCHAR* CalcCaption = NULL;    
+
+const TCHAR* CalcCaption = NULL;
 switch (analysis_page) {
   case ANALYSIS_PAGE_BAROGRAPH:
     CalcCaption = TEXT("_@M885_"); // Settings
@@ -138,9 +138,9 @@ switch (analysis_page) {
     WindowControl *wCalc = pForm->FindByName(TEXT("cmdCalc"));
     if (wCalc) {
       wCalc->SetCaption(LKGetText(CalcCaption));
-    }  
+    }
   }
-  
+
   Surface.SelectObject(hfOld);
 
 }
@@ -238,7 +238,7 @@ static void OnCalcClicked(WndButton* pWnd){
     case CContestMgr::TYPE_OLC_CLASSIC:
       contestType = CContestMgr::TYPE_FAI_TRIANGLE;
       break;
-      
+
     case CContestMgr::TYPE_FAI_TRIANGLE:
       contestType = CContestMgr::TYPE_FAI_TRIANGLE4;
       FAI_OptimizerMode = 4;
@@ -256,7 +256,7 @@ static void OnCalcClicked(WndButton* pWnd){
 #endif
       contestType = CContestMgr::TYPE_OLC_FAI;
       break;
-      
+
     case CContestMgr::TYPE_OLC_FAI:
       contestType = CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
       break;
@@ -402,6 +402,3 @@ unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode
 
   entered = false;
 }
-
-
-

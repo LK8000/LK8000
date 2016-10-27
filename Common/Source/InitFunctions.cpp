@@ -106,12 +106,12 @@ void PreloadInitialisation(bool ask) {
     InitLKFonts();
     // We are sure that buttons have been created already
     ButtonLabel::SetFont(MapWindowBoldFont);
-    
+
     // font change, we need to reset "Messge
     Message::InitFont();
-  
+
     // LKTOKEN _@M1206_ "Initialising..."
-	CreateProgressDialog(MsgToken(1206)); 
+	CreateProgressDialog(MsgToken(1206));
   }
 
   // Interface (before interface)
@@ -119,7 +119,7 @@ void PreloadInitialisation(bool ask) {
     LKReadLanguageFile(szLanguageFile);
     InputEvents::readFile();
   }
-  
+
   InitCustomHardware();
 }
 
@@ -144,13 +144,13 @@ BOOL InitInstance()
  #if (SDL_MAJOR_VERSION >= 2)
   SDL_DisplayMode mode = {};
   if(SDL_GetCurrentDisplayMode(0, &mode) == 0) {
-  	ScreenSizeX = mode.w;
+	ScreenSizeX = mode.w;
     ScreenSizeY = mode.h;
   } else {
-  	fprintf(stderr, "SDL_GetCurrentDisplayMode() has failed: %s\n", ::SDL_GetError());
+	fprintf(stderr, "SDL_GetCurrentDisplayMode() has failed: %s\n", ::SDL_GetError());
   }
   #else
-  	ScreenSizeX = 0;
+	ScreenSizeX = 0;
     ScreenSizeY = 0;
   #endif
 #endif
@@ -166,7 +166,7 @@ BOOL InitInstance()
     ScreenSizeX=iWidth;
     ScreenSizeY=iHeight;
   }
-#endif  
+#endif
   WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
 #endif
 #ifdef WIN32
@@ -185,18 +185,18 @@ BOOL InitInstance()
   if(!MainWindow.Create(WindowSize)) {
       StartupStore(TEXT(". FAILURE: Create main window%s"),NEWLINE);
       return FALSE;
-  } 
+  }
   const PixelRect rc(MainWindow.GetClientRect());
   ScreenSizeX = rc.GetSize().cx;
   ScreenSizeY = rc.GetSize().cy;
   ScreenHasChanged();
-  
+
   InitLKScreen();
   InitLKFonts(); // causing problems with CreateButtonLabels?
 
   LKLoadFixedBitmaps();
   LKLoadProfileBitmaps();
-  LKObjects_Create(); 
+  LKObjects_Create();
 
   ButtonLabel::CreateButtonLabels(rc);
   ButtonLabel::SetFont(MapWindowBoldFont);
@@ -207,6 +207,3 @@ BOOL InitInstance()
 
   return TRUE;
 }
-
-
-

@@ -121,4 +121,3 @@ int16 DBB::fdf_findfield(byte id) {
   }
   return ii;
 }
-

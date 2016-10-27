@@ -22,7 +22,7 @@ void UpdateLogBook(bool welandedforsure) {
 
   #if (WINDOWSPC>0)
   #else
-  // Only in SIMMODE on pna/ppc we dont log 
+  // Only in SIMMODE on pna/ppc we dont log
   if (SIMMODE) return;
   #endif
 
@@ -107,7 +107,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     file.WriteLn(_T("### AUTO-GENERATED LOGBOOK (ENCODED IN UTF-8)"));
     file.WriteLn(_T("###"));
   }
-  
+
   //
   // Header line for new note
   //
@@ -229,7 +229,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
         Units::GetAltitudeName());
     file.WriteLn(line);
   }
- 
+
   //
   // Max Altitude reached
   //
@@ -392,7 +392,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
     pilotname[20]=0;
   } else
     _tcscpy(pilotname,_T(""));
-    
+
   if (!dofirstline) {
     file.WriteLn(_T("________________________________________"));
   }
@@ -416,5 +416,3 @@ bool UpdateLogBookLST(bool welandedforsure) {
 
   return true;
 }
-
-

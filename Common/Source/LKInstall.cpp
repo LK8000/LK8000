@@ -43,7 +43,7 @@ void InstallSystem() {
 
 
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
-  // because GetFileAttributes can be very slow or hang if checking a directory. In any case testing a file is 
+  // because GetFileAttributes can be very slow or hang if checking a directory. In any case testing a file is
   // much more faster.
   _stprintf(srcfile,TEXT("%s%s_SYSTEM"),srcdir, _T(DIRSEP));
   if ( !lk::filesystem::exist(srcfile) ) {
@@ -171,7 +171,7 @@ void InstallSystem() {
   } else {
 	StartupStore(_T(". RegKey Font directory is <%s>%s"),fontdir,NEWLINE);
 	lk::filesystem::createDirectory(fontdir);
-	_tcscpy(dstdir,fontdir); 
+	_tcscpy(dstdir,fontdir);
   }
   #else
   UNUSED(fontdir);
@@ -325,9 +325,3 @@ bool CheckFilesystemWritable() {
   success &= fclose(stream) == 0;
   return(success);
 }
-
-
-
-
-
-

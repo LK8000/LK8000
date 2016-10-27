@@ -21,7 +21,7 @@ extern void ResetVisualGlideGlobals(void);
 
 
 // border margins in boxed text
-#define XYMARGIN NIBLSCALE(1) 
+#define XYMARGIN NIBLSCALE(1)
 
 // minimum space between two adjacent boxes on the same row
 #define BOXINTERVAL NIBLSCALE(1)
@@ -52,7 +52,7 @@ unsigned short Sideview_VGBox_Number = 0;
 void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) {
 
     const RECT& rci = sDia.rc;
-    
+
     unsigned short numboxrows = 1;
 
 #if BUGSTOP
@@ -95,7 +95,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 
     // we can cut the waypoint name, but not the value data, so we use the second row of data
     // to size the box for everything.
-    maxtSizeX = textSizeBot.cx; 
+    maxtSizeX = textSizeBot.cx;
 
     int a = (rci.right-rci.left) / (textSizeBot.cx+BOXINTERVAL);
     int b = (rci.right-rci.left) - a * (textSizeBot.cx)-(BOXINTERVAL * (a + 1));
@@ -184,7 +184,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     // Reassign dynamically the vertical scale for each subwindow size
     double vscale = 1000 * (100 - Current_Multimap_SizeY) / 100;
 #else
-    // Set the vertical range 
+    // Set the vertical range
     double vscale;
     if (Units::GetUserAltitudeUnit() == unFeet)
         vscale = (1000 / TOFEET);
@@ -325,7 +325,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 #endif
 
         // Since terrain can be approximated due to low precision maps, or waypoint position or altitude error,
-        // we have a common problem: we get an obstacle to get to the waypoint because it is 
+        // we have a common problem: we get an obstacle to get to the waypoint because it is
         // positioned "BELOW" the terrain itself. We try to reduce this problem here.
 #define SAFETERRAIN	50
 
@@ -505,13 +505,13 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
 
     PixelRect ClipRect(Sideview_VGBox[nslot]);
     ClipRect.Grow(-1*NIBLSCALE(2), 0); // text padding
-    
-    // 
+
+    //
     // LINE 1
-    // 
+    //
     tx = max<PixelScalar>(ClipRect.left, x - (tsize.cx / 2));
     ty = y - (vy - y);
-    
+
     Surface.DrawText(tx, ty, wText1, &ClipRect);
 
     if (numlines == 1) goto _end;
@@ -522,7 +522,7 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
 
     //
     // LINE 2
-    // 
+    //
     Surface.SetTextColor(RGB_BLACK);
     Surface.SelectObject(line2Font);
     Surface.GetTextSize(wText2, &tsize);
@@ -565,5 +565,3 @@ void ResetVisualGlideGlobals() {
     Sideview_VGBox_Number = 0;
 
 }
-
-

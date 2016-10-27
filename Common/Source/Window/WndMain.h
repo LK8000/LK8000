@@ -19,7 +19,7 @@ class WndMain : public WndMainBase, public MapWindow {
 public:
     WndMain();
     virtual ~WndMain();
-    
+
 protected:
     virtual void OnCreate();
     virtual bool OnClose();
@@ -28,7 +28,7 @@ protected:
     virtual bool OnSize(int cx, int cy);
 
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect);
-    
+
     virtual void OnKillFocus();
 
     virtual bool OnMouseMove(const POINT& Pos);
@@ -48,4 +48,3 @@ private:
 };
 
 #endif	/* WNDMAIN_H */
-

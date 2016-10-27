@@ -76,16 +76,16 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
      #endif
      auto OldPen = Surface.SelectObject(BorderPen);
      auto OldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
-     
+
      Surface.Rectangle(rc.left, rc.top, rc.right, rc.bottom - BottomSize);
-     
+
      Surface.SelectObject(OldPen);
      Surface.SelectObject(OldBrush);
   }
   #endif
 
 
-#ifdef DRAWLKSTATUS 
+#ifdef DRAWLKSTATUS
   if (LKevent==LKEVENT_NEWRUN) dodrawlkstatus=true;
 #endif
 
@@ -102,7 +102,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 		break;
 #endif
 #if (1)
-		if (!DrawInfo.NAVWarning) { 
+		if (!DrawInfo.NAVWarning) {
 		static double firsttime=DrawInfo.Time;
 		// delayed automatic exit from welcome mode
 		if ( DrawInfo.Time > (firsttime+3.0) ) {
@@ -180,7 +180,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
   default:
     memset((void*)&TextDisplayMode, 0, sizeof(TextDisplayMode));
     TextDisplayMode.Color = RGB_WHITE;
-    TextDisplayMode.NoSetFont = 1; 
+    TextDisplayMode.NoSetFont = 1;
     TextDisplayMode.AlligneCenter = 1;
     Surface.SelectObject(LK8TargetFont);
     _stprintf(Buffer,TEXT("MapSpaceMode=%d"),MapSpaceMode);
@@ -193,6 +193,3 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 #endif
   Surface.SelectObject(oldfont);
 }
-
-
-

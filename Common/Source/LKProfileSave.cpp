@@ -52,7 +52,7 @@ void LKProfileSave(const TCHAR *szFile)
   StartupStore(_T("... SaveProfile <%s>%s"),szFile,NEWLINE);
   #endif
 
-  
+
   if (_tcslen(szFile)>0)
 	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
 
@@ -69,7 +69,7 @@ void LKProfileSave(const TCHAR *szFile)
   fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
   fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
 
-  // 
+  //
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
   //
   // -- USE _CONFIG VARIABLES WHEN A RUNTIME VALUE CAN BE CHANGED --
@@ -77,7 +77,7 @@ void LKProfileSave(const TCHAR *szFile)
   // FOR EXAMPLE: ActiveMap can be set by default in system config, but also changed
   // at runtime with a button and with a customkey. We must save in profile ONLY
   // the _Config, not the temporary setup!
-  // 
+  //
 
 
 
@@ -88,10 +88,10 @@ void LKProfileSave(const TCHAR *szFile)
 //  rprintf(szRegistryAircraftCategory, AircraftCategory);
 //  rprintf(szRegistryAircraftRego, AircraftRego_Config);
 //  rprintf(szRegistryAircraftType, AircraftType_Config);
-  rprintf(szRegistryAirfieldFile, szAirfieldFile); 
+  rprintf(szRegistryAirfieldFile, szAirfieldFile);
   rprintf(szRegistryAirspaceFile, szAirspaceFile);
-  rprintf(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType()); 
-  rprintf(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity()); 
+  rprintf(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType());
+  rprintf(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity());
   rprintf(szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout);
   rprintf(szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels);
   rprintf(szRegistryAirspaceAckAllSame, AirspaceAckAllSame);
@@ -440,7 +440,7 @@ void LKAircraftSave(const TCHAR *szFile)
   StartupStore(_T("... AircraftSave <%s>%s"),szFile,NEWLINE);
   #endif
 
-  
+
   if (_tcslen(szFile)>0)
 	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
 
@@ -556,7 +556,7 @@ void LKDeviceSave(const TCHAR *szFile)
 
   rprintf(szRegistryIpPort1,dwIpPort1);
   rprintf(szRegistryIpPort2,dwIpPort2);
-  
+
   rprintf(szRegistryUseExtSound1,UseExtSound1);
   rprintf(szRegistryUseExtSound2,UseExtSound2);
 
@@ -571,4 +571,3 @@ void LKDeviceSave(const TCHAR *szFile)
   fclose(pfp);
 
 }
-

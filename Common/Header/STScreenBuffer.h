@@ -30,15 +30,15 @@ public:
 #ifdef USE_TERRAIN_BLUR
     void Blur(unsigned int boxw);
 #endif
-   
+
 	// Draws buffer into given device context within rectangle
 	void DrawStretch(LKSurface& Surface, const RECT& rcDest, int scale);
-	
+
 protected:
 #ifdef USE_TERRAIN_BLUR
 	void HorizontalBlur(unsigned int boxw, BGRColor* src, BGRColor* dst);
 	void VerticalBlur(unsigned int boxh, BGRColor* src, BGRColor* dst);
-    
+
 	BGRColor *m_pBufferTmp;
 #endif
 };

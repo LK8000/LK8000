@@ -21,7 +21,7 @@ public:
   virtual ~ConditionMonitor() {}
 
   void Update(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-    if (!Calculated->Flying) 
+    if (!Calculated->Flying)
       return;
 
     bool restart = false;
@@ -118,7 +118,7 @@ protected:
   };
 
   void Notify(void) {
-	// LKTOKEN  _@M616_ = "Significant wind change" 
+	// LKTOKEN  _@M616_ = "Significant wind change"
     DoStatusMessage(MsgToken(616));
   };
 
@@ -142,14 +142,14 @@ public:
   virtual ~ConditionMonitorFinalGlide() {}
 protected:
 
-  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
+  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (!Calculated->Flying || !ValidTaskPoint(ActiveTaskPoint)) {
       return false;
     }
 
     tad = Calculated->TaskAltitudeDifference*0.2+0.8*tad;
 
-    bool BeforeFinalGlide = 
+    bool BeforeFinalGlide =
       (ValidTaskPoint(ActiveTaskPoint+1) && !Calculated->FinalGlide);
 
     if (BeforeFinalGlide) {
@@ -166,14 +166,14 @@ protected:
         if ((last_tad< -50) && (tad>1)) {
           // just reached final glide, previously well below
           return true;
-        } 
+        }
         if ((last_tad> 1) && (tad< -50)) {
           // dropped well below final glide, previously above
 	  last_tad = tad;
           return true; // JMW this was true before
         }
       }
-    } 
+    }
     return false;
   };
 
@@ -203,7 +203,7 @@ public:
   virtual ~ConditionMonitorSunset() {}
 protected:
 
-  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
+  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (!ValidTaskPoint(ActiveTaskPoint) || !Calculated->Flying) {
       return false;
     }
@@ -243,8 +243,8 @@ public:
   virtual ~ConditionMonitorAATTime() {}
 protected:
 
-  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
-    if (DoOptimizeRoute() || !AATEnabled || !ValidTaskPoint(ActiveTaskPoint) 
+  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+    if (DoOptimizeRoute() || !AATEnabled || !ValidTaskPoint(ActiveTaskPoint)
         || !(Calculated->ValidStart && !Calculated->ValidFinish)
         || !Calculated->Flying) {
       return false;
@@ -262,7 +262,7 @@ protected:
   };
 
   void Notify(void) {
-	// LKTOKEN  _@M270_ = "Expect early task arrival" 
+	// LKTOKEN  _@M270_ = "Expect early task arrival"
     DoStatusMessage(MsgToken(270));
   };
 
@@ -279,7 +279,7 @@ public:
   virtual ~ConditionMonitorStartRules() {}
 protected:
 
-  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
+  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (!ValidTaskPoint(ActiveTaskPoint) || !Calculated->Flying
         || (ActiveTaskPoint>0) || !ValidTaskPoint(ActiveTaskPoint+1)) {
       return false;
@@ -293,16 +293,16 @@ protected:
     } else {
       withinMargin = false;
     }
-    return !(ValidStartSpeed(Basic, Calculated) 
+    return !(ValidStartSpeed(Basic, Calculated)
 	     && InsideStartHeight(Basic, Calculated));
   };
 
   void Notify(void) {
     if (withinMargin)
-	// LKTOKEN  _@M652_ = "Start rules violated\r\nbut within margin" 
+	// LKTOKEN  _@M652_ = "Start rules violated\r\nbut within margin"
       DoStatusMessage(MsgToken(652));
     else
-	// LKTOKEN  _@M651_ = "Start rules violated" 
+	// LKTOKEN  _@M651_ = "Start rules violated"
       DoStatusMessage(MsgToken(651));
   };
 
@@ -321,7 +321,7 @@ public:
 
 protected:
 
-  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
+  bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (!Calculated->Flying || !ValidTaskPoint(ActiveTaskPoint)) {
       return false;
     }
@@ -366,7 +366,7 @@ void ConditionMonitorsUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   #if 0
   cm_sunset.Update(Basic, Calculated); // it doesnt work in europe..
   #endif
-  cm_aattime.Update(Basic, Calculated);  
-  cm_startrules.Update(Basic, Calculated);  
-  cm_glideterrain.Update(Basic, Calculated);  
+  cm_aattime.Update(Basic, Calculated);
+  cm_startrules.Update(Basic, Calculated);
+  cm_glideterrain.Update(Basic, Calculated);
 }

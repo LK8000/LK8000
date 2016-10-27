@@ -104,7 +104,7 @@ void FlarmIdFile::GetAsString(FILE* hFile, int charCount, TCHAR *res)
   char bytes[100];
 
   fread(bytes, 1, bytesToRead, (FILE*)hFile);
-    	
+
   TCHAR *curChar = res;
   for (unsigned z = 0; z < bytesToRead && (z+1) < array_size(bytes) ; z += 2)
     {
@@ -118,19 +118,19 @@ void FlarmIdFile::GetAsString(FILE* hFile, int charCount, TCHAR *res)
 
       *curChar = (unsigned char)i;
       curChar ++;
-        
-    }     
+
+    }
   *curChar = 0;
-		
+
 }
 FlarmId* FlarmIdFile::GetFlarmIdItem(long id)
-{	
+{
   FlarmIdMap::iterator iterFind = flarmIds.find(id);
   if( iterFind != flarmIds.end() )
     {
-      return flarmIds[id];		
+      return flarmIds[id];
     }
-	
+
   return NULL;
 }
 
@@ -144,20 +144,18 @@ FlarmId* FlarmIdFile::GetFlarmIdItem(TCHAR *cn)
       if(_tcscmp(itemTemp->cn, cn) == 0)
 	{
 	  return itemTemp;
-	}	
+	}
       ++iterFind;
     }
-	
+
   return NULL;
 }
 
-long FlarmId::GetId() 
-{ 
+long FlarmId::GetId()
+{
   unsigned int res;
 
   _stscanf(id, TEXT("%6x"), &res);
 
   return res;
 };
-
-

@@ -304,7 +304,7 @@ ResetScale();
 		}
       }
       if((fDist / fTotalDistance ) > 0.45) /* prevent drawing almost same sectors */
-    	bFlat = true;
+	bFlat = true;
     }
 
     // draw track
@@ -427,5 +427,3 @@ DrawLabel(Surface, rc, TEXT("O"), xp, yp);
 Surface.SelectObject(hfOldU);
 
 }
-
-

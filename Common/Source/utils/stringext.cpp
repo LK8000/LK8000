@@ -834,7 +834,7 @@ int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars) {
     _tcsncpy(unicode, ascii, maxChars);
     unicode[maxChars-1] = '\0';
     return len;
-#endif 
+#endif
 }
 
 int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars) {
@@ -844,9 +844,9 @@ int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars) {
     size_t len = std::min(_tcslen(unicode), (size_t)maxChars);
     _tcsncpy(ascii, unicode, maxChars);
     ascii[maxChars-1] = '\0';
-    
+
     return len;
-#endif 
+#endif
 }
 
 int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
@@ -857,7 +857,7 @@ int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
     size_t len = mbstowcs(temp, unicode, maxChars);
     if(len!=(size_t)-1) {
         return unicode2utf(temp, utf, maxChars);
-    } 
+    }
     // if error, return simple copy
     len = std::min(_tcslen(unicode), (size_t)maxChars);
     _tcsncpy(utf, unicode, maxChars);
@@ -866,9 +866,9 @@ int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
     size_t len = std::min(_tcslen(unicode), (size_t)maxChars-1);
     _tcsncpy(utf, unicode, maxChars);
     utf[maxChars-1] = '\0';
-    
-    return len;   
-#endif 
+
+    return len;
+#endif
 }
 
 int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
@@ -885,9 +885,9 @@ int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
     _tcsncpy(unicode, utf, maxChars);
     unicode[maxChars-1] = '\0';
     return len;
-#endif 
+#endif
 }
-  
+
 int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize) {
 #if defined(_UNICODE)
     return  unicode2usascii(unicode, ascii, outSize);
@@ -896,7 +896,7 @@ int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize) {
     size_t len = mbstowcs(temp, unicode, outSize);
     if(len!=(size_t)-1) {
         return unicode2usascii(temp, ascii, outSize);
-    } 
+    }
     // if error, return simple copy
     len = std::min(_tcslen(unicode), (size_t)outSize);
     _tcsncpy(ascii, unicode, len);
@@ -906,5 +906,5 @@ int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize) {
     _tcsncpy(ascii, unicode, outSize);
     ascii[outSize-1] = '\0';
     return len;
-#endif 
+#endif
 }

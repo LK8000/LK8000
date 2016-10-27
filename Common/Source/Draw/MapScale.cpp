@@ -11,7 +11,7 @@
 
 
 double MapWindow::LimitMapScale(double value) {
-  
+
   double minreasonable=5.0;		// give minreasonable values in system units, in meters! (what you would like to see on the mapscale)
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
@@ -26,13 +26,13 @@ double MapWindow::LimitMapScale(double value) {
 	if (AATEnabled && (ActiveTaskPoint>0)) {
 	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 1200.0;
 	} else {
-	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 600.0; 
+	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 600.0;
 	}
       }
   }
 
   minreasonable = Units::ToUserDistance(minreasonable / 1.4);		// 1.4 for mapscale symbol
-  
+
   // return value in user distance units!!!
   if (ScaleListCount>0) {
     return FindMapScale(max(minreasonable,min(160.0,value)));		//maximum limit in user distance units!
@@ -44,7 +44,7 @@ double MapWindow::LimitMapScale(double value) {
 
 
 
-int MapWindow::GetMapResolutionFactor(void) { 
+int MapWindow::GetMapResolutionFactor(void) {
   return NIBLSCALE(30);
 }
 
@@ -71,7 +71,7 @@ double MapWindow::FindMapScale(double Value){
   int    BestFitIdx=-1;
   LKASSERT(DrawRect.right!=0);
   LKASSERT(GetMapResolutionFactor()!=0);
-  double DesiredScale = 
+  double DesiredScale =
     (Value*IBLSCALE(DrawRect.right))/GetMapResolutionFactor();
 
   LKASSERT(DesiredScale!=0);
@@ -125,7 +125,7 @@ void MapWindow::FillScaleListForEngineeringUnits(void)
       ScaleList[ScaleListCount++] = 50.0;
       ScaleList[ScaleListCount++] = 75.0;
       break;
-      
+
     case unStatuteMiles:
       ScaleListCount = 0;
       ScaleList[ScaleListCount++] = 50.0  * (0.0006214 / 3.281);		// to ft;
@@ -178,7 +178,7 @@ void MapWindow::FillScaleListForEngineeringUnits(void)
       ScaleList[ScaleListCount++] = 40.0;
       break;
   } //sw units
-  
+
   double scalefactor = (double)GetMapResolutionFactor() / (double)IBLSCALE(DrawRect.right) * 1.4;
   for (i=0; i<ScaleListCount; i++) ScaleList[i] /= scalefactor;
 }

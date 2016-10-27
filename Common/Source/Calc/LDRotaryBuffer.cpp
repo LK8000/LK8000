@@ -23,10 +23,10 @@ FILE *fp;
 
 	switch (AverEffTime) {
 		case ae3seconds:
-			bsize=3;	
+			bsize=3;
 			break;
 		case ae5seconds:
-			bsize=5;	
+			bsize=5;
 			break;
 		case ae10seconds:
 			bsize=10;
@@ -53,7 +53,7 @@ FILE *fp;
 			bsize=180;	// probably too long interval
 			break;
 		default:
-			bsize=3; // make it evident 
+			bsize=3; // make it evident
 			break;
 	}
 	//if (bsize <3 || bsize>MAXLDROTARYSIZE) return false;
@@ -76,7 +76,7 @@ FILE *fp;
 
 	Rotary_Speed=0;
 	Rotary_Distance=0;
-  return false; 
+  return false;
 }
 
 
@@ -113,7 +113,7 @@ FILE *fp;
 	if (ISCAR) {
 		goto _noautoreset;
 	}
-	
+
 	if (Calculated->Circling) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"Circling, ignore LDrotary\r\n");
@@ -170,18 +170,18 @@ _noautoreset:
         buf->prevaltitude = iround(Calculated->NavAltitude*100);
         return;
     }
-    
+
     int diffAlt = buf->prevaltitude - iround(Calculated->NavAltitude*100);
     buf->prevaltitude = iround(Calculated->NavAltitude*100);
 
-	if (++buf->start >=buf->size) { 
+	if (++buf->start >=buf->size) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"*** rotary reset and VALID=TRUE ++bufstart=%d >=bufsize=%d\r\n",buf->start, buf->size);
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
 		buf->start=0;
-		buf->valid=true; // flag for a full usable buffer 
+		buf->valid=true; // flag for a full usable buffer
 	}
         LKASSERT(buf->start>=0 && buf->start<MAXLDROTARYSIZE);
         if (buf->start<0 ||buf->start>=MAXLDROTARYSIZE) buf->start=0; // UNMANAGED RECOVERY!
@@ -194,7 +194,7 @@ _noautoreset:
 	}
 	buf->totaldistance+=iround(distance*100);
 	buf->distance[buf->start]=iround(distance*100);
-    
+
     buf->totalaltitude+=diffAlt;
 	buf->altitude[buf->start]=diffAlt;
 
@@ -213,7 +213,7 @@ _noautoreset:
 	}
 #ifdef DEBUG_ROTARY
 	sprintf(ventabuffer,"insert buf[%d/%d], distance=%d totdist=%d\r\n",buf->start, buf->size-1, buf->distance[buf->start], buf->totaldistance);
-	if ((fp=fopen("DEBUG.TXT","a"))!= NULL) 
+	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 		    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
 }
@@ -261,7 +261,7 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
 	}
 
 	ldrotary_s bc;
-  	memcpy(&bc, buf, sizeof(ldrotary_s));
+	memcpy(&bc, buf, sizeof(ldrotary_s));
 
 	if (bc.valid == false ) {
 		if (bc.start==0) {
@@ -286,7 +286,7 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
 		// if qnh is correct, while gps is generally accurate for the purpose.
 		avertas=averias*AirDensityRatio(AltitudeToQNEAltitude(Basic->Altitude));
 		// This is just to be sure we are not using an impossible part of the polar
-		if (avertas>(GlidePolar::Vminsink()-8.3) && (avertas>0)) { // minsink - 30km/h 
+		if (avertas>(GlidePolar::Vminsink()-8.3) && (avertas>0)) { // minsink - 30km/h
 
             Calculated->EqMc = GlidePolar::EquMC(averias);
 
@@ -322,7 +322,7 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
 		bcold=bc.start+1;
 	else
 		bcold=0;
-		
+
 	sprintf(ventabuffer,"bcstart=%d bcold=%d altnew=%d altold=%d altdiff=%d totaldistance=%d eff=%f\r\n",
 		bc.start, bcold,
 		bc.altitude[bc.start], bc.altitude[bcold], bc.totalaltitude, bc.totaldistance, eff);
@@ -348,7 +348,7 @@ short i;
 }
 
 void InsertRotaryBuffer(ifilter_s *buf, int value) {
-	if (++buf->start >=buf->size) { 
+	if (++buf->start >=buf->size) {
 		buf->start=0;
 	}
 	buf->array[buf->start]=value;
@@ -364,17 +364,17 @@ int FilterFast(ifilter_s *buf, int minvalue, int maxvalue) {
   float aver=0.0, oldaver, low=minvalue, high=maxvalue, cutoff;
 
   for (iter=0; iter<MAXITERFILTER; iter++) {
- 	 for (i=0, nc=0, s=0; i<bc.size; i++) {
+	 for (i=0, nc=0, s=0; i<bc.size; i++) {
 		val=&bc.array[i];
 		if (*val >=low && *val <=high) { s+=*val; nc++; }
 	  }
 	  if (nc==0) { aver=0.0; break; }
 	  oldaver=aver; aver=((float)s/nc);
- 	  //printf("Sum=%d count=%d Aver=%0.3f (old=%0.3f)\n",s,nc,aver,oldaver);
+	  //printf("Sum=%d count=%d Aver=%0.3f (old=%0.3f)\n",s,nc,aver,oldaver);
 	  if (oldaver==aver) break;
 	  cutoff=aver/50; // 2%
- 	  low=aver-cutoff;
- 	  high=aver+cutoff;
+	  low=aver-cutoff;
+	  high=aver+cutoff;
   }
   //printf("Found: aver=%d (%0.3f) after %d iterations\n",(int)aver, aver, iter);
   return ((int)aver);
@@ -394,7 +394,7 @@ int FilterRotary(ifilter_s *buf, int minvalue, int maxvalue) {
   high = maxvalue;
 
   for (iter=0; iter<MAXITERFILTER; iter++) {
- 	 for (i=0, nc=0, s=0,curs=bc.start; i<bc.size; i++) {
+	 for (i=0, nc=0, s=0,curs=bc.start; i<bc.size; i++) {
 
 		val=bc.array[curs];
 		if (val >=low && val <=high) {
@@ -408,11 +408,11 @@ int FilterRotary(ifilter_s *buf, int minvalue, int maxvalue) {
 		break;
 	  }
 	  aver=((float)s/nc);
- 	  //printf("Sum=%d count=%d Aver=%0.3f\n",s,nc,aver);
+	  //printf("Sum=%d count=%d Aver=%0.3f\n",s,nc,aver);
 
 	  cutoff=aver/50; // 2%
- 	  low=aver-cutoff;
- 	  high=aver+cutoff;
+	  low=aver-cutoff;
+	  high=aver+cutoff;
   }
 
   //printf("final: aver=%d\n",(int)aver);
@@ -429,10 +429,8 @@ main(int argc, char *argv[])
   int values[20] = { 140,121,134,119,116,118,121,122,120,124,119,117,116,130,122,119,110,118,120,121 };
   for (i=0; i<20; i++) InsertRotaryBuffer(&buf, values[i]);
   FilterFast(&buf, 70,200 );
-  buf.start=10; 
+  buf.start=10;
   for (i=0; i<20; i++) InsertRotaryBuffer(&buf, values[i]);
   FilterFast(&buf, 70,200 );
 }
 */
-
-

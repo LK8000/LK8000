@@ -130,5 +130,3 @@ bool CheckAlarms(unsigned short al) {
   return false;
 
 }
-
-

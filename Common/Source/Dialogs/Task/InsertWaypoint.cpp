@@ -21,7 +21,7 @@ void InsertWaypoint(int index, unsigned short append) {
     return;
 
   int i;
-  
+
   LockTaskData();
   TaskModified = true;
   TargetModified = true;
@@ -34,16 +34,16 @@ void InsertWaypoint(int index, unsigned short append) {
     UnlockTaskData();
     return;
   }
-  
+
   if (ValidTaskPoint(MAXTASKPOINTS-1)) {
     // No room for any more task points!
     MessageBoxX(
-	// LKTOKEN  _@M727_ = "Too many waypoints in task!" 
+	// LKTOKEN  _@M727_ = "Too many waypoints in task!"
       MsgToken(727),
-	// LKTOKEN  _@M357_ = "Insert Waypoint" 
+	// LKTOKEN  _@M357_ = "Insert Waypoint"
       MsgToken(357),
       mbOk);
-    
+
     UnlockTaskData();
     return;
   }
@@ -57,7 +57,7 @@ void InsertWaypoint(int index, unsigned short append) {
 		// to the right by one position
 		for (i=MAXTASKPOINTS-1; i>indexInsert; i--) {
 			Task[i] = Task[i-1];
-		}  
+		}
 		// Insert new point and update task details
 		ResetTaskWaypoint(indexInsert);
 		Task[indexInsert].Index = index;
@@ -81,7 +81,7 @@ void InsertWaypoint(int index, unsigned short append) {
 				Task[i].Index = index;
 				break;
 			}
-		}  
+		}
 		break;
 
 	// append 2 = add after finish
@@ -92,7 +92,7 @@ void InsertWaypoint(int index, unsigned short append) {
 				Task[i+1].Index = index;
 				break;
 			}
-		}  
+		}
 		break;
 
 	default:
@@ -104,5 +104,5 @@ void InsertWaypoint(int index, unsigned short append) {
 
   RefreshTask();
   UnlockTaskData();
-  
+
 }

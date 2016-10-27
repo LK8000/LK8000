@@ -28,8 +28,8 @@ public:
   inline  bool IsDisabled() {
     return (ImageBuffer == NULL);
   }
-  bool GetField(unsigned int x, unsigned int y, 
-                short *theight); 
+  bool GetField(unsigned int x, unsigned int y,
+                short *theight);
   inline short* GetImageBuffer() {
     return ImageBuffer;
   }
@@ -56,7 +56,7 @@ public:
 private:
   bool initialised;
   bool loaded_one;
-private:  
+private:
   int view_x;
   int view_y;
   RasterTile tiles[MAX_RTC_TILES];
@@ -67,7 +67,7 @@ private:
   unsigned int width, height;
 public:
   bool GetScanType(void);
-  short GetField(unsigned int lx, 
+  short GetField(unsigned int lx,
                  unsigned int ly);
   void LoadJPG2000(const wchar_t* jp2_filename);
   bool GetInitialised(void);
@@ -78,7 +78,7 @@ public:
   short* GetOverview(void);
   void SetSize(int width, int height);
   short* GetImageBuffer(int index);
-  void SetLatLonBounds(double lon_min, double lon_max, 
+  void SetLatLonBounds(double lon_min, double lon_max,
                        double lat_min, double lat_max);
   void SetTile(int index, int xstart, int ystart, int xend, int yend);
   bool PollTiles(int x, int y);

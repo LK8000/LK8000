@@ -133,10 +133,10 @@ void dlgMultimapsShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap1"));
   if (wp) Multimap1 = (wp->GetDataField()->GetAsInteger());
- 
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap2"));
   if (wp) Multimap2 = (wp->GetDataField()->GetAsInteger());
- 
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap3"));
   if (wp) Multimap3 = (wp->GetDataField()->GetAsInteger());
 
@@ -149,4 +149,3 @@ void dlgMultimapsShowModal(void){
   wf = NULL;
 
 }
-

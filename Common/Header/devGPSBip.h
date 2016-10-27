@@ -2,7 +2,7 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   devGPSBip.h
  * Author: Bruno de Lacheisserie
  *
@@ -15,4 +15,3 @@
 BOOL GPSBipRegister(void);
 
 #endif	/* DEVGPSBIP_H */
-

@@ -17,14 +17,13 @@ class WndCtrlBase :public WndPaint {
 public:
     WndCtrlBase(const TCHAR* szName);
     ~WndCtrlBase();
-    
+
     const TCHAR* GetWndName() const {
         return _szWindowName.c_str();
     }
-    
-protected:    
+
+protected:
     tstring _szWindowName;
 };
 
 #endif	/* _WIN32_WNDCTRLBASE_H */
-

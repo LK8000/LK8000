@@ -8,13 +8,13 @@
 
 #ifndef	DEVCAIGPSNAV_H
 #define	DEVCAIGPSNAV_H
- 
+
 #include "devBase.h"
 
 
 /**
  * @brief CAI GPS-Nav device class
- * 
+ *
  * Class provides support for Cambridge GPS-Nav IGC certifed logger.
  */
 class CDevCAIGpsNav : public DevBase
@@ -24,7 +24,7 @@ class CDevCAIGpsNav : public DevBase
   static BOOL Init(DeviceDescriptor_t *d);
   static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
   static BOOL Install(PDeviceDescriptor_t d);
-  
+
 public:
   static bool Register();
 };

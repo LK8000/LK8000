@@ -207,7 +207,7 @@ void Globals_Init(void) {
   WasFlying = false;
 
   LastDoRangeWaypointListTime=0;
-  DeviceNeedClipping=false; // forcing extensive clipping 
+  DeviceNeedClipping=false; // forcing extensive clipping
 
   EnableAutoBacklight=true;
   EnableAutoSoundVolume=true;
@@ -290,8 +290,8 @@ void Globals_Init(void) {
   WpHome_Lon=0;
 
   // Name of nearest wp to takeoff and landings
-  _tcscpy(TAKEOFFWP_Name,_T("")); 
-  _tcscpy(LANDINGWP_Name,_T("")); 
+  _tcscpy(TAKEOFFWP_Name,_T(""));
+  _tcscpy(LANDINGWP_Name,_T(""));
 
   // Number of Thermals updated from DoThermalHistory
   LKNumThermals=0;
@@ -414,7 +414,7 @@ void Globals_Init(void) {
   AirspaceWarningVerticalMargin = 1000;       // vertical distance used to calculate too close condition , in m*10
   AirspaceWarningDlgTimeout = 10;             // airspace warning dialog auto closing in x secs
   AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
-  AirspaceAckAllSame = 0; 
+  AirspaceAckAllSame = 0;
 
   SnailNext = 0;
   LongSnailNext = 0;
@@ -484,7 +484,7 @@ void Globals_Init(void) {
   TrailActive_Config = 1; // long
   DisableAutoLogger = false;
   LiveTrackerInterval = 0;
-  
+
   IGCWriteLock=false; // workaround, but not a real solution
 
   AutoWindMode_Config= D_AUTOWIND_CIRCLING;
@@ -581,7 +581,7 @@ void Globals_Init(void) {
   LockSettingsInFlight = false;
   LoggerShortName = false;
 
-  /* 
+  /*
    * These tables are initialized by InitSineTable later than Globals here
   COSTABLE[4096];
   SINETABLE[4096];
@@ -648,7 +648,7 @@ void Globals_Init(void) {
 
 
 
-  // ^ ADD NEW GLOBALS up here ^ 
+  // ^ ADD NEW GLOBALS up here ^
   // ---------------------------
 
 }
@@ -666,5 +666,3 @@ void Reset_CustomMenu(void) {
 	CustomMenu9  = ckDisabled;			// Landscape> 1st top left
 	CustomMenu10 = ckDisabled;
 }
-
-

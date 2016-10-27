@@ -25,14 +25,14 @@ void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
   ScaleYFromData(rc, &flightstats.Altitude);
   ScaleYFromValue(rc, 0);
   ScaleXFromValue(rc, 1.2f*(flightstats.Altitude.x_min+1.0)); // in case no data
-  ScaleXFromValue(rc, flightstats.Altitude.x_min); 
+  ScaleXFromValue(rc, flightstats.Altitude.x_min);
 
   if((ISCAR && INVERTCOLORS)  || IsDithered())
 	RenderSky( Surface,   rc, SKY_HORIZON_COL , SKY_SPACE_COL, GC_NO_COLOR_STEPS );
 
   for(int j=1;j<MAXTASKPOINTS;j++) {
     if (ValidTaskPoint(j) && (flightstats.LegStartTime[j]>=0)) {
-      double xx = 
+      double xx =
         (flightstats.LegStartTime[j]-CALCULATED_INFO.TakeOffTime)/3600.0;
       if (xx>=0) {
         DrawLine(Surface, rc,
@@ -86,4 +86,3 @@ void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
 //  DrawYLabel(hdc, rc, TEXT("h"));
 
 }
-

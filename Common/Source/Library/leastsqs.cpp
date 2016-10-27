@@ -24,7 +24,7 @@
 #include "LKAssert.h"
 #include <math.h>
 
-/* 
+/*
 Least squares fit:
 
 y = b0 + b1x
@@ -103,16 +103,16 @@ void LeastSquares::least_squares_update() {
   double denom = (sum_weights * sum_xi_2 - sum_xi * sum_xi);
 
   if (fabs(denom)>0.0) {
-    m = ( sum_weights * sum_xi_yi - sum_xi * sum_yi ) / 
+    m = ( sum_weights * sum_xi_yi - sum_xi * sum_yi ) /
       denom;
   } else {
     m = 0.0;
-  }	
+  }
   LKASSERT(sum_weights!=0);
   b = (sum_yi - m*sum_xi) / sum_weights;
-  
+
   y_ave = m*(x_max+x_min)/2.0+b;
-    
+
 }
 
 
@@ -135,7 +135,7 @@ void LeastSquares::least_squares_error_update() {
 }
 
 
-/* 
+/*
   return the least squares error:
 
               (y[i] - y_hat[i])^2
@@ -143,10 +143,8 @@ void LeastSquares::least_squares_error_update() {
                       n
  */
 
-/* 
+/*
   return the maximum least squares error:
 
               (y[i] - y_hat[i])^2
  */
-
-

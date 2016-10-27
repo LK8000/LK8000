@@ -42,7 +42,7 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
   short contenttop=rc.top+NIBLSCALE(50);
 
   TextDisplayMode.Color = RGB_BLACK;
-  TextDisplayMode.NoSetFont = 1; 
+  TextDisplayMode.NoSetFont = 1;
   //TextDisplayMode.AlligneRight = 0;
   TextDisplayMode.AlligneCenter = 1;
   TextDisplayMode.WhiteBold = 1;
@@ -72,5 +72,3 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
   return;
 }
 #endif
-
-

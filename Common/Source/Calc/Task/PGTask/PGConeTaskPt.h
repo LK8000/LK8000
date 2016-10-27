@@ -2,7 +2,7 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- *  
+ *
  * File:   PGConeTaskPt.h
  * Author: Bruno de Lacheisserie
  *
@@ -19,7 +19,7 @@ class PGConeTaskPt : public PGCicrcleTaskPt {
 public:
     PGConeTaskPt();
     virtual ~PGConeTaskPt();
-    
+
     virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt);
     virtual void UpdateTaskPoint(TASK_POINT& TskPt ) const;
 
@@ -32,4 +32,3 @@ protected:
 };
 
 #endif	/* PGCONETASKPT_H */
-

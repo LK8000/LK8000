@@ -33,7 +33,7 @@ void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
   for (i=0; i<numsteps ; i++) {
 
     h = (flightstats.Altitude_Ceiling.y_max-flightstats.Altitude_Base.y_min)*
-      i/(double)(numsteps-1)+flightstats.Altitude_Base.y_min; 
+      i/(double)(numsteps-1)+flightstats.Altitude_Base.y_min;
 
     wind = windanalyser->windstore.getWind(GPS_INFO.Time, h, &found);
     mag = sqrt(wind.x*wind.x+wind.y*wind.y);
@@ -128,6 +128,3 @@ void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
  // DrawYLabel(hdc, rc, TEXT("h"));
 
 }
-
-
-

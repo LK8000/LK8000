@@ -70,7 +70,7 @@ WindAnalyser::WindAnalyser() : minVector(), maxVector()
   circleDeg = 0;
   lastHeading = 0;
   pastHalfway=false;
-  
+
   minSatCnt = 1; // JMW conf->getWindMinSatCount();
   curModeOK=false;
 }
@@ -93,34 +93,34 @@ void WindAnalyser::slot_newSample(NMEA_INFO *nmeaInfo,
 
 
   Vector curVector;
-  
+
   bool fullCircle=false;
 
   //circledetection
   if( lastHeading )
     {
       int diff= (int)nmeaInfo->TrackBearing - lastHeading;
-      
+
       if( diff > 180 )
         diff -= 360;
       if( diff < -180 )
         diff += 360;
-      
+
       diff = abs(diff);
       circleDeg += diff;
     }
   lastHeading = (int)nmeaInfo->TrackBearing;
-  
+
   if(circleDeg >= 360 )
     {
       //full circle made!
-      
+
       fullCircle=true;
       circleDeg = 0;
       circleCount++;  //increase the number of circles flown (used
       //to determine the quality)
     }
-  
+
   curVector.x= nmeaInfo->Speed*cos(nmeaInfo->TrackBearing*3.14159/180.0);
   curVector.y= nmeaInfo->Speed*sin(nmeaInfo->TrackBearing*3.14159/180.0);
 
@@ -134,38 +134,38 @@ void WindAnalyser::slot_newSample(NMEA_INFO *nmeaInfo,
     // or use circular buffer
   }
 
-  if ((nmeaInfo->Speed< Magnitude(minVector))||first) 
+  if ((nmeaInfo->Speed< Magnitude(minVector))||first)
     {
       minVector.x = curVector.x; minVector.y = curVector.y;
     }
-  if ((nmeaInfo->Speed> Magnitude(maxVector))||first) 
+  if ((nmeaInfo->Speed> Magnitude(maxVector))||first)
     {
       maxVector.x = curVector.x; maxVector.y = curVector.y;
     }
-  
+
   if (fullCircle) { //we have completed a full circle!
     if (numwindsamples<MAXWINDSAMPLES-1) {
       _calcWind(nmeaInfo, derivedInfo);    //calculate the wind for
                                            //this circle, only if it
                                            //is valid
-    } 
+    }
     fullCircle=false;
-    
+
     // should set each vector to average
     Vector v;
     v.x = (maxVector.x-minVector.x)/2;
     v.y = (maxVector.y-minVector.y)/2;
-    
+
     minVector.x = v.x; minVector.y = v.y;
     maxVector.x = v.x; maxVector.y = v.y;
-    
+
     first = true;
     numwindsamples = 0;
 
     if (startcircle>1) {
       startcircle--;
     }
-    
+
     if (startcircle==1) {
       climbstartpos.x = nmeaInfo->Longitude;
       climbstartpos.y = nmeaInfo->Latitude;
@@ -175,10 +175,10 @@ void WindAnalyser::slot_newSample(NMEA_INFO *nmeaInfo,
     climbendpos.x = nmeaInfo->Longitude;
     climbendpos.y = nmeaInfo->Latitude;
     climbendtime = nmeaInfo->Time;
-    
+
     //no need to reset fullCircle, it will automaticly be reset in the next itteration.
-  } 
-  
+  }
+
   first = false;
   windstore.slot_Altitude(nmeaInfo, derivedInfo);
 }
@@ -303,7 +303,7 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
       jmin = j;
     }
   }
-  
+
   if(jmin<0 || jmax<0) {
       return;
   }
@@ -314,7 +314,7 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
   minVector = windsamples[jmin].v;
 
   // attempt to fit cycloid
-  
+
   double phase;
   double mag = 0.5*(windsamples[jmax].mag - windsamples[jmin].mag);
   double wx, wy;
@@ -386,5 +386,3 @@ void WindAnalyser::slot_newEstimate(NMEA_INFO *nmeaInfo,
 
   windstore.slot_measurement(nmeaInfo, derivedInfo, a, quality);
 }
-
-

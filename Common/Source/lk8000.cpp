@@ -112,10 +112,10 @@ Poco::NamedMutex Mutex("LOCK8000");
 //
 // -1	for init instance error
 // -2	for mutex error return
-// 
+//
 //  111 for normal program termination with automatic relaunch, if using lkrun
 //  222 for normal program termination, with request to quit lkrun if running
-// 
+//
 //  259 is reserved by OS (STILL_ACTIVE) status
 #ifdef WIN32
 HINSTANCE _hInstance;
@@ -133,21 +133,21 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #endif
 {
     (void)hPrevInstance;
-    
+
     _hInstance = hInstance; // this need to be first, always !
 #ifndef UNDER_CE
     const TCHAR* szCmdLine = GetCommandLine();
 #endif
-    
+
 #else
 int main(int argc, char *argv[]) {
-  
+
   std::string strCmdLine("");
   for (int i=1;i<argc;i++) {
     strCmdLine.append(std::string(argv[i]).append(" "));
   }
   const TCHAR* szCmdLine = strCmdLine.c_str();
-  
+
 #endif
 
   // use mutex to avoid multiple instances of lk8000 be running
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("KOBO"),NEWLINE);
 #elif defined(__linux__)
   StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
- 
+
   struct utsname sysinfo = {};
   if(uname(&sysinfo) == 0) {
     StartupStore(". System Name:    %s %s" NEWLINE, sysinfo.sysname, sysinfo.nodename);
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
     StartupStore(". Kernel Build:   %s" NEWLINE, sysinfo.version);
     StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
   }
-  
+
 #elif defined(PNA)
   StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PNA"),NEWLINE);
 #elif defined(UNDER_CE)
@@ -188,13 +188,13 @@ int main(int argc, char *argv[]) {
   #if TESTBENCH
     #ifdef __GNUC__
         #ifdef __MINGW32__
-          StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"), 
-                  __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION, 
-                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, 
+          StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"),
+                  __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION,
+                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
                   NEWLINE);
         #else
-          StartupStore(TEXT(". Built with GCC %d.%d.%d %s"), 
-                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, 
+          StartupStore(TEXT(". Built with GCC %d.%d.%d %s"),
+                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
                   NEWLINE);
 
         #endif
@@ -272,10 +272,10 @@ int main(int argc, char *argv[]) {
 
   std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
 
-  
+
   // This is needed otherwise LKSound will be silent until we init Globals.
   EnableSoundModes=true;
- 
+
   bool realexitforced=false;
 
   LKSound(_T("LK_CONNECT.WAV"));
@@ -300,7 +300,7 @@ int main(int argc, char *argv[]) {
   LKRunStartEnd(true);
   // END OF PRELOAD, PROGRAM GO!
 
-  #ifdef PNA 
+  #ifdef PNA
     // At this point we still havent loaded profile. Loading profile will also reload registry.
     // If registry was deleted in PNA, model type is not configured. It is configured in profile, but
     // it is too early here. So no ModelType .
@@ -311,7 +311,7 @@ int main(int argc, char *argv[]) {
         LoadModelFromProfile();
     }
   #endif
-  
+
   bool datadir = CheckDataDir();
   if (!datadir) {
     // we cannot call startupstore, no place to store log!
@@ -325,7 +325,7 @@ int main(int argc, char *argv[]) {
   StartupStore(_T(". Program data directory is <%s>") NEWLINE,LKGetLocalPath());
   #endif
 
-  InstallSystem(); 
+  InstallSystem();
 
   // These directories are needed if missing, as LK can run also with no maps and no waypoints..
   CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
@@ -354,15 +354,15 @@ int main(int argc, char *argv[]) {
     StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
     return -1;
   }
-  
+
 #ifdef RADIO_ACTIVE
   memset( &(RadioPara), 0, sizeof(Radio_t));
   RadioPara.Volume = 6;
   RadioPara.Squelch = 3;
   RadioPara.Vox = 5;
   RadioPara.Enabled = false; //devIsRadio(devA()) || devIsRadio(devB());
-#endif  // RADIO_ACTIVE        
-  
+#endif  // RADIO_ACTIVE
+
   // Initialise main blackboard data
 
   memset( &(Task), 0, sizeof(Task_t));
@@ -410,7 +410,7 @@ int main(int argc, char *argv[]) {
   GPS_INFO.Day = pda_time->tm_mday;
   GPS_INFO.Hour  = pda_time->tm_hour;
   GPS_INFO.Minute = pda_time->tm_min;
-  GPS_INFO.Second = pda_time->tm_sec;  
+  GPS_INFO.Second = pda_time->tm_sec;
 
   CalculateNewPolarCoef();
   GlidePolar::SetBallast();
@@ -418,7 +418,7 @@ int main(int argc, char *argv[]) {
 #ifdef PNA // VENTA-ADDON
     TCHAR sTmp[250];
 	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
-	CreateProgressDialog(sTmp); 
+	CreateProgressDialog(sTmp);
 
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
@@ -451,7 +451,7 @@ int main(int argc, char *argv[]) {
     CreateProgressDialog(MsgToken(1213));
   }
 #endif
-  
+
   // this should work ok for all pdas as well
   if ( SetSoundVolume() == true ) {
     // LKTOKEN _@M1214_ "AUTOMATIC SOUND LEVEL CONTROL"
@@ -467,7 +467,7 @@ int main(int argc, char *argv[]) {
 
   ReadWayPoints();
   StartupStore(_T(". LOADED %d WAYPOINTS + %u virtuals%s"),(unsigned)WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
-  InitLDRotary(&rotaryLD); 
+  InitLDRotary(&rotaryLD);
   InitWindRotary(&rotaryWind); // 100103
   MapWindow::zoom.Reset();
   InitLK8000();
@@ -533,22 +533,22 @@ int main(int argc, char *argv[]) {
   CDevCProbe::Register();
   BlueFlyRegister();
   LXV7easyRegister();
-  DevLXNanoIII::Register();  
+  DevLXNanoIII::Register();
   XCTracerRegister();
   GPSBipRegister ();
-#ifdef RADIO_ACTIVE  
+#ifdef RADIO_ACTIVE
   PVCOMRegister();
   KRT2Register();
-#endif  // RADIO_ACTIVE        
-    
+#endif  // RADIO_ACTIVE
+
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<
-  // or you get an assertion error in device.cpp 
+  // or you get an assertion error in device.cpp
 
   ComCheck_Init();
   // we need devInit for all devices. Missing initialization otherwise.
-  devInit(); 
+  devInit();
 
   LiveTrackerInit();
 
@@ -623,11 +623,11 @@ int main(int argc, char *argv[]) {
   MainWindow.RunModalLoop();
 
 _Shutdown:
-  
+
   MainWindow.Destroy();
   Message::Destroy();
 
-  DeInitLKFonts();  
+  DeInitLKFonts();
   LKObjects_Delete();
   LKUnloadProfileBitmaps();
   LKUnloadFixedBitmaps();
@@ -636,9 +636,9 @@ _Shutdown:
   InputEvents::UnloadString();
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
-  
+
   Mutex.unlock();
-  
+
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated, realexitforced=%d%s"),realexitforced,NEWLINE);
   #endif
@@ -655,8 +655,8 @@ _Shutdown:
     KoboPowerOff();
 #endif
   }
-#endif  
-  
+#endif
+
   if (realexitforced) return 222;
   else return 111;
 }

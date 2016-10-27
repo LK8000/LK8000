@@ -29,7 +29,7 @@ MapWindow::Zoom::Zoom():
 }
 
 
-/** 
+/**
  * @brief Sets requested zoom scale for TARGET_PAN mode
  */
 void MapWindow::Zoom::CalculateTargetPanZoom()
@@ -39,15 +39,15 @@ void MapWindow::Zoom::CalculateTargetPanZoom()
 }
 
 
-/** 
+/**
  * @brief Sets requested zoom scale for AUTO_ZOOM mode
  */
 void MapWindow::Zoom::CalculateAutoZoom()
 {
   static int autoMapScaleTaskIndex = -1;
   static int wait_for_new_wpt_distance = 0;
-  double wpd = DerivedDrawInfo.ZoomDistance; 
-  
+  double wpd = DerivedDrawInfo.ZoomDistance;
+
   if (wait_for_new_wpt_distance>0) wait_for_new_wpt_distance--;		//This counter is needed to get new valid waypoint distance after wp changes
   if ( (wpd > 0) && (wait_for_new_wpt_distance==0) ) {
     double AutoZoomFactor;
@@ -58,7 +58,7 @@ void MapWindow::Zoom::CalculateAutoZoom()
       AutoZoomFactor = 2.5;
     else
       AutoZoomFactor = 4;
-    
+
     if ( ( !ISPARAGLIDER && (wpd < AutoZoomFactor * _scaleOverDistanceModify) ) ||
 	 ( ISPARAGLIDER  && (wpd < PGAutoZoomThreshold)) ) {
       // waypoint is too close, so zoom in
@@ -66,14 +66,14 @@ void MapWindow::Zoom::CalculateAutoZoom()
       _modeScale[SCALE_CRUISE] = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
     }
   }
-  
+
   LockTaskData();  // protect from external task changes
     // if we aren't looking at a waypoint, see if we are now
     if(autoMapScaleTaskIndex == -1) {
       if(ValidTaskPoint(ActiveTaskPoint))
         autoMapScaleTaskIndex = ActiveTaskPoint;
     }
-    
+
     if(ValidTaskPoint(ActiveTaskPoint)) {
       // if the current zoom focused waypoint has changed...
       if(autoMapScaleTaskIndex != ActiveTaskPoint) {
@@ -114,20 +114,20 @@ double MapWindow::Zoom::GetPgCruiseZoomInitValue(int parameter_number) const
     case 2: return 0.10;
     case 3: return 0.15;
     case 4: return 0.20;
-    case 5: return 0.35; 
-    case 6: return 0.50; 
-    case 7: return 0.75; 
-    case 8: return 1.00; 
+    case 5: return 0.35;
+    case 6: return 0.50;
+    case 7: return 0.75;
+    case 8: return 1.00;
     case 9: return 1.50;
     case 10: return 2.00;
     case 11: return 3.50;
     case 12: return 5.00;
     case 13: return 7.50;
     case 14: return 10.00;
-    default: return 0.35; 
+    default: return 0.35;
   }
 }
-/** 
+/**
  * @brief Resets Map Zoom to initial values
  */
 void MapWindow::Zoom::Reset()
@@ -139,14 +139,14 @@ void MapWindow::Zoom::Reset()
     _modeScale[SCALE_CIRCLING] = SCALE_CIRCLING_INIT;
     _modeScale[SCALE_PANORAMA] = SCALE_PANORAMA_INIT;
     break;
-    
+
   case umParaglider:
   case umCar:
     _modeScale[SCALE_CRUISE]   = GetPgCruiseZoomInitValue(PGCruiseZoom);
     _modeScale[SCALE_CIRCLING] = GetPgClimbZoomInitValue(PGClimbZoom);
     _modeScale[SCALE_PANORAMA] = SCALE_PG_PANORAMA_INIT;
     break;
-    
+
   default:
     // make it an evident problem
     _modeScale[SCALE_CRUISE] = _modeScale[SCALE_CIRCLING] = _modeScale[SCALE_PANORAMA] = SCALE_INVALID_INIT;
@@ -162,25 +162,25 @@ void MapWindow::Zoom::Reset()
 
   if(_autoZoom)
     _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
-  
+
   _requestedScale = &_modeScale[SCALE_CRUISE];
   _scale = *_requestedScale;
   _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
   _realscale = *_requestedScale/DISTANCEMODIFY/1000;
-  
+
   _inited = true;
   SwitchMode();
 }
 
 
-/** 
+/**
  * @brief Assigns proper zoom ratio for new Display Mode
  */
 void MapWindow::Zoom::SwitchMode()
 {
   if(!_inited)
     return;
-  
+
   if((mode._mode & Mode::MODE_TARGET_PAN) && !(mode._lastMode & Mode::MODE_TARGET_PAN)) {
     // TARGET_PAN enabled
     _requestedScale = &_modeScale[SCALE_TARGET_PAN];
@@ -194,9 +194,9 @@ void MapWindow::Zoom::SwitchMode()
     if(!(mode._lastMode & Mode::MODE_PAN))
       // PAN enabled - use current map scale if PAN enabled
       _modeScale[SCALE_PAN] = *_requestedScale;
-    
+
     _requestedScale = &_modeScale[SCALE_PAN];
-    
+
     // do not change zoom for other mode changes while in PAN mode
     return;
   }
@@ -214,20 +214,20 @@ void MapWindow::Zoom::SwitchMode()
     }
     else {
       _requestedScale = &_modeScale[SCALE_CRUISE];
-      
+
       if(_autoZoom)
         CalculateAutoZoom();
     }
   }
   *_requestedScale = LimitMapScale(*_requestedScale);
-  
+
   RefreshMap();
 }
 
 
-/** 
+/**
  * @brief Switches AutoZoom state
- * 
+ *
  * @param vswitch Switch value:
  *               - -1 - switch current state
  *               -  0 - disable
@@ -240,19 +240,19 @@ void MapWindow::Zoom::EventAutoZoom(int vswitch)
     _autoZoom = !_autoZoom;
   else
     _autoZoom = vswitch;
-  
+
   if(_autoZoom)
     // backup current zoom
     _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
-  
+
   if(_autoZoom != lastAutoZoom)
     SwitchMode();
 }
 
 
-/** 
+/**
  * @brief Sets provided value as current zoom
- * 
+ *
  * @param value zoom ratio to set
  */
 void MapWindow::Zoom::EventSetZoom(double value)
@@ -265,9 +265,9 @@ void MapWindow::Zoom::EventSetZoom(double value)
 }
 
 
-/** 
+/**
  * @brief Modifies current zoom ratio
- * 
+ *
  * @param vswitch Modifier value:
  */
 void MapWindow::Zoom::EventScaleZoom(int vswitch)
@@ -289,7 +289,7 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
     DoStatusMessage(MsgToken(857)); // AutoZoom OFF
     _autoZoom = false;
   }
-  
+
   // For best results, zooms should be multiples or roots of 2
   double value = *_requestedScale;
   if(ScaleListCount > 0) {
@@ -324,13 +324,13 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
 }
 
 
-/** 
+/**
  * @brief Updates current map scale
  */
 void MapWindow::Zoom::UpdateMapScale()
 {
   static bool pg_autozoom_turned_on = false;
-  
+
   if(mode.Is(Mode::MODE_TARGET_PAN)) {
     // update TARGET_PAN
     CalculateTargetPanZoom();
@@ -338,8 +338,8 @@ void MapWindow::Zoom::UpdateMapScale()
       ModifyMapScale();
     return;
   }
-  
-  // in PG mode if autozoom is set to on, and waypoint distance drops below 
+
+  // in PG mode if autozoom is set to on, and waypoint distance drops below
   // PGAutoZoomThreshold, we should turn on autozoom if it is off. Do this only once, let the user able to turn it off near WP
   if ( ISPARAGLIDER && AutoZoom_Config && !_autoZoom && (DerivedDrawInfo.ZoomDistance>0) && (DerivedDrawInfo.ZoomDistance < PGAutoZoomThreshold)) {
     if (!pg_autozoom_turned_on) {
@@ -361,14 +361,14 @@ void MapWindow::Zoom::UpdateMapScale()
       ModifyMapScale();
     return;
   }
-  
+
   // if there is user intervention in the scale
   if(_scale != *_requestedScale)
     ModifyMapScale();
 }
 
 
-/** 
+/**
  * @brief Recalculates zoom parameters
  */
 
@@ -395,7 +395,7 @@ void MapWindow::Zoom::ModifyMapScale()
 bool MapWindow::Zoom::GetPgClimbInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
 {
   double mapscale = GetPgClimbZoomInitValue(init_parameter);
- 
+
   // Get nearest discrete value
   double ms = MapWindow::FindMapScale(mapscale/1.4)*1.4;
   return Units::FormatUserMapScale(NULL, Units::ToSysDistance(ms), out, size);
@@ -404,9 +404,8 @@ bool MapWindow::Zoom::GetPgClimbInitMapScaleText(int init_parameter, TCHAR *out,
 bool MapWindow::Zoom::GetPgCruiseInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
 {
   double mapscale = GetPgCruiseZoomInitValue(init_parameter);
- 
+
   // Get nearest discrete value
   double ms = MapWindow::FindMapScale(mapscale/1.4)*1.4;
   return Units::FormatUserMapScale(NULL, Units::ToSysDistance(ms), out, size);
 }
-

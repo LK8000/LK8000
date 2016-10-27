@@ -16,15 +16,14 @@
 class WndPaint : public Window {
 public:
     WndPaint(CONST WNDCLASS* wcx = NULL) : Window(wcx) {
-        
+
     }
 
 protected:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) = 0;
-    
-  	virtual LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	virtual LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 };
 
 #endif	/* WNDPAINT_H */
-

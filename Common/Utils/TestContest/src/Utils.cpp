@@ -106,7 +106,7 @@ void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
 	cur_lon2=lon2;
   }
 #endif
-   
+
 
   lat1 *= DEG_TO_RAD;
   lat2 *= DEG_TO_RAD;

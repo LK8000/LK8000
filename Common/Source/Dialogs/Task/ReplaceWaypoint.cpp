@@ -31,7 +31,7 @@ void ReplaceWaypoint(int index) {
   } else {
 	// 130206 this is no more called, normally, because we filter out this condition
 	// in dlgWayPointDetails..
-    
+
     // Insert a new waypoint since there's
     // nothing to replace
     ActiveTaskPoint=0;
@@ -41,4 +41,3 @@ void ReplaceWaypoint(int index) {
   RefreshTask();
   UnlockTaskData();
 }
-

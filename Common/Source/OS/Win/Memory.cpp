@@ -15,8 +15,8 @@ size_t CheckFreeRam(void) {
   memInfo.dwLength = sizeof(memInfo);
   GlobalMemoryStatus(&memInfo);
 
-  //	   memInfo.dwTotalPhys, 
-  //	   memInfo.dwAvailPhys, 
+  //	   memInfo.dwTotalPhys,
+  //	   memInfo.dwAvailPhys,
   //	   memInfo.dwTotalPhys- memInfo.dwAvailPhys);
 
   return memInfo.dwAvailPhys;
@@ -29,15 +29,15 @@ unsigned long CheckMaxHeapBlock(void) {
     // return NULL which heap checker recognizes as an error and will terminate
     // program immediately when configured so (can be confusing for developer)
     return(0xFFFFFFFF);
-  #else  
+  #else
     // try allocate maximum block (of course on PC with disk swapping, we will not
     // try maximum block, function just returns something near to initial top value)
     size_t top = 100*1024*1024; // start with 100MB/2
     size_t btm = 0;
-    
+
     void*  addr;
     size_t size;
-    
+
     while ((size = (btm + top) / 2) != 0) { // ~ btm + (top - btm) / 2
       addr = malloc(size);
       if (addr == NULL)
@@ -49,7 +49,7 @@ unsigned long CheckMaxHeapBlock(void) {
         btm = size;
       }
     }
-    
+
     return(0);
   #endif
 }
@@ -90,7 +90,7 @@ void MemLeakCheck() {
 }
 
 
-// This is necessary to be called periodically to get rid of 
+// This is necessary to be called periodically to get rid of
 // memory defragmentation, since on pocket pc platforms there is no
 // automatic defragmentation.
 void MyCompactHeaps() {
@@ -102,7 +102,7 @@ void MyCompactHeaps() {
   static bool init=false;
   if (!init) {
     // get the pointer to the function
-    CompactAllHeaps = (CompactAllHeapsFn) 
+    CompactAllHeaps = (CompactAllHeapsFn)
       GetProcAddress(LoadLibrary(_T("coredll.dll")),
 		     _T("CompactAllHeaps"));
     init=true;
@@ -123,7 +123,7 @@ unsigned long FindFreeSpace(const TCHAR *path) {
   #if TESTBENCH
   StartupStore(_T("... FindFreeSpace <%s> start\n"),path);
   #endif
-  if (GetDiskFreeSpaceEx(path, 
+  if (GetDiskFreeSpaceEx(path,
 			 &FreeBytesAvailableToCaller,
 			 &TotalNumberOfBytes,
 			 &TotalNumberOfFreeBytes)) {
@@ -139,5 +139,3 @@ unsigned long FindFreeSpace(const TCHAR *path) {
     return 0;
   }
 }
-
-

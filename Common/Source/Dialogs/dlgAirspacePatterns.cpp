@@ -33,14 +33,14 @@ static void OnAirspacePatternsPaintListItem(WindowControl * Sender, LKSurface& S
         Surface.SelectObject(LKBrush_White);
         Surface.SelectObject(LK_BLACK_PEN);
         Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-         
+
         Surface.SelectObject(MapWindow::GetAirspaceBrush(DrawListIndex));
         Surface.SetTextColor(LKColor(0x00, 0x00, 0x00));
         Surface.Rectangle(100 * ScreenScale, 2 * ScreenScale, 180 * ScreenScale, 22 * ScreenScale);
     }
 }
 
-static void OnAirspacePatternsListEnter(WindowControl * Sender, 
+static void OnAirspacePatternsListEnter(WindowControl * Sender,
 				WndListFrame::ListInfo_t *ListInfo) {
   (void)Sender;
   ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
@@ -58,7 +58,7 @@ static void OnAirspacePatternsListEnter(WindowControl * Sender,
 }
 
 
-static void OnAirspacePatternsListInfo(WindowControl * Sender, 
+static void OnAirspacePatternsListInfo(WindowControl * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
   (void)Sender;
   if (ListInfo->DrawIndex == -1){
@@ -81,7 +81,7 @@ static void OnCloseClicked(WndButton* pWnd){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-#ifdef HAVE_HATCHED_BRUSH     
+#ifdef HAVE_HATCHED_BRUSH
   OnPaintCallbackEntry(OnAirspacePatternsPaintListItem),
 #endif
   OnListCallbackEntry(OnAirspacePatternsListInfo),

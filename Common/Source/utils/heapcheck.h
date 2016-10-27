@@ -21,5 +21,5 @@
 #ifdef HC_DUMA
   #include "../../../../duma/duma.h"
 #endif
-  
+
 #endif /* __heapcheck_h__ */

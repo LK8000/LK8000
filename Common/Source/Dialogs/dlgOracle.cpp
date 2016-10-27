@@ -70,11 +70,11 @@ void dlgOracleShowModal(void){
   SHOWTHREAD(_T("dlgOracleShowModal"));
 
   wf=NULL;
- 
+
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ORACLE_L : IDR_XML_ORACLE_P);
 
   if (!wf) return;
-  MapWindow::SuspendDrawingThread();  
+  MapWindow::SuspendDrawingThread();
   _WhereAmI.Start();
 
   WindowControl* pWndClose = wf->FindByName(_T("cmdClose"));

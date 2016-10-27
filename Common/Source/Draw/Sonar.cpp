@@ -45,7 +45,7 @@ AirSpaceSonarLevelStruct sSonarLevel[10] = {
 
 //
 // calc the sonar delay time
-// This function can manage more than 1 airspace as Input. 
+// This function can manage more than 1 airspace as Input.
 // However currently we only use one, the closest.
 //
 int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAltitudeAGL, int iAltitude)
@@ -109,7 +109,7 @@ int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAl
 				int iTmp =	(iAS_HorDist);
 				if(iTmp > 0) {
 					LKASSERT(divider!=0);
-            				if(iTmp < sSonarLevel[4].iDistantrance/divider)   {
+					if(iTmp < sSonarLevel[4].iDistantrance/divider)   {
 						iTmpH_Level = 4;
 						if(iTmp < sSonarLevel[3].iDistantrance/divider)   {
 							iTmpH_Level = 3;
@@ -186,7 +186,7 @@ void MapWindow::DoSonar(void) {
 	if(ISCAR||ISGAAIRCRAFT||SIMMODE||DerivedDrawInfo.FreeFlying)
 	{
 		const CAirspaceBase* pAs = &near_airspace;
-		iSonarLevel = CalcSonarDelay( 1, &pAs, 
+		iSonarLevel = CalcSonarDelay( 1, &pAs,
 			(int)DerivedDrawInfo.AltitudeAGL, (int)DerivedDrawInfo.NavAltitude);
 
 		#if DEBUG_SONAR
@@ -197,9 +197,9 @@ void MapWindow::DoSonar(void) {
 		if((iSonarLevel >=0) && (iSonarLevel < 10)) {
 			if( lSonarCnt > (unsigned)sSonarLevel[iSonarLevel].iSoundDelay)
 			{
-	  			lSonarCnt = 0;
-          			// StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
-	  			LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
+				lSonarCnt = 0;
+				// StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
+				LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
 			}
 		}
 	}
@@ -209,4 +209,3 @@ void MapWindow::DoSonar(void) {
   #endif
 
 }
-

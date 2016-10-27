@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   resource_data.h
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 18 septembre 2014, 13:34
  */
 #ifndef resource_data_h
@@ -147,7 +147,7 @@ BIN_DATA(IDB_LKSMALLTOWN)
 BIN_DATA(IDB_LKVERYSMALLTOWN)
 
 #ifndef DISABLEAUDIO
-   
+
     BIN_DATA(IDR_WAV_MM0)
     BIN_DATA(IDR_WAV_MM1)
     BIN_DATA(IDR_WAV_MM2)
@@ -155,17 +155,17 @@ BIN_DATA(IDB_LKVERYSMALLTOWN)
     BIN_DATA(IDR_WAV_MM4)
     BIN_DATA(IDR_WAV_MM5)
     BIN_DATA(IDR_WAV_MM6)
-    
+
     BIN_DATA(IDR_WAV_DRIP)
     BIN_DATA(IDR_WAV_CLICK)
     BIN_DATA(IDR_WAV_HIGHCLICK)
-    
+
     BIN_DATA(IDR_WAV_TONE1)
     BIN_DATA(IDR_WAV_TONE2)
     BIN_DATA(IDR_WAV_TONE3)
     BIN_DATA(IDR_WAV_TONE4)
     BIN_DATA(IDR_WAV_TONE7)
-    
+
     BIN_DATA(IDR_WAV_BTONE2)
     BIN_DATA(IDR_WAV_BTONE4)
     BIN_DATA(IDR_WAV_BTONE5)
@@ -181,29 +181,29 @@ BIN_DATA(IDB_LKVERYSMALLTOWN)
     BIN_DATA(IDR_WAV_OVERTONE6)
     BIN_DATA(IDR_WAV_OVERTONE7)
 #endif
-        
+
 #endif
 
 #include <tchar.h>
 #include "resource.h"
 #define RESOURCE_ID(_NAME)  #_NAME
 #define NAMED_RESOURCE(_NAME) { _TEXT(RESOURCE_ID(_NAME)) , ConstBuffer<void>(_NAME##_begin, _NAME##_size) }
-#ifndef WIN32_RESOURCE 
+#ifndef WIN32_RESOURCE
 static const struct {
     const TCHAR * szName;
     ConstBuffer<void> data;
 } named_resources[] = {
-   
+
     NAMED_RESOURCE(IDR_XML_AIRSPACE_P),
     NAMED_RESOURCE(IDR_XML_AIRSPACECOLOURS_P),
     NAMED_RESOURCE(IDR_XML_MULTISELECTLIST_P),
     NAMED_RESOURCE(IDR_XML_MULTISELECTLIST_L),
-    
+
 #ifdef HAVE_HATCHED_BRUSH
     NAMED_RESOURCE(IDR_XML_AIRSPACEPATTERNS_P),
     NAMED_RESOURCE(IDR_XML_AIRSPACEPATTERNS_L),
 #endif // HAVE_HATCHED_BRUSH
-    
+
     NAMED_RESOURCE(IDR_XML_ANALYSIS_P),
     NAMED_RESOURCE(IDR_XML_BASICSETTINGS_P),
     NAMED_RESOURCE(IDR_XML_BASICSETTINGS_L),
@@ -303,7 +303,7 @@ static const struct {
     NAMED_RESOURCE(IDB_LKVERYSMALLTOWN),
 
 #ifndef DISABLEAUDIO
-   
+
     NAMED_RESOURCE(IDR_WAV_MM0),
     NAMED_RESOURCE(IDR_WAV_MM1),
     NAMED_RESOURCE(IDR_WAV_MM2),
@@ -311,17 +311,17 @@ static const struct {
     NAMED_RESOURCE(IDR_WAV_MM4),
     NAMED_RESOURCE(IDR_WAV_MM5),
     NAMED_RESOURCE(IDR_WAV_MM6),
-    
+
     NAMED_RESOURCE(IDR_WAV_DRIP),
     NAMED_RESOURCE(IDR_WAV_CLICK),
     NAMED_RESOURCE(IDR_WAV_HIGHCLICK),
-    
+
     NAMED_RESOURCE(IDR_WAV_TONE1),
     NAMED_RESOURCE(IDR_WAV_TONE2),
     NAMED_RESOURCE(IDR_WAV_TONE3),
     NAMED_RESOURCE(IDR_WAV_TONE4),
     NAMED_RESOURCE(IDR_WAV_TONE7),
-    
+
     NAMED_RESOURCE(IDR_WAV_BTONE2),
     NAMED_RESOURCE(IDR_WAV_BTONE4),
     NAMED_RESOURCE(IDR_WAV_BTONE5),
@@ -336,7 +336,7 @@ static const struct {
     NAMED_RESOURCE(IDR_WAV_OVERTONE5),
     NAMED_RESOURCE(IDR_WAV_OVERTONE6),
     NAMED_RESOURCE(IDR_WAV_OVERTONE7),
-    
+
 #endif // !DISABLEAUDIO
 
 #endif // !WIN32
@@ -360,12 +360,12 @@ static const struct {
 #endif //__linux__
 
 inline ConstBuffer<void> GetNamedResource(const TCHAR* szName) {
-    
+
     const TCHAR* szID = szName;
     TCHAR szTmp[10] = {};
     if((ptrdiff_t)szName < (ptrdiff_t)std::numeric_limits<unsigned short>::max()) {
         // we have resource ID
-        _stprintf(szTmp, _T("%u"), (unsigned short)(ptrdiff_t)szName);        
+        _stprintf(szTmp, _T("%u"), (unsigned short)(ptrdiff_t)szName);
         szID = szTmp;
     }
     if(szID) {
@@ -389,4 +389,3 @@ inline const TCHAR* GetNamedResourceString(const TCHAR* szName) {
 #endif // !WIN32_RESOURCE
 
 #endif	/* resource_data_h */
-

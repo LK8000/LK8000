@@ -5,7 +5,7 @@
  *
  * File:   LKBitmap.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 16 octobre 2014, 20:07
  */
 
@@ -20,7 +20,7 @@
 #endif
 
 LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
-#ifdef WIN32    
+#ifdef WIN32
     bitmap = Bitmap.bitmap;
     Bitmap.bitmap = nullptr;
 #elif defined(USE_MEMORY_CANVAS)
@@ -35,7 +35,7 @@ LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
 }
 
 LKBitmap::LKBitmap() {
-    
+
 }
 
 LKBitmap::~LKBitmap() {
@@ -43,7 +43,7 @@ LKBitmap::~LKBitmap() {
 }
 
 LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
-#ifdef WIN32    
+#ifdef WIN32
     std::swap(bitmap, Bitmap.bitmap);
 #elif defined(USE_MEMORY_CANVAS)
     std::swap(buffer, Bitmap.buffer);
@@ -51,7 +51,7 @@ LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
   std::swap(texture, Bitmap.texture);
   std::swap(size, Bitmap.size);
   std::swap(interpolation, Bitmap.interpolation);
-#else    
+#else
 #warning "Not Implemented"
 #endif
     return * this;
@@ -66,7 +66,7 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
     bitmap = (HBITMAP) LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 #endif
     return IsDefined();
-#else 
+#else
     return LoadPNGFile(FilePath);
 #endif
     return false;
@@ -75,7 +75,7 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
 #ifdef WIN32
     extern HINSTANCE _hInstance;
 #endif
-    
+
 bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
     Reset();
 #ifdef WIN32

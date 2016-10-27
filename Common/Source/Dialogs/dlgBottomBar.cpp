@@ -110,7 +110,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgBottomBarShowModal(void){
 
   WndProperty *wp;
-  
+
   WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_BOTTOMBAR);
 
   if (!wf) return;
@@ -210,7 +210,7 @@ void dlgBottomBarShowModal(void){
 
   if (changed) {
 
-    if (!(ConfBB1 || ConfBB2 || ConfBB3 || ConfBB4 || ConfBB5 || 
+    if (!(ConfBB1 || ConfBB2 || ConfBB3 || ConfBB4 || ConfBB5 ||
         ConfBB6 || ConfBB7 || ConfBB8 || ConfBB9)) {
       MessageBoxX(
                    MsgToken(16), // can't disable all non-TRM0
@@ -231,5 +231,3 @@ void dlgBottomBarShowModal(void){
 
   delete wf;
 }
-
-

@@ -91,7 +91,7 @@ const bool terrain_minalt[NUMRAMPS] = {
         1       // Low Hills
 };
 
-const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = { 
+const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
   {
 
 #ifdef DITHER
@@ -208,7 +208,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {1999,        254, 170, 136},
     {2000,        253, 107, 100},
     {2499,        253, 107, 100},
-    {2500,        255, 255, 255} 
+    {2500,        255, 255, 255}
   },
   { // LKoogle lowlands
 #ifdef DITHER
@@ -325,7 +325,7 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {6000,         255,255,255},
     {6000,         255,255,255},
     {6000,         255,255,255},
-  } 
+  }
 */
   {
 #ifdef DITHER
@@ -419,4 +419,3 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
 */
 
 };
-

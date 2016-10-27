@@ -15,4 +15,3 @@
 BOOL BlueFlyRegister(void);
 
 #endif	/* DEVBLUEFLYVARIO_H */
-

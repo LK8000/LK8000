@@ -24,23 +24,23 @@ void OnInfoBoxHelp(WindowControl * Sender){
 
   switch (page2mode()) {
   case 0:
-	// LKTOKEN  _@M835_ = "cruise" 
+	// LKTOKEN  _@M835_ = "cruise"
     _tcscpy(mode,MsgToken(835));
     break;
   case 1:
-	// LKTOKEN  _@M834_ = "circling" 
+	// LKTOKEN  _@M834_ = "circling"
     _tcscpy(mode,MsgToken(834));
     break;
   case 2:
-	// LKTOKEN  _@M836_ = "final glide" 
+	// LKTOKEN  _@M836_ = "final glide"
     _tcscpy(mode,MsgToken(836));
     break;
   case 3:
-	// LKTOKEN  _@M833_ = "auxiliary" 
+	// LKTOKEN  _@M833_ = "auxiliary"
     _tcscpy(mode,MsgToken(833));
     break;
   default:
-	// LKTOKEN  _@M266_ = "Error" 
+	// LKTOKEN  _@M266_ = "Error"
     _tcscpy(mode,MsgToken(266));
     assert(false);
     return;
@@ -53,4 +53,3 @@ void OnInfoBoxHelp(WindowControl * Sender){
 
 
 }
-

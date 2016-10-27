@@ -32,7 +32,7 @@
 #define NEAR_AS_ZOOM_1000M
 
 // There are known as "shared multimaps" and they are sized inside Defines.h
-// See NUMBER_OF_SHARED_MULTIMAPS. 
+// See NUMBER_OF_SHARED_MULTIMAPS.
 #define IM_VISUALGLIDE 3
 #define IM_NEAR_AS 2
 #define IM_NEXT_WP 1

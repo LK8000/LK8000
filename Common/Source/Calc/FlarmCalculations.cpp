@@ -24,4 +24,3 @@ double FlarmCalculations::Average30s(long flarmId, double curTime, double curAlt
 {
   return averageCalculatorMap[flarmId].GetAverage(curTime, curAltitude);
 }
-

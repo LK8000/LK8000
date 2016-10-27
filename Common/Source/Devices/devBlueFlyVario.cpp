@@ -38,10 +38,10 @@ enum ValueType {
 class CHardwareParameter {
 public:
 
-    CHardwareParameter() 
-            : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal() {    
+    CHardwareParameter()
+            : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal() {
     }
-    
+
     CHardwareParameter(const tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
             : _Code(code), _MinHWVersion(minHWVersion), _Type(type), _Factor(factor), _MinHWVal(minHWVal), _MaxHWVal(maxHWVal) {
     }
@@ -58,7 +58,7 @@ public:
     inline const tstring& Code() const { return _Code; }
     inline ValueType Type() const { return _Type; }
     inline int MinHwVersion() const { return _MinHWVersion; }
-    
+
     double Min() const {
         if(Type() == TYPE_DOUBLE) {
             return ((double)_MinHWVal) * _Factor;
@@ -118,7 +118,7 @@ public:
         }
         _Value = szTmp;
     }
-    
+
     void operator=(bool v) {
         _Value = (v?_T("1"):_T("0"));
     }
@@ -137,7 +137,7 @@ private:
 class CHardwareParameters {
     typedef std::map<tstring, CHardwareParameter> ParameterList_t;
 
-public: 
+public:
     typedef ParameterList_t::const_iterator const_iterator;
     typedef ParameterList_t::iterator iterator;
     typedef ParameterList_t::value_type value_type;
@@ -172,7 +172,7 @@ public:
     void updateHardwareSettingsValues(TCHAR* line) {
         _Values = line;
         if (!_Keys.empty() && !_Values.empty()) {
-            
+
             std::string::size_type PrevPosKey = 0, PosKey = 0;
             std::string::size_type PrevPosVal = 0, PosVal = 0;
             if(((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != std::string::npos)) { //skip first Value
@@ -180,13 +180,13 @@ public:
                 while ( ((PosKey = _Keys.find_first_of(_T(" \n"), PosKey)) != std::string::npos)
                         && ((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != std::string::npos) )
                 {
-                    
+
                     if (PosKey > PrevPosKey) {
                         ParameterList_t::iterator It = _ParameterList.find(_Keys.substr(PrevPosKey, PosKey-PrevPosKey));
                         if (It != _ParameterList.end()) {
                             (*It).second.Value(_Values.substr(PrevPosVal, PosVal-PrevPosVal));
                         }
-                    }                    
+                    }
                     PrevPosKey = ++PosKey;
                     PrevPosVal = ++PosVal;
                 }
@@ -207,7 +207,7 @@ public:
     }
 
     inline operator bool ()  const { return !_Keys.empty() && !_Values.empty(); }
-    
+
 private:
     ParameterList_t _ParameterList;
 
@@ -237,7 +237,7 @@ namespace dlgBlueFlyConfig {
             lstPageWnd[CurrentPage]->SetVisible(false);
             CurrentPage+=Step;
             lstPageWnd[CurrentPage]->SetVisible(true);
-            
+
             WindowControl * pWnd = wfDlg->FindByName(_T("cmdNext"));
             if(pWnd) {
                 pWnd->SetVisible(CurrentPage<(lstPageWnd.size()-1));
@@ -318,11 +318,11 @@ namespace dlgBlueFlyConfig {
         DataAccessCallbackEntry(OnParamData),
         EndCallBackEntry()
     };
-    
+
     void FillProperty(CHardwareParameters::value_type& Val) {
         if(!wfDlg) return;
         CHardwareParameter& Param = Val.second;
-        
+
         WndProperty* pWnd = (WndProperty*)wfDlg->FindByName(Param.Code().c_str());
         if(pWnd) {
             DataField* pData = pWnd->GetDataField();
@@ -361,7 +361,7 @@ namespace dlgBlueFlyConfig {
         Init = true;
 
         wfDlg = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_BLUEFLYCONFIG_L : IDR_XML_BLUEFLYCONFIG_P);
-        
+
         if (wfDlg) {
             // build list of page WindowConrol*
             lstPageWnd.clear();

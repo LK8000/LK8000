@@ -9,14 +9,14 @@
 class GlidePolar {
  public:
 
-  static double MacCreadyAltitude(double MCREADY, double Distance, 
-                                  const double Bearing, 
-				  const double WindSpeed, 
-                                  const double WindBearing, 
-				  double *BestCruiseTrack, 
-                                  double *VMacCready, 
-				  const bool isFinalGlide, 
-                                  double *timetogo, 
+  static double MacCreadyAltitude(double MCREADY, double Distance,
+                                  const double Bearing,
+				  const double WindSpeed,
+                                  const double WindBearing,
+				  double *BestCruiseTrack,
+                                  double *VMacCready,
+				  const bool isFinalGlide,
+                                  double *timetogo,
                                   double AltitudeAboveTarget=1.0e6,
                                 #ifdef BCT_ALT_FIX
                                   double cruise_efficiency=1.0,
@@ -40,16 +40,16 @@ class GlidePolar {
   static double WingArea;
   static double WingLoading;
   static double WeightOffset;
-  
+
   static double FlapsPos[MAX_FLAPS];
   static TCHAR  FlapsName[MAX_FLAPS][MAXFLAPSNAME+1];
   static int FlapsPosCount;
   static double FlapsMass;
 
   static double SinkRate(double Vias);
-  static double SinkRate(double Vias, 
+  static double SinkRate(double Vias,
                 double loadfactor);
-  static double SinkRate(double a,double b, double c, 
+  static double SinkRate(double a,double b, double c,
                          double MC, double HW, double V);
   static double FindSpeedForSinkRate(double w);
   static double FindSpeedForSinkRateAccurate(double w);
@@ -62,13 +62,13 @@ class GlidePolar {
 
  private:
   static double MacCreadyAltitude_internal(double MCREADY,
-                                           double Distance, 
-                                           const double Bearing, 
-                                           const double WindSpeed, 
-                                           const double WindBearing, 
-                                           double *BestCruiseTrack, 
-                                           double *VMacCready, 
-                                           const bool isFinalGlide, 
+                                           double Distance,
+                                           const double Bearing,
+                                           const double WindSpeed,
+                                           const double WindBearing,
+                                           double *BestCruiseTrack,
+                                           double *VMacCready,
+                                           const bool isFinalGlide,
                                            double *timetogo,
                                          #ifdef BCT_ALT_FIX
                                            const double cruise_efficiency,
@@ -77,14 +77,14 @@ class GlidePolar {
 					   const double cruise_efficiency);
                                          #endif
 
-  static double MacCreadyAltitude_heightadjust(double MCREADY, 
-                                               double Distance, 
-                                               const double Bearing, 
-                                               const double WindSpeed, 
-                                               const double WindBearing, 
-                                               double *BestCruiseTrack, 
-                                               double *VMacCready, 
-                                               const bool isFinalGlide, 
+  static double MacCreadyAltitude_heightadjust(double MCREADY,
+                                               double Distance,
+                                               const double Bearing,
+                                               const double WindSpeed,
+                                               const double WindBearing,
+                                               double *BestCruiseTrack,
+                                               double *VMacCready,
+                                               const bool isFinalGlide,
                                                double *timetogo,
                                                const double AltitudeAboveTarget,
                                              #ifdef BCT_ALT_FIX
@@ -102,7 +102,7 @@ public:
 	static double Vbestld() {
 		return ((double)_Vbestld)/2.0;
 	}
-    static double SinkRateBestLd() { 
+    static double SinkRateBestLd() {
 		return _sinkratecache[_Vbestld];
 	}
 

@@ -41,9 +41,9 @@ void WindStore::slot_measurement(NMEA_INFO *nmeaInfo,
                                  DERIVED_INFO *derivedInfo,
                                  Vector windvector, int quality){
   updated = true;
-  windlist->addMeasurement(nmeaInfo->Time, windvector, nmeaInfo->Altitude, quality);   
+  windlist->addMeasurement(nmeaInfo->Time, windvector, nmeaInfo->Altitude, quality);
   //we may have a new wind value, so make sure it's emitted if needed!
-  recalculateWind(nmeaInfo, derivedInfo);  
+  recalculateWind(nmeaInfo, derivedInfo);
 }
 
 
@@ -80,13 +80,13 @@ void WindStore::recalculateWind(NMEA_INFO *nmeaInfo,
                                     nmeaInfo->Altitude, &found);
 
   if (found) {
-    if ((fabs(CurWind.x-_lastWind.x)>1.0) || 
+    if ((fabs(CurWind.x-_lastWind.x)>1.0) ||
 	(fabs(CurWind.y-_lastWind.y)>1.0) || updated) {
       _lastWind=CurWind;
 
       updated = false;
       _lastAltitude=nmeaInfo->Altitude;
-      
+
       newWind(nmeaInfo, derivedInfo, CurWind);
     }
   } // otherwise, don't change anything
@@ -94,7 +94,7 @@ void WindStore::recalculateWind(NMEA_INFO *nmeaInfo,
 }
 
 
-void WindStore::newWind(NMEA_INFO *nmeaInfo, DERIVED_INFO *derivedInfo, 
+void WindStore::newWind(NMEA_INFO *nmeaInfo, DERIVED_INFO *derivedInfo,
                         Vector &wind) {
   //
   double mag = sqrt(wind.x*wind.x+wind.y*wind.y);

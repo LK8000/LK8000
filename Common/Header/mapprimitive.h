@@ -1,7 +1,7 @@
 #ifndef MAPPRIMITIVE_H
 #define MAPPRIMITIVE_H
 
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <zzip/lib.h>
 #include <tchar.h>
 
@@ -50,7 +50,7 @@ typedef struct {
 typedef struct {
   double x;
   double y;
-  double m;  
+  double m;
 } pointObj;
 
 typedef struct {

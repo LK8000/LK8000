@@ -29,7 +29,7 @@ WndMainBase::WndMainBase() : WndPaint(NULL), _hWndFocus()  {
 }
 
 WndMainBase::~WndMainBase() {
-    
+
 }
 
 bool WndMainBase::Create(const RECT& rect) {
@@ -46,15 +46,15 @@ bool WndMainBase::Create(const RECT& rect) {
     wc.lpszMenuName = 0;
     wc.lpszClassName = _T("LK8000_Main");
 
-/* 
+/*
  * http://msdn.microsoft.com/fr-fr/library/windows/apps/xaml/ms908209.aspx
- * 
- * Applications create custom dialog box classes by filling a WNDCLASS structure with appropriate information and 
+ *
+ * Applications create custom dialog box classes by filling a WNDCLASS structure with appropriate information and
  * registering the class with the RegisterClass function. Some applications fill the structure by using the GetClassInfo
  * function, specifying the name of the predefined dialog box. In such cases, the applications modify at least the
- * lpszClassName member before registering. In all cases, the cbWndExtra member of WNDCLASS for a custom 
+ * lpszClassName member before registering. In all cases, the cbWndExtra member of WNDCLASS for a custom
  * dialog box class must be set to at least DLGWINDOWEXTRA.
- */    
+ */
 
 #ifdef UNDER_CE
     WNDCLASS dc;
@@ -63,15 +63,15 @@ bool WndMainBase::Create(const RECT& rect) {
 #else
     wc.cbWndExtra = DLGWINDOWEXTRA;
 #endif
-    
-    
+
+
     // Register the window class.
     _szClassName = wc.lpszClassName;
 
     if(!RegisterClass(&wc)) {
         StartupStore(_T("RegisterClass(%s) failed = <0x%x>\n"), wc.lpszClassName, GetLastError());
     }
-    
+
 
     _szWindowText = _T("LK8000");
     _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
@@ -80,7 +80,7 @@ bool WndMainBase::Create(const RECT& rect) {
 }
 
 void WndMainBase::OnCreate() {
-    
+
 #ifdef HAVE_ACTIVATE_INFO
     SHSetAppKeyWndAssoc(VK_APP1, _hWnd);
     SHSetAppKeyWndAssoc(VK_APP2, _hWnd);
@@ -89,7 +89,7 @@ void WndMainBase::OnCreate() {
     SHSetAppKeyWndAssoc(VK_APP5, _hWnd);
     SHSetAppKeyWndAssoc(VK_APP6, _hWnd);
 #endif
-    
+
     WndPaint::OnCreate();
 }
 

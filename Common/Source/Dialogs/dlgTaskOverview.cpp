@@ -53,21 +53,21 @@ static void UpdateCaption (void) {
   TCHAR title[MAX_PATH];
   TCHAR name[MAX_PATH] = TEXT("\0");
   TaskFileName(MAX_PATH, name);
-  
+
   if (_tcslen(name)>0) {
     _stprintf(title, TEXT("%s: %s"),
-	// LKTOKEN  _@M688_ = "Task Overview" 
+	// LKTOKEN  _@M688_ = "Task Overview"
               MsgToken(688),
               name);
   } else {
     _stprintf(title, TEXT("%s"),
-	// LKTOKEN  _@M688_ = "Task Overview" 
+	// LKTOKEN  _@M688_ = "Task Overview"
               MsgToken(688));
   }
 
   if (TaskModified) {
     _tcscat(title, TEXT(" *"));
-  } 
+  }
 
   wf->SetCaption(title);
 }
@@ -86,7 +86,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
   int w1 = Surface.GetTextWidth(TEXT(" 000km"));
   _stprintf(sTmp, _T("  000%s"), MsgToken(2179));
   int w2 = Surface.GetTextWidth(sTmp);
-  
+
   int TextMargin = (Sender->GetHeight() - Surface.GetTextHeight(TEXT("A"))) / 2;
 
   int p1 = w0-w1-w2- Sender->GetHeight()-2;
@@ -101,17 +101,17 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       _stprintf(wpName, TEXT("%s%s"),
                 WayPointList[Task[i].Index].Name,
                 (WayPointList[Task[i].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
-      
+
       if (AATEnabled && ValidTaskPoint(i+1) && (i>0)) {
         if (Task[i].AATType==0 || Task[i].AATType==3) {
-          _stprintf(sTmp, TEXT("%s %.1f"), 
+          _stprintf(sTmp, TEXT("%s %.1f"),
                     wpName, Task[i].AATCircleRadius*DISTANCEMODIFY);
         } else {
           if(Task[i].AATType==2 && DoOptimizeRoute()) {
-             _stprintf(sTmp, TEXT("%s %.1f/1"), 
+             _stprintf(sTmp, TEXT("%s %.1f/1"),
                     wpName, Task[i].PGConeSlope);
           } else {
-             _stprintf(sTmp, TEXT("%s %.1f"), 
+             _stprintf(sTmp, TEXT("%s %.1f"),
                     wpName, Task[i].AATSectorRadius*DISTANCEMODIFY);
           }
         }
@@ -120,37 +120,37 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       }
 
       Surface.SetBackgroundTransparent();
-      Surface.SetTextColor(RGB_BLACK);      
+      Surface.SetTextColor(RGB_BLACK);
       Surface.DrawTextClip(Sender->GetHeight()+2*ScreenScale, TextMargin,
 		     sTmp, p1-4*ScreenScale);
 
-      _stprintf(sTmp, TEXT("%.0f %s"), 
+      _stprintf(sTmp, TEXT("%.0f %s"),
 		Task[i].Leg*DISTANCEMODIFY,
 		Units::GetDistanceName());
       Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
       _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),MsgToken(2179));
       Surface.DrawText(Sender->GetHeight()+p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
-      
+
     }
 
   } else {
-      
-    Surface.SetTextColor(RGB_BLACK);      
-      
+
+    Surface.SetTextColor(RGB_BLACK);
+
      // if (DrawListIndex==n) { // patchout 091126
      if (DrawListIndex==n && UpLimit < MAXTASKPOINTS) { // patch 091126
 
-	// LKTOKEN  _@M832_ = "add waypoint" 
+	// LKTOKEN  _@M832_ = "add waypoint"
       _stprintf(sTmp, TEXT("  (%s)"), MsgToken(832));
       Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
     } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
 
       if (!AATEnabled || ISPARAGLIDER) {
-	// LKTOKEN  _@M735_ = "Total:" 
+	// LKTOKEN  _@M735_ = "Total:"
 	_tcscpy(sTmp, MsgToken(735));
 	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
-      
+
 	if (fai_ok) {
 	  _stprintf(sTmp, TEXT("%.0f %s FAI"), lengthtotal*DISTANCEMODIFY,
 		    Units::GetDistanceName());
@@ -171,15 +171,15 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 	  d1 = CALCULATED_INFO.AATTargetDistance;
 	}
 
-	_stprintf(sTmp, TEXT("%s %.0f min %.0f (%.0f) %s"), 
-	// LKTOKEN  _@M735_ = "Total:" 
+	_stprintf(sTmp, TEXT("%s %.0f min %.0f (%.0f) %s"),
+	// LKTOKEN  _@M735_ = "Total:"
                   MsgToken(735),
                   AATTaskLength*1.0,
 		  DISTANCEMODIFY*lengthtotal,
 		  DISTANCEMODIFY*d1,
 		  Units::GetDistanceName());
 	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
-      } 
+      }
     }
   }
   UnlockTaskData();
@@ -203,7 +203,7 @@ static void OverviewRefreshTask(void) {
     }
   }
 
-  // Simple FAI 2004 triangle rules 
+  // Simple FAI 2004 triangle rules
   fai_ok = true;
   if (lengthtotal>0) {
     for (i=0; i<MAXTASKPOINTS; i++) {
@@ -219,7 +219,7 @@ static void OverviewRefreshTask(void) {
   }
 
   RefreshTaskStatistics();
-  
+
   WndProperty* wp;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATEst"));
@@ -236,7 +236,7 @@ static void OverviewRefreshTask(void) {
     wp->GetDataField()->SetAsFloat(dd);
     wp->RefreshDisplay();
   }
-  
+
   LowLimit =0;
   wTaskList->ResetList();
   wTaskList->Redraw();
@@ -255,7 +255,7 @@ static void UpdateAdvanced(void) {
 }
 
 
-static void OnTaskListEnter(WindowControl * Sender, 
+static void OnTaskListEnter(WindowControl * Sender,
 		     WndListFrame::ListInfo_t *ListInfo) {
   (void)Sender;
   bool isfinish = false;
@@ -271,9 +271,9 @@ static void OnTaskListEnter(WindowControl * Sender,
 		if (ItemIndex>0) {
 #ifdef LAST_TASKPOINT_QUESTION
 			if (MessageBoxX(
-			// LKTOKEN  _@M817_ = "Will this be the finish?" 
+			// LKTOKEN  _@M817_ = "Will this be the finish?"
 			MsgToken(817),
-			// LKTOKEN  _@M54_ = "Add Waypoint" 
+			// LKTOKEN  _@M54_ = "Add Waypoint"
 			MsgToken(54),
 			mbYesNo) == IdYes)
 #else
@@ -316,9 +316,9 @@ static void OnTaskListEnter(WindowControl * Sender,
 				}
 			}
 
-		} // ValidWaypoint 
+		} // ValidWaypoint
 		OverviewRefreshTask();
-	
+
 	} // CheckDeclaration
 
 	return;
@@ -350,7 +350,7 @@ static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
   if (ListInfo->DrawIndex == -1) {
 	ListInfo->ItemCount = UpLimit-LowLimit+2;
   } else {
-	DrawListIndex = ListInfo->DrawIndex +ListInfo->ScrollIndex; 
+	DrawListIndex = ListInfo->DrawIndex +ListInfo->ScrollIndex;
 	ItemIndex = ListInfo->ItemIndex +ListInfo->ScrollIndex;
   }
 }
@@ -368,9 +368,9 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 static void OnClearClicked(WndButton* pWnd){
   if (MessageBoxX(
-	// LKTOKEN  _@M179_ = "Clear the task?" 
+	// LKTOKEN  _@M179_ = "Clear the task?"
                   MsgToken(179),
-	// LKTOKEN  _@M178_ = "Clear task" 
+	// LKTOKEN  _@M178_ = "Clear task"
                   MsgToken(178),
                   mbYesNo) == IdYes) {
     if (CheckDeclaration()) {
@@ -414,7 +414,7 @@ static void OnDeclareClicked(WndButton* pWnd){
 
 static void OnSaveClicked(WndButton* pWnd){
 
-  int file_index; 
+  int file_index;
   TCHAR task_name[MAX_PATH];
   TCHAR file_name[MAX_PATH];
   WndProperty* wp;
@@ -454,14 +454,14 @@ static void OnSaveClicked(WndButton* pWnd){
 
   if (file_index>0) {
 	// file already exists! ask if want to overwrite
-	_stprintf(file_name, TEXT("%s: '%s'"), 
-	// LKTOKEN  _@M696_ = "Task file already exists" 
+	_stprintf(file_name, TEXT("%s: '%s'"),
+	// LKTOKEN  _@M696_ = "Task file already exists"
 		MsgToken(696),
 		dfe->GetAsString());
 
 		if(MessageBoxX(
 			file_name,
-			// LKTOKEN  _@M510_ = "Overwrite?" 
+			// LKTOKEN  _@M510_ = "Overwrite?"
 			MsgToken(510),
 			mbYesNo) != IdYes) {
 
@@ -485,7 +485,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
   if (!wp) return;
 
   wp->OnLButtonDown((POINT){0,0});
-  
+
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
   int file_index = dfe->GetAsInteger();
@@ -497,7 +497,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
 		}
 	}
   } else {
-	// LKTOKEN  _@M467_ = "No Task to load" 
+	// LKTOKEN  _@M467_ = "No Task to load"
 	MessageBoxX(MsgToken(467),_T(" "), mbOk);
 	return;
   }
@@ -510,13 +510,13 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
           if(_tcsicmp(wextension,_T(LKS_TSK))==0) {
               CTaskFileHelper helper;
               bOK = helper.Load(szFileName);
-          } 
+          }
 #ifdef OLDTASK_COMPAT
           else if (_tcsicmp(wextension,_T(LKS_OLD_TSK))==0) {
               LoadNewTask(szFileName);
               bOK = true;
-          } 
-#endif          
+          }
+#endif
           else if (_tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
               bOK = LoadCupTask(szFileName);
           } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
@@ -562,7 +562,7 @@ static void OnDeleteClicked(WndButton* pWnd){
   if (file_index>0) {
     lk::filesystem::deleteFile(dfe->GetPathFile());
     // Cannot update dfe list, so we force exit.
-    ItemIndex = -1; 
+    ItemIndex = -1;
     if(pWnd) {
       WndForm * pForm = pWnd->GetParentWndForm();
       if(pForm) {
@@ -613,7 +613,7 @@ void dlgTaskOverviewShowModal(int Idx){
 
   WndButton *wb = (WndButton*)wf->FindByName(TEXT("cmdTimegates"));
   if (wb) wb->SetVisible(false);
-  
+
   if (ISPARAGLIDER) {
 	if (PGOptimizeRoute) AATEnabled=true; // force it on
         EnableMultipleStartPoints=false;
@@ -637,7 +637,7 @@ void dlgTaskOverviewShowModal(int Idx){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (wp) {
-    wp->SetVisible(false);  
+    wp->SetVisible(false);
 	DataFieldFileReader* dfe;
 	dfe = (DataFieldFileReader*)wp->GetDataField();
 
@@ -659,7 +659,7 @@ void dlgTaskOverviewShowModal(int Idx){
   // initialise and turn on the display
   OverviewRefreshTask();
 
-  UpdateAdvanced(); 
+  UpdateAdvanced();
 
 
 
@@ -678,4 +678,3 @@ void dlgTaskOverviewShowModal(int Idx){
   wf = NULL;
 
 }
-

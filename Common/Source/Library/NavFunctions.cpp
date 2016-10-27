@@ -81,7 +81,7 @@ void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
 	cur_lon2=lon2;
   }
 #endif
-   
+
 
   lat1 *= DEG_TO_RAD;
   lat2 *= DEG_TO_RAD;
@@ -149,7 +149,7 @@ double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
 
 
 
-void FindLatitudeLongitude(double Lat, double Lon, 
+void FindLatitudeLongitude(double Lat, double Lon,
                            double Bearing, double Distance,
                            double *lat_out, double *lon_out)
 {
@@ -167,7 +167,7 @@ void FindLatitudeLongitude(double Lat, double Lon,
   const double cosLat = cos(Lat);
   const double sinLat = sin(Lat);
 
-  ResultLat = asin(sinLat*cosDistance+cosLat*sinDistance*cos(Bearing)); 
+  ResultLat = asin(sinLat*cosDistance+cosLat*sinDistance*cos(Bearing));
   if (lat_out) {
     *lat_out = ResultLat*RAD_TO_DEG;
   }
@@ -191,7 +191,7 @@ void xXY_to_LL(double Lat_TP, double Long_TP, double X_int, double Y_int, double
    double Sin_DLng, Cos_DLng;
    double Lat_Num, Lat_Denum;
    double Long_Num, Long_Denum;
-   double Temp; 
+   double Temp;
    double   Delta_Long;
  //  long   X_Own = 0;
  //  long   Y_Own = 0;
@@ -206,7 +206,7 @@ void xXY_to_LL(double Lat_TP, double Long_TP, double X_int, double Y_int, double
 
       /* Non polar projection */
 
-      if ( X != 0.0 ) 
+      if ( X != 0.0 )
 	  {
 
          Cos_Lat_TP = cos((double) DEG_TO_RAD * (double) Lat_TP);
@@ -241,7 +241,7 @@ void xXY_to_LL(double Lat_TP, double Long_TP, double X_int, double Y_int, double
       else {
          *Lat  = Lat_TP + (double)(RAD_TO_DEG * atan2(Y, EARTH_DIAMETER) * 2);
          *Long = Long_TP;
-      } 
+      }
    }
    else {
 
@@ -314,7 +314,7 @@ void xXY_Brg_Rng(double X_1, double Y_1, double X_2, double Y_2, double *Bearing
 void xBrg_Rng_XY(double X_RefPos, double Y_RefPos, double Bearing, double Range, double *X, double *Y)
 {
   (void)X_RefPos;
-  (void)Y_RefPos;	
+  (void)Y_RefPos;
 
 
 double V = Bearing / RAD_TO_DEG;
@@ -356,9 +356,9 @@ void LL_to_BearRange(double Lat_TP, double Long_TP, double Lat_Pnt, double Long_
 {
 	double pos_X, pos_Y;
 
-	xLL_to_XY(Lat_TP, 
+	xLL_to_XY(Lat_TP,
 		Long_TP,
-		Lat_Pnt, 
+		Lat_Pnt,
 		Long_Pnt,
 		&pos_X, &pos_Y);
 
@@ -469,7 +469,7 @@ double CrossTrackError(double lon1, double lat1,
 
   double sinXTD = sin(XTD);
   ATD = asin(sqrt( sindist_AD*sindist_AD - sinXTD*sinXTD )/cos(XTD));
-  
+
   if (lon4 && lat4) {
     IntermediatePoint(lon1, lat1, lon2, lat2, ATD, dist_AB,
 		      lon4, lat4);
@@ -482,7 +482,7 @@ double CrossTrackError(double lon1, double lat1,
 }
 
 
-void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
+void ScreenClosestPoint(const POINT &p1, const POINT &p2,
 			const POINT &p3, POINT *p4, int offset) {
 
   int v12x, v12y, v13x, v13y;
@@ -503,10 +503,10 @@ void ScreenClosestPoint(const POINT &p1, const POINT &p2,
       } else {
 	proj = mag12/2;
       }
-    } 
+    }
     f = min(1.0,max(0.0,(double)proj/mag12));
 
-    // location of 'closest' point 
+    // location of 'closest' point
     p4->x = iround(v12x*f)+p1.x;
     p4->y = iround(v12y*f)+p1.y;
   } else {

@@ -22,7 +22,7 @@ const TCHAR * LKGetLocalPath(void) {
 #ifdef KOBO
     return _T("/mnt/onboard/" LKDATADIR "/");
 #else
-    
+
     static TCHAR localpath[MAX_PATH + 1] = {0};
 
     if (!DoInit[MDI_GETLOCALPATH]) {
@@ -160,7 +160,7 @@ void ExpandLocalPath(TCHAR* filein) {
   if (!ptr) return;
 
   ptr += _tcslen(code);
-   
+
   const TCHAR* ptr2 = lpath + _tcslen(lpath) -1;
 
   if( (*ptr2=='/')||(*ptr2=='\\') ) {
@@ -177,7 +177,7 @@ void ExpandLocalPath(TCHAR* filein) {
     _stprintf(output,TEXT("%s%s"),lpath, ptr);
     _tcscpy(filein, output);
   }
-  lk::filesystem::fixPath(filein);  
+  lk::filesystem::fixPath(filein);
 }
 
 

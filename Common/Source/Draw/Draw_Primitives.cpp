@@ -16,7 +16,7 @@ void MapWindow::DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& 
 
     LKASSERT(Icon.GetSize().cx == 10);
     LKASSERT(Icon.GetSize().cy == 10);
-    
+
     Icon.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), NIBLSCALE(10), NIBLSCALE(10));
 }
 
@@ -50,7 +50,7 @@ void MapWindow::DrawMulticolorDashLine(LKSurface& Surface, const int width,
   pt[1].x = ptEnd.x;
   pt[1].y = ptEnd.y;
   #endif
-  
+
   //increment on smallest variance
   if(abs(ptStart.x - ptEnd.x) < abs(ptStart.y - ptEnd.y)){
     #ifdef GTL2
@@ -60,9 +60,9 @@ void MapWindow::DrawMulticolorDashLine(LKSurface& Surface, const int width,
     for (i = 0; i < width; i++, flipcol=!flipcol){
       flipcol ?  Surface.SelectObject(hpDash2) : Surface.SelectObject(hpDash1);
       pt[0].x += 1;
-      pt[1].x += 1;     
+      pt[1].x += 1;
       Surface.Polyline(pt, 2, rc);
-    }   
+    }
   } else {
     #ifdef GTL2
     pt[0].y -= Offset;
@@ -71,11 +71,11 @@ void MapWindow::DrawMulticolorDashLine(LKSurface& Surface, const int width,
     for (i = 0; i < width; i++, flipcol=!flipcol){
       flipcol ?  Surface.SelectObject(hpDash2) : Surface.SelectObject(hpDash1);
       pt[0].y += 1;
-      pt[1].y += 1;     
+      pt[1].y += 1;
       Surface.Polyline(pt, 2, rc);
-    }   
+    }
   }
-  
+
   Surface.SelectObject(hpOld);
-  
-} 
+
+}

@@ -540,8 +540,8 @@ bool initStdHandles()
 					// rwa	mode
 					// 010	"w"		w,   CREATE_ALWAYS					O_WRONLY				O_CREAT|O_TRUNC
 					// 011	"a"		w,   OPEN_ALWAYS   (APPEND DATA)	O_WRONLY	O_APPEND	O_CREAT
-					// 100	"r"		r,   OPEN_EXISTING					O_RDONLY				
-					// 110	"r+"	r/w, OPEN_EXISTING					O_RDWR					
+					// 100	"r"		r,   OPEN_EXISTING					O_RDONLY
+					// 110	"r+"	r/w, OPEN_EXISTING					O_RDWR
 					// 111	"a+"	r/w, OPEN_ALWAYS   (APPEND DATA)	O_RDWR		O_APPEND	O_CREAT
 					int	flags = 0;
 					int	mode = 0;
@@ -625,8 +625,8 @@ bool initStdHandles()
 					// rwa	mode
 					// 010	"w"		w,   CREATE_ALWAYS					O_WRONLY				O_CREAT|O_TRUNC
 					// 011	"a"		w,   OPEN_ALWAYS   (APPEND DATA)	O_WRONLY	O_APPEND	O_CREAT
-					// 100	"r"		r,   OPEN_EXISTING					O_RDONLY				
-					// 110	"r+"	r/w, OPEN_EXISTING					O_RDWR					
+					// 100	"r"		r,   OPEN_EXISTING					O_RDONLY
+					// 110	"r+"	r/w, OPEN_EXISTING					O_RDWR
 					// 111	"a+"	r/w, OPEN_ALWAYS   (APPEND DATA)	O_RDWR		O_APPEND	O_CREAT
 					int	flags = 0;
 					int	mode = 0;
@@ -721,8 +721,8 @@ bool initStdHandles()
 					// rwa	mode
 					// 010	"w"		w,   CREATE_ALWAYS					O_WRONLY				O_CREAT|O_TRUNC
 					// 011	"a"		w,   OPEN_ALWAYS   (APPEND DATA)	O_WRONLY	O_APPEND	O_CREAT
-					// 100	"r"		r,   OPEN_EXISTING					O_RDONLY				
-					// 110	"r+"	r/w, OPEN_EXISTING					O_RDWR					
+					// 100	"r"		r,   OPEN_EXISTING					O_RDONLY
+					// 110	"r+"	r/w, OPEN_EXISTING					O_RDWR
 					// 111	"a+"	r/w, OPEN_ALWAYS   (APPEND DATA)	O_RDWR		O_APPEND	O_CREAT
 					int	flags = 0;
 					int	mode = 0;

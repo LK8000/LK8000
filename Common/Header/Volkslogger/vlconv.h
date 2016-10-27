@@ -101,14 +101,14 @@ DIRENTRY
   descriptive information about each single flight log in the VL
 */
 struct DIRENTRY {
-	unsigned int  serno; // FR serial number 
+	unsigned int  serno; // FR serial number
 	tm   firsttime; // time of first fix
 	tm   lasttime;  // time of last fix
   long recordingtime; // length of trace in seconds
   int	 takeoff;				// set to one if VL has detected a takeoff
 											//  (v>10kt) inside this trace
   char filename[15];  // filename as required by IGC
-  char pilot[65];					// flight-info, can be enhanced by all 
+  char pilot[65];					// flight-info, can be enhanced by all
 	char competitionid[4];	// headerfields, but these here might be
 	char gliderid[8];				// enough
 };

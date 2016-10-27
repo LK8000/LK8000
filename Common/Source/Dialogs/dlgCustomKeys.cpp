@@ -196,4 +196,3 @@ void dlgCustomKeysShowModal(void){
   wf = NULL;
 
 }
-

@@ -69,4 +69,3 @@ protected:
 };
 
 #endif	/* ARRAY_ADAPTOR_H */
-

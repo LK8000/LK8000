@@ -22,8 +22,8 @@ extern bool OnFastPanning;
 void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
     (void) nmea_info;
     (void) derived_info;
-    
-#ifndef ENABLE_OPENGL    
+
+#ifndef ENABLE_OPENGL
     if (MapWindow::IsDisplayRunning()) {
         // 121028 Do not set MapDirty when we are fast panning, otherwise we shall overpass the
         // timeout (700ms) there, resulting in messy refreshes.
@@ -71,7 +71,7 @@ public:
 
 #ifdef HAVE_CPU_FREQUENCY
             const ScopeLockCPU cpu;
-#endif            
+#endif
             // make local copy before editing...
             LockFlightData();
             FLARM_RefreshSlots(&GPS_INFO);
@@ -133,7 +133,7 @@ public:
             // update live tracker with new values
             // this is a nonblocking call, live tracker runs on different thread
             LiveTrackerUpdate(&tmpGPS, &tmpCALCULATED);
-            
+
 #ifndef NO_DATARECORDER
             if (FlightDataRecorderActive) {
                 UpdateFlightDataRecorder(&tmpGPS, &tmpCALCULATED);
@@ -151,7 +151,7 @@ CalculationThread _CalculationThreadRun;
 Poco::Thread _CalculationThread;
 
 // Since the calling function want to be sure that threads are created, they now flag a go status
-// and we save 500ms at startup. 
+// and we save 500ms at startup.
 // At the end of thread creation, we expect goCalc and goInst flags are true
 void CreateCalculationThread() {
     // Create a read thread for performing calculations
@@ -164,4 +164,3 @@ void CreateCalculationThread() {
 void WaitThreadCalculation() {
     _CalculationThread.join();
 }
-

@@ -31,10 +31,10 @@ void GetTeamCode(TCHAR *code, double bearing, double range)
 		//{
 		//	bearing -= 360;
 		//}
-		
 
 
-	ConvertHeadingToTeamCode(bearing, code);	
+
+	ConvertHeadingToTeamCode(bearing, code);
 	NumberToTeamCode(range/100.0, &code[2],0);
 }
 
@@ -45,9 +45,9 @@ void ConvertHeadingToTeamCode(double heading, TCHAR *code)
 		code[0] = '-';
 		code[1] = '-';
 		return;
-	}	 
+	}
 
-	double bamValue = (heading * TEAMCODE_COMBINAIONS) / 360.0;	
+	double bamValue = (heading * TEAMCODE_COMBINAIONS) / 360.0;
 	NumberToTeamCode(bamValue, code, 2);
 }
 
@@ -74,7 +74,7 @@ void NumberToTeamCode(double value, TCHAR *code, int minCiffers)
 		int txtPos = maxCif - curCif;
 
 		if (partSize < 10)
-		{		
+		{
 			rest -= partVal;
 			code[txtPos] = (unsigned char)('0' + partSize);
 			curCif--;
@@ -96,9 +96,9 @@ void NumberToTeamCode(double value, TCHAR *code, int minCiffers)
 }
 
 double GetBearing(TCHAR *code )
-{		
+{
 	int val = GetValueFromTeamCode(code, 2);
-	
+
 	double bearing = (val * 360.0/TEAMCODE_COMBINAIONS);
 	 bearing -= 0;
 	if (bearing < 0)
@@ -130,7 +130,7 @@ int GetValueFromTeamCode(TCHAR *code, int maxCount)
 	int val = 0;
 	int charPos = 0;
 	while (code[charPos] != 0 && charPos < maxCount)
-	{		
+	{
 		int cifferVal = 0;
 		if (code[charPos] >= '0' && code[charPos] <= '9')
 		{
@@ -145,7 +145,7 @@ int GetValueFromTeamCode(TCHAR *code, int maxCount)
 		val += (int)cifferVal;
 
 		charPos++;
-	}	
+	}
 	return val;
 }
 
@@ -157,8 +157,8 @@ void CalcTeamMatePos(double ownBear, double ownDist, double mateBear, double mat
 	double toDeg = 180.0 / PI;
 
 	// convert bearings to radians
-	ownBear = ownBear * toRad; 
-	mateBear = mateBear * toRad; 
+	ownBear = ownBear * toRad;
+	mateBear = mateBear * toRad;
 
 	// Calculate range
 	double Xs = ownDist*sin(ownBear) - mateDist*sin(mateBear);
@@ -168,7 +168,7 @@ void CalcTeamMatePos(double ownBear, double ownDist, double mateBear, double mat
 
 	// Calculate bearing
 	double bearing;
-	
+
 	if (Xs != 0)
 	{
 		bearing = (atan(Ys/Xs) * toDeg);
@@ -192,14 +192,14 @@ void CalcTeamMatePos(double ownBear, double ownDist, double mateBear, double mat
 void CalcTeammateBearingRange(double ownBear, double ownDist, TCHAR *TeamMateCode,  double *bearToMate, double *distToMate)
 {
 	double calcBearing = GetBearing(TeamMateCode)/*+ 180*/;
-	double calcRange = GetRange(TeamMateCode);	
+	double calcRange = GetRange(TeamMateCode);
 
 
 	//if (calcBearing > 360)
 	//{
 	//	calcBearing -= 360;
 	//}
-	
+
 
 	CalcTeamMatePos(ownBear, ownDist, calcBearing, calcRange, bearToMate, distToMate);
 }

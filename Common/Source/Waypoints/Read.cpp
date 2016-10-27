@@ -13,7 +13,7 @@
 int globalFileNum = 0;
 
 void InitVirtualWaypoints();
-void InitWayPointCalc(void); 
+void InitWayPointCalc(void);
 
 void ReadWayPoints(void)
 {
@@ -23,7 +23,7 @@ void ReadWayPoints(void)
 
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
   TCHAR szFile2[MAX_PATH] = TEXT("\0");
-        
+
   ZZIP_FILE *fp=NULL;
 
     LockTaskData();
@@ -33,7 +33,7 @@ void ReadWayPoints(void)
     _tcscpy(szFile1,szWaypointFile);
 
     _tcscpy(szWaypointFile,_T(""));
-      
+
     if (_tcslen(szFile1)>0) {
       ExpandLocalPath(szFile1);
       fp = openzip(szFile1, "rt");
@@ -74,11 +74,10 @@ void ReadWayPoints(void)
         StartupStore(TEXT("--- No waypoint file 2%s"),NEWLINE);
       }
     }
-	
+
     // each time we load WayPoint, we need to init WaypointCalc !!
     InitWayPointCalc();
 
   UnlockTaskData();
 
 }
-

@@ -46,7 +46,7 @@ void MapWindow::RenderMapWindowBg(LKSurface& Surface, const RECT& rc) {
     // Here we calculate arrival altitude, GD etc for map waypoints. Splitting with multicalc will result in delayed
     // updating of visible landables, for example. The nearest pages do this separately, with their own sorting.
     // Basically we assume -like for nearest- that values will not change that much in the multicalc split time.
-    // Target and tasks are recalculated in real time in any case. Nearest too. 
+    // Target and tasks are recalculated in real time in any case. Nearest too.
     LKCalculateWaypointReachable(false);
 
 _skip_calcs:
@@ -71,7 +71,7 @@ _skip_calcs:
         }
     }
 
-    // 
+    //
     // "Checkpoint Charlie"
     // This is were we process stuff for anything else but main map.
     // We let the calculations run also for MapSpace modes.
@@ -83,9 +83,9 @@ _skip_calcs:
 QuickRedraw:
     //
     if (DONTDRAWTHEMAP) {
-        const bool isMultimap = IsMultiMapShared(); // DrawMapSpace can change "MapSpaceMode", get this before. 
+        const bool isMultimap = IsMultiMapShared(); // DrawMapSpace can change "MapSpaceMode", get this before.
         DrawMapSpace(Surface, rc);
-        // Is this a "shared map" environment? 
+        // Is this a "shared map" environment?
         if (isMultimap) {
             // Shared map, of course not MSN_MAP, since dontdrawthemap was checked
             //
@@ -97,11 +97,11 @@ QuickRedraw:
             }
 
         } else {
-            // Not in map painting environment 
+            // Not in map painting environment
             // ex. nearest pages, but also MAPRADAR..
         }
 
-        // 
+        //
         DrawBottomBar(Surface, rc);
 #ifdef DRAWDEBUG
         DrawDebug(hdc, rc);
@@ -153,11 +153,11 @@ QuickRedraw:
             UnlockTerrainDataGraphics();
             goto QuickRedraw;
         }
-        
+
         if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
             terrainpainted = true;
         }
-        
+
         if (DONTDRAWTHEMAP) {
             UnlockTerrainDataGraphics();
             goto QuickRedraw;
@@ -190,8 +190,8 @@ QuickRedraw:
         // fill background..
         Surface.FillRect(&rc, hInvBackgroundBrush[BgMapColor]);
     }
-        
-        
+
+
     if (IsMultimapTopology()) {
         DrawTopology(Surface, DrawRect, _Proj);
     } else {
@@ -315,17 +315,17 @@ _skip_2:
         if (IsMultimapOverlaysGauges()) {
             RenderOverlayGauges(Surface, rc);
         }
-        
+
         if (TrackBar) {
             DrawHeading(Surface, Orig, DrawRect);
             if (ISGAAIRCRAFT) {
                 DrawFuturePos(Surface, Orig, DrawRect);
             }
         }
-        
+
         if (ISGAAIRCRAFT) {
             DrawHSIarc(Surface, Orig, DrawRect);
-        }        
+        }
 
         if (IsMultimapOverlaysText()) {
             DrawLook8000(Surface, rc);
@@ -359,5 +359,3 @@ _skip_2:
 #endif
 
 }
-
-

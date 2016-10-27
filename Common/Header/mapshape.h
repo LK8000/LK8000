@@ -89,12 +89,12 @@ typedef	struct
     int		nCurrentRecord;
     int		bCurrentRecordModified;
     char	*pszCurrentRecord;
-    
+
     int		bNoHeader;
     int		bUpdated;
 
     char 	*pszStringField;
-    int		nStringFieldLen;    
+    int		nStringFieldLen;
 #ifdef SWIG
 %mutable;
 #endif
@@ -103,7 +103,7 @@ typedef DBFInfo * DBFHandle;
 
 typedef enum {FTString, FTInteger, FTDouble, FTInvalid} DBFFieldType;
 
-// Shapefile object, no write access via scripts                               
+// Shapefile object, no write access via scripts
 typedef struct {
 #ifdef SWIG
 %immutable;
@@ -119,12 +119,12 @@ typedef struct {
   rectObj bounds; // shape extent
 
 #ifndef SWIG
-  DBFHandle hDBF; // DBF file pointer 
+  DBFHandle hDBF; // DBF file pointer
 #endif
 
   int *indexes; // what items do we need to retrieve from this shapefile
   int numindexes;
-  
+
   int lastshape;
 
   char *status;
@@ -136,14 +136,14 @@ typedef struct {
 } shapefileObj;
 
 // layerInfo structure for tiled shapefiles
-typedef struct { 
+typedef struct {
   shapefileObj shpfile;
   shapefileObj tileshpfile;
 } msTiledSHPLayerInfo;
 
 #ifndef SWIG
 
-// shapefileObj function prototypes 
+// shapefileObj function prototypes
 int msSHPOpenFile(shapefileObj *shpfile, const char *mode, const TCHAR *filename);
 int msSHPCreateFile(shapefileObj *shpfile, const TCHAR *filename, int type);
 void msSHPCloseFile(shapefileObj *shpfile);

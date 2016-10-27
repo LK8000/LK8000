@@ -8,23 +8,23 @@
    This part of the code is taken from ShapeLib 1.1.5
    Copyright (c) 1999, Frank Warmerdam
 
-   This software is available under the following "MIT Style" license, or at the option 
-   of the licensee under the LGPL (see LICENSE.LGPL). 
+   This software is available under the following "MIT Style" license, or at the option
+   of the licensee under the LGPL (see LICENSE.LGPL).
    This option is discussed in more detail in shapelib.html.
 
-   Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-   and associated documentation files (the "Software"), to deal in the Software without restriction, 
-   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+   and associated documentation files (the "Software"), to deal in the Software without restriction,
+   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
    subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included in all copies 
+   The above copyright notice and this permission notice shall be included in all copies
    or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
@@ -87,7 +87,7 @@ static void writeHeader(DBFHandle psDBF)
 
     abyHeader[8] = psDBF->nHeaderLength % 256;
     abyHeader[9] = psDBF->nHeaderLength / 256;
-    
+
     abyHeader[10] = psDBF->nRecordLength % 256;
     abyHeader[11] = psDBF->nRecordLength / 256;
 
@@ -125,7 +125,7 @@ static void flushRecord( DBFHandle psDBF )
     {
 	psDBF->bCurrentRecordModified = MS_FALSE;
 
-	nRecordOffset = psDBF->nRecordLength * psDBF->nCurrentRecord 
+	nRecordOffset = psDBF->nRecordLength * psDBF->nCurrentRecord
 	                                             + psDBF->nHeaderLength;
 
 	fseek( psDBF->fp, nRecordOffset, 0 );
@@ -138,7 +138,7 @@ static void flushRecord( DBFHandle psDBF )
 /*                              msDBFOpen()                             */
 /*                                                                      */
 /*      Open a .dbf file.                                               */
-/************************************************************************/   
+/************************************************************************/
 DBFHandle msDBFOpen( const TCHAR * pszFilename, const char * pszAccess )
 
 {
@@ -150,23 +150,23 @@ DBFHandle msDBFOpen( const TCHAR * pszFilename, const char * pszAccess )
     /* -------------------------------------------------------------------- */
     /*      We only allow the access strings "rb" and "r+".                 */
     /* -------------------------------------------------------------------- */
-    if( strcmp(pszAccess,"r") != 0 && strcmp(pszAccess,"r+") != 0 
+    if( strcmp(pszAccess,"r") != 0 && strcmp(pszAccess,"r+") != 0
         && strcmp(pszAccess,"rb") != 0 && strcmp(pszAccess,"r+b") != 0 )
         return( NULL );
-    
+
     /* -------------------------------------------------------------------- */
     /*	Ensure the extension is converted to dbf or DBF if it is 	    */
     /*	currently .shp or .shx.						    */
     /* -------------------------------------------------------------------- */
     pszDBFFilename = (TCHAR *) malloc((_tcslen(pszFilename)+1) * sizeof(TCHAR) * 2);
     _tcscpy( pszDBFFilename, pszFilename );
-    
-    if( _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".shp")) 
+
+    if( _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".shp"))
       || _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".shx")) )
     {
         _tcscpy( pszDBFFilename+_tcslen(pszDBFFilename)-4, _T(".dbf"));
     }
-    else if( _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".SHP")) 
+    else if( _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".SHP"))
       || _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".SHX")) )
     {
         _tcscpy( pszDBFFilename+_tcslen(pszDBFFilename)-4, _T(".DBF"));
@@ -185,7 +185,7 @@ DBFHandle msDBFOpen( const TCHAR * pszFilename, const char * pszAccess )
     psDBF->bCurrentRecordModified = MS_FALSE;
 
     psDBF->pszStringField = NULL;
-    psDBF->nStringFieldLen = 0;    
+    psDBF->nStringFieldLen = 0;
 
     free( pszDBFFilename );
 
@@ -195,12 +195,12 @@ DBFHandle msDBFOpen( const TCHAR * pszFilename, const char * pszAccess )
     pabyBuf = (uchar *) malloc(500);
     zzip_fread( pabyBuf, 32, 1, psDBF->zfp );
 
-    psDBF->nRecords = nRecords = 
+    psDBF->nRecords = nRecords =
      pabyBuf[4] + pabyBuf[5]*256 + pabyBuf[6]*256*256 + pabyBuf[7]*256*256*256;
 
     psDBF->nHeaderLength = nHeadLen = pabyBuf[8] + pabyBuf[9]*256;
     psDBF->nRecordLength = nRecLen = pabyBuf[10] + pabyBuf[11]*256;
-    
+
     psDBF->nFields = nFields = (nHeadLen - 32) / 32;
 
     psDBF->pszCurrentRecord = (char *) malloc(nRecLen);
@@ -240,7 +240,7 @@ DBFHandle msDBFOpen( const TCHAR * pszFilename, const char * pszAccess )
 	if( iField == 0 )
 	    psDBF->panFieldOffset[iField] = 1;
 	else
-	    psDBF->panFieldOffset[iField] = 
+	    psDBF->panFieldOffset[iField] =
 	      psDBF->panFieldOffset[iField-1] + psDBF->panFieldSize[iField-1];
     }
 
@@ -266,7 +266,7 @@ void  msDBFClose(DBFHandle psDBF)
     #if USETOPOMARKS
     /* -------------------------------------------------------------------- */
     /*      Update last access date, and number of records if we have       */
-    /*	write access.                					    */ 
+    /*	write access.                					    */
     /* -------------------------------------------------------------------- */
     if( psDBF->bUpdated && psDBF->fp)
     {
@@ -354,7 +354,7 @@ DBFHandle msDBFCreate( const TCHAR * pszFilename )
     psDBF->nFields = 0;
     psDBF->nRecordLength = 1;
     psDBF->nHeaderLength = 33;
-    
+
     psDBF->panFieldOffset = NULL;
     psDBF->panFieldSize = NULL;
     psDBF->panFieldDecimals = NULL;
@@ -368,7 +368,7 @@ DBFHandle msDBFCreate( const TCHAR * pszFilename )
 
     psDBF->pszStringField = NULL;
 
-    psDBF->nStringFieldLen = 0;    
+    psDBF->nStringFieldLen = 0;
 
 
     psDBF->bNoHeader = MS_TRUE;
@@ -405,16 +405,16 @@ int	msDBFAddField(DBFHandle psDBF, const char * pszFieldName, DBFFieldType eType
     /* -------------------------------------------------------------------- */
     psDBF->nFields++;
 
-    psDBF->panFieldOffset = (int *) 
+    psDBF->panFieldOffset = (int *)
       SfRealloc( psDBF->panFieldOffset, sizeof(int) * psDBF->nFields );
 
-    psDBF->panFieldSize = (int *) 
+    psDBF->panFieldSize = (int *)
       SfRealloc( psDBF->panFieldSize, sizeof(int) * psDBF->nFields );
 
-    psDBF->panFieldDecimals = (int *) 
+    psDBF->panFieldDecimals = (int *)
       SfRealloc( psDBF->panFieldDecimals, sizeof(int) * psDBF->nFields );
 
-    psDBF->pachFieldType = (char *) 
+    psDBF->pachFieldType = (char *)
       SfRealloc( psDBF->pachFieldType, sizeof(char) * psDBF->nFields );
 
     /* -------------------------------------------------------------------- */
@@ -460,7 +460,7 @@ int	msDBFAddField(DBFHandle psDBF, const char * pszFieldName, DBFFieldType eType
         pszFInfo[16] = nWidth;
         pszFInfo[17] = nDecimals;
     }
-    
+
     /* -------------------------------------------------------------------- */
     /*      Make the current record buffer appropriately larger.            */
     /* -------------------------------------------------------------------- */
@@ -486,7 +486,7 @@ static char *msDBFReadAttribute(DBFHandle psDBF, int hEntity, int iField )
     /* -------------------------------------------------------------------- */
     /*	Is the request valid?                  				    */
     /* -------------------------------------------------------------------- */
-    if( iField < 0 || iField >= psDBF->nFields ) 
+    if( iField < 0 || iField >= psDBF->nFields )
     {
 	#if MAPSHAPEERROR
         msSetError(MS_DBFERR, "Invalid field index %d.", "msDBFGetItemIndex()",iField );
@@ -538,23 +538,23 @@ static char *msDBFReadAttribute(DBFHandle psDBF, int hEntity, int iField )
 
     /*
     ** Trim trailing blanks (SDL Modification)
-    */ 
+    */
     for(i=strlen(psDBF->pszStringField)-1;i>=0;i--) {
-      if(psDBF->pszStringField[i] != ' ') { 
-	psDBF->pszStringField[i+1] = '\0'; 
+      if(psDBF->pszStringField[i] != ' ') {
+	psDBF->pszStringField[i+1] = '\0';
 	break;
       }
     }
 
-    if(i == -1) psDBF->pszStringField[0] = '\0'; // whole string is blank (SDL fix)      
+    if(i == -1) psDBF->pszStringField[0] = '\0'; // whole string is blank (SDL fix)
 
     /*
     ** Trim/skip leading blanks (SDL/DM Modification - only on numeric types)
-    */ 
+    */
     if( psDBF->pachFieldType[iField] == 'N' || psDBF->pachFieldType[iField] == 'F' || psDBF->pachFieldType[iField] == 'D' ) {
         for(i=0;i<(int)strlen(psDBF->pszStringField);i++) {
             if(psDBF->pszStringField[i] != ' ')
-                break;	
+                break;
         }
         pReturnField = psDBF->pszStringField+i;
     }
@@ -592,7 +592,7 @@ double	msDBFReadDoubleAttribute( DBFHandle psDBF, int iRecord, int iField )
 /************************************************************************/
 const char *msDBFReadStringAttribute( DBFHandle psDBF, int iRecord, int iField )
 {
-  return( msDBFReadAttribute( psDBF, iRecord, iField ) );  
+  return( msDBFReadAttribute( psDBF, iRecord, iField ) );
 }
 
 /************************************************************************/
@@ -624,24 +624,24 @@ DBFFieldType msDBFGetFieldInfo( DBFHandle psDBF, int iField, char * pszFieldName
 {
   if( iField < 0 || iField >= psDBF->nFields )
     return( FTInvalid );
-  
+
   if( pnWidth != NULL )
     *pnWidth = psDBF->panFieldSize[iField];
-  
+
   if( pnDecimals != NULL )
     *pnDecimals = psDBF->panFieldDecimals[iField];
-  
+
   if( pszFieldName != NULL )
     {
       int	i;
-      
+
       strncpy( pszFieldName, (char *) psDBF->pszHeader+iField*32, 11 );
       pszFieldName[11] = '\0';
       for( i = 10; i > 0 && pszFieldName[i] == ' '; i-- )
 	pszFieldName[i] = '\0';
     }
-  
-  if( psDBF->pachFieldType[iField] == 'N' 
+
+  if( psDBF->pachFieldType[iField] == 'N'
       || psDBF->pachFieldType[iField] == 'F'
       || psDBF->pachFieldType[iField] == 'D' )
     {
@@ -667,30 +667,30 @@ static int msDBFWriteAttribute(DBFHandle psDBF, int hEntity, int iField, void * 
   int	       	nRecordOffset, i, j;
   uchar	*pabyRec;
   char	szSField[40], szFormat[12];
-  
+
   /* -------------------------------------------------------------------- */
   /*	Is this a valid record?						  */
   /* -------------------------------------------------------------------- */
   if( hEntity < 0 || hEntity > psDBF->nRecords )
     return( MS_FALSE );
-  
+
   if( psDBF->bNoHeader )
     writeHeader(psDBF);
-  
+
   /* -------------------------------------------------------------------- */
   /*      Is this a brand new record?                                     */
   /* -------------------------------------------------------------------- */
   if( hEntity == psDBF->nRecords )
     {
       flushRecord( psDBF );
-      
+
       psDBF->nRecords++;
       for( i = 0; i < psDBF->nRecordLength; i++ )
 	psDBF->pszCurrentRecord[i] = ' ';
-      
+
       psDBF->nCurrentRecord = hEntity;
     }
-  
+
   /* -------------------------------------------------------------------- */
   /*      Is this an existing record, but different than the last one     */
   /*      we accessed?                                                    */
@@ -698,17 +698,17 @@ static int msDBFWriteAttribute(DBFHandle psDBF, int hEntity, int iField, void * 
   if( psDBF->nCurrentRecord != hEntity )
     {
       flushRecord( psDBF );
-      
+
       nRecordOffset = psDBF->nRecordLength * hEntity + psDBF->nHeaderLength;
-      
+
       fseek( psDBF->fp, nRecordOffset, 0 );
       fread( psDBF->pszCurrentRecord, psDBF->nRecordLength, 1, psDBF->fp );
 
       psDBF->nCurrentRecord = hEntity;
     }
-  
+
   pabyRec = (uchar *) psDBF->pszCurrentRecord;
-  
+
   /* -------------------------------------------------------------------- */
   /*      Assign all the record fields.                                   */
   /* -------------------------------------------------------------------- */
@@ -730,20 +730,20 @@ static int msDBFWriteAttribute(DBFHandle psDBF, int hEntity, int iField, void * 
       strncpy((char *) (pabyRec+psDBF->panFieldOffset[iField]),  szSField, strlen(szSField) );
     }
     break;
-    
+
   default:
     if( strlen((char *) pValue) > (unsigned)psDBF->panFieldSize[iField] )
       j = psDBF->panFieldSize[iField];
     else
       j = strlen((char *) pValue);
-    
+
     strncpy((char *) (pabyRec+psDBF->panFieldOffset[iField]), (char *) pValue, j );
     break;
   }
-  
+
   psDBF->bCurrentRecordModified = MS_TRUE;
   psDBF->bUpdated = MS_TRUE;
-  
+
   return( MS_TRUE );
 }
 
@@ -766,7 +766,7 @@ int msDBFWriteDoubleAttribute( DBFHandle psDBF, int iRecord, int iField, double 
 int msDBFWriteIntegerAttribute( DBFHandle psDBF, int iRecord, int iField,	int nValue )
 {
   double	dValue = nValue;
-  
+
   return( msDBFWriteAttribute( psDBF, iRecord, iField, (void *) &dValue ) );
 }
 
@@ -810,12 +810,12 @@ int m_strcasecmp(const char *s1, const char*s2) {
 int msDBFGetItemIndex(DBFHandle dbffile, char *name)
 {
   int i;
-  int fWidth,fnDecimals; /* field width and number of decimals */    
+  int fWidth,fnDecimals; /* field width and number of decimals */
   char fName[32]; /* field name */
 
   if(!name) {
     #if MAPSHAPEERROR
-    msSetError(MS_MISCERR, "NULL item name passed.", "msGetItemIndex()");    
+    msSetError(MS_MISCERR, "NULL item name passed.", "msGetItemIndex()");
     #endif
     return(-1);
   }
@@ -828,7 +828,7 @@ int msDBFGetItemIndex(DBFHandle dbffile, char *name)
   }
 
   #if MAPSHAPEERROR
-  msSetError(MS_DBFERR, "Item '%s' not found.", "msDBFGetItemIndex()",name);  
+  msSetError(MS_DBFERR, "Item '%s' not found.", "msDBFGetItemIndex()",name);
   #endif
   return(-1); /* item not found */
 }
@@ -908,7 +908,7 @@ int *msDBFGetItemIndexes(DBFHandle dbffile, char **items, int numitems)
 
   for(i=0;i<numitems;i++) {
     itemindexes[i] = msDBFGetItemIndex(dbffile, items[i]);
-    if(itemindexes[i] == -1) { 
+    if(itemindexes[i] == -1) {
       free(itemindexes);
       return(NULL); // item not found
     }

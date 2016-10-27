@@ -62,7 +62,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   // This should never happen
   LKASSERT(_tcslen(String) < sizeof(OrigString));
   #endif
-  LK_tcsncpy(OrigString, String,READLINE_LENGTH);  
+  LK_tcsncpy(OrigString, String,READLINE_LENGTH);
   // if string is too short do nothing
   if (_tcslen(OrigString)<11) return false;
 
@@ -78,10 +78,10 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 		TempString[j++] = _T(',');
 		TempString[j++] = _T(DUMCHAR);
 		continue;
-	} 
+	}
 	/* we need terminations for comments
 	if ( OrigString[i] == _T('\r') ) continue;
-	if ( OrigString[i] == _T('\n') ) continue; 
+	if ( OrigString[i] == _T('\n') ) continue;
 	*/
 
 	TempString[j++] = OrigString[i];
@@ -99,7 +99,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 	pToken[NAME_SIZE-1]= _T('\0');
   }
 
-  _tcscpy(Temp->Name, pToken); 
+  _tcscpy(Temp->Name, pToken);
   CleanCupCode(Temp->Name);
 
   #ifdef CUPDEBUG
@@ -112,10 +112,10 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   if (pToken == NULL) return false;
 
   if (_tcslen(pToken)>CUPSIZE_CODE) pToken[CUPSIZE_CODE-1]= _T('\0');
-  _tcscpy(Temp->Code, pToken); 
+  _tcscpy(Temp->Code, pToken);
   for (i=_tcslen(Temp->Code)-1; i>1; i--) if (Temp->Code[i]==' ') Temp->Code[i]=0; else break;
   _tcscpy(Tname,Temp->Code);
-  for (j=0, i=0; i<_tcslen(Tname); i++) 
+  for (j=0, i=0; i<_tcslen(Tname); i++)
 	//if (Tname[i]!='\"') Temp->Code[j++]=Tname[i];
 	if ( (Tname[i]!='\"') && (Tname[i]!=DUMCHAR) ) Temp->Code[j++]=Tname[i]; Temp->Code[j]= _T('\0');
 
@@ -129,7 +129,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   StartupStore(_T("   CUP CODE=<%s>%s"),Temp->Code,NEWLINE);
   #endif
 
-        
+
   // ---------------- COUNTRY ------------------
   pToken = _tcstok(NULL, TEXT(","));
   if (pToken == NULL) return false;
@@ -186,7 +186,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   // ---------------- STYLE  ------------------
   pToken = _tcstok(NULL, TEXT(","));
   if (pToken == NULL) return false;
-  
+
   Temp->Style = (int)_tcstol(pToken,NULL,10);
   switch(Temp->Style) {
 	case STYLE_AIRFIELDGRASS:	// airfield grass
@@ -238,10 +238,10 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   pToken = _tcstok(NULL, TEXT(","));
   if (pToken == NULL) return false;
   if (_tcslen(pToken)>CUPSIZE_FREQ) pToken[CUPSIZE_FREQ-1]= _T('\0');
-  _tcscpy(Temp->Freq, pToken); 
+  _tcscpy(Temp->Freq, pToken);
   TrimRight(Temp->Freq);
   _tcscpy(Tname,Temp->Freq);
-  for (j=0, i=0; i<_tcslen(Tname); i++) 
+  for (j=0, i=0; i<_tcslen(Tname); i++)
 	if ( (Tname[i]!='\"') && (Tname[i]!=DUMCHAR) ) Temp->Freq[j++]=Tname[i];
   Temp->Freq[j]= _T('\0');
 
@@ -257,7 +257,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 	if (_tcslen(pToken)>=COMMENT_SIZE) pToken[COMMENT_SIZE-1]= _T('\0');
 
 	// remove trailing spaces and CR LF
-	_tcscpy(ctemp, pToken); 
+	_tcscpy(ctemp, pToken);
 	for (i=_tcslen(ctemp)-1; i>1; i--) {
 		if ( (ctemp[i]==' ') || (ctemp[i]=='\r') || (ctemp[i]=='\n') ) ctemp[i]=0;
 		else
@@ -265,7 +265,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 	}
 
 	// now remove " " (if there)
-	for (j=0, i=0; i<_tcslen(ctemp); i++) 
+	for (j=0, i=0; i<_tcslen(ctemp); i++)
 		if (ctemp[i]!='\"') ctemp[j++]=ctemp[i];
 	ctemp[j]= _T('\0');
 	if (_tcslen(ctemp) >0 ) {
@@ -285,7 +285,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 
   if(Temp->Altitude <= 0) {
 	WaypointAltitudeFromTerrain(Temp);
-  } 
+  }
 
   if (Temp->Details) {
 	free(Temp->Details);
@@ -310,18 +310,18 @@ double ReadLength(TCHAR *temp)
 	if ( *stop == 'n' ) {
 		len = len / TONAUTICALMILES;
 		return len;
-	} 
+	}
 	if ( (*stop == 'm') && (*(stop+1) == 'l') ) {
 		len = len / TOMILES;
 		return len;
-	} 
+	}
 	if ( (*stop == 'f') || (*stop == 'F') ) {
 		len = len / TOFEET;
 		return len;
-	} 
+	}
 	if ( (*stop == 'm') || (*stop == '\0') ) {
 		return len;
-	} 
+	}
   }
   len = -9999;
   return len;

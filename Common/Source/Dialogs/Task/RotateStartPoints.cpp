@@ -15,7 +15,7 @@ void RotateStartPoints(void) {
   if (!EnableMultipleStartPoints) return;
 
   LockTaskData();
-  
+
   int found = -1;
   int imax = 0;
   for (int i=0; i<MAXSTARTPOINTS; i++) {
@@ -37,5 +37,3 @@ void RotateStartPoints(void) {
   RefreshTask();
   UnlockTaskData();
 }
-
-

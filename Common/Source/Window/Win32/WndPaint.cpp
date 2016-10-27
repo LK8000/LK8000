@@ -5,7 +5,7 @@
  *
  * File:   WndPaint.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 17 novembre 2014, 23:21
  */
 
@@ -27,5 +27,3 @@ LRESULT CALLBACK WndPaint::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     }
     return Window::WinMsgHandler(hWnd, uMsg, wParam, lParam);
 }
-
-

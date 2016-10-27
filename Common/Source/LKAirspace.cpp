@@ -73,7 +73,7 @@ static const int k_nAreaType[k_nAreaCount] = {
 CAirspaceManager CAirspaceManager::_instance;
 
 // CAirspace class attributes
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED
 int CAirspace::_nearesthdistance = 0; // for infobox
 int CAirspace::_nearestvdistance = 0; // for infobox
 TCHAR* CAirspace::_nearesthname = NULL; // for infobox
@@ -127,11 +127,11 @@ const LKColor& CAirspaceBase::TypeColor(void) const {
 
 
 const LKBrush& CAirspaceBase::TypeBrush(void) const {
-#ifdef HAVE_HATCHED_BRUSH    
+#ifdef HAVE_HATCHED_BRUSH
     return MapWindow::GetAirspaceBrushByClass(_type);
 #else
-    return MapWindow::GetAirSpaceSldBrushByClass(_type);    
-#endif    
+    return MapWindow::GetAirSpaceSldBrushByClass(_type);
+#endif
 }
 
 
@@ -199,7 +199,7 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
     _pos_in_acked_nonfly_zone = false;
     _pred_in_acked_nonfly_zone = false;
 
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED
     _nearesthname = NULL;
     _nearestvname = NULL;
     _nearesthdistance = 100000;
@@ -209,7 +209,7 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
     _sideview_nearest_instance = NULL; // Init nearest instance for sideview
 
     // 110518 PENDING_QUESTION
-    // From Paolo to Kalman: casting a double to a signed int won't create problems 
+    // From Paolo to Kalman: casting a double to a signed int won't create problems
     // if for any reason it overflows the positive sign, going negative?
     // Kalman: overflow occurs after 24855days (68years) runtime, i think it will not cause problems.
     _now = (int) Basic->Time;
@@ -269,7 +269,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     bool pos_altitude = IsAltitudeInside(alt, agl);
     if (!pos_altitude) _pos_inside_now = false;
 
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED   
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED
     if (_flyzone && _pos_inside_now) {
         // If in flyzone, nearest warning point given (nearest distance to leaving the fly zone)
         if (abs(_hdistance) < abs(_nearesthdistance)) {
@@ -449,11 +449,11 @@ bool CAirspace::FinishWarning() {
                 int alt = _lastknownalt;
                 int agl = _lastknownagl;
                 if (_vdistance < 0) {
-                    // adjacent airspace will be above this one 
+                    // adjacent airspace will be above this one
                     alt += abs_vdistance + vdistance_lookout;
                     agl += abs_vdistance + vdistance_lookout;
                 } else {
-                    // adjacent airspace will be below this one 
+                    // adjacent airspace will be below this one
                     alt -= abs_vdistance + vdistance_lookout;
                     agl -= abs_vdistance + vdistance_lookout;
                 }
@@ -489,7 +489,7 @@ bool CAirspace::FinishWarning() {
 
         case aweEnteringFly:
             if (_pred_blindtime) break; //Do not count predicted events near takeoff, filters not settled yet
-            // Also preset warnlevel to awYellow, because we entering yellow zone. 
+            // Also preset warnlevel to awYellow, because we entering yellow zone.
             // but we don't need to generate a warning message right now - force no change in warnlevel
             _hwarninglabel_hide = true;
             if (abs_hdistance < _hdistancemargin) {
@@ -511,11 +511,11 @@ bool CAirspace::FinishWarning() {
                 int alt = _lastknownalt;
                 int agl = _lastknownagl;
                 if (_vdistance < 0) {
-                    // adjacent airspace will be above this one 
+                    // adjacent airspace will be above this one
                     alt += abs_vdistance + vdistance_lookout;
                     agl += abs_vdistance + vdistance_lookout;
                 } else {
-                    // adjacent airspace will be below this one 
+                    // adjacent airspace will be below this one
                     alt -= abs_vdistance + vdistance_lookout;
                     agl -= abs_vdistance + vdistance_lookout;
                 }
@@ -1120,7 +1120,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
                 for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
                     *itr = _Proj.LonLat2Screen(it->Longitude(), it->Latitude());
                 }
-               
+
 #if DEBUG_NEAR_POINTS
                 StartupStore(_T("... area point geo %i screen %i\n"), _geopoints.size(), _screenpoints.size());
 #endif
@@ -1226,7 +1226,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
 
     while ((pToken != NULL) && (*pToken != '\0')) {
 
-        //BugFix 110922 
+        //BugFix 110922
         //Malformed alt causes the parser to read wrong altitude, for example on line  AL FL65 (MNM ALT 5500ft)
         //Stop parsing if we have enough info!
         if ((Alt->Base != abUndef) && (fHasUnit) && ((Alt->Altitude != 0) || (Alt->FL != 0) || (Alt->AGL != 0))) break;
@@ -1631,7 +1631,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 							if(((int)(ExtractFrequency(p)*1000+0.5))  != ((int)(ExtractFrequency(Name)*1000+0.5)))
 							{
 							  _stprintf(sTmp, TEXT("%s %s"),  Name, p );
-						  	  LK_tcsncpy(Name, sTmp, NAME_SIZE);
+							  LK_tcsncpy(Name, sTmp, NAME_SIZE);
 							}
 						}
 						else
@@ -1651,7 +1651,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         continue;
 
                     case _T('Y'): // AY
-                        // ignore 
+                        // ignore
                         continue;
 
                     default:
@@ -1661,9 +1661,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 			    else
                                 _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
-                            // LKTOKEN  _@M68_ = "Airspace" 
+                            // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
-			} 
+			}
                         break;
                 } //sw
                 break;
@@ -1676,7 +1676,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++; // skip A and space
                         if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
                             _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
-                            // LKTOKEN  _@M68_ = "Airspace" 
+                            // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
@@ -1686,7 +1686,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++; // skip B and space
                         if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
                             _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
-                            // LKTOKEN  _@M68_ = "Airspace" 
+                            // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
@@ -1707,7 +1707,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                             points.push_back(CPoint2D(lat, lon));
                         } else {
                             _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
-                            // LKTOKEN  _@M68_ = "Airspace" 
+                            // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
@@ -1722,7 +1722,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                 _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
 
-                            // LKTOKEN  _@M68_ = "Airspace" 
+                            // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
 			}
                         break;
@@ -1754,7 +1754,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                 }
 
                 _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
-                // LKTOKEN  _@M68_ = "Airspace" 
+                // LKTOKEN  _@M68_ = "Airspace"
                 if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                 break;
 
@@ -1772,7 +1772,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 
                     maxwarning--;
-                    // LKTOKEN  _@M68_ = "Airspace" 
+                    // LKTOKEN  _@M68_ = "Airspace"
                     if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
 		}
                 break;
@@ -2143,14 +2143,14 @@ void CAirspaceManager::CloseAirspaces() {
 
     _detail_queue.clear();
     _detail_current = nullptr;
-    
+
     // need to cleanup, otherwise "Item.Pointer" still not null but invalid
     LKNumAirspaces = 0;
     for (LKAirspace_Nearest_Item& Item : LKAirspaces) {
         Item.Valid = false;
         Item.Pointer = NULL;
     }
-    
+
     // this is needed for avoid crash if airspaces configuration is changed
     // after Step 1 and before step 2 of multicalc inside AirspacesWarning
     CAirspace::ResetSideviewNearestInstance();
@@ -2316,7 +2316,7 @@ int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], dou
 // Otherwise, returns index of the circle or area that is closest to the specified point.
 //
 // Also returns the distance and bearing to the boundary of the airspace,
-// (TODO enhancement: return also the vertical separation).  
+// (TODO enhancement: return also the vertical separation).
 //
 // Distance <0 means interior.
 //
@@ -2554,7 +2554,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             _sideview_nearest = CAirspace::GetSideviewNearestInstance();
 
             // Fill infoboxes - Nearest horizontal
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED
             if (CAirspace::GetNearestHName() != NULL) {
                 LK_tcsncpy(NearestAirspaceName, CAirspace::GetNearestHName(), NAME_SIZE);
                 NearestAirspaceHDist = CAirspace::GetNearestHDistance();
@@ -2572,7 +2572,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             }
 #endif
 
-#ifdef LKAIRSP_INFOBOX_USE_SELECTED 
+#ifdef LKAIRSP_INFOBOX_USE_SELECTED
             if (_selected_airspace != NULL) {
                 _selected_airspace->CalculateDistance(NULL, NULL, NULL);
                 LK_tcsncpy(NearestAirspaceName, _selected_airspace->Name(), NAME_SIZE);
@@ -2702,7 +2702,7 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const {
 }
 
 // Gets an airspace object instance copy for a given airspace
-// to display instance attributes 
+// to display instance attributes
 // NOTE: virtual methods don't work on copied instances!
 //       they have to be mapped through airspacemanager class because of the mutex
 
@@ -2729,7 +2729,7 @@ inline bool warning_queue_sorter(const AirspaceWarningMessage& a, const Airspace
 
 bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
     if (msg == NULL) return false;
-    
+
     ScopeLock guard(_csairspaces);
     if(_user_warning_queue.empty()) {
       return false;
@@ -2806,7 +2806,7 @@ void CAirspaceManager::AirspaceAckSpace(CAirspace &airspace) {
     }
 }
 
-// Disable an airspace 
+// Disable an airspace
 
 void CAirspaceManager::AirspaceDisable(CAirspace &airspace) {
     ScopeLock guard(_csairspaces);
@@ -2871,13 +2871,13 @@ void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace) {
 const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
     switch (type) {
         case RESTRICT:
-            // LKTOKEN  _@M565_ = "Restricted" 
+            // LKTOKEN  _@M565_ = "Restricted"
             return MsgToken(565);
         case PROHIBITED:
-            // LKTOKEN  _@M537_ = "Prohibited" 
+            // LKTOKEN  _@M537_ = "Prohibited"
             return MsgToken(537);
         case DANGER:
-            // LKTOKEN  _@M213_ = "Danger Area" 
+            // LKTOKEN  _@M213_ = "Danger Area"
             return MsgToken(213);
         case CLASSA:
             return TEXT("Class A");
@@ -2894,12 +2894,12 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
         case CLASSG:
             return TEXT("Class G");
         case NOGLIDER:
-            // LKTOKEN  _@M464_ = "No Glider" 
+            // LKTOKEN  _@M464_ = "No Glider"
             return MsgToken(464);
         case CTR:
             return TEXT("CTR");
         case WAVE:
-            // LKTOKEN  _@M794_ = "Wave" 
+            // LKTOKEN  _@M794_ = "Wave"
             return MsgToken(794);
         case AATASK:
             return TEXT("AAT");
@@ -2908,7 +2908,7 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
 	case CLASSRMZ:
 	    return TEXT("RMZ");
         case OTHER:
-            // LKTOKEN  _@M765_ = "Unknown" 
+            // LKTOKEN  _@M765_ = "Unknown"
             return MsgToken(765);
         default:
             return TEXT("");
@@ -3266,7 +3266,7 @@ void CAirspaceManager::AirspaceDisableWaveSectors(void) {
 #endif
 
 
-// queue new airspaces for popup details 
+// queue new airspaces for popup details
 void CAirspaceManager::PopupAirspaceDetail(CAirspace * pAsp) {
     ScopeLock guard(_csairspaces);
     _detail_queue.push_back(pAsp);
@@ -3282,7 +3282,7 @@ void CAirspaceManager::ProcessAirspaceDetailQueue() {
     while(!_detail_queue.empty()) {
         _detail_current = _detail_queue.front();
         _detail_queue.pop_front(); // remove Airspace from fifo
-        
+
         {
             ScopeUnlock Unlock(_csairspaces);
             dlgAirspaceDetails();
@@ -3310,9 +3310,9 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
         LKPen FramePen(PEN_SOLID, IBLSCALE(1), TypeColor());
 
         const auto oldColor = Surface.SetTextColor(TypeColor());
-        
+
         const auto oldPen = Surface.SelectObject(FramePen);
-        
+
         const auto oldBrush = Surface.SelectObject(Enabled() ? TypeBrush() : LKBrush_Hollow);
 
         Surface.Polygon(ptOut, Length);

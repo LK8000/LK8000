@@ -44,9 +44,9 @@ class ReplayLogger {
   static bool Enabled;
   static bool ScanBuffer(TCHAR *buffer, double *Time, double *Latitude,
 			 double *Longitude, double *Altitude);
-  static bool ReadPoint(double *Time, 
-			double *Latitude, 
-			double *Longitude, 
+  static bool ReadPoint(double *Time,
+			double *Latitude,
+			double *Longitude,
 			double *Altitude);
   static TCHAR FileName[MAX_PATH+1];
 };
@@ -66,5 +66,3 @@ void ResetFRecord(void);
 #endif
 
 #endif
-
-

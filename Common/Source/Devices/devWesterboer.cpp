@@ -124,7 +124,7 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
     {
 	  RequestInfos(d);
       return PWES0(d, &String[7], pGPS);
-    } 
+    }
   else
     if(_tcsncmp(TEXT("$PWES1"), String, 6)==0)
     {
@@ -138,7 +138,7 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
     else
       if(_tcsncmp(TEXT("$PWES2"), String, 6)==0)
       {
-    	return PWES2(d, &String[7], pGPS);
+	return PWES2(d, &String[7], pGPS);
       }
   return FALSE;
 
@@ -217,7 +217,7 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   double vtas, vias;
   double altqne, altqnh;
   static bool initqnh=true;
-#ifdef DEVICE_SERIAL  
+#ifdef DEVICE_SERIAL
   static int NoMsg =0;
  // static int HardwareId = 0;
 
@@ -370,7 +370,7 @@ static int  iOldVarioSwitch=0;
     }
     else
     {
-  	  ExternalTriggerCruise = false;
+	  ExternalTriggerCruise = false;
 	  ExternalTriggerCircling = true;
     }
   }
@@ -509,6 +509,3 @@ if(_tcslen(String) < 180)
 #endif
   return(true);
 } // PWES2()
-
-
-

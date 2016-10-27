@@ -17,7 +17,7 @@ class WndTextEdit : public WndText {
 public:
     WndTextEdit();
     virtual ~WndTextEdit();
-    
+
     int GetLineCount() {
         return (int)::SendMessage(_hWnd, EM_GETLINECOUNT, 0, 0);
     }
@@ -25,4 +25,3 @@ public:
 };
 
 #endif	/* _WIN32_WNDTEXTEDIT_H */
-

@@ -1,0 +1,31 @@
+* 	text=auto whitespace=trailing-space
+
+*.xml	-text whitespace=cr-at-eol
+*.xsd	-text whitespace=cr-at-eol
+*.lkt	-text whitespace=cr-at-eol
+
+*.sh	text eol=lf
+
+*.plr	-text
+
+*.dvc	-text
+*.acf	-text
+*.prf	-text
+
+*.cup	-text
+*.IGC	-text
+
+*.hdr	binary
+*.zip	binary
+*.tgz	binary
+*.WAV	binary
+*.wav	binary
+*.TTF	binary
+*.BMP	binary
+*.bmp	binary
+*.dem	binary
+.DEM	binary
+.ico	binary
+.LKM	binary
+.odt	binary
+

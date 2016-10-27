@@ -42,4 +42,3 @@ public:
 };
 
 #endif	/* _LINUX_WNDTEXTEDIT_H */
-

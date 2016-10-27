@@ -31,7 +31,7 @@ double ReadAltitude(TCHAR *temp)
 			case 'f':
 				Altitude = Altitude / TOFEET;
 				break;
-			default:				// anything else is a syntax error   
+			default:				// anything else is a syntax error
 				Altitude = -9999;
 				break;
 		}

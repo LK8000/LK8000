@@ -8,27 +8,27 @@
    This part of the code is taken from ShapeLib 1.1.5
    Copyright (c) 1999, Frank Warmerdam
 
-   This software is available under the following "MIT Style" license, or at the option 
-   of the licensee under the LGPL (see LICENSE.LGPL). 
+   This software is available under the following "MIT Style" license, or at the option
+   of the licensee under the LGPL (see LICENSE.LGPL).
    This option is discussed in more detail in shapelib.html.
 
-   Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-   and associated documentation files (the "Software"), to deal in the Software without restriction, 
-   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+   and associated documentation files (the "Software"), to deal in the Software without restriction,
+   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
    subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included in all copies 
+   The above copyright notice and this permission notice shall be included in all copies
    or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <tchar.h>
@@ -75,7 +75,7 @@ void msFreeCharArray(char **array, int num_items)
 }
 
 #if MAPSHAPEERROR
-void msPrintShape(shapeObj *p) 
+void msPrintShape(shapeObj *p)
 {
   int i,j;
 
@@ -97,7 +97,7 @@ void msInitShape(shapeObj *shape)
   shape->type = MS_SHAPE_NULL;
   shape->bounds.minx = shape->bounds.miny = -1;
   shape->bounds.maxx = shape->bounds.maxy = -1;
-  
+
   // attribute component
   shape->values = NULL;
   shape->numvalues = 0;
@@ -131,7 +131,7 @@ int msCopyShape(shapeObj *from, shapeObj *to) {
   to->index = from->index;
   to->tileindex = from->tileindex;
 
-  if(from->values) {    
+  if(from->values) {
     to->values = (char **)malloc(sizeof(char *)*from->numvalues);
     for(i=0; i<from->numvalues; i++)
       to->values[i] = strdup(from->values[i]);
@@ -151,7 +151,7 @@ void msFreeShape(shapeObj *shape)
 
   if(shape->values) msFreeCharArray(shape->values, shape->numvalues);
   if(shape->text) free(shape->text);
-  
+
   msInitShape(shape); // now reset
 }
 
@@ -164,7 +164,7 @@ void msComputeBounds(shapeObj *shape)
 
   shape->bounds.minx = shape->bounds.maxx = shape->line[0].point[0].x;
   shape->bounds.miny = shape->bounds.maxy = shape->line[0].point[0].y;
-    
+
   for( i=0; i<shape->numlines; i++ ) {
     for( j=0; j<shape->line[i].numpoints; j++ ) {
       shape->bounds.minx = MS_MIN(shape->bounds.minx, shape->line[i].point[j].x);
@@ -194,7 +194,7 @@ int msAddLine(shapeObj *p, lineObj *new_line)
 
   /* Copy the new line onto the end of the extended line array */
   c= p->numlines;
-  extended_line[c].numpoints = new_line->numpoints;  
+  extended_line[c].numpoints = new_line->numpoints;
   if((extended_line[c].point = (pointObj *)malloc(new_line->numpoints * sizeof(pointObj))) == NULL) {
     #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msAddLine()");
@@ -228,7 +228,7 @@ void msRectToPolygon(rectObj rect, shapeObj *poly)
   lineObj line={0,NULL};
 
   line.point = (pointObj *)malloc(sizeof(pointObj)*5);
-  
+
   line.point[0].x = rect.minx;
   line.point[0].y = rect.miny;
   line.point[1].x = rect.minx;
@@ -239,9 +239,9 @@ void msRectToPolygon(rectObj rect, shapeObj *poly)
   line.point[3].y = rect.miny;
   line.point[4].x = line.point[0].x;
   line.point[4].y = line.point[0].y;
-  
+
   line.numpoints = 5;
-  
+
   msAddLine(poly, &line);
   poly->type = MS_SHAPE_POLYGON;
   poly->bounds = rect;
@@ -324,7 +324,7 @@ void msRectToPolygon(rectObj rect, shapeObj *poly)
 
 /*
 ** Routine for clipping a polyline, stored in a shapeObj struct, to a
-** rectangle. Uses clipLine() function to create a new shapeObj. 
+** rectangle. Uses clipLine() function to create a new shapeObj.
 */
 void msClipPolylineRect(shapeObj *shape, rectObj rect)
 {
@@ -357,7 +357,7 @@ void msClipPolylineRect(shapeObj *shape, rectObj rect)
 	} else { /* add just the last point */
 	  line.point[line.numpoints].x = x2;
 	  line.point[line.numpoints].y = y2;
-	  line.numpoints++;	  
+	  line.numpoints++;
 	}
 
 	if((x2 != shape->line[i].point[j].x) || (y2 != shape->line[i].point[j].y)) {
@@ -375,7 +375,7 @@ void msClipPolylineRect(shapeObj *shape, rectObj rect)
     free(line.point);
     line.numpoints = 0; /* new line */
   }
-  
+
   for (i=0; i<shape->numlines; i++) free(shape->line[i].point);
   free(shape->line);
 
@@ -397,22 +397,22 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
   lineObj line={0,NULL};
 
   msInitShape(&tmp);
-  
+
   if(shape->numlines == 0) /* nothing to clip */
     return;
-   
+
   for(j=0; j<shape->numlines; j++) {
 
     line.point = (pointObj *)malloc(sizeof(pointObj)*2*shape->line[j].numpoints+1); /* worst case scenario, +1 allows us to duplicate the 1st and last point */
     line.numpoints = 0;
 
     for (i = 0; i < shape->line[j].numpoints-1; i++) {
-      
+
       x1 = shape->line[j].point[i].x;
       y01 = shape->line[j].point[i].y;
       x2 = shape->line[j].point[i+1].x;
       y2 = shape->line[j].point[i+1].y;
-      
+
       deltax = x2-x1;
       if (deltax == 0) { /* bump off of the vertical */
 	deltax = (x1 > rect.minx) ? -NEARZERO : NEARZERO ;
@@ -421,7 +421,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
       if (deltay == 0) { /* bump off of the horizontal */
 	deltay = (y01 > rect.miny) ? -NEARZERO : NEARZERO ;
       }
-      
+
       if (deltax > 0) {		/*  points to right */
 	xin = rect.minx;
 	xout = rect.maxx;
@@ -438,10 +438,10 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
 	yin = rect.maxy;
 	yout = rect.miny;
       }
-      
+
       tinx = (xin - x1)/deltax;
       tiny = (yin - y01)/deltay;
-      
+
       if (tinx < tiny) {	/* hits x first */
 	tin1 = tinx;
 	tin2 = tiny;
@@ -449,7 +449,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
 	tin1 = tiny;
 	tin2 = tinx;
       }
-      
+
       if (1 >= tin1) {
 	if (0 < tin1) {
 	  line.point[line.numpoints].x = xin;
@@ -459,9 +459,9 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
 	if (1 >= tin2) {
 	  toutx = (xout - x1)/deltax;
 	  touty = (yout - y01)/deltay;
-	  
+
 	  tout = (toutx < touty) ? toutx : touty ;
-	  
+
 	  if (0 < tin2 || 0 < tout) {
 	    if (tin2 <= tout) {
 	      if (0 < tin2) {
@@ -515,7 +515,7 @@ void msClipPolygonRect(shapeObj *shape, rectObj rect)
 
     free(line.point);
   } /* next line */
-  
+
   for (i=0; i<shape->numlines; i++) free(shape->line[i].point);
   free(shape->line);
 
@@ -536,14 +536,14 @@ void msTransformShapeToPixel(shapeObj *shape, rectObj extent, double cellsize)
   if(shape->numlines == 0) return; // nothing to transform
 
   if(shape->type == MS_SHAPE_LINE || shape->type == MS_SHAPE_POLYGON) { // remove co-linear vertices
-  
+
     for(i=0; i<shape->numlines; i++) { // for each part
-      
+
       shape->line[i].point[0].x = MS_MAP2IMAGE_X(shape->line[i].point[0].x, extent.minx, cellsize);
       shape->line[i].point[0].y = MS_MAP2IMAGE_Y(shape->line[i].point[0].y, extent.maxy, cellsize);
-      
+
       for(j=1, k=1; j < shape->line[i].numpoints; j++ ) {
-	
+
 	shape->line[i].point[k].x = MS_MAP2IMAGE_X(shape->line[i].point[j].x, extent.minx, cellsize);
 	shape->line[i].point[k].y = MS_MAP2IMAGE_Y(shape->line[i].point[j].y, extent.maxy, cellsize);
 
@@ -552,9 +552,9 @@ void msTransformShapeToPixel(shapeObj *shape, rectObj extent, double cellsize)
 	    k++;
 	} else {
 	  if((shape->line[i].point[k-1].x != shape->line[i].point[k].x) || (shape->line[i].point[k-1].y != shape->line[i].point[k].y)) {
-	    if(((shape->line[i].point[k-2].y - shape->line[i].point[k-1].y)*(shape->line[i].point[k-1].x - shape->line[i].point[k].x)) == ((shape->line[i].point[k-2].x - shape->line[i].point[k-1].x)*(shape->line[i].point[k-1].y - shape->line[i].point[k].y))) {	    
+	    if(((shape->line[i].point[k-2].y - shape->line[i].point[k-1].y)*(shape->line[i].point[k-1].x - shape->line[i].point[k].x)) == ((shape->line[i].point[k-2].x - shape->line[i].point[k-1].x)*(shape->line[i].point[k-1].y - shape->line[i].point[k].y))) {
 	      shape->line[i].point[k-1].x = shape->line[i].point[k].x;
-	      shape->line[i].point[k-1].y = shape->line[i].point[k].y;	
+	      shape->line[i].point[k-1].y = shape->line[i].point[k].y;
 	    } else {
 	      k++;
 	    }
@@ -584,8 +584,8 @@ void msTransformPixelToShape(shapeObj *shape, rectObj extent, double cellsize)
 	if(shape->type == MS_SHAPE_LINE || shape->type == MS_SHAPE_POLYGON)  // remove co-linear vertices
 	{
 		for(i=0; i<shape->numlines; i++)  // for each part
-		{ 
-			for(j=0; j < shape->line[i].numpoints; j++ ) 
+		{
+			for(j=0; j < shape->line[i].numpoints; j++ )
 			{
 				shape->line[i].point[j].x = MS_IMAGE2MAP_X(shape->line[i].point[j].x, extent.minx, cellsize);
 				shape->line[i].point[j].y = MS_IMAGE2MAP_Y(shape->line[i].point[j].y, extent.maxy, cellsize);
@@ -596,7 +596,7 @@ void msTransformPixelToShape(shapeObj *shape, rectObj extent, double cellsize)
 	{
 		for(i=0; i<shape->numlines; i++)  // for each part
 		{
-			for(j=1; j < shape->line[i].numpoints; j++ ) 
+			for(j=1; j < shape->line[i].numpoints; j++ )
 			{
 				shape->line[i].point[j].x = MS_IMAGE2MAP_X(shape->line[i].point[j].x, extent.minx, cellsize);
 				shape->line[i].point[j].y = MS_IMAGE2MAP_Y(shape->line[i].point[j].y, extent.maxy, cellsize);
@@ -611,7 +611,7 @@ void msTransformPixelToShape(shapeObj *shape, rectObj extent, double cellsize)
 ** Not a generic intersection test, we KNOW the lines aren't parallel or coincident. To be used with the next
 ** buffering code only. See code in mapsearch.c for a boolean test for intersection.
 */
-pointObj generateLineIntersection(pointObj a, pointObj b, pointObj c, pointObj d) 
+pointObj generateLineIntersection(pointObj a, pointObj b, pointObj c, pointObj d)
 {
   pointObj p;
   double r;
@@ -619,8 +619,8 @@ pointObj generateLineIntersection(pointObj a, pointObj b, pointObj c, pointObj d
 
   if(b.x == c.x && b.y == c.y) return(b);
 
-  numerator = ((a.y-c.y)*(d.x-c.x) - (a.x-c.x)*(d.y-c.y));  
-  denominator = ((b.x-a.x)*(d.y-c.y) - (b.y-a.y)*(d.x-c.x));  
+  numerator = ((a.y-c.y)*(d.x-c.x) - (a.x-c.x)*(d.y-c.y));
+  denominator = ((b.x-a.x)*(d.y-c.y) - (b.y-a.y)*(d.x-c.x));
 
   r = numerator/denominator;
 
@@ -637,13 +637,13 @@ void bufferPolyline(shapeObj *p, shapeObj *op, int w)
   pointObj a;
   lineObj inside, outside;
   double angle;
-  double dx, dy;  
+  double dx, dy;
 
   for (i = 0; i < p->numlines; i++) {
 
     inside.point = (pointObj *)malloc(sizeof(pointObj)*p->line[i].numpoints);
     outside.point = (pointObj *)malloc(sizeof(pointObj)*p->line[i].numpoints);
-    inside.numpoints = outside.numpoints = p->line[i].numpoints;    
+    inside.numpoints = outside.numpoints = p->line[i].numpoints;
 
     angle = asin(MS_ABS(p->line[i].point[1].x - p->line[i].point[0].x)/sqrt((pow((p->line[i].point[1].x - p->line[i].point[0].x),2) + pow((p->line[i].point[1].y - p->line[i].point[0].y),2))));
     if(p->line[i].point[0].x < p->line[i].point[1].x)
@@ -659,7 +659,7 @@ void bufferPolyline(shapeObj *p, shapeObj *op, int w)
     inside.point[1].x = p->line[i].point[1].x + dx;
     inside.point[0].y = p->line[i].point[0].y + dy;
     inside.point[1].y = p->line[i].point[1].y + dy;
-    
+
     outside.point[0].x = p->line[i].point[0].x - dx;
     outside.point[1].x = p->line[i].point[1].x - dx;
     outside.point[0].y = p->line[i].point[0].y - dy;
@@ -681,7 +681,7 @@ void bufferPolyline(shapeObj *p, shapeObj *op, int w)
       inside.point[j].x = p->line[i].point[j].x + dx;
       a.y = p->line[i].point[j-1].y + dy;
       inside.point[j].y = p->line[i].point[j].y + dy;
-      inside.point[j-1] = generateLineIntersection(inside.point[j-2], inside.point[j-1], a, inside.point[j]);      
+      inside.point[j-1] = generateLineIntersection(inside.point[j-2], inside.point[j-1], a, inside.point[j]);
 
       a.x = p->line[i].point[j-1].x - dx;
       outside.point[j].x = p->line[i].point[j].x - dx;
@@ -698,7 +698,7 @@ void bufferPolyline(shapeObj *p, shapeObj *op, int w)
     free(inside.point);
     free(outside.point);
   }
-  
+
   return;
 }
 
@@ -727,7 +727,7 @@ static int get_centroid(shapeObj *p, pointObj *lp, double *miny, double *maxy)
 
   lp->x = cent_weight_x / total_len;
   lp->y = cent_weight_y / total_len;
-  
+
   return(0);
 }
 #endif
@@ -786,17 +786,17 @@ int msPolygonLabelPoint(shapeObj *p, pointObj *lp, int min_dimension)
   xintersect = (double *)calloc(n, sizeof(double));
 
   for(k=1; k<=NUM_SCANLINES; k++) { /* sample the shape in the y direction */
-    
-    y = maxy - k*skip; 
 
-    /* need to find a y that won't intersect any vertices exactly */  
+    y = maxy - k*skip;
+
+    /* need to find a y that won't intersect any vertices exactly */
     hi_y = y - 1; /* first initializing lo_y, hi_y to be any 2 pnts on either side of lp->y */
     lo_y = y + 1;
     for(j=0; j<p->numlines; j++) {
-      if((lo_y < y) && (hi_y >= y)) 
+      if((lo_y < y) && (hi_y >= y))
 	break; /* already initialized */
       for(i=0; i < p->line[j].numpoints; i++) {
-	if((lo_y < y) && (hi_y >= y)) 
+	if((lo_y < y) && (hi_y >= y))
 	  break; /* already initialized */
 	if(p->line[j].point[i].y < y)
 	  lo_y = p->line[j].point[i].y;
@@ -812,36 +812,36 @@ int msPolygonLabelPoint(shapeObj *p, pointObj *lp, int min_dimension)
 	  lo_y = p->line[j].point[i].y;
 	if((p->line[j].point[i].y >= y) && ((p->line[j].point[i].y - y) < (hi_y - y)))
 	  hi_y = p->line[j].point[i].y;
-      }      
+      }
     }
 
-    if(lo_y == hi_y) 
+    if(lo_y == hi_y)
       return (MS_FAILURE);
-    else  
-      y = (hi_y + lo_y)/2.0;    
-    
+    else
+      y = (hi_y + lo_y)/2.0;
+
     nfound = 0;
     for(j=0; j<p->numlines; j++) { /* for each line */
-      
+
       point1 = &( p->line[j].point[p->line[j].numpoints-1] );
       for(i=0; i < p->line[j].numpoints; i++) {
 	point2 = &( p->line[j].point[i] );
-	
+
 	if(EDGE_CHECK(point1->y, y, point2->y) == CLIP_MIDDLE) {
-	  
+
 	  if(point1->y == point2->y)
 	    continue; /* ignore horizontal edges */
-	  else	  
+	  else
 	    slope = (point2->x - point1->x) / (point2->y - point1->y);
-	  
+
 	  x = point1->x + (y - point1->y)*slope;
 	  xintersect[nfound++] = x;
 	} /* End of checking this edge */
-	
+
 	point1 = point2;  /* Go on to next edge */
       }
     } /* Finished the scanline */
-    
+
     /* First, sort the intersections */
     do {
       wrong_order = 0;
@@ -852,7 +852,7 @@ int msPolygonLabelPoint(shapeObj *p, pointObj *lp, int min_dimension)
 	}
       }
     } while(wrong_order);
-    
+
     /* Great, now find longest span */
     for(i=0; i < nfound; i += 2) {
       len = fabs(xintersect[i] - xintersect[i+1]);
@@ -882,7 +882,7 @@ int msPolylineLabelPoint(shapeObj *p, pointObj *lp, int min_length, double *angl
   int segment_index, line_index, temp_segment_index;
   int i, j;
   double theta;
-  
+
   temp_segment_index = segment_index = line_index = 0;
 
   total_length = 0;
@@ -923,19 +923,19 @@ int msPolylineLabelPoint(shapeObj *p, pointObj *lp, int min_length, double *angl
 
   lp->x = (p->line[i].point[j].x + p->line[i].point[j-1].x)/2.0;
   lp->y = (p->line[i].point[j].y + p->line[i].point[j-1].y)/2.0;
- 
+
   theta = asin(MS_ABS(p->line[i].point[j].x - p->line[i].point[j-1].x)/sqrt((pow((p->line[i].point[j].x - p->line[i].point[j-1].x),2) + pow((p->line[i].point[j].y - p->line[i].point[j-1].y),2))));
 
   if(p->line[i].point[j-1].x < p->line[i].point[j].x) { /* i.e. to the left */
     if(p->line[i].point[j-1].y < p->line[i].point[j].y) /* i.e. below */
       *angle = -(90.0 - MS_RAD_TO_DEG*theta);
     else
-      *angle = (90.0 - MS_RAD_TO_DEG*theta);      
+      *angle = (90.0 - MS_RAD_TO_DEG*theta);
   } else {
     if(p->line[i].point[j-1].y < p->line[i].point[j].y) /* i.e. below */
       *angle = (90.0 - MS_RAD_TO_DEG*theta);
     else
-      *angle = -(90.0 - MS_RAD_TO_DEG*theta);      
+      *angle = -(90.0 - MS_RAD_TO_DEG*theta);
   }
 
   return(MS_SUCCESS);

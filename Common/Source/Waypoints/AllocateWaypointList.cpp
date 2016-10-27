@@ -13,12 +13,12 @@
 
 
 bool AddWaypoint(WAYPOINT& Waypoint) {
-    
+
     try {
         WayPointList.push_back(Waypoint);
         // WAYPOINT struct contains pointer to malloc string,
         // ownership of this string is transfered to WayPointList
-        // Reset all content by security 
+        // Reset all content by security
         Waypoint = {0};
 
     } catch (std::exception& e) {

@@ -52,4 +52,3 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange, short wpT
 	return -1;
   }
 }
-

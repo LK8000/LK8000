@@ -28,7 +28,7 @@ void CalculateTaskSectors(void)
         SectorBearing = StartPoints[i].OutBound;
 
         FindLatitudeLongitude(WayPointList[StartPoints[i].Index].Latitude,
-                              WayPointList[StartPoints[i].Index].Longitude, 
+                              WayPointList[StartPoints[i].Index].Longitude,
                               SectorBearing + SectorAngle, SectorSize,
                               &StartPoints[i].SectorStartLat,
                               &StartPoints[i].SectorStartLon);
@@ -90,22 +90,22 @@ void CalculateTaskSectors(void)
 	  }
 
           FindLatitudeLongitude(WayPointList[Task[i].Index].Latitude,
-                                WayPointList[Task[i].Index].Longitude, 
+                                WayPointList[Task[i].Index].Longitude,
                                 SectorBearing + SectorAngle, SectorSize,
                                 &Task[i].SectorStartLat,
                                 &Task[i].SectorStartLon);
 
           FindLatitudeLongitude(WayPointList[Task[i].Index].Latitude,
-                                WayPointList[Task[i].Index].Longitude,	
+                                WayPointList[Task[i].Index].Longitude,
                                 SectorBearing - SectorAngle, SectorSize,
                                 &Task[i].SectorEndLat,
                                 &Task[i].SectorEndLon);
 
           if (!AATEnabled)
           {
-            Task[i].AATStartRadial  = 
+            Task[i].AATStartRadial  =
               AngleLimit360(SectorBearing - SectorAngle);
-            Task[i].AATFinishRadial = 
+            Task[i].AATFinishRadial =
               AngleLimit360(SectorBearing + SectorAngle);
           }
 
@@ -113,4 +113,3 @@ void CalculateTaskSectors(void)
     }
   UnlockTaskData();
 }
-

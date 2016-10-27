@@ -6,4 +6,3 @@
 BOOL DigiflyRegister(void);
 
 #endif
-

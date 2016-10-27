@@ -616,12 +616,12 @@ switch(LKevent)
 		    }
 		  }
 	    }
-    
+
 #ifdef FLARM_MS
     if(bFound) {
         /*
          * we can't show dialog from Draw thread
-         * instead, new event is queued, dialog will be popup by main thread 
+         * instead, new event is queued, dialog will be popup by main thread
          */
         InputEvents::processGlideComputer(GCE_POPUP_MULTISELECT);
     }
@@ -633,7 +633,7 @@ switch(LKevent)
   break;
 
   case LKEVENT_PAGEUP:
-  	  if(SPLITSCREEN_FACTOR == F_SIZE1) SPLITSCREEN_FACTOR = F_SIZE0;
+	  if(SPLITSCREEN_FACTOR == F_SIZE1) SPLITSCREEN_FACTOR = F_SIZE0;
 	  if(SPLITSCREEN_FACTOR == F_SIZE2) SPLITSCREEN_FACTOR = F_SIZE1;
 	  if(SPLITSCREEN_FACTOR == F_SIZE3) SPLITSCREEN_FACTOR = F_SIZE2;
   break;
@@ -656,8 +656,8 @@ if(SPLITSCREEN_FACTOR >0.95)
 switch(iFlarmDirection)
 {
 	case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
- 	case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
- 	case 2: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
+	case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
+	case 2: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
 }
 
 static double oldSplit = 0;
@@ -729,9 +729,9 @@ DiagrammStruct sDia;
   LastDoTraffic=0;
   DoTraffic(&DrawInfo,&DerivedDrawInfo);
   if (DrawInfo.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-   	DerivedDrawInfo.NavAltitude = DrawInfo.BaroAltitude;
+	DerivedDrawInfo.NavAltitude = DrawInfo.BaroAltitude;
   } else {
-  	DerivedDrawInfo.NavAltitude = DrawInfo.Altitude;
+	DerivedDrawInfo.NavAltitude = DrawInfo.Altitude;
   }
   GPSalt =  DerivedDrawInfo.NavAltitude;
 
@@ -970,7 +970,7 @@ double scl = xtick;
 		  LK_tcsncpy(asFLARMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
 		}
 
-	  	int iCnt= FLARMID_SIZE_NAME;
+		int iCnt= FLARMID_SIZE_NAME;
 
 	        for ( (iCnt = FLARMID_SIZE_NAME);iCnt>0 ; iCnt--)
 	        {
@@ -1024,7 +1024,7 @@ if(SPLITSCREEN_FACTOR >0)
 	   *************************************************************************/
 	  fx = asFLARMPos[i].fx;
 	  fy = asFLARMPos[i].fy;
-  	  fFlarmAlt = asFLARMPos[i].fAlt;
+	  fFlarmAlt = asFLARMPos[i].fAlt;
 	  int x  = DistanceToX(fx,  &sTopDia);
 	  int y  = HeightToY  (fy,  &sTopDia);
 	  PositionTopView[i].left   = x - iTouchAreaSize;
@@ -1081,7 +1081,7 @@ if(SPLITSCREEN_FACTOR >0)
 			Surface.DrawCircle(x, y, iCircleSize, rct, true );
 			break;
 		  default:
-	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
+			POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
 			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360( asFLARMPos[i].fFlarmBearing ));
 			Surface.Polygon(Triangle,5);
 
@@ -1147,8 +1147,8 @@ if(SPLITSCREEN_FACTOR >0)
   for (int i=0; i<FLARM_MAX_TRAFFIC; i++)
     if(LKTraffic[i].Status != LKT_EMPTY)
     {
-  	  fMaxHeight = max (fMaxHeight, LKTraffic[i].Altitude);
-  	  fMinHeight = min (fMinHeight, LKTraffic[i].Altitude);
+	  fMaxHeight = max (fMaxHeight, LKTraffic[i].Altitude);
+	  fMinHeight = min (fMinHeight, LKTraffic[i].Altitude);
     }
 
 
@@ -1318,7 +1318,7 @@ if(bSideview)
   if(pBmpTemp) {
     pBmpTemp->Draw(Surface, rci.left+NIBLSCALE(5),rci.top+TOPLIMITER, NIBLSCALE(22), NIBLSCALE(22));
   }
-          
+
 
   /********************************************************
    * draw head up/right icon
@@ -1405,14 +1405,14 @@ iStep = 1;
           LKASSERT(DrawInfo.FLARM_RingBuf[iIdx].iColorIdx>=0 && DrawInfo.FLARM_RingBuf[iIdx].iColorIdx<NO_VARIO_COLORS);
 
           const LKBrush* pBrush = variobrush[DrawInfo.FLARM_RingBuf[iIdx].iColorIdx];
-          
+
           const PixelRect rcDot = {
               Pnt.x-iTraceDotSize,
               Pnt.y-iTraceDotSize,
-              Pnt.x+iTraceDotSize, 
+              Pnt.x+iTraceDotSize,
               Pnt.y+iTraceDotSize
           };
-          
+
           Surface.FillRect(&rcDot, *pBrush);
           iCnt++;
         }
@@ -1480,7 +1480,7 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
 			Surface.DrawCircle(x, y, iCircleSize, rc, true, true );
 			break;
 		  default:
-	 		POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
+			POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
 			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360(  pTraf->TrackBearing ));
 			Surface.Polygon(Triangle,5);
 	    }

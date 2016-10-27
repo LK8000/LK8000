@@ -32,13 +32,13 @@ void CuSonde::test() {
     GPS_INFO.Altitude = i+50;
     GPS_INFO.OutsideAirTemperature = 20.0+DALR*0.5*i;
     GPS_INFO.RelativeHumidity = 50;
-    updateMeasurements(&GPS_INFO, &CALCULATED_INFO);      
+    updateMeasurements(&GPS_INFO, &CALCULATED_INFO);
   }
   for (i=3000; i>0; i-= 50) {
     GPS_INFO.Altitude = i+50;
     GPS_INFO.OutsideAirTemperature = 20.0+DALR*0.5*i;
     GPS_INFO.RelativeHumidity = 50;
-    updateMeasurements(&GPS_INFO, &CALCULATED_INFO);      
+    updateMeasurements(&GPS_INFO, &CALCULATED_INFO);
   }
 }
 #endif
@@ -97,8 +97,8 @@ void CuSonde::updateMeasurements(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
 
   RasterTerrain::Lock();
-  hGround = 
-    RasterTerrain::GetTerrainHeight(Basic->Latitude, Basic->Longitude); 
+  hGround =
+    RasterTerrain::GetTerrainHeight(Basic->Latitude, Basic->Longitude);
   RasterTerrain::Unlock();
   if (hGround == TERRAIN_INVALID) hGround=0; //@ 101027 FIX
 
@@ -149,7 +149,7 @@ void CuSonde::findThermalHeight(unsigned short level) {
   double dthermalheight = (level+dlevel)*CUSONDE_HEIGHTSTEP;
   if (dlevel>0.0) {
     if (dlevel>1.0) {
-      if ((level+2<CUSONDE_NUMLEVELS) 
+      if ((level+2<CUSONDE_NUMLEVELS)
 	  && (cslevels[level+2].nmeasurements>0)) {
 	// estimated point should be in next level.
 	return;
@@ -190,7 +190,7 @@ void CuSonde::findCloudBase(unsigned short level) {
   double dcloudbase = (level+dlevel)*CUSONDE_HEIGHTSTEP;
   if (dlevel>0.0) {
     if (dlevel>1.0) {
-      if ((level+2<CUSONDE_NUMLEVELS) 
+      if ((level+2<CUSONDE_NUMLEVELS)
 	  && (cslevels[level+2].nmeasurements>0)) {
 	// estimated point should be in next level.
 	return;
@@ -206,12 +206,12 @@ void CuSonde::findCloudBase(unsigned short level) {
 #endif
 
   }
-  
+
 }
 
 
 
-void CuSondeLevel::updateTemps(double rh, double t) 
+void CuSondeLevel::updateTemps(double rh, double t)
 // calculate dew point
 // input:  humi [%RH]
 //         temp [degreesC]
@@ -223,18 +223,18 @@ void CuSondeLevel::updateTemps(double rh, double t)
    logEx=0.66077+7.5*t/(237.3+t)+(log10(rh)-2);
    LKASSERT((0.66077+7.5-logEx)!=0);
    adewpoint = (logEx - 0.66077)*237.3/(0.66077+7.5-logEx);
- 
-   // update statistics 
+
+   // update statistics
    if (0) {
      nmeasurements++;
-     dewpoint = (adewpoint+dewpoint*(nmeasurements-1))/nmeasurements;   
+     dewpoint = (adewpoint+dewpoint*(nmeasurements-1))/nmeasurements;
      airTemp = (t+airTemp*(nmeasurements-1))/nmeasurements;
    } else {
      if (nmeasurements==0) {
-       dewpoint = adewpoint;   
+       dewpoint = adewpoint;
        airTemp = t;
      } else {
-       dewpoint = adewpoint*0.5+dewpoint*0.5;   
+       dewpoint = adewpoint*0.5+dewpoint*0.5;
        airTemp = t*0.5+airTemp*0.5;
      }
 
@@ -274,12 +274,12 @@ double calc_dewpoint(double h, double t)
    - calculate dewpoint
    - update statistical model:
 
-   - for each height: 
+   - for each height:
        -- calculate temp of dry parcel of air from ground temp
              projected up at DALR
        -- thermal index is difference in dry temp and environmental temp
        -- calculate dew point
-       -- extrapolate difference between DALR temp and dew point to 
+       -- extrapolate difference between DALR temp and dew point to
             find cloud base (where difference is 0)
        -- extrapolate thermal index to find estimated convection height
             (where thermal index = -3)
@@ -302,4 +302,3 @@ DALR = -0.00974 degrees C per meter
 C to Kelvin = +273.15
 
  */
-

@@ -50,11 +50,11 @@ int RasterMap::GetEffectivePixelSize(double *pixel_D,
   }
 
   // how many steps are in the pixel size
-  DistanceBearing(latitude, longitude, latitude+step_size, 
+  DistanceBearing(latitude, longitude, latitude+step_size,
                   longitude, &terrain_step_x, NULL);
   terrain_step_x = fabs(terrain_step_x);
 
-  DistanceBearing(latitude, longitude, latitude, 
+  DistanceBearing(latitude, longitude, latitude,
                   longitude+step_size, &terrain_step_y, NULL);
   terrain_step_y = fabs(terrain_step_y);
 
@@ -92,7 +92,7 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
 
   xlleft = (int)(TerrainInfo->Left*fXroundingFine)+128;
   xlltop  = (int)(TerrainInfo->Top*fYroundingFine)-128;
-  
+
   Interpolate = ((Xrounding==1)&&(Yrounding==1));
 }
 
@@ -128,7 +128,7 @@ void RasterTerrain::SetTerrainRounding(double x, double y) {
   }
 }
 
-int RasterTerrain::GetEffectivePixelSize(double *pixel_D, 
+int RasterTerrain::GetEffectivePixelSize(double *pixel_D,
                                          double latitude, double longitude) {
   if (TerrainMap) {
     return TerrainMap->GetEffectivePixelSize(pixel_D, latitude, longitude);
@@ -138,7 +138,7 @@ int RasterTerrain::GetEffectivePixelSize(double *pixel_D,
 }
 
 
-bool RasterTerrain::WaypointIsInTerrainRange(double latitude, 
+bool RasterTerrain::WaypointIsInTerrainRange(double latitude,
                                              double longitude) {
   if (TerrainMap) {
     return TerrainMap->IsInside(latitude, longitude);
@@ -157,5 +157,3 @@ bool RasterTerrain::GetTerrainCenter(double *latitude,
     return false;
   }
 }
-
-

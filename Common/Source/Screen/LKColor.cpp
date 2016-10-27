@@ -5,7 +5,7 @@
  *
  * File:   LKColor.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 15 octobre 2014, 20:16
  */
 
@@ -65,7 +65,7 @@ LKColor LKColor::MixColors(const LKColor& Color2, double fFact1) const {
     if (green > 255) green = 255;
     int blue = (int) (fFact1 * (double) blue1 + fFact2 * (double) blue2);
     if (blue > 255) blue = 255;
-    
+
     return LKColor((uint8_t) red, (uint8_t) green, (uint8_t) blue);
 #endif
 }

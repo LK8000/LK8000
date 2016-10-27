@@ -5,7 +5,7 @@
 * Author:		Steve Loughran
 * Created:		2001
 * Language:		C++
-* Package:		
+* Package:
 * Status:		Experimental
 * @doc
 *
@@ -19,7 +19,7 @@
     written in PowerBasic.  To get the source code for MADTRAN, go to:
 
       http://164.214.2.59/publications/guides/MADTRAN/index.html
-    
+
 	this version retains the core algorithms as static functions
 
 */
@@ -116,13 +116,13 @@ double sphtmd (double ap, double bp, double cp, double dp, double ep,
 //    written in PowerBasic.  To get the source code for MADTRAN, go to:
 //
 //      http://164.214.2.59/publications/guides/MADTRAN/index.html
-//    
+//
 //    and download MADTRAN.ZIP
 //  - If the UTM zone is out of range, the y-zone character is set to the
 //    asterisk character ('*').
 
 void LatLonToUtm (double a, double f, int& utmXZone, char& utmYZone,
-	double& easting, double& northing, double lat, double lon) 
+	double& easting, double& northing, double lat, double lon)
 {
 	double recf;
 	double b;
@@ -209,7 +209,7 @@ void LatLonToUtm (double a, double f, int& utmXZone, char& utmYZone,
 //  LatLonToUtm() member function.)
 
 void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone,
-	double& easting, double& northing, double lat, double lon) 
+	double& easting, double& northing, double lat, double lon)
 {
 	LatLonToUtm (6378137.0, 1 / 298.257223563, utmXZone, utmYZone,
 		easting, northing, lat, lon);
@@ -251,7 +251,7 @@ void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone,
 //=======================================================================
 
 void UtmToLatLon (double a, double f, int utmXZone, char utmYZone,
-	double easting, double northing, double& lat, double& lon) 
+	double easting, double northing, double& lat, double& lon)
 {
 	double recf;
 	double b;
@@ -292,7 +292,7 @@ void UtmToLatLon (double a, double f, int utmXZone, char utmYZone,
 		* (tn * tn * tn * tn * tn) / 16.0) / 48.0;
 	ep = 315.0 * a * ((tn * tn * tn * tn) - (tn * tn * tn * tn * tn)) / 512.0;
 	if ((utmYZone <= 'M' && utmYZone >= 'C')
-		|| (utmYZone <= 'm' && utmYZone >= 'c')) { 
+		|| (utmYZone <= 'm' && utmYZone >= 'c')) {
 		nfn = 10000000.0;
 	} else {
 		nfn = 0;
@@ -324,7 +324,7 @@ void UtmToLatLon (double a, double f, int utmXZone, char utmYZone,
 		* eta) / (24.0 * sr * (sn * sn * sn) * (ok * ok * ok * ok));
 	lat = ftphi - (de * de) * t10 + (de * de * de * de) * t11;
 	t14 = 1.0 / (sn * c * ok);
-	t15 = (1.0 + 2.0 * (t * t) + eta) / (6 * (sn * sn * sn) * c 
+	t15 = (1.0 + 2.0 * (t * t) + eta) / (6 * (sn * sn * sn) * c
 		* (ok * ok * ok));
 	dlam = de * t14 - (de * de * de) * t15;
 	olam = (utmXZone * 6 - 183.0) * deg2rad;
@@ -341,9 +341,8 @@ void UtmToLatLon (double a, double f, int utmXZone, char utmYZone,
 //=======================================================================
 
 void UtmToLatLonWGS84 (int utmXZone, char utmYZone, double easting,
-					   double northing, double& lat, double& lon) 
+					   double northing, double& lat, double& lon)
 	{
 	UtmToLatLon (6378137.0, 1 / 298.257223563, utmXZone, utmYZone,
 		easting, northing, lat, lon);
 	}
-

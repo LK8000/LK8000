@@ -122,12 +122,12 @@ void dlgWindSettingsShowModal(void){
     wp = (WndProperty*)wf->FindByName(TEXT("prpAutoWind"));
     if (wp) {
       DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M418_ = "Manual" 
+	// LKTOKEN  _@M418_ = "Manual"
       dfe->addEnumText(MsgToken(418));
-	// LKTOKEN  _@M175_ = "Circling" 
+	// LKTOKEN  _@M175_ = "Circling"
       dfe->addEnumText(MsgToken(175));
       dfe->addEnumText(gettext(TEXT("ZigZag")));
-	// LKTOKEN  _@M149_ = "Both" 
+	// LKTOKEN  _@M149_ = "Both"
       dfe->addEnumText(MsgToken(149));
       dfe->addEnumText(MsgToken(1793)); // External
 
@@ -155,10 +155,9 @@ void dlgWindSettingsShowModal(void){
         MapWindow::EnableTrailDrift = wp->GetDataField()->GetAsBoolean();
       }
     }
-    
+
     delete wf;
   }
   wf = NULL;
 
 }
-

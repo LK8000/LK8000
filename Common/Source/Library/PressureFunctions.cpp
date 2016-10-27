@@ -91,7 +91,7 @@ double FindQNH(double alt_raw, double alt_known) {
   // (altitude can come from GPS or known airfield altitude or terrain
   // height on ground)
 
-  // This function assumes the barometric altitude (alt_raw) is 
+  // This function assumes the barometric altitude (alt_raw) is
   // already adjusted for QNH ---> the function returns the
   // QNH value to make the barometric altitude equal to the
   // alt_known value.
@@ -101,7 +101,7 @@ double FindQNH(double alt_raw, double alt_known) {
 
   // step 1, find static pressure from device assuming it's QNH adjusted
   double psraw = QNHAltitudeToStaticPressure(alt_raw);
-  // step 2, calculate QNH so that reported alt will be known alt 
+  // step 2, calculate QNH so that reported alt will be known alt
   return pow(pow(psraw/100.0,k1) + k2*alt_known,1/k1);
 
   // example, QNH=1014, ps=100203
@@ -116,7 +116,7 @@ double AirDensity(double altitude) {
   if (altitude>44330){
       altitude=44330;
   }
-  if (altitude<-200) { // min altitude 
+  if (altitude<-200) { // min altitude
       TESTBENCH_DO_ONLY(10,StartupStore(_T(".... INVALID ALTITUDE in AirDensity: %f%s"),altitude,NEWLINE));
       altitude=-200;
   }

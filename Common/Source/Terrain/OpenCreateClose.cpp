@@ -12,7 +12,7 @@
 #include "Dialogs/dlgProgress.h"
 
 RasterMap* RasterTerrain::TerrainMap = nullptr;
-        
+
 void RasterTerrain::OpenTerrain(void)
 {
   #if TESTBENCH
@@ -38,19 +38,19 @@ void RasterTerrain::OpenTerrain(void)
 
 bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
   LKASSERT(!TerrainMap); // memory leak;
-  
+
   TerrainMap = new(std::nothrow) RasterMap();
   if (!TerrainMap) {
     return false;
   }
   if (!TerrainMap->Open(zfilename)) {
     delete TerrainMap;
-    TerrainMap = nullptr;  
-  } 
+    TerrainMap = nullptr;
+  }
   return isTerrainLoaded();
 }
 
-///////// Specialised open/close routines /////////////////// 
+///////// Specialised open/close routines ///////////////////
 
 
 void RasterTerrain::CloseTerrain(void)
@@ -61,7 +61,6 @@ void RasterTerrain::CloseTerrain(void)
 
   // TODO code: lock it first?
 
-  delete TerrainMap; 
+  delete TerrainMap;
   TerrainMap = nullptr;
 }
-

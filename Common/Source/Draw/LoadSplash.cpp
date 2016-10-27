@@ -51,7 +51,7 @@ LKBitmap LoadSplash(const TCHAR *splashfile) {
                 break;
 	    default:
 	        break;
-    	}
+	}
     }
 
     hWelcomeBitmap.LoadFromFile(srcfile);

@@ -351,7 +351,7 @@ cleanup:
           free(expandedArg);
           expandedArg = 0;
         }
-        
+
 	if (!success)
 	{
 		if (argv != NULL)

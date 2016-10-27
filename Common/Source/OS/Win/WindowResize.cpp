@@ -21,7 +21,7 @@ RECT WindowResize(unsigned int x, unsigned int y) {
   w.right = x;
   w.bottom = y;
 #else
-  // 
+  //
   // For Windows PC we need to calculate borders
   //
   w.right = x + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
@@ -39,5 +39,3 @@ RECT WindowResize(unsigned int x, unsigned int y) {
   return(w);
 
 }
-
-

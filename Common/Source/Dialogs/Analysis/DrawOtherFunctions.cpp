@@ -29,7 +29,7 @@ void Statistics::DrawNoData(LKSurface& Surface, const RECT& rc) {
 
   SIZE tsize;
   TCHAR text[80];
-	// LKTOKEN  _@M470_ = "No data" 
+	// LKTOKEN  _@M470_ = "No data"
   _stprintf(text,TEXT("%s"), MsgToken(470));
   Surface.GetTextSize(text, &tsize);
   int x = (int)(rc.left+rc.right-tsize.cx)/2;
@@ -71,7 +71,7 @@ void Statistics::DrawYLabel(LKSurface& Surface, const RECT& rc, const TCHAR *tex
 
 
 void Statistics::DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
-			   const int Style) 
+			   const int Style)
 {
   if (lsdata->sum_n<2) {
     return;
@@ -86,7 +86,7 @@ void Statistics::DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsd
   xmax = lsdata->x_max;
   ymin = lsdata->x_min*lsdata->m+lsdata->b;
   ymax = lsdata->x_max*lsdata->m+lsdata->b;
-  
+
   xmin = (int)((xmin-x_min)*xscale)+rc.left+BORDER_X;
   xmax = (int)((xmax-x_min)*xscale)+rc.left+BORDER_X;
   ymin = (int)((y_max-ymin)*yscale)+rc.top;
@@ -103,8 +103,8 @@ void Statistics::DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsd
 
 
 void Statistics::DrawTrendN(LKSurface& Surface, const RECT& rc,
-			    LeastSquares* lsdata, 
-                            const int Style) 
+			    LeastSquares* lsdata,
+                            const int Style)
 {
   if (lsdata->sum_n<2) {
     return;
@@ -119,7 +119,7 @@ void Statistics::DrawTrendN(LKSurface& Surface, const RECT& rc,
   xmax = lsdata->sum_n+0.5;
   ymin = lsdata->x_min*lsdata->m+lsdata->b;
   ymax = lsdata->x_max*lsdata->m+lsdata->b;
-  
+
   xmin = (int)((xmin)*xscale)+rc.left+BORDER_X;
   xmax = (int)((xmax)*xscale)+rc.left+BORDER_X;
   ymin = (int)((y_max-ymin)*yscale)+rc.top;
@@ -199,13 +199,13 @@ void Statistics::DrawFilledLineGraph(LKSurface& Surface, const RECT& rc,
     line[i].x = ((lsdata->xstore[i]-x_min)*xscale)+rc.left+BORDER_X;
     line[i].y = ((y_max-lsdata->ystore[i])*yscale)+rc.top;
   }
-  
+
   line[lsdata->sum_n].x = line[lsdata->sum_n - 1].x;
   line[lsdata->sum_n].y = rc.bottom-BORDER_Y;
   line[lsdata->sum_n+1].x = line[0].x;
   line[lsdata->sum_n+1].y = rc.bottom-BORDER_Y;
   line[lsdata->sum_n+2] = line[0];
-  
+
   Surface.Polygon(line.data(), line.size());
 }
 
@@ -227,5 +227,3 @@ void Statistics::DrawLineGraph(LKSurface& Surface, const RECT& rc, LeastSquares*
     StyleLine(Surface, line[0], line[1], Style, rc);
   }
 }
-
-

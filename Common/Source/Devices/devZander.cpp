@@ -28,20 +28,20 @@ static BOOL ZanderParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apG
   if(_tcsncmp(TEXT("$PZAN1"), String, 6)==0)
     {
       return PZAN1(d, &String[7], apGPS);
-    } 
+    }
   if(_tcsncmp(TEXT("$PZAN2"), String, 6)==0)
     {
       return PZAN2(d, &String[7], apGPS);
-    } 
+    }
   if(_tcsncmp(TEXT("$PZAN3"), String, 6)==0)
     {
       return PZAN3(d, &String[7], apGPS);
-    } 
+    }
   if(_tcsncmp(TEXT("$PZAN4"), String, 6)==0)
     {
       return PZAN4(d, &String[7], apGPS);
-    } 
-    
+    }
+
   return FALSE;
 
 }
@@ -57,7 +57,7 @@ static BOOL ZanderIsLogger(PDeviceDescriptor_t d){
 
 static BOOL ZanderIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE); 
+  return(TRUE);
 }
 
 
@@ -127,7 +127,7 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 
   NMEAParser::ExtractParameter(String,ctemp,0);
   vtas = StrToDouble(ctemp,NULL)/3.6;
-  
+
   NMEAParser::ExtractParameter(String,ctemp,1);
   wnet = (StrToDouble(ctemp,NULL)-10000)/100; // cm/s
   apGPS->Vario = wnet;
@@ -161,20 +161,20 @@ static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
   //A=active (Windmessung ok) / V=void (Windmessung nicht verwendbar)
   //Windmessung im Geradeausflug: mit ZS1-Kompass A,A, ohne Kompass A,V
   //Windmessung im Kreisflug: V,A
-    
+
   TCHAR ctemp[80];
   double wspeed, wfrom;
   char wind_usable;
-   
+
   NMEAParser::ExtractParameter(String,ctemp,3);
   wfrom=StrToDouble(ctemp,NULL);
-  
+
   NMEAParser::ExtractParameter(String,ctemp,4);
   wspeed=StrToDouble(ctemp,NULL);
-  
+
   NMEAParser::ExtractParameter(String,ctemp,5);
-  wind_usable=ctemp[0]; 
-  
+  wind_usable=ctemp[0];
+
 
   if (wind_usable == 'A') {
 
@@ -198,7 +198,7 @@ static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 	}
 	#endif
   }
-    
+
   return true;
 }
 
@@ -210,14 +210,12 @@ static BOOL PZAN4(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
   //windcomponent (km/h)
   //wing loading (kp/m2)
   //best glide ratio
-    
+
   TCHAR ctemp[80];
-  
+
   NMEAParser::ExtractParameter(String,ctemp,0);
   MACCREADY = StrToDouble(ctemp,NULL);
-   
-  
+
+
   return true;
 }
-
-

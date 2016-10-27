@@ -36,11 +36,11 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
     if (ComPortStatus[0]==CPS_OPENKO) {
       TextInBox(Surface, &rc, MsgToken(971), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode); // No ComPort
     } else {
-    	if (ComPortStatus[0]==CPS_OPENOK) {
+	if (ComPortStatus[0]==CPS_OPENOK) {
 		if ((ComPortRx[0]>0) && !firstrun) {
 			// GPS IS MISSING
 			TextInBox(Surface, &rc, MsgToken(973), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
-			firstrun=false; 
+			firstrun=false;
 		} else {
 			// NO DATA RX
 			TextInBox(Surface, &rc, MsgToken(972), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
@@ -95,5 +95,3 @@ goto_DrawLockModeStatus:
   Surface.SelectObject(oldfont);
   return;
 }
-
-

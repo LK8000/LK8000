@@ -29,7 +29,7 @@ BOOL EWParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)String;
   (void)pGPS;
   // no propriatary sentence
-  
+
   return FALSE;
 
 }
@@ -55,10 +55,10 @@ BOOL EWTryConnect(PDeviceDescriptor_t d) {
   while (--retries){
 
     d->Com->WriteString(TEXT("##\r\n"));         // send IO Mode command
-    if (ExpectString(d, TEXT("IO Mode.\r"))) 
+    if (ExpectString(d, TEXT("IO Mode.\r")))
       return TRUE;
 
-    ExpectString(d, TEXT("$$$"));                 // empty imput buffer 
+    ExpectString(d, TEXT("$$$"));                 // empty imput buffer
   }
 
   nDeclErrorCode = 1;
@@ -98,12 +98,12 @@ BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   LK_tcsncpy(sPilot, decl->PilotName, 12);               // copy and strip fields
   LK_tcsncpy(sGliderType, decl->AircraftType, 8);
   LK_tcsncpy(sGliderID, decl->AircraftRego, 8);
- 
+
   // build string (field 4-5 are GPS info, no idea what to write)
-  _stprintf(sTmp, TEXT("%-12s%-8s%-8s%-12s%-12s%-6s\r"), 
-           sPilot, 
-           sGliderType, 
-           sGliderID, 
+  _stprintf(sTmp, TEXT("%-12s%-8s%-8s%-12s%-12s%-6s\r"),
+           sPilot,
+           sGliderType,
+           sGliderID,
            TEXT(""),                              // GPS Model
            TEXT(""),                              // GPS Serial No.
            TEXT("")                               // Flight Date,
@@ -117,9 +117,9 @@ BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
     nDeclErrorCode = 1;
     return(FALSE);
   };
-  
 
-  /*  
+
+  /*
   _stprintf(sTmp, TEXT("#SUI%02d"), 0);           // send pilot name
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
@@ -169,9 +169,9 @@ BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
 
   for (int j = 0; j < decl->num_waypoints; j++)
     EWDeclAddWayPoint(d, decl->waypoint[j]);
-  
+
   d->Com->WriteString(TEXT("NMEA\r\n"));         // switch to NMEA mode
-  
+
   d->Com->SetBaudrate(lLastBaudrate);            // restore baudrate
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
@@ -191,7 +191,7 @@ BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
   int DegLat, DegLon;
   double MinLat, MinLon;
   char NoS, EoW;
-  short EoW_Flag, NoS_Flag, EW_Flags;	
+  short EoW_Flag, NoS_Flag, EW_Flags;
 
   if (nDeclErrorCode != 0)                        // check for error
     return(FALSE);
@@ -204,7 +204,7 @@ BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 
   while (_tcslen(IDString) < 6)                   // fill up with spaces
     _tcscat(IDString, TEXT(" "));
-  
+
   #if USESHORTTPNAME > 0
     _tcscpy(&IDString[3], TEXT("   "));           // truncate to short name
   #endif
@@ -243,43 +243,43 @@ BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
     {
       EoW_Flag = 0x08;
     }
-  else 
-    { 
+  else
+    {
       EoW_Flag = 0x04;
     }
   if (NoS == 'N')
     {
       NoS_Flag = 0x01;
     }
-  else 
-    {	
+  else
+    {
       NoS_Flag = 0x02;
     }
   //  Do the calculation
   EW_Flags = (short)(EoW_Flag | NoS_Flag);
 
                                                   // setup command string
-  _stprintf(EWRecord,TEXT("#STP%02X%02X%02X%02X%02X%02X%02X%02X%02X%04X%02X%04X"), 
-                      ewDecelTpIndex, 
-                      IDString[0], 
+  _stprintf(EWRecord,TEXT("#STP%02X%02X%02X%02X%02X%02X%02X%02X%02X%04X%02X%04X"),
+                      ewDecelTpIndex,
+                      IDString[0],
                       IDString[1],
-                      IDString[2], 
-                      IDString[3], 
-                      IDString[4], 
-                      IDString[5], 
-                      EW_Flags, 
-                      DegLat, (int)MinLat/10, 
+                      IDString[2],
+                      IDString[3],
+                      IDString[4],
+                      IDString[5],
+                      EW_Flags,
+                      DegLat, (int)MinLat/10,
                       DegLon, (int)MinLon/10);
-    
+
   appendCheckSum(EWRecord);                       // complete package with CS and CRLF
-    
+
   d->Com->WriteString(EWRecord);                 // put it to the logger
 
   if (!ExpectString(d, TEXT("OK\r"))){            // wait for response
     nDeclErrorCode = 1;
     return(FALSE);
   }
-    
+
   ewDecelTpIndex = ewDecelTpIndex + 1;            // increase TP index
 
   return(TRUE);
@@ -329,10 +329,9 @@ BOOL ewInstall(PDeviceDescriptor_t d){
 
 BOOL ewRegister(void){
   return(devRegister(
-    TEXT("EW Logger"), 
+    TEXT("EW Logger"),
     1l << dfGPS
       | 1l << dfLogger,
     ewInstall
   ));
 }
-

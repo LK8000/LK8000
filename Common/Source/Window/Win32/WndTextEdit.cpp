@@ -5,7 +5,7 @@
  *
  * File:   WndTextEdit.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 18 novembre 2014, 00:08
  */
 
@@ -14,7 +14,7 @@
 WndTextEdit::WndTextEdit() : WndText(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
     _dwStyles = WS_CHILD|ES_MULTILINE|ES_CENTER|WS_BORDER|ES_READONLY|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
     _szClassName = _T("EDIT");
-    
+
 }
 
 WndTextEdit::~WndTextEdit() {

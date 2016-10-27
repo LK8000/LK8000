@@ -156,5 +156,3 @@ void RenderPlaneSideview(LKSurface& Surface, double fDist, double fAltitude,doub
   Surface.SelectObject(oldPen);
   Surface.SelectObject(oldBrush);
 } //else !asp_heading_task
-
-

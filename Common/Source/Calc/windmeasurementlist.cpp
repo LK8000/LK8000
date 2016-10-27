@@ -65,7 +65,7 @@ Vector WindMeasurementList::getWind(double Time, double alt, bool *found){
   result.y = 0;
   double override_time = 1.1;
   bool overridden = false;
- 
+
   for(uint i=0;i< nummeasurementlist; i++) {
     m= measurementlist[i];
     altdiff= (alt - m->altitude)*1.0/altRange;
@@ -73,22 +73,22 @@ Vector WindMeasurementList::getWind(double Time, double alt, bool *found){
 
     if ((fabs(altdiff)< 1.0) && (timediff < 1.0)) {
 
-      q_quality = min(5,m->quality)* REL_FACTOR_QUALITY / 5; 
+      q_quality = min(5,m->quality)* REL_FACTOR_QUALITY / 5;
       //measurement quality
-      
+
       a_quality = iround(((2.0/
                            (altdiff*altdiff+1.0))
                           -1.0)
-                         * REL_FACTOR_ALTITUDE); 
+                         * REL_FACTOR_ALTITUDE);
       //factor in altitude difference between current altitude and
       //measurement.  Maximum alt difference is 1000 m.
-      
+
       double k=0.0025;
-      
+
       t_quality = iround(k*(1.0-timediff)/(timediff*timediff+k)
                          * REL_FACTOR_TIME);
       //factor in timedifference. Maximum difference is 1 hours.
-      
+
       if (m->quality == 6) {
         if (timediff< override_time) {
           // over-ride happened, so re-set accumulator
@@ -127,7 +127,7 @@ Vector WindMeasurementList::getWind(double Time, double alt, bool *found){
     result.x=result.x/(int)total_quality;
     result.y=result.y/(int)total_quality;
   }
-  return result;         
+  return result;
 }
 
 
@@ -176,7 +176,7 @@ uint WindMeasurementList::getLeastImportantItem(double Time) {
       founditem=i;
     }
   }
-  return founditem;  
+  return founditem;
 }
 
 
@@ -186,4 +186,3 @@ int WindMeasurementList::compareItems(QCollection::Item s1, QCollection::Item s2
   return (int)(((WindMeasurement*)s1)->altitude - ((WindMeasurement*)s2)->altitude).getMeters();
 }
 */
-

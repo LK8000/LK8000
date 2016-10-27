@@ -28,7 +28,7 @@ static void UpdateList(WndListFrame* pWnd){
 static int DrawListIndex=0;
 
 static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
-  
+
   TCHAR label[40];
   (void)Sender;
   if (DrawListIndex < AIRSPACECLASSCOUNT){
@@ -40,9 +40,9 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
     } else {
       w0 = 225*ScreenScale;
     }
-	// LKTOKEN  _@M789_ = "Warn" 
+	// LKTOKEN  _@M789_ = "Warn"
     w1 = Surface.GetTextWidth(MsgToken(789))+ScreenScale*10;
-	// LKTOKEN  _@M241_ = "Display" 
+	// LKTOKEN  _@M241_ = "Display"
     w2 = Surface.GetTextWidth(MsgToken(241))+ScreenScale*10;
     x0 = w0-w1-w2;
 
@@ -59,21 +59,21 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
       Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
       Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(i));
       Surface.Rectangle(x0, 2*ScreenScale,w0, 22*ScreenScale);
-        
+
     } else {
-    
+
       bool iswarn;
       bool isdisplay;
 
       iswarn = (MapWindow::iAirspaceMode[i]>=2);
       isdisplay = ((MapWindow::iAirspaceMode[i]%2)>0);
       if (iswarn) {
-	// LKTOKEN  _@M789_ = "Warn" 
+	// LKTOKEN  _@M789_ = "Warn"
         _tcscpy(label, MsgToken(789));
         Surface.DrawText(w0-w1-w2, 2*ScreenScale, label);
       }
       if (isdisplay) {
-	// LKTOKEN  _@M241_ = "Display" 
+	// LKTOKEN  _@M241_ = "Display"
         _tcscpy(label, MsgToken(241));
         Surface.DrawText(w0-w2, 2*ScreenScale, label);
       }
@@ -86,7 +86,7 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
 
 static bool changed = false;
 
-static void OnAirspaceListEnter(WindowControl * Sender, 
+static void OnAirspaceListEnter(WindowControl * Sender,
 				WndListFrame::ListInfo_t *ListInfo) {
   (void)Sender;
   int ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
@@ -98,13 +98,13 @@ static void OnAirspaceListEnter(WindowControl * Sender,
     if (colormode) {
       int c = dlgAirspaceColoursShowModal();
       if (c>=0) {
-	MapWindow::iAirspaceColour[ItemIndex] = c; 
+	MapWindow::iAirspaceColour[ItemIndex] = c;
 	changed = true;
       }
-#ifdef HAVE_HATCHED_BRUSH      
+#ifdef HAVE_HATCHED_BRUSH
       int p = dlgAirspacePatternsShowModal();
       if (p>=0) {
-	MapWindow::iAirspaceBrush[ItemIndex] = p; 
+	MapWindow::iAirspaceBrush[ItemIndex] = p;
 	changed = true;
       }
 #endif
@@ -118,7 +118,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 }
 
 
-static void OnAirspaceListInfo(WindowControl * Sender, 
+static void OnAirspaceListInfo(WindowControl * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
   (void)Sender;
   if (ListInfo->DrawIndex == -1){
@@ -180,4 +180,3 @@ bool dlgAirspaceShowModal(bool coloredit){
 
   return changed;
 }
-

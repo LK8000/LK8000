@@ -15,7 +15,7 @@ void AddReservedWaypoints()
 {
     WayPointList.resize(NUMRESWP);
     WayPointCalc.resize(NUMRESWP);
-        
+
 	WayPointList[RESWP_TAKEOFF].Number=RESWP_TAKEOFF+1;
 	WayPointList[RESWP_TAKEOFF].Latitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TAKEOFF].Longitude=RESWP_INVALIDNUMBER;
@@ -31,11 +31,11 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TAKEOFF].Visible=FALSE;
 	WayPointList[RESWP_TAKEOFF].InTask=false;
 	WayPointList[RESWP_TAKEOFF].Details=(TCHAR *)NULL;
-	
+
 	WayPointList[RESWP_TAKEOFF].FarVisible=false;
 	WayPointList[RESWP_TAKEOFF].FileNum=-1;  // 100219  so it cannot be saved
 	WayPointList[RESWP_TAKEOFF].Format= LKW_VIRTUAL;  //@ bugfix 101110
-	
+
 	WayPointList[RESWP_LASTTHERMAL].Number=RESWP_LASTTHERMAL+1;
 	WayPointList[RESWP_LASTTHERMAL].Latitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_LASTTHERMAL].Longitude=RESWP_INVALIDNUMBER;
@@ -45,8 +45,8 @@ void AddReservedWaypoints()
 	if ( WayPointList[RESWP_LASTTHERMAL].Comment == NULL)
 		WayPointList[RESWP_LASTTHERMAL].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1320_ "LAST GOOD THERMAL"
-	if (WayPointList[RESWP_LASTTHERMAL].Comment!=NULL) 
-		_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, MsgToken(1320));		
+	if (WayPointList[RESWP_LASTTHERMAL].Comment!=NULL)
+		_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, MsgToken(1320));
 	WayPointList[RESWP_LASTTHERMAL].Reachable=FALSE;
 	WayPointList[RESWP_LASTTHERMAL].AltArivalAGL=0.0;
 	WayPointList[RESWP_LASTTHERMAL].Visible=TRUE; // careful! 100929
@@ -71,7 +71,7 @@ void AddReservedWaypoints()
 	if ( WayPointList[RESWP_TEAMMATE].Comment == NULL)
 		WayPointList[RESWP_TEAMMATE].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1321_ "TEAM MATE"
-	if (WayPointList[RESWP_TEAMMATE].Comment!=NULL) 
+	if (WayPointList[RESWP_TEAMMATE].Comment!=NULL)
 		_tcscpy(WayPointList[RESWP_TEAMMATE].Comment, MsgToken(1321));
 	WayPointList[RESWP_TEAMMATE].Reachable=FALSE;
 	WayPointList[RESWP_TEAMMATE].AltArivalAGL=0.0;
@@ -96,7 +96,7 @@ void AddReservedWaypoints()
 	if ( WayPointList[RESWP_FLARMTARGET].Comment == NULL)
 		WayPointList[RESWP_FLARMTARGET].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	// LKTOKEN _@M1322_ "FLARM TARGET"
-	if (WayPointList[RESWP_FLARMTARGET].Comment!=NULL) 
+	if (WayPointList[RESWP_FLARMTARGET].Comment!=NULL)
 		_tcscpy(WayPointList[RESWP_FLARMTARGET].Comment, MsgToken(1322));
 	WayPointList[RESWP_FLARMTARGET].Reachable=FALSE;
 	WayPointList[RESWP_FLARMTARGET].AltArivalAGL=0.0;
@@ -121,7 +121,7 @@ void AddReservedWaypoints()
 	_tcscpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
 	if ( WayPointList[RESWP_OPTIMIZED].Comment == NULL)
 		WayPointList[RESWP_OPTIMIZED].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
-	if (WayPointList[RESWP_OPTIMIZED].Comment!=NULL) 
+	if (WayPointList[RESWP_OPTIMIZED].Comment!=NULL)
 	       _tcscpy(WayPointList[RESWP_OPTIMIZED].Comment, _T("OPTIMIZED") );
 
 	WayPointList[RESWP_OPTIMIZED].Reachable=FALSE;
@@ -156,7 +156,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FAIOPTIMIZED].Visible=FALSE;
 	WayPointList[RESWP_FAIOPTIMIZED].InTask=false;
 	WayPointList[RESWP_FAIOPTIMIZED].Details=(TCHAR *)NULL;
-	
+
 	WayPointList[RESWP_FAIOPTIMIZED].FarVisible=false;
 	WayPointList[RESWP_FAIOPTIMIZED].FileNum=-1;
 	WayPointList[RESWP_FAIOPTIMIZED].Format= LKW_VIRTUAL;
@@ -179,7 +179,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FREEFLY].Visible=FALSE;
 	WayPointList[RESWP_FREEFLY].InTask=false;
 	WayPointList[RESWP_FREEFLY].Details=(TCHAR *)NULL;
-	
+
 	WayPointList[RESWP_FREEFLY].FarVisible=false;
 	WayPointList[RESWP_FREEFLY].FileNum=-1;
 	WayPointList[RESWP_FREEFLY].Format= LKW_VIRTUAL;
@@ -193,7 +193,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_PANPOS].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_PANPOS].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_PANPOS].Flags=TURNPOINT;
-	_tcscpy(WayPointList[RESWP_PANPOS].Name, _T("")); 
+	_tcscpy(WayPointList[RESWP_PANPOS].Name, _T(""));
 	if ( WayPointList[RESWP_PANPOS].Comment == NULL)
 		WayPointList[RESWP_PANPOS].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 	if (WayPointList[RESWP_PANPOS].Comment!=NULL)
@@ -203,7 +203,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_PANPOS].Visible=FALSE;
 	WayPointList[RESWP_PANPOS].InTask=false;
 	WayPointList[RESWP_PANPOS].Details=(TCHAR *)NULL;
-	
+
 	WayPointList[RESWP_PANPOS].FarVisible=false;
 	WayPointList[RESWP_PANPOS].FileNum=-1;
 	WayPointList[RESWP_PANPOS].Format= LKW_VIRTUAL;
@@ -226,7 +226,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_UNUSED].Visible=FALSE;
 	WayPointList[RESWP_UNUSED].InTask=false;
 	WayPointList[RESWP_UNUSED].Details=(TCHAR *)NULL;
-	
+
 	WayPointList[RESWP_UNUSED].FarVisible=false;
 	WayPointList[RESWP_UNUSED].FileNum=-1;
 	WayPointList[RESWP_UNUSED].Format= LKW_VIRTUAL;
@@ -240,7 +240,7 @@ void AddReservedWaypoints()
 	_tcscpy(WayPointList[i].Name, _T("LKMARKER"));
 	if ( WayPointList[i].Comment == NULL)
 		WayPointList[i].Comment = (TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
-	if (WayPointList[i].Comment!=NULL) 
+	if (WayPointList[i].Comment!=NULL)
 		_tcscpy(WayPointList[i].Comment, _T(""));
 	WayPointList[i].Reachable=FALSE;
 	WayPointList[i].AltArivalAGL=0.0;
@@ -262,7 +262,7 @@ void AddReservedWaypoints()
 
 
 /**
- *  Must be called BEFORE ReadWaypoints()!! 
+ *  Must be called BEFORE ReadWaypoints()!!
  *  #LockTaskData() Needed for call this.
  */
 void InitVirtualWaypoints()	// 091102

@@ -112,7 +112,7 @@ static void NextPage(int Step){
 
 static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
-  
+
   if (DetailDrawListIndex < (int)aDetailTextLine.size()){
       LKASSERT(DetailDrawListIndex>=0);
       const TCHAR* szText = aDetailTextLine[DetailDrawListIndex];
@@ -390,12 +390,12 @@ void dlgWayPointDetailsShowModal(short mypage){
      TCHAR code[20];
      double wpdistance = 0;
      double wpbearing = 0;
-        
+
      if (TeamCodeRefWaypoint >= 0) {
-        LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude, 
+        LL_to_BearRange(WayPointList[TeamCodeRefWaypoint].Latitude,
                   WayPointList[TeamCodeRefWaypoint].Longitude,
-                  WayPointList[SelectedWaypoint].Latitude, 
-                  WayPointList[SelectedWaypoint].Longitude, 
+                  WayPointList[SelectedWaypoint].Latitude,
+                  WayPointList[SelectedWaypoint].Longitude,
                   &wpbearing, &wpdistance);
 
         GetTeamCode(code,wpbearing, wpdistance);
@@ -411,7 +411,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   wCommentEntry = (WndOwnerDrawFrame *)NULL;
   CommentDrawListIndex=0;
   aCommentTextLine.clear();
- 
+
   wComment = (WndListFrame*)wf->FindByName(TEXT("frmWpComment"));
   LKASSERT(wComment!=NULL);
 
@@ -439,9 +439,9 @@ void dlgWayPointDetailsShowModal(short mypage){
   wp = ((WndProperty *)wf->FindByName(TEXT("prpCoordinate")));
   LKASSERT(wp);
   wp->SetText(sTmp);
-	
+
   //
-  // Waypoint Altitude 
+  // Waypoint Altitude
   //
   Units::FormatUserAltitude(WayPointList[SelectedWaypoint].Altitude, sTmp, sizeof(sTmp)-1);
   wp = ((WndProperty *)wf->FindByName(TEXT("prpAltitude")));
@@ -460,15 +460,15 @@ void dlgWayPointDetailsShowModal(short mypage){
   ((WndProperty *)wf->FindByName(TEXT("prpSunset")))->SetText(sTmp);
 
 
-  // 
+  //
   // Distance and bearing
   //
   double distance, bearing;
   DistanceBearing(GPS_INFO.Latitude,
                   GPS_INFO.Longitude,
                   WayPointList[SelectedWaypoint].Latitude,
-                  WayPointList[SelectedWaypoint].Longitude, 
-                  &distance, 
+                  WayPointList[SelectedWaypoint].Longitude,
+                  &distance,
                   &bearing);
 
   TCHAR DistanceText[MAX_PATH];
@@ -499,18 +499,18 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   //
   // Altitude reqd at mc 0
-  // 
+  //
   double alt=0;
-  alt = CALCULATED_INFO.NavAltitude - 
+  alt = CALCULATED_INFO.NavAltitude -
     GlidePolar::MacCreadyAltitude(0.0,
 				  distance,
-				  bearing, 
-				  CALCULATED_INFO.WindSpeed, 
-				  CALCULATED_INFO.WindBearing, 
+				  bearing,
+				  CALCULATED_INFO.WindSpeed,
+				  CALCULATED_INFO.WindBearing,
 				  0, 0, true,
 				  0)- WayPointList[SelectedWaypoint].Altitude;
 
-  if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable) 
+  if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable)
 	alt-=(SAFETYALTITUDEARRIVAL/10);
 
   _stprintf(sTmp, TEXT("%.0f %s"), alt*ALTITUDEMODIFY,
@@ -522,17 +522,17 @@ void dlgWayPointDetailsShowModal(short mypage){
 
 
   // alt reqd at current mc
-  alt = CALCULATED_INFO.NavAltitude - 
+  alt = CALCULATED_INFO.NavAltitude -
     GlidePolar::MacCreadyAltitude(MACCREADY,
 				  distance,
-				  bearing, 
-				  CALCULATED_INFO.WindSpeed, 
-				  CALCULATED_INFO.WindBearing, 
+				  bearing,
+				  CALCULATED_INFO.WindSpeed,
+				  CALCULATED_INFO.WindBearing,
 				  0, 0, true,
 				  0)-
     WayPointList[SelectedWaypoint].Altitude;
 
-  if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable) 
+  if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable)
 	alt-=(SAFETYALTITUDEARRIVAL/10);
 
   _stprintf(sTmp, TEXT("%.0f %s"), alt*ALTITUDEMODIFY,
@@ -557,7 +557,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   DetailDrawListIndex=0;
   aDetailTextLine.clear();
- 
+
   wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   LKASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
@@ -567,7 +567,7 @@ void dlgWayPointDetailsShowModal(short mypage){
     Surface.SelectObject(wDetailsEntry->GetFont());
     aDetailTextLine.update(Surface, wDetailsEntry->GetWidth(), WayPointList[SelectedWaypoint].Details );
   }
-  
+
   WndButton *wb;
 
   TCHAR captmp[200];
@@ -623,7 +623,7 @@ void dlgWayPointDetailsShowModal(short mypage){
      tmpIdx = RealActiveWaypoint;
     if(tmpIdx != -1)
     {
-    	wb->SetOnClickNotify(OnReplaceClicked);
+	wb->SetOnClickNotify(OnReplaceClicked);
 	_stprintf(captmp,_T("%s <%s>"),MsgToken(1826),WayPointList[tmpIdx ].Name); // replace  xx
     } else {
 	_stprintf(captmp,_T("( %s )"),MsgToken(555));
@@ -658,5 +658,3 @@ void dlgWayPointDetailsShowModal(short mypage){
   wf = NULL;
 
 }
-
-

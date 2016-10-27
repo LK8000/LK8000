@@ -253,6 +253,3 @@ void clean_igcfile(TCHAR *quelldateiname, TCHAR *zieldateiname) {
   fclose(quelle);
   fclose(ziel);
 }
-
-
-

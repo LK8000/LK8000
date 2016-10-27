@@ -31,7 +31,7 @@ void OpenGeoid(void) {
         if (hResInfo) {
             HGLOBAL hRes = LoadResource(_hInstance, hResInfo);
             if (hRes) {
-                // Retrieves a pointer to the resource in memory 
+                // Retrieves a pointer to the resource in memory
                 const unsigned char* lpRes = static_cast<const unsigned char*>(LockResource(hRes));
                 if (lpRes) {
                     const size_t len = SizeofResource(_hInstance, hResInfo);
@@ -93,4 +93,3 @@ double LookupGeoidSeparation(double lat, double lon) {
   y-=(double)ilat;
   return interpolation2d(x,y,getEGM96data(ilon,ilat),getEGM96data(ilonp1,ilat),getEGM96data(ilon,ilat+1),getEGM96data(ilonp1,ilat+1));
 }
-

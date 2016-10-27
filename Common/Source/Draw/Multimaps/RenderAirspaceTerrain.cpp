@@ -155,13 +155,13 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         if (Sideview_pHandeled[iSizeIdx].bEnabled) {
             if (MapWindow::GetAirSpaceFillType() == MapWindow::asp_fill_border_only)
             {
-        	  Surface.SelectObject(LKBrush_Hollow);
-        	  Framewidth *=3;
+		  Surface.SelectObject(LKBrush_Hollow);
+		  Framewidth *=3;
             }
-        	else
-        	{
-        	  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
-        	}
+		else
+		{
+		  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
+		}
             Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
             fFrameColFact = 0.8;
             FrameColor = MapWindow::GetAirspaceColourByClass(type);
@@ -308,7 +308,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 1].x = iround(0 * dx1) + x0; //iround(j*dx1)+x0;
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 1].y = CalcHeightCoordinat(0, psDiag); //iBottom;
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 2] = apTerrainPolygon[0];
-    
+
     static_assert(array_size(apTerrainPolygon) >= AIRSPACE_SCANSIZE_X + 3, "wrong array size");
     Surface.Polygon(apTerrainPolygon, AIRSPACE_SCANSIZE_X + 3);
 
@@ -335,4 +335,3 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
 
     Surface.SetTextColor(Sideview_TextColor); // RGB_MENUTITLEFG
 }
-

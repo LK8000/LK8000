@@ -18,7 +18,7 @@ void ThermalLocator_Point::Drift(double t_0,
 				 double drift_lon, double drift_lat,
                                  double decay) {
 
-  // convert to flat earth coordinates, then drift by wind and delta t  
+  // convert to flat earth coordinates, then drift by wind and delta t
   double dt = t_0-t;
   weight = (exp(-1.5*decay*dt/TLOCATOR_NMAX));
   x = (longitude+drift_lon*dt-longitude_0)*fastcosine(latitude_0);
@@ -40,7 +40,7 @@ ThermalLocator::ThermalLocator() {
 void ThermalLocator::Reset() {
   if (initialised) {
     initialised = false;
-    
+
     // clear array
     for (int i=0; i<TLOCATOR_NMAX; i++) {
       points[i].valid = false;
@@ -79,7 +79,7 @@ void ThermalLocator::AddPoint(double t, double longitude, double latitude, doubl
 
 }
 
-void ThermalLocator::Update(double t_0, 
+void ThermalLocator::Update(double t_0,
 			    double longitude_0, double latitude_0,
 			    double wind_speed, double wind_bearing,
 			    double trackbearing,
@@ -96,9 +96,9 @@ void ThermalLocator::Update(double t_0,
 
   double dlat1, dlon1;
 
-  FindLatitudeLongitude(latitude_0, 
-                        longitude_0, 
-                        wind_bearing, 
+  FindLatitudeLongitude(latitude_0,
+                        longitude_0,
+                        wind_bearing,
                         wind_speed, &dlat1, &dlon1);
 
   double traildrift_lat = (latitude_0-dlat1);
@@ -157,10 +157,10 @@ void ThermalLocator::Update(double t_0,
 
 
 
-void ThermalLocator::Update_Internal(double t_0, 
-                                     double longitude_0, 
+void ThermalLocator::Update_Internal(double t_0,
+                                     double longitude_0,
                                      double latitude_0,
-                                     double traildrift_lon, 
+                                     double traildrift_lon,
                                      double traildrift_lat,
                                      double trackbearing,
                                      double decay,
@@ -226,20 +226,20 @@ void ThermalLocator::Update_Internal(double t_0,
     LKASSERT(fastcosine(latitude_0)!=0);
     if (fastcosine(latitude_0)==0) goto _skipout;
     est_longitude = est_x/fastcosine(latitude_0)+longitude_0;
-    
+
     *Thermal_Longitude = est_longitude;
     *Thermal_Latitude = est_latitude;
     *Thermal_R = 1;
-    *Thermal_W = 1;    
+    *Thermal_W = 1;
   } else {
 _skipout:
     *Thermal_R = -1;
-    *Thermal_W = 0;    
+    *Thermal_W = 0;
   }
 }
 
 
-void ThermalLocator::Drift(double t_0, 
+void ThermalLocator::Drift(double t_0,
 			   double longitude_0, double latitude_0,
 			   double wind_lon, double wind_lat, double decay) {
 
@@ -257,7 +257,7 @@ void ThermalLocator::EstimateThermalBase(double Thermal_Longitude,
 					 double Thermal_Latitude,
 					 double altitude,
 					 double wthermal,
-					 double wind_speed, 
+					 double wind_speed,
 					 double wind_bearing,
 					 double *ground_longitude,
 					 double *ground_latitude,
@@ -277,8 +277,8 @@ void ThermalLocator::EstimateThermalBase(double Thermal_Longitude,
   RasterTerrain::Lock();
 
   double lat, lon;
-  FindLatitudeLongitude(Thermal_Latitude, Thermal_Longitude, 
-                        wind_bearing, 
+  FindLatitudeLongitude(Thermal_Latitude, Thermal_Longitude,
+                        wind_bearing,
                         wind_speed*dt,
                         &lat, &lon);
   double Xrounding = fabs(lon-Thermal_Longitude)/2;
@@ -291,18 +291,18 @@ void ThermalLocator::EstimateThermalBase(double Thermal_Longitude,
 
   for (double t = 0; t<=Tmax; t+= dt) {
 
-    FindLatitudeLongitude(Thermal_Latitude, Thermal_Longitude, 
-                          wind_bearing, 
+    FindLatitudeLongitude(Thermal_Latitude, Thermal_Longitude,
+                          wind_bearing,
                           wind_speed*t, &lat, &lon);
-    
+
     double hthermal = altitude-wthermal*t;
     hground = RasterTerrain::GetTerrainHeight(lat, lon);
     if (hground==TERRAIN_INVALID) hground=0; //@ 101027 FIX
     double dh = hthermal-hground;
     if (dh<0) {
       t = t+dh/wthermal;
-      FindLatitudeLongitude(Thermal_Latitude, Thermal_Longitude, 
-                            wind_bearing, 
+      FindLatitudeLongitude(Thermal_Latitude, Thermal_Longitude,
+                            wind_bearing,
                             wind_speed*t, &lat, &lon);
       break;
     }

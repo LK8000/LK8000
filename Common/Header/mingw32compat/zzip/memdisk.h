@@ -29,12 +29,12 @@ zzip_mem_disk_extern zzip__new__ ZZIP_MEM_DISK*
 zzip_mem_disk_open (char* filename);
 zzip_mem_disk_extern zzip__new__ ZZIP_MEM_DISK*
 zzip_mem_disk_fdopen (int fd);
-zzip_mem_disk_extern void 
+zzip_mem_disk_extern void
 zzip_mem_disk_close (ZZIP_MEM_DISK* _zzip_restrict dir);
 
 zzip_mem_disk_extern long
 zzip_mem_disk_load (ZZIP_MEM_DISK* dir, ZZIP_DISK* disk);
-zzip_mem_disk_extern void 
+zzip_mem_disk_extern void
 zzip_mem_disk_unload (ZZIP_MEM_DISK* dir);
 ZZIP_EXTRA_BLOCK*
 zzip_mem_entry_extra_block (ZZIP_MEM_ENTRY* entry, short datatype);
@@ -65,7 +65,7 @@ struct _zzip_mem_entry {
     char*            zz_comment;   /* zero-terminated (from "comment") */
     ZZIP_EXTRA_BLOCK* zz_ext[3];   /* terminated by null in z_datatype */
 };                                 /* the extra blocks are NOT converted */
-     
+
 #define _zzip_mem_disk_findfirst(_d_) ((_d_)->list)
 #define _zzip_mem_disk_findnext(_d_,_e_) (!(_e_)?(_d_)->list:(_e_)->zz_next)
 #define _zzip_mem_entry_findnext(_e_) ((_e_)->zz_next)
@@ -121,12 +121,12 @@ zzip_mem_entry_to_data(ZZIP_MEM_ENTRY* entry) {
 #endif
 
 ZZIP_MEM_ENTRY*
-zzip_mem_disk_findfile(ZZIP_MEM_DISK* dir, 
+zzip_mem_disk_findfile(ZZIP_MEM_DISK* dir,
                        char* filename, ZZIP_MEM_ENTRY* after,
 		       zzip_strcmp_fn_t compare);
 
 ZZIP_MEM_ENTRY*
-zzip_mem_disk_findmatch(ZZIP_MEM_DISK* dir, 
+zzip_mem_disk_findmatch(ZZIP_MEM_DISK* dir,
                         char* filespec, ZZIP_MEM_ENTRY* after,
 			zzip_fnmatch_fn_t compare, int flags);
 

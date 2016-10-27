@@ -27,7 +27,7 @@ static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   if(_tcsncmp(TEXT("$PILC"), String, 5)==0)
     {
       return PILC(d, &String[6], pGPS);
-    } 
+    }
 
   return FALSE;
 
@@ -36,7 +36,7 @@ static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 static BOOL IlecIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE); 
+  return(TRUE);
 }
 
 
@@ -134,8 +134,8 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 
 	} else	pGPS->ExternalWindAvailable = FALSE;
-	
-	
+
+
 	pGPS->VarioAvailable = TRUE;
 	TriggerVarioUpdate();
 	return TRUE;
@@ -150,7 +150,7 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   }
 
   // Using the polar requires recalculating polar coefficients internally each time.. no thanks.
-  // if (_tcscmp(ctemp,_T("POLAR"))==0) { } 
+  // if (_tcscmp(ctemp,_T("POLAR"))==0) { }
 
   return TRUE;
 }

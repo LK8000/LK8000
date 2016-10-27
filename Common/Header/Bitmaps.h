@@ -12,7 +12,7 @@
 #include "Screen/LKBitmap.h"
 
 #if defined(STATIC_BITMAPS)
-#define BEXTMODE 
+#define BEXTMODE
 #undef  STATIC_BITMAPS
 
 #else
@@ -105,7 +105,7 @@ BEXTMODE LKIcon hScrollBarBitmapTop;
 BEXTMODE LKIcon hScrollBarBitmapMid;
 BEXTMODE LKIcon hScrollBarBitmapBot;
 
-// Map icons 
+// Map icons
 BEXTMODE LKIcon hMountop;
 BEXTMODE LKIcon hMountpass;
 BEXTMODE LKIcon hBridge;

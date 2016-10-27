@@ -126,7 +126,7 @@ double GetMacCready(int wpindex, short wpmode) {
 void CheckSetMACCREADY(const double value) {
     if (value<0)
         MACCREADY=0;
-    else 
+    else
         if (value>12)
             MACCREADY=12;
         else
@@ -188,7 +188,7 @@ bool CheckClubVersion() {
 
 void ClubForbiddenMsg() {
     MessageBoxX(
-            // LKTOKEN  _@M503_ = "Operation forbidden on CLUB devices" 
+            // LKTOKEN  _@M503_ = "Operation forbidden on CLUB devices"
             MsgToken(503),
             _T("CLUB DEVICE"),
             mbOk);
@@ -380,5 +380,3 @@ bool IsThermalBarVisible(void) {
     return false;
 
 }
-
-

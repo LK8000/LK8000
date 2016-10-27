@@ -6,7 +6,7 @@
    $Id: DoInits.h,v 1.1 2011/12/21 10:35:29 root Exp root $
 
    PLEASE USE COMMENTS ALSO HERE TO DESCRIBE YOUR GLOBALS!
-   YOU CAN INITIALIZE VALUES TO true,false,zero and NULL, 
+   YOU CAN INITIALIZE VALUES TO true,false,zero and NULL,
    or you can do it also inside Globals_Init.
 
 */
@@ -25,7 +25,7 @@
 	MDI_DOAUTOQNH,			// force qnh search for 10 s
 	MDI_DOCOMMON,			// generic reset
 	MDI_DOTRAFFIC,			// FLARM trigger
-	MDI_DETECTFREEFLYING,		// force detect FF 
+	MDI_DETECTFREEFLYING,		// force detect FF
 	MDI_MCREADYCACHE,		// Reset cache for MC
 	MDI_DOTHERMALHISTORY,		// Reset thermal history storage
 	MDI_BATTERYMANAGER,		// Reset warnings on battery power
@@ -58,12 +58,12 @@
 	MDI_DRAWTASK,			// screen change
 	MDI_CALCLOGGING,		// generic reset
 	MDI_DRAWHSI,			// screen change
-	MDI_LAST_DOINIT,		
+	MDI_LAST_DOINIT,
  } MDI_t;
 
 #if defined(STATIC_DOINITS)
   // Careful, we MUST initialize here. Check that MDIs fit in this array.
-  bool DoInit[100]={ 
+  bool DoInit[100]={
 	1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,
@@ -83,4 +83,3 @@
 #endif
 
 #endif // DOINITS_H
-

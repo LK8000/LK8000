@@ -24,7 +24,7 @@ extern void LKDeviceSave(const TCHAR *szFile);
 
 static void OnSaveExistingClicked(WndButton* pWnd) {
 
-  int file_index; 
+  int file_index;
   TCHAR file_name[MAX_PATH];
   WndProperty* wp;
   DataFieldFileReader *dfe;
@@ -46,9 +46,9 @@ static void OnSaveExistingClicked(WndButton* pWnd) {
 
   if (file_index>0) {
 	_tcscpy(file_name,dfe->GetAsString());
-	if(MessageBoxX(file_name, 
-		// LKTOKEN  _@M509_ = "Overwrite profile?" 
-		MsgToken(509), 
+	if(MessageBoxX(file_name,
+		// LKTOKEN  _@M509_ = "Overwrite profile?"
+		MsgToken(509),
 		mbYesNo) == IdYes) {
 
 		switch (profilemode) {
@@ -56,28 +56,28 @@ static void OnSaveExistingClicked(WndButton* pWnd) {
 				LKProfileSave(dfe->GetPathFile());
 				break;
 			case 1:
-                        	LKPilotSave(dfe->GetPathFile());
+				LKPilotSave(dfe->GetPathFile());
 				break;
 			case 2:
-                        	LKAircraftSave(dfe->GetPathFile());
+				LKAircraftSave(dfe->GetPathFile());
 				break;
 			case 3:
-                        	LKDeviceSave(dfe->GetPathFile());
+				LKDeviceSave(dfe->GetPathFile());
 				break;
 			default:
 				return;
 		}
-		// LKTOKEN  _@M535_ = "Profile saved!" 
+		// LKTOKEN  _@M535_ = "Profile saved!"
 		MessageBoxX(MsgToken(535),_T(""), mbOk);
 		return;
 	}
-  	dfe->Set(0);
-  } 
+	dfe->Set(0);
+  }
 }
 
 static void OnSaveNewClicked(WndButton* pWnd) {
 
-  int file_index; 
+  int file_index;
   TCHAR file_name[MAX_PATH];
   TCHAR profile_name[MAX_PATH];
   TCHAR tmptext[MAX_PATH];
@@ -103,27 +103,27 @@ static void OnSaveNewClicked(WndButton* pWnd) {
   file_index = dfe->GetAsInteger();
 
   if (file_index==0) {
-	_stprintf(tmptext, TEXT("%s: %s"), 
-		// LKTOKEN  _@M458_ = "New profile" 
-		MsgToken(458), 
+	_stprintf(tmptext, TEXT("%s: %s"),
+		// LKTOKEN  _@M458_ = "New profile"
+		MsgToken(458),
 		profile_name);
 
-	if(MessageBoxX(tmptext, 
-		// LKTOKEN  _@M579_ = "Save ?" 
-		MsgToken(579), 
+	if(MessageBoxX(tmptext,
+		// LKTOKEN  _@M579_ = "Save ?"
+		MsgToken(579),
 		mbYesNo) == IdYes) {
 		switch (profilemode) {
 			case 0:
 				LKProfileSave(file_name);
 				break;
 			case 1:
-                        	LKPilotSave(file_name);
+				LKPilotSave(file_name);
 				break;
 			case 2:
-                        	LKAircraftSave(file_name);
+				LKAircraftSave(file_name);
 				break;
 			case 3:
-                        	LKDeviceSave(file_name);
+				LKDeviceSave(file_name);
 				break;
 			default:
 				return;
@@ -131,30 +131,30 @@ static void OnSaveNewClicked(WndButton* pWnd) {
 		dfe->addFile(profile_name, file_name);
 
 		MessageBoxX(
-		// LKTOKEN  _@M535_ = "Profile saved!" 
-		MsgToken(535), 
+		// LKTOKEN  _@M535_ = "Profile saved!"
+		MsgToken(535),
 		_T(""), mbOk);
 
-  		dfe->Set(0);
+		dfe->Set(0);
 		return;
 	}
   }
 
   if (file_index>0) {
-	_stprintf(tmptext, TEXT("%s: %s"), 
-	// LKTOKEN  _@M533_ = "Profile already exists" 
-		MsgToken(533), 	
+	_stprintf(tmptext, TEXT("%s: %s"),
+	// LKTOKEN  _@M533_ = "Profile already exists"
+		MsgToken(533),
 		profile_name);
 
 	if (CheckClubVersion() ) {
 		MessageBoxX(tmptext,
-		// LKTOKEN  _@M162_ = "Cannot overwrite!" 
+		// LKTOKEN  _@M162_ = "Cannot overwrite!"
 		MsgToken(162),
 		mbOk);
 	} else {
-		if(MessageBoxX(tmptext, 
-		// LKTOKEN  _@M510_ = "Overwrite?" 
-		MsgToken(510), 
+		if(MessageBoxX(tmptext,
+		// LKTOKEN  _@M510_ = "Overwrite?"
+		MsgToken(510),
 		mbYesNo) == IdYes) {
 
 			switch (profilemode) {
@@ -162,25 +162,25 @@ static void OnSaveNewClicked(WndButton* pWnd) {
 					LKProfileSave(file_name);
 					break;
 				case 1:
-	                        	LKPilotSave(file_name);
+					LKPilotSave(file_name);
 					break;
 				case 2:
-	                        	LKAircraftSave(file_name);
+					LKAircraftSave(file_name);
 					break;
 				case 3:
-	                        	LKDeviceSave(file_name);
+					LKDeviceSave(file_name);
 					break;
 				default:
 					return;
 			}
 			MessageBoxX(
-			// LKTOKEN  _@M535_ = "Profile saved!" 
+			// LKTOKEN  _@M535_ = "Profile saved!"
 			MsgToken(535),
 			_T(""), mbOk);
 			return;
 		}
 	}
-  	dfe->Set(0);
+	dfe->Set(0);
   }
 }
 
@@ -248,9 +248,9 @@ void dlgProfilesShowModal(short mode){
 	}
 
 	dfe->ScanDirectoryTop(_T(LKD_CONF),tsuff);
-  	dfe->Set(0);
+	dfe->Set(0);
   }
- 
+
   wf->ShowModal();
 
   delete wf;

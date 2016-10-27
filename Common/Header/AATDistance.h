@@ -25,7 +25,7 @@ public:
 
 private:
 
-  double DistanceCovered_internal(double longitude, double latitude, 
+  double DistanceCovered_internal(double longitude, double latitude,
                                   bool insector);
   double DistanceCovered_inside(double longitude, double latitude);
   double DistanceCovered_outside(double longitude, double latitude);
@@ -50,15 +50,14 @@ private:
   int best[MAXTASKPOINTS];
   int num_points[MAXTASKPOINTS];
 
-  void ShiftTargetFromBehind(double longitude, double latitude, 
+  void ShiftTargetFromBehind(double longitude, double latitude,
                              int taskwaypoint);
-  void ShiftTargetFromInFront(double longitude, double latitude, 
+  void ShiftTargetFromInFront(double longitude, double latitude,
                               int taskwaypoint);
-  void ShiftTargetOutside(double longitude, double latitude, 
+  void ShiftTargetOutside(double longitude, double latitude,
                           int taskwaypoint);
 };
 
 double AATCloseDistance(void);
 
 #endif
-

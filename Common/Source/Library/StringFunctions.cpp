@@ -164,14 +164,14 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String, charset& cs){
   if (_fgetts(String, Max, fp) != NULL){     // 20060512/sgi change 200 to max
 
     String[Max-1] = '\0';                    // 20060512/sgi added make shure the  string is terminated
-    TCHAR *pWC = &String[max((size_t)0,_tcslen(String)-1)]; 
+    TCHAR *pWC = &String[max((size_t)0,_tcslen(String)-1)];
     // 20060512/sgi change add -1 to set pWC at the end of the string
 
     while (pWC >= String && (*pWC == '\r' || *pWC == '\n')){
       *pWC = '\0';
       pWC--;
     }
-    
+
 #ifndef UNICODE
     DetectCharsetAndFixString(String, cs);
 #endif
@@ -246,7 +246,7 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
   if (Source==NULL) return 0.0;
   StringLength = _tcslen(Source);
 
-  while(((Source[index] == ' ')||(Source[index]=='+')||(Source[index]==9)) 
+  while(((Source[index] == ' ')||(Source[index]=='+')||(Source[index]==9))
         && (index<StringLength))
     // JMW added skip for tab stop
     // JMW added skip for "+"
@@ -288,8 +288,8 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
 	  index ++;Divisor = Divisor * 10;
 	}
     }
-  
-_strtodouble_return:  
+
+_strtodouble_return:
   if(Stop != NULL) {
     if (index < StringLength) {
         *Stop = &Source[index];
@@ -309,7 +309,7 @@ _strtodouble_return:
 
 // RMN: Volkslogger outputs data in hex-strings.  Function copied from StrToDouble
 // Note: Decimal-point and decimals disregarded.  Assuming integer amounts only.
-double HexStrToDouble(TCHAR *Source, TCHAR **Stop) 
+double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
 {
   int index = 0;
   int StringLength        = 0;
@@ -332,30 +332,30 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
     index++;
   }
 
-  while( 
-  (index < StringLength)	 &&	 
-	(	( (Source[index]>= '0') && (Source [index] <= '9')  ) || 
-		( (Source[index]>= 'A') && (Source [index] <= 'F')  ) || 
+  while(
+  (index < StringLength)	 &&
+	(	( (Source[index]>= '0') && (Source [index] <= '9')  ) ||
+		( (Source[index]>= 'A') && (Source [index] <= 'F')  ) ||
 		( (Source[index]>= 'a') && (Source [index] <= 'f')  )
-		)	 
+		)
 	)
     {
       if((Source[index]>= '0') && (Source [index] <= '9'))	  {
 		Sum = (Sum*16) + (Source[ index ] - '0');
 		index ++;
 	  }
-   	  if (index >= StringLength) goto _hexstrtodouble_return;
+	  if (index >= StringLength) goto _hexstrtodouble_return;
 	  if((Source[index]>= 'A') && (Source [index] <= 'F'))	  {
 		Sum = (Sum*16) + (Source[ index ] - 'A' + 10);
 		index ++;
 	  }
-   	  if (index >= StringLength) goto _hexstrtodouble_return;
+	  if (index >= StringLength) goto _hexstrtodouble_return;
 	  if((Source[index]>= 'a') && (Source [index] <= 'f'))	  {
 		Sum = (Sum*16) + (Source[ index ] - 'a' + 10);
 		index ++;
 	  }
     }
-  
+
 _hexstrtodouble_return:
   if(Stop != NULL) {
       if (index < StringLength) {
@@ -376,7 +376,7 @@ _hexstrtodouble_return:
 
 
 TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
-// "s" MUST be a pointer to an array, not to a string!!! 
+// "s" MUST be a pointer to an array, not to a string!!!
 // (ARM92, Win emulator cause access violation if not)
 
   const TCHAR *spanp;
@@ -480,7 +480,7 @@ void TrimRight(TCHAR* str) {
     TCHAR * end = str + _tcslen(str);
     while(end > str && _istspace(*(end-1))) end--;
     // Write new null terminator
-    *(end) = 0;  
+    *(end) = 0;
 }
 
 TCHAR* StringMallocParse(const TCHAR* old_string) {
@@ -496,7 +496,7 @@ TCHAR* StringMallocParse(const TCHAR* old_string) {
         if (old_string[i + 1] == 'r') {
           buffer[used++] = '\r';
           i++;
-        } else if (old_string[i + 1] == 'n') { 
+        } else if (old_string[i + 1] == 'n') {
           buffer[used++] = '\n';
           i++;
         } else if (old_string[i + 1] == '\\') {
@@ -513,14 +513,14 @@ TCHAR* StringMallocParse(const TCHAR* old_string) {
   // right trim string
   while(used > 0 && buffer[used-1] == _T(' ')) {
     --used;
-  }  
+  }
   buffer[used++] =_T('\0');
 
   TCHAR *pstart = _tcsstr(buffer, _T("_@M"));
   if (pstart==NULL) {
 	goto _notoken;
   }
-  
+
   // find end of token
   TCHAR *pnext;
   pnext = std::find(pstart+3, &buffer[used], _T('_'));
@@ -532,12 +532,12 @@ TCHAR* StringMallocParse(const TCHAR* old_string) {
 	StartupStore(_T("...... Menu Label incorrect, token too big: <%s>" NEWLINE),buffer);
 	goto _notoken;
   }
-  ++pnext; 
-  
+  ++pnext;
+
   TCHAR lktoken[10];
   *std::copy(pstart, pnext, lktoken) = _T('\0');
   *pstart = _T('\0');
-  
+
   const TCHAR *tokentext;
   tokentext = gettext(lktoken);
   size_t new_len;
@@ -560,7 +560,7 @@ _notoken:
   return new_string;
 }
 
-/* 
+/*
  * Implementation of the _splitpath runtime library function with wide character strings
  * Copyright 2000, 2004 Martin Fuchs -- GPL licensed - WINE project
  */
@@ -627,8 +627,8 @@ void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR
 bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
 {
   // This is a char, and we need space for at least MAX_HELP TCHARS!
-  // 
-  unsigned char buf[1500 * 2]; 
+  //
+  unsigned char buf[1500 * 2];
 
   long startPos = zzip_tell(fp);
 
@@ -638,7 +638,7 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
   }
 
   size_t nbRead = zzip_fread(buf, 1, sizeof(buf) - 1, fp);
-  
+
   if (nbRead == 0)
     return(false);
 
@@ -699,17 +699,17 @@ void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numof
   }
   // We need space for 0 termination, otherwise we are in trobles
   // So numofchars must be < than the destination string.
-  // Notice> we cannot check sizeof of a pointer, so anything with an address size instead of an array size 
+  // Notice> we cannot check sizeof of a pointer, so anything with an address size instead of an array size
   // will be excluded. Better than nothing.
   if (  sizedest>sizeof(dest) && numofchars >= sizedest ) {
 	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %s line %d dstsize=%d srcsize=%d") NEWLINE, filename, line,sizedest,numofchars);
 	_tcsncpy(dest,src,sizedest-1);
 	dest[sizedest-1] = '\0';
 	return;
-	//LKASSERT(false); 
+	//LKASSERT(false);
   }
   #endif
-  
+
   // if source is null we safely ignore it, and give an empty string as result
   if (src == NULL || src[0]=='\0') {
 	dest[0] = '\0';
@@ -761,4 +761,3 @@ void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec) {
         }
     }
 }
-

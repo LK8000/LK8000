@@ -53,7 +53,7 @@ TCHAR *WhatTimeIsIt(void) {
   Units::TimeToTextS(tlocal, (int)TimeLocal((int)(GPS_INFO.Time))),
   Units::TimeToText(tutc, (int)GPS_INFO.Time);
   _stprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
-  if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0)) 
+  if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0))
      _stprintf(time_temp, _T("h%s (NO FIX)"), tlocal);
   else
      _stprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
@@ -69,7 +69,7 @@ TCHAR *OracleFormatDistance(const TCHAR *name,const TCHAR *ntype,const double di
 
   static TCHAR ttmp[150];
   double dist_over=0, dist_near=0;
-  
+
   switch(mode) {
 	case 0:		// big city
 	default:
@@ -80,12 +80,12 @@ TCHAR *OracleFormatDistance(const TCHAR *name,const TCHAR *ntype,const double di
 
   // 5km west of  the city <abcd>
   if (dist>dist_near) {
-	_stprintf(ttmp,_T("%.0f %s %s %s %s <%s>"), 
+	_stprintf(ttmp,_T("%.0f %s %s %s %s <%s>"),
 		dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg), MsgToken(1711),ntype,name); // of
 	return ttmp;
   }
 
-  // near 
+  // near
   if (dist>dist_over) {
 	_stprintf(ttmp,_T("%s %s <%s>"),MsgToken(1712), ntype,name); // Near
 	return ttmp;
@@ -118,17 +118,17 @@ void WhereAmI::run(void) {
       MapWindow::GetPanLongitude(),
       MapWindow::GetPanLatitude()
   };
-  rectObj bounds = { 
-      center.x, center.y, 
-      center.x, center.y 
+  rectObj bounds = {
+      center.x, center.y,
+      center.x, center.y
   };
 
   for(int i = 0; i < 10; ++i) {
       double X, Y;
       FindLatitudeLongitude(center.y, center.x, i*360/10, 30*1000, &Y, &X );
-      bounds.minx = std::min(bounds.minx, X); 
+      bounds.minx = std::min(bounds.minx, X);
       bounds.maxx = std::max(bounds.maxx, X);
-      bounds.miny = std::min(bounds.miny, Y); 
+      bounds.miny = std::min(bounds.miny, Y);
       bounds.maxy = std::max(bounds.maxy, Y);
   }
 
@@ -167,15 +167,15 @@ void WhereAmI::run(void) {
   _stprintf(toracle,_T("%s\n\n"), MsgToken(1724)); // YOUR POSITION:
 
   if (NearestBigCity.Valid) {
-	_tcscat(toracle, OracleFormatDistance(NearestBigCity.Name,MsgToken(1714), 
+	_tcscat(toracle, OracleFormatDistance(NearestBigCity.Name,MsgToken(1714),
 		NearestBigCity.Distance, NearestBigCity.Bearing,0));	// the city
 	_tcscat(toracle, _T("\n"));
   }
 
 
   if (NearestCity.Valid && NearestSmallCity.Valid) {
-	
-	if ( (NearestCity.Distance - NearestSmallCity.Distance) <=3000) 
+
+	if ( (NearestCity.Distance - NearestSmallCity.Distance) <=3000)
 		item=&NearestCity;
 	else
 		item=&NearestSmallCity;
@@ -191,7 +191,7 @@ void WhereAmI::run(void) {
 	 dist=item->Distance;
 	 brg=item->Bearing;
 
- 	 if (dist>1500) {
+	 if (dist>1500) {
 		//
 		// 2km South of city
 		//
@@ -203,8 +203,8 @@ void WhereAmI::run(void) {
 		//
 		//  Over city
 		//
-  		_stprintf(ttmp,_T("%s "),MsgToken(1716)); // Over the city
- 		 _tcscat(toracle,ttmp);
+		_stprintf(ttmp,_T("%s "),MsgToken(1716)); // Over the city
+		 _tcscat(toracle,ttmp);
 		over=true;
 	  }
 	  _stprintf(ttmp,_T("<%s>"), item->Name);
@@ -216,40 +216,40 @@ void WhereAmI::run(void) {
   // Careful, some wide water areas have the center far away from us even if we are over them.
   // We can only check for 2-5km distances max.
   if (NearestWaterArea.Valid) {
-  	if (found) {
+	if (found) {
 		if (NearestWaterArea.Distance<2000) {
 			if (over) {
 				//
 				// Over city and lake
 				//
-	 			_stprintf(ttmp,_T(" %s %s"), MsgToken(1717),NearestWaterArea.Name); // and
-	 			_tcscat(toracle,ttmp);
+				_stprintf(ttmp,_T(" %s %s"), MsgToken(1717),NearestWaterArea.Name); // and
+				_tcscat(toracle,ttmp);
 				saynear=true;
 			} else {
 				//
-				// 2km South of city 
+				// 2km South of city
 				// over lake
 				//
-	 			_stprintf(ttmp,_T("\n%s %s"), MsgToken(1718),NearestWaterArea.Name); // over
-	 			_tcscat(toracle,ttmp);
+				_stprintf(ttmp,_T("\n%s %s"), MsgToken(1718),NearestWaterArea.Name); // over
+				_tcscat(toracle,ttmp);
 				saynear=true;
 			}
 		} else {
 			if (NearestWaterArea.Distance<6000) {
 				if (over) {
 					//
-					// Over city 
+					// Over city
 					// near lake
 					//
-	 				_stprintf(ttmp,_T("\n%s %s"), MsgToken(1719),NearestWaterArea.Name); // near to
-	 				_tcscat(toracle,ttmp);
+					_stprintf(ttmp,_T("\n%s %s"), MsgToken(1719),NearestWaterArea.Name); // near to
+					_tcscat(toracle,ttmp);
 				} else {
 					//
 					// 2km South of city
 					// near lake
 					//
-	 				_stprintf(ttmp,_T("\n%s %s"), MsgToken(1718),NearestWaterArea.Name); // over
-	 				_tcscat(toracle,ttmp);
+					_stprintf(ttmp,_T("\n%s %s"), MsgToken(1718),NearestWaterArea.Name); // over
+					_tcscat(toracle,ttmp);
 				}
 			}
 			// else no mention to water area, even if it is the only item. Not accurate!
@@ -259,17 +259,17 @@ void WhereAmI::run(void) {
 			brg=NearestWaterArea.Bearing;
 			//
 			// 2km North of lake
-			// 
+			//
 			_stprintf(ttmp,_T("%.0f %s %s "), NearestWaterArea.Distance*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 			_tcscat(toracle,ttmp);
-		 	_stprintf(ttmp,_T("%s <%s>"), MsgToken(1711),NearestWaterArea.Name); // of
- 			_tcscat(toracle,ttmp);
+			_stprintf(ttmp,_T("%s <%s>"), MsgToken(1711),NearestWaterArea.Name); // of
+			_tcscat(toracle,ttmp);
 		} else {
 			//
 			// Over lake
-			// 
- 			_stprintf(ttmp,_T("%s <%s>"), MsgToken(1718),NearestWaterArea.Name); // over
- 			_tcscat(toracle,ttmp);
+			//
+			_stprintf(ttmp,_T("%s <%s>"), MsgToken(1718),NearestWaterArea.Name); // over
+			_tcscat(toracle,ttmp);
 			over=true;
 		}
 		found=true;
@@ -279,7 +279,7 @@ void WhereAmI::run(void) {
   _tcscat(toracle,_T("\n"));
 
 
-  // find nearest turnpoint & nearest Landable  
+  // find nearest turnpoint & nearest Landable
   unsigned idx_nearest_airport = 0;
   unsigned idx_nearest_unknown = 0;
   {
@@ -287,13 +287,13 @@ void WhereAmI::run(void) {
     double dist_unknown = std::numeric_limits<double>::max();
 
     for(unsigned i=NUMRESWP; i<WayPointList.size(); ++i) {
-        
+
         if(WayPointList[i].Style == STYLE_THERMAL) continue;
 
-        DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, 
-                      WayPointList[i].Latitude, WayPointList[i].Longitude, 
+        DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude,
+                      WayPointList[i].Latitude, WayPointList[i].Longitude,
                       &(WayPointCalc[i].Distance), &(WayPointCalc[i].Bearing));
-        
+
         if(WayPointCalc[i].Distance > 70000) continue; // To Far
 
         if(WayPointCalc[i].WpType == WPT_AIRPORT) {
@@ -301,14 +301,14 @@ void WhereAmI::run(void) {
                 dist_airport = WayPointCalc[i].Distance;
                 idx_nearest_airport = i;
             }
-        } 
+        }
         if(WayPointCalc[i].Distance < dist_unknown) {
             dist_unknown = WayPointCalc[i].Distance;
             idx_nearest_unknown = i;
         }
     }
   }
-  
+
   int j = idx_nearest_unknown;
   if (!ValidNotResWayPoint(j)) goto _end;
 
@@ -316,23 +316,23 @@ void WhereAmI::run(void) {
 
 _dowp:
 
-  DistanceBearing( 
-	WayPointList[j].Latitude,WayPointList[j].Longitude, 
-	GPS_INFO.Latitude, GPS_INFO.Longitude, 
+  DistanceBearing(
+	WayPointList[j].Latitude,WayPointList[j].Longitude,
+	GPS_INFO.Latitude, GPS_INFO.Longitude,
 	&wpdist,&brg);
 
   TCHAR wptype[100];
   switch(WayPointList[j].Style) {
 	case STYLE_AIRFIELDGRASS:
 	case STYLE_GLIDERSITE:
- 		_stprintf(wptype,_T("%s "), MsgToken(1720));	// the airfield of
+		_stprintf(wptype,_T("%s "), MsgToken(1720));	// the airfield of
 		break;
 	case STYLE_OUTLANDING:
- 		_stprintf(wptype,_T("%s "), MsgToken(1721));	// the field of
+		_stprintf(wptype,_T("%s "), MsgToken(1721));	// the field of
 		needmorewp=true;
 		break;
 	case STYLE_AIRFIELDSOLID:
- 		_stprintf(wptype,_T("%s "), MsgToken(1722));	// the airport of
+		_stprintf(wptype,_T("%s "), MsgToken(1722));	// the airport of
 		break;
 	default:
 		_tcscpy(wptype,_T(""));
@@ -342,10 +342,10 @@ _dowp:
 
   if ( (_tcslen(wptype)==0) && WayPointCalc[j].IsLandable) {
 	if (WayPointCalc[j].IsAirport)  {
- 		 _stprintf(wptype,_T("%s "), MsgToken(1720));	// the airfield of
+		 _stprintf(wptype,_T("%s "), MsgToken(1720));	// the airfield of
 		needmorewp=false;
 	} else {
- 		 _stprintf(wptype,_T("%s "), MsgToken(1721));	// the field of
+		 _stprintf(wptype,_T("%s "), MsgToken(1721));	// the field of
 		needmorewp=true;
 	}
   } else {
@@ -358,46 +358,46 @@ _dowp:
   // nn km south
   if (wpdist>2000) {
 	//
-	// 2km South of city 
+	// 2km South of city
 	// and/over lake
 	// 4 km SW of waypoint
 	_stprintf(ttmp,_T("\n%.0f %s %s "), wpdist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 	_tcscat(toracle,ttmp);
 
- 	 _stprintf(ttmp,_T("%s %s<%s>"), MsgToken(1711),wptype,WayPointList[j].Name); // of
- 	 _tcscat(toracle,ttmp);
+	 _stprintf(ttmp,_T("%s %s<%s>"), MsgToken(1711),wptype,WayPointList[j].Name); // of
+	 _tcscat(toracle,ttmp);
 
   } else {
 	if (found) {
 		if (over) {
 			if (saynear) {
 				//
-				// 2km South of city 
+				// 2km South of city
 				// over lake
 				// near waypoint
 				// ----
 				// Over city and lake
 				// near waypoint
 
-	 			_stprintf(ttmp,_T("\n%s %s<%s>"), MsgToken(1719),wptype,WayPointList[j].Name); // near to
-	 			_tcscat(toracle,ttmp);
+				_stprintf(ttmp,_T("\n%s %s<%s>"), MsgToken(1719),wptype,WayPointList[j].Name); // near to
+				_tcscat(toracle,ttmp);
 			} else {
-				// Over city 
+				// Over city
 				// near lake and waypoint
 
-	 			_stprintf(ttmp,_T(" %s %s<%s>"), MsgToken(1717),wptype,WayPointList[j].Name); // and
-	 			_tcscat(toracle,ttmp);
+				_stprintf(ttmp,_T(" %s %s<%s>"), MsgToken(1717),wptype,WayPointList[j].Name); // and
+				_tcscat(toracle,ttmp);
 			}
 		} else {
- 			_stprintf(ttmp,_T("\n%s %s<%s>"), MsgToken(1719),wptype,WayPointList[j].Name); // near to
- 			_tcscat(toracle,ttmp);
+			_stprintf(ttmp,_T("\n%s %s<%s>"), MsgToken(1719),wptype,WayPointList[j].Name); // near to
+			_tcscat(toracle,ttmp);
 		}
 	} else {
 		//
 		// Near waypoint (because "over" could be wrong, we have altitudes in wp!)
-		// 
- 		_stprintf(ttmp,_T("%s %s<%s>"), MsgToken(1723),wptype,WayPointList[j].Name); // Near to
- 		_tcscat(toracle,ttmp);
+		//
+		_stprintf(ttmp,_T("%s %s<%s>"), MsgToken(1723),wptype,WayPointList[j].Name); // Near to
+		_tcscat(toracle,ttmp);
 	}
   }
 
@@ -410,7 +410,7 @@ _dowp:
   goto _dowp;
 
 _end:
-            
+
   UnlockTerrainDataGraphics();
 
 #ifdef ULLIS_PRIVATE_FEATURES
@@ -426,4 +426,3 @@ _end:
   StartupStore(_T("Oracle : Result found in %d ms") NEWLINE, _time.Elapsed());
   #endif
 }
-

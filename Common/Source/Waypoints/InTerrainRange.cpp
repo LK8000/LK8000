@@ -31,35 +31,35 @@ bool WaypointInTerrainRange(WAYPOINT *List) {
     return true;
   } else {
     if (WaypointOutOfTerrainRangeDontAskAgain == 0){
-      
+
       TCHAR sTmp[250];
       int res;
 
-      _stprintf(sTmp, _T("Waypoint #%d \"%s\" \r\n%s\r\n\r\n%s"), 
+      _stprintf(sTmp, _T("Waypoint #%d \"%s\" \r\n%s\r\n\r\n%s"),
                 List->Number, List->Name,
-	// LKTOKEN  _@M837_ = "out of Terrain bound" 
+	// LKTOKEN  _@M837_ = "out of Terrain bound"
 		MsgToken(837),
-	// LKTOKEN  _@M395_ = "Load anyway?" 
+	// LKTOKEN  _@M395_ = "Load anyway?"
 		MsgToken(395));
-      
+
       res = dlgWaypointOutOfTerrain(sTmp);
-      
+
       switch(res){
-      case wpTerrainBoundsYes: 
+      case wpTerrainBoundsYes:
         return true;
-      case wpTerrainBoundsNo: 
+      case wpTerrainBoundsNo:
         return false;
-      case wpTerrainBoundsYesAll: 
+      case wpTerrainBoundsYesAll:
         WaypointOutOfTerrainRangeDontAskAgain = 1;
         // WaypointsOutOfRange = 1; // this would override user choice in configuration!
         return true;
-      case mrCancel: 
-      case wpTerrainBoundsNoAll: 
+      case mrCancel:
+      case wpTerrainBoundsNoAll:
         WaypointOutOfTerrainRangeDontAskAgain = 2;
         // WaypointsOutOfRange = 2; // this would override user choice in configuration!
         return false;
       }
-      
+
     } else {
       if (WaypointOutOfTerrainRangeDontAskAgain == 2)
         return(false);

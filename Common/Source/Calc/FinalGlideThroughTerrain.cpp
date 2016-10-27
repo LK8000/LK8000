@@ -15,24 +15,24 @@
 // Final glide through terrain and footprint calculations
 
 
-double FinalGlideThroughTerrain(const double this_bearing, 
+double FinalGlideThroughTerrain(const double this_bearing,
                               #ifdef GTL2
                                 const double start_lat,
                                 const double start_lon,
                                 const double start_alt,
                               #else
-				NMEA_INFO *Basic, 
+				NMEA_INFO *Basic,
                               #endif
                                 DERIVED_INFO *Calculated,
                                 double *retlat, double *retlon,
                                 const double max_range,
 				bool *out_of_range,
-				double *TerrainBase) 
+				double *TerrainBase)
 {
-  double irange = GlidePolar::MacCreadyAltitude(MACCREADY, 
-						1.0, this_bearing, 
-						Calculated->WindSpeed, 
-						Calculated->WindBearing, 
+  double irange = GlidePolar::MacCreadyAltitude(MACCREADY,
+						1.0, this_bearing,
+						Calculated->WindSpeed,
+						Calculated->WindBearing,
 						0, 0, true, 0);
 #ifndef GTL2
   const double start_lat = Basic->Latitude;
@@ -80,7 +80,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
 
   // calculate terrain rounding factor
 
-  FindLatitudeLongitude(start_lat, start_lon, 0, 
+  FindLatitudeLongitude(start_lat, start_lon, 0,
                         glide_max_range/NUMFINALGLIDETERRAIN, &lat, &lon);
 
   double Xrounding = fabs(lon-start_lon)/2;
@@ -95,9 +95,9 @@ double FinalGlideThroughTerrain(const double this_bearing,
 #else
   altitude = Calculated->NavAltitude;
 #endif
-  h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon)); 
+  h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon));
   if (h==TERRAIN_INVALID) h=0; // @ 101027 FIX
-  dh = altitude - h - safetyterrain; 
+  dh = altitude - h - safetyterrain;
   last_dh = dh;
   if (dh<0) {
     start_under = true;
@@ -137,10 +137,10 @@ double FinalGlideThroughTerrain(const double this_bearing,
       // early exit
       *out_of_range = true;
 #if 100125
-      if (max_range<glide_max_range) 
-      	retval = max_range;
+      if (max_range<glide_max_range)
+	retval = max_range;
       else
-      	retval = glide_max_range;
+	retval = glide_max_range;
 #else
       retval = max_range;
 #endif
@@ -159,10 +159,10 @@ double FinalGlideThroughTerrain(const double this_bearing,
     lon += dlon;
 
     // find height over terrain
-   
-    h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon)); 
+
+    h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon));
     if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX
-    
+
 
     dh = altitude - h - safetyterrain;
 
@@ -217,5 +217,3 @@ double FinalGlideThroughTerrain(const double this_bearing,
   RasterTerrain::Unlock();
   return retval;
 }
-
-

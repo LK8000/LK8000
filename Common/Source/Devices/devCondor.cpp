@@ -29,11 +29,11 @@ static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
   if(_tcsncmp(TEXT("$LXWP0"), String, 6)==0)
     {
       return cLXWP0(d, &String[7], pGPS);
-    } 
+    }
   if(_tcsncmp(TEXT("$LXWP1"), String, 6)==0)
     {
       return cLXWP1(d, &String[7], pGPS);
-    } 
+    }
   if(_tcsncmp(TEXT("$LXWP2"), String, 6)==0)
     {
       return cLXWP2(d, &String[7], pGPS);
@@ -46,7 +46,7 @@ static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
 static BOOL CondorIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE); 
+  return(TRUE);
 }
 
 
@@ -140,7 +140,7 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   DevIsCondor=true;
 
   double alt, airspeed, wspeed, wfrom;
- 
+
   NMEAParser::ExtractParameter(String,ctemp,1);
   airspeed = StrToDouble(ctemp,NULL)/TOKPH;
 

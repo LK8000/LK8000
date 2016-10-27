@@ -18,7 +18,7 @@ static TCHAR nTemp2String[READLINE_LENGTH*2];
 
 
 
-// returns -1 if error, or the WpFileType 
+// returns -1 if error, or the WpFileType
 int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 {
   WAYPOINT new_waypoint {};
@@ -76,18 +76,18 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 			StartupStore(_T(". Waypoint file %d format: CompeGPS with UTM coordinates UNSUPPORTED%s"),globalFileNum+1,NEWLINE);
 			return -1;
 		}
-		if ( _tcsncmp(_T("U  1"),nTemp2String,4) != 0 && 
+		if ( _tcsncmp(_T("U  1"),nTemp2String,4) != 0 &&
 		     _tcsncmp(_T("U 1"),nTemp2String,3) != 0 ) {
 			StartupStore(_T(". Waypoint file %d format: CompeGPS unknown U field, rejected%s"),globalFileNum+1,NEWLINE);
 			return -1;
 		}
-		
+
 		StartupStore(_T(". Waypoint file %d format: CompeGPS, LatLon coordinates%s"),globalFileNum+1,NEWLINE);
 		fempty=false;
 		fileformat=LKW_COMPE;
 		break;
 	}
-	if ( (_tcsncmp(_T("name,code,country"),nTemp2String,17) == 0) || 
+	if ( (_tcsncmp(_T("name,code,country"),nTemp2String,17) == 0) ||
 		(_tcsncmp(_T("Title,Code,Country"),nTemp2String,18) == 0)  // 100314
 	) {
 		StartupStore(_T(". Waypoint file %d format: SeeYou%s"),globalFileNum+1,NEWLINE);
@@ -117,10 +117,10 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 		fileformat=LKW_DAT;
 		break;
 	}
-	// Otherwise we use the fileformat .xxx suffix. 
+	// Otherwise we use the fileformat .xxx suffix.
 	// Why we did not do it since the beginning? Simply because we should not rely on .xxx suffix
 	// because some formats like CompeGPS and OZI, for example, share the same .WPT suffix.
-	// 
+	//
 	if (fileformat<0) {
 		StartupStore(_T(".. Unknown WP header, unknown format in <%s>%s"),nTemp2String,NEWLINE);
 		// leaving fempty true, so no good file available
@@ -140,18 +140,18 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   // a real shame, too lazy to change into do while loop
   // Skip already read lines containing header, unless we are using DAT, which has no header
-  if ( fileformat==LKW_DAT) goto goto_inloop; 
+  if ( fileformat==LKW_DAT) goto goto_inloop;
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
   while(ReadString(fp, READLINE_LENGTH, nTemp2String, cs)){
-goto_inloop:    
+goto_inloop:
 	nLineNumber++;
 	nTemp2String[READLINE_LENGTH]=_T('\0');
 	nTemp2String[READLINE_LENGTH-1]=_T('\n');
 	nTemp2String[READLINE_LENGTH-2]=_T('\r');
 	fPos += _tcslen(nTemp2String);
-   
+
 	if (_tcsstr(nTemp2String, TEXT("**")) == nTemp2String) // Look For Comment
 		continue;
 
@@ -161,8 +161,8 @@ goto_inloop:
 	if (nTemp2String[0] == '\0')
 		continue;
 
-	new_waypoint.Details = NULL; 
-	new_waypoint.Comment = NULL; 
+	new_waypoint.Details = NULL;
+	new_waypoint.Comment = NULL;
 
 	if ( fileformat == LKW_DAT || fileformat== LKW_XCW ) {
 		if (ParseDAT(nTemp2String, &new_waypoint)) {
@@ -175,12 +175,12 @@ goto_inloop:
 				continue;
 			}
 
-			if (WaypointInTerrainRange(&new_waypoint)) { 
+			if (WaypointInTerrainRange(&new_waypoint)) {
 				if(!AddWaypoint(new_waypoint)) {
 					return -1; // failed to allocate
 				}
-			}	
-	  	}
+			}
+		}
 	}
 	if ( fileformat == LKW_CUP ) {
 		if ( _tcsncmp(_T("-----Related Tasks"),nTemp2String,18)==0) {
@@ -195,7 +195,7 @@ goto_inloop:
 				continue;
 			}
 
-			if (WaypointInTerrainRange(&new_waypoint)) { 
+			if (WaypointInTerrainRange(&new_waypoint)) {
 				if(!AddWaypoint(new_waypoint)) {
 					return -1; // failed to allocate
 				}

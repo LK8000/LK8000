@@ -37,7 +37,7 @@ static const COLORRAMP* lastColorRamp = NULL;
 static void ColorRampLookup(const short h,
         uint8_t &r, uint8_t &g, uint8_t &b,
         const COLORRAMP* ramp_colors, const int numramp,
-        const unsigned char interp_levels) 
+        const unsigned char interp_levels)
 {
 
     const unsigned short is = 1 << interp_levels;
@@ -45,7 +45,7 @@ static void ColorRampLookup(const short h,
     for (unsigned int i = numramp - 1; i--;) {
         if (h >= ramp_colors[i].h) {
             const unsigned short f = (h - ramp_colors[i].h) * is / (ramp_colors[i + 1].h - ramp_colors[i].h);
-            
+
             const unsigned short of = is - f;
 
             r = (f * ramp_colors[i + 1].r + of * ramp_colors[i].r) >> interp_levels;
@@ -90,7 +90,7 @@ inline void TerrainShading(const short illum, uint8_t &r, uint8_t &g, uint8_t &b
 // (0.25*30/mapscale) pixels/terrain
 //  mapscale/(0.25*30)
 //  mapscale/7.5 terrain units/pixel
-// 
+//
 // this is for TerrainInfo->StepSize = 0.0025;
 
 //
@@ -148,7 +148,7 @@ public:
             if (dtquant > 4) dtquant = 4; // .. but not too much
             break;
         };
-        
+
 #else
         if (ScreenSize != ss640x480) {
             if (dtquant > 3) dtquant = 3; // .. but not too much
@@ -173,7 +173,7 @@ public:
          */
 
 
-        
+
 
         LKASSERT(ScreenScale != 0);
         const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
@@ -185,7 +185,7 @@ public:
             ToggleMultimapTerrain();
             return;
         }
-        
+
         ixs = sbuf->GetCorrectedWidth() / oversampling;
         iys = sbuf->GetHeight() / oversampling;
 
@@ -242,11 +242,11 @@ public:
         }
         terrain_ready = false;
     }
-    
+
     void SetDirty() {
         _dirty = true;
     }
-    
+
     bool IsDirty() const {
         return _dirty;
     }
@@ -263,9 +263,9 @@ private:
     double pixelsize_d;
 
 #ifdef USE_TERRAIN_BLUR
-// only used if blur...    
+// only used if blur...
     int blursize;
-    int oversampling; 
+    int oversampling;
 #else
     static constexpr int oversampling = 1; //no oversampling if no "Blur"
 #endif
@@ -276,7 +276,7 @@ private:
     static constexpr int interp_levels = 8;
     const COLORRAMP* color_ramp;
     static constexpr unsigned int height_scale = 4;
-   
+
 public:
 
     void SetShading() {
@@ -316,7 +316,7 @@ public:
         Pt.x = (X0 + X1) / 2 + dtquant;
         Pt.y = (Y0 + Y1) / 2;
         _Proj.Screen2LonLat(Pt, X, Y);
-        
+
         double dX = std::abs(xmiddle - X);
         DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDX, NULL);
 
@@ -338,7 +338,7 @@ public:
 
         /*
         // We might accelerate drawing by disabling shading while quickdrawing,
-        // but really this wouldnt change much the things now in terms of speed, 
+        // but really this wouldnt change much the things now in terms of speed,
         // while instead creating a confusing effect.
         if (QUICKDRAW) {
             do_shading=false;
@@ -359,18 +359,18 @@ public:
         POINT orig = MapWindow::GetOrigScreen();
         orig.x -= offset.x;
         orig.y -= offset.y;
-        
+
         if(DisplayMap->interpolate()) {
-            
-            FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y, 
-                    [DisplayMap](const double &X, const double &Y){ 
-                        return DisplayMap->GetFieldInterpolate(X,Y); 
+
+            FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y,
+                    [DisplayMap](const double &X, const double &Y){
+                        return DisplayMap->GetFieldInterpolate(X,Y);
                     });
         } else {
-            
-            FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y, 
+
+            FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y,
                     [DisplayMap](const double &X, const double &Y){
-                        return DisplayMap->GetFieldFine(X,Y); 
+                        return DisplayMap->GetFieldFine(X,Y);
                     });
         }
 
@@ -379,7 +379,7 @@ public:
 
     /**
      * Attention ! never call this without check if map is loaded.
-     * 
+     *
      * template is needed for avoid to test if interpolation is needed for each pixel.
      */
     template<typename GetHeight_t>
@@ -403,12 +403,12 @@ public:
             const int y = Y0 + (iy*dtquant);
             const double ac1 = PanLatitude - y*ac3;
             const double cc1 = y * ac2;
- 
+
             for (unsigned int ix=0; ix < ixs; ix++) {
                 const int x = X0 + (ix*dtquant);
                 const double Y = ac1 - x*ac2;
                 const double X = PanLongitude + (invfastcosine(Y) * ((x * ac3) - cc1));
- 
+
                 unsigned short& hDst = hBuf[iy*ixs+ix];
                 // this is setting to 0 any negative terrain value and can be a problem for dutch people
                 // myhbuf cannot load negative values!
@@ -417,11 +417,11 @@ public:
         }
 
         if (!terrain_minalt[TerrainRamp]) {
-            minalt = 0; //@ 101110  
+            minalt = 0; //@ 101110
         } else {
             minalt = *std::min_element(hBuf, hBuf+(ixs*iys));
         }
-        
+
 
         if (TerrainRamp == 13) {
             if (!GPS_INFO.NAVWarning) {
@@ -435,7 +435,7 @@ public:
             }
         }
 
-        // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt))); 
+        // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt)));
 
     }
 
@@ -463,7 +463,7 @@ public:
         const BGRColor* oColorBuf = colorBuf + 64 * 256;
         if (!sbuf->GetBuffer()) return;
 
-        #pragma omp parallel for 
+        #pragma omp parallel for
         for (unsigned int y = 0; y < ciys; ++y) {
             const int itss_y = ciys - 1 - y;
             const int itss_y_ixs = itss_y*cixs;
@@ -616,14 +616,14 @@ public:
     void Draw(LKSurface& Surface, const RECT& rc) {
         if(_dirty) {
             sbuf->SetDirty();
-            
+
 #ifdef USE_TERRAIN_BLUR
             if (blursize > 0) {
                 sbuf->Blur(blursize);
             }
 #endif
         }
-        
+
         _dirty = false;
         sbuf->DrawStretch(Surface, rc, oversampling);
     }
@@ -650,28 +650,28 @@ void CloseTerrainRenderer() {
  * @return true if all terrain parameters are same, false if one or more change
  */
 static bool UpToDate(short TerrainContrast, short TerrainBrightness, short TerrainRamp, short Shading, const ScreenProjection& _Proj) {
-    
+
     static short old_TerrainContrast(TerrainContrast);
     static short old_TerrainBrightness(TerrainBrightness);
     static short old_TerrainRamp(TerrainRamp);
     static short old_Shading(Shading);
     static ScreenProjection old_ScreenProjection(_Proj);
 
-    if(old_TerrainContrast != TerrainContrast 
+    if(old_TerrainContrast != TerrainContrast
             || old_TerrainBrightness != TerrainBrightness
-            || old_TerrainRamp != TerrainRamp            
+            || old_TerrainRamp != TerrainRamp
             || old_Shading != Shading
             || old_ScreenProjection != _Proj) {
-        
+
         old_TerrainContrast = TerrainContrast;
         old_TerrainBrightness = TerrainBrightness;
         old_TerrainRamp = TerrainRamp;
         old_Shading = Shading;
         old_ScreenProjection = _Proj;
-               
+
         return false;
     }
-    
+
     return true;
 }
 
@@ -758,19 +758,19 @@ _redo:
         // step 1: fill height buffer
         trenderer->Height({rc.left, rc.top}, _Proj);
 
-        
+
         // step 2: calculate sunlight vector
         const double fudgeelevation = (10.0 + 80.0 * TerrainBrightness / 255.0);
         const int sx = (255 * (fastcosine(fudgeelevation) * fastsine(sunazimuth)));
         const int sy = (255 * (fastcosine(fudgeelevation) * fastcosine(sunazimuth)));
         const int sz = (255 * fastsine(fudgeelevation));
-        
+
         // step 3: calculate derivatives of height buffer
         // step 4: calculate illumination and colors
         trenderer->Slope(sx, sy, sz);
     }
     // step 5: draw
     trenderer->Draw(Surface, rc);
-    
+
     return true;
 }

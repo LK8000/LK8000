@@ -22,7 +22,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 	case LKEVENT_ENTER:
 		// Event are cleared from called inner functions, but we do it nevertheless..
 		SetModeType(LKMODE_MAP, MP_MOVING);
-		LKevent=LKEVENT_NONE; // check if removable 
+		LKevent=LKEVENT_NONE; // check if removable
 		break;
 	default:
 		LKevent=LKEVENT_NONE;
@@ -100,7 +100,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   y+=(textSize.cy)/2; // spacing
 
   if (GPSAltitudeOffset != 0) {
-      _stprintf(Buffer, _T("WARNING: HGPS offset: %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); 
+      _stprintf(Buffer, _T("WARNING: HGPS offset: %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY);
       y+=(textSize.cy);
       LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   }
@@ -111,4 +111,3 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
 
 }
-

@@ -37,7 +37,7 @@ void ChangeWindCalcSpeed(const int newspeed) {
 
 #ifdef _WIN32
 // runmode 0: exec inside LocalPath home of LK8000
-// runmode 1: exec inside 
+// runmode 1: exec inside
 bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
   if (_tcslen(prog) <5) {
 	StartupStore(_T("... LKRun failure: invalid exec path <%s>%s"),prog,NEWLINE);
@@ -63,11 +63,11 @@ bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
 	si.cb=sizeof(STARTUPINFO);
 	si.wShowWindow= SW_SHOWNORMAL;
 	si.dwFlags = STARTF_USESHOWWINDOW;
-	// if (!::CreateProcess(_T("C:\\WINDOWS\\notepad.exe"),_T(""), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) 
+	// if (!::CreateProcess(_T("C:\\WINDOWS\\notepad.exe"),_T(""), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
 
     /*cf. http://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
-     * The Unicode version of this function, CreateProcessW, can modify the contents of this string. Therefore, this 
-     * parameter cannot be a pointer to read-only memory (such as a const variable or a literal string). If this parameter 
+     * The Unicode version of this function, CreateProcessW, can modify the contents of this string. Therefore, this
+     * parameter cannot be a pointer to read-only memory (such as a const variable or a literal string). If this parameter
      * is a constant string, the function may cause an access violation.
      * */
 	if (!::CreateProcess(path,NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
@@ -97,9 +97,9 @@ void GotoWaypoint(const int wpnum) {
 	wpname[10] = '\0';
 
 	if (MessageBoxX(
-	// LKTOKEN  _@M158_ = "CONFIRM GOTO, ABORTING TASK?" 
+	// LKTOKEN  _@M158_ = "CONFIRM GOTO, ABORTING TASK?"
 	MsgToken(158),
-	// LKTOKEN  _@M40_ = "A task is running!" 
+	// LKTOKEN  _@M40_ = "A task is running!"
 	MsgToken(40),
 	mbYesNo) == IdYes) {
 		LockTaskData();
@@ -138,7 +138,7 @@ TCHAR * GetSizeSuffix(void) {
 void LKRunStartEnd(bool start) {
 #ifdef WIN32
   if (start) {
-	LKRun(_T("PREROTATE1.EXE"),1,5000); 
+	LKRun(_T("PREROTATE1.EXE"),1,5000);
 	LKRun(_T("PREROTATE2.EXE"),1,5000);
 	LKRun(_T("PREROTATE3.EXE"),1,5000);
 	LKRun(_T("PRELOAD_00.EXE"),1,0);
@@ -151,7 +151,7 @@ void LKRunStartEnd(bool start) {
 	LKRun(_T("ENDLOAD_05.EXE"),1,5000);
 	LKRun(_T("ENDLOAD_30.EXE"),1,30000);
 	LKRun(_T("ENDLOAD_60.EXE"),1,60000);
-	LKRun(_T("ENDROTATE1.EXE"),1,5000); 
+	LKRun(_T("ENDROTATE1.EXE"),1,5000);
 	LKRun(_T("ENDROTATE2.EXE"),1,5000);
 	LKRun(_T("ENDROTATE3.EXE"),1,5000);
 	LKRun(_T("ENDLOAD_99.EXE"),1,INFINITE);
@@ -162,15 +162,15 @@ void LKRunStartEnd(bool start) {
 }
 
 
-/** 
+/**
  * @brief Returns task file name
- * 
+ *
  * Function obtains task file path and strips the directory part and file
  * extension from it.
- * 
+ *
  * @param bufferLen The length of the buffer
- * @param buffer Buffer for the task file name 
- * 
+ * @param buffer Buffer for the task file name
+ *
  * @return Buffer with filled data
  */
 const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
@@ -180,7 +180,7 @@ const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
   LKASSERT(buffer!=NULL);
   #endif
   if (buffer==NULL) return NULL;
-  
+
   LockTaskData();
   int len = _tcslen(LastTaskFileName);
   if(len > 0) {
@@ -199,14 +199,14 @@ const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
     name[index] = _T('\0');
   }
   UnlockTaskData();
-  
+
   _tcsncpy(buffer, name, bufferLen);
   #if BUGSTOP
   LKASSERT(bufferLen>0);
   #endif
   if (bufferLen>0)
   buffer[bufferLen - 1] = _T('\0');
-  
+
   return buffer;
 }
 
@@ -217,7 +217,7 @@ const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
 //
 bool UseContestEngine(void) {
   // Gliding and Paragliding mode always have the engine running
-  if (ISGLIDER || ISPARAGLIDER) return true; 
+  if (ISGLIDER || ISPARAGLIDER) return true;
   // All other modes like Car and GA, will need 1.5 page to be ON
   if (!ConfIP[LKMODE_INFOMODE][IM_CONTEST]) return false;
 
@@ -260,7 +260,7 @@ int GetWaypointFileFormatType(const TCHAR* wfilename) {
 // This function is called when a valid GPS time (or a time taken from an IGC replay log)
 // is verified to be gone back in time.
 // This was normally happening when the device was switched off and back on some time later, until 3.1f.
-// Now the time in LK is advancing also considering the date through a full year, 
+// Now the time in LK is advancing also considering the date through a full year,
 // so it is unlikely to happen after a valid fix.
 //
 // But this can also happen  after switching ON a PNA with no time battery, and thus a full reset.
@@ -292,7 +292,7 @@ void MasterTimeReset(void) {
 	StartupStore(_T("... Master Time Reset going silent, no fix! %s%s"), WhatTimeIsIt(),NEWLINE);
 	silent=true;
   } else
-	silent=false; // arm it 
+	silent=false; // arm it
 
   StartupStore(_T("... Master Time Reset %s%s"), WhatTimeIsIt(),NEWLINE);
   DoStatusMessage(_T("MASTER TIME RESET")); // no translation please
@@ -329,7 +329,7 @@ int CurrentMarker=RESWP_FIRST_MARKER-1;
 // Returns the next waypoint index to use for marker
 int GetVirtualWaypointMarkerSlot(void) {
 
-  if (CurrentMarker==RESWP_LAST_MARKER) 
+  if (CurrentMarker==RESWP_LAST_MARKER)
 	CurrentMarker=RESWP_FIRST_MARKER-1;
 
   return ++CurrentMarker;

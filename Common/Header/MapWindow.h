@@ -71,7 +71,7 @@
 #include "RGB.h"
 
 // NOT USED ANYMORE, USE RGB_xxx as color definition
-// Used by MapWindow::TextColor 
+// Used by MapWindow::TextColor
 // 5 bits (0-30) . Some colors unused
 // #define TEXTBLACK 0
 // #define TEXTWHITE 1
@@ -93,7 +93,7 @@
 
 // VENTA3 note> probably it would be a good idea to separate static WP data to dynamic values,
 // by moving things like Reachable, AltArival , etc to WPCALC
-// Currently at 5.2.2 the whole structure is saved into the task file, so everytime we 
+// Currently at 5.2.2 the whole structure is saved into the task file, so everytime we
 // change the struct all old taks files become invalid... (there's a bug, btw, in this case)
 
 typedef struct _WAYPOINT_INFO
@@ -125,18 +125,18 @@ typedef struct _WAYPOINT_INFO
   short Style;
 } WAYPOINT;
 
-// This struct is separated from _WAYPOINT_INFO and will not be used in task files.  
+// This struct is separated from _WAYPOINT_INFO and will not be used in task files.
 // It is managed by the same functions that manage WayPointList, only add variables here
-// and use them like  WayPointCalc[n].Distance  for example. 
+// and use them like  WayPointCalc[n].Distance  for example.
 // THIS STRUCTURE MUST BE INITIALIZED inside waypointparser function!!
 typedef struct _WAYPOINT_CALCULATED
 {
 //  long timeslot;
-  double GR;       // GR from current position 
+  double GR;       // GR from current position
   short VGR;       // Visual GR
-  double Distance; // distance from current position 
+  double Distance; // distance from current position
   double Bearing;  // used for radial
-  double AltArriv[ALTA_SIZE]; 
+  double AltArriv[ALTA_SIZE];
   double NextETE;
   bool Preferred;  // Flag to be used by Preferred quick selection WP page (TODO) and by BestAlternate
   double AltReqd[ALTA_SIZE];
@@ -212,9 +212,9 @@ class ScreenProjection;
 
 class MapWindow {
  public:
-  /** 
+  /**
    * @brief Class responsible for handling all Map Zoom activities
-   * 
+   *
    * Zoom class is responsible for:
    *  - storing Map Zoom state (global and for each of the modes)
    *  - provide Zoom related calculations
@@ -228,7 +228,7 @@ class MapWindow {
     static const double SCALE_PANORAMA_INIT;
     static const double SCALE_PG_PANORAMA_INIT;
     static const double SCALE_INVALID_INIT;
-    
+
     enum TMapScaleType {
       SCALE_CRUISE,             /**< @brief Basic zoom for flight mode used for:
                                    - cruise mode when AutoZoom is disabled
@@ -240,10 +240,10 @@ class MapWindow {
       SCALE_AUTO_ZOOM,          /**< @brief AutoZoom zoom */
       SCALE_PAN,                /**< @brief PAN zoom */
       SCALE_TARGET_PAN,         /**< @brief TARGET_PAN zoom */
-      
+
       SCALE_NUM                 /**< @brief DO NOT USE THAT */
     };
-    
+
     friend class MapWindow;
     bool  _bMapScale;
     bool _inited;                                 /**< @brief Object inited flag */
@@ -275,21 +275,21 @@ class MapWindow {
 
     Zoom();
     void Reset();
-    
+
     void AutoZoom(bool enable)      { _autoZoom = enable; SwitchMode(); }
     bool AutoZoom() const           { return _autoZoom; }
-    
+
     void CircleZoom(bool enable)    { _circleZoom = enable; SwitchMode(); }
     bool CircleZoom() const         { return _circleZoom; }
-    
+
     void BigZoom(bool enable)       { _bigZoom = enable; }
     bool BigZoom() const            { return _bigZoom; }
-    
+
     void SwitchMode();
-    
+
     double Scale() const { return _scale; }
     double RealScale() const { return _realscale; }
-    
+
     void EventAutoZoom(int vswitch);
     void EventSetZoom(double value);
     void EventScaleZoom(int vswitch);
@@ -301,11 +301,11 @@ class MapWindow {
     bool GetPgCruiseInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
 
   };
-  
 
-  /** 
+
+  /**
    * @brief Class responsible for handling Map Display Mode data
-   * 
+   *
    * There are 2 types of map display modes:
    *  - fly
    *     - modes representing current flight mode (ie. cruise, circle, final glide)
@@ -316,7 +316,7 @@ class MapWindow {
    */
   class Mode {
   public:
-    /** 
+    /**
      * @brief Fly Modes
      */
     enum TModeFly {
@@ -326,8 +326,8 @@ class MapWindow {
       MODE_FLY_FINAL_GLIDE = 0x0004
     };
     static const unsigned FLY_MASK = 0x00FF;
-    
-    /** 
+
+    /**
      * @brief Special Modes
      */
     enum TModeSpecial {
@@ -337,49 +337,49 @@ class MapWindow {
       MODE_SPECIAL_PANORAMA    = 0x0400
     };
     static const unsigned SPECIAL_MASK = 0xFF00;
-    
-    /** 
+
+    /**
      * @brief All Display Modes
      */
     enum TMode {
       MODE_NONE        = MODE_FLY_NONE,
-      
+
       MODE_CRUISE      = MODE_FLY_CRUISE,
       MODE_CIRCLING    = MODE_FLY_CIRCLING,
       MODE_FINAL_GLIDE = MODE_FLY_FINAL_GLIDE,
-      
+
       MODE_PAN         = MODE_SPECIAL_PAN,
       MODE_TARGET_PAN  = MODE_SPECIAL_TARGET_PAN,
       MODE_PANORAMA    = MODE_SPECIAL_PANORAMA
     };
-    
+
   private:
     friend class Zoom;
     unsigned _mode;                    /**< @brief Current Map Display Mode */
     unsigned _lastMode;                /**< @brief Previous Map Display Mode */
     TModeFly _userForcedFlyMode;       /**< @brief Fly Mode forced by a user */
-    
+
   public:
     Mode();
-    
+
     TModeFly UserForcedMode() const    { return _userForcedFlyMode; }
     void UserForcedMode(TModeFly umode) { _userForcedFlyMode = umode; }
-    
+
     bool Is(TMode tmode) const   { return _mode & tmode; }
     void Fly(TModeFly flyMode);
     TModeFly Fly() const        { return static_cast<TModeFly>(_mode & FLY_MASK); }
-    
+
     void Special(TModeSpecial specialMode, bool enable);
     TModeSpecial Special() const { return static_cast<TModeSpecial>(_mode & SPECIAL_MASK); }
-    
+
     bool AnyPan() const { return _mode & (MODE_SPECIAL_PAN | MODE_SPECIAL_TARGET_PAN); }
   };
-  
+
 
   static bool IsDisplayRunning();
   static int iAirspaceMode[AIRSPACECLASSCOUNT];
 #ifdef HAVE_HATCHED_BRUSH
-  static int iAirspaceBrush[AIRSPACECLASSCOUNT]; 
+  static int iAirspaceBrush[AIRSPACECLASSCOUNT];
 #endif
   static int iAirspaceColour[AIRSPACECLASSCOUNT];
   static BOOL CLOSETHREAD;
@@ -407,7 +407,7 @@ class MapWindow {
   // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
   static void InitAirSpaceSldBrushes(const LKColor colours[]);
 
-  
+
  private:
 
   static BOOL Initialised;
@@ -429,13 +429,13 @@ class MapWindow {
 
   // solid brushes for airspace drawing (initialized in InitAirSpaceSldBrushes())
   static LKBrush hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
- 
+
 #ifdef ENABLE_OPENGL
   static LKColor AboveTerrainColor;
 #else
   static LKBrush hAboveTerrainBrush;
 #endif
-  
+
   static Zoom zoom;
   static Mode mode;
 
@@ -455,7 +455,7 @@ class MapWindow {
   static void UpdateTimeStats(bool start);
 
   // Drawing primitives
-  
+
   static void DrawMulticolorDashLine(LKSurface& , const int , const POINT& , const POINT& ,
 			   const LKColor& , const LKColor&,
 			   const RECT&);
@@ -472,7 +472,7 @@ class MapWindow {
   static void CreateDrawingThread(void);
   static void SuspendDrawingThread(void);
   static void ResumeDrawingThread(void);
-  
+
   static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
   static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 
@@ -527,7 +527,7 @@ class MapWindow {
   static void CalculateScreenPositionsAirspace(const RECT& rcDraw, const ScreenProjection& _Proj);
   static void CalculateScreenPositionsThermalSources(const ScreenProjection& _Proj);
   static void LKCalculateWaypointReachable(const bool forced);
-  
+
   static bool PointVisible(const POINT &P);
   static bool PointVisible(const double &lon, const double &lat);
   static bool PointInRect(const double &lon, const double &lat,
@@ -580,7 +580,7 @@ class MapWindow {
 #ifdef DRAWDEBUG
   static void DrawDebug(HDC hdc, const RECT rc);
 #endif
-  static void DrawWelcome8000(LKSurface& Surface, const RECT& rc); 
+  static void DrawWelcome8000(LKSurface& Surface, const RECT& rc);
   static void DrawLKStatus(LKSurface& Surface, const RECT& rc);
   static void DrawFlightMode(LKSurface& Surface, const RECT& rc);
   static void DrawGPSStatus(LKSurface& Surface, const RECT& rc);
@@ -601,8 +601,8 @@ class MapWindow {
   static void DrawTeammate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawOffTrackIndicator(LKSurface& Surface, const RECT& rc);
   static void DrawProjectedTrack(LKSurface& Surface, const RECT& rc, const POINT& Orig);
-  static void DrawStartEndSector(LKSurface& Surface, const RECT& rc, 
-                                    const POINT &Start, const POINT &End, int Index, 
+  static void DrawStartEndSector(LKSurface& Surface, const RECT& rc,
+                                    const POINT &Start, const POINT &End, int Index,
                                     int Type, double Radius);
   static void DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft);
   static void DrawTaskSectors(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) ;
@@ -619,8 +619,8 @@ protected:
   static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   static void DrawCompass(LKSurface& Surface, const RECT& rc,const double angle);
 
-  
-private:  
+
+private:
   static void DrawFinalGlide(LKSurface& Surface, const RECT& rc);
   static void DrawThermalBand(LKSurface& Surface, const RECT& rc);
   static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
@@ -649,14 +649,14 @@ public:
   static Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
 
 protected:
-  static LKBitmapSurface BackBufferSurface; 
+  static LKBitmapSurface BackBufferSurface;
   static Mutex BackBuffer_Mutex;
 #else
 protected:
   void Render(LKSurface& Surface, const PixelRect& Rect);
   static LKBitmapSurface BackBufferSurface;
-  
-  
+
+
 #endif
 private:
   static int iSnailNext;
@@ -665,18 +665,18 @@ private:
 #ifndef ENABLE_OPENGL
   static LKWindowSurface WindowSurface; // used as AttribDC for Bitmap Surface.
   static LKBitmapSurface TempSurface;
-  
+
   static LKMaskBitmapSurface hdcMask; // Only used For Airspaces drawing "Transparent Border" or "Paterns Borders"
   static LKBitmapSurface hdcbuffer; // Used For aispaces
 #endif
-  
+
   static double PanLatitude;
   static double PanLongitude;
 
   static double DisplayAngle;
   static double DisplayAircraftAngle;
   static unsigned targetPanSize;
-  
+
  public:
   static void RefreshMap(); // set public VENTA
 
@@ -693,14 +693,14 @@ private:
 
   static short Y_Up, Y_Down; // Up and Down keys vertical limits, ex. for zoom in out on map
   static short X_Left, X_Right; // Ungestured fast clicks on infopages (THE SAME AS IN: PROCESS_VIRTUALKEY)
-  
+
   static BOOL THREADRUNNING;
   static BOOL THREADEXIT;
-  
+
   static double LimitMapScale(double value);
 
   static void SetTargetPan(bool dopan, int task_index, unsigned dlgSize = 0);
-  
+
   static void SetPanTaskEdit(unsigned TskPoint);
 
   static double GetPanLatitude() { return PanLatitude; }
@@ -724,7 +724,7 @@ private:
   static      LKPen hpTerrainLine;
   static      LKPen hpTerrainLineBg;
   static      LKPen hpStartFinishThick;
-  
+
  private:
 
   static unsigned fpsTime0;
@@ -736,7 +736,7 @@ protected:
   static void RenderMapWindow(LKSurface& Surface, const RECT& rc);
   static void UpdateCaches(const ScreenProjection& _Proj, bool force=false);
 
-private:  
+private:
   static void RenderOverlayGauges(LKSurface& Surface, const RECT& rc);
   static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc);
   static double findMapScaleBarSize(const RECT& rc);
@@ -748,10 +748,10 @@ private:
   static double StepMapScale(int Step);
   static double FindMapScale(double Value);
   static void FillScaleListForEngineeringUnits(void);
-  
+
 
 public:
-	static void FreeSlot(); 
+	static void FreeSlot();
 private:
   // How many slots in screen, divided by horizontal blocks on vertical positions
   // How many parts of vertical screens we are using. H=480 mean 48 pixel sized slots
@@ -776,7 +776,7 @@ private:
  private:
   static POINT Orig_Screen;
   static double TargetZoomDistance;
-  static int TargetPanIndex; 
+  static int TargetPanIndex;
   static void ClearAirSpace(bool fill, const RECT& rc);
 
  public:
@@ -785,7 +785,7 @@ private:
   static void SaturateLabelDeclutter(void);
   static void SetDeclutterIcon(RECT *drect);
   static bool RenderTimeAvailable();
-  static int SnailWidthScale; 
+  static int SnailWidthScale;
   static bool TargetMoved(double &longitude, double &latitude);
 
     // Touch Screen Events Area
@@ -795,16 +795,16 @@ protected:
 	static void _OnSize(int cx, int cy);
 	static void _OnCreate(Window& Wnd, int cx, int cy);
 	static void _OnDestroy();
-    
-/////////////////////////////////////////////////////        
+
+/////////////////////////////////////////////////////
 // Mouse Event Handling /////////////////////////////
 	static void _OnDragMove(const POINT& Pos);
-    
+
 	static void _OnLButtonDown(const POINT& Pos);
     static void _OnLButtonUp(const POINT& Pos);
-    
+
 	static void _OnLButtonDblClick(const POINT& Pos);
-    
+
     // Values to be remembered
     static bool pressed;
     static double Xstart, Ystart;
@@ -812,10 +812,10 @@ protected:
     static double Xlat, Ylat;
     static double distance;
 
-    
-/////////////////////////////////////////////////////    
-    
-/////////////////////////////////////////////////////    
+
+/////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////
 // Keyboard Event Handling //////////////////////////
     static void _OnKeyDown(unsigned KeyCode);
 
@@ -835,7 +835,7 @@ protected:
 	static void key_previous_mode();
 	static void key_next_mode();
 /////////////////////////////////////////////////////
-    
+
  private:
   static NMEA_INFO DrawInfo;
   static DERIVED_INFO DerivedDrawInfo;
@@ -856,10 +856,9 @@ protected:
   #include "MapWindowA.h"
 };
 
-void PolygonRotateShift(POINT* poly, int n, int x, int y, 
+void PolygonRotateShift(POINT* poly, int n, int x, int y,
                         double angle);
 
 void threadsafePolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle);
 
 #endif
-

@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   BtHandlerWince.h
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Adapted from original code provided by Naviter
  */
 
@@ -82,9 +82,9 @@ public:
 protected:
     CBthDevice();
     ~CBthDevice();
-    
+
     CBthDevice( const CBthDevice& ) = delete;
-    CBthDevice& operator=( const CBthDevice& ) = delete;    
+    CBthDevice& operator=( const CBthDevice& ) = delete;
 
 private:
     static CBthDevice* m_pInstance;
@@ -92,4 +92,3 @@ private:
 
 #endif
 #endif	/* CBTHANDLERWINCE_H */
-

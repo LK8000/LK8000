@@ -17,7 +17,7 @@ bool CanRotateScreen() {
 bool RotateScreen(short angle) {
 #if (WINDOWSPC>0)
   return false;
-#else 
+#else
   //
   // Change the orientation of the screen
   //
@@ -41,28 +41,28 @@ bool RotateScreen(short angle) {
 			StartupStore(_T("... CURRENT ORIENT=0, rotate to 90\n"));
 			#endif
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
-			DeviceMode.dmDisplayOrientation = DMDO_90; 
+			DeviceMode.dmDisplayOrientation = DMDO_90;
 			break;
 		case DMDO_90:
 			#if TESTBENCH
 			StartupStore(_T("... CURRENT ORIENT=90, rotate back to 0\n"));
 			#endif
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
-			DeviceMode.dmDisplayOrientation = DMDO_0; 
+			DeviceMode.dmDisplayOrientation = DMDO_0;
 			break;
 		case DMDO_180:
 			#if TESTBENCH
 			StartupStore(_T("... CURRENT ORIENT=180, rotate to 270\n"));
 			#endif
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
-			DeviceMode.dmDisplayOrientation = DMDO_270; 
+			DeviceMode.dmDisplayOrientation = DMDO_270;
 			break;
 		case DMDO_270:
 			#if TESTBENCH
 			StartupStore(_T("... CURRENT ORIENT=270, rotate back to 180\n"));
 			#endif
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
-			DeviceMode.dmDisplayOrientation = DMDO_180; 
+			DeviceMode.dmDisplayOrientation = DMDO_180;
 			break;
 		default:
 			#if TESTBENCH
@@ -82,28 +82,28 @@ bool RotateScreen(short angle) {
 			StartupStore(_T("... CURRENT ORIENT=0, flip to 180\n"));
 			#endif
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
-			DeviceMode.dmDisplayOrientation = DMDO_180; 
+			DeviceMode.dmDisplayOrientation = DMDO_180;
 			break;
 		case DMDO_90:
 			#if TESTBENCH
 			StartupStore(_T("... CURRENT ORIENT=90, flip to 270\n"));
 			#endif
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
-			DeviceMode.dmDisplayOrientation = DMDO_270; 
+			DeviceMode.dmDisplayOrientation = DMDO_270;
 			break;
 		case DMDO_180:
 			#if TESTBENCH
 			StartupStore(_T("... CURRENT ORIENT=180, flip back to 0\n"));
 			#endif
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
-			DeviceMode.dmDisplayOrientation = DMDO_0; 
+			DeviceMode.dmDisplayOrientation = DMDO_0;
 			break;
 		case DMDO_270:
 			#if TESTBENCH
 			StartupStore(_T("... CURRENT ORIENT=270, flip back to 90\n"));
 			#endif
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
-			DeviceMode.dmDisplayOrientation = DMDO_90; 
+			DeviceMode.dmDisplayOrientation = DMDO_90;
 			break;
 		default:
 			#if TESTBENCH
@@ -146,5 +146,3 @@ bool RotateScreen(short angle) {
 #endif // !WINDOWSPC
 
 }
-
-

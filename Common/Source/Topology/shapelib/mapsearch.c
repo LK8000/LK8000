@@ -8,23 +8,23 @@
    This part of the code is taken from ShapeLib 1.1.5
    Copyright (c) 1999, Frank Warmerdam
 
-   This software is available under the following "MIT Style" license, or at the option 
-   of the licensee under the LGPL (see LICENSE.LGPL). 
+   This software is available under the following "MIT Style" license, or at the option
+   of the licensee under the LGPL (see LICENSE.LGPL).
    This option is discussed in more detail in shapelib.html.
 
-   Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-   and associated documentation files (the "Software"), to deal in the Software without restriction, 
-   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+   and associated documentation files (the "Software"), to deal in the Software without restriction,
+   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
    subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included in all copies 
+   The above copyright notice and this permission notice shall be included in all copies
    or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
@@ -57,7 +57,7 @@ int msRectContained(const rectObj *a, const rectObj *b)
   if(a->minx >= b->minx && a->maxx <= b->maxx)
     if(a->miny >= b->miny && a->maxy <= b->maxy)
       return(MS_TRUE);
-  return(MS_FALSE);  
+  return(MS_FALSE);
 }
 
 #if 0 // ----------------  UNUSED CODE IN LK8000
@@ -102,10 +102,10 @@ int msPolygonDirection(lineObj *c)
   lv = LASTVERT(v,c->numpoints);
   nv = NEXTVERT(v,c->numpoints);
 
-  area = c->point[lv].x*c->point[v].y - c->point[lv].y*c->point[v].x + c->point[lv].y*c->point[nv].x - c->point[lv].x*c->point[nv].y + c->point[v].x*c->point[nv].y - c->point[nv].x*c->point[v].y;   
+  area = c->point[lv].x*c->point[v].y - c->point[lv].y*c->point[v].x + c->point[lv].y*c->point[nv].x - c->point[lv].x*c->point[nv].y + c->point[v].x*c->point[nv].y - c->point[nv].x*c->point[v].y;
   if(area > 0)
-    return(1); /* counter clockwise orientation */ 
-  else 
+    return(1); /* counter clockwise orientation */
+  else
     if(area < 0) /* clockwise orientation */
       return(-1);
     else
@@ -136,8 +136,8 @@ int msIntersectSegments(pointObj *a, pointObj *b, pointObj *c, pointObj *d) { /*
   double r, s;
   double denominator, numerator;
 
-  numerator = ((a->y-c->y)*(d->x-c->x) - (a->x-c->x)*(d->y-c->y));  
-  denominator = ((b->x-a->x)*(d->y-c->y) - (b->y-a->y)*(d->x-c->x));  
+  numerator = ((a->y-c->y)*(d->x-c->x) - (a->x-c->x)*(d->y-c->y));
+  denominator = ((b->x-a->x)*(d->y-c->y) - (b->y-a->y)*(d->x-c->x));
 
   if((denominator == 0) && (numerator == 0)) { /* lines are coincident, intersection is a line segement if it exists */
     if(a->y == c->y) { /* coincident horizontally, check x's */
@@ -184,19 +184,19 @@ int msIntersectPointPolygon(pointObj *point, shapeObj *poly) {
       status = !status;
   }
 
-  return(status);  
+  return(status);
 }
 
 #if 0 // ----------------- UNUSED CODE IN LK8000
 
 int msIntersectMultipointPolygon(multipointObj *points, shapeObj *poly) {
   int i;
-  
+
   for(i=0; i<points->numpoints; i++) {
     if(msIntersectPointPolygon(&(points->point[i]), poly) == MS_TRUE)
       return(MS_TRUE);
   }
-    
+
   return(MS_FALSE);
 }
 
@@ -230,7 +230,7 @@ int msIntersectPolylinePolygon(shapeObj *line, shapeObj *poly) {
 	for(v2=1; v2<poly->line[c2].numpoints; v2++)
 	  if(msIntersectSegments(&(line->line[c1].point[v1-1]), &(line->line[c1].point[v1]), &(poly->line[c2].point[v2-1]), &(poly->line[c2].point[v2])) ==  MS_TRUE)
 	    return(MS_TRUE);
-  
+
   return(MS_FALSE);
 }
 
@@ -255,7 +255,7 @@ int msIntersectPolygons(shapeObj *p1, shapeObj *p2) {
     for(v1=1; v1<p1->line[c1].numpoints; v1++)
       for(c2=0; c2<p2->numlines; c2++)
 	for(v2=1; v2<p2->line[c2].numpoints; v2++)
-	  if(msIntersectSegments(&(p1->line[c1].point[v1-1]), &(p1->line[c1].point[v1]), &(p2->line[c2].point[v2-1]), &(p2->line[c2].point[v2])) ==  MS_TRUE)	    
+	  if(msIntersectSegments(&(p1->line[c1].point[v1-1]), &(p1->line[c1].point[v1]), &(p2->line[c2].point[v2-1]), &(p2->line[c2].point[v2])) ==  MS_TRUE)
 	    return(MS_TRUE);
 
   /*
@@ -266,7 +266,7 @@ int msIntersectPolygons(shapeObj *p1, shapeObj *p2) {
   return(MS_FALSE);
 }
 
-#endif // ---------------------------     UNUSED CODE 
+#endif // ---------------------------     UNUSED CODE
 
 
 /*
@@ -277,7 +277,7 @@ double msDistancePointToPoint(pointObj *a, pointObj *b)
 {
   double d;
   double dx, dy;
-  
+
   dx = a->x - b->x;
   dy = a->y - b->y;
   d = sqrt(dx*dx + dy*dy);
@@ -312,7 +312,7 @@ double msDistancePointToSegment(pointObj *p, pointObj *a, pointObj *b)
 
 #define slope(a,b) (((a)->y - (b)->y)/((a)->x - (b)->x))
 
-// Segment to segment distance code is a modified version of that found at: 
+// Segment to segment distance code is a modified version of that found at:
 //
 //   http://www.geometryalgorithms.com/Archive/algorithm_0106/algorithm_0106.htm
 //
@@ -323,11 +323,11 @@ double msDistancePointToSegment(pointObj *p, pointObj *a, pointObj *b)
 // liable for any real or imagined damage resulting from its use.
 // Users of this code must verify correctness for their application.
 
-double msDistanceSegmentToSegment(pointObj *pa, pointObj *pb, pointObj *pc, pointObj *pd) 
+double msDistanceSegmentToSegment(pointObj *pa, pointObj *pb, pointObj *pc, pointObj *pd)
 {
   vectorObj dP;
   vectorObj u, v, w;
-  double a, b, c, d, e; 
+  double a, b, c, d, e;
   double D;
   double sc, sN, sD; // N=numerator, D=demoninator
   double tc, tN, tD;
@@ -342,10 +342,10 @@ double msDistanceSegmentToSegment(pointObj *pa, pointObj *pb, pointObj *pc, poin
 
   u.x = pb->x - pa->x; // u = pb - pa
   u.y = pb->y - pa->y;
-  v.x = pd->x - pc->x; // v = pd - pc 
-  v.y = pd->y - pc->y; 
+  v.x = pd->x - pc->x; // v = pd - pc
+  v.y = pd->y - pc->y;
   w.x = pa->x - pc->x; // w = pa - pc
-  w.y = pa->y - pc->y; 
+  w.y = pa->y - pc->y;
 
   a = dot(u,u);
   b = dot(u,v);
@@ -356,7 +356,7 @@ double msDistanceSegmentToSegment(pointObj *pa, pointObj *pb, pointObj *pc, poin
   D = a*c - b*b;
   sc = sN = sD = D;
   tc = tN = tD = D;
-  
+
   // compute the line parameters of the two closest points
   if(D < SMALL_NUMBER) { // lines are parallel or almost parallel
     sN = 0.0;
@@ -462,7 +462,7 @@ double msDistanceShapeToShape(shapeObj *shape1, shapeObj *shape2)
     for(i=0;i<shape1->numlines;i++) {
       for(j=0; j<shape1->line[i].numpoints; j++) {
         dist = msDistancePointToShape(&(shape1->line[i].point[j]), shape2);
-        if((dist < minDist) || (minDist < 0)) 
+        if((dist < minDist) || (minDist < 0))
 	  minDist = dist;
       }
     }
@@ -473,7 +473,7 @@ double msDistanceShapeToShape(shapeObj *shape1, shapeObj *shape2)
       for(i=0;i<shape2->numlines;i++) {
         for(j=0; j<shape2->line[i].numpoints; j++) {
           dist = msDistancePointToShape(&(shape2->line[i].point[j]), shape1);
-          if((dist < minDist) || (minDist < 0)) 
+          if((dist < minDist) || (minDist < 0))
 	    minDist = dist;
         }
       }
@@ -484,41 +484,41 @@ double msDistanceShapeToShape(shapeObj *shape1, shapeObj *shape2)
           for(k=0;k<shape2->numlines;k++) {
             for(l=1; l<shape2->line[k].numpoints; l++) {
               // check intersection (i.e. dist=0)
-	      if(msIntersectSegments(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l])) == MS_TRUE) 
+	      if(msIntersectSegments(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l])) == MS_TRUE)
                 return(0);
 
 	      // no intersection, compute distance
 	      dist = msDistanceSegmentToSegment(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l]));
-	      if((dist < minDist) || (minDist < 0)) 
+	      if((dist < minDist) || (minDist < 0))
 		minDist = dist;
 	    }
 	  }
- 	}
+	}
       }
-      break;    
+      break;
     case(MS_SHAPE_POLYGON):
-      // shape2 (the polygon) could contain shape1 or one of it's parts      
+      // shape2 (the polygon) could contain shape1 or one of it's parts
       for(i=0; i<shape1->numlines; i++) {
         if(msIntersectPointPolygon(&(shape1->line[0].point[0]), shape2) == MS_TRUE) // this considers holes and multiple parts
           return(0);
       }
-      
+
       // check segment intersection and, if necessary, distance between segments
       for(i=0;i<shape1->numlines;i++) {
         for(j=1; j<shape1->line[i].numpoints; j++) {
           for(k=0;k<shape2->numlines;k++) {
             for(l=1; l<shape2->line[k].numpoints; l++) {
 	      // check intersection (i.e. dist=0)
-	      if(msIntersectSegments(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l])) == MS_TRUE) 
+	      if(msIntersectSegments(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l])) == MS_TRUE)
                 return(0);
 
 	      // no intersection, compute distance
 	      dist = msDistanceSegmentToSegment(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l]));
-	      if((dist < minDist) || (minDist < 0)) 
+	      if((dist < minDist) || (minDist < 0))
 		minDist = dist;
 	    }
 	  }
- 	}
+	}
       }
       break;
     }
@@ -529,37 +529,37 @@ double msDistanceShapeToShape(shapeObj *shape1, shapeObj *shape2)
       for(i=0;i<shape2->numlines;i++) {
         for(j=0; j<shape2->line[i].numpoints; j++) {
           dist = msDistancePointToShape(&(shape2->line[i].point[j]), shape1);
-          if((dist < minDist) || (minDist < 0)) 
+          if((dist < minDist) || (minDist < 0))
 	    minDist = dist;
         }
       }
       break;
     case(MS_SHAPE_LINE):
-      // shape1 (the polygon) could contain shape2 or one of it's parts      
+      // shape1 (the polygon) could contain shape2 or one of it's parts
       for(i=0; i<shape2->numlines; i++) {
         if(msIntersectPointPolygon(&(shape2->line[i].point[0]), shape1) == MS_TRUE) // this considers holes and multiple parts
           return(0);
       }
-      
+
       // check segment intersection and, if necessary, distance between segments
-      for(i=0;i<shape1->numlines;i++) {      
+      for(i=0;i<shape1->numlines;i++) {
         for(j=1; j<shape1->line[i].numpoints; j++) {
           for(k=0;k<shape2->numlines;k++) {
             for(l=1; l<shape2->line[k].numpoints; l++) {
 	      // check intersection (i.e. dist=0)
-	      if(msIntersectSegments(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l])) == MS_TRUE) 
+	      if(msIntersectSegments(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l])) == MS_TRUE)
                 return(0);
 
 	      // no intersection, compute distance
 	      dist = msDistanceSegmentToSegment(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l]));
-	      if((dist < minDist) || (minDist < 0)) 
+	      if((dist < minDist) || (minDist < 0))
 		minDist = dist;
 	    }
 	  }
- 	}
+	}
       }
-      break; 
-    case(MS_SHAPE_POLYGON): 
+      break;
+    case(MS_SHAPE_POLYGON):
       // shape1 completely contains shape2 (only need to check one point from each part)
       for(i=0; i<shape2->numlines; i++) {
         if(msIntersectPointPolygon(&(shape2->line[i].point[0]), shape1) == MS_TRUE) // this considers holes and multiple parts
@@ -573,21 +573,21 @@ double msDistanceShapeToShape(shapeObj *shape1, shapeObj *shape2)
       }
 
       // check segment intersection and, if necessary, distance between segments
-      for(i=0;i<shape1->numlines;i++) {        
+      for(i=0;i<shape1->numlines;i++) {
         for(j=1; j<shape1->line[i].numpoints; j++) {
           for(k=0;k<shape2->numlines;k++) {
             for(l=1; l<shape2->line[k].numpoints; l++) {
 	      // check intersection (i.e. dist=0)
-	      if(msIntersectSegments(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l])) == MS_TRUE) 
-                return(0);	      
+	      if(msIntersectSegments(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l])) == MS_TRUE)
+                return(0);
 
 	      // no intersection, compute distance
 	      dist = msDistanceSegmentToSegment(&(shape1->line[i].point[j-1]), &(shape1->line[i].point[j]), &(shape2->line[k].point[l-1]), &(shape2->line[k].point[l]));
-	      if((dist < minDist) || (minDist < 0)) 
+	      if((dist < minDist) || (minDist < 0))
 		minDist = dist;
 	    }
 	  }
- 	}
+	}
       }
       break;
     }
@@ -598,5 +598,3 @@ double msDistanceShapeToShape(shapeObj *shape1, shapeObj *shape2)
 }
 
 #endif // UNUSED CODE
-
-

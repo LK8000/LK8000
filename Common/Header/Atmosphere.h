@@ -12,7 +12,7 @@ public:
   double airTemp; // degrees C
   double dewpoint; // degrees C
   double tempDry; // degrees C
-  double thermalIndex; 
+  double thermalIndex;
   void updateTemps(double rh, double t);
   void updateThermalIndex(unsigned short level, bool newdata=true);
   int nmeasurements;
@@ -31,7 +31,7 @@ class CuSonde {
 public:
   static double maxGroundTemperature;
   static double hGround;
-  static unsigned short last_level; 
+  static unsigned short last_level;
   static void updateMeasurements(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   static CuSondeLevel cslevels[CUSONDE_NUMLEVELS];
   static void findCloudBase(unsigned short level);

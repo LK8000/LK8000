@@ -76,7 +76,7 @@ void PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]) {
   // however it doesnt hurt .
   // For this reason, the 70kg pilot weight is not important.
   // If we want to adjust wingloading, we just need to change gross weight.
-  WEIGHTS[0] = 70;                      // Pilot weight 
+  WEIGHTS[0] = 70;                      // Pilot weight
   WEIGHTS[1] = ww[0]-WEIGHTS[0];        // Glider empty weight
   WEIGHTS[2] = ww[1];                   // Ballast weight
 
@@ -134,11 +134,11 @@ bool ReadWinPilotPolar(void) {
           str[found]=_T('_');
           bRetry = true; // only retry if file name change.
         }
-        
+
         if(bRetry) {
             _tcscpy(szFile,str.c_str());
             ExpandLocalPath(szFile);
-         
+
             stream = _tfopen(szFile, _T("rt"));
         }
     }
@@ -176,14 +176,14 @@ bool ReadWinPilotPolar(void) {
               ctemp[0] = _T('\0');
               PExtractParameter(TempString, ctemp, 8);
 		if ( _tcscmp(ctemp,_T("")) != 0) {
-              		GlidePolar::WingArea = StrToDouble(ctemp,NULL);
+			GlidePolar::WingArea = StrToDouble(ctemp,NULL);
 		} else {
-	      		GlidePolar::WingArea = 0.0;
+			GlidePolar::WingArea = 0.0;
 		}
 
               #if TESTBENCH
               StartupStore(_T("... Polar ww0=%.2f ww1=%.2f v0=%.2f,%.2f v1=%.2f,%f v2=%.2f,%.2f area=%.2f\n"),
-                  ww[0], ww[1], dPOLARV[0], dPOLARW[0], dPOLARV[1], 
+                  ww[0], ww[1], dPOLARV[0], dPOLARW[0], dPOLARV[1],
                   dPOLARW[1], dPOLARV[2], dPOLARW[2], GlidePolar::WingArea);
               #endif
 
@@ -213,23 +213,23 @@ bool ReadWinPilotPolar(void) {
 	// Unless we check valid string, even with empty string currentFlapsPos will be positive,
 	// and thus force Flaps calculations even with no extended polar.
 	// Let's allow empty lines and comments in the polar file, before the flaps line is found.
-	// 
+	//
 	do {
 	   if (_tcslen(TempString) <10) continue;
 	   if(_tcsstr(TempString,TEXT("*")) == TempString) continue;
-    	   // try to read flaps configuration line
-     	   PExtractParameter(TempString, ctemp, 0);
-     	   GlidePolar::FlapsMass = StrToDouble(ctemp,NULL);
-     	   PExtractParameter(TempString, ctemp, 1);
-     	   int flapsCount = (int) StrToDouble(ctemp,NULL);
+	   // try to read flaps configuration line
+	   PExtractParameter(TempString, ctemp, 0);
+	   GlidePolar::FlapsMass = StrToDouble(ctemp,NULL);
+	   PExtractParameter(TempString, ctemp, 1);
+	   int flapsCount = (int) StrToDouble(ctemp,NULL);
 
-     	   // int currentFlapsPos = 0;
-     	   // GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;  // no need, already initialised
+	   // int currentFlapsPos = 0;
+	   // GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;  // no need, already initialised
 
-     	   int currentFlapsPos=1;
-     	   for (i=2; i <= flapsCount*2; i=i+2) {
+	   int currentFlapsPos=1;
+	   for (i=2; i <= flapsCount*2; i=i+2) {
 	        PExtractParameter(TempString, ctemp, i);
-	        GlidePolar::FlapsPos[currentFlapsPos] = StrToDouble(ctemp,NULL);				
+	        GlidePolar::FlapsPos[currentFlapsPos] = StrToDouble(ctemp,NULL);
 			if (GlidePolar::FlapsPos[currentFlapsPos] > 0) {
 			  GlidePolar::FlapsPos[currentFlapsPos] = GlidePolar::FlapsPos[currentFlapsPos]/TOKPH;
 			}
@@ -240,12 +240,12 @@ bool ReadWinPilotPolar(void) {
 		_tcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
 		if (currentFlapsPos >= (MAX_FLAPS-1)) break; // safe check
 	        currentFlapsPos++;
-       	   }
+	   }
 	   _tcscpy(GlidePolar::FlapsName[0],GlidePolar::FlapsName[1]);
            GlidePolar::FlapsPos[currentFlapsPos] = MAXSPEED;
            _tcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
            currentFlapsPos++;
-           GlidePolar::FlapsPosCount = currentFlapsPos; 
+           GlidePolar::FlapsPosCount = currentFlapsPos;
 	   break;
 	} while(ReadStringX(stream,READLINE_LENGTH,TempString, cs));
 
@@ -264,12 +264,12 @@ bool ReadWinPilotPolar(void) {
 		dPOLARW[1]= -1.71;
 		dPOLARV[2]= 205.1;
 		dPOLARW[2]= -4.2;
-              	GlidePolar::WingArea = 10.04;
+		GlidePolar::WingArea = 10.04;
 		PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
 		_tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
 	} // !foundline
       }
-    } 
+    }
     else {
 	StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);
     }
@@ -288,7 +288,7 @@ void CalculateNewPolarCoef(void)
 
   // StartupStore(TEXT(". Calculate New Polar Coef%s"),NEWLINE);
 
-  GlidePolar::WeightOffset=0; // 100131 
+  GlidePolar::WeightOffset=0; // 100131
 
   // Load polar file
   if (ReadWinPilotPolar()) return;
@@ -329,7 +329,7 @@ typedef struct WinPilotPolarInternal {
 // REMEMBER: add new polars at the bottom, or old configuration will get a different polar value
 // Also remember, currently 300 items limit in WindowControls.h DFE_  enums.
 // THIS IS NOW UNUSED
-WinPilotPolarInternal WinPilotPolars[] = 
+WinPilotPolarInternal WinPilotPolars[] =
 {
   {TEXT("ERROR"), 670,100,100,-1.29,120,-1.61,150,-2.45,15.3},
   }; //   0-x
@@ -346,7 +346,7 @@ bool ReadWinPilotPolarInternal(int i) {
   double dPOLARW[3];
   double ww[2];
 
-  if (!(i < (int)(sizeof(WinPilotPolars) / sizeof(WinPilotPolars[0])))) { 
+  if (!(i < (int)(sizeof(WinPilotPolars) / sizeof(WinPilotPolars[0])))) {
 	return(FALSE);
   }
 
@@ -365,11 +365,3 @@ bool ReadWinPilotPolarInternal(int i) {
   return(TRUE);
 
 }
-
-
-
-
-
-
-
-

@@ -178,7 +178,7 @@ public:
 #if defined(USE_LIBJPEG) || defined(USE_GDI)
   bool LoadFile(const TCHAR *path);
 #endif
-  
+
   bool LoadPNGFile(const TCHAR *path);
 
   void Reset();

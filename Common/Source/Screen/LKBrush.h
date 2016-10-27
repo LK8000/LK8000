@@ -25,17 +25,17 @@ public:
     LKBrush& operator= (LKBrush&& Brush); // tranfert ownership
 
     explicit LKBrush(const LKColor& Color) : Brush(Color) { }
-    
+
     virtual ~LKBrush();
-    
+
     void Create(const LKColor& Color) { Set(Color); }
 #ifdef HAVE_HATCHED_BRUSH
     void Create(const LKBitmap& Bitmap) { Set(Bitmap); }
 #endif
     void Release() { Reset(); }
-    
+
     operator bool() const;
-    
+
 #ifdef USE_GDI
 public:
     LKBrush(): Brush() {}
@@ -66,4 +66,3 @@ extern const LKBrush  LK_BLACK_BRUSH;
 extern const LKBrush  LK_HOLLOW_BRUSH;
 
 #endif	/* LKBRUSH_H */
-

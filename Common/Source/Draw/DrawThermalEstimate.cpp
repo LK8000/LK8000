@@ -28,7 +28,7 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const Sc
 			tradius=50;
 		else
 			tradius=100;
-			
+
 		const auto oldPen = Surface.SelectObject(LKPen_White_N3);
 		Surface.DrawCircle(screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc, true);
 		Surface.SelectObject(LKPen_Black_N1);
@@ -59,9 +59,9 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
 
   int idx=0;
 
-  // do not mix old and new thermals 
+  // do not mix old and new thermals
   if (mode.Is(Mode::MODE_CIRCLING))
-    return; 
+    return;
 
   // draw only when visible , at high zoom level
   if ( MapWindow::zoom.RealScale() >1 ) return;
@@ -69,7 +69,7 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
   idx=GetThermalMultitarget();
   // no L> target destination
   if (idx <0)
-    return; 
+    return;
 
   const POINT screen = _Proj.LonLat2Screen( ThermalHistory[idx].Longitude, ThermalHistory[idx].Latitude);
 

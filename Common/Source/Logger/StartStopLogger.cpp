@@ -15,20 +15,20 @@ void guiStartLogger(bool noAsk) {
 
   if (!LoggerActive)
   {
-	if (ReplayLogger::IsEnabled()) { 
-		if (LoggerActive) 
-			guiStopLogger(true); 
+	if (ReplayLogger::IsEnabled()) {
+		if (LoggerActive)
+			guiStopLogger(true);
 		return;
 	}
 	TCHAR TaskMessage[1024];
-	_tcscpy(TaskMessage,MsgToken(876)); // Start Logger With Declaration\r\n")); 
+	_tcscpy(TaskMessage,MsgToken(876)); // Start Logger With Declaration\r\n"));
 	_tcscat(TaskMessage,_T("\r\n"));
 	for(i=0;i<MAXTASKPOINTS;i++)
 	{
 		if(Task[i].Index == -1)
 		{
 			if(i==0) _tcscat(TaskMessage,MsgToken(479)); // None
-			Debounce(); 
+			Debounce();
 			break;
 		}
 		_tcscat(TaskMessage,WayPointList[ Task[i].Index ].Name);
@@ -39,17 +39,17 @@ void guiStartLogger(bool noAsk) {
 		}
 	}
 
-	// LKTOKEN  _@M637_ = "Start Logger" 
+	// LKTOKEN  _@M637_ = "Start Logger"
 	if(noAsk || (MessageBoxX(TaskMessage,MsgToken(637), mbYesNo) == IdYes))
 	{
 		IGCWriteLock=true; // Lock ASAP
 		if (LoggerClearFreeSpace()) {
-	  
+
 			StartLogger();
 				LoggerHeader();
 				// THIS IS HAPPENING TOO EARLY, and we still have concurrency with F record!
 				// LoggerActive = true; // start logger after Header is completed.  Concurrency
-	  
+
 				int ntp=0;
 				for(i=0;i<MAXTASKPOINTS;i++)
 				{
@@ -63,10 +63,10 @@ void guiStartLogger(bool noAsk) {
 				for(i=0;i<MAXTASKPOINTS;i++)
 				{
 					if(Task[i].Index == -1) {
-						Debounce(); 
+						Debounce();
 						break;
 					}
-					AddDeclaration(WayPointList[Task[i].Index].Latitude, WayPointList[Task[i].Index].Longitude, 
+					AddDeclaration(WayPointList[Task[i].Index].Latitude, WayPointList[Task[i].Index].Longitude,
 					WayPointList[Task[i].Index].Name );
 				}
 				EndDeclaration();
@@ -76,13 +76,13 @@ void guiStartLogger(bool noAsk) {
 				#endif
 		} else {
 
-	// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!" 
+	// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!"
 			MessageBoxX(MsgToken(408),
-	// LKTOKEN  _@M404_ = "Logger Error" 
+	// LKTOKEN  _@M404_ = "Logger Error"
 			MsgToken(404), mbOk);
 			StartupStore(TEXT("------ Logger not started: Insufficient Storage%s"),NEWLINE);
 		}
-		IGCWriteLock=false; 
+		IGCWriteLock=false;
 	}
 	FullScreen();
   }
@@ -91,22 +91,22 @@ void guiStartLogger(bool noAsk) {
 
 void guiStopLogger(bool noAsk) {
   if (LoggerActive) {
-    if(noAsk || 
-	// LKTOKEN  _@M669_ = "Stop Logger" 
+    if(noAsk ||
+	// LKTOKEN  _@M669_ = "Stop Logger"
        (MessageBoxX(MsgToken(669),
-	// LKTOKEN  _@M669_ = "Stop Logger" 
+	// LKTOKEN  _@M669_ = "Stop Logger"
 		    MsgToken(669),
 		    mbYesNo) == IdYes)) {
       StopLogger();
       if (!noAsk) {
 	// force landing for paragliders..
-	if ( (ISPARAGLIDER) && CALCULATED_INFO.Flying && 
+	if ( (ISPARAGLIDER) && CALCULATED_INFO.Flying &&
 		((GPS_INFO.Speed <= TakeOffSpeedThreshold) || GPS_INFO.NAVWarning) ) {
 			// force landing event from TakeoffLanding
 			LKSW_ForceLanding=true;
 			StartupStore(_T(". Logger stopped manually, landing is forced%s"),NEWLINE);
 	}
-		
+
         FullScreen();
       }
     }

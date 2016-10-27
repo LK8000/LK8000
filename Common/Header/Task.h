@@ -40,7 +40,7 @@ typedef struct _TASK_POINT
   double SectorEndLat;
   double SectorEndLon;
   POINT	 Start;
-  POINT	 End;		
+  POINT	 End;
   int	 AATType;
   double AATCircleRadius;
   double AATSectorRadius;
@@ -61,8 +61,8 @@ typedef struct _TASK_POINT
   bool	 OutCircle;
   double AATTargetAltitude;
   double PGConeSlope; // Slope Ratio for PG Cone Turn point
-  double PGConeBase; // Base Altitude of Cone Turn Point 
-  double PGConeBaseRadius; // radius At Base Altitude of Cone Turn Point 
+  double PGConeBase; // Base Altitude of Cone Turn Point
+  double PGConeBaseRadius; // radius At Base Altitude of Cone Turn Point
   // always add new members at the End of this struct
   //   needed for compatibility with old task file.
 }TASK_POINT;
@@ -122,12 +122,12 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius);
 
 double FindInsideAATSectorRange(double latitude,
                                 double longitude,
-                                int taskwaypoint, 
+                                int taskwaypoint,
                                 double course_bearing,
                                 double p_found);
 double FindInsideAATSectorDistance(double latitude,
                                 double longitude,
-                                int taskwaypoint, 
+                                int taskwaypoint,
                                 double course_bearing,
                                 double p_found=0.0);
 

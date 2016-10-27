@@ -27,7 +27,7 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   double last_pirker_mc = 5.0;
   double last_dh = -1.0;
   double pirker_mc_zero = 0.0;
- 
+
   (void)Basic;
 
   short retry=1;
@@ -39,15 +39,15 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   while (pirker_mc<max_mc) {
 
-    h = GlidePolar::MacCreadyAltitude(pirker_mc, 
+    h = GlidePolar::MacCreadyAltitude(pirker_mc,
                                       1.0, // unit distance
-				      this_bearing, 
-                                      Calculated->WindSpeed, 
-                                      Calculated->WindBearing, 
+				      this_bearing,
+                                      Calculated->WindSpeed,
+                                      Calculated->WindBearing,
                                       0, 0, true, 0);
 
-    dh = (h_target-h); 
-    // height difference, how much we have compared to 
+    dh = (h_target-h);
+    // height difference, how much we have compared to
     // how much we need at that speed.
     //   dh>0, we can afford to speed up
 
@@ -71,7 +71,7 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     if ((dh<=0)&&(last_dh>0)) {
       if (dh-last_dh < 0) {
 	double f = (-last_dh)/(dh-last_dh);
-	pirker_mc_zero = last_pirker_mc*(1.0-f)+f*pirker_mc;	
+	pirker_mc_zero = last_pirker_mc*(1.0-f)+f*pirker_mc;
       } else {
 	pirker_mc_zero = pirker_mc;
       }
@@ -90,5 +90,3 @@ double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   }
   return -1.0; // no solution found, unreachable without further climb
 }
-
-

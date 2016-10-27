@@ -30,11 +30,11 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
 
   switch(GetMMNorthUp(getsideviewpage))
   {
-   	case TRACKUP:
-   		break;
+	case TRACKUP:
+		break;
 
-   	case NORTHUP:
-   	default:
+	case NORTHUP:
+	default:
 		m_Dia.fXMin = -m_Dia.fXMax;
 		break;
   }
@@ -77,8 +77,8 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   switch(GetMMNorthUp(getsideviewpage))
   {
       case TRACKUP:
-	    	DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
-	    	DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
+		DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
+		DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
 		break;
 
       case NORTHUP:
@@ -98,7 +98,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
 #warning "wrong place for do that, always bad idea to change layout inside drawing fonctions !"
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
 /*******/
-  
+
   zoom.RequestedScale((m_Dia.fXMax -m_Dia.fXMin)  * fFact *  (DISTANCEMODIFY)/10.0f);
 
   POINT Orig           =  { CalcDistanceCoordinat(0.0,  (DiagrammStruct*) &m_Dia),(rct.bottom-rct.top)/2};
@@ -108,7 +108,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   zoom.UpdateMapScale();
 
   const ScreenProjection _Proj = CalculateScreenPositions( Orig, rct, &Orig_Aircraft);
-  
+
   CalculateScreenPositionsAirspace(rct, _Proj);
 
   bool terrainpainted=false;
@@ -127,7 +127,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
         // blackscreen would force everything to be painted white, instead
         LKTextBlack=BgMapColorTextBlack[BgMapColor];
         if (BgMapColor>6 ) BlackScreen=true; else BlackScreen=false;
-  } 
+  }
 
   ResetLabelDeclutter();
 
@@ -183,7 +183,7 @@ _nomoredeclutter:
   */
 
 
-  // 
+  //
   // Stuff for MAPTRK only (M1)
   if (MapSpaceMode==MSM_MAPTRK) {
 	if(IsMultimapTerrain() || IsMultimapTopology() ) {
@@ -233,9 +233,9 @@ _nomoredeclutter:
 		Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
 	} else {
 	    if (TrackBar) {
-    	 	    DrawHeadUpLine(Surface, Orig, rct, psDia->fXMin ,psDia->fXMax);
-    	 	    if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, rct, true);
-    	 	}
+		    DrawHeadUpLine(Surface, Orig, rct, psDia->fXMin ,psDia->fXMax);
+		    if (ISGAAIRCRAFT) DrawFuturePos(Surface, Orig, rct, true);
+		}
 	}
      break;
 
@@ -269,7 +269,7 @@ void MapWindow::DrawHeadUpLine(LKSurface& Surface, const POINT& Orig, const RECT
 
   const double tmp = fMax*zoom.ResScaleOverDistanceModify();
   const double trackbearing =  DisplayAircraftAngle+  (DerivedDrawInfo.Heading-DrawInfo.TrackBearing);
-  
+
   const POINT p2 = { Orig.x + (int)(tmp*fastsine(trackbearing)), Orig.y - (int)(tmp*fastcosine(trackbearing)) };
 
   const LKColor rgbCol = BlackScreen?RGB_INVDRAW:RGB_BLACK;
@@ -278,7 +278,3 @@ void MapWindow::DrawHeadUpLine(LKSurface& Surface, const POINT& Orig, const RECT
   const RECT ClipRect = {rc.left+NIBLSCALE(5), rc.top+NIBLSCALE(5), rc.right-NIBLSCALE(5), rc.bottom-NIBLSCALE(5) };
   Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), Orig, p2, rgbCol, ClipRect);
 }
-
-
-
-

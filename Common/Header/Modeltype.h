@@ -12,7 +12,7 @@
 
 /*
     Here we declare Model Types for embedded custom versions. Initially for PNAs only.
-	We don't need a "type" and a "model" such as "pna" and "hp310". Instead we use a 
+	We don't need a "type" and a "model" such as "pna" and "hp310". Instead we use a
 	single int value with subsets made of ranges.
 	We use modeltypes currently for extraclipping, hardware key transcoding, and we should
 	also handle embedded gps com ports and adjustments (TODO)

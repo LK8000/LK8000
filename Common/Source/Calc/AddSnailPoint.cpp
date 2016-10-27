@@ -47,7 +47,7 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
           LongSnailTrail[LongSnailNext].Longitude = SnailTrail[SnailNext].Longitude;
           LongSnailTrail[LongSnailNext].FarVisible = true; // hasn't been filtered out yet.
 
-          // find the next 
+          // find the next
           int snext = SnailNext+2;
           snext %= TRAILSIZE;
           // no mistake: longsnailnext+1 is a valid position
@@ -59,7 +59,7 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
           // LongSnailTrail is sized LONGTRAILSIZE+1, we use last position for the closing point
           // so we have LongSnailNext=LONGTRAILSIZE mean invalid
-          if (++LongSnailNext > LONGTRAILSIZE) LongSnailNext=LONGTRAILSIZE; 
+          if (++LongSnailNext > LONGTRAILSIZE) LongSnailNext=LONGTRAILSIZE;
       }
   }
 _skipout:

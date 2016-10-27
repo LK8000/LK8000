@@ -88,7 +88,7 @@ inline int64_t _lround(double i) {
 
 inline unsigned int CombinedDivAndMod(unsigned int &lx) {
   unsigned int ox = lx & 0xff;
-  // JMW no need to check max since overflow will result in 
+  // JMW no need to check max since overflow will result in
   // beyond max dimensions
   lx = lx>>8;
   return ox;
@@ -96,4 +96,3 @@ inline unsigned int CombinedDivAndMod(unsigned int &lx) {
 
 
 #endif	/* MATHFUNCTIONS_H */
-

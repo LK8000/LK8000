@@ -17,14 +17,14 @@ void MapWindow::CalculateOrientationNormal(void) {
 
   if( (DisplayOrientation == NORTHUP) ||
       ((DisplayOrientation == NORTHTRACK) &&(!mode.Is(Mode::MODE_CIRCLING)))
-	|| (DisplayOrientation == NORTHSMART) || 
+	|| (DisplayOrientation == NORTHSMART) ||
 	( ((DisplayOrientation == NORTHCIRCLE) ||(DisplayOrientation==TRACKCIRCLE)) && (mode.Is(Mode::MODE_CIRCLING)) ) )
   {
 		if (mode.Is(Mode::MODE_CIRCLING))
 			GliderCenter=true;
 		else
 			GliderCenter=false;
-    
+
 		if (DisplayOrientation == TRACKCIRCLE) {
 			DisplayAngle = DerivedDrawInfo.WaypointBearing;
 			DisplayAircraftAngle = trackbearing-DisplayAngle;
@@ -38,7 +38,7 @@ void MapWindow::CalculateOrientationNormal(void) {
 	// normal, glider forward
 	GliderCenter = false;
 	DisplayAngle = trackbearing;
-	DisplayAircraftAngle = 0.0;    
+	DisplayAircraftAngle = 0.0;
   }
 
   DisplayAngle = AngleLimit360(DisplayAngle);
@@ -83,7 +83,7 @@ void MapWindow::CalculateOrigin(const RECT& rc, POINT *Orig) {
 		CalculateOrientationNormal();
 	}
   }
-  
+
   if(mode.Is(Mode::MODE_TARGET_PAN)) {
     if (ScreenLandscape) {
       Orig->x = (rc.left + rc.right - targetPanSize)/2;
@@ -99,7 +99,7 @@ void MapWindow::CalculateOrigin(const RECT& rc, POINT *Orig) {
 	Orig->y = (rc.bottom + rc.top)/2;
   } else {
 	// automagic northup smart
-	if (DisplayOrientation == NORTHSMART) { 
+	if (DisplayOrientation == NORTHSMART) {
 		double trackbearing = DrawInfo.TrackBearing;
 		int middleXY,spanxy;
 		if (ScreenLandscape) {
@@ -152,6 +152,3 @@ void MapWindow::SetAutoOrientation(bool doreset) {
 	DisplayOrientation=oldDisplayOrientation;
   }
 }
-
-
-

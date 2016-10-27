@@ -20,9 +20,9 @@
 # define _zzip_fnmatch_CASEFOLD 0
 /* if your system does not have fnmatch, we fall back to strcmp: */
 static int _zzip_fnmatch(char* pattern, char* string, int flags)
-{ 
+{
     fprintf (stderr, "<zzip:mmapped:strcmp>");
-    return strcmp (pattern, string); 
+    return strcmp (pattern, string);
 }
 #endif
 

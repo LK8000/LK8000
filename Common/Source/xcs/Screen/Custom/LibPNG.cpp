@@ -146,7 +146,7 @@ LoadPNG(const void *data, size_t size)
 }
 
 UncompressedImage
-LoadPNGFile(const TCHAR *path) 
+LoadPNGFile(const TCHAR *path)
 {
 
     FILE *file = _tfopen(path, _T("rb"));
@@ -206,7 +206,7 @@ LoadPNGFile(const TCHAR *path)
      * read some of the signature */
     unsigned int sig_read = 0;
     png_set_sig_bytes(png_ptr, sig_read);
-    
+
     /*
      * If you have enough memory to read
      * in the entire image at once, and

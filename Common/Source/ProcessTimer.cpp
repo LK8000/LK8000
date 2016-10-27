@@ -42,8 +42,8 @@ void ProcessTimer(void)
 // This is the equivalent for SIM mode only.
 // Running at 2Hz, set and called by WndProc, as above.
 // Note, there is no ConnectionProcessTimer of course.
-// Note 2: careful that the 1hz LKSimulator call is only roughly approximated, because it is 
-// accumulating a delay due each execution. This is explaining some inaccurate calculations 
+// Note 2: careful that the 1hz LKSimulator call is only roughly approximated, because it is
+// accumulating a delay due each execution. This is explaining some inaccurate calculations
 // while using SIM mode: the "1 second has passed" is not accurate because it is not based on an
 // absolute time. It is in fact based on the time incrementer after each run. Since in the program
 // we use a local time, this means that 1 minute passed in real (local) time does not normally
@@ -132,13 +132,13 @@ int ConnectionProcessTimer(int itimeout) {
   static bool s_lastGpsConnect = false;
   static bool s_connectWait = false;
   static bool s_lockWait = false;
- 
-  // save status for this run 
+
+  // save status for this run
   bool gpsconnect = GPSCONNECT;
-  
+
   if (gpsconnect) {
     extGPSCONNECT = TRUE;
-  } 
+  }
 
   if ((extGPSCONNECT == FALSE) && (GPS_INFO.NAVWarning!=true)) {
 	// If gps is not connected, set navwarning to true so
@@ -149,14 +149,14 @@ int ConnectionProcessTimer(int itimeout) {
   }
 
   bool DoTriggerUpdate = false;
-  
+
   GPSCONNECT = FALSE;
   bool navwarning = GPS_INFO.NAVWarning;
 
   if((gpsconnect == false) && (s_lastGpsConnect == false)) {
 	// re-draw screen every five seconds even if no GPS
     DoTriggerUpdate = true;
-      
+
 	devLinkTimeout(devAll());
 
 	if(s_lockWait == true) {
@@ -166,7 +166,7 @@ int ConnectionProcessTimer(int itimeout) {
 	if(!s_connectWait) {
 		// gps is waiting for connection first time
 		extGPSCONNECT = FALSE;
-  
+
 		s_connectWait = true;
 
 		if (!s_firstcom) LKSound(TEXT("LK_GPSNOCOM.WAV"));
@@ -177,7 +177,7 @@ int ConnectionProcessTimer(int itimeout) {
 		// or during a restart. Very careful, it shall be set to zero by the same function who
 		// set it to true.
                 // V6: do not reset comports while inside configuration
-		if ((itimeout % 90 == 0) && !LKDoNotResetComms && !MenuActive) { 
+		if ((itimeout % 90 == 0) && !LKDoNotResetComms && !MenuActive) {
 			// no activity for 90/2 seconds (running at 2Hz), then reset.
 			// This is needed only for virtual com ports..
 			extGPSCONNECT = FALSE;
@@ -185,7 +185,7 @@ int ConnectionProcessTimer(int itimeout) {
 			  InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
 			  RestartCommPorts();
 			}
-	  
+
 			itimeout = 0;
 		}
 	}
@@ -201,21 +201,21 @@ int ConnectionProcessTimer(int itimeout) {
 
 	RestartCommPorts();
   }
-  
+
   if((gpsconnect == true) && (s_lastGpsConnect == false)) {
 	itimeout = 0; // reset timeout
 	s_firstcom=false;
-      
+
 	if(s_connectWait) {
 		DoTriggerUpdate = true;
 		s_connectWait = false;
 	}
   }
-  
+
   if((gpsconnect == true) && (s_lastGpsConnect == true)) {
 	if((navwarning == true) && (s_lockWait == false)) {
 		DoTriggerUpdate = true;
-	  
+
 		s_lockWait = true;
 		LKSound(TEXT("LK_GPSNOFIX.WAV"));
 		FullScreen();
@@ -226,12 +226,11 @@ int ConnectionProcessTimer(int itimeout) {
 		}
 	}
   }
-  
+
   if(DoTriggerUpdate) {
 	TriggerGPSUpdate();
   }
-  
+
   s_lastGpsConnect = gpsconnect;
   return itimeout;
 }
-

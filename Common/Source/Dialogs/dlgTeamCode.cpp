@@ -13,28 +13,28 @@
 #include "resource.h"
 
 static WndForm *wf=NULL;
-     
+
 
 #include "TeamCodeCalculation.h"
 
 
-static void Update() 
+static void Update()
 {
   WndProperty* wp;
   TCHAR Text[100];
   double teammateBearing = CALCULATED_INFO.TeammateBearing;
   double teammateRange = CALCULATED_INFO.TeammateRange;
 
-  
+
   if(ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid ) {
 	double Value = CALCULATED_INFO.TeammateBearing -  GPS_INFO.TrackBearing;
-      
+
 	if (Value < -180.0)
 		Value += 360.0;
 	else
 		if (Value > 180.0)
 			Value -= 360.0;
-      
+
 	if (Value > 1)
 		_stprintf(Text, TEXT("%2.0f%s>"), Value, MsgToken(2179));
 	else
@@ -42,7 +42,7 @@ static void Update()
 			_stprintf(Text, TEXT("<%2.0f%s"), -Value, MsgToken(2179));
 		else
 			_tcscpy(Text, TEXT("<>"));
-      
+
   } else {
 	_tcscpy(Text, TEXT("---"));
   }
@@ -51,7 +51,7 @@ static void Update()
   if (wp) {
     wp->SetText(Text);
     wp->RefreshDisplay();
-  } 
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
   if (wp) {
@@ -65,7 +65,7 @@ static void Update()
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
   if (wp) {
-	if (TeammateCodeValid) 
+	if (TeammateCodeValid)
 		wp->GetDataField()->SetAsFloat(teammateRange*DISTANCEMODIFY);
 	else
 		wp->GetDataField()->SetAsFloat(0);
@@ -90,13 +90,13 @@ static void Update()
 static void OnCodeClicked(WndButton* pWnd)
 {
   TCHAR newTeammateCode[10];
-  
+
   LK_tcsncpy(newTeammateCode, TeammateCode, 9);
   dlgTextEntryShowModal(newTeammateCode, 7);
 
   int i= _tcslen(newTeammateCode)-1;
   while (i>=0) {
-    if (newTeammateCode[i]!=_T(' ')) 
+    if (newTeammateCode[i]!=_T(' '))
       {
 	break;
       }
@@ -134,7 +134,7 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void dlgTeamCodeShowModal(void) 
+void dlgTeamCodeShowModal(void)
 {
   WndProperty* wp = NULL;
   WndButton *buttonCode = NULL;
@@ -157,7 +157,7 @@ void dlgTeamCodeShowModal(void)
   buttonCode = ((WndButton *)wf->FindByName(TEXT("cmdSetCode")));
   if (buttonCode) {
     buttonCode->SetOnClickNotify(OnCodeClicked);
-  }  
+  }
 
   // Set unit for range
   wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
@@ -172,6 +172,6 @@ void dlgTeamCodeShowModal(void)
   wf->ShowModal();
 
   delete wf;
-  wf=NULL; 
+  wf=NULL;
 
 }

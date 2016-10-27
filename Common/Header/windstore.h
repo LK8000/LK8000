@@ -30,10 +30,10 @@
 
 class WindStore  {
 
-public: 
+public:
   WindStore();
   ~WindStore();
-  
+
 public: // Public slots
   /**
     * Called with new measurements. The quality is a measure for how good the
@@ -66,7 +66,7 @@ private:
   /** Recalculates the wind from the stored measurements.
     * May result in a newWind signal. */
   void recalculateWind(NMEA_INFO *basic, DERIVED_INFO *derived);
-  
+
   bool updated;
 
 };

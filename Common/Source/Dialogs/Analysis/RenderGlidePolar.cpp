@@ -17,7 +17,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 {
   int minSpeed = iround(GlidePolar::Vminsink()*0.6);
   int maxSpeed = iround(SAFTEYSPEED*1.1);
-  
+
   ResetScale();
   ScaleYFromValue(rc, 0);
   ScaleYFromValue(rc, GlidePolar::SinkRate(maxSpeed));
@@ -34,7 +34,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   if((GlidePolar::SinkRate(minSpeed)-GlidePolar::SinkRate(maxSpeed))*LIFTMODIFY > 5)  {
 	  gridtick = 1.0;  }
   if((GlidePolar::SinkRate(minSpeed)-GlidePolar::SinkRate(maxSpeed))*LIFTMODIFY > 20)  {
-  	  gridtick = 5.0;  }
+	  gridtick = 5.0;  }
   DrawYGrid_cor(Surface, rc,  gridtick/LIFTMODIFY, 0, STYLE_THINDASHPAPER, gridtick, true);
 
   double sinkrate0, sinkrate1;
@@ -49,13 +49,13 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 
   // Draw Polar curve
   for (int i=minSpeed; i<maxSpeed; ++i) {
-    
+
     sinkrate0 = GlidePolar::SinkRate(i);
     sinkrate1 = GlidePolar::SinkRate(i+1);
 
     DrawLine(Surface, rc,
-             i, sinkrate0 , 
-             i+1, sinkrate1, 
+             i, sinkrate0 ,
+             i+1, sinkrate1,
              STYLE_GREENMEDIUM); // ex STYLE_DASHGREEN
 
     if (CALCULATED_INFO.AverageClimbRateN[i]>0) {
@@ -72,10 +72,10 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 
 
       }
-     
+
       v0 = v1; i0 = i;
       v0valid = true;
-    } 
+    }
   }
 
   // Draw Current MC Glide Slope
@@ -83,7 +83,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   double ff= (sb-MACCREADY)/max(1.0, CALCULATED_INFO.VMacCready);
 
   DrawLine(Surface, rc,
-           0, MACCREADY, 
+           0, MACCREADY,
            maxSpeed,
            MACCREADY+ff*maxSpeed,
            STYLE_REDTHICK);
@@ -159,7 +159,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
     Surface.SetTextColor(RGB_DARKGREEN);
   else
     Surface.SetTextColor(RGB_GREEN);
-  
+
   Surface.SetBackgroundOpaque();
   TCHAR text[80];
   _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
@@ -200,5 +200,3 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   Surface.SelectObject(hfOldU);
   Surface.SetBackgroundTransparent();
 }
-
-

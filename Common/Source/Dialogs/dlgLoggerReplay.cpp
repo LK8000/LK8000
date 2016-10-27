@@ -46,7 +46,7 @@ static void OnRateData(DataField *Sender, DataField::DataAccessKind_t Mode){
     case DataField::daGet:
       Sender->Set(ReplayLogger::TimeScale);
     break;
-    case DataField::daPut: 
+    case DataField::daPut:
     case DataField::daChange:
       ReplayLogger::TimeScale = Sender->GetAsFloat();
     break;
@@ -87,7 +87,7 @@ void dlgLoggerReplayShowModal(void){
     if (wp) {
       DataFieldFileReader* dfe;
       dfe = (DataFieldFileReader*)wp->GetDataField();
-      // dfe->ScanDirectoryTop(_T(""),TEXT("*.igc")); 
+      // dfe->ScanDirectoryTop(_T(""),TEXT("*.igc"));
       _stprintf(tsuf,_T("*%s"),_T(LKS_IGC));
       dfe->ScanDirectoryTop(_T(LKD_LOGS),tsuf);
       dfe->Lookup(ReplayLogger::GetFilename());
@@ -99,4 +99,3 @@ void dlgLoggerReplayShowModal(void){
   }
   wf = NULL;
 }
-

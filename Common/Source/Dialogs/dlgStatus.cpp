@@ -41,52 +41,52 @@ static void NextPage(int Step){
   if (status_page<0) { status_page=NUMPAGES-1; }
   switch(status_page) {
   case 0:
-	// LKTOKEN  _@M661_ = "Status: Aircraft" 
+	// LKTOKEN  _@M661_ = "Status: Aircraft"
     wf->SetCaption(MsgToken(661));
     break;
   case 1:
     if (SIMMODE) {
 	TCHAR sysmode[100];
 	_stprintf(sysmode,_T("%s (%s)"),MsgToken(664),MsgToken(1211) );
-    	wf->SetCaption(sysmode);
+	wf->SetCaption(sysmode);
     } else {
-	// LKTOKEN  _@M664_ = "Status: System" 
-    	wf->SetCaption(MsgToken(664));
+	// LKTOKEN  _@M664_ = "Status: System"
+	wf->SetCaption(MsgToken(664));
 #if FLARMDEADLOCK
-    	if( GPS_INFO.FLARM_SW_Version  < 0.01)
-    	{
-    	  if(nmeaParser1.isFlarm)
+	if( GPS_INFO.FLARM_SW_Version  < 0.01)
+	{
+	  if(nmeaParser1.isFlarm)
             devRequestFlarmVersion(devA());
-    	  else
-    	    if(nmeaParser2.isFlarm)
+	  else
+	    if(nmeaParser2.isFlarm)
               devRequestFlarmVersion(devB());
-    	}
+	}
 #endif
     }
     break;
   case 2:
-	// LKTOKEN  _@M665_ = "Status: Task" 
+	// LKTOKEN  _@M665_ = "Status: Task"
     wf->SetCaption(MsgToken(665));
     break;
   case 3:
-	// LKTOKEN  _@M663_ = "Status: Rules" 
+	// LKTOKEN  _@M663_ = "Status: Rules"
     wf->SetCaption(MsgToken(663));
     break;
   case 4:
-	// LKTOKEN  _@M666_ = "Status: Times" 
+	// LKTOKEN  _@M666_ = "Status: Times"
     wf->SetCaption(MsgToken(666));
     break;
   case 5:
-	// LKTOKEN  _@M662_ = "Status: Ext.Device" 
+	// LKTOKEN  _@M662_ = "Status: Ext.Device"
     wf->SetCaption(MsgToken(662));
     break;
   }
   wStatus0->SetVisible(status_page == 0);
-  wStatus1->SetVisible(status_page == 1); 
-  wStatus2->SetVisible(status_page == 2); 
-  wStatus3->SetVisible(status_page == 3); 
-  wStatus4->SetVisible(status_page == 4); 
-  wStatus5->SetVisible(status_page == 5); 
+  wStatus1->SetVisible(status_page == 1);
+  wStatus2->SetVisible(status_page == 2);
+  wStatus3->SetVisible(status_page == 3);
+  wStatus4->SetVisible(status_page == 4);
+  wStatus5->SetVisible(status_page == 5);
 
 }
 
@@ -192,7 +192,7 @@ static void UpdateValuesSystem() {
   } else {
     return;
   }
-  
+
   TCHAR Temp[80];
   TCHAR Temp2[80];
 
@@ -201,14 +201,14 @@ static void UpdateValuesSystem() {
   if (wp) {
     if (extGPSCONNECT) {
       if (GPS_INFO.NAVWarning) {
-	// LKTOKEN  _@M303_ = "Fix invalid" 
+	// LKTOKEN  _@M303_ = "Fix invalid"
         wp->SetText(MsgToken(303));
       } else {
         if (GPS_INFO.SatellitesUsed==0) {
-	// LKTOKEN  _@M471_ = "No fix" 
+	// LKTOKEN  _@M471_ = "No fix"
           wp->SetText(MsgToken(471));
         } else {
-	// LKTOKEN  _@M31_ = "3D fix" 
+	// LKTOKEN  _@M31_ = "3D fix"
           wp->SetText(MsgToken(31));
         }
       }
@@ -229,7 +229,7 @@ static void UpdateValuesSystem() {
         wp->RefreshDisplay();
       }
     } else {
-	// LKTOKEN  _@M240_ = "Disconnected" 
+	// LKTOKEN  _@M240_ = "Disconnected"
       wp->SetText(MsgToken(240));
       wp->RefreshDisplay();
     }
@@ -238,18 +238,18 @@ static void UpdateValuesSystem() {
   wp = (WndProperty*)wf->FindByName(TEXT("prpVario"));
   if (wp) {
     if (GPS_INFO.VarioAvailable) {
-	// LKTOKEN  _@M199_ = "Connected" 
-#ifdef DEVICE_SERIAL	
+	// LKTOKEN  _@M199_ = "Connected"
+#ifdef DEVICE_SERIAL
      if(GPS_INFO.HardwareId >0)
      {
-    	  TCHAR sDevice[32]={0};
- 		if((pDevSecondaryBaroSource != NULL))
+	  TCHAR sDevice[32]={0};
+		if((pDevSecondaryBaroSource != NULL))
            if(!(pDevSecondaryBaroSource->Disabled))
            {
              _stprintf(sDevice, TEXT("%s"), pDevSecondaryBaroSource->Name  );
            }
 
- 		if((pDevPrimaryBaroSource != NULL))
+		if((pDevPrimaryBaroSource != NULL))
            if(!(pDevPrimaryBaroSource->Disabled))
            {
              _stprintf(sDevice, TEXT("%s"), pDevPrimaryBaroSource->Name );
@@ -259,10 +259,10 @@ static void UpdateValuesSystem() {
 		wp->SetText(Temp);
      }
      else
-#endif     
+#endif
 	   wp->SetText(MsgToken(199));
     } else {
-	// LKTOKEN  _@M240_ = "Disconnected" 
+	// LKTOKEN  _@M240_ = "Disconnected"
       wp->SetText(MsgToken(240));
     }
     wp->RefreshDisplay();
@@ -271,20 +271,20 @@ static void UpdateValuesSystem() {
   if (wp) {
     wp = (WndProperty*)wf->FindByName(TEXT("prpFLARM"));
     if (GPS_INFO.FLARM_Available) {
-	// LKTOKEN  _@M199_ = "Connected" 
+	// LKTOKEN  _@M199_ = "Connected"
 
 #if FLARMDEADLOCK
       if(FLARM_SW_Version > 0.0)
       {
     //	StartupStore(_T("STATUS: Flarm Version: %4.2f/%4.2f\n"),FLARM_SW_Version, FLARM_HW_Version);
 		_stprintf(Temp,TEXT("OK (%4.2f/%4.2f) "),FLARM_SW_Version, FLARM_HW_Version);
-    	wp->SetText(Temp);
+	wp->SetText(Temp);
       }
       else
 #endif
         wp->SetText(MsgToken(199));
     } else {
-	// LKTOKEN  _@M240_ = "Disconnected" 
+	// LKTOKEN  _@M240_ = "Disconnected"
       wp->SetText(MsgToken(240));
     }
     wp->RefreshDisplay();
@@ -294,19 +294,19 @@ static void UpdateValuesSystem() {
   if (wp) {
     if (LoggerGActive()) {
       if (LoggerActive) {
-	// LKTOKEN  _@M494_ = "ON (G)" 
+	// LKTOKEN  _@M494_ = "ON (G)"
         wp->SetText(MsgToken(494));
       } else {
-	// LKTOKEN  _@M489_ = "OFF (G)" 
+	// LKTOKEN  _@M489_ = "OFF (G)"
         wp->SetText(MsgToken(489));
       }
     }
     else { // no G Record
       if (LoggerActive) {
-	// LKTOKEN  _@M495_ = "ON (no G)" 
+	// LKTOKEN  _@M495_ = "ON (no G)"
         wp->SetText(MsgToken(495));
       } else {
-	// LKTOKEN  _@M490_ = "OFF (no G)" 
+	// LKTOKEN  _@M490_ = "OFF (no G)"
         wp->SetText(MsgToken(490));
       }
     }
@@ -316,7 +316,7 @@ static void UpdateValuesSystem() {
   wp = (WndProperty*)wf->FindByName(TEXT("prpDeclared"));
   if (wp) {
     if (DeclaredToDevice) {
-	// LKTOKEN  _@M827_ = "Yes" 
+	// LKTOKEN  _@M827_ = "Yes"
       wp->SetText(MsgToken(827));
     } else {
       wp->SetText(MsgToken(890)); // No
@@ -408,7 +408,7 @@ static void UpdateValuesTimes(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTakeoffTime"));
   if (wp) {
     if (CALCULATED_INFO.FlightTime>0) {
-      Units::TimeToText(Temp, 
+      Units::TimeToText(Temp,
                         (int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
       wp->SetText(Temp);
     } else {
@@ -419,7 +419,7 @@ static void UpdateValuesTimes(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLandingTime"));
   if (wp) {
     if (!CALCULATED_INFO.Flying) {
-      Units::TimeToText(Temp, 
+      Units::TimeToText(Temp,
                         (int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime
                                               +CALCULATED_INFO.FlightTime)));
       wp->SetText(Temp);
@@ -494,8 +494,8 @@ static void UpdateValuesFlight(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMaxHeightGain"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"), 
-              CALCULATED_INFO.MaxHeightGain*ALTITUDEMODIFY, 
+    _stprintf(Temp, TEXT("%.0f %s"),
+              CALCULATED_INFO.MaxHeightGain*ALTITUDEMODIFY,
               Units::GetAltitudeName());
     wp->SetText(Temp);
   }
@@ -552,20 +552,20 @@ static void UpdateValuesRules(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpValidStart"));
   if (wp) {
     if (CALCULATED_INFO.ValidStart) {
-	// LKTOKEN  _@M677_ = "TRUE" 
+	// LKTOKEN  _@M677_ = "TRUE"
       wp->SetText(MsgToken(677));
     } else {
-	// LKTOKEN  _@M278_ = "FALSE" 
+	// LKTOKEN  _@M278_ = "FALSE"
       wp->SetText(MsgToken(278));
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpValidFinish"));
   if (wp) {
     if (CALCULATED_INFO.ValidFinish) {
-	// LKTOKEN  _@M677_ = "TRUE" 
+	// LKTOKEN  _@M677_ = "TRUE"
       wp->SetText(MsgToken(677));
     } else {
-	// LKTOKEN  _@M278_ = "FALSE" 
+	// LKTOKEN  _@M278_ = "FALSE"
       wp->SetText(MsgToken(278));
     }
   }
@@ -583,8 +583,8 @@ static void UpdateValuesRules(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartSpeed"));
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
-      _stprintf(Temp, TEXT("%.0f %s"), 
-                TASKSPEEDMODIFY*CALCULATED_INFO.TaskStartSpeed, 
+      _stprintf(Temp, TEXT("%.0f %s"),
+                TASKSPEEDMODIFY*CALCULATED_INFO.TaskStartSpeed,
                 Units::GetTaskSpeedName());
       wp->SetText(Temp);
     } else {
@@ -613,8 +613,8 @@ static void UpdateValuesRules(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeight"));
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
-      _stprintf(Temp, TEXT("%.0f %s"), 
-                (CALCULATED_INFO.TaskStartAltitude)*ALTITUDEMODIFY, 
+      _stprintf(Temp, TEXT("%.0f %s"),
+                (CALCULATED_INFO.TaskStartAltitude)*ALTITUDEMODIFY,
                 Units::GetAltitudeName());
       wp->SetText(Temp);
     } else {
@@ -625,8 +625,8 @@ static void UpdateValuesRules(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishAlt"));
   if (wp) {
     double finish_min = FAIFinishHeight(&GPS_INFO, &CALCULATED_INFO, -1);
-    _stprintf(Temp, TEXT("%.0f %s"), 
-              finish_min*ALTITUDEMODIFY, 
+    _stprintf(Temp, TEXT("%.0f %s"),
+              finish_min*ALTITUDEMODIFY,
               Units::GetAltitudeName());
     wp->SetText(Temp);
   }
@@ -653,7 +653,7 @@ static void UpdateValuesTask(void) {
   if (CALCULATED_INFO.TaskStartTime>0.0) {
     dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpETETime"));
   if (wp) {
     Units::TimeToText(Temp, (int)dd);
@@ -670,7 +670,7 @@ static void UpdateValuesTask(void) {
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"), DISTANCEMODIFY*
               (CALCULATED_INFO.TaskDistanceToGo
-               +CALCULATED_INFO.TaskDistanceCovered), 
+               +CALCULATED_INFO.TaskDistanceCovered),
               Units::GetDistanceName());
     wp->SetText(Temp);
   }
@@ -678,12 +678,12 @@ static void UpdateValuesTask(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRemainingDistance"));
   if (wp) {
     if (AATEnabled) {
-      _stprintf(Temp, TEXT("%.0f %s"), 
-                DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance, 
+      _stprintf(Temp, TEXT("%.0f %s"),
+                DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance,
                 Units::GetDistanceName());
     } else {
-      _stprintf(Temp, TEXT("%.0f %s"), 
-                DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceToGo, 
+      _stprintf(Temp, TEXT("%.0f %s"),
+                DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceToGo,
                 Units::GetDistanceName());
     }
     wp->SetText(Temp);
@@ -697,15 +697,15 @@ static void UpdateValuesTask(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEstimatedSpeed"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"), 
+    _stprintf(Temp, TEXT("%.0f %s"),
               TASKSPEEDMODIFY*d1, Units::GetTaskSpeedName());
     wp->SetText(Temp);
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAverageSpeed"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"), 
-              TASKSPEEDMODIFY*CALCULATED_INFO.TaskSpeed, 
+    _stprintf(Temp, TEXT("%.0f %s"),
+              TASKSPEEDMODIFY*CALCULATED_INFO.TaskSpeed,
               Units::GetTaskSpeedName());
     wp->SetText(Temp);
   }
@@ -787,4 +787,3 @@ void dlgStatusShowModal(int start_page){
   wf = NULL;
 
 }
-

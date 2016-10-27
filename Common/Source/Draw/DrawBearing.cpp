@@ -32,16 +32,16 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
   }
   else {
     if (!ValidTaskPoint(ActiveTaskPoint)) {
-      return; 
+      return;
     }
     LockTaskData();
 
     if (AATEnabled && ( DoOptimizeRoute() || ((ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1))) ) {
       targetLat = Task[ActiveTaskPoint].AATTargetLat;
-      targetLon = Task[ActiveTaskPoint].AATTargetLon; 
+      targetLon = Task[ActiveTaskPoint].AATTargetLon;
     } else {
       targetLat = WayPointList[Task[ActiveTaskPoint].Index].Latitude;
-      targetLon = WayPointList[Task[ActiveTaskPoint].Index].Longitude; 
+      targetLon = WayPointList[Task[ActiveTaskPoint].Index].Longitude;
     }
     UnlockTaskData();
 
@@ -58,12 +58,12 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
 
           if (AATEnabled && ValidTaskPoint(i+1)) {
             targetLat = Task[i].AATTargetLat;
-            targetLon = Task[i].AATTargetLon; 
+            targetLon = Task[i].AATTargetLon;
           } else {
             targetLat = WayPointList[Task[i].Index].Latitude;
-            targetLon = WayPointList[Task[i].Index].Longitude; 
+            targetLon = WayPointList[Task[i].Index].Longitude;
           }
-       
+
           DrawGreatCircle(Surface, rc, _Proj, startLon, startLat,
                           targetLon, targetLat);
 
@@ -95,4 +95,3 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
     UnlockTaskData();
   }
 }
-

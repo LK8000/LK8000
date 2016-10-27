@@ -32,7 +32,7 @@ public:
     void Release() { Reset(); }
 
 	operator bool() const { return IsDefined(); }
-    
+
 #ifdef USE_GDI
 public:
 	explicit LKPen(HPEN Pen) { pen = Pen; }
@@ -47,4 +47,3 @@ extern const LKPen LK_BLACK_PEN;
 extern const LKPen LK_WHITE_PEN;
 
 #endif	/* LKPEN_H */
-

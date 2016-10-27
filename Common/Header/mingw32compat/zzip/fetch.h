@@ -2,7 +2,7 @@
 #define _ZZIP_FORMATS_H
 
 #include <zzip/types.h>
-#include <zzip/format.h> 
+#include <zzip/format.h>
 #include <zzip/stdint.h>
 
 /* linux knows "byteswap.h" giving us an optimized variant */

@@ -34,7 +34,7 @@ void TopologyInitialiseMarks() {
   StartupStore(TEXT(". Initialise marks%s"),NEWLINE);
 
   LockTerrainDataGraphics();
-	  
+
   // TODO code: - This convert to non-unicode will not support all languages
   //		(some may use more complicated PATH names, containing Unicode)
   //  char buffer[MAX_PATH];
@@ -48,8 +48,8 @@ void TopologyInitialiseMarks() {
 
   TCHAR buf[MAX_PATH];
   LocalPath(buf, _T(LKD_CONF));
-  _tcscat(buf, _T(DIRSEP)); _tcscat(buf, _T(LKF_SMARKS)); 
-  topo_marks = new TopologyWriter(buf, LKColor(0xD0,0xD0,0xD0)); 
+  _tcscat(buf, _T(DIRSEP)); _tcscat(buf, _T(LKF_SMARKS));
+  topo_marks = new TopologyWriter(buf, LKColor(0xD0,0xD0,0xD0));
   if (topo_marks) {
     topo_marks->scaleThreshold = 30.0;
     //topo_marks->scaleDefaultThreshold = 30.0;	// 101212
@@ -88,4 +88,3 @@ void DrawMarks (const HDC hdc, const RECT rc)
 }
 
 #endif // USETOPOMARKS
-

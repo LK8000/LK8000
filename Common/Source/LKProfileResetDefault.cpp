@@ -15,7 +15,7 @@
 
 //
 // Set all default values for configuration.
-// We need to set runtime variables later, that make use of 
+// We need to set runtime variables later, that make use of
 // configuration values. One setting for configuration, and the
 // runtime equivalent of the same setting, for the case when it
 // is possible to change such runtime value with a button.
@@ -80,7 +80,7 @@ void LKProfileResetDefault(void) {
 
   SafetyAltitudeMode = 0;
 
-  SAFETYALTITUDEARRIVAL = 3000; // * 10 
+  SAFETYALTITUDEARRIVAL = 3000; // * 10
   SAFETYALTITUDETERRAIN = 500; // *10
   SAFTEYSPEED = 55.556;
 
@@ -93,7 +93,7 @@ void LKProfileResetDefault(void) {
 
   for(i=0;i<AIRSPACECLASSCOUNT;i++) {
 	MapWindow::iAirspaceMode[i] = 3; // Display + Warning
-  } 
+  }
 #ifdef HAVE_HATCHED_BRUSH
   MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);
 #else
@@ -150,7 +150,7 @@ void LKProfileResetDefault(void) {
   PGOpenTimeM=0;
   PGCloseTimeH=23;
   PGCloseTimeM=59;
-  
+
   PGNumberOfGates=0;
   PGGateIntervalTime=30;
   PGStartOut=0;
@@ -194,7 +194,7 @@ void LKProfileResetDefault(void) {
   else
       BarOpacity = 75;
 
-  #ifdef PPC2002  
+  #ifdef PPC2002
   FontRenderer = 1; // AntiAliasing
   #else
   FontRenderer = 0; // ClearType Compatible
@@ -218,7 +218,7 @@ void LKProfileResetDefault(void) {
   CustomKeyModeRightUpCorner = (CustomKeyMode_t)ckToggleOverlays;
   CustomKeyModeCenterScreen = (CustomKeyMode_t)ckWhereAmI;
 
-  MapBox = (MapBox_t)mbBoxed; 
+  MapBox = (MapBox_t)mbBoxed;
 
   // Units labels printout
   if ((ScreenSize == (ScreenSize_t)ss240x320) ||
@@ -247,7 +247,7 @@ void LKProfileResetDefault(void) {
   // 1 is showing all airports and declutter only unneeded outlandings
   NewMapDeclutter = 1;
 
-  AverEffTime = (AverEffTime_t)ae30seconds; 
+  AverEffTime = (AverEffTime_t)ae30seconds;
 
   if (IsDithered())
       BgMapColor_Config = 0; // white
@@ -328,7 +328,7 @@ void LKProfileResetDefault(void) {
   StartHeightRef = 0;
 
   StartMaxHeight = 0;
-  
+
   StartMaxHeightMargin = 0;
 
   StartMaxSpeed = 0;
@@ -371,12 +371,12 @@ void LKProfileResetDefault(void) {
   ConfIP32 = 1;
   ConfIP33 = 1;
 
-  GlidePolar::SafetyMacCready = 0.5; // This is saved *10 and loaded /10 in Adjust! 
+  GlidePolar::SafetyMacCready = 0.5; // This is saved *10 and loaded /10 in Adjust!
 
   DisableAutoLogger = false;
-  
+
   LiveTrackerInterval = 0;
-  
+
   // empty or demo versions
   //szAirspaceFile[0] = TEXT('\0');
   //szWaypointFile[0] = TEXT('\0');
@@ -473,5 +473,3 @@ void LKProfileResetDefault(void) {
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 
 }
-
-

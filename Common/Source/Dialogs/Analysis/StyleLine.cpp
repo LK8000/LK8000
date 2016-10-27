@@ -119,5 +119,3 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
   }
 
 }
-
-

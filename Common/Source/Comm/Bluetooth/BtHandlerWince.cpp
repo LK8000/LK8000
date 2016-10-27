@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   BtHandlerWince.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Adapted from original code provided by Naviter
  */
 
@@ -234,7 +234,7 @@ bool CBtHandlerWince::FillDevices() {
 
         RegCloseKey(key);
     }
-    
+
     szKey = L"Software\\Microsoft\\Bluetooth\\Device";
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, szKey, 0, 0, &key) == ERROR_SUCCESS) {
         wchar_t szSubKey[300];
@@ -269,7 +269,7 @@ bool CBtHandlerWince::FillDevices() {
         }
 
         RegCloseKey(key);
-    }    
+    }
 
     szKey = L"Comm\\Security\\bluetooth";
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, szKey, 0, 0, &key) == ERROR_SUCCESS) {
@@ -310,7 +310,7 @@ bool CBtHandlerWince::LookupDevices() {
         StartupStore(_T("CBtHandlerWince::LookupDevices: Failed%s"), NEWLINE);
         return false;
     }
-    
+
     DWORD dwSize = 5000;
     LPWSAQUERYSET pwsaResults = (LPWSAQUERYSET)calloc(1, dwSize);
     pwsaResults->dwSize = sizeof (WSAQUERYSET);
@@ -488,7 +488,7 @@ bool RegDelnodeRecurse(HKEY hKeyRoot, const wchar_t* lpKey) {
     return false;
 }
 
-/* 
+/*
  *  RegDelnode()
  *
  *  Purpose:    Deletes a registry key and all its subkeys / values.

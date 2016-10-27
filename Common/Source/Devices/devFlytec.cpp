@@ -31,7 +31,7 @@ static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
   if(_tcsncmp(TEXT("$FLYSEN"), String, 7)==0)
     {
       return FLYSEN(d, &String[8], pGPS);
-    } 
+    }
 
   return FALSE;
 
@@ -40,7 +40,7 @@ static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
 static BOOL FlytecIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
-  return(TRUE); 
+  return(TRUE);
 }
 
 
@@ -109,7 +109,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 		NMEAParser::ExtractParameter(String,ctemp,9);
 		if ( (_tcscmp(ctemp,_T("A"))==0) || (_tcscmp(ctemp,_T("V"))==0))
 			offset=1;
-		else 
+		else
 			return TRUE;
 	}
   }
@@ -157,14 +157,14 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   pGPS->Altitude = StrToDouble(ctemp,NULL);
 
   // ------------------------
-  label_nogps: 
+  label_nogps:
 
   // SATS
   NMEAParser::ExtractParameter(String,ctemp,9+offset);
   pGPS->SatellitesUsed = (int) StrToDouble(ctemp,NULL);
 
   // DATE
-  // Firmware 3.32 has got the date 
+  // Firmware 3.32 has got the date
   if (offset>0) {
 	NMEAParser::ExtractParameter(String,ctemp,0);
 	long gy, gm, gd;
@@ -191,7 +191,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
       NMEAParser::ExtractParameter(String,ctemp,0+offset);
       pGPS->Time = TimeModify(ctemp, pGPS, StartDay);
   }
-  // TODO : check if TimeHasAdvanced check is needed (cf. Parser.cpp) 
+  // TODO : check if TimeHasAdvanced check is needed (cf. Parser.cpp)
 #else
   NMEAParser::ExtractParameter(String,ctemp,0+offset);
   double fixTime = StrToDouble(ctemp,NULL);
@@ -240,7 +240,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
         }
 	pGPS->Time = fixTime;
   }
-#endif  
+#endif
 
   // HPA from the pressure sensor
   //   NMEAParser::ExtractParameter(String,ctemp,10+offset);
@@ -261,9 +261,9 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   vtas=StrToDouble(ctemp,NULL)/10;
   pGPS->IndicatedAirspeed = vtas/AirDensityRatio(palt);
   pGPS->TrueAirspeed = vtas;
-  if (pGPS->IndicatedAirspeed >0) 
+  if (pGPS->IndicatedAirspeed >0)
 	pGPS->AirspeedAvailable = TRUE;
-  else 
+  else
 	pGPS->AirspeedAvailable = FALSE;
 
   // ignore n.14 airspeed source
@@ -273,7 +273,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL);
   pGPS->TemperatureAvailable=TRUE;
 
-  // ignore n.16 baloon temperature  
+  // ignore n.16 baloon temperature
 
   // BATTERY PERCENTAGES
   NMEAParser::ExtractParameter(String,ctemp,17+offset);

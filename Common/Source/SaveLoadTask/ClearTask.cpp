@@ -16,7 +16,7 @@ extern void ResetStartPoint(START_POINT& StartPt);
 void ClearTask(void) {
 
   LockTaskData();
-  TaskModified = true; 
+  TaskModified = true;
   TargetModified = true;
   if (ISPARAGLIDER) PGOptimizeRoute = PGOptimizeRoute_Config;
   LastTaskFileName[0] = _T('\0');
@@ -30,4 +30,3 @@ void ClearTask(void) {
 
   UnlockTaskData();
 }
-

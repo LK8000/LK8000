@@ -49,7 +49,7 @@ bool IsMultiMapNoMain() {
   else
 	return false;
 }
-	
+
 
 //
 // All multimapped page, not sharing map customkeys and events
@@ -68,10 +68,10 @@ bool IsMultiMapCustom() {
 //
 bool IsMultiMapShared() {
   // TODO!
-  // static bool shared[]={ false, false, false..} 
+  // static bool shared[]={ false, false, false..}
   // return shared[MapSpaceMode];  simply...
   //
-  if ( (MapSpaceMode==MSM_MAP) || (MapSpaceMode == MSM_MAPTRK) || (MapSpaceMode == MSM_MAPWPT) || (MapSpaceMode==MSM_MAPASP) 
+  if ( (MapSpaceMode==MSM_MAP) || (MapSpaceMode == MSM_MAPTRK) || (MapSpaceMode == MSM_MAPWPT) || (MapSpaceMode==MSM_MAPASP)
 	|| (MapSpaceMode==MSM_VISUALGLIDE) )
 	return true;
   else
@@ -157,7 +157,7 @@ bool IsMultimapWaypoints(void) {
   return Multimap_Flags_Waypoints[i];
 }
 
-// Both Texta and Gauges active! 
+// Both Texta and Gauges active!
 bool IsMultimapOverlaysAll(void) {
   if (!HaveGauges()) return false;
   short i=Get_Current_Multimap_Type();
@@ -326,7 +326,7 @@ void DisableMultimapOverlaysGauges(void) {
 // Default flags for multimaps, used at init and at reset config
 // They are eventually overloaded by a profile.
 // See Defines.h for MP_ definitions.
-// Of course MapWindowBg may decide not to use overlays, for example, by itself for a 
+// Of course MapWindowBg may decide not to use overlays, for example, by itself for a
 // particular MapSpaceMode.. nevertheless, here are the defaults.
 //
 // Multimap modality (enabled/disabled and orientation) are in Multimap_Mode, not here.
@@ -411,10 +411,10 @@ void MultiMapSound() {
 		case 1: // MP_MOVING
 			PlayResource(TEXT("IDR_WAV_MM0"));
 			break;
-		case 2: 
+		case 2:
 			PlayResource(TEXT("IDR_WAV_MM1"));
 			break;
-		case 3: 
+		case 3:
 			PlayResource(TEXT("IDR_WAV_MM2"));
 			break;
 		case 4:
@@ -446,6 +446,3 @@ void Reset_Multimap_Mode(void) {
   Multimap4=mm_enabled_normal;
 
 }
-
-
-

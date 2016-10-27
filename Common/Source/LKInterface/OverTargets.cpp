@@ -15,7 +15,7 @@
 int GetOvertargetIndex(void) {
   int index;
   switch (OvertargetMode) {
-	case OVT_TASK: // task 
+	case OVT_TASK: // task
 		if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 			if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())
 				index=RESWP_OPTIMIZED;
@@ -104,7 +104,7 @@ void GetOvertargetName(TCHAR *overtargetname) {
   index=GetOvertargetIndex();
   if (index<0)
 	_stprintf(overtargetname,_T("%s ---"),GetOvertargetHeader());
-  else 
+  else
 	_stprintf(overtargetname,_T("%s%s"), GetOvertargetHeader(),WayPointList[index].Name);
   UnlockTaskData();
 }
@@ -154,7 +154,7 @@ _tryagain:
     goto _tryagain;
   }
 
-  // For PG/HG, skip BALT overtarget if nothing valid. 
+  // For PG/HG, skip BALT overtarget if nothing valid.
   // We assume that this means no landables ever seen around, because
   // the BA function would keep the old one even if invalid.
   if (ISPARAGLIDER && OvertargetMode==OVT_BALT) {
@@ -165,7 +165,7 @@ _tryagain:
   if(OvertargetMode==OVT_ALT1 && (!ValidWayPoint(Alternate1))) {
 	goto _tryagain;
   }
-  
+
   // Skip Alternate 2 if Not defined
   if(OvertargetMode==OVT_ALT2 && (!ValidWayPoint(Alternate2))) {
 	goto _tryagain;
@@ -223,4 +223,3 @@ _tryagain:
 			break;
 	}
 }
-

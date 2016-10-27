@@ -45,13 +45,13 @@ bool CustomKeyHandler(const int key) {
 	case CKI_BOTTOMCENTER:
 		ckeymode=CustomKeyModeCenter;
 		break;
-	case CKI_BOTTOMLEFT:	
+	case CKI_BOTTOMLEFT:
 		ckeymode=CustomKeyModeLeft;
 		break;
-	case CKI_BOTTOMRIGHT:	
+	case CKI_BOTTOMRIGHT:
 		ckeymode=CustomKeyModeRight;
 		break;
-	case CKI_BOTTOMICON:	
+	case CKI_BOTTOMICON:
 		ckeymode=CustomKeyModeAircraftIcon;
 		break;
 	case CKI_TOPLEFT:
@@ -194,13 +194,13 @@ passthrough:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (ValidWayPoint(HomeWaypoint)) {
 			if ( (ValidTaskPoint(ActiveTaskPoint)) && (Task[ActiveTaskPoint].Index == HomeWaypoint )) {
-	// LKTOKEN  _@M82_ = "Already going home" 
+	// LKTOKEN  _@M82_ = "Already going home"
 				DoStatusMessage(MsgToken(82));
 			} else {
 				GotoWaypoint(HomeWaypoint);
 			}
 		} else
-	// LKTOKEN  _@M465_ = "No Home to go!" 
+	// LKTOKEN  _@M465_ = "No Home to go!"
 			DoStatusMessage(MsgToken(465));
 		return true;
 	case ckPanorama:
@@ -315,7 +315,7 @@ passthrough:
 	case ckMessageRepeat:
 		InputEvents::eventRepeatStatusMessage(NULL);
                 return true;
-		
+
 	case ckWaypointLookup:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventWaypointDetails(_T("select"));
@@ -421,7 +421,7 @@ passthrough:
 			else
 				LKSound(TEXT("LK_TONEDOWN.WAV"));
 		}
-		return true;                
+		return true;
 	case ckResetView:
 		ModeType[LKMODE_MAP]    =       MP_MOVING;
 		ModeType[LKMODE_INFOMODE]=      IM_CRUISE;
@@ -444,7 +444,7 @@ passthrough:
 	    {
 	      DisplayOrientation++;
 	      if(DisplayOrientation > NORTHSMART)
-	    	DisplayOrientation = 0;
+		DisplayOrientation = 0;
 	      MapWindow::SetAutoOrientation(true); // 101008 reset it
 	      switch(DisplayOrientation)
 	      {
@@ -492,7 +492,7 @@ void InitCustomKeys(void) {
 // Order is strictly the one in Enums.h for customkeys
 //
 CustomKeyLabel[0]=2200;		// Disabled  - note: never shown since label not printed at all
-CustomKeyLabel[1]=2201;		// Menu 
+CustomKeyLabel[1]=2201;		// Menu
 CustomKeyLabel[2]=2202;		// Page Back
 CustomKeyLabel[3]=2203;		// Toggle Map<>current page
 CustomKeyLabel[4]=2204;		// Toggle Map<>Landables
@@ -556,5 +556,3 @@ CustomKeyLabel[61]=2251;	// Optimizer Mode
 
 static_assert(60 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
 }
-
-

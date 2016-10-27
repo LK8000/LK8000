@@ -2,7 +2,7 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- *  
+ *
  * File:   ComPort.h
  * Author: Bruno de Lacheisserie
  *
@@ -21,12 +21,12 @@ class ComPort : public Poco::Runnable {
 public:
     ComPort(int idx, const tstring& sName);
     virtual ~ComPort();
-    
+
     ComPort( const ComPort& ) = delete;
-    ComPort& operator=( const ComPort& ) = delete;    
+    ComPort& operator=( const ComPort& ) = delete;
 
     ComPort( ComPort&& ) = delete;
-    ComPort& operator=( ComPort&& ) = delete;    
+    ComPort& operator=( ComPort&& ) = delete;
 
     bool StopRxThread();
     bool StartRxThread();
@@ -88,7 +88,7 @@ protected:
 
     Poco::Event StopEvt;
     Poco::Thread ReadThread;
-    
+
 private:
     typedef TCHAR _NmeaString_t[MAX_NMEA_LEN];
 

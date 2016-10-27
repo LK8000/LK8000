@@ -20,25 +20,25 @@ public:
     virtual ~LKBitmapSurface();
 
     LKBitmapSurface(LKSurface& Surface, unsigned width, unsigned height);
-        
+
     virtual void Create(const LKSurface& Surface, unsigned width, unsigned height);
     virtual void Release();
 
     virtual void Resize(unsigned width, unsigned height);
 
     void CopyTo(LKSurface &other);
-    
+
 #ifdef WIN32
     operator LKBitmap& () { return _hBitmap; }
 
     operator HBITMAP () const { return _hBitmap; }
-    
+
 protected:
     LKBitmap _hBitmap;
     LKBitmap _oldBitmap;
     SIZE _Size;
 #endif
-    
+
 #ifdef ENABLE_OPENGL
     void Begin(LKSurface& Surface);
     void Commit(LKSurface& Surface);
@@ -53,4 +53,3 @@ public:
 };
 
 #endif	/* LKBITMAPSURFACE_H */
-

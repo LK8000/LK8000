@@ -221,17 +221,17 @@ DoInit[MDI_DRAWTASK]=false;
                     break;
                 case LINE:
                     if (!AATEnabled) { // this Type exist only if not AAT task
-                    	if(ISGAAIRCRAFT) {
-                    		POINT start,end;
-                    		double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
-                    		int length=14*ScreenScale; //Make intermediate WP lines always of the same size independent by zoom level
-                    		start.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
-                    		start.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
-                    		rotation=Reciprocal(rotation);
-                    		end.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
-                    		end.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
-                    		Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), start, end, taskcolor, rc);
-                    	} else Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), Task[i].Start, Task[i].End, taskcolor, rc);
+			if(ISGAAIRCRAFT) {
+				POINT start,end;
+				double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
+				int length=14*ScreenScale; //Make intermediate WP lines always of the same size independent by zoom level
+				start.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
+				start.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
+				rotation=Reciprocal(rotation);
+				end.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
+				end.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
+				Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), start, end, taskcolor, rc);
+			} else Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), Task[i].Start, Task[i].End, taskcolor, rc);
                     }
                     break;
                 case CONE:
@@ -286,7 +286,7 @@ DoInit[MDI_DRAWTASK]=false;
             }
         }
     }
-    
+
     LKPen ArrowPen(PEN_SOLID, size_tasklines-NIBLSCALE(1), taskcolor);
     for (i = 0; ValidTaskPoint(i + 1); i++) {
         int imin = min(Task[i].Index, Task[i + 1].Index);
@@ -320,7 +320,7 @@ DoInit[MDI_DRAWTASK]=false;
                         ClipPt1,
                         ClipPt2,
                         taskcolor, RGB_BLACK,rc);
-                
+
                 // draw small arrow along task direction
                 POINT p_p;
                 POINT Arrow[] = {
@@ -333,11 +333,11 @@ DoInit[MDI_DRAWTASK]=false;
 
                 const auto OldPen = Surface.SelectObject(ArrowPen);
                 Surface.Polyline(Arrow, array_size(Arrow), rc);
-                Surface.SelectObject(OldPen);                
+                Surface.SelectObject(OldPen);
             }
         }
     }
-    
+
     // Draw DashLine From current position to Active TurnPoint center
     if(ValidTaskPoint(ActiveTaskPoint)) {
         const POINT ptStart = _Proj.LonLat2Screen(DrawInfo.Longitude, DrawInfo.Latitude);

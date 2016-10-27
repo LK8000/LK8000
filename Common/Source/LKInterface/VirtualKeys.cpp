@@ -45,7 +45,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	#ifdef DEBUG_PROCVK
 	TCHAR buf[100];
-	_stprintf(buf,_T("R=%d,%d,%d,%d, X=%d Y=%d kt=%ld"),0, 0, 
+	_stprintf(buf,_T("R=%d,%d,%d,%d, X=%d Y=%d kt=%ld"),0, 0,
 	ScreenSizeX, ScreenSizeY,X,Y,keytime);
 	DoStatusMessage(buf);
 	#endif
@@ -81,7 +81,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	// 120602 fix
 	// TopSize is dynamically assigned by DrawNearest,Drawcommon, DrawXX etc. so we cannot make static yups
-        // v5 bug fix: TopSize is available only after DrawNearest is executed. So it is now reset at 0 
+        // v5 bug fix: TopSize is available only after DrawNearest is executed. So it is now reset at 0
         // on ChangeScreen, but it is a mistake. Really we dont need TopSize, it was used for Long center key
         // press which is no more in use.
 	//
@@ -89,16 +89,16 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	longpress_ydown=(short)(MapWindow::Y_BottomBar-(MapWindow::Y_BottomBar/3.7));
 	shortpress_yup=(short)((MapWindow::Y_BottomBar-TopSize)/2.7)+TopSize;
 	shortpress_ydown=(short)(MapWindow::Y_BottomBar-(MapWindow::Y_BottomBar/2.7));
-	
+
 	// do not consider navboxes, they are processed separately
 	// These are coordinates for up down center VKs
 	// yup and ydown are used normally on nearest page item selection, but also for real VK
-	// that currently are almost unused. 
+	// that currently are almost unused.
 
 	if (DrawBottom) {
 		// Native LK mode: always fullscreen mode
 		// If long click, we are processing an Enter, and we want a wider valid center area
-		if ( keytime>=(VKSHORTCLICK*2)) { 
+		if ( keytime>=(VKSHORTCLICK*2)) {
 			yup=longpress_yup;
 			ydown=longpress_ydown;
 		} else {
@@ -118,9 +118,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	TCHAR buf[100];
 	#endif
 
-	// Handle fullscreen 8000 mode 
+	// Handle fullscreen 8000 mode
 	// sound clicks require some attention here
-	if (DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) { 
+	if (DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) {
 		//
 		// CLICKS on NAVBOXES, any MapSpaceMode ok
 		//
@@ -164,7 +164,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			//
 			// VIRTUAL CENTER KEY HANDLING
 			//
-			// long press on center navbox 
+			// long press on center navbox
 			// Activate following choices for testing and experimenting. Always disable for real usage.
 #if (0)
 			// Output NMEA to device
@@ -238,7 +238,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			}
 #endif
 
-			// REAL USAGE, ALWAYS ACTIVATE 
+			// REAL USAGE, ALWAYS ACTIVATE
 			#if (1)
 			// standard configurable mode
 			if (keytime >=CustomKeyTime) {
@@ -256,11 +256,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			SoundModeIndex();
 
 			return 0;
-		// End click on navboxes 
-		} else 
+		// End click on navboxes
+		} else
 		// CLICK ON SORTBOX line at the top, only with no map and only for enabled pages
 		if ( (Y<=SortBoxY[MapSpaceMode]) &&
-			( MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS || 
+			( MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS ||
 			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC ||
 			MapSpaceMode==MSM_AIRSPACES || MapSpaceMode==MSM_THERMALS ||
 			MapSpaceMode==MSM_COMMON || MapSpaceMode==MSM_RECENT) ) {
@@ -327,7 +327,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 			return 0;
 		// end sortbox
-		}  
+		}
 	// end newmap  with no gestures
 	}
 
@@ -414,7 +414,7 @@ gesture_right:
 
                     // Notice: MultiMap has its own sounds. We come here when switching pages, but with
 					// an exception: from moving map we generate currently a direct NextModeType from
-					// MapWndProc, and thus we dont get ProcessVirtualKeys for that single case.	
+					// MapWndProc, and thus we dont get ProcessVirtualKeys for that single case.
 					// We should not be playing a CLICK sound while we are playing the MM tone, or
 					// it wont come up !
 					if (ModeIndex!=LKMODE_MAP) {
@@ -455,7 +455,7 @@ gesture_left:
 		}
 	}
 
-	// UNGESTURES: 
+	// UNGESTURES:
 	// No need to use gestures if clicking on right or left center border screen
 	// This will dramatically speed up the user interface in turbulence
 	if (dontdrawthemap) {
@@ -483,7 +483,7 @@ gesture_left:
 				// DoStatusMessage(_T("DBG-032-A event up not used here"));
 				return 0;
 			}
-        	PlayResource(TEXT("IDR_WAV_CLICK"));
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 			LKevent=LKEVENT_UP;
 			MapWindow::RefreshMap();
 			// DoStatusMessage(_T("DBG-032-B event up used here"));
@@ -498,7 +498,7 @@ gesture_left:
 	if (Y>ydown) {
 		if (dontdrawthemap) {
 			if (MapSpaceMode<=MSM_MAP) return 0;
-        	PlayResource(TEXT("IDR_WAV_CLICK"));
+		PlayResource(TEXT("IDR_WAV_CLICK"));
 			LKevent=LKEVENT_DOWN;
 			MapWindow::RefreshMap();
 			return 0;
@@ -521,7 +521,7 @@ gesture_left:
 	// no click for already clicked events
 
 
-		// If in mapspacemode process ENTER 
+		// If in mapspacemode process ENTER
 		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap && !IsMultiMap()) {
 			LKSound(_T("LK_BEEP1.WAV"));
 			LKevent=LKEVENT_ENTER;
@@ -531,7 +531,7 @@ gesture_left:
 /*
 		// do not process enter in panmode, unused
 		if ( !MapWindow::mode.AnyPan() ) {
-	             DoStatusMessage(_T("Virtual ENTER")); 
+	             DoStatusMessage(_T("Virtual ENTER"));
 		     return 13;
 		}
 */
@@ -548,13 +548,13 @@ gesture_left:
 		} else {
 			return 0;
 		}
-	DoStatusMessage(_T("VirtualKey Error")); 
+	DoStatusMessage(_T("VirtualKey Error"));
 	return 0;
 }
 
 
 
-// 
+//
 // LK v6 Keyclicks out of MapRect but inside DrawRect. What we call SubScreen area.
 //
 int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode) {
@@ -569,5 +569,3 @@ int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode) {
     return 0; // unmanaged keypress
 
 }
-
-

@@ -26,7 +26,7 @@
 extern void Init_Fonts_1(void);
 extern void Init_Fonts_2(void);
 
-int GetFontRenderer() { 
+int GetFontRenderer() {
 
   switch(FontRenderer) {
 	case 0:
@@ -61,7 +61,7 @@ void ApplyFontSize(LOGFONT *logfont) {
 
 
 
-  #ifdef USE_FREETYPE 
+  #ifdef USE_FREETYPE
   if (logfont->lfWeight == 600) logfont->lfHeight+=1000;
   #endif
   return;
@@ -82,7 +82,7 @@ void ApplyCustomResize(LOGFONT *logfont, short change) {
       }
       unsigned int u=  (double)(logfont->lfHeight*i) / 16.0;
       logfont->lfHeight = logfont->lfHeight + (u*psign);
-  } 
+  }
 }
 
 
@@ -151,7 +151,7 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 
   // FIXFONTS possible multiplier for FT_Set_Pixel in place of Set_Char_Size
   // double mulp=(8.7 / 10.0)*100;
-  // lfTmp.lfHeight = (int)((lfTmp.lfHeight*mulp)/100.0); 
+  // lfTmp.lfHeight = (int)((lfTmp.lfHeight*mulp)/100.0);
 
   // DEFAULT_QUALITY			   0
   // RASTER_FONTTYPE			   0x0001
@@ -190,13 +190,13 @@ void Init_Fonts_1(void)
 {
 
   #if TESTBENCH
-  StartupStore(_T(". Init_Fonts_1%s"),NEWLINE); 
+  StartupStore(_T(". Init_Fonts_1%s"),NEWLINE);
   #endif
 
   LOGFONT logfontTitleWindowLogFont;
   LOGFONT logfontMapWindowLogFont;
   LOGFONT logfontMapWindowBoldLogFont;
-  LOGFONT logfontCDIWindowLogFont; 
+  LOGFONT logfontCDIWindowLogFont;
   LOGFONT logfontGenericVar03Font;
   LOGFONT logfontMapWaypointFont;
   LOGFONT logfontMapWaypointBoldFont;
@@ -221,7 +221,7 @@ void Init_Fonts_1(void)
  * TitleWindowFont	= Font=0 in dialogs, used also in dlStartup rawwrite. Easily removable.
  * CDIWindowFont	= Font=3 and Font=4 in dialogs
  * LK8GenericVar03Font		= Stats, map labels
- * MapWindowFont	= 
+ * MapWindowFont	=
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
 
 
@@ -230,7 +230,7 @@ void Init_Fonts_1(void)
    ------------------------------------------------------------------------------------
 
    MapWaypoint                map waypoint names
-   MapWaypointBold            map waypoint names 
+   MapWaypointBold            map waypoint names
    MapTopology                map topology names
    MapScaleFont               map scale and ibox indicators 3.5km AUX9 .. overlay
    LK8InfoBigFont             nearest pages, values
@@ -250,17 +250,17 @@ void Init_Fonts_1(void)
 
    LK8VisualTop               visualglide
    LK8VisualBot
- 
+
    Custom1Font	              available, not yet used
- 
- 
+
+
  */
 
   //
   // LANDSCAPE
   //
    // If you set a font here for a specific resolution, no automatic font generation is used.
-  if ( (ScreenSize==(ScreenSize_t)ss480x272) || 
+  if ( (ScreenSize==(ScreenSize_t)ss480x272) ||
        (ScreenSize==0 && ScreenLandscape && ScreenGeometry==SCREEN_GEOMETRY_169) )
   { // WQVGA  e.g. MIO
     propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), &logfontTitleWindowLogFont);
@@ -269,8 +269,8 @@ void Init_Fonts_1(void)
     propGetFontSettingsFromString(TEXT("16,0,0,0,600,0,0,0,0,0,0,4,2,Tahoma"), &logfontMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), &logfontCustom1Font);
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), &logfontMapWindowLogFont);
-    propGetFontSettingsFromString(TEXT("19,0,0,0,600,0,0,0,0,0,0,6,2,Tahoma"), &logfontMapWaypointBoldFont); 
-    propGetFontSettingsFromString(TEXT("19,0,0,0,400,0,0,0,0,0,0,6,2,Tahoma"), &logfontMapWindowBoldLogFont); 
+    propGetFontSettingsFromString(TEXT("19,0,0,0,600,0,0,0,0,0,0,6,2,Tahoma"), &logfontMapWaypointBoldFont);
+    propGetFontSettingsFromString(TEXT("19,0,0,0,400,0,0,0,0,0,0,6,2,Tahoma"), &logfontMapWindowBoldLogFont);
     propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), &logfontMapWaypointFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,4,2,Tahoma"), &logfontMapScaleFont);
   }
@@ -279,8 +279,8 @@ void Init_Fonts_1(void)
   { // e.g. Messada 2440
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("16,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font); 
-    propGetFontSettingsFromString(TEXT("16,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont); 
+    propGetFontSettingsFromString(TEXT("16,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
+    propGetFontSettingsFromString(TEXT("16,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCustom1Font);
     propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapScaleFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont);
@@ -293,8 +293,8 @@ void Init_Fonts_1(void)
   {
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font); 
-    propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont); 
+    propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
+    propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont);
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCustom1Font);
     propGetFontSettingsFromString(TEXT("30,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapScaleFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont);
@@ -329,7 +329,7 @@ void Init_Fonts_1(void)
   }
   else if (ScreenSize==(ScreenSize_t)ss640x480 ||
        (ScreenSize==0 && ScreenLandscape && ScreenGeometry==SCREEN_GEOMETRY_43) )
-  { 
+  {
     propGetFontSettingsFromString(TEXT("19,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("24,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("26,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
@@ -341,7 +341,7 @@ void Init_Fonts_1(void)
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointBoldFont);
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowBoldLogFont);
   }
-  else if (ScreenSize==(ScreenSize_t)ss320x240) { 
+  else if (ScreenSize==(ScreenSize_t)ss320x240) {
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("14,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("14,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
@@ -352,15 +352,15 @@ void Init_Fonts_1(void)
     propGetFontSettingsFromString(TEXT("17,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointBoldFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowBoldLogFont);
-  } 
-  // 
-  // PORTRAIT MODE 
+  }
   //
-  else if (ScreenSize==(ScreenSize_t)ss240x320) { 
+  // PORTRAIT MODE
+  //
+  else if (ScreenSize==(ScreenSize_t)ss240x320) {
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("12,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("13,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font); 
-    propGetFontSettingsFromString(TEXT("13,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont); 
+    propGetFontSettingsFromString(TEXT("13,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
+    propGetFontSettingsFromString(TEXT("13,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont);
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCustom1Font);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapScaleFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont);
@@ -373,8 +373,8 @@ void Init_Fonts_1(void)
   {
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("15,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font); 
-    propGetFontSettingsFromString(TEXT("15,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont); 
+    propGetFontSettingsFromString(TEXT("15,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
+    propGetFontSettingsFromString(TEXT("15,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont);
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCustom1Font);
     propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapScaleFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont);
@@ -390,11 +390,11 @@ void Init_Fonts_1(void)
     propGetFontSettingsFromString(TEXT("23,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
     propGetFontSettingsFromString(TEXT("23,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont);
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCustom1Font);
-    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapScaleFont); 
-    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont); 
-    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointFont); 
-    propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointBoldFont); 
-    propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowBoldLogFont); 
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapScaleFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointFont);
+    propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointBoldFont);
+    propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss480x800 ||
        (ScreenSize==0 && !ScreenLandscape && ScreenGeometry==SCREEN_GEOMETRY_53) )
@@ -427,7 +427,7 @@ void Init_Fonts_1(void)
   // ELSE WE DID NOT FIND A VALID CUSTOM RESOLUTION OR A VALID SCREEN GEOMETRY FOR THIS ORIENTATION!
   // We use 16:9 480x272 settings, but no warranty! No boldness.
   //
-  else { 
+  else {
     StartupStore(_T(". >> (Fonts) Unknown unsupported screen geometry or resolution%s"),NEWLINE);
     if (ScreenLandscape) {
 	    propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), &logfontTitleWindowLogFont);
@@ -438,13 +438,13 @@ void Init_Fonts_1(void)
 	    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), &logfontMapScaleFont);
 	    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), &logfontMapWindowLogFont);
 	    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), &logfontMapWaypointFont);
-	    propGetFontSettingsFromString(TEXT("19,0,0,0,400,0,0,0,0,0,0,6,2,Tahoma"), &logfontMapWaypointBoldFont); 
-	    propGetFontSettingsFromString(TEXT("19,0,0,0,400,0,0,0,0,0,0,6,2,Tahoma"), &logfontMapWindowBoldLogFont); 
+	    propGetFontSettingsFromString(TEXT("19,0,0,0,400,0,0,0,0,0,0,6,2,Tahoma"), &logfontMapWaypointBoldFont);
+	    propGetFontSettingsFromString(TEXT("19,0,0,0,400,0,0,0,0,0,0,6,2,Tahoma"), &logfontMapWindowBoldLogFont);
     } else {
 	    propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
 	    propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
-	    propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font); 
-	    propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont); 
+	    propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontGenericVar03Font);
+	    propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapTopologyFont);
 	    propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontCustom1Font);
 	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapScaleFont);
 	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont);
@@ -526,9 +526,8 @@ void DeInitLKFonts() {
   LK8OverlaySmallFont.Release();
   LK8OverlayGatesFont.Release();
   LK8OverlayMcModeFont.Release();
-  
+
   LK8VisualTopFont.Release();
   LK8VisualBotFont.Release();
 
 }
-

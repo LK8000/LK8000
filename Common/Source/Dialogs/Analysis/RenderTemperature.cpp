@@ -60,17 +60,17 @@ void Statistics::RenderTemperature(LKSurface& Surface, const RECT& rc)
 
       DrawLine(Surface, rc,
 	       CuSonde::cslevels[i].tempDry, i,
-	       CuSonde::cslevels[i+1].tempDry, (i+1), 
+	       CuSonde::cslevels[i+1].tempDry, (i+1),
 	       STYLE_REDTHICK);
 
       DrawLine(Surface, rc,
 	       CuSonde::cslevels[i].airTemp, i,
-	       CuSonde::cslevels[i+1].airTemp, (i+1), 
+	       CuSonde::cslevels[i+1].airTemp, (i+1),
 	       STYLE_MEDIUMBLACK);
 
       DrawLine(Surface, rc,
 	       CuSonde::cslevels[i].dewpoint, i,
-	       CuSonde::cslevels[i+1].dewpoint, i+1, 
+	       CuSonde::cslevels[i+1].dewpoint, i+1,
 	       STYLE_BLUETHIN);
 
       if (ipos> 2) {
@@ -112,5 +112,3 @@ void Statistics::RenderTemperature(LKSurface& Surface, const RECT& rc)
 //  DrawXLabel(hdc, rc, TEXT("T")TEXT(DEG));
 //  DrawYLabel(hdc, rc, TEXT("h"));
 }
-
-

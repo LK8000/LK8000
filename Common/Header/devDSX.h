@@ -8,7 +8,7 @@
 
 #ifndef	DEVDSX_H
 #define	DEVDSX_H
- 
+
 
 
 BOOL DSXRegister(void);

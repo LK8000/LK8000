@@ -36,7 +36,7 @@ BOOL genInstall(PDeviceDescriptor_t d){
 
 BOOL genRegister(void){
   return(devRegister(
-    TEXT("Generic"), 
+    TEXT("Generic"),
       (1l << dfGPS)
     ,
     genInstall
@@ -67,10 +67,9 @@ BOOL internalInstall(PDeviceDescriptor_t d){
 
 BOOL InternalRegister(void){
   return(devRegister(
-    TEXT("Internal"), 
+    TEXT("Internal"),
       (1l << dfGPS)
     ,
     internalInstall
   ));
 }
-

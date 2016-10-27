@@ -35,7 +35,7 @@ void InitCustomHardware(void) {
   if (GlobalModelType == MODELTYPE_PNA_ROYALTEK3200) {
 	Init_Royaltek3200();
   }
-  
+
   CBthDevice::Instance();
   #endif
 
@@ -126,15 +126,15 @@ void UpdateConfIP(void) {
   ConfMP[4]=true; // traffic mode
 
   // Check if we have INFOMODE
-  if (ConfIP[1][0]==false && ConfIP[1][1]==false 
-	&& ConfIP[1][2]==false && ConfIP[1][3]==false 
+  if (ConfIP[1][0]==false && ConfIP[1][1]==false
+	&& ConfIP[1][2]==false && ConfIP[1][3]==false
 	&& ConfIP[1][4]==false && ConfIP[1][5]==false && ConfIP[1][6]==false) {
 	ConfMP[1]=false;
   } else
 	ConfMP[1]=true;
 
   // Check if we have NEAREST pages
-  if (ConfIP[2][0]==false && ConfIP[2][1]==false 
+  if (ConfIP[2][0]==false && ConfIP[2][1]==false
 	&& ConfIP[2][2]==false && ConfIP[2][3]==false ) {
 	ConfMP[2]=false;
   } else
@@ -160,7 +160,7 @@ void UpdateConfIP(void) {
 void SetInitialModeTypes(void) {
 
   // Update the initial values for each mapspace, keeping the first valid value. We search backwards.
-  // INFOMODE 1  
+  // INFOMODE 1
   // Attention> Respect inverted order!
   if (ConfIP[LKMODE_INFOMODE][IM_HSI]) ModeType[LKMODE_INFOMODE]=IM_HSI;
   if (ConfIP[LKMODE_INFOMODE][IM_TRI]) ModeType[LKMODE_INFOMODE]=IM_TRI;
@@ -170,7 +170,7 @@ void SetInitialModeTypes(void) {
   if (ConfIP[LKMODE_INFOMODE][IM_THERMAL]) ModeType[LKMODE_INFOMODE]=IM_THERMAL;
   if (ConfIP[LKMODE_INFOMODE][IM_CRUISE]) ModeType[LKMODE_INFOMODE]=IM_CRUISE;
 
-  // WP NEAREST MODE 2  
+  // WP NEAREST MODE 2
   if (ConfIP[LKMODE_WP][WP_NEARTPS]) ModeType[LKMODE_WP]=WP_NEARTPS;
   if (ConfIP[LKMODE_WP][WP_LANDABLE]) ModeType[LKMODE_WP]=WP_LANDABLE;
   if (ConfIP[LKMODE_WP][WP_AIRPORTS]) ModeType[LKMODE_WP]=WP_AIRPORTS;
@@ -184,7 +184,7 @@ void SetInitialModeTypes(void) {
 
 
 // Requires restart if activated from config menu
-void InitLK8000() 
+void InitLK8000()
 {
         #if TESTBENCH
 	StartupStore(_T(". Init LK8000%s"),NEWLINE);
@@ -197,7 +197,7 @@ void InitLK8000()
 }
 
 
-// Conversion between submenus and global mapspace modes 
+// Conversion between submenus and global mapspace modes
 // Basic initialization of global variables and parameters.
 //
 void InitModeTable() {
@@ -246,7 +246,7 @@ void InitModeTable() {
 	// startup mode
 	ModeIndex=LKMODE_MAP;
 	// startup values for each mode. we shall update these defaults using current profile settings
-	// for ConfIP real values. 
+	// for ConfIP real values.
 	// 130114 NOTE: THIS DOES NOT WORK, WE ARE NOT UPDATING ModeTable!
 	// ToDo: in case we really want to change initial values for each mode, we must
 	// fix by calling a new UpdateModeTables, setting these ModeTypes.
@@ -278,7 +278,7 @@ void InitModeTable() {
 		SortedAirportIndex[i]=-1;
 	}
 
-	for (i=0; i<MAXCOMMON; i++) 
+	for (i=0; i<MAXCOMMON; i++)
 		CommonIndex[i]= -1;
 
 	for (i=0; i<=MSM_TOP; i++) {

@@ -41,7 +41,7 @@ protected:
 #ifndef USE_GDI
     Canvas* _pCanvas; // need to be first.
 #endif
-    
+
 public:
     LKSurface();
     virtual ~LKSurface();
@@ -92,39 +92,39 @@ public:
         return OldPen();
     }
 
-    OldFont SelectObject(OldFont o) { 
+    OldFont SelectObject(OldFont o) {
         if(_pCanvas && o && o->IsDefined()) {
             _pCanvas->Select(*o);
         }
-        return OldFont(); 
+        return OldFont();
     }
-    OldBrush SelectObject(OldBrush o) { 
+    OldBrush SelectObject(OldBrush o) {
         if(_pCanvas && o) {
             _pCanvas->Select(*o);
         }
-        return OldBrush(); 
+        return OldBrush();
     }
-    OldPen SelectObject(OldPen o) { 
+    OldPen SelectObject(OldPen o) {
         if(_pCanvas && o) {
             _pCanvas->Select(*o);
         }
-        return OldPen(); 
+        return OldPen();
     }
-    
+
     bool Attach(Canvas* pCanvas);
     Canvas* Detach();
-    
+
     operator Canvas&() const {
         LKASSERT(_pCanvas);
         return (*_pCanvas);
     }
-    
+
     bool IsDefined() const { return (_pCanvas && _pCanvas->IsDefined()); }
 #endif
 
     LKColor SetTextColor(const LKColor& Color);
     LKColor SetBkColor(const LKColor& Color);
-    
+
     inline void SetBackgroundTransparent();
     inline void SetBackgroundOpaque();
 
@@ -179,16 +179,16 @@ public:
     bool TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc);
 
     bool CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmapSurface& bmpMask, int xMask, int yMask);
-    
+
     bool AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
 
     bool InvertRect(const RECT& rc);
 
 #endif
-    
+
 #ifdef USE_MEMORY_CANVAS
     void AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
-#endif    
+#endif
     bool GetTextSize(const TCHAR* lpString, SIZE* lpSize);
     void DrawText(int X, int Y, const TCHAR* lpString, RECT* ClipRect = nullptr);
     int DrawText(const TCHAR* lpchText, RECT *lpRect, UINT uFormat);
@@ -210,7 +210,7 @@ public:
     void RestoreState(int nSaved);
 
     virtual void Release();
-    
+
 #ifdef USE_GDI
     virtual void SetAttribDC(HDC hDC);
     virtual void SetOutputDC(HDC hDC);
@@ -234,10 +234,10 @@ public:
     HDC GetAttribDC() const {
         return _AttribDC ? _AttribDC : _OutputDC;
     }
-	
+
 protected:
     friend class LKIcon;
-    
+
     HDC GetTempDC();
 
     HDC _OutputDC; // Drawing Surface
@@ -250,7 +250,7 @@ private:
 
 #ifdef UNDER_CE
 // pointer to AlphaBlend() function (initialized by first call of AlphaBlendSupported())
-typedef BOOL (WINAPI *TAlphaBlendF)(HDC,int,int,int,int,HDC,int,int,int,int,BLENDFUNCTION); 
+typedef BOOL (WINAPI *TAlphaBlendF)(HDC,int,int,int,int,HDC,int,int,int,int,BLENDFUNCTION);
 static TAlphaBlendF AlphaBlendF;
 #endif
 
@@ -281,4 +281,3 @@ inline void LKSurface::SetBackgroundOpaque() {
 }
 
 #endif	/* LKSURFACE_H */
-

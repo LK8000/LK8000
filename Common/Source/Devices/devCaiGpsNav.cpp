@@ -65,70 +65,70 @@ namespace {
   bool CAICommandModeExpect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!ExpectString(d, TEXT("cmd>"))) {
-      // LKTOKEN  _@M1414_ = "Device not responsive!" 
+      // LKTOKEN  _@M1414_ = "Device not responsive!"
       _tcsncpy(errBuf, MsgToken(1414), errBufSize);
       return false;
     }
     return true;
   }
-  
+
   bool CAICommandMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
   {
     // enter command mode
     d->Com->WriteString(TEXT("\x03"));
     return CAICommandModeExpect(d, errBufSize, errBuf);
   }
-  
+
   bool CAINMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!CAICommandMode(d, errBufSize, errBuf))
       return false;
-    
+
     d->Com->WriteString(TEXT("NMEA\r"));
-    
+
     // This is for a slightly different mode, that
     // apparently outputs pressure info too...
     //(d->Com.WriteString)(TEXT("PNP\r\n"));
     //(d->Com.WriteString)(TEXT("LOG 0\r\n"));
-    
+
     return true;
   }
-  
+
   bool CAIUploadModeExpect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!ExpectString(d, TEXT("up>"))) {
-      // LKTOKEN  _@M1414_ = "Device not responsive!" 
+      // LKTOKEN  _@M1414_ = "Device not responsive!"
       _tcsncpy(errBuf, MsgToken(1414), errBufSize);
       return false;
     }
     return true;
   }
-  
+
   bool CAIUploadMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!CAICommandMode(d, errBufSize, errBuf))
       return false;
-    
+
     // enter upload mode
     d->Com->WriteString(TEXT("upl 1\r"));
     return CAIUploadModeExpect(d, errBufSize, errBuf);
   }
-  
+
   bool CAIDownloadModeExpect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!ExpectString(d, TEXT("dn>"))) {
-      // LKTOKEN  _@M1414_ = "Device not responsive!" 
+      // LKTOKEN  _@M1414_ = "Device not responsive!"
       _tcsncpy(errBuf, MsgToken(1414), errBufSize);
       return false;
     }
     return true;
   }
-  
+
   bool CAIDownloadMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!CAICommandMode(d, errBufSize, errBuf))
       return false;
-    
+
     // enter upload mode
     d->Com->WriteString(TEXT("dow 1\r"));
     return CAIDownloadModeExpect(d, errBufSize, errBuf);
@@ -138,11 +138,11 @@ namespace {
   {
     // clear old points
     d->Com->WriteString(TEXT("cle poi\r"));
-    
+
     // wait for command prompt
     if(!CAICommandModeExpect(d, errBufSize, errBuf))
       return false;
-    
+
     return true;
   }
 
@@ -150,27 +150,27 @@ namespace {
   {
     int DegLat = (int)wp.Latitude;
     double MinLat = wp.Latitude - DegLat;
-    char NoS = 'N'; 
+    char NoS = 'N';
     if(MinLat < 0) {
       NoS = 'S';
-      DegLat *= -1; 
+      DegLat *= -1;
       MinLat *= -1;
     }
     MinLat *= 60;
-    
+
     int DegLon = (int)wp.Longitude ;
     double MinLon = wp.Longitude - DegLon;
     char EoW = 'E';
     if(MinLon < 0) {
       EoW = 'W';
-      DegLon *= -1; 
+      DegLon *= -1;
       MinLon *= -1;
     }
     MinLon *= 60;
-    
+
     TCHAR name[16];
     LK_tcsncpy(name, wp.Name, 12);
-    
+
     int flags = 0;
     if(wp.Flags & AIRPORT)
       flags |= WP_FLAGS_AIRFIELD;
@@ -186,14 +186,14 @@ namespace {
       flags |= WP_FLAGS_FINISH_POINT;
     if(flags == 0)
       flags = WP_FLAGS_WAYPOINT;
-    
+
     TCHAR remark[16];
     if(wp.Comment) {
       LK_tcsncpy(remark, wp.Comment, 12);
     }
     else
       remark[0] = '\0';
-    
+
     // prepare and send command
     TCHAR buffer[128];
     _stprintf(buffer, TEXT("C,%d,%02d%07.4f%c,%03d%07.4f%c,%d,%d,%d,%-12s%-12s\r"),
@@ -206,14 +206,14 @@ namespace {
               name,
               remark);
     d->Com->WriteString(buffer);
-    
+
     // wait for command prompt
     if(!CAIDownloadModeExpect(d, errBufSize, errBuf))
       return false;
-    
+
     return true;
   }
-  
+
   bool WaypointsUpload(PDeviceDescriptor_t d, const CTaskWPSet &wps, unsigned errBufSize, TCHAR errBuf[])
   {
     // set task name
@@ -221,25 +221,25 @@ namespace {
     TCHAR tskName[TASK_NAME_LENGTH + 1];
     TaskFileName(TASK_NAME_LENGTH + 1, tskName);
     _tcscat(tskName, TEXT("_LK8000"));
-    
+
     // prepare and send command
     TCHAR buffer[128];
     _stprintf(buffer, TEXT("Y%-*s\r"), TASK_NAME_LENGTH, tskName);
     d->Com->WriteString(buffer);
-    
+
     // wait for command prompt
     if(!CAIDownloadModeExpect(d, errBufSize, errBuf))
       return false;
-    
+
     // set all waypoints
     int i=0;
     for(CTaskWPSet::const_iterator it=wps.begin(), end=wps.end(); it!=end; ++it, i++)
       if(!WaypointUpload(d, **it, i, errBufSize, errBuf))
         return false;
-    
+
     return true;
   }
-  
+
   bool TaskUpload(PDeviceDescriptor_t d, const CTaskWPIdxArray &task, unsigned errBufSize, TCHAR errBuf[])
   {
     // prepare and send command
@@ -254,11 +254,11 @@ namespace {
     }
     text += _stprintf(text, TEXT("\r"));
     d->Com->WriteString(buffer);
-    
+
     // wait for command prompt
     if(!CAIDownloadModeExpect(d, errBufSize, errBuf))
       return false;
-    
+
     return true;
   }
 
@@ -268,21 +268,21 @@ namespace {
     // enter CAI upload mode
     if(!CAIUploadMode(d, errBufSize, errBuf))
       return false;
-    
+
     // request active configuration
     d->Com->WriteString(TEXT("x\r"));
-    
+
     // get active configuration
     TCAIRecordX recordX;
     Poco::Thread::sleep(500); // some params come up 0 if we don't wait!
     d->Com->Read(&recordX, sizeof(recordX));
     if(!CAIUploadModeExpect(d, errBufSize, errBuf))
       return false;
-    
+
     // enter CAI download mode
     if(!CAIDownloadMode(d, errBufSize, errBuf))
       return false;
-    
+
     // prepare and send command
     TCHAR pilot[25];
     LK_tcsncpy(pilot, decl.PilotName, 24);
@@ -301,14 +301,14 @@ namespace {
               recordX.radii_arrival,
               recordX.fix_interval_arrival << 8 | recordX.fix_interval_enroute);
     d->Com->WriteString(buffer);
-    
+
     // wait for command prompt
     if(!CAIDownloadModeExpect(d, errBufSize, errBuf))
       return false;
-    
+
     return true;
   }
-  
+
 }
 
 
@@ -326,13 +326,13 @@ BOOL CDevCAIGpsNav::Init(DeviceDescriptor_t *d)
     d->Com->WriteString(TEXT("\x03"));
     Poco::Thread::sleep(500);
     d->Com->WriteString(TEXT("NMEA\r"));
-    
+
     // This is for a slightly different mode, that
     // apparently outputs pressure info too...
     //(d->Com.WriteString)(TEXT("PNP\r\n"));
     //(d->Com.WriteString)(TEXT("LOG 0\r\n"));
   }
-  
+
   return true;
 }
 
@@ -347,7 +347,7 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
   CTaskWPSet wps;
   for(int i=0; i<decl->num_waypoints; i++)
     wps.insert(decl->waypoint[i]);
-  
+
   // create a list of waypoint indexes in a task
   CTaskWPIdxArray task;
   for(int i=0; i<decl->num_waypoints; i++) {
@@ -356,11 +356,11 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
       if(decl->waypoint[i] == *it)
         task.push_back(j);
   }
-  
+
   const unsigned BUFF_LEN = 128;
   TCHAR buffer[BUFF_LEN];
-  // LKTOKEN  _@M1400_ = "Task declaration" 
-  // LKTOKEN  _@M1404_ = "Opening connection" 
+  // LKTOKEN  _@M1400_ = "Task declaration"
+  // LKTOKEN  _@M1404_ = "Opening connection"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1404));
   CreateProgressDialog(buffer);
 
@@ -369,33 +369,33 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
     return false;
   int timeout;
   bool status = SetRxTimeout(d, 500, timeout, errBufSize, errBuf);
-  
+
   if(status) {
     EmptyRXBuffer(d);
     status = CAICommandMode(d, errBufSize, errBuf);
   }
-  
-  // LKTOKEN  _@M1400_ = "Task declaration" 
-  // LKTOKEN  _@M1403_ = "Sending declaration" 
+
+  // LKTOKEN  _@M1400_ = "Task declaration"
+  // LKTOKEN  _@M1403_ = "Sending declaration"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
   CreateProgressDialog(buffer);
-  
+
   if(status) {
     int temptimeout;
     status = SetRxTimeout(d, 5000, temptimeout, errBufSize, errBuf);
   }
-  
+
   if(status)
     status = WaypointsClear(d, errBufSize, errBuf);
 
   if(status)
     // enter CAI download mode
     status = CAIDownloadMode(d, errBufSize, errBuf);
-  
+
   if(status)
     // upload waypoints
     status = WaypointsUpload(d, wps, errBufSize, errBuf);
-  
+
   if(status)
     // upload task
     status = TaskUpload(d, task, errBufSize, errBuf);
@@ -403,19 +403,19 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
   if(status)
     // upload pilot and glider data
     status = PilotAndGliderUpload(d, *decl, errBufSize, errBuf);
-  
+
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1406_ = "Closing connection"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1406));
   CreateProgressDialog(buffer);
-  
+
   // restore NMEA mode
   status &= CAINMEAMode(d, errBufSize, errBuf);
-  
+
   // restore regular communication
   status &= SetRxTimeout(d, timeout, timeout, errBufSize, errBuf);
   status &= StartRxThread(d, errBufSize, errBuf);
-  
+
   return status;
 }
 

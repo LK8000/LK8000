@@ -36,5 +36,3 @@ void RenderSky(LKSurface& Surface, const RECT& rci, const LKColor& Col1, const L
         Surface.FillRect(&rcd, hbHorizon);
     }
 }
-
-

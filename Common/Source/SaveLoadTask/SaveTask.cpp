@@ -24,9 +24,9 @@ void SaveTask(const TCHAR *szFileName) {
     } else {
 
         MessageBoxX(
-                // LKTOKEN  _@M263_ = "Error in saving task!" 
+                // LKTOKEN  _@M263_ = "Error in saving task!"
                 MsgToken(263), gettext(TEXT("Save task")), mbOk);
-        
+
         StartupStore(_T("++++++ SaveTask: ERROR saving task!%s"), NEWLINE);
     }
 }
@@ -52,9 +52,5 @@ void RenameIfVirtual(const unsigned int i) {
 		WayPointList[i].Altitude=WayPointList[RESWP_TAKEOFF].Altitude;
 	}
   }
- 
-} 
 
-
-
-
+}

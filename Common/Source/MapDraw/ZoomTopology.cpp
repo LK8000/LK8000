@@ -18,7 +18,7 @@ extern Topology* TopoStore[MAXTOPOLOGY];
 double ReadZoomTopology(int iCategory) {
 
   for (int z=0; z<MAXTOPOLOGY; z++) {
-	if (TopoStore[z]) { 
+	if (TopoStore[z]) {
 		if ( TopoStore[z]->scaleCategory == iCategory ) {
 			return (TopoStore[z]->scaleThreshold);
 		}
@@ -30,7 +30,7 @@ double ReadZoomTopology(int iCategory) {
 bool HaveZoomTopology(int iCategory) {
 
   for (int z=0; z<MAXTOPOLOGY; z++) {
-	if (TopoStore[z]) { 
+	if (TopoStore[z]) {
 		if ( TopoStore[z]->scaleCategory == iCategory ) {
 			return true;
 		}
@@ -52,7 +52,7 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
   if (cztmode==0) {
 	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) { 
+		if (TopoStore[z]) {
 			if ( TopoStore[z]->scaleCategory == iCategory ) {
 				#if DEBUG_LKTOPO
 				StartupStore(_T("... ChangeZoomTopology zindex=%d, categ=%d oldscale=%f newscale=%f%s"),z,iCategory,
@@ -68,7 +68,7 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
   if (cztmode==1) {
 	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) { 
+		if (TopoStore[z]) {
 			if ( TopoStore[z]->scaleCategory == iCategory ) {
 				#if DEBUG_LKTOPO
 				StartupStore(_T("... ChangeZoomTopology: zindex=%d, categ=%d oldscale=%f increment=%f%s"),z,iCategory,
@@ -84,7 +84,7 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
   if (cztmode==2) {
 	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) { 
+		if (TopoStore[z]) {
 			#if DEBUG_LKTOPO
 			StartupStore(_T("... ChangeZoomTopology for all: zindex=%d, categ=%d oldscale=%f increment=%f%s"),z,iCategory,
 			TopoStore[z]->scaleThreshold, newScale,NEWLINE);
@@ -98,7 +98,7 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
   if (cztmode==3) {
 	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) { 
+		if (TopoStore[z]) {
 			if ( TopoStore[z]->scaleCategory == iCategory ) {
 				#if DEBUG_LKTOPO
 				StartupStore(_T("... ChangeZoomTopology default zindex=%d, categ=%d oldscale=%f default=%f%s"),
@@ -114,7 +114,7 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
   if (cztmode==4) {
 	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) { 
+		if (TopoStore[z]) {
 			#if DEBUG_LKTOPO
 			StartupStore(_T("... ChangeZoomTopology all default zindex=%d, categ=%d oldscale=%f default=%f%s"),
 			z,iCategory, TopoStore[z]->scaleThreshold, TopoStore[z]->scaleDefaultThreshold,NEWLINE);
@@ -148,5 +148,3 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
   UnlockTerrainDataGraphics();
 }
-
-

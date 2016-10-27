@@ -16,16 +16,16 @@ class InputEvents {
 private:
   static double getIncStep(const TCHAR *misc, double step);
   static double getIncStep(double step, int *count, int *otherCount);
-    
+
 public:
-  
+
   typedef enum {
     PopupWaypoint,
     PopupThermal,
     PopupTraffic,
   } PopupType;
-     
-     
+
+
   static void readFile();
   static void UnloadString();
 
@@ -69,7 +69,7 @@ public:
   static void eventMode(const TCHAR *misc);
   static void eventNearestAirspaceDetails(const TCHAR *misc);
   static void eventNearestWaypointDetails(const TCHAR *misc);
-  static void eventNull(const TCHAR *misc); 
+  static void eventNull(const TCHAR *misc);
   static void eventPan(const TCHAR *misc);
   static void eventPlaySound(const TCHAR *misc);
   static void eventProfileLoad(const TCHAR *misc);
@@ -120,16 +120,16 @@ public:
   static void eventChangeNettoVario(const TCHAR *misc);
   static void eventService(const TCHAR *misc);
   static void eventWifi(const TCHAR *misc);
-  
+
   static void eventInfoStripe(const TCHAR *misc);
   static void eventInfoPage(const TCHAR *misc);
   static void eventModeType(const TCHAR *misc);
-  
+
   static void eventShowMultiselect(const TCHAR *misc);
   // -------
 
   static void showErrors();
-  
+
 #ifdef LXMINIMAP
   static unsigned getSelectedButtonId();
   static void eventChangeSorting(const TCHAR *misc);
@@ -154,7 +154,7 @@ enum {
   GCE_FLIGHTMODE_CRUISE,
   GCE_FLIGHTMODE_FINALGLIDE,
   GCE_FLIGHTMODE_FINALGLIDE_TERRAIN,
-  GCE_FLIGHTMODE_FINALGLIDE_ABOVE,	
+  GCE_FLIGHTMODE_FINALGLIDE_ABOVE,
   GCE_FLIGHTMODE_FINALGLIDE_BELOW,
   GCE_LANDING,
   GCE_STARTUP_REAL,
@@ -172,7 +172,7 @@ enum {
 };
 
 // NE = NMEA Events (hard coded triggered events from the NMEA processor)
-// NMEA Events are Not Used, leave in code only for allow reuse in futur.   
+// NMEA Events are Not Used, leave in code only for allow reuse in futur.
 enum {
   NE_COUNT // How many we have for arrays etc
 };

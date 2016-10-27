@@ -40,13 +40,13 @@ void SettingsEnter() {
 
 
 void SettingsLeave() {
-  if (!GlobalRunning) return; 
+  if (!GlobalRunning) return;
 
   SwitchToMapWindow();
 
   // Locking everything here prevents the calculation thread from running,
   // while shared data is potentially reloaded.
- 
+
   LockFlightData();
   LockTaskData();
 
@@ -64,7 +64,7 @@ void SettingsLeave() {
 		TERRAINFILECHANGED  = TRUE;
 	}
 	TOPOLOGYFILECHANGED = TRUE;
-  } 
+  }
 
   if (TERRAINFILECHANGED) {
 	#if TESTBENCH
@@ -108,7 +108,7 @@ void SettingsLeave() {
 		// LKForceDoNearestTurnpoint=true; 101222
 	}
 	InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //@ BUGFIX 101020
-  } 
+  }
 
   if (TOPOLOGYFILECHANGED) {
 	#if TESTBENCH
@@ -118,7 +118,7 @@ void SettingsLeave() {
 	OpenTopology();
 	MapWindow::ForceVisibilityScan = true;
   }
-  
+
   if(AIRSPACEFILECHANGED) {
 	#if TESTBENCH
 	StartupStore(_T(".... AIRSPACEFILECHANGED from configuration\n"));
@@ -127,8 +127,8 @@ void SettingsLeave() {
 	CAirspaceManager::Instance().ReadAirspaces();
 	CAirspaceManager::Instance().SortAirspaces();
 	MapWindow::ForceVisibilityScan = true;
-  }  
-  
+  }
+
   if (POLARFILECHANGED) {
 	#if TESTBENCH
 	StartupStore(_T(".... POLARFILECHANGED from configuration\n"));
@@ -136,7 +136,7 @@ void SettingsLeave() {
 	CalculateNewPolarCoef();
 	GlidePolar::SetBallast();
   }
-  
+
   if (AIRFIELDFILECHANGED
       || AIRSPACEFILECHANGED
       || WAYPOINTFILECHANGED
@@ -151,7 +151,7 @@ void SettingsLeave() {
   if (FONTSCHANGED || AIRCRAFTTYPECHANGED) {
       ReinitScreen();
   }
-  
+
   UnlockTaskData();
   UnlockFlightData();
 
@@ -186,6 +186,3 @@ void SystemConfiguration(short mode) {
   #endif
   SettingsLeave();
 }
-
-
-

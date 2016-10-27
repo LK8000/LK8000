@@ -111,6 +111,3 @@ double hoehe;
    hoehe = (t11*log(p11/p)/GMR + 11000);
  return (long int) hoehe;
 }
-
-
-

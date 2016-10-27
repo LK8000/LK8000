@@ -36,14 +36,14 @@ void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
   DrawBarChart(Surface, rc, &flightstats.ThermalAverage);
 
   DrawLine(Surface, rc,
-           0, MACCREADY, 
+           0, MACCREADY,
            flightstats.ThermalAverage.sum_n,
            MACCREADY,
            STYLE_REDTHICK);
 
   DrawLabel(Surface, rc, TEXT("MC"),
 	    max(0.5, (double)flightstats.ThermalAverage.sum_n-1), MACCREADY);
-  
+
   DrawTrendN(Surface, rc,
              &flightstats.ThermalAverage,
              STYLE_BLUETHIN);
@@ -63,6 +63,3 @@ void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
   DrawYLabel(Surface, rc, text);
 
 }
-
-
-

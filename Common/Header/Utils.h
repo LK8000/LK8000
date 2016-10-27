@@ -35,8 +35,8 @@ double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
 
 void SectorEndPoint(double StartLat, double StartLon, double  Radial, double Dist, double *EndLat, double *EndLon);
 void CalculateNewPolarCoef(void);
-void FindLatitudeLongitude(double Lat, double Lon, 
-                           double Bearing, double Distance, 
+void FindLatitudeLongitude(double Lat, double Lon,
+                           double Bearing, double Distance,
                            double *lat_out, double *lon_out);
 void ConvertFlightLevels(void);
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc);
@@ -91,8 +91,8 @@ TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 void TrimRight(TCHAR* str);
 
-void SaveRegistryToFile(const TCHAR* szFile); 
-void LoadRegistryFromFile(const TCHAR* szFile); 
+void SaveRegistryToFile(const TCHAR* szFile);
+void LoadRegistryFromFile(const TCHAR* szFile);
 
 /* =====================================================
    Interface Files !
@@ -234,7 +234,7 @@ extern void ClubForbiddenMsg(void);
 
 #if USELKASSERT
 void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars,
-			const unsigned int sizedest, const int line = 0, const TCHAR *filename = NULL); 
+			const unsigned int sizedest, const int line = 0, const TCHAR *filename = NULL);
 #define LK_tcsncpy(dest, src, numofchars) {;LK_tcsncpy_internal(dest, src, numofchars, sizeof(dest), __LINE__, _T(__FILE__));}
 #else
 void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars);

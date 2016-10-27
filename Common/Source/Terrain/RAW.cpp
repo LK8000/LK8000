@@ -25,7 +25,7 @@ bool RasterMap::Open(const TCHAR* zfilename) {
 
   TerrainFile.open(zfilename, true);
   if(TerrainFile.is_open() && TerrainFile.data()) {
-    
+
     TerrainInfo = reinterpret_cast<const TERRAIN_INFO*>(TerrainFile.data());
     TerrainMem = reinterpret_cast<const short*>(TerrainFile.data() + sizeof(TERRAIN_INFO));
 
@@ -38,11 +38,11 @@ bool RasterMap::Open(const TCHAR* zfilename) {
       Close();
     } else {
       StartupStore(_T(". Terrain size is %ld\n"), (long)nsize*sizeof(short));
-      
+
 #ifdef UNDER_CE
       // head memory are faster than memory mapped file,
       // if filesize are not to huge, store DEM data into heap memory.
-      
+
       if (CheckFreeRam()>(nsize*sizeof(short)+5000000U)) {
         // make sure there is 5 meg of ram left after allocating space
         pTerrainMem.reset(new(std::nothrow) short[nsize]);
@@ -55,12 +55,12 @@ bool RasterMap::Open(const TCHAR* zfilename) {
         }
       }
 #endif
-      
+
     }
   } else {
     StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE);
   }
-  
+
   return isMapLoaded();
 }
 
@@ -68,15 +68,12 @@ bool RasterMap::Open(const TCHAR* zfilename) {
 void RasterMap::Close(void) {
   TerrainMem = nullptr;
   TerrainInfo = nullptr;
-  
+
 #ifdef UNDER_CE
   pTerrainMem = nullptr;
 #endif
-  
+
   if(TerrainFile.is_open()) {
     TerrainFile.close();
   }
 }
-
-
-

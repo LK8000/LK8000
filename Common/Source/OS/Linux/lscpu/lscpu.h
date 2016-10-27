@@ -10,8 +10,8 @@
 
 #include "cpuset.h"
 
-/* 
- * global description 
+/*
+ * global description
  * lscpu - CPU architecture information helper
  *
  * Copyright (C) 2008 Cai Qian <qcai@redhat.com>

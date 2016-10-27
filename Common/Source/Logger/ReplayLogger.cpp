@@ -172,7 +172,7 @@ public:
 
   bool Update(double t, double lon, double lat, double alt) {
     if (num<4) { num++; }
-	if ( p[3].t >t ) { 
+	if ( p[3].t >t ) {
 		for (int i=0; i<4; i++) {
 			p[i].lat = lat;
 			p[i].lon = lon;
@@ -286,7 +286,7 @@ public:
     return tav;
   }
   bool NeedData(double tthis) {
-    return (!Ready())||(p[2].t<=tthis+0.1); 
+    return (!Ready())||(p[2].t<=tthis+0.1);
   }
 private:
   int num;
@@ -358,7 +358,7 @@ bool ReplayLogger::UpdateInternal(void) {
     finished = !ReadPoint(&t1,&Lat1,&Lon1,&Alt1);
 
     if (!finished && (t1>0)) {
-	if (!cli.Update(t1,Lon1,Lat1,Alt1)) { 
+	if (!cli.Update(t1,Lon1,Lat1,Alt1)) {
 		break;
 	}
     }
@@ -430,9 +430,9 @@ void ReplayLogger::Start(void) {
   flightstats.Reset();
   if (!UpdateInternal()) {
     MessageBoxX(
-	// LKTOKEN  _@M201_ = "Could not open IGC file!" 
+	// LKTOKEN  _@M201_ = "Could not open IGC file!"
 		MsgToken(201),
-	// LKTOKEN  _@M305_ = "Flight replay" 
+	// LKTOKEN  _@M305_ = "Flight replay"
 		MsgToken(305),
 		mbOk);
   }
@@ -460,5 +460,3 @@ bool ReplayLogger::Update(void) {
   Enabled = UpdateInternal();
   return Enabled;
 }
-
-

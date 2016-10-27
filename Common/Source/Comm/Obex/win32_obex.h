@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   win32_obex.h
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 01 novembre 2013, 16:15
  */
 
@@ -79,7 +79,7 @@ DECLARE_INTERFACE_(INTERFACE, IUnknown)
     STDMETHOD(Next)(THIS_ ULONG, IObexDevice**,ULONG*) PURE;
 	STDMETHOD(Skip)(THIS_ ULONG) PURE;
 	STDMETHOD(Reset)(THIS) PURE;
-	STDMETHOD(Clone)(THIS_ IDeviceEnum**) PURE;	
+	STDMETHOD(Clone)(THIS_ IDeviceEnum**) PURE;
 };
 #undef INTERFACE
 
@@ -97,7 +97,7 @@ DECLARE_INTERFACE_(INTERFACE, IUnknown)
     STDMETHOD(SetPath)(THIS_ LPCWSTR, DWORD, IHeaderCollection*) PURE;
     STDMETHOD(EnumProperties)(THIS_ REFIID, void **) PURE;
     STDMETHOD(SetPassword)(THIS_ LPCWSTR) PURE;
-    STDMETHOD(BindToStorage)(THIS_ DWORD, IStorage**) PURE;	
+    STDMETHOD(BindToStorage)(THIS_ DWORD, IStorage**) PURE;
 };
 #undef INTERFACE
 

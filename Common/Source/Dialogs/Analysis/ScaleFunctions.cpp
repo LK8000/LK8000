@@ -155,6 +155,3 @@ int Statistics::ScaleY(const RECT& rc,double y)
 {
   return(int)((y_max-y)*yscale)+rc.top;
 }
-
-
-

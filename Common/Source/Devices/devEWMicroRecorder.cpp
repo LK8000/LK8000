@@ -36,7 +36,7 @@ BOOL ExpectStringWait(PDeviceDescriptor_t d, const TCHAR *token) {
 
     if (ch != EOF) {
 
-      if (token[i] == (TCHAR)ch) 
+      if (token[i] == (TCHAR)ch)
         i++;
       else
         i=0;
@@ -56,7 +56,7 @@ BOOL ExpectStringWait(PDeviceDescriptor_t d, const TCHAR *token) {
 
 
 
-BOOL EWMicroRecorderParseNMEA(PDeviceDescriptor_t d, 
+BOOL EWMicroRecorderParseNMEA(PDeviceDescriptor_t d,
                               TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80], *params[5];
   int nparams = NMEAParser::ValidateAndExtract(String, ctemp, 80, params, 5);
@@ -113,7 +113,7 @@ BOOL EWMicroRecorderTryConnect(PDeviceDescriptor_t d) {
 }
 
 
-static void EWMicroRecorderWriteWayPoint(PDeviceDescriptor_t d, 
+static void EWMicroRecorderWriteWayPoint(PDeviceDescriptor_t d,
                                          const WAYPOINT *wp,
                                          const TCHAR* EWType) {
   TCHAR EWRecord[128];
@@ -146,8 +146,8 @@ static void EWMicroRecorderWriteWayPoint(PDeviceDescriptor_t d,
   _stprintf(EWRecord,
             TEXT("%s%02d%05d%c%03d%05d%c %s\r\n"),
             EWType,
-            DegLat, (int)MinLat, NoS, 
-            DegLon, (int)MinLon, EoW, 
+            DegLat, (int)MinLat, NoS,
+            DegLon, (int)MinLon, EoW,
             wp->Name);
   d->Com->WriteString(EWRecord);                 // put it to the logger
 }
@@ -160,34 +160,34 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
 
   // Must have at least two, max 12 waypoints
   if(decl->num_waypoints < 2) {
-    // LKTOKEN  _@M1412_ = "Not enough waypoints!" 
+    // LKTOKEN  _@M1412_ = "Not enough waypoints!"
     _tcsncpy(errBuffer, MsgToken(1412), errBufferLen);
     return FALSE;
   }
   if(decl->num_waypoints > 12) {
-    // LKTOKEN  _@M1413_ = "Too many waypoints!" 
+    // LKTOKEN  _@M1413_ = "Too many waypoints!"
     _tcsncpy(errBuffer, MsgToken(1413), errBufferLen);
     return FALSE;
   }
-  
+
   d->Com->StopRxThread();
 
   d->Com->SetRxTimeout(500);                     // set RX timeout to 500[ms]
-  
+
   const unsigned BUFF_LEN = 128;
   TCHAR buffer[BUFF_LEN];
 
-  // LKTOKEN  _@M1400_ = "Task declaration" 
-  // LKTOKEN  _@M1405_ = "Testing connection" 
+  // LKTOKEN  _@M1400_ = "Task declaration"
+  // LKTOKEN  _@M1405_ = "Testing connection"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1405));
   CreateProgressDialog(buffer);
   if (!EWMicroRecorderTryConnect(d)) {
-    // LKTOKEN  _@M1411_ = "Device not connected!" 
+    // LKTOKEN  _@M1411_ = "Device not connected!"
     _tcsncpy(errBuffer, MsgToken(1411), errBufferLen);
     return FALSE;
   }
-  
-  // LKTOKEN  _@M1400_ = "Task declaration" 
+
+  // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1403_ = "Sending  declaration"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
   CreateProgressDialog(buffer);
@@ -221,18 +221,18 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
   wp = decl->waypoint[decl->num_waypoints - 1];
   EWMicroRecorderWriteWayPoint(d, wp, TEXT("Finish LatLon:    "));
   EWMicroRecorderWriteWayPoint(d, wp, TEXT("Land LatLon:      "));
-  
+
   d->Com->WriteString(TEXT("\x03"));         // finish sending user file
 
   if (!ExpectStringWait(d, TEXT("uploaded successfully"))) {
     // error!
-    // LKTOKEN  _@M1415_ = "Declaration not accepted!" 
+    // LKTOKEN  _@M1415_ = "Declaration not accepted!"
     _tcsncpy(errBuffer, MsgToken(1415), errBufferLen);
     nDeclErrorCode = 1;
   }
 
-  // LKTOKEN  _@M1400_ = "Task declaration" 
-  // LKTOKEN  _@M1402_ = "Disabling declaration mode" 
+  // LKTOKEN  _@M1400_ = "Task declaration"
+  // LKTOKEN  _@M1402_ = "Disabling declaration mode"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1402));
   CreateProgressDialog(buffer);
   d->Com->WriteString(TEXT("!!\r\n"));         // go back to NMEA mode
@@ -273,13 +273,10 @@ BOOL ewMicroRecorderInstall(PDeviceDescriptor_t d){
 
 BOOL ewMicroRecorderRegister(void){
   return(devRegister(
-    TEXT("EW MicroRecorder"), 
+    TEXT("EW MicroRecorder"),
     1l << dfGPS
       | 1l << dfLogger
       | 1l << dfBaroAlt,
     ewMicroRecorderInstall
   ));
 }
-
-
-

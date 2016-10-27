@@ -44,7 +44,7 @@ int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, co
 		// For Oren: remember to always DeleteObject you create with Create, or in 1 hour any
 		// device will run out of GDI space, including your PC...
 		// Meanwhile, I have created LKObjects, so anytime we should use them . No need to delete them.
-		//HPEN hPenBlack = ::CreatePen(PEN_SOLID, (5), LKColor(0x00,0x0,0x0));  
+		//HPEN hPenBlack = ::CreatePen(PEN_SOLID, (5), LKColor(0x00,0x0,0x0));
 		//HPEN hPenWhite = (HPEN)CreatePen(PEN_SOLID, (2), LKColor(0xff,0xff,0xff));
 		const PenReference hPenBlack = LKPen_Black_N5;
 		const PenReference hPenWhite = LKPen_White_N2;
@@ -72,7 +72,7 @@ int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, co
 		{
 
 			if ( (screenAngle < 300) && (screenAngle > 60) )
- 			{
+			{
 				continue;
 			}
 
@@ -151,7 +151,7 @@ void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc
 	short rad=(rc.right/2) - (rcx/10);
 	short rcy= rad;
 
-	if ( DisplayOrientation == NORTHSMART || 
+	if ( DisplayOrientation == NORTHSMART ||
 		DisplayOrientation == NORTHTRACK ||
 		DisplayOrientation == NORTHUP ||
 		MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
@@ -218,6 +218,3 @@ void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc
 	Surface.SelectObject(oldfont);
 
 }
-
-
-

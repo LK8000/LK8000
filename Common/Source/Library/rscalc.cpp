@@ -43,7 +43,7 @@ class SunEphemeris {
   double f0(double lat, double declin) {
     double fo,dfo;
     // Correction: different sign at S HS
-    dfo = DEG_TO_RAD*(0.5*SUN_DIAMETER + AIR_REFRACTION); 
+    dfo = DEG_TO_RAD*(0.5*SUN_DIAMETER + AIR_REFRACTION);
     if (lat < 0.0) dfo = -dfo;
     fo = tan(declin + dfo) * tan(lat*DEG_TO_RAD);
     if (fo>0.99999) fo=1.0; // to avoid overflow //
@@ -153,7 +153,7 @@ class SunEphemeris {
     riset = 12.0 - 12.0 * ha/PI + tzone - longit/15.0 + equation/60.0;
     settm = 12.0 + 12.0 * ha/PI + tzone - longit/15.0 + equation/60.0;
     noont = riset + 12.0 * ha/PI;
-    altmax = 90.0 + delta * RAD_TO_DEG - latit; 
+    altmax = 90.0 + delta * RAD_TO_DEG - latit;
 
     // Correction for S HS suggested by David Smith
     // to express altitude as degrees from the N horizon
@@ -207,4 +207,3 @@ double DoSunEphemeris(double lon, double lat) {
   return (double)mysun.settm;
 
 }
-

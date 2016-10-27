@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   dlgIgcFile.cpp
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 1 novembre 2013, 20:04
  */
 #include "externs.h"
@@ -42,7 +42,7 @@ namespace DlgIgcFile {
                 FileList.push_back(It.getName());
             }
         }
-        
+
 	_tcscpy(tmpPath,szPath);
         _tcscat(tmpPath, _T("*.IGC"));
 
@@ -68,9 +68,9 @@ namespace DlgIgcFile {
     void OnSend(WndButton* pWnd) {
         if(ItemIndex < FileList.size()) {
             StartHourglassCursor();
-            
+
             //Start Bluetooth if needed...
-#ifdef UNDER_CE    
+#ifdef UNDER_CE
             CObexPush Obex;
             if(Obex.Startup()) {
                 StartupStore(_T("Startup OK \n"));
@@ -163,7 +163,7 @@ namespace DlgIgcFile {
             FileList_t::const_iterator ItFileName = FileList.begin();
             std::advance(ItFileName, DrawListIndex);
             int w0 = Sender->GetWidth();
-          
+
             Surface.SetTextColor(RGB_BLACK);
             Surface.DrawTextClip(2 * ScreenScale, 2 * ScreenScale, ItFileName->c_str(), w0 - ScreenScale * 5);
         }

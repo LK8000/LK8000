@@ -7,4 +7,3 @@
 BOOL condorRegister(void);
 
 #endif
-

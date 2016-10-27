@@ -38,14 +38,14 @@ FILE *fp;
 	if (CALCULATED_INFO.OnGround) {
 		return;
 	}
-	
+
 	if (CALCULATED_INFO.Circling) {
 		return;
 	}
 
 
 	// speed is in m/s
-	if (speed<1 || speed>100 || altitude <1 || altitude >10000) { 
+	if (speed<1 || speed>100 || altitude <1 || altitude >10000) {
 		if (errs>2) {
 			#ifdef DEBUG_ROTARY
 			sprintf(ventabuffer,"Wind Rotary reset after exceeding errors\n");
@@ -67,7 +67,7 @@ FILE *fp;
 	}
 	errs=0;
 
-	if (++buf->start >=buf->size) { 
+	if (++buf->start >=buf->size) {
 		#ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"*** rotary reset ++bufstart=%d >=bufsize=%d\n",buf->start, buf->size);
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
@@ -91,9 +91,9 @@ FILE *fp;
 
 	#ifdef DEBUG_ROTARY
 	sprintf(ventabuffer,"insert buf[%d/%d], track=%d alt=%d GS=%d",
-		buf->start, buf->size-1, 
+		buf->start, buf->size-1,
 		buf->track[buf->start]-180,
-		buf->altitude[buf->start] , 
+		buf->altitude[buf->start] ,
 		buf->speed[buf->start]);
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 		    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
@@ -145,7 +145,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 	StartupStore(_T("------ TrueWind: Invalid target speed=%f in Wind Calculation%s"),iaspeed,NEWLINE);
 	return WCALC_INVALID_DATA;
   } else {
-	// kmh range for GS 
+	// kmh range for GS
 	low = 10;
 	high = 300;
   }
@@ -153,7 +153,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   #ifdef DEBUG_WCALC
   if ((fp=fopen("DEBUG.TXT","a"))!= NULL) {
 	fprintf(fp,"-------------------------------------------\n");
-  	if (GPS_INFO.AirspeedAvailable) {
+	if (GPS_INFO.AirspeedAvailable) {
 		fprintf(fp,"TAS/IAS are available, preconfig iaspeed=%.3f not used \n",iaspeed);
 		fprintf(fp,"*** DUMP BUFFER, rotary size=%d (max buffer:%d) start=%d\n",bc.size, WCALC_ROTARYSIZE,bc.start);
 		for (i=0; i< bc.size; i+=5) {
@@ -192,7 +192,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   #endif
 
 
-  // search for a GS convergent value between these two margins. 
+  // search for a GS convergent value between these two margins.
 
   for (iter=0; iter<MAXITERFILTER; iter++) {
 	#ifdef DEBUG_WCALC
@@ -241,11 +241,11 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 
   #ifdef DEBUG_WCALC
   if (averspeed>0) {
-  	sprintf(ventabuffer,"GPS GS averspeed is %d kmh", (int)averspeed);
-  	if ((fp=fopen("DEBUG.TXT","a"))!= NULL) {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
+	sprintf(ventabuffer,"GPS GS averspeed is %d kmh", (int)averspeed);
+	if ((fp=fopen("DEBUG.TXT","a"))!= NULL) {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
   }
   #endif
-  
+
   // track search, and also altitude average
   // Track is stored + 180, so 359 is now 539. There is NO 360, it is 0 + 180
 
@@ -289,7 +289,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 	avertrack=((float)s/nc);
 	averaltitude=alt/nc;
 
-	cutoff=avertrack/(float)(10.0*(iter+1)); 
+	cutoff=avertrack/(float)(10.0*(iter+1));
 	if (cutoff<1) cutoff=1;
 	low=(int)(avertrack-cutoff);
 	high=(int)(avertrack+cutoff);
@@ -304,11 +304,11 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 
   #ifdef DEBUG_WCALC
   if (avertrack>-1) {
-  	sprintf(ventabuffer,"GPS TRACK avertrack is %d", (int)avertrack-180);
-  	if ((fp=fopen("DEBUG.TXT","a"))!= NULL) {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
+	sprintf(ventabuffer,"GPS TRACK avertrack is %d", (int)avertrack-180);
+	if ((fp=fopen("DEBUG.TXT","a"))!= NULL) {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
   } else {
-  	sprintf(ventabuffer,"GPS TRACK avertrack is -1 : NO average track found)");
-  	if ((fp=fopen("DEBUG.TXT","a"))!= NULL) {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
+	sprintf(ventabuffer,"GPS TRACK avertrack is -1 : NO average track found)");
+	if ((fp=fopen("DEBUG.TXT","a"))!= NULL) {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
   }
   #endif
 
@@ -350,7 +350,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 	}
 	// iasquality is number of valid fixes found
 	iasquality=nc;
-	haveias=true; 
+	haveias=true;
 	averias=((float)s/nc);
 	cutoff=averias/(float)(10.0*(iter+1));
 	if (cutoff<1) cutoff=1;
@@ -383,7 +383,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   }
 
   goto_NoAirspeed:
-  // track is inserted with +180 
+  // track is inserted with +180
   // a negative heading to 325 is 145, so 145-180 would be -35 . 360-35=325 correct
   if (avertrack>-1) { // if valid avertrack found
 	avertrack-=180;
@@ -397,13 +397,13 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 	if (GPS_INFO.AirspeedAvailable && !DevIsCondor ) {
 	#endif
 		if (averias>0)
-			sprintf(ventabuffer,"*** Averages found (AIRSPEED AVAILABLE): averIAS=%d speed=%d track=%d altitude=%d\n", 
+			sprintf(ventabuffer,"*** Averages found (AIRSPEED AVAILABLE): averIAS=%d speed=%d track=%d altitude=%d\n",
 				(int)(averias*TOKPH), (int)averspeed, (int)avertrack, (int)averaltitude);
 		else
-			sprintf(ventabuffer,"*** Averages found (AIRSPEED AVAILABLE): INVALID averIAS=%dm/s speed=%d track=%d altitude=%d\n", 
+			sprintf(ventabuffer,"*** Averages found (AIRSPEED AVAILABLE): INVALID averIAS=%dm/s speed=%d track=%d altitude=%d\n",
 				(int)averias, (int)averspeed, (int)avertrack, (int)averaltitude);
 	} else {
-		sprintf(ventabuffer,"*** Averages found: speed=%d track=%d altitude=%d\n", 
+		sprintf(ventabuffer,"*** Averages found: speed=%d track=%d altitude=%d\n",
 			(int)averspeed, (int)avertrack, (int)averaltitude);
 	}
 
@@ -424,7 +424,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   #endif
 
   if (averspeed<=0 && avertrack<0){
-  	#ifdef DEBUG_WCALC
+	#ifdef DEBUG_WCALC
 	sprintf(ventabuffer,"Fail: GPS averspeed<=0 && avertrack<0 INVALID ALL \n");
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 	{;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
@@ -432,7 +432,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 	return WCALC_INVALID_ALL;
   }
   if (averspeed<=0) {
-  	#ifdef DEBUG_WCALC
+	#ifdef DEBUG_WCALC
 	sprintf(ventabuffer,"Fail: GPS averspeed<=0 INVALID SPEED \n");
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 	{;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
@@ -440,7 +440,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 	return WCALC_INVALID_SPEED;
   }
   if (avertrack<0) {
-  	#ifdef DEBUG_WCALC
+	#ifdef DEBUG_WCALC
 	sprintf(ventabuffer,"Fail: GPS avertrack<0 INVALID TRACK \n");
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 	{;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
@@ -494,13 +494,13 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 #endif
 
   if (p_heading==999) {
-  	#ifdef DEBUG_WCALC
+	#ifdef DEBUG_WCALC
 	sprintf(ventabuffer,"Fail: GPS avertrack=%d INVALID HEADING \n",(int)avertrack);
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 	{;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 	#endif
 	return WCALC_INVALID_HEADING;
-  } 
+  }
   #ifdef DEBUG_WCALC
   else {
 	sprintf(ventabuffer,"*** avertrack=%d presumed HEADING is %d \n",(int)avertrack,(int)p_heading);
@@ -588,15 +588,11 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 
   // StartupStore(_T(".......gsq=%d tq=%d wcalc=%d  qual=%d\n"),gsquality,trackquality, windcalctime,
   // 						((gsquality+trackquality)*100) / (windcalctime*2)  );
-  // return quality percentage: part/total *100 
-  if (haveias) 
+  // return quality percentage: part/total *100
+  if (haveias)
 	return ( ((gsquality+trackquality+iasquality)*100) / (windcalctime*3) );
   else
 	return ( ((gsquality+trackquality)*100) / (windcalctime*2) );
 
 
 }
-
-
-
-

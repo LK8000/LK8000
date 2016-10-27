@@ -54,7 +54,7 @@ void OpenTopology() {
 
   // Ready to open the file now..
   ZZIP_FILE* zFile = openzip(szFile, "rt");
-  
+
   if (!zFile) {
     UnlockTerrainDataGraphics();
     StartupStore(TEXT(". No topology file <%s>%s"), szFile,NEWLINE);
@@ -75,29 +75,29 @@ void OpenTopology() {
 
   charset cs = charset::unknown;
   while(ReadString(zFile,READLINE_LENGTH,TempString,cs)) {
-      
+
     if(_tcslen(TempString) > 0 && _tcsstr(TempString,TEXT("*")) != TempString) // Look For Comment
       {
-        
+
         BYTE red, green, blue;
         // filename,range,icon,field
-        
+
         // File name
         PExtractParameter(TempString, ctemp, 0);
         _tcscpy(ShapeName, ctemp);
-        
+
         _tcscpy(wShapeFilename, Directory);
 
         _tcscat(wShapeFilename,ShapeName);
         _tcscat(wShapeFilename,TEXT(".shp"));
-        
+
         // Shape range
         PExtractParameter(TempString, ctemp, 1);
         ShapeRange = StrToDouble(ctemp,NULL);
 
 	// Normally ShapeRange is indicating km threshold for items to be drawn.
 	// If over 5000, we identify an LKmap topology and subtract 5000 to get the type.
-	// 
+	//
 	// SCALE CATEGORIES scaleCategory
 	// 0 is reserved
 	// 1 is marked locations
@@ -184,7 +184,7 @@ void OpenTopology() {
 		StartupStore(_T("... LKMAPS new topo file%s"),NEWLINE);
 		#endif
 		LKTopo++;
-			
+
 	} else {
 		#if DEBUG_LKTOPO
 		StartupStore(_T("... OLD XCS topo file%s"),NEWLINE);
@@ -192,13 +192,13 @@ void OpenTopology() {
 		LKTopo=-1;
 	}
 
-        
+
         // Shape icon
         PExtractParameter(TempString, ctemp, 2);
         ShapeIcon = _tcstol(ctemp, &Stop, 10);
-        
+
         // Shape field for text display
-        
+
         // sjt 02NOV05 - field parameter enabled
         PExtractParameter(TempString, ctemp, 3);
         if (_istalnum(ctemp[0])) {
@@ -207,28 +207,28 @@ void OpenTopology() {
         } else {
           ShapeField = -1;
 	}
-        
+
         // Red component of line / shading colour
         PExtractParameter(TempString, ctemp, 4);
         red = (BYTE)_tcstol(ctemp, &Stop, 10);
-        
+
         // Green component of line / shading colour
         PExtractParameter(TempString, ctemp, 5);
         green = (BYTE)_tcstol(ctemp, &Stop, 10);
-        
+
         // Blue component of line / shading colour
         PExtractParameter(TempString, ctemp, 6);
         blue = (BYTE)_tcstol(ctemp, &Stop, 10);
-        
-        if ((red==64) 
-            && (green==96) 
+
+        if ((red==64)
+            && (green==96)
             && (blue==240)) {
           // JMW update colours to ICAO standard
           red =    85; // water colours
           green = 160;
           blue =  255;
         }
-        
+
         if (ShapeField<0) {
           Topology* newtopo;
           newtopo = new Topology(wShapeFilename);
@@ -244,7 +244,7 @@ void OpenTopology() {
         TopoStore[numtopo]->scaleDefaultThreshold = ShapeRange;
 	TopoStore[numtopo]->scaleThreshold = ShapeRange;
 
-        if (ShapeIcon!=0) 
+        if (ShapeIcon!=0)
           TopoStore[numtopo]->loadBitmap(ShapeIcon);
 	else {
 	  // Careful not to use hPen and hBrush then! Always check that it is not null
@@ -272,7 +272,7 @@ void OpenTopology() {
         numtopo++;
       }
   }
-  
+
   //  CloseHandle (hFile);
   zzip_fclose(zFile);
 

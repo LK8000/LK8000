@@ -17,12 +17,12 @@
  * @brief Draw Runway on map
  *
  * @remarks THIS FUNCTION is threadsafe only if called by dialogs using picto bool true
- * 
+ *
  * @param Surface : Surface to Draw
- * @param wp : Landable Waypoint 
- * @param rc : Clipping Rect 
+ * @param wp : Landable Waypoint
+ * @param rc : Clipping Rect
  * @param fScaleFact : Scaling factor for runway symbol radius and runway length, use #MapWindow::zoom value for Moving Map or constant for waypoint Picto
- * @param picto true for drawing Waypoint Picto ( don't draw radio info ) 
+ * @param picto true for drawing Waypoint Picto ( don't draw radio info )
  */
 
 void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, double fScaleFact, BOOL picto)
@@ -82,7 +82,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
          #define X ScreenSizeX==
 	 #define Y ScreenSizeY==
          // Ok this doesnt look nice, but lets remember we are inside a DoInit.
-         // Generally the generic setup is good for everyone, but in case we 
+         // Generally the generic setup is good for everyone, but in case we
          // can make it custom for any resolution.
          if (X 1024 && Y 768) {; rwl = 4.5; rwb = 2.5; cir = 5.0; } else
          if (X 1014 && Y 758) {; rwl = 4.5; rwb = 2.5; cir = 5.0; } else
@@ -91,11 +91,11 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 
          // .. and this is the rule of thumb, I could not find a better idea
          // I think it is easier to redesign the drawing approach and make it
-         // really scalable. 
+         // really scalable.
          //
          // This hack works for: 800x600 960x540 1280x720 (and relative portrait modes)
          // These are the screen resolutions used by kobo, samsung s4 mini and s5 mini
-         // 
+         //
          if (ScreenLandscape) {
              if (ScreenSizeX<=480) {
 		 // testlk> Ok: t5     Bad for: -
@@ -116,10 +116,10 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
          break;
     }
 
-    // 
+    //
     // These are the (absolute) scale thresholds for painting informations
     // For example, paint just radio starting from 5.0km (3.6abs) etc.
-    // There is no rule possible, it matters only testing. 
+    // There is no rule possible, it matters only testing.
     //
     switch(ScreenSize)
     {
@@ -185,8 +185,8 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 
   // Do not print glidersite at low zoom levels, in any case
   // not useful on some resolutions
-  // if( !picto && (MapWindow::zoom.RealScale() > 3) ) 
-  //	bGlider=false; 
+  // if( !picto && (MapWindow::zoom.RealScale() > 3) )
+  //	bGlider=false;
 
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
   const auto oldBrush = Surface.SelectObject(LKBrush_Red);
@@ -216,12 +216,12 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	{
             #ifndef DITHER
 	    if(solid)
-	  	  Surface.SelectObject(LKBrush_DarkGrey );
+		  Surface.SelectObject(LKBrush_DarkGrey );
 	    else
 		  Surface.SelectObject(LKBrush_White);
             #else
 	    if(solid)
-	  	  Surface.SelectObject(LKBrush_Black);
+		  Surface.SelectObject(LKBrush_Black);
 	    else
 		  Surface.SelectObject(LKBrush_White);
             #endif
@@ -240,7 +240,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     if(bGlider)
     {
 	    int iScale = (int)(fScaleFact*2.0);
-            	    double fFact = 0.04*fScaleFact/1.5;
+		    double fFact = 0.04*fScaleFact/1.5;
             if(iScale==0) iScale=1;
 	    POINT WhiteWing [17]  = {
 		  { (long)(-228  * fFact ) , (long)(13  * fFact)}, //1
@@ -274,7 +274,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   // StartupStore(_T(".......fscale=%f *1600=%f realscale = %f\n"), fScaleFact, fScaleFact*1600, MapWindow::zoom.RealScale());
 
 
-  if( !picto && (MapWindow::zoom.RealScale() <= scale_drawradio)  ) 
+  if( !picto && (MapWindow::zoom.RealScale() <= scale_drawradio)  )
   {
 
 	const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
@@ -324,5 +324,3 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   Surface.SelectObject(oldBrush);
 
 }
-
-

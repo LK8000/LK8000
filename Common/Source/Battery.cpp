@@ -2,9 +2,9 @@
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * linux code adapted from XCSoar original source code Battery.cpp
- * 
+ *
 
    $Id$
 */
@@ -61,7 +61,7 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
     pBatteryInfo->BatteryLifePercent = BATTERY_UNKNOWN;
     pBatteryInfo->acStatus = Battery::UNKNOWN;
     pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
-    
+
     return false;
 }
 #endif
@@ -185,7 +185,7 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
             pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
             break;
     }
-    
+
     return true;
 }
 #else
@@ -201,7 +201,7 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
     pBatteryInfo->BatteryLifePercent = BATTERY_UNKNOWN;
     pBatteryInfo->acStatus = Battery::UNKNOWN;
     pBatteryInfo->chargeStatus = Battery::CHARGE_UNKNOWN;
-    
+
     return false;
 }
 
@@ -210,16 +210,16 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
 
 
 
-// 2015.02.07 
+// 2015.02.07
 // By default the global bool HaveBatteryInfo is always false.
 // We set it true, and use battery infos, only if we find a real battery.
-// Beware. If for any reason the battery no longer gives info we ought to 
+// Beware. If for any reason the battery no longer gives info we ought to
 // clear the flag too.
 static bool battInitialized=false;
 
 void UpdateBatteryInfos(void) {
 
-  BATTERYINFO BatteryInfo; 
+  BATTERYINFO BatteryInfo;
   BatteryInfo.acStatus = Battery::UNKNOWN;
 
   #ifdef PNA
@@ -230,11 +230,11 @@ void UpdateBatteryInfos(void) {
 
 	PDABatteryTemperature = 0;
 	HaveBatteryInfo=true;
-  } else 
+  } else
   #endif
   if (GetBatteryInfo(&BatteryInfo)) {
     PDABatteryPercent = BatteryInfo.BatteryLifePercent;
-    PDABatteryTemperature = BatteryInfo.BatteryTemperature; 
+    PDABatteryTemperature = BatteryInfo.BatteryTemperature;
     PDABatteryStatus=BatteryInfo.acStatus;
     PDABatteryFlag=BatteryInfo.chargeStatus;
 
@@ -247,7 +247,7 @@ void UpdateBatteryInfos(void) {
     // All you need to display extra Battery informations...
     //	TCHAR vtemp[1000];
     //	_stprintf(vtemp,_T("Battpercent=%d Volt=%d Curr=%d AvCurr=%d mAhC=%d Temp=%d Lifetime=%d Fulllife=%d\n"),
-    //		BatteryInfo.BatteryLifePercent, BatteryInfo.BatteryVoltage, 
+    //		BatteryInfo.BatteryLifePercent, BatteryInfo.BatteryVoltage,
     //		BatteryInfo.BatteryCurrent, BatteryInfo.BatteryAverageCurrent,
     //		BatteryInfo.BatterymAHourConsumed,
     //		BatteryInfo.BatteryTemperature, BatteryInfo.BatteryLifeTime, BatteryInfo.BatteryFullLifeTime);
@@ -341,17 +341,17 @@ void LKBatteryManager() {
 	if (last_status != PDABatteryStatus) {
 		if (PDABatteryStatus==Battery::OFFLINE) {
 			if (GiveBatteryWarnings())
-	// LKTOKEN  _@M514_ = "POWER SUPPLY OFF" 
+	// LKTOKEN  _@M514_ = "POWER SUPPLY OFF"
 			DoStatusMessage(MsgToken(514));
 		} else {
 			if (PDABatteryStatus==Battery::ONLINE) {
 				if (GiveBatteryWarnings())
-	// LKTOKEN  _@M515_ = "POWER SUPPLY ON" 
+	// LKTOKEN  _@M515_ = "POWER SUPPLY ON"
 				DoStatusMessage(MsgToken(515));
 			} else {
 				if (PDABatteryStatus==Battery::BACKUP_POWER) {
 					if (GiveBatteryWarnings())
-	// LKTOKEN  _@M119_ = "BACKUP POWER SUPPLY ON" 
+	// LKTOKEN  _@M119_ = "BACKUP POWER SUPPLY ON"
 					DoStatusMessage(MsgToken(119));
 				}
 			}
@@ -373,22 +373,22 @@ void LKBatteryManager() {
 		recharging=true;
 		if (PDABatteryFlag==Battery::CHARGING || PDABatteryStatus==Battery::ONLINE) {
 			if (GiveBatteryWarnings())
-	// LKTOKEN  _@M124_ = "BATTERY IS RECHARGING" 
+	// LKTOKEN  _@M124_ = "BATTERY IS RECHARGING"
 			DoStatusMessage(MsgToken(124));
-  			last_time=GPS_INFO.Time;
+			last_time=GPS_INFO.Time;
 		}
 	}
 	return;
   }
-	
+
   // if battery is same level, do nothing except when 100% during recharge
   if (last_percent == PDABatteryPercent) {
 	if (recharging && (PDABatteryPercent==100) && warn100) {
 		if (GiveBatteryWarnings())
-	// LKTOKEN  _@M123_ = "BATTERY 100% CHARGED" 
+	// LKTOKEN  _@M123_ = "BATTERY 100% CHARGED"
 		DoStatusMessage(MsgToken(123));
 		warn100=false;
-  		last_time=GPS_INFO.Time;
+		last_time=GPS_INFO.Time;
 	}
 	return;
   }
@@ -461,7 +461,7 @@ bool GiveBatteryWarnings(void)
   // If last warning was issued more than 60 minutes ago, reset toomany.
   if (GPS_INFO.Time>(last_time+3600)) {
 	#if TESTBENCH
-	if (last_time>0 && numwarn>0) 
+	if (last_time>0 && numwarn>0)
 		StartupStore(_T("... GiveBatteryWarnings resetting at %s%s"),WhatTimeIsIt(),NEWLINE);
 	#endif
 	toomany=false;
@@ -482,5 +482,3 @@ bool GiveBatteryWarnings(void)
   last_time=GPS_INFO.Time;
   return true;
 }
-
-

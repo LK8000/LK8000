@@ -29,4 +29,3 @@ void DefaultTask(void) {
   RefreshTask();
   UnlockTaskData();
 }
-

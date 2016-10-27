@@ -41,7 +41,7 @@ int SetSplitScreenSize(int iPercent) {
     int iOld = (int) (fSplitFact * 100.0);
 #if 0
     if (iPercent >= 90)
-    	iPercent =90;
+	iPercent =90;
 #endif
     if (iPercent == 100)
         fSplitFact = 1;
@@ -224,4 +224,3 @@ int CalcDistanceCoordinat(double fDist, DiagrammStruct* psDia) {
     return xPos;
 
 }
-

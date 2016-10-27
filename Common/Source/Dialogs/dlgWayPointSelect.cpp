@@ -62,16 +62,16 @@ static int ItemIndex = -1;
 
 static int SelectedWayPointFileIdx = 0;
 
-static void OnWaypointListEnter(WindowControl * Sender, 
+static void OnWaypointListEnter(WindowControl * Sender,
 				WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender; (void)ListInfo;
-  
+
   if(Sender) {
     WndForm * pForm = Sender->GetParentWndForm();
     if(pForm) {
       pForm->SetModalResult((ItemIndex != -1) ? mrOK : mrCancel);
     }
-  }  
+  }
 }
 
 
@@ -159,8 +159,8 @@ static int WaypointDirectionCompare(const void *elem1, const void *elem2 ){
 
 static void SetWPNameCaption(const TCHAR* tFilter) {
 
-  TCHAR namfilter[50]; 
-  if ( _tcscmp(tFilter,_T("*")) == 0) 
+  TCHAR namfilter[50];
+  if ( _tcscmp(tFilter,_T("*")) == 0)
 	_tcscpy(namfilter,_T("*"));
   else {
 	if (_tcslen(tFilter) <GC_SUB_STRING_THRESHOLD)
@@ -392,7 +392,7 @@ static void UpdateList(void){
 		LowLimit=0;
 		UpLimit=matches;
 /*
-		for (i=0; i<UpLimit; i++) 
+		for (i=0; i<UpLimit; i++)
 			StartupStore(_T("StrIndex[%d] = %d <%s>\n"), i, StrIndex[i], WayPointList[WayPointSelectInfo[StrIndex[i]].Index].Name);
 */
 	} else {
@@ -508,10 +508,10 @@ static void OnFilterNameButton(WndButton* pWnd) {
 	for (i=0; i<UpLimit; i++)
 	{
 
-  	    if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
-  	    {
-  	  	  CursorPos = i;
-  	    }
+	    if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
+	    {
+		  CursorPos = i;
+	    }
 	}
 
     wWayPointListEntry->SetFocus();
@@ -556,7 +556,7 @@ static void OnFilterDistance(DataField *Sender, DataField::DataAccessKind_t Mode
   if (DistanceFilterIdx == 0)
     _stprintf(sTmp, TEXT("%c"), '*');
   else
-    _stprintf(sTmp, TEXT("%.0f%s"), 
+    _stprintf(sTmp, TEXT("%.0f%s"),
               DistanceFilter[DistanceFilterIdx],
               Units::GetDistanceName());
   Sender->Set(sTmp);
@@ -673,7 +673,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     const int TextHeight = Surface.GetTextHeight(_T("dp"));
 
     const int TextPos = (LineHeight - TextHeight) / 2; // offset for text vertical center
-    
+
     if (DrawListIndex < n) {
 
         const size_t i = (FullFlag) ? StrIndex[DrawListIndex] : (LowLimit + DrawListIndex);
@@ -682,7 +682,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
         LKASSERT(i < WayPointList.size());
 
-        const int width = Sender->GetWidth(); // total width 
+        const int width = Sender->GetWidth(); // total width
 
         const int w0 = LineHeight; // Picto Width
         const int w2 = Surface.GetTextWidth(TEXT(" 000km")); // distance Width
@@ -715,7 +715,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         Surface.DrawText(x3, TextPos, sTmp);
     } else {
         if (DrawListIndex == 0) {
-            // LKTOKEN  _@M466_ = "No Match!" 
+            // LKTOKEN  _@M466_ = "No Match!"
             _stprintf(sTmp, TEXT("%s"), MsgToken(466));
             Surface.DrawText(IBLSCALE(2), TextPos, sTmp);
         }
@@ -864,7 +864,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   UpdateList();
   wf->SetTimerNotify(1000, OnTimerNotify);
 
-  if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0) 
+  if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0)
    && (ItemIndex < (UpLimit - LowLimit))) {
 
 	if (FullFlag)

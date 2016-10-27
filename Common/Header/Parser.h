@@ -142,7 +142,7 @@ typedef struct _NMEA_INFO
   int HardwareId;
   int SerialNumber;
   double SoftwareVer;
-#endif  
+#endif
   #if LOGFRECORD
   int SatelliteIDs[MAXSATELLITES];
   #endif
@@ -154,9 +154,9 @@ typedef struct _NMEA_INFO
   #endif
 
   double StallRatio;
-  
+
   BOOL MagneticHeadingAvailable;
-  double MagneticHeading;  
+  double MagneticHeading;
 
   BOOL GyroscopeAvailable;
   double Pitch;
@@ -181,10 +181,10 @@ class NMEAParser {
   void _Reset(void);
 
   BOOL ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO);
- 
-#ifdef UNDER_CE 
+
+#ifdef UNDER_CE
   static BOOL ParseGPS_POSITION(int portnum,
-			      const GPS_POSITION& loc, NMEA_INFO& GPSData);  
+			      const GPS_POSITION& loc, NMEA_INFO& GPSData);
   BOOL ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData);
 #endif
   bool gpsValid;
@@ -204,14 +204,14 @@ class NMEAParser {
   static size_t ExtractParameters(const TCHAR *src, TCHAR *dst, TCHAR **arr, size_t sz);
   static BOOL NMEAChecksum(const TCHAR *String);
 
-  static void ExtractParameter(const TCHAR *Source, 
-			       TCHAR *Destination, 
+  static void ExtractParameter(const TCHAR *Source,
+			       TCHAR *Destination,
 			       int DesiredFieldNumber);
 
  private:
   BOOL GGAAvailable;
   BOOL RMZAvailable;
-  bool RMCAvailable; 
+  bool RMCAvailable;
   bool TASAvailable;
   double RMZAltitude;
   double LastTime;
@@ -232,7 +232,7 @@ class NMEAParser {
   BOOL VTG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL RMB(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL RMZ(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  
+
   BOOL WP0(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL WP1(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL WP2(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);

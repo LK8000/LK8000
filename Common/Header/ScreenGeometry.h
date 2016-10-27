@@ -4,7 +4,7 @@
    See CREDITS.TXT file for authors and copyrights
 
    PLEASE USE COMMENTS ALSO HERE TO DESCRIBE YOUR GLOBALS!
-   YOU CAN INITIALIZE VALUES TO true,false,zero and NULL, 
+   YOU CAN INITIALIZE VALUES TO true,false,zero and NULL,
    or you can do it also inside Globals_Init.
 
 */

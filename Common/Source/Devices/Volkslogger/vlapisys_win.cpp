@@ -35,14 +35,14 @@ int noninteractive=1;
 
 
 /** wait a specified amount of milliseconds (t) */
-void VLA_SYS::wait_ms(const int32 t)  {  
+void VLA_SYS::wait_ms(const int32 t)  {
   if (t>0) {
     Poco::Thread::sleep(t);
   }
 }
 
 /** read value of a continous running seconds-timer */
-int32 VLA_SYS::get_timer_s()  {  
+int32 VLA_SYS::get_timer_s()  {
 #if defined(HAVE_POSIX) || !defined(_WIN32_WCE)
   return time(NULL);
 #else
@@ -80,7 +80,7 @@ VLA_ERROR VLA_SYS::serial_close_port()
 {
 
   device->Com->SetBaudrate(lLastBaudrate);            // restore baudrate
-  
+
   device->Com->SetRxTimeout(0);                       // clear timeout
   device->Com->StartRxThread();                       // restart RX thread
 

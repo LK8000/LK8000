@@ -28,7 +28,7 @@
 #if BUGSTOP
   #define BUGSTOP_LKASSERT(arg) LKASSERT(arg)
 #else
-  #define BUGSTOP_LKASSERT(arg) 
+  #define BUGSTOP_LKASSERT(arg)
 #endif
 
 #if TESTBENCH

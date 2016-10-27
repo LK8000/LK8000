@@ -33,6 +33,3 @@ void SwapWaypoint(int index) {
   RefreshTask();
   UnlockTaskData();
 }
-
-
-

@@ -50,8 +50,8 @@ public:
 	~CWaveInThread();
 
    BOOL Init(cbWaveIn pcbWaveIn,
-             DWORD dwActiveThreadPriority, 
-             WORD wBufferCount, 
+             DWORD dwActiveThreadPriority,
+             WORD wBufferCount,
              DWORD dwSingleBufferSize,
              WORD wChannels,
              DWORD dwSamplesPerSec,
@@ -99,8 +99,8 @@ public:
 	CWaveOutThread();
 	~CWaveOutThread();
    BOOL Init(cbWaveOut pcbWaveOut,
-             DWORD dwActiveThreadPriority, 
-             WORD wBufferCount, 
+             DWORD dwActiveThreadPriority,
+             WORD wBufferCount,
              DWORD dwSingleBufferSize,
              WORD wChannels,
              DWORD dwSamplesPerSec,
@@ -114,9 +114,9 @@ public:
    DWORD GetDataLen();
    void SuspendThread();
    void ResumeThread();
-   void SetSoundVolume(int volpercent); 
+   void SetSoundVolume(int volpercent);
    void RestoreSoundVolume();
-   DWORD dwVolume_restore; 
+   DWORD dwVolume_restore;
 
 
 protected:

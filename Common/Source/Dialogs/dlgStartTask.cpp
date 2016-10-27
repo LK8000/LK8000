@@ -74,11 +74,10 @@ void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double A
     }
 
     wf->ShowModal();
-    
+
     delete wf;
   }
   wf = NULL;
 
   *validStart = startIsValid;
 }
-

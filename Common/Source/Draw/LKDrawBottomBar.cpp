@@ -88,7 +88,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 
 	Surface.SelectObject(LK8BottomBarUnitFont);
 	// m for meters unit, f is shorter anyway
-	Surface.GetTextSize(_T("m"), &TextSize); 
+	Surface.GetTextSize(_T("m"), &TextSize);
 	int sxUnit = TextSize.cx;
 
 	Surface.SelectObject(LK8BottomBarValueFont);
@@ -98,12 +98,12 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	int sxValue = TextSize.cx + NIBLSCALE(2) + (HideUnits ? 0 : sxUnit);
 
 	// The vertical align of fonts cannot be done using the TextSize metrics..
-	// because the reported height is considering also vertical spacing. 
+	// because the reported height is considering also vertical spacing.
 	// So this is a workaround. We cannot align perfectly.
         // WARNING. Changing these settings will require also Fonts1.cpp sizing of BottomBar
         // to be adjust as well!
 
- 	yRow2Value =  rc.bottom-(syValue*2);
+	yRow2Value =  rc.bottom-(syValue*2);
 	yRow2Title =  yRow2Value - (syValue/2) - (syTitle/2) + NIBLSCALE(2);
 	yRow2Unit  =  yRow2Value;
 
@@ -126,7 +126,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	StartupStore(_T("... BOTTOMBAR splitter=%d\n"),bbsplitter);
 	#endif
 
-	
+
 	short ii;
 	// set correct initial bottombar stripe, excluding TRM
 	if(!ConfBB[BottomMode])
@@ -137,7 +137,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
             BottomMode=ii;
 	}
 
-	DoInit[MDI_DRAWBOTTOMBAR]=false; 
+	DoInit[MDI_DRAWBOTTOMBAR]=false;
 
   } // end doinit
 
@@ -226,7 +226,7 @@ _afterautotrm:
                                 showunit=Units::TimeToTextDown(BufferValue, (int)Trip_Moving_Time);
 				if (showunit)
 					_tcscpy(BufferUnit, _T("h"));
-				else 
+				else
 					_tcscpy(BufferUnit, _T(""));
 				showunit=true;
                         } else {
@@ -299,7 +299,7 @@ _afterautotrm:
                                 showunit=Units::TimeToTextDown(BufferValue, (int)Trip_Steady_Time);
 				if (showunit)
 					_tcscpy(BufferUnit, _T("h"));
-				else 
+				else
 					_tcscpy(BufferUnit, _T(""));
 				showunit=true;
                         } else {
@@ -334,7 +334,7 @@ _afterautotrm:
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		CropString(BufferTitle, 7);
 		break;
-		
+
 	case BM_CUS3:
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -391,7 +391,7 @@ _afterautotrm:
                                 showunit=Units::TimeToTextDown(BufferValue, (int)(Trip_Steady_Time+Trip_Moving_Time));
 				if (showunit)
 					_tcscpy(BufferUnit, _T("h"));
-				else 
+				else
 					_tcscpy(BufferUnit, _T(""));
 				showunit=true;
                         } else {
@@ -413,8 +413,8 @@ _afterautotrm:
 		CropString(BufferTitle, 7);
 		break;
 	case BM_SYS:
-  		showunit=true;
-  			_tcscpy(BufferUnit, TEXT(""));
+		showunit=true;
+			_tcscpy(BufferUnit, TEXT(""));
 			if (SIMMODE) {
 				// LKTOKEN _@M1199_ "Sat"
 				_tcscpy(BufferTitle, MsgToken(1199));
@@ -444,7 +444,7 @@ _afterautotrm:
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		CropString(BufferTitle, 7);
 		break;
-		
+
 	case BM_CUS3:
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -493,7 +493,7 @@ _afterautotrm:
 	case BM_HGH:
 		showunit=LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
 		break;
-	case BM_AUX:  
+	case BM_AUX:
 		if (ISCAR) {
 			_stprintf(BufferValue,_T("%.1f"),SPEEDMODIFY*Rotary_Speed);
 			_stprintf(BufferTitle,_T("AvgSpd"));
@@ -517,7 +517,7 @@ _afterautotrm:
 		break;
 	case BM_SYS:
 		// LKTOKEN _@M1068_ "HBAR"
-  		_tcscpy(BufferTitle, MsgToken(1068));
+		_tcscpy(BufferTitle, MsgToken(1068));
 		if (DrawInfo.BaroAltitudeAvailable) {
 			if (EnableNavBaroAltitude)
 				// LKTOKEN _@M894_ "ON"
@@ -527,14 +527,14 @@ _afterautotrm:
 				_tcscpy(BufferValue,MsgToken(491));
 		} else
 			_stprintf(BufferValue,TEXT("---"));
-  		showunit=false;
+		showunit=false;
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		CropString(BufferTitle, 7);
 		break;
-		
+
 	case BM_CUS3:
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -576,13 +576,13 @@ _afterautotrm:
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		CropString(BufferTitle, 7);
 		break;
-	case BM_CRU: 
+	case BM_CRU:
 		if (ISCAR) {
 			_tcscpy(BufferTitle,MsgToken(2091)); // Averag (speed average really)
 			int totime=(int)(Trip_Steady_Time+Trip_Moving_Time);
 			if (totime>0) {
 				_stprintf(BufferValue,_T("%.1f"),(DerivedDrawInfo.Odometer*SPEEDMODIFY)/totime);
-  				_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+				_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 			} else {
 				_stprintf(BufferValue, TEXT("---"));
 				showunit=false;
@@ -612,16 +612,16 @@ _afterautotrm:
 		break;
 	case BM_TSK:
 // TODO MAKE IT LKPROCESS
-  		Value=ALTITUDEMODIFY*DerivedDrawInfo.TaskStartAltitude;
+		Value=ALTITUDEMODIFY*DerivedDrawInfo.TaskStartAltitude;
 		if (Value>0) {
 			_stprintf(BufferValue,TEXT("%d"),(int)Value);
-  			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 		} else {
 			_tcscpy(BufferValue, TEXT("---"));
 			_tcscpy(BufferUnit, TEXT(""));
 			showunit=false;
 		}
- 		// LKTOKEN _@M1200_ "Start"
+		// LKTOKEN _@M1200_ "Start"
 		_tcscpy(BufferTitle, MsgToken(1200));
 		break;
 	case BM_ALT:
@@ -653,7 +653,7 @@ _afterautotrm:
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		CropString(BufferTitle, 7);
 		break;
-		
+
 	case BM_CUS3:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -732,7 +732,7 @@ _afterautotrm:
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		CropString(BufferTitle, 7);
 		break;
-		
+
 	case BM_CUS3:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -794,7 +794,7 @@ _afterautotrm:
 		showunit=LKFormatValue(LK_FIN_GR, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_ALT:
-		showunit=LKFormatValue(LK_HOME_ARRIVAL, true, BufferValue, BufferUnit, BufferTitle); 
+		showunit=LKFormatValue(LK_HOME_ARRIVAL, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_SYS:
 		showunit=LKFormatValue(LK_EXTBATT2VOLT, true, BufferValue, BufferUnit, BufferTitle);
@@ -804,7 +804,7 @@ _afterautotrm:
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		CropString(BufferTitle, 7);
 		break;
-		
+
 	case BM_CUS3:
 		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -873,7 +873,7 @@ _afterautotrm:
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		CropString(BufferTitle, 7);
 		break;
-		
+
 	case BM_CUS3:
 		index=GetInfoboxIndex(8,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -938,7 +938,7 @@ _afterautotrm:
   LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
-   *    CLEAN UP 
+   *    CLEAN UP
    */
 
 EndOfNavboxes:
@@ -949,4 +949,3 @@ EndOfNavboxes:
 
 
 }
-

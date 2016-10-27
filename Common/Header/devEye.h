@@ -8,13 +8,13 @@
 
 #ifndef	DEVEYE_H
 #define	DEVEYE_H
- 
+
 #include "devBase.h"
 
 
 /**
  * @brief Eye device class
- * 
+ *
  * Class provides support for Eye device.
  */
 class CDevEye : public DevBase
@@ -25,7 +25,7 @@ class CDevEye : public DevBase
   static bool PEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info);
   static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *sentence, NMEA_INFO *info);
   static BOOL Install(PDeviceDescriptor_t d);
-  
+
 public:
   static bool Register();
 };

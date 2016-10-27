@@ -51,12 +51,12 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
 	case DataField::daGet:
 		if (PressureHg) {
 			INHg=QNH/TOHPA;
-			Sender->Set(INHg); 
+			Sender->Set(INHg);
 		} else {
-			Sender->Set(QNH); 
+			Sender->Set(QNH);
 		}
 		break;
-	case DataField::daPut: 
+	case DataField::daPut:
 	case DataField::daChange:
 		if (PressureHg) {
 			INHg = Sender->GetAsFloat();
@@ -115,7 +115,7 @@ static void SetBallast(bool updateDevices) {
   WndProperty* wp;
 
   GlidePolar::SetBallast();
-  if (updateDevices) { 
+  if (updateDevices) {
 	devPutBallast(devA(), BALLAST);
 	devPutBallast(devB(), BALLAST);
   }
@@ -127,7 +127,7 @@ static void SetBallast(bool updateDevices) {
       {
     wp->GetDataField()->Set(BALLAST*100);
     wp->RefreshDisplay();
-  	    foldBallast = BALLAST;
+	    foldBallast = BALLAST;
   }
 	}
 
@@ -160,7 +160,7 @@ static void SetBallast(bool updateDevices) {
 
 static bool OnTimerNotify(WndForm* pWnd) {
   // devices are updates by BallastDump() method when dumping water ballast
-  SetBallast(false); 
+  SetBallast(false);
 
   WndProperty* wp;
   static double altlast = GPS_INFO.BaroAltitude;
@@ -355,7 +355,7 @@ void dlgBasicSettingsShowModal(void){
 		wp->GetDataField()->SetEditFormat(_T("%1.1f"));
 		wp->GetDataField()->SetMin(1.0);
 		wp->GetDataField()->SetStep(0.1);
-	} 
+	}
 	if (ISGLIDER) {
 		wp->GetDataField()->SetDisplayFormat(_T("%.1f kg/m2"));
 		wp->GetDataField()->SetEditFormat(_T("%1.1f"));
@@ -381,4 +381,3 @@ void dlgBasicSettingsShowModal(void){
   wf = NULL;
 
 }
-

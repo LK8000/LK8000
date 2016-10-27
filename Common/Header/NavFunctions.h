@@ -8,11 +8,11 @@ void xXY_Brg_Rng(double X_1, double Y_1, double X_2, double Y_2, double *Bearing
 void xBrg_Rng_XY(double X_RefPos, double Y_RefPos, double Bearing, double Range, double *X, double *Y);
 void xCrs_Spd_to_VxVy(double Crs, double Spd, double *Vx, double *Vy);
 void xVxVy_to_Crs_Spd(double Vx, double Vy, double *Crs, double *Spd);
-void LL_to_BearRange(double Lat_TP, double Long_TP, double Lat_Pnt, double Long_Pnt, 
+void LL_to_BearRange(double Lat_TP, double Long_TP, double Lat_Pnt, double Long_Pnt,
 			double *Bearing, double *Range);
 void DistanceBearing(double lat1, double lon1, double lat2, double lon2, double *Distance, double *Bearing);
 double DoubleDistance(double lat1, double lon1, double lat2, double lon2, double lat3, double lon3);
-void FindLatitudeLongitude(double Lat, double Lon, double Bearing, double Distance, 
+void FindLatitudeLongitude(double Lat, double Lon, double Bearing, double Distance,
 			double *lat_out, double *lon_out);
 
 void IntermediatePoint(double lon1, double lat1,

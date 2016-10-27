@@ -18,7 +18,7 @@ double AltitudeFromTerrain(double Lat, double Lon) {
   RasterTerrain::SetTerrainRounding(0.0,0.0);
   myalt = RasterTerrain::GetTerrainHeight(Lat, Lon);
   RasterTerrain::Unlock();
-  
+
   return (myalt==TERRAIN_INVALID)?0:myalt;
 }
 
@@ -39,5 +39,5 @@ void UpdateTargetAltitude(TASK_POINT& TskPt) {
     }
     if(TskPt.AATTargetAltitude <= 0) {
         TskPt.AATTargetAltitude = WayPointList[TskPt.Index].Altitude;
-    } 
+    }
 }

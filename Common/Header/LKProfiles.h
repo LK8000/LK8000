@@ -13,7 +13,7 @@
 
 //
 // >>> PLEASE KEEP ALPHA ORDER , BE TIDY! <<<
-// 
+//
 // If you want to force a reset of a parameter in an old configuration,
 // maybe because the software has changed and this old parameter must be
 // manually reconfigured by the user, there is a simple solution:
@@ -123,7 +123,7 @@ char szRegistryAlternate1[]= "Alternate1b";
 char szRegistryAlternate2[]= "Alternate2b";
 char szRegistryAltitudeUnitsValue[] = "AltitudeUnits";
 char szRegistryAppIndLandable[] = "AppIndLandable1";
-char szRegistryAppInfoBoxModel[] = "AppInfoBoxModel"; 
+char szRegistryAppInfoBoxModel[] = "AppInfoBoxModel";
 char szRegistryAppInverseInfoBox[] = "AppInverseInfoBox2";
 char szRegistryArrivalValue[]= "ArrivalValue";
 char szRegistryAutoAdvance[] = "AutoAdvance";
@@ -137,7 +137,7 @@ char szRegistryAutoSoundVolume[]= "AutoSoundVolume";
 char szRegistryAutoWind[]= "AutoWind";
 char szRegistryAutoZoom[] = "AutoZoom";
 char szRegistryAverEffTime[]= "AverEffTime1";
-char szRegistryBallastSecsToEmpty[]=	 "BallastSecsToEmpty1"; 
+char szRegistryBallastSecsToEmpty[]=	 "BallastSecsToEmpty1";
 char szRegistryBarOpacity[]= "BarOpacity";
 char szRegistryBestWarning[]= "BestWarning";
 char szRegistryBgMapColor[]= "BgMapColor";
@@ -404,7 +404,7 @@ char szRegistryOverlay_RightBottom[]       = "Overlay_RightBottom";
 //
 //
 //
-#else 
+#else
 //
 // ------------------------------------- externals ------------------------------------------
 //

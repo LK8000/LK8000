@@ -30,4 +30,3 @@ void TraceThread(const TCHAR *mes);
 #define SHOWTHREAD(arg)
 
 #endif
-

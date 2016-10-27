@@ -52,13 +52,13 @@ double AdjustAATTargets(double desired) {
           // scale to 0,1
 
           if (av>0.01) {
-            d = desired; 
+            d = desired;
 	    // 20080615 JMW
 	    // was (desired/av)*d;
-	    // now, we don't want it to be proportional 
+	    // now, we don't want it to be proportional
           } else {
             d = desired;
-          } 
+          }
           d = min(1.0, max(d, 0.0))*2.0-1.0;
           Task[i].AATTargetOffsetRadius = d;
 	}
@@ -67,4 +67,3 @@ double AdjustAATTargets(double desired) {
   UnlockTaskData();
   return av;
 }
-

@@ -179,7 +179,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 		default:
 			break;
 	}
-	LKevent=LKEVENT_NONE; 
+	LKevent=LKEVENT_NONE;
 
 	LKColor icolor; // 091229
 
@@ -313,15 +313,15 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 					_stprintf(Buffer,_T("??? %s\""),tpas);
 					break;
 			}
-        		LKWriteText(Surface, Buffer, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, icolor, false);
+			LKWriteText(Surface, Buffer, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, icolor, false);
 		} else {
 			LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle); // 091219
-        		LKWriteText(Surface, BufferValue, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+			LKWriteText(Surface, BufferValue, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 		}
 		if ( curtype == (IM_TOP+IM_TARGET) ) goto label_Target;
 	} else {
 		LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle); // 091219
-        	LKWriteText(Surface, BufferValue, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+		LKWriteText(Surface, BufferValue, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	}
 
 	if (curtype == IM_TRI) goto label_TRI;
@@ -543,7 +543,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_LD_CRUISE, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-			_tcscpy(BufferValue,_T("")); 
+			_tcscpy(BufferValue,_T(""));
             _tcscpy(BufferTitle,_T(""));
 			break;
 		case IM_AUX:
@@ -634,7 +634,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_CONTEST:
 			//showunit=LKFormatValue(LK_OLC_PLUS_PREDICTED_SCORE, false, BufferValue, BufferUnit, BufferTitle);
-			showunit=LKFormatValue(LK_OLC_FAI_SPEED, false, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_OLC_FAI_SPEED, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[9],&qrow[10],&qrow[8]);
 			break;
 		case IM_AUX:
@@ -666,7 +666,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_CONTEST:
 			//showunit=LKFormatValue(LK_OLC_LEAGUE_SCORE, false, BufferValue, BufferUnit, BufferTitle);
-			showunit=LKFormatValue(LK_OLC_LEAGUE_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_OLC_LEAGUE_SPEED, true, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(11);
@@ -696,7 +696,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_FIN_GR, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-			showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle);
 			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_AUX:
@@ -763,11 +763,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[9], &qcolumn[9],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_TASK:
-			showunit=LKFormatValue(LK_LKFIN_ETE, false, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_LKFIN_ETE, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[9], &qcolumn[9],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_CONTEST:
-			//showunit=LKFormatValue(LK_OLC_FAI_SPEED, false, BufferValue, BufferUnit, BufferTitle); 
+			//showunit=LKFormatValue(LK_OLC_FAI_SPEED, false, BufferValue, BufferUnit, BufferTitle);
 			showunit=LKFormatValue(LK_OLC_PLUS_PREDICTED_SCORE, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[12],&qrow[13],&qrow[11]);
 			break;
@@ -777,7 +777,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_TRF+IM_TOP:
-			showunit=LKFormatValue(LK_TARGET_EIAS, false, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_TARGET_EIAS, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		default:
@@ -798,11 +798,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[13], &qcolumn[13],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_TASK:
-			showunit=LKFormatValue(LK_SPEEDTASK_ACH, true, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_SPEEDTASK_ACH, true, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[13], &qcolumn[13],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_CONTEST:
-			//showunit=LKFormatValue(LK_OLC_LEAGUE_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
+			//showunit=LKFormatValue(LK_OLC_LEAGUE_SPEED, true, BufferValue, BufferUnit, BufferTitle);
 			showunit=LKFormatValue(LK_OLC_LEAGUE_SCORE, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[12],&qrow[13],&qrow[11]);
 			break;
@@ -829,12 +829,12 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_CRUISE:
 		case IM_TASK:
-			showunit=LKFormatValue(LK_MC, true, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_MC, true, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-			_tcscpy(BufferValue,_T("")); 
+			_tcscpy(BufferValue,_T(""));
             _tcscpy(BufferTitle,_T(""));
-			//showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
+			//showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(16);
@@ -842,7 +842,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
-			showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle);
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
@@ -924,7 +924,7 @@ label_TRI:
 	_tcscpy(BufferTitle, MsgToken(915)); // NOT FOR IFR USAGE
 	Surface.SelectObject(LK8PanelSmallFont);
 	LKWriteText(Surface,  BufferTitle, qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
-#endif // not in LKCOMPETITION 
+#endif // not in LKCOMPETITION
 	goto label_End; // End of TRI
 
 	// This is the HSI page
@@ -1049,7 +1049,7 @@ label_HSI:
 	goto label_End; // End of HSI
 
 	// Traffic Target page
-	
+
 label_Target:
         #ifdef DITHER
 	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],INVERTCOLORS?RGB_WHITE:RGB_BLACK);
@@ -1063,7 +1063,7 @@ label_Target:
 	showunit=false; // 091219
 
 	// left
-	
+
 	showunit=LKFormatValue(LK_TARGET_DIST, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(Surface, &showunit, BufferValue, Empty, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[3],&qrow[4],&qrow[2]);
 
@@ -1098,7 +1098,7 @@ label_End:
 
 
 
-void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle, 
+void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
 				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3) {
 
   static short unitrowoffset=0;
@@ -1170,7 +1170,7 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
 	LKWriteText(Surface, BufferValue, *columnvalue,*row1, WTMODE_NORMAL,WTALIGN_RIGHT, AMBERCOLOR, false);
 
   if (*showunit==true && !HideUnits) {
-       	Surface.SelectObject(LK8PanelUnitFont); // 091230
+	Surface.SelectObject(LK8PanelUnitFont); // 091230
         LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
   }
   Surface.SelectObject(LK8PanelSmallFont);
@@ -1181,5 +1181,3 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
   #endif
 
 }
-
-

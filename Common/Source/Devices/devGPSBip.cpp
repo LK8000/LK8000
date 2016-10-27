@@ -2,7 +2,7 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   devGPSBip.cpp
  * Author: Bruno de Lacheisserie
  *
@@ -15,7 +15,7 @@
 
 using std::placeholders::_1;
 
-static const 
+static const
 TCHAR szDeviceName[] = TEXT("GPSBip");
 
 static const TCHAR* DeviceNameList[] = {
@@ -56,8 +56,8 @@ BOOL Install(PDeviceDescriptor_t d){
       DeviceRegister[0].Installer(ItOut++); // Disabled
     }
   }
-  
-  
+
+
   _tcscpy(d->Name, szDeviceName);
   d->ParseNMEA = ParseNMEA;
   d->PutMacCready = NULL;
@@ -80,11 +80,11 @@ BOOL Install(PDeviceDescriptor_t d){
 
 BOOL GPSBipRegister(void) {
   return(devRegister(
-    szDeviceName, 
+    szDeviceName,
       (1l << dfGPS) |
       (1l << dfVario) |
       (1l << dfBaroAlt)
     ,
     Install
-  ));  
+  ));
 }

@@ -2,7 +2,7 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   filesystem.h
  * Author: Bruno de Lacheisserie
  *
@@ -32,7 +32,7 @@ namespace lk {
 
 
 		class directory_iterator_impl;
-		
+
         class directory_iterator {
         public:
             directory_iterator(const TCHAR* szPath);
@@ -60,10 +60,10 @@ namespace lk {
 
         // user directory ( ".../MyDocument/" on Windows, "/home/username/" on linux )
         bool getUserPath(TCHAR* szPath, size_t MaxSize);
-        
+
         // fix directory separator
         void fixPath(TCHAR* szPath);
-        
+
 
     }
 }
@@ -81,4 +81,3 @@ namespace lk {
 #undef SHGetSpecialFolderPath
 #endif
 #endif	/* FILESYSTEM_H */
-

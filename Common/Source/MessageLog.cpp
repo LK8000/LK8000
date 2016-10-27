@@ -72,7 +72,7 @@ void FailStore(const TCHAR *Str, ...)
 		fclose(stream);
 	}
 	initialised = true;
-  } 
+  }
   stream = _tfopen(szFileName,TEXT("ab+"));
   if (stream == NULL) {
 	StartupStore(_T("------ FailStore failed, cannot open <%s>%s"), szFileName, NEWLINE);
@@ -92,9 +92,9 @@ void FailStore(const TCHAR *Str, ...)
 	#endif
 #endif
 
-CheckFreeRam(),SNEWLINE); 
+CheckFreeRam(),SNEWLINE);
   fprintf(stream, "Message: %S%s", buf, SNEWLINE);
-  fprintf(stream, "GPSINFO: Latitude=%f Longitude=%f Altitude=%f Speed=%f %s", 
+  fprintf(stream, "GPSINFO: Latitude=%f Longitude=%f Altitude=%f Speed=%f %s",
 	GPS_INFO.Latitude, GPS_INFO.Longitude, GPS_INFO.Altitude, GPS_INFO.Speed, SNEWLINE);
 
   fclose(stream);
@@ -130,14 +130,14 @@ void StartupStore(const TCHAR *Str, ...)
   if (!initialised) {
 	LocalPath(szFileName, TEXT(LKF_RUNLOG));
 	initialised = true;
-  } 
+  }
 
   startupStoreFile = _tfopen(szFileName, TEXT("ab+"));
   if (startupStoreFile != NULL) {
     char sbuf[(MAX_PATH*2)+1]; // FIX 100205
-    
+
     int i = TCHAR2utf(buf, sbuf, sizeof(sbuf));
-    
+
     if (i > 0) {
       if (sbuf[i - 1] == 0x0a && (i == 1 || (i > 1 && sbuf[i-2] != 0x0d)))
         sprintf(sbuf + i - 1, SNEWLINE);
@@ -147,4 +147,3 @@ void StartupStore(const TCHAR *Str, ...)
   }
   UnlockStartupStore();
 }
-

@@ -86,7 +86,7 @@ void ResetFRecord_Internal(void)
       szLastFRecord[iFirst]=0;
 }
 void ResetFRecord(void)
-{ 
+{
   SetFRecordLastTime(0);
   ResetFRecord_Internal();
 }
@@ -216,7 +216,7 @@ void StopLogger(void) {
 
       MessageBoxX(
 		gettext(szMessage),
-	// LKTOKEN  _@M404_ = "Logger Error" 
+	// LKTOKEN  _@M404_ = "Logger Error"
 		MsgToken(404), mbOk);
       StartupStore(_T("%s") NEWLINE, szMessage);
       break;
@@ -226,7 +226,7 @@ void StopLogger(void) {
 
       MessageBoxX(
 		gettext(szMessage),
-	// LKTOKEN  _@M404_ = "Logger Error" 
+	// LKTOKEN  _@M404_ = "Logger Error"
 		MsgToken(404), mbOk);
       StartupStore(_T("%s") NEWLINE, szMessage);
       break;
@@ -237,7 +237,7 @@ void StopLogger(void) {
 
       MessageBoxX(
 		gettext(szMessage),
-	// LKTOKEN  _@M404_ = "Logger Error" 
+	// LKTOKEN  _@M404_ = "Logger Error"
 		MsgToken(404), mbOk);
       StartupStore(_T("%s") NEWLINE, szMessage);
       break;
@@ -247,7 +247,7 @@ void StopLogger(void) {
 
       MessageBoxX(
 		gettext(szMessage),
-	// LKTOKEN  _@M404_ = "Logger Error" 
+	// LKTOKEN  _@M404_ = "Logger Error"
 		MsgToken(404), mbOk);
       StartupStore(_T("%s") NEWLINE, szMessage);
       break;
@@ -263,7 +263,7 @@ void StopLogger(void) {
 // There is nothing we can do about it, in these few cases: we shall log a QNH altitude instead
 // of QNE altitude, which is what we have been doing up to v4 in any case. It cant be worst.
 // In all other cases, the pressure altitude will be saved, and out IGC logger replay is converting it
-// to the desired QNH altitude back. 
+// to the desired QNH altitude back.
 #if LOGFRECORD
 void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
                       double BaroAltitude, short Hour, short Minute, short Second,
@@ -370,7 +370,7 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
       LogPointToBuffer(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude, iHour, iMin, iSec);
       #endif
     }
-  } else if (NumLoggerBuffered && !GPS_INFO.NAVWarning) { 
+  } else if (NumLoggerBuffered && !GPS_INFO.NAVWarning) {
 
     #if LOGFRECORD
     LogFRecordToFile(LoggerBuffer[0].SatelliteIDs,  // write FRec before cached BRecs
@@ -391,7 +391,7 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
                      LoggerBuffer[i].Second);
     }
     NumLoggerBuffered = 0;
-  } 
+  }
   if (LoggerActive && !GPS_INFO.NAVWarning) {
     LogPointToFile(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude,
                    iHour, iMin, iSec);
@@ -438,10 +438,10 @@ bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second
 
   // only write F Record if it has changed since last time
   // check every 4.5 minutes to see if it's changed.  Transient changes are not tracked.
-  if (!bAlways 
+  if (!bAlways
         && strcmp(szFRecord + 7, szLastFRecord + 7) == 0
         && strlen(szFRecord) == strlen(szLastFRecord) )
-  { // constellation has not changed 
+  { // constellation has not changed
       if (iNumberSatellites >=3)
         bRetVal=true;  // if the last FRecord had 3+ sats, then return true
                       //  and this causes 5-minute counter to reset
@@ -462,7 +462,7 @@ bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second
                         // we keep looking for changed constellations
     }
     else
-    {  // IGCwrite failed 
+    {  // IGCwrite failed
       bRetVal = false;
     }
 
@@ -472,9 +472,9 @@ bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second
 }
 
 
-bool LogFRecord(int SatelliteIDs[], bool bAlways ) 
+bool LogFRecord(int SatelliteIDs[], bool bAlways )
 {
-  if (LoggerActive || bAlways) 
+  if (LoggerActive || bAlways)
     {
       return LogFRecordToFile(SatelliteIDs,
 			      GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second, bAlways);
@@ -547,7 +547,7 @@ void StartLogger()
 	lk::filesystem::deleteFile(szSLoggerFileName);
   }
 
-  
+
   for(i=1;i<99;i++)
     {
       // 2003-12-31-XXX-987-01.IGC
@@ -567,7 +567,7 @@ void StartLogger()
                  cAsset[1],
                  cAsset[2],
                  i);
- 
+
         _stprintf(szFLoggerFileNameRoot,
                  TEXT("%s%s%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
                  TEXT(""), // this creates it in root if MoveFile() fails
@@ -628,7 +628,7 @@ void LoggerHeader(void)
 {
   char datum[]= "HFDTM100GPSDATUM:WGS-84\r\n";
   char temp[100];
-  
+
   // Flight recorder ID number MUST go first..
 
   // Do one more check on %C because if one is 0 the string will not be closed by newline
@@ -663,7 +663,7 @@ void LoggerHeader(void)
   sprintf(temp,HFGIDGLIDERID, AircraftRego_Config);
   IGCWriteRecord(temp);
 
-  // 110117 TOCHECK: maybe a 8 char limit is needed. 
+  // 110117 TOCHECK: maybe a 8 char limit is needed.
   sprintf(temp,HFCCLCOMPETITIONCLASS, CompetitionClass_Config);
   IGCWriteRecord(temp);
 
@@ -688,16 +688,16 @@ void LoggerHeader(void)
 	#endif
   #else
 
-  #ifdef PPC2002 
-    	#ifndef LKCOMPETITION
+  #ifdef PPC2002
+	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s PPC2002\r\n", LKFORK);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC PPC2002\r\n", LKFORK);
 	#endif
   #endif
   // PNA is also PPC2003..
-  #ifdef PPC2003 
-    	#ifndef LKCOMPETITION
+  #ifdef PPC2003
+	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s PPC2003\r\n", LKFORK);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC PPC2003\r\n", LKFORK);
@@ -707,7 +707,7 @@ void LoggerHeader(void)
   #endif
 
   #ifdef __linux__
-    	#ifndef LKCOMPETITION
+	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s LINUX\r\n", LKFORK);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC LINUX\r\n", LKFORK);
@@ -715,14 +715,14 @@ void LoggerHeader(void)
   #endif
 // Kobo AFTER __linux__
   #ifdef KOBO
-    	#ifndef LKCOMPETITION
+	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s KOBO\r\n", LKFORK);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC KOBO\r\n", LKFORK);
 	#endif
   #endif
   #ifdef WINDOWSPC
-    	#ifndef LKCOMPETITION
+	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s WINDOWSPC\r\n", LKFORK);
 	#else
     sprintf(temp,"HFFTYFRTYPE:%sC WINDOWSPC\r\n", LKFORK);
@@ -796,8 +796,8 @@ void StartDeclaration(int ntp)
 	wname[8]='\0';
 	AddDeclaration(WayPointList[HomeWaypoint].Latitude, WayPointList[HomeWaypoint].Longitude, wname);
   } else
-  	IGCWriteRecord(start);
-                               
+	IGCWriteRecord(start);
+
 }
 
 
@@ -814,7 +814,7 @@ void EndDeclaration(void)
 	wname[8]='\0';
 	AddDeclaration(WayPointList[HomeWaypoint].Latitude, WayPointList[HomeWaypoint].Longitude, wname);
   } else
-  	IGCWriteRecord(start);
+	IGCWriteRecord(start);
 }
 
 void AddDeclaration(double Latitude, double Longitude, TCHAR *ID)
@@ -893,15 +893,15 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
   // and task declaration will fail. The solution is to let devices have a flag for "HaveFlarm".
   LKDoNotResetComms=true;
 
-  // LKTOKEN  _@M221_ = "Declare Task?" 
-  if (MessageBoxX(MsgToken(221), 
+  // LKTOKEN  _@M221_ = "Declare Task?"
+  if (MessageBoxX(MsgToken(221),
 	dev->Name, mbYesNo) == IdYes) {
 
 	const unsigned ERROR_BUFFER_LEN = 64;
 	TCHAR errorBuffer[ERROR_BUFFER_LEN] = { '\0' };
 
 	if (devDeclare(dev, decl, ERROR_BUFFER_LEN, errorBuffer)) {
-		// LKTOKEN  _@M686_ = "Task Declared!" 
+		// LKTOKEN  _@M686_ = "Task Declared!"
 		MessageBoxX(MsgToken(686),
 			dev->Name, mbOk);
 
@@ -912,17 +912,17 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 		TCHAR buffer[2*ERROR_BUFFER_LEN];
 
 		if(errorBuffer[0] == '\0') {
-			// LKTOKEN  _@M1410_ = "Unknown error" 
+			// LKTOKEN  _@M1410_ = "Unknown error"
 			_tcsncpy(errorBuffer, MsgToken(1410), ERROR_BUFFER_LEN);
 		} else {
 			// do it just to be sure
 			errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';
 		}
 
-		// LKTOKEN  _@M265_ = "Error! Task NOT declared!" 
+		// LKTOKEN  _@M265_ = "Error! Task NOT declared!"
 		_sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), MsgToken(265), errorBuffer);
 		MessageBoxX(buffer, dev->Name, mbOk);
-      
+
 		DeclaredToDevice = false;
 	}
   }
@@ -949,7 +949,7 @@ void LoggerDeviceDeclare() {
   _tcscpy(Decl.AircraftRego,AircraftRego_Config);	// max 32
   _tcscpy(Decl.CompetitionClass,CompetitionClass_Config);   //
   _tcscpy(Decl.CompetitionID,CompetitionID_Config);	// max 32
-  
+
   for (i = 0; i < MAXTASKPOINTS; i++) {
     if (Task[i].Index == -1)
       break;
@@ -966,7 +966,7 @@ void LoggerDeviceDeclare() {
     found_logger = true;
 
   if (!found_logger) {
-	// LKTOKEN  _@M474_ = "No logger connected" 
+	// LKTOKEN  _@M474_ = "No logger connected"
     MessageBoxX(MsgToken(474),
 		devB()->Name, mbOk);
     DeclaredToDevice = true; // testing only
@@ -980,9 +980,9 @@ bool CheckDeclaration(void) {
     return true;
   } else {
     if(MessageBoxX(
-	// LKTOKEN  _@M492_ = "OK to invalidate declaration?" 
+	// LKTOKEN  _@M492_ = "OK to invalidate declaration?"
 		   MsgToken(492),
-	// LKTOKEN  _@M694_ = "Task declared" 
+	// LKTOKEN  _@M694_ = "Task declared"
 		   MsgToken(694),
 		   mbYesNo) == IdYes){
       DeclaredToDevice = false;
@@ -1151,7 +1151,7 @@ bool LoggerClearFreeSpace(void) {
 }
 
 bool IsValidIGCChar(char c) //returns 1 if valid char for IGC files
-{//                                 
+{//
 
   if ( c >=0x20  && c <= 0x7E &&
        c != 0x0D &&
@@ -1232,7 +1232,7 @@ int RunSignature() {
 //
 // Paolo+Durval: feed external headers to LK for PNAdump software
 //
-#define MAXHLINE 100  
+#define MAXHLINE 100
 #define EXTHFILE	"COMPE.CNF"
 //#define DEBUGHFILE	1
 
@@ -1262,15 +1262,15 @@ void AdditionalHeaders(void) {
     char tmpString[MAXHLINE + 1];
     char tmps[MAXHLINE + 1];
     tmpString[MAXHLINE] = '\0';
-    
+
     while(size_t nbRead = fread(tmpString, sizeof(tmpString[0]), array_size(tmpString) - 1U, stream)) {
         tmpString[nbRead] = '\0';
         char* pTmp = strpbrk(tmpString, "\r\n");
         while(pTmp && (((*pTmp) == '\r') || ((*pTmp) == '\n'))) {
             (*pTmp++) = '\0';
         }
-        fseek(stream, -1 * (&tmpString[nbRead] - pTmp) ,SEEK_CUR); 
-        
+        fseek(stream, -1 * (&tmpString[nbRead] - pTmp) ,SEEK_CUR);
+
         size_t len = strlen(tmpString);
         if ((len < 2) || (tmpString[0] != '$')) {
             continue;

@@ -34,7 +34,7 @@ void FillDataOptions()
 {
     // cleanup array, madatory for avoid to have pointer to freed string.
     std::fill(std::begin(Data_Options), std::end(Data_Options), DATAOPTIONS{});
-    
+
 	// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt"
 	SetDataOption(0, ugAltitude,		TEXT("_@M1001_"), TEXT("_@M1002_"));
 	// LKTOKEN  _@M1003_ = "Altitude AGL", _@M1004_ = "HAGL"
@@ -226,7 +226,7 @@ void FillDataOptions()
 	SetDataOption(92, ugNone,           TEXT("_@M1459_"), TEXT("_@M1460_"));
 	// Distance FAI 3 TPs
 	SetDataOption(93, ugNone,           TEXT("_@M1461_"), TEXT("_@M1462_"));
-	
+
 	////////  PREDICTED ////////
 	// Distance OLC
 	SetDataOption(94, ugNone,           TEXT("_@M1463_"), TEXT("_@M1464_"));
@@ -234,7 +234,7 @@ void FillDataOptions()
 	SetDataOption(95, ugNone,           TEXT("_@M1465_"), TEXT("_@M1466_"));
 	// Distance FAI 3 TPs
 	SetDataOption(96, ugNone,           TEXT("_@M1469_"), TEXT("_@M1470_"));
-	
+
 	// Speed OLC
 	SetDataOption(97, ugNone,           TEXT("_@M1471_"), TEXT("_@M1472_"));
 	// Speed FAI triangle
@@ -309,7 +309,7 @@ void FillDataOptions()
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
     static_assert(134 < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
 
-    
+
     // Fill all null string pointer with empty string, avoid to check all time is used.
     for(auto tag : Data_Options) {
         if(!tag.Description) {

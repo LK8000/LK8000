@@ -18,7 +18,7 @@
 #include "Dialogs.h"
 #include "resource.h"
 
-#ifdef RADIO_ACTIVE    
+#ifdef RADIO_ACTIVE
 //extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
@@ -30,7 +30,7 @@ static WndButton *wpnewDual       = NULL;
 static WndButton  *wpnewVolDwn  = NULL;
 static WndButton  *wpnewVolUp  = NULL;
 static WndButton  *wpnewExChg  = NULL;
-static WndButton *wpnewVol = NULL; 
+static WndButton *wpnewVol = NULL;
 //static WndProperty *wpVolume;
 
 static int ActiveRadioIndex=-1;
@@ -82,7 +82,7 @@ int Frac = 	(int)(Freq*1000.0+0.05) - 100*((int) (Freq *10.0+0.05));
         break;
       }
 
-          
+
   return Valid;
 }
 
@@ -113,8 +113,8 @@ _stprintf(szFreq,  _T("%7.3f"),Freq);
 	      if(fabs(Freq -   StrToDouble(WayPointList[i].Freq,NULL)) < 0.001)
 	        if(fDist < minDist)
 	        {
-	    	  minDist = fDist;
-	    	  minIdx =i;
+		  minDist = fDist;
+		  minIdx =i;
 	        }
 	    }
 	}
@@ -246,13 +246,13 @@ TCHAR Name[250];
           wpnewActive->SetCaption(Name);
         _stprintf(Name,_T("%7.3f"),RadioPara.ActiveFrequency);
         if(wpnewActiveFreq)
-          wpnewActiveFreq->SetCaption(Name);        
+          wpnewActiveFreq->SetCaption(Name);
     }
 
 
     if((ValidWayPoint(PassiveRadioIndex)) && 0)
     {
-        if( PassiveRadioIndex > RESWP_END )        
+        if( PassiveRadioIndex > RESWP_END )
         {
           _stprintf(Name,_T("%s"),WayPointList[PassiveRadioIndex].Name);
           if(wpnewPassive)
@@ -269,7 +269,7 @@ TCHAR Name[250];
           wpnewPassive->SetCaption(Name);
         _stprintf(Name,_T("%7.3f"),RadioPara.PassiveFrequency);
         if(wpnewPassiveFreq)
-          wpnewPassiveFreq->SetCaption(Name);        
+          wpnewPassiveFreq->SetCaption(Name);
     }
 
 
@@ -316,7 +316,7 @@ static void OnActiveButton(WndButton* pWnd){
       if(!ValidFrequency(Frequency))
       {
    // 	DoStatusMessage(_T("No valid Frequency!") );
-    	return;
+	return;
       }
       devPutFreqActive(devA(), Frequency, WayPointList[res].Name);
       devPutFreqActive(devB(), Frequency, WayPointList[res].Name);
@@ -338,7 +338,7 @@ static void OnPassiveButton(WndButton* pWnd){
 //   LKASSERT(res>=0);
 //   LKASSERT(ValidWayPointFast(res));
    if(res > RESWP_END )
-     if(ValidWayPoint(res)) 
+     if(ValidWayPoint(res))
     {
       double Frequency = StrToDouble(WayPointList[res].Freq,NULL);
       if(Frequency < 100.0)
@@ -367,21 +367,21 @@ _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
     dlgNumEntryShowModal(szFreq,8,false);
     double Frequency = StrToDouble(szFreq,NULL);
     while(Frequency > 1000.0)
- 	   Frequency /=10;
+	   Frequency /=10;
     if(ValidFrequency(Frequency))
     {
       _stprintf( RadioPara.ActiveName,_T(" "));
       int iIdx = SearchStation(Frequency);
       if(iIdx != 0)
       {
-    	_stprintf(Name,_T("%s"),WayPointList[iIdx].Name);
-    	_stprintf( RadioPara.ActiveName,_T("%s"),WayPointList[iIdx].Name);
-    	ActiveRadioIndex = iIdx;
+	_stprintf(Name,_T("%s"),WayPointList[iIdx].Name);
+	_stprintf( RadioPara.ActiveName,_T("%s"),WayPointList[iIdx].Name);
+	ActiveRadioIndex = iIdx;
 
       }
       devPutFreqActive(devA(), Frequency,Name);
       devPutFreqActive(devB(), Frequency,Name);
- 	  RadioPara.ActiveFrequency = Frequency;
+	  RadioPara.ActiveFrequency = Frequency;
 
       RadioPara.Changed =TRUE;
  //	 OnRemoteUpdate();
@@ -406,8 +406,8 @@ TCHAR	Name[20] = _T("  ???   ");
       int iIdx = SearchStation(Frequency);
       if(iIdx != 0)
       {
-    	_stprintf(Name,_T("%s"),WayPointList[iIdx].Name);
-    	_stprintf( RadioPara.PassiveName,_T("%s"),WayPointList[iIdx].Name);
+	_stprintf(Name,_T("%s"),WayPointList[iIdx].Name);
+	_stprintf( RadioPara.PassiveName,_T("%s"),WayPointList[iIdx].Name);
 	PassiveRadioIndex = iIdx;
       }
      devPutFreqStandby(devA(), Frequency,Name);
@@ -446,7 +446,7 @@ double fTmp;
 static void SendVolSq(void){
   if (HoldOff ==0)
   {
-  
+
   }
 }
 
@@ -500,7 +500,7 @@ static void OnVolDownButton(WndButton* pWnd){
   if(VolMode == VOL)
   {
 	if(lVolume > 1)
-  	  lVolume -= 1;
+	  lVolume -= 1;
 	if(lVolume < 1)
 	  lVolume = 1;
 	if (HoldOff ==0)
@@ -548,7 +548,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
     HoldOff--;
   else
     OnRemoteUpdate();
-  
+
   return 0;
 }
 
@@ -556,7 +556,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
 static CallBackTableEntry_t CallBackTable[]={
 
   ClickNotifyCallbackEntry(OnDualButton),
-  ClickNotifyCallbackEntry(OnActiveButton),  
+  ClickNotifyCallbackEntry(OnActiveButton),
   ClickNotifyCallbackEntry(OnActiveFreq),
   ClickNotifyCallbackEntry(OnPassiveFreq),
   ClickNotifyCallbackEntry(OnPassiveButton),
@@ -575,44 +575,44 @@ void dlgRadioSettingsShowModal(void){
 
     wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOSETTINGS );
   if (!wf) return;
-  
+
   VolMode = VOL; // start with volume
-  
+
   if (wf) {
     wpnewActive = (WndButton*)wf->FindByName(TEXT("cmdActive"));
     LKASSERT( wpnewActive !=NULL);
     wpnewActive->SetOnClickNotify(OnActiveButton);
 
     wpnewActiveFreq = (WndButton*)wf->FindByName(TEXT("cmdActiveFreq"));
-    LKASSERT( wpnewActiveFreq !=NULL);    
+    LKASSERT( wpnewActiveFreq !=NULL);
     wpnewActiveFreq->SetOnClickNotify(OnActiveFreq);
 
     wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdPassive"));
-    LKASSERT(   wpnewPassive   !=NULL)  
+    LKASSERT(   wpnewPassive   !=NULL)
     wpnewPassive->SetOnClickNotify(OnPassiveButton);
 
-    wpnewPassiveFreq = (WndButton*)wf->FindByName(TEXT("cmdPassiveFreq"));    
-    LKASSERT(   wpnewPassiveFreq   !=NULL)  
+    wpnewPassiveFreq = (WndButton*)wf->FindByName(TEXT("cmdPassiveFreq"));
+    LKASSERT(   wpnewPassiveFreq   !=NULL)
     wpnewPassiveFreq->SetOnClickNotify(OnPassiveFreq);
 
    wpnewVol  = (WndButton*)wf->FindByName(TEXT("cmdVol"));
-    LKASSERT(   wpnewVol   !=NULL)  
+    LKASSERT(   wpnewVol   !=NULL)
     wpnewVol->SetOnClickNotify(OnMuteButton);
- 
+
    wpnewDual  = (WndButton*)wf->FindByName(TEXT("cmdDual"));
-   LKASSERT(   wpnewDual   !=NULL)  
+   LKASSERT(   wpnewDual   !=NULL)
    wpnewDual->SetOnClickNotify(OnDualButton);
 
    wpnewVolDwn = ((WndButton *)wf->FindByName(TEXT("cmdVolDown")));
-   LKASSERT(   wpnewVolDwn   !=NULL)  
+   LKASSERT(   wpnewVolDwn   !=NULL)
    wpnewVolDwn->SetOnClickNotify(OnVolDownButton);
-     
+
    wpnewVolUp =     ((WndButton *)wf->FindByName(TEXT("cmdVolUp")));
-   LKASSERT(   wpnewVolUp   !=NULL)  
+   LKASSERT(   wpnewVolUp   !=NULL)
    wpnewVolUp->SetOnClickNotify(OnVolUpButton);
 
    wpnewExChg  =        ((WndButton *)wf->FindByName(TEXT("cmdXchange")));
-   LKASSERT(   wpnewExChg    !=NULL)  
+   LKASSERT(   wpnewExChg    !=NULL)
    wpnewExChg ->SetOnClickNotify(OnExchange);
 
 //    wf->SetTimerNotify(OnTimerNotify);
@@ -631,4 +631,4 @@ void dlgRadioSettingsShowModal(void){
   return ;
 }
 
-#endif  // RADIO_ACTIVE        
+#endif  // RADIO_ACTIVE

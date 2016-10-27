@@ -38,7 +38,7 @@ void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
   switch(LKevent) {
 	//
 	// USABLE EVENTS
-	// 
+	//
 	case LKEVENT_NEWRUN:
 		// Upon entering a new multimap, Active is forced reset. It should not be necessary
 		if (MapSpaceMode==MSM_VISUALGLIDE) {
@@ -84,7 +84,7 @@ void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
 	  {
         /*
          * we can't show dialog from Draw thread
-         * instead, new event is queued, dialog will be popup by main thread 
+         * instead, new event is queued, dialog will be popup by main thread
          */
         InputEvents::processGlideComputer(GCE_WAYPOINT_DETAILS_SCREEN);
 
@@ -113,4 +113,3 @@ void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
  // LKevent=LKEVENT_NONE;
 
 }
-

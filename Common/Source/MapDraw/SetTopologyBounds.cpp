@@ -23,9 +23,9 @@ bool RectangleIsInside(rectObj r_exterior, rectObj r_interior) {
   if ((r_interior.minx >= r_exterior.minx)&&
       (r_interior.maxx <= r_exterior.maxx)&&
       (r_interior.miny >= r_exterior.miny)&&
-      (r_interior.maxy <= r_exterior.maxy))    
+      (r_interior.maxy <= r_exterior.maxy))
     return true;
-  else 
+  else
     return false;
 }
 
@@ -38,7 +38,7 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
   bool unchanged=false;
   static double oldmapscale=0;
   static short runnext=0;
-  
+
   rectObj bounds_screen = MapWindow::CalculateScreenBounds(1.0, rcin, _Proj);
 
   if (!force) {
@@ -63,9 +63,9 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
     #endif
     recompute = true;
   }
-  
+
   // also trigger if the scale has changed heaps
-  double range_real = max((bounds_screen.maxx-bounds_screen.minx), 
+  double range_real = max((bounds_screen.maxx-bounds_screen.minx),
 			  (bounds_screen.maxy-bounds_screen.miny));
   double range = max(MINRANGE,range_real);
 
@@ -96,12 +96,12 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
 
     bounds_active = MapWindow::CalculateScreenBounds(scale, rcin, _Proj);
 
-    range_active = max((bounds_active.maxx-bounds_active.minx), 
+    range_active = max((bounds_active.maxx-bounds_active.minx),
 		       (bounds_active.maxy-bounds_active.miny));
-    
+
     for (int z=0; z<MAXTOPOLOGY; z++) {
       if (TopoStore[z]) {
-	TopoStore[z]->triggerUpdateCache=true;          
+	TopoStore[z]->triggerUpdateCache=true;
       }
     }
     #if USETOPOMARKS
@@ -136,7 +136,7 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
 		runnext=NUMRUNS;
   }
 
-  
+
   #if DEBUG_STB
   StartupStore(_T("------ Run full update --- \n"));
   #endif
@@ -144,18 +144,18 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
   // check if things have come into or out of scale limit
   for (int z=0; z<MAXTOPOLOGY; z++) {
     if (TopoStore[z]) {
-      TopoStore[z]->TriggerIfScaleNowVisible();          
+      TopoStore[z]->TriggerIfScaleNowVisible();
     }
   }
 
   // ok, now update the caches
-  #if USETOPOMARKS 
+  #if USETOPOMARKS
   if (topo_marks) {
     topo_marks->updateCache(bounds_active);
   }
   #endif
 
-    // check if any needs to have cache updates because wasnt 
+    // check if any needs to have cache updates because wasnt
     // visible previously when bounds moved
     bool sneaked = false;
     bool rta;
@@ -178,5 +178,3 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
     DebugStore("%d # shapes\n", total_shapes_visible);
 #endif
 }
-
-

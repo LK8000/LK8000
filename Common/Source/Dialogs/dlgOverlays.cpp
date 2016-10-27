@@ -224,10 +224,10 @@ void dlgOverlaysShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
   if (wp) Overlay_TopLeft = (wp->GetDataField()->GetAsInteger());
- 
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
   if (wp) Overlay_TopMid = (wp->GetDataField()->GetAsInteger());
- 
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
   if (wp) Overlay_TopRight = (wp->GetDataField()->GetAsInteger());
 
@@ -248,10 +248,10 @@ void dlgOverlaysShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
   if (wp) Overlay_RightTop = (wp->GetDataField()->GetAsInteger());
- 
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
   if (wp) Overlay_RightMid = (wp->GetDataField()->GetAsInteger());
- 
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
   if (wp) Overlay_RightBottom = (wp->GetDataField()->GetAsInteger());
 
@@ -259,4 +259,3 @@ void dlgOverlaysShowModal(void){
   wf = NULL;
 
 }
-

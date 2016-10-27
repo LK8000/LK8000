@@ -8,4 +8,3 @@ BOOL pgInstall(PDeviceDescriptor_t d);
 BOOL pgRegister(void);
 
 #endif
-

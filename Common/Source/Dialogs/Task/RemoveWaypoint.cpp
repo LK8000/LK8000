@@ -21,11 +21,11 @@ void RemoveWaypoint(int index) {
 
   if (!CheckDeclaration())
     return;
-  
+
   if (ActiveTaskPoint<0) {
     return; // No waypoint to remove
   }
-  
+
   // Check to see whether selected WP is actually
   // in the task list.
   // If not, we'll ask the user if they want to remove
@@ -35,7 +35,7 @@ void RemoveWaypoint(int index) {
   // active WP.
   // If they're all before the active WP then just remove
   // the nearest to the active WP
-  
+
   LockTaskData();
   TaskModified = true;
   TargetModified = true;
@@ -45,30 +45,30 @@ void RemoveWaypoint(int index) {
   while ((i < MAXTASKPOINTS) && (Task[i].Index != index)) {
     ++i;
   }
-  
+
   if (i < MAXTASKPOINTS) {
     // Found WP, so remove it
     RemoveTaskPoint(i);
-    
+
     if (Task[ActiveTaskPoint].Index == -1) {
       // We've just removed the last task point and it was
       // active at the time
       ActiveTaskPoint--;
     }
-    
+
   } else {
     // Didn't find WP, so search backwards
-    
+
     i = ActiveTaskPoint;
     do {
       --i;
     } while (i >= 0 && Task[i].Index != index);
-    
+
     if (i >= 0) {
       // Found WP, so remove it
       RemoveTaskPoint(i);
       ActiveTaskPoint--;
-      
+
     } else {
       // WP not found, so ask user if they want to
       // remove the active WP
@@ -76,18 +76,18 @@ void RemoveWaypoint(int index) {
 
 	TCHAR tlkbuf[100];
 	_stprintf(tlkbuf,_T("%s\n%s"),
-	// LKTOKEN  _@M169_ = "Chosen Waypoint not in current task." 
+	// LKTOKEN  _@M169_ = "Chosen Waypoint not in current task."
         MsgToken(169),
-	// LKTOKEN  _@M551_ = "Remove active Waypoint?" 
+	// LKTOKEN  _@M551_ = "Remove active Waypoint?"
 	MsgToken(551));
 
       int ret = MessageBoxX(
         tlkbuf,
-	// LKTOKEN  _@M550_ = "Remove Waypoint" 
+	// LKTOKEN  _@M550_ = "Remove Waypoint"
         MsgToken(550),
         mbYesNo);
       LockTaskData();
-      
+
       if (ret == IdYes) {
         RemoveTaskPoint(ActiveTaskPoint);
         if (Task[ActiveTaskPoint].Index == -1) {
@@ -102,4 +102,3 @@ void RemoveWaypoint(int index) {
   UnlockTaskData();
 
 }
-

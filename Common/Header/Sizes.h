@@ -60,7 +60,7 @@
 #endif
 
 // Size of array for ias values AverageClimbRate and AverageClimbRateN calculations
-#define MAXAVERAGECLIMBRATESIZE  200 
+#define MAXAVERAGECLIMBRATESIZE  200
 
 // #define FLARM_MAX_TRAFFIC 15
 #define MAXSATELLITES 12
@@ -73,7 +73,7 @@
 #define MAX_LOADSTRING 100
 #define MAX_ASSETIDSTRING	10
 
-#define LONGTRAILSIZE 600 
+#define LONGTRAILSIZE 600
 // 1000 points at 3.6 seconds average = one hour
 #define TRAILSIZE 1000
 // short trail is 10 minutes approx
@@ -130,7 +130,7 @@
 // timeout in quarter seconds of infobox focus
 #define FOCUSTIMEOUTMAX 24*4
 
-// timeout in quarter seconds of menu button 
+// timeout in quarter seconds of menu button
 #define MENUTIMEOUTMAX 8*4
 
 // timeout of display/battery mode in quarter seconds
@@ -143,7 +143,7 @@
 #ifdef HAVE_HATCHED_BRUSH
 #define NUMAIRSPACEBRUSHES 8
 #else
-#define NUMAIRSPACEBRUSHES NUMAIRSPACECOLORS 
+#define NUMAIRSPACEBRUSHES NUMAIRSPACECOLORS
 #endif
 
 #define NUMBUTTONLABELS 16

@@ -4,7 +4,7 @@
    unsigned C9X typedefs. The ISO C 9X: 7.18 Integer types file is stdint.h
  */
 
-#include <zzip/conf.h> 
+#include <zzip/conf.h>
 
 /* enforce use of ifdef'd C9X entries in system headers */
 #define __USE_ANSI 1
@@ -43,4 +43,3 @@ typedef _zzip___int64 int64_t;
 #endif
 
 #endif /*_ZZIP_STDINT_H*/
-
