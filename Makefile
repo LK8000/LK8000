@@ -1419,14 +1419,6 @@ ifeq ($(TARGET),LINUX)
 install : all
 	$(Q)install -p -m 0755 -d ~/LK8000/_System/_Bitmaps 
 	$(Q)install -p -m 0755 -d ~/LK8000/_System/_Sounds
-	$(Q)install -p -m 0755 -d ~/LK8000/_Airspaces 
-	$(Q)install -p -m 0755 -d ~/LK8000/_Configuration 
-	$(Q)install -p -m 0755 -d ~/LK8000/_Language 
-	$(Q)install -p -m 0755 -d ~/LK8000/_Logger 
-	$(Q)install -p -m 0755 -d ~/LK8000/_Maps
-	$(Q)install -p -m 0755 -d ~/LK8000/_Polars 
-	$(Q)install -p -m 0755 -d ~/LK8000/_Tasks
-	$(Q)install -p -m 0755 -d ~/LK8000/_Waypoints
 	@$(NQ)echo "  install $(OUTPUTS)"
 	$(Q)install -p -m 0755 $(OUTPUTS) ~/LK8000
 	@$(NQ)echo "  install _System"
@@ -1435,16 +1427,38 @@ install : all
 	$(Q)install -p -m 0644 $(BITMAP_FILES) ~/LK8000/_System/_Bitmaps
 	@$(NQ)echo "  install _System/_Sounds"
 	$(Q)install -p -m 0644 $(SOUND_FILES) ~/LK8000/_System/_Sounds
-	@$(NQ)echo "  install _Polars"
-	$(Q)install -p -m 0644 $(POLAR_FILES) ~/LK8000/_Polars
-	@$(NQ)echo "  install _Language"
-	$(Q)install -p -m 0644 $(LANGUAGE_FILES) ~/LK8000/_Language
-	@$(NQ)echo "  install _Configuration"
-	$(Q)install -p -m 0644 $(CONFIG_FILES) ~/LK8000/_Configuration
-	@$(NQ)echo "  install _Waypoints"
-	$(Q)install -p -m 0644 $(WAYPOINT_FILES) ~/LK8000/_Waypoints
 
+	@$(NQ)echo "  install Common files"
+	$(call build_distrib_common, $(HOME))
 endif	
+
+ifneq ($(TARGET),KOBO)
+distrib : $(OUTPUTS) $(SYSTEM_FILES) $(BITMAP_FILES) $(SOUND_FILES) \
+	    $(POLAR_FILES) $(LANGUAGE_FILES) $(CONFIG_FILES) $(WAYPOINT_FILES)
+	
+	$(Q)rm -rf Distrib/$(TARGET)
+	$(Q)rm -rf $(TARGET)-install.zip
+	
+	$(Q)install -p -m 0755 -d Distrib/$(TARGET)/LK8000/_System/_Bitmaps 
+	$(Q)install -p -m 0755 -d Distrib/$(TARGET)/LK8000/_System/_Sounds
+	@$(NQ)echo "  install $(OUTPUTS)"
+	$(Q)install -p -m 0755 $(OUTPUTS) Distrib/$(TARGET)/LK8000
+	@$(NQ)echo "  install _System"
+	$(Q)install -p -m 0644 $(SYSTEM_FILES) Distrib/$(TARGET)/LK8000/_System
+	@$(NQ)echo "  install _System/_Bitmaps"
+	$(Q)install -p -m 0644 $(BITMAP_FILES) Distrib/$(TARGET)/LK8000/_System/_Bitmaps
+	@$(NQ)echo "  install _System/_Sounds"
+	$(Q)install -p -m 0644 $(SOUND_FILES) Distrib/$(TARGET)/LK8000/_System/_Sounds
+
+	@$(NQ)echo "  install Common files"
+	$(call build_distrib_common, Distrib/$(TARGET))
+
+	@$(NQ)echo   Zip:     Distrib/$(TARGET)/Distrib-$(TARGET).zip
+	$(Q)cd Distrib/$(TARGET) && zip -qr $(TARGET)-install.zip LK8000
+	$(Q)mv Distrib/$(TARGET)/$(TARGET)-install.zip .
+	
+endif
+
 
 #
 # Useful debugging targets - make preprocessed versions of the source
@@ -1545,6 +1559,7 @@ $(BIN)/%.min.rc: $(SRC)/%.rc $(patsubst Common/Data/Dialogs/%.xml,$(BIN)/Data/Di
 
 $(BIN)/Data/Dialogs/%.min.xml: Common/Data/Dialogs/%.xml
 	@$(NQ)echo "  minimize $@"
+	$(Q)$(MKDIR) $(dir $@)
 	$(Q)xsltproc --output $@ build/dialogtemplate-$(DLG-ENCODING).xsl $<
 
 $(MASKED_PNG) : $(patsubst $(PNG_TARGET)/%.PNG, $(BITMAP_DIR)/%.BMP, $@)

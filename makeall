@@ -2,11 +2,11 @@
 start=`date`
 make clean
 #make -j 4 TARGET=PPC2002
-make -j 4 TARGET=PPC2003
-make -j 4 TARGET=PNA
-make -j 4 TARGET=PC
-make -j 4 TARGET=LINUX
-make -j 4 TARGET=KOBO
+make -j4 TARGET=PPC2003 distrib
+make -j4 TARGET=PNA distrib
+make -j4 TARGET=PC distrib
+make -j4 TARGET=LINUX
+make -j4 TARGET=KOBO
 #make -j 4 TARGET=PI PI=$HOME/x-tools/raspberrypi-rootfs
 
 echo "DONE -----------"

@@ -59,7 +59,8 @@ KOBO_KERNEL = \
  $(patsubst kobo/kernel/%, LK8000/kobo/%, $(KOBO_KERNEL_SOURCES))
 
 
-define build-kobofs
+define build_distrib_kobo
+
 $(Q)rm -rf $(BIN)/$(1)/KoboRoot
 
 $(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/drivers	
@@ -79,24 +80,17 @@ $(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/opt/LK8000/lib
 $(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/opt/LK8000/lib/kernel
 $(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/opt/LK8000/share/fonts
 $(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/opt/LK8000/share/_System/_Bitmaps
-$(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Airspaces
-$(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Configuration
-$(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Language
-$(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Logger
-$(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Maps
-$(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Polars
-$(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Tasks
-$(Q)install -m 0755 -d  $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Waypoints
+
 $(Q)install -m 0644 kobo/inittab $(BIN)/$(1)/KoboRoot/etc
 $(Q)install -m 0755 $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) kobo/rcS $(BIN)/$(1)/KoboRoot/opt/LK8000/bin
 $(Q)install --strip --strip-program=$(STRIP) -m 0755 $(KOBO_SYS_LIB_PATHS) $(BIN)/$(1)/KoboRoot/opt/LK8000/lib
+
 $(Q)install -m 0644 $(FONTS_FILES) $(BIN)/$(1)/KoboRoot/opt/LK8000/share/fonts
 $(Q)install -m 0644 $(SYSTEM_FILES) $(BIN)/$(1)/KoboRoot/opt/LK8000/share/_System
 $(Q)install -m 0644 $(BITMAP_FILES) $(BIN)/$(1)/KoboRoot/opt/LK8000/share/_System/_Bitmaps
-$(Q)install -m 0644 $(POLAR_FILES) $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Polars
-$(Q)install -m 0644 $(LANGUAGE_FILES) $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Language
-$(Q)install -m 0644 $(CONFIG_FILES) $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Configuration
-$(Q)install -m 0644 $(WAYPOINT_FILES) $(BIN)/$(1)/KoboRoot/mnt/onboard/LK8000/_Waypoints
+
+$(call build_distrib_common, $(BIN)/$(1)/KoboRoot/mnt/onboard)
+
 endef
 
 
@@ -121,7 +115,7 @@ $(BIN)/std/.kobo/KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN)
 	$(CONFIG_FILES)  kobo/inittab kobo/rcS
 	@$(NQ)echo "  TAR     $@"
 	
-	$(call build-kobofs,std)
+	$(call build_distrib_kobo,std)
 	$(Q)install -m 0755 -d  $(BIN)/std/.kobo
 	$(Q)fakeroot tar czfC $@ $(BIN)/std/KoboRoot .
 
@@ -131,7 +125,7 @@ $(BIN)/otg/.kobo/KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN)
 	$(CONFIG_FILES)  kobo/inittab kobo/rcS kobo/60-persistent-serial.rules $(KOBO_KERNEL_SOURCES)
 	@$(NQ)echo "  TAR     $@"
 	
-	$(call build-kobofs,otg)
+	$(call build_distrib_kobo,otg)
 
 	$(Q)install -m 0755 -d  $(BIN)/otg/KoboRoot/lib/udev/rules.d
 	$(Q)install -m 0644 kobo/60-persistent-serial.rules $(BIN)/otg/KoboRoot/lib/udev/rules.d
