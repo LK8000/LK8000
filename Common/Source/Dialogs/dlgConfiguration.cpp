@@ -1215,7 +1215,8 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
             if(It != COMMPort.end()) {
                 dfe->Set((unsigned)std::distance(COMMPort.begin(), It));
             } else {
-                dfe->Set(0);
+                dfe->addEnumText(szPort);
+                dfe->Set((unsigned)COMMPort.size());
             }
         }
         wp->RefreshDisplay();
