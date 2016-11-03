@@ -738,7 +738,6 @@ private:
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
     bool mMouseDown;
 
-    PeriodClock LastMouseMoveTime;
 };
 
 class WndOwnerDrawFrame:public WndFrame{

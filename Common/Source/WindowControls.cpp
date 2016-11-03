@@ -2886,27 +2886,17 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect) {
 
 bool WndListFrame::OnMouseMove(const POINT& Pos) {
 
-  if ( LastMouseMoveTime.Check(0) )
-  {
-    if (mMouseDown && PtInRect(&rcScrollBar, Pos))
-    {
-      int iScrollBarTop = max(1, (int)Pos.y - mMouseScrollBarYOffset);
+  if (mMouseDown) {
 
-      int iScrollIndex = GetScrollIndexFromScrollBarTop(iScrollBarTop);
+    const int iScrollBarTop = max(1, (int)Pos.y - mMouseScrollBarYOffset);
+    const int iScrollIndex = GetScrollIndexFromScrollBarTop(iScrollBarTop);
 
-      if(iScrollIndex !=mListInfo.ScrollIndex)
-      {
-        int iScrollAmount = iScrollIndex - mListInfo.ScrollIndex;
+    if(iScrollIndex !=mListInfo.ScrollIndex) {
+        const int iScrollAmount = iScrollIndex - mListInfo.ScrollIndex;
         mListInfo.ScrollIndex = mListInfo.ScrollIndex + iScrollAmount;
         Redraw();
-      }
     }
-    else //not in scrollbar
-    {
-      mMouseDown = false; // force re-click of scroll bar
-    }
-    LastMouseMoveTime.Update();
-  } // Tickcount
+  }
   return false;
 }
 
