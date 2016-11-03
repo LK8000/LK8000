@@ -46,12 +46,12 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     ./bjam toolset=gcc target-os=linux variant=release link=shared runtime-link=shared --prefix=/opt/kobo/arm-unknown-linux-gnueabi --user-config=user-config.jam install
 cd ..
 
-# install libpng ( 1.6.25 - 2016-09-01 )
-wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.25/libpng-1.6.25.tar.gz
-tar xzf libpng-1.6.25.tar.gz
+# install libpng ( 1.6.26 - 2016-10-20 )
+wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.26/libpng-1.6.26.tar.gz
+tar xzf libpng-1.6.26.tar.gz
 mkdir libpng-build
 cd libpng-build
-../libpng-1.6.25/configure \
+../libpng-1.6.26/configure \
     --host=arm-unknown-linux-gnueabi \
     CC=arm-unknown-linux-gnueabi-gcc \
     AR=arm-unknown-linux-gnueabi-ar \
