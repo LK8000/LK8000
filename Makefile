@@ -237,6 +237,7 @@ $(info GCC VERSION : $(GCCVERSION))
 ######## output files
 ifeq ($(CONFIG_LINUX),y)
  SUFFIX :=
+ INSTALL_PATH ?= ~
 else
  SUFFIX :=.exe
 endif
@@ -647,9 +648,7 @@ include build/xcs_screen.mk
 include build/xcs_event.mk
 include build/lk_os.mk
 
-ifeq ($(CONFIG_LINUX),y)
 include build/bitmap2png.mk
-endif
 
 ####### sources
 WINDOW := \
@@ -1385,7 +1384,7 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 .DEFAULT_GOAL := all
 .PHONY: FORCE all clean cleani tags rebuild cppcheck install
 
-all:	$(DISTRIB_OUTPUT) $(PNG) $(MASKED_PNG) $(OUTPUTS)
+all:	$(DISTRIB_OUTPUT) $(OUTPUTS)
 	
 rebuild:
 	@$(MAKE) clean
@@ -1415,22 +1414,22 @@ cppcheck :
 #	$(Q)cppcheck --force --enable=warning -q -j4 $(ZZIPSRC)
 #	$(Q)cppcheck --force --enable=warning -q -j4 $(COMPAT)
 	
-ifeq ($(TARGET),LINUX)
-install : all
-	$(Q)install -p -m 0755 -d ~/LK8000/_System/_Bitmaps 
-	$(Q)install -p -m 0755 -d ~/LK8000/_System/_Sounds
+install : $(OUTPUTS) $(SYSTEM_FILES) $(BITMAP_FILES) $(SOUND_FILES) \
+	    $(POLAR_FILES) $(LANGUAGE_FILES) $(CONFIG_FILES) $(WAYPOINT_FILES)
+	
+	$(Q)install -p -m 0755 -d $(INSTALL_PATH)/LK8000/_System/_Bitmaps 
+	$(Q)install -p -m 0755 -d $(INSTALL_PATH)/LK8000/_System/_Sounds
 	@$(NQ)echo "  install $(OUTPUTS)"
-	$(Q)install -p -m 0755 $(OUTPUTS) ~/LK8000
+	$(Q)install -p -m 0755 $(OUTPUTS) $(INSTALL_PATH)/LK8000
 	@$(NQ)echo "  install _System"
-	$(Q)install -p -m 0644 $(SYSTEM_FILES) ~/LK8000/_System
+	$(Q)install -p -m 0644 $(SYSTEM_FILES) $(INSTALL_PATH)/LK8000/_System
 	@$(NQ)echo "  install _System/_Bitmaps"
-	$(Q)install -p -m 0644 $(BITMAP_FILES) ~/LK8000/_System/_Bitmaps
+	$(Q)install -p -m 0644 $(BITMAP_FILES) $(INSTALL_PATH)/LK8000/_System/_Bitmaps
 	@$(NQ)echo "  install _System/_Sounds"
-	$(Q)install -p -m 0644 $(SOUND_FILES) ~/LK8000/_System/_Sounds
+	$(Q)install -p -m 0644 $(SOUND_FILES) $(INSTALL_PATH)/LK8000/_System/_Sounds
 
 	@$(NQ)echo "  install Common files"
-	$(call build_distrib_common, $(HOME))
-endif	
+	$(call build_distrib_common, $(INSTALL_PATH))
 
 ifneq ($(TARGET),KOBO)
 distrib : $(OUTPUTS) $(SYSTEM_FILES) $(BITMAP_FILES) $(SOUND_FILES) \
