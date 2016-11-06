@@ -111,13 +111,25 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   pToken = _tcstok(NULL, TEXT(","));
   if (pToken == NULL) return false;
 
-  if (_tcslen(pToken)>CUPSIZE_CODE) pToken[CUPSIZE_CODE-1]= _T('\0');
+  if (_tcslen(pToken)>CUPSIZE_CODE) {
+      pToken[CUPSIZE_CODE-1]= _T('\0');
+  }
   _tcscpy(Temp->Code, pToken);
-  for (i=_tcslen(Temp->Code)-1; i>1; i--) if (Temp->Code[i]==' ') Temp->Code[i]=0; else break;
+  for (i=_tcslen(Temp->Code)-1; i>1; i--) { 
+      if (Temp->Code[i]==' ') {
+          Temp->Code[i]=0;  
+      } else {
+          break;
+      }
+  }
   _tcscpy(Tname,Temp->Code);
-  for (j=0, i=0; i<_tcslen(Tname); i++)
+  for (j=0, i=0; i<_tcslen(Tname); i++) {
 	//if (Tname[i]!='\"') Temp->Code[j++]=Tname[i];
-	if ( (Tname[i]!='\"') && (Tname[i]!=DUMCHAR) ) Temp->Code[j++]=Tname[i]; Temp->Code[j]= _T('\0');
+	if ( (Tname[i]!='\"') && (Tname[i]!=DUMCHAR) ){
+       Temp->Code[j++]=Tname[i];
+    } 
+  }
+  Temp->Code[j]= _T('\0');
 
   if (_tcslen(Temp->Code)>5) { // 100310
 	if (  _tcscmp(Temp->Code,_T("LKHOME")) == 0 ) {
