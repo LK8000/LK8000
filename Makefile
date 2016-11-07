@@ -844,7 +844,6 @@ CALC	:=\
 	$(CLC)/BestAlternate.cpp	\
 	$(CLC)/Calculations2.cpp \
 	$(CLC)/Calculations_Utils.cpp \
-	$(CLC)/ClimbAverageCalculator.cpp\
 	$(CLC)/ClimbStats.cpp\
 	$(CLC)/ContestMgr.cpp\
 	$(CLC)/DistanceToHome.cpp\

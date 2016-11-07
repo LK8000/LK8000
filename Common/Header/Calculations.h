@@ -55,7 +55,6 @@ typedef struct _DERIVED_INFO
   double AverageLD;
   double VMacCready;
   double Average30s;
-  double NettoAverage30s;
   double BestCruiseTrack;
   double AverageThermal;
   double ThermalGain;
