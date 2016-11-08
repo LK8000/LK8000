@@ -219,36 +219,33 @@ void dlgProfilesShowModal(short mode){
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (wp) {
     wp->SetVisible(false);
-	DataFieldFileReader* dfe;
-	dfe = (DataFieldFileReader*)wp->GetDataField();
-
-	TCHAR tsuff[10];
-	switch (profilemode) {
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+	  switch (profilemode) {
 		case 0:
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_PRF));
-			_stprintf(tsuff,_T("*%s"),_T(LKS_PRF));
+            dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_PRF));
 			break;
 		case 1:
-			_stprintf(profilesuffix,_T("%s"),_T(LKS_PILOT));
-			_stprintf(tsuff,_T("*%s"),_T(LKS_PILOT));
 			wf->SetCaption(MsgToken(1784)); // Aircraft profiles
+			_stprintf(profilesuffix,_T("%s"),_T(LKS_PILOT));
+            dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_PILOT));
 			break;
 		case 2:
 			wf->SetCaption(MsgToken(1783)); // Pilot profiles
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_AIRCRAFT));
-			_stprintf(tsuff,_T("*%s"),_T(LKS_AIRCRAFT));
+            dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_AIRCRAFT));
 			break;
 		case 3:
 			wf->SetCaption(MsgToken(1819)); // Device profiles
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_DEVICE));
-			_stprintf(tsuff,_T("*%s"),_T(LKS_DEVICE));
+            dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_DEVICE));
 			break;
 		default:
 			return;
-	}
-
-	dfe->ScanDirectoryTop(_T(LKD_CONF),tsuff);
-	dfe->Set(0);
+	  }
+	  dfe->Set(0);
+    }
   }
 
   wf->ShowModal();

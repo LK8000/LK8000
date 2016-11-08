@@ -154,9 +154,8 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filte
 }
 
 bool DataFieldFileReader::Lookup(const TCHAR *Text) {
-  int i=0;
   mValue = 0;
-  for (i=1; i<(int)nFiles; i++) {    
+  for (unsigned i=1; i<nFiles; i++) {    
     // if (_tcscmp(Text,fields[i].mTextPathFile)==0) { 091126
     if (_tcsicmp(Text,fields[i].mTextPathFile)==0) {
       mValue = i;

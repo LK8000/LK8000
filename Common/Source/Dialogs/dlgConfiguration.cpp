@@ -1228,7 +1228,6 @@ static void setVariables(void) {
 
   LKASSERT(wf);
 
-  TCHAR tsuf[10]; // 091101
   buttonPilotName = ((WndButton *)wf->FindByName(TEXT("cmdPilotName")));
   if (buttonPilotName) {
     buttonPilotName->SetOnClickNotify(OnPilotNameClicked);
@@ -2054,29 +2053,29 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPilotFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_PILOT));
-    dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
-    dfe->Set(0);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_CONF),_T("*" LKS_PILOT));
+      dfe->Set(0);
+    }
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_AIRCRAFT));
-    dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
-    dfe->Set(0);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_AIRCRAFT));
+      dfe->Set(0);
+    }
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpDeviceFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_DEVICE));
-    dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
-    dfe->Set(0);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_DEVICE));
+      dfe->Set(0);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2087,11 +2086,11 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpPolarFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_POLARS));
-    dfe->ScanDirectoryTop(_T(LKD_POLARS),tsuf); //091101
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_POLARS), _T("*" LKS_POLARS)); //091101
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2099,13 +2098,12 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_AIRSPACES));
-    dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_OPENAIP));
-    dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_AIRSPACES));
+      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_OPENAIP));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2113,13 +2111,12 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalAirspaceFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_AIRSPACES));
-    dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_OPENAIP));
-    dfe->ScanDirectoryTop(_T(LKD_AIRSPACES),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_AIRSPACES));
+      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_OPENAIP));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2127,19 +2124,15 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_WINPILOT));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_XCSOAR));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_CUP));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_COMPE));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_OPENAIP));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_WINPILOT));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_XCSOAR));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_CUP));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_COMPE));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_OPENAIP));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2147,19 +2140,15 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalWaypointFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),(LKS_WP_WINPILOT));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),(LKS_WP_XCSOAR));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_CUP));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_COMPE));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(LKS_OPENAIP));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_WINPILOT));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_XCSOAR));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_CUP));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_COMPE));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_OPENAIP));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2167,13 +2156,12 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_MAPS));
-    dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
-    _stprintf(tsuf,_T("*%s"),_T(XCS_MAPS));
-    dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" LKS_MAPS));
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" XCS_MAPS));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2181,11 +2169,11 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_TERRAINDEM));
-    dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" LKS_TERRAINDEM));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2193,11 +2181,11 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirfieldFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_AIRFIELDS));
-    dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_AIRFIELDS));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2208,11 +2196,11 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpLanguageFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_LANGUAGE));
-    dfe->ScanDirectoryTop(_T(LKD_LANGUAGE),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_LANGUAGE), _T("*" LKS_LANGUAGE));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 
@@ -2220,11 +2208,11 @@ DataField* dfe = wp->GetDataField();
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpInputFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),_T(LKS_INPUT));
-    dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
-    dfe->Lookup(temptext);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_INPUT));
+      dfe->Lookup(temptext);
+    }
     wp->RefreshDisplay();
   }
 

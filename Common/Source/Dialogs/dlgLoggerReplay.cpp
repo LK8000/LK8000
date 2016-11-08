@@ -70,7 +70,6 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgLoggerReplayShowModal(void){
 
-  TCHAR tsuf[10];
   wf = dlgLoadFromXML(CallBackTable, IDR_XML_LOGGERREPLAY);
 
   WndProperty* wp;
@@ -85,12 +84,11 @@ void dlgLoggerReplayShowModal(void){
 
     wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
     if (wp) {
-      DataFieldFileReader* dfe;
-      dfe = (DataFieldFileReader*)wp->GetDataField();
-      // dfe->ScanDirectoryTop(_T(""),TEXT("*.igc"));
-      _stprintf(tsuf,_T("*%s"),_T(LKS_IGC));
-      dfe->ScanDirectoryTop(_T(LKD_LOGS),tsuf);
-      dfe->Lookup(ReplayLogger::GetFilename());
+      DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+      if(dfe) {
+        dfe->ScanDirectoryTop(_T(LKD_LOGS), _T("*" LKS_IGC));
+        dfe->Lookup(ReplayLogger::GetFilename());
+      }
       wp->RefreshDisplay();
     }
 

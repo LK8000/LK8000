@@ -638,20 +638,15 @@ void dlgTaskOverviewShowModal(int Idx){
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (wp) {
     wp->SetVisible(false);
-	DataFieldFileReader* dfe;
-	dfe = (DataFieldFileReader*)wp->GetDataField();
-
-	TCHAR suff[10];
-	_stprintf(suff,_T("*%s"),_T(LKS_TSK));
-	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    if(dfe) {
+      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_TSK));
 #ifdef OLDTASK_COMPAT
-	_stprintf(suff,_T("*%s"),_T(LKS_OLD_TSK));
-	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+	  dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_OLD_TSK));
 #endif
-	_stprintf(suff,_T("*%s"),_T(LKS_WP_CUP));
-	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
-	_stprintf(suff,_T("*%s"),_T(LKS_WP_GPX));
-	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+	  dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_CUP));
+	  dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_GPX));
+    }
 	wp->RefreshDisplay();
   }
   UpdateFilePointer();

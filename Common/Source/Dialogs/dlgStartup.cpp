@@ -681,26 +681,21 @@ static WndForm* InitStartup(BYTE mode) {
         if (pWndProfile) {
             DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(pWndProfile->GetDataField());
             if(dfe) {
-                TCHAR temp[MAX_PATH];
                 if (mode == RUN_PROFILE) {
-                    _stprintf(temp, _T("*%s"), _T(LKS_PRF));
-                    dfe->ScanDirectoryTop(_T(LKD_CONF), temp);
+                    dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_PRF));
                     dfe->addFile(MsgToken(1741), _T("PROFILE_RESET"));
                     dfe->Lookup(startProfileFile);
 
                 } else if (mode == RUN_AIRCRAFT) {
-                    _stprintf(temp, _T("*%s"), _T(LKS_AIRCRAFT));
-                    dfe->ScanDirectoryTop(_T(LKD_CONF), temp);
+                    dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_AIRCRAFT));
                     dfe->Lookup(startAircraftFile);
 
                 } else if (mode == RUN_DEVICE) {
-                    _stprintf(temp, _T("*%s"), _T(LKS_DEVICE));
-                    dfe->ScanDirectoryTop(_T(LKD_CONF), temp);
+                    dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_DEVICE));
                     dfe->Lookup(startDeviceFile);
 
                 } else if (mode == RUN_PILOT) {
-                    _stprintf(temp, _T("*%s"), _T(LKS_PILOT));
-                    dfe->ScanDirectoryTop(_T(LKD_CONF), temp);
+                    dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_PILOT));
                     dfe->Lookup(startPilotFile);
                 }
             }
