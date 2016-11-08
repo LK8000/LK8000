@@ -1247,29 +1247,10 @@ ZZIP	:=\
 	$(ZZIPSRC)/zip.c 		$(ZZIPSRC)/zstat.c \
 	$(ZZIPSRC)/zutil.c
 
-JASSRC	:=$(SRC)/jasper
-JASPER	:=\
-	$(JASSRC)/base/jas_cm.c 	$(JASSRC)/base/jas_debug.c \
-	$(JASSRC)/base/jas_getopt.c	$(JASSRC)/base/jas_icc.c \
-	$(JASSRC)/base/jas_iccdata.c 	$(JASSRC)/base/jas_image.c \
-	$(JASSRC)/base/jas_init.c 	$(JASSRC)/base/jas_malloc.c \
-	$(JASSRC)/base/jas_seq.c 	$(JASSRC)/base/jas_stream.c \
-	$(JASSRC)/base/jas_string.c 	$(JASSRC)/base/jas_tvp.c \
-	$(JASSRC)/base/jas_version.c	$(JASSRC)/jp2/jp2_cod.c \
-	$(JASSRC)/jp2/jp2_dec.c 	$(JASSRC)/jpc/jpc_bs.c \
-	$(JASSRC)/jpc/jpc_cs.c 		$(JASSRC)/jpc/jpc_dec.c \
-	$(JASSRC)/jpc/jpc_math.c 	$(JASSRC)/jpc/jpc_mct.c \
-	$(JASSRC)/jpc/jpc_mqdec.c       $(JASSRC)/jpc/jpc_mqcod.c \
-	$(JASSRC)/jpc/jpc_qmfb.c 	$(JASSRC)/jpc/jpc_rtc.cpp \
-	$(JASSRC)/jpc/jpc_t1dec.c 	$(JASSRC)/jpc/jpc_t1enc.c \
-	$(JASSRC)/jpc/jpc_t1cod.c \
-	$(JASSRC)/jpc/jpc_t2dec.c 	$(JASSRC)/jpc/jpc_t2cod.c \
-	$(JASSRC)/jpc/jpc_tagtree.c	$(JASSRC)/jpc/jpc_tsfb.c \
-	$(JASSRC)/jpc/jpc_util.c 	$(JASSRC)/jpc/RasterTile.cpp
-
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
-	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp
+	$(COMPATSRC)/errno.cpp
+	
 
 POCOSRC:=$(LIB)/poco
 POCO :=\
@@ -1317,10 +1298,6 @@ GLU :=\
     $(GLUSRC)/tessellate.c \
     $(GLUSRC)/tessmono.c 
 
-#ifneq ($(CONFIG_PC),y)
-#COMPAT	:=$(COMPAT) \
-#   $(COMPATSRC)/redir.cpp
-#endif
 
 DIALOG_XML = $(wildcard Common/Data/Dialogs/*.xml)
 BITMAP_RES = $(wildcard Common/Data/Bitmaps/*.bmp)
@@ -1342,8 +1319,6 @@ SRC_FILES += \
 	
 
 endif
-# Add JP2 library for JP2000 unsupported raster maps
-# (BIN)/jasper.a \
 
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
@@ -1493,10 +1468,6 @@ $(BIN)/glutess.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(GLU)) $(patsubst $(SRC)%.c,
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
 $(BIN)/zzip.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(ZZIP)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(ZZIP))
-	@$(NQ)echo "  AR      $@"
-	$(Q)$(AR) $(ARFLAGS) $@ $^
-
-$(BIN)/jasper.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(JASPER)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(JASPER))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
