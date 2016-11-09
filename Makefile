@@ -461,6 +461,9 @@ ifeq ($(CONFIG_LINUX),y)
  INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
  INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
+ ifneq ($(CONFIG_PC),y)
+  INCLUDES	+= -I$(HDR)/mingw32compat/WinCE
+ endif
 endif
 
 INCLUDES	+=  -I$(SRC)/xcs
@@ -514,7 +517,7 @@ ifeq ($(INT_OVERFLOW), y)
 endif
 
 CXXFLAGS	:= -std=gnu++0x $(OPTIMIZE) $(PROFILE)
-CFLAGS		:= $(OPTIMIZE) $(PROFILE)
+CFLAGS		:= -std=gnu89 $(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration
 LDLIBS :=
@@ -844,7 +847,6 @@ CALC	:=\
 	$(CLC)/BestAlternate.cpp	\
 	$(CLC)/Calculations2.cpp \
 	$(CLC)/Calculations_Utils.cpp \
-	$(CLC)/ClimbAverageCalculator.cpp\
 	$(CLC)/ClimbStats.cpp\
 	$(CLC)/ContestMgr.cpp\
 	$(CLC)/DistanceToHome.cpp\
@@ -1341,9 +1343,11 @@ OBJS	+= $(BIN)/resource.a
 endif
 
 ifneq ($(CONFIG_LINUX),y)
-OBJS	+= $(BIN)/zzip.a 
-OBJS	+= $(BIN)/compat.a
-OBJS	+= $(BIN)/lk8000.rsc
+ OBJS	+= $(BIN)/zzip.a 
+ OBJS	+= $(BIN)/lk8000.rsc
+ ifneq ($(CONFIG_PC),y)
+  OBJS	+= $(BIN)/compat.a
+ endif
 endif
 
 ifeq ($(OPENGL),y)

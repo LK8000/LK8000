@@ -2137,9 +2137,9 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%s"),(LKS_WP_WINPILOT));
+    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_WINPILOT));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-    _stprintf(tsuf,_T("*%s"),(LKS_WP_XCSOAR));
+    _stprintf(tsuf,_T("*%s"),_T(LKS_WP_XCSOAR));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     _stprintf(tsuf,_T("*%s"),_T(LKS_WP_CUP));
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);

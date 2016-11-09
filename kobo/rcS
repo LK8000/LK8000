@@ -79,6 +79,7 @@ if [ ! -n "${PLATFORM}" ] ; then
         RAM="$(ntx_hwconfig -s -p /dev/mmcblk0 RAMType)"
         RAM_SIZE="$(ntx_hwconfig -s -p /dev/mmcblk0 RamSize)"
         RAM_SIZE="$(echo $RAM_SIZE | awk '{print $RAM_SIZE-MB}')"
+        WIFI="$(ntx_hwconfig -s -p /dev/mmcblk0 Wifi)"
 	fi
 
 	if [ "${PLATFORM}" == "freescale" ] ; then
@@ -90,6 +91,21 @@ if [ ! -n "${PLATFORM}" ] ; then
 	elif [ ! -e "/etc/u-boot/${PLATFORM}/u-boot.mmc" ] ; then
 		PLATFORM="ntx508"
 	fi
+
+    if [ $PLATFORM == freescale ]; then
+        INTERFACE=wlan0
+        WIFI_MODULE=ar6000
+    else
+        INTERFACE=eth0
+        WIFI_MODULE=dhd
+        if [ x$WIFI == "xRTL8189" ]; then
+            WIFI_MODULE=8189fs
+        fi
+    fi
+
+    export INTERFACE
+    export WIFI_MODULE
+    export WIFI_MODULE_PATH=/drivers/$PLATFORM/wifi/$WIFI_MODULE.ko
 
     echo "${CPU}" > /mnt/onboard/LK8000/kobo/CPU
     echo "${PCB}" > /mnt/onboard/LK8000/kobo/PCB

@@ -30,7 +30,7 @@ int CpuSummary() {
 
 #include <stdio.h>
 #include <unistd.h>
-
+#include <numeric>
 #include <inttypes.h>
 
 /* Show overall CPU utilization of the system 
