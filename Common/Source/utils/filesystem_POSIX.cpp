@@ -141,7 +141,9 @@ namespace lk {
             }
 
             virtual ~directory_iterator_impl_POSIX() {
-                closedir(dirp);
+                if(dirp) {
+                    closedir(dirp);
+                }
             }
 
             virtual void operator++() {
