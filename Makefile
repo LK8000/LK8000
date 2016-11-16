@@ -1291,7 +1291,6 @@ GLU :=\
     $(GLUSRC)/mesh.c \
     $(GLUSRC)/normal.c \
     $(GLUSRC)/priorityq.c \
-    $(GLUSRC)/priorityq-heap.c \
     $(GLUSRC)/render.c \
     $(GLUSRC)/sweep.c \
     $(GLUSRC)/tess.c \
