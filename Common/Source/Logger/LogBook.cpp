@@ -68,14 +68,16 @@ void ResetLogBook(void) {
 
   TCHAR filename[MAX_PATH];
 
-  #if TESTBENCH
-  StartupStore(_T("... ResetLogBook <%s>\n"),filename);
-  #endif
-
   _stprintf(filename,_T("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP),_T(LKF_LOGBOOKTXT));
+#if TESTBENCH
+  StartupStore(_T("... ResetLogBook <%s>\n"),filename);
+#endif
   lk::filesystem::deleteFile(filename);
 
   _stprintf(filename,_T("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP),_T(LKF_LOGBOOKLST));
+#if TESTBENCH
+  StartupStore(_T("... ResetLogBook <%s>\n"),filename);
+#endif
   lk::filesystem::deleteFile(filename);
 }
 
