@@ -447,14 +447,14 @@ void dlgChecklistShowModal(short checklistmode){
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
-  if (wDetails==NULL) {
+  if (!wDetails) {
     StartupStore(_T("..... NOTEPAD ERROR NULL frmDetails!\n"));
     goto deinit;
   }
   wDetails->SetBorderKind(BORDERLEFT);
 
   wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
-  if (wDetailsEntry) {
+  if (!wDetailsEntry) {
     StartupStore(_T("..... NOTEPAD ERROR NULL frmDetailsEntry!\n"));
     goto deinit;
   }
@@ -465,11 +465,9 @@ void dlgChecklistShowModal(short checklistmode){
 
   wf->ShowModal();
 
-  delete wf;
 
 deinit:
 
+  delete wf;
   DeinitNotepad();
-  return;
-
 }
