@@ -102,13 +102,13 @@ Some of them are also copyright owners of LK, some are not. Never mind.
  Andreas K. Wasserbauer <akw@alpensegler.org>
  Frank Paynter <paynterf@gmail.com>
  Frank van der Hulst <drifter.frank@gmail.com>
- Felix Hädicke <felixhaedicke@web.de>
+ Felix HÃ¤dicke <felixhaedicke@web.de>
  Melissa Jenkins <melissa-xcsoar@littlebluecar.co.uk>
  Alexander Lehmann <a.lehm@gmx.de>
- Christian Körner <christian_koerner@web.de>
+ Christian KÃ¶rner <christian_koerner@web.de>
  Mindaugas Milasauskas <mindmil@gmail.com>
  Benjamin Tissoires <benjamin.tissoires@gmail.com>
- Florian Mösch <florian@moesch.org>
+ Florian MÃ¶sch <florian@moesch.org>
  Lloyd Bailey <3dairspace@lloydbailey.net>
  Timo Bruderek <timo.bruderek@gmx.de>
  Steffen Engel <steffen.engel@nutrimat.de>
