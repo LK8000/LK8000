@@ -20,7 +20,7 @@
 
 #include <zzip/zzip.h>
 #include <zzip/plugin.h>
-#include <zzip/stdint.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
