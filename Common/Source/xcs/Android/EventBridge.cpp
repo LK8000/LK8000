@@ -71,7 +71,7 @@ IsCursorKey(unsigned key_code)
 
 gcc_visibility_default
 void
-Java_org_xcsoar_EventBridge_onKeyDown(JNIEnv *env, jclass cls, jint key_code)
+Java_org_LK8000_EventBridge_onKeyDown(JNIEnv *env, jclass cls, jint key_code)
 {
   if (event_queue == nullptr)
     /* XCSoar not yet initialised */
@@ -88,7 +88,7 @@ Java_org_xcsoar_EventBridge_onKeyDown(JNIEnv *env, jclass cls, jint key_code)
 
 gcc_visibility_default
 void
-Java_org_xcsoar_EventBridge_onKeyUp(JNIEnv *env, jclass cls, jint key_code)
+Java_org_LK8000_EventBridge_onKeyUp(JNIEnv *env, jclass cls, jint key_code)
 {
   if (event_queue == nullptr)
     /* XCSoar not yet initialised */
@@ -100,7 +100,7 @@ Java_org_xcsoar_EventBridge_onKeyUp(JNIEnv *env, jclass cls, jint key_code)
 
 gcc_visibility_default
 void
-Java_org_xcsoar_EventBridge_onMouseDown(JNIEnv *env, jclass cls,
+Java_org_LK8000_EventBridge_onMouseDown(JNIEnv *env, jclass cls,
                                         jint x, jint y)
 {
   if (event_queue == nullptr)
@@ -113,7 +113,7 @@ Java_org_xcsoar_EventBridge_onMouseDown(JNIEnv *env, jclass cls,
 
 gcc_visibility_default
 void
-Java_org_xcsoar_EventBridge_onMouseUp(JNIEnv *env, jclass cls,
+Java_org_LK8000_EventBridge_onMouseUp(JNIEnv *env, jclass cls,
                                       jint x, jint y)
 {
   if (event_queue == nullptr)
@@ -126,7 +126,7 @@ Java_org_xcsoar_EventBridge_onMouseUp(JNIEnv *env, jclass cls,
 
 gcc_visibility_default
 void
-Java_org_xcsoar_EventBridge_onMouseMove(JNIEnv *env, jclass cls,
+Java_org_LK8000_EventBridge_onMouseMove(JNIEnv *env, jclass cls,
                                         jint x, jint y)
 {
   if (event_queue == nullptr)
@@ -140,7 +140,7 @@ Java_org_xcsoar_EventBridge_onMouseMove(JNIEnv *env, jclass cls,
 
 gcc_visibility_default
 void
-Java_org_xcsoar_EventBridge_onPointerDown(JNIEnv *env, jclass cls)
+Java_org_LK8000_EventBridge_onPointerDown(JNIEnv *env, jclass cls)
 {
   if (event_queue == nullptr)
     /* XCSoar not yet initialised */
@@ -152,7 +152,7 @@ Java_org_xcsoar_EventBridge_onPointerDown(JNIEnv *env, jclass cls)
 
 gcc_visibility_default
 void
-Java_org_xcsoar_EventBridge_onPointerUp(JNIEnv *env, jclass cls)
+Java_org_LK8000_EventBridge_onPointerUp(JNIEnv *env, jclass cls)
 {
   if (event_queue == nullptr)
     /* XCSoar not yet initialised */
