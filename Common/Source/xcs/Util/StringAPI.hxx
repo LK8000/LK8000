@@ -158,7 +158,11 @@ gcc_pure gcc_nonnull_all
 static inline int
 StringCollate(const char *a, const char *b)
 {
+#ifdef UNDER_CE
+  return StringIsEqual(a, b);
+#else
   return strcoll(a, b);
+#endif
 }
 
 /**
