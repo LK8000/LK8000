@@ -44,7 +44,6 @@ public:
 
     virtual void OnResize(PixelSize new_size) {
         WndPaint<_Base>::OnResize(new_size);
-        _canvas.Resize(new_size);
         _Dirty= true;
     }
 
