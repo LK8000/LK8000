@@ -64,10 +64,13 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   Java::Object::Initialise(env);
   Java::File::Initialise(env);
 
+  NativeView::Initialise(env);
+  Environment::Initialise(env);
+  AndroidBitmap::Initialise(env);
+
   context = new Context(env, _context);
 
-  NativeView::Initialise(env);
-  AndroidBitmap::Initialise(env);
+  InitialiseDataPath();
 
   OpenGL::Initialise();
   TextUtil::Initialise(env);
@@ -105,10 +108,15 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   TextUtil::Deinitialise(env);
   OpenGL::Deinitialise();
   ScreenDeinitialized();
+  DeinitialiseDataPath();
 
   delete context;
   context = nullptr;
 
+  AndroidBitmap::Deinitialise(env);
+  Environment::Deinitialise(env);
+  NativeView::Deinitialise(env);
+  Java::URL::Deinitialise(env);
 }
 
 gcc_visibility_default
