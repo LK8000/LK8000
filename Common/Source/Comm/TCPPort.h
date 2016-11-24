@@ -12,6 +12,15 @@
 #ifndef TCPPORT_H
 #define TCPPORT_H
 #include "SocketPort.h"
+#ifdef WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>  // typedef int socklen_t;
+// WSAGetLastError is alias of GetLastError, WSAGetLastError is not exported by winsok.dll
+// and ws2.dll not exist on PPC2002 device.
+//#define WSAGetLastError GetLastError
+#else
+#include <netinet/in.h>
+#endif
 
 class TCPClientPort : public SocketPort {
 public:
@@ -33,6 +42,24 @@ protected:
     virtual unsigned RxThread();
     
     SOCKET mServerSocket;
+};
+
+class UDPServerPort : public SocketPort {
+public:
+
+	UDPServerPort(int idx, const tstring& sName) : SocketPort(idx, sName) {
+		mSAddressClient =  { 0 };
+	}
+
+    virtual int SetRxTimeout(int TimeOut) { return 0; }
+protected:
+    virtual bool Connect();
+
+    virtual unsigned RxThread();
+    virtual bool Write(const void *data, size_t length);
+
+	SOCKADDR_IN mSAddressClient;
+
 };
 
 #endif /* TCPPORT_H */

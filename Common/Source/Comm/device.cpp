@@ -277,6 +277,7 @@ void RefreshComPortList() {
 
     COMMPort.push_back(_T("TCPClient"));
     COMMPort.push_back(_T("TCPServer"));
+    COMMPort.push_back(_T("UDPServer"));
 
     if(COMMPort.empty()) {
         // avoid segfault on device config  dialog if no comport detected.
@@ -475,6 +476,14 @@ BOOL devInit() {
             }
 #endif
             Com = new TCPServerPort(i, Port);
+        } else if (_tcscmp(Port, _T("UDPServer")) == 0) {
+#ifdef KOBO
+            if(!IsKoboWifiOn()) {
+              KoboWifiOn();
+            }
+#endif
+            Com = new UDPServerPort(i, Port);
+
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
         }
