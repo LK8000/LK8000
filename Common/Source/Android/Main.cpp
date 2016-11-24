@@ -19,6 +19,8 @@
 #include "Util/StringAPI.hxx"
 #include "Window/WndMain.h"
 #include "org_LK8000_NativeView.h"
+#include "Screen/OpenGL/Texture.hpp"
+#include "Screen/OpenGL/Buffer.hpp"
 
 unsigned android_api_level;
 
