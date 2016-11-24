@@ -28,11 +28,12 @@ import android.content.BroadcastReceiver;
 import android.os.BatteryManager;
 
 class BatteryReceiver extends BroadcastReceiver {
-  private static native void setBatteryPercent(int level, int plugged);
+  private static native void setBatteryPercent(int level, int plugged, int status);
 
   @Override public void onReceive(Context context, Intent intent) {
     int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
     int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
-    setBatteryPercent(level, plugged);
+    int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, 0);
+    setBatteryPercent(level, plugged, status);
   }
 }

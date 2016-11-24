@@ -188,6 +188,61 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
 
     return true;
 }
+#elif defined(ANDROID)
+#include <jni.h>
+
+static Battery::battery_status acStatus =  Battery::UNKNOWN;
+static uint8_t BatteryLifePercent = BATTERY_UNKNOWN;
+Battery::battery_charge_status chargeStatus = Battery::CHARGE_UNKNOWN;;
+
+extern "C"
+gcc_visibility_default
+JNIEXPORT void JNICALL
+Java_org_LK8000_BatteryReceiver_setBatteryPercent(JNIEnv *env, jclass cls, jint value, jint plugged, jint status) {
+	BatteryLifePercent = value;
+	acStatus = (!plugged) ? Battery::OFFLINE : Battery::ONLINE;
+
+	switch (status) {
+		default :
+		case 1 : // BATTERY_STATUS_UNKNOWN = 1;
+			chargeStatus = Battery::CHARGE_UNKNOWN;
+			break;
+		case 2 : // BATTERY_STATUS_CHARGING = 2;
+			chargeStatus = Battery::CHARGING;
+			break;
+		case 3 : // BATTERY_STATUS_DISCHARGING = 3;
+			acStatus = Battery::OFFLINE;
+			break;
+		case 4 :  // BATTERY_STATUS_NOT_CHARGING = 4;
+		case 5 :  // BATTERY_STATUS_FULL = 5;
+			if (BatteryLifePercent >= 0) {
+				if (BatteryLifePercent > 30) {
+					chargeStatus = Battery::HIGH;
+				} else if (BatteryLifePercent > 30) {
+					chargeStatus = Battery::LOW;
+				} else {
+					chargeStatus = Battery::CRITICAL;
+				}
+			}
+			break;
+	}
+}
+
+bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
+
+	// check incoming pointer
+	if (NULL == pBatteryInfo) {
+		return false;
+	}
+
+	// assume failure at entry
+	pBatteryInfo->BatteryLifePercent = BatteryLifePercent;
+	pBatteryInfo->acStatus = acStatus;
+	pBatteryInfo->chargeStatus = chargeStatus;
+
+	return acStatus !=  Battery::UNKNOWN;
+}
+
 #else
 // For now, for linux ==> TODO !
 bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
