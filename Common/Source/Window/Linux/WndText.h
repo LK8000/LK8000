@@ -83,9 +83,8 @@ public:
 
 #ifdef ENABLE_OPENGL
         if (_Dirty) {
-            this->Setup(_canvas);
-
             _canvas.Begin(Surface);
+            this->Setup(_canvas);
 #else
             Canvas& _canvas = Surface;
 #endif
