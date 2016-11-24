@@ -67,7 +67,7 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
 #endif
     return IsDefined();
 #elif defined(ANDROID)
-    return LoadFromFile(FilePath);
+    return LoadFile(FilePath);
 #else
     return LoadPNGFile(FilePath);
 #endif
