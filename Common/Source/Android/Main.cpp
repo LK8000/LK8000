@@ -23,7 +23,6 @@
 #include "Event/Queue.hpp"
 #include "Util/StringAPI.hxx"
 #include "Window/WndMain.h"
-#include "org_LK8000_NativeView.h"
 #include "Screen/OpenGL/Texture.hpp"
 #include "Screen/OpenGL/Buffer.hpp"
 
@@ -41,6 +40,7 @@ extern "C" {
   __attribute__((weak)) void *__dso_handle;
 }
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT jint JNICALL
 Java_org_LK8000_NativeView_getEglContextClientVersion(JNIEnv *env, jobject obj)
@@ -55,6 +55,7 @@ Java_org_LK8000_NativeView_getEglContextClientVersion(JNIEnv *env, jobject obj)
 extern bool Startup(const char*);
 extern void Shutdown();
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT jboolean JNICALL
 Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
@@ -91,6 +92,7 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   return Startup(nullptr);
 }
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj)
@@ -101,6 +103,7 @@ Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj)
     MainWindow.RunModalLoop();
 }
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
@@ -128,6 +131,7 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   Java::URL::Deinitialise(env);
 }
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_resizedNative(JNIEnv *env, jobject obj,
@@ -144,6 +148,7 @@ Java_org_LK8000_NativeView_resizedNative(JNIEnv *env, jobject obj,
   event_queue->Push(event);
 }
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_pauseNative(JNIEnv *env, jobject obj)
@@ -159,6 +164,7 @@ Java_org_LK8000_NativeView_pauseNative(JNIEnv *env, jobject obj)
   assert(num_buffers == 0);
 }
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_resumeNative(JNIEnv *env, jobject obj)
@@ -170,12 +176,14 @@ Java_org_LK8000_NativeView_resumeNative(JNIEnv *env, jobject obj)
   MainWindow.Resume();
 }
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_setBatteryPercent(JNIEnv *env, jobject, jint, jint) {
     #warning " Not Implemented"
 }
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_setHapticFeedback(JNIEnv * env, jobject, jboolean) {

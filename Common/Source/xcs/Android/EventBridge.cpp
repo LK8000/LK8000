@@ -21,13 +21,13 @@ Copyright_License {
 }
 */
 
-#include "org_LK8000_EventBridge.h"
 #include "Product.hpp"
 #include "Event/Queue.hpp"
 #include "Event/Idle.hpp"
 #include "Event/Globals.hpp"
 #include "OS/Clock.hpp"
 #include "Compiler.h"
+#include <jni.h>
 
 /**
  * @see http://developer.android.com/reference/android/view/KeyEvent.html
@@ -69,6 +69,7 @@ IsCursorKey(unsigned key_code)
   return key_code == KEYCODE_DPAD_UP || key_code == KEYCODE_DPAD_DOWN;
 }
 
+extern "C"
 gcc_visibility_default
 void
 Java_org_LK8000_EventBridge_onKeyDown(JNIEnv *env, jclass cls, jint key_code)
@@ -86,6 +87,7 @@ Java_org_LK8000_EventBridge_onKeyDown(JNIEnv *env, jclass cls, jint key_code)
   ResetUserIdle();
 }
 
+extern "C"
 gcc_visibility_default
 void
 Java_org_LK8000_EventBridge_onKeyUp(JNIEnv *env, jclass cls, jint key_code)
@@ -98,6 +100,7 @@ Java_org_LK8000_EventBridge_onKeyUp(JNIEnv *env, jclass cls, jint key_code)
   ResetUserIdle();
 }
 
+extern "C"
 gcc_visibility_default
 void
 Java_org_LK8000_EventBridge_onMouseDown(JNIEnv *env, jclass cls,
@@ -111,6 +114,7 @@ Java_org_LK8000_EventBridge_onMouseDown(JNIEnv *env, jclass cls,
   ResetUserIdle();
 }
 
+extern "C"
 gcc_visibility_default
 void
 Java_org_LK8000_EventBridge_onMouseUp(JNIEnv *env, jclass cls,
@@ -124,6 +128,7 @@ Java_org_LK8000_EventBridge_onMouseUp(JNIEnv *env, jclass cls,
   ResetUserIdle();
 }
 
+extern "C"
 gcc_visibility_default
 void
 Java_org_LK8000_EventBridge_onMouseMove(JNIEnv *env, jclass cls,
@@ -138,6 +143,7 @@ Java_org_LK8000_EventBridge_onMouseMove(JNIEnv *env, jclass cls,
   ResetUserIdle();
 }
 
+extern "C"
 gcc_visibility_default
 void
 Java_org_LK8000_EventBridge_onPointerDown(JNIEnv *env, jclass cls)
@@ -150,6 +156,7 @@ Java_org_LK8000_EventBridge_onPointerDown(JNIEnv *env, jclass cls)
   ResetUserIdle();
 }
 
+extern "C"
 gcc_visibility_default
 void
 Java_org_LK8000_EventBridge_onPointerUp(JNIEnv *env, jclass cls)
