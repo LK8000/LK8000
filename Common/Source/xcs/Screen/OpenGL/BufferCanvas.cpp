@@ -124,10 +124,13 @@ BufferCanvas::Resize(PixelSize new_size)
 void
 BufferCanvas::Begin(Canvas &other)
 {
-  assert(IsDefined());
   assert(!active);
 
-  Resize(other.GetSize());
+  if(IsDefined()) {
+      Resize(other.GetSize());
+  } else {
+      Create(other);
+  }
 
   if (frame_buffer != nullptr) {
     /* activate the frame buffer */
