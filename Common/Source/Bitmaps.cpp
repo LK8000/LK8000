@@ -27,7 +27,13 @@ static std::set<tstring> setMissingBitmap;
     #define IMG_EXT "PNG"
 #endif
 
-LKBitmap LKLoadBitmap(const TCHAR *srcfile) {
+LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires = false) {
+
+    TCHAR srcfile[MAX_PATH];
+    TCHAR sDir[MAX_PATH];
+    SystemPath(sDir,TEXT(LKD_BITMAPS));
+    _stprintf(srcfile,_T("%s DIRSEP %s%s." IMG_EXT),sDir, sName, Hires?_T("_H"):_T(""));
+
     LKBitmap hBmp;
     if (!hBmp.LoadFromFile(srcfile)) {
         auto ib = setMissingBitmap.insert(srcfile);
@@ -55,217 +61,117 @@ void LKLoadFixedBitmaps(void) {
   StartupStore(_T("... Loading Fixed Bitmaps\n"));
   #endif
 
-  TCHAR srcfile[MAX_PATH];
-  TCHAR sDir[MAX_PATH];
-  TCHAR hires_suffix[4];
-
-  SystemPath(sDir,TEXT(LKD_BITMAPS));
-  _tcscat(sDir, _T(DIRSEP));
-  if (UseHiresBitmap)
-	_tcscpy(hires_suffix,_T("_H"));
-  else
-	_tcscpy(hires_suffix,_T(""));
-
-  _stprintf(srcfile,_T("%sTPOINT_BIG%s." IMG_EXT),sDir,hires_suffix);
-  hTurnPoint=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sTPOINT_BIG_INV%s." IMG_EXT),sDir,hires_suffix);
-  hInvTurnPoint=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sTPOINT_SML%s." IMG_EXT),sDir,hires_suffix);
-  hSmall=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sTPOINT_SML_INV%s." IMG_EXT),sDir,hires_suffix);
-  hInvSmall=LKLoadBitmap(srcfile);
+  hTurnPoint = LKLoadBitmap(_T("TPOINT_BIG"), UseHiresBitmap);
+  hInvTurnPoint = LKLoadBitmap(_T("TPOINT_BIG_INV"), UseHiresBitmap);
+  hSmall = LKLoadBitmap(_T("TPOINT_SML"), UseHiresBitmap);
+  hInvSmall = LKLoadBitmap(_T("TPOINT_SML_INV"), UseHiresBitmap);
 
 #ifdef DITHER
-  _stprintf(srcfile,_T("%sKB_BATTERY_FULL." IMG_EXT),sDir);
-  hKB_BatteryFull=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_FULLC." IMG_EXT),sDir);
-  hKB_BatteryFullC=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_96." IMG_EXT),sDir);
-  hKB_Battery96=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_84." IMG_EXT),sDir);
-  hKB_Battery84=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_72." IMG_EXT),sDir);
-  hKB_Battery72=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_60." IMG_EXT),sDir);
-  hKB_Battery60=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_48." IMG_EXT),sDir);
-  hKB_Battery48=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_36." IMG_EXT),sDir);
-  hKB_Battery36=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_24." IMG_EXT),sDir);
-  hKB_Battery24=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sKB_BATTERY_12." IMG_EXT),sDir);
-  hKB_Battery12=LKLoadBitmap(srcfile);
+  hKB_BatteryFull=LKLoadBitmap(_T("KB_BATTERY_FULL"));
+  hKB_BatteryFullC=LKLoadBitmap(_T("KB_BATTERY_FULLC"));
+  hKB_Battery96=LKLoadBitmap(_T("KB_BATTERY_96"));
+  hKB_Battery84=LKLoadBitmap(_T("KB_BATTERY_84"));
+  hKB_Battery72=LKLoadBitmap(_T("KB_BATTERY_72"));
+  hKB_Battery60=LKLoadBitmap(_T("KB_BATTERY_60"));
+  hKB_Battery48=LKLoadBitmap(_T("KB_BATTERY_48"));
+  hKB_Battery36=LKLoadBitmap(_T("KB_BATTERY_36"));
+  hKB_Battery24=LKLoadBitmap(_T("KB_BATTERY_24"));
+  hKB_Battery12=LKLoadBitmap(_T("KB_BATTERY_12"));
 #endif
-  _stprintf(srcfile,_T("%sBATTERY_FULL." IMG_EXT),sDir);
-  hBatteryFull=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBATTERY_FULLC." IMG_EXT),sDir);
-  hBatteryFullC=LKLoadBitmap(srcfile);
 
-  _stprintf(srcfile,_T("%sBATTERY_96." IMG_EXT),sDir);
-  hBattery96=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBATTERY_84." IMG_EXT),sDir);
-  hBattery84=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBATTERY_72." IMG_EXT),sDir);
-  hBattery72=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBATTERY_60." IMG_EXT),sDir);
-  hBattery60=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBATTERY_48." IMG_EXT),sDir);
-  hBattery48=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBATTERY_36." IMG_EXT),sDir);
-  hBattery36=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBATTERY_24." IMG_EXT),sDir);
-  hBattery24=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBATTERY_12." IMG_EXT),sDir);
-  hBattery12=LKLoadBitmap(srcfile);
+  hBatteryFull=LKLoadBitmap(_T("BATTERY_FULL"));
+  hBatteryFullC=LKLoadBitmap(_T("BATTERY_FULLC"));
+  hBattery96=LKLoadBitmap(_T("BATTERY_96"));
+  hBattery84=LKLoadBitmap(_T("BATTERY_84"));
+  hBattery72=LKLoadBitmap(_T("BATTERY_72"));
+  hBattery60=LKLoadBitmap(_T("BATTERY_60"));
+  hBattery48=LKLoadBitmap(_T("BATTERY_48"));
+  hBattery36=LKLoadBitmap(_T("BATTERY_36"));
+  hBattery24=LKLoadBitmap(_T("BATTERY_24"));
+  hBattery12=LKLoadBitmap(_T("BATTERY_12"));
 
-  _stprintf(srcfile,_T("%sTRACE_NO." IMG_EXT),sDir);
-  hNoTrace=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sTRACE_FULL." IMG_EXT),sDir);
-  hFullTrace=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sTRACE_CLIMB." IMG_EXT),sDir);
-  hClimbTrace=LKLoadBitmap(srcfile);
+  hNoTrace=LKLoadBitmap(_T("TRACE_NO"));
+  hFullTrace=LKLoadBitmap(_T("TRACE_FULL"));
+  hClimbTrace=LKLoadBitmap(_T("TRACE_CLIMB"));
 
-  _stprintf(srcfile,_T("%sHEAD_UP." IMG_EXT),sDir);
-  hHeadUp=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sNORTH_UP." IMG_EXT),sDir);
-  hNorthUp=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sHEAD_RIGHT." IMG_EXT),sDir);
-  hHeadRight=LKLoadBitmap(srcfile);
+  hHeadUp=LKLoadBitmap(_T("HEAD_UP"));
+  hNorthUp=LKLoadBitmap(_T("NORTH_UP"));
+  hHeadRight=LKLoadBitmap(_T("HEAD_RIGHT"));
 
-  _stprintf(srcfile,_T("%sMM0." IMG_EXT),sDir);
-  hMM0=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMM1." IMG_EXT),sDir);
-  hMM1=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMM2." IMG_EXT),sDir);
-  hMM2=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMM3." IMG_EXT),sDir);
-  hMM3=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMM4." IMG_EXT),sDir);
-  hMM4=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMM5." IMG_EXT),sDir);
-  hMM5=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMM6." IMG_EXT),sDir);
-  hMM6=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMM7." IMG_EXT),sDir);
-  hMM7=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMM8." IMG_EXT),sDir);
-  hMM8=LKLoadBitmap(srcfile);
+  hMM0=LKLoadBitmap(_T("MM0"));
+  hMM1=LKLoadBitmap(_T("MM1"));
+  hMM2=LKLoadBitmap(_T("MM2"));
+  hMM3=LKLoadBitmap(_T("MM3"));
+  hMM4=LKLoadBitmap(_T("MM4"));
+  hMM5=LKLoadBitmap(_T("MM5"));
+  hMM6=LKLoadBitmap(_T("MM6"));
+  hMM7=LKLoadBitmap(_T("MM7"));
+  hMM8=LKLoadBitmap(_T("MM8"));
 
-  _stprintf(srcfile,_T("%sIMM0." IMG_EXT),sDir);
-  hIMM0=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sIMM1." IMG_EXT),sDir);
-  hIMM1=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sIMM2." IMG_EXT),sDir);
-  hIMM2=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sIMM3." IMG_EXT),sDir);
-  hIMM3=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sIMM4." IMG_EXT),sDir);
-  hIMM4=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sIMM5." IMG_EXT),sDir);
-  hIMM5=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sIMM6." IMG_EXT),sDir);
-  hIMM6=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sIMM7." IMG_EXT),sDir);
-  hIMM7=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sIMM8." IMG_EXT),sDir);
-  hIMM8=LKLoadBitmap(srcfile);
+  hIMM0=LKLoadBitmap(_T("IMM0"));
+  hIMM1=LKLoadBitmap(_T("IMM1"));
+  hIMM2=LKLoadBitmap(_T("IMM2"));
+  hIMM3=LKLoadBitmap(_T("IMM3"));
+  hIMM4=LKLoadBitmap(_T("IMM4"));
+  hIMM5=LKLoadBitmap(_T("IMM5"));
+  hIMM6=LKLoadBitmap(_T("IMM6"));
+  hIMM7=LKLoadBitmap(_T("IMM7"));
+  hIMM8=LKLoadBitmap(_T("IMM8"));
 
-  _stprintf(srcfile,_T("%sBUTTONLEFT32." IMG_EXT),sDir);
-  hBmpLeft32=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBUTTONRIGHT32." IMG_EXT),sDir);
-  hBmpRight32=LKLoadBitmap(srcfile);
+  hBmpLeft32=LKLoadBitmap(_T("BUTTONLEFT32"));
+  hBmpRight32=LKLoadBitmap(_T("BUTTONRIGHT32"));
 
-  _stprintf(srcfile,_T("%sTHERMALSOURCE." IMG_EXT),sDir);
-  hBmpThermalSource=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sAAT_TARGET." IMG_EXT),sDir);
-  hBmpTarget=LKLoadBitmap(srcfile);
+  hBmpThermalSource=LKLoadBitmap(_T("THERMALSOURCE"));
+  hBmpTarget=LKLoadBitmap(_T("AAT_TARGET"));
 
-  _stprintf(srcfile,_T("%sSCROLLBARTOP." IMG_EXT),sDir);
-  hScrollBarBitmapTop=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sSCROLLBARMID." IMG_EXT),sDir);
-  hScrollBarBitmapMid=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sSCROLLBARBOT." IMG_EXT),sDir);
-  hScrollBarBitmapBot=LKLoadBitmap(srcfile);
+  hScrollBarBitmapTop=LKLoadBitmap(_T("SCROLLBARTOP"));
+  hScrollBarBitmapMid=LKLoadBitmap(_T("SCROLLBARMID"));
+  hScrollBarBitmapBot=LKLoadBitmap(_T("SCROLLBARBOT"));
 
+  hBmpMarker=LKLoadBitmap(_T("MARKER"), UseHiresBitmap);
 
-  _stprintf(srcfile,_T("%sMARKER%s." IMG_EXT),sDir,hires_suffix);
-  hBmpMarker=LKLoadBitmap(srcfile);
-
-  _stprintf(srcfile,_T("%sFLARMTRAFFIC." IMG_EXT),sDir);
-  hFLARMTraffic=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sLOGGER1." IMG_EXT),sDir);
-  hLogger=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sLOGGER0." IMG_EXT),sDir);
-  hLoggerOff=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sLOGGEROFF." IMG_EXT),sDir);
-  hLoggerDisabled=LKLoadBitmap(srcfile);
+  hFLARMTraffic=LKLoadBitmap(_T("FLARMTRAFFIC"));
+  hLogger=LKLoadBitmap(_T("LOGGER1"));
+  hLoggerOff=LKLoadBitmap(_T("LOGGER0"));
+  hLoggerDisabled=LKLoadBitmap(_T("LOGGEROFF"));
 
   // For low zooms, we use Small icon (a dot in fact)
-  _stprintf(srcfile,_T("%sMOUNTOP%s." IMG_EXT),sDir,hires_suffix);
-  hMountop=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sMOUNTPASS%s." IMG_EXT),sDir,hires_suffix);
-  hMountpass=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBRIDGE%s." IMG_EXT),sDir,hires_suffix);
-  hBridge=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sINTERSECT%s." IMG_EXT),sDir,hires_suffix);
-  hIntersect=LKLoadBitmap(srcfile);
+  hMountop=LKLoadBitmap(_T("MOUNTOP"), UseHiresBitmap);
+  hMountpass=LKLoadBitmap(_T("MOUNTPASS"), UseHiresBitmap);
+  hBridge=LKLoadBitmap(_T("BRIDGE"), UseHiresBitmap);
+  hIntersect=LKLoadBitmap(_T("INTERSECT"), UseHiresBitmap);
 
-  _stprintf(srcfile,_T("%sTERRWARNING%s." IMG_EXT),sDir,hires_suffix);
-  hTerrainWarning=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sASPWARNING%s." IMG_EXT),sDir,hires_suffix);
-  hAirspaceWarning=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sTEAMMATEPOS%s." IMG_EXT),sDir,hires_suffix);
-  hBmpTeammatePosition=LKLoadBitmap(srcfile);
+  hTerrainWarning=LKLoadBitmap(_T("TERRWARNING"), UseHiresBitmap);
+  hAirspaceWarning=LKLoadBitmap(_T("ASPWARNING"), UseHiresBitmap);
+  hBmpTeammatePosition=LKLoadBitmap(_T("TEAMMATEPOS"), UseHiresBitmap);
 
 #ifdef HAVE_HATCHED_BRUSH
-  _stprintf(srcfile,_T("%sBRUSH_AIRSPACE0." IMG_EXT),sDir);
-  hAirspaceBitmap[0]=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBRUSH_AIRSPACE1." IMG_EXT),sDir);
-  hAirspaceBitmap[1]=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBRUSH_AIRSPACE2." IMG_EXT),sDir);
-  hAirspaceBitmap[2]=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBRUSH_AIRSPACE3." IMG_EXT),sDir);
-  hAirspaceBitmap[3]=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBRUSH_AIRSPACE4." IMG_EXT),sDir);
-  hAirspaceBitmap[4]=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBRUSH_AIRSPACE5." IMG_EXT),sDir);
-  hAirspaceBitmap[5]=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBRUSH_AIRSPACE6." IMG_EXT),sDir);
-  hAirspaceBitmap[6]=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sBRUSH_AIRSPACE7." IMG_EXT),sDir);
-  hAirspaceBitmap[7]=LKLoadBitmap(srcfile);
+  hAirspaceBitmap[0]=LKLoadBitmap(_T("BRUSH_AIRSPACE0"));
+  hAirspaceBitmap[1]=LKLoadBitmap(_T("BRUSH_AIRSPACE1"));
+  hAirspaceBitmap[2]=LKLoadBitmap(_T("BRUSH_AIRSPACE2"));
+  hAirspaceBitmap[3]=LKLoadBitmap(_T("BRUSH_AIRSPACE3"));
+  hAirspaceBitmap[4]=LKLoadBitmap(_T("BRUSH_AIRSPACE4"));
+  hAirspaceBitmap[5]=LKLoadBitmap(_T("BRUSH_AIRSPACE5"));
+  hAirspaceBitmap[6]=LKLoadBitmap(_T("BRUSH_AIRSPACE6"));
+  hAirspaceBitmap[7]=LKLoadBitmap(_T("BRUSH_AIRSPACE7"));
 
-  _stprintf(srcfile,_T("%sBRUSH_ABOVETERR." IMG_EXT),sDir);
-  hAboveTerrainBitmap=LKLoadBitmap(srcfile);
+  hAboveTerrainBitmap=LKLoadBitmap(_T("BRUSH_ABOVETERR"));
 #endif
   
-  _stprintf(srcfile,_T("%sDAM%s." IMG_EXT),sDir,hires_suffix);
-  hDam=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sSENDER%s." IMG_EXT),sDir,hires_suffix);
-  hSender=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sNDB%s." IMG_EXT),sDir,hires_suffix);
-  hNdb=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sVOR%s." IMG_EXT),sDir,hires_suffix);
-  hVor=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sCOOLTOWER%s." IMG_EXT),sDir,hires_suffix);
-  hCoolTower=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sTUNNEL%s." IMG_EXT),sDir,hires_suffix);
-  hTunnel=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sPOWERPLANT%s." IMG_EXT),sDir,hires_suffix);
-  hPowerPlant=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sCASTLE%s." IMG_EXT),sDir,hires_suffix);
-  hCastle=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sLKTHERMAL%s." IMG_EXT),sDir,hires_suffix);
-  hLKThermal=LKLoadBitmap(srcfile);
-  _stprintf(srcfile,_T("%sLKTHERMAL_RED%s." IMG_EXT),sDir,hires_suffix);
-  hLKThermalRed=LKLoadBitmap(srcfile);
+  hDam=LKLoadBitmap(_T("DAM"), UseHiresBitmap);
+  hSender=LKLoadBitmap(_T("SENDER"), UseHiresBitmap);
+  hNdb=LKLoadBitmap(_T("NDB"), UseHiresBitmap);
+  hVor=LKLoadBitmap(_T("VOR"), UseHiresBitmap);
+  hCoolTower=LKLoadBitmap(_T("COOLTOWER"), UseHiresBitmap);
+  hTunnel=LKLoadBitmap(_T("TUNNEL"), UseHiresBitmap);
+  hPowerPlant=LKLoadBitmap(_T("POWERPLANT"), UseHiresBitmap);
+  hCastle=LKLoadBitmap(_T("CASTLE"), UseHiresBitmap);
+  hLKThermal=LKLoadBitmap(_T("LKTHERMAL"), UseHiresBitmap);
+  hLKThermalRed=LKLoadBitmap(_T("LKTHERMAL_RED"), UseHiresBitmap);
 
-  _stprintf(srcfile,_T("%sPICTORI%s." IMG_EXT),sDir,hires_suffix);
-  hLKPictori=LKLoadBitmap(srcfile);
+  hLKPictori=LKLoadBitmap(_T("PICTORI"), UseHiresBitmap);
   
-  _stprintf(srcfile,_T("%sMC_VARIO_TICK%s." IMG_EXT),sDir,hires_suffix);
-  hMcVario=LKLoadBitmap(srcfile);
+  hMcVario=LKLoadBitmap(_T("MC_VARIO_TICK"), UseHiresBitmap);
 }
 
 
@@ -386,33 +292,14 @@ void LKLoadProfileBitmaps(void) {
   StartupStore(_T("... Loading Profile Bitmaps\n"));
   #endif
 
-  TCHAR srcfile[MAX_PATH];
-  TCHAR sDir[MAX_PATH];
-  TCHAR hires_suffix[4];
-
-  SystemPath(sDir,TEXT(LKD_BITMAPS));
-  _tcscat(sDir, _T(DIRSEP));
-        
-  if (UseHiresBitmap)
-	_tcscpy(hires_suffix,_T("_H"));
-  else
-	_tcscpy(hires_suffix,_T(""));
-
-
   if ( ISPARAGLIDER ) {
-	_stprintf(srcfile,_T("%sICOCRUISE_PG." IMG_EXT),sDir);
-	hCruise=LKLoadBitmap(srcfile);
-	_stprintf(srcfile,_T("%sICOCLIMB_PG." IMG_EXT),sDir);
-	hClimb=LKLoadBitmap(srcfile);
-	_stprintf(srcfile,_T("%sICOFINAL_PG." IMG_EXT),sDir);
-	hFinalGlide=LKLoadBitmap(srcfile);
+	hCruise=LKLoadBitmap(_T("ICOCRUISE_PG"));
+	hClimb=LKLoadBitmap(_T("ICOCLIMB_PG"));
+	hFinalGlide=LKLoadBitmap(_T("ICOFINAL_PG"));
   } else {
-	_stprintf(srcfile,_T("%sICOCRUISE_AC." IMG_EXT),sDir);
-	hCruise=LKLoadBitmap(srcfile);
-	_stprintf(srcfile,_T("%sICOCLIMB_AC." IMG_EXT),sDir);
-	hClimb=LKLoadBitmap(srcfile);
-	_stprintf(srcfile,_T("%sICOFINAL_AC." IMG_EXT),sDir);
-	hFinalGlide=LKLoadBitmap(srcfile);
+    hCruise=LKLoadBitmap(_T("ICOCRUISE_AC"));
+    hClimb=LKLoadBitmap(_T("ICOCLIMB_AC"));
+    hFinalGlide=LKLoadBitmap(_T("ICOFINAL_AC"));
   }
 
   //
@@ -422,28 +309,20 @@ void LKLoadProfileBitmaps(void) {
 	// WinPilot style
 #ifdef OLD_WINPILOT_BITMAPS
 	case wpLandableDefault:
-		_stprintf(srcfile,_T("%sAPT1_REACH%s." IMG_EXT),sDir,hires_suffix);
-		hBmpAirportReachable=LKLoadBitmap(srcfile);
-		_stprintf(srcfile,_T("%sAPT1_UNREACH%s." IMG_EXT),sDir,hires_suffix);
-		hBmpAirportUnReachable=LKLoadBitmap(srcfile);
-		_stprintf(srcfile,_T("%sFLD1_REACH%s." IMG_EXT),sDir,hires_suffix);
-		hBmpFieldReachable=LKLoadBitmap(srcfile);
-		_stprintf(srcfile,_T("%sFLD1_UNREACH%s." IMG_EXT),sDir,hires_suffix);
-		hBmpFieldUnReachable=LKLoadBitmap(srcfile);
+		hBmpAirportReachable=LKLoadBitmap(_T("APT1_REACH"), UseHiresBitmap);
+		hBmpAirportUnReachable=LKLoadBitmap(_T("APT1_UNREACH"), UseHiresBitmap);
+		hBmpFieldReachable=LKLoadBitmap(_T("FLD1_REACH"), UseHiresBitmap);
+		hBmpFieldUnReachable=LKLoadBitmap(_T("FLD1_UNREACH"), UseHiresBitmap);
 
 		break;
 #endif
 	// LK style 
 	case wpLandableAltA:
 	default:
-		_stprintf(srcfile,_T("%sAPT2_REACH%s." IMG_EXT),sDir,hires_suffix);
-		hBmpAirportReachable=LKLoadBitmap(srcfile);
-		_stprintf(srcfile,_T("%sAPT2_UNREACH%s." IMG_EXT),sDir,hires_suffix);
-		hBmpAirportUnReachable=LKLoadBitmap(srcfile);
-		_stprintf(srcfile,_T("%sFLD2_REACH%s." IMG_EXT),sDir,hires_suffix);
-		hBmpFieldReachable=LKLoadBitmap(srcfile);
-		_stprintf(srcfile,_T("%sFLD2_UNREACH%s." IMG_EXT),sDir,hires_suffix);
-		hBmpFieldUnReachable=LKLoadBitmap(srcfile);
+		hBmpAirportReachable=LKLoadBitmap(_T("APT2_REACH"), UseHiresBitmap);
+		hBmpAirportUnReachable=LKLoadBitmap(_T("APT2_UNREACH"), UseHiresBitmap);
+		hBmpFieldReachable=LKLoadBitmap(_T("FLD2_REACH"), UseHiresBitmap);
+		hBmpFieldUnReachable=LKLoadBitmap(_T("FLD2_UNREACH"), UseHiresBitmap);
 
 		break;
 
