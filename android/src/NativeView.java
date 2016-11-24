@@ -30,6 +30,8 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.app.Activity;
@@ -44,9 +46,11 @@ import android.content.Intent;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Configuration;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.webkit.MimeTypeMap;
+
 
 class EGLException extends Exception {
   public EGLException(String _msg) {
@@ -381,6 +385,20 @@ class NativeView extends SurfaceView
     opts.inScaled = false;
 
     return BitmapFactory.decodeResource(resources, resourceId, opts);
+  }
+
+  /**
+   * Loads an image from assets.
+   */
+  private Bitmap loadAssetsBitmap(String pathName) {
+    AssetManager assetManager = resources.getAssets();
+    try {
+      InputStream istr = assetManager.open(pathName);
+      return BitmapFactory.decodeStream(istr);
+    } catch (IOException e) {
+      Log.e(TAG, "NativeView.loadAssetsBitmap('" + pathName + "') error", e);
+    }
+    return null;
   }
 
   /**

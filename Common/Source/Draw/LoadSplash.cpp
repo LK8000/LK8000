@@ -18,43 +18,49 @@
 
 LKBitmap LoadSplash(const TCHAR *splashfile) {
 
- LKBitmap hWelcomeBitmap;
- TCHAR sDir[MAX_PATH];
- TCHAR srcfile[MAX_PATH];
- TCHAR fprefix[20];
+#ifdef ANDROID
+    const TCHAR* sDir = _T(LKD_BITMAPS);
+#else
+    TCHAR sDir[MAX_PATH];
+    SystemPath(sDir,_T(LKD_BITMAPS));
+#endif
 
- _tcscpy(fprefix,splashfile);
 
- SystemPath(sDir,TEXT(LKD_BITMAPS));
+    TCHAR srcfile[MAX_PATH];
 
     // first look for lkstart_480x272.bmp for example
-    _stprintf(srcfile,_T("%s" DIRSEP "%s_%s." IMG_EXT),sDir, fprefix,GetSizeSuffix() );
+    _stprintf(srcfile,_T("%s" DIRSEP "%s_%s." IMG_EXT),sDir, splashfile,GetSizeSuffix() );
     if (!lk::filesystem::exist(srcfile)) {
         switch(ScreenGeometry) {
             case SCREEN_GEOMETRY_43:
             if (ScreenLandscape)
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_640x480." IMG_EXT),sDir, fprefix );
+                _stprintf(srcfile,_T("%s" DIRSEP "%s_640x480." IMG_EXT),sDir, splashfile );
             else
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x640." IMG_EXT),sDir, fprefix );
+                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x640." IMG_EXT),sDir, splashfile );
 	        break;
 	    case SCREEN_GEOMETRY_53:
             if (ScreenLandscape)
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_800x480." IMG_EXT),sDir, fprefix );
+                _stprintf(srcfile,_T("%s" DIRSEP "%s_800x480." IMG_EXT),sDir, splashfile );
             else
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x800." IMG_EXT),sDir, fprefix );
+                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x800." IMG_EXT),sDir, splashfile );
                 break;
 	    case SCREEN_GEOMETRY_169:
             if (ScreenLandscape)
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x272." IMG_EXT),sDir, fprefix );
+                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x272." IMG_EXT),sDir, splashfile );
             else
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_272x480." IMG_EXT),sDir, fprefix );
+                _stprintf(srcfile,_T("%s" DIRSEP "%s_272x480." IMG_EXT),sDir, splashfile );
                 break;
 	    default:
 	        break;
-	}
+	    }
     }
 
+    LKBitmap hWelcomeBitmap;
+#ifdef ANDROID
+    hWelcomeBitmap.LoadAssetsFile(srcfile);
+#else
     hWelcomeBitmap.LoadFromFile(srcfile);
+#endif
     return hWelcomeBitmap;
 }
 

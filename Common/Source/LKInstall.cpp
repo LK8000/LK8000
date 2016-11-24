@@ -303,7 +303,7 @@ bool CheckRegistryProfile() {
     return lk::filesystem::exist(profilePath);
 }
 
-
+#ifndef ANDROID
 bool CheckSystemBitmaps() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
@@ -311,6 +311,7 @@ bool CheckSystemBitmaps() {
   _stprintf(srcfile,TEXT("%s%s_BITMAPSH"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
+#endif
 
 bool CheckFilesystemWritable() {
   TCHAR srcdir[MAX_PATH];

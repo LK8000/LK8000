@@ -48,6 +48,7 @@ class NativeView {
   static jmethodID setRequestedOrientationID;
   static jmethodID swap_method;
   static jmethodID loadResourceBitmap_method;
+  static jmethodID loadAssetsBitmap_method;
   static jmethodID loadFileBitmap_method;
   static jmethodID bitmapToTexture_method;
   static jmethodID open_file_method;
@@ -129,6 +130,11 @@ public:
   jobject loadResourceBitmap(const char *name) {
     Java::String name2(env, name);
     return env->CallObjectMethod(obj, loadResourceBitmap_method, name2.Get());
+  }
+
+  jobject loadAssetsBitmap(const char *name) {
+    Java::String name2(env, name);
+    return env->CallObjectMethod(obj, loadAssetsBitmap_method, name2.Get());
   }
 
   jobject loadFileBitmap(const char *path) {

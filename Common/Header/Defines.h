@@ -115,7 +115,16 @@
 #if !defined(DISABLEAUDIO) || !defined(DISABLEEXTAUDIO)
 #define LKD_SOUNDS	"_System\\_Sounds"
 #endif
-#define LKD_BITMAPS	"_System\\_Bitmaps"
+
+#ifdef ANDROID
+/*
+ * bitmaps are loaded from AssetManager, and '_' prefix are forbiden...
+ */
+    #define LKD_BITMAPS	"bitmaps"
+#else
+    #define LKD_BITMAPS	"_System\\_Bitmaps"
+#endif
+
 #define LKD_CONF	"_Configuration"
 #define LKD_TASKS	"_Tasks"
 #define LKD_WAYPOINTS	"_Waypoints"

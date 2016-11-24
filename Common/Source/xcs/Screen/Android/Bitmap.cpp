@@ -168,6 +168,19 @@ Bitmap::LoadStretch(ResourceId id, unsigned zoom)
 }
 
 bool
+Bitmap::LoadAssetsFile(const TCHAR *name) {
+  assert(name != nullptr && *name != _T('\0'));
+
+  Reset();
+
+  auto *new_bmp = native_view->loadAssetsBitmap(name);
+  if (new_bmp == nullptr)
+    return false;
+
+  return Set(Java::GetEnv(), new_bmp, Type::STANDARD);
+}
+
+bool
 Bitmap::LoadFile(const TCHAR *path)
 {
   assert(path != nullptr && *path != _T('\0'));

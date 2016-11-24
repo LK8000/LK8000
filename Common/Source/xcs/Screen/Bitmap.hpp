@@ -178,6 +178,10 @@ public:
 
   bool Load(ResourceId id, Type type=Type::STANDARD);
 
+#ifdef ANDROID
+  bool LoadAssetsFile(const TCHAR *name);
+#endif
+
   /**
    * Load a bitmap and stretch it by the specified zoom factor.
    */

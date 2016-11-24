@@ -28,14 +28,21 @@ static std::set<tstring> setMissingBitmap;
 #endif
 
 LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires = false) {
+    LKBitmap hBmp;
 
     TCHAR srcfile[MAX_PATH];
+#ifdef ANDROID
+
+    _stprintf(srcfile,_T(LKD_BITMAPS "/%s%s." IMG_EXT), sName, Hires?_T("_H"):_T(""));
+    bool success = hBmp.LoadAssetsFile(srcfile);
+#else
     TCHAR sDir[MAX_PATH];
     SystemPath(sDir,TEXT(LKD_BITMAPS));
-    _stprintf(srcfile,_T("%s DIRSEP %s%s." IMG_EXT),sDir, sName, Hires?_T("_H"):_T(""));
+    _stprintf(srcfile,_T("%s" DIRSEP "%s%s." IMG_EXT),sDir, sName, Hires?_T("_H"):_T(""));
 
-    LKBitmap hBmp;
-    if (!hBmp.LoadFromFile(srcfile)) {
+    bool success = hBmp.LoadFromFile(srcfile);
+#endif
+    if (!success) {
         auto ib = setMissingBitmap.insert(srcfile);
         if(ib.second) {
             StartupStore(_T(".... Failed to load file : <%s>%s"), srcfile, NEWLINE);

@@ -29,6 +29,7 @@ jmethodID NativeView::init_surface_method, NativeView::deinit_surface_method;
 jmethodID NativeView::setRequestedOrientationID;
 jmethodID NativeView::swap_method;
 jmethodID NativeView::loadResourceBitmap_method;
+jmethodID NativeView::loadAssetsBitmap_method;
 jmethodID NativeView::loadFileBitmap_method;
 jmethodID NativeView::bitmapToTexture_method;
 jmethodID NativeView::open_file_method;
@@ -48,6 +49,8 @@ NativeView::Initialise(JNIEnv *env)
   swap_method = env->GetMethodID(cls, "swap", "()V");
 
   loadResourceBitmap_method = env->GetMethodID(cls, "loadResourceBitmap",
+                                               "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
+  loadAssetsBitmap_method = env->GetMethodID(cls, "loadAssetsBitmap",
                                                "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
   loadFileBitmap_method = env->GetMethodID(cls, "loadFileBitmap",
                                            "(Ljava/lang/String;)Landroid/graphics/Bitmap;");

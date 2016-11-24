@@ -52,7 +52,11 @@ static LKBitmap ProfileBitmap;
 
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
+
+#ifndef ANDROID
 extern bool CheckSystemBitmaps(void);
+#endif
+
 void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, const LKColor& rgbcolor, int wtmode);
 
 // This global is set true on startup only here, and it is cleared by the LoadNewTask
@@ -812,6 +816,11 @@ short dlgStartupShowModal(void) {
         goto _exit;
     }
 
+#ifndef ANDROID
+    /*
+     * Bitmaps files are inside apk, no need to check
+     */
+
     if (!CheckSystemBitmaps()) {
         TCHAR mydir[MAX_PATH];
         TCHAR mes[MAX_PATH];
@@ -824,6 +833,7 @@ short dlgStartupShowModal(void) {
         BeforeShutdown();
         goto _exit;
     }
+#endif
 
     extern unsigned short Bitmaps_Errors;
     if (Bitmaps_Errors) {
