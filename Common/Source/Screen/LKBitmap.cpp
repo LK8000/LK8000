@@ -19,42 +19,12 @@
 #include "resource_data.h"
 #endif
 
-LKBitmap::LKBitmap(LKBitmap&& Bitmap) {
-#ifdef WIN32
-    bitmap = Bitmap.bitmap;
-    Bitmap.bitmap = nullptr;
-#elif defined(USE_MEMORY_CANVAS)
-    std::swap(buffer, Bitmap.buffer);
-#elif defined(ENABLE_OPENGL)
-  std::swap(texture, Bitmap.texture);
-  std::swap(size, Bitmap.size);
-  std::swap(interpolation, Bitmap.interpolation);
-#else
-#warning "Not Implemented"
-#endif
-}
-
 LKBitmap::LKBitmap() {
 
 }
 
 LKBitmap::~LKBitmap() {
     Release();
-}
-
-LKBitmap& LKBitmap::operator= (LKBitmap&& Bitmap) {
-#ifdef WIN32
-    std::swap(bitmap, Bitmap.bitmap);
-#elif defined(USE_MEMORY_CANVAS)
-    std::swap(buffer, Bitmap.buffer);
-#elif defined(ENABLE_OPENGL)
-  std::swap(texture, Bitmap.texture);
-  std::swap(size, Bitmap.size);
-  std::swap(interpolation, Bitmap.interpolation);
-#else
-#warning "Not Implemented"
-#endif
-    return * this;
 }
 
 bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {

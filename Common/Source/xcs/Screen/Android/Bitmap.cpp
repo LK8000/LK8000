@@ -40,9 +40,46 @@ static const struct {
 #endif
 
 Bitmap::Bitmap(ResourceId id)
-  :bmp(nullptr), texture(nullptr), interpolation(false)
 {
   Load(id);
+}
+
+Bitmap::Bitmap(Bitmap &&src)
+  :bmp(src.bmp),
+   type(src.type),
+   texture(src.texture),
+   size(src.size),
+   interpolation(src.interpolation),
+   flipped(src.flipped)
+{
+  src.bmp = nullptr;
+  src.texture = nullptr;
+
+  if (IsDefined()) {
+    RemoveSurfaceListener(src);
+    AddSurfaceListener(*this);
+  }
+}
+
+Bitmap& Bitmap::operator=(Bitmap &&src)
+{
+  std::swap(bmp, src.bmp);
+  std::swap(type , src.type);
+  std::swap(texture, src.texture);
+  std::swap(size, src.size);
+  std::swap(interpolation, src.interpolation);
+
+  if(!src.IsDefined() && IsDefined()) {
+    RemoveSurfaceListener(src);
+    AddSurfaceListener(*this);
+  }
+
+  if(src.IsDefined() && !IsDefined()) {
+    RemoveSurfaceListener(*this);
+    AddSurfaceListener(src);
+  }
+
+  return (*this);
 }
 
 static const char *

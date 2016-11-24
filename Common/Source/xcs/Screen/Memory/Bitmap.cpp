@@ -28,6 +28,19 @@ Copyright_License {
 
 #include <assert.h>
 
+Bitmap::Bitmap(Bitmap &&src)
+  :buffer(src.buffer)
+{
+  src.buffer = WritableImageBuffer<BitmapPixelTraits>::Empty();
+}
+
+Bitmap& Bitmap::operator=(Bitmap &&src)
+{
+  std::swap(buffer, src.buffer);
+
+  return (*this);
+}
+
 bool
 Bitmap::Load(const UncompressedImage &uncompressed, Type type)
 {

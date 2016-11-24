@@ -17,12 +17,12 @@
 class LKBitmap final : public Bitmap {
 public:
 	LKBitmap();
-	LKBitmap(LKBitmap&& orig);
+	LKBitmap(LKBitmap&& orig) = default;
 	LKBitmap(const LKBitmap& orig) = delete;
 
-	virtual ~LKBitmap();
+	~LKBitmap();
 
-	LKBitmap& operator=(LKBitmap&& );
+	LKBitmap& operator=(LKBitmap&& ) = default;
 	LKBitmap& operator=(const LKBitmap& Bitmap) = delete;
 
 	void Release() { Reset(); }

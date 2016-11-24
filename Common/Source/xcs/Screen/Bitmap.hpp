@@ -60,7 +60,7 @@ using BitmapPixelTraits = BGRAPixelTraits;
 /**
  * An image loaded from storage.
  */
-class Bitmap
+    class Bitmap
 #ifdef ANDROID
              : private GLSurfaceListener
 #endif
@@ -81,34 +81,33 @@ public:
 
 protected:
 #ifdef ANDROID
-  jobject bmp;
+  jobject bmp = nullptr;
 
   Type type;
 #endif
 
 #ifdef ENABLE_OPENGL
-  GLTexture *texture;
+  GLTexture *texture = nullptr;
   PixelSize size;
 
-  bool interpolation;
+  bool interpolation = false;
+
+  /**
+   * Flip up/down?  Some image formats (such as BMP and TIFF) store
+   * the bottom-most row first.
+   */
+  bool flipped = false;
 #elif defined(USE_MEMORY_CANVAS)
-  WritableImageBuffer<BitmapPixelTraits> buffer;
+  WritableImageBuffer<BitmapPixelTraits> buffer = WritableImageBuffer<BitmapPixelTraits>::Empty();
 #else
   HBITMAP bitmap;
 #endif
 
 public:
-#ifdef ENABLE_OPENGL
-  Bitmap()
-    :
-#ifdef ANDROID
-    bmp(nullptr),
-#endif
-    texture(nullptr), interpolation(false) {}
-#elif defined(USE_MEMORY_CANVAS)
-  constexpr Bitmap():buffer(WritableImageBuffer<BitmapPixelTraits>::Empty()) {}
+#ifdef USE_GDI
+  Bitmap();
 #else
-  Bitmap():bitmap(nullptr) {}
+  Bitmap() = default;
 #endif
 
   explicit Bitmap(ResourceId id);
@@ -116,6 +115,10 @@ public:
 #if !defined(USE_GDI) && !defined(ANDROID)
   Bitmap(ConstBuffer<void> buffer);
 #endif
+
+  Bitmap(Bitmap &&src);
+  Bitmap& operator=(Bitmap &&src );
+
 
   ~Bitmap() {
     Reset();

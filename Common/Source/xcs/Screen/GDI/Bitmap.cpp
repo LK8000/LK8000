@@ -34,6 +34,7 @@ Copyright_License {
 #endif
 
 #include <assert.h>
+#include <algorithm>
 
 #ifdef HAVE_IMGDECMP_DLL
 
@@ -89,6 +90,25 @@ load_imgdecmp_file(const TCHAR *path)
 }
 
 #endif /* HAVE_IMGDECMP_DLL */
+
+Bitmap::Bitmap() : bitmap()
+{
+
+}
+
+
+Bitmap::Bitmap(Bitmap &&src)
+  :bitmap(src.bitmap)
+{
+  src.bitmap = nullptr;
+}
+
+Bitmap& Bitmap::operator=(Bitmap &&src)
+{
+  std::swap(bitmap, src.bitmap);
+
+	return (*this);
+}
 
 bool
 Bitmap::LoadFile(const TCHAR *path)
