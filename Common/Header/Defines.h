@@ -111,18 +111,24 @@
  */
 #define LKD_HOME	LKDATADIR
 #define LKD_LOGS	"_Logger"
-#define LKD_SYSTEM	"_System"
-#if !defined(DISABLEAUDIO) || !defined(DISABLEEXTAUDIO)
-#define LKD_SOUNDS	"_System\\_Sounds"
-#endif
 
 #ifdef ANDROID
 /*
- * bitmaps are loaded from AssetManager, and '_' prefix are forbiden...
- */
-    #define LKD_BITMAPS	"bitmaps"
+ * system files are loaded from AssetManager, and '_' prefix are forbiden...
+ *  for all file in this directory :
+ *....- are inside apk bundle
+ *    - must be loaded using zzip from native code or using java code.
+ *    - are read only and hidden for users
+  */
+    #define LKD_SYSTEM	     "assets"
+    #define LKD_SOUNDS	     "sounds" // bitmap are loaded from java ressouce
+    #define LKD_BITMAPS      "bitmaps" // bitmap are loaded from java using AssetManager
+    #define LKD_SYS_LANGUAGE "assets/language"
+    #define LKD_SYS_POLAR    "assets/polars"
 #else
-    #define LKD_BITMAPS	"_System\\_Bitmaps"
+    #define LKD_SYSTEM       "_System"
+    #define LKD_SOUNDS       "_System\\_Sounds"
+    #define LKD_BITMAPS      "_System\\_Bitmaps"
 #endif
 
 #define LKD_CONF	"_Configuration"
