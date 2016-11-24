@@ -40,7 +40,7 @@ TextUtil::Initialise(JNIEnv *_env)
 {
   env = _env;
 
-  cls.Find(env, "org/xcsoar/TextUtil");
+  cls.Find(env, "org/LK8000/TextUtil");
 
   midTextUtil = env->GetMethodID(cls, "<init>", "(IIIZ)V");
   midGetFontMetrics = env->GetMethodID(cls, "getFontMetrics", "([I)V");

@@ -36,7 +36,7 @@ extern "C" {
 
 gcc_visibility_default
 JNIEXPORT jint JNICALL
-Java_org_lk8000_NativeView_getEglContextClientVersion(JNIEnv *env, jobject obj)
+Java_org_LK8000_NativeView_getEglContextClientVersion(JNIEnv *env, jobject obj)
 {
 #ifdef HAVE_GLES2
   return 2;
@@ -50,7 +50,7 @@ extern void Shutdown();
 
 gcc_visibility_default
 JNIEXPORT jboolean JNICALL
-Java_org_lk8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
+Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
                                             jobject _context,
                                             jint width, jint height,
                                             jint xdpi, jint ydpi,
@@ -83,7 +83,7 @@ Java_org_lk8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
 gcc_visibility_default
 JNIEXPORT void JNICALL
-Java_org_xcsoar_NativeView_runNative(JNIEnv *env, jobject obj)
+Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj)
 {
     OpenGL::Initialise();
     MainWindow.RunModalLoop();
@@ -91,7 +91,7 @@ Java_org_xcsoar_NativeView_runNative(JNIEnv *env, jobject obj)
 
 gcc_visibility_default
 JNIEXPORT void JNICALL
-Java_org_xcsoar_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
+Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
 {
   Shutdown();
 
@@ -111,7 +111,7 @@ Java_org_xcsoar_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
 
 gcc_visibility_default
 JNIEXPORT void JNICALL
-Java_org_xcsoar_NativeView_resizedNative(JNIEnv *env, jobject obj,
+Java_org_LK8000_NativeView_resizedNative(JNIEnv *env, jobject obj,
                                          jint width, jint height)
 {
   if (event_queue == nullptr)
@@ -127,7 +127,7 @@ Java_org_xcsoar_NativeView_resizedNative(JNIEnv *env, jobject obj,
 
 gcc_visibility_default
 JNIEXPORT void JNICALL
-Java_org_xcsoar_NativeView_pauseNative(JNIEnv *env, jobject obj)
+Java_org_LK8000_NativeView_pauseNative(JNIEnv *env, jobject obj)
 {
   if (event_queue == nullptr)
     /* pause before we have initialized the event subsystem does not
@@ -142,11 +142,23 @@ Java_org_xcsoar_NativeView_pauseNative(JNIEnv *env, jobject obj)
 
 gcc_visibility_default
 JNIEXPORT void JNICALL
-Java_org_xcsoar_NativeView_resumeNative(JNIEnv *env, jobject obj)
+Java_org_LK8000_NativeView_resumeNative(JNIEnv *env, jobject obj)
 {
   if (event_queue == nullptr)
     /* there is nothing here yet which can be resumed */
     exit(0);
 
   MainWindow.Resume();
+}
+
+gcc_visibility_default
+JNIEXPORT void JNICALL
+Java_org_LK8000_NativeView_setBatteryPercent(JNIEnv *env, jobject, jint, jint) {
+    #warning " Not Implemented"
+}
+
+gcc_visibility_default
+JNIEXPORT void JNICALL
+Java_org_LK8000_NativeView_setHapticFeedback(JNIEnv * env, jobject, jboolean) {
+    #warning " Not Implemented"
 }

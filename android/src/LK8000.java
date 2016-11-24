@@ -122,8 +122,9 @@ public class LK8000 extends Activity {
     tv.setText("Loading LK8000...");
     setContentView(tv);
 
-    registerReceiver(batteryReceiver,
-                     new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+/*
+    registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+*/
   }
 
   private void quit() {

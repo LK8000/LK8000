@@ -37,7 +37,7 @@ jmethodID NativeView::getNetState_method;
 void
 NativeView::Initialise(JNIEnv *env)
 {
-  cls.Find(env, "org/xcsoar/NativeView");
+  cls.Find(env, "org/LK8000/NativeView");
 
   textureNonPowerOfTwo_field =
     env->GetStaticFieldID(cls, "textureNonPowerOfTwo", "Z");
