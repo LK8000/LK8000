@@ -105,7 +105,9 @@ extern void PreloadInitialisation(bool ask);
 extern bool LoadModelFromProfile(void);
 #endif
 
+#ifndef ANDROID
 Poco::NamedMutex Mutex("LOCK8000");
+#endif
 
 static bool realexitforced=false;
 
@@ -470,7 +472,9 @@ void Shutdown() {
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
 
+#ifndef ANDROID
   Mutex.unlock();
+#endif
 
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated, realexitforced=%d%s"),realexitforced,NEWLINE);
@@ -524,11 +528,11 @@ int main(int argc, char *argv[]) {
 #endif
 
   // use mutex to avoid multiple instances of lk8000 be running
-  #if (!((WINDOWSPC>0) && TESTBENCH))
+#if (!((WINDOWSPC>0) && TESTBENCH)) && !defined(ANDROID)
    if (!Mutex.tryLock()) {
 	  return(-2);
   }
-  #endif
+#endif
 
   #if TRACETHREAD
   _THREADID_WINMAIN=GetCurrentThreadId();
