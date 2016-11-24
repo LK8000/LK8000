@@ -34,6 +34,7 @@ jmethodID NativeView::loadFileBitmap_method;
 jmethodID NativeView::bitmapToTexture_method;
 jmethodID NativeView::open_file_method;
 jmethodID NativeView::getNetState_method;
+jmethodID NativeView::getPackagePath_method;
 
 void
 NativeView::Initialise(JNIEnv *env)
@@ -61,6 +62,8 @@ NativeView::Initialise(JNIEnv *env)
                                       "(Ljava/lang/String;)V");
 
   getNetState_method = env->GetMethodID(cls, "getNetState", "()I");
+
+  getPackagePath_method = env->GetMethodID(cls, "getPackagePath", "()Ljava/lang/String;");
 }
 
 void

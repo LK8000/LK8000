@@ -53,6 +53,7 @@ class NativeView {
   static jmethodID bitmapToTexture_method;
   static jmethodID open_file_method;
   static jmethodID getNetState_method;
+  static jmethodID getPackagePath_method;
 
 public:
   /**
@@ -168,6 +169,17 @@ public:
   int getNetState() const {
     return env->CallIntMethod(obj, getNetState_method);
   }
+
+  void getPackagePath(char *buffer, size_t max_size) const {
+
+    jstring path = (jstring)env->CallObjectMethod(obj, getPackagePath_method);
+
+    if (path != nullptr) {
+      Java::String path2(env, path);
+      path2.CopyTo(buffer, max_size);
+    }
+  }
+
 };
 
 #endif

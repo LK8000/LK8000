@@ -32,6 +32,8 @@ import javax.microedition.khronos.opengles.GL10;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
+import android.content.pm.PackageManager;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.app.Activity;
@@ -450,6 +452,18 @@ class NativeView extends SurfaceView
 
   private int getNetState() {
     return NetUtil.getNetState();
+  }
+
+  private final String getPackagePath() {
+    Context context = getContext();
+
+    PackageManager pm = context.getPackageManager();
+    try {
+      return pm.getApplicationInfo(context.getPackageName(), 0).sourceDir;
+    } catch (Exception e) {
+      Log.e(TAG, "NativeView.getPackagePath() error", e);
+    }
+    return "";
   }
 
   private void swap() {

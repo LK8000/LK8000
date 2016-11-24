@@ -15,7 +15,9 @@
 #include <android/log.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <Android/Main.hpp>
 #include "Android/Environment.hpp"
+#include "Android/NativeView.hpp"
 
 /**
  * Determine whether a text file contains a given string
@@ -164,6 +166,17 @@ const TCHAR * LKGetPath(TCHAR *localpath, TCHAR const *fileToSearch) {
 const TCHAR * LKGetSystemPath(void) {
 #ifdef KOBO
     return _T("/opt/" LKDATADIR "/share/");
+#elif defined(ANDROID)
+    // we use assets stored in apk, so, system directory is apk file....
+
+    static TCHAR szPakagePath[MAX_PATH] = {0};
+    if(szPakagePath[0] == '\0') {
+
+        native_view->getPackagePath(szPakagePath, sizeof(szPakagePath));
+        strcat(szPakagePath, "/");
+    }
+    return szPakagePath;
+
 #else
     return LKGetLocalPath();
 #endif
