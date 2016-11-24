@@ -18,7 +18,7 @@
 #include "Screen/SingleWindow.hpp"
 #include "WndPaint.h"
 
-class WndMainBase : public virtual WndPaint<SingleWindow> {
+class WndMainBase : public WndPaint<SingleWindow> {
     typedef WndPaint<SingleWindow> __super;
 public:
     WndMainBase() { }
