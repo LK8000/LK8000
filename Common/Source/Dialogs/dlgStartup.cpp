@@ -765,6 +765,7 @@ short dlgStartupShowModal(void) {
         goto _exit;
     }
 
+#ifndef ANDROID
     if (!CheckDataDir()) {
         TCHAR mydir[MAX_PATH];
         TCHAR mes[MAX_PATH];
@@ -855,6 +856,7 @@ short dlgStartupShowModal(void) {
         BeforeShutdown();
         goto _exit;
     }
+#endif
 
     extern bool CheckFilesystemWritable(void);
     if (!CheckFilesystemWritable()) {
