@@ -146,6 +146,7 @@
 #define POCO_ARCH_SH      0x0d
 #define POCO_ARCH_NIOS2   0x0e
 #define POCO_ARCH_ARM64   0x0f
+#define POCO_ARCH_AARCH64 0x10
 
 
 #if defined(__ALPHA) || defined(__alpha) || defined(__alpha__) || defined(_M_ALPHA)
@@ -217,9 +218,13 @@
 	#else
 		#define POCO_ARCH_BIG_ENDIAN 1
 	#endif
-
+#elif defined(__AARCH64EL__)
+	#define POCO_ARCH POCO_ARCH_AARCH64
+	#define POCO_ARCH_LITTLE_ENDIAN 1
+#elif defined(__AARCH64EB__)
+	#define POCO_ARCH POCO_ARCH_AARCH64
+	#define POCO_ARCH_BIG_ENDIAN 1
 #endif
-
 
 #if !defined(POCO_ARCH)
 	#error "Unknown Hardware Architecture."
