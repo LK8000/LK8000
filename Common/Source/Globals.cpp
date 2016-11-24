@@ -310,7 +310,9 @@ void Globals_Init(void) {
 
   debounceTimeout = 250; //250ms
 
+#ifndef ANDROID
   WarningHomeDir=false;
+#endif
 
   ScreenSize=0;
   ScreenSizeX=0;

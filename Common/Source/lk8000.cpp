@@ -151,11 +151,13 @@ bool Startup(const TCHAR* szCmdLine) {
     }
   #endif
 
+#ifndef ANDROID
   bool datadir = CheckDataDir();
   if (!datadir) {
     // we cannot call startupstore, no place to store log!
     WarningHomeDir=true;
   }
+#endif
 
   #if TESTBENCH
   TCHAR szPath[MAX_PATH] = {0};
@@ -172,6 +174,8 @@ bool Startup(const TCHAR* szCmdLine) {
   CreateDirectoryIfAbsent(TEXT(LKD_TASKS));
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
+  CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
+  CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
 
   _stprintf(defaultProfileFile,_T("%s" LKD_CONF DIRSEP LKPROFILE), LKGetLocalPath());
   _tcscpy(startProfileFile, defaultProfileFile);
@@ -429,6 +433,7 @@ bool Startup(const TCHAR* szCmdLine) {
 
   GlobalRunning = true;
 
+#ifndef ANDROID
     if (WarningHomeDir) {
         TCHAR nopath[MAX_PATH];
         LocalPath(nopath, _T(""));
@@ -436,6 +441,8 @@ bool Startup(const TCHAR* szCmdLine) {
         MessageBoxX(nopath, MsgToken(1209), mbOk);
         WarningHomeDir = false;
     }
+#endif
+
 #ifdef UNDER_CE
     static bool checktickcountbug = true; // 100510
     if (checktickcountbug) {

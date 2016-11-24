@@ -148,7 +148,9 @@ GEXTERN int  RecentNumber;
 //  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
 GEXTERN short  SortedMode[MSM_TOP+1];
 
+#ifndef ANDROID
 GEXTERN bool  WarningHomeDir;
+#endif
 
 // Specials
 GEXTERN bool UseGeoidSeparation;
