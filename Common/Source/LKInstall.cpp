@@ -316,7 +316,7 @@ bool CheckSystemBitmaps() {
 bool CheckFilesystemWritable() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  SystemPath(srcdir, _T(LKD_SYSTEM));
+  LocalPath(srcdir, _T(""));
   _stprintf(srcfile,TEXT("%s%sEmptyTest.txt"),srcdir, _T(DIRSEP));
 
   FILE *stream;
@@ -324,5 +324,8 @@ bool CheckFilesystemWritable() {
   if (stream==NULL) return false;
   bool success = fprintf(stream,"FILESYSTEM WRITE CHECK, THIS FILE CAN BE REMOVED ANY TIME\n") >= 0;
   success &= fclose(stream) == 0;
+
+  lk::filesystem::deleteFile(srcfile);
+
   return(success);
 }
