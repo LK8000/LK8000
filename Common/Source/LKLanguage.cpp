@@ -71,12 +71,21 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	TCHAR sNum[10];
 	_stprintf(sNum,_T("%u"),inumber);
 
-  ZZIP_FILE *helpFile = openzip(sFile, "rb");
-	if (helpFile == NULL) {
-		StartupStore(_T("... Missing HELP FILE <%s>%s"),sFile,NEWLINE);
-		// we can only have one Help call at a time, from the user interface. Ok static sHelp.
-		_stprintf(sHelp,_T("ERROR, help file not found:\r\n%s\r\nCheck configuration!"),sFile);
-		return (sHelp);
+    ZZIP_FILE *helpFile = openzip(sFile, "rb");
+	if (!helpFile) {
+#ifdef LKD_SYS_LANGUAGE
+		SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
+		_stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
+		helpFile = openzip(sFile, "rt");
+#endif
+
+		if(!helpFile) {
+			StartupStore(_T("... Missing HELP FILE <%s>%s"), sFile, NEWLINE);
+			// we can only have one Help call at a time, from the user interface. Ok static sHelp.
+			_stprintf(sHelp, _T("ERROR, help file not found:\r\n%s\r\nCheck configuration!"),
+					  sFile);
+			return (sHelp);
+		}
 	}
 
 	// search for beginning of code index   @000
@@ -240,7 +249,11 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
   _tcscpy(szFile1,szFileName);
   tryeng:
   if (_tcslen(szFile1)==0) {
-	_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
+#ifdef LKD_SYS_LANGUAGE
+	SystemPath(szFile1, _T(LKD_SYS_LANGUAGE DIRSEP "ENGLISH.LNG" ));
+#else
+	_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\" LKD_LANGUAGE "\\ENGLISH.LNG"));
+#endif
 	english=true;
   }
   ExpandLocalPath(szFile1);
@@ -249,6 +262,13 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
   ZZIP_FILE *langFile = openzip(szFile1, "rt");
   if (langFile == NULL) {
 	if (english) {
+#ifdef ANDROID
+		SystemPath(szFile1, "assets/ENGLISH.LNG");
+		langFile = openzip(szFile1, "rt");
+		if(langFile) {
+			goto tryeng;
+		}
+#endif
 		StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
 		// critic point, no default language! BIG PROBLEM here!
 	} else {
@@ -348,8 +368,16 @@ bool LKLoadMessages(bool fillup) {
 
   ZZIP_FILE *hFile = openzip(sFile, "rt");
 	if (hFile == NULL) {
-	StartupStore(_T("... LoadText Missing Language File: <%s>%s"),sFile,NEWLINE);
-	return false;
+#ifdef LKD_SYS_LANGUAGE
+		SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
+		_stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
+		hFile = openzip(sFile, "rt");
+#endif
+	if(!hFile) {
+	    StartupStore(_T("... LoadText Missing Language File: <%s>%s"), sFile, NEWLINE);
+		return false;
+	}
+
   } else {
 	if (fillup)
 		StartupStore(_T(". Language fillup load file: <%s>%s"),sFile,NEWLINE);

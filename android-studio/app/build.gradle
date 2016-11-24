@@ -16,6 +16,17 @@ android {
                 arguments "-DBOOST_ROOT=$System.env.BOOST_ROOT"
             }
         }
+        copy {
+            from "../../Common/Data/Language/Translations"
+            into "src/main/assets/language"
+        }
+        copy {
+            from "../../Common/Data/Language"
+            into "src/main/assets/language"
+            include "ENG_MSG.TXT"
+            include "ENG_HELP.TXT"
+            include "ENGLISH.LNG"
+        }
     }
     buildTypes {
         release {
