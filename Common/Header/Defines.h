@@ -9,6 +9,7 @@
 #ifndef LK8000_DEFINES_H
 #define LK8000_DEFINES_H
 
+#include <math.h>
 
 // The StartupStore line separator, normally CRLF but previously it was only LF
 #define SNEWLINE        "\r\n"
