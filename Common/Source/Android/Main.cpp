@@ -18,6 +18,7 @@
 #include "Android/TextUtil.hpp"
 #include "Android/Context.hpp"
 #include "Android/Environment.hpp"
+#include "Android/InternalSensors.hpp"
 
 #include "Screen/OpenGL/Init.hpp"
 #include "Screen/Debug.hpp"
@@ -75,6 +76,7 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   NativeView::Initialise(env);
   Environment::Initialise(env);
   AndroidBitmap::Initialise(env);
+  InternalSensors::Initialise(env);
 
   context = new Context(env, _context);
 
@@ -124,6 +126,7 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   delete context;
   context = nullptr;
 
+  InternalSensors::Deinitialise(env);
   AndroidBitmap::Deinitialise(env);
   Environment::Deinitialise(env);
   NativeView::Deinitialise(env);

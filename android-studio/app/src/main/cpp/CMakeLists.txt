@@ -24,6 +24,7 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Android/Product.cpp
     Common/Source/xcs/Android/TextUtil.cpp
     Common/Source/xcs/Android/EventBridge.cpp
+	Common/Source/xcs/Android/InternalSensors.cpp
 
     Common/Source/xcs/Java/String.cxx
     Common/Source/xcs/Java/Global.cxx
@@ -121,6 +122,8 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Hardware/RotateDisplay.cpp
 
     Common/Source/xcs/Math/Angle.cpp
+    Common/Source/xcs/Math/KalmanFilter1d.cpp
+    Common/Source/xcs/Math/SelfTimingKalmanFilter1d.cpp
 
     Common/Source/OS/Linux/CpuLoad.cpp
     Common/Source/OS/Linux/Memory.cpp
