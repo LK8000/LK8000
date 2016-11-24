@@ -43,6 +43,11 @@
 #include <bcm_host.h>
 #endif
 
+#ifdef ANDROID
+#include "Android/Main.hpp"
+#include "Android/NativeView.hpp"
+#endif
+
 // windows
 WndMain MainWindow; // Main Window singleton
 
@@ -167,6 +172,13 @@ BOOL InitInstance()
     ScreenSizeY=iHeight;
   }
 #endif
+#ifdef ANDROID
+  const PixelSize Size = native_view->GetSize();
+  ScreenSizeX=Size.cx;
+  ScreenSizeY=Size.cy;
+#endif
+
+
   WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
 #endif
 #ifdef WIN32
@@ -176,7 +188,6 @@ BOOL InitInstance()
   WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
 #endif
 #endif
-
 
   #if TESTBENCH
   StartupStore(TEXT(". Create main window%s"),NEWLINE);
