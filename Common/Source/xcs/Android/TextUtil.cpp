@@ -96,9 +96,8 @@ TextUtil::create(const char *facename, int height, bool bold, bool italic)
 
   // construct org.xcsoar.TextUtil object
   localObject = env->NewObject(cls, midTextUtil,
-                               paramFamilyName.Get(),
                                paramStyle, paramTextSize,
-                               paint_flags);
+                               paint_flags, false);
   if (!localObject)
     return nullptr;
 
