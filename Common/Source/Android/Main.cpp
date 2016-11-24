@@ -1,7 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   Main.cpp
+ * Author: Bruno de Lacheisserie
+ *
+ * Created on October 18, 2016, 10:15 PM
  */
 
 #include "Main.hpp"
@@ -90,6 +95,8 @@ gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj)
 {
+    InitThreadDebug();
+
     OpenGL::Initialise();
     MainWindow.RunModalLoop();
 }
@@ -99,6 +106,8 @@ JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
 {
   Shutdown();
+
+  InitThreadDebug();
 
   delete event_queue;
   event_queue = nullptr;
@@ -127,7 +136,7 @@ Java_org_LK8000_NativeView_resizedNative(JNIEnv *env, jobject obj,
   if (event_queue == nullptr)
     return;
 
-  MainWindow.Resize({width, height});
+  MainWindow.AnnounceResize(width, height);
 
   event_queue->Purge(Event::RESIZE);
 

@@ -1,12 +1,10 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
  * File:   Main.h
- * Author: bruno
+ * Author: Bruno de Lacheisserie
  *
  * Created on October 18, 2016, 10:15 PM
  */
