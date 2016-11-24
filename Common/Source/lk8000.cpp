@@ -506,7 +506,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     (void)hPrevInstance;
 
     _hInstance = hInstance; // this need to be first, always !
-#ifndef UNDER_CE
+#ifdef UNDER_CE
+    const TCHAR* szCmdLine = _T("");
+#else
     const TCHAR* szCmdLine = GetCommandLine();
 #endif
 
