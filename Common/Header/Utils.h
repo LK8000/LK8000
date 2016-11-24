@@ -122,7 +122,6 @@ void SystemPath(TCHAR* buf, const TCHAR* file = TEXT(""));
 void GetPath(TCHAR* buffer, const TCHAR* file, const TCHAR* lkPath);
 const TCHAR *LKGetLocalPath(void);
 const TCHAR *LKGetSystemPath(void);
-const TCHAR *LKGetPath(TCHAR *localpath, const TCHAR *fileToSearch);
 
 void ExpandLocalPath(TCHAR* filein);
 void ContractLocalPath(TCHAR* filein);

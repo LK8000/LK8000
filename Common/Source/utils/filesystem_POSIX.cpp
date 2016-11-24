@@ -20,6 +20,7 @@
 #include <dirent.h>
 #include <fnmatch.h>
 #include <string>
+
 #ifdef UNICODE
 #error "POSIX & UNICODE is unsupported"
 #endif
@@ -262,11 +263,9 @@ bool lk::filesystem::getBasePath(TCHAR* szPath, size_t MaxSize) {
     return true;
 }
 
+#ifndef ANDROID
 bool lk::filesystem::getUserPath(TCHAR* szPath, size_t MaxSize) {
 
-#ifdef ANDROID
-#warning "not inplemented"
-#else
     szPath[0] = '\0';
     char* szHome = getenv("HOME");
     if (szHome) {
@@ -296,9 +295,10 @@ bool lk::filesystem::getUserPath(TCHAR* szPath, size_t MaxSize) {
         }
         return true;
     }
-#endif
+
     return false;
 }
+#endif
 
 void lk::filesystem::fixPath(TCHAR* szPath) {
     TCHAR * sz = _tcsstr(szPath, _T("\\"));

@@ -17,6 +17,8 @@
 #include "Android/Bitmap.hpp"
 #include "Android/TextUtil.hpp"
 #include "Android/Context.hpp"
+#include "Android/Environment.hpp"
+
 #include "Screen/OpenGL/Init.hpp"
 #include "Screen/Debug.hpp"
 #include "Event/Globals.hpp"
@@ -76,8 +78,6 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
   context = new Context(env, _context);
 
-  InitialiseDataPath();
-
   OpenGL::Initialise();
   TextUtil::Initialise(env);
 
@@ -120,7 +120,6 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   TextUtil::Deinitialise(env);
   OpenGL::Deinitialise();
   ScreenDeinitialized();
-  DeinitialiseDataPath();
 
   delete context;
   context = nullptr;
@@ -128,7 +127,6 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   AndroidBitmap::Deinitialise(env);
   Environment::Deinitialise(env);
   NativeView::Deinitialise(env);
-  Java::URL::Deinitialise(env);
 }
 
 extern "C"

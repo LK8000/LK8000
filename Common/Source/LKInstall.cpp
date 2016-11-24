@@ -42,6 +42,7 @@ void InstallSystem() {
   SystemPath(srcdir,TEXT(LKD_SYSTEM));
 
 
+
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
   // because GetFileAttributes can be very slow or hang if checking a directory. In any case testing a file is
   // much more faster.
@@ -56,11 +57,11 @@ void InstallSystem() {
 	#endif
   }
 
+#ifdef PNA
   if (  failure ) {
 	StartupStore(_T("------ WARNING: NO font will be installed on device (and thus wrong text size displayed)%s"),NEWLINE);
   } else {
 
-#ifdef PNA
 	if (GlobalModelType == MODELTYPE_PNA_HP31X) { // 091109
 
 		StartupStore(_T(". InstallSystem checking desktop links for HP31X%s"),NEWLINE);
@@ -133,9 +134,8 @@ void InstallSystem() {
 			}
 		}
 	}
-#endif
-
   }
+#endif
 
 #ifdef UNDER_CE
   // search for the main system directory on the real device
