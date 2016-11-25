@@ -39,7 +39,6 @@ bool sound_table::init() {
 			 str[array_size(str)-1] = _T('\0');  // added make sure the string is terminated
 			 _stprintf(str,"LKALARM,%d", i);
 			 set((sound_code_t)i,str);
-			 StartupStore(_T("..SOUND %d %s: %s" ), i,str,NEWLINE );
 		 }
 		 return true;
 	 }
