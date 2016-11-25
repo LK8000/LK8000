@@ -12,6 +12,8 @@
 #include "TCPPort.h"
 #include "utils/stringext.h"
 
+using namespace std::placeholders;
+
 #ifdef __linux__
 // Optionally disable the tcp/ip optimization, to reduce latencies
 // This has effect only on write operations.
@@ -25,11 +27,6 @@
 #ifdef linux
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
-typedef struct sockaddr_in SOCKADDR_IN;
-typedef struct sockaddr SOCKADDR;
-typedef struct in_addr IN_ADDR;
-
 #endif
 
 static LPCTSTR GetAddress(unsigned idx) {
@@ -184,3 +181,89 @@ unsigned TCPServerPort::RxThread() {
     }
     return 0U;
 }
+
+
+//UDP  ToninoTarsi 2016
+
+bool UDPServerPort::Connect() {
+
+	mSocket = socket(AF_INET, SOCK_DGRAM, 0);
+
+    if (mSocket == INVALID_SOCKET) {
+        unsigned dwError = WSAGetLastError();
+        StartupStore(_T("... UDPServerPort Port %u Unable to create socket, error=%u") NEWLINE, (unsigned)GetPortIndex() + 1, dwError); // 091117
+
+        return false;
+    }
+
+    //-------------------------
+    // Set the socket I/O mode: In this case FIONBIO
+    // enables or disables the blocking mode for the
+    // socket based on the numerical value of iMode.
+    // If iMode = 0, blocking is enabled;
+    // If iMode != 0, non-blocking mode is enabled.
+
+    u_long iMode = 1;
+    int iResult = ioctlsocket(mSocket, FIONBIO, &iMode);
+    if (iResult == SOCKET_ERROR) {
+        StartupStore(_T(".... ioctlsocket failed with error: %d%s"), iResult, NEWLINE);
+        // if failed, socket still in blocking mode, it's big problem
+    }
+
+    SOCKADDR_IN sin = { 0 };
+    sin.sin_addr.s_addr = htonl(INADDR_ANY);
+    sin.sin_port = htons(GetPort(GetPortIndex()));
+    sin.sin_family = AF_INET;
+
+    //set timer for recv_socket
+    struct timeval tv;
+    tv.tv_usec = mTimeout;
+    setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO,(char*)&tv,sizeof(tv));
+
+    if(bind (mSocket, (SOCKADDR *)&sin, sizeof(sin)) == SOCKET_ERROR) {
+        unsigned dwError = WSAGetLastError();
+        StartupStore(_T("... UDPServerPort %u <%s> Bind Failed, error=%u") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName(), dwError); // 091117
+
+        return false;
+    }
+    StartupStore(_T(". UDPServerPort %u Connect <%s> OK") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName());
+    return true;
+}
+
+unsigned UDPServerPort::RxThread() {
+
+	while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+		int nRecv;
+		socklen_t slen = sizeof(mSAddressClient);
+		_Buff_t szString;
+		if ((nRecv = recvfrom(mSocket, szString, sizeof(szString), 0, (struct sockaddr *) &mSAddressClient, &slen)) != -1)  {
+			szString[nRecv] = 0;
+			UpdateStatus();
+			if (nRecv > 0) {
+				std::for_each(std::begin(szString), std::begin(szString) + nRecv,std::bind(&UDPServerPort::ProcessChar, this, _1));
+			}
+		}
+	}
+	return 0U;
+}
+
+bool UDPServerPort::Write(const void *data, size_t length) {
+
+	if (mSocket == INVALID_SOCKET) {
+	        unsigned dwError = WSAGetLastError();
+	        StartupStore(_T("... UDPServerPort Port socket invalid. Errno : %d"),dwError);
+	        return false;
+	}
+    // if no client sended data yet we try to send to the default Android AP ( 192.168.43.1 ) on port 8000 for LKNET
+    if ( mSAddressClient.sin_port == 0 ) {
+        SOCKADDR_IN sDefault = { 0 };
+        sDefault.sin_addr.s_addr = inet_addr("192.168.43.1");
+        sDefault.sin_port = htons(8000);
+        sDefault.sin_family = AF_INET;
+        return sendto(mSocket, (const char *)data, length, 0, (sockaddr*)&sDefault, sizeof(sDefault));
+    }
+    else
+    	return sendto(mSocket, (const char *)data, length, 0, (sockaddr*)&mSAddressClient, sizeof(mSAddressClient));
+}
+
+

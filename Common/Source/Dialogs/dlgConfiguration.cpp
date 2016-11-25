@@ -1013,20 +1013,21 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
     bool bBt = ((_tcslen(szPortName) > 3) && (_tcsncmp(szPortName, _T("BT:"), 3) == 0));
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
+    bool bUDPServer = (_tcscmp(szPortName, _T("UDPServer")) == 0);
 
     // For com port properties, hide them for disable, internal, Bluetooth or TCP, show otherwise
     if (std::begin(PortPropName) + idx < std::end(PortPropName)) {
         std::for_each(
                 std::begin(PortPropName[idx]),
                 std::end(PortPropName[idx]),
-                std::bind(ShowWindowControl, wf, _1, !(bHide || bBt || bTCPClient || bTCPServer))
+                std::bind(ShowWindowControl, wf, _1, !(bHide || bBt || bTCPClient || bTCPServer || bUDPServer ))
                 );
 
         // Show Ip Addr only for TCPClient Port
         ShowWindowControl(wf, prpIpAddr[idx], bTCPClient);
 
-        // Show Ip Port for TCPClient and TCPServer Port
-        ShowWindowControl(wf, prpIpPort[idx], bTCPClient || bTCPServer);
+        // Show Ip Port for TCPClient and TCPServer Port or UDPServer
+        ShowWindowControl(wf, prpIpPort[idx], bTCPClient || bTCPServer || bUDPServer);
 
 
         // Manage external sounds only if necessary
