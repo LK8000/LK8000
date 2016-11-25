@@ -31,11 +31,20 @@ bool sound_table::init() {
     TCHAR srcfile[MAX_PATH] = {};
      _stprintf(srcfile,_T("%s" LKD_CONF DIRSEP LKSOUNDTABLE),LKGetLocalPath());
     
-    FILE *fp;
-    if ( (fp=_tfopen(srcfile, _T("rt"))) == NULL ) {
-        StartupStore(_T("...Cannot load conversion sound table file for external sound : %s" ) NEWLINE ,srcfile);
-        return false;
-    }
+     FILE *fp;
+	 if ( (fp=_tfopen(srcfile, _T("rt"))) == NULL ) {
+		 StartupStore(_T("...Loading default Sound Table : %s" ), NEWLINE );
+		 for (int i=DEFAULT;i<last;i++) {
+			 TCHAR str[200]; // Nmea string can have max (200 - soundCodeSize - 1)
+			 str[array_size(str)-1] = _T('\0');  // added make sure the string is terminated
+			 _stprintf(str,"LKALARM,%d", i);
+			 set((sound_code_t)i,str);
+			 StartupStore(_T("..SOUND %d %s: %s" ), i,str,NEWLINE );
+		 }
+		 return true;
+	 }
+
+
 
     TCHAR str[200]; // Nmea string can have max (200 - soundCodeSize - 1) 
     str[array_size(str)-1] = _T('\0');  // added make sure the string is terminated
