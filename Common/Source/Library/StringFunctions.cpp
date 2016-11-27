@@ -135,7 +135,11 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
   zzip_seek(zFile, dwFilePos+j, SEEK_SET);
   sTmp[Max-1] = '\0';
 #ifdef UNICODE
-  mbstowcs(String, sTmp, strlen(sTmp)+1);
+  if(cs == charset::utf8) {
+      utf2TCHAR(sTmp,String, strlen(sTmp)+1);
+  } else {
+      mbstowcs(String, sTmp, strlen(sTmp)+1);
+  }
 #else
   strncpy(String, sTmp, strlen(sTmp)+1);
 
