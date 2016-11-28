@@ -1983,6 +1983,12 @@ DataField* dfe = wp->GetDataField();
     wp->GetDataField()->SetUnits(TEXT("sec"));
     wp->RefreshDisplay();
   }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
+  if (wp) {
+    wp->GetDataField()->Set(LiveTrackerRadar_config);
+    wp->RefreshDisplay();
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyMacCready"));
   if (wp) {
@@ -3008,6 +3014,14 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
+  if (wp) {
+    if (LiveTrackerRadar_config != wp->GetDataField()->GetAsBoolean()) {
+      LiveTrackerRadar_config = wp->GetDataField()->GetAsBoolean();
+    }
+    requirerestart = true;
+  }
+  
   double val;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyMacCready"));

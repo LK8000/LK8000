@@ -75,7 +75,7 @@ void LKSimulator(void) {
 	ThLatitude=GPS_INFO.Latitude-0.022;
 	ThLongitude=GPS_INFO.Longitude-0.033;
 
-	if (EnableFLARMMap) {
+	if (EnableFLARMMap && !LiveTrackerRadar_config ) {
 		srand(MonotonicClockMS());
 		SimFlarmTraffic(0xdd8951,22.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8944,31.0+(double)(rand() % 32));
@@ -144,7 +144,7 @@ void LKSimulator(void) {
 
   // We cannot use doinit for flarm, because it could be enabled from configuration AFTER startup,
   // and it must work all the way the same in order not to confuse users.
-  if (EnableFLARMMap) {
+  if (EnableFLARMMap && !LiveTrackerRadar_config ) {
 	if (!flarmwasinit) {
 		srand(MonotonicClockMS());
 		// Add a poker of traffic for the boys
