@@ -732,6 +732,7 @@ GEXTERN int TeamFlarmIdTarget;    // FlarmId of the glider to track
 
 GEXTERN bool DisableAutoLogger;
 GEXTERN int LiveTrackerInterval;
+GEXTERN bool LiveTrackerRadar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
 
 // Interface Globals
 GEXTERN StatusMessageSTRUCT StatusMessageData[MAXSTATUSMESSAGECACHE];
