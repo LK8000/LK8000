@@ -28,6 +28,15 @@ android {
             include "ENGLISH.LNG"
         }
     }
+    sourceSets {
+        main.java.srcDirs += "../../android/src"
+        main.java.srcDirs += "../../android/ioio/software/IOIOLib/src"
+        main.java.srcDirs += "../../android/ioio/software/IOIOLib/target/android/src"
+        main.java.srcDirs += "../../android/ioio/software/IOIOLibAccessory/src"
+        main.java.srcDirs += "../../android/ioio/software/IOIOLibBT/src"
+        main.java.srcDirs += "../../android/ioio/software/IOIOLibAndroidDevice/src"
+    }
+
     buildTypes {
         release {
             minifyEnabled false

@@ -22,15 +22,17 @@
 
 package org.LK8000.testing;
 
+import android.os.Bundle;
+
 /**
- * Wrapper class to move org.LK8000.XCSoar forward to package
+ * Wrapper class to move org.LK8000.LK8000 forward to package
  * org.LK8000.testing.
  */
-public class MyService extends org.LK8000.MyService {
-  @Override public void onCreate() {
-    if (mainActivityClass == null)
-      mainActivityClass = XCSoar.class;
+public class LK8000 extends org.LK8000.LK8000 {
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    if (serviceClass == null)
+      serviceClass = MyService.class;
 
-    super.onCreate();
+    super.onCreate(savedInstanceState);
   }
 }
