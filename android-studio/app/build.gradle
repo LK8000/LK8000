@@ -35,6 +35,8 @@ android {
         main.java.srcDirs += "../../android/ioio/software/IOIOLibAccessory/src"
         main.java.srcDirs += "../../android/ioio/software/IOIOLibBT/src"
         main.java.srcDirs += "../../android/ioio/software/IOIOLibAndroidDevice/src"
+
+        main.manifest.srcFile "../../android/AndroidManifest.xml"
     }
 
     buildTypes {
