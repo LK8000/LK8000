@@ -32,6 +32,11 @@ android {
             into "src/main/assets"
             include "DEFAULT_MENU.TXT"
         }
+        copy {
+            from "../../Common/Distribution/LK8000/_System/"
+            into "src/main/assets"
+            include "CREDITS.TXT"
+        }
     }
     sourceSets {
         main{
