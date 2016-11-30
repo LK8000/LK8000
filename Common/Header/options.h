@@ -179,7 +179,7 @@
 // PWC Scoring use WGS84 earth model, but LK8000 use FAISphere
 // PG optimise can Work with WGS84 but Wapoint validation not..
 // we need change Waypoint validation before use it
-#ifndef UNDER_CE
+#if !defined(UNDER_CE) && !defined(ANDROID)
     #define _WGS84
     #ifdef __cplusplus
         #include <GeographicLib/Constants.hpp>
