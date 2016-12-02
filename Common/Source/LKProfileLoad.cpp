@@ -366,6 +366,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryDeviceB,&*dwDeviceName2, array_size(dwDeviceName2));
   PREAD(sname,svalue,szRegistryDisableAutoLogger,&DisableAutoLogger);
   PREAD(sname,svalue,szRegistryLiveTrackerInterval,&LiveTrackerInterval);
+  PREAD(sname,svalue,szRegistryLiveTrackerRadar_config,&LiveTrackerRadar_config);
   PREAD(sname,svalue,szRegistryDisplayText,&DisplayTextType);
   PREAD(sname,svalue,szRegistryDisplayUpValue,&DisplayOrientation_Config);
   if (matchedstring) return;

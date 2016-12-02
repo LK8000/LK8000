@@ -107,7 +107,7 @@ void NMEAParser::UpdateMonitor(void)
   if (LKHearthBeats<20) return;
 
   /* check if Flarm disappeared after 30 seconds no activity */
-  if (GPS_INFO.FLARM_Available && ((GPS_INFO.Time -LastFlarmCommandTime)> 30) )
+  if (GPS_INFO.FLARM_Available && ((GPS_INFO.Time -LastFlarmCommandTime)> (LKTime_Real*2)) )
   {
 	static unsigned short MessageCnt =0;
 	if(MessageCnt <10)

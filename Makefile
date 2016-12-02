@@ -989,6 +989,8 @@ UTILS	:=\
 	$(SRC)/utils/filesystem.cpp \
 	$(SRC)/utils/openzip.cpp \
 	$(SRC)/utils/TextWrapArray.cpp \
+	$(SRC)/utils/hmac_sha2.cpp \
+
 
 COMMS	:=\
 	$(CMM)/LKFlarm.cpp\

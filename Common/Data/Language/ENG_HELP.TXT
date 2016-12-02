@@ -1866,5 +1866,9 @@ The first three overlays on top cannot be changed, only disabled.
 [Aircraft symbol]
 Choose the symbol you want to see on the main map
 
+@1295
+[LiveTrack24 Radar]
+If enabled the FLARM system will be feed with data from LiveTrack24.com server
+
 @9999
 No help available on this item!

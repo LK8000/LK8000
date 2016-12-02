@@ -2212,4 +2212,4 @@ _@M2318_ "Paraglider"
 _@M2319_ "Hangglider"
 _@M2320_ "Glider"
 _@M2321_ "Aircraft"
-
+_@M2322_ "Enable Radar"
