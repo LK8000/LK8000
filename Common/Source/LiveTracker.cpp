@@ -49,6 +49,7 @@
 #include "utils/hmac_sha2.h"
 #include "FlarmCalculations.h"
 #include "md5.h"
+#include "NavFunctions.h"
 
 extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
 extern void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
@@ -1001,7 +1002,7 @@ static std::string downloadJSON(std::string url) {
 	int rxlen = -1;
 	TCHAR *tc = new TCHAR[url.size() + 1];
 	ascii2TCHAR(url.c_str(), tc, url.length() + 1);
-	delete tc;
+	delete[] tc;
 
 	char txbuf[512];
 	char rxcontent[50000];
@@ -1025,7 +1026,7 @@ static std::string downloadJSON(std::string url) {
 
 	TCHAR *tcc = new TCHAR[response.size() + 1];
 	ascii2TCHAR(response.c_str(), tcc, response.length() + 1);
-	delete tcc;
+	delete[] tcc;
 
 	return response;
 }
