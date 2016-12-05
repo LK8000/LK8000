@@ -29,8 +29,6 @@ PROFILE	    :=
 REMOVE_NS   := n
 
 ifeq ($(DEBUG),y)
- OPTIMIZE  := -O0
- OPTIMIZE  += -g3 -ggdb
  REMOVE_NS :=
  BIN       :=Bin/$(TARGET)_debug
 endif
@@ -116,6 +114,16 @@ ifeq ($(TARGET),PI)
   OPENMP         :=y
 endif
 
+ifeq ($(TARGET),CUBIE)
+  HOST_IS_ARM     :=n
+  TARGET_IS_CUBIE :=y
+  CONFIG_LINUX    :=y
+  CONFIG_ANDROID  :=n
+  MINIMAL         :=n
+  OPENMP          :=y
+  TARGET_HAS_MALI :=y
+endif
+
 include build/pkgconfig.mk
 ############# build and CPU info
 
@@ -132,12 +140,14 @@ else ifeq ($(CONFIG_WINE),y)
  CPU    :=i586
  MCPU   := -mcpu=$(CPU)
 else ifeq ($(TARGET_IS_KOBO),y)
- OPTIMIZE := -O3 -g
  TCPATH := arm-unknown-linux-gnueabi-
  MCPU   := -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations
 else ifeq ($(TARGET_IS_PI),y)
  TCPATH := arm-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
+else ifeq ($(TARGET_IS_CUBIE),y)
+ TCPATH := arm-linux-gnueabihf-
+ MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 else ifeq ($(CONFIG_LINUX),y)
  TCPATH :=
 else
@@ -234,6 +244,16 @@ GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 
 $(info GCC VERSION : $(GCCVERSION))
 
+
+ifeq ($(DEBUG),y)
+ ifeq ($(CLANG),y)
+  OPTIMIZE  := -O0 
+ else
+  OPTIMIZE  := -Og
+ endif
+ OPTIMIZE  += -g3 -ggdb
+endif
+
 ######## output files
 ifeq ($(CONFIG_LINUX),y)
  SUFFIX :=
@@ -279,7 +299,22 @@ ifeq ($(TARGET_IS_PI),y)
  CE_DEFS += -isystem $(PI)/opt/vc/include/interface/vmcs_host/linux
  USE_CONSOLE = y	
 
- CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include
+ CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include 
+
+endif
+
+ifeq ($(TARGET_IS_CUBIE),y)
+ USE_EGL :=y
+ OPENGL	 :=y
+ GLES    :=y
+ USE_X11 :=n
+ USE_CONSOLE = y	
+	
+ CE_DEFS += -DHAVE_MALI
+ CE_DEFS += --sysroot=$(CUBIE) 
+ CE_DEFS += -isystem $(CUBIE)/usr/include/c++/4.8.2 
+ CE_DEFS += -isystem $(CUBIE)/usr/include/c++/4.8.2/armv7l-unknown-linux-gnueabihf 
+ CE_DEFS += -isystem $(CUBIE)/usr/include 
 
 endif
 
@@ -570,6 +605,10 @@ endif
 
 ifeq ($(TARGET_IS_PI),y)
  LDFLAGS		+= --sysroot=$(PI) -L$(PI)/usr/lib/arm-linux-gnueabihf
+endif
+
+ifeq ($(TARGET_IS_CUBIE),y)
+ LDFLAGS		+= --sysroot=$(CUBIE)
 endif
 
 ifeq ($(CONFIG_WIN32),y)

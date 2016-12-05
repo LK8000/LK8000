@@ -17,7 +17,7 @@ ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
 endif
 
 ifeq ($(HOST_IS_ARM)$(TARGET_HAS_MALI),ny)
-  PKG_CONFIG := PKG_CONFIG_LIBDIR=$(CUBIE)/usr/lib/arm-linux-gnueabihf/pkgconfig $(PKG_CONFIG) --define-variable=prefix=$(CUBIE)/usr
+  PKG_CONFIG := PKG_CONFIG_LIBDIR=$(CUBIE)/usr/lib/pkgconfig $(PKG_CONFIG) --define-variable=prefix=$(CUBIE)/usr
 endif
 
 # Generates a pkg-config lookup for a library.
@@ -45,7 +45,6 @@ $(1)_MODVERSION := $$(shell $$(PKG_CONFIG) --modversion $(2))
 ifeq ($$($(1)_CPPFLAGS)$$($(1)_LDLIBS),)
 $$(error library not found: $(2))
 endif
-
 $$(info build with $$(shell $$(PKG_CONFIG) --print-provides $(2)) Library)
 
 endef
