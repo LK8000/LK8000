@@ -27,15 +27,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef STRING_API_HPP
-#define STRING_API_HPP
+#ifndef STRING_API_HXX
+#define STRING_API_HXX
 
 #include "Compiler.h"
 
 #include <string.h>
 
 #ifdef _UNICODE
-#include "WStringAPI.hpp"
+#include "WStringAPI.hxx"
 #endif
 
 gcc_pure gcc_nonnull_all
@@ -158,12 +158,7 @@ gcc_pure gcc_nonnull_all
 static inline int
 StringCollate(const char *a, const char *b)
 {
-#ifdef _WIN32_WCE
-  /* WinCE doesn't have strcoll() */
-  return strcmp(a, b);
-#else
   return strcoll(a, b);
-#endif
 }
 
 /**

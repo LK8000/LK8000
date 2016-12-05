@@ -314,8 +314,8 @@ ifeq ($(CONFIG_LINUX),y)
  endif
 
  ifeq ($(OPENGL)$(USE_EGL),yy)
-  EGL_LDLIBS += -lEGL
-  USE_X11 ?=$(shell $(PKG_CONFIG) --exists x11 && echo y)
+   EGL_LDLIBS += -lEGL
+    USE_X11 ?=$(shell $(PKG_CONFIG) --exists x11 && echo y)
   USE_SDL ?=n
  endif
 
@@ -420,18 +420,18 @@ ifeq ($(CONFIG_LINUX),y)
 
  endif
 
- $(eval $(call pkg-config-library,ZZIP,zziplib))
- CE_DEFS += $(patsubst -I%,-isystem %,$(ZZIP_CPPFLAGS))
+  $(eval $(call pkg-config-library,ZZIP,zziplib))
+  CE_DEFS += $(patsubst -I%,-isystem %,$(ZZIP_CPPFLAGS))
 
- $(eval $(call pkg-config-library,ZLIB,zlib))
- CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
+  $(eval $(call pkg-config-library,ZLIB,zlib))
+  CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
 
- $(eval $(call pkg-config-library,FREETYPE,freetype2))
- CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
- CE_DEFS += -DUSE_FREETYPE
+  $(eval $(call pkg-config-library,FREETYPE,freetype2))
+  CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
+  CE_DEFS += -DUSE_FREETYPE
 
- $(eval $(call pkg-config-library,PNG,libpng))
- CE_DEFS += $(patsubst -I%,-isystem %,$(PNG_CPPFLAGS))
+  $(eval $(call pkg-config-library,PNG,libpng))
+  CE_DEFS += $(patsubst -I%,-isystem %,$(PNG_CPPFLAGS))
 endif
 
 ifeq ($(CONFIG_WIN32),y)
@@ -473,7 +473,7 @@ endif
 ifeq ($(CONFIG_LINUX),y)
  INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
- INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
+ INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR)/libzzip -I$(HDR) -I$(SRC)
  ifneq ($(CONFIG_PC),y)
   INCLUDES	+= -I$(HDR)/mingw32compat/WinCE
  endif

@@ -23,13 +23,13 @@
 #include <zzip/format.h>
 #include <zzip/fetch.h>
 #include <zzip/__debug.h>
-#include <windef.h>
 
 #include "utils/stringext.h"
 
 #include "utils/heapcheck.h"
 
 #if defined(__MINGW32__)
+#include <windef.h>
 //(WINDOWSPC>0)&&
 // JMW needed otherwise seek/tell won't work!
 #undef _fmode
@@ -555,10 +555,14 @@ zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE *file)
 ZZIP_FILE*
 zzip_fopen(const TCHAR* filename, zzip_char_t* mode)
 {
+#ifdef UNICODE
     char utfname[MAX_PATH*2];
     TCHAR2utf(filename, utfname, countof(utfname));
 
     return zzip_freopen (utfname, mode, 0);
+#else
+    return zzip_freopen (filename, mode, 0);
+#endif
 }
 
 /** => zzip_fopen

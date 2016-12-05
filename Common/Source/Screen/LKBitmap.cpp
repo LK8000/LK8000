@@ -66,6 +66,8 @@ bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
     bitmap = (HBITMAP) LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 #endif
     return IsDefined();
+#elif defined(ANDROID)
+    return LoadFromFile(FilePath);
 #else
     return LoadPNGFile(FilePath);
 #endif
@@ -83,6 +85,8 @@ bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
     if (bitmap) {
         return true;
     }
+#elif defined(ANDROID)
+#warning "not implemented"
 #else
     if(ResourceName) {
         return Load(GetNamedResource(ResourceName), Type::STANDARD);

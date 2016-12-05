@@ -44,7 +44,7 @@
 bool RestartToNickel = true; // default to true, mandatory for avoid to brick device in case of abnormal termination.
 #endif
 
-extern void Shutdown(void);
+extern void BeforeShutdown(void);
 
 static WndForm *wf = NULL;
 static LKBitmap StartBitmap;
@@ -757,7 +757,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), mbOk);
         MessageBoxX(mes, _T("NO LK8000 DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
@@ -770,7 +770,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), mbOk);
         MessageBoxX(mes, _T("NO SYSTEM DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
@@ -784,7 +784,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), mbOk);
         MessageBoxX(mes, _T("NO LANGUAGE DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
     if (!CheckLanguageEngMsg()) {
@@ -796,7 +796,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("ENG_MSG.TXT MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
     if (!CheckSystemDefaultMenu()) {
@@ -808,7 +808,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
@@ -821,7 +821,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("_BITMAPSH MISSING in SYSTEM Bitmaps\nCheck System Install"), _T("FATAL ERROR 032"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
@@ -842,7 +842,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), mbOk);
         MessageBoxX(mes, _T("NO POLARS DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
@@ -850,7 +850,7 @@ short dlgStartupShowModal(void) {
     if (!CheckFilesystemWritable()) {
         MessageBoxX(_T("LK8000 CANNOT WRITE IN MEMORY CARD!\nCARD IS LOCKED, OR DAMAGED, OR FULL."), _T("CRITICAL PROBLEM"), mbOk);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
@@ -927,7 +927,7 @@ short dlgStartupShowModal(void) {
                 // LKTOKEN  _@M198_ = "Confirm Exit?"
                 MsgToken(198),
                 TEXT("LK8000"), mbYesNo) == IdYes) {
-            Shutdown();
+            BeforeShutdown();
         } else {
             RUN_MODE = RUN_WELCOME;
         }

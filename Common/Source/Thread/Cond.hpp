@@ -12,12 +12,39 @@
 #ifndef COND_HPP
 #define	COND_HPP
 
+#include "Poco/Condition.h"
+
 /// Exists only for avoids to change xcs original code...
 // unimplemented, never used so no linker error
-class Cond {
+class Cond : protected Poco::Condition {
 public:
-    void Wait(Mutex &mutex);
-    void Broadcast() {}
+    Cond() {}
+    ~Cond() {}
+
+    inline
+    void Wait(Mutex &mutex) {
+        Poco::Condition::wait<Mutex>(mutex);
+    }
+
+    inline
+    bool Wait(Mutex &mutex, unsigned timeout_ms) {
+        try {
+            Poco::Condition::wait<Mutex>(mutex, timeout_ms);
+        } catch(Poco::TimeoutException& e) {
+            return false;
+        }
+        return true;
+    }
+
+    inline
+    void Broadcast() {
+        Poco::Condition::broadcast();
+    }
+
+    inline
+    void Signal() {
+        Poco::Condition::signal();
+    }
 };
 
 

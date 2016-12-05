@@ -22,13 +22,10 @@
 #define _ZZIP_CONF_H 1
 
 #if !defined ZZIP_OMIT_CONFIG_H
-# if defined __MINGW32__
-# include <zzip/_gnuc.h>
-# elif defined _MSC_VER || defined __BORLANDC__ || defined __WATCOMC__ || defined WIN32 || defined WINDOWSPC
+# if defined _MSC_VER || defined __BORLANDC__ || defined __WATCOMC__
 # include <zzip/_msvc.h>
-# else /* autoconf generated */
-JMW something wrong
-//# include <zzip/_config.h>
+#else
+# include <zzip/_gnuc.h>
 # endif
 #endif
 

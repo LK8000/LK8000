@@ -84,7 +84,7 @@ public:
             del_total_tick = total_tick - total_tick_old;
             del_idle = idle - idle_old;
         }
-        return std::lrint(((del_total_tick - del_idle) / (double) del_total_tick) * 100);
+        return lrint(((del_total_tick - del_idle) / (double) del_total_tick) * 100);
     }
 
 private:

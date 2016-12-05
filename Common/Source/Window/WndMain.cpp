@@ -46,8 +46,7 @@ WndMain::~WndMain() {
 extern void WaitThreadCalculation();
 extern void StartupLogFreeRamAndStorage();
 
-void Shutdown(void) {
-  int i;
+void BeforeShutdown(void) {
 
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(MsgToken(1219));
@@ -194,7 +193,7 @@ void Shutdown(void) {
   StartupStore(TEXT(".... Close Windows%s"),NEWLINE);
   #endif
 
-  for (i=0;i<NUMDEV;i++) {
+  for (int i=0;i<NUMDEV;i++) {
 	if (ComPortStatus[i]!=0) {
 		StartupStore(_T(". ComPort %d: status=%d Rx=%ld Tx=%ld ErrRx=%ld + ErrTx=%ld" NEWLINE), i,
 		ComPortStatus[i], ComPortRx[i],ComPortTx[i], ComPortErrRx[i],ComPortErrTx[i]);
@@ -244,7 +243,7 @@ bool WndMain::OnClose() {
                     TEXT("LK8000"),
                     mbYesNo) == IdYes) {
 
-        Shutdown();
+        BeforeShutdown();
     }
     return true;
 }

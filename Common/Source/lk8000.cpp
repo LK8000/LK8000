@@ -107,176 +107,13 @@ extern bool LoadModelFromProfile(void);
 
 Poco::NamedMutex Mutex("LOCK8000");
 
-//
-// WINMAIN RETURNS CODE ARE:
-//
-// -1	for init instance error
-// -2	for mutex error return
-//
-//  111 for normal program termination with automatic relaunch, if using lkrun
-//  222 for normal program termination, with request to quit lkrun if running
-//
-//  259 is reserved by OS (STILL_ACTIVE) status
-#ifdef WIN32
-HINSTANCE _hInstance;
+static bool realexitforced=false;
 
-#ifndef UNDER_CE
-int WINAPI WinMain(     HINSTANCE hInstance,
-                        HINSTANCE hPrevInstance,
-                        LPSTR     lpCmdLine,
-                        int       nCmdShow)
-#else
-int WINAPI WinMain(     HINSTANCE hInstance,
-                        HINSTANCE hPrevInstance,
-                        LPWSTR     lpCmdLine,
-                        int       nCmdShow)
-#endif
-{
-    (void)hPrevInstance;
-
-    _hInstance = hInstance; // this need to be first, always !
-#ifndef UNDER_CE
-    const TCHAR* szCmdLine = GetCommandLine();
-#endif
-
-#else
-int main(int argc, char *argv[]) {
-
-  std::string strCmdLine("");
-  for (int i=1;i<argc;i++) {
-    strCmdLine.append(std::string(argv[i]).append(" "));
-  }
-  const TCHAR* szCmdLine = strCmdLine.c_str();
-
-#endif
-
-  // use mutex to avoid multiple instances of lk8000 be running
-  #if (!((WINDOWSPC>0) && TESTBENCH))
-   if (!Mutex.tryLock()) {
-	  return(-2);
-  }
-  #endif
-
-  #if TRACETHREAD
-  _THREADID_WINMAIN=GetCurrentThreadId();
-  StartupStore(_T("##############  WINMAIN threadid=%d\n"),GetCurrentThreadId());
-  #endif
-  _stprintf(LK8000_Version,_T("%s v%s.%s "), _T(LKFORK), _T(LKVERSION),_T(LKRELEASE));
-  _tcscat(LK8000_Version, TEXT(__DATE__));
-  StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
-#ifdef KOBO
-  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("KOBO"),NEWLINE);
-#elif defined(__linux__)
-  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
-
-  struct utsname sysinfo = {};
-  if(uname(&sysinfo) == 0) {
-    StartupStore(". System Name:    %s %s" NEWLINE, sysinfo.sysname, sysinfo.nodename);
-    StartupStore(". Kernel Version: %s" NEWLINE, sysinfo.release);
-    StartupStore(". Kernel Build:   %s" NEWLINE, sysinfo.version);
-    StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
-  }
-
-#elif defined(PNA)
-  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PNA"),NEWLINE);
-#elif defined(UNDER_CE)
-  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PDA"),NEWLINE);
-#elif defined(WIN32)
-  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PC"),NEWLINE);
-#endif
-
-  #if TESTBENCH
-    #ifdef __GNUC__
-        #ifdef __MINGW32__
-          StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"),
-                  __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION,
-                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
-                  NEWLINE);
-        #else
-          StartupStore(TEXT(". Built with GCC %d.%d.%d %s"),
-                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
-                  NEWLINE);
-
-        #endif
-    #endif
-
-    StartupStore(_T(". Compiler options:%s"),NEWLINE);
-    #ifdef ENABLE_OPENGL
-    StartupStore(_T("    + ENABLE_OPENGL%s"),NEWLINE);
-    #endif
-    #ifdef HAVE_GLES
-    StartupStore(_T("    + HAVE_GLES%s"),NEWLINE);
-    #endif
-    #ifdef USE_WAYLAND
-    StartupStore(_T("    + USE_WAYLAND%s"),NEWLINE);
-    #endif
-    #ifdef USE_X11
-    StartupStore(_T("    + USE_X11%s"),NEWLINE);
-    #endif
-    #ifdef USE_CONSOLE
-    StartupStore(_T("    + USE_CONSOLE%s"),NEWLINE);
-    #endif
-    #ifdef ENABLE_SDL
-    StartupStore(_T("    + ENABLE_SDL%s"),NEWLINE);
-    #endif
-    #ifdef USE_EGL
-    StartupStore(_T("    + USE_EGL%s"),NEWLINE);
-    #endif
-    #ifdef USE_FB
-    StartupStore(_T("    + USE_FB%s"),NEWLINE);
-    #endif
-    #ifdef USE_MEMORY_CANVAS
-    StartupStore(_T("    + USE_MEMORY_CANVAS%s"),NEWLINE);
-    #endif
-    #ifdef GREYSCALE
-    StartupStore(_T("    + GREYSCALE%s"),NEWLINE);
-    #endif
-    #ifdef DITHER
-    StartupStore(_T("    + DITHER%s"),NEWLINE);
-    #endif
-    #ifdef USE_ALSA
-    StartupStore(_T("    + USE_ALSA%s"),NEWLINE);
-    #endif
-    #ifdef USE_FREETYPE
-    StartupStore(_T("    + USE_FREETYPE%s"),NEWLINE);
-    #endif
-    #ifdef USE_FULLSCREEN
-    StartupStore(_T("    + USE_FULLSCREEN%s"),NEWLINE);
-    #endif
-    #ifdef HC_MALLOC
-    StartupStore(_T("    + HC_MALLOC%s"),NEWLINE);
-    #endif
-    #ifdef POCO_STATIC
-    StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
-    #endif
-
-    StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
-  #endif
-
-  // WE NEED TO KNOW IN RUNTIME WHEN THESE OPTIONS ARE ENABLED, EVEN WITH NO TESTBENCH!
-  #ifndef NDEBUG
-  StartupStore(TEXT(". DEBUG enabled in makefile%s"),NEWLINE);
-  #endif
-  #if YDEBUG
-  StartupStore(TEXT(". YDEBUG option enabled%s"),NEWLINE);
-  #endif
-  #if BUGSTOP
-  StartupStore(TEXT(". BUGSTOP option enabled%s"),NEWLINE);
-  #endif
-  #if USELKASSERT
-  StartupStore(TEXT(". USELKASSERT option enabled%s"),NEWLINE);
-  #endif
-
-  ScreenGlobalInit InitScreen;
-  SoundGlobalInit InitSound;
-
-  std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
-
+bool Startup(const TCHAR* szCmdLine) {
 
   // This is needed otherwise LKSound will be silent until we init Globals.
   EnableSoundModes=true;
 
-  bool realexitforced=false;
 
   LKSound(_T("LK_CONNECT.WAV"));
 
@@ -343,7 +180,7 @@ int main(int argc, char *argv[]) {
   _stprintf(defaultDeviceFile,_T("%s" LKD_CONF DIRSEP LKDEVICE),LKGetLocalPath());
   _tcscpy(startDeviceFile, defaultDeviceFile);
 
-#if !defined(UNDER_CE) || defined(__linux__)
+#if !defined(UNDER_CE) || (defined(__linux__) && !defined(ANDROID))
   LK8000GetOpts(szCmdLine);
 #endif
 
@@ -380,7 +217,7 @@ int main(int argc, char *argv[]) {
   PreloadInitialisation(false); // calls dlgStartup
   if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {
     realexitforced=true;
-    goto _Shutdown;
+    return false;
   }
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
@@ -616,14 +453,10 @@ int main(int argc, char *argv[]) {
             MessageBoxX(MsgToken(155), TEXT("Warning!"), mbOk);
         }
     }
+    return true;
+}
 
- //
- // Main message loop
- //
-  MainWindow.RunModalLoop();
-
-_Shutdown:
-
+void Shutdown() {
   MainWindow.Destroy();
   Message::Destroy();
 
@@ -642,7 +475,186 @@ _Shutdown:
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated, realexitforced=%d%s"),realexitforced,NEWLINE);
   #endif
+}
 
+
+//
+// WINMAIN RETURNS CODE ARE:
+//
+// -1	for init instance error
+// -2	for mutex error return
+//
+//  111 for normal program termination with automatic relaunch, if using lkrun
+//  222 for normal program termination, with request to quit lkrun if running
+//
+//  259 is reserved by OS (STILL_ACTIVE) status
+#ifdef WIN32
+HINSTANCE _hInstance;
+
+#ifndef UNDER_CE
+int WINAPI WinMain(     HINSTANCE hInstance,
+                        HINSTANCE hPrevInstance,
+                        LPSTR     lpCmdLine,
+                        int       nCmdShow)
+#else
+int WINAPI WinMain(     HINSTANCE hInstance,
+                        HINSTANCE hPrevInstance,
+                        LPWSTR     lpCmdLine,
+                        int       nCmdShow)
+#endif
+{
+    (void)hPrevInstance;
+
+    _hInstance = hInstance; // this need to be first, always !
+#ifndef UNDER_CE
+    const TCHAR* szCmdLine = GetCommandLine();
+#endif
+
+#else
+int main(int argc, char *argv[]) {
+
+  std::string strCmdLine("");
+  for (int i=1;i<argc;i++) {
+    strCmdLine.append(std::string(argv[i]).append(" "));
+  }
+  const TCHAR* szCmdLine = strCmdLine.c_str();
+
+#endif
+
+  // use mutex to avoid multiple instances of lk8000 be running
+  #if (!((WINDOWSPC>0) && TESTBENCH))
+   if (!Mutex.tryLock()) {
+	  return(-2);
+  }
+  #endif
+
+  #if TRACETHREAD
+  _THREADID_WINMAIN=GetCurrentThreadId();
+  StartupStore(_T("##############  WINMAIN threadid=%d\n"),GetCurrentThreadId());
+  #endif
+  _stprintf(LK8000_Version,_T("%s v%s.%s "), _T(LKFORK), _T(LKVERSION),_T(LKRELEASE));
+  _tcscat(LK8000_Version, TEXT(__DATE__));
+  StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
+#ifdef KOBO
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("KOBO"),NEWLINE);
+#elif defined(__linux__)
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
+
+  struct utsname sysinfo = {};
+  if(uname(&sysinfo) == 0) {
+    StartupStore(". System Name:    %s %s" NEWLINE, sysinfo.sysname, sysinfo.nodename);
+    StartupStore(". Kernel Version: %s" NEWLINE, sysinfo.release);
+    StartupStore(". Kernel Build:   %s" NEWLINE, sysinfo.version);
+    StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
+  }
+
+#elif defined(PNA)
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PNA"),NEWLINE);
+#elif defined(UNDER_CE)
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PDA"),NEWLINE);
+#elif defined(WIN32)
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PC"),NEWLINE);
+#endif
+
+  #if TESTBENCH
+    #ifdef __GNUC__
+        #ifdef __MINGW32__
+          StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"),
+                  __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION,
+                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
+                  NEWLINE);
+        #else
+          StartupStore(TEXT(". Built with GCC %d.%d.%d %s"),
+                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
+                  NEWLINE);
+
+        #endif
+    #endif
+
+    StartupStore(_T(". Compiler options:%s"),NEWLINE);
+    #ifdef ENABLE_OPENGL
+    StartupStore(_T("    + ENABLE_OPENGL%s"),NEWLINE);
+    #endif
+    #ifdef HAVE_GLES
+    StartupStore(_T("    + HAVE_GLES%s"),NEWLINE);
+    #endif
+    #ifdef USE_WAYLAND
+    StartupStore(_T("    + USE_WAYLAND%s"),NEWLINE);
+    #endif
+    #ifdef USE_X11
+    StartupStore(_T("    + USE_X11%s"),NEWLINE);
+    #endif
+    #ifdef USE_CONSOLE
+    StartupStore(_T("    + USE_CONSOLE%s"),NEWLINE);
+    #endif
+    #ifdef ENABLE_SDL
+    StartupStore(_T("    + ENABLE_SDL%s"),NEWLINE);
+    #endif
+    #ifdef USE_EGL
+    StartupStore(_T("    + USE_EGL%s"),NEWLINE);
+    #endif
+    #ifdef USE_FB
+    StartupStore(_T("    + USE_FB%s"),NEWLINE);
+    #endif
+    #ifdef USE_MEMORY_CANVAS
+    StartupStore(_T("    + USE_MEMORY_CANVAS%s"),NEWLINE);
+    #endif
+    #ifdef GREYSCALE
+    StartupStore(_T("    + GREYSCALE%s"),NEWLINE);
+    #endif
+    #ifdef DITHER
+    StartupStore(_T("    + DITHER%s"),NEWLINE);
+    #endif
+    #ifdef USE_ALSA
+    StartupStore(_T("    + USE_ALSA%s"),NEWLINE);
+    #endif
+    #ifdef USE_FREETYPE
+    StartupStore(_T("    + USE_FREETYPE%s"),NEWLINE);
+    #endif
+    #ifdef USE_FULLSCREEN
+    StartupStore(_T("    + USE_FULLSCREEN%s"),NEWLINE);
+    #endif
+    #ifdef HC_MALLOC
+    StartupStore(_T("    + HC_MALLOC%s"),NEWLINE);
+    #endif
+    #ifdef POCO_STATIC
+    StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
+    #endif
+
+    StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
+  #endif
+
+  // WE NEED TO KNOW IN RUNTIME WHEN THESE OPTIONS ARE ENABLED, EVEN WITH NO TESTBENCH!
+  #ifndef NDEBUG
+  StartupStore(TEXT(". DEBUG enabled in makefile%s"),NEWLINE);
+  #endif
+  #if YDEBUG
+  StartupStore(TEXT(". YDEBUG option enabled%s"),NEWLINE);
+  #endif
+  #if BUGSTOP
+  StartupStore(TEXT(". BUGSTOP option enabled%s"),NEWLINE);
+  #endif
+  #if USELKASSERT
+  StartupStore(TEXT(". USELKASSERT option enabled%s"),NEWLINE);
+  #endif
+
+#ifndef ANDROID
+  ScreenGlobalInit InitScreen;
+#endif
+
+  SoundGlobalInit InitSound;
+
+  std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
+
+
+  if(Startup(szCmdLine)) {
+    //
+    // Main message loop
+    //
+     MainWindow.RunModalLoop();
+  }
+
+  Shutdown();
   pSaveScreen = nullptr;
 #ifdef KOBO
   extern bool RestartToNickel;
