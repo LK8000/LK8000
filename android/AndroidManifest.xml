@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="org.LK8000"
+          android:installLocation="auto"
+          android:versionCode="107"
+          android:versionName="6.1a">
+  <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <activity android:name=".LK8000"
+              android:label="@string/app_name"
+              android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale"
+              android:launchMode="singleInstance">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+
+      <intent-filter>
+	<action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+      </intent-filter>
+      <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
+		 android:resource="@xml/accessory_filter" />
+      <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                 android:resource="@xml/usb_device_filter" />
+    </activity>
+
+    <service android:name=".MyService"/>
+  </application>
+
+  <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="22"/>
+  <uses-permission android:name="android.permission.BLUETOOTH"></uses-permission>
+  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"></uses-permission>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+
+  <!-- Disable implicit requirements -->
+  <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
+  <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
+  <uses-feature android:name="android.hardware.location" android:required="false"/>
+  <uses-feature android:name="android.hardware.location.network" android:required="false"/>
+  <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+  <uses-feature android:name="android.hardware.usb.accessory" android:required="false"/>
+
+  <!-- Allow installation on faked touchscreen -->
+  <uses-feature android:name="android.hardware.faketouch" android:required="false"/>
+</manifest>

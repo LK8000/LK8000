@@ -18,7 +18,7 @@
 #include "Event/Queue.hpp"
 #include "Util/StringAPI.hxx"
 #include "Window/WndMain.h"
-
+#include "org_LK8000_NativeView.h"
 
 unsigned android_api_level;
 

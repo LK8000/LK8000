@@ -21,7 +21,7 @@ Copyright_License {
 }
 */
 
-#include "org_xcsoar_EventBridge.h"
+#include "org_LK8000_EventBridge.h"
 #include "Product.hpp"
 #include "Event/Queue.hpp"
 #include "Event/Idle.hpp"
@@ -107,7 +107,7 @@ Java_org_xcsoar_EventBridge_onMouseDown(JNIEnv *env, jclass cls,
     /* XCSoar not yet initialised */
     return;
 
-  event_queue->Push(Event(Event::MOUSE_DOWN, PixelPoint(x, y)));
+  event_queue->Push(Event(Event::MOUSE_DOWN, x, y));
   ResetUserIdle();
 }
 
@@ -120,7 +120,7 @@ Java_org_xcsoar_EventBridge_onMouseUp(JNIEnv *env, jclass cls,
     /* XCSoar not yet initialised */
     return;
 
-  event_queue->Push(Event(Event::MOUSE_UP, PixelPoint(x, y)));
+  event_queue->Push(Event(Event::MOUSE_UP, x, y));
   ResetUserIdle();
 }
 
@@ -134,7 +134,7 @@ Java_org_xcsoar_EventBridge_onMouseMove(JNIEnv *env, jclass cls,
     return;
 
   event_queue->Purge(Event::MOUSE_MOTION);
-  event_queue->Push(Event(Event::MOUSE_MOTION, PixelPoint(x, y)));
+  event_queue->Push(Event(Event::MOUSE_MOTION, x, y));
   ResetUserIdle();
 }
 
