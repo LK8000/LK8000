@@ -93,13 +93,19 @@ static int	iRectangleSize = 4;
 
 	if ( (DrawInfo.FLARM_Traffic[i].ID !=0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) ) {
 
-		painted++;
 
 		double target_lon;
 		double target_lat;
 
 		target_lon = DrawInfo.FLARM_Traffic[i].Longitude;
 		target_lat = DrawInfo.FLARM_Traffic[i].Latitude;
+
+                if (!PointVisible(target_lon, target_lat)) {
+                   // StartupStore(_T("... This traffic is not visible on map with current zoom%s"),NEWLINE);
+                   continue;
+                }
+
+		painted++;
 
 		#if (0) // No scaling, wrong
 		if ((EnableFLARMMap==2)&&(scalefact>1.0)) {
