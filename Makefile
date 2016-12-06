@@ -260,6 +260,7 @@ ifeq ($(TARGET_IS_KOBO),y)
  DITHER    :=y
  OPENGL    :=n
  USE_SOUND_EXTDEV := y
+ USE_LIBINPUT :=n
  CE_DEFS += -DKOBO
  CE_DEFS += -DUSE_MEMORY_CANVAS
 endif
@@ -342,6 +343,7 @@ ifeq ($(CONFIG_LINUX),y)
   EGL_LDLIBS += $(DRM_LDLIBS) $(GBM_LDLIBS)
   USE_CONSOLE = y
   USE_X11 = n
+  USE_SDL = n
  else ifeq ($(USE_X11),y)
   $(eval $(call pkg-config-library,X11,x11))
   CE_DEFS += $(X11_CPPFLAGS) -DUSE_X11
@@ -349,8 +351,20 @@ ifeq ($(CONFIG_LINUX),y)
 
  ifeq ($(USE_CONSOLE),y)
   CE_DEFS += -DUSE_CONSOLE
+
+  USE_LIBINPUT ?= $(shell $(PKG_CONFIG) --exists libinput && echo y)
  endif
 
+ ifeq ($(USE_LIBINPUT),y)
+  $(eval $(call pkg-config-library,LIBINPUT,libinput))
+  $(eval $(call pkg-config-library,LIBUDEV,libudev))
+
+  ifeq ($(LIBINPUT_MODVERSION),0.6.0)
+   CE_DEFS += -DLIBINPUT_LEGACY_API
+  endif
+
+  CE_DEFS += $(LIBINPUT_CPPFLAGS) $(LIBUDEV_CPPFLAGS) -DUSE_LIBINPUT
+ endif
 # Use SDL if not explicitly disabled or disabled by another FLAG ... 
  USE_SDL ?=y
 
@@ -582,6 +596,8 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(SDL_MIXER_LDLIBS)
  LDLIBS += $(ALSA_LDLIBS)
  LDLIBS += $(SNDFILE_LDLIBS)
+ LDLIBS += $(LIBINPUT_LDLIBS)
+ LDLIBS += $(LIBUDEV_LDLIBS)
 
 endif
 

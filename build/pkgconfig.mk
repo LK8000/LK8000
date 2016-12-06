@@ -40,6 +40,7 @@ endif
 
 $(1)_CPPFLAGS := $$(shell $$(PKG_CONFIG) --cflags $(2))
 $(1)_LDLIBS := $$(shell $$(PKG_CONFIG) --libs $(2))
+$(1)_MODVERSION := $$(shell $$(PKG_CONFIG) --modversion $(2))
 
 ifeq ($$($(1)_CPPFLAGS)$$($(1)_LDLIBS),)
 $$(error library not found: $(2))
