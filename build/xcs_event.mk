@@ -55,7 +55,7 @@ XCS_EVENT += \
 	    $(XCS_EVENT_LINUX) \
 	    $(XCS_EVENT_POLL) \
 	
-        ifeq ($(USE_X11), y)
+        ifeq ($(USE_X11),y)
 	    # linux target with X11 event
 	    XCS_EVENT += $(XCS_EVENT_X11) 
 	else ifeq ($(USE_WAYLAND),y)

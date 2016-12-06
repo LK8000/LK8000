@@ -272,7 +272,7 @@ ifeq ($(TARGET_IS_PI),y)
  GLES2   :=n
  USE_SDL :=n
  USE_X11 :=n
-
+ ENABLE_MESA_KMS :=n
  CE_DEFS += -DUSE_VIDEOCORE
  CE_DEFS += -isystem $(PI)/opt/vc/include -isystem $(PI)/opt/vc/include/interface/vcos/pthreads
  CE_DEFS += -isystem $(PI)/opt/vc/include/interface/vmcs_host/linux
@@ -298,6 +298,7 @@ ifeq ($(CONFIG_LINUX),y)
   GLES2   ?=n
   GLES    ?=n
   USE_X11 ?=n
+  ENABLE_MESA_KMS ?=n
  endif
 
  GLES2 ?=n
@@ -332,7 +333,16 @@ ifeq ($(CONFIG_LINUX),y)
   USE_SDL :=n
  endif
 
- ifeq ($(USE_X11), y)
+ ifeq ($(ENABLE_MESA_KMS),y)
+  $(eval $(call pkg-config-library,DRM,libdrm))
+  $(eval $(call pkg-config-library,GBM,gbm))
+  DRM_CPPFLAGS := $(patsubst -I%,-isystem %,$(DRM_CPPFLAGS))
+  GBM_CPPFLAGS := $(patsubst -I%,-isystem %,$(GBM_CPPFLAGS))
+  CE_DEFS += -DMESA_KMS $(DRM_CPPFLAGS) $(GBM_CPPFLAGS)
+  EGL_LDLIBS += $(DRM_LDLIBS) $(GBM_LDLIBS)
+  USE_CONSOLE = y
+  USE_X11 = n
+ else ifeq ($(USE_X11),y)
   $(eval $(call pkg-config-library,X11,x11))
   CE_DEFS += $(X11_CPPFLAGS) -DUSE_X11
  endif
