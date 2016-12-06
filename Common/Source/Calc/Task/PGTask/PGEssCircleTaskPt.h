@@ -20,7 +20,7 @@ public:
     PGEssCicrcleTaskPt();
     virtual ~PGEssCicrcleTaskPt();
     
-    virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt);
+    void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 };
 
 #endif /* PGESSCIRCLE_H */
