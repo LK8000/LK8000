@@ -904,7 +904,6 @@ DRAW	:=\
 	$(DRW)/RenderMapWindow.cpp \
 	$(DRW)/RenderMapWindowBg.cpp \
 	$(DRW)/ScreenProjection.cpp \
-	$(DRW)/Sonar.cpp \
 	$(DRW)/TextInBox.cpp \
 	$(DRW)/UpdateAndRefresh.cpp \
 	$(DRW)/Task/TaskRenderer.cpp \
@@ -1236,7 +1235,8 @@ SRC_FILES :=\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/lk8000.cpp\
 	$(SRC)/LiveTracker.cpp \
-	$(SRC)/LKAirspace.cpp	\
+	$(SRC)/Airspace/LKAirspace.cpp	\
+	$(SRC)/Airspace/Sonar.cpp	\
 	$(SRC)/LKInstall.cpp 		\
 	$(SRC)/LKLanguage.cpp		\
 	$(SRC)/LKObjects.cpp \
