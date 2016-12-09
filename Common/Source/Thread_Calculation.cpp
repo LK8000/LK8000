@@ -135,9 +135,7 @@ public:
             LiveTrackerUpdate(&tmpGPS, &tmpCALCULATED);
 
 #ifndef NO_DATARECORDER
-            if (FlightDataRecorderActive) {
-                UpdateFlightDataRecorder(&tmpGPS, &tmpCALCULATED);
-            }
+            UpdateFlightDataRecorder(&tmpGPS, &tmpCALCULATED);
 #endif
         }
     }
