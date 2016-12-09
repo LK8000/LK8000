@@ -14,6 +14,7 @@
 #include "Poco/Latin1Encoding.h"
 #include "Poco/UTF8Encoding.h"
 #include "Poco/TextConverter.h"
+#include "Util/Clamp.hpp"
 
 #ifdef __MINGW32__
 #ifndef max
@@ -751,12 +752,12 @@ void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec) {
     LKASSERT(Hour && Min);
     TCHAR* sz = NULL;
     if (szString) {
-        *Hour = clamp((int)_tcstol(szString, &sz, 10), 0, 23);
+        *Hour = Clamp<int>(_tcstol(szString, &sz, 10), 0, 23);
         if (*sz == _T(':')) {
-            *Min = clamp((int)_tcstol(sz + 1, &sz, 10), 0, 59);
+            *Min = Clamp<int>(_tcstol(sz + 1, &sz, 10), 0, 59);
 
             if (Sec && (*sz == _T(':'))) {
-                *Sec = clamp((int)_tcstol(sz + 1, &sz, 10), 0, 59);
+                *Sec = Clamp<int>(_tcstol(sz + 1, &sz, 10), 0, 59);
             }
         }
     }

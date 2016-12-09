@@ -10,6 +10,7 @@
 #include "McReady.h"
 #include "DoInits.h"
 #include "utils/stl_utils.h"
+#include "Util/Clamp.hpp"
 
 
 double GlidePolar::polar_a;
@@ -88,7 +89,7 @@ void GlidePolar::SetBallast() {
   if ((SAFTEYSPEED<1)||(SAFTEYSPEED>=MAXSAFETYSPEED)) {
     SAFTEYSPEED=MAXSAFETYSPEED-1;
   }
-  iSAFETYSPEED=clamp(iround(SAFTEYSPEED*2), 8, (MAXSPEED*2));
+  iSAFETYSPEED=Clamp(iround(SAFTEYSPEED*2), 8, (MAXSPEED*2));
 
   // _sinkratecache is an array for 0.5 m/s values!! i = irount(speed * 2) speed in m/s
   for(int _i=8;_i<=(MAXSPEED*2);_i++)
@@ -128,7 +129,7 @@ inline double GlidePolar::_SinkRateFast(const double &MC, const unsigned &v) {
     LKASSERT(iSAFETYSPEED > 8U);
     LKASSERT(v >= 8U && v <= iSAFETYSPEED);
 #endif
-    return _sinkratecache[clamp(v, 8U, iSAFETYSPEED)] - MC;
+    return _sinkratecache[Clamp(v, 8U, iSAFETYSPEED)] - MC;
 }
 
 double GlidePolar::SinkRateFast(const double &MC, const double &v) {
@@ -378,7 +379,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
                                       // be to WindBearing
       double BCTguess;                // (deg) guessed best
                                       // cruise track
-      double Precision;       // (deg) we know we’re at least
+      double Precision;       // (deg) we know weï¿½re at least
                               // this close to the real answer
       double AngleBrg;        // (deg) angle opposite brg-to-WP
                               // side of triangle
@@ -429,7 +430,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
 
         // The following calculates some things that need to be
         // calculated only once and only if the first guess (above)
-        // wasn’t close enough.
+        // wasnï¿½t close enough.
 
         if (DistDrift == 0) { // is 0 first iteration of loop only
 
@@ -455,7 +456,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
         AngleBrg   = 180 - AngleCruise - AngleDrift;
 
         // use law of sines to calc other triangle side lengths.
-        // We’ll use multiplier twice, so calculate it just once:
+        // Weï¿½ll use multiplier twice, so calculate it just once:
 
         #if BUGSTOP
 	LKASSERT(AngleBrg!=0);
@@ -493,8 +494,8 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
           WindLimit = BCTguess;  // try BCT closer to Bearing
         else
           BrgLimit  = BCTguess;  // try BCT closer to wind dir
-      } // “while” loop calculating BCT
-    } // “if” there is crosswind & more alt is needed
+      } // ï¿½whileï¿½ loop calculating BCT
+    } // ï¿½ifï¿½ there is crosswind & more alt is needed
   } // "if" SpeedFound && BestCruiseTrack && !isFinalGlide
 
   #endif // BCT_ALT_FIX
