@@ -7,6 +7,8 @@
 */
 #include "externs.h"
 #include "Sound/Sound.h"
+#include "Util/Clamp.hpp"
+#include "OS/Sleep.h"
 
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500
@@ -15,16 +17,11 @@
 #define GC_HORIZONTAL_DELAY_FACT   250.0f
 #define GC_VERTICAL_DELAY_FACT      25.0f
 
-
-extern AirSpaceSonarLevelStruct sSonarLevel[];
-extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-extern int Sideview_iNoHandeldSpaces;
-
 //#define DEBUG_SONAR	1
 
 
 
-AirSpaceSonarLevelStruct sSonarLevel[10] = {
+const AirSpaceSonarLevelStruct sSonarLevel[10] = {
     /* horizontal sonar levels */
     /* Dist , Delay *0.5s, V/H,      soundfile */
     {  150,     3,         true, TEXT("LK_SONAR_H1.WAV")},
@@ -48,6 +45,7 @@ AirSpaceSonarLevelStruct sSonarLevel[10] = {
 // This function can manage more than 1 airspace as Input.
 // However currently we only use one, the closest.
 //
+static
 int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAltitudeAGL, int iAltitude)
 {
   int iAS_HorDist;
@@ -158,12 +156,20 @@ int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAl
 // We do Sonar from draw thread, because it is reasonable to think that without a visual aid on map,
 // the simple sonar sound alone is an halved solution.
 //
-void MapWindow::DoSonar(void) {
+void DoSonar(void) {
 
   static unsigned long lSonarCnt = 0;
 
-  if (!SonarWarning || DrawInfo.NAVWarning || !EnableSoundModes)return;
+  if (!SonarWarning || !EnableSoundModes)return;
 
+	LockFlightData();
+	bool NAVWarning = GPS_INFO.NAVWarning;
+	bool FreeFlying = CALCULATED_INFO.FreeFlying;
+	int AltitudeAGL = CALCULATED_INFO.AltitudeAGL;
+	int NavAltitude = CALCULATED_INFO.NavAltitude;
+	UnlockFlightData();
+	
+	if(NAVWarning) return;
 
   CAirspace *aspfound = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
 
@@ -183,11 +189,10 @@ void MapWindow::DoSonar(void) {
 
   if ( near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance) ) {
 	int iSonarLevel=0;
-	if(ISCAR||ISGAAIRCRAFT||SIMMODE||DerivedDrawInfo.FreeFlying)
+	if(ISCAR||ISGAAIRCRAFT||SIMMODE||FreeFlying)
 	{
 		const CAirspaceBase* pAs = &near_airspace;
-		iSonarLevel = CalcSonarDelay( 1, &pAs,
-			(int)DerivedDrawInfo.AltitudeAGL, (int)DerivedDrawInfo.NavAltitude);
+		iSonarLevel = CalcSonarDelay( 1, &pAs, AltitudeAGL, NavAltitude);
 
 		#if DEBUG_SONAR
 		StartupStore(_T(".. iSonarLevel=%d\n"),iSonarLevel);
@@ -208,4 +213,41 @@ void MapWindow::DoSonar(void) {
   else StartupStore(_T("SONAR: no near_airspace, return\n"));
   #endif
 
+}
+
+class SonarThread : public Poco::Runnable
+{
+public:
+    void Start() {
+				bStop = false;
+        Thread.start(*this);
+    }
+		
+    void Stop() {
+			bStop = true;
+			Thread.join();
+		}
+protected:
+    void run() {
+			PeriodClock Timer;
+			while(!bStop) {
+				DoSonar();
+				unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
+				Sleep(n);
+				Timer.Update();
+			}
+		}
+
+		bool bStop;
+    Poco::Thread Thread;
+};
+
+SonarThread SonarThreadInstance;
+
+void InitAirspaceSonar() {
+	SonarThreadInstance.Start();
+}
+
+void DeinitAirspaceSonar() {
+	SonarThreadInstance.Stop();
 }

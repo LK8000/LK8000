@@ -32,7 +32,6 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
    *  need to be removed outside Draw thread
    */
   LKBatteryManager();
-  DoSonar();
   /***/
 }
 

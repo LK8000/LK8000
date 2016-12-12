@@ -80,6 +80,8 @@
 #include "LKInterface/CScreenOrientation.h"
 #include <time.h>
 
+#include "Airspace/Sonar.h"
+
 #ifdef __linux__
 #include <sys/utsname.h>
 #endif
@@ -589,6 +591,8 @@ int main(int argc, char *argv[]) {
   ProgramStarted = psInitDone;
 
   GlobalRunning = true;
+	
+	InitAirspaceSonar();
 
     if (WarningHomeDir) {
         TCHAR nopath[MAX_PATH];

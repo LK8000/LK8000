@@ -34,6 +34,8 @@
 #include "Dialogs/dlgProgress.h"
 #include "Draw/ScreenProjection.h"
 
+#include "Airspace/Sonar.h"
+
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);
 
@@ -71,6 +73,8 @@ void Shutdown(void) {
   StartupLogFreeRamAndStorage();
   #endif
 
+	DeinitAirspaceSonar();
+	
   // turn off all displays
   GlobalRunning = false;
 

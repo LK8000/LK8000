@@ -622,9 +622,6 @@ private:
   static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
   static void LKDrawVario(LKSurface& Surface, const RECT& rc);
 
-
-  static void DoSonar(void);
-
   static bool TextInBox(LKSurface& Surface, const RECT *area, const TCHAR* Value, int x, int y, TextInBoxMode_t *Mode, bool noOverlap=false);
   static void VGTextInBox(LKSurface& Surface, const unsigned short nslot, const short numlines, const TCHAR* wText1, const TCHAR *wText2, const TCHAR *wText3, int x, int y, const LKColor& trgb, const LKBrush& bbrush);
   static void ToggleFullScreenStart();
