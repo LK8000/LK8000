@@ -124,6 +124,15 @@ ifeq ($(TARGET),CUBIE)
   TARGET_HAS_MALI :=y
 endif
 
+ifeq ($(TARGET),OPENVARIO)
+  HOST_IS_ARM     :=n
+  CONFIG_LINUX    :=y
+  CONFIG_ANDROID  :=n
+  MINIMAL         :=n
+  OPENMP          :=y
+  TARGET_HAS_MALI :=y
+endif
+
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC)$(TARGET),yPCX64)
@@ -214,23 +223,26 @@ endif
 
 EXE		:=$(findstring .exe,$(MAKE))
 
-ifeq ($(CLANG),y)
- CXX		:=$(TCPATH)clang++$(EXE)
- CC		:=$(TCPATH)clang$(EXE)
- AS		:=$(TCPATH)clang$(EXE) -c
- STRIP		:=$(TCPATH)strip$(EXE)
-else
- CXX		:=$(TCPATH)g++$(EXE)
- CC		:=$(TCPATH)gcc$(EXE)
- AS		:=$(TCPATH)as$(EXE)
- STRIP		:=$(TCPATH)strip$(EXE)	
-endif
+ifneq ($(TARGET),OPENVARIO)
+ ifeq ($(CLANG),y)
+  CXX		:=$(TCPATH)clang++$(EXE)
+  CC		:=$(TCPATH)clang$(EXE)
+  AS		:=$(TCPATH)clang$(EXE) -c
+  STRIP		:=$(TCPATH)strip$(EXE)
+ else
+  CXX		:=$(TCPATH)g++$(EXE)
+  CC		:=$(TCPATH)gcc$(EXE)
+  AS		:=$(TCPATH)as$(EXE)
+  STRIP		:=$(TCPATH)strip$(EXE)	
+ endif
 
-AR		:=$(TCPATH)ar$(EXE)
-SIZE		:=$(TCPATH)size$(EXE)
-WINDRES		:=$(TCPATH)windres$(EXE)
-LD		:=$(TCPATH)ld$(EXE)
-OBJCOPY		:=$(TCPATH)objcopy$(EXE)
+ AR		:=$(TCPATH)ar$(EXE)
+ SIZE		:=$(TCPATH)size$(EXE)
+ WINDRES	:=$(TCPATH)windres$(EXE)
+ LD		:=$(TCPATH)ld$(EXE)
+ OBJCOPY		:=$(TCPATH)objcopy$(EXE)
+endif
+	
 SYNCE_PCP	:=synce-pcp
 SYNCE_PRM	:=synce-prm
 CE_VERSION	:=0x0$(CE_MAJOR)$(CE_MINOR)
@@ -303,7 +315,7 @@ ifeq ($(TARGET_IS_PI),y)
 
 endif
 
-ifeq ($(TARGET_IS_CUBIE),y)
+ifeq ($(TARGET_HAS_MALI),y)
  USE_EGL :=y
  OPENGL	 :=y
  GLES    :=y
@@ -311,11 +323,13 @@ ifeq ($(TARGET_IS_CUBIE),y)
  USE_CONSOLE = y	
 	
  CE_DEFS += -DHAVE_MALI
+endif
+
+ifeq ($(TARGET_IS_CUBIE),y)
  CE_DEFS += --sysroot=$(CUBIE) 
  CE_DEFS += -isystem $(CUBIE)/usr/include/c++/4.8.2 
  CE_DEFS += -isystem $(CUBIE)/usr/include/c++/4.8.2/armv7l-unknown-linux-gnueabihf 
  CE_DEFS += -isystem $(CUBIE)/usr/include 
-
 endif
 
 ifeq ($(CONFIG_LINUX),y)
@@ -669,21 +683,19 @@ endif
 ####### compiler target
 
 ifeq ($(CONFIG_PC),y)
-ifeq ($(TARGET),PCX64)
-    TARGET_ARCH := -m64
+ ifeq ($(TARGET),PCX64)
+  TARGET_ARCH := -m64
+ else
+  TARGET_ARCH	:=-mwindows -march=i586 -mms-bitfields
+ endif
+else ifeq ($(CONFIG_LINUX),y)
+ TARGET_ARCH	:= $(MCPU)
+else ifeq ($(TARGET),PNA)
+ TARGET_ARCH	:=-mwin32
 else
-    TARGET_ARCH	:=-mwindows -march=i586 -mms-bitfields
-endif
-else
-TARGET_ARCH	:=-mwin32 $(MCPU)
-ifeq ($(TARGET),PNA)
-TARGET_ARCH	:=-mwin32
-endif
-ifeq ($(CONFIG_LINUX),y)
-TARGET_ARCH	:= $(MCPU)
+ TARGET_ARCH	:=-mwin32 $(MCPU)
 endif
 
-endif
 WINDRESFLAGS	:=-I$(HDR) -I$(SRC) $(CE_DEFS) -D_MINGW32_
 MAKEFLAGS	+=-r
 
@@ -1525,7 +1537,9 @@ endif
 $(OUTPUTS) : $(OUTPUTS_NS) 
 	@$(NQ)echo "  STRIP   $@"
 	$(Q)$(STRIP) $< -o $@
+ifneq ($(TARGET),OPENVARIO)
 	$(Q)$(SIZE) $@
+endif
 
 ifeq ($(REMOVE_NS),y)
 	$(RM) $(OUTPUTS_NS)
