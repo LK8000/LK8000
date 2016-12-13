@@ -124,7 +124,6 @@ ifeq ($(TARGET),CUBIE)
   TARGET_HAS_MALI :=y
 endif
 
-include build/pkgconfig.mk
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC)$(TARGET),yPCX64)
@@ -170,6 +169,7 @@ ifeq ($(CONFIG_PPC2002),y)
 endif
 
 -include local.mk
+include build/pkgconfig.mk
 
 ############# platform info
 
