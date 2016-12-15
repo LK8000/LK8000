@@ -62,13 +62,12 @@ tstring Message::msgText;
 // Get start time to reduce overrun errors
 PeriodClock startTime;
 
-int Message::block_ref = 0;
+int Message::ScopeBlockRender::_Block = 0;
 
 void Message::Initialize(RECT rc) {
 
     startTime.Update();
 
-    block_ref = 0;
     hidden = true;
     nvisible = 0;
     rcmsg = rc; // default; message window can be full size of screen
@@ -160,22 +159,9 @@ void Message::Resize() {
 }
 
 
-void Message::BlockRender(bool doblock) {
-  //Lock();
-  if (doblock) {
-    block_ref++;
-  } else {
-    block_ref--;
-  }
-  assert(block_ref>=0);
-  // TODO code: add blocked time to messages' timers so they come
-  // up once unblocked.
-  //Unlock();
-}
-
 bool Message::Render() {
     if (!GlobalRunning) return false;
-    if (block_ref) return false;
+    if (ScopeBlockRender::isBlocked()) return false;
 
     Lock();
     unsigned fpsTime = startTime.Elapsed();
