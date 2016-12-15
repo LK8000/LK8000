@@ -83,8 +83,6 @@ void Globals_Init(void) {
   InfoType[8] = 387389207;
 
 
-  StatusMessageData_Size = 0;
-
   //
   // Configuration with default values for new profile
   //

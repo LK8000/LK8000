@@ -1291,7 +1291,6 @@ SRC_FILES :=\
 	$(SRC)/SaveLoadTask/LoadCupTask.cpp\
 	$(SRC)/SaveLoadTask/LoadGpxTask.cpp\
 	$(SRC)/Settings.cpp\
-	$(SRC)/StatusFile.cpp \
 	$(SRC)/Thread_Calculation.cpp\
 	$(SRC)/Thread_Draw.cpp	\
 	$(SRC)/TrueWind.cpp		\
