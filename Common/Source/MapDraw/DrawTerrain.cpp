@@ -399,7 +399,9 @@ public:
         const double ac2 = sint*InvDrawScale;
         const double ac3 = cost*InvDrawScale;
 
-        #pragma omp parallel for
+#if defined(_OPENMP)
+				#pragma omp parallel for
+#endif
         for (unsigned int iy=0; iy < iys; iy++) {
             const int y = Y0 + (iy*dtquant);
             const double ac1 = PanLatitude - y*ac3;
@@ -464,7 +466,9 @@ public:
         const BGRColor* oColorBuf = colorBuf + 64 * 256;
         if (!sbuf->GetBuffer()) return;
 
+#if defined(_OPENMP)				
         #pragma omp parallel for
+#endif
         for (unsigned int y = 0; y < ciys; ++y) {
             const int itss_y = ciys - 1 - y;
             const int itss_y_ixs = itss_y*cixs;
