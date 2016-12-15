@@ -18,6 +18,7 @@
 #include "utils/stl_utils.h"
 #include "Util/tstring.hpp"
 #include "Screen/FontReference.h"
+#include "Screen/LKFont.h"
 
 #ifndef GET_X_LPARAM
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))

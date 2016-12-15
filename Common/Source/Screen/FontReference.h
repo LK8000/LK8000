@@ -6,7 +6,7 @@
  * File:   FontReference.h
  * Author: Bruno de Lacheisserie
  *
- * Created on 7 décembre 2014, 19:03
+ * Created on 7 dÃ©cembre 2014, 19:03
  */
 
 #ifndef FONTREFERENCE_H
@@ -14,9 +14,8 @@
 
 #ifdef USE_GDI
 
-#include <windows.h>
-
-typedef HFONT FontReference;
+class LKFont;
+class FontReference;
 
 #else
 

@@ -15,6 +15,20 @@
 #include "Screen/Font.hpp"
 #ifndef USE_GDI
 #include "Screen/Custom/Cache.hpp"
+#include "FontReference.h"
+#endif
+
+#ifdef WIN32
+class LKFont;
+class FontReference {
+public:
+	FontReference() : _font_ref()  { }
+	FontReference(const LKFont* ref) : _font_ref(ref)  { }
+	inline operator HFONT();
+private:
+	const LKFont* _font_ref;
+};
+
 #endif
 
 class LKFont final : public Font {
@@ -42,12 +56,18 @@ public:
     explicit LKFont(HFONT Font) {  font = Font; }
 
     operator HFONT() const { return Native(); }
-#else
-    operator const LKFont*() const { return this; }
-
 #endif
+    operator FontReference() const { return this; }
 };
 
 static_assert(sizeof(LKFont) == sizeof(Font), "not same size");
+
+#ifdef WIN32
+
+inline FontReference::operator HFONT() {
+	return _font_ref?_font_ref->Native():NULL;
+}
+
+#endif
 
 #endif	/* LKFONT_H */
