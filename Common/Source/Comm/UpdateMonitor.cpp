@@ -59,12 +59,12 @@ void NMEAParser::UpdateMonitor(void)
 	// No valid fix on any port. We use the first port with at least some data going through!
 	// This will keep probably at least the time updated since the gps may still be receiving a 
 	// valid time, good for us.
-	if ( (LKHearthBeats-ComPortHB[0])<10 ) {
+	if ( (LKHearthBeats- devA()->HB)<10 ) {
 		// It is not granted that devA is really a GPS source.
 		// Very unlikely, but possible..
 		if (devIsGPSSource(devA())) active=1;
 	} else {
-		if ( (LKHearthBeats-ComPortHB[1])<10 ) {
+		if ( (LKHearthBeats-devB()->HB)<10 ) {
 			// portB is really active, although there is no valid fix on it.
 			// Before electing it to gps, lets be sure it really has one!
 			// LKEXT1 and other instruments do not provide GPS source in fact.
@@ -122,7 +122,7 @@ void NMEAParser::UpdateMonitor(void)
   }
 
   // Check Port 1 with no serial activity in last seconds
-  if ( (LKHearthBeats-ComPortHB[0])>10 ) {
+  if ( (LKHearthBeats-devA()->HB)>10 ) {
 	#ifdef DEBUGNPM
 	StartupStore(_T("... GPS Port 1 : no activity LKHB=%u CBHB=%u %s"),LKHearthBeats, ComPortHB[0],NEWLINE);
 	#endif
@@ -158,7 +158,7 @@ void NMEAParser::UpdateMonitor(void)
 		validBaro++;
   }
   // now check also port 2
-  if ( (LKHearthBeats-ComPortHB[1])>10 ) {
+  if ( (LKHearthBeats-devB()->HB)>10 ) {
 	#ifdef DEBUGNPM
 	StartupStore(_T("... GPS Port 2 : no activity LKHB=%u CBHB=%u %s"),LKHearthBeats, ComPortHB[1],NEWLINE);
 	#endif

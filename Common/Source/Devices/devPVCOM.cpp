@@ -74,7 +74,7 @@ BOOL PVCOMInstall(PDeviceDescriptor_t d){
   d->PutFreqStandby = PVCOMPutFreqStandby;
   d->StationSwap = PVCOMStationSwap;
   d->ParseNMEA    = PVCOMParseString;
-  d->RadioMode    = PVCOMRadioMode;
+  d->PutRadioMode    = PVCOMRadioMode;
   StartupStore(_T(". PVCOMInstall %s%s"), WhatTimeIsIt(),NEWLINE);
   return(TRUE);
 

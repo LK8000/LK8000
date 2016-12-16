@@ -48,7 +48,7 @@ BOOL KRT2Install(PDeviceDescriptor_t d){
   d->StationSwap = KRT2StationSwap;
   d->ParseNMEA    = NULL;
   d->ParseStream   = KRT2ParseString;
-  d->RadioMode    = KRT2RadioMode;
+  d->PutRadioMode    = KRT2RadioMode;
   return(TRUE);
 
 }

@@ -166,30 +166,32 @@ void ComPort::ProcessChar(char c) {
 }
 
 void ComPort::AddStatRx(unsigned dwBytes) {
-    if (GetPortIndex() < NUMDEV)
-        ComPortRx[GetPortIndex()] += dwBytes;
+    if (GetPortIndex() < NUMDEV) {
+        DeviceList[GetPortIndex()].Rx += dwBytes;
+    }
 }
 
 void ComPort::AddStatErrRx(unsigned dwBytes) {
-    if (GetPortIndex() < NUMDEV)
-        ComPortErrRx[GetPortIndex()] += dwBytes;
+    if (GetPortIndex() < NUMDEV) {
+        DeviceList[GetPortIndex()].ErrRx += dwBytes;
+    }
 }
 
 void ComPort::AddStatTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortTx[GetPortIndex()] += dwBytes;
+        DeviceList[GetPortIndex()].Tx += dwBytes;
     }
 }
 
 void ComPort::AddStatErrTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortErrTx[GetPortIndex()] += dwBytes;
+        DeviceList[GetPortIndex()].ErrTx += dwBytes;
     }
 }
 
 void ComPort::SetPortStatus(int nStatus) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortStatus[GetPortIndex()] = nStatus;
+        DeviceList[GetPortIndex()].Status = nStatus;
     }
 }
 

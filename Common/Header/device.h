@@ -74,11 +74,10 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*PutBugs)(DeviceDescriptor_t *d, double	Bugs);
   BOOL (*PutBallast)(DeviceDescriptor_t	*d,	double Ballast);
   BOOL (*PutVolume)(DeviceDescriptor_t	*d,	int Volume);
-  BOOL (*RadioMode)(DeviceDescriptor_t	*d,	int mode);
+  BOOL (*PutRadioMode)(DeviceDescriptor_t	*d,	int mode);
   BOOL (*PutSquelch)(DeviceDescriptor_t	*d,	int Squelch);
   BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	double Freq, TCHAR StationName[]);
   BOOL (*StationSwap)(DeviceDescriptor_t	*d);
-  BOOL (*devPutRadioMode)(DeviceDescriptor_t	*d, int mode);
   BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	double Standby, TCHAR StationName[]);
   BOOL (*Open)(DeviceDescriptor_t	*d,	int	Port);
   BOOL (*Close)(DeviceDescriptor_t *d);
@@ -97,7 +96,16 @@ typedef	struct DeviceDescriptor_t{
 
   int PortNumber;
   bool Disabled;
-
+  
+  // Com port diagnostic
+  int Status;
+  unsigned Rx;
+  unsigned ErrRx;
+  unsigned Tx;
+  unsigned ErrTx;
+  // Com ports hearth beats, based on LKHearthBeats
+  unsigned HB;
+  
   void InitStruct(int i);
 }DeviceDescriptor_t;
 
@@ -145,17 +153,16 @@ bool devIsDisabled(int devindex);
 BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLink);
 BOOL devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
 BOOL devParseStream(int portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
-BOOL devPutMacCready(PDeviceDescriptor_t d,	double MacCready);
+BOOL devPutMacCready(double MacCready);
 BOOL devRequestFlarmVersion(PDeviceDescriptor_t d);
-BOOL devPutBugs(PDeviceDescriptor_t	d, double	Bugs);
-BOOL devPutBallast(PDeviceDescriptor_t d,	double Ballast);
-BOOL devPutVolume(PDeviceDescriptor_t	d, int Volume);
-BOOL devPutFreqSwap(PDeviceDescriptor_t	d);
-BOOL devPutRadioMode(PDeviceDescriptor_t	d, int Mode);
-BOOL devPutVolume(PDeviceDescriptor_t	d, int Volume);
-BOOL devPutSquelch(PDeviceDescriptor_t d, int Volume);
-BOOL devPutFreqActive(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);
-BOOL devPutFreqStandby(PDeviceDescriptor_t d,	double Freq, TCHAR StationName[]);
+BOOL devPutBugs(double	Bugs);
+BOOL devPutBallast(double Ballast);
+BOOL devPutVolume(int Volume);
+BOOL devPutFreqSwap();
+BOOL devPutRadioMode(int Mode);
+BOOL devPutSquelch(int Volume);
+BOOL devPutFreqActive(double Freq, TCHAR StationName[]);
+BOOL devPutFreqStandby(double Freq, TCHAR StationName[]);
 BOOL devLinkTimeout(PDeviceDescriptor_t	d);
 BOOL devDeclare(PDeviceDescriptor_t	d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(PDeviceDescriptor_t d);

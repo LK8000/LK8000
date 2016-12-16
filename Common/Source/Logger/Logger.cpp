@@ -959,16 +959,15 @@ void LoggerDeviceDeclare() {
 
   DeclaredToDevice = false;
 
-  if (LoggerDeclare(devA(), &Decl))
-    found_logger = true;
-
-  if (LoggerDeclare(devB(), &Decl))
-    found_logger = true;
+  for(auto dev : DeviceList) {
+    if (LoggerDeclare(&dev, &Decl)) {
+      found_logger = true;
+    }  
+  }
 
   if (!found_logger) {
-	// LKTOKEN  _@M474_ = "No logger connected"
-    MessageBoxX(MsgToken(474),
-		devB()->Name, mbOk);
+	// LKTOKEN  _@M474_ = "No logger connected" 
+    MessageBoxX(MsgToken(474), _T(""), mbOk);
     DeclaredToDevice = true; // testing only
   }
 
