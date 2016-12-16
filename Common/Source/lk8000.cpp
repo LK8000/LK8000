@@ -79,6 +79,7 @@
 #include "Hardware/CPU.hpp"
 #include "LKInterface/CScreenOrientation.h"
 #include <time.h>
+#include "utils/openzip.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -107,6 +108,8 @@ extern bool LoadModelFromProfile(void);
 
 #ifndef ANDROID
 Poco::NamedMutex Mutex("LOCK8000");
+#else
+zzip_file_ptr zzipSystem;
 #endif
 
 static bool realexitforced=false;
@@ -151,7 +154,15 @@ bool Startup(const TCHAR* szCmdLine) {
     }
   #endif
 
-#ifndef ANDROID
+#ifdef ANDROID
+  /** system files are stored in "assets"
+   * "assets" are zipped inside apk
+   * for speedup access to this files by zziplib, we need to keep it open...
+   */
+  TCHAR szSystemPath[MAX_PATH];
+  SystemPath(szSystemPath, TEXT(LKD_SYSTEM DIRSEP LKF_CREDITS));
+  zzipSystem = openzip(szSystemPath, "rb");
+#else
   bool datadir = CheckDataDir();
   if (!datadir) {
     // we cannot call startupstore, no place to store log!
@@ -481,6 +492,8 @@ void Shutdown() {
 
 #ifndef ANDROID
   Mutex.unlock();
+#else
+  zzipSystem.close();
 #endif
 
   #if TESTBENCH
