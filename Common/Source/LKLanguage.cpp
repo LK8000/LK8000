@@ -246,37 +246,33 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
   bool english=false;
   TCHAR szFile1[MAX_PATH] = _T("\0");
   _tcscpy(LKLangSuffix,_T(""));
+
+
   _tcscpy(szFile1,szFileName);
   tryeng:
   if (_tcslen(szFile1)==0) {
-#ifdef LKD_SYS_LANGUAGE
-	SystemPath(szFile1, _T(LKD_SYS_LANGUAGE DIRSEP "ENGLISH.LNG" ));
-#else
-	_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\" LKD_LANGUAGE "\\ENGLISH.LNG"));
-#endif
+	_tcscpy(szFile1, _T(LKD_DEFAULT_LANGUAGE));
 	english=true;
   }
-  ExpandLocalPath(szFile1);
-  // SetRegistryString(szRegistryLanguageFile, TEXT("\0")); // ?
 
-  ZZIP_FILE *langFile = openzip(szFile1, "rt");
+  TCHAR szFilePath[MAX_PATH] = _T("\0");
+  LocalPath(szFilePath, szFile1);
+  ZZIP_FILE *langFile = openzip(szFilePath, "rt");
+  if(!langFile) {
+    SystemPath(szFilePath, szFile1);
+    langFile = openzip(szFilePath, "rt");
+  }
+
   if (langFile == NULL) {
 	if (english) {
-#ifdef ANDROID
-		SystemPath(szFile1, "assets/ENGLISH.LNG");
-		langFile = openzip(szFile1, "rt");
-		if(langFile) {
-			goto tryeng;
-		}
-#endif
 		StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
 		// critic point, no default language! BIG PROBLEM here!
+		return;
 	} else {
 		StartupStore(_T("--- NO LANGUAGE FILE FOUND <%s>, retrying with ENGlish!%s"),szFile1,NEWLINE);
 		_tcscpy(szFile1,_T(""));
 		goto tryeng;
 	}
-	return;
   }
 
   bool found=false;

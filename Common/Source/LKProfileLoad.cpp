@@ -438,7 +438,11 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) {; LKTopoZoomCat90/=1000; return;}
   PREAD(sname,svalue,szRegistryLKVarioBar,&LKVarioBar);
   PREAD(sname,svalue,szRegistryLKVarioVal,&LKVarioVal);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile, array_size(szLanguageFile));
+  if (matchedstring) {
+    return;
+  }
 
   if (!strcmp(szRegistryLatLonUnits,sname)) {
 	ival=strtol(svalue, NULL, 10);

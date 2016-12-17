@@ -2202,14 +2202,17 @@ DataField* dfe = wp->GetDataField();
 
   _tcscpy(temptext,szLanguageFile);
   if (_tcslen(temptext)==0) {
-	_tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
+	_tcscpy(temptext,_T(LKD_DEFAULT_LANGUAGE));
   }
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpLanguageFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
       dfe->ScanDirectoryTop(_T(LKD_LANGUAGE), _T("*" LKS_LANGUAGE));
+#ifdef LKD_SYS_LANGUAGE
+      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_LANGUAGE), _T("*" LKS_LANGUAGE));
+      dfe->Sort();
+#endif
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -3593,7 +3596,6 @@ int ival;
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szLanguageFile)) {
       _tcscpy(szLanguageFile,temptext);
       requirerestart = true; // restart needed for language load

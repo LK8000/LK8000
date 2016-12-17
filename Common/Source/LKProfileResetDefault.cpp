@@ -394,7 +394,7 @@ void LKProfileResetDefault(void) {
   szAdditionalWaypointFile[0] = TEXT('\0');
   _tcscpy(szTerrainFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.DEM"));
   _tcscpy(szAirfieldFile,_T("%LOCAL_PATH%\\\\_Waypoints\\WAYNOTES.txt"));
-  _tcscpy(szLanguageFile,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
+  _tcscpy(szLanguageFile,_T(LKD_DEFAULT_LANGUAGE));
 
   szInputFile[0] = TEXT('\0');
   _tcscpy(szMapFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.LKM"));

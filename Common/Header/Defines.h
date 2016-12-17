@@ -127,6 +127,7 @@
     #define LKD_SYS_POLAR    "assets/polars"
 
     #define LKD_DEFAULT_POLAR   "assets/polars/Default.plr"
+    #define LKD_DEFAULT_LANGUAGE   "assets/language/ENGLISH.LNG"
 
 #else
     #define LKD_SYSTEM       "_System"
@@ -134,6 +135,7 @@
     #define LKD_BITMAPS      "_System\\_Bitmaps"
 
     #define LKD_DEFAULT_POLAR   "_Polars\\Default.plr"
+    #define LKD_DEFAULT_LANGUAGE   "_Language\\ENGLISH.LNG"
 
 #endif
 
