@@ -387,7 +387,7 @@ void LKProfileResetDefault(void) {
   //szPolarFile[0] = TEXT('\0');
 
 
-  _tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+  _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
   _tcscpy(szAirspaceFile,_T("%LOCAL_PATH%\\\\_Airspaces\\DEMO.txt"));
   szAdditionalAirspaceFile[0] = TEXT('\0');
   _tcscpy(szWaypointFile,_T("%LOCAL_PATH%\\\\_Waypoints\\DEMO.cup"));

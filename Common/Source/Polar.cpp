@@ -10,6 +10,7 @@
 #include "McReady.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
+#include "utils/openzip.h"
 
 
 bool ReadWinPilotPolarInternal(int i);
@@ -115,16 +116,16 @@ bool ReadWinPilotPolar(void) {
   dPOLARV[2]= 205.1;
   dPOLARW[2]= -4.2;
 
-  _tcscpy(szFile,szPolarFile);
-  if (_tcscmp(szFile,_T(""))==0) {
-	StartupStore(_T("... Empty polar file, using Default%s"),NEWLINE);
-	_tcscpy(szFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
-  }
-
-    ExpandLocalPath(szFile);
-    StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
-
-    FILE * stream = _tfopen(szFile, _T("rt"));
+    if (_tcscmp(szPolarFile,_T(""))==0) {
+        StartupStore(_T("... Empty polar file, using Default" NEWLINE));
+        _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
+    }
+    LocalPath(szFile, szPolarFile);
+    ZZIP_FILE* stream = openzip(szFile, _T("rt"));
+    if(!stream) {
+        SystemPath(szFile, szPolarFile);
+        stream = openzip(szFile, _T("rt"));
+    }
     if(!stream){
         // polar file name can be an old name, convert to new name and retry.
         bool bRetry = false;
@@ -136,16 +137,16 @@ bool ReadWinPilotPolar(void) {
         }
 
         if(bRetry) {
-            _tcscpy(szFile,str.c_str());
-            ExpandLocalPath(szFile);
-
-            stream = _tfopen(szFile, _T("rt"));
+            LocalPath(szFile,str.c_str());
+            stream = openzip(szFile, _T("rt"));
         }
     }
+
+    StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
     if (stream){
 
         charset cs = charset::unknown;
-        while(ReadStringX(stream,READLINE_LENGTH,TempString, cs) && (!foundline)){
+        while(ReadString(stream,READLINE_LENGTH,TempString, cs) && (!foundline)){
 
 		if (_tcslen(TempString) <10) continue;
 
@@ -247,10 +248,9 @@ bool ReadWinPilotPolar(void) {
            currentFlapsPos++;
            GlidePolar::FlapsPosCount = currentFlapsPos;
 	   break;
-	} while(ReadStringX(stream,READLINE_LENGTH,TempString, cs));
+	} while(ReadString(stream,READLINE_LENGTH,TempString, cs));
 
-      {
-	fclose(stream);
+	zzip_close(stream);
 	if (foundline) {
 		ContractLocalPath(szFile);
 		_tcscpy(szFile,szPolarFile);
@@ -266,9 +266,9 @@ bool ReadWinPilotPolar(void) {
 		dPOLARW[2]= -4.2;
 		GlidePolar::WingArea = 10.04;
 		PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
-		_tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+
+        _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
 	} // !foundline
-      }
     }
     else {
 	StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);

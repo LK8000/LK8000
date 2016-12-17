@@ -332,6 +332,8 @@ class DataFieldFileReader: public DataField {
   int GetAsInteger(void) override;
   const TCHAR *GetAsString(void) override;
 
+  int GetLabelIndex(const TCHAR* label);
+
   bool Lookup(const TCHAR* text);
   const TCHAR* GetPathFile(void) const;
 
@@ -341,6 +343,7 @@ class DataFieldFileReader: public DataField {
 
   void Sort(int startindex=0) override;
   void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
+  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
 
  protected:
   BOOL ScanDirectories(const TCHAR *pattern, const TCHAR *filter);

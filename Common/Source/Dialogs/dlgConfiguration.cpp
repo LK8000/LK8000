@@ -2087,15 +2087,19 @@ DataField* dfe = wp->GetDataField();
   }
 
   if (_tcscmp(szPolarFile,_T(""))==0) 
-    _tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+    _tcscpy(temptext,_T(LKD_DEFAULT_POLAR));
   else
     _tcscpy(temptext,szPolarFile);
-  ExpandLocalPath(temptext);
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpPolarFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
       dfe->ScanDirectoryTop(_T(LKD_POLARS), _T("*" LKS_POLARS)); //091101
+#ifdef LKD_SYS_POLAR
+      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
+#endif
+      dfe->Sort();
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -4327,9 +4331,8 @@ void UpdateAircraftConfig(void){
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
     if (_tcscmp(temptext,_T(""))==0) {
-        _tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
-    } else
-      ContractLocalPath(temptext);
+        _tcscpy(temptext,_T(LKD_DEFAULT_POLAR));
+    }
 
     if (_tcscmp(temptext,szPolarFile)) {
       _tcscpy(szPolarFile,temptext);

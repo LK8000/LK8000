@@ -478,7 +478,24 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryLiveTrackerport,&LiveTrackerport_Config);
   PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config, array_size(LiveTrackerusr_Config));
   PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config, array_size(LiveTrackerpwd_Config));
+  if (matchedstring) return;
+
   PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile, array_size(szPolarFile));
+  if (matchedstring) {
+    /***************************************************/
+    /* for compatibilty with old file                  */
+    TCHAR code[] = _T("%LOCAL_PATH%\\");
+    const TCHAR* ptr = _tcsstr(szPolarFile, code);
+    while (ptr && (*ptr) == '\\') {
+      ++ptr;
+    }
+    if(ptr) {
+      _tcscpy(szPolarFile, ptr);
+    }
+    /***************************************************/
+    return;
+  }
+
   PREAD(sname,svalue,szRegistryPollingMode,&PollingMode);
   if (matchedstring) return;
 

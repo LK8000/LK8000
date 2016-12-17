@@ -21,6 +21,7 @@
 #include "Screen/LKWindowSurface.h"
 
 #include <functional>
+#include <Form/Form.hpp>
 
 #include "Event/Event.h"
 #include "Asset.hpp"
@@ -119,6 +120,40 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
 
 }
 
+void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
+
+  static zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
+  zzip_error_t zzipError;
+
+  tstring sRootPath = LKGetSystemPath();
+  if(sRootPath.empty()) {
+    return;
+  }
+  sRootPath.pop_back(); // remove trailing directory separator
+
+  size_t subdir_size = _tcslen(subdir);
+  // Open the archive root directory.
+  ZZIP_DIR* dir = zzip_dir_open_ext_io(sRootPath.c_str(), &zzipError, ext, nullptr);
+  if (dir) {
+    ZZIP_DIRENT dirent;
+    // Loop through the files in the archive.
+    while(zzip_dir_read(dir, &dirent)) {
+
+      if( _tcsnicmp(subdir, dirent.d_name, subdir_size) == 0) {
+        if(checkFilter(dirent.d_name, filter)) {
+
+          TCHAR* szFileName = _tcsrchr(dirent.d_name, _T('/'))+1;
+          if(GetLabelIndex(szFileName) <= 0) {
+            addFile(szFileName, dirent.d_name);
+          }
+        }
+      }
+    }
+    zzip_dir_close(dir);
+  }
+}
+
+
 
 BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filter) {
 
@@ -151,6 +186,16 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filte
     }
 
     return TRUE;
+}
+
+int DataFieldFileReader::GetLabelIndex(const TCHAR* label) {
+  for (unsigned i=1; i<nFiles; i++) {
+    // if (_tcscmp(Text,fields[i].mTextPathFile)==0) { 091126
+    if (_tcsicmp(label,fields[i].mTextFile)==0) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 bool DataFieldFileReader::Lookup(const TCHAR *Text) {

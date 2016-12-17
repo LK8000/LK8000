@@ -125,10 +125,16 @@
     #define LKD_BITMAPS      "bitmaps" // bitmap are loaded from java using AssetManager
     #define LKD_SYS_LANGUAGE "assets/language"
     #define LKD_SYS_POLAR    "assets/polars"
+
+    #define LKD_DEFAULT_POLAR   "assets/polars/Default.plr"
+
 #else
     #define LKD_SYSTEM       "_System"
     #define LKD_SOUNDS       "_System\\_Sounds"
     #define LKD_BITMAPS      "_System\\_Bitmaps"
+
+    #define LKD_DEFAULT_POLAR   "_Polars\\Default.plr"
+
 #endif
 
 #define LKD_CONF	"_Configuration"

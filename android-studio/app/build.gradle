@@ -37,6 +37,11 @@ android {
             into "src/main/assets"
             include "CREDITS.TXT"
         }
+        copy {
+            from "../../Common/Distribution/LK8000/_Polars"
+            into "src/main/assets/polars"
+            include "*.plr"
+        }
     }
     sourceSets {
         main{
