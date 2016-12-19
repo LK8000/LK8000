@@ -27,6 +27,10 @@
 
 #endif // __linux__
 
+#ifdef  ANDROID
+#include "Android/InternalPort.h"
+#endif
+
 
 #ifdef RADIO_ACTIVE
 bool devDriverActivated(const TCHAR *DeviceName) ;
@@ -497,7 +501,7 @@ BOOL devInit() {
             continue;
         }
         if(_tcscmp(pDev->Name,TEXT("Internal")) == 0) {
-            _tcscpy(Port, _T("GPSID"));
+            _tcscpy(Port, _T("internal"));
         } else { 
             Port[0] = _T('\0');
             SpeedIndex = 2U;
@@ -532,8 +536,12 @@ BOOL devInit() {
             if(bStartOk) {
                 Com = new BthPort(i, &Port[3]);
             }
-        } else if (_tcscmp(Port, _T("GPSID")) == 0) {
+        } else if (_tcscmp(Port, _T("internal")) == 0) {
+#ifdef ANDROID
+            Com = new InternalPort(i, Port);
+#else
             Com = new GpsIdPort(i, Port);
+#endif
         } else if (_tcscmp(Port, _T("TCPClient")) == 0) {
 #ifdef KOBO
             if(!IsKoboWifiOn()) {

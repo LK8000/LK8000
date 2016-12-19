@@ -168,9 +168,10 @@ inline unsigned int getDeviceIndex(JNIEnv *env, jobject obj) {
 
 // Implementations of the various C++ functions called by InternalGPS.java.
 
+extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
-Java_org_xcsoar_InternalGPS_setConnected(JNIEnv *env, jobject obj,
+Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj,
                                          jint connected)
 {
   unsigned index = getDeviceIndex(env, obj);

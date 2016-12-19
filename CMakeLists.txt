@@ -31,7 +31,9 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Java/File.cxx
     Common/Source/xcs/Java/Object.cxx
 
+
     Common/Source/Android/Main.cpp
+    Common/Source/Android/InternalPort.cpp
 
     Common/Source/Window/WndMain.cpp
 
