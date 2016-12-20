@@ -121,10 +121,10 @@ bool ReadWinPilotPolar(void) {
         _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
     }
     LocalPath(szFile, szPolarFile);
-    ZZIP_FILE* stream = openzip(szFile, _T("rt"));
+    ZZIP_FILE* stream = openzip(szFile, "rt");
     if(!stream) {
         SystemPath(szFile, szPolarFile);
-        stream = openzip(szFile, _T("rt"));
+        stream = openzip(szFile, "rt");
     }
     if(!stream){
         // polar file name can be an old name, convert to new name and retry.
@@ -138,7 +138,7 @@ bool ReadWinPilotPolar(void) {
 
         if(bRetry) {
             LocalPath(szFile,str.c_str());
-            stream = openzip(szFile, _T("rt"));
+            stream = openzip(szFile, "rt");
         }
     }
 

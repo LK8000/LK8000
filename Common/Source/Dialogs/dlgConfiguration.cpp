@@ -2097,7 +2097,14 @@ DataField* dfe = wp->GetDataField();
     if(dfe) {
       dfe->ScanDirectoryTop(_T(LKD_POLARS), _T("*" LKS_POLARS)); //091101
 #ifdef LKD_SYS_POLAR
-      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
+      /**
+       * Add entry from system directory not exist in data directory.
+       */
+#ifdef ANDROID
+      dfe->ScanZipDirectory(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
+#else
+#warning "not implemented"
+#endif
 #endif
       dfe->Sort();
       dfe->Lookup(temptext);
@@ -2210,7 +2217,14 @@ DataField* dfe = wp->GetDataField();
     if(dfe) {
       dfe->ScanDirectoryTop(_T(LKD_LANGUAGE), _T("*" LKS_LANGUAGE));
 #ifdef LKD_SYS_LANGUAGE
-      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_LANGUAGE), _T("*" LKS_LANGUAGE));
+      /**
+       * Add entry from system directory not exist in data directory.
+       */
+#ifdef ANDROID      
+      dfe->ScanZipDirectory(_T(LKD_SYS_LANGUAGE), _T("*" LKS_LANGUAGE));
+#else
+#warning "not implemented"
+#endif
       dfe->Sort();
 #endif
       dfe->Lookup(temptext);

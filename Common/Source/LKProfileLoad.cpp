@@ -488,8 +488,11 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) {
     /***************************************************/
     /* for compatibilty with old file                  */
-    TCHAR code[] = _T("%LOCAL_PATH%\\");
+    const TCHAR code[] = _T("%LOCAL_PATH%\\");
     const TCHAR* ptr = _tcsstr(szPolarFile, code);
+    if(ptr) {
+      ptr += _tcslen(code);
+    }
     while (ptr && (*ptr) == '\\') {
       ++ptr;
     }

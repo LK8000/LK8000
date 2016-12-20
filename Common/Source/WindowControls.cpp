@@ -120,7 +120,8 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
 
 }
 
-void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
+#ifdef ANDROID
+void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* filter) { // 091101
 
   static zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
   zzip_error_t zzipError;
@@ -152,7 +153,7 @@ void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHA
     zzip_dir_close(dir);
   }
 }
-
+#endif
 
 
 BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filter) {
