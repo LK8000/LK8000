@@ -7,6 +7,8 @@
 */
 
 #include "externs.h"
+#include "Message.h"
+#include "Sound/Sound.h"
 
 /** [Alarm Max Altitude] 
  * 
@@ -48,13 +50,14 @@ void InitAlarms(void) {
 #endif
 
 // alarms in range 0-(MAXLKALARMS-1), that is  0-2
-bool CheckAlarms(unsigned short al) {
+static
+bool CheckAlarms(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated, unsigned short al) {
 
   // safe check
   if (al>=MAXLKALARMS) return false;
 
   // Alarms are working only with a valid GPS fix. No navigator, no alarms.
-  if (GPS_INFO.NAVWarning) return false;
+  if (Basic.NAVWarning) return false;
 
   // do we have a valid alarm request?
   if ( LKalarms[al].triggervalue == 0) return false;
@@ -84,10 +87,10 @@ bool CheckAlarms(unsigned short al) {
   }
 
   // if too early we ignore it in any case
-  if (GPS_INFO.Time < (LKalarms[al].lasttriggertime + LKALARMSINTERVAL)) {
+  if (Basic.Time < (LKalarms[al].lasttriggertime + LKALARMSINTERVAL)) {
 #if DEBUG_LKALARMS
     StartupStore(_T("...... Alarms: too early for [%d], still %.0f seconds to go\n"),
-                          al, (LKalarms[al].lasttriggertime + LKALARMSINTERVAL)- GPS_INFO.Time);
+                          al, (LKalarms[al].lasttriggertime + LKALARMSINTERVAL)- Basic.Time);
 #endif
     return false;
   }
@@ -97,7 +100,7 @@ bool CheckAlarms(unsigned short al) {
   //
   // First we check for altitude alarms , 0-2
   //
-  const int navaltitude=(int)CALCULATED_INFO.NavAltitude;
+  const int navaltitude=(int)Calculated.NavAltitude;
   // is this is the first valid sample?
   if (LKalarms[al].lastvalue==0) {
     LKalarms[al].lastvalue= navaltitude;
@@ -122,7 +125,7 @@ bool CheckAlarms(unsigned short al) {
 #endif
       // bingo : update lasttime and counter
       LKalarms[al].triggerscount++;
-      LKalarms[al].lasttriggertime = GPS_INFO.Time;
+      LKalarms[al].lasttriggertime = Basic.Time;
       bTrigger = true;
     }
   } // end altitude alarms
@@ -132,4 +135,49 @@ bool CheckAlarms(unsigned short al) {
 
   return bTrigger;
 
+}
+
+static PeriodClock LKAlarmTick;
+//
+// Called by CalculationThread
+//
+void CheckAltitudeAlarms(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
+
+  if(!LKAlarmTick.CheckUpdate(1000)) {
+    // don't check Alarms faster than 1Hz
+    return;
+  }
+  
+	const TCHAR*  AlarmsSounds[] = {
+		_T("LK_ALARM_ALT1.WAV"),
+		_T("LK_ALARM_ALT2.WAV"),
+		_T("LK_ALARM_ALT3.WAV")
+	};
+
+  // Alarms are working only with a valid GPS fix. No navigator, no alarms.
+  if (Basic.NAVWarning) return;
+
+	unsigned active_alarm = 0U; // no new alarms 
+	
+	// check all alarms in reverse order, give priority to the lowest alarm in list
+	for( unsigned i = MAXLKALARMS; i > 0; --i) {
+		if(CheckAlarms(Basic, Calculated, i-1)) {
+			active_alarm = i;
+		}
+	}
+	
+	// new alarms ? 
+	if(active_alarm > 0) {
+		// ack previous alarms message
+		Message::Acknowledge(MSG_ALARM);
+
+		// Display new alarms message
+		TCHAR textalarm[100];
+		_stprintf(textalarm,_T("%s %d: %s %d"), MsgToken(1650), active_alarm, MsgToken(1651),  // ALARM ALTITUDE
+										((int)((double)LKalarms[active_alarm-1].triggervalue*ALTITUDEMODIFY)));
+
+		Message::AddMessage(12000, MSG_ALARM, textalarm); // Message for 12 sec.
+
+		LKSound(AlarmsSounds[active_alarm-1]);
+	}
 }

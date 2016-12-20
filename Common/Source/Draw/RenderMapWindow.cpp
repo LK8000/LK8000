@@ -22,14 +22,8 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
 #warning "TODO : Remove from Draw thread, that slowdown redraw for nothing"  
 
   /**
-   * don't work if GPS data Rate are faster than 1hz
-   * need to rewrite using DoStatusMessage and remove from Draw Thread
-   * 
-   */
-  DrawLKAlarms();
-  /**
-   * this 2 functions call are not drawing functions
-   *  need to be removed outside Draw thread
+   * this function are not drawing functions
+   *  need to be moved outside Draw thread
    */
   LKBatteryManager();
   /***/

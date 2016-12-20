@@ -137,6 +137,7 @@ public:
 #ifndef NO_DATARECORDER
             UpdateFlightDataRecorder(&tmpGPS, &tmpCALCULATED);
 #endif
+            CheckAltitudeAlarms(tmpGPS, tmpCALCULATED);
         }
     }
 private:

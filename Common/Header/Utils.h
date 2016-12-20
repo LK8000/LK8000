@@ -174,7 +174,7 @@ void ToggleBaroAltitude(void);
 bool ReducedMapSize(void);
 
 void InitAlarms(void);
-bool CheckAlarms(unsigned short al);
+void CheckAltitudeAlarms(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
 void MasterTimeReset(void);
 bool DoOptimizeRoute(void);
