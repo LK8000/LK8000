@@ -104,6 +104,14 @@ public:
 
             if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
+            // values changed, so copy them back now: ONLY CALCULATED INFO
+            // should be changed in DoCalculations, so we only need to write
+            // that one back (otherwise we may write over new data)
+            // Need to be Done before TriggerRedraw            
+            LockFlightData();
+            memcpy(&CALCULATED_INFO, &tmpCALCULATED, sizeof (DERIVED_INFO));
+            UnlockFlightData();            
+
             // This is activating another run for Thread Draw
             TriggerRedraws(&tmpGPS, &tmpCALCULATED);
 
@@ -122,13 +130,6 @@ public:
             }
 
             if (MapWindow::CLOSETHREAD) break; // drop out on exit
-
-            // values changed, so copy them back now: ONLY CALCULATED INFO
-            // should be changed in DoCalculations, so we only need to write
-            // that one back (otherwise we may write over new data)
-            LockFlightData();
-            memcpy(&CALCULATED_INFO, &tmpCALCULATED, sizeof (DERIVED_INFO));
-            UnlockFlightData();
 
             // update live tracker with new values
             // this is a nonblocking call, live tracker runs on different thread
