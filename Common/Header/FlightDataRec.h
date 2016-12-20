@@ -5,7 +5,7 @@
 #ifndef NO_DATARECORDER
 
 void InitFlightDataRecorder(void);
-void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 void CloseFlightDataRecorder(void);
 
 #endif

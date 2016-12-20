@@ -135,7 +135,7 @@ public:
             LiveTrackerUpdate(&tmpGPS, &tmpCALCULATED);
 
 #ifndef NO_DATARECORDER
-            UpdateFlightDataRecorder(&tmpGPS, &tmpCALCULATED);
+            UpdateFlightDataRecorder(tmpGPS, tmpCALCULATED);
 #endif
             CheckAltitudeAlarms(tmpGPS, tmpCALCULATED);
         }
