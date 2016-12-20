@@ -26,7 +26,7 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
    * need to rewrite using DoStatusMessage and remove from Draw Thread
    * 
    */
-  DrawLKAlarms(Surface, rc);
+  DrawLKAlarms();
   /**
    * this 2 functions call are not drawing functions
    *  need to be removed outside Draw thread

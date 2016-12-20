@@ -8,25 +8,36 @@
 
 #include "externs.h"
 
+/** [Alarm Max Altitude] 
+ * 
+ * An alarm will be triggered everytime this altitude is reached and crossed.
+ * 
+ * The alarm will not be repeated within the next 60 seconds.
+ * Each alarm can be repeated max 30 times. After 30 times, an alarm will automatically self disable for the current flight.
+ * 
+ * The visual alarm message automatically disappears after 12 seconds.
+
+ * After 1 minute, if altitude has been lower than Max Altitude and then becomes higher again, alarm will sound again.
+ * 
+ * To disable this alarm, set it to 0. ( Default Value )
+ * The altitude used for alarm is the one chosen in Config menu 5 "Use baro altitude".
+ * Multiple alarms set at the same altitude will have no effect.
+ * 
+ * Each alarm has a custom sound that can be changed inside _System _Sounds folder. They are named LK_ALARM_ALTx.WAV
+ */
+
 // #define DEBUG_LKALARMS	1
 
-void InitAlarms(void) {
 
-  #if DEBUG_LKALARMS
-  StartupStore(_T("...... Alarms: InitAlarms\n"));
-  #endif
-  int i;
-  for (i=0; i<MAXLKALARMS; i++) {
-	LKalarms[i].triggervalue=0;
-	LKalarms[i].lastvalue=0;
-	LKalarms[i].lasttriggertime=0.0;
-	LKalarms[i].triggerscount=0;
+static_assert(array_size(LKalarms) == MAXLKALARMS, "Wrong MAXLKALARMS and LKalarms array");
+
+void InitAlarms(void) {
+  for ( auto &alarm : LKalarms) {
+    alarm.triggervalue = 0;
+    alarm.lastvalue = 0;
+    alarm.lasttriggertime = 0.0;
+    alarm.triggerscount = 0;
   }
-	/* Test values
-	LKalarms[0].triggervalue=500;
-	LKalarms[1].triggervalue=0;
-	LKalarms[2].triggervalue=1200;
-	*/
 }
 
 #if DEBUG_LKALARMS
@@ -38,8 +49,6 @@ void InitAlarms(void) {
 
 // alarms in range 0-(MAXLKALARMS-1), that is  0-2
 bool CheckAlarms(unsigned short al) {
-
-  int i;
 
   // safe check
   if (al>=MAXLKALARMS) return false;
@@ -54,32 +63,33 @@ bool CheckAlarms(unsigned short al) {
   // However, maybe we can have LK set automatically alarms in the future.
   // Duplicates filter is working giving priority to the lowest element in the list
   // We don't want more than 1 alarm for the same trigger value
-  for (i=0; i<=al && i<MAXLKALARMS ; i++) {
-	if (i==al) continue; // do not check against ourselves
-	// if a previous alarm has the same value, we are a duplicate
-	if (LKalarms[al].triggervalue == LKalarms[i].triggervalue) {
-		#if DEBUG_LKALARMS
-		StartupStore(_T("...... Alarms: duplicate value [%d]=[%d] =<%d>\n"), al, i, LKalarms[i].triggervalue);
-		#endif
-		return false;
-	}
+  
+  // i < MAXLKALARMS always true : already check line 56.
+  for (unsigned i = 0; i < al && i < MAXLKALARMS ; i++) {
+    // if a previous alarm has the same value, we are a duplicate
+    if (LKalarms[al].triggervalue == LKalarms[i].triggervalue) {
+#if DEBUG_LKALARMS
+      StartupStore(_T("...... Alarms: duplicate value [%d]=[%d] =<%d>\n"), al, i, LKalarms[i].triggervalue);
+#endif
+      return false;
+    }
   }
 
   // ok so this is not a duplicated alarm, lets check if we have overcounted
   if (LKalarms[al].triggerscount >= MAXLKALARMSTRIGGERS) {
-	#if DEBUG_LKALARMS
-	StartupStore(_T("...... Alarms: count exceeded for [%d]\n"),al);
-	#endif
-	return false;
+#if DEBUG_LKALARMS
+    StartupStore(_T("...... Alarms: count exceeded for [%d]\n"),al);
+#endif
+    return false;
   }
 
   // if too early we ignore it in any case
   if (GPS_INFO.Time < (LKalarms[al].lasttriggertime + LKALARMSINTERVAL)) {
-	#if DEBUG_LKALARMS
-	StartupStore(_T("...... Alarms: too early for [%d], still %.0f seconds to go\n"),al,
-	(LKalarms[al].lasttriggertime + LKALARMSINTERVAL)- GPS_INFO.Time);
-	#endif
-	return false;
+#if DEBUG_LKALARMS
+    StartupStore(_T("...... Alarms: too early for [%d], still %.0f seconds to go\n"),
+                          al, (LKalarms[al].lasttriggertime + LKALARMSINTERVAL)- GPS_INFO.Time);
+#endif
+    return false;
   }
 
   // So this is a potentially valid alarm to check
@@ -87,46 +97,39 @@ bool CheckAlarms(unsigned short al) {
   //
   // First we check for altitude alarms , 0-2
   //
-  if (al<3) {
+  const int navaltitude=(int)CALCULATED_INFO.NavAltitude;
+  // is this is the first valid sample?
+  if (LKalarms[al].lastvalue==0) {
+    LKalarms[al].lastvalue= navaltitude;
+#if DEBUG_LKALARMS
+    StartupStore(_T("...... Alarms: init lastvalue [%d] = %d\n"),al,LKalarms[al].lastvalue);
+#endif
+    return false;
+  }
 
-	int navaltitude=(int)CALCULATED_INFO.NavAltitude;
-
-	// is this is the first valid sample?
-	if (LKalarms[al].lastvalue==0) {
-		LKalarms[al].lastvalue= navaltitude;
-		#if DEBUG_LKALARMS
-		StartupStore(_T("...... Alarms: init lastvalue [%d] = %d\n"),al,LKalarms[al].lastvalue);
-		#endif
-		return false;
-	}
-
-	// if we were previously below trigger altitude
-	if (LKalarms[al].lastvalue< LKalarms[al].triggervalue) {
-		#if DEBUG_LKALARMS
-		StartupStore(_T("...... Alarms: armed lastvalue [%d] = %d < trigger <%d>\n"),al,
-		LKalarms[al].lastvalue,LKalarms[al].triggervalue);
-		#endif
-		// if we are now over the trigger altitude
-		if (navaltitude >= LKalarms[al].triggervalue) {
-			#if DEBUG_LKALARMS
-			StartupStore(_T("...... Alarms: RING [%d] = %d\n"),al,navaltitude);
-			#endif
-			// bingo. first reset last value , update lasttime and counter
-			LKalarms[al].lastvalue=0;
-			LKalarms[al].triggerscount++;
-			LKalarms[al].lasttriggertime = GPS_INFO.Time;
-			return true;
-		}
-	}
-
-	// otherwise simply update lastvalue
-	LKalarms[al].lastvalue=navaltitude;
-	return false;
-
+  
+  bool bTrigger = false;
+  // if we were previously below trigger altitude
+  if (LKalarms[al].lastvalue < LKalarms[al].triggervalue) {
+#if DEBUG_LKALARMS
+    StartupStore(_T("...... Alarms: armed lastvalue [%d] = %d < trigger <%d>\n"),
+            al, LKalarms[al].lastvalue,LKalarms[al].triggervalue);
+#endif
+    // if we are now over the trigger altitude
+    if (navaltitude >= LKalarms[al].triggervalue) {
+#if DEBUG_LKALARMS
+      StartupStore(_T("...... Alarms: RING [%d] = %d\n"),al,navaltitude);
+#endif
+      // bingo : update lasttime and counter
+      LKalarms[al].triggerscount++;
+      LKalarms[al].lasttriggertime = GPS_INFO.Time;
+      bTrigger = true;
+    }
   } // end altitude alarms
 
+  // otherwise simply update lastvalue
+  LKalarms[al].lastvalue=navaltitude;
 
-  // other alarms here, or failed
-  return false;
+  return bTrigger;
 
 }

@@ -10,83 +10,42 @@
 #include "externs.h"
 #include "RGB.h"
 #include "Sound/Sound.h"
+#include "Message.h"
 //
 // Called by DrawThread
 //
-void MapWindow::DrawLKAlarms(LKSurface& Surface, const RECT& rc) {
+void MapWindow::DrawLKAlarms() {
 
-  static unsigned short displaycounter=0;
-  static short oldvalidalarm=-1;
-  short validalarm=-1;
+	const TCHAR*  AlarmsSounds[] = {
+		_T("LK_ALARM_ALT1.WAV"),
+		_T("LK_ALARM_ALT2.WAV"),
+		_T("LK_ALARM_ALT3.WAV")
+	};
 
   // Alarms are working only with a valid GPS fix. No navigator, no alarms.
   if (DrawInfo.NAVWarning) return;
 
-  // give priority to the lowest alarm in list
-  if (CheckAlarms(2)) validalarm=2;
-  if (CheckAlarms(1)) validalarm=1;
-  if (CheckAlarms(0)) validalarm=0;
-
-  // If we have a new alarm, play sound if available and enabled
-  if (validalarm>=0) {
-    switch (validalarm) {
-        case 0:
-            LKSound(_T("LK_ALARM_ALT1.WAV"));
-            break;
-        case 1:
-            LKSound(_T("LK_ALARM_ALT2.WAV"));
-            break;
-        case 2:
-            LKSound(_T("LK_ALARM_ALT3.WAV"));
-            break;
-        default:
-            break;
-    }
-	displaycounter=12; // seconds to display alarm on screen, resetting anything set previously
-  }
-
-  // Now paint message, even for passed alarms
-  if (displaycounter) {
-
-	if (--displaycounter>60) displaycounter=0; // safe check 
-
-	TCHAR textalarm[100];
-	short currentalarm=0;
-	if (validalarm>=0) {
-		currentalarm=validalarm;
-		oldvalidalarm=validalarm;
-	} else
-		if (oldvalidalarm>=0) currentalarm=oldvalidalarm; // safety check
-
-	switch(currentalarm) {
-		case 0:
-		case 1:
-		case 2:
-			_stprintf(textalarm,_T("%s %d: %s %d"),
-			MsgToken(1650), currentalarm+1, MsgToken(1651),  // ALARM ALTITUDE
-			((int)((double)LKalarms[currentalarm].triggervalue*ALTITUDEMODIFY)));
-			break;
-		default:
-			break;
+	unsigned active_alarm = 0U; // no new alarms 
+	
+	// check all alarms in reverse order, give priority to the lowest alarm in list
+	for( unsigned i = MAXLKALARMS; i > 0; --i) {
+		if(CheckAlarms(i-1)) {
+			active_alarm = i;
+		}
 	}
+	
+	// new alarms ? 
+	if(active_alarm > 0) {
+		// ack previous alarms message
+		Message::Acknowledge(MSG_ALARM);
 
-	const auto oldfont = Surface.SelectObject(ScreenLandscape
-                                                  ? LK8TargetFont
-                                                  : LK8MediumFont);
+		// Display new alarms message
+		TCHAR textalarm[100];
+		_stprintf(textalarm,_T("%s %d: %s %d"), MsgToken(1650), active_alarm, MsgToken(1651),  // ALARM ALTITUDE
+										((int)((double)LKalarms[active_alarm-1].triggervalue*ALTITUDEMODIFY)));
 
-	TextInBoxMode_t TextInBoxMode = {0};
-	TextInBoxMode.Color = RGB_WHITE;
-	TextInBoxMode.NoSetFont=1;
-	TextInBoxMode.AlligneCenter = 1;
-	TextInBoxMode.WhiteBorder = 1;
-	TextInBoxMode.Border = 1;
+		Message::AddMessage(12000, MSG_ALARM, textalarm); // Message for 12 sec.
 
-	// same position for gps warnings: if navwarning, then no alarms. So no overlapping.
-        TextInBox(Surface, &rc, textalarm , (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
-
-	Surface.SelectObject(oldfont);
-  }
-
+		LKSound(AlarmsSounds[active_alarm-1]);
+	}
 }
-
-

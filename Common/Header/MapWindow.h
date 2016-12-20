@@ -585,7 +585,7 @@ class MapWindow {
   static void DrawFlightMode(LKSurface& Surface, const RECT& rc);
   static void DrawGPSStatus(LKSurface& Surface, const RECT& rc);
   static void DrawFunctions1HZ(LKSurface& Surface, const RECT& rc);
-  static void DrawLKAlarms(LKSurface& Surface, const RECT& rc);
+  static void DrawLKAlarms();
 
   static void DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,double unit_step, double zero, int iTextAling,
 		                const LKColor& color, DiagrammStruct *psDia, const TCHAR *pLable=NULL);
