@@ -132,7 +132,7 @@ public:
 
             // update live tracker with new values
             // this is a nonblocking call, live tracker runs on different thread
-            LiveTrackerUpdate(&tmpGPS, &tmpCALCULATED);
+            LiveTrackerUpdate(tmpGPS, tmpCALCULATED);
 
 #ifndef NO_DATARECORDER
             UpdateFlightDataRecorder(tmpGPS, tmpCALCULATED);
