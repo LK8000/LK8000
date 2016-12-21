@@ -20,13 +20,18 @@ Copyright_License {
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 }
 */
-
+#include "externs.h"
+#include <device.h>
+#include <Globals.h>
+#include <Geoid.h>
 #include "InternalSensors.hpp"
 #include "Context.hpp"
 #include "Math/SelfTimingKalmanFilter1d.hpp"
 #include "OS/Clock.hpp"
 #include "Compiler.h"
 #include "Thread/Mutex.hpp"
+
+
 
 Java::TrivialClass InternalSensors::gps_cls, InternalSensors::sensors_cls;
 jmethodID InternalSensors::gps_ctor_id, InternalSensors::close_method;
@@ -174,32 +179,33 @@ JNIEXPORT void JNICALL
 Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj,
                                          jint connected)
 {
+
   unsigned index = getDeviceIndex(env, obj);
-#warning TODO : implement
-#ifdef TEMP_DISABLED
-  ScopeLock protect(device_blackboard->mutex);
-  NMEAInfo &basic = device_blackboard->SetRealState(index);
+  LockComm();
+  PDeviceDescriptor_t pdev = devX(index);
+  if(pdev) {
+    pdev->HB = LKHearthBeats;
+    switch (connected) {
+      case 0: /* not connected */
+        pdev->nmeaParser.expire = true;
+        pdev->nmeaParser.gpsValid = false;
+        break;
 
-  switch (connected) {
-  case 0: /* not connected */
-    basic.alive.Clear();
-    basic.location_available.Clear();
-    break;
+      case 1: /* waiting for fix */
+        GPSCONNECT=TRUE;
+        pdev->nmeaParser.expire = false;
+        pdev->nmeaParser.gpsValid = false;
+        break;
 
-  case 1: /* waiting for fix */
-    basic.alive.Update(MonotonicClockFloat());
-    basic.gps.nonexpiring_internal_gps = true;
-    basic.location_available.Clear();
-    break;
-
-  case 2: /* connected */
-    basic.alive.Update(MonotonicClockFloat());
-    basic.gps.nonexpiring_internal_gps = true;
-    break;
+      case 2: /* connected */
+        GPSCONNECT=TRUE;
+        pdev->nmeaParser.expire = false;
+        pdev->nmeaParser.gpsValid = true;
+        break;
+    }
+    GPS_INFO.NAVWarning = !(pdev->nmeaParser.gpsValid);
   }
-
-  device_blackboard->ScheduleMerge();
-#endif
+  UnlockComm();
 }
 
 extern "C"
@@ -215,64 +221,53 @@ Java_org_LK8000_InternalGPS_setLocation(JNIEnv *env, jobject obj,
                                         jboolean hasAcceleration, jdouble acceleration)
 {
   unsigned index = getDeviceIndex(env, obj);
-
-#warning TODO : implement "InternalGPS_setLocation"
-#ifdef TEMP_DISABLED
-  ScopeLock protect(device_blackboard->mutex);
-  NMEAInfo &basic = device_blackboard->SetRealState(index);
-  basic.UpdateClock();
-  basic.alive.Update(basic.clock);
-
-  BrokenDateTime date_time = BrokenDateTime::FromUnixTimeUTC(time / 1000);
-  double second_of_day = date_time.GetSecondOfDay() +
-    /* add the millisecond fraction of the original timestamp for
-       better accuracy */
-    unsigned(time % 1000) / 1000.;
-
-  if (second_of_day < basic.time &&
-      basic.date_time_utc.IsDatePlausible() &&
-      (BrokenDate)date_time > (BrokenDate)basic.date_time_utc)
-    /* don't wrap around when going past midnight in UTC */
-    second_of_day += 24u * 3600u;
-
-  basic.time = second_of_day;
-  basic.time_available.Update(basic.clock);
-  basic.date_time_utc = date_time;
-
-  basic.gps.satellites_used = n_satellites;
-  basic.gps.satellites_used_available.Update(basic.clock);
-  basic.gps.real = true;
-  basic.gps.nonexpiring_internal_gps = true;
-  basic.location = GeoPoint(Angle::Degrees(longitude),
-                            Angle::Degrees(latitude));
-  basic.location_available.Update(basic.clock);
-
-  if (hasAltitude) {
-    auto GeoidSeparation = EGM96::LookupSeparation(basic.location);
-    basic.gps_altitude = altitude - GeoidSeparation;
-    basic.gps_altitude_available.Update(basic.clock);
-  } else
-    basic.gps_altitude_available.Clear();
-
-  if (hasBearing) {
-    basic.track = Angle::Degrees(bearing);
-    basic.track_available.Update(basic.clock);
-  } else
-    basic.track_available.Clear();
-
-  if (hasSpeed) {
-    basic.ground_speed = ground_speed;
-    basic.ground_speed_available.Update(basic.clock);
+  LockComm();
+  GPSCONNECT = TRUE;
+  PDeviceDescriptor_t pdev = devX(index);
+  if(pdev) {
+    pdev->HB = LKHearthBeats;
   }
+  if(pdev && pdev->nmeaParser.activeGPS) {
 
-  if (hasAccuracy)
-    basic.gps.hdop = accuracy;
+    const time_t utcTime = time/1000;
+    struct tm* utc = gmtime(&utcTime);
 
-  if (hasAcceleration)
-    basic.acceleration.ProvideGLoad(acceleration, true);
+    GPS_INFO.Time = utc->tm_hour * 3600 + utc->tm_min * 60 + utc->tm_sec;
+    GPS_INFO.Year = utc->tm_year + 1900;
 
-  device_blackboard->ScheduleMerge();
-#endif
+    GPS_INFO.Year = utc->tm_year;
+    GPS_INFO.Month = utc->tm_mon;
+    GPS_INFO.Day = utc->tm_mday;
+    GPS_INFO.Hour = utc->tm_hour;
+    GPS_INFO.Minute = utc->tm_min;
+    GPS_INFO.Second = utc->tm_sec;
+
+    static int startday = -1;
+    GPS_INFO.Time = TimeModify(&GPS_INFO, startday) + unsigned(time % 1000) / 1000.;
+
+
+
+    GPS_INFO.Latitude = latitude;
+    GPS_INFO.Longitude = longitude;
+    GPS_INFO.SatellitesUsed = n_satellites;
+
+    if (hasAltitude) {
+      GPS_INFO.Altitude = altitude;
+      if (UseGeoidSeparation) {
+        double GeoidSeparation = LookupGeoidSeparation(GPS_INFO.Latitude, GPS_INFO.Longitude);
+        GPS_INFO.Altitude -= GeoidSeparation;
+      }
+
+    }
+    if (hasBearing) {
+      GPS_INFO.TrackBearing = bearing;
+    }
+    if(hasSpeed) {
+      GPS_INFO.Speed = ground_speed;
+    }
+    TriggerGPSUpdate();
+  }
+  UnlockComm();
 }
 
 // Implementations of the various C++ functions called by NonGPSSensors.java.
@@ -341,6 +336,8 @@ ComputeNoncompVario(const double pressure, const double d_pressure)
   return FACTOR * pow(pressure, EXPONENT) * d_pressure;
 }
 
+extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
@@ -360,24 +357,30 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
   static constexpr double KF_VAR_ACCEL(0.0075);
   static constexpr double KF_MAX_DT(60);
 
-#warning TODO : implement  "NonGPSSensors_setBarometricPressure"
-#ifdef TEMP_DISABLED
   // XXX this shouldn't be a global variable
   static SelfTimingKalmanFilter1d kalman_filter(KF_MAX_DT, KF_VAR_ACCEL);
 
+
   const unsigned int index = getDeviceIndex(env, obj);
-  ScopeLock protect(device_blackboard->mutex);
+  LockComm();
+  GPSCONNECT = TRUE;
+  PDeviceDescriptor_t pdev = devX(index);
+  if(pdev) {
+    pdev->HB = LKHearthBeats;
 
-  /* Kalman filter updates are also protected by the blackboard
-     mutex. These should not take long; we won't hog the mutex
-     unduly. */
-  kalman_filter.Update(pressure, sensor_noise_variance);
+    /* Kalman filter updates are also protected by the CommPort
+       mutex. These should not take long; we won't hog the mutex
+       unduly. */
+    kalman_filter.Update(pressure, sensor_noise_variance);
 
-  NMEAInfo &basic = device_blackboard->SetRealState(index);
-  basic.ProvideNoncompVario(ComputeNoncompVario(kalman_filter.GetXAbs(),
-                                                kalman_filter.GetXVel()));
-  basic.ProvideStaticPressure(
-      AtmosphericPressure::HectoPascal(kalman_filter.GetXAbs()));
-  device_blackboard->ScheduleMerge();
+
+
+#ifndef NDEBUG
+    double NoncompVario = ComputeNoncompVario(kalman_filter.GetXAbs(),
+                                                kalman_filter.GetXVel());
 #endif
+
+    UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToAltitude(kalman_filter.GetXAbs() * 100));
+  }
+  UnlockComm();
 }

@@ -15,7 +15,7 @@ extern unsigned LastRMZHB;	 // common to both devA and devB, updated in Parser
 double trackbearingminspeed=0; // minimal speed to use gps bearing
 
 //#define DEBUGBARO	1	// also needed in UpdateBaroSource
-//#define DEBUGNPM	1
+#define DEBUGNPM	1
 
 //
 // Run every 5 seconds, approx.
@@ -88,13 +88,20 @@ void NMEAParser::UpdateMonitor(void)
   short validBaro = 0;
   // Check each Port with no serial activity in last seconds
   for(auto& dev : DeviceList) {
+    if(!dev.nmeaParser.expire) {
+      continue;
+    }
+    if(dev.Disabled) {
+      continue;
+    }
+
     if ( (LKHearthBeats-dev.HB)>10 ) {
 #ifdef DEBUGNPM
-      StartupStore(_T("... GPS Port 1 : no activity LKHB=%u CBHB=%u" NEWLINE),LKHearthBeats, dev.HB);
+      StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u" NEWLINE), dev.PortNumber, LKHearthBeats, dev.HB);
 #endif
       // if this is active and supposed to have a valid fix.., but no HB..
       if ( (active==dev.PortNumber) && (dev.nmeaParser.gpsValid) ) {
-        StartupStore(_T("... GPS Port 1 no hearthbeats, but still gpsValid: forced invalid  %s" NEWLINE),WhatTimeIsIt());
+        StartupStore(_T("... GPS Port %d no hearthbeats, but still gpsValid: forced invalid  %s" NEWLINE), dev.PortNumber, WhatTimeIsIt());
       }
       dev.nmeaParser.gpsValid=false;
       invalidGps++;
@@ -179,12 +186,12 @@ void NMEAParser::UpdateMonitor(void)
         } else {
           DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
         }
-        StartupStore(_T("... GPS baro source back available %s%s"),WhatTimeIsIt(),NEWLINE);
+        StartupStore(_T("... GPS baro source back available %s" NEWLINE),WhatTimeIsIt());
         lastvalidBaro=true;
       } else {
         static bool said=false;
         if (!said) {
-          StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s%s"),WhatTimeIsIt(),NEWLINE);
+          StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s" NEWLINE),WhatTimeIsIt());
           said=true;
         }
       }
@@ -195,7 +202,7 @@ void NMEAParser::UpdateMonitor(void)
       if (invalidBaro||!GotFirstBaroAltitude) {
         GPS_INFO.BaroAltitudeAvailable=FALSE;
         #ifdef DEBUGNPM
-        StartupStore(_T(".... We still have valid baro, resetting BaroAltitude OFF %s\n"),WhatTimeIsIt());
+        StartupStore(_T(".... We still have valid baro, resetting BaroAltitude OFF %s" NEWLINE),WhatTimeIsIt());
         #endif
       }
     }
@@ -291,9 +298,9 @@ void NMEAParser::UpdateMonitor(void)
   if (active == lastactive) return;
 
   if (active!=0)
-    StartupStore(_T(". GPS NMEA source changed to port %d  %s%s"),active,WhatTimeIsIt(),NEWLINE);
+    StartupStore(_T(". GPS NMEA source changed to port %d  %s" NEWLINE),active,WhatTimeIsIt());
   else
-    StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s%s"),WhatTimeIsIt(),NEWLINE);
+    StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s" NEWLINE),WhatTimeIsIt());
 
 
   if (PortMonitorMessages<15) { // do not overload pilot with messages!
@@ -308,7 +315,7 @@ void NMEAParser::UpdateMonitor(void)
     } 
   } else {
     if (PortMonitorMessages==15) { 
-      StartupStore(_T("... GOING SILENT on too many Com reportings.  %s%s"),WhatTimeIsIt(),NEWLINE);
+      StartupStore(_T("... GOING SILENT on too many Com reportings.  %s" NEWLINE),WhatTimeIsIt());
       DoStatusMessage(MsgToken(317)); // GOING SILENT ON COM REPORTING
       PortMonitorMessages++;	// we go to 16, and never be back here
     }

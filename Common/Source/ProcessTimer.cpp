@@ -120,11 +120,18 @@ void CommonProcessTimer()
 
 
 // Running at 0.2hz every 5 seconds
-// (this part should be rewritten)
 int ConnectionProcessTimer(int itimeout) {
   LockComm();
   NMEAParser::UpdateMonitor();
   UnlockComm();
+
+
+
+// TODO : this part should be rewritten
+//      1) do we have valid fix on one device
+//      2) what port is alive ?
+//      3) restart only dead port
+
 
   // dont warn on startup
   static bool s_firstcom=true;
@@ -180,10 +187,17 @@ int ConnectionProcessTimer(int itimeout) {
 		if ((itimeout % 90 == 0) && !LKDoNotResetComms && !MenuActive) {
 			// no activity for 90/2 seconds (running at 2Hz), then reset.
 			// This is needed only for virtual com ports..
-			extGPSCONNECT = FALSE;
-			if (!(devIsDisabled(0) && devIsDisabled(1))) {
-			  InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-			  RestartCommPorts();
+            if (!(devIsDisabled(0) && devIsDisabled(1))) {
+
+              if(devA()->nmeaParser.expire) {
+                  extGPSCONNECT = FALSE;
+                  // if device A never expire, don't restart CommPort
+                  StartupStore(_T(". ComPort RESET ordered" NEWLINE));
+                  if (MapSpaceMode != MSM_WELCOME) {
+                      InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+                  }
+                  RestartCommPorts();
+              }
 			}
 
 			itimeout = 0;
@@ -193,11 +207,12 @@ int ConnectionProcessTimer(int itimeout) {
 
   // Force RESET of comm ports on demand
   if (LKForceComPortReset) {
-	StartupStore(_T(". ComPort RESET ordered%s"),NEWLINE);
+	StartupStore(_T(". ComPort RESET ordered" NEWLINE));
 	LKForceComPortReset=false;
 	LKDoNotResetComms=false;
-	if (MapSpaceMode != MSM_WELCOME)
-		InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+	if (MapSpaceMode != MSM_WELCOME) {
+        InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+    }
 
 	RestartCommPorts();
   }

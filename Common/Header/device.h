@@ -7,7 +7,7 @@
 #include "BtHandler.h"
 #include <vector>
 #include "Util/tstring.hpp"
-#include "utils\stl_utils.h"
+#include "utils/stl_utils.h"
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2
@@ -136,7 +136,7 @@ extern DeviceDescriptor_t *pDevPrimaryBaroSource;
 extern DeviceDescriptor_t *pDevSecondaryBaroSource;
 
 inline 
-DeviceDescriptor_t* devX(unsigned idx) {
+PDeviceDescriptor_t devX(unsigned idx) {
 	if(idx < array_size(DeviceList)) {
 		return &DeviceList[idx];
 	}

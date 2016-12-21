@@ -39,6 +39,8 @@ NMEAParser::NMEAParser() {
 }
 
 void NMEAParser::_Reset(void) {
+
+  expire = true;
   nSatellites = 0;
   gpsValid = false;
   isFlarm = false;
