@@ -28,8 +28,6 @@ void CheckBackTarget(int flarmslot);
 
 
 unsigned LastRMZHB=0;	 // common to both devA and devB.
-NMEAParser nmeaParser1;
-NMEAParser nmeaParser2;
 int NMEAParser::StartDay = -1;
 
 
@@ -58,45 +56,15 @@ void NMEAParser::_Reset(void) {
   LastTime = 0;
 }
 
-void NMEAParser::Reset(void) {
-
-  // clear status
-  nmeaParser1._Reset();
-  nmeaParser2._Reset();
-
-  // trigger updates
-  TriggerGPSUpdate();
-  TriggerVarioUpdate();
-}
-
-
-BOOL NMEAParser::ParseNMEAString(int device,
-				 TCHAR *String, NMEA_INFO *pGPS)
-{
-
-  LKASSERT(!ReplayLogger::IsEnabled());
-
-  switch (device) {
-  case 0: 
-    return nmeaParser1.ParseNMEAString_Internal(String, pGPS);
-  case 1:
-    return nmeaParser2.ParseNMEAString_Internal(String, pGPS);
-  };
-  return FALSE;
-}
-
 #ifdef UNDER_CE
 BOOL NMEAParser::ParseGPS_POSITION(int Idx, const GPS_POSITION& loc, NMEA_INFO& GPSData) {
     LKASSERT(!ReplayLogger::IsEnabled());
 
-    switch (Idx) {
-        case 0:
-            ComPortHB[0]=LKHearthBeats;
-            return nmeaParser1.ParseGPS_POSITION_internal(loc, GPSData);
-        case 1:
-            ComPortHB[1]=LKHearthBeats;
-            return nmeaParser2.ParseGPS_POSITION_internal(loc, GPSData);
-    };
+    PDeviceDescriptor_t pdev = devX(Idx)
+    if(pdev) {
+      pdev->HB = LKHearthBeats;
+      return pdev->nmeaParser.ParseGPS_POSITION_internal(loc, GPSData);
+    }
     return FALSE;
 }
 

@@ -1688,8 +1688,6 @@ void InputEvents::eventWind(const TCHAR *misc) {
 // For the simple SendNMEA without port specified, we assume it is a FLARM
 // commanded action from menu buttons.
 //
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
 void InputEvents::eventSendNMEA(const TCHAR *misc) {
   #if TESTBENCH
   StartupStore(_T("... SendNMEA: <%s>\n"),misc);
@@ -1699,8 +1697,12 @@ void InputEvents::eventSendNMEA(const TCHAR *misc) {
   // But since we only manage FLARM buttons in v5, no reason to complicate life.
   // if ( strncmp  misc PF ..)
   short flarmfoundonport=-1;
-  if (nmeaParser2.isFlarm) flarmfoundonport=2;
-  if (nmeaParser1.isFlarm) flarmfoundonport=1; // priority on lowest port
+ for(const auto& dev : DeviceList) {
+    if(dev.nmeaParser.isFlarm) {
+      flarmfoundonport = dev.nmeaParser.isFlarm;
+      break; // we have got first available Flarm device, ingore next device.
+    }
+  }  
   if (flarmfoundonport==-1) {
       DoStatusMessage(_T("NO FLARM"));
       #if TESTBENCH
@@ -1712,10 +1714,10 @@ void InputEvents::eventSendNMEA(const TCHAR *misc) {
   StartupStore(_T("... SendNMEA sent to port %d\n"),flarmfoundonport);
   #endif
   if (misc) {
-      if (flarmfoundonport==1)
-          Port1WriteNMEA(misc);
-      else
-          Port2WriteNMEA(misc);
+    PDeviceDescriptor_t found_flarm = devX(flarmfoundonport);
+    if (found_flarm) {
+       devWriteNMEAString(found_flarm, misc);
+    }
   }
 }
 

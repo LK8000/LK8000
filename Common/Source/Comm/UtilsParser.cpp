@@ -11,11 +11,6 @@
 #include <ctype.h>
 
 
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
-
-
-
 /*
  * Copy a provided string into the supplied buffer, terminate on
  * the checksum separator, split into an array of parameters,
@@ -223,19 +218,3 @@ BOOL NMEAParser::NMEAChecksum(const TCHAR *String)
   else
     return FALSE;
 }
-
-
-
-
-bool NMEAParser::PortIsFlarm(int device) {
-  switch (device) {
-  case 0: 
-    return nmeaParser1.isFlarm;
-  case 1:
-    return nmeaParser2.isFlarm;
-  default:
-    return false;
-  };
-}
-
-

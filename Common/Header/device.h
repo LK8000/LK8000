@@ -7,6 +7,7 @@
 #include "BtHandler.h"
 #include <vector>
 #include "Util/tstring.hpp"
+#include "utils\stl_utils.h"
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2
@@ -106,6 +107,8 @@ typedef	struct DeviceDescriptor_t{
   // Com ports hearth beats, based on LKHearthBeats
   unsigned HB;
   
+	NMEAParser nmeaParser;
+	
   void InitStruct(int i);
 }DeviceDescriptor_t;
 
@@ -131,6 +134,14 @@ extern DeviceRegister_t   DeviceRegister[NUMREGDEV];
 extern int DeviceRegisterCount;
 extern DeviceDescriptor_t *pDevPrimaryBaroSource;
 extern DeviceDescriptor_t *pDevSecondaryBaroSource;
+
+inline 
+DeviceDescriptor_t* devX(unsigned idx) {
+	if(idx < array_size(DeviceList)) {
+		return &DeviceList[idx];
+	}
+	return nullptr;
+}
 
 void UnlockComm();
 void LockComm();

@@ -17,9 +17,6 @@
 #include "Util/UTF8.hpp"
 
 
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
-
 extern void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col);
 
 
@@ -426,17 +423,16 @@ _afterautotrm:
 				} else {
 					_stprintf(BufferValue,TEXT("%d"),(int)Value);
 				}
-				if (nmeaParser1.activeGPS == true)
+        
+  			// LKTOKEN _@M1199_ "Sat"
+				_stprintf(BufferTitle, TEXT("%s:?"), MsgToken(1199));
+        for(const auto& dev : DeviceList) {
+          if(dev.nmeaParser.activeGPS) {
 					// LKTOKEN _@M1199_ "Sat"
-					_stprintf(BufferTitle, TEXT("%s:A"), MsgToken(1199));
-				else {
-					if (nmeaParser2.activeGPS == true)
-						// LKTOKEN _@M1199_ "Sat"
-						_stprintf(BufferTitle, TEXT("%s:B"), MsgToken(1199));
-					else
-						// LKTOKEN _@M1199_ "Sat"
-						_stprintf(BufferTitle, TEXT("%s:?"), MsgToken(1199));
-				}
+            _stprintf(BufferTitle,_T("  (%s:%c)"), MsgToken(1199), _T('A')+dev.PortNumber);
+            break; // we have got the first active port.
+          }
+        }        
 			}
 		break;
 	case BM_CUS2:

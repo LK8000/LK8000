@@ -172,12 +172,8 @@ class NMEAParser {
  public:
   NMEAParser();
   static void UpdateMonitor(void);
-  static BOOL ParseNMEAString(int portnum,
-			      TCHAR *String, NMEA_INFO *GPS_INFO);
   static BOOL devParseStream(int portnum,
 			      char *String,int len, NMEA_INFO *GPS_INFO);
-  static void Reset(void);
-  static bool PortIsFlarm(int portnum);
   void _Reset(void);
 
   BOOL ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO);

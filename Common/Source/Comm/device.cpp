@@ -392,6 +392,9 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
     Status = CPS_UNUSED; // 100210
     HB = 0; // counter
+
+    nmeaParser._Reset();
+
     static bool doinit = true;
     if (doinit) {
         Rx = 0;
@@ -400,7 +403,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
         ErrRx = 0;
 
         doinit = false;
-    }    
+    }
 }
 
 bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
@@ -425,8 +428,6 @@ void RestartCommPorts() {
     StartupStore(TEXT(". RestartCommPorts begin @%s%s"), WhatTimeIsIt(), NEWLINE);
 
     devCloseAll();
-
-    NMEAParser::Reset();
 
     devInit();
 
@@ -715,11 +716,11 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   }
 
   if(String[0]=='$') {  // Additional "if" to find GPS strings
-	if(NMEAParser::ParseNMEAString(portNum, String, pGPS)) {
+	if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
 		//GPSCONNECT  = TRUE; // NO! 121126
 		return(TRUE);
-	} 
-  }
+		} 
+	}
   return(FALSE);
 
 }
@@ -837,9 +838,9 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   if ((d != NULL) && (d->Declare != NULL))
 	result = d->Declare(d, decl, errBufferLen, errBuffer);
   else {
-	if ((d != NULL) && NMEAParser::PortIsFlarm(d->Port)) {
-		result |= FlarmDeclare(d, decl, errBufferLen, errBuffer);
-	}
+	if(d && d->nmeaParser.isFlarm) {
+    	result |= FlarmDeclare(d, decl, errBufferLen, errBuffer);
+  	}
   }
   /***********************************************************/
   devDirectLink(d,false);
@@ -862,7 +863,7 @@ BOOL devIsLogger(PDeviceDescriptor_t d)
     }
   }
   if ((d != NULL) && !result) {
-    result |= NMEAParser::PortIsFlarm(d->Port);
+    result |= d->nmeaParser.isFlarm;
   }
   UnlockComm();
 
