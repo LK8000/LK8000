@@ -21,9 +21,10 @@ Copyright_License {
 }
 */
 #include "externs.h"
-#include <device.h>
-#include <Globals.h>
-#include <Geoid.h>
+#include "device.h"
+#include "Globals.h"
+#include "Geoid.h"
+#include "devBase.h"
 #include "InternalSensors.hpp"
 #include "Context.hpp"
 #include "Math/SelfTimingKalmanFilter1d.hpp"
@@ -337,6 +338,7 @@ ComputeNoncompVario(const double pressure, const double d_pressure)
 }
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+static BOOL IsBaroSource(PDeviceDescriptor_t d) { return TRUE; }
 
 extern "C"
 gcc_visibility_default
@@ -367,6 +369,9 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
     pdev->HB = LKHearthBeats;
+    if(!pdev->IsBaroSource) {
+      pdev->IsBaroSource = &IsBaroSource;
+    }
 
     /* Kalman filter updates are also protected by the CommPort
        mutex. These should not take long; we won't hog the mutex

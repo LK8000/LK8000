@@ -88,14 +88,11 @@ void NMEAParser::UpdateMonitor(void)
   short validBaro = 0;
   // Check each Port with no serial activity in last seconds
   for(auto& dev : DeviceList) {
-    if(!dev.nmeaParser.expire) {
-      continue;
-    }
     if(dev.Disabled) {
       continue;
     }
 
-    if ( (LKHearthBeats-dev.HB)>10 ) {
+    if (!dev.nmeaParser.expire && (LKHearthBeats-dev.HB)>10 ) {
 #ifdef DEBUGNPM
       StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u" NEWLINE), dev.PortNumber, LKHearthBeats, dev.HB);
 #endif
