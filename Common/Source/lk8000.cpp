@@ -611,7 +611,7 @@ void Shutdown() {
   #endif
 }
 
-
+#ifndef ANDROID
 //
 // WINMAIN RETURNS CODE ARE:
 //
@@ -664,10 +664,7 @@ int main(int argc, char *argv[]) {
   }
 #endif
 
-#ifndef ANDROID
   ScreenGlobalInit InitScreen;
-#endif
-
   SoundGlobalInit InitSound;
 
   std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
@@ -698,3 +695,5 @@ int main(int argc, char *argv[]) {
   if (realexitforced) return 222;
   else return 111;
 }
+
+#endif
