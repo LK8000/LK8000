@@ -116,6 +116,116 @@ static bool realexitforced=false;
 
 bool Startup(const TCHAR* szCmdLine) {
 
+  #if TRACETHREAD
+  _THREADID_WINMAIN=GetCurrentThreadId();
+  StartupStore(_T("##############  WINMAIN threadid=%d\n"),GetCurrentThreadId());
+  #endif
+  _stprintf(LK8000_Version,_T("%s v%s.%s "), _T(LKFORK), _T(LKVERSION),_T(LKRELEASE));
+  _tcscat(LK8000_Version, TEXT(__DATE__));
+  StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
+#ifdef KOBO
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("KOBO"),NEWLINE);
+#elif defined(__linux__)
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
+
+  struct utsname sysinfo = {};
+  if(uname(&sysinfo) == 0) {
+    StartupStore(". System Name:    %s %s" NEWLINE, sysinfo.sysname, sysinfo.nodename);
+    StartupStore(". Kernel Version: %s" NEWLINE, sysinfo.release);
+    StartupStore(". Kernel Build:   %s" NEWLINE, sysinfo.version);
+    StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
+  }
+
+#elif defined(PNA)
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PNA"),NEWLINE);
+#elif defined(UNDER_CE)
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PDA"),NEWLINE);
+#elif defined(WIN32)
+  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PC"),NEWLINE);
+#endif
+
+  #if TESTBENCH
+    #ifdef __GNUC__
+        #ifdef __MINGW32__
+          StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"),
+                  __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION,
+                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
+                  NEWLINE);
+        #else
+          StartupStore(TEXT(". Built with GCC %d.%d.%d %s"),
+                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
+                  NEWLINE);
+
+        #endif
+    #endif
+
+    StartupStore(_T(". Compiler options:%s"),NEWLINE);
+    #ifdef ENABLE_OPENGL
+    StartupStore(_T("    + ENABLE_OPENGL%s"),NEWLINE);
+    #endif
+    #ifdef HAVE_GLES
+    StartupStore(_T("    + HAVE_GLES%s"),NEWLINE);
+    #endif
+    #ifdef USE_WAYLAND
+    StartupStore(_T("    + USE_WAYLAND%s"),NEWLINE);
+    #endif
+    #ifdef USE_X11
+    StartupStore(_T("    + USE_X11%s"),NEWLINE);
+    #endif
+    #ifdef USE_CONSOLE
+    StartupStore(_T("    + USE_CONSOLE%s"),NEWLINE);
+    #endif
+    #ifdef ENABLE_SDL
+    StartupStore(_T("    + ENABLE_SDL%s"),NEWLINE);
+    #endif
+    #ifdef USE_EGL
+    StartupStore(_T("    + USE_EGL%s"),NEWLINE);
+    #endif
+    #ifdef USE_FB
+    StartupStore(_T("    + USE_FB%s"),NEWLINE);
+    #endif
+    #ifdef USE_MEMORY_CANVAS
+    StartupStore(_T("    + USE_MEMORY_CANVAS%s"),NEWLINE);
+    #endif
+    #ifdef GREYSCALE
+    StartupStore(_T("    + GREYSCALE%s"),NEWLINE);
+    #endif
+    #ifdef DITHER
+    StartupStore(_T("    + DITHER%s"),NEWLINE);
+    #endif
+    #ifdef USE_ALSA
+    StartupStore(_T("    + USE_ALSA%s"),NEWLINE);
+    #endif
+    #ifdef USE_FREETYPE
+    StartupStore(_T("    + USE_FREETYPE%s"),NEWLINE);
+    #endif
+    #ifdef USE_FULLSCREEN
+    StartupStore(_T("    + USE_FULLSCREEN%s"),NEWLINE);
+    #endif
+    #ifdef HC_MALLOC
+    StartupStore(_T("    + HC_MALLOC%s"),NEWLINE);
+    #endif
+    #ifdef POCO_STATIC
+    StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
+    #endif
+
+    StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
+  #endif
+
+  // WE NEED TO KNOW IN RUNTIME WHEN THESE OPTIONS ARE ENABLED, EVEN WITH NO TESTBENCH!
+  #ifndef NDEBUG
+  StartupStore(TEXT(". DEBUG enabled in makefile%s"),NEWLINE);
+  #endif
+  #if YDEBUG
+  StartupStore(TEXT(". YDEBUG option enabled%s"),NEWLINE);
+  #endif
+  #if BUGSTOP
+  StartupStore(TEXT(". BUGSTOP option enabled%s"),NEWLINE);
+  #endif
+  #if USELKASSERT
+  StartupStore(TEXT(". USELKASSERT option enabled%s"),NEWLINE);
+  #endif
+  
   // This is needed otherwise LKSound will be silent until we init Globals.
   EnableSoundModes=true;
 
@@ -553,116 +663,6 @@ int main(int argc, char *argv[]) {
 	  return(-2);
   }
 #endif
-
-  #if TRACETHREAD
-  _THREADID_WINMAIN=GetCurrentThreadId();
-  StartupStore(_T("##############  WINMAIN threadid=%d\n"),GetCurrentThreadId());
-  #endif
-  _stprintf(LK8000_Version,_T("%s v%s.%s "), _T(LKFORK), _T(LKVERSION),_T(LKRELEASE));
-  _tcscat(LK8000_Version, TEXT(__DATE__));
-  StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);
-#ifdef KOBO
-  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("KOBO"),NEWLINE);
-#elif defined(__linux__)
-  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("LINUX"),NEWLINE);
-
-  struct utsname sysinfo = {};
-  if(uname(&sysinfo) == 0) {
-    StartupStore(". System Name:    %s %s" NEWLINE, sysinfo.sysname, sysinfo.nodename);
-    StartupStore(". Kernel Version: %s" NEWLINE, sysinfo.release);
-    StartupStore(". Kernel Build:   %s" NEWLINE, sysinfo.version);
-    StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
-  }
-
-#elif defined(PNA)
-  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PNA"),NEWLINE);
-#elif defined(UNDER_CE)
-  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PDA"),NEWLINE);
-#elif defined(WIN32)
-  StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PC"),NEWLINE);
-#endif
-
-  #if TESTBENCH
-    #ifdef __GNUC__
-        #ifdef __MINGW32__
-          StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d) %s"),
-                  __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION,
-                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
-                  NEWLINE);
-        #else
-          StartupStore(TEXT(". Built with GCC %d.%d.%d %s"),
-                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
-                  NEWLINE);
-
-        #endif
-    #endif
-
-    StartupStore(_T(". Compiler options:%s"),NEWLINE);
-    #ifdef ENABLE_OPENGL
-    StartupStore(_T("    + ENABLE_OPENGL%s"),NEWLINE);
-    #endif
-    #ifdef HAVE_GLES
-    StartupStore(_T("    + HAVE_GLES%s"),NEWLINE);
-    #endif
-    #ifdef USE_WAYLAND
-    StartupStore(_T("    + USE_WAYLAND%s"),NEWLINE);
-    #endif
-    #ifdef USE_X11
-    StartupStore(_T("    + USE_X11%s"),NEWLINE);
-    #endif
-    #ifdef USE_CONSOLE
-    StartupStore(_T("    + USE_CONSOLE%s"),NEWLINE);
-    #endif
-    #ifdef ENABLE_SDL
-    StartupStore(_T("    + ENABLE_SDL%s"),NEWLINE);
-    #endif
-    #ifdef USE_EGL
-    StartupStore(_T("    + USE_EGL%s"),NEWLINE);
-    #endif
-    #ifdef USE_FB
-    StartupStore(_T("    + USE_FB%s"),NEWLINE);
-    #endif
-    #ifdef USE_MEMORY_CANVAS
-    StartupStore(_T("    + USE_MEMORY_CANVAS%s"),NEWLINE);
-    #endif
-    #ifdef GREYSCALE
-    StartupStore(_T("    + GREYSCALE%s"),NEWLINE);
-    #endif
-    #ifdef DITHER
-    StartupStore(_T("    + DITHER%s"),NEWLINE);
-    #endif
-    #ifdef USE_ALSA
-    StartupStore(_T("    + USE_ALSA%s"),NEWLINE);
-    #endif
-    #ifdef USE_FREETYPE
-    StartupStore(_T("    + USE_FREETYPE%s"),NEWLINE);
-    #endif
-    #ifdef USE_FULLSCREEN
-    StartupStore(_T("    + USE_FULLSCREEN%s"),NEWLINE);
-    #endif
-    #ifdef HC_MALLOC
-    StartupStore(_T("    + HC_MALLOC%s"),NEWLINE);
-    #endif
-    #ifdef POCO_STATIC
-    StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
-    #endif
-
-    StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
-  #endif
-
-  // WE NEED TO KNOW IN RUNTIME WHEN THESE OPTIONS ARE ENABLED, EVEN WITH NO TESTBENCH!
-  #ifndef NDEBUG
-  StartupStore(TEXT(". DEBUG enabled in makefile%s"),NEWLINE);
-  #endif
-  #if YDEBUG
-  StartupStore(TEXT(". YDEBUG option enabled%s"),NEWLINE);
-  #endif
-  #if BUGSTOP
-  StartupStore(TEXT(". BUGSTOP option enabled%s"),NEWLINE);
-  #endif
-  #if USELKASSERT
-  StartupStore(TEXT(". USELKASSERT option enabled%s"),NEWLINE);
-  #endif
 
 #ifndef ANDROID
   ScreenGlobalInit InitScreen;
