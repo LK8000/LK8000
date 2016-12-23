@@ -1269,6 +1269,7 @@ POCO :=\
      $(POCOSRC)/NamedEvent.cpp \
      $(POCOSRC)/Exception.cpp \
      $(POCOSRC)/Mutex.cpp \
+     $(POCOSRC)/Condition.cpp \
      $(POCOSRC)/NamedMutex.cpp \
      $(POCOSRC)/Runnable.cpp \
      $(POCOSRC)/RWLock.cpp \
