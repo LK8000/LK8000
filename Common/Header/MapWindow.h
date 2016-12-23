@@ -585,10 +585,6 @@ class MapWindow {
   static void DrawFlightMode(LKSurface& Surface, const RECT& rc);
   static void DrawGPSStatus(LKSurface& Surface, const RECT& rc);
   static void DrawFunctions1HZ(LKSurface& Surface, const RECT& rc);
-  static void DrawLKAlarms(LKSurface& Surface, const RECT& rc);
-  static void DrawFDRAlarms(LKSurface& Surface, const RECT& rc);
-
-
 
   static void DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,double unit_step, double zero, int iTextAling,
 		                const LKColor& color, DiagrammStruct *psDia, const TCHAR *pLable=NULL);
@@ -624,9 +620,6 @@ private:
   static void DrawTerrainAbove(LKSurface& Surface, const RECT& rc);
   static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
   static void LKDrawVario(LKSurface& Surface, const RECT& rc);
-
-
-  static void DoSonar(void);
 
   static bool TextInBox(LKSurface& Surface, const RECT *area, const TCHAR* Value, int x, int y, TextInBoxMode_t *Mode, bool noOverlap=false);
   static void VGTextInBox(LKSurface& Surface, const unsigned short nslot, const short numlines, const TCHAR* wText1, const TCHAR *wText2, const TCHAR *wText3, int x, int y, const LKColor& trgb, const LKBrush& bbrush);

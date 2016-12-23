@@ -740,10 +740,6 @@ GEXTERN bool DisableAutoLogger;
 GEXTERN int LiveTrackerInterval;
 GEXTERN bool LiveTrackerRadar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
 
-// Interface Globals
-GEXTERN StatusMessageSTRUCT StatusMessageData[MAXSTATUSMESSAGECACHE];
-GEXTERN int StatusMessageData_Size;
-
 GEXTERN short TerrainContrast;
 GEXTERN short TerrainBrightness;
 GEXTERN short TerrainRamp;

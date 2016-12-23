@@ -81,6 +81,8 @@
 #include <time.h>
 #include "utils/openzip.h"
 
+#include "Airspace/Sonar.h"
+
 #ifdef __linux__
 #include <sys/utsname.h>
 #endif
@@ -553,6 +555,8 @@ bool Startup(const TCHAR* szCmdLine) {
   ProgramStarted = psInitDone;
 
   GlobalRunning = true;
+	
+	InitAirspaceSonar();
 
 #ifndef ANDROID
     if (WarningHomeDir) {

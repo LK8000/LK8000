@@ -8,7 +8,8 @@ enum {
   MSG_AIRSPACE,
   MSG_USERINTERFACE,
   MSG_GLIDECOMPUTER,
-  MSG_COMMS
+  MSG_COMMS,
+  MSG_ALARM,
 };
 
 
@@ -42,16 +43,23 @@ class Message {
   static void Lock();
   static void Unlock();
 
-  static void BlockRender(bool doblock);
-
   class ScopeBlockRender {
   public:
     ScopeBlockRender() {
-        BlockRender(true);
+        assert(_Block>=0);
+        ++_Block;
     }
+
     ~ScopeBlockRender() {
-        BlockRender(false);
+        --_Block;
+        assert(_Block>=0);
     }
+
+    static bool isBlocked() {
+        return (_Block > 0);
+    }
+    private:
+        static int _Block;
   };
 
  private:
@@ -65,7 +73,6 @@ class Message {
   static void Resize();
   static bool hidden;
   static int nvisible;
-  static int block_ref;
 
 };
 

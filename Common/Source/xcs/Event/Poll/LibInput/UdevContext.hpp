@@ -21,47 +21,38 @@ Copyright_License {
 }
 */
 
-#include "Thread/Debug.hpp"
-#include "Thread/Mutex.hpp"
-#include "Thread/Handle.hpp"
+#ifndef XCSOAR_EVENT_UDEVCONTEXT_HPP
+#define XCSOAR_EVENT_UDEVCONTEXT_HPP
 
-#include <assert.h>
+static constexpr const char *UDEV_DEFAULT_SEAT = "seat0";
 
-#ifndef NDEBUG
+struct udev;
 
-#ifdef ANDROID
-/* on Android, XCSoar's "main" thread is different from the process
-   main thread */
-static ThreadHandle main_thread;
-#else
-static ThreadHandle main_thread = ThreadHandle::GetCurrent();
-#endif
-
-#ifdef ANDROID
-
-void
-InitThreadDebug()
-{
-  main_thread = ThreadHandle::GetCurrent();
-}
-
-#endif
-
-void
-AssertNoneLocked()
-{
-#ifndef NDEBUG
-#warning "AssertNoneLocked : not implemented"    
-#endif
-/*    
-  assert(thread_locks_held == 0);
+/**
+ * Helper class for initialisation and (thread safe) access to the udev context.
  */
-}
+class UdevContext {
+  struct udev *ud;
 
-bool
-InMainThread()
-{
-  return main_thread.IsInside();
-}
+  explicit UdevContext(struct udev *_ud):ud(_ud) {}
 
-#endif /* !NDEBUG */
+public:
+  UdevContext():ud(nullptr) {}
+  UdevContext(const UdevContext &);
+
+  UdevContext(UdevContext &&other)
+    :ud(other.ud) {
+    other.ud = nullptr;
+  }
+
+  UdevContext &operator=(const UdevContext &);
+  ~UdevContext();
+
+  struct udev *Get() {
+    return ud;
+  }
+
+  static UdevContext NewRef();
+};
+
+#endif

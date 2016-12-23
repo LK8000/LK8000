@@ -33,6 +33,10 @@ XCS_EVENT_X11 := \
 	
 XCS_EVENT_WAYLAND := \
 	$(SRC)/xcs/Event/Poll/WaylandQueue.cpp \
+
+XCS_EVENT_LIBINPUT := \
+	$(SRC)/xcs/Event/Poll/LibInput/LibInputHandler.cpp \
+	$(SRC)/xcs/Event/Poll/LibInput/UdevContext.cpp \
 	
 XCS_EVENT := \
 	$(SRC)/xcs/Event/Globals.cpp \
@@ -55,7 +59,7 @@ XCS_EVENT += \
 	    $(XCS_EVENT_LINUX) \
 	    $(XCS_EVENT_POLL) \
 	
-        ifeq ($(USE_X11), y)
+        ifeq ($(USE_X11),y)
 	    # linux target with X11 event
 	    XCS_EVENT += $(XCS_EVENT_X11) 
 	else ifeq ($(USE_WAYLAND),y)
@@ -66,6 +70,11 @@ XCS_EVENT += \
 	    XCS_EVENT += \
 		$(XCS_EVENT_CONSOLE) \
 	
+	    ifeq ($(USE_LIBINPUT),y)
+	        XCS_EVENT += \
+		    $(XCS_EVENT_LIBINPUT)
+	    endif
+
 	endif
     endif
 

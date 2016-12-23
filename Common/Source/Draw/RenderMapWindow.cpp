@@ -19,14 +19,14 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
 
   ONEHZLIMITER;
 
-  DrawLKAlarms(Surface, rc);
-#ifndef NO_DATARECORDER
-  DrawFDRAlarms(Surface, rc);
-#endif
-  #if (WINDOWSPC<1)
+#warning "TODO : Remove from Draw thread, that slowdown redraw for nothing"  
+
+  /**
+   * this function are not drawing functions
+   *  need to be moved outside Draw thread
+   */
   LKBatteryManager();
-  #endif
-  DoSonar();
+  /***/
 }
 
 

@@ -29,8 +29,6 @@ PROFILE	    :=
 REMOVE_NS   := n
 
 ifeq ($(DEBUG),y)
- OPTIMIZE  := -O0
- OPTIMIZE  += -g3 -ggdb
  REMOVE_NS :=
  BIN       :=Bin/$(TARGET)_debug
 endif
@@ -116,7 +114,25 @@ ifeq ($(TARGET),PI)
   OPENMP         :=y
 endif
 
-include build/pkgconfig.mk
+ifeq ($(TARGET),CUBIE)
+  HOST_IS_ARM     :=n
+  TARGET_IS_CUBIE :=y
+  CONFIG_LINUX    :=y
+  CONFIG_ANDROID  :=n
+  MINIMAL         :=n
+  OPENMP          :=y
+  TARGET_HAS_MALI :=y
+endif
+
+ifeq ($(TARGET),OPENVARIO)
+  HOST_IS_ARM     :=n
+  CONFIG_LINUX    :=y
+  CONFIG_ANDROID  :=n
+  MINIMAL         :=n
+  OPENMP          :=y
+  TARGET_HAS_MALI :=y
+endif
+
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC)$(TARGET),yPCX64)
@@ -132,12 +148,14 @@ else ifeq ($(CONFIG_WINE),y)
  CPU    :=i586
  MCPU   := -mcpu=$(CPU)
 else ifeq ($(TARGET_IS_KOBO),y)
- OPTIMIZE := -O3 -g
  TCPATH := arm-unknown-linux-gnueabi-
  MCPU   := -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations
 else ifeq ($(TARGET_IS_PI),y)
  TCPATH := arm-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
+else ifeq ($(TARGET_IS_CUBIE),y)
+ TCPATH := arm-linux-gnueabihf-
+ MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 else ifeq ($(CONFIG_LINUX),y)
  TCPATH :=
 else
@@ -160,6 +178,7 @@ ifeq ($(CONFIG_PPC2002),y)
 endif
 
 -include local.mk
+include build/pkgconfig.mk
 
 ############# platform info
 
@@ -204,23 +223,26 @@ endif
 
 EXE		:=$(findstring .exe,$(MAKE))
 
-ifeq ($(CLANG),y)
- CXX		:=$(TCPATH)clang++$(EXE)
- CC		:=$(TCPATH)clang$(EXE)
- AS		:=$(TCPATH)clang$(EXE) -c
- STRIP		:=$(TCPATH)strip$(EXE)
-else
- CXX		:=$(TCPATH)g++$(EXE)
- CC		:=$(TCPATH)gcc$(EXE)
- AS		:=$(TCPATH)as$(EXE)
- STRIP		:=$(TCPATH)strip$(EXE)	
-endif
+ifneq ($(TARGET),OPENVARIO)
+ ifeq ($(CLANG),y)
+  CXX		:=$(TCPATH)clang++$(EXE)
+  CC		:=$(TCPATH)clang$(EXE)
+  AS		:=$(TCPATH)clang$(EXE) -c
+  STRIP		:=$(TCPATH)strip$(EXE)
+ else
+  CXX		:=$(TCPATH)g++$(EXE)
+  CC		:=$(TCPATH)gcc$(EXE)
+  AS		:=$(TCPATH)as$(EXE)
+  STRIP		:=$(TCPATH)strip$(EXE)	
+ endif
 
-AR		:=$(TCPATH)ar$(EXE)
-SIZE		:=$(TCPATH)size$(EXE)
-WINDRES		:=$(TCPATH)windres$(EXE)
-LD		:=$(TCPATH)ld$(EXE)
-OBJCOPY		:=$(TCPATH)objcopy$(EXE)
+ AR		:=$(TCPATH)ar$(EXE)
+ SIZE		:=$(TCPATH)size$(EXE)
+ WINDRES	:=$(TCPATH)windres$(EXE)
+ LD		:=$(TCPATH)ld$(EXE)
+ OBJCOPY		:=$(TCPATH)objcopy$(EXE)
+endif
+	
 SYNCE_PCP	:=synce-pcp
 SYNCE_PRM	:=synce-prm
 CE_VERSION	:=0x0$(CE_MAJOR)$(CE_MINOR)
@@ -233,6 +255,16 @@ EBROWSE         :=ebrowse
 GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 
 $(info GCC VERSION : $(GCCVERSION))
+
+
+ifeq ($(DEBUG),y)
+ ifeq ($(CLANG),y)
+  OPTIMIZE  := -O0 
+ else
+  OPTIMIZE  := -Og
+ endif
+ OPTIMIZE  += -g3 -ggdb
+endif
 
 ######## output files
 ifeq ($(CONFIG_LINUX),y)
@@ -260,6 +292,7 @@ ifeq ($(TARGET_IS_KOBO),y)
  DITHER    :=y
  OPENGL    :=n
  USE_SOUND_EXTDEV := y
+ USE_LIBINPUT :=n
  CE_DEFS += -DKOBO
  CE_DEFS += -DUSE_MEMORY_CANVAS
 endif
@@ -272,14 +305,31 @@ ifeq ($(TARGET_IS_PI),y)
  GLES2   :=n
  USE_SDL :=n
  USE_X11 :=n
-
+ ENABLE_MESA_KMS :=n
  CE_DEFS += -DUSE_VIDEOCORE
  CE_DEFS += -isystem $(PI)/opt/vc/include -isystem $(PI)/opt/vc/include/interface/vcos/pthreads
  CE_DEFS += -isystem $(PI)/opt/vc/include/interface/vmcs_host/linux
  USE_CONSOLE = y	
 
- CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include
+ CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include 
 
+endif
+
+ifeq ($(TARGET_HAS_MALI),y)
+ USE_EGL :=y
+ OPENGL	 :=y
+ GLES    :=y
+ USE_X11 :=n
+ USE_CONSOLE = y	
+	
+ CE_DEFS += -DHAVE_MALI
+endif
+
+ifeq ($(TARGET_IS_CUBIE),y)
+ CE_DEFS += --sysroot=$(CUBIE) 
+ CE_DEFS += -isystem $(CUBIE)/usr/include/c++/4.8.2 
+ CE_DEFS += -isystem $(CUBIE)/usr/include/c++/4.8.2/armv7l-unknown-linux-gnueabihf 
+ CE_DEFS += -isystem $(CUBIE)/usr/include 
 endif
 
 ifeq ($(CONFIG_LINUX),y)
@@ -298,6 +348,7 @@ ifeq ($(CONFIG_LINUX),y)
   GLES2   ?=n
   GLES    ?=n
   USE_X11 ?=n
+  ENABLE_MESA_KMS ?=n
  endif
 
  GLES2 ?=n
@@ -332,15 +383,37 @@ ifeq ($(CONFIG_LINUX),y)
   USE_SDL :=n
  endif
 
- ifeq ($(USE_X11), y)
+ ifeq ($(ENABLE_MESA_KMS),y)
+  $(eval $(call pkg-config-library,DRM,libdrm))
+  $(eval $(call pkg-config-library,GBM,gbm))
+  DRM_CPPFLAGS := $(patsubst -I%,-isystem %,$(DRM_CPPFLAGS))
+  GBM_CPPFLAGS := $(patsubst -I%,-isystem %,$(GBM_CPPFLAGS))
+  CE_DEFS += -DMESA_KMS $(DRM_CPPFLAGS) $(GBM_CPPFLAGS)
+  EGL_LDLIBS += $(DRM_LDLIBS) $(GBM_LDLIBS)
+  USE_CONSOLE = y
+  USE_X11 = n
+  USE_SDL = n
+ else ifeq ($(USE_X11),y)
   $(eval $(call pkg-config-library,X11,x11))
   CE_DEFS += $(X11_CPPFLAGS) -DUSE_X11
  endif
 
  ifeq ($(USE_CONSOLE),y)
   CE_DEFS += -DUSE_CONSOLE
+
+  USE_LIBINPUT ?= $(shell $(PKG_CONFIG) --exists libinput && echo y)
  endif
 
+ ifeq ($(USE_LIBINPUT),y)
+  $(eval $(call pkg-config-library,LIBINPUT,libinput))
+  $(eval $(call pkg-config-library,LIBUDEV,libudev))
+
+  ifeq ($(LIBINPUT_MODVERSION),0.6.0)
+   CE_DEFS += -DLIBINPUT_LEGACY_API
+  endif
+
+  CE_DEFS += $(LIBINPUT_CPPFLAGS) $(LIBUDEV_CPPFLAGS) -DUSE_LIBINPUT
+ endif
 # Use SDL if not explicitly disabled or disabled by another FLAG ... 
  USE_SDL ?=y
 
@@ -548,6 +621,10 @@ ifeq ($(TARGET_IS_PI),y)
  LDFLAGS		+= --sysroot=$(PI) -L$(PI)/usr/lib/arm-linux-gnueabihf
 endif
 
+ifeq ($(TARGET_IS_CUBIE),y)
+ LDFLAGS		+= --sysroot=$(CUBIE)
+endif
+
 ifeq ($(CONFIG_WIN32),y)
  LDFLAGS		+=-Wl,--major-subsystem-version=$(CE_MAJOR)
  LDFLAGS		+=-Wl,--minor-subsystem-version=$(CE_MINOR)
@@ -572,6 +649,8 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(SDL_MIXER_LDLIBS)
  LDLIBS += $(ALSA_LDLIBS)
  LDLIBS += $(SNDFILE_LDLIBS)
+ LDLIBS += $(LIBINPUT_LDLIBS)
+ LDLIBS += $(LIBUDEV_LDLIBS)
 
 endif
 
@@ -604,21 +683,19 @@ endif
 ####### compiler target
 
 ifeq ($(CONFIG_PC),y)
-ifeq ($(TARGET),PCX64)
-    TARGET_ARCH := -m64
+ ifeq ($(TARGET),PCX64)
+  TARGET_ARCH := -m64
+ else
+  TARGET_ARCH	:=-mwindows -march=i586 -mms-bitfields
+ endif
+else ifeq ($(CONFIG_LINUX),y)
+ TARGET_ARCH	:= $(MCPU)
+else ifeq ($(TARGET),PNA)
+ TARGET_ARCH	:=-mwin32
 else
-    TARGET_ARCH	:=-mwindows -march=i586 -mms-bitfields
-endif
-else
-TARGET_ARCH	:=-mwin32 $(MCPU)
-ifeq ($(TARGET),PNA)
-TARGET_ARCH	:=-mwin32
-endif
-ifeq ($(CONFIG_LINUX),y)
-TARGET_ARCH	:= $(MCPU)
+ TARGET_ARCH	:=-mwin32 $(MCPU)
 endif
 
-endif
 WINDRESFLAGS	:=-I$(HDR) -I$(SRC) $(CE_DEFS) -D_MINGW32_
 MAKEFLAGS	+=-r
 
@@ -786,7 +863,6 @@ DRAW	:=\
 	$(DRW)/DrawGreatCircle.cpp \
 	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawHSI.cpp \
-	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
 	$(DRW)/DrawRunway.cpp \
 	$(DRW)/DrawTRI.cpp \
@@ -839,7 +915,6 @@ DRAW	:=\
 	$(DRW)/RenderMapWindow.cpp \
 	$(DRW)/RenderMapWindowBg.cpp \
 	$(DRW)/ScreenProjection.cpp \
-	$(DRW)/Sonar.cpp \
 	$(DRW)/TextInBox.cpp \
 	$(DRW)/UpdateAndRefresh.cpp \
 	$(DRW)/Task/TaskRenderer.cpp \
@@ -1171,7 +1246,8 @@ SRC_FILES :=\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/lk8000.cpp\
 	$(SRC)/LiveTracker.cpp \
-	$(SRC)/LKAirspace.cpp	\
+	$(SRC)/Airspace/LKAirspace.cpp	\
+	$(SRC)/Airspace/Sonar.cpp	\
 	$(SRC)/LKInstall.cpp 		\
 	$(SRC)/LKLanguage.cpp		\
 	$(SRC)/LKObjects.cpp \
@@ -1214,7 +1290,6 @@ SRC_FILES :=\
 	$(SRC)/SaveLoadTask/LoadCupTask.cpp\
 	$(SRC)/SaveLoadTask/LoadGpxTask.cpp\
 	$(SRC)/Settings.cpp\
-	$(SRC)/StatusFile.cpp \
 	$(SRC)/Thread_Calculation.cpp\
 	$(SRC)/Thread_Draw.cpp	\
 	$(SRC)/TrueWind.cpp		\
@@ -1461,7 +1536,9 @@ endif
 $(OUTPUTS) : $(OUTPUTS_NS) 
 	@$(NQ)echo "  STRIP   $@"
 	$(Q)$(STRIP) $< -o $@
+ifneq ($(TARGET),OPENVARIO)
 	$(Q)$(SIZE) $@
+endif
 
 ifeq ($(REMOVE_NS),y)
 	$(RM) $(OUTPUTS_NS)

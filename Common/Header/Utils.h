@@ -91,22 +91,6 @@ void LoadRegistryFromFile(const TCHAR* szFile);
    Interface Files !
    ===================================================== */
 
-void StatusFileInit(void);
-
-typedef struct {
-	const TCHAR *key;		/* English key */
-	const TCHAR *sound;		/* What sound entry to play */
-	TCHAR *nmea_gps;		/* NMEA Sentence - to GPS serial */
-	TCHAR *nmea_vario;		/* NMEA Sentence - to Vario serial */
-	bool doStatus;
-	bool doSound;
-	int delay_ms;		/* Delay for DoStatusMessage */
-	int iFontHeightRatio;	// TODO - not yet used
-	bool docenter;		// TODO - not yet used
-	int *TabStops;		// TODO - not yet used
-	int disabled;		/* Disabled - currently during run time */
-} StatusMessageSTRUCT;
-
 typedef struct {
 	TCHAR *key;
 	TCHAR *text;
@@ -189,7 +173,7 @@ void ToggleBaroAltitude(void);
 bool ReducedMapSize(void);
 
 void InitAlarms(void);
-bool CheckAlarms(unsigned short al);
+void CheckAltitudeAlarms(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
 void MasterTimeReset(void);
 bool DoOptimizeRoute(void);

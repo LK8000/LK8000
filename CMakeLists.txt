@@ -143,6 +143,9 @@ add_library( LK8000 SHARED
     Common/Source/Screen/LKBitmapSurface.cpp
     Common/Source/Screen/LKIcon.cpp
 
+    Common/Source/Airspace/LKAirspace.cpp
+    Common/Source/Airspace/Sonar.cpp
+
     Common/Source/UIGlobals.cpp
     Common/Source/AirfieldDetails.cpp
     Common/Source/Alarms.cpp
@@ -168,7 +171,6 @@ add_library( LK8000 SHARED
     Common/Source/InputEvents.cpp
     Common/Source/lk8000.cpp
     Common/Source/LiveTracker.cpp
-    Common/Source/LKAirspace.cpp
     Common/Source/LKInstall.cpp
     Common/Source/LKLanguage.cpp
     Common/Source/LKObjects.cpp
@@ -189,7 +191,6 @@ add_library( LK8000 SHARED
     Common/Source/Polar.cpp
     Common/Source/ProcessTimer.cpp
     Common/Source/Settings.cpp
-    Common/Source/StatusFile.cpp
     Common/Source/Thread_Calculation.cpp
     Common/Source/Thread_Draw.cpp
     Common/Source/TrueWind.cpp
@@ -293,7 +294,6 @@ add_library( LK8000 SHARED
     Common/Source/Draw/DrawGreatCircle.cpp
     Common/Source/Draw/DrawHeading.cpp
     Common/Source/Draw/DrawHSI.cpp
-    Common/Source/Draw/DrawLKAlarms.cpp
     Common/Source/Draw/DrawMapScale.cpp
     Common/Source/Draw/DrawRunway.cpp
     Common/Source/Draw/DrawTRI.cpp
@@ -333,7 +333,6 @@ add_library( LK8000 SHARED
     Common/Source/Draw/RenderMapWindow.cpp
     Common/Source/Draw/RenderMapWindowBg.cpp
     Common/Source/Draw/ScreenProjection.cpp
-    Common/Source/Draw/Sonar.cpp
     Common/Source/Draw/TextInBox.cpp
     Common/Source/Draw/UpdateAndRefresh.cpp
 

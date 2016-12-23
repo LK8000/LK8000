@@ -20,7 +20,7 @@ public:
     PGSectorTaskPt();
     virtual ~PGSectorTaskPt();
     
-    virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt);
+    void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
     
 protected:
 

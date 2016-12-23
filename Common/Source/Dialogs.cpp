@@ -12,12 +12,6 @@
 #include "Message.h"
 #include "Sound/Sound.h"
 
-bool forceDestroyStatusMessage = false;
-
-void ClearStatusMessages(void) {
-  forceDestroyStatusMessage = true;
-}
-
 // DoMessage is designed to delegate what to do for a message
 // The "what to do" can be defined in a configuration file
 // Defaults for each message include:
@@ -34,39 +28,17 @@ void ClearStatusMessages(void) {
 void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound) {
   Message::Lock();
 
-  StatusMessageSTRUCT LocalMessage;
-  LocalMessage = StatusMessageData[0];
-
-  int i;
-  // Search from end of list (allow overwrites by user)
-  for (i=StatusMessageData_Size - 1; i>0; i--) {
-    #if BUGSTOP
-    LKASSERT(i>=0);
-    #else
-    if (i<0) break;
-    #endif
-    if (_tcscmp(text, StatusMessageData[i].key) == 0) {
-      LocalMessage = StatusMessageData[i];
-      break;
-    }
-  }
-
-  // doSound always true, to be removed the StatusFile entirely
-  if (LocalMessage.doSound && playsound)
-    PlayResource(LocalMessage.sound);
+  if (playsound)
+    PlayResource(TEXT("IDR_WAV_DRIP"));
 
   // TODO code: consider what is a sensible size?
   TCHAR msgcache[1024];
-  if (LocalMessage.doStatus) {
-
-    LK_tcsncpy(msgcache,gettext(text),800);
-    if (data != NULL) {
-      _tcscat(msgcache, TEXT(" "));
-      _tcscat(msgcache, data);
-    }
-
-    Message::AddMessage(LocalMessage.delay_ms, 1, msgcache);
-  }
+	LK_tcsncpy(msgcache,gettext(text),800);
+	if (data != NULL) {
+		_tcscat(msgcache, TEXT(" "));
+		_tcscat(msgcache, data);
+	}
+  Message::AddMessage(1500, 1, msgcache); // message time 1.5s
 
   Message::Unlock();
 }

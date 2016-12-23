@@ -15,6 +15,7 @@
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
 #include "OS/Memory.h"
+#include "Util/Clamp.hpp"
 #include <time.h>
 // #define DEBUG_LOGGER	1
 
@@ -352,7 +353,7 @@ void LogPointToFile(double Latitude, double Longitude, double Altitude,
   sprintf(szBRecord,"B%02d%02d%02d%02d%05.0f%c%03d%05.0f%cA%05d%05d\r\n",
           Hour, Minute, Second,
           DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-          (int)BaroAltitude,clamp<int>(Altitude,0,99999));
+          (int)BaroAltitude,Clamp<int>(Altitude,0,99999));
 
   IGCWriteRecord(szBRecord);
 }

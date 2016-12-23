@@ -20,7 +20,7 @@ public:
     PGCicrcleTaskPt();
     virtual ~PGCicrcleTaskPt();
 
-    virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt);
+    void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 
 protected: 
     bool CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized);

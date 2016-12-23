@@ -72,7 +72,6 @@ void PreloadInitialisation(bool ask) {
 	LKProfileInitRuntime();
     }
 
-    StatusFileInit();
   } else {
     // We are in the dialog startup phase
     FullScreen();

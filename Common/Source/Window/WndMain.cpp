@@ -34,6 +34,8 @@
 #include "Dialogs/dlgProgress.h"
 #include "Draw/ScreenProjection.h"
 
+#include "Airspace/Sonar.h"
+
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);
 
@@ -70,6 +72,8 @@ void BeforeShutdown(void) {
   StartupLogFreeRamAndStorage();
   #endif
 
+	DeinitAirspaceSonar();
+	
   // turn off all displays
   GlobalRunning = false;
 
@@ -335,10 +339,6 @@ void AfterStartup() {
   #endif
   CloseProgressDialog();
 
-  // NOTE: Must show errors AFTER all windows ready
-  int olddelay = StatusMessageData[0].delay_ms;
-  StatusMessageData[0].delay_ms = 20000; // 20 seconds
-
   if (SIMMODE) {
 	StartupStore(TEXT(". GCE_STARTUP_SIMULATOR%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_SIMULATOR);
@@ -346,7 +346,6 @@ void AfterStartup() {
 	StartupStore(TEXT(". GCE_STARTUP_REAL%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_REAL);
   }
-  StatusMessageData[0].delay_ms = olddelay;
 
   // Create default task if none exists
   #if TESTBENCH

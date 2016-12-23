@@ -76,10 +76,12 @@ namespace memory_mapped_file
 
     size_t base_mmf::query_file_size_()
     {
-    #if defined(_WIN32)
+    #if defined(_WIN64)
         DWORD high_size;
         DWORD low_size = GetFileSize(file_handle_, &high_size);
         return (size_t(high_size) << 32) | low_size;
+    #elif defined(_WIN32)
+        return GetFileSize(file_handle_, NULL);
     #else
         struct stat sbuf;
         if (::fstat(file_handle_, &sbuf) == -1) return 0;
@@ -122,9 +124,17 @@ namespace memory_mapped_file
         file_mapping_handle_ = ::CreateFileMapping(
             file_handle_, 0, PAGE_READONLY, 0, 0, 0);
         if (file_mapping_handle_ == NULL) return;
+
+#ifdef _WIN64
+        DWORD dwFileOffsetHigh = real_offset >> 32; 
+        DWORD dwFileOffsetLow = real_offset & 0xFFFFFFFF;
+#else
+        DWORD dwFileOffsetHigh = 0U; 
+        DWORD dwFileOffsetLow = real_offset;
+#endif
         char* real_data = static_cast<char*>(::MapViewOfFile(
-            file_mapping_handle_, FILE_MAP_READ, real_offset >> 32,
-            real_offset & 0xFFFFFFFF, offset - real_offset + mapping_size));
+            file_mapping_handle_, FILE_MAP_READ, dwFileOffsetHigh,
+            dwFileOffsetLow, offset - real_offset + mapping_size));
         if (! real_data) return;
     #else
         char* real_data = static_cast<char*>(::mmap(
@@ -213,9 +223,17 @@ namespace memory_mapped_file
         file_mapping_handle_ = ::CreateFileMapping(
             file_handle_, 0, PAGE_READWRITE, 0, 0, 0);
         if (file_mapping_handle_ == NULL) return;
+        
+#ifdef _WIN64
+        DWORD dwFileOffsetHigh = real_offset >> 32; 
+        DWORD dwFileOffsetLow = real_offset & 0xFFFFFFFF;
+#else
+        DWORD dwFileOffsetHigh = 0U; 
+        DWORD dwFileOffsetLow = real_offset;
+#endif
         char* real_data = static_cast<char*>(::MapViewOfFile(
-            file_mapping_handle_, FILE_MAP_WRITE, real_offset >> 32,
-            real_offset & 0xFFFFFFFF, offset - real_offset + mapping_size));
+            file_mapping_handle_, FILE_MAP_WRITE, dwFileOffsetHigh,
+            dwFileOffsetLow, offset - real_offset + mapping_size));
         if (! real_data) return;    
     #else
         if (offset + mapping_size > file_size_)
