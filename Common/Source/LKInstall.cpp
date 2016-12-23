@@ -20,19 +20,17 @@
 
 // This will NOT be called from PC versions
 void InstallSystem() {
-
+#ifdef UNDER_CE
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
 
-#ifdef UNDER_CE
+
   TCHAR dstdir[MAX_PATH];
   TCHAR maindir[MAX_PATH];
   TCHAR dstfile[MAX_PATH];
   TCHAR tbuf[MAX_PATH*3];
 
   dstdir[0]='\0';
-
-#endif
 
   bool failure=false;
 
@@ -137,7 +135,6 @@ void InstallSystem() {
   }
 #endif
 
-#ifdef UNDER_CE
   // search for the main system directory on the real device
   // Remember that SHGetSpecialFolder works differently on CE platforms, and you cannot check for result.
   // We need to verify if directory does really exist.
@@ -232,10 +229,11 @@ void InstallSystem() {
 	} else
 		StartupStore(_T("... Font TAHOMABD.TTF installed on device%s"),NEWLINE);
   }
-#endif
+
   #if TESTBENCH
   StartupStore(_T(". InstallSystem completed OK%s"),NEWLINE);
   #endif
+#endif
 }
 
 
