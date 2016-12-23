@@ -141,6 +141,13 @@ namespace OpenGL {
    * used for secure call of #glPushAttrib 
    */
   extern GLint max_attrib_stack_depth;
+  
+#else
+  /**
+   * store current state of GL_SCISSOR_TEST
+   *   workaround for broken ::glGetBooleanv(GL_SCISSOR_TEST, &enabled);
+   */
+  extern bool scissor_test;  
 #endif
  
 };

@@ -40,11 +40,18 @@ public:
   explicit GLCanvasScissor(PixelRect rc) {
     Scissor(rc);
   }
+  
+  ~GLCanvasScissor() {
+    OpenGL::scissor_test = false;
+  }
 
 private:
   void Scissor(PixelRect rc) {
     OpenGL::ToViewport(rc);
     ::glScissor(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
+#if HAVE_GLES
+    OpenGL::scissor_test = true;
+#endif
   }
 };
 

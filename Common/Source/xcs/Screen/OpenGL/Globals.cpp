@@ -66,6 +66,8 @@ namespace OpenGL {
 
 #ifndef HAVE_GLES
   GLint max_attrib_stack_depth;
+#else
+  bool scissor_test = false;
 #endif
  
 };
