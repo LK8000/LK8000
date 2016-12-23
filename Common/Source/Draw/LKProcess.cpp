@@ -2464,6 +2464,21 @@ olc_score:
 			_stprintf(BufferTitle, TEXT("E.Tar"));
 			break;
 
+		// B135 Altitude QNE
+		case LK_QNE:
+			_tcscpy(BufferTitle, MsgToken(2324));
+			value = -1;
+			if (DrawInfo.BaroAltitudeAvailable) {
+				value= AltitudeToQNEAltitude(DrawInfo.BaroAltitude);
+				_stprintf(BufferValue, TEXT("%d"),(int)value);
+			}
+			else {
+				_stprintf(BufferValue, TEXT("--"));
+
+			}
+			valid=true;
+			break;
+
 		// B141
 		case LK_WIND:
 			// LKTOKEN  _@M1185_ = "Wind"

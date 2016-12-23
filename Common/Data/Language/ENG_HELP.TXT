@@ -1514,6 +1514,10 @@ Use this speed if you want to maximize efficiency and glide distance
 [Target Req. Efficicency]
 Required efficiency to the current target
 
+@935
+[Altitude QNE]
+QNE refers to the indicated altitude at the landing runway threshold when 1013.25 mbar or 29.92 inHg is set in the altimeter's Kollsman window
+
 #
 # END INFOBOXES 800 - 1199
 #
