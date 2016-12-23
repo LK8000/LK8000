@@ -41,9 +41,11 @@ public:
     Scissor(rc);
   }
   
+#ifdef HAVE_GLES  
   ~GLCanvasScissor() {
     OpenGL::scissor_test = false;
   }
+#endif
 
 private:
   void Scissor(PixelRect rc) {
