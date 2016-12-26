@@ -113,16 +113,7 @@ gcc_pure
 static bool
 CheckOESDrawTexture()
 {
-#if defined(ANDROID)
-#warning "temporary disabled"
-/**
- * crash on screen rotation, problem seem's not EOS itself, because that happen only on DrawTerrain.
- *  need to investigate !
- */
-  return false;
-#else
   return OpenGL::IsExtensionSupported("GL_OES_draw_texture");
-#endif
 }
 
 #endif
