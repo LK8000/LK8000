@@ -22,6 +22,7 @@
 
 #include <functional>
 #include <Form/Form.hpp>
+#include <OS/RotateScreen.h>
 
 #include "Event/Event.h"
 #include "Asset.hpp"
@@ -1717,6 +1718,7 @@ int WndForm::ShowModal(void) {
     enterTime.Update();
 
     Message::ScopeBlockRender BlockRender;
+    ScopeLockScreen LockScreen;
 
     SetVisible(true);
 
@@ -1912,6 +1914,7 @@ void WndForm::SetFont(FontReference Value){
 }
 
 void WndForm::Show() {
+    ScopeLockScreen LockScreen;
     MainWindow.UnGhost();
     
     WindowControl::Show();

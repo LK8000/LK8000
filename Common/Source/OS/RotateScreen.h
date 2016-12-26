@@ -24,5 +24,13 @@ bool CanRotateScreen();
  */
 bool RotateScreen(short angle);
 
+class ScopeLockScreen final {
+public:
+    ScopeLockScreen();
+    ~ScopeLockScreen();
+private:
+    int previous_state;
+};
+
 #endif	/* ROTATESCREEN_H */
 

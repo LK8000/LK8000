@@ -35,6 +35,7 @@
 #include "Draw/ScreenProjection.h"
 
 #include "Airspace/Sonar.h"
+#include <OS/RotateScreen.h>
 
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);
@@ -241,6 +242,7 @@ void WndMain::OnCreate() {
 }
 
 bool WndMain::OnClose() {
+    ScopeLockScreen LockSreen;
     if(!_isRunning) {
         return WndMainBase::OnClose();
     }

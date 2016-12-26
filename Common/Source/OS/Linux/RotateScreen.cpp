@@ -10,11 +10,16 @@
  */
 
 #include "externs.h"
+#include "../RotateScreen.h"
 #include "Hardware/RotateDisplay.hpp"
 #include "LKInterface/CScreenOrientation.h"
 #include "Hardware/RotateDisplay.hpp"
 #include "DisplayOrientation.hpp"
 #include "MessageLog.h"
+#ifdef ANDROID
+#include "Android/NativeView.hpp"
+#include <Android/Main.hpp>
+#endif
 
 #ifdef KOBO
 #include "Event/Globals.hpp"
@@ -82,3 +87,39 @@ bool RotateScreen(short angle) {
     
     return true;
 }
+
+#ifdef ANDROID
+ScopeLockScreen::ScopeLockScreen() :
+    previous_state(native_view->getRequestedOrientation())
+{
+    const int tmp = native_view->getDisplayOrientation();
+    switch(tmp) {
+        default:
+        case 0:
+            native_view->setRequestedOrientation(NativeView::ScreenOrientation::PORTRAIT);
+            break;
+        case 1:
+            native_view->setRequestedOrientation(NativeView::ScreenOrientation::LANDSCAPE);
+            break;
+        case 2:
+            native_view->setRequestedOrientation(NativeView::ScreenOrientation::REVERSE_PORTRAIT);
+            break;
+        case 3:
+            native_view->setRequestedOrientation(NativeView::ScreenOrientation::REVERSE_LANDSCAPE);
+            break;
+    }
+}
+
+ScopeLockScreen::~ScopeLockScreen() {
+    native_view->setRequestedOrientation(static_cast<NativeView::ScreenOrientation>(previous_state));
+}
+#else
+ScopeLockScreen::ScopeLockScreen() :
+            previous_state()
+{
+    // TODO : implement if needed.
+}
+
+ScopeLockScreen::~ScopeLockScreen() {
+}
+#endif

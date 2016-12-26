@@ -82,6 +82,7 @@
 #include "utils/openzip.h"
 
 #include "Airspace/Sonar.h"
+#include <OS/RotateScreen.h>
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -342,6 +343,7 @@ bool Startup(const TCHAR* szCmdLine) {
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
   OpenGeoid();
+  ScopeLockScreen LockSreen;
 
   PreloadInitialisation(false); // calls dlgStartup
   if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {

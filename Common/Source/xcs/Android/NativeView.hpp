@@ -47,6 +47,7 @@ class NativeView {
   static jmethodID init_surface_method, deinit_surface_method;
   static jmethodID setRequestedOrientationID;
   static jmethodID getRequestedOrientationID;
+  static jmethodID getDisplayOrientationID;
   static jmethodID swap_method;
   static jmethodID loadResourceBitmap_method;
   static jmethodID loadAssetsBitmap_method;
@@ -127,6 +128,10 @@ public:
 
   int getRequestedOrientation() {
     return env->CallIntMethod(obj, getRequestedOrientationID);
+  }
+
+  int getDisplayOrientation() {
+    return env->CallIntMethod(obj, getDisplayOrientationID);
   }
 
 
