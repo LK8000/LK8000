@@ -120,13 +120,27 @@ bool ReadWinPilotPolar(void) {
         StartupStore(_T("... Empty polar file, using Default" NEWLINE));
         _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
     }
-    LocalPath(szFile, szPolarFile);
+
+    /**
+     * szPolarFile can be :
+     *   1 - absolute path
+     *   2 - relative path to external directory ( LocalPath )
+     *   3 - retlative path to external directory but with old filename ( migration from V5 or older )
+     *   4 - relative path to system directory
+     *
+     * it's important to try in this order.
+     * in worst case we try to open file 4 time, but timing is not important here.
+     */
+
+    _tcscpy(szFile, szPolarFile);
     ZZIP_FILE* stream = openzip(szFile, "rt");
     if(!stream) {
-        SystemPath(szFile, szPolarFile);
+        // failed to open absolute. try LocalPath
+        LocalPath(szFile, szPolarFile);
         stream = openzip(szFile, "rt");
     }
     if(!stream){
+        // failed to open Local. try with converted file name to new file name.
         // polar file name can be an old name, convert to new name and retry.
         bool bRetry = false;
         tstring str (szPolarFile);
@@ -140,6 +154,11 @@ bool ReadWinPilotPolar(void) {
             LocalPath(szFile,str.c_str());
             stream = openzip(szFile, "rt");
         }
+    }
+    if(!stream) {
+        // all previous failed. try SystemPath
+        SystemPath(szFile, szPolarFile);
+        stream = openzip(szFile, "rt");
     }
 
     StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
