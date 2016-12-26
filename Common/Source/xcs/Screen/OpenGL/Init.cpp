@@ -114,7 +114,7 @@ static bool
 CheckOESDrawTexture()
 {
 #if defined(ANDROID)
-#warning "OESDrawTexture temporary disabled, crash after screen rotate on Galaxy Tab 2"
+#warning "temporary disabled"
 /**
  * crash on screen rotation, problem seem's not EOS itself, because that happen only on DrawTerrain.
  *  need to investigate !
@@ -291,9 +291,6 @@ OpenGL::SetupContext()
   }
 #endif
 
-#if defined(ANDROID) && !defined(NDEBUG)
-#warning " FBO disabled : seem's not work on Emulator with OpenGL renderer "Android Emulator OpenGL ES Translator (GeForce GT 520/PCIe/SSE2)"
-#else
   frame_buffer_object = CheckFBO() && FBO::Initialise();
   if (frame_buffer_object) {
     render_buffer_depth_stencil = CheckDepthStencil();
@@ -303,7 +300,6 @@ OpenGL::SetupContext()
       /* fall back to a packed depth+stencil format */
       render_buffer_stencil = render_buffer_depth_stencil;
   }
-#endif
 
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_DITHER);
