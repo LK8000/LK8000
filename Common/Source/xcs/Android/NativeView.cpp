@@ -27,6 +27,7 @@ Java::TrivialClass NativeView::cls;
 jfieldID NativeView::textureNonPowerOfTwo_field;
 jmethodID NativeView::init_surface_method, NativeView::deinit_surface_method;
 jmethodID NativeView::setRequestedOrientationID;
+jmethodID NativeView::getRequestedOrientationID;
 jmethodID NativeView::swap_method;
 jmethodID NativeView::loadResourceBitmap_method;
 jmethodID NativeView::loadAssetsBitmap_method;
@@ -47,6 +48,9 @@ NativeView::Initialise(JNIEnv *env)
   deinit_surface_method = env->GetMethodID(cls, "deinitSurface", "()V");
   setRequestedOrientationID =
     env->GetMethodID(cls, "setRequestedOrientation", "(I)Z");
+  getRequestedOrientationID =
+          env->GetMethodID(cls, "getRequestedOrientation", "()I");
+
   swap_method = env->GetMethodID(cls, "swap", "()V");
 
   loadResourceBitmap_method = env->GetMethodID(cls, "loadResourceBitmap",

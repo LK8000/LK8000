@@ -288,6 +288,10 @@ class NativeView extends SurfaceView
     return true;
   }
 
+  private int getRequestedOrientation() {
+    return ((Activity)getContext()).getRequestedOrientation();
+  }
+
   @Override public void surfaceCreated(SurfaceHolder holder) {
     haveSurface = true;
   }

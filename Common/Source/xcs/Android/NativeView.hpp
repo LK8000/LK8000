@@ -46,6 +46,7 @@ class NativeView {
   static jfieldID textureNonPowerOfTwo_field;
   static jmethodID init_surface_method, deinit_surface_method;
   static jmethodID setRequestedOrientationID;
+  static jmethodID getRequestedOrientationID;
   static jmethodID swap_method;
   static jmethodID loadResourceBitmap_method;
   static jmethodID loadAssetsBitmap_method;
@@ -123,6 +124,11 @@ public:
   bool setRequestedOrientation(ScreenOrientation so) {
     return env->CallBooleanMethod(obj, setRequestedOrientationID, (jint)so);
   }
+
+  int getRequestedOrientation() {
+    return env->CallIntMethod(obj, getRequestedOrientationID);
+  }
+
 
   void swap() {
     env->CallVoidMethod(obj, swap_method);
