@@ -236,8 +236,7 @@ Java_org_LK8000_InternalGPS_setLocation(JNIEnv *env, jobject obj,
     GPS_INFO.Time = utc->tm_hour * 3600 + utc->tm_min * 60 + utc->tm_sec;
     GPS_INFO.Year = utc->tm_year + 1900;
 
-    GPS_INFO.Year = utc->tm_year;
-    GPS_INFO.Month = utc->tm_mon;
+    GPS_INFO.Month = utc->tm_mon + 1;
     GPS_INFO.Day = utc->tm_mday;
     GPS_INFO.Hour = utc->tm_hour;
     GPS_INFO.Minute = utc->tm_min;
