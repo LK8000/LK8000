@@ -12,6 +12,7 @@
 #include "externs.h"
 #include "devGPSBip.h"
 #include <functional>
+#include <array>
 
 using std::placeholders::_1;
 
