@@ -59,6 +59,7 @@ namespace FBO {
   void FramebufferTexture2D(GLenum target, GLenum attachment,
                             GLenum textarget, GLuint texture,
                             GLint level);
+  GLenum CheckFramebufferStatus(GLenum target);
 
 #else
   /* on OpenGL, we assume that the extension is built-in */
