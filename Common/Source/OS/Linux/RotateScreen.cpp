@@ -31,6 +31,13 @@ bool CanRotateScreen() {
     return true;
 #elif defined(USE_EGL) && !defined(USE_FULLSCREEN)
     return false;
+#elif defined(ANDROID)
+    /**
+     * TODO : implement CScreenOrientation::GetScreenSetting() && CScreenOrientation::SetScreenSetting
+     * in all case this only used for show screen mode menu button and android use sensor for screen rotate,
+     *  so screen rotation is controled by device, no need to have this menu.
+     */
+    return false;
 #else
     return Display::RotateSupported();
 #endif
