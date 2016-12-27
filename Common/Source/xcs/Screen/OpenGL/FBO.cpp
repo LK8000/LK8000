@@ -70,7 +70,7 @@ FBO::Initialise()
     _glGenRenderbuffers != nullptr && _glRenderbufferStorage != nullptr &&
     _glBindFramebuffer != nullptr && _glDeleteFramebuffers != nullptr &&
     _glGenFramebuffers != nullptr && _glFramebufferRenderbuffer != nullptr &&
-    _glFramebufferTexture2D != nullptr;
+    _glFramebufferTexture2D != nullptr && _glCheckFramebufferStatus != nullptr;
 }
 
 void
