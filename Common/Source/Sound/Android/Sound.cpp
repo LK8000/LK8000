@@ -88,6 +88,8 @@ void LKSound(const TCHAR *lpName) {
 
 void PlayResource (const TCHAR* lpName) {
     LKASSERT(lpName);
-    LKSound(FindWave(lpName));
+    const TCHAR* szName =  FindWave(lpName);
+    if ( szName != nullptr )
+        LKSound(szName);
 }
 
