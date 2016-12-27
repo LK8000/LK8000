@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "6.1a"
         setProperty("archivesBaseName", "LK8000-$versionName")
+        manifestPlaceholders = [applicationLabel: "@string/app_name"]
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11 -frtti -fexceptions"
@@ -51,24 +52,32 @@ android {
         }
     }
     sourceSets {
-        main{
+        main {
             java.srcDirs += [
-                        "../../android/src",
-                        "../../android/ioio/software/IOIOLib/src",
-                        "../../android/ioio/software/IOIOLib/target/android/src",
-                        "../../android/ioio/software/IOIOLibAccessory/src",
-                        "../../android/ioio/software/IOIOLibBT/src",
-                          "../../android/ioio/software/IOIOLibAndroidDevice/src"
-                        ]
+                    "../../android/src",
+                    "../../android/ioio/software/IOIOLib/src",
+                    "../../android/ioio/software/IOIOLib/target/android/src",
+                    "../../android/ioio/software/IOIOLibAccessory/src",
+                    "../../android/ioio/software/IOIOLibBT/src",
+                    "../../android/ioio/software/IOIOLibAndroidDevice/src"
+            ]
             manifest.srcFile "../../android/AndroidManifest.xml"
             res.srcDirs += ["../../android/res"]
         }
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            manifestPlaceholders = [applicationLabel: "@string/app_name_debug"]
+        }
+        beta {
+            initWith(buildTypes.release)
+            applicationIdSuffix ".beta"
+            manifestPlaceholders = [applicationLabel: "@string/app_name_beta"]
         }
     }
     productFlavors {

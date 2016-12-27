@@ -4,9 +4,9 @@
           android:installLocation="auto"
           android:versionCode="107"
           android:versionName="6.1a">
-  <application android:icon="@drawable/icon" android:label="@string/app_name">
+  <application android:icon="@drawable/icon" android:label="${applicationLabel}">
     <activity android:name=".LK8000"
-              android:label="@string/app_name"
+              android:label="${applicationLabel}"
               android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale"
               android:launchMode="singleInstance">
       <intent-filter>
