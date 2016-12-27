@@ -47,6 +47,13 @@ public class SoundUtil {
         m.setAudioStreamType(AudioManager.STREAM_MUSIC);
         m.start();
 
+        while (m.isPlaying()) {
+            Thread.sleep(10);
+        }
+        Thread.sleep(10);
+        m.release();
+        m = null;
+
     } catch (Exception e) {
         return false;
     }
