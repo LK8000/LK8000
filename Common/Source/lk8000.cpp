@@ -275,9 +275,6 @@ bool Startup(const TCHAR* szCmdLine) {
   TCHAR szSystemPath[MAX_PATH];
   SystemPath(szSystemPath, TEXT(LKD_SYSTEM DIRSEP LKF_CREDITS));
   zzipSystem = openzip(szSystemPath, "rb");
-
-  SoundGlobalInit InitSound;
-
 #else
   bool datadir = CheckDataDir();
   if (!datadir) {
@@ -674,7 +671,6 @@ int main(int argc, char *argv[]) {
 #endif
 
   ScreenGlobalInit InitScreen;
-  SoundGlobalInit InitSound;
 
   std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
 

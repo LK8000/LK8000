@@ -13,55 +13,65 @@
 #include "Android/SoundUtil.hpp"
 #include "Android/Context.hpp"
 #include "Android/Main.hpp"
-
-static bool bSoundInit = false;
-static bool bSoundFile = false;
-std::map<tstring, tstring> _resourceToWav;
 /*
  * Sound can be play from more than one thread, so we need use mutex for protect audioChunkCache.
  */
 static Mutex mutex_sound;
 
-SoundGlobalInit::SoundGlobalInit() {
 
-    _resourceToWav["IDR_WAV_MM0"] = "MM0.WAV";
-    _resourceToWav["IDR_WAV_MM1"] = "MM1.WAV";
-    _resourceToWav["IDR_WAV_MM2"] = "MM2.WAV";
-    _resourceToWav["IDR_WAV_MM3"] = "MM3.WAV";
-    _resourceToWav["IDR_WAV_MM4"] = "MM4.WAV";
-    _resourceToWav["IDR_WAV_MM5"] = "MM5.WAV";
-    _resourceToWav["IDR_WAV_MM6"] = "MM6.WAV";
-    _resourceToWav["IDR_WAV_DRIP"] = "LKbeep-drip.WAV";
-    _resourceToWav["IDR_WAV_CLICK"] = "LK_SHORTERCLICKM.WAV";
-    _resourceToWav["IDR_WAV_HIGHCLICK"] = "LK_CLICKH.WAV";
-    _resourceToWav["IDR_WAV_TONE1"] = "LK_T1.WAV";
-    _resourceToWav["IDR_WAV_TONE2"] = "LK_T2.WAV";
-    _resourceToWav["IDR_WAV_TONE3"] = "LK_T3.WAV";
-    _resourceToWav["IDR_WAV_TONE4"] = "LK_T4.WAV";
-    _resourceToWav["IDR_WAV_TONE7"] = "LK_T8.WAV";
-    _resourceToWav["IDR_WAV_BTONE2"] = "LK_B2b.WAV";
-    _resourceToWav["IDR_WAV_BTONE4"] = "LK_B4.WAV";
-    _resourceToWav["IDR_WAV_BTONE5"] = "LK_B5.WAV";
-    _resourceToWav["IDR_WAV_BTONE6"] = "LK_B5b.WAV";
-    _resourceToWav["IDR_WAV_BTONE7"] = "LK_B8.WAV";
-    _resourceToWav["IDR_WAV_OVERTONE0"] = "LK_S0.WAV";
-    _resourceToWav["IDR_WAV_OVERTONE1"] = "LK_S1.WAV";
-    _resourceToWav["IDR_WAV_OVERTONE2"] = "LK_S2.WAV";
-    _resourceToWav["IDR_WAV_OVERTONE3"] = "LK_S3.WAV";
-    _resourceToWav["IDR_WAV_OVERTONE4"] = "LK_S4.WAV";
-    _resourceToWav["IDR_WAV_OVERTONE5"] = "LK_S5.WAV";
-    _resourceToWav["IDR_WAV_OVERTONE6"] = "LK_S6.WAV";
-    _resourceToWav["IDR_WAV_OVERTONE7"] = "LK_S6b.WAV";
+static const struct {
+    const TCHAR* szName;
+    const TCHAR* szFile;
+} _resourceToWav[] = {
+        { _T("IDR_WAV_MM0"), _T("MM0.WAV") },
+        { _T("IDR_WAV_MM1"), _T("MM1.WAV") },
+        { _T("IDR_WAV_MM2"), _T("MM2.WAV") },
+        { _T("IDR_WAV_MM3"), _T("MM3.WAV") },
+        { _T("IDR_WAV_MM4"), _T("MM4.WAV") },
+        { _T("IDR_WAV_MM5"), _T("MM5.WAV") },
+        { _T("IDR_WAV_MM6"), _T("MM6.WAV") },
+        { _T("IDR_WAV_DRIP"), _T("LKbeep-drip.WAV") },
+        { _T("IDR_WAV_CLICK"), _T("LK_SHORTERCLICKM.WAV") },
+        { _T("IDR_WAV_HIGHCLICK"), _T("LK_CLICKH.WAV") },
+        { _T("IDR_WAV_TONE1"), _T("LK_T1.WAV") },
+        { _T("IDR_WAV_TONE2"), _T("LK_T2.WAV") },
+        { _T("IDR_WAV_TONE3"), _T("LK_T3.WAV") },
+        { _T("IDR_WAV_TONE4"), _T("LK_T4.WAV") },
+        { _T("IDR_WAV_TONE7"), _T("LK_T8.WAV") },
+        { _T("IDR_WAV_BTONE2"), _T("LK_B2b.WAV") },
+        { _T("IDR_WAV_BTONE4"), _T("LK_B4.WAV") },
+        { _T("IDR_WAV_BTONE5"), _T("LK_B5.WAV") },
+        { _T("IDR_WAV_BTONE6"), _T("LK_B5b.WAV") },
+        { _T("IDR_WAV_BTONE7"), _T("LK_B8.WAV") },
+        { _T("IDR_WAV_OVERTONE0"), _T("LK_S0.WAV") },
+        { _T("IDR_WAV_OVERTONE1"), _T("LK_S1.WAV") },
+        { _T("IDR_WAV_OVERTONE2"), _T("LK_S2.WAV") },
+        { _T("IDR_WAV_OVERTONE3"), _T("LK_S3.WAV") },
+        { _T("IDR_WAV_OVERTONE4"), _T("LK_S4.WAV") },
+        { _T("IDR_WAV_OVERTONE5"), _T("LK_S5.WAV") },
+        { _T("IDR_WAV_OVERTONE6"), _T("LK_S6.WAV") },
+        { _T("IDR_WAV_OVERTONE7"), _T("LK_S6b.WAV") },
+};
 
-    bSoundInit = true;
+static
+const TCHAR* FindWave(const TCHAR* szName) {
+    for (const auto &Resource : _resourceToWav) {
+        if (_tcscmp(Resource.szName, szName) == 0) {
+            return Resource.szFile;
+        }
+    }
+    return nullptr;
 }
+
+SoundGlobalInit::SoundGlobalInit() {
+}
+
   
 SoundGlobalInit::~SoundGlobalInit() {
-    bSoundInit = false;
 }
 
 bool IsSoundInit() {
-    return(bSoundInit);
+    return(true);
 }
 
 bool SetSoundVolume() {
@@ -78,12 +88,6 @@ void LKSound(const TCHAR *lpName) {
 
 void PlayResource (const TCHAR* lpName) {
     LKASSERT(lpName);
-
-    const tstring  szWav = _resourceToWav[lpName];
-    TCHAR* lpWav = new TCHAR[szWav.size()+1];
-    lpWav[szWav.size()]=0;
-    std::copy(szWav.begin(),szWav.end(),lpWav);
-    LKSound(lpWav);
-    delete lpWav;
+    LKSound(FindWave(lpName));
 }
 
