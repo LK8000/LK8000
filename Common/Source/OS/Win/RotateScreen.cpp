@@ -156,6 +156,7 @@ ScopeLockScreen::ScopeLockScreen() :
     if(hwnd) {
         DWORD dwStyle = (DWORD)GetWindowLong(hwnd, GWL_STYLE);
         previous_state = !!(dwStyle&WS_SIZEBOX);
+        SetWindowLong(hwnd, GWL_STYLE, dwStyle&(~WS_SIZEBOX));
     }
 #endif
 }
@@ -166,7 +167,7 @@ ScopeLockScreen::~ScopeLockScreen() {
         HWND hwnd = MainWindow.Handle();
         if(hwnd) {
             DWORD dwStyle = (DWORD)GetWindowLong(hwnd, GWL_STYLE);
-            SetWindowLong(hwnd, GWL_STYLE, dwStyle&WS_SIZEBOX);
+            SetWindowLong(hwnd, GWL_STYLE, dwStyle|WS_SIZEBOX);
         }
     }
 #endif
