@@ -22,7 +22,7 @@
 #define PASSIVE_STATION 0
 
 
-#define DEBUG_OUTPUT        /* switch for debugging output                    */
+//#define DEBUG_OUTPUT        /* switch for debugging output                    */
 //#define RESEND_ON_NAK       /* switch for command retry on transmission fail  */
 //#define RADIO_VOLTAGE       /* read Radio Supply voltage and store it in BATT2 indicator */
 

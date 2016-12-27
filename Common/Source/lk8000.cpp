@@ -49,7 +49,7 @@
 #include "devWesterboer.h"
 #include "devFlyNet.h"
 #include "devKRT2.h"
-#include "devAR6201.h"
+#include "devAR620x.h"
 #include "devLXNano3.h"
 #include "devXCTracer.h"
 #include "devGPSBip.h"
