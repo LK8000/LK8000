@@ -42,6 +42,13 @@ android {
             into "src/main/assets/polars"
             include "*.plr"
         }
+        copy {
+            from "../../Common/Data/Sounds","../../Common/Distribution/LK8000/_System/_Sounds",
+                    "../../Common/Distribution/LK8000/_System/_Sounds/OPTIONALS"
+            into "src/main/assets/sounds"
+            include "*.wav"
+            include "*.WAV"
+        }
     }
     sourceSets {
         main{

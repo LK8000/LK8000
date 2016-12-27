@@ -25,6 +25,7 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Android/TextUtil.cpp
     Common/Source/xcs/Android/EventBridge.cpp
 	Common/Source/xcs/Android/InternalSensors.cpp
+	Common/Source/xcs/Android/SoundUtil.cpp
 
     Common/Source/xcs/Java/String.cxx
     Common/Source/xcs/Java/Global.cxx
@@ -697,6 +698,8 @@ add_library( LK8000 SHARED
     Common/Source/Library/glutess/tess.c
     Common/Source/Library/glutess/tessellate.c
     Common/Source/Library/glutess/tessmono.c
+
+    Common/Source/Sound/Android/Sound.cpp
 
     Common/Source/Resource/resource_data.S
     Common/Source/Resource/resource_bmp.S

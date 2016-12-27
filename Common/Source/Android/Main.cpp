@@ -15,6 +15,7 @@
 #include "Java/File.hxx"
 #include "Android/NativeView.hpp"
 #include "Android/Bitmap.hpp"
+#include "Android/SoundUtil.hpp"
 #include "Android/TextUtil.hpp"
 #include "Android/Context.hpp"
 #include "Android/Environment.hpp"
@@ -89,6 +90,8 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
   event_queue = new EventQueue();
 
+  SoundUtil::Initialise(env);
+
   ScreenInitialized();
 
   return Startup(nullptr);
@@ -126,6 +129,7 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   delete context;
   context = nullptr;
 
+  SoundUtil::Deinitialise(env);
   InternalSensors::Deinitialise(env);
   AndroidBitmap::Deinitialise(env);
   Environment::Deinitialise(env);

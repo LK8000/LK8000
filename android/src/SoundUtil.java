@@ -23,34 +23,34 @@ Copyright_License {
 
 package org.LK8000;
 
-import java.util.HashMap;
+import android.content.res.AssetFileDescriptor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.content.Context;
+import android.util.Log;
 
 public class SoundUtil {
-  private static HashMap<String, Integer> resources = new HashMap();
-
-/*
-  static {
-    resources.put("IDR_FAIL", R.raw.fail);
-    resources.put("IDR_INSERT", R.raw.insert);
-    resources.put("IDR_REMOVE", R.raw.remove);
-    resources.put("IDR_WAV_BEEPBWEEP", R.raw.beep_bweep);
-    resources.put("IDR_WAV_CLEAR", R.raw.beep_clear);
-    resources.put("IDR_WAV_DRIP", R.raw.beep_drip);
-  }
-*/
+    private static final String TAG = "LK8000";
 
   public static boolean play(Context context, String name) {
-    Integer id = resources.get(name);
-    if (id == null)
-      return false;
 
-    MediaPlayer mp = MediaPlayer.create(context, id);
-    if (mp == null)
-      return false;
+    try {
+        MediaPlayer m = new MediaPlayer();
+        Log.d(TAG, "sounds/" + name );
+        AssetFileDescriptor descriptor = context.getAssets().openFd("sounds/" + name );
+        m.setDataSource(descriptor.getFileDescriptor(),descriptor.getStartOffset(), descriptor.getLength());
+        descriptor.close();
 
-    mp.start();
+        m.prepare();
+//        m.setVolume(1f, 1f);  // To be moved into setVolume ?
+        m.setLooping(false);
+        m.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        m.start();
+
+    } catch (Exception e) {
+        return false;
+    }
+
     return true;
   }
 }

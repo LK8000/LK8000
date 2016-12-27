@@ -28,7 +28,7 @@
 
 
 // Disable internally generated sounds
-#if !defined(WIN32) && !defined(ENABLE_SDL) && !defined(USE_ALSA)
+#if !defined(WIN32) && !defined(ENABLE_SDL) && !defined(USE_ALSA) && !defined(ANDROID)
     // audio is only implemented for WIN32 && SDL Enabled TARGET
     #define DISABLEAUDIO
 #endif
