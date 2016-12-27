@@ -30,35 +30,47 @@ import android.content.Context;
 import android.util.Log;
 
 public class SoundUtil {
+
     private static final String TAG = "LK8000";
 
-  public static boolean play(Context context, String name) {
-
-    try {
-        MediaPlayer m = new MediaPlayer();
-        Log.d(TAG, "sounds/" + name );
-        AssetFileDescriptor descriptor = context.getAssets().openFd("sounds/" + name );
-        m.setDataSource(descriptor.getFileDescriptor(),descriptor.getStartOffset(), descriptor.getLength());
-        descriptor.close();
-
-        m.prepare();
-//        m.setVolume(1f, 1f);  // To be moved into setVolume ?
-        m.setLooping(false);
-        m.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        m.start();
-
-        while (m.isPlaying()) {
-            Thread.sleep(10);
+    private static  class playSoundThread implements Runnable {
+        Context _context;
+        String _name;
+        public playSoundThread(Context context, String name) {
+            _context = context;
+            _name = name;
         }
-        Thread.sleep(10);
-        m.release();
-        m = null;
 
-    } catch (Exception e) {
-        Log.e(TAG, e.toString());
-        return false;
+        public void run() {
+            try {
+                MediaPlayer m = new MediaPlayer();
+                AssetFileDescriptor descriptor = _context.getAssets().openFd("sounds/" + _name );
+                m.setDataSource(descriptor.getFileDescriptor(),descriptor.getStartOffset(), descriptor.getLength());
+                descriptor.close();
+
+                m.prepare();
+                m.setLooping(false);
+                m.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                m.start();
+
+                while (m.isPlaying()) {
+                    Thread.sleep(10);
+                }
+                Thread.sleep(10);
+                m.release();
+                m = null;
+
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
+                return ;
+            }
+        }
     }
 
+
+  public static boolean play(Context context, String name) {
+    Runnable r = new playSoundThread(context,name);
+    new Thread(r).start();
     return true;
   }
 }
