@@ -30,7 +30,7 @@ static const struct {
         { _T("IDR_WAV_MM4"), _T("MM4.WAV") },
         { _T("IDR_WAV_MM5"), _T("MM5.WAV") },
         { _T("IDR_WAV_MM6"), _T("MM6.WAV") },
-        { _T("IDR_WAV_DRIP"), _T("LKbeep-drip.WAV") },
+        { _T("IDR_WAV_DRIP"), _T("LKbeep-drip.wav") },
         { _T("IDR_WAV_CLICK"), _T("LK_SHORTERCLICKM.WAV") },
         { _T("IDR_WAV_HIGHCLICK"), _T("LK_CLICKH.WAV") },
         { _T("IDR_WAV_TONE1"), _T("LK_T1.WAV") },
@@ -38,11 +38,11 @@ static const struct {
         { _T("IDR_WAV_TONE3"), _T("LK_T3.WAV") },
         { _T("IDR_WAV_TONE4"), _T("LK_T4.WAV") },
         { _T("IDR_WAV_TONE7"), _T("LK_T8.WAV") },
-        { _T("IDR_WAV_BTONE2"), _T("LK_B2b.WAV") },
-        { _T("IDR_WAV_BTONE4"), _T("LK_B4.WAV") },
-        { _T("IDR_WAV_BTONE5"), _T("LK_B5.WAV") },
-        { _T("IDR_WAV_BTONE6"), _T("LK_B5b.WAV") },
-        { _T("IDR_WAV_BTONE7"), _T("LK_B8.WAV") },
+        { _T("IDR_WAV_BTONE2"), _T("LK_B2b.wav") },
+        { _T("IDR_WAV_BTONE4"), _T("LK_B4.wav") },
+        { _T("IDR_WAV_BTONE5"), _T("LK_B5.wav") },
+        { _T("IDR_WAV_BTONE6"), _T("LK_B5b.wav") },
+        { _T("IDR_WAV_BTONE7"), _T("LK_B8.wav") },
         { _T("IDR_WAV_OVERTONE0"), _T("LK_S0.WAV") },
         { _T("IDR_WAV_OVERTONE1"), _T("LK_S1.WAV") },
         { _T("IDR_WAV_OVERTONE2"), _T("LK_S2.WAV") },
@@ -82,14 +82,19 @@ bool SetSoundVolume() {
   
 void LKSound(const TCHAR *lpName) {
     ScopeLock Lock(mutex_sound);
-    SoundUtil::Play(Java::GetEnv(), context->Get(), lpName);
+    if(!SoundUtil::Play(Java::GetEnv(), context->Get(), lpName)) {
+        StartupStore(_T("Sound : error playing '%s'" NEWLINE), lpName);
+    }
 }
 
 
 void PlayResource (const TCHAR* lpName) {
     LKASSERT(lpName);
     const TCHAR* szName =  FindWave(lpName);
-    if ( szName != nullptr )
+    if ( szName != nullptr ) {
         LKSound(szName);
+    } else {
+        StartupStore(_T("Sound : Missing resource '%s'" NEWLINE), lpName);
+    }
 }
 
