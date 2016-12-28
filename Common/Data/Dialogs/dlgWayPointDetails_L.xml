@@ -25,16 +25,16 @@
     </WndListFrame>
     <WndFrame Name="frmCommands" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
 
-      <WndButton Name="cmdInserInTask" Caption="dynamic" X="4" Y="2" Width="9999"  Height="44" Font="2" />
-      <WndButton Name="cmdAppendInTask1" Caption="_@M1827_" X="4" Y="-1" Width="9999"  Height="44" Font="2" />
-      <WndButton Name="cmdAppendInTask2" Caption="_@M1828_" X="4" Y="-1" Width="9999"  Height="44" Font="2" />
-      <WndButton Name="cmdRemoveFromTask" Caption="_@M552_" X="4" Y="-1" Width="9999"  Height="44" Font="2" />
-      <WndButton Name="cmdReplace" Caption="dynamic" X="4" Y="-1" Width="9999"  Height="41" Font="2" />
+      <WndButton Name="cmdInserInTask" Caption="dynamic" X="4" Y="2" Width="-1"  Height="44" Font="2" />
+      <WndButton Name="cmdAppendInTask1" Caption="_@M1827_" X="4" Y="-1" Width="-1"  Height="44" Font="2" />
+      <WndButton Name="cmdAppendInTask2" Caption="_@M1828_" X="4" Y="-1" Width="-1"  Height="44" Font="2" />
+      <WndButton Name="cmdRemoveFromTask" Caption="_@M552_" X="4" Y="-1" Width="-1"  Height="44" Font="2" />
+      <WndButton Name="cmdReplace" Caption="dynamic" X="4" Y="-1" Width="-1"  Height="41" Font="2" />
     </WndFrame>
     <WndFrame Name="frmSpecial" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
 
-      <WndButton Name="cmdNewHome"   Caption="_@M605_"  X="4" Y="4" Width="9999"  Height="51" Font="2" />
-      <WndButton Name="cmdTeamCode"  Caption="_@M604_"  X="4" Y="-997" Width="9999"  Height="51" Font="2" />
+      <WndButton Name="cmdNewHome"   Caption="_@M605_"  X="4" Y="4" Width="-1"  Height="51" Font="2" />
+      <WndButton Name="cmdTeamCode"  Caption="_@M604_"  X="4" Y="-997" Width="-1"  Height="51" Font="2" />
 
     </WndFrame>
   </WndForm>
