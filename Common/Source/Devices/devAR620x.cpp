@@ -250,7 +250,7 @@ BOOL AR620xPutVolume(PDeviceDescriptor_t d, int Volume) {
 
 
 BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) {
-
+#ifdef SET_SQUELCH
   uint8_t i, len;
   if(d != NULL)
     if(!d->Disabled)
@@ -273,6 +273,7 @@ BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) {
             RadioPara.Squelch = Squelch;
           
       }
+#endif
   return(TRUE);
 }
 
@@ -395,17 +396,6 @@ BOOL AR620xRadioMode(PDeviceDescriptor_t d, int mode) {
   return(TRUE);
 }
 
-
-BOOL AR620xRequestAllData(PDeviceDescriptor_t d) {
-  TCHAR  szTmp[255];
-
-  LockComm();
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-        d->Com->WriteString(szTmp);
-  UnlockComm();
-  return(TRUE);
 }
 
 
@@ -510,7 +500,7 @@ LKASSERT(d !=NULL);
                 case 0:
                   if(uiVersionCRC!= CRC.intVal16)  {
                   if(CRC.intVal16 !=  CRCBitwise(szCommand, szCommand[2]+3)) {           
-                        StartupStore(_T("AR620x Version CRC check fail"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
+                        StartupStore(_T("AR620x Version CRC check fail! %s") ,NEWLINE);
                    }
                    else    
                    {
@@ -525,7 +515,7 @@ LKASSERT(d !=NULL);
                 case 3:
                   if(uiVolumeCRC != CRC.intVal16){
                   if(CRC.intVal16 !=  CRCBitwise(szCommand, szCommand[2]+3)) {           
-                        StartupStore(_T("AR620x Volume CRC check fail"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
+                        StartupStore(_T("AR620x Volume CRC check fail %s") ,NEWLINE);
                    }
                    else                      
                   {                                       
@@ -541,7 +531,7 @@ LKASSERT(d !=NULL);
                 case 4:
                   if(uiSquelchCRC!= CRC.intVal16){
                   if(CRC.intVal16 !=  CRCBitwise(szCommand, szCommand[2]+3)) {           
-                        StartupStore(_T("AR620x Squelch CRC check fail"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
+                        StartupStore(_T("AR620x Squelch CRC check fail! %s") ,NEWLINE);
                    }
                    else    
                    {
@@ -558,7 +548,7 @@ LKASSERT(d !=NULL);
                     
                   if(uiStatusCRC != CRC.intVal16){
                   if(CRC.intVal16 !=  CRCBitwise(szCommand, szCommand[2]+3)) {           
-                        StartupStore(_T("AR620x Status CRC check fail"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
+                        StartupStore(_T("AR620x Status CRC check fail %s"),NEWLINE);
                    }
                    else   
                    {
@@ -576,7 +566,7 @@ LKASSERT(d !=NULL);
                 case 21:
                     if(uiVoltageCRC != CRC.intVal16) {
                         if(CRC.intVal16 !=  CRCBitwise(szCommand, szCommand[2]+3)) {
-                             StartupStore(_T("AR620x Voltage CRC check fail"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
+                             StartupStore(_T("AR620x Voltage CRC check fail!%s") ,NEWLINE);
                         }
                         else
                         {
@@ -593,7 +583,7 @@ LKASSERT(d !=NULL);
                 case 22:
                     if(uiLastChannelCRC != CRC.intVal16) {
                         if(CRC.intVal16 !=  CRCBitwise(szCommand, szCommand[2]+3)) {           
-                             StartupStore(_T("AR620x Channel CRC check fail"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
+                             StartupStore(_T("AR620x Channel CRC check fail!%s") ,NEWLINE);
                         }
                         else
                         {

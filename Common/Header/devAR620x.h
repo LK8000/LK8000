@@ -11,7 +11,6 @@ int AR620xNMEAddCheckSumStrg( TCHAR szStrg[] );
  BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) ;
  BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) ;
  BOOL AR620xStationSwap(PDeviceDescriptor_t d);
- BOOL AR620xRequestAllData(PDeviceDescriptor_t d) ;
  BOOL AR620xParseString(PDeviceDescriptor_t d, char  *String, int len, NMEA_INFO *info);
  BOOL AR620xInstall(PDeviceDescriptor_t d);
  BOOL AR620xRadioMode(PDeviceDescriptor_t d, int mode);
