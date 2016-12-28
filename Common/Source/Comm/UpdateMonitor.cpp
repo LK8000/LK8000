@@ -27,14 +27,9 @@ void NMEAParser::UpdateMonitor(void)
   short active=-1; // active port number for gps
   static short lastactive=0;
   static bool  lastvalidBaro=false;
-  static bool wasSilent[2]={false,false};
+  static bool wasSilent[array_size(DeviceList)] = { false };
 
-  // TODO: PRINT THIS INFORMATION IN THE IGC LOG FILE, ABSOLUTELY!
-  static double oldoffset=0;
-  if (GPSAltitudeOffset!=oldoffset) {
-     StartupStore(_T(". GPS ALTITUDE OFFSET CHANGED FROM: %f TO: %f%s"),oldoffset,GPSAltitudeOffset,NEWLINE);
-     oldoffset=GPSAltitudeOffset;
-  }
+
      
 
   // find first valid GPS

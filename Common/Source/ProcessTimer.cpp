@@ -121,14 +121,20 @@ void CommonProcessTimer()
 
 // Running at 0.2hz every 5 seconds
 int ConnectionProcessTimer(int itimeout) {
+
+  // TODO: PRINT THIS INFORMATION IN THE IGC LOG FILE, ABSOLUTELY!
+  static double oldoffset=0;
+  if (GPSAltitudeOffset!=oldoffset) {
+    StartupStore(_T(". GPS ALTITUDE OFFSET CHANGED FROM: %f TO: %f%s"),oldoffset,GPSAltitudeOffset,NEWLINE);
+    oldoffset=GPSAltitudeOffset;
+  }
+
   LockComm();
   NMEAParser::UpdateMonitor();
   UnlockComm();
 
 
-
-// TODO : this part should be rewritten
-//      1) do we have valid fix on one device
+//      1) we have valid fix on active device ?
 //      2) what port is alive ?
 //      3) restart only dead port
 
