@@ -25,7 +25,8 @@ double trackbearingminspeed=0; // minimal speed to use gps bearing
 // This is the hearth of LK. Questions? Ask Paolo..
 // THIS IS RUNNING WITH LockComm  from ConnectionProcessTimer .
 //
-void NMEAParser::UpdateMonitor(void) 
+static
+void UpdateMonitor(void)
 {
   short active=-1; // active port number for gps
   static short lastactive=0;
@@ -90,6 +91,7 @@ void NMEAParser::UpdateMonitor(void)
       continue;
     }
 
+    assert(dev.PortNumber < array_size(wasSilent));
     if (!dev.nmeaParser.expire && (LKHearthBeats-dev.HB)>10 ) {
 #ifdef DEBUGNPM
       StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u" NEWLINE), dev.PortNumber, LKHearthBeats, dev.HB);
@@ -103,7 +105,7 @@ void NMEAParser::UpdateMonitor(void)
       // We want to be sure that if this device is silent, and it was providing Baro altitude,
       // now it is set to off.
       if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
-        if ( &dev == pDevPrimaryBaroSource || dev.nmeaParser.RMZAvailable || dev.nmeaParser.TASAvailable ) {
+        if ( &dev == pDevPrimaryBaroSource || dev.nmeaParser.IsValidBaroSource() ) {
           invalidBaro++;
         }
       }
@@ -121,7 +123,7 @@ void NMEAParser::UpdateMonitor(void)
     } else {
       wasSilent[dev.PortNumber]=false;
       // We have hearth beats, is baro available?
-      if ( devIsBaroSource(&dev) || dev.nmeaParser.RMZAvailable || dev.nmeaParser.TASAvailable ) // 100411
+      if ( devIsBaroSource(&dev) || dev.nmeaParser.IsValidBaroSource() ) // 100411
         validBaro++;
     }
   }
@@ -211,10 +213,10 @@ void NMEAParser::UpdateMonitor(void)
   // But RMZ is special, because it can be sent through the multiplexer from a flarm box.
   if (LKHearthBeats > (LastRMZHB+5)) {
     #if DEBUGBARO
-    StartupStore(_T(".... RMZ not updated recently, resetting HB\n"));
+    StartupStore(_T(".... RMZ not updated recently, resetting HB" NEWLINE));
     #endif
     for(auto& dev : DeviceList) {
-      dev.nmeaParser.RMZAvailable = FALSE;
+      dev.nmeaParser.ResetRMZ();
     }
   }
 
@@ -329,7 +331,7 @@ int ConnectionProcessTimer(int itimeout) {
   }
 
   LockComm();
-  NMEAParser::UpdateMonitor();
+  UpdateMonitor();
   UnlockComm();
 
 

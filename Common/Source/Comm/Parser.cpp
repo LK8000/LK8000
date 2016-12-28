@@ -46,7 +46,7 @@ void NMEAParser::_Reset(void) {
   isFlarm = false;
   activeGPS = true;
   GGAAvailable = FALSE;
-  RMZAvailable = FALSE;
+  RMZAvailable = false;
   RMZAltitude = 0;
   RMCAvailable = false;
   TASAvailable = false; // 100411
@@ -550,7 +550,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	RMZAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 	// StartupStore(_T("....... Pressure=%.0f QNH=%.2f Altitude=%.1f\n"),ps,QNH,RMZAltitude);
 
-	RMZAvailable = TRUE;
+	RMZAvailable = true;
 
 	UpdateBaroSource(pGPS, BARO__GM130, NULL,   RMZAltitude);
   }
@@ -565,7 +565,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 		#endif
 	}
 
-	RMZAvailable = TRUE;
+	RMZAvailable = true;
 
 	UpdateBaroSource(pGPS, BARO__ROYALTEK3200,  NULL,  RMZAltitude);
 
@@ -944,7 +944,7 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
   RMZAltitude = ParseAltitude(params[0], params[1]);
   RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
-  RMZAvailable = TRUE;
+  RMZAvailable = true;
   LastRMZHB=LKHearthBeats; // this is common to both ports!
 
   // If we have a single RMZ with no gps fix data, we still manage the baro altitude.

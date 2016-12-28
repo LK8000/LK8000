@@ -171,12 +171,20 @@ double TimeModify(const TCHAR* FixTime, NMEA_INFO* info, int& StartDay);
 class NMEAParser {
  public:
   NMEAParser();
-  static void UpdateMonitor(void);
   static BOOL devParseStream(int portnum,
 			      char *String,int len, NMEA_INFO *GPS_INFO);
   void _Reset(void);
 
   BOOL ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO);
+
+
+  bool IsValidBaroSource() {
+      return ( RMZAvailable || TASAvailable);
+  }
+
+  void ResetRMZ() {
+      RMZAvailable = false;
+  }
 
 #ifdef UNDER_CE
   static BOOL ParseGPS_POSITION(int portnum,
@@ -207,7 +215,7 @@ class NMEAParser {
 
  private:
   BOOL GGAAvailable;
-  BOOL RMZAvailable;
+  bool RMZAvailable;
   bool RMCAvailable;
   bool TASAvailable;
   double RMZAltitude;
