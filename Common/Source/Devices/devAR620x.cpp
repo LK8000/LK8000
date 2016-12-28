@@ -81,22 +81,23 @@ uint8_t uiFrac = ((int)(fFreq*1000.0+0.5)) - (((int)(fFreq *10.0))*100);
     
 switch(uiFrac )
 {
-    case 0:  uFreIdx += 0;  break;
-    case 5:  uFreIdx += 1;  break;
-    case 10: uFreIdx += 2;  break;
-    case 15: uFreIdx += 3;  break;
-    case 25: uFreIdx += 4;  break;
-    case 30: uFreIdx += 5;  break;
-    case 35: uFreIdx += 6;  break;
-    case 40: uFreIdx += 7;  break;
-    case 50: uFreIdx += 8;  break;
-    case 55: uFreIdx += 9;  break;
-    case 60: uFreIdx += 10; break;
-    case 65: uFreIdx += 11; break;
-    case 75: uFreIdx += 12; break;
-    case 80: uFreIdx += 13; break;
-    case 85: uFreIdx += 14; break;
-    case 90: uFreIdx += 15; break;   
+    case 0:   uFreIdx += 0;  break;
+    case 5:   uFreIdx += 1;  break;
+    case 10:  uFreIdx += 2;  break;
+    case 15:  uFreIdx += 3;  break;
+    case 25:  uFreIdx += 4;  break;
+    case 30:  uFreIdx += 5;  break;
+    case 35:  uFreIdx += 6;  break;
+    case 40:  uFreIdx += 7;  break;
+    case 50:  uFreIdx += 8;  break;
+    case 55:  uFreIdx += 9;  break;
+    case 60:  uFreIdx += 10; break;
+    case 65:  uFreIdx += 11; break;
+    case 75:  uFreIdx += 12; break;
+    case 80:  uFreIdx += 13; break;
+    case 85:  uFreIdx += 14; break;
+    case 90:  uFreIdx += 15; break;
+    case 100: uFreIdx += 0;  break;
     default:   StartupStore(_T("undefined Frequency!  %u -> %u %s"),uiFrac, uFreIdx,NEWLINE);     break;
 }
  
@@ -250,6 +251,7 @@ BOOL AR620xPutVolume(PDeviceDescriptor_t d, int Volume) {
 
 
 BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) {
+//#define	SET_SQUELCH
 #ifdef SET_SQUELCH
   uint8_t i, len;
   if(d != NULL)
@@ -396,7 +398,7 @@ BOOL AR620xRadioMode(PDeviceDescriptor_t d, int mode) {
   return(TRUE);
 }
 
-}
+
 
 
 BOOL AR620xParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
