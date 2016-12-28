@@ -21,7 +21,7 @@
 
 
 
-const AirSpaceSonarLevelStruct sSonarLevel[10] = {
+const AirSpaceSonarLevelStruct sSonarLevel[] = {
     /* horizontal sonar levels */
     /* Dist , Delay *0.5s, V/H,      soundfile */
     {  150,     3,         true, TEXT("LK_SONAR_H1.WAV")},
@@ -171,15 +171,18 @@ void DoSonar(void) {
 	
 	if(NAVWarning) return;
 
-  CAirspace *aspfound = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
-
-  if( aspfound == NULL ) {
-	#if DEBUG_SONAR
-	StartupStore(_T("SONAR: no aspfound, return\n"));
-	#endif
-	return;
+  CAirspaceBase near_airspace;
+  {
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+    CAirspace *found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
+    if (found == nullptr) {
+#if DEBUG_SONAR
+      StartupStore(_T("SONAR: no aspfound, return\n"));
+#endif
+      return;
+    }
+    near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
   }
-  CAirspaceBase near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(aspfound);
 
   // we dont use these at all
   bool bAS_Inside;
@@ -191,8 +194,8 @@ void DoSonar(void) {
 	int iSonarLevel=0;
 	if(ISCAR||ISGAAIRCRAFT||SIMMODE||FreeFlying)
 	{
-		const CAirspaceBase* pAs = &near_airspace;
-		iSonarLevel = CalcSonarDelay( 1, &pAs, AltitudeAGL, NavAltitude);
+		const CAirspaceBase* pAs[1] = { &near_airspace };
+		iSonarLevel = CalcSonarDelay( 1, pAs, AltitudeAGL, NavAltitude);
 
 		#if DEBUG_SONAR
 		StartupStore(_T(".. iSonarLevel=%d\n"),iSonarLevel);
@@ -204,7 +207,7 @@ void DoSonar(void) {
 			{
 				lSonarCnt = 0;
 				// StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
-				LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
+				LKSound(sSonarLevel[iSonarLevel].szSoundFilename);
 			}
 		}
 	}
