@@ -16,6 +16,11 @@
 #ifndef ENABLE_OPENGL
 extern bool OnFastPanning;
 #endif
+
+#ifdef ANDROID
+#include "Java/Global.hxx"
+#endif
+
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.
 
@@ -140,6 +145,11 @@ public:
 #endif
             CheckAltitudeAlarms(tmpGPS, tmpCALCULATED);
         }
+
+#ifdef ANDROID
+        Java::DetachCurrentThread();
+#endif
+
     }
 private:
     NMEA_INFO tmpGPS;
