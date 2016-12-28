@@ -99,20 +99,29 @@ bool RotateScreen(short angle) {
 ScopeLockScreen::ScopeLockScreen() :
     previous_state(native_view->getRequestedOrientation())
 {
-    const int tmp = native_view->getDisplayOrientation();
-    switch(tmp) {
+    const PixelSize size = native_view->GetSize();
+    const int rotation = native_view->getDisplayOrientation();
+    switch(rotation) {
         default:
-        case 0:
-            native_view->setRequestedOrientation(NativeView::ScreenOrientation::PORTRAIT);
+        case 0: // ROTATION_0
+            native_view->setRequestedOrientation( (size.cx > size.cy)
+                                                  ? NativeView::ScreenOrientation::LANDSCAPE
+                                                  : NativeView::ScreenOrientation::PORTRAIT);
             break;
-        case 1:
-            native_view->setRequestedOrientation(NativeView::ScreenOrientation::LANDSCAPE);
+        case 1: // ROTATION_90
+            native_view->setRequestedOrientation( (size.cx > size.cy)
+                                                  ? NativeView::ScreenOrientation::LANDSCAPE
+                                                  : NativeView::ScreenOrientation::REVERSE_PORTRAIT);
             break;
-        case 2:
-            native_view->setRequestedOrientation(NativeView::ScreenOrientation::REVERSE_PORTRAIT);
+        case 2: // ROTATION_180
+            native_view->setRequestedOrientation( (size.cx > size.cy)
+                                                  ? NativeView::ScreenOrientation::REVERSE_LANDSCAPE
+                                                  : NativeView::ScreenOrientation::REVERSE_PORTRAIT);
             break;
-        case 3:
-            native_view->setRequestedOrientation(NativeView::ScreenOrientation::REVERSE_LANDSCAPE);
+        case 3: // ROTATION_270
+            native_view->setRequestedOrientation( (size.cx > size.cy)
+                                                  ? NativeView::ScreenOrientation::REVERSE_LANDSCAPE
+                                                  : NativeView::ScreenOrientation::PORTRAIT);
             break;
     }
 }
