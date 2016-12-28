@@ -8,15 +8,18 @@
 */
 
 #include "externs.h"
+#include "Sound/Sound.h"
+#include "InputEvents.h"
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 extern unsigned LastRMZHB;	 // common to both devA and devB, updated in Parser
 
 double trackbearingminspeed=0; // minimal speed to use gps bearing
 
-//#define DEBUGBARO	1	// also needed in UpdateBaroSource
+#ifndef NDEBUG
+#define DEBUGBARO	1	// also needed in UpdateBaroSource
 #define DEBUGNPM	1
-
+#endif
 //
 // Run every 5 seconds, approx.
 // This is the hearth of LK. Questions? Ask Paolo..
@@ -124,8 +127,8 @@ void NMEAParser::UpdateMonitor(void)
   }
 
 #ifdef DEBUGNPM
-  if (invalidGps==2) {
-    StartupStore(_T("... GPS no gpsValid available on port 1 and 2, active=%d @%s" NEWLINE),active,WhatTimeIsIt());
+  if (invalidGps==array_size(DeviceList)) {
+    StartupStore(_T("... GPS no gpsValid available on any port, active=%d @%s" NEWLINE),active,WhatTimeIsIt());
   }
   if (invalidBaro>0) {
     StartupStore(_T("... Baro altitude just lost, current status=%d @%s" NEWLINE),GPS_INFO.BaroAltitudeAvailable,WhatTimeIsIt());
@@ -246,8 +249,7 @@ void NMEAParser::UpdateMonitor(void)
     if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude)>100.0) && !CALCULATED_INFO.OnGround ) {
         DoStatusMessage(MsgToken(122)); // Baro not available, Using GPS ALTITUDE
         EnableNavBaroAltitude=false;
-        StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"),
-        GPS_INFO.BaroAltitude, GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);
+        StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"), GPS_INFO.BaroAltitude, GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);
         lastBaroAltitude=-1;
         lastGPSAltitude=-1;
         counterSameBaro=0;
@@ -314,4 +316,141 @@ void NMEAParser::UpdateMonitor(void)
   }
 
   lastactive=active;
+}
+
+// Running at 0.2hz every 5 seconds
+int ConnectionProcessTimer(int itimeout) {
+
+  // TODO: PRINT THIS INFORMATION IN THE IGC LOG FILE, ABSOLUTELY!
+  static double oldoffset=0;
+  if (GPSAltitudeOffset!=oldoffset) {
+    StartupStore(_T(". GPS ALTITUDE OFFSET CHANGED FROM: %f TO: %f%s"),oldoffset,GPSAltitudeOffset,NEWLINE);
+    oldoffset=GPSAltitudeOffset;
+  }
+
+  LockComm();
+  NMEAParser::UpdateMonitor();
+  UnlockComm();
+
+
+//      1) we have valid fix on active device ?
+//      2) what port is alive ?
+//      3) restart only dead port
+
+
+  // dont warn on startup
+  static bool s_firstcom=true;
+
+  static bool s_lastGpsConnect = false;
+  static bool s_connectWait = false;
+  static bool s_lockWait = false;
+
+  // save status for this run
+  bool gpsconnect = GPSCONNECT;
+
+  if (gpsconnect) {
+    extGPSCONNECT = TRUE;
+  }
+
+  if ((extGPSCONNECT == FALSE) && (GPS_INFO.NAVWarning!=true)) {
+    // If gps is not connected, set navwarning to true so
+    // calculations flight timers don't get updated
+    LockFlightData();
+    GPS_INFO.NAVWarning = true;
+    UnlockFlightData();
+  }
+
+  bool DoTriggerUpdate = false;
+
+  GPSCONNECT = FALSE;
+  bool navwarning = GPS_INFO.NAVWarning;
+
+  if((gpsconnect == false) && (s_lastGpsConnect == false)) {
+    // re-draw screen every five seconds even if no GPS
+    DoTriggerUpdate = true;
+
+    devLinkTimeout(devAll());
+
+    if(s_lockWait == true) {
+      // gps was waiting for fix, now waiting for connection
+      s_lockWait = false;
+    }
+    if(!s_connectWait) {
+      // gps is waiting for connection first time
+      extGPSCONNECT = FALSE;
+
+      s_connectWait = true;
+
+      if (!s_firstcom) LKSound(TEXT("LK_GPSNOCOM.WAV"));
+      FullScreen();
+    } else {
+      // restart comm ports on timeouts, but not during managed special communications with devices
+      // that will not provide NMEA stream, for example during a binary conversation for task declaration
+      // or during a restart. Very careful, it shall be set to zero by the same function who
+      // set it to true.
+      // V6: do not reset comports while inside configuration
+      if ((itimeout % 90 == 0) && !LKDoNotResetComms && !MenuActive) {
+        // no activity for 90/2 seconds (running at 2Hz), then reset.
+        // This is needed only for virtual com ports..
+        if (!(devIsDisabled(0) && devIsDisabled(1))) {
+
+          if(devA()->nmeaParser.expire) {
+            extGPSCONNECT = FALSE;
+            // if device A never expire, don't restart CommPort
+            StartupStore(_T(". ComPort RESET ordered" NEWLINE));
+            if (MapSpaceMode != MSM_WELCOME) {
+              InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+            }
+            RestartCommPorts();
+          }
+        }
+
+        itimeout = 0;
+      }
+    }
+  }
+
+  // Force RESET of comm ports on demand
+  if (LKForceComPortReset) {
+    StartupStore(_T(". ComPort RESET ordered" NEWLINE));
+    LKForceComPortReset=false;
+    LKDoNotResetComms=false;
+    if (MapSpaceMode != MSM_WELCOME) {
+      InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+    }
+
+    RestartCommPorts();
+  }
+
+  if((gpsconnect == true) && (s_lastGpsConnect == false)) {
+    itimeout = 0; // reset timeout
+    s_firstcom=false;
+
+    if(s_connectWait) {
+      DoTriggerUpdate = true;
+      s_connectWait = false;
+    }
+  }
+
+  if((gpsconnect == true) && (s_lastGpsConnect == true)) {
+    if((navwarning == true) && (s_lockWait == false)) {
+      DoTriggerUpdate = true;
+
+      s_lockWait = true;
+      LKSound(TEXT("LK_GPSNOFIX.WAV"));
+      FullScreen();
+    } else {
+      if((navwarning == false) && (s_lockWait == true)) {
+        DoTriggerUpdate = true;
+        s_lockWait = false;
+      }
+    }
+  }
+
+  if(DoTriggerUpdate) {
+    TriggerGPSUpdate();
+  }
+
+  s_lastGpsConnect = gpsconnect;
+  return itimeout;
 }
