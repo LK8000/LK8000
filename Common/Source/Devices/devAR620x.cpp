@@ -32,7 +32,7 @@
 #define BIT8            0x100
 #define QUERY           BIT7         
 #define DAUL            BIT8
-
+#define SQUELCH         BIT7
 typedef union
 {
     uint16_t intVal16;
@@ -135,6 +135,7 @@ BOOL AR620xInstall(PDeviceDescriptor_t d){
   d->ParseStream   = AR620xParseString;
   d->RadioMode    = AR620xRadioMode;
   RadioPara.Enabled8_33 = TRUE;
+  sStatus.intVal16 = SQUELCH; // BIT7 for Squelch enabled
   return(TRUE);
 
 }
