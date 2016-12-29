@@ -42,19 +42,22 @@ LKBitmap LoadSplash(const TCHAR *splashfile) {
         if (ScreenLandscape) {
             if (ScreenSizeX > 800) {
                 _stprintf(srcfile, _T("%s" DIRSEP "%s_1920x1080." IMG_EXT), sDir, splashfile);
+#ifdef ANDROID
                 hWelcomeBitmap.LoadAssetsFile(srcfile);
+#else
+                hWelcomeBitmap.LoadFromFile(srcfile);
+#endif
             }
         }else {
             if (ScreenSizeX > 480) {
                 _stprintf(srcfile, _T("%s" DIRSEP "%s_1080x1920." IMG_EXT), sDir, splashfile);
+#ifdef ANDROID
                 hWelcomeBitmap.LoadAssetsFile(srcfile);
+#else
+                hWelcomeBitmap.LoadFromFile(srcfile);
+#endif
             }
         }
-#ifdef ANDROID
-        hWelcomeBitmap.LoadAssetsFile(srcfile);
-#else
-        hWelcomeBitmap.LoadFromFile(srcfile);
-#endif
     }
 
     if (!hWelcomeBitmap.IsDefined()) {
