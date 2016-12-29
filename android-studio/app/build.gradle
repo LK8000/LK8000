@@ -50,6 +50,11 @@ android {
             include "*.wav"
             include "*.WAV"
         }
+        copy {
+            from "../../Common/Data/Fonts"
+            into "src/main/assets/fonts"
+            include "*.ttf"
+        }
     }
     sourceSets {
         main {
