@@ -48,13 +48,19 @@ public class TextUtil {
     if (  monospace )
       tf =   Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansMono.ttf");
     else {
-      if ( style == 0 )
-        tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed.ttf");
-      else if ( style == 1 )
-            tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed-Bold.ttf");
-      else if ( style == 2 )
-          tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed-Oblique.ttf");
+      switch (style) {
+          case 0:
+              tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed.ttf");
+              break;
+          case 1:
+              tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed-Bold.ttf");
+              break;
+          case 2:
+              tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed-Oblique.ttf");
+              break;
+      }
     }
+
 
     paint = new Paint(paint_flags);
     paint.setTypeface(tf);
