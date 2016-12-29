@@ -24,7 +24,7 @@ bool InternalPort::Initialize() {
         internal_sensors->subscribeToSensor(InternalSensors::TYPE_PRESSURE);
         return NullComPort::Initialize();
     }
-    false;
+    return false;
 }
 
 bool InternalPort::Close() {
