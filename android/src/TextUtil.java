@@ -26,12 +26,14 @@ Copyright_License {
 
 package org.LK8000;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.Canvas;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 
 public class TextUtil {
   private Paint paint;
@@ -39,11 +41,20 @@ public class TextUtil {
   private int[] extent = new int[2];
   private int[] id = new int[5];
 
-  public TextUtil(int style, int textSize,
+  public TextUtil(Context context, String facename, int style, int textSize,
                   int paint_flags, boolean monospace) {
-    Typeface tf = monospace
-      ? Typeface.MONOSPACE
-      : Typeface.create((Typeface)null, style);
+
+    Typeface tf = null;
+    if (  monospace )
+      tf =   Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansMono.ttf");
+    else {
+      if ( style == 0 )
+        tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed.ttf");
+      else if ( style == 1 )
+            tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed-Bold.ttf");
+      else if ( style == 2 )
+          tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed-Oblique.ttf");
+    }
 
     paint = new Paint(paint_flags);
     paint.setTypeface(tf);

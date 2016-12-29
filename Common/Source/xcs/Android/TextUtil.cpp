@@ -27,6 +27,8 @@ Copyright_License {
 #include "Java/Exception.hxx"
 #include "Screen/Point.hpp"
 #include "Asset.hpp"
+#include "Android/Context.hpp"
+#include "Android/Main.hpp"
 
 JNIEnv *TextUtil::env;
 static Java::TrivialClass cls;
@@ -42,7 +44,7 @@ TextUtil::Initialise(JNIEnv *_env)
 
   cls.Find(env, "org/LK8000/TextUtil");
 
-  midTextUtil = env->GetMethodID(cls, "<init>", "(IIIZ)V");
+  midTextUtil = env->GetMethodID(cls, "<init>","(Landroid/content/Context;Ljava/lang/String;IIIZ)V");
   midGetFontMetrics = env->GetMethodID(cls, "getFontMetrics", "([I)V");
   midGetTextBounds = env->GetMethodID(cls, "getTextBounds",
                                       "(Ljava/lang/String;)[I");
@@ -95,7 +97,7 @@ TextUtil::create(const char *facename, int height, bool bold, bool italic)
     paint_flags |= 1;
 
   // construct org.xcsoar.TextUtil object
-  localObject = env->NewObject(cls, midTextUtil,
+  localObject = env->NewObject(cls, midTextUtil,context->Get(),paramFamilyName.Get(),
                                paramStyle, paramTextSize,
                                paint_flags, false);
   if (!localObject)
