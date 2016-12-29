@@ -44,6 +44,7 @@ public class TextUtil {
   public TextUtil(Context context, String facename, int style, int textSize,
                   int paint_flags, boolean monospace) {
 
+    textSize = (int) (textSize / 1.16666);
     Typeface tf = null;
     if (  monospace )
       tf =   Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansMono.ttf");
