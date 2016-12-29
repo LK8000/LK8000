@@ -188,18 +188,19 @@ Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj,
     pdev->HB = LKHearthBeats;
     switch (connected) {
       case 0: /* not connected */
+        pdev->nmeaParser.connected = false;
         pdev->nmeaParser.expire = true;
         pdev->nmeaParser.gpsValid = false;
         break;
 
       case 1: /* waiting for fix */
-        GPSCONNECT=TRUE;
+        pdev->nmeaParser.connected = true;
         pdev->nmeaParser.expire = false;
         pdev->nmeaParser.gpsValid = false;
         break;
 
       case 2: /* connected */
-        GPSCONNECT=TRUE;
+        pdev->nmeaParser.connected = true;
         pdev->nmeaParser.expire = false;
         pdev->nmeaParser.gpsValid = true;
         break;
@@ -223,9 +224,9 @@ Java_org_LK8000_InternalGPS_setLocation(JNIEnv *env, jobject obj,
 {
   unsigned index = getDeviceIndex(env, obj);
   LockComm();
-  GPSCONNECT = TRUE;
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
+    pdev->nmeaParser.connected = true;
     pdev->HB = LKHearthBeats;
   }
   if(pdev && pdev->nmeaParser.activeGPS) {
@@ -364,9 +365,9 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
 
   const unsigned int index = getDeviceIndex(env, obj);
   LockComm();
-  GPSCONNECT = TRUE;
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
+    pdev->nmeaParser.connected;
     pdev->HB = LKHearthBeats;
     if(!pdev->IsBaroSource) {
       pdev->IsBaroSource = &IsBaroSource;

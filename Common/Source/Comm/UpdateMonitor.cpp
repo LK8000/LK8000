@@ -26,7 +26,7 @@ double trackbearingminspeed=0; // minimal speed to use gps bearing
 // THIS IS RUNNING WITH LockComm  from ConnectionProcessTimer .
 //
 static
-void UpdateMonitor(void)
+bool  UpdateMonitor(void)
 {
   short active=-1; // active port number for gps
   static short lastactive=0;
@@ -63,10 +63,12 @@ void UpdateMonitor(void)
   for(auto& dev : DeviceList) {
       dev.nmeaParser.activeGPS = (dev.PortNumber == active);
   }
- 
+
+  PDeviceDescriptor_t active_dev = devX(active);
+
   // wait for 10 seconds before monitoring, after startup
   if (LKHearthBeats<20) {
-    return;
+    return active_dev->nmeaParser.connected;
   }
 
   /* check if Flarm disappeared after 30 seconds no activity */
@@ -91,8 +93,8 @@ void UpdateMonitor(void)
       continue;
     }
 
-    assert(dev.PortNumber < array_size(wasSilent));
-    if (!dev.nmeaParser.expire && (LKHearthBeats-dev.HB)>10 ) {
+    assert((unsigned)dev.PortNumber < array_size(wasSilent));
+    if (dev.nmeaParser.expire && (LKHearthBeats-dev.HB)>10 ) {
 #ifdef DEBUGNPM
       StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u" NEWLINE), dev.PortNumber, LKHearthBeats, dev.HB);
 #endif
@@ -111,8 +113,9 @@ void UpdateMonitor(void)
       }
       dev.nmeaParser._Reset();
       dev.nmeaParser.activeGPS=false; // because Reset is setting it to true
+
       // We reset some flags globally only once in case of device gone silent 
-      if (!devIsDisabled(dev.PortNumber) && !wasSilent[dev.PortNumber]) {
+      if (!dev.Disabled && !wasSilent[dev.PortNumber]) {
         GPS_INFO.AirspeedAvailable=false;
         GPS_INFO.VarioAvailable=false;
         GPS_INFO.NettoVarioAvailable=false;
@@ -167,15 +170,10 @@ void UpdateMonitor(void)
     }
   } else {
     if ( lastvalidBaro==false) {
-      #if DEBUGBARO
-      TCHAR devname[50];
-      if (pDevPrimaryBaroSource) {
-        LK_tcsncpy(devname,pDevPrimaryBaroSource->Name,49);
-      } else {
-        _tcscpy(devname,_T("unknown"));
-      }
-      StartupStore(_T("... GPS baro source back available from <%s>%s"),devname,NEWLINE);
-      #endif
+#if DEBUGBARO
+      const TCHAR* devname = (pDevPrimaryBaroSource) ? pDevPrimaryBaroSource->Name : _T("unknown");
+      StartupStore(_T("... GPS baro source back available from <%s>" NEWLINE),devname);
+#endif
 
       if (GotFirstBaroAltitude) {
         if (EnableNavBaroAltitude) {
@@ -211,10 +209,11 @@ void UpdateMonitor(void)
   // there was a real RMZ in the NMEA stream lately.
   // Normally RMZAvailable, RMCAvailable, GGA etc.etc. are reset to false when the com port is silent.
   // But RMZ is special, because it can be sent through the multiplexer from a flarm box.
-  if (LKHearthBeats > (LastRMZHB+5)) {
+  if ((LastRMZHB > 0) && LKHearthBeats > (LastRMZHB+5)) {
     #if DEBUGBARO
     StartupStore(_T(".... RMZ not updated recently, resetting HB" NEWLINE));
     #endif
+    LastRMZHB = 0;
     for(auto& dev : DeviceList) {
       dev.nmeaParser.ResetRMZ();
     }
@@ -275,8 +274,8 @@ void UpdateMonitor(void)
           GotFirstBaroAltitude=false;
           firstrecovery++;
         }
-      }
     }
+  }
 
 
     // Set some fine tuning parameters here, depending on device/situation/mode
@@ -291,33 +290,33 @@ void UpdateMonitor(void)
 
   // Nothing has changed? No need to give new alerts. We might have no active gps at all, also.
   // In this case, active and lastactive are 0, nothing we can do about it.
-  if (active == lastactive) return;
+  if (active != lastactive) {
 
-  if (active!=0)
-    StartupStore(_T(". GPS NMEA source changed to port %d  %s" NEWLINE),active,WhatTimeIsIt());
-  else
-    StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s" NEWLINE),WhatTimeIsIt());
+    if (active!=0)
+      StartupStore(_T(". GPS NMEA source changed to port %d  %s" NEWLINE),active,WhatTimeIsIt());
+    else
+      StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s" NEWLINE),WhatTimeIsIt());
 
 
-  if (PortMonitorMessages<15) { // do not overload pilot with messages!
-    // do not say anything if we never got the first port, on startup essentially
-    PDeviceDescriptor_t active_dev = devX(active);
-            
-    if ( (lastactive!=0) && active_dev &&  active_dev->nmeaParser.gpsValid ) {
-      TCHAR vbuf[100];
-      _stprintf(vbuf,_T("%s %d"), MsgToken(277),active); // FALLBACK USING GPS ON PORT ..
-      DoStatusMessage(vbuf);
-      PortMonitorMessages++;
-    } 
-  } else {
-    if (PortMonitorMessages==15) { 
-      StartupStore(_T("... GOING SILENT on too many Com reportings.  %s" NEWLINE),WhatTimeIsIt());
-      DoStatusMessage(MsgToken(317)); // GOING SILENT ON COM REPORTING
-      PortMonitorMessages++;	// we go to 16, and never be back here
+    if (PortMonitorMessages<15) { // do not overload pilot with messages!
+      // do not say anything if we never got the first port, on startup essentially
+      if ( (lastactive!=0) && active_dev &&  active_dev->nmeaParser.gpsValid ) {
+        TCHAR vbuf[100];
+        _stprintf(vbuf,_T("%s %d"), MsgToken(277),active); // FALLBACK USING GPS ON PORT ..
+        DoStatusMessage(vbuf);
+        PortMonitorMessages++;
+      } 
+    } else {
+      if (PortMonitorMessages==15) { 
+        StartupStore(_T("... GOING SILENT on too many Com reportings.  %s" NEWLINE),WhatTimeIsIt());
+        DoStatusMessage(MsgToken(317)); // GOING SILENT ON COM REPORTING
+        PortMonitorMessages++;	// we go to 16, and never be back here
+      }
     }
-  }
 
-  lastactive=active;
+    lastactive=active;
+  }
+  return active_dev->nmeaParser.connected;      
 }
 
 // Running at 0.2hz every 5 seconds
@@ -331,7 +330,7 @@ int ConnectionProcessTimer(int itimeout) {
   }
 
   LockComm();
-  UpdateMonitor();
+  bool gpsconnect = UpdateMonitor();
   UnlockComm();
 
 
@@ -347,9 +346,6 @@ int ConnectionProcessTimer(int itimeout) {
   static bool s_connectWait = false;
   static bool s_lockWait = false;
 
-  // save status for this run
-  bool gpsconnect = GPSCONNECT;
-
   if (gpsconnect) {
     extGPSCONNECT = TRUE;
   }
@@ -364,7 +360,6 @@ int ConnectionProcessTimer(int itimeout) {
 
   bool DoTriggerUpdate = false;
 
-  GPSCONNECT = FALSE;
   bool navwarning = GPS_INFO.NAVWarning;
 
   if((gpsconnect == false) && (s_lastGpsConnect == false)) {
@@ -383,7 +378,9 @@ int ConnectionProcessTimer(int itimeout) {
 
       s_connectWait = true;
 
-      if (!s_firstcom) LKSound(TEXT("LK_GPSNOCOM.WAV"));
+      if (!s_firstcom) {
+        LKSound(TEXT("LK_GPSNOCOM.WAV"));
+      }
       FullScreen();
     } else {
       // restart comm ports on timeouts, but not during managed special communications with devices
@@ -398,7 +395,6 @@ int ConnectionProcessTimer(int itimeout) {
 
           if(devA()->nmeaParser.expire) {
             extGPSCONNECT = FALSE;
-            // if device A never expire, don't restart CommPort
             StartupStore(_T(". ComPort RESET ordered" NEWLINE));
             if (MapSpaceMode != MSM_WELCOME) {
               InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);

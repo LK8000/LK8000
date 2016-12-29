@@ -55,7 +55,6 @@ void SIMProcessTimer(void)
 
   CommonProcessTimer();
 
-  GPSCONNECT = TRUE;
   extGPSCONNECT = TRUE;
 
   if (!ReplayLogger::Update()) {

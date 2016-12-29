@@ -40,6 +40,7 @@ NMEAParser::NMEAParser() {
 
 void NMEAParser::_Reset(void) {
 
+  connected = false;
   expire = true;
   nSatellites = 0;
   gpsValid = false;
@@ -76,7 +77,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
     if (!gpsValid) {
         return TRUE;
     }
-    GPSCONNECT=TRUE;
+    connected = true;
 
     switch (loc.FixType) {
         case GPS_FIX_UNKNOWN:
@@ -418,7 +419,7 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
   
   gpsValid = !NAVWarn(params[5][0]);
-  GPSCONNECT=TRUE;
+  connected = true;
 
   if (!activeGPS) return TRUE;
 
@@ -540,7 +541,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
   gpsValid = !NAVWarn(params[1][0]);
 
-  GPSCONNECT = TRUE;    
+  connected = true;
   RMCAvailable=true; // 100409
 
   #ifdef PNA
@@ -739,7 +740,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
 
   GGAAvailable = TRUE;
-  GPSCONNECT = TRUE;     // 091208
+  connected = TRUE;     // 091208
 
   // this will force gps invalid but will NOT assume gps valid!
   nSatellites = (int)(min(16.0, StrToDouble(params[6], NULL)));

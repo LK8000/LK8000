@@ -147,12 +147,13 @@ static BOOL XTRC(PDeviceDescriptor_t d, TCHAR *String, TCHAR **params, size_t np
     }
 
     d->nmeaParser.gpsValid = !pGPS->NAVWarning;
+    d->nmeaParser.connected = true;
 
     if(!pGPS->NAVWarning) {
         TriggerGPSUpdate();
     }
     
-    GPSCONNECT = true;
+
 
     return TRUE;
 }

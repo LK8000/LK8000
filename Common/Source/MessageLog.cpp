@@ -128,7 +128,10 @@ void StartupStore(const TCHAR *Str, ...)
 
 #ifdef ANDROID
   __android_log_print(ANDROID_LOG_INFO, "LK8000","%s", buf);
+#elif defined(__linux__) && !defined(NDEBUG)
+  printf("%s", buf);
 #endif
+  
 
   LockStartupStore();
 

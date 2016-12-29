@@ -127,6 +127,10 @@ bool ComPort::StartRxThread() {
 void ComPort::run() {
     StartupStore(_T(". ComPort %u ReadThread : started%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
     RxThread();
+    PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
+    if(d) {
+        d->nmeaParser.connected = false;
+    }
     StartupStore(_T(". ComPort %u ReadThread : terminated%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
 }
 

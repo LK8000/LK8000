@@ -96,7 +96,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   double vtas;
   static int offset=-1;
 
-  GPSCONNECT=true;
+  d->nmeaParser.connected = true;
 
   // firmware 3.31h no offset
   // firmware 3.32  1 offset

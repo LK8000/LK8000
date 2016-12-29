@@ -128,7 +128,6 @@ void Globals_Init(void) {
   TerrainRamp_Config = 0;
 
   NettoSpeed = 1000;
-  GPSCONNECT = FALSE;
 
   time_in_flight=0;
   time_on_ground=20; // on startup we are flying or on ground, we cant be none of them! see TakeoffLanding

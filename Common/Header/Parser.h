@@ -191,6 +191,7 @@ class NMEAParser {
 			      const GPS_POSITION& loc, NMEA_INFO& GPSData);
   BOOL ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData);
 #endif
+  bool connected;
   bool expire; // false for device not sending data when no valid fix [ default is true ]
   bool gpsValid;
   int nSatellites;
