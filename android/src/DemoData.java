@@ -36,12 +36,12 @@ public class DemoData {
         createDirectoryIfAbsent("_Configuration");
         File f = new File(Environment.getExternalStorageDirectory(), "LK8000" + java.io.File.separator + "_Configuration" + java.io.File.separator + "DEFAULT_PROFILE.prf");
         if (!f.exists()) {
-            copyToExternalStorage(context, "DEMO.prf", "LK8000/_Configuration" + java.io.File.separator + "DEFAULT_PROFILE.prf");
-            copyToExternalStorage(context, "DEMO.DEM", "LK8000/_Maps" + java.io.File.separator + "DEMO.DEM");
-            copyToExternalStorage(context, "DEMO.LKM", "LK8000/_Maps" + java.io.File.separator + "DEMO.LKM");
-            copyToExternalStorage(context, "DEMO.cup", "LK8000/_Waypoints" + java.io.File.separator + "DEMO.cup");
-            copyToExternalStorage(context, "WAYNOTES.TXT", "LK8000/_Waypoints" + java.io.File.separator + "WAYNOTES.TXT");
-            copyToExternalStorage(context, "DEMO.txt", "LK8000/_Airspaces" + java.io.File.separator + "DEMO.txt");
+            copyToExternalStorage(context, "DEMO.prf", "LK8000/_Configuration" + java.io.File.separator + "DEFAULT_PROFILE.prf",false);
+            copyToExternalStorage(context, "DEMO.DEM", "LK8000/_Maps" + java.io.File.separator + "DEMO.DEM",false);
+            copyToExternalStorage(context, "DEMO.LKM", "LK8000/_Maps" + java.io.File.separator + "DEMO.LKM",false);
+            copyToExternalStorage(context, "DEMO.cup", "LK8000/_Waypoints" + java.io.File.separator + "DEMO.cup",false);
+            copyToExternalStorage(context, "WAYNOTES.TXT", "LK8000/_Waypoints" + java.io.File.separator + "WAYNOTES.TXT",false);
+            copyToExternalStorage(context, "DEMO.txt", "LK8000/_Airspaces" + java.io.File.separator + "DEMO.txt",false);
         }
     }
 
@@ -53,7 +53,12 @@ public class DemoData {
         }
     }
 
-    public static void copyToExternalStorage(Context context, String inFileName, String outFileName) {
+    public static void copyToExternalStorage(Context context, String inFileName, String outFileName,boolean overWrite) {
+        if ( !overWrite   ) {
+            File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + outFileName);
+            if(file.exists())
+                return;
+        }
         AssetManager assetManager = context.getAssets();
         InputStream in = null;
         OutputStream out = null;
