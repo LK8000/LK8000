@@ -55,6 +55,18 @@ android {
             into "src/main/assets/fonts"
             include "*.ttf"
         }
+        copy {
+            from "../../Common/Distribution/LK8000/_Maps",
+                    "../../Common/Distribution/LK8000/_Waypoints",
+                    "../../Common/Distribution/LK8000/_Airspaces"
+            into "src/main/assets/demodata"
+            include "*.*"
+        }
+        copy {
+            from  "../../Common/Distribution/LK8000/_Configuration"
+            into "src/main/assets/demodata"
+            include "DEMO.prf"
+        }
     }
     sourceSets {
         main {
@@ -127,6 +139,7 @@ android {
             path "../../CMakeLists.txt"
         }
     }
+
 }
 
 dependencies {

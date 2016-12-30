@@ -54,7 +54,6 @@ public class LK8000 extends Activity {
    * package.
    */
   protected static Class serviceClass;
-
   private static NativeView nativeView;
 
   PowerManager.WakeLock wakeLock;
@@ -82,11 +81,12 @@ public class LK8000 extends Activity {
                  "ABI=" + Build.CPU_ABI + "\n" +
                  "PRODUCT=" + Build.PRODUCT + "\n" +
                  "FINGERPRINT=" + Build.FINGERPRINT + "\n" +
-                 "error=" + Loader.error);
+                 "error=" + org.LK8000.Loader.error);
       setContentView(tv);
       return;
     }
 
+    DemoData.copyDemoData(this.getApplication());
     NetUtil.initialise(this);
     InternalGPS.Initialize();
     NonGPSSensors.Initialize();
