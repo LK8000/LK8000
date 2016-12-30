@@ -745,8 +745,8 @@ short dlgStartupShowModal(void) {
 
     WindowControl* wSplash = wf->FindByName(TEXT("frmSplash"));
     if(wSplash) {
-        wSplash->SetWidth(ScreenSizeX);
-        // wSplash->SetHeight(ScreenSizeY);// - IBLSCALE(55));
+        wSplash->SetWidth(wf->GetWidth());
+        wSplash->SetHeight(wf->GetHeight());
     }
 
 

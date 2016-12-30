@@ -91,6 +91,7 @@ dlgProgress::dlgProgress() {
         WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 
         if(wSplash) {
             wSplash->SetWidth(_WndForm->GetWidth());
+            wSplash->SetHeight(_WndForm->GetHeight());
         }
         WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
         if(wText) {
