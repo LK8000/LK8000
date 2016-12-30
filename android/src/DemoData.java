@@ -9,8 +9,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Created by Tony on 30/12/2016.
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   DemoData.java
+ * Copy demo data from assets to external storage
+ * Author: Tonino Tarsi 30/12/2016.
+ *
  */
 
 public class DemoData {
@@ -35,7 +42,6 @@ public class DemoData {
             copyToExternalStorage(context, "DEMO.cup", "LK8000/_Waypoints" + java.io.File.separator + "DEMO.cup");
             copyToExternalStorage(context, "WAYNOTES.TXT", "LK8000/_Waypoints" + java.io.File.separator + "WAYNOTES.TXT");
             copyToExternalStorage(context, "DEMO.txt", "LK8000/_Airspaces" + java.io.File.separator + "DEMO.txt");
-
         }
     }
 
@@ -52,7 +58,7 @@ public class DemoData {
         InputStream in = null;
         OutputStream out = null;
         try {
-            in = assetManager.open("demodata/" + inFileName);   // if files resides inside the "Files" directory itself
+            in = assetManager.open("demodata/" + inFileName);
             out = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/" + outFileName);
             copyFile(in, out);
             in.close();
@@ -62,7 +68,6 @@ public class DemoData {
             out = null;
         } catch (Exception e) {
             e.printStackTrace();
-
         }
     }
 

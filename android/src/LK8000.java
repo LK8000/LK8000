@@ -81,7 +81,7 @@ public class LK8000 extends Activity {
                  "ABI=" + Build.CPU_ABI + "\n" +
                  "PRODUCT=" + Build.PRODUCT + "\n" +
                  "FINGERPRINT=" + Build.FINGERPRINT + "\n" +
-                 "error=" + org.LK8000.Loader.error);
+                 "error=" + Loader.error);
       setContentView(tv);
       return;
     }
