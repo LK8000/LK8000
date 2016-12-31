@@ -86,7 +86,7 @@ public class LK8000 extends Activity {
       return;
     }
 
-    DemoData.copyDemoData(this.getApplication());
+    LKDistribution.copyLKDistribution(this.getApplication(),false);
     NetUtil.initialise(this);
     InternalGPS.Initialize();
     NonGPSSensors.Initialize();

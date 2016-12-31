@@ -56,16 +56,34 @@ android {
             include "*.ttf"
         }
         copy {
-            from "../../Common/Distribution/LK8000/_Maps",
-                    "../../Common/Distribution/LK8000/_Waypoints",
-                    "../../Common/Distribution/LK8000/_Airspaces"
-            into "src/main/assets/demodata"
+            from "../../Common/Distribution/LK8000/_Maps"
+            into "src/main/assets/distribution/maps"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Waypoints"
+                    into "src/main/assets/distribution/waypoints"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Airspaces"
+                    into "src/main/assets/distribution/airspaces"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Tasks"
+            into "src/main/assets/distribution/tasks"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Logger"
+            into "src/main/assets/distribution/logger"
             include "*.*"
         }
         copy {
             from  "../../Common/Distribution/LK8000/_Configuration"
-            into "src/main/assets/demodata"
-            include "DEMO.prf"
+            into "src/main/assets/distribution/configuration"
+            include "DEMO.prf","CAR.prf","TREKKING.prf","NOTEDEMO.TXT","IDFLARM.TXT"
         }
     }
     sourceSets {

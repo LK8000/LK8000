@@ -11,8 +11,8 @@
 .externalNativeBuild
 /app/src/main/assets/language
 /app/src/main/assets/polars
+/app/src/main/assets/distribution
 /app/src/main/assets/sounds
 /app/src/main/assets/fonts
-/app/src/main/assets/demodata
 /app/src/main/assets/DEFAULT_MENU.TXT
 /app/src/main/assets/CREDITS.TXT
