@@ -50,6 +50,7 @@
 #include "devFlyNet.h"
 #include "devKRT2.h"
 #include "devAR620x.h"
+#include "devATR833.h"
 #include "devLXNano3.h"
 #include "devXCTracer.h"
 #include "devGPSBip.h"
@@ -541,6 +542,7 @@ int main(int argc, char *argv[]) {
   PVCOMRegister();
   KRT2Register();
   AR620xRegister();
+  ATR833Register();
 #endif  // RADIO_ACTIVE
 
   // REPETITION REMINDER ..
