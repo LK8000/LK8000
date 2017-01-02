@@ -122,18 +122,28 @@ public:
 
             if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
+            bool need_update = false;
             if (SIMMODE) {
                 if (needcalculationsslow || (ReplayLogger::IsEnabled())) {
                     DoCalculationsSlow(&tmpGPS, &tmpCALCULATED);
                     needcalculationsslow = false;
+                    need_update = true;
                 }
             } else {
                 if (needcalculationsslow) {
                     DoCalculationsSlow(&tmpGPS, &tmpCALCULATED);
                     needcalculationsslow = false;
+                    need_update = true;
                 }
             }
 
+            if(need_update) {
+                // CALCULATED_INFO need to copy back second time if data are updated by DoCalculationsSlow;
+                LockFlightData();
+                memcpy(&CALCULATED_INFO, &tmpCALCULATED, sizeof (DERIVED_INFO));
+                UnlockFlightData();            
+            }            
+            
             if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
             // update live tracker with new values
