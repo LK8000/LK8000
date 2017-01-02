@@ -23,6 +23,12 @@ public:
         const int64_t Y = _lround((_PanLat - lat) * _Zoom);
         const int64_t X = _lround((_PanLon - lon) * fastcosine(lat) * _Zoom);
 
+        assert( static_cast<double>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024) > std::numeric_limits<RasterPoint::scalar_type>::min());
+        assert( static_cast<double>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024) < std::numeric_limits<RasterPoint::scalar_type>::max());
+        
+        assert( static_cast<double>(_Origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024) > std::numeric_limits<RasterPoint::scalar_type>::min());
+        assert( static_cast<double>(_Origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024) < std::numeric_limits<RasterPoint::scalar_type>::max());
+
         return RasterPoint{
             static_cast<RasterPoint::scalar_type>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024),
             static_cast<RasterPoint::scalar_type>(_Origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024)
