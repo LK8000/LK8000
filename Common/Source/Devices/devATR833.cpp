@@ -142,7 +142,10 @@ bool Send_NACK(PDeviceDescriptor_t d, uint8_t Command, int reason)
 
 
 BOOL ATR833PutVolume(PDeviceDescriptor_t d, int Volume) {
-uint8_t Val = (uint8_t) Volume;
+static uint8_t Val=0;
+if(Val == (int8_t)Volume)
+  return false;
+Val = (uint8_t) Volume;
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
@@ -158,7 +161,10 @@ uint8_t Val = (uint8_t) Volume;
 
 
 BOOL ATR833PutSquelch(PDeviceDescriptor_t d, int Squelch) {
-uint8_t Val = (uint8_t) Squelch;
+static uint8_t Val=0;
+if(Val == (int8_t)Squelch)
+  return false;
+Val = (int8_t) Squelch;
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
@@ -173,6 +179,10 @@ uint8_t Val = (uint8_t) Squelch;
 
 
 BOOL ATR833PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
+
+static double oldFreq=0;
+if(oldFreq == Freq) return true;
+oldFreq = Freq;
 uint8_t Arg[2];
 
   if(d != NULL)
@@ -190,6 +200,10 @@ uint8_t Arg[2];
 
 
 BOOL ATR833PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
+static double oldFreq=0;
+if(oldFreq == Freq) return true;
+oldFreq = Freq;
+
 uint8_t Arg[2];
 
 
@@ -223,7 +237,10 @@ BOOL ATR833StationSwap(PDeviceDescriptor_t d) {
 
 
 BOOL ATR833RadioMode(PDeviceDescriptor_t d, int mode) {
-    uint8_t Val = (uint8_t) mode;
+static uint8_t Val=0;
+if(Val == (int8_t)mode)
+  return false;
+Val = (int8_t) mode;
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
@@ -362,6 +379,8 @@ while (cnt < len )
 return true;
 }
 
+extern int SearchStation(double Freq);
+
 
 
 /*****************************************************************************
@@ -382,7 +401,7 @@ uint16_t processed=0;
 LKASSERT(szCommand !=NULL);
 LKASSERT(d !=NULL);
  double fTmp;
-
+int Idx=0;
   switch (szCommand[0])
   {  
       /*****************************************************************************************/
@@ -390,9 +409,13 @@ LKASSERT(d !=NULL);
           RadioPara.Changed = true;     
            fTmp =  RadioPara.PassiveFrequency;
           RadioPara.PassiveFrequency =  RadioPara.ActiveFrequency;          
-          RadioPara.ActiveFrequency = fTmp;           
-          _stprintf(RadioPara.PassiveName,_T("        ")) ;   
-          _stprintf(RadioPara.ActiveName,_T("        ")) ;   
+          RadioPara.ActiveFrequency = fTmp;
+          Idx = SearchStation(RadioPara.ActiveFrequency);
+          if(Idx != 0)
+            _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
+          Idx = SearchStation(RadioPara.PassiveFrequency);
+          if(Idx != 0)
+            _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
          if (iDebugLevel) StartupStore(_T("ATR833 Swap %s"),    NEWLINE);
          processed  = 2;                             
       break;      
@@ -400,9 +423,12 @@ LKASSERT(d !=NULL);
       case 0x12:               // Standby Frequency                      
           RadioPara.PassiveFrequency = (double)szCommand[1] +((double) szCommand[2] * 5.0 / 1000.0);                      
           _stprintf(szTempStr,_T("ATR833 Passive: %7.3fMHz"),  RadioPara.PassiveFrequency );
-          if (iDebugLevel)  StartupStore(_T(" %s %s"),szTempStr, NEWLINE);                       
-          _stprintf(RadioPara.PassiveName,_T("        ")) ;   
-          RadioPara.Changed = true;     
+          if (iDebugLevel)  StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
+          Idx = SearchStation(RadioPara.PassiveFrequency);
+          if(Idx != 0)
+            _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
+
+          RadioPara.Changed = true;
          processed  = 3;                             
       break;
       /*****************************************************************************************/
@@ -410,8 +436,10 @@ LKASSERT(d !=NULL);
          RadioPara.ActiveFrequency = (double) szCommand[1] +((double) szCommand[2] * 5.0 /1000.0);
          _stprintf(szTempStr,_T("ATR833 Active:  %7.3fMHz"),  RadioPara.ActiveFrequency );
           if (iDebugLevel)StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
-         _stprintf(RadioPara.ActiveName  ,_T("        ")) ;     
-         RadioPara.Changed = true;                     
+          Idx = SearchStation(RadioPara.ActiveFrequency);
+          if(Idx != 0)
+            _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
+         RadioPara.Changed = true;
          processed  = 3;                         
       break;                         
       /*****************************************************************************************/
@@ -443,6 +471,7 @@ LKASSERT(d !=NULL);
        /*****************************************************************************************/        
        case 0x19:               // Dual          
          RadioPara.Dual = szCommand[1] ;
+         RadioPara.Changed = true;
          if (iDebugLevel) StartupStore(_T("ATR833 Dual %i %s"),   RadioPara.Dual, NEWLINE);
          processed  = 2;                   
       break; 
