@@ -53,104 +53,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   else
         fScaleFact /=1600;
 
-  if (DoInit[MDI_MAPWPVECTORS])
-  {
-    //
-    // How long and thick is the runway drawn, and how big is the circle.
-    // No rule possible, it depends on how we are dealing with many other
-    // custom things on screen, because LK is drawing differently depending
-    // on geometry, resolution, orientation. We dont split bits.
-    //
-    switch(ScreenSize)
-    {
-     case ss240x320: rwl = 9.0; rwb = 2.0;cir = 4.0; break; // 43
-     case ss240x400: rwl = 9.0; rwb = 1.0;cir = 4.0; break; // 53
-     case ss272x480: rwl = 9.0; rwb = 2.5;cir = 4.0; break; // 169
-     case ss480x640: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
-     case ss600x800: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
-     case ss480x800: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
-     case sslandscape: rwl = 6.0; rwb = 1.0;cir = 5.0; break; // sslandscape is never assigned!
-     case ss320x240: rwl = 9.0; rwb = 2.0;cir = 4.0; break; // 43
-     case ss400x240: rwl = 9.0; rwb = 1.0;cir = 4.0; break; // 53
-     case ss480x234: rwl = 9.0; rwb = 1.0;cir = 4.0; break; // 21
-     case ss480x272: rwl = 9.0; rwb = 2.5;cir = 4.0; break; // 169
-     case ss640x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
-     case ss800x600: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
-     case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
-     case ssnone:
-
-         #define X ScreenSizeX==
-	 #define Y ScreenSizeY==
-         // Ok this doesnt look nice, but lets remember we are inside a DoInit.
-         // Generally the generic setup is good for everyone, but in case we
-         // can make it custom for any resolution.
-         if (X 1024 && Y 768) {; rwl = 4.5; rwb = 2.5; cir = 5.0; } else
-         if (X 1014 && Y 758) {; rwl = 4.5; rwb = 2.5; cir = 5.0; } else
-         if (X 720 && Y 408) {; rwl = 10.0; rwb = 6.0; cir = 5.0; } else
-         if (X 720 && Y 432) {; rwl = 10.0; rwb = 4.0; cir = 5.0; } else
-
-         // .. and this is the rule of thumb, I could not find a better idea
-         // I think it is easier to redesign the drawing approach and make it
-         // really scalable.
-         //
-         // This hack works for: 800x600 960x540 1280x720 (and relative portrait modes)
-         // These are the screen resolutions used by kobo, samsung s4 mini and s5 mini
-         //
-         if (ScreenLandscape) {
-             if (ScreenSizeX<=480) {
-		 // testlk> Ok: t5     Bad for: -
-                 rwl = 9.0*(480.0/ScreenSizeX); rwb = 2.5*(480.0/ScreenSizeX); cir = 4.0;
-             } else {
-		 // testlk> Ok:  3,13,14,22    Bad: t4, t15, t23
-                 rwl = 6.0; rwb = 2.5; cir = 5.0;
-             }
-         } else {
-             if (ScreenSizeX<480) {
-		 // testlk> Ok: 10,19     Bad for: 20
-                 rwl = 6.0*(480.0/ScreenSizeX); rwb = 2.5*(480.0/ScreenSizeX); cir = 4.0;
-             } else {
-		 // testlk> Ok: 8,28     Bad for: -
-                 rwl = 6.0; rwb = 2.5; cir = 5.0;
-             }
-         }
-         break;
-    }
-
-    //
-    // These are the (absolute) scale thresholds for painting informations
-    // For example, paint just radio starting from 5.0km (3.6abs) etc.
-    // There is no rule possible, it matters only testing.
-    //
-    switch(ScreenSize)
-    {
-
-	case ss480x272:
-		scale_drawradio=2.6;
-		scale_bigfont=1.1;
-		scale_fullinfos=0.8;
-		break;
-	case ss800x480:
-		scale_drawradio=2.6;
-		scale_bigfont=1.5;
-		scale_fullinfos=1.5;
-		break;
-	case ss640x480:
-		scale_drawradio=3.6;
-		scale_bigfont=1.5;
-		scale_fullinfos=1.5;
-		break;
-
-	default:
-
-                scale_drawradio=3.6;
-                scale_bigfont=1.5;
-                scale_fullinfos=1.5;
-                break;
-    }
-
-
-    DoInit[MDI_MAPWPVECTORS]=false;
-  }
+  rwl = 4.0; rwb = 2;cir = 3.5;  // Same size on all resoltion // Tony 2017.
 
   if( wp->RunwayLen > 100) /* square if no runway defined */
   {
@@ -171,8 +74,8 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     b = l ;
   }
 
-  l = (int)(l * fScaleFact); if(l==0) l=1;
-  b = (int)(b * fScaleFact); if(b==0) b=1;
+  l = (int)(2 * l * fScaleFact / ScreenScale ); if(l==0) l=1;
+  b = (int)(2 * b * fScaleFact / ScreenScale ); if(b==0) b=1;
   p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
 
   switch(wp->Style) {
