@@ -54,7 +54,6 @@ public class LK8000 extends Activity {
    * package.
    */
   protected static Class serviceClass;
-
   private static NativeView nativeView;
 
   PowerManager.WakeLock wakeLock;
@@ -87,6 +86,7 @@ public class LK8000 extends Activity {
       return;
     }
 
+    LKDistribution.copyLKDistribution(this.getApplication(),false);
     NetUtil.initialise(this);
     InternalGPS.Initialize();
     NonGPSSensors.Initialize();
