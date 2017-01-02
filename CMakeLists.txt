@@ -15,9 +15,10 @@ include_directories(
     Common/Source/xcs
     ./
     ${BOOST_ROOT}
+    /home/bruno/x-tools/glm
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -fexceptions -frtti -Wall -DBOOST_NO_IOSTREAM -DBOOST_NO_IOSFWD -DBOOST_NO_STRINGSTREAM -DBOOST_NO_WSTREAMBUF -D__linux__ -DHAVE_POSIX -D__STDC_FORMAT_MACROS -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DPOCO_NO_UNWINDOWS -DANDROID -DPOCO_ANDROID " )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -fexceptions -frtti -Wall -DBOOST_NO_IOSTREAM -DBOOST_NO_IOSFWD -DBOOST_NO_STRINGSTREAM -DBOOST_NO_WSTREAMBUF -D__linux__ -DHAVE_POSIX -D__STDC_FORMAT_MACROS -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DENABLE_OPENGL -DHAVE_GLES -DHAVE_GLES2 -DUSE_GLSL -DGL_GLEXT_PROTOTYPES -DPOCO_NO_UNWINDOWS -DANDROID -DPOCO_ANDROID " )
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu89 ")
 
 add_library( LK8000 SHARED
@@ -98,6 +99,7 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Screen/OpenGL/Shapes.cpp
     Common/Source/xcs/Screen/OpenGL/Surface.cpp
     Common/Source/xcs/Screen/OpenGL/Triangulate.cpp
+    Common/Source/xcs/Screen/OpenGL/Shaders.cpp
 
     Common/Source/xcs/Util/tstring.cpp
     Common/Source/xcs/Util/ConvertString.cpp
@@ -717,7 +719,7 @@ add_library( LK8000 SHARED
 
 find_library( log-lib log )
 find_library( android-lib android )
-find_library( gles-lib GLESv1_CM )
+find_library( gles-lib GLESv2 )
 
 target_link_libraries(
     LK8000
