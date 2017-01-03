@@ -17,8 +17,8 @@ extern unsigned LastRMZHB;	 // common to both devA and devB, updated in Parser
 double trackbearingminspeed=0; // minimal speed to use gps bearing
 
 #ifndef NDEBUG
-#define DEBUGBARO	1	// also needed in UpdateBaroSource
-#define DEBUGNPM	1
+//#define DEBUGBARO	1	// also needed in UpdateBaroSource
+//#define DEBUGNPM	1
 #endif
 //
 // Run every 5 seconds, approx.
@@ -94,7 +94,7 @@ bool  UpdateMonitor(void)
     }
 
     assert((unsigned)dev.PortNumber < array_size(wasSilent));
-    if (dev.nmeaParser.expire && (LKHearthBeats-dev.HB)>10 ) {
+    if ((LKHearthBeats-dev.HB)>10 ) {
 #ifdef DEBUGNPM
       StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u" NEWLINE), dev.PortNumber, LKHearthBeats, dev.HB);
 #endif
@@ -111,8 +111,19 @@ bool  UpdateMonitor(void)
           invalidBaro++;
         }
       }
+
+      bool dev_active = dev.nmeaParser.activeGPS;
+      bool dev_expire = dev.nmeaParser.expire;
       dev.nmeaParser._Reset();
-      dev.nmeaParser.activeGPS=false; // because Reset is setting it to true
+      dev.nmeaParser.expire = dev_expire; // restore expire status (Reset is setting it to true)
+
+      if(!dev.nmeaParser.expire) {
+        // if device never expire, is still connected & don't change activeGPS status.
+        dev.nmeaParser.connected = true;
+        dev.nmeaParser.activeGPS = dev_active;
+      } else {
+        dev.nmeaParser.activeGPS=false; // because Reset is setting it to true
+      }
 
       // We reset some flags globally only once in case of device gone silent 
       if (!dev.Disabled && !wasSilent[dev.PortNumber]) {
