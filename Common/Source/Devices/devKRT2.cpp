@@ -35,7 +35,7 @@
 int KRT2_Convert_Answer(DeviceDescriptor_t *d, char *szCommand, int len);
 
 
-
+int uiDebugLevel = 1;
 
 BOOL KRT2Install(PDeviceDescriptor_t d){
 
@@ -319,44 +319,68 @@ BOOL KRT2RequestAllData(PDeviceDescriptor_t d) {
 BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
 //(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info)
 {
-int i;
-int tmp =0;
-int processed =0;
-static int Recbuflen =0;
-
 if(d == NULL) return 0;
 if(String == NULL) return 0;
 if(len == 0) return 0;
 
-#define REC_BUFSIZE 180
- RadioPara.Changed = false;
- static char  converted[REC_BUFSIZE];
- for (i=0; i < len; i++)
- {
-    LKASSERT(Recbuflen < REC_BUFSIZE);
-     converted[Recbuflen++] =  String[i];
-     converted[Recbuflen] =0;
- }
-processed = KRT2_Convert_Answer(d, converted , Recbuflen);
+#define REC_BUFSIZE 128
+int cnt=0;
+static uint16_t Recbuflen =0;
+static uint16_t CommandLength=REC_BUFSIZE;
+static char Command[REC_BUFSIZE];
 
-if(processed >0)
+while (cnt < len)
 {
-  RadioPara.Changed = true;
 
-  tmp  = Recbuflen-processed;
-  LKASSERT(tmp< REC_BUFSIZE);
-  LKASSERT(tmp>= 0);
-  for (i=0; i < tmp; i++)
-     converted[i] =   converted[processed+i];
-  Recbuflen = tmp;
+  if(String[cnt] ==STX)
+    Recbuflen =0;
+
+  if(Recbuflen >= REC_BUFSIZE)
+     Recbuflen =0;
+  LKASSERT(Recbuflen < REC_BUFSIZE);
+
+  if(uiDebugLevel ==2) StartupStore(_T(". KRT2   Raw Input: Recbuflen:%u  0x%02X %c %s"),  Recbuflen,(uint8_t)String[cnt] ,String[cnt] ,NEWLINE);
+  Command[Recbuflen++] =(char) String[cnt++];
+  if(Recbuflen == 1)
+  {
+    switch (Command[0])
+    {
+      case 'S': CommandLength = 1; break;
+	  case ACK: CommandLength = 1; break;
+	  case NAK: CommandLength = 1; break;
+	  default: break;
+    }
+  }
+
+  if(Recbuflen == 2)
+  {
+	  switch(Command[1])
+	  {
+		case 'U': CommandLength = 13; break;
+		case 'R': CommandLength = 13; break;
+		case 'A': CommandLength = 6;  break;
+	    case 'C': CommandLength = 2;  break;
+		case 'O': CommandLength = 2;  break;
+		case 'o': CommandLength = 2;  break;
+		default : CommandLength = 2;  break;
+	  }
+  }
+
+     if(Recbuflen == (CommandLength) ) // all received
+     {
+       if(uiDebugLevel ==2)	 StartupStore(_T("================ %s") ,NEWLINE);
+       if(uiDebugLevel ==2) for(int i=0; i < (CommandLength);i++)   StartupStore(_T(". KRT2   Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
+       if(uiDebugLevel ==2)  StartupStore(_T(". KRT2  Process Command %u  %s") ,CommandLength ,NEWLINE);
+       KRT2_Convert_Answer(d, Command, CommandLength);
+       RadioPara.Changed = true;
+       Recbuflen = 0;
+       CommandLength = REC_BUFSIZE;
+     }
+
+
+
 }
-
-  //    StartupStore(_T(". KRT2 %s %s"), String, NEWLINE);
-
-
 return  RadioPara.Changed;
-
-
 }
 
 
@@ -382,7 +406,7 @@ double  fTmp  =0.0;
 int processed=0;
 static int iDetected = 0;
 static bool bFound = false;
-static int iInvalidCount =0;
+
 
 
 int i;
@@ -430,7 +454,7 @@ LKASSERT(d !=NULL);
 //        SendDataBufferISR(lastComPort, szLastCommandSend, strlen(szLastCommandSend));
       }
 #else
-      _stprintf(szTempStr,_T("$PVCOM,A,ERR,FAILED"));
+      _stprintf(szTempStr,_T(". KRT2 no acknolage!"));
 #endif
       processed++;
     }
@@ -441,7 +465,6 @@ LKASSERT(d !=NULL);
       if(len > 1)
       {
       processed++;
-      iInvalidCount =0;
       switch (szCommand[1])
       {
 
@@ -532,8 +555,10 @@ LKASSERT(d !=NULL);
              }
           break;
           case '8':  _stprintf(szTempStr,_T("STA,8_33KHZ"));
+            RadioPara.Enabled8_33 = true;
           break;
           case '6':  _stprintf(szTempStr,_T("STA,25KHZ"));
+            RadioPara.Enabled8_33 = false;
           break;
           case '1': _stprintf(szTempStr,_T("SIDETONE"));
           break;
@@ -547,23 +572,33 @@ LKASSERT(d !=NULL);
           /**********************************************************************************/
 
           case 'B':  _stprintf(szTempStr,_T("BAT_LOW"));
+            RadioPara.lowBAT = true;
           break;
-          case 'D':  _stprintf(szTempStr,_T("STA,BAT_OK"));
+          case 'D':  _stprintf(szTempStr,_T("BAT_OK"));
+            RadioPara.lowBAT = false;
           break;
-          case 'J':  _stprintf(szTempStr,_T("STA,RX_ON"));
+          case 'J':  _stprintf(szTempStr,_T("RX_ON"));
+            RadioPara.RX_active = true;
           break;
           case 'V':  _stprintf(szTempStr,_T("RX_OFF"));
+            RadioPara.RX_active = false;
           break;
           case 'K':  _stprintf(szTempStr,_T("TX_ON"));
+            RadioPara.TX= true;
           break;
           case 'L': _stprintf(szTempStr,_T("TE_ON"));
           break;
 
           case 'Y': _stprintf(szTempStr,_T("RX_TX_OFF"));
+            RadioPara.TX= false;
+            RadioPara.RX_active = false;
+            RadioPara.RX_standy = false;
           break;
           case 'M':  _stprintf(szTempStr,_T("RX_AF"));
+            RadioPara.RX_active = true;
           break;
           case 'm': _stprintf(szTempStr,_T("RX_SF"));
+            RadioPara.RX_standy = true;
           break;
           case 'E': _stprintf(szTempStr,_T("STX_E"));
           break;
@@ -595,27 +630,8 @@ LKASSERT(d !=NULL);
           break;
       }
       }
-      else
-      {             /* try up to 30 times this is getting a valid command */
+    }
 
- // processed=0;
-        if( iInvalidCount++ < 30)
-          processed=0;
-        else        /* no! remove the  fragment in the  message queue */
-        {
-          #ifdef  DEBUG_OUTPUT
-              _stprintf(szTempStr,_T("ERR, PIPE CLEARED 0x%2X%2X "),(int)szCommand[0], (int)szCommand[1]);
-          #endif
-        }
-      }
-    }
-    else
-    {
-      processed++; // skip invalid char
-      #ifdef  DEBUG_OUTPUT
-         _stprintf(szTempStr,_T("ERR,UNKNOWN CHARACTER 0x%X"),(int)szCommand[0]);
-      #endif
-    }
 
 
 #ifdef TESTBENCH
