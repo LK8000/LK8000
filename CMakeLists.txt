@@ -554,6 +554,7 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devLXNano3.cpp
     Common/Source/Devices/devXCTracer.cpp
     Common/Source/Devices/devGPSBip.cpp
+    Common/Source/Devices/devAR620x.cpp
 
     Common/Source/Dialogs/AddCustomKeyList.cpp
     Common/Source/Dialogs/dlgAirspace.cpp

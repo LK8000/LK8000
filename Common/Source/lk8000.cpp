@@ -49,6 +49,7 @@
 #include "devWesterboer.h"
 #include "devFlyNet.h"
 #include "devKRT2.h"
+#include "devAR620x.h"
 #include "devLXNano3.h"
 #include "devXCTracer.h"
 #include "devGPSBip.h"
@@ -507,6 +508,7 @@ bool Startup(const TCHAR* szCmdLine) {
 #ifdef RADIO_ACTIVE
   PVCOMRegister();
   KRT2Register();
+  AR620xRegister();
 #endif  // RADIO_ACTIVE
 
   // REPETITION REMINDER ..
