@@ -94,7 +94,7 @@ inline
 short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longitude) const {
     assert(Interpolate);
 
-    unsigned int lx = (Longitude * fXroundingFine) - xlleft;
+    unsigned int lx = (int)(Longitude * fXroundingFine) - xlleft;
     unsigned int ly = xlltop - (int) (Latitude * fYroundingFine);
 
     const unsigned ix = CombinedDivAndMod(lx);
