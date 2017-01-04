@@ -1057,6 +1057,8 @@ DEVS	:=\
 	$(DEV)/devXCTracer.cpp \
 	$(DEV)/devGPSBip.cpp \
 	$(DEV)/devAR620x.cpp \
+	$(DEV)/devATR833.cpp \
+
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
