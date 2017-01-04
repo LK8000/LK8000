@@ -77,7 +77,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
      case ss640x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
      case ss800x600: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
      case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
-     case ssnone:
+     case ssnone:    rwl = 6.0; rwb =   2;cir = 4.5; break;
 
          #define X ScreenSizeX==
 	 #define Y ScreenSizeY==
@@ -157,10 +157,6 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     if (picto)
        l = (int) (rwl);
     else {
-       // We cant rescale runways , no method found.
-       if (ScreenSize==ssnone)
-           l = (int) (rwl * (1.0+ (680.0/800.0-1.0)/4.0)); // wtf..!
-       else
            l = (int) (rwl * (1.0+ ((double)wp->RunwayLen/800.0-1.0)/4.0));
     }
 
@@ -171,10 +167,15 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     b = l ;
   }
 
+#ifdef ANDROID
+    l = (int)(l * 2.0 * fScaleFact / ScreenScale ); if(l==0) l=1;
+    b = (int)(b * 2.0 * fScaleFact / ScreenScale ); if(b==0) b=1;
+    p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
+#else
   l = (int)(l * fScaleFact); if(l==0) l=1;
   b = (int)(b * fScaleFact); if(b==0) b=1;
   p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
-
+#endif
   switch(wp->Style) {
 	case STYLE_AIRFIELDSOLID: solid = true;  bRunway  = true;  bOutland = false;  bGlider  = false;	break;
 	case STYLE_AIRFIELDGRASS: solid = false; bRunway  = true;  bOutland = false;  bGlider  = false;	break;
