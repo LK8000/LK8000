@@ -367,7 +367,7 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
   LockComm();
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
-    pdev->nmeaParser.connected;
+    pdev->nmeaParser.connected = true;
     pdev->HB = LKHearthBeats;
     if(!pdev->IsBaroSource) {
       pdev->IsBaroSource = &IsBaroSource;
