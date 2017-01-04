@@ -196,6 +196,7 @@ namespace LKGeom {
         template<typename polygon_in, typename polygon_out>
         void ClipPolygon(const polygon_in& inPoly, polygon_out& outPoly) {
             typedef typename polygon_in::const_iterator const_iterator;
+            typedef typename polygon_out::value_type out_value;
             
             Upoint *pt_Cp_start = &Cp_start;
             Upoint *pt_Cp_end = &Cp_end;
@@ -216,10 +217,6 @@ namespace LKGeom {
                 outPoly.clear();
             }
 
-            if (inPoly.empty() || !IsSamePoint(*inPoly.begin(), *inPoly.rbegin())) {
-                return;
-            }
-
             /* 
              * Init Output Polygon 
              */
@@ -237,7 +234,7 @@ namespace LKGeom {
              */
             M_code = CP_space_code(pt_Cp_start);
             if(!M_code) {
-                out = Cp_start;
+                out = out_value(Cp_start.x, Cp_start.y);
             }
 
 
@@ -257,9 +254,9 @@ namespace LKGeom {
                  */
                 if (j & _SEGM) {
                     if (j & _CLIP) {
-                        out = Cp_start;
+                        out = out_value(Cp_start.x, Cp_start.y);
                     }
-                    out = Cp_end;
+                    out = out_value(Cp_end.x, Cp_end.y);
                     pt_lastTp = NULL;
                 } else {
                     /*
@@ -306,7 +303,7 @@ namespace LKGeom {
                             }
                             if (pt_lastTp != &(Clip_region[Cra[A_code & ~_TWOBITS]])) {
                                 pt_lastTp = &(Clip_region[Cra[A_code & ~_TWOBITS]]);
-                                out = *pt_lastTp;
+                                out = out_value(pt_lastTp->x, pt_lastTp->y);
                             }
                         }
                     } else {
@@ -327,7 +324,7 @@ namespace LKGeom {
                 if (D_code & _TWOBITS) {
                     if (pt_lastTp != &(Clip_region[Cra[D_code & ~_TWOBITS]])) {
                         pt_lastTp = &(Clip_region[Cra[D_code & ~_TWOBITS]]);
-                        out = *pt_lastTp;
+                        out = out_value(pt_lastTp->x, pt_lastTp->y);
                     }
                 }
                 /*
@@ -335,9 +332,6 @@ namespace LKGeom {
                  */
                 *pt_Cp_start = (*in);
                 M_code = N_Code;
-            }
-            if (!outPoly.empty()) {
-                out = *outPoly.begin();
             }
         }
     };
@@ -355,6 +349,10 @@ namespace LKGeom {
         const Upoint BottomRight =  (Upoint){ClipRect.right, ClipRect.bottom};
 
         LKGeom::clipper<Upoint> (TopLeft, BottomRight).ClipPolygon(inPoly, outPoly);
+        
+        if (!outPoly.empty() && outPoly.front() != outPoly.back()) {
+            outPoly.push_back(outPoly.front());
+        }
     }
        
     template<typename Upoint, typename Urect>

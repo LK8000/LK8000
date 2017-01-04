@@ -33,12 +33,17 @@ public:
       return LonLat2Screen(pt.x,pt.y);
     }
 
-    inline 
+    inline
     FloatPoint ToFloatPoint(const pointObj& pt) const {
+        return ToFloatPoint(pt.x,pt.y);
+    }
+
+    inline 
+    FloatPoint ToFloatPoint(double lon, double lat) const {
         typedef FloatPoint::scalar_type scalar_type;
 
-        const scalar_type Y = (_PanLat - pt.y) * _Zoom;
-        const scalar_type X = (_PanLon - pt.x) * fastcosine(pt.y) * _Zoom;
+        const scalar_type Y = (_PanLat - lat) * _Zoom;
+        const scalar_type X = (_PanLon - lon) * fastcosine(lat) * _Zoom;
 
         return FloatPoint{
             static_cast<scalar_type>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024),

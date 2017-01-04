@@ -7,6 +7,7 @@
 
 #include "Thread/Mutex.hpp"
 #include "Point2D.h"
+#include "Math/Point2D.hpp"
 
 #include <tchar.h>
 #include <vector>
@@ -50,7 +51,13 @@ typedef struct _AIRSPACE_ALT
   AirspaceAltBase_t Base;
 } AIRSPACE_ALT;
 
-typedef std::vector<POINT> POINTList;
+#ifdef HAVE_GLES
+typedef std::vector<FloatPoint> ScreenPointList;
+#else
+typedef std::vector<RasterPoint> ScreenPointList;
+#endif
+typedef std::vector<RasterPoint> RasterPointList;
+
 
 //Airspace warning and ack levels
 typedef enum {awNone=0, awYellow, awRed} AirspaceWarningLevel_t;
@@ -279,8 +286,9 @@ protected:
     // previous version draw circular airspace using circle, but it's wrong, circle in geographic coordinate are ellipsoid in screen coordinate.
     CPoint2DArray _geopoints;
 
-    // this array is modified by DrawThread, never use it in another thread !!
-    POINTList _screenpoints;
+    // this 2 array is modified by DrawThread, never use it in another thread !!
+    ScreenPointList _screenpoints; // this is member for reduce memory alloc, but is used only by CalculateScreenPosition();
+    RasterPointList _screenpoints_clipped;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Draw Picto methods
@@ -289,7 +297,7 @@ protected:
 public:
     virtual void DrawPicto(LKSurface& Surface, const RECT &rc) const;
 protected:
-    virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList &screenpoints_picto) const;
+    virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList &screenpoints_picto) const;
     ////////////////////////////////////////////////////////////////////////////////
 
     static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
@@ -369,7 +377,7 @@ private:
 //  this methods are NEVER used at same time of airspace loading
 //  therefore we can be considered is thread safe
 protected:
-  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, POINTList &screenpoints_picto) const;
+  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, RasterPointList &screenpoints_picto) const override;
 ////////////////////////////////////////////////////////////////////////////////
 };
 
@@ -402,7 +410,7 @@ private:
 //  this methods are NEVER used at same time of airspace loading
 //  therefore we can be considered is thread safe
 protected:
-  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, POINTList &screenpoints_picto) const;
+  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, RasterPointList &screenpoints_picto) const override;
 ////////////////////////////////////////////////////////////////////////////////
 };
 

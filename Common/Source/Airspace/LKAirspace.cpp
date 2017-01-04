@@ -832,18 +832,6 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
     if (iAirspaceMode[_type] % 2 == 1) {
         if (CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
 
-            if (msRectOverlap(&_bounds, &screenbounds_latlon))  {
-
-                if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
-                    _drawstyle = adsFilled;
-                } else {
-                    _drawstyle = adsOutline;
-                    //    _drawstyle = adsFilled;
-                }
-                if (!_enabled)
-                    _drawstyle = adsDisabled;
-            }
-
             // Ulli: we need to calculate screen position even if not visible for Multiselect and Multimaps
             // Bruno: this need to change for 2 reasons :
             //     - because that slow down map drawing.
@@ -855,9 +843,31 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
                     std::begin(_geopoints), std::end(_geopoints),
                     std::back_inserter(_screenpoints),
                     [&_Proj](CPoint2DArray::const_reference pt) {
+#ifdef HAVE_GLES
+                        return _Proj.ToFloatPoint(pt.Longitude(), pt.Latitude());
+#else
                         return _Proj.LonLat2Screen(pt.Longitude(), pt.Latitude());
+#endif
                     });
             _screenpoints.push_back(_screenpoints.front());
+
+            PixelRect MaxRect = rcDraw;
+            MaxRect.Grow(300); // add space for inner airspace border, avoid artefact on screen border.
+
+            LKGeom::ClipPolygon(MaxRect, _screenpoints, _screenpoints_clipped);
+
+            // airspace is visible only if clipped polygon have more than 2 point.
+            if (_screenpoints_clipped.size() > 2)  {
+
+                if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
+                    _drawstyle = adsFilled;
+                } else {
+                    _drawstyle = adsOutline;
+                    //    _drawstyle = adsFilled;
+                }
+                if (!_enabled)
+                    _drawstyle = adsDisabled;
+            }
         }
     }
 }
@@ -865,8 +875,8 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
 // Draw airspace
 
 void CAirspace::Draw(LKSurface& Surface, const RECT &rc, bool param1) const {
-    size_t outLength = _screenpoints.size();
-    const RasterPoint * clip_ptout = _screenpoints.data();
+    size_t outLength = _screenpoints_clipped.size();
+    const RasterPoint * clip_ptout = _screenpoints_clipped.data();
 
     if (param1) {
         if (outLength > 2) {
@@ -3243,7 +3253,7 @@ void CAirspaceManager::ProcessAirspaceDetailQueue() {
 //  therefore we can be considered is thread safe.
 
 void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
-    POINTList screenpoints_picto;
+    RasterPointList screenpoints_picto;
     CalculatePictPosition(rc, 0.9, screenpoints_picto);
 
     size_t Length = screenpoints_picto.size();
@@ -3267,11 +3277,11 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
     }
 }
 
-void CAirspace::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
+void CAirspace::CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList& screenpoints_picto) const {
     LKASSERT(FALSE); // never call this function on base class instance !
 }
 
-void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
+void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList& screenpoints_picto) const {
     const int cx = rcDraw.right - rcDraw.left;
     const int cy = rcDraw.bottom - rcDraw.top;
     const int radius = iround(((double) ((cy < cx) ? cy : cx) / 2.0) * zoom);
@@ -3280,7 +3290,7 @@ void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, PO
     LKSurface::buildCircle(center, radius, screenpoints_picto);
 }
 
-void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList& screenpoints_picto) const {
+void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList& screenpoints_picto) const {
     screenpoints_picto.clear();
 
     const double dlon = _bounds.maxx - _bounds.minx;
