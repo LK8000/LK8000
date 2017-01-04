@@ -1658,3 +1658,6 @@ endif
 ifneq ($(wildcard $(BIN)/*/*/*/.*.d),)
 include $(wildcard $(BIN)/*/*/*/.*.d)
 endif
+ifneq ($(wildcard $(BIN)/*/*/*/*/.*.d),)
+include $(wildcard $(BIN)/*/*/*/*/.*.d)
+endif
