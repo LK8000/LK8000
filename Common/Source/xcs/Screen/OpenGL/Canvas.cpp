@@ -188,8 +188,8 @@ Canvas::DrawPolyline(const RasterPoint *points, unsigned num_points)
 #endif
 
   pen.Bind();
-  
-  if (pen.GetWidth() <= 2) {
+
+  if (pen.GetWidth() <= OpenGL::max_line_width) {
     const ScopeVertexPointer vp(points);
     glDrawArrays(GL_LINE_STRIP, 0, num_points);
   } else {
@@ -243,7 +243,7 @@ Canvas::DrawPolygon(const RasterPoint *points, unsigned num_points)
   if (IsPenOverBrush()) {
     pen.Bind();
 
-    if (pen.GetWidth() <= 2) {
+    if (pen.GetWidth() <= OpenGL::max_line_width) {
       glDrawArrays(GL_LINE_LOOP, 0, num_points);
     } else {
       unsigned vertices = LineToTriangles(points, num_points, vertex_buffer,
@@ -278,7 +278,7 @@ Canvas::DrawTriangleFan(const RasterPoint *points, unsigned num_points)
   if (IsPenOverBrush()) {
     pen.Bind();
 
-    if (pen.GetWidth() <= 2) {
+    if (pen.GetWidth() <= OpenGL::max_line_width) {
       glDrawArrays(GL_LINE_LOOP, 0, num_points);
     } else {
       unsigned vertices = LineToTriangles(points, num_points, vertex_buffer,

@@ -113,6 +113,10 @@ namespace OpenGL {
   extern GLenum render_buffer_stencil;
 
   /**
+   * largest supported width for aliased lines
+   */
+  extern GLfloat max_line_width;
+  /**
    * The dimensions of the OpenGL window in pixels.
    */
   extern Point2D<unsigned> window_size;
