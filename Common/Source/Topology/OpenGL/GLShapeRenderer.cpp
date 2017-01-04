@@ -83,8 +83,9 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
   if(!brush.IsOpaque()) {
     blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
-  
-  curr_LabelPos = clipRect.GetBottomRight();
+
+  curr_LabelPos.x = clipRect.right;
+  curr_LabelPos.y = clipRect.bottom;
   
   const shapeObj& shp = shape.shape;
 
@@ -92,7 +93,7 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
   for (int j = 0; j < shp.numlines; j++) {
     gluTessBeginContour(tess);
     for (int i = 0; i < shp.line[j].numpoints; i++) {
-      const RasterPoint pt = _Proj.LonLat2Screen(shp.line[j].point[i]);
+      const FloatPoint pt = _Proj.ToFloatPoint(shp.line[j].point[i]);
       if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
         curr_LabelPos = pt;
       }  
@@ -116,7 +117,7 @@ void GLShapeRenderer::polygonBegin(GLenum type) {
 }
   
 void GLShapeRenderer::polygonVertex(GLdouble *vertex) {
-  curr_polygon.insert(curr_polygon.end(), RasterPoint(vertex[0], vertex[1]));
+  curr_polygon.insert(curr_polygon.end(), FloatPoint(vertex[0], vertex[1]));
 }
 
 void GLShapeRenderer::polygonCombine(GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4], void **outData) {  
