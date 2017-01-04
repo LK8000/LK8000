@@ -232,12 +232,20 @@ namespace LKGeom {
             *pt_Cp_start = *in;
 
             /*
+             * Compute the first point’ status.
+             * If visible, then store the first point in the output array.
+             */
+            M_code = CP_space_code(pt_Cp_start);
+            if(!M_code) {
+                out = Cp_start;
+            }
+
+
+            /*
              * Next polygons points... We build a vector from the start
              * point to the end point.
              * Clip the line with a standard 2D line clipping method.
              */
-
-            M_code = CP_space_code(pt_Cp_start);
             while (++in != inPoly.end()) {
                 *pt_Cp_end = (*in);
 
