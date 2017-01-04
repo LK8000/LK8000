@@ -10,6 +10,19 @@
 #include "LKInterface.h"
 #include "DoInits.h"
 #include "ScreenGeometry.h"
+#ifdef ANDROID
+#include "Android/Main.hpp"
+#include "Android/NativeView.hpp"
+#endif
+#ifdef KOBO
+#include "Kobo/Model.hpp"
+#endif
+//#ifdef WIN32
+//#include <windows.h>
+//#endif
+#ifdef USE_X11
+#include <X11/Xlib.h>
+#endif
 
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
@@ -264,16 +277,36 @@ double GetScreen0Ratio(void) {
 }
 
 //
-// Quick and dirty PPI estimation
+// Screen DPI estimation for some platform.
 //
 unsigned short GetScreenDensity(void) {
 
-  #ifdef KOBO
-  #define DEFAULT_SCREEN_SIZE 6
-  #else
-  #define DEFAULT_SCREEN_SIZE 5
-  #endif
+#ifdef KOBO
+	switch (DetectKoboModel()) {
+	case KoboModel::GLOHD:
+		return 300;
+	case KoboModel::TOUCH2:
+		return 167;
+	default:
+		return 200; // Kobo Mini 200 dpi; Kobo Glo 212 dpi (according to Wikipedia)
+	}
+#endif
 
-  return sqrt(ScreenSizeX*ScreenSizeX + ScreenSizeY*ScreenSizeY)/DEFAULT_SCREEN_SIZE;
+#ifdef  ANDROID
+	return native_view->GetXDPI();
+#endif
 
+//#ifdef WIN32    // for the moment we mantain default value for WIN32 as LOGPIXELSX always return 96 ?
+//	HDC dc = GetDC(NULL);
+//	return GetDeviceCaps(dc, LOGPIXELSX);
+//#endif
+
+#ifdef USE_X11
+	_XDisplay* disp = XOpenDisplay(NULL);
+	double xres = ((((double) DisplayWidth(disp,0)) * 25.4) /  ((double) DisplayWidthMM(disp,0)));
+	return (short) xres;
+#endif
+
+	// if we are not able to get correct value just return default estimation
+	return sqrt(ScreenSizeX*ScreenSizeX + ScreenSizeY*ScreenSizeY)/5; // default to a 5 in screen;
 }
