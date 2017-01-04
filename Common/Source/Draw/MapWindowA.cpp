@@ -209,6 +209,11 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
     asp_selected_flash = !asp_selected_flash;
 
     for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+
+        if ((*it)->DrawStyle() == adsHidden) {
+          continue;
+        }
+
         const int airspace_type = (*it)->Type();
 
         std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil;

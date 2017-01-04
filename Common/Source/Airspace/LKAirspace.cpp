@@ -750,18 +750,29 @@ void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &
 
 CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius) :
 CAirspace(),
-_latcenter(Center_Latitude),
-_loncenter(Center_Longitude),
+_center(Center_Latitude, Center_Longitude),
 _radius(Airspace_Radius) {
-    _screenpoints.reserve(65);
-    CalcBounds();
+
+    _geopoints.reserve(90);
+    for (unsigned i = 0; i < 90; ++i) {
+        GeoPoint pt = _center.Direct(static_cast<double> (i*4), _radius);
+
+        _bounds.minx = std::min(pt.longitude, _bounds.minx);
+        _bounds.maxx = std::max(pt.longitude, _bounds.maxx);
+        _bounds.miny = std::min(pt.latitude, _bounds.miny);
+        _bounds.maxy = std::max(pt.latitude, _bounds.maxy);
+
+        _geopoints.push_back({pt.latitude, pt.longitude});
+    }
+
+    _screenpoints.reserve(_geopoints.size());
     AirspaceAGLLookup(Center_Latitude, Center_Longitude, &_base.Altitude, &_top.Altitude);
 }
 
 // Dumps object instance to Runtime.log
 
 void CAirspace_Circle::Dump() const {
-    StartupStore(TEXT("CAirspace_Circle Dump, CenterLat:%f, CenterLon:%f, Radius:%f%s"), _latcenter, _loncenter, _radius, NEWLINE);
+    StartupStore(TEXT("CAirspace_Circle Dump, CenterLat:%f, CenterLon:%f, Radius:%f%s"), _center.latitude, _center.longitude, _radius, NEWLINE);
     CAirspace::Dump();
 }
 
@@ -777,8 +788,8 @@ void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const {
     if (_top.Base == abFL) md5.Update((const unsigned char*) &_top.FL, sizeof (_top.FL));
     if (_top.Base == abAGL) md5.Update((const unsigned char*) &_top.AGL, sizeof (_top.AGL));
     if (_top.Base == abMSL) md5.Update((const unsigned char*) &_top.Altitude, sizeof (_top.Altitude));
-    md5.Update((const unsigned char*) &_latcenter, sizeof (_latcenter));
-    md5.Update((const unsigned char*) &_loncenter, sizeof (_loncenter));
+    md5.Update((const unsigned char*) &_center.latitude, sizeof (_center.latitude));
+    md5.Update((const unsigned char*) &_center.longitude, sizeof (_center.longitude));
     md5.Update((const unsigned char*) &_radius, sizeof (_radius));
     md5.Final();
     memcpy(hashout, md5.digestChars, min(maxbufsize, 33));
@@ -804,8 +815,8 @@ bool CAirspace_Circle::IsHorizontalInside(const double &longitude, const double 
 double CAirspace_Circle::Range(const double &longitude, const double &latitude, double &bearing) const {
     double distance;
     DistanceBearing(latitude, longitude,
-            _latcenter,
-            _loncenter,
+            _center.latitude,
+            _center.longitude,
             &distance, &bearing);
     distance -= _radius;
     if (distance < 0) bearing += 180;
@@ -813,52 +824,15 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
     return distance;
 }
 
-// Helper function to calculate circle bounds
-
-void CAirspace_Circle::ScanCircleBounds(double bearing) {
-    double lat, lon;
-    FindLatitudeLongitude(_latcenter, _loncenter,
-            bearing, _radius,
-            &lat, &lon);
-
-    _bounds.minx = min(lon, _bounds.minx);
-    _bounds.maxx = max(lon, _bounds.maxx);
-    _bounds.miny = min(lat, _bounds.miny);
-    _bounds.maxy = max(lat, _bounds.maxy);
-}
-
-// Calculate airspace bounds
-
-void CAirspace_Circle::CalcBounds() {
-    _bounds.minx = _loncenter;
-    _bounds.maxx = _loncenter;
-    _bounds.miny = _latcenter;
-    _bounds.maxy = _latcenter;
-    ScanCircleBounds(0);
-    ScanCircleBounds(90);
-    ScanCircleBounds(180);
-    ScanCircleBounds(270);
-
-    // JMW detect airspace that wraps across 180
-    if ((_bounds.minx< -90) && (_bounds.maxx > 90)) {
-        double tmp = _bounds.minx;
-        _bounds.minx = _bounds.maxx;
-        _bounds.maxx = tmp;
-    }
-}
-
 // Calculate screen coordinates for drawing
-
-void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
+void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
     _drawstyle = adsHidden;
     //  if (!_enabled) return;
 
     if (iAirspaceMode[_type] % 2 == 1) {
         if (CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
-            /*   if (msRectOverlap(&_bounds, &screenbounds_latlon)   // Ulli: this caused problems with Multiselect for Multimaps, no drawback by removing found
-                  // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
-                  ) */
-            {
+
+            if (msRectOverlap(&_bounds, &screenbounds_latlon))  {
 
                 if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
                     _drawstyle = adsFilled;
@@ -868,12 +842,22 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
                 }
                 if (!_enabled)
                     _drawstyle = adsDisabled;
-
-                _screencenter = _Proj.LonLat2Screen(_loncenter, _latcenter);
-                _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
-
-                LKSurface::buildCircle(_screencenter, _screenradius, _screenpoints);
             }
+
+            // Ulli: we need to calculate screen position even if not visible for Multiselect and Multimaps
+            // Bruno: this need to change for 2 reasons :
+            //     - because that slow down map drawing.
+            //     - OpenGL ES use short for screen coordinate and we have int overflow for object to far ( 4km with 10m zoom level )
+
+            _screenpoints.clear();
+
+            std::transform(
+                    std::begin(_geopoints), std::end(_geopoints),
+                    std::back_inserter(_screenpoints),
+                    [&_Proj](CPoint2DArray::const_reference pt) {
+                        return _Proj.LonLat2Screen(pt.Longitude(), pt.Latitude());
+                    });
+            _screenpoints.push_back(_screenpoints.front());
         }
     }
 }
@@ -882,7 +866,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
 
 void CAirspace::Draw(LKSurface& Surface, const RECT &rc, bool param1) const {
     size_t outLength = _screenpoints.size();
-    const POINT * clip_ptout = &(*_screenpoints.begin());
+    const RasterPoint * clip_ptout = _screenpoints.data();
 
     if (param1) {
         if (outLength > 2) {
@@ -899,7 +883,8 @@ void CAirspace::Draw(LKSurface& Surface, const RECT &rc, bool param1) const {
 //
 // CAIRSPACE AREA CLASS
 //
-CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace(), _geopoints(std::move(Area_Points)) {
+CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace() {
+    std::swap(_geopoints, Area_Points);
     CalcBounds();
     AirspaceAGLLookup((_bounds.miny + _bounds.maxy) / 2.0, (_bounds.minx + _bounds.maxx) / 2.0, &_base.Altitude, &_top.Altitude);
 }
@@ -1063,6 +1048,7 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 // Calculate airspace bounds
 
 void CAirspace_Area::CalcBounds() {
+    assert(!_geopoints.empty());
     CPoint2DArray::iterator it = _geopoints.begin();
 
     _bounds.minx = it->Longitude();
@@ -1085,46 +1071,6 @@ void CAirspace_Area::CalcBounds() {
             if (it->Longitude() < 0) {
                 CPoint2D newpoint(it->Latitude(), it->Longitude() + 360);
                 *it = newpoint;
-            }
-        }
-    }
-}
-
-// Calculate screen coordinates for drawing
-
-void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
-
-
-    _drawstyle = adsHidden;
-
-    //  if (!_enabled) return;
-
-    if (iAirspaceMode[_type] % 2 == 1) {
-        if (CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
-            /*     if (msRectOverlap(&_bounds, &screenbounds_latlon)  // Ulli: this caused problems with Multiselect for Multimaps, no drawback by removing found
-                    // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
-                    )*/
-            {
-
-                if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
-                    _drawstyle = adsFilled;
-                } else {
-                    _drawstyle = adsOutline;
-                    //    _drawstyle = adsFilled;
-                }
-                if (!_enabled)
-                    _drawstyle = adsDisabled;
-
-                CPoint2DArray::const_iterator it;
-                _screenpoints.resize(_geopoints.size());
-                POINTList::iterator itr = _screenpoints.begin();
-                for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
-                    *itr = _Proj.LonLat2Screen(it->Longitude(), it->Latitude());
-                }
-
-#if DEBUG_NEAR_POINTS
-                StartupStore(_T("... area point geo %i screen %i\n"), _geopoints.size(), _screenpoints.size());
-#endif
             }
         }
     }
@@ -2651,10 +2597,9 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
 }
 
 void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
-    CAirspaceList::iterator it;
     ScopeLock guard(_csairspaces);
-    for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-        (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj, ResMapScaleOverDistanceModify);
+    for (auto asp : _airspaces_near) {
+        asp->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj, ResMapScaleOverDistanceModify);
     }
 }
 
@@ -3304,7 +3249,7 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
     size_t Length = screenpoints_picto.size();
     if (Length > 2) {
 
-        const POINT * ptOut = &(*screenpoints_picto.begin());
+        const RasterPoint * ptOut = &(*screenpoints_picto.begin());
 
         LKPen FramePen(PEN_SOLID, IBLSCALE(1), TypeColor());
 
@@ -3370,12 +3315,12 @@ void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, POIN
     const double scaleY = ((double) cy) / dlat * zoom;
     const double scale = (scaleX < scaleY) ? scaleX : scaleY;
 
-    POINT tmpPnt;
     screenpoints_picto.reserve(_geopoints.size());
     for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-        tmpPnt.x = xoff - iround((PanLongitudeCenter - it->Longitude()) * ((double) fastcosine(it->Latitude())) * scale);
-        tmpPnt.y = yoff + iround((PanLatitudeCenter - it->Latitude()) * scale);
-        screenpoints_picto.push_back(tmpPnt);
+        screenpoints_picto.push_back( {
+            xoff - iround((PanLongitudeCenter - it->Longitude()) * ((double) fastcosine(it->Latitude())) * scale),
+            yoff + iround((PanLatitudeCenter - it->Latitude()) * scale)
+        });
     }
 }
 ////////////////////////////////////////////////////////////////////////////////

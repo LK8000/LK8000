@@ -15,6 +15,7 @@
 #include <algorithm>
 
 #include "Screen/LKSurface.h"
+#include "Geographic/GeoPoint.h"
 
 class ScreenProjection;
 struct XMLNode;
@@ -252,7 +253,7 @@ public:
     // Dump this airspace to runtime.log
     virtual void Dump() const = 0;
     // Calculate drawing coordinates on screen
-    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) = 0;
+    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify);
     // Draw airspace on map
     virtual void Draw(LKSurface& Surface, const RECT &rc, bool param1) const;
     // Calculate nearest horizontal distance and bearing to the airspace from a given point
@@ -274,6 +275,10 @@ public:
     static CAirspace* GetSideviewNearestInstance() { return _sideview_nearest_instance; }
 
 protected:
+    // polygon points : circular airspace are also stored like polygon because that avoid to calculate geographic coordinate for each drawing
+    // previous version draw circular airspace using circle, but it's wrong, circle in geographic coordinate are ellipsoid in screen coordinate.
+    CPoint2DArray _geopoints;
+
     // this array is modified by DrawThread, never use it in another thread !!
     POINTList _screenpoints;
 
@@ -284,7 +289,7 @@ protected:
 public:
     virtual void DrawPicto(LKSurface& Surface, const RECT &rc) const;
 protected:
-    virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList &screenpoints_picto) const = 0;
+    virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, POINTList &screenpoints_picto) const;
     ////////////////////////////////////////////////////////////////////////////////
 
     static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
@@ -343,19 +348,16 @@ public:
   virtual ~CAirspace_Area() {};
 
   // Check if a point horizontally inside in this airspace
-  virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const;
+  virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const override ;
   // Dump this airspace to runtime.log
-  virtual void Dump() const;
-  // Calculate drawing coordinates on screen
-  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify);
+  virtual void Dump() const override;
 
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
-  virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
+  virtual double Range(const double &longitude, const double &latitude, double &bearing) const override;
   // Calculate unique hash code for this airspace
-  virtual void Hash(char *hashout, int maxbufsize) const;
+  virtual void Hash(char *hashout, int maxbufsize) const override;
 
 private:
-  CPoint2DArray _geopoints;        // polygon points
 
   // Winding number calculation to check a point is horizontally inside polygon
   int wn_PnPoly( const double &longitude, const double &latitude ) const;
@@ -381,28 +383,19 @@ public:
   virtual ~CAirspace_Circle() {}
 
   // Check if a point horizontally inside in this airspace
-  virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const;
+  virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const override;
   // Dump this airspace to runtime.log
-  virtual void Dump() const;
-  // Calculate drawing coordinates on screen
-  virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify);
+  virtual void Dump() const override;
 
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
-  virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
+  virtual double Range(const double &longitude, const double &latitude, double &bearing) const override;
   // Calculate unique hash code for this airspace
-  virtual void Hash(char *hashout, int maxbufsize) const;
+  virtual void Hash(char *hashout, int maxbufsize) const override;
 
 private:
-  POINT _screencenter;        // center point in screen coordinates
-  int _screenradius;        // radius in screen coordinates
-  double _latcenter;        // center point latitude
-  double _loncenter;        // center point longitude
-  double _radius;            // radius
 
-  // Bound calculation helper function
-  void ScanCircleBounds(double bearing);
-  // Calculate airspace bounds
-  void CalcBounds();
+  GeoPoint _center; // center point latitude longitude
+  double _radius;            // radius
 
 ////////////////////////////////////////////////////////////////////////////////
 // Draw Picto methods
