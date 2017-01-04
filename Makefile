@@ -253,6 +253,8 @@ ETAGS           :=etags
 EBROWSE         :=ebrowse
 
 GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
+GCC_GTEQ_480 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 40800)
+
 
 $(info GCC VERSION : $(GCCVERSION))
 
@@ -261,7 +263,11 @@ ifeq ($(DEBUG),y)
  ifeq ($(CLANG),y)
   OPTIMIZE  := -O0 
  else
-  OPTIMIZE  := -Og
+  ifeq ($(GCC_GTEQ_480),1)
+   OPTIMIZE  := -Og
+  else
+   OPTIMIZE  := -O0
+  endif
  endif
  OPTIMIZE  += -g3 -ggdb
 endif
@@ -586,7 +592,6 @@ endif
 ifeq ($(CONFIG_PC),y)
  CPPFLAGS	+= -D_WINDOWS -DWIN32 -DCECORE $(UNICODE)
 
-GCC_GTEQ_480 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 40800)
 ifeq ($(GCC_GTEQ_480),1)
     CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
  endif
