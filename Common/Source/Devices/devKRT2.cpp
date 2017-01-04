@@ -35,7 +35,7 @@
 int KRT2_Convert_Answer(DeviceDescriptor_t *d, char *szCommand, int len);
 
 
-int uiDebugLevel = 1;
+int uiKRT2DebugLevel = 1;
 
 BOOL KRT2Install(PDeviceDescriptor_t d){
 
@@ -339,7 +339,7 @@ while (cnt < len)
      Recbuflen =0;
   LKASSERT(Recbuflen < REC_BUFSIZE);
 
-  if(uiDebugLevel ==2) StartupStore(_T(". KRT2   Raw Input: Recbuflen:%u  0x%02X %c %s"),  Recbuflen,(uint8_t)String[cnt] ,String[cnt] ,NEWLINE);
+  if(uiKRT2DebugLevel ==2) StartupStore(_T(". KRT2   Raw Input: Recbuflen:%u  0x%02X %c %s"),  Recbuflen,(uint8_t)String[cnt] ,String[cnt] ,NEWLINE);
   Command[Recbuflen++] =(char) String[cnt++];
   if(Recbuflen == 1)
   {
@@ -368,9 +368,9 @@ while (cnt < len)
 
      if(Recbuflen == (CommandLength) ) // all received
      {
-       if(uiDebugLevel ==2)	 StartupStore(_T("================ %s") ,NEWLINE);
-       if(uiDebugLevel ==2) for(int i=0; i < (CommandLength);i++)   StartupStore(_T(". KRT2   Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
-       if(uiDebugLevel ==2)  StartupStore(_T(". KRT2  Process Command %u  %s") ,CommandLength ,NEWLINE);
+       if(uiKRT2DebugLevel ==2)	 StartupStore(_T("================ %s") ,NEWLINE);
+       if(uiKRT2DebugLevel ==2) for(int i=0; i < (CommandLength);i++)   StartupStore(_T(". KRT2   Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
+       if(uiKRT2DebugLevel ==2)  StartupStore(_T(". KRT2  Process Command %u  %s") ,CommandLength ,NEWLINE);
        KRT2_Convert_Answer(d, Command, CommandLength);
        RadioPara.Changed = true;
        Recbuflen = 0;

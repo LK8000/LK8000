@@ -38,7 +38,7 @@
 bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *uiArg);
 int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len);
 
-int  iDebugLevel = 1;
+int  iATR833DebugLevel = 1;
 
 
 BOOL ATR833Install(PDeviceDescriptor_t d){
@@ -86,17 +86,17 @@ bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *
        if(uiArg == NULL)
         return false;
 
-     if(iDebugLevel==2)  StartupStore(_T("ATR833 ==== send  ====== %s"),  NEWLINE);      
-     if(iDebugLevel==2)   StartupStore(_T("ATR833 0x%02X %s"),  STX_BYTE , NEWLINE);    
-     if(iDebugLevel==2)   StartupStore(_T("ATR833 0x%02X %s"),  SYNC_BYTE , NEWLINE);      
-     if(iDebugLevel==2)   StartupStore(_T("ATR833 0x%02X %s"),  Command , NEWLINE);      
+     if(iATR833DebugLevel==2)  StartupStore(_T("ATR833 ==== send  ====== %s"),  NEWLINE);
+     if(iATR833DebugLevel==2)   StartupStore(_T("ATR833 0x%02X %s"),  STX_BYTE , NEWLINE);
+     if(iATR833DebugLevel==2)   StartupStore(_T("ATR833 0x%02X %s"),  SYNC_BYTE , NEWLINE);
+     if(iATR833DebugLevel==2)   StartupStore(_T("ATR833 0x%02X %s"),  Command , NEWLINE);
     d->Com->PutChar(STX_BYTE);
     d->Com->PutChar(SYNC_BYTE);
     d->Com->PutChar(Command);
     uint8_t uiCheckSum =SYNC_BYTE^Command;
     for(int i=0; i < Len; i++)
     {
-       if(iDebugLevel) StartupStore(_T("ATR833 0x%02X %s"),  uiArg[i] , NEWLINE);           
+       if(iATR833DebugLevel) StartupStore(_T("ATR833 0x%02X %s"),  uiArg[i] , NEWLINE);
        d->Com->PutChar( uiArg[i]); 
        uiCheckSum^= uiArg[i];
        if(uiArg[i] == STX_BYTE) // resend on STX occurance
@@ -108,8 +108,8 @@ bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *
     }
     d->Com->PutChar(uiCheckSum);
 
-    if(iDebugLevel==2) StartupStore(_T("ATR833 0x%02X %s"),  uiCheckSum , NEWLINE);     
-    if(iDebugLevel==2)  StartupStore(_T("ATR833 ==== send end   ====== %s"),   NEWLINE);     
+    if(iATR833DebugLevel==2) StartupStore(_T("ATR833 0x%02X %s"),  uiCheckSum , NEWLINE);
+    if(iATR833DebugLevel==2)  StartupStore(_T("ATR833 ==== send end   ====== %s"),   NEWLINE);
     return true;
 }
 
@@ -152,7 +152,7 @@ Val = (uint8_t) Volume;
       {
          Send_Command( d, 0x16 , 1, &Val);
          RadioPara.Volume= Volume;
-         if(iDebugLevel) StartupStore(_T(". ATR833 Send Volume %ui %s"), Val,NEWLINE);
+         if(iATR833DebugLevel) StartupStore(_T(". ATR833 Send Volume %ui %s"), Val,NEWLINE);
       }
   return(TRUE);
 }
@@ -171,7 +171,7 @@ Val = (int8_t) Squelch;
       {
          Send_Command( d, 0x16 , 1, &Val);
          RadioPara.Squelch = Squelch;
-         if(iDebugLevel) StartupStore(_T(". ATR833 Send Squelch %ui %s"), Val,NEWLINE);
+         if(iATR833DebugLevel) StartupStore(_T(". ATR833 Send Squelch %ui %s"), Val,NEWLINE);
       }
   return(TRUE);
 }
@@ -193,7 +193,7 @@ uint8_t Arg[2];
         Arg[1] =((Freq- (double)Arg[0] ) *1000.0) /5;
         Send_Command( d, 0x13 , 2, Arg);  // Send Activ
         RadioPara.ActiveFrequency =  Freq;
-        if(iDebugLevel) StartupStore(_T(". ATR833 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+        if(iATR833DebugLevel) StartupStore(_T(". ATR833 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
       }
   return(TRUE);
 }
@@ -217,7 +217,7 @@ uint8_t Arg[2];
         RadioPara.PassiveFrequency =  Freq;
         if(StationName != NULL)
           _stprintf(RadioPara.PassiveName  ,_T("%s"),StationName) ;
-         if(iDebugLevel) StartupStore(_T(". ATR833 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+         if(iATR833DebugLevel) StartupStore(_T(". ATR833 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
 
       }
   return(TRUE);
@@ -230,7 +230,7 @@ BOOL ATR833StationSwap(PDeviceDescriptor_t d) {
       if (d->Com)
       {
            Send_Command( d, 0x11 , 0, NULL);  // Send Activ      
-           if(iDebugLevel) StartupStore(_T(". ATR833  station swap %s"), NEWLINE);
+           if(iATR833DebugLevel) StartupStore(_T(". ATR833  station swap %s"), NEWLINE);
       }
   return(TRUE);
 }
@@ -246,7 +246,7 @@ Val = (int8_t) mode;
       if (d->Com)
       {
          Send_Command( d, 0x19 , 1, &Val);  // Send Activ        
-           if(iDebugLevel) StartupStore(_T(". ATR833  Dual %ui  %s"), Val, NEWLINE);
+           if(iATR833DebugLevel) StartupStore(_T(". ATR833  Dual %ui  %s"), Val, NEWLINE);
       }
   return(TRUE);
 }
@@ -345,13 +345,13 @@ while (cnt < len )
        if(converted[COMMAND_IDX]  == ACK_BYTE)
        { // Acknolage Handler here
            Recbuflen =0;
-           if (iDebugLevel==2) StartupStore(_T("ATR833 ACK Command 0x%02X   %s"),  converted[3]   , NEWLINE);  
+           if (iATR833DebugLevel==2) StartupStore(_T("ATR833 ACK Command 0x%02X   %s"),  converted[3]   , NEWLINE);
            return true;
        }
        
        if(converted[COMMAND_IDX]  == NACK_BYTE)
        {   // No-Acknolage Handler here      
-           if (iDebugLevel==2) StartupStore(_T("ATR833 NO-ACK Command 0x%02X  cause  0x%02X !!! %s"),  converted[3]   , converted[4],  NEWLINE);  
+           if (iATR833DebugLevel==2) StartupStore(_T("ATR833 NO-ACK Command 0x%02X  cause  0x%02X !!! %s"),  converted[3]   , converted[4],  NEWLINE);
            Recbuflen =0;
            return true;
        }      
@@ -359,8 +359,8 @@ while (cnt < len )
      /***************************************************************************/  
     if (Recbuflen == (CommanLength+FRAME_LEN))  // Command len + Header Length + CRC Byte
     {      
-      if (iDebugLevel==2) StartupStore(_T("ATR833 ==== receive  ====== %s"), NEWLINE);      
-      if (iDebugLevel==2) for (int i=0; i < Recbuflen; i++)    StartupStore(_T("ATR833 Received  0x%02X %s"),  converted[i] , NEWLINE);      
+      if (iATR833DebugLevel==2) StartupStore(_T("ATR833 ==== receive  ====== %s"), NEWLINE);
+      if (iATR833DebugLevel==2) for (int i=0; i < Recbuflen; i++)    StartupStore(_T("ATR833 Received  0x%02X %s"),  converted[i] , NEWLINE);
       if(converted[CommanLength+3] == uiChecsum)
       {
          ATR833_Convert_Answer(d, (uint8_t*)&converted[COMMAND_IDX] , Recbuflen-FRAME_LEN +1);
@@ -368,11 +368,11 @@ while (cnt < len )
       }
       else
       {
-          if (iDebugLevel) StartupStore(_T("ATR833 CHECKSUM ERR  Command 0x%02X  0x%02X  %s"),  converted[CommanLength+3] , uiChecsum, NEWLINE);      
+          if (iATR833DebugLevel) StartupStore(_T("ATR833 CHECKSUM ERR  Command 0x%02X  0x%02X  %s"),  converted[CommanLength+3] , uiChecsum, NEWLINE);
          Send_NACK(d, converted[COMMAND_IDX] , CHECKSUM); 
       }
       Recbuflen =0;
-       if (iDebugLevel==2) StartupStore(_T("ATR833 ==== end ===== %s"),   NEWLINE);      
+       if (iATR833DebugLevel==2) StartupStore(_T("ATR833 ==== end ===== %s"),   NEWLINE);
     }  
     uiChecsum  ^= String[cnt++];
  }
@@ -416,14 +416,14 @@ int Idx=0;
           Idx = SearchStation(RadioPara.PassiveFrequency);
           if(Idx != 0)
             _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
-         if (iDebugLevel) StartupStore(_T("ATR833 Swap %s"),    NEWLINE);
+         if (iATR833DebugLevel) StartupStore(_T("ATR833 Swap %s"),    NEWLINE);
          processed  = 2;                             
       break;      
       /*****************************************************************************************/
       case 0x12:               // Standby Frequency                      
           RadioPara.PassiveFrequency = (double)szCommand[1] +((double) szCommand[2] * 5.0 / 1000.0);                      
           _stprintf(szTempStr,_T("ATR833 Passive: %7.3fMHz"),  RadioPara.PassiveFrequency );
-          if (iDebugLevel)  StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
+          if (iATR833DebugLevel)  StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
           Idx = SearchStation(RadioPara.PassiveFrequency);
           if(Idx != 0)
             _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
@@ -435,7 +435,7 @@ int Idx=0;
       case 0x13:               // Active Frequency
          RadioPara.ActiveFrequency = (double) szCommand[1] +((double) szCommand[2] * 5.0 /1000.0);
          _stprintf(szTempStr,_T("ATR833 Active:  %7.3fMHz"),  RadioPara.ActiveFrequency );
-          if (iDebugLevel)StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
+          if (iATR833DebugLevel)StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
           Idx = SearchStation(RadioPara.ActiveFrequency);
           if(Idx != 0)
             _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
@@ -444,42 +444,42 @@ int Idx=0;
       break;                         
       /*****************************************************************************************/
       case 0x14:               // Intercom        
-          if (iDebugLevel) StartupStore(_T("ATR833 Intercon %s"),    NEWLINE);
+          if (iATR833DebugLevel) StartupStore(_T("ATR833 Intercon %s"),    NEWLINE);
           processed  = 2;
       break; 
       /*****************************************************************************************/
       case 0x16:               // Volume                                
          RadioPara.Volume = szCommand[1] ;
          RadioPara.Changed = true;
-         if (iDebugLevel) StartupStore(_T("ATR833 Volume %i %s"),   RadioPara.Volume, NEWLINE);
+         if (iATR833DebugLevel) StartupStore(_T("ATR833 Volume %i %s"),   RadioPara.Volume, NEWLINE);
          processed  = 2;                   
       break; 
       /*****************************************************************************************/    
       case 0x17:               // Squelch                          
          RadioPara.Squelch = szCommand[1] ;
          RadioPara.Changed = true;
-         if (iDebugLevel) StartupStore(_T("ATR833 Squelch %i %s"),   RadioPara.Squelch, NEWLINE);      
+         if (iATR833DebugLevel) StartupStore(_T("ATR833 Squelch %i %s"),   RadioPara.Squelch, NEWLINE);
          processed  = 2;                   
       break; 
       /*****************************************************************************************/    
       case 0x18:               // Vox            
          RadioPara.Vox = szCommand[1] ;
          RadioPara.Changed = true;          
-         if (iDebugLevel) StartupStore(_T("ATR833 Vox %i %s"),   RadioPara.Vox , NEWLINE);
+         if (iATR833DebugLevel) StartupStore(_T("ATR833 Vox %i %s"),   RadioPara.Vox , NEWLINE);
          processed  = 2;                   
       break; 
        /*****************************************************************************************/        
        case 0x19:               // Dual          
          RadioPara.Dual = szCommand[1] ;
          RadioPara.Changed = true;
-         if (iDebugLevel) StartupStore(_T("ATR833 Dual %i %s"),   RadioPara.Dual, NEWLINE);
+         if (iATR833DebugLevel) StartupStore(_T("ATR833 Dual %i %s"),   RadioPara.Dual, NEWLINE);
          processed  = 2;                   
       break; 
       /*****************************************************************************************/        
         case 0x1A:               // NF          
          RadioPara.Dual = szCommand[1] ;
           RadioPara.Changed = true;
-         if (iDebugLevel) StartupStore(_T("ATR833 NF %i %s"),   RadioPara.Volume, NEWLINE);
+         if (iATR833DebugLevel) StartupStore(_T("ATR833 NF %i %s"),   RadioPara.Volume, NEWLINE);
          processed  = 2;                   
       break; 
       /*****************************************************************************************/       
@@ -503,7 +503,7 @@ int Idx=0;
                RadioPara.Enabled8_33  = true;  
              RadioPara.Dual = szCommand[12];       
              RadioPara.Changed = true;           
-             if (iDebugLevel) StartupStore(_T("All Data %s"),  NEWLINE);   
+             if (iATR833DebugLevel) StartupStore(_T("All Data %s"),  NEWLINE);
          processed  = 13;                   
       break; 
       /*****************************************************************************************/      
@@ -513,7 +513,7 @@ int Idx=0;
       /*****************************************************************************************/      
       
       default:
-          if (iDebugLevel) StartupStore(_T("ATR833 unknown Command %02X %s"),  szCommand[0], NEWLINE);
+          if (iATR833DebugLevel) StartupStore(_T("ATR833 unknown Command %02X %s"),  szCommand[0], NEWLINE);
           processed  = 0;
       break;
    }  // case
