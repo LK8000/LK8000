@@ -256,14 +256,20 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
   }
 
   TCHAR szFilePath[MAX_PATH] = _T("\0");
-  LocalPath(szFilePath, szFile1);
-  ZZIP_FILE *langFile = openzip(szFilePath, "rt");
+  _tcscpy(szFilePath,szFile1);
+  ZZIP_FILE* langFile = openzip(szFilePath, "rt");
   if(!langFile) {
+	  // failed to open absolute. try LocalPath
+	  LocalPath(szFilePath, szFile1);
+	  langFile = openzip(szFile1, "rt");
+  }
+  if(!langFile) {
+	// failed to open lOCAL. try SystemPath
     SystemPath(szFilePath, szFile1);
     langFile = openzip(szFilePath, "rt");
   }
 
-  if (langFile == NULL) {
+  if (!langFile) {
 	if (english) {
 		StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
 		// critic point, no default language! BIG PROBLEM here!
