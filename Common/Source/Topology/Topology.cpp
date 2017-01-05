@@ -645,13 +645,12 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
       break;
 
     case(MS_SHAPE_POLYGON):
-#ifdef ENABLE_OPENGL
-      shape_renderer.renderPolygon(renderer, Surface, *cshape, hbBrush, _Proj);
-#else
-
 	  // if it's a water area (nolabels), print shape up to defaultShape, but print
 	  // labels only up to custom label levels
       if (checkVisible(*shape, screenRect)) {
+#ifdef ENABLE_OPENGL
+        shape_renderer.renderPolygon(renderer, Surface, *cshape, hbBrush, _Proj);
+#else
         for (int tt = 0; tt < shape->numlines; ++tt) {
           const RasterPoint ptLabel = shape2Screen(shape->line[tt], iskip, _Proj, points);
           Surface.Polygon(points.data(), points.size(), rc);
@@ -659,9 +658,9 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
             cshape->renderSpecial(renderer, Surface,ptLabel.x,ptLabel.y,rc);
           }
         }
+#endif
       }
 
-#endif
 	break;
 
     default:

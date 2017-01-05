@@ -11,18 +11,13 @@
 
 #include "GLShapeRenderer.h"
 
-#include <stdlib.h>  
 #include <memory>
 #include "utils/make_unique.h"
 
-#include "Screen/OpenGL/System.hpp"
-#include "Screen/OpenGL/Canvas.hpp"
 #include "Screen/OpenGL/Scope.hpp"
 #include "Screen/OpenGL/VertexPointer.hpp"
 
-#include "Screen/Point.hpp"
 #include "externs.h"
-#include "MapWindow.h"
 #include "Topology.h"
 #include "../Draw/ScreenProjection.h"
 
@@ -89,6 +84,11 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
   
   const shapeObj& shp = shape.shape;
 
+  FloatPoint prev_pt = {
+          std::numeric_limits<FloatPoint::scalar_type>::max(),
+          std::numeric_limits<FloatPoint::scalar_type>::max()
+  };
+
   gluTessBeginPolygon(tess, this );
   for (int j = 0; j < shp.numlines; j++) {
     gluTessBeginContour(tess);
@@ -96,9 +96,13 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
       const FloatPoint pt = _Proj.ToFloatPoint(shp.line[j].point[i]);
       if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
         curr_LabelPos = pt;
-      }  
-      vertex_t& vertex = *(pointers.insert(pointers.end(), vertex_t({{(GLdouble)pt.x, (GLdouble)pt.y, 0.}})));
-      gluTessVertex(tess, vertex.data(), vertex.data());
+      }
+      if(lround(std::abs((prev_pt.x - pt.x) + std::abs(prev_pt.y - pt.y))) > 0) {
+        vertex_t &vertex = *(pointers.insert(pointers.end(),
+                                             vertex_t({{(GLdouble) pt.x, (GLdouble) pt.y, 0.}})));
+        gluTessVertex(tess, vertex.data(), vertex.data());
+        prev_pt = pt;
+      }
     }
     gluTessEndContour(tess);
   }
