@@ -50,6 +50,7 @@
 #include "devFlyNet.h"
 #include "devKRT2.h"
 #include "devAR620x.h"
+#include "devATR833.h"
 #include "devLXNano3.h"
 #include "devXCTracer.h"
 #include "devGPSBip.h"
@@ -509,6 +510,7 @@ bool Startup(const TCHAR* szCmdLine) {
   PVCOMRegister();
   KRT2Register();
   AR620xRegister();
+  ATR833Register();
 #endif  // RADIO_ACTIVE
 
   // REPETITION REMINDER ..
