@@ -136,7 +136,7 @@ public:
     void DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
     void DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
 
-    void Polygon(const POINT *apt, int cpt, const RECT& ClipRect);
+    void Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect);
     void Polygon(const POINT *apt, int cpt);
 
     void Polyline(const POINT *apt, int cpt);
@@ -202,7 +202,7 @@ public:
 
     bool RoundRect(const RECT& rc, int nWidth, int nHeight);
 
-    static void buildCircle(const POINT& center, int radius, std::vector<POINT>& list);
+    static void buildCircle(const RasterPoint& center, int radius, std::vector<RasterPoint>& list);
 
     void ExcludeClipRect(const RECT& rc);
 

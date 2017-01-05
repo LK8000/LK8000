@@ -142,19 +142,19 @@ namespace LKGeom {
                     // use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
                     if (outcodeOut & _TOP) { // point is above the clip rectangle
                         LKASSERT((Cp_end.y - Cp_start.y) != 0);
-                        Cp_Clip.x = Cp_start.x + MulDiv((Cp_end.x - Cp_start.x),(Clip_region[2].y - Cp_start.y),(Cp_end.y - Cp_start.y));
+                        Cp_Clip.x = Cp_start.x + _MulDiv((Cp_end.x - Cp_start.x),(Clip_region[2].y - Cp_start.y),(Cp_end.y - Cp_start.y));
                         Cp_Clip.y = Clip_region[2].y;
                     } else if (outcodeOut & _BOTTOM) { // point is below the clip rectangle
                         LKASSERT((Cp_end.y - Cp_start.y) != 0);
-                        Cp_Clip.x = Cp_start.x + MulDiv((Cp_end.x - Cp_start.x), (Clip_region[0].y - Cp_start.y), (Cp_end.y - Cp_start.y));
+                        Cp_Clip.x = Cp_start.x + _MulDiv((Cp_end.x - Cp_start.x), (Clip_region[0].y - Cp_start.y), (Cp_end.y - Cp_start.y));
                         Cp_Clip.y = Clip_region[0].y;
                     } else if (outcodeOut & _RIGHT) { // point is to the right of clip rectangle
                         LKASSERT((Cp_end.x - Cp_start.x) != 0);
-                        Cp_Clip.y =Cp_start.y + MulDiv((Cp_end.y - Cp_start.y), (Clip_region[2].x - Cp_start.x), (Cp_end.x - Cp_start.x));
+                        Cp_Clip.y =Cp_start.y + _MulDiv((Cp_end.y - Cp_start.y), (Clip_region[2].x - Cp_start.x), (Cp_end.x - Cp_start.x));
                         Cp_Clip.x = Clip_region[2].x;
                     } else /*if (outcodeOut & _LEFT)*/ { // point is to the left of clip rectangle
                         LKASSERT((Cp_end.x - Cp_start.x) != 0);
-                        Cp_Clip.y = Cp_start.y + MulDiv((Cp_end.y - Cp_start.y), (Clip_region[0].x - Cp_start.x), (Cp_end.x - Cp_start.x));
+                        Cp_Clip.y = Cp_start.y + _MulDiv((Cp_end.y - Cp_start.y), (Clip_region[0].x - Cp_start.x), (Cp_end.x - Cp_start.x));
                         Cp_Clip.x = Clip_region[0].x;
                     }
 

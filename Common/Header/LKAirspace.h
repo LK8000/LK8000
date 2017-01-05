@@ -262,7 +262,7 @@ public:
     // Calculate drawing coordinates on screen
     virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify);
     // Draw airspace on map
-    virtual void Draw(LKSurface& Surface, const RECT &rc, bool param1) const;
+    virtual void Draw(LKSurface& Surface, bool fill) const;
     // Calculate nearest horizontal distance and bearing to the airspace from a given point
     virtual double Range(const double &longitude, const double &latitude, double &bearing) const  = 0;
     // Calculate unique hash code for this airspace

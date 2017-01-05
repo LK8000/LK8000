@@ -122,8 +122,8 @@ DrawAirSpaceBorders(Surface, rc);
               }
               // set filling brush
               hdcbuffer.SelectObject(GetAirSpaceSldBrushByClass(airspace_type));
-              (*itr)->Draw(hdcbuffer, rc, true);
-              (*itr)->Draw(hdcMask, rc, false);
+              (*itr)->Draw(hdcbuffer, true);
+              (*itr)->Draw(hdcMask, false);
             }
       }//for
     } else {
@@ -137,7 +137,7 @@ DrawAirSpaceBorders(Surface, rc);
               }
               // set filling brush
               TempSurface.SelectObject(GetAirSpaceSldBrushByClass(airspace_type));
-              (*it)->Draw(TempSurface, rc, true);
+              (*it)->Draw(TempSurface, true);
             }
       }//for
     }//else borders_only
@@ -230,7 +230,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
             // Fill Stencil
             Surface.SelectObject(hAirspaceBorderPen);
             Surface.SelectObject(LKBrush_Hollow);
-            (*it)->Draw(Surface, rc, true);
+            (*it)->Draw(Surface, true);
 
             glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
             glDepthMask(GL_TRUE);
@@ -255,7 +255,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
         } else {
             Surface.SelectObject(LKBrush_Hollow);
         }
-        (*it)->Draw(Surface, rc, true);
+        (*it)->Draw(Surface, true);
     }//for
 }
 #endif

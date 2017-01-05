@@ -33,7 +33,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
             Surface.SelectObject(LKPen_Grey_N2 );
           }
 
-          (*it)->Draw(Surface, rc, false);
+          (*it)->Draw(Surface, false);
         }
       } // for
 
@@ -50,7 +50,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
           }
           if((*it)->DrawStyle()==adsDisabled)
             Surface.SelectObject(LKPen_Black_N0 );
-          (*it)->Draw(Surface, rc, false);
+          (*it)->Draw(Surface, false);
         }
       }//for
 

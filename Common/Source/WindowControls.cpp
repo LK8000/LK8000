@@ -2981,7 +2981,7 @@ inline int WndListFrame::GetScrollBarHeight (void)
   if(mListInfo.ItemCount ==0) {
     return h;
   } else {
-    return max(ScrollbarWidth, MulDiv(h, mListInfo.ItemInPageCount, mListInfo.ItemCount));
+    return max(ScrollbarWidth, _MulDiv(h, mListInfo.ItemInPageCount, mListInfo.ItemCount));
   }
 }
 

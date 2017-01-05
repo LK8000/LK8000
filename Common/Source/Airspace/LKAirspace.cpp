@@ -851,7 +851,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
                     });
             _screenpoints.push_back(_screenpoints.front());
 
-            PixelRect MaxRect = rcDraw;
+            PixelRect MaxRect(rcDraw);
             MaxRect.Grow(300); // add space for inner airspace border, avoid artefact on screen border.
 
             LKGeom::ClipPolygon(MaxRect, _screenpoints, _screenpoints_clipped);
@@ -874,17 +874,17 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
 
 // Draw airspace
 
-void CAirspace::Draw(LKSurface& Surface, const RECT &rc, bool param1) const {
+void CAirspace::Draw(LKSurface& Surface, bool fill) const {
     size_t outLength = _screenpoints_clipped.size();
     const RasterPoint * clip_ptout = _screenpoints_clipped.data();
 
-    if (param1) {
+    if (fill) {
         if (outLength > 2) {
-            Surface.Polygon(clip_ptout, outLength, rc);
+            Surface.Polygon(clip_ptout, outLength);
         }
     } else {
         if (outLength > 1) {
-            Surface.Polyline(clip_ptout, outLength, rc);
+            Surface.Polyline(clip_ptout, outLength);
         }
     }
 }
@@ -3285,7 +3285,7 @@ void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, Ra
     const int cx = rcDraw.right - rcDraw.left;
     const int cy = rcDraw.bottom - rcDraw.top;
     const int radius = iround(((double) ((cy < cx) ? cy : cx) / 2.0) * zoom);
-    const POINT center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
+    const RasterPoint center = {rcDraw.left + cx / 2, rcDraw.top + cy / 2};
 
     LKSurface::buildCircle(center, radius, screenpoints_picto);
 }

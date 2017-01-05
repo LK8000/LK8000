@@ -98,6 +98,6 @@ void DrawSplash(LKSurface& Surface, const LKBitmap& Bmp) {
     Surface.Blackness(0,0,ScreenSizeX,ScreenSizeY);
     if(Bmp) {
         const PixelSize bmSize = Bmp.GetSize();
-        Surface.DrawBitmap(0,0,ScreenSizeX,MulDiv<short>(bmSize.cy,ScreenSizeX,bmSize.cx),Bmp,bmSize.cx,bmSize.cy);
+        Surface.DrawBitmap(0,0,ScreenSizeX,_MulDiv<short>(bmSize.cy,ScreenSizeX,bmSize.cx),Bmp,bmSize.cx,bmSize.cy);
     }
 }
