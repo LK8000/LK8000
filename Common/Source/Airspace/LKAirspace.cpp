@@ -766,6 +766,7 @@ _radius(Airspace_Radius) {
     }
 
     _screenpoints.reserve(_geopoints.size());
+    _screenpoints_clipped.reserve(_geopoints.size());
     AirspaceAGLLookup(Center_Latitude, Center_Longitude, &_base.Altitude, &_top.Altitude);
 }
 
@@ -826,19 +827,62 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
 
 // Calculate screen coordinates for drawing
 void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
-    _drawstyle = adsHidden;
-    //  if (!_enabled) return;
 
-    if (iAirspaceMode[_type] % 2 == 1) {
-        if (CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
+    /** TODO 
+     *   check map projection change
+     *   move CAirspaceManager::Instance().CheckAirspaceAltitude() outside draw function
+     */
+    
+    
+    /** optimized pseudo code
+     * 
+     * if ( Map projection has Changed ) {
+     *    - clear screen coordinate cache.
+     * }
+     * 
+     * if (airspace is visible and _screenpoints is empty ) {
+     *    - calculate screen position
+     *    if ( screen bounds does not include aispace bounds ) {
+     *      - clip screen coordinate to rcDraw
+     *    }
+     *    - set drawing style
+     * }
+     */
 
-            // Ulli: we need to calculate screen position even if not visible for Multiselect and Multimaps
-            // Bruno: this need to change for 2 reasons :
-            //     - because that slow down map drawing.
-            //     - OpenGL ES use short for screen coordinate and we have int overflow for object to far ( 4km with 10m zoom level )
+    _drawstyle = adsHidden;        
 
-            _screenpoints.clear();
+    // Check Visibility : faster first
+    bool is_visible =(iAirspaceMode[_type] % 2 == 1); // airspace class disabled ?
+    if(is_visible) { // no need to msRectOverlap if airspace is not visible
+        is_visible = msRectOverlap(&_bounds, &screenbounds_latlon);
+    }
+    if(is_visible) { // no need to check Altitude if airspace is not visible
+        #warning "CheckAirspaceAltitude() lock Flight data for altitude : to slow, need to change"
+        is_visible = CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top);
+    }
+    
+    if(is_visible) { 
+        // we need to calculate new screen position
+        _screenpoints.clear();
+        _screenpoints_clipped.clear();
+        bool need_clipping = !msRectContained(&_bounds, &screenbounds_latlon);
 
+        if(!need_clipping) {
+            // no need clipping we can calc screen pos directly inside _screenpoints_clipped
+            std::transform(
+                    std::begin(_geopoints), std::end(_geopoints),
+                    std::back_inserter(_screenpoints_clipped),
+                    [&_Proj](CPoint2DArray::const_reference pt) {
+                        return _Proj.LonLat2Screen(pt.Longitude(), pt.Latitude());
+                    });
+
+            // close polygon if needed
+            if(_screenpoints_clipped.front() != _screenpoints_clipped.back()) {
+                _screenpoints_clipped.push_back(_screenpoints_clipped.front());
+            }
+
+        } else {
+            // clipping is need calc screen pos in temp array
             std::transform(
                     std::begin(_geopoints), std::end(_geopoints),
                     std::back_inserter(_screenpoints),
@@ -849,25 +893,29 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
                         return _Proj.LonLat2Screen(pt.Longitude(), pt.Latitude());
 #endif
                     });
-            _screenpoints.push_back(_screenpoints.front());
+
+            // close polygon if needed
+            if(_screenpoints.front() != _screenpoints.back()) {
+                _screenpoints.push_back(_screenpoints.front());
+            }
 
             PixelRect MaxRect(rcDraw);
             MaxRect.Grow(300); // add space for inner airspace border, avoid artefact on screen border.
 
             LKGeom::ClipPolygon(MaxRect, _screenpoints, _screenpoints_clipped);
+        }
 
-            // airspace is visible only if clipped polygon have more than 2 point.
-            if (_screenpoints_clipped.size() > 2)  {
+        // airspace is visible only if clipped polygon have more than 2 point.
+        if (_screenpoints_clipped.size() > 2)  {
 
-                if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
-                    _drawstyle = adsFilled;
-                } else {
-                    _drawstyle = adsOutline;
-                    //    _drawstyle = adsFilled;
-                }
-                if (!_enabled)
-                    _drawstyle = adsDisabled;
+            if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
+                _drawstyle = adsFilled;
+            } else {
+                _drawstyle = adsOutline;
+                //    _drawstyle = adsFilled;
             }
+            if (!_enabled)
+                _drawstyle = adsDisabled;
         }
     }
 }
@@ -895,6 +943,10 @@ void CAirspace::Draw(LKSurface& Surface, bool fill) const {
 //
 CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace() {
     std::swap(_geopoints, Area_Points);
+
+    _screenpoints.reserve(_geopoints.size());
+    _screenpoints_clipped.reserve(_geopoints.size());
+
     CalcBounds();
     AirspaceAGLLookup((_bounds.miny + _bounds.maxy) / 2.0, (_bounds.minx + _bounds.maxx) / 2.0, &_base.Altitude, &_top.Altitude);
 }
