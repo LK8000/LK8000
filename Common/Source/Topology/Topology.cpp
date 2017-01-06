@@ -507,29 +507,37 @@ bool Topology::checkVisible(const shapeObj& shape, const rectObj &screenRect) {
   return (msRectOverlap(&shape.bounds, &screenRect) == MS_TRUE);
 }
 
-static RasterPoint shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _Proj, std::vector<RasterPoint>& points) {
+template <typename T>
+static T shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _Proj, std::vector<T>& points) {
 
-  RasterPoint leftPoint = {
-    std::numeric_limits<PixelScalar>::max(),
-    std::numeric_limits<PixelScalar>::max()
+  typedef typename T::scalar_type scalar_type;
+  using std::placeholders::_1;
+
+  T leftPoint = {
+    std::numeric_limits<scalar_type>::max(),
+    std::numeric_limits<scalar_type>::max()
   };
   const int last = line.numpoints-1;
   points.clear();
   points.reserve((line.numpoints/iskip)+1);
 
+
+  GeoToScreen<T> ToScreen(_Proj);
+
   // first point is inserted before loop for avoid to check "if(first)" inside loop
-  points.push_back(_Proj.LonLat2Screen(line.point[0]));
+  points.push_back(ToScreen(line.point[0]));
 
   for(int i = 1; i < last; i+=iskip) {
-    const RasterPoint pt = _Proj.LonLat2Screen(line.point[i]);
+    const T pt = ToScreen(line.point[i]);
     if (pt.x<=leftPoint.x) {
       leftPoint = pt;
     }
-    if(manhattan_distance(pt,points.back()) > 2) {
+    const T& prev_pt = points.back();
+    if(lround(std::abs((prev_pt.x - pt.x) + std::abs(prev_pt.y - pt.y))) > 2) {
         points.push_back(std::move(pt));
     }
   }
-  const RasterPoint pt = _Proj.LonLat2Screen(line.point[last]);
+  const T pt = ToScreen(line.point[last]);
   if (pt.x<=leftPoint.x) {
     leftPoint = pt;
   }
@@ -594,12 +602,18 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
       iskip = 4;
     }
   }
+
+  typedef RasterPoint ScreenPoint;
+#else
+  typedef FloatPoint ScreenPoint;
 #endif
 
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
   const rectObj screenRect = MapWindow::screenbounds_latlon;
 
-  static std::vector<RasterPoint> points;
+
+
+  static std::vector<ScreenPoint> points;
 
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
 
@@ -638,7 +652,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 
       if (checkVisible(*shape, screenRect))
         for (int tt = 0; tt < shape->numlines; ++tt) {
-          const RasterPoint ptLabel = shape2Screen(shape->line[tt], 1, _Proj, points);
+          const ScreenPoint ptLabel = shape2Screen(shape->line[tt], 1, _Proj, points);
           Surface.Polyline(points.data(), points.size(), rc);
           cshape->renderSpecial(renderer, Surface,ptLabel.x,ptLabel.y,rc);
         }
