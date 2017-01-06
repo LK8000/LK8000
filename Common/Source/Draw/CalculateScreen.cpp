@@ -277,7 +277,7 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
     typedef array_t::value_type point_t;
 
     typedef decltype(Groundline2) array2_t;
-    typedef array_t::value_type point2_t;
+    typedef array2_t::value_type point2_t;
 
 
     static_assert(std::is_same<point2_t, point_t>::value, "Groundline & Groundline2 need to same value type");
