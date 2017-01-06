@@ -15,7 +15,7 @@
 #ifdef RADIO_ACTIVE
 #define RoundFreq(a) ((int)((a)*1000.0+0.5)/1000.0)
 #define Freq2Idx(a)  (int)(((a)-118.0) * 3040/(137.00-118.0)+0.5)
-
+#define BIT(n) (1 << (n))
 
 #define ACTIVE_STATION  1
 #define PASSIVE_STATION 0
@@ -26,11 +26,9 @@
 
 #define HEADER_ID       0xA5
 #define PROTOKOL_ID     0x14
-#define BIT7            0x80
-#define BIT8            0x100
-#define QUERY           BIT7         
-#define DAUL            BIT8
-#define SQUELCH         BIT7
+#define QUERY           BIT(7)
+#define DAUL            BIT(8)
+#define SQUELCH         BIT(7)
 
 #ifdef TESTBENCH
 int iAR620DebugLevel =1;
@@ -451,8 +449,10 @@ static uint16_t uiVolumeCRC      =0;
 static uint16_t uiVersionCRC     =0;
 static uint16_t uiStatusCRC      =0;
 static uint16_t uiSquelchCRC     =0;
+static uint16_t uiRxStatusCRC    =0;
 #ifdef RADIO_VOLTAGE
 static uint16_t uiVoltageCRC     =0;
+uint32_t ulState;
 #endif
 int processed=0;
 
@@ -536,7 +536,24 @@ LKASSERT(d !=NULL);
         RadioPara.Changed = true;
       }
     break;
+    case 64:
+      if(uiRxStatusCRC != CRC) {
+          uiRxStatusCRC = CRC;
 
+          ulState = szCommand[4] << 24 | szCommand[5] << 16 | szCommand[6] << 8 | szCommand[7];
+        RadioPara.TX        = ((ulState & (BIT(5)| BIT(6))) > 0) ? true : false;
+        RadioPara.RX_active = ((ulState & BIT(7)) > 0)  ? true : false;
+        RadioPara.RX_standy = ((ulState & BIT(8)) > 0)  ? true : false;
+        RadioPara.RX        = (RadioPara.RX_active ||   RadioPara.RX_standy );
+        RadioPara.Changed = true;
+
+        if(iAR620DebugLevel )                         StartupStore(_T("AR620x 0x%X %s")  ,ulState , NEWLINE);
+        if(iAR620DebugLevel ) if(RadioPara.RX)        StartupStore(_T("AR620x Rx  %s")        , NEWLINE);
+        if(iAR620DebugLevel ) if(RadioPara.RX_active) StartupStore(_T("AR620x Rx Active  %s") , NEWLINE);
+        if(iAR620DebugLevel ) if(RadioPara.RX_standy) StartupStore(_T("AR620x Rx Passive %s") , NEWLINE);
+        if(iAR620DebugLevel ) if(RadioPara.TX)        StartupStore(_T("AR620x Tx  %s")        , NEWLINE);
+      }
+    break;
     default:
     break;
   }

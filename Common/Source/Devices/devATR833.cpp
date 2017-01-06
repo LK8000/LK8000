@@ -33,12 +33,12 @@
 
 #define DEBUG_OUTPUT        /* switch for debugging output                    */
 //#define RESEND_ON_NAK       /* switch for command retry on transmission fail  */
-
+#define BIT(n) (1 << (n))
 
 bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *uiArg);
 int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len);
 #ifdef TESTBENCH
-int  iATR833DebugLevel = 1;
+int  iATR833DebugLevel = 2;
 #else
 int  iATR833DebugLevel = 0;
 #endif
@@ -302,7 +302,7 @@ static uint8_t  converted[REC_BUFSIZE];
       {
         case 0x10: CommanLength=0  ; break;         // keep ALive
         case 0x11: CommanLength=0  ; break;         // Swap
-        case 0x12: CommanLength=2  ; break;         // Standba Freq
+        case 0x12: CommanLength=2  ; break;         // Standby Freq
         case 0x13: CommanLength=2  ; break;         // Active Freq
         case 0x14: CommanLength=1  ; break;         // Intercom
         case 0x16: CommanLength=1  ; break;         // Volume
@@ -393,6 +393,11 @@ LKASSERT(d !=NULL);
 int Idx=0;
   switch (szCommand[0])
   {  
+    case 0x10:               // keep alive
+   //   Send_Command( d, 0x10 , 0, NULL);  // reply
+      RadioPara.Changed = true;
+      processed  = 1;
+    break;
     /*****************************************************************************************/
     case 0x11:               // Swap Frequency
       RadioPara.Changed = true;
@@ -406,7 +411,7 @@ int Idx=0;
       if(Idx != 0)
         _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Swap %s"),    NEWLINE);
-      processed  = 2;
+      processed  = 1;
     break;
     /*****************************************************************************************/
     case 0x12:               // Standby Frequency
@@ -474,6 +479,11 @@ int Idx=0;
     /*****************************************************************************************/
     case 0x40:               // TxRx
       processed  = 2;
+      RadioPara.TX        = ((szCommand[1] & BIT(3)) > 0) ? true : false;
+      RadioPara.RX_active = ((szCommand[1] & BIT(1)) > 0) ? true : false;
+      RadioPara.RX_standy = ((szCommand[1] & BIT(2)) > 0) ? true : false;
+      RadioPara.RX        = (RadioPara.RX_active ||   RadioPara.RX_standy );
+      RadioPara.Changed = true;
     break;
     /*****************************************************************************************/
     case 0x41:               // ErrorStatus

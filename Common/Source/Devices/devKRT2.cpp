@@ -14,8 +14,8 @@
 
 #ifdef RADIO_ACTIVE
 
- #define min(X,Y) ((X) < (Y) ? : (X) : (Y))
-
+#define min(X,Y) ((X) < (Y) ? : (X) : (Y))
+#define BIT(n) (1 << (n))
 
 #define ACTIVE_STATION  1
 #define PASSIVE_STATION 0
