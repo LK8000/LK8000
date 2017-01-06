@@ -363,6 +363,8 @@ int main(int argc, char *argv[]) {
   RadioPara.Squelch = 3;
   RadioPara.Vox = 5;
   RadioPara.Enabled = false; //devIsRadio(devA()) || devIsRadio(devB());
+  RadioPara.ActiveFrequency  = 118.00;
+  RadioPara.PassiveFrequency = 118.00;
 #endif  // RADIO_ACTIVE
 
   // Initialise main blackboard data
