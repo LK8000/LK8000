@@ -70,5 +70,25 @@ protected:
     double _PixelSize;
 };
 
+
+template<typename T>
+struct GeoToScreen {
+    GeoToScreen(const ScreenProjection& Proj) : _Proj(Proj) {}
+
+    template<typename U = T>
+    typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
+    operator()(const pointObj& pt) {
+        return _Proj.LonLat2Screen(pt);
+    }
+
+    template<typename U = T>
+    typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
+    operator()(const pointObj& pt) {
+        return _Proj.ToFloatPoint(pt);
+    }
+
+    const ScreenProjection& _Proj;
+};
+
 #endif	/* SCREENPROJECTION_H */
 
