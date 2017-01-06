@@ -22,6 +22,7 @@
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
 #include "Time/PeriodClock.hpp"
+#include <array>
 
 #ifndef ENABLE_OPENGL
 #include "Poco/ThreadTarget.h"
@@ -834,9 +835,16 @@ protected:
   static void CalculateOrientationTargetPan(void);
   static void CalculateOrientationNormal(void);
 
-  static POINT Groundline[NUMTERRAINSWEEPS+1];
+#ifdef ENABLE_OPENGL
+  static std::array<FloatPoint, NUMTERRAINSWEEPS+2> Groundline;
 #ifdef GTL2
-  static POINT Groundline2[NUMTERRAINSWEEPS+1];
+  static std::array<FloatPoint, NUMTERRAINSWEEPS+1> Groundline2;
+#endif
+#else
+  static std::array<RasterPoint, NUMTERRAINSWEEPS+1> Groundline;
+#ifdef GTL2
+  static std::array<RasterPoint, NUMTERRAINSWEEPS+1> Groundline2;
+#endif
 #endif
 
   static bool targetMoved;

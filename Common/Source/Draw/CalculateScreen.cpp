@@ -271,28 +271,40 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
 }
 
 void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj) {
-    static_assert(array_size(Groundline) == array_size(DerivedDrawInfo.GlideFootPrint), "wrong array size");
+    static_assert(Groundline.size() == array_size(DerivedDrawInfo.GlideFootPrint), "wrong array size");
+
+    typedef decltype(Groundline) array_t;
+    typedef array_t::value_type point_t;
+
+    typedef decltype(Groundline2) array2_t;
+    typedef array_t::value_type point2_t;
+
+
+    static_assert(std::is_same<point2_t, point_t>::value, "Groundline & Groundline2 need to same value type");
+
+
+    GeoToScreen<point_t> ToScreen(_Proj);
 
     if (FinalGlideTerrain) {
         std::transform(
                 std::begin(DerivedDrawInfo.GlideFootPrint),
                 std::end(DerivedDrawInfo.GlideFootPrint),
                 std::begin(Groundline),
-                [&_Proj](const pointObj & pt) {
-                    return _Proj.LonLat2Screen(pt);
+                [&ToScreen](const pointObj & pt) {
+                    return ToScreen(pt);
                 });
 
     }
 #ifdef GTL2
-    static_assert(array_size(Groundline2) == array_size(GlideFootPrint2), "wrong array size");
+    static_assert(Groundline2.size() == array_size(GlideFootPrint2), "wrong array size");
 
     if (FinalGlideTerrain > 2) {// show next-WP line
         std::transform(
                 std::begin(GlideFootPrint2),
                 std::end(GlideFootPrint2),
                 std::begin(Groundline2),
-                [&_Proj](const pointObj & pt) {
-                    return _Proj.LonLat2Screen(pt);
+                [&ToScreen](const pointObj & pt) {
+                    return ToScreen(pt);
                 });
     }
 #endif

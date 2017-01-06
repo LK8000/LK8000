@@ -312,9 +312,14 @@ void LKSurface::Polyline(const FloatPoint *apt, int cpt, const RECT& ClipRect) {
         _pCanvas->DrawPolyline(apt, cpt);
     }
 }
+
+void LKSurface::DrawDashPoly(const int width, const LKColor& color, const FloatPoint* pt, const unsigned npoints, const RECT& rc) {
+    LKPen hpDash(PEN_DASH, width, color);
+    Polyline(pt, npoints, rc);
+}
 #endif
 
-void LKSurface::DrawDashPoly(const int width, const LKColor& color, const POINT *pt, const unsigned npoints, const RECT& rc) {
+void LKSurface::DrawDashPoly(const int width, const LKColor& color, const RasterPoint *pt, const unsigned npoints, const RECT& rc) {
     for (unsigned Segment = 1; Segment < npoints; Segment++) {
         DrawDashLine(width, pt[Segment - 1], pt[Segment], color, rc);
     }

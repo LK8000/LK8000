@@ -144,9 +144,11 @@ public:
 
 #ifdef ENABLE_OPENGL
     void Polyline(const FloatPoint *apt, int cpt, const RECT& ClipRect);
+
+    void DrawDashPoly(const int width, const LKColor& color, const FloatPoint* pt, const unsigned npoints, const RECT& rc);
 #endif
 
-    void DrawDashPoly(const int width, const LKColor& color, const POINT* pt, const unsigned npoints, const RECT& rc);
+    void DrawDashPoly(const int width, const LKColor& color, const RasterPoint* pt, const unsigned npoints, const RECT& rc);
 
     /**
      * this is used only by DrawThread, not thread safe

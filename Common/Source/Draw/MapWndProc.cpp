@@ -100,9 +100,16 @@ bool MapWindow::LandableReachable = false;
 LKPen MapWindow::hSnailPens[NUMSNAILCOLORS];
 LKColor MapWindow::hSnailColours[NUMSNAILCOLORS];
 
-POINT MapWindow::Groundline[NUMTERRAINSWEEPS+1];
+#ifdef ENABLE_OPENGL
+std::array<FloatPoint, NUMTERRAINSWEEPS+2> MapWindow::Groundline;
 #ifdef GTL2
-POINT MapWindow::Groundline2[NUMTERRAINSWEEPS+1];
+std::array<FloatPoint, NUMTERRAINSWEEPS+1> MapWindow::Groundline2;
+#endif
+#else
+std::array<RasterPoint, NUMTERRAINSWEEPS+1> MapWindow::Groundline;
+#ifdef GTL2
+std::array<RasterPoint, NUMTERRAINSWEEPS+1> MapWindow::Groundline2;
+#endif
 #endif
 
 // 17 is number of airspace types

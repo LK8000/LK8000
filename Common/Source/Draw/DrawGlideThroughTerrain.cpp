@@ -71,7 +71,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   #else
   // draw a dashed perimetral line first
   #endif
-  Surface.Polyline(Groundline,NUMTERRAINSWEEPS+1, rc);
+  Surface.Polyline(Groundline.data(),Groundline.size(), rc);
 
   // draw perimeter if selected and during a flight
   #ifdef GTL2
@@ -81,7 +81,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   if ((FinalGlideTerrain==1) || ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && (FinalGlideTerrain==2))) { 
   #endif
 	Surface.SelectObject(hpTerrainLine);
-	Surface.Polyline(Groundline,NUMTERRAINSWEEPS+1, rc);
+	Surface.Polyline(Groundline.data(),Groundline.size(), rc);
   }
   
   #ifdef GTL2  
@@ -89,10 +89,10 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   if (DrawGTL2) {
     // Draw a solid white line.
     Surface.SelectObject(LKPen_White_N2);
-    Surface.Polyline(Groundline2, NUMTERRAINSWEEPS+1, rc);
+    Surface.Polyline(Groundline2.data(), Groundline2.size(), rc);
 
     // Draw a dashed red line.
-    Surface.DrawDashPoly(NIBLSCALE(2), RGB_RED, Groundline2, NUMTERRAINSWEEPS+1, rc);
+    Surface.DrawDashPoly(NIBLSCALE(2), RGB_RED, Groundline2.data(), Groundline2.size(), rc);
   }
   #endif
 
