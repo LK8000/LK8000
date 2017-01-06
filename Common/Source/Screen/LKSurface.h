@@ -142,6 +142,10 @@ public:
     void Polyline(const POINT *apt, int cpt);
     void Polyline(const POINT *apt, int cpt, const RECT& ClipRect);
 
+#ifdef ENABLE_OPENGL
+    void Polyline(const FloatPoint *apt, int cpt, const RECT& ClipRect);
+#endif
+
     void DrawDashPoly(const int width, const LKColor& color, const POINT* pt, const unsigned npoints, const RECT& rc);
 
     /**

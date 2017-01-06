@@ -273,6 +273,7 @@ public:
   void DrawRaisedEdge(PixelRect &rc);
 
   void DrawPolyline(const RasterPoint *points, unsigned num_points);
+  void DrawPolyline(const FloatPoint *points, unsigned num_points);
 
   void DrawPolygon(const RasterPoint *points, unsigned num_points);
 

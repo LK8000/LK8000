@@ -304,6 +304,16 @@ void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
     }
 }
 
+#ifdef ENABLE_OPENGL
+void LKSurface::Polyline(const FloatPoint *apt, int cpt, const RECT& ClipRect) {
+    if(_pCanvas) {
+        const GLPushScissor push_scissor;
+        const GLCanvasScissor scissor(ClipRect);
+        _pCanvas->DrawPolyline(apt, cpt);
+    }
+}
+#endif
+
 void LKSurface::DrawDashPoly(const int width, const LKColor& color, const POINT *pt, const unsigned npoints, const RECT& rc) {
     for (unsigned Segment = 1; Segment < npoints; Segment++) {
         DrawDashLine(width, pt[Segment - 1], pt[Segment], color, rc);
