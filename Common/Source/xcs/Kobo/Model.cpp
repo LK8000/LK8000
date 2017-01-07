@@ -58,8 +58,9 @@ static constexpr struct {
   { "SN-N705", KoboModel::MINI },
   { "SN-N905", KoboModel::TOUCH },
   { "SN-613A4", KoboModel::GLO },
-  { "SN-N4375", KoboModel::GLOHD },
+  { "SN-N437", KoboModel::GLOHD },
   { "SN-N5875", KoboModel::TOUCH2 },
+  { "SN-N514", KoboModel::AURA },
 };
 
 static KoboModel
@@ -78,6 +79,8 @@ DetectKoboModel()
   char buffer[16];
   if (!ReadFromFile("/dev/mmcblk0", 0x200, buffer, sizeof(buffer)))
     return KoboModel::UNKNOWN;
-
+#if TESTBENCH
+  	  StartupStore(_T(".. Detected Kobo Model <%s>%s"),buffer,,NEWLINE);
+#endif
   return DetectKoboModel(buffer);
 }
