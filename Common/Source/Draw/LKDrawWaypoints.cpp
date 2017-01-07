@@ -188,16 +188,17 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
             }
         }
 
+
         if(pWptBmp) {
 #if defined(ANDROID) || defined(KOBO)  || defined(USE_X11)	// In devices where we have exact  screen DIP we use it
-			unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
-#ifdef DITHER			 // On KOBO colors are not  readeble so reduce size of unReachable
-			if ( WayPointList[i].Reachable == FALSE )
-				IconSize *= 0.8;  // reduce size if unreachable
+            unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
+#ifdef DITHER    // On KOBO colors are not  readeble so reduce size of unReachable
+            if ( WayPointList[i].Reachable == FALSE )
+                IconSize *= 0.8;  // reduce size if unreachable
 #endif
 #else
-			// Stretch only if Scaled size is greater than 20
-		const unsigned IconSize = std::max(NIBLSCALE(10), 20);
+            // Stretch only if Scaled size is greater than 20
+            const unsigned IconSize = std::max(NIBLSCALE(10), 20);
 #endif
             pWptBmp->Draw(Surface, WayPointList[i].Screen.x-IconSize/2, WayPointList[i].Screen.y-IconSize/2, IconSize,IconSize);
         }
@@ -551,10 +552,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
     }
     if(pWptBmp) {
 #if defined(ANDROID) || defined(KOBO) || defined(USE_X11)	// In devices where we have exact  screen DIP we use it
-		const unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
+        const unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
 #else
-		// Stretch only if Scaled size is greater than 20
-		const unsigned IconSize = std::max(NIBLSCALE(10), 20);
+        // Stretch only if Scaled size is greater than 20
+        const unsigned IconSize = std::max(NIBLSCALE(10), 20);
 #endif
         pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
     }
@@ -669,10 +670,10 @@ turnpoint:
 
     if(pWptBmp) {
 #if defined(ANDROID) || defined(KOBO)|| defined(USE_X11)	// In devices where we have exact  screen DIP we use it
-		unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
+        unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
 #else
-		// Stretch only if Scaled size is greater than 20
-		const unsigned IconSize = std::max(NIBLSCALE(10), 20);
+        // Stretch only if Scaled size is greater than 20
+        const unsigned IconSize = std::max(NIBLSCALE(10), 20);
 #endif
         pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
     }
