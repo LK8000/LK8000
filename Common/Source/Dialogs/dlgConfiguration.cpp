@@ -2639,7 +2639,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(1797)); // Vector
-	// LKTOKEN  _@M87_ = "Alternate" 
+	// LKTOKEN  _@M87_ = "Bitmap"
     dfe->addEnumText(MsgToken(87));
     dfe->Set(Appearance.IndLandable);
     wp->RefreshDisplay();
