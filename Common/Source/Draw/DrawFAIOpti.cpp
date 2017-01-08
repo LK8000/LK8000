@@ -567,7 +567,7 @@ if (iOpposite >0)
   POINT line[2];
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
-  fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
+  fDistTri = fDistMin;
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
 int iCnt = 0;
@@ -665,7 +665,9 @@ int iCnt = 0;
       fDist_b += fDelta_Dist;
     }
     }
-    fDistTri+=fTic;iCnt++;
+
+    fDistTri = ((int)(fDistMin/fTic)+1) * fTic + (iCnt) * fTic;
+    iCnt++;
  //   if((iCnt %2) ==0)
   //    DrawText(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   }
