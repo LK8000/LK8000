@@ -33,6 +33,7 @@ enum class KoboModel {
   GLO,
   GLOHD,
   TOUCH2,
+  AURA,
 };
 
 gcc_const

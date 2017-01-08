@@ -377,7 +377,7 @@ This determines how long menus will appear on screen if the user does not make a
 Defines the location of the glider drawn on the screen in percent from the bottom.
 
 @184
-Two styles are available: Vector or Alternate. 
+Two styles are available: Vector or Bitmap. 
 Vector waypoints will show runway orientation, radio, and other informations.
 
 @185
