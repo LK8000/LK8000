@@ -191,7 +191,7 @@ void Statistics::RenderFAIOptimizer(LKSurface& Surface, const RECT& rc)
 {
 
 unsigned int ui;
-double fXY_Scale = 1.0;
+double fXY_Scale = 2.5;
 double lat0 = 0;
 double lon0 = 0;
 double lat1 = 0;
@@ -214,7 +214,7 @@ ResetScale();
   CContestMgr::CResult result = CContestMgr::Instance().Result( CContestMgr::TYPE_FAI_TRIANGLE, true);
   const CPointGPSArray &points = result.PointArray();
 //  if(contestType == CContestMgr::TYPE_FAI_TRIANGLE)
-     fXY_Scale = 1.5;
+     fXY_Scale = 2.5;
 
   // find center
   double fTotalDistance = result.Distance();
