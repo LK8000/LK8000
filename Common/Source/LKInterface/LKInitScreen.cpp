@@ -162,6 +162,13 @@ void InitLKScreen() {
   StartupStore(_T("... ScreenDensity= %d  ScreenPixelRatio=%d (/10) ThinSize=%d%s"),ScreenDensity,ScreenPixelRatio,ScreenThinSize,NEWLINE);
   #endif
 
+  if (ScreenPixelRatio<10) {
+     #ifdef TESTBENCH
+     StartupStore(_T("... UNSUPPORTED RESCALING TO LOWER%s"),NEWLINE);
+     #endif
+     ScreenPixelRatio=10;
+  }
+
   if (ScreenLandscape) {
 	GestureSize=RescalePixelSize(50);
 	LKVarioSize=ScreenSizeX/16;
