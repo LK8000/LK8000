@@ -138,6 +138,16 @@ void InitLKScreen() {
 		ScreenLandscape=false;
   }
   ScreenDensity=GetScreenDensity();
+
+  // This is used by RescalePixelSize(), defined in Makefile when needed.
+  // We are not supposed to use directly this value
+  // because we go through RescalePixelSize() .. but we never know.
+  #ifdef RESCALE_PIXEL
+  ScreenPixelRatio=(ScreenDensity*10)/LK_REFERENCE_DPI;
+  #else
+  ScreenPixelRatio=10;
+  #endif
+
   #ifdef __linux__
   if (ScreenDensity>200)
      ScreenThinSize=NIBLSCALE(1);
@@ -147,7 +157,7 @@ void InitLKScreen() {
   ScreenThinSize=1;
   #endif
   #ifdef TESTBENCH
-  StartupStore(_T("... ScreenDensity= %d  ThinSize=%d%s"),ScreenDensity,ScreenThinSize,NEWLINE);
+  StartupStore(_T("... ScreenDensity= %d  ScreenPixelRatio=%d (/10) ThinSize=%d%s"),ScreenDensity,ScreenPixelRatio,ScreenThinSize,NEWLINE);
   #endif
 
   if (ScreenLandscape) {
@@ -310,3 +320,19 @@ unsigned short GetScreenDensity(void) {
 	// if we are not able to get correct value just return default estimation
 	return sqrt(ScreenSizeX*ScreenSizeX + ScreenSizeY*ScreenSizeY)/5; // default to a 5 in screen;
 }
+
+#ifdef RESCALE_PIXEL
+//
+// Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
+// If unused, this function is a transparent #define RescalePixelSize(arg) arg 
+// See ScreenGeometry.h
+// WARNING: use this function only after InitLKScreen() has been done.
+//
+unsigned short RescalePixelSize(unsigned short x) {
+
+return (x*ScreenPixelRatio)/10;
+
+}
+#endif
+
+

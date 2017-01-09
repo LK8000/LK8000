@@ -40,6 +40,11 @@
 extern unsigned short GetScreenGeometry(unsigned int x, unsigned int y);
 extern double GetScreen0Ratio(void);
 extern unsigned short GetScreenDensity(void);
+#ifdef RESCALE_PIXEL
+extern unsigned short RescalePixelSize(unsigned short x);
+#else
+#define RescalePixelSize(arg) arg
+#endif
 
 
 #endif

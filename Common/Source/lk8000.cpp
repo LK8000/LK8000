@@ -251,6 +251,9 @@ int main(int argc, char *argv[]) {
     #ifdef POCO_STATIC
     StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
     #endif
+    #ifdef RESCALE_PIXEL
+    StartupStore(_T("    + RESCALE_PIXEL%s"),NEWLINE);
+    #endif
 
     StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
