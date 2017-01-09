@@ -451,7 +451,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   POINT line[2];
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
-  fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
+  fDistTri = fDistMin ; //((int)(fDistMin/fTic)+1) * fTic ;
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
 int iCnt = 0;
@@ -535,7 +535,10 @@ int iCnt = 0;
       fDist_b += fDelta_Dist;
     }
   }
-  fDistTri+=fTic;iCnt++;
+  fDistTri+=fTic;
+  if(iCnt == 0)
+    fDistTri = ((int)(fDistMin/fTic)+1) * fTic;
+  iCnt++;
 }
 
 Surface.SelectObject(hfOld);
