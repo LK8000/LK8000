@@ -396,6 +396,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryGearMode      ,GearWarningMode);
   rprintf(szRegistryGearAltitude  ,GearWarningAltitude);
   rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
+  rprintf(szRegistryFAIOptiMode   ,FAI_OptimizerMode);
+
   if (SaveRuntime) rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
 
