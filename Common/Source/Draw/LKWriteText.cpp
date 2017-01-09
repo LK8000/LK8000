@@ -10,6 +10,9 @@
 #include "RGB.h"
 #include <iterator>
 #include <functional>
+#ifdef RESCALE_PIXEL
+#include "ScreenGeometry.h"
+#endif
 
 using std::placeholders::_1;
 
@@ -109,6 +112,24 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
 #ifdef USE_FREETYPE
 #warning "to slow, rewrite using freetype outline"
 #endif
+
+#ifdef RESCALE_PIXEL
+        short emboldsize=RescalePixelSize(1); 
+        
+        for (short a=1; a<=emboldsize; a++) {
+           Surface.DrawText(x - a, y - a, wText, ClipRect);
+           Surface.DrawText(x - a, y + a, wText, ClipRect);
+           Surface.DrawText(x + a, y - a, wText, ClipRect);
+           Surface.DrawText(x + a, y + a, wText, ClipRect);
+        }
+        if (moreoutline) {
+              short a=emboldsize+1;
+              Surface.DrawText(x - a, y, wText, ClipRect);
+              Surface.DrawText(x + a, y, wText, ClipRect);
+              Surface.DrawText(x, y - a, wText, ClipRect);
+              Surface.DrawText(x, y + a, wText, ClipRect);
+        }
+#else
         Surface.DrawText(x - 1, y - 1, wText, ClipRect);
         Surface.DrawText(x - 1, y + 1, wText, ClipRect);
         Surface.DrawText(x + 1, y - 1, wText, ClipRect);
@@ -123,6 +144,7 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
             Surface.DrawText(x, y - 2, wText, ClipRect);
             Surface.DrawText(x, y + 2, wText, ClipRect);
         }
+#endif
 
         Surface.SetTextColor(textColor);
         Surface.DrawText(x, y, wText, ClipRect);
