@@ -46,9 +46,12 @@ IntConvertStruct sFrequency;
 IntConvertStruct sStatus;
 
 #define MAX_CMD_LEN 128
-uint8_t  szTmp[MAX_CMD_LEN];
 
 
+#define  RESEND_DELAY 100
+
+volatile BOOL bSending = false;
+//volatile BOOL bReceiving = false;
 int AR620x_Convert_Answer(DeviceDescriptor_t *d, uint8_t  *szCommand, int len, uint16_t CRC);
 
 BOOL AR620xInstall(PDeviceDescriptor_t d){
@@ -81,6 +84,19 @@ BOOL AR620xRegister(void){
 BOOL AR620xIsRadio(PDeviceDescriptor_t d){
   (void)d;
   return(TRUE);
+}
+
+int SendCommand(PDeviceDescriptor_t d, uint8_t szTmp[], uint16_t len)
+{
+
+  bSending = true;
+  d->Com->Write(szTmp,len);
+  Poco::Thread::sleep(100);
+
+  d->Com->Write(szTmp,len);
+  Poco::Thread::sleep(100); // don't listen to old status in the pipe
+  bSending = false;
+  return true;
 }
 
 double Idx2Freq(uint16_t uFreqIdx)
@@ -213,8 +229,9 @@ if(Command == NULL )
 
 
 BOOL AR620xPutVolume(PDeviceDescriptor_t d, int Volume) {
- #define  AR620x_HAS_VOLUME_CONTROL
+#define  AR620x_HAS_VOLUME_CONTROL
 #ifdef AR620x_HAS_VOLUME_CONTROL
+uint8_t  szTmp[MAX_CMD_LEN];
 int len;
 
   if(d != NULL)
@@ -230,7 +247,7 @@ int len;
         CRC.intVal16 =  CRCBitwise(szTmp, len);
         szTmp [len++] = CRC.intVal8[1];
         szTmp [len++] = CRC.intVal8[0];
-        d->Com->Write(szTmp,len);
+        SendCommand(d, szTmp,len);
         if(iAR620DebugLevel) StartupStore(_T(". AR620x Volume  %i%s"), Volume,NEWLINE);
         RadioPara.Volume = Volume;
       }
@@ -246,6 +263,7 @@ int len;
 BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 #define	SET_SQUELCH
 #ifdef SET_SQUELCH
+uint8_t  szTmp[MAX_CMD_LEN];
 uint8_t len;
   if(d != NULL)
     if(!d->Disabled)
@@ -260,7 +278,7 @@ uint8_t len;
         CRC.intVal16 =  CRCBitwise(szTmp, len);
         szTmp [len++] = CRC.intVal8[1];
         szTmp [len++] = CRC.intVal8[0];
-        d->Com->Write(szTmp,len);
+        SendCommand(d, szTmp,len);
         if(iAR620DebugLevel) StartupStore(_T(". AR620x Squelch  %i%s"), Squelch,NEWLINE);
         RadioPara.Squelch = Squelch;
       }
@@ -271,18 +289,19 @@ uint8_t len;
 
 BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
 int len;
-
+uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
+        if(iAR620DebugLevel) StartupStore(_T(". AR620x Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
         len = SetAR620xStation(szTmp ,ACTIVE_STATION, Freq, StationName);
-        d->Com->Write(szTmp,len);
+        SendCommand(d, szTmp,len);
         RadioPara.ActiveFrequency=  Freq;
         if(StationName != NULL)
           _stprintf(RadioPara.ActiveName,_T("%s"),StationName) ;
 
-        if(iAR620DebugLevel) StartupStore(_T(". AR620x Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+
       }
   return(TRUE);
 }
@@ -290,13 +309,13 @@ int len;
 
 BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
 int len;
-
+uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
         len = SetAR620xStation(szTmp ,PASSIVE_STATION, Freq, StationName);
-        d->Com->Write(szTmp,len);
+        SendCommand(d, szTmp,len);
         RadioPara.PassiveFrequency =  Freq;
         if(StationName != NULL)
           _stprintf(RadioPara.PassiveName  ,_T("%s"),StationName) ;
@@ -308,7 +327,7 @@ int len;
 
 BOOL AR620xStationSwap(PDeviceDescriptor_t d) {
 uint8_t len=0;
-
+uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
@@ -326,7 +345,7 @@ uint8_t len=0;
         CRC.intVal16 =  CRCBitwise(szTmp, len);
         szTmp [len++] = CRC.intVal8[1];
         szTmp [len++] = CRC.intVal8[0];
-        d->Com->Write(szTmp,len);
+        SendCommand(d, szTmp,len);
       }
   return(TRUE);
 }
@@ -334,7 +353,7 @@ uint8_t len=0;
 
 BOOL AR620xRadioMode(PDeviceDescriptor_t d, int mode) {
 uint8_t len;
-
+uint8_t  szTmp[MAX_CMD_LEN];
 
   if(d != NULL)
     if(!d->Disabled)
@@ -360,7 +379,7 @@ uint8_t len;
         CRC.intVal16 =  CRCBitwise(szTmp, len);
         szTmp [len++] = CRC.intVal8[1];
         szTmp [len++] = CRC.intVal8[0];
-        d->Com->Write(szTmp,len);
+        SendCommand(d, szTmp,len);
       }
   return(TRUE);
 }
@@ -388,7 +407,7 @@ while (cnt < len)
 {   
   if(String[cnt] == HEADER_ID)
     Recbuflen =0;
-  
+
   if(Recbuflen >= REC_BUFSIZE)
     Recbuflen =0;
 
@@ -411,19 +430,27 @@ while (cnt < len)
        CalCRC =CRCBitwise(Command, CommandLength+3);
        if(CalCRC  == CRC.intVal16)
        {
-           if(iAR620DebugLevel ==2)  StartupStore(_T("AR620x  Process Command %u  %s") ,Command[3]  ,NEWLINE);
-           AR620x_Convert_Answer(d, Command, CommandLength+5,CalCRC);
+           if(!bSending)
+           {
+             if(iAR620DebugLevel ==2 )  StartupStore(_T("AR620x  Process Command %u  %s") ,Command[3]  ,NEWLINE);
+             AR620x_Convert_Answer(d, Command, CommandLength+5,CalCRC);
+           }
+           else
+             if(iAR620DebugLevel)  StartupStore(_T("AR620x  skip Command %u  %s") ,Command[3]  ,NEWLINE);
+
        }
        else
        {
     	   if(iAR620DebugLevel)StartupStore(_T("AR620x  CRC check fail! Command 0x%04X  0x%04X %s") ,CRC.intVal16,CalCRC ,NEWLINE);
        }
        Recbuflen = 0;
+
      }
   }
 
 
 }
+
 return  RadioPara.Changed;
 }
 
@@ -516,7 +543,7 @@ LKASSERT(d !=NULL);
         RadioPara.Changed = true;
         sFrequency.intVal8[1] = szCommand[4] ;
         sFrequency.intVal8[0] = szCommand[5] ;
-        if(   RadioPara.ActiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
+      //  if(   RadioPara.ActiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
         {
           RadioPara.ActiveFrequency =  Idx2Freq(sFrequency.intVal16);
           Idx = SearchStation(RadioPara.ActiveFrequency);
@@ -526,7 +553,7 @@ LKASSERT(d !=NULL);
 
         sFrequency.intVal8[1] = szCommand[6];
         sFrequency.intVal8[0] = szCommand[7] ;
-        if(   RadioPara.PassiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
+    //    if(   RadioPara.PassiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
         {
           RadioPara.PassiveFrequency =  Idx2Freq(sFrequency.intVal16);
           Idx = SearchStation(RadioPara.PassiveFrequency);
