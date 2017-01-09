@@ -88,7 +88,9 @@ void InitLKScreen() {
   else
 	UseHiresBitmap=false;
 
-  // StartupStore(_T("...... ScreenScale=%d ScreenDScale=%.3f ScreenIntScale=%d\n"),ScreenScale,ScreenDScale,ScreenIntScale);
+  #ifdef TESTBENCH
+  StartupStore(_T("...... ScreenScale=%d ScreenDScale=%.3f ScreenIntScale=%d\n"),ScreenScale,ScreenDScale,ScreenIntScale);
+  #endif
 
   ScreenSize=0; // This is "ssnone"
 
@@ -161,10 +163,10 @@ void InitLKScreen() {
   #endif
 
   if (ScreenLandscape) {
-	GestureSize=50;
+	GestureSize=RescalePixelSize(50);
 	LKVarioSize=ScreenSizeX/16;
   } else {
-	GestureSize=50;
+	GestureSize=RescalePixelSize(50);
 	LKVarioSize=ScreenSizeX/11;
   }
 
@@ -326,7 +328,7 @@ unsigned short GetScreenDensity(void) {
 // Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
 // If unused, this function is a transparent #define RescalePixelSize(arg) arg 
 // See ScreenGeometry.h
-// WARNING: use this function only after InitLKScreen() has been done.
+// WARNING: use this function only after ScreenPixelRatio has been calculated by InitLKScreen().
 //
 unsigned short RescalePixelSize(unsigned short x) {
 
