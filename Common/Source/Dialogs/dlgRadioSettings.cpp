@@ -168,10 +168,10 @@ int Idx=0;
         }
     }
     if(RadioPara.TX)
-      _stprintf(Name,_T("[Tx:%s]"),RadioPara.ActiveName);
+      _stprintf(Name,_T(">%s<"),RadioPara.ActiveName);
     else
       if(RadioPara.RX_active)
-        _stprintf(Name,_T("[Rx:%s]"),RadioPara.ActiveName);
+        _stprintf(Name,_T("<%s>"),RadioPara.ActiveName);
       else
         _stprintf(Name,_T("[%s]"),RadioPara.ActiveName);
     if(wpnewActive)
@@ -195,7 +195,7 @@ int Idx=0;
         }
     }
     if(RadioPara.RX_standy)
-      _stprintf(Name,_T("[Rx:%s]"),RadioPara.PassiveName);
+      _stprintf(Name,_T("<%s>"),RadioPara.PassiveName);
     else
       _stprintf(Name,_T("[%s]"),RadioPara.PassiveName);
     if(wpnewPassive)
