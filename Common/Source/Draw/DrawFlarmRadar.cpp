@@ -1103,7 +1103,11 @@ if(SPLITSCREEN_FACTOR >0)
 	     */
 	      if(LKTraffic[i].Locked)
 	      {
+                    #ifdef NO_DASH_LINES
+		    Surface.DrawLine(PEN_SOLID,2, (POINT){x_middle, y_middle},(POINT){ x, y} ,rgb_targetlinecol, rct );
+                    #else
 		    Surface.DrawDashLine(4, (POINT){x_middle, y_middle},(POINT){ x, y} ,rgb_targetlinecol, rct );
+                    #endif
 	      }
 	    }
       }
@@ -1277,7 +1281,11 @@ if(bSideview)
 	  if(LKTraffic[i].Locked)
 	  {
 		int  h0 = HeightToY(0,&sDia);
+                #ifdef NO_DASH_LINES
+		Surface.DrawLine(PEN_SOLID, 2, (POINT){x_middle,       h0},(POINT){ x, hy} ,rgb_targetlinecol, rc );
+                #else
 		Surface.DrawDashLine(4, (POINT){x_middle,       h0},(POINT){ x, hy} ,rgb_targetlinecol, rc );
+                #endif
 	  }
 	}
   }

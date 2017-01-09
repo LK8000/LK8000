@@ -632,7 +632,11 @@ int iCnt = 0;
 
       if(j> 0)
       {
+        #ifdef NO_DASH_LINES
+        Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0] , line[1] , RGB_BLACK, rc);
+        #else
         Surface.DrawLine(PEN_DASH, NIBLSCALE(1), line[0] , line[1] , RGB_BLACK, rc);
+        #endif
       }
 
 

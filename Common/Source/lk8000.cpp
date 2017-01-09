@@ -254,6 +254,9 @@ int main(int argc, char *argv[]) {
     #ifdef RESCALE_PIXEL
     StartupStore(_T("    + RESCALE_PIXEL%s"),NEWLINE);
     #endif
+    #ifdef NO_DASH_LINES
+    StartupStore(_T("    + NO_DASH_LINES%s"),NEWLINE);
+    #endif
 
     StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif

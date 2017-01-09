@@ -166,6 +166,28 @@ void DrawSelectionFrame(LKSurface& Surface, const RECT& rc) {
 
     col = RGB_YELLOW;
 
+#ifdef NO_DASH_LINES
+    Surface.DrawLine(PEN_SOLID, ScreenThinSize, (POINT) {
+        rci.left, rci.top}, (POINT) {
+        rci.left, rci.bottom
+    }, col, rci);
+
+    Surface.DrawLine(PEN_SOLID, ScreenThinSize, (POINT) {
+        rci.left, rci.bottom}, (POINT) {
+        rci.right, rci.bottom
+    }, col, rci);
+
+    Surface.DrawLine(PEN_SOLID, ScreenThinSize, (POINT) {
+        rci.right, rci.bottom}, (POINT) {
+        rci.right, rci.top
+    }, col, rci);
+
+    Surface.DrawLine(PEN_SOLID, ScreenThinSize, (POINT) {
+        rci.right, rci.top}, (POINT) {
+        rci.left, rci.top
+    }, col, rci);
+
+#else
     Surface.DrawDashLine(iSize, (POINT) {
         rci.left, rci.top}, (POINT) {
         rci.left, rci.bottom
@@ -185,7 +207,7 @@ void DrawSelectionFrame(LKSurface& Surface, const RECT& rc) {
         rci.right, rci.top}, (POINT) {
         rci.left, rci.top
     }, col, rci);
-
+#endif
 
 }
 
