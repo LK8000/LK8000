@@ -14,12 +14,19 @@
 #include "LKObjects.h"
 #include "utils/stl_utils.h"
 #include "NavFunctions.h"
+#ifdef RESCALE_PIXEL
+#include "ScreenGeometry.h"
+#endif
 //
 // SCALE SIZE: NIBLSCALE(42+4)
 //
 #define MAPSCALE_VSIZE  NIBLSCALE(42)
 #define MAPSCALE_HSIZE  NIBLSCALE(5)
+#ifdef RESCALE_PIXEL
+#define MAPSCALE_RIGHTMARGIN   (rc.right-NIBLSCALE(3)) - RescalePixelSize(1)
+#else
 #define MAPSCALE_RIGHTMARGIN   (rc.right-NIBLSCALE(3))
+#endif
 
 /* in Landscape mode, we need to draw Scale upper for avoid menu overlap
  * this define are crap, but i don't have better way for do that now.
@@ -64,22 +71,22 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
         };
 
         ScaleLineBck[0] = {
-            ScaleLine[0].x - 1, 
-            ScaleLine[0].y - 1, 
-            ScaleLine[1].x + 2, 
-            ScaleLine[1].y + 2
+            ScaleLine[0].x - RescalePixelSize(1), 
+            ScaleLine[0].y - RescalePixelSize(1), 
+            ScaleLine[1].x + RescalePixelSize(2), 
+            ScaleLine[1].y + RescalePixelSize(2)
         };
         ScaleLineBck[1] = {
-            ScaleLine[1].x - 1, 
-            ScaleLine[1].y - 1, 
-            ScaleLine[2].x + 2, 
-            ScaleLine[2].y + 2
+            ScaleLine[1].x - RescalePixelSize(1), 
+            ScaleLine[1].y - RescalePixelSize(1), 
+            ScaleLine[2].x + RescalePixelSize(2), 
+            ScaleLine[2].y + RescalePixelSize(2)
         };
         ScaleLineBck[2] = {
-            ScaleLine[3].x - 1, 
-            ScaleLine[3].y - 1, 
-            ScaleLine[2].x + 2, 
-            ScaleLine[2].y + 2
+            ScaleLine[3].x - RescalePixelSize(1), 
+            ScaleLine[3].y - RescalePixelSize(1), 
+            ScaleLine[2].x + RescalePixelSize(2), 
+            ScaleLine[2].y + RescalePixelSize(2)
         }; 
         
         SIZE tsize;
@@ -103,7 +110,12 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     Surface.FillRect(&ScaleLineBck[1], LKBrush_Black);
     Surface.FillRect(&ScaleLineBck[2], LKBrush_Black);
    
+    #ifdef RESCALE_PIXEL
+    auto hpOld = Surface.SelectObject(LKPen_White_N0);
+    if (ScreenDensity>=380) hpOld = Surface.SelectObject(LKPen_White_N1);
+    #else
     const auto hpOld = Surface.SelectObject(LKPen_White_N0);
+    #endif
     Surface.Polyline(ScaleLine, array_size(ScaleLine));
     Surface.SelectObject(hpOld);
 
