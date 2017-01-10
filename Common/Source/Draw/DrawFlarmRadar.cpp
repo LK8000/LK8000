@@ -111,7 +111,7 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
   double x_max = psDia->fXMax;
   double x_min = psDia->fXMin;
   TCHAR unit_text[MAX_PATH];
-  for (xval=zero; xval<= x_max; xval+= ticstep) {
+  for (xval=zero; xval< x_max; xval+= ticstep) {
 
     xmin = (int)((xval-x_min)*xscale)+rc.left;
     ymin = rc.top;
