@@ -11,6 +11,7 @@
 #include "Screen/Point.hpp"
 #include "Math/Point2D.hpp"
 #include "mapprimitive.h"
+#include "Geographic/GeoPoint.h"
 
 class ScreenProjection final {
 public:
@@ -85,6 +86,18 @@ struct GeoToScreen {
     typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
     operator()(const pointObj& pt) {
         return _Proj.ToFloatPoint(pt);
+    }
+
+    template<typename U = T>
+    typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
+    operator()(const GeoPoint& pt) {
+        return _Proj.LonLat2Screen(pt.longitude, pt.latitude);
+    }
+
+    template<typename U = T>
+    typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
+    operator()(const GeoPoint& pt) {
+        return _Proj.ToFloatPoint(pt.longitude, pt.latitude);
     }
 
     const ScreenProjection& _Proj;
