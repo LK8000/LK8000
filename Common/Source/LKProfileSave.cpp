@@ -189,7 +189,11 @@ void LKProfileSave(const TCHAR *szFile)
   ///rprintf(szRegistryDeviceB,dwDeviceName2);
   rprintf(szRegistryDisableAutoLogger,DisableAutoLogger);
   rprintf(szRegistryDisplayText,DisplayTextType);
-  rprintf(szRegistryDisplayUpValue,DisplayOrientation_Config);
+  if (SaveRuntime) {
+      rprintf(szRegistryDisplayUpValue, DisplayOrientation);
+  } else {
+      rprintf(szRegistryDisplayUpValue, DisplayOrientation_Config);
+  }
   rprintf(szRegistryDistanceUnitsValue,DistanceUnit_Config );
   rprintf(szRegistryEnableFLARMMap,EnableFLARMMap);
   rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude_Config);
