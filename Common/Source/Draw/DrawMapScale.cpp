@@ -14,9 +14,7 @@
 #include "LKObjects.h"
 #include "utils/stl_utils.h"
 #include "NavFunctions.h"
-#ifdef RESCALE_PIXEL
 #include "ScreenGeometry.h"
-#endif
 //
 // SCALE SIZE: NIBLSCALE(42+4)
 //
