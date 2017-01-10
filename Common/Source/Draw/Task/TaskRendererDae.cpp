@@ -19,6 +19,9 @@ TaskRendererDae::TaskRendererDae(const GeoPoint& center, double start, double en
 
     _GeoPoints.reserve(360 + 4);
 
+// order of point is very important, need to be odered for allow drawing polygon using OpenGL triangle fan
+
+    _GeoPoints.push_back(center.Direct(start, 500));
     _GeoPoints.push_back(center.Direct(start, 10e3));
 
     for (int i = start_bearing; i <= end_bearing; ++i) {
@@ -31,7 +34,6 @@ TaskRendererDae::TaskRendererDae(const GeoPoint& center, double start, double en
     for (int i = end_bearing + 1; i < start_bearing + 360; ++i) {
         _GeoPoints.push_back(center.Direct(static_cast<double> (i), 500));
     }
-    _GeoPoints.push_back(center.Direct(start, 500));
 
     _bounds.minx = _bounds.maxx = center.longitude;
     _bounds.miny = _bounds.maxy = center.latitude;

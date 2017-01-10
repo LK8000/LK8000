@@ -21,6 +21,9 @@ class TaskRendererDae : public TaskRenderer {
 public:
     TaskRendererDae(const GeoPoint& center, double start, double end);
 
+    bool IsPolygon() const override { 
+        return true; 
+    }
 };
 
 #endif /* TASKRENDERERDAE_H */

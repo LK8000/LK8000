@@ -32,12 +32,23 @@ public:
     void Draw(LKSurface& Surface, const RECT &rc, bool bFill) const;
     void CalculateScreenPosition(const rectObj &screenbounds, const ScreenProjection& _Proj);
 
+    /**
+     * return true if task point is polygon, false if shape is polyline.
+     */
+    virtual bool IsPolygon() const = 0;
+
+#ifdef USE_GDI
     PixelRect GetScreenBounds() const;
+#endif
 
 protected:
-
+#ifdef HAVE_GLES
+  typedef FloatPoint ScreenPoint;
+#else
+  typedef RasterPoint ScreenPoint;
+#endif	
     typedef std::vector<GeoPoint> GeoPoints_t;
-    typedef std::vector<RasterPoint> ScreenPoints_t;
+    typedef std::vector<ScreenPoint> ScreenPoints_t;
 
     GeoPoints_t _GeoPoints;
     ScreenPoints_t _ScreenPoints;

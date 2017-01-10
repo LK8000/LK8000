@@ -25,6 +25,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     if (!AATEnabled) return;
 
     LockTaskData(); // protect from external task changes
+#ifdef USE_GDI
     /**********************************************/
     /* Check if not Validated Waypoint is visible */
     bool bDraw = false;
@@ -49,9 +50,12 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         }
     }
     /**********************************************/
+#else
+    const int maxTp = MAXTASKPOINTS;
+#endif
 
-    if (bDraw) { // Draw Only if one is Visible
 #ifdef USE_GDI
+    if (bDraw) { // Draw Only if one is Visible
         rcDraw.top = std::max(rc.top, rcDraw.top);
         rcDraw.bottom = std::min(rc.bottom, rcDraw.bottom);
         rcDraw.left = std::max(rc.left, rcDraw.left);
@@ -110,10 +114,8 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
                     TempSurface,
                     rcDraw.left, rcDraw.top);
         }
-#endif
-	}
-
-    {
-        UnlockTaskData();
     }
+#endif
+
+    UnlockTaskData();
 }
