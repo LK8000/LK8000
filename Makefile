@@ -567,11 +567,19 @@ ifneq ($(DEBUG),y)
  CPPFLAGS	+= -DNDEBUG
 endif
 #
+#
+# ###################################
+#     OTHER COMPILER OPTIONS 
+# ###################################
+#
 # LX MINIMAP CUSTOM VERSION
+# CPPFLAGS	+= -DLXMINIMAP
 #
-#CPPFLAGS	+= -DLXMINIMAP
+# RESCALING OF PIXEL SIZE WHEN NEEDED, BASED ON DPI
+# CPPFLAGS	+= -DRESCALE_PIXEL
 #
-#
+# DASH LINES NOT SUPPORTED ? USE THIS.
+# CPPFLAGS	+= -DNO_DASH_LINES 
 
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type
 CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized

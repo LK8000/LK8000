@@ -592,13 +592,21 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                             BestReach.x = CalcDistanceCoordinat( dOpt, &sDia);
                             BestReach.y = CalcHeightCoordinatOutbound( AltOpt,  &sDia );
 
+                            #ifdef NO_DASH_LINES
+                            Surface.DrawLine(PEN_SOLID, 2, line[2], BestReach,  RGB_BLUE, rc);
+                            #else
                             Surface.DrawDashLine(3, line[2], BestReach,  RGB_BLUE, rc);
+                            #endif
                         } else {
                             bConicalFinal = false;
                         }
 
                         if(LKGeom::ClipLine((RECT) {rc.left, rc.top, rc.right, rc.bottom}, line[0],  line[1])) {
+                            #ifdef NO_DASH_LINES
+                            Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1],  RGB_DARKBLUE, rc);
+                            #else
                             Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  RGB_DARKBLUE, rc);
+                            #endif
                         }
 
 
@@ -608,7 +616,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                         line[0].y = CalcHeightCoordinatOutbound((basedist + Slope * AltBase - Radius) / Slope, &sDia);
 
                         if(LKGeom::ClipLine((RECT) {rc.left, rc.top, rc.right, rc.bottom}, line[0],  line[1])) {
+                            #ifdef NO_DASH_LINES
+                            Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1],  RGB_DARKBLUE, rc);
+                            #else
                             Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  RGB_DARKBLUE, rc);
+                            #endif
                         }
                     }
                 }
@@ -621,7 +633,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                 line[0].y = y0;
                 line[1].x = line[0].x;
                 line[1].y = rc.top;
+                #ifdef NO_DASH_LINES
+                Surface.DrawLine(PEN_SOLID, 2, line[0], line[1],  RGB_DARKGREY, rc);
+                #else
                 Surface.DrawDashLine(4, line[0], line[1], RGB_DARKGREY, rc);
+                #endif
             } else {
                 // Landable
                 line[0].x = iWpPos;
@@ -645,7 +661,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                 line[0].y = CalcHeightCoordinat((SAFETYALTITUDEARRIVAL / 10) + wpt_altitude + fArrHight, &sDia);
                 line[1].x = line[0].x;
                 line[1].y = rc.top;
+                #ifdef NO_DASH_LINES
+                Surface.DrawLine(PEN_SOLID, 2, line[0], line[1],  RGB_DARKGREY, rc);
+                #else
                 Surface.DrawDashLine(4, line[0], line[1], RGB_DARKGREY, rc);
+                #endif
             }
         }
     } // overindex is valid
@@ -665,7 +685,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                 line[0].y = CalcHeightCoordinat(DerivedDrawInfo.NavAltitude, &sDia);
                 line[1].x = CalcDistanceCoordinat(wpt_dist, &sDia);
                 line[1].y = CalcHeightCoordinatOutbound(altarriv, &sDia);
+                #ifdef NO_DASH_LINES
+                Surface.DrawLine(PEN_SOLID, 2, line[0], line[1],  RGB_BLUE, rc);
+                #else
                 Surface.DrawDashLine(3, line[0], line[1], RGB_BLUE, rc);
+                #endif
             }
             altarriv = wpt_altarriv + wpt_altitude;
             if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL / 10);
@@ -679,7 +703,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                 line[1].x = CalcDistanceCoordinat(wpt_dist, &sDia);
                 line[1].y = CalcHeightCoordinatOutbound(altarriv, &sDia);
             }
+            #ifdef NO_DASH_LINES
+            Surface.DrawLine(PEN_SOLID, 2, line[0], line[1],  RGB_BLUE, rc);
+            #else
             Surface.DrawDashLine(3, line[0], line[1], RGB_BLUE, rc);
+            #endif
 
         } else {
             //  double t = fDist/(speed!=0?speed:1);
@@ -703,7 +731,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
             if (ISGLIDER || ISPARAGLIDER)
                 if (line[1].y < line[0].y) line[1].y = line[0].y;
 
+            #ifdef NO_DASH_LINES
+            Surface.DrawLine(PEN_SOLID, 2, line[0], line[1],  RGB_BLUE, rc);
+            #else
             Surface.DrawDashLine(3, line[0], line[1], RGB_BLUE, rc);
+            #endif
         }
     }
 

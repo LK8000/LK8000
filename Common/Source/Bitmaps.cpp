@@ -326,11 +326,17 @@ void LKLoadProfileBitmaps(void) {
 	// LK style 
 	case wpLandableAltA:
 	default:
+#ifndef DITHER			 // On KOBO RED is mutch more readeble than green
 		hBmpAirportReachable=LKLoadBitmap(_T("APT2_REACH"), UseHiresBitmap);
 		hBmpAirportUnReachable=LKLoadBitmap(_T("APT2_UNREACH"), UseHiresBitmap);
 		hBmpFieldReachable=LKLoadBitmap(_T("FLD2_REACH"), UseHiresBitmap);
 		hBmpFieldUnReachable=LKLoadBitmap(_T("FLD2_UNREACH"), UseHiresBitmap);
-
+#else
+		hBmpAirportReachable=LKLoadBitmap(_T("APT2_UNREACH"), UseHiresBitmap);
+		hBmpAirportUnReachable=LKLoadBitmap(_T("APT2_REACH"), UseHiresBitmap);
+		hBmpFieldReachable=LKLoadBitmap(_T("FLD2_UNREACH"), UseHiresBitmap);
+		hBmpFieldUnReachable=LKLoadBitmap(_T("FLD2_REACH"), UseHiresBitmap);
+#endif
 		break;
 
   }

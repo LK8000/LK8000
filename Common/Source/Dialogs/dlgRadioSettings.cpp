@@ -166,7 +166,13 @@ int Idx=0;
           devPutFreqActive(RadioPara.ActiveFrequency, WayPointList[Idx].Name);
         }
     }
-    _stprintf(Name,_T("[%s]"),RadioPara.ActiveName);
+    if(RadioPara.TX)
+      _stprintf(Name,_T(">%s<"),RadioPara.ActiveName);
+    else
+      if(RadioPara.RX_active)
+        _stprintf(Name,_T("<%s>"),RadioPara.ActiveName);
+      else
+        _stprintf(Name,_T("[%s]"),RadioPara.ActiveName);
     if(wpnewActive)
       wpnewActive->SetCaption(Name);
     _stprintf(Name,_T("%6.03f"),RadioPara.ActiveFrequency);
@@ -186,7 +192,10 @@ int Idx=0;
           devPutFreqStandby(RadioPara.PassiveFrequency, WayPointList[Idx].Name);
         }
     }
-    _stprintf(Name,_T("[%s]"),RadioPara.PassiveName);
+    if(RadioPara.RX_standy)
+      _stprintf(Name,_T("<%s>"),RadioPara.PassiveName);
+    else
+      _stprintf(Name,_T("[%s]"),RadioPara.PassiveName);
     if(wpnewPassive)
      wpnewPassive->SetCaption(Name);
     _stprintf(Name,_T("%6.03f"),RadioPara.PassiveFrequency);

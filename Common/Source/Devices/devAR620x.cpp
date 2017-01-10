@@ -15,8 +15,7 @@
 #ifdef RADIO_ACTIVE
 #define RoundFreq(a) ((int)((a)*1000.0+0.5)/1000.0)
 #define Freq2Idx(a)  (int)(((a)-118.0) * 3040/(137.00-118.0)+0.5)
-#define min(X,Y) ((X) < (Y) ? : (X) : (Y))
-
+#define BIT(n) (1 << (n))
 
 #define ACTIVE_STATION  1
 #define PASSIVE_STATION 0
@@ -27,11 +26,9 @@
 
 #define HEADER_ID       0xA5
 #define PROTOKOL_ID     0x14
-#define BIT7            0x80
-#define BIT8            0x100
-#define QUERY           BIT7         
-#define DAUL            BIT8
-#define SQUELCH         BIT7
+#define QUERY           BIT(7)
+#define DAUL            BIT(8)
+#define SQUELCH         BIT(7)
 
 #ifdef TESTBENCH
 int iAR620DebugLevel =1;
@@ -40,17 +37,67 @@ int iAR620DebugLevel =0;
 #endif
 typedef union
 {
-    uint16_t intVal16;
-    uint8_t  intVal8[2];
+  uint16_t intVal16;
+  uint8_t  intVal8[2];
 } IntConvertStruct;
 
 IntConvertStruct CRC;
 IntConvertStruct sFrequency;
 IntConvertStruct sStatus;
-uint8_t  szTmp[128];
+
+#define MAX_CMD_LEN 128
 
 
+#define  RESEND_DELAY 100
+
+volatile BOOL bSending = false;
+//volatile BOOL bReceiving = false;
 int AR620x_Convert_Answer(DeviceDescriptor_t *d, uint8_t  *szCommand, int len, uint16_t CRC);
+
+BOOL AR620xInstall(PDeviceDescriptor_t d){
+
+  _tcscpy(d->Name, TEXT("Dittel AR620x"));
+  d->IsRadio        = AR620xIsRadio;
+  d->PutVolume      = AR620xPutVolume;
+  d->PutSquelch     = AR620xPutSquelch;
+  d->PutFreqActive  = AR620xPutFreqActive;
+  d->PutFreqStandby = AR620xPutFreqStandby;
+  d->StationSwap    = AR620xStationSwap;
+  d->ParseNMEA      = NULL;
+  d->ParseStream    = AR620xParseString;
+  d->PutRadioMode      = AR620xRadioMode;
+  RadioPara.Enabled8_33 = TRUE;
+  sStatus.intVal16 = SQUELCH; // BIT7 for Squelch enabled
+  return(TRUE);
+
+}
+
+BOOL AR620xRegister(void){
+  return(devRegister(
+    TEXT("Becker AR620x"),
+    (1l << dfRadio),
+    AR620xInstall
+  ));
+}
+
+
+BOOL AR620xIsRadio(PDeviceDescriptor_t d){
+  (void)d;
+  return(TRUE);
+}
+
+int SendCommand(PDeviceDescriptor_t d, uint8_t szTmp[], uint16_t len)
+{
+
+  bSending = true;
+  d->Com->Write(szTmp,len);
+  Poco::Thread::sleep(100);
+
+  d->Com->Write(szTmp,len);
+  Poco::Thread::sleep(100); // don't listen to old status in the pipe
+  bSending = false;
+  return true;
+}
 
 double Idx2Freq(uint16_t uFreqIdx)
 {
@@ -84,8 +131,8 @@ uint16_t  uFreIdx= Freq2Idx(fFreq);
 uFreIdx &= 0xFFF0;
 uint8_t uiFrac = ((int)(fFreq*1000.0+0.5)) - (((int)(fFreq *10.0))*100);
     
-switch(uiFrac )
-{
+  switch(uiFrac )
+  {
     case 0:   uFreIdx += 0;  break;
     case 5:   uFreIdx += 1;  break;
     case 10:  uFreIdx += 2;  break;
@@ -104,8 +151,8 @@ switch(uiFrac )
     case 90:  uFreIdx += 15; break;
     case 100: uFreIdx += 0;  break;
     default:   StartupStore(_T("undefined Frequency!  %u -> %u %s"),uiFrac, uFreIdx,NEWLINE);     break;
-}
- 
+  }
+
 return (uFreIdx);
 }
 
@@ -127,40 +174,7 @@ static uint16_t CRCBitwise(uint8_t *data, size_t len)
 
 
 
-BOOL AR620xInstall(PDeviceDescriptor_t d){
 
-  _tcscpy(d->Name, TEXT("Dittel AR620x"));
-  d->IsRadio = AR620xIsRadio;
-  d->PutVolume = AR620xPutVolume;
-  d->PutSquelch = AR620xPutSquelch;
-  d->PutFreqActive = AR620xPutFreqActive;
-  d->PutFreqStandby = AR620xPutFreqStandby;
-  d->StationSwap = AR620xStationSwap;
-  d->ParseNMEA    = NULL;
-  d->ParseStream   = AR620xParseString;
-  d->PutRadioMode    = AR620xRadioMode;
-  RadioPara.Enabled8_33 = TRUE;
-  sStatus.intVal16 = SQUELCH; // BIT7 for Squelch enabled
-  return(TRUE);
-
-}
-
-BOOL AR620xRegister(void){
-  return(devRegister(
-    TEXT("Becker AR620x"),
-    (1l << dfRadio),
-    AR620xInstall
-  ));
-}
-
-
-
-
-
-BOOL AR620xIsRadio(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
 
 
 
@@ -175,43 +189,38 @@ BOOL AR620xIsRadio(PDeviceDescriptor_t d){
  *****************************************************************************/
 int  SetAR620xStation(uint8_t *Command ,int Active_Passive, double fFrequency, TCHAR* Station)
 {
-
-unsigned int len = 8;
+unsigned int len = 0;
 LKASSERT(Station !=NULL)
 LKASSERT(Command !=NULL)
 if(Command == NULL )
-    return false;
+  return false;
 
-len = 10;
-     IntConvertStruct   ActiveFreqIdx; ActiveFreqIdx.intVal16 = Frq2Idx(RadioPara.ActiveFrequency);
-     IntConvertStruct   PassiveFreqIdx;  PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveFrequency);
-    Command [0] = HEADER_ID ;
-    Command [1] = PROTOKOL_ID ;
-    Command [2] = 5;
+  IntConvertStruct ActiveFreqIdx;  ActiveFreqIdx.intVal16  = Frq2Idx(RadioPara.ActiveFrequency );
+  IntConvertStruct PassiveFreqIdx; PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveFrequency);
+  Command [len++] = HEADER_ID ;
+  Command [len++] = PROTOKOL_ID ;
+  Command [len++] = 5;
 
-    switch (Active_Passive)
-    {
-      case ACTIVE_STATION:
-           ActiveFreqIdx.intVal16 = Frq2Idx(fFrequency);
-            if(iAR620DebugLevel) StartupStore(_T(">AF:%u  %7.3f%s"), ActiveFreqIdx.intVal16, fFrequency, NEWLINE);
-      break;
-      default:
-      case PASSIVE_STATION:
-          PassiveFreqIdx.intVal16 =  Frq2Idx(fFrequency);
-          if(iAR620DebugLevel) StartupStore(_T(">PF:%u  %7.3f%s"), PassiveFreqIdx.intVal16, fFrequency,NEWLINE);
-      break;
-    }  
-     Command [3] = 22;
-    Command [4] = ActiveFreqIdx.intVal8[1];
-    Command [5] = ActiveFreqIdx.intVal8[0];
-    Command [6] = PassiveFreqIdx.intVal8[1];
-    Command [7] = PassiveFreqIdx.intVal8[0];
-    CRC.intVal16 =  CRCBitwise(Command, 8);
-    Command [8] = CRC.intVal8[1];
-    Command [9] = CRC.intVal8[0];
-  
-//  SendDataBufferISR(ComPort, Command, 13);
-//  sprintf(szLastCommandSend, Command); lastComPort = ComPort; // remember for 2nd try in case it fails
+  switch (Active_Passive)
+  {
+    case ACTIVE_STATION:
+         ActiveFreqIdx.intVal16 = Frq2Idx(fFrequency);
+         if(iAR620DebugLevel) StartupStore(_T(">AF:%u  %7.3f%s"), ActiveFreqIdx.intVal16, fFrequency, NEWLINE);
+    break;
+    default:
+    case PASSIVE_STATION:
+        PassiveFreqIdx.intVal16 =  Frq2Idx(fFrequency);
+        if(iAR620DebugLevel) StartupStore(_T(">PF:%u  %7.3f%s"), PassiveFreqIdx.intVal16, fFrequency,NEWLINE);
+    break;
+  }
+  Command [len++] = 22;
+  Command [len++] = ActiveFreqIdx.intVal8[1];
+  Command [len++] = ActiveFreqIdx.intVal8[0];
+  Command [len++] = PassiveFreqIdx.intVal8[1];
+  Command [len++] = PassiveFreqIdx.intVal8[0];
+  CRC.intVal16 =  CRCBitwise(Command, len);
+  Command [len++] = CRC.intVal8[1];
+  Command [len++] = CRC.intVal8[0];
   return len;
 }
 
@@ -220,28 +229,27 @@ len = 10;
 
 
 BOOL AR620xPutVolume(PDeviceDescriptor_t d, int Volume) {
- // #define  AR620x_HAS_VOLUME_CONTROL
+#define  AR620x_HAS_VOLUME_CONTROL
 #ifdef AR620x_HAS_VOLUME_CONTROL
-  int i, len;
+uint8_t  szTmp[MAX_CMD_LEN];
+int len;
 
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {         
-            len = 0;
-            szTmp [len++] = HEADER_ID ;
-            szTmp [len++] = PROTOKOL_ID ;
-            szTmp [len++] =3;
-            szTmp [len++] =3;
-            szTmp [len++]  =  50-Volume*5;   
-            CRC.intVal16 =  CRCBitwise(szTmp, len);
-            szTmp [len++] = CRC.intVal8[1];
-            szTmp [len++] = CRC.intVal8[0];
-            for (i=0; i < len; i++)
-               d->Com->PutChar(szTmp[i]);
-
-            if(iAR620DebugLevel) StartupStore(_T(". AR620x Volume  %i%s"), Volume,NEWLINE);
-     //       RadioPara.Volume = Volume         
+        len = 0;
+        szTmp [len++] = HEADER_ID ;
+        szTmp [len++] = PROTOKOL_ID ;
+        szTmp [len++] =2;
+        szTmp [len++] =3;
+        szTmp [len++]  =  50-Volume*5;
+        CRC.intVal16 =  CRCBitwise(szTmp, len);
+        szTmp [len++] = CRC.intVal8[1];
+        szTmp [len++] = CRC.intVal8[0];
+        SendCommand(d, szTmp,len);
+        if(iAR620DebugLevel) StartupStore(_T(". AR620x Volume  %i%s"), Volume,NEWLINE);
+        RadioPara.Volume = Volume;
       }
   return(TRUE);
 #else
@@ -253,29 +261,26 @@ BOOL AR620xPutVolume(PDeviceDescriptor_t d, int Volume) {
 
 
 BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) {
-// #define	SET_SQUELCH
+#define	SET_SQUELCH
 #ifdef SET_SQUELCH
-  uint8_t i, len;
+uint8_t  szTmp[MAX_CMD_LEN];
+uint8_t len;
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
-            len = 0;
-            szTmp [len++] = HEADER_ID ;
-            szTmp [len++] = PROTOKOL_ID ;
-            szTmp [len++] =3;
-            szTmp [len++] =4;
-            szTmp [len++] = 6 + (Squelch-1)*2;   
-            CRC.intVal16 =  CRCBitwise(szTmp, len);
-            szTmp [len++] = CRC.intVal8[1];
-            szTmp [len++] = CRC.intVal8[0];
-            for (i=0; i < len; i++)
-               d->Com->PutChar(szTmp[i]);
-
-            if(iAR620DebugLevel) StartupStore(_T(". AR620x Squelch  %i%s"), Squelch,NEWLINE);
-
-            RadioPara.Squelch = Squelch;
-          
+        len = 0;
+        szTmp [len++] = HEADER_ID ;
+        szTmp [len++] = PROTOKOL_ID ;
+        szTmp [len++] =2;
+        szTmp [len++] =4;
+        szTmp [len++] = 6 + (Squelch-1)*2;
+        CRC.intVal16 =  CRCBitwise(szTmp, len);
+        szTmp [len++] = CRC.intVal8[1];
+        szTmp [len++] = CRC.intVal8[0];
+        SendCommand(d, szTmp,len);
+        if(iAR620DebugLevel) StartupStore(_T(". AR620x Squelch  %i%s"), Squelch,NEWLINE);
+        RadioPara.Squelch = Squelch;
       }
 #endif
   return(TRUE);
@@ -283,66 +288,56 @@ BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
-
-    int i, len;
-
+int len;
+uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
-         len = SetAR620xStation(szTmp ,ACTIVE_STATION, Freq, StationName);
-          
-         for (i=0; i < len; i++)
-           d->Com->PutChar(szTmp[i]);
-
+        if(iAR620DebugLevel) StartupStore(_T(". AR620x Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+        len = SetAR620xStation(szTmp ,ACTIVE_STATION, Freq, StationName);
+        SendCommand(d, szTmp,len);
         RadioPara.ActiveFrequency=  Freq;
         if(StationName != NULL)
           _stprintf(RadioPara.ActiveName,_T("%s"),StationName) ;
 
-        if(iAR620DebugLevel) StartupStore(_T(". AR620x Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+
       }
   return(TRUE);
 }
 
 
 BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
-
-  int i, len;
-
+int len;
+uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
-         len = SetAR620xStation(szTmp ,PASSIVE_STATION, Freq, StationName);
-         for (i=0; i < len; i++)
-           d->Com->PutChar(szTmp[i]);
-
-
+        len = SetAR620xStation(szTmp ,PASSIVE_STATION, Freq, StationName);
+        SendCommand(d, szTmp,len);
         RadioPara.PassiveFrequency =  Freq;
         if(StationName != NULL)
           _stprintf(RadioPara.PassiveName  ,_T("%s"),StationName) ;
         if(iAR620DebugLevel) StartupStore(_T(". AR620x Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
-
       }
   return(TRUE);
 }
 
 
 BOOL AR620xStationSwap(PDeviceDescriptor_t d) {
-
-  uint8_t i, len;
-
+uint8_t len=0;
+uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
-         len = 0;
-         IntConvertStruct   ActiveFreqIdx; ActiveFreqIdx.intVal16 = Frq2Idx(RadioPara.ActiveFrequency);
-         IntConvertStruct   PassiveFreqIdx;  PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveFrequency);
+        IntConvertStruct ActiveFreqIdx;  ActiveFreqIdx.intVal16  = Frq2Idx(RadioPara.ActiveFrequency );
+        IntConvertStruct PassiveFreqIdx; PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveFrequency);
         szTmp [len++] = HEADER_ID ;
         szTmp [len++] = PROTOKOL_ID ;
         szTmp [len++] = 5;
-        szTmp [len++]  = 22;
+        szTmp [len++] = 22;
         szTmp [len++] = PassiveFreqIdx.intVal8[1];
         szTmp [len++] = PassiveFreqIdx.intVal8[0];
         szTmp [len++] = ActiveFreqIdx.intVal8[1];
@@ -350,43 +345,41 @@ BOOL AR620xStationSwap(PDeviceDescriptor_t d) {
         CRC.intVal16 =  CRCBitwise(szTmp, len);
         szTmp [len++] = CRC.intVal8[1];
         szTmp [len++] = CRC.intVal8[0];
-        for (i=0; i < len ; i++)
-            d->Com->PutChar(szTmp[i]);
+        SendCommand(d, szTmp,len);
       }
   return(TRUE);
 }
 
 
 BOOL AR620xRadioMode(PDeviceDescriptor_t d, int mode) {
+uint8_t len;
+uint8_t  szTmp[MAX_CMD_LEN];
 
-  uint8_t  i,len;
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
-
-         if( mode > 0  )
-         {
-            sStatus.intVal16 |= DAUL;  // turn Dual Mode On
-            if(iAR620DebugLevel) StartupStore(_T(". AR620x  Dual on %s"), NEWLINE);
-         }
-         else
-         {
-            sStatus.intVal16 &= ~DAUL;   // turn Dual Mode Off
-            if(iAR620DebugLevel)StartupStore(_T(". AR620x  Dual off %s"), NEWLINE);
-         }
-         len = 0;
-         szTmp [len++] = HEADER_ID ;
-         szTmp [len++] = PROTOKOL_ID ;
-         szTmp [len++] =3;
-         szTmp [len++] =12;
-         szTmp [len++]  = sStatus.intVal8[1];   
-         szTmp [len++]  = sStatus.intVal8[0];   
-         CRC.intVal16 =  CRCBitwise(szTmp, len);
-         szTmp [len++] = CRC.intVal8[1];
-         szTmp [len++] = CRC.intVal8[0];         
-         for (i=0; i < len; i++)
-           d->Com->PutChar(szTmp[i]);
+        if( mode > 0  )
+        {
+          sStatus.intVal16 |= DAUL;  // turn Dual Mode On
+          if(iAR620DebugLevel) StartupStore(_T(". AR620x  Dual on %s"), NEWLINE);
+        }
+        else
+        {
+          sStatus.intVal16 &= ~DAUL;   // turn Dual Mode Off
+          if(iAR620DebugLevel)StartupStore(_T(". AR620x  Dual off %s"), NEWLINE);
+        }
+        len = 0;
+        szTmp [len++] = HEADER_ID ;
+        szTmp [len++] = PROTOKOL_ID ;
+        szTmp [len++] =3;
+        szTmp [len++] =12;
+        szTmp [len++]  = sStatus.intVal8[1];
+        szTmp [len++]  = sStatus.intVal8[0];
+        CRC.intVal16 =  CRCBitwise(szTmp, len);
+        szTmp [len++] = CRC.intVal8[1];
+        szTmp [len++] = CRC.intVal8[0];
+        SendCommand(d, szTmp,len);
       }
   return(TRUE);
 }
@@ -412,45 +405,57 @@ if(len == 0) return 0;
 
 while (cnt < len)
 {   
-  if(String[cnt] ==HEADER_ID)
+  if(String[cnt] == HEADER_ID)
     Recbuflen =0;
-  
+
+  if(Recbuflen >= REC_BUFSIZE)
+    Recbuflen =0;
+
+  LKASSERT(Recbuflen < REC_BUFSIZE);
+  Command[Recbuflen++] =(uint8_t) String[cnt++];
+
   if(Recbuflen == 2)
-      if(Command[Recbuflen-1] != PROTOKOL_ID)
-          Recbuflen =0;
-          
+    if(Command[Recbuflen-1] != PROTOKOL_ID)
+      Recbuflen =0;
+
   if(Recbuflen >= 3)
   {
      CommandLength = Command[2];
      if(Recbuflen >= (CommandLength+5) ) // all received
      {
-       if(iAR620DebugLevel ==2) for(int i=0; i < (CommandLength+5);i++)   StartupStore(_T("AR620x  Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
+       if(iAR620DebugLevel ==2) for(int i=0; i < (CommandLength+4);i++)   StartupStore(_T("AR620x  Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
        CRC.intVal8[1] =  Command[CommandLength+3];
        CRC.intVal8[0] =  Command[CommandLength+4];
        if(iAR620DebugLevel ==2) StartupStore(_T("AR620x  CRC 0x%04X %s") ,CRC.intVal16,NEWLINE);
        CalCRC =CRCBitwise(Command, CommandLength+3);
        if(CalCRC  == CRC.intVal16)
        {
-           if(iAR620DebugLevel ==2)  StartupStore(_T("AR620x  Process Command %u  %s") ,CommandLength ,NEWLINE);
-           AR620x_Convert_Answer(d, Command, CommandLength+5,CalCRC);
+           if(!bSending)
+           {
+             if(iAR620DebugLevel ==2 )  StartupStore(_T("AR620x  Process Command %u  %s") ,Command[3]  ,NEWLINE);
+             AR620x_Convert_Answer(d, Command, CommandLength+5,CalCRC);
+           }
+           else
+             if(iAR620DebugLevel)  StartupStore(_T("AR620x  skip Command %u  %s") ,Command[3]  ,NEWLINE);
+
        }
        else
        {
     	   if(iAR620DebugLevel)StartupStore(_T("AR620x  CRC check fail! Command 0x%04X  0x%04X %s") ,CRC.intVal16,CalCRC ,NEWLINE);
        }
        Recbuflen = 0;
+
      }
   }
-  if(Recbuflen >= REC_BUFSIZE)
-     Recbuflen =0;
-  LKASSERT(Recbuflen < REC_BUFSIZE);
-  Command[Recbuflen++] =(uint8_t) String[cnt++];
+
 
 }
+
 return  RadioPara.Changed;
 }
 
 
+extern int SearchStation(double Freq);
 
 /*****************************************************************************
  * this function converts a KRT answer sting to a NMEA answer
@@ -471,97 +476,115 @@ static uint16_t uiVolumeCRC      =0;
 static uint16_t uiVersionCRC     =0;
 static uint16_t uiStatusCRC      =0;
 static uint16_t uiSquelchCRC     =0;
+static uint16_t uiRxStatusCRC    =0;
 #ifdef RADIO_VOLTAGE
 static uint16_t uiVoltageCRC     =0;
+uint32_t ulState;
 #endif
 int processed=0;
 
-
+int Idx=0;
 LKASSERT(szCommand !=NULL);
 LKASSERT(d !=NULL);
 
 
+  switch ((unsigned char)(szCommand[3] & 0x7F))
+  {
+    case 0:
+      if(uiVersionCRC!= CRC)  {
+         uiVersionCRC = CRC;
+       }
+    break;
 
-      switch ((unsigned char)(szCommand[3] & 0x7F))
-      {
-        case 0:
-          if(uiVersionCRC!= CRC)  {
-             uiVersionCRC = CRC;
-           }
-        break;                  
-
-        case 3:
-          if(uiVolumeCRC != CRC){                                     
-             uiVolumeCRC = CRC;
-             RadioPara.Changed = true;
-             RadioPara.Volume = (50-(int)szCommand[4])/5;
-             if(iAR620DebugLevel )  StartupStore(_T("AR620x  Volume %u  %s") , RadioPara.Volume  ,NEWLINE);
-           }
-        break;
-
-        case 4:
-          if(uiSquelchCRC!= CRC){
-              uiSquelchCRC = CRC;                    
-              RadioPara.Changed = true;
-              RadioPara.Squelch = (int)(szCommand[4]-5)/2;
-              if(iAR620DebugLevel )  StartupStore(_T("AR620x  Volume %u  %s") , RadioPara.Squelch  ,NEWLINE);
-           }
-        break;
-
-        case 12:
-          if(uiStatusCRC != CRC){
-             uiStatusCRC = CRC;
-             RadioPara.Changed = true;
-             sStatus.intVal8[1] = szCommand[4] ;
-             sStatus.intVal8[0] = szCommand[5] ;    
-            if(sStatus.intVal16 & DAUL) 
-               RadioPara.Dual = true;
-             else
-               RadioPara.Dual = false;
-             if(iAR620DebugLevel )  StartupStore(_T("AR620x  Volume %u  %s") , RadioPara.Dual  ,NEWLINE);
-           }
-        break;
-#ifdef RADIO_VOLTAGE
-        case 21:
-            if(uiVoltageCRC != CRC) {
-                  uiVoltageCRC = CRC;
-                  GPS_INFO.ExtBatt2_Voltage =   8.5 + szCommand[4] *0.1;
-                  RadioPara.Changed = true;                                              
-                  if(iAR620DebugLevel  == 2)   StartupStore(_T("AR620x Supply Voltage: %4.1fV %s"),  GPS_INFO.ExtBatt2_Voltage  ,NEWLINE);
-                }            
-           break;
-#endif           
-        case 22:
-            if(uiLastChannelCRC != CRC) {
-                 uiLastChannelCRC = CRC;
-                  RadioPara.Changed = true;
-                  sFrequency.intVal8[1] = szCommand[4] ;
-                  sFrequency.intVal8[0] = szCommand[5] ;              
-                 if(   RadioPara.ActiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
-                 {
-                    RadioPara.ActiveFrequency =  Idx2Freq(sFrequency.intVal16);
-                    _stprintf(RadioPara.ActiveName,_T("        ")) ;                        
-                    if(iAR620DebugLevel )  StartupStore(_T("AR620x <AF %u  %7.3f%s"), sFrequency.intVal16, RadioPara.ActiveFrequency ,NEWLINE);
-                }
-
-                sFrequency.intVal8[1] = szCommand[6];
-                sFrequency.intVal8[0] = szCommand[7] ;     
-                if(   RadioPara.PassiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
-               {
-                  RadioPara.PassiveFrequency =  Idx2Freq(sFrequency.intVal16);
-                   _stprintf(RadioPara.PassiveName,_T("        ")) ;       
-                   if(iAR620DebugLevel )  StartupStore(_T("AR620x <PF: %u %7.3f%s"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
-
-                }
-             } 
-        break;
-
-        default:
-        break;
+    case 3:
+      if(uiVolumeCRC != CRC){
+        uiVolumeCRC = CRC;
+        RadioPara.Changed = true;
+        RadioPara.Volume = (50-(int)szCommand[4])/5;
+        if(iAR620DebugLevel )  StartupStore(_T("AR620x Volume %u  %s") , RadioPara.Volume  ,NEWLINE);
       }
+    break;
 
+    case 4:
+      if(uiSquelchCRC!= CRC){
+        uiSquelchCRC = CRC;
+        RadioPara.Changed = true;
+        RadioPara.Squelch = (int)(szCommand[4]-6)/2+1;  // 6 + (Squelch-1)*2
+        if(iAR620DebugLevel )  StartupStore(_T("AR620x Squelch %u  %s") , RadioPara.Squelch  ,NEWLINE);
+      }
+    break;
 
+    case 12:
+      if(uiStatusCRC != CRC){
+        uiStatusCRC = CRC;
+        RadioPara.Changed = true;
+        sStatus.intVal8[1] = szCommand[4] ;
+        sStatus.intVal8[0] = szCommand[5] ;
+        if(sStatus.intVal16 & DAUL)
+         RadioPara.Dual = true;
+        else
+         RadioPara.Dual = false;
+        if(iAR620DebugLevel )  StartupStore(_T("AR620x Dual %u  %s") , RadioPara.Dual  ,NEWLINE);
+      }
+    break;
+#ifdef RADIO_VOLTAGE
+    case 21:
+      if(uiVoltageCRC != CRC) {
+        uiVoltageCRC = CRC;
+        GPS_INFO.ExtBatt2_Voltage =   8.5 + szCommand[4] *0.1;
+        RadioPara.Changed = true;
+        if(iAR620DebugLevel  == 2)   StartupStore(_T("AR620x Supply Voltage: %4.1fV %s"),  GPS_INFO.ExtBatt2_Voltage  ,NEWLINE);
+      }
+    break;
+#endif           
+    case 22:
+      if(uiLastChannelCRC != CRC) {
+        uiLastChannelCRC = CRC;
+        RadioPara.Changed = true;
+        sFrequency.intVal8[1] = szCommand[4] ;
+        sFrequency.intVal8[0] = szCommand[5] ;
+      //  if(   RadioPara.ActiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
+        {
+          RadioPara.ActiveFrequency =  Idx2Freq(sFrequency.intVal16);
+          Idx = SearchStation(RadioPara.ActiveFrequency);
+          if(Idx != 0)   _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
+          if(iAR620DebugLevel ) StartupStore(_T("AR620x <AF %u  %7.3f%s"), sFrequency.intVal16, RadioPara.ActiveFrequency ,NEWLINE);
+        }
 
-    return processed;  /* return the number of converted characters */
+        sFrequency.intVal8[1] = szCommand[6];
+        sFrequency.intVal8[0] = szCommand[7] ;
+    //    if(   RadioPara.PassiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
+        {
+          RadioPara.PassiveFrequency =  Idx2Freq(sFrequency.intVal16);
+          Idx = SearchStation(RadioPara.PassiveFrequency);
+          if(Idx != 0)  _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
+          if(iAR620DebugLevel ) StartupStore(_T("AR620x <PF: %u %7.3f%s"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
+        }
+        RadioPara.Changed = true;
+      }
+    break;
+    case 64:
+      if(uiRxStatusCRC != CRC) {
+          uiRxStatusCRC = CRC;
+
+          ulState = szCommand[4] << 24 | szCommand[5] << 16 | szCommand[6] << 8 | szCommand[7];
+        RadioPara.TX        = ((ulState & (BIT(5)| BIT(6))) > 0) ? true : false;
+        RadioPara.RX_active = ((ulState & BIT(7)) > 0)  ? true : false;
+        RadioPara.RX_standy = ((ulState & BIT(8)) > 0)  ? true : false;
+        RadioPara.RX        = (RadioPara.RX_active ||   RadioPara.RX_standy );
+        RadioPara.Changed = true;
+
+        if(iAR620DebugLevel )                         StartupStore(_T("AR620x 0x%X %s")  ,ulState , NEWLINE);
+        if(iAR620DebugLevel ) if(RadioPara.RX)        StartupStore(_T("AR620x Rx  %s")        , NEWLINE);
+        if(iAR620DebugLevel ) if(RadioPara.RX_active) StartupStore(_T("AR620x Rx Active  %s") , NEWLINE);
+        if(iAR620DebugLevel ) if(RadioPara.RX_standy) StartupStore(_T("AR620x Rx Passive %s") , NEWLINE);
+        if(iAR620DebugLevel ) if(RadioPara.TX)        StartupStore(_T("AR620x Tx  %s")        , NEWLINE);
+      }
+    break;
+    default:
+    break;
+  }
+
+  return processed;  /* return the number of converted characters */
 }
 #endif  // RADIO_ACTIVE

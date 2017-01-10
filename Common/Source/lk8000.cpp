@@ -213,6 +213,12 @@ bool Startup(const TCHAR* szCmdLine) {
     #ifdef POCO_STATIC
     StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
     #endif
+    #ifdef RESCALE_PIXEL
+    StartupStore(_T("    + RESCALE_PIXEL%s"),NEWLINE);
+    #endif
+    #ifdef NO_DASH_LINES
+    StartupStore(_T("    + NO_DASH_LINES%s"),NEWLINE);
+    #endif
 
     StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
@@ -330,6 +336,8 @@ bool Startup(const TCHAR* szCmdLine) {
   RadioPara.Squelch = 3;
   RadioPara.Vox = 5;
   RadioPara.Enabled = false; //devIsRadio(devA()) || devIsRadio(devB());
+  RadioPara.ActiveFrequency  = 118.00;
+  RadioPara.PassiveFrequency = 118.00;
 #endif  // RADIO_ACTIVE
 
   // Initialise main blackboard data

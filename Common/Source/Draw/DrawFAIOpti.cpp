@@ -558,16 +558,19 @@ if (iOpposite >0)
   hpSectorPen.Create(PEN_SOLID, ScreenThinSize, RGB_BLACK );
   Surface.SelectObject(hpSectorPen);
   Surface.SetTextColor(RGB_BLACK);
-  double fTic= 1/DISTANCEMODIFY;
-  if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
-  if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
-  if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
-//  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
-  if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
+  float fZoom = MapWindow::zoom.RealScale() ;
+  double         fTic = 5;
+  if(fZoom > 3)  fTic = 10;
+  if(fZoom > 5)  fTic = 25;
+  if(fZoom > 25) fTic = 50;
+  if(fZoom > 60) fTic = 100;
+  if( DISTANCEMODIFY > 0.0)
+    fTic /= DISTANCEMODIFY;
+
   POINT line[2];
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
-  fDistTri = ((int)(fDistMin/fTic)+1) * fTic ;
+  fDistTri = fDistMin;
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
 int iCnt = 0;
@@ -629,7 +632,11 @@ int iCnt = 0;
 
       if(j> 0)
       {
+        #ifdef NO_DASH_LINES
+        Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0] , line[1] , RGB_BLACK, rc);
+        #else
         Surface.DrawLine(PEN_DASH, NIBLSCALE(1), line[0] , line[1] , RGB_BLACK, rc);
+        #endif
       }
 
 
@@ -665,7 +672,9 @@ int iCnt = 0;
       fDist_b += fDelta_Dist;
     }
     }
-    fDistTri+=fTic;iCnt++;
+
+    fDistTri = ((int)(fDistMin/fTic)+1) * fTic + (iCnt) * fTic;
+    iCnt++;
  //   if((iCnt %2) ==0)
   //    DrawText(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   }

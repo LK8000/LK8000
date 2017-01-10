@@ -516,12 +516,20 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         line[0].y = CalcHeightCoordinat(GPSalt, &sDia);
         line[1].x = CalcDistanceCoordinat(iABS_AS_HorDistance, &sDia);
         line[1].y = line[0].y;
+        #ifdef NO_DASH_LINES
+        Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), line[0], line[1], Sideview_TextColor, rc);
+        #else
         Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
+        #endif
         if (iAS_HorDistance < 0) {
             line[0].y = CalcHeightCoordinat(GPSalt - (double) iAS_VertDistance, &sDia);
             line[1].y = line[0].y;
 
+            #ifdef NO_DASH_LINES
+            Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), line[0], line[1], Sideview_TextColor, rc);
+            #else
             Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
+            #endif
         }
 
         bool bLeft = false;
@@ -556,7 +564,11 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         line[1].x = line[0].x;
         line[1].y = CalcHeightCoordinat(GPSalt - (double) iAS_VertDistance, &sDia);
 
+        #ifdef NO_DASH_LINES
+        Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), line[0], line[1], Sideview_TextColor, rc);
+        #else
         Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
+        #endif
         Units::FormatUserAltitude((double) abs(iAS_VertDistance), buffer, 7);
         _stprintf(text, _T(" %s"), buffer);
         Surface.GetTextSize(text, &tsize);

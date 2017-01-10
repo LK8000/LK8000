@@ -230,7 +230,11 @@ _nomoredeclutter:
      case TRACKUP:
 	// Are we are not topview fullscreen?
 	if (Current_Multimap_SizeY<SIZE4 && !(MapSpaceMode==MSM_VISUALGLIDE)) {
+                #ifdef NO_DASH_LINES
+		Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1],  Sideview_TextColor, rct);
+                #else
 		Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);
+                #endif
 	} else {
 	    if (TrackBar) {
 		    DrawHeadUpLine(Surface, Orig, rct, psDia->fXMin ,psDia->fXMax);
