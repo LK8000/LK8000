@@ -304,10 +304,21 @@ Canvas::DrawTriangleFan(const RasterPoint *points, unsigned num_points)
   OpenGL::solid_shader->Use();
 #endif
 
+  std::unique_ptr<const GLBlend> blend;
+  if(!brush.IsOpaque()) {
+    blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
+
   ScopeVertexPointer vp(points);
 
   if (!brush.IsHollow() && num_points >= 3) {
     brush.Bind();
+
+    std::unique_ptr<const GLBlend> blend;
+    if(!brush.IsOpaque()) {
+      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
     glDrawArrays(GL_TRIANGLE_FAN, 0, num_points);
   }
 
@@ -326,6 +337,27 @@ Canvas::DrawTriangleFan(const RasterPoint *points, unsigned num_points)
     }
 
     pen.Unbind();
+  }
+}
+
+void
+Canvas::DrawTriangleFan(const FloatPoint *points, unsigned num_points)
+{
+  if (!brush.IsHollow() && num_points >= 3) {
+
+#ifdef USE_GLSL
+    OpenGL::solid_shader->Use();
+#endif
+
+    ScopeVertexPointer vp(points);
+
+    brush.Bind();
+    std::unique_ptr<const GLBlend> blend;
+    if(!brush.IsOpaque()) {
+      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, num_points);
   }
 }
 

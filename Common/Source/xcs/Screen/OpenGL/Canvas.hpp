@@ -284,6 +284,13 @@ public:
   void DrawTriangleFan(const RasterPoint *points, unsigned num_points);
 
   /**
+   * Draw a triangle fan (GL_TRIANGLE_FAN).  The first point is the
+   * origin of the fan.
+   * rmq : only take account of brush.
+   */
+  void DrawTriangleFan(const FloatPoint *points, unsigned num_points);
+
+  /**
    * Draw a solid thin horizontal line.
    */
   void DrawHLine(int x1, int x2, int y, Color color);
