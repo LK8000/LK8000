@@ -71,7 +71,15 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   #else
   // draw a dashed perimetral line first
   #endif
-  Surface.Polyline(Groundline.data(),Groundline.size(), rc);
+#ifdef ENABLE_OPENGL
+  // first point is center of polygon (OpenGL GL_TRIANGLE_FAN), polyline start is second point
+  const auto polyline_start  = std::next(Groundline.begin());
+#else
+  const auto polyline_start  = Groundline.begin();
+#endif
+  const size_t polyline_size = std::distance(polyline_start,Groundline.end());
+
+  Surface.Polyline(&(*polyline_start),polyline_size, rc);
 
   // draw perimeter if selected and during a flight
   #ifdef GTL2
@@ -81,7 +89,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   if ((FinalGlideTerrain==1) || ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && (FinalGlideTerrain==2))) { 
   #endif
 	Surface.SelectObject(hpTerrainLine);
-	Surface.Polyline(Groundline.data(),Groundline.size(), rc);
+    Surface.Polyline(&(*polyline_start),polyline_size, rc);
   }
   
   #ifdef GTL2  
