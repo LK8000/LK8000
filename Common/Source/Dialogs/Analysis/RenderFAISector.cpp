@@ -442,12 +442,19 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   #endif
   Surface.SelectObject(hpSectorPen);
 
-  double fTic= 1/DISTANCEMODIFY;
-  if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
-  if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
-  if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
-//  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
-  if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
+  double fZoom =1;
+  LKASSERT(Statistics::yscale !=0);
+  LKASSERT(DISTANCEMODIFY!=0);
+  if(Statistics::yscale >0)
+    fZoom =  2500.0/Statistics::yscale;
+  double         fTic = 5;
+  if(fZoom > 3)  fTic = 10;
+  if(fZoom > 10) fTic = 25;
+  if(fZoom > 15) fTic = 50;
+  if(fZoom > 30) fTic = 100;
+  if( DISTANCEMODIFY > 0.0)
+    fTic =fTic/ DISTANCEMODIFY;
+
   POINT line[2];
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
@@ -462,9 +469,9 @@ int iCnt = 0;
     {
     TCHAR text[180]; SIZE tsize;
     if(bFirstUnit)
-      _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
+      _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY+0.5), Units::GetUnitName(Units::GetUserDistanceUnit()));
     else
-      _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
+      _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY+0.5));
     bFirstUnit = false;
     Surface.GetTextSize(text, &tsize);
     #ifndef DITHER
@@ -527,7 +534,6 @@ int iCnt = 0;
       {
         Surface.DrawText(line[0].x, line[0].y, text);
         j=1;
-
       }
       line[1] =  line[0];
 
@@ -535,9 +541,15 @@ int iCnt = 0;
       fDist_b += fDelta_Dist;
     }
   }
-  fDistTri+=fTic;
   if(iCnt == 0)
-    fDistTri = ((int)(fDistMin/fTic)+1) * fTic;
+  {
+    fDistTri = ((int)(fDistMin/fTic)+1.0) * fTic ;
+    if(((int)(fDistTri - fDistMin  )) < (fTic*0.75))
+      fDistTri += fTic;
+  }
+  else
+    fDistTri+=fTic;
+
   iCnt++;
 }
 
