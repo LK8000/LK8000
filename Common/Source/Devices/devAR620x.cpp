@@ -543,23 +543,19 @@ LKASSERT(d !=NULL);
         RadioPara.Changed = true;
         sFrequency.intVal8[1] = szCommand[4] ;
         sFrequency.intVal8[0] = szCommand[5] ;
-      //  if(   RadioPara.ActiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
-        {
-          RadioPara.ActiveFrequency =  Idx2Freq(sFrequency.intVal16);
-          Idx = SearchStation(RadioPara.ActiveFrequency);
-          if(Idx != 0)   _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
-          if(iAR620DebugLevel ) StartupStore(_T("AR620x <AF %u  %7.3f%s"), sFrequency.intVal16, RadioPara.ActiveFrequency ,NEWLINE);
-        }
+        RadioPara.ActiveFrequency =  Idx2Freq(sFrequency.intVal16);
+        Idx = SearchStation(RadioPara.ActiveFrequency);
+        if(Idx != 0)   _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
+        else _stprintf(RadioPara.PassiveName ,_T("  ???   "));
+        if(iAR620DebugLevel ) StartupStore(_T("AR620x <AF %u  %7.3f%s"), sFrequency.intVal16, RadioPara.ActiveFrequency ,NEWLINE);
 
         sFrequency.intVal8[1] = szCommand[6];
         sFrequency.intVal8[0] = szCommand[7] ;
-    //    if(   RadioPara.PassiveFrequency  !=  Idx2Freq(sFrequency.intVal16))
-        {
-          RadioPara.PassiveFrequency =  Idx2Freq(sFrequency.intVal16);
-          Idx = SearchStation(RadioPara.PassiveFrequency);
-          if(Idx != 0)  _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
-          if(iAR620DebugLevel ) StartupStore(_T("AR620x <PF: %u %7.3f%s"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
-        }
+        RadioPara.PassiveFrequency =  Idx2Freq(sFrequency.intVal16);
+        Idx = SearchStation(RadioPara.PassiveFrequency);
+        if(Idx != 0)  _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
+        else _stprintf(RadioPara.PassiveName ,_T("  ???   "));
+        if(iAR620DebugLevel ) StartupStore(_T("AR620x <PF: %u %7.3f%s"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
         RadioPara.Changed = true;
       }
     break;
