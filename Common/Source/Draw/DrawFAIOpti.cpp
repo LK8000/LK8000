@@ -15,6 +15,8 @@
 #include "LKObjects.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
+#include "MapWindow.h"
+
 
 #ifdef PNA
   #define FAI_SECTOR_STEPS 11
@@ -574,6 +576,12 @@ if (iOpposite >0)
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
   int iCnt = 0;
+  bool bTinyFont = false;
+  Surface.SetBackgroundTransparent();
+  const auto oldFont = Surface.SelectObject(LK8InfoSmallFont);
+//  const auto oldBrush = Surface.SelectObject(LKBrush_Black);
+  LKColor mapscalecolor = OverColorRef;
+  if (OverColorRef== RGB_WHITE ) mapscalecolor=RGB_SBLACK;
 
   while(fDistTri <= fDistMax)
   {
@@ -638,7 +646,8 @@ if (iOpposite >0)
 
       if(j==0)
       {
-        Surface.DrawText(line[0].x, line[0].y, text);
+        if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
+        MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
         j=1;
 
       }
@@ -649,15 +658,21 @@ if (iOpposite >0)
         _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY+0.5));
       Surface.GetTextSize(text, &tsize);
       if(i == 0)
-        Surface.DrawText(line[0].x, line[0].y, text);
-
+        {
+         if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
+          MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+        }
         if(i == FAI_SECTOR_STEPS-1)
-          Surface.DrawText(line[0].x, line[0].y, text);
-
+          {
+          if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
+          MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+          }
       if(iCnt > 1)
         if(i== (FAI_SECTOR_STEPS/2))
-          Surface.DrawText(line[0].x, line[0].y, text);
-
+          {
+            if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
+            MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+          }
       line[1] =  line[0];
 
       fDist_a -= fDelta_Dist;
@@ -681,6 +696,7 @@ if (iOpposite >0)
 
 Surface.SelectObject(hfOld);
 Surface.SelectObject(hpOldPen);
-
+//Surface.SelectObject(oldBrush);
+Surface.SelectObject(oldFont);
 return 0;
 }
