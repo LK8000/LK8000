@@ -212,6 +212,19 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 			{ -14, 2 }, { -14, -1 }, { -1, -1 }, { -1, -6 }, { 2, -6 }
 		};
 
+#ifdef RESCALE_PIXEL
+                for (unsigned short a=0; a<array_size(AircraftInner); a++) {
+                   AircraftInner[a].x *= ScreenPixelRatio;
+                   AircraftInner[a].x /= 10;
+                   AircraftInner[a].y *= ScreenPixelRatio;
+                   AircraftInner[a].y /= 10;
+                   AircraftOuter[a].x *= ScreenPixelRatio;
+                   AircraftOuter[a].x /= 10;
+                   AircraftOuter[a].y *= ScreenPixelRatio;
+                   AircraftOuter[a].y /= 10;
+                }
+#endif
+
 		PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x,
 				Orig.y, angle);
 		PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x,
