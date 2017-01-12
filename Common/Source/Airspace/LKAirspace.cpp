@@ -831,7 +831,7 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
 }
 
 // Calculate screen coordinates for drawing
-void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
+void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
 
     /** TODO 
      *   check map projection change
@@ -2662,10 +2662,10 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
 #endif
 }
 
-void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify) {
+void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
     ScopeLock guard(_csairspaces);
     for (auto asp : _airspaces_near) {
-        asp->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj, ResMapScaleOverDistanceModify);
+        asp->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
     }
 }
 

@@ -260,7 +260,7 @@ public:
     // Dump this airspace to runtime.log
     virtual void Dump() const = 0;
     // Calculate drawing coordinates on screen
-    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify);
+    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
     // Draw airspace on map
     virtual void Draw(LKSurface& Surface, bool fill) const;
     // Calculate nearest horizontal distance and bearing to the airspace from a given point
@@ -491,7 +491,7 @@ public:
 
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
-  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj, const double &ResMapScaleOverDistanceModify);
+  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
   const CAirspaceList& GetNearAirspacesRef() const;
 
   //Nearest page 2.4
