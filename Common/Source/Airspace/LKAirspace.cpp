@@ -753,6 +753,11 @@ CAirspace(),
 _center(Center_Latitude, Center_Longitude),
 _radius(Airspace_Radius) {
 
+    _bounds.minx = _center.longitude;
+    _bounds.maxx = _center.longitude;
+    _bounds.miny = _center.latitude;
+    _bounds.maxy = _center.latitude;
+
     _geopoints.reserve(90);
     for (unsigned i = 0; i < 90; ++i) {
         GeoPoint pt = _center.Direct(static_cast<double> (i*4), _radius);
