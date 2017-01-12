@@ -52,6 +52,12 @@
 #define NOLINETO
 #endif
 
+#if defined(ANDROID) || defined(KOBO)
+ #define RESCALE_PIXEL
+#endif
+
+
+
  // CACHE CALCULATIONS: IT IS IMPERATIVE THAT THIS OPTION CAN BE DISABLED ANYTIME!
  #define LK_CACHECALC 1
  // Notice:  These are only used if above is active!
