@@ -12,6 +12,7 @@
 #include "GLShapeRenderer.h"
 
 #include <memory>
+#include <mapprimitive.h>
 #include "utils/make_unique.h"
 
 #include "Screen/OpenGL/Scope.hpp"
@@ -92,8 +93,10 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
   gluTessBeginPolygon(tess, this );
   for (int j = 0; j < shp.numlines; j++) {
     gluTessBeginContour(tess);
-    for (int i = 0; i < shp.line[j].numpoints; i++) {
-      const FloatPoint pt = _Proj.ToFloatPoint(shp.line[j].point[i]);
+    const lineObj &line = shp.line[j];
+    for (int i =0; i < line.numpoints; i++) {
+      const pointObj &point = line.point[i];
+      const FloatPoint pt = _Proj.ToFloatPoint(point.x, point.y);
       if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
         curr_LabelPos = pt;
       }

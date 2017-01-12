@@ -18,8 +18,8 @@ void MapWindow::DrawGreatCircle(LKSurface& Surface, const RECT& rc, const Screen
         double startLon, double startLat, double targetLon, double targetLat) {
 
     POINT pt[2] = {
-        _Proj.LonLat2Screen(startLon, startLat),
-        _Proj.LonLat2Screen(targetLon, targetLat)
+        _Proj.ToRasterPoint(startLon, startLat),
+        _Proj.ToRasterPoint(targetLon, targetLat)
     };
 
 

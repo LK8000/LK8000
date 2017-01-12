@@ -28,7 +28,7 @@ void MapWindow::LKDrawLongTrail( LKSurface& Surface, const RECT& rc, const Scree
     if(last_point == std::end(SnailTrail)) {
         last_point = std::begin(SnailTrail);
     }
-    (*polyline_iterator) = _Proj.LonLat2Screen(last_point->Longitude, last_point->Latitude);
+    (*polyline_iterator) = _Proj.ToRasterPoint(last_point->Longitude, last_point->Latitude);
 
     polyline_iterator = std::next(polyline_iterator);
 
@@ -36,7 +36,7 @@ void MapWindow::LKDrawLongTrail( LKSurface& Surface, const RECT& rc, const Scree
 
     while(cur_iterator != end_iterator) {
 
-        (*polyline_iterator) = _Proj.LonLat2Screen(cur_iterator->Longitude, cur_iterator->Latitude);
+        (*polyline_iterator) = _Proj.ToRasterPoint(cur_iterator->Longitude, cur_iterator->Latitude);
 
         if(manhattan_distance(*std::prev(polyline_iterator),(*polyline_iterator)) > nearby) {
             polyline_iterator = std::next(polyline_iterator);

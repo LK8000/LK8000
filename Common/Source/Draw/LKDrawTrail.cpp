@@ -68,7 +68,7 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
             this_lon += traildrift_lon * dt;
         }
         
-        (*polyline_iterator) = _Proj.LonLat2Screen(this_lon, this_lat);
+        (*polyline_iterator) = _Proj.ToRasterPoint(this_lon, this_lat);
 
         if(use_colors && prev_color != cur_iterator->Colour) {
             // draw polyline before change color.

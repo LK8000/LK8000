@@ -522,7 +522,7 @@ static T shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _P
   points.reserve((line.numpoints/iskip)+1);
 
 
-  GeoToScreen<T> ToScreen(_Proj);
+  const GeoToScreen<T> ToScreen(_Proj);
 
   // first point is inserted before loop for avoid to check "if(first)" inside loop
   points.push_back(ToScreen(line.point[0]));
@@ -633,8 +633,10 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
         // first a latlon overlap check, only approximated because of fastcosine in latlon2screen
         if (checkVisible(*shape, screenRect))
           for (int tt = 0; tt < shape->numlines; tt++) {
-			for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
-				const POINT sc = _Proj.LonLat2Screen(shape->line[tt].point[jj]);
+            const lineObj &line = shape->line[tt];
+			for (int jj=0; jj< line.numpoints; jj++) {
+                const pointObj &point = line.point[jj];
+				const POINT sc = _Proj.ToRasterPoint(point.x, point.y);
 				if (dobitmap) {
 					// bugfix 101212 missing case for scaleCategory 0 (markers)
 					if (scaleCategory==0||cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {

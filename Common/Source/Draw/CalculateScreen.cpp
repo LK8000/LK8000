@@ -25,7 +25,7 @@ rectObj MapWindow::CalculateScreenBounds(double scale, const RECT& rc, const Scr
   rectObj sb;
 
   if (scale>= 1.0) {
-    const POINT screen_center = _Proj.LonLat2Screen(PanLongitude, PanLatitude);
+    const POINT screen_center = _Proj.ToRasterPoint(PanLongitude, PanLatitude);
 
     sb.minx = sb.maxx = PanLongitude;
     sb.miny = sb.maxy = PanLatitude;
@@ -105,7 +105,7 @@ void MapWindow::CalculateScreenPositionsThermalSources(const ScreenProjection& _
                             -DerivedDrawInfo.WindSpeed*t,
                             &lat, &lon);
       if (PointVisible(lon,lat)) {
-        DerivedDrawInfo.ThermalSources[i].Screen = _Proj.LonLat2Screen(lon, lat);
+        DerivedDrawInfo.ThermalSources[i].Screen = _Proj.ToRasterPoint(lon, lat);
         DerivedDrawInfo.ThermalSources[i].Visible = 
           PointVisible(DerivedDrawInfo.ThermalSources[i].Screen);
       } else {
@@ -152,8 +152,8 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
         // aircraft is smaller than one third screen width
 
         const ScreenProjection _Proj;
-        *Orig_Aircraft = _Proj.LonLat2Screen(DrawInfo.Longitude, DrawInfo.Latitude);
-        const POINT screen = _Proj.LonLat2Screen(PanLongitude, PanLatitude);
+        *Orig_Aircraft = _Proj.ToRasterPoint(DrawInfo.Longitude, DrawInfo.Latitude);
+        const POINT screen = _Proj.ToRasterPoint(PanLongitude, PanLatitude);
         
         if ((fabs((double)Orig_Aircraft->x-screen.x)<(rc.right-rc.left)/3)
             && (fabs((double)Orig_Aircraft->y-screen.y)<(rc.bottom-rc.top)/3)) {
@@ -175,7 +175,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
   }
 
   const ScreenProjection _Proj;
-  *Orig_Aircraft = _Proj.LonLat2Screen(DrawInfo.Longitude, DrawInfo.Latitude);
+  *Orig_Aircraft = _Proj.ToRasterPoint(DrawInfo.Longitude, DrawInfo.Latitude);
 
   // very important
   screenbounds_latlon = CalculateScreenBounds(0.0, rc, _Proj);
@@ -197,7 +197,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
       unsigned index = Task[i].Index;
       if (index < WayPointList.size()) {
         
-        WayPointList[index].Screen = _Proj.LonLat2Screen(WayPointList[index].Longitude, WayPointList[index].Latitude);
+        WayPointList[index].Screen = _Proj.ToRasterPoint(WayPointList[index].Longitude, WayPointList[index].Latitude);
         WayPointList[index].Visible = 
           PointVisible(WayPointList[index].Screen);
        } else {
@@ -210,7 +210,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
         unsigned index = StartPoints[i].Index;
         if (StartPoints[i].Active && (index < WayPointList.size())) {
 
-          WayPointList[index].Screen = _Proj.LonLat2Screen(WayPointList[index].Longitude, WayPointList[index].Latitude);
+          WayPointList[index].Screen = _Proj.ToRasterPoint(WayPointList[index].Longitude, WayPointList[index].Latitude);
           WayPointList[index].Visible = 
             PointVisible(WayPointList[index].Screen);
          } else {
@@ -229,7 +229,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
         if (!WayPointList[i].FarVisible) continue;
         if(PointVisible(WayPointList[i].Longitude, WayPointList[i].Latitude) )
           {
-            WayPointList[i].Screen = _Proj.LonLat2Screen(WayPointList[i].Longitude, WayPointList[i].Latitude);
+            WayPointList[i].Screen = _Proj.ToRasterPoint(WayPointList[i].Longitude, WayPointList[i].Latitude);
             WayPointList[i].Visible = PointVisible(WayPointList[i].Screen);
           }
       }
@@ -251,7 +251,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
 			TASKSTATS_POINT& StatPt =  TaskStats[ActiveTaskPoint];
 			for (int j=0; j<MAXISOLINES; j++) {
 				if (StatPt.IsoLine_valid[j]) {
-					StatPt.IsoLine_Screen[j] = _Proj.LonLat2Screen(StatPt.IsoLine_Longitude[j], StatPt.IsoLine_Latitude[j]);
+					StatPt.IsoLine_Screen[j] = _Proj.ToRasterPoint(StatPt.IsoLine_Longitude[j], StatPt.IsoLine_Latitude[j]);
 				}
 			}
 		}
@@ -260,7 +260,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
 			TASKSTATS_POINT& StatPt =  TaskStats[TargetPanIndex];
 			for (int j=0; j<MAXISOLINES; j++) {
 				if (StatPt.IsoLine_valid[j]) {
-					StatPt.IsoLine_Screen[j] = _Proj.LonLat2Screen(StatPt.IsoLine_Longitude[j], StatPt.IsoLine_Latitude[j]);
+					StatPt.IsoLine_Screen[j] = _Proj.ToRasterPoint(StatPt.IsoLine_Longitude[j], StatPt.IsoLine_Latitude[j]);
 				}
 			}
 		}
@@ -283,7 +283,7 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
     static_assert(std::is_same<point2_t, point_t>::value, "Groundline & Groundline2 need to same value type");
 
 
-    GeoToScreen<point_t> ToScreen(_Proj);
+    const GeoToScreen<point_t> ToScreen(_Proj);
 
     if (FinalGlideTerrain) {
         std::transform(

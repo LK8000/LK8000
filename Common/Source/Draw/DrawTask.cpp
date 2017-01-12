@@ -273,8 +273,8 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
         double bearing = Task[i].OutBound;
         POINT sct1, sct2;
         if (AATEnabled) {
-            sct1 = _Proj.LonLat2Screen(Task[i].AATTargetLon, Task[i].AATTargetLat);
-            sct2 = _Proj.LonLat2Screen(Task[i + 1].AATTargetLon,Task[i + 1].AATTargetLat);
+            sct1 = _Proj.ToRasterPoint(Task[i].AATTargetLon, Task[i].AATTargetLat);
+            sct2 = _Proj.ToRasterPoint(Task[i + 1].AATTargetLon,Task[i + 1].AATTargetLat);
             DistanceBearing(Task[i].AATTargetLat,
                     Task[i].AATTargetLon,
                     Task[i + 1].AATTargetLat,
@@ -318,7 +318,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
     // Draw DashLine From current position to Active TurnPoint center
     if(ValidTaskPoint(ActiveTaskPoint)) {
-        const POINT ptStart = _Proj.LonLat2Screen(DrawInfo.Longitude, DrawInfo.Latitude);
+        const POINT ptStart = _Proj.ToRasterPoint(DrawInfo.Longitude, DrawInfo.Latitude);
         Surface.DrawDashLine(NIBLSCALE(1),
                     ptStart,
                     WayPointList[Task[ActiveTaskPoint].Index].Screen,
