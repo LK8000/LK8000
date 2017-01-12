@@ -82,7 +82,7 @@ public:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) {
 
 #ifdef ENABLE_OPENGL
-        if (_Dirty) {
+        if (_Dirty || !_canvas.IsDefined()) {
             _canvas.Begin(Surface);
             this->Setup(_canvas);
 #else
