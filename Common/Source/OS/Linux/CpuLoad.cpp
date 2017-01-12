@@ -43,28 +43,24 @@ class GetCpuLoad_Singleton {
 public:
 
     GetCpuLoad_Singleton() {
-        _fp = fopen("/proc/stat", "r");
+        FILE* _fp = fopen("/proc/stat", "r");
 
-        if (_fp && read_fields()) {
-            total_tick = std::accumulate(std::begin(fields), std::end(fields), (uint64_t)0);
-            idle = fields[3]; /* idle ticks index */
+        if (_fp) {
+            if(read_fields()) {
+                total_tick = std::accumulate(std::begin(fields), std::end(fields), (uint64_t) 0);
+                idle = fields[3]; /* idle ticks index */
+            }
+            fclose(_fp);
         }
         
         lastValue.Update();
     }
 
     ~GetCpuLoad_Singleton() {
-        if (_fp) {
-            fclose(_fp);
-        }
     }
 
     int operator()() {
 
-        if (_fp == NULL) {
-            return INVALID_VALUE;
-        }
-        
         // only calculate each 1s  
         if(lastValue.CheckUpdate(1*1000)) {
             if (!read_fields()) {
@@ -90,19 +86,22 @@ public:
 private:
 
     bool read_fields() {
-        fseek(_fp, 0, SEEK_SET);
-        fflush(_fp);
-        if (fgets(buffer, BUF_MAX, _fp)) {
-            int retval = sscanf(buffer, "cpu %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
-                    &fields[0], &fields[1], &fields[2], &fields[3], &fields[4],
-                    &fields[5], &fields[6], &fields[7], &fields[8], &fields[9]);
+        bool bRet = false;
+        FILE* _fp = fopen("/proc/stat", "r");
+        if(_fp) {
+            if (fgets(buffer, BUF_MAX, _fp)) {
+                int retval = sscanf(buffer,
+                                    "cpu %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
+                                    &fields[0], &fields[1], &fields[2], &fields[3], &fields[4],
+                                    &fields[5], &fields[6], &fields[7], &fields[8], &fields[9]);
 
-            return (retval >= 4); /* Atleast 4 fields is to be read */
+                bRet = (retval >= 4); /* Atleast 4 fields is to be read */
+            }
+            fclose(_fp);
         }
-        return false;
+        return bRet;
     }
 
-    FILE* _fp;
     char buffer[BUF_MAX];
 
     uint64_t fields[10], total_tick, total_tick_old, idle, idle_old, del_total_tick, del_idle;
