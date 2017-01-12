@@ -42,7 +42,7 @@ void Init_Fonts_2(void)
   LOGFONT logfontPanelBig;
   LOGFONT logfontPanelMedium;   // infopages header topleft number "2.x" and HSI
   LOGFONT logfontPanelSmall;
-  LOGFONT logfontPanelUnit;
+  LOGFONT logfontPanelUnit;     // used for FAI Sector scaling
 
   // BottomBar ONLY
   //

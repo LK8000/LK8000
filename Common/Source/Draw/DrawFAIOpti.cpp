@@ -15,6 +15,8 @@
 #include "LKObjects.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
+#include "MapWindow.h"
+
 
 #ifdef PNA
   #define FAI_SECTOR_STEPS 11
@@ -561,11 +563,11 @@ if (iOpposite >0)
   float fZoom = MapWindow::zoom.RealScale() ;
   double         fTic = 5;
   if(fZoom > 3)  fTic = 10;
-  if(fZoom > 5)  fTic = 25;
-  if(fZoom > 25) fTic = 50;
-  if(fZoom > 60) fTic = 100;
+  if(fZoom > 10) fTic = 25;
+  if(fZoom > 20) fTic = 50;
+  if(fZoom > 50) fTic = 100;
   if( DISTANCEMODIFY > 0.0)
-    fTic /= DISTANCEMODIFY;
+    fTic =  fTic/ DISTANCEMODIFY;
 
   POINT line[2];
   BOOL bFirstUnit = true;
@@ -573,7 +575,13 @@ if (iOpposite >0)
   fDistTri = fDistMin;
   const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
-int iCnt = 0;
+  int iCnt = 0;
+  bool bTinyFont = false;
+  Surface.SetBackgroundTransparent();
+  const auto oldFont = Surface.SelectObject(LK8InfoSmallFont);
+//  const auto oldBrush = Surface.SelectObject(LKBrush_Black);
+  LKColor mapscalecolor = OverColorRef;
+  if (OverColorRef== RGB_WHITE ) mapscalecolor=RGB_SBLACK;
 
   while(fDistTri <= fDistMax)
   {
@@ -581,9 +589,9 @@ int iCnt = 0;
     {
         TCHAR text[180]; SIZE tsize;
         if(bFirstUnit)
-          _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
+          _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY+0.5), Units::GetUnitName(Units::GetUserDistanceUnit()));
         else
-          _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
+          _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY+0.5));
         bFirstUnit = false;
         Surface.GetTextSize(text, &tsize);
 
@@ -632,55 +640,63 @@ int iCnt = 0;
 
       if(j> 0)
       {
-        #ifdef NO_DASH_LINES
-        Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0] , line[1] , RGB_BLACK, rc);
-        #else
         Surface.DrawLine(PEN_DASH, NIBLSCALE(1), line[0] , line[1] , RGB_BLACK, rc);
-        #endif
       }
 
 
       if(j==0)
       {
-        Surface.DrawText(line[0].x, line[0].y, text);
+        if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
+        MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
         j=1;
 
       }
 
-//      TCHAR text[180]; SIZE tsize;
       if(iCnt==0)
-        _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY), Units::GetUnitName(Units::GetUserDistanceUnit()));
+        _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY+0.5), Units::GetUnitName(Units::GetUserDistanceUnit()));
       else
-        _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY));
+        _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY+0.5));
       Surface.GetTextSize(text, &tsize);
       if(i == 0)
-        Surface.DrawText(line[0].x, line[0].y, text);
-
-      if(iCnt > 1)
+        {
+         if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
+          MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+        }
         if(i == FAI_SECTOR_STEPS-1)
-          Surface.DrawText(line[0].x, line[0].y, text);
-
-      if(iCnt > 2)
+          {
+          if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
+          MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+          }
+      if(iCnt > 1)
         if(i== (FAI_SECTOR_STEPS/2))
-          Surface.DrawText(line[0].x, line[0].y, text);
-
+          {
+            if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
+            MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+          }
       line[1] =  line[0];
-
-
 
       fDist_a -= fDelta_Dist;
       fDist_b += fDelta_Dist;
     }
     }
 
-    fDistTri = ((int)(fDistMin/fTic)+1) * fTic + (iCnt) * fTic;
+
+    if(iCnt == 0)
+    {
+      fDistTri = ((int)(fDistMin/fTic)+1.0) * fTic ;
+      if(((int)(fDistTri - fDistMin  )) < (fTic*0.75))
+        fDistTri += fTic;
+    }
+    else
+      fDistTri+=fTic;
+
     iCnt++;
- //   if((iCnt %2) ==0)
-  //    DrawText(hdc, line[0].x, line[0].y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
   }
 
 Surface.SelectObject(hfOld);
 Surface.SelectObject(hpOldPen);
-
+//Surface.SelectObject(oldBrush);
+Surface.SelectObject(oldFont);
 return 0;
 }

@@ -150,14 +150,11 @@ void InitLKScreen() {
   ScreenPixelRatio=10;
   #endif
 
-  #ifdef __linux__
-  if (ScreenDensity>200)
-     ScreenThinSize=NIBLSCALE(1);
-  else
-     ScreenThinSize=1;
-  #else
-  ScreenThinSize=1;
-  #endif
+  //
+  // The thinnest line somehow visible on screen from 35cm distance.
+  // 
+  ScreenThinSize=RescalePixelSize(1);
+
   #ifdef TESTBENCH
   StartupStore(_T("... ScreenDensity= %d  ScreenPixelRatio=%d (/10) ThinSize=%d%s"),ScreenDensity,ScreenPixelRatio,ScreenThinSize,NEWLINE);
   #endif
