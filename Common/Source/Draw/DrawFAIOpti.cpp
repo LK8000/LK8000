@@ -557,15 +557,20 @@ if (iOpposite >0)
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
-  hpSectorPen.Create(PEN_SOLID, ScreenThinSize, RGB_BLACK );
+  hpSectorPen.Create(PEN_DASH, ScreenThinSize, RGB_BLACK );
   Surface.SelectObject(hpSectorPen);
   Surface.SetTextColor(RGB_BLACK);
   float fZoom = MapWindow::zoom.RealScale() ;
-  double         fTic = 5;
-  if(fZoom > 3)  fTic = 10;
-  if(fZoom > 10) fTic = 25;
-  if(fZoom > 20) fTic = 50;
-  if(fZoom > 50) fTic = 100;
+
+  double         fTic = 100;
+  if(fZoom > 50) fTic = 100; else
+  if(fZoom > 20) fTic = 50;  else
+  if(fZoom > 10) fTic = 25;  else fTic = 25;
+ // if(fZoom > 3)  fTic = 10;  else   // FAI grid below 25km need to much CPU power in moving map and PAN mode!!!
+ // if(fZoom > 1)  fTic = 5;   else   // on slow devices like MIO
+ // if(fZoom > 0.5)fTic = 2;   else   // the user should use Analysis page for this
+ // if(fZoom > 0.2)fTic = 1;
+
   if( DISTANCEMODIFY > 0.0)
     fTic =  fTic/ DISTANCEMODIFY;
 
@@ -579,11 +584,10 @@ if (iOpposite >0)
   bool bTinyFont = false;
   Surface.SetBackgroundTransparent();
   const auto oldFont = Surface.SelectObject(LK8InfoSmallFont);
-//  const auto oldBrush = Surface.SelectObject(LKBrush_Black);
-  LKColor mapscalecolor = OverColorRef;
-  if (OverColorRef== RGB_WHITE ) mapscalecolor=RGB_SBLACK;
 
-  while(fDistTri <= fDistMax)
+//  if (fillcolor== RGB_WHITE ) fillcolor=RGB_SBLACK;
+
+  while((fDistTri <= fDistMax)/* && (iCnt < 10)*/)
   {
     if(CheckFAILeg(fDist_c,fDistTri))
     {
@@ -647,7 +651,7 @@ if (iOpposite >0)
       if(j==0)
       {
         if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
-        MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+        MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
         j=1;
 
       }
@@ -660,18 +664,18 @@ if (iOpposite >0)
       if(i == 0)
         {
          if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
-          MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+          MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
         }
         if(i == FAI_SECTOR_STEPS-1)
           {
           if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
-          MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+          MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
           }
       if(iCnt > 1)
         if(i== (FAI_SECTOR_STEPS/2))
           {
             if(bTinyFont) Surface.DrawText(line[0].x, line[0].y, text); else
-            MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+            MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
           }
       line[1] =  line[0];
 
@@ -693,10 +697,11 @@ if (iOpposite >0)
     iCnt++;
 
   }
-
+#if TESTBENCH
+    StartupStore(_T("... FAI SECTRO: scale %d lines%s"), iCnt, NEWLINE);
+#endif
 Surface.SelectObject(hfOld);
 Surface.SelectObject(hpOldPen);
-//Surface.SelectObject(oldBrush);
 Surface.SelectObject(oldFont);
 return 0;
 }
