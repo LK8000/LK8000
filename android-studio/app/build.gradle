@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 
 android {
     compileSdkVersion 21
@@ -44,7 +59,7 @@ android {
             include "*.plr"
         }
         copy {
-            from "../../Common/Data/Sounds","../../Common/Distribution/LK8000/_System/_Sounds",
+            from "../../Common/Data/Sounds", "../../Common/Distribution/LK8000/_System/_Sounds",
                     "../../Common/Distribution/LK8000/_System/_Sounds/OPTIONALS"
             into "src/main/assets/sounds"
             include "*.wav"
@@ -62,12 +77,12 @@ android {
         }
         copy {
             from "../../Common/Distribution/LK8000/_Waypoints"
-                    into "src/main/assets/distribution/waypoints"
+            into "src/main/assets/distribution/waypoints"
             include "*.*"
         }
         copy {
             from "../../Common/Distribution/LK8000/_Airspaces"
-                    into "src/main/assets/distribution/airspaces"
+            into "src/main/assets/distribution/airspaces"
             include "*.*"
         }
         copy {
@@ -81,9 +96,9 @@ android {
             include "*.*"
         }
         copy {
-            from  "../../Common/Distribution/LK8000/_Configuration"
+            from "../../Common/Distribution/LK8000/_Configuration"
             into "src/main/assets/distribution/configuration"
-            include "DEMO.prf","CAR.prf","TREKKING.prf","NOTEDEMO.TXT","IDFLARM.TXT"
+            include "DEMO.prf", "CAR.prf", "TREKKING.prf", "NOTEDEMO.TXT", "IDFLARM.TXT"
         }
     }
     sourceSets {
@@ -157,9 +172,20 @@ android {
             path "../../CMakeLists.txt"
         }
     }
-
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+        transitive = true;
+    }
+    compile('com.crashlytics.sdk.android:crashlytics-ndk:1.1.5@aar') {
+        transitive = true;
+    }
+}
+
+crashlytics {
+    enableNdk true
+    androidNdkOut 'build/intermediates/cmake/fat/beta/obj'
+    androidNdkLibsOut 'build/intermediates/cmake/fat/beta/obj'
 }
