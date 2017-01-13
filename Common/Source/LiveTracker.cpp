@@ -1521,7 +1521,7 @@ static std::string DeltaRLE(std::vector<int> data) {
 	for (unsigned int i = 0; i < data.size(); i++) {
 		int datai = (data[i]);
 
-		if ((i == 0)) {
+		if (i == 0) {
 			res += intToGBase64(datai);
 		} else {
 
