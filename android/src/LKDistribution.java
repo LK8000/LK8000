@@ -51,6 +51,7 @@ public class LKDistribution {
         createDirectoryToExternalStorageIfAbsent("LK8000/_Configuration");
         createDirectoryToExternalStorageIfAbsent("LK8000/_Logger");
         createDirectoryToExternalStorageIfAbsent("LK8000/_Tasks");
+        createDirectoryToExternalStorageIfAbsent("LK8000/_Polars");
 
         File f = new File(Environment.getExternalStorageDirectory(), "LK8000/_Configuration/DEFAULT_PROFILE.prf");
         boolean default_exist = f.exists();
@@ -62,6 +63,8 @@ public class LKDistribution {
             copyDirectoryToExternalStorage(context,"distribution/airspaces", "LK8000/_Airspaces",force);
             copyDirectoryToExternalStorage(context,"distribution/logger", "LK8000/_Logger",force);
             copyDirectoryToExternalStorage(context,"distribution/task", "LK8000/_Task",force);
+            copyDirectoryToExternalStorage(context,"distribution/polars", "LK8000/_Polars",force);
+
         }
     }
 
