@@ -199,17 +199,68 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
 	} else {
 
-		// GLIDER AICRAFT NORMAL ICON
+           // GLIDER AIRCRAFT THIN ICON
+           // Inner:
+           // { 1, -5 }, { 1, 0 }, { 14, 0 }, { 14, 1 }, { 1, 1 }, { 1, 8 },
+           // { 4, 8 }, { 4, 9 }, { -3, 9 }, { -3, 8 }, { 0, 8 }, { 0, 1 },
+           // { -13, 1 }, { -13, 0 }, { 0, 0 }, { 0, -5 }, { 1, -5 }
+           // Outer:
+           // { 2, -6 }, { 2, -1 }, { 15, -1 }, { 15, 2 }, { 2, 2 }, { 2, 7 },
+           // { 5, 7 }, { 5, 10 }, { -4, 10 }, { -4, 7 }, { -1, 7 }, { -1, 2 },
+           // { -14, 2 }, { -14, -1 }, { -1, -1 }, { -1, -6 }, { 2, -6 }
+
+           // GLIDER AIRCRAFT THICKER ICON
 
 		POINT AircraftInner[] = {
-			{ 1, -5 }, { 1, 0 }, { 14, 0 }, { 14, 1 }, { 1, 1 }, { 1, 8 },
-			{ 4, 8 }, { 4, 9 }, { -3, 9 }, { -3, 8 }, { 0, 8 }, { 0, 1 },
-			{ -13, 1 }, { -13, 0 }, { 0, 0 }, { 0, -5 }, { 1, -5 }
+			{ 1, -5 },
+			{ 2, -2 },
+			{ 2, 0 },
+			{ 10, 0 },
+			{ 16, 1 },
+			{ 16, 2 },
+			{ 2, 2 },
+			{ 1, 6 },
+			{ 1, 13 },
+			{ 5, 13 },
+			{ 5, 14 },
+			{ -4, 14 },
+			{ -4, 13 },
+			{ 0, 13 },
+			{ 0, 6 },
+			{ -1, 2 },
+			{ -15, 2 },
+			{ -15, 1 },
+			{ -9, 0 },
+			{ -1, 0 },
+			{ -1, 2 },
+			{ 0, -5 },
+			{ 1, -5 }
 		};
 		POINT AircraftOuter[] = {
-			{ 2, -6 }, { 2, -1 }, { 15, -1 }, { 15, 2 }, { 2, 2 }, { 2, 7 },
-			{ 5, 7 }, { 5, 10 }, { -4, 10 }, { -4, 7 }, { -1, 7 }, { -1, 2 },
-			{ -14, 2 }, { -14, -1 }, { -1, -1 }, { -1, -6 }, { 2, -6 }
+			{ 2, -6 },
+			{ 3, -3 },
+			{ 3, -1 },
+			{ 11, -1 },
+			{ 17, 0 },
+			{ 17, 3 },
+			{ 3, 3 },
+			{ 2, 7 },
+			{ 2, 12 },
+			{ 6, 12 },
+			{ 6, 15 },
+			{ -5, 15 },
+			{ -5, 12 },
+			{ -1, 12 },
+			{ -1, 7 },
+			{ -2, 3 },
+			{ -16, 3 },
+			{ -16, 0 },
+			{ -8, -1 },
+			{ -2, -1 },
+			{ -2, -3 },
+			{ -1, -6 },
+			{ 2, -6 }
+
 		};
 
 		PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x,
@@ -221,6 +272,7 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 		const auto hbOld = Surface.SelectObject(LK_BLACK_BRUSH);
 
 		Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
+
 
 		Surface.SelectObject(LK_WHITE_BRUSH);
 		Surface.Polygon(AircraftInner, array_size(AircraftInner));
