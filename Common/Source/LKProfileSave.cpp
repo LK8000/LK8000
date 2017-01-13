@@ -279,7 +279,11 @@ void LKProfileSave(const TCHAR *szFile)
 //  >> Moved to AircraftFile <<
 //  rprintf(szRegistrySafteySpeed,SAFTEYSPEED*1000); // m/s x1000
   rprintf(szRegistrySectorRadius,SectorRadius);
+
+#if defined(PPC2003) || defined(PNA)
   rprintf(szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS);
+#endif
+
   rprintf(szRegistrySaveRuntime,SaveRuntime);
   rprintf(szRegistryShading,Shading_Config);
   rprintf(szRegistrySnailTrail,TrailActive_Config);

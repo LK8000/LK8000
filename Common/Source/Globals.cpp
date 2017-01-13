@@ -472,11 +472,9 @@ void Globals_Init(void) {
   EnableMultipleStartPoints = false;
   StartHeightRef = 0; // MSL
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
-  #if ( (WINDOWSPC==0))
+#if defined(PPC2003) || defined(PNA)
   SetSystemTimeFromGPS = true;
-  #else
-  SetSystemTimeFromGPS = false;
-  #endif
+#endif
   SaveRuntime = false;
 
   SelectedWaypoint = -1;

@@ -603,7 +603,11 @@ GEXTERN short TerrainRamp_Config;
 GEXTERN double QNH;
 GEXTERN int NettoSpeed;
 GEXTERN unsigned debounceTimeout;
+
+#if defined(PPC2003) || defined(PNA)
 GEXTERN bool SetSystemTimeFromGPS;
+#endif
+
 GEXTERN bool SaveRuntime;
 GEXTERN bool ForceFinalGlide;
 GEXTERN bool AutoForceFinalGlide;

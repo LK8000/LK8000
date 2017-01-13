@@ -1956,13 +1956,13 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSetSystemTimeFromGPS"));
   if (wp) {
-#ifndef PPC2003   // PNA is also PPC2003
-    wp->SetVisible(false);
+#if defined(PPC2003) || defined(PNA)
+      wp->SetVisible(true);
+      wp->GetDataField()->Set(SetSystemTimeFromGPS);
+      wp->RefreshDisplay();
 #else
-    wp->SetVisible(true);
+      wp->SetVisible(false);
 #endif
-    wp->GetDataField()->Set(SetSystemTimeFromGPS);
-    wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSaveRuntime"));
@@ -3079,13 +3079,14 @@ void dlgConfigurationShowModal(short mode){
       GlidePolar::SafetyMacCready = val;
     }
   }
-
+#if defined(PPC2003) || defined(PNA)
   wp = (WndProperty*)wf->FindByName(TEXT("prpSetSystemTimeFromGPS"));
   if (wp) {
     if (SetSystemTimeFromGPS != wp->GetDataField()->GetAsBoolean()) {
       SetSystemTimeFromGPS = wp->GetDataField()->GetAsBoolean();
     }
   }
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSaveRuntime"));
   if (wp) {

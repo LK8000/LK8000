@@ -302,11 +302,9 @@ void LKProfileResetDefault(void) {
 
   BallastSecsToEmpty =  120;
 
-  #if ((WINDOWSPC==0))
+#if defined(PPC2003) || defined(PNA)
   SetSystemTimeFromGPS = true;
-  #else
-  SetSystemTimeFromGPS = false;
-  #endif
+#endif
   SaveRuntime = false;
 
   AutoForceFinalGlide = false;
