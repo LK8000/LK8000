@@ -76,7 +76,7 @@ public:
     Destroy();
   }
 
-  bool IsDefined() const {
+  bool IsDefined() const override {
     return texture != nullptr;
   }
 

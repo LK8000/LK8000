@@ -59,8 +59,7 @@ void LKWindowSurface::Create(Window& Wnd){
 #elif !defined(ENABLE_OPENGL)
     _pCanvas = new WindowCanvas(Wnd);
 #else
-    _pCanvas = new BufferCanvas();
-    _pCanvas->Create(Wnd.GetSize());
+    _pCanvas = new Canvas(Wnd.GetSize());
 #endif
 }
 

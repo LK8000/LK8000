@@ -111,7 +111,7 @@ protected:
   }
 
 public:
-  bool IsDefined() const {
+  virtual bool IsDefined() const {
     return true;
   }
 
