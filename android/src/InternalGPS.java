@@ -91,7 +91,7 @@ public class InternalGPS
   Context _context;
 
 
-    private final SafeDestruct safeDestruct = new SafeDestruct();
+  private final SafeDestruct safeDestruct = new SafeDestruct();
 
   InternalGPS(Context context, int _index) {
     index = _index;
