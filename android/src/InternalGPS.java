@@ -50,18 +50,6 @@ import java.lang.Math;
  */
 public class InternalGPS
   implements LocationListener, SensorEventListener, Runnable {
-
-  public class GPSFixChangeReceiver extends BroadcastReceiver {
-    // on some devices onStatusChanged is never called. we use a BroadcastReceiver in this case
-    // to receive android.location.GPS_FIX_CHANGE messages
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      Bundle bundle = intent.getExtras();
-      boolean bFix = bundle.getBoolean("enabled");
-      if (!bFix) setConnectedSafe(1); // waiting for fix
-    }
-  }
-
   private static final String TAG = "LK8000";
 
   private static Handler handler;
@@ -287,5 +275,16 @@ public class InternalGPS
         break;
     }
     // TODO: do lowpass filtering to remove vibrations?!?
+  }
+
+  public class GPSFixChangeReceiver extends BroadcastReceiver {
+    // on some devices onStatusChanged is never called. we use a BroadcastReceiver in this case
+    // to receive android.location.GPS_FIX_CHANGE messages
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      Bundle bundle = intent.getExtras();
+      boolean bFix = bundle.getBoolean("enabled");
+      if (!bFix) setConnectedSafe(1); // waiting for fix
+    }
   }
 }
