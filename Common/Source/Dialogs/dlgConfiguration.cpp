@@ -2642,8 +2642,8 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(1797)); // Vector
-	// LKTOKEN  _@M87_ = "Bitmap"
-    dfe->addEnumText(MsgToken(87));
+	// LKTOKEN  _@M2327_ "Bitmap"
+    dfe->addEnumText(MsgToken(2327));
     dfe->Set(Appearance.IndLandable);
     wp->RefreshDisplay();
   }
