@@ -94,10 +94,12 @@ LKBitmap LoadSplash(const TCHAR *splashfile) {
 }
 
 
-void DrawSplash(LKSurface& Surface, const LKBitmap& Bmp) {
-    Surface.Blackness(0,0,ScreenSizeX,ScreenSizeY);
+void DrawSplash(LKSurface& Surface, const RECT& rcDraw, const LKBitmap& Bmp) {
+    PixelRect rc(rcDraw);
+    Surface.Blackness(rc.left,rc.top,rc.GetSize().cx,rc.GetSize().cy);
     if(Bmp) {
         const PixelSize bmSize = Bmp.GetSize();
-        Surface.DrawBitmap(0,0,ScreenSizeX,_MulDiv<short>(bmSize.cy,ScreenSizeX,bmSize.cx),Bmp,bmSize.cx,bmSize.cy);
+        const PixelScalar cx = rc.GetSize().cx;
+        Surface.DrawBitmap(rc.left,rc.top,cx,_MulDiv<short>(bmSize.cy,cx,bmSize.cx),Bmp,bmSize.cx,bmSize.cy);
     }
 }

@@ -13,7 +13,7 @@
 #define LOADSPLASH_H
 
 LKBitmap LoadSplash(const TCHAR *splashfile);
-void DrawSplash(LKSurface& Surface, const LKBitmap& Bmp);
+void DrawSplash(LKSurface& Surface, const RECT& rcDraw, const LKBitmap& Bmp);
 
 #endif /* LOADSPLASH_H */
 

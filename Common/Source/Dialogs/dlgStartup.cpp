@@ -118,14 +118,14 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
             StartBitmap = LoadSplash(_T("LKSTART"));
         }
         if(StartBitmap) {
-            DrawSplash(Surface, StartBitmap);
+            DrawSplash(Surface, Sender->GetClientRect(), StartBitmap);
         }
     } else {
         if(!ProfileBitmap) {
             ProfileBitmap = LoadSplash(_T("LKPROFILE"));
         }
         if(ProfileBitmap) {
-            DrawSplash(Surface, ProfileBitmap);
+            DrawSplash(Surface, Sender->GetClientRect(), ProfileBitmap);
         }
     }
 
