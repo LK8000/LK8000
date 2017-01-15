@@ -57,6 +57,7 @@ android {
             from "../../Common/Distribution/LK8000/_Polars"
             into "src/main/assets/polars"
             include "*.plr"
+            exclude "Example.*"
         }
         copy {
             from "../../Common/Data/Sounds", "../../Common/Distribution/LK8000/_System/_Sounds",
@@ -103,7 +104,7 @@ android {
         copy {
             from "../../Common/Distribution/LK8000/_Polars"
             into "src/main/assets/distribution/polars"
-            include "Default.plr"
+            include "Example.*"
         }
     }
     sourceSets {
