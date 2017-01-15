@@ -22,6 +22,8 @@
 
 package org.LK8000;
 
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Bundle;
 import android.os.Build;
@@ -74,11 +76,14 @@ public class InternalGPS
   private Sensor accelerometer;
   private double acceleration;
   private static boolean queriedLocationSettings = false;
+  Context _context;
+
 
   private final SafeDestruct safeDestruct = new SafeDestruct();
 
   InternalGPS(Context context, int _index) {
     index = _index;
+    _context = context;
 
     locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
     if (locationManager == null ||
@@ -130,6 +135,13 @@ public class InternalGPS
                                      sensorManager.SENSOR_DELAY_NORMAL);
 
       setConnectedSafe(1); // waiting for fix
+
+      GPSFixChangeReceiver receiver = new GPSFixChangeReceiver();
+      IntentFilter filter = new IntentFilter("android.location.GPS_ENABLED_CHANGE");
+      filter.addAction("android.location.GPS_FIX_CHANGE");
+      _context.registerReceiver(receiver, filter);
+
+
     } else {
       Log.d(TAG, "Unsubscribing from GPS updates.");
       setConnectedSafe(0); // not connected
@@ -263,5 +275,16 @@ public class InternalGPS
         break;
     }
     // TODO: do lowpass filtering to remove vibrations?!?
+  }
+
+  public class GPSFixChangeReceiver extends BroadcastReceiver {
+    // on some devices onStatusChanged is never called. we use a BroadcastReceiver in this case
+    // to receive android.location.GPS_FIX_CHANGE messages
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      Bundle bundle = intent.getExtras();
+      boolean bFix = bundle.getBoolean("enabled");
+      if (!bFix) setConnectedSafe(1); // waiting for fix
+    }
   }
 }
