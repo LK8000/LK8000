@@ -234,13 +234,6 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
     {
       //Proprietary String
 
-#ifdef DSX
-      if(_tcscmp(params[0] + 1,TEXT("PDSXT"))==0)
-        {
-          return PDSXT(&String[7], params + 1, n_params, pGPS);
-        }
-#endif 
-
 
       if(_tcscmp(params[0] + 1,TEXT("PTAS1"))==0)
         {
@@ -1032,25 +1025,5 @@ BOOL NMEAParser::HCHDG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   }
   return FALSE;
 }
-
-
-#ifdef DSX
-// warning, TODO FIX, calling AddMessage from wrong thread? CHECK
-BOOL NMEAParser::PDSXT(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
-{
-  TCHAR mbuf[300];
-
-  if ( _tcslen(params[0]) >0) 
-	_stprintf(mbuf,_T("MESSAGE FROM <%s>: %s"), params[0], params[1]);
-  else
-	_stprintf(mbuf,_T("MESSAGE: %s"),params[1] );
-  Message::AddMessage(30000, 3, mbuf);
-  LKSound(TEXT("LK_TONEUP.WAV"));
-
-  return TRUE;
-
-
-}
-#endif
 
 

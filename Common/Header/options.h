@@ -207,7 +207,6 @@
 				// Do not remove, it can be worked out with no problems if we want to
 				// support external switches through NMEA input.
 
-// #define DSX			// only an experimental test feature for sms reception
 
 // TopologyWriter for adding topo labels dynamically, previously used for markers
 // May be sill used for custom user's topology, so let's keep it for a while.

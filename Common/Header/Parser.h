@@ -247,9 +247,6 @@ class NMEAParser {
   BOOL PFLAV(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAU(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-#ifdef DSX
-  BOOL PDSXT(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-#endif
 };
 
 void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO);

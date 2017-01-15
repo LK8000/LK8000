@@ -1031,8 +1031,6 @@ DEVS	:=\
 	$(DEV)/devCondor.cpp \
 	$(DEV)/devDigifly.cpp \
 	$(DEV)/devDisabled.cpp \
-	$(DEV)/devDSX.cpp \
-	$(DEV)/devEye.cpp \
 	$(DEV)/devEW.cpp \
 	$(DEV)/devEWMicroRecorder.cpp \
 	$(DEV)/devFlymasterF1.cpp \

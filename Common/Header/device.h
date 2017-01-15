@@ -12,9 +12,9 @@
 #define	NUMDEV		 2
 
 #ifdef RADIO_ACTIVE
-#define	NUMREGDEV	 42 // Max number of registered devices
+#define	NUMREGDEV	 40 // Max number of registered devices
 #else
-#define	NUMREGDEV	 38 // Max number of registered devices
+#define	NUMREGDEV	 36 // Max number of registered devices
 #endif // RADIO_ACTIVE
 
 #define	devA()	    (&DeviceList[0])
