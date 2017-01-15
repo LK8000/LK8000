@@ -14,6 +14,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "Multimap.h"
+#include "ScreenGeometry.h"
 #include <string.h>
 
 MapWaypointLabel_t MapWaypointLabelList[200];
@@ -190,13 +191,15 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 
 
         if(pWptBmp) {
-#if defined(ANDROID) || defined(KOBO)  || defined(USE_X11)	// In devices where we have exact  screen DIP we use it
-            unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
-#else
-            // Stretch only if Scaled size is greater than 20
-            const unsigned IconSize = std::max(NIBLSCALE(10), 20);
-#endif
+#ifdef RESCALE_PIXEL
+            unsigned IconSize = RescalePixelSize(20);
             pWptBmp->Draw(Surface, WayPointList[i].Screen.x-IconSize/2, WayPointList[i].Screen.y-IconSize/2, IconSize,IconSize);
+#else
+            // Stretch only if Scaled size is greater than 20  TODO CHECK ON PNA ALL RESOLUTIONS
+            // const unsigned IconSize = std::max(NIBLSCALE(10), 20);
+            // pWptBmp->Draw(Surface, WayPointList[i].Screen.x-IconSize/2, WayPointList[i].Screen.y-IconSize/2, IconSize,IconSize);
+            pWptBmp->Draw(Surface, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20);
+#endif
         }
     }
   } // for all waypoints
@@ -547,13 +550,15 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc)
 		pWptBmp = &hTurnPoint;
     }
     if(pWptBmp) {
-#if defined(ANDROID) || defined(KOBO) || defined(USE_X11)	// In devices where we have exact  screen DIP we use it
-        const unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
-#else
-        // Stretch only if Scaled size is greater than 20
-        const unsigned IconSize = std::max(NIBLSCALE(10), 20);
-#endif
+#ifdef RESCALE_PIXEL
+        const unsigned IconSize = RescalePixelSize(20);
         pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
+#else
+        // Stretch only if Scaled size is greater than 20 TODO CHECK ON PNA ALL RESOLUTIONS       
+        // const unsigned IconSize = std::max(NIBLSCALE(10), 20);
+        // pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
+        pWptBmp->Draw(Surface, E->Pos.x-10,E->Pos.y-10,20,20);
+#endif
     }
     } // wp in task
   } // for all waypoint, searching for those in task
@@ -665,13 +670,14 @@ turnpoint:
 	} // below zoom threshold
 
     if(pWptBmp) {
-#if defined(ANDROID) || defined(KOBO)|| defined(USE_X11)	// In devices where we have exact  screen DIP we use it
-        unsigned IconSize = (int) 20*ScreenDensity/120.0; // we take 120 as reference DPI
+#ifdef RESCALE_PIXEL
+        unsigned IconSize = RescalePixelSize(20);
+        pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
 #else
         // Stretch only if Scaled size is greater than 20
         const unsigned IconSize = std::max(NIBLSCALE(10), 20);
-#endif
         pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
+#endif
     }
       }
     }
