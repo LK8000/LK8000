@@ -43,9 +43,7 @@
 #include "devPVCOM.h"
 #include "devCondor.h"
 #include "devIlec.h"
-#include "devDSX.h"
 #include "devIMI.h"
-#include "devEye.h"
 #include "devWesterboer.h"
 #include "devFlyNet.h"
 #include "devKRT2.h"
@@ -501,9 +499,7 @@ bool Startup(const TCHAR* szCmdLine) {
   condorRegister();
   DigiflyRegister(); // 100209
   IlecRegister();
-  DSXRegister();
   CDevIMI::Register();
-  CDevEye::Register();
   FlytecRegister();
   LK8EX1Register();
   WesterboerRegister();

@@ -473,7 +473,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
  // PREAD(sname,svalue,szRegistryPGOpenTimeH,&PGOpenTimeH);
  // PREAD(sname,svalue,szRegistryPGOpenTimeM,&PGOpenTimeM);
   PREAD(sname,svalue,szRegistryPGOptimizeRoute,&PGOptimizeRoute_Config);
-  PREAD(sname,svalue,szRegistryPGGliderSymbol,&PGGliderSymbol);
+  PREAD(sname,svalue,szRegistryGliderSymbol,&GliderSymbol);
 
 
  // PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);

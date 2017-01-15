@@ -2459,15 +2459,18 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGGliderSymbol"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpGliderSymbol"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
+    dfe->addEnumText(MsgToken(227));  //  Default
     dfe->addEnumText(MsgToken(2317)); // _@M2317_ "Triangle"
     dfe->addEnumText(MsgToken(2318)); // _@M2318_ "Paraglider"
     dfe->addEnumText(MsgToken(2319)); // _@M2319_ "Hangglider"
-    dfe->addEnumText(MsgToken(2320)); // _@M2320_ "Glider"
+    dfe->addEnumText(MsgToken(2320)); // _@M2320_ "Big Glider"
     dfe->addEnumText(MsgToken(2321)); // _@M2322_ "Aircraft"
-    dfe->Set(PGGliderSymbol);
+    dfe->addEnumText(MsgToken(2325)); //  "Small Glider"
+    dfe->addEnumText(MsgToken(2326)); //  "Gem"
+    dfe->Set(GliderSymbol);
     wp->RefreshDisplay();
   }
 
@@ -3818,12 +3821,11 @@ int ival;
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGGliderSymbol"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpGliderSymbol"));
   if (wp) {
-    if (PGGliderSymbol != wp->GetDataField()->GetAsInteger() )
+    if (GliderSymbol != wp->GetDataField()->GetAsInteger() )
     {
-    	PGGliderSymbol = wp->GetDataField()->GetAsInteger();
-      //requirerestart = true;
+    	GliderSymbol = wp->GetDataField()->GetAsInteger();
     }
   }
 

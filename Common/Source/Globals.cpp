@@ -266,7 +266,7 @@ void Globals_Init(void) {
   TrackBar=false;
   PGOptimizeRoute=true;
   PGOptimizeRoute_Config=true;
-  PGGliderSymbol = 0;
+  GliderSymbol = 0; // Default
   WindCalcSpeed=0;
   WindCalcTime=WCALC_TIMEBACK;
   RepeatWindCalc=false;

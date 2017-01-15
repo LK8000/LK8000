@@ -238,7 +238,7 @@ void LKProfileResetDefault(void) {
 
   PGOptimizeRoute=true;
   PGOptimizeRoute_Config = true;
-  PGGliderSymbol = 0;  // Triangle
+  GliderSymbol = 0;  // Default depending on mode type
 
   GlideBarMode = (GlideBarMode_t)gbDisabled;
 
