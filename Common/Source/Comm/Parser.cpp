@@ -666,7 +666,7 @@ force_advance:
 	}
   } // gpsvalid 091108
 
-#ifdef WIN32
+#if defined(PPC2003) || defined(PNA)
   // As soon as we get a fix for the first time, set the
   // system clock to the GPS time.
   static bool sysTimeInitialised = false;
