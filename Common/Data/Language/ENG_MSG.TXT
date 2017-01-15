@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  160511
+# MASTER UPDATED:  170115
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -2210,9 +2210,13 @@ _@M2316_ "Aircraft symbol"
 _@M2317_ "Triangle"
 _@M2318_ "Paraglider"
 _@M2319_ "Hangglider"
-_@M2320_ "Glider"
+_@M2320_ "Big Glider"
 _@M2321_ "Aircraft"
 _@M2322_ "Enable Radar"
 
 _@M2323_ "Altitude QNE"
 _@M2324_ "QNE"
+_@M2325_ "Small Glider"
+_@M2326_ "Gem"
+
+

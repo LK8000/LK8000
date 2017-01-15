@@ -30,7 +30,7 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
    //
    // If we are using default shape, pick up the right one for mode type
    //
-   if (PGGliderSymbol==0) {
+   if (GliderSymbol==0) {
       if (ISPARAGLIDER) aicon=AICON_TRIANGLE; else
       if (ISGLIDER) aicon=AICON_GLIDER_THICK; else
       if (ISGAAIRCRAFT) aicon=AICON_GAAIRCRAFT; else
@@ -40,7 +40,7 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
          aicon=AICON_TRIANGLE;
       }
    } else {
-      aicon=PGGliderSymbol;
+      aicon=GliderSymbol;
    }
 
    auto hpOld = Surface.SelectObject(LK_NULL_PEN);

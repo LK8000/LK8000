@@ -18,6 +18,9 @@
       <WndProperty Name="prpBallastSecsToEmpty" Caption="_@M246_" X="1" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H152_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min="10" Max="900" Step="1"/>
       </WndProperty>
+    <WndProperty Name="prpGliderSymbol" Caption="_@M2316_"  X="1" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H1294_">
+        <DataField Name="" DataType="enum"/>
+      </WndProperty>
       <WndButton Name="cmdAircraftType" Caption="_@M60_" X="1" Y="-1" Width="-1" Height="22" Font="2" />
       <WndButton Name="cmdAircraftRego" Caption="_@M56_" X="1" Y="-1" Width="-1" Height="22" Font="2" />
       <WndButton Name="cmdCompetitionClass" Caption="_@M937_" X="1" Y="-1" Width="-1" Height="22" Font="2" />
