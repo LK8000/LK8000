@@ -636,15 +636,18 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
             const lineObj &line = shape->line[tt];
 			for (int jj=0; jj< line.numpoints; jj++) {
                 const pointObj &point = line.point[jj];
-				const POINT sc = _Proj.ToRasterPoint(point.x, point.y);
-				if (dobitmap) {
-					// bugfix 101212 missing case for scaleCategory 0 (markers)
-					if (scaleCategory==0||cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
-						MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
-					}
-				} else {
-					cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc);
-				}
+                if(msPointInRect(&point, &screenRect)) {
+                    const POINT sc = _Proj.ToRasterPoint(point.x, point.y);
+                    if (dobitmap) {
+                        // bugfix 101212 missing case for scaleCategory 0 (markers)
+                        if (scaleCategory == 0 ||
+                            cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
+                            MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
+                        }
+                    } else {
+                        cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc);
+                    }
+                }
 			}
 		}
 	  }
