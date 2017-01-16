@@ -873,12 +873,15 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
         bool need_clipping = !msRectContained(&_bounds, &screenbounds_latlon);
 
         if(!need_clipping) {
+
+            const GeoToScreen<RasterPointList::value_type> ToScreen(_Proj);
+
             // no need clipping we can calc screen pos directly inside _screenpoints_clipped
             std::transform(
                     std::begin(_geopoints), std::end(_geopoints),
                     std::back_inserter(_screenpoints_clipped),
-                    [&_Proj](CPoint2DArray::const_reference pt) {
-                        return _Proj.ToRasterPoint(pt.Longitude(), pt.Latitude());
+                    [&ToScreen](CPoint2DArray::const_reference pt) {
+                        return ToScreen(pt.Longitude(), pt.Latitude());
                     });
 
             // close polygon if needed
@@ -887,9 +890,9 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
             }
 
         } else {
-            
+
             const GeoToScreen<ScreenPointList::value_type> ToScreen(_Proj);
-            
+
             // clipping is need calc screen pos in temp array
             std::transform(
                     std::begin(_geopoints), std::end(_geopoints),
