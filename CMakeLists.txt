@@ -320,6 +320,7 @@ add_library( LK8000 SHARED
     Common/Source/Draw/LKDrawNearest.cpp
     Common/Source/Draw/LKDrawTargetTraffic.cpp
     Common/Source/Draw/LKDrawTrail.cpp
+    Common/Source/Draw/LKDrawLongTrail.cpp
     Common/Source/Draw/LKDrawVario.cpp
     Common/Source/Draw/LKDrawWaypoints.cpp
     Common/Source/Draw/LKDrawWelcome.cpp

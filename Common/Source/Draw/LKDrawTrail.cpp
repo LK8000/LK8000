@@ -10,14 +10,26 @@
 #include "externs.h"
 #include "ScreenProjection.h"
 
+
+#ifdef HAVE_GLES
+/**
+ * quick fix for avoid screen coordinate overflow, if too much cpu overhead, write drawing algoritm for skip point ouside screen and use RasterPoint
+ */
+typedef FloatPoint ScreenPoint;
+#else
+typedef RasterPoint ScreenPoint;
+#endif
+
 void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
-    static RasterPoint snail_polyline[array_size(SnailTrail)];
+
+    static ScreenPoint snail_polyline[array_size(SnailTrail)];
     
     if (!TrailActive) return;
 
     const double display_time = DrawInfo.Time;
     const bool use_colors = (MapWindow::zoom.RealScale() < 2); // 1.5 is also quite good;
 
+    static_assert(array_size(SnailTrail) == TRAILSIZE, "Invalid SnailTrail size");
     //  Trail size
     int num_trail_max = TRAILSIZE;
     if (TrailActive == 2) {
@@ -27,7 +39,13 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
     if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
         num_trail_max /= TRAILSHRINK; // ( 2 min for short track ? )
     }    
-    
+
+    /**
+     * SnailTrail is circular buffer:
+     *  end_iterator : most recent point
+     *  cur_iterator : oldest point, ( last point of array if end_iterator is begin
+     *   we don't need to check if buffer is full here, empty point are check in drawing loop.
+     */
     const SNAIL_POINT* end_iterator = std::next(SnailTrail,iSnailNext);
     const SNAIL_POINT* cur_iterator = end_iterator;
     if(cur_iterator != std::begin(SnailTrail)) {
@@ -36,7 +54,7 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
         cur_iterator = std::prev(std::end(SnailTrail));
     }
         
-    RasterPoint* polyline_iterator = &snail_polyline[0];
+    ScreenPoint* polyline_iterator = &snail_polyline[0];
 
     unsigned short prev_color = 2;
     if(use_colors) {
@@ -57,7 +75,9 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
         traildrift_lat = (DrawInfo.Latitude - tlat1);
         traildrift_lon = (DrawInfo.Longitude - tlon1);
     }
-   
+
+    const GeoToScreen<ScreenPoint> ToScreen(_Proj);
+
     while( (num_trail_max--) > 0 &&  cur_iterator->Time && cur_iterator != end_iterator) {
         
         double this_lat = cur_iterator->Latitude;
@@ -68,7 +88,7 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
             this_lon += traildrift_lon * dt;
         }
         
-        (*polyline_iterator) = _Proj.ToRasterPoint(this_lon, this_lat);
+        (*polyline_iterator) = ToScreen(this_lon, this_lat);
 
         if(use_colors && prev_color != cur_iterator->Colour) {
             // draw polyline before change color.
@@ -92,4 +112,3 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
     Surface.Polyline(snail_polyline, std::distance(snail_polyline, polyline_iterator) , rc);
 }
 
-#include "LKDrawLongTrail.cpp"
