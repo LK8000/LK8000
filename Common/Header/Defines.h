@@ -131,11 +131,11 @@
 
 #else
     #define LKD_SYSTEM       "_System"
-    #define LKD_SOUNDS       "_System\\_Sounds"
-    #define LKD_BITMAPS      "_System\\_Bitmaps"
+    #define LKD_SOUNDS       "_System" DIRSEP "_Sounds"
+    #define LKD_BITMAPS      "_System" DIRSEP "_Bitmaps"
 
-    #define LKD_DEFAULT_POLAR   "_Polars\\Default.plr"
-    #define LKD_DEFAULT_LANGUAGE   "_Language\\ENGLISH.LNG"
+    #define LKD_DEFAULT_POLAR   "_Polars" DIRSEP "Default.plr"
+    #define LKD_DEFAULT_LANGUAGE   "_Language" DIRSEP "ENGLISH.LNG"
 
 #endif
 

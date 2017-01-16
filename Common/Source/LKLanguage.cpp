@@ -261,7 +261,7 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
   if(!langFile) {
 	  // failed to open absolute. try LocalPath
 	  LocalPath(szFilePath, szFile1);
-	  langFile = openzip(szFile1, "rt");
+	  langFile = openzip(szFilePath, "rt");
   }
   if(!langFile) {
 	// failed to open lOCAL. try SystemPath
