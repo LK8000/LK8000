@@ -115,6 +115,18 @@ Normalize(RasterPoint *v, float length)
   v->y = lround(v->y * scale);
 }
 
+static inline void
+Normalize(FloatPoint *v, float length)
+{
+  // TODO: optimize!
+  double squared_length = v->x * (FloatPoint::product_type)v->x +
+                          v->y * (FloatPoint::product_type)v->y;
+  float scale = length / sqrt(squared_length);
+  v->x = (v->x * scale);
+  v->y = (v->y * scale);
+}
+
+
 template <typename PT>
 static unsigned
 _PolygonToTriangles(const PT *points, unsigned num_points,
@@ -458,17 +470,19 @@ TriangleToStrip(GLushort *triangles, unsigned index_count,
 /**
  * Append a RasterPoint to the end of an array and advance the array pointer
  */
+template<typename PT>
 static void
-AppendPoint(RasterPoint* &strip, PixelScalar x, PixelScalar y)
+AppendPoint(PT* &strip, typename PT::scalar_type x, typename PT::scalar_type y)
 {
   strip->x = x;
   strip->y = y;
   strip++;
 }
 
+template<typename PT>
 unsigned
-LineToTriangles(const RasterPoint *points, unsigned num_points,
-                AllocatedArray<RasterPoint> &strip,
+LineToTriangles(const PT *points, unsigned num_points,
+                AllocatedArray<PT> &strip,
                 unsigned line_width, bool loop, bool tcap)
 {
   // A line has to have at least two points
@@ -488,12 +502,12 @@ LineToTriangles(const RasterPoint *points, unsigned num_points,
 
   // strip will point to the start of the output array
   // s is the working pointer
-  RasterPoint *s = strip.begin();
+  PT *s = strip.begin();
 
   // a, b and c point to three consecutive points which are used to iterate
   // through the line given in 'points'. Where b is the current position,
   // a the previous point and c the next point.
-  const RasterPoint *a, *b, *c;
+  const PT *a, *b, *c;
 
   // pointer to the end of the original points array
   // used for faster loop conditions
@@ -534,7 +548,7 @@ LineToTriangles(const RasterPoint *points, unsigned num_points,
 
   if (!loop) {
     // add flat or triangle cap at beginning of line
-    RasterPoint ba = *a - *b;
+    PT ba = *a - *b;
     Normalize(&ba, half_line_width);
 
     if (tcap)
@@ -556,7 +570,7 @@ LineToTriangles(const RasterPoint *points, unsigned num_points,
       // skip zero or 180 degree bends
       // TODO: support 180 degree bends!
       if (!TriangleEmpty(*a, *b, *c)) {
-        RasterPoint g = *b - *a, h = *c - *b;
+        PT g = *b - *a, h = *c - *b;
         Normalize(&g, 1000.);
         Normalize(&h, 1000.);
         int bisector_x = -g.y - h.y;
@@ -603,10 +617,10 @@ LineToTriangles(const RasterPoint *points, unsigned num_points,
     }
   } else {
     // add flat or triangle cap at end of line
-    RasterPoint ab = *b - *a;
+    PT ab = *b - *a;
     Normalize(&ab, half_line_width);
 
-    RasterPoint p;
+    PT p;
     p.x = sign * -ab.y;
     p.y = sign * ab.x;
     AppendPoint(s, b->x - p.x, b->y - p.y);
@@ -617,4 +631,20 @@ LineToTriangles(const RasterPoint *points, unsigned num_points,
   }
 
   return s - strip.begin();
+}
+
+unsigned
+LineToTriangles(const RasterPoint *points, unsigned num_points,
+                AllocatedArray<RasterPoint> &strip,
+                unsigned line_width, bool loop, bool tcap) {
+
+  return LineToTriangles<RasterPoint>(points, num_points, strip, line_width, loop, tcap);
+}
+
+unsigned
+LineToTriangles(const FloatPoint *points, unsigned num_points,
+                AllocatedArray<FloatPoint> &strip,
+                unsigned line_width, bool loop, bool tcap) {
+  return LineToTriangles<FloatPoint>(points, num_points, strip, line_width, loop, tcap);
+
 }

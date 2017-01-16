@@ -80,6 +80,7 @@ protected:
    * static buffer to store vertices of wide lines.
    */
   static AllocatedArray<RasterPoint> vertex_buffer;
+  static AllocatedArray<FloatPoint> vertex_buffer_float;
 
 public:
   Canvas()

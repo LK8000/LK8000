@@ -88,4 +88,9 @@ LineToTriangles(const RasterPoint *points, unsigned num_points,
                 AllocatedArray<RasterPoint> &strip,
                 unsigned line_width, bool loop=false, bool tcap=false);
 
+unsigned
+LineToTriangles(const FloatPoint *points, unsigned num_points,
+                AllocatedArray<FloatPoint> &strip,
+                unsigned line_width, bool loop=false, bool tcap=false);
+
 #endif

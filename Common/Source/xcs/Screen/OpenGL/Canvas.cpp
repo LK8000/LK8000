@@ -60,6 +60,7 @@ Copyright_License {
 #include "utils/stl_utils.h"
 
 AllocatedArray<RasterPoint> Canvas::vertex_buffer;
+AllocatedArray<FloatPoint> Canvas::vertex_buffer_float;
 
 void
 Canvas::DrawFilledRectangle(int left, int top, int right, int bottom,
@@ -233,8 +234,17 @@ Canvas::DrawPolyline(const FloatPoint *points, unsigned num_points) {
 
   pen.Bind();
 
-  const ScopeVertexPointer vp(points);
-  glDrawArrays(GL_LINE_STRIP, 0, num_points);
+  if (pen.GetWidth() <= OpenGL::max_line_width) {
+    const ScopeVertexPointer vp(points);
+    glDrawArrays(GL_LINE_STRIP, 0, num_points);
+  } else {
+    const unsigned vertices = LineToTriangles(points, num_points, vertex_buffer_float,
+                                              pen.GetWidth(), false);
+    if (vertices > 0) {
+      const ScopeVertexPointer vp(vertex_buffer_float.begin());
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices);
+    }
+  }
 
   pen.Unbind();
 
