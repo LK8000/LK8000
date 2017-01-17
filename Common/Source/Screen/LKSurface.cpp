@@ -315,6 +315,7 @@ void LKSurface::Polyline(const FloatPoint *apt, int cpt, const RECT& ClipRect) {
 
 void LKSurface::DrawDashPoly(const int width, const LKColor& color, const FloatPoint* pt, const unsigned npoints, const RECT& rc) {
     LKPen hpDash(PEN_DASH, width, color);
+    SelectObject(hpDash);
     Polyline(pt, npoints, rc);
 }
 #endif
