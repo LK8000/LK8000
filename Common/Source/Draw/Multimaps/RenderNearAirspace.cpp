@@ -14,7 +14,7 @@
 #include "LKObjects.h"
 #include "InputEvents.h"
 
-#define THICK_LINE 3
+#define THICK_LINE 3 // NOTICE v6.1: we should not use absolute values..TODO
 
 extern double fSplitFact;
 extern double fOffset;
@@ -517,7 +517,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         line[1].x = CalcDistanceCoordinat(iABS_AS_HorDistance, &sDia);
         line[1].y = line[0].y;
         #ifdef NO_DASH_LINES
-        Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), line[0], line[1], Sideview_TextColor, rc);
+        Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1], Sideview_TextColor, rc);
         #else
         Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
         #endif
@@ -526,7 +526,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
             line[1].y = line[0].y;
 
             #ifdef NO_DASH_LINES
-            Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), line[0], line[1], Sideview_TextColor, rc);
+            Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1], Sideview_TextColor, rc);
             #else
             Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
             #endif
@@ -565,7 +565,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         line[1].y = CalcHeightCoordinat(GPSalt - (double) iAS_VertDistance, &sDia);
 
         #ifdef NO_DASH_LINES
-        Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), line[0], line[1], Sideview_TextColor, rc);
+        Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1], Sideview_TextColor, rc);
         #else
         Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
         #endif
