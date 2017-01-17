@@ -134,9 +134,6 @@ void MapWindow::CalculateScreenPositionsAirspace(const RECT& rcDraw, const Scree
 
 ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RECT& rc, POINT *Orig_Aircraft )
 {
-
-  unsigned int i;
-
   Orig_Screen = Orig;
 
   if (!mode.AnyPan()) {
@@ -193,46 +190,10 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
   LockTaskData();
 
   if (!WayPointList.empty()) {
-    for (i=0; i<MAXTASKPOINTS; i++) {
-      unsigned index = Task[i].Index;
-      if (index < WayPointList.size()) {
-        
-        WayPointList[index].Screen = _Proj.ToRasterPoint(WayPointList[index].Longitude, WayPointList[index].Latitude);
-        WayPointList[index].Visible = 
-          PointVisible(WayPointList[index].Screen);
-       } else {
-       	 // No need to continue.
-         break;
-      }      
+    /* Is needed ? */
+    for(auto& wpt : WayPointList) {
+        wpt.Visible = PointVisible(wpt.Longitude, wpt.Latitude);
     }
-    if (EnableMultipleStartPoints) {
-      for(i=0;i<MAXSTARTPOINTS-1;i++) {
-        unsigned index = StartPoints[i].Index;
-        if (StartPoints[i].Active && (index < WayPointList.size())) {
-
-          WayPointList[index].Screen = _Proj.ToRasterPoint(WayPointList[index].Longitude, WayPointList[index].Latitude);
-          WayPointList[index].Visible = 
-            PointVisible(WayPointList[index].Screen);
-         } else {
-           // No Need to continue.
-           break;
-        }
-      }
-    }
-
-    // only calculate screen coordinates for waypoints that are visible
-
-    // TODO 110203 OPTIMIZE THIS !
-    for(i=0;i<WayPointList.size();i++)
-      {
-        WayPointList[i].Visible = false;
-        if (!WayPointList[i].FarVisible) continue;
-        if(PointVisible(WayPointList[i].Longitude, WayPointList[i].Latitude) )
-          {
-            WayPointList[i].Screen = _Proj.ToRasterPoint(WayPointList[i].Longitude, WayPointList[i].Latitude);
-            WayPointList[i].Visible = PointVisible(WayPointList[i].Screen);
-          }
-      }
   }
 
   if(TrailActive)

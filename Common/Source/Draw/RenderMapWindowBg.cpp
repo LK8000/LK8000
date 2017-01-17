@@ -253,7 +253,7 @@ _skip_stuff:
     }
 
     if (IsMultimapWaypoints()) {
-        DrawWaypointsNew(Surface, DrawRect);
+        DrawWaypointsNew(Surface, DrawRect, _Proj);
     }
     if (TrailActive) {
         LKDrawLongTrail(Surface, DrawRect, _Proj);

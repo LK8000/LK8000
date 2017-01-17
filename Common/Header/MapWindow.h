@@ -107,7 +107,6 @@ typedef struct _WAYPOINT_INFO
   int Flags;
   TCHAR Name[NAME_SIZE + 1];
   TCHAR *Comment;
-  POINT	Screen;
   int UnusedZoom;	// THIS IS UNUSED AND CAN BE REALLOCATED. WE DONT REMOVE TO KEEP COMPATIBILITY WITH OLD TASKS!
   BOOL Reachable;
   double AltArivalAGL;
@@ -514,7 +513,11 @@ class MapWindow {
 
   static int DrawFlarmObjectTrace(LKSurface& Surface,double fZoom, DiagrammStruct* Dia);
 
-  static void DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, double fScaleFact, BOOL Picto = false);
+/**
+ * DrawRunway : _Proj can be null only if Picto = true !!
+ */
+  static void DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, const ScreenProjection* _Proj,  double fScaleFact, BOOL Picto = false);
+
   static void DrawTaskPicto(LKSurface& Surface, int TaskIdx, const RECT& rc, double fScaleFact);
   static void DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc);
   static void DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp);
@@ -548,7 +551,7 @@ class MapWindow {
 #endif
   static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
   static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
-  static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
+  static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawLook8000(LKSurface& Surface, const RECT& rc);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
   static void DrawMapSpace(LKSurface& Surface, const RECT& rc);

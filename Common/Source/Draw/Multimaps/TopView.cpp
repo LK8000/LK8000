@@ -166,7 +166,7 @@ _nomoredeclutter:
   }
 
   if (IsMultimapWaypoints()) {
-	DrawWaypointsNew(Surface,rct);
+	DrawWaypointsNew(Surface,rct,_Proj);
   }
   if (Flags_DrawFAI)
 	DrawFAIOptimizer(Surface, rct, _Proj, Orig_Aircraft);

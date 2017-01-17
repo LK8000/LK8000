@@ -83,7 +83,7 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
   // ResetLabelDeclutter();	// If you saturated labels for topology, now you can reset the declutter to allow
 				// printing only waypoints,
 
-  DrawWaypointsNew(Surface,rct);
+  DrawWaypointsNew(Surface,rct,_Proj);
 
   const auto oldpen = Surface.SelectObject(LKPen_White_N1);
   const auto oldbrush = Surface.SelectObject(LKBrush_LightGrey);

@@ -32,7 +32,7 @@ static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
         LockTaskData();
         LKASSERT(ValidWayPointFast(SelectedWaypoint));
         if (WayPointCalc[SelectedWaypoint].IsLandable) {
-            MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 4000, true);
+            MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, nullptr, 4000, true);
         } else {
             MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
         }

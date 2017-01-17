@@ -12,6 +12,7 @@
 #include "LKObjects.h"
 #include <string.h>
 #include "ScreenGeometry.h"
+#include "Draw/ScreenProjection.h"
 
 /**
  * @brief Draw Runway on map
@@ -25,8 +26,14 @@
  * @param picto true for drawing Waypoint Picto ( don't draw radio info )
  */
 
-void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, double fScaleFact, BOOL picto)
+void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, const ScreenProjection* _Proj, double fScaleFact, BOOL picto)
 {
+  if(!picto && !_Proj) {
+      // if we don't draw picto ScreenProjection parameter are mandatory.
+      assert(false);
+      return;
+  }
+
   int solid= false;
   bool bGlider = false;
   bool bOutland = false;
@@ -38,12 +45,12 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   static double scale_bigfont=0;
   static double scale_fullinfos=0;
 
-  int Center_x = wp->Screen.x;
-  int Center_y = wp->Screen.y;
-  if(picto)
-  {
-	  Center_x = rc.left+ (rc.right- rc.left)/2;
-	  Center_y = rc.bottom +(rc.top-rc.bottom)/2;
+  RasterPoint Center;
+  if(picto) {
+	  Center.x = rc.left+ (rc.right- rc.left)/2;
+	  Center.y = rc.bottom +(rc.top-rc.bottom)/2;
+  } else {
+      Center =  _Proj->ToRasterPoint(wp->Longitude, wp->Latitude);
   }
 
   int l,p,b;
@@ -199,9 +206,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   if(!bOutland)
   {
 	if (picto)
-		Surface.DrawCircle(Center_x, Center_y, p, true);
+		Surface.DrawCircle(Center.x, Center.y, p, true);
 	else
-		Surface.DrawCircle(Center_x, Center_y, p,  rc, true);
+		Surface.DrawCircle(Center.x, Center.y, p,  rc, true);
   }
 
   if(bRunway)
@@ -228,9 +235,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
             #endif
 	}
 	if(picto) {
-	  threadsafePolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir);
+	  threadsafePolygonRotateShift(Runway, 5,  Center.x, Center.y,  wp->RunwayDir);
 	} else {
-	  PolygonRotateShift(Runway, 5,  Center_x, Center_y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
+	  PolygonRotateShift(Runway, 5,  Center.x, Center.y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
 	}
 	Surface.Polygon(Runway ,5 );
 
@@ -264,9 +271,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	    };
 
 	    if (picto)
-	       threadsafePolygonRotateShift(WhiteWing, 17,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
+	       threadsafePolygonRotateShift(WhiteWing, 17,  Center.x, Center.y,  0/*+ wp->RunwayDir-Brg*/);
 	    else
-	       PolygonRotateShift(WhiteWing, 17,  Center_x, Center_y,  0/*+ wp->RunwayDir-Brg*/);
+	       PolygonRotateShift(WhiteWing, 17,  Center.x, Center.y,  0/*+ wp->RunwayDir-Brg*/);
 
 	    Surface.Polygon(WhiteWing ,17 );
     }
@@ -296,7 +303,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	unsigned int offset = p + NIBLSCALE(1) ;
 	{
 		if ( _tcslen(wp->Freq)>0 ) {
-			MapWindow::LKWriteBoxedText(Surface,rc,wp->Freq, Center_x- offset, Center_y -offset, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+			MapWindow::LKWriteBoxedText(Surface,rc,wp->Freq, Center.x- offset, Center.y -offset, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
 		}
 
 		//
@@ -304,13 +311,13 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 		//
 		if (MapWindow::zoom.RealScale() <=scale_fullinfos) {
 			if ( _tcslen(wp->Code)==4 ) {
-				MapWindow::LKWriteBoxedText(Surface,rc,wp->Code,Center_x + offset, Center_y - offset, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
+				MapWindow::LKWriteBoxedText(Surface,rc,wp->Code,Center.x + offset, Center.y - offset, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
 			}
 
 			if (wp->Altitude >0) {
 				TCHAR tAlt[20];
 				_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
-				MapWindow::LKWriteBoxedText(Surface,rc,tAlt, Center_x + offset, Center_y + offset, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+				MapWindow::LKWriteBoxedText(Surface,rc,tAlt, Center.x + offset, Center.y + offset, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
 			}
 
 		}
