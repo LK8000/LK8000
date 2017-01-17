@@ -41,12 +41,13 @@ public:
     PixelRect GetScreenBounds() const;
 #endif
 
-protected:
 #ifdef HAVE_GLES
   typedef FloatPoint ScreenPoint;
 #else
   typedef RasterPoint ScreenPoint;
 #endif	
+	
+protected:
     typedef std::vector<GeoPoint> GeoPoints_t;
     typedef std::vector<ScreenPoint> ScreenPoints_t;
 

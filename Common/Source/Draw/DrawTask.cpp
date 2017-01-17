@@ -137,6 +137,15 @@ Surface.SelectObject(oldbrush);
 
 void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft) {
 
+#ifdef HAVE_GLES
+    typedef FloatPoint ScreenPoint;
+#else
+    typedef RasterPoint ScreenPoint;
+#endif
+
+    const GeoToScreen<ScreenPoint> ToScreen(_Proj);
+
+
     LKColor whitecolor = RGB_WHITE;
     LKColor origcolor = Surface.SetTextColor(whitecolor);
 
@@ -159,11 +168,34 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
 	if (WayPointList.empty()) return;
 
+    /**
+     * Drawing Task :
+     *   - Draw Task Sector Except Start Point
+     *        (draw finish sector only after validate the first waypoint or if task is with only 2 tps)
+     *   - AAT Task only : Draw Isoline of Active Turnpoint
+     *   - Draw all Start Turnpoint only if Active Turmpoint is First.
+     *   - Build Polyline connecting all turn point center
+     *   - Build Line from current position to Active TurnPoint
+     *   - if(AAT or optimized) {
+     *          - Draw Thin Dash Polyline using polyline 
+     *          - Draw Thin Dash line form current position to Active Turn point
+     *          - replace Polyline by another one Connecting All AAT Target point
+     *      }
+     *   - Draw Multicolor DashLine using Polyline
+     *   - Draw Arrow along multicolor DashLine
+     */
+
+
+
+
+
 	const auto oldpen = Surface.SelectObject(hpStartFinishThin);
 	const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
 	LockTaskData(); // protect from external task changes
 
+    
+    // Draw All Task Sector Except first
 	for (int i = 1; ValidTaskPoint(i); i++) {
 		const TaskRenderer* pItem = gTaskSectorRenderer.GetRenderer(i);
 		assert(pItem);
@@ -181,15 +213,22 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 			} else { // normal sector
 
 				if(SectorType == LINE && !AATEnabled && ISGAAIRCRAFT) { // this Type exist only if not AAT task
-					POINT start,end;
 					double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
 					int length=14*ScreenScale; //Make intermediate WP lines always of the same size independent by zoom level
-					start.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
-					start.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
+
+                    const auto& wpt = WayPointList[Task[i].Index];
+
+                    const ScreenPoint Center = ToScreen(wpt.Longitude, wpt.Latitude);
+                    const ScreenPoint Start = {
+                            static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
+                            static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
+                    };
 					rotation=Reciprocal(rotation);
-					end.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
-					end.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
-					Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), start, end, taskcolor, rc);
+                    const ScreenPoint End = {
+                            static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
+                            static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
+                    };
+					Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), Start, End, taskcolor, rc);
 				} else {
 					Surface.SelectObject(hpStartFinishThin);
 					pItem->Draw(Surface, rc, false);
@@ -198,6 +237,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 		}
 	}
 
+    // Draw Iso Line
 	if (AATEnabled && !DoOptimizeRoute()) {
 		// ELSE HERE IS *** AAT ***
 		// JMW added iso lines
@@ -236,6 +276,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 		}
 	}
 
+    // Draw Start Turnpoint
 	if ((ActiveTaskPoint < 2) && ValidTaskPoint(0) && ValidTaskPoint(1)) {
 
 		const TaskRenderer* pTaskItem = gTaskSectorRenderer.GetRenderer(0);
@@ -251,7 +292,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 		if (EnableMultipleStartPoints) {
 			for (int i = 0; i < MAXSTARTPOINTS; i++) {
 				if (StartPoints[i].Active && ValidWayPoint(StartPoints[i].Index)) {
-					const TaskRenderer* pStartItem = gStartSectorRenderer.GetRenderer(0);
+					const TaskRenderer* pStartItem = gStartSectorRenderer.GetRenderer(i);
 					assert(pStartItem);
 					if(pStartItem) {
 						Surface.SelectObject(hpStartFinishThick);
@@ -264,71 +305,84 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 			}
 		}
 	}
+    
+    // Build Polyline connecting Center
+    typedef std::vector<ScreenPoint> polyline_t;
+    typedef std::array<ScreenPoint,2> line_t;
 
+    polyline_t task_polyline; // make it static for save memory Alloc/Free ( don't forget to clear in this case )
+
+    for(unsigned i = 0; ValidTaskPointFast(i); ++i ) {
+        const WAYPOINT& wpt = WayPointList[Task[i].Index];
+        task_polyline.push_back(ToScreen(wpt.Longitude, wpt.Latitude));
+    }
+    
+    if(AATEnabled) {
+        
+        Surface.DrawDashPoly(NIBLSCALE(1), taskcolor, task_polyline.data(), task_polyline.size(), rc);
+        
+        if((unsigned)ActiveTaskPoint < task_polyline.size()) {
+            // Draw DashLine From current position to Active TurnPoint center
+            const line_t to_next_center = {{(ToScreen(DrawInfo.Longitude, DrawInfo.Latitude)), (task_polyline[ActiveTaskPoint])}};
+            
+            Surface.DrawDashPoly(NIBLSCALE(1), taskcolor, to_next_center.data(), to_next_center.size(), rc);
+        }
+        
+        // replace Polyline by another one Connecting All AAT Target point 
+        task_polyline.clear();
+        for(unsigned i = 0; ValidTaskPointFast(i); ++i ) {
+            const TASK_POINT& tpt = Task[i];
+            task_polyline.push_back(ToScreen(tpt.AATTargetLon, tpt.AATTargetLat));
+        }        
+    }
+
+    /**
+     * This is faster way to draw Task polyline
+     *  instead for have same look of V6.0 we use slow "DrawMulticolorDashLine"
+     * TODO : use OpenGL Textured Line instead.
+     */
+    //Surface.DrawDashPoly(size_tasklines, taskcolor, task_polyline.data(), task_polyline.size(), rc);
+    
+    
     LKPen ArrowPen(PEN_SOLID, size_tasklines-NIBLSCALE(1), taskcolor);
-    for (int i = 0; ValidTaskPoint(i + 1); i++) {
-        int imin = min(Task[i].Index, Task[i + 1].Index);
-        int imax = max(Task[i].Index, Task[i + 1].Index);
-        // JMW AAT!
-        double bearing = Task[i].OutBound;
-        POINT sct1, sct2;
-        if (AATEnabled) {
-            sct1 = _Proj.ToRasterPoint(Task[i].AATTargetLon, Task[i].AATTargetLat);
-            sct2 = _Proj.ToRasterPoint(Task[i + 1].AATTargetLon,Task[i + 1].AATTargetLat);
-            DistanceBearing(Task[i].AATTargetLat,
-                    Task[i].AATTargetLon,
-                    Task[i + 1].AATTargetLat,
-                    Task[i + 1].AATTargetLon,
-                    NULL, &bearing);
+    LKBrush ArrowBrush(taskcolor);
 
-            // draw nominal track line
-            Surface.DrawDashLine(NIBLSCALE(1), // 091217
-                    WayPointList[imin].Screen,
-                    WayPointList[imax].Screen,
-                    taskcolor, rc);
-        } else {
-            sct1 = WayPointList[imin].Screen;
-            sct2 = WayPointList[imax].Screen;
-        }
+    for (unsigned i = ActiveTaskPoint; i < task_polyline.size()-1; i++) {
+        ScreenPoint sct1 = task_polyline[i];
+        ScreenPoint sct2 = task_polyline[i+1];
+                
+        if(LKGeom::ClipLine(rc, sct1, sct2)) {
+            // draw small arrow along task direction
 
-        if ((i >= ActiveTaskPoint && DoOptimizeRoute()) || !DoOptimizeRoute()) {
-            POINT ClipPt1 = sct1, ClipPt2 = sct2;
-            if(LKGeom::ClipLine(rc, ClipPt1, ClipPt2)) {
-                DrawMulticolorDashLine(Surface, size_tasklines,
-                        ClipPt1,
-                        ClipPt2,
-                        taskcolor, RGB_BLACK,rc);
+            const RasterPoint Pt1(sct1.x, sct1.y);
+            const RasterPoint Pt2(sct2.x, sct2.y);
 
-                // draw small arrow along task direction
-                POINT p_p;
-                POINT Arrow[] = {
-                    {6, 6},
-                    {0, 0},
-                    {-6, 6}
-                };
-                ScreenClosestPoint(sct1, sct2, Orig_Aircraft, &p_p, NIBLSCALE(25));
-                PolygonRotateShift(Arrow, array_size(Arrow), p_p.x, p_p.y, bearing - DisplayAngle);
+            // TODO : remove after implement OpenGL Textured Line
+            DrawMulticolorDashLine(Surface, size_tasklines, Pt1, Pt2, taskcolor, RGB_BLACK, rc);
 
-                const auto OldPen = Surface.SelectObject(ArrowPen);
-                Surface.Polyline(Arrow, array_size(Arrow), rc);
-                Surface.SelectObject(OldPen);
-            }
+            RasterPoint p_p;
+            RasterPoint Arrow[] = {
+                {8, 0},
+                {-2, -5},
+                {0, 0},
+                {-2, 5},
+                {8, 0}
+            };
+            
+            const ScreenPoint Vect = sct2 - sct1;
+            const double angle = (atan2(Vect.y,Vect.x)*RAD_TO_DEG);
+
+            ScreenClosestPoint(Pt1, Pt2, Orig_Aircraft, &p_p, NIBLSCALE(25));
+            PolygonRotateShift(Arrow, array_size(Arrow), p_p.x, p_p.y, angle);
+
+            Surface.SelectObject(ArrowBrush);
+            Surface.SelectObject(ArrowPen);
+
+            Surface.Polygon(Arrow, array_size(Arrow), rc);
         }
     }
 
-    // Draw DashLine From current position to Active TurnPoint center
-    if(ValidTaskPoint(ActiveTaskPoint)) {
-        const POINT ptStart = _Proj.ToRasterPoint(DrawInfo.Longitude, DrawInfo.Latitude);
-        Surface.DrawDashLine(NIBLSCALE(1),
-                    ptStart,
-                    WayPointList[Task[ActiveTaskPoint].Index].Screen,
-                    taskcolor, rc);
-
-    }
-
-    {
-        UnlockTaskData();
-    }
+    UnlockTaskData();
 
     // restore original color
     Surface.SetTextColor(origcolor);

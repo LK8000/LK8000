@@ -162,7 +162,17 @@ public:
 
     void DrawLine(int x1, int y1, int x2, int y2);
     void DrawLine(int x1, int y1, int x2, int y2, int x3, int y3);
-    void DrawLine(Pen::Style PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc);
+
+    template <typename PT>
+    void DrawLine(Pen::Style PenStyle, const int width, const PT& ptStart, const PT& ptEnd, const LKColor& cr, const RECT& rc) {
+        LKPen Pen(PenStyle, width, cr);
+        const auto OldPen = SelectObject(Pen);
+
+        const PT pt[2] = {ptStart, ptEnd};
+        Polyline(pt, 2, rc);
+
+        SelectObject(OldPen);
+    }
 
     void DrawSolidLine(const POINT &ptStart, const POINT &ptEnd, const RECT& rc);
 
