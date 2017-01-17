@@ -282,10 +282,17 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
                     NULL, &bearing);
 
             // draw nominal track line
-            Surface.DrawDashLine(NIBLSCALE(1), // 091217
+#ifdef NO_DASH_LINES
+            Surface.DrawLine(PEN_SOLID,ScreenThinSize,
                     WayPointList[imin].Screen,
                     WayPointList[imax].Screen,
                     taskcolor, rc);
+#else
+            Surface.DrawDashLine(NIBLSCALE(1),
+                    WayPointList[imin].Screen,
+                    WayPointList[imax].Screen,
+                    taskcolor, rc);
+#endif
         } else {
             sct1 = WayPointList[imin].Screen;
             sct2 = WayPointList[imax].Screen;
@@ -294,10 +301,17 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
         if ((i >= ActiveTaskPoint && DoOptimizeRoute()) || !DoOptimizeRoute()) {
             POINT ClipPt1 = sct1, ClipPt2 = sct2;
             if(LKGeom::ClipLine(rc, ClipPt1, ClipPt2)) {
+#ifdef NO_DASH_LINES
+                Surface.DrawLine(PEN_SOLID, size_tasklines,
+                        ClipPt1,
+                        ClipPt2,
+                         taskcolor,rc);
+#else
                 DrawMulticolorDashLine(Surface, size_tasklines,
                         ClipPt1,
                         ClipPt2,
                         taskcolor, RGB_BLACK,rc);
+#endif
 
                 // draw small arrow along task direction
                 POINT p_p;
@@ -319,10 +333,17 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
     // Draw DashLine From current position to Active TurnPoint center
     if(ValidTaskPoint(ActiveTaskPoint)) {
         const POINT ptStart = _Proj.LonLat2Screen(DrawInfo.Longitude, DrawInfo.Latitude);
+#ifdef NO_DASH_LINES
+        Surface.DrawLine(PEN_SOLID,ScreenThinSize,
+                    ptStart,
+                    WayPointList[Task[ActiveTaskPoint].Index].Screen,
+                    taskcolor, rc);
+#else
         Surface.DrawDashLine(NIBLSCALE(1),
                     ptStart,
                     WayPointList[Task[ActiveTaskPoint].Index].Screen,
                     taskcolor, rc);
+#endif
 
     }
 

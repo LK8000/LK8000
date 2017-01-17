@@ -260,7 +260,11 @@ void LKObjects_Create() {
   MapWindow::hpThermalBandGlider.Create(PEN_SOLID, NIBLSCALE(2), LKColor(0x00,0x00,0x30));
   MapWindow::hpFinalGlideBelow.Create(PEN_SOLID, NIBLSCALE(1), LKColor(0xFF,0xA0,0xA0)); // another light red
   MapWindow::hpFinalGlideAbove.Create(PEN_SOLID, NIBLSCALE(1), LKColor(0xA0,0xFF,0xA0)); // another light green
-  MapWindow::hpTerrainLine.Create(PEN_DASH, ScreenThinSize, LKColor(0x30,0x30,0x30)); // shade
+  #ifdef NO_DASH_LINES
+  MapWindow::hpTerrainLine.Create(PEN_SOLID, ScreenThinSize, LKColor(0x30,0x30,0x30)); // shade
+  #else
+  MapWindow::hpTerrainLine.Create(PEN_DASH, 1, LKColor(0x30,0x30,0x30)); // shade
+  #endif
   MapWindow::hpTerrainLineBg.Create(PEN_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
 
 
