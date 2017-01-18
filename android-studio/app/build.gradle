@@ -28,9 +28,10 @@ task extractGlmZipFile(dependsOn: downloadGlmZipFile, type: Copy) {
 }
 
 task downloadBoostZipFile(type: Download) {
-    src 'http://www.vololiberomontecucco.it/lklibs/boost_1_63_0.zip'
+    src 'https://freefr.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.zip'
     dest new File(buildDir, 'boost.zip')
     onlyIfNewer true
+    acceptAnyCertificate true
 }
 task extractBoolsZipFile(dependsOn: downloadBoostZipFile, type: Copy) {
     from zipTree(downloadBoostZipFile.dest)
