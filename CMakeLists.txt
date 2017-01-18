@@ -14,7 +14,7 @@ include_directories(
     Common/Source
     Common/Source/xcs
     ./
-    ${BOOST_ROOT}
+    android-studio/app/build/boost_1_63_0
     android-studio/app/build/glm
 )
 
