@@ -1,3 +1,5 @@
+import de.undercouch.gradle.tasks.download.Download
+
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -7,6 +9,7 @@ buildscript {
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
+
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
@@ -14,6 +17,17 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+task downloadGlmZipFile(type: Download) {
+    src 'https://github.com/g-truc/glm/releases/download/0.9.8.3/glm-0.9.8.3.zip'
+    dest new File(buildDir, 'glm.zip')
+    onlyIfNewer true
+}
+task extractGlmZipFile(dependsOn: downloadGlmZipFile, type: Copy) {
+    from zipTree(downloadGlmZipFile.dest)
+    into buildDir
+}
+
+preBuild.dependsOn extractGlmZipFile
 
 android {
     compileSdkVersion 21
