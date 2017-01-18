@@ -36,7 +36,6 @@
 #include "Screen/LKBitmapSurface.h"
 #endif
 
-extern int ScreenThinSize;
 
 #ifdef USE_GDI
 
@@ -371,7 +370,7 @@ void LKSurface::DrawDashLine(const int width, const POINT& ptStart, const POINT&
     // the group of lines properly
 
     //Create a dot pen
-    LKPen hpDash(PEN_DASH, ScreenThinSize, cr);
+    LKPen hpDash(PEN_DASH, 1, cr);
     const auto hpOld = SelectObject(hpDash);
 
     pt[0] = ptStart;

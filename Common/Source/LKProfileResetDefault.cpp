@@ -171,7 +171,11 @@ void LKProfileResetDefault(void) {
 
   LKMaxLabels=70;
 
+#if defined(ANDROID) || defined(KOBO)
+  IphoneGestures = (IphoneGestures_t)iphEnabled;
+#else
   IphoneGestures = (IphoneGestures_t)iphDisabled;
+#endif
 
   PollingMode = (PollingMode_t)pollmodeDisabled;
 

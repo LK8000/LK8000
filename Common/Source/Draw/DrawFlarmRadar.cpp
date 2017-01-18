@@ -129,7 +129,11 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 	line[0].y = ymin;
     }
 
-    Surface.DrawDashLine(1, line[0], line[1], color, rc);
+#ifdef NO_DASH_LINES
+    Surface.DrawLine(PEN_SOLID,ScreenThinSize, line[0], line[1], color, rc);
+#else
+    Surface.DrawDashLine(ScreenThinSize, line[0], line[1], color, rc);
+#endif
 
 
 
@@ -179,7 +183,11 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 	line[0].y = ymin;
     }
 
-    Surface.DrawDashLine(1, line[0], line[1],  color, rc);
+#ifdef NO_DASH_LINES
+    Surface.DrawLine(PEN_SOLID,ScreenThinSize, line[0], line[1], color, rc);
+#else
+    Surface.DrawDashLine(ScreenThinSize, line[0], line[1], color, rc);
+#endif
 
 
     if (iTextAling>TEXT_NO_TEXT)
@@ -235,7 +243,11 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 
     // If sideview is at minimal size, print units but not the dashed lines to avoid cluttering.
     if (Current_Multimap_SizeY<SIZE3) {
-        Surface.DrawDashLine(1, line[0], line[1], color, rc);
+#ifdef NO_DASH_LINES
+        Surface.DrawLine(PEN_SOLID,ScreenThinSize, line[0], line[1], color, rc);
+#else
+        Surface.DrawDashLine(ScreenThinSize, line[0], line[1], color, rc);
+#endif
     }
 
     // Do not print 0 altitude in shared maps, it is useless and we have no spare space to do it.
@@ -281,7 +293,11 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     line[1].y = ymax;
 
     if (Current_Multimap_SizeY<SIZE3) {
-        Surface.DrawDashLine(1,(POINT) line[0],(POINT) line[1], color, rc);
+#ifdef NO_DASH_LINES
+        Surface.DrawLine(PEN_SOLID,ScreenThinSize, (POINT) line[0], (POINT) line[1], color, rc);
+#else
+        Surface.DrawDashLine(ScreenThinSize, (POINT) line[0], (POINT) line[1], color, rc);
+#endif
     }
     // Do not print 0 altitude in shared maps, it is useless and we have no spare space to do it.
     // Beside, we would print it black on blue.

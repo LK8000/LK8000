@@ -319,13 +319,24 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
     
     if(AATEnabled) {
         
+#ifdef NO_DASH_LINES
+        LKPen ThinPen(PEN_SOLID, ScreenThinSize, taskcolor);
+        Surface.SelectObject(ThinPen);
+        Surface.Polyline(task_polyline.data(), task_polyline.size(), rc);
+#else
         Surface.DrawDashPoly(NIBLSCALE(1), taskcolor, task_polyline.data(), task_polyline.size(), rc);
-        
+#endif
+
         if((unsigned)ActiveTaskPoint < task_polyline.size()) {
             // Draw DashLine From current position to Active TurnPoint center
             const line_t to_next_center = {{(ToScreen(DrawInfo.Longitude, DrawInfo.Latitude)), (task_polyline[ActiveTaskPoint])}};
-            
+
+#ifdef NO_DASH_LINES
+            Surface.Polyline(task_polyline.data(), task_polyline.size(), rc);
+
+#else
             Surface.DrawDashPoly(NIBLSCALE(1), taskcolor, to_next_center.data(), to_next_center.size(), rc);
+#endif
         }
         
         // replace Polyline by another one Connecting All AAT Target point 
@@ -336,14 +347,18 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
         }        
     }
 
+
+#ifdef NO_DASH_LINES
     /**
      * This is faster way to draw Task polyline
      *  instead for have same look of V6.0 we use slow "DrawMulticolorDashLine"
      * TODO : use OpenGL Textured Line instead.
      */
-    //Surface.DrawDashPoly(size_tasklines, taskcolor, task_polyline.data(), task_polyline.size(), rc);
-    
-    
+     LKPen TaskPen(PEN_SOLID, size_tasklines, taskcolor);
+     Surface.SelectObject(TaskPen);
+     Surface.Polyline(task_polyline.data(), task_polyline.size(), rc);
+#endif
+
     LKPen ArrowPen(PEN_SOLID, size_tasklines-NIBLSCALE(1), taskcolor);
     LKBrush ArrowBrush(taskcolor);
 
@@ -357,8 +372,10 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
             const RasterPoint Pt1(sct1.x, sct1.y);
             const RasterPoint Pt2(sct2.x, sct2.y);
 
+#ifndef NO_DASH_LINES
             // TODO : remove after implement OpenGL Textured Line
             DrawMulticolorDashLine(Surface, size_tasklines, Pt1, Pt2, taskcolor, RGB_BLACK, rc);
+#endif
 
             RasterPoint p_p;
             RasterPoint Arrow[] = {

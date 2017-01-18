@@ -231,6 +231,7 @@ _nomoredeclutter:
 	// Are we are not topview fullscreen?
 	if (Current_Multimap_SizeY<SIZE4 && !(MapSpaceMode==MSM_VISUALGLIDE)) {
                 #ifdef NO_DASH_LINES
+                // on 435 DPI, NIBLSCALE1=4 ThinSize=3, reasonably ok: undashed must be smaller than dashed
 		Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1],  Sideview_TextColor, rct);
                 #else
 		Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1],  Sideview_TextColor, rct);

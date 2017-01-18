@@ -13,6 +13,7 @@
 #define STATIC_LKOBJECTS
 #include "LKObjects.h"
 #include "Bitmaps.h"
+#include "ScreenGeometry.h"
 
 #include "RGB.h"
 
@@ -160,21 +161,21 @@ void LKObjects_Create() {
   MapWindow::hSnailColours[13] = RGB_RED;
   MapWindow::hSnailColours[14] = RGB_DARKRED;
 
-  MapWindow::hSnailPens[0].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[0]);
-  MapWindow::hSnailPens[1].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[1]);
-  MapWindow::hSnailPens[2].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[2]);
-  MapWindow::hSnailPens[3].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[3]);
-  MapWindow::hSnailPens[4].Create(PEN_SOLID,  iwidth/NIBLSCALE(2), MapWindow::hSnailColours[4]);
-  MapWindow::hSnailPens[5].Create(PEN_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[5]);
-  MapWindow::hSnailPens[6].Create(PEN_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[6]);
-  MapWindow::hSnailPens[7].Create(PEN_SOLID,  iwidth/NIBLSCALE(6), MapWindow::hSnailColours[7]);
-  MapWindow::hSnailPens[8].Create(PEN_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[8]);
-  MapWindow::hSnailPens[9].Create(PEN_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[9]);
-  MapWindow::hSnailPens[10].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[10]);
-  MapWindow::hSnailPens[11].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[11]);
-  MapWindow::hSnailPens[12].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[12]);
-  MapWindow::hSnailPens[13].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[13]);
-  MapWindow::hSnailPens[14].Create(PEN_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
+  MapWindow::hSnailPens[0].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[0]);
+  MapWindow::hSnailPens[1].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[1]);
+  MapWindow::hSnailPens[2].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[2]);
+  MapWindow::hSnailPens[3].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[3]);
+  MapWindow::hSnailPens[4].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[4]);
+  MapWindow::hSnailPens[5].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(4)), MapWindow::hSnailColours[5]);
+  MapWindow::hSnailPens[6].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(4)), MapWindow::hSnailColours[6]);
+  MapWindow::hSnailPens[7].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(6)), MapWindow::hSnailColours[7]);
+  MapWindow::hSnailPens[8].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(4)), MapWindow::hSnailColours[8]);
+  MapWindow::hSnailPens[9].Create(PEN_SOLID, RescalePixelSize(iwidth/NIBLSCALE(4)), MapWindow::hSnailColours[9]);
+  MapWindow::hSnailPens[10].Create(PEN_SOLID,RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[10]);
+  MapWindow::hSnailPens[11].Create(PEN_SOLID,RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[11]);
+  MapWindow::hSnailPens[12].Create(PEN_SOLID,RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[12]);
+  MapWindow::hSnailPens[13].Create(PEN_SOLID,RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[13]);
+  MapWindow::hSnailPens[14].Create(PEN_SOLID,RescalePixelSize(iwidth/NIBLSCALE(2)), MapWindow::hSnailColours[14]);
   #else
   // DITHERED SNAIL TRAIL
   MapWindow::hSnailColours[0] = RGB_GREY;
@@ -260,7 +261,11 @@ void LKObjects_Create() {
   MapWindow::hpThermalBandGlider.Create(PEN_SOLID, NIBLSCALE(2), LKColor(0x00,0x00,0x30));
   MapWindow::hpFinalGlideBelow.Create(PEN_SOLID, NIBLSCALE(1), LKColor(0xFF,0xA0,0xA0)); // another light red
   MapWindow::hpFinalGlideAbove.Create(PEN_SOLID, NIBLSCALE(1), LKColor(0xA0,0xFF,0xA0)); // another light green
-  MapWindow::hpTerrainLine.Create(PEN_DASH, ScreenThinSize, LKColor(0x30,0x30,0x30)); // shade
+  #ifdef NO_DASH_LINES
+  MapWindow::hpTerrainLine.Create(PEN_SOLID, ScreenThinSize, LKColor(0x30,0x30,0x30)); // shade
+  #else
+  MapWindow::hpTerrainLine.Create(PEN_DASH, 1, LKColor(0x30,0x30,0x30)); // shade
+  #endif
   MapWindow::hpTerrainLineBg.Create(PEN_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
 
 

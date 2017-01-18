@@ -156,7 +156,7 @@ void InitLKScreen() {
   ScreenThinSize=RescalePixelSize(1);
 
   #ifdef TESTBENCH
-  StartupStore(_T("... ScreenDensity= %d  ScreenPixelRatio=%d (/10) ThinSize=%d%s"),ScreenDensity,ScreenPixelRatio,ScreenThinSize,NEWLINE);
+  StartupStore(_T("... ScreenDensity= %d  ScreenPixelRatio=%d (/10) ThinSize=%d NIBLSCALE(1)=%d (2)=%d %s"),ScreenDensity,ScreenPixelRatio,ScreenThinSize,NIBLSCALE(1), NIBLSCALE(2),NEWLINE);
   #endif
 
   if (ScreenPixelRatio<10) {

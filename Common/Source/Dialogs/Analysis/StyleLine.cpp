@@ -9,15 +9,18 @@
 #include "externs.h"
 #include "Sideview.h"
 #include "Asset.hpp"
-
+#include "ScreenGeometry.h"
 
 extern LKPen penThinSignal;
 
 
 void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
                            const int Style, const RECT& rc) {
-  int minwidth = 1;
-  minwidth = 3;
+#ifdef NO_DASH_LINES
+  int minwidth = RescalePixelSize(2);
+#else
+  int minwidth = RescalePixelSize(3);
+#endif
   POINT line[2];
   line[0] = l1;
   line[1] = l2;
@@ -29,13 +32,21 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
 	COL = LKColor(0,50,255);
 	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.5);
+#ifdef NO_DASH_LINES
+    Surface.DrawLine(PEN_SOLID,minwidth, l1, l2, COL, rc);
+#else
     Surface.DrawDashLine(minwidth, l1, l2, COL, rc);
+#endif
     break;
   case STYLE_REDTHICK:
 	COL = LKColor(250,50,50);
 	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.7);
+#ifdef NO_DASH_LINES
+    Surface.DrawLine(PEN_SOLID,minwidth, l1, l2, COL, rc);
+#else
     Surface.DrawDashLine(minwidth, l1, l2, COL, rc);
+#endif
     break;
 
   case STYLE_GREENMEDIUM:
@@ -95,8 +106,11 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
 	COL = LKColor(0,255,0);
 	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.7);
-
+#ifdef NO_DASH_LINES
+    Surface.DrawLine(PEN_SOLID,IBLSCALE(1),line[0], line[1], COL, rc);
+#else
     Surface.DrawDashLine(IBLSCALE(2),line[0], line[1], COL, rc);
+#endif
     break;
   case STYLE_MEDIUMBLACK:
     oldpen = Surface.SelectObject(penThinSignal);
@@ -104,14 +118,22 @@ void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
     Surface.SelectObject(oldpen);
     break;
   case STYLE_THINDASHPAPER:
-    Surface.DrawDashLine(1, l1, l2, LKColor(0x60,0x60,0x60), rc);
+#ifdef NO_DASH_LINES
+    Surface.DrawLine(PEN_SOLID,ScreenThinSize, l1, l2, LKColor(0x60,0x60,0x60), rc);
+#else
+    Surface.DrawDashLine(ScreenThinSize, l1, l2, LKColor(0x60,0x60,0x60), rc);
+#endif
     break;
   case STYLE_WHITETHICK:
 	COL =  RGB_WHITE;
 	if(INVERTCOLORS || IsDithered())
 	  COL = COL.ChangeBrightness(0.3);
 
-    Surface.DrawDashLine(3, l1, l2, COL, rc);
+#ifdef NO_DASH_LINES
+    Surface.DrawLine(PEN_SOLID,minwidth, l1, l2, COL, rc);
+#else
+    Surface.DrawDashLine(minwidth, l1, l2, COL, rc);
+#endif
     break;
 
   default:
