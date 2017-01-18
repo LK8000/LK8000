@@ -21,6 +21,7 @@
 #include "../Draw/ScreenProjection.h"
 #include "ShapeSpecialRenderer.h"
 #include "NavFunctions.h"
+#include "ScreenGeometry.h"
 
 #ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"
@@ -72,10 +73,14 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=2;
 				break;
 			default:
+#ifdef RESCALE_PIXEL
+				    psize=RescalePixelSize(3);
+#else
 				if (ScreenLandscape)
 				    psize=3;
 				else
 				    psize=NIBLSCALE(1);
+#endif
 				break;
 		}
 		break;
@@ -93,10 +98,14 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=2;
 				break;
 			default:
+#ifdef RESCALE_PIXEL
+				    psize=RescalePixelSize(3);
+#else
 				if (ScreenLandscape)
 				    psize=3;
 				else
 				    psize=NIBLSCALE(1);
+#endif
 				break;
 		}
 		break;
@@ -112,14 +121,18 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=NIBLSCALE(1);
 				break;
 			default:
+#ifdef RESCALE_PIXEL
+                                psize=RescalePixelSize(1);
+#else
 				psize=NIBLSCALE(1);
+#endif
 				break;
 		}
 		break;
 	case 60: // railroads
 		switch(ScreenSize) {
 			default:
-				psize=1;
+				psize=RescalePixelSize(1);
 		}
 		break;
 
