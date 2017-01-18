@@ -17,29 +17,18 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
-task downloadGlmZipFile(type: Download) {
-    src 'https://github.com/g-truc/glm/releases/download/0.9.8.3/glm-0.9.8.3.zip'
-    dest new File(buildDir, 'glm.zip')
-    onlyIfNewer true
-}
-task extractGlmZipFile(dependsOn: downloadGlmZipFile, type: Copy) {
-    from zipTree(downloadGlmZipFile.dest)
-    into buildDir
-}
-
 task downloadBoostZipFile(type: Download) {
     src 'https://freefr.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.zip'
     dest new File(buildDir, 'boost.zip')
     onlyIfNewer true
     acceptAnyCertificate true
 }
-task extractBoolsZipFile(dependsOn: downloadBoostZipFile, type: Copy) {
+task extractBoostZipFile(dependsOn: downloadBoostZipFile, type: Copy) {
     from zipTree(downloadBoostZipFile.dest)
     into buildDir
 }
 
-preBuild.dependsOn extractGlmZipFile
-preBuild.dependsOn extractBoolsZipFile
+preBuild.dependsOn extractBoostZipFile
 
 android {
     compileSdkVersion 21
