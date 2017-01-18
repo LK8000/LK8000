@@ -11,6 +11,7 @@
 
 #include "externs.h"
 #include "ShapeSpecialRenderer.h"
+#include "Asset.hpp"
 
 ShapeSpecialRenderer::ShapeSpecialRenderer() {
 }
