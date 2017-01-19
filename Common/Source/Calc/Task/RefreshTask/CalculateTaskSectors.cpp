@@ -94,13 +94,13 @@ void CalculateTaskSectors(void) {
 
 				switch (FinishLine) {
 					case 0:
-						gTaskSectorRenderer.SetCircle(i, center, StartRadius);
+						gTaskSectorRenderer.SetCircle(i, center, FinishRadius);
 						break;
 					case 1:
-						gTaskSectorRenderer.SetLine(i, center, StartRadius, SectorBearing);
+						gTaskSectorRenderer.SetLine(i, center, FinishRadius, SectorBearing);
 						break;
 					case 2:
-						gTaskSectorRenderer.SetStartSector(i, center, StartRadius, SectorBearing - 45, SectorBearing + 45);
+						gTaskSectorRenderer.SetStartSector(i, center, FinishRadius, SectorBearing - 45, SectorBearing + 45);
 						break;
 					default:
 						assert(false);
