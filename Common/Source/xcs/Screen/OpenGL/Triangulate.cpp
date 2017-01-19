@@ -556,7 +556,7 @@ LineToTriangles(const PT *points, unsigned num_points,
       AppendPoint(s, a->x + ba.x, a->y + ba.y);
 
     // add flat cap coordinates to the output array
-    RasterPoint p;
+    PT p;
     p.x = ba.y;
     p.y = -ba.x;
     AppendPoint(s, a->x - p.x, a->y - p.y);
@@ -573,8 +573,8 @@ LineToTriangles(const PT *points, unsigned num_points,
         PT g = *b - *a, h = *c - *b;
         Normalize(&g, 1000.);
         Normalize(&h, 1000.);
-        int bisector_x = -g.y - h.y;
-        int bisector_y = g.x + h.x;
+        typename PT::product_type bisector_x = -g.y - h.y;
+        typename PT::product_type bisector_y = g.x + h.x;
 
         float projected_length = (-g.y * bisector_x + g.x * bisector_y) *
                                  (1.f / 1000.f);
@@ -589,9 +589,13 @@ LineToTriangles(const PT *points, unsigned num_points,
         }
 
         float scale = half_line_width / projected_length;
-        bisector_x = sign * (int)lround(bisector_x * scale);
-        bisector_y = sign * (int)lround(bisector_y * scale);
-
+        if(std::is_integral<typename PT::product_type>::value) {
+          bisector_x = sign * (typename PT::product_type) lround(bisector_x * scale);
+          bisector_y = sign * (typename PT::product_type) lround(bisector_y * scale);
+        } else {
+          bisector_x = sign * bisector_x * scale;
+          bisector_y = sign * bisector_y * scale;
+        }
         AppendPoint(s, b->x - bisector_x, b->y - bisector_y);
         AppendPoint(s, b->x + bisector_x, b->y + bisector_y);
       }
