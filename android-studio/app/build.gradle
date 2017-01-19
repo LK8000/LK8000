@@ -17,18 +17,17 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
-task downloadBoostZipFile(type: Download) {
+task downloadBoost(type: Download) {
     src 'https://freefr.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.zip'
-    dest new File(buildDir, 'boost.zip')
+    dest new File(projectDir,'Thirdparty/boost.zip')
     onlyIfNewer true
     acceptAnyCertificate true
 }
-task extractBoostZipFile(dependsOn: downloadBoostZipFile, type: Copy) {
-    from zipTree(downloadBoostZipFile.dest)
-    into buildDir
+task extractBoost(dependsOn: downloadBoost, type: Copy) {
+    from zipTree(downloadBoost.dest)
+    into 'Thirdparty'
 }
-
-preBuild.dependsOn extractBoostZipFile
+preBuild.dependsOn extractBoost
 
 android {
     compileSdkVersion 21

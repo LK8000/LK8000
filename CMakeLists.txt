@@ -14,7 +14,7 @@ include_directories(
     Common/Source
     Common/Source/xcs
     ./
-    android-studio/app/build/boost_1_63_0
+    android-studio/app/Thirdparty/boost_1_63_0
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -fexceptions -frtti -Wall -DBOOST_NO_IOSTREAM -DBOOST_NO_IOSFWD -DBOOST_NO_STRINGSTREAM -DBOOST_NO_WSTREAMBUF -D__linux__ -DHAVE_POSIX -D__STDC_FORMAT_MACROS -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DPOCO_NO_UNWINDOWS -DANDROID -DPOCO_ANDROID " )
