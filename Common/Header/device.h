@@ -9,7 +9,7 @@
 #include "Util/tstring.hpp"
 
 #define DEVNAMESIZE  32
-#define	NUMDEV		 2
+#define	NUMDEV		 6
 
 #ifdef RADIO_ACTIVE
 #define	NUMREGDEV	 40 // Max number of registered devices
@@ -19,6 +19,10 @@
 
 #define	devA()	    (&DeviceList[0])
 #define	devB()	    (&DeviceList[1])
+#define devC()      (&DeviceList[2])
+#define devD()      (&DeviceList[3])
+#define devE()      (&DeviceList[4])
+#define devF()      (&DeviceList[5])
 #define devAll()    (NULL)
 
 class COMMPortItem_t {

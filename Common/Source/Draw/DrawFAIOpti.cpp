@@ -698,7 +698,7 @@ if (iOpposite >0)
 
   }
 #if TESTBENCH
-    StartupStore(_T("... FAI SECTRO: scale %d lines%s"), iCnt, NEWLINE);
+ //   StartupStore(_T("... FAI SECTRO: scale %d lines%s"), iCnt, NEWLINE);
 #endif
 Surface.SelectObject(hfOld);
 Surface.SelectObject(hpOldPen);

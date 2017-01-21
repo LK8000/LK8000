@@ -40,7 +40,7 @@ extern void dlgCustomMenuShowModal(void);
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName);
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
-
+void UpdateDeviceEntries(int DeviceIdx);
 
 static bool taskchanged = false;
 static bool requirerestart = false;
@@ -48,6 +48,9 @@ static bool utcchanged = false;
 static bool waypointneedsave = false;
 static bool fontschanged= false;
 
+
+
+static  int dwDeviceIndex[NUMDEV] = {0,0,0,0,0,0};
 
 short configMode=0;	// current configuration mode, 0=system 1=pilot 2=aircraft 3=device
 short config_page[4]={0,0,0,0}; // remember last page we were using, for each profile
@@ -324,28 +327,78 @@ static void NextPage(int Step){
     }
 } // NextPage
 
-static void UpdateDeviceSetupButton(size_t idx, const TCHAR *Name) {
-    const TCHAR * DevicePropName[] = {_T("prpComPort1"), _T("prpComPort2")};
+static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
+  //  const TCHAR * DevicePropName[] = {_T("prpComPort1")};
 
     // check if all array have same size ( compil time check );
-    static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
+//    static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
+  WndProperty* wp;
 
-    if (std::begin(DeviceList) + idx < std::end(DeviceList)) {
-        bool bHidePort = DeviceList[idx].Disabled = (_tcslen(Name) == 0) || (_tcscmp(Name, _T(DEV_DISABLED_NAME)) == 0);
-        _tcscpy(DeviceList[idx].Name, Name);
-        bHidePort |= (_tcscmp(Name, _T("Internal")) == 0);
-        
-        ShowWindowControl(wf, DevicePropName[idx], !bHidePort);
-        
-        if(!bHidePort) {
-            WndProperty* wp = (WndProperty*) wf->FindByName(DevicePropName[idx]);
-            if (wp) {
-                UpdateComPortSetting(idx, wp->GetDataField()->GetAsString());
-            }
-        } else {
-            UpdateComPortSetting(idx, _T(""));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComPort1"));
+  if (wp) {
+      if (_tcscmp(szPort[ActiveDevice], wp->GetDataField()->GetAsString()) != 0)
+      {
+          _tcscpy(szPort[ActiveDevice], wp->GetDataField()->GetAsString());
+          COMPORTCHANGED = true;
+      }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
+  if (wp) {
+        if (UseExtSound[ActiveDevice] != (wp->GetDataField()->GetAsBoolean())) {
+                UseExtSound[ActiveDevice] = (wp->GetDataField()->GetAsBoolean());
         }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
+  if (wp) {
+    if ((int)dwSpeedIndex[ActiveDevice] != wp->GetDataField()->GetAsInteger()) {
+      dwSpeedIndex[ActiveDevice] = wp->GetDataField()->GetAsInteger();
+      COMPORTCHANGED = true;
     }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
+  if (wp) {
+    if ((int)dwBitIndex[ActiveDevice] != wp->GetDataField()->GetAsInteger()) {
+      dwBitIndex[ActiveDevice] = wp->GetDataField()->GetAsInteger();
+      COMPORTCHANGED = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
+  if (wp) {
+    if (_tcscmp(szIpAddress[ActiveDevice], wp->GetDataField()->GetAsString()) != 0) {
+      _tcsncpy(szIpAddress[ActiveDevice], wp->GetDataField()->GetAsString(), array_size(szIpAddress[ActiveDevice]));
+      szIpAddress[ActiveDevice][array_size(szIpAddress[ActiveDevice])-1] = _T('\0');
+      COMPORTCHANGED = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
+  if (wp) {
+    if ((int)dwIpPort[ActiveDevice] != wp->GetDataField()->GetAsInteger()) {
+      dwIpPort[ActiveDevice] = wp->GetDataField()->GetAsInteger();
+      COMPORTCHANGED = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
+  if (wp) {
+    StartupStore(_T("........... Exchange old Device%i idx%i %s %s"),ActiveDevice,dwDeviceIndex[ActiveDevice], DeviceList[ActiveDevice].Name,NEWLINE); // 091105
+
+
+    if (dwDeviceIndex[ActiveDevice] != wp->GetDataField()->GetAsInteger()) {
+      dwDeviceIndex[ActiveDevice]= wp->GetDataField()->GetAsInteger();
+      COMPORTCHANGED = true;
+      WriteDeviceSettings(ActiveDevice, devRegisterGetName(dwDeviceIndex[ActiveDevice]));
+      StartupStore(_T("........... Exchange new Device%i idx%i %s %s"),ActiveDevice,dwDeviceIndex[ActiveDevice], DeviceList[ActiveDevice].Name,NEWLINE); // 091105
+    }
+  }
+
+  /************************************************************************/
+
+    UpdateComPortSetting(idx, szPort[ActiveDevice]);
 }
 
 static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -355,7 +408,9 @@ static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daPut:
     case DataField::daChange:
-      UpdateDeviceSetupButton(0, Sender->GetAsString());
+  //    StartupStore(_T("........... OnDeviceAData %i %s"),ActiveDevice,NEWLINE); // 091105
+      StartupStore(_T("........... OnDeviceAData Device %i %s %s"),ActiveDevice, Sender->GetAsString(),NEWLINE); // 091105
+      UpdateDeviceSetupButton(ActiveDevice);
     break;
 	default: 
 		StartupStore(_T("........... DBG-902%s"),NEWLINE); // 091105
@@ -364,21 +419,7 @@ static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 }
 
-static void OnDeviceBData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-      UpdateDeviceSetupButton(1, Sender->GetAsString());
-    break;
-	default: 
-		StartupStore(_T("........... DBG-903%s"),NEWLINE); // 091105
-		break;
-  }
-
-}
   
 static void OnAirspaceFillType(DataField *Sender, DataField::DataAccessKind_t Mode){
   WndProperty* wp;
@@ -961,14 +1002,81 @@ static void OnBthDevice(WndButton* pWnd) {
     DlgBluetooth::Show();
     
     TCHAR szPort[MAX_PATH];
-    ReadPort1Settings(szPort, NULL, NULL);
+    ReadPortSettings(szPort, NULL, NULL);
     UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort1")), szPort);
 
-    ReadPort2Settings(szPort, NULL, NULL);
-    UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
+ //   ReadPort2Settings(szPort, NULL, NULL);
+  //  UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
 }
 #endif
 
+
+
+static void OnNextDevice(WndButton* pWnd) {
+  UpdateDeviceSetupButton(ActiveDevice );
+
+  ActiveDevice++;
+  if(ActiveDevice >=NUMDEV)
+    ActiveDevice = 0;
+
+  UpdateDeviceEntries(ActiveDevice);
+
+}
+
+static void RenameDeviceFrame(WndButton* pWnd,const TCHAR Name) {
+  TCHAR newname[25];
+  WndForm* wf = pWnd->GetParentWndForm();
+  if(wf) {
+      _stprintf(newname,  TEXT("%s"), MsgToken(232));
+      newname[_tcslen(newname)-1] = Name;
+    WndFrame  *wDev = ((WndFrame *)wf->FindByName(TEXT("frmCommName")));
+    if(wDev) {
+        wDev->SetCaption(newname);
+    }
+  }
+  UpdateDeviceEntries(ActiveDevice);
+}
+
+static void OnA(WndButton* pWnd) {
+  UpdateDeviceSetupButton(ActiveDevice );
+  ActiveDevice =0;
+  RenameDeviceFrame(pWnd,'A');
+  UpdateDeviceEntries(ActiveDevice);
+}
+
+static void OnB(WndButton* pWnd) {
+  UpdateDeviceSetupButton(ActiveDevice );
+  ActiveDevice =1;
+  RenameDeviceFrame(pWnd,'B');
+  UpdateDeviceEntries(ActiveDevice);
+}
+
+static void OnC(WndButton* pWnd) {
+  UpdateDeviceSetupButton(ActiveDevice );
+  ActiveDevice =2;
+  RenameDeviceFrame(pWnd,'C');
+  UpdateDeviceEntries(ActiveDevice);
+}
+
+static void OnD(WndButton* pWnd) {
+  UpdateDeviceSetupButton(ActiveDevice );
+  ActiveDevice =3;
+  RenameDeviceFrame(pWnd,'D');
+  UpdateDeviceEntries(ActiveDevice);
+}
+static void OnE(WndButton* pWnd) {
+  UpdateDeviceSetupButton(ActiveDevice );
+  ActiveDevice =4;
+  RenameDeviceFrame(pWnd,'E');
+  UpdateDeviceEntries(ActiveDevice);
+}
+
+static void OnF(WndButton* pWnd) {
+  UpdateDeviceSetupButton(ActiveDevice );
+  ActiveDevice =5;
+  RenameDeviceFrame(pWnd,'F');
+  UpdateDeviceEntries(ActiveDevice);
+}
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
     WindowControl* pWnd = wf->FindByName(WndName);
     if(pWnd) {
@@ -977,64 +1085,89 @@ void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
 }
 
 void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
-    const TCHAR* PortPropName[][2] = { 
-        { _T("prpComSpeed1"), _T("prpComBit1") }, 
-        { _T("prpComSpeed2"), _T("prpComBit2") }
-    };
-    const TCHAR * prpExtSound[2] = {
-            _T("prpExtSound1"),
-            _T("prpExtSound2")
-        };
 
-    const TCHAR * prpIpAddr[2] = {
-            _T("prpComIpAddr1"),
-            _T("prpComIpAddr2")
-        };
-    const TCHAR * prpIpPort[2] = {
-            _T("prpComIpPort1"),
-            _T("prpComIpPort2")
-        };
-
-    
     LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
-    static_assert(array_size(DeviceList) == array_size(PortPropName), "PortPropName array size need to be same of DeviceList array size");
+    /*
+    static_assert(array_size(DeviceList) == array_size(PortPropName[0]), "PortPropName array size need to be same of DeviceList array size");
     static_assert(array_size(DeviceList) == array_size(prpExtSound), "prpExtSound array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(prpIpAddr), "prpIpAddr array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(prpIpPort), "prpIpPort array size need to be same of DeviceList array size");
-
+    static_assert(array_size(DeviceList) == array_size(prpIpAddr[0]), "prpIpAddr array size need to be same of DeviceList array size");
+    static_assert(array_size(DeviceList) == array_size(prpIpPort[0]), "prpIpPort array size need to be same of DeviceList array size");
+*/
 #ifdef DISABLEEXTAUDIO    
     bool bManageExtAudio = false;
 #else
     bool bManageExtAudio = true;
 #endif
+
+    WndProperty* wp;
+
+
+    wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
+    bool bHide = false;
+
+    if (wp)
+    {
+      if(wp->GetDataField()->GetAsString())
+      {
+        {
+          if(_tcscmp(wp->GetDataField()->GetAsString(), _T(DEV_DISABLED_NAME)) == 0)
+          {
+            DeviceList[idx].Disabled = true;
+            bHide = true;
+          }
+          else
+            DeviceList[idx].Disabled = false;
+
+          if (_tcscmp(wp->GetDataField()->GetAsString(), _T("Internal")) == 0)
+          {
+            bHide = true;
+          }
+        }
+      }
+    }
+    if(bHide)
+    {
+        ShowWindowControl(wf, TEXT("prpComPort1"), !bHide);
+        ShowWindowControl(wf, TEXT("prpComSpeed1"),!bHide);
+        ShowWindowControl(wf, TEXT("prpComBit1"),  !bHide );
+        ShowWindowControl(wf, TEXT("prpComIpAddr1"),!bHide);
+        ShowWindowControl(wf, TEXT("prpComIpPort1"),!bHide);
+        ShowWindowControl(wf, TEXT("prpExtSound1"), !bHide);
+    }
+    else
+    {
     bManageExtAudio &= IsSoundInit();
-    bool bHide = (DeviceList[idx].Disabled || (_tcscmp(DeviceList[idx].Name, _T("Internal")) == 0));
+
     bool bBt = ((_tcslen(szPortName) > 3) && (_tcsncmp(szPortName, _T("BT:"), 3) == 0));
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
     bool bUDPServer = (_tcscmp(szPortName, _T("UDPServer")) == 0);
-
-    // For com port properties, hide them for disable, internal, Bluetooth or TCP, show otherwise
-    if (std::begin(PortPropName) + idx < std::end(PortPropName)) {
-        std::for_each(
-                std::begin(PortPropName[idx]),
-                std::end(PortPropName[idx]),
-                std::bind(ShowWindowControl, wf, _1, !(bHide || bBt || bTCPClient || bTCPServer || bUDPServer ))
-                );
-
-        // Show Ip Addr only for TCPClient Port
-        ShowWindowControl(wf, prpIpAddr[idx], bTCPClient);
-
-        // Show Ip Port for TCPClient and TCPServer Port or UDPServer
-        ShowWindowControl(wf, prpIpPort[idx], bTCPClient || bTCPServer || bUDPServer);
-
-
-        // Manage external sounds only if necessary
-        if (bManageExtAudio) {
-            ShowWindowControl(wf, prpExtSound[idx], !bHide);
-        }
+    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer);
+    if(bCOM)
+    {
+      ShowWindowControl(wf, TEXT("prpComPort1"), true);
+      ShowWindowControl(wf, TEXT("prpComSpeed1"),true);
+      ShowWindowControl(wf, TEXT("prpComBit1"),  true );
+      ShowWindowControl(wf, TEXT("prpComIpAddr1"),false);
+      ShowWindowControl(wf, TEXT("prpComIpPort1"),false);
+      ShowWindowControl(wf, TEXT("prpExtSound1"), false);
     }
+    else
+    {
+      ShowWindowControl(wf, TEXT("prpComPort1"), false);
+      ShowWindowControl(wf, TEXT("prpComSpeed1"),false);
+      ShowWindowControl(wf, TEXT("prpComBit1"),  bTCPClient || bTCPServer || bUDPServer);
+      ShowWindowControl(wf, TEXT("prpComIpAddr1"), bTCPClient);
+      ShowWindowControl(wf, TEXT("prpComIpPort1"),  bTCPClient || bTCPServer || bUDPServer);
+    }
+
+    // Manage external sounds only if necessary
+    if (bManageExtAudio) {
+        ShowWindowControl(wf,  TEXT("prpExtSound1"), !bHide);
+    }
+    }
+
 }
 
 static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -1043,20 +1176,7 @@ static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daPut:
     case DataField::daChange:
-        UpdateComPortSetting(0, Sender->GetAsString());
-    break;
-	default: 
-		break;
-  }
-}
-
-static void OnComPort2Data(DataField *Sender, DataField::DataAccessKind_t Mode){
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-        UpdateComPortSetting(1, Sender->GetAsString());
+        UpdateComPortSetting(ActiveDevice, Sender->GetAsString());
     break;
 	default: 
 		break;
@@ -1078,10 +1198,10 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnWaypointSaveClicked),
 
   DataAccessCallbackEntry(OnDeviceAData),
-  DataAccessCallbackEntry(OnDeviceBData),
+ // DataAccessCallbackEntry(OnDeviceBData),
   
   DataAccessCallbackEntry(OnComPort1Data),
-  DataAccessCallbackEntry(OnComPort2Data),
+  //DataAccessCallbackEntry(OnComPort2Data),
 
 
   ClickNotifyCallbackEntry(OnSetTopologyClicked),
@@ -1100,6 +1220,14 @@ static CallBackTableEntry_t CallBackTable[]={
 #ifndef NO_BLUETOOTH
   ClickNotifyCallbackEntry(OnBthDevice),
 #endif
+  ClickNotifyCallbackEntry(OnNextDevice),
+  ClickNotifyCallbackEntry(OnA),
+  ClickNotifyCallbackEntry(OnB),
+  ClickNotifyCallbackEntry(OnC),
+  ClickNotifyCallbackEntry(OnD),
+  ClickNotifyCallbackEntry(OnE),
+  ClickNotifyCallbackEntry(OnF),
+  ClickNotifyCallbackEntry(OnNextDevice),
   ClickNotifyCallbackEntry(OnTerminalClicked),
   EndCallBackEntry()
 };
@@ -1192,8 +1320,8 @@ static void GetInfoBoxSelector(int item, int mode)
   }
 }
 
-static  int dwDeviceIndex1=0;
-static  int dwDeviceIndex2=0;
+
+//static  int dwDeviceIndex2=0;
 static  TCHAR temptext[MAX_PATH];
 
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
@@ -1222,6 +1350,76 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
         }
         wp->RefreshDisplay();
     }
+}
+
+
+void UpdateDeviceEntries(int DeviceIdx)
+{
+  WndProperty *wp;
+
+  LKASSERT(wf);
+
+
+TCHAR szPort[MAX_PATH];
+
+ReadPortSettings(DeviceIdx,szPort,NULL, NULL);
+UpdateComPortSetting(DeviceIdx,szPort);
+UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
+
+
+wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
+if (wp) {
+  DataField* dfe = wp->GetDataField();
+  dfe->Set(dwSpeedIndex[DeviceIdx]);
+  wp->SetReadOnly(false);
+  wp->RefreshDisplay();
+}
+wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
+if (wp) {
+  DataField* dfe = wp->GetDataField();
+  dfe->Set(dwBitIndex[DeviceIdx]);
+  wp->RefreshDisplay();
+}
+wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
+if (wp) {
+  wp->GetDataField()->Set(UseExtSound[DeviceIdx]);
+  wp->RefreshDisplay();
+}
+
+wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
+if (wp) {
+  wp->GetDataField()->Set(szIpAddress[DeviceIdx]);
+  wp->RefreshDisplay();
+}
+
+wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
+if (wp) {
+  wp->GetDataField()->Set((int)dwIpPort[DeviceIdx]);
+  wp->RefreshDisplay();
+}
+
+TCHAR deviceName1[MAX_PATH];
+//  TCHAR deviceName2[MAX_PATH];
+ReadDeviceSettings(DeviceIdx, deviceName1);
+
+StartupStore(_T("........... UpdateDeviceEntries data %i %s %s"),ActiveDevice,  dwDeviceName[ActiveDevice] ,NEWLINE); // 091105
+StartupStore(_T("........... UpdateDeviceEntries select %i %s %s"),ActiveDevice,  deviceName1 ,NEWLINE); // 091105
+
+
+
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+    dfe->Set(dwDeviceIndex[DeviceIdx]);
+    wp->RefreshDisplay();
+    UpdateButtons();
+  }
+
+UpdateComPortSetting(DeviceIdx,szPort);
+UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
+  
+  UpdateComPortSetting(DeviceIdx, szPort);
 }
 
 static void setVariables(void) {
@@ -1282,7 +1480,7 @@ static void setVariables(void) {
 
   TCHAR szPort[MAX_PATH];
   
-  ReadPort1Settings(szPort,NULL, NULL);
+  ReadPortSettings(ActiveDevice,szPort,NULL, NULL);
   UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
@@ -1290,7 +1488,7 @@ static void setVariables(void) {
     DataField* dfe = wp->GetDataField();
     std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1));
     
-    dfe->Set(dwSpeedIndex1);
+    dfe->Set(dwSpeedIndex[ActiveDevice]);
     wp->SetReadOnly(false);
     wp->RefreshDisplay();
   }
@@ -1299,36 +1497,35 @@ static void setVariables(void) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("8bit"));
     dfe->addEnumText(TEXT("7bit"));
-    dfe->Set(dwBit1Index);
+    dfe->Set(dwBitIndex[ActiveDevice]);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
   if (wp) {
-    wp->GetDataField()->Set(UseExtSound1);
+    wp->GetDataField()->Set(UseExtSound[ActiveDevice]);
     wp->RefreshDisplay();
   }
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
   if (wp) {
-    wp->GetDataField()->Set(szIpAddress1);
+    wp->GetDataField()->Set(szIpAddress[ActiveDevice]);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
   if (wp) {
-    wp->GetDataField()->Set((int)dwIpPort1);
+    wp->GetDataField()->Set((int)dwIpPort[ActiveDevice]);
     wp->RefreshDisplay();
   }
 
   TCHAR deviceName1[MAX_PATH];
-  TCHAR deviceName2[MAX_PATH];
-  ReadDeviceSettings(0, deviceName1);
-  ReadDeviceSettings(1, deviceName2);
-  #ifdef DEBUG_DEVSETTING
-  StartupStore(_T("...... Config ReadDeviceSet 0=<%s> 1=<%s>\n"),deviceName1, deviceName2);
-  #endif
-
+  //  TCHAR deviceName2[MAX_PATH];
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
+
+
+
+
+  ReadDeviceSettings(ActiveDevice, deviceName1);
   if (wp) {
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<DeviceRegisterCount; i++) {
@@ -1336,68 +1533,40 @@ static void setVariables(void) {
       dfe->addEnumText(DeviceName);
 
       if (_tcscmp(DeviceName, deviceName1) == 0)
-        dwDeviceIndex1 = i;
+        dwDeviceIndex[ActiveDevice] = i;
     }
     dfe->Sort(3);
-    dfe->Set(dwDeviceIndex1);
+    dfe->Set(dwDeviceIndex[ActiveDevice]);
     wp->RefreshDisplay();
   }
 
+  for(int devIdx=0; devIdx < NUMDEV; devIdx++)
+  {
+      ReadDeviceSettings(devIdx, deviceName1);
+      {
+        for (int i=0; i<DeviceRegisterCount; i++)
+        {
+          if (_tcscmp(devRegisterGetName(i), deviceName1) == 0)
+          {
+            StartupStore(_T("==================================================== %s"),NEWLINE); // 091105
+            dwDeviceIndex[devIdx] = i;
+            StartupStore(_T("........... SetVariable Device #%i id:%i %s %s"),devIdx,  dwDeviceIndex[devIdx], deviceName1,NEWLINE); // 091105
+            ReadPortSettings(devIdx,szPort,NULL, NULL);
+            StartupStore(_T("........... SetVariable Port   #%i %s %s"),devIdx,  szPort,NEWLINE); // 091105
 
-  ReadPort2Settings(szPort,NULL, NULL);
+            StartupStore(_T("........... SetVariable SppedIdx   #%i %i %s"),devIdx,  dwSpeedIndex[devIdx],NEWLINE); // 091105
+            StartupStore(_T("........... SetVariable Bit        #%i %i %s"),devIdx,  dwBitIndex[devIdx],NEWLINE); // 091105
+            StartupStore(_T("........... SetVariable IP-Adr     #%i %s %s"),devIdx,  szIpAddress[devIdx],NEWLINE); // 091105
+            StartupStore(_T("........... SetVariable Port       #%i %i %s"),devIdx,  dwIpPort[devIdx],NEWLINE); // 091105
+            StartupStore(_T("........... SetVariable Sound      #%i %i %s"),devIdx,  UseExtSound[devIdx],NEWLINE); // 091105
 
-  UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort2")), szPort);
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed2"));
-  if (wp) {
-    DataField* dfe = wp->GetDataField();
-    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1));
-
-    dfe->Set(dwSpeedIndex2);
-    wp->RefreshDisplay();
+          }
+        }
+      }
   }
+  UpdateButtons();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComBit2"));
-  if (wp) {
-    DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(TEXT("8bit"));
-    dfe->addEnumText(TEXT("7bit"));
-    dfe->Set(dwBit2Index);
-    wp->RefreshDisplay();
-  }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound2"));
-  if (wp) {
-    wp->GetDataField()->Set(UseExtSound2);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr2"));
-  if (wp) {
-    wp->GetDataField()->Set(szIpAddress2);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort2"));
-  if (wp) {
-    wp->GetDataField()->Set((int)dwIpPort2);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice2"));
-  if (wp) {
-    DataField* dfe = wp->GetDataField();
-    for (int i=0; i<DeviceRegisterCount; i++) {
-      LPCTSTR DeviceName = devRegisterGetName(i);
-      dfe->addEnumText(DeviceName);
-      
-      if (_tcscmp(DeviceName, deviceName2) == 0)
-        dwDeviceIndex2 = i;
-    }
-    dfe->Sort(3);
-    dfe->Set(dwDeviceIndex2);
-    wp->RefreshDisplay();
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
   if (wp) {
@@ -2971,19 +3140,19 @@ void dlgConfigurationShowModal(short mode){
 
   if (mode==3) {
 	TCHAR deviceName1[MAX_PATH];
-	TCHAR deviceName2[MAX_PATH];
-	ReadDeviceSettings(0, deviceName1);
-	ReadDeviceSettings(1, deviceName2);
-	UpdateDeviceSetupButton(0, deviceName1);
-	UpdateDeviceSetupButton(1, deviceName2);
+//	TCHAR deviceName2[MAX_PATH];
+	ReadDeviceSettings(ActiveDevice, deviceName1);
+//	ReadDeviceSettings(1, deviceName2);
+	UpdateDeviceSetupButton(ActiveDevice);
+//	UpdateDeviceSetupButton(1, deviceName2);
 // Don't show external sound config if not compiled for this device or not used
 #ifdef DISABLEEXTAUDIO
         ShowWindowControl(wf, _T("prpExtSound1"), false);
-        ShowWindowControl(wf, _T("prpExtSound2"), false);
+ //       ShowWindowControl(wf, _T("prpExtSound2"), false);
 #else
         if (!IsSoundInit()) {
             ShowWindowControl(wf, _T("prpExtSound1"), false);
-            ShowWindowControl(wf, _T("prpExtSound2"), false);
+ //           ShowWindowControl(wf, _T("prpExtSound2"), false);
         }
 #endif
   }
@@ -4115,123 +4284,7 @@ int ival;
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComPort1"));
-  if (wp) {
-      COMMPort_t::const_iterator It = COMMPort.begin();
-      std::advance(It, wp->GetDataField()->GetAsInteger());
-      if(It != COMMPort.end() && !It->IsSamePort(szPort1)) {
-          _tcscpy(szPort1, It->GetName());
-          COMPORTCHANGED = true;
-      }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
-  if (wp) {
-	if (UseExtSound1 != (wp->GetDataField()->GetAsBoolean())) {
-		UseExtSound1 = (wp->GetDataField()->GetAsBoolean());
-	}
-  }
-  
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
-  if (wp) {
-    if ((int)dwSpeedIndex1 != wp->GetDataField()->GetAsInteger()) {
-      dwSpeedIndex1 = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
-  if (wp) {
-    if ((int)dwBit1Index != wp->GetDataField()->GetAsInteger()) {
-      dwBit1Index = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-    }
-  }
-  
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
-  if (wp) {
-    if (_tcscmp(szIpAddress1, wp->GetDataField()->GetAsString()) != 0) {
-      _tcsncpy(szIpAddress1, wp->GetDataField()->GetAsString(), array_size(szIpAddress1));
-      szIpAddress1[array_size(szIpAddress1)-1] = _T('\0');
-      COMPORTCHANGED = true;
-    }
-  }  
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
-  if (wp) {
-    if ((int)dwIpPort1 != wp->GetDataField()->GetAsInteger()) {
-      dwIpPort1 = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-    }
-  }
-  
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
-  if (wp) {
-    if (dwDeviceIndex1 != wp->GetDataField()->GetAsInteger()) {
-      dwDeviceIndex1 = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-      WriteDeviceSettings(0, devRegisterGetName(dwDeviceIndex1));  
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComPort2"));
-  if (wp) {
-      COMMPort_t::const_iterator It = COMMPort.begin();
-      std::advance(It, wp->GetDataField()->GetAsInteger());
-      if(It != COMMPort.end() && !It->IsSamePort(szPort2)) {
-          _tcscpy(szPort2, It->GetName());
-          COMPORTCHANGED = true;
-      }
-  }
-  
-  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound2"));
-  if (wp) {
-	if (UseExtSound2 != (wp->GetDataField()->GetAsBoolean())) {
-		UseExtSound2 = (wp->GetDataField()->GetAsBoolean());
-	}
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed2"));
-  if (wp) {
-    if ((int)dwSpeedIndex2 != wp->GetDataField()->GetAsInteger()) {
-      dwSpeedIndex2 = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComBit2"));
-  if (wp) {
-    if ((int)dwBit2Index != wp->GetDataField()->GetAsInteger()) {
-      dwBit2Index = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-    }
-  }
-  
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr2"));
-  if (wp) {
-    if (_tcscmp(szIpAddress2, wp->GetDataField()->GetAsString()) != 0) {
-      _tcsncpy(szIpAddress2, wp->GetDataField()->GetAsString(), array_size(szIpAddress2));
-      szIpAddress2[array_size(szIpAddress2)-1] = _T('\0');
-      COMPORTCHANGED = true;
-    }
-  }  
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort2"));
-  if (wp) {
-    if ((int)dwIpPort2 != wp->GetDataField()->GetAsInteger()) {
-      dwIpPort2 = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-    }
-  }
-    
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice2"));
-  if (wp) {
-    if (dwDeviceIndex2 != wp->GetDataField()->GetAsInteger()) {
-      dwDeviceIndex2 = wp->GetDataField()->GetAsInteger();
-      COMPORTCHANGED = true;
-      WriteDeviceSettings(1, devRegisterGetName(dwDeviceIndex2));  
-    }
-  }
+  UpdateDeviceSetupButton(ActiveDevice);
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSnailWidthScale"));
   if (wp) {

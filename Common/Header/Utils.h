@@ -35,8 +35,8 @@ void FindLatitudeLongitude(double Lat, double Lon,
                            double *lat_out, double *lon_out);
 void ConvertFlightLevels(void);
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc);
-void ReadPort1Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index);
-void ReadPort2Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit2Index);
+void ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index);
+
 //void ReadPort3Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit3Index);
 
 
@@ -66,6 +66,8 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String, charset& cs);
 bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
 
 
+void LatLon2Flat(double lon, double lat, int *scx, int *scy);
+
 double StrToDouble(TCHAR *Source, TCHAR **Stop);
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, int DesiredFieldNumber);
 void SaveWindToRegistry();
@@ -84,8 +86,8 @@ TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 void TrimRight(TCHAR* str);
 
-void SaveRegistryToFile(const TCHAR* szFile);
-void LoadRegistryFromFile(const TCHAR* szFile);
+void SaveRegistryToFile(const TCHAR* szFile); 
+void LoadRegistryFromFile(const TCHAR* szFile); 
 
 /* =====================================================
    Interface Files !

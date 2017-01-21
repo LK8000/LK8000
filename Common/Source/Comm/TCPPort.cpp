@@ -30,23 +30,17 @@ using namespace std::placeholders;
 #endif
 
 static LPCTSTR GetAddress(unsigned idx) {
-    switch (idx) {
-        case 0:
-            return szIpAddress1;
-        case 1:
-            return szIpAddress2;
-    }
-    return _T("");
+if(idx >= 0)
+ if(idx < NUMDEV)
+    return szIpAddress[idx];
+return _T("");
 }
 
 static uint16_t GetPort(unsigned idx) {
-    switch (idx) {
-        case 0:
-            return dwIpPort1;
-        case 1:
-            return dwIpPort2;
-    }
-    return 0U;
+if(idx >= 0)
+ if(idx < NUMDEV)
+    return dwIpPort[idx];
+return 0U;
 }
 
 

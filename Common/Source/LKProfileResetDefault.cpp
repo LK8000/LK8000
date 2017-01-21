@@ -203,8 +203,8 @@ void LKProfileResetDefault(void) {
   GPSAltitudeOffset = 0;
 
   UseGeoidSeparation = true;
-  UseExtSound1 = false;
-  UseExtSound2 = false;
+  UseExtSound[0] = false;
+  UseExtSound[1] = false;
 
   PressureHg = 0;
 
@@ -400,15 +400,16 @@ void LKProfileResetDefault(void) {
   _tcscpy(szMapFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.LKM"));
 
   // Ports and device settings
-  dwDeviceName1[0]=_T('\0');
-  szPort1[0] = _T('\0');
-  dwSpeedIndex1 = 2;
-  dwBit1Index = (BitIndex_t)bit8N1;
-  dwDeviceName2[0]=_T('\0');
-  szPort2[0] = _T('\0');
-  dwSpeedIndex2 = 2;
-  dwBit2Index = (BitIndex_t)bit8N1;
-
+  for(int i=0 ; i< NUMDEV; i++)
+  {
+    dwDeviceName[i][0]=_T('\0');
+    szPort      [i][0]=_T('\0');
+    szIpAddress [i][0]=_T('\0');
+    dwSpeedIndex[i]   = 2;
+    dwBitIndex  [i]   = (BitIndex_t)bit8N1;
+    dwIpPort    [i]   = 23;
+    UseExtSound [i]   = false;
+  }
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
   _tcscpy(LiveTrackersrv_Config,_T("www.livetrack24.com"));
   LiveTrackerport_Config = 80;

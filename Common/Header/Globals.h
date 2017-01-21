@@ -152,8 +152,6 @@ GEXTERN bool  WarningHomeDir;
 
 // Specials
 GEXTERN bool UseGeoidSeparation;
-GEXTERN bool UseExtSound1;
-GEXTERN bool UseExtSound2;
 GEXTERN double GPSAltitudeOffset; 	// VENTA3
 GEXTERN bool PressureHg;
 //GEXTERN bool ShortcutIbox;
@@ -851,19 +849,28 @@ GEXTERN TCHAR szInputFile[MAX_PATH];
 GEXTERN TCHAR szMapFile[MAX_PATH];
 
 // Ports and devices
-
-GEXTERN TCHAR szPort1[MAX_PATH];
-GEXTERN unsigned dwSpeedIndex1;
-GEXTERN unsigned dwBit1Index;
-GEXTERN TCHAR szPort2[MAX_PATH];
-GEXTERN unsigned dwSpeedIndex2;
-GEXTERN unsigned dwBit2Index;
-GEXTERN TCHAR szIpAddress1[16]; // IPv4
-GEXTERN TCHAR szIpAddress2[16]; // IPv4
-GEXTERN unsigned dwIpPort1;
-GEXTERN unsigned dwIpPort2;
-GEXTERN TCHAR dwDeviceName1[DEVNAMESIZE+1];
-GEXTERN TCHAR dwDeviceName2[DEVNAMESIZE+1];
+GEXTERN unsigned  ActiveDevice;
+GEXTERN TCHAR szPort[NUMDEV][MAX_PATH];
+//GEXTERN TCHAR szPort1[MAX_PATH];
+//GEXTERN TCHAR szPort2[MAX_PATH];
+GEXTERN unsigned dwSpeedIndex[NUMDEV];
+//GEXTERN unsigned dwSpeedIndex1;
+//GEXTERN unsigned dwSpeedIndex2;
+GEXTERN unsigned dwBitIndex[NUMDEV];
+//GEXTERN unsigned dwBit1Index;
+//GEXTERN unsigned dwBit2Index;
+GEXTERN TCHAR szIpAddress[NUMDEV][16];
+//GEXTERN TCHAR szIpAddress1[16]; // IPv4
+//GEXTERN TCHAR szIpAddress2[16]; // IPv4
+GEXTERN unsigned dwIpPort[NUMDEV];
+//GEXTERN unsigned dwIpPort1;
+//GEXTERN unsigned dwIpPort2;
+GEXTERN TCHAR dwDeviceName[NUMDEV][DEVNAMESIZE+1];
+//GEXTERN TCHAR dwDeviceName1[DEVNAMESIZE+1];
+//GEXTERN TCHAR dwDeviceName2[DEVNAMESIZE+1];
+GEXTERN bool UseExtSound[NUMDEV];
+//GEXTERN bool UseExtSound1;
+//GEXTERN bool UseExtSound2;
 GEXTERN double LastFlarmCommandTime;
 GEXTERN bool  DevIsCondor;
 

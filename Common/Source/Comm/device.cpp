@@ -319,18 +319,18 @@ bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
     return (_tcscmp(dev.Name, DeviceName) == 0);
 }
 
-bool ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
-    switch (idx) {
-        case 0:
-            ReadPort1Settings(szPort, SpeedIndex, Bit1Index);
-            return true;
-        case 1:
-            ReadPort2Settings(szPort, SpeedIndex, Bit1Index);
-            return true;
-        default:
-            return false;
-    }
+
+bool GetPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
+    if (idx >= 0)
+      if (idx < NUMDEV)
+      {
+          ReadPortSettings(idx, szPort, SpeedIndex, Bit1Index);
+        return true;
+      }
+    return false;
+
 }
+
 
 void RestartCommPorts() {
 
@@ -430,14 +430,15 @@ BOOL devInit() {
             Port[0] = _T('\0');
             SpeedIndex = 2U;
             BitIndex = bit8N1;
-            ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
+            GetPortSettings(i, Port, &SpeedIndex, &BitIndex);
         }
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
-
+/*
         if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
             StartupStore(_T(". Port <%s> Already used, Device %c Disabled ! %s"), Port, (_T('A') + i), NEWLINE);
             continue;
         }
+*/
         UsedPort.insert(Port);
         
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
@@ -933,8 +934,9 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 #ifdef RADIO_ACTIVE
 
 bool devDriverActivated(const TCHAR *DeviceName) {
-    if ((_tcscmp(dwDeviceName1, DeviceName) == 0) || (_tcscmp(dwDeviceName2, DeviceName) == 0)) {
-        if (_tcscmp(szPort1, szPort2) == 0) {
+  for(int i=0; i <NUMDEV; i++)
+    if ((_tcscmp(dwDeviceName[i], DeviceName) == 0)) {
+        if (_tcscmp(szPort[0], szPort[0]) == 0) {
             return true;
         }
     }
