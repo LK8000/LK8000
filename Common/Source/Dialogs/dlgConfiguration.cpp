@@ -2188,6 +2188,27 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+    WndButton *cmdLKMapOpen = ((WndButton *) wf->FindByName(TEXT("cmdLKMapOpen")));
+    if (cmdLKMapOpen) {
+#ifdef ANDROID
+        cmdLKMapOpen->SetVisible(true);
+        jclass cls = Java::GetEnv()->FindClass("org/LK8000/LKMaps");
+        if (cls != nullptr) {
+            jmethodID mid = Java::GetEnv()->GetStaticMethodID(cls, "isPackageInstalled",
+                                                              "(Landroid/content/Context;)Z");
+            if (mid != nullptr) {
+                jboolean isPackageInstalled = Java::GetEnv()->CallStaticBooleanMethod(cls, mid, context->Get());
+                if ( isPackageInstalled )
+                    cmdLKMapOpen->SetWndText(MsgToken(2329));
+                else
+                    cmdLKMapOpen->SetWndText(MsgToken(2328));
+            }
+        }
+#else
+        cmdLKMapOpen->SetVisible(false);
+#endif
+    }
+
   _tcscpy(temptext,szMapFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapFile"));
@@ -2939,24 +2960,6 @@ wp->RefreshDisplay();
     wp->RefreshDisplay();
   }
 
-    WndButton *cmdLKMapOpen = ((WndButton *) wf->FindByName(TEXT("cmdLKMapOpen")));
-#ifdef ANDROID
-    cmdLKMapOpen->SetVisible(true);
-    jclass cls = Java::GetEnv()->FindClass("org/LK8000/LKMaps");
-    if (cls != nullptr) {
-        jmethodID mid = Java::GetEnv()->GetStaticMethodID(cls, "isPackageInstalled",
-                                                          "(Landroid/content/Context;)Z");
-        if (mid != nullptr) {
-            jboolean  isPackageInstalled = Java::GetEnv()->CallStaticBooleanMethod(cls, mid, context->Get());
-            if ( isPackageInstalled )
-                cmdLKMapOpen->SetWndText(MsgToken(2329));
-            else
-                cmdLKMapOpen->SetWndText(MsgToken(2328));
-        }
-    }
-#else
-    cmdLKMapOpen->SetVisible(false);
-#endif
 
   for (int i=0; i<4; i++) {
     for (int j=0; j<8; j++) {
