@@ -17,8 +17,8 @@
 #include "Util/UTF8.hpp"
 
 
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
+extern NMEAParser nmeaParser[NUMDEV];
+
 
 extern void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col);
 
@@ -426,11 +426,11 @@ _afterautotrm:
 				} else {
 					_stprintf(BufferValue,TEXT("%d"),(int)Value);
 				}
-				if (nmeaParser1.activeGPS == true)
+				if (nmeaParser[0].activeGPS == true)
 					// LKTOKEN _@M1199_ "Sat"
 					_stprintf(BufferTitle, TEXT("%s:A"), MsgToken(1199));
 				else {
-					if (nmeaParser2.activeGPS == true)
+					if (nmeaParser[1].activeGPS == true)
 						// LKTOKEN _@M1199_ "Sat"
 						_stprintf(BufferTitle, TEXT("%s:B"), MsgToken(1199));
 					else

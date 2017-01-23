@@ -20,8 +20,8 @@
 #include "NavFunctions.h"
 
 extern BOOL extGPSCONNECT;
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
+extern NMEAParser nmeaParser[NUMDEV];
+
 
 
 static WndForm *wf=NULL;
@@ -222,10 +222,14 @@ static void UpdateValuesSystem() {
         } else { // valid but unknown number of sats
           _stprintf(Temp,TEXT(">3"));
         }
-	if (nmeaParser1.activeGPS==true)
-		_tcscat(Temp,_T("  (Dev:A)"));
-	else
-		_tcscat(Temp,_T("  (Dev:B)"));
+	if (nmeaParser[0].activeGPS==true)	_tcscat(Temp,_T("  (Dev:A)"));
+        if (nmeaParser[1].activeGPS==true)      _tcscat(Temp,_T("  (Dev:B)"));
+        if (nmeaParser[2].activeGPS==true)      _tcscat(Temp,_T("  (Dev:C)"));
+        if (nmeaParser[3].activeGPS==true)      _tcscat(Temp,_T("  (Dev:D)"));
+        if (nmeaParser[4].activeGPS==true)      _tcscat(Temp,_T("  (Dev:E)"));
+        if (nmeaParser[5].activeGPS==true)      _tcscat(Temp,_T("  (Dev:F)"));
+
+
         wp->SetText(Temp);
         wp->RefreshDisplay();
       }

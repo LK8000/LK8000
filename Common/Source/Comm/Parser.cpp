@@ -28,8 +28,7 @@ void CheckBackTarget(int flarmslot);
 
 
 unsigned LastRMZHB=0;	 // common to both devA and devB.
-NMEAParser nmeaParser1;
-NMEAParser nmeaParser2;
+NMEAParser nmeaParser[NUMDEV];
 int NMEAParser::StartDay = -1;
 
 
@@ -61,8 +60,10 @@ void NMEAParser::_Reset(void) {
 void NMEAParser::Reset(void) {
 
   // clear status
-  nmeaParser1._Reset();
-  nmeaParser2._Reset();
+
+  for(int i=0; i< NUMDEV; i++)
+    nmeaParser[i]._Reset();
+
 
   // trigger updates
   TriggerGPSUpdate();
@@ -75,13 +76,8 @@ BOOL NMEAParser::ParseNMEAString(int device,
 {
 
   LKASSERT(!ReplayLogger::IsEnabled());
+  return nmeaParser[device].ParseNMEAString_Internal(String, pGPS);
 
-  switch (device) {
-  case 0: 
-    return nmeaParser1.ParseNMEAString_Internal(String, pGPS);
-  case 1:
-    return nmeaParser2.ParseNMEAString_Internal(String, pGPS);
-  };
   return FALSE;
 }
 

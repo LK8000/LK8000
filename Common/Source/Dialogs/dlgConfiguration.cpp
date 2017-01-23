@@ -385,14 +385,11 @@ static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
-    StartupStore(_T("........... Exchange old Device%i idx%i %s %s"),ActiveDevice,dwDeviceIndex[ActiveDevice], DeviceList[ActiveDevice].Name,NEWLINE); // 091105
-
 
     if (dwDeviceIndex[ActiveDevice] != wp->GetDataField()->GetAsInteger()) {
       dwDeviceIndex[ActiveDevice]= wp->GetDataField()->GetAsInteger();
       COMPORTCHANGED = true;
       WriteDeviceSettings(ActiveDevice, devRegisterGetName(dwDeviceIndex[ActiveDevice]));
-      StartupStore(_T("........... Exchange new Device%i idx%i %s %s"),ActiveDevice,dwDeviceIndex[ActiveDevice], DeviceList[ActiveDevice].Name,NEWLINE); // 091105
     }
   }
 
@@ -548,7 +545,7 @@ static void OnAircraftTypeClicked(WndButton* pWnd) {
 
 static void OnTerminalClicked(WndButton* pWnd) {
     extern void dlgTerminal(int portnum);
-    dlgTerminal(0);
+    dlgTerminal(ActiveDevice);
 }
 
 static void OnPilotNameClicked(WndButton* pWnd) {
@@ -1401,11 +1398,6 @@ if (wp) {
 TCHAR deviceName1[MAX_PATH];
 //  TCHAR deviceName2[MAX_PATH];
 ReadDeviceSettings(DeviceIdx, deviceName1);
-
-StartupStore(_T("........... UpdateDeviceEntries data %i %s %s"),ActiveDevice,  dwDeviceName[ActiveDevice] ,NEWLINE); // 091105
-StartupStore(_T("........... UpdateDeviceEntries select %i %s %s"),ActiveDevice,  deviceName1 ,NEWLINE); // 091105
-
-
 
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));

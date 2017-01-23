@@ -11,8 +11,8 @@
 #include <ctype.h>
 
 
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
+extern NMEAParser nmeaParser[NUMDEV];
+
 
 
 
@@ -228,14 +228,11 @@ BOOL NMEAParser::NMEAChecksum(const TCHAR *String)
 
 
 bool NMEAParser::PortIsFlarm(int device) {
-  switch (device) {
-  case 0: 
-    return nmeaParser1.isFlarm;
-  case 1:
-    return nmeaParser2.isFlarm;
-  default:
-    return false;
-  };
+if(device >=0)
+  if(device < NUMDEV)
+    return nmeaParser[device].isFlarm;
+
+ return false;
 }
 
 

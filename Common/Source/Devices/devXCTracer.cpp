@@ -150,17 +150,9 @@ static BOOL XTRC(PDeviceDescriptor_t d, TCHAR *String, TCHAR **params, size_t np
      * Need to rewrite
      * 
      */
-    extern NMEAParser nmeaParser1;
-    extern NMEAParser nmeaParser2;
+    extern NMEAParser nmeaParser[NUMDEV];
+    nmeaParser[d->PortNumber].gpsValid = !pGPS->NAVWarning;
 
-    switch (d->PortNumber) {
-        case 0:
-            nmeaParser1.gpsValid = !pGPS->NAVWarning;
-            break;
-        case 1:
-            nmeaParser2.gpsValid = !pGPS->NAVWarning;
-            break;
-    }
 
     if(!pGPS->NAVWarning) {
         TriggerGPSUpdate();

@@ -21,8 +21,13 @@ static WndListFrame *wTTYList=NULL;
 static WndOwnerDrawFrame *wTTYListEntry = NULL;
 
 static TCHAR tmps[100];
-
-
+TCHAR* DeviceName(int dev)
+{
+  static TCHAR NewName[50];
+  _tcscpy(NewName,MsgToken(232));
+  NewName[(_tcslen(NewName))-1] ='A'+dev;
+  return NewName;
+}
 #define INTERLINE NIBLSCALE(2);
 
 static bool OnTimerNotify(WndForm* pWnd) {
@@ -89,7 +94,7 @@ static bool stopped=false;
 
 static void OnPortClicked(WndButton* pWnd) {
   // Name is available only in Fly mode, not inited in SIM mode because no devices, and not inited if disabled
-  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(232),
+  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(ActiveDevice),
      _tcslen(DeviceList[ActiveDevice].Name)>0?DeviceList[ActiveDevice].Name:MsgToken(1600));
   wf->SetCaption(tmps);
   ComCheck_ActivePort=ActiveDevice; // needed
@@ -100,40 +105,19 @@ static void OnPortClicked(WndButton* pWnd) {
 }
 
 
-static void OnPrevClicked(WndButton* pWnd) {
- // if(stopped)
-  {
-    if(ActiveDevice==0)
-      ActiveDevice = NUMDEV-1;
-    else
-      ActiveDevice--;
-    OnPortClicked(pWnd);
-  }
-}
-
-static void OnNextClicked(WndButton* pWnd) {
- // if(stopped)
-  {
-    ActiveDevice++;
-    if(ActiveDevice==NUMDEV)
-      ActiveDevice = 0;
-
-    OnPortClicked(pWnd);
-  }
-}
 
 static void OnStopClicked(WndButton* pWnd) {
   stopped=!stopped;
   wf->SetCaption(tmps);
   if (stopped) {
-      _stprintf(tmps,_T("%s: %s  %s%c"),MsgToken(1871), MsgToken(670),
-          MsgToken(232),'A'+ActiveDevice);
+      _stprintf(tmps,_T("%s: %s  %s"),MsgToken(1871), MsgToken(670),
+          DeviceName(ActiveDevice));
       wf->SetCaption(tmps);
       wf->SetTimerNotify(0, NULL);
       ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(1200)); // Start
   } else {
       {
-        _stprintf(tmps,_T("%s: %s%c (%s)"),MsgToken(1871),MsgToken(232),'A'+ActiveDevice,
+        _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(ActiveDevice),
         _tcslen(DeviceList[ActiveDevice].Name)>0?DeviceList[ActiveDevice].Name:MsgToken(1600));
 
       }
@@ -142,6 +126,34 @@ static void OnStopClicked(WndButton* pWnd) {
       ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
   }
 }
+
+
+static void OnPrevClicked(WndButton* pWnd) {
+    if(!stopped)
+      OnStopClicked(pWnd);
+
+    if(ActiveDevice==0)
+      ActiveDevice = NUMDEV-1;
+    else
+      ActiveDevice--;
+    OnPortClicked(pWnd);
+  //  OnStopClicked(pWnd);
+
+}
+
+static void OnNextClicked(WndButton* pWnd) {
+  if(!stopped)
+    OnStopClicked(pWnd);
+
+    ActiveDevice++;
+    if(ActiveDevice==NUMDEV)
+      ActiveDevice = 0;
+
+    OnPortClicked(pWnd);
+ //   OnStopClicked(pWnd);
+
+}
+
 
 static void OnTTYCloseClicked(WndButton* pWnd) {
   ComCheck_ActivePort=-1;

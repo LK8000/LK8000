@@ -1688,8 +1688,8 @@ void InputEvents::eventWind(const TCHAR *misc) {
 // For the simple SendNMEA without port specified, we assume it is a FLARM
 // commanded action from menu buttons.
 //
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
+extern NMEAParser nmeaParser[NUMDEV];
+
 void InputEvents::eventSendNMEA(const TCHAR *misc) {
   #if TESTBENCH
   StartupStore(_T("... SendNMEA: <%s>\n"),misc);
@@ -1699,8 +1699,8 @@ void InputEvents::eventSendNMEA(const TCHAR *misc) {
   // But since we only manage FLARM buttons in v5, no reason to complicate life.
   // if ( strncmp  misc PF ..)
   short flarmfoundonport=-1;
-  if (nmeaParser2.isFlarm) flarmfoundonport=2;
-  if (nmeaParser1.isFlarm) flarmfoundonport=1; // priority on lowest port
+  if (nmeaParser[1].isFlarm) flarmfoundonport=2;
+  if (nmeaParser[0].isFlarm) flarmfoundonport=1; // priority on lowest port
   if (flarmfoundonport==-1) {
       DoStatusMessage(_T("NO FLARM"));
       #if TESTBENCH

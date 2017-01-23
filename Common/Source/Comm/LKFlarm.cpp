@@ -221,8 +221,8 @@ void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 double FLARM_NorthingToLatitude = 0.0;
 double FLARM_EastingToLongitude = 0.0;
 
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
+extern NMEAParser nmeaParser[NUMDEV];
+
 
 
 BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
@@ -257,8 +257,8 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   // We want to be sure that we are not going to elect as Flarm two simultaneous ports.
   // We let it happen once, and give warning. Then only one of the two will remain.
   // It is a real borderline situation, due to conflict on comm ports, normally virtual com ports.
-  if (nmeaParser1.gpsValid && nmeaParser2.gpsValid) {
-	if (nmeaParser1.isFlarm && nmeaParser2.isFlarm) {
+  if (nmeaParser[0].gpsValid && nmeaParser[1].gpsValid) {
+	if (nmeaParser[0].isFlarm && nmeaParser[1].isFlarm) {
 		DoStatusMessage(_T("FLARM DETECTED ON TWO COM PORTS! AUTO-EXCLUDING."));
 		StartupStore(_T("......... WARNING! FLARM DETECTED ON TWO COM PORTS! %s\n"), WhatTimeIsIt());
 		pGPS->FLARM_Available = false;
@@ -286,10 +286,10 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	}
 	sayflarmavailable=false;
 #if FLARMDEADLOCK
-	if(nmeaParser1.isFlarm) {
+	if(nmeaParser[0].isFlarm) {
 		devRequestFlarmVersion(devA());
 	} else {
-		if(nmeaParser2.isFlarm)
+		if(nmeaParser[1].isFlarm)
 			devRequestFlarmVersion(devB());
 	}
 #endif

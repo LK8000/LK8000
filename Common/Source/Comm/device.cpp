@@ -534,6 +534,7 @@ BOOL devInit() {
         if (pDevNmeaOut == devB()) {
             devA()->pDevPipeTo = devB();
         }
+
     }
 
     UnlockComm();
@@ -596,10 +597,11 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port){
 
  // devParseStream(devIdx, c, &GPS_INFO);
 BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
-  
+  StartupStore(_T(". ParseStream %u    %s"),portNum, NEWLINE);
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if (d && d->ParseStream) {
-    if (portNum>=0 && portNum<=1) {
+      StartupStore(_T(". ParseStream %u  %s  %s"),portNum,d->Name , NEWLINE);
+    if (portNum>=0 && portNum< NUMDEV) {
       ComPortHB[portNum]=LKHearthBeats;
     }
     if (d->ParseStream(d, stream, length, pGPS)) {
@@ -620,7 +622,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
-  if (portNum>=0 && portNum<=1) {
+  if (portNum>=0 && portNum< NUMDEV) {
 	ComPortHB[portNum]=LKHearthBeats;
   }
 

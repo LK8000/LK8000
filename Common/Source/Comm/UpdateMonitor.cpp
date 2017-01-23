@@ -11,8 +11,8 @@
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 extern unsigned LastRMZHB;	 // common to both devA and devB, updated in Parser
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
+extern NMEAParser nmeaParser[NUMDEV];
+
 
 double trackbearingminspeed=0; // minimal speed to use gps bearing
 
@@ -41,21 +41,34 @@ void NMEAParser::UpdateMonitor(void)
      oldoffset=GPSAltitudeOffset;
   }
      
-
+  bool ValidPGS = false;
   // does anyone have GPS?
-  if (nmeaParser1.gpsValid || nmeaParser2.gpsValid) {
-	if (nmeaParser1.gpsValid && nmeaParser2.gpsValid) {
+  for(int i =0; i< NUMDEV; i++)
+  {
+    nmeaParser[i].activeGPS = false;
+    if(!ValidPGS)
+      if (nmeaParser[i].gpsValid)
+      {
+        active = i;
+        nmeaParser[i].activeGPS = true;
+        ValidPGS = true;
+      }
+  }
+/*
+  if (nmeaParser[0].gpsValid || nmeaParser[1].gpsValid) {
+	if (nmeaParser[0].gpsValid && nmeaParser[1].gpsValid) {
 		// both valid, just use first
-		nmeaParser2.activeGPS = false;
-		nmeaParser1.activeGPS = true;
+		nmeaParser[1].activeGPS = false;
+		nmeaParser[0].activeGPS = true;
 		active=1;
 	} else {
 		// only one valid, pick it up
-		nmeaParser1.activeGPS = nmeaParser1.gpsValid;
-		nmeaParser2.activeGPS = nmeaParser2.gpsValid;
-		active= nmeaParser1.activeGPS ? 1 : 2;
+		nmeaParser[0].activeGPS = nmeaParser[0].gpsValid;
+		nmeaParser[1].activeGPS = nmeaParser[1].gpsValid;
+		active= nmeaParser[0].activeGPS ? 1 : 2;
 	}
-  } else {
+	*/
+  if(ValidPGS) {
 	// No valid fix on any port. We use the first port with at least some data going through!
 	// This will keep probably at least the time updated since the gps may still be receiving a 
 	// valid time, good for us.
@@ -75,31 +88,12 @@ void NMEAParser::UpdateMonitor(void)
 		}
 	}
 
-	switch(active) {
-		case 0:
-			nmeaParser1.activeGPS = false;
-			nmeaParser2.activeGPS = false;
-			break;
-		case 1:
-			nmeaParser1.activeGPS = true;
-			nmeaParser2.activeGPS = false;
-			break;
-		case 2:
-			nmeaParser1.activeGPS = false;
-			nmeaParser2.activeGPS = true;
-			break;
-		default:
-			nmeaParser1.activeGPS = false;
-			nmeaParser2.activeGPS = false;
-			LKASSERT(0);
-			break;
-	}
   }
 
 
-  if (nmeaParser2.activeGPS==true && active==1) {
+  if (nmeaParser[1].activeGPS==true && active==1) {
 	StartupStore(_T(".... GPS Update error: port 1 and 2 are active! %s%s"),WhatTimeIsIt(),NEWLINE);
-	nmeaParser2.activeGPS=false; // force it off
+	nmeaParser[1].activeGPS=false; // force it off
 	active=1; 
   }
 
@@ -127,21 +121,21 @@ void NMEAParser::UpdateMonitor(void)
 	StartupStore(_T("... GPS Port 1 : no activity LKHB=%u CBHB=%u %s"),LKHearthBeats, ComPortHB[0],NEWLINE);
 	#endif
 	// if this is active and supposed to have a valid fix.., but no HB..
-	if ( (active==1) && (nmeaParser1.gpsValid) ) {
+	if ( (active==1) && (nmeaParser[0].gpsValid) ) {
 		StartupStore(_T("... GPS Port 1 no hearthbeats, but still gpsValid: forced invalid  %s%s"),WhatTimeIsIt(),NEWLINE);
 	}
-	nmeaParser1.gpsValid=false;
+	nmeaParser[0].gpsValid=false;
 	invalidGps=1;
 	// We want to be sure that if this device is silent, and it was providing Baro altitude,
 	// now it is set to off.
 	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
-		if ( devA() == pDevPrimaryBaroSource || nmeaParser1.RMZAvailable 
-		  || nmeaParser1.TASAvailable ) {
+		if ( devA() == pDevPrimaryBaroSource || nmeaParser[0].RMZAvailable
+		  || nmeaParser[0].TASAvailable ) {
 			invalidBaro=1;
 		}
 	}
-	nmeaParser1._Reset();
-	nmeaParser1.activeGPS=false; // because Reset is setting it to true
+	nmeaParser[0]._Reset();
+	nmeaParser[0].activeGPS=false; // because Reset is setting it to true
 	// We reset some flags globally only once in case of device gone silent 
 	if (!devIsDisabled(0) && !wasSilent[0]) {
 		GPS_INFO.AirspeedAvailable=false;
@@ -154,7 +148,7 @@ void NMEAParser::UpdateMonitor(void)
   } else {
 	wasSilent[0]=false;
 	// We have hearth beats, is baro available?
-	if ( devIsBaroSource(devA()) || nmeaParser1.RMZAvailable || nmeaParser1.TASAvailable ) // 100411
+	if ( devIsBaroSource(devA()) || nmeaParser[0].RMZAvailable || nmeaParser[0].TASAvailable ) // 100411
 		validBaro++;
   }
   // now check also port 2
@@ -162,19 +156,19 @@ void NMEAParser::UpdateMonitor(void)
 	#ifdef DEBUGNPM
 	StartupStore(_T("... GPS Port 2 : no activity LKHB=%u CBHB=%u %s"),LKHearthBeats, ComPortHB[1],NEWLINE);
 	#endif
-	if ( (active==2) && (nmeaParser2.gpsValid) ) {
+	if ( (active==2) && (nmeaParser[1].gpsValid) ) {
 		StartupStore(_T("... GPS port 2 no hearthbeats, but still gpsValid: forced invalid  %s%s"),WhatTimeIsIt(),NEWLINE);
 	}
-	nmeaParser2.gpsValid=false;
+	nmeaParser[1].gpsValid=false;
 	invalidGps++;
 	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
-		if ( devB() == pDevPrimaryBaroSource || nmeaParser2.RMZAvailable 
-		  || nmeaParser2.TASAvailable ) {
+		if ( devB() == pDevPrimaryBaroSource || nmeaParser[1].RMZAvailable
+		  || nmeaParser[1].TASAvailable ) {
 			invalidBaro++;
 		}
 	}
-	nmeaParser2._Reset();
-	nmeaParser2.activeGPS=false; // because Reset is setting it to true
+	nmeaParser[1]._Reset();
+	nmeaParser[1].activeGPS=false; // because Reset is setting it to true
 	if (!devIsDisabled(1) && !wasSilent[1]) {
 		GPS_INFO.AirspeedAvailable=false;
 		GPS_INFO.VarioAvailable=false;
@@ -186,7 +180,7 @@ void NMEAParser::UpdateMonitor(void)
   } else {
 	wasSilent[1]=false;
 	// We have hearth beats, is baro available?
-	if ( devIsBaroSource(devB()) || nmeaParser2.RMZAvailable || nmeaParser2.TASAvailable   )  // 100411
+	if ( devIsBaroSource(devB()) || nmeaParser[1].RMZAvailable || nmeaParser[1].TASAvailable   )  // 100411
 		validBaro++;
   }
 
@@ -222,8 +216,8 @@ void NMEAParser::UpdateMonitor(void)
 		GPS_INFO.NettoVarioAvailable=false;
 		GPS_INFO.AccelerationAvailable = false;
 		EnableExternalTriggerCruise = false;
-		nmeaParser1._Reset();
-		nmeaParser2._Reset();
+		nmeaParser[0]._Reset();
+		nmeaParser[1]._Reset();
 		// 120824 Check this situation better> Reset is setting activeGPS true for both devices!
 		lastvalidBaro=false;
 	}
@@ -273,12 +267,12 @@ void NMEAParser::UpdateMonitor(void)
   // there was a real RMZ in the NMEA stream lately.
   // Normally RMZAvailable, RMCAvailable, GGA etc.etc. are reset to false when the com port is silent.
   // But RMZ is special, because it can be sent through the multiplexer from a flarm box.
-  if ( (nmeaParser1.RMZAvailable || nmeaParser2.RMZAvailable) && (LKHearthBeats > (LastRMZHB+5))) {
+  if ( (nmeaParser[0].RMZAvailable || nmeaParser[1].RMZAvailable) && (LKHearthBeats > (LastRMZHB+5))) {
 	#if DEBUGBARO
 	StartupStore(_T(".... RMZ not updated recently, resetting HB\n"));
 	#endif
-	nmeaParser1.RMZAvailable = FALSE;
-	nmeaParser2.RMZAvailable = FALSE;
+	nmeaParser[0].RMZAvailable = FALSE;
+	nmeaParser[1].RMZAvailable = FALSE;
   }
 
   // Check baro altitude problems. This can happen for several reasons: mixed input on baro on same port,
@@ -329,8 +323,8 @@ void NMEAParser::UpdateMonitor(void)
 				GPS_INFO.NettoVarioAvailable=false;
 				GPS_INFO.AccelerationAvailable = false;
 				EnableExternalTriggerCruise = false;
-				nmeaParser1._Reset();
-				nmeaParser2._Reset();
+				nmeaParser[0]._Reset();
+				nmeaParser[1]._Reset();
 				// 120824 Check this situation better> Reset is setting activeGPS true for both devices!
 				lastvalidBaro=false;
 				GotFirstBaroAltitude=false;
@@ -362,7 +356,7 @@ void NMEAParser::UpdateMonitor(void)
 
   if (PortMonitorMessages<15) { // do not overload pilot with messages!
 	// do not say anything if we never got the first port, on startup essentially
-	if ((lastactive!=0) && (nmeaParser1.gpsValid || nmeaParser2.gpsValid)){
+	if ((lastactive!=0) && (nmeaParser[0].gpsValid || nmeaParser[1].gpsValid)){
 		TCHAR vbuf[100];
 		_stprintf(vbuf,_T("%s %d"), MsgToken(277),active); // FALLBACK USING GPS ON PORT ..
 		DoStatusMessage(vbuf);

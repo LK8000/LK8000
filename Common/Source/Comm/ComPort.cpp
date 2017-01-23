@@ -125,9 +125,9 @@ bool ComPort::StartRxThread() {
 }
 
 void ComPort::run() {
-    StartupStore(_T(". ComPort %u ReadThread : started%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
+    StartupStore(_T(". ComPort %u  %s on %s ReadThread : started%s"), (unsigned)(GetPortIndex() + 1), szPort[GetPortIndex() ],DeviceList[GetPortIndex()].Name,NEWLINE);
     RxThread();
-    StartupStore(_T(". ComPort %u ReadThread : terminated%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
+    StartupStore(_T(". ComPort %u  %s on %s ReadThread : terminated%s"), (unsigned)(GetPortIndex() + 1),szPort[GetPortIndex()],DeviceList[GetPortIndex()].Name, NEWLINE);
 }
 
 void ComPort::ProcessChar(char c) {
