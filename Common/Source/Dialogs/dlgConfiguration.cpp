@@ -597,11 +597,11 @@ static void OnAirspaceColoursClicked(WndButton* pWnd) {
 
 static void OnLKMapOpenClicked(WndButton* pWnd) {
 #ifdef ANDROID
-    jclass cls = Java::GetEnv()->FindClass("org/LK8000/LKMaps");
-    if(cls == nullptr) return;
-    jmethodID mid = Java::GetEnv()->GetStaticMethodID(cls, "openLKMaps","(Landroid/content/Context;)V");
-    if(mid == nullptr) return;
-    Java::GetEnv()->CallStaticVoidMethod(cls, mid,context->Get());
+  jclass cls = Java::GetEnv()->FindClass("org/LK8000/LKMaps");
+  if(cls == nullptr) return;
+  jmethodID mid = Java::GetEnv()->GetStaticMethodID(cls, "openLKMaps","(Landroid/content/Context;)V");
+  if(mid == nullptr) return;
+  Java::GetEnv()->CallStaticVoidMethod(cls, mid,context->Get());
 #endif
 }
 
@@ -2188,26 +2188,26 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-    WndButton *cmdLKMapOpen = ((WndButton *) wf->FindByName(TEXT("cmdLKMapOpen")));
-    if (cmdLKMapOpen) {
+  WndButton *cmdLKMapOpen = ((WndButton *) wf->FindByName(TEXT("cmdLKMapOpen")));
+  if (cmdLKMapOpen) {
 #ifdef ANDROID
-        cmdLKMapOpen->SetVisible(true);
-        jclass cls = Java::GetEnv()->FindClass("org/LK8000/LKMaps");
-        if (cls != nullptr) {
-            jmethodID mid = Java::GetEnv()->GetStaticMethodID(cls, "isPackageInstalled",
-                                                              "(Landroid/content/Context;)Z");
-            if (mid != nullptr) {
-                jboolean isPackageInstalled = Java::GetEnv()->CallStaticBooleanMethod(cls, mid, context->Get());
-                if ( isPackageInstalled )
-                    cmdLKMapOpen->SetWndText(MsgToken(2329));
-                else
-                    cmdLKMapOpen->SetWndText(MsgToken(2328));
-            }
-        }
-#else
-        cmdLKMapOpen->SetVisible(false);
-#endif
+    cmdLKMapOpen->SetVisible(true);
+    jclass cls = Java::GetEnv()->FindClass("org/LK8000/LKMaps");
+    if (cls != nullptr) {
+      jmethodID mid = Java::GetEnv()->GetStaticMethodID(cls, "isPackageInstalled",
+                                                        "(Landroid/content/Context;)Z");
+      if (mid != nullptr) {
+        jboolean isPackageInstalled = Java::GetEnv()->CallStaticBooleanMethod(cls, mid, context->Get());
+        if ( isPackageInstalled )
+          cmdLKMapOpen->SetWndText(MsgToken(2329));
+        else
+          cmdLKMapOpen->SetWndText(MsgToken(2328));
+      }
     }
+#else
+    cmdLKMapOpen->SetVisible(false);
+#endif
+  }
 
   _tcscpy(temptext,szMapFile);
   ExpandLocalPath(temptext);
