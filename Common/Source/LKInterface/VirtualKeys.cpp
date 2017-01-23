@@ -59,6 +59,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 		// same for bottom navboxes: they do not exist in infobox mode
 		s_bottomY=MapWindow::Y_BottomBar-NIBLSCALE(2);
+#if TESTBENCH
+                StartupStore(_T("... Virtualkeys: s_xleft=%d s_xright=%d s_bottomY=%d%s"),s_xleft,s_xright,s_bottomY, NEWLINE);
+#endif
 
 		DoInit[MDI_PROCESSVIRTUALKEY]=false;
 	}
