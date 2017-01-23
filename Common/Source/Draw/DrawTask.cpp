@@ -21,6 +21,7 @@ $Id$
 #include "Task/TaskRendererDae.h"
 #include "Task/TaskRendererLine.h"
 #include "Task/TaskRendererMgr.h"
+#include "ScreenGeometry.h"
 
 extern int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
 extern LKColor taskcolor;
@@ -47,6 +48,28 @@ finish--;
 if(center_y < width)
   width = center_y-2;
 
+#ifdef RESCALE_PIXEL
+POINT startfinishline[2] = {{0,-width},
+                            {0,width}};
+
+POINT track[] = {
+    {0,-width/5},
+    {width/2,0},
+    {0,width/5},
+    {0,-width/5}
+};
+if(TaskIdx == finish)
+{
+  track[0].x = -width/2; track[0].y= -width/5;
+  track[1].x = 0 ; track[1].y= 0;
+  track[2].x = -width/2 ; track[2].y= width/5;
+  track[3] = track[0];
+}
+#else
+//
+// 20160122 note: values here are divided by screenscale because RotateShift is multiplying by screenscale.
+// So it is an even operation. With new RescalePixel we dont need this anymore.
+//
 POINT startfinishline[2] = {{0,-width/ScreenScale},
                             {0,width/ScreenScale}};
 
@@ -63,6 +86,7 @@ if(TaskIdx == finish)
   track[2].x = -width/2/ScreenScale ; track[2].y= width/5/ScreenScale;
   track[3] = track[0];
 }
+#endif
 
 LockTaskData(); // protect from external task changes
 double StartRadial = Task[TaskIdx].AATStartRadial;
@@ -183,13 +207,17 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 				if(SectorType == LINE && !AATEnabled && ISGAAIRCRAFT) { // this Type exist only if not AAT task
 					POINT start,end;
 					double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
+#ifdef RESCALE_PIXEL
+					int length=RescalePixelSize(14); //Make intermediate WP lines always of the same size independent by zoom level
+#else
 					int length=14*ScreenScale; //Make intermediate WP lines always of the same size independent by zoom level
+#endif
 					start.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
 					start.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
 					rotation=Reciprocal(rotation);
 					end.x=WayPointList[Task[i].Index].Screen.x+(long)(length*fastsine(rotation));
 					end.y=WayPointList[Task[i].Index].Screen.y-(long)(length*fastcosine(rotation));
-					Surface.DrawLine(PEN_SOLID, NIBLSCALE(3), start, end, taskcolor, rc);
+					Surface.DrawLine(PEN_SOLID, RescalePixelSize(3), start, end, taskcolor, rc);
 				} else {
 					Surface.SelectObject(hpStartFinishThin);
 					pItem->Draw(Surface, rc, false);
@@ -215,7 +243,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 				TASKSTATS_POINT& StatPt =  TaskStats[ActiveTaskPoint];
 				for (int j = 0; j < MAXISOLINES - 1; j++) {
 					if (StatPt.IsoLine_valid[j] && StatPt.IsoLine_valid[j + 1]) {
-						Surface.DrawLine(PEN_SOLID, NIBLSCALE(2),
+						Surface.DrawLine(PEN_SOLID, RescalePixelSize(2),
 									StatPt.IsoLine_Screen[j],
 									StatPt.IsoLine_Screen[j + 1],
 									LKColor(0, 0, 255), rc);
@@ -226,7 +254,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 				TASKSTATS_POINT& StatPt =  TaskStats[TargetPanIndex];
 				for (int j = 0; j < MAXISOLINES - 1; j++) {
 					if (StatPt.IsoLine_valid[j] && StatPt.IsoLine_valid[j + 1]) {
-						Surface.DrawLine(PEN_SOLID, NIBLSCALE(2),
+						Surface.DrawLine(PEN_SOLID, RescalePixelSize(2),
 									StatPt.IsoLine_Screen[j],
 									StatPt.IsoLine_Screen[j + 1],
 									LKColor(0, 0, 255), rc);
@@ -265,7 +293,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 		}
 	}
 
-    LKPen ArrowPen(PEN_SOLID, size_tasklines-NIBLSCALE(1), taskcolor);
+    LKPen ArrowPen(PEN_SOLID, size_tasklines-RescalePixelSize(1), taskcolor);
     for (int i = 0; ValidTaskPoint(i + 1); i++) {
         int imin = min(Task[i].Index, Task[i + 1].Index);
         int imax = max(Task[i].Index, Task[i + 1].Index);

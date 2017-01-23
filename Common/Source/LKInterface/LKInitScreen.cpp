@@ -142,13 +142,15 @@ void InitLKScreen() {
   ScreenDensity=GetScreenDensity();
 
   // This is used by RescalePixelSize(), defined in Makefile when needed.
-  // We are not supposed to use directly this value
-  // because we go through RescalePixelSize() .. but we never know.
+  // Some functions using ScreenScale have been changed to use rescaled pixels.
+  // We must check that pixelratio is never lower than ScreenScale.
   #ifdef RESCALE_PIXEL
   ScreenPixelRatio=(ScreenDensity*10)/LK_REFERENCE_DPI;
   #else
   ScreenPixelRatio=10;
   #endif
+  int idscale=(int)ScreenDScale*10;
+  ScreenPixelRatio=max(idscale,(int)ScreenPixelRatio);
 
   //
   // The thinnest line somehow visible on screen from 35cm distance.
@@ -156,7 +158,7 @@ void InitLKScreen() {
   ScreenThinSize=RescalePixelSize(1);
 
   #ifdef TESTBENCH
-  StartupStore(_T("... ScreenDensity= %d  ScreenPixelRatio=%d (/10) ThinSize=%d NIBLSCALE(1)=%d (2)=%d %s"),ScreenDensity,ScreenPixelRatio,ScreenThinSize,NIBLSCALE(1), NIBLSCALE(2),NEWLINE);
+  StartupStore(_T("... ScreenDensity= %d  idscale=%d ScreenPixelRatio=%d (/10) ThinSize=%d NIBLSCALE(1)=%d (2)=%d %s"),ScreenDensity,idscale,ScreenPixelRatio,ScreenThinSize,NIBLSCALE(1), NIBLSCALE(2),NEWLINE);
   #endif
 
   if (ScreenPixelRatio<10) {

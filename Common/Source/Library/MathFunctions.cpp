@@ -6,7 +6,7 @@
    $Id$
 */
 #include "externs.h"
-
+#include "ScreenGeometry.h"
 
 
 
@@ -99,8 +99,13 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
 
   if(angle != lastangle) {
     lastangle = angle;
+#ifdef RESCALE_PIXEL
+    cost = ifastcosine(angle)*ScreenPixelRatio/10;
+    sint = ifastsine(angle)*ScreenPixelRatio/10;
+#else
     cost = ifastcosine(angle)*ScreenScale;
     sint = ifastsine(angle)*ScreenScale;
+#endif
   }
   const int xxs = xs*1024+512;
   const int yys = ys*1024+512;
@@ -118,8 +123,13 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
 
 void threadsafePolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle) {
 
+#ifdef RESCALE_PIXEL
+  const int cost = ifastcosine(angle)*ScreenPixelRatio/10;
+  const int sint = ifastsine(angle)*ScreenPixelRatio/10;
+#else
   const int cost = ifastcosine(angle)*ScreenScale;
   const int sint = ifastsine(angle)*ScreenScale;
+#endif
 
   const int xxs = xs*1024+512;
   const int yys = ys*1024+512;

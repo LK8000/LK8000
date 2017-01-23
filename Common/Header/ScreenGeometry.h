@@ -32,9 +32,9 @@
 #define SCREEN_GEOMETRY_COUNT    6
 
 // Many graphic functions in LK were tuned around low DPI devices, with the most tuned being 
-// 480x272 at around 110 DPI. 800x480 was also managed properly at 186 DPI.
-// Here we fix a reference DPI to rescale pixel sizes upon.
-#define LK_REFERENCE_DPI  140
+// 480x272 at around 110 DPI. 800x480 was also managed decently at 186 DPI.
+// Here we fix a reference DPI to rescale pixels. Lower value means bigger rescaling.
+#define LK_REFERENCE_DPI  120
 
 
 extern unsigned short GetScreenGeometry(unsigned int x, unsigned int y);

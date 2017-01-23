@@ -32,7 +32,11 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   Start.y = Orig.y;
   Start.x = Orig.x;
 
+#ifdef RESCALE_PIXEL
+  int kx = tsize.cx/2;
+#else
   int kx = tsize.cx/ScreenScale/2;
+#endif
 
   POINT Arrow[7] = { {0,-20}, {-6,-26}, {0,-20},
                      {6,-26}, {0,-20},

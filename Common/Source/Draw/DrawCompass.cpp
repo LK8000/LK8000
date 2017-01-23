@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "DoInits.h"
 #include "LKObjects.h"
+#include "ScreenGeometry.h"
 
 void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double angle)
 {
@@ -38,8 +39,13 @@ void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double ang
       Arrow[4].y  = -11;
 
 	// no more clock, no need to have different compass position
+#ifdef RESCALE_PIXEL
+	Start.y = rc.top + RescalePixelSize(11); 
+	Start.x = rc.right - RescalePixelSize(11);
+#else
 	Start.y = rc.top + NIBLSCALE(11); 
 	Start.x = rc.right - NIBLSCALE(11);
+#endif
 
       // North arrow
       PolygonRotateShift(Arrow, 5, Start.x, Start.y, 
