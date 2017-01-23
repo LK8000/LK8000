@@ -55,9 +55,9 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   POINT Tail[2] = {{0,-20}, {0,-26-min(20,wmag)*3}};
   double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
   for(i=0; i<2; i++) {
-    if (ScreenScale>1) {
-      Tail[i].x *= ScreenScale;
-      Tail[i].y *= ScreenScale;
+    if (ScreenPixelRatio>10) {
+      Tail[i].x *= ScreenPixelRatio /10;
+      Tail[i].y *= ScreenPixelRatio /10;
     }
     protateshift(Tail[i], angle, Start.x, Start.y);
   }
