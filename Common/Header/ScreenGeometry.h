@@ -12,6 +12,7 @@
 #ifndef SCREENGEO_H
 #define SCREENGEO_H
 
+#include "Compiler.h"
 
 #define SCREEN_GEOMETRY_INVALID  0
 
@@ -40,11 +41,21 @@
 extern unsigned short GetScreenGeometry(unsigned int x, unsigned int y);
 extern double GetScreen0Ratio(void);
 extern unsigned short GetScreenDensity(void);
+
+/**
+ * Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
+ * If unused, this function is a transparent #define RescalePixelSize(arg) arg
+ * See ScreenGeometry.h
+ * WARNING: use this function only after ScreenPixelRatio has been calculated by InitLKScreen().
+ */
+gcc_pure inline
+int RescalePixelSize(int x) {
 #ifdef RESCALE_PIXEL
-extern unsigned short RescalePixelSize(unsigned short x);
+    return (x * ScreenPixelRatio) / 10;
 #else
-#define RescalePixelSize(arg) arg
+    return x;
 #endif
+}
 
 
 #endif

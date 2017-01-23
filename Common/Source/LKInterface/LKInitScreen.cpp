@@ -150,12 +150,8 @@ void InitLKScreen() {
   ScreenPixelRatio=10;
   #endif
   int idscale=(int)ScreenDScale*10;
-  ScreenPixelRatio=max(idscale,(int)ScreenPixelRatio);
+  ScreenPixelRatio=max<int>(idscale,ScreenPixelRatio);
 
-  //
-  // The thinnest line somehow visible on screen from 35cm distance.
-  // 
-  ScreenThinSize=RescalePixelSize(1);
 
   #ifdef TESTBENCH
   StartupStore(_T("... ScreenDensity= %d  idscale=%d ScreenPixelRatio=%d (/10) ThinSize=%d NIBLSCALE(1)=%d (2)=%d %s"),ScreenDensity,idscale,ScreenPixelRatio,ScreenThinSize,NIBLSCALE(1), NIBLSCALE(2),NEWLINE);
@@ -168,11 +164,16 @@ void InitLKScreen() {
      ScreenPixelRatio=10;
   }
 
+  //
+  // The thinnest line somehow visible on screen from 35cm distance.
+  //
+  ScreenThinSize=RescalePixelSize(1);
+
+  GestureSize=RescalePixelSize(50);
+
   if (ScreenLandscape) {
-	GestureSize=RescalePixelSize(50);
 	LKVarioSize=ScreenSizeX/16;
   } else {
-	GestureSize=RescalePixelSize(50);
 	LKVarioSize=ScreenSizeX/11;
   }
 
@@ -329,18 +330,5 @@ unsigned short GetScreenDensity(void) {
 	return sqrt(ScreenSizeX*ScreenSizeX + ScreenSizeY*ScreenSizeY)/5; // default to a 5 in screen;
 }
 
-#ifdef RESCALE_PIXEL
-//
-// Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
-// If unused, this function is a transparent #define RescalePixelSize(arg) arg 
-// See ScreenGeometry.h
-// WARNING: use this function only after ScreenPixelRatio has been calculated by InitLKScreen().
-//
-unsigned short RescalePixelSize(unsigned short x) {
-
-return (x*ScreenPixelRatio)/10;
-
-}
-#endif
 
 

@@ -21,6 +21,7 @@
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
 #include "InputEvents.h"
+#include "ScreenGeometry.h"
 
 extern POINT startScreen;
 
@@ -494,8 +495,8 @@ RECT rct = rc;  /* rectangle for topview */
 rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
 rc.top     = rct.bottom;
 static double fScaleFact = 5.0;
-static int iCircleSize    = 4  * ScreenPixelRatio /10 ;
-static int iRectangleSize = 4  * ScreenPixelRatio /10 ;
+static int iCircleSize    = RescalePixelSize(4);
+static int iRectangleSize = RescalePixelSize(4);
 
 static short tscaler=0;
 static POINT Arrow[5];
@@ -814,9 +815,9 @@ DiagrammStruct sDia;
 	  {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; };
 
 
-	iCircleSize    = 4 * ScreenPixelRatio /10;
-	iTraceDotSize  = 2 * ScreenPixelRatio /10;
-	iRectangleSize = 4 * ScreenPixelRatio /10;
+	iCircleSize    = RescalePixelSize(4);
+	iTraceDotSize  = RescalePixelSize(2);
+	iRectangleSize = RescalePixelSize(4);
 	DoInit[MDI_FLARMRADAR]=false;
   }
 
