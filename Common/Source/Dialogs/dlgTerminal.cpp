@@ -94,11 +94,11 @@ static bool stopped=false;
 
 static void OnPortClicked(WndButton* pWnd) {
   // Name is available only in Fly mode, not inited in SIM mode because no devices, and not inited if disabled
-  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(ActiveDevice),
-     _tcslen(DeviceList[ActiveDevice].Name)>0?DeviceList[ActiveDevice].Name:MsgToken(1600));
+  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(SelectedDevice),
+     _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken(1600));
   wf->SetCaption(tmps);
-  ComCheck_ActivePort=ActiveDevice; // needed
-  ComCheck_Reset=0;
+  ComCheck_ActivePort=SelectedDevice; // needed
+  ComCheck_Reset=ComCheck_ActivePort;
   wf->SetTimerNotify(500, OnTimerNotify);
   ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
   stopped=false;
@@ -111,14 +111,14 @@ static void OnStopClicked(WndButton* pWnd) {
   wf->SetCaption(tmps);
   if (stopped) {
       _stprintf(tmps,_T("%s: %s  %s"),MsgToken(1871), MsgToken(670),
-          DeviceName(ActiveDevice));
+          DeviceName(SelectedDevice));
       wf->SetCaption(tmps);
       wf->SetTimerNotify(0, NULL);
       ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(1200)); // Start
   } else {
       {
-        _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(ActiveDevice),
-        _tcslen(DeviceList[ActiveDevice].Name)>0?DeviceList[ActiveDevice].Name:MsgToken(1600));
+        _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(SelectedDevice),'A'+SelectedDevice,
+        _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken(1600));
 
       }
       wf->SetCaption(tmps);
@@ -132,12 +132,12 @@ static void OnPrevClicked(WndButton* pWnd) {
     if(!stopped)
       OnStopClicked(pWnd);
 
-    if(ActiveDevice==0)
-      ActiveDevice = NUMDEV-1;
+    if(SelectedDevice==0)
+      SelectedDevice = NUMDEV-1;
     else
-      ActiveDevice--;
+      SelectedDevice--;
     OnPortClicked(pWnd);
-  //  OnStopClicked(pWnd);
+ //   OnStopClicked(pWnd);
 
 }
 
@@ -145,12 +145,12 @@ static void OnNextClicked(WndButton* pWnd) {
   if(!stopped)
     OnStopClicked(pWnd);
 
-    ActiveDevice++;
-    if(ActiveDevice==NUMDEV)
-      ActiveDevice = 0;
+    SelectedDevice++;
+    if(SelectedDevice==NUMDEV)
+      SelectedDevice = 0;
 
     OnPortClicked(pWnd);
- //   OnStopClicked(pWnd);
+  //  OnStopClicked(pWnd);
 
 }
 

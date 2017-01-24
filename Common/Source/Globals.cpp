@@ -561,7 +561,7 @@ void Globals_Init(void) {
   LastFlarmCommandTime=0; // last time we got a PFLAU
   DevIsCondor = false; // we are using condor simulator
 
-  ActiveDevice = 0;
+  SelectedDevice = 0;
   for(int i=0 ; i< NUMDEV; i++)
   {/*
     GEXTERN TCHAR szPort[NUMDEV][MAX_PATH];

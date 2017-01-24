@@ -849,7 +849,7 @@ GEXTERN TCHAR szInputFile[MAX_PATH];
 GEXTERN TCHAR szMapFile[MAX_PATH];
 
 // Ports and devices
-GEXTERN unsigned  ActiveDevice;
+GEXTERN unsigned  SelectedDevice;
 GEXTERN TCHAR szPort[NUMDEV][MAX_PATH];
 //GEXTERN TCHAR szPort1[MAX_PATH];
 //GEXTERN TCHAR szPort2[MAX_PATH];

@@ -131,8 +131,8 @@ void ComPort::run() {
 }
 
 void ComPort::ProcessChar(char c) {
-    if (ComCheck_ActivePort>=0 && GetPortIndex()==(unsigned)ComCheck_ActivePort) {
-        ComCheck_AddChar(c);
+    if (ComCheck_ActivePort>=0 && (GetPortIndex()==(unsigned)ComCheck_ActivePort))  {
+      ComCheck_AddChar(c);
     }
 
 #ifdef RADIO_ACTIVE
