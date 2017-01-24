@@ -153,10 +153,6 @@ void InitLKScreen() {
   ScreenPixelRatio=max<int>(idscale,ScreenPixelRatio);
 
 
-  #ifdef TESTBENCH
-  StartupStore(_T("... ScreenDensity= %d  idscale=%d ScreenPixelRatio=%d (/10) ThinSize=%d NIBLSCALE(1)=%d (2)=%d %s"),ScreenDensity,idscale,ScreenPixelRatio,ScreenThinSize,NIBLSCALE(1), NIBLSCALE(2),NEWLINE);
-  #endif
-
   if (ScreenPixelRatio<10) {
      #ifdef TESTBENCH
      StartupStore(_T("... UNSUPPORTED RESCALING TO LOWER%s"),NEWLINE);
@@ -164,6 +160,10 @@ void InitLKScreen() {
      ScreenPixelRatio=10;
   }
 
+  #ifdef TESTBENCH
+  StartupStore(_T("... ScreenDensity= %d  idscale=%d ScreenPixelRatio=%d (/10) ThinSize=%d NIBLSCALE(1)=%d (2)=%d %s"),ScreenDensity,idscale,ScreenPixelRatio,ScreenThinSize,NIBLSCALE(1), NIBLSCALE(2),NEWLINE);
+  #endif
+  
   //
   // The thinnest line somehow visible on screen from 35cm distance.
   //
