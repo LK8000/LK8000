@@ -320,9 +320,10 @@ unsigned short GetScreenDensity(void) {
 //	return GetDeviceCaps(dc, LOGPIXELSX);
 //#endif
 
-#ifdef USE_X11
+#if 0 // def USE_X11
 	_XDisplay* disp = XOpenDisplay(NULL);
 	double xres = ((((double) DisplayWidth(disp,0)) * 25.4) /  ((double) DisplayWidthMM(disp,0)));
+        XCloseDisplay(disp);
 	return (short) xres;
 #endif
 
