@@ -100,7 +100,7 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
       if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
         curr_LabelPos = pt;
       }
-      if(lround(std::abs((prev_pt.x - pt.x) + std::abs(prev_pt.y - pt.y))) > 0) {
+      if(ManhattanDistance(prev_pt, pt) >= 1) {
         vertex_t &vertex = *(pointers.insert(pointers.end(),
                                              vertex_t({{(GLdouble) pt.x, (GLdouble) pt.y, 0.}})));
         gluTessVertex(tess, vertex.data(), vertex.data());
