@@ -7,6 +7,40 @@ if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpu=neon")
 endif ()
 
+include(ExternalProject)
+
+set(GEOGRAPHIC_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-studio/app/Thirdparty/GeographicLib)
+set(GEOGRAPHIC_INCLUDE ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}/include)
+set(GEOGRAPHIC_LIB ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}/lib/libGeographic.a)
+
+ExternalProject_Add (
+    GeographicLib
+    URL https://freefr.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.46.zip
+    URL_HASH MD5=e282dc7526fea0a69d7d6324e418de32
+    PREFIX ${GEOGRAPHIC_PREFIX}
+    BINARY_DIR ${GEOGRAPHIC_PREFIX}/build/${ANDROID_ABI}
+    INSTALL_DIR ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}
+    CMAKE_ARGS
+        "-DANDROID_ABI=${ANDROID_ABI}"
+        "-DANDROID_NDK=${ANDROID_NDK}"
+        "-DCMAKE_INSTALL_PREFIX=${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}"
+        "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
+        "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+        "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
+        "-DGEOGRAPHICLIB_LIB_TYPE=STATIC"
+)
+
+add_custom_command (
+    OUTPUT ${GEOGRAPHIC_LIB}
+    DEPENDS GeographicLib
+    VERBATIM
+)
+
+add_custom_target(
+    generate-GeographicLib
+    DEPENDS ${GEOGRAPHIC_LIB}
+)
+
 include_directories(
     Common/Header/linuxcompat
     Common/Header/libzzip
@@ -15,6 +49,7 @@ include_directories(
     Common/Source/xcs
     ./
     android-studio/app/Thirdparty/boost_1_63_0
+    ${GEOGRAPHIC_INCLUDE}
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -fexceptions -frtti -Wall -DBOOST_NO_IOSTREAM -DBOOST_NO_IOSFWD -DBOOST_NO_STRINGSTREAM -DBOOST_NO_WSTREAMBUF -D__linux__ -DHAVE_POSIX -D__STDC_FORMAT_MACROS -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DPOCO_NO_UNWINDOWS -DANDROID -DPOCO_ANDROID " )
@@ -714,6 +749,7 @@ add_library( LK8000 SHARED
     Common/Source/Resource/resource_xml.S
 )
 
+add_dependencies(LK8000 generate-GeographicLib)
 
 find_library( log-lib log )
 find_library( android-lib android )
@@ -721,6 +757,7 @@ find_library( gles-lib GLESv1_CM )
 
 target_link_libraries(
     LK8000
+    ${GEOGRAPHIC_LIB}
     ${android-lib}
     ${log-lib}
     ${gles-lib}
