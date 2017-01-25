@@ -24,7 +24,7 @@
 //#define RESEND_ON_NAK       /* switch for command retry on transmission fail  */
 #define RADIO_VOLTAGE       /* read Radio Supply voltage and store it in BATT2 indicator */
 
-#define HEADER_ID       0xA5
+constexpr uint8_t HEADER_ID = 0xA5;
 #define PROTOKOL_ID     0x14
 #define QUERY           BIT(7)
 #define DAUL            BIT(8)
@@ -405,7 +405,7 @@ if(len == 0) return 0;
 
 while (cnt < len)
 {   
-  if(String[cnt] == HEADER_ID)
+  if((uint8_t)String[cnt] == HEADER_ID)
     Recbuflen =0;
 
   if(Recbuflen >= REC_BUFSIZE)
