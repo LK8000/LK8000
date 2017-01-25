@@ -2794,8 +2794,6 @@ void InputEvents::eventRun(const TCHAR *misc) {
   ::CloseHandle(pi.hProcess);
   ::CloseHandle(pi.hThread);
   StartupStore(_T("... RUN TERMINATED%s"),NEWLINE);
-#else
-#warning "InputEvents::eventRun : Not implemented for this platform"
 #endif
 }
 

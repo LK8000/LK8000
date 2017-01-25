@@ -82,8 +82,6 @@ bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime) {
   }
   return false;
 }
-#else
-  #warning "LKRun : Not implemented for this platform"
 #endif
 
 void GotoWaypoint(const int wpnum) {
@@ -156,8 +154,6 @@ void LKRunStartEnd(bool start) {
 	LKRun(_T("ENDROTATE3.EXE"),1,5000);
 	LKRun(_T("ENDLOAD_99.EXE"),1,INFINITE);
   }
-#else
-#warning "LKRunStartEnd : not implemented"
 #endif
 }
 

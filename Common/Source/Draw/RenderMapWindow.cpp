@@ -19,7 +19,7 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
 
   ONEHZLIMITER;
 
-#warning "TODO : Remove from Draw thread, that slowdown redraw for nothing"  
+// TODO : Remove from Draw thread, that slowdown redraw for nothing
 
   /**
    * this function are not drawing functions

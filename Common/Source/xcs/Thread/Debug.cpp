@@ -51,7 +51,7 @@ void
 AssertNoneLocked()
 {
 #ifndef NDEBUG
-#warning "AssertNoneLocked : not implemented"    
+// TODO : implement #AssertNoneLocked
 #endif
 /*    
   assert(thread_locks_held == 0);

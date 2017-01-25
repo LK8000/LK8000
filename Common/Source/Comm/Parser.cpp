@@ -694,8 +694,6 @@ force_advance:
 		}
 	}
   }
-#else
-#warning "Set system clock to the GPS time not implemented."
 #endif
 
   if(RMZAvailable) {

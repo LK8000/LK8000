@@ -188,12 +188,12 @@ extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_setBatteryPercent(JNIEnv *env, jobject, jint, jint) {
-    #warning " Not Implemented"
+    //TODO : " Not Implemented"
 }
 
 extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_setHapticFeedback(JNIEnv * env, jobject, jboolean) {
-    #warning " Not Implemented"
+    //TODO : " Not Implemented"
 }

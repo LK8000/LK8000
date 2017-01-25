@@ -1008,7 +1008,7 @@ bool devDriverActivated(const TCHAR *DeviceName) {
 BOOL devPutVolume(int Volume) {
   bool bRet = for_all_device(&DeviceDescriptor_t::PutVolume, Volume);
   
-#warning "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
+//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
 /****************************************************************/
 /* Need to be moved inside device drivers like all others device*/  
   if (SIMMODE) {
@@ -1035,7 +1035,7 @@ BOOL devPutVolume(int Volume) {
 BOOL devPutSquelch(int Squelch) {
   bool bRet = for_all_device(&DeviceDescriptor_t::PutSquelch, Squelch);
 
-#warning "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
+//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
 /****************************************************************/
 /* Need to be moved inside device drivers like all others device*/
   if (SIMMODE) {
@@ -1064,7 +1064,7 @@ BOOL devPutSquelch(int Squelch) {
 BOOL devPutRadioMode(int mode) {
   bool bRet = for_all_device(&DeviceDescriptor_t::PutRadioMode, mode);
   
-#warning "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
+//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
 /****************************************************************/
 /* Need to be moved inside device drivers like all others device*/
   if (SIMMODE) {
@@ -1089,8 +1089,8 @@ BOOL devPutRadioMode(int mode) {
  */
 BOOL devPutFreqSwap() {
   bool bRet = for_all_device(&DeviceDescriptor_t::StationSwap);
-  
-#warning "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
+
+//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
 /****************************************************************/
 /* Need to be moved inside device drivers like all others device*/
   if (SIMMODE) {
@@ -1118,7 +1118,7 @@ BOOL devPutFreqSwap() {
 BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
   bool bRet = for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
 
-#warning "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
+//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
 /****************************************************************/
 /* Need to be moved inside device drivers like all others device*/    
   if (SIMMODE) {
@@ -1144,9 +1144,9 @@ BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
-  bool bRet = for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);    
+  bool bRet = for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
 
-#warning "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
+//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
 /****************************************************************/
 /* Need to be moved inside device drivers like all others device*/    
   if (SIMMODE) {

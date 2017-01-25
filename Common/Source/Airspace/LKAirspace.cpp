@@ -862,7 +862,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
         is_visible = msRectOverlap(&_bounds, &screenbounds_latlon);
     }
     if(is_visible) { // no need to check Altitude if airspace is not visible
-        #warning "CheckAirspaceAltitude() lock Flight data for altitude : to slow, need to change"
+        // TODO : "CheckAirspaceAltitude() lock Flight data for altitude : to slow, need to change"
         is_visible = CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top);
     }
     

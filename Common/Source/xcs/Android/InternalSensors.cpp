@@ -313,6 +313,7 @@ Java_org_LK8000_NonGPSSensors_setMagneticField(
   */
 }
 
+#if 0
 /**
  * Helper function for
  * Java_org_xcsoar_NonGPSSensors_setBarometricPressure: Given a
@@ -336,6 +337,7 @@ ComputeNoncompVario(const double pressure, const double d_pressure)
   static constexpr double EXPONENT(-0.8097374740609689);
   return FACTOR * pow(pressure, EXPONENT) * d_pressure;
 }
+#endif
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 static BOOL IsBaroSource(PDeviceDescriptor_t d) { return TRUE; }
@@ -380,7 +382,7 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
 
 
 
-#ifndef NDEBUG
+#if 0
     double NoncompVario = ComputeNoncompVario(kalman_filter.GetXAbs(),
                                                 kalman_filter.GetXVel());
 #endif

@@ -29,7 +29,7 @@ Copyright_License {
 #include "Android/Main.hpp"
 #include "ResourceId.hpp"
 
-#warning "need to implement"
+// TODO: "need to implement"
 #if 0
 #include "android_drawable.h"
 #else

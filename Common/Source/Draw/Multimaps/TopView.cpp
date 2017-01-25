@@ -95,7 +95,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   EnableThermalLocator =0;
 
 /*******/
-#warning "wrong place for do that, always bad idea to change layout inside drawing fonctions !"
+//TODO : "wrong place for do that, always bad idea to change layout inside drawing fonctions !"
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
 /*******/
 

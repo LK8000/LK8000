@@ -56,7 +56,7 @@ bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
         return true;
     }
 #elif defined(ANDROID)
-#warning "not implemented"
+// TODO : "not implemented"
 #else
     if(ResourceName) {
         return Load(GetNamedResource(ResourceName), Type::STANDARD);

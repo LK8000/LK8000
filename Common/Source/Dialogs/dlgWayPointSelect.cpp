@@ -39,8 +39,8 @@ static WndForm *wf=NULL;
 static WndListFrame *wWayPointList=NULL;
 static WndOwnerDrawFrame *wWayPointListEntry = NULL;
 
-static const TCHAR NameFilter[] = TEXT("*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
-static unsigned NameFilterIdx=0;
+//static const TCHAR NameFilter[] = TEXT("*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
+//static unsigned NameFilterIdx=0;
 
 static double DistanceFilter[] = {0.0, 25.0, 50.0, 75.0, 100.0, 150.0, 250.0, 500.0, 1000.0};
 static unsigned DistanceFilterIdx=0;
@@ -463,8 +463,8 @@ static void FilterMode(bool direction) {
       wpDirection->RefreshDisplay();
     }
   } else {
-    NameFilterIdx=0;
 #if 0 // 100503 OBSOLETED
+    NameFilterIdx=0;
     if (wpName) {
       wpName->GetDataField()->Set(TEXT("**"));
       wpName->RefreshDisplay();
