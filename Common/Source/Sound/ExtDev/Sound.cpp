@@ -84,24 +84,11 @@ void LKSound(const TCHAR *lpName) {
     const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
-        if (UseExtSound[0]) {
-            devWriteNMEAString(devA(), nmeaStr.c_str());
+        for(int dev = 0; dev < NUMDEV; dev++)
+        if (UseExtSound[dev]) {
+            devWriteNMEAString(DeviceList[dev], nmeaStr.c_str());
         }
-        if (UseExtSound[1]) {
-            devWriteNMEAString(devB(), nmeaStr.c_str());
-        }
-        if (UseExtSound[2]) {
-            devWriteNMEAString(devC(), nmeaStr.c_str());
-        }
-        if (UseExtSound[3]) {
-            devWriteNMEAString(devD(), nmeaStr.c_str());
-        }
-        if (UseExtSound[4]) {
-            devWriteNMEAString(devE(), nmeaStr.c_str());
-        }
-        if (UseExtSound[5]) {
-            devWriteNMEAString(devF(), nmeaStr.c_str());
-        }
+
     }
         
 }
@@ -128,23 +115,9 @@ void PlayResource (const TCHAR* lpName) {
     const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
-        if (UseExtSound[0]) {
-            devWriteNMEAString(devA(), nmeaStr.c_str());
-        }
-        if (UseExtSound[1]) {
-            devWriteNMEAString(devB(), nmeaStr.c_str());
-        }
-        if (UseExtSound[2]) {
-            devWriteNMEAString(devC(), nmeaStr.c_str());
-        }
-        if (UseExtSound[3]) {
-            devWriteNMEAString(devD(), nmeaStr.c_str());
-        }
-        if (UseExtSound[4]) {
-            devWriteNMEAString(devE(), nmeaStr.c_str());
-        }
-        if (UseExtSound[5]) {
-            devWriteNMEAString(devF(), nmeaStr.c_str());
+      for(int dev = 0; dev < NUMDEV; dev++)
+        if (UseExtSound[dev]) {
+            devWriteNMEAString(DeviceList[dev], nmeaStr.c_str());
         }
     }
         

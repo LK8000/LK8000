@@ -2356,8 +2356,8 @@ void InputEvents::eventBugs(const TCHAR *misc) {
   if (BUGS != oldBugs) {
     CheckSetBugs(min(1.0,max(0.5,BUGS)));
 
-    devPutBugs(devA(), BUGS);
-    devPutBugs(devB(), BUGS);
+    devPutBugs(devAll(), BUGS);
+
     GlidePolar::SetBallast();
   }
   UnlockFlightData();
@@ -2392,8 +2392,8 @@ void InputEvents::eventBallast(const TCHAR *misc) {
   }
   if (BALLAST != oldBallast) {
     CheckSetBallast(min(1.0,max(0.0,BALLAST)));
-    devPutBallast(devA(), BALLAST);
-    devPutBallast(devB(), BALLAST);
+    devPutBallast(devAll(), BALLAST);
+
     GlidePolar::SetBallast();
   }
   UnlockFlightData();
@@ -3329,8 +3329,8 @@ void	MacCreadyProcessing(int UpDown)
       AutoMcMode=amcFinalAndClimb;
     }
 
-  devPutMacCready(devA(), MACCREADY);
-  devPutMacCready(devB(), MACCREADY);
+  devPutMacCready(devAll(), MACCREADY);
+
 
   return;
 }

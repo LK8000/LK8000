@@ -286,11 +286,10 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	}
 	sayflarmavailable=false;
 #if FLARMDEADLOCK
-	if(nmeaParser[0].isFlarm) {
-		devRequestFlarmVersion(devA());
-	} else {
-		if(nmeaParser[1].isFlarm)
-			devRequestFlarmVersion(devB());
+	//if(nmeaParser[0].isFlarm)
+	  {
+		devRequestFlarmVersion(devAll());
+
 	}
 #endif
   }

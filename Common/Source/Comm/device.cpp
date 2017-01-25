@@ -534,7 +534,18 @@ BOOL devInit() {
         if (pDevNmeaOut == devB()) {
             devA()->pDevPipeTo = devB();
         }
-
+        if (pDevNmeaOut == devC()) {
+            devB()->pDevPipeTo = devC();
+        }
+        if (pDevNmeaOut == devD()) {
+            devA()->pDevPipeTo = devD();
+        }
+        if (pDevNmeaOut == devE()) {
+            devB()->pDevPipeTo = devE();
+        }
+        if (pDevNmeaOut == devF()) {
+            devA()->pDevPipeTo = devF();
+        }
     }
 
     UnlockComm();
@@ -597,10 +608,8 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port){
 
  // devParseStream(devIdx, c, &GPS_INFO);
 BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
-  StartupStore(_T(". ParseStream %u    %s"),portNum, NEWLINE);
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if (d && d->ParseStream) {
-      StartupStore(_T(". ParseStream %u  %s  %s"),portNum,d->Name , NEWLINE);
     if (portNum>=0 && portNum< NUMDEV) {
       ComPortHB[portNum]=LKHearthBeats;
     }
@@ -674,6 +683,22 @@ BOOL devPutMacCready(PDeviceDescriptor_t d, double MacCready)
   if (SIMMODE)
     return TRUE;
   LockComm();
+  if (d == devAll())
+  {
+    for(int dev=0; dev < NUMDEV; dev++)
+    {
+      d= &DeviceList[dev];
+      if (d)
+      {
+        if(!d->Disabled)
+        {
+          if(d->PutMacCready)
+            result = d->PutMacCready(d, MacCready);         
+        }
+      }
+    }
+  }
+  else
   if (d != NULL && d->PutMacCready != NULL)
     result = d->PutMacCready(d, MacCready);
   UnlockComm();
@@ -684,23 +709,39 @@ BOOL devPutMacCready(PDeviceDescriptor_t d, double MacCready)
 
 BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
 {
-#if FLARMDEADLOCK
+bool result= false;
   if (SIMMODE)
     return TRUE;
+#if FLARMDEADLOCK
 
   if(GPS_INFO.FLARM_Available)
   {
+    if (d == devAll())
+    {
+      for(int dev=0; dev < NUMDEV; dev++)
+      {
+        d= &DeviceList[dev];
+        if (d)
+        {
+          if(!d->Disabled)
+          {
+            result = devWriteNMEAString(d,_T("PFLAV,R"));
+          }
+        }
+      }
+    }
+    else
     if (d != NULL)
     {
       if(!d->Disabled)
       {
-  	    devWriteNMEAString(d,_T("PFLAV,R"));
-        return TRUE;
+        result = devWriteNMEAString(d,_T("PFLAV,R"));
+      
       }
     }
   }
 #endif
-  return FALSE;
+  return result;
 }
 
 
@@ -711,6 +752,22 @@ BOOL devPutBugs(PDeviceDescriptor_t d, double Bugs)
   if (SIMMODE)
     return TRUE;
   LockComm();
+  if (d == devAll())
+  {
+    for(int dev=0; dev < NUMDEV; dev++)
+    {
+      d= &DeviceList[dev];
+      if (d)
+      {
+        if(!d->Disabled)
+        {
+          if(d->PutBugs)
+            result = d->PutBugs(d, Bugs);;
+        }
+      }
+    }
+  }
+  else
   if (d != NULL && d->PutBugs != NULL)
     result = d->PutBugs(d, Bugs);
   UnlockComm();
@@ -725,6 +782,19 @@ BOOL devPutBallast(PDeviceDescriptor_t d, double Ballast)
   if (SIMMODE)
     return TRUE;
   LockComm();
+  if (d == devAll())
+  {
+    for(int dev=0; dev < NUMDEV; dev++)
+    {
+      d= &DeviceList[dev];
+      if (d)
+      {
+        if(d->PutBallast != NULL)
+          result = d->PutBallast(d, Ballast);
+      }
+    }
+  }
+  else
   if (d != NULL && d->PutBallast != NULL)
     result = d->PutBallast(d, Ballast);
   UnlockComm();
@@ -944,7 +1014,15 @@ bool devDriverActivated(const TCHAR *DeviceName) {
     }
     return false;
 }
+/*
+bool devDriverActivated(int dev, const TCHAR *DeviceName) {
 
+    if ((_tcscmp(dwDeviceName[dev], DeviceName) == 0)) {
+        return true;
+
+    }
+    return false;
+}*/
 
 BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
 {
@@ -954,7 +1032,25 @@ BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
     return TRUE;
   LockComm();
 
+  if (d == devAll())
+  {
+    for(int dev=0; dev < NUMDEV; dev++)
+    {
+      d = &DeviceList[dev];
+      if(!d->Disabled)
+      {
+        if (d->Com)
+        {
+          if (devDriverActivated(TEXT("PVCOM")))
+            PVCOMPutVolume(d, Volume);
 
+          if(d->PutVolume != NULL)
+            result = d->PutVolume(d, Volume);
+        }
+      }
+    }
+  }
+  else
   if (d != NULL)
   {
     if(!d->Disabled)
@@ -981,16 +1077,37 @@ BOOL devPutSquelch(PDeviceDescriptor_t d, int Squelch)
   if (SIMMODE)
     return TRUE;
   LockComm();
+
+  if (d == devAll())
+  {
+    for(int dev=0; dev < NUMDEV; dev++)
+    {
+      d = &DeviceList[dev];
+      if(!d->Disabled)
+      {
+        if (d->Com)
+        {
+          if (devDriverActivated(TEXT("PVCOM")))
+            PVCOMPutSquelch(d, Squelch);
+
+          if(d->PutSquelch != NULL)
+            result = d->PutSquelch(d, Squelch);
+        }
+      }
+    }
+  }
+  else
   if (d != NULL)
   {
     if(!d->Disabled)
       if (d->Com)
       {
-        if(d->PutSquelch != NULL)
-          result = d->PutSquelch(d, Squelch);
-    
         if (devDriverActivated(TEXT("PVCOM")))
           PVCOMPutSquelch(d, Squelch);
+
+        if(d->PutSquelch != NULL)
+          result = d->PutSquelch(d, Squelch);
+
       }
   }
   UnlockComm();
@@ -1004,17 +1121,36 @@ BOOL devPutRadioMode(PDeviceDescriptor_t d, int mode)
 BOOL result = TRUE;
 
   LockComm();
-  if (d != NULL)
+  if (d == devAll())
   {
-    if(!d->Disabled)
-      if (d->Com)
+    for(int dev=0; dev < NUMDEV; dev++)
+    {
+      d = &DeviceList[dev];
+      if(!d->Disabled)
       {
-        if(d->RadioMode != NULL)
-          result = d->RadioMode(d,mode);
-
-        if (devDriverActivated(TEXT("PVCOM")))
-          PVCOMRadioMode(d,mode);
+        if (d->Com)
+        {
+            if (devDriverActivated(TEXT("PVCOM")))
+              PVCOMRadioMode(d,mode);
+            if(d->RadioMode != NULL)
+              result = d->RadioMode(d,mode);
+        }
       }
+    }
+  }
+  else
+  {
+    if (d != NULL)
+    {
+      if(!d->Disabled)
+        if (d->Com)
+        {
+          if (devDriverActivated(TEXT("PVCOM")))
+            PVCOMRadioMode(d,mode);
+          if(d->RadioMode != NULL)
+            result = d->RadioMode(d,mode);
+        }
+    }
   }
   UnlockComm();
  return result;
@@ -1025,16 +1161,34 @@ BOOL devPutFreqSwap(PDeviceDescriptor_t d)
 BOOL result = TRUE;
 
       LockComm();
+      if (d == devAll())
+      {
+        for(int dev=0; dev < NUMDEV; dev++)
+        {
+          d = &DeviceList[dev];
+          if(!d->Disabled)
+          {
+            if (d->Com)
+            {
+              if (devDriverActivated(TEXT("PVCOM")))
+                PVCOMStationSwap(d);
 
+              if(d->StationSwap != NULL)
+                result = d->StationSwap(d);
+            }
+          }
+        }
+      }
+      else
       if (d != NULL)
       {
         if(!d->Disabled)
           if (d->Com)
           {
-            if(d->StationSwap != NULL)
-              result = d->StationSwap(d);
             if (devDriverActivated(TEXT("PVCOM")))
               PVCOMStationSwap(d);
+            if(d->StationSwap != NULL)
+              result = d->StationSwap(d);
           }
       }
       UnlockComm();
@@ -1056,18 +1210,37 @@ BOOL result = TRUE;
  }
 
   LockComm();
+  if (d == devAll())
+  {
+    for(int dev=0; dev < NUMDEV; dev++)
+    {
+      d = &DeviceList[dev];
+      if(!d->Disabled)
+      {
+        if (d->Com)
+        {
+          if (devDriverActivated(TEXT("PVCOM")))
+              PVCOMPutFreqActive(d, Freq,StationName);
 
+          if(d->PutFreqActive != NULL)
+            result = d->PutFreqActive(d, Freq,StationName);
+        }
+      }
+    }
+  }
+  else
   if (d != NULL)
   {
     if(!d->Disabled)
-   {
+    {
       if (d->Com)
       {
+        if (devDriverActivated(TEXT("PVCOM")))
+           PVCOMPutFreqActive(d, Freq,StationName);
+
         if(d->PutFreqActive != NULL)
           result = d->PutFreqActive(d, Freq,StationName);
 
-         if (devDriverActivated(TEXT("PVCOM")))
-            PVCOMPutFreqActive(d, Freq,StationName);
       }
     }
   }
@@ -1090,6 +1263,25 @@ BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq,TCHAR  StationName[])
   }
   
   LockComm();
+  if (d == devAll())
+  {
+    for(int dev=0; dev < NUMDEV; dev++)
+    {
+      d = &DeviceList[dev];
+      if(!d->Disabled)
+      {
+        if (d->Com)
+        {
+          if (devDriverActivated( TEXT("PVCOM")))
+            PVCOMPutFreqStandby(d, Freq,StationName);
+
+          if(d->PutFreqStandby != NULL)
+            result = d->PutFreqStandby(d, Freq,StationName);
+        }
+      }
+    }
+  }
+  else
   if (d != NULL)
   {
     if(!d->Disabled)

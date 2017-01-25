@@ -160,8 +160,8 @@ TCHAR Tmp[255];
     if((ASFrequency >= 118) && (ASFrequency <= 138))
     {
       _stprintf(Tmp,_T("%7.3fMHz"),ASFrequency);
-      devPutFreqActive(devA(), ASFrequency, (TCHAR*)airspace_copy.Name());
-      devPutFreqActive(devB(), ASFrequency,(TCHAR*)airspace_copy.Name());
+      devPutFreqActive(devAll(), ASFrequency, (TCHAR*)airspace_copy.Name());
+
         DoStatusMessage(_T("RADIO:"), Tmp );
     }
   }

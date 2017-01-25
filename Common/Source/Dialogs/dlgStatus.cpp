@@ -56,11 +56,9 @@ static void NextPage(int Step){
 #if FLARMDEADLOCK
 	if( GPS_INFO.FLARM_SW_Version  < 0.01)
 	{
-	  if(nmeaParser1.isFlarm)
-            devRequestFlarmVersion(devA());
-	  else
-	    if(nmeaParser2.isFlarm)
-              devRequestFlarmVersion(devB());
+
+            devRequestFlarmVersion(devAll());
+
 	}
 #endif
     }

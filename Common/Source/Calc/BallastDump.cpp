@@ -25,14 +25,14 @@
          BallastTimerActive = false;
          BALLAST = 0.0;
          GlidePolar::SetBallast(); 
-         devPutBallast(devA(), BALLAST); // 
-         devPutBallast(devB(), BALLAST); //
+         devPutBallast(devAll(), BALLAST); //
+
        }
   //     if (fabs(BALLAST-BALLAST_last)>0.01) removed the change check, will be send every 5s for long ballast dumps
        { // Ulli changed from 5% to 1% because sometimes it stopped at 55%
          GlidePolar::SetBallast();
-         devPutBallast(devA(), BALLAST);
-         devPutBallast(devB(), BALLAST);
+         devPutBallast(devAll(), BALLAST);
+
        }
        BallastTimeLast = GPS_INFO.Time;
      }

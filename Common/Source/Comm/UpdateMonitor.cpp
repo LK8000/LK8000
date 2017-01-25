@@ -92,13 +92,13 @@ void NMEAParser::UpdateMonitor(void)
 
 for(int dev =0; dev < NUMDEV; dev++)
 {
-
+/*
   if (nmeaParser[dev].activeGPS==true && active==1) {
 	StartupStore(_T(".... GPS Update error: port 1 and 2 are active! %s%s"),WhatTimeIsIt(),NEWLINE);
 	nmeaParser[dev].activeGPS=false; // force it off
 	active=1; 
   }
-
+*/
   // wait for some seconds before monitoring, after startup
   if (LKHearthBeats<20) return;
 

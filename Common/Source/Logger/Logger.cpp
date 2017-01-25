@@ -958,12 +958,10 @@ void LoggerDeviceDeclare() {
   Decl.num_waypoints = i;
 
   DeclaredToDevice = false;
+  for(int dev = 0; dev < NUMDEV; dev++)
+    if (LoggerDeclare(&DeviceList[dev], &Decl))
+      found_logger = true;
 
-  if (LoggerDeclare(devA(), &Decl))
-    found_logger = true;
-
-  if (LoggerDeclare(devB(), &Decl))
-    found_logger = true;
 
   if (!found_logger) {
 	// LKTOKEN  _@M474_ = "No logger connected"

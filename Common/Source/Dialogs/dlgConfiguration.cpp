@@ -1152,7 +1152,7 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
     }
     else
     {
-      ShowWindowControl(wf, TEXT("prpComPort1"), false);
+      ShowWindowControl(wf, TEXT("prpComPort1"), true);
       ShowWindowControl(wf, TEXT("prpComSpeed1"),false);
       ShowWindowControl(wf, TEXT("prpComBit1"),  bTCPClient || bTCPServer || bUDPServer);
       ShowWindowControl(wf, TEXT("prpComIpAddr1"), bTCPClient);
