@@ -43,7 +43,7 @@ bool
 EventQueue::Pop(Event &event)
 {
   ScopeLock protect(mutex);
-  if (quit || events.empty())
+  if (events.empty())
     return false;
 
   event = events.front();
@@ -68,13 +68,14 @@ bool
 EventQueue::Wait(Event &event)
 {
   ScopeLock protect(mutex);
-  if (quit)
-    return false;
 
   if (events.empty())
     now_us = MonotonicClockUS();
 
   while (events.empty()) {
+    if (quit)
+      return false;
+
     if (Generate(event))
       return true;
 

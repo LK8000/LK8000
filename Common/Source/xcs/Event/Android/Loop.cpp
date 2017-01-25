@@ -30,9 +30,6 @@ Copyright_License {
 bool
 EventLoop::Get(Event &event)
 {
-  if (queue.IsQuit())
-    return false;
-
   if (bulk) {
     if (queue.Pop(event))
       return true;

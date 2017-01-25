@@ -690,6 +690,7 @@ int main(int argc, char *argv[]) {
     //
      MainWindow.RunModalLoop();
   }
+  MainWindow.Destroy();
 
   Shutdown();
   pSaveScreen = nullptr;

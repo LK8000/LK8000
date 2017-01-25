@@ -100,12 +100,12 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
-Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj)
-{
-    InitThreadDebug();
+Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj) {
+  InitThreadDebug();
 
-    OpenGL::Initialise();
-    MainWindow.RunModalLoop();
+  OpenGL::Initialise();
+  MainWindow.RunModalLoop();
+  MainWindow.Destroy();
 }
 
 extern "C"
@@ -174,9 +174,12 @@ gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeView_resumeNative(JNIEnv *env, jobject obj)
 {
-  if (event_queue == nullptr)
-    /* there is nothing here yet which can be resumed */
-    exit(0);
+  if (event_queue == nullptr) {
+    /* there is nothing here yet which can be resumed
+     * or shutdown in progress ...
+     */
+    return;
+  }
 
   MainWindow.Resume();
 }

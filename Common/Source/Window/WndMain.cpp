@@ -219,18 +219,17 @@ void BeforeShutdown(void) {
 	    );
   StartupStore(foop);
 #endif
-  StartupStore(_T(". Destroy MainWindow" NEWLINE));
 
   #if TESTBENCH
   StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
   #endif
   CloseProgressDialog();
 
+  MainWindow.PostQuit();
 #if TESTBENCH
   StartupLogFreeRamAndStorage();
   #endif
 
-  MainWindow.Destroy();
 }
 
 
@@ -256,6 +255,7 @@ bool WndMain::OnClose() {
 }
 
 void WndMain::OnDestroy() {
+    StartupStore(_T("WndMain::OnDestroy" NEWLINE));
     _isRunning = false;
     StopTimer();
     MapWindow::_OnDestroy();
