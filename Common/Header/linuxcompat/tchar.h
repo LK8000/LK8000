@@ -22,7 +22,7 @@ typedef char	_TCHAR;
 /*
  * _TEOF, the constant you should use instead of EOF.
  */
-#define _TEOF EOF
+#define _TEOF (TCHAR)EOF
 
 /*
  * __TEXT is a private macro whose specific use is to force the expansion of a
