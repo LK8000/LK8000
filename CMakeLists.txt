@@ -13,6 +13,14 @@ set(GEOGRAPHIC_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-studio/app/Thirdparty/Ge
 set(GEOGRAPHIC_INCLUDE ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}/include)
 set(GEOGRAPHIC_LIB ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}/lib/libGeographic.a)
 
+if (CMAKE_HOST_WIN32)
+    # WORKARROUND : GeographicLib build system use WIN32 system variable for detect if tools like chmod is available
+    # WIN32 is always false with NDK
+    set(GEOGRAPHIC_WIN32 -DWIN32:BOOL=ON)
+else ()
+    set(GEOGRAPHIC_WIN32 )
+endif ()
+
 ExternalProject_Add (
     GeographicLib
     URL https://freefr.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.46.zip
@@ -28,6 +36,7 @@ ExternalProject_Add (
         "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
         "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
         "-DGEOGRAPHICLIB_LIB_TYPE=STATIC"
+        ${GEOGRAPHIC_WIN32}
 )
 
 add_custom_command (
