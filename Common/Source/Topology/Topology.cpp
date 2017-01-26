@@ -74,7 +74,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				break;
 			default:
 #ifdef RESCALE_PIXEL
-				    psize=RescalePixelSize(3);
+				    psize=RescalePixelSize(2);
 #else
 				if (ScreenLandscape)
 				    psize=3;
@@ -99,7 +99,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				break;
 			default:
 #ifdef RESCALE_PIXEL
-				    psize=RescalePixelSize(3);
+				    psize=RescalePixelSize(2);
 #else
 				if (ScreenLandscape)
 				    psize=3;
