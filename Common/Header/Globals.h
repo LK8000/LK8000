@@ -454,7 +454,6 @@ GEXTERN bool GlobalRunning;
 GEXTERN short ScreenSize;
 GEXTERN int ScreenSizeX;
 GEXTERN int ScreenSizeY;
-GEXTERN RECT ScreenSizeR;
 GEXTERN bool ScreenLandscape;
 GEXTERN double ScreenDScale;
 GEXTERN int ScreenScale;
@@ -463,7 +462,10 @@ GEXTERN double Screen0Ratio;
 GEXTERN short ScreenGeometry;
 GEXTERN unsigned short ScreenDensity;
 GEXTERN int ScreenThinSize;
+
+#ifdef RESCALE_PIXEL
 GEXTERN unsigned short ScreenPixelRatio; // x10
+#endif
 
 GEXTERN int AircraftMenuSize;
 GEXTERN int CompassMenuSize;

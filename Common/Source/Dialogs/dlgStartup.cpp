@@ -217,8 +217,6 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 
     if (RUN_MODE != RUN_WELCOME) {
 
-        // FillRect(hDC,&ScreenSizeR, LKBrush_Black); // REMOVE
-
         TCHAR mes[100];
 #ifndef LKCOMPETITION
         _stprintf(mes, _T("%s v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken(2054));
