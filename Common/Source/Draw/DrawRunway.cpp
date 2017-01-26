@@ -86,6 +86,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
      case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
      case ssnone:    rwl = 6.0; rwb =   2;cir = 4.5; break;
 
+      /*   the line above is only a workaround to avoid runaway to be tool long on  Anrtoid and Kobo
+       *   waiting  for a definitive and more elegant solution.
+
          #define X ScreenSizeX==
 	 #define Y ScreenSizeY==
          // Ok this doesnt look nice, but lets remember we are inside a DoInit.
@@ -121,7 +124,10 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
              }
          }
          break;
+
+             */
     }
+
 
     //
     // These are the (absolute) scale thresholds for painting informations
