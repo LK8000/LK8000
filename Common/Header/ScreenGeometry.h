@@ -35,12 +35,12 @@
 // Many graphic functions in LK were tuned around low DPI devices, with the most tuned being 
 // 480x272 at around 110 DPI. 800x480 was also managed decently at 186 DPI.
 // Here we fix a reference DPI to rescale pixels. Lower value means bigger rescaling.
-#define LK_REFERENCE_DPI  120
+#define LK_REFERENCE_DPI  80
 
 
 extern unsigned short GetScreenGeometry(unsigned int x, unsigned int y);
 extern double GetScreen0Ratio(void);
-extern unsigned short GetScreenDensity(void);
+extern int GetScreenDensity(void);
 
 /**
  * Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
@@ -51,7 +51,7 @@ extern unsigned short GetScreenDensity(void);
 gcc_pure inline
 int RescalePixelSize(int x) {
 #ifdef RESCALE_PIXEL
-    return (x * ScreenPixelRatio) / 10;
+    return (x * ScreenPixelRatio) >> 10;
 #else
     return x;
 #endif

@@ -324,7 +324,7 @@ void Globals_Init(void) {
   ScreenThinSize=1;
   
 #ifdef RESCALE_PIXEL  
-  ScreenPixelRatio=10; // This is unity*10
+  ScreenPixelRatio=1<<10; // This is 1.0
 #endif
 
   // Default arrival mode calculation type

@@ -102,7 +102,7 @@ void InitLKScreen() {
     // We must check that pixelratio is never lower than ScreenScale.
     ScreenDensity = GetScreenDensity();
 #ifdef RESCALE_PIXEL
-    ScreenPixelRatio = std::max(1 * 10, (ScreenDensity * 10) / LK_REFERENCE_DPI);
+  ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/LK_REFERENCE_DPI);
 #endif
 
     
@@ -274,8 +274,7 @@ double GetScreen0Ratio(void) {
 //
 // Screen DPI estimation for some platform.
 //
-
-unsigned short GetScreenDensity(void) {
+int GetScreenDensity(void) {
 
 #ifdef KOBO
     switch (DetectKoboModel()) {

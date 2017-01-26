@@ -460,11 +460,11 @@ GEXTERN int ScreenScale;
 GEXTERN bool ScreenIntScale;
 GEXTERN double Screen0Ratio;
 GEXTERN short ScreenGeometry;
-GEXTERN unsigned short ScreenDensity;
+GEXTERN int ScreenDensity;
 GEXTERN int ScreenThinSize;
 
 #ifdef RESCALE_PIXEL
-GEXTERN unsigned short ScreenPixelRatio; // x10
+GEXTERN int ScreenPixelRatio; // 22.10 fixed size number
 #endif
 
 GEXTERN int AircraftMenuSize;
