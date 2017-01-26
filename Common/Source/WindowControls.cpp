@@ -2631,7 +2631,7 @@ int WndListFrame::GetScrollBarWidth() {
     if ( ScrollbarWidth == -1) {
         // use fat Scroll on Embedded platform for allow usage on touch screen with fat finger ;-)
         constexpr double scale = HasTouchScreen() ? 1.0 : 0.75; 
-        ScrollbarWidth = ScrollbarWidthInitial * ScreenDScale * scale;
+        ScrollbarWidth = IBLSCALE(ScrollbarWidthInitial * scale);
     }
     return ScrollbarWidth;
 }
