@@ -41,17 +41,17 @@ void NMEAParser::UpdateMonitor(void)
      oldoffset=GPSAltitudeOffset;
   }
      
-  bool ValidPGS = false;
+  bool ValidGPS = false;
   // does anyone have GPS?
   for(int i =0; i< NUMDEV; i++)
   {
     nmeaParser[i].activeGPS = false;
-    if(!ValidPGS)
+    if(!ValidGPS)
       if (nmeaParser[i].gpsValid)
       {
         active = i;
         nmeaParser[i].activeGPS = true;
-        ValidPGS = true;
+        ValidGPS = true;
       }
   }
 /*
@@ -68,7 +68,7 @@ void NMEAParser::UpdateMonitor(void)
 		active= nmeaParser[0].activeGPS ? 1 : 2;
 	}
 	*/
-  if(ValidPGS) {
+  if(ValidGPS) {
 	// No valid fix on any port. We use the first port with at least some data going through!
 	// This will keep probably at least the time updated since the gps may still be receiving a 
 	// valid time, good for us.
@@ -131,12 +131,14 @@ for(int dev =0; dev < NUMDEV; dev++)
 	invalidGps=1;
 	// We want to be sure that if this device is silent, and it was providing Baro altitude,
 	// now it is set to off.
+/*  */
 	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
 		if ( &DeviceList[dev] == pDevPrimaryBaroSource || nmeaParser[dev].RMZAvailable
 		  || nmeaParser[dev].TASAvailable ) {
 			invalidBaro=1;
 		}
 	}
+/* */
 	nmeaParser[dev]._Reset();
 	nmeaParser[dev].activeGPS=false; // because Reset is setting it to true
 	// We reset some flags globally only once in case of device gone silent 
@@ -159,7 +161,7 @@ for(int dev =0; dev < NUMDEV; dev++)
   }
   #ifdef DEBUGNPM
   if (invalidGps==2) {
-	StartupStore(_T("... GPS no gpsValid available on port 1 and 2, active=%d @%s%s"),active,WhatTimeIsIt(),NEWLINE);
+	StartupStore(_T("... GPS no gpsValid available on any port, active=%d @%s%s"),active,WhatTimeIsIt(),NEWLINE);
   }
   if (invalidBaro>0) {
 	StartupStore(_T("... Baro altitude just lost, current status=%d @%s%s"),GPS_INFO.BaroAltitudeAvailable,WhatTimeIsIt(),NEWLINE);
@@ -167,8 +169,7 @@ for(int dev =0; dev < NUMDEV; dev++)
   #endif
 
 
-#warning ToDo: reenable Baro checks
-#ifdef BARO_CHECK
+
   // do we really still have a baro altitude available?
   // If some baro source disappeared, let's reset it for safety. Parser will re-enable them immediately if available.
   // Assuming here that if no Baro is available, no airdata is available also
@@ -244,12 +245,20 @@ for(int dev =0; dev < NUMDEV; dev++)
   // there was a real RMZ in the NMEA stream lately.
   // Normally RMZAvailable, RMCAvailable, GGA etc.etc. are reset to false when the com port is silent.
   // But RMZ is special, because it can be sent through the multiplexer from a flarm box.
-  if ( (nmeaParser[0].RMZAvailable || nmeaParser[1].RMZAvailable) && (LKHearthBeats > (LastRMZHB+5))) {
+  bool RMZavailable = false;
+  for(int dev = 0; dev < NUMDEV; dev++)
+  {
+    if(nmeaParser[dev].RMZAvailable)
+      RMZavailable = true;
+  }
+
+  if ( (RMZavailable) && (LKHearthBeats > (LastRMZHB+5))) {
 	#if DEBUGBARO
 	StartupStore(_T(".... RMZ not updated recently, resetting HB\n"));
 	#endif
-	nmeaParser[0].RMZAvailable = FALSE;
-	nmeaParser[1].RMZAvailable = FALSE;
+        for(int dev = 0; dev < NUMDEV; dev++)
+	  nmeaParser[dev].RMZAvailable = FALSE;
+
   }
 
   // Check baro altitude problems. This can happen for several reasons: mixed input on baro on same port,
@@ -300,8 +309,9 @@ for(int dev =0; dev < NUMDEV; dev++)
 				GPS_INFO.NettoVarioAvailable=false;
 				GPS_INFO.AccelerationAvailable = false;
 				EnableExternalTriggerCruise = false;
-				nmeaParser[0]._Reset();
-				nmeaParser[1]._Reset();
+		                for(int dev = 0; dev < NUMDEV; dev++)
+		                  nmeaParser[dev]._Reset();
+
 				// 120824 Check this situation better> Reset is setting activeGPS true for both devices!
 				lastvalidBaro=false;
 				GotFirstBaroAltitude=false;
@@ -310,7 +320,7 @@ for(int dev =0; dev < NUMDEV; dev++)
 	}
   }
 
-#endif
+
 
   // Set some fine tuning parameters here, depending on device/situation/mode
   if (ISCAR)
@@ -334,7 +344,13 @@ for(int dev =0; dev < NUMDEV; dev++)
 
   if (PortMonitorMessages<15) { // do not overload pilot with messages!
 	// do not say anything if we never got the first port, on startup essentially
-	if ((lastactive!=0) && (nmeaParser[0].gpsValid || nmeaParser[1].gpsValid)){
+      bool GPSvalid = false;
+      for(int dev = 0; dev < NUMDEV; dev++)
+      {
+        if ( nmeaParser[dev].gpsValid  )
+          GPSvalid = true;
+      }
+	if ((lastactive!=0) && (GPSvalid)){
 		TCHAR vbuf[100];
 		_stprintf(vbuf,_T("%s %d"), MsgToken(277),active); // FALLBACK USING GPS ON PORT ..
 		DoStatusMessage(vbuf);
