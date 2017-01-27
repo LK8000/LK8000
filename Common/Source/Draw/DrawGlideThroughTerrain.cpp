@@ -16,6 +16,8 @@ extern void ClearGTL2(void);
 #include "LKObjects.h"
 #endif
 #include "ScreenProjection.h"
+#include "ScreenGeometry.h"
+
 //
 // Glide through terrain will paint a cross over the first and last obstacle to
 // the destination.

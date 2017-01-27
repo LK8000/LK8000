@@ -10,7 +10,7 @@
 #include "Bitmaps.h"
 #include "LKObjects.h"
 #include "ScreenProjection.h"
-
+#include "ScreenGeometry.h"
 //
 // Draw circles and gadgets for thermals
 //

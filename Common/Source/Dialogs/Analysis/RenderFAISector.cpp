@@ -10,6 +10,7 @@
 #include "Defines.h"
 #include "LKObjects.h"
 #include "NavFunctions.h"
+#include "ScreenGeometry.h"
 
 #ifdef PNA
 #define FAI_SECTOR_STEPS 11

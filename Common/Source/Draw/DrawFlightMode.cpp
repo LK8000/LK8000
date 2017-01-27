@@ -10,6 +10,7 @@
 #include "DoInits.h"
 #include "Bitmaps.h"
 #include "Multimap.h"
+#include "ScreenGeometry.h"
 
 extern bool FastZoom; // QUICKDRAW
 

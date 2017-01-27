@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Sideview.h"
 #include "Asset.hpp"
-
+#include "ScreenGeometry.h"
 
 void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
 {

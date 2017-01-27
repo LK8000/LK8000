@@ -921,17 +921,6 @@ static const double PI = (4*atan(1));
 #define WPCIRCLESIZE        2
 
 
-#define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))
-#define MAXIBLSCALE    100     // CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
-#if TESTBENCH
-extern int Test_NIBLSCALE(short x, const int line, const TCHAR *file);
-#define NIBLSCALE(x)  Test_NIBLSCALE(x,  __LINE__,  _T(__FILE__))
-#else
-#define NIBLSCALE(x) (LKIBLSCALE[x])
-#endif
-
-
-
 //
 // SHORTCUTS
 //

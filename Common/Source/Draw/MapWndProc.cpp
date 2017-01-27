@@ -23,6 +23,7 @@
 #include "TunedParameter.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
+#include "ScreenGeometry.h"
 
 #ifndef ENABLE_OPENGL
 #include "Screen/LKBitmapSurface.h"

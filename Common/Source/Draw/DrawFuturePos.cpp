@@ -13,6 +13,7 @@
 
 #include "externs.h"
 #include "RGB.h"
+#include "ScreenGeometry.h"
 
 void MapWindow::DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT& rc, bool headUpLine) {
     if(DrawInfo.Speed < 13.88) return; //Don't continue if ground speed < 50 Km/h

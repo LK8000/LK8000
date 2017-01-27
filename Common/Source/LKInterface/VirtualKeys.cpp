@@ -16,6 +16,7 @@
 #include "DoInits.h"
 #include "Multimap.h"
 #include "Sound/Sound.h"
+#include "ScreenGeometry.h"
 
 void BottomSounds();
 extern int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode);

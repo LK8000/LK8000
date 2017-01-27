@@ -16,6 +16,7 @@
 #include "Multimap.h"
 #include "Sound/Sound.h"
 #include "LoadSplash.h"
+#include "ScreenGeometry.h"
 
 //
 // Called by LKDrawLook8000, this is what happens when we change mapspace mode, advancing through types.

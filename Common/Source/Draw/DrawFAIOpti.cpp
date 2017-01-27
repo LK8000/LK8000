@@ -16,6 +16,7 @@
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
 #include "MapWindow.h"
+#include "ScreenGeometry.h"
 
 
 #ifdef PNA

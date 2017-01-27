@@ -8,6 +8,7 @@
 #include "externs.h"
 #include "Sideview.h"
 #include "Asset.hpp"
+#include "ScreenGeometry.h"
 
 void Statistics::DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text,
 			   const double xv, const double yv) {

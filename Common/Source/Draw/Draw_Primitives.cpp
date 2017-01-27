@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Topology.h"
+#include "ScreenGeometry.h"
 
 
 void MapWindow::DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& Icon) {

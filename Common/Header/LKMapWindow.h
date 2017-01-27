@@ -5,6 +5,7 @@
 #if !defined(LKMAPWINDOW_H)
 #define LKMAPWINDOW_H
 
+#include "ScreenGeometry.h"
 
 // Maximum number of characters for waypoint name. Should be dynamically calculated?
 // CAUTION a line should be adjusted by hand! Not a reference value!!

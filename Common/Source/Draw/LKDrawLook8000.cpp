@@ -22,6 +22,7 @@
 #ifndef UNICODE
 #include "Util/UTF8.hpp"
 #endif
+#include "ScreenGeometry.h"
 
 #define AMBERCOLOR  RGB_AMBER
 // The size of compass drawn by DrawCompass on topright

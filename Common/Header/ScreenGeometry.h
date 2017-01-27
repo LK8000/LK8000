@@ -38,10 +38,6 @@
 #define LK_REFERENCE_DPI  80
 
 
-extern unsigned short GetScreenGeometry(unsigned int x, unsigned int y);
-extern double GetScreen0Ratio(void);
-extern int GetScreenDensity(void);
-
 /**
  * Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
  * If unused, this function is a transparent #define RescalePixelSize(arg) arg
@@ -57,5 +53,20 @@ int RescalePixelSize(int x) {
 #endif
 }
 
+gcc_pure inline
+int IBLSCALE(int x) {
+    return ScreenIntScale ? (x * ScreenScale) : (x * ScreenDScale);
+}
+
+// CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
+
+#define MAXIBLSCALE    100
+extern int LKIBLSCALE[MAXIBLSCALE+1];
+
+gcc_pure inline
+int NIBLSCALE(int x) {
+    LKASSERT(x >= 0 && x <= MAXIBLSCALE);
+    return LKIBLSCALE[x];
+}
 
 #endif

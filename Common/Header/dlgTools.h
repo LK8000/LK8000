@@ -9,6 +9,8 @@
 #if !defined(__DLGTOOLS_H)
 #define __DLGTOOLS_H
 
+#include "ScreenGeometry.h"
+
 class WndForm;
 
 #define OnHelpCallbackEntry(x)      {TEXT(#x), (void *)static_cast<WindowControl::OnHelpCallback_t>(x)}

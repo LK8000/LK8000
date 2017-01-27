@@ -13,6 +13,7 @@
 #include "DoInits.h"
 #include "FlarmRadar.h"
 #include "ScreenProjection.h"
+#include "ScreenGeometry.h"
 
 extern const LKBrush * variobrush[NO_VARIO_COLORS];
 

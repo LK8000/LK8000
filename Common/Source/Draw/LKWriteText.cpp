@@ -10,9 +10,7 @@
 #include "RGB.h"
 #include <iterator>
 #include <functional>
-#ifdef RESCALE_PIXEL
 #include "ScreenGeometry.h"
-#endif
 
 using std::placeholders::_1;
 

@@ -12,6 +12,7 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 #include "../ScreenProjection.h"
+#include "ScreenGeometry.h"
 
 extern LKColor  Sideview_TextColor;
 

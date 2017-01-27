@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "RGB.h"
+#include "ScreenGeometry.h"
 
 
 //

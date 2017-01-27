@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Sideview.h"
-
+#include "ScreenGeometry.h"
 
 extern double fSplitFact;
 extern LKColor Sideview_TextColor;

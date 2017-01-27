@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "ScreenGeometry.h"
 
 
 double MapWindow::LimitMapScale(double value) {

@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Bitmaps.h"
 #include "ScreenProjection.h"
+#include "ScreenGeometry.h"
 
 void MapWindow::DrawTeammate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
     if (TeammateCodeValid) {
