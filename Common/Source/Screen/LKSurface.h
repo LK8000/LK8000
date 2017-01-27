@@ -136,13 +136,19 @@ public:
     void DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
     void DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
 
-    void Polygon(const POINT *apt, int cpt, const RECT& ClipRect);
+    void Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect);
     void Polygon(const POINT *apt, int cpt);
 
     void Polyline(const POINT *apt, int cpt);
     void Polyline(const POINT *apt, int cpt, const RECT& ClipRect);
 
-    void DrawDashPoly(const int width, const LKColor& color, const POINT* pt, const unsigned npoints, const RECT& rc);
+#ifdef ENABLE_OPENGL
+    void Polyline(const FloatPoint *apt, int cpt, const RECT& ClipRect);
+
+    void DrawDashPoly(const int width, const LKColor& color, const FloatPoint* pt, const unsigned npoints, const RECT& rc);
+#endif
+
+    void DrawDashPoly(const int width, const LKColor& color, const RasterPoint* pt, const unsigned npoints, const RECT& rc);
 
     /**
      * this is used only by DrawThread, not thread safe
@@ -156,7 +162,17 @@ public:
 
     void DrawLine(int x1, int y1, int x2, int y2);
     void DrawLine(int x1, int y1, int x2, int y2, int x3, int y3);
-    void DrawLine(Pen::Style PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc);
+
+    template <typename PT>
+    void DrawLine(Pen::Style PenStyle, const int width, const PT& ptStart, const PT& ptEnd, const LKColor& cr, const RECT& rc) {
+        LKPen Pen(PenStyle, width, cr);
+        const auto OldPen = SelectObject(Pen);
+
+        const PT pt[2] = {ptStart, ptEnd};
+        Polyline(pt, 2, rc);
+
+        SelectObject(OldPen);
+    }
 
     void DrawSolidLine(const POINT &ptStart, const POINT &ptEnd, const RECT& rc);
 
@@ -202,7 +218,7 @@ public:
 
     bool RoundRect(const RECT& rc, int nWidth, int nHeight);
 
-    static void buildCircle(const POINT& center, int radius, std::vector<POINT>& list);
+    static void buildCircle(const RasterPoint& center, int radius, std::vector<RasterPoint>& list);
 
     void ExcludeClipRect(const RECT& rc);
 

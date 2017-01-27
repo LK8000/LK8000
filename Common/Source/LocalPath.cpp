@@ -10,33 +10,107 @@
 #include "DoInits.h"
 #include "Asset.hpp"
 
-const TCHAR * LKGetSystemPath(void) {
-#ifdef KOBO
-    return _T("/opt/" LKDATADIR "/share/");
-#else
-    return LKGetLocalPath();
-#endif
+
+#ifdef ANDROID
+#include <android/log.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <Android/Main.hpp>
+#include "Android/Environment.hpp"
+#include "Android/NativeView.hpp"
+
+/**
+ * Determine whether a text file contains a given string
+ *
+ * If two strings are given, the second string is considered
+ * as no-match for the given line (i.e. string1 AND !string2).
+ */
+static bool
+fgrep(const char *fname, const char *string, const char *string2 = nullptr)
+{
+    char line[100];
+    FILE *fp;
+
+    if ((fp = fopen(fname, "r")) == nullptr)
+        return false;
+    while (fgets(line, sizeof(line), fp) != nullptr)
+        if (strstr(line, string) != nullptr &&
+            (string2 == nullptr || strstr(line, string2) == nullptr)) {
+            fclose(fp);
+            return true;
+        }
+    fclose(fp);
+    return false;
 }
 
-const TCHAR * LKGetLocalPath(void) {
-#ifdef KOBO
-    return _T("/mnt/onboard/" LKDATADIR "/");
-#else
+/**
+ * The default mount point of the SD card on Android.
+ */
+#define ANDROID_SDCARD "/sdcard"
 
-    static TCHAR localpath[MAX_PATH + 1] = {0};
+/**
+ * On the Samsung Galaxy Tab, the "external" SD card is mounted here.
+ * Shame on the Samsung engineers, they didn't implement
+ * Environment.getExternalStorageDirectory() properly.
+ */
+#define ANDROID_SAMSUNG_EXTERNAL_SD "/sdcard/external_sd"
 
-    if (!DoInit[MDI_GETLOCALPATH]) {
-        return localpath;
+/**
+ * This is the partition that the Kobo software mounts on PCs
+ */
+#define KOBO_USER_DATA "/mnt/onboard"
+
+
+static
+void getExternalStoragePublicDirectory(TCHAR* szPath, size_t MaxSize) {
+    /* on Samsung Galaxy S4 (and others), the "external" SD card is
+       mounted here */
+    if (lk::filesystem::isDirectory(_T("/mnt/extSdCard" LKDATADIR))
+        && access(_T("/mnt/extSdCard" LKDATADIR),W_OK) == 0) {
+        /* found writable XCSoarData: use this SD card */
+        _tcsncpy(szPath, _T("/mnt/extSdCard"), MaxSize);
+        return;
     }
 
-    DoInit[MDI_GETLOCALPATH] = false;
+    /* hack for Samsung Galaxy S and Samsung Galaxy Tab (which has a
+       built-in and an external SD card) */
+    struct stat st;
+    if (stat(ANDROID_SAMSUNG_EXTERNAL_SD, &st) == 0 &&
+        S_ISDIR(st.st_mode) &&
+        fgrep("/proc/mounts", ANDROID_SAMSUNG_EXTERNAL_SD " ", "tmpfs ")) {
 
-    const TCHAR *fileToSearch = _T(LKD_LANGUAGE"\\_LANGUAGE");
-    return LKGetPath(localpath, fileToSearch);
-#endif
+        __android_log_print(ANDROID_LOG_DEBUG, "LK8000", "Enable Samsung hack : " ANDROID_SAMSUNG_EXTERNAL_SD);
+
+        _tcsncpy(szPath, _T(ANDROID_SAMSUNG_EXTERNAL_SD), MaxSize);
+        return;
+    }
+
+    /* try Context.getExternalStoragePublicDirectory() */
+    if (Environment::getExternalStoragePublicDirectory(szPath, MaxSize, LKDATADIR) != nullptr) {
+        TCHAR* szEnd = _tcsrchr(szPath, '/');
+        if(szEnd) {
+            *szEnd = _T('\0');
+        }
+        __android_log_print(ANDROID_LOG_DEBUG, "LK8000", "Environment.getExternalStoragePublicDirectory()='%s'", szPath);
+        return;
+    }
+
+    /* now try Context.getExternalStorageDirectory(), because
+       getExternalStoragePublicDirectory() needs API level 8 */
+    if (Environment::getExternalStorageDirectory(szPath, MaxSize - 32) != nullptr) {
+        return;
+    }
+
+    /* hard-coded path for Android */
+    __android_log_print(ANDROID_LOG_DEBUG, "L8000", "Fallback : " ANDROID_SDCARD);
+
+    _tcsncpy(szPath, _T(ANDROID_SDCARD), MaxSize);
 }
 
+
+#else
 // return Path including trailing directory separator.
+static
 const TCHAR * LKGetPath(TCHAR *localpath, TCHAR const *fileToSearch) {
 
    if (lk::filesystem::getExePath(localpath, MAX_PATH)) {
@@ -54,10 +128,10 @@ const TCHAR * LKGetPath(TCHAR *localpath, TCHAR const *fileToSearch) {
     localpath[0] = _T('\0');
     if (lk::filesystem::getUserPath(localpath, MAX_PATH)) {
         _tcscat(localpath, TEXT(LKDATADIR"\\"));
-
         size_t nLen = _tcslen(localpath);
         _tcscat(localpath, fileToSearch);
         lk::filesystem::fixPath(localpath);
+
         if (lk::filesystem::exist(localpath)) {
             // Yes, so we use the current path folder
             localpath[nLen] = _T('\0');
@@ -87,7 +161,55 @@ const TCHAR * LKGetPath(TCHAR *localpath, TCHAR const *fileToSearch) {
     localpath[0] = _T('\0');
     return localpath;
 }
+#endif
 
+const TCHAR * LKGetSystemPath(void) {
+#ifdef KOBO
+    return _T("/opt/" LKDATADIR "/share/");
+#elif defined(ANDROID)
+    // we use assets stored in apk, so, system directory is apk file....
+
+    static TCHAR szPakagePath[MAX_PATH] = {0};
+    if(szPakagePath[0] == '\0') {
+
+        native_view->getPackagePath(szPakagePath, sizeof(szPakagePath));
+        strcat(szPakagePath, "/");
+    }
+    return szPakagePath;
+
+#else
+    return LKGetLocalPath();
+#endif
+}
+
+const TCHAR * LKGetLocalPath(void) {
+#ifdef KOBO
+    return _T("/mnt/onboard/" LKDATADIR "/");
+#else
+
+    static TCHAR localpath[MAX_PATH + 1] = {0};
+
+    if (!DoInit[MDI_GETLOCALPATH]) {
+        return localpath;
+    }
+
+    DoInit[MDI_GETLOCALPATH] = false;
+
+#ifdef ANDROID
+
+    getExternalStoragePublicDirectory(localpath, sizeof(localpath));
+    _tcscat(localpath, _T( "/" LKDATADIR "/"));
+    lk::filesystem::createDirectory(localpath);
+    return localpath;
+
+#else
+
+    const TCHAR *fileToSearch = _T(LKD_LANGUAGE"\\_LANGUAGE");
+    return LKGetPath(localpath, fileToSearch);
+
+#endif // ! ANDROID
+#endif
+}
 
 #ifdef PNA
 #include <shlobj.h>

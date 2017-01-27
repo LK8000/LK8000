@@ -83,7 +83,7 @@
 
 static const double pi = 3.14159265358979;
 static const double a = 6378.16;	/* major radius (km) IAU66 ellipsoid */
-static const double f = 1.0 / 298.25;	/* inverse flattening IAU66 ellipsoid */
+//static const double f = 1.0 / 298.25;	/* inverse flattening IAU66 ellipsoid */
 static const double b = 6378.16 * (1.0 -1.0 / 298.25 );
 	/* minor radius b=a*(1-f) */
 static const double r_0 = 6371.2;	/* "mean radius" for spherical harmonic expansion */

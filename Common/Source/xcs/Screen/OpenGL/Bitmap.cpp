@@ -21,12 +21,37 @@ Copyright_License {
 }
 */
 
+#include <algorithm>
+
 #include "Screen/Bitmap.hpp"
 #include "Screen/Debug.hpp"
 #include "Screen/Custom/UncompressedImage.hpp"
 #include "UncompressedImage.hpp"
 #include "Texture.hpp"
 #include "Debug.hpp"
+
+#ifndef ANDROID
+
+Bitmap::Bitmap(Bitmap &&src)
+  :texture(src.texture),
+   size(src.size),
+   interpolation(src.interpolation),
+   flipped(src.flipped)
+{
+  src.texture = nullptr;
+}
+
+Bitmap& Bitmap::operator=(Bitmap &&src)
+{
+  std::swap(texture, src.texture);
+  std::swap(size, src.size);
+  std::swap(interpolation, src.interpolation);
+  std::swap(flipped, src.flipped);
+  
+  return *this;
+}
+
+#endif /* !ANDROID */
 
 void
 Bitmap::EnableInterpolation()

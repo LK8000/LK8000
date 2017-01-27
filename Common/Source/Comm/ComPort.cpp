@@ -127,6 +127,10 @@ bool ComPort::StartRxThread() {
 void ComPort::run() {
     StartupStore(_T(". ComPort %u ReadThread : started%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
     RxThread();
+    PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
+    if(d) {
+        d->nmeaParser.connected = false;
+    }
     StartupStore(_T(". ComPort %u ReadThread : terminated%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
 }
 
@@ -166,30 +170,32 @@ void ComPort::ProcessChar(char c) {
 }
 
 void ComPort::AddStatRx(unsigned dwBytes) {
-    if (GetPortIndex() < NUMDEV)
-        ComPortRx[GetPortIndex()] += dwBytes;
+    if (GetPortIndex() < NUMDEV) {
+        DeviceList[GetPortIndex()].Rx += dwBytes;
+    }
 }
 
 void ComPort::AddStatErrRx(unsigned dwBytes) {
-    if (GetPortIndex() < NUMDEV)
-        ComPortErrRx[GetPortIndex()] += dwBytes;
+    if (GetPortIndex() < NUMDEV) {
+        DeviceList[GetPortIndex()].ErrRx += dwBytes;
+    }
 }
 
 void ComPort::AddStatTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortTx[GetPortIndex()] += dwBytes;
+        DeviceList[GetPortIndex()].Tx += dwBytes;
     }
 }
 
 void ComPort::AddStatErrTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortErrTx[GetPortIndex()] += dwBytes;
+        DeviceList[GetPortIndex()].ErrTx += dwBytes;
     }
 }
 
 void ComPort::SetPortStatus(int nStatus) {
     if (GetPortIndex() < NUMDEV) {
-        ComPortStatus[GetPortIndex()] = nStatus;
+        DeviceList[GetPortIndex()].Status = nStatus;
     }
 }
 

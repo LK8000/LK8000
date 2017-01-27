@@ -1,0 +1,210 @@
+import de.undercouch.gradle.tasks.download.Download
+
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+task downloadBoost(type: Download) {
+    src 'https://freefr.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.zip'
+    dest new File(projectDir,'Thirdparty/boost.zip')
+    onlyIfNewer true
+    acceptAnyCertificate true
+}
+task extractBoost(dependsOn: downloadBoost, type: Copy) {
+    from zipTree(downloadBoost.dest)
+    into 'Thirdparty'
+}
+preBuild.dependsOn extractBoost
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "org.lk8000"
+        minSdkVersion 9
+        targetSdkVersion 21
+        versionCode 14
+        versionName "6.1a"
+        setProperty("archivesBaseName", "LK8000-$versionName")
+        manifestPlaceholders = [applicationLabel: "@string/app_name"]
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11 -frtti -fexceptions"
+            }
+        }
+        copy {
+            from "../../Common/Data/Language/Translations"
+            into "src/main/assets/language"
+        }
+        copy {
+            from "../../Common/Data/Language"
+            into "src/main/assets/language"
+            include "ENG_MSG.TXT"
+            include "ENG_HELP.TXT"
+            include "ENGLISH.LNG"
+        }
+        copy {
+            from "../../Common/Data/Language"
+            into "src/main/assets"
+            include "DEFAULT_MENU.TXT"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_System/"
+            into "src/main/assets"
+            include "CREDITS.TXT"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Polars"
+            into "src/main/assets/polars"
+            include "*.plr"
+            exclude "Example.*"
+        }
+        copy {
+            from "../../Common/Data/Sounds", "../../Common/Distribution/LK8000/_System/_Sounds",
+                    "../../Common/Distribution/LK8000/_System/_Sounds/OPTIONALS"
+            into "src/main/assets/sounds"
+            include "*.wav"
+            include "*.WAV"
+        }
+        copy {
+            from "../../Common/Data/Fonts"
+            into "src/main/assets/fonts"
+            include "*.ttf"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Maps"
+            into "src/main/assets/distribution/maps"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Waypoints"
+            into "src/main/assets/distribution/waypoints"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Airspaces"
+            into "src/main/assets/distribution/airspaces"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Tasks"
+            into "src/main/assets/distribution/tasks"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Logger"
+            into "src/main/assets/distribution/logger"
+            include "*.*"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Configuration"
+            into "src/main/assets/distribution/configuration"
+            include "DEMO.prf", "CAR.prf", "TREKKING.prf", "NOTEDEMO.TXT", "IDFLARM.TXT"
+        }
+        copy {
+            from "../../Common/Distribution/LK8000/_Polars"
+            into "src/main/assets/distribution/polars"
+            include "Example.*"
+        }
+    }
+    sourceSets {
+        main {
+            java.srcDirs += [
+                    "../../android/src",
+                    "../../android/ioio/software/IOIOLib/src",
+                    "../../android/ioio/software/IOIOLib/target/android/src",
+                    "../../android/ioio/software/IOIOLibAccessory/src",
+                    "../../android/ioio/software/IOIOLibBT/src",
+                    "../../android/ioio/software/IOIOLibAndroidDevice/src"
+            ]
+            manifest.srcFile "../../android/AndroidManifest.xml"
+            res.srcDirs += ["../../android/res"]
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            manifestPlaceholders = [applicationLabel: "@string/app_name_debug"]
+        }
+        beta {
+            initWith(buildTypes.release)
+            applicationIdSuffix ".beta"
+            manifestPlaceholders = [applicationLabel: "@string/app_name_beta"]
+        }
+    }
+    productFlavors {
+        x86 {
+            ndk {
+                abiFilter "x86"
+            }
+        }
+        x86_64 {
+            ndk {
+                abiFilter "x86_64"
+            }
+        }
+        mips {
+            ndk {
+                abiFilter "mips"
+            }
+        }
+        armv7 {
+            ndk {
+                abiFilter "armeabi-v7a"
+            }
+        }
+        arm64 {
+            ndk {
+                abiFilter "arm64-v8a"
+            }
+        }
+        arm {
+            ndk {
+                abiFilter "armeabi"
+            }
+        }
+        fat {
+            ndk {
+                abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips'
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "../../CMakeLists.txt"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
+        transitive = true;
+    }
+    compile('com.crashlytics.sdk.android:crashlytics-ndk:1.1.5@aar') {
+        transitive = true;
+    }
+}
+
+crashlytics {
+    enableNdk true
+    androidNdkOut 'build/intermediates/cmake/fat/beta/obj'
+    androidNdkLibsOut 'build/intermediates/cmake/fat/beta/obj'
+}

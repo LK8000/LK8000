@@ -119,7 +119,7 @@ static int	iRectangleSize = 4;
 		#endif
       
 		POINT sc, sc_name, sc_av;
-		sc = _Proj.LonLat2Screen(target_lon, target_lat);
+		sc = _Proj.ToRasterPoint(target_lon, target_lat);
 
 		sc_name = sc;
 

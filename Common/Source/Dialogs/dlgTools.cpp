@@ -22,13 +22,6 @@
     #include <linux/input.h>
 #endif
 
-int DLGSCALE(int x) {
-  int iRetVal = x;
-  iRetVal = (int) ((x)*ScreenDScale);
-  return iRetVal;
-}
-
-
 static void OnButtonClick(WndButton* pWnd){
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();

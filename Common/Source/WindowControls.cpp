@@ -21,6 +21,8 @@
 #include "Screen/LKWindowSurface.h"
 
 #include <functional>
+#include <Form/Form.hpp>
+#include <OS/RotateScreen.h>
 
 #include "Event/Event.h"
 #include "Asset.hpp"
@@ -119,6 +121,41 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
 
 }
 
+#ifdef ANDROID
+void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* filter) { // 091101
+
+  static zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
+  zzip_error_t zzipError;
+
+  tstring sRootPath = LKGetSystemPath();
+  if(sRootPath.empty()) {
+    return;
+  }
+  sRootPath.pop_back(); // remove trailing directory separator
+
+  size_t subdir_size = _tcslen(subdir);
+  // Open the archive root directory.
+  ZZIP_DIR* dir = zzip_dir_open_ext_io(sRootPath.c_str(), &zzipError, ext, nullptr);
+  if (dir) {
+    ZZIP_DIRENT dirent;
+    // Loop through the files in the archive.
+    while(zzip_dir_read(dir, &dirent)) {
+
+      if( _tcsnicmp(subdir, dirent.d_name, subdir_size) == 0) {
+        if(checkFilter(dirent.d_name, filter)) {
+
+          TCHAR* szFileName = _tcsrchr(dirent.d_name, _T('/'))+1;
+          if(GetLabelIndex(szFileName) <= 0) {
+            addFile(szFileName, dirent.d_name);
+          }
+        }
+      }
+    }
+    zzip_dir_close(dir);
+  }
+}
+#endif
+
 
 BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filter) {
 
@@ -151,6 +188,16 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filte
     }
 
     return TRUE;
+}
+
+int DataFieldFileReader::GetLabelIndex(const TCHAR* label) {
+  for (unsigned i=1; i<nFiles; i++) {
+    // if (_tcscmp(Text,fields[i].mTextPathFile)==0) { 091126
+    if (_tcsicmp(label,fields[i].mTextFile)==0) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 bool DataFieldFileReader::Lookup(const TCHAR *Text) {
@@ -474,18 +521,12 @@ DataFieldEnum::~DataFieldEnum()
 }
 
 void DataFieldEnum::Clear() {
-  for (unsigned int i=0; i<nEnums; i++) {
-    if (mEntries[i].mText) {
-      free(mEntries[i].mText);
-      mEntries[i].mText= NULL;
-    }
-  }
-  nEnums = 0;
+  mEntries.clear();
   mValue = 0;
 }
 
 int DataFieldEnum::GetAsInteger(void){
-  if (mValue<nEnums) {
+  if (mValue<mEntries.size()) {
     return mEntries[mValue].index;
   } else {
     return 0; // JMW shouldn't get here
@@ -493,41 +534,29 @@ int DataFieldEnum::GetAsInteger(void){
 }
 
 bool DataFieldEnum::GetAsBoolean() {
-  assert(nEnums == 2);
-  if (mValue<nEnums) {
+  assert(mEntries.size() == 2);
+  if (mValue<mEntries.size()) {
     return mEntries[mValue].index;
   }
   return false;
 }
 
 void DataFieldEnum::addEnumText(const TCHAR *Text) {
-  if (nEnums<DFE_MAX_ENUMS-1) {
-    mEntries[nEnums].mText = (TCHAR*)malloc((_tcslen(Text)+1)*sizeof(TCHAR));
-    if (mEntries[nEnums].mText == NULL) return; // MALLOC ALERT
-    _tcscpy(mEntries[nEnums].mText, Text);
-    mEntries[nEnums].index = nEnums;
-    nEnums++;
-  }
+  const unsigned int idx = mEntries.size();
+  mEntries.push_back({idx, Text});
 }
 
 void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
-  if (nEnums<DFE_MAX_ENUMS-1) {
-    TCHAR *p;
-    mEntries[nEnums].mText = (TCHAR*)malloc((_tcslen(Text)+1)*sizeof(TCHAR));
-    if (mEntries[nEnums].mText == NULL) return;
-    _tcscpy(mEntries[nEnums].mText, Text);
-    p = _tcschr(mEntries[nEnums].mText, _T('\n'));
-    if (p)
-	*p = _T(' ');
-    
-    mEntries[nEnums].index = nEnums;
-    nEnums++;
-  }
+  tstring szTmp(Text);
+  std::replace(szTmp.begin(), szTmp.end(), _T('\n'), _T(' '));
+
+  const unsigned int idx = mEntries.size();
+  mEntries.push_back({idx, std::move(szTmp)});
 }
 
 const TCHAR *DataFieldEnum::GetAsString(void) {
-  if (mValue<nEnums) {
-    return(mEntries[mValue].mText);
+  if (mValue<mEntries.size()) {
+    return(mEntries[mValue].mText.c_str());
   } else {
     return NULL;
   }
@@ -536,10 +565,10 @@ const TCHAR *DataFieldEnum::GetAsString(void) {
 
 void DataFieldEnum::Set(unsigned Value){
   // first look it up
-  if (Value >= nEnums) {
+  if (Value >= mEntries.size()) {
     Value = 0;
   }
-  for (unsigned int i=0; i<nEnums; i++) {
+  for (unsigned int i=0; i<mEntries.size(); i++) {
     if (mEntries[i].index == Value) {
       unsigned lastValue = mValue;
       mValue = i;
@@ -559,7 +588,7 @@ int DataFieldEnum::SetAsInteger(int Value){
 }
 
 void DataFieldEnum::Inc(void){
-  if (mValue<nEnums-1) {
+  if (mValue<mEntries.size()-1) {
     mValue++;
     if (!GetDetachGUI())(mOnDataAccess)(this, daChange); // rev 1.85
   }
@@ -572,24 +601,24 @@ void DataFieldEnum::Dec(void){
   }
 }
 
-static int DataFieldEnumCompare(const void *elem1, 
-                                             const void *elem2 ){
-  return _tcscmp(((const DataFieldEnumEntry*)elem1)->mText,
-                 ((const DataFieldEnumEntry*)elem2)->mText);
-}
+struct DataFieldEnumEntry_sorter {
+
+  bool operator()( const DataFieldEnumEntry& a, const DataFieldEnumEntry& b ) const {
+    return ( a.mText < b.mText ); 
+  }
+};
 
 void DataFieldEnum::Sort(int startindex){
-  qsort(mEntries+startindex, nEnums-startindex, sizeof(DataFieldEnumEntry), 
-        DataFieldEnumCompare);
+    std::sort(std::next(mEntries.begin(), startindex), mEntries.end(), DataFieldEnumEntry_sorter());
 }
 int DataFieldEnum::CreateComboList(void) {
   unsigned int i=0;
-  for (i=0; i < nEnums; i++){
+  for (i=0; i < mEntries.size(); i++){
     mComboList.ComboPopupItemList[i] = mComboList.CreateItem(
                                           i, 
                                           mEntries[i].index,
-                                          mEntries[i].mText,
-                                          mEntries[i].mText);
+                                          mEntries[i].mText.c_str(),
+                                          mEntries[i].mText.c_str());
 //    if (mEntries[i].index == mValue) {
 //      mComboList.ComboPopupItemSavedIndex=i;
 //    }
@@ -1689,6 +1718,7 @@ int WndForm::ShowModal(void) {
     enterTime.Update();
 
     Message::ScopeBlockRender BlockRender;
+    ScopeLockScreen LockScreen;
 
     SetVisible(true);
 
@@ -1884,6 +1914,7 @@ void WndForm::SetFont(FontReference Value){
 }
 
 void WndForm::Show() {
+    ScopeLockScreen LockScreen;
     MainWindow.UnGhost();
     
     WindowControl::Show();
@@ -2600,7 +2631,7 @@ int WndListFrame::GetScrollBarWidth() {
     if ( ScrollbarWidth == -1) {
         // use fat Scroll on Embedded platform for allow usage on touch screen with fat finger ;-)
         constexpr double scale = HasTouchScreen() ? 1.0 : 0.75; 
-        ScrollbarWidth = ScrollbarWidthInitial * ScreenDScale * scale;
+        ScrollbarWidth = IBLSCALE(ScrollbarWidthInitial * scale);
     }
     return ScrollbarWidth;
 }
@@ -2950,7 +2981,7 @@ inline int WndListFrame::GetScrollBarHeight (void)
   if(mListInfo.ItemCount ==0) {
     return h;
   } else {
-    return max(ScrollbarWidth, MulDiv(h, mListInfo.ItemInPageCount, mListInfo.ItemCount));
+    return max(ScrollbarWidth, _MulDiv(h, mListInfo.ItemInPageCount, mListInfo.ItemCount));
   }
 }
 

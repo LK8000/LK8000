@@ -15,8 +15,10 @@
 #include "Poco/Mutex.h"
 #include "Poco/ScopedLock.h"
 #include "Poco/ScopedUnlock.h"
+#include "Poco/Condition.h"
 
 class Mutex : protected Poco::Mutex {
+    friend class Poco::Condition;
     friend class Poco::ScopedLock<Mutex>;
     friend class Poco::ScopedUnlock<Mutex>;
 public:

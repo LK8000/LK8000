@@ -54,7 +54,7 @@ BOOL ATR833Install(PDeviceDescriptor_t d){
   d->StationSwap    = ATR833StationSwap;
   d->ParseNMEA      = NULL;
   d->ParseStream    = ATR833ParseString;
-  d->RadioMode      = ATR833RadioMode;
+  d->PutRadioMode   = ATR833RadioMode;
   RadioPara.Enabled8_33  = true;  
   if(iATR833DebugLevel) StartupStore(_T("ATR833 Install & Data Request%s"),  NEWLINE);
   ATR833RequestAllData(d);

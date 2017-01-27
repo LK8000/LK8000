@@ -22,4 +22,36 @@ ZZIP_FILE * openzip(const TCHAR* szFile, const char *mode);
 }
 #endif
 
+#ifdef __cplusplus
+class zzip_file_ptr {
+public:
+    zzip_file_ptr() : _fp() { }
+    explicit zzip_file_ptr(ZZIP_FILE* fp) : _fp(fp) { }
+
+    zzip_file_ptr& operator=(ZZIP_FILE* fp) {
+        if(_fp != fp) {
+            close();
+        }
+        _fp = fp;
+        return *this;
+    }
+
+    ~zzip_file_ptr() {
+        close();
+    }
+
+    void close() {
+        if(_fp) {
+            zzip_close(_fp);
+        }
+    }
+
+    operator bool() { return !!(_fp); }
+
+    operator ZZIP_FILE*() { return _fp; }
+
+private:
+    ZZIP_FILE* _fp;
+};
+#endif
 #endif	/* OPENZIP_H */

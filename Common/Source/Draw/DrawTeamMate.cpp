@@ -13,7 +13,7 @@
 void MapWindow::DrawTeammate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
     if (TeammateCodeValid) {
         if (PointVisible(TeammateLongitude, TeammateLatitude)) {
-            const POINT point = _Proj.LonLat2Screen(TeammateLongitude, TeammateLatitude);
+            const RasterPoint point = _Proj.ToRasterPoint(TeammateLongitude, TeammateLatitude);
             hBmpTeammatePosition.Draw(Surface, point.x - NIBLSCALE(10), point.y - NIBLSCALE(10), IBLSCALE(20), IBLSCALE(20));
         }
     }

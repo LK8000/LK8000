@@ -28,7 +28,7 @@
 
 
 // Disable internally generated sounds
-#if !defined(WIN32) && !defined(ENABLE_SDL) && !defined(USE_ALSA)
+#if !defined(WIN32) && !defined(ENABLE_SDL) && !defined(USE_ALSA) && !defined(ANDROID)
     // audio is only implemented for WIN32 && SDL Enabled TARGET
     #define DISABLEAUDIO
 #endif
@@ -50,6 +50,14 @@
 
 #ifdef PNA
 #define NOLINETO
+#endif
+
+#if defined(ANDROID) || defined(KOBO)
+ #define RESCALE_PIXEL
+#endif
+
+#ifdef HAVE_GLES
+ #define NO_DASH_LINES
 #endif
 
  // CACHE CALCULATIONS: IT IS IMPERATIVE THAT THIS OPTION CAN BE DISABLED ANYTIME!
@@ -176,10 +184,8 @@
 // Eric Carden, April 21, 2012
 // #define BCT_ALT_FIX
 
-// PWC Scoring use WGS84 earth model, but LK8000 use FAISphere
-// PG optimise can Work with WGS84 but Wapoint validation not..
-// we need change Waypoint validation before use it
-#ifndef UNDER_CE
+// use WGS84 earth model
+#if !defined(UNDER_CE)
     #define _WGS84
     #ifdef __cplusplus
         #include <GeographicLib/Constants.hpp>

@@ -19,6 +19,9 @@ class TaskRendererLine : public TaskRenderer {
 public:
     TaskRendererLine(const GeoPoint& center, double radius, double radial);
 
+    bool IsPolygon() const override { 
+        return true; 
+    }
 };
 
 #endif /* TASKRENDERERLINE_H */

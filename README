@@ -50,12 +50,16 @@ LINUX Target :
     USE_SDL2=[y|n]
         "y" by default if USE_SDL=y or OPENGL=n or USE_EGL=n and libSDL2 are available. 
 
+    ENABLE_MESA_KMS=[y|n]
+        "n" by default,
+        if "y" is specified, use GBM/DRM instead of X11
+
+
 Do you want LINUX greyscaled like on Kobo? 
 $make -j4 TARGET=LINUX OPENGL=n GREYSCALE=y DITHER=y clean
 $make -j4 TARGET=LINUX OPENGL=n GREYSCALE=y DITHER=y install
 Notice the "clean" will also remove the Distrib folder. That is needed
 to rebuild bitmaps for use without opengl
-
 
 --------------------------------------------------------------------------------
 Raspberry Pi 2

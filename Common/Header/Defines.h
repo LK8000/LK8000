@@ -9,6 +9,7 @@
 #ifndef LK8000_DEFINES_H
 #define LK8000_DEFINES_H
 
+#include <math.h>
 
 // The StartupStore line separator, normally CRLF but previously it was only LF
 #define SNEWLINE        "\r\n"
@@ -110,11 +111,34 @@
  */
 #define LKD_HOME	LKDATADIR
 #define LKD_LOGS	"_Logger"
-#define LKD_SYSTEM	"_System"
-#if !defined(DISABLEAUDIO) || !defined(DISABLEEXTAUDIO)
-#define LKD_SOUNDS	"_System\\_Sounds"
+
+#ifdef ANDROID
+/*
+ * system files are loaded from AssetManager, and '_' prefix are forbiden...
+ *  for all file in this directory :
+ *....- are inside apk bundle
+ *    - must be loaded using zzip from native code or using java code.
+ *    - are read only and hidden for users
+  */
+    #define LKD_SYSTEM	     "assets"
+    #define LKD_SOUNDS	     "sounds" // bitmap are loaded from java ressouce
+    #define LKD_BITMAPS      "bitmaps" // bitmap are loaded from java using AssetManager
+    #define LKD_SYS_LANGUAGE "assets/language"
+    #define LKD_SYS_POLAR    "assets/polars"
+
+    #define LKD_DEFAULT_POLAR   "assets/polars/Default.plr"
+    #define LKD_DEFAULT_LANGUAGE   "assets/language/ENGLISH.LNG"
+
+#else
+    #define LKD_SYSTEM       "_System"
+    #define LKD_SOUNDS       "_System" DIRSEP "_Sounds"
+    #define LKD_BITMAPS      "_System" DIRSEP "_Bitmaps"
+
+    #define LKD_DEFAULT_POLAR   "_Polars" DIRSEP "Default.plr"
+    #define LKD_DEFAULT_LANGUAGE   "_Language" DIRSEP "ENGLISH.LNG"
+
 #endif
-#define LKD_BITMAPS	"_System\\_Bitmaps"
+
 #define LKD_CONF	"_Configuration"
 #define LKD_TASKS	"_Tasks"
 #define LKD_WAYPOINTS	"_Waypoints"

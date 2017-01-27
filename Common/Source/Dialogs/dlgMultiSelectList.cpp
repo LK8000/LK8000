@@ -13,6 +13,7 @@
 #include "Multimap.h"
 #include "resource.h"
 #include "NavFunctions.h"
+#include "Draw/ScreenProjection.h"
 
 #define MAX_LIST_ITEMS 50
 ListElement* pResult = NULL;
@@ -312,7 +313,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
             if (Elements[i].type != IM_TASK_PT) {
                 if (WayPointCalc[idx].IsLandable) {
-                    MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, 4000, true);
+                    MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 4000, true);
 
                     if (WayPointCalc[idx].IsAirport) {
                         // remove spaces from frequency

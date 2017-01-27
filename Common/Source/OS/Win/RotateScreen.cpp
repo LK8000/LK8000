@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "../RotateScreen.h"
 
 bool CanRotateScreen() {
     return true;
@@ -145,4 +146,29 @@ bool RotateScreen(short angle) {
 
 #endif // !WINDOWSPC
 
+}
+
+ScopeLockScreen::ScopeLockScreen() :
+            previous_state()
+{
+#ifndef UNDER_CE
+    HWND hwnd = MainWindow.Handle();
+    if(hwnd) {
+        DWORD dwStyle = (DWORD)GetWindowLong(hwnd, GWL_STYLE);
+        previous_state = !!(dwStyle&WS_SIZEBOX);
+        SetWindowLong(hwnd, GWL_STYLE, dwStyle&(~WS_SIZEBOX));
+    }
+#endif
+}
+
+ScopeLockScreen::~ScopeLockScreen() {
+#ifndef UNDER_CE
+    if(previous_state) {
+        HWND hwnd = MainWindow.Handle();
+        if(hwnd) {
+            DWORD dwStyle = (DWORD)GetWindowLong(hwnd, GWL_STYLE);
+            SetWindowLong(hwnd, GWL_STYLE, dwStyle|WS_SIZEBOX);
+        }
+    }
+#endif
 }

@@ -234,21 +234,16 @@ class DataFieldBoolean:public DataField{
 
 };
 
-// Max number of enumerated items. ATTENTION! Polars, infoboxe types etc.. are around 100 already!
-// Anything more than this will NOT raise a bug message .
-#define DFE_MAX_ENUMS 200
-
 typedef struct {
-  TCHAR *mText;
   unsigned int index;
+  tstring mText;
 } DataFieldEnumEntry;
 
 class DataFieldEnum: public DataField {
 
   private:
-    unsigned int nEnums;
     unsigned int mValue;
-    DataFieldEnumEntry mEntries[DFE_MAX_ENUMS];
+    std::vector<DataFieldEnumEntry> mEntries;
 
   public:
     DataFieldEnum(const TCHAR *EditFormat,
@@ -262,7 +257,6 @@ class DataFieldEnum: public DataField {
 	{ mValue = Default; }
       else
 	{mValue = 0;}
-      nEnums = 0;
       if (mOnDataAccess) {
 	(mOnDataAccess)(this, daGet);
       }
@@ -332,6 +326,8 @@ class DataFieldFileReader: public DataField {
   int GetAsInteger(void) override;
   const TCHAR *GetAsString(void) override;
 
+  int GetLabelIndex(const TCHAR* label);
+
   bool Lookup(const TCHAR* text);
   const TCHAR* GetPathFile(void) const;
 
@@ -341,7 +337,9 @@ class DataFieldFileReader: public DataField {
 
   void Sort(int startindex=0) override;
   void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
-
+#ifdef ANDROID
+  void ScanZipDirectory(const TCHAR *subdir, const TCHAR *filter);
+#endif
  protected:
   BOOL ScanDirectories(const TCHAR *pattern, const TCHAR *filter);
 

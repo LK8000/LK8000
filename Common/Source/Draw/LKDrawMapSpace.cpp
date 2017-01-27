@@ -58,7 +58,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
   if (MapSpaceMode==MSM_WELCOME) {
       LKBitmap WelcomeBitmap = LoadSplash(_T("LKPROFILE"));
       if(WelcomeBitmap) {
-          DrawSplash(Surface, WelcomeBitmap);
+          DrawSplash(Surface, rc, WelcomeBitmap);
       }
   } else {
       Surface.FillRect(&rc, hB);

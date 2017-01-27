@@ -44,7 +44,7 @@
 bool RestartToNickel = true; // default to true, mandatory for avoid to brick device in case of abnormal termination.
 #endif
 
-extern void Shutdown(void);
+extern void BeforeShutdown(void);
 
 static WndForm *wf = NULL;
 static LKBitmap StartBitmap;
@@ -52,7 +52,11 @@ static LKBitmap ProfileBitmap;
 
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
+
+#ifndef ANDROID
 extern bool CheckSystemBitmaps(void);
+#endif
+
 void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, const LKColor& rgbcolor, int wtmode);
 
 // This global is set true on startup only here, and it is cleared by the LoadNewTask
@@ -114,14 +118,14 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
             StartBitmap = LoadSplash(_T("LKSTART"));
         }
         if(StartBitmap) {
-            DrawSplash(Surface, StartBitmap);
+            DrawSplash(Surface, Sender->GetClientRect(), StartBitmap);
         }
     } else {
         if(!ProfileBitmap) {
             ProfileBitmap = LoadSplash(_T("LKPROFILE"));
         }
         if(ProfileBitmap) {
-            DrawSplash(Surface, ProfileBitmap);
+            DrawSplash(Surface, Sender->GetClientRect(), ProfileBitmap);
         }
     }
 
@@ -212,8 +216,6 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
     }
 
     if (RUN_MODE != RUN_WELCOME) {
-
-        // FillRect(hDC,&ScreenSizeR, LKBrush_Black); // REMOVE
 
         TCHAR mes[100];
 #ifndef LKCOMPETITION
@@ -741,8 +743,8 @@ short dlgStartupShowModal(void) {
 
     WindowControl* wSplash = wf->FindByName(TEXT("frmSplash"));
     if(wSplash) {
-        wSplash->SetWidth(ScreenSizeX);
-        // wSplash->SetHeight(ScreenSizeY);// - IBLSCALE(55));
+        wSplash->SetWidth(wf->GetWidth());
+        wSplash->SetHeight(wf->GetHeight());
     }
 
 
@@ -757,10 +759,11 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), mbOk);
         MessageBoxX(mes, _T("NO LK8000 DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
+#ifndef ANDROID
     if (!CheckDataDir()) {
         TCHAR mydir[MAX_PATH];
         TCHAR mes[MAX_PATH];
@@ -770,7 +773,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), mbOk);
         MessageBoxX(mes, _T("NO SYSTEM DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
@@ -784,7 +787,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), mbOk);
         MessageBoxX(mes, _T("NO LANGUAGE DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
     if (!CheckLanguageEngMsg()) {
@@ -796,7 +799,7 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("ENG_MSG.TXT MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
     if (!CheckSystemDefaultMenu()) {
@@ -808,9 +811,14 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
+
+#ifndef ANDROID
+    /*
+     * Bitmaps files are inside apk, no need to check
+     */
 
     if (!CheckSystemBitmaps()) {
         TCHAR mydir[MAX_PATH];
@@ -821,9 +829,10 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("_BITMAPSH MISSING in SYSTEM Bitmaps\nCheck System Install"), _T("FATAL ERROR 032"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
+#endif
 
     extern unsigned short Bitmaps_Errors;
     if (Bitmaps_Errors) {
@@ -842,15 +851,16 @@ short dlgStartupShowModal(void) {
         MessageBoxX(_T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), mbOk);
         MessageBoxX(mes, _T("NO POLARS DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
+#endif
 
     extern bool CheckFilesystemWritable(void);
     if (!CheckFilesystemWritable()) {
         MessageBoxX(_T("LK8000 CANNOT WRITE IN MEMORY CARD!\nCARD IS LOCKED, OR DAMAGED, OR FULL."), _T("CRITICAL PROBLEM"), mbOk);
         RUN_MODE = RUN_EXIT;
-        Shutdown();
+        BeforeShutdown();
         goto _exit;
     }
 
@@ -927,7 +937,7 @@ short dlgStartupShowModal(void) {
                 // LKTOKEN  _@M198_ = "Confirm Exit?"
                 MsgToken(198),
                 TEXT("LK8000"), mbYesNo) == IdYes) {
-            Shutdown();
+            BeforeShutdown();
         } else {
             RUN_MODE = RUN_WELCOME;
         }

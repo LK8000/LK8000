@@ -32,9 +32,8 @@ Copyright_License {
 #endif
 
 #ifdef ANDROID
-#include "Util/tstring.hpp"
 #include "Screen/OpenGL/Surface.hpp"
-#include "ResourceId.hpp"
+#include <jni.h>
 #endif
 
 #ifdef USE_GDI
@@ -61,7 +60,7 @@ using BitmapPixelTraits = BGRAPixelTraits;
 /**
  * An image loaded from storage.
  */
-class Bitmap
+    class Bitmap
 #ifdef ANDROID
              : private GLSurfaceListener
 #endif
@@ -82,38 +81,33 @@ public:
 
 protected:
 #ifdef ANDROID
-  /** resource id */
-  ResourceId id;
+  jobject bmp = nullptr;
 
   Type type;
-
-  /** filename for external images (id=0) */
-  tstring pathName;
 #endif
 
 #ifdef ENABLE_OPENGL
-  GLTexture *texture;
+  GLTexture *texture = nullptr;
   PixelSize size;
 
-  bool interpolation;
+  bool interpolation = false;
+
+  /**
+   * Flip up/down?  Some image formats (such as BMP and TIFF) store
+   * the bottom-most row first.
+   */
+  bool flipped = false;
 #elif defined(USE_MEMORY_CANVAS)
-  WritableImageBuffer<BitmapPixelTraits> buffer;
+  WritableImageBuffer<BitmapPixelTraits> buffer = WritableImageBuffer<BitmapPixelTraits>::Empty();
 #else
   HBITMAP bitmap;
 #endif
 
 public:
-#ifdef ENABLE_OPENGL
-  Bitmap()
-    :
-#ifdef ANDROID
-    id(ResourceId::Null()),
-#endif
-    texture(nullptr), interpolation(false) {}
-#elif defined(USE_MEMORY_CANVAS)
-  constexpr Bitmap():buffer(WritableImageBuffer<BitmapPixelTraits>::Empty()) {}
+#ifdef USE_GDI
+  Bitmap();
 #else
-  Bitmap():bitmap(nullptr) {}
+  Bitmap() = default;
 #endif
 
   explicit Bitmap(ResourceId id);
@@ -121,6 +115,10 @@ public:
 #if !defined(USE_GDI) && !defined(ANDROID)
   Bitmap(ConstBuffer<void> buffer);
 #endif
+
+  Bitmap(Bitmap &&src);
+  Bitmap& operator=(Bitmap &&src );
+
 
   ~Bitmap() {
     Reset();
@@ -130,7 +128,9 @@ public:
   Bitmap &operator=(const Bitmap &other) = delete;
 public:
   bool IsDefined() const {
-#ifdef ENABLE_OPENGL
+#ifdef ANDROID
+    return bmp != nullptr;
+#elif defined(ENABLE_OPENGL)
     return texture != nullptr;
 #elif defined(USE_MEMORY_CANVAS)
     return buffer.data != nullptr;
@@ -155,6 +155,14 @@ public:
   unsigned GetHeight() const {
     return buffer.height;
   }
+#else
+  unsigned GetWidth() const {
+    return GetSize().cx;
+  }
+
+  unsigned GetHeight() const {
+    return GetSize().cy;
+  }
 #endif
 
 #ifdef ENABLE_OPENGL
@@ -170,12 +178,16 @@ public:
 
   bool Load(ResourceId id, Type type=Type::STANDARD);
 
+#ifdef ANDROID
+  bool LoadAssetsFile(const TCHAR *name);
+#endif
+
   /**
    * Load a bitmap and stretch it by the specified zoom factor.
    */
   bool LoadStretch(ResourceId id, unsigned zoom);
 
-#if defined(USE_LIBJPEG) || defined(USE_GDI)
+#if defined(USE_LIBJPEG) || defined(USE_GDI) || defined(ANDROID)
   bool LoadFile(const TCHAR *path);
 #endif
 
@@ -183,6 +195,7 @@ public:
 
   void Reset();
 
+  gcc_pure
   const PixelSize GetSize() const;
 
 #ifdef ENABLE_OPENGL
@@ -203,11 +216,8 @@ public:
 
 #ifdef ANDROID
 private:
-  /**
-   * Load the texture again after the OpenGL surface has been
-   * recreated.
-   */
-  bool Reload();
+  bool Set(JNIEnv *env, jobject _bmp, Type _type);
+  bool MakeTexture();
 
   /* from GLSurfaceListener */
   virtual void SurfaceCreated() override;

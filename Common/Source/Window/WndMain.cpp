@@ -34,6 +34,9 @@
 #include "Dialogs/dlgProgress.h"
 #include "Draw/ScreenProjection.h"
 
+#include "Airspace/Sonar.h"
+#include <OS/RotateScreen.h>
+
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);
 
@@ -46,8 +49,7 @@ WndMain::~WndMain() {
 extern void WaitThreadCalculation();
 extern void StartupLogFreeRamAndStorage();
 
-void Shutdown(void) {
-  int i;
+void BeforeShutdown(void) {
 
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(MsgToken(1219));
@@ -71,6 +73,8 @@ void Shutdown(void) {
   StartupLogFreeRamAndStorage();
   #endif
 
+	DeinitAirspaceSonar();
+	
   // turn off all displays
   GlobalRunning = false;
 
@@ -194,10 +198,11 @@ void Shutdown(void) {
   StartupStore(TEXT(".... Close Windows%s"),NEWLINE);
   #endif
 
-  for (i=0;i<NUMDEV;i++) {
-	if (ComPortStatus[i]!=0) {
-		StartupStore(_T(". ComPort %d: status=%d Rx=%ld Tx=%ld ErrRx=%ld + ErrTx=%ld" NEWLINE), i,
-		ComPortStatus[i], ComPortRx[i],ComPortTx[i], ComPortErrRx[i],ComPortErrTx[i]);
+  for (int i=0;i<NUMDEV;i++) {
+    const DeviceDescriptor_t& ComPort = DeviceList[i];
+	if (ComPort.Status!=0) {
+		StartupStore(_T(". ComPort %d: status=%d Rx=%u Tx=%u ErrRx=%u ErrTx=%u" NEWLINE), i,
+		ComPort.Status, ComPort.Rx, ComPort.Tx, ComPort.ErrRx, ComPort.ErrTx);
 	}
   }
   StartupStore(_T(". Finished shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
@@ -214,18 +219,17 @@ void Shutdown(void) {
 	    );
   StartupStore(foop);
 #endif
-  StartupStore(_T(". Destroy MainWindow" NEWLINE));
 
   #if TESTBENCH
   StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
   #endif
   CloseProgressDialog();
 
+  MainWindow.PostQuit();
 #if TESTBENCH
   StartupLogFreeRamAndStorage();
   #endif
 
-  MainWindow.Destroy();
 }
 
 
@@ -237,6 +241,7 @@ void WndMain::OnCreate() {
 }
 
 bool WndMain::OnClose() {
+    ScopeLockScreen LockSreen;
     if(!_isRunning) {
         return WndMainBase::OnClose();
     }
@@ -244,12 +249,13 @@ bool WndMain::OnClose() {
                     TEXT("LK8000"),
                     mbYesNo) == IdYes) {
 
-        Shutdown();
+        BeforeShutdown();
     }
     return true;
 }
 
 void WndMain::OnDestroy() {
+    StartupStore(_T("WndMain::OnDestroy" NEWLINE));
     _isRunning = false;
     StopTimer();
     MapWindow::_OnDestroy();
@@ -335,10 +341,6 @@ void AfterStartup() {
   #endif
   CloseProgressDialog();
 
-  // NOTE: Must show errors AFTER all windows ready
-  int olddelay = StatusMessageData[0].delay_ms;
-  StatusMessageData[0].delay_ms = 20000; // 20 seconds
-
   if (SIMMODE) {
 	StartupStore(TEXT(". GCE_STARTUP_SIMULATOR%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_SIMULATOR);
@@ -346,7 +348,6 @@ void AfterStartup() {
 	StartupStore(TEXT(". GCE_STARTUP_REAL%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_REAL);
   }
-  StatusMessageData[0].delay_ms = olddelay;
 
   // Create default task if none exists
   #if TESTBENCH

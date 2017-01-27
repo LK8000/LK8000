@@ -49,8 +49,9 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
   unsigned int y=0, first, last;
 
-  _stprintf(tmps,_T("[ Rx=%ld ErrRx=%ld Tx=%ld ErrTx=%ld ]"),
-      ComPortRx[active],ComPortErrRx[active],ComPortTx[active],ComPortErrTx[active]);
+  const DeviceDescriptor_t& ComPort = DeviceList[active];
+  _stprintf(tmps,_T("[ Rx=%u ErrRx=%u Tx=%u ErrTx=%u ]"),
+      ComPort.Rx,ComPort.ErrRx,ComPort.Tx,ComPort.ErrTx);
   Surface.DrawText(0, 0, tmps);
   y+=hline;
 

@@ -14,6 +14,7 @@
 #include "Poco/Latin1Encoding.h"
 #include "Poco/UTF8Encoding.h"
 #include "Poco/TextConverter.h"
+#include "Util/Clamp.hpp"
 
 #ifdef __MINGW32__
 #ifndef max
@@ -135,7 +136,11 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
   zzip_seek(zFile, dwFilePos+j, SEEK_SET);
   sTmp[Max-1] = '\0';
 #ifdef UNICODE
-  mbstowcs(String, sTmp, strlen(sTmp)+1);
+  if(cs == charset::utf8) {
+      utf2TCHAR(sTmp,String, strlen(sTmp)+1);
+  } else {
+      mbstowcs(String, sTmp, strlen(sTmp)+1);
+  }
 #else
   strncpy(String, sTmp, strlen(sTmp)+1);
 
@@ -751,12 +756,12 @@ void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec) {
     LKASSERT(Hour && Min);
     TCHAR* sz = NULL;
     if (szString) {
-        *Hour = clamp((int)_tcstol(szString, &sz, 10), 0, 23);
+        *Hour = Clamp<int>(_tcstol(szString, &sz, 10), 0, 23);
         if (*sz == _T(':')) {
-            *Min = clamp((int)_tcstol(sz + 1, &sz, 10), 0, 59);
+            *Min = Clamp<int>(_tcstol(sz + 1, &sz, 10), 0, 59);
 
             if (Sec && (*sz == _T(':'))) {
-                *Sec = clamp((int)_tcstol(sz + 1, &sz, 10), 0, 59);
+                *Sec = Clamp<int>(_tcstol(sz + 1, &sz, 10), 0, 59);
             }
         }
     }

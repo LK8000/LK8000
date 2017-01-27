@@ -10,6 +10,7 @@
 #include "LKObjects.h"
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Scope.hpp"
+#include <Screen/OpenGL/VertexPointer.hpp>
 #endif
 //
 // Draw the reachable SHADED terrain glide amoeba
@@ -47,7 +48,7 @@ _doit:
   TempSurface.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
   TempSurface.SelectObject(LK_WHITE_PEN);
   TempSurface.SelectObject(LKBrush_White);
-  TempSurface.Polygon(Groundline,NUMTERRAINSWEEPS+1);
+  TempSurface.Polygon(Groundline.data(),Groundline.size());
 
   // need to do this to prevent drawing of colored outline
   TempSurface.SelectObject(LK_WHITE_PEN);
@@ -80,7 +81,8 @@ _doit:
     glStencilMask(0xFF);
     glClear(GL_STENCIL_BUFFER_BIT);  // needs mask=0xFF
 
-    canvas.DrawPolygon(Groundline,NUMTERRAINSWEEPS+1);
+    ScopeVertexPointer vp(Groundline.data());
+    glDrawArrays(GL_TRIANGLE_FAN, 0, Groundline.size());
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glDepthMask(GL_TRUE);

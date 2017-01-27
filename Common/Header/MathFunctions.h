@@ -67,16 +67,30 @@ int  roundupdivision(int a, int b);
 
 double LowPassFilter(double y_last, double x_in, double fact);
 
-#ifndef MulDiv
-    #define MulDiv _MulDiv
+#undef MulDiv
+template<typename T>
+inline T _MulDiv(T nNumber, T nNumerator, T nDenominator) {
+    T res = nNumber;
+    res *= nNumerator;
+    res /= nDenominator;
+    return res;
+}
 
-inline int _MulDiv(int nNumber, int nNumerator, int nDenominator) {
+template<>
+inline int _MulDiv<int>(int nNumber, int nNumerator, int nDenominator) {
     int64_t res = nNumber;
     res *= nNumerator;
     res /= nDenominator;
     return res;
 }
-#endif
+
+template<>
+inline short _MulDiv<short>(short nNumber, short nNumerator, short nDenominator) {
+    int res = nNumber;
+    res *= nNumerator;
+    res /= nDenominator;
+    return res;
+}
 
 inline int iround(double i) {
     return lround(i);

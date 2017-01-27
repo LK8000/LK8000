@@ -12,6 +12,8 @@
 #ifndef ASSET_HPP
 #define	ASSET_HPP
 
+#include "Product.hpp"
+
 constexpr
 bool IsAltair() {
     return false;

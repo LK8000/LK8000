@@ -16,6 +16,11 @@
 #ifndef ENABLE_OPENGL
 extern bool OnFastPanning;
 #endif
+
+#ifdef ANDROID
+#include "Java/Global.hxx"
+#endif
+
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.
 
@@ -104,42 +109,57 @@ public:
 
             if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
+            // values changed, so copy them back now: ONLY CALCULATED INFO
+            // should be changed in DoCalculations, so we only need to write
+            // that one back (otherwise we may write over new data)
+            // Need to be Done before TriggerRedraw            
+            LockFlightData();
+            memcpy(&CALCULATED_INFO, &tmpCALCULATED, sizeof (DERIVED_INFO));
+            UnlockFlightData();            
+
             // This is activating another run for Thread Draw
             TriggerRedraws(&tmpGPS, &tmpCALCULATED);
 
             if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
+            bool need_update = false;
             if (SIMMODE) {
                 if (needcalculationsslow || (ReplayLogger::IsEnabled())) {
                     DoCalculationsSlow(&tmpGPS, &tmpCALCULATED);
                     needcalculationsslow = false;
+                    need_update = true;
                 }
             } else {
                 if (needcalculationsslow) {
                     DoCalculationsSlow(&tmpGPS, &tmpCALCULATED);
                     needcalculationsslow = false;
+                    need_update = true;
                 }
             }
 
+            if(need_update) {
+                // CALCULATED_INFO need to copy back second time if data are updated by DoCalculationsSlow;
+                LockFlightData();
+                memcpy(&CALCULATED_INFO, &tmpCALCULATED, sizeof (DERIVED_INFO));
+                UnlockFlightData();            
+            }            
+            
             if (MapWindow::CLOSETHREAD) break; // drop out on exit
-
-            // values changed, so copy them back now: ONLY CALCULATED INFO
-            // should be changed in DoCalculations, so we only need to write
-            // that one back (otherwise we may write over new data)
-            LockFlightData();
-            memcpy(&CALCULATED_INFO, &tmpCALCULATED, sizeof (DERIVED_INFO));
-            UnlockFlightData();
 
             // update live tracker with new values
             // this is a nonblocking call, live tracker runs on different thread
-            LiveTrackerUpdate(&tmpGPS, &tmpCALCULATED);
+            LiveTrackerUpdate(tmpGPS, tmpCALCULATED);
 
 #ifndef NO_DATARECORDER
-            if (FlightDataRecorderActive) {
-                UpdateFlightDataRecorder(&tmpGPS, &tmpCALCULATED);
-            }
+            UpdateFlightDataRecorder(tmpGPS, tmpCALCULATED);
 #endif
+            CheckAltitudeAlarms(tmpGPS, tmpCALCULATED);
         }
+
+#ifdef ANDROID
+        Java::DetachCurrentThread();
+#endif
+
     }
 private:
     NMEA_INFO tmpGPS;

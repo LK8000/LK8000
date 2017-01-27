@@ -107,7 +107,7 @@ int msPolylineLabelPoint(shapeObj *p, pointObj *lp, int min_length, double *angl
 int msPolygonLabelPoint(shapeObj *p, pointObj *lp, int min_dimension);
 int msAddLine(shapeObj *p, lineObj *new_line);
 
-int msPointInRect(pointObj *p, rectObj *rect); // in mapsearch.c
+int msPointInRect(const pointObj *p, const rectObj *rect); // in mapsearch.c
 int msRectOverlap(const rectObj *a, const rectObj *b);		//const arguments fixed
 int msRectContained(const rectObj *a, const rectObj *b);	//const arguments fixed
 void msMergeRect(rectObj *a, rectObj *b);

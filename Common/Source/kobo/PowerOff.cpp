@@ -31,6 +31,7 @@
  * Only exist for avoid to link with all LK8000 binary source file.
  */
 int ScreenScale = 1;
+unsigned short ScreenPixelRatio = 1;
 void MSG_ASSERTION(int line, const TCHAR *filename) { assert(false); }
 void StartupStore(const TCHAR *Str, ...) { }
 /**************************************************************/

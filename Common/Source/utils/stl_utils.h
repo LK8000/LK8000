@@ -55,9 +55,5 @@ struct safe_free {
 	}
 };
 
-template<typename _Tp>
-inline const _Tp& clamp(const _Tp& __val, const _Tp& __min, const _Tp& __max) {
-    return std::max(std::min(__val,__max),__min);
-}
 
 #endif // stl_utils_h__

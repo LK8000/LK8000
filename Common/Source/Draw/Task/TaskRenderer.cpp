@@ -15,26 +15,38 @@
 #include "Math/Point2D.hpp"
 
 void TaskRenderer::Draw(LKSurface& Surface, const RECT &rc, bool bFill) const {
-    if (_Visible) {
-        if (bFill) {
+    if (!_Visible || _ScreenPoints.empty()) {
+        return;
+    }
+
+    if (bFill) {
+        if(IsPolygon()) {
+#ifdef ENABLE_OPENGL
+            Canvas& canvas = Surface;
+            canvas.DrawTriangleFan(_ScreenPoints.data(), _ScreenPoints.size());
+#else
             Surface.Polygon(_ScreenPoints.data(), _ScreenPoints.size(), rc);
-        } else {
-            Surface.Polyline(_ScreenPoints.data(), _ScreenPoints.size(), rc);
+#endif
         }
+    } else {
+        Surface.Polyline(_ScreenPoints.data(), _ScreenPoints.size(), rc);
     }
 }
 
 void TaskRenderer::CalculateScreenPosition(const rectObj &screenbounds, const ScreenProjection& _Proj) {
+
+    GeoToScreen<ScreenPoint> ToScreen(_Proj);
+
     _ScreenPoints.clear();
     _Visible = msRectOverlap(&_bounds, &screenbounds);
     if (_Visible) {
         _ScreenPoints.reserve(_GeoPoints.size() + 1); // +1 for close polygon
 
         const GeoPoint& first = _GeoPoints.front();
-        _ScreenPoints.push_back(_Proj.LonLat2Screen(first.longitude, first.latitude));
+        _ScreenPoints.push_back(ToScreen(first));
 
         for (GeoPoints_t::const_iterator It = std::next(_GeoPoints.begin()); It != _GeoPoints.end(); ++It) {
-            const RasterPoint pt = _Proj.LonLat2Screen(It->longitude, It->latitude);
+            const ScreenPoint pt = ToScreen(*It);
             if (ManhattanDistance(pt, _ScreenPoints.back()) > 2) {
                 _ScreenPoints.push_back(pt);
             }
@@ -42,7 +54,7 @@ void TaskRenderer::CalculateScreenPosition(const rectObj &screenbounds, const Sc
         _ScreenPoints.push_back(_ScreenPoints.front());
     }
 }
-
+#ifdef USE_GDI
 PixelRect TaskRenderer::GetScreenBounds() const {
     PixelRect bounds(0, 0, 0, 0);
     if (_Visible) {
@@ -60,3 +72,4 @@ PixelRect TaskRenderer::GetScreenBounds() const {
     }
     return bounds;
 }
+#endif

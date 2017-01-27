@@ -11,7 +11,6 @@
 #include "InputEvents.h"
 #include "TraceThread.h"
 #include "OS/Memory.h"
-#include "Sound/Sound.h"
 
 extern int ConnectionProcessTimer(int itimeout);
 extern void CommonProcessTimer(void);
@@ -56,7 +55,6 @@ void SIMProcessTimer(void)
 
   CommonProcessTimer();
 
-  GPSCONNECT = TRUE;
   extGPSCONNECT = TRUE;
 
   if (!ReplayLogger::Update()) {
@@ -114,123 +112,4 @@ void CommonProcessTimer()
 	MyCompactHeaps();
 	cp_twohzcounter = 0;
   }
-}
-
-
-
-
-// Running at 0.2hz every 5 seconds
-// (this part should be rewritten)
-int ConnectionProcessTimer(int itimeout) {
-  LockComm();
-  NMEAParser::UpdateMonitor();
-  UnlockComm();
-
-  // dont warn on startup
-  static bool s_firstcom=true;
-
-  static bool s_lastGpsConnect = false;
-  static bool s_connectWait = false;
-  static bool s_lockWait = false;
-
-  // save status for this run
-  bool gpsconnect = GPSCONNECT;
-
-  if (gpsconnect) {
-    extGPSCONNECT = TRUE;
-  }
-
-  if ((extGPSCONNECT == FALSE) && (GPS_INFO.NAVWarning!=true)) {
-	// If gps is not connected, set navwarning to true so
-	// calculations flight timers don't get updated
-	LockFlightData();
-	GPS_INFO.NAVWarning = true;
-	UnlockFlightData();
-  }
-
-  bool DoTriggerUpdate = false;
-
-  GPSCONNECT = FALSE;
-  bool navwarning = GPS_INFO.NAVWarning;
-
-  if((gpsconnect == false) && (s_lastGpsConnect == false)) {
-	// re-draw screen every five seconds even if no GPS
-    DoTriggerUpdate = true;
-
-	devLinkTimeout(devAll());
-
-	if(s_lockWait == true) {
-		// gps was waiting for fix, now waiting for connection
-		s_lockWait = false;
-	}
-	if(!s_connectWait) {
-		// gps is waiting for connection first time
-		extGPSCONNECT = FALSE;
-
-		s_connectWait = true;
-
-		if (!s_firstcom) LKSound(TEXT("LK_GPSNOCOM.WAV"));
-		FullScreen();
-	} else {
-		// restart comm ports on timeouts, but not during managed special communications with devices
-		// that will not provide NMEA stream, for example during a binary conversation for task declaration
-		// or during a restart. Very careful, it shall be set to zero by the same function who
-		// set it to true.
-                // V6: do not reset comports while inside configuration
-		if ((itimeout % 90 == 0) && !LKDoNotResetComms && !MenuActive) {
-			// no activity for 90/2 seconds (running at 2Hz), then reset.
-			// This is needed only for virtual com ports..
-			extGPSCONNECT = FALSE;
-			if (!(devIsDisabled(0) && devIsDisabled(1))) {
-			  InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-			  RestartCommPorts();
-			}
-
-			itimeout = 0;
-		}
-	}
-  }
-
-  // Force RESET of comm ports on demand
-  if (LKForceComPortReset) {
-	StartupStore(_T(". ComPort RESET ordered%s"),NEWLINE);
-	LKForceComPortReset=false;
-	LKDoNotResetComms=false;
-	if (MapSpaceMode != MSM_WELCOME)
-		InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-
-	RestartCommPorts();
-  }
-
-  if((gpsconnect == true) && (s_lastGpsConnect == false)) {
-	itimeout = 0; // reset timeout
-	s_firstcom=false;
-
-	if(s_connectWait) {
-		DoTriggerUpdate = true;
-		s_connectWait = false;
-	}
-  }
-
-  if((gpsconnect == true) && (s_lastGpsConnect == true)) {
-	if((navwarning == true) && (s_lockWait == false)) {
-		DoTriggerUpdate = true;
-
-		s_lockWait = true;
-		LKSound(TEXT("LK_GPSNOFIX.WAV"));
-		FullScreen();
-	} else {
-		if((navwarning == false) && (s_lockWait == true)) {
-            DoTriggerUpdate = true;
-			s_lockWait = false;
-		}
-	}
-  }
-
-  if(DoTriggerUpdate) {
-	TriggerGPSUpdate();
-  }
-
-  s_lastGpsConnect = gpsconnect;
-  return itimeout;
 }

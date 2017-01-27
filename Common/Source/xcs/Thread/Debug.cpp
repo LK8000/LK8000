@@ -50,7 +50,9 @@ InitThreadDebug()
 void
 AssertNoneLocked()
 {
-#warning "usefull to implement"    
+#ifndef NDEBUG
+// TODO : implement #AssertNoneLocked
+#endif
 /*    
   assert(thread_locks_held == 0);
  */

@@ -15,6 +15,7 @@
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
 #include "OS/Memory.h"
+#include "Util/Clamp.hpp"
 #include <time.h>
 // #define DEBUG_LOGGER	1
 
@@ -352,7 +353,7 @@ void LogPointToFile(double Latitude, double Longitude, double Altitude,
   sprintf(szBRecord,"B%02d%02d%02d%02d%05.0f%c%03d%05.0f%cA%05d%05d\r\n",
           Hour, Minute, Second,
           DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-          (int)BaroAltitude,clamp<int>(Altitude,0,99999));
+          (int)BaroAltitude,Clamp<int>(Altitude,0,99999));
 
   IGCWriteRecord(szBRecord);
 }
@@ -959,16 +960,15 @@ void LoggerDeviceDeclare() {
 
   DeclaredToDevice = false;
 
-  if (LoggerDeclare(devA(), &Decl))
-    found_logger = true;
-
-  if (LoggerDeclare(devB(), &Decl))
-    found_logger = true;
+  for(auto dev : DeviceList) {
+    if (LoggerDeclare(&dev, &Decl)) {
+      found_logger = true;
+    }  
+  }
 
   if (!found_logger) {
-	// LKTOKEN  _@M474_ = "No logger connected"
-    MessageBoxX(MsgToken(474),
-		devB()->Name, mbOk);
+	// LKTOKEN  _@M474_ = "No logger connected" 
+    MessageBoxX(MsgToken(474), _T(""), mbOk);
     DeclaredToDevice = true; // testing only
   }
 

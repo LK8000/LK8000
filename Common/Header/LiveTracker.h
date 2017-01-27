@@ -15,6 +15,6 @@ void LiveTrackerInit();
 void LiveTrackerShutdown();
 
 // Update live tracker data, non blocking
-void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
 #endif // LIVETRACKER_H

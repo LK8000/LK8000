@@ -20,11 +20,11 @@
 
 // This will NOT be called from PC versions
 void InstallSystem() {
-
+#ifdef UNDER_CE
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
 
-#ifdef UNDER_CE
+
   TCHAR dstdir[MAX_PATH];
   TCHAR maindir[MAX_PATH];
   TCHAR dstfile[MAX_PATH];
@@ -32,14 +32,13 @@ void InstallSystem() {
 
   dstdir[0]='\0';
 
-#endif
-
   bool failure=false;
 
   #if TESTBENCH
   StartupStore(_T(". Welcome to InstallSystem v1.2%s"),NEWLINE);
   #endif
   SystemPath(srcdir,TEXT(LKD_SYSTEM));
+
 
 
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
@@ -56,11 +55,11 @@ void InstallSystem() {
 	#endif
   }
 
+#ifdef PNA
   if (  failure ) {
 	StartupStore(_T("------ WARNING: NO font will be installed on device (and thus wrong text size displayed)%s"),NEWLINE);
   } else {
 
-#ifdef PNA
 	if (GlobalModelType == MODELTYPE_PNA_HP31X) { // 091109
 
 		StartupStore(_T(". InstallSystem checking desktop links for HP31X%s"),NEWLINE);
@@ -133,11 +132,9 @@ void InstallSystem() {
 			}
 		}
 	}
+  }
 #endif
 
-  }
-
-#ifdef UNDER_CE
   // search for the main system directory on the real device
   // Remember that SHGetSpecialFolder works differently on CE platforms, and you cannot check for result.
   // We need to verify if directory does really exist.
@@ -232,10 +229,11 @@ void InstallSystem() {
 	} else
 		StartupStore(_T("... Font TAHOMABD.TTF installed on device%s"),NEWLINE);
   }
-#endif
+
   #if TESTBENCH
   StartupStore(_T(". InstallSystem completed OK%s"),NEWLINE);
   #endif
+#endif
 }
 
 
@@ -303,7 +301,7 @@ bool CheckRegistryProfile() {
     return lk::filesystem::exist(profilePath);
 }
 
-
+#ifndef ANDROID
 bool CheckSystemBitmaps() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
@@ -311,11 +309,12 @@ bool CheckSystemBitmaps() {
   _stprintf(srcfile,TEXT("%s%s_BITMAPSH"),srcdir, _T(DIRSEP));
   return lk::filesystem::exist(srcfile);
 }
+#endif
 
 bool CheckFilesystemWritable() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  SystemPath(srcdir, _T(LKD_SYSTEM));
+  LocalPath(srcdir, _T(""));
   _stprintf(srcfile,TEXT("%s%sEmptyTest.txt"),srcdir, _T(DIRSEP));
 
   FILE *stream;
@@ -323,5 +322,8 @@ bool CheckFilesystemWritable() {
   if (stream==NULL) return false;
   bool success = fprintf(stream,"FILESYSTEM WRITE CHECK, THIS FILE CAN BE REMOVED ANY TIME\n") >= 0;
   success &= fclose(stream) == 0;
+
+  lk::filesystem::deleteFile(srcfile);
+
   return(success);
 }

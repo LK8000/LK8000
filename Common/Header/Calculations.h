@@ -190,7 +190,11 @@ typedef struct _DERIVED_INFO
 
   THERMAL_SOURCE_INFO ThermalSources[MAX_THERMAL_SOURCES];
 
+#ifdef ENABLE_OPENGL
+  pointObj GlideFootPrint[NUMTERRAINSWEEPS+2];
+#else
   pointObj GlideFootPrint[NUMTERRAINSWEEPS+1];
+#endif
 
   TCHAR OwnTeamCode[10];
   double TeammateBearing;

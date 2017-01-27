@@ -10,26 +10,34 @@
 
 RECT WindowResize(unsigned int x, unsigned int y) {
 
-  RECT w;
+  RECT w = { 0, 0, (LONG)x, (LONG)y };
 
 #if defined(UNDER_CE) || defined(USE_FULLSCREEN)
   //
   // For Windows CE we disable frames, so no borders to calculate.
   //
-  w.left = 0;
-  w.top = 0;
-  w.right = x;
-  w.bottom = y;
 #else
   //
   // For Windows PC we need to calculate borders
   //
-  w.right = x + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
-  w.left = (GetSystemMetrics(SM_CXSCREEN) - w.right) / 2;
-  w.right = w.right + w.left;
-  w.bottom = y + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
-  w.top = (GetSystemMetrics(SM_CYSCREEN) - w.bottom) / 2;
-  w.bottom = w.bottom + w.top;
+  HWND hwnd = MainWindow.Handle();
+  // if MainWindow not already exist, use default style.
+  DWORD dwStyle = WS_SYSMENU|WS_SIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS|WS_VISIBLE|WS_CAPTION;
+  DWORD dwExStyle = 0U;
+  HMENU menu = NULL;
+  if(hwnd) {
+    dwStyle = GetWindowLongPtr( hwnd, GWL_STYLE ) ;
+    dwExStyle = GetWindowLongPtr( hwnd, GWL_EXSTYLE ) ;
+    menu = GetMenu( hwnd ) ;
+  }
+    
+  if(!AdjustWindowRectEx( &w, dwStyle, menu ? TRUE : FALSE, dwExStyle )) {
+      StartupStore(_T("AdjustWindowRectEx failed: error <%d>" NEWLINE), (int)GetLastError());
+  }
+  
+  // Center in Screen
+  ::OffsetRect(&w, (GetSystemMetrics(SM_CXSCREEN) - (w.right - w.left)) /2,
+                    (GetSystemMetrics(SM_CYSCREEN) - (w.bottom - w.top)) /2);
 #endif
 
   #if TESTBENCH

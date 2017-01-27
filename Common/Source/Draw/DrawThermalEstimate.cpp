@@ -19,7 +19,7 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const Sc
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
 	if (DerivedDrawInfo.ThermalEstimate_R>0) {
-		const POINT screen = _Proj.LonLat2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude);
+		const POINT screen = _Proj.ToRasterPoint(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude);
 		DrawBitmapIn(Surface, screen, hBmpThermalSource);
 
 		const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
@@ -71,7 +71,7 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
   if (idx <0)
     return;
 
-  const POINT screen = _Proj.LonLat2Screen( ThermalHistory[idx].Longitude, ThermalHistory[idx].Latitude);
+  const POINT screen = _Proj.ToRasterPoint( ThermalHistory[idx].Longitude, ThermalHistory[idx].Latitude);
 
   double tradius;
   if (ISPARAGLIDER)

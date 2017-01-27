@@ -32,7 +32,7 @@ static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
         LockTaskData();
         LKASSERT(ValidWayPointFast(SelectedWaypoint));
         if (WayPointCalc[SelectedWaypoint].IsLandable) {
-            MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, 4000, true);
+            MapWindow::DrawRunway(Surface, &WayPointList[SelectedWaypoint], rc, nullptr, 4000, true);
         } else {
             MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[SelectedWaypoint]);
         }
@@ -123,8 +123,7 @@ static void OnRadioFrequencyClicked(WndButton* pWnd){
   LKASSERT(ValidWayPointFast(SelectedWaypoint));
   Ferquency = StrToDouble(WayPointList[SelectedWaypoint].Freq,NULL);
 
-  devPutFreqActive(devA(), Ferquency, WayPointList[SelectedWaypoint].Name);
-  devPutFreqActive(devB(), Ferquency, WayPointList[SelectedWaypoint].Name);
+  devPutFreqActive(Ferquency, WayPointList[SelectedWaypoint].Name);
 
   _stprintf(szFreq,_T(" %6.3fMHz ") ,Ferquency);
 

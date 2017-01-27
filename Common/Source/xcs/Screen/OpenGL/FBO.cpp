@@ -38,6 +38,7 @@ static PFNGLDELETEFRAMEBUFFERSOESPROC _glDeleteFramebuffers;
 static PFNGLGENFRAMEBUFFERSOESPROC _glGenFramebuffers;
 static PFNGLFRAMEBUFFERRENDERBUFFEROESPROC _glFramebufferRenderbuffer;
 static PFNGLFRAMEBUFFERTEXTURE2DOESPROC _glFramebufferTexture2D;
+static PFNGLCHECKFRAMEBUFFERSTATUSOESPROC _glCheckFramebufferStatus;
 
 bool
 FBO::Initialise()
@@ -62,11 +63,14 @@ FBO::Initialise()
   _glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DOESPROC)
     dlsym(RTLD_DEFAULT, "glFramebufferTexture2DOES");
 
+  _glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSOESPROC)
+    dlsym(RTLD_DEFAULT, "glCheckFramebufferStatusOES");
+
   return _glBindRenderbuffer != nullptr && _glDeleteRenderbuffers != nullptr &&
     _glGenRenderbuffers != nullptr && _glRenderbufferStorage != nullptr &&
     _glBindFramebuffer != nullptr && _glDeleteFramebuffers != nullptr &&
     _glGenFramebuffers != nullptr && _glFramebufferRenderbuffer != nullptr &&
-    _glFramebufferTexture2D != nullptr;
+    _glFramebufferTexture2D != nullptr && _glCheckFramebufferStatus != nullptr;
 }
 
 void
@@ -144,6 +148,13 @@ FBO::FramebufferTexture2D(GLenum target, GLenum attachment,
   assert(_glFramebufferTexture2D != nullptr);
 
   _glFramebufferTexture2D(target, attachment, textarget, texture, level);
+}
+
+GLenum
+FBO::CheckFramebufferStatus(GLenum target)
+{
+  assert(_glCheckFramebufferStatus != nullptr);
+ return _glCheckFramebufferStatus(target);
 }
 
 #endif

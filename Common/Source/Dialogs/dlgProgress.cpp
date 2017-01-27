@@ -23,7 +23,7 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
     if(!SplashBitmap) {
         SplashBitmap = LoadSplash(_T("LKSTART"));
     }
-    DrawSplash(Surface, SplashBitmap);
+    DrawSplash(Surface, Sender->GetClientRect(), SplashBitmap);
 }
 
 static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
@@ -91,11 +91,12 @@ dlgProgress::dlgProgress() {
         WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 
         if(wSplash) {
             wSplash->SetWidth(_WndForm->GetWidth());
+            wSplash->SetHeight(_WndForm->GetHeight());
         }
         WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
         if(wText) {
             wText->SetWidth(_WndForm->GetWidth());
-            wText->SetTop(ScreenSizeY - IBLSCALE(35));
+            wText->SetTop(_WndForm->GetHeight() - wText->GetHeight());
         }
         _WndForm->Show();
         _WndForm->Redraw();

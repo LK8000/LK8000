@@ -22,6 +22,7 @@
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
 #include "Time/PeriodClock.hpp"
+#include <array>
 
 #ifndef ENABLE_OPENGL
 #include "Poco/ThreadTarget.h"
@@ -106,7 +107,6 @@ typedef struct _WAYPOINT_INFO
   int Flags;
   TCHAR Name[NAME_SIZE + 1];
   TCHAR *Comment;
-  POINT	Screen;
   int UnusedZoom;	// THIS IS UNUSED AND CAN BE REALLOCATED. WE DONT REMOVE TO KEEP COMPATIBILITY WITH OLD TASKS!
   BOOL Reachable;
   double AltArivalAGL;
@@ -513,7 +513,11 @@ class MapWindow {
 
   static int DrawFlarmObjectTrace(LKSurface& Surface,double fZoom, DiagrammStruct* Dia);
 
-  static void DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, double fScaleFact, BOOL Picto = false);
+/**
+ * DrawRunway : _Proj can be null only if Picto = true !!
+ */
+  static void DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, const ScreenProjection* _Proj,  double fScaleFact, BOOL Picto = false);
+
   static void DrawTaskPicto(LKSurface& Surface, int TaskIdx, const RECT& rc, double fScaleFact);
   static void DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc);
   static void DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp);
@@ -547,7 +551,7 @@ class MapWindow {
 #endif
   static void DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc);
   static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
-  static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc);
+  static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawLook8000(LKSurface& Surface, const RECT& rc);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
   static void DrawMapSpace(LKSurface& Surface, const RECT& rc);
@@ -585,10 +589,6 @@ class MapWindow {
   static void DrawFlightMode(LKSurface& Surface, const RECT& rc);
   static void DrawGPSStatus(LKSurface& Surface, const RECT& rc);
   static void DrawFunctions1HZ(LKSurface& Surface, const RECT& rc);
-  static void DrawLKAlarms(LKSurface& Surface, const RECT& rc);
-  static void DrawFDRAlarms(LKSurface& Surface, const RECT& rc);
-
-
 
   static void DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,double unit_step, double zero, int iTextAling,
 		                const LKColor& color, DiagrammStruct *psDia, const TCHAR *pLable=NULL);
@@ -624,9 +624,6 @@ private:
   static void DrawTerrainAbove(LKSurface& Surface, const RECT& rc);
   static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
   static void LKDrawVario(LKSurface& Surface, const RECT& rc);
-
-
-  static void DoSonar(void);
 
   static bool TextInBox(LKSurface& Surface, const RECT *area, const TCHAR* Value, int x, int y, TextInBoxMode_t *Mode, bool noOverlap=false);
   static void VGTextInBox(LKSurface& Surface, const unsigned short nslot, const short numlines, const TCHAR* wText1, const TCHAR *wText2, const TCHAR *wText3, int x, int y, const LKColor& trgb, const LKBrush& bbrush);
@@ -841,9 +838,16 @@ protected:
   static void CalculateOrientationTargetPan(void);
   static void CalculateOrientationNormal(void);
 
-  static POINT Groundline[NUMTERRAINSWEEPS+1];
+#ifdef ENABLE_OPENGL
+  static std::array<FloatPoint, NUMTERRAINSWEEPS+2> Groundline;
 #ifdef GTL2
-  static POINT Groundline2[NUMTERRAINSWEEPS+1];
+  static std::array<FloatPoint, NUMTERRAINSWEEPS+1> Groundline2;
+#endif
+#else
+  static std::array<RasterPoint, NUMTERRAINSWEEPS+1> Groundline;
+#ifdef GTL2
+  static std::array<RasterPoint, NUMTERRAINSWEEPS+1> Groundline2;
+#endif
 #endif
 
   static bool targetMoved;

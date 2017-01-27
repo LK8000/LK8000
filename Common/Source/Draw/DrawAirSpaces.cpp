@@ -76,8 +76,8 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
             hdcbuffer.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
             // get brush, can be solid or a 1bpp bitmap
             hdcbuffer.SelectObject(hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
-            (*itr)->Draw(hdcbuffer, rc, true);
-            (*itr)->Draw(hdcMask, rc, false);
+            (*itr)->Draw(hdcbuffer, true);
+            (*itr)->Draw(hdcMask, false);
         }
       }//for
     } else {
@@ -92,7 +92,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
             TempSurface.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
             // get brush, can be solid or a 1bpp bitmap
             TempSurface.SelectObject(hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
-            (*it)->Draw(TempSurface, rc, true);
+            (*it)->Draw(TempSurface, true);
         }
       }//for
     }
@@ -129,7 +129,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
           }
 		  if(((*it)->DrawStyle()==adsDisabled))
 		    TempSurface.SelectObject(LKPen_Grey_N1);
-          (*it)->Draw(TempSurface, rc, false);
+          (*it)->Draw(TempSurface, false);
         }
       }//for
     }

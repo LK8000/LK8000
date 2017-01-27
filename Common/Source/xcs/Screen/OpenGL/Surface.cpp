@@ -25,6 +25,7 @@ Copyright_License {
 
 #include <list>
 #include <cassert>
+#include <algorithm>
 
 typedef std::list<GLSurfaceListener *> GLSurfaceListenerList;
 
@@ -35,6 +36,8 @@ bool surface_valid = true;
 void
 AddSurfaceListener(GLSurfaceListener &listener)
 {
+  // dont add listner twice !!
+  assert(std::find(surface_listeners.begin(), surface_listeners.end(), &listener) == surface_listeners.end());
   surface_listeners.push_back(&listener);
 }
 

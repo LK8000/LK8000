@@ -19,6 +19,9 @@ class TaskRendererStartSector : public TaskRenderer {
 public:
     TaskRendererStartSector(const GeoPoint& center, double radius, double start, double end);
 
+    bool IsPolygon() const override { 
+        return true; 
+    }
 };
 
 #endif /* TASKRENDERERSTARTSECTOR_H */

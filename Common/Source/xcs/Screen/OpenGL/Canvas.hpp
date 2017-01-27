@@ -80,6 +80,7 @@ protected:
    * static buffer to store vertices of wide lines.
    */
   static AllocatedArray<RasterPoint> vertex_buffer;
+  static AllocatedArray<FloatPoint> vertex_buffer_float;
 
 public:
   Canvas()
@@ -111,7 +112,7 @@ protected:
   }
 
 public:
-  bool IsDefined() const {
+  virtual bool IsDefined() const {
     return true;
   }
 
@@ -273,6 +274,7 @@ public:
   void DrawRaisedEdge(PixelRect &rc);
 
   void DrawPolyline(const RasterPoint *points, unsigned num_points);
+  void DrawPolyline(const FloatPoint *points, unsigned num_points);
 
   void DrawPolygon(const RasterPoint *points, unsigned num_points);
 
@@ -281,6 +283,13 @@ public:
    * origin of the fan.
    */
   void DrawTriangleFan(const RasterPoint *points, unsigned num_points);
+
+  /**
+   * Draw a triangle fan (GL_TRIANGLE_FAN).  The first point is the
+   * origin of the fan.
+   * rmq : only take account of brush.
+   */
+  void DrawTriangleFan(const FloatPoint *points, unsigned num_points);
 
   /**
    * Draw a solid thin horizontal line.

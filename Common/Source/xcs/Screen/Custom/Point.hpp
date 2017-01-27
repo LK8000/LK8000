@@ -143,7 +143,8 @@ struct PixelRect {
     return { right, bottom };
   }
 
-  constexpr bool IsInside(RasterPoint pt) const {
+  template <typename T>
+  constexpr bool IsInside(Point2D<T> pt) const {
     return pt.x >= left && pt.x < right && pt.y >= top && pt.y < bottom;
   }
 };

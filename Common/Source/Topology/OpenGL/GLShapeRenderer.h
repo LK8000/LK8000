@@ -43,14 +43,14 @@ public:
 private:
     GLUtesselator* tess;
     GLenum curr_type;
-    std::vector<RasterPoint> curr_polygon;
+    std::vector<FloatPoint> curr_polygon;
     
     typedef std::array<GLdouble,3> vertex_t;
     std::list<vertex_t> pointers;
     
     bool noLabel;
     PixelRect clipRect;
-    RasterPoint curr_LabelPos;
+    FloatPoint curr_LabelPos;
     
 protected:    
   friend GLvoid GLAPIENTRY beginCallback(GLenum type, void* polygon_data);

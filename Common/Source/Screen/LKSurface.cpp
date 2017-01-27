@@ -234,7 +234,7 @@ void LKSurface::Polygon(const POINT *apt, int cpt) {
 #endif    
 }
 
-void LKSurface::Polygon(const POINT *apt, int cpt, const RECT& ClipRect) {
+void LKSurface::Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect) {
     assert(apt[0] == apt[cpt-1]);
     if(cpt>=3) {
 #ifdef ENABLE_OPENGL
@@ -242,9 +242,9 @@ void LKSurface::Polygon(const POINT *apt, int cpt, const RECT& ClipRect) {
         const GLCanvasScissor scissor(ClipRect);
         Polygon(apt, cpt);
 #else
-        std::vector<POINT> Clipped;
+        std::vector<RasterPoint> Clipped;
         Clipped.reserve(cpt);
-        LKGeom::ClipPolygon(ClipRect, const_array_adaptor<POINT>(apt, cpt), Clipped);
+        LKGeom::ClipPolygon(ClipRect, const_array_adaptor<RasterPoint>(apt, cpt), Clipped);
         if(Clipped.size() >= 3) {
             Polygon(Clipped.data(), Clipped.size());
         }
@@ -303,7 +303,23 @@ void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
     }
 }
 
-void LKSurface::DrawDashPoly(const int width, const LKColor& color, const POINT *pt, const unsigned npoints, const RECT& rc) {
+#ifdef ENABLE_OPENGL
+void LKSurface::Polyline(const FloatPoint *apt, int cpt, const RECT& ClipRect) {
+    if(_pCanvas) {
+        const GLPushScissor push_scissor;
+        const GLCanvasScissor scissor(ClipRect);
+        _pCanvas->DrawPolyline(apt, cpt);
+    }
+}
+
+void LKSurface::DrawDashPoly(const int width, const LKColor& color, const FloatPoint* pt, const unsigned npoints, const RECT& rc) {
+    LKPen hpDash(PEN_DASH, width, color);
+    SelectObject(hpDash);
+    Polyline(pt, npoints, rc);
+}
+#endif
+
+void LKSurface::DrawDashPoly(const int width, const LKColor& color, const RasterPoint *pt, const unsigned npoints, const RECT& rc) {
     for (unsigned Segment = 1; Segment < npoints; Segment++) {
         DrawDashLine(width, pt[Segment - 1], pt[Segment], color, rc);
     }
@@ -344,15 +360,6 @@ void LKSurface::DrawLine(int x1, int y1, int x2, int y2, int x3, int y3) {
     Polyline(pt, 3);
 }
 
-void LKSurface::DrawLine(Pen::Style PenStyle, const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc) {
-    LKPen Pen(PenStyle, width, cr);
-    const auto OldPen = SelectObject(Pen);
-
-    const POINT pt[2] = {ptStart, ptEnd};
-    Polyline(pt, 2, rc);
-
-    SelectObject(OldPen);
-}
 
 void LKSurface::DrawDashLine(const int width, const POINT& ptStart, const POINT& ptEnd, const LKColor& cr, const RECT& rc) {
     int i;
@@ -745,18 +752,21 @@ static const double ycoords[] = {
     _SIN(56), _SIN(57), _SIN(58), _SIN(59), _SIN(60), _SIN(61), _SIN(62), _SIN(63)
 };
 
-void LKSurface::buildCircle(const POINT& center, int radius, std::vector<POINT>& list) {
+void LKSurface::buildCircle(const RasterPoint& center, int radius, std::vector<RasterPoint>& list) {
+  
+    typedef RasterPoint::scalar_type scalar_type;
+  
     int step = ((radius<20)?2:1);
     list.clear();
     list.reserve((64/step)+1);
-    list.emplace_back( (POINT){ 
-        center.x + static_cast<PixelScalar>(radius * xcoords[0]), 
-        center.y + static_cast<PixelScalar>(radius * ycoords[0]) 
+    list.emplace_back( (RasterPoint){ 
+        center.x + static_cast<scalar_type>(radius * xcoords[0]), 
+        center.y + static_cast<scalar_type>(radius * ycoords[0]) 
     });
     for(int i=64-step; i>=0; i-=step) {
-        list.emplace_back( (POINT){ 
-            center.x + static_cast<PixelScalar>(radius * xcoords[i]), 
-            center.y + static_cast<PixelScalar>(radius * ycoords[i]) 
+        list.emplace_back( (RasterPoint){ 
+            center.x + static_cast<scalar_type>(radius * xcoords[i]), 
+            center.y + static_cast<scalar_type>(radius * ycoords[i]) 
         });
     }
 }
@@ -769,8 +779,8 @@ void LKSurface::DrawCircle(long x, long y, int radius, const RECT& rc, bool fill
     if ((y + radius) < rc.top) return;
 
     // Only called by ThreadDraw, so static vector can be used.
-    static std::vector<POINT> CirclePt;
-    buildCircle((POINT){x,y}, radius, CirclePt);
+    static std::vector<RasterPoint> CirclePt;
+    buildCircle(RasterPoint(x,y), radius, CirclePt);
       
     if (fill) {
         Polygon(CirclePt.data(), CirclePt.size(), rc);
@@ -780,8 +790,8 @@ void LKSurface::DrawCircle(long x, long y, int radius, const RECT& rc, bool fill
 }
 
 void LKSurface::DrawCircle(long x, long y, int radius, bool fill) {
-    std::vector<POINT> CirclePt;
-    buildCircle((POINT){x,y}, radius, CirclePt);
+    std::vector<RasterPoint> CirclePt;
+    buildCircle((RasterPoint){x,y}, radius, CirclePt);
       
     if (fill) {
         Polygon(CirclePt.data(), CirclePt.size());
@@ -791,7 +801,7 @@ void LKSurface::DrawCircle(long x, long y, int radius, bool fill) {
 }
 
 int LKSurface::Segment(long x, long y, int radius, const RECT& rc, double start, double end, bool horizon) {
-    POINT pt[66];
+    RasterPoint pt[66];
     int i;
     int istart;
     int iend;

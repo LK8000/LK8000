@@ -4,7 +4,7 @@
    See CREDITS.TXT file for authors and copyrights
 
    $Id$
-*/
+ */
 
 #include "externs.h"
 #include "LKInterface.h"
@@ -28,172 +28,147 @@
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
 // resolution has its own tuned settings. This is thought for real devices, not for PC emulations.
 // Attention: after InitLKScreen, also InitLKFonts should be called.
+
 void InitLKScreen() {
 
-  const PixelRect Rect(MainWindow.GetClientRect());
-  int iWidth=0, iHeight=0;
-
 #if (WINDOWSPC>0) || defined(__linux__)
-  iWidth=Rect.GetSize().cx;
-  iHeight=Rect.GetSize().cy;
+    const PixelRect Rect(MainWindow.GetClientRect());
+    ScreenSizeX = Rect.GetSize().cx;
+    ScreenSizeY = Rect.GetSize().cy;
 #else
-  iWidth=GetSystemMetrics(SM_CXSCREEN);
-  iHeight=GetSystemMetrics(SM_CYSCREEN);
+    ScreenSizeX = GetSystemMetrics(SM_CXSCREEN);
+    ScreenSizeY = GetSystemMetrics(SM_CYSCREEN);
 #endif
 
-  ScreenSizeX=iWidth;
-  ScreenSizeY=iHeight;
-  ScreenSizeR.top=0;
-  ScreenSizeR.bottom=iHeight-1;
-  ScreenSizeR.left=0;
-  ScreenSizeR.right=iWidth-1;
+    ScreenSize = ssnone; // This is "ssnone"
+
+    // -----------------------------------------------------
+    // These are the embedded known resolutions, fine tuned.
+    // -----------------------------------------------------
+
+    if (ScreenSizeX == 240 && ScreenSizeY == 320) ScreenSize = ss240x320; // QVGA      portrait
+    if (ScreenSizeX == 234 && ScreenSizeY == 320) ScreenSize = ss240x320; // use the same config of 240x320
+    if (ScreenSizeX == 272 && ScreenSizeY == 480) ScreenSize = ss272x480;
+    if (ScreenSizeX == 240 && ScreenSizeY == 400) ScreenSize = ss240x320; //           portrait
+    if (ScreenSizeX == 480 && ScreenSizeY == 640) ScreenSize = ss480x640; //  VGA
+    if (ScreenSizeX == 640 && ScreenSizeY == 480) ScreenSize = ss640x480; //   VGA
+    if (ScreenSizeX == 320 && ScreenSizeY == 240) ScreenSize = ss320x240; //  QVGA
+    if (ScreenSizeX == 320 && ScreenSizeY == 234) ScreenSize = ss320x240; //  QVGA
+    if (ScreenSizeX == 480 && ScreenSizeY == 800) ScreenSize = ss480x800;
+    if (ScreenSizeX == 600 && ScreenSizeY == 800) ScreenSize = ss600x800;
+    if (ScreenSizeX == 400 && ScreenSizeY == 240) ScreenSize = ss400x240; // landscape
+    if (ScreenSizeX == 480 && ScreenSizeY == 272) ScreenSize = ss480x272; // WQVGA     landscape
+    if (ScreenSizeX == 480 && ScreenSizeY == 234) ScreenSize = ss480x234; //   iGo
+    if (ScreenSizeX == 800 && ScreenSizeY == 480) ScreenSize = ss800x480; //  WVGA
+    if (ScreenSizeX == 800 && ScreenSizeY == 600) ScreenSize = ss800x600; //  WVGA
 
 
-  int maxsize=0;
-  int minsize=0;
-  maxsize = max(ScreenSizeR.right-ScreenSizeR.left+1,ScreenSizeR.bottom-ScreenSizeR.top+1);
-  minsize = min(ScreenSizeR.right-ScreenSizeR.left+1,ScreenSizeR.bottom-ScreenSizeR.top+1);
+    ScreenGeometry = GetScreenGeometry(ScreenSizeX, ScreenSizeY);
 
-  ScreenDScale = max(1.0,minsize/240.0); // always start w/ shortest dimension
+    if (ScreenSize == ssnone) {
+        StartupStore(_T(". InitLKScreen: AUTORES %dx%d%s"), ScreenSizeX, ScreenSizeY, NEWLINE);
 
-  if (maxsize == minsize)
-  {
-    ScreenDScale *= 240.0 / 320.0;
-  }
+        ScreenLandscape = (ScreenSizeX >= ScreenSizeY);
 
-  ScreenScale = (int)ScreenDScale;
+        // ScreenGeometry and ScreenLandscape need to be set before call GetScreen0Ratio;
+        Screen0Ratio = GetScreen0Ratio();
 
-  #if (WINDOWSPC>0)
-  if (maxsize==720) {
-        ScreenScale=2; // force rescaling with Stretch
-  }
-  #endif
+    } else {
+        StartupStore(_T(". InitLKScreen: %dx%d%s"), ScreenSizeX, ScreenSizeY, NEWLINE);
 
-  if ( ((double)ScreenScale) == ScreenDScale)
-	ScreenIntScale = true;
-  else
-	ScreenIntScale = false;
+        ScreenLandscape = ((ScreenSize_t) ScreenSize > sslandscape);
+        Screen0Ratio = 1;
+    }
 
-  int i;
-  if ( ScreenIntScale ) {
-        for (i=0; i<=MAXIBLSCALE; i++) LKIBLSCALE[i]=(int)(i*ScreenScale);
-  } else {
-        for (i=0; i<=MAXIBLSCALE;i++) LKIBLSCALE[i]=(int)(i*ScreenDScale);
-  }
+    
+    // -----------------------------
+    // Calculate Screen Scale Factor
+    // -----------------------------
+    
+    //  int maxsize = std::max(ScreenSizeX, ScreenSizeY);
+    int minsize = std::min(ScreenSizeX, ScreenSizeY);
+    
+    ScreenDScale = std::max(1.0, minsize / 240.0); // always start w/ shortest dimension
+    ScreenScale = lround(ScreenDScale);
 
-  // Initially, this is the default. Eventually retune it for each resolution.
-  // We might in the future also set a UseStretch, with or without Hires.
-  if (ScreenScale>1)
-	UseHiresBitmap=true;
-  else
-	UseHiresBitmap=false;
+    ScreenIntScale = (((double) ScreenScale) == ScreenDScale);
 
-  #ifdef TESTBENCH
-  StartupStore(_T("...... ScreenScale=%d ScreenDScale=%.3f ScreenIntScale=%d\n"),ScreenScale,ScreenDScale,ScreenIntScale);
-  #endif
+    for (int i = 0; i <= MAXIBLSCALE; i++) {
+        LKIBLSCALE[i] = IBLSCALE(i);
+    }    
+    
+    // This is used by RescalePixelSize(), defined in Makefile when needed.
+    // Some functions using ScreenScale have been changed to use rescaled pixels.
+    // We must check that pixelratio is never lower than ScreenScale.
+    ScreenDensity = GetScreenDensity();
+#ifdef RESCALE_PIXEL
+  ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/LK_REFERENCE_DPI);
+#endif
 
-  ScreenSize=0; // This is "ssnone"
+    
+    // -----------------------------
+    // Initialize some Global variable 
+    // -----------------------------
+    
+    
+    // Initially, this is the default. Eventually retune it for each resolution.
+    // We might in the future also set a UseStretch, with or without Hires.
+    UseHiresBitmap = (ScreenScale > 1);
+    
+    //
+    // The thinnest line somehow visible on screen from 35cm distance.
+    //
+    ScreenThinSize = RescalePixelSize(1);
 
-  // -----------------------------------------------------
-  // These are the embedded known resolutions, fine tuned.
-  // -----------------------------------------------------
+    GestureSize = RescalePixelSize(50);
 
-  if (iWidth == 240 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // QVGA      portrait
-  if (iWidth == 234 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // use the same config of 240x320
-  if (iWidth == 272 && iHeight == 480) ScreenSize=(ScreenSize_t)ss272x480;
-  if (iWidth == 240 && iHeight == 400) ScreenSize=(ScreenSize_t)ss240x320; //           portrait
-  if (iWidth == 480 && iHeight == 640) ScreenSize=(ScreenSize_t)ss480x640; //  VGA
-  if (iWidth == 640 && iHeight == 480) ScreenSize=(ScreenSize_t)ss640x480; //   VGA
-  if (iWidth == 320 && iHeight == 240) ScreenSize=(ScreenSize_t)ss320x240; //  QVGA
-  if (iWidth == 320 && iHeight == 234) ScreenSize=(ScreenSize_t)ss320x240; //  QVGA
-  if (iWidth == 480 && iHeight == 800) ScreenSize=(ScreenSize_t)ss480x800;
-  if (iWidth == 600 && iHeight == 800) ScreenSize=(ScreenSize_t)ss600x800;
-  if (iWidth == 400 && iHeight == 240) ScreenSize=(ScreenSize_t)ss400x240; // landscape
-  if (iWidth == 480 && iHeight == 272) ScreenSize=(ScreenSize_t)ss480x272; // WQVGA     landscape
-  if (iWidth == 480 && iHeight == 234) ScreenSize=(ScreenSize_t)ss480x234; //   iGo
-  if (iWidth == 800 && iHeight == 480) ScreenSize=(ScreenSize_t)ss800x480; //  WVGA
-  if (iWidth == 800 && iHeight == 600) ScreenSize=(ScreenSize_t)ss800x600; //  WVGA
+    // Override defaults for custom settings
+    switch ((ScreenSize_t) ScreenSize) {
+        case ss600x800:
+            LKVarioSize = 45;
+            break;
+        case ss240x320:
+            LKVarioSize = 13;
+            break;
+        case ss272x480:
+            LKVarioSize = 30;
+            break;
+        default:
+            if (ScreenLandscape) {
+                LKVarioSize = ScreenSizeX / 16;
+            } else {
+                LKVarioSize = ScreenSizeX / 11;
+            }
+            break;
+    }
 
-  ScreenGeometry=GetScreenGeometry(iWidth,iHeight);
-  #if TESTBENCH
-  StartupStore(_T("..... ScreenGeometry type: %d%s"),ScreenGeometry,NEWLINE);
-  #endif
+    AircraftMenuSize = NIBLSCALE(28) + 14;
+    CompassMenuSize = AircraftMenuSize + NIBLSCALE(17);
 
-  if (ScreenSize==0) {
-    StartupStore(_T(". InitLKScreen: AUTORES %dx%d%s"),iWidth,iHeight,NEWLINE);
+#ifdef TESTBENCH
+    StartupStore(_T("..... ScreenSizeX      = %d" NEWLINE), ScreenSizeX);
+    StartupStore(_T("..... ScreenSizeY      = %d" NEWLINE), ScreenSizeY);
+    StartupStore(_T("..... ScreenDensity    = %d" NEWLINE), ScreenDensity);
+    StartupStore(_T("..... ScreenGeometry   = %d" NEWLINE), ScreenGeometry);
+    StartupStore(_T("..... ScreenSize(enum) = %d" NEWLINE), ScreenSize);
+    StartupStore(_T("..... ScreenDScale     = %.3f" NEWLINE), ScreenDScale);
+    StartupStore(_T("..... ScreenScale      = %d" NEWLINE), ScreenScale);
+    StartupStore(_T("..... ScreenIntScale   = %s" NEWLINE), ScreenIntScale ? _T("true") : _T("false"));
+    StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
 
-	if (ScreenSizeX>=ScreenSizeY) {
-		ScreenLandscape=true;
-	} else {
-		ScreenLandscape=false;
-	}
-        Screen0Ratio=GetScreen0Ratio();
-	#if TESTBENCH
-	StartupStore(_T("..... Screen0Ratio=%f\n"),Screen0Ratio);
-	#endif
-  } else {
-    StartupStore(_T(". InitLKScreen: %dx%d%s"),iWidth,iHeight,NEWLINE);
+#ifdef RESCALE_PIXEL  
+    StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
+#endif
 
-    if (ScreenSize > (ScreenSize_t)sslandscape)
-		ScreenLandscape=true;
-	else
-		ScreenLandscape=false;
-  }
-  ScreenDensity=GetScreenDensity();
+    StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
+    StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));
+    StartupStore(_T("..... NIBLSCALE(2)     = %d" NEWLINE), NIBLSCALE(2));
 
-  // This is used by RescalePixelSize(), defined in Makefile when needed.
-  // Some functions using ScreenScale have been changed to use rescaled pixels.
-  // We must check that pixelratio is never lower than ScreenScale.
-  #ifdef RESCALE_PIXEL
-  ScreenPixelRatio=(ScreenDensity*10)/LK_REFERENCE_DPI;
-  #else
-  ScreenPixelRatio=10;
-  #endif
-  int idscale=(int)ScreenDScale*10;
-  ScreenPixelRatio=max(idscale,(int)ScreenPixelRatio);
-
-  //
-  // The thinnest line somehow visible on screen from 35cm distance.
-  // 
-  ScreenThinSize=RescalePixelSize(1);
-
-  #ifdef TESTBENCH
-  StartupStore(_T("... ScreenDensity= %d  idscale=%d ScreenPixelRatio=%d (/10) ThinSize=%d NIBLSCALE(1)=%d (2)=%d %s"),ScreenDensity,idscale,ScreenPixelRatio,ScreenThinSize,NIBLSCALE(1), NIBLSCALE(2),NEWLINE);
-  #endif
-
-  if (ScreenPixelRatio<10) {
-     #ifdef TESTBENCH
-     StartupStore(_T("... UNSUPPORTED RESCALING TO LOWER%s"),NEWLINE);
-     #endif
-     ScreenPixelRatio=10;
-  }
-
-  if (ScreenLandscape) {
-	GestureSize=RescalePixelSize(50);
-	LKVarioSize=ScreenSizeX/16;
-  } else {
-	GestureSize=RescalePixelSize(50);
-	LKVarioSize=ScreenSizeX/11;
-  }
-
-  // Override defaults for custom settings
-  switch (ScreenSize) {
-	case (ScreenSize_t)ss600x800:
-		LKVarioSize=45;
-		break;
-	case (ScreenSize_t)ss240x320:
-		LKVarioSize=13;
-		break;
-	case (ScreenSize_t)ss272x480:
-		LKVarioSize=30;
-		break;
-	default:
-		break;
-  }
-
-  AircraftMenuSize=NIBLSCALE(28)+14;
-  CompassMenuSize=AircraftMenuSize+NIBLSCALE(17);
-
+    StartupStore(_T("..... GestureSize      = %d" NEWLINE), GestureSize);
+    StartupStore(_T("..... LKVarioSize      = %d" NEWLINE), LKVarioSize);
+    StartupStore(_T("..... AircraftMenuSize = %d" NEWLINE), AircraftMenuSize);
+    StartupStore(_T("..... CompassMenuSize  = %d" NEWLINE), CompassMenuSize);
+#endif  
 } // End of LKInitScreen
 
 
@@ -203,47 +178,48 @@ void InitLKScreen() {
 // Most modern screens have a 1,777 ratio, so in any case there is no need to think
 // about dozens of geometries and we can take it easy with a simple approach here.
 //
+
 unsigned short GetScreenGeometry(unsigned int x, unsigned int y) {
 
-  #if TESTBENCH
-  LKASSERT(x<5000 && y<5000);
-  #endif
-  LKASSERT(x>0 && y>0);
+#if TESTBENCH
+    LKASSERT(x < 5000 && y < 5000);
+#endif
+    LKASSERT(x > 0 && y > 0);
 
-  double ratio= x>=y?x/(double)y:y/(double)x;
+    double ratio = x >= y ? x / (double) y : y / (double) x;
 
-  //
-  // Table of internally tuned ratios in LK8000
-  //
-  // Ratio   Aspect     Examples
-  // -----   ------     --------
-  // 1,333    4:3        320x240 640x480 800x600
-  // 1,666    5:3        800x480
-  // 1,777    16:9       480x272 960x540 1280x720 1920x1080
-  // 2,05     2:1        480x234
-  //
-  // Aspect change thresholds:
-  //
-  // 1,000
-  //   1,166
-  // 1,333
-  //   1,500
-  // 1,666
-  //   1,721
-  // 1,777
-  //   1,888
-  // 2,000
-  //
+    //
+    // Table of internally tuned ratios in LK8000
+    //
+    // Ratio   Aspect     Examples
+    // -----   ------     --------
+    // 1,333    4:3        320x240 640x480 800x600
+    // 1,666    5:3        800x480
+    // 1,777    16:9       480x272 960x540 1280x720 1920x1080
+    // 2,05     2:1        480x234
+    //
+    // Aspect change thresholds:
+    //
+    // 1,000
+    //   1,166
+    // 1,333
+    //   1,500
+    // 1,666
+    //   1,721
+    // 1,777
+    //   1,888
+    // 2,000
+    //
 
-  // Here we decide which is the closest ratio
-  while(1) {
-      if ( ratio< 1.166) return SCREEN_GEOMETRY_21; // yet unsupported SCREEN_GEOMETRY_SQUARED!
-      if ( ratio< 1.500) return SCREEN_GEOMETRY_43; // 1,33
-      if ( ratio< 1.721) return SCREEN_GEOMETRY_53; // 1,66
-      if ( ratio< 1.888) return SCREEN_GEOMETRY_169;// 1,77
-      if ( ratio< 2.112) return SCREEN_GEOMETRY_21;
-      ratio/=2;
-  }
+    // Here we decide which is the closest ratio
+    while (1) {
+        if (ratio < 1.166) return SCREEN_GEOMETRY_21; // yet unsupported SCREEN_GEOMETRY_SQUARED!
+        if (ratio < 1.500) return SCREEN_GEOMETRY_43; // 1,33
+        if (ratio < 1.721) return SCREEN_GEOMETRY_53; // 1,66
+        if (ratio < 1.888) return SCREEN_GEOMETRY_169; // 1,77
+        if (ratio < 2.112) return SCREEN_GEOMETRY_21;
+        ratio /= 2;
+    }
 }
 
 //
@@ -252,95 +228,84 @@ unsigned short GetScreenGeometry(unsigned int x, unsigned int y) {
 // ApplyFontSize() using formula:  new_height=(old_height * Screen0Ratio)
 // If we change this function, let's update also ScreenGeometry.h for memo.
 //
+
 double GetScreen0Ratio(void) {
-  double ratio=0;
-  if (ScreenLandscape) {
-      switch (ScreenGeometry) {
-          case SCREEN_GEOMETRY_43:
-              ratio=(double)ScreenSizeY/480.0;
-              break;
-          case SCREEN_GEOMETRY_53:
-              ratio=(double)ScreenSizeY/480.0;
-              break;
-          case SCREEN_GEOMETRY_169:
-              ratio=(double)ScreenSizeY/272.0;
-              break;
-          case SCREEN_GEOMETRY_21:
-              ratio=(double)ScreenSizeY/234.0;
-              break;
-          default:
-              ratio=(double)ScreenSizeY/272.0;
-              break;
-      }
-  } else {
-      switch (ScreenGeometry) {
-          case SCREEN_GEOMETRY_43:
-              ratio=(double)ScreenSizeY/640.0;
-              break;
-          case SCREEN_GEOMETRY_53:
-              ratio=(double)ScreenSizeY/800.0;
-              break;
-          case SCREEN_GEOMETRY_169:
-              ratio=(double)ScreenSizeY/480.0;
-              break;
-          case SCREEN_GEOMETRY_21:
-              ratio=(double)ScreenSizeY/480.0;
-              break;
-          default:
-              ratio=(double)ScreenSizeY/480.0;
-              break;
-      }
-  }
-  return ratio;
+    double ratio = 0;
+    if (ScreenLandscape) {
+        switch (ScreenGeometry) {
+            case SCREEN_GEOMETRY_43:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+            case SCREEN_GEOMETRY_53:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+            case SCREEN_GEOMETRY_169:
+                ratio = (double) ScreenSizeY / 272.0;
+                break;
+            case SCREEN_GEOMETRY_21:
+                ratio = (double) ScreenSizeY / 234.0;
+                break;
+            default:
+                ratio = (double) ScreenSizeY / 272.0;
+                break;
+        }
+    } else {
+        switch (ScreenGeometry) {
+            case SCREEN_GEOMETRY_43:
+                ratio = (double) ScreenSizeY / 640.0;
+                break;
+            case SCREEN_GEOMETRY_53:
+                ratio = (double) ScreenSizeY / 800.0;
+                break;
+            case SCREEN_GEOMETRY_169:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+            case SCREEN_GEOMETRY_21:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+            default:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+        }
+    }
+    return ratio;
 }
 
 //
 // Screen DPI estimation for some platform.
 //
-unsigned short GetScreenDensity(void) {
+int GetScreenDensity(void) {
 
 #ifdef KOBO
-	switch (DetectKoboModel()) {
-	case KoboModel::GLOHD:
-		return 300;
-	case KoboModel::TOUCH2:
-		return 167;
-	default:
-		return 200; // Kobo Mini 200 dpi; Kobo Glo 212 dpi (according to Wikipedia)
-	}
+    switch (DetectKoboModel()) {
+        case KoboModel::GLOHD:
+            return 300;
+        case KoboModel::TOUCH2:
+            return 167;
+        default:
+            return 200; // Kobo Mini 200 dpi; Kobo Glo 212 dpi (according to Wikipedia)
+    }
 #endif
 
 #ifdef  ANDROID
-	return native_view->GetXDPI();
+    return native_view->GetXDPI();
 #endif
 
-//#ifdef WIN32    // for the moment we mantain default value for WIN32 as LOGPIXELSX always return 96 ?
-//	HDC dc = GetDC(NULL);
-//	return GetDeviceCaps(dc, LOGPIXELSX);
-//#endif
+    //#ifdef WIN32    // for the moment we mantain default value for WIN32 as LOGPIXELSX always return 96 ?
+    //	HDC dc = GetDC(NULL);
+    //	return GetDeviceCaps(dc, LOGPIXELSX);
+    //#endif
 
-#ifdef USE_X11
-	_XDisplay* disp = XOpenDisplay(NULL);
-	double xres = ((((double) DisplayWidth(disp,0)) * 25.4) /  ((double) DisplayWidthMM(disp,0)));
-	return (short) xres;
+#if 0 // def USE_X11
+    _XDisplay* disp = XOpenDisplay(NULL);
+    double xres = ((((double) DisplayWidth(disp, 0)) * 25.4) / ((double) DisplayWidthMM(disp, 0)));
+    XCloseDisplay(disp);
+    return (short) xres;
 #endif
 
-	// if we are not able to get correct value just return default estimation
-	return sqrt(ScreenSizeX*ScreenSizeX + ScreenSizeY*ScreenSizeY)/5; // default to a 5 in screen;
+    // if we are not able to get correct value just return default estimation
+    return sqrt(ScreenSizeX * ScreenSizeX + ScreenSizeY * ScreenSizeY) / 5; // default to a 5 in screen;
 }
 
-#ifdef RESCALE_PIXEL
-//
-// Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
-// If unused, this function is a transparent #define RescalePixelSize(arg) arg 
-// See ScreenGeometry.h
-// WARNING: use this function only after ScreenPixelRatio has been calculated by InitLKScreen().
-//
-unsigned short RescalePixelSize(unsigned short x) {
-
-return (x*ScreenPixelRatio)/10;
-
-}
-#endif
 
 

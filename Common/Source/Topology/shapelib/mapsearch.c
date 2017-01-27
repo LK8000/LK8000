@@ -60,6 +60,15 @@ int msRectContained(const rectObj *a, const rectObj *b)
   return(MS_FALSE);
 }
 
+int msPointInRect(const pointObj *p, const rectObj *rect)
+{
+  if(p->x < rect->minx) return(MS_FALSE);
+  if(p->x > rect->maxx) return(MS_FALSE);
+  if(p->y < rect->miny) return(MS_FALSE);
+  if(p->y > rect->maxy) return(MS_FALSE);
+  return(MS_TRUE);
+}
+
 #if 0 // ----------------  UNUSED CODE IN LK8000
 
 /*
@@ -71,15 +80,6 @@ void msMergeRect(rectObj *a, rectObj *b)
   a->maxx = MS_MAX(a->maxx, b->maxx);
   a->miny = MS_MIN(a->miny, b->miny);
   a->maxy = MS_MAX(a->maxy, b->maxy);
-}
-
-int msPointInRect(pointObj *p, rectObj *rect)
-{
-  if(p->x < rect->minx) return(MS_FALSE);
-  if(p->x > rect->maxx) return(MS_FALSE);
-  if(p->y < rect->miny) return(MS_FALSE);
-  if(p->y > rect->maxy) return(MS_FALSE);
-  return(MS_TRUE);
 }
 
 int msPolygonDirection(lineObj *c)

@@ -30,10 +30,6 @@
 #ifndef CHAR_UTIL_HPP
 #define CHAR_UTIL_HPP
 
-#ifdef _UNICODE
-#include "TCharUtil.hpp"
-#endif
-
 constexpr
 static inline bool
 IsASCII(const unsigned char ch)

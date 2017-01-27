@@ -37,6 +37,10 @@ public:
                    SWP_NOMOVE | SWP_NOZORDER |
                    SWP_NOACTIVATE | SWP_NOOWNERZORDER);
     }
+		
+		inline void PostQuit() {
+			PostQuitMessage(0);
+		}
 
   /**
    * Check if the specified event should be allowed.  An event may be

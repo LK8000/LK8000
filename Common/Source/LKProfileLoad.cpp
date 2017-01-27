@@ -438,7 +438,11 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) {; LKTopoZoomCat90/=1000; return;}
   PREAD(sname,svalue,szRegistryLKVarioBar,&LKVarioBar);
   PREAD(sname,svalue,szRegistryLKVarioVal,&LKVarioVal);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile, array_size(szLanguageFile));
+  if (matchedstring) {
+    return;
+  }
 
   if (!strcmp(szRegistryLatLonUnits,sname)) {
 	ival=strtol(svalue, NULL, 10);
@@ -478,7 +482,27 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryLiveTrackerport,&LiveTrackerport_Config);
   PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config, array_size(LiveTrackerusr_Config));
   PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config, array_size(LiveTrackerpwd_Config));
+  if (matchedstring) return;
+
   PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile, array_size(szPolarFile));
+  if (matchedstring) {
+    /***************************************************/
+    /* for compatibilty with old file                  */
+    const TCHAR code[] = _T("%LOCAL_PATH%\\");
+    const TCHAR* ptr = _tcsstr(szPolarFile, code);
+    if(ptr) {
+      ptr += _tcslen(code);
+    }
+    while (ptr && (*ptr) == '\\') {
+      ++ptr;
+    }
+    if(ptr) {
+      _tcscpy(szPolarFile, ptr);
+    }
+    /***************************************************/
+    return;
+  }
+
   PREAD(sname,svalue,szRegistryPollingMode,&PollingMode);
   if (matchedstring) return;
 
@@ -543,7 +567,11 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   PREAD(sname,svalue,szRegistrySectorRadius,&SectorRadius);
+
+#if defined(PPC2003) || defined(PNA)
   PREAD(sname,svalue,szRegistrySetSystemTimeFromGPS,&SetSystemTimeFromGPS);
+#endif
+
   PREAD(sname,svalue,szRegistrySaveRuntime,&SaveRuntime);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryShading,&Shading_Config);

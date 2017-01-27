@@ -292,6 +292,10 @@ OpenGL::SetupContext()
       render_buffer_stencil = render_buffer_depth_stencil;
   }
 
+  GLfloat lineWidthRange[2] = {0.0f, 0.0f};
+  glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+  max_line_width = lineWidthRange[1];
+
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_DITHER);
 #ifndef HAVE_GLES2

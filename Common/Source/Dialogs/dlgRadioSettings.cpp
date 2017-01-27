@@ -163,8 +163,7 @@ int Idx=0;
         if( HoldOff ==0)
         {
           HoldOff = HOLDOFF_TIME;
-          devPutFreqActive(devA(), RadioPara.ActiveFrequency, WayPointList[Idx].Name);
-          devPutFreqActive(devB(), RadioPara.ActiveFrequency, WayPointList[Idx].Name);
+          devPutFreqActive(RadioPara.ActiveFrequency, WayPointList[Idx].Name);
         }
     }
     if(RadioPara.TX)
@@ -190,8 +189,7 @@ int Idx=0;
         if( HoldOff ==0)
         {
           HoldOff = HOLDOFF_TIME;
-          devPutFreqStandby(devA(), RadioPara.PassiveFrequency, WayPointList[Idx].Name);
-          devPutFreqStandby(devB(), RadioPara.PassiveFrequency, WayPointList[Idx].Name);
+          devPutFreqStandby(RadioPara.PassiveFrequency, WayPointList[Idx].Name);
         }
     }
     if(RadioPara.RX_standy)
@@ -301,9 +299,7 @@ static void OnDualButton(WndButton* pWnd){
 TCHAR Name[250];
 
     RadioPara.Dual = !RadioPara.Dual;
-    devPutRadioMode(devA(), (int)RadioPara.Dual);
-    devPutRadioMode(devB(), (int)RadioPara.Dual);
-
+    devPutRadioMode((int)RadioPara.Dual);
     if(RadioPara.Dual)
       _stprintf(Name,_T("Dual Off"));
     else
@@ -328,8 +324,7 @@ static void OnActiveButton(WndButton* pWnd){
    // 	DoStatusMessage(_T("No valid Frequency!") );
 	return;
       }
-      devPutFreqActive(devA(), Frequency, WayPointList[res].Name);
-      devPutFreqActive(devB(), Frequency, WayPointList[res].Name);
+      devPutFreqActive(Frequency, WayPointList[res].Name);
       _stprintf(RadioPara.ActiveName,_T("%s"), WayPointList[res].Name);
       RadioPara.ActiveFrequency = Frequency;
 
@@ -356,8 +351,7 @@ static void OnPassiveButton(WndButton* pWnd){
      //    DoStatusMessage(_T("No valid Frequency!") );
         return;
       }
-      devPutFreqStandby(devA(), Frequency, WayPointList[res].Name);
-      devPutFreqStandby(devB(), Frequency, WayPointList[res].Name);
+      devPutFreqStandby(Frequency, WayPointList[res].Name);
 
       _stprintf(RadioPara.PassiveName,_T("%s"), WayPointList[res].Name);
       RadioPara.PassiveFrequency = Frequency;
@@ -389,9 +383,8 @@ _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
 	ActiveRadioIndex = iIdx;
 
       }
-      devPutFreqActive(devA(), Frequency,Name);
-      devPutFreqActive(devB(), Frequency,Name);
-	  RadioPara.ActiveFrequency = Frequency;
+      devPutFreqActive(Frequency,Name);
+ 	  RadioPara.ActiveFrequency = Frequency;
 
       RadioPara.Changed =TRUE;
  //	 OnRemoteUpdate();
@@ -420,8 +413,7 @@ TCHAR	Name[20] = _T("  ???   ");
 	_stprintf( RadioPara.PassiveName,_T("%s"),WayPointList[iIdx].Name);
 	PassiveRadioIndex = iIdx;
       }
-     devPutFreqStandby(devA(), Frequency,Name);
-     devPutFreqStandby(devB(), Frequency,Name);
+     devPutFreqStandby(Frequency,Name);
     RadioPara.PassiveFrequency = Frequency;
   //  _stprintf( RadioPara.PassiveName,_T(""));
     RadioPara.Changed =TRUE;
@@ -441,8 +433,7 @@ double fTmp;
    tmp =   ActiveRadioIndex;
    ActiveRadioIndex = PassiveRadioIndex;
    PassiveRadioIndex = tmp;
-   devPutFreqSwap(devA());
-   devPutFreqSwap(devB());
+   devPutFreqSwap();
     fTmp =   RadioPara.ActiveFrequency;
     RadioPara.ActiveFrequency = RadioPara.PassiveFrequency;
     RadioPara.PassiveFrequency=  fTmp;
@@ -482,8 +473,7 @@ static void OnVolUpButton(WndButton* pWnd){
         if(lVolume > 20) lVolume = 20;
         if (HoldOff ==0)
         {
-          devPutVolume(devA(), lVolume);
-          devPutVolume(devB(), lVolume);
+          devPutVolume(lVolume);
           HoldOff = HOLDOFF_TIME;
         }
     }
@@ -495,8 +485,7 @@ static void OnVolUpButton(WndButton* pWnd){
       SqCnt =0;
       if (HoldOff ==0)
       {
-        devPutSquelch(devA(), lSquelch);
-        devPutSquelch(devB(), lSquelch);
+        devPutSquelch(lSquelch);
         HoldOff = HOLDOFF_TIME;
       }
     }
@@ -515,8 +504,7 @@ static void OnVolDownButton(WndButton* pWnd){
 	  lVolume = 1;
 	if (HoldOff ==0)
 	{
-	  devPutVolume(devA(), lVolume);
-	  devPutVolume(devB(), lVolume);
+	  devPutVolume(lVolume);
 	  HoldOff = HOLDOFF_TIME;
 	}
   }
@@ -528,8 +516,7 @@ static void OnVolDownButton(WndButton* pWnd){
 	SqCnt =0;
 	  if (HoldOff ==0)
 	  {
-	      devPutSquelch(devA(), lSquelch);
-	      devPutSquelch(devB(), lSquelch);
+	      devPutSquelch(lSquelch);
 	      HoldOff = HOLDOFF_TIME;
 	  }
   }

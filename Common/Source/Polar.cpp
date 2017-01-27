@@ -10,6 +10,7 @@
 #include "McReady.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
+#include "utils/openzip.h"
 
 
 bool ReadWinPilotPolarInternal(int i);
@@ -115,17 +116,31 @@ bool ReadWinPilotPolar(void) {
   dPOLARV[2]= 205.1;
   dPOLARW[2]= -4.2;
 
-  _tcscpy(szFile,szPolarFile);
-  if (_tcscmp(szFile,_T(""))==0) {
-	StartupStore(_T("... Empty polar file, using Default%s"),NEWLINE);
-	_tcscpy(szFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
-  }
+    if (_tcscmp(szPolarFile,_T(""))==0) {
+        StartupStore(_T("... Empty polar file, using Default" NEWLINE));
+        _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
+    }
 
-    ExpandLocalPath(szFile);
-    StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
+    /**
+     * szPolarFile can be :
+     *   1 - absolute path
+     *   2 - relative path to external directory ( LocalPath )
+     *   3 - retlative path to external directory but with old filename ( migration from V5 or older )
+     *   4 - relative path to system directory
+     *
+     * it's important to try in this order.
+     * in worst case we try to open file 4 time, but timing is not important here.
+     */
 
-    FILE * stream = _tfopen(szFile, _T("rt"));
+    _tcscpy(szFile, szPolarFile);
+    ZZIP_FILE* stream = openzip(szFile, "rt");
+    if(!stream) {
+        // failed to open absolute. try LocalPath
+        LocalPath(szFile, szPolarFile);
+        stream = openzip(szFile, "rt");
+    }
     if(!stream){
+        // failed to open Local. try with converted file name to new file name.
         // polar file name can be an old name, convert to new name and retry.
         bool bRetry = false;
         tstring str (szPolarFile);
@@ -136,16 +151,21 @@ bool ReadWinPilotPolar(void) {
         }
 
         if(bRetry) {
-            _tcscpy(szFile,str.c_str());
-            ExpandLocalPath(szFile);
-
-            stream = _tfopen(szFile, _T("rt"));
+            LocalPath(szFile,str.c_str());
+            stream = openzip(szFile, "rt");
         }
     }
+    if(!stream) {
+        // all previous failed. try SystemPath
+        SystemPath(szFile, szPolarFile);
+        stream = openzip(szFile, "rt");
+    }
+
+    StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
     if (stream){
 
         charset cs = charset::unknown;
-        while(ReadStringX(stream,READLINE_LENGTH,TempString, cs) && (!foundline)){
+        while(ReadString(stream,READLINE_LENGTH,TempString, cs) && (!foundline)){
 
 		if (_tcslen(TempString) <10) continue;
 
@@ -247,10 +267,9 @@ bool ReadWinPilotPolar(void) {
            currentFlapsPos++;
            GlidePolar::FlapsPosCount = currentFlapsPos;
 	   break;
-	} while(ReadStringX(stream,READLINE_LENGTH,TempString, cs));
+	} while(ReadString(stream,READLINE_LENGTH,TempString, cs));
 
-      {
-	fclose(stream);
+	zzip_close(stream);
 	if (foundline) {
 		ContractLocalPath(szFile);
 		_tcscpy(szFile,szPolarFile);
@@ -266,9 +285,9 @@ bool ReadWinPilotPolar(void) {
 		dPOLARW[2]= -4.2;
 		GlidePolar::WingArea = 10.04;
 		PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
-		_tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+
+        _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
 	} // !foundline
-      }
     }
     else {
 	StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);

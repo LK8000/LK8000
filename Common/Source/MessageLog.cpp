@@ -12,6 +12,10 @@
 #include "utils/stringext.h"
 #include "OS/Memory.h"
 
+#ifdef ANDROID
+#include <android/log.h>
+#endif
+
 void StartupLogFreeRamAndStorage() {
   size_t freeram = CheckFreeRam()/1024;
   TCHAR buffer[MAX_PATH];
@@ -121,6 +125,13 @@ void StartupStore(const TCHAR *Str, ...)
   va_start(ap, Str);
   _vsntprintf(buf, array_size(buf), Str, ap);
   va_end(ap);
+
+#ifdef ANDROID
+  __android_log_print(ANDROID_LOG_INFO, "LK8000","%s", buf);
+#elif defined(__linux__) && !defined(NDEBUG)
+  printf("%s", buf);
+#endif
+  
 
   LockStartupStore();
 

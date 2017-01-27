@@ -71,7 +71,15 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   #else
   // draw a dashed perimetral line first
   #endif
-  Surface.Polyline(Groundline,NUMTERRAINSWEEPS+1, rc);
+#ifdef ENABLE_OPENGL
+  // first point is center of polygon (OpenGL GL_TRIANGLE_FAN), polyline start is second point
+  const auto polyline_start  = std::next(Groundline.begin());
+#else
+  const auto polyline_start  = Groundline.begin();
+#endif
+  const size_t polyline_size = std::distance(polyline_start,Groundline.end());
+
+  Surface.Polyline(&(*polyline_start),polyline_size, rc);
 
   // draw perimeter if selected and during a flight
   #ifdef GTL2
@@ -81,7 +89,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   if ((FinalGlideTerrain==1) || ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && (FinalGlideTerrain==2))) { 
   #endif
 	Surface.SelectObject(hpTerrainLine);
-	Surface.Polyline(Groundline,NUMTERRAINSWEEPS+1, rc);
+    Surface.Polyline(&(*polyline_start),polyline_size, rc);
   }
   
   #ifdef GTL2  
@@ -89,10 +97,10 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   if (DrawGTL2) {
     // Draw a solid white line.
     Surface.SelectObject(LKPen_White_N2);
-    Surface.Polyline(Groundline2, NUMTERRAINSWEEPS+1, rc);
+    Surface.Polyline(Groundline2.data(), Groundline2.size(), rc);
 
     // Draw a dashed red line.
-    Surface.DrawDashPoly(NIBLSCALE(2), RGB_RED, Groundline2, NUMTERRAINSWEEPS+1, rc);
+    Surface.DrawDashPoly(NIBLSCALE(2), RGB_RED, Groundline2.data(), Groundline2.size(), rc);
   }
   #endif
 
@@ -112,7 +120,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 		// only if valid position, and visible
 		if (DerivedDrawInfo.FarObstacle_Lon >0) 
 		if (PointVisible(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat)) {
-			const POINT sc = _Proj.LonLat2Screen(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat);
+			const POINT sc = _Proj.ToRasterPoint(DerivedDrawInfo.FarObstacle_Lon, DerivedDrawInfo.FarObstacle_Lat);
 			DrawBitmapIn(Surface, sc, hTerrainWarning);
 
 			if (DerivedDrawInfo.FarObstacle_AltArriv <=-50 ||  DerivedDrawInfo.FarObstacle_Dist<5000 ) {
@@ -123,7 +131,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 		} // visible far obstacle
 
 		if (PointVisible(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude)) {
-			const POINT sc = _Proj.LonLat2Screen(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude);
+			const POINT sc = _Proj.ToRasterPoint(DerivedDrawInfo.TerrainWarningLongitude, DerivedDrawInfo.TerrainWarningLatitude);
 			DrawBitmapIn(Surface, sc, hTerrainWarning);
 #if 0
 			// 091203 add obstacle altitude on moving map

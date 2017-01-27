@@ -139,7 +139,7 @@ BIN_DATA(IDR_XML_RADIOSETTINGS)
 
 #endif
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(ANDROID)
 // on win32 platform, Bitmap can't be in unix style resource.
 BIN_DATA(IDB_EMPTY)
 BIN_DATA(IDB_TOWN)
@@ -295,7 +295,7 @@ static const struct {
     NAMED_RESOURCE(IDR_XML_RADIOSETTINGS),
 
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(ANDROID)
     // on win32 platform, Bitmap can't be in unix style resource.
     NAMED_RESOURCE(IDB_EMPTY),
     NAMED_RESOURCE(IDB_TOWN),

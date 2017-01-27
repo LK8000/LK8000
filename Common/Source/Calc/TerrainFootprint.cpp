@@ -28,6 +28,17 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   Calculated->TerrainBase = Calculated->TerrainAlt;
 
+
+  pointObj* out = Calculated->GlideFootPrint;
+
+#ifdef ENABLE_OPENGL
+  assert(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +2); // #GlideFootPrint array to small
+  // first point is current poisition
+  *(out++) = (pointObj){Basic->Longitude,Basic->Latitude};
+#else
+  assert(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +1); // #GlideFootPrint array to small  
+#endif
+
   for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
     bearing = (i*360.0)/NUMTERRAINSWEEPS;
     distance = FinalGlideThroughTerrain(bearing, 
@@ -47,8 +58,7 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
                             distance,	 // limited, originally maxrange and more..
                             &lat, &lon);
     }
-    Calculated->GlideFootPrint[i].x = lon;
-    Calculated->GlideFootPrint[i].y = lat;
+    *(out++) = (pointObj){lon, lat};
   }
   Calculated->Experimental = Calculated->TerrainBase;
   

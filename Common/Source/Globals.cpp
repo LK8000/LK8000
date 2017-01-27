@@ -83,8 +83,6 @@ void Globals_Init(void) {
   InfoType[8] = 387389207;
 
 
-  StatusMessageData_Size = 0;
-
   //
   // Configuration with default values for new profile
   //
@@ -130,7 +128,6 @@ void Globals_Init(void) {
   TerrainRamp_Config = 0;
 
   NettoSpeed = 1000;
-  GPSCONNECT = FALSE;
 
   time_in_flight=0;
   time_on_ground=20; // on startup we are flying or on ground, we cant be none of them! see TakeoffLanding
@@ -310,7 +307,9 @@ void Globals_Init(void) {
 
   debounceTimeout = 250; //250ms
 
+#ifndef ANDROID
   WarningHomeDir=false;
+#endif
 
   ScreenSize=0;
   ScreenSizeX=0;
@@ -323,7 +322,10 @@ void Globals_Init(void) {
   ScreenGeometry=0;
   ScreenDensity=0;
   ScreenThinSize=1;
-  ScreenPixelRatio=10; // This is unity*10
+  
+#ifdef RESCALE_PIXEL  
+  ScreenPixelRatio=1<<10; // This is 1.0
+#endif
 
   // Default arrival mode calculation type
   // 091016 currently not changed anymore
@@ -473,11 +475,9 @@ void Globals_Init(void) {
   EnableMultipleStartPoints = false;
   StartHeightRef = 0; // MSL
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
-  #if ( (WINDOWSPC==0))
+#if defined(PPC2003) || defined(PNA)
   SetSystemTimeFromGPS = true;
-  #else
-  SetSystemTimeFromGPS = false;
-  #endif
+#endif
   SaveRuntime = false;
 
   SelectedWaypoint = -1;

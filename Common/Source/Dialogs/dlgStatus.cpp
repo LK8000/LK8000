@@ -20,9 +20,6 @@
 #include "NavFunctions.h"
 
 extern BOOL extGPSCONNECT;
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
-
 
 static WndForm *wf=NULL;
 static bool multi_page = false;
@@ -54,14 +51,12 @@ static void NextPage(int Step){
 	// LKTOKEN  _@M664_ = "Status: System"
 	wf->SetCaption(MsgToken(664));
 #if FLARMDEADLOCK
-	if( GPS_INFO.FLARM_SW_Version  < 0.01)
-	{
-	  if(nmeaParser1.isFlarm)
-            devRequestFlarmVersion(devA());
-	  else
-	    if(nmeaParser2.isFlarm)
-              devRequestFlarmVersion(devB());
-	}
+  for(const auto& dev : DeviceList) {
+    if(dev.nmeaParser.isFlarm) {
+      devRequestFlarmVersion(&dev);
+      break; // we have got first available Flarm device, ingore next device.
+    }
+  }
 #endif
     }
     break;
@@ -222,10 +217,12 @@ static void UpdateValuesSystem() {
         } else { // valid but unknown number of sats
           _stprintf(Temp,TEXT(">3"));
         }
-	if (nmeaParser1.activeGPS==true)
-		_tcscat(Temp,_T("  (Dev:A)"));
-	else
-		_tcscat(Temp,_T("  (Dev:B)"));
+        for(const auto& dev : DeviceList) {
+          if(dev.nmeaParser.activeGPS) {
+            _stprintf(Temp+_tcslen(Temp),_T("  (Dev:%c)"), _T('A')+dev.PortNumber);
+            break; // we have got the first active port.
+          }
+        }
         wp->SetText(Temp);
         wp->RefreshDisplay();
       }

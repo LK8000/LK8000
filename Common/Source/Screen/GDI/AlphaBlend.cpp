@@ -129,7 +129,7 @@ BOOL BlendImages(HBITMAP hbmSrc1, HBITMAP hbmSrc2, HBITMAP hbmDst, DWORD dwWeigh
     return TRUE;
 }
 
-typedef WINGDIAPI int (WINAPI *pfnSetStretchBltMode_t)(HDC,int);
+typedef int (WINAPI *pfnSetStretchBltMode_t)(HDC,int);
 pfnSetStretchBltMode_t pfnSetStretchBltMode = NULL;
 
 /*********************************************************************\

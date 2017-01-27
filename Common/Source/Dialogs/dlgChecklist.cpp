@@ -15,6 +15,8 @@
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
 #include "resource.h"
+#include "utils/openzip.h"
+
 
 #define MAXNOTETITLE 200	// max number of characters in a title note
 #define MAXNOTEDETAILS 5000	// max size of each note details
@@ -322,8 +324,9 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
 /// @retval false data load error
 ///
 static bool LoadUtfChecklist(const TCHAR* fileName, bool warn) {
-  Utf8File file;
-  if (!file.Open(fileName, Utf8File::io_read)) {
+
+  ZZIP_FILE *fp=openzip(fileName, "rb");
+  if(!fp) {
     if (warn) StartupStore(_T("... Not found notes <%s>%s"),fileName,NEWLINE);
     return(false);
   }
@@ -340,42 +343,21 @@ static bool LoadUtfChecklist(const TCHAR* fileName, bool warn) {
   Details[0]= 0;
   Name[0]= 0;
   TempString[0]=0;
-  bool firstline=true;
 
-  while (file.ReadLn(TempString, MAXNOTETITLE)) {
+  charset cs = charset::utf8;
+  while(ReadString(fp,MAXNOTETITLE,TempString, cs)) {
     // skip comment lines
     if (TempString[0] == _T('#')) {
-      firstline=false;
       continue;
     }
-
-    // Skip BOMs, if existing. Just to be sure, we only check the very first line of the file.
-    // UTF8 BOM: 0xef 0xbb 0xbf
-    // Unicode l.e. BOM: 0xff 0xfe (not supported)
-    // Unicode b.e. BOM: 0xfe 0xff (not supported)
-
-    if (firstline && (byte)TempString[0]==0xef && (byte)TempString[1]==0xbb && (byte)TempString[2]==0xbf) {
-       #ifdef TESTBENCH
-       StartupStore(_T("... LoadUtfChecklist, ignoring UTF8 BOM%s\n"),NEWLINE);
-       #endif
-       AddChecklistLine(&TempString[3], Details, Name, inDetails);
-    } else {
-       if (firstline && ((unsigned)TempString[0]==0xffef || (unsigned)TempString[0]==0xfeff)) {
-          #ifdef TESTBENCH
-          StartupStore(_T("... LoadUtfChecklist, ignoring UNICODE BOM%s\n"),NEWLINE);
-          #endif
-          AddChecklistLine(&TempString[1], Details, Name, inDetails);
-       } else {
-          AddChecklistLine(TempString, Details, Name, inDetails);
-       }
-    }
-    firstline=false;
+    AddChecklistLine(TempString, Details, Name, inDetails);
   } // while
 
   if (inDetails) {
     _tcscat(Details,TEXT(ENDOFLINE));
     addChecklist(Name, Details);
   }
+  zzip_fclose(fp);
 
   return(true);
 } // LoadUtfChecklist

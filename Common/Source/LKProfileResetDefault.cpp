@@ -306,11 +306,9 @@ void LKProfileResetDefault(void) {
 
   BallastSecsToEmpty =  120;
 
-  #if ((WINDOWSPC==0))
+#if defined(PPC2003) || defined(PNA)
   SetSystemTimeFromGPS = true;
-  #else
-  SetSystemTimeFromGPS = false;
-  #endif
+#endif
   SaveRuntime = false;
 
   AutoForceFinalGlide = false;
@@ -391,14 +389,14 @@ void LKProfileResetDefault(void) {
   //szPolarFile[0] = TEXT('\0');
 
 
-  _tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+  _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
   _tcscpy(szAirspaceFile,_T("%LOCAL_PATH%\\\\_Airspaces\\DEMO.txt"));
   szAdditionalAirspaceFile[0] = TEXT('\0');
   _tcscpy(szWaypointFile,_T("%LOCAL_PATH%\\\\_Waypoints\\DEMO.cup"));
   szAdditionalWaypointFile[0] = TEXT('\0');
   _tcscpy(szTerrainFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.DEM"));
   _tcscpy(szAirfieldFile,_T("%LOCAL_PATH%\\\\_Waypoints\\WAYNOTES.txt"));
-  _tcscpy(szLanguageFile,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
+  _tcscpy(szLanguageFile,_T(LKD_DEFAULT_LANGUAGE));
 
   szInputFile[0] = TEXT('\0');
   _tcscpy(szMapFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.LKM"));

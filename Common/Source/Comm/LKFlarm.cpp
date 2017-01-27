@@ -221,10 +221,6 @@ void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 double FLARM_NorthingToLatitude = 0.0;
 double FLARM_EastingToLongitude = 0.0;
 
-extern NMEAParser nmeaParser1;
-extern NMEAParser nmeaParser2;
-
-
 BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
 TCHAR Temp[80];
@@ -257,15 +253,19 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   // We want to be sure that we are not going to elect as Flarm two simultaneous ports.
   // We let it happen once, and give warning. Then only one of the two will remain.
   // It is a real borderline situation, due to conflict on comm ports, normally virtual com ports.
-  if (nmeaParser1.gpsValid && nmeaParser2.gpsValid) {
-	if (nmeaParser1.isFlarm && nmeaParser2.isFlarm) {
-		DoStatusMessage(_T("FLARM DETECTED ON TWO COM PORTS! AUTO-EXCLUDING."));
-		StartupStore(_T("......... WARNING! FLARM DETECTED ON TWO COM PORTS! %s\n"), WhatTimeIsIt());
-		pGPS->FLARM_Available = false;
-		isFlarm = false;
-		conflict=true;
-		return FALSE;
-	}
+  unsigned flarm_count = 0;
+  for(const auto& dev : DeviceList) {
+    if(dev.nmeaParser.gpsValid && dev.nmeaParser.isFlarm) {
+      ++flarm_count;
+    }
+  }
+  if (flarm_count > 1) {
+    DoStatusMessage(_T("FLARM DETECTED ON MULTIPLE COM PORTS! AUTO-EXCLUDING."));
+    StartupStore(_T("......... WARNING! FLARM DETECTED ON TWO COM PORTS! %s\n"), WhatTimeIsIt());
+    pGPS->FLARM_Available = false;
+    isFlarm = false;
+    conflict=true;
+    return FALSE;
   }
 
   if(!pGPS->FLARM_Available)
@@ -286,12 +286,12 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	}
 	sayflarmavailable=false;
 #if FLARMDEADLOCK
-	if(nmeaParser1.isFlarm) {
-		devRequestFlarmVersion(devA());
-	} else {
-		if(nmeaParser2.isFlarm)
-			devRequestFlarmVersion(devB());
-	}
+  for(const auto& dev : DeviceList) {
+    if(dev.nmeaParser.isFlarm) {
+      devRequestFlarmVersion(&dev);
+      break; // we have got first available Flarm device, ingore next device.
+    }
+  }
 #endif
   }
 

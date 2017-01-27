@@ -15,7 +15,7 @@
 
 class ThreadHandle {
 public:
-    ThreadHandle() = delete;
+    ThreadHandle() = default;
     
     explicit ThreadHandle(Poco::Thread* thread) : _thread(thread) {}
     bool IsInside() const { return _thread == Poco::Thread::current(); }

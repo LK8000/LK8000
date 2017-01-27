@@ -42,7 +42,7 @@ static const char PKT_STX = '\x02';
 static const char PKT_ACK = '\x06';
 
 /// not acknowledged (CRC checksum is wrong)
-static const char PKT_NAK = '\x15';
+//static const char PKT_NAK = '\x15';
 
 // commands supported by Colibri/Nano:
 
@@ -51,7 +51,7 @@ static const char PKT_NAK = '\x15';
 //static const char PKT_LOGERINFO = '\x'; // unknown
 
 /// read flight info and task declaration
-static const char PKT_PCREAD    = '\xC9';
+//static const char PKT_PCREAD    = '\xC9';
 
 /// write flight info and task declaration
 static const char PKT_PCWRITE   = '\xCA';
@@ -60,7 +60,7 @@ static const char PKT_PCWRITE   = '\xCA';
 static const char PKT_CCWRITE   = '\xD0';
 
 /// read Lx class (char LxClass[9] + CRC)
-static const char PKT_CCREAD    = '\xCF';
+//static const char PKT_CCREAD    = '\xCF';
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -551,7 +551,7 @@ void DevLXNano::Decl::SetString(StrId str_id, const TCHAR* text)
   char *output;
   int outSize;
 
-  if (str_id >= 0 && str_id < (int) max_wp_count)
+  if (str_id >= 0 && (int) str_id < (int) max_wp_count)
   {
     output = task.name[str_id]; outSize = sizeof(task.name[0]);
   }

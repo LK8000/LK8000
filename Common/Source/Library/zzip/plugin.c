@@ -11,7 +11,9 @@
  *          of the Mozilla Public License 1.1
  */
 
+#ifdef WIN32
 #include <windows.h>
+#endif
 
 #include <zzip/lib.h>
 #include <zzip/plugin.h>
@@ -32,8 +34,6 @@
 
 #include "utils/stringext.h"
 
-#include "utils/heapcheck.h"
-
 zzip_off_t
 zzip_filesize(int fd)
 {
@@ -50,7 +50,7 @@ zzip_filesize(int fd)
 }
 
 
-#if defined(__MINGW32__) && (WINDOWSPC<1)
+#if defined(__MINGW32__) && (UNDER_CE)
 
 #include <fcntl.h>
 
@@ -130,10 +130,15 @@ int wince_open (const char *path, int oflag, ...)
 // on PC Windows we must convert UTF8 filename into WCHAR* and use _wopen
 int winpc_open(zzip_char_t* filename, int flags, ...)
 {
+#ifdef UNICODE
+
   TCHAR wpath[MAX_PATH];
   utf2TCHAR(filename, wpath, MAX_PATH);
 
   return(_topen(wpath, flags));
+#else
+  return(_topen(filename, flags));
+#endif
 }
 
 #endif

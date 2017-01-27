@@ -17,6 +17,9 @@ class NullComPort : public ComPort {
 public:
     NullComPort(int idx, const tstring& sName) : ComPort(idx, sName) {}
 
+    virtual bool Initialize() { return true; }
+    virtual bool Close() { return true; }
+
     virtual void Flush() { }
     virtual void Purge() { }
     virtual void CancelWaitEvent() { }
@@ -30,7 +33,7 @@ public:
     virtual bool Write(const void *data, size_t length)  { return true; };
     virtual size_t Read(void *szString, size_t size)  { return 0U; };
 protected:
-    virtual unsigned RxThread() { StopEvt.wait(); return 0U; }
+    virtual unsigned RxThread() { assert(false); return 0U; }
 };
 
 

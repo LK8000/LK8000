@@ -142,19 +142,19 @@ namespace LKGeom {
                     // use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
                     if (outcodeOut & _TOP) { // point is above the clip rectangle
                         LKASSERT((Cp_end.y - Cp_start.y) != 0);
-                        Cp_Clip.x = Cp_start.x + MulDiv((Cp_end.x - Cp_start.x),(Clip_region[2].y - Cp_start.y),(Cp_end.y - Cp_start.y));
+                        Cp_Clip.x = Cp_start.x + _MulDiv((Cp_end.x - Cp_start.x),(Clip_region[2].y - Cp_start.y),(Cp_end.y - Cp_start.y));
                         Cp_Clip.y = Clip_region[2].y;
                     } else if (outcodeOut & _BOTTOM) { // point is below the clip rectangle
                         LKASSERT((Cp_end.y - Cp_start.y) != 0);
-                        Cp_Clip.x = Cp_start.x + MulDiv((Cp_end.x - Cp_start.x), (Clip_region[0].y - Cp_start.y), (Cp_end.y - Cp_start.y));
+                        Cp_Clip.x = Cp_start.x + _MulDiv((Cp_end.x - Cp_start.x), (Clip_region[0].y - Cp_start.y), (Cp_end.y - Cp_start.y));
                         Cp_Clip.y = Clip_region[0].y;
                     } else if (outcodeOut & _RIGHT) { // point is to the right of clip rectangle
                         LKASSERT((Cp_end.x - Cp_start.x) != 0);
-                        Cp_Clip.y =Cp_start.y + MulDiv((Cp_end.y - Cp_start.y), (Clip_region[2].x - Cp_start.x), (Cp_end.x - Cp_start.x));
+                        Cp_Clip.y =Cp_start.y + _MulDiv((Cp_end.y - Cp_start.y), (Clip_region[2].x - Cp_start.x), (Cp_end.x - Cp_start.x));
                         Cp_Clip.x = Clip_region[2].x;
                     } else /*if (outcodeOut & _LEFT)*/ { // point is to the left of clip rectangle
                         LKASSERT((Cp_end.x - Cp_start.x) != 0);
-                        Cp_Clip.y = Cp_start.y + MulDiv((Cp_end.y - Cp_start.y), (Clip_region[0].x - Cp_start.x), (Cp_end.x - Cp_start.x));
+                        Cp_Clip.y = Cp_start.y + _MulDiv((Cp_end.y - Cp_start.y), (Clip_region[0].x - Cp_start.x), (Cp_end.x - Cp_start.x));
                         Cp_Clip.x = Clip_region[0].x;
                     }
 
@@ -196,6 +196,7 @@ namespace LKGeom {
         template<typename polygon_in, typename polygon_out>
         void ClipPolygon(const polygon_in& inPoly, polygon_out& outPoly) {
             typedef typename polygon_in::const_iterator const_iterator;
+            typedef typename polygon_out::value_type out_value;
             
             Upoint *pt_Cp_start = &Cp_start;
             Upoint *pt_Cp_end = &Cp_end;
@@ -216,10 +217,6 @@ namespace LKGeom {
                 outPoly.clear();
             }
 
-            if (inPoly.empty() || !IsSamePoint(*inPoly.begin(), *inPoly.rbegin())) {
-                return;
-            }
-
             /* 
              * Init Output Polygon 
              */
@@ -232,12 +229,20 @@ namespace LKGeom {
             *pt_Cp_start = *in;
 
             /*
+             * Compute the first point’ status.
+             * If visible, then store the first point in the output array.
+             */
+            M_code = CP_space_code(pt_Cp_start);
+            if(!M_code) {
+                out = out_value(Cp_start.x, Cp_start.y);
+            }
+
+
+            /*
              * Next polygons points... We build a vector from the start
              * point to the end point.
              * Clip the line with a standard 2D line clipping method.
              */
-
-            M_code = CP_space_code(pt_Cp_start);
             while (++in != inPoly.end()) {
                 *pt_Cp_end = (*in);
 
@@ -249,9 +254,9 @@ namespace LKGeom {
                  */
                 if (j & _SEGM) {
                     if (j & _CLIP) {
-                        out = Cp_start;
+                        out = out_value(Cp_start.x, Cp_start.y);
                     }
-                    out = Cp_end;
+                    out = out_value(Cp_end.x, Cp_end.y);
                     pt_lastTp = NULL;
                 } else {
                     /*
@@ -298,7 +303,7 @@ namespace LKGeom {
                             }
                             if (pt_lastTp != &(Clip_region[Cra[A_code & ~_TWOBITS]])) {
                                 pt_lastTp = &(Clip_region[Cra[A_code & ~_TWOBITS]]);
-                                out = *pt_lastTp;
+                                out = out_value(pt_lastTp->x, pt_lastTp->y);
                             }
                         }
                     } else {
@@ -319,7 +324,7 @@ namespace LKGeom {
                 if (D_code & _TWOBITS) {
                     if (pt_lastTp != &(Clip_region[Cra[D_code & ~_TWOBITS]])) {
                         pt_lastTp = &(Clip_region[Cra[D_code & ~_TWOBITS]]);
-                        out = *pt_lastTp;
+                        out = out_value(pt_lastTp->x, pt_lastTp->y);
                     }
                 }
                 /*
@@ -327,9 +332,6 @@ namespace LKGeom {
                  */
                 *pt_Cp_start = (*in);
                 M_code = N_Code;
-            }
-            if (!outPoly.empty()) {
-                out = *outPoly.begin();
             }
         }
     };
@@ -347,6 +349,10 @@ namespace LKGeom {
         const Upoint BottomRight =  (Upoint){ClipRect.right, ClipRect.bottom};
 
         LKGeom::clipper<Upoint> (TopLeft, BottomRight).ClipPolygon(inPoly, outPoly);
+        
+        if (!outPoly.empty() && outPoly.front() != outPoly.back()) {
+            outPoly.push_back(outPoly.front());
+        }
     }
        
     template<typename Upoint, typename Urect>

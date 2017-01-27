@@ -48,6 +48,8 @@ namespace OpenGL {
 
   GLenum render_buffer_depth_stencil, render_buffer_stencil;
 
+  GLfloat max_line_width;
+
   Point2D<unsigned> window_size, viewport_size;
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
@@ -66,6 +68,8 @@ namespace OpenGL {
 
 #ifndef HAVE_GLES
   GLint max_attrib_stack_depth;
+#else
+  bool scissor_test = false;
 #endif
  
 };

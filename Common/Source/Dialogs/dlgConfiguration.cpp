@@ -33,6 +33,11 @@
 #include "resource.h"
 #include "LKStyle.h"
 
+#ifdef ANDROID
+#include <jni.h>
+#include "Android/Main.hpp"
+#include "Android/Context.hpp"
+#endif
 using namespace std::placeholders;
 
 extern void UpdateAircraftConfig(void);
@@ -589,6 +594,18 @@ static void OnAirspaceColoursClicked(WndButton* pWnd) {
     }
 }
 
+
+static void OnLKMapOpenClicked(WndButton* pWnd) {
+#ifdef ANDROID
+  jclass cls = Java::GetEnv()->FindClass("org/LK8000/LKMaps");
+  if(cls == nullptr) return;
+  jmethodID mid = Java::GetEnv()->GetStaticMethodID(cls, "openLKMaps","(Landroid/content/Context;)V");
+  if(mid == nullptr) return;
+  Java::GetEnv()->CallStaticVoidMethod(cls, mid,context->Get());
+#endif
+}
+
+
 static void OnSetTopologyClicked(WndButton* pWnd) {
     dlgTopologyShowModal();
 }
@@ -1076,6 +1093,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnWaypointDeleteClicked),
   ClickNotifyCallbackEntry(OnWaypointEditClicked),
   ClickNotifyCallbackEntry(OnWaypointSaveClicked),
+  ClickNotifyCallbackEntry(OnLKMapOpenClicked),
 
   DataAccessCallbackEntry(OnDeviceAData),
   DataAccessCallbackEntry(OnDeviceBData),
@@ -1956,13 +1974,13 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSetSystemTimeFromGPS"));
   if (wp) {
-#ifndef PPC2003   // PNA is also PPC2003
-    wp->SetVisible(false);
+#if defined(PPC2003) || defined(PNA)
+      wp->SetVisible(true);
+      wp->GetDataField()->Set(SetSystemTimeFromGPS);
+      wp->RefreshDisplay();
 #else
-    wp->SetVisible(true);
+      wp->SetVisible(false);
 #endif
-    wp->GetDataField()->Set(SetSystemTimeFromGPS);
-    wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSaveRuntime"));
@@ -2087,15 +2105,26 @@ DataField* dfe = wp->GetDataField();
   }
 
   if (_tcscmp(szPolarFile,_T(""))==0) 
-    _tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+    _tcscpy(temptext,_T(LKD_DEFAULT_POLAR));
   else
     _tcscpy(temptext,szPolarFile);
-  ExpandLocalPath(temptext);
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpPolarFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
       dfe->ScanDirectoryTop(_T(LKD_POLARS), _T("*" LKS_POLARS)); //091101
+#ifdef LKD_SYS_POLAR
+      /**
+       * Add entry from system directory not exist in data directory.
+       */
+#ifdef ANDROID
+      dfe->ScanZipDirectory(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
+#else
+#warning "not implemented"
+#endif
+#endif
+      dfe->Sort();
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2159,6 +2188,27 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+  WndButton *cmdLKMapOpen = ((WndButton *) wf->FindByName(TEXT("cmdLKMapOpen")));
+  if (cmdLKMapOpen) {
+#ifdef ANDROID
+    cmdLKMapOpen->SetVisible(true);
+    jclass cls = Java::GetEnv()->FindClass("org/LK8000/LKMaps");
+    if (cls != nullptr) {
+      jmethodID mid = Java::GetEnv()->GetStaticMethodID(cls, "isPackageInstalled",
+                                                        "(Landroid/content/Context;)Z");
+      if (mid != nullptr) {
+        jboolean isPackageInstalled = Java::GetEnv()->CallStaticBooleanMethod(cls, mid, context->Get());
+        if ( isPackageInstalled )
+          cmdLKMapOpen->SetWndText(MsgToken(2329));
+        else
+          cmdLKMapOpen->SetWndText(MsgToken(2328));
+      }
+    }
+#else
+    cmdLKMapOpen->SetVisible(false);
+#endif
+  }
+
   _tcscpy(temptext,szMapFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapFile"));
@@ -2198,14 +2248,24 @@ DataField* dfe = wp->GetDataField();
 
   _tcscpy(temptext,szLanguageFile);
   if (_tcslen(temptext)==0) {
-	_tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
+	_tcscpy(temptext,_T(LKD_DEFAULT_LANGUAGE));
   }
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpLanguageFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
       dfe->ScanDirectoryTop(_T(LKD_LANGUAGE), _T("*" LKS_LANGUAGE));
+#ifdef LKD_SYS_LANGUAGE
+      /**
+       * Add entry from system directory not exist in data directory.
+       */
+#ifdef ANDROID      
+      dfe->ScanZipDirectory(_T(LKD_SYS_LANGUAGE), _T("*" LKS_LANGUAGE));
+#else
+#warning "not implemented"
+#endif
+      dfe->Sort();
+#endif
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2900,6 +2960,7 @@ wp->RefreshDisplay();
     wp->RefreshDisplay();
   }
 
+
   for (int i=0; i<4; i++) {
     for (int j=0; j<8; j++) {
       SetInfoBoxSelector(j, i);
@@ -3061,13 +3122,14 @@ void dlgConfigurationShowModal(short mode){
       GlidePolar::SafetyMacCready = val;
     }
   }
-
+#if defined(PPC2003) || defined(PNA)
   wp = (WndProperty*)wf->FindByName(TEXT("prpSetSystemTimeFromGPS"));
   if (wp) {
     if (SetSystemTimeFromGPS != wp->GetDataField()->GetAsBoolean()) {
       SetSystemTimeFromGPS = wp->GetDataField()->GetAsBoolean();
     }
   }
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSaveRuntime"));
   if (wp) {
@@ -3592,7 +3654,6 @@ int ival;
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szLanguageFile)) {
       _tcscpy(szLanguageFile,temptext);
       requirerestart = true; // restart needed for language load
@@ -4329,9 +4390,8 @@ void UpdateAircraftConfig(void){
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
     if (_tcscmp(temptext,_T(""))==0) {
-        _tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
-    } else
-      ContractLocalPath(temptext);
+        _tcscpy(temptext,_T(LKD_DEFAULT_POLAR));
+    }
 
     if (_tcscmp(temptext,szPolarFile)) {
       _tcscpy(szPolarFile,temptext);

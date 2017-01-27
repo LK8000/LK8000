@@ -162,7 +162,11 @@ void TTYPort::Flush() {
 
 void TTYPort::Purge() {
     if(_tty != -1) {
+#if defined(ANDROID) && __ANDROID_API__ < 21
+        ioctl(_tty, TCSBRK, 1);
+#else
         tcdrain(_tty);
+#endif
     }
 }
 

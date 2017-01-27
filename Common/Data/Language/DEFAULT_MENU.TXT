@@ -2623,6 +2623,7 @@ location=5
 mode=SIMNETTO
 type=key
 data=7
+event=Mode SIMALT
 label=_@M2113_\n$(HGPS)
 location=6
 

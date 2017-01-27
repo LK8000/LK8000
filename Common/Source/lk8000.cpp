@@ -79,6 +79,10 @@
 #include "Hardware/CPU.hpp"
 #include "LKInterface/CScreenOrientation.h"
 #include <time.h>
+#include "utils/openzip.h"
+
+#include "Airspace/Sonar.h"
+#include <OS/RotateScreen.h>
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -105,57 +109,15 @@ extern void PreloadInitialisation(bool ask);
 extern bool LoadModelFromProfile(void);
 #endif
 
+#ifndef ANDROID
 Poco::NamedMutex Mutex("LOCK8000");
-
-//
-// WINMAIN RETURNS CODE ARE:
-//
-// -1	for init instance error
-// -2	for mutex error return
-//
-//  111 for normal program termination with automatic relaunch, if using lkrun
-//  222 for normal program termination, with request to quit lkrun if running
-//
-//  259 is reserved by OS (STILL_ACTIVE) status
-#ifdef WIN32
-HINSTANCE _hInstance;
-
-#ifndef UNDER_CE
-int WINAPI WinMain(     HINSTANCE hInstance,
-                        HINSTANCE hPrevInstance,
-                        LPSTR     lpCmdLine,
-                        int       nCmdShow)
 #else
-int WINAPI WinMain(     HINSTANCE hInstance,
-                        HINSTANCE hPrevInstance,
-                        LPWSTR     lpCmdLine,
-                        int       nCmdShow)
-#endif
-{
-    (void)hPrevInstance;
-
-    _hInstance = hInstance; // this need to be first, always !
-#ifndef UNDER_CE
-    const TCHAR* szCmdLine = GetCommandLine();
+zzip_file_ptr zzipSystem;
 #endif
 
-#else
-int main(int argc, char *argv[]) {
+static bool realexitforced=false;
 
-  std::string strCmdLine("");
-  for (int i=1;i<argc;i++) {
-    strCmdLine.append(std::string(argv[i]).append(" "));
-  }
-  const TCHAR* szCmdLine = strCmdLine.c_str();
-
-#endif
-
-  // use mutex to avoid multiple instances of lk8000 be running
-  #if (!((WINDOWSPC>0) && TESTBENCH))
-   if (!Mutex.tryLock()) {
-	  return(-2);
-  }
-  #endif
+bool Startup(const TCHAR* szCmdLine) {
 
   #if TRACETHREAD
   _THREADID_WINMAIN=GetCurrentThreadId();
@@ -272,17 +234,10 @@ int main(int argc, char *argv[]) {
   #if USELKASSERT
   StartupStore(TEXT(". USELKASSERT option enabled%s"),NEWLINE);
   #endif
-
-  ScreenGlobalInit InitScreen;
-  SoundGlobalInit InitSound;
-
-  std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
-
-
+  
   // This is needed otherwise LKSound will be silent until we init Globals.
   EnableSoundModes=true;
 
-  bool realexitforced=false;
 
   LKSound(_T("LK_CONNECT.WAV"));
 
@@ -318,11 +273,21 @@ int main(int argc, char *argv[]) {
     }
   #endif
 
+#ifdef ANDROID
+  /** system files are stored in "assets"
+   * "assets" are zipped inside apk
+   * for speedup access to this files by zziplib, we need to keep it open...
+   */
+  TCHAR szSystemPath[MAX_PATH];
+  SystemPath(szSystemPath, TEXT(LKD_SYSTEM DIRSEP LKF_CREDITS));
+  zzipSystem = openzip(szSystemPath, "rb");
+#else
   bool datadir = CheckDataDir();
   if (!datadir) {
     // we cannot call startupstore, no place to store log!
     WarningHomeDir=true;
   }
+#endif
 
   #if TESTBENCH
   TCHAR szPath[MAX_PATH] = {0};
@@ -339,6 +304,8 @@ int main(int argc, char *argv[]) {
   CreateDirectoryIfAbsent(TEXT(LKD_TASKS));
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
+  CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
+  CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
 
   _stprintf(defaultProfileFile,_T("%s" LKD_CONF DIRSEP LKPROFILE), LKGetLocalPath());
   _tcscpy(startProfileFile, defaultProfileFile);
@@ -349,7 +316,7 @@ int main(int argc, char *argv[]) {
   _stprintf(defaultDeviceFile,_T("%s" LKD_CONF DIRSEP LKDEVICE),LKGetLocalPath());
   _tcscpy(startDeviceFile, defaultDeviceFile);
 
-#if !defined(UNDER_CE) || defined(__linux__)
+#if !defined(UNDER_CE) || (defined(__linux__) && !defined(ANDROID))
   LK8000GetOpts(szCmdLine);
 #endif
 
@@ -384,11 +351,12 @@ int main(int argc, char *argv[]) {
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
   OpenGeoid();
+  ScopeLockScreen LockSreen;
 
   PreloadInitialisation(false); // calls dlgStartup
   if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {
     realexitforced=true;
-    goto _Shutdown;
+    return false;
   }
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
@@ -597,7 +565,10 @@ int main(int argc, char *argv[]) {
   ProgramStarted = psInitDone;
 
   GlobalRunning = true;
+	
+	InitAirspaceSonar();
 
+#ifndef ANDROID
     if (WarningHomeDir) {
         TCHAR nopath[MAX_PATH];
         LocalPath(nopath, _T(""));
@@ -605,6 +576,8 @@ int main(int argc, char *argv[]) {
         MessageBoxX(nopath, MsgToken(1209), mbOk);
         WarningHomeDir = false;
     }
+#endif
+
 #ifdef UNDER_CE
     static bool checktickcountbug = true; // 100510
     if (checktickcountbug) {
@@ -624,14 +597,10 @@ int main(int argc, char *argv[]) {
             MessageBoxX(MsgToken(155), TEXT("Warning!"), mbOk);
         }
     }
+    return true;
+}
 
- //
- // Main message loop
- //
-  MainWindow.RunModalLoop();
-
-_Shutdown:
-
+void Shutdown() {
   MainWindow.Destroy();
   Message::Destroy();
 
@@ -645,12 +614,85 @@ _Shutdown:
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
 
+#ifndef ANDROID
   Mutex.unlock();
+#else
+  zzipSystem.close();
+#endif
 
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated, realexitforced=%d%s"),realexitforced,NEWLINE);
   #endif
+}
 
+#ifndef ANDROID
+//
+// WINMAIN RETURNS CODE ARE:
+//
+// -1	for init instance error
+// -2	for mutex error return
+//
+//  111 for normal program termination with automatic relaunch, if using lkrun
+//  222 for normal program termination, with request to quit lkrun if running
+//
+//  259 is reserved by OS (STILL_ACTIVE) status
+#ifdef WIN32
+HINSTANCE _hInstance;
+
+#ifndef UNDER_CE
+int WINAPI WinMain(     HINSTANCE hInstance,
+                        HINSTANCE hPrevInstance,
+                        LPSTR     lpCmdLine,
+                        int       nCmdShow)
+#else
+int WINAPI WinMain(     HINSTANCE hInstance,
+                        HINSTANCE hPrevInstance,
+                        LPWSTR     lpCmdLine,
+                        int       nCmdShow)
+#endif
+{
+    (void)hPrevInstance;
+
+    _hInstance = hInstance; // this need to be first, always !
+#ifdef UNDER_CE
+    const TCHAR* szCmdLine = _T("");
+#else
+    const TCHAR* szCmdLine = GetCommandLine();
+#endif
+
+#else
+int main(int argc, char *argv[]) {
+
+  std::string strCmdLine("");
+  for (int i=1;i<argc;i++) {
+    strCmdLine.append(std::string(argv[i]).append(" "));
+  }
+  const TCHAR* szCmdLine = strCmdLine.c_str();
+
+#endif
+
+  // use mutex to avoid multiple instances of lk8000 be running
+#if (!((WINDOWSPC>0) && TESTBENCH)) && !defined(ANDROID)
+   if (!Mutex.tryLock()) {
+	  return(-2);
+  }
+#endif
+
+  ScreenGlobalInit InitScreen;
+  SoundGlobalInit InitSound;
+  
+  std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
+
+
+  if(Startup(szCmdLine)) {
+    //
+    // Main message loop
+    //
+     MainWindow.RunModalLoop();
+  }
+  MainWindow.Destroy();
+
+  Shutdown();
   pSaveScreen = nullptr;
 #ifdef KOBO
   extern bool RestartToNickel;
@@ -668,3 +710,5 @@ _Shutdown:
   if (realexitforced) return 222;
   else return 111;
 }
+
+#endif

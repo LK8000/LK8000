@@ -124,10 +124,13 @@ BufferCanvas::Resize(PixelSize new_size)
 void
 BufferCanvas::Begin(Canvas &other)
 {
-  assert(IsDefined());
   assert(!active);
 
-  Resize(other.GetSize());
+  if(IsDefined()) {
+      Resize(other.GetSize());
+  } else {
+      Create(other);
+  }
 
   if (frame_buffer != nullptr) {
     /* activate the frame buffer */
@@ -179,6 +182,13 @@ BufferCanvas::Begin(Canvas &other)
     glVertexAttrib4f(OpenGL::Attribute::TRANSLATE,
                      OpenGL::translate.x, OpenGL::translate.y, 0, 0);
 #endif
+
+#if defined(HAVE_GLES) && !defined(HAVE_GLES2)
+      // without this we have SIGSEGV first call glDrawTexiOES after Screen Rotate ( GalaxyTab 2 GT-P3110 )
+      GLenum status = FBO::CheckFramebufferStatus(FBO::FRAMEBUFFER);
+      assert(status == GL_FRAMEBUFFER_COMPLETE_OES);
+#endif
+
   } else {
     offset = other.offset;
   }

@@ -44,7 +44,6 @@ public:
 
     virtual void OnResize(PixelSize new_size) {
         WndPaint<_Base>::OnResize(new_size);
-        _canvas.Resize(new_size);
         _Dirty= true;
     }
 
@@ -83,10 +82,9 @@ public:
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) {
 
 #ifdef ENABLE_OPENGL
-        if (_Dirty) {
-            this->Setup(_canvas);
-
+        if (_Dirty || !_canvas.IsDefined()) {
             _canvas.Begin(Surface);
+            this->Setup(_canvas);
 #else
             Canvas& _canvas = Surface;
 #endif

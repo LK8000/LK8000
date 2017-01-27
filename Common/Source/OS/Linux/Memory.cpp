@@ -11,8 +11,9 @@
 
 #include <stddef.h>
 #include <sys/sysinfo.h>
+#ifndef ANDROID
 #include <sys/statvfs.h>
-
+#endif
 
 size_t CheckFreeRam(void) {
     struct sysinfo info = {};
@@ -23,10 +24,12 @@ size_t CheckFreeRam(void) {
 }
 
 size_t FindFreeSpace(const char *path) {
+#ifndef ANDROID
     struct statvfs info = {};
     if(statvfs(path, &info) == 0) {
         return (info.f_bfree * info.f_bsize) /1024;
     }
+#endif
     return ~((size_t)0);
 }
 

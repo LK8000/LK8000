@@ -95,7 +95,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   EnableThermalLocator =0;
 
 /*******/
-#warning "wrong place for do that, always bad idea to change layout inside drawing fonctions !"
+//TODO : "wrong place for do that, always bad idea to change layout inside drawing fonctions !"
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
 /*******/
 
@@ -166,7 +166,7 @@ _nomoredeclutter:
   }
 
   if (IsMultimapWaypoints()) {
-	DrawWaypointsNew(Surface,rct);
+	DrawWaypointsNew(Surface,rct,_Proj);
   }
   if (Flags_DrawFAI)
 	DrawFAIOptimizer(Surface, rct, _Proj, Orig_Aircraft);

@@ -28,8 +28,6 @@ void CheckBackTarget(int flarmslot);
 
 
 unsigned LastRMZHB=0;	 // common to both devA and devB.
-NMEAParser nmeaParser1;
-NMEAParser nmeaParser2;
 int NMEAParser::StartDay = -1;
 
 
@@ -41,12 +39,15 @@ NMEAParser::NMEAParser() {
 }
 
 void NMEAParser::_Reset(void) {
+
+  connected = false;
+  expire = true;
   nSatellites = 0;
   gpsValid = false;
   isFlarm = false;
   activeGPS = true;
   GGAAvailable = FALSE;
-  RMZAvailable = FALSE;
+  RMZAvailable = false;
   RMZAltitude = 0;
   RMCAvailable = false;
   TASAvailable = false; // 100411
@@ -58,45 +59,15 @@ void NMEAParser::_Reset(void) {
   LastTime = 0;
 }
 
-void NMEAParser::Reset(void) {
-
-  // clear status
-  nmeaParser1._Reset();
-  nmeaParser2._Reset();
-
-  // trigger updates
-  TriggerGPSUpdate();
-  TriggerVarioUpdate();
-}
-
-
-BOOL NMEAParser::ParseNMEAString(int device,
-				 TCHAR *String, NMEA_INFO *pGPS)
-{
-
-  LKASSERT(!ReplayLogger::IsEnabled());
-
-  switch (device) {
-  case 0: 
-    return nmeaParser1.ParseNMEAString_Internal(String, pGPS);
-  case 1:
-    return nmeaParser2.ParseNMEAString_Internal(String, pGPS);
-  };
-  return FALSE;
-}
-
 #ifdef UNDER_CE
 BOOL NMEAParser::ParseGPS_POSITION(int Idx, const GPS_POSITION& loc, NMEA_INFO& GPSData) {
     LKASSERT(!ReplayLogger::IsEnabled());
 
-    switch (Idx) {
-        case 0:
-            ComPortHB[0]=LKHearthBeats;
-            return nmeaParser1.ParseGPS_POSITION_internal(loc, GPSData);
-        case 1:
-            ComPortHB[1]=LKHearthBeats;
-            return nmeaParser2.ParseGPS_POSITION_internal(loc, GPSData);
-    };
+    PDeviceDescriptor_t pdev = devX(Idx);
+    if(pdev) {
+      pdev->HB = LKHearthBeats;
+      return pdev->nmeaParser.ParseGPS_POSITION_internal(loc, GPSData);
+    }
     return FALSE;
 }
 
@@ -106,7 +77,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
     if (!gpsValid) {
         return TRUE;
     }
-    GPSCONNECT=TRUE;
+    connected = true;
 
     switch (loc.FixType) {
         case GPS_FIX_UNKNOWN:
@@ -441,7 +412,7 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
   
   gpsValid = !NAVWarn(params[5][0]);
-  GPSCONNECT=TRUE;
+  connected = true;
 
   if (!activeGPS) return TRUE;
 
@@ -563,7 +534,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
   gpsValid = !NAVWarn(params[1][0]);
 
-  GPSCONNECT = TRUE;    
+  connected = true;
   RMCAvailable=true; // 100409
 
   #ifdef PNA
@@ -573,7 +544,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	RMZAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 	// StartupStore(_T("....... Pressure=%.0f QNH=%.2f Altitude=%.1f\n"),ps,QNH,RMZAltitude);
 
-	RMZAvailable = TRUE;
+	RMZAvailable = true;
 
 	UpdateBaroSource(pGPS, BARO__GM130, NULL,   RMZAltitude);
   }
@@ -588,7 +559,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 		#endif
 	}
 
-	RMZAvailable = TRUE;
+	RMZAvailable = true;
 
 	UpdateBaroSource(pGPS, BARO__ROYALTEK3200,  NULL,  RMZAltitude);
 
@@ -695,7 +666,7 @@ force_advance:
 	}
   } // gpsvalid 091108
 
-#ifdef WIN32
+#if defined(PPC2003) || defined(PNA)
   // As soon as we get a fix for the first time, set the
   // system clock to the GPS time.
   static bool sysTimeInitialised = false;
@@ -723,8 +694,6 @@ force_advance:
 		}
 	}
   }
-#else
-#warning "Set system clock to the GPS time not implemented."
 #endif
 
   if(RMZAvailable) {
@@ -762,7 +731,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
 
   GGAAvailable = TRUE;
-  GPSCONNECT = TRUE;     // 091208
+  connected = TRUE;     // 091208
 
   // this will force gps invalid but will NOT assume gps valid!
   nSatellites = (int)(min(16.0, StrToDouble(params[6], NULL)));
@@ -967,7 +936,7 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
   RMZAltitude = ParseAltitude(params[0], params[1]);
   RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
-  RMZAvailable = TRUE;
+  RMZAvailable = true;
   LastRMZHB=LKHearthBeats; // this is common to both ports!
 
   // If we have a single RMZ with no gps fix data, we still manage the baro altitude.

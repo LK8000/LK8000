@@ -100,9 +100,16 @@ bool MapWindow::LandableReachable = false;
 LKPen MapWindow::hSnailPens[NUMSNAILCOLORS];
 LKColor MapWindow::hSnailColours[NUMSNAILCOLORS];
 
-POINT MapWindow::Groundline[NUMTERRAINSWEEPS+1];
+#ifdef ENABLE_OPENGL
+std::array<FloatPoint, NUMTERRAINSWEEPS+2> MapWindow::Groundline;
 #ifdef GTL2
-POINT MapWindow::Groundline2[NUMTERRAINSWEEPS+1];
+std::array<FloatPoint, NUMTERRAINSWEEPS+1> MapWindow::Groundline2;
+#endif
+#else
+std::array<RasterPoint, NUMTERRAINSWEEPS+1> MapWindow::Groundline;
+#ifdef GTL2
+std::array<RasterPoint, NUMTERRAINSWEEPS+1> MapWindow::Groundline2;
+#endif
 #endif
 
 // 17 is number of airspace types
@@ -192,18 +199,18 @@ void MapWindow::_OnSize(int cx, int cy) {
 #ifndef ENABLE_OPENGL
     // this is Used for check Thread_Draw don't use surface object.
     ScopeLock Lock(Surface_Mutex);
-#endif
 
     BackBufferSurface.Resize(cx, cy);
 
-#ifndef ENABLE_OPENGL
     DrawSurface.Resize(cx, cy);
 
     TempSurface.Resize(cx, cy);
     hdcbuffer.Resize(cx, cy);
     hdcMask.Resize(cx, cy);
-
 #endif
+
+    // don't resize BackBufferSuface, resize is done by next Begin.
+    MapDirty = true;
 }
 
 void MapWindow::UpdateActiveScreenZone(RECT rc) {

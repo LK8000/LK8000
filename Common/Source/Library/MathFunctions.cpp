@@ -100,8 +100,8 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
   if(angle != lastangle) {
     lastangle = angle;
 #ifdef RESCALE_PIXEL
-    cost = ifastcosine(angle)*ScreenPixelRatio/10;
-    sint = ifastsine(angle)*ScreenPixelRatio/10;
+    cost = RescalePixelSize(ifastcosine(angle));
+    sint = RescalePixelSize(ifastsine(angle));
 #else
     cost = ifastcosine(angle)*ScreenScale;
     sint = ifastsine(angle)*ScreenScale;
@@ -124,8 +124,8 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
 void threadsafePolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle) {
 
 #ifdef RESCALE_PIXEL
-  const int cost = ifastcosine(angle)*ScreenPixelRatio/10;
-  const int sint = ifastsine(angle)*ScreenPixelRatio/10;
+  const int cost = RescalePixelSize(ifastcosine(angle));
+  const int sint = RescalePixelSize(ifastsine(angle));
 #else
   const int cost = ifastcosine(angle)*ScreenScale;
   const int sint = ifastsine(angle)*ScreenScale;

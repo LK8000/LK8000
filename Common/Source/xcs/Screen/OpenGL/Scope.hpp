@@ -61,6 +61,15 @@ class GLScissor : public GLEnable<GL_SCISSOR_TEST> {
 public:
   GLScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
     ::glScissor(x, y, width, height);
+#if HAVE_GLES
+    OpenGL::scissor_test = true;
+#endif
+    
+  }
+  ~GLScissor() {
+#if HAVE_GLES      
+    OpenGL::scissor_test = false;
+#endif
   }
 };
 
@@ -108,7 +117,7 @@ class GLPushScissor {
 public:
     GLPushScissor() {
         ::glGetIntegerv(GL_SCISSOR_BOX, scissor_box);
-        ::glGetBooleanv(GL_SCISSOR_TEST, &enabled);
+        enabled = OpenGL::scissor_test;
     }
     ~GLPushScissor() {
         if(enabled) {
@@ -117,6 +126,8 @@ public:
             ::glDisable(GL_SCISSOR_TEST);
         }
         ::glScissor(scissor_box[0],scissor_box[1],scissor_box[2],scissor_box[3]);
+
+        OpenGL::scissor_test = enabled;
     }
 private:
     GLint scissor_box[4];

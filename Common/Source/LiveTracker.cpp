@@ -306,12 +306,12 @@ void LiveTrackerShutdown() {
 }
 
 // Update live tracker data, non blocking
-void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	if (!_inited)
 		return;               // Do nothing if not inited
 	if (LiveTrackerInterval == 0)
 		return; // Disabled
-	if (Basic->NAVWarning)
+	if (Basic.NAVWarning)
 		return;      // Do not log if no gps fix
 
 //	if (!Calculated->Flying)
@@ -323,8 +323,8 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	ScopeLock guard(_t_mutex);
 
 	//Check if sending needed (time interval)
-	if (Basic->Time >= logtime) {
-		logtime = (int) Basic->Time + LiveTrackerInterval;
+	if (Basic.Time >= logtime) {
+		logtime = (int) Basic.Time + LiveTrackerInterval;
 		if (logtime >= 86400)
 			logtime -= 86400;
 	} else
@@ -338,22 +338,22 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	struct tm t;
 	time_t t_of_day;
-	t.tm_year = Basic->Year - 1900;
-	t.tm_mon = Basic->Month - 1; // Month, 0 - jan
-	t.tm_mday = Basic->Day;
-	t.tm_hour = Basic->Hour;
-	t.tm_min = Basic->Minute;
-	t.tm_sec = Basic->Second;
+	t.tm_year = Basic.Year - 1900;
+	t.tm_mon = Basic.Month - 1; // Month, 0 - jan
+	t.tm_mday = Basic.Day;
+	t.tm_hour = Basic.Hour;
+	t.tm_min = Basic.Minute;
+	t.tm_sec = Basic.Second;
 	t.tm_isdst = 0; // Is DST on? 1 = yes, 0 = no, -1 = unknown
 	t_of_day = mkgmtime(&t);
 
 	newpoint.unix_timestamp = t_of_day;
-	newpoint.flying = Calculated->Flying;
-	newpoint.latitude = Basic->Latitude;
-	newpoint.longitude = Basic->Longitude;
-	newpoint.alt = Calculated->NavAltitude;
-	newpoint.ground_speed = Basic->Speed;
-	newpoint.course_over_ground = Calculated->Heading;
+	newpoint.flying = Calculated.Flying;
+	newpoint.latitude = Basic.Latitude;
+	newpoint.longitude = Basic.Longitude;
+	newpoint.alt = Calculated.NavAltitude;
+	newpoint.ground_speed = Basic.Speed;
+	newpoint.course_over_ground = Calculated.Heading;
 
 	_t_points.push_back(newpoint);
 	NewDataEvent.set();
@@ -1521,7 +1521,7 @@ static std::string DeltaRLE(std::vector<int> data) {
 	for (unsigned int i = 0; i < data.size(); i++) {
 		int datai = (data[i]);
 
-		if ((i == 0)) {
+		if (i == 0) {
 			res += intToGBase64(datai);
 		} else {
 

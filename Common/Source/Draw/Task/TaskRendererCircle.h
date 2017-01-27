@@ -21,6 +21,9 @@ class TaskRendererCircle : public TaskRenderer {
 public:
     TaskRendererCircle(const GeoPoint& center, double radius);
 
+    bool IsPolygon() const override { 
+        return true; 
+    }
 };
 
 #endif /* TASKRENDERERCIRCLE_H */

@@ -95,9 +95,6 @@ void MapWindow::Initialize() {
 	// This will reset the function for the new ScreenScale
 	PolygonRotateShift((POINT*)NULL,0,0,0,DisplayAngle+1);
 
-	// Restart from moving map
-	if (MapSpaceMode!=MSM_WELCOME) SetModeType(LKMODE_MAP, MP_MOVING);
-
 	// These should be better checked. first_run is forcing also cache update for topo.
 	ForceRenderMap=true;
 	first_run=true;

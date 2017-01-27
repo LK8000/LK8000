@@ -71,12 +71,21 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	TCHAR sNum[10];
 	_stprintf(sNum,_T("%u"),inumber);
 
-  ZZIP_FILE *helpFile = openzip(sFile, "rb");
-	if (helpFile == NULL) {
-		StartupStore(_T("... Missing HELP FILE <%s>%s"),sFile,NEWLINE);
-		// we can only have one Help call at a time, from the user interface. Ok static sHelp.
-		_stprintf(sHelp,_T("ERROR, help file not found:\r\n%s\r\nCheck configuration!"),sFile);
-		return (sHelp);
+    ZZIP_FILE *helpFile = openzip(sFile, "rb");
+	if (!helpFile) {
+#ifdef LKD_SYS_LANGUAGE
+		SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
+		_stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
+		helpFile = openzip(sFile, "rt");
+#endif
+
+		if(!helpFile) {
+			StartupStore(_T("... Missing HELP FILE <%s>%s"), sFile, NEWLINE);
+			// we can only have one Help call at a time, from the user interface. Ok static sHelp.
+			_stprintf(sHelp, _T("ERROR, help file not found:\r\n%s\r\nCheck configuration!"),
+					  sFile);
+			return (sHelp);
+		}
 	}
 
 	// search for beginning of code index   @000
@@ -237,26 +246,39 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
   bool english=false;
   TCHAR szFile1[MAX_PATH] = _T("\0");
   _tcscpy(LKLangSuffix,_T(""));
+
+
   _tcscpy(szFile1,szFileName);
   tryeng:
   if (_tcslen(szFile1)==0) {
-	_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
+	_tcscpy(szFile1, _T(LKD_DEFAULT_LANGUAGE));
 	english=true;
   }
-  ExpandLocalPath(szFile1);
-  // SetRegistryString(szRegistryLanguageFile, TEXT("\0")); // ?
 
-  ZZIP_FILE *langFile = openzip(szFile1, "rt");
-  if (langFile == NULL) {
+  TCHAR szFilePath[MAX_PATH] = _T("\0");
+  _tcscpy(szFilePath,szFile1);
+  ZZIP_FILE* langFile = openzip(szFilePath, "rt");
+  if(!langFile) {
+	  // failed to open absolute. try LocalPath
+	  LocalPath(szFilePath, szFile1);
+	  langFile = openzip(szFilePath, "rt");
+  }
+  if(!langFile) {
+	// failed to open lOCAL. try SystemPath
+    SystemPath(szFilePath, szFile1);
+    langFile = openzip(szFilePath, "rt");
+  }
+
+  if (!langFile) {
 	if (english) {
 		StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
 		// critic point, no default language! BIG PROBLEM here!
+		return;
 	} else {
 		StartupStore(_T("--- NO LANGUAGE FILE FOUND <%s>, retrying with ENGlish!%s"),szFile1,NEWLINE);
 		_tcscpy(szFile1,_T(""));
 		goto tryeng;
 	}
-	return;
   }
 
   bool found=false;
@@ -348,8 +370,16 @@ bool LKLoadMessages(bool fillup) {
 
   ZZIP_FILE *hFile = openzip(sFile, "rt");
 	if (hFile == NULL) {
-	StartupStore(_T("... LoadText Missing Language File: <%s>%s"),sFile,NEWLINE);
-	return false;
+#ifdef LKD_SYS_LANGUAGE
+		SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
+		_stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
+		hFile = openzip(sFile, "rt");
+#endif
+	if(!hFile) {
+	    StartupStore(_T("... LoadText Missing Language File: <%s>%s"), sFile, NEWLINE);
+		return false;
+	}
+
   } else {
 	if (fillup)
 		StartupStore(_T(". Language fillup load file: <%s>%s"),sFile,NEWLINE);

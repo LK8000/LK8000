@@ -148,7 +148,9 @@ GEXTERN int  RecentNumber;
 //  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
 GEXTERN short  SortedMode[MSM_TOP+1];
 
+#ifndef ANDROID
 GEXTERN bool  WarningHomeDir;
+#endif
 
 // Specials
 GEXTERN bool UseGeoidSeparation;
@@ -452,16 +454,18 @@ GEXTERN bool GlobalRunning;
 GEXTERN short ScreenSize;
 GEXTERN int ScreenSizeX;
 GEXTERN int ScreenSizeY;
-GEXTERN RECT ScreenSizeR;
 GEXTERN bool ScreenLandscape;
 GEXTERN double ScreenDScale;
 GEXTERN int ScreenScale;
 GEXTERN bool ScreenIntScale;
 GEXTERN double Screen0Ratio;
 GEXTERN short ScreenGeometry;
-GEXTERN unsigned short ScreenDensity;
+GEXTERN int ScreenDensity;
 GEXTERN int ScreenThinSize;
-GEXTERN unsigned short ScreenPixelRatio; // x10
+
+#ifdef RESCALE_PIXEL
+GEXTERN int ScreenPixelRatio; // 22.10 fixed size number
+#endif
 
 GEXTERN int AircraftMenuSize;
 GEXTERN int CompassMenuSize;
@@ -550,10 +554,6 @@ GEXTERN int GearWarningMode;
 GEXTERN NMEA_INFO GPS_INFO;
 GEXTERN DERIVED_INFO CALCULATED_INFO;
 
-// gps detection
-GEXTERN BOOL GPSCONNECT;
-GEXTERN BOOL VARIOCONNECT;
-
 // units
 GEXTERN double SPEEDMODIFY;
 GEXTERN double LIFTMODIFY;
@@ -605,7 +605,11 @@ GEXTERN short TerrainRamp_Config;
 GEXTERN double QNH;
 GEXTERN int NettoSpeed;
 GEXTERN unsigned debounceTimeout;
+
+#if defined(PPC2003) || defined(PNA)
 GEXTERN bool SetSystemTimeFromGPS;
+#endif
+
 GEXTERN bool SaveRuntime;
 GEXTERN bool ForceFinalGlide;
 GEXTERN bool AutoForceFinalGlide;
@@ -738,10 +742,6 @@ GEXTERN int TeamFlarmIdTarget;    // FlarmId of the glider to track
 GEXTERN bool DisableAutoLogger;
 GEXTERN int LiveTrackerInterval;
 GEXTERN bool LiveTrackerRadar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
-
-// Interface Globals
-GEXTERN StatusMessageSTRUCT StatusMessageData[MAXSTATUSMESSAGECACHE];
-GEXTERN int StatusMessageData_Size;
 
 GEXTERN short TerrainContrast;
 GEXTERN short TerrainBrightness;

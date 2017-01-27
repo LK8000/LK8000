@@ -60,6 +60,7 @@ Copyright_License {
 #include "utils/stl_utils.h"
 
 AllocatedArray<RasterPoint> Canvas::vertex_buffer;
+AllocatedArray<FloatPoint> Canvas::vertex_buffer_float;
 
 void
 Canvas::DrawFilledRectangle(int left, int top, int right, int bottom,
@@ -188,8 +189,8 @@ Canvas::DrawPolyline(const RasterPoint *points, unsigned num_points)
 #endif
 
   pen.Bind();
-  
-  if (pen.GetWidth() <= 2) {
+
+  if (pen.GetWidth() <= OpenGL::max_line_width) {
     const ScopeVertexPointer vp(points);
     glDrawArrays(GL_LINE_STRIP, 0, num_points);
   } else {
@@ -211,6 +212,51 @@ Canvas::DrawPolyline(const RasterPoint *points, unsigned num_points)
 #endif
     
 }
+
+void
+Canvas::DrawPolyline(const FloatPoint *points, unsigned num_points) {
+#ifdef USE_GLSL
+  glm::mat4 matrix = glm::translate(glm::mat4(),glm::vec3(1, 1, 0));
+    glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(matrix));
+#else
+  glPushMatrix();
+
+#ifdef HAVE_GLES
+  glTranslatex((GLfixed)1 << 16, (GLfixed)1 << 16, 0);
+#else
+  glTranslatef(1, 1, 0.);
+#endif
+#endif
+
+#ifdef USE_GLSL
+  OpenGL::solid_shader->Use();
+#endif
+
+  pen.Bind();
+
+  if (pen.GetWidth() <= OpenGL::max_line_width) {
+    const ScopeVertexPointer vp(points);
+    glDrawArrays(GL_LINE_STRIP, 0, num_points);
+  } else {
+    const unsigned vertices = LineToTriangles(points, num_points, vertex_buffer_float,
+                                              pen.GetWidth(), false);
+    if (vertices > 0) {
+      const ScopeVertexPointer vp(vertex_buffer_float.begin());
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices);
+    }
+  }
+
+  pen.Unbind();
+
+#ifdef USE_GLSL
+  glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE,
+                       glm::value_ptr(glm::mat4()));
+#else
+  glPopMatrix();
+#endif
+
+}
+
 
 void
 Canvas::DrawPolygon(const RasterPoint *points, unsigned num_points)
@@ -243,7 +289,7 @@ Canvas::DrawPolygon(const RasterPoint *points, unsigned num_points)
   if (IsPenOverBrush()) {
     pen.Bind();
 
-    if (pen.GetWidth() <= 2) {
+    if (pen.GetWidth() <= OpenGL::max_line_width) {
       glDrawArrays(GL_LINE_LOOP, 0, num_points);
     } else {
       unsigned vertices = LineToTriangles(points, num_points, vertex_buffer,
@@ -268,17 +314,28 @@ Canvas::DrawTriangleFan(const RasterPoint *points, unsigned num_points)
   OpenGL::solid_shader->Use();
 #endif
 
+  std::unique_ptr<const GLBlend> blend;
+  if(!brush.IsOpaque()) {
+    blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
+
   ScopeVertexPointer vp(points);
 
   if (!brush.IsHollow() && num_points >= 3) {
     brush.Bind();
+
+    std::unique_ptr<const GLBlend> blend;
+    if(!brush.IsOpaque()) {
+      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
     glDrawArrays(GL_TRIANGLE_FAN, 0, num_points);
   }
 
   if (IsPenOverBrush()) {
     pen.Bind();
 
-    if (pen.GetWidth() <= 2) {
+    if (pen.GetWidth() <= OpenGL::max_line_width) {
       glDrawArrays(GL_LINE_LOOP, 0, num_points);
     } else {
       unsigned vertices = LineToTriangles(points, num_points, vertex_buffer,
@@ -290,6 +347,27 @@ Canvas::DrawTriangleFan(const RasterPoint *points, unsigned num_points)
     }
 
     pen.Unbind();
+  }
+}
+
+void
+Canvas::DrawTriangleFan(const FloatPoint *points, unsigned num_points)
+{
+  if (!brush.IsHollow() && num_points >= 3) {
+
+#ifdef USE_GLSL
+    OpenGL::solid_shader->Use();
+#endif
+
+    ScopeVertexPointer vp(points);
+
+    brush.Bind();
+    std::unique_ptr<const GLBlend> blend;
+    if(!brush.IsOpaque()) {
+      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, num_points);
   }
 }
 
