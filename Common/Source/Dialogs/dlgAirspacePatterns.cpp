@@ -36,7 +36,11 @@ static void OnAirspacePatternsPaintListItem(WindowControl * Sender, LKSurface& S
 
         Surface.SelectObject(MapWindow::GetAirspaceBrush(DrawListIndex));
         Surface.SetTextColor(LKColor(0x00, 0x00, 0x00));
-        Surface.Rectangle(100 * ScreenScale, 2 * ScreenScale, 180 * ScreenScale, 22 * ScreenScale);
+        const PixelRect rcClient(Sender->GetClientRect());
+        Surface.Rectangle(rcClient.left + DLGSCALE(2), 
+                          rcClient.top + DLGSCALE(2), 
+                          rcClient.right - DLGSCALE(2), 
+                          rcClient.bottom - DLGSCALE(2));
     }
 }
 
