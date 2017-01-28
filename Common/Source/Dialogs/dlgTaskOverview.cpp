@@ -73,7 +73,7 @@ static void UpdateCaption (void) {
 }
 
 static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
-  (void)Sender;
+
   int n = UpLimit - LowLimit;
   TCHAR sTmp[120];
   TCHAR wpName[120];
@@ -82,16 +82,25 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
   landableStr[2] = MsgToken(1238)[0];
   LockTaskData();
 
-  int w0 = Sender->GetWidth()-1;
-  int w1 = Surface.GetTextWidth(TEXT(" 000km"));
+  const PixelRect rcClient(Sender->GetClientRect());
+  
+  const int w0 = rcClient.GetSize().cx - DLGSCALE(1);
+  const int w1 = Surface.GetTextWidth(TEXT(" 000km"));
   _stprintf(sTmp, _T("  000%s"), MsgToken(2179));
-  int w2 = Surface.GetTextWidth(sTmp);
+  const int w2 = Surface.GetTextWidth(sTmp);
 
-  int TextMargin = (Sender->GetHeight() - Surface.GetTextHeight(TEXT("A"))) / 2;
+  const int TextMargin = (rcClient.GetSize().cy - Surface.GetTextHeight(TEXT("A"))) / 2;
 
-  int p1 = w0-w1-w2- Sender->GetHeight()-2;
-  int p2 = w0-w2- Sender->GetHeight()-2;
-  RECT rc = {0*ScreenScale,  0*ScreenScale, (int)Sender->GetHeight(), (int)Sender->GetHeight()};
+  const int p1 = w0-w1-w2- rcClient.GetSize().cy - DLGSCALE(2);
+  const int p2 = w0-w2- rcClient.GetSize().cy - DLGSCALE(2);
+  
+  const PixelRect rc = {
+      0, 
+      0,
+      rcClient.GetSize().cy, 
+      rcClient.GetSize().cy
+  };
+  
   if (DrawListIndex < n){
     int i = LowLimit + DrawListIndex;
 //    if ((WayPointList[Task[i].Index].Flags & LANDPOINT) >0)
@@ -121,16 +130,13 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
       Surface.SetBackgroundTransparent();
       Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawTextClip(Sender->GetHeight()+2*ScreenScale, TextMargin,
-		     sTmp, p1-4*ScreenScale);
+      Surface.DrawTextClip(rc.right + DLGSCALE(2), TextMargin, sTmp, p1-DLGSCALE(4));
 
-      _stprintf(sTmp, TEXT("%.0f %s"),
-		Task[i].Leg*DISTANCEMODIFY,
-		Units::GetDistanceName());
-      Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
+      _stprintf(sTmp, TEXT("%.0f %s"),Task[i].Leg*DISTANCEMODIFY,Units::GetDistanceName());
+      Surface.DrawText(rc.right+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
       _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),MsgToken(2179));
-      Surface.DrawText(Sender->GetHeight()+p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
+      Surface.DrawText(rc.right +p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
     }
 
@@ -143,22 +149,15 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
 	// LKTOKEN  _@M832_ = "add waypoint"
       _stprintf(sTmp, TEXT("  (%s)"), MsgToken(832));
-      Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
+      Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
     } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
 
       if (!AATEnabled || ISPARAGLIDER) {
-	// LKTOKEN  _@M735_ = "Total:"
-	_tcscpy(sTmp, MsgToken(735));
-	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
-
-	if (fai_ok) {
-	  _stprintf(sTmp, TEXT("%.0f %s FAI"), lengthtotal*DISTANCEMODIFY,
-		    Units::GetDistanceName());
-	} else {
-	  _stprintf(sTmp, TEXT("%.0f %s"), lengthtotal*DISTANCEMODIFY,
-		    Units::GetDistanceName());
-	}
-	Surface.DrawText(Sender->GetHeight()+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
+        // LKTOKEN  _@M735_ = "Total:"
+        Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken(735));
+	   _stprintf(sTmp, TEXT("%.0f %s%s"), lengthtotal*DISTANCEMODIFY, Units::GetDistanceName(), fai_ok?_T(" FAI"):_T(""));
+	
+       Surface.DrawText(rc.right +p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
       } else {
 
@@ -178,7 +177,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 		  DISTANCEMODIFY*lengthtotal,
 		  DISTANCEMODIFY*d1,
 		  Units::GetDistanceName());
-	Surface.DrawText(Sender->GetHeight()+2*ScreenScale, TextMargin, sTmp);
+	Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
       }
     }
   }
