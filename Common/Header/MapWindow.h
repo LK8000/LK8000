@@ -805,7 +805,6 @@ protected:
     static double Xstart, Ystart;
     static PeriodClock tsDownTime;
     static double Xlat, Ylat;
-    static double distance;
 
 
 /////////////////////////////////////////////////////
