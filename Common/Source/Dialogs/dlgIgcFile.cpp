@@ -165,7 +165,7 @@ namespace DlgIgcFile {
             int w0 = Sender->GetWidth();
 
             Surface.SetTextColor(RGB_BLACK);
-            Surface.DrawTextClip(2 * ScreenScale, 2 * ScreenScale, ItFileName->c_str(), w0 - ScreenScale * 5);
+            Surface.DrawTextClip(DLGSCALE(2), DLGSCALE(2), ItFileName->c_str(), w0 - DLGSCALE(2));
         }
     }
 
