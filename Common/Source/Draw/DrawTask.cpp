@@ -48,7 +48,6 @@ finish--;
 if(center_y < width)
   width = center_y-2;
 
-#ifdef RESCALE_PIXEL
 POINT startfinishline[2] = {{0,-width},
                             {0,width}};
 
@@ -65,28 +64,6 @@ if(TaskIdx == finish)
   track[2].x = -width/2 ; track[2].y= width/5;
   track[3] = track[0];
 }
-#else
-//
-// 20160122 note: values here are divided by screenscale because RotateShift is multiplying by screenscale.
-// So it is an even operation. With new RescalePixel we dont need this anymore.
-//
-POINT startfinishline[2] = {{0,-width/ScreenScale},
-                            {0,width/ScreenScale}};
-
-POINT track[] = {
-    {0,-width/5/ScreenScale},
-    {width/2/ScreenScale,0},
-    {0,width/5/ScreenScale},
-    {0,-width/5/ScreenScale}
-};
-if(TaskIdx == finish)
-{
-  track[0].x = -width/2/ScreenScale; track[0].y= -width/5/ScreenScale;
-  track[1].x = 0 ; track[1].y= 0;
-  track[2].x = -width/2/ScreenScale ; track[2].y= width/5/ScreenScale;
-  track[3] = track[0];
-}
-#endif
 
 LockTaskData(); // protect from external task changes
 double StartRadial = Task[TaskIdx].AATStartRadial;
@@ -130,10 +107,13 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
             } else {
                 LineBrg = Task[TaskIdx].Bisector;
             }
-            threadsafePolygonRotateShift(startfinishline, 2, center_x, center_y, LineBrg);
+            protateshift(startfinishline[0], LineBrg, center_x, center_y);
+            protateshift(startfinishline[1], LineBrg, center_x, center_y);
             Surface.Polyline(startfinishline, 2);
             if ((TaskIdx == 0) || (TaskIdx == finish)) {
-                threadsafePolygonRotateShift(track, array_size(track), center_x, center_y, LineBrg);
+                for(POINT& pt : track) {
+                    protateshift(pt, LineBrg, center_x, center_y);
+                }
                 Surface.Polygon(track, array_size(track));
             }
        break;
@@ -239,9 +219,9 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 				if(SectorType == LINE && !AATEnabled && ISGAAIRCRAFT) { // this Type exist only if not AAT task
 					double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
 #ifdef RESCALE_PIXEL
-					int length=RescalePixelSize(14); //Make intermediate WP lines always of the same size independent by zoom level
+					const int length=RescalePixelSize(14); //Make intermediate WP lines always of the same size independent by zoom level
 #else
-					int length=14*ScreenScale; //Make intermediate WP lines always of the same size independent by zoom level
+					const int length=IBLSCALE(14); //Make intermediate WP lines always of the same size independent by zoom level
 #endif
 
                     const auto& wpt = WayPointList[Task[i].Index];

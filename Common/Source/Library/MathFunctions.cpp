@@ -72,20 +72,12 @@ void protate(POINT &pin, const double &angle)
 
 
 void protateshift(POINT &pin, const double &angle, const int &xs, const int &ys) {
-  int x= pin.x;
-  int y= pin.y;
-  static double lastangle = 0;
-  static int cost=1024,sint=0;
-
-  if(angle != lastangle)
-    {
-      lastangle = angle;
-      cost = ifastcosine(angle);
-      sint = ifastsine(angle);
-    }
-  pin.x = (x*cost - y*sint + 512 + (xs*1024))/1024;
-  pin.y = (y*cost + x*sint + 512 + (ys*1024))/1024;
-
+    const int x = pin.x;
+    const int y = pin.y;
+    const int cost = ifastcosine(angle);
+    const int sint = ifastsine(angle);
+    pin.x = (x*cost - y*sint + 512 + (xs*1024))/1024;
+    pin.y = (y*cost + x*sint + 512 + (ys*1024))/1024;
 }
 
 
