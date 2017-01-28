@@ -173,7 +173,6 @@ PeriodClock MapWindow::tsDownTime;
 
 double MapWindow::Xlat = 0.;
 double MapWindow::Ylat = 0.;
-double MapWindow::distance = 0.;
 
 // Touch Screen Events Area
 short MapWindow::Y_BottomBar;
@@ -488,14 +487,12 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         }
 
         int gestDir = LKGESTURE_NONE;
-        int gestDist = -1;
 
         int gestX = startScreen.x - Pos.x;
         int gestY = startScreen.y - Pos.y;
+        int gestDist = isqrt4((gestX * gestX) + (gestY * gestY));
 
         if ((dontdrawthemap && (Pos.y < Y_BottomBar)) || ((MapSpaceMode == MSM_MAP))) {
-
-            gestDist = isqrt4((long) ((gestX * gestX) + (gestY * gestY)));
 
             // GESTURE DETECTION
             // if gestX >0 gesture from right to left , gestX <0 gesture from left to right
@@ -757,14 +754,6 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         }
 #endif
 
-        // we need to calculate it here only if needed
-        if (gestDist >= 0) {
-            distance = gestDist / ScreenScale;
-        } else {
-            distance = isqrt4((long) ((startScreen.x - Pos.x)*(startScreen.x - Pos.x)+ (startScreen.y - Pos.y)*(startScreen.y - Pos.y))) / ScreenScale;
-        }
-
-
         // Handling double click passthrough
         // Caution, timed clicks from PC with a mouse are different from real touchscreen devices
 
@@ -796,7 +785,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         }
 
         _Proj.Screen2LonLat(Pos, Xlat, Ylat);
-        if (SIMMODE && NOTANYPAN && (distance > NIBLSCALE(36))) {
+        if (SIMMODE && NOTANYPAN && (gestDist > NIBLSCALE(36))) {
             // This drag moves the aircraft (changes speed and direction)
             //
             // Notice: Parser is not active because there is no real gps. We can use GPS_INFO.
@@ -811,9 +800,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                     GPS_INFO.Altitude = DerivedDrawInfo.TerrainAlt;
                 GPS_INFO.Altitude += 200;
                 if (ISPARAGLIDER)
-                    GPS_INFO.Speed = min(16.0, max(minspeed, distance / 9));
+                    GPS_INFO.Speed = min(16.0, max<double>(minspeed, gestDist / NIBLSCALE(9)));
                 else
-                    GPS_INFO.Speed = min(100.0, max(minspeed, distance / 3));
+                    GPS_INFO.Speed = min(100.0, max<double>(minspeed, gestDist / NIBLSCALE(3)));
             }
             GPS_INFO.TrackBearing = (int) newbearing;
             if (GPS_INFO.TrackBearing == 360) GPS_INFO.TrackBearing = 0;
