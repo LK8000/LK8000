@@ -506,21 +506,19 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 	const TCHAR *Name = NULL;
 	if (AirspaceSelectInfo[i].airspace) Name = AirspaceSelectInfo[i].airspace->Name();
     if (Name) {
-
-      int w0, w1, w2, w3, x1, x2, x3;
-      if (ScreenLandscape) {
-        w0 = 202*ScreenScale;
-      } else {
-        w0 = 225*ScreenScale;
-      }
-      w1 = Surface.GetTextWidth(TEXT("XXX"));
-      w2 = Surface.GetTextWidth(TEXT(" 000km"));
-      _stprintf(sTmp, _T(" 000%s"), MsgToken(2179));
-      w3 = Surface.GetTextWidth(sTmp);
+      const PixelRect rcClient(Sender->GetClientRect());
+      const int w0 = rcClient.GetSize().cx;
+      const int w1 = Surface.GetTextWidth(TEXT("XXX")) + DLGSCALE(2);
       
-      x1 = w0-w1-w2-w3;
+      _stprintf(sTmp, TEXT(" 000%s"), Units::GetDistanceName());
+      const int w2 = Surface.GetTextWidth(sTmp) + DLGSCALE(2);
+      
+      _stprintf(sTmp, _T(" -000%s"), MsgToken(2179));
+      const int w3 = Surface.GetTextWidth(sTmp) + DLGSCALE(2);
+      
+      const int x1 = w0-w1-w2-w3;
 
-      Surface.DrawTextClip(2*ScreenScale, 2*ScreenScale, Name, x1-ScreenScale*5);
+      Surface.DrawTextClip(DLGSCALE(2), DLGSCALE(2), Name, x1-DLGSCALE(5));
       
       sTmp[0] = '\0';
       sTmp[1] = '\0';
@@ -528,19 +526,17 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 	  LK_tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
       // left justified
      
-      Surface.DrawText(x1, 2*ScreenScale, sTmp);
+      Surface.DrawText(x1, DLGSCALE(2), sTmp);
 
       // right justified after airspace type
-      _stprintf(sTmp, TEXT("%.0f%s"), 
-                AirspaceSelectInfo[i].Distance,
-                Units::GetDistanceName());
-      x2 = w0-w3-Surface.GetTextWidth(sTmp);
-      Surface.DrawText(x2, 2*ScreenScale, sTmp);
+      _stprintf(sTmp, TEXT("%.0f%s"), AirspaceSelectInfo[i].Distance, Units::GetDistanceName());
+      const int x2 = w0-w3-Surface.GetTextWidth(sTmp);
+      Surface.DrawText(x2, DLGSCALE(2), sTmp);
       
       // right justified after distance
       _stprintf(sTmp, TEXT("%d%s"),  iround(AirspaceSelectInfo[i].Direction), MsgToken(2179));
-      x3 = w0-Surface.GetTextWidth(sTmp);
-      Surface.DrawText(x3, 2*ScreenScale, sTmp);
+      const int x3 = w0-Surface.GetTextWidth(sTmp);
+      Surface.DrawText(x3, DLGSCALE(2), sTmp);
     } else {
       // should never get here!
     }
@@ -548,8 +544,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
     if (DrawListIndex == 0){
       Surface.SetTextColor(RGB_BLACK);
 	// LKTOKEN  _@M466_ = "No Match!" 
-      _stprintf(sTmp, TEXT("%s"), MsgToken(466));
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, sTmp);
+      Surface.DrawText(DLGSCALE(2), DLGSCALE(2), MsgToken(466));
     }
   }
 }
