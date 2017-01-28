@@ -285,8 +285,8 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
         } else {
 #endif
             // set a min mouse move to trigger panning
-            if ((abs(startScreen.x - Pos.x) + abs(startScreen.y - Pos.y))
-                    > (ScreenScale + 1)) {
+            
+            if ( ManhattanDistance<POINT, int>(startScreen, Pos) > IBLSCALE(1) ) {
                 _Proj.Screen2LonLat(Pos, Xlat, Ylat);
                 PanLongitude += (Xstart - Xlat);
                 PanLatitude += (Ystart - Ylat);
