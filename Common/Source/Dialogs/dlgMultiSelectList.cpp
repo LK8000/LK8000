@@ -235,8 +235,8 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
 }
 
 static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
-    (void) Sender;
-#define PICTO_WIDTH 50
+
+    #define PICTO_WIDTH 50
     
     Surface.SetTextColor(RGB_BLACK);
     if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {
@@ -244,7 +244,12 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         static CAirspaceBase airspace_copy;
         int i = DrawListIndex;
         LKASSERT(i < MAX_LIST_ITEMS);
-        RECT rc = {0 * ScreenScale, 0 * ScreenScale, PICTO_WIDTH*ScreenScale, 34 * ScreenScale};
+        PixelRect rc = {
+            0, 
+            0, 
+            DLGSCALE(PICTO_WIDTH), 
+            static_cast<PixelScalar>(Sender->GetHeight())
+        };
 
         const CAirspace* pAS = NULL;
         int HorDist, Bearing, VertDist;
@@ -414,15 +419,10 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
          ********************/
         Surface.SetBackgroundTransparent();
         Surface.SetTextColor(RGB_BLACK);
-        int iLen = _tcslen(text1);
-        if (iLen > 100)
-            iLen = 100;
-        Surface.DrawText((int) (PICTO_WIDTH * 1.1) * ScreenScale, 2 * ScreenScale, text1);
+        Surface.DrawText(rc.right + DLGSCALE(2), DLGSCALE(2), text1);
+        int ytext2 = Surface.GetTextHeight(text1);
         Surface.SetTextColor(RGB_DARKBLUE);
-        iLen = _tcslen(text2);
-        if (iLen > 100)
-            iLen = 100;
-        Surface.DrawText((int) (PICTO_WIDTH * 1.1) * ScreenScale, 15 * ScreenScale, text2);
+        Surface.DrawText(rc.right + DLGSCALE(2), ytext2, text2);
 
     }
 }
@@ -527,8 +527,23 @@ ListElement* dlgMultiSelectListShowModal(void) {
     wMultiSelectListList->SetEnterCallback(OnMultiSelectListListEnter);
 
     wMultiSelectListListEntry = (WndOwnerDrawFrame*) wf->FindByName(TEXT("frmMultiSelectListListEntry"));
-    LKASSERT(wMultiSelectListListEntry != NULL);
-    wMultiSelectListListEntry->SetCanFocus(true);
+    if(wMultiSelectListListEntry) {
+        /*
+         * control height must contains 2 text Line 
+         * Check and update Height if necessary
+         */
+        LKWindowSurface windowSurface(MainWindow);
+        LKBitmapSurface tmpSurface(windowSurface, 1, 1);
+
+        const auto oldFont = tmpSurface.SelectObject(wMultiSelectListListEntry->GetFont());
+        const int minHeight = 2 * tmpSurface.GetTextHeight(_T("dp")) + 2 * DLGSCALE(2);
+        tmpSurface.SelectObject(oldFont);
+        const int wHeight = wMultiSelectListListEntry->GetHeight();
+        if(minHeight > wHeight) {
+            wMultiSelectListListEntry->SetHeight(minHeight);
+        }
+        wMultiSelectListListEntry->SetCanFocus(true);
+    }
 
     UpdateList();
 
