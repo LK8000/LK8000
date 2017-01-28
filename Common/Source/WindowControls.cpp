@@ -26,6 +26,7 @@
 
 #include "Event/Event.h"
 #include "Asset.hpp"
+#include "ScreenGeometry.h"
 
 #ifndef USE_GDI
 #include "Screen/SubCanvas.hpp"
@@ -34,10 +35,8 @@
 using std::placeholders::_1;
 
 
-#define ISCALE ScreenScale
-
-#define DEFAULTBORDERPENWIDTH 1*ISCALE
-#define SELECTORWIDTH         4*ISCALE
+#define DEFAULTBORDERPENWIDTH DLGSCALE(1)
+#define SELECTORWIDTH         DLGSCALE(4)
 
 // utility functions
 
