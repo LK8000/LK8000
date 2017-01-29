@@ -40,8 +40,6 @@
 
 /**
  * Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
- * If unused, this function is a transparent #define RescalePixelSize(arg) arg
- * See ScreenGeometry.h
  * WARNING: use this function only after ScreenPixelRatio has been calculated by InitLKScreen().
  */
 gcc_pure inline
@@ -59,6 +57,5 @@ int DLGSCALE(int x) {
 }
 
 #define NIBLSCALE IBLSCALE
-#define RescalePixelSize IBLSCALE
 
 #endif

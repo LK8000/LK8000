@@ -91,7 +91,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=2;
 				break;
 			default:
-			    psize=RescalePixelSize(2);
+			    psize=IBLSCALE(2);
 				break;
 		}
 		break;
