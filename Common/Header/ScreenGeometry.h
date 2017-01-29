@@ -37,9 +37,6 @@
 // Here we fix a reference DPI to rescale pixels. Lower value means bigger rescaling.
 #define LK_REFERENCE_DPI  80
 
-#define MAXIBLSCALE    100     // CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
-
-
 /**
  * Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
  * If unused, this function is a transparent #define RescalePixelSize(arg) arg
@@ -57,27 +54,16 @@ int RescalePixelSize(int x) {
 
 gcc_pure inline
 int IBLSCALE(int x) {
-    return ScreenIntScale ? (x * ScreenScale) : (x * ScreenDScale);
+    extern int ScreenScale;
+    return (x * ScreenScale) >> 10;
 }
+
+#define NIBLSCALE IBLSCALE
 
 gcc_pure inline
 int DLGSCALE(int x) {
     return IBLSCALE(x);
 }
-
-
-// CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
-gcc_pure inline
-int NIBLSCALE(int x) {
-
-    extern int LKIBLSCALE[MAXIBLSCALE+1];
-
-
-    LKASSERT(x >= 0 && x <= MAXIBLSCALE);
-    return LKIBLSCALE[x];
-}
-
-
 
 
 #endif

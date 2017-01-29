@@ -34,7 +34,7 @@ unsigned short DpiSize=0;
 unsigned short ReferenceDpi=0;
 #endif
 
-int LKIBLSCALE[MAXIBLSCALE+1];
+int ScreenScale = 1<<10;
 
 
 unsigned short GetScreenGeometry(unsigned int x, unsigned int y);
@@ -174,19 +174,9 @@ void InitLKScreen() {
     // -----------------------------
     // Calculate Screen Scale Factor
     // -----------------------------
-    
-    //  int maxsize = std::max(ScreenSizeX, ScreenSizeY);
     int minsize = std::min(ScreenSizeX, ScreenSizeY);
-    
-    ScreenDScale = std::max(0.83, minsize / 240.0); // min.200 (240*.83)
-    ScreenScale = std::max(1,(int)lround(ScreenDScale));
+    ScreenScale = std::max(1<<10, (minsize<<10) / 240);
 
-    ScreenIntScale = (((double) ScreenScale) == ScreenDScale);
-
-    for (int i = 0; i <= MAXIBLSCALE; i++) {
-        LKIBLSCALE[i] = IBLSCALE(i);
-    }    
-    
     // This is used by RescalePixelSize(), defined in Makefile when needed.
     // Some functions using ScreenScale have been changed to use rescaled pixels.
     // We must check that pixelratio is never lower than ScreenScale.
@@ -242,10 +232,8 @@ void InitLKScreen() {
     StartupStore(_T("..... ScreenDensity    = %d" NEWLINE), ScreenDensity);
     StartupStore(_T("..... ScreenGeometry   = %d" NEWLINE), ScreenGeometry);
     StartupStore(_T("..... ScreenSize(enum) = %d" NEWLINE), ScreenSize);
-    StartupStore(_T("..... ScreenDScale     = %.3f" NEWLINE), ScreenDScale);
-    StartupStore(_T("..... ScreenScale      = %d" NEWLINE), ScreenScale);
-    StartupStore(_T("..... ScreenIntScale   = %s" NEWLINE), ScreenIntScale ? _T("true") : _T("false"));
     StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
+    StartupStore(_T("..... ScreenScale      = %d.%d" NEWLINE), ScreenScale>>10, ScreenScale&0x3FF);
 
 #ifdef RESCALE_PIXEL  
     StartupStore(_T("..... ReferenceDpi     = %d" NEWLINE), ReferenceDpi);

@@ -13,10 +13,7 @@
 
 #include "Screen/Point.hpp"
 #include "Defines.h"
-
-extern bool ScreenIntScale;
-extern double ScreenDScale;
-extern int ScreenScale;
+#include "ScreenGeometry.h"
 
 namespace Layout {
    PixelScalar Scale(const PixelScalar x) {
