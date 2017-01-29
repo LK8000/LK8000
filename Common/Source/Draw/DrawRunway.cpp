@@ -86,8 +86,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
      case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
      case ssnone:
 
-      /*   the line above is only a workaround to avoid runaway to be tool long on  Anrtoid and Kobo
-       *   waiting  for a definitive and more elegant solution.
+      //   the line above is only a workaround to avoid runaway to be tool long on  Anrtoid and Kobo
+      //   waiting  for a definitive and more elegant solution.
+      //
 
          #define X ScreenSizeX==
 	 #define Y ScreenSizeY==
@@ -125,7 +126,6 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
          }
          break;
 
-             */
     }
 
 
