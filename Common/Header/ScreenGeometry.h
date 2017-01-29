@@ -55,18 +55,10 @@ int RescalePixelSize(int x) {
 
 gcc_pure inline
 int IBLSCALE(int x) {
-    return ScreenIntScale ? (x * ScreenScale) : (x * ScreenDScale);
+    extern int ScreenScale;
+    return (x * ScreenScale) >> 10;
 }
 
-// CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
-
-#define MAXIBLSCALE    100
-extern int LKIBLSCALE[MAXIBLSCALE+1];
-
-gcc_pure inline
-int NIBLSCALE(int x) {
-    LKASSERT(x >= 0 && x <= MAXIBLSCALE);
-    return LKIBLSCALE[x];
-}
+#define NIBLSCALE IBLSCALE
 
 #endif

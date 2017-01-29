@@ -315,9 +315,6 @@ void Globals_Init(void) {
   ScreenSizeX=0;
   ScreenSizeY=0;
   ScreenLandscape=false;
-  ScreenDScale=1;
-  ScreenScale=1;
-  ScreenIntScale=false;
   Screen0Ratio=1;
   ScreenGeometry=0;
   ScreenDensity=0;

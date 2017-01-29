@@ -24,11 +24,12 @@
 #include <X11/Xlib.h>
 #endif
 
-
 /**
- * lookup table for NIBLSCALE(x)
+ * calc by LKInitScreen  "min(Width,Height) / 240"
+ *  can't be used outside IBLSCALE
  */
-int LKIBLSCALE[MAXIBLSCALE+1];
+int ScreenScale = 1<<10;
+
 
 //
 // Inside LKFonts we support special resolutions at best possible tuned settings.
@@ -228,17 +229,8 @@ void InitLKScreen() {
     // Calculate Screen Scale Factor
     // -----------------------------
     
-    //  int maxsize = std::max(ScreenSizeX, ScreenSizeY);
     int minsize = std::min(ScreenSizeX, ScreenSizeY);
-    
-    ScreenDScale = std::max(1.0, minsize / 240.0); // always start w/ shortest dimension
-    ScreenScale = lround(ScreenDScale);
-
-    ScreenIntScale = (((double) ScreenScale) == ScreenDScale);
-
-    for (int i = 0; i <= MAXIBLSCALE; i++) {
-        LKIBLSCALE[i] = IBLSCALE(i);
-    }    
+    ScreenScale = std::max(1<<10, (minsize<<10) / 240);
     
     // This is used by RescalePixelSize(), defined in Makefile when needed.
     // Some functions using ScreenScale have been changed to use rescaled pixels.
@@ -294,10 +286,8 @@ void InitLKScreen() {
     StartupStore(_T("..... ScreenDensity    = %d" NEWLINE), ScreenDensity);
     StartupStore(_T("..... ScreenGeometry   = %d" NEWLINE), ScreenGeometry);
     StartupStore(_T("..... ScreenSize(enum) = %d" NEWLINE), ScreenSize);
-    StartupStore(_T("..... ScreenDScale     = %.3f" NEWLINE), ScreenDScale);
-    StartupStore(_T("..... ScreenScale      = %d" NEWLINE), ScreenScale);
-    StartupStore(_T("..... ScreenIntScale   = %s" NEWLINE), ScreenIntScale ? _T("true") : _T("false"));
     StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
+    StartupStore(_T("..... ScreenScale      = %d.%d" NEWLINE), ScreenScale>>10, ScreenScale&0x3FF);
 
 #ifdef RESCALE_PIXEL  
     StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
