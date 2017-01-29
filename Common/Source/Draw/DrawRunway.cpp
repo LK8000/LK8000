@@ -181,8 +181,8 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   }
 
 #ifdef ANDROID
-    l = (int)(l * 2.0 * fScaleFact / ScreenScale ); if(l==0) l=1;
-    b = (int)(b * 2.0 * fScaleFact / ScreenScale ); if(b==0) b=1;
+    l = (int)(l * 2.0 * fScaleFact / IBLSCALE(1) ); if(l==0) l=1;
+    b = (int)(b * 2.0 * fScaleFact / IBLSCALE(1) ); if(b==0) b=1;
     p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
 #else
   l = (int)(l * fScaleFact); if(l==0) l=1;
