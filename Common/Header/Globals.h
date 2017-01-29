@@ -462,6 +462,7 @@ GEXTERN double Screen0Ratio;
 GEXTERN short ScreenGeometry;
 GEXTERN int ScreenDensity;
 GEXTERN int ScreenThinSize;
+GEXTERN double Screen84Factor;
 
 #ifdef RESCALE_PIXEL
 GEXTERN int ScreenPixelRatio; // 22.10 fixed size number

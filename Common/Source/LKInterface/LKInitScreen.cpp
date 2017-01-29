@@ -120,6 +120,11 @@ void InitLKScreen() {
     //
     ScreenThinSize = RescalePixelSize(1);
 
+    // 
+    // Some functions are tuned around 800x480 using DrawScale. This is the correction factor.
+    //
+    Screen84Factor=NIBLSCALE(30)/60.0;
+
     GestureSize = RescalePixelSize(50);
 
     // Override defaults for custom settings
@@ -155,6 +160,7 @@ void InitLKScreen() {
     StartupStore(_T("..... ScreenScale      = %d" NEWLINE), ScreenScale);
     StartupStore(_T("..... ScreenIntScale   = %s" NEWLINE), ScreenIntScale ? _T("true") : _T("false"));
     StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
+    StartupStore(_T("..... Screen84Factor   = %f" NEWLINE), Screen84Factor);
 
 #ifdef RESCALE_PIXEL  
     StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);

@@ -322,6 +322,7 @@ void Globals_Init(void) {
   ScreenGeometry=0;
   ScreenDensity=0;
   ScreenThinSize=1;
+  Screen84Factor=1;
   
 #ifdef RESCALE_PIXEL  
   ScreenPixelRatio=1<<10; // This is 1.0
