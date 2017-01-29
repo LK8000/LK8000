@@ -42,8 +42,10 @@ double MapWindow::LimitMapScale(double value) {
 }
 
 
-
-
+//
+// DO NOT CHANGE. This is the unity upon which rescaling relies on.
+// It is like 0 degrees Celsius.
+//
 int MapWindow::GetMapResolutionFactor(void) {
   return NIBLSCALE(30);
 }
