@@ -26,10 +26,14 @@
 
 /**
  * calc by LKInitScreen  "min(Width,Height) / 240"
- *  can't be used outside IBLSCALE
+ *  used for scaling Dialog Template
  */
-int ScreenScale = 1<<10;
+int DialogScale = 1<<10; // 1.0
 
+/**
+ * DPI Scale
+ */
+int ScreenPixelRatio = 1<<10; // 1.0
 
 //
 // Inside LKFonts we support special resolutions at best possible tuned settings.
@@ -163,6 +167,17 @@ int GetScreenDensity(void) {
     return (short) xres;
 #endif
 
+#ifdef WIN32 
+    switch(ScreenSize) {
+        case ss240x320:
+        case ss240x400:
+        case ss320x240:
+        case ss400x240:
+        case ss480x272:
+        case ss272x480:
+            return LK_REFERENCE_DPI;
+    }
+#endif
     // if we are not able to get correct value just return default estimation
     return sqrt(ScreenSizeX * ScreenSizeX + ScreenSizeY * ScreenSizeY) / 5; // default to a 5 in screen;
 }
@@ -228,18 +243,12 @@ void InitLKScreen() {
     // -----------------------------
     // Calculate Screen Scale Factor
     // -----------------------------
-    
-    int minsize = std::min(ScreenSizeX, ScreenSizeY);
-    ScreenScale = std::max(1<<10, (minsize<<10) / 240);
-    
-    // This is used by RescalePixelSize(), defined in Makefile when needed.
-    // Some functions using ScreenScale have been changed to use rescaled pixels.
-    // We must check that pixelratio is never lower than ScreenScale.
-    ScreenDensity = GetScreenDensity();
-#ifdef RESCALE_PIXEL
-  ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/LK_REFERENCE_DPI);
-#endif
 
+    int minsize = std::min(ScreenSizeX, ScreenSizeY);
+    DialogScale = std::max(1<<10, (minsize<<10) / 240);
+    
+    ScreenDensity = GetScreenDensity();
+    ScreenPixelRatio = ((ScreenDensity<<10)/LK_REFERENCE_DPI);
     
     // -----------------------------
     // Initialize some Global variable 
@@ -248,14 +257,14 @@ void InitLKScreen() {
     
     // Initially, this is the default. Eventually retune it for each resolution.
     // We might in the future also set a UseStretch, with or without Hires.
-    UseHiresBitmap = (ScreenScale > 1);
+    UseHiresBitmap = (lround(ScreenPixelRatio) > 1);
     
     //
     // The thinnest line somehow visible on screen from 35cm distance.
     //
-    ScreenThinSize = RescalePixelSize(1);
+    ScreenThinSize = IBLSCALE(1);
 
-    GestureSize = RescalePixelSize(50);
+    GestureSize = IBLSCALE(50);
 
     // Override defaults for custom settings
     switch ((ScreenSize_t) ScreenSize) {
@@ -287,11 +296,9 @@ void InitLKScreen() {
     StartupStore(_T("..... ScreenGeometry   = %d" NEWLINE), ScreenGeometry);
     StartupStore(_T("..... ScreenSize(enum) = %d" NEWLINE), ScreenSize);
     StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
-    StartupStore(_T("..... ScreenScale      = %d.%d" NEWLINE), ScreenScale>>10, ScreenScale&0x3FF);
 
-#ifdef RESCALE_PIXEL  
     StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
-#endif
+    StartupStore(_T("..... DialogScale      = %d.%d" NEWLINE), DialogScale >> 10, DialogScale & 0x3FF);
 
     StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
     StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));

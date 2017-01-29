@@ -45,20 +45,20 @@
  * WARNING: use this function only after ScreenPixelRatio has been calculated by InitLKScreen().
  */
 gcc_pure inline
-int RescalePixelSize(int x) {
-#ifdef RESCALE_PIXEL
+int IBLSCALE(int x) {
+    extern int ScreenPixelRatio;
+    
     return (x * ScreenPixelRatio) >> 10;
-#else
-    return x;
-#endif
 }
 
-gcc_pure inline
-int IBLSCALE(int x) {
-    extern int ScreenScale;
-    return (x * ScreenScale) >> 10;
+inline
+int DLGSCALE(int x) {
+    extern int DialogScale;
+    
+    return (x * DialogScale) >> 10;
 }
 
 #define NIBLSCALE IBLSCALE
+#define RescalePixelSize IBLSCALE
 
 #endif
