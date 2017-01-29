@@ -410,17 +410,16 @@ bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
     return (_tcscmp(dev.Name, DeviceName) == 0);
 }
 
-bool ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
-    switch (idx) {
-        case 0:
-            ReadPort1Settings(szPort, SpeedIndex, Bit1Index);
-            return true;
-        case 1:
-            ReadPort2Settings(szPort, SpeedIndex, Bit1Index);
-            return true;
-        default:
-            return false;
-    }
+
+bool GetPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
+    if (idx >= 0)
+      if (idx < NUMDEV)
+      {
+          ReadPortSettings(idx, szPort, SpeedIndex, Bit1Index);
+        return true;
+      }
+    return false;
+
 }
 
 void RestartCommPorts() {
@@ -992,10 +991,9 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 #ifdef RADIO_ACTIVE
 
 bool devDriverActivated(const TCHAR *DeviceName) {
-    if ((_tcscmp(dwDeviceName1, DeviceName) == 0) || (_tcscmp(dwDeviceName2, DeviceName) == 0)) {
-        if (_tcscmp(szPort1, szPort2) == 0) {
-            return true;
-        }
+  for(int i=0; i <NUMDEV; i++)
+    if ((_tcscmp(dwDeviceName[i], DeviceName) == 0)) {
+            return true;        
     }
     return false;
 }

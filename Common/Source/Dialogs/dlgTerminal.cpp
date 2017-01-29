@@ -21,8 +21,13 @@ static WndListFrame *wTTYList=NULL;
 static WndOwnerDrawFrame *wTTYListEntry = NULL;
 
 static TCHAR tmps[100];
-
-
+TCHAR* DeviceName(int dev)
+{
+  static TCHAR NewName[50];
+  _tcscpy(NewName,MsgToken(232));
+  NewName[(_tcslen(NewName))-1] ='A'+dev;
+  return NewName;
+}
 #define INTERLINE NIBLSCALE(2);
 
 static bool OnTimerNotify(WndForm* pWnd) {
@@ -49,9 +54,8 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
   unsigned int y=0, first, last;
 
-  const DeviceDescriptor_t& ComPort = DeviceList[active];
   _stprintf(tmps,_T("[ Rx=%u ErrRx=%u Tx=%u ErrTx=%u ]"),
-      ComPort.Rx,ComPort.ErrRx,ComPort.Tx,ComPort.ErrTx);
+      DeviceList[active].Rx ,  DeviceList[active].Tx,  DeviceList[active].ErrRx ,  DeviceList[active].ErrTx);
   Surface.DrawText(0, 0, tmps);
   y+=hline;
 
@@ -87,52 +91,69 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
 static bool stopped=false;
 
-static void OnPort1Clicked(WndButton* pWnd) {
+
+static void OnPortClicked(WndButton* pWnd) {
   // Name is available only in Fly mode, not inited in SIM mode because no devices, and not inited if disabled
-  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(232),
-     _tcslen(DeviceList[0].Name)>0?DeviceList[0].Name:MsgToken(1600));
+  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(SelectedDevice),
+     _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken(1600));
   wf->SetCaption(tmps);
-  ComCheck_ActivePort=0; // needed
-  ComCheck_Reset=0;
+  ComCheck_ActivePort=SelectedDevice; // needed
+  ComCheck_Reset=ComCheck_ActivePort;
   wf->SetTimerNotify(500, OnTimerNotify);
   ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
   stopped=false;
 }
 
-static void OnPort2Clicked(WndButton* pWnd) {
-  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(233),
-      _tcslen(DeviceList[1].Name)>0?DeviceList[1].Name:MsgToken(1600));
-  wf->SetCaption(tmps);
-  ComCheck_ActivePort=1; // needed
-  ComCheck_Reset=1;
-  wf->SetTimerNotify(500, OnTimerNotify);
-  ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
-  stopped=false;
-}
+
 
 static void OnStopClicked(WndButton* pWnd) {
   stopped=!stopped;
   wf->SetCaption(tmps);
   if (stopped) {
-      _stprintf(tmps,_T("%s: %s %s"),MsgToken(1871), MsgToken(670),
-           ComCheck_ActivePort==0?MsgToken(232):MsgToken(233));
+      _stprintf(tmps,_T("%s: %s  %s"),MsgToken(1871), MsgToken(670),
+          DeviceName(SelectedDevice));
       wf->SetCaption(tmps);
       wf->SetTimerNotify(0, NULL);
       ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(1200)); // Start
   } else {
-      if (ComCheck_ActivePort==0) {
-          _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(232),
-              _tcslen(DeviceList[0].Name)>0?DeviceList[0].Name:MsgToken(1600));
+      {
+        _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(SelectedDevice),
+        _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken(1600));
 
-      } else {
-          _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),MsgToken(233),
-              _tcslen(DeviceList[1].Name)>0?DeviceList[1].Name:MsgToken(1600));
       }
       wf->SetCaption(tmps);
       wf->SetTimerNotify(500, OnTimerNotify);
       ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
   }
 }
+
+
+static void OnPrevClicked(WndButton* pWnd) {
+    if(!stopped)
+      OnStopClicked(pWnd);
+
+    if(SelectedDevice==0)
+      SelectedDevice = NUMDEV-1;
+    else
+      SelectedDevice--;
+    OnPortClicked(pWnd);
+ //   OnStopClicked(pWnd);
+
+}
+
+static void OnNextClicked(WndButton* pWnd) {
+  if(!stopped)
+    OnStopClicked(pWnd);
+
+    SelectedDevice++;
+    if(SelectedDevice==NUMDEV)
+      SelectedDevice = 0;
+
+    OnPortClicked(pWnd);
+  //  OnStopClicked(pWnd);
+
+}
+
 
 static void OnTTYCloseClicked(WndButton* pWnd) {
   ComCheck_ActivePort=-1;
@@ -161,8 +182,8 @@ void dlgTerminal(int portnumber) {
 
 
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnTTYCloseClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSelectPort1")))->SetOnClickNotify(OnPort1Clicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSelectPort2")))->SetOnClickNotify(OnPort2Clicked);
+  ((WndButton *)wf->FindByName(TEXT("cmdSelectPort1")))->SetOnClickNotify(OnPrevClicked);
+  ((WndButton *)wf->FindByName(TEXT("cmdSelectPort2")))->SetOnClickNotify(OnNextClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetOnClickNotify(OnStopClicked);
 
   wTTYList = (WndListFrame*)wf->FindByName(TEXT("frmTTYList"));
@@ -173,16 +194,7 @@ void dlgTerminal(int portnumber) {
   LKASSERT(wTTYListEntry!=NULL);
   wTTYListEntry->SetWidth(wf->GetWidth()-NIBLSCALE(2));
 
-  switch(portnumber) {
-      case 0:
-          OnPort1Clicked(NULL);
-          break;
-      case 1:
-          OnPort2Clicked(NULL);
-          break;
-      default:
-          break;
-  }
+  OnPortClicked(NULL);
 
 
 

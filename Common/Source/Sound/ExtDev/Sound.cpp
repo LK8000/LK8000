@@ -47,12 +47,20 @@ bool SetSoundVolume() {
     return false;
 }
   
+bool ExtSound(void)
+{
+  for (int i=0 ; i < NUMDEV; i++)
+    if(UseExtSound[i]) return true;
+  return false;
+}
+
 void LKSound(const TCHAR *lpName) {
     TCHAR *ptrExt;
     TCHAR soundFileStr[100];
     LKASSERT(lpName);
 
-    if(!lpName || !bSoundInit || !EnableSoundModes || (!UseExtSound1 && !UseExtSound2)) {
+    if(!lpName || !bSoundInit || !EnableSoundModes || (!ExtSound())
+      ) {
         return;
     }
     
@@ -76,21 +84,34 @@ void LKSound(const TCHAR *lpName) {
     const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
-        if (UseExtSound1) {
+        if (UseExtSound[0]) {
             devWriteNMEAString(devA(), nmeaStr.c_str());
         }
-        if (UseExtSound2) {
+        if (UseExtSound[1]) {
             devWriteNMEAString(devB(), nmeaStr.c_str());
+        }
+        if (UseExtSound[2]) {
+            devWriteNMEAString(devC(), nmeaStr.c_str());
+        }
+        if (UseExtSound[3]) {
+            devWriteNMEAString(devD(), nmeaStr.c_str());
+        }
+        if (UseExtSound[4]) {
+            devWriteNMEAString(devE(), nmeaStr.c_str());
+        }
+        if (UseExtSound[5]) {
+            devWriteNMEAString(devF(), nmeaStr.c_str());
         }
     }
         
 }
 
+
 void PlayResource (const TCHAR* lpName) {
 
     LKASSERT(lpName);
 
-    if(!lpName || !bSoundInit || !EnableSoundModes || (!UseExtSound1 && !UseExtSound2)) {
+    if(!lpName || !bSoundInit || !EnableSoundModes || (!ExtSound())) {
         return;
     }
 
@@ -107,11 +128,23 @@ void PlayResource (const TCHAR* lpName) {
     const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
 
     if (!nmeaStr.empty()) {
-        if (UseExtSound1) {
+        if (UseExtSound[0]) {
             devWriteNMEAString(devA(), nmeaStr.c_str());
         }
-        if (UseExtSound2) {
+        if (UseExtSound[1]) {
             devWriteNMEAString(devB(), nmeaStr.c_str());
+        }
+        if (UseExtSound[2]) {
+            devWriteNMEAString(devC(), nmeaStr.c_str());
+        }
+        if (UseExtSound[3]) {
+            devWriteNMEAString(devD(), nmeaStr.c_str());
+        }
+        if (UseExtSound[4]) {
+            devWriteNMEAString(devE(), nmeaStr.c_str());
+        }
+        if (UseExtSound[5]) {
+            devWriteNMEAString(devF(), nmeaStr.c_str());
         }
     }
         

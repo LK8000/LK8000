@@ -18,42 +18,42 @@ bool	EnableLogNMEA = false;
 // New LogNMEA
 void LogNMEA(TCHAR* text, int PortNum) {
 
-static FILE *logfp = NULL;
-static FILE *logfp0= NULL;
-static FILE *logfp1= NULL;
+static FILE *logfpall = NULL;
+static FILE *logfsingle[NUMDEV]= {NULL,NULL,NULL,NULL,NULL,NULL};
+
 static int iLastPort =-1;
 static bool wasWriting=false;
 
 
   if (!EnableLogNMEA) {
       if (wasWriting) { 
-          if(logfp != NULL) {
-              fclose(logfp) ;
-              logfp = NULL;
+          if(logfpall != NULL) {
+              fclose(logfpall) ;
+              logfpall = NULL;
           }
-          if(logfp0 != NULL) {
-              fclose(logfp0);
-              logfp0 = NULL;
+          for(int dev = 0; dev < NUMDEV; dev++)
+          {
+            if(logfsingle[dev] != NULL) {
+              fclose(logfsingle[dev]);
+              logfsingle[dev] = NULL;
+            }
           }
-          if(logfp1 != NULL) {
-              fclose(logfp1);
-              logfp1 = NULL;
-          }
+
           iLastPort =-1;
           wasWriting=false;
       }
       return;
   }
 
-  if(logfp == NULL)
+  if(logfpall == NULL)
   {
         TCHAR fpname[LKSIZEBUFFERPATH];
         TCHAR buffer[LKSIZEBUFFERPATH];
 	LocalPath(buffer,TEXT(LKD_LOGS));
 	_stprintf(fpname, _T("%s%sNMEA_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP), GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day,
 	GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-	logfp = _tfopen(fpname, _T("a"));
-	if (logfp == NULL) {
+	logfpall = _tfopen(fpname, _T("a"));
+	if (logfpall == NULL) {
 		DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE"));
 		EnableLogNMEA=false;
 		return;
@@ -64,36 +64,26 @@ static bool wasWriting=false;
   if(iLastPort != -1)  /* already a port info ? */
   {
     if( iLastPort != PortNum) /* more than one port active (another than the previous) */
+    {
+      if((PortNum >=0) && (PortNum < NUMDEV))
+      {
+        if(logfsingle[PortNum] == NULL)
 	{
-	  if(logfp0 == NULL)
-	  {
-                TCHAR fpname[LKSIZEBUFFERPATH];
-                TCHAR buffer[LKSIZEBUFFERPATH];
-		LocalPath(buffer,TEXT(LKD_LOGS));
-	    _stprintf(fpname, _T("%s%sNMEA_A_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP), GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-		logfp0 = _tfopen(fpname, _T("a"));
-		if (logfp0 == NULL) {
-		  DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT A:"));
-		  return; }
-                wasWriting=true;
-	  }
-
-	  if(logfp1 == NULL)
-	  {
-                TCHAR fpname[LKSIZEBUFFERPATH];
-                TCHAR buffer[LKSIZEBUFFERPATH];
-        LocalPath(buffer,TEXT(LKD_LOGS));
-		_stprintf(fpname, _T("%s%sNMEA_B_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP), GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-		logfp1 = _tfopen(fpname, _T("a"));
-		if (logfp1 == NULL) {
-		  DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT B:"));
-		  return; }
-                wasWriting=true;
-	  }
+          TCHAR fpname[LKSIZEBUFFERPATH];
+          TCHAR buffer[LKSIZEBUFFERPATH];
+	  LocalPath(buffer,TEXT(LKD_LOGS));
+	  _stprintf(fpname, _T("%s%sNMEA_%C_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP),'A'+PortNum, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	  logfsingle[PortNum] = _tfopen(fpname, _T("a"));
+	  if (logfsingle[PortNum] == NULL) {
+	    DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT A:"));
+	  return; }
+          wasWriting=true;
 	}
+      }
+    }
   }
-  iLastPort = PortNum;
 
+  iLastPort = PortNum;
 
   char snmea[LKSIZENMEA];
   LKASSERT(_tcslen(text)<sizeof(snmea));
@@ -116,19 +106,13 @@ static bool wasWriting=false;
 	snmea[l-1]=0;
   }
 
-  if( logfp != NULL)
-    fprintf(logfp,"%s",snmea);
+  if( logfpall != NULL)
+    fprintf(logfpall,"%s",snmea);
 
-   if(PortNum ==0)
-   {
-     if(logfp0 != NULL)
-       fprintf(logfp0,"%s",snmea);
-   }
-   else
-   {
-     if(PortNum ==1)
-       if(logfp1 != NULL)
-         fprintf(logfp1,"%s",snmea);
-   }
+
+  if(logfsingle[PortNum] != NULL)
+    fprintf(logfsingle[PortNum],"%s",snmea);
+
+
 }
 

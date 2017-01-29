@@ -35,8 +35,8 @@ void FindLatitudeLongitude(double Lat, double Lon,
                            double *lat_out, double *lon_out);
 void ConvertFlightLevels(void);
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc);
-void ReadPort1Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index);
-void ReadPort2Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit2Index);
+void ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index);
+
 //void ReadPort3Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit3Index);
 
 
