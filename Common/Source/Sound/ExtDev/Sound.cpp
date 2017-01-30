@@ -47,11 +47,34 @@ bool SetSoundVolume() {
     return false;
 }
   
-bool ExtSound(void)
-{
-  for (int i=0 ; i < NUMDEV; i++)
-    if(UseExtSound[i]) return true;
+static
+bool ExtSound(const TCHAR *lpName) {
+  if(!lpName || !bSoundInit || !EnableSoundModes) {
+      return false;
+  }    
+  
+  for (int i=0 ; i < NUMDEV; i++) {
+    if(UseExtSound[i]) {
+        return true;
+    }
+  }
   return false;
+}
+
+static
+void PlayExtSound(sound_code_t sound_code) {
+    const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
+    if (!nmeaStr.empty()) {
+        for(unsigned i = 0; i < NUMDEV; ++i) {
+            
+            static_assert(array_size(UseExtSound) == NUMDEV, "invalid array size");
+            static_assert(array_size(DeviceList) == NUMDEV, "invalid array size");
+            
+            if (UseExtSound[i]) {
+                devWriteNMEAString(DeviceList[i], nmeaStr.c_str());
+            }
+        }
+    }   
 }
 
 void LKSound(const TCHAR *lpName) {
@@ -59,8 +82,7 @@ void LKSound(const TCHAR *lpName) {
     TCHAR soundFileStr[100];
     LKASSERT(lpName);
 
-    if(!lpName || !bSoundInit || !EnableSoundModes || (!ExtSound())
-      ) {
+    if(!ExtSound(lpName)) {
         return;
     }
     
@@ -81,29 +103,7 @@ void LKSound(const TCHAR *lpName) {
         sound_code = sound_code_t::DEFAULT;
     }
     
-    const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
-
-    if (!nmeaStr.empty()) {
-        if (UseExtSound[0]) {
-            devWriteNMEAString(devA(), nmeaStr.c_str());
-        }
-        if (UseExtSound[1]) {
-            devWriteNMEAString(devB(), nmeaStr.c_str());
-        }
-        if (UseExtSound[2]) {
-            devWriteNMEAString(devC(), nmeaStr.c_str());
-        }
-        if (UseExtSound[3]) {
-            devWriteNMEAString(devD(), nmeaStr.c_str());
-        }
-        if (UseExtSound[4]) {
-            devWriteNMEAString(devE(), nmeaStr.c_str());
-        }
-        if (UseExtSound[5]) {
-            devWriteNMEAString(devF(), nmeaStr.c_str());
-        }
-    }
-        
+    PlayExtSound(sound_code);
 }
 
 
@@ -111,7 +111,7 @@ void PlayResource (const TCHAR* lpName) {
 
     LKASSERT(lpName);
 
-    if(!lpName || !bSoundInit || !EnableSoundModes || (!ExtSound())) {
+    if(!ExtSound(lpName)) {
         return;
     }
 
@@ -125,28 +125,6 @@ void PlayResource (const TCHAR* lpName) {
         sound_code = static_cast<sound_code_t>(resource_sound);
     }
     
-    const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
-
-    if (!nmeaStr.empty()) {
-        if (UseExtSound[0]) {
-            devWriteNMEAString(devA(), nmeaStr.c_str());
-        }
-        if (UseExtSound[1]) {
-            devWriteNMEAString(devB(), nmeaStr.c_str());
-        }
-        if (UseExtSound[2]) {
-            devWriteNMEAString(devC(), nmeaStr.c_str());
-        }
-        if (UseExtSound[3]) {
-            devWriteNMEAString(devD(), nmeaStr.c_str());
-        }
-        if (UseExtSound[4]) {
-            devWriteNMEAString(devE(), nmeaStr.c_str());
-        }
-        if (UseExtSound[5]) {
-            devWriteNMEAString(devF(), nmeaStr.c_str());
-        }
-    }
-        
+    PlayExtSound(sound_code);
 }
 

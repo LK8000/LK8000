@@ -72,7 +72,7 @@ static bool wasWriting=false;
           TCHAR fpname[LKSIZEBUFFERPATH];
           TCHAR buffer[LKSIZEBUFFERPATH];
 	  LocalPath(buffer,TEXT(LKD_LOGS));
-	  _stprintf(fpname, _T("%s%sNMEA_%C_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP),'A'+PortNum, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	  _stprintf(fpname, _T("%s%sNMEA_%c_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP),_T('A')+PortNum, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 	  logfsingle[PortNum] = _tfopen(fpname, _T("a"));
 	  if (logfsingle[PortNum] == NULL) {
 	    DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT A:"));
