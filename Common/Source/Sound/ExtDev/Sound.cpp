@@ -71,7 +71,7 @@ void PlayExtSound(sound_code_t sound_code) {
             static_assert(array_size(DeviceList) == NUMDEV, "invalid array size");
             
             if (UseExtSound[i]) {
-                devWriteNMEAString(DeviceList[i], nmeaStr.c_str());
+                devWriteNMEAString(&DeviceList[i], nmeaStr.c_str());
             }
         }
     }   
