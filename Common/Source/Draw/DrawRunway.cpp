@@ -85,7 +85,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
      case ss800x600: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
      case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
      case ssnone:
-
+#if defined(ANDROID) || defined(KOBO)
+                 rwl = 6.0; rwb = 2.5; cir = 5.0; break;
+#else
       //   the line above is only a workaround to avoid runaway to be tool long on  Anrtoid and Kobo
       //   waiting  for a definitive and more elegant solution.
       //
@@ -125,6 +127,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
              }
          }
          break;
+#endif
 
     }
 
@@ -170,10 +173,12 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     if (picto)
        l = (int) (rwl);
     else {
+#ifndef __linux__
        // We cant rescale runways , no method found.
        if (ScreenSize==ssnone)
            l = (int) (rwl * (1.0+ (680.0/800.0-1.0)/4.0)); // wtf..!
        else
+#endif
            l = (int) (rwl * (1.0+ ((double)wp->RunwayLen/800.0-1.0)/4.0));
     }
 
@@ -184,9 +189,15 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     b = l ;
   }
 
+#if defined(ANDROID) || defined(KOBO)
+  l = (int)(l * 2.0 * fScaleFact / ScreenScale); if(l==0) l=1;
+  b = (int)(b * 2.0 * fScaleFact / ScreenScale); if(b==0) b=1;
+  p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
+#else
   l = (int)(l * fScaleFact); if(l==0) l=1;
   b = (int)(b * fScaleFact); if(b==0) b=1;
   p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
+#endif
 
   switch(wp->Style) {
 	case STYLE_AIRFIELDSOLID: solid = true;  bRunway  = true;  bOutland = false;  bGlider  = false;	break;
