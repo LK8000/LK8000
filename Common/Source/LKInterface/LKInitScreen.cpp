@@ -248,7 +248,8 @@ void InitLKScreen() {
     DialogScale = std::max(1<<10, (minsize<<10) / 240);
     
     ScreenDensity = GetScreenDensity();
-    ScreenPixelRatio = ((ScreenDensity<<10)/LK_REFERENCE_DPI);
+    // ScreenPixelRatio can't be less than 1.0 ! 
+    ScreenPixelRatio = std::max(1<<10, ((ScreenDensity<<10)/LK_REFERENCE_DPI));
     
     // -----------------------------
     // Initialize some Global variable 
