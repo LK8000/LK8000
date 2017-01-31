@@ -25,6 +25,7 @@
  * @param fScaleFact : Scaling factor for runway symbol radius and runway length, 
                        use #MapWindow::zoom value for Moving Map or constant for waypoint Picto
  * @param picto true for drawing Waypoint Picto ( don't draw radio info )
+ *                     Pictos are painted in Dialogs. We need full scale choice here.
  */
 
 void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, const ScreenProjection* _Proj, double fScaleFact, BOOL picto)
@@ -133,10 +134,12 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   // StartupStore(_T("IN fScale=%f  "),fScaleFact);
 
   //
-  // Threshold boundaries
+  // Threshold boundaries, not for pictos
   //
-  if (fScaleFact < dmin_realscale) fScaleFact=dmin_realscale;
-  if (fScaleFact > dmax_realscale) fScaleFact=dmax_realscale;
+  if (!picto) {
+     if (fScaleFact < dmin_realscale) fScaleFact=dmin_realscale;
+     if (fScaleFact > dmax_realscale) fScaleFact=dmax_realscale;
+  }
 
   // StartupStore(_T("NORM fScale=%f  "),fScaleFact);
 
@@ -255,7 +258,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 
 
   //
-  // Print waypoint information on screen
+  // Print waypoint information on screen, not for Pictos
   // 
   if( !picto && (MapWindow::zoom.RealScale() <= scale_drawradio)) {
 
