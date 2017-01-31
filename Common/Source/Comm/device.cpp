@@ -529,7 +529,7 @@ BOOL devInit() {
             unsigned int j;
             for( j = 0; j < i ; j++)
             {
-              if(_tcscmp(szPort[i] , szPort[j])==0)
+              if( (_tcscmp(szPort[i] , szPort[j])==0)  &&  DeviceList[j].iSharedPort <0)
               {
                 DeviceList[i].iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
