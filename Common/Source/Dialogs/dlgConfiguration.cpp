@@ -43,10 +43,10 @@ using namespace std::placeholders;
 extern void UpdateAircraftConfig(void);
 extern void dlgCustomMenuShowModal(void);
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
-void UpdateComPortSetting(size_t idx, const TCHAR* szPortName);
+void UpdateComPortSetting(WndForm* pOwner, size_t idx, const TCHAR* szPortName);
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
-void UpdateDeviceEntries(int DeviceIdx);
-
+void UpdateDeviceEntries(WndForm *pOwner, int DeviceIdx);
+static void UpdateButtons(WndForm *pOwner) ;
 static bool taskchanged = false;
 static bool requirerestart = false;
 static bool utcchanged = false;
@@ -229,10 +229,10 @@ int GlobalToBoxType(int i) {
 	return iTmp;
 }
 
-static void UpdateButtons(void) {
+static void UpdateButtons(WndForm *pOwner) {
   TCHAR text[120];
   TCHAR val[100];
-
+if(!pOwner) return;
   if (buttonPilotName) {
     _tcscpy(val,PilotName_Config);
     if (_tcslen(val)<=0) {
@@ -284,7 +284,7 @@ static void UpdateButtons(void) {
     buttonCompetitionID->SetCaption(text);
   }
 
-  WndButton* wCmdBth = ((WndButton *)wf->FindByName(TEXT("cmdBth")));
+  WndButton* wCmdBth = ((WndButton *)pOwner->FindByName(TEXT("cmdBth")));
   if(wCmdBth) {
 #ifdef NO_BLUETOOTH
       wCmdBth->SetVisible(false);
@@ -332,14 +332,16 @@ static void NextPage(int Step){
     }
 } // NextPage
 
-static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
+static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *Name*/) {
   //  const TCHAR * DevicePropName[] = {_T("prpComPort1")};
 
     // check if all array have same size ( compil time check );
 //    static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
+  if(!pOwner)
+    return;
   WndProperty* wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComPort1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpComPort1"));
   if (wp) {
       if (_tcscmp(szPort[SelectedDevice], wp->GetDataField()->GetAsString()) != 0)
       {
@@ -348,14 +350,14 @@ static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
       }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpExtSound1"));
   if (wp) {
         if (UseExtSound[SelectedDevice] != (wp->GetDataField()->GetAsBoolean())) {
                 UseExtSound[SelectedDevice] = (wp->GetDataField()->GetAsBoolean());
         }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
     if ((int)dwSpeedIndex[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
       dwSpeedIndex[SelectedDevice] = wp->GetDataField()->GetAsInteger();
@@ -363,7 +365,7 @@ static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpComBit1"));
   if (wp) {
     if ((int)dwBitIndex[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
       dwBitIndex[SelectedDevice] = wp->GetDataField()->GetAsInteger();
@@ -371,7 +373,7 @@ static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpComIpAddr1"));
   if (wp) {
     if (_tcscmp(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString()) != 0) {
       _tcsncpy(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString(), array_size(szIpAddress[SelectedDevice]));
@@ -380,7 +382,7 @@ static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpComIpPort1"));
   if (wp) {
     if ((int)dwIpPort[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
       dwIpPort[SelectedDevice] = wp->GetDataField()->GetAsInteger();
@@ -388,7 +390,7 @@ static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpComDevice1"));
   if (wp) {
 
     if (dwDeviceIndex[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
@@ -400,7 +402,7 @@ static void UpdateDeviceSetupButton(size_t idx /*, const TCHAR *Name*/) {
 
   /************************************************************************/
 
-    UpdateComPortSetting(idx, szPort[SelectedDevice]);
+    UpdateComPortSetting(pOwner, idx, szPort[SelectedDevice]);
 }
 
 static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -412,7 +414,7 @@ static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
     case DataField::daChange:
   //    StartupStore(_T("........... OnDeviceAData %i %s"),SelectedDevice,NEWLINE); // 091105
       StartupStore(_T("........... OnDeviceAData Device %i %s %s"),SelectedDevice, Sender->GetAsString(),NEWLINE); // 091105
-      UpdateDeviceSetupButton(SelectedDevice);
+      UpdateDeviceSetupButton(wf, SelectedDevice);
     break;
 	default: 
 		StartupStore(_T("........... DBG-902%s"),NEWLINE); // 091105
@@ -535,7 +537,7 @@ static void OnAircraftRegoClicked(WndButton* pWnd) {
         dlgTextEntryShowModal(Temp, 100);
         _tcscpy(AircraftRego_Config, Temp);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnAircraftTypeClicked(WndButton* pWnd) {
@@ -545,13 +547,13 @@ static void OnAircraftTypeClicked(WndButton* pWnd) {
         dlgTextEntryShowModal(Temp, 100);
         _tcscpy(AircraftType_Config, Temp);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnTerminalClicked(WndButton* pWnd) {
     extern void dlgTerminal(int portnum);
     dlgTerminal(SelectedDevice);
-    UpdateDeviceEntries(SelectedDevice);
+    UpdateDeviceEntries(pWnd->GetParentWndForm(), SelectedDevice);
 }
 
 static void OnPilotNameClicked(WndButton* pWnd) {
@@ -561,7 +563,7 @@ static void OnPilotNameClicked(WndButton* pWnd) {
         dlgTextEntryShowModal(Temp, 100);
         _tcscpy(PilotName_Config, Temp);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnLiveTrackersrvClicked(WndButton* pWnd) {
@@ -571,7 +573,7 @@ static void OnLiveTrackersrvClicked(WndButton* pWnd) {
         dlgTextEntryShowModal(Temp, 100);
         _tcscpy(LiveTrackersrv_Config, Temp);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnLiveTrackerportClicked(WndButton* pWnd) {
@@ -582,7 +584,7 @@ static void OnLiveTrackerportClicked(WndButton* pWnd) {
         TCHAR *sz = NULL;
         LiveTrackerport_Config = _tcstol(Temp, &sz, 10);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnLiveTrackerusrClicked(WndButton* pWnd) {
@@ -592,7 +594,7 @@ static void OnLiveTrackerusrClicked(WndButton* pWnd) {
         dlgTextEntryShowModal(Temp, 100);
         _tcscpy(LiveTrackerusr_Config, Temp);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnLiveTrackerpwdClicked(WndButton* pWnd) {
@@ -602,7 +604,7 @@ static void OnLiveTrackerpwdClicked(WndButton* pWnd) {
         dlgTextEntryShowModal(Temp, 100);
         _tcscpy(LiveTrackerpwd_Config, Temp);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnCompetitionClassClicked(WndButton* pWnd) {
@@ -612,7 +614,7 @@ static void OnCompetitionClassClicked(WndButton* pWnd) {
         dlgTextEntryShowModal(Temp, 100);
         _tcscpy(CompetitionClass_Config, Temp);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnCompetitionIDClicked(WndButton* pWnd) {
@@ -622,7 +624,7 @@ static void OnCompetitionIDClicked(WndButton* pWnd) {
         dlgTextEntryShowModal(Temp, 100);
         _tcscpy(CompetitionID_Config, Temp);
     }
-    UpdateButtons();
+    UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnAirspaceColoursClicked(WndButton* pWnd) {
@@ -743,7 +745,7 @@ static void OnCopy(WndButton* pWnd) {
   for (int item=0; item<8; item++) {
     InfoBoxPropName(name, item, mode);
     WndProperty *wp;
-    wp = (WndProperty*)wf->FindByName(name);
+    wp = (WndProperty*)pWnd->GetParentWndForm()->FindByName(name);
     if (wp) {
       cpyInfoBox[item] = wp->GetDataField()->GetAsInteger();
     }
@@ -767,7 +769,7 @@ static void OnPaste(WndButton* pWnd) {
     for (int item=0; item<8; item++) {
       InfoBoxPropName(name, item, mode);
       WndProperty *wp;
-      wp = (WndProperty*)wf->FindByName(name);
+      wp = (WndProperty*)pWnd->GetParentWndForm()->FindByName(name);
       if (wp && (cpyInfoBox[item]>=0)&&(cpyInfoBox[item]<NumDataOptions)) {
 	wp->GetDataField()->Set(cpyInfoBox[item]);
 	wp->RefreshDisplay();
@@ -1028,72 +1030,71 @@ static void OnBthDevice(WndButton* pWnd) {
 
 
 static void OnNextDevice(WndButton* pWnd) {
-  UpdateDeviceSetupButton(SelectedDevice );
+WndForm* pOwner = pWnd->GetParentWndForm();
+  UpdateDeviceSetupButton(pOwner,SelectedDevice );
 
   SelectedDevice++;
   if(SelectedDevice >=NUMDEV)
     SelectedDevice = 0;
 
-  UpdateDeviceEntries(SelectedDevice);
+  UpdateDeviceEntries(pOwner, SelectedDevice);
 
 }
 
-static void RenameDeviceFrame(const TCHAR Name) {
-  TCHAR newname[25];
- // WndForm* wf = pWnd->GetParentWndForm();
-  if(wf) {
-      _stprintf(newname,  TEXT("%s"), MsgToken(232));
-      newname[_tcslen(newname)-1] = Name;
-    WndFrame  *wDev = ((WndFrame *)wf->FindByName(TEXT("frmCommName")));
-    if(wDev) {
-        wDev->SetCaption(newname);
-    }
-  }
-
-}
 
 static void OnA(WndButton* pWnd) {
-  UpdateDeviceSetupButton(SelectedDevice );
+WndForm* pOwner = pWnd->GetParentWndForm();
+  UpdateDeviceSetupButton(pOwner,SelectedDevice );
   SelectedDevice =0;
-  UpdateDeviceEntries(SelectedDevice);
+  UpdateDeviceEntries(pOwner, SelectedDevice);
 }
 
 static void OnB(WndButton* pWnd) {
-  UpdateDeviceSetupButton(SelectedDevice );
+WndForm* pOwner = pWnd->GetParentWndForm();
+  UpdateDeviceSetupButton(pOwner,SelectedDevice );
   SelectedDevice =1;
-  UpdateDeviceEntries(SelectedDevice);
+  UpdateDeviceEntries(pOwner, SelectedDevice);
 }
+
 
 static void OnC(WndButton* pWnd) {
-  UpdateDeviceSetupButton(SelectedDevice );
+WndForm* pOwner = pWnd->GetParentWndForm();
+  UpdateDeviceSetupButton(pOwner,SelectedDevice );
   SelectedDevice =2;
-  UpdateDeviceEntries(SelectedDevice);
+  UpdateDeviceEntries(pOwner, SelectedDevice);
 }
+
 
 static void OnD(WndButton* pWnd) {
-  UpdateDeviceSetupButton(SelectedDevice );
+WndForm* pOwner = pWnd->GetParentWndForm();
+  UpdateDeviceSetupButton(pOwner,SelectedDevice );
   SelectedDevice =3;
-  UpdateDeviceEntries(SelectedDevice);
-}
-static void OnE(WndButton* pWnd) {
-  UpdateDeviceSetupButton(SelectedDevice );
-  SelectedDevice =4;
-  UpdateDeviceEntries(SelectedDevice);
+  UpdateDeviceEntries(pOwner, SelectedDevice);
 }
 
-static void OnF(WndButton* pWnd) {
-  UpdateDeviceSetupButton(SelectedDevice );
-  SelectedDevice =5;
-  UpdateDeviceEntries(SelectedDevice);
+static void OnE(WndButton* pWnd) {
+WndForm* pOwner = pWnd->GetParentWndForm();
+  UpdateDeviceSetupButton(pOwner,SelectedDevice );
+  SelectedDevice =4;
+  UpdateDeviceEntries(pOwner, SelectedDevice);
 }
+
+
+static void OnF(WndButton* pWnd) {
+WndForm* pOwner = pWnd->GetParentWndForm();
+  UpdateDeviceSetupButton(pOwner,SelectedDevice );
+  SelectedDevice =5;
+  UpdateDeviceEntries(pOwner, SelectedDevice);
+}
+
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
-    WindowControl* pWnd = wf->FindByName(WndName);
+    WindowControl* pWnd = pOwner->FindByName(WndName);
     if(pWnd) {
         pWnd->SetVisible(bShow);
     }
 }
 
-void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
+void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName) {
 
     LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
@@ -1112,8 +1113,20 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
     WndProperty* wp;
 
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
-    RenameDeviceFrame((TCHAR)('A'+SelectedDevice));
+
+    wp = (WndProperty*)pOwner->FindByName(TEXT("prpComDevice1"));
+
+
+    TCHAR newname[25];
+
+    if(pOwner) {
+        _stprintf(newname,  TEXT("%s"), MsgToken(232));
+        newname[_tcslen(newname)-1] = (TCHAR)('A'+SelectedDevice);
+      WndFrame  *wDev = ((WndFrame *)pOwner->FindByName(TEXT("frmCommName")));
+      if(wDev) {
+          wDev->SetCaption(newname);
+      }
+    }
     bool bHide = false;
 
     if (wp)
@@ -1186,7 +1199,7 @@ static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daPut:
     case DataField::daChange:
-        UpdateComPortSetting(SelectedDevice, Sender->GetAsString());
+        UpdateComPortSetting(wf, SelectedDevice, Sender->GetAsString());
     break;
 	default: 
 		break;
@@ -1364,7 +1377,7 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
 }
 
 
-void UpdateDeviceEntries(int DeviceIdx)
+void UpdateDeviceEntries(WndForm *wf, int DeviceIdx)
 {
   WndProperty *wp;
 
@@ -1374,7 +1387,7 @@ void UpdateDeviceEntries(int DeviceIdx)
 TCHAR szPort[MAX_PATH];
 
 ReadPortSettings(DeviceIdx,szPort,NULL, NULL);
-UpdateComPortSetting(DeviceIdx,szPort);
+UpdateComPortSetting(wf,DeviceIdx,szPort);
 UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
 
 
@@ -1419,66 +1432,66 @@ ReadDeviceSettings(DeviceIdx, deviceName1);
     DataField* dfe = wp->GetDataField();
     dfe->Set(dwDeviceIndex[DeviceIdx]);
     wp->RefreshDisplay();
-    UpdateButtons();
+    UpdateButtons(wf);
   }
 
-UpdateComPortSetting(DeviceIdx,szPort);
+UpdateComPortSetting(wf, DeviceIdx,szPort);
 UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
   
-  UpdateComPortSetting(DeviceIdx, szPort);
+  UpdateComPortSetting(wf, DeviceIdx, szPort);
 }
 
-static void setVariables(void) {
+static void setVariables( WndForm *pOwner) {
   WndProperty *wp;
 
-  LKASSERT(wf);
+  LKASSERT(pOwner);
 
-  buttonPilotName = ((WndButton *)wf->FindByName(TEXT("cmdPilotName")));
+  buttonPilotName = ((WndButton *)pOwner->FindByName(TEXT("cmdPilotName")));
   if (buttonPilotName) {
     buttonPilotName->SetOnClickNotify(OnPilotNameClicked);
   }
-  buttonLiveTrackersrv = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackersrv")));
+  buttonLiveTrackersrv = ((WndButton *)pOwner->FindByName(TEXT("cmdLiveTrackersrv")));
   if (buttonLiveTrackersrv) {
     buttonLiveTrackersrv->SetOnClickNotify(OnLiveTrackersrvClicked);
   }
-  buttonLiveTrackerport = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerport")));
+  buttonLiveTrackerport = ((WndButton *)pOwner->FindByName(TEXT("cmdLiveTrackerport")));
   if (buttonLiveTrackerport) {
     buttonLiveTrackerport->SetOnClickNotify(OnLiveTrackerportClicked);
   }
-  buttonLiveTrackerusr = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerusr")));
+  buttonLiveTrackerusr = ((WndButton *)pOwner->FindByName(TEXT("cmdLiveTrackerusr")));
   if (buttonLiveTrackerusr) {
     buttonLiveTrackerusr->SetOnClickNotify(OnLiveTrackerusrClicked);
   }
-  buttonLiveTrackerpwd = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerpwd")));
+  buttonLiveTrackerpwd = ((WndButton *)pOwner->FindByName(TEXT("cmdLiveTrackerpwd")));
   if (buttonLiveTrackerpwd) {
     buttonLiveTrackerpwd->SetOnClickNotify(OnLiveTrackerpwdClicked);
   }
-  buttonAircraftType = ((WndButton *)wf->FindByName(TEXT("cmdAircraftType")));
+  buttonAircraftType = ((WndButton *)pOwner->FindByName(TEXT("cmdAircraftType")));
   if (buttonAircraftType) {
     buttonAircraftType->SetOnClickNotify(OnAircraftTypeClicked);
   }
-  buttonAircraftRego = ((WndButton *)wf->FindByName(TEXT("cmdAircraftRego")));
+  buttonAircraftRego = ((WndButton *)pOwner->FindByName(TEXT("cmdAircraftRego")));
   if (buttonAircraftRego) {
     buttonAircraftRego->SetOnClickNotify(OnAircraftRegoClicked);
   }
-  buttonCompetitionClass = ((WndButton *)wf->FindByName(TEXT("cmdCompetitionClass")));
+  buttonCompetitionClass = ((WndButton *)pOwner->FindByName(TEXT("cmdCompetitionClass")));
   if (buttonCompetitionClass) {
     buttonCompetitionClass->SetOnClickNotify(OnCompetitionClassClicked);
   }
-  buttonCompetitionID = ((WndButton *)wf->FindByName(TEXT("cmdCompetitionID")));
+  buttonCompetitionID = ((WndButton *)pOwner->FindByName(TEXT("cmdCompetitionID")));
   if (buttonCompetitionID) {
     buttonCompetitionID->SetOnClickNotify(OnCompetitionIDClicked);
   }
-  buttonCopy = ((WndButton *)wf->FindByName(TEXT("cmdCopy")));
+  buttonCopy = ((WndButton *)pOwner->FindByName(TEXT("cmdCopy")));
   if (buttonCopy) {
     buttonCopy->SetOnClickNotify(OnCopy);
   }
-  buttonPaste = ((WndButton *)wf->FindByName(TEXT("cmdPaste")));
+  buttonPaste = ((WndButton *)pOwner->FindByName(TEXT("cmdPaste")));
   if (buttonPaste) {
     buttonPaste->SetOnClickNotify(OnPaste);
   }
 
-  UpdateButtons();
+  UpdateButtons(pOwner);
 
 
   const TCHAR *tSpeed[] = {TEXT("1200"),TEXT("2400"),TEXT("4800"),TEXT("9600"),
@@ -1487,9 +1500,9 @@ static void setVariables(void) {
   TCHAR szPort[MAX_PATH];
   
   ReadPortSettings(SelectedDevice,szPort,NULL, NULL);
-  UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
+  UpdateComPortList((WndProperty*)pOwner->FindByName(TEXT("prpComPort1")), szPort);
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1));
@@ -1498,7 +1511,7 @@ static void setVariables(void) {
     wp->SetReadOnly(false);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
+  wp = (WndProperty*)pOwner->FindByName(TEXT("prpComBit1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("8bit"));
@@ -1570,7 +1583,7 @@ static void setVariables(void) {
         }
       }
   }
-  UpdateButtons();
+  UpdateButtons(wf);
 
 
 
@@ -3185,14 +3198,14 @@ void dlgConfigurationShowModal(short mode){
 
   wf->FilterAdvanced(1); // useless, we dont use advanced options anymore TODO remove
 
-  setVariables();
+  setVariables(wf);
 
   if (mode==3) {
 	TCHAR deviceName1[MAX_PATH];
 //	TCHAR deviceName2[MAX_PATH];
 	ReadDeviceSettings(SelectedDevice, deviceName1);
 //	ReadDeviceSettings(1, deviceName2);
-	UpdateDeviceSetupButton(SelectedDevice);
+	UpdateDeviceSetupButton(wf, SelectedDevice);
 //	UpdateDeviceSetupButton(1, deviceName2);
 // Don't show external sound config if not compiled for this device or not used
 #ifdef DISABLEEXTAUDIO
@@ -4333,7 +4346,7 @@ int ival;
     }
   }
 
-  UpdateDeviceSetupButton(SelectedDevice);
+  UpdateDeviceSetupButton(wf, SelectedDevice);
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSnailWidthScale"));
   if (wp) {
