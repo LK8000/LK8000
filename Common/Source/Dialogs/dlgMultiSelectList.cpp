@@ -318,7 +318,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
             if (Elements[i].type != IM_TASK_PT) {
                 if (WayPointCalc[idx].IsLandable) {
-                    MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 4000, true);
+                    MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 1.5, true);
 
                     if (WayPointCalc[idx].IsAirport) {
                         // remove spaces from frequency

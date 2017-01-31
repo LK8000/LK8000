@@ -22,185 +22,195 @@
  * @param Surface : Surface to Draw
  * @param wp : Landable Waypoint
  * @param rc : Clipping Rect
- * @param fScaleFact : Scaling factor for runway symbol radius and runway length, use #MapWindow::zoom value for Moving Map or constant for waypoint Picto
+ * @param fScaleFact : Scaling factor for runway symbol radius and runway length, 
+                       use #MapWindow::zoom value for Moving Map or constant for waypoint Picto
  * @param picto true for drawing Waypoint Picto ( don't draw radio info )
+ *                     Pictos are painted in Dialogs. We need full scale choice here.
  */
 
 void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, const ScreenProjection* _Proj, double fScaleFact, BOOL picto)
 {
   if(!picto && !_Proj) {
-      // if we don't draw picto ScreenProjection parameter are mandatory.
-      assert(false);
-      return;
+     // if we don't draw picto ScreenProjection parameter are mandatory.
+     assert(false);
+     return;
   }
 
   int solid= false;
-  bool bGlider = false;
   bool bOutland = false;
-  bool bRunway = false;
-  static double rwl = 8;
-  static double rwb = 1;
-  static double cir = 6;
+
+  static double dinitrw_len = 1;       // runway len
+  static double dinitrw_thick = 1;     // runway thickness
+  static double dinitrw_radius = 1;    // runway circle radius
+  static double dinitrw_len_out = 1;   // outlanding runway len 
+  static double dinitrw_thick_out = 1; // outlanding runway thickness
+
   static double scale_drawradio=0;
   static double scale_bigfont=0;
   static double scale_fullinfos=0;
 
+
   RasterPoint Center;
   if(picto) {
-	  Center.x = rc.left+ (rc.right- rc.left)/2;
-	  Center.y = rc.bottom +(rc.top-rc.bottom)/2;
+     Center.x = rc.left+ (rc.right- rc.left)/2;
+     Center.y = rc.bottom +(rc.top-rc.bottom)/2;
   } else {
-      Center =  _Proj->ToRasterPoint(wp->Longitude, wp->Latitude);
+     Center =  _Proj->ToRasterPoint(wp->Longitude, wp->Latitude);
   }
 
-  int l,p,b;
+  //
+  // TOP AND BOTTOM ZOOM LEVELS for rescaling vectors.
+  // RealScale is an absolute value, depending on resolution and distance unit in use.
+  // The smaller RealScale, the bigger airfield becomes, within these limits.
+  // Up to V6, we had values equivalent to (approx) 0.30 - 3.10
+  // Notice: for very low resolutions, values are already preset and cannot be changed.
+  //
+  #define MIN_REALSCALE 0.30 // reduce to enlarge vectors at low zoom (ex.300m)
+  #define MAX_REALSCALE 3.10 // increase to reduce vectors at high zoom (ex.7.5km)
 
-  if(picto)
-	fScaleFact /=2000;
-  else
-        fScaleFact /=1600;
+  static double  dmin_realscale=0;
+  static double  dmax_realscale=0;
+
 
   if (DoInit[MDI_MAPWPVECTORS])
   {
+
     //
-    // How long and thick is the runway drawn, and how big is the circle.
-    // No rule possible, it depends on how we are dealing with many other
-    // custom things on screen, because LK is drawing differently depending
-    // on geometry, resolution, orientation. We dont split bits.
+    // Everything rescales properly on all resolutions.
     //
-    switch(ScreenSize)
-    {
-     case ss240x320: rwl = 9.0; rwb = 2.0;cir = 4.0; break; // 43
-     case ss240x400: rwl = 9.0; rwb = 1.0;cir = 4.0; break; // 53
-     case ss272x480: rwl = 9.0; rwb = 2.5;cir = 4.0; break; // 169
-     case ss480x640: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
-     case ss600x800: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
-     case ss480x800: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
-     case sslandscape: rwl = 6.0; rwb = 1.0;cir = 5.0; break; // sslandscape is never assigned!
-     case ss320x240: rwl = 9.0; rwb = 2.0;cir = 4.0; break; // 43
-     case ss400x240: rwl = 9.0; rwb = 1.0;cir = 4.0; break; // 53
-     case ss480x234: rwl = 9.0; rwb = 1.0;cir = 4.0; break; // 21
-     case ss480x272: rwl = 9.0; rwb = 2.5;cir = 4.0; break; // 169
-     case ss640x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
-     case ss800x600: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 43
-     case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break; // 53
-     case ssnone:    rwl = 6.0; rwb =   2;cir = 4.5; break;
-
-      /*   the line above is only a workaround to avoid runaway to be tool long on  Anrtoid and Kobo
-       *   waiting  for a definitive and more elegant solution.
-
-         #define X ScreenSizeX==
-	 #define Y ScreenSizeY==
-         // Ok this doesnt look nice, but lets remember we are inside a DoInit.
-         // Generally the generic setup is good for everyone, but in case we
-         // can make it custom for any resolution.
-         if (X 1024 && Y 768) {; rwl = 4.5; rwb = 2.5; cir = 5.0; } else
-         if (X 1014 && Y 758) {; rwl = 4.5; rwb = 2.5; cir = 5.0; } else
-         if (X 720 && Y 408) {; rwl = 10.0; rwb = 6.0; cir = 5.0; } else
-         if (X 720 && Y 432) {; rwl = 10.0; rwb = 4.0; cir = 5.0; } else
-
-         // .. and this is the rule of thumb, I could not find a better idea
-         // I think it is easier to redesign the drawing approach and make it
-         // really scalable.
-         //
-         // This hack works for: 800x600 960x540 1280x720 (and relative portrait modes)
-         // These are the screen resolutions used by kobo, samsung s4 mini and s5 mini
-         //
-         if (ScreenLandscape) {
-             if (ScreenSizeX<=480) {
-		 // testlk> Ok: t5     Bad for: -
-                 rwl = 9.0*(480.0/ScreenSizeX); rwb = 2.5*(480.0/ScreenSizeX); cir = 4.0;
-             } else {
-		 // testlk> Ok:  3,13,14,22    Bad: t4, t15, t23
-                 rwl = 6.0; rwb = 2.5; cir = 5.0;
-             }
-         } else {
-             if (ScreenSizeX<480) {
-		 // testlk> Ok: 10,19     Bad for: 20
-                 rwl = 6.0*(480.0/ScreenSizeX); rwb = 2.5*(480.0/ScreenSizeX); cir = 4.0;
-             } else {
-		 // testlk> Ok: 8,28     Bad for: -
-                 rwl = 6.0; rwb = 2.5; cir = 5.0;
-             }
-         }
-         break;
-
-             */
-    }
-
+    dinitrw_radius = 5;           // the most important
+    dinitrw_len = dinitrw_radius;     // half of len (+- from the center, so it doubles)
+    dinitrw_thick = dinitrw_len/4.3;   // half of thickness
+    //
+    dinitrw_len_out   = dinitrw_len * 0.8;    // outlandings runway sizes
+    dinitrw_thick_out = dinitrw_thick * 1.3;  // thickness
 
     //
     // These are the (absolute) scale thresholds for painting informations
     // For example, paint just radio starting from 5.0km (3.6abs) etc.
-    // There is no rule possible, it matters only testing.
+    // On very low resolutions, we cant split bits and pixels, and we must go custom.
+    // No big deal, we are inside a doinit.
     //
     switch(ScreenSize)
     {
-
-	case ss480x272:
+	case ss320x240:
+	case ss240x320:
 		scale_drawradio=2.6;
 		scale_bigfont=1.1;
 		scale_fullinfos=0.8;
+                dmin_realscale=0.30;
+                dmax_realscale=1.85;
+		break;
+
+	case ss480x272:
+	case ss272x480:
+		scale_drawradio=2.6;
+		scale_bigfont=1.1;
+		scale_fullinfos=0.8;
+                dmin_realscale=0.30;
+                dmax_realscale=2.5;
 		break;
 	case ss800x480:
+	case ss480x800:
 		scale_drawradio=2.6;
 		scale_bigfont=1.5;
 		scale_fullinfos=1.5;
+                dmin_realscale=MIN_REALSCALE;
+                dmax_realscale=MAX_REALSCALE;
 		break;
-	case ss640x480:
-		scale_drawradio=3.6;
-		scale_bigfont=1.5;
-		scale_fullinfos=1.5;
-		break;
-
 	default:
-
                 scale_drawradio=3.6;
                 scale_bigfont=1.5;
                 scale_fullinfos=1.5;
+                dmin_realscale=MIN_REALSCALE;
+                dmax_realscale=MAX_REALSCALE;
                 break;
     }
-
-
     DoInit[MDI_MAPWPVECTORS]=false;
   }
+  // END OF DOINIT
 
-  if( wp->RunwayLen > 100) /* square if no runway defined */
-  {
-    if (picto)
-       l = (int) (rwl);
-    else {
-           l = (int) (rwl * (1.0+ ((double)wp->RunwayLen/800.0-1.0)/4.0));
-    }
 
-    b = (int) (rwb/1.5 );
-  } else
-  {
-    l = (int)( rwl*0.5);
-    b = l ;
+  // StartupStore(_T("IN fScale=%f  "),fScaleFact);
+
+  //
+  // Threshold boundaries, not for pictos
+  //
+  if (!picto) {
+     if (fScaleFact < dmin_realscale) fScaleFact=dmin_realscale;
+     if (fScaleFact > dmax_realscale) fScaleFact=dmax_realscale;
   }
 
-#ifdef ANDROID
-    l = (int)(l * 2.0 * fScaleFact / IBLSCALE(1) ); if(l==0) l=1;
-    b = (int)(b * 2.0 * fScaleFact / IBLSCALE(1) ); if(b==0) b=1;
-    p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
-#else
-  l = (int)(l * fScaleFact); if(l==0) l=1;
-  b = (int)(b * fScaleFact); if(b==0) b=1;
-  p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
-#endif
+  // StartupStore(_T("NORM fScale=%f  "),fScaleFact);
+
+  fScaleFact= MAX_REALSCALE / fScaleFact; 
+
+  // StartupStore(_T("OUT fScale=%f\n"),fScaleFact);
+
+
+  double drw_len,drw_thick;
+
+  //
+  // Ordered values for compiler jump table following LKStyle.h enum
+  // Adjust here desired difference of sizes for each type.
+  // By default, all similar except outlandings
+  //
   switch(wp->Style) {
-	case STYLE_AIRFIELDSOLID: solid = true;  bRunway  = true;  bOutland = false;  bGlider  = false;	break;
-	case STYLE_AIRFIELDGRASS: solid = false; bRunway  = true;  bOutland = false;  bGlider  = false;	break;
-	case STYLE_OUTLANDING	: solid = false; bRunway  = true;  bOutland = true;   bGlider  = false; b*=2; break;
-	case STYLE_GLIDERSITE	: solid = false; bRunway  = true;  bOutland = false;  bGlider  = true;	break;
-	default: return; break;
+     case STYLE_AIRFIELDGRASS: 
+        solid = false; bOutland = false;  
+        drw_len = dinitrw_len;
+        drw_thick = dinitrw_thick;
+        break;
+
+     case STYLE_OUTLANDING: 
+        solid = false;  bOutland = true;   
+        drw_thick=dinitrw_thick_out;
+        drw_len=dinitrw_len_out;
+        break;
+
+     case STYLE_GLIDERSITE: 
+        solid = true;   bOutland = false; 
+        drw_len = dinitrw_len;
+        drw_thick = dinitrw_thick;
+
+        break;
+
+     case STYLE_AIRFIELDSOLID: 
+        solid = true;   bOutland = false;
+        drw_len = dinitrw_len;
+        drw_thick = dinitrw_thick;
+        break;
+
+     default: return; 
+        break;
   }
 
-  // Do not print glidersite at low zoom levels, in any case
-  // not useful on some resolutions
-  // if( !picto && (MapWindow::zoom.RealScale() > 3) )
-  //	bGlider=false;
+  // 
+  // If we have no information on runway len, we shall draw it as a square.
+  // For airfields, the square is drawn inside circle.
+  // For outlandings, as a standalone square
+  //
+  if( wp->RunwayLen == 0) {  
+     drw_len = dinitrw_len *0.6;
+     drw_thick = drw_len ;
+  }
+
+  //
+  // Adjust sizes for current zoom level, and finally go integer.
+  // We need to use float multiplier for radius, len, thick, or we loose any accuracy
+  // when multiplying by scale factor. This is why we go integer only here.
+  //
+
+  int irw_radius = (int)(dinitrw_radius * fScaleFact); if(irw_radius==0) irw_radius=1;
+  int irw_len    = (int)(drw_len * fScaleFact);   if(irw_len==0)    irw_len=1;
+  int irw_thick  = (int)(drw_thick * fScaleFact); if(irw_thick==0)  irw_thick=1;
+
+  // 
+  // Rescale radius only, since len and thick are rescaled by polygon rotation 
+  // (which is bad idea in any case- it should at least be called RescaledPolygon..)
+  //
+  irw_radius=IBLSCALE(irw_radius);
+
 
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
   const auto oldBrush = Surface.SelectObject(LKBrush_Red);
@@ -212,129 +222,88 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   if(!bOutland)
   {
 	if (picto)
-		Surface.DrawCircle(Center.x, Center.y, p, true);
+		Surface.DrawCircle(Center.x, Center.y, irw_radius, true);
 	else
-		Surface.DrawCircle(Center.x, Center.y, p,  rc, true);
+		Surface.DrawCircle(Center.x, Center.y, irw_radius,  rc, true);
   }
 
-  if(bRunway)
-  {
-	POINT Runway[5] = {
-		  { b, l },  // 1
-		  {-b, l },  // 2
-		  {-b,-l },  // 3
-		  { b,-l },  // 4
-		  { b,l  }   // 5
-	};
-	if(!bOutland)
-	{
-            #ifndef DITHER
-	    if(solid)
-		  Surface.SelectObject(LKBrush_DarkGrey );
-	    else
-		  Surface.SelectObject(LKBrush_White);
-            #else
-	    if(solid)
-		  Surface.SelectObject(LKBrush_Black);
-	    else
-		  Surface.SelectObject(LKBrush_White);
-            #endif
-	}
-	if(picto) {
-	  threadsafePolygonRotateShift(Runway, 5,  Center.x, Center.y,  wp->RunwayDir);
-	} else {
-	  PolygonRotateShift(Runway, 5,  Center.x, Center.y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
-	}
-	Surface.Polygon(Runway ,5 );
+  POINT Runway[5] = {
+     { irw_thick, irw_len },  // 1
+     {-irw_thick, irw_len },  // 2
+     {-irw_thick,-irw_len },  // 3
+     { irw_thick,-irw_len },  // 4
+     { irw_thick,irw_len  }   // 5
+  };
 
-  } // bRunway
-
-
-  if(fScaleFact >= 0.9) {
-    if(bGlider)
-    {
-	    int iScale = (int)(fScaleFact*2.0);
-		    double fFact = 0.04*fScaleFact/1.5;
-            if(iScale==0) iScale=1;
-	    POINT WhiteWing [17]  = {
-		  { (long)(-228  * fFact ) , (long)(13  * fFact)}, //1
-		  { (long) (-221 * fFact ) , (long)(-5  * fFact)}, //2
-		  { (long) (-102 * fFact ) , (long)(-50 * fFact)}, //3
-		  { (long) (8	 * fFact ) , (long)( 5  * fFact)}, //4
-		  { (long) (149  * fFact ) , (long)(-55 * fFact)}, //5
-		  { (long) (270  * fFact ) , (long)(-12 * fFact)}, //6
-		  { (long) (280  * fFact ) , (long)( 5  * fFact)}, //7
-		  { (long) (152  * fFact ) , (long)(-30 * fFact)}, //8
-		  { (long) (48	 * fFact ) , (long)( 27 * fFact)}, //9
-		  { (long) (37	 * fFact ) , (long)( 44 * fFact)}, //10
-		  { (long)(-20	 * fFact ) , (long)( 65 * fFact)}, //11
-		  { (long)(-29	 * fFact ) , (long)( 80 * fFact)}, //12
-		  { (long)(-56	 * fFact ) , (long)( 83 * fFact)}, //13
-		  { (long)(-50	 * fFact ) , (long)( 40 * fFact)}, //14
-		  { (long)(-30	 * fFact ) , (long)( 27 * fFact)}, //15
-		  { (long)(-103  * fFact ) , (long)(-26 * fFact)}, //16
-		  { (long)(-228  * fFact ) , (long)( 13 * fFact)}  //17
-	    };
-
-	    if (picto)
-	       threadsafePolygonRotateShift(WhiteWing, 17,  Center.x, Center.y,  0/*+ wp->RunwayDir-Brg*/);
-	    else
-	       PolygonRotateShift(WhiteWing, 17,  Center.x, Center.y,  0/*+ wp->RunwayDir-Brg*/);
-
-	    Surface.Polygon(WhiteWing ,17 );
-    }
+  if(!bOutland) {
+#ifndef DITHER
+     if(solid)
+        Surface.SelectObject(LKBrush_DarkGrey );
+     else
+        Surface.SelectObject(LKBrush_White);
+#else
+     if(solid)
+        Surface.SelectObject(LKBrush_Black);
+     else
+        Surface.SelectObject(LKBrush_White);
+#endif
   }
 
-  // StartupStore(_T(".......fscale=%f *1600=%f realscale = %f\n"), fScaleFact, fScaleFact*1600, MapWindow::zoom.RealScale());
-
-
-  if( !picto && (MapWindow::zoom.RealScale() <= scale_drawradio)  )
-  {
-
-	const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
-                                                ? LK8PanelUnitFont
-                                                : LK8GenericVar02Font);
-        #ifndef DITHER
-	if (INVERTCOLORS)
-		Surface.SelectObject(LKBrush_Petrol);
-	else
-		Surface.SelectObject(LKBrush_LightCyan);
-        #else
-	if (INVERTCOLORS)
-		Surface.SelectObject(LKBrush_Black);
-	else
-		Surface.SelectObject(LKBrush_White);
-        #endif
-
-	unsigned int offset = p + NIBLSCALE(1) ;
-	{
-		if ( _tcslen(wp->Freq)>0 ) {
-			MapWindow::LKWriteBoxedText(Surface,rc,wp->Freq, Center.x- offset, Center.y -offset, WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
-		}
-
-		//
-		// Full infos! 1.5km scale
-		//
-		if (MapWindow::zoom.RealScale() <=scale_fullinfos) {
-			if ( _tcslen(wp->Code)==4 ) {
-				MapWindow::LKWriteBoxedText(Surface,rc,wp->Code,Center.x + offset, Center.y - offset, WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
-			}
-
-			if (wp->Altitude >0) {
-				TCHAR tAlt[20];
-				_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
-				MapWindow::LKWriteBoxedText(Surface,rc,tAlt, Center.x + offset, Center.y + offset, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
-			}
-
-		}
-	}
-	Surface.SelectObject(hfOld);
-
+  if(picto) {
+     threadsafePolygonRotateShift(Runway, 5,  Center.x, Center.y,  wp->RunwayDir);
+  } else {
+     PolygonRotateShift(Runway, 5,  Center.x, Center.y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
   }
+  Surface.Polygon(Runway ,5 );
 
 
+  //
+  // Print waypoint information on screen, not for Pictos
+  // 
+  if( !picto && (MapWindow::zoom.RealScale() <= scale_drawradio)) {
+
+     const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
+                                             ? LK8PanelUnitFont : LK8GenericVar02Font);
+#ifndef DITHER
+     if (INVERTCOLORS)
+        Surface.SelectObject(LKBrush_Petrol);
+     else
+        Surface.SelectObject(LKBrush_LightCyan);
+#else
+     if (INVERTCOLORS)
+        Surface.SelectObject(LKBrush_Black);
+     else
+        Surface.SelectObject(LKBrush_White);
+#endif
+
+     unsigned int offset = irw_radius + NIBLSCALE(1);
+
+     if ( _tcslen(wp->Freq)>0 ) {
+        MapWindow::LKWriteBoxedText(Surface,rc,wp->Freq, Center.x- offset, Center.y -offset, 
+                                    WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
+     }
+
+     //
+     // Full infos! 1.5km scale
+     //
+     if (MapWindow::zoom.RealScale() <=scale_fullinfos) {
+        if ( _tcslen(wp->Code)==4 ) {
+           MapWindow::LKWriteBoxedText(Surface,rc,wp->Code,Center.x + offset, Center.y - offset, 
+                                       WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
+        }
+
+        if (wp->Altitude >0) {
+           TCHAR tAlt[20];
+           _stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
+           MapWindow::LKWriteBoxedText(Surface,rc,tAlt, Center.x + offset, Center.y + offset, 
+                                       WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+        }
+     }
+     Surface.SelectObject(hfOld);
+  }
 
   Surface.SelectObject(oldPen);
   Surface.SelectObject(oldBrush);
 
 }
+
