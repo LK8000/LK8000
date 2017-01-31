@@ -145,9 +145,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
     if(Appearance.IndLandable == wpLandableDefault)
     {
 
-      double fScaleFact = zoom.DrawScale();
-      if(fScaleFact > 20000.0) fScaleFact = 20000.0; // limit to prevent huge airfiel symbols
-      if(fScaleFact < 1600)   fScaleFact = 1600; // limit to prevent tiny airfiel symbols
+      double fScaleFact = zoom.RealScale();
 
       if (decluttericons) {
         if (WayPointCalc[i].IsAirport && (WayPointList[i].RunwayLen>minrunway || WayPointList[i].RunwayLen==0)) {
