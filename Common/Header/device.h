@@ -99,6 +99,7 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*Config)(DeviceDescriptor_t	*d);
   DeviceDescriptor_t *pDevPipeTo;
 
+  int iSharedPort;
   int PortNumber;
   bool Disabled;
   

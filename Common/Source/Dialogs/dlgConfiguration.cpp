@@ -551,6 +551,7 @@ static void OnAircraftTypeClicked(WndButton* pWnd) {
 static void OnTerminalClicked(WndButton* pWnd) {
     extern void dlgTerminal(int portnum);
     dlgTerminal(SelectedDevice);
+    UpdateDeviceEntries(SelectedDevice);
 }
 
 static void OnPilotNameClicked(WndButton* pWnd) {
@@ -1037,9 +1038,9 @@ static void OnNextDevice(WndButton* pWnd) {
 
 }
 
-static void RenameDeviceFrame(WndButton* pWnd,const TCHAR Name) {
+static void RenameDeviceFrame(const TCHAR Name) {
   TCHAR newname[25];
-  WndForm* wf = pWnd->GetParentWndForm();
+ // WndForm* wf = pWnd->GetParentWndForm();
   if(wf) {
       _stprintf(newname,  TEXT("%s"), MsgToken(232));
       newname[_tcslen(newname)-1] = Name;
@@ -1048,47 +1049,41 @@ static void RenameDeviceFrame(WndButton* pWnd,const TCHAR Name) {
         wDev->SetCaption(newname);
     }
   }
-  UpdateDeviceEntries(SelectedDevice);
+
 }
 
 static void OnA(WndButton* pWnd) {
   UpdateDeviceSetupButton(SelectedDevice );
   SelectedDevice =0;
-  RenameDeviceFrame(pWnd,'A');
   UpdateDeviceEntries(SelectedDevice);
 }
 
 static void OnB(WndButton* pWnd) {
   UpdateDeviceSetupButton(SelectedDevice );
   SelectedDevice =1;
-  RenameDeviceFrame(pWnd,'B');
   UpdateDeviceEntries(SelectedDevice);
 }
 
 static void OnC(WndButton* pWnd) {
   UpdateDeviceSetupButton(SelectedDevice );
   SelectedDevice =2;
-  RenameDeviceFrame(pWnd,'C');
   UpdateDeviceEntries(SelectedDevice);
 }
 
 static void OnD(WndButton* pWnd) {
   UpdateDeviceSetupButton(SelectedDevice );
   SelectedDevice =3;
-  RenameDeviceFrame(pWnd,'D');
   UpdateDeviceEntries(SelectedDevice);
 }
 static void OnE(WndButton* pWnd) {
   UpdateDeviceSetupButton(SelectedDevice );
   SelectedDevice =4;
-  RenameDeviceFrame(pWnd,'E');
   UpdateDeviceEntries(SelectedDevice);
 }
 
 static void OnF(WndButton* pWnd) {
   UpdateDeviceSetupButton(SelectedDevice );
   SelectedDevice =5;
-  RenameDeviceFrame(pWnd,'F');
   UpdateDeviceEntries(SelectedDevice);
 }
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
@@ -1118,6 +1113,7 @@ void UpdateComPortSetting(size_t idx, const TCHAR* szPortName) {
 
 
     wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
+    RenameDeviceFrame((TCHAR)('A'+SelectedDevice));
     bool bHide = false;
 
     if (wp)
