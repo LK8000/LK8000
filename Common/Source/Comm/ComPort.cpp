@@ -142,7 +142,7 @@ void ComPort::ProcessChar(char c) {
 #ifdef RADIO_ACTIVE
     if(RadioPara.Enabled && devParseStream(devIdx, &c, 1, &GPS_INFO)) {
         // if this port is used for stream device, leave immediately.
-        return;
+  //       don't return mayby more devices on one Port (shared Port)
     }
 #endif // RADIO_ACTIVE
 
