@@ -563,11 +563,11 @@ if (iOpposite >0)
   float fZoom = MapWindow::zoom.RealScale() ;
 
   double         fTic = 100;
-  if(fZoom > 50) fTic = 100; else
-  if(fZoom > 20) fTic = 50;  else
-  if(fZoom > 10) fTic = 25;  else
-  if(fZoom > 3)  fTic = 10;  else fTic = 10;  // FAI grid below 10km need to much CPU power in moving map and PAN mode!!!
- /* if(fZoom > 1)  fTic = 5;   else   // on slow devices like MIO
+  if(fZoom > 20) fTic = 100; else
+  if(fZoom > 5) fTic = 50;  else
+  if(fZoom > 3) fTic = 25;  else fTic = 25;
+ /* if(fZoom > 3)  fTic = 10;  else fTic = 10;  // FAI grid below 10km need to much CPU power in moving map and PAN mode!!!
+  if(fZoom > 1)  fTic = 5;   else   // on slow devices like MIO
   if(fZoom > 0.5)fTic = 2;   else   // the user should use Analysis page for this
   if(fZoom > 0.2)fTic = 1;*/
 
@@ -701,9 +701,7 @@ if (iOpposite >0)
     iCnt++;
 
   }
-#if TESTBENCH
-    StartupStore(_T("... FAI SECTRO: scale %d lines%s"), iCnt, NEWLINE);
-#endif
+
 Surface.SelectObject(hfOld);
 Surface.SelectObject(hpOldPen);
 Surface.SelectObject(oldFont);
