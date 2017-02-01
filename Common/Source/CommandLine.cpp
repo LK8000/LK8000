@@ -112,7 +112,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
   if (validx && validy) {
      int x=_tcstol(mytext1, nullptr, 10);
      int y=_tcstol(mytext2, nullptr, 10);
-     if (x>=240 && x<=5000 && y>=240 && y<=5000) {
+     if (x>=100 && x<=5000 && y>=100 && y<=5000) {
         ScreenSizeX=x;
         ScreenSizeY=y;
         StartupStore(_T(". CommandLine ScreenSize x=%d y=%d%s"),x,y,NEWLINE);

@@ -39,6 +39,79 @@ unsigned short ReferenceDpi=0;
 // resolution has its own tuned settings. This is thought for real devices, not for PC emulations.
 // Attention: after InitLKScreen, also InitLKFonts should be called.
 
+// NOTES
+//
+// ScreenDScale (double)
+//
+//   Ratio between shortest size of the screen in pixels, and 240.
+//   Range is 0.83 (200px) and up. We support any resolution starting from 200px, example 266x200
+//   but some geometries below 200px can also work. 
+//
+// ScreenScale (int)
+//
+//   The integer part of ScreenDScale, can be used to rescale by simple integer operation 
+//   On a 800x480 ScreenScale is 2, but on a 1920x1080 it is 4 (Dscale 4.5) and thus not good.
+//  
+// ScreenIntScale (bool)
+//
+//   If ScreenScale and ScreenDScale correspond, then we can safely use ScreenScale for accurate rescaling 
+//   It is used by only one (macro) function, the most important IBLSCALE as
+//   define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))
+//   
+// IBLSCALE(x)
+//  
+//   Normally usable for accurate rescaling when accuracy is needed.
+//   When accuracy is not needed, ScreenScale is faster. 
+//
+// NIBLSCALE(x)
+//
+//   It is an array of IBLSCALE values ready as an array. A lookup table limited to MAXIBLSCALE 
+//   Normally 100 but can be enlarged. In TESTBENCH mode the boundary are checked automatically
+//   and an error is given on screen to the programmer or user.
+//
+// ALL OF THE ABOVE is used to rescale properly in respect to the geometry of LK.
+// We adopted for historical reasons 240 as base resolution (effectively the lowest, so it is the unity).
+// But geometry (the size in pixels and the shape of the screen, 5:3, 16:9 etc.) is one thing, 
+// size of screen is another matter. There are cases we want to enlarge things because the screen density
+// is way too large in respect of the low resolutions existing in windows devices so far.
+// So we now have also a ScreenPixelRatio (int) and relative RescalePixelSize() function for this purpose.
+// ScreenPixelRatio is the difference in size of one pixel on current screen in respect of a 
+// "standard" look chosen for a certain density. A 480x272 5" is around 110dpi, while a 800x480 5" is 186dpi.
+// We assume a "reference dpi" is good for rescaling. 80, 96, 110, anything, and we use it.
+//
+// FONTS and Screen0Ratio
+//
+// We tuned geometries (4:3 5:3 16:9 etc) around templates and we rescale in their respect.
+// If we need to rescale 1600x960 , ratio 1.66, we use 800x480 template for fonts and we rescale.
+// Screen0Ratio is made for this purpose. And it is a vertical ratio, because we rescale fonts
+// vertically (that's the way to do it). Screen0Ratio is otherwise pretty useless for the programmer.
+// Since we manage each supported geometry separately, we also have a :
+//
+// ScreenGeometry
+// a simple reference to the enumerated gemetries we manage. 
+// If you need to rescale a bitmap, the original should be *optimistically* with the same 
+// geometry of ScreenGeometry, otherwise you must stretch it. This is an important thing to know.
+//
+// Why do we have so many parameters for rescaling, so many geometries, so many differences between
+// landscape and portrait? Simply because we cannot split bits and pixels and LK wouldnt
+// shine on any device, giving out the best looking and best sizes automatically for all the fonts
+// we use. In addition, when you deal with low resolution devices, things get even more tough because
+// a pixel difference makes a shape good or bad looking, and a line become a z/line.
+//
+// Things can be simplified a lot by choosing only one scaling approach.
+// Dealing with 240 only for dialogs for example, and rescale upon DPI.
+// But in such case, the entire code must be revised and adjusted, not to mention the tests
+// on smaller devices where "you cannot split pixels".
+// One example for all: if you have a small resolution device, which you normally look in flight
+// from a distance of 30-35cm, some things cannot be drawn or written (like some units in infopages)
+// and some items must be drastically rescaled or enlarged, it depends.
+// Since these low resolution devices such as 480x272 are still well in use, changing ScreenScale
+// adopting a unified method means loosing the previously set tuned parameters.
+// Dropping support for low res devices would open a totally different landscape.
+// 1.2.2017 paolo
+//
+
+
 void InitLKScreen() {
 
 #if (WINDOWSPC>0) || defined(__linux__)
@@ -98,8 +171,8 @@ void InitLKScreen() {
     //  int maxsize = std::max(ScreenSizeX, ScreenSizeY);
     int minsize = std::min(ScreenSizeX, ScreenSizeY);
     
-    ScreenDScale = std::max(1.0, minsize / 240.0); // always start w/ shortest dimension
-    ScreenScale = lround(ScreenDScale);
+    ScreenDScale = std::max(0.83, minsize / 240.0); // min.200 (240*.83)
+    ScreenScale = std::max(1,(int)lround(ScreenDScale));
 
     ScreenIntScale = (((double) ScreenScale) == ScreenDScale);
 
