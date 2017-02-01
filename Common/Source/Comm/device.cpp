@@ -28,7 +28,11 @@
 #endif // __linux__
 
 #ifdef  ANDROID
+#include "Java/Global.hxx"
+#include "Java/String.hxx"
 #include "Android/InternalPort.h"
+#include "Android/BluetoothHelper.hpp"
+#include <sstream>
 #endif
 
 
@@ -356,6 +360,34 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("TCPClient"));
     COMMPort.push_back(_T("TCPServer"));
     COMMPort.push_back(_T("UDPServer"));
+
+#ifdef ANDROID
+    JNIEnv *env = Java::GetEnv();
+    if(env) {
+        Java::LocalRef<jobjectArray> bonded(env, BluetoothHelper::list(env));
+        if (bonded) {
+
+            jsize nBT = env->GetArrayLength(bonded) / 2;
+            for (jsize i = 0; i < nBT; ++i) {
+                Java::String j_address(env, (jstring) env->GetObjectArrayElement(bonded, i * 2));
+                if(!j_address)
+                    continue;
+
+                const std::string address = j_address.ToString();
+                if (address.empty())
+                    continue;
+
+                Java::String j_name(env, (jstring) env->GetObjectArrayElement(bonded, i * 2 + 1));
+                std::stringstream prefixed_address, name;
+
+                prefixed_address << "BT:" << address;
+                name << "BT:" << ( j_name ? j_name.ToString() : std::string() );
+
+                COMMPort.push_back(COMMPortItem_t(prefixed_address.str(), name.str()));
+            }
+        }
+    }
+#endif
 
     if(COMMPort.empty()) {
         // avoid segfault on device config  dialog if no comport detected.

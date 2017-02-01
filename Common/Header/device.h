@@ -28,10 +28,16 @@
 
 class COMMPortItem_t {
 public:
-    inline COMMPortItem_t(const TCHAR* szName, const TCHAR* szLabel =_T("")) {
-		_sName = szName;
-		_sLabel = szLabel;
+    inline COMMPortItem_t(const TCHAR* szName, const TCHAR* szLabel =_T("")) :
+			_sName(szName), _sLabel(szLabel)
+	{
 	}
+
+	inline COMMPortItem_t(const tstring&& szName, const tstring&& szLabel) :
+			_sName(szName), _sLabel(szLabel)
+	{
+	}
+
 #ifndef NO_BLUETOOTH
     inline COMMPortItem_t(const CBtDevice* pDev) : _sName(pDev->BTPortName()), _sLabel() {
         _sLabel = _T("BT:") + pDev->GetName();
