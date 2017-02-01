@@ -23,10 +23,9 @@ Copyright_License {
 
 #include "NativeLeScanCallback.hpp"
 #include "LeScanCallback.hpp"
-#include "Main.hpp"
+#include "Android/Main.hpp"
 #include "Java/Class.hxx"
 #include "Java/String.hxx"
-#include "org_xcsoar_NativeLeScanCallback.h"
 
 namespace NativeLeScanCallback {
   static Java::TrivialClass cls;
@@ -34,8 +33,9 @@ namespace NativeLeScanCallback {
   static jfieldID ptr_field;
 };
 
+extern "C"
 JNIEXPORT void JNICALL
-Java_org_xcsoar_NativeLeScanCallback_onLeScan(JNIEnv *env, jobject obj,
+Java_org_LK8000_NativeLeScanCallback_onLeScan(JNIEnv *env, jobject obj,
                                               jstring _address, jstring _name)
 {
   jlong ptr = env->GetLongField(obj, NativeLeScanCallback::ptr_field);
@@ -54,7 +54,7 @@ void
 NativeLeScanCallback::Initialise(JNIEnv *env)
 {
   if (android_api_level < 18 ||
-      !cls.FindOptional(env, "org/xcsoar/NativeLeScanCallback"))
+      !cls.FindOptional(env, "org/LK8000/NativeLeScanCallback"))
     /* Bluetooth LE not supported on this Android version */
     return;
 

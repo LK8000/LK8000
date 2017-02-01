@@ -23,7 +23,7 @@ Copyright_License {
 
 #include "BluetoothHelper.hpp"
 #include "Context.hpp"
-#include "Main.hpp"
+#include "Android/Main.hpp"
 #include "NativeLeScanCallback.hpp"
 #include "PortBridge.hpp"
 #include "Java/String.hxx"
@@ -51,8 +51,7 @@ BluetoothHelper::Initialise(JNIEnv *env)
   assert(!cls.IsDefined());
   assert(env != nullptr);
 
-  if (android_api_level < 5 ||
-      !cls.FindOptional(env, "org/xcsoar/BluetoothHelper"))
+  if (  !cls.FindOptional(env, "org/LK8000/BluetoothHelper"))
     /* Android < 2.0 doesn't have Bluetooth support */
     return false;
 
@@ -64,9 +63,9 @@ BluetoothHelper::Initialise(JNIEnv *env)
   connect_method = env->GetStaticMethodID(cls, "connect",
                                           "(Landroid/content/Context;"
                                           "Ljava/lang/String;)"
-                                          "Lorg/xcsoar/AndroidPort;");
+                                          "Lorg/LK8000/AndroidPort;");
   createServer_method = env->GetStaticMethodID(cls, "createServer",
-                                               "()Lorg/xcsoar/AndroidPort;");
+                                               "()Lorg/LK8000/AndroidPort;");
 
   startLeScan_method = env->GetStaticMethodID(cls, "startLeScan",
                                               "(Landroid/bluetooth/BluetoothAdapter$LeScanCallback;)Z");
