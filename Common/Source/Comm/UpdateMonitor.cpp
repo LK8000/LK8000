@@ -33,14 +33,11 @@ bool  UpdateMonitor(void)
   static bool  lastvalidBaro=false;
   static bool wasSilent[array_size(DeviceList)] = { false };
 
-
-     
-
   // find first valid GPS
   for(const auto& dev : DeviceList) {
     if(dev.nmeaParser.gpsValid) {
       active = dev.PortNumber;
-      break; // we got first, no need to contine;
+      break; // we got first, no need to continue;
     }
   }
   
@@ -56,10 +53,20 @@ bool  UpdateMonitor(void)
     }    
   }
   if(active == -1) {
-    // if no activity on any port, let first port active.
+    // if no activity on any port, let first connected port active.
+    for(const auto& dev : DeviceList) {
+      if(dev.nmeaParser.connected) {
+        active = dev.PortNumber;
+        break; // we got first, no need to contine;
+      }
+    }
+  }
+  if(active == -1) {
+    // if no connected port, let first port active.
     active = 0;
   }
-  // activate "active" and desactivate all others
+
+  // activate "active" port and desactivate all others
   for(auto& dev : DeviceList) {
       dev.nmeaParser.activeGPS = (dev.PortNumber == active);
   }
@@ -89,6 +96,7 @@ bool  UpdateMonitor(void)
   short validBaro = 0;
   // Check each Port with no serial activity in last seconds
   for(auto& dev : DeviceList) {
+    // ignore disabled port
     if(dev.Disabled) {
       continue;
     }
