@@ -74,7 +74,11 @@ bool WndMainBase::Create(const RECT& rect) {
 
 
     _szWindowText = _T("LK8000");
-    _dwStyles = WS_SYSMENU|WS_SIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
+    _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
+    
+#ifndef UNDER_CE
+    _dwStyles |= WS_SIZEBOX;
+#endif
 
     return WndPaint::Create(NULL, rect);
 }
