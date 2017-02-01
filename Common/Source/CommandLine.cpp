@@ -13,7 +13,7 @@
 // This is a quick solution to tell profiles not to override a command line choice, for v5
 bool CommandResolution=false;
 
-extern unsigned short LcdSize, DpiSize;
+extern unsigned short LcdSize, DpiSize,ReferenceDpi;
 
 
 //
@@ -28,7 +28,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
   if (MyCommandLine == NULL) return true;
 
   const TCHAR *pC, *pCe;
-  TCHAR stx[10], sty[10], screensize[10], screendpi[10];
+  TCHAR mytext1[10], mytext2[10];
   bool validx=false, validy=false;
 
   pC = _tcsstr(MyCommandLine, TEXT("-help"));
@@ -75,7 +75,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
   //
   pC = _tcsstr(MyCommandLine, TEXT("-x="));
   if (pC != NULL) {
-     _tcscpy(stx,_T(""));
+     _tcscpy(mytext1,_T(""));
       pC += strlen("-x=");
      if (*pC == '"'){
         pC++;
@@ -86,14 +86,14 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
         while (*pCe != ' ' && *pCe != '\0') pCe++;
      }
      if (pCe != NULL && pCe > pC) {
-        LK_tcsncpy(stx, pC, pCe-pC);
+        LK_tcsncpy(mytext1, pC, pCe-pC);
         validx=true;
      }
   }
 
   pC = _tcsstr(MyCommandLine, TEXT("-y="));
   if (pC != NULL) {
-     _tcscpy(sty,_T(""));
+     _tcscpy(mytext2,_T(""));
       pC += strlen("-y=");
      if (*pC == '"') {
         pC++;
@@ -104,14 +104,14 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
         while (*pCe != ' ' && *pCe != '\0') pCe++;
      }
      if (pCe != NULL && pCe > pC) {
-        LK_tcsncpy(sty, pC, pCe-pC);
+        LK_tcsncpy(mytext2, pC, pCe-pC);
         validy=true;
      }
   }
 
   if (validx && validy) {
-     int x=_tcstol(stx, nullptr, 10);
-     int y=_tcstol(sty, nullptr, 10);
+     int x=_tcstol(mytext1, nullptr, 10);
+     int y=_tcstol(mytext2, nullptr, 10);
      if (x>=240 && x<=5000 && y>=240 && y<=5000) {
         ScreenSizeX=x;
         ScreenSizeY=y;
@@ -122,7 +122,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
 
   pC = _tcsstr(MyCommandLine, TEXT("-lcdsize="));
   if (pC != NULL){
-     _tcscpy(screensize,_T(""));
+     _tcscpy(mytext1,_T(""));
      pC += strlen("-lcdsize=");
      if (*pC == '"'){
         pC++;
@@ -133,8 +133,8 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
         while (*pCe != ' ' && *pCe != '\0') pCe++;
      }
      if (pCe != NULL && pCe > pC) {
-        LK_tcsncpy(screensize, pC, pCe-pC);
-        int s=_tcstol(screensize, nullptr, 10);
+        LK_tcsncpy(mytext1, pC, pCe-pC);
+        int s=_tcstol(mytext1, nullptr, 10);
         if (s<20 || s >240) {
            StartupStore(_T(". CommandLine monitor size=%d is out of range%s"),s,NEWLINE);
         } else {
@@ -146,7 +146,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
 
   pC = _tcsstr(MyCommandLine, TEXT("-dpi="));
   if (pC != NULL){
-     _tcscpy(screendpi,_T(""));
+     _tcscpy(mytext1,_T(""));
      pC += strlen("-dpi=");
      if (*pC == '"'){
         pC++;
@@ -157,13 +157,37 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
         while (*pCe != ' ' && *pCe != '\0') pCe++;
      }
      if (pCe != NULL && pCe > pC) {
-        LK_tcsncpy(screendpi, pC, pCe-pC);
-        int s=_tcstol(screendpi, nullptr, 10);
+        LK_tcsncpy(mytext1, pC, pCe-pC);
+        int s=_tcstol(mytext1, nullptr, 10);
         if (s<40 || s >2000) {
            StartupStore(_T(". CommandLine dpi=%d is out of range%s"),s,NEWLINE);
         } else {
            StartupStore(_T(". CommandLine dpi=%d inches%s"),s,NEWLINE);
            DpiSize=s;
+        }
+     }
+  }
+
+  pC = _tcsstr(MyCommandLine, TEXT("-refdpi="));
+  if (pC != NULL){
+     _tcscpy(mytext1,_T(""));
+     pC += strlen("-refdpi=");
+     if (*pC == '"'){
+        pC++;
+        pCe = pC;
+        while (*pCe != '"' && *pCe != '\0') pCe++;
+     } else{
+        pCe = pC;
+        while (*pCe != ' ' && *pCe != '\0') pCe++;
+     }
+     if (pCe != NULL && pCe > pC) {
+        LK_tcsncpy(mytext1, pC, pCe-pC);
+        int s=_tcstol(mytext1, nullptr, 10);
+        if (s<10 || s >500) {
+           StartupStore(_T(". CommandLine refdpi=%d is out of range%s"),s,NEWLINE);
+        } else {
+           StartupStore(_T(". CommandLine refdpi=%d inches%s"),s,NEWLINE);
+           ReferenceDpi=s;
         }
      }
   }

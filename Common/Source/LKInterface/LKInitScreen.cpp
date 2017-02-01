@@ -30,6 +30,9 @@ unsigned short LcdSize=50;
 // The DpiSize, when 0 it is calculated by GetScreenDensity, otherwise forced 
 // Can be overridden by command line -dpi=nnn 
 unsigned short DpiSize=0; 
+#if RESCALE_PIXEL
+unsigned short ReferenceDpi=0;
+#endif
 
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
@@ -109,7 +112,8 @@ void InitLKScreen() {
     // We must check that pixelratio is never lower than ScreenScale.
     ScreenDensity = GetScreenDensity();
 #ifdef RESCALE_PIXEL
-  ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/LK_REFERENCE_DPI);
+  if (!ReferenceDpi) ReferenceDpi=LK_REFERENCE_DPI;
+  ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/ReferenceDpi);
 #endif
 
     
@@ -164,6 +168,7 @@ void InitLKScreen() {
     StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
 
 #ifdef RESCALE_PIXEL  
+    StartupStore(_T("..... ReferenceDpi     = %d" NEWLINE), ReferenceDpi);
     StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
 #endif
 
