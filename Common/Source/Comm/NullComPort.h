@@ -17,6 +17,8 @@ class NullComPort : public ComPort {
 public:
     NullComPort(int idx, const tstring& sName) : ComPort(idx, sName) {}
 
+    bool StartRxThread() { return true; }
+
     virtual bool Initialize() { return true; }
     virtual bool Close() { return true; }
 

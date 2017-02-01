@@ -32,10 +32,6 @@ ComPort::~ComPort() {
 }
 
 bool ComPort::Initialize() {
-    if(!StartRxThread()) {
-        StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
-        return false;
-    }
     return true;
 }
 
@@ -128,7 +124,9 @@ bool ComPort::StartRxThread() {
 }
 
 void ComPort::run() {
+
     StartupStore(_T(". ComPort %u ReadThread : started%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
+
     RxThread();
     PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
     if(d) {

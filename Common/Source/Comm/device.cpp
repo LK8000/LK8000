@@ -570,14 +570,12 @@ BOOL devInit() {
         }
 
         if (Com && Com->Initialize()) {
+            /*
+             * Need to be done before anny #DeviceDescriptor_t::Callback call.
+             */
+            DeviceList[i].Com = Com;
             DeviceList[i].Status = CPS_OPENOK;
             pDev->Installer(&DeviceList[i]);
-
-            if ((pDevNmeaOut == NULL) && (pDev->Flags & (1l << dfNmeaOut))) {
-                pDevNmeaOut = &DeviceList[i];
-            }
-
-            DeviceList[i].Com = Com;
 
             devInit(&DeviceList[i]);
             devOpen(&DeviceList[i], i);
@@ -589,6 +587,12 @@ BOOL devInit() {
                     pDevSecondaryBaroSource = &DeviceList[i];
                 }
             }
+
+            if ((pDevNmeaOut == NULL) && (pDev->Flags & (1l << dfNmeaOut))) {
+                pDevNmeaOut = &DeviceList[i];
+            }
+
+            Com->StartRxThread();
         } else {
             delete Com;
             DeviceList[i].Status = CPS_OPENKO;

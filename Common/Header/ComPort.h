@@ -29,7 +29,7 @@ public:
     ComPort& operator=( ComPort&& ) = delete;
 
     bool StopRxThread();
-    bool StartRxThread();
+    virtual bool StartRxThread();
 
 #if USELKASSERT
     inline bool IsCurrentThread() {
