@@ -24,6 +24,13 @@
 #include <X11/Xlib.h>
 #endif
 
+// The default size of lcd monitor in 1/10 of inches (50= 5")
+// Can be overridden by command line -lcdsize=45
+unsigned short LcdSize=50;
+// The DpiSize, when 0 it is calculated by GetScreenDensity, otherwise forced 
+// Can be overridden by command line -dpi=nnn 
+unsigned short DpiSize=0; 
+
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
 // resolution has its own tuned settings. This is thought for real devices, not for PC emulations.
@@ -276,6 +283,8 @@ double GetScreen0Ratio(void) {
 //
 int GetScreenDensity(void) {
 
+    if (DpiSize) return((int)DpiSize);
+
 #ifdef KOBO
     switch (DetectKoboModel()) {
         case KoboModel::GLOHD:
@@ -304,7 +313,7 @@ int GetScreenDensity(void) {
 #endif
 
     // if we are not able to get correct value just return default estimation
-    return sqrt(ScreenSizeX * ScreenSizeX + ScreenSizeY * ScreenSizeY) / 5; // default to a 5 in screen;
+    return (sqrt(ScreenSizeX * ScreenSizeX + ScreenSizeY * ScreenSizeY) *10) / LcdSize; 
 }
 
 

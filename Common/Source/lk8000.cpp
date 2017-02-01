@@ -317,7 +317,7 @@ bool Startup(const TCHAR* szCmdLine) {
   _tcscpy(startDeviceFile, defaultDeviceFile);
 
 #if !defined(UNDER_CE) || (defined(__linux__) && !defined(ANDROID))
-  LK8000GetOpts(szCmdLine);
+  if (!LK8000GetOpts(szCmdLine)) return 0;
 #endif
 
   InitSineTable();

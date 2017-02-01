@@ -8,211 +8,167 @@
 
 #include "externs.h"
 
-#if !defined(UNDER_CE) || defined(__linux__)
+#if !defined(UNDER_CE) || defined(__linux__) && !defined(ANDROID)
 
 // This is a quick solution to tell profiles not to override a command line choice, for v5
 bool CommandResolution=false;
 
-void LK8000GetOpts(const TCHAR *MyCommandLine) {
+extern unsigned short LcdSize, DpiSize;
+
+
+//
+//  true,  continue normally
+//  false, no startup
+// 
+
+bool LK8000GetOpts(const TCHAR *MyCommandLine) {
 
   CommandResolution=false;
 
-  if (MyCommandLine != NULL){
-    const TCHAR *pC, *pCe;
+  if (MyCommandLine == NULL) return true;
 
-    pC = _tcsstr(MyCommandLine, TEXT("-profile="));
-    if (pC != NULL){
-      pC += strlen("-profile=");
-      if (*pC == '"'){
-        pC++;
-        pCe = pC;
-        while (*pCe != '"' && *pCe != '\0') pCe++;
-      } else{
-        pCe = pC;
-        while (*pCe != ' ' && *pCe != '\0') pCe++;
-      }
-      if (pCe != NULL && pCe-1 > pC){
+  const TCHAR *pC, *pCe;
+  TCHAR stx[10], sty[10], screensize[10], screendpi[10];
+  bool validx=false, validy=false;
 
-        LK_tcsncpy(startProfileFile, pC, pCe-pC);
-      }
-    }
+  pC = _tcsstr(MyCommandLine, TEXT("-help"));
+  if (pC != NULL){
 
-	//
-	// custom resolution setup
-	//
-	pC = _tcsstr(MyCommandLine, TEXT("-x="));
-	if (pC != NULL) {
-		TCHAR stx[10];
-		_tcscpy(stx,_T(""));
-		pC += strlen("-x=");
-		if (*pC == '"'){
-			pC++;
-			pCe = pC;
-			while (*pCe != '"' && *pCe != '\0') pCe++;
-		} else{
-			pCe = pC;
-			while (*pCe != ' ' && *pCe != '\0') pCe++;
-		}
-		if (pCe != NULL && pCe-1 > pC) {
-			LK_tcsncpy(stx, pC, pCe-pC);
-		}
+     fprintf(stderr,"\n\
+ **************** LK8000 command line help ******************\n\
+ -help\n\
+ -profile=filename\n\
+          load filename as StartProfileFile\n\
+ -x=n -y=n\n\
+          use specified screen resolution, example -x=480 -y=272\n\
+ -lcdsize=n\n\
+          assume monitor size is n inches. The value must be multiplied by 10\n\
+          and must be integer. Example for 4.5 inches, use -lcdsize=45 \n\
+ -dpi=n\n\
+          assume screen density has n dpi , example -dpi=144\n\
+          This value ovverrides -lcdsize\n\
+\n");
 
-		pC = _tcsstr(MyCommandLine, TEXT("-y="));
-		if (pC != NULL) {
-			TCHAR sty[10];
-			_tcscpy(sty,_T(""));
-			pC += strlen("-y=");
-			if (*pC == '"') {
-				pC++;
-				pCe = pC;
-				while (*pCe != '"' && *pCe != '\0') pCe++;
-			} else {
-				pCe = pC;
-				while (*pCe != ' ' && *pCe != '\0') pCe++;
-			}
-			if (pCe != NULL && pCe-1 > pC) {
-				LK_tcsncpy(sty, pC, pCe-pC);
-			}
-
-			int x=_tcstol(stx, nullptr, 10);
-			int y=_tcstol(sty, nullptr, 10);
-			if (x>=240 && x<=4000 && y>=240 && y<=4000) {
-				ScreenSizeX=x;
-				ScreenSizeY=y;
-        CommandResolution=true;
-			}
-		}
-	}
-
-    pC = _tcsstr(MyCommandLine, TEXT("-640x480"));
-    if (pC != NULL){
-      ScreenSizeX=640;
-      ScreenSizeY=480;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-800x480"));
-    if (pC != NULL){
-      ScreenSizeX=800;
-      ScreenSizeY=480;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-720x408"));
-    if (pC != NULL){
-      ScreenSizeX=720;
-      ScreenSizeY=408;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-800x600"));
-    if (pC != NULL){
-      ScreenSizeX=800;
-      ScreenSizeY=600;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-896x672"));
-    if (pC != NULL){
-      ScreenSizeX=896;
-      ScreenSizeY=672;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-854x358"));
-    if (pC != NULL){
-      ScreenSizeX=854;
-      ScreenSizeY=358;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-big"));
-    if (pC != NULL){
-      ScreenSizeX=896;
-      ScreenSizeY=672;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-400x240"));
-    if (pC != NULL){
-      ScreenSizeX=400;
-      ScreenSizeY=240;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-480x272"));
-    if (pC != NULL){
-      ScreenSizeX=480;
-      ScreenSizeY=272;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-480x234"));
-    if (pC != NULL){
-      ScreenSizeX=480;
-      ScreenSizeY=234;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-480x800"));
-    if (pC != NULL){
-      ScreenSizeX=480;
-      ScreenSizeY=800;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-portrait"));
-    if (pC != NULL){
-      ScreenSizeX=480;
-      ScreenSizeY=640;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-480x640"));
-    if (pC != NULL){
-      ScreenSizeX=480;
-      ScreenSizeY=640;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-small"));
-    if (pC != NULL){
-      ScreenSizeX/= 2;
-      ScreenSizeY/= 2;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-320x240"));
-    if (pC != NULL){
-      ScreenSizeX=320;
-      ScreenSizeY=240;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-320x234"));
-    if (pC != NULL){
-      ScreenSizeX=320;
-      ScreenSizeY=234;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-240x320"));
-    if (pC != NULL){
-      ScreenSizeX=240;
-      ScreenSizeY=320;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-234x320"));
-    if (pC != NULL){
-      ScreenSizeX=234;
-      ScreenSizeY=320;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-240x400"));
-    if (pC != NULL){
-      ScreenSizeX=240;
-      ScreenSizeY=400;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-272x480"));
-    if (pC != NULL){
-      ScreenSizeX=272;
-      ScreenSizeY=480;
-      CommandResolution=true;
-    }
-    pC = _tcsstr(MyCommandLine, TEXT("-testmode"));
-    if (pC != NULL){
-      ScreenSizeX=1018;
-      ScreenSizeY=564;
-      CommandResolution=true;
-    }
+  return false; 
 
   }
 
+
+  pC = _tcsstr(MyCommandLine, TEXT("-profile="));
+  if (pC != NULL){
+     pC += strlen("-profile=");
+     if (*pC == '"'){
+        pC++;
+        pCe = pC;
+        while (*pCe != '"' && *pCe != '\0') pCe++;
+     } else{
+        pCe = pC;
+        while (*pCe != ' ' && *pCe != '\0') pCe++;
+     }
+     if (pCe != NULL && pCe-1 > pC) {
+        LK_tcsncpy(startProfileFile, pC, pCe-pC);
+     }
+  }
+
+  //
+  // custom resolution setup
+  //
+  pC = _tcsstr(MyCommandLine, TEXT("-x="));
+  if (pC != NULL) {
+     _tcscpy(stx,_T(""));
+      pC += strlen("-x=");
+     if (*pC == '"'){
+        pC++;
+        pCe = pC;
+        while (*pCe != '"' && *pCe != '\0') pCe++;
+     } else{
+        pCe = pC;
+        while (*pCe != ' ' && *pCe != '\0') pCe++;
+     }
+     if (pCe != NULL && pCe > pC) {
+        LK_tcsncpy(stx, pC, pCe-pC);
+        validx=true;
+     }
+  }
+
+  pC = _tcsstr(MyCommandLine, TEXT("-y="));
+  if (pC != NULL) {
+     _tcscpy(sty,_T(""));
+      pC += strlen("-y=");
+     if (*pC == '"') {
+        pC++;
+        pCe = pC;
+        while (*pCe != '"' && *pCe != '\0') pCe++;
+     } else {
+        pCe = pC;
+        while (*pCe != ' ' && *pCe != '\0') pCe++;
+     }
+     if (pCe != NULL && pCe > pC) {
+        LK_tcsncpy(sty, pC, pCe-pC);
+        validy=true;
+     }
+  }
+
+  if (validx && validy) {
+     int x=_tcstol(stx, nullptr, 10);
+     int y=_tcstol(sty, nullptr, 10);
+     if (x>=240 && x<=5000 && y>=240 && y<=5000) {
+        ScreenSizeX=x;
+        ScreenSizeY=y;
+        StartupStore(_T(". CommandLine ScreenSize x=%d y=%d%s"),x,y,NEWLINE);
+        CommandResolution=true;
+     }
+  }
+
+  pC = _tcsstr(MyCommandLine, TEXT("-lcdsize="));
+  if (pC != NULL){
+     _tcscpy(screensize,_T(""));
+     pC += strlen("-lcdsize=");
+     if (*pC == '"'){
+        pC++;
+        pCe = pC;
+        while (*pCe != '"' && *pCe != '\0') pCe++;
+     } else{
+        pCe = pC;
+        while (*pCe != ' ' && *pCe != '\0') pCe++;
+     }
+     if (pCe != NULL && pCe > pC) {
+        LK_tcsncpy(screensize, pC, pCe-pC);
+        int s=_tcstol(screensize, nullptr, 10);
+        if (s<20 || s >240) {
+           StartupStore(_T(". CommandLine monitor size=%d is out of range%s"),s,NEWLINE);
+        } else {
+           StartupStore(_T(". CommandLine monitor size=%d inches%s"),s,NEWLINE);
+           LcdSize=s;
+        }
+     }
+  }
+
+  pC = _tcsstr(MyCommandLine, TEXT("-dpi="));
+  if (pC != NULL){
+     _tcscpy(screendpi,_T(""));
+     pC += strlen("-dpi=");
+     if (*pC == '"'){
+        pC++;
+        pCe = pC;
+        while (*pCe != '"' && *pCe != '\0') pCe++;
+     } else{
+        pCe = pC;
+        while (*pCe != ' ' && *pCe != '\0') pCe++;
+     }
+     if (pCe != NULL && pCe > pC) {
+        LK_tcsncpy(screendpi, pC, pCe-pC);
+        int s=_tcstol(screendpi, nullptr, 10);
+        if (s<40 || s >2000) {
+           StartupStore(_T(". CommandLine dpi=%d is out of range%s"),s,NEWLINE);
+        } else {
+           StartupStore(_T(". CommandLine dpi=%d inches%s"),s,NEWLINE);
+           DpiSize=s;
+        }
+     }
+  }
+
+  return true;
 }
 
 #endif
