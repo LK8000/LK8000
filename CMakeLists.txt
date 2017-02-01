@@ -79,13 +79,19 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Android/Product.cpp
     Common/Source/xcs/Android/TextUtil.cpp
     Common/Source/xcs/Android/EventBridge.cpp
-	Common/Source/xcs/Android/InternalSensors.cpp
-	Common/Source/xcs/Android/SoundUtil.cpp
+    Common/Source/xcs/Android/InternalSensors.cpp
+    Common/Source/xcs/Android/SoundUtil.cpp
+    Common/Source/xcs/Android/BluetoothHelper.cpp
+    Common/Source/xcs/Android/NativeLeScanCallback.cpp
+    Common/Source/xcs/Android/PortBridge.cpp
+    Common/Source/xcs/Android/NativeInputListener.cpp
+    Common/Source/xcs/Android/NativePortListener.cpp
 
     Common/Source/xcs/Java/String.cxx
     Common/Source/xcs/Java/Global.cxx
     Common/Source/xcs/Java/File.cxx
     Common/Source/xcs/Java/Object.cxx
+    Common/Source/xcs/Java/Exception.cxx
 
 
     Common/Source/Android/Main.cpp

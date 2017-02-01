@@ -20,6 +20,11 @@
 #include "Android/Context.hpp"
 #include "Android/Environment.hpp"
 #include "Android/InternalSensors.hpp"
+#include "Android/NativePortListener.hpp"
+#include "Android/NativeInputListener.hpp"
+#include "Android/PortBridge.hpp"
+#include "Android/BluetoothHelper.hpp"
+#include "Android/NativeLeScanCallback.hpp"
 
 #include "Screen/OpenGL/Init.hpp"
 #include "Screen/Debug.hpp"
@@ -78,6 +83,11 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   Environment::Initialise(env);
   AndroidBitmap::Initialise(env);
   InternalSensors::Initialise(env);
+  NativePortListener::Initialise(env);
+  NativeInputListener::Initialise(env);
+  PortBridge::Initialise(env);
+  BluetoothHelper::Initialise(env);
+  NativeLeScanCallback::Initialise(env);
 
   context = new Context(env, _context);
 
@@ -129,6 +139,10 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   delete context;
   context = nullptr;
 
+  NativeLeScanCallback::Deinitialise(env);
+  BluetoothHelper::Deinitialise(env);
+  NativeInputListener::Deinitialise(env);
+  NativePortListener::Deinitialise(env);
   SoundUtil::Deinitialise(env);
   InternalSensors::Deinitialise(env);
   AndroidBitmap::Deinitialise(env);
