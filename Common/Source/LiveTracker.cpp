@@ -493,7 +493,7 @@ static int WriteData(SOCKET s, const void *data, size_t length) {
 // Do a transaction with server
 // returns received bytes, -1 if transaction failed
 static int DoTransactionToServer(const char* server_name, int server_port,
-		char *txbuf, char *rxbuf, unsigned int maxrxbuflen) {
+		const char *txbuf, char *rxbuf, unsigned int maxrxbuflen) {
 
 #ifdef LT_DEBUG
 	StartupStore(TEXT(".DoTransactionToServer txbuf : %s%s"), txbuf, NEWLINE);
@@ -574,9 +574,9 @@ static int DoTransactionToServer(const char* server_name, int server_port,
 				break;
 			case 4:
 				//Content chr
-				rxbuf[rxlen] = cdata;
-				if (rxlen < maxrxbuflen)
-					rxlen++;
+				if (rxlen < maxrxbuflen) {
+					rxbuf[rxlen++] = cdata;
+				}
 				break;
 			} //sw
 		} //for
@@ -587,7 +587,7 @@ static int DoTransactionToServer(const char* server_name, int server_port,
 		goto cleanup;
 	}
 
-	rxbuf[rxlen] = 0;
+	rxbuf[std::min(rxlen, maxrxbuflen-1)] = 0;
 #ifdef LT_DEBUG
 	StartupStore(TEXT(".DoTransactionToServer recv len=%d: %s%s"), rxlen, rxbuf, NEWLINE);
 #endif
@@ -1417,7 +1417,6 @@ static std::string passwordToken(const std::string& plainTextPassword,
 
 static int GetUserIDFromServer2() {
 	int retval = -1;
-	int rxlen;
 	char txbuf[512];
 
 	char rxcontent[32];
@@ -1426,10 +1425,10 @@ static int GetUserIDFromServer2() {
 	sprintf(txbuf, "/api/t/lt/getUserID/%s/%s/%s/0/0/%s/%s", appKey, "1.0",
 			"LK8000", pwt0.c_str(), _username);
 
-	rxlen = DoTransactionToServer("t2.livetrack24.com", 80, txbuf, rxcontent,
+	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, txbuf, rxcontent,
 			sizeof(rxcontent));
 	if (rxlen > 0) {
-		rxcontent[rxlen] = 0;
+		rxcontent[std::min<unsigned>(rxlen, array_size(rxcontent)-1)] = 0;
 
 		std::vector<std::string> strings;
 
@@ -1555,7 +1554,6 @@ static std::string DeltaRLE(std::vector<int> data) {
 static bool SendGPSPointPacket2(unsigned int *packet_id) {
 
 	char rxbuf[32];
-	int rxlen;
 	int nPoints = 0;
 
 	if (1) {
@@ -1594,16 +1592,10 @@ static bool SendGPSPointPacket2(unsigned int *packet_id) {
 	stringStream << DeltaRLE(COGlist) << "/";
 	stringStream << "LK8000";  // TrackInfo
 
-	std::string command = stringStream.str();
-	char *txbuf = new char[command.length() + 1];
-	std::copy(command.begin(), command.end(), txbuf);
-	txbuf[command.length()] = 0;
-	rxlen = DoTransactionToServer("t2.livetrack24.com", 80, txbuf, rxbuf,
-			sizeof(rxbuf));
-
-	delete[] txbuf;
+	const std::string command = stringStream.str();
+	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, command.c_str(), rxbuf, sizeof(rxbuf));
 	if (rxlen > 0) {
-		rxbuf[rxlen] = 0;
+		rxbuf[std::min<unsigned>(rxlen, array_size(rxbuf)-1)] = 0;
 
 		std::vector<std::string> strings;
 
