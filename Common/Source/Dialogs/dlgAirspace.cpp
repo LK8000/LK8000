@@ -34,31 +34,35 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
   if (DrawListIndex < AIRSPACECLASSCOUNT){
     int i = DrawListIndex;
 	LK_tcsncpy(label, CAirspaceManager::Instance().GetAirspaceTypeText(i), 39);
-    int w0, w1, w2, x0;
-    if (ScreenLandscape) {
-      w0 = 202*ScreenScale;
-    } else {
-      w0 = 225*ScreenScale;
-    }
+    
+    const PixelRect rcClient(Sender->GetClientRect());
+    const int w0 = rcClient.GetSize().cx;
 	// LKTOKEN  _@M789_ = "Warn"
-    w1 = Surface.GetTextWidth(MsgToken(789))+ScreenScale*10;
+    const int w1 = Surface.GetTextWidth(MsgToken(789)) + DLGSCALE(10);
 	// LKTOKEN  _@M241_ = "Display"
-    w2 = Surface.GetTextWidth(MsgToken(241))+ScreenScale*10;
-    x0 = w0-w1-w2;
+    const int w2 = Surface.GetTextWidth(MsgToken(241)) + DLGSCALE(2);
+    
+    const int x0 = w0-w1-w2;
 
     Surface.SetTextColor(RGB_BLACK);
-    Surface.DrawTextClip(2*ScreenScale, 2*ScreenScale,
-                   label, x0-ScreenScale*10);
+    Surface.DrawTextClip(DLGSCALE(2), DLGSCALE(2), label, x0-DLGSCALE(10));
 
     if (colormode) {
+      PixelRect rcColor = {
+          x0, 
+          rcClient.top + DLGSCALE(2), 
+          rcClient.right - DLGSCALE(2), 
+          rcClient.bottom - DLGSCALE(2)
+      };
 
       Surface.SelectObject(LK_WHITE_PEN);
       Surface.SelectObject(LKBrush_White);
-      Surface.Rectangle(x0, 2*ScreenScale,w0, 22*ScreenScale);
+      Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
+
       Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(i));
       Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
       Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(i));
-      Surface.Rectangle(x0, 2*ScreenScale,w0, 22*ScreenScale);
+      Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
 
     } else {
 
@@ -68,14 +72,12 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
       iswarn = (MapWindow::iAirspaceMode[i]>=2);
       isdisplay = ((MapWindow::iAirspaceMode[i]%2)>0);
       if (iswarn) {
-	// LKTOKEN  _@M789_ = "Warn"
-        _tcscpy(label, MsgToken(789));
-        Surface.DrawText(w0-w1-w2, 2*ScreenScale, label);
+        // LKTOKEN  _@M789_ = "Warn"
+        Surface.DrawText(x0, DLGSCALE(2), MsgToken(789));
       }
       if (isdisplay) {
-	// LKTOKEN  _@M241_ = "Display"
-        _tcscpy(label, MsgToken(241));
-        Surface.DrawText(w0-w2, 2*ScreenScale, label);
+        // LKTOKEN  _@M241_ = "Display"
+        Surface.DrawText(w0-w2, DLGSCALE(2), MsgToken(241));
       }
 
     }

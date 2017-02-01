@@ -128,9 +128,10 @@ PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
     const PixelScalar nbRow = ScreenLandscape ? 5 : 7;
     const PixelScalar nbCol = ScreenLandscape ? 5 : 4;
 
+    /* we use DLGSCALE here because reference layout are 320x240 screen*/
     const PixelSize size = {
-        std::min<PixelScalar>((rc.GetSize().cx-(nbCol-1))/nbCol, NIBLSCALE(80)), 
-        std::min<PixelScalar>((rc.GetSize().cy-nbRow-1)/nbRow, NIBLSCALE(40))
+        std::min<PixelScalar>((rc.GetSize().cx-(nbCol-1))/nbCol, DLGSCALE(80)), 
+        std::min<PixelScalar>((rc.GetSize().cy-(nbRow-1))/nbRow, DLGSCALE(40))
     };
     
     const double x_interval = (rc.GetSize().cx - size.cx * nbCol) / (nbCol-1);

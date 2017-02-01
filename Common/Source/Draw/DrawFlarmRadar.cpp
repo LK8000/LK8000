@@ -495,8 +495,8 @@ RECT rct = rc;  /* rectangle for topview */
 rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
 rc.top     = rct.bottom;
 static double fScaleFact = 5.0;
-static int iCircleSize    = RescalePixelSize(4);
-static int iRectangleSize = RescalePixelSize(4);
+static int iCircleSize    = IBLSCALE(4);
+static int iRectangleSize = IBLSCALE(4);
 
 static short tscaler=0;
 static POINT Arrow[5];
@@ -815,9 +815,9 @@ DiagrammStruct sDia;
 	  {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; };
 
 
-	iCircleSize    = RescalePixelSize(4);
-	iTraceDotSize  = RescalePixelSize(2);
-	iRectangleSize = RescalePixelSize(4);
+	iCircleSize    = IBLSCALE(4);
+	iTraceDotSize  = IBLSCALE(2);
+	iRectangleSize = IBLSCALE(4);
 	DoInit[MDI_FLARMRADAR]=false;
   }
 

@@ -315,18 +315,11 @@ void Globals_Init(void) {
   ScreenSizeX=0;
   ScreenSizeY=0;
   ScreenLandscape=false;
-  ScreenDScale=1;
-  ScreenScale=1;
-  ScreenIntScale=false;
   Screen0Ratio=1;
   ScreenGeometry=0;
   ScreenDensity=0;
   ScreenThinSize=1;
   
-#ifdef RESCALE_PIXEL  
-  ScreenPixelRatio=1<<10; // This is 1.0
-#endif
-
   // Default arrival mode calculation type
   // 091016 currently not changed anymore
   AltArrivMode=ALTA_MC;

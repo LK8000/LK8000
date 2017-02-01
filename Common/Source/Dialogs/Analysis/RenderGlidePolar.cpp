@@ -11,7 +11,7 @@
 #include "utils/stl_utils.h"
 #include "LKObjects.h"
 #include "Asset.hpp"
-
+#include "ScreenGeometry.h"
 
 void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 {

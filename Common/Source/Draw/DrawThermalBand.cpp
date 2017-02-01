@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "LKObjects.h"
+#include "ScreenGeometry.h"
 
 void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 {

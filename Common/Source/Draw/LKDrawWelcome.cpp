@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include "RGB.h"
 #include "OS/Memory.h"
+#include "ScreenGeometry.h"
 
 void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 

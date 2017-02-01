@@ -117,7 +117,7 @@ static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
       LKASSERT(DetailDrawListIndex>=0);
       const TCHAR* szText = aDetailTextLine[DetailDrawListIndex];
       Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText);
+      Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
   }
 }
 
@@ -140,7 +140,7 @@ static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface)
       LKASSERT(CommentDrawListIndex>=0);
       const TCHAR* szText = aCommentTextLine[CommentDrawListIndex];
       Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(2*ScreenScale, 2*ScreenScale, szText);
+      Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
   }
 }
 

@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "RGB.h"
 #include "DoInits.h"
-
+#include "ScreenGeometry.h"
 
 // This is the 4.x Sight Traffic page aka LK F104 mode
 // Remember that when we are painting DrawTarget there is no

@@ -15,6 +15,7 @@
 #include "DoInits.h"
 #include "McReady.h"
 #include "Util/UTF8.hpp"
+#include "ScreenGeometry.h"
 
 
 extern void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col);

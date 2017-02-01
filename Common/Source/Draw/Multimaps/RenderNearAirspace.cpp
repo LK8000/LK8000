@@ -13,6 +13,7 @@
 #include "Dialogs.h"
 #include "LKObjects.h"
 #include "InputEvents.h"
+#include "ScreenGeometry.h"
 
 #define THICK_LINE 3 // NOTICE v6.1: we should not use absolute values..TODO
 

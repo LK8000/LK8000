@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "ScreenGeometry.h"
 
 bool MapWindow::GliderCenter=false;
 

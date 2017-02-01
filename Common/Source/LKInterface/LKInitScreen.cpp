@@ -24,6 +24,165 @@
 #include <X11/Xlib.h>
 #endif
 
+/**
+ * calc by LKInitScreen  "min(Width,Height) / 240"
+ *  used for scaling Dialog Template
+ */
+int DialogScale = 1<<10; // 1.0
+
+/**
+ * DPI Scale
+ */
+int ScreenPixelRatio = 1<<10; // 1.0
+
+//
+// Inside LKFonts we support special resolutions at best possible tuned settings.
+// These resolutions are used as a base for resizing, considering their geometry ratio.
+// Most modern screens have a 1,777 ratio, so in any case there is no need to think
+// about dozens of geometries and we can take it easy with a simple approach here.
+//
+static
+unsigned short GetScreenGeometry(unsigned int x, unsigned int y) {
+
+#if TESTBENCH
+    LKASSERT(x < 5000 && y < 5000);
+#endif
+    LKASSERT(x > 0 && y > 0);
+
+    double ratio = x >= y ? x / (double) y : y / (double) x;
+
+    //
+    // Table of internally tuned ratios in LK8000
+    //
+    // Ratio   Aspect     Examples
+    // -----   ------     --------
+    // 1,333    4:3        320x240 640x480 800x600
+    // 1,666    5:3        800x480
+    // 1,777    16:9       480x272 960x540 1280x720 1920x1080
+    // 2,05     2:1        480x234
+    //
+    // Aspect change thresholds:
+    //
+    // 1,000
+    //   1,166
+    // 1,333
+    //   1,500
+    // 1,666
+    //   1,721
+    // 1,777
+    //   1,888
+    // 2,000
+    //
+
+    // Here we decide which is the closest ratio
+    while (1) {
+        if (ratio < 1.166) return SCREEN_GEOMETRY_21; // yet unsupported SCREEN_GEOMETRY_SQUARED!
+        if (ratio < 1.500) return SCREEN_GEOMETRY_43; // 1,33
+        if (ratio < 1.721) return SCREEN_GEOMETRY_53; // 1,66
+        if (ratio < 1.888) return SCREEN_GEOMETRY_169; // 1,77
+        if (ratio < 2.112) return SCREEN_GEOMETRY_21;
+        ratio /= 2;
+    }
+}
+
+//
+// We calculate the correct scaling factor based on vertical extension.
+// That is because all fonts are rescaled by their height by the function
+// ApplyFontSize() using formula:  new_height=(old_height * Screen0Ratio)
+// If we change this function, let's update also ScreenGeometry.h for memo.
+//
+static
+double GetScreen0Ratio(void) {
+    double ratio = 0;
+    if (ScreenLandscape) {
+        switch (ScreenGeometry) {
+            case SCREEN_GEOMETRY_43:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+            case SCREEN_GEOMETRY_53:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+            case SCREEN_GEOMETRY_169:
+                ratio = (double) ScreenSizeY / 272.0;
+                break;
+            case SCREEN_GEOMETRY_21:
+                ratio = (double) ScreenSizeY / 234.0;
+                break;
+            default:
+                ratio = (double) ScreenSizeY / 272.0;
+                break;
+        }
+    } else {
+        switch (ScreenGeometry) {
+            case SCREEN_GEOMETRY_43:
+                ratio = (double) ScreenSizeY / 640.0;
+                break;
+            case SCREEN_GEOMETRY_53:
+                ratio = (double) ScreenSizeY / 800.0;
+                break;
+            case SCREEN_GEOMETRY_169:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+            case SCREEN_GEOMETRY_21:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+            default:
+                ratio = (double) ScreenSizeY / 480.0;
+                break;
+        }
+    }
+    return ratio;
+}
+
+//
+// Screen DPI estimation for some platform.
+//
+static
+int GetScreenDensity(void) {
+
+#ifdef KOBO
+    switch (DetectKoboModel()) {
+        case KoboModel::GLOHD:
+            return 300;
+        case KoboModel::TOUCH2:
+            return 167;
+        default:
+            return 200; // Kobo Mini 200 dpi; Kobo Glo 212 dpi (according to Wikipedia)
+    }
+#endif
+
+#ifdef  ANDROID
+    return native_view->GetXDPI();
+#endif
+
+    //#ifdef WIN32    // for the moment we mantain default value for WIN32 as LOGPIXELSX always return 96 ?
+    //	HDC dc = GetDC(NULL);
+    //	return GetDeviceCaps(dc, LOGPIXELSX);
+    //#endif
+
+#if 0 // def USE_X11
+    _XDisplay* disp = XOpenDisplay(NULL);
+    double xres = ((((double) DisplayWidth(disp, 0)) * 25.4) / ((double) DisplayWidthMM(disp, 0)));
+    XCloseDisplay(disp);
+    return (short) xres;
+#endif
+
+#ifdef WIN32 
+    switch(ScreenSize) {
+        case ss240x320:
+        case ss240x400:
+        case ss320x240:
+        case ss400x240:
+        case ss480x272:
+        case ss272x480:
+            return LK_REFERENCE_DPI;
+    }
+#endif
+    // if we are not able to get correct value just return default estimation
+    return sqrt(ScreenSizeX * ScreenSizeX + ScreenSizeY * ScreenSizeY) / 5; // default to a 5 in screen;
+}
+
+
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
 // resolution has its own tuned settings. This is thought for real devices, not for PC emulations.
@@ -84,27 +243,13 @@ void InitLKScreen() {
     // -----------------------------
     // Calculate Screen Scale Factor
     // -----------------------------
-    
-    //  int maxsize = std::max(ScreenSizeX, ScreenSizeY);
+
     int minsize = std::min(ScreenSizeX, ScreenSizeY);
+    DialogScale = std::max(1<<10, (minsize<<10) / 240);
     
-    ScreenDScale = std::max(1.0, minsize / 240.0); // always start w/ shortest dimension
-    ScreenScale = lround(ScreenDScale);
-
-    ScreenIntScale = (((double) ScreenScale) == ScreenDScale);
-
-    for (int i = 0; i <= MAXIBLSCALE; i++) {
-        LKIBLSCALE[i] = IBLSCALE(i);
-    }    
-    
-    // This is used by RescalePixelSize(), defined in Makefile when needed.
-    // Some functions using ScreenScale have been changed to use rescaled pixels.
-    // We must check that pixelratio is never lower than ScreenScale.
     ScreenDensity = GetScreenDensity();
-#ifdef RESCALE_PIXEL
-  ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/LK_REFERENCE_DPI);
-#endif
-
+    // ScreenPixelRatio can't be less than 1.0 ! 
+    ScreenPixelRatio = std::max(1<<10, ((ScreenDensity<<10)/LK_REFERENCE_DPI));
     
     // -----------------------------
     // Initialize some Global variable 
@@ -113,14 +258,14 @@ void InitLKScreen() {
     
     // Initially, this is the default. Eventually retune it for each resolution.
     // We might in the future also set a UseStretch, with or without Hires.
-    UseHiresBitmap = (ScreenScale > 1);
+    UseHiresBitmap = (lround(ScreenPixelRatio) > 1);
     
     //
     // The thinnest line somehow visible on screen from 35cm distance.
     //
-    ScreenThinSize = RescalePixelSize(1);
+    ScreenThinSize = IBLSCALE(1);
 
-    GestureSize = RescalePixelSize(50);
+    GestureSize = IBLSCALE(50);
 
     // Override defaults for custom settings
     switch ((ScreenSize_t) ScreenSize) {
@@ -151,14 +296,10 @@ void InitLKScreen() {
     StartupStore(_T("..... ScreenDensity    = %d" NEWLINE), ScreenDensity);
     StartupStore(_T("..... ScreenGeometry   = %d" NEWLINE), ScreenGeometry);
     StartupStore(_T("..... ScreenSize(enum) = %d" NEWLINE), ScreenSize);
-    StartupStore(_T("..... ScreenDScale     = %.3f" NEWLINE), ScreenDScale);
-    StartupStore(_T("..... ScreenScale      = %d" NEWLINE), ScreenScale);
-    StartupStore(_T("..... ScreenIntScale   = %s" NEWLINE), ScreenIntScale ? _T("true") : _T("false"));
     StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
 
-#ifdef RESCALE_PIXEL  
     StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
-#endif
+    StartupStore(_T("..... DialogScale      = %d.%d" NEWLINE), DialogScale >> 10, DialogScale & 0x3FF);
 
     StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
     StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));
@@ -170,142 +311,3 @@ void InitLKScreen() {
     StartupStore(_T("..... CompassMenuSize  = %d" NEWLINE), CompassMenuSize);
 #endif  
 } // End of LKInitScreen
-
-
-//
-// Inside LKFonts we support special resolutions at best possible tuned settings.
-// These resolutions are used as a base for resizing, considering their geometry ratio.
-// Most modern screens have a 1,777 ratio, so in any case there is no need to think
-// about dozens of geometries and we can take it easy with a simple approach here.
-//
-
-unsigned short GetScreenGeometry(unsigned int x, unsigned int y) {
-
-#if TESTBENCH
-    LKASSERT(x < 5000 && y < 5000);
-#endif
-    LKASSERT(x > 0 && y > 0);
-
-    double ratio = x >= y ? x / (double) y : y / (double) x;
-
-    //
-    // Table of internally tuned ratios in LK8000
-    //
-    // Ratio   Aspect     Examples
-    // -----   ------     --------
-    // 1,333    4:3        320x240 640x480 800x600
-    // 1,666    5:3        800x480
-    // 1,777    16:9       480x272 960x540 1280x720 1920x1080
-    // 2,05     2:1        480x234
-    //
-    // Aspect change thresholds:
-    //
-    // 1,000
-    //   1,166
-    // 1,333
-    //   1,500
-    // 1,666
-    //   1,721
-    // 1,777
-    //   1,888
-    // 2,000
-    //
-
-    // Here we decide which is the closest ratio
-    while (1) {
-        if (ratio < 1.166) return SCREEN_GEOMETRY_21; // yet unsupported SCREEN_GEOMETRY_SQUARED!
-        if (ratio < 1.500) return SCREEN_GEOMETRY_43; // 1,33
-        if (ratio < 1.721) return SCREEN_GEOMETRY_53; // 1,66
-        if (ratio < 1.888) return SCREEN_GEOMETRY_169; // 1,77
-        if (ratio < 2.112) return SCREEN_GEOMETRY_21;
-        ratio /= 2;
-    }
-}
-
-//
-// We calculate the correct scaling factor based on vertical extension.
-// That is because all fonts are rescaled by their height by the function
-// ApplyFontSize() using formula:  new_height=(old_height * Screen0Ratio)
-// If we change this function, let's update also ScreenGeometry.h for memo.
-//
-
-double GetScreen0Ratio(void) {
-    double ratio = 0;
-    if (ScreenLandscape) {
-        switch (ScreenGeometry) {
-            case SCREEN_GEOMETRY_43:
-                ratio = (double) ScreenSizeY / 480.0;
-                break;
-            case SCREEN_GEOMETRY_53:
-                ratio = (double) ScreenSizeY / 480.0;
-                break;
-            case SCREEN_GEOMETRY_169:
-                ratio = (double) ScreenSizeY / 272.0;
-                break;
-            case SCREEN_GEOMETRY_21:
-                ratio = (double) ScreenSizeY / 234.0;
-                break;
-            default:
-                ratio = (double) ScreenSizeY / 272.0;
-                break;
-        }
-    } else {
-        switch (ScreenGeometry) {
-            case SCREEN_GEOMETRY_43:
-                ratio = (double) ScreenSizeY / 640.0;
-                break;
-            case SCREEN_GEOMETRY_53:
-                ratio = (double) ScreenSizeY / 800.0;
-                break;
-            case SCREEN_GEOMETRY_169:
-                ratio = (double) ScreenSizeY / 480.0;
-                break;
-            case SCREEN_GEOMETRY_21:
-                ratio = (double) ScreenSizeY / 480.0;
-                break;
-            default:
-                ratio = (double) ScreenSizeY / 480.0;
-                break;
-        }
-    }
-    return ratio;
-}
-
-//
-// Screen DPI estimation for some platform.
-//
-int GetScreenDensity(void) {
-
-#ifdef KOBO
-    switch (DetectKoboModel()) {
-        case KoboModel::GLOHD:
-            return 300;
-        case KoboModel::TOUCH2:
-            return 167;
-        default:
-            return 200; // Kobo Mini 200 dpi; Kobo Glo 212 dpi (according to Wikipedia)
-    }
-#endif
-
-#ifdef  ANDROID
-    return native_view->GetXDPI();
-#endif
-
-    //#ifdef WIN32    // for the moment we mantain default value for WIN32 as LOGPIXELSX always return 96 ?
-    //	HDC dc = GetDC(NULL);
-    //	return GetDeviceCaps(dc, LOGPIXELSX);
-    //#endif
-
-#if 0 // def USE_X11
-    _XDisplay* disp = XOpenDisplay(NULL);
-    double xres = ((((double) DisplayWidth(disp, 0)) * 25.4) / ((double) DisplayWidthMM(disp, 0)));
-    XCloseDisplay(disp);
-    return (short) xres;
-#endif
-
-    // if we are not able to get correct value just return default estimation
-    return sqrt(ScreenSizeX * ScreenSizeX + ScreenSizeY * ScreenSizeY) / 5; // default to a 5 in screen;
-}
-
-
-

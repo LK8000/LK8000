@@ -73,14 +73,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=2;
 				break;
 			default:
-#ifdef RESCALE_PIXEL
-				    psize=RescalePixelSize(2);
-#else
-				if (ScreenLandscape)
-				    psize=3;
-				else
-				    psize=NIBLSCALE(1);
-#endif
+			    psize=IBLSCALE(2);
 				break;
 		}
 		break;
@@ -98,14 +91,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=2;
 				break;
 			default:
-#ifdef RESCALE_PIXEL
-				    psize=RescalePixelSize(2);
-#else
-				if (ScreenLandscape)
-				    psize=3;
-				else
-				    psize=NIBLSCALE(1);
-#endif
+			    psize=IBLSCALE(2);
 				break;
 		}
 		break;
@@ -121,18 +107,14 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=NIBLSCALE(1);
 				break;
 			default:
-#ifdef RESCALE_PIXEL
-                                psize=RescalePixelSize(1);
-#else
 				psize=NIBLSCALE(1);
-#endif
 				break;
 		}
 		break;
 	case 60: // railroads
 		switch(ScreenSize) {
 			default:
-				psize=RescalePixelSize(1);
+				psize=NIBLSCALE(1);
 		}
 		break;
 

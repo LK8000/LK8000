@@ -72,20 +72,12 @@ void protate(POINT &pin, const double &angle)
 
 
 void protateshift(POINT &pin, const double &angle, const int &xs, const int &ys) {
-  int x= pin.x;
-  int y= pin.y;
-  static double lastangle = 0;
-  static int cost=1024,sint=0;
-
-  if(angle != lastangle)
-    {
-      lastangle = angle;
-      cost = ifastcosine(angle);
-      sint = ifastsine(angle);
-    }
-  pin.x = (x*cost - y*sint + 512 + (xs*1024))/1024;
-  pin.y = (y*cost + x*sint + 512 + (ys*1024))/1024;
-
+    const int x = pin.x;
+    const int y = pin.y;
+    const int cost = ifastcosine(angle);
+    const int sint = ifastsine(angle);
+    pin.x = (x*cost - y*sint + 512 + (xs*1024))/1024;
+    pin.y = (y*cost + x*sint + 512 + (ys*1024))/1024;
 }
 
 
@@ -99,13 +91,8 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
 
   if(angle != lastangle) {
     lastangle = angle;
-#ifdef RESCALE_PIXEL
-    cost = RescalePixelSize(ifastcosine(angle));
-    sint = RescalePixelSize(ifastsine(angle));
-#else
-    cost = ifastcosine(angle)*ScreenScale;
-    sint = ifastsine(angle)*ScreenScale;
-#endif
+    cost = IBLSCALE(ifastcosine(angle));
+    sint = IBLSCALE(ifastsine(angle));
   }
   const int xxs = xs*1024+512;
   const int yys = ys*1024+512;
@@ -123,13 +110,8 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
 
 void threadsafePolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle) {
 
-#ifdef RESCALE_PIXEL
-  const int cost = RescalePixelSize(ifastcosine(angle));
-  const int sint = RescalePixelSize(ifastsine(angle));
-#else
-  const int cost = ifastcosine(angle)*ScreenScale;
-  const int sint = ifastsine(angle)*ScreenScale;
-#endif
+  const int cost = IBLSCALE(ifastcosine(angle));
+  const int sint = IBLSCALE(ifastsine(angle));
 
   const int xxs = xs*1024+512;
   const int yys = ys*1024+512;

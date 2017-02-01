@@ -52,10 +52,6 @@
 #define NOLINETO
 #endif
 
-#if defined(ANDROID) || defined(KOBO)
- #define RESCALE_PIXEL
-#endif
-
 #ifdef HAVE_GLES
  #define NO_DASH_LINES
 #endif

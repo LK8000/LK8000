@@ -23,6 +23,7 @@
 #include "utils/openzip.h"
 #include "Draw/ScreenProjection.h"
 #include "NavFunctions.h"
+#include "ScreenGeometry.h"
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 

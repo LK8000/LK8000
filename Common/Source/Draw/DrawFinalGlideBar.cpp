@@ -10,7 +10,7 @@
 #include "LKInterface.h"
 #include "LKObjects.h"
 
-
+#include "ScreenGeometry.h"
 //
 // Final Glide Bar, revised for variometer gauge
 //

@@ -14,6 +14,7 @@
 #include "RGB.h"
 #include "LKStyle.h"
 #include "Screen/FontReference.h"
+#include "ScreenGeometry.h"
 
 extern short GetVisualGlidePoints(unsigned short numslots);
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);

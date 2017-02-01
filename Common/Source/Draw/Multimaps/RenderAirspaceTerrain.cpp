@@ -14,6 +14,7 @@
 #include "Multimap.h"
 #include "LKObjects.h"
 #include "Asset.hpp"
+#include "ScreenGeometry.h"
 
 using std::min;
 using std::max;

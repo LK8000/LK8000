@@ -11,6 +11,7 @@
 #include "Bitmaps.h"
 #include "RGB.h"
 #include "ScreenProjection.h"
+#include "ScreenGeometry.h"
 
 void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft)
 {

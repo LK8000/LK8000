@@ -14,6 +14,7 @@
 #include "Screen/BrushReference.h"
 #include "Bitmaps.h"
 #include "Util/Clamp.hpp"
+#include "ScreenGeometry.h"
 
 #define BOXTHICK 1
 #define PIXELSEPARATE 1

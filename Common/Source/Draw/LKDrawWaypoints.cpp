@@ -189,7 +189,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
         if(pWptBmp) {
 			// Stretch only if Scaled size is greater than 20
-            const unsigned IconSize = std::max<unsigned>(RescalePixelSize(20), 20U);
+            const unsigned IconSize = std::max<unsigned>(IBLSCALE(20), 20U);
 			const RasterPoint ScreenPt =  _Proj.ToRasterPoint(WayPointList[i].Longitude, WayPointList[i].Latitude);
             pWptBmp->Draw(Surface, ScreenPt.x-IconSize/2, ScreenPt.y-IconSize/2, IconSize,IconSize);
         }
@@ -541,15 +541,9 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		pWptBmp = &hTurnPoint;
     }
     if(pWptBmp) {
-#ifdef RESCALE_PIXEL
-        const unsigned IconSize = RescalePixelSize(20);
-        pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
-#else
         // Stretch only if Scaled size is greater than 20 TODO CHECK ON PNA ALL RESOLUTIONS       
-        // const unsigned IconSize = std::max(NIBLSCALE(10), 20);
-        // pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
-        pWptBmp->Draw(Surface, E->Pos.x-10,E->Pos.y-10,20,20);
-#endif
+        const unsigned IconSize = std::max(NIBLSCALE(10), 20);
+        pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
     }
     } // wp in task
   } // for all waypoint, searching for those in task
@@ -661,14 +655,9 @@ turnpoint:
 	} // below zoom threshold
 
     if(pWptBmp) {
-#ifdef RESCALE_PIXEL
-        unsigned IconSize = RescalePixelSize(20);
-        pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
-#else
         // Stretch only if Scaled size is greater than 20
         const unsigned IconSize = std::max(NIBLSCALE(10), 20);
         pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
-#endif
     }
       }
     }

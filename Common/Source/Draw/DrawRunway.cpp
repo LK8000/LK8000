@@ -209,7 +209,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   // Rescale radius only, since len and thick are rescaled by polygon rotation 
   // (which is bad idea in any case- it should at least be called RescaledPolygon..)
   //
-  irw_radius=RescalePixelSize(irw_radius);
+  irw_radius=IBLSCALE(irw_radius);
 
 
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);

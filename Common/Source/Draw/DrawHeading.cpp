@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "RGB.h"
-
+#include "ScreenGeometry.h"
 
 //
 // The heading track line, like on Garmin units

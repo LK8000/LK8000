@@ -307,7 +307,6 @@ GEXTERN unsigned LKHearthBeats;
 // number of reporting messages from Portmonitor.
 GEXTERN int PortMonitorMessages;
 
-GEXTERN int LKIBLSCALE[MAXIBLSCALE+1];
 GEXTERN int FlarmNetCount;
 
 // Copy of runtime traffic for instant use
@@ -455,17 +454,10 @@ GEXTERN short ScreenSize;
 GEXTERN int ScreenSizeX;
 GEXTERN int ScreenSizeY;
 GEXTERN bool ScreenLandscape;
-GEXTERN double ScreenDScale;
-GEXTERN int ScreenScale;
-GEXTERN bool ScreenIntScale;
 GEXTERN double Screen0Ratio;
 GEXTERN short ScreenGeometry;
 GEXTERN int ScreenDensity;
 GEXTERN int ScreenThinSize;
-
-#ifdef RESCALE_PIXEL
-GEXTERN int ScreenPixelRatio; // 22.10 fixed size number
-#endif
 
 GEXTERN int AircraftMenuSize;
 GEXTERN int CompassMenuSize;

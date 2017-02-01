@@ -48,9 +48,9 @@ static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface
 
             Surface.SetBackgroundTransparent();
             Surface.SetTextColor(RGB_BLACK);
-            const int xText = 3 * ScreenScale;
+            const int xText = DLGSCALE(2);
             const int yText = (h - Surface.GetTextHeight(szText)) / 2;
-            Surface.DrawTextClip(xText, yText, szText, w - ScreenScale * 5);
+            Surface.DrawTextClip(xText, yText, szText, w - DLGSCALE(2));
         }
     }
 }
