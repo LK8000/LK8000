@@ -91,6 +91,9 @@ size_t SocketPort::Read(void *szString, size_t size) {
         if (iResult > 0) {
             AddStatRx(iResult);
             return iResult;
+        } else if (iResult == 0) {
+            // no data : socket disconnected ?
+            iResult = SOCKET_ERROR;
         }
     }
 
