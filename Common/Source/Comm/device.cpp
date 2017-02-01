@@ -704,7 +704,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 	// TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
 	d->pDevPipeTo->Com->WriteString(String);
     }
-#ifdef RADIO_ACTIVE    
+#ifdef RADIO_ACTIVE
     if (devDriverActivated(TEXT("PVCOM")))
       PVCOMParseString(d, String, pGPS);
 #endif
@@ -713,14 +713,15 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 		//GPSCONNECT  = TRUE; // NO! 121126
 		return(TRUE);
 	}
+
+    if(String[0]=='$') {  // Additional "if" to find GPS strings
+      if (d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
+        //GPSCONNECT  = TRUE; // NO! 121126
+        return (TRUE);
+      }
+    }
   }
 
-  if(String[0]=='$') {  // Additional "if" to find GPS strings
-	if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
-		//GPSCONNECT  = TRUE; // NO! 121126
-		return(TRUE);
-		} 
-	}
   return(FALSE);
 
 }
