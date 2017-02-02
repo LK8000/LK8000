@@ -117,6 +117,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) 
         if( !d.Disabled && d.Com && (d.*func) ) {
           nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
       }
+
     }
     return (nbDeviceFailed > 0);
 }
@@ -160,6 +161,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
         if( !d.Disabled && d.Com && (d.*func) ) {
           nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;
       }
+
     }
     return (nbDeviceFailed > 0);
 }
@@ -394,7 +396,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
     HB = 0; // counter
 
     nmeaParser._Reset();
-
+    iSharedPort = -1;
     static bool doinit = true;
     if (doinit) {
         Rx = 0;
@@ -410,17 +412,16 @@ bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
     return (_tcscmp(dev.Name, DeviceName) == 0);
 }
 
-bool ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
-    switch (idx) {
-        case 0:
-            ReadPort1Settings(szPort, SpeedIndex, Bit1Index);
-            return true;
-        case 1:
-            ReadPort2Settings(szPort, SpeedIndex, Bit1Index);
-            return true;
-        default:
-            return false;
-    }
+
+bool GetPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
+    if (idx >= 0)
+      if (idx < NUMDEV)
+      {
+          ReadPortSettings(idx, szPort, SpeedIndex, Bit1Index);
+        return true;
+      }
+    return false;
+
 }
 
 void RestartCommPorts() {
@@ -512,7 +513,24 @@ BOOL devInit() {
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
 
         if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
-            StartupStore(_T(". Port <%s> Already used, Device %c Disabled ! %s"), Port, (_T('A') + i), NEWLINE);
+            unsigned int j;
+            for( j = 0; j < i ; j++)
+            {
+              if( (_tcscmp(szPort[i] , szPort[j])==0)  &&  DeviceList[j].iSharedPort <0)
+              {
+                DeviceList[i].iSharedPort =j;
+                StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
+                DeviceList[i].Com =  DeviceList[j].Com ;
+                DeviceList[i].Status = CPS_OPENOK;
+                pDev->Installer(&DeviceList[i]);
+          
+                if(devIsRadio(&DeviceList[i]))
+                {
+                  RadioPara.Enabled = true;
+                  StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
+                }
+              }
+            }
             continue;
         }
         UsedPort.insert(Port);
@@ -632,9 +650,13 @@ static BOOL devClose(PDeviceDescriptor_t d)
     
     ComPort *Com = d->Com;
     if (Com) {
-      Com->Close();
+      if(d->iSharedPort <0)
+      {
+        Com->Close();
+        delete Com;
+      }
       d->Com = NULL; // if we do that before Stop RXThread , Crash ....
-      delete Com;
+
     }    
   }
 
@@ -674,24 +696,33 @@ PDeviceDescriptor_t devGetDeviceOnPort(int Port){
 
  // devParseStream(devIdx, c, &GPS_INFO);
 BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
-  
-  PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
-  if (d && d->ParseStream) {
-    d->HB=LKHearthBeats;
-    if (d->ParseStream(d, stream, length, pGPS)) {
-          
-    }
-    return(TRUE);        
-  }
+bool  ret = FALSE;
+PDeviceDescriptor_t din = devGetDeviceOnPort(portNum);
+PDeviceDescriptor_t d = NULL;
 
-  return(FALSE);    
+    for(int dev =0; dev < NUMDEV; dev++)
+    {
+      d = &DeviceList[dev];
+      if (din && d && d->ParseStream)
+      {
+       if((d->iSharedPort == portNum) ||  (d->Port == portNum))
+       {
+         d->HB=LKHearthBeats;
+         if (d->ParseStream(din, stream, length, pGPS)) {
+          
+         }
+         ret =TRUE;
+       }
+     }
+   }
+  return(ret);
 }    
 
 
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
 BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
-
+bool  ret = FALSE;
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
@@ -704,15 +735,17 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 	// TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
 	d->pDevPipeTo->Com->WriteString(String);
     }
-#ifdef RADIO_ACTIVE    
-    if (devDriverActivated(TEXT("PVCOM")))
-      PVCOMParseString(d, String, pGPS);
-#endif
-    if (d->ParseNMEA != NULL)
-	if ((d->ParseNMEA)(d, String, pGPS)) {
+    for(int dev =0; dev < NUMDEV; dev++)
+    {
+      PDeviceDescriptor_t d2 = &DeviceList[dev];
+      if (d2)
+       if((d2->iSharedPort == portNum) ||  (d2->Port == portNum))
+         if (d2->ParseNMEA != NULL)
+	   if ((d2->ParseNMEA)(d, String, pGPS)) {
 		//GPSCONNECT  = TRUE; // NO! 121126
-		return(TRUE);
-	}
+	      ret = (TRUE);
+	  }
+    }
   }
 
   if(String[0]=='$') {  // Additional "if" to find GPS strings
@@ -721,7 +754,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 		return(TRUE);
 		} 
 	}
-  return(FALSE);
+  return(ret);
 
 }
 
@@ -992,10 +1025,9 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 #ifdef RADIO_ACTIVE
 
 bool devDriverActivated(const TCHAR *DeviceName) {
-    if ((_tcscmp(dwDeviceName1, DeviceName) == 0) || (_tcscmp(dwDeviceName2, DeviceName) == 0)) {
-        if (_tcscmp(szPort1, szPort2) == 0) {
-            return true;
-        }
+  for(int i=0; i <NUMDEV; i++)
+    if ((_tcscmp(dwDeviceName[i], DeviceName) == 0)) {
+            return true;        
     }
     return false;
 }
@@ -1006,25 +1038,8 @@ bool devDriverActivated(const TCHAR *DeviceName) {
  * @return FALSE if error on one device.
  */
 BOOL devPutVolume(int Volume) {
-  bool bRet = for_all_device(&DeviceDescriptor_t::PutVolume, Volume);
-  
-//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
-/****************************************************************/
-/* Need to be moved inside device drivers like all others device*/  
-  if (SIMMODE) {
-    return TRUE;
-  }
+  return for_all_device(&DeviceDescriptor_t::PutVolume, Volume);
 
-  DeviceScopeLock Lock(CritSec_Comm);
-  for( DeviceDescriptor_t& d : DeviceList) {
-    if (!d.Disabled && d.Com) {
-      if (devDriverActivated(TEXT("PVCOM"))) {
-        PVCOMPutVolume(&d, Volume);
-      }
-    }
-  }
-/****************************************************************/
-  return bRet;    
 }
 
 /**
@@ -1033,25 +1048,8 @@ BOOL devPutVolume(int Volume) {
  * @return FALSE if error on one device.
  */
 BOOL devPutSquelch(int Squelch) {
-  bool bRet = for_all_device(&DeviceDescriptor_t::PutSquelch, Squelch);
+  return for_all_device(&DeviceDescriptor_t::PutSquelch, Squelch);
 
-//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
-/****************************************************************/
-/* Need to be moved inside device drivers like all others device*/
-  if (SIMMODE) {
-    return TRUE;
-  }
-
-  DeviceScopeLock Lock(CritSec_Comm);
-  for( DeviceDescriptor_t& d : DeviceList) {
-    if (!d.Disabled && d.Com) {
-      if (devDriverActivated(TEXT("PVCOM"))) {
-        PVCOMPutSquelch(&d, Squelch);
-      }
-    }
-  }
-/****************************************************************/
-  return bRet;    
 }    
 
 /**
@@ -1062,25 +1060,7 @@ BOOL devPutSquelch(int Squelch) {
  * @return FALSE if error on one device.
  */
 BOOL devPutRadioMode(int mode) {
-  bool bRet = for_all_device(&DeviceDescriptor_t::PutRadioMode, mode);
-  
-//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
-/****************************************************************/
-/* Need to be moved inside device drivers like all others device*/
-  if (SIMMODE) {
-    return TRUE;
-  }
-
-  DeviceScopeLock Lock(CritSec_Comm);
-  for( DeviceDescriptor_t& d : DeviceList) {
-    if (!d.Disabled && d.Com) {
-      if (devDriverActivated(TEXT("PVCOM"))) {
-        PVCOMRadioMode(&d, mode);
-      }
-    }
-  }
-/****************************************************************/
-  return bRet;  
+  return for_all_device(&DeviceDescriptor_t::PutRadioMode, mode);
 }
 
 /**
@@ -1088,25 +1068,8 @@ BOOL devPutRadioMode(int mode) {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqSwap() {
-  bool bRet = for_all_device(&DeviceDescriptor_t::StationSwap);
+  return for_all_device(&DeviceDescriptor_t::StationSwap);
 
-//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
-/****************************************************************/
-/* Need to be moved inside device drivers like all others device*/
-  if (SIMMODE) {
-    return TRUE;
-  }
-
-  DeviceScopeLock Lock(CritSec_Comm);
-  for( DeviceDescriptor_t& d : DeviceList) {
-    if (!d.Disabled && d.Com) {
-      if (devDriverActivated(TEXT("PVCOM"))) {
-        PVCOMStationSwap(&d);
-      }
-    }
-  }
-/****************************************************************/
-  return bRet;  
 }  
 
 
@@ -1116,27 +1079,16 @@ BOOL devPutFreqSwap() {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
-  bool bRet = for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
-
-//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
-/****************************************************************/
-/* Need to be moved inside device drivers like all others device*/    
   if (SIMMODE) {
     RadioPara.ActiveFrequency=  Freq;
     _stprintf( RadioPara.ActiveName, _T("%s") , StationName);
     return TRUE;
   }
+  return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
 
-  DeviceScopeLock Lock(CritSec_Comm);
-  for( DeviceDescriptor_t& d : DeviceList) {
-    if (!d.Disabled && d.Com) {
-      if (devDriverActivated(TEXT("PVCOM"))) {
-        PVCOMPutFreqActive(&d,Freq,StationName);
-      }
-    }
-  }
-/****************************************************************/  
-  return bRet;    
+
+
+
 }
 
 /**
@@ -1144,26 +1096,13 @@ BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
-  bool bRet = for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
-
-//TODO: "PVCOM are hardcoded inside device management, that not the good ways, need to use device drivers like all others"
-/****************************************************************/
-/* Need to be moved inside device drivers like all others device*/    
   if (SIMMODE) {
      RadioPara.PassiveFrequency=  Freq;
      _stprintf( RadioPara.PassiveName, _T("%s") , StationName);
     return TRUE;
   }
-  DeviceScopeLock Lock(CritSec_Comm);
-  for( DeviceDescriptor_t& d : DeviceList) {
-    if (!d.Disabled && d.Com) {
-      if (devDriverActivated(TEXT("PVCOM"))) {
-        PVCOMPutFreqStandby(&d,Freq,StationName);
-      }
-    }
-  }
-/****************************************************************/
-  return bRet;
+  return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
+
 }
 #endif  // RADIO_ACTIVE        
 

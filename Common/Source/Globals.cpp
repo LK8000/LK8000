@@ -186,8 +186,6 @@ void Globals_Init(void) {
   ActiveAlternate = -1;
 
   GPSAltitudeOffset = 0;
-  UseExtSound1=false;
-  UseExtSound2=false;
   UseGeoidSeparation=false;
   PressureHg=false;
 
@@ -550,17 +548,19 @@ void Globals_Init(void) {
   szMapFile[0] = TEXT('\0');
 
   // Ports and device settings
-  dwDeviceName1[0]=_T('\0');
-  szPort1[0] = _T('\0');
-  dwSpeedIndex1 = 2;
-  dwBit1Index = (BitIndex_t)bit8N1;
-  dwDeviceName2[0]=_T('\0');
-  szPort2[0] = _T('\0');
-  dwSpeedIndex2 = 2;
-  dwBit2Index = (BitIndex_t)bit8N1;
   LastFlarmCommandTime=0; // last time we got a PFLAU
   DevIsCondor = false; // we are using condor simulator
-
+  SelectedDevice = 0;
+  for(int i=0 ; i< NUMDEV; i++)
+  {
+    dwDeviceName[i][0]=_T('\0');
+    szPort      [i][0]=_T('\0');
+    szIpAddress [i][0]=_T('\0');
+    dwSpeedIndex[i]   = 2;
+    dwBitIndex  [i]   = (BitIndex_t)bit8N1;
+    dwIpPort    [i]   = 23;
+    UseExtSound [i]   = false;
+  }
   // Units
   SpeedUnit_Config = 2;		// default is kmh
   TaskSpeedUnit_Config = 2;	// default is kph
