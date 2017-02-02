@@ -30,7 +30,7 @@ unsigned short LcdSize=50;
 // The DpiSize, when 0 it is calculated by GetScreenDensity, otherwise forced 
 // Can be overridden by command line -dpi=nnn 
 unsigned short DpiSize=0; 
-#if RESCALE_PIXEL
+#ifdef RESCALE_PIXEL
 unsigned short ReferenceDpi=0;
 #endif
 
