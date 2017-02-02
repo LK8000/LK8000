@@ -29,7 +29,6 @@ TTYPort::TTYPort(int idx, const tstring& sName, unsigned dwSpeed, BitIndex_t Bit
         ComPort(idx, sName),
         _dwPortSpeed(dwSpeed),
         _dwPortBit(BitSize),
-        valid_frames(0U),
         _tty(-1),
         _oldtio(),
         _Timeout()

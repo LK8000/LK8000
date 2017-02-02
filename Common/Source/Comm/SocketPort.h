@@ -48,27 +48,27 @@ typedef struct in_addr IN_ADDR;
 class SocketPort : public ComPort {
 public:
     SocketPort(int idx, const tstring& sName);
-    virtual ~SocketPort();
+    ~SocketPort();
     
-    virtual bool Initialize();
-    virtual bool Close();    
+    bool Initialize() override;
+    bool Close() override;
 
-    virtual void Flush() {};
-    virtual void Purge() {};
-    virtual void CancelWaitEvent() {};
+    void Flush() override {};
+    void Purge() override {};
+    void CancelWaitEvent() override {};
 
-    virtual int SetRxTimeout(int TimeOut);
-    virtual unsigned long SetBaudrate(unsigned long) { return 0U; }
-    virtual unsigned long GetBaudrate() const  {  return 0U; }
+    int SetRxTimeout(int TimeOut) override;
+    unsigned long SetBaudrate(unsigned long) override { return 0U; }
+    unsigned long GetBaudrate() const override {  return 0U; }
 
-    virtual void UpdateStatus() {};
+    void UpdateStatus() override {};
 
-    virtual bool Write(const void *data, size_t length);
-    virtual size_t Read(void *szString, size_t size);
+    bool Write(const void *data, size_t length) override;
+    size_t Read(void *szString, size_t size) override;
 
 protected:
     virtual bool Connect() = 0;
-    virtual unsigned RxThread();
+    unsigned RxThread() override;
 
     SOCKET mSocket;
     unsigned mTimeout;    

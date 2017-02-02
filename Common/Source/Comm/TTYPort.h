@@ -21,32 +21,29 @@ public:
     TTYPort(int idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling);
     virtual ~TTYPort();
 
-    virtual bool Initialize();
-    virtual bool Close();
+    bool Initialize() override;
+    bool Close() override;
 
-    virtual void Flush();
-    virtual void Purge();
-    virtual void DirtyPurge() { Purge(); }
-    virtual void CancelWaitEvent();
+    void Flush() override;
+    void Purge() override;
+    void CancelWaitEvent() override;
 
-    virtual int SetRxTimeout(int);
-    virtual unsigned long SetBaudrate(unsigned long);
-    virtual unsigned long GetBaudrate() const;
+    int SetRxTimeout(int) override;
+    unsigned long SetBaudrate(unsigned long) override;
+    unsigned long GetBaudrate() const override;
 
-    virtual void UpdateStatus();
+    void UpdateStatus() override;
 
-    virtual size_t Read(void *szString, size_t size);
-    virtual bool Write(const void *data, size_t length);
+    size_t Read(void *szString, size_t size) override;
+    bool Write(const void *data, size_t length) override;
 
 protected:
-    virtual unsigned RxThread();
+    unsigned RxThread() override;
 
 private:
-    void signal_handler_IO(int status);
 
     unsigned _dwPortSpeed;
     BitIndex_t _dwPortBit;
-    unsigned short valid_frames;
 
     int _tty;
     struct termios _oldtio;

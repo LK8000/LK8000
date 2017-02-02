@@ -17,25 +17,25 @@ class NullComPort : public ComPort {
 public:
     NullComPort(int idx, const tstring& sName) : ComPort(idx, sName) {}
 
-    bool StartRxThread() { return true; }
+    bool StartRxThread() override { return true; }
 
-    virtual bool Initialize() { return true; }
-    virtual bool Close() { return true; }
+    bool Initialize() override { return true; }
+    bool Close() override { return true; }
 
-    virtual void Flush() { }
-    virtual void Purge() { }
-    virtual void CancelWaitEvent() { }
+    void Flush() override { }
+    void Purge() override { }
+    void CancelWaitEvent() override { }
 
-    virtual int SetRxTimeout(int TimeOut) { return 0; }
-    virtual unsigned long SetBaudrate(unsigned long) { return 0U; }
-    virtual unsigned long GetBaudrate() const  {  return 0U; }
+    int SetRxTimeout(int TimeOut) override { return 0; }
+    unsigned long SetBaudrate(unsigned long) override { return 0U; }
+    unsigned long GetBaudrate() const  override {  return 0U; }
 
-    virtual void UpdateStatus()  { };
+    void UpdateStatus() override { };
 
-    virtual bool Write(const void *data, size_t length)  { return true; };
-    virtual size_t Read(void *szString, size_t size)  { return 0U; };
+    bool Write(const void *data, size_t length) override { return true; };
+    size_t Read(void *szString, size_t size) override { return 0U; };
 protected:
-    virtual unsigned RxThread() { assert(false); return 0U; }
+    unsigned RxThread() override { assert(false); return 0U; }
 };
 
 

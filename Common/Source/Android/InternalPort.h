@@ -22,8 +22,8 @@ public:
     InternalPort( InternalPort&& ) = delete;
     InternalPort& operator=( InternalPort&& ) = delete;
 
-    virtual bool Initialize();
-    virtual bool Close();
+    bool Initialize() override;
+    bool Close() override;
 
 private:
 
