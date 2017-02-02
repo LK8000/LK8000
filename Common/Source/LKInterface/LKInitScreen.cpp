@@ -34,6 +34,13 @@ unsigned short DpiSize=0;
 unsigned short ReferenceDpi=0;
 #endif
 
+int LKIBLSCALE[MAXIBLSCALE+1];
+
+
+unsigned short GetScreenGeometry(unsigned int x, unsigned int y);
+double GetScreen0Ratio(void);
+int GetScreenDensity(void);
+
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
 // resolution has its own tuned settings. This is thought for real devices, not for PC emulations.

@@ -20,11 +20,6 @@ class WndForm;
 
 #define EndCallBackEntry()          {TEXT(""), NULL}
 
-inline
-int DLGSCALE(int x) {
-    return IBLSCALE(x);
-}
-
 typedef struct{
   const TCHAR *Name;
   void *Ptr;

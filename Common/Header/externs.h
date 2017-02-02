@@ -56,6 +56,8 @@
 // Include assert for LK testbench
 #include "LKAssert.h"
 #include "MathFunctions.h"
+
+#include "ScreenGeometry.h"
 //
 // Common Functions
 //

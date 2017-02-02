@@ -271,14 +271,6 @@ void ToggleDrawTaskFAI(void) {
 
 }
 
-#if TESTBENCH
-
-int Test_NIBLSCALE(short x, const int line, const TCHAR *file) {
-    LKASSERT(x >= 0 && x <= MAXIBLSCALE);
-    return LKIBLSCALE[x];
-}
-#endif
-
 #if TRACETHREAD
 
 int _THREADID_WINMAIN = 0;
