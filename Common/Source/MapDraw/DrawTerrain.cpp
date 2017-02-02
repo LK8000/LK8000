@@ -126,7 +126,7 @@ public:
 
 #if defined(_WIN32_WCE) || defined(__arm__) || !defined(NDEBUG)
         // scale dtquant so resolution is not too high on large displays
-        dtquant *= ScreenScale; // lower resolution a bit.. (no need for CPU >800mHz)
+        dtquant = std::min<unsigned>(1, IBLSCALE(dtquant)); // lower resolution a bit.. (no need for CPU >800mHz)
 
 #ifdef KOBO
         /**
@@ -176,7 +176,6 @@ public:
 
 
 
-        LKASSERT(ScreenScale != 0);
         const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
         const int res_y = iround((rc.bottom - rc.top) * oversampling / dtquant);
 
