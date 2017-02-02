@@ -13,8 +13,10 @@
 // This is a quick solution to tell profiles not to override a command line choice, for v5
 bool CommandResolution=false;
 
-extern unsigned short LcdSize, DpiSize,ReferenceDpi;
-
+extern unsigned short LcdSize, DpiSize;
+#ifdef RESCALE_PIXEL        
+extern unsigned short ReferenceDpi;
+#endif
 
 //
 //  true,  continue normally
@@ -187,7 +189,9 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
            StartupStore(_T(". CommandLine refdpi=%d is out of range%s"),s,NEWLINE);
         } else {
            StartupStore(_T(". CommandLine refdpi=%d inches%s"),s,NEWLINE);
+#ifdef RESCALE_PIXEL           
            ReferenceDpi=s;
+#endif
         }
      }
   }
