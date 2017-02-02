@@ -117,11 +117,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) 
         if( !d.Disabled && d.Com && (d.*func) ) {
           nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
       }
-        else
-        {
-          if( !d.Disabled && (d.iSharedPort >=0)&& (d.*func))
-            nbDeviceFailed +=  (d.*func)(&DeviceList[d.iSharedPort]) ? 0 : 1;
-        }
+
     }
     return (nbDeviceFailed > 0);
 }
@@ -144,11 +140,6 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
         if( !d.Disabled && d.Com && (d.*func) ) {
           nbDeviceFailed +=  (d.*func)(&d, Val1) ? 0 : 1;
       }
-        else
-        {
-          if( !d.Disabled && (d.iSharedPort >=0) && (d.*func))
-            nbDeviceFailed +=  (d.*func)(&DeviceList[d.iSharedPort] , Val1) ? 0 : 1;
-        }
     }
     return (nbDeviceFailed > 0);
 }
@@ -170,11 +161,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
         if( !d.Disabled && d.Com && (d.*func) ) {
           nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;
       }
-      else
-      {
-        if( !d.Disabled && (d.iSharedPort >=0) && (d.*func))
-          nbDeviceFailed +=  (d.*func)(&DeviceList[d.iSharedPort] , Val1, Val2) ? 0 : 1;
-      }
+
     }
     return (nbDeviceFailed > 0);
 }
@@ -533,7 +520,7 @@ BOOL devInit() {
               {
                 DeviceList[i].iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
-           
+                DeviceList[i].Com =  DeviceList[j].Com ;
                 DeviceList[i].Status = CPS_OPENOK;
                 pDev->Installer(&DeviceList[i]);
           
@@ -663,9 +650,13 @@ static BOOL devClose(PDeviceDescriptor_t d)
     
     ComPort *Com = d->Com;
     if (Com) {
-      Com->Close();
+      if(d->iSharedPort <0)
+      {
+        Com->Close();
+        delete Com;
+      }
       d->Com = NULL; // if we do that before Stop RXThread , Crash ....
-      delete Com;
+
     }    
   }
 
