@@ -35,7 +35,8 @@ unsigned short LcdSize=50;
 unsigned short DpiSize=0; 
 unsigned short ReferenceDpi=0;
 
-int ScreenScale = 1<<10;
+int ScreenScale::screen_scale_int = ScreenScale::radix;
+double ScreenScale::screen_scale_double = ScreenScale::radix;
 
 
 unsigned short GetScreenGeometry(unsigned int x, unsigned int y);
@@ -150,7 +151,7 @@ void InitLKScreen() {
     // Calculate Screen Scale Factor
     // -----------------------------
     int minsize = std::min(ScreenSizeX, ScreenSizeY);
-    ScreenScale = std::max(1<<10, (minsize<<10) / 240);
+    ScreenScale::set((double)minsize / 240.0);
 
     // This is used by RescalePixelSize(), defined in Makefile when needed.
     // Some functions using ScreenScale have been changed to use rescaled pixels.
@@ -167,8 +168,8 @@ void InitLKScreen() {
     
     // Initially, this is the default. Eventually retune it for each resolution.
     // We might in the future also set a UseStretch, with or without Hires.
-    UseHiresBitmap = (ScreenScale > 1);
-    
+    UseHiresBitmap = (IBLSCALE(1) > 1);
+
     //
     // The thinnest line somehow visible on screen from 35cm distance.
     //
@@ -206,14 +207,16 @@ void InitLKScreen() {
     StartupStore(_T("..... ScreenGeometry   = %d" NEWLINE), ScreenGeometry);
     StartupStore(_T("..... ScreenSize(enum) = %d" NEWLINE), ScreenSize);
     StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
-    StartupStore(_T("..... ScreenScale      = %d.%d" NEWLINE), ScreenScale>>10, ScreenScale&0x3FF);
+    StartupStore(_T("..... ScreenScale      = %f" NEWLINE), ScreenScale::get());
 
     StartupStore(_T("..... ReferenceDpi     = %d" NEWLINE), ReferenceDpi);
     StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
 
     StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
     StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));
+    StartupStore(_T("..... NIBLSCALE(2.0)   = %f" NEWLINE), NIBLSCALE(2.0));
     StartupStore(_T("..... NIBLSCALE(2)     = %d" NEWLINE), NIBLSCALE(2));
+    StartupStore(_T("..... NIBLSCALE(2.0)   = %f" NEWLINE), NIBLSCALE(2.0));
 
     StartupStore(_T("..... GestureSize      = %d" NEWLINE), GestureSize);
     StartupStore(_T("..... LKVarioSize      = %d" NEWLINE), LKVarioSize);
