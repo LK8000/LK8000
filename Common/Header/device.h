@@ -102,7 +102,7 @@ typedef	struct DeviceDescriptor_t{
   int iSharedPort;
   int PortNumber;
   bool Disabled;
-  
+  bool bNMEAOut;
   // Com port diagnostic
   int Status;
   unsigned Rx;

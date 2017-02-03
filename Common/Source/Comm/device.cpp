@@ -397,6 +397,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
     nmeaParser._Reset();
     iSharedPort = -1;
+    bNMEAOut     = false;
     static bool doinit = true;
     if (doinit) {
         Rx = 0;
@@ -466,7 +467,7 @@ BOOL devInit() {
     LockComm();
     
     TCHAR DeviceName[DEVNAMESIZE + 1];
-    PDeviceDescriptor_t pDevNmeaOut = NULL;
+
 
     TCHAR Port[MAX_PATH] = {_T('\0')};
     unsigned SpeedIndex = 2U;
@@ -591,8 +592,8 @@ BOOL devInit() {
             DeviceList[i].Status = CPS_OPENOK;
             pDev->Installer(&DeviceList[i]);
 
-            if ((pDevNmeaOut == NULL) && (pDev->Flags & (1l << dfNmeaOut))) {
-                pDevNmeaOut = &DeviceList[i];
+            if (pDev->Flags & (1l << dfNmeaOut)) {
+                DeviceList[i].bNMEAOut = true;
             }
 
             DeviceList[i].Com = Com;
@@ -625,14 +626,6 @@ BOOL devInit() {
 #endif          
     }
 
-    if (pDevNmeaOut != NULL) {
-        if (pDevNmeaOut == devA()) {
-            devB()->pDevPipeTo = devA();
-        }
-        if (pDevNmeaOut == devB()) {
-            devA()->pDevPipeTo = devB();
-        }
-    }
 
     UnlockComm();
     return (TRUE);
@@ -650,7 +643,7 @@ static BOOL devClose(PDeviceDescriptor_t d)
     
     ComPort *Com = d->Com;
     if (Com) {
-      if(d->iSharedPort <0)
+      if(d->iSharedPort <0)  // don't close shared Ports,  these are only copies!
       {
         Com->Close();
         delete Com;
@@ -730,11 +723,6 @@ bool  ret = FALSE;
   if (d != NULL){
 	d->HB=LKHearthBeats;
 
-    if (d->pDevPipeTo && d->pDevPipeTo->Com) {
-	// stream pipe, pass nmea to other device (NmeaOut)
-	// TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
-	d->pDevPipeTo->Com->WriteString(String);
-    }
     for(int dev =0; dev < NUMDEV; dev++)
     {
       PDeviceDescriptor_t d2 = &DeviceList[dev];
@@ -745,8 +733,15 @@ bool  ret = FALSE;
 		//GPSCONNECT  = TRUE; // NO! 121126
 	      ret = (TRUE);
 	  }
+      if(!d2->Disabled)     // NMEA out ! even on multiple ports
+        if(d2->bNMEAOut) 	// stream pipe, pass nmea to other device (NmeaOut)
+        {                   // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
+          d2->Com->WriteString(String);
+        }
     }
+
   }
+
 
   if(String[0]=='$') {  // Additional "if" to find GPS strings
 	if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
