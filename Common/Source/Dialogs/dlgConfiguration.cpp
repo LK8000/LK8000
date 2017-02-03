@@ -1190,6 +1190,20 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
         ShowWindowControl(wf,  TEXT("prpExtSound1"), !bHide);
     }
     }
+    TCHAR StateText[255];
+    _tcscpy(StateText,_T(""));
+    if( DeviceList[SelectedDevice].nmeaParser.gpsValid) _tcscat(StateText,TEXT("GPSFix "));
+    if( DeviceList[SelectedDevice].nmeaParser.isFlarm) _tcscat(StateText,TEXT("Flarm "));
+    if( DeviceList[SelectedDevice].nmeaParser.IsValidBaroSource()) _tcscat(StateText,TEXT("Baro "));
+    if( DeviceList[SelectedDevice].iSharedPort>=0 ) _tcscat(StateText,TEXT("Shared "));
+
+    wp = (WndProperty*)pOwner->FindByName(TEXT("prpStatus"));
+    if (wp) {
+      DataField* dfe = wp->GetDataField();
+      dfe->Set(StateText);
+      wp->RefreshDisplay();
+    }
+
 
 }
 

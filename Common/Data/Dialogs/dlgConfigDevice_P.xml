@@ -3,9 +3,15 @@
   <WndForm Name="frmConfiguration" Type="Dialog" X="0" Y="50" Width="240" Height="320" Caption="_@M195_" Font="2" >
     <WndButton Name="cmdClose" Caption="_@M186_" X="1" Y="260" Width="79"  Height="45" Font="2" Tag="2" />
     <WndButton Name="cmdBth" Caption="Bluetooth" X="80" Y="260" Width="79"  Height="45" Font="2" Tag="2" OnClickNotify="OnBthDevice" />             
-    <WndButton Name="cmdTerminal" Caption="_@M1871_" X="159" Y="260" Width="79"  Height="45" Font="2" Tag="2" OnClickNotify="OnTerminalClicked" />
+    <WndButton Name="cmdTerminal" Caption="_@M1871_" X="159" Y="260" Width="79"  Height="45" Font="2" Tag="2" OnClickNotify="OnTerminalClicked" />    
     <WndFrame Name="frmComm" X="0" Y="0" Width="-1" Height="260" Font="2">
-      <WndFrame Name="frmCommName" Caption="_@M232_" X="1" Y="0" Width="-1" Height="87" Font="2" Border="30">
+        <WndButton Name="cmdA" Caption="A" X="1"   Y="1"   Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnA" />
+        <WndButton Name="cmdB" Caption="B" X="41"  Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnB" />
+        <WndButton Name="cmdC" Caption="C" X="81"  Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnC" />
+        <WndButton Name="cmdD" Caption="D" X="121" Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnD" />
+        <WndButton Name="cmdE" Caption="E" X="161" Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnE" />
+        <WndButton Name="cmdF" Caption="F" X="201" Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnF" />    
+      <WndFrame Name="frmCommName" Caption="_@M232_" X="1" Y="40" Width="-1" Height="127" Font="2" Border="30">  
         <WndProperty Name="prpComDevice1" Caption="_@M450_"   X="60" Y="1"  Width="173" Height="22" CaptionWidth="80" Font="2" Help="_@H153_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnDeviceAData"/>
         </WndProperty>
@@ -27,15 +33,11 @@
         <WndProperty Name="prpComIpPort1" Caption="Port"  X="162" Y="-999"  Width="-1" Height="22" CaptionWidth="30" Font="2" Keyboard="1">
           <DataField Name="" DataType="integer" DisplayFormat="%d" EditFormat="%d" Min="1" Max="65635" Step="1"/>
         </WndProperty>
+        <WndProperty Name="prpStatus" Caption="_@M660_"  X="1" Y="90"  Width="235" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" Keyboard="0">
+          <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s"/>
+        </WndProperty>        
       </WndFrame>
-      <WndFrame Name="frmComm" Caption="_@M595_" X="1" Y="88" Width="-1" Height="87" Font="2" Border="30">            
-        <WndButton Name="cmdA" Caption="A" X="1"   Y="-1"   Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnA" />
-        <WndButton Name="cmdB" Caption="B" X="41"  Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnB" />
-        <WndButton Name="cmdC" Caption="C" X="81"  Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnC" />
-        <WndButton Name="cmdD" Caption="D" X="121" Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnD" />
-        <WndButton Name="cmdE" Caption="E" X="161" Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnE" />
-        <WndButton Name="cmdF" Caption="F" X="201" Y="-999" Width="40"  Height="40" Font="2" Tag="2" OnClickNotify="OnF" />   
-      </WndFrame>
+
       <WndProperty Name="prpUseGeoidSeparation" Caption="_@M322_" X="2" Y="-1" Width="233" Height="21" CaptionWidth="140" Font="2" Help="_@H158_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
