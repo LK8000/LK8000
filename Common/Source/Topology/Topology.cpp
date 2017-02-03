@@ -130,7 +130,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 	case 60: // railroads
 		switch(ScreenSize) {
 			default:
-				psize=RescalePixelSize(1);
+				psize=IBLSCALE(1);
 		}
 		break;
 

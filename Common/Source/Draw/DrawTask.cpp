@@ -232,7 +232,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
                             static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
                             static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
                     };
-					Surface.DrawLine(PEN_SOLID, RescalePixelSize(3), Start, End, taskcolor, rc);
+					Surface.DrawLine(PEN_SOLID, IBLSCALE(3), Start, End, taskcolor, rc);
 				} else {
 					Surface.SelectObject(hpStartFinishThin);
 					pItem->Draw(Surface, rc, false);
@@ -259,7 +259,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 				TASKSTATS_POINT& StatPt =  TaskStats[ActiveTaskPoint];
 				for (int j = 0; j < MAXISOLINES - 1; j++) {
 					if (StatPt.IsoLine_valid[j] && StatPt.IsoLine_valid[j + 1]) {
-						Surface.DrawLine(PEN_SOLID, RescalePixelSize(2),
+						Surface.DrawLine(PEN_SOLID, IBLSCALE(2),
 									StatPt.IsoLine_Screen[j],
 									StatPt.IsoLine_Screen[j + 1],
 									LKColor(0, 0, 255), rc);
@@ -270,7 +270,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 				TASKSTATS_POINT& StatPt =  TaskStats[TargetPanIndex];
 				for (int j = 0; j < MAXISOLINES - 1; j++) {
 					if (StatPt.IsoLine_valid[j] && StatPt.IsoLine_valid[j + 1]) {
-						Surface.DrawLine(PEN_SOLID, RescalePixelSize(2),
+						Surface.DrawLine(PEN_SOLID, IBLSCALE(2),
 									StatPt.IsoLine_Screen[j],
 									StatPt.IsoLine_Screen[j + 1],
 									LKColor(0, 0, 255), rc);
@@ -363,7 +363,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
      Surface.Polyline(task_polyline.data(), task_polyline.size(), rc);
 #endif
 
-    LKPen ArrowPen(PEN_SOLID, size_tasklines-RescalePixelSize(1), taskcolor);
+    LKPen ArrowPen(PEN_SOLID, size_tasklines-IBLSCALE(1), taskcolor);
     LKBrush ArrowBrush(taskcolor);
 
     for (unsigned i = ActiveTaskPoint; i < task_polyline.size()-1; i++) {

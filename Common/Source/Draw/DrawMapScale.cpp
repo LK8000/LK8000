@@ -65,22 +65,22 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
         };
 
         ScaleLineBck[0] = {
-            ScaleLine[0].x - RescalePixelSize(1), 
-            ScaleLine[0].y - RescalePixelSize(1), 
-            ScaleLine[1].x + RescalePixelSize(2), 
-            ScaleLine[1].y + RescalePixelSize(2)
+            ScaleLine[0].x - IBLSCALE(1), 
+            ScaleLine[0].y - IBLSCALE(1), 
+            ScaleLine[1].x + IBLSCALE(2), 
+            ScaleLine[1].y + IBLSCALE(2)
         };
         ScaleLineBck[1] = {
-            ScaleLine[1].x - RescalePixelSize(1), 
-            ScaleLine[1].y - RescalePixelSize(1), 
-            ScaleLine[2].x + RescalePixelSize(2), 
-            ScaleLine[2].y + RescalePixelSize(2)
+            ScaleLine[1].x - IBLSCALE(1), 
+            ScaleLine[1].y - IBLSCALE(1), 
+            ScaleLine[2].x + IBLSCALE(2), 
+            ScaleLine[2].y + IBLSCALE(2)
         };
         ScaleLineBck[2] = {
-            ScaleLine[3].x - RescalePixelSize(1), 
-            ScaleLine[3].y - RescalePixelSize(1), 
-            ScaleLine[2].x + RescalePixelSize(2), 
-            ScaleLine[2].y + RescalePixelSize(2)
+            ScaleLine[3].x - IBLSCALE(1), 
+            ScaleLine[3].y - IBLSCALE(1), 
+            ScaleLine[2].x + IBLSCALE(2), 
+            ScaleLine[2].y + IBLSCALE(2)
         }; 
         
         SIZE tsize;

@@ -156,8 +156,8 @@ void InitLKScreen() {
     // Some functions using ScreenScale have been changed to use rescaled pixels.
     // We must check that pixelratio is never lower than ScreenScale.
     ScreenDensity = GetScreenDensity();
-  if (!ReferenceDpi) ReferenceDpi=LK_REFERENCE_DPI;
-  ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/ReferenceDpi);
+    if (!ReferenceDpi) ReferenceDpi=LK_REFERENCE_DPI;
+    ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/ReferenceDpi);
 
     
     // -----------------------------
@@ -172,9 +172,9 @@ void InitLKScreen() {
     //
     // The thinnest line somehow visible on screen from 35cm distance.
     //
-    ScreenThinSize = RescalePixelSize(1);
+    ScreenThinSize = IBLSCALE(1);
 
-    GestureSize = RescalePixelSize(50);
+    GestureSize = IBLSCALE(50);
 
     // Override defaults for custom settings
     switch ((ScreenSize_t) ScreenSize) {
