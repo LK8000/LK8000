@@ -218,11 +218,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
 				if(SectorType == LINE && !AATEnabled && ISGAAIRCRAFT) { // this Type exist only if not AAT task
 					double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
-#ifdef RESCALE_PIXEL
-					const int length=RescalePixelSize(14); //Make intermediate WP lines always of the same size independent by zoom level
-#else
 					const int length=IBLSCALE(14); //Make intermediate WP lines always of the same size independent by zoom level
-#endif
 
                     const auto& wpt = WayPointList[Task[i].Index];
 

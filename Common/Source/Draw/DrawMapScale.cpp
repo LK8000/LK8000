@@ -20,11 +20,7 @@
 //
 #define MAPSCALE_VSIZE  NIBLSCALE(42)
 #define MAPSCALE_HSIZE  NIBLSCALE(5)
-#ifdef RESCALE_PIXEL
-#define MAPSCALE_RIGHTMARGIN   (rc.right-NIBLSCALE(3)) - RescalePixelSize(1)
-#else
 #define MAPSCALE_RIGHTMARGIN   (rc.right-NIBLSCALE(3))
-#endif
 
 /* in Landscape mode, we need to draw Scale upper for avoid menu overlap
  * this define are crap, but i don't have better way for do that now.
@@ -108,7 +104,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
     Surface.FillRect(&ScaleLineBck[1], LKBrush_Black);
     Surface.FillRect(&ScaleLineBck[2], LKBrush_Black);
    
-    #ifdef RESCALE_PIXEL
+    #if 0 // TODO CHECK
     auto hpOld = Surface.SelectObject(LKPen_White_N0);
     if (ScreenDensity>=380) hpOld = Surface.SelectObject(LKPen_White_N1);
     #else

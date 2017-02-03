@@ -541,14 +541,15 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		pWptBmp = &hTurnPoint;
     }
     if(pWptBmp) {
-#ifdef RESCALE_PIXEL
-        const unsigned IconSize = RescalePixelSize(20);
-        pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
-#else
+#if defined(PNA) && defined(UNDER_CE)
+
         // Stretch only if Scaled size is greater than 20 TODO CHECK ON PNA ALL RESOLUTIONS       
         // const unsigned IconSize = std::max(NIBLSCALE(10), 20);
         // pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
         pWptBmp->Draw(Surface, E->Pos.x-10,E->Pos.y-10,20,20);
+#else
+        const unsigned IconSize = IBLSCALE(20);
+        pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
 #endif
     }
     } // wp in task
@@ -661,8 +662,8 @@ turnpoint:
 	} // below zoom threshold
 
     if(pWptBmp) {
-#ifdef RESCALE_PIXEL
-        unsigned IconSize = RescalePixelSize(20);
+#if !defined(PNA) || !defined(UNDER_CE)
+        unsigned IconSize = IBLSCALE(20);
         pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
 #else
         // Stretch only if Scaled size is greater than 20

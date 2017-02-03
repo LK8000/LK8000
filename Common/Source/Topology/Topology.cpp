@@ -73,8 +73,9 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=2;
 				break;
 			default:
-#ifdef RESCALE_PIXEL
-				    psize=RescalePixelSize(2);
+#if !defined(PNA) || !defined(UNDER_CE)
+
+                                psize=IBLSCALE(2);
 #else
 				if (ScreenLandscape)
 				    psize=3;
@@ -98,8 +99,9 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=2;
 				break;
 			default:
-#ifdef RESCALE_PIXEL
-				    psize=RescalePixelSize(2);
+#if !defined(PNA) || !defined(UNDER_CE)
+
+				psize=IBLSCALE(2);
 #else
 				if (ScreenLandscape)
 				    psize=3;
@@ -121,11 +123,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 				psize=NIBLSCALE(1);
 				break;
 			default:
-#ifdef RESCALE_PIXEL
-                                psize=RescalePixelSize(1);
-#else
-				psize=NIBLSCALE(1);
-#endif
+                                psize=IBLSCALE(1);
 				break;
 		}
 		break;

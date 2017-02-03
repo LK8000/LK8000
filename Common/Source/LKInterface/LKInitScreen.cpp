@@ -24,15 +24,16 @@
 #include <X11/Xlib.h>
 #endif
 
+// Our reference DPI for scaling. Work in progress. Not meaningful and not used.
+#define LK_REFERENCE_DPI 80
+
 // The default size of lcd monitor in 1/10 of inches (50= 5")
 // Can be overridden by command line -lcdsize=45
 unsigned short LcdSize=50;
 // The DpiSize, when 0 it is calculated by GetScreenDensity, otherwise forced 
 // Can be overridden by command line -dpi=nnn 
 unsigned short DpiSize=0; 
-#ifdef RESCALE_PIXEL
 unsigned short ReferenceDpi=0;
-#endif
 
 int ScreenScale = 1<<10;
 
@@ -181,10 +182,8 @@ void InitLKScreen() {
     // Some functions using ScreenScale have been changed to use rescaled pixels.
     // We must check that pixelratio is never lower than ScreenScale.
     ScreenDensity = GetScreenDensity();
-#ifdef RESCALE_PIXEL
   if (!ReferenceDpi) ReferenceDpi=LK_REFERENCE_DPI;
   ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/ReferenceDpi);
-#endif
 
     
     // -----------------------------
@@ -235,10 +234,8 @@ void InitLKScreen() {
     StartupStore(_T("..... Screen0Ratio     = %f" NEWLINE), Screen0Ratio);
     StartupStore(_T("..... ScreenScale      = %d.%d" NEWLINE), ScreenScale>>10, ScreenScale&0x3FF);
 
-#ifdef RESCALE_PIXEL  
     StartupStore(_T("..... ReferenceDpi     = %d" NEWLINE), ReferenceDpi);
     StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
-#endif
 
     StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
     StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));

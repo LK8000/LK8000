@@ -285,8 +285,8 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
 #warning "to slow, rewrite using freetype outline"
 #endif
 
-#ifdef RESCALE_PIXEL
-    short emboldsize=RescalePixelSize(1);
+#if !defined(PNA) || defined(UNDER_CE)
+    short emboldsize=IBLSCALE(1);
     for (short a=1; a<=emboldsize; a++) {
        Surface.DrawText(x-a, y-a, Value);
        Surface.DrawText(x-a, y+a, Value);

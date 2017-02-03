@@ -10,9 +10,6 @@
 #include "RGB.h"
 #include <iterator>
 #include <functional>
-#ifdef RESCALE_PIXEL
-#include "ScreenGeometry.h"
-#endif
 
 using std::placeholders::_1;
 
@@ -113,8 +110,8 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
 #warning "to slow, rewrite using freetype outline"
 #endif
 
-#ifdef RESCALE_PIXEL
-        short emboldsize=RescalePixelSize(1); 
+#if !defined(PNA) || !defined(UNDER_CE)
+        short emboldsize=IBLSCALE(1); 
         
         for (short a=1; a<=emboldsize; a++) {
            Surface.DrawText(x - a, y - a, wText, ClipRect);

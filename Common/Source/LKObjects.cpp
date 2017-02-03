@@ -159,7 +159,7 @@ void LKObjects_Create() {
   MapWindow::hSnailColours[13] = RGB_RED;
   MapWindow::hSnailColours[14] = RGB_DARKRED;
 
-  const int iwidth= RescalePixelSize(MapWindow::SnailWidthScale);
+  const int iwidth= IBLSCALE(MapWindow::SnailWidthScale);
 
   MapWindow::hSnailPens[0].Create(PEN_SOLID, std::max(1, iwidth / 2), MapWindow::hSnailColours[0]);
   MapWindow::hSnailPens[1].Create(PEN_SOLID, std::max(1, iwidth / 2), MapWindow::hSnailColours[1]);

@@ -59,13 +59,8 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
     SIZE tSize;
     Surface.GetTextSize(sTmp, &tSize);
     POINT pt = {
-#ifdef RESCALE_PIXEL
-      RescalePixelSize(8) + tSize.cx/2,
-      RescalePixelSize(-24)
-#else
       IBLSCALE(8) + tSize.cx/2,
       IBLSCALE(-24)
-#endif
     };  
     if (Arrow[1].y>=Arrow[3].y) {
         pt.x *= (-1);

@@ -14,9 +14,7 @@
 bool CommandResolution=false;
 
 extern unsigned short LcdSize, DpiSize;
-#ifdef RESCALE_PIXEL        
 extern unsigned short ReferenceDpi;
-#endif
 
 //
 //  true,  continue normally
@@ -189,9 +187,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
            StartupStore(_T(". CommandLine refdpi=%d is out of range%s"),s,NEWLINE);
         } else {
            StartupStore(_T(". CommandLine refdpi=%d inches%s"),s,NEWLINE);
-#ifdef RESCALE_PIXEL           
            ReferenceDpi=s;
-#endif
         }
      }
   }

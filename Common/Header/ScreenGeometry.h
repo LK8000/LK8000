@@ -32,24 +32,15 @@
 //
 #define SCREEN_GEOMETRY_COUNT    6
 
-// Many graphic functions in LK were tuned around low DPI devices, with the most tuned being 
-// 480x272 at around 110 DPI. 800x480 was also managed decently at 186 DPI.
-// Here we fix a reference DPI to rescale pixels. Lower value means bigger rescaling.
-#define LK_REFERENCE_DPI  80
-
 /**
- * Rescale pixel size depending on DPI. Most sizes are tuned for 110-180 dpi . We need to rescale them.
- * If unused, this function is a transparent #define RescalePixelSize(arg) arg
+ * Rescale pixel size depending on DPI
  * See ScreenGeometry.h
  * WARNING: use this function only after ScreenPixelRatio has been calculated by InitLKScreen().
+ * CURRENTLY NOT USED. WORK IN PROGRESS
  */
 gcc_pure inline
 int RescalePixelSize(int x) {
-#ifdef RESCALE_PIXEL
     return (x * ScreenPixelRatio) >> 10;
-#else
-    return x;
-#endif
 }
 
 gcc_pure inline

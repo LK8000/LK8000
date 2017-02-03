@@ -1104,7 +1104,7 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
   static short unitrowoffset=0;
   if (DoInit[MDI_WRITEINFO]) {
 	switch(ScreenSize) {
-#ifndef RESCALE_PIXEL_SIZE
+#if 1 // TODO WE SHOULD USE GENERAL default, after CHECKING
 		case ss800x480:
 			unitrowoffset=10;
 			break;
