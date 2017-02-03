@@ -49,33 +49,24 @@ int GetScreenDensity(void);
 
 // NOTES
 //
-// ScreenDScale (double)
+// ScreenScale (fixed point 22.10)
 //
-//   Ratio between shortest size of the screen in pixels, and 240.
-//   Range is 0.83 (200px) and up. We support any resolution starting from 200px, example 266x200
-//   but some geometries below 200px can also work. 
-//
-// ScreenScale (int)
-//
-//   The integer part of ScreenDScale, can be used to rescale by simple integer operation 
-//   On a 800x480 ScreenScale is 2, but on a 1920x1080 it is 4 (Dscale 4.5) and thus not good.
+//   Ratio between the shortest size of the screen in pixels, and 240.
+//   Range is 1 (240px) and up. We support any resolution starting from 240px.
 //  
-// ScreenIntScale (bool)
-//
-//   If ScreenScale and ScreenDScale correspond, then we can safely use ScreenScale for accurate rescaling 
-//   It is used by only one (macro) function, the most important IBLSCALE as
-//   define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))
-//   
 // IBLSCALE(x)
 //  
-//   Normally usable for accurate rescaling when accuracy is needed.
-//   When accuracy is not needed, ScreenScale is faster. 
+//   Function for scaling inside screen, not dialogs.
+//   Careful using 2*IBLSCALE(x) and not IBLSCALE(2*x)
 //
 // NIBLSCALE(x)
 //
-//   It is an array of IBLSCALE values ready as an array. A lookup table limited to MAXIBLSCALE 
-//   Normally 100 but can be enlarged. In TESTBENCH mode the boundary are checked automatically
-//   and an error is given on screen to the programmer or user.
+//   Deprecated, it's an alias of IBLSCALE(x). 
+//
+// DLGSCALE(x)
+//   Same as IBLSCALE(x) but dedicated to dialog templates.
+//   Inside dialogs it is MANDATORY to use DLGSCALE, for future compatibility in case
+//   we change rescaling approach on map drawing. 
 //
 // ALL OF THE ABOVE is used to rescale properly in respect to the geometry of LK.
 // We adopted for historical reasons 240 as base resolution (effectively the lowest, so it is the unity).
@@ -100,23 +91,6 @@ int GetScreenDensity(void);
 // If you need to rescale a bitmap, the original should be *optimistically* with the same 
 // geometry of ScreenGeometry, otherwise you must stretch it. This is an important thing to know.
 //
-// Why do we have so many parameters for rescaling, so many geometries, so many differences between
-// landscape and portrait? Simply because we cannot split bits and pixels and LK wouldnt
-// shine on any device, giving out the best looking and best sizes automatically for all the fonts
-// we use. In addition, when you deal with low resolution devices, things get even more tough because
-// a pixel difference makes a shape good or bad looking, and a line become a z/line.
-//
-// Things can be simplified a lot by choosing only one scaling approach.
-// Dealing with 240 only for dialogs for example, and rescale upon DPI.
-// But in such case, the entire code must be revised and adjusted, not to mention the tests
-// on smaller devices where "you cannot split pixels".
-// One example for all: if you have a small resolution device, which you normally look in flight
-// from a distance of 30-35cm, some things cannot be drawn or written (like some units in infopages)
-// and some items must be drastically rescaled or enlarged, it depends.
-// Since these low resolution devices such as 480x272 are still well in use, changing ScreenScale
-// adopting a unified method means loosing the previously set tuned parameters.
-// Dropping support for low res devices would open a totally different landscape.
-// 1.2.2017 paolo
 //
 
 
