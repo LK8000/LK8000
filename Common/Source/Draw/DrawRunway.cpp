@@ -71,6 +71,10 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   static double  dmin_realscale=0;
   static double  dmax_realscale=0;
 
+  // 
+  // TODO cache many values if fScaleFact does not change.
+  // So we can use floating point arithmetic for accuracy.
+
 
   if (DoInit[MDI_MAPWPVECTORS])
   {
