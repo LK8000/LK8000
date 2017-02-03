@@ -517,14 +517,18 @@ BOOL devInit() {
             unsigned int j;
             for( j = 0; j < i ; j++)
             {
+              if(!DeviceList[i].Disabled)
               if( (_tcscmp(szPort[i] , szPort[j])==0)  &&  DeviceList[j].iSharedPort <0)
               {
+                devInit(&DeviceList[i]);
                 DeviceList[i].iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
-                DeviceList[i].Com =  DeviceList[j].Com ;
+                DeviceList[i].Com = DeviceList[j].Com ;
                 DeviceList[i].Status = CPS_OPENOK;
                 pDev->Installer(&DeviceList[i]);
-          
+                if (pDev->Flags & (1l << dfNmeaOut)) {
+                    DeviceList[i].bNMEAOut = true;
+                }
                 if(devIsRadio(&DeviceList[i]))
                 {
                   RadioPara.Enabled = true;
@@ -719,39 +723,49 @@ bool  ret = FALSE;
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
+  PDeviceDescriptor_t d2;
   // intercept device specific parser routines 
   if (d != NULL){
-	d->HB=LKHearthBeats;
+    d->HB=LKHearthBeats;
 
     for(int dev =0; dev < NUMDEV; dev++)
     {
-      PDeviceDescriptor_t d2 = &DeviceList[dev];
+      d2 = &DeviceList[dev];
       if (d2)
        if((d2->iSharedPort == portNum) ||  (d2->Port == portNum))
          if (d2->ParseNMEA != NULL)
 	   if ((d2->ParseNMEA)(d, String, pGPS)) {
 		//GPSCONNECT  = TRUE; // NO! 121126
-	      ret = (TRUE);
+	      ret = TRUE;
 	  }
-    if(d ==  GetActiveGPS())
-      if(!d2->Disabled)     // NMEA out ! even on multiple ports
-        if(d2->bNMEAOut) 	// stream pipe, pass nmea to other device (NmeaOut)
-        {                   // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
-          d2->Com->WriteString(String);
-        }
     }
-
   }
 
 
   if(String[0]=='$') {  // Additional "if" to find GPS strings
 	if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
 		//GPSCONNECT  = TRUE; // NO! 121126
-		return(TRUE);
+	    ret = TRUE;
 		} 
 	}
-  return(ret);
 
+
+
+  if (d != NULL){
+    if(d ==  GetActiveGPS())
+    {
+      for(int dev =0; dev < NUMDEV; dev++)
+      {
+        d2 = &DeviceList[dev];
+        if(!d2->Disabled)     // NMEA out ! even on multiple ports
+          if(d2->bNMEAOut)      // stream pipe, pass nmea to other device (NmeaOut)
+          {                   // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
+            d2->Com->WriteString(String);
+          }
+      }
+    }
+  }
+  return(ret);
 }
 
 BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable)
