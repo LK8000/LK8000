@@ -65,8 +65,8 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   // Up to V6, we had values equivalent to (approx) 0.30 - 3.10
   // Notice: for very low resolutions, values are already preset and cannot be changed.
   //
-  #define MIN_REALSCALE 0.30 // reduce to enlarge vectors at low zoom (ex.300m)
-  #define MAX_REALSCALE 3.10 // increase to reduce vectors at high zoom (ex.7.5km)
+  #define MIN_REALSCALE 0.30 // reduce to enlarge vectors at high zoom (ex.300m)
+  #define MAX_REALSCALE 3.10 // increase to reduce vectors at low zoom (ex.7.5km)
 
   static double  dmin_realscale=0;
   static double  dmax_realscale=0;
@@ -78,7 +78,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     //
     // Everything rescales properly on all resolutions.
     //
-    dinitrw_radius = 5;           // the most important
+    dinitrw_radius = 6.5;           // the most important
     dinitrw_len = dinitrw_radius;     // half of len (+- from the center, so it doubles)
     dinitrw_thick = dinitrw_len/4.3;   // half of thickness
     //
