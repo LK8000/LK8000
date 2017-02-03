@@ -733,6 +733,7 @@ bool  ret = FALSE;
 		//GPSCONNECT  = TRUE; // NO! 121126
 	      ret = (TRUE);
 	  }
+    if(d ==  GetActiveGPS())
       if(!d2->Disabled)     // NMEA out ! even on multiple ports
         if(d2->bNMEAOut) 	// stream pipe, pass nmea to other device (NmeaOut)
         {                   // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
