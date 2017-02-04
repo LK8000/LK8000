@@ -320,7 +320,6 @@ void Globals_Init(void) {
   ScreenDensity=0;
   ScreenThinSize=1;
   
-  ScreenPixelRatio=1<<10; // This is 1.0
 
   // Default arrival mode calculation type
   // 091016 currently not changed anymore

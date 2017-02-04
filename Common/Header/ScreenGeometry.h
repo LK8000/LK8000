@@ -40,13 +40,63 @@
  */
 gcc_pure inline
 int RescalePixelSize(int x) {
+    extern int ScreenPixelRatio; // 22.10 fixed size number
     return (x * ScreenPixelRatio) >> 10;
 }
 
+/**
+ * screen_scale_int and screen_scale_double need to have same value and used only by IBLSCALE() function
+ *  this class exist for enforce this requirement,
+ *  helper struct are made for select right value (int or double at compil time.
+ */
+class ScreenScale {
+public:
+
+    static void set(double scale) {
+        screen_scale_double = scale;
+        screen_scale_int = static_cast<int>(scale*radix);
+    }
+
+    template<class T, bool = std::is_integral<T>::value>
+    struct helper { };
+
+    template<class T>
+    struct helper<T, true> {
+        static T scale( T x )
+        {
+            return (x * screen_scale_int) >> radix_shift;
+        }
+    };
+
+    template<class T>
+    struct helper<T, false> {
+        static T scale ( T x )
+        {
+            return x * screen_scale_double;
+        }
+    };
+
+protected:
+
+    friend void InitLKScreen();
+
+    static double get() {
+        return screen_scale_double;
+    }
+
+private:
+    constexpr static int radix_shift = 10;
+    constexpr static int radix = 1 << radix_shift;
+
+    static int screen_scale_int;
+    static double screen_scale_double;
+};
+
+
+template<class T>
 gcc_pure inline
-int IBLSCALE(int x) {
-    extern int ScreenScale;
-    return (x * ScreenScale) >> 10;
+T IBLSCALE(T x) {
+    return ScreenScale::helper<T>::scale(x);
 }
 
 #define NIBLSCALE IBLSCALE
