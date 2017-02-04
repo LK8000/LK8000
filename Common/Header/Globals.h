@@ -459,8 +459,6 @@ GEXTERN short ScreenGeometry;
 GEXTERN int ScreenDensity;
 GEXTERN int ScreenThinSize;
 
-GEXTERN int ScreenPixelRatio; // 22.10 fixed size number
-
 GEXTERN int AircraftMenuSize;
 GEXTERN int CompassMenuSize;
 

@@ -23,6 +23,7 @@
 #ifdef USE_X11
 #include <X11/Xlib.h>
 #endif
+#include "ScreenGeometry.h"
 
 // Our reference DPI for scaling. Work in progress. Not meaningful and not used.
 #define LK_REFERENCE_DPI 80
@@ -34,6 +35,9 @@ unsigned short LcdSize=50;
 // Can be overridden by command line -dpi=nnn 
 unsigned short DpiSize=0; 
 unsigned short ReferenceDpi=0;
+
+int ScreenPixelRatio=1<<10; // This is 1.0
+
 
 int ScreenScale::screen_scale_int = ScreenScale::radix;
 double ScreenScale::screen_scale_double = ScreenScale::radix;

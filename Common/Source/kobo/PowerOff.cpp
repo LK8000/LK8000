@@ -30,11 +30,14 @@
 /**************************************************************
  * Only exist for avoid to link with all LK8000 binary source file.
  */
-int ScreenScale = 1;
-unsigned short ScreenPixelRatio = 1;
+#include "ScreenGeometry.h"
+int ScreenScale::screen_scale_int = ScreenScale::radix;
+
 void MSG_ASSERTION(int line, const TCHAR *filename) { assert(false); }
 void StartupStore(const TCHAR *Str, ...) { }
 /**************************************************************/
+
+
 
 const PixelSize bird_size { 15000, 9000 }; 
 const RasterPoint bird_polygon[] = {

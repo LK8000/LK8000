@@ -40,6 +40,7 @@
  */
 gcc_pure inline
 int RescalePixelSize(int x) {
+    extern int ScreenPixelRatio; // 22.10 fixed size number
     return (x * ScreenPixelRatio) >> 10;
 }
 
