@@ -10,7 +10,7 @@
 #include "utils/stl_utils.h"
 
 #define DEVNAMESIZE  32
-#define	NUMDEV		 2
+#define	NUMDEV		 6
 
 #ifdef RADIO_ACTIVE
 #define	NUMREGDEV	 40 // Max number of registered devices
@@ -20,6 +20,10 @@
 
 #define	devA()	    (&DeviceList[0])
 #define	devB()	    (&DeviceList[1])
+#define devC()      (&DeviceList[2])
+#define devD()      (&DeviceList[3])
+#define devE()      (&DeviceList[4])
+#define devF()      (&DeviceList[5])
 #define devAll()    (NULL)
 
 class COMMPortItem_t {
@@ -95,9 +99,10 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*Config)(DeviceDescriptor_t	*d);
   DeviceDescriptor_t *pDevPipeTo;
 
+  int iSharedPort;
   int PortNumber;
   bool Disabled;
-  
+  bool bNMEAOut;
   // Com port diagnostic
   int Status;
   unsigned Rx;
@@ -119,7 +124,7 @@ typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
 void VarioWriteSettings(void);
-
+PDeviceDescriptor_t  GetActiveGPS(void);
 typedef	struct{
   const TCHAR	         *Name;
   unsigned int		 Flags;

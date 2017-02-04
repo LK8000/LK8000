@@ -2,8 +2,8 @@
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
   <WndForm Name="frmTerminal" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M1871_" Font="2" >
 
-    <WndButton Name="cmdSelectPort1" Caption="_@M232_" X="1" Y="2" Width="61"  Height="28" Font="3" Tag="3" />
-    <WndButton Name="cmdSelectPort2" Caption="_@M233_" X="63" Y="2" Width="61"  Height="28" Font="3" Tag="3" />
+    <WndButton Name="cmdSelectPort1" Caption="_@M6_" X="1" Y="2" Width="61"  Height="28" Font="3" Tag="3" />
+    <WndButton Name="cmdSelectPort2" Caption="_@M460_" X="63" Y="2" Width="61"  Height="28" Font="3" Tag="3" />
     <WndButton Name="cmdSelectStop" Caption="_@M670_" X="125" Y="2" Width="57"  Height="28" Font="2" Tag="3" />
     <WndButton Name="cmdClose" Caption="_@M186_" X="183" Y="2" Width="57"  Height="28" Font="2" Tag="3" />
 

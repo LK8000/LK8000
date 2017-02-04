@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmConfiguration" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M195_" Font="2" >
+  <WndForm Name="frmConfiguration" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M195_" Font="2" > 
     <WndButton Name="cmdTerminal" Caption="_@M1871_" X="3" Y="140" Width="70"  Height="28" Font="2" Tag="3" OnClickNotify="OnTerminalClicked" />
     <WndButton Name="cmdBth" Caption="Bluetooth" X="3" Y="168" Width="70"  Height="28" Font="2" Tag="2" OnClickNotify="OnBthDevice"/>
     <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="196" Width="70"  Height="28" Font="2" Tag="3" />
     <WndFrame Name="frmComm" X="0" Y="1" Width="-2" Height="138" Font="2">
-      <WndFrame Name="frmComm" Caption="_@M232_" X="0" Y="0" Width="-1" Height="68" Font="2" Border="30">
+        <WndButton Name="cmdA" Caption="A" X="1" Y="-1"   Width="50"  Height="40" Font="2" Tag="2" OnClickNotify="OnA" />
+        <WndButton Name="cmdB" Caption="B" X="51" Y="-999" Width="50"  Height="40" Font="2" Tag="2" OnClickNotify="OnB" />
+        <WndButton Name="cmdC" Caption="C" X="101" Y="-999" Width="50"  Height="40" Font="2" Tag="2" OnClickNotify="OnC" />
+        <WndButton Name="cmdD" Caption="D" X="151" Y="-999" Width="50"  Height="40" Font="2" Tag="2" OnClickNotify="OnD" />
+        <WndButton Name="cmdE" Caption="E" X="201" Y="-999" Width="50"  Height="40" Font="2" Tag="2" OnClickNotify="OnE" />
+        <WndButton Name="cmdF" Caption="F" X="251" Y="-999" Width="50"  Height="40" Font="2" Tag="2" OnClickNotify="OnF" />      
+      <WndFrame Name="frmCommName" Caption="_@M232_" X="0" Y="41" Width="-1" Height="128" Font="2" Border="30">        
         <WndProperty Name="prpComDevice1" Caption="_@M450_" X="60" Y="1" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H153_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnDeviceAData" />
         </WndProperty>
@@ -27,29 +33,9 @@
         <WndProperty Name="prpComIpPort1" Caption="Port"  X="230" Y="-999"  Width="-1" Height="22" CaptionWidth="30" Font="2" Keyboard="1">
           <DataField Name="" DataType="integer" DisplayFormat="%d" EditFormat="%d" Min="1" Max="65635" Step="1"/>
         </WndProperty>
-      </WndFrame>
-      <WndFrame Name="frmComm" Caption="_@M233_" X="0" Y="69" Width="-1" Height="68" Font="2" Border="30">
-        <WndProperty Name="prpComDevice2" Caption="_@M450_" X="60" Y="1" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H157_">
-          <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnDeviceBData"/>
-        </WndProperty>
-        <WndProperty Name="prpComPort2" Caption="_@M530_"  X="60" Y="-1"  Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H154_">
-          <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnComPort2Data"/>
-        </WndProperty>
-        <WndProperty Name="prpExtSound2" Caption="_@M2250_" X="215" Y="-999" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H240_">
-          <DataField Name="" DataType="boolean"/>
-        </WndProperty>
-        <WndProperty Name="prpComSpeed2" Caption="_@M135_"  X="60" Y="-1"  Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
-          <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
-        </WndProperty>
-        <WndProperty Name="prpComBit2" Caption=" "  X="215" Y="-999" Width="-1" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
-          <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
-        </WndProperty>
-        <WndProperty Name="prpComIpAddr2" Caption="IP"  X="60" Y="-999"  Width="170" Height="22" CaptionWidth="70" Font="2" Keyboard="1">
+        <WndProperty Name="prpStatus" Caption="_@M660_"  X="60" Y="70"  Width="349" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" Keyboard="0">
           <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s"/>
-        </WndProperty>
-        <WndProperty Name="prpComIpPort2" Caption="Port"  X="230" Y="-999"  Width="-1" Height="22" CaptionWidth="30" Font="2" Keyboard="1">
-          <DataField Name="" DataType="integer" DisplayFormat="%d" EditFormat="%d" Min="1" Max="65635" Step="1"/>
-        </WndProperty>        
+        </WndProperty>   
       </WndFrame>
     </WndFrame>
       <WndFrame Name="frmComm" X="75" Y="139" Width="-2" Height="84" Font="2">

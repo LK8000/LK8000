@@ -25,10 +25,20 @@ double trackbearingminspeed=0; // minimal speed to use gps bearing
 // This is the hearth of LK. Questions? Ask Paolo..
 // THIS IS RUNNING WITH LockComm  from ConnectionProcessTimer .
 //
+
+short active=-1; // active port number for gps
+PDeviceDescriptor_t GetActiveGPS(void)
+{
+  if(active >= 0)
+   if(active < NUMDEV)
+     if(!DeviceList[active].Disabled)
+       return &DeviceList[active];
+  return NULL;
+}
 static
 bool  UpdateMonitor(void)
 {
-  short active=-1; // active port number for gps
+
   static short lastactive=0;
   static bool  lastvalidBaro=false;
   static bool wasSilent[array_size(DeviceList)] = { false };

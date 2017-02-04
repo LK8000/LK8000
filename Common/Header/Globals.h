@@ -843,19 +843,14 @@ GEXTERN TCHAR szInputFile[MAX_PATH];
 GEXTERN TCHAR szMapFile[MAX_PATH];
 
 // Ports and devices
-
-GEXTERN TCHAR szPort1[MAX_PATH];
-GEXTERN unsigned dwSpeedIndex1;
-GEXTERN unsigned dwBit1Index;
-GEXTERN TCHAR szPort2[MAX_PATH];
-GEXTERN unsigned dwSpeedIndex2;
-GEXTERN unsigned dwBit2Index;
-GEXTERN TCHAR szIpAddress1[16]; // IPv4
-GEXTERN TCHAR szIpAddress2[16]; // IPv4
-GEXTERN unsigned dwIpPort1;
-GEXTERN unsigned dwIpPort2;
-GEXTERN TCHAR dwDeviceName1[DEVNAMESIZE+1];
-GEXTERN TCHAR dwDeviceName2[DEVNAMESIZE+1];
+GEXTERN unsigned  SelectedDevice;
+GEXTERN TCHAR szPort[NUMDEV][MAX_PATH];
+GEXTERN unsigned dwSpeedIndex[NUMDEV];
+GEXTERN unsigned dwBitIndex[NUMDEV];
+GEXTERN TCHAR szIpAddress[NUMDEV][16];
+GEXTERN unsigned dwIpPort[NUMDEV];
+GEXTERN TCHAR dwDeviceName[NUMDEV][DEVNAMESIZE+1];
+GEXTERN bool UseExtSound[NUMDEV];
 GEXTERN double LastFlarmCommandTime;
 GEXTERN bool  DevIsCondor;
 
