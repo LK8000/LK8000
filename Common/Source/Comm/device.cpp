@@ -752,8 +752,7 @@ bool  ret = FALSE;
 		} 
 	}
 
-
-    if(d ==  GetActiveGPS())
+    if(d->nmeaParser.activeGPS)
     {
       for(int dev =0; dev < NUMDEV; dev++)
       {
