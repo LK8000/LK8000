@@ -167,7 +167,7 @@ void InitLKScreen() {
     
     // Initially, this is the default. Eventually retune it for each resolution.
     // We might in the future also set a UseStretch, with or without Hires.
-    UseHiresBitmap = (ScreenScale > 1);
+    UseHiresBitmap = (ScreenScale>>10) > 1;
     
     //
     // The thinnest line somehow visible on screen from 35cm distance.
@@ -210,7 +210,7 @@ void InitLKScreen() {
 
     StartupStore(_T("..... ReferenceDpi     = %d" NEWLINE), ReferenceDpi);
     StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
-
+    StartupStore(_T("..... UseHiresBitmap  = %s" NEWLINE), UseHiresBitmap?_T("true"):_T("false"));
     StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
     StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));
     StartupStore(_T("..... NIBLSCALE(2)     = %d" NEWLINE), NIBLSCALE(2));
