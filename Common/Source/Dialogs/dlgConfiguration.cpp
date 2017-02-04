@@ -1166,7 +1166,7 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
     bool bUDPServer = (_tcscmp(szPortName, _T("UDPServer")) == 0);
-    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer);
+    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || ( DeviceList[SelectedDevice].iSharedPort>=0 ));
     if(bCOM)
     {
       ShowWindowControl(wf, TEXT("prpComPort1"), true);
