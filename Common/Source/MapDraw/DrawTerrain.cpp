@@ -126,7 +126,10 @@ public:
 
 #if defined(_WIN32_WCE) || defined(__arm__) || !defined(NDEBUG)
         // scale dtquant so resolution is not too high on large displays
-        dtquant = std::min<unsigned>(1, IBLSCALE(dtquant)); // lower resolution a bit.. (no need for CPU >800mHz)
+        // lower resolution a bit.. (no need for CPU >800mHz)
+        // update : on android with HD or QHD device, even with fast cpu, is very important to leave it as is.
+        dtquant = std::max<unsigned>(2, IBLSCALE(dtquant));
+
 
 #ifdef KOBO
         /**
@@ -154,6 +157,7 @@ public:
         if (ScreenSize != ss640x480) {
             if (dtquant > 3) dtquant = 3; // .. but not too much
         }
+
 #endif
 #endif
 #ifdef USE_TERRAIN_BLUR
