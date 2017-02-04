@@ -1,9 +1,16 @@
-//
-// Created by bruno on 12/20/16.
-//
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   InternalPort.h
+ * Author: Bruno de Lacheisserie
+ *
+ * Adapted from original code provided by Naviter
+ */
 
-#ifndef ANDROID_STUDIO_INTERNALPORT_H
-#define ANDROID_STUDIO_INTERNALPORT_H
+#ifndef ANDROID_INTERNALPORT_H
+#define ANDROID_INTERNALPORT_H
 
 #include <externs.h>
 #include <Comm/NullComPort.h>
@@ -32,4 +39,4 @@ private:
 };
 
 
-#endif //ANDROID_STUDIO_INTERNALPORT_H
+#endif //ANDROID_INTERNALPORT_H
