@@ -734,22 +734,20 @@ bool  ret = FALSE;
     for(int dev =0; dev < NUMDEV; dev++)
     {
       d2 = &DeviceList[dev];
-      if (d2)
-       if((d2->iSharedPort == portNum) ||  (d2->Port == portNum))
-         if (d2->ParseNMEA != NULL)
-	   if ((d2->ParseNMEA)(d, String, pGPS)) {
+      if((d2->iSharedPort == portNum) ||  (d2->Port == portNum))
+	  if ( d2->ParseNMEA && d2->ParseNMEA(d, String, pGPS) ) {
 		//GPSCONNECT  = TRUE; // NO! 121126
 	      ret = TRUE;
-	  }
+	  } else if( d2 == d) {
+        // call ParseNMEAString_Internal only for master port if string are not device specific. 
+        if(String[0]=='$') {  // Additional "if" to find GPS strings
+          if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
+            //GPSCONNECT  = TRUE; // NO! 121126
+            ret = TRUE;
+          } 
+        }
+      }
     }
-
-
-    if(String[0]=='$') {  // Additional "if" to find GPS strings
-	  if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
-		//GPSCONNECT  = TRUE; // NO! 121126
-	    ret = TRUE;
-		} 
-	}
 
     if(d->nmeaParser.activeGPS)
     {
