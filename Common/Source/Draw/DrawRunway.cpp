@@ -143,13 +143,13 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   if (!picto) {
      if (fScaleFact < dmin_realscale) fScaleFact=dmin_realscale;
      if (fScaleFact > dmax_realscale) fScaleFact=dmax_realscale;
+     // StartupStore(_T("NORM fScale=%f  "),fScaleFact);
+     fScaleFact= MAX_REALSCALE / fScaleFact;
+     // StartupStore(_T("OUT fScale=%f\n"),fScaleFact);
   }
 
-  // StartupStore(_T("NORM fScale=%f  "),fScaleFact);
 
-  fScaleFact= MAX_REALSCALE / fScaleFact; 
 
-  // StartupStore(_T("OUT fScale=%f\n"),fScaleFact);
 
 
   double drw_len,drw_thick;

@@ -694,11 +694,10 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
         // Draw Picto
         int idx = WayPointSelectInfo[i].Index;
+        const RECT PictoRect = {0, 0, w0, LineHeight};
         if (WayPointCalc[idx].IsLandable) {
-            const RECT PictoRect = {2, 2, w0-4, LineHeight-4};
-            MapWindow::DrawRunway(Surface, &WayPointList[idx], PictoRect, nullptr, 0.5 , true);
+            MapWindow::DrawRunway(Surface, &WayPointList[idx], PictoRect, nullptr, 1 , true);
         } else {
-            const RECT PictoRect = {0, 0, w0, LineHeight};
             MapWindow::DrawWaypointPicto(Surface, PictoRect, &WayPointList[idx]);
         }
 
