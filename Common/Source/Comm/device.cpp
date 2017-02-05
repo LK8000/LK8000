@@ -733,9 +733,8 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   d->HB=LKHearthBeats;
 
   // intercept device specific parser routines 
-    for(int dev =0; dev < NUMDEV; dev++)
-    {
-      DeviceDescriptor_t& d2 = DeviceList[dev];
+    for(DeviceDescriptor_t& d2 : DeviceList) {
+        
       if((d2.iSharedPort == portNum) ||  (d2.Port == portNum)) {
         if ( d2.ParseNMEA && d2.ParseNMEA(d, String, pGPS) ) {
           //GPSCONNECT  = TRUE; // NO! 121126
@@ -752,15 +751,13 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
       }
     }
 
-    if(d->nmeaParser.activeGPS)
-    {
-      for(int dev =0; dev < NUMDEV; dev++)
-      {
-        DeviceDescriptor_t& d2 = DeviceList[dev];
-        if(!d2.Disabled)     // NMEA out ! even on multiple ports
-          if(d2.bNMEAOut)      // stream pipe, pass nmea to other device (NmeaOut)
-          {                   // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
-            d2.Com->WriteString(String);
+    if(d->nmeaParser.activeGPS) {
+        
+      for(DeviceDescriptor_t& d2 : DeviceList) {
+          
+          if(!d2.Disabled && d2.bNMEAOut) { // NMEA out ! even on multiple ports    
+            // stream pipe, pass nmea to other device (NmeaOut)
+            d2.Com->WriteString(String); // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
           }
       }
     }
