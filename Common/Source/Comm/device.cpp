@@ -722,29 +722,32 @@ PDeviceDescriptor_t d = NULL;
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
 BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
-bool  ret = FALSE;
+  bool  ret = FALSE;
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
-  PDeviceDescriptor_t d2;
-  // intercept device specific parser routines 
-  if (d != NULL){
-    d->HB=LKHearthBeats;
+  if(!d) {
+    return FALSE;
+  }
+  
+  d->HB=LKHearthBeats;
 
+  // intercept device specific parser routines 
     for(int dev =0; dev < NUMDEV; dev++)
     {
-      d2 = &DeviceList[dev];
-      if((d2->iSharedPort == portNum) ||  (d2->Port == portNum))
-	  if ( d2->ParseNMEA && d2->ParseNMEA(d, String, pGPS) ) {
-		//GPSCONNECT  = TRUE; // NO! 121126
-	      ret = TRUE;
-	  } else if( d2 == d) {
-        // call ParseNMEAString_Internal only for master port if string are not device specific. 
-        if(String[0]=='$') {  // Additional "if" to find GPS strings
-          if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
-            //GPSCONNECT  = TRUE; // NO! 121126
+      DeviceDescriptor_t& d2 = DeviceList[dev];
+      if((d2.iSharedPort == portNum) ||  (d2.Port == portNum)) {
+        if ( d2.ParseNMEA && d2.ParseNMEA(d, String, pGPS) ) {
+          //GPSCONNECT  = TRUE; // NO! 121126
             ret = TRUE;
-          } 
+        } else if( &d2 == d) {
+          // call ParseNMEAString_Internal only for master port if string are not device specific.
+          if(String[0]=='$') {  // Additional "if" to find GPS strings
+            if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
+              //GPSCONNECT  = TRUE; // NO! 121126
+              ret = TRUE;
+            }
+          }
         }
       }
     }
@@ -753,15 +756,14 @@ bool  ret = FALSE;
     {
       for(int dev =0; dev < NUMDEV; dev++)
       {
-        d2 = &DeviceList[dev];
-        if(!d2->Disabled)     // NMEA out ! even on multiple ports
-          if(d2->bNMEAOut)      // stream pipe, pass nmea to other device (NmeaOut)
+        DeviceDescriptor_t& d2 = DeviceList[dev];
+        if(!d2.Disabled)     // NMEA out ! even on multiple ports
+          if(d2.bNMEAOut)      // stream pipe, pass nmea to other device (NmeaOut)
           {                   // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
-            d2->Com->WriteString(String);
+            d2.Com->WriteString(String);
           }
       }
     }
-  }
   return(ret);
 }
 
