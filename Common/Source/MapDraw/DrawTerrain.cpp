@@ -356,7 +356,7 @@ public:
 #ifdef UNDER_CE
             if (MapWindow::zoom.RealScale() > 5.4) do_shading = false;
 #else
-            if (MapWindow::zoom.RealScale() > 7.2) do_shading = false;
+            if (MapWindow::zoom.RealScale() > 14.3) do_shading = false;
 #endif
         }
 
