@@ -97,7 +97,6 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
   BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
-  DeviceDescriptor_t *pDevPipeTo;
 
   int iSharedPort;
   int PortNumber;

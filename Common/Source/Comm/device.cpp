@@ -386,7 +386,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
     PutQNH = NULL;
     OnSysTicker = NULL;
 
-    pDevPipeTo = NULL;
     PutVolume = NULL;
     PutFreqActive = NULL;
     PutFreqStandby = NULL;
