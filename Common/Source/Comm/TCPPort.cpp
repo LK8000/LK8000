@@ -79,12 +79,52 @@ bool TCPClientPort::Connect() {
     sin.sin_port = htons(GetPort(GetPortIndex()));
     sin.sin_family = AF_INET;
 
+#ifdef __linux__
+    int arg = fcntl(mSocket, F_GETFL, NULL);
+    arg |= O_NONBLOCK;
+    fcntl(mSocket, F_SETFL, arg);
+#endif
+
     if(connect(mSocket, (SOCKADDR*)&sin, sizeof(sin)) == SOCKET_ERROR) {
+
+#ifdef __linux__
+        // Wait for Connection succesfull
+        fd_set fdset;
+        FD_ZERO(&fdset);
+        FD_SET(mSocket, &fdset);
+        struct timeval tv = {10, 0}; /* 10 second timeout */
+        int res = select(mSocket + 1, NULL, &fdset, NULL, &tv);
+        if(res > 0) {
+            int so_error;
+            socklen_t len = sizeof so_error;
+            res = getsockopt(mSocket, SOL_SOCKET, SO_ERROR, &so_error, &len);
+
+            if (so_error != 0) {
+                StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, SO_ERROR=%d") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName(), so_error);
+                return false;
+            }
+
+        } else if(res == 0) {
+            StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, TIMEOUT") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName()); // 091117
+            return false;
+        } else {
+            StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, errno=%d") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName(), errno);
+            return false;
+        }
+
+#else
         unsigned dwError = WSAGetLastError();
         StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, error=%u") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName(), dwError); // 091117
-
         return false;
+#endif
     }
+
+#ifdef __linux__
+    arg = fcntl(mSocket, F_GETFL, NULL);
+    arg &= (~O_NONBLOCK);;
+    fcntl(mSocket, F_SETFL, arg);
+#endif
+
 
     StartupStore(_T(". TCPClientPort %u Connect <%s> OK") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName());
 
