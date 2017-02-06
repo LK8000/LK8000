@@ -624,7 +624,7 @@ static void OnFilterDirection(DataField *Sender, DataField::DataAccessKind_t Mod
 
 static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
 
-  TCHAR sTmp[12];
+  TCHAR sTmp[50];
 
   switch(Mode){
     case DataField::daGet:
@@ -666,7 +666,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     }
 
     unsigned int n = UpLimit - LowLimit;
-    TCHAR sTmp[12];
+    TCHAR sTmp[50];
 
     Surface.SetTextColor(RGB_BLACK);
 
