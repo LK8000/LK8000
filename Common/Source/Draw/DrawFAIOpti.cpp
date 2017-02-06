@@ -17,6 +17,12 @@
 #include "NavFunctions.h"
 #include "MapWindow.h"
 
+#ifdef HAVE_GLES
+typedef FloatPoint ScreenPoint;
+#else
+typedef RasterPoint ScreenPoint;
+#endif
+
 
 #ifdef PNA
   #define FAI_SECTOR_STEPS 11
@@ -39,6 +45,7 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const Scree
   const auto oldpen = Surface.SelectObject(hpStartFinishThin);
   const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
+  const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 /********************************************************************/
   unsigned int ui;
   double lat1 = 0;
@@ -146,7 +153,7 @@ int numlegs=0;
     {
       LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
       const auto hOldPen = Surface.SelectObject(hpSectorPen);
-      const POINT Pt1 = _Proj.ToRasterPoint(lon_CP, lat_CP);
+      const POINT Pt1 = ToScreen(lon_CP, lat_CP);
       FindLatitudeLongitude(lat1, lon1, 0 , fFAIDistance* 0.20, &lat2, &lon2); /* 1000m destination circle */
       int iRadius = (int)((lat2-lat1)*zoom.DrawScale());
       Surface.DrawCircle(Pt1.x, Pt1.y, iRadius  , rc, false);
@@ -184,6 +191,8 @@ double lat_d,lon_d;
 double alpha, fDistTri, cos_alpha=0;
 POINT apSectorPolygon[MAX_FAI_SECTOR_PTS+1];
 DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
+
+const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 
 if(fabs(fDist_c) < 1000.0)  /* distance too short for a FAI sector */
     return -1;
@@ -253,7 +262,7 @@ if (iOpposite >0)
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
       LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-      apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);
+      apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);
 
 
       fDistTri += fDelta_Dist;
@@ -284,7 +293,7 @@ if (iOpposite >0)
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
       LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-      apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);
+      apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);
 
       fDist_a += fDelta_Dist;
     }
@@ -323,7 +332,7 @@ if (iOpposite >0)
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_a, &lat_d, &lon_d);
         LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-        apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);;
+        apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);;
 
 
         fDistTri += fDelta_Dist;
@@ -347,7 +356,7 @@ if (iOpposite >0)
     alpha = acos(cos_alpha)*180/PI * dir;
     FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
     LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-    apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);;
+    apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);;
 
 
     fDist_a -= fDelta_Dist;
@@ -392,7 +401,7 @@ if (iOpposite >0)
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
         LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-        apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);;
+        apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);;
 
 
         fDistTri -= fDelta_Dist;
@@ -424,7 +433,7 @@ if (iOpposite >0)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
       LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-      apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);;
+      apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);;
 
       fDist_b += fDelta_Dist;
     }
@@ -455,7 +464,7 @@ if (iOpposite >0)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
       LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-      apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);;
+      apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);;
       fDistTri -= fDelta_Dist;
     }
   }
@@ -476,7 +485,7 @@ if (iOpposite >0)
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
         LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-        apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);;
+        apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);;
 
         fDist_a += fDelta_Dist;
         fDist_b -= fDelta_Dist;
@@ -519,7 +528,7 @@ if (iOpposite >0)
             alpha = acos(cos_alpha)*180/PI * dir;
             FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
             LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-            apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);
+            apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);
 
             fDist_a -= fDelta_Dist;
             fDist_b += fDelta_Dist;
@@ -539,7 +548,7 @@ if (iOpposite >0)
               alpha = acos(cos_alpha)*180/PI * dir;
               FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
               LKASSERT(iPolyPtr < MAX_FAI_SECTOR_PTS);
-              apSectorPolygon[iPolyPtr++] = _Proj.ToRasterPoint(lon_d, lat_d);
+              apSectorPolygon[iPolyPtr++] = ToScreen(lon_d, lat_d);
           fDist_a += fDelta_Dist;
           fDist_b -= fDelta_Dist;
         }
@@ -644,7 +653,7 @@ if (iOpposite >0)
       cos_alpha = ( fDist_b*fDist_b + fDist_c*fDist_c - fDist_a*fDist_a )/(2.0*fDist_c*fDist_b);
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
-      line[0] = _Proj.ToRasterPoint(lon_d, lat_d);
+      line[0] = ToScreen(lon_d, lat_d);
 
       if((j> 0) && !bLast)
       {
