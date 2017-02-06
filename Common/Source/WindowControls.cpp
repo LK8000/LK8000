@@ -27,6 +27,7 @@
 #include "Event/Event.h"
 #include "Asset.hpp"
 #include "ScreenGeometry.h"
+#include "Util/Clamp.hpp"
 
 #ifndef USE_GDI
 #include "Screen/SubCanvas.hpp"
@@ -2918,16 +2919,27 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool sel
 
 bool WndListFrame::OnMouseMove(const POINT& Pos) {
 
-  if (mMouseDown && mCaptureScrollButton) {
+  if (mMouseDown) {
     SetCapture();
 
-    const int iScrollBarTop = max(1, (int)Pos.y - mMouseScrollBarYOffset);
-    const int iScrollIndex = GetScrollIndexFromScrollBarTop(iScrollBarTop);
+    if(mCaptureScrollButton) {
+      const int iScrollBarTop = max(1, (int)Pos.y - mMouseScrollBarYOffset);
+      const int iScrollIndex = GetScrollIndexFromScrollBarTop(iScrollBarTop);
 
-    if(iScrollIndex !=mListInfo.ScrollIndex) {
+      if(iScrollIndex !=mListInfo.ScrollIndex) {
         const int iScrollAmount = iScrollIndex - mListInfo.ScrollIndex;
         mListInfo.ScrollIndex = mListInfo.ScrollIndex + iScrollAmount;
         Redraw();
+      }
+    } else {
+      const int ScrollOffset =  Pos.y - mScrollStart.y;
+      const int ScrollStep = GetHeight() / mListInfo.ItemInPageCount;
+      const int newIndex = Clamp(mListInfo.ScrollIndex - (ScrollOffset / ScrollStep), 0, mListInfo.ItemCount- mListInfo.ItemInPageCount) ;
+      if(newIndex != mListInfo.ScrollIndex) {
+        mListInfo.ScrollIndex = newIndex;
+        mScrollStart = Pos;
+      }
+      Redraw();
     }
   }
   return false;
@@ -2952,26 +2964,28 @@ bool WndListFrame::OnLButtonDown(const POINT& Pos) {
         mListInfo.ScrollIndex = min ( mListInfo.ItemCount- mListInfo.ItemInPageCount, mListInfo.ScrollIndex +mListInfo.ItemInPageCount);
     }
     Redraw();
-    
-  }     
+  } else {
+      mScrollStart = Pos;
+  }
   return true;
 }
 
 bool WndListFrame::OnLButtonUp(const POINT& Pos) {
-    ReleaseCapture();
-    
-    if(mMouseDown && !mCaptureScrollButton) {
-        
-        if (!mClients.empty()) {
-          RECT Rc = {};
-          SelectItemFromScreen(Pos.x, Pos.y, &Rc, true);
-          mClients.front()->SetFocus();
-        }        
+  ReleaseCapture();
 
-        mMouseDown=false;
+  if(mMouseDown) {
+    if(!mCaptureScrollButton) {
+
+      if (!mClients.empty()) {
+        RECT Rc = {};
+        SelectItemFromScreen(Pos.x, Pos.y, &Rc, true);
+        mClients.front()->SetFocus();
+      }
     }
-    mCaptureScrollButton = false;
-    return true;
+    mMouseDown=false;
+  }
+  mCaptureScrollButton = false;
+  return true;
 }
 
 inline int WndListFrame::GetScrollBarHeight (void)

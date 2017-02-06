@@ -720,6 +720,7 @@ protected:
 
     virtual void Paint(LKSurface& Surface);
 
+    virtual bool OnLButtonDownNotify(Window* pWnd, const POINT& Pos) { return OnLButtonDown(Pos); }
     virtual bool OnLButtonDown(const POINT& Pos);
     virtual bool OnLButtonUp(const POINT& Pos);
 
@@ -734,9 +735,10 @@ private:
 
     RECT rcScrollBarButton;
     RECT rcScrollBar;
+    POINT mScrollStart;
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
     bool mMouseDown;
-		bool mCaptureScrollButton;
+    bool mCaptureScrollButton;
 
 };
 
