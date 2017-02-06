@@ -2540,6 +2540,7 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
   SetForeColor(RGB_LISTFG);
   SetBackColor(RGB_LISTBG);
   mMouseDown = false;
+  mCaptureScrollButton = false;
   ScrollbarWidth=-1;
 
   rcScrollBarButton.top=0; // make sure this rect is initialized so we don't "loose" random lbuttondown events if scrollbar not drawn
@@ -2824,19 +2825,14 @@ int WndListFrame::PrepareItemDraw(void){
   return(1);
 }
 
-bool WndListFrame::OnLButtonUp(const POINT& Pos) {
-    mMouseDown=false;
-    return true;
-}
 
-static bool isselect = false;
 
-bool WndFrame::OnLButtonUp(const POINT& Pos) {
+bool WndFrame::OnLButtonDown(const POINT& Pos) {
   return false;
 }
 
 // JMW needed to support mouse/touchscreen
-bool WndFrame::OnLButtonDown(const POINT& Pos) {
+bool WndFrame::OnLButtonUp(const POINT& Pos) {
 
   if (mIsListItem && GetParent()!=NULL) {
  
@@ -2847,10 +2843,9 @@ bool WndFrame::OnLButtonDown(const POINT& Pos) {
     WndListFrame* wlf = ((WndListFrame*)GetParent());
     if(wlf) {
         RECT Rc = {};
-        wlf->SelectItemFromScreen(Pos.x, Pos.y, &Rc);
+        wlf->SelectItemFromScreen(Pos.x, Pos.y, &Rc, false);
     }
   }
-  isselect = false;
 
   return true;
 }
@@ -2897,7 +2892,7 @@ void WndListFrame::SetItemIndex(int iValue){
   RecalculateIndices(false);
 }
 
-void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect) {
+void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool select) {
   (void)xPos;
   WindowControl * pChild = NULL;
   if(!mClients.empty()) {
@@ -2907,7 +2902,7 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect) {
     int index = yPos / pChild->GetHeight(); // yPos is offset within ListEntry item!
 
     if ((index>=0)&&(index<mListInfo.BottomIndex)) {
-      if (!isselect) {
+      if (!select) {
         if (mOnListEnterCallback) {
           mOnListEnterCallback(this, &mListInfo);
         }
@@ -2923,7 +2918,8 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect) {
 
 bool WndListFrame::OnMouseMove(const POINT& Pos) {
 
-  if (mMouseDown) {
+  if (mMouseDown && mCaptureScrollButton) {
+    SetCapture();
 
     const int iScrollBarTop = max(1, (int)Pos.y - mMouseScrollBarYOffset);
     const int iScrollIndex = GetScrollIndexFromScrollBarTop(iScrollBarTop);
@@ -2938,40 +2934,44 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
 }
 
 bool WndListFrame::OnLButtonDown(const POINT& Pos) {
-
-  mMouseDown=false;
-    
+  mMouseDown=true;
   if (PtInRect(&rcScrollBarButton, Pos))  // see if click is on scrollbar handle
   {
     mMouseScrollBarYOffset = max(0, (int)Pos.y - (int)rcScrollBarButton.top);  // start mouse drag
-    mMouseDown=true;
+    mCaptureScrollButton=true;
 
-  }
-  else if (PtInRect(&rcScrollBar, Pos)) // clicked in scroll bar up/down/pgup/pgdn
-  {
-    if (Pos.y - rcScrollBar.top < (ScrollbarWidth)) // up arrow
+  } else if (PtInRect(&rcScrollBar, Pos)) { // clicked in scroll bar up/down/pgup/pgdn
+
+    if (Pos.y - rcScrollBar.top < (ScrollbarWidth)) { // up arrow
       mListInfo.ScrollIndex = max(0, mListInfo.ScrollIndex- 1);
-      
-    else if (rcScrollBar.bottom -Pos.y < (ScrollbarWidth)  ) //down arrow
+    } else if (rcScrollBar.bottom -Pos.y < (ScrollbarWidth)  ) { //down arrow
       mListInfo.ScrollIndex = max(0,min(mListInfo.ItemCount- mListInfo.ItemInPageCount, mListInfo.ScrollIndex+ 1));
-
-    else if (Pos.y < rcScrollBarButton.top) // page up
+    } else if (Pos.y < rcScrollBarButton.top) { // page up
       mListInfo.ScrollIndex = max(0, mListInfo.ScrollIndex- mListInfo.ItemInPageCount);
-
-    else // page down
-      if (mListInfo.ItemCount > mListInfo.ScrollIndex+ mListInfo.ItemInPageCount)
-          mListInfo.ScrollIndex = min ( mListInfo.ItemCount- mListInfo.ItemInPageCount, mListInfo.ScrollIndex +mListInfo.ItemInPageCount);
-    
+    } else if (mListInfo.ItemCount > mListInfo.ScrollIndex+ mListInfo.ItemInPageCount) {  // page down
+        mListInfo.ScrollIndex = min ( mListInfo.ItemCount- mListInfo.ItemInPageCount, mListInfo.ScrollIndex +mListInfo.ItemInPageCount);
+    }
     Redraw();
     
-  } 
-  else if (!mClients.empty())
-  {
-    isselect = true;
-    ((WndFrame*)mClients.front())->OnLButtonDown(Pos);
-  }
-
+  }     
   return true;
+}
+
+bool WndListFrame::OnLButtonUp(const POINT& Pos) {
+    ReleaseCapture();
+    
+    if(mMouseDown && !mCaptureScrollButton) {
+        
+        if (!mClients.empty()) {
+          RECT Rc = {};
+          SelectItemFromScreen(Pos.x, Pos.y, &Rc, true);
+          mClients.front()->SetFocus();
+        }        
+
+        mMouseDown=false;
+    }
+    mCaptureScrollButton = false;
+    return true;
 }
 
 inline int WndListFrame::GetScrollBarHeight (void)

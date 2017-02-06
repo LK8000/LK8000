@@ -702,7 +702,7 @@ class WndListFrame:public WndFrame{
     int GetItemIndex(void){return(mListInfo.ItemIndex);}
     void SetItemIndexPos(int iValue);
     void SetItemIndex(int iValue);
-    void SelectItemFromScreen(int xPos, int yPos, RECT *rect);
+    void SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool select);
 
     void CalcChildRect(int& x, int& y, int& cx, int& cy) const;
 
@@ -736,6 +736,7 @@ private:
     RECT rcScrollBar;
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
     bool mMouseDown;
+		bool mCaptureScrollButton;
 
 };
 
