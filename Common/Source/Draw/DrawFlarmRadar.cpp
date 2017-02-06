@@ -25,7 +25,6 @@
 
 extern POINT startScreen;
 
-
 /*
 #undef LKASSERT
 #define LKASSERT(arg)
@@ -131,7 +130,7 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     }
 
 #ifdef NO_DASH_LINES
-    Surface.DrawLine(PEN_SOLID,ScreenThinSize, line[0], line[1], color, rc);
+    Surface.DrawLine(PEN_SOLID,1, line[0], line[1], color, rc);
 #else
     Surface.DrawDashLine(ScreenThinSize, line[0], line[1], color, rc);
 #endif
@@ -185,7 +184,7 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     }
 
 #ifdef NO_DASH_LINES
-    Surface.DrawLine(PEN_SOLID,ScreenThinSize, line[0], line[1], color, rc);
+    Surface.DrawLine(PEN_SOLID,1, line[0], line[1], color, rc);
 #else
     Surface.DrawDashLine(ScreenThinSize, line[0], line[1], color, rc);
 #endif
@@ -245,7 +244,7 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     // If sideview is at minimal size, print units but not the dashed lines to avoid cluttering.
     if (Current_Multimap_SizeY<SIZE3) {
 #ifdef NO_DASH_LINES
-        Surface.DrawLine(PEN_SOLID,ScreenThinSize, line[0], line[1], color, rc);
+        Surface.DrawLine(PEN_SOLID,1, line[0], line[1], color, rc);
 #else
         Surface.DrawDashLine(ScreenThinSize, line[0], line[1], color, rc);
 #endif
@@ -295,7 +294,7 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 
     if (Current_Multimap_SizeY<SIZE3) {
 #ifdef NO_DASH_LINES
-        Surface.DrawLine(PEN_SOLID,ScreenThinSize, (POINT) line[0], (POINT) line[1], color, rc);
+        Surface.DrawLine(PEN_SOLID,1, (POINT) line[0], (POINT) line[1], color, rc);
 #else
         Surface.DrawDashLine(ScreenThinSize, (POINT) line[0], (POINT) line[1], color, rc);
 #endif
