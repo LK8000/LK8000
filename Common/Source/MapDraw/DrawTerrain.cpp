@@ -535,7 +535,7 @@ public:
 
 #else
         const int tc = TerrainContrast;
-        StartupStore(_T("CONTRAST=%d  BRIGHT=%d  scale=%f \n"),TerrainContrast,TerrainBrightness, MapWindow::zoom.RealScale());
+        // StartupStore(_T("CONTRAST=%d  BRIGHT=%d  scale=%f \n"),TerrainContrast,TerrainBrightness, MapWindow::zoom.RealScale());
 #endif
 
         const BGRColor* oColorBuf = colorBuf + 64 * 256;
