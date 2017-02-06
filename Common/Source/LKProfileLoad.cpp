@@ -290,9 +290,12 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryBarOpacity,&BarOpacity);
   PREAD(sname,svalue,szRegistryBestWarning,&BestWarning);
   PREAD(sname,svalue,szRegistryBgMapColor,&BgMapColor_Config);
-  PREAD(sname,svalue,szRegistryBit1Index,&dwBit1Index);
-  PREAD(sname,svalue,szRegistryBit2Index,&dwBit2Index);
-
+  PREAD(sname,svalue,szRegistryBit1Index,&dwBitIndex[0]);
+  PREAD(sname,svalue,szRegistryBit2Index,&dwBitIndex[1]);
+  PREAD(sname,svalue,szRegistryBit3Index,&dwBitIndex[2]);
+  PREAD(sname,svalue,szRegistryBit4Index,&dwBitIndex[3]);
+  PREAD(sname,svalue,szRegistryBit5Index,&dwBitIndex[4]);
+  PREAD(sname,svalue,szRegistryBit6Index,&dwBitIndex[5]);
   // We save multiplied by 100, so we adjust it back after loading
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryBugs,&BUGS_Config);
@@ -362,8 +365,12 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   PREAD(sname,svalue,szRegistryDebounceTimeout,&debounceTimeout);
   PREAD(sname,svalue,szRegistryDeclutterMode,&DeclutterMode);
-  PREAD(sname,svalue,szRegistryDeviceA,&*dwDeviceName1, array_size(dwDeviceName1));
-  PREAD(sname,svalue,szRegistryDeviceB,&*dwDeviceName2, array_size(dwDeviceName2));
+  PREAD(sname,svalue,szRegistryDeviceA,&dwDeviceName[0][0], array_size(dwDeviceName[0]));
+  PREAD(sname,svalue,szRegistryDeviceB,&dwDeviceName[1][0], array_size(dwDeviceName[1]));
+  PREAD(sname,svalue,szRegistryDeviceC,&dwDeviceName[2][0], array_size(dwDeviceName[2]));
+  PREAD(sname,svalue,szRegistryDeviceD,&dwDeviceName[3][0], array_size(dwDeviceName[3]));
+  PREAD(sname,svalue,szRegistryDeviceE,&dwDeviceName[4][0], array_size(dwDeviceName[4]));
+  PREAD(sname,svalue,szRegistryDeviceF,&dwDeviceName[5][0], array_size(dwDeviceName[5]));
   PREAD(sname,svalue,szRegistryDisableAutoLogger,&DisableAutoLogger);
   PREAD(sname,svalue,szRegistryLiveTrackerInterval,&LiveTrackerInterval);
   PREAD(sname,svalue,szRegistryLiveTrackerRadar_config,&LiveTrackerRadar_config);
@@ -515,30 +522,42 @@ void LKParseProfileString(const char *sname, const char *svalue) {
             RefreshComPortList();
         }
         if(dwIdxPort < COMMPort.size()) {
-          _tcscpy(szPort1, COMMPort[dwIdxPort].GetName());
+          _tcscpy(szPort[0], COMMPort[dwIdxPort].GetName());
         }
         return;
     }
-
+  
   PREAD(sname,svalue,szRegistryPort2Index,&dwIdxPort);
     if(matchedstring) {
         if(COMMPort.size() == 0) {
             RefreshComPortList();
         }
         if(dwIdxPort < COMMPort.size()) {
-          _tcscpy(szPort2, COMMPort[dwIdxPort].GetName());
+          _tcscpy(szPort[1], COMMPort[dwIdxPort].GetName());
         }
         return;
     }
   /***************************************************/
-  PREAD(sname,svalue,szRegistryPort1Name,szPort1, array_size(szPort1));
-  PREAD(sname,svalue,szRegistryPort2Name,szPort2, array_size(szPort2));
+  PREAD(sname,svalue,szRegistryPort1Name ,szPort[0]     , array_size(szPort[0])     );
+  PREAD(sname,svalue,szRegistryPort2Name ,szPort[1]     , array_size(szPort[1])     );
+  PREAD(sname,svalue,szRegistryPort3Name ,szPort[2]     , array_size(szPort[2])     );
+  PREAD(sname,svalue,szRegistryPort4Name ,szPort[3]     , array_size(szPort[3])     );
+  PREAD(sname,svalue,szRegistryPort5Name ,szPort[4]     , array_size(szPort[4])     );
+  PREAD(sname,svalue,szRegistryPort6Name ,szPort[5]     , array_size(szPort[5])     );
 
-  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress1, array_size(szIpAddress1));
-  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress2, array_size(szIpAddress2));
+  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress[0], array_size(szIpAddress[0]));
+  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress[1], array_size(szIpAddress[1]));
+  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress[2], array_size(szIpAddress[2]));
+  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress[3], array_size(szIpAddress[3]));
+  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress[4], array_size(szIpAddress[4]));
+  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress[5], array_size(szIpAddress[5]));
 
-  PREAD(sname,svalue,szRegistryIpPort1,&dwIpPort1);
-  PREAD(sname,svalue,szRegistryIpPort2,&dwIpPort2);
+  PREAD(sname,svalue,szRegistryIpPort1,&dwIpPort[0]);
+  PREAD(sname,svalue,szRegistryIpPort2,&dwIpPort[1]);
+  PREAD(sname,svalue,szRegistryIpPort3,&dwIpPort[2]);
+  PREAD(sname,svalue,szRegistryIpPort4,&dwIpPort[3]);
+  PREAD(sname,svalue,szRegistryIpPort5,&dwIpPort[4]);
+  PREAD(sname,svalue,szRegistryIpPort6,&dwIpPort[5]);
 
   PREAD(sname,svalue,szRegistryPressureHg,&PressureHg);
   PREAD(sname,svalue,szRegistrySafetyAltitudeArrival,&SAFETYALTITUDEARRIVAL);
@@ -578,8 +597,12 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistrySnailTrail,&TrailActive_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistrySnailWidthScale,&MapWindow::SnailWidthScale);
-  PREAD(sname,svalue,szRegistrySpeed1Index,&dwSpeedIndex1);
-  PREAD(sname,svalue,szRegistrySpeed2Index,&dwSpeedIndex2);
+  PREAD(sname,svalue,szRegistrySpeed1Index,&dwSpeedIndex[0]);
+  PREAD(sname,svalue,szRegistrySpeed2Index,&dwSpeedIndex[1]);
+  PREAD(sname,svalue,szRegistrySpeed3Index,&dwSpeedIndex[2]);
+  PREAD(sname,svalue,szRegistrySpeed4Index,&dwSpeedIndex[3]);
+  PREAD(sname,svalue,szRegistrySpeed5Index,&dwSpeedIndex[4]);
+  PREAD(sname,svalue,szRegistrySpeed6Index,&dwSpeedIndex[5]);
   PREAD(sname,svalue,szRegistrySpeedUnitsValue,&SpeedUnit_Config);
   PREAD(sname,svalue,szRegistryStartHeightRef,&StartHeightRef);
   PREAD(sname,svalue,szRegistryStartLine,&StartLine);
@@ -611,8 +634,13 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   PREAD(sname,svalue,szRegistryUseGeoidSeparation,&UseGeoidSeparation);
-  PREAD(sname,svalue,szRegistryUseExtSound1,&UseExtSound1);
-  PREAD(sname,svalue,szRegistryUseExtSound2,&UseExtSound2);
+  PREAD(sname,svalue,szRegistryUseExtSound1,&UseExtSound[0]);
+  PREAD(sname,svalue,szRegistryUseExtSound2,&UseExtSound[1]);
+  PREAD(sname,svalue,szRegistryUseExtSound3,&UseExtSound[2]);
+  PREAD(sname,svalue,szRegistryUseExtSound4,&UseExtSound[3]);
+  PREAD(sname,svalue,szRegistryUseExtSound5,&UseExtSound[4]);
+  PREAD(sname,svalue,szRegistryUseExtSound6,&UseExtSound[5]);
+
   PREAD(sname,svalue,szRegistryUseUngestures,&UseUngestures);
   PREAD(sname,svalue,szRegistryUseTotalEnergy,&UseTotalEnergy_Config);
   if (matchedstring) return;
@@ -830,31 +858,27 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
 void ReadDeviceSettings(const int devIdx, TCHAR *Name){
   Name[0] = '\0';
-  if (devIdx == 0) _tcscpy(Name,dwDeviceName1);
-  if (devIdx == 1) _tcscpy(Name,dwDeviceName2);
+  if (devIdx >=  0)
+    if (devIdx <  NUMDEV)
+      _tcscpy(Name,dwDeviceName[devIdx]);
+
   if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
 }
 
-void ReadPort1Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
-    if (szPort) {
-        _tcscpy(szPort, szPort1);
-    }
-    if (SpeedIndex) {
-        *SpeedIndex = dwSpeedIndex1;
-    }
-    if (Bit1Index) {
-        *Bit1Index = static_cast<BitIndex_t>(dwBit1Index);
-    }
-}
 
-void ReadPort2Settings(LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
-    if (szPort) {
-        _tcscpy(szPort, szPort2);
+
+
+void ReadPortSettings( int devIdx,LPTSTR szPort_n, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
+  if (devIdx < 0)  devIdx =0;
+  if (devIdx >= NUMDEV) devIdx =NUMDEV-1;
+
+    if (szPort_n) {
+        _tcscpy(szPort_n, &szPort[devIdx][0]);
     }
     if (SpeedIndex) {
-        *SpeedIndex = dwSpeedIndex2;
+        *SpeedIndex = dwSpeedIndex[devIdx];
     }
     if (Bit1Index) {
-        *Bit1Index = static_cast<BitIndex_t>(dwBit2Index);
+        *Bit1Index = static_cast<BitIndex_t>(dwBitIndex[devIdx]);
     }
 }

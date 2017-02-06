@@ -25,14 +25,16 @@ double trackbearingminspeed=0; // minimal speed to use gps bearing
 // This is the hearth of LK. Questions? Ask Paolo..
 // THIS IS RUNNING WITH LockComm  from ConnectionProcessTimer .
 //
+
 static
 bool  UpdateMonitor(void)
 {
-  short active=-1; // active port number for gps
-  static short lastactive=0;
+
+  static int lastactive=0;
   static bool  lastvalidBaro=false;
   static bool wasSilent[array_size(DeviceList)] = { false };
 
+  int active = -1;
   // find first valid GPS
   for(const auto& dev : DeviceList) {
     if(dev.nmeaParser.gpsValid) {

@@ -441,8 +441,9 @@ void LKProfileSave(const TCHAR *szFile)
 
 
 void WriteDeviceSettings(const int devIdx, const TCHAR *Name){
-  if (devIdx == 0) _tcscpy(dwDeviceName1,Name);
-  if (devIdx == 1) _tcscpy(dwDeviceName2,Name);
+  if (devIdx >= 0)
+    if (devIdx < NUMDEV)
+      _tcscpy(dwDeviceName[devIdx],Name);
 }
 
 //
@@ -554,26 +555,54 @@ void LKDeviceSave(const TCHAR *szFile)
   fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
   fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
 
-  rprintf(szRegistryDeviceA,dwDeviceName1);
-  rprintf(szRegistryDeviceB,dwDeviceName2);
+  rprintf(szRegistryDeviceA,dwDeviceName[0]);
+  rprintf(szRegistryDeviceB,dwDeviceName[1]);
+  rprintf(szRegistryDeviceC,dwDeviceName[2]);
+  rprintf(szRegistryDeviceD,dwDeviceName[3]);
+  rprintf(szRegistryDeviceE,dwDeviceName[4]);
+  rprintf(szRegistryDeviceF,dwDeviceName[5]);
 
-  rprintf(szRegistryPort1Name,szPort1);
-  rprintf(szRegistryPort2Name,szPort2);
+  rprintf(szRegistryPort1Name,szPort[0]);
+  rprintf(szRegistryPort2Name,szPort[1]);
+  rprintf(szRegistryPort3Name,szPort[2]);
+  rprintf(szRegistryPort4Name,szPort[3]);
+  rprintf(szRegistryPort5Name,szPort[4]);
+  rprintf(szRegistryPort6Name,szPort[5]);
 
-  rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
-  rprintf(szRegistrySpeed2Index,dwSpeedIndex2);
+  rprintf(szRegistrySpeed1Index,dwSpeedIndex[0]);
+  rprintf(szRegistrySpeed2Index,dwSpeedIndex[1]);
+  rprintf(szRegistrySpeed3Index,dwSpeedIndex[2]);
+  rprintf(szRegistrySpeed4Index,dwSpeedIndex[3]);
+  rprintf(szRegistrySpeed5Index,dwSpeedIndex[4]);
+  rprintf(szRegistrySpeed6Index,dwSpeedIndex[5]);
 
-  rprintf(szRegistryBit1Index,dwBit1Index);
-  rprintf(szRegistryBit2Index,dwBit2Index);
+  rprintf(szRegistryBit1Index,dwBitIndex[0]);
+  rprintf(szRegistryBit2Index,dwBitIndex[1]);
+  rprintf(szRegistryBit3Index,dwBitIndex[2]);
+  rprintf(szRegistryBit4Index,dwBitIndex[3]);
+  rprintf(szRegistryBit5Index,dwBitIndex[4]);
+  rprintf(szRegistryBit6Index,dwBitIndex[5]);
 
-  rprintf(szRegistryIpAddress1,szIpAddress1);
-  rprintf(szRegistryIpAddress2,szIpAddress2);
+  rprintf(szRegistryIpAddress1,szIpAddress[0]);
+  rprintf(szRegistryIpAddress2,szIpAddress[1]);
+  rprintf(szRegistryIpAddress3,szIpAddress[2]);
+  rprintf(szRegistryIpAddress4,szIpAddress[3]);
+  rprintf(szRegistryIpAddress5,szIpAddress[4]);
+  rprintf(szRegistryIpAddress6,szIpAddress[5]);
 
-  rprintf(szRegistryIpPort1,dwIpPort1);
-  rprintf(szRegistryIpPort2,dwIpPort2);
+  rprintf(szRegistryIpPort1,dwIpPort[0]);
+  rprintf(szRegistryIpPort2,dwIpPort[1]);
+  rprintf(szRegistryIpPort3,dwIpPort[2]);
+  rprintf(szRegistryIpPort4,dwIpPort[3]);
+  rprintf(szRegistryIpPort5,dwIpPort[4]);
+  rprintf(szRegistryIpPort6,dwIpPort[5]);
 
-  rprintf(szRegistryUseExtSound1,UseExtSound1);
-  rprintf(szRegistryUseExtSound2,UseExtSound2);
+  rprintf(szRegistryUseExtSound1,UseExtSound[0]);
+  rprintf(szRegistryUseExtSound2,UseExtSound[1]);
+  rprintf(szRegistryUseExtSound3,UseExtSound[2]);
+  rprintf(szRegistryUseExtSound4,UseExtSound[3]);
+  rprintf(szRegistryUseExtSound5,UseExtSound[4]);
+  rprintf(szRegistryUseExtSound6,UseExtSound[5]);
 
   rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
   rprintf(szRegistryPollingMode,PollingMode);
