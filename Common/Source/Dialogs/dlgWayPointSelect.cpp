@@ -732,7 +732,10 @@ static void OnWpListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListI
 }
 
 static void OnWPSSelectClicked(WndButton* pWnd) {
-    OnWaypointListEnter(NULL, NULL);
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if(pForm) {
+    OnWaypointListEnter(pForm->FindByName(TEXT("frmWayPointList")), NULL);
+  }
 }
 
 static void OnWPSCloseClicked(WndButton* pWnd) {
