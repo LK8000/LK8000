@@ -716,8 +716,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     } else {
         if (DrawListIndex == 0) {
             // LKTOKEN  _@M466_ = "No Match!"
-            _stprintf(sTmp, TEXT("%s"), MsgToken(466));
-            Surface.DrawText(IBLSCALE(2), TextPos, sTmp);
+            Surface.DrawText(IBLSCALE(2), TextPos, MsgToken(466));
         }
     }
 }
@@ -733,7 +732,10 @@ static void OnWpListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListI
 }
 
 static void OnWPSSelectClicked(WndButton* pWnd) {
-    OnWaypointListEnter(NULL, NULL);
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if(pForm) {
+    OnWaypointListEnter(pForm->FindByName(TEXT("frmWayPointList")), NULL);
+  }
 }
 
 static void OnWPSCloseClicked(WndButton* pWnd) {
