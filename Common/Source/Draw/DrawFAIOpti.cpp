@@ -170,10 +170,14 @@ int numlegs=0;
 
 
 
-int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor)
+int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& InFfillcolor)
 {
 double fDist_a, fDist_b, fDist_c, fAngle;
 int i;
+LKColor fillcolor = InFfillcolor;
+#ifdef KOBO
+  fillcolor = RGB_SBLACK;
+#endif
 
 int iPolyPtr=0;
 double lat_d,lon_d;
@@ -563,14 +567,14 @@ if (iOpposite >0)
   float fZoom = MapWindow::zoom.RealScale() ;
 
   double         fTic = 100;
-  if(fZoom > 20) fTic = 100; else
-  if(fZoom > 5) fTic = 50;  else
-  if(fZoom > 3) fTic = 25;  else fTic = 25;
+  if(fZoom > 50) fTic = 100; else
+  if(fZoom > 20) fTic = 50;  else
+  if(fZoom > 10) fTic = 25;  else fTic = 25;
  /* if(fZoom > 3)  fTic = 10;  else fTic = 10;  // FAI grid below 10km need to much CPU power in moving map and PAN mode!!!
   if(fZoom > 1)  fTic = 5;   else   // on slow devices like MIO
   if(fZoom > 0.5)fTic = 2;   else   // the user should use Analysis page for this
   if(fZoom > 0.2)fTic = 1;*/
-
+  bool bLast = false;
   if( DISTANCEMODIFY > 0.0)
     fTic =  fTic/ DISTANCEMODIFY;
 
@@ -642,7 +646,7 @@ if (iOpposite >0)
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
       line[0] = _Proj.ToRasterPoint(lon_d, lat_d);
 
-      if(j> 0)
+      if((j> 0) && !bLast)
       {
 #ifdef NO_DASH_LINE
         Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0] , line[1] , RGB_BLACK, rc);
@@ -692,12 +696,16 @@ if (iOpposite >0)
     if(iCnt == 0)
     {
       fDistTri = ((int)(fDistMin/fTic)+1.0) * fTic ;
-      if(((int)(fDistTri - fDistMin  )) < (fTic*0.75))
-        fDistTri += fTic;
+      if(((int)(fDistTri - fDistMin  )) > (fTic*0.65))
+        fDistTri -= fTic;
     }
-    else
-      fDistTri+=fTic;
 
+    fDistTri += fTic;
+    if( ((fDistTri+0.65*fTic) > fDistMax ) && !bLast)
+    {
+      fDistTri = fDistMax-0.5;
+      bLast = true;
+    }
     iCnt++;
 
   }

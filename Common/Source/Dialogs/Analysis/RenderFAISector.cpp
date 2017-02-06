@@ -457,6 +457,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
     fTic =fTic/ DISTANCEMODIFY;
 
   POINT line[2];
+  BOOL bLast = false;
   BOOL bFirstUnit = true;
   LKASSERT(fTic!=0);
   fDistTri = fDistMin ; //((int)(fDistMin/fTic)+1) * fTic ;
@@ -526,7 +527,7 @@ int iCnt = 0;
       line[0].x = ScaleX(rc, x1);
       line[0].y = ScaleY(rc, y1);
 
-      if(j>0)
+      if((j>0) && !bLast)
       {
         Surface.Polyline(line, 2);
       }
@@ -545,11 +546,17 @@ int iCnt = 0;
   if(iCnt == 0)
   {
     fDistTri = ((int)(fDistMin/fTic)+1.0) * fTic ;
-    if(((int)(fDistTri - fDistMin  )) < (fTic*0.75))
-      fDistTri += fTic;
+    if(((int)(fDistTri - fDistMin  )) > (fTic*0.65))
+      fDistTri -= fTic;
   }
-  else
-    fDistTri+=fTic;
+
+
+  fDistTri += fTic;
+  if( ((fDistTri+0.65*fTic) > fDistMax ) && !bLast)
+  {
+    fDistTri = fDistMax-0.5;
+    bLast = true;
+  }
 
   iCnt++;
 }
