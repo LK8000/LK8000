@@ -16,14 +16,30 @@
 #include "NavFunctions.h"
 
 // #define TDEBUG 1
+#define AUTOCONTRAST
 
 #include "./ColorRamps.h"
 #include "Kobo/Model.hpp"
 
+//
+// Choose the scale threshold for disabling shading. This happens at low zoom levels.
+// Values are in RealScale. Imperial and nautical distance units are using it too.
+// For CE it is also a matter of CPU, reducing calculations for low zoom.
+// For the rest of platforms, if using AUTOCONTRAST this value may be rised up to 18 or more.
+// 
+#ifdef UNDER_CE
+#define NOSHADING_REALSCALE  5.4  // After 7.5Km zoom
+#else
+#define NOSHADING_REALSCALE  14.3 // After 20Km  zoom 14.3
+#endif
 
 unsigned short minalt = TERRAIN_INVALID;
 
 static bool terrain_ready = false;
+
+#ifdef AUTOCONTRAST
+static short autobr=128;
+#endif
 
 extern bool FastZoom;
 
@@ -352,11 +368,10 @@ public:
         if (epx > min(ixs, iys) / 4) {
             do_shading = false;
         } else {
-
-#ifdef UNDER_CE
-            if (MapWindow::zoom.RealScale() > 5.4) do_shading = false;
+#ifdef AUTOCONTRAST
+            if (MapWindow::zoom.RealScale() > 18) do_shading = false;
 #else
-            if (MapWindow::zoom.RealScale() > 14.3) do_shading = false;
+            if (MapWindow::zoom.RealScale() > NOSHADING_REALSCALE) do_shading = false;
 #endif
         }
 
@@ -464,7 +479,64 @@ public:
         const unsigned int ixsright = cixs - 1 - iepx;
         const unsigned int iysbottom = ciys - iepx;
         const int hscale = max(1, (int) (pixelsize_d));
+#ifdef AUTOCONTRAST
+        //
+        // The more you zoom in (lower RealScale), the more you rise contrast and brightness.
+        // More details are visible at high zoom levels, automatically, and shading artifacts are not
+        // appearing at low zoom.
+        // Linear scaling not giving good enough results, going manual here.
+        //
+
+        // 100->255 %  (1:2.55) :
+        // 10=25.5 15=38 20=51 25=64 30=76.5 40=102 45=114 50=127.5 60=153 65=166 70=178.5 75=191 80=204 85=218 90=229
+        int tc;
+        const double ftc=MapWindow::zoom.RealScale();
+        if (ftc>10.8) { tc=51; autobr=114; }                               // 20 km and up 20 45
+           else if (ftc>7.2) { tc=64; autobr=128; }                        // 15 km   25 50
+              else if (ftc>5.4) { tc=64; autobr=128; }                     //  10 km  25 50
+                 else if (ftc>3.58) { tc=64; autobr=166; }                 // 7.5 km  25 65
+                    else if (ftc>2.55) { tc=102; autobr=179; }             // 5.0 km  40 70
+                       else if (ftc>1.43) { tc=128; autobr=179; }          // 3.5 km  50 70
+                          else if (ftc>1.1) { tc=128; autobr=191; }        // 2.0 km  50 75
+                             else if (ftc>0.72) { tc=204; autobr=191; }    // 1.5 km  80 75
+                                else if (ftc>0.54) { tc=204; autobr=204; } // 1.0 km  80 80
+                                   else { tc=218; autobr=218; }            //  < 1km  85 85
+
+        // StartupStore(_T("AUTOC scale=%f  contrast=%d  brightness=%d\n"),MapWindow::zoom.RealScale(), tc,autobr);
+
+
+/*
+        //
+        // Linear scaling approach, not good
+        //
+        #define TOP_SHD 14.3 // at this realscale, contrast is 0
+        double ftc=std::min(MapWindow::zoom.RealScale(),TOP_SHD); 
+        ftc*=255.0/TOP_SHD;
+        int tc=255-(int)ftc;
+        StartupStore(_T("SLOPE scale=%f contrast=%d\n"),MapWindow::zoom.RealScale(),tc);
+        //
+        // Now that contrast is changing dynamically, we can adjust brightness for best results.
+        // The reasonable range with the contrast automatically adjusted is 70% to 100%, in the range 5km to 0
+        // 
+        #define MINBT_THR 3.1   // The min brightness threshold for RealScale
+        #define MINBT_VAL 70.0  // Percentage of brightness at min >= RealScale
+        //
+        #define MINBT_BOT (MINBT_VAL*(255.0/100.0))  // 178.7
+        #define MINBT_UNI (255-MINBT_BOT)/MINBT_THR // 25.5
+        double fbr=std::min(MapWindow::zoom.RealScale(),MINBT_THR); // 5km
+        fbr *= MINBT_UNI;
+        fbr += MINBT_BOT;
+        fbr =  MINBT_BOT + (255.0-fbr);
+        autobrightness=(short)fbr;
+        StartupStore(_T("BRIGH scale=%f  uni=%f fbr=%f\n"),MapWindow::zoom.RealScale(), MINBT_UNI,fbr);
+*/
+
+        
+
+#else
         const int tc = TerrainContrast;
+        StartupStore(_T("CONTRAST=%d  BRIGHT=%d  scale=%f \n"),TerrainContrast,TerrainBrightness, MapWindow::zoom.RealScale());
+#endif
 
         const BGRColor* oColorBuf = colorBuf + 64 * 256;
         if (!sbuf->GetBuffer()) return;
@@ -768,7 +840,12 @@ _redo:
 
 
         // step 2: calculate sunlight vector
+
+#ifdef AUTOCONTRAST
+        const double fudgeelevation = (10.0 + 80.0 * autobr / 255.0);
+#else
         const double fudgeelevation = (10.0 + 80.0 * TerrainBrightness / 255.0);
+#endif
         const int sx = (255 * (fastcosine(fudgeelevation) * fastsine(sunazimuth)));
         const int sy = (255 * (fastcosine(fudgeelevation) * fastcosine(sunazimuth)));
         const int sz = (255 * fastsine(fudgeelevation));
