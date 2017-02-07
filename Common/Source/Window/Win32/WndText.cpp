@@ -30,3 +30,7 @@ void WndText::OnCreate() {
     Window::OnCreate();
 }
 
+void WndText::OnDestroy() {
+    _BkBrush.Release();
+    Window::OnDestroy();
+}

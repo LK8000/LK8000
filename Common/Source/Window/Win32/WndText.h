@@ -29,6 +29,8 @@ public:
 protected:
     virtual HBRUSH OnCtlColor(HDC hdc);
     virtual void OnCreate();
+		virtual void OnDestroy();
+
 
 private:
     LKColor _TextColor;
