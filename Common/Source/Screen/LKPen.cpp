@@ -16,9 +16,9 @@
 
 #ifdef USE_GDI
 
-const LKPen LK_NULL_PEN((HPEN)GetStockObject(NULL_PEN));
-const LKPen LK_BLACK_PEN((HPEN)GetStockObject(BLACK_PEN));
-const LKPen LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));
+const HPEN LK_NULL_PEN((HPEN)GetStockObject(NULL_PEN));
+const HPEN LK_BLACK_PEN((HPEN)GetStockObject(BLACK_PEN));
+const HPEN LK_WHITE_PEN((HPEN)GetStockObject(WHITE_PEN));
 
 #else
 

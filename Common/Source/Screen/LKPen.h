@@ -42,8 +42,13 @@ public:
 #endif
 };
 
+#ifdef USE_GDI
+extern const HPEN LK_NULL_PEN;
+extern const HPEN LK_BLACK_PEN;
+extern const HPEN LK_WHITE_PEN;
+#else
 extern const LKPen LK_NULL_PEN;
 extern const LKPen LK_BLACK_PEN;
 extern const LKPen LK_WHITE_PEN;
-
+#endif
 #endif	/* LKPEN_H */
