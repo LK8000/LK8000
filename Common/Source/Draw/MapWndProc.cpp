@@ -294,11 +294,7 @@ void MapWindow::_OnDragMove(const POINT& Pos) {
                     LockTaskData(); // protect from external task changes
                     WayPointList[RESWP_PANPOS].Latitude = PanLatitude;
                     WayPointList[RESWP_PANPOS].Longitude = PanLongitude;
-                    static int iCnt = 0;
-                    if (iCnt++ > 10) {
-                        RefreshTask();
-                        iCnt = 0;
-                    }
+                    CalculateTaskSectors(PanTaskEdit);
                     UnlockTaskData(); // protect from external task changes
                 }
 
@@ -449,6 +445,17 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 #ifndef ENABLE_OPENGL
             OnFastPanning = false;
 #endif
+
+            /**
+             * if TaskEdit in progrees, we need to recalculate all task
+             *   only edited taskpoint are recalculated when panning
+             */
+            if (ValidTaskPoint(PanTaskEdit)) {
+                LockTaskData(); // protect from external task changes
+                CalculateTaskSectors();
+                UnlockTaskData(); // protect from external task changes
+            }
+
 
             ignorenext = false;
             RefreshMap();

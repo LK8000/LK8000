@@ -77,7 +77,10 @@ double AdjustAATTargets(double desired);
 void RefreshTaskWaypoint(int i);
 void RefreshTask(void);
 BOOL CheckFAILeg(double leg, double total);
+
 void CalculateTaskSectors(void);
+void CalculateTaskSectors(int Idx);
+
 void CalculateAATTaskSectors(void);
 
 void guiStartLogger(bool noAsk = false);
