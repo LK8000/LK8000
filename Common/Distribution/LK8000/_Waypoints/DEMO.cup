@@ -1,5 +1,5 @@
 name,code,country,lat,lon,elev,style,rwdir,rwlen,freq,desc
-"Valbrembo",LKHOME,IT,4543.403N,00935.710E,229.0m,5,20,680.0m,"122.600",
+"Valbrembo",LILV,IT,4543.403N,00935.710E,229.0m,5,20,680.0m,"122.600",
 "Bresso",LIMB,IT,4532.483N,00912.133E,146.0m,5,180,1080.0m,"122.000",
 "Calcinate",LILC,IT,4548.550N,00846.100E,244.0m,5,100,590.0m,"128.450",
 "Gorle",OBGGORLE,IT,4542.466N,00943.400E,270.0m,3,20,200.0m,,
