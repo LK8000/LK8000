@@ -497,7 +497,7 @@ public:
                  else if (ftc>3.58) { tc=64; autobr=166; }                 // 7.5 km  25 65
                     else if (ftc>2.55) { tc=102; autobr=179; }             // 5.0 km  40 70
                        else if (ftc>1.43) { tc=128; autobr=179; }          // 3.5 km  50 70
-                          else if (ftc>1.1) { tc=128; autobr=191; }        // 2.0 km  50 75
+                          else if (ftc>1.1) { tc=179; autobr=191; }        // 2.0 km  70 75
                              else if (ftc>0.72) { tc=204; autobr=191; }    // 1.5 km  80 75
                                 else if (ftc>0.54) { tc=204; autobr=204; } // 1.0 km  80 80
                                    else { tc=218; autobr=218; }            //  < 1km  85 85
