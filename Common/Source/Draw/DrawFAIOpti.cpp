@@ -44,7 +44,6 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const Scree
     const auto oldpen = Surface.SelectObject(hpStartFinishThin);
     const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
-    const GeoToScreen<ScreenPoint> ToScreen(_Proj);
     /********************************************************************/
     unsigned int ui;
     double lat1 = 0;
@@ -145,11 +144,14 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const Scree
 
         /*********************************************************/
 
+        // TODO : check if visible for avoid to far draw outside screen.
+        // for 1000m radius cylinder, it's better to build cylinder in screen coordinate
+        // and draw this like polygon ; cf. Task sector drawing
 
         if (ISPARAGLIDER && bFAI) {
             LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2), FAI_SECTOR_COLOR);
             const auto hOldPen = Surface.SelectObject(hpSectorPen);
-            const POINT Pt1 = ToScreen(lon_CP, lat_CP);
+            const RasterPoint Pt1 = _Proj.ToRasterPoint(lon_CP, lat_CP);
             FindLatitudeLongitude(lat1, lon1, 0, fFAIDistance * 0.20, &lat2, &lon2); /* 1000m destination circle */
             int iRadius = (int) ((lat2 - lat1) * zoom.DrawScale());
             Surface.DrawCircle(Pt1.x, Pt1.y, iRadius, rc, false);
@@ -171,6 +173,12 @@ void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const Scree
 
 }
 
+// TODO : first grid line is point, no need to calculate polyline for draw one point
+// TODO : last grig line is sector outbound, no need to draw this polyline
+// TODO : geographic shape change only when optimizer generate new sector, no need to calculate this shape for each draw
+//          calculate geographic shape in cache and just convert polygon to screen coordinate in this fuction like it's made for task sector
+// TODO : check if text is visible before draw, avoid texture generation for nothing
+
 int RenderFAISector(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite, const LKColor& InFfillcolor) {
     double fDist_a, fDist_b, fDist_c, fAngle;
     int i;
@@ -182,7 +190,7 @@ int RenderFAISector(LKSurface& Surface, const RECT& rc, const ScreenProjection& 
     int iPolyPtr = 0;
     double lat_d, lon_d;
     double alpha, fDistTri, cos_alpha = 0;
-    POINT apSectorPolygon[MAX_FAI_SECTOR_PTS + 1];
+    ScreenPoint apSectorPolygon[MAX_FAI_SECTOR_PTS + 1];
     DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 
     const GeoToScreen<ScreenPoint> ToScreen(_Proj);
@@ -564,31 +572,25 @@ int RenderFAISector(LKSurface& Surface, const RECT& rc, const ScreenProjection& 
     if (DISTANCEMODIFY > 0.0)
         fTic = fTic / DISTANCEMODIFY;
 
-    POINT line[2];
     BOOL bFirstUnit = true;
     LKASSERT(fTic != 0);
     fDistTri = fDistMin;
     const auto hfOld = Surface.SelectObject(LK8PanelUnitFont);
 
     int iCnt = 0;
-    bool bTinyFont = false;
     Surface.SetBackgroundTransparent();
     const auto oldFont = Surface.SelectObject(LK8InfoSmallFont);
 
     //  if (fillcolor== RGB_WHITE ) fillcolor=RGB_SBLACK;
 
+#ifdef NO_DASH_LINE
+    LKPen GridPen(PEN_SOLID, ScreenThinSize, RGB_BLACK);
+#else
+    LKPen GridPen(PEN_DASH, NIBLSCALE(1), RGB_BLACK);
+#endif
+
     while ((fDistTri <= fDistMax)/* && (iCnt < 10)*/) {
         if (CheckFAILeg(fDist_c, fDistTri)) {
-            TCHAR text[180];
-            SIZE tsize;
-            if (bFirstUnit)
-                _stprintf(text, TEXT("%i%s"), (int) (fDistTri * DISTANCEMODIFY + 0.5), Units::GetUnitName(Units::GetUserDistanceUnit()));
-            else
-                _stprintf(text, TEXT("%i"), (int) (fDistTri * DISTANCEMODIFY + 0.5));
-            bFirstUnit = false;
-            Surface.GetTextSize(text, &tsize);
-
-            int j = 0;
 
             if (fDistTri < FAI28_45Threshold) {
                 fDist_b = fDistTri*FAI_NORMAL_PERCENTAGE;
@@ -618,56 +620,52 @@ int RenderFAISector(LKSurface& Surface, const RECT& rc, const ScreenProjection& 
             }
 
 
+            ScreenPoint* outPoly = apSectorPolygon;
+
             for (i = 0; i < FAI_SECTOR_STEPS; i++) {
                 LKASSERT(fDist_c * fDist_b != 0);
                 cos_alpha = (fDist_b * fDist_b + fDist_c * fDist_c - fDist_a * fDist_a) / (2.0 * fDist_c * fDist_b);
                 alpha = acos(cos_alpha)*180 / PI * dir;
                 FindLatitudeLongitude(lat1, lon1, AngleLimit360(fAngle + alpha), fDist_b, &lat_d, &lon_d);
-                line[0] = ToScreen(lon_d, lat_d);
 
-                if ((j > 0) && !bLast) {
-#ifdef NO_DASH_LINE
-                    Surface.DrawLine(PEN_SOLID, ScreenThinSize, line[0], line[1], RGB_BLACK, rc);
-#else
-                    Surface.DrawDashLine(NIBLSCALE(1), line[0], line[1], RGB_BLACK, rc);
-#endif
-                }
-
-
-                if (j == 0) {
-                    if (bTinyFont) Surface.DrawText(line[0].x, line[0].y, text);
-                    else
-                        MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-                    j = 1;
-
-                }
-
-                if (iCnt == 0)
-                    _stprintf(text, TEXT("%i%s"), (int) (fDistTri * DISTANCEMODIFY + 0.5), Units::GetUnitName(Units::GetUserDistanceUnit()));
-                else
-                    _stprintf(text, TEXT("%i"), (int) (fDistTri * DISTANCEMODIFY + 0.5));
-                Surface.GetTextSize(text, &tsize);
-                if (i == 0) {
-                    if (bTinyFont) Surface.DrawText(line[0].x, line[0].y, text);
-                    else
-                        MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-                }
-                if (i == FAI_SECTOR_STEPS - 1) {
-                    if (bTinyFont) Surface.DrawText(line[0].x, line[0].y, text);
-                    else
-                        MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-                }
-                if (iCnt > 1)
-                    if (i == (FAI_SECTOR_STEPS / 2)) {
-                        if (bTinyFont) Surface.DrawText(line[0].x, line[0].y, text);
-                        else
-                            MapWindow::LKWriteText(Surface, text, line[0].x, line[0].y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-                    }
-                line[1] = line[0];
+                *(outPoly++) = ToScreen(lon_d, lat_d);
 
                 fDist_a -= fDelta_Dist;
                 fDist_b += fDelta_Dist;
             }
+
+
+            const unsigned polyline_size = std::distance(apSectorPolygon,outPoly);
+            auto oldPen = Surface.SelectObject(GridPen);
+            Surface.Polyline(apSectorPolygon, polyline_size, rc);
+            Surface.SelectObject(oldPen);
+
+
+
+            TCHAR text[180];
+            SIZE tsize;
+            if (bFirstUnit || iCnt == 0) {
+                _stprintf(text, TEXT("%i%s"), (int) (fDistTri * DISTANCEMODIFY + 0.5),
+                          Units::GetUnitName(Units::GetUserDistanceUnit()));
+                bFirstUnit = false;
+            } else {
+                _stprintf(text, TEXT("%i"), (int) (fDistTri * DISTANCEMODIFY + 0.5));
+            }
+            Surface.GetTextSize(text, &tsize);
+
+            ScreenPoint& pt_start = apSectorPolygon[0];
+            MapWindow::LKWriteText(Surface, text, pt_start.x, pt_start.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+
+            ScreenPoint& pt_end = apSectorPolygon[polyline_size-1];
+            if(pt_end != pt_start) {
+                MapWindow::LKWriteText(Surface, text, pt_end.x, pt_end.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+            }
+
+            if (iCnt > 1) {
+                ScreenPoint& pt_mid = apSectorPolygon[(polyline_size-1) / 2];
+                MapWindow::LKWriteText(Surface, text, pt_mid.x, pt_mid.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+            }
+
         }
 
 
