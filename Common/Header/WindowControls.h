@@ -630,7 +630,7 @@ class WndFrame:public WindowControl{
 
       mLastDrawTextHeight = 0;
       mIsListItem = false;
-
+      mLButtonDown = false;
       SetForeColor(GetParent()->GetForeColor());
       SetBackColor(GetParent()->GetBackColor());
       mCaptionStyle = DT_EXPANDTABS
@@ -660,6 +660,7 @@ class WndFrame:public WindowControl{
 
     int mLastDrawTextHeight;
     UINT mCaptionStyle;
+    bool mLButtonDown;
 
 
 };

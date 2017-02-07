@@ -2829,25 +2829,28 @@ int WndListFrame::PrepareItemDraw(void){
 
 
 bool WndFrame::OnLButtonDown(const POINT& Pos) {
+  mLButtonDown = true;
+  if (!HasFocus()) {
+    SetFocus();
+    Redraw();
+  }
   return false;
 }
 
 // JMW needed to support mouse/touchscreen
 bool WndFrame::OnLButtonUp(const POINT& Pos) {
+  if(mLButtonDown) {
 
-  if (mIsListItem && GetParent()!=NULL) {
- 
-    if (!HasFocus()) {
-      SetFocus();  
-    }
-    Redraw();
-    WndListFrame* wlf = ((WndListFrame*)GetParent());
-    if(wlf) {
+    if (mIsListItem && GetParent() != NULL) {
+
+      WndListFrame *wlf = ((WndListFrame *) GetParent());
+      if (wlf) {
         RECT Rc = {};
         wlf->SelectItemFromScreen(Pos.x, Pos.y, &Rc, false);
+      }
     }
+    mLButtonDown = false;
   }
-
   return true;
 }
 
@@ -2931,7 +2934,7 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
         mListInfo.ScrollIndex = mListInfo.ScrollIndex + iScrollAmount;
         Redraw();
       }
-    } else {
+    } else if (mListInfo.ItemCount > mListInfo.ItemInPageCount) {
       const int ScrollOffset =  Pos.y - mScrollStart.y;
       const int ScrollStep = GetHeight() / mListInfo.ItemInPageCount;
       const int newIndex = Clamp(mListInfo.ScrollIndex - (ScrollOffset / ScrollStep), 0, mListInfo.ItemCount- mListInfo.ItemInPageCount) ;
