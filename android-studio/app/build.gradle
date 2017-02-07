@@ -87,7 +87,8 @@ android {
         copy {
             from "../../Common/Distribution/LK8000/_Maps"
             into "src/main/assets/distribution/maps"
-            include "*.*"
+            include "DEMO.LKM"
+            include "DEMO_250.DEM"
         }
         copy {
             from "../../Common/Distribution/LK8000/_Waypoints"
