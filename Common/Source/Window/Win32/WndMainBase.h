@@ -38,8 +38,8 @@ public:
                    SWP_NOACTIVATE | SWP_NOOWNERZORDER);
     }
 		
-		inline void PostQuit() {
-			PostQuitMessage(0);
+		inline void PostQuit() { 
+			
 		}
 
   /**

@@ -250,8 +250,9 @@ bool WndMain::OnClose() {
                     mbYesNo) == IdYes) {
 
         BeforeShutdown();
+        return WndMainBase::OnClose();
     }
-    return true;
+    return true; 
 }
 
 void WndMain::OnDestroy() {
