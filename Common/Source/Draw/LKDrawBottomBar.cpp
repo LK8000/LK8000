@@ -635,7 +635,7 @@ _afterautotrm:
 		cpusummary=CpuSummary();
 		_tcscpy(BufferTitle,_T("CPU"));
 
-		if (cpusummary!=INVALID_VALUE) {
+		if (cpusummary >= 0 && cpusummary <= 100) {
 		    showunit=true;
 		    _stprintf(BufferValue,_T("%d"),cpusummary);
 		    _tcscpy(BufferUnit,_T("%"));
