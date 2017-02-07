@@ -410,6 +410,11 @@ void LKProfileResetDefault(void) {
     dwIpPort    [i]   = 23;
     UseExtSound [i]   = false;
   }
+
+  #ifdef ANDROID
+  _tcscpy(dwDeviceName[0], _T("Internal"));
+#endif
+
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
   _tcscpy(LiveTrackersrv_Config,_T("www.livetrack24.com"));
   LiveTrackerport_Config = 80;

@@ -555,6 +555,10 @@ void Globals_Init(void) {
     dwIpPort    [i]   = 23;
     UseExtSound [i]   = false;
   }
+#ifdef ANDROID
+  _tcscpy(dwDeviceName[0], _T("Internal"));
+#endif
+
   // Units
   SpeedUnit_Config = 2;		// default is kmh
   TaskSpeedUnit_Config = 2;	// default is kph
