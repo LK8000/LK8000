@@ -146,7 +146,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
     nrc.bottom=rc.bottom;
 
 
-    const LKBrush& brush_bar = INVERTCOLORS?LKBrush_Black:LKBrush_Nlight;
+    const auto& brush_bar = INVERTCOLORS?LKBrush_Black:LKBrush_Nlight;
 
     if (LKSurface::AlphaBlendSupported() && MapSpaceMode == MSM_MAP && BarOpacity < 100) {
         if (BarOpacity == 0) {

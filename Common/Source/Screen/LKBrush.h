@@ -43,10 +43,6 @@ public:
         brush = Brush;
     }
 
-    static LKBrush MakeStock(int fnObject) {
-      return LKBrush((HBRUSH)GetStockObject(fnObject));
-    }
-
     operator HBRUSH() const { return brush; }
 
 protected:
@@ -61,8 +57,14 @@ protected:
 
 inline LKBrush::operator bool() const { return IsDefined(); }
 
+#ifdef USE_GDI
+extern const HBRUSH  LK_WHITE_BRUSH;
+extern const HBRUSH  LK_BLACK_BRUSH;
+extern const HBRUSH  LK_HOLLOW_BRUSH;
+#else
 extern const LKBrush  LK_WHITE_BRUSH;
 extern const LKBrush  LK_BLACK_BRUSH;
 extern const LKBrush  LK_HOLLOW_BRUSH;
+#endif
 
 #endif	/* LKBRUSH_H */

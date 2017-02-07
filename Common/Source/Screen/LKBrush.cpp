@@ -20,9 +20,9 @@
 
 #ifdef USE_GDI
 
-const LKBrush LK_WHITE_BRUSH = LKBrush::MakeStock(WHITE_BRUSH);
-const LKBrush  LK_BLACK_BRUSH = LKBrush::MakeStock(BLACK_BRUSH);
-const LKBrush  LK_HOLLOW_BRUSH = LKBrush::MakeStock(HOLLOW_BRUSH);
+const HBRUSH LK_WHITE_BRUSH((HBRUSH)GetStockObject(WHITE_BRUSH));
+const HBRUSH LK_BLACK_BRUSH((HBRUSH)GetStockObject(BLACK_BRUSH));
+const HBRUSH LK_HOLLOW_BRUSH((HBRUSH)GetStockObject(HOLLOW_BRUSH));
 
 LKBrush::LKBrush(LKBrush&& Brush) {
     brush = Brush.brush;
