@@ -290,6 +290,7 @@ void LKObjects_Delete() {
   LKBrush_Mlight.Release();
   LKBrush_Red.Release();
   LKBrush_Yellow.Release();
+  LKBrush_LightYellow.Release();
   LKBrush_Green.Release();
   LKBrush_DarkYellow2.Release();
   LKBrush_Orange.Release();
