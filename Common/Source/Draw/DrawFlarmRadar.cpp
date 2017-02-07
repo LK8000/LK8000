@@ -25,6 +25,7 @@
 
 extern POINT startScreen;
 
+#define NO_DASH_LINES
 /*
 #undef LKASSERT
 #define LKASSERT(arg)
@@ -124,7 +125,10 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 
     // We always print the dashed vertical lines in the sideview.
     // But we cannot print them in the topview, if available, when topology is also painted!
-    if ( IsMultiMapShared() && (Current_Multimap_SizeY>SIZE0) && IsMultimapTopology() ) {
+    // Correction v6.2: screen is too cluttered with vertical lines on top view even without
+    // topology. 
+    // if ( IsMultiMapShared() && (Current_Multimap_SizeY>SIZE0) && IsMultimapTopology() ) {
+    if (1) {
 	ymin = Current_Multimap_TopRect.bottom;
 	line[0].y = ymin;
     }
@@ -178,7 +182,9 @@ void MapWindow::DrawXGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     line[1].x = xmax;
     line[1].y = ymax;
 
-    if ( IsMultiMapShared() && (Current_Multimap_SizeY>SIZE0) && IsMultimapTopology() ) {
+    // Dont print vertical lines on topview in v6.2. 
+    //if ( IsMultiMapShared() && (Current_Multimap_SizeY>SIZE0) && IsMultimapTopology() ) {
+    if (1) {
 	ymin = Current_Multimap_TopRect.bottom;
 	line[0].y = ymin;
     }
@@ -242,6 +248,7 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     line[1].y = ymax;
 
     // If sideview is at minimal size, print units but not the dashed lines to avoid cluttering.
+    // These are the elevation horizontal lines in sideview.
     if (Current_Multimap_SizeY<SIZE3) {
 #ifdef NO_DASH_LINES
         Surface.DrawLine(PEN_SOLID,1, line[0], line[1], color, rc);
@@ -293,6 +300,7 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
     line[1].y = ymax;
 
     if (Current_Multimap_SizeY<SIZE3) {
+       // Who knows where is this line painted? 
 #ifdef NO_DASH_LINES
         Surface.DrawLine(PEN_SOLID,1, (POINT) line[0], (POINT) line[1], color, rc);
 #else
