@@ -2,7 +2,10 @@
 LK8000 Tactical Flight Computer - http://www.lk8000.org
 
 Original concept, design and development of LK8000 Project by Paolo Ventafridda
-Core developers: Bruno de Lacheisserie, Ulli Heynen, Paolo Ventafridda
+Core developers: Bruno de Lacheisserie
+                 Ulli Heynen, Paolo Ventafridda, Tony Tarsi
+
+Other developers:
 Tobias Bieniek
 Eric Carden
 Oren Cohen
@@ -14,7 +17,6 @@ Richard Pecl
 Mateusz Pusz
 Alberto Realis-Luc
 Kalman Rozsahegyi
-Tonino Tarsi
 Karim Trojette
 
 LK8000 Project Copyrights:
@@ -32,6 +34,7 @@ Kuba Kubrynski
 Richard Pecl
 Mateusz Pusz
 Alberto Realis-Luc
+Tony Tarsi
 Kalman Rozsahegyi
 Karim Trojette
 
