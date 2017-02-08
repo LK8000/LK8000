@@ -120,11 +120,11 @@ static void ClearText(void)
 static void OnKey(WndButton* pWnd) {
     LKASSERT(pWnd);
     if(!pWnd) return;
-
+/*
     if (first) {
         ClearText();
         first = false;
-    }
+    }*/
     PlayResource(TEXT("IDR_WAV_CLICK"));
     const TCHAR *Caption = pWnd->GetWndText();
     if (cursor < max_width - 1) {
@@ -231,7 +231,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID)
   wf = dlgLoadFromXML(CallBackTable, ResID);
   if (!wf) return;
 
-  cursor = 0;
+ // cursor = _tcslen(text);
   ClearText();
 
   if (_tcslen(text)>0) {
@@ -241,7 +241,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID)
     // this text is replaced by first key down
     // but used if "OK" is clicked first for don't reset current value.
   }
-
+  cursor = _tcslen(edittext);
   UpdateTextboxProp();
 
   WindowControl* pBtHelp = wf->FindByName(TEXT("cmdHelp"));
@@ -252,6 +252,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID)
   wf->SetKeyDownNotify(FormKeyDown);
   wf->ShowModal();
   LK_tcsncpy(text, edittext, max_width-1);
+ // cursor = _tcslen(text);
   delete wf;
   wf=NULL;
 }
@@ -259,6 +260,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID)
 int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 {
 	WaypointKeyRed = WPKeyRed;
+//	  cursor = _tcslen(text);
 	dlgTextEntryKeyboardShowModal(text, width, ScreenLandscape ? IDR_XML_TEXTENTRY_KEYBOARD_L : IDR_XML_TEXTENTRY_KEYBOARD_P);
 	return IdenticalIndex;
 }
@@ -266,6 +268,7 @@ int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 void dlgNumEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 {
 	WaypointKeyRed = WPKeyRed;
+//	  cursor = _tcslen(text);
 	dlgTextEntryKeyboardShowModal(text, width, ScreenLandscape ? IDR_XML_NUMENTRY_KEYBOARD_L : IDR_XML_NUMENTRY_KEYBOARD_P);
 }
 
