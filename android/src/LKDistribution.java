@@ -62,7 +62,7 @@ public class LKDistribution {
             copyDirectoryToExternalStorage(context,"distribution/waypoints", "LK8000/_Waypoints",force);
             copyDirectoryToExternalStorage(context,"distribution/airspaces", "LK8000/_Airspaces",force);
             copyDirectoryToExternalStorage(context,"distribution/logger", "LK8000/_Logger",force);
-            copyDirectoryToExternalStorage(context,"distribution/task", "LK8000/_Task",force);
+            copyDirectoryToExternalStorage(context,"distribution/tasks", "LK8000/_Tasks",force);
             copyDirectoryToExternalStorage(context,"distribution/polars", "LK8000/_Polars",force);
 
         }
