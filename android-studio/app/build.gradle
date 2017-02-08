@@ -14,9 +14,6 @@ task extractBoost(dependsOn: downloadBoost, type: Copy) {
     into 'Thirdparty'
 }
 preBuild.dependsOn extractBoost
-=======
-apply plugin: 'com.android.application'
->>>>>>> parent of bb2ac4a... add crashlytics plugin
 
 android {
     compileSdkVersion 21
