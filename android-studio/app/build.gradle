@@ -14,6 +14,9 @@ task extractBoost(dependsOn: downloadBoost, type: Copy) {
     into 'Thirdparty'
 }
 preBuild.dependsOn extractBoost
+=======
+apply plugin: 'com.android.application'
+>>>>>>> parent of bb2ac4a... add crashlytics plugin
 
 android {
     compileSdkVersion 21
@@ -73,7 +76,8 @@ android {
         copy {
             from "../../Common/Distribution/LK8000/_Maps"
             into "src/main/assets/distribution/maps"
-            include "*.*"
+            include "DEMO.LKM"
+            include "DEMO_250.DEM"
         }
         copy {
             from "../../Common/Distribution/LK8000/_Waypoints"

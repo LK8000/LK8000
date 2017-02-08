@@ -183,7 +183,6 @@ TaskSpeedUnits=2l
 TeamcodeRefWaypoint1=19
 TerrainBrightness1=128
 TerrainContrast1=128
-TerrainFile="%LOCAL_PATH%\\_Maps\DEMO.DEM"
 TerrainRamp=0
 ThermalBar=0
 ThermalLocator=1
