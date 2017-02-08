@@ -25,10 +25,7 @@
     </activity>
 
     <service android:name=".MyService"/>
-      <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="fc98b7c6e410fe9b228914ce5fa5c4a140204056" />
-    </application>
+  </application>
 
   <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="22"/>
   <uses-permission android:name="android.permission.BLUETOOTH"></uses-permission>
