@@ -26,8 +26,8 @@ void MapWindow::DrawGreatCircle(LKSurface& Surface, const RECT& rc, const Screen
     const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 
     ScreenPoint pt[2] = {
-        ToScreen(startLon, startLat),
-        ToScreen(targetLon, targetLat)
+        ToScreen(startLat, startLon),
+        ToScreen(targetLat, targetLon)
     };
 
     if(LKGeom::ClipLine(rc, pt[0], pt[1])) {

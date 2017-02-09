@@ -648,7 +648,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 			for (int jj=0; jj< line.numpoints; jj++) {
                 const pointObj &point = line.point[jj];
                 if(msPointInRect(&point, &screenRect)) {
-                    const POINT sc = _Proj.ToRasterPoint(point.x, point.y);
+                    const POINT sc = _Proj.ToRasterPoint(point.y, point.x);
                     if (dobitmap) {
                         // bugfix 101212 missing case for scaleCategory 0 (markers)
                         if (scaleCategory == 0 ||

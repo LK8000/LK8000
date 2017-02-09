@@ -923,7 +923,7 @@ int numlegs=0;
       if (ISPARAGLIDER && bFAI) {
           LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2), FAI_SECTOR_COLOR);
           const auto hOldPen = Surface.SelectObject(hpSectorPen);
-          const RasterPoint Pt1 = _Proj.ToRasterPoint(lon_CP, lat_CP);
+          const RasterPoint Pt1 = _Proj.ToRasterPoint(lat_CP, lon_CP);
 
           int iRadius = (int) ((fFAIDistance * 0.20) * zoom.ResScaleOverDistanceModify());
           Surface.DrawCircle(Pt1.x, Pt1.y, iRadius, rc, false);                    /* 20% destination circle */

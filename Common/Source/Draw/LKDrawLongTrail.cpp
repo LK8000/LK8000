@@ -45,7 +45,7 @@ void MapWindow::LKDrawLongTrail( LKSurface& Surface, const RECT& rc, const Scree
 
     const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 
-    (*polyline_iterator) = ToScreen(last_point->Longitude, last_point->Latitude);
+    (*polyline_iterator) = ToScreen(last_point->Latitude, last_point->Longitude);
 
     polyline_iterator = std::next(polyline_iterator);
 
@@ -53,7 +53,7 @@ void MapWindow::LKDrawLongTrail( LKSurface& Surface, const RECT& rc, const Scree
 
     while(cur_iterator != end_iterator) {
 
-        (*polyline_iterator) = ToScreen(cur_iterator->Longitude, cur_iterator->Latitude);
+        (*polyline_iterator) = ToScreen(cur_iterator->Latitude, cur_iterator->Longitude);
 
         if(ManhattanDistance(*std::prev(polyline_iterator),(*polyline_iterator)) > nearby) {
             polyline_iterator = std::next(polyline_iterator);

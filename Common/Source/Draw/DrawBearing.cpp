@@ -83,8 +83,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
         if(ValidTaskPoint(i) && ValidTaskPoint(i+1)) {
           if(i>= ActiveTaskPoint) {
             if(PointVisible(Task[i].AATTargetLon, Task[i].AATTargetLat)) {
-              const RasterPoint sct = _Proj.ToRasterPoint(Task[i].AATTargetLon,
-                                                          Task[i].AATTargetLat);
+              const RasterPoint sct = _Proj.ToRasterPoint(Task[i].AATTargetLat, Task[i].AATTargetLon);
               DrawBitmapIn(Surface, sct, hBmpTarget);
             }
           }
@@ -93,8 +92,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
     }
     if(ValidTaskPoint(ActiveTaskPoint+1) && (DoOptimizeRoute() || (ActiveTaskPoint>0)) ) {
       if(PointVisible(Task[ActiveTaskPoint].AATTargetLon, Task[ActiveTaskPoint].AATTargetLat)) {
-        const POINT sct = _Proj.ToRasterPoint(Task[ActiveTaskPoint].AATTargetLon,
-                                              Task[ActiveTaskPoint].AATTargetLat);
+        const POINT sct = _Proj.ToRasterPoint(Task[ActiveTaskPoint].AATTargetLat, Task[ActiveTaskPoint].AATTargetLon);
         DrawBitmapIn(Surface, sct, hBmpTarget);
       }
     }
