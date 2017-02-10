@@ -36,6 +36,9 @@ void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
       Bearing = &t;
     }
     geod.GenInverse(lat1, lon1, lat2, lon2, outmask, *Distance, *Bearing, t, t, t, t, t);
+    if(outmask & Geodesic::AZIMUTH) {
+        *Bearing = AngleLimit360(*Bearing);
+    }
     return;
   }
 
