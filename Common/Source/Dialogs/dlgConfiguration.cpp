@@ -1197,11 +1197,16 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     if( DeviceList[SelectedDevice].nmeaParser.IsValidBaroSource()) _tcscat(StateText,TEXT("Baro "));
     if( DeviceList[SelectedDevice].iSharedPort>=0 ) _tcscat(StateText,TEXT("Shared "));
 
-    wp = (WndProperty*)pOwner->FindByName(TEXT("prpStatus"));
-    if (wp) {
-      DataField* dfe = wp->GetDataField();
-      dfe->Set(StateText);
-      wp->RefreshDisplay();
+    if(DeviceList[idx].Disabled)
+      ShowWindowControl(wf, TEXT("prpStatus"),false);
+    else
+    {
+      wp = (WndProperty*)pOwner->FindByName(TEXT("prpStatus"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        dfe->Set(StateText);
+        wp->RefreshDisplay();
+      }
     }
 
 
