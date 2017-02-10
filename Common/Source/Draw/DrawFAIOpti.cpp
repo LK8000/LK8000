@@ -128,7 +128,7 @@ polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( do
         FAISector_polyline.push_back(ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude));
 
       i =0;
-      if((Grid_num > 0) && (Grid_num <  NumberGrids))
+      if(/*(Grid_num > 0) && */ (Grid_num <  NumberGrids))
         Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
       ScreenPoint pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
       MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
