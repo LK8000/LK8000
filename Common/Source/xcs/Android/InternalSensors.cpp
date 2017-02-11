@@ -223,7 +223,7 @@ Java_org_LK8000_InternalGPS_setLocation(JNIEnv *env, jobject obj,
                                         jboolean hasAcceleration, jdouble acceleration)
 {
   unsigned index = getDeviceIndex(env, obj);
-  LockComm();
+
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
     pdev->nmeaParser.connected = true;
@@ -268,7 +268,6 @@ Java_org_LK8000_InternalGPS_setLocation(JNIEnv *env, jobject obj,
     }
     TriggerGPSUpdate();
   }
-  UnlockComm();
 }
 
 // Implementations of the various C++ functions called by NonGPSSensors.java.
@@ -366,7 +365,6 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
 
 
   const unsigned int index = getDeviceIndex(env, obj);
-  LockComm();
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
     pdev->nmeaParser.connected = true;
@@ -389,5 +387,4 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
 
     UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToAltitude(kalman_filter.GetXAbs() * 100));
   }
-  UnlockComm();
 }
