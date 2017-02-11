@@ -1462,10 +1462,11 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
         if(dfe) {
             dfe->Clear();
             std::for_each(
-            	COMMPort.begin(),
-            	COMMPort.end(),
-            	std::bind(&DataField::addEnumText, dfe, std::bind(&COMMPortItem_t::GetLabel, _1))
-            );
+                    COMMPort.begin(), COMMPort.end(),
+                    [dfe](const COMMPortItem_t &item) {
+                        dfe->addEnumText(item.GetName(), item.GetLabel());
+                    });
+
             COMMPort_t::iterator It = std::find_if(
                 COMMPort.begin(), 
                 COMMPort.end(), 
@@ -1611,7 +1612,7 @@ static void setVariables( WndForm *pOwner) {
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1));
+    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1, nullptr));
     
     dfe->Set(dwSpeedIndex[SelectedDevice]);
     wp->SetReadOnly(false);

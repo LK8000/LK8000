@@ -146,8 +146,7 @@ class DataField{
   void SetUnits(const TCHAR *text) { _tcscpy(mUnits, text); }
   const TCHAR* GetUnits() const { return mUnits; }
 
-
-  virtual void addEnumText(const TCHAR *Text) { assert(false); }
+  virtual void addEnumText(const TCHAR *Text, const TCHAR *Label = nullptr ) { assert(false); }
   virtual void addEnumTextNoLF(const TCHAR *Text) { assert(false); }
   virtual void Sort(int startindex=0) { assert(false); }
 
@@ -237,7 +236,8 @@ class DataFieldBoolean:public DataField{
 typedef struct {
   unsigned int index;
   tstring mText;
-} DataFieldEnumEntry;
+  tstring mLabel;
+} DataFieldEnumEntry ;
 
 class DataFieldEnum: public DataField {
 
@@ -268,11 +268,13 @@ class DataFieldEnum: public DataField {
   void Dec(void) override;
   int CreateComboList(void) override;
 
-  void addEnumText(const TCHAR *Text) override;
+
   void addEnumTextNoLF(const TCHAR *Text) override;
+  void addEnumText(const TCHAR *Text, const TCHAR *Label) override ;
 
   int GetAsInteger(void) override;
   const TCHAR *GetAsString(void) override;
+  const TCHAR *GetAsDisplayString(void) override;
   bool GetAsBoolean() override;
 
   void Set(unsigned Value) override;

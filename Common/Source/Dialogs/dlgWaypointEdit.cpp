@@ -206,7 +206,7 @@ static void SetValues(WndForm* wf) {
       if (wp) {
 	  DataField* dfe = wp->GetDataField();
 	  if(dfe){
-		  std::for_each(std::begin(cYZone), std::end(cYZone), std::bind(&DataField::addEnumText, dfe, _1));
+		  std::for_each(std::begin(cYZone), std::end(cYZone), std::bind(&DataField::addEnumText, dfe, _1, nullptr));
 		  dfe->Set(YZoneToenum(utmYZone));
 	  }
 	  wp->RefreshDisplay();

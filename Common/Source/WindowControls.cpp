@@ -541,8 +541,8 @@ bool DataFieldEnum::GetAsBoolean() {
   return false;
 }
 
-void DataFieldEnum::addEnumText(const TCHAR *Text) {
-  mEntries.push_back({ (unsigned)mEntries.size(), Text });
+void DataFieldEnum::addEnumText(const TCHAR *Text, const TCHAR *Label) {
+  mEntries.push_back({ (unsigned)mEntries.size(), Text, Label ? Label : _T("") });
 }
 
 void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
@@ -556,6 +556,17 @@ void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
 const TCHAR *DataFieldEnum::GetAsString(void) {
   if (mValue<mEntries.size()) {
     return(mEntries[mValue].mText.c_str());
+  } else {
+    return NULL;
+  }
+}
+
+const TCHAR *DataFieldEnum::GetAsDisplayString(void) {
+  if (mValue<mEntries.size()) {
+    const DataFieldEnumEntry& entry = mEntries[mValue];
+    return entry.mLabel.empty()
+               ? entry.mText.c_str()
+               : entry.mLabel.c_str();
   } else {
     return NULL;
   }
@@ -613,11 +624,12 @@ void DataFieldEnum::Sort(int startindex){
 int DataFieldEnum::CreateComboList(void) {
   unsigned int i=0;
   for (i=0; i < mEntries.size(); i++){
+    const DataFieldEnumEntry& entry = mEntries[i];
     mComboList.ComboPopupItemList[i] = mComboList.CreateItem(
                                           i, 
-                                          mEntries[i].index,
-                                          mEntries[i].mText.c_str(),
-                                          mEntries[i].mText.c_str());
+                                          entry.index,
+                                          entry.mText.c_str(),
+                                          entry.mLabel.empty() ? entry.mText.c_str() : entry.mLabel.c_str() );
 //    if (mEntries[i].index == mValue) {
 //      mComboList.ComboPopupItemSavedIndex=i;
 //    }
