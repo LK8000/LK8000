@@ -24,7 +24,7 @@ $Id$
 #include "ScreenGeometry.h"
 #include "LKObjects.h"
 
-static FAI_Sector FAI_TaskSectorCache[2];
+
 extern int DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,FAI_Sector* pSector , const LKColor& InFfillcolor);
 extern bool CalcSectorCache(FAI_Sector* pSector,double lat1, double lon1, double lat2, double lon2, double fGrid, int iOpposite);
 extern LKColor taskcolor;
@@ -421,7 +421,7 @@ void MapWindow::DrawTaskSectors(LKSurface& Surface, const RECT& rc, const Screen
 int Active = ActiveTaskPoint;
 if(ValidTaskPoint(PanTaskEdit))
 Active = PanTaskEdit;
-
+static FAI_Sector FAI_TaskSectorCache[2];
 CScopeLock LockTask(LockTaskData, UnlockTaskData);
 
     /*******************************************************************************************************/
@@ -482,12 +482,11 @@ double	lon1 = WayPointList[Task[a].Index].Longitude;
 double	lat2 = WayPointList[Task[b].Index].Latitude;
 double	lon2 = WayPointList[Task[b].Index].Longitude;
 
-CalcSectorCache(&FAI_TaskSectorCache[0], lat1,  lon1,  lat2,  lon2, fTic, 0);
-DrawFAISector ( Surface, rc, _Proj, &FAI_TaskSectorCache[0], RGB_YELLOW );
+FAI_TaskSectorCache[0].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
+FAI_TaskSectorCache[0].DrawFAISector ( Surface, rc, _Proj, RGB_YELLOW );
 
-CalcSectorCache(&FAI_TaskSectorCache[1], lat1,  lon1,  lat2,  lon2, fTic, 1);
-DrawFAISector ( Surface, rc, _Proj,&FAI_TaskSectorCache[1], RGB_CYAN );
-
+FAI_TaskSectorCache[1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
+FAI_TaskSectorCache[1].DrawFAISector ( Surface, rc, _Proj, RGB_CYAN );
 
 
 /*******************************************************************************************************/

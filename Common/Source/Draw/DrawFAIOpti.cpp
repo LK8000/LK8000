@@ -19,8 +19,6 @@
 #include "Draw/ScreenProjection.h"
 #include "Math/Point2D.hpp"
 
-#define FAIGRIDLINES
-
 
 #ifdef HAVE_GLES
 typedef FloatPoint ScreenPoint;
@@ -40,10 +38,8 @@ extern BOOL CheckFAILeg(double leg, double total);
 
 
 
-int DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,FAI_Sector* pSector , const LKColor& InFfillcolor)
+int FAI_Sector::DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const LKColor& InFfillcolor)
 {
-	if(pSector == NULL)
-		return -1;
 
 int i;
 LKColor fillcolor = InFfillcolor;
@@ -74,15 +70,15 @@ polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( do
 
   iPointCnt = 0;
   FAISector_polyline.clear();
-  if(!pSector->FAIShape.empty())
+  if(!m_FAIShape.empty())
   {
-    for (std::list<GeoPoint>::iterator it = pSector->FAIShape.begin(); it != pSector->FAIShape.end(); it++)
+    for (std::list<GeoPoint>::iterator it = m_FAIShape.begin(); it != m_FAIShape.end(); it++)
     {
       FAISector_polyline.push_back(ToScreen(  it->longitude, it->latitude));
       iPointCnt++;
     }
     FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
-//    StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  pSector->FAIShape.begin()->latitude,  pSector->FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
+//    StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
 //	  StartupStore(_T("FAI Sector draw with %u points  %s"), iPointCnt, NEWLINE);
 
 #ifdef FILL_FAI_SECTORS
@@ -94,15 +90,15 @@ polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( do
 
   iPointCnt = 0;
   FAISector_polyline.clear();
-  if(!pSector->FAIShape2.empty())
+  if(!m_FAIShape2.empty())
   {
-    for (std::list<GeoPoint>::iterator it = pSector->FAIShape2.begin(); it != pSector->FAIShape2.end(); it++)
+    for (std::list<GeoPoint>::iterator it = m_FAIShape2.begin(); it != m_FAIShape2.end(); it++)
     {
       FAISector_polyline.push_back(ToScreen(  it->longitude, it->latitude));
       iPointCnt++;
     }
     FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
-//    StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  pSector->FAIShape2.begin()->latitude,  pSector->FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
+//    StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape2.begin()->latitude,  m_FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
 //    StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), iPointCnt, NEWLINE);
 
 #ifdef FILL_FAI_SECTORS
@@ -116,13 +112,13 @@ polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( do
   Surface.SelectObject(hpSectorPen);
   Surface.SetBackgroundTransparent();
   const auto oldFont = Surface.SelectObject(LK8InfoSmallFont);
-  unsigned  int NumberGrids = pSector->FAIGridLines.size()-1;
+  unsigned  int NumberGrids = m_FAIGridLines.size()-1;
   unsigned int Grid_num = 0;
   FAISector_polyline.clear();
 
-  if(!pSector->FAIGridLines.empty())
+  if(!m_FAIGridLines.empty())
   {
-    for (std::list<GPS_Gridline_t>::iterator it = pSector->FAIGridLines.begin(); it != pSector->FAIGridLines.end(); it++)
+    for (std::list<GPS_Gridline_t>::iterator it = m_FAIGridLines.begin(); it != m_FAIGridLines.end(); it++)
     {
       for(i=0; i < FAI_SECTOR_STEPS; i++)
         FAISector_polyline.push_back(ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude));
@@ -163,29 +159,38 @@ return 0;
 
 extern BOOL CheckFAILeg(double leg, double total);
 
-void EraseFAISector(FAI_Sector* pSector)
+void FAI_Sector::FreeFAISectorMem(void)
 {
-	if(pSector == NULL)
-		 return;
-
-  if(!pSector->FAIGridLines.empty()) pSector->FAIGridLines.clear();
-  if(!pSector->FAIShape.empty()) pSector->FAIShape.clear();
-  if(!pSector->FAIShape2.empty()) pSector->FAIShape2.clear();
-
+  if(m_FAIGridLines.empty()) m_FAIGridLines.clear();
+  if(m_FAIShape.empty()) m_FAIShape.clear();
+  if(m_FAIShape2.empty()) m_FAIShape2.clear();
 }
 
+FAI_Sector::~FAI_Sector(void){
+  FreeFAISectorMem();
+  StartupStore(_T("FAI Sector ~FAI_Sector erased %s"),  NEWLINE);
+};
+
+FAI_Sector::FAI_Sector(void){
+  m_lat1=0;
+  m_lat2=0;
+  m_lon1=0;
+  m_lon2=0;
+  m_fGrid =0;
+  m_Side =0;
+  StartupStore(_T("FAI_Sector constructor %s"),  NEWLINE);
+};
 
 
-bool CalcSectorCache(FAI_Sector* pSector,double lat1, double lon1, double lat2, double lon2, double fGrid, int iOpposite)
+bool FAI_Sector::CalcSectorCache(double lat1, double lon1, double lat2, double lon2, double fGrid, int iOpposite)
 {
- if(pSector == NULL )
-	return false;
- if(fabs(pSector->lat1 - lat1) < 0.00001)
-   if(fabs(pSector->lon1 - lon1) < 0.00001)
-	 if(fabs(pSector->lat2 - lat2) < 0.00001)
-	   if(fabs(pSector->lon2 - lon2) < 0.00001)
-		 if(pSector->Side == iOpposite)
-		   if(fabs(pSector->fGrid - fGrid) < 0.0001)
+
+ if(fabs(m_lat1 - lat1) < 0.00001)
+   if(fabs(m_lon1 - lon1) < 0.00001)
+	 if(fabs(m_lat2 - lat2) < 0.00001)
+	   if(fabs(m_lon2 - lon2) < 0.00001)
+		 if(m_Side == iOpposite)
+		   if(fabs(m_fGrid - fGrid) < 0.0001)
 		   {
 		//	 StartupStore(_T("FAI Sector use cached %s"),  NEWLINE);
 			 return true;   /* already calculated with the same parameters */
@@ -204,15 +209,15 @@ if(fabs(fDist_c) < 1000.0)  /* distance too short for a FAI sector */
     return -1;
 
 
-pSector->lat1  = lat1;   /* remember parameter */
-pSector->lon1  = lon1;
-pSector->lat2  = lat2;
-pSector->lon2  = lon2;
-pSector->Side  = iOpposite;
-pSector->fGrid = fGrid;
+m_lat1  = lat1;   /* remember parameter */
+m_lon1  = lon1;
+m_lat2  = lat2;
+m_lon2  = lon2;
+m_Side  = iOpposite;
+m_fGrid = fGrid;
 
 StartupStore(_T("FAI Sector recalc %s"),  NEWLINE);
-EraseFAISector( pSector);
+FreeFAISectorMem();
 
 double fDistMax = fDist_c/FAI_NORMAL_PERCENTAGE;
 double fDistMin = fDist_c/(1.0-2.0*FAI_NORMAL_PERCENTAGE );
@@ -260,7 +265,7 @@ if (iOpposite >0)
   else
     fB = fDistMax;
 
- // pSector->FAIShape.clear();
+  m_FAIShape.clear();
 
   if(fA<fB)
   {
@@ -278,7 +283,7 @@ if (iOpposite >0)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-      pSector->FAIShape.push_back(GeoPoint(lat_d,lon_d));
+       m_FAIShape.push_back(GeoPoint(lat_d,lon_d));
 
       fDistTri += fDelta_Dist;
     }
@@ -308,7 +313,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-      pSector->FAIShape.push_back(GeoPoint(lat_d,lon_d));
+       m_FAIShape.push_back(GeoPoint(lat_d,lon_d));
 
       fDist_a += fDelta_Dist;
     }
@@ -346,7 +351,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_a, &lat_d, &lon_d);
 
-        pSector->FAIShape.push_back(GeoPoint(lat_d,lon_d));
+         m_FAIShape.push_back(GeoPoint(lat_d,lon_d));
 
         fDistTri += fDelta_Dist;
       }
@@ -369,7 +374,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
     alpha = acos(cos_alpha)*180/PI * dir;
     FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-    pSector->FAIShape.push_back(GeoPoint(lat_d,lon_d));
+     m_FAIShape.push_back(GeoPoint(lat_d,lon_d));
 
     fDist_a -= fDelta_Dist;
     fDist_b += fDelta_Dist;
@@ -413,7 +418,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-        pSector->FAIShape.push_back(GeoPoint(lat_d,lon_d));
+         m_FAIShape.push_back(GeoPoint(lat_d,lon_d));
 
         fDistTri -= fDelta_Dist;
      }
@@ -444,7 +449,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-      pSector->FAIShape.push_back(GeoPoint(lat_d,lon_d));
+       m_FAIShape.push_back(GeoPoint(lat_d,lon_d));
 
       fDist_b += fDelta_Dist;
     }
@@ -474,7 +479,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-      pSector->FAIShape.push_back(GeoPoint(lat_d,lon_d));
+       m_FAIShape.push_back(GeoPoint(lat_d,lon_d));
 
       fDistTri -= fDelta_Dist;
     }
@@ -496,7 +501,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
         alpha = acos(cos_alpha)*180/PI * dir;
         FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-        pSector->FAIShape.push_back(GeoPoint(lat_d,lon_d));
+         m_FAIShape.push_back(GeoPoint(lat_d,lon_d));
 
         fDist_a += fDelta_Dist;
         fDist_b -= fDelta_Dist;
@@ -506,7 +511,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   /********************************************************************
    * calc 2nd sectors if needed
    ********************************************************************/
-//  pSector->FAIShape2.clear();
+  m_FAIShape2.clear();
   if((fDistMax < FAI28_45Threshold) && (fDist_c/FAI_BIG_PERCENTAGE > FAI28_45Threshold))
   {
   /********************************************************************
@@ -523,7 +528,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-      pSector->FAIShape2.push_back(GeoPoint(lat_d,lon_d));
+       m_FAIShape2.push_back(GeoPoint(lat_d,lon_d));
 
       fDist_a -= fDelta_Dist;
       fDist_b += fDelta_Dist;
@@ -542,7 +547,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
 
-      pSector->FAIShape2.push_back(GeoPoint(lat_d,lon_d));
+       m_FAIShape2.push_back(GeoPoint(lat_d,lon_d));
 
       fDist_a -= fDelta_Dist;
       fDist_b += fDelta_Dist;
@@ -552,28 +557,6 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   /********************************************************************
    * calc round leg grid
    ********************************************************************/
-#ifdef  FAIGRIDLINES
-  /*
-  while(!pSector->FAIGridLines.empty())
-  {
-    pSector->FAIGridLines.back().GridLine.clear();
-    pSector->FAIGridLines.erase( pSector->FAIGridLines.end() );
-  }*/
-/*
-  double fZoom =1;
-  LKASSERT(Statistics::yscale !=0);
-  LKASSERT(DISTANCEMODIFY!=0);
-  if(Statistics::yscale >0)
-    fZoom =  2500.0/Statistics::yscale;
-  double         fTic = 100;
-  if(fZoom > 30) fTic = 100;else
-  if(fZoom > 15) fTic = 50; else
-  if(fZoom > 10) fTic = 25; else
-  if(fZoom > 3)  fTic = 10; else
-  if(fZoom > 1)  fTic = 5;  else fTic = 1;
-  if( DISTANCEMODIFY > 0.0)
-    fTic =fTic/ DISTANCEMODIFY;
-*/
 
   double  fTic = fGrid;
   BOOL bLast = false;
@@ -581,7 +564,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   LKASSERT(fTic!=0);
   fDistTri = fDistMin ; //((int)(fDistMin/fTic)+1) * fTic ;
 
-
+  m_FAIGridLines.clear();
 int iCnt = 0;
 
   while(fDistTri <= fDistMax)
@@ -638,14 +621,12 @@ int iCnt = 0;
       alpha = acos(cos_alpha)*180/PI * dir;
       FindLatitudeLongitude(lat1, lon1, AngleLimit360( fAngle + alpha ) , fDist_b, &lat_d, &lon_d);
       NewGrid.GridLine[i] = GeoPoint(lat_d,lon_d);
-  //    push_back(GeoPoint(lat_d,lon_d));
-
 
       fDist_a -= fDelta_Dist;
       fDist_b += fDelta_Dist;
     }
 
-    pSector->FAIGridLines.push_back(NewGrid);
+     m_FAIGridLines.push_back(NewGrid);
   }
 
   if(iCnt == 0)
@@ -665,35 +646,20 @@ int iCnt = 0;
 
   iCnt++;
 }
-#endif
+
 return 0;
 }
 
 
+
+
 //#define   FILL_FAI_SECTORS
-/*******************************************************************************************
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *****************************************************************************************/
+
 void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft)
 {
 
- static  FAI_Sector FAI_SectorCache[6];
- // FAI_Sector* pSector = &FAI_SectorCache[0];
+static	FAI_Sector FAI_SectorCache[6];
+
   const auto whitecolor = RGB_WHITE;
   const auto origcolor = Surface.SetTextColor(whitecolor);
   const auto oldpen = Surface.SelectObject(hpStartFinishThin);
@@ -806,10 +772,10 @@ int numlegs=0;
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
       if(fDist > FAI_MIN_DISTANCE_THRESHOLD)
       {
-        CalcSectorCache(&FAI_SectorCache[2*i], lat1,  lon1,  lat2,  lon2, fTic, 0);
-        DrawFAISector ( Surface, rc, _Proj,&FAI_SectorCache[2*i], rgbCol );
-        CalcSectorCache(&FAI_SectorCache[2*i+1], lat1,  lon1,  lat2,  lon2, fTic, 1);
-        DrawFAISector ( Surface, rc, _Proj, &FAI_SectorCache[2*i+1], rgbCol );
+        FAI_SectorCache[2*i].CalcSectorCache( lat1,  lon1,  lat2,  lon2, fTic, 0);
+        FAI_SectorCache[2*i].DrawFAISector ( Surface, rc, _Proj, rgbCol );
+        FAI_SectorCache[2*i+1].CalcSectorCache( lat1,  lon1,  lat2,  lon2, fTic, 1);
+        FAI_SectorCache[2*i+1].DrawFAISector ( Surface, rc, _Proj,  rgbCol );
       }
     }
 
@@ -817,20 +783,26 @@ int numlegs=0;
 
 /*********************************************************/
 
+	  // TODO : check if visible for avoid to far draw outside screen.
+	  // for 1000m radius cylinder, it's better to build cylinder in screen coordinate
+	  // and draw this like polygon ; cf. Task sector drawing
 
-    if(ISPARAGLIDER && bFAI)
-    {
-      LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2),  FAI_SECTOR_COLOR );
-      const auto hOldPen = Surface.SelectObject(hpSectorPen);
-      const POINT Pt1 = ToScreen(lon_CP, lat_CP);
-      FindLatitudeLongitude(lat1, lon1, 0 , fFAIDistance* 0.20, &lat2, &lon2); /* 1000m destination circle */
-      int iRadius = (int)((lat2-lat1)*zoom.DrawScale());
-      Surface.DrawCircle(Pt1.x, Pt1.y, iRadius  , rc, false);
-      FindLatitudeLongitude(lat1, lon1, 0 , 500, &lat2, &lon2); /* 1000m destination circle */
-      iRadius = (int)((lat2-lat1)*zoom.DrawScale());
-      Surface.DrawCircle(Pt1.x, Pt1.y, iRadius  , rc, false);
-      Surface.SelectObject (hOldPen);
-    }
+
+
+      if (ISPARAGLIDER && bFAI) {
+          LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2), FAI_SECTOR_COLOR);
+          const auto hOldPen = Surface.SelectObject(hpSectorPen);
+          const RasterPoint Pt1 = _Proj.ToRasterPoint(lon_CP, lat_CP);
+
+          int iRadius = (int) ((fFAIDistance * 0.20) * zoom.ResScaleOverDistanceModify());
+          Surface.DrawCircle(Pt1.x, Pt1.y, iRadius, rc, false);                    /* 20% destination circle */
+
+          iRadius = (int) ((500) * zoom. ResScaleOverDistanceModify());             /* 1000m circle  */
+          Surface.DrawCircle(Pt1.x, Pt1.y, iRadius, rc, false);
+
+          Surface.SelectObject(hOldPen);
+
+      }
 
 /*********************************************************/
 

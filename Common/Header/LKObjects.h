@@ -90,35 +90,6 @@ OEXTERN	LKPen	LKPen_GABRG;
 
 
 
-#ifdef PNA
-  #define FAI_SECTOR_STEPS 11
-#else
-  #define FAI_SECTOR_STEPS 21
-#endif
-
-typedef std::list<GeoPoint> GPS_Track;
-
-
-struct GPS_Gridline_t
-{
-  GeoPoint GridLine[FAI_SECTOR_STEPS];
-  TCHAR szLable[20];
-  double fValue;
-};
-
-typedef std::list<GPS_Gridline_t> GPS_Gridlines;
-
-typedef struct
-{
-  GPS_Track     FAIShape;
-  GPS_Track     FAIShape2;
-  GPS_Gridlines FAIGridLines;
-  double        lat1,lat2,lon1,lon2;
-  double        fGrid;
-  int           Side;
-} FAI_Sector;
-
-
 
 
 
