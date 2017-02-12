@@ -19,7 +19,7 @@
 #include "Draw/ScreenProjection.h"
 #include "Math/Point2D.hpp"
 
-
+//#define FAI_DEBUG
 #ifdef HAVE_GLES
 typedef FloatPoint ScreenPoint;
 #else
@@ -78,8 +78,10 @@ polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( do
       iPointCnt++;
     }
     FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
-//    StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
-//	  StartupStore(_T("FAI Sector draw with %u points  %s"), iPointCnt, NEWLINE);
+#ifdef  FAI_DEBUG
+    StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
+    StartupStore(_T("FAI Sector draw with %u points  %s"), iPointCnt, NEWLINE);
+#endif
 
 #ifdef FILL_FAI_SECTORS
 	 Surface.Polygon(FAISector_polyline.data(), iPointCnt, rc);
@@ -98,9 +100,10 @@ polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( do
       iPointCnt++;
     }
     FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
-//    StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape2.begin()->latitude,  m_FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
-//    StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), iPointCnt, NEWLINE);
-
+#ifdef  FAI_DEBUG
+    StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape2.begin()->latitude,  m_FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
+    StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), iPointCnt, NEWLINE);
+#endif
 #ifdef FILL_FAI_SECTORS
 	 Surface.Polygon(FAISector_polyline.data(), iPointCnt, rc);
 #else
@@ -168,7 +171,9 @@ void FAI_Sector::FreeFAISectorMem(void)
 
 FAI_Sector::~FAI_Sector(void){
   FreeFAISectorMem();
+#ifdef  FAI_DEBUG
   StartupStore(_T("FAI Sector ~FAI_Sector erased %s"),  NEWLINE);
+#endif
 };
 
 FAI_Sector::FAI_Sector(void){
@@ -178,7 +183,9 @@ FAI_Sector::FAI_Sector(void){
   m_lon2=0;
   m_fGrid =0;
   m_Side =0;
+#ifdef  FAI_DEBUG
   StartupStore(_T("FAI_Sector constructor %s"),  NEWLINE);
+#endif
 };
 
 
@@ -192,7 +199,9 @@ bool FAI_Sector::CalcSectorCache(double lat1, double lon1, double lat2, double l
 		 if(m_Side == iOpposite)
 		   if(fabs(m_fGrid - fGrid) < 0.0001)
 		   {
-		//	 StartupStore(_T("FAI Sector use cached %s"),  NEWLINE);
+#ifdef  FAI_DEBUG
+			 StartupStore(_T("FAI Sector use cached %s"),  NEWLINE);
+#endif
 			 return true;   /* already calculated with the same parameters */
 		   }
 
@@ -215,8 +224,9 @@ m_lat2  = lat2;
 m_lon2  = lon2;
 m_Side  = iOpposite;
 m_fGrid = fGrid;
-
+#ifdef FAI_DEBUG
 StartupStore(_T("FAI Sector recalc %s"),  NEWLINE);
+#endif
 FreeFAISectorMem();
 
 double fDistMax = fDist_c/FAI_NORMAL_PERCENTAGE;
