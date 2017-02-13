@@ -52,6 +52,8 @@ const PixelRect ScreenRect(rc);
 
 typedef std::vector<ScreenPoint> polyline_t;
 polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( don't forget to clear in this case )
+
+  FAISector_polyline.reserve( (7.5*FAI_SECTOR_STEPS) + 1); // avoid memory realloc.
 // FAISector_polyline.clear();
 
 
