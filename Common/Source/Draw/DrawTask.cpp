@@ -25,8 +25,6 @@ $Id$
 #include "LKObjects.h"
 #include "DrawFAIOpti.h"
 
-extern int DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,FAI_Sector* pSector , const LKColor& InFfillcolor);
-extern bool CalcSectorCache(FAI_Sector* pSector,double lat1, double lon1, double lat2, double lon2, double fGrid, int iOpposite);
 extern LKColor taskcolor;
 
 //
