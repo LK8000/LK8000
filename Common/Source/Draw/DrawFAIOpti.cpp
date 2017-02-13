@@ -42,7 +42,6 @@ extern BOOL CheckFAILeg(double leg, double total);
 int FAI_Sector::DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const LKColor& InFfillcolor)
 {
 
-int i;
 LKColor fillcolor = InFfillcolor;
 #ifdef KOBO
   fillcolor = RGB_SBLACK;
@@ -67,9 +66,8 @@ Surface.SetBackgroundTransparent();
   FAISector_polyline.clear();
   if(!m_FAIShape.empty())
   {
-    for (std::list<GeoPoint>::iterator it = m_FAIShape.begin(); it != m_FAIShape.end(); it++)
-    {
-      const ScreenPoint Pos = ToScreen(*it);
+    for (GPS_Track::const_reference pt : m_FAIShape) {
+      const ScreenPoint Pos = ToScreen(pt);
 
       if(ScreenRect.IsInside(Pos))
     	bSectorvisible = true;
@@ -93,9 +91,8 @@ Surface.SetBackgroundTransparent();
 	  FAISector_polyline.clear();
 	  if(!m_FAIShape2.empty())
 	  {
-		for (std::list<GeoPoint>::iterator it = m_FAIShape2.begin(); it != m_FAIShape2.end(); it++)
-		{
-          const ScreenPoint Pos = ToScreen(*it);
+        for (GPS_Track::const_reference pt : m_FAIShape2) {
+          const ScreenPoint Pos = ToScreen(pt);
 		  if(ScreenRect.IsInside(Pos))
 		 	bSectorvisible = true;
 		  FAISector_polyline.push_back(Pos);
@@ -124,12 +121,11 @@ Surface.SetBackgroundTransparent();
 
 	  if(!m_FAIGridLines.empty())
 	  {
-		for (std::list<GPS_Gridline_t>::iterator it = m_FAIGridLines.begin(); it != m_FAIGridLines.end(); it++)
-		{
+        for (GPS_Gridlines::const_reference line : m_FAIGridLines) {
+
 		  bool bGridVisible = false;
-		  for(i=0; i < FAI_SECTOR_STEPS; i++)
-		  {
-            const ScreenPoint Pos = ToScreen(it->GridLine[i]);
+          for (const GeoPoint& pt : line.GridLine) {
+            const ScreenPoint Pos = ToScreen(pt);
 		    if(ScreenRect.IsInside(Pos))
 		      bGridVisible = true;
 			FAISector_polyline.push_back(Pos);
@@ -140,17 +136,17 @@ Surface.SetBackgroundTransparent();
 		  	  Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
 
             const ScreenPoint& pt_start = FAISector_polyline.front();
-		    MapWindow::LKWriteText(Surface, it->szLable, pt_start.x, pt_start.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+		    MapWindow::LKWriteText(Surface, line.szLable, pt_start.x, pt_start.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 
 		    if( Grid_num > 0)
 		    {
               const ScreenPoint& pt_end = FAISector_polyline.back();
-		      MapWindow::LKWriteText(Surface, it->szLable, pt_end.x, pt_end.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+		      MapWindow::LKWriteText(Surface, line.szLable, pt_end.x, pt_end.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 		    }
 		    if( Grid_num > 1)
 		    {
               const ScreenPoint& pt_mid = FAISector_polyline[FAISector_polyline.size()/2];
-		      MapWindow::LKWriteText(Surface, it->szLable, pt_mid.x, pt_mid.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+		      MapWindow::LKWriteText(Surface, line.szLable, pt_mid.x, pt_mid.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 		    }
 		  }
 		  else
