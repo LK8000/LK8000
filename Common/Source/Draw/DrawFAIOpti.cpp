@@ -136,17 +136,26 @@ Surface.SetBackgroundTransparent();
 		  	  Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
 
             const ScreenPoint& pt_start = FAISector_polyline.front();
-		    MapWindow::LKWriteText(Surface, line.szLable, pt_start.x, pt_start.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+            if(ScreenRect.IsInside(pt_start)) {
+              MapWindow::LKWriteText(Surface, line.szLable, pt_start.x, pt_start.y, WTMODE_OUTLINED,
+                                     WTALIGN_LEFT, fillcolor, true);
+            }
 
 		    if( Grid_num > 0)
 		    {
               const ScreenPoint& pt_end = FAISector_polyline.back();
-		      MapWindow::LKWriteText(Surface, line.szLable, pt_end.x, pt_end.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+              if(ScreenRect.IsInside(pt_end)) {
+                MapWindow::LKWriteText(Surface, line.szLable, pt_end.x, pt_end.y, WTMODE_OUTLINED,
+                                       WTALIGN_LEFT, fillcolor, true);
+              }
 		    }
 		    if( Grid_num > 1)
 		    {
               const ScreenPoint& pt_mid = FAISector_polyline[FAISector_polyline.size()/2];
-		      MapWindow::LKWriteText(Surface, line.szLable, pt_mid.x, pt_mid.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+              if(ScreenRect.IsInside(pt_mid)) {
+                MapWindow::LKWriteText(Surface, line.szLable, pt_mid.x, pt_mid.y, WTMODE_OUTLINED,
+                                       WTALIGN_LEFT, fillcolor, true);
+              }
 		    }
 		  }
 		  else
