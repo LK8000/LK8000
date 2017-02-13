@@ -62,99 +62,120 @@ polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( do
   /********************************************************************
    * draw polygon
    ********************************************************************/
-  LKPen   hpSectorPen(PEN_SOLID, IBLSCALE(2),  fillcolor );
-
-  const auto hpOldPen = Surface.SelectObject(hpSectorPen);
-  const auto hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
-
+LKPen   hpSectorPen(PEN_SOLID, IBLSCALE(2),  fillcolor );
+const auto hpOldPen = Surface.SelectObject(hpSectorPen);
+const auto hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
+Surface.SetBackgroundTransparent();
 
   iPointCnt = 0;
+
+  bool bSectorvisible=false;
   FAISector_polyline.clear();
   if(!m_FAIShape.empty())
   {
     for (std::list<GeoPoint>::iterator it = m_FAIShape.begin(); it != m_FAIShape.end(); it++)
     {
-      FAISector_polyline.push_back(ToScreen(  it->longitude, it->latitude));
+      ScreenPoint Pos = ToScreen(  it->longitude, it->latitude);
+      if(PtInRect(&rc, Pos))
+    	bSectorvisible = true;
+      FAISector_polyline.push_back(Pos);
       iPointCnt++;
     }
-    FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
-#ifdef  FAI_DEBUG
-    StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
-    StartupStore(_T("FAI Sector draw with %u points  %s"), iPointCnt, NEWLINE);
-#endif
-
-#ifdef FILL_FAI_SECTORS
-	 Surface.Polygon(FAISector_polyline.data(), iPointCnt, rc);
-#else
-	 Surface.Polyline(FAISector_polyline.data(), iPointCnt, rc);
-#endif
   }
+    if(bSectorvisible) {
+		FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
+	#ifdef  FAI_DEBUG
+		StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
+		StartupStore(_T("FAI Sector draw with %u points  %s"), iPointCnt, NEWLINE);
+	#endif
 
-  iPointCnt = 0;
-  FAISector_polyline.clear();
-  if(!m_FAIShape2.empty())
-  {
-    for (std::list<GeoPoint>::iterator it = m_FAIShape2.begin(); it != m_FAIShape2.end(); it++)
-    {
-      FAISector_polyline.push_back(ToScreen(  it->longitude, it->latitude));
-      iPointCnt++;
+	#ifdef FILL_FAI_SECTORS
+		 Surface.Polygon(FAISector_polyline.data(), iPointCnt, rc);
+	#else
+		 Surface.Polyline(FAISector_polyline.data(), iPointCnt, rc);
+	#endif
     }
-    FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
-#ifdef  FAI_DEBUG
-    StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape2.begin()->latitude,  m_FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
-    StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), iPointCnt, NEWLINE);
-#endif
-#ifdef FILL_FAI_SECTORS
-	 Surface.Polygon(FAISector_polyline.data(), iPointCnt, rc);
-#else
-	 Surface.Polyline(FAISector_polyline.data(), iPointCnt, rc);
-#endif
-  }
 
-  hpSectorPen.Create(PEN_DASH, ScreenThinSize, RGB_BLACK );
-  Surface.SelectObject(hpSectorPen);
-  Surface.SetBackgroundTransparent();
-  const auto oldFont = Surface.SelectObject(LK8InfoSmallFont);
-  unsigned  int NumberGrids = m_FAIGridLines.size()-1;
-  unsigned int Grid_num = 0;
-  FAISector_polyline.clear();
+	  iPointCnt = 0;
+	  FAISector_polyline.clear();
+	  if(!m_FAIShape2.empty())
+	  {
+		for (std::list<GeoPoint>::iterator it = m_FAIShape2.begin(); it != m_FAIShape2.end(); it++)
+		{
+		  ScreenPoint Pos = ToScreen(  it->longitude, it->latitude);
+		  if(PtInRect(&rc, Pos))
+		 	bSectorvisible = true;
+		  FAISector_polyline.push_back(Pos);
+		  iPointCnt++;
+		}
+	  }
+	  if(bSectorvisible)
+	  {
+		FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
+	#ifdef  FAI_DEBUG
+		StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape2.begin()->latitude,  m_FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
+		StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), iPointCnt, NEWLINE);
+	#endif
+	#ifdef FILL_FAI_SECTORS
+		 Surface.Polygon(FAISector_polyline.data(), iPointCnt, rc);
+	#else
+		 Surface.Polyline(FAISector_polyline.data(), iPointCnt, rc);
+	#endif
 
-  if(!m_FAIGridLines.empty())
+      hpSectorPen.Create(PEN_DASH, ScreenThinSize, RGB_BLACK );
+      Surface.SelectObject(hpSectorPen);
+      Surface.SetBackgroundTransparent();
+      const auto oldFont = Surface.SelectObject(LK8InfoSmallFont);
+	  unsigned  int NumberGrids = m_FAIGridLines.size()-1;
+	  unsigned int Grid_num = 0;
+	  FAISector_polyline.clear();
+
+	  if(!m_FAIGridLines.empty())
+	  {
+		for (std::list<GPS_Gridline_t>::iterator it = m_FAIGridLines.begin(); it != m_FAIGridLines.end(); it++)
+		{
+		  for(i=0; i < FAI_SECTOR_STEPS; i++)
+			FAISector_polyline.push_back(ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude));
+
+		  i =0;
+		  if(/*(Grid_num > 0) && */ (Grid_num <  NumberGrids))
+			Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
+		  ScreenPoint pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+		  MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+
+		  if( Grid_num > 0)
+		  i =FAI_SECTOR_STEPS-1;
+		  pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+		  MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+
+		  if( Grid_num > 1)
+		  i =FAI_SECTOR_STEPS/2;
+		  pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+		  MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+
+          FAISector_polyline.clear();
+
+		  Grid_num++;
+		}
+	  }
+	  Surface.SelectObject(oldFont);
+    } // if visible
+
+  if(!FAISector_polyline.empty())  /* maybe not empty due visibility check */
+    FAISector_polyline.clear();    /* clear if not empty                   */
+
+
+  if(bSectorvisible)
   {
-    for (std::list<GPS_Gridline_t>::iterator it = m_FAIGridLines.begin(); it != m_FAIGridLines.end(); it++)
-    {
-      for(i=0; i < FAI_SECTOR_STEPS; i++)
-        FAISector_polyline.push_back(ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude));
-
-      i =0;
-      if(/*(Grid_num > 0) && */ (Grid_num <  NumberGrids))
-        Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
-      ScreenPoint pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
-      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-
-      if( Grid_num > 0)
-      i =FAI_SECTOR_STEPS-1;
-      pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
-      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-
-      if( Grid_num > 1)
-      i =FAI_SECTOR_STEPS/2;
-      pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
-      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-
-      FAISector_polyline.clear();
-
-      Grid_num++;
-    }
+#ifdef  FAI_DEBUG
+   	StartupStore(_T("FAI Sector1 skipped not in view window  %s"), NEWLINE);
+#endif
   }
 
 
-
-  Surface.SelectObject(oldFont);
   Surface.SelectObject(hpOldPen);
   Surface.SelectObject(hpOldBrush);
   hpSectorPen.Release();
-
 return 0;
 }
 
