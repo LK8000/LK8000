@@ -22,8 +22,11 @@ $Id$
 #include "Task/TaskRendererLine.h"
 #include "Task/TaskRendererMgr.h"
 #include "ScreenGeometry.h"
+#include "LKObjects.h"
 
-extern int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
+
+extern int DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,FAI_Sector* pSector , const LKColor& InFfillcolor);
+extern bool CalcSectorCache(FAI_Sector* pSector,double lat1, double lon1, double lat2, double lon2, double fGrid, int iOpposite);
 extern LKColor taskcolor;
 
 //
@@ -418,7 +421,7 @@ void MapWindow::DrawTaskSectors(LKSurface& Surface, const RECT& rc, const Screen
 int Active = ActiveTaskPoint;
 if(ValidTaskPoint(PanTaskEdit))
 Active = PanTaskEdit;
-
+static FAI_Sector FAI_TaskSectorCache[2];
 CScopeLock LockTask(LockTaskData, UnlockTaskData);
 
     /*******************************************************************************************************/
@@ -465,15 +468,25 @@ if(TaskPoints ==5)
 }
 
 
+float fZoom = MapWindow::zoom.RealScale() ;
+
+double         fTic = 100;
+if(fZoom > 50) fTic = 100; else
+if(fZoom > 20) fTic = 50;  else
+if(fZoom > 10) fTic = 25;  else fTic = 25;
+if( DISTANCEMODIFY > 0.0)
+  fTic =  fTic/ DISTANCEMODIFY;
 
 double	lat1 = WayPointList[Task[a].Index].Latitude;
 double	lon1 = WayPointList[Task[a].Index].Longitude;
 double	lat2 = WayPointList[Task[b].Index].Latitude;
 double	lon2 = WayPointList[Task[b].Index].Longitude;
 
-RenderFAISector ( Surface, rc, _Proj, lat1, lon1, lat2, lon2, 1, RGB_YELLOW );
-RenderFAISector ( Surface, rc, _Proj, lat1, lon1, lat2, lon2, 0, RGB_CYAN );
+FAI_TaskSectorCache[0].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
+FAI_TaskSectorCache[0].DrawFAISector ( Surface, rc, _Proj, RGB_YELLOW );
 
+FAI_TaskSectorCache[1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
+FAI_TaskSectorCache[1].DrawFAISector ( Surface, rc, _Proj, RGB_CYAN );
 
 
 /*******************************************************************************************************/
