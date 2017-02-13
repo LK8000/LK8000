@@ -52,6 +52,7 @@ const PixelRect ScreenRect(rc);
 
 typedef std::vector<ScreenPoint> polyline_t;
 polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( don't forget to clear in this case )
+// FAISector_polyline.clear();
 
 
   /********************************************************************
@@ -63,7 +64,6 @@ const auto hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
 Surface.SetBackgroundTransparent();
 
   bool bSectorvisible=false;
-  FAISector_polyline.clear();
   if(!m_FAIShape.empty())
   {
     for (GPS_Track::const_reference pt : m_FAIShape) {
@@ -172,10 +172,6 @@ Surface.SetBackgroundTransparent();
 	  Surface.SelectObject(oldFont);
     } // if visible
 
-  if(!FAISector_polyline.empty())  /* maybe not empty due visibility check */
-    FAISector_polyline.clear();    /* clear if not empty                   */
-
-
   if(bSectorvisible)
   {
 #ifdef  FAI_SECTOR_DEBUG
@@ -196,9 +192,9 @@ extern BOOL CheckFAILeg(double leg, double total);
 
 void FAI_Sector::FreeFAISectorMem(void)
 {
-  if(m_FAIGridLines.empty()) m_FAIGridLines.clear();
-  if(m_FAIShape.empty()) m_FAIShape.clear();
-  if(m_FAIShape2.empty()) m_FAIShape2.clear();
+  m_FAIGridLines.clear();
+  m_FAIShape.clear();
+  m_FAIShape2.clear();
 }
 
 FAI_Sector::~FAI_Sector(void){
