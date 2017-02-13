@@ -68,7 +68,6 @@ LKPen   hpSectorPen(PEN_SOLID, IBLSCALE(2),  fillcolor );
 const auto hpOldPen = Surface.SelectObject(hpSectorPen);
 const auto hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
 Surface.SetBackgroundTransparent();
-ScreenPoint Pos;
   iPointCnt = 0;
 
   bool bSectorvisible=false;
@@ -77,7 +76,7 @@ ScreenPoint Pos;
   {
     for (std::list<GeoPoint>::iterator it = m_FAIShape.begin(); it != m_FAIShape.end(); it++)
     {
-      Pos = ToScreen(  it->longitude, it->latitude);
+      const ScreenPoint Pos = ToScreen(*it);
 
       if(ScreenRect.IsInside(Pos))
     	bSectorvisible = true;
@@ -105,7 +104,7 @@ ScreenPoint Pos;
 	  {
 		for (std::list<GeoPoint>::iterator it = m_FAIShape2.begin(); it != m_FAIShape2.end(); it++)
 		{
-		  Pos = ToScreen(  it->longitude, it->latitude);
+          const ScreenPoint Pos = ToScreen(*it);
 		  if(ScreenRect.IsInside(Pos))
 		 	bSectorvisible = true;
 		  FAISector_polyline.push_back(Pos);
@@ -140,7 +139,7 @@ ScreenPoint Pos;
 		  bool bGridVisible = false;
 		  for(i=0; i < FAI_SECTOR_STEPS; i++)
 		  {
-		    Pos = ToScreen(   it->GridLine[i].longitude, it->GridLine[i].latitude);
+            const ScreenPoint Pos = ToScreen(it->GridLine[i]);
 		    if(ScreenRect.IsInside(Pos))
 		      bGridVisible = true;
 			FAISector_polyline.push_back(Pos);
@@ -151,19 +150,19 @@ ScreenPoint Pos;
 		    if( (Grid_num <  NumberGrids))
 		  	  Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
 
-		    ScreenPoint pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+		    const ScreenPoint pt =  ToScreen(it->GridLine[i]);
 		    MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 
 		    if( Grid_num > 0)
 		    {
 		      i =FAI_SECTOR_STEPS-1;
-		      pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+              const ScreenPoint pt =  ToScreen(it->GridLine[i]);
 		      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 		    }
 		    if( Grid_num > 1)
 		    {
 		      i =FAI_SECTOR_STEPS/2;
-		      pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+              const ScreenPoint pt =  ToScreen(it->GridLine[i]);
 		      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 		    }
 		  }
