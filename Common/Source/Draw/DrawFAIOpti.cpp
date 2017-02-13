@@ -55,6 +55,7 @@ int iPointCnt=0;
 
 
 const GeoToScreen<ScreenPoint> ToScreen(_Proj);
+const PixelRect ScreenRect(rc);
 
 typedef std::vector<ScreenPoint> polyline_t;
 polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( don't forget to clear in this case )
@@ -77,7 +78,8 @@ ScreenPoint Pos;
     for (std::list<GeoPoint>::iterator it = m_FAIShape.begin(); it != m_FAIShape.end(); it++)
     {
       Pos = ToScreen(  it->longitude, it->latitude);
-      if(PtInRect(&rc, Pos))
+
+      if(ScreenRect.IsInside(Pos))
     	bSectorvisible = true;
       FAISector_polyline.push_back(Pos);
       iPointCnt++;
@@ -104,7 +106,7 @@ ScreenPoint Pos;
 		for (std::list<GeoPoint>::iterator it = m_FAIShape2.begin(); it != m_FAIShape2.end(); it++)
 		{
 		  Pos = ToScreen(  it->longitude, it->latitude);
-		  if(PtInRect(&rc, Pos))
+		  if(ScreenRect.IsInside(Pos))
 		 	bSectorvisible = true;
 		  FAISector_polyline.push_back(Pos);
 		  iPointCnt++;
@@ -139,7 +141,7 @@ ScreenPoint Pos;
 		  for(i=0; i < FAI_SECTOR_STEPS; i++)
 		  {
 		    Pos = ToScreen(   it->GridLine[i].longitude, it->GridLine[i].latitude);
-		    if(PtInRect(&rc, Pos))
+		    if(ScreenRect.IsInside(Pos))
 		      bGridVisible = true;
 			FAISector_polyline.push_back(Pos);
 		  }
