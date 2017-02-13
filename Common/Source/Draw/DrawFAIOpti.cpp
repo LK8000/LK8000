@@ -18,6 +18,7 @@
 #include "MapWindow.h"
 #include "Draw/ScreenProjection.h"
 #include "Math/Point2D.hpp"
+#include "FAI_Sector.h"
 
 //#define FAI_SECTOR_DEBUG
 #ifdef HAVE_GLES

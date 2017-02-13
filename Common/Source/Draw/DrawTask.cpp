@@ -23,7 +23,7 @@ $Id$
 #include "Task/TaskRendererMgr.h"
 #include "ScreenGeometry.h"
 #include "LKObjects.h"
-
+#include "FAI_Sector.h"
 
 extern int DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,FAI_Sector* pSector , const LKColor& InFfillcolor);
 extern bool CalcSectorCache(FAI_Sector* pSector,double lat1, double lon1, double lat2, double lon2, double fGrid, int iOpposite);
