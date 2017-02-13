@@ -37,7 +37,7 @@ extern BOOL CheckFAILeg(double leg, double total);
 
 
 
-
+// #define   FILL_FAI_SECTORS
 
 int FAI_Sector::DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const LKColor& InFfillcolor)
 {
@@ -47,12 +47,6 @@ LKColor fillcolor = InFfillcolor;
 #ifdef KOBO
   fillcolor = RGB_SBLACK;
 #endif
-
-int iPointCnt=0;
-
-
-
-
 
 const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 const PixelRect ScreenRect(rc);
@@ -68,7 +62,6 @@ LKPen   hpSectorPen(PEN_SOLID, IBLSCALE(2),  fillcolor );
 const auto hpOldPen = Surface.SelectObject(hpSectorPen);
 const auto hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
 Surface.SetBackgroundTransparent();
-  iPointCnt = 0;
 
   bool bSectorvisible=false;
   FAISector_polyline.clear();
@@ -81,24 +74,22 @@ Surface.SetBackgroundTransparent();
       if(ScreenRect.IsInside(Pos))
     	bSectorvisible = true;
       FAISector_polyline.push_back(Pos);
-      iPointCnt++;
     }
   }
     if(bSectorvisible) {
-		FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
+		FAISector_polyline.push_back(FAISector_polyline.front());
 	#ifdef  FAI_SECTOR_DEBUG
 		StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
 		StartupStore(_T("FAI Sector draw with %u points  %s"), iPointCnt, NEWLINE);
 	#endif
 
 	#ifdef FILL_FAI_SECTORS
-		 Surface.Polygon(FAISector_polyline.data(), iPointCnt, rc);
+		 Surface.Polygon(FAISector_polyline.data(), FAISector_polyline.size(), rc);
 	#else
-		 Surface.Polyline(FAISector_polyline.data(), iPointCnt, rc);
+		 Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size(), rc);
 	#endif
     }
 
-	  iPointCnt = 0;
 	  FAISector_polyline.clear();
 	  if(!m_FAIShape2.empty())
 	  {
@@ -108,20 +99,19 @@ Surface.SetBackgroundTransparent();
 		  if(ScreenRect.IsInside(Pos))
 		 	bSectorvisible = true;
 		  FAISector_polyline.push_back(Pos);
-		  iPointCnt++;
 		}
 	  }
 	  if(bSectorvisible)
 	  {
-		FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
+		FAISector_polyline.push_back(FAISector_polyline.front());
 	#ifdef  FAI_SECTOR_DEBUG
 		StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape2.begin()->latitude,  m_FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
 		StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), iPointCnt, NEWLINE);
 	#endif
 	#ifdef FILL_FAI_SECTORS
-		 Surface.Polygon(FAISector_polyline.data(), iPointCnt, rc);
+		 Surface.Polygon(FAISector_polyline.data(), FAISector_polyline.size(), rc);
 	#else
-		 Surface.Polyline(FAISector_polyline.data(), iPointCnt, rc);
+		 Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size(), rc);
 	#endif
 
       hpSectorPen.Create(PEN_DASH, ScreenThinSize, RGB_BLACK );
@@ -699,11 +689,6 @@ int iCnt = 0;
 
 return 0;
 }
-
-
-
-
-//#define   FILL_FAI_SECTORS
 
 void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft)
 {
