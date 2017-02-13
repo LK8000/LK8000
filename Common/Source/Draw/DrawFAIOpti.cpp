@@ -19,7 +19,7 @@
 #include "Draw/ScreenProjection.h"
 #include "Math/Point2D.hpp"
 
-//#define FAI_DEBUG
+//#define FAI_SECTOR_DEBUG
 #ifdef HAVE_GLES
 typedef FloatPoint ScreenPoint;
 #else
@@ -66,7 +66,7 @@ LKPen   hpSectorPen(PEN_SOLID, IBLSCALE(2),  fillcolor );
 const auto hpOldPen = Surface.SelectObject(hpSectorPen);
 const auto hpOldBrush = Surface.SelectObject(LKBrush_Hollow);
 Surface.SetBackgroundTransparent();
-
+ScreenPoint Pos;
   iPointCnt = 0;
 
   bool bSectorvisible=false;
@@ -75,7 +75,7 @@ Surface.SetBackgroundTransparent();
   {
     for (std::list<GeoPoint>::iterator it = m_FAIShape.begin(); it != m_FAIShape.end(); it++)
     {
-      ScreenPoint Pos = ToScreen(  it->longitude, it->latitude);
+      Pos = ToScreen(  it->longitude, it->latitude);
       if(PtInRect(&rc, Pos))
     	bSectorvisible = true;
       FAISector_polyline.push_back(Pos);
@@ -84,7 +84,7 @@ Surface.SetBackgroundTransparent();
   }
     if(bSectorvisible) {
 		FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
-	#ifdef  FAI_DEBUG
+	#ifdef  FAI_SECTOR_DEBUG
 		StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
 		StartupStore(_T("FAI Sector draw with %u points  %s"), iPointCnt, NEWLINE);
 	#endif
@@ -102,7 +102,7 @@ Surface.SetBackgroundTransparent();
 	  {
 		for (std::list<GeoPoint>::iterator it = m_FAIShape2.begin(); it != m_FAIShape2.end(); it++)
 		{
-		  ScreenPoint Pos = ToScreen(  it->longitude, it->latitude);
+		  Pos = ToScreen(  it->longitude, it->latitude);
 		  if(PtInRect(&rc, Pos))
 		 	bSectorvisible = true;
 		  FAISector_polyline.push_back(Pos);
@@ -112,7 +112,7 @@ Surface.SetBackgroundTransparent();
 	  if(bSectorvisible)
 	  {
 		FAISector_polyline.push_back(*FAISector_polyline.begin()); iPointCnt++;
-	#ifdef  FAI_DEBUG
+	#ifdef  FAI_SECTOR_DEBUG
 		StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape2.begin()->latitude,  m_FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
 		StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), iPointCnt, NEWLINE);
 	#endif
@@ -134,25 +134,42 @@ Surface.SetBackgroundTransparent();
 	  {
 		for (std::list<GPS_Gridline_t>::iterator it = m_FAIGridLines.begin(); it != m_FAIGridLines.end(); it++)
 		{
+		  bool bGridVisible = false;
 		  for(i=0; i < FAI_SECTOR_STEPS; i++)
-			FAISector_polyline.push_back(ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude));
+		  {
+		    Pos = ToScreen(   it->GridLine[i].longitude, it->GridLine[i].latitude);
+		    if(PtInRect(&rc, Pos))
+		      bGridVisible = true;
+			FAISector_polyline.push_back(Pos);
+		  }
+		  if(bGridVisible)
+		  {
+		    i =0;
+		    if( (Grid_num <  NumberGrids))
+		  	  Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
 
-		  i =0;
-		  if(/*(Grid_num > 0) && */ (Grid_num <  NumberGrids))
-			Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
-		  ScreenPoint pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
-		  MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+		    ScreenPoint pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+		    MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 
-		  if( Grid_num > 0)
-		  i =FAI_SECTOR_STEPS-1;
-		  pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
-		  MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-
-		  if( Grid_num > 1)
-		  i =FAI_SECTOR_STEPS/2;
-		  pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
-		  MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
-
+		    if( Grid_num > 0)
+		    {
+		      i =FAI_SECTOR_STEPS-1;
+		      pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+		      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+		    }
+		    if( Grid_num > 1)
+		    {
+		      i =FAI_SECTOR_STEPS/2;
+		      pt =  ToScreen(  it->GridLine[i].longitude, it->GridLine[i].latitude);
+		      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+		    }
+		  }
+		  else
+		  {
+#ifdef  FAI_SECTOR_DEBUG
+        	StartupStore(_T("FAI Grid %u skipped not in view window  %s"),Grid_num, NEWLINE);
+#endif
+		  }
           FAISector_polyline.clear();
 
 		  Grid_num++;
@@ -167,8 +184,8 @@ Surface.SetBackgroundTransparent();
 
   if(bSectorvisible)
   {
-#ifdef  FAI_DEBUG
-   	StartupStore(_T("FAI Sector1 skipped not in view window  %s"), NEWLINE);
+#ifdef  FAI_SECTOR_DEBUG
+   	StartupStore(_T("FAI Sector skipped not in view window  %s"), NEWLINE);
 #endif
   }
 
@@ -192,7 +209,7 @@ void FAI_Sector::FreeFAISectorMem(void)
 
 FAI_Sector::~FAI_Sector(void){
   FreeFAISectorMem();
-#ifdef  FAI_DEBUG
+#ifdef  FAI_SECTOR_DEBUG
   StartupStore(_T("FAI Sector ~FAI_Sector erased %s"),  NEWLINE);
 #endif
 };
@@ -204,7 +221,7 @@ FAI_Sector::FAI_Sector(void){
   m_lon2=0;
   m_fGrid =0;
   m_Side =0;
-#ifdef  FAI_DEBUG
+#ifdef  FAI_SECTOR_DEBUG
   StartupStore(_T("FAI_Sector constructor %s"),  NEWLINE);
 #endif
 };
@@ -220,7 +237,7 @@ bool FAI_Sector::CalcSectorCache(double lat1, double lon1, double lat2, double l
 		 if(m_Side == iOpposite)
 		   if(fabs(m_fGrid - fGrid) < 0.0001)
 		   {
-#ifdef  FAI_DEBUG
+#ifdef  FAI_SECTOR_DEBUG
 			 StartupStore(_T("FAI Sector use cached %s"),  NEWLINE);
 #endif
 			 return true;   /* already calculated with the same parameters */
@@ -245,7 +262,7 @@ m_lat2  = lat2;
 m_lon2  = lon2;
 m_Side  = iOpposite;
 m_fGrid = fGrid;
-#ifdef FAI_DEBUG
+#ifdef FAI_SECTOR_DEBUG
 StartupStore(_T("FAI Sector recalc %s"),  NEWLINE);
 #endif
 FreeFAISectorMem();
