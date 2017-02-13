@@ -136,24 +136,21 @@ Surface.SetBackgroundTransparent();
 		  }
 		  if(bGridVisible)
 		  {
-		    i =0;
 		    if( (Grid_num <  NumberGrids))
 		  	  Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
 
-		    const ScreenPoint pt =  ToScreen(it->GridLine[i]);
-		    MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+            const ScreenPoint& pt_start = FAISector_polyline.front();
+		    MapWindow::LKWriteText(Surface, it->szLable, pt_start.x, pt_start.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 
 		    if( Grid_num > 0)
 		    {
-		      i =FAI_SECTOR_STEPS-1;
-              const ScreenPoint pt =  ToScreen(it->GridLine[i]);
-		      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+              const ScreenPoint& pt_end = FAISector_polyline.back();
+		      MapWindow::LKWriteText(Surface, it->szLable, pt_end.x, pt_end.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 		    }
 		    if( Grid_num > 1)
 		    {
-		      i =FAI_SECTOR_STEPS/2;
-              const ScreenPoint pt =  ToScreen(it->GridLine[i]);
-		      MapWindow::LKWriteText(Surface, it->szLable, pt.x, pt.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
+              const ScreenPoint& pt_mid = FAISector_polyline[FAISector_polyline.size()/2];
+		      MapWindow::LKWriteText(Surface, it->szLable, pt_mid.x, pt_mid.y, WTMODE_OUTLINED, WTALIGN_LEFT, fillcolor, true);
 		    }
 		  }
 		  else
