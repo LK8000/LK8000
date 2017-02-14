@@ -909,24 +909,23 @@ static void LiveTrackerThread() {
 // Leonardo Live Info (www.livetrack24.com) data exchange thread for API V2
 
 /** Decompress an STL string using zlib and return the original data. */
-static bool gzipInflate(const std::string& compressedBytes,
+static bool gzipInflate(const char* compressedBytes, unsigned nBytes,
 		std::string& uncompressedBytes) {
-	if (compressedBytes.size() == 0) {
-		uncompressedBytes = compressedBytes;
-		return true;
+	if (nBytes == 0) {
+		return false;
 	}
 
 	uncompressedBytes.clear();
 
-	unsigned full_length = compressedBytes.size();
-	unsigned half_length = compressedBytes.size() / 2;
+	unsigned full_length = nBytes;
+	unsigned half_length = nBytes / 2;
 
 	unsigned uncompLength = full_length;
 	char* uncomp = (char*) calloc(sizeof(char), uncompLength);
 
 	z_stream strm;
-	strm.next_in = (Bytef *) compressedBytes.c_str();
-	strm.avail_in = compressedBytes.size();
+	strm.next_in = (Bytef *) compressedBytes;
+	strm.avail_in = nBytes;
 	strm.total_out = 0;
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
@@ -967,11 +966,12 @@ static bool gzipInflate(const std::string& compressedBytes,
 		return false;
 	}
 
-	for (size_t i = 0; i < strm.total_out; ++i) {
-		uncompressedBytes += uncomp[i];
+	if(done) {
+		std::copy_n(uncomp, strm.total_out, std::back_inserter(uncompressedBytes));
 	}
+
 	free(uncomp);
-	return true;
+	return done;
 }
 
 static std::string otpReply(std::string question) {
@@ -996,23 +996,25 @@ static std::string otpReply(std::string question) {
 
 static std::string downloadJSON(std::string url) {
 
-	char rxcontent[50000];
+	typedef std::array<char, 64*1024> buffer_t;
+	std::unique_ptr<buffer_t> rxcontent_ptr(new buffer_t);
+	buffer_t& rxcontent(*rxcontent_ptr);
 
-	int rxlen = DoTransactionToServer("api.livetrack24.com", 80, url.c_str(), rxcontent, sizeof(rxcontent));
+	int rxlen = DoTransactionToServer("api.livetrack24.com", 80, url.c_str(), rxcontent.data(), rxcontent.size());
 
 	if (rxlen == -1)
 		return "";
 
-	std::string response(rxcontent, rxlen);
+
 
 	if (url.find("gzip/1") != std::string::npos) {
-		std::string stedec;
-		if (gzipInflate(response, stedec)) {
-			response = stedec;
+		std::string response;
+		if (gzipInflate(rxcontent.data(), rxlen, response)) {
+			return response;
 		}
 	}
 
-	return response;
+	return std::string(rxcontent.data(), rxlen);
 }
 
 static picojson::value callLiveTrack24(std::string subURL, bool calledSelf =
@@ -1035,6 +1037,9 @@ false) {
 	}
 
 	std::string err = picojson::parse(res, reply);
+	if(!res.is<picojson::object>()) {
+		return res;
+	}
 
 	if (res.get("qwe").is<std::string>()) {
 		g_otpQuestion = res.get("qwe").get<std::string>();
