@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT updated 150521
+# LK8000 ENG_HLP.TXT updated 170214
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -1873,6 +1873,12 @@ Choose the symbol you want to see on the main map
 @1295
 [LiveTrack24 Radar]
 If enabled the FLARM system will be feed with data from LiveTrack24.com server
+
+@1296
+[Auto-Contrast]
+ON: contrast and brightness are automatically adjusted for best results.
+OFF: Terrain contrast and brightness can be adjusted manually.
+Default is ON.
 
 @9999
 No help available on this item!

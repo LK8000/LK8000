@@ -404,6 +404,7 @@ _@M2322_ "Enable Radar"
    2325  "Small Glider"
    2326  "Gem"
 
+   981   "Auto-Contrast"
 
 HELP FILE
 
@@ -420,3 +421,9 @@ HELP FILE
 +@1294
 +[Aircraft symbol]
 +Choose the symbol you want to see on the main map
+
+@1296
+Auto-Contrast (see help)
+
+
+

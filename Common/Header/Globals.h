@@ -395,6 +395,8 @@ GEXTERN double ThermalRadius;
 GEXTERN double SinkRadius;
 GEXTERN double SimNettoVario;
 
+GEXTERN bool AutoContrast; // automatic contrast of terrain
+
 // Append over here NEW
 
 #if LK_CACHECALC

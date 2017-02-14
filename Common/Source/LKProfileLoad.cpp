@@ -824,6 +824,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistry_earth_model_wgs84,&earth_model_wgs84);
   if (matchedstring) return;
 #endif
+  PREAD(sname,svalue,szRegistryAutoContrast,&AutoContrast);
+  if (matchedstring) return;
 
 
   if (SaveRuntime) if(!IsEmbedded()) {

@@ -503,6 +503,44 @@ static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mod
 
 }
 
+static void OnAutoContrastChange(DataField *Sender, DataField::DataAccessKind_t Mode){
+  WndProperty* wp;
+  switch(Mode){
+     case DataField::daGet:
+        break;
+     case DataField::daPut:
+     case DataField::daChange:
+        wp = (WndProperty*)wf->FindByName(TEXT("prpAutoContrast"));
+        if (wp) {
+           if (AutoContrast != wp->GetDataField()->GetAsBoolean()) {
+              AutoContrast = wp->GetDataField()->GetAsBoolean();
+           }
+        }
+        wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainContrast"));
+        if(wp) {
+           if(AutoContrast) {
+              wp->SetReadOnly(true);
+           } else {
+              wp->SetReadOnly(false);
+           }
+           wp->RefreshDisplay();
+        }
+        wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainBrightness"));
+        if(wp) {
+           if(AutoContrast) {
+              wp->SetReadOnly(true);
+           } else {
+              wp->SetReadOnly(false);
+           }
+           wp->RefreshDisplay();
+        }
+        break;
+     default:
+        break;
+  }
+}
+
+
 static void OnGearWarningModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
 WndProperty* wp;
 
@@ -1274,6 +1312,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DataAccessCallbackEntry(OnAirspaceDisplay),
   DataAccessCallbackEntry(OnAspPermModified),
   DataAccessCallbackEntry(OnGearWarningModeChange),
+  DataAccessCallbackEntry(OnAutoContrastChange),
 #ifndef NO_BLUETOOTH
   ClickNotifyCallbackEntry(OnBthDevice),
 #endif
@@ -2930,15 +2969,23 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoContrast"));
+  if (wp) {
+     wp->GetDataField()->Set(AutoContrast);
+     wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainContrast"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(TerrainContrast*100/255));
+    if (AutoContrast) wp->SetReadOnly(true); // needed on dlg startup
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainBrightness"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(TerrainBrightness*100/255));
+    if (AutoContrast) wp->SetReadOnly(true); // needed on dlg startup
     wp->RefreshDisplay();
   }
 
@@ -3696,6 +3743,7 @@ int ival;
       CALCULATED_INFO.AutoMacCready=AutoMacCready_Config;
     }
   }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpShading"));
   if (wp) {
     if (Shading_Config != wp->GetDataField()->GetAsBoolean()) {

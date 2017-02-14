@@ -424,6 +424,9 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistry_earth_model_wgs84,earth_model_wgs84);
 #endif
 
+  rprintf(szRegistryAutoContrast,AutoContrast);
+  
+
 
 
   extern bool CommandResolution;

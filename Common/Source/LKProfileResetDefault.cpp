@@ -480,6 +480,9 @@ void LKProfileResetDefault(void) {
 #ifdef _WGS84
   earth_model_wgs84 = true;
 #endif
+
+  AutoContrast=true;
+
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 
 }

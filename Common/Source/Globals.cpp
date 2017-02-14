@@ -649,6 +649,7 @@ void Globals_Init(void) {
   earth_model_wgs84 = true;
 #endif
 
+  AutoContrast=true;
 
   // ^ ADD NEW GLOBALS up here ^
   // ---------------------------
