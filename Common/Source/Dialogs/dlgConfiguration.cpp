@@ -1214,6 +1214,7 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
       ShowWindowControl(wf, TEXT("prpStatus"),false);
     else
     {
+      ShowWindowControl(wf, TEXT("prpStatus"),true);
       wp = (WndProperty*)pOwner->FindByName(TEXT("prpStatus"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
