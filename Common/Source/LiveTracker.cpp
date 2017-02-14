@@ -499,26 +499,22 @@ static int DoTransactionToServer(const char* server_name, int server_port,
 	StartupStore(TEXT(".DoTransactionToServer txbuf : %s%s"), txbuf, NEWLINE);
 #endif
 
-	SOCKET s = INVALID_SOCKET;
-	unsigned int sent = 0;
-	int tmpres;
 	int rxfsm = 0;
 	unsigned int rxlen = 0;
 	char recvbuf[BUFSIZ];
 	unsigned char cdata;
-	unsigned int txbuflen = strlen(txbuf);
 
-	s = EstablishConnection(server_name, server_port);
+	SOCKET s = EstablishConnection(server_name, server_port);
 	if (s == INVALID_SOCKET)
 		return -1;
 
 	//Send the query to the server
-	tmpres = WriteData(s, "GET ", (unsigned int) strlen("GET "));
+	int tmpres = WriteData(s, "GET ", (unsigned int) strlen("GET "));
 	if (tmpres < 0) {
 		rxlen = -1;
 		goto cleanup;
 	}
-	tmpres = WriteData(s, txbuf + sent, txbuflen - sent);
+	tmpres = WriteData(s, txbuf, strlen(txbuf));
 	if (tmpres < 0) {
 		rxlen = -1;
 		goto cleanup;
@@ -999,18 +995,10 @@ static std::string otpReply(std::string question) {
 }
 
 static std::string downloadJSON(std::string url) {
-	int rxlen = -1;
-	TCHAR *tc = new TCHAR[url.size() + 1];
-	ascii2TCHAR(url.c_str(), tc, url.length() + 1);
-	delete[] tc;
 
-	char txbuf[512];
 	char rxcontent[50000];
 
-	sprintf(txbuf, "/%s", url.c_str());
-
-	rxlen = DoTransactionToServer("api.livetrack24.com", 80, txbuf, rxcontent,
-			sizeof(rxcontent));
+	int rxlen = DoTransactionToServer("api.livetrack24.com", 80, url.c_str(), rxcontent, sizeof(rxcontent));
 
 	if (rxlen == -1)
 		return "";
@@ -1024,10 +1012,6 @@ static std::string downloadJSON(std::string url) {
 		}
 	}
 
-	TCHAR *tcc = new TCHAR[response.size() + 1];
-	ascii2TCHAR(response.c_str(), tcc, response.length() + 1);
-	delete[] tcc;
-
 	return response;
 }
 
@@ -1035,14 +1019,14 @@ static picojson::value callLiveTrack24(std::string subURL, bool calledSelf =
 false) {
 	picojson::value res;
 
-	std::string url = "api/v2/op/" + subURL;
+	std::string url = "/api/v2/op/" + subURL;
 	url += "/ak/" + std::string(appKey) + "/vc/" + otpReply(g_otpQuestion);
 	if (calledSelf)
-		url += +"/di/" + g_deviceID + "/ut/" + g_ut;
+		url += "/di/" + g_deviceID + "/ut/" + g_ut;
 
 	std::string reply = downloadJSON(url);
 
-	if (reply == "") {
+	if (reply.empty()) {
 #ifdef LT_DEBUG
 		StartupStore(TEXT(".LiveRadar callLiveTrack24 : Empty response from server%s"),
 				NEWLINE);
@@ -1099,18 +1083,15 @@ static bool LiveTrack24_Radar() {
 	t.tm_isdst = 0; // Is DST on? 1 = yes, 0 = no, -1 = unknown
 	t_of_day = mkgmtime(&t);
 
-	std::string strCommand;
-	std::string slat, slon;
-	std::ostringstream strs;
-	strs << "liveList";
+	std::ostringstream strsCommand;
+	strsCommand << "liveList";
 	//strs << "/lat/" << GPS_INFO.Latitude << "/lon/" << GPS_INFO.Longitude << "/radius/30"  ;
-	strs << "/friends/1";
-	strs << "/sync/" << g_sync;
-	strs << "/gzip/1";
+	strsCommand << "/friends/1";
+	strsCommand << "/sync/" << g_sync;
+	strsCommand << "/gzip/1";
 
-	strCommand = strs.str();
 
-	picojson::value json = callLiveTrack24(strCommand);
+	picojson::value json = callLiveTrack24(strsCommand.str());
 
 	if (json.is<picojson::null>()) {
 #ifdef LT_DEBUG
@@ -1137,7 +1118,7 @@ static bool LiveTrack24_Radar() {
 	picojson::array list = json.get("userlist").get<picojson::array>();
 
 #ifdef LT_DEBUG
-	StartupStore(TEXT(". LiveRadar list.size =%d %s"), list.size(),
+	StartupStore(TEXT(". LiveRadar list.size =%d %s"), (int)list.size(),
 			NEWLINE);
 #endif
 
