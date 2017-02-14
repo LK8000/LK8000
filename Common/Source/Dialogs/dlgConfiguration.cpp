@@ -70,6 +70,7 @@ static WndForm *wf=NULL;
 #define NUMOFCONFIGPAGES 22 // total number of config pages including engineering
 #define NUMENGPAGES 1       // number of engineering hidden pages, part of NUMOFCONFIGPAGES
 #define FIRST_INFOBOX_PAGE 13 
+#define MAXNUMDEVICES 6     // A B C D E F
 
 static WndFrame *wConfig[NUMOFCONFIGPAGES]={};
 
@@ -3250,7 +3251,11 @@ void dlgConfigurationShowModal(short mode){
 //         ShowWindowControl(wf, _T("prpExtSound2"), false);
         }
 #endif
-  }
+     extern void InitDlgDevice(WndForm *wf);
+     InitDlgDevice(wf);
+
+
+  } // end configmode_device
 
   wp = static_cast<WndProperty*>(wf->FindByName(_T("prpEarthModel")));
   if(wp) {
@@ -4513,4 +4518,130 @@ void UpdateAircraftConfig(void){
   }
 }
 
+
+//
+// Setup device dialogs fine tuning
+//
+void InitDlgDevice(WndForm *pWndForm) {
+
+   if(!pWndForm) {
+      LKASSERT(0);
+      return;
+   }
+
+   WindowControl * pWnd = nullptr;
+
+   if (ScreenLandscape) {
+
+            const unsigned int SPACEBORDER = NIBLSCALE(2); // spacing between buttons and left&right
+            const unsigned int w = (ScreenSizeX - (SPACEBORDER * (MAXNUMDEVICES+1))) / MAXNUMDEVICES;
+            unsigned int lx = SPACEBORDER - 1 + SPACEBORDER/2; // count from 0
+
+            pWnd = pWndForm->FindByName(TEXT("cmdA"));
+            if(pWnd) {
+                pWnd->SetWidth(w);
+                pWnd->SetLeft(lx);
+            }
+
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdB"));
+            if(pWnd) {
+                pWnd->SetWidth(w);
+                pWnd->SetLeft(lx);
+            }
+
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdC"));
+            if(pWnd) {
+                pWnd->SetWidth(w);
+                pWnd->SetLeft(lx);
+            }
+
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdD"));
+            if(pWnd) {
+                pWnd->SetWidth(w);
+                pWnd->SetLeft(lx);
+            }
+
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdE"));
+            if(pWnd) {
+                pWnd->SetWidth(w);
+                pWnd->SetLeft(lx);
+            }
+
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdF"));
+            if(pWnd) {
+                pWnd->SetWidth(w);
+                pWnd->SetLeft(lx);
+            }
+
+        } else {
+
+            return; // no need to adjust for portrait mode
+
+/*
+            const unsigned SPACEBORDER = NIBLSCALE(2);
+            unsigned w = (ScreenSizeX - (SPACEBORDER * 3)) / 2;
+            int h = ScreenSizeY - IBLSCALE(90); // 40+5+40+5
+
+            int lx = SPACEBORDER - 1; // count from 0
+            pWnd = pWndForm->FindByName(TEXT("cmdA"));
+            if(pWnd) {
+                pWnd->SetTop(h + IBLSCALE(45));
+                pWnd->SetLeft(lx);
+                pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
+            }
+
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdB"));
+            if(pWnd) {
+                pWnd->SetTop(h + IBLSCALE(45));
+                pWnd->SetLeft(lx);
+                pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
+            }
+
+
+            lx = SPACEBORDER - 1; // count from 0
+            pWnd = pWndForm->FindByName(TEXT("cmdC"));
+            if(pWnd) {
+                pWnd->SetTop(h);
+                pWnd->SetLeft(lx);
+                pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
+            }
+
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdD"));
+            if(pWnd) {
+                pWnd->SetTop(h);
+                pWnd->SetLeft(lx);
+                pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
+            lx += w + SPACEBORDER;
+
+            pWnd = pWndForm->FindByName(TEXT("cmdE"));
+            if(pWnd) {
+                pWnd->SetTop(h);
+                pWnd->SetLeft(lx);
+                pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
+            }
+
+            lx += w + SPACEBORDER;
+            pWnd = pWndForm->FindByName(TEXT("cmdF"));
+            if(pWnd) {
+                pWnd->SetTop(h);
+                pWnd->SetLeft(lx);
+                pWnd->SetHeight(IBLSCALE(40));
+                pWnd->SetWidth(w);
+            }
+*/
+  }
+
+}
 
