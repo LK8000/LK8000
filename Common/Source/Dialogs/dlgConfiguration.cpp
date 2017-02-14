@@ -57,13 +57,19 @@ static bool fontschanged= false;
 
 static  int dwDeviceIndex[NUMDEV] = {0,0,0,0,0,0};
 
-short configMode=0;	// current configuration mode, 0=system 1=pilot 2=aircraft 3=device
-short config_page[4]={0,0,0,0}; // remember last page we were using, for each profile
+#define CONFIGMODE_SYSTEM   0
+#define CONFIGMODE_PILOT    1
+#define CONFIGMODE_AIRCRAFT 2
+#define CONFIGMODE_DEVICE   3
+
+static short configMode=0;  // current configuration mode, see above
+static short config_page[4]={0,0,0,0}; // remember last page we were using, for each profile
 
 static WndForm *wf=NULL;
 
 #define NUMOFCONFIGPAGES 22 // total number of config pages including engineering
 #define NUMENGPAGES 1       // number of engineering hidden pages, part of NUMOFCONFIGPAGES
+#define FIRST_INFOBOX_PAGE 13 
 
 static WndFrame *wConfig[NUMOFCONFIGPAGES]={};
 
@@ -301,7 +307,7 @@ static void NextPage(int Step){
     LKASSERT((size_t)configMode<array_size(config_page));
     config_page[configMode] += Step;
 
-    if (configMode==0 && !EngineeringMenu) { 
+    if (configMode==CONFIGMODE_SYSTEM && !EngineeringMenu) { 
         if (config_page[configMode]>=(numPages-NUMENGPAGES)) { config_page[configMode]=0; }
         if (config_page[configMode]<0) { config_page[configMode]=numPages-(NUMENGPAGES+1); } 
     } else {
@@ -332,11 +338,13 @@ static void NextPage(int Step){
     }
 } // NextPage
 
-static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *Name*/) {
-  //  const TCHAR * DevicePropName[] = {_T("prpComPort1")};
 
-    // check if all array have same size ( compil time check );
-//    static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
+static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *Name*/) {
+
+  // const TCHAR * DevicePropName[] = {_T("prpComPort1")};
+  // check if all array have same size ( compil time check );
+  // static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
+
   if(!pOwner)
     return;
   WndProperty* wp;
@@ -412,7 +420,7 @@ static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daPut:
     case DataField::daChange:
-  //    StartupStore(_T("........... OnDeviceAData %i %s"),SelectedDevice,NEWLINE); // 091105
+//    StartupStore(_T("........... OnDeviceAData %i %s"),SelectedDevice,NEWLINE); // 091105
       StartupStore(_T("........... OnDeviceAData Device %i %s %s"),SelectedDevice, Sender->GetAsString(),NEWLINE); // 091105
       UpdateDeviceSetupButton(wf, SelectedDevice);
     break;
@@ -438,7 +446,9 @@ static void OnAirspaceFillType(DataField *Sender, DataField::DataAccessKind_t Mo
         wp->SetVisible( (Sender->GetAsInteger() == (int)MapWindow::asp_fill_ablend_full) || (Sender->GetAsInteger() == (int)MapWindow::asp_fill_ablend_borders) );
     break;
 	default: 
+                #ifdef TESTBENCH
 		StartupStore(_T("........... DBG-908%s"),NEWLINE); 
+                #endif
 		break;
   }
 }
@@ -460,7 +470,9 @@ static void OnAirspaceDisplay(DataField *Sender, DataField::DataAccessKind_t Mod
       if (wp) wp->SetVisible(altmode==AUTO || altmode==ALLBELOW);
     break;
 	default: 
+                #ifdef TESTBENCH
 		StartupStore(_T("........... DBG-908%s"),NEWLINE); 
+                #endif
 		break;
   }
 }
@@ -482,7 +494,9 @@ static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mod
 
     break;
 	default:
+                #ifdef TESTBENCH
 		StartupStore(_T("........... DBG-908%s"),NEWLINE);
+                #endif
 		break;
   }
 
@@ -524,7 +538,6 @@ int ival;
         }
       break;
       default:
-//     	StartupStore(_T("........... DBG-908%s"),NEWLINE);
       break;
     }
 }
@@ -710,7 +723,7 @@ static void OnCloseClicked(WndButton* pWnd) {
 static int cpyInfoBox[10];
 
 int page2mode(void) {
-  return config_page[configMode]-13;
+  return config_page[configMode]-FIRST_INFOBOX_PAGE;
 }
 
 
@@ -813,7 +826,6 @@ static void SetLocalTime(void) {
 }
 
 static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
-//  WndProperty* wp;
   int ival;
 
   switch(Mode){
@@ -909,7 +921,7 @@ static void OnWaypointNewClicked(WndButton* pWnd){
 
 static void OnWaypointEditClicked(WndButton* pWnd){
 
-    int res;
+  int res;
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
 	return;
@@ -1022,8 +1034,8 @@ static void OnBthDevice(WndButton* pWnd) {
     ReadPortSettings(SelectedDevice,szPort, NULL, NULL);
     UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort1")), szPort);
 
- //   ReadPort2Settings(szPort, NULL, NULL);
-  //  UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
+    // ReadPort2Settings(szPort, NULL, NULL);
+    // UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
 }
 #endif
 
@@ -3219,21 +3231,21 @@ void dlgConfigurationShowModal(short mode){
 
   setVariables(wf);
 
-  if (mode==3) {
+  if (configMode==CONFIGMODE_DEVICE) {
 	TCHAR deviceName1[MAX_PATH];
-//	TCHAR deviceName2[MAX_PATH];
+//      TCHAR deviceName2[MAX_PATH];
 	ReadDeviceSettings(SelectedDevice, deviceName1);
-//	ReadDeviceSettings(1, deviceName2);
+//      ReadDeviceSettings(1, deviceName2);
 	UpdateDeviceSetupButton(wf, SelectedDevice);
-//	UpdateDeviceSetupButton(1, deviceName2);
+//      UpdateDeviceSetupButton(1, deviceName2);
 // Don't show external sound config if not compiled for this device or not used
 #ifdef DISABLEEXTAUDIO
         ShowWindowControl(wf, _T("prpExtSound1"), false);
- //       ShowWindowControl(wf, _T("prpExtSound2"), false);
+//      ShowWindowControl(wf, _T("prpExtSound2"), false);
 #else
         if (!IsSoundInit()) {
-            ShowWindowControl(wf, _T("prpExtSound1"), false);
- //           ShowWindowControl(wf, _T("prpExtSound2"), false);
+           ShowWindowControl(wf, _T("prpExtSound1"), false);
+//         ShowWindowControl(wf, _T("prpExtSound2"), false);
         }
 #endif
   }
