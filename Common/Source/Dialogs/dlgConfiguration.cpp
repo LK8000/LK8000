@@ -1590,6 +1590,7 @@ static void setVariables( WndForm *pOwner) {
     wp->RefreshDisplay();
   }
 
+#ifdef TESTBENCH
   for(int devIdx=0; devIdx < NUMDEV; devIdx++)
   {
       ReadDeviceSettings(devIdx, deviceName1);
@@ -1614,6 +1615,7 @@ static void setVariables( WndForm *pOwner) {
         }
       }
   }
+#endif
   UpdateButtons(wf);
 
 
