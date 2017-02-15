@@ -102,7 +102,7 @@ void FAI_Sector::AnalysisDrawFAISector (LKSurface& Surface, const RECT& rc, cons
   hpSectorPen.Create(PEN_DASH, ScreenThinSize, RGB_BLACK );
   hpOldPen = Surface.SelectObject(hpSectorPen);
 
-  unsigned  int NumberGrids = m_FAIGridLines.size()-1;
+  unsigned  int NumberGrids = m_FAIGridLines.size();
   unsigned int Grid_num = 0;
   
   for (GPS_Gridlines::const_reference line : m_FAIGridLines) {
@@ -111,7 +111,8 @@ void FAI_Sector::AnalysisDrawFAISector (LKSurface& Surface, const RECT& rc, cons
       for (const GeoPoint& pt : line.GridLine) {
         FAISector_polyline.push_back(ToScreen(pt));
       }
-      Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size());
+      if(Grid_num <  NumberGrids-1)
+        Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size());
       
       {
         const ScreenPoint& pt_start = FAISector_polyline.front();
