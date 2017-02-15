@@ -24,7 +24,7 @@ using namespace std::placeholders;
 #endif
 #endif
 
-#ifdef linux
+#ifdef __linux__
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #endif
