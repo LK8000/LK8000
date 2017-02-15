@@ -542,8 +542,7 @@ bool DataFieldEnum::GetAsBoolean() {
 }
 
 void DataFieldEnum::addEnumText(const TCHAR *Text) {
-  const unsigned int idx = mEntries.size();
-  mEntries.push_back({idx, Text});
+  mEntries.push_back({ (unsigned)mEntries.size(), Text });
 }
 
 void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
