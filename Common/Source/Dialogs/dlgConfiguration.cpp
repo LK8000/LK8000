@@ -1632,7 +1632,8 @@ static void setVariables( WndForm *pOwner) {
   }
 
 #ifdef TESTBENCH
-  for(int devIdx=0; devIdx < NUMDEV; devIdx++)
+  
+  if (configMode==CONFIGMODE_DEVICE) for(int devIdx=0; devIdx < NUMDEV; devIdx++)
   {
       ReadDeviceSettings(devIdx, deviceName1);
       {
