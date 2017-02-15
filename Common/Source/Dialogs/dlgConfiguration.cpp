@@ -2242,7 +2242,7 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(LiveTrackerInterval));
+    wp->GetDataField()->SetAsInteger(LiveTrackerInterval);
     wp->GetDataField()->SetUnits(TEXT("sec"));
     wp->RefreshDisplay();
   }
@@ -3356,8 +3356,8 @@ void dlgConfigurationShowModal(short mode){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    if (LiveTrackerInterval != (int)wp->GetDataField()->GetAsFloat()) {
-      LiveTrackerInterval = (int)(wp->GetDataField()->GetAsFloat());
+    if (LiveTrackerInterval != wp->GetDataField()->GetAsInteger()) {
+      LiveTrackerInterval = (wp->GetDataField()->GetAsInteger());
       requirerestart = true;
     }
   }
@@ -3366,8 +3366,8 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (LiveTrackerRadar_config != wp->GetDataField()->GetAsBoolean()) {
       LiveTrackerRadar_config = wp->GetDataField()->GetAsBoolean();
+      requirerestart = true;
     }
-    requirerestart = true;
   }
   
   double val;
