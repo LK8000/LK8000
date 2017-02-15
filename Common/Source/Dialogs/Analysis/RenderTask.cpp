@@ -195,8 +195,9 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
     else           fTic = 1;
     if( DISTANCEMODIFY > 0.0)
       fTic = 10* fTic/ DISTANCEMODIFY;
+#ifdef FAI_GRID_DEBUG
     StartupStore(_T("RenderContest yscale:%f  fZoom:%f  fTic:%f DISTANCEMODIFY:%f %s"), yscale,fZoom, fTic, DISTANCEMODIFY, NEWLINE);
-
+#endif
   if (!AATEnabled)
   {
 	for (i=MAXTASKPOINTS-1; i>0; i--)

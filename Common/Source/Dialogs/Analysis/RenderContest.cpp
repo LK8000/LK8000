@@ -219,8 +219,9 @@ double         fTic = 5;
   if(fZoom > 10) fTic = 25;
   if(fZoom > 25) fTic = 50;
   if(fZoom > 30) fTic = 100;
-
+#ifdef FAI_GRID_DEBUG
   StartupStore(_T("RenderContest Statistics::yscale:%f  fZoom:%f  fTic:%f %s"), Statistics::yscale,fZoom, fTic, NEWLINE);
+#endif
   if( DISTANCEMODIFY > 0.0)
 	fTic =fTic/ DISTANCEMODIFY;
 
