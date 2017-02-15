@@ -28,7 +28,7 @@ public:
     ComPort( ComPort&& ) = delete;
     ComPort& operator=( ComPort&& ) = delete;
 
-    bool StopRxThread();
+    virtual bool StopRxThread();
     virtual bool StartRxThread();
 
 #if USELKASSERT

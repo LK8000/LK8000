@@ -362,6 +362,8 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("UDPServer"));
 
 #ifdef ANDROID
+    COMMPort.push_back(_T("Bluetooth Server"));
+
     JNIEnv *env = Java::GetEnv();
     if(env) {
         Java::LocalRef<jobjectArray> bonded(env, BluetoothHelper::list(env));
@@ -567,7 +569,7 @@ BOOL devInit() {
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
         StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), DeviceName, Port, NEWLINE);
         
-        ComPort *Com = NULL;
+        ComPort *Com = nullptr;
         if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
 #ifdef NO_BLUETOOTH
             bool bStartOk = true;
@@ -611,7 +613,10 @@ BOOL devInit() {
             }
 #endif
             Com = new UDPServerPort(i, Port);
-
+        } else if (_tcscmp(Port, _T("Bluetooth Server")) == 0) {
+#ifdef ANDROID
+            Com = new BluetoothServerPort(i, Port);
+#endif
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
         }

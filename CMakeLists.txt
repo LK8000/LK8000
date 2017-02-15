@@ -96,6 +96,8 @@ add_library( LK8000 SHARED
 
     Common/Source/Android/Main.cpp
     Common/Source/Android/InternalPort.cpp
+    Common/Source/Android/AndroidPort.cpp
+    Common/Source/Android/BluetoothPort.cpp
 
     Common/Source/Window/WndMain.cpp
 

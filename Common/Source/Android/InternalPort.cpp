@@ -5,8 +5,6 @@
  *
  * File:   InternalPort.cpp
  * Author: Bruno de Lacheisserie
- *
- * Adapted from original code provided by Naviter
  */
 
 #include "InternalPort.h"

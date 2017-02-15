@@ -5,8 +5,6 @@
  *
  * File:   InternalPort.h
  * Author: Bruno de Lacheisserie
- *
- * Adapted from original code provided by Naviter
  */
 
 #ifndef ANDROID_INTERNALPORT_H

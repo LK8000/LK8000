@@ -22,6 +22,9 @@ public:
 protected:
     virtual bool Connect();
 };
+#elif defined (ANDROID)
+#include "Android/BluetoothPort.h"
+typedef  BluetoothPort BthPort;
 #else
 #include "../NullComPort.h"
 typedef NullComPort BthPort;
