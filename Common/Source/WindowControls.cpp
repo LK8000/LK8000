@@ -1757,18 +1757,8 @@ int WndForm::ShowModal(void) {
                 continue;
             }
             
-#ifdef _WIN32_WCE
             /* The Windows CE dialog manager does not handle KEY_ESCAPE and
                so we have to do it by ourself */
-
-            // On Altair, the RemoteKey ("E" Button) shall also close the analyse-page
-            if (IsAltair()) {
-                if (event.GetKeyCode() == KEY_ESCAPE || event.GetKeyCode() == KEY_F15) {
-                    mModalResult = mrOK;
-                    continue;
-                }
-            } else 
-#endif
 
             if (event.GetKeyCode() == KEY_ESCAPE) {
                 mModalResult = mrCancel;
