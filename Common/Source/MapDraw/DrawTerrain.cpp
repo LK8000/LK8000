@@ -16,7 +16,6 @@
 #include "NavFunctions.h"
 
 // #define TDEBUG 1
-#define AUTOCONTRAST
 
 #include "./ColorRamps.h"
 #include "Kobo/Model.hpp"
@@ -37,9 +36,7 @@ unsigned short minalt = TERRAIN_INVALID;
 
 static bool terrain_ready = false;
 
-#ifdef AUTOCONTRAST
 static short autobr=128;
-#endif
 
 extern bool FastZoom;
 
@@ -368,11 +365,11 @@ public:
         if (epx > min(ixs, iys) / 4) {
             do_shading = false;
         } else {
-#ifdef AUTOCONTRAST
-            if (MapWindow::zoom.RealScale() > 18) do_shading = false;
-#else
-            if (MapWindow::zoom.RealScale() > NOSHADING_REALSCALE) do_shading = false;
-#endif
+            if (AutoContrast) {
+               if (MapWindow::zoom.RealScale() > 18) do_shading = false;
+            } else {
+               if (MapWindow::zoom.RealScale() > NOSHADING_REALSCALE) do_shading = false;
+            }
         }
 
         POINT orig = MapWindow::GetOrigScreen();
@@ -479,7 +476,9 @@ public:
         const unsigned int ixsright = cixs - 1 - iepx;
         const unsigned int iysbottom = ciys - iepx;
         const int hscale = max(1, (int) (pixelsize_d));
-#ifdef AUTOCONTRAST
+
+        int tc=1;
+     if (AutoContrast) {
         //
         // The more you zoom in (lower RealScale), the more you rise contrast and brightness.
         // More details are visible at high zoom levels, automatically, and shading artifacts are not
@@ -489,7 +488,6 @@ public:
 
         // 100->255 %  (1:2.55) :
         // 10=25.5 15=38 20=51 25=64 30=76.5 40=102 45=114 50=127.5 60=153 65=166 70=178.5 75=191 80=204 85=218 90=229
-        int tc;
         const double ftc=MapWindow::zoom.RealScale();
         if (ftc>10.8) { tc=51; autobr=114; }                               // 20 km and up 20 45
            else if (ftc>7.2) { tc=64; autobr=128; }                        // 15 km   25 50
@@ -504,40 +502,12 @@ public:
 
         // StartupStore(_T("AUTOC scale=%f  contrast=%d  brightness=%d\n"),MapWindow::zoom.RealScale(), tc,autobr);
 
-
-/*
-        //
-        // Linear scaling approach, not good
-        //
-        #define TOP_SHD 14.3 // at this realscale, contrast is 0
-        double ftc=std::min(MapWindow::zoom.RealScale(),TOP_SHD); 
-        ftc*=255.0/TOP_SHD;
-        int tc=255-(int)ftc;
-        StartupStore(_T("SLOPE scale=%f contrast=%d\n"),MapWindow::zoom.RealScale(),tc);
-        //
-        // Now that contrast is changing dynamically, we can adjust brightness for best results.
-        // The reasonable range with the contrast automatically adjusted is 70% to 100%, in the range 5km to 0
-        // 
-        #define MINBT_THR 3.1   // The min brightness threshold for RealScale
-        #define MINBT_VAL 70.0  // Percentage of brightness at min >= RealScale
-        //
-        #define MINBT_BOT (MINBT_VAL*(255.0/100.0))  // 178.7
-        #define MINBT_UNI (255-MINBT_BOT)/MINBT_THR // 25.5
-        double fbr=std::min(MapWindow::zoom.RealScale(),MINBT_THR); // 5km
-        fbr *= MINBT_UNI;
-        fbr += MINBT_BOT;
-        fbr =  MINBT_BOT + (255.0-fbr);
-        autobrightness=(short)fbr;
-        StartupStore(_T("BRIGH scale=%f  uni=%f fbr=%f\n"),MapWindow::zoom.RealScale(), MINBT_UNI,fbr);
-*/
-
-        
-
-#else
-        const int tc = TerrainContrast;
+     } else { // NOT AUTOCONTRAST
+        tc = TerrainContrast;
         // StartupStore(_T("CONTRAST=%d  BRIGHT=%d  scale=%f \n"),TerrainContrast,TerrainBrightness, MapWindow::zoom.RealScale());
-#endif
+     }
 
+        const int tc_in_use = tc;
         const BGRColor* oColorBuf = colorBuf + 64 * 256;
         if (!sbuf->GetBuffer()) return;
 
@@ -644,7 +614,7 @@ public:
                             int mag = isqrt4(dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
                             if (mag > 0) {
                                 mag = (dd2 * sz + dd0 * sx + dd1 * sy) / mag;
-                                mag = max(-64, min(63, (mag - sz) * tc / 128));
+                                mag = max(-64, min(63, (mag - sz) * tc_in_use / 128));
                                 *imageBuf = oColorBuf[h + mag * 256];
                             } else {
                                 *imageBuf = oColorBuf[h];
@@ -841,11 +811,12 @@ _redo:
 
         // step 2: calculate sunlight vector
 
-#ifdef AUTOCONTRAST
-        const double fudgeelevation = (10.0 + 80.0 * autobr / 255.0);
-#else
-        const double fudgeelevation = (10.0 + 80.0 * TerrainBrightness / 255.0);
-#endif
+        double fudgeelevation = 1;
+        if (AutoContrast)
+           fudgeelevation = (10.0 + 80.0 * autobr / 255.0);
+        else
+           fudgeelevation = (10.0 + 80.0 * TerrainBrightness / 255.0);
+
         const int sx = (255 * (fastcosine(fudgeelevation) * fastsine(sunazimuth)));
         const int sy = (255 * (fastcosine(fudgeelevation) * fastcosine(sunazimuth)));
         const int sz = (255 * fastsine(fudgeelevation));
