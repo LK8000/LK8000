@@ -448,14 +448,15 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   if(Statistics::yscale >0)
     fZoom =  2500.0/Statistics::yscale;
   double         fTic = 100;
-  if(fZoom > 30) fTic = 100;else
-  if(fZoom > 15) fTic = 50; else
-  if(fZoom > 10) fTic = 25; else
-  if(fZoom > 3)  fTic = 10; else
-  if(fZoom > 1)  fTic = 5;  else fTic = 1;
+  if(fZoom > 30) fTic = 100;
+  if(fZoom > 15) fTic = 50;
+  if(fZoom > 10) fTic = 25;
+  if(fZoom > 3)  fTic = 10;
+  if(fZoom > 1)  fTic = 5;
+  else           fTic = 1;
   if( DISTANCEMODIFY > 0.0)
     fTic =fTic/ DISTANCEMODIFY;
-
+/***/
   POINT line[2];
   BOOL bLast = false;
   BOOL bFirstUnit = true;

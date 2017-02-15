@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "LKObjects.h"
-
+#include "DrawFAIOpti.h"
 
 void Statistics::RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode)
 {
@@ -22,6 +22,9 @@ double fXY_Scale = 1.5;
   double x1, y1, x2=0, y2=0;
   double lat_c, lon_c;
   double aatradius[MAXTASKPOINTS];
+ // AnalysisProjection StatisticProjection()
+static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
+
 
   // find center
   ResetScale();
@@ -55,6 +58,7 @@ double fXY_Scale = 1.5;
     DrawNoData(Surface, rc);
     return;
   }
+
 
   CPointGPSArray trace;
   CContestMgr::Instance().Trace(trace);
@@ -145,7 +149,6 @@ double fXY_Scale = 1.5;
 
   ScaleMakeSquare(rc);
 
-
   // draw aat areas
     if (AATEnabled)
     {
@@ -180,6 +183,20 @@ double fXY_Scale = 1.5;
       }
     }
 
+    double fZoom = 100.0f;
+    if(Statistics::yscale >0)
+      fZoom =  2500.0/Statistics::yscale;
+    double         fTic = 100;
+    if(fZoom > 30) fTic = 100;
+    if(fZoom > 15) fTic = 50;
+    if(fZoom > 10) fTic = 25;
+    if(fZoom > 3)  fTic = 10;
+    if(fZoom > 1)  fTic = 5;
+    else           fTic = 1;
+    if( DISTANCEMODIFY > 0.0)
+      fTic = 10* fTic/ DISTANCEMODIFY;
+    StartupStore(_T("RenderContest yscale:%f  fZoom:%f  fTic:%f DISTANCEMODIFY:%f %s"), yscale,fZoom, fTic, DISTANCEMODIFY, NEWLINE);
+
   if (!AATEnabled)
   {
 	for (i=MAXTASKPOINTS-1; i>0; i--)
@@ -206,11 +223,15 @@ double fXY_Scale = 1.5;
 		if( ValidTaskPoint(4) && i <2)
 			goto skip_FAI;
 #ifndef DITHER
-		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
-	    RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
+	    TaskFAISector[2*i].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
+	    TaskFAISector[2*i].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTYELLOW) ;
+		TaskFAISector[2*i+1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
+		TaskFAISector[2*i+1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTCYAN) ;
 #else
-		RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );
-	    RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_GREY   );
+	    TaskFAISector[2*i].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
+	    TaskFAISector[2*i].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTGREY) ;
+		TaskFAISector[2*i+1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
+		TaskFAISector[2*i+1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_GREY) ;
 #endif
 	    skip_FAI:
 		DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
@@ -224,12 +245,20 @@ double fXY_Scale = 1.5;
 	  lon1 = WayPointList[Task[3].Index].Longitude;
 	  lat2 = WayPointList[Task[1].Index].Latitude;
 	  lon2 = WayPointList[Task[1].Index].Longitude;
+
+// RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );
+// RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_GREY   );
           #ifndef DITHER
-	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTYELLOW );
-	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_LIGHTCYAN   );
+	    TaskFAISector[MAXTASKPOINTS-1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
+	    TaskFAISector[MAXTASKPOINTS-1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTYELLOW) ;
+		TaskFAISector[MAXTASKPOINTS-2].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
+		TaskFAISector[MAXTASKPOINTS-2].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTCYAN) ;
           #else
-	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );
-	  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_GREY   );
+
+	    TaskFAISector[MAXTASKPOINTS-1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
+	    TaskFAISector[MAXTASKPOINTS-1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTGREY) ;
+		TaskFAISector[MAXTASKPOINTS-2].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
+		TaskFAISector[MAXTASKPOINTS-2].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_GREY) ;
           #endif
 	}
   }

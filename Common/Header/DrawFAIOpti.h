@@ -28,6 +28,7 @@ struct GPS_Gridline_t
 
 typedef std::list<GPS_Gridline_t> GPS_Gridlines;
 
+class Projection;
 
 class FAI_Sector
 {
@@ -42,7 +43,17 @@ public:
  ~FAI_Sector(void);
  void FreeFAISectorMem(void);
  bool CalcSectorCache(double lat1, double lon1, double lat2, double lon2, double fGrid, int iOpposite);
- int DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const LKColor& InFfillcolor);
+
+ /**
+	* Specialised For MapWindow
+	*/
+ void DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const LKColor& InFfillcolor);
+ 
+ /**
+	* For Specialised for Analysis Dialog
+	*/
+ void AnalysisDrawFAISector (LKSurface& Surface, const RECT& rc, const GeoPoint& center, const LKColor& InFfillcolor);
+
 } ;
 
 
