@@ -1211,7 +1211,6 @@ DLGS	:=\
 	$(DLG)/Analysis/RenderBarograph.cpp \
 	$(DLG)/Analysis/RenderClimb.cpp \
 	$(DLG)/Analysis/RenderContest.cpp \
-	$(DLG)/Analysis/RenderFAISector.cpp \
 	$(DLG)/Analysis/RenderGlidePolar.cpp \
 	$(DLG)/Analysis/RenderSpeed.cpp\
 	$(DLG)/Analysis/RenderTask.cpp \
