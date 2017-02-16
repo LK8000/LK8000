@@ -223,9 +223,8 @@ const TCHAR *LKGetText(const TCHAR *TextIn) {
 
 //
 // Direct token access, with range check, faster than LKGetText of course
-// !!! this function is not threadsafe in case of Error;
 //
-const TCHAR *MsgToken(const unsigned int inumber) {
+const TCHAR *MsgToken(unsigned inumber) {
   if (inumber<=MAX_MESSAGES && LKMessages[inumber]) {
     return LKMessages[inumber];
   }
@@ -522,12 +521,6 @@ bool LKLoadMessages(bool fillup) {
 	LKMessages[inumber] = (TCHAR *)malloc((_tcslen(scapt)+1)*sizeof(TCHAR));
 	LKASSERT(LKMessages[inumber]!=NULL);
 	_tcscpy(LKMessages[inumber],scapt);
-	if (inumber>=MAX_MESSAGES) {
-		#if TESTBENCH
-		StartupStore(_T("... TOO MANY MESSAGES, MAX %d%s"), MAX_MESSAGES, NEWLINE);
-		#endif
-		break;
-	}
 
   }
   zzip_fclose(hFile);

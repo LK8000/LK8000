@@ -19,7 +19,7 @@ void LKUnloadMessage();
 
 const TCHAR *LKgethelptext(const TCHAR *TextIn);
 const TCHAR *LKGetText(const TCHAR *TextIn);
-const TCHAR *MsgToken(const unsigned int tindex);
+const TCHAR *MsgToken(unsigned tindex);
 
 
 #define gettext LKGetText

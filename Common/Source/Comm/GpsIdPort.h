@@ -16,29 +16,29 @@
 #if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
 
-class GpsIdPort  : public ComPort {
+class GpsIdPort : public ComPort {
 public:
     GpsIdPort(int idx, const tstring& sName);
-    virtual ~GpsIdPort();
+    ~GpsIdPort();
 
-    virtual bool Initialize();
-    virtual bool Close();
+    bool Initialize() override;
+    bool Close() override;
 
-    virtual void Flush();
-    virtual void Purge();
-    virtual void CancelWaitEvent();
+    void Flush() override;
+    void Purge() override;
+    void CancelWaitEvent() override;
 
-    virtual int SetRxTimeout(int TimeOut);
-    virtual unsigned long SetBaudrate(unsigned long);
-    virtual unsigned long GetBaudrate() const;
+    int SetRxTimeout(int TimeOut) override;
+    unsigned long SetBaudrate(unsigned long) override;
+    unsigned long GetBaudrate() const override;
 
-    virtual void UpdateStatus();
+    void UpdateStatus() override;
 
-    virtual bool Write(const void *data, size_t length);
-    virtual size_t Read(void *szString, size_t size);
+    bool Write(const void *data, size_t length) override;
+    size_t Read(void *szString, size_t size) override;
 
 protected:
-    virtual unsigned RxThread();
+    unsigned RxThread() override;
 
     HANDLE _hGPS;  // GPS device
     HANDLE _hLoc;  // signals GPS locaton arrival

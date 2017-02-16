@@ -499,26 +499,22 @@ static int DoTransactionToServer(const char* server_name, int server_port,
 	StartupStore(TEXT(".DoTransactionToServer txbuf : %s%s"), txbuf, NEWLINE);
 #endif
 
-	SOCKET s = INVALID_SOCKET;
-	unsigned int sent = 0;
-	int tmpres;
 	int rxfsm = 0;
 	unsigned int rxlen = 0;
 	char recvbuf[BUFSIZ];
 	unsigned char cdata;
-	unsigned int txbuflen = strlen(txbuf);
 
-	s = EstablishConnection(server_name, server_port);
+	SOCKET s = EstablishConnection(server_name, server_port);
 	if (s == INVALID_SOCKET)
 		return -1;
 
 	//Send the query to the server
-	tmpres = WriteData(s, "GET ", (unsigned int) strlen("GET "));
+	int tmpres = WriteData(s, "GET ", (unsigned int) strlen("GET "));
 	if (tmpres < 0) {
 		rxlen = -1;
 		goto cleanup;
 	}
-	tmpres = WriteData(s, txbuf + sent, txbuflen - sent);
+	tmpres = WriteData(s, txbuf, strlen(txbuf));
 	if (tmpres < 0) {
 		rxlen = -1;
 		goto cleanup;
@@ -913,24 +909,23 @@ static void LiveTrackerThread() {
 // Leonardo Live Info (www.livetrack24.com) data exchange thread for API V2
 
 /** Decompress an STL string using zlib and return the original data. */
-static bool gzipInflate(const std::string& compressedBytes,
+static bool gzipInflate(const char* compressedBytes, unsigned nBytes,
 		std::string& uncompressedBytes) {
-	if (compressedBytes.size() == 0) {
-		uncompressedBytes = compressedBytes;
-		return true;
+	if (nBytes == 0) {
+		return false;
 	}
 
 	uncompressedBytes.clear();
 
-	unsigned full_length = compressedBytes.size();
-	unsigned half_length = compressedBytes.size() / 2;
+	unsigned full_length = nBytes;
+	unsigned half_length = nBytes / 2;
 
 	unsigned uncompLength = full_length;
 	char* uncomp = (char*) calloc(sizeof(char), uncompLength);
 
 	z_stream strm;
-	strm.next_in = (Bytef *) compressedBytes.c_str();
-	strm.avail_in = compressedBytes.size();
+	strm.next_in = (Bytef *) compressedBytes;
+	strm.avail_in = nBytes;
 	strm.total_out = 0;
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
@@ -971,11 +966,12 @@ static bool gzipInflate(const std::string& compressedBytes,
 		return false;
 	}
 
-	for (size_t i = 0; i < strm.total_out; ++i) {
-		uncompressedBytes += uncomp[i];
+	if(done) {
+		std::copy_n(uncomp, strm.total_out, std::back_inserter(uncompressedBytes));
 	}
+
 	free(uncomp);
-	return true;
+	return done;
 }
 
 static std::string otpReply(std::string question) {
@@ -999,50 +995,40 @@ static std::string otpReply(std::string question) {
 }
 
 static std::string downloadJSON(std::string url) {
-	int rxlen = -1;
-	TCHAR *tc = new TCHAR[url.size() + 1];
-	ascii2TCHAR(url.c_str(), tc, url.length() + 1);
-	delete[] tc;
 
-	char txbuf[512];
-	char rxcontent[50000];
+	typedef std::array<char, 64*1024> buffer_t;
+	std::unique_ptr<buffer_t> rxcontent_ptr(new buffer_t);
+	buffer_t& rxcontent(*rxcontent_ptr);
 
-	sprintf(txbuf, "/%s", url.c_str());
-
-	rxlen = DoTransactionToServer("api.livetrack24.com", 80, txbuf, rxcontent,
-			sizeof(rxcontent));
+	int rxlen = DoTransactionToServer("api.livetrack24.com", 80, url.c_str(), rxcontent.data(), rxcontent.size());
 
 	if (rxlen == -1)
 		return "";
 
-	std::string response(rxcontent, rxlen);
+
 
 	if (url.find("gzip/1") != std::string::npos) {
-		std::string stedec;
-		if (gzipInflate(response, stedec)) {
-			response = stedec;
+		std::string response;
+		if (gzipInflate(rxcontent.data(), rxlen, response)) {
+			return response;
 		}
 	}
 
-	TCHAR *tcc = new TCHAR[response.size() + 1];
-	ascii2TCHAR(response.c_str(), tcc, response.length() + 1);
-	delete[] tcc;
-
-	return response;
+	return std::string(rxcontent.data(), rxlen);
 }
 
 static picojson::value callLiveTrack24(std::string subURL, bool calledSelf =
 false) {
 	picojson::value res;
 
-	std::string url = "api/v2/op/" + subURL;
+	std::string url = "/api/v2/op/" + subURL;
 	url += "/ak/" + std::string(appKey) + "/vc/" + otpReply(g_otpQuestion);
 	if (calledSelf)
-		url += +"/di/" + g_deviceID + "/ut/" + g_ut;
+		url += "/di/" + g_deviceID + "/ut/" + g_ut;
 
 	std::string reply = downloadJSON(url);
 
-	if (reply == "") {
+	if (reply.empty()) {
 #ifdef LT_DEBUG
 		StartupStore(TEXT(".LiveRadar callLiveTrack24 : Empty response from server%s"),
 				NEWLINE);
@@ -1051,6 +1037,9 @@ false) {
 	}
 
 	std::string err = picojson::parse(res, reply);
+	if(!res.is<picojson::object>()) {
+		return res;
+	}
 
 	if (res.get("qwe").is<std::string>()) {
 		g_otpQuestion = res.get("qwe").get<std::string>();
@@ -1099,18 +1088,15 @@ static bool LiveTrack24_Radar() {
 	t.tm_isdst = 0; // Is DST on? 1 = yes, 0 = no, -1 = unknown
 	t_of_day = mkgmtime(&t);
 
-	std::string strCommand;
-	std::string slat, slon;
-	std::ostringstream strs;
-	strs << "liveList";
+	std::ostringstream strsCommand;
+	strsCommand << "liveList";
 	//strs << "/lat/" << GPS_INFO.Latitude << "/lon/" << GPS_INFO.Longitude << "/radius/30"  ;
-	strs << "/friends/1";
-	strs << "/sync/" << g_sync;
-	strs << "/gzip/1";
+	strsCommand << "/friends/1";
+	strsCommand << "/sync/" << g_sync;
+	strsCommand << "/gzip/1";
 
-	strCommand = strs.str();
 
-	picojson::value json = callLiveTrack24(strCommand);
+	picojson::value json = callLiveTrack24(strsCommand.str());
 
 	if (json.is<picojson::null>()) {
 #ifdef LT_DEBUG
@@ -1137,7 +1123,7 @@ static bool LiveTrack24_Radar() {
 	picojson::array list = json.get("userlist").get<picojson::array>();
 
 #ifdef LT_DEBUG
-	StartupStore(TEXT(". LiveRadar list.size =%d %s"), list.size(),
+	StartupStore(TEXT(". LiveRadar list.size =%d %s"), (int)list.size(),
 			NEWLINE);
 #endif
 

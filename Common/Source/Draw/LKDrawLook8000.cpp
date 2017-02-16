@@ -154,7 +154,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         yLeftWind =  rc.bottom - BottomSize - SizeMediumFont.cy - NIBLSCALE(2);
 
 
-        #ifndef linux
+        #ifndef __linux__
         // TahomaBD need a bit adjustments for perfection
         yMcSafety+=NIBLSCALE(1);
         yAltSafety+= NIBLSCALE(1);

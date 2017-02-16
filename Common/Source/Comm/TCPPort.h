@@ -27,19 +27,19 @@ public:
     TCPClientPort(int idx, const tstring& sName) : SocketPort(idx, sName) { }
     
 protected:
-    virtual bool Connect();
+    bool Connect() override;
 };
 
 class TCPServerPort : public SocketPort {
 public:
     TCPServerPort(int idx, const tstring& sName) : SocketPort(idx, sName),  mServerSocket(INVALID_SOCKET) { }
     
-    virtual bool Close();
-    virtual int SetRxTimeout(int TimeOut) { return 0; }
+    bool Close() override;
+    int SetRxTimeout(int TimeOut) override { return 0; }
 protected:
-    virtual bool Connect();
+    bool Connect() override;
     
-    virtual unsigned RxThread();
+    unsigned RxThread() override;
     
     SOCKET mServerSocket;
 };
@@ -51,12 +51,12 @@ public:
 		mSAddressClient =  { 0 };
 	}
 
-    virtual int SetRxTimeout(int TimeOut) { return 0; }
+    int SetRxTimeout(int TimeOut) override { return 0; }
 protected:
-    virtual bool Connect();
+    bool Connect() override;
 
-    virtual unsigned RxThread();
-    virtual bool Write(const void *data, size_t length);
+    unsigned RxThread() override;
+    bool Write(const void *data, size_t length) override;
 
 	SOCKADDR_IN mSAddressClient;
 

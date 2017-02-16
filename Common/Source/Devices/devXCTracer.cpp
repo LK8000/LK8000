@@ -121,7 +121,7 @@ static BOOL XTRC(PDeviceDescriptor_t d, TCHAR *String, TCHAR **params, size_t np
         pGPS->Latitude = latitude;
         pGPS->Longitude = longitude;
 
-        pGPS->NAVWarning = false;
+        pGPS->NAVWarning = ( (latitude == 0.0) && (longitude == 0.0) );
         pGPS->SatellitesUsed = -1;
 
         pGPS->Altitude = StrToDouble(params[10], nullptr); // altitude
