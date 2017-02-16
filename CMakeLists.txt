@@ -670,7 +670,6 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/Analysis/RenderBarograph.cpp
     Common/Source/Dialogs/Analysis/RenderClimb.cpp
     Common/Source/Dialogs/Analysis/RenderContest.cpp
-    Common/Source/Dialogs/Analysis/RenderFAISector.cpp
     Common/Source/Dialogs/Analysis/RenderGlidePolar.cpp
     Common/Source/Dialogs/Analysis/RenderSpeed.cpp
     Common/Source/Dialogs/Analysis/RenderTask.cpp

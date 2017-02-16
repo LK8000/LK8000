@@ -39,13 +39,13 @@ class AnalysisProjection {
 public:
     AnalysisProjection(const GeoPoint& center, const RECT& rect) : _center(center), _Rect(rect) {}
     
-    ScreenPoint operator()(const GeoPoint& pt) const {
+    RasterPoint operator()(const GeoPoint& pt) const {
       double x1 = (pt.longitude - _center.longitude)*fastcosine(_center.latitude);
       double y1 = (pt.latitude - _center.latitude);
 
       return { 
-          static_cast<ScreenPoint::scalar_type>(Statistics::ScaleX(_Rect, x1)), 
-          static_cast<ScreenPoint::scalar_type>(Statistics::ScaleY(_Rect, y1))
+          static_cast<RasterPoint::scalar_type>(Statistics::ScaleX(_Rect, x1)),
+          static_cast<RasterPoint::scalar_type>(Statistics::ScaleY(_Rect, y1))
       };
     }
 private:
@@ -115,17 +115,17 @@ void FAI_Sector::AnalysisDrawFAISector (LKSurface& Surface, const RECT& rc, cons
         Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size());
       
       {
-        const ScreenPoint& pt_start = FAISector_polyline.front();
+        const RasterPoint& pt_start = FAISector_polyline.front();
         Surface.DrawText(pt_start.x, pt_start.y, line.szLable);      
       }
 
       if(Grid_num > 0) {
-        const ScreenPoint& pt_start = FAISector_polyline.back();
+        const RasterPoint& pt_start = FAISector_polyline.back();
         Surface.DrawText(pt_start.x, pt_start.y, line.szLable);
       }
 
       if(Grid_num > 2) {
-    	  const ScreenPoint& pt_mid = FAISector_polyline[FAISector_polyline.size()/2];
+    	const RasterPoint& pt_mid = FAISector_polyline[FAISector_polyline.size()/2];
         Surface.DrawText(pt_mid.x, pt_mid.y, line.szLable);
       }
     }
