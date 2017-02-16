@@ -19,6 +19,7 @@
 #include "Draw/ScreenProjection.h"
 #include "Math/Point2D.hpp"
 #include "DrawFAIOpti.h"
+#include "Asset.hpp"
 
 //#define FAI_SECTOR_DEBUG
 #ifdef HAVE_GLES
@@ -31,24 +32,119 @@ typedef RasterPoint ScreenPoint;
 
 #define MAX_FAI_SECTOR_PTS (8*FAI_SECTOR_STEPS)
 extern LKColor taskcolor;
-int RenderFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double lat1, double lon1, double lat2, double lon2, int iOpposite , const LKColor& fillcolor);
 extern BOOL CheckFAILeg(double leg, double total);
 
 
+class AnalysisProjection {
+public:
+    AnalysisProjection(const GeoPoint& center, const RECT& rect) : _center(center), _Rect(rect) {}
+    
+    ScreenPoint operator()(const GeoPoint& pt) const {
+      double x1 = (pt.longitude - _center.longitude)*fastcosine(_center.latitude);
+      double y1 = (pt.latitude - _center.latitude);
 
+      return { 
+          static_cast<ScreenPoint::scalar_type>(Statistics::ScaleX(_Rect, x1)), 
+          static_cast<ScreenPoint::scalar_type>(Statistics::ScaleY(_Rect, y1))
+      };
+    }
+private:
+    const GeoPoint& _center;
+    const RECT& _Rect;
+};
 
 // #define   FILL_FAI_SECTORS
 
-int FAI_Sector::DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const LKColor& InFfillcolor)
-{
+void FAI_Sector::AnalysisDrawFAISector (LKSurface& Surface, const RECT& rc, const GeoPoint& center, const LKColor& InFfillcolor) {
+  
+  AnalysisProjection ToScreen(center, rc);
+  typedef std::vector<RasterPoint> polyline_t;
+  polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( don't forget to clear in this case )
+
+  FAISector_polyline.reserve( (7.5*FAI_SECTOR_STEPS) + 1); // avoid memory realloc.
+
+
+  /********************************************************************
+   * draw polygon
+   ********************************************************************/
+  LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), IsDithered()?RGB_RED:RGB_GREEN);
+  LKBrush hbSectorFill(InFfillcolor);
+
+  auto hpOldPen = Surface.SelectObject(hpSectorPen);
+  auto hbOldBrush = Surface.SelectObject(hbSectorFill);
+  auto oldFont = Surface.SelectObject(LK8PanelUnitFont);
+
+  Surface.SetBackgroundTransparent();
+  Surface.SetTextColor(IsDithered()? RGB_GREY : RGB_DARKGREY);
+
+  if(!m_FAIShape.empty()) {
+    FAISector_polyline.clear();
+    
+    for (GPS_Track::const_reference pt : m_FAIShape) {
+      FAISector_polyline.push_back(ToScreen(pt));
+    }
+    FAISector_polyline.push_back(FAISector_polyline.front());
+    Surface.Polygon(FAISector_polyline.data(), FAISector_polyline.size());
+  }
+
+  if(!m_FAIShape2.empty()) {
+    FAISector_polyline.clear();
+      
+    for (GPS_Track::const_reference pt : m_FAIShape2) {
+      FAISector_polyline.push_back(ToScreen(pt));
+    }
+	FAISector_polyline.push_back(FAISector_polyline.front());
+    Surface.Polygon(FAISector_polyline.data(), FAISector_polyline.size());
+  }
+  
+  Surface.SelectObject(hpOldPen);
+  
+  hpSectorPen.Create(PEN_DASH, ScreenThinSize, RGB_BLACK );
+  hpOldPen = Surface.SelectObject(hpSectorPen);
+
+  unsigned  int NumberGrids = m_FAIGridLines.size();
+  unsigned int Grid_num = 0;
+  
+  for (GPS_Gridlines::const_reference line : m_FAIGridLines) {
+    FAISector_polyline.clear();
+    if (Grid_num <  NumberGrids) {
+      for (const GeoPoint& pt : line.GridLine) {
+        FAISector_polyline.push_back(ToScreen(pt));
+      }
+      if(Grid_num <  NumberGrids-1)
+        Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size());
+      
+      {
+        const ScreenPoint& pt_start = FAISector_polyline.front();
+        Surface.DrawText(pt_start.x, pt_start.y, line.szLable);      
+      }
+
+      if(Grid_num > 0) {
+        const ScreenPoint& pt_start = FAISector_polyline.back();
+        Surface.DrawText(pt_start.x, pt_start.y, line.szLable);
+      }
+
+      if(Grid_num > 2) {
+    	  const ScreenPoint& pt_mid = FAISector_polyline[FAISector_polyline.size()/2];
+        Surface.DrawText(pt_mid.x, pt_mid.y, line.szLable);
+      }
+    }
+    Grid_num++;
+  } // if visible
+  Surface.SelectObject(oldFont);
+  Surface.SelectObject(hpOldPen);
+  Surface.SelectObject(hbOldBrush);
+}
+
+void FAI_Sector::DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj ,const LKColor& InFfillcolor) {
 
 LKColor fillcolor = InFfillcolor;
 #ifdef KOBO
   fillcolor = RGB_SBLACK;
 #endif
 
-const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 const PixelRect ScreenRect(rc);
+const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 
 typedef std::vector<ScreenPoint> polyline_t;
 polyline_t FAISector_polyline; // make it static for save memory Alloc/Free ( don't forget to clear in this case )
@@ -185,7 +281,6 @@ Surface.SetBackgroundTransparent();
   Surface.SelectObject(hpOldPen);
   Surface.SelectObject(hpOldBrush);
   hpSectorPen.Release();
-return 0;
 }
 
 
@@ -244,8 +339,9 @@ double alpha, fDistTri, cos_alpha=0;
 
 DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 
-if(fabs(fDist_c) < 1000.0)  /* distance too short for a FAI sector */
-    return -1;
+if(fabs(fDist_c) < 1000.0) {  /* distance too short for a FAI sector */
+    return false;
+}
 
 
 m_lat1  = lat1;   /* remember parameter */
@@ -687,7 +783,7 @@ int iCnt = 0;
   iCnt++;
 }
 
-return 0;
+return true;
 }
 
 void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft)

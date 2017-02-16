@@ -10,7 +10,7 @@
 #include "ContestMgr.h"
 #include "LKObjects.h"
 #include "NavFunctions.h"
-
+#include "DrawFAIOpti.h"
 CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
 
 /*****************************************************************
@@ -209,6 +209,21 @@ double fTotalPercent = 1.0;
 #endif
 
 ResetScale();
+static FAI_Sector ContestFAISector[6];
+
+double fZoom=50;
+if(Statistics::yscale >0)
+  fZoom =  2500.0/Statistics::yscale;
+double         fTic = 10;
+  if(fZoom > 5)  fTic = 10;
+  if(fZoom > 10) fTic = 25;
+  if(fZoom > 25) fTic = 50;
+  if(fZoom > 30) fTic = 100;
+#ifdef FAI_GRID_DEBUG
+  StartupStore(_T("RenderContest Statistics::yscale:%f  fZoom:%f  fTic:%f %s"), Statistics::yscale,fZoom, fTic, NEWLINE);
+#endif
+  if( DISTANCEMODIFY > 0.0)
+	fTic =fTic/ DISTANCEMODIFY;
 
 
   CContestMgr::CResult result = CContestMgr::Instance().Result( CContestMgr::TYPE_FAI_TRIANGLE, true);
@@ -260,6 +275,9 @@ ResetScale();
 
   ScaleMakeSquare(rc);
 
+
+
+
   if(result.Type() ==  CContestMgr::TYPE_FAI_TRIANGLE)
   {
     for(ui=0; ui<points.size()-1; ui++)
@@ -300,8 +318,13 @@ ResetScale();
                       break;
                   }
                   #endif
-		  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, rgbCol );
-		  RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, rgbCol );
+            if(ui < 3)
+            {
+			ContestFAISector[2*ui].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
+			ContestFAISector[2*ui].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , rgbCol) ;
+			ContestFAISector[2*ui+1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
+			ContestFAISector[2*ui+1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , rgbCol) ;
+            }
 		}
       }
       if((fDist / fTotalDistance ) > 0.45) /* prevent drawing almost same sectors */
