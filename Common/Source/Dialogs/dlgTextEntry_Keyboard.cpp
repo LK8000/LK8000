@@ -16,7 +16,7 @@
 #include "resource.h"
 
 
-static bool first= true;
+static bool first= false;
 static WndForm *wf=NULL;
 static WndProperty * wKeyboardPopupWndProperty = nullptr;
 
@@ -120,11 +120,11 @@ static void ClearText(void)
 static void OnKey(WndButton* pWnd) {
     LKASSERT(pWnd);
     if(!pWnd) return;
-/*
+
     if (first) {
         ClearText();
         first = false;
-    }*/
+    }
     PlayResource(TEXT("IDR_WAV_CLICK"));
     const TCHAR *Caption = pWnd->GetWndText();
     if (cursor < max_width - 1) {
@@ -221,8 +221,6 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID)
 {
-
-  first = true;
   wf = NULL;
   if (width==0) {
     width = MAX_TEXTENTRY;
@@ -259,16 +257,16 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID)
 
 int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 {
+	first = false;
 	WaypointKeyRed = WPKeyRed;
-//	  cursor = _tcslen(text);
 	dlgTextEntryKeyboardShowModal(text, width, ScreenLandscape ? IDR_XML_TEXTENTRY_KEYBOARD_L : IDR_XML_TEXTENTRY_KEYBOARD_P);
 	return IdenticalIndex;
 }
 
 void dlgNumEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
-{
+{  
+    first = true;
 	WaypointKeyRed = WPKeyRed;
-//	  cursor = _tcslen(text);
 	dlgTextEntryKeyboardShowModal(text, width, ScreenLandscape ? IDR_XML_NUMENTRY_KEYBOARD_L : IDR_XML_NUMENTRY_KEYBOARD_P);
 }
 
