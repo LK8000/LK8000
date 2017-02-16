@@ -28,7 +28,6 @@ struct GPS_Gridline_t
 
 typedef std::list<GPS_Gridline_t> GPS_Gridlines;
 
-class Projection;
 
 class FAI_Sector
 {
