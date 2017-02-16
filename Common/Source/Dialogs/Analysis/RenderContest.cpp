@@ -209,12 +209,12 @@ double fTotalPercent = 1.0;
 #endif
 
 ResetScale();
-FAI_Sector ContestFAISector[6];
+static FAI_Sector ContestFAISector[6];
 
 double fZoom=50;
 if(Statistics::yscale >0)
   fZoom =  2500.0/Statistics::yscale;
-double         fTic = 5;
+double         fTic = 10;
   if(fZoom > 5)  fTic = 10;
   if(fZoom > 10) fTic = 25;
   if(fZoom > 25) fTic = 50;
