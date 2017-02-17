@@ -136,6 +136,7 @@ public:
 
         extern unsigned int TerrainQuantization();
         dtquant = TerrainQuantization();
+        LKASSERT(dtquant>=1);
 
 #ifdef USE_TERRAIN_BLUR
         blursize = max((unsigned int) 0, (dtquant - 1) / 2); // always 0
@@ -169,6 +170,8 @@ public:
 
         ixs = sbuf->GetCorrectedWidth() / oversampling;
         iys = sbuf->GetHeight() / oversampling;
+
+        TESTBENCH_DO_ONLY(5,StartupStore(_T("... Terrain quant=%d ixs=%d iys=%d  TOTAL=%d\n"),dtquant,ixs,iys,ixs*iys));
 
         hBuf = (unsigned short*) malloc(sizeof (unsigned short)*ixs * iys);
         if (!hBuf) {
