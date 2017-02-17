@@ -15,6 +15,7 @@ bool CommandResolution=false;
 
 extern unsigned short LcdSize, DpiSize;
 extern unsigned short ReferenceDpi;
+extern unsigned int CommandQuantization;
 
 //
 //  true,  continue normally
@@ -47,6 +48,10 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
  -dpi=n\n\
           assume screen density has n dpi , example -dpi=144\n\
           This value ovverrides -lcdsize\n\
+ -refdpi=n\n\
+          set reference DPI, default to 80.\n\
+ -quant=n\n\
+          force terrain quantization=n\n\
 \n");
 
   return false; 
@@ -188,6 +193,30 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
         } else {
            StartupStore(_T(". CommandLine refdpi=%d inches%s"),s,NEWLINE);
            ReferenceDpi=s;
+        }
+     }
+  }
+
+  pC = _tcsstr(MyCommandLine, TEXT("-quant="));
+  if (pC != NULL){
+     _tcscpy(mytext1,_T(""));
+     pC += strlen("-quant=");
+     if (*pC == '"'){
+        pC++;
+        pCe = pC;
+        while (*pCe != '"' && *pCe != '\0') pCe++;
+     } else{
+        pCe = pC;
+        while (*pCe != ' ' && *pCe != '\0') pCe++;
+     }
+     if (pCe != NULL && pCe > pC) {
+        LK_tcsncpy(mytext1, pC, pCe-pC);
+        int s=_tcstol(mytext1, nullptr, 10);
+        if (s<1 || s >16) {
+           StartupStore(_T(". CommandLine quant=%d is out of range 1-16%s"),s,NEWLINE);
+        } else {
+           StartupStore(_T(". CommandLine terrain quantization=%d %s"),s,NEWLINE);
+           CommandQuantization=s;
         }
      }
   }

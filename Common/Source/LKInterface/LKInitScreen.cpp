@@ -31,10 +31,18 @@
 // The default size of lcd monitor in 1/10 of inches (50= 5")
 // Can be overridden by command line -lcdsize=45
 unsigned short LcdSize=50;
+
 // The DpiSize, when 0 it is calculated by GetScreenDensity, otherwise forced 
 // Can be overridden by command line -dpi=nnn 
 unsigned short DpiSize=0; 
 unsigned short ReferenceDpi=0;
+
+// CommandQuantization is read by TerrainQuantization. Changing during runtime this
+// parameter will permanently set quantization until it is changed again.
+// It can also be forced by cmdline.
+// Set this parameter to 0 to let TerrainQuantization() work normally.
+// Note that TerrainQuantization() is called only when screen geometry changes.
+unsigned int   CommandQuantization=0; 
 
 int ScreenPixelRatio=1<<10; // This is 1.0
 
@@ -226,6 +234,9 @@ void InitLKScreen() {
     StartupStore(_T("..... LKVarioSize      = %d" NEWLINE), LKVarioSize);
     StartupStore(_T("..... AircraftMenuSize = %d" NEWLINE), AircraftMenuSize);
     StartupStore(_T("..... CompassMenuSize  = %d" NEWLINE), CompassMenuSize);
+
+    extern unsigned int TerrainQuantization();
+    StartupStore(_T("..... TerrainQuantiz.  = %d" NEWLINE), TerrainQuantization());
 #endif  
 } // End of LKInitScreen
 
@@ -368,8 +379,13 @@ int GetScreenDensity(void) {
 }
 
 
-
+//
+// This function is called by TerrainDraw TerrainRenderer.
+// It happens every time we change screen resolution, like when we change multimaps.
+//
 unsigned int TerrainQuantization(void) {
+
+  if (CommandQuantization) return CommandQuantization;
 
   unsigned int dtquant;
 
