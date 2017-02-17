@@ -134,45 +134,9 @@ public:
         }
         error = false;
 
-        // need at least 2Ghz singlecore CPU here for dtquant 1
-        dtquant = 2;
+        extern unsigned int TerrainQuantization();
+        dtquant = TerrainQuantization();
 
-#if defined(_WIN32_WCE) || defined(__arm__) || !defined(NDEBUG)
-        // scale dtquant so resolution is not too high on large displays
-        // lower resolution a bit.. (no need for CPU >800mHz)
-        // update : on android with HD or QHD device, even with fast cpu, is very important to leave it as is.
-        dtquant = std::max<unsigned>(2, IBLSCALE(dtquant));
-
-
-#ifdef KOBO
-        /**
-         * dtquand for each kobo model
-         * for faster terrain redraw, dtquant need to be 2 or 4 ...
-         */
-        KoboModel model = DetectKoboModel();
-        switch(model) {
-          case KoboModel::GLO:
-          case KoboModel::GLOHD:
-            dtquant = 4;
-            break;
-          case KoboModel::MINI:
-          case KoboModel::TOUCH:
-          case KoboModel::TOUCH2:
-            dtquant = 2;
-            break;
-          case KoboModel::UNKNOWN:
-          default:
-            if (dtquant > 4) dtquant = 4; // .. but not too much
-            break;
-        };
-
-#else
-        if (ScreenSize != ss640x480) {
-            if (dtquant > 3) dtquant = 3; // .. but not too much
-        }
-
-#endif
-#endif
 #ifdef USE_TERRAIN_BLUR
         blursize = max((unsigned int) 0, (dtquant - 1) / 2); // always 0
         oversampling = max(1, (blursize + 1) / 2 + 1); // always 1
