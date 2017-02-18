@@ -19,6 +19,8 @@ static WndForm *wf=NULL;
 
 extern bool UpdateQNH(const double newqnh);
 
+#define EASTER_EGGS
+
 // static bool BallastTimerActive = false;
 
 static void OnCloseClicked(WndButton* pWnd) {
@@ -47,6 +49,9 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
   WndProperty* wp;
 
   double newqnh=0;
+#ifdef EASTER_EGGS
+  float ee=0; unsigned int egg=0;
+#endif
   switch(Mode){
 	case DataField::daGet:
 		if (PressureHg) {
@@ -58,6 +63,28 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		break;
 	case DataField::daPut:
 	case DataField::daChange:
+
+#ifdef EASTER_EGGS
+           ee=Sender->GetAsFloat();
+           if (ee>=8.0 && ee<9.0) {
+              ee*=100; ee-=800; // eggs going from 1 to 99
+              egg=iround(ee);   // needed, not a mistake
+
+              //
+              // 0-16 quantizations (0=unused)
+              //
+              if (egg<=16) {
+                 extern unsigned int CommandQuantization;
+                 CommandQuantization=egg;
+                 StartupStore(_T("EASTER EGG Quantization=%d%s"),CommandQuantization,NEWLINE);
+                 break;
+              }
+
+              break;
+           }
+#endif
+
+
 		if (PressureHg) {
 			INHg = Sender->GetAsFloat();
 			newqnh=INHg*TOHPA;
