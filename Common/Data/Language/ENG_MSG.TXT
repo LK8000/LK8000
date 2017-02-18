@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  170214
+# MASTER UPDATED:  170217
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1031,6 +1031,7 @@ _@M975_ " GPS data error "
 # V6.2
 #
 _@M981_ "Auto-Contrast"
+_@M982_ "(reserved)"
 
 #
 # Infoboxes in Description / Tile order. 

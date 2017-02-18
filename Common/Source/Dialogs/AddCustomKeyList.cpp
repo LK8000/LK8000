@@ -44,7 +44,7 @@ void AddCustomKeyList( DataField* dfe) {
     // We no longer use ActiveMap but we must preserve position in the enum in order to keep backward compatibility
     // with saved existing profiles..
     // dfe->addEnumText(TEXT("ActiveMap On/Off"));
-    dfe->addEnumText(MsgToken(239));	// Disabled
+    dfe->addEnumText(MsgToken(982));	// (reserved)
 
 	// TOKEN 426 = "Mark Location"
     dfe->addEnumText(MsgToken(426));
