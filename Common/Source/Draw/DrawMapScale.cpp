@@ -127,7 +127,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
 
     DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
     if(ValidTaskPoint(PanTaskEdit))
-    {
+    {  RefreshTask();
         double Dist = DerivedDrawInfo.TaskTotalDistance;
     	if( DerivedDrawInfo.TaskFAI)
     	{
