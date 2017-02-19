@@ -92,31 +92,29 @@ void GlidePolar::SetBallast() {
   iSAFETYSPEED=Clamp(iround(SAFTEYSPEED*2), 8, (MAXSPEED*2));
 
   // _sinkratecache is an array for 0.5 m/s values!! i = irount(speed * 2) speed in m/s
-  for(int _i=8;_i<=(MAXSPEED*2);_i++)
-    {
-      double vtrack = ((double)_i)/2; // TAS along bearing in cruise
-      double thesinkrate
-        =  -SinkRate(polar_a,polar_b,polar_c,0,0,vtrack);
+  for(int _i=8;_i<=(MAXSPEED*2);_i++) {
+     double vtrack = ((double)_i)/2; // TAS along bearing in cruise
+     double thesinkrate = -SinkRate(polar_a,polar_b,polar_c,0,0,vtrack);
 
-      BUGSTOP_LKASSERT(thesinkrate>0);
-      if (thesinkrate<=0) thesinkrate=0.001;
-      double ld = vtrack/thesinkrate;
-      if (ld>=bestld) {
+     BUGSTOP_LKASSERT(thesinkrate>0);
+     if (thesinkrate<=0) thesinkrate=0.001;
+     double ld = vtrack/thesinkrate;
+     if (ld>=bestld) {
         bestld = ld;
         _Vbestld = _i;
-      }
-      if (thesinkrate<= minsink) {
+     }
+     if (thesinkrate<= minsink) {
         minsink = thesinkrate;
         _Vminsink = _i;
-      }
+     }
       _sinkratecache[_i] = -thesinkrate;
 
-    }
-    BUGSTOP_LKASSERT(bestld>0);
-    if (bestld<=0) {
-        TESTBENCH_DO_ONLY(10, StartupStore(_T(".... SetBallast bestld=%f NOT FOUND! Polar error?%s"),bestld,NEWLINE));
-        bestld=1;
-    }
+  }
+  BUGSTOP_LKASSERT(bestld>0);
+  if (bestld<=0) {
+     TESTBENCH_DO_ONLY(10, StartupStore(_T(".... SetBallast bestld=%f NOT FOUND! Polar error?%s"),bestld,NEWLINE));
+     bestld=1;
+  }
   UnlockFlightData();
 
 }
