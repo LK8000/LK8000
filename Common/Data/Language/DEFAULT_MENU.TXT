@@ -232,7 +232,7 @@ type=key
 data=APP1
 event=MarkLocation pan
 label=_@M2070_
-location=1
+location=11
 
 mode=pan
 type=key

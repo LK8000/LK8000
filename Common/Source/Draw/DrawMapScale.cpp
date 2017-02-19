@@ -127,15 +127,15 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
 
     DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
     if(ValidTaskPoint(PanTaskEdit))
-    {
+    {  RefreshTask();
         double Dist = DerivedDrawInfo.TaskTotalDistance;
     	if( DerivedDrawInfo.TaskFAI)
     	{
     	  Dist = DerivedDrawInfo.TaskFAIDistance;
-          _stprintf(Scale2, _T("FAI Task %.1f%s %.1f%s %s %.0f%s"),  Dist*DISTANCEMODIFY, Units::GetDistanceName(),pandistance*DISTANCEMODIFY,Units::GetDistanceName(), Scale1 ,panbearing,MsgToken(2179) );
+          _stprintf(Scale2, _T("FAI Task %.1f%s %s %.0f%s"),  Dist*DISTANCEMODIFY, Units::GetDistanceName(), Scale1 ,panbearing,MsgToken(2179) );
     	}
         else
-    	  _stprintf(Scale2, _T("     Task %.1f%s %.1f%s %s %.0f%s"),  Dist*DISTANCEMODIFY, Units::GetDistanceName(),pandistance*DISTANCEMODIFY, Units::GetDistanceName(), Scale1 ,panbearing,MsgToken(2179) );
+    	  _stprintf(Scale2, _T("     Task %.1f%s %s %.0f%s"),  Dist*DISTANCEMODIFY, Units::GetDistanceName(), Scale1 ,panbearing,MsgToken(2179) );
     }
     else
     {
