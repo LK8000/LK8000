@@ -341,7 +341,7 @@ void RefreshComPortList() {
 #endif
 
 #endif
-    
+
 #ifndef NO_BLUETOOTH
     CBtHandler* pBtHandler = CBtHandler::Get();
     if (pBtHandler) {
@@ -364,7 +364,6 @@ void RefreshComPortList() {
 }
 
 void DeviceDescriptor_t::InitStruct(int i) {
-    Port = -1;
     Name[0] = '\0';
     ParseNMEA = NULL;
     PutMacCready = NULL;
@@ -440,17 +439,11 @@ void RestartCommPorts() {
 
 // Only called from devInit() above which
 // is in turn called with LockComm
-static BOOL devOpen(PDeviceDescriptor_t d, int Port){
-  BOOL res = TRUE;
-
-  if (d != NULL && d->Open != NULL)
-    res = d->Open(d, Port);
-
-  if (res == TRUE) {
-    d->Port = Port;
-    
-  }       
-  return res;
+static BOOL devOpen(PDeviceDescriptor_t d){
+  if (d && d->Open) {
+    return d->Open(d);
+  }
+  return TRUE;
 }
 
 // Only called from devInit() above which
@@ -464,7 +457,7 @@ static BOOL devInit(PDeviceDescriptor_t d){
 
 BOOL devInit() {
     LockComm();
-    
+
     TCHAR DeviceName[DEVNAMESIZE + 1];
 
 
@@ -604,7 +597,7 @@ BOOL devInit() {
             }
 
             devInit(&DeviceList[i]);
-            devOpen(&DeviceList[i], i);
+            devOpen(&DeviceList[i]);
 
             if (devIsBaroSource(&DeviceList[i])) {
                 if (pDevPrimaryBaroSource == NULL) {
@@ -687,11 +680,10 @@ BOOL devCloseAll(void){
 
 PDeviceDescriptor_t devGetDeviceOnPort(int Port){
 
-    for( DeviceDescriptor_t& d : DeviceList) {
-        if (d.Port == Port)
-            return (&d);
-    }
-    return nullptr;
+  if(Port >=0 && Port < array_size(DeviceList)) {
+    return &DeviceList[Port];
+  }
+  return nullptr;
 }
 
  // devParseStream(devIdx, c, &GPS_INFO);
@@ -705,7 +697,7 @@ PDeviceDescriptor_t d = NULL;
       d = &DeviceList[dev];
       if (din && d && d->ParseStream)
       {
-       if((d->iSharedPort == portNum) ||  (d->Port == portNum))
+       if((d->iSharedPort == portNum) ||  (d->PortNumber == portNum))
        {
          d->HB=LKHearthBeats;
          if (d->ParseStream(din, stream, length, pGPS)) {
@@ -735,7 +727,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   // intercept device specific parser routines 
     for(DeviceDescriptor_t& d2 : DeviceList) {
         
-      if((d2.iSharedPort == portNum) ||  (d2.Port == portNum)) {
+      if((d2.iSharedPort == portNum) ||  (d2.PortNumber == portNum)) {
         if ( d2.ParseNMEA && d2.ParseNMEA(d, String, pGPS) ) {
           //GPSCONNECT  = TRUE; // NO! 121126
             ret = TRUE;

@@ -30,7 +30,7 @@ private:
 public:
 	static bool Register();
 	static const TCHAR* GetName() { return TEXT("C-Probe"); }
-	static BOOL Open(PDeviceDescriptor_t d, int Port);
+	static BOOL Open(PDeviceDescriptor_t d);
 	static BOOL Close (PDeviceDescriptor_t d);
 
 

@@ -210,14 +210,9 @@ BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t *d) {
     return (TRUE);
 }
 
-BOOL DevLXMiniMap::Open(PDeviceDescriptor_t d, int Port){
+BOOL DevLXMiniMap::Open(PDeviceDescriptor_t d){
 
-//test();
-
-	 TCHAR mcbuf[100];
-
-	 _stprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"),3);
-	 devWriteNMEAString(d, mcbuf);
+  devWriteNMEAString(d, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,3"));
 
   return(TRUE);
 }

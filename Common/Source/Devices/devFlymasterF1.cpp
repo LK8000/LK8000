@@ -59,7 +59,7 @@ static BOOL FlymasterF1IsBaroSource(PDeviceDescriptor_t d){
  *  To return to navigation mode, i.e. tell F1 to start sending navigation data again send:
  *  $PFMNAV,*02
  */
-static BOOL Open(PDeviceDescriptor_t d,	int	Port) {
+static BOOL Open(PDeviceDescriptor_t d) {
   if(d && d->Com) {
     const char szNmeaOn[] = "$PFMNAV,*2E\r\n";
     return d->Com->Write(szNmeaOn, strlen(szNmeaOn));

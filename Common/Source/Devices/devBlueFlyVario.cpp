@@ -414,7 +414,7 @@ namespace dlgBlueFlyConfig {
 /**************************************************************************************************************************************************************/
 static unsigned RequestParamTimer = 10;
 
-BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d, int Port) {
+BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d) {
     RequestParamTimer = 10;
     CHardwareParameters& HardwareParameters = gHardwareParameters[d];
 

@@ -46,7 +46,7 @@ BOOL CDevCProbe::Install( PDeviceDescriptor_t d ) {
 	return(TRUE);
 }
 
-BOOL CDevCProbe::Open( PDeviceDescriptor_t d, int Port ) {
+BOOL CDevCProbe::Open( PDeviceDescriptor_t d) {
 	m_pDevice = d;
 
 	m_pCritSec_DeviceData = new Mutex();

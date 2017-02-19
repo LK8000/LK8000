@@ -229,7 +229,7 @@ void test(void){
 #endif
 
 
-BOOL cai302Open(PDeviceDescriptor_t d, int Port){
+BOOL cai302Open(PDeviceDescriptor_t d){
 
 //test();
 

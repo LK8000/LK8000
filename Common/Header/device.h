@@ -68,7 +68,6 @@ typedef struct Declaration {
 } Declaration_t;
 
 typedef	struct DeviceDescriptor_t{
-  int	Port;
   ComPort *Com;
   TCHAR	Name[DEVNAMESIZE+1];
 
@@ -84,7 +83,7 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	double Freq, TCHAR StationName[]);
   BOOL (*StationSwap)(DeviceDescriptor_t	*d);
   BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	double Standby, TCHAR StationName[]);
-  BOOL (*Open)(DeviceDescriptor_t	*d,	int	Port);
+  BOOL (*Open)(DeviceDescriptor_t *d);
   BOOL (*Close)(DeviceDescriptor_t *d);
   BOOL (*Init)(DeviceDescriptor_t	*d);
   BOOL (*LinkTimeout)(DeviceDescriptor_t *d);
@@ -111,7 +110,7 @@ typedef	struct DeviceDescriptor_t{
   // Com ports hearth beats, based on LKHearthBeats
   unsigned HB;
   
-	NMEAParser nmeaParser;
+  NMEAParser nmeaParser;
 	
   void InitStruct(int i);
 }DeviceDescriptor_t;

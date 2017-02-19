@@ -61,7 +61,7 @@ class DevLXMiniMap : public DevLXNano
     static double CalculateBalastFactor(double Ballast);
     static double CalculateBalast(double Factor);
 
-    static BOOL Open(PDeviceDescriptor_t d, int Port);
+    static BOOL Open(PDeviceDescriptor_t d);
     static BOOL Init(PDeviceDescriptor_t d);
 
 
