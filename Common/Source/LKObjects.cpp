@@ -161,21 +161,21 @@ void LKObjects_Create() {
 
   const int iwidth= MapWindow::SnailWidthScale*IBLSCALE(1);
 
-  MapWindow::hSnailPens[0].Create(PEN_SOLID, std::max(1, iwidth / 2), MapWindow::hSnailColours[0]);
-  MapWindow::hSnailPens[1].Create(PEN_SOLID, std::max(1, iwidth / 2), MapWindow::hSnailColours[1]);
-  MapWindow::hSnailPens[2].Create(PEN_SOLID, std::max(1, iwidth / 2), MapWindow::hSnailColours[2]);
-  MapWindow::hSnailPens[3].Create(PEN_SOLID, std::max(1, iwidth / 2), MapWindow::hSnailColours[3]);
-  MapWindow::hSnailPens[4].Create(PEN_SOLID, std::max(1, iwidth / 2), MapWindow::hSnailColours[4]);
-  MapWindow::hSnailPens[5].Create(PEN_SOLID, std::max(1, iwidth / 4), MapWindow::hSnailColours[5]);
-  MapWindow::hSnailPens[6].Create(PEN_SOLID, std::max(1, iwidth / 4), MapWindow::hSnailColours[6]);
-  MapWindow::hSnailPens[7].Create(PEN_SOLID, std::max(1, iwidth / 6), MapWindow::hSnailColours[7]);
-  MapWindow::hSnailPens[8].Create(PEN_SOLID, std::max(1, iwidth / 4), MapWindow::hSnailColours[8]);
-  MapWindow::hSnailPens[9].Create(PEN_SOLID, std::max(1, iwidth / 4), MapWindow::hSnailColours[9]);
-  MapWindow::hSnailPens[10].Create(PEN_SOLID,std::max(1, iwidth / 2), MapWindow::hSnailColours[10]);
-  MapWindow::hSnailPens[11].Create(PEN_SOLID,std::max(1, iwidth / 2), MapWindow::hSnailColours[11]);
-  MapWindow::hSnailPens[12].Create(PEN_SOLID,std::max(1, iwidth / 2), MapWindow::hSnailColours[12]);
-  MapWindow::hSnailPens[13].Create(PEN_SOLID,std::max(1, iwidth / 2), MapWindow::hSnailColours[13]);
-  MapWindow::hSnailPens[14].Create(PEN_SOLID,std::max(1, iwidth / 2), MapWindow::hSnailColours[14]);
+  MapWindow::hSnailPens[0].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[0]);
+  MapWindow::hSnailPens[1].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[1]);
+  MapWindow::hSnailPens[2].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[2]);
+  MapWindow::hSnailPens[3].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[3]);
+  MapWindow::hSnailPens[4].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[4]);
+  MapWindow::hSnailPens[5].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (4*IBLSCALE(1))), MapWindow::hSnailColours[5]);
+  MapWindow::hSnailPens[6].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (4*IBLSCALE(1))), MapWindow::hSnailColours[6]);
+  MapWindow::hSnailPens[7].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (6*IBLSCALE(1))), MapWindow::hSnailColours[7]);
+  MapWindow::hSnailPens[8].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (4*IBLSCALE(1))), MapWindow::hSnailColours[8]);
+  MapWindow::hSnailPens[9].Create(PEN_SOLID, std::max(ScreenThinSize, iwidth / (4*IBLSCALE(1))), MapWindow::hSnailColours[9]);
+  MapWindow::hSnailPens[10].Create(PEN_SOLID,std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[10]);
+  MapWindow::hSnailPens[11].Create(PEN_SOLID,std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[11]);
+  MapWindow::hSnailPens[12].Create(PEN_SOLID,std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[12]);
+  MapWindow::hSnailPens[13].Create(PEN_SOLID,std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[13]);
+  MapWindow::hSnailPens[14].Create(PEN_SOLID,std::max(ScreenThinSize, iwidth / (2*IBLSCALE(1))), MapWindow::hSnailColours[14]);
   #else
   // DITHERED SNAIL TRAIL
   MapWindow::hSnailColours[0] = RGB_GREY;
