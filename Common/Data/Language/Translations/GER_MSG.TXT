@@ -869,8 +869,8 @@ _@M278_ "FALSCH"
 #_@M279_ "FLARM DETECTED"
 _@M279_ "FLARM ERKANNT!"
 
-#_@M280_ "FLARM on map "
-_@M280_ "FLARM-V auf Karte "
+#_@M280_ "FLARM on map " // UNUSED
+#_@M280_ "Verkehr auf Karte "
 
 #_@M281_ "FLY"
 _@M281_ "FLIEGEN"
@@ -2968,7 +2968,7 @@ _@M974_ " GPS nicht verbunden "
 #_@M975_ " GPS data error "
 _@M975_ " GPS Datenfehler "
 
-
+_@M983_ "Verkehr auf Karte "
 
 #
 # Infoboxes in Description / Tile order. 

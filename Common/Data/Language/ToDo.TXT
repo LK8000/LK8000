@@ -405,6 +405,7 @@ _@M2322_ "Enable Radar"
    2326  "Gem"
 
    981   "Auto-Contrast"
+   983   "Trafic on map "  (leave trailing blank space) this is menu item 
 
 HELP FILE
 

@@ -441,9 +441,9 @@ A blue profile of thermals will appear during circling on the left upper part of
 Track line does not appear on low zoom levels. 
 
 @199
-This enables the display of FLARM traffic on the map window
-[Disabled] No Flarm objects will be shown on map
-[Enabled] Flarm object will appear on the map in their real position
+This enables the display of FLARM and other traffic on the map window
+[Disabled] No objects will be shown on map
+[Enabled] Objects will appear on the map in their real position
 
 @200
 Determines how waypoints are advanced when flying the task.

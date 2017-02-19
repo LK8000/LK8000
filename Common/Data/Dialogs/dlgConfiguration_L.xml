@@ -433,7 +433,7 @@
       <WndProperty Name="prpTrackBar" Caption="_@M736_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H198_">
         <DataField Name="" DataType="boolean" />
       </WndProperty>
-      <WndProperty Name="prpEnableFLARMMap" Caption="_@M280_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H199_">
+      <WndProperty Name="prpEnableFLARMMap" Caption="_@M983_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H199_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
     </WndFrame>

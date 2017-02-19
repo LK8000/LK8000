@@ -1,5 +1,5 @@
 ﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  170217
+# MASTER UPDATED:  170218
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -301,6 +301,7 @@ _@M276_ "FAI finish height"
 _@M277_ "FALLBACK USING GPS ON PORT"
 _@M278_ "FALSE"
 _@M279_ "FLARM DETECTED"
+# M280 unused after 6.0
 _@M280_ "FLARM on map "
 _@M281_ "FLY"
 _@M282_ "Field"
@@ -1032,6 +1033,7 @@ _@M975_ " GPS data error "
 #
 _@M981_ "Auto-Contrast"
 _@M982_ "(reserved)"
+_@M983_ "Traffic on map "
 
 #
 # Infoboxes in Description / Tile order. 
