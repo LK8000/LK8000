@@ -870,7 +870,7 @@ _@M278_ "FALSCH"
 _@M279_ "FLARM ERKANNT!"
 
 #_@M280_ "FLARM on map "
-_@M280_ "Verkehr auf Karte "
+_@M280_ "Radar auf Karte "
 
 #_@M281_ "FLY"
 _@M281_ "FLIEGEN"
