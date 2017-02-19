@@ -26,21 +26,22 @@
 // TODO code: (need to discuss) Consider moving almost all this functionality into AddMessage ?
 
 void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound) {
-  Message::Lock();
-
-  if (playsound)
+  if (playsound) {
     PlayResource(TEXT("IDR_WAV_DRIP"));
+  }
 
-  // TODO code: consider what is a sensible size?
-  TCHAR msgcache[1024];
-	LK_tcsncpy(msgcache,gettext(text),800);
-	if (data != NULL) {
-		_tcscat(msgcache, TEXT(" "));
-		_tcscat(msgcache, data);
-	}
-  Message::AddMessage(1500, 1, msgcache); // message time 1.5s
+  tstring temp_string; // for store [text + " " + data] if needed.
+  const TCHAR* szText = gettext(text); // get translated text
 
-  Message::Unlock();
+  if (data && _tcslen(data) > 0) {
+    // if concat translated text and data if data is not enpty string
+    temp_string = szText;
+    temp_string += _T(" ");
+    temp_string += data;
+
+    szText = temp_string.c_str(); // replace translated text by concat string
+  }
+  Message::AddMessage(1500, 1, szText); // message time 1.5s
 }
 
 

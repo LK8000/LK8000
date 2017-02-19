@@ -70,7 +70,7 @@ extern bool		CheckRegistryProfile();
 extern bool		Debounce(int debouncetime);
 extern bool		Debounce();
 
-extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL, const bool playsound = true);
+void DoStatusMessage(const TCHAR* text, const TCHAR* data = nullptr, const bool playsound = true) gcc_nonnull(1);
 
 extern WndMain MainWindow;
 
