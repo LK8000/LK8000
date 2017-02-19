@@ -36,6 +36,7 @@
 #ifdef ANDROID
 #include <jni.h>
 #include "Android/Main.hpp"
+#include "Android/NativeView.hpp"
 #include "Android/Context.hpp"
 #endif
 using namespace std::placeholders;
@@ -2608,6 +2609,23 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty *) wf->FindByName(TEXT("prpAndroidScreenOrientation"));
+  if (wp) {
+#ifdef ANDROID
+    wp->SetVisible(true);
+    DataField *dfe = wp->GetDataField();
+    dfe->addEnumText(TEXT("Auto"));
+    dfe->addEnumText(TEXT("Portrait"));
+    dfe->addEnumText(TEXT("Landscape"));
+    dfe->addEnumText(TEXT("Reverse Portrait"));
+    dfe->addEnumText(TEXT("Reverse Landscape"));
+    dfe->Set(native_view->getScreenOrientation());
+    wp->RefreshDisplay();
+#else
+    wp->SetVisible(false);
+#endif
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpPollingMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -4024,6 +4042,14 @@ int ival;
   if (wp) {
     if (IphoneGestures != (IphoneGestures_t) (wp->GetDataField()->GetAsInteger())) {
       IphoneGestures = (IphoneGestures_t) (wp->GetDataField()->GetAsInteger());
+    }
+  }
+
+  wp = (WndProperty *) wf->FindByName(TEXT("prpAndroidScreenOrientation"));
+  if (wp) {
+    int ret = wp->GetDataField()->GetAsInteger();
+    if (ret != native_view->getScreenOrientation()) {
+      native_view->setScreenOrientation(ret);
     }
   }
 

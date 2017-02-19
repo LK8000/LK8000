@@ -343,11 +343,14 @@
       <WndProperty Name="prpMenuTimeout" Caption="_@M434_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H182_">
         <DataField Name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min="1" Max="120" Step="1"/>
       </WndProperty>
-      <WndButton Name="cmdSetCustomKeys" Caption="_@M196_" X="70" Y="-997" Width="-1"  Height="30" Font="2" OnClickNotify="OnSetCustomKeysClicked" />
-      <WndButton Name="cmdSetCustomMenu" Caption="_@M1788_" X="70" Y="-998" Width="-1"  Height="30" Font="2" OnClickNotify="OnSetCustomMenuClicked" />
-      <WndButton Name="cmdSetInfoPages" Caption="_@M1603_" X="70" Y="-998" Width="-1"  Height="30" Font="2" OnClickNotify="OnSetInfoPagesClicked" />
-      <WndButton Name="cmdSetBottomBar" Caption="_@M1602_" X="70" Y="-998" Width="-1"  Height="30" Font="2" OnClickNotify="OnSetBottomBarClicked" />
-      <WndButton Name="cmdSetMultimaps" Caption="_@M1822_" X="70" Y="-998" Width="-1"  Height="30" Font="2" OnClickNotify="OnMultimapsClicked" />
+      <WndButton Name="cmdSetCustomKeys" Caption="_@M196_" X="70" Y="-997" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetCustomKeysClicked" />
+      <WndButton Name="cmdSetCustomMenu" Caption="_@M1788_" X="70" Y="-998" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetCustomMenuClicked" />
+      <WndButton Name="cmdSetInfoPages" Caption="_@M1603_" X="70" Y="-998" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetInfoPagesClicked" />
+      <WndButton Name="cmdSetBottomBar" Caption="_@M1602_" X="70" Y="-998" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetBottomBarClicked" />
+      <WndButton Name="cmdSetMultimaps" Caption="_@M1822_" X="70" Y="-998" Width="-1"  Height="22" Font="2" OnClickNotify="OnMultimapsClicked" />
+	  <WndProperty Name="prpAndroidScreenOrientation" Caption="_@M2330_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1297_">
+        <DataField Name="" DataType="enum" Min="0" Max="1" Step="1" />
+      </WndProperty>	  
     </WndFrame>
     <WndFrame Name="frmAppearance" X="70" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpGliderScreenPosition" Caption="_@M327_"  X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H183_">
