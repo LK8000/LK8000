@@ -75,7 +75,7 @@ public:
 };
 #else
 typedef Mutex DeviceMutex;
-typdefef ScopeLock DeviceScopeLock;
+typedef ScopeLock DeviceScopeLock;
 #endif
 static DeviceMutex  CritSec_Comm;        
 
