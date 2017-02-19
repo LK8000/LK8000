@@ -73,7 +73,9 @@ protected:
         return Read(szString, sizeof (szString));
     }
 
-    void StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *fmt, ...);
+    static
+    void StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *fmt, ...)
+            gcc_printf(3,4) gcc_nonnull(3);
 
     void AddStatRx(unsigned dwBytes);
     void AddStatErrRx(unsigned dwBytes);
