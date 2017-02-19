@@ -404,6 +404,8 @@ _@M2322_ "Enable Radar"
    2325  "Small Glider"
    2326  "Gem"
 
+   2330  "Screen Orientation "
+
    981   "Auto-Contrast"
    983   "Trafic on map "  (leave trailing blank space) this is menu item 
 
@@ -426,5 +428,7 @@ HELP FILE
 @1296
 Auto-Contrast (see help)
 
+@1297  
+Screen Orientation (see help)
 
 
