@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 import android.util.DisplayMetrics;
@@ -295,6 +297,40 @@ class NativeView extends SurfaceView
   private int getDisplayOrientation() {
     return ((Activity)getContext()).getWindowManager().getDefaultDisplay().getRotation();
   }
+
+  private boolean setScreenOrientation(int screenOrientation) {
+    SharedPreferences settings = ((Activity)getContext()).getSharedPreferences("LK8000", 0);
+    SharedPreferences.Editor editor = settings.edit();
+    editor.putInt("screenOrientation",screenOrientation);
+    editor.commit();
+    switch (screenOrientation ) {
+      case 0 :
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        break;
+      case 1:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT );
+        break;
+      case 2:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        break;
+      case 3:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+        break;
+      case 4:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        break;
+      default:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
+    return true;
+  }
+
+  private int getScreenOrientation() {
+    SharedPreferences settings = ((Activity)getContext()).getSharedPreferences("LK8000", 0);
+    int ret = settings.getInt("screenOrientation", 0);
+    return ret;
+  }
+
 
   @Override public void surfaceCreated(SurfaceHolder holder) {
     haveSurface = true;

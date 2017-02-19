@@ -1880,5 +1880,9 @@ ON: contrast and brightness are automatically adjusted for best results.
 OFF: Terrain contrast and brightness can be adjusted manually.
 Default is ON.
 
+@1297
+[Screen Orientation]
+Select your prefered screen orientation. In Auto mode the screen will rotate occording to the device sensor. 
+
 @9999
 No help available on this item!

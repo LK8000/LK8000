@@ -2230,3 +2230,4 @@ _@M2327_ "Bitmap"
 _@M2328_ "Install LKMAPS"
 _@M2329_ "Open LKMAPS"
 
+_@M2330_ "Screen Orientation"

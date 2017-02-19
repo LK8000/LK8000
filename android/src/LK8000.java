@@ -24,6 +24,8 @@ package org.LK8000;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
@@ -124,6 +126,27 @@ public class LK8000 extends Activity {
 
     registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
+    SharedPreferences settings = getSharedPreferences("LK8000", 0);
+    int screenOrientation = settings.getInt("screenOrientation", 0);
+    switch (screenOrientation ) {
+      case 0 :
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        break;
+      case 1:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT );
+        break;
+      case 2:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        break;
+      case 3:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+        break;
+      case 4:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        break;
+      default:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
   }
 
   private void quit() {
@@ -287,4 +310,5 @@ public class LK8000 extends Activity {
     } else
       return super.dispatchTouchEvent(ev);
   }
+
 }

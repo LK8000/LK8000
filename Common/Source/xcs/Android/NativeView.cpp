@@ -27,7 +27,9 @@ Java::TrivialClass NativeView::cls;
 jfieldID NativeView::textureNonPowerOfTwo_field;
 jmethodID NativeView::init_surface_method, NativeView::deinit_surface_method;
 jmethodID NativeView::setRequestedOrientationID;
+jmethodID NativeView::setScreenOrientationID;
 jmethodID NativeView::getRequestedOrientationID;
+jmethodID NativeView::getScreenOrientationID;
 jmethodID NativeView::getDisplayOrientationID;
 jmethodID NativeView::swap_method;
 jmethodID NativeView::loadResourceBitmap_method;
@@ -47,6 +49,8 @@ NativeView::Initialise(JNIEnv *env)
     env->GetStaticFieldID(cls, "textureNonPowerOfTwo", "Z");
   init_surface_method = env->GetMethodID(cls, "initSurface", "()Z");
   deinit_surface_method = env->GetMethodID(cls, "deinitSurface", "()V");
+  setScreenOrientationID = env->GetMethodID(cls, "setScreenOrientation", "(I)Z");
+  getScreenOrientationID = env->GetMethodID(cls, "getScreenOrientation", "()I");
   setRequestedOrientationID =
     env->GetMethodID(cls, "setRequestedOrientation", "(I)Z");
   getRequestedOrientationID =
