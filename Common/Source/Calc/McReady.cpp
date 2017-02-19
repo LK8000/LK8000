@@ -19,7 +19,7 @@ double GlidePolar::polar_c;
 unsigned GlidePolar::_Vminsink = 2;
 unsigned GlidePolar::_Vbestld = 2;
 double GlidePolar::_sinkratecache[(MAXSPEED+1)*2]; // this is in 0.5m/s !!
-double GlidePolar::bestld = 0.0;
+double GlidePolar::bestld = 1.0;
 double GlidePolar::minsink = 10000.0;
 double GlidePolar::BallastLitres = 0.0;
 double GlidePolar::WingArea = 0.0;
@@ -81,7 +81,7 @@ void GlidePolar::SetBallast() {
   // to fly slower than min sink speed)
 
   minsink = 10000.0;
-  bestld = 0.0;
+  double tmp_bestld = 0.0;
 
   // Rounding errors could make SAFTEYSPEED 0.00xx and not 0
   // Now below 3kmh we consider the speed wrong
@@ -99,7 +99,8 @@ void GlidePolar::SetBallast() {
      BUGSTOP_LKASSERT(thesinkrate>0);
      if (thesinkrate<=0) thesinkrate=0.001;
      double ld = vtrack/thesinkrate;
-     if (ld>=bestld) {
+     if (ld>=tmp_bestld) {
+        tmp_bestld=ld;
         bestld = ld;
         _Vbestld = _i;
      }
