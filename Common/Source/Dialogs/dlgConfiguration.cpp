@@ -4045,6 +4045,7 @@ int ival;
     }
   }
 
+#ifdef ANDROID
   wp = (WndProperty *) wf->FindByName(TEXT("prpAndroidScreenOrientation"));
   if (wp) {
     int ret = wp->GetDataField()->GetAsInteger();
@@ -4052,6 +4053,7 @@ int ival;
       native_view->setScreenOrientation(ret);
     }
   }
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPollingMode")); 
   if (wp) {
