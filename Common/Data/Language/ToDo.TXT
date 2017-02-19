@@ -1,4 +1,4 @@
-Things to be fixed in LK languages files/tokens:
+ThingsF2 to be fixed in LK languages files/tokens:
 
 >>>>>>>>>>>> DO NOT REMOVE OR CHANGE EXISTING TOKENS!!!!!!!!!!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<
 >>>>>>>>>>>> DO NOT REMOVE OR CHANGE EXISTING TOKENS!!!!!!!!!!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<
@@ -425,5 +425,7 @@ HELP FILE
 @1296
 Auto-Contrast (see help)
 
+@280
+we have not only Flarm traffic but also FT24 so better rename to "traffic on map"
 
 
