@@ -1880,6 +1880,29 @@ _@M1860_ "HSI"
 
 _@M1870_ "Sonar ZonesAéro "
 
+# Menu 12 edition polices
+_@M1880_ "Waypoint"
+_@M1881_ "Topologie "
+_@M1882_ "Balises proches "
+_@M1883_ "Barre inférieure "
+_@M1884_ "Type Overlay  "
+_@M1885_ "Affichage sur 2 lignes "
+_@M1886_ "Cible Overlay "
+_@M1887_ "Valeurs Overlay  "
+_@M1888_ "Indicateur de plané "
+ 
+_@M1891_ "en haut à gauche "
+_@M1892_ "en haut au centre"
+_@M1893_ "en haut à droite "
+_@M1894_ "à droite en haut "
+_@M1895_ "à droite au centre "
+_@M1896_ "à droite en bas "
+_@M1897_ "à gauche en haut "
+_@M1898_ "à gauche au centre "
+_@M1899_ "à gauche en bas "
+_@M1900_ "en bas à gauche "
+_@M1901_ "POWER OFF"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
