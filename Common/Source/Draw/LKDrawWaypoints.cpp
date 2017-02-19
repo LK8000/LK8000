@@ -190,7 +190,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
         if(pWptBmp) {
             // TODO 
             const unsigned IconSize = (UseHiresBitmap ? iround(IBLSCALE(10.0)) : 20); 
-            const RasterPoint ScreenPt =  _Proj.ToRasterPoint(WayPointList[i].Longitude, WayPointList[i].Latitude);
+            const RasterPoint ScreenPt =  _Proj.ToRasterPoint(WayPointList[i].Latitude, WayPointList[i].Longitude);
             pWptBmp->Draw(Surface, ScreenPt.x-IconSize/2, ScreenPt.y-IconSize/2, IconSize,IconSize);
         }
     }
@@ -467,7 +467,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 	      } // end intask/irange/dowrite
 
     if (MapWindow::zoom.RealScale()<20 && islandable && dowrite) {
-	  const RasterPoint ScreenPt =  _Proj.ToRasterPoint(WayPointList[i].Longitude, WayPointList[i].Latitude);
+	  const RasterPoint ScreenPt =  _Proj.ToRasterPoint(WayPointList[i].Latitude, WayPointList[i].Longitude);
       TextInBox(Surface, &rc, Buffer, ScreenPt.x+IBLSCALE(4), ScreenPt.y, &TextDisplayMode, true);
       dowrite=false; // do not pass it along
     }
@@ -489,7 +489,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
 
           if (dowrite) {
-			RasterPoint LabelPos =  _Proj.ToRasterPoint(WayPointList[i].Longitude, WayPointList[i].Latitude);
+			RasterPoint LabelPos =  _Proj.ToRasterPoint(WayPointList[i].Latitude, WayPointList[i].Longitude);
 			LabelPos.x += 5;
 
             if (PtInRect(&ClipRect, LabelPos)) {

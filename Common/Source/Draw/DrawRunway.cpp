@@ -55,7 +55,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
      Center.x = rc.left+ (rc.right- rc.left)/2;
      Center.y = rc.bottom +(rc.top-rc.bottom)/2;
   } else {
-     Center =  _Proj->ToRasterPoint(wp->Longitude, wp->Latitude);
+     Center =  _Proj->ToRasterPoint(wp->Latitude, wp->Longitude);
   }
 
   //

@@ -19,7 +19,7 @@ public:
     ~ScreenProjection();
     
     inline
-    RasterPoint ToRasterPoint(double lon, double lat) const {
+    RasterPoint ToRasterPoint(double lat, double lon) const {
         const int64_t Y = _lround((_PanLat - lat) * _Zoom);
         const int64_t X = _lround((_PanLon - lon) * fastcosine(lat) * _Zoom);
 
@@ -36,7 +36,7 @@ public:
     }
     
     inline 
-    FloatPoint ToFloatPoint(double lon, double lat) const {
+    FloatPoint ToFloatPoint(double lat, double lon) const {
         typedef FloatPoint::scalar_type scalar_type;
 
         const scalar_type Y = (_PanLat - lat) * _Zoom;
@@ -74,38 +74,38 @@ struct GeoToScreen {
 
     template<typename U = T>
     typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
-    operator()(double lon, double lat) const {
-        return _Proj.ToRasterPoint(lon,lat);
+    operator()(double lat, double lon) const {
+        return _Proj.ToRasterPoint(lat, lon);
     }
 
     template<typename U = T>
     typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
-    operator()(double lon, double lat) const {
-        return _Proj.ToFloatPoint(lon,lat);
+    operator()(double lat, double lon) const {
+        return _Proj.ToFloatPoint(lat, lon);
     }
 		
     template<typename U = T>
     typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
     operator()(const pointObj& pt) const {
-        return _Proj.ToRasterPoint(pt.x,pt.y);
+        return _Proj.ToRasterPoint(pt.y, pt.x);
     }
 
     template<typename U = T>
     typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
     operator()(const pointObj& pt) const {
-        return _Proj.ToFloatPoint(pt.x,pt.y);
+        return _Proj.ToFloatPoint(pt.y, pt.x);
     }
 
     template<typename U = T>
     typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
     operator()(const GeoPoint& pt) const {
-        return _Proj.ToRasterPoint(pt.longitude, pt.latitude);
+        return _Proj.ToRasterPoint(pt.latitude, pt.longitude);
     }
 
     template<typename U = T>
     typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
     operator()(const GeoPoint& pt) const {
-        return _Proj.ToFloatPoint(pt.longitude, pt.latitude);
+        return _Proj.ToFloatPoint(pt.latitude, pt.longitude);
     }
 
     const ScreenProjection& _Proj;

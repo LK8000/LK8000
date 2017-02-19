@@ -211,16 +211,9 @@ void ComPort::StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *f
     LKASSERT(fmt!=NULL);
 
     va_start(ap, fmt);
-#ifdef TESTBENCH
-    int n = _vsntprintf(tmp, 127, fmt, ap);
-#else
-    _vsntprintf(tmp, 127, fmt, ap);
-#endif
+    gcc_unused int n = _vsntprintf(tmp, 127, fmt, ap);
     va_end(ap);
-
-#ifdef TESTBENCH
     LKASSERT(n>=0); // Message to long for "tmp" buffer
-#endif
 
 
     tmp[126] = _T('\0');

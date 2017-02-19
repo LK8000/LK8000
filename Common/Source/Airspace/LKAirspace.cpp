@@ -881,7 +881,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
                     std::begin(_geopoints), std::end(_geopoints),
                     std::back_inserter(_screenpoints_clipped),
                     [&ToScreen](CPoint2DArray::const_reference pt) {
-                        return ToScreen(pt.Longitude(), pt.Latitude());
+                        return ToScreen(pt.Latitude(), pt.Longitude());
                     });
 
             // close polygon if needed
@@ -898,7 +898,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
                     std::begin(_geopoints), std::end(_geopoints),
                     std::back_inserter(_screenpoints),
                     [&ToScreen](CPoint2DArray::const_reference pt) {
-                        return ToScreen(pt.Longitude(), pt.Latitude());
+                        return ToScreen(pt.Latitude(), pt.Longitude());
                     });
 
             // close polygon if needed

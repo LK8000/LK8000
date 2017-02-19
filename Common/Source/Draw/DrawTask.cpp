@@ -223,7 +223,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
                     const auto& wpt = WayPointList[Task[i].Index];
 
-                    const ScreenPoint Center = ToScreen(wpt.Longitude, wpt.Latitude);
+                    const ScreenPoint Center = ToScreen(wpt.Latitude, wpt.Longitude);
                     const ScreenPoint Start = {
                             static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
                             static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
@@ -319,7 +319,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
     for(unsigned i = 0; ValidTaskPointFast(i); ++i ) {
         const WAYPOINT& wpt = WayPointList[Task[i].Index];
-        task_polyline.push_back(ToScreen(wpt.Longitude, wpt.Latitude));
+        task_polyline.push_back(ToScreen(wpt.Latitude, wpt.Longitude));
     }
     
     if(AATEnabled) {
@@ -334,7 +334,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
         if((unsigned)ActiveTaskPoint < task_polyline.size()) {
             // Draw DashLine From current position to Active TurnPoint center
-            const line_t to_next_center = {{(ToScreen(DrawInfo.Longitude, DrawInfo.Latitude)), (task_polyline[ActiveTaskPoint])}};
+            const line_t to_next_center = {{(ToScreen(DrawInfo.Latitude, DrawInfo.Longitude)), (task_polyline[ActiveTaskPoint])}};
 
 #ifdef NO_DASH_LINES
             Surface.Polyline(to_next_center.data(), to_next_center.size(), rc);
@@ -348,7 +348,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
         task_polyline.clear();
         for(unsigned i = 0; ValidTaskPointFast(i); ++i ) {
             const TASK_POINT& tpt = Task[i];
-            task_polyline.push_back(ToScreen(tpt.AATTargetLon, tpt.AATTargetLat));
+            task_polyline.push_back(ToScreen(tpt.AATTargetLat, tpt.AATTargetLon));
         }        
     }
 

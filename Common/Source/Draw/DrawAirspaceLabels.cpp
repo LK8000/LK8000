@@ -38,7 +38,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const Scr
           // Horizontal warning point
           if (distances_ready && (hlabeldrawstyle > awsHidden) && PointVisible(lon, lat)) {
 
-              const POINT sc = _Proj.ToRasterPoint(lon, lat);
+              const POINT sc = _Proj.ToRasterPoint(lat, lon);
               hAirspaceWarning.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10));              
               
               Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));

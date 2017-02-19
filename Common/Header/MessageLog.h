@@ -16,10 +16,12 @@
 #include "Compiler.h"
 
 extern "C" {
-void DebugStore(const char *Str, ...) gcc_printf(1,2);
+void DebugStore(const char *Str, ...)
+        gcc_printf(1,2) gcc_nonnull(1);
 }
 
-void StartupStore(const TCHAR *Str, ...) gcc_printf(1,2);
+void StartupStore(const TCHAR *Str, ...)
+        gcc_printf(1,2) gcc_nonnull(1);
 
 #endif	/* MESSAGELOG_H */
 
