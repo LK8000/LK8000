@@ -267,7 +267,8 @@ _skip_stuff:
         DrawTask(Surface, DrawRect, _Proj, Orig_Aircraft);
 
     }
-    if (Flags_DrawFAI) {
+    if ((Flags_DrawFAI) && (CALCULATED_INFO.Odometer > 0))
+    {
         if (MapWindow::DerivedDrawInfo.Flying) { // FAI optimizer does not depend on tasks, being based on trace
             DrawFAIOptimizer(Surface, DrawRect, _Proj, Orig_Aircraft);
         } else { // not flying => show FAI sectors for the task
