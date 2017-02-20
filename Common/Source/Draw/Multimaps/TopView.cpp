@@ -168,9 +168,8 @@ _nomoredeclutter:
   if (IsMultimapWaypoints()) {
 	DrawWaypointsNew(Surface,rct,_Proj);
   }
-
-  if ((Flags_DrawFAI) &&(CALCULATED_INFO.Odometer > 0))
-  	DrawFAIOptimizer(Surface, rct, _Proj, Orig_Aircraft);
+  if (Flags_DrawFAI)
+	DrawFAIOptimizer(Surface, rct, _Proj, Orig_Aircraft);
 
   DeclutterMode=olddecluttermode; // set it back correctly
 
