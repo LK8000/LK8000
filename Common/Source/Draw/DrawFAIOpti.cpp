@@ -339,7 +339,7 @@ double alpha, fDistTri, cos_alpha=0;
 
 DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
 
-if(fabs(fDist_c) < 1000.0) {  /* distance too short for a FAI sector */
+if(fabs(fDist_c) < 10000.0) {  /* distance too short for a FAI sector */
     return false;
 }
 

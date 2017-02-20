@@ -376,7 +376,8 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
   PointsResult(type, traceResult);
   
 
-  if(!sprint) {
+  if((!sprint) && (	CALCULATED_INFO.Odometer > 0))
+  {
     // calculate TYPE_FAI_3_TPS
 	  /*
 if(result.Type() ==ContestMgr::TYPE_FAI_TRIANGLE)
