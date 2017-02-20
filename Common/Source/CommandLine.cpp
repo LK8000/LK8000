@@ -32,6 +32,12 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
   TCHAR mytext1[10], mytext2[10];
   bool validx=false, validy=false;
 
+  pC = _tcsstr(MyCommandLine, TEXT("-sysop"));
+  if (pC != NULL){
+     extern bool SysOpMode;
+     SysOpMode=true;
+  }
+
   pC = _tcsstr(MyCommandLine, TEXT("-help"));
   if (pC != NULL){
 
@@ -52,6 +58,8 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
           set reference DPI, default to 80.\n\
  -quant=n\n\
           force terrain quantization=n\n\
+ -sysop\n\
+          start with sysop mode active\n\
 \n");
 
   return false; 

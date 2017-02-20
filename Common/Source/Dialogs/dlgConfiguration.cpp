@@ -614,7 +614,40 @@ static void OnPilotNameClicked(WndButton* pWnd) {
     if (buttonPilotName) {
         _tcscpy(Temp, PilotName_Config);
         dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(PilotName_Config, Temp);
+
+        //
+        // ACCESS TO SYSOP MODE 
+        //
+        extern bool SysOpMode;
+        extern bool Sysop(TCHAR *command);
+        #define SYSOPW "OPSYS"
+
+        if (!SysOpMode) {
+           if (!_tcscmp(Temp,_T(SYSOPW))) {
+              _tcscpy(Temp,_T("SYSOP"));
+              Sysop(Temp); // activate sysop mode and exit dialog
+              if(pWnd) {
+                 WndForm * pForm = pWnd->GetParentWndForm();
+                 if(pForm) pForm->SetModalResult(mrOK);
+              }
+              return;
+           }
+        } 
+        
+        if (SysOpMode && _tcslen(Temp)>=2) {
+           if (Sysop(Temp)) {
+              // if requested, close immediately the parent dialog and back to normal menu!
+              // This is needed for example when commanding resolution chang because
+              // dialogs are not changed until closed, and we risk not seeing the Close button anymore.
+              if(pWnd) {
+                 WndForm * pForm = pWnd->GetParentWndForm();
+                 if(pForm) pForm->SetModalResult(mrOK);
+              }
+           }
+           return; // in SysOp mode no change of pilot name
+        } 
+
+        if (!SysOpMode) _tcscpy(PilotName_Config, Temp);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
