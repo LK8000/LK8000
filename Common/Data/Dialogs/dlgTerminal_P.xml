@@ -7,8 +7,8 @@
     <WndButton Name="cmdSelectStop" Caption="_@M670_" X="125" Y="2" Width="57"  Height="28" Font="2" Tag="3" />
     <WndButton Name="cmdClose" Caption="_@M186_" X="183" Y="2" Width="57"  Height="28" Font="2" Tag="3" />
 
-    <WndListFrame Name="frmTTYList" X="0" Y="32" Width="200" Height="270" Font="2" OnListInfo="OnTTYListInfo">
-    <WndOwnerDrawFrame Name="frmTTYListEntry" X="2" Y="2" Width="200" Height="270" Font="2"  OnPaint="OnPaintListItem"/>
+    <WndListFrame Name="frmTTYList" X="1" Y="32" Width="-1" Height="-1" Font="2" OnListInfo="OnTTYListInfo">
+    <WndOwnerDrawFrame Name="frmTTYListEntry" X="1" Y="1" Width="-1" Height="-1" Font="2"  OnPaint="OnPaintListItem"/>
     </WndListFrame>
   </WndForm>
 </PMML>
