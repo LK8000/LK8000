@@ -172,7 +172,8 @@ Surface.SetBackgroundTransparent();
       FAISector_polyline.push_back(Pos);
     }
   }
-    if(bSectorvisible) {
+  //  if(bSectorvisible)
+    {
 		FAISector_polyline.push_back(FAISector_polyline.front());
 	#ifdef  FAI_SECTOR_DEBUG
 		StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
@@ -185,7 +186,7 @@ Surface.SetBackgroundTransparent();
 		 Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size(), rc);
 	#endif
     }
-
+    bSectorvisible = false;
 	  FAISector_polyline.clear();
 	  if(!m_FAIShape2.empty())
 	  {
@@ -196,7 +197,7 @@ Surface.SetBackgroundTransparent();
 		  FAISector_polyline.push_back(Pos);
 		}
 	  }
-	  if(bSectorvisible)
+	//  if(bSectorvisible)
 	  {
 		FAISector_polyline.push_back(FAISector_polyline.front());
 	#ifdef  FAI_SECTOR_DEBUG
@@ -642,6 +643,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
         fDist_a += fDelta_Dist;
         fDist_b -= fDelta_Dist;
     }
+    fDistMin *= FAI_BIG_PERCENTAGE;
   }
 
   /********************************************************************
