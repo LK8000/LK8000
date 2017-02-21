@@ -254,6 +254,8 @@ add_library( LK8000 SHARED
     Common/Source/units.cpp
     Common/Source/Utils.cpp
     Common/Source/WindowControls.cpp
+    Common/Source/Sysop.cpp
+
 
     Common/Source/Logger/DoSignature.cpp
     Common/Source/Logger/FlightDataRec.cpp
