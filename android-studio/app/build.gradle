@@ -109,14 +109,7 @@ android {
     }
     sourceSets {
         main {
-            java.srcDirs += [
-                    "../../android/src",
-                    "../../android/ioio/software/IOIOLib/src",
-                    "../../android/ioio/software/IOIOLib/target/android/src",
-                    "../../android/ioio/software/IOIOLibAccessory/src",
-                    "../../android/ioio/software/IOIOLibBT/src",
-                    "../../android/ioio/software/IOIOLibAndroidDevice/src"
-            ]
+            java.srcDirs += ["../../android/src"]
             manifest.srcFile "../../android/AndroidManifest.xml"
             res.srcDirs += ["../../android/res"]
         }
@@ -191,7 +184,11 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics-ndk:1.1.6@aar') {
         transitive = true;
     }
-    compile "com.android.support:support-compat:25.3.1"
+    compile 'com.android.support:support-compat:25.3.1'
+
+    compile 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
+    compile 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
+    compile 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'
 }
 
 crashlytics {
