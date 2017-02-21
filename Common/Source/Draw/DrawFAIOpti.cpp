@@ -222,19 +222,24 @@ Surface.SetBackgroundTransparent();
 	  if(!m_FAIGridLines.empty())
 	  {
         for (GPS_Gridlines::const_reference line : m_FAIGridLines) {
-
-		  bool bGridVisible = false;
+		  int iFirstVisible= -1;
+		  int iLastVisible = -1;
+		  int i=0;
           for (const GeoPoint& pt : line.GridLine) {
             const ScreenPoint Pos = ToScreen(pt);
 		    if(ScreenRect.IsInside(Pos))
-		      bGridVisible = true;
+		    {
+		      if(iFirstVisible < 0) iFirstVisible = i;
+		      iLastVisible = i;
+		    }
 			FAISector_polyline.push_back(Pos);
+			i++;
 		  }
-		  if(bGridVisible)
+		  if(iFirstVisible >= 0)
 		  {
 		    if( (Grid_num <  NumberGrids))
 		  	  Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
-
+/*
             const ScreenPoint& pt_start = FAISector_polyline.front();
             if(ScreenRect.IsInside(pt_start)) {
               MapWindow::LKWriteText(Surface, line.szLable, pt_start.x, pt_start.y, WTMODE_OUTLINED,
@@ -249,9 +254,9 @@ Surface.SetBackgroundTransparent();
                                        WTALIGN_LEFT, fillcolor, true);
               }
 		    }
-		    if( Grid_num > 1)
+		    if( Grid_num > 1)/*/
 		    {
-              const ScreenPoint& pt_mid = FAISector_polyline[FAISector_polyline.size()/2];
+              const ScreenPoint& pt_mid = FAISector_polyline[iFirstVisible + (iLastVisible-iFirstVisible)/2];
               if(ScreenRect.IsInside(pt_mid)) {
                 MapWindow::LKWriteText(Surface, line.szLable, pt_mid.x, pt_mid.y, WTMODE_OUTLINED,
                                        WTALIGN_LEFT, fillcolor, true);
