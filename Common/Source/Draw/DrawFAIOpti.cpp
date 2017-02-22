@@ -172,12 +172,12 @@ Surface.SetBackgroundTransparent();
       FAISector_polyline.push_back(Pos);
     }
   }
-  //  if(bSectorvisible)
+    if(bSectorvisible)
     {
 		FAISector_polyline.push_back(FAISector_polyline.front());
 	#ifdef  FAI_SECTOR_DEBUG
 		StartupStore(_T("FAI Sector draw with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape.begin()->latitude,  m_FAIShape.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
-		StartupStore(_T("FAI Sector draw with %u points  %s"), iPointCnt, NEWLINE);
+		StartupStore(_T("FAI Sector draw with %u points  %s"), FAISector_polyline.size(), NEWLINE);
 	#endif
 
 	#ifdef FILL_FAI_SECTORS
@@ -186,6 +186,7 @@ Surface.SetBackgroundTransparent();
 		 Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size(), rc);
 	#endif
     }
+
     bSectorvisible = false;
 	  FAISector_polyline.clear();
 	  if(!m_FAIShape2.empty())
@@ -197,19 +198,19 @@ Surface.SetBackgroundTransparent();
 		  FAISector_polyline.push_back(Pos);
 		}
 	  }
-	//  if(bSectorvisible)
+	  if(bSectorvisible)
 	  {
 		FAISector_polyline.push_back(FAISector_polyline.front());
 	#ifdef  FAI_SECTOR_DEBUG
 		StartupStore(_T("FAI Sector draw 2nd section with lat:%8.4f  lon:%8.4f => screen x:%u y:%u  %s"),  m_FAIShape2.begin()->latitude,  m_FAIShape2.begin()->longitude , FAISector_polyline.begin()->x, FAISector_polyline.begin()->y , NEWLINE);
-		StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), iPointCnt, NEWLINE);
+		StartupStore(_T("FAI Sector draw 2nd section with %u points  %s"), FAISector_polyline.size(), NEWLINE);
 	#endif
 	#ifdef FILL_FAI_SECTORS
 		 Surface.Polygon(FAISector_polyline.data(), FAISector_polyline.size(), rc);
 	#else
 		 Surface.Polyline(FAISector_polyline.data(), FAISector_polyline.size(), rc);
 	#endif
-
+	  }
       hpSectorPen.Create(PEN_DASH, ScreenThinSize, RGB_BLACK );
       Surface.SelectObject(hpSectorPen);
       Surface.SetBackgroundTransparent();
@@ -221,19 +222,24 @@ Surface.SetBackgroundTransparent();
 	  if(!m_FAIGridLines.empty())
 	  {
         for (GPS_Gridlines::const_reference line : m_FAIGridLines) {
-
-		  bool bGridVisible = false;
+		  int iFirstVisible= -1;
+		  int iLastVisible = -1;
+		  int i=0;
           for (const GeoPoint& pt : line.GridLine) {
             const ScreenPoint Pos = ToScreen(pt);
 		    if(ScreenRect.IsInside(Pos))
-		      bGridVisible = true;
+		    {
+		      if(iFirstVisible < 0) iFirstVisible = i;
+		      iLastVisible = i;
+		    }
 			FAISector_polyline.push_back(Pos);
+			i++;
 		  }
-		  if(bGridVisible)
+		  if(iFirstVisible >= 0)
 		  {
 		    if( (Grid_num <  NumberGrids))
 		  	  Surface.Polyline(FAISector_polyline.data(), FAI_SECTOR_STEPS, rc);
-
+/*
             const ScreenPoint& pt_start = FAISector_polyline.front();
             if(ScreenRect.IsInside(pt_start)) {
               MapWindow::LKWriteText(Surface, line.szLable, pt_start.x, pt_start.y, WTMODE_OUTLINED,
@@ -248,9 +254,9 @@ Surface.SetBackgroundTransparent();
                                        WTALIGN_LEFT, fillcolor, true);
               }
 		    }
-		    if( Grid_num > 1)
+		    if( Grid_num > 1)/*/
 		    {
-              const ScreenPoint& pt_mid = FAISector_polyline[FAISector_polyline.size()/2];
+              const ScreenPoint& pt_mid = FAISector_polyline[iFirstVisible + (iLastVisible-iFirstVisible)/2];
               if(ScreenRect.IsInside(pt_mid)) {
                 MapWindow::LKWriteText(Surface, line.szLable, pt_mid.x, pt_mid.y, WTMODE_OUTLINED,
                                        WTALIGN_LEFT, fillcolor, true);
@@ -269,7 +275,6 @@ Surface.SetBackgroundTransparent();
 		}
 	  }
 	  Surface.SelectObject(oldFont);
-    } // if visible
 
   if(bSectorvisible)
   {
