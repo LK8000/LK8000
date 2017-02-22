@@ -97,8 +97,7 @@ unsigned MapWindow::targetPanSize = 0;
 
 bool MapWindow::LandableReachable = false;
 
-LKPen MapWindow::hSnailPens[NUMSNAILCOLORS];
-LKColor MapWindow::hSnailColours[NUMSNAILCOLORS];
+LKPen MapWindow::hSnailPens[NUMSNAILCOLORS+1];
 
 #ifdef ENABLE_OPENGL
 std::array<FloatPoint, NUMTERRAINSWEEPS+2> MapWindow::Groundline;
