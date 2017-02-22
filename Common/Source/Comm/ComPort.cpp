@@ -130,7 +130,7 @@ void ComPort::run() {
     RxThread();
     PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
     if(d) {
-        d->nmeaParser.connected = false;
+        d->Status = CPS_OPENKO;
     }
 
 #ifdef ANDROID
