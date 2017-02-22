@@ -596,7 +596,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryShading,&Shading_Config);
   PREAD(sname,svalue,szRegistrySnailTrail,&TrailActive_Config);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistrySnailWidthScale,&MapWindow::SnailWidthScale);
+  PREAD(sname,svalue,szRegistrySnailScale,&SnailScale);
   PREAD(sname,svalue,szRegistrySpeed1Index,&dwSpeedIndex[0]);
   PREAD(sname,svalue,szRegistrySpeed2Index,&dwSpeedIndex[1]);
   PREAD(sname,svalue,szRegistrySpeed3Index,&dwSpeedIndex[2]);

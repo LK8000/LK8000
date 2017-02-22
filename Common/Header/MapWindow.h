@@ -780,7 +780,6 @@ private:
   static void SaturateLabelDeclutter(void);
   static void SetDeclutterIcon(RECT *drect);
   static bool RenderTimeAvailable();
-  static int SnailWidthScale;
   static bool TargetMoved(double &longitude, double &latitude);
 
     // Touch Screen Events Area

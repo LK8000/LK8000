@@ -855,6 +855,7 @@
 // km for distance, kmh for speed etc.  in map overlay
 
 #define MAXFONTRESIZE 10 // -10 .. -5 -4 -3 -2 -1 [0] +1 +2 +3 +4 +5 .. +10
+#define MAXSNAILRESIZE 10 // -10 .. -5 -4 -3 -2 -1 [0] +1 +2 +3 +4 +5 .. +10
 
 // McReady
 

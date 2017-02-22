@@ -58,7 +58,6 @@ LKColor MapWindow::AboveTerrainColor;
 LKBrush  MapWindow::hAboveTerrainBrush;
 #endif
 
-int MapWindow::SnailWidthScale = 16;
 int MapWindow::ScaleListCount = 0;
 double MapWindow::ScaleList[];
 int MapWindow::ScaleCurrent;

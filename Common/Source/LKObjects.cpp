@@ -158,10 +158,15 @@ void LKObjects_Create() {
   LKColor      hSnailColours[NUMSNAILCOLORS+1];
 
   extern float ScreenPixelRatio;
+  extern short ApplySnailResize(short defaultsize, short change);
 
   int tmpsize= iround(SNAIL_SIZE0 * ScreenPixelRatio);
   #ifdef TESTBENCH
   StartupStore(_T(". SNAIL[0]=%d ratio=%f\n"),tmpsize,ScreenPixelRatio);
+  #endif
+  tmpsize=ApplySnailResize(tmpsize,SnailScale);
+  #ifdef TESTBENCH
+  StartupStore(_T(". SNAIL[0]=%d scale=%d\n"),tmpsize,SnailScale-MAXSNAILRESIZE);
   #endif
   iSnailSizes[0]= tmpsize;
   iSnailSizes[1]= tmpsize;
@@ -178,6 +183,10 @@ void LKObjects_Create() {
   #ifdef TESTBENCH
   StartupStore(_T(". SNAIL[5]=%d\n"),tmpsize);
   #endif
+  tmpsize=ApplySnailResize(tmpsize,SnailScale);
+  #ifdef TESTBENCH
+  StartupStore(_T(". SNAIL[5]=%d scale=%d\n"),tmpsize,SnailScale-MAXSNAILRESIZE);
+  #endif
   iSnailSizes[5]= tmpsize;
   iSnailSizes[6]= tmpsize;
   iSnailSizes[9]= tmpsize;
@@ -187,11 +196,19 @@ void LKObjects_Create() {
   #ifdef TESTBENCH
   StartupStore(_T(". SNAIL[7]=%d\n"),tmpsize);
   #endif
+  tmpsize=ApplySnailResize(tmpsize,SnailScale);
+  #ifdef TESTBENCH
+  StartupStore(_T(". SNAIL[7]=%d scale=%d\n"),tmpsize,SnailScale-MAXSNAILRESIZE);
+  #endif
   iSnailSizes[7]= tmpsize;
 
   tmpsize= iround(SNAIL_SIZEN * ScreenPixelRatio);
   #ifdef TESTBENCH
   StartupStore(_T(". (N) SNAIL[15]=%d\n"),tmpsize);
+  #endif
+  tmpsize=ApplySnailResize(tmpsize,SnailScale);
+  #ifdef TESTBENCH
+  StartupStore(_T(". SNAIL[15]=%d scale=%d\n"),tmpsize,SnailScale-MAXSNAILRESIZE);
   #endif
   iSnailSizes[15]= tmpsize;
 
@@ -222,7 +239,6 @@ void LKObjects_Create() {
      MapWindow::hSnailPens[i].Create(PEN_SOLID, iSnailSizes[i], hSnailColours[i]);
   }
 
-
 #else
 
   // DITHERED SNAIL TRAIL
@@ -244,7 +260,6 @@ void LKObjects_Create() {
   hSnailColours[14] = RGB_BLACK;
   hSnailColours[15] = RGB_BLACK;
 
-
   MapWindow::hSnailPens[0].Create(PEN_DASH, iSnailSizes[0], hSnailColours[0]);
   MapWindow::hSnailPens[1].Create(PEN_DASH, iSnailSizes[1], hSnailColours[1]);
   MapWindow::hSnailPens[2].Create(PEN_DASH, iSnailSizes[2], hSnailColours[2]);
@@ -252,7 +267,6 @@ void LKObjects_Create() {
   MapWindow::hSnailPens[4].Create(PEN_DASH, iSnailSizes[4], hSnailColours[4]);
   MapWindow::hSnailPens[5].Create(PEN_DASH, iSnailSizes[5], hSnailColours[5]);
   MapWindow::hSnailPens[6].Create(PEN_DASH, iSnailSizes[6], hSnailColours[6]);
-
   MapWindow::hSnailPens[7].Create(PEN_SOLID,  iSnailSizes[7], hSnailColours[7]);
   MapWindow::hSnailPens[8].Create(PEN_SOLID,  iSnailSizes[8], hSnailColours[8]);
   MapWindow::hSnailPens[9].Create(PEN_SOLID,  iSnailSizes[9], hSnailColours[9]);
@@ -262,7 +276,6 @@ void LKObjects_Create() {
   MapWindow::hSnailPens[13].Create(PEN_SOLID,  iSnailSizes[13], hSnailColours[13]);
   MapWindow::hSnailPens[14].Create(PEN_SOLID,  iSnailSizes[14], hSnailColours[14]);
   MapWindow::hSnailPens[15].Create(PEN_SOLID,  iSnailSizes[15], hSnailColours[15]);
-
 
 #endif  // DITHERED
 
@@ -420,4 +433,24 @@ void LKObjects_Delete() {
 
 
 
+short ApplySnailResize(short defaultsize,short change) {
+
+  if (change!=MAXSNAILRESIZE) {
+      int psign=1; short i;
+      if (change>MAXSNAILRESIZE) {
+          psign=1;
+          i=change-MAXSNAILRESIZE; // 6>>1 , 10>>5
+      } else {
+          psign=-1;
+          i=MAXSNAILRESIZE-change; // 0>>5 , 4>>1
+      }
+      unsigned int u=  (double)(defaultsize*i) / 8.0; 
+      short newsize=defaultsize + (u*psign);
+      if (newsize<1) newsize=1;
+      
+      return newsize;
+  }
+
+  return defaultsize;
+}
 
