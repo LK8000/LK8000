@@ -287,7 +287,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistrySaveRuntime,SaveRuntime);
   rprintf(szRegistryShading,Shading_Config);
   rprintf(szRegistrySnailTrail,TrailActive_Config);
-  rprintf(szRegistrySnailWidthScale,MapWindow::SnailWidthScale);
+  rprintf(szRegistrySnailScale,SnailScale);
 //  rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
 //  rprintf(szRegistrySpeed2Index,dwSpeedIndex2);
   rprintf(szRegistrySpeedUnitsValue,SpeedUnit_Config);

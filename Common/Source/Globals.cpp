@@ -650,6 +650,7 @@ void Globals_Init(void) {
 #endif
 
   AutoContrast=true;
+  SnailScale=MAXSNAILRESIZE;
 
   // ^ ADD NEW GLOBALS up here ^
   // ---------------------------

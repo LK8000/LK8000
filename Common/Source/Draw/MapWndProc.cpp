@@ -58,7 +58,6 @@ LKColor MapWindow::AboveTerrainColor;
 LKBrush  MapWindow::hAboveTerrainBrush;
 #endif
 
-int MapWindow::SnailWidthScale = 16;
 int MapWindow::ScaleListCount = 0;
 double MapWindow::ScaleList[];
 int MapWindow::ScaleCurrent;
@@ -97,8 +96,7 @@ unsigned MapWindow::targetPanSize = 0;
 
 bool MapWindow::LandableReachable = false;
 
-LKPen MapWindow::hSnailPens[NUMSNAILCOLORS];
-LKColor MapWindow::hSnailColours[NUMSNAILCOLORS];
+LKPen MapWindow::hSnailPens[NUMSNAILCOLORS+1];
 
 #ifdef ENABLE_OPENGL
 std::array<FloatPoint, NUMTERRAINSWEEPS+2> MapWindow::Groundline;

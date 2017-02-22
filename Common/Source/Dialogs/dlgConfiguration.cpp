@@ -1823,6 +1823,14 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpSnailScale"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+    FontSetEnums(dfe);
+    dfe->Set(SnailScale);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontVisualGlide"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -3165,12 +3173,6 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSnailWidthScale"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(MapWindow::SnailWidthScale);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpGPSAltitudeOffset"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(GPSAltitudeOffset*ALTITUDEMODIFY/1000)); // 100429
@@ -3616,6 +3618,14 @@ double dval;
       if (FontBottomBar != wp->GetDataField()->GetAsInteger() ) {
           FontBottomBar = wp->GetDataField()->GetAsInteger();
           fontschanged=true;
+      }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpSnailScale"));
+  if (wp) {
+      if (SnailScale != wp->GetDataField()->GetAsInteger() ) {
+          SnailScale = wp->GetDataField()->GetAsInteger();
+          requirerestart=true;
       }
   }
 
@@ -4496,14 +4506,6 @@ int ival;
   }
 
   UpdateDeviceSetupButton(wf, SelectedDevice);
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSnailWidthScale"));
-  if (wp) {
-    if (MapWindow::SnailWidthScale != wp->GetDataField()->GetAsInteger()) {
-      MapWindow::SnailWidthScale = wp->GetDataField()->GetAsInteger();
-      requirerestart = true;
-    }
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu")); // VENTA9
   if (wp) EngineeringMenu = wp->GetDataField()->GetAsBoolean();

@@ -119,7 +119,7 @@ void LKProfileResetDefault(void) {
 
   Alternate2 = -1;
 
-  MapWindow::SnailWidthScale = 16;
+  SnailScale = MAXSNAILRESIZE;
 
   TeamCodeRefWaypoint = -1;
 

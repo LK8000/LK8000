@@ -422,8 +422,8 @@ class MapWindow {
   static LKPen hAirspacePens[AIRSPACECLASSCOUNT];
   static LKPen hBigAirspacePens[AIRSPACECLASSCOUNT];
   static LKPen hAirspaceBorderPen;
-  static LKPen hSnailPens[NUMSNAILCOLORS];
-  static LKColor hSnailColours[NUMSNAILCOLORS];
+
+  static LKPen hSnailPens[NUMSNAILCOLORS+1];
 
   static LKBrush hAirspaceBrushes[NUMAIRSPACEBRUSHES];
 
@@ -780,7 +780,6 @@ private:
   static void SaturateLabelDeclutter(void);
   static void SetDeclutterIcon(RECT *drect);
   static bool RenderTimeAvailable();
-  static int SnailWidthScale;
   static bool TargetMoved(double &longitude, double &latitude);
 
     // Touch Screen Events Area

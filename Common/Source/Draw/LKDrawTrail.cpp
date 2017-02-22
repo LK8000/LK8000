@@ -56,7 +56,7 @@ void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProj
         
     ScreenPoint* polyline_iterator = &snail_polyline[0];
 
-    unsigned short prev_color = 2;
+    unsigned short prev_color = 15; // fixed pen for low zoom snail trail
     if(use_colors) {
         prev_color = cur_iterator->Colour;
     }

@@ -396,6 +396,7 @@ GEXTERN double SinkRadius;
 GEXTERN double SimNettoVario;
 
 GEXTERN bool AutoContrast; // automatic contrast of terrain
+GEXTERN short SnailScale;  // user choice for rescaling the snail trail
 
 // Append over here NEW
 

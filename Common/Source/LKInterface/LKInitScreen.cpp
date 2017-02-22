@@ -25,8 +25,9 @@
 #endif
 #include "ScreenGeometry.h"
 
-// Our reference DPI for scaling. Work in progress. Not meaningful and not used.
-#define LK_REFERENCE_DPI 80
+// Our reference DPI for scaling: we tuned objects for 320x240@3.5" (114dpi) and 480x272@5" (110dpi). 
+// So we can use 110.
+#define LK_REFERENCE_DPI 110
 
 // The default size of lcd monitor in 1/10 of inches (50= 5")
 // Can be overridden by command line -lcdsize=45
@@ -44,7 +45,8 @@ unsigned short ReferenceDpi=0;
 // Note that TerrainQuantization() is called only when screen geometry changes.
 unsigned int   CommandQuantization=0; 
 
-int ScreenPixelRatio=1<<10; // This is 1.0
+int   FixedScreenPixelRatio=1<<10; // This is 1.0
+float ScreenPixelRatio=0;
 
 
 int ScreenScale::screen_scale_int = ScreenScale::radix;
@@ -170,7 +172,8 @@ void InitLKScreen() {
     // We must check that pixelratio is never lower than ScreenScale.
     ScreenDensity = GetScreenDensity();
     if (!ReferenceDpi) ReferenceDpi=LK_REFERENCE_DPI;
-    ScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/ReferenceDpi);
+    FixedScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/ReferenceDpi);
+    ScreenPixelRatio = (float)ScreenDensity/(float)ReferenceDpi;
 
     
     // -----------------------------
@@ -222,7 +225,8 @@ void InitLKScreen() {
     StartupStore(_T("..... ScreenScale      = %f" NEWLINE), ScreenScale::get());
 
     StartupStore(_T("..... ReferenceDpi     = %d" NEWLINE), ReferenceDpi);
-    StartupStore(_T("..... ScreenPixelRatio = %d.%d" NEWLINE), ScreenPixelRatio >> 10, ScreenPixelRatio & 0x3FF);
+    StartupStore(_T("..... ScreenPixelRatio = %f" NEWLINE), ScreenPixelRatio);
+    StartupStore(_T("..... FixedScreenPixelRatio = %d.%d" NEWLINE), FixedScreenPixelRatio >> 10, FixedScreenPixelRatio & 0x3FF);
     StartupStore(_T("..... UseHiresBitmap   = %s" NEWLINE), UseHiresBitmap?_T("true"):_T("false"));
     StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
     StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));
