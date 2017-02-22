@@ -14,11 +14,12 @@
 
 class NativeView;
 class Context;
+class IOIOHelper;
 
 extern unsigned android_api_level;
 extern Context *context;
 extern NativeView *native_view;
 
-
+extern IOIOHelper *ioio_helper;
 
 #endif /* ANDROID_MAIN_H */

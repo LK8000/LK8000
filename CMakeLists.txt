@@ -93,6 +93,8 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Android/NativeInputListener.cpp
     Common/Source/xcs/Android/NativePortListener.cpp
 
+    Common/Source/xcs/Android/IOIOHelper.cpp
+
     Common/Source/xcs/Java/String.cxx
     Common/Source/xcs/Java/Global.cxx
     Common/Source/xcs/Java/File.cxx
@@ -104,6 +106,8 @@ add_library( LK8000 SHARED
     Common/Source/Android/InternalPort.cpp
     Common/Source/Android/AndroidPort.cpp
     Common/Source/Android/BluetoothPort.cpp
+
+    Common/Source/Android/IOIOUartPort.cpp
 
     Common/Source/Window/WndMain.cpp
 

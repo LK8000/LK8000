@@ -25,6 +25,7 @@
 #include "Android/PortBridge.hpp"
 #include "Android/BluetoothHelper.hpp"
 #include "Android/NativeLeScanCallback.hpp"
+#include <Android/IOIOHelper.hpp>
 
 #include "Screen/OpenGL/Init.hpp"
 #include "Screen/Debug.hpp"
@@ -39,6 +40,8 @@ unsigned android_api_level;
 
 Context *context;
 NativeView *native_view;
+
+IOIOHelper *ioio_helper = nullptr;
 
 extern WndMain MainWindow;
 
@@ -89,6 +92,8 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   BluetoothHelper::Initialise(env);
   NativeLeScanCallback::Initialise(env);
 
+  const bool have_ioio = IOIOHelper::Initialise(env);
+
   context = new Context(env, _context);
 
   OpenGL::Initialise();
@@ -100,7 +105,11 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
   event_queue = new EventQueue();
 
+  if (have_ioio)
+    ioio_helper = new IOIOHelper(env);
+
   SoundUtil::Initialise(env);
+
 
   ScreenInitialized();
 
@@ -132,6 +141,9 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   delete native_view;
   native_view = nullptr;
 
+  delete ioio_helper;
+  ioio_helper = nullptr;
+
   TextUtil::Deinitialise(env);
   OpenGL::Deinitialise();
   ScreenDeinitialized();
@@ -139,6 +151,7 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   delete context;
   context = nullptr;
 
+  IOIOHelper::Deinitialise(env);
   NativeLeScanCallback::Deinitialise(env);
   BluetoothHelper::Deinitialise(env);
   NativeInputListener::Deinitialise(env);

@@ -33,6 +33,9 @@
 #include "Android/InternalPort.h"
 #include "Android/BluetoothHelper.hpp"
 #include <sstream>
+#include <Android/Main.hpp>
+#include <Android/IOIOUartPort.h>
+
 #endif
 
 
@@ -404,6 +407,14 @@ void RefreshComPortList() {
             }
         }
     }
+
+    if(ioio_helper) {
+        COMMPort.push_back(COMMPortItem_t("IOIOUart_0", "IOIO Uart 0"));
+        COMMPort.push_back(COMMPortItem_t("IOIOUart_1", "IOIO Uart 1"));
+        COMMPort.push_back(COMMPortItem_t("IOIOUart_2", "IOIO Uart 2"));
+        COMMPort.push_back(COMMPortItem_t("IOIOUart_3", "IOIO Uart 3"));
+    }
+
 #endif
 
     if(COMMPort.empty()) {
@@ -631,6 +642,11 @@ BOOL devInit() {
         } else if (_tcscmp(Port, _T("Bluetooth Server")) == 0) {
 #ifdef ANDROID
             Com = new BluetoothServerPort(i, Port);
+#endif
+        } else if(_tcsncmp(Port, _T("IOIOUart_"), 9) == 0) {
+#ifdef ANDROID
+            unsigned ID = _tcstoul(Port+9, nullptr, 10);
+            Com = new IOIOUartPort(i, Port, ID, dwSpeed[SpeedIndex]);
 #endif
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
