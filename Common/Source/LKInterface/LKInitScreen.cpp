@@ -48,8 +48,6 @@ unsigned int   CommandQuantization=0;
 // The time spent rendering the very first full map on startup
 unsigned int DrawTerrainTimer=0; 
 
-
-int   FixedScreenPixelRatio=1<<10; // This is 1.0
 float ScreenPixelRatio=0;
 
 
@@ -176,7 +174,6 @@ void InitLKScreen() {
     // We must check that pixelratio is never lower than ScreenScale.
     ScreenDensity = GetScreenDensity();
     if (!ReferenceDpi) ReferenceDpi=LK_REFERENCE_DPI;
-    FixedScreenPixelRatio = std::max(1<<10, (ScreenDensity<<10)/ReferenceDpi);
     ScreenPixelRatio = (float)ScreenDensity/(float)ReferenceDpi;
 
     
@@ -230,7 +227,6 @@ void InitLKScreen() {
 
     StartupStore(_T("..... ReferenceDpi     = %d" NEWLINE), ReferenceDpi);
     StartupStore(_T("..... ScreenPixelRatio = %f" NEWLINE), ScreenPixelRatio);
-    StartupStore(_T("..... FixedScreenPixelRatio = %d.%d" NEWLINE), FixedScreenPixelRatio >> 10, FixedScreenPixelRatio & 0x3FF);
     StartupStore(_T("..... UseHiresBitmap   = %s" NEWLINE), UseHiresBitmap?_T("true"):_T("false"));
     StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
     StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));

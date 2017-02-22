@@ -33,18 +33,6 @@
 #define SCREEN_GEOMETRY_COUNT    6
 
 /**
- * Rescale pixel size depending on DPI
- * See ScreenGeometry.h
- * WARNING: use this function only after ScreenPixelRatio has been calculated by InitLKScreen().
- * CURRENTLY NOT USED. WORK IN PROGRESS
- */
-gcc_pure inline
-int RescalePixelSize(int x) {
-    extern int FixedScreenPixelRatio; // 22.10 fixed size number
-    return (x * FixedScreenPixelRatio) >> 10;
-}
-
-/**
  * screen_scale_int and screen_scale_double need to have same value and used only by IBLSCALE() function
  *  this class exist for enforce this requirement,
  *  helper struct are made for select right value (int or double at compil time.
