@@ -803,6 +803,7 @@
 #define CPS_OPENKO	2 	// port could not be open
 #define CPS_OPENOK	3 	// port open ok
 #define CPS_EFRAME	4	// frame errors
+#define CPS_OPENWAIT    5 	// port open ok but wait for connected device
 
 // Overtargets Modes
 #define OVT_TASK        0

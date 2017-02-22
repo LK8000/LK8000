@@ -43,17 +43,20 @@ bool AndroidPort::Close() {
 }
 
 bool AndroidPort::StopRxThread() {
-    ScopeLock lock(mutex);
-    running = false;
 
-    return true;
+    if(ComPort::StopRxThread()) {
+        ScopeLock lock(mutex);
+        running = false;
+        return true;
+    }
+    return false;
 }
 
 bool AndroidPort::StartRxThread() {
     ScopeLock lock(mutex);
     running = true;
 
-    return true;
+    return ComPort::StartRxThread();
 }
 
 
@@ -65,6 +68,7 @@ void AndroidPort::Purge() {
 
 void AndroidPort::CancelWaitEvent() {
     newdata.Broadcast();
+    newstate.Broadcast();
 };
 
 unsigned long AndroidPort::SetBaudrate(unsigned long baud_rate) {
@@ -151,10 +155,35 @@ enum PortState {
 };
 
 void AndroidPort::PortStateChanged() {
-    if(bridge) {
+    newstate.Signal();
+}
+
+unsigned AndroidPort::RxThread() {
+
+
+    while(!StopEvt.tryWait(0) ) {
+
+        ScopeLock lock(mutex);
+        newstate.Wait(mutex);
+
         PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
-        if (d) {
-            d->nmeaParser.connected = ((bridge->getState(Java::GetEnv())) == STATE_READY);
+        if (bridge && d) {
+            switch(bridge->getState(Java::GetEnv())) {
+                case STATE_READY :
+                    d->Status = CPS_OPENOK;
+                    break;
+                case STATE_FAILED:
+                    d->Status = CPS_OPENKO;
+                    break;
+                case STATE_LIMBO:
+                    d->Status = CPS_OPENWAIT;
+                    break;
+                default:
+                    d->Status = CPS_OPENKO;
+                    break;
+            }
         }
     }
+
+    return 0;
 }

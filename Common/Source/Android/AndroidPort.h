@@ -45,12 +45,13 @@ public:
 
 protected:
 
-    unsigned RxThread() override { return 0; }
+    unsigned RxThread() override;
 
     /* protect fifo and flags*/
     Mutex mutex;
     /* singal new data available */
     Cond newdata;
+    Cond newstate;
 
     bool running;
     bool closing;
