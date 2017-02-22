@@ -731,7 +731,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
 
   GGAAvailable = TRUE;
-  connected = TRUE;     // 091208
+  connected = true;     // 091208
 
   // this will force gps invalid but will NOT assume gps valid!
   nSatellites = (int)(min(16.0, StrToDouble(params[6], NULL)));
