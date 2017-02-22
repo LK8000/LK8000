@@ -30,16 +30,20 @@ bool AndroidPort::Initialize() {
 
 bool AndroidPort::Close() {
 
+    PortBridge * delete_bridge = bridge;
     {
         ScopeLock lock(mutex);
         running = false;
+        bridge = nullptr;
     }
-    delete bridge;
-    bridge = nullptr;
 
-    CancelWaitEvent();
+    while(!ComPort::Close()) {
+        Sleep(10);
+    }
 
-    return ComPort::Close();
+    delete delete_bridge;
+
+    return true;
 }
 
 bool AndroidPort::StopRxThread() {
@@ -160,15 +164,16 @@ void AndroidPort::PortStateChanged() {
 
 unsigned AndroidPort::RxThread() {
 
+    ScopeLock lock(mutex);
 
-    while(!StopEvt.tryWait(0) ) {
+    PortBridge * active_bridge = bridge;
+    while( running ) {
 
-        ScopeLock lock(mutex);
         newstate.Wait(mutex);
 
         PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
-        if (bridge && d) {
-            switch(bridge->getState(Java::GetEnv())) {
+        if (d) {
+            switch(active_bridge->getState(Java::GetEnv())) {
                 case STATE_READY :
                     d->Status = CPS_OPENOK;
                     break;
@@ -182,6 +187,12 @@ unsigned AndroidPort::RxThread() {
                     d->Status = CPS_OPENKO;
                     break;
             }
+        }
+
+        if(!bridge) {
+            d->Status = CPS_OPENKO;
+            // port is Closed.
+            break;
         }
     }
 

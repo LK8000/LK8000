@@ -89,10 +89,10 @@ bool ComPort::StopRxThread() {
 #endif
     CancelWaitEvent();
 
-#ifdef _DEBUG_STOP_RXTHREAD
-    StartupStore(_T("... ComPort %u StopRxThread: Wait End of thread !%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
-#endif
     if (ReadThread.isRunning()) {
+#ifdef _DEBUG_STOP_RXTHREAD
+        StartupStore(_T("... ComPort %u StopRxThread: Wait End of thread !%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
+#endif
         if(!ReadThread.tryJoin(20000)) {
             StartupStore(_T("... ComPort %u StopRxThread: RX Thread forced to terminate!%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
             // TODO : Kill Thread ??
