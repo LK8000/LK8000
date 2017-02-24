@@ -81,6 +81,10 @@ bool SetSoundVolume() {
 
   
 void LKSound(const TCHAR *lpName) {
+    if(!lpName || !EnableSoundModes) {
+        return;
+    }
+
     ScopeLock Lock(mutex_sound);
     if(!SoundUtil::Play(Java::GetEnv(), context->Get(), lpName)) {
         StartupStore(_T("Sound : error playing '%s'" NEWLINE), lpName);
@@ -90,6 +94,11 @@ void LKSound(const TCHAR *lpName) {
 
 void PlayResource (const TCHAR* lpName) {
     LKASSERT(lpName);
+
+    if(!lpName || !EnableSoundModes) {
+        return;
+    }
+
     const TCHAR* szName =  FindWave(lpName);
     if ( szName != nullptr ) {
         LKSound(szName);
