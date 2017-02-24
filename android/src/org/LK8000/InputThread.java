@@ -31,7 +31,7 @@ import android.util.Log;
  * A wrapper for an InputStream which allows reading with a timeout.
  */
 class InputThread extends Thread {
-  private static final String TAG = "LK8000";
+  private static final String TAG = "InputThread";
 
   static final int BUFFER_SIZE = 256;
 
@@ -73,12 +73,14 @@ class InputThread extends Thread {
   }
 
   void close() {
+    Log.d(TAG, "start close " + name);
     closeInternal();
 
     try {
       join();
     } catch (InterruptedException e) {
     }
+    Log.d(TAG, "end close " + name);
   }
 
   boolean isValid() {

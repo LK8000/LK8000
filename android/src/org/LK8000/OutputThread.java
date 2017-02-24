@@ -31,7 +31,7 @@ import android.util.Log;
  * A wrapper for an OutputStream which allows writing with a timeout.
  */
 class OutputThread extends Thread {
-  private static final String TAG = "LK8000";
+  private static final String TAG = "OutputThread";
 
   static final int BUFFER_SIZE = 256;
 
@@ -45,7 +45,7 @@ class OutputThread extends Thread {
   int head, tail;
 
   OutputThread(String _name, OutputStream _os) {
-    super("InputThread " + _name);
+    super("OutputThread " + _name);
 
     name = _name;
     os = _os;
@@ -54,6 +54,8 @@ class OutputThread extends Thread {
   }
 
   synchronized void close() {
+    Log.d(TAG, "start close " + name);
+
     OutputStream os2 = os;
     if (os2 == null)
       return;
@@ -66,6 +68,7 @@ class OutputThread extends Thread {
     }
 
     notifyAll();
+    Log.d(TAG, "end close " + name);
   }
 
   synchronized boolean drain() {

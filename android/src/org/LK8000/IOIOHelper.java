@@ -42,7 +42,7 @@ import ioio.lib.spi.IOIOConnectionFactory;
  */
 final class IOIOHelper implements IOIOConnectionHolder,
                                   IOIOAgent.Listener {
-  private static final String TAG = "LK8000";
+  private static final String TAG = "IOIOHelper";
 
   private IOIOMultiAgent agent;
 
@@ -161,6 +161,7 @@ final class IOIOHelper implements IOIOConnectionHolder,
   }
 
   @Override public synchronized void addListener(IOIOConnectionListener l) {
+    Log.d(TAG, "addListener " + l.getClass().getName());
     closedListeners.add(l);
 
     agent.enable();
@@ -176,6 +177,7 @@ final class IOIOHelper implements IOIOConnectionHolder,
   }
 
   @Override public synchronized void removeListener(IOIOConnectionListener l) {
+    Log.d(TAG, "removeListener " + l.getClass().getName());
     if (openListeners.remove(l))
       /* this listener thinks the IOIO connection is established;
          invoke the onIOIODisconnect() method */
@@ -190,6 +192,7 @@ final class IOIOHelper implements IOIOConnectionHolder,
 
   @Override
   public synchronized void cycleListener(IOIOConnectionListener l) {
+    Log.d(TAG, "cycleListener " + l.getClass().getName());
     if (!isOpen())
       return;
 
@@ -205,16 +208,19 @@ final class IOIOHelper implements IOIOConnectionHolder,
 
   @Override public synchronized void onIOIOConnect(IOIO ioio)
     throws ConnectionLostException, InterruptedException {
+    Log.d(TAG, "onIOIOConnect " + ioio.getClass().getName());
     openAllListeners(ioio);
     ioio_ = ioio;
   }
 
   @Override public synchronized void onIOIODisconnect(IOIO ioio) {
+    Log.d(TAG, "onIOIODisconnect " + ioio.getClass().getName());
     ioio_ = null;
     closeAllListeners(ioio);
   }
 
   @Override public synchronized boolean onIOIOIdle(IOIO ioio) {
+    Log.d(TAG, "onIOIOIdle ");
     return handleNewListeners();
   }
 

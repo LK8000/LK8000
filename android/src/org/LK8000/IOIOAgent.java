@@ -37,7 +37,7 @@ import ioio.lib.spi.IOIOConnectionFactory;
  * IOIOConnectionFactory.
  */
 final class IOIOAgent extends Thread {
-  private static final String TAG = "LK8000";
+  private static final String TAG = "IOIOAgent";
 
   interface Listener extends IOIOConnectionListener {
     boolean onIOIOIdle(IOIO ioio)
@@ -66,6 +66,7 @@ final class IOIOAgent extends Thread {
   }
 
   public synchronized void enable() {
+    Log.d(TAG, "enable " + getName());
     enabledFlag = true;
 
     /* ask the thread to initiate a connection or to invoke
@@ -75,6 +76,7 @@ final class IOIOAgent extends Thread {
   }
 
   public synchronized void disable() {
+    Log.d(TAG, "disable " + getName());
     if (!enabledFlag)
       return;
 
@@ -94,6 +96,7 @@ final class IOIOAgent extends Thread {
   }
 
   public void shutdown() {
+    Log.d(TAG, "shutdown " + getName());
     synchronized(this) {
       shutdownFlag = true;
 
@@ -114,7 +117,7 @@ final class IOIOAgent extends Thread {
    * Called by the connection thread to open a connection.
    */
   private IOIO synchronousOpen() {
-    Log.d(TAG, "open " + getName());
+    Log.d(TAG, "synchronousOpen " + getName());
 
     IOIO ioio;
 
@@ -173,6 +176,8 @@ final class IOIOAgent extends Thread {
    * Called by the connection thread to close the connection.
    */
   private void synchronousClose(IOIO ioio) {
+    Log.d(TAG, "synchronousClose " + getName());
+
     if (ioio == null)
       return;
 
@@ -182,6 +187,7 @@ final class IOIOAgent extends Thread {
   }
 
   private void idle(IOIO ioio) {
+    Log.d(TAG, "idle " + getName());
     if (interrupted())
       return;
 

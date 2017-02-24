@@ -36,7 +36,7 @@ import ioio.lib.api.exception.ConnectionLostException;
  *
  */
 final class GlueIOIOPort extends IOIOPort implements IOIOConnectionListener {
-  private static final String TAG = "LK8000";
+  private static final String TAG = "GlueIOIOPort";
 
   private IOIOConnectionHolder holder;
 
@@ -81,6 +81,9 @@ final class GlueIOIOPort extends IOIOPort implements IOIOConnectionListener {
   @Override public void onIOIOConnect(IOIO ioio)
     throws ConnectionLostException, InterruptedException {
 
+    Log.d(TAG, "onIOIOConnect");
+
+
     try {
       synchronized(this) {
         connected = true;
@@ -110,6 +113,8 @@ final class GlueIOIOPort extends IOIOPort implements IOIOConnectionListener {
   }
 
   @Override public void onIOIODisconnect(IOIO ioio) {
+    Log.d(TAG, "onIOIODisconnect");
+
     connected = false;
     stateChanged();
 
@@ -117,6 +122,8 @@ final class GlueIOIOPort extends IOIOPort implements IOIOConnectionListener {
   }
 
   @Override public void close() {
+    Log.d(TAG, "close");
+
     IOIOConnectionHolder holder;
     synchronized(this) {
       holder = this.holder;
@@ -128,6 +135,8 @@ final class GlueIOIOPort extends IOIOPort implements IOIOConnectionListener {
   }
 
   @Override public int getState() {
+    Log.d(TAG, "getState");
+
     boolean ready;
     synchronized(this) {
       ready = connected && !constructing;
