@@ -47,6 +47,9 @@ import android.content.ComponentName;
 import android.util.Log;
 import android.provider.Settings;
 import android.view.View;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
+import io.fabric.sdk.android.Fabric;
 
 public class LK8000 extends Activity {
   private static final String TAG = "LK8000";
@@ -67,6 +70,14 @@ public class LK8000 extends Activity {
       serviceClass = MyService.class;
 
     super.onCreate(savedInstanceState);
+//    Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
+
+    Fabric fabric = new Fabric.Builder(this).debuggable(true).kits(
+            new Crashlytics(),
+            new CrashlyticsNdk()
+    ).build();
+
+    Fabric.with(fabric);
 
     Log.d(TAG, "ABI=" + Build.CPU_ABI);
     Log.d(TAG, "PRODUCT=" + Build.PRODUCT);
