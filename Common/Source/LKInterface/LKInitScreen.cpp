@@ -230,7 +230,7 @@ void InitLKScreen() {
     StartupStore(_T("..... UseHiresBitmap   = %s" NEWLINE), UseHiresBitmap?_T("true"):_T("false"));
     StartupStore(_T("..... ThinSize         = %d" NEWLINE), ScreenThinSize);
     StartupStore(_T("..... NIBLSCALE(1)     = %d" NEWLINE), NIBLSCALE(1));
-    StartupStore(_T("..... NIBLSCALE(2.0)   = %f" NEWLINE), NIBLSCALE(2.0));
+    StartupStore(_T("..... NIBLSCALE(1.0)   = %f" NEWLINE), NIBLSCALE(1.0));
     StartupStore(_T("..... NIBLSCALE(2)     = %d" NEWLINE), NIBLSCALE(2));
     StartupStore(_T("..... NIBLSCALE(2.0)   = %f" NEWLINE), NIBLSCALE(2.0));
 
