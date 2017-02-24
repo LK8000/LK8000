@@ -2231,3 +2231,5 @@ _@M2328_ "Install LKMAPS"
 _@M2329_ "Open LKMAPS"
 
 _@M2330_ "Screen Orientation "
+_@M2331_ "Glider Black"
+_@M2332_ "Big Glider Black"
