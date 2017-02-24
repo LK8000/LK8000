@@ -2813,6 +2813,8 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(2321)); // _@M2322_ "Aircraft"
     dfe->addEnumText(MsgToken(2325)); //  "Small Glider"
     dfe->addEnumText(MsgToken(2326)); //  "Gem"
+    dfe->addEnumText(MsgToken(2331)); //  "Glider Black"
+    dfe->addEnumText(MsgToken(2332)); //  "Big Glider Black"
     dfe->Set(GliderSymbol);
     wp->RefreshDisplay();
   }
