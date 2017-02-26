@@ -45,6 +45,10 @@ unsigned short ReferenceDpi=0;
 // Note that TerrainQuantization() is called only when screen geometry changes.
 unsigned int   CommandQuantization=0; 
 
+// The time spent rendering the very first full map on startup
+unsigned int DrawTerrainTimer=0; 
+
+
 int   FixedScreenPixelRatio=1<<10; // This is 1.0
 float ScreenPixelRatio=0;
 
@@ -386,6 +390,7 @@ int GetScreenDensity(void) {
 //
 // This function is called by TerrainDraw TerrainRenderer.
 // It happens every time we change screen resolution, like when we change multimaps.
+// TODO > use DrawTerrainTimer to choose optimal dtquant.
 //
 unsigned int TerrainQuantization(void) {
 

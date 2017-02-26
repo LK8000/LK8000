@@ -17,6 +17,8 @@
 
 extern bool FastZoom;
 extern bool TargetDialogOpen;
+extern unsigned int DrawTerrainTimer;
+
 
 void MapWindow::RenderOverlayGauges(LKSurface& Surface, const RECT& rc) {
     if (IsThermalBarVisible()) {
@@ -154,8 +156,19 @@ QuickRedraw:
             goto QuickRedraw;
         }
 
-        if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
-            terrainpainted = true;
+        if (!DrawTerrainTimer) {
+           unsigned tstime=MonotonicClockMS();
+           if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
+              if (!DrawTerrainTimer) {
+                 DrawTerrainTimer=MonotonicClockMS()-tstime;
+                 #ifdef TESTBENCH
+                 StartupStore(_T("... First full terrain rendering, time spent=%d ms\n"),DrawTerrainTimer);
+                 #endif
+              }
+              terrainpainted = true;
+           }
+        } else {
+           if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) terrainpainted = true;
         }
 
         if (DONTDRAWTHEMAP) {
