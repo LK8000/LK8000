@@ -32,7 +32,12 @@
 
   // set alpha blended airspace opacity (0..100)
   static void SetAirSpaceOpacity(int opacity) {
-    AirspaceOpacity = opacity;
+    if(AirspaceOpacity != opacity) {
+      AirspaceOpacity = opacity;
+#ifdef ENABLE_OPENGL
+      InitAirSpaceSldBrushes(Colours);
+#endif
+    }
   }
 
   // get alpha blended airspace opacity
