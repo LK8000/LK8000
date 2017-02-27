@@ -10,10 +10,6 @@
 #include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
 
-#ifdef ANDROID
-#include "Java/Global.hxx"
-#endif
-
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500
 #define GC_VERTICAL_THRESHOLD        250
@@ -243,9 +239,6 @@ protected:
 				Sleep(n);
 				Timer.Update();
 			}
-#ifdef ANDROID
-			Java::DetachCurrentThread();
-#endif
 		}
 
 		bool bStop;

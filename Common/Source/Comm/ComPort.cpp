@@ -19,9 +19,6 @@
 #include <stdio.h>
 #include "Poco/RunnableAdapter.h"
 #include "ComCheck.h"
-#ifdef ANDROID
-#include <Java/Global.hxx>
-#endif
 
 ComPort::ComPort(int idx, const tstring& sName) : StopEvt(false), devIdx(idx), sPortName(sName) {
     pLastNmea = std::begin(_NmeaString);
@@ -132,10 +129,6 @@ void ComPort::run() {
     if(d) {
         d->Status = CPS_OPENKO;
     }
-
-#ifdef ANDROID
-    Java::DetachCurrentThread();
-#endif
 
     StartupStore(_T(". ComPort %u ReadThread : terminated%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
 }

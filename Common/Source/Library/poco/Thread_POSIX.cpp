@@ -49,6 +49,10 @@
 #	include <time.h>
 #endif
 
+#ifdef ANDROID
+#include "Java/Global.hxx"
+#endif
+
 
 //
 // Block SIGPIPE in main thread.
@@ -389,6 +393,10 @@ void* ThreadImpl::runnableEntry(void* pThread)
 	{
 		ErrorHandler::handle();
 	}
+
+#ifdef ANDROID
+	Java::DetachCurrentThread();
+#endif
 
 	pData->pRunnableTarget = 0;
 	pData->done.set();
