@@ -864,7 +864,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   PrepareData();
   if (WayPointSelectInfo==NULL) goto _return; // Will be null also if strindex was null
   UpdateList();
-  wf->SetTimerNotify(1000, OnTimerNotify);
+  wf->SetTimerNotify(5000, OnTimerNotify);
 
   if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0)
    && (ItemIndex < (UpLimit - LowLimit))) {
