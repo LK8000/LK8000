@@ -22,10 +22,21 @@ AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName),
 
 bool AndroidPort::Initialize() {
 
-    bridge->setInputListener(Java::GetEnv(), this);
-    bridge->setListener(Java::GetEnv(), this);
+    try {
+        JNIEnv *env = Java::GetEnv();
+        if (CreateBridge()) {
+            assert(bridge);
+            bridge->setInputListener(env, this);
+            bridge->setListener(env, this);
 
-    return ComPort::Initialize();
+            return ComPort::Initialize();
+        }
+    } catch (const std::exception& e) {
+        const tstring what = to_tstring(e.what());
+        StartupStore(_T("FAILED! <%s>" NEWLINE), what.c_str());
+    }
+    StatusMessage(mbOk, NULL, TEXT("%s %s"), MsgToken(762), GetPortName());
+    return false;
 }
 
 bool AndroidPort::Close() {

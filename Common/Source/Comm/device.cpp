@@ -362,12 +362,16 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("UDPServer"));
 
 #ifdef ANDROID
-    COMMPort.push_back(_T("Bluetooth Server"));
 
     JNIEnv *env = Java::GetEnv();
-    if(env) {
-        Java::LocalRef<jobjectArray> bonded(env, BluetoothHelper::list(env));
-        if (bonded) {
+    if(env && BluetoothHelper::isEnabled(env)) {
+
+        COMMPort.push_back(_T("Bluetooth Server"));
+
+
+        jobjectArray jbonded = BluetoothHelper::list(env);
+        if (jbonded) {
+            Java::LocalRef<jobjectArray> bonded(env, jbonded);
 
             jsize nBT = env->GetArrayLength(bonded) / 2;
             for (jsize i = 0; i < nBT; ++i) {
@@ -715,9 +719,9 @@ BOOL devCloseAll(void){
 }
 
 
-PDeviceDescriptor_t devGetDeviceOnPort(int Port){
+PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port){
 
-  if(Port >=0 && Port < array_size(DeviceList)) {
+  if(Port < array_size(DeviceList)) {
     return &DeviceList[Port];
   }
   return nullptr;

@@ -50,6 +50,23 @@ add_custom_target(
     DEPENDS ${GEOGRAPHIC_LIB}
 )
 
+set(BOOST_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-studio/app/Thirdparty/boost)
+
+ExternalProject_Add (
+    boost
+    URL https://freefr.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.zip
+    URL_HASH MD5=3c706b3fc749884ea5510c39474fd732
+    PREFIX ${BOOST_PREFIX}
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+)
+
+ExternalProject_Get_Property(boost source_dir)
+set(BOOST_INCLUDE ${source_dir})
+
 include_directories(
     Common/Header/linuxcompat
     Common/Header/libzzip
@@ -57,7 +74,7 @@ include_directories(
     Common/Source
     Common/Source/xcs
     ./
-    android-studio/app/Thirdparty/boost_1_63_0
+    ${BOOST_INCLUDE}
     ${GEOGRAPHIC_INCLUDE}
 )
 
@@ -774,6 +791,7 @@ add_library( LK8000 SHARED
 )
 
 add_dependencies(LK8000 generate-GeographicLib)
+add_dependencies(LK8000 boost)
 
 find_library( log-lib log )
 find_library( android-lib android )

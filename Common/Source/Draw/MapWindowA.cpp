@@ -42,10 +42,13 @@ LKBrush MapWindow::hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
 // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
 //static
 void MapWindow::InitAirSpaceSldBrushes(const LKColor colours[]) {
+#ifdef ENABLE_OPENGL
+    const int8_t alpha = 0xFF * AirspaceOpacity/100;
+#endif
   // initialize solid color brushes for airspace drawing
   for (int i = 0; i < NUMAIRSPACECOLORS; i++) {
 #ifdef ENABLE_OPENGL
-    hAirSpaceSldBrushes[i].Create(colours[i].WithAlpha(0xFF*100/AirspaceOpacity));
+    hAirSpaceSldBrushes[i].Create(colours[i].WithAlpha(alpha));
 #else
     hAirSpaceSldBrushes[i].Create(colours[i]);
 #endif

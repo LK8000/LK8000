@@ -45,6 +45,8 @@ public:
 
 protected:
 
+    virtual bool CreateBridge() = 0;
+
     unsigned RxThread() override;
 
     /* protect fifo and flags*/

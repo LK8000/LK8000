@@ -165,7 +165,7 @@ void RestartCommPorts();
 
 BOOL devInit();
 BOOL devCloseAll(void);
-PDeviceDescriptor_t devGetDeviceOnPort(int Port);
+PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port);
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
 BOOL devHasBaroSource(void);
 bool devIsDisabled(int devindex);

@@ -90,13 +90,15 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
           std::numeric_limits<FloatPoint::scalar_type>::max()
   };
 
+  const GeoToScreen<FloatPoint> ToScreen(_Proj);
+
   gluTessBeginPolygon(tess, this );
   for (int j = 0; j < shp.numlines; j++) {
     gluTessBeginContour(tess);
     const lineObj &line = shp.line[j];
     for (int i =0; i < line.numpoints; i++) {
       const pointObj &point = line.point[i];
-      const FloatPoint pt = _Proj.ToFloatPoint(point.x, point.y);
+      const FloatPoint pt = ToScreen(point);
       if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
         curr_LabelPos = pt;
       }
