@@ -87,18 +87,23 @@ void dlgAddMultiSelectListDetailsDialog(int Index) {
     if ((Index >= 0) && (Index < iNO_ELEMENTS)) {
         switch (Elements[Index].type) {
         case IM_AIRSPACE:
+            wf->SetTimerNotify(0,NULL);
             LKASSERT(Elements[Index].ptr);
             CAirspaceManager::Instance().PopupAirspaceDetail(static_cast<CAirspace*>(Elements[Index].ptr));
             break;
 
         case IM_WAYPOINT:
+            wf->SetTimerNotify(0,NULL);
             LKASSERT(Elements[Index].iIdx < (int)WayPointList.size());
             SelectedWaypoint = Elements[Index].iIdx;
+            wf->SetTimerNotify(0,NULL);
             PopupWaypointDetails();
             break;
 
         case IM_TASK_PT:
+            wf->SetTimerNotify(0,NULL);
             LKASSERT(Elements[Index].iIdx <= MAXTASKPOINTS);
+            LKASSERT(iLastTaskPoint>=0);
             RealActiveWaypoint = -1;
             if (Elements[Index].iIdx == 0)
                 dlgTaskWaypointShowModal(Elements[Index].iIdx, 0, false, true);
@@ -543,7 +548,7 @@ ListElement* dlgMultiSelectListShowModal(void) {
             wMultiSelectListListEntry->SetHeight(minHeight);
         }
         wMultiSelectListListEntry->SetCanFocus(true);
-    }
+    } else LKASSERT(0);
 
     UpdateList();
 
