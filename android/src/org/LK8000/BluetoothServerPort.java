@@ -50,7 +50,7 @@ final class BluetoothServerPort extends MultiPort
 
   BluetoothServerPort(BluetoothAdapter adapter, UUID uuid)
     throws IOException {
-    serverSocket = adapter.listenUsingRfcommWithServiceRecord("XCSoar", uuid);
+    serverSocket = adapter.listenUsingRfcommWithServiceRecord("LK8000", uuid);
 
     thread.start();
   }

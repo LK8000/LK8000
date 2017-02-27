@@ -365,9 +365,10 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("Bluetooth Server"));
 
     JNIEnv *env = Java::GetEnv();
-    if(env) {
-        Java::LocalRef<jobjectArray> bonded(env, BluetoothHelper::list(env));
-        if (bonded) {
+    if(env && BluetoothHelper::isEnabled(env)) {
+        jobjectArray jbonded = BluetoothHelper::list(env);
+        if (jbonded) {
+            Java::LocalRef<jobjectArray> bonded(env, jbonded);
 
             jsize nBT = env->GetArrayLength(bonded) / 2;
             for (jsize i = 0; i < nBT; ++i) {

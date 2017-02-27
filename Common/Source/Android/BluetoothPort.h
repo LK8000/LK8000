@@ -22,14 +22,14 @@ class BluetoothPort : public AndroidPort {
 public:
     BluetoothPort(int idx, const tstring& sName) : AndroidPort(idx, sName) { }
 
-    bool Initialize() override;
+    bool CreateBridge() override;
 };
 
 class BluetoothServerPort : public AndroidPort {
 public:
     BluetoothServerPort(int idx, const tstring& sName) : AndroidPort(idx, sName) { }
 
-    bool Initialize() override;
+    bool CreateBridge() override;
 };
 
 
