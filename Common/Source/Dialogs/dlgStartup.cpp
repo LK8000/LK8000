@@ -298,6 +298,9 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 static void OnSIMClicked(WndButton* pWnd) {
   RUN_MODE = RUN_SIM;
+  #ifdef TESTBENCH
+  StartupStore(_T("... **** SIM MODE SELECTED ****") NEWLINE);
+  #endif
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -308,6 +311,9 @@ static void OnSIMClicked(WndButton* pWnd) {
 
 static void OnFLYClicked(WndButton* pWnd) {
   RUN_MODE = RUN_FLY;
+  #ifdef TESTBENCH
+  StartupStore(_T("... **** FLY MODE SELECTED ****") NEWLINE);
+  #endif
   //  Removed 110605: we now run devInit on startup for all devices, and we dont want an immediate and useless reset.
   //  LKForceComPortReset=true;
   PortMonitorMessages = 0;
@@ -332,6 +338,9 @@ static void OnDUALPROFILEClicked(WndButton* pWnd) {
 
 static void OnEXITClicked(WndButton* pWnd) {
   RUN_MODE = RUN_EXIT;
+  #ifdef TESTBENCH
+  StartupStore(_T("... EXIT MODE SELECTED") NEWLINE);
+  #endif
 #ifdef KOBO
   RestartToNickel = false;
 #endif
