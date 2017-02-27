@@ -362,10 +362,13 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("UDPServer"));
 
 #ifdef ANDROID
-    COMMPort.push_back(_T("Bluetooth Server"));
 
     JNIEnv *env = Java::GetEnv();
     if(env && BluetoothHelper::isEnabled(env)) {
+
+        COMMPort.push_back(_T("Bluetooth Server"));
+
+
         jobjectArray jbonded = BluetoothHelper::list(env);
         if (jbonded) {
             Java::LocalRef<jobjectArray> bonded(env, jbonded);
