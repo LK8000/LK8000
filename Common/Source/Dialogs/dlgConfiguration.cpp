@@ -4650,7 +4650,7 @@ void InitDlgDevice(WndForm *pWndForm) {
    if (ScreenLandscape) {
 
             const unsigned int SPACEBORDER = NIBLSCALE(2); // spacing between buttons and left&right
-            const unsigned int w = (ScreenSizeX - (SPACEBORDER * (MAXNUMDEVICES+1))) / MAXNUMDEVICES;
+            const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES+1))) / MAXNUMDEVICES;
             unsigned int lx = SPACEBORDER - 1 + SPACEBORDER/2; // count from 0
 
             pWnd = pWndForm->FindByName(TEXT("cmdA"));
@@ -4700,7 +4700,7 @@ void InitDlgDevice(WndForm *pWndForm) {
 
 /*
             const unsigned SPACEBORDER = NIBLSCALE(2);
-            unsigned w = (ScreenSizeX - (SPACEBORDER * 3)) / 2;
+            unsigned w = (pWndForm->GetWidth() - (SPACEBORDER * 3)) / 2;
             int h = ScreenSizeY - IBLSCALE(90); // 40+5+40+5
 
             int lx = SPACEBORDER - 1; // count from 0
