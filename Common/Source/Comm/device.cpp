@@ -715,9 +715,9 @@ BOOL devCloseAll(void){
 }
 
 
-PDeviceDescriptor_t devGetDeviceOnPort(int Port){
+PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port){
 
-  if(Port >=0 && Port < array_size(DeviceList)) {
+  if(Port < array_size(DeviceList)) {
     return &DeviceList[Port];
   }
   return nullptr;
