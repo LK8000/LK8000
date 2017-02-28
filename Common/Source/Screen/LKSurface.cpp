@@ -609,7 +609,7 @@ int LKSurface::DrawText(const TCHAR* lpchText, RECT *lpRect, UINT uFormat) {
     return ::DrawText(*this, lpchText, _tcslen(lpchText), lpRect, uFormat);
 #else
     if(_pCanvas) {
-        if(!(uFormat&DT_CALCRECT)) {
+        if(!(uFormat&(DT_NOCLIP|DT_CALCRECT))) {
             PixelRect rcText(*lpRect);
             SubCanvas ClipCanvas(*_pCanvas, rcText.GetOrigin(), rcText.GetSize() );
             rcText.Offset(-rcText.left, -rcText.top);
