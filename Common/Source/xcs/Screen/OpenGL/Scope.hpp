@@ -60,6 +60,8 @@ public:
 class GLScissor : public GLEnable<GL_SCISSOR_TEST> {
 public:
   GLScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
+    assert(width > 0);
+    assert(height > 0);
     ::glScissor(x, y, width, height);
 #if HAVE_GLES
     OpenGL::scissor_test = true;
