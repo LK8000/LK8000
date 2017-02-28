@@ -275,26 +275,39 @@ static void SetValues(WndForm* wf) {
     wp->RefreshDisplay();
   }
 #ifdef  RADIO_ACTIVE
-  if(RadioPara.Enabled)
-  {
-    double fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
-    if(fASFrequency >0)
-    {
-      wb = (WndButton*)wf->FindByName(TEXT("cmdSFrequency"));
-      if (wb)
-      {
-       ((WndButton *)wf->FindByName(TEXT("cmdSFrequency"))) ->SetLeft(IBLSCALE(3));
-       ((WndButton *)wf->FindByName(TEXT("cmdSFrequency"))) ->SetWidth(IBLSCALE(110));
 
-        ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetLeft(IBLSCALE(115));
-        ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetWidth(IBLSCALE(120));
+  WindowControl* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
+  if (wFreq) {
+    bool bRadio = false;
+
+    if(RadioPara.Enabled) {
+
+      double fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
+      if(fASFrequency >0) {
+
+        WindowControl* wClose = wf->FindByName(TEXT("cmdClose"));
+        if(wClose) {
+          wClose->SetLeft(IBLSCALE(115));
+          wClose->SetWidth(IBLSCALE(120));
+        }
+
+        wFreq->SetLeft(IBLSCALE(3));
+        wFreq->SetWidth(IBLSCALE(110));
 
         _stprintf(buffer2,_T("%7.3fMHz"),fASFrequency);
-        wb->SetCaption(buffer2);
-        wb->Redraw();
+        wFreq->SetCaption(buffer2);
+        wFreq->Redraw();
+        bRadio = true;
       }
     }
-  }   
+    wFreq->SetVisible(bRadio);
+  }
+
+#else
+  WndProperty* wFreq = wf->FindByName(TEXT("cmdSFrequency");
+  if (wFreq) {
+    wFreq->Hide();
+  }
 #endif  // RADIO_ACTIVE        
   // ONLY for DIAGNOSTICS- ENABLE ALSO XML
   #if 0
