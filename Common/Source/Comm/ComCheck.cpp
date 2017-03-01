@@ -47,7 +47,13 @@ void ComCheck_NewLine() {
 // We should lock this function
 // 
 void ComCheck_AddChar(TCHAR c) {
-    
+
+#ifndef UNICODE
+    if(!::isascii(c)) {
+        c = '?';
+    }
+#endif
+
     const unsigned MaxLineSize = array_size(ComCheckBuffer[ComCheck_LastLine])-1;
             
     if (ComCheck_Reset>=0) {
