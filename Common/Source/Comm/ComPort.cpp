@@ -93,6 +93,7 @@ bool ComPort::StopRxThread() {
         if(!ReadThread.tryJoin(20000)) {
             StartupStore(_T("... ComPort %u StopRxThread: RX Thread forced to terminate!%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
             // TODO : Kill Thread ??
+            return false;
         }
     }
     StopEvt.reset();
@@ -101,23 +102,29 @@ bool ComPort::StopRxThread() {
 }
 
 bool ComPort::StartRxThread() {
-    StopEvt.reset();
+  try {
+      StopEvt.reset();
 
 
-    // Create a read thread for reading data from the communication port.
-    ReadThread.start(*this);
-    ReadThread.setPriority(Poco::Thread::PRIO_NORMAL); //THREAD_PRIORITY_ABOVE_NORMAL
+      // Create a read thread for reading data from the communication port.
+      ReadThread.start(*this);
+      ReadThread.setPriority(Poco::Thread::PRIO_NORMAL); //THREAD_PRIORITY_ABOVE_NORMAL
 
-    if(!ReadThread.isRunning()) {
-        // Could not create the read thread.
-        StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
+      if (!ReadThread.isRunning()) {
+          // Could not create the read thread.
+          StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"),
+                       (unsigned) (GetPortIndex() + 1), GetPortName(), NEWLINE);
 
-        // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
-        StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(761), GetPortName());
-        //DWORD dwError = GetLastError();
-        return false;
-    }
-    return true;
+          // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
+          StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(761), GetPortName());
+          //DWORD dwError = GetLastError();
+          return false;
+      }
+      return true;
+  } catch(std::exception& e) {
+      StartupStore(_T(". ComPort %u <%s> StartRxThread : %s" NEWLINE), (unsigned) (GetPortIndex() + 1), GetPortName(), e.what());
+      return false;
+  }
 }
 
 void ComPort::run() {
