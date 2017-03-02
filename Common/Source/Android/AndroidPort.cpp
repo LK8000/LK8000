@@ -58,10 +58,12 @@ bool AndroidPort::Close() {
 }
 
 bool AndroidPort::StopRxThread() {
-
-    if(ComPort::StopRxThread()) {
+    {
         ScopeLock lock(mutex);
         running = false;
+    }
+
+    if(ComPort::StopRxThread()) {
         return true;
     }
     return false;
