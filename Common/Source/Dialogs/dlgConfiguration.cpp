@@ -4560,6 +4560,7 @@ int ival;
       StartupStore(_T("..... dlgConfiguration: fontschanged requested\n"));
       #endif
       FONTSCHANGED=true;
+      fontschanged=false;
   }
 
   if (snailchanged) {
