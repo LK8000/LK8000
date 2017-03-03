@@ -423,8 +423,9 @@ static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daPut:
     case DataField::daChange:
-//    StartupStore(_T("........... OnDeviceAData %i %s"),SelectedDevice,NEWLINE); // 091105
+      #ifdef TESTBENCH
       StartupStore(_T("........... OnDeviceAData Device %i %s %s"),SelectedDevice, Sender->GetAsString(),NEWLINE); // 091105
+      #endif
       UpdateDeviceSetupButton(wf, SelectedDevice);
     break;
 	default: 
@@ -493,10 +494,11 @@ static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mod
       wp = (WndProperty*)wf->FindByName(TEXT("prpAspPermDisable"));
       if (wp)
     	  AspPermanentChanged=(wp->GetDataField()->GetAsInteger());
-		StartupStore(_T(".......AspPermanentChanged %i %s"),AspPermanentChanged,NEWLINE);
-
-    break;
-	default:
+          #ifdef TESTBENCH 
+          StartupStore(_T(".......AspPermanentChanged %i %s"),AspPermanentChanged,NEWLINE);
+          #endif
+          break;
+    default:
                 #ifdef TESTBENCH
 		StartupStore(_T("........... DBG-908%s"),NEWLINE);
                 #endif
