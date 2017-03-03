@@ -1235,18 +1235,18 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
       }
     }
 
-    LKASSERT(((WndButton *)pOwner->FindByName(TEXT("cmdA"))));
-    LKASSERT(((WndButton *)pOwner->FindByName(TEXT("cmdB"))));
-    LKASSERT(((WndButton *)pOwner->FindByName(TEXT("cmdC"))));
-    LKASSERT(((WndButton *)pOwner->FindByName(TEXT("cmdD"))));
-    LKASSERT(((WndButton *)pOwner->FindByName(TEXT("cmdE"))));
-    LKASSERT(((WndButton *)pOwner->FindByName(TEXT("cmdF"))));
-    ((WndButton *)pOwner->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
-    ((WndButton *)pOwner->FindByName(TEXT("cmdB")))->LedSetOnOff(!DeviceList[1].Disabled);
-    ((WndButton *)pOwner->FindByName(TEXT("cmdC")))->LedSetOnOff(!DeviceList[2].Disabled);
-    ((WndButton *)pOwner->FindByName(TEXT("cmdD")))->LedSetOnOff(!DeviceList[3].Disabled);
-    ((WndButton *)pOwner->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
-    ((WndButton *)pOwner->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdA")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdB")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdB")))->LedSetOnOff(!DeviceList[1].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdC")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdC")))->LedSetOnOff(!DeviceList[2].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdD")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdD")))->LedSetOnOff(!DeviceList[3].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdE")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdF")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
 
     if(bHide)
     {
