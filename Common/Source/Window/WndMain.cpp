@@ -198,13 +198,14 @@ void BeforeShutdown(void) {
   StartupStore(TEXT(".... Close Windows%s"),NEWLINE);
   #endif
 
-  for (int i=0;i<NUMDEV;i++) {
+  if (RUN_MODE==RUN_FLY) for (int i=0;i<NUMDEV;i++) {
     const DeviceDescriptor_t& ComPort = DeviceList[i];
 	if (ComPort.Status!=0) {
 		StartupStore(_T(". ComPort %d: status=%d Rx=%u Tx=%u ErrRx=%u ErrTx=%u" NEWLINE), i,
 		ComPort.Status, ComPort.Rx, ComPort.Tx, ComPort.ErrRx, ComPort.ErrTx);
 	}
   }
+  
   StartupStore(_T(". Finished shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
   LKRunStartEnd(false);
 
