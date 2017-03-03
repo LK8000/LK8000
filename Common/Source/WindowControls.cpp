@@ -16,6 +16,7 @@
 #include "dlgTools.h"
 #include "Modeltype.h"
 #include "TraceThread.h"
+#include "Sideview.h"
 
 #include "Screen/LKBitmapSurface.h"
 #include "Screen/LKWindowSurface.h"
@@ -40,6 +41,26 @@ using std::placeholders::_1;
 #define SELECTORWIDTH         DLGSCALE(4)
 
 // utility functions
+
+//
+// Led button color ramps
+//
+const LEDCOLORRAMP LedRamp[MAXLEDCOLORS]= {
+     {   0,   0,   0,     140,  140,  140,   10 },  // black
+     { 160,   0,   0,     255,  130,  130,   10 },  // red ok
+     {   0, 123,   0,      80,  255,   80,   10 },  // green ok
+     {   0,   0, 160,     120,  120,  255,   10 },  // blue ok
+     { 130, 130,   0,     255,  255,    0,   10 },  // yellow ok
+     { 255, 128,   0,     255,  185,  140,   10 },  // orange ok
+     { 164, 255, 164,     255,  255,  255,    5 },  // light green for dithering
+     {   0, 0,   0,        70,  140,   70,   10 },  // very dark green 
+     {   0,  90,  90,       0,  255,  255,   10 }   // cyan
+};
+
+//
+// Distance from button borders for drawing the led rectangle
+//
+#define LEDBUTTONBORDER 3
 
 
 #define ENABLECOMBO true // master on/off for combo popup
@@ -1958,6 +1979,11 @@ WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Capt
   mDefault = false;
   mCanFocus = true;
 
+  mLedMode = LEDMODE_DISABLED;
+  mLedOnOff=false;
+  mLedSize=5; // the default size, including pen borders
+  mLedColor= LEDCOLOR_BLACK;
+
   SetForeColor(RGB_BUTTONFG);
   SetBackColor(GetParent()->GetBackColor());
 
@@ -1966,6 +1992,22 @@ WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Capt
   }
   mLastDrawTextHeight = -1;
 }
+
+void WndButton::LedSetMode(unsigned short ledmode) {
+   mLedMode=ledmode;
+}
+void WndButton::LedSetSize(unsigned short ledsize) {
+   LKASSERT(ledsize>0 && ledsize<200);
+   mLedSize=ledsize;
+}
+void WndButton::LedSetOnOff(bool ledonoff) {
+   mLedOnOff=ledonoff;
+}
+void WndButton::LedSetColor(unsigned short ledcolor) {
+   LKASSERT(ledcolor>=0 && ledcolor<MAXLEDCOLORS);
+   mLedColor=ledcolor;
+}
+
 
 bool WndButton::OnKeyDown(unsigned KeyCode) {
     switch (KeyCode) {
@@ -2037,9 +2079,41 @@ void WndButton::Paint(LKSurface& Surface){
   RECT rc = GetClientRect();
   InflateRect(&rc, -2, -2); // todo border width
 
-  // JMW todo: add icons?
-
   Surface.DrawPushButton(rc, mDown);
+
+
+  if (mLedMode) {
+     RECT lrc={rc.left+(LEDBUTTONBORDER-1),rc.bottom-(LEDBUTTONBORDER+NIBLSCALE(mLedSize)),
+               rc.right-LEDBUTTONBORDER,rc.bottom-LEDBUTTONBORDER};
+     unsigned short lcol=0;
+     switch(mLedMode) {
+        case LEDMODE_REDGREEN:
+           if (IsDithered())
+              lcol=(mLedOnOff?LEDCOLOR_LGREEN:LEDCOLOR_ORANGE);
+           else
+              lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_RED);
+           break;
+        case LEDMODE_OFFGREEN:
+           if (IsDithered())
+              lcol=(mLedOnOff?LEDCOLOR_LGREEN:LEDCOLOR_BLUE);
+           else
+              lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_DGREEN);
+           break;
+        case LEDMODE_MANUAL:
+           lcol=mLedColor;
+           break;
+        default:
+           LKASSERT(0);
+           break;
+     }
+     RenderSky(Surface, lrc,
+        LKColor( LedRamp[lcol].r1, LedRamp[lcol].g1, LedRamp[lcol].b1 ), 
+        LKColor( LedRamp[lcol].r2, LedRamp[lcol].g2, LedRamp[lcol].b2 ), 
+        LedRamp[lcol].l 
+     );
+                           
+
+  }
 
   const TCHAR * szCaption = GetWndText();
   const size_t nSize = _tcslen(szCaption);

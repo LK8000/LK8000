@@ -875,6 +875,36 @@ protected:
     }
 };
 
+#define LEDMODE_DISABLED    0
+#define LEDMODE_REDGREEN    1
+#define LEDMODE_OFFGREEN    2
+#define LEDMODE_MANUAL      3
+
+#define LEDCOLOR_BLACK    0
+#define LEDCOLOR_RED      1
+#define LEDCOLOR_GREEN    2
+#define LEDCOLOR_BLUE     3
+#define LEDCOLOR_YELLOW   4
+#define LEDCOLOR_ORANGE   5
+#define LEDCOLOR_LGREEN   6
+#define LEDCOLOR_DGREEN   7
+#define LEDCOLOR_CYAN     8
+#define MAXLEDCOLORS      9
+//
+// blending from rgb1 to rgb2 colors, bottom->up
+//
+typedef struct _LEDCOLORRAMP
+{
+     unsigned char r1;
+     unsigned char g1;
+     unsigned char b1;
+     unsigned char r2;
+     unsigned char g2;
+     unsigned char b2;
+     unsigned short l;
+} LEDCOLORRAMP;
+
+
 class WndButton:public WindowControl{
   public:
     typedef void (*ClickNotifyCallback_t)(WndButton* pWnd);
@@ -884,6 +914,11 @@ class WndButton:public WindowControl{
     virtual void Paint(LKSurface& Surface) override;
     bool mDown;
     bool mDefault;
+    unsigned short mLedMode;   // 0=no led  1=OnOff mode  2=manual (choose colors)
+    bool mLedOnOff;            // if mLedUse=1  this is used to toggle false=orange/true=green
+    unsigned short mLedSize;   // override default size
+    unsigned short mLedColor;  // in manual mode, use LEDCOLOR_xxx, default is Black. 
+
     int mLastDrawTextHeight;
     ClickNotifyCallback_t mOnClickNotify;
 
@@ -897,6 +932,11 @@ class WndButton:public WindowControl{
 
     virtual bool OnKeyDown(unsigned KeyCode) override;
     virtual bool OnKeyUp(unsigned KeyCode) override;
+
+    virtual void LedSetMode(unsigned short leduse);
+    virtual void LedSetSize(unsigned short ledsize);
+    virtual void LedSetColor(unsigned short ledcolor);
+    virtual void LedSetOnOff(bool ledonoff);
 
     void SetOnClickNotify(ClickNotifyCallback_t Function){
       mOnClickNotify = Function;
