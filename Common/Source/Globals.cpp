@@ -441,6 +441,7 @@ void Globals_Init(void) {
   INPUTFILECHANGED = FALSE;
   FONTSCHANGED= false;
   AIRCRAFTTYPECHANGED = false;
+  SNAILCHANGED= false;
 
   ActiveTaskPoint = -1;
   PanTaskEdit    = -1;

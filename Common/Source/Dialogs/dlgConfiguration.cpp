@@ -53,6 +53,7 @@ static bool requirerestart = false;
 static bool utcchanged = false;
 static bool waypointneedsave = false;
 static bool fontschanged= false;
+static bool snailchanged= false;
 
 
 
@@ -422,8 +423,9 @@ static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daPut:
     case DataField::daChange:
-//    StartupStore(_T("........... OnDeviceAData %i %s"),SelectedDevice,NEWLINE); // 091105
+      #ifdef TESTBENCH
       StartupStore(_T("........... OnDeviceAData Device %i %s %s"),SelectedDevice, Sender->GetAsString(),NEWLINE); // 091105
+      #endif
       UpdateDeviceSetupButton(wf, SelectedDevice);
     break;
 	default: 
@@ -492,10 +494,11 @@ static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mod
       wp = (WndProperty*)wf->FindByName(TEXT("prpAspPermDisable"));
       if (wp)
     	  AspPermanentChanged=(wp->GetDataField()->GetAsInteger());
-		StartupStore(_T(".......AspPermanentChanged %i %s"),AspPermanentChanged,NEWLINE);
-
-    break;
-	default:
+          #ifdef TESTBENCH 
+          StartupStore(_T(".......AspPermanentChanged %i %s"),AspPermanentChanged,NEWLINE);
+          #endif
+          break;
+    default:
                 #ifdef TESTBENCH
 		StartupStore(_T("........... DBG-908%s"),NEWLINE);
                 #endif
@@ -1234,6 +1237,20 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
         }
       }
     }
+
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdA")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdB")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdB")))->LedSetOnOff(!DeviceList[1].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdC")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdC")))->LedSetOnOff(!DeviceList[2].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdD")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdD")))->LedSetOnOff(!DeviceList[3].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdE")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
+    if ((WndButton *)pOwner->FindByName(TEXT("cmdF")))
+       ((WndButton *)pOwner->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
+
     if(bHide)
     {
         ShowWindowControl(wf, TEXT("prpComPort1"), !bHide);
@@ -3628,7 +3645,7 @@ double dval;
   if (wp) {
       if (SnailScale != wp->GetDataField()->GetAsInteger() ) {
           SnailScale = wp->GetDataField()->GetAsInteger();
-          requirerestart=true;
+          snailchanged=true;
       }
   }
 
@@ -4545,6 +4562,15 @@ int ival;
       StartupStore(_T("..... dlgConfiguration: fontschanged requested\n"));
       #endif
       FONTSCHANGED=true;
+      fontschanged=false;
+  }
+
+  if (snailchanged) {
+      #if TESTBENCH
+      StartupStore(_T("..... dlgConfiguration: snailchanged requested\n"));
+      #endif
+      SNAILCHANGED=true;
+      snailchanged=false;
   }
 
 #if (WINDOWSPC>0)
@@ -4657,6 +4683,9 @@ void InitDlgDevice(WndForm *pWndForm) {
             if(pWnd) {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
+                ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
+
             }
 
             lx += w + SPACEBORDER;
@@ -4664,6 +4693,8 @@ void InitDlgDevice(WndForm *pWndForm) {
             if(pWnd) {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
+                ((WndButton *)wf->FindByName(TEXT("cmdB")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdB")))->LedSetOnOff(!DeviceList[1].Disabled);
             }
 
             lx += w + SPACEBORDER;
@@ -4671,6 +4702,8 @@ void InitDlgDevice(WndForm *pWndForm) {
             if(pWnd) {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
+                ((WndButton *)wf->FindByName(TEXT("cmdC")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdC")))->LedSetOnOff(!DeviceList[2].Disabled);
             }
 
             lx += w + SPACEBORDER;
@@ -4678,6 +4711,8 @@ void InitDlgDevice(WndForm *pWndForm) {
             if(pWnd) {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
+                ((WndButton *)wf->FindByName(TEXT("cmdD")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdD")))->LedSetOnOff(!DeviceList[3].Disabled);
             }
 
             lx += w + SPACEBORDER;
@@ -4685,6 +4720,8 @@ void InitDlgDevice(WndForm *pWndForm) {
             if(pWnd) {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
+                ((WndButton *)wf->FindByName(TEXT("cmdE")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
             }
 
             lx += w + SPACEBORDER;
@@ -4692,6 +4729,8 @@ void InitDlgDevice(WndForm *pWndForm) {
             if(pWnd) {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
+                ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
             }
 
         } else {
