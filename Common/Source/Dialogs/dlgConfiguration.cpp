@@ -53,6 +53,7 @@ static bool requirerestart = false;
 static bool utcchanged = false;
 static bool waypointneedsave = false;
 static bool fontschanged= false;
+static bool snailchanged= false;
 
 
 
@@ -3642,7 +3643,7 @@ double dval;
   if (wp) {
       if (SnailScale != wp->GetDataField()->GetAsInteger() ) {
           SnailScale = wp->GetDataField()->GetAsInteger();
-          requirerestart=true;
+          snailchanged=true;
       }
   }
 
@@ -4559,6 +4560,14 @@ int ival;
       StartupStore(_T("..... dlgConfiguration: fontschanged requested\n"));
       #endif
       FONTSCHANGED=true;
+  }
+
+  if (snailchanged) {
+      #if TESTBENCH
+      StartupStore(_T("..... dlgConfiguration: snailchanged requested\n"));
+      #endif
+      SNAILCHANGED=true;
+      snailchanged=false;
   }
 
 #if (WINDOWSPC>0)

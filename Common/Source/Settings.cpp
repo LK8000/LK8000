@@ -36,6 +36,7 @@ void SettingsEnter() {
   COMPORTCHANGED = FALSE;
   FONTSCHANGED = false;
   AIRCRAFTTYPECHANGED = false;
+  SNAILCHANGED = false;
 }
 
 
@@ -148,7 +149,7 @@ void SettingsLeave() {
   }
 
   extern void ReinitScreen(void);
-  if (FONTSCHANGED || AIRCRAFTTYPECHANGED) {
+  if (FONTSCHANGED || SNAILCHANGED || AIRCRAFTTYPECHANGED) {
       ReinitScreen();
   }
 
