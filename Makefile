@@ -1271,6 +1271,7 @@ SRC_FILES :=\
 	$(SRC)/LKProfileSave.cpp\
 	$(SRC)/LKSimulator.cpp\
 	$(SRC)/LKSimTraffic.cpp\
+	$(SRC)/LKSnailTrail.cpp\
 	$(SRC)/LKUtils.cpp \
 	$(SRC)/LocalPath.cpp\
 	$(SRC)/Locking.cpp\
