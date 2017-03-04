@@ -560,15 +560,10 @@ goto_bearing:
 				// LKTOKEN  _@M1047_ = "Track", _@M1048_ = "Track"
 				_tcscpy(BufferTitle, MsgToken(1048));
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			value = DrawInfo.TrackBearing;
+				_tcscpy(BufferTitle, Data_Options[lkindex].Title );
+			value = AngleLimit360(DrawInfo.TrackBearing);
 			valid=true;
-			if (value > 1)
-				_stprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken(2179));
-			else if (value < -1)
-				_stprintf(BufferValue, TEXT("%2.0f%s"), -value, MsgToken(2179));
-			else
-				_stprintf(BufferValue, TEXT("0%s"), MsgToken(2179));
+			_stprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken(2179));
 			break;
 
 		// B24
