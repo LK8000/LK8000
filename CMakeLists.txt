@@ -280,6 +280,7 @@ add_library( LK8000 SHARED
     Common/Source/Utils.cpp
     Common/Source/WindowControls.cpp
     Common/Source/Sysop.cpp
+    Common/Source/LKSnailTrail.cpp
 
 
     Common/Source/Logger/DoSignature.cpp
