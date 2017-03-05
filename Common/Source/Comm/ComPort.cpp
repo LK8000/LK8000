@@ -122,7 +122,8 @@ bool ComPort::StartRxThread() {
       }
       return true;
   } catch(std::exception& e) {
-      StartupStore(_T(". ComPort %u <%s> StartRxThread : %s" NEWLINE), (unsigned) (GetPortIndex() + 1), GetPortName(), e.what());
+      const tstring error = to_tstring(e.what());
+      StartupStore(_T(". ComPort %u <%s> StartRxThread : %s" NEWLINE), (unsigned) (GetPortIndex() + 1), GetPortName(), error.c_str());
       return false;
   }
 }

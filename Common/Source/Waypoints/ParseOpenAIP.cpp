@@ -14,6 +14,7 @@
 #include "xmlParser.h"
 #include <sstream>
 #include "LKStyle.h"
+#include "Util/TruncateString.hpp"
 
 extern int globalFileNum;
 
@@ -286,7 +287,7 @@ bool ParseAirports(XMLNode &airportsNode)
 
         // Add the comments
         std::basic_string<TCHAR> str(comments.str());
-        new_waypoint.Comment = new TCHAR[str.length()+1];
+        new_waypoint.Comment = (TCHAR*)malloc((str.length()+1)*sizeof(TCHAR));
         if (new_waypoint.Comment != nullptr) {
             std::copy(str.begin(),str.end(),new_waypoint.Comment);
             new_waypoint.Comment[str.length()]='\0';
@@ -398,7 +399,7 @@ bool ParseNavAids(XMLNode &navAidsNode)
 
         // Add the comments
         std::basic_string<TCHAR> str(comments.str());
-        new_waypoint.Comment = new TCHAR[str.length()+1];
+        new_waypoint.Comment = (TCHAR*)malloc((str.length()+1)*sizeof(TCHAR));
         if (new_waypoint.Comment != nullptr) {
             std::copy(str.begin(),str.end(),new_waypoint.Comment);
             new_waypoint.Comment[str.length()]='\0';
@@ -482,8 +483,7 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
 
         // Name
         if(GetContent(HotSpotNode, TEXT("NAME"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Name, dataStr, NAME_SIZE);
-            if (_tcslen(dataStr)>NAME_SIZE) new_waypoint.Name[NAME_SIZE]= _T('\0');
+            CopyTruncateString(new_waypoint.Name, NAME_SIZE, dataStr );
         } else continue;
 
         // Geolocation
@@ -503,7 +503,7 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
 
         // Add the comments
         std::basic_string<TCHAR> str(comments.str());
-        new_waypoint.Comment = new TCHAR[str.length()+1];
+        new_waypoint.Comment = (TCHAR*)malloc((str.length()+1)*sizeof(TCHAR));
         if (new_waypoint.Comment != nullptr) {
             std::copy(str.begin(),str.end(),new_waypoint.Comment);
             new_waypoint.Comment[str.length()]='\0';

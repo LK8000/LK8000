@@ -29,7 +29,6 @@ android {
         manifestPlaceholders = [applicationLabel: "@string/app_name"]
         externalNativeBuild {
             cmake {
-                cppFlags "-std=c++11 -frtti -fexceptions"
             }
         }
         copy {
@@ -129,6 +128,9 @@ android {
         debug {
             applicationIdSuffix ".debug"
             manifestPlaceholders = [applicationLabel: "@string/app_name_debug"]
+            debuggable true
+            jniDebuggable true
+            renderscriptDebuggable true
         }
         beta {
             initWith(buildTypes.release)

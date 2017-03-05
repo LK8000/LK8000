@@ -17,6 +17,7 @@ XCS_OS_LINUX := \
 XCS_UTIL := \
 	$(SRC)/xcs/Util/tstring.cpp \
 	$(SRC)/xcs/Util/ConvertString.cpp \
+	$(SRC)/xcs/Util/TruncateString.cpp \
 
 XCS_OS := \
 	$(XCS_UTIL) \
