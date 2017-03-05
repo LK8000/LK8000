@@ -4685,7 +4685,6 @@ void InitDlgDevice(WndForm *pWndForm) {
                 pWnd->SetLeft(lx);
                 ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetMode(LEDMODE_OFFGREEN); 
                 ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
-
             }
 
             lx += w + SPACEBORDER;
@@ -4733,9 +4732,42 @@ void InitDlgDevice(WndForm *pWndForm) {
                 ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
             }
 
-        } else {
+   } else {
 
-            return; // no need to adjust for portrait mode
+            pWnd = pWndForm->FindByName(TEXT("cmdA"));
+            if(pWnd) {
+                ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
+            }
+
+            pWnd = pWndForm->FindByName(TEXT("cmdB"));
+            if(pWnd) {
+                ((WndButton *)wf->FindByName(TEXT("cmdB")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdB")))->LedSetOnOff(!DeviceList[1].Disabled);
+            }
+
+            pWnd = pWndForm->FindByName(TEXT("cmdC"));
+            if(pWnd) {
+                ((WndButton *)wf->FindByName(TEXT("cmdC")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdC")))->LedSetOnOff(!DeviceList[2].Disabled);
+            }
+
+            pWnd = pWndForm->FindByName(TEXT("cmdD"));
+            if(pWnd) {
+                ((WndButton *)wf->FindByName(TEXT("cmdD")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdD")))->LedSetOnOff(!DeviceList[3].Disabled);
+            }
+            pWnd = pWndForm->FindByName(TEXT("cmdE"));
+            if(pWnd) {
+                ((WndButton *)wf->FindByName(TEXT("cmdE")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
+            }
+            pWnd = pWndForm->FindByName(TEXT("cmdF"));
+            if(pWnd) {
+                ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetMode(LEDMODE_OFFGREEN); 
+                ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
+            }
+
 
 /*
             const unsigned SPACEBORDER = NIBLSCALE(2);
