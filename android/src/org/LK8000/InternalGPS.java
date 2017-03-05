@@ -283,8 +283,10 @@ public class InternalGPS
     @Override
     public void onReceive(Context context, Intent intent) {
       Bundle bundle = intent.getExtras();
-      boolean bFix = bundle.getBoolean("enabled");
-      if (!bFix) setConnectedSafe(1); // waiting for fix
+      if(bundle != null) {
+        boolean bFix = bundle.getBoolean("enabled");
+        if (!bFix) setConnectedSafe(1); // waiting for fix
+      }
     }
   }
 }
