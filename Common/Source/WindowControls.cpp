@@ -1376,8 +1376,11 @@ void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
     
     // use negative value to space down items
     // -999 to stay on the same line
-    // -998 to advance one line with more space
-    // -997 to advance one line with twice more space
+    // -998 to advance one line with spacing IBLSCALE 3
+    // -997 to advance one line with spacing IBLSCALE 6
+    // -991 advance with spacing IBLSCALE 1
+    // -992 advance with spacing IBLSCALE 2
+    // other -n   advance exactly height*n . 
 
     if (y < 0 && !mClients.empty()) {
         WindowControl * pPrev = mClients.back();
@@ -1390,6 +1393,12 @@ void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
                 break;
             case -997: //@ 101115
                 y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(6));
+                break;
+            case -992: 
+                y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(2));
+                break;
+            case -991: 
+                y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(1));
                 break;
             default:
                 y = (pPrev->GetTop() - ((pPrev->GetHeight()) * y));
