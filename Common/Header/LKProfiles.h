@@ -223,7 +223,7 @@ char szRegistryFontCustom1[]= "FontCustom1B";
 
 char szRegistryGlideBarMode[]= "GlideBarMode";
 char szRegistryGliderScreenPosition[] = "GliderScreenPosition";
-char szRegistryGpsAltitudeOffset[] = "GpsAltitudeOffset";
+char szRegistryGpsAltitudeOffset[] = "GpsAltitudeOffset1";
 char szRegistryHandicap[] = "Handicap1";
 char szRegistryHideUnits[]= "HideUnits";
 char szRegistryHomeWaypoint[]= "HomeWaypoint1b";

@@ -480,9 +480,6 @@
       <WndProperty Name="prpSetSystemTimeFromGPS" Caption="_@M766_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H210_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
-      <WndProperty Name="prpGPSAltitudeOffset" Caption="_@M318_" X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H159_">
-        <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="-1000" Max="1000" Step="1"/>
-      </WndProperty>
       <WndProperty Name="prpAutoBacklight" Caption="_@M106_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H211_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
@@ -528,6 +525,9 @@
       </WndProperty>
       <WndProperty Name="prpIphoneGestures" Caption="_@M346_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H180_">
         <DataField Name="" DataType="enum" Min="0" Max="1" Step="1" />
+      </WndProperty>
+      <WndProperty Name="prpGPSAltitudeOffset" Caption="_@M318_" X="1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H159_">
+        <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="-1000" Max="1000" Step="1"/>
       </WndProperty>
     </WndFrame>
   </WndForm>
