@@ -4666,169 +4666,29 @@ void UpdateAircraftConfig(void){
 //
 void InitDlgDevice(WndForm *pWndForm) {
 
-   if(!pWndForm) {
-      LKASSERT(0);
-      return;
-   }
-
-   WindowControl * pWnd = nullptr;
-
-   if (ScreenLandscape) {
-
-            const unsigned int SPACEBORDER = NIBLSCALE(2); // spacing between buttons and left&right
-            const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES+1))) / MAXNUMDEVICES;
-            unsigned int lx = SPACEBORDER - 1 + SPACEBORDER/2; // count from 0
-
-            pWnd = pWndForm->FindByName(TEXT("cmdA"));
-            if(pWnd) {
-                pWnd->SetWidth(w);
-                pWnd->SetLeft(lx);
-                ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
-            }
-
-            lx += w + SPACEBORDER;
-            pWnd = pWndForm->FindByName(TEXT("cmdB"));
-            if(pWnd) {
-                pWnd->SetWidth(w);
-                pWnd->SetLeft(lx);
-                ((WndButton *)wf->FindByName(TEXT("cmdB")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdB")))->LedSetOnOff(!DeviceList[1].Disabled);
-            }
-
-            lx += w + SPACEBORDER;
-            pWnd = pWndForm->FindByName(TEXT("cmdC"));
-            if(pWnd) {
-                pWnd->SetWidth(w);
-                pWnd->SetLeft(lx);
-                ((WndButton *)wf->FindByName(TEXT("cmdC")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdC")))->LedSetOnOff(!DeviceList[2].Disabled);
-            }
-
-            lx += w + SPACEBORDER;
-            pWnd = pWndForm->FindByName(TEXT("cmdD"));
-            if(pWnd) {
-                pWnd->SetWidth(w);
-                pWnd->SetLeft(lx);
-                ((WndButton *)wf->FindByName(TEXT("cmdD")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdD")))->LedSetOnOff(!DeviceList[3].Disabled);
-            }
-
-            lx += w + SPACEBORDER;
-            pWnd = pWndForm->FindByName(TEXT("cmdE"));
-            if(pWnd) {
-                pWnd->SetWidth(w);
-                pWnd->SetLeft(lx);
-                ((WndButton *)wf->FindByName(TEXT("cmdE")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
-            }
-
-            lx += w + SPACEBORDER;
-            pWnd = pWndForm->FindByName(TEXT("cmdF"));
-            if(pWnd) {
-                pWnd->SetWidth(w);
-                pWnd->SetLeft(lx);
-                ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
-            }
-
-   } else {
-
-            pWnd = pWndForm->FindByName(TEXT("cmdA"));
-            if(pWnd) {
-                ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
-            }
-
-            pWnd = pWndForm->FindByName(TEXT("cmdB"));
-            if(pWnd) {
-                ((WndButton *)wf->FindByName(TEXT("cmdB")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdB")))->LedSetOnOff(!DeviceList[1].Disabled);
-            }
-
-            pWnd = pWndForm->FindByName(TEXT("cmdC"));
-            if(pWnd) {
-                ((WndButton *)wf->FindByName(TEXT("cmdC")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdC")))->LedSetOnOff(!DeviceList[2].Disabled);
-            }
-
-            pWnd = pWndForm->FindByName(TEXT("cmdD"));
-            if(pWnd) {
-                ((WndButton *)wf->FindByName(TEXT("cmdD")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdD")))->LedSetOnOff(!DeviceList[3].Disabled);
-            }
-            pWnd = pWndForm->FindByName(TEXT("cmdE"));
-            if(pWnd) {
-                ((WndButton *)wf->FindByName(TEXT("cmdE")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
-            }
-            pWnd = pWndForm->FindByName(TEXT("cmdF"));
-            if(pWnd) {
-                ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetMode(LEDMODE_OFFGREEN); 
-                ((WndButton *)wf->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
-            }
-
-
-/*
-            const unsigned SPACEBORDER = NIBLSCALE(2);
-            unsigned w = (pWndForm->GetWidth() - (SPACEBORDER * 3)) / 2;
-            int h = ScreenSizeY - IBLSCALE(90); // 40+5+40+5
-
-            int lx = SPACEBORDER - 1; // count from 0
-            pWnd = pWndForm->FindByName(TEXT("cmdA"));
-            if(pWnd) {
-                pWnd->SetTop(h + IBLSCALE(45));
-                pWnd->SetLeft(lx);
-                pWnd->SetHeight(IBLSCALE(40));
-                pWnd->SetWidth(w);
-            }
-
-            lx += w + SPACEBORDER;
-            pWnd = pWndForm->FindByName(TEXT("cmdB"));
-            if(pWnd) {
-                pWnd->SetTop(h + IBLSCALE(45));
-                pWnd->SetLeft(lx);
-                pWnd->SetHeight(IBLSCALE(40));
-                pWnd->SetWidth(w);
-            }
-
-
-            lx = SPACEBORDER - 1; // count from 0
-            pWnd = pWndForm->FindByName(TEXT("cmdC"));
-            if(pWnd) {
-                pWnd->SetTop(h);
-                pWnd->SetLeft(lx);
-                pWnd->SetHeight(IBLSCALE(40));
-                pWnd->SetWidth(w);
-            }
-
-            lx += w + SPACEBORDER;
-            pWnd = pWndForm->FindByName(TEXT("cmdD"));
-            if(pWnd) {
-                pWnd->SetTop(h);
-                pWnd->SetLeft(lx);
-                pWnd->SetHeight(IBLSCALE(40));
-                pWnd->SetWidth(w);
-            lx += w + SPACEBORDER;
-
-            pWnd = pWndForm->FindByName(TEXT("cmdE"));
-            if(pWnd) {
-                pWnd->SetTop(h);
-                pWnd->SetLeft(lx);
-                pWnd->SetHeight(IBLSCALE(40));
-                pWnd->SetWidth(w);
-            }
-
-            lx += w + SPACEBORDER;
-            pWnd = pWndForm->FindByName(TEXT("cmdF"));
-            if(pWnd) {
-                pWnd->SetTop(h);
-                pWnd->SetLeft(lx);
-                pWnd->SetHeight(IBLSCALE(40));
-                pWnd->SetWidth(w);
-            }
-*/
+  if(!pWndForm) {
+    LKASSERT(0);
+    return;
   }
 
-}
+  // spacing between buttons and left&right
+  const unsigned int SPACEBORDER = DLGSCALE(2);
+  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES + 1))) / MAXNUMDEVICES;
+  unsigned int lx = SPACEBORDER; // count from 0
 
+  static_assert(MAXNUMDEVICES == array_size(DeviceList), "wrong array size");
+
+  for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
+    TCHAR szWndName[5];
+    _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
+    WindowControl * pWnd = pWndForm->FindByName(szWndName);
+    if(pWnd) {
+      pWnd->SetWidth(w);
+      pWnd->SetLeft(lx);
+      ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
+      ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
+
+      lx += w + SPACEBORDER;
+    }
+  }
+}
