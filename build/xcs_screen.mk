@@ -175,6 +175,7 @@ else
 #win32
 
 XCS_SCREEN = \
+    $(XCS_UTILS) \
     $(XCS_SCREEN_GDI) \
     $(SRC)/xcs/Screen/Debug.cpp \
     $(SRC)/xcs/Thread/Debug.cpp \

@@ -14,6 +14,7 @@
 #include "xmlParser.h"
 #include <sstream>
 #include "LKStyle.h"
+#include "Util/TruncateString.hpp"
 
 extern int globalFileNum;
 
@@ -482,8 +483,7 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
 
         // Name
         if(GetContent(HotSpotNode, TEXT("NAME"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Name, dataStr, NAME_SIZE);
-            if (_tcslen(dataStr)>NAME_SIZE) new_waypoint.Name[NAME_SIZE]= _T('\0');
+            CopyTruncateString(new_waypoint.Name, NAME_SIZE, dataStr );
         } else continue;
 
         // Geolocation
