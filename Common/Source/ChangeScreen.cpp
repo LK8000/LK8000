@@ -20,6 +20,9 @@
 #include "DoInits.h"
 #include "Screen/Point.hpp"
 
+extern unsigned int DrawTerrainTimer_First, DrawTerrainTimer_Last,DrawTerrainTimer_Max;
+extern unsigned int DrawTerrainTimer_Loops, DrawTerrainTimer_Dtq;
+
 //
 // Detect if screen resolution and/or orientation has changed
 //
@@ -142,6 +145,13 @@ void ReinitScreen(void) {
   // Some parameters need to be reset in advance, otherwise they will be retuned only when the
   // relative DoInit is accomplished. This is a mistake of course.
   TopSize=0; // requires a DrawNearest. 0 is Ok on startup.
+
+  DrawTerrainTimer_First=0;
+  DrawTerrainTimer_Last=0;
+  DrawTerrainTimer_Max=0;
+  DrawTerrainTimer_Loops=0;
+  DrawTerrainTimer_Dtq=0;
+
 
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
