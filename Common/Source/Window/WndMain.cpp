@@ -205,11 +205,13 @@ void BeforeShutdown(void) {
 		ComPort.Status, ComPort.Rx, ComPort.Tx, ComPort.ErrRx, ComPort.ErrTx);
 	}
   }
-  extern unsigned int DrawTerrainTimer_First, DrawTerrainTimer_Last,DrawTerrainTimer_Max,DrawTerrainTimer_Loops;
+  extern unsigned int DrawTerrainTimer_First, DrawTerrainTimer_Last,DrawTerrainTimer_Max;
+  extern unsigned int DrawTerrainTimer_Loops, DrawTerrainTimer_Dtq;
   #ifdef TESTBENCH
   if (DrawTerrainTimer_First) {
-     StartupStore(_T("... Terrain drawing timers: first=%d last=%d max=%d loops=%d%s"),
-        DrawTerrainTimer_First,DrawTerrainTimer_Last,DrawTerrainTimer_Max,DrawTerrainTimer_Loops,NEWLINE);
+     StartupStore(_T("... Terrain drawing timers: first=%d last=%d max=%d loops=%d dtq=%d%s"),
+        DrawTerrainTimer_First,DrawTerrainTimer_Last,DrawTerrainTimer_Max,
+        DrawTerrainTimer_Loops, DrawTerrainTimer_Dtq, NEWLINE);
   }
   #endif
   

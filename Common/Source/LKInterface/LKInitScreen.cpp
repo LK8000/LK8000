@@ -50,6 +50,7 @@ unsigned int DrawTerrainTimer_First=0;  // first time on startup
 unsigned int DrawTerrainTimer_Last=0;   // last time we did it
 unsigned int DrawTerrainTimer_Max=0;    // the longest time so far
 unsigned int DrawTerrainTimer_Loops=0;  // loops made for above timing
+unsigned int DrawTerrainTimer_Dtq=0;    // dtq used for above timing
 
 float ScreenPixelRatio=0;
 
