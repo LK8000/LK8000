@@ -1391,16 +1391,16 @@ void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
                 y = pPrev->GetTop();
                 break;
             case -998: //@ 101115
-                y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(3));
+                y = (pPrev->GetTop() + pPrev->GetHeight() + DLGSCALE(3));
                 break;
             case -997: //@ 101115
-                y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(6));
+                y = (pPrev->GetTop() + pPrev->GetHeight() + DLGSCALE(6));
                 break;
             case -992: 
-                y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(2));
+                y = (pPrev->GetTop() + pPrev->GetHeight() + DLGSCALE(2));
                 break;
             case -991: 
-                y = (pPrev->GetTop() + pPrev->GetHeight() + NIBLSCALE(1));
+                y = (pPrev->GetTop() + pPrev->GetHeight() + DLGSCALE(1));
                 break;
             default:
                 y = (pPrev->GetTop() - ((pPrev->GetHeight()) * y));
@@ -1542,19 +1542,19 @@ void WindowControl::PaintBorder(LKSurface& Surface) {
         const RECT rcClient = GetClientRect();
 
         if (mBorderKind & BORDERTOP) {
-            const RECT rcLine = { rcClient.left, rcClient.top, rcClient.right, rcClient.top + NIBLSCALE(1) };
+            const RECT rcLine = { rcClient.left, rcClient.top, rcClient.right, rcClient.top + DLGSCALE(1) };
             Surface.FillRect(&rcLine, mBrushBorder);
         }
         if (mBorderKind & BORDERRIGHT) {
-            const RECT rcLine = { rcClient.right - NIBLSCALE(1), rcClient.top, rcClient.right, rcClient.bottom };
+            const RECT rcLine = { rcClient.right - DLGSCALE(1), rcClient.top, rcClient.right, rcClient.bottom };
             Surface.FillRect(&rcLine, mBrushBorder);
         }
         if (mBorderKind & BORDERBOTTOM) {
-            const RECT rcLine = { rcClient.left, rcClient.bottom - NIBLSCALE(1), rcClient.right, rcClient.bottom };
+            const RECT rcLine = { rcClient.left, rcClient.bottom - DLGSCALE(1), rcClient.right, rcClient.bottom };
             Surface.FillRect(&rcLine, mBrushBorder);
         }
         if (mBorderKind & BORDERLEFT) {
-            const RECT rcLine = { rcClient.left, rcClient.top, rcClient.left + NIBLSCALE(1), rcClient.bottom };
+            const RECT rcLine = { rcClient.left, rcClient.top, rcClient.left + DLGSCALE(1), rcClient.bottom };
             Surface.FillRect(&rcLine, mBrushBorder);
         }
     }
@@ -1716,10 +1716,10 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
 
   mhBrushTitle = LKBrush_Black; // 101204
 
-  mClientRect.top = (mBorderKind & BORDERTOP) ? NIBLSCALE(1) : 0;
-  mClientRect.left = (mBorderKind & BORDERLEFT) ? NIBLSCALE(1) : 0;
-  mClientRect.bottom = Height - ((mBorderKind & BORDERBOTTOM) ? NIBLSCALE(1) : 0);
-  mClientRect.right = Width - ((mBorderKind & BORDERRIGHT) ? NIBLSCALE(1) : 0);
+  mClientRect.top = (mBorderKind & BORDERTOP) ? DLGSCALE(1) : 0;
+  mClientRect.left = (mBorderKind & BORDERLEFT) ? DLGSCALE(1) : 0;
+  mClientRect.bottom = Height - ((mBorderKind & BORDERBOTTOM) ? DLGSCALE(1) : 0);
+  mClientRect.right = Width - ((mBorderKind & BORDERRIGHT) ? DLGSCALE(1) : 0);
 
   mTitleRect.top = 0;
   mTitleRect.left = 0;
@@ -1856,7 +1856,7 @@ void WndForm::Paint(LKSurface& Surface){
         
         Surface.FillRect(&rcLine, LKBrush_Green);
 
-        Surface.DrawText(mTitleRect.left+NIBLSCALE(2), mTitleRect.top, szCaption);
+        Surface.DrawText(mTitleRect.left+DLGSCALE(2), mTitleRect.top, szCaption);
 
         Surface.SelectObject(oldFont);
     } 
@@ -1887,10 +1887,10 @@ void WndForm::SetCaption(const TCHAR *Value) {
         Surface.SelectObject(oldFont);
         
         mTitleRect.bottom = mTitleRect.top + tsize.cy;
-        rcClient.top = mTitleRect.bottom+NIBLSCALE(1);
+        rcClient.top = mTitleRect.bottom+DLGSCALE(1);
     } else {
         mTitleRect.bottom = 0;
-        rcClient.top = (mBorderKind & BORDERTOP) ? NIBLSCALE(1) : 0;
+        rcClient.top = (mBorderKind & BORDERTOP) ? DLGSCALE(1) : 0;
     }
 
     if (!EqualRect(&mClientRect, &rcClient)){
@@ -1911,13 +1911,13 @@ int  WndForm::SetBorderKind(int Value) {
     RECT rcClient = GetClientRect();
 
     if(mTitleRect.bottom > 0) {
-        rcClient.top = mTitleRect.bottom+NIBLSCALE(1);
+        rcClient.top = mTitleRect.bottom+DLGSCALE(1);
     } else {
-        rcClient.top += (Value & BORDERTOP) ? NIBLSCALE(1) : 0;
+        rcClient.top += (Value & BORDERTOP) ? DLGSCALE(1) : 0;
     }    
-    rcClient.left += (Value & BORDERLEFT) ? NIBLSCALE(1) : 0;
-    rcClient.bottom -= (Value & BORDERBOTTOM) ? NIBLSCALE(1) : 0;
-    rcClient.right -= (Value & BORDERRIGHT) ? NIBLSCALE(1) : 0;
+    rcClient.left += (Value & BORDERLEFT) ? DLGSCALE(1) : 0;
+    rcClient.bottom -= (Value & BORDERBOTTOM) ? DLGSCALE(1) : 0;
+    rcClient.right -= (Value & BORDERRIGHT) ? DLGSCALE(1) : 0;
     
     if (!EqualRect(&mClientRect, &rcClient)){
         mClientRect = rcClient;
@@ -2096,7 +2096,7 @@ void WndButton::Paint(LKSurface& Surface){
 
 
   if (mLedMode) {
-     RECT lrc={rc.left+(LEDBUTTONBORDER-1),rc.bottom-(LEDBUTTONBORDER+NIBLSCALE(mLedSize)),
+     RECT lrc={rc.left+(LEDBUTTONBORDER-1),rc.bottom-(LEDBUTTONBORDER+DLGSCALE(mLedSize)),
                rc.right-LEDBUTTONBORDER,rc.bottom-LEDBUTTONBORDER};
      unsigned short lcol=0;
      switch(mLedMode) {
@@ -2471,7 +2471,7 @@ void WndProperty::Paint(LKSurface& Surface){
 	org.x = mEditRect.left;
 	org.y = mEditRect.top - tsize.cy;
   } else {
-	org.x = mCaptionWidth - mBitmapSize - (tsize.cx + NIBLSCALE(2));
+	org.x = mCaptionWidth - mBitmapSize - (tsize.cx + DLGSCALE(2));
 	org.y = (GetHeight() - tsize.cy)/2;
   }
 
@@ -2500,7 +2500,7 @@ void WndProperty::Paint(LKSurface& Surface){
     // Draw Text Value
 
     RECT rcText = mEditRect;
-    InflateRect(&rcText, -NIBLSCALE(3), -1);
+    InflateRect(&rcText, -DLGSCALE(3), -1);
     
     Surface.SelectObject(mhValueFont);
     Surface.SetTextColor(RGB_BLACK);
@@ -2677,7 +2677,7 @@ void WndListFrame::Paint(LKSurface& Surface) {
                 mOnListCallback(this, &mListInfo);
             }
 
-            const RasterPoint offset(pChildFrame->GetLeft(),  i * pChildFrame->GetHeight() + ((GetBorderKind()&BORDERTOP) ? NIBLSCALE(1) : 0));
+            const RasterPoint offset(pChildFrame->GetLeft(),  i * pChildFrame->GetHeight() + ((GetBorderKind()&BORDERTOP) ? DLGSCALE(1) : 0));
             const PixelSize size(pChildFrame->GetWidth(), pChildFrame->GetHeight());
 
 #ifndef USE_GDI
@@ -2779,7 +2779,7 @@ void WndListFrame::RedrawScrolled(bool all) {
   mOnListCallback(this, &mListInfo);
   WindowControl * pChild = mClients.front();
   if(pChild) {
-    const int newTop = pChild->GetHeight() * (mListInfo.ItemIndex - mListInfo.TopIndex) + ((GetBorderKind()&BORDERTOP) ? NIBLSCALE(1) : 0);
+    const int newTop = pChild->GetHeight() * (mListInfo.ItemIndex - mListInfo.TopIndex) + ((GetBorderKind()&BORDERTOP) ? DLGSCALE(1) : 0);
     if (newTop == pChild->GetTop()){
       Redraw();                     // non moving the helper window force redraw
     } else {
