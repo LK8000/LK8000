@@ -171,7 +171,15 @@ public:
         ixs = sbuf->GetCorrectedWidth() / oversampling;
         iys = sbuf->GetHeight() / oversampling;
 
-        TESTBENCH_DO_ONLY(5,StartupStore(_T("... Terrain quant=%d ixs=%d iys=%d  TOTAL=%d\n"),dtquant,ixs,iys,ixs*iys));
+        extern unsigned int DrawTerrainTimer_Loops;
+        TESTBENCH_DO_ONLY(5,StartupStore(_T("... TERRAIN QUANT=%d ixs=%d iys=%d  TOTAL=%d\n"),dtquant,ixs,iys,ixs*iys));
+        if ((ixs*iys) >DrawTerrainTimer_Loops) {
+           #ifdef TESTBENCH
+           if (DrawTerrainTimer_Loops)
+              StartupStore(_T("... TERRAIN QUANT LOOPS, NEW MAX: %d (old=%d)%s"), ixs*iys,DrawTerrainTimer_Loops,NEWLINE);
+           #endif
+           DrawTerrainTimer_Loops=ixs*iys;
+        }
 
         hBuf = (unsigned short*) malloc(sizeof (unsigned short)*ixs * iys);
         if (!hBuf) {

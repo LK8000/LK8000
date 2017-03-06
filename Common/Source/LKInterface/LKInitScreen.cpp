@@ -45,8 +45,11 @@ unsigned short ReferenceDpi=0;
 // Note that TerrainQuantization() is called only when screen geometry changes.
 unsigned int   CommandQuantization=0; 
 
-// The time spent rendering the very first full map on startup
-unsigned int DrawTerrainTimer=0; 
+// The time spent rendering the LARGEST terrain map
+unsigned int DrawTerrainTimer_First=0;  // first time on startup
+unsigned int DrawTerrainTimer_Last=0;   // last time we did it
+unsigned int DrawTerrainTimer_Max=0;    // the longest time so far
+unsigned int DrawTerrainTimer_Loops=0;  // loops made for above timing
 
 float ScreenPixelRatio=0;
 
