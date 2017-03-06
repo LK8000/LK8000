@@ -40,7 +40,6 @@ using std::placeholders::_1;
 // #define USE_OLD_SELECTOR
 
 #define DEFAULTBORDERPENWIDTH DLGSCALE(1)
-#define SELECTORWIDTH         DLGSCALE(4)
 
 // utility functions
 
@@ -1555,6 +1554,7 @@ void WindowControl::PaintBorder(LKSurface& Surface) {
 
 void WindowControl::PaintSelector(LKSurface& Surface){
 #ifdef USE_OLD_SELECTOR
+#define SELECTORWIDTH         DLGSCALE(4)
   if (!mDontPaintSelector && mCanFocus && HasFocus()){
     const auto oldPen = Surface.SelectObject(LKPen_Petrol_C2);
 
