@@ -399,6 +399,71 @@ unsigned int TerrainQuantization(void) {
 
   if (CommandQuantization) return CommandQuantization;
 
+#if 1
+  //
+  // This is only a proof of concept for alpha versions
+  // All actions performed on screen geometry changes (change multimap for example)
+  //
+  static unsigned int lastmax=0;
+  static unsigned int newquant=0; 
+  if (DrawTerrainTimer_First && DrawTerrainTimer_Loops>10000 && (lastmax!=DrawTerrainTimer_Max)) {
+
+    StartupStore(_T("... TQ:  lastmax=%d newmax=%d, action!\n"), lastmax,DrawTerrainTimer_Max);
+    unsigned int nloopms= DrawTerrainTimer_Loops / DrawTerrainTimer_Max;
+    StartupStore(_T("... TQ:  nLOOPMS = %d  CURRENT TIMER=%d\n"),nloopms, DrawTerrainTimer_Max);
+
+    // 
+    // Max allowed time to draw full map terrain (only terrain, no topology, airspace etc.)
+    // 
+    unsigned int tunedown_threshold=nloopms * 120; // over this value, tune down
+    StartupStore(_T("... TQ:  TUNEDOWN > %d\n"),tunedown_threshold);
+
+    unsigned int tloops[10];
+    tloops[1]= DrawTerrainTimer_Loops * DrawTerrainTimer_Dtq * DrawTerrainTimer_Dtq;
+    for (int i=2; i<10; i++) {
+       tloops[i]= tloops[1] / i / i;
+    }
+
+    for (int i=9; i>0; i--) {
+       StartupStore(_T("... TQ=%d  LOOPS=%d\n"),i, tloops[i]);
+       tloops[i]= tloops[1] / i / i;
+    }
+
+    for (unsigned int i=1; i<10; i++) {
+       if ( tloops[i]>tunedown_threshold ) {
+          StartupStore(_T("... TQ:  with dtquant=%i we run %d loops, more than tunedown=%d --> try higher dtquant \n"),
+             i,tloops[i],tunedown_threshold);
+          continue;
+       }
+       StartupStore(_T("... TQ:  with dtquant=%i we do %d loops, less than tunedown=%d --> Ok we use this\n"),
+          i,tloops[i],tunedown_threshold);
+       newquant=i;
+       break;
+    }
+
+    if (newquant==0) {
+       StartupStore(_T("... TQ:  NO SOLUTION FOUND!\n"));
+    } else {
+       if (newquant==DrawTerrainTimer_Dtq)
+          StartupStore(_T("... TQ:  NO NEED TO CHANGE CURRENT QUANTIZATION %d\n"),DrawTerrainTimer_Dtq);
+       else 
+          StartupStore(_T("... TQ:  SUGGESTION TO CHANGE QUANTIZATION FROM %d to %d\n"),DrawTerrainTimer_Dtq, newquant);
+
+          DrawTerrainTimer_Dtq=0;
+
+          return newquant;
+    }
+ 
+    lastmax=DrawTerrainTimer_Max;
+  } else {
+     if (newquant) return newquant;
+  }
+#endif
+
+  //
+  // On startup and whenever we have no clue to decide a quantization based on terrain drawing timings,
+  // we shall use the following rule of thumb. 
+  //
   unsigned int dtquant;
 
   // need at least 2Ghz singlecore CPU here for dtquant 1
