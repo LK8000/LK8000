@@ -36,6 +36,8 @@
 
 using std::placeholders::_1;
 
+// Old selector style has corners smoothed badly looking
+// #define USE_OLD_SELECTOR
 
 #define DEFAULTBORDERPENWIDTH DLGSCALE(1)
 #define SELECTORWIDTH         DLGSCALE(4)
@@ -1559,7 +1561,7 @@ void WindowControl::PaintBorder(LKSurface& Surface) {
 }
 
 void WindowControl::PaintSelector(LKSurface& Surface){
-
+#ifdef USE_OLD_SELECTOR
   if (!mDontPaintSelector && mCanFocus && HasFocus()){
     const auto oldPen = Surface.SelectObject(hPenDefaultSelector);
 
@@ -1588,7 +1590,7 @@ void WindowControl::PaintSelector(LKSurface& Surface){
 
     Surface.SelectObject(oldPen);
   }
-
+#endif
 }
 
 extern void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
@@ -1626,7 +1628,9 @@ void WindowControl::Paint(LKSurface& Surface) {
         Surface.FillRect(&rc, LKBrush_Higlighted);
     }
     PaintBorder(Surface);
+    #ifdef USE_OLD_SELECTOR
     PaintSelector(Surface);
+    #endif
 }
 
 WindowControl *WindowControl::FocusNext(WindowControl *Sender) {
