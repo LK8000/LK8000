@@ -169,8 +169,7 @@ bool ParseAirports(XMLNode &airportsNode)
 
         // Name
         if(GetContent(AirportNode, TEXT("NAME"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Name, dataStr, NAME_SIZE);
-            if (_tcslen(dataStr)>NAME_SIZE) new_waypoint.Name[NAME_SIZE]= _T('\0');
+            CopyTruncateString(new_waypoint.Name, NAME_SIZE, dataStr );
         } else continue;
 
         // ICAO code
@@ -363,8 +362,7 @@ bool ParseNavAids(XMLNode &navAidsNode)
 
         // Name
         if(GetContent(NavAidNode, TEXT("NAME"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Name, dataStr, NAME_SIZE);
-            if (_tcslen(dataStr)>NAME_SIZE) new_waypoint.Name[NAME_SIZE]= _T('\0');
+            CopyTruncateString(new_waypoint.Name, NAME_SIZE, dataStr );
         } else continue;
 
         // Navigational aid ID
