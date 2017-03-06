@@ -406,7 +406,14 @@ unsigned int TerrainQuantization(void) {
   //
   static unsigned int lastmax=0;
   static unsigned int newquant=0; 
-  if (DrawTerrainTimer_First && DrawTerrainTimer_Loops>10000 && (lastmax!=DrawTerrainTimer_Max)) {
+
+  
+  // below these ms do not consider Max. Should be checked on PNAs.
+  // Probably we should move Max calculation inside DrawTerrain, excluding UpToDate cases.
+  // But when UpToDate we render in less than 10ms in the worst of cases.
+  #define VALIDMS 20
+
+  if (DrawTerrainTimer_First && DrawTerrainTimer_Max > VALIDMS &&DrawTerrainTimer_Loops>10000 && (lastmax!=DrawTerrainTimer_Max)) {
 
     StartupStore(_T("... TQ:  lastmax=%d newmax=%d, action!\n"), lastmax,DrawTerrainTimer_Max);
     unsigned int nloopms= DrawTerrainTimer_Loops / DrawTerrainTimer_Max;
