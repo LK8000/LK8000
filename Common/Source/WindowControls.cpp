@@ -2087,8 +2087,11 @@ void WndButton::Paint(LKSurface& Surface){
 
   Surface.DrawPushButton(rc, mDown);
 
-
-  static bool flipflop=true; // remember to flip only after showing a focused item!
+  // Flip-flopping works only with OPENGL because dialogs are repainted every second
+  // Selected item is painted yellow in any case.
+  // Remember to flip only after showing a focused item!
+  // 
+  static bool flipflop=true; 
   if (mLedMode) {
      RECT lrc={rc.left+(LEDBUTTONBORDER-1),rc.bottom-(LEDBUTTONBORDER+DLGSCALE(mLedSize)),
                rc.right-LEDBUTTONBORDER,rc.bottom-LEDBUTTONBORDER};
@@ -2100,7 +2103,9 @@ void WndButton::Paint(LKSurface& Surface){
            else {
               if (HasFocus()) {
                  lcol=(flipflop?LEDCOLOR_YELLOW:LEDCOLOR_BLACK);
+                 #ifdef ENABLE_OPENGL
                  flipflop=!flipflop;
+                 #endif
               } else
                 lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_RED);
            }
@@ -2111,8 +2116,9 @@ void WndButton::Paint(LKSurface& Surface){
            else {
               if (HasFocus()) {
                  lcol=(flipflop?LEDCOLOR_YELLOW:LEDCOLOR_DGREEN);
-                 // only flip after showing focused item!
+                 #ifdef ENABLE_OPENGL
                  flipflop=!flipflop;
+                 #endif
               } else
                  lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_DGREEN);
            }
