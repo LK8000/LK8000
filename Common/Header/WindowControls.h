@@ -508,8 +508,6 @@ class WindowControl : public WndCtrlBase {
     LKBrush mBrushBk;
     LKBrush mBrushBorder;
 
-    PenReference mhPenSelector;
-
     TCHAR *mHelpText;
 
     OnHelpCallback_t mOnHelpCallback;
@@ -575,8 +573,6 @@ class WindowControl : public WndCtrlBase {
     }
 
     void SetBorderColor(const LKColor& Color) { mBrushBorder.Create(Color);}
-
-    PenReference GetSelectorPen(void) const {return(mhPenSelector);};
 
     virtual void SetCaption(const TCHAR *Value);
     void SetHelpText(const TCHAR *Value);

@@ -1254,8 +1254,6 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   if (mOwner != NULL)
     mOwner->AddClient(this);  
 
-  mhPenSelector = hPenDefaultSelector;
-
   SetBorderColor(RGB_BLACK);
   mBorderKind = 0; //BORDERRIGHT | BORDERBOTTOM;
 
