@@ -233,6 +233,9 @@ void InitLKScreen() {
     StartupStore(_T("..... NIBLSCALE(1.0)   = %f" NEWLINE), NIBLSCALE(1.0));
     StartupStore(_T("..... NIBLSCALE(2)     = %d" NEWLINE), NIBLSCALE(2));
     StartupStore(_T("..... NIBLSCALE(2.0)   = %f" NEWLINE), NIBLSCALE(2.0));
+    // These are just reminders, since DLGSCALE is IBLSCALE
+    StartupStore(_T("..... DLGSCALE(1)     = %d" NEWLINE), DLGSCALE(1));
+    StartupStore(_T("..... DLGSCALE(2)     = %d" NEWLINE), DLGSCALE(2));
 
     StartupStore(_T("..... GestureSize      = %d" NEWLINE), GestureSize);
     StartupStore(_T("..... LKVarioSize      = %d" NEWLINE), LKVarioSize);
