@@ -1204,8 +1204,6 @@ static LKColor bkColor = RGB_WINBACKGROUND; // PETROL
 static LKColor fgColor = RGB_WINFOREGROUND; // WHITE
 int WindowControl::InstCount=0;
 
-PenReference WindowControl::hPenDefaultSelector;
-
 WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name, 
 			     int X, int Y, int Width, int Height, bool Visible)
                 : WndCtrlBase(Name)
@@ -1233,9 +1231,6 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   mColorBack = bkColor; // PETROL
   mColorFore = fgColor; // WHITE
 
-  if (InstCount == 0){
-	hPenDefaultSelector = LKPen_Petrol_C2;
-  }
   InstCount++;
 
   // if Owner is Not provided, use MainWindow
@@ -1561,7 +1556,7 @@ void WindowControl::PaintBorder(LKSurface& Surface) {
 void WindowControl::PaintSelector(LKSurface& Surface){
 #ifdef USE_OLD_SELECTOR
   if (!mDontPaintSelector && mCanFocus && HasFocus()){
-    const auto oldPen = Surface.SelectObject(hPenDefaultSelector);
+    const auto oldPen = Surface.SelectObject(LKPen_Petrol_C2);
 
     const int Width = GetWidth();
     const int Height = GetHeight();

@@ -517,8 +517,6 @@ class WindowControl : public WndCtrlBase {
 
     static int InstCount;
 
-    static PenReference hPenDefaultSelector;
-
   protected:
 
     bool mCanFocus;
