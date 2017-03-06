@@ -46,14 +46,14 @@ BOOL GetTrue(DeviceDescriptor_t *d) {
 static
 BOOL Install(PDeviceDescriptor_t d){
 
-  assert(DeviceDesciptorList.size() == array_size(DeviceNameList));
+  LKASSERT(DeviceDesciptorList.size() == array_size(DeviceNameList));
   auto ItOut = std::begin(DeviceDesciptorList);
   for(auto DevName : DeviceNameList) {
     DeviceRegister_t* pDev = std::find_if(&DeviceRegister[0], &DeviceRegister[DeviceRegisterCount], std::bind(&devNameCompare, _1, DevName));
     if (pDev != &DeviceRegister[DeviceRegisterCount]) {
       pDev->Installer(ItOut++);
     } else {
-      assert(false);
+      LKASSERT(false);
       DeviceRegister[0].Installer(ItOut++); // Disabled
     }
   }

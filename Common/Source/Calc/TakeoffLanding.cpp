@@ -51,7 +51,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			}
 
 			if (WayPointList[RESWP_TAKEOFF].Altitude==0) WayPointList[RESWP_TAKEOFF].Altitude=0.001; // 100227 BUGFIX?
-			assert(WayPointList[RESWP_TAKEOFF].Comment);
+			LKASSERT(WayPointList[RESWP_TAKEOFF].Comment);
 			_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("LAST GROUND POSITION"));
 			WayPointList[RESWP_TAKEOFF].Reachable=TRUE;
 			WayPointList[RESWP_TAKEOFF].Visible=TRUE;

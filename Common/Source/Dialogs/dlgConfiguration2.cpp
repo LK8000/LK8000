@@ -42,7 +42,7 @@ void OnInfoBoxHelp(WindowControl * Sender){
   default:
 	// LKTOKEN  _@M266_ = "Error"
     _tcscpy(mode,MsgToken(266));
-    assert(false);
+    LKASSERT(false);
     return;
   }
 

@@ -32,11 +32,11 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   pointObj* out = Calculated->GlideFootPrint;
 
 #ifdef ENABLE_OPENGL
-  assert(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +2); // #GlideFootPrint array to small
+  LKASSERT(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +2); // #GlideFootPrint array to small
   // first point is current poisition
   *(out++) = (pointObj){Basic->Longitude,Basic->Latitude};
 #else
-  assert(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +1); // #GlideFootPrint array to small  
+  LKASSERT(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +1); // #GlideFootPrint array to small  
 #endif
 
   for (int i=0; i<=NUMTERRAINSWEEPS; i++) {

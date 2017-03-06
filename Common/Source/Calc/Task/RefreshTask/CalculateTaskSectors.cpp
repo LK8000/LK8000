@@ -38,7 +38,7 @@ void CalculateTaskSectors(int Idx) {
                                                        SectorBearing + 45);
                     break;
                 default:
-                    assert(false);
+                    LKASSERT(false);
             }
         } else if (ValidTaskPointFast(Idx + 1)) {
             if (!AATEnabled && !DoOptimizeRoute()) {
@@ -63,7 +63,7 @@ void CalculateTaskSectors(int Idx) {
                         gTaskSectorRenderer.SetLine(Idx, center, SectorRadius, SectorBearing + 90);
                         break;
                     default:
-                        assert(false);
+                        LKASSERT(false);
                 }
             } else {
                 switch (TaskPt.AATType) {
@@ -78,7 +78,7 @@ void CalculateTaskSectors(int Idx) {
                                                       TaskPt.AATFinishRadial);
                         break;
                     default:
-                        assert(false);
+                        LKASSERT(false);
                 }
             }
         } else {
@@ -97,7 +97,7 @@ void CalculateTaskSectors(int Idx) {
                                                        SectorBearing + 45);
                     break;
                 default:
-                    assert(false);
+                    LKASSERT(false);
             }
         }
         if (!AATEnabled) {

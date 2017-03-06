@@ -1117,7 +1117,7 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 // Calculate airspace bounds
 
 void CAirspace_Area::CalcBounds() {
-    assert(!_geopoints.empty());
+    LKASSERT(!_geopoints.empty());
     CPoint2DArray::iterator it = _geopoints.begin();
 
     _bounds.minx = it->Longitude();
@@ -1796,7 +1796,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
     // Push last one to the list
     if (parsing_state == 10) {
-        assert(!newairspace);
+        LKASSERT(!newairspace);
         if (Radius > 0) {
             // Last one was a circle
             newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);

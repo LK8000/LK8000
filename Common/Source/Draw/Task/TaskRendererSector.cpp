@@ -15,7 +15,7 @@ TaskRendererSector::TaskRendererSector(const GeoPoint& center, double radius, do
 
     const int start_bearing = std::ceil(start);
     const int end_bearing = std::floor((end > start) ? end : end + 360);
-    assert(end_bearing > start_bearing);
+    LKASSERT(end_bearing > start_bearing);
 
     _GeoPoints.reserve(3 + (end_bearing - start_bearing));
 

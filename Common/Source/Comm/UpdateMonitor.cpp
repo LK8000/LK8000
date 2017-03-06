@@ -103,7 +103,7 @@ bool  UpdateMonitor(void)
       continue;
     }
 
-    assert((unsigned)dev.PortNumber < array_size(wasSilent));
+    LKASSERT((unsigned)dev.PortNumber < array_size(wasSilent));
     if ((LKHearthBeats-dev.HB)>10 ) {
 #ifdef DEBUGNPM
       StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u" NEWLINE), dev.PortNumber, LKHearthBeats, dev.HB);

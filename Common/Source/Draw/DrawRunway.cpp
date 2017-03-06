@@ -32,7 +32,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 {
   if(!picto && !_Proj) {
      // if we don't draw picto ScreenProjection parameter are mandatory.
-     assert(false);
+     LKASSERT(false);
      return;
   }
 

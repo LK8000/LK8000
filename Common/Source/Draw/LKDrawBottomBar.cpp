@@ -36,7 +36,7 @@ void CropString(TCHAR* String, unsigned max_char) {
     char* pend = const_cast<char*>(next.second);
     if(pend) {
         // check if pend are inside String.
-        assert(static_cast<size_t>(pend - String) <= strlen(String));
+        LKASSERT(static_cast<size_t>(pend - String) <= strlen(String));
         (*pend) = '\0';
     }
 #endif

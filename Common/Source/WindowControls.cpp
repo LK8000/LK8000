@@ -555,7 +555,7 @@ int DataFieldEnum::GetAsInteger(void){
 }
 
 bool DataFieldEnum::GetAsBoolean() {
-  assert(mEntries.size() == 2);
+  LKASSERT(mEntries.size() == 2);
   if (mValue<mEntries.size()) {
     return mEntries[mValue].index;
   }
