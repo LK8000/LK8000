@@ -257,7 +257,7 @@ bool WndMain::OnClose() {
 }
 
 void WndMain::OnDestroy() {
-    StartupStore(_T("WndMain::OnDestroy" NEWLINE));
+    StartupStore(_T(". WndMain::OnDestroy" NEWLINE));
     _isRunning = false;
     StopTimer();
     MapWindow::_OnDestroy();
