@@ -678,6 +678,10 @@ void CloseTerrainRenderer() {
     terrain_ready = false;
 }
 
+#ifdef TESTBENCH
+unsigned int UpToDate_Hits=0;
+unsigned int UpToDate_Miss=0;
+#endif
 /**
  * @return true if all terrain parameters are same, false if one or more change
  */
@@ -701,9 +705,15 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
         old_Shading = Shading;
         old_ScreenProjection = _Proj;
 
+        #ifdef TESTBENCH
+        UpToDate_Miss++;
+        #endif
         return false;
     }
 
+    #ifdef TESTBENCH
+    UpToDate_Hits++;
+    #endif
     return true;
 }
 
