@@ -23,8 +23,8 @@ endif ()
 
 ExternalProject_Add (
     GeographicLib
-    URL https://freefr.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.46.zip
-    URL_HASH MD5=e282dc7526fea0a69d7d6324e418de32
+    URL https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.47-patch1.tar.gz
+    URL_HASH MD5=4fadb45c713ed87b3fc0c709cd9eba26
     PREFIX ${GEOGRAPHIC_PREFIX}
     BINARY_DIR ${GEOGRAPHIC_PREFIX}/build/${ANDROID_ABI}
     INSTALL_DIR ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}
