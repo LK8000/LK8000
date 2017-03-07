@@ -12,6 +12,8 @@
 #ifndef OPENZIP_H
 #define	OPENZIP_H
 
+#include <zzip/zzip.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
