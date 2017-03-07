@@ -335,7 +335,7 @@ static bool LoadUtfChecklist(const TCHAR* fileName, bool warn) {
   StartupStore(_T(". Loading UTF notes <%s>%s"),fileName,NEWLINE);
   #endif
 
-  TCHAR TempString[MAXNOTETITLE];
+  TCHAR TempString[MAXNOTETITLE+1];
   TCHAR Details[MAXNOTEDETAILS+1];
   TCHAR Name[MAXNOTETITLE+1];
   bool inDetails = false;
@@ -451,5 +451,6 @@ void dlgChecklistShowModal(short checklistmode){
 deinit:
 
   delete wf;
+  wf=NULL;
   DeinitNotepad();
 }
