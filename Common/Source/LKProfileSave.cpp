@@ -522,6 +522,7 @@ void LKPilotSave(const TCHAR *szFile)
   rprintf(szRegistryPilotName,PilotName_Config);
   rprintf(szRegistryLiveTrackerInterval,LiveTrackerInterval);
   rprintf(szRegistryLiveTrackerRadar_config,LiveTrackerRadar_config);
+  rprintf(szRegistryLiveTrackerStart_config,LiveTrackerStart_config);
   rprintf(szRegistryLiveTrackersrv,LiveTrackersrv_Config);
   rprintf(szRegistryLiveTrackerport,LiveTrackerport_Config);
   rprintf(szRegistryLiveTrackerusr,LiveTrackerusr_Config);

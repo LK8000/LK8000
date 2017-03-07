@@ -374,6 +374,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryDisableAutoLogger,&DisableAutoLogger);
   PREAD(sname,svalue,szRegistryLiveTrackerInterval,&LiveTrackerInterval);
   PREAD(sname,svalue,szRegistryLiveTrackerRadar_config,&LiveTrackerRadar_config);
+  PREAD(sname,svalue,szRegistryLiveTrackerStart_config,&LiveTrackerStart_config);
   PREAD(sname,svalue,szRegistryDisplayText,&DisplayTextType);
   PREAD(sname,svalue,szRegistryDisplayUpValue,&DisplayOrientation_Config);
   if (matchedstring) return;

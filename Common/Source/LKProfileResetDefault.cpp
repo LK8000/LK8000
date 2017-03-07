@@ -377,7 +377,7 @@ void LKProfileResetDefault(void) {
 
   LiveTrackerInterval = 0;
   LiveTrackerRadar_config = false;
-
+  LiveTrackerStart_config = 0;
   // empty or demo versions
   //szAirspaceFile[0] = TEXT('\0');
   //szWaypointFile[0] = TEXT('\0');
