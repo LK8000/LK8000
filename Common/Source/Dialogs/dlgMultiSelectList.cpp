@@ -309,8 +309,11 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                 idx = Task[Elements[i].iIdx].Index;
             }
 
-            if (idx >= WayPointList.size()) idx = WayPointList.size();
-            LKASSERT(idx <= WayPointList.size());
+            // This is not a solution. It will avoid a crash but the solution is to understand
+            // why we are getting a wrong idx, eventually. If ever we got a wrong idx!
+            // And then this "fix" should be changed to something more useful, instead of 
+            // adopting a totally wrong waypoint for task.
+            if (idx >= WayPointList.size()) idx = WayPointList.size()-1;
 
             if (WayPointList[idx].Comment != NULL) {
                 LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
