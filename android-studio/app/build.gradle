@@ -29,6 +29,7 @@ android {
         manifestPlaceholders = [applicationLabel: "@string/app_name"]
         externalNativeBuild {
             cmake {
+                arguments "-DANDROID_TOOLCHAIN=gcc"
             }
         }
         copy {
