@@ -2088,7 +2088,6 @@ void WndButton::Paint(LKSurface& Surface){
   Surface.DrawPushButton(rc, mDown);
 
 
-  static bool flipflop=true; // remember to flip only after showing a focused item!
   if (mLedMode) {
      RECT lrc={rc.left+(LEDBUTTONBORDER-1),rc.bottom-(LEDBUTTONBORDER+DLGSCALE(mLedSize)),
                rc.right-LEDBUTTONBORDER,rc.bottom-LEDBUTTONBORDER};
@@ -2097,25 +2096,14 @@ void WndButton::Paint(LKSurface& Surface){
         case LEDMODE_REDGREEN:
            if (IsDithered())
               lcol=(mLedOnOff?LEDCOLOR_LGREEN:LEDCOLOR_ORANGE);
-           else {
-              if (HasFocus()) {
-                 lcol=(flipflop?LEDCOLOR_YELLOW:LEDCOLOR_BLACK);
-                 flipflop=!flipflop;
-              } else
-                lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_RED);
-           }
+           else
+              lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_RED);
            break;
         case LEDMODE_OFFGREEN:
            if (IsDithered())
               lcol=(mLedOnOff?LEDCOLOR_LGREEN:LEDCOLOR_BLUE);
-           else {
-              if (HasFocus()) {
-                 lcol=(flipflop?LEDCOLOR_YELLOW:LEDCOLOR_DGREEN);
-                 // only flip after showing focused item!
-                 flipflop=!flipflop;
-              } else
-                 lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_DGREEN);
-           }
+           else
+              lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_DGREEN);
            break;
         case LEDMODE_MANUAL:
            lcol=mLedColor;
