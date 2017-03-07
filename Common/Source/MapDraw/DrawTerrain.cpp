@@ -171,7 +171,7 @@ public:
         ixs = sbuf->GetCorrectedWidth() / oversampling;
         iys = sbuf->GetHeight() / oversampling;
 
-        extern unsigned int DrawTerrainTimer_Loops, DrawTerrainTimer_Dtq;
+        extern unsigned int DrawTerrainTimer_Loops;
         TESTBENCH_DO_ONLY(5,StartupStore(_T("... TERRAIN QUANT=%d ixs=%d iys=%d  TOTAL=%d\n"),dtquant,ixs,iys,ixs*iys));
         if ((ixs*iys) >DrawTerrainTimer_Loops) {
            #ifdef TESTBENCH
@@ -179,13 +179,6 @@ public:
               StartupStore(_T("... TERRAIN QUANT LOOPS, NEW MAX: %d (old=%d)%s"), ixs*iys,DrawTerrainTimer_Loops,NEWLINE);
            #endif
            DrawTerrainTimer_Loops=ixs*iys;
-        }
-        if (dtquant!=DrawTerrainTimer_Dtq) {
-           #ifdef TESTBENCH
-           if (DrawTerrainTimer_Dtq)
-              StartupStore(_T("... TERRAIN QUANTIZATION SET TO %d (old=%d)%s"), dtquant,DrawTerrainTimer_Dtq,NEWLINE);
-           #endif
-           DrawTerrainTimer_Dtq=dtquant;
         }
 
         hBuf = (unsigned short*) malloc(sizeof (unsigned short)*ixs * iys);
