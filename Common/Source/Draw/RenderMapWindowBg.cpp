@@ -17,9 +17,7 @@
 
 extern bool FastZoom;
 extern bool TargetDialogOpen;
-extern unsigned int DrawTerrainTimer_First;
-extern unsigned int DrawTerrainTimer_Last;
-extern unsigned int DrawTerrainTimer_Max;
+extern unsigned int DrawTerrainTimer;
 
 
 void MapWindow::RenderOverlayGauges(LKSurface& Surface, const RECT& rc) {
@@ -158,29 +156,20 @@ QuickRedraw:
             goto QuickRedraw;
         }
 
-        unsigned tetime=0;
-        unsigned tstime=MonotonicClockMS();
-        if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
-           tetime=MonotonicClockMS()-tstime;
-           terrainpainted = true;
-           if (tetime>0) {
-              if (!DrawTerrainTimer_First) {
-                 DrawTerrainTimer_First=tetime;
+        if (!DrawTerrainTimer) {
+           unsigned tstime=MonotonicClockMS();
+           if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
+              if (!DrawTerrainTimer) {
+                 DrawTerrainTimer=MonotonicClockMS()-tstime;
                  #ifdef TESTBENCH
-                 StartupStore(_T("... TERRAIN RENDERING FIRST TIME = %d ms%s"),DrawTerrainTimer_First,NEWLINE);
+                 StartupStore(_T("... First full terrain rendering, time spent=%d ms\n"),DrawTerrainTimer);
                  #endif
               }
-              DrawTerrainTimer_Last=tetime;
-              if (tetime>DrawTerrainTimer_Max) {
-                 #ifdef TESTBENCH
-                 if (DrawTerrainTimer_Max)
-                    StartupStore(_T("... TERRAIN RENDERING NEW MAX = %d ms (old=%d ms)%s"),tetime,DrawTerrainTimer_Max,NEWLINE);
-                 #endif
-                 DrawTerrainTimer_Max=tetime;
-              }
+              terrainpainted = true;
            }
+        } else {
+           if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) terrainpainted = true;
         }
-
 
         if (DONTDRAWTHEMAP) {
             UnlockTerrainDataGraphics();
