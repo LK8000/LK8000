@@ -163,7 +163,7 @@ QuickRedraw:
         if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
            tetime=MonotonicClockMS()-tstime;
            terrainpainted = true;
-           if (tetime>=10) {
+           if (tetime>1) {
               if (!DrawTerrainTimer_First) {
                  DrawTerrainTimer_First=tetime;
                  #ifdef TESTBENCH

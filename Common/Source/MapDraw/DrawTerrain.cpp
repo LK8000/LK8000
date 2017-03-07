@@ -172,11 +172,11 @@ public:
         iys = sbuf->GetHeight() / oversampling;
 
         extern unsigned int DrawTerrainTimer_Loops, DrawTerrainTimer_Dtq;
-        TESTBENCH_DO_ONLY(5,StartupStore(_T("... terrain quant=%d ixs=%d iys=%d  total=%d\n"),dtquant,ixs,iys,ixs*iys));
+        TESTBENCH_DO_ONLY(5,StartupStore(_T("... TERRAIN QUANT=%d ixs=%d iys=%d  TOTAL=%d\n"),dtquant,ixs,iys,ixs*iys));
         if ((ixs*iys) >DrawTerrainTimer_Loops) {
            #ifdef TESTBENCH
            if (DrawTerrainTimer_Loops)
-              StartupStore(_T("... terrain quant loops, new max: %d (old=%d)%s"), ixs*iys,DrawTerrainTimer_Loops,NEWLINE);
+              StartupStore(_T("... TERRAIN QUANT LOOPS, NEW MAX: %d (old=%d)%s"), ixs*iys,DrawTerrainTimer_Loops,NEWLINE);
            #endif
            DrawTerrainTimer_Loops=ixs*iys;
         }
