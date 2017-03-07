@@ -325,13 +325,13 @@ void InputEvents::readFile() {
 	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
 	    int iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
-	    if (iikey >= 0)
+	    if (iikey >= 0 && iikey < NE_COUNT)
 	      GC2Event[mode_id][iikey] = event_id;
 
 	    // Make ne (NMEA Event)
 	  } else if (_tcscmp(d_type, TEXT("ne")) == 0) { 		// NE - NMEA Event
 	    int iiikey = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
-	    if (iiikey >= 0)
+	    if (iiikey >= 0 && iiikey < NE_COUNT)
 	      N2Event[mode_id][iiikey] = event_id;
 	  } else if (_tcscmp(d_type, TEXT("label")) == 0)	{	// label only - no key associated (label can still be touch screen)
 	    // Nothing to do here...
