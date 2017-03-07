@@ -25,7 +25,7 @@
 # if defined _MSC_VER || defined __BORLANDC__ || defined __WATCOMC__
 # include <zzip/_msvc.h>
 #else
-# include <zzip/_gnuc.h>
+# include <zzip/_config.h>
 # endif
 #endif
 
