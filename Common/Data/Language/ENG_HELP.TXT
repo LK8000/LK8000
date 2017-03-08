@@ -1884,5 +1884,15 @@ Default is ON.
 [Screen Orientation]
 Select your prefered screen orientation. In Auto mode the screen will rotate occording to the device sensor. 
 
+@1298
+[Tracking Mode]
+Here you can select how you want to be tracked.
+in flight only:
+tracking starts after takeoff and ends after landing detection.
+permanent:
+tracking as long as LK8000 runs and has a valid GPS signal.
+We recomend in flight only because it transfers the takeoff and landing information for a correct log. (default)
+while permanent can be used to test your tracking settings on ground. (Note: Tracking need a falid GPS fix)
+
 @9999
 No help available on this item!

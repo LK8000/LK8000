@@ -409,6 +409,12 @@ _@M2322_ "Enable Radar"
    981   "Auto-Contrast"
    983   "Trafic on map "  (leave trailing blank space) this is menu item 
 
++_@M2333_ Tracking mode
++_@M2334_ in Flight Only
++_@M2335_ permanent
+
+
+   
 HELP FILE
 
 +@933
@@ -431,4 +437,7 @@ Auto-Contrast (see help)
 @1297  
 Screen Orientation (see help)
 
+
+@1298
+Tracking Mode (see help)
 

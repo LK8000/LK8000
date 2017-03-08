@@ -655,6 +655,19 @@ static void OnPilotNameClicked(WndButton* pWnd) {
     UpdateButtons(pWnd->GetParentWndForm());
 }
 
+
+
+static void OnLiveTrackerStartConfig(DataField *Sender, DataField::DataAccessKind_t Mode){
+WndProperty* wp;
+wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
+if (wp) {
+  if (LiveTrackerStart_config != wp->GetDataField()->GetAsInteger()) {
+  	LiveTrackerStart_config = wp->GetDataField()->GetAsInteger();
+    requirerestart = true;
+  }
+}
+}
+
 static void OnLiveTrackersrvClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackersrv) {
@@ -1363,6 +1376,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DataAccessCallbackEntry(OnAirspaceDisplay),
   DataAccessCallbackEntry(OnAspPermModified),
   DataAccessCallbackEntry(OnGearWarningModeChange),
+  DataAccessCallbackEntry(OnLiveTrackerStartConfig),
   DataAccessCallbackEntry(OnAutoContrastChange),
 #ifndef NO_BLUETOOTH
   ClickNotifyCallbackEntry(OnBthDevice),
@@ -2310,6 +2324,16 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
     wp->GetDataField()->Set(LiveTrackerRadar_config);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
+  if (wp)
+  {
+	DataField* dfe = wp->GetDataField();
+	dfe->addEnumText(MsgToken(2334));	// LKTOKEN   _@M2334_ "In flight only (default)"
+	dfe->addEnumText(MsgToken(2335));	// LKTOKEN  _@M2335_ "permanent (test purpose)"
+    dfe->Set(LiveTrackerStart_config);
     wp->RefreshDisplay();
   }
 
