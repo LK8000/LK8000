@@ -354,13 +354,13 @@ bool LKLoadMessages(bool fillup) {
 
   if (doinit) {
     std::fill(std::begin(LKMessages), std::end(LKMessages), (TCHAR*)NULL);
-	doinit=false;
+    doinit=false;
   } else {
-	if (!fillup) {
-		// init data when reloading language files or changing it
-		// but not in fillup mode of course
+     if (!fillup) {
+        // init data when reloading language files or changing it
+        // but not in fillup mode of course
         LKUnloadMessage();
-	}
+     }
   }
 
   LocalPath(sPath,_T(LKD_LANGUAGE));
@@ -368,22 +368,21 @@ bool LKLoadMessages(bool fillup) {
   _stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
 
   ZZIP_FILE *hFile = openzip(sFile, "rt");
-	if (hFile == NULL) {
-#ifdef LKD_SYS_LANGUAGE
-		SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
-		_stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
-		hFile = openzip(sFile, "rt");
-#endif
-	if(!hFile) {
-	    StartupStore(_T("... LoadText Missing Language File: <%s>%s"), sFile, NEWLINE);
-		return false;
-	}
-
+  if (hFile == NULL) {
+     #ifdef LKD_SYS_LANGUAGE
+     SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
+     _stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
+     hFile = openzip(sFile, "rt");
+     #endif
+     if(!hFile) {
+        StartupStore(_T("... LoadText Missing Language File: <%s>%s"), sFile, NEWLINE);
+        return false;
+     }
   } else {
-	if (fillup)
-		StartupStore(_T(". Language fillup load file: <%s>%s"),sFile,NEWLINE);
-	else
-		StartupStore(_T(". Language load file: <%s>%s"),sFile,NEWLINE);
+     if (fillup)
+        StartupStore(_T(". Language fillup load file: <%s>%s"),sFile,NEWLINE);
+     else
+        StartupStore(_T(". Language load file: <%s>%s"),sFile,NEWLINE);
   }
 
   // search for beginning of code index, in the range _@M1_  _@M9999_
@@ -393,134 +392,131 @@ bool LKLoadMessages(bool fillup) {
 
   bool havewarned=false;
   while (ReadULine(hFile, sTmp, array_size(sTmp))) {
-
-	unsigned int slen=_tcslen(sTmp); // includes cr or lf or both
-	if ( (slen<9) || (sTmp[0]!='_') || (sTmp[1]!='@') || (sTmp[2]!='M') ) {
+     unsigned int slen=_tcslen(sTmp); // includes cr or lf or both
+     if ( (slen<9) || (sTmp[0]!='_') || (sTmp[1]!='@') || (sTmp[2]!='M') ) {
         #if DEBUG_GETTEXT
         if(slen>0 && sTmp[0]!='#') {
-            StartupStore(_T(".... MSG_ENG missing _@M line <%s>\n"),sTmp);
+           StartupStore(_T(".... MSG_ENG missing _@M line <%s>\n"),sTmp);
         }
         #endif
-		continue;
-	}
+        continue;
+     }
 
-    // get the item index number, quick conversion from unicode
-    unsigned short inumber = 0;
-    for (unsigned int i = 0; i < slen - 4 && isdigit(sTmp[3 + i]); i++) {
+     // get the item index number, quick conversion from unicode
+     unsigned short inumber = 0;
+     for (unsigned int i = 0; i < slen - 4 && isdigit(sTmp[3 + i]); i++) {
         inumber = (inumber * 10) + ((char)sTmp[3 + i] - '0');
-    }
+     }
 
-	if (inumber >=MAX_MESSAGES) {
-		if (!havewarned) {
-			StartupStore(_T("...... ERROR LOADING NON-COMPATIBLE MSG FILE!%s"),NEWLINE);
-			havewarned=true;
-		}
-		StartupStore(_T("...... MSG token <%d> over limit! <%s>%s"),inumber,sTmp,NEWLINE);
-		continue;
-	}
+     if (inumber >=MAX_MESSAGES) {
+        if (!havewarned) {
+           StartupStore(_T("...... ERROR LOADING NON-COMPATIBLE MSG FILE!%s"),NEWLINE);
+           havewarned=true;
+        }
+        StartupStore(_T("...... MSG token <%d> over limit! <%s>%s"),inumber,sTmp,NEWLINE);
+        continue;
+     }
 
-	int start=0;
-	for (unsigned i=3; i<slen; i++) {
-		if (sTmp[i]=='\"') {
-			start=i;
-			break;
-		}
-	}
+     int start=0;
+     for (unsigned i=3; i<slen; i++) {
+        if (sTmp[i]=='\"') {
+           start=i;
+           break;
+        }
+     }
 
-	int end=0;
-	if (start==0) {
-		#if DEBUG_GETTEXT
-		StartupStore(_T(".... MSG_ENG no start\n"));
-		#endif
-		continue;
-	}
-	for (unsigned i=start+1; i<slen; i++) {
-		if (sTmp[i]=='\"') {
-			sTmp[i]='\0';
-			end=i;
-			break;
-		}
-	}
-	if (end==0) {
-		#if DEBUG_GETTEXT
-		StartupStore(_T(".... MSG_ENG no end <%s> start=%d\n"),sTmp,start);
-		#endif
-		continue;
-	}
-	int newlen;
-	newlen=_tcslen(&sTmp[start+1]);
-	if (newlen>MAX_MESSAGE_SIZE) {
-		#if DEBUG_GETTEXT
-		StartupStore(_T(".... MSG_ENG caption too big, len=%d\n"),newlen);
-		#endif
-		continue;
-	}
-	if (newlen==0) {
+     int end=0;
+     if (start==0) {
         #if DEBUG_GETTEXT
-		StartupStore(_T(".... MSG_ENG TOKEN # %d : caption is empty, null text.\n"),inumber);
-		#endif
-		continue;
-	}
-    #if DEBUG_GETTEXT
-	if (newlen>maxsize) maxsize=newlen;
-    #endif
+        StartupStore(_T(".... MSG_ENG no start\n"));
+        #endif
+        continue;
+     }
+     for (unsigned i=start+1; i<slen; i++) {
+        if (sTmp[i]=='\"') {
+           sTmp[i]='\0';
+           end=i;
+           break;
+        }
+     }
+     if (end==0) {
+        #if DEBUG_GETTEXT
+        StartupStore(_T(".... MSG_ENG no end <%s> start=%d\n"),sTmp,start);
+        #endif
+        continue;
+     }
+     int newlen;
+     newlen=_tcslen(&sTmp[start+1]);
+     if (newlen>MAX_MESSAGE_SIZE) {
+        #if DEBUG_GETTEXT
+        StartupStore(_T(".... MSG_ENG caption too big, len=%d\n"),newlen);
+        #endif
+        continue;
+     }
+     if (newlen==0) {
+        #if DEBUG_GETTEXT
+        StartupStore(_T(".... MSG_ENG TOKEN # %d : caption is empty, null text.\n"),inumber);
+        #endif
+        continue;
+     }
+     #if DEBUG_GETTEXT
+     if (newlen>maxsize) maxsize=newlen;
+     #endif
 
-	// transcode special charcaters while loading from file
-	TCHAR tcode;
-	bool donetcode;
-	_tcscpy(scaptraw,&sTmp[start+1]);
-    unsigned j=0;
-	for (unsigned i=0; i<_tcslen(scaptraw); i++) {
-		donetcode=false;
-		if (scaptraw[i] == '\\') {
-			if ( (i+1) <_tcslen(scaptraw)) {
-				switch(scaptraw[i+1]) {
-					case 'n':
-						tcode='\n';
-						i++;
-						break;
-					case 'r':
-						tcode='\r';
-						i++;
-						break;
-					default:
-						tcode='\\';
-						break;
-				}
-				scapt[j++]=tcode;
-				donetcode=true;
-			}
-		}
-		if (!donetcode) {
-			scapt[j++]=scaptraw[i];
-		}
-	}
-	scapt[j]='\0';
+     // transcode special charcaters while loading from file
+     TCHAR tcode;
+     bool donetcode;
+     _tcscpy(scaptraw,&sTmp[start+1]);
+     unsigned j=0;
+     for (unsigned i=0; i<_tcslen(scaptraw); i++) {
+        donetcode=false;
+        if (scaptraw[i] == '\\') {
+           if ( (i+1) <_tcslen(scaptraw)) {
+              switch(scaptraw[i+1]) {
+                 case 'n':
+                    tcode='\n';
+                    i++;
+                    break;
+                 case 'r':
+                    tcode='\r';
+                    i++;
+                    break;
+                 default:
+                    tcode='\\';
+                    break;
+              }
+              scapt[j++]=tcode;
+              donetcode=true;
+           }
+        }
+        if (!donetcode) {
+           scapt[j++]=scaptraw[i];
+        }
+     }
+     scapt[j]='\0';
 
-	if (LKMessages[inumber]) {
-		// only for debugging translations
-		#if TESTBENCH
-		if (!fillup)
-			StartupStore(_T("... INVALID LANGUAGE MESSAGE INDEX <%d> duplicated!\n"),inumber);
-		#endif
-		continue;
-	}
-	#if TESTBENCH
-	#if (WINDOWSPC>0)
-	// CAUTION, on a PNA this would freeze the device if language file is not updated!
-	// StartupStore is locking and unlocking threads at each run!!
-	if (fillup)
-		StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
-	#endif
-	#endif
+     if (LKMessages[inumber]) {
+        // only for debugging translations
+        #if TESTBENCH
+        if (!fillup) StartupStore(_T("... INVALID LANGUAGE MESSAGE INDEX <%d> duplicated!\n"),inumber);
+        #endif
+        continue;
+     }
+     #if TESTBENCH
+     #if (WINDOWSPC>0)
+     // CAUTION, on a PNA this would freeze the device if language file is not updated!
+     // StartupStore is locking and unlocking threads at each run!!
+     if (fillup) StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
+     #endif
+     #endif
 
-#ifndef UNICODE
-    LKASSERT(ValidateUTF8(scapt));
-#endif
+     #ifndef UNICODE
+     LKASSERT(ValidateUTF8(scapt));
+     #endif
 
-	LKMessages[inumber] = (TCHAR *)malloc((_tcslen(scapt)+1)*sizeof(TCHAR));
-	LKASSERT(LKMessages[inumber]!=NULL);
-	_tcscpy(LKMessages[inumber],scapt);
+     LKMessages[inumber] = (TCHAR *)malloc((_tcslen(scapt)+1)*sizeof(TCHAR));
+     LKASSERT(LKMessages[inumber]!=NULL);
+     _tcscpy(LKMessages[inumber],scapt);
 
   }
   zzip_fclose(hFile);
@@ -528,5 +524,6 @@ bool LKLoadMessages(bool fillup) {
 }
 
 void LKUnloadMessage(){
-	std::for_each(std::begin(LKMessages), std::end(LKMessages), safe_free());
+  std::for_each(std::begin(LKMessages), std::end(LKMessages), safe_free());
 }
+
