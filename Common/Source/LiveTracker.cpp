@@ -349,7 +349,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 
 	newpoint.unix_timestamp = t_of_day;
 	newpoint.flying = true;
-	if(LiveTrackerStart_config == 1)
+	if(LiveTrackerStart_config == 0)
 	  newpoint.flying = Calculated.Flying;
 	newpoint.latitude = Basic.Latitude;
 	newpoint.longitude = Basic.Longitude;
