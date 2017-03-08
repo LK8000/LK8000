@@ -72,7 +72,7 @@ static WndForm *wf=NULL;
 #define NUMOFCONFIGPAGES 22 // total number of config pages including engineering
 #define NUMENGPAGES 1       // number of engineering hidden pages, part of NUMOFCONFIGPAGES
 #define FIRST_INFOBOX_PAGE 13 
-#define MAXNUMDEVICES 6     // A B C D E F
+
 
 static WndFrame *wConfig[NUMOFCONFIGPAGES]={};
 
@@ -4697,18 +4697,20 @@ void InitDlgDevice(WndForm *pWndForm) {
 
   // spacing between buttons and left&right
   const unsigned int SPACEBORDER = DLGSCALE(2);
-  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES + 1))) / MAXNUMDEVICES;
+  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (NUMDEV + 1))) / NUMDEV;
   unsigned int lx = SPACEBORDER; // count from 0
 
-  static_assert(MAXNUMDEVICES == array_size(DeviceList), "wrong array size");
+  static_assert(NUMDEV == array_size(DeviceList), "wrong array size");
 
-  for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
+  for(unsigned i = 0; i < NUMDEV; ++i) {
     TCHAR szWndName[5];
     _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
     WindowControl * pWnd = pWndForm->FindByName(szWndName);
     if(pWnd) {
       pWnd->SetWidth(w);
       pWnd->SetLeft(lx);
+
+
       ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
       ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
 
