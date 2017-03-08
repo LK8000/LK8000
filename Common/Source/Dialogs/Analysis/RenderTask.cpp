@@ -183,18 +183,6 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
       }
     }
 
-    double fZoom = 100.0f;
-    if(Statistics::yscale >0)
-      fZoom =  2500.0/Statistics::yscale;
-    double         fTic = 100;
-    if(fZoom > 30) fTic = 100;
-    if(fZoom > 15) fTic = 50;
-    if(fZoom > 10) fTic = 25;
-    if(fZoom > 3)  fTic = 10;
-    if(fZoom > 1)  fTic = 5;
-    else           fTic = 1;
-    if( DISTANCEMODIFY > 0.0)
-      fTic = 10* fTic/ DISTANCEMODIFY;
 #ifdef FAI_GRID_DEBUG
     StartupStore(_T("RenderContest yscale:%f  fZoom:%f  fTic:%f DISTANCEMODIFY:%f %s"), yscale,fZoom, fTic, DISTANCEMODIFY, NEWLINE);
 #endif
@@ -223,6 +211,17 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 	//	DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
 		if( ValidTaskPoint(4) && i <2)
 			goto skip_FAI;
+
+            double fTic,fDist_c, fAngle ;
+            DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
+			fTic= 1/DISTANCEMODIFY;
+			if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
+			if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
+			if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
+			//  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
+			if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
+
+
 #ifndef DITHER
 	    TaskFAISector[2*i].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
 	    TaskFAISector[2*i].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTYELLOW) ;
@@ -246,6 +245,15 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 	  lon1 = WayPointList[Task[3].Index].Longitude;
 	  lat2 = WayPointList[Task[1].Index].Latitude;
 	  lon2 = WayPointList[Task[1].Index].Longitude;
+            double fTic,fDist_c, fAngle ;
+            DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
+			fTic= 1/DISTANCEMODIFY;
+			if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
+			if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
+			if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
+			//  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
+			if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
+
 
 // RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );
 // RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_GREY   );

@@ -191,7 +191,7 @@ void Statistics::RenderFAIOptimizer(LKSurface& Surface, const RECT& rc)
 {
 
 unsigned int ui;
-double fXY_Scale = 2.5;
+double fXY_Scale = 2.6;
 double lat0 = 0;
 double lon0 = 0;
 double lat1 = 0;
@@ -209,21 +209,7 @@ double fTotalPercent = 1.0;
 #endif
 
 ResetScale();
-static FAI_Sector ContestFAISector[6];
-
-double fZoom=50;
-if(Statistics::yscale >0)
-  fZoom =  2500.0/Statistics::yscale;
-double         fTic = 10;
-  if(fZoom > 5)  fTic = 10;
-  if(fZoom > 10) fTic = 25;
-  if(fZoom > 25) fTic = 50;
-  if(fZoom > 30) fTic = 100;
-#ifdef FAI_GRID_DEBUG
-  StartupStore(_T("RenderContest Statistics::yscale:%f  fZoom:%f  fTic:%f %s"), Statistics::yscale,fZoom, fTic, NEWLINE);
-#endif
-  if( DISTANCEMODIFY > 0.0)
-	fTic =fTic/ DISTANCEMODIFY;
+static FAI_Sector ContestFAISector[10];
 
 
   CContestMgr::CResult result = CContestMgr::Instance().Result( CContestMgr::TYPE_FAI_TRIANGLE, true);
@@ -318,8 +304,19 @@ double         fTic = 10;
                       break;
                   }
                   #endif
-            if(ui < 3)
+            if(ui < 5)
             {
+
+            double fTic,fDist_c, fAngle ;
+            DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
+			fTic= 10/DISTANCEMODIFY;
+			if(fDist_c > 5/DISTANCEMODIFY)   fTic = 20/DISTANCEMODIFY;
+			if(fDist_c > 50/DISTANCEMODIFY)  fTic = 50/DISTANCEMODIFY;
+			if(fDist_c > 100/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
+			//  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
+			if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
+
+
 			ContestFAISector[2*ui].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
 			ContestFAISector[2*ui].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , rgbCol) ;
 			ContestFAISector[2*ui+1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
