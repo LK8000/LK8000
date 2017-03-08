@@ -47,6 +47,7 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
 void UpdateComPortSetting(WndForm* pOwner, size_t idx, const TCHAR* szPortName);
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
 void UpdateDeviceEntries(WndForm *pOwner, int DeviceIdx);
+void UpdateDeviceLed(WndForm *pWndForm, bool reset) ;
 static void UpdateButtons(WndForm *pOwner) ;
 static bool taskchanged = false;
 static bool requirerestart = false;
@@ -1251,6 +1252,8 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
       }
     }
 
+     UpdateDeviceLed(pOwner, false);
+/*
     if ((WndButton *)pOwner->FindByName(TEXT("cmdA")))
        ((WndButton *)pOwner->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
     if ((WndButton *)pOwner->FindByName(TEXT("cmdB")))
@@ -1263,7 +1266,7 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
        ((WndButton *)pOwner->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
     if ((WndButton *)pOwner->FindByName(TEXT("cmdF")))
        ((WndButton *)pOwner->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
-
+*/
     if(bHide)
     {
         ShowWindowControl(wf, TEXT("prpComPort1"), !bHide);
@@ -4685,6 +4688,68 @@ void UpdateAircraftConfig(void){
 }
 
 
+
+#define GPS_OFF  1
+#define GPS_ON   2
+#define GPS_DATA 3
+#define GPS_FIX  4
+void UpdateDeviceLed(WndForm *pWndForm, bool reset = false) {
+
+if(!pWndForm) {
+LKASSERT(0);
+return;
+}
+
+static_assert(NUMDEV == array_size(DeviceList), "wrong array size");
+
+// spacing between buttons and left&right
+const unsigned int SPACEBORDER = DLGSCALE(2);
+const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (NUMDEV + 1))) / NUMDEV;
+unsigned int lx = SPACEBORDER; // count from 0
+static unsigned int ButtonStates[NUMDEV] = {0,0,0,0,0,0};
+unsigned int newState =GPS_OFF;
+
+
+for(unsigned i = 0; i < NUMDEV; ++i) {
+  TCHAR szWndName[5];
+  _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
+  WindowControl * pWnd = pWndForm->FindByName(szWndName);
+  if(pWnd) {
+    pWnd->SetWidth(w);
+    pWnd->SetLeft(lx);
+    if(reset) ButtonStates[i] =0;
+    newState =GPS_OFF;
+    if( !DeviceList[i].Disabled )
+    {
+      newState = 	GPS_ON;
+      if(DeviceList[i].nmeaParser.connected)
+        newState = GPS_DATA;
+
+      if(DeviceList[i].nmeaParser.gpsValid)
+        newState = GPS_FIX;
+    }
+
+    if(ButtonStates[i] != newState )
+    {
+      ((WndButton*)pWnd)->LedSetMode(LEDMODE_MANUAL );
+
+      switch(newState)
+      {
+        case GPS_ON:   ((WndButton*)pWnd)->LedSetColor(LEDCOLOR_BLUE ); break;
+        case GPS_DATA: ((WndButton*)pWnd)->LedSetColor(LEDCOLOR_YELLOW); break;
+        case GPS_FIX:  ((WndButton*)pWnd)->LedSetColor(LEDCOLOR_GREEN); break;
+        case GPS_OFF:
+        default:   ((WndButton*)pWnd)->LedSetColor(LEDCOLOR_BLACK);  break;
+      }
+
+      ButtonStates[i] = newState;
+    }
+    lx += w + SPACEBORDER;
+  }
+} // for i
+}
+
+
 //
 // Setup device dialogs fine tuning
 //
@@ -4695,26 +4760,6 @@ void InitDlgDevice(WndForm *pWndForm) {
     return;
   }
 
-  // spacing between buttons and left&right
-  const unsigned int SPACEBORDER = DLGSCALE(2);
-  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (NUMDEV + 1))) / NUMDEV;
-  unsigned int lx = SPACEBORDER; // count from 0
+  UpdateDeviceLed(pWndForm, true);
 
-  static_assert(NUMDEV == array_size(DeviceList), "wrong array size");
-
-  for(unsigned i = 0; i < NUMDEV; ++i) {
-    TCHAR szWndName[5];
-    _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
-    WindowControl * pWnd = pWndForm->FindByName(szWndName);
-    if(pWnd) {
-      pWnd->SetWidth(w);
-      pWnd->SetLeft(lx);
-
-
-      ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
-      ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
-
-      lx += w + SPACEBORDER;
-    }
-  }
 }
