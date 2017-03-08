@@ -303,122 +303,140 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
         case IM_TASK_PT:
         case IM_WAYPOINT:
-            idx = Elements[i].iIdx;
+            idx = -1;
+            LockTaskData(); // protect from external task changes
+
             if (Elements[i].type == IM_TASK_PT) {
-                LKASSERT(Elements[i].iIdx <= MAXTASKPOINTS);
-                idx = Task[Elements[i].iIdx].Index;
+                if(ValidTaskPointFast(Elements[i].iIdx)) {
+                    idx = Task[Elements[i].iIdx].Index;
+                }
+            } else {
+                if(ValidWayPointFast(Elements[i].iIdx)) {
+                    idx = Elements[i].iIdx;
+                }
             }
 
             // This is not a solution. It will avoid a crash but the solution is to understand
             // why we are getting a wrong idx, eventually. If ever we got a wrong idx!
             // And then this "fix" should be changed to something more useful, instead of 
             // adopting a totally wrong waypoint for task.
-            if (idx >= WayPointList.size()) idx = WayPointList.size()-1;
+            assert(idx >= 0);
+            if(idx >= 0) {
 
-            if (WayPointList[idx].Comment != NULL) {
-                LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
-            } else {
-                _tcscpy(Comment, TEXT(""));
-            }
+                if (idx >= WayPointList.size()) idx = WayPointList.size();
+                LKASSERT(idx <= WayPointList.size());
 
-            DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,
-                            WayPointList[idx].Longitude, &Distance, NULL);
-
-            if (Elements[i].type != IM_TASK_PT) {
-                if (WayPointCalc[idx].IsLandable) {
-                    MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 1.5, true);
-
-                    if (WayPointCalc[idx].IsAirport) {
-                        // remove spaces from frequency
-                        for (j = 1; j < (CUPSIZE_FREQ); j++)
-                            if (WayPointList[idx].Freq[CUPSIZE_FREQ - j] == ' ')
-                                WayPointList[idx].Freq[CUPSIZE_FREQ - j] = '\0';
-
-                        if (_tcslen(WayPointList[idx].Freq) > 2)
-                            _stprintf(text1, TEXT("%s %s MHz"), WayPointList[idx].Name, WayPointList[idx].Freq);
-                        else
-                            _stprintf(text1, TEXT("%s"), WayPointList[idx].Name);
-                    } else {
-                        if (WayPointList[idx].Comment != NULL)
-                            _stprintf(text1, TEXT("%s %s"), WayPointList[idx].Name, Comment);
-                        else
-                            _stprintf(text1, TEXT("%s"), WayPointList[idx].Name);
-                    }
-
-                    if ((WayPointList[idx].RunwayLen >= 10) || (WayPointList[idx].RunwayDir > 0)) {
-                        _stprintf(text2, TEXT("%3.1f%s (%i%s  %02i/%02i  %i%s)"), Distance*DISTANCEMODIFY
-                                  , Units::GetDistanceName(), (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY)
-                                  , Units::GetAltitudeName()
-                                  , (int) (WayPointList[idx].RunwayDir / 10.0 + 0.5)
-                                  , (int) (AngleLimit360(WayPointList[idx].RunwayDir + 180.0) / 10.0 + 0.5)
-                                  , (int) ((double) WayPointList[idx].RunwayLen * ALTITUDEMODIFY)
-                                  , Units::GetAltitudeName());
-                    } else {
-                        _stprintf(text2, TEXT("%3.1f%s (%i%s) "), Distance*DISTANCEMODIFY, Units::GetDistanceName()
-                                  , (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY)
-                                  , Units::GetAltitudeName());
-                    }
-
-                }// waypoint isLandable
-                else {
-                    MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[idx]);
-                    _stprintf(text1, TEXT("%s %s"), WayPointList[idx].Name, Comment);
-
-                    _stprintf(text2, TEXT("%3.1f%s (%i%s)"), Distance*DISTANCEMODIFY
-                              , Units::GetDistanceName()
-                              , (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY)
-                              , Units::GetAltitudeName());
+                if (WayPointList[idx].Comment != NULL) {
+                    LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
+                } else {
+                    _tcscpy(Comment, TEXT(""));
                 }
 
-            }// Elements IM_TASK
-            else {
-                LockTaskData(); // protect from external task changes
-                int iTaskIdx = Elements[i].iIdx;
-                MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc, 3000);
-                int iLastTaskPoint = 0;
+                DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,
+                                WayPointList[idx].Longitude, &Distance, NULL);
 
-                while (ValidTaskPoint(iLastTaskPoint))
-                    iLastTaskPoint++;
+                if (Elements[i].type != IM_TASK_PT) {
+                    if (WayPointCalc[idx].IsLandable) {
+                        MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 1.5, true);
 
-                iLastTaskPoint--;
+                        if (WayPointCalc[idx].IsAirport) {
+                            // remove spaces from frequency
+                            for (j = 1; j < (CUPSIZE_FREQ); j++)
+                                if (WayPointList[idx].Freq[CUPSIZE_FREQ - j] == ' ')
+                                    WayPointList[idx].Freq[CUPSIZE_FREQ - j] = '\0';
 
-                if (iTaskIdx == 0) {
-                    // _@M2301_  "S"    # S = Start Task point
-                    _stprintf(text1, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
-                    _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"), StartRadius*DISTANCEMODIFY
-                              , Units::GetDistanceName()
-                              , (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY)
-                              , Units::GetAltitudeName());
-                } else {
-                    if (iTaskIdx == iLastTaskPoint) {
-                        //	_@M2303_  "F"                 // max 30         30 => max 60 char
-                        _stprintf(text1, TEXT("%s: (%s) "), MsgToken(2303), WayPointList[idx].Name);
-                        _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"), FinishRadius*DISTANCEMODIFY
-                                  , Units::GetDistanceName()
-                                  , (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY)
-                                  , Units::GetAltitudeName());
-                    } else {
-                        //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
-                        _stprintf(text1, TEXT("%s%i: (%s) "), MsgToken(2302), iTaskIdx, WayPointList[idx].Name);
-                        double SecRadius = 0;
-
-                        SecRadius = SectorRadius;
-                        if (AATEnabled) {
-                            if (Task[iTaskIdx].AATType == SECTOR)
-                                SecRadius = Task[iTaskIdx].AATSectorRadius;
+                            if (_tcslen(WayPointList[idx].Freq) > 2)
+                                _stprintf(text1, TEXT("%s %s MHz"), WayPointList[idx].Name,
+                                          WayPointList[idx].Freq);
                             else
-                                SecRadius = Task[iTaskIdx].AATCircleRadius;
+                                _stprintf(text1, TEXT("%s"), WayPointList[idx].Name);
+                        } else {
+                            if (WayPointList[idx].Comment != NULL)
+                                _stprintf(text1, TEXT("%s %s"), WayPointList[idx].Name, Comment);
+                            else
+                                _stprintf(text1, TEXT("%s"), WayPointList[idx].Name);
                         }
 
-                        _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"), SecRadius*DISTANCEMODIFY
-                                  , Units::GetDistanceName()
-                                  , (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY)
-                                  , Units::GetAltitudeName());
-                    }
-                }
+                        if ((WayPointList[idx].RunwayLen >= 10) ||
+                            (WayPointList[idx].RunwayDir > 0)) {
+                            _stprintf(text2, TEXT("%3.1f%s (%i%s  %02i/%02i  %i%s)"),
+                                      Distance * DISTANCEMODIFY, Units::GetDistanceName(),
+                                      (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                                      Units::GetAltitudeName(),
+                                      (int) (WayPointList[idx].RunwayDir / 10.0 + 0.5),
+                                      (int) (AngleLimit360(WayPointList[idx].RunwayDir + 180.0) /
+                                             10.0 + 0.5),
+                                      (int) ((double) WayPointList[idx].RunwayLen * ALTITUDEMODIFY),
+                                      Units::GetAltitudeName());
+                        } else {
+                            _stprintf(text2, TEXT("%3.1f%s (%i%s) "), Distance * DISTANCEMODIFY,
+                                      Units::GetDistanceName(),
+                                      (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                                      Units::GetAltitudeName());
+                        }
 
-                UnlockTaskData(); // protect from external task changes
+                    }// waypoint isLandable
+                    else {
+                        MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[idx]);
+                        _stprintf(text1, TEXT("%s %s"), WayPointList[idx].Name, Comment);
+
+                        _stprintf(text2, TEXT("%3.1f%s (%i%s)"), Distance * DISTANCEMODIFY,
+                                  Units::GetDistanceName(),
+                                  (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                                  Units::GetAltitudeName());
+                    }
+
+                }// Elements IM_TASK
+                else {
+                    int iTaskIdx = Elements[i].iIdx;
+                    MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc, 3000);
+                    int iLastTaskPoint = 0;
+
+                    while (ValidTaskPoint(iLastTaskPoint))
+                        iLastTaskPoint++;
+
+                    iLastTaskPoint--;
+
+                    if (iTaskIdx == 0) {
+                        // _@M2301_  "S"    # S = Start Task point
+                        _stprintf(text1, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
+                        _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"),
+                                  StartRadius * DISTANCEMODIFY, Units::GetDistanceName(),
+                                  (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                                  Units::GetAltitudeName());
+                    } else {
+                        if (iTaskIdx == iLastTaskPoint) {
+                            //	_@M2303_  "F"                 // max 30         30 => max 60 char
+                            _stprintf(text1, TEXT("%s: (%s) "), MsgToken(2303),
+                                      WayPointList[idx].Name);
+                            _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"),
+                                      FinishRadius * DISTANCEMODIFY, Units::GetDistanceName(),
+                                      (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                                      Units::GetAltitudeName());
+                        } else {
+                            //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
+                            _stprintf(text1, TEXT("%s%i: (%s) "), MsgToken(2302), iTaskIdx,
+                                      WayPointList[idx].Name);
+                            double SecRadius = 0;
+
+                            SecRadius = SectorRadius;
+                            if (AATEnabled) {
+                                if (Task[iTaskIdx].AATType == SECTOR)
+                                    SecRadius = Task[iTaskIdx].AATSectorRadius;
+                                else
+                                    SecRadius = Task[iTaskIdx].AATCircleRadius;
+                            }
+
+                            _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"),
+                                      SecRadius * DISTANCEMODIFY, Units::GetDistanceName(),
+                                      (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                                      Units::GetAltitudeName());
+                        }
+                    }
+
+                }
             }
+            UnlockTaskData(); // protect from external task changes
             break;
         }
 
