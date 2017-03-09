@@ -3223,7 +3223,7 @@ void CAirspaceManager::LoadSettings() {
 
         while (fgets(linebuf, MAX_PATH, f) != NULL) {
             //Parse next line
-            retval = sscanf(linebuf, "%s %s", hash, flagstr);
+            retval = sscanf(linebuf, "%32s %3s", hash, flagstr);
             if (retval == 2 && hash[0] != '#') {
                 // Get the airspace pointer associated with the hash
                 for (i = 0; i < _airspaces.size(); ++i) {
