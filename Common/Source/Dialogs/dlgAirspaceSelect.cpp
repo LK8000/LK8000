@@ -482,7 +482,7 @@ static void OnFilterType(DataField *Sender,
   }
 
   if (TypeFilterIdx>0) {
-	LK_tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0])-1);
+	LK_tcsncpy(sTmp, CAirspaceManager::GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0])-1);
   } else {
 	_tcscpy(sTmp, TEXT("*"));
   }
@@ -524,7 +524,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
       sTmp[0] = '\0';
       sTmp[1] = '\0';
       sTmp[2] = '\0';
-	  LK_tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
+	  LK_tcsncpy(sTmp, CAirspaceManager::GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
       // left justified
      
       Surface.DrawText(x1, DLGSCALE(2), sTmp);
@@ -610,7 +610,7 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode){
 
     WndProperty* wp = ((WndProperty *)wf->FindByName(TEXT("prpFltType")));
     if(wp && wp->GetDataField()) {
-        wp->GetDataField()->SetAsString(CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx));
+        wp->GetDataField()->SetAsString(CAirspaceManager::GetAirspaceTypeText(TypeFilterIdx));
         wp->RefreshDisplay();
     }
     return true;

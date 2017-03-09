@@ -33,7 +33,7 @@ static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   if (DrawListIndex < AIRSPACECLASSCOUNT){
     int i = DrawListIndex;
-	LK_tcsncpy(label, CAirspaceManager::Instance().GetAirspaceTypeText(i), 39);
+	LK_tcsncpy(label, CAirspaceManager::GetAirspaceTypeText(i), 39);
     
     const PixelRect rcClient(Sender->GetClientRect());
     const int w0 = rcClient.GetSize().cx;

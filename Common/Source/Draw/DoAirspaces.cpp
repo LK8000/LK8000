@@ -210,7 +210,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
               // copy name
               LK_tcsncpy(OutItem.Name, pAsp->Name(), NAME_SIZE);
               // copy type string (type string comes from centralized type->str conversion function of CAirspaceManager)
-              LK_tcsncpy(OutItem.Type, CAirspaceManager::Instance().GetAirspaceTypeShortText(pAsp->Type()), 4);
+              LK_tcsncpy(OutItem.Type, CAirspaceManager::GetAirspaceTypeShortText(pAsp->Type()), 4);
 
               // copy distance
               OutItem.Distance = max(pAsp->LastCalculatedHDistance(),0);

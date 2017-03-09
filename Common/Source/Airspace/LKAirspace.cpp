@@ -118,7 +118,7 @@ void CAirspace::Dump() const {
 }
 
 const TCHAR* CAirspaceBase::TypeName(void) const {
-    return (CAirspaceManager::Instance().GetAirspaceTypeText(_type));
+    return (CAirspaceManager::GetAirspaceTypeText(_type));
 
 };
 
@@ -863,7 +863,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
     }
     if(is_visible) { // no need to check Altitude if airspace is not visible
         // TODO : "CheckAirspaceAltitude() lock Flight data for altitude : to slow, need to change"
-        is_visible = CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top);
+        is_visible = CAirspaceManager::CheckAirspaceAltitude(_base, _top);
     }
     
     if(is_visible) { 
@@ -1161,7 +1161,7 @@ bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const
     return true;
 }
 
-bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const {
+bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) {
     if (AltitudeMode == ALLON) {
         return true;
     } else if (AltitudeMode == ALLOFF) {
@@ -2881,7 +2881,7 @@ void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace) {
 
 // Centralized function to get airspace type texts
 
-const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
+const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
     switch (type) {
         case RESTRICT:
             // LKTOKEN  _@M565_ = "Restricted"
@@ -2930,7 +2930,7 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
 
 // Centralized function to get airspace type texts in short form
 
-const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const {
+const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
     switch (type) {
         case RESTRICT:
             return TEXT("Res");
@@ -2967,7 +2967,7 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const {
     }
 }
 
-void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const {
+void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) {
     TCHAR sUnitBuffer[24];
     TCHAR sAltUnitBuffer[24];
     TCHAR intbuf[128];
@@ -3023,7 +3023,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
     LK_tcsncpy(buffer, intbuf, bufferlen - 1);
 }
 
-void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const {
+void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) {
     TCHAR sUnitBuffer[24];
     TCHAR intbuf[128];
 
