@@ -59,6 +59,7 @@ static void OnUpClicked(WndButton* Sender) {
     if (ItemIndex > 0) {
         ItemIndex--;
     } else {
+        LKASSERT(iNO_ELEMENTS>0);
         ItemIndex = (iNO_ELEMENTS - 1);
     }
     wMultiSelectListList->SetItemIndexPos(ItemIndex);
@@ -223,7 +224,7 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
             LKASSERT(Pos < MAX_LIST_ITEMS);
             LKASSERT(iNO_ELEMENTS < MAX_LIST_ITEMS);
             for (int i = iNO_ELEMENTS; i > Pos; i--) {
-                LKASSERT(i >= 0);
+                LKASSERT(i > 0);
                 Elements[i].ptr = Elements[i - 1].ptr;
                 Elements[i].type = Elements[i - 1].type;
                 Elements[i].iIdx = Elements[i - 1].iIdx;
