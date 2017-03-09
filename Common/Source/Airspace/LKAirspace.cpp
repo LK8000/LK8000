@@ -23,6 +23,7 @@
 #include "utils/openzip.h"
 #include "Draw/ScreenProjection.h"
 #include "NavFunctions.h"
+#include "Util/TruncateString.hpp"
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
@@ -737,7 +738,7 @@ void CAirspaceBase::ResetWarnings() {
 // Initialize instance attributes
 
 void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) {
-    LK_tcsncpy(_name, name, NAME_SIZE);
+    CopyTruncateString(_name, NAME_SIZE, name);
     _type = type;
     memcpy(&_base, &base, sizeof (_base));
     memcpy(&_top, &top, sizeof (_top));
