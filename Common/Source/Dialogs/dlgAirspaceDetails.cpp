@@ -304,7 +304,7 @@ static void SetValues(WndForm* wf) {
   }
 
 #else
-  WndProperty* wFreq = wf->FindByName(TEXT("cmdSFrequency");
+  WndProperty* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
   if (wFreq) {
     wFreq->Hide();
   }
