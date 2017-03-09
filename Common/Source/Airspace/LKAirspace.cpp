@@ -3232,20 +3232,15 @@ void CAirspaceManager::LoadSettings() {
                     if (strcmp(hash, asp_data[i].hash) == 0) {
                         //Match, restore settings
                         //chr1 F=Flyzone
-                        if (flagstr[0] == 'F') {
-                            if (!asp_data[i].airspace->Flyzone()) asp_data[i].airspace->FlyzoneToggle();
-                        } else {
-                            if (asp_data[i].airspace->Flyzone()) asp_data[i].airspace->FlyzoneToggle();
-                        }
+                        asp_data[i].airspace->Flyzone(flagstr[0] == 'F');
                         //chr2 E=Enabled
-                        if (flagstr[1] == 'E') asp_data[i].airspace->Enabled(true);
-                        else asp_data[i].airspace->Enabled(false);
+                        asp_data[i].airspace->Enabled(flagstr[1] == 'E');
                         //chr3 S=Selected
                         if (flagstr[2] == 'S') AirspaceSetSelect(*(asp_data[i].airspace));
 
                         // This line is readed, never needed anymore
                         //StartupStore(TEXT(". Airspace settings loaded for %s%s"),asp_data[i].airspace->Name(),NEWLINE);
-                        asp_data[i].airspace = NULL;
+                        asp_data[i].airspace = nullptr;
                         airspaces_restored++;
                     }
                 }

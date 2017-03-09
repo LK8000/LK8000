@@ -152,9 +152,8 @@ public:
   const rectObj& Bounds() const { return _bounds; }
   bool Flyzone() const { return _flyzone; }
   void FlyzoneToggle() { _flyzone = !_flyzone; }
-  #if ASPWAVEOFF
   void Flyzone(bool active) { _flyzone = active; }
-  #endif
+
   int LabelPriority() const { return _labelpriority; }
   // Label priority sequencing
   void LabelPriorityInc() { if (_labelpriority<10) ++_labelpriority; }        // Increase priority
