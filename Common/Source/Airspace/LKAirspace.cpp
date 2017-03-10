@@ -23,6 +23,7 @@
 #include "utils/openzip.h"
 #include "Draw/ScreenProjection.h"
 #include "NavFunctions.h"
+#include "Util/TruncateString.hpp"
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
@@ -118,7 +119,7 @@ void CAirspace::Dump() const {
 }
 
 const TCHAR* CAirspaceBase::TypeName(void) const {
-    return (CAirspaceManager::Instance().GetAirspaceTypeText(_type));
+    return (CAirspaceManager::GetAirspaceTypeText(_type));
 
 };
 
@@ -737,7 +738,7 @@ void CAirspaceBase::ResetWarnings() {
 // Initialize instance attributes
 
 void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) {
-    LK_tcsncpy(_name, name, NAME_SIZE);
+    CopyTruncateString(_name, NAME_SIZE, name);
     _type = type;
     memcpy(&_base, &base, sizeof (_base));
     memcpy(&_top, &top, sizeof (_top));
@@ -863,7 +864,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
     }
     if(is_visible) { // no need to check Altitude if airspace is not visible
         // TODO : "CheckAirspaceAltitude() lock Flight data for altitude : to slow, need to change"
-        is_visible = CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top);
+        is_visible = CAirspaceManager::CheckAirspaceAltitude(_base, _top);
     }
     
     if(is_visible) { 
@@ -1161,7 +1162,7 @@ bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const
     return true;
 }
 
-bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const {
+bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) {
     if (AltitudeMode == ALLON) {
         return true;
     } else if (AltitudeMode == ALLOFF) {
@@ -2881,7 +2882,7 @@ void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace) {
 
 // Centralized function to get airspace type texts
 
-const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
+const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
     switch (type) {
         case RESTRICT:
             // LKTOKEN  _@M565_ = "Restricted"
@@ -2930,7 +2931,7 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const {
 
 // Centralized function to get airspace type texts in short form
 
-const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const {
+const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
     switch (type) {
         case RESTRICT:
             return TEXT("Res");
@@ -2967,7 +2968,7 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const {
     }
 }
 
-void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const {
+void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) {
     TCHAR sUnitBuffer[24];
     TCHAR sAltUnitBuffer[24];
     TCHAR intbuf[128];
@@ -3023,7 +3024,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
     LK_tcsncpy(buffer, intbuf, bufferlen - 1);
 }
 
-void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const {
+void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) {
     TCHAR sUnitBuffer[24];
     TCHAR intbuf[128];
 
@@ -3223,7 +3224,7 @@ void CAirspaceManager::LoadSettings() {
 
         while (fgets(linebuf, MAX_PATH, f) != NULL) {
             //Parse next line
-            retval = sscanf(linebuf, "%s %s", hash, flagstr);
+            retval = sscanf(linebuf, "%32s %3s", hash, flagstr);
             if (retval == 2 && hash[0] != '#') {
                 // Get the airspace pointer associated with the hash
                 for (i = 0; i < _airspaces.size(); ++i) {
@@ -3231,20 +3232,15 @@ void CAirspaceManager::LoadSettings() {
                     if (strcmp(hash, asp_data[i].hash) == 0) {
                         //Match, restore settings
                         //chr1 F=Flyzone
-                        if (flagstr[0] == 'F') {
-                            if (!asp_data[i].airspace->Flyzone()) asp_data[i].airspace->FlyzoneToggle();
-                        } else {
-                            if (asp_data[i].airspace->Flyzone()) asp_data[i].airspace->FlyzoneToggle();
-                        }
+                        asp_data[i].airspace->Flyzone(flagstr[0] == 'F');
                         //chr2 E=Enabled
-                        if (flagstr[1] == 'E') asp_data[i].airspace->Enabled(true);
-                        else asp_data[i].airspace->Enabled(false);
+                        asp_data[i].airspace->Enabled(flagstr[1] == 'E');
                         //chr3 S=Selected
                         if (flagstr[2] == 'S') AirspaceSetSelect(*(asp_data[i].airspace));
 
                         // This line is readed, never needed anymore
                         //StartupStore(TEXT(". Airspace settings loaded for %s%s"),asp_data[i].airspace->Name(),NEWLINE);
-                        asp_data[i].airspace = NULL;
+                        asp_data[i].airspace = nullptr;
                         airspaces_restored++;
                     }
                 }

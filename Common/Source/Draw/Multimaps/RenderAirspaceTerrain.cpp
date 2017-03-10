@@ -223,7 +223,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
             blongtext = true;
         }
 
-        LK_tcsncpy(text, CAirspaceManager::Instance().GetAirspaceTypeShortText(Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
+        LK_tcsncpy(text, CAirspaceManager::GetAirspaceTypeShortText(Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
         Surface.GetTextSize(text, &textsize);
         if (textsize.cx < aispacesize.cx) {
             if (2 * textsize.cy < aispacesize.cy) {

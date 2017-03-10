@@ -24,6 +24,8 @@
 #if !defined ZZIP_OMIT_CONFIG_H
 # if defined _MSC_VER || defined __BORLANDC__ || defined __WATCOMC__
 # include <zzip/_msvc.h>
+#elif defined(__MINGW32__)
+# include <zzip/_gnuc.h>
 #else
 # include <zzip/_config.h>
 # endif

@@ -152,9 +152,8 @@ public:
   const rectObj& Bounds() const { return _bounds; }
   bool Flyzone() const { return _flyzone; }
   void FlyzoneToggle() { _flyzone = !_flyzone; }
-  #if ASPWAVEOFF
   void Flyzone(bool active) { _flyzone = active; }
-  #endif
+
   int LabelPriority() const { return _labelpriority; }
   // Label priority sequencing
   void LabelPriorityInc() { if (_labelpriority<10) ++_labelpriority; }        // Increase priority
@@ -438,11 +437,11 @@ public:
   static CAirspaceManager& Instance() { return _instance; }
 
   //HELPER FUNCTIONS
-  bool CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const;
-  const TCHAR* GetAirspaceTypeText(int type) const;
-  const TCHAR* GetAirspaceTypeShortText(int type) const;
-  void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
-  void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
+  static bool CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top);
+  static const TCHAR* GetAirspaceTypeText(int type);
+  static const TCHAR* GetAirspaceTypeShortText(int type);
+  static void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt);
+  static void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt);
 
 
   // Upper level interfaces

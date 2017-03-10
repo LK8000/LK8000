@@ -225,7 +225,7 @@ static void SetValues(WndForm* wf) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
-	  _stprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), TEXT("FLY"));
+	  _stprintf(buffer,TEXT("%s %s"), CAirspaceManager::GetAirspaceTypeText(airspace_copy.Type()), TEXT("FLY"));
 /*
 	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
 		_stprintf(buffer,TEXT("%s"),airspace_copy.Name());
@@ -234,7 +234,7 @@ static void SetValues(WndForm* wf) {
 			                          ,airspace_copy.Name());     // NAME_SIZE          30   => max. 30 char
 */
 	} else {
-	  _stprintf(buffer,TEXT("%s %s"), TEXT("NOFLY"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()));
+	  _stprintf(buffer,TEXT("%s %s"), TEXT("NOFLY"), CAirspaceManager::GetAirspaceTypeText(airspace_copy.Type()));
 	}
 
 	wp->SetText( buffer );
@@ -304,7 +304,7 @@ static void SetValues(WndForm* wf) {
   }
 
 #else
-  WndProperty* wFreq = wf->FindByName(TEXT("cmdSFrequency");
+  WndProperty* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
   if (wFreq) {
     wFreq->Hide();
   }

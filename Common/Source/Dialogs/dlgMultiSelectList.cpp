@@ -324,9 +324,6 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             assert(idx >= 0);
             if(idx >= 0) {
 
-                if (idx >= WayPointList.size()) idx = WayPointList.size();
-                LKASSERT(idx <= WayPointList.size());
-
                 if (WayPointList[idx].Comment != NULL) {
                     LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
                 } else {
