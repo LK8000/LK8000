@@ -524,6 +524,11 @@ bool LKLoadMessages(bool fillup) {
 }
 
 void LKUnloadMessage(){
-  std::for_each(std::begin(LKMessages), std::end(LKMessages), safe_free());
+  for (int i=0; i<MAX_MESSAGES; i++) {
+     if (LKMessages[i]) {
+        free(LKMessages[i]);
+     }
+  }
+  std::fill(std::begin(LKMessages), std::end(LKMessages), (TCHAR*)NULL);
 }
 
