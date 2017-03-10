@@ -19,22 +19,22 @@
 
 CoordinateFormats_t Units::CoordinateFormat;
 
-UnitDescriptor_t Units::UnitDescriptors[unLastUnit] ={
-  {NULL,       1,          0},
-  {TEXT("km"), 0.001,      0},
-  {TEXT("nm"), 0.00053996, 0},
-  {TEXT("mi"), 0.0006214,  0},
+UnitDescriptor_t Units::UnitDescriptors[] ={
+  {NULL,         1,          0},
+  {TEXT("km"),   0.001,      0},
+  {TEXT("nm"),   0.00053996, 0},
+  {TEXT("mi"),   0.0006214,  0},
   {TEXT("kh"), 0.0036,     0}, // 091219
-  {TEXT("kt"), 0.001944,   0},
-  {TEXT("mh"), 0.002237,   0},
-  {TEXT("ms"), 1.0,        0},
-  {TEXT("fm"), 3.281*60.0, 0},
-  {TEXT("m"),  1.0,        0},
-  {TEXT("ft"), 3.281,      0},
-  {TEXT("K"),  1,          0},
-  {NULL,       1.0,        -273.15}, // name is contruct by GetUnitName()
-  {NULL,       1.8,        -459.67}, // name is contruct by GetUnitName()
-  {TEXT("fs"), 3.281,      0} // 100128
+  {TEXT("kt"),   0.001944,   0},
+  {TEXT("mh"),  0.002237,   0},
+  {TEXT("ms"),  1.0,        0},
+  {TEXT("fm"),  3.281*60.0, 0},
+  {TEXT("m"),    1.0,        0},
+  {TEXT("ft"),   3.281,      0},
+  {TEXT("K"),    1,          0},
+  {NULL,   1.0,       -273.15}, // name is contruct by GetUnitName()
+  {NULL,   1.8,       -459.67}, // name is contruct by GetUnitName()
+  {TEXT("fs"),  3.281,      0} // 100128
 };
 
 Units_t Units::UserDistanceUnit = unKiloMeter;
@@ -231,9 +231,6 @@ const TCHAR *Units::GetUnitName(Units_t Unit) {
     //  return(gettext(UnitDescriptors[Unit].Name));
     // JMW adjusted this because units are pretty standard internationally
     // so don't need different names in different languages.
-
-    const TCHAR *szName = _T("");
-
     if (!UnitDescriptors[Unit].Name) {
         switch (Unit) {
             case unUndef:
@@ -249,19 +246,16 @@ const TCHAR *Units::GetUnitName(Units_t Unit) {
             case unFeet:
             case unFligthLevel:
             case unKelvin:
-                szName = UnitDescriptors[Unit].Name;
                 break;
             case unGradCelcius:
-                szName = MsgToken(2180);
+                UnitDescriptors[Unit].Name = MsgToken(2180);
                 break;
             case unGradFahrenheit:
-                szName = MsgToken(2181);
-                break;
-            case unLastUnit:
+                UnitDescriptors[Unit].Name = MsgToken(2181);
                 break;
         }
     }
-    return szName;
+    return UnitDescriptors[Unit].Name;
 }
 
 Units_t Units::GetUserDistanceUnit(void){

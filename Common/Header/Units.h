@@ -41,8 +41,7 @@ typedef enum {
   unFligthLevel,
   unKelvin,
   unGradCelcius,                    // K = C� + 273,15
-  unGradFahrenheit,                 // K = (�F + 459,67) / 1,8
-  unLastUnit
+  unGradFahrenheit                  // K = (�F + 459,67) / 1,8
 }Units_t;
 
 
@@ -58,7 +57,7 @@ typedef enum {
 } UnitGroup_t;
 
 typedef struct{
-  const TCHAR * const Name;
+  const TCHAR   *Name;
   double  ToUserFact;
   double  ToUserOffset;
 }UnitDescriptor_t;
