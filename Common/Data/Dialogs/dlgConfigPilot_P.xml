@@ -12,7 +12,7 @@
       <DataField Name="" DataType="boolean"/>
     </WndProperty>
     <WndProperty Name="prpLiveTrackerStart_config" Caption="_@M2333_" X="-1" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1298_">
-        <DataField name="" DataType="enum"  Min="0" Max="1" Step="1" OnDataAccess="OnTrackerStartConfig"/>
+        <DataField name="" DataType="enum"  Min="0" Max="2" Step="1" OnDataAccess="OnLiveTrackerStartConfig"/>
     </WndProperty>
     <WndButton Name="cmdLiveTrackersrv" Caption="_@M1782_" X="2" Y="-1" Width="200"  Height="25" Font="2" />
     <WndButton Name="cmdLiveTrackerport" Caption="Port" X="202" Y="-999" Width="35"  Height="25" Font="2" />

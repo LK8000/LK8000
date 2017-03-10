@@ -659,11 +659,17 @@ static void OnPilotNameClicked(WndButton* pWnd) {
 
 static void OnLiveTrackerStartConfig(DataField *Sender, DataField::DataAccessKind_t Mode){
 WndProperty* wp;
-wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
-if (wp) {
-  if (LiveTrackerStart_config != wp->GetDataField()->GetAsInteger()) {
-  	LiveTrackerStart_config = wp->GetDataField()->GetAsInteger();
-    requirerestart = true;
+if(wf)
+{
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
+  if (wp)
+  {
+    if (LiveTrackerStart_config != wp->GetDataField()->GetAsInteger())
+    {
+      LiveTrackerStart_config = (int)wp->GetDataField()->GetAsInteger();
+      requirerestart = true;
+
+    }
   }
 }
 }
