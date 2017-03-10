@@ -325,7 +325,7 @@ void InputEvents::readFile() {
 	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
 	    int iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
-	    if (iikey >= 0 && iikey < NE_COUNT)
+	    if (iikey >= 0 && iikey < GCE_COUNT)
 	      GC2Event[mode_id][iikey] = event_id;
 
 	    // Make ne (NMEA Event)
