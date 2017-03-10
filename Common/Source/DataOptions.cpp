@@ -32,8 +32,10 @@ bool SetDataOption( int index, UnitGroup_t UnitGroup, const TCHAR *Description, 
 
 void FillDataOptions()
 {
-    // cleanup array, madatory for avoid to have pointer to freed string.
-    std::fill(std::begin(Data_Options), std::end(Data_Options), DATAOPTIONS{});
+
+   // cleanup array, madatory for avoid to have pointer to freed string.
+   std::fill(std::begin(Data_Options), std::end(Data_Options), DATAOPTIONS{});
+
 
 	// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt"
 	SetDataOption(0, ugAltitude,		TEXT("_@M1001_"), TEXT("_@M1002_"));
@@ -312,7 +314,7 @@ void FillDataOptions()
 
 
     // Fill all null string pointer with empty string, avoid to check all time is used.
-    for(auto tag : Data_Options) {
+    for(auto& tag : Data_Options) {
         if(!tag.Description) {
             tag.Description = _T("");
         }
