@@ -30,6 +30,8 @@
 # event=Null
 # label=$(AC03)
 #
+# NOTICE> events are read bottom-up! 
+#
 # -------------------
 # GlideComputerEvents
 # -------------------
@@ -68,14 +70,14 @@ event=Service GPSRESTART
 mode=default
 type=gce
 data=STARTUP_SIMULATOR
-#event=TaskLoad Default.lkt
 event=Service DEFTASK
+event=TaskLoad Default.lkt
 
 mode=default
 type=gce
 data=STARTUP_REAL
-event=TaskLoad Default.lkt
 event=Service DEFTASK
+event=TaskLoad Default.lkt
 
 mode=default
 type=gce
