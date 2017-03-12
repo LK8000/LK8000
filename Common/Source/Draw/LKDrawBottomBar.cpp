@@ -25,11 +25,6 @@ extern void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2
 
 void CropString(TCHAR* String, unsigned max_char) {
 #ifdef UNICODE
-    LKASSERT( _tcslen(String)>max_char);
-    if (_tcslen(String)>max_char) {
-       String[0]=_T('\0'); // abort 
-       return;
-    }
     String[max_char] = _T('\0');
 #else
     // utf8 : number of Char are not equal to Number of Byte, we need to iterate each code point
@@ -139,9 +134,9 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
             BottomMode=ii;
 	}
 
-        strcpy(BufferValue,_T(""));
-        strcpy(BufferUnit,_T(""));
-        strcpy(BufferTitle,_T(""));
+        _tcscpy(BufferValue,_T(""));
+        _tcscpy(BufferUnit,_T(""));
+        _tcscpy(BufferTitle,_T(""));
 
 	DoInit[MDI_DRAWBOTTOMBAR]=false;
 
