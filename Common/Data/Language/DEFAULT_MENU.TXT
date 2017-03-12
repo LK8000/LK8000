@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release  170218
+# Release  170312
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -68,12 +68,14 @@ event=Service GPSRESTART
 mode=default
 type=gce
 data=STARTUP_SIMULATOR
-event=TaskLoad Default.lkt
+#event=TaskLoad Default.lkt
+event=Service DEFTASK
 
 mode=default
 type=gce
 data=STARTUP_REAL
 event=TaskLoad Default.lkt
+event=Service DEFTASK
 
 mode=default
 type=gce

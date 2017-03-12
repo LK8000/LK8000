@@ -2306,6 +2306,11 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("DEFTASK")) == 0) {
+     DefaultTask();
+     return;
+  }
+
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 

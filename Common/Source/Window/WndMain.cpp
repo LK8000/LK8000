@@ -351,12 +351,6 @@ void AfterStartup() {
 	InputEvents::processGlideComputer(GCE_STARTUP_REAL);
   }
 
-  // Create default task if none exists
-  #if TESTBENCH
-  StartupStore(TEXT(". Create default task%s"),NEWLINE);
-  #endif
-  DefaultTask();
-
   // Trigger first redraw
   MapWindow::zoom.Reset();
   FullScreen();
