@@ -63,7 +63,19 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   }
 
 
+	_tcscpy(BufferValue,_T(""));
 	_tcscpy(BufferUnit,_T(""));
+	_tcscpy(BufferTitle,_T(""));
+
+        if ( lkindex<0 ) {
+           TESTBENCH_DO_ONLY(20,StartupStore(_T("****** CRITICAL: LKFormatValue negative lkindex=%d ******%s"),lkindex,NEWLINE));
+           return false;
+        }
+
+        if (!Data_Options[lkindex].Title || !Data_Options[lkindex].Description) {
+           TESTBENCH_DO_ONLY(20,StartupStore(_T("****** CRITICAL: LKFormatValue NULL DATA_OPTION [%d] ******%s"),lkindex,NEWLINE));
+           return false;
+        }
 
 	switch(lkindex) {
 
