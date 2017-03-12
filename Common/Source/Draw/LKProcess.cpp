@@ -72,11 +72,6 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
            return false;
         }
 
-        if (!Data_Options[lkindex].Title || !Data_Options[lkindex].Description) {
-           TESTBENCH_DO_ONLY(20,StartupStore(_T("****** CRITICAL: LKFormatValue NULL DATA_OPTION [%d] ******%s"),lkindex,NEWLINE));
-           return false;
-        }
-
 	switch(lkindex) {
 
 
