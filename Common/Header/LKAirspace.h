@@ -542,8 +542,8 @@ private:
   bool StartsWith(const TCHAR *Text, const TCHAR *LookFor) const;
   void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const;
   bool ReadCoords(TCHAR *Text, double *X, double *Y) const;
-  bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
-  bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
+  bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const;
+  bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const;
   void CorrectGeoPoints(CPoint2DArray &points);
 
   bool FillAirspacesFromOpenAIP(ZZIP_FILE *fp);

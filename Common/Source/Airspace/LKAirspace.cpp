@@ -1249,7 +1249,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
         if ((Alt->Base != abUndef) && (fHasUnit) && ((Alt->Altitude != 0) || (Alt->FL != 0) || (Alt->AGL != 0))) break;
 
         if (isdigit(*pToken)) {
-            double d = (double) StrToDouble(pToken, &Stop);
+            double d = StrToDouble(pToken, &Stop);
             if (Alt->Base == abFL) {
                 Alt->FL = d;
                 Alt->Altitude = AltitudeToQNHAltitude((Alt->FL * 100) / TOFEET);
@@ -1413,7 +1413,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const {
     return true;
 }
 
-bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const {
+bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const {
     double StartLat, StartLon;
     double EndLat, EndLon;
     double StartBearing;
@@ -1452,18 +1452,21 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, doub
     return true;
 }
 
-bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const {
-    double Radius;
-    double StartBearing;
-    double EndBearing;
-    double arc_bearing_range;
-    TCHAR *Stop = NULL;
+bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const {
+    double arc_bearing_range = 0.0;
+    TCHAR *Stop = nullptr;
     double lat = 0, lon = 0;
 
     // TODO 110307 FIX problem of StrToDouble returning 0.0 in case of error , and not setting Stop!!
-    Radius = NAUTICALMILESTOMETRES * (double) StrToDouble(Text, &Stop);
-    StartBearing = (double) StrToDouble(&Stop[1], &Stop);
-    EndBearing = (double) StrToDouble(&Stop[1], &Stop);
+    double Radius = NAUTICALMILESTOMETRES * (double) StrToDouble(Text, &Stop);
+    if(!Stop) {
+        return false;
+    }
+    double StartBearing = (double) StrToDouble(&Stop[1], &Stop);
+    if(!Stop) {
+        return false;
+    }
+    double EndBearing = (double) StrToDouble(&Stop[1], &Stop);
 
     if (Rotation > 0) arc_bearing_range = EndBearing - StartBearing;
     else arc_bearing_range = StartBearing - EndBearing;
