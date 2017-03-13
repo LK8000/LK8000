@@ -195,6 +195,6 @@ dependencies {
 
 crashlytics {
     enableNdk true
-    androidNdkOut 'build/intermediates/cmake/fat/beta/obj'
-    androidNdkLibsOut 'build/intermediates/cmake/fat/beta/obj'
+    androidNdkOut 'build/intermediates/cmake/${flavor}/${buildType}/obj'
+    androidNdkLibsOut 'build/intermediates/cmake/${flavor}/${buildType}/obj'
 }
