@@ -2265,7 +2265,7 @@ int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], dou
                     if (i == AIRSPACE_SCANSIZE_X - 1)
                         airspacetype[iSelAS].rc.right = i + 3;
 
-                    if (airspacetype[iSelAS].bRectAllowed == false) {
+                    if ((airspacetype[iSelAS].psAS) && (!airspacetype[iSelAS].bRectAllowed)) {
 
                         if (airspacetype[iSelAS].psAS->Base()->Base == abAGL)
                             iHeight = (unsigned int) (airspacetype[iSelAS].psAS->Base()->AGL + terrain_heights[i]);
