@@ -171,8 +171,9 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 		if ( (hlen+slen+2) > MAX_HELP) {
 			#if DEBUG_GETTEXT
 			StartupStore(_T("... help too long: truncating line <%s>\n"),sTmp);
-			#endif
-			_tcsncat(sHelp,sTmp,MAX_HELP-hlen-1);
+            #endif
+            size_t  freespace = array_size(sHelp) - _tcslen(sHelp) - 1;
+			_tcsncat(sHelp, sTmp, freespace);
 			break;
 		}
 
