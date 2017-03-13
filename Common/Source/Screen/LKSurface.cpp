@@ -639,14 +639,18 @@ void LKSurface::DrawTextClip(int x, int y, const TCHAR *text, PixelScalar width)
 
 int LKSurface::GetTextWidth(const TCHAR *text) {
     SIZE tsize;
-    GetTextSize(text, &tsize);
-    return tsize.cx;
+    if(GetTextSize(text, &tsize)) {
+        return tsize.cx;
+    }
+    return 0;
 }
 
 int LKSurface::GetTextHeight(const TCHAR *text) {
-    SIZE tsize;
-    GetTextSize(text, &tsize);
-    return tsize.cy;
+    SIZE tsize{};
+    if(GetTextSize(text, &tsize)) {
+        return tsize.cy;
+    }
+    return 0;
 }
 
 void LKSurface::SetPixel(int X, int Y, const LKColor& Color) {
