@@ -716,7 +716,7 @@ static BOOL devClose(PDeviceDescriptor_t d)
         Com->Close();
         delete Com;
       }
-      d->Com = NULL; // if we do that before Stop RXThread , Crash ....
+      d->Com = nullptr; // if we do that before Stop RXThread , Crash ....
 
     }    
   }
@@ -735,13 +735,13 @@ BOOL devCloseAll(void){
      * 
      * Bruno.
      */
-  LockComm();
   for (unsigned i=0; i<NUMDEV; i++){
+    LockComm();
     devClose(&DeviceList[i]);
     DeviceList[i].Status=CPS_CLOSED; // 100210
+    UnlockComm();
   }
-  UnlockComm();
-  
+
   return(TRUE);
 }
 
@@ -969,39 +969,34 @@ BOOL devIsLogger(PDeviceDescriptor_t d)
   return result;
 }
 
-BOOL devIsGPSSource(PDeviceDescriptor_t d)
-{
-  BOOL result = FALSE;
-
-  LockComm();
-  if ((d != NULL) && (d->IsGPSSource != NULL))
-    result = d->IsGPSSource(d);
-  UnlockComm();
-
-  return result;
+/**
+ * used only in UpdateMonitor() : already under LockComm ...
+ */
+BOOL devIsGPSSource(PDeviceDescriptor_t d) {
+  if (d && d->IsGPSSource) {
+    return d->IsGPSSource(d);
+  }
+  return false;
 }
 
-BOOL devIsBaroSource(PDeviceDescriptor_t d)
-{
-  BOOL result = FALSE;
-
-  LockComm();
-  if ((d != NULL) && (d->IsBaroSource != NULL))
-    result = d->IsBaroSource(d);
-  UnlockComm();
-
-  return result;
+/**
+ * used only in devInit() and UpdateMonitor() : already under LockComm ...
+ */
+BOOL devIsBaroSource(PDeviceDescriptor_t d) {
+  if (d && d->IsBaroSource) {
+    return d->IsBaroSource(d);
+  }
+  return false;
 }
 
-BOOL devIsRadio(PDeviceDescriptor_t d)
-{
-  BOOL result = FALSE;
-  LockComm();
-  if ((d != NULL) && (d->IsRadio != NULL))
-    result = d->IsRadio(d);
-  UnlockComm();
-
-  return result;
+/**
+ * used only in devInit() : already under LockComm ...
+ */
+BOOL devIsRadio(PDeviceDescriptor_t d) {
+  if (d && d->IsRadio) {
+    return d->IsRadio(d);
+  }
+  return false;
 }
 
 
