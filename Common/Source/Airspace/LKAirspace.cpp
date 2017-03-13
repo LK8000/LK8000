@@ -1559,8 +1559,20 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                 continue; // Ensure newline removal won't fail
         }
         nSize = _tcslen(p);
-        if (p[nSize - 1] == _T('\n')) p[--nSize] = _T('\0');
-        if (p[nSize - 1] == _T('\r')) p[--nSize] = _T('\0');
+        if (nSize<=0) {
+           StartupStore(_T("**** CRITICAL, FillAirspacesFromOpenAir (1) nSize=%d%s"),nSize,NEWLINE);
+           continue;
+        }
+        if (p[nSize - 1] == _T('\n')) {
+           p[--nSize] = _T('\0');
+           if (nSize==0) {
+              StartupStore(_T("**** CRITICAL, FillAirspacesFromOpenAir (2) nSize=%d%s"),nSize,NEWLINE);
+              continue;
+           }
+        }
+        if (p[nSize - 1] == _T('\r')) {
+           p[--nSize] = _T('\0');
+        }
 
         //    StartupStore(TEXT(".  %s%s"),p,NEWLINE);
 
