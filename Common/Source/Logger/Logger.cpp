@@ -919,6 +919,7 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 			// do it just to be sure
 			errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';
 		}
+        StartupStore(_T("Error! Task NOT declared : %s" NEWLINE), errorBuffer);
 
 		// LKTOKEN  _@M265_ = "Error! Task NOT declared!"
 		_sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), MsgToken(265), errorBuffer);
