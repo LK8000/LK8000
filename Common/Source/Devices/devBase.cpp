@@ -11,6 +11,9 @@
 #include "devBase.h"
 #include "Dialogs/dlgProgress.h"
 
+#ifdef TESTBENCH
+#define DEBUG_DEV_COM
+#endif
 //____________________________________________________________class_definitions_
 
 
