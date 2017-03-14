@@ -2096,14 +2096,22 @@ void WndButton::Paint(LKSurface& Surface){
         case LEDMODE_REDGREEN:
            if (IsDithered())
               lcol=(mLedOnOff?LEDCOLOR_LGREEN:LEDCOLOR_ORANGE);
-           else
-              lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_RED);
+           else {
+              if (HasFocus())
+                 lcol=LEDCOLOR_YELLOW;
+              else
+                 lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_RED);
+           }
            break;
         case LEDMODE_OFFGREEN:
            if (IsDithered())
               lcol=(mLedOnOff?LEDCOLOR_LGREEN:LEDCOLOR_BLUE);
-           else
-              lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_DGREEN);
+           else {
+              if (HasFocus())
+                 lcol=LEDCOLOR_YELLOW;
+              else
+                 lcol=(mLedOnOff?LEDCOLOR_GREEN:LEDCOLOR_DGREEN);
+           }
            break;
         case LEDMODE_MANUAL:
            lcol=mLedColor;
