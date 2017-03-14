@@ -250,7 +250,7 @@ Java_org_LK8000_InternalGPS_setLocation(JNIEnv *env, jobject obj,
 
     GPS_INFO.Latitude = latitude;
     GPS_INFO.Longitude = longitude;
-    GPS_INFO.SatellitesUsed = n_satellites;
+    GPS_INFO.SatellitesUsed = (n_satellites > 0) ? n_satellites : -1;
 
     if (hasAltitude) {
       GPS_INFO.Altitude = altitude;
