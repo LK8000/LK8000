@@ -389,6 +389,8 @@ int GetScreenDensity(void) {
 //
 // This function is called by TerrainDraw TerrainRenderer.
 // It happens every time we change screen resolution, like when we change multimaps.
+// If we want a good result, either fix it manually like here or calculate dtquant dynamically.
+// Since we have no dynamic calculation in v6.1, we go manual.
 // TODO > use DrawTerrainTimer to choose optimal dtquant.
 //
 unsigned int TerrainQuantization(void) {
@@ -397,40 +399,57 @@ unsigned int TerrainQuantization(void) {
 
   unsigned int dtquant;
 
-  // need at least 2Ghz singlecore CPU here for dtquant 1
-  dtquant = 2;
 
-  // scale dtquant so resolution is not too high on large displays
-  // lower resolution a bit.. (no need for CPU >800mHz)
-  // update : on android with HD or QHD device, even with fast cpu, is very important to leave it as is.
-  dtquant = std::max<unsigned>(2, IBLSCALE(dtquant));
-
-#ifdef KOBO
-  /**
-  * dtquand for each kobo model
-  * for faster terrain redraw, dtquant need to be 2 or 4 ...
-  */
+  // 
+  // KOBO
+  // for faster terrain redraw, dtquant need to be 2 or 4 ...
+  //
+  #ifdef KOBO
   KoboModel model = DetectKoboModel();
-     switch(model) {
-        case KoboModel::GLO:
-        case KoboModel::GLOHD:
-           dtquant = 4;
-           break;
-        case KoboModel::MINI:
-        case KoboModel::TOUCH:
-        case KoboModel::TOUCH2:
-           dtquant = 2;
-           break;
-        case KoboModel::UNKNOWN:
-        default:
-           if (dtquant > 4) dtquant = 4; // .. but not too much
-           break;
-     };
-#else
-     if (ScreenSize != ss640x480) {
-        if (dtquant > 3) dtquant = 3; // .. but not too much
-     }
-#endif
+  switch(model) {
+     case KoboModel::GLO:
+     case KoboModel::GLOHD:
+        dtquant = 4;
+        break;
+     case KoboModel::MINI:
+     case KoboModel::TOUCH:
+     case KoboModel::TOUCH2:
+        dtquant = 2;
+        break;
+     case KoboModel::UNKNOWN:
+     default:
+        dtquant = std::max<unsigned>(2, IBLSCALE(2));
+        if (dtquant > 4) dtquant = 4; // .. but not too much
+        break;
+  };
+  goto _ret;
+  #endif
+
+  //
+  // WINDOWS PC 
+  // 
+  #if (WINDOWSPC>0)
+  if (ScreenSizeX >1900) // beyond FULLHD
+     dtquant=3;
+  else
+     dtquant=2;
+
+  goto _ret;
+  #endif
+
+  // GENERAL PURPOSE APPROACH
+  // If we use usual low-res screens, we always use 2
+  // else we start with a (wrong) guess .
+  if (ScreenSize != ssnone)
+     dtquant=2;
+  else {
+     dtquant = std::max<unsigned>(2, IBLSCALE(2));
+     if (dtquant>3) dtquant=3;
+  }
+  
+
+_ret: 
+  // do something for all platforms here
 
   return dtquant;
 }
