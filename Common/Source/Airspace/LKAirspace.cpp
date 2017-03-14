@@ -1258,7 +1258,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
             } else {
                 Alt->Altitude = d;
             }
-            if (*Stop != '\0') {
+            if (Stop && *Stop != '\0') {
                 pToken = Stop;
                 continue;
             }
@@ -1387,6 +1387,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const {
     if (*Stop == '\0') return false;
 
     Xdeg = (double) StrToDouble(Stop, &Stop);
+    if (*Stop == '\0') return false;
     Stop++;
     Xmin = (double) StrToDouble(Stop, &Stop);
     if (*Stop == ':') {
@@ -1466,7 +1467,7 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
     if(!Stop) {
         return false;
     }
-    double EndBearing = (double) StrToDouble(&Stop[1], &Stop);
+    double EndBearing = (double) StrToDouble(&Stop[1], nullptr);
 
     if (Rotation > 0) arc_bearing_range = EndBearing - StartBearing;
     else arc_bearing_range = StartBearing - EndBearing;

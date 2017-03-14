@@ -34,7 +34,6 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	// use strsep_r instead of ( cf. Utils.h )
 
 	TCHAR *pToken = NULL;
-	TCHAR *Stop= NULL;
 
 	TCHAR *pWClast = TempString;
 
@@ -61,7 +60,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
 		return false;
 
-	Temp->Latitude = (double)StrToDouble(pToken, &Stop);
+	Temp->Latitude = (double)StrToDouble(pToken, nullptr);
 
 	if((Temp->Latitude > 90) || (Temp->Latitude < -90)) {
 		return false;
@@ -71,7 +70,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
 		return false;
 
-	Temp->Longitude  = (double)StrToDouble(pToken, &Stop);
+	Temp->Longitude  = (double)StrToDouble(pToken, nullptr);
 	if((Temp->Longitude  > 180) || (Temp->Longitude  < -180)) {
 		return false;
 	}
@@ -133,7 +132,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
 		return false;
 
-	Temp->Altitude = (double)StrToDouble(pToken, &Stop)/TOFEET;
+	Temp->Altitude = (double)StrToDouble(pToken, nullptr)/TOFEET;
 	if(Temp->Altitude <= 0) {
 		WaypointAltitudeFromTerrain(Temp);
 	}

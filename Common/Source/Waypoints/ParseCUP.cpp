@@ -317,7 +317,7 @@ double ReadLength(TCHAR *temp)
 	len=-9999;
 	return len;
   }
-  if (stop != NULL){	// number converted endpointer is set
+  if (stop){	// number converted endpointer is set
 
 	if ( *stop == 'n' ) {
 		len = len / TONAUTICALMILES;

@@ -924,8 +924,7 @@ bool DataFieldInteger::CreateKeyboard(void){
 	_tcscpy(szText, GetAsString());
 	dlgNumEntryShowModal(szText,20, false);
 
-	TCHAR*szStop;
-	SetAsFloat((int)floor((StrToDouble(szText, &szStop)/mStep)+0.5)*mStep);
+	SetAsFloat((int)floor((StrToDouble(szText, nullptr)/mStep)+0.5)*mStep);
 
 	return true;
 }
@@ -1074,8 +1073,7 @@ bool DataFieldFloat::CreateKeyboard(void){
 	_tcscpy(szText, GetAsString());
 	dlgNumEntryShowModal(szText,20, false);
 
-	TCHAR*szStop;
-	SetAsFloat(floor((StrToDouble(szText, &szStop)/mStep)+0.5)*mStep);
+	SetAsFloat(floor((StrToDouble(szText, nullptr)/mStep)+0.5)*mStep);
 
 	return true;
 }
