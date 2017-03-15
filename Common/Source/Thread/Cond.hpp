@@ -12,6 +12,7 @@
 #ifndef COND_HPP
 #define	COND_HPP
 
+#include "Thread/Mutex.hpp"
 #include "Poco/Condition.h"
 
 /// Exists only for avoids to change xcs original code...
