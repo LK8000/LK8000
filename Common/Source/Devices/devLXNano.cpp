@@ -682,6 +682,9 @@ int DevLXNano::Decl::ToStream(void* buf)
 
   crc = DevLXNano::CalcCrc(dst - (byte*) buf, buf);
   LX_ADD_TO_STREAM(crc);
+  #ifdef TESTBENCH
+  StartupStore(_T("... LXNANO DECL CRC=%d SIZE=%d" NEWLINE),crc,(unsigned)(dst-(byte*)buf));
+  #endif
 
   return(dst - (byte*) buf);
 } // ToStream()
@@ -732,6 +735,9 @@ int DevLXNano::Class::ToStream(void* buf)
 
   crc = DevLXNano::CalcCrc(dst - (byte*) buf, buf);
   LX_ADD_TO_STREAM(crc);
+  #ifdef TESTBENCH
+  StartupStore(_T("... LXNANO DECL CRC=%d%s"),crc,NEWLINE);
+  #endif
 
   return(dst - (byte*) buf);
 } // ToStream()
