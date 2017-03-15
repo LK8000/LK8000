@@ -2654,6 +2654,7 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 
 	SettingsEnter();
 	LKProfileLoad(buffer);
+    LKProfileInitRuntime();
 	SettingsLeave();
 	_stprintf(buffer2,_T("Profile \"%s\" loaded"),misc);
 	MessageBoxX(buffer2, _T("Load Profile"), mbOk);

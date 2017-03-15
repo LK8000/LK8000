@@ -897,12 +897,15 @@ short dlgStartupShowModal(void) {
 #endif
                         MessageBoxX(MsgToken(1758), MsgToken(1757), mbOk);
                         FullResetAsked = true;
+                        LKProfileResetDefault();
                     } else {
 #if TESTBENCH
                         StartupStore(_T("... Selected new profile, preloading..\n"));
 #endif
+                        LKProfileLoad(startProfileFile);
                         FullResetAsked = false;
                     }
+                    LKProfileInitRuntime();                    
                 }
             }
         }
@@ -913,6 +916,8 @@ short dlgStartupShowModal(void) {
 #if TESTBENCH
                     StartupStore(_T("... Selected new aircraft, preloading..\n"));
 #endif
+                    LKProfileLoad(startAircraftFile);
+                    LKProfileInitRuntime();
                 }
             }
         }
@@ -923,6 +928,8 @@ short dlgStartupShowModal(void) {
 #if TESTBENCH
                     StartupStore(_T("... Selected new device, preloading..\n"));
 #endif
+                    LKProfileLoad(startDeviceFile);
+                    LKProfileInitRuntime();
                 }
             }
         }
@@ -933,6 +940,8 @@ short dlgStartupShowModal(void) {
 #if TESTBENCH
                     StartupStore(_T("... Selected new pilot, preloading..\n"));
 #endif
+                    LKProfileLoad(startPilotFile);
+                    LKProfileInitRuntime();
                 }
             }
         }

@@ -65,13 +65,10 @@ void PreloadInitialisation(bool ask) {
     LKProfileLoad(startAircraftFile);
     LKProfileLoad(startPilotFile);
     LKProfileLoad(startDeviceFile);
-    // if DEFAULT PROFILE does not exist, initialize ResetDefaults!
-    // This is because LKProfileLoad will do this at its end, normally.
-    // Notice: aircraft and pilot files will not be overridden by defaults
-    if (!LKProfileLoad(startProfileFile)) {
-	LKProfileInitRuntime();
-    }
+    LKProfileLoad(startProfileFile);
 
+	LKProfileInitRuntime();
+    
   } else {
     // We are in the dialog startup phase
     FullScreen();
@@ -83,30 +80,34 @@ void PreloadInitialisation(bool ask) {
     if (retstartup<0) return;
 
     if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
-	StartupStore(_T(". USER ASKED FOR PROFILE FULL RESET!%s"),NEWLINE);
-	DoStatusMessage(MsgToken(1757)); // LK8000 PROFILES RESET
-	LKProfileResetDefault();
-	LKProfileInitRuntime();
-
+        StartupStore(_T(". USER ASKED FOR PROFILE FULL RESET!%s"),NEWLINE);
+        DoStatusMessage(MsgToken(1757)); // LK8000 PROFILES RESET
+        LKProfileResetDefault();
 	// Notice: this is also resetting the default Aircraft and Pilot profiles to demo settings
     } else  {
-	if (!LKProfileLoad(startPilotFile)) {
-		#if TESTBENCH
-		StartupStore(_T(". PilotFile RESET to defaults%s"),NEWLINE);
-		#endif
-	}
-	if (!LKProfileLoad(startDeviceFile)) {
-		#if TESTBENCH
-		StartupStore(_T(". DeviceFile RESET to defaults%s"),NEWLINE);
-		#endif
-	}
-	if (!LKProfileLoad(startAircraftFile)) {
-		#if TESTBENCH
-		StartupStore(_T(". AircraftFile RESET to defaults%s"),NEWLINE);
-		#endif
-	}
-	LKProfileLoad(startProfileFile); // this is calling adjust and InitRuntime itself
+        if (!LKProfileLoad(startPilotFile)) {
+            #if TESTBENCH
+            StartupStore(_T(". PilotFile RESET to defaults%s"),NEWLINE);
+            #endif
+        }
+        if (!LKProfileLoad(startDeviceFile)) {
+            #if TESTBENCH
+            StartupStore(_T(". DeviceFile RESET to defaults%s"),NEWLINE);
+            #endif
+        }
+        if (!LKProfileLoad(startAircraftFile)) {
+            #if TESTBENCH
+            StartupStore(_T(". AircraftFile RESET to defaults%s"),NEWLINE);
+            #endif
+        }
+    	if(!LKProfileLoad(startProfileFile)) {
+            #if TESTBENCH
+            StartupStore(_T(". SystemFile RESET to defaults%s"),NEWLINE);
+            #endif
+        }
     }
+	LKProfileInitRuntime();
+
     InitLKFonts();
     // We are sure that buttons have been created already
     ButtonLabel::SetFont(MapWindowBoldFont);

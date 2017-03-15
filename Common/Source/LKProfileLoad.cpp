@@ -159,9 +159,6 @@ bool LKProfileLoad(const TCHAR *szFile)
   }
 
   fclose(fp);
-  if (found) {
-	LKProfileInitRuntime();
-  }
   return found;
 }
 
