@@ -86,7 +86,7 @@ class DevLXNano : public DevLX
     static bool Wide2LxAscii(const TCHAR* input, int outSize, char* output);
 
     /// Calculate LX CRC value for the given data.
-    static byte CalcCrc(int length, void* data);
+    static byte CalcCrc(int length, const void* data);
 
   //----------------------------------------------------------------------------
   private:

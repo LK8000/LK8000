@@ -445,25 +445,21 @@ bool DevLXNano::Wide2LxAscii(const TCHAR* input, int outSize, char* output)
 /// @param data    data to be CRC calculated on
 ///
 //static
-byte DevLXNano::CalcCrc(int length, void* data)
-{
+byte DevLXNano::CalcCrc(int length, const void* data) {
   byte crcVal = 0xFF;
-
-  char* pc = (char*) data;
+  const byte* pc = static_cast<const byte*>(data);
 
   // for all data in object, skipping last CRC value
-  for (int i = 0; i < length; i++)
-  {
-    char d = *pc++;
-    for (int count = 8; --count >= 0; d <<= 1)
-    {
-      signed char tmp = crcVal ^ d;
+  for (int i = 0; i < length; i++) {
+    byte d = pc[i];
+    for (int count = 8; --count >= 0; d <<= 1) {
+      byte tmp = crcVal ^ d;
       crcVal <<= 1;
-      if (tmp < 0)
+      if (tmp & 0x80) {
         crcVal ^= LX_CRC_POLY;
+      }
     }
   }
-
   return(crcVal);
 } // CalcCrc()
 
