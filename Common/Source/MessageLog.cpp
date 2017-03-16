@@ -119,17 +119,32 @@ void UnlockStartupStore() {
 
 void StartupStore(const TCHAR *Str, ...)
 {
-  TCHAR buf[(MAX_PATH*2)+1]; // 260 chars normally  FIX 100205
-  va_list ap;
+  TCHAR buf[1024]; // 2 kByte for unicode, 1kByte for utf-8
 
+  va_list ap;
   va_start(ap, Str);
   _vsntprintf(buf, array_size(buf), Str, ap);
   va_end(ap);
 
+  buf[array_size(buf) -1] = _T('\0'); // grant string is null terminated.
+
+  /* remove trailing space
+   *   ' '	(0x20)	space (SPC)
+   *   '\t'	(0x09)	horizontal tab (TAB)
+   *   '\n'	(0x0a)	newline (LF)
+   *   '\v'	(0x0b)	vertical tab (VT)
+   *   '\f'	(0x0c)	feed (FF)
+   *   '\r'	(0x0d)	carriage return (CR)
+   */
+  for(size_t i = _tcslen(buf)-1; _istspace(buf[i]); --i) {
+      buf[i] = '\0';
+  }  
+  
+  
 #ifdef ANDROID
-  __android_log_print(ANDROID_LOG_INFO, "LK8000","%s", buf);
+  __android_log_print(ANDROID_LOG_INFO, "LK8000","%s\n", buf);
 #elif defined(__linux__) && !defined(NDEBUG)
-  printf("%s", buf);
+  printf("%s\n", buf);
 #endif
   
 
@@ -145,14 +160,20 @@ void StartupStore(const TCHAR *Str, ...)
 
   startupStoreFile = _tfopen(szFileName, TEXT("ab+"));
   if (startupStoreFile != NULL) {
-    char sbuf[(MAX_PATH*2)+1]; // FIX 100205
-
-    int i = TCHAR2utf(buf, sbuf, sizeof(sbuf));
+#ifdef UNICODE
+    /* each codepoints can be encoded in one to four bytes.
+    * worst case : ( <number of codepoint> x 4 ) + <size of '\0'>
+    */
+    const size_t buff_size = (_tcslen(buf) * 4) + 1;
+    char sbuf[buff_size]; 
+    size_t i = TCHAR2utf(buf, sbuf, buff_size);
+#else
+    char* sbuf = buf; // string are already utf-8 encoded, no need to convert.
+    size_t i = strlen(sbuf);
+#endif
 
     if (i > 0) {
-      if (sbuf[i - 1] == 0x0a && (i == 1 || (i > 1 && sbuf[i-2] != 0x0d)))
-        sprintf(sbuf + i - 1, SNEWLINE);
-      fprintf(startupStoreFile, "[%09u] %s", MonotonicClockMS(), sbuf);
+      fprintf(startupStoreFile, "[%09u] %s" SNEWLINE, MonotonicClockMS(), sbuf);
     }
     fclose(startupStoreFile);
   }
