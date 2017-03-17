@@ -157,18 +157,20 @@ QuickRedraw:
         }
 
         if (!DrawTerrainTimer) {
-           unsigned tstime=MonotonicClockMS();
+           uint64_t tstime=MonotonicClockUS();
            if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
               if (!DrawTerrainTimer) {
-                 DrawTerrainTimer=MonotonicClockMS()-tstime;
+                 DrawTerrainTimer=MonotonicClockUS()-tstime;
                  #ifdef TESTBENCH
-                 StartupStore(_T("... First full terrain rendering, time spent=%d ms\n"),DrawTerrainTimer);
+                 StartupStore(_T("... First full terrain rendering, time spent=%u.%u ms\n"),DrawTerrainTimer/1000, DrawTerrainTimer%1000);
                  #endif
               }
               terrainpainted = true;
            }
         } else {
-           if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) terrainpainted = true;
+           if(DrawTerrain(Surface, DrawRect, _Proj, sunazimuth, sunelevation)) {
+               terrainpainted = true;
+           }
         }
 
         if (DONTDRAWTHEMAP) {
