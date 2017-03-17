@@ -438,17 +438,16 @@ unsigned int TerrainQuantization(void) {
   #endif
 
   // GENERAL PURPOSE APPROACH
-  // If we use usual low-res screens, we always use 2
-  // else we start with a (wrong) guess .
-  if (ScreenSize != ssnone)
-     dtquant=2;
-  else {
-     dtquant = std::max<unsigned>(2, IBLSCALE(2));
-     if (dtquant>3) dtquant=3;
-  }
-  
+  dtquant = std::max<unsigned>(2, IBLSCALE(2));
+  if (dtquant>3) dtquant=3;
+ 
+  // .. And the values above are the used as defaults. Then we must dynamically check
+  // if we can adjust to better values by checking drawing times.
+  // We can do it for 6.1g 
 
+#if (WINDOWSPC>0) || (KOBO)
 _ret: 
+#endif
   // do something for all platforms here
 
   return dtquant;
