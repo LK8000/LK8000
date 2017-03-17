@@ -11,6 +11,7 @@
 #define __DEVBASE_H_
 
 #include "device.h"
+#include "Compiler.h"
 
 //_____________________________________________________________________includes_
 
@@ -68,48 +69,61 @@ class DevBase
     DevBase() {}
 
     /// Converts parameter from NMEA sentence into double.
+    gcc_nonnull(1, 3)
     static bool ParToDouble(
       const TCHAR* sentence, unsigned int parIdx, double* value);
 
     /// Constant handler returning always @c true.
+    gcc_nonnull(1)
     static BOOL GetTrue(PDeviceDescriptor_t d);
 
     /// Constant handler returning always @c false.
+    gcc_nonnull(1)
     static BOOL GetFalse(PDeviceDescriptor_t d);
 
     /// Show declaration progress dialog.
     static void ShowProgress(DeclDlg dlgType);
 
     /// Checks minimum and maximum waypoint count limits.
+    gcc_nonnull(5)
     static bool CheckWPCount(const Declaration_t& decl, int minCount, int maxCount, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Stops port Rx thread.
+    gcc_nonnull(1, 3)
     static bool StopRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Starts port Rx thread.
+    gcc_nonnull(1, 3)
     static bool StartRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Sets Rx read timeout.
+    gcc_nonnull(1, 5)
     static bool SetRxTimeout(PDeviceDescriptor_t d, int newTimeout, int& orgTimeout, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Writes given data to COM port and checks the result.
+    gcc_nonnull(1, 2, 5)
     static bool ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Writes given character to COM port and checks the result.
+    gcc_nonnull(1, 4)
     static bool ComWrite(PDeviceDescriptor_t d, char character, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Flushes COM port output buffers.
+    gcc_nonnull(1)
     static void ComFlush(PDeviceDescriptor_t d);
 
     /// Reads data from COM port and checks if they contain expected data.
+    gcc_nonnull(1, 2, 7)
     static bool ComExpect(PDeviceDescriptor_t d,
       const void* expected, int length, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Reads data from COM port and checks if they contain expected character.
+    gcc_nonnull(1, 6)
     static bool ComExpect(PDeviceDescriptor_t d,
       char expected, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Reads data from COM port and checks if they contain expected string.
+    gcc_nonnull(1, 2, 6)
     static bool ComExpect(PDeviceDescriptor_t d,
       const char* expected, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[]);
 
