@@ -203,14 +203,17 @@ BOOL DevLXNano::DeclareTask(PDeviceDescriptor_t d,
 //static
 bool DevLXNano::StartNMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
 {
-  ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
+  if(ComWrite(d, PKT_SYN, errBufSize, errBuf)) {
+    ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
+  }
 
-  ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
+  if(ComWrite(d, PKT_SYN, errBufSize, errBuf)) {
+    ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
+  }
 
-  ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
+  if(ComWrite(d, PKT_SYN, errBufSize, errBuf)) {
+    ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
+  }
 
   // XCSoar:
   //if (!ComExpect(d, "$$$", 32, NULL, errBufSize, errBuf))
@@ -236,17 +239,22 @@ bool DevLXNano::StartCMDMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR e
   // we have to wait longer while enabling declaration phase because we have
   // to parse all NMEA sequences that are incomming before declaration mode
   // is enabled.
-  ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
+  if(ComWrite(d, PKT_SYN, errBufSize, errBuf)) {
+    ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
+  }
 
-  ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
+  if(ComWrite(d, PKT_SYN, errBufSize, errBuf)) {
+    ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
+  }
 
-  ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  if (!ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf))
-    return(false);
+  if (ComWrite(d, PKT_SYN, errBufSize, errBuf)) {
+    if(ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf)) {
+      return true;
+    }
+  }
 
-  return(true);
+  return false;
+
 } // StartCMDMode()
 
 
