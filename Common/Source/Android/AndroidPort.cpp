@@ -166,8 +166,6 @@ size_t AndroidPort::Read(void *szString, size_t size) {
 
 void AndroidPort::DataReceived(const void *data, size_t length) {
 
-    AddStatRx(length);
-
     if(running) {
         const char *string_data = static_cast<const char *>(data);
 
@@ -175,6 +173,8 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
                       string_data + length,
                       std::bind(&AndroidPort::ProcessChar, this, _1));
 
+        AddStatRx(length);
+        
     } else {
         ScopeLock lock(mutex);
         const uint8_t *src_data = static_cast<const uint8_t *>(data);
@@ -182,7 +182,12 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
         const size_t available_size =  buffer.capacity() - buffer.size();
         const size_t insert_size = std::min(available_size, length);
 
-        buffer.insert(buffer.cend(), src_data,  src_data + insert_size);
+        buffer.insert(buffer.cend(), src_data,  std::next(src_data,insert_size));
+
+        AddStatRx(insert_size);
+        if(insert_size < length) {
+            AddStatErrRx(length - insert_size);
+        }
 
         newdata.Broadcast();
     }
