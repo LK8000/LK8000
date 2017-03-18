@@ -283,8 +283,9 @@ bool DevBase::ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsi
     res = true;
 
   #ifdef DEBUG_DEV_COM
-    StartupStore(_T("ComWrite:  %s [%02X] len=%d%s"),
-      res ? _T("OK") : _T("ER"), ((const unsigned char*) data)[0], length, NEWLINE);
+    const uint8_t* tx_buffer = static_cast<const uint8_t*>(data);
+
+    StartupStore(_T("ComWrite: %s len=%d [%s]"), res ? _T("OK") : _T("ER"), length, toHexString(tx_buffer, length).c_str());
   #endif
 
   return(res);
@@ -346,33 +347,35 @@ void DevBase::ComFlush(PDeviceDescriptor_t d)
 bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
   int length, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[])
 {
-  int ch;
-  char* prx = (char*) rxBuf;
+  uint8_t* prx = static_cast<uint8_t*>(rxBuf);
   const char* pe  = (const char*) expected;
 
   if (length <= 0)
     return(true);
 
 #ifdef DEBUG_DEV_COM
-  char prevch = 0;
+  const size_t rx_size = checkChars;
+  std::unique_ptr<uint8_t[]> rx_debug;
+  if(!rxBuf) {
+      rx_debug.reset(new uint8_t[rx_size]);
+      prx = rx_debug.get();
+  }
 #endif
 
+  int ch;
   while ((ch = d->Com->GetChar()) != EOF)
   {
-#ifdef DEBUG_DEV_COM
-    prevch = ch;
-#endif
-
-    if (prx != NULL)
+    if (prx) {
       *prx++ = ch;
+    }
 
     if (ch == *pe)
     {
       if ((++pe - (const char*) expected) == length)
       {
-        #ifdef DEBUG_DEV_COM
-          StartupStore(_T("ComExpect: OK [%02X] check=%d%s"), (unsigned) ch, checkChars, NEWLINE);
-        #endif
+#ifdef DEBUG_DEV_COM
+        StartupStore(_T("ComExpect: OK check=%d [%s]"), checkChars, toHexString(expected, length).c_str());
+#endif
         return(true);
       }
     }
@@ -384,8 +387,9 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
   }
 
 #ifdef DEBUG_DEV_COM
-    StartupStore(_T("ComExpect: ER [%02X] check=%d%s"),
-      (prevch == 0) ? (unsigned) ch : (unsigned char) prevch, checkChars, NEWLINE);
+  const size_t received = rx_size - checkChars;
+  prx = rxBuf ? static_cast<uint8_t*>(rxBuf) : rx_debug.get();
+  StartupStore(_T("ComExpect: ERR check=%d [%s]"), checkChars, toHexString(prx, received).c_str());
 #endif
 
   // LKTOKEN  _@M1414_ = "Device not responsive!"

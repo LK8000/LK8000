@@ -12,8 +12,9 @@
 #ifndef MESSAGELOG_H
 #define	MESSAGELOG_H
 
-#include <tchar.h>
 #include "Compiler.h"
+#include <tchar.h>
+#include "Util/tstring.hpp"
 
 extern "C" {
 void DebugStore(const char *Str, ...)
@@ -22,6 +23,8 @@ void DebugStore(const char *Str, ...)
 
 void StartupStore(const TCHAR *Str, ...)
         gcc_printf(1,2) gcc_nonnull(1);
+
+tstring toHexString(const void* data, size_t size);
 
 #endif	/* MESSAGELOG_H */
 

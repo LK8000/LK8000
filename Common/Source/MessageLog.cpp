@@ -179,3 +179,21 @@ void StartupStore(const TCHAR *Str, ...)
   }
   UnlockStartupStore();
 }
+
+tstring toHexString(const void* data, size_t size) {
+  tstring szHex;
+  szHex.reserve(size * 3); // 3 char for each byte
+  constexpr TCHAR hex_chars[16] = {
+          _T('0'), _T('1'), _T('2'), _T('3'), _T('4'), _T('5'), _T('6'), _T('7'),
+          _T('8'), _T('9'), _T('A'), _T('B'), _T('C'), _T('D'), _T('E'), _T('F')
+  };
+
+  const uint8_t* p = static_cast<const uint8_t*>(data);
+  const uint8_t* pend = p + size;
+  for(;p < pend; ++p) {
+    szHex += (hex_chars[((*p) & 0xF0) >> 4]);
+    szHex += (hex_chars[((*p) & 0x0F) >> 0]);
+    szHex += ' ';
+  }
+  return szHex;
+}
