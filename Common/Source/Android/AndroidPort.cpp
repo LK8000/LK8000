@@ -83,6 +83,11 @@ void AndroidPort::Purge() {
     }
 }
 
+void AndroidPort::Flush() {
+    ScopeLock protect(mutex);
+    buffer.clear();
+}
+
 void AndroidPort::CancelWaitEvent() {
     newdata.Broadcast();
     newstate.Broadcast();

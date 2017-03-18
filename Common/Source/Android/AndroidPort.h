@@ -31,7 +31,7 @@ public:
     bool StartRxThread() override;
 
     void Purge() override;
-    void Flush() override {}
+    void Flush() override;
     void CancelWaitEvent() override;
     int SetRxTimeout(int TimeOut) override { return 0; }
 
