@@ -16,7 +16,7 @@
 using namespace std::placeholders;
 
 AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName),
-                                                          running(), closing(), bridge() {
+                                                          timeout(RXTIMEOUT), running(), closing(), bridge() {
 
 }
 
@@ -91,7 +91,14 @@ void AndroidPort::Flush() {
 void AndroidPort::CancelWaitEvent() {
     newdata.Broadcast();
     newstate.Broadcast();
-};
+}
+
+int AndroidPort::SetRxTimeout(int TimeOut) {
+    int old_timeout = timeout;
+    timeout = TimeOut;
+    return old_timeout;
+}
+
 
 unsigned long AndroidPort::SetBaudrate(unsigned long baud_rate) {
     if(bridge) {
@@ -123,7 +130,7 @@ size_t AndroidPort::Read(void *szString, size_t size) {
     assert(!running);
 
     if(buffer.empty()) {
-        newdata.Wait(mutex);
+        newdata.Wait(mutex, timeout);
     }
 
     if(running || buffer.empty()) {

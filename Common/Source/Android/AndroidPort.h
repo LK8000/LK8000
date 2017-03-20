@@ -33,7 +33,7 @@ public:
     void Purge() override;
     void Flush() override;
     void CancelWaitEvent() override;
-    int SetRxTimeout(int TimeOut) override { return 0; }
+    int SetRxTimeout(int TimeOut) override;
 
     void UpdateStatus() override {}
 
@@ -55,6 +55,7 @@ protected:
     Cond newdata;
     Cond newstate;
 
+    int timeout;
     bool running;
     bool closing;
 
