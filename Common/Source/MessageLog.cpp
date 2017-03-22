@@ -110,18 +110,11 @@ CheckFreeRam(),SNEWLINE);
 #endif
 
 
-Poco::FastMutex  CritSec_StartupStore;
-
-void LockStartupStore() {
-	CritSec_StartupStore.lock();
-}
-
-void UnlockStartupStore() {
-	CritSec_StartupStore.unlock();
-}
-
 void StartupStore(const TCHAR *Str, ...)
 {
+  static Mutex mutex;
+  ScopeLock Lock(mutex);
+
   TCHAR buf[1024]; // 2 kByte for unicode, 1kByte for utf-8
 
   va_list ap;
@@ -151,8 +144,6 @@ void StartupStore(const TCHAR *Str, ...)
 #endif
   
 
-  LockStartupStore();
-
   FILE *startupStoreFile = NULL;
   static TCHAR szFileName[MAX_PATH];
   static bool initialised = false;
@@ -180,7 +171,6 @@ void StartupStore(const TCHAR *Str, ...)
     }
     fclose(startupStoreFile);
   }
-  UnlockStartupStore();
 }
 
 tstring toHexString(const void* data, size_t size) {
