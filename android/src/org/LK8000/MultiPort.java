@@ -131,8 +131,11 @@ class MultiPort implements AndroidPort, InputListener {
         error = true;
         i.remove();
         port.close();
-      } else if (nbytes > result)
+      } else if (nbytes > result) {
         result = nbytes;
+      } else {
+        Log.d(TAG, "write: data loose.");
+      }
     }
 
     return result;
