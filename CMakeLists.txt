@@ -67,17 +67,6 @@ ExternalProject_Add (
 ExternalProject_Get_Property(boost source_dir)
 set(BOOST_INCLUDE ${source_dir})
 
-include_directories(
-    Common/Header/linuxcompat
-    Common/Header/libzzip
-    Common/Header
-    Common/Source
-    Common/Source/xcs
-    ./
-    ${BOOST_INCLUDE}
-    ${GEOGRAPHIC_INCLUDE}
-)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++11 -fexceptions -frtti -Wall -fopenmp")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wparentheses -Wuninitialized")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_NO_IOSTREAM -DBOOST_NO_IOSFWD -DBOOST_NO_STRINGSTREAM -DBOOST_NO_WSTREAMBUF ")
@@ -790,6 +779,17 @@ add_library( LK8000 SHARED
     Common/Source/Resource/resource_data.S
     Common/Source/Resource/resource_bmp.S
     Common/Source/Resource/resource_xml.S
+)
+
+target_include_directories( LK8000 PRIVATE
+    Common/Header/linuxcompat
+    Common/Header/libzzip
+    Common/Header
+    Common/Source
+    Common/Source/xcs
+    ./
+    ${BOOST_INCLUDE}
+    ${GEOGRAPHIC_INCLUDE}
 )
 
 add_dependencies(LK8000 generate-GeographicLib)
