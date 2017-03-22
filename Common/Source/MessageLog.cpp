@@ -24,33 +24,36 @@ void StartupLogFreeRamAndStorage() {
   StartupStore(TEXT(". Free ram=%u K  storage=%u K") NEWLINE, (unsigned int)freeram,(unsigned int)freestorage);
 }
 
-
+/**
+ * it's for debug build only.
+ *  - file are cleared by first use.
+ */
 void DebugStore(const char *Str, ...)
 {
-#if defined(DEBUG)
-  char buf[MAX_PATH];
-  va_list ap;
-  int len;
+#ifndef NDEBUG
 
-  va_start(ap, Str);
-  len = vsprintf(buf, Str, ap);
-  va_end(ap);
+  FILE *stream = nullptr;
 
-  LockFlightData();
-  FILE *stream;
-  TCHAR szFileName[] = TEXT(LKF_DEBUG);
+  static Mutex mutex;
+  ScopeLock Lock(mutex);
+
+  static TCHAR szFileName[MAX_PATH];
   static bool initialised = false;
   if (!initialised) {
+    LocalPath(szFileName, TEXT(LKF_DEBUG));
+    stream = _tfopen(szFileName,TEXT("w"));
     initialised = true;
-    stream = _wfopen(szFileName,TEXT("w"));
   } else {
-    stream = _wfopen(szFileName,TEXT("a+"));
+    stream = _tfopen(szFileName,TEXT("a+"));
   }
 
-  fwrite(buf,len,1,stream);
-
-  fclose(stream);
-  UnlockFlightData();
+  if(stream) {
+      va_list ap;
+      va_start(ap, Str);
+      vfprintf(stream, Str, ap);
+      va_end(ap);
+      fclose(stream);
+  }
 #endif
 }
 
