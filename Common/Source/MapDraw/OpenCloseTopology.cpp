@@ -36,13 +36,12 @@ void OpenTopology() {
   std::fill(std::begin(TopoStore), std::end(TopoStore), nullptr);
 
      // Topology is inside the LKM map file
-     TCHAR  szmapFile[MAX_PATH] = TEXT("\0");
-    _tcscpy(szmapFile,szMapFile);
+     TCHAR  szmapFile[MAX_PATH];
+    LocalPath(szmapFile, _T(LKD_MAPS), szMapFile);
     if (_tcslen(szmapFile)==0) {
       UnlockTerrainDataGraphics();
       return;
     }
-    ExpandLocalPath(szmapFile);
 
     // Look for the file within the map zip file...
     _tcscpy(Directory,szmapFile);

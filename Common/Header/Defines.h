@@ -126,18 +126,19 @@
     #define LKD_SYS_LANGUAGE "assets/language"
     #define LKD_SYS_POLAR    "assets/polars"
 
-    #define LKD_DEFAULT_POLAR   "assets/polars/Default.plr"
-    #define LKD_DEFAULT_LANGUAGE   "assets/language/ENGLISH.LNG"
-
 #else
     #define LKD_SYSTEM       "_System"
     #define LKD_SOUNDS       "_System" DIRSEP "_Sounds"
     #define LKD_BITMAPS      "_System" DIRSEP "_Bitmaps"
 
-    #define LKD_DEFAULT_POLAR   "_Polars" DIRSEP "Default.plr"
-    #define LKD_DEFAULT_LANGUAGE   "_Language" DIRSEP "ENGLISH.LNG"
+    #define LKD_SYS_LANGUAGE "_Language"
+    #define LKD_SYS_POLAR    "_Polars"
 
 #endif
+
+#define LKD_DEFAULT_POLAR   "Default.plr"
+#define LKD_DEFAULT_LANGUAGE   "ENGLISH.LNG"
+
 
 #define LKD_CONF	"_Configuration"
 #define LKD_TASKS	"_Tasks"

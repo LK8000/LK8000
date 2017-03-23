@@ -171,50 +171,52 @@ void InputEvents::readFile() {
   //
   // ENGINEERING MODE: SELECTED XCI HAS PRIORITY
   //
-  _tcscpy(szFile1,szInputFile);
-  ExpandLocalPath(szFile1);
-  _tcscpy(szInputFile,_T("")); // disabled until verified valid
-
-  if (_tcslen(szFile1)>0) {
+  if (_tcslen(szInputFile)>0) {
+    LocalPath(szFile1, _T(LKD_CONF), szInputFile);
     fp=openzip(szFile1, "rb");
   }
 
-  TCHAR xcifile[MAX_PATH];
+  const TCHAR * xcifile = nullptr;
   if (fp == NULL) {
+
+    // invalide ENGINEERING MODE: SELECTED XCI, reset config.
+    _tcscpy(szInputFile, _T(""));
+
 	// No special XCI in engineering, or nonexistent file.. go ahead with language check
 	// Remember: DEFAULT_MENU existance is already been checked upon startup.
 
-	TCHAR xcipath[MAX_PATH];
-	SystemPath(xcipath,_T(LKD_SYSTEM));
-
 	switch(AircraftCategory) {
 		case umGlider:
-			_stprintf(xcifile,_T("%s%sMENU_GLIDER.TXT"), xcipath, _T(DIRSEP));
+			xcifile = _T("MENU_GLIDER.TXT");
 			break;
 		case umParaglider:
-			_stprintf(xcifile,_T("%s%sMENU_PARAGLIDER.TXT"), xcipath, _T(DIRSEP));
+            xcifile = _T("MENU_PARAGLIDER.TXT");
 			break;
 		case umCar:
-			_stprintf(xcifile,_T("%s%sMENU_CAR.TXT"), xcipath, _T(DIRSEP));
+            xcifile = _T("MENU_CAR.TXT");
 			break;
 		case umGAaircraft:
-			_stprintf(xcifile,_T("%s%sMENU_GA.TXT"), xcipath, _T(DIRSEP));
+            xcifile = _T("MENU_GA.TXT");
 			break;
 		default:
-			_stprintf(xcifile,_T("%s%sMENU_OTHER.TXT"), xcipath, _T(DIRSEP));
+            xcifile = _T("MENU_OTHER.TXT");
 			break;
 	}
-	fp=openzip(xcifile, "rt");
+
+    TCHAR xcifilepath[MAX_PATH];
+
+    SystemPath(xcifilepath,_T(LKD_SYSTEM), xcifile);
+	fp=openzip(xcifilepath, "rt");
 	if (fp == NULL) {
-		_stprintf(xcifile,_T("%s%sDEFAULT_MENU.TXT"), xcipath, _T(DIRSEP));
-		fp=openzip(xcifile, "rt");
+        SystemPath(xcifilepath,_T(LKD_SYSTEM), _T("DEFAULT_MENU.TXT"));
+		fp=openzip(xcifilepath, "rt");
 		if (fp == NULL) {
 			// This cannot happen
-			StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifile);
+			StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifilepath);
 			return;
 		}
 	} else {
-		StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
+		StartupStore(_T(". Loaded menu <%s>\n"),xcifilepath);
 	}
   }
 
@@ -410,11 +412,6 @@ void InputEvents::readFile() {
   #ifdef TESTBENCH
   StartupStore(_T("... Loaded %d Menu Events (Max is %d)%s"),Events_count,MAX_EVENTS,NEWLINE);
   #endif
-
-  // file was ok, so save it to registry
-  ContractLocalPath(szFile1);
-  _tcscpy(szInputFile,szFile1);
-
   zzip_fclose(fp);
 #endif
 }
@@ -2564,10 +2561,7 @@ void InputEvents::eventTaskLoad(const TCHAR *misc) {
   if (misc && (_tcslen(misc)>0)) {
 
     TCHAR szFileName[MAX_PATH];
-	LocalPath(szFileName,_T(LKD_TASKS));
-	_tcscat(szFileName,_T(DIRSEP));
-	_tcscat(szFileName,misc);
-
+	LocalPath(szFileName,_T(LKD_TASKS), misc);
     LPCTSTR wextension = _tcsrchr(szFileName, '.');
     if(wextension) {
         if(_tcscmp(wextension,_T(LKS_TSK))==0) {
@@ -2593,9 +2587,7 @@ void InputEvents::eventTaskSave(const TCHAR *misc) {
   TCHAR buffer[MAX_PATH];
   if (_tcslen(misc)>0) {
 	LockTaskData();
-	LocalPath(buffer,_T(LKD_TASKS));
-	_tcscat(buffer,_T(DIRSEP));
-	_tcscat(buffer,misc);
+	LocalPath(buffer,_T(LKD_TASKS), misc);
 	SaveTask(buffer);
 	UnlockTaskData();
   }
@@ -2620,14 +2612,10 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 			mbYesNo) == IdNo) {
 			return;
 		}
-		SystemPath(buffer,_T(LKD_SYSTEM)); // 100223
-		_tcscat(buffer,_T(DIRSEP));
-		_tcscat(buffer,_T("FACTORYPRF"));
+		SystemPath(buffer,_T(LKD_SYSTEM), _T("FACTORYPRF")); // 100223
 		factory=true;
 	} else {
-		LocalPath(buffer,_T(LKD_CONF)); // 100223
-		_tcscat(buffer,_T(DIRSEP));
-		_tcscat(buffer,misc);
+		LocalPath(buffer,_T(LKD_CONF), misc); // 100223
 	}
 
 	FILE *fp=NULL;

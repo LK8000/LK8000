@@ -27,31 +27,14 @@ namespace DlgIgcFile {
 
     void ScanFile() {
         FileList.clear();
-        TCHAR szPath[MAX_PATH] = _T("\0");
-        TCHAR tmpPath[MAX_PATH];
-	LocalPath(szPath, _T(LKD_LOGS));
-        size_t nLen = _tcslen(szPath);
-        if (szPath[nLen - 1] != _T('\\')) {
-            _tcscat(szPath, _T(DIRSEP));
-        }
-	_tcscpy(tmpPath,szPath);
-        _tcscat(tmpPath, _T("*.igc"));
+        TCHAR szPath[MAX_PATH];
+        LocalPath(szPath, _T(LKD_LOGS), _T("*.igc"));
 
-        for(lk::filesystem::directory_iterator It(tmpPath); It; ++It) {
+        for(lk::filesystem::directory_iterator It(szPath); It; ++It) {
             if(!It.isDirectory()) {
                 FileList.push_back(It.getName());
             }
         }
-
-	_tcscpy(tmpPath,szPath);
-        _tcscat(tmpPath, _T("*.IGC"));
-
-        for(lk::filesystem::directory_iterator It(tmpPath); It; ++It) {
-            if(!It.isDirectory()) {
-                FileList.push_back(It.getName());
-            }
-        }
-
 
         std::sort(FileList.rbegin(), FileList.rend()); // sort in desc order.
     }
@@ -117,15 +100,11 @@ namespace DlgIgcFile {
                     if(DeviceIndex != 0) {
                         DeviceIndex--;
 
-                        TCHAR szFileFullPath[MAX_PATH] = _T("\0");
-                        LocalPath(szFileFullPath, _T(LKD_LOGS));
-                        size_t nLen = _tcslen(szFileFullPath);
-                        if (szFileFullPath[nLen - 1] != _T('\\')) {
-                            _tcscat(szFileFullPath, _T("\\"));
-                        }
                         FileList_t::const_iterator ItFileName = FileList.begin();
                         std::advance(ItFileName, ItemIndex);
-                        _tcscat(szFileFullPath, ItFileName->c_str());
+
+                        TCHAR szFileFullPath[MAX_PATH];
+                        LocalPath(szFileFullPath, _T(LKD_LOGS), ItFileName->c_str());
 
                         if(!Obex.SendFile(DeviceIndex, szFileFullPath)) {
                             StopHourglassCursor();

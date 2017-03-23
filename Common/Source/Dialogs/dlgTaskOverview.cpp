@@ -432,9 +432,7 @@ static void OnSaveClicked(WndButton* pWnd){
   if (_tcslen(task_name)>0) {
 
 	_tcscat(task_name, TEXT(LKS_TSK));
-	LocalPath(file_name,TEXT(LKD_TASKS));
-	_tcscat(file_name,TEXT(DIRSEP));
-	_tcscat(file_name,task_name); // 091101
+	LocalPath(file_name,TEXT(LKD_TASKS), task_name);
 
 	dfe->Lookup(file_name);
 	file_index = dfe->GetAsInteger();
@@ -502,24 +500,29 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
   }
 
   if (file_index>0) {
+
       LPCTSTR szFileName = dfe->GetPathFile();
       LPCTSTR wextension = _tcsrchr(szFileName, _T('.'));
       if(wextension) {
+
+          TCHAR szFilePath[MAX_PATH];
+          LocalPath(szFilePath, _T(LKD_TASKS), szFileName);
+
           bool bOK = false;
           if(_tcsicmp(wextension,_T(LKS_TSK))==0) {
               CTaskFileHelper helper;
-              bOK = helper.Load(szFileName);
+              bOK = helper.Load(szFilePath);
           }
 #ifdef OLDTASK_COMPAT
           else if (_tcsicmp(wextension,_T(LKS_OLD_TSK))==0) {
-              LoadNewTask(szFileName);
+              LoadNewTask(szFilePath);
               bOK = true;
           }
 #endif
           else if (_tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
-              bOK = LoadCupTask(szFileName);
+              bOK = LoadCupTask(szFilePath);
           } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
-              bOK = LoadGpxTask(szFileName);
+              bOK = LoadGpxTask(szFilePath);
           }
           if(!bOK) {
               MessageBoxX(MsgToken(467),_T(" "), mbOk);

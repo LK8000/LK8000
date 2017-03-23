@@ -154,7 +154,7 @@ namespace lk {
                         closedir(dirp);
                         dirp = NULL;
                     }
-                } while ((*this) && (isDots(getName()) || ((fnmatch(_sPattern.c_str(), entry.d_name, 0)) != 0)));
+                } while ((*this) && (isDots(getName()) || ((fnmatch(_sPattern.c_str(), entry.d_name, FNM_CASEFOLD)) != 0)));
             }
 
             virtual operator bool() {
@@ -166,7 +166,7 @@ namespace lk {
                 return S_ISDIR(DTTOIF(entry.d_type));
 #else
                 struct stat st;
-                if (fstatat(dirfd(dirp), entry.d_name, &st, 0) == -1) {
+                if (fstatat(dirfd(dirp), entry.d_name, &st, 0) == 0) {
                     return S_ISDIR(st.st_mode);
                 }
                 return false;

@@ -2133,33 +2133,43 @@ void CAirspaceManager::ReadAirspaces() {
     for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
         fileCounter++;
         TCHAR szFile[MAX_PATH] = TEXT("\0");
-        _tcscpy(szFile, airSpaceFile);
-        _tcscpy(airSpaceFile, _T(""));
-        ExpandLocalPath(szFile);
+        LocalPath(szFile, _T(LKD_AIRSPACES), airSpaceFile);
 
         if(_tcslen(szFile) > 0) { // Check if there is a filename present
             LPCTSTR wextension = _tcsrchr(szFile, _T('.'));
 
+            bool readOk=false;
+
             if(wextension != nullptr) { // Check if we have a file extension
                 ZZIP_FILE* fp = openzip(szFile, "rt");
-
                 if(fp != nullptr) { // Check if it possible to open the file
-                    bool readOk=false;
 
                     if(_tcsicmp(wextension,_T(".txt"))==0) { // TXT file: should be an OpenAir
                         FillAirspacesFromOpenAir(fp);
                         readOk=true;
-                    } else if(_tcsicmp(wextension,_T(".aip"))==0) readOk=FillAirspacesFromOpenAIP(fp); // AIP file: should be an OpenAIP
-                    else StartupStore(TEXT("... Unknown airspace file %d extension: %s%s"), fileCounter, wextension, NEWLINE);
+                    } else if(_tcsicmp(wextension,_T(".aip"))==0) { // AIP file: should be an OpenAIP
+                        readOk=FillAirspacesFromOpenAIP(fp);
+                    }  else {
+                        StartupStore(TEXT("... Unknown airspace file %d extension: %s%s"), fileCounter, wextension, NEWLINE);
+                    }
 
-                    if(readOk) { // if file was OK remember otherwise forget it
-                        ContractLocalPath(szFile);
-                        _tcscpy(airSpaceFile, szFile);
-                    } else StartupStore(TEXT("... Failed to parse airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
+                    if(!readOk) { // if file was OK remember otherwise forget it
+                        StartupStore(TEXT("... Failed to parse airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
+                    }
                     zzip_fclose(fp);
-                } else StartupStore(TEXT("... Unable to open airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
-            } else StartupStore(TEXT("... Airspace file %d without extension.%s"), fileCounter, NEWLINE);
-        } else StartupStore(TEXT("... No airspace file %d%s"),fileCounter, NEWLINE);
+                } else {
+                    StartupStore(TEXT("... Unable to open airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
+                }
+            } else {
+                StartupStore(TEXT("... Airspace file %d without extension.%s"), fileCounter, NEWLINE);
+            }
+            if(!readOk) { // if file was OK remember otherwise forget it
+                _tcscpy(airSpaceFile, _T(""));
+            }
+
+        } else {
+            StartupStore(TEXT("... No airspace file %d%s"),fileCounter, NEWLINE);
+        }
     }
 #if ASPWAVEOFF
     AirspaceDisableWaveSectors();

@@ -289,8 +289,9 @@ bool Startup(const TCHAR* szCmdLine) {
   #if TESTBENCH
   TCHAR szPath[MAX_PATH] = {0};
   lk::filesystem::getExePath(szPath, MAX_PATH);
-  StartupStore(_T(". Program execution path is <%s>") NEWLINE,szPath);
-  StartupStore(_T(". Program data directory is <%s>") NEWLINE,LKGetLocalPath());
+  StartupStore(_T(". Program execution path :   <%s>"), szPath);
+  StartupStore(_T(". Program system directory : <%s>"), LKGetSystemPath());
+  StartupStore(_T(". Program data directory :   <%s>"), LKGetLocalPath());
   #endif
 
   InstallSystem();
@@ -304,13 +305,13 @@ bool Startup(const TCHAR* szCmdLine) {
   CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
   CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
 
-  _stprintf(defaultProfileFile,_T("%s" LKD_CONF DIRSEP LKPROFILE), LKGetLocalPath());
+  LocalPath(defaultProfileFile, _T(LKD_CONF), _T(LKPROFILE));
   _tcscpy(startProfileFile, defaultProfileFile);
-  _stprintf(defaultAircraftFile,_T("%s" LKD_CONF DIRSEP LKAIRCRAFT), LKGetLocalPath());
+  LocalPath(defaultAircraftFile,_T(LKD_CONF), _T(LKAIRCRAFT));
   _tcscpy(startAircraftFile, defaultAircraftFile);
-  _stprintf(defaultPilotFile,_T("%s" LKD_CONF DIRSEP LKPILOT),LKGetLocalPath());
+  LocalPath(defaultPilotFile,_T(LKD_CONF), _T(LKPILOT));
   _tcscpy(startPilotFile, defaultPilotFile);
-  _stprintf(defaultDeviceFile,_T("%s" LKD_CONF DIRSEP LKDEVICE),LKGetLocalPath());
+  LocalPath(defaultDeviceFile,_T(LKD_CONF), _T(LKDEVICE));
   _tcscpy(startDeviceFile, defaultDeviceFile);
 
 #if !defined(UNDER_CE) || (defined(__linux__) && !defined(ANDROID))

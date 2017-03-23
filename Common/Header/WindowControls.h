@@ -338,12 +338,17 @@ class DataFieldFileReader: public DataField {
   int SetAsInteger(int Value) override;
 
   void Sort(int startindex=0) override;
+
+  gcc_nonnull_all
   void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
 #ifdef ANDROID
+  gcc_nonnull_all
   void ScanZipDirectory(const TCHAR *subdir, const TCHAR *filter);
 #endif
  protected:
-  BOOL ScanDirectories(const TCHAR *pattern, const TCHAR *filter);
+
+  gcc_nonnull_all
+  BOOL ScanDirectories(const TCHAR *sPath, const TCHAR* subdir, const TCHAR *filter);
 
 };
 

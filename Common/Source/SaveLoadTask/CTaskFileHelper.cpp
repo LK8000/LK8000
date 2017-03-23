@@ -185,12 +185,11 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
         #endif
         // Clear the flag, forever.
         FullResetAsked=false;
-        _tcscpy(taskFileName,_T("%LOCAL_PATH%\\\\_Tasks\\DEMO.lkt"));
-        ExpandLocalPath(taskFileName);
-    } else {
-       _tcscpy(taskFileName,szFileName);
-    }
 
+        LocalPath(taskFileName, _T(LKD_TASKS),  _T("DEMO.lkt"));
+    } else {
+        _tcscpy(taskFileName, szFileName);
+    }
 
 
     FILE* stream = _tfopen(taskFileName, TEXT("rb"));

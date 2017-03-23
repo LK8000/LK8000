@@ -370,29 +370,21 @@ bool LoadChecklist(short checklistmode) {
   switch(checklistmode) {
 	// notepad
 	case 0:
-		LocalPath(filename, TEXT(LKD_CONF));
-		_tcscat(filename,_T(DIRSEP));
-		_tcscat(filename,_T(LKF_CHECKLIST));
+		LocalPath(filename, TEXT(LKD_CONF), _T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),MsgToken(878));  // notepad
 
 		if (LoadUtfChecklist(filename,false)) return true;
                 // if no user file, look for demo file
-		LocalPath(filename, TEXT(LKD_CONF));
-		_tcscat(filename,_T(DIRSEP));
-		_tcscat(filename,_T(LKF_CHECKLISTDEMO));
+		LocalPath(filename, TEXT(LKD_CONF), _T(LKF_CHECKLISTDEMO));
 		return LoadUtfChecklist(filename,true);
 	// logbook TXT
 	case 1:
-		LocalPath(filename, TEXT(LKD_LOGS));
-		_tcscat(filename,_T(DIRSEP));
-		_tcscat(filename,_T(LKF_LOGBOOKTXT));
+		LocalPath(filename, TEXT(LKD_LOGS), _T(LKF_LOGBOOKTXT));
 		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
 		 return LoadUtfChecklist(filename,true);
 	// logbook LST
 	case 2:
-		LocalPath(filename, TEXT(LKD_LOGS));
-		_tcscat(filename,_T(DIRSEP));
-		_tcscat(filename,_T(LKF_LOGBOOKLST));
+		LocalPath(filename, TEXT(LKD_LOGS), _T(LKF_LOGBOOKLST));
 		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
 		return LoadUtfChecklist(filename,true);
 		break;

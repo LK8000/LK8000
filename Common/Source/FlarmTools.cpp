@@ -43,9 +43,7 @@ void OpenFLARMDetails() {
   }
 
   TCHAR filename[MAX_PATH];
-  LocalPath(filename,TEXT(LKD_CONF));
-  _tcscat(filename,_T(DIRSEP));
-  _tcscat(filename,_T(LKF_FLARMIDS));
+  LocalPath(filename,TEXT(LKD_CONF),_T(LKF_FLARMIDS));
 
   #if TESTBENCH
   StartupStore(TEXT("... OpenFLARMDetails: <%s>%s"),filename,NEWLINE);
@@ -86,9 +84,7 @@ void OpenFLARMDetails() {
 void SaveFLARMDetails(void)
 {
   TCHAR filename[MAX_PATH];
-  LocalPath(filename,TEXT(LKD_CONF)); // 091103
-  _tcscat(filename,_T(DIRSEP));
-  _tcscat(filename,_T(LKF_FLARMIDS));
+  LocalPath(filename,TEXT(LKD_CONF),_T(LKF_FLARMIDS)); // 091103
 
   FILE * stream = _tfopen(filename,_T("wt"));
   if(stream) {

@@ -136,7 +136,7 @@ bool ReadWinPilotPolar(void) {
     ZZIP_FILE* stream = openzip(szFile, "rt");
     if(!stream) {
         // failed to open absolute. try LocalPath
-        LocalPath(szFile, szPolarFile);
+        LocalPath(szFile, _T("LKD_POLARS"), szPolarFile);
         stream = openzip(szFile, "rt");
     }
     if(!stream){
@@ -151,13 +151,13 @@ bool ReadWinPilotPolar(void) {
         }
 
         if(bRetry) {
-            LocalPath(szFile,str.c_str());
+            LocalPath(szFile,_T(LKD_POLARS), str.c_str());
             stream = openzip(szFile, "rt");
         }
     }
     if(!stream) {
         // all previous failed. try SystemPath
-        SystemPath(szFile, szPolarFile);
+        SystemPath(szFile, _T(LKD_SYS_POLAR), szPolarFile);
         stream = openzip(szFile, "rt");
     }
 
@@ -270,10 +270,11 @@ bool ReadWinPilotPolar(void) {
 	} while(ReadString(stream,READLINE_LENGTH,TempString, cs));
 
 	zzip_close(stream);
-	if (foundline) {
-		ContractLocalPath(szFile);
-		_tcscpy(szFile,szPolarFile);
-	} else {
+  } else {
+        StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);
+  }
+
+	if (!foundline) {
 		StartupStore(_T("... INVALID POLAR FILE! POLAR RESET TO DEFAULT: Std.Cirrus\n"));
 		ww[0]= 337;
 		ww[1]= 80;
@@ -288,10 +289,6 @@ bool ReadWinPilotPolar(void) {
 
         _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
 	} // !foundline
-    }
-    else {
-	StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);
-    }
   return(foundline);
 
 }

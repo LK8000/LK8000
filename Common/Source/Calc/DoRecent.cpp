@@ -22,10 +22,7 @@ bool LoadRecentList() {
    int i=0, nwp;
    unsigned int csum;
 
-  LocalPath(buffer,TEXT(LKD_CONF));
-  _tcscat(buffer,TEXT(DIRSEP));
-  _tcscat(buffer,_T(LKF_RECENTS)); // 091101
-
+   LocalPath(buffer,TEXT(LKD_CONF),_T(LKF_RECENTS));
 
    RecentNumber=0;
    for (i=0; i<MAXCOMMON; i++) {
@@ -83,9 +80,7 @@ bool SaveRecentList() {
    FILE *fp;
    int i;
 
-  LocalPath(buffer,TEXT(LKD_CONF));
-  _tcscat(buffer,TEXT(DIRSEP));
-  _tcscat(buffer,_T(LKF_RECENTS)); // 091101
+  LocalPath(buffer,TEXT(LKD_CONF),_T(LKF_RECENTS));
 
    StartupStore(_T(". Save history to <%s>%s"),buffer,NEWLINE);  // 091122
    if (WayPointList.empty()) {

@@ -95,10 +95,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
 
 
   _tcscat(profile_name, profilesuffix);
-  LocalPath(file_name,TEXT(LKD_CONF));
-  _tcscat(file_name,TEXT(DIRSEP));
-  _tcscat(file_name,profile_name);
-
+  LocalPath(file_name,TEXT(LKD_CONF), profile_name);
   dfe->Lookup(file_name);
   file_index = dfe->GetAsInteger();
 

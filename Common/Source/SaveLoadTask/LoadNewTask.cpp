@@ -117,9 +117,8 @@ void LoadNewTask(LPCTSTR szFileName)
 	#endif
 	// Clear the flag, forever.
 	FullResetAsked=false;
-	_tcscpy(taskFileName,_T("%LOCAL_PATH%\\\\_Tasks\\DEMO.TSK"));
-	ExpandLocalPath(taskFileName);
 
+	LocalPath(taskFileName, _T(LKD_TASKS),  _T("DEMO.lkt"));
   } else {
 	_tcscpy(taskFileName,szFileName);
   }

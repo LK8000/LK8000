@@ -247,79 +247,54 @@ bool CheckRootDir() {
 
 
 bool CheckDataDir() {
-  TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  SystemPath(srcdir,_T(LKD_SYSTEM));
-  _stprintf(srcfile,TEXT("%s%s_SYSTEM"),srcdir, _T(DIRSEP));
+  SystemPath(srcfile,_T(LKD_SYSTEM),_T("_SYSTEM"));
   return lk::filesystem::exist(srcfile);
 }
 
 bool CheckLanguageDir() {
-  TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir, _T(LKD_LANGUAGE));
-  _stprintf(srcfile,TEXT("%s%s_LANGUAGE"),srcdir, _T(DIRSEP));
+  LocalPath(srcfile, _T(LKD_LANGUAGE), _T("_LANGUAGE"));
   return lk::filesystem::exist(srcfile);
 }
 
 bool CheckLanguageEngMsg() {
-  TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir, _T(LKD_LANGUAGE));
-  _stprintf(srcfile,TEXT("%s%sENG_MSG.TXT"),srcdir, _T(DIRSEP));
+  LocalPath(srcfile, _T(LKD_LANGUAGE), _T("ENG_MSG.TXT"));
   return lk::filesystem::exist(srcfile);
 }
 
 bool CheckSystemDefaultMenu() {
-  TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  SystemPath(srcdir, _T(LKD_SYSTEM));
-  _stprintf(srcfile,TEXT("%s%sDEFAULT_MENU.TXT"),srcdir, _T(DIRSEP));
+  SystemPath(srcfile, _T(LKD_SYSTEM), _T("DEFAULT_MENU.TXT"));
   return lk::filesystem::exist(srcfile);
 }
 
 
 bool CheckPolarsDir() {
-  TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir, _T(LKD_POLARS));
-  _stprintf(srcfile,TEXT("%s%s_POLARS"),srcdir, _T(DIRSEP));
+  LocalPath(srcfile, _T(LKD_POLARS), _T("_POLARS"));
   if ( !lk::filesystem::exist(srcfile) ) {
     return false;
   }
 
-  LocalPath(srcdir, _T(LKD_POLARS));
-  _stprintf(srcfile,TEXT("%s%sDefault.plr"),srcdir, _T(DIRSEP));
+  LocalPath(srcfile, _T(LKD_POLARS), _T("Default.plr"));
   return lk::filesystem::exist(srcfile);
-}
-
-bool CheckRegistryProfile() {
-    TCHAR srcpath[MAX_PATH];
-    TCHAR profilePath[MAX_PATH];
-    if ( GlobalModelType == MODELTYPE_PNA_HP31X ) return false;
-    LocalPath(srcpath,TEXT(LKD_CONF)); // 091101
-    _stprintf(profilePath,_T("%s%s%s"),srcpath, _T(DIRSEP),LKPROFILE); // 091101
-    return lk::filesystem::exist(profilePath);
 }
 
 #ifndef ANDROID
 bool CheckSystemBitmaps() {
-  TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  SystemPath(srcdir, _T(LKD_BITMAPS));
-  _stprintf(srcfile,TEXT("%s%s_BITMAPSH"),srcdir, _T(DIRSEP));
+  SystemPath(srcfile, _T(LKD_BITMAPS), _T("_BITMAPSH"));
   return lk::filesystem::exist(srcfile);
 }
 #endif
 
 bool CheckFilesystemWritable() {
-  TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir, _T(""));
-  _stprintf(srcfile,TEXT("%s%sEmptyTest.txt"),srcdir, _T(DIRSEP));
+  LocalPath(srcfile, _T("EmptyTest.txt"));
 
-  FILE *stream;
-  stream=_tfopen(srcfile,_T("a"));
+  FILE *stream =_tfopen(srcfile,_T("w"));
   if (stream==NULL) return false;
   bool success = fprintf(stream,"FILESYSTEM WRITE CHECK, THIS FILE CAN BE REMOVED ANY TIME\n") >= 0;
   success &= fclose(stream) == 0;

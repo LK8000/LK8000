@@ -1240,7 +1240,7 @@ int RunSignature() {
 void AdditionalHeaders(void) {
 
     TCHAR pathfilename[MAX_PATH + 1];
-    _stprintf(pathfilename, TEXT("%s%s%s%s"), LKGetLocalPath(), _T(LKD_LOGS), _T(DIRSEP), _T(EXTHFILE));
+    LocalPath(pathfilename, _T(LKD_LOGS), _T(EXTHFILE));
 
     if (!lk::filesystem::exist(pathfilename)) {
 #if DEBUGHFILE

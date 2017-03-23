@@ -122,23 +122,8 @@ int DataFieldFileReader::SetAsInteger(int Value){
 void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
   
   TCHAR buffer[MAX_PATH] = TEXT("\0");
-  LocalPath(buffer);
-  if (_tcslen(subdir)>0) {
-    const TCHAR* ptr = subdir;
-    const TCHAR* ptr2 = buffer + _tcslen(buffer) -1;
-
-    if( (*ptr2=='/')||(*ptr2=='\\') ) {
-        if( ((*ptr=='/')||(*ptr=='\\')) ) {
-            ++ptr;
-        }
-    } else {
-        if( (*ptr!='/')||(*ptr!='\\') ) {
-            _tcscat(buffer, _T(DIRSEP));
-        }
-    }
-	_tcscat(buffer,ptr);
-  }
-  ScanDirectories(buffer,filter);
+  LocalPath(buffer, subdir);
+  ScanDirectories(buffer,_T(""), filter);
   Sort();
 
 }
@@ -168,7 +153,11 @@ void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* fil
 
           TCHAR* szFileName = _tcsrchr(dirent.d_name, _T('/'))+1;
           if(GetLabelIndex(szFileName) <= 0) {
-            addFile(szFileName, dirent.d_name);
+            TCHAR * szFilePath = dirent.d_name + _tcslen(subdir);
+            while( (*szFilePath) == _T('/') || (*szFilePath) == _T('\\') ) {
+                ++szFilePath;
+            }
+            addFile(szFileName, szFilePath);
           }
         }
       }
@@ -179,32 +168,42 @@ void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* fil
 #endif
 
 
-BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* filter) {
+BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdir, const TCHAR* filter) {
 
-    TCHAR DirPath[MAX_PATH];
+    assert(sPath);
+    assert(subdir);
+    assert(filter);
+
     TCHAR FileName[MAX_PATH];
 
-    if (sPath) {
-        _tcscpy(DirPath, sPath);
-        _tcscpy(FileName, sPath);
-    } else {
-        DirPath[0] = 0;
-        FileName[0] = 0;
+    _tcscpy(FileName, sPath);
+    _tcscat(FileName, TEXT(DIRSEP));
+    if(_tcslen(subdir) > 0) {
+        _tcscat(FileName, subdir);
+        _tcscat(FileName, TEXT(DIRSEP));
     }
 
-    _tcscat(DirPath, TEXT("\\"));
-    _tcscat(FileName, TEXT("\\*"));
-    lk::filesystem::fixPath(DirPath);
+    _tcscat(FileName, TEXT("*"));
     lk::filesystem::fixPath(FileName);
-    
+
     for (lk::filesystem::directory_iterator It(FileName); It; ++It) {
         if (It.isDirectory()) {
-            _tcscpy(FileName, DirPath);
+
+            _tcscpy(FileName, subdir);
+            if(_tcslen(FileName) > 0) {
+                _tcscat(FileName, TEXT(DIRSEP));
+            }
             _tcscat(FileName, It.getName());
-            ScanDirectories(FileName, filter);
+
+            ScanDirectories(sPath, FileName, filter);
         } else if(checkFilter(It.getName(), filter)) {
-            _tcscpy(FileName, DirPath);
+
+            _tcscpy(FileName, subdir);
+            if(_tcslen(FileName) > 0) {
+              _tcscat(FileName, TEXT(DIRSEP));
+            }
             _tcscat(FileName, It.getName());
+
             addFile(It.getName(), FileName);
         }
     }

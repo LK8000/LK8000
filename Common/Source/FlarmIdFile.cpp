@@ -13,17 +13,13 @@
 
 FlarmIdFile::FlarmIdFile(void)
 {
-  TCHAR path[MAX_PATH];
-
   TCHAR flarmIdFileName[MAX_PATH] = TEXT("\0");
 
-  LocalPath(path);
-
-  _stprintf(flarmIdFileName, TEXT("%s%s%s%s%s"), path, _T(DIRSEP), TEXT(LKD_CONF), _T(DIRSEP), TEXT(LKF_FLARMNET));
+  LocalPath(flarmIdFileName, _T(LKD_CONF), _T(LKF_FLARMNET));
 
   FILE*	hFile = _tfopen(flarmIdFileName, TEXT("rt"));
   if (hFile == NULL) {
-	_stprintf(flarmIdFileName, TEXT("%s%s%s%sdata.fln"), path, _T(DIRSEP), TEXT(LKD_CONF), _T(DIRSEP));
+    LocalPath(flarmIdFileName, _T(LKD_CONF), _T("data.fln"));
 	hFile = _tfopen(flarmIdFileName, TEXT("rt"));
 	if (hFile == NULL) return;
   }

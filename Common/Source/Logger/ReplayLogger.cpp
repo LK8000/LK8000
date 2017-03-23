@@ -28,7 +28,11 @@ bool ReplayLogger::ReadLine(TCHAR *buffer) {
   }
   if (!fp) {
     if (_tcslen(FileName)>0) {
-      fp = _tfopen(FileName, TEXT("rt"));
+
+      TCHAR szFilePath[MAX_PATH];
+      LocalPath(szFilePath, _T(LKD_LOGS), FileName);
+
+      fp = _tfopen(szFilePath, TEXT("rt"));
     }
   }
   if (fp==NULL) {

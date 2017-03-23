@@ -61,14 +61,15 @@
 //
 // Common Functions
 //
-extern void 	InstallSystem();
-extern bool		CheckRootDir();
-extern bool		CheckDataDir();
-extern bool		CheckLanguageDir();
-extern bool		CheckPolarsDir();
-extern bool		CheckRegistryProfile();
-extern bool		Debounce(int debouncetime);
-extern bool		Debounce();
+void InstallSystem();
+bool CheckRootDir();
+bool CheckDataDir();
+bool CheckLanguageDir();
+bool CheckPolarsDir();
+bool CheckFilesystemWritable();
+
+bool Debounce(int debouncetime);
+bool Debounce();
 
 void DoStatusMessage(const TCHAR* text, const TCHAR* data = nullptr, const bool playsound = true) gcc_nonnull(1);
 

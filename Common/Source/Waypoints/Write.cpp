@@ -220,51 +220,33 @@ void WriteWayPointFile(FILE *fp) {
 // called from dlgConfiguration
 // CAREFUL we must check for read only files here!!
 void WaypointWriteFiles(void) {
-  LockTaskData();
+    LockTaskData();
 
-  TCHAR szFile1[MAX_PATH] = TEXT("\0");
-  TCHAR szFile2[MAX_PATH] = TEXT("\0");
-
-  FILE *fp=NULL;
-  _tcscpy(szFile1,szWaypointFile);
-  ExpandLocalPath(szFile1);
-
-  if (_tcslen(szFile1)>0) {
-    fp = _tfopen(szFile1, TEXT("wb"));
-  } else {
-
-	LocalPath(szFile1,_T(LKD_WAYPOINTS));
-	_tcscat(szFile1,_T(DIRSEP)); _tcscat(szFile1,_T(LKF_WAYPOINTS1)); // 091206
-
-	fp = _tfopen(szFile1, TEXT("wb"));
-  }
-
-  if(fp != NULL) {
+    TCHAR* WaypointFileList[] = {
+            szWaypointFile,
+            szAdditionalWaypointFile
+    };
     globalFileNum = 0;
-    WriteWayPointFile(fp);
-    fprintf(fp,"\r\n");
-    fclose(fp);
-    fp = NULL;
-  }
-  _tcscpy(szFile2,szAdditionalWaypointFile);
-  ExpandLocalPath(szFile2);
+    for( TCHAR* szFile : WaypointFileList) {
 
-  if (_tcslen(szFile2)>0) {
-    fp = _tfopen(szFile2, TEXT("wb"));
-  } else {
+        const int type = WpFileType[globalFileNum+1];
 
-	LocalPath(szFile2,_T(LKD_WAYPOINTS));
-	_tcscat(szFile2,_T(DIRSEP)); _tcscat(szFile2,_T(LKF_WAYPOINTS2)); // 091206
+        // only few file type can be writed.
+        if( type == LKW_CUP || type == LKW_COMPE|| type == LKW_OZI || type == LKW_DAT ) {
 
-	fp = _tfopen(szFile2, TEXT("wb"));
-  }
+            if (_tcslen(szFile) > 0) {
+                TCHAR szFilePath[MAX_PATH] = TEXT("\0");
+                LocalPath(szFilePath, _T(LKD_WAYPOINTS), szFile);
+                FILE *fp = _tfopen(szFilePath, TEXT("wb"));
+                if (fp) {
+                    WriteWayPointFile(fp);
+                    fprintf(fp, "\r\n");
+                    fclose(fp);
+                }
+            }
+        }
+        ++globalFileNum;
+    }
 
-  if(fp != NULL) {
-    globalFileNum = 1;
-    WriteWayPointFile(fp);
-    fprintf(fp,"\r\n");
-    fclose(fp);
-    fp = NULL;
-  }
-  UnlockTaskData();
+    UnlockTaskData();
 }

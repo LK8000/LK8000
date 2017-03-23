@@ -263,12 +263,12 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
   ZZIP_FILE* langFile = openzip(szFilePath, "rt");
   if(!langFile) {
 	  // failed to open absolute. try LocalPath
-	  LocalPath(szFilePath, szFile1);
+	  LocalPath(szFilePath, _T(LKD_LANGUAGE), szFile1);
 	  langFile = openzip(szFilePath, "rt");
   }
   if(!langFile) {
 	// failed to open lOCAL. try SystemPath
-    SystemPath(szFilePath, szFile1);
+    SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), szFile1);
     langFile = openzip(szFilePath, "rt");
   }
 

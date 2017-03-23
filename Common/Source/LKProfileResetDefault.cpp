@@ -388,16 +388,16 @@ void LKProfileResetDefault(void) {
 
 
   _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
-  _tcscpy(szAirspaceFile,_T("%LOCAL_PATH%\\\\_Airspaces\\DEMO.txt"));
+  _tcscpy(szAirspaceFile,_T("DEMO.txt"));
   szAdditionalAirspaceFile[0] = TEXT('\0');
-  _tcscpy(szWaypointFile,_T("%LOCAL_PATH%\\\\_Waypoints\\DEMO.cup"));
+  _tcscpy(szWaypointFile,_T("DEMO.cup"));
   szAdditionalWaypointFile[0] = TEXT('\0');
-  _tcscpy(szTerrainFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.DEM"));
-  _tcscpy(szAirfieldFile,_T("%LOCAL_PATH%\\\\_Waypoints\\WAYNOTES.txt"));
+  _tcscpy(szTerrainFile,_T("DEMO.DEM"));
+  _tcscpy(szAirfieldFile,_T("WAYNOTES.txt"));
   _tcscpy(szLanguageFile,_T(LKD_DEFAULT_LANGUAGE));
 
   szInputFile[0] = TEXT('\0');
-  _tcscpy(szMapFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.LKM"));
+  _tcscpy(szMapFile,_T("DEMO.LKM"));
 
   // Ports and device settings
   for(int i=0 ; i< NUMDEV; i++)

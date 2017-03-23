@@ -17,67 +17,43 @@ void InitWayPointCalc(void);
 
 void ReadWayPoints(void)
 {
-  #if TESTBENCH
-  StartupStore(TEXT(". ReadWayPoints%s"),NEWLINE);
-  #endif
-
-  TCHAR szFile1[MAX_PATH] = TEXT("\0");
-  TCHAR szFile2[MAX_PATH] = TEXT("\0");
-
-  ZZIP_FILE *fp=NULL;
+    #if TESTBENCH
+    StartupStore(TEXT(". ReadWayPoints%s"),NEWLINE);
+    #endif
 
     LockTaskData();
     CloseWayPoints(); // BUGFIX 091104 duplicate waypoints entries
     InitVirtualWaypoints();	// 091103
 
-    _tcscpy(szFile1,szWaypointFile);
+    globalFileNum = 0;
 
-    _tcscpy(szWaypointFile,_T(""));
+    TCHAR* WaypointFileList[] = {
+        szWaypointFile,
+        szAdditionalWaypointFile
+    };
 
-    if (_tcslen(szFile1)>0) {
-      ExpandLocalPath(szFile1);
-      fp = openzip(szFile1, "rt");
-    } else {
-    }
+    for( TCHAR* szFile : WaypointFileList) {
 
-    if(fp != NULL)
-      {
-        globalFileNum = 0;
-        WpFileType[1]=ReadWayPointFile(fp, szFile1);
-        zzip_fclose(fp);
-        fp = 0;
-        // read OK, so set the registry to the actual file name
-        ContractLocalPath(szFile1);
-	_tcscpy(szWaypointFile,szFile1);
-      } else {
-      StartupStore(TEXT("--- No waypoint file 1%s"),NEWLINE);
-    }
+        if (_tcslen(szFile) > 0) {
+            TCHAR szFilePath[MAX_PATH];
+            LocalPath(szFilePath, _T(LKD_WAYPOINTS), szFile);
+            ZZIP_FILE* fp = openzip(szFilePath, "rt");
+            if (fp) {
+                WpFileType[globalFileNum+1] = ReadWayPointFile(fp, szFilePath);
+                zzip_fclose(fp);
+                fp = nullptr;
+            } else {
+                StartupStore(TEXT("--- No waypoint file %d"), globalFileNum+1);
+                // file not found : reset config
+                _tcscpy(szFile, _T(""));
+            }
+        }
 
-  // read additional waypoint file
-
-    // reset to empty until we verified it is existing
-    _tcscpy(szFile2,szAdditionalWaypointFile);
-    _tcscpy(szAdditionalWaypointFile,_T(""));
-
-    if (_tcslen(szFile2)>0){
-      ExpandLocalPath(szFile2);
-      fp = openzip(szFile2, "rt");
-      if(fp != NULL){
-        globalFileNum = 1;
-        WpFileType[2]=ReadWayPointFile(fp, szFile2);
-        zzip_fclose(fp);
-        fp = NULL;
-        // read OK, so set the registry to the actual file name
-        ContractLocalPath(szFile2);
-	_tcscpy(szAdditionalWaypointFile,szFile2);
-      } else {
-        StartupStore(TEXT("--- No waypoint file 2%s"),NEWLINE);
-      }
+        ++globalFileNum;
     }
 
     // each time we load WayPoint, we need to init WaypointCalc !!
     InitWayPointCalc();
 
-  UnlockTaskData();
-
+    UnlockTaskData();
 }

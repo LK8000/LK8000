@@ -21,8 +21,7 @@ void RasterTerrain::OpenTerrain(void)
   CreateProgressDialog(MsgToken(900)); // Loading Terrain File...
 
   TCHAR szFile[MAX_PATH] = _T("\0");
-  _tcscpy(szFile,szTerrainFile);
-  ExpandLocalPath(szFile);
+  LocalPath(szFile,_T(LKD_MAPS), szTerrainFile);
 
   if ( (_tcslen(szFile)>0) && ( _tcsstr(szFile, _T(".DEM")) || _tcsstr(szFile, _T(".dem")) ) ) {
 	if (!CreateTerrainMap(szFile)) {

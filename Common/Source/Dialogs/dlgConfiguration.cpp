@@ -2466,7 +2466,6 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szAirspaceFile);
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2479,7 +2478,6 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szAdditionalAirspaceFile);
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalAirspaceFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2492,7 +2490,6 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szWaypointFile);
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2508,7 +2505,6 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szAdditionalWaypointFile);
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalWaypointFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2545,7 +2541,6 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szMapFile);
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2558,7 +2553,6 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szTerrainFile);
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2570,7 +2564,6 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szAirfieldFile);
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirfieldFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2607,7 +2600,6 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szInputFile);
-  ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpInputFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -3936,10 +3928,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szWaypointFile)) {
       _tcscpy(szWaypointFile,temptext);
       WAYPOINTFILECHANGED= true;
@@ -3948,10 +3938,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalWaypointFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAdditionalWaypointFile)) {
       _tcscpy(szAdditionalWaypointFile,temptext);
       WAYPOINTFILECHANGED= true;
@@ -3960,10 +3948,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAirspaceFile)) {
       _tcscpy(szAirspaceFile,temptext);
       AIRSPACEFILECHANGED= true;
@@ -3972,10 +3958,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalAirspaceFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAdditionalAirspaceFile)) {
       _tcscpy(szAdditionalAirspaceFile,temptext);
       AIRSPACEFILECHANGED= true;
@@ -3984,10 +3968,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szMapFile)) {
       _tcscpy(szMapFile,temptext);
       MAPFILECHANGED= true;
@@ -3996,10 +3978,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szTerrainFile)) {
       _tcscpy(szTerrainFile,temptext);
       TERRAINFILECHANGED= true;
@@ -4008,10 +3988,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirfieldFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAirfieldFile)) {
       _tcscpy(szAirfieldFile,temptext);
       AIRFIELDFILECHANGED= true;
@@ -4020,8 +3998,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLanguageFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
     if (_tcscmp(temptext,szLanguageFile)) {
       _tcscpy(szLanguageFile,temptext);
@@ -4032,10 +4009,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpInputFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
     if (_tcscmp(temptext,szInputFile)) {
       _tcscpy(szInputFile,temptext);
       requirerestart = true;

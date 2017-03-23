@@ -29,7 +29,7 @@ bool sound_table::init() {
     reset(); // useless still table is initialized only one time. no impact on perf, so is better to leave it...
 
     TCHAR srcfile[MAX_PATH] = {};
-     _stprintf(srcfile,_T("%s" LKD_CONF DIRSEP LKSOUNDTABLE),LKGetLocalPath());
+    LocalPath(srcfile,_T(LKD_CONF), _T(LKSOUNDTABLE));
     
      FILE *fp;
 	 if ( (fp=_tfopen(srcfile, _T("rt"))) == NULL ) {

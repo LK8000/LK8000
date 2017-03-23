@@ -11,10 +11,8 @@
 
 void SaveDefaultTask(void) {
   LockTaskData();
-    TCHAR buffer[MAX_PATH];
-  LocalPath(buffer,TEXT(LKD_TASKS));
-  _tcscat(buffer,TEXT(DIRSEP));
-  _tcscat(buffer,_T(LKF_DEFAULTASK)); // 091101
-    SaveTask(buffer);
+  TCHAR buffer[MAX_PATH];
+  LocalPath(buffer, _T(LKD_TASKS), _T(LKF_DEFAULTASK));
+  SaveTask(buffer);
   UnlockTaskData();
 }

@@ -12,47 +12,26 @@
 #include "AirfieldDetails.h"
 #include "utils/openzip.h"
 
-ZZIP_FILE* zAirfieldDetails = NULL;
+ZZIP_FILE* OpenAirfieldDetails() {
 
-static TCHAR szAirfieldDetailsFile[MAX_PATH] = TEXT("\0");
+  ZZIP_FILE * fp = nullptr;
 
-void OpenAirfieldDetails() {
-  TCHAR zfilename[MAX_PATH];
-
-  zAirfieldDetails = NULL;
-
-  _tcscpy(szAirfieldDetailsFile,szAirfieldFile);
-
-  if (_tcslen(szAirfieldDetailsFile)>0) {
-    ExpandLocalPath(szAirfieldDetailsFile);
-    _tcscpy(zfilename, szAirfieldDetailsFile);
-    _tcscpy(szAirfieldFile,_T(""));
-  } else {
-	#if 0
-	LocalPath(zfilename, _T(KD_WAYPOINTS));
-	_tcscat(zfilename, _T(DIRSEP));
-	_tcscat(zfilename, _T(LKF_AIRFIELDS));
-	#else
-	_tcscpy(zfilename, _T(""));
-	#endif
+  if (_tcslen(szAirfieldFile)>0) {
+    TCHAR zfilename[MAX_PATH];
+    LocalPath(zfilename, _T(LKD_WAYPOINTS), szAirfieldFile);
+    fp = openzip(zfilename, "rb");
   }
-  if (_tcslen(zfilename)>0) {
-    StartupStore(_T(". open AirfieldFile <%s> %s"), zfilename, NEWLINE);
-    zAirfieldDetails = openzip(zfilename, "rb");
+
+  StartupStore(_T(". open AirfieldFile %s <%s> "), fp ? _T("") : _T("FAILED"),  szAirfieldFile);
+
+  return fp;
+}
+
+
+void CloseAirfieldDetails(ZZIP_FILE* fp) {
+  if (fp) {
+    zzip_fclose(fp);
   }
-};
-
-
-void CloseAirfieldDetails() {
-  if (zAirfieldDetails == NULL) {
-    return;
-  }
-  // file was OK, so save the registry
-  ContractLocalPath(szAirfieldDetailsFile);
-  _tcscpy(szAirfieldFile,szAirfieldDetailsFile);
-
-  zzip_fclose(zAirfieldDetails);
-  zAirfieldDetails = NULL;
 };
 
 
@@ -128,10 +107,12 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
  * fix: if empty lines, do not set details for the waypoint
  * fix: remove CR from text appearing as a spurious char in waypoint details
  */
-void ParseAirfieldDetails() {
+void ParseAirfieldDetails(ZZIP_FILE* fp) {
 
-  if(zAirfieldDetails == NULL)
+  assert(fp);
+  if(!fp) {
     return;
+  }
 
   TCHAR TempString[READLINE_LENGTH+1];
   TCHAR CleanString[READLINE_LENGTH+1];
@@ -149,7 +130,7 @@ void ParseAirfieldDetails() {
   unsigned int j;
 
   charset cs = charset::unknown;
-  while(ReadString(zAirfieldDetails,READLINE_LENGTH,TempString, cs))
+  while(ReadString(fp,READLINE_LENGTH,TempString, cs))
     {
       if(TempString[0]=='[') { // Look for start
 
@@ -207,16 +188,15 @@ void ParseAirfieldDetails() {
 
 void ReadAirfieldFile() {
   #if TESTBENCH
-  StartupStore(TEXT(". ReadAirfieldFile%s"),NEWLINE);
+  StartupStore(TEXT(". ReadAirfieldFile"));
   #endif
 
 	// LKTOKEN  _@M400_ = "Loading Waypoint Notes File..."
   CreateProgressDialog(MsgToken(400));
 
-  {
-    OpenAirfieldDetails();
-    ParseAirfieldDetails();
-    CloseAirfieldDetails();
+  ZZIP_FILE* fp = OpenAirfieldDetails();
+  if(fp) {
+    ParseAirfieldDetails(fp);
+    CloseAirfieldDetails(fp);
   }
-
 }

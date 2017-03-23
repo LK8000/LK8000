@@ -101,14 +101,16 @@ typedef struct {
 // Parse string (new lines etc) and malloc the string
 TCHAR* StringMallocParse(const TCHAR* old_string);
 
-void LocalPath(TCHAR* buf, const TCHAR* file = TEXT(""));
-void SystemPath(TCHAR* buf, const TCHAR* file = TEXT(""));
-void GetPath(TCHAR* buffer, const TCHAR* file, const TCHAR* lkPath);
+void LocalPath(TCHAR* buf, const TCHAR* file = TEXT("")) gcc_nonnull_all;
+void LocalPath(TCHAR* buffer, const TCHAR* SubPath, const TCHAR* file) gcc_nonnull_all;
+
+void SystemPath(TCHAR* buf, const TCHAR* file = TEXT("")) gcc_nonnull_all;
+void SystemPath(TCHAR* buffer, const TCHAR* SubPath, const TCHAR* file) gcc_nonnull_all;
+
+void RemoveFilePathPrefix(const TCHAR* szPrefix, TCHAR* szFilePath) gcc_nonnull_all;
+
 const TCHAR *LKGetLocalPath(void);
 const TCHAR *LKGetSystemPath(void);
-
-void ExpandLocalPath(TCHAR* filein);
-void ContractLocalPath(TCHAR* filein);
 
 void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);
 #if 0

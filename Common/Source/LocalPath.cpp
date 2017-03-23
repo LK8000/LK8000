@@ -241,87 +241,76 @@ BOOL GetFontPath(TCHAR *pPos)
 }
 #endif
 
-void SystemPath(TCHAR* buffer, const TCHAR* file) {
-    GetPath(buffer, file, LKGetSystemPath());
-}
-
-
-void LocalPath(TCHAR* buffer, const TCHAR* file) {
-    GetPath(buffer, file, LKGetLocalPath());
-}
-
-void GetPath(TCHAR* buffer, const TCHAR* file, const TCHAR* lkPath) {
+static gcc_nonnull_all
+void GetPath(TCHAR* buffer, const TCHAR* subpath, const TCHAR* file, const TCHAR* lkPath) {
   // remove leading directory separator from file.
-  const TCHAR* ptr2 = file;
-  while( (*ptr2) == _T('\\') && (*ptr2) ) {
-      ++ptr2;
+  const TCHAR* pfile = file;
+  while( (*pfile) == _T('\\') && (*pfile) == _T('/') ) {
+      ++pfile;
   }
 
-  if (_tcslen(file)>0)
-    _stprintf(buffer,TEXT("%s%s"),lkPath,ptr2);
-  else {
-    _tcscpy(buffer,lkPath);
+  // remove leading directory separator from subpath.
+  const TCHAR* psub = subpath;
+  while( (*psub) == _T('\\') || (*psub) == _T('/')) {
+    ++psub;
+  }
+
+  _tcscpy(buffer,lkPath);
+
+  if( _tcslen(psub) > 0) {
+      _tcscat(buffer,psub);
+      // remove trailing directory separator;
+      size_t len = _tcslen(buffer);
+      while(len > 1 && ( buffer[len-1] == _T('\\') || buffer[len-1] == _T('/'))) {
+          buffer[--len] = _T('\0');
+      }
+      // add right (platform depends) trailing separator
+      _tcscat(buffer, _T(DIRSEP));
+  }
+
+  if (_tcslen(pfile)>0) {
+      _tcscat(buffer,pfile);
   }
 
   lk::filesystem::fixPath(buffer);
 }
 
-void ExpandLocalPath(TCHAR* filein) {
-  // Convert %LOCALPATH% to Local Path
-
-  if (_tcslen(filein)==0) {
-    return;
-  }
-
-  TCHAR lpath[MAX_PATH];
-  TCHAR code[] = TEXT("%LOCAL_PATH%\\");
-  TCHAR output[MAX_PATH];
-  LocalPath(lpath);
-
-  const TCHAR* ptr = _tcsstr(filein, code);
-  if (!ptr) return;
-
-  ptr += _tcslen(code);
-
-  const TCHAR* ptr2 = lpath + _tcslen(lpath) -1;
-
-  if( (*ptr2=='/')||(*ptr2=='\\') ) {
-    if( ((*ptr=='/')||( *ptr=='\\')) ) {
-      ++ptr;
-    }
-  } else {
-    if( (*ptr!='/')||(*ptr!='\\') ) {
-      _tcscat(lpath, _T(DIRSEP));
-    }
-  }
-
-  if (_tcslen(ptr)>0) {
-    _stprintf(output,TEXT("%s%s"),lpath, ptr);
-    _tcscpy(filein, output);
-  }
-  lk::filesystem::fixPath(filein);
+void SystemPath(TCHAR* buffer, const TCHAR* SubPath, const TCHAR* file) {
+    GetPath(buffer, SubPath, file,  LKGetSystemPath());
 }
 
+void LocalPath(TCHAR* buffer, const TCHAR* SubPath, const TCHAR* file) {
+    GetPath(buffer, SubPath, file, LKGetLocalPath());
+}
 
-void ContractLocalPath(TCHAR* filein) {
-  // Convert Local Path part to %LOCALPATH%
+void SystemPath(TCHAR* buffer, const TCHAR* file) {
+    GetPath(buffer, _T(""), file, LKGetSystemPath());
+}
 
-  if (_tcslen(filein)==0) {
-    return;
-  }
+void LocalPath(TCHAR* buffer, const TCHAR* file) {
+    GetPath(buffer, _T(""), file, LKGetLocalPath());
+}
 
-  TCHAR lpath[MAX_PATH];
-  TCHAR code[] = TEXT("%LOCAL_PATH%\\");
-  TCHAR output[MAX_PATH];
-  LocalPath(lpath);
-
-  TCHAR* ptr;
-  ptr = _tcsstr(filein, lpath);
-  if (!ptr) return;
-
-  ptr += _tcslen(lpath);
-  if (_tcslen(ptr)>0) {
-    _stprintf(output,TEXT("%s%s"),code, ptr);
-    _tcscpy(filein, output);
-  }
+/**
+ * * some file are loaded from LocalPath or SystemPath
+ *   ( in v6 Polar and language )
+ *
+ *  this fonction remove Prefix from path.
+ *  requiered for compatibilty with old config file
+ */
+void RemoveFilePathPrefix(const TCHAR* szPrefix, TCHAR* szFilePath) {
+    /***************************************************/
+    /* for compatibilty with old file                  */
+    const TCHAR* code = szPrefix;
+    const TCHAR* ptr = _tcsstr(szFilePath, code);
+    if(ptr) {
+        ptr += _tcslen(code);
+    }
+    while (ptr && ((*ptr) == '\\' || (*ptr) == '/')) {
+        ++ptr;
+    }
+    if(ptr) {
+        _tcscpy(szFilePath, ptr);
+    }
+    /***************************************************/
 }

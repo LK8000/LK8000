@@ -762,12 +762,10 @@ short dlgStartupShowModal(void) {
 
     if (!CheckRootDir()) {
         TCHAR mydir[MAX_PATH];
-        TCHAR mes[MAX_PATH];
 
-        LocalPath(mydir, _T(""));
-        _stprintf(mes, _T("%s"), mydir);
+        LocalPath(mydir);
         MessageBoxX(_T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), mbOk);
-        MessageBoxX(mes, _T("NO LK8000 DIRECTORY"), mbOk, true);
+        MessageBoxX(mydir, _T("NO LK8000 DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
         BeforeShutdown();
         goto _exit;
@@ -866,7 +864,6 @@ short dlgStartupShowModal(void) {
     }
 #endif
 
-    extern bool CheckFilesystemWritable(void);
     if (!CheckFilesystemWritable()) {
         MessageBoxX(_T("LK8000 CANNOT WRITE IN MEMORY CARD!\nCARD IS LOCKED, OR DAMAGED, OR FULL."), _T("CRITICAL PROBLEM"), mbOk);
         RUN_MODE = RUN_EXIT;
@@ -890,7 +887,7 @@ short dlgStartupShowModal(void) {
         if (RUN_MODE == RUN_PROFILE) {
             if (_tcslen(dfe->GetPathFile()) > 0) {
                 if (_tcscmp(dfe->GetPathFile(), startProfileFile)) { // if they are not the same
-                    _tcscpy(startProfileFile, dfe->GetPathFile());
+                    const TCHAR* szFileName = dfe->GetPathFile();
                     if (_tcscmp(startProfileFile, _T("PROFILE_RESET")) == 0) {
 #if TESTBENCH
                         StartupStore(_T("... Selected FULL RESET virtual profile\n"));
@@ -902,6 +899,7 @@ short dlgStartupShowModal(void) {
 #if TESTBENCH
                         StartupStore(_T("... Selected new profile, preloading..\n"));
 #endif
+                        LocalPath(startProfileFile, _T(LKD_CONF), szFileName);
                         LKProfileLoad(startProfileFile);
                         FullResetAsked = false;
                     }
@@ -912,7 +910,7 @@ short dlgStartupShowModal(void) {
         if (RUN_MODE == RUN_AIRCRAFT) {
             if (_tcslen(dfe->GetPathFile()) > 0) {
                 if (_tcscmp(dfe->GetPathFile(), startAircraftFile)) { // if they are not the same
-                    _tcscpy(startAircraftFile, dfe->GetPathFile());
+                    LocalPath(startAircraftFile, _T(LKD_CONF), dfe->GetPathFile());
 #if TESTBENCH
                     StartupStore(_T("... Selected new aircraft, preloading..\n"));
 #endif
@@ -924,7 +922,7 @@ short dlgStartupShowModal(void) {
         if (RUN_MODE == RUN_DEVICE) {
             if (_tcslen(dfe->GetPathFile()) > 0) {
                 if (_tcscmp(dfe->GetPathFile(), startDeviceFile)) { // if they are not the same
-                    _tcscpy(startDeviceFile, dfe->GetPathFile());
+                    LocalPath(startDeviceFile, _T(LKD_CONF), dfe->GetPathFile());
 #if TESTBENCH
                     StartupStore(_T("... Selected new device, preloading..\n"));
 #endif
@@ -936,7 +934,7 @@ short dlgStartupShowModal(void) {
         if (RUN_MODE == RUN_PILOT) {
             if (_tcslen(dfe->GetPathFile()) > 0) {
                 if (_tcscmp(dfe->GetPathFile(), startPilotFile)) { // if they are not the same
-                    _tcscpy(startPilotFile, dfe->GetPathFile());
+                    LocalPath(startPilotFile, _T(LKD_CONF), dfe->GetPathFile());
 #if TESTBENCH
                     StartupStore(_T("... Selected new pilot, preloading..\n"));
 #endif
