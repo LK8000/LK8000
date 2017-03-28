@@ -61,7 +61,10 @@ public:
     virtual bool Write(const void *data, size_t length) = 0;
     virtual size_t Read(void *szString, size_t size) = 0;
 
-    void WriteString(const TCHAR *);
+#ifdef UNICODE
+    void WriteString(const TCHAR* Text) gcc_nonnull_all;
+#endif
+    void WriteString(const char* Text) gcc_nonnull_all;
 
     void PutChar(BYTE);
     int GetChar();
