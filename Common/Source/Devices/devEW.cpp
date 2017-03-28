@@ -300,10 +300,11 @@ BOOL EWIsGPSSource(PDeviceDescriptor_t d){
 
 
 BOOL EWLinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  if (!fDeclarationPending)
-    d->Com->WriteString(TEXT("NMEA\r\n"));
-
+  if(d && d->Com) {
+    if (!fDeclarationPending) {
+      d->Com->WriteString(TEXT("NMEA\r\n"));
+    }
+  }
   return(TRUE);
 }
 
