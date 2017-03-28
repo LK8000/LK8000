@@ -45,6 +45,8 @@ Topology* TopoStore[MAXTOPOLOGY] = {};
 uint8_t tshadow_r, tshadow_g, tshadow_b, tshadow_h;
 uint8_t thighlight_r, thighlight_g, thighlight_b, thighlight_h;
 
+extern void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float lightness);
+
 
 static const COLORRAMP* lastColorRamp = NULL;
 
@@ -624,6 +626,8 @@ public:
 
                     ColorRampLookup(i << height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
                     TerrainShading(mag, r, g, b);
+                    // rgb_lightness(r,g,b,1.15);
+
                     colorBuf[i + (mag + 64)*256] = BGRColor(r, g, b);
                 }
             }

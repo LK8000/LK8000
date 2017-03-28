@@ -318,6 +318,7 @@ add_library( LK8000 SHARED
 
     Common/Source/Library/bsearch.cpp
     Common/Source/Library/Crc.cpp
+    Common/Source/Library/ColorFunctions.cpp
     Common/Source/Library/DirectoryFunctions.cpp
     Common/Source/Library/DrawFunctions.cpp
     Common/Source/Library/leastsqs.cpp
