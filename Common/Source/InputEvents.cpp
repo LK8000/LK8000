@@ -2311,6 +2311,15 @@ void InputEvents::eventService(const TCHAR *misc) {
      return;
   }
 
+  if (_tcscmp(misc, TEXT("LUMUP")) == 0) {
+     if (TerrainWhiteness<=1.45) TerrainWhiteness+=0.05;
+     return;
+  }
+  if (_tcscmp(misc, TEXT("LUMDOWN")) == 0) {
+     if (TerrainWhiteness>=0.55) TerrainWhiteness-=0.05;
+     return;
+  }
+
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 

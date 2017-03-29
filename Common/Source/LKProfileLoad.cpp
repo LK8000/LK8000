@@ -619,6 +619,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryTerrainContrast,&TerrainContrast);
   PREAD(sname,svalue,szRegistryTerrainFile,szTerrainFile, array_size(szTerrainFile));
   PREAD(sname,svalue,szRegistryTerrainRamp,&TerrainRamp_Config);
+  PREAD(sname,svalue,szRegistryTerrainWhiteness,&TerrainWhiteness);
+  if (matchedstring) {; TerrainWhiteness/=100; return;}
   PREAD(sname,svalue,szRegistryThermalBar,&ThermalBar);
   PREAD(sname,svalue,szRegistryThermalLocator,&EnableThermalLocator);
   if (matchedstring) return;

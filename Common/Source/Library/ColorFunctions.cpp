@@ -183,7 +183,7 @@ void HSLtoRGB( float *r, float *g, float *b, float H, float S, float L ) {
 // 
 void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float light ) {
 
-   LKASSERT(light>0 && light <= 1.5);
+   LKASSERT(light>0 && light <= 1.8);
    if (light==1) return;
 
    float h, s, v, tr, tg, tb;

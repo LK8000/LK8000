@@ -653,6 +653,7 @@ void Globals_Init(void) {
 
   AutoContrast=true;
   SnailScale=MAXSNAILRESIZE;
+  TerrainWhiteness=1;
 
   // ^ ADD NEW GLOBALS up here ^
   // ---------------------------

@@ -482,6 +482,7 @@ void LKProfileResetDefault(void) {
 #endif
 
   AutoContrast=true;
+  TerrainWhiteness=1;
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 

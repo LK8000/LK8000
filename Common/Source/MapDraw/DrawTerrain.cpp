@@ -626,7 +626,7 @@ public:
 
                     ColorRampLookup(i << height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
                     TerrainShading(mag, r, g, b);
-                    // rgb_lightness(r,g,b,1.15);
+                    rgb_lightness(r,g,b,TerrainWhiteness);
 
                     colorBuf[i + (mag + 64)*256] = BGRColor(r, g, b);
                 }
@@ -676,16 +676,20 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
     static short old_TerrainBrightness(TerrainBrightness);
     static short old_TerrainRamp(TerrainRamp);
     static short old_Shading(Shading);
+    static float old_TerrainWhiteness=0;
     static ScreenProjection old_ScreenProjection(_Proj);
 
-    if(old_TerrainContrast != TerrainContrast
+    if( old_ScreenProjection != _Proj
+            || old_TerrainWhiteness != TerrainWhiteness
+            || old_TerrainContrast != TerrainContrast
             || old_TerrainBrightness != TerrainBrightness
             || old_TerrainRamp != TerrainRamp
-            || old_Shading != Shading
-            || old_ScreenProjection != _Proj) {
+            || old_Shading != Shading ) {
 
+        if (old_TerrainWhiteness != TerrainWhiteness) lastColorRamp=NULL; // reload color table
         old_TerrainContrast = TerrainContrast;
         old_TerrainBrightness = TerrainBrightness;
+        old_TerrainWhiteness = TerrainWhiteness;
         old_TerrainRamp = TerrainRamp;
         old_Shading = Shading;
         old_ScreenProjection = _Proj;
