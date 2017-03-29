@@ -127,7 +127,9 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
     if(c == '\n'){
       break;
     }
-
+    if(c == '\r'){
+      break;
+    }
     sTmp[i] = c;
     i++;
   }
