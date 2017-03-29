@@ -619,8 +619,11 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryTerrainContrast,&TerrainContrast);
   PREAD(sname,svalue,szRegistryTerrainFile,szTerrainFile, array_size(szTerrainFile));
   PREAD(sname,svalue,szRegistryTerrainRamp,&TerrainRamp_Config);
+  if (matchedstring) return; // do not remove
   PREAD(sname,svalue,szRegistryTerrainWhiteness,&TerrainWhiteness);
-  if (matchedstring) {; TerrainWhiteness/=100; return;}
+  // we must be sure we are changing TerrainWhiteness only when loaded from profile
+  // otherwise we would get 0.01  (1/100), black screen..
+  if (matchedstring) {; TerrainWhiteness/=100; return;}  
   PREAD(sname,svalue,szRegistryThermalBar,&ThermalBar);
   PREAD(sname,svalue,szRegistryThermalLocator,&EnableThermalLocator);
   if (matchedstring) return;
