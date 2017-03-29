@@ -1,4 +1,75 @@
-#A1;
+#A3;
+
+[Latest software changes]
+In summary what's up in current branch:
+
+Up to 6 devices can now be set in Device configuration
+New Aircraft symbols in Aircraft configuration, choose the best for you!
+Android screen orientation in System config p.22
+New terrain auto-contrast in System config p.4
+New tracking mode in Pilot configuration
+
+Version 6.1f  170xyy
+
+New INFO button in menu Info 2/2 .
+New informations will automatically be displayed on first restart of LK after upgrade, if available.
+
+
+[Version 6.1e 170310]
+Fix default task not loaded automatically if missing
+Many important bug fixes leading to possible crashes, and stability issues.
+
+
+[Version 6.1d 170228]
+New tracking mode in Pilot configuration.
+Here you can select how you want to be tracked.
+in flight only: tracking starts after takeoff and ends after landing detection.
+permanent: tracking as long as LK8000 runs and has a valid GPS signal.
+We recomend in flight only because it transfers the takeoff and landing information for a correct log. (default)
+while permanent can be used to test your tracking settings on ground. (Note: Tracking need a falid GPS fix)
+---
+New Snail trail (the colored track), size rescaled correctly on android
+Snail trail size changes are immediate, no need to restart LK.
+Better FAI optimizer
+---
+FAI analysis, grid scale made better.
+---
+Device configuration, new buttons Led style
+---
+GPS Altitude offset is moved to engineering mode.
+Other minor cosmetic changes
+---
+
+Fix wrong track value in replay mode with WGS84 earth model
+Fix waypoint names in OpenAIP
+Fix bug in menu buttons showing inverted status of Total energy in use
+Fix bug from v6.0, reloading fonts when not needed upon exiting config
+
+Many bug fixes leading to possible crashes
+
+[Version 6.1c 170228]
+
+Android BlueTooth fixes
+Android screen orientation in System menu 22.
+Terrain auto-contrast in System config page 4
+If ON, contrast and brightness are automatically adjusted for best results, dynamically.
+
+Terrain quantization reworked
+
+Refresh heading waypoints on dialog only every 5 seconds, not every second, otherwise no chance to select anything!
+New glider symbol "Black glider" in Aircraft setup.
+
+Iphone gestures configuration moved to engineering, default is now Normal, as on all smartphones.
+
+
+
+[Team Announces]
+For suggestions, bug reporting, any question, please join our free support forum at:
+www.postfrontal.com/forum/default.asp?CAT_ID=11
+
+
+
+
 [LK8000 AUTHORS]
 LK8000 Tactical Flight Computer - http://www.lk8000.org
 
@@ -61,12 +132,6 @@ Simon Taylor
 
 Other contributors may be missing from the old 2009 xcsoar file, and will be added on demand.
 Since LK version 6 we are using code from XCSOAR contributed after the fork in 2009.
-Next page is dedicated to an updated list of XCSOAR current authors, some of which are also copyright owners of LK. 
-
-[XCsoar authors]
-XCSoar Glide Computer - http://www.xcsoar.org/
-Copyright (C) 2000-2015 The XCSoar Project
-
 The following people and organizations have contributed code to XCSoar.
 Some of them are also copyright owners of LK, some are not. Never mind.
 
