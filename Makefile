@@ -803,6 +803,7 @@ endif
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \
 	$(LIB)/Crc.cpp\
+	$(LIB)/ColorFunctions.cpp \
 	$(LIB)/DirectoryFunctions.cpp \
 	$(LIB)/DrawFunctions.cpp \
 	$(LIB)/leastsqs.cpp \

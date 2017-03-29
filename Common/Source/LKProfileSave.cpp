@@ -304,6 +304,9 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryTerrainContrast,TerrainContrast);
   rprintf(szRegistryTerrainFile,szTerrainFile);
   rprintf(szRegistryTerrainRamp,TerrainRamp_Config);
+
+  if (SaveRuntime) rprintf(szRegistryTerrainWhiteness,TerrainWhiteness*100);
+
   rprintf(szRegistryThermalBar,ThermalBar);
   rprintf(szRegistryThermalLocator,EnableThermalLocator);
   rprintf(szRegistryTpFilter,TpFilter);

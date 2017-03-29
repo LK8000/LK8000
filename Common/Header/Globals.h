@@ -397,6 +397,7 @@ GEXTERN double SimNettoVario;
 
 GEXTERN bool AutoContrast; // automatic contrast of terrain
 GEXTERN short SnailScale;  // user choice for rescaling the snail trail
+GEXTERN double TerrainWhiteness; // HSV luminance
 
 // Append over here NEW
 

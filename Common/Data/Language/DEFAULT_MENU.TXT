@@ -1620,15 +1620,15 @@ location=9
 mode=ScreenMode
 type=key
 data=11
-label= 
-event=Null
+label=LUMEN\n+
+event=Service LUMUP
 location=10
 
 mode=ScreenMode
 type=key
 data=12
-label= 
-event=Null
+label=LUMEN\n-
+event=Service LUMDOWN
 location=11
 
 # -------------
