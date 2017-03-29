@@ -1,18 +1,22 @@
-#A3;
+#A4;
 
 [Latest software changes]
 In summary what's up in current branch:
 
 Up to 6 devices can now be set in Device configuration
 New Aircraft symbols in Aircraft configuration, choose the best for you!
+New tracking mode in Pilot configuration
 Android screen orientation in System config p.22
 New terrain auto-contrast in System config p.4
-New tracking mode in Pilot configuration
+New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
+   (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
 
 Version 6.1f  170xyy
-
 New INFO button in menu Info 2/2 .
 New informations will automatically be displayed on first restart of LK after upgrade, if available.
+
+New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
+   (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
 
 
 [Version 6.1e 170310]
