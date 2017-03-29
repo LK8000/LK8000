@@ -1,3 +1,4 @@
+#A1;
 [LK8000 AUTHORS]
 LK8000 Tactical Flight Computer - http://www.lk8000.org
 

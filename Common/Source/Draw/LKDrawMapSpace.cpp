@@ -101,19 +101,17 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 		RefreshMap();
 		break;
 #endif
-#if (1)
 		if (!DrawInfo.NAVWarning) {
-		static double firsttime=DrawInfo.Time;
-		// delayed automatic exit from welcome mode
-		if ( DrawInfo.Time > (firsttime+3.0) ) {
-			SetModeType(LKMODE_MAP,MP_MOVING);
-			LKevent=LKEVENT_NONE;
-			LKSound(_T("LK_BEEP1.WAV"));
-			RefreshMap();
-			break;
-		}
-		}
-#endif
+		   static double firsttime=DrawInfo.Time;
+		   // delayed automatic exit from welcome mode
+		   if ( DrawInfo.Time > (firsttime+3.0) ) {
+                      SetModeType(LKMODE_MAP,MP_MOVING);
+                      LKevent=LKEVENT_NONE;
+                      LKSound(_T("LK_BEEP1.WAV"));
+                      RefreshMap();
+                      break;
+                   }
+                }
 		if(GlobalModelType==MODELTYPE_PNA_MINIMAP)
 		{
 			SetModeType(LKMODE_MAP,MP_MOVING);

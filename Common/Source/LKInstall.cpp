@@ -327,3 +327,113 @@ bool CheckFilesystemWritable() {
 
   return(success);
 }
+
+//
+// The INFO system, previously CREDITS, can be updated anytime.
+// We save the last version we have read inside _Configuration/LASTINFO.TXT. 
+//--pv
+//
+#include "utils/openzip.h"
+#define LKF_LASTVERSION "LASTINFO.TXT"
+bool CheckInfoUpdated() {
+
+  TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
+  SystemPath(srcdir, _T(LKD_SYSTEM));
+  _stprintf(srcfile,TEXT("%s%s%s"),srcdir, _T(DIRSEP), _T(LKF_CREDITS));
+
+  bool have_old_version=false, have_new_version=false;
+  TCHAR newversion[3], oldversion[3];
+
+  // 
+  // First we check the INFO has a version
+  // 
+  if (lk::filesystem::exist(srcfile)) {
+
+     ZZIP_FILE *fp=openzip(srcfile, "rb");
+     if (!fp) {
+        return false;
+     }
+
+     #define MAXHEADER 10
+     TCHAR line[MAXHEADER+1]; line[0]=0;
+
+     charset cs = charset::unknown;
+     ReadString(fp,MAXHEADER,line, cs);
+
+     if (_tcslen(line)==4) {
+        if ( line[0] == _T('#') && line[3]==_T(';') ) {
+           newversion[0]=line[1];
+           newversion[1]=line[2];
+           newversion[2]=_T('\0');
+           have_new_version=true;
+        } 
+     }
+     zzip_fclose(fp);
+  } 
+  #ifdef TESTBENCH
+     else StartupStore(_T("... Info/Credits file <%s> not existing!%s"),srcfile,NEWLINE);
+  #endif
+
+  if (!have_new_version) {
+     StartupStore(_T(". LKInstall: INFO DOES NOT HAVE A VERSION??%s"),NEWLINE);
+     return false;
+  }
+
+  LocalPath(srcdir, _T(LKD_CONF));
+  _stprintf(srcfile,TEXT("%s%s%s%s"),srcdir,_T(DIRSEP),_T(DIRSEP),_T(LKF_LASTVERSION));
+
+  if ( !lk::filesystem::exist(srcfile) ) {
+     #ifdef TESTBENCH
+     StartupStore(_T("... Info version <%s> not existing, first time?%s"),srcfile,NEWLINE);
+     #endif
+  } else {
+     ZZIP_FILE *fp=openzip(srcfile, "rb");
+     if (!fp) return false;
+
+     #define MAXHEADER 10
+     TCHAR line[MAXHEADER+1]; line[0]=0;
+
+     charset cs = charset::unknown;
+     ReadString(fp,MAXHEADER,line, cs);
+
+     if (_tcslen(line)==4) {
+        if ( line[0] == _T('#') && line[3]==_T(';') ) {
+           oldversion[0]=line[1];
+           oldversion[1]=line[2];
+           oldversion[2]=_T('\0');
+           have_old_version=true;
+        }
+     }
+     zzip_fclose(fp);
+  }
+
+  if (have_old_version) {
+     if (!_tcscmp(newversion,oldversion)) {
+        // same version, nothing to do
+        #ifdef TESTBENCH
+        StartupStore(_T(".... Info/Credits old=new version, nothing to do.\n"));
+        #endif
+        return false;
+     } 
+  }
+  // ... else we either dont have an old version, or the old and the new are different.
+  // we save new version as old version. In both cases we return true
+  // First we remove the existing version file
+  lk::filesystem::deleteFile(srcfile); 
+
+  // then we create a new one with the current version in the header
+  FILE *stream;
+  stream=_tfopen(srcfile,_T("a"));
+  if (stream==NULL) {
+     // In case of problems, we drop usage
+     StartupStore(_T(". LKInstall cannot create lastversion.txt%s"),NEWLINE);
+     return false;
+  }
+  fprintf(stream,"#%s;\n",newversion);
+  StartupStore(_T(". LKInstall created <%s> header= #%s;%s"),srcfile,newversion,NEWLINE);
+  fclose(stream);
+  return true;
+}
+
+

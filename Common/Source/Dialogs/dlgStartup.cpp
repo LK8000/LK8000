@@ -52,6 +52,7 @@ static LKBitmap ProfileBitmap;
 
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
+extern bool CheckInfoUpdated(void);
 
 #ifndef ANDROID
 extern bool CheckSystemBitmaps(void);
@@ -965,6 +966,7 @@ _exit:
 
     if (RUN_MODE == RUN_FLY || RUN_MODE == RUN_SIM) {
         LKSound(_T("LK_SLIDE.WAV"));
+        if (CheckInfoUpdated()) dlgChecklistShowModal(3);
         return 0; // do not repeat dialog
     }
 

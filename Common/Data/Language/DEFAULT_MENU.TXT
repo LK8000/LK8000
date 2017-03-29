@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release  170312
+# Release  170329
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -1252,7 +1252,7 @@ type=key
 data=9
 event=Service CREDITS
 event=Mode default
-label=Credits
+label=INFO
 location=8
 
 mode=Info2
