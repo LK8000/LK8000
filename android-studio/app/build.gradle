@@ -23,8 +23,8 @@ android {
         applicationId "org.lk8000"
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 26
-        versionName "6.1e"
+        versionCode 27
+        versionName "6.1f"
         setProperty("archivesBaseName", "LK8000-$versionName")
         manifestPlaceholders = [applicationLabel: "@string/app_name"]
         externalNativeBuild {
