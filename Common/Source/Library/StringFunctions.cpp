@@ -124,10 +124,22 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
     j++;
     dwTotalNumBytesRead++;
 
+    /* line ending can be : 
+     *  "\r\n" (Windows)
+     *  "\r"   (Unix)
+     *  "\n"   (Mac)
+     */
+
     if(c == '\n'){
+      // Mac line ending
       break;
     }
     if(c == '\r'){
+      // Unix or Windows line ending
+      if(j < dwNumBytesRead && FileBuffer[j] == '\n') {
+          // Windows line ending
+          j++;
+      }
       break;
     }
     sTmp[i] = c;
