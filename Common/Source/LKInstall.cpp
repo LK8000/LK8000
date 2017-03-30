@@ -15,6 +15,7 @@
 #include "LKRoyaltek3200.h"
 #endif
 #endif
+#include "utils/stringext.h"
 
 
 
@@ -381,7 +382,7 @@ bool CheckInfoUpdated() {
   }
 
   LocalPath(srcdir, _T(LKD_CONF));
-  _stprintf(srcfile,TEXT("%s%s%s%s"),srcdir,_T(DIRSEP),_T(DIRSEP),_T(LKF_LASTVERSION));
+  _stprintf(srcfile,TEXT("%s%s%s"),srcdir,_T(DIRSEP),_T(LKF_LASTVERSION));
 
   if ( !lk::filesystem::exist(srcfile) ) {
      #ifdef TESTBENCH
@@ -423,15 +424,18 @@ bool CheckInfoUpdated() {
   lk::filesystem::deleteFile(srcfile); 
 
   // then we create a new one with the current version in the header
-  FILE *stream;
-  stream=_tfopen(srcfile,_T("a"));
+  FILE *stream =_tfopen(srcfile,_T("a"));
   if (stream==NULL) {
      // In case of problems, we drop usage
      StartupStore(_T(". LKInstall cannot create lastversion.txt%s"),NEWLINE);
      return false;
   }
-  fprintf(stream,"#%s;\n",newversion);
-  StartupStore(_T(". LKInstall created <%s> header= #%s;%s"),srcfile,newversion,NEWLINE);
+  char sbuf[20]; TCHAR tbuf[10];
+  _stprintf(tbuf,_T("#%s;\n"),newversion);
+  TCHAR2utf(tbuf,sbuf,sizeof(sbuf));
+  fprintf(stream,sbuf);
+
+  StartupStore(_T(". LKInstall created <%s> header=<%s>%s"),srcfile,tbuf,NEWLINE);
   fclose(stream);
   return true;
 }
