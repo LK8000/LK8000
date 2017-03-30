@@ -1,6 +1,15 @@
-#A4;
+#A6;
+[Welcome to LK8000]
+Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
+This info dialog that you are reading can be found on:
+Menu - Info 2/2 - INFO button
+
+There are several pages that you can scroll using Next and Prev buttons.
+Please advance to the next page to start reading about changes and enhancements.
+
 
 [Latest software changes]
+
 In summary what's up in current branch:
 
 Up to 6 devices can now be set in Device configuration
@@ -11,13 +20,20 @@ New terrain auto-contrast in System config p.4
 New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
    (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
 
-Version 6.1f  170xyy
+In detail, this version 6.1f  :
 New INFO button in menu Info 2/2 .
 New informations will automatically be displayed on first restart of LK after upgrade, if available.
 
 New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
    (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
 
+Bugfix "GPS NO FIX" on some smartphones.
+Bugfix on loading AIRCRAFT profiles
+Bugfix with EW logger
+Bluetooth fixes on android
+Many internal fixes and improvements.
+
+Please advance to next item to see informations about previous versions.
 
 [Version 6.1e 170310]
 Fix default task not loaded automatically if missing
