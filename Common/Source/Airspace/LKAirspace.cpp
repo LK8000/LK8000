@@ -1999,9 +1999,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             break;
         case 'G':
             if(len==1) Type=CLASSG; // G class airspace
-            if(len ==2) if (_tcsicmp(dataStr,_T("GP"))==0) Type=NOGLIDER;
-            if(len ==4) if (_tcsicmp(dataStr,_T("GSEC"))==0) Type=GLIDERSECT;
-
+            else
+            {
+              if (_tcsicmp(dataStr,_T("GP"))==0)      Type=NOGLIDER;
+              if (_tcsicmp(dataStr,_T("GSEC"))==0)    Type=GLIDERSECT;
+              if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDERSECT;
+            }
             break;
         //case 'O':
             //if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
