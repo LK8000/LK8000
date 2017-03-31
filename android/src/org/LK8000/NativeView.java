@@ -418,12 +418,9 @@ class NativeView extends SurfaceView
    */
   private Bitmap loadResourceBitmap(String name) {
     /* find the resource */
-    int resourceId = resources.getIdentifier(name, "drawable", "org.LK8000");
+    int resourceId = resources.getIdentifier(name, "drawable", getContext().getPackageName());
     if (resourceId == 0) {
-      resourceId = resources.getIdentifier(name, "drawable",
-                                           "org.LK8000.testing");
-      if (resourceId == 0)
-        return null;
+      return null;
     }
 
     /* load the Bitmap from the resource */

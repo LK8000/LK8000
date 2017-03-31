@@ -19,6 +19,10 @@
 #include "resource_data.h"
 #endif
 
+#ifdef ANDROID
+#include "ResourceId.hpp"
+#endif
+
 LKBitmap::LKBitmap() {
 
 }
@@ -56,7 +60,11 @@ bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
         return true;
     }
 #elif defined(ANDROID)
-// TODO : "not implemented"
+
+    if((ptrdiff_t)ResourceName < (ptrdiff_t)std::numeric_limits<unsigned short>::max()) {
+        // we have resource ID
+        return Load(ResourceId((unsigned short)(ptrdiff_t)ResourceName));
+    }
 #else
     if(ResourceName) {
         return Load(GetNamedResource(ResourceName), Type::STANDARD);
