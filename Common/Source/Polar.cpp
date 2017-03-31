@@ -132,18 +132,18 @@ bool ReadWinPilotPolar(void) {
      * in worst case we try to open file 4 time, but timing is not important here.
      */
 
-    _tcscpy(szFile, szPolarFile);
+    tstring str (szPolarFile);
+    _tcscpy(szFile, str.c_str());
     ZZIP_FILE* stream = openzip(szFile, "rt");
     if(!stream) {
         // failed to open absolute. try LocalPath
-        LocalPath(szFile, _T("LKD_POLARS"), szPolarFile);
+        LocalPath(szFile, _T("LKD_POLARS"), str.c_str());
         stream = openzip(szFile, "rt");
     }
     if(!stream){
         // failed to open Local. try with converted file name to new file name.
         // polar file name can be an old name, convert to new name and retry.
         bool bRetry = false;
-        tstring str (szPolarFile);
         const TCHAR strReplace[] = _T(" ()");
         for(std::size_t found = str.find_first_of(strReplace); found!=std::string::npos; found=str.find_first_of(strReplace,found+1)) {
           str[found]=_T('_');
@@ -157,7 +157,7 @@ bool ReadWinPilotPolar(void) {
     }
     if(!stream) {
         // all previous failed. try SystemPath
-        SystemPath(szFile, _T(LKD_SYS_POLAR), szPolarFile);
+        SystemPath(szFile, _T(LKD_SYS_POLAR), str.c_str());
         stream = openzip(szFile, "rt");
     }
 
