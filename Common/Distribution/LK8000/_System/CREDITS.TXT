@@ -1,4 +1,4 @@
-#A6;
+#A7;
 [Welcome to LK8000]
 Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
 This info dialog that you are reading can be found on:
@@ -20,14 +20,17 @@ New terrain auto-contrast in System config p.4
 New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
    (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
 
-In detail, this version 6.1f  :
+>> In details, in this version 6.1f  :
 New INFO button in menu Info 2/2 .
-New informations will automatically be displayed on first restart of LK after upgrade, if available.
+(informations will automatically be displayed on first restart of LK after upgrade, if available)
 
 New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
-   (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
+(Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
+
+Profiles are now compatible between all platforms, and can be copied from a PNA to Android for example.
 
 Bugfix "GPS NO FIX" on some smartphones.
+Bugfix LX Nano task declaration on 64bit devices
 Bugfix on loading AIRCRAFT profiles
 Bugfix with EW logger
 Bluetooth fixes on android
