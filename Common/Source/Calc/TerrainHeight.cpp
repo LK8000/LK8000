@@ -14,12 +14,14 @@ void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   short Alt = 0;
 
+  LockTerrainDataGraphics();
   RasterTerrain::Lock();
   // want most accurate rounding here
   RasterTerrain::SetTerrainRounding(0,0);
   Alt = RasterTerrain::GetTerrainHeight(Basic->Latitude, 
                                         Basic->Longitude);
   RasterTerrain::Unlock();
+  UnlockTerrainDataGraphics();
 
   if(Alt!=TERRAIN_INVALID) { // terrain invalid is now positive  ex. 32767
 	Calculated->TerrainValid = true;

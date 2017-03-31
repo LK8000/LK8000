@@ -35,6 +35,7 @@ Bugfix LX Nano task declaration on 64bit devices
 Bugfix on loading AIRCRAFT profiles
 Bugfix with EW logger
 Bluetooth fixes on android
+BugFix missing topology icons
 Many internal fixes and improvements.
 
 Please advance to next item to see informations about previous versions.

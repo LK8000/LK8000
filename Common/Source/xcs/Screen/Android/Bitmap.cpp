@@ -29,14 +29,8 @@ Copyright_License {
 #include "Android/Main.hpp"
 #include "ResourceId.hpp"
 
-// TODO: "need to implement"
-#if 0
-#include "android_drawable.h"
-#else
-static const struct {
-  unsigned id;
-  const char *name;
-} DrawableNames[] = {};
+#ifdef ANDROID
+#include "Android/android_drawable.h"
 #endif
 
 Bitmap::Bitmap(ResourceId id)
