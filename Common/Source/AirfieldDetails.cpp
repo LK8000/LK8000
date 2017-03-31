@@ -20,9 +20,9 @@ ZZIP_FILE* OpenAirfieldDetails() {
     TCHAR zfilename[MAX_PATH];
     LocalPath(zfilename, _T(LKD_WAYPOINTS), szAirfieldFile);
     fp = openzip(zfilename, "rb");
+    StartupStore(_T(". open AirfieldFile %s <%s> "), fp ? _T("") : _T("FAILED"),  szAirfieldFile);
   }
 
-  StartupStore(_T(". open AirfieldFile %s <%s> "), fp ? _T("") : _T("FAILED"),  szAirfieldFile);
 
   return fp;
 }
