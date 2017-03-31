@@ -34,7 +34,7 @@
 
 extern	  double  ExtractFrequency(TCHAR*);
 
-static const int k_nAreaCount = 15;
+static const int k_nAreaCount = 16;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("R"),
     _T("Q"),
@@ -50,7 +50,8 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("GP"),
     _T("CTR"),
     _T("TMZ"),
-    _T("RMZ")
+    _T("RMZ"),
+    _T("GSEC")
 };
 static const int k_nAreaType[k_nAreaCount] = {
     RESTRICT,
@@ -67,7 +68,8 @@ static const int k_nAreaType[k_nAreaCount] = {
     NOGLIDER,
     CTR,
     CLASSTMZ,
-    CLASSRMZ
+    CLASSRMZ,
+    GLIDERSECT
 };
 
 
@@ -1997,7 +1999,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             break;
         case 'G':
             if(len==1) Type=CLASSG; // G class airspace
-            //else if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDING; //TODO: GLIDING missing in LK8000
+            if(len ==2) if (_tcsicmp(dataStr,_T("GP"))==0) Type=NOGLIDER;
+            if(len ==4) if (_tcsicmp(dataStr,_T("GSEC"))==0) Type=GLIDERSECT;
+
             break;
         //case 'O':
             //if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
@@ -2947,6 +2951,9 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
             return TEXT("TMZ");
 	case CLASSRMZ:
 	    return TEXT("RMZ");
+	case GLIDERSECT:
+	    return TEXT("GldSect");
+
         case OTHER:
             // LKTOKEN  _@M765_ = "Unknown"
             return MsgToken(765);
@@ -2989,6 +2996,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
             return TEXT("TMZ");
         case CLASSRMZ:
             return TEXT("RMZ");
+        case GLIDERSECT:
+            return TEXT("GldSec");
         default:
             return TEXT("?");
     }
