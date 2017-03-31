@@ -3,6 +3,7 @@
 [Latest software changes]
 In summary what's up in current branch:
 
+Airspace Class Glider Sector "GldSec" added (GSEC open airspace, GLIDING OpenAIP)
 Up to 6 devices can now be set in Device configuration
 New Aircraft symbols in Aircraft configuration, choose the best for you!
 New tracking mode in Pilot configuration
