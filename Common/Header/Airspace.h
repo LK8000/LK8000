@@ -22,7 +22,8 @@
 #define CLASSG                          14
 #define CLASSTMZ                        15
 #define CLASSRMZ                        16
-#define AIRSPACECLASSCOUNT              17
+#define GLIDERSECT                      17
+#define AIRSPACECLASSCOUNT              18
 
 #define ALLON 0
 #define CLIP 1
