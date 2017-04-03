@@ -137,7 +137,7 @@ bool ReadWinPilotPolar(void) {
     ZZIP_FILE* stream = openzip(szFile, "rt");
     if(!stream) {
         // failed to open absolute. try LocalPath
-        LocalPath(szFile, _T("LKD_POLARS"), str.c_str());
+        LocalPath(szFile, _T(LKD_POLARS), str.c_str());
         stream = openzip(szFile, "rt");
     }
     if(!stream){
