@@ -325,6 +325,8 @@ bool CheckInfoUpdated() {
   ZZIP_FILE *fp_new=openzip(srcfile, "rb");
   if (fp_new) {
     new_size = zzip_fread(newversion, 1, sizeof(newversion), fp_new);
+    // warning fread can return -1, new_size is size_t, casting result?
+    // Situation managed here, anyway.
     if(new_size == sizeof(newversion)) {
       have_new_version= ( newversion[0] == _T('#') && newversion[3]==_T(';') );
     }

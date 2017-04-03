@@ -1904,6 +1904,10 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
     // Allocate buffer to read the file
     zzip_seek(fp, 0, SEEK_END); // seek to end of file
     long size = zzip_tell(fp); // get current file pointer
+    if (size < 0) {
+        StartupStore(TEXT(". ERROR, FillAirSpaceFromOpenAIP ftell failure%s"), NEWLINE);
+        return false;
+    }
     zzip_seek(fp, 0, SEEK_SET); // seek back to beginning of file
     char* buff = (char*) calloc(size + 1, sizeof(char));
     if(buff==nullptr) {
@@ -1912,7 +1916,14 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
     }
 
     // Read the file
+    // fread can return -1, and zzip_tell can return -1 as well.
+    // So in case of problems with zzip, here we must consider nread can be same as size but still invalid!
     long nRead = zzip_fread(buff, sizeof (char), size, fp);
+    if (nRead < 0) {
+        StartupStore(TEXT(". ERROR, FillAirSpaceFromOpenAIP fread failure%s"), NEWLINE);
+        free(buff);
+        return false;
+    }
     if(nRead != size) {
         StartupStore(TEXT(".. Not able to buffer all airspace file.%s"), NEWLINE);
         free(buff);

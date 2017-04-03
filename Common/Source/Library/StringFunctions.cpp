@@ -111,6 +111,8 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
     return(FALSE);
 
   dwFilePos = zzip_tell(zFile);
+  if (dwFilePos < 0)
+    return(FALSE);
 
   dwNumBytesRead = zzip_fread(FileBuffer, 1, Max, zFile);
   if (dwNumBytesRead <= 0)
@@ -658,7 +660,8 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
 
   size_t nbRead = zzip_fread(buf, 1, sizeof(buf) - 1, fp);
 
-  if (nbRead == 0)
+  // warning..warning.. zzip_fread can return -1 ..
+  if (nbRead <= 0)
     return(false);
 
   buf[nbRead] = '\0';

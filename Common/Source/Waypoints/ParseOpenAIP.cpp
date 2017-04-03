@@ -32,6 +32,10 @@ bool ParseOpenAIP(ZZIP_FILE *fp)
     // Allocate buffer to read the file
     zzip_seek(fp, 0, SEEK_END); // seek to end of file
     long size = zzip_tell(fp); // get current file pointer
+    if (size < 0) {
+       StartupStore(_T(". ParseOpenAIP, size failure!%s"),NEWLINE);
+       return false;
+    }
     zzip_seek(fp, 0, SEEK_SET); // seek back to beginning of file
     char* buff = (char*) calloc(size + 1, sizeof(char));
     if(buff==nullptr) {
@@ -41,6 +45,12 @@ bool ParseOpenAIP(ZZIP_FILE *fp)
 
     // Read the file
     long nRead = zzip_fread(buff, sizeof (char), size, fp);
+    // fread can return -1...
+    if (nRead < 0) {
+       StartupStore(_T(". ParseOpenAIP, fread failure!%s"),NEWLINE);
+       free(buff);
+       return false;
+    }
     if(nRead != size) {
         StartupStore(TEXT(".. Not able to buffer all airspace file.%s"), NEWLINE);
         free(buff);
