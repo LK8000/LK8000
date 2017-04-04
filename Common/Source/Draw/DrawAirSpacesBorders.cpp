@@ -38,7 +38,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
       } // for
 
       /***********************************************************************
-       * now draw aispaces on top (normal order) with thin pen
+       * now draw airspaces on top (normal order) with thin pen
        ***********************************************************************/
 
       for (CAirspaceList::const_iterator it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
@@ -48,9 +48,8 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
           } else {
             Surface.SelectObject(hAirspacePens[(*it)->Type()]);
           }
-          if((*it)->DrawStyle()==adsDisabled)
-            Surface.SelectObject(LKPen_Black_N0 );
-          (*it)->Draw(Surface, false);
+          if((*it)->DrawStyle() != adsDisabled)
+            (*it)->Draw(Surface, false);
         }
       }//for
 
