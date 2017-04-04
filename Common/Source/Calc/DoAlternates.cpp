@@ -29,7 +29,8 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
     WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveTaskPoint].AATTargetLon;
     WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[Task[ActiveTaskPoint].Index].Altitude;
 	WaypointAltitudeFromTerrain(&WayPointList[RESWP_OPTIMIZED]);
-	_stprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[Task[ActiveTaskPoint].Index].Name);
+	_sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[Task[ActiveTaskPoint].Index].Name);
+    WayPointList[RESWP_OPTIMIZED].Name[NAME_SIZE] = _T('\0');
   }
   #endif
 
