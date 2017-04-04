@@ -303,7 +303,7 @@ void RefreshComPortList() {
         portok = false;
       }
       if(portok) {
-        char path[64];
+        char path[MAX_PATH];
         snprintf(path, sizeof(path), "/dev/%s", namelist[i]->d_name);
         if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
           COMMPort.push_back(path);
@@ -1230,7 +1230,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
       MinLon *=60;
       MinLon *= 1000;
 
-      TCHAR shortname[6];
+      TCHAR shortname[12];
       _stprintf(shortname,_T("P%02d"),j);
       _stprintf(Buffer,
 	      TEXT("PFLAC,S,ADDWP,%02d%05.0f%c,%03d%05.0f%c,%s"),
