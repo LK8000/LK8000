@@ -204,7 +204,7 @@ bool lk::filesystem::getExeName(TCHAR* szName, size_t MaxSize) {
     szName[std::min((ssize_t)MaxSize, ret)] = '\0';
 
     TCHAR* szSep = _tcsrchr(szName, '/');
-    if (!szSep) {
+    if (szSep) {
         _tcscpy(szName, szSep);
     }
 
