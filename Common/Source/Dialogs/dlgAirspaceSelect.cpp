@@ -396,21 +396,25 @@ static void OnFilterDistance(DataField *Sender,
 
 static void SetDirectionData(DataField *Sender){
 
-  TCHAR sTmp[12];
+  TCHAR sTmp[17];
 
   if (Sender == NULL){
     Sender = wpDirection->GetDataField();
   }
 
-  if (DirectionFilterIdx == 0)
+  if (DirectionFilterIdx == 0) {
     _stprintf(sTmp, TEXT("%c"), '*');
-  else if (DirectionFilterIdx == 1){
+  } else if (DirectionFilterIdx == 1) {
     int a = iround(CALCULATED_INFO.Heading);
-    if (a <=0)
+    if (a <=0) {
       a += 360;
-    _stprintf(sTmp, TEXT("HDG(%d%s)"), a, MsgToken(2179));
-  }else
-    _stprintf(sTmp, TEXT("%d%s"), DirectionFilter[DirectionFilterIdx], MsgToken(2179));
+    }
+    _sntprintf(sTmp, array_size(sTmp), TEXT("HDG(%d%s)"), a, MsgToken(2179));
+  }else {
+    _sntprintf(sTmp, array_size(sTmp), TEXT("%d%s"), DirectionFilter[DirectionFilterIdx], MsgToken(2179));
+  }
+
+  sTmp[array_size(sTmp)-1] = _T('\0');
 
   Sender->Set(sTmp);
 
