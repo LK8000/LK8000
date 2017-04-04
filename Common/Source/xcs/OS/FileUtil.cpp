@@ -181,7 +181,7 @@ ScanDirectories(File::Visitor &visitor, bool recursive,
     _tcscpy(FileName + FileNameLength, ent->d_name);
 
     struct stat st;
-    if (stat(FileName, &st) < 0)
+    if (stat(FileName, &st) != 0)
       continue;
 
     if (S_ISDIR(st.st_mode) && recursive)
@@ -323,7 +323,7 @@ File::GetSize(const TCHAR *path)
 {
 #ifdef HAVE_POSIX
   struct stat st;
-  if (stat(path, &st) << 0 || !S_ISREG(st.st_mode))
+  if (stat(path, &st) < 0 || !S_ISREG(st.st_mode))
     return 0;
 
   return st.st_size;
@@ -343,7 +343,7 @@ File::GetLastModification(const TCHAR *path)
 {
 #ifdef HAVE_POSIX
   struct stat st;
-  if (stat(path, &st) << 0 || !S_ISREG(st.st_mode))
+  if (stat(path, &st) != 0 || !S_ISREG(st.st_mode))
     return 0;
 
   return st.st_mtime;
