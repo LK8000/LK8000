@@ -183,10 +183,10 @@ static double CalculateAngle(TCHAR *temp)
 
   Degrees += (Mins/60);
 
-  if((*Stop == 'N') || (*Stop == 'E'))
+  if( Stop && ((*Stop == 'N') || (*Stop == 'E')))
     {
     }
-  else if((*Stop == 'S') || (*Stop == 'W'))
+  else if( Stop && ((*Stop == 'S') || (*Stop == 'W')))
     {
       Degrees *= -1;
     }
