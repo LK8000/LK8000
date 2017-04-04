@@ -1,6 +1,9 @@
-#A7;
+#A8;
 [Welcome to LK8000]
 Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
+Join our free support forum at http://www.postfrontal.com/forum
+
+
 This info dialog that you are reading can be found on:
 Menu - Info 2/2 - INFO button
 
@@ -36,6 +39,7 @@ Bugfix on loading AIRCRAFT profiles
 Bugfix with EW logger
 Bluetooth fixes on android
 BugFix missing topology icons
+Many critical bug fixes leading to crashes
 Many internal fixes and improvements.
 
 Please advance to next item to see informations about previous versions.
