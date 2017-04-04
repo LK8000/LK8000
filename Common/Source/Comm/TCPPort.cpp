@@ -11,7 +11,7 @@
 #include "externs.h"
 #include "TCPPort.h"
 #include "utils/stringext.h"
-
+#include <functional>
 using namespace std::placeholders;
 
 #ifdef __linux__

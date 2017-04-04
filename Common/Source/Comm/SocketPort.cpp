@@ -10,7 +10,7 @@
  */
 #include "externs.h"
 #include "SocketPort.h"
-
+#include <functional>
 using namespace std::placeholders;
 
 SocketPort::SocketPort(int idx, const tstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET), mTimeout(40) {

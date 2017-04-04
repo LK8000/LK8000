@@ -18,6 +18,7 @@
 #include "RGB.h"
 
 #include "utils/stl_utils.h"
+#include <functional>
 using std::placeholders::_1;
 
 extern void SnailTrail_Create(void);

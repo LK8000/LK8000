@@ -22,6 +22,7 @@
 #include "ShapeSpecialRenderer.h"
 #include "NavFunctions.h"
 #include "ScreenGeometry.h"
+#include <functional>
 
 #ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"

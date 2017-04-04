@@ -10,7 +10,7 @@
 #include "Multimap.h"
 #include "ScreenProjection.h"
 #include "Task/TaskRendererMgr.h"
-
+#include <functional>
 using std::placeholders::_1;
 
 int MapWindow::iSnailNext=0;

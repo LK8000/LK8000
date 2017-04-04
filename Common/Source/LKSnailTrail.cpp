@@ -11,6 +11,7 @@
 #include "LKObjects.h"
 #include "ScreenGeometry.h"
 
+#include <functional>
 using std::placeholders::_1;
 
 
