@@ -1,4 +1,4 @@
-#A8;
+#A9;
 [Welcome to LK8000]
 Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
 Join our free support forum at http://www.postfrontal.com/forum
@@ -32,6 +32,8 @@ New Screen View menus LUMEN +- to make terrain colors lighter or darker in realt
 (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
 
 Profiles are now compatible between all platforms, and can be copied from a PNA to Android for example.
+
+Disabled airspaces are painted with a grey line, not black. Good expecially on Kobo.
 
 Bugfix "GPS NO FIX" on some smartphones.
 Bugfix LX Nano task declaration on 64bit devices
