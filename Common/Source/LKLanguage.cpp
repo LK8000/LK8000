@@ -68,7 +68,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	StartupStore(_T("... Open Language file type <%C>: <%s>%s"),ttype,sFile,NEWLINE);
 	#endif
 
-	TCHAR sNum[10];
+	TCHAR sNum[11];
 	_stprintf(sNum,_T("%u"),inumber);
 
     ZZIP_FILE *helpFile = openzip(sFile, "rb");
