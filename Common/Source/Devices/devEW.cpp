@@ -38,7 +38,7 @@ BOOL EWParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 void appendCheckSum(TCHAR *String){
   int i;
   unsigned char CalcCheckSum = 0;
-  TCHAR sTmp[6];
+  TCHAR sTmp[11];
 
   for(i=1; String[i] != '\0'; i++){
     CalcCheckSum = (unsigned char)(CalcCheckSum ^ (unsigned char)String[i]);
