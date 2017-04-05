@@ -103,8 +103,12 @@ void SetHome(bool reset)
 	GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;
 	GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
 	GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
+
+	RasterTerrain::Lock();
     RasterTerrain::SetTerrainRounding(0,0);
     const short Alt = RasterTerrain::GetTerrainHeight(GPS_INFO.Latitude, GPS_INFO.Longitude);
+	RasterTerrain::Unlock();
+
     if(Alt!=TERRAIN_INVALID) { // terrain invalid is now positive  ex. 32767
       CALCULATED_INFO.TerrainValid = true;
     }

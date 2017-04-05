@@ -274,7 +274,7 @@ public:
      * @offset : {top, left} coordinate of Terrain Rendering Rect relative to DrawRect
      */
     void Height(const POINT& offset, const ScreenProjection& _Proj) {
-
+        RasterTerrain::Lock();
         RasterMap* DisplayMap = RasterTerrain::TerrainMap;
         assert(DisplayMap);
         if(!DisplayMap) {
@@ -315,8 +315,6 @@ public:
         pixelsize_d = sqrt((pixelDX * pixelDX + pixelDY * pixelDY) / 2.0);
 
         // OK, ready to start loading height
-
-        DisplayMap->Lock();
 
         // set resolution
         DisplayMap->SetFieldRounding(dX/3, dY/3);
@@ -359,7 +357,7 @@ public:
                     });
         }
 
-        DisplayMap->Unlock();
+        RasterTerrain::Unlock();
     }
 
     /**

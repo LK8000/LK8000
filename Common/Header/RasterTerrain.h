@@ -48,9 +48,6 @@ class RasterMap final {
   bool Open(const TCHAR* filename);
   void Close();
 
-  void Lock() { CritSec_TerrainFile.Lock(); }
-  void Unlock() { CritSec_TerrainFile.Unlock(); }
-
 protected:
   friend class TerrainRenderer;
 
@@ -76,7 +73,6 @@ protected:
   std::unique_ptr<short[]> pTerrainMem;
 #endif
 
-  Mutex  CritSec_TerrainFile;
 
   memory_mapped_file::read_only_mmf TerrainFile;
 };
@@ -169,9 +165,11 @@ public:
   static void OpenTerrain();
   static void CloseTerrain();
   static bool isTerrainLoaded() {
+    ScopeLock lock(mutex);
     return TerrainMap;
   }
   static RasterMap* TerrainMap;
+  static Mutex mutex;
 
 public:
   static void Lock(void);
@@ -181,7 +179,6 @@ public:
 
   static void SetTerrainRounding(double x, double y);
 
-  static int GetEffectivePixelSize(double *pixel_D, double latitude, double longitude);
   static bool WaypointIsInTerrainRange(double latitude, double longitude);
   static bool GetTerrainCenter(double *latitude, double *longitude);
 

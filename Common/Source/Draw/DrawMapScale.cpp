@@ -117,7 +117,9 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*
 
     if (inpanmode) {
 	if (DerivedDrawInfo.TerrainValid) {
+        RasterTerrain::Lock();
 		double alt= ALTITUDEMODIFY*RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude());
+        RasterTerrain::Unlock();
 		if (alt==TERRAIN_INVALID) alt=0.0;
 		_stprintf(Scale1, _T(" %.0f%s "),alt,
 		Units::GetUnitName(Units::GetUserAltitudeUnit()));

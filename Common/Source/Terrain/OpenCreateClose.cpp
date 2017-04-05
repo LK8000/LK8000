@@ -12,6 +12,7 @@
 #include "Dialogs/dlgProgress.h"
 
 RasterMap* RasterTerrain::TerrainMap = nullptr;
+Mutex  RasterTerrain::mutex;
 
 void RasterTerrain::OpenTerrain(void)
 {
@@ -36,6 +37,8 @@ void RasterTerrain::OpenTerrain(void)
 
 
 bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
+  ScopeLock lock(mutex);
+
   LKASSERT(!TerrainMap); // memory leak;
 
   TerrainMap = new(std::nothrow) RasterMap();
@@ -58,7 +61,7 @@ void RasterTerrain::CloseTerrain(void)
   StartupStore(TEXT(". CloseTerrain%s"),NEWLINE);
   #endif
 
-  // TODO code: lock it first?
+  ScopeLock lock(mutex);
 
   delete TerrainMap;
   TerrainMap = nullptr;

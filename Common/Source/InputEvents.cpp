@@ -1027,7 +1027,9 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
   LockFlightData();
 
   if (_tcscmp(misc, TEXT("pan")) == 0) {
+    RasterTerrain::Lock();
 	short th= RasterTerrain::GetTerrainHeight(MapWindow::GetPanLatitude(), MapWindow::GetPanLongitude());
+    RasterTerrain::Unlock();
 	if (th==TERRAIN_INVALID) th=0;
 	MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), th );
 	ForceRenderMap=true;

@@ -135,8 +135,10 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 			DrawBitmapIn(Surface, sc, hTerrainWarning);
 #if 0
 			// 091203 add obstacle altitude on moving map
+			RasterTerrain::Lock();
 			h =  max(0,RasterTerrain::GetTerrainHeight(DerivedDrawInfo.TerrainWarningLatitude, 
-				DerivedDrawInfo.TerrainWarningLongitude)); 
+				DerivedDrawInfo.TerrainWarningLongitude));
+			RasterTerrain::Unlock();
 			if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX but unused
 			dh = CALCULATED_INFO.NavAltitude - h - (SAFETYALTITUDETERRAIN/10);
 			_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*dh);

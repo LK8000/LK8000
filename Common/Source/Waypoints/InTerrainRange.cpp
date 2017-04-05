@@ -22,10 +22,6 @@ bool WaypointInTerrainRange(WAYPOINT *List) {
     return(true);
   }
 
-  if (!RasterTerrain::isTerrainLoaded()) {
-    return(true);
-  }
-
   if (RasterTerrain::WaypointIsInTerrainRange(List->Latitude,
                                               List->Longitude)) {
     return true;

@@ -103,17 +103,16 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
 
 
 void RasterTerrain::Lock(void) {
-  if (TerrainMap) {
-    TerrainMap->Lock();
-  }
+  mutex.Lock();
 }
 
 void RasterTerrain::Unlock(void) {
-  if (TerrainMap) {
-    TerrainMap->Unlock();
-  }
+  mutex.Unlock();
 }
 
+/**
+ *  RasterTerrain::Lock() Requiered
+ */
 short RasterTerrain::GetTerrainHeight(const double &Latitude,
                                       const double &Longitude) {
   if (TerrainMap && TerrainMap->isMapLoaded()) {
@@ -123,25 +122,19 @@ short RasterTerrain::GetTerrainHeight(const double &Latitude,
   }
 }
 
+/**
+ *  RasterTerrain::Lock() Requiered
+ */
 void RasterTerrain::SetTerrainRounding(double x, double y) {
   if (TerrainMap) {
     TerrainMap->SetFieldRounding(x, y);
   }
 }
 
-int RasterTerrain::GetEffectivePixelSize(double *pixel_D,
-                                         double latitude, double longitude) {
-  if (TerrainMap) {
-    return TerrainMap->GetEffectivePixelSize(pixel_D, latitude, longitude);
-  } else {
-    return 1;
-  }
-}
+bool RasterTerrain::WaypointIsInTerrainRange(double latitude, double longitude) {
+  ScopeLock lock(mutex);
 
-
-bool RasterTerrain::WaypointIsInTerrainRange(double latitude,
-                                             double longitude) {
-  if (TerrainMap) {
+  if (TerrainMap && TerrainMap->isMapLoaded()) {
     return TerrainMap->IsInside(latitude, longitude);
   } else {
     return true;
@@ -149,8 +142,9 @@ bool RasterTerrain::WaypointIsInTerrainRange(double latitude,
 }
 
 
-bool RasterTerrain::GetTerrainCenter(double *latitude,
-                                     double *longitude) {
+bool RasterTerrain::GetTerrainCenter(double *latitude, double *longitude) {
+  ScopeLock lock(mutex);
+
   if (TerrainMap) {
     TerrainMap->GetMapCenter(latitude, longitude);
     return true;

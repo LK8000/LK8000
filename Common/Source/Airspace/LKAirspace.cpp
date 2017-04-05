@@ -148,10 +148,10 @@ void CAirspaceBase::AirspaceAGLLookup(double av_lat, double av_lon, double *base
         // want most accurate rounding here
         RasterTerrain::SetTerrainRounding(0, 0);
         double th = RasterTerrain::GetTerrainHeight(av_lat, av_lon);
+        RasterTerrain::Unlock();
 
         if (th == TERRAIN_INVALID) th = 0; //@ 101027 FIX
         // 101027 We still use 0 altitude for no terrain, what else can we do..
-        RasterTerrain::Unlock();
 
         if (_base.Base == abAGL) {
             base_out = th;
