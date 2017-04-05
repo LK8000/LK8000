@@ -651,23 +651,21 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
   //
   unsigned char buf[1500 * 2];
 
-  long startPos = zzip_tell(fp);
-
+  zzip_off_t startPos = zzip_tell(fp);
   if (startPos < 0) {
     StartupStore(_T(". ftell() error = %d%s"), errno, NEWLINE);
     return(false);
   }
 
-  size_t nbRead = zzip_fread(buf, 1, sizeof(buf) - 1, fp);
-
-  // warning..warning.. zzip_fread can return -1 ..
+  zzip_ssize_t nbRead = zzip_read(fp, buf, sizeof(buf) - 1);
+  // warning..warning.. zzip_read can return -1 ..
   if (nbRead <= 0)
     return(false);
 
   buf[nbRead] = '\0';
 
   // find new line (CR/LF/CRLF) in the string and terminate string at that position
-  size_t i;
+  zzip_ssize_t i;
   for (i = 0; i < nbRead; i++) {
     if (buf[i] == '\n')
     {
