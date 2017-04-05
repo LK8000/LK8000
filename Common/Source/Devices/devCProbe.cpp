@@ -507,7 +507,7 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	wp = (WndProperty*)pWnd->FindByName(TEXT("prpAbsPress"));
 	if(wp){
 		LockDeviceData();
-		_stprintf(Temp, TEXT("%.2f hPa"), m_abs_press);
+		_stprintf(Temp, TEXT("%.2f hPa"), m_abs_press/100.);
 		UnlockDeviceData();
 
 		wp->SetText(Temp);
