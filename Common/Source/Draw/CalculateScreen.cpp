@@ -255,6 +255,7 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
                     return ToScreen(pt);
                 });
 
+        assert(Groundline.front() == Groundline.back());
     }
 #ifdef GTL2
     static_assert(Groundline2.size() == array_size(GlideFootPrint2), "wrong array size");
@@ -267,6 +268,8 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
                 [&ToScreen](const pointObj & pt) {
                     return ToScreen(pt);
                 });
+
+        assert(Groundline2.front() == Groundline2.back());
     }
 #endif
 }
