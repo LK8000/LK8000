@@ -39,7 +39,8 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   LKASSERT(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +1); // #GlideFootPrint array to small  
 #endif
 
-  for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
+  const pointObj* first_out = out; // this is first polygon point (OpenGL or not), used for close polygon.
+  for (int i=0; i<NUMTERRAINSWEEPS; i++) {
     bearing = (i*360.0)/NUMTERRAINSWEEPS;
     distance = FinalGlideThroughTerrain(bearing, 
                                       #ifdef GTL2
@@ -60,6 +61,8 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
     *(out++) = (pointObj){lon, lat};
   }
+  (*out) = (*first_out); // close polygon
+
   Calculated->Experimental = Calculated->TerrainBase;
   
   #ifdef GTL2
