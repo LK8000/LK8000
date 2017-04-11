@@ -2163,10 +2163,10 @@ void CAirspaceManager::ReadAirspaces() {
     int fileCounter=0;
     for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
         fileCounter++;
-        TCHAR szFile[MAX_PATH] = TEXT("\0");
-        LocalPath(szFile, _T(LKD_AIRSPACES), airSpaceFile);
-
-        if(_tcslen(szFile) > 0) { // Check if there is a filename present
+        if(_tcslen(airSpaceFile) > 0) { // Check if there is a filename present
+            
+            TCHAR szFile[MAX_PATH] = TEXT("\0");
+            LocalPath(szFile, _T(LKD_AIRSPACES), airSpaceFile);
             LPCTSTR wextension = _tcsrchr(szFile, _T('.'));
 
             bool readOk=false;
