@@ -55,14 +55,19 @@ using namespace std::placeholders;
 
 // this lock is used for protect DeviceList array.
 #if USELKASSERT
-class DeviceMutex : public Poco::Mutex {
+class DeviceMutex : protected Poco::Mutex {
+    friend class DeviceScopeLock;
+    friend class Poco::ScopedLock<DeviceMutex>;
 public:
-    inline void Lock() {
+    inline void Lock(const TCHAR* filename, int line) {
         Poco::Mutex::lock();
         // Check if we are not inside RXThread, otherwise, we can have deadlock when we stop RxThread.
         for(DeviceDescriptor_t device : DeviceList) {
             if(device.Com) {
-                LKASSERT(!device.Com->IsCurrentThread());
+                if(device.Com->IsCurrentThread()) {
+                    StartupStore(_T("Err. LockComm inside RxThread %s  line(%d)"), filename, line);
+                    assert(false);
+                }
             }
         }
     }
@@ -95,9 +100,15 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 
 int DeviceRegisterCount = 0;
 
+#if USELKASSERT
+void LockComm_d(const TCHAR* filename, int line) {
+  CritSec_Comm.Lock(filename, line);
+}
+#else
 void LockComm() {
   CritSec_Comm.Lock();
 }
+#endif
 
 void UnlockComm() {
   CritSec_Comm.Unlock();
