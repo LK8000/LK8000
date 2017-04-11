@@ -14,7 +14,7 @@
 
 template <typename T>
 void GPSResetData(T& data) {
-    memset(&data, 0, data.dwSize);
+    memset(&data, 0, sizeof (T));
     data.dwSize = sizeof (T);
     data.dwVersion = 1;
 }
