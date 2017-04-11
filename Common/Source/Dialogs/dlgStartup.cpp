@@ -888,10 +888,12 @@ short dlgStartupShowModal(void) {
             if (_tcslen(dfe->GetPathFile()) > 0) {
                 if (_tcscmp(dfe->GetPathFile(), startProfileFile)) { // if they are not the same
                     const TCHAR* szFileName = dfe->GetPathFile();
-                    if (_tcscmp(startProfileFile, _T("PROFILE_RESET")) == 0) {
+                    if (_tcscmp(szFileName, _T("PROFILE_RESET")) == 0) {
 #if TESTBENCH
                         StartupStore(_T("... Selected FULL RESET virtual profile\n"));
 #endif
+                        _tcscpy(startProfileFile,szFileName);
+
                         MessageBoxX(MsgToken(1758), MsgToken(1757), mbOk);
                         FullResetAsked = true;
                         LKProfileResetDefault();
