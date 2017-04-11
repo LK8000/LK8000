@@ -34,8 +34,6 @@
 
 unsigned short minalt = TERRAIN_INVALID;
 
-static bool terrain_ready = false;
-
 static short autobr=128;
 
 extern bool FastZoom;
@@ -117,8 +115,7 @@ class TerrainRenderer {
     TerrainRenderer &operator=(const TerrainRenderer &) = delete; // disallowed
 public:
 
-    TerrainRenderer(const RECT& rc) : _dirty(true),  sbuf(), hBuf(), colorBuf()  {
-        terrain_ready = false;
+    TerrainRenderer(const RECT& rc) : _dirty(true), _ready(), sbuf(), hBuf(), colorBuf()  {
 
 #if (WINDOWSPC>0) && TESTBENCH
         StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"), rc.left, rc.top, rc.right, rc.bottom);
@@ -163,7 +160,7 @@ public:
         const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
         const int res_y = iround((rc.bottom - rc.top) * oversampling / dtquant);
 
-        sbuf = new CSTScreenBuffer(res_x, res_y);
+        sbuf = new (std::nothrow) CSTScreenBuffer(res_x, res_y);
         if(!sbuf) {
             OutOfMemory(_T(__FILE__), __LINE__);
             ToggleMultimapTerrain();
@@ -183,13 +180,11 @@ public:
             // We *must* disable terrain at this point.
             //
             ToggleMultimapTerrain();
-            delete sbuf;
-            sbuf = NULL;
             return;
         }
-#if (WINDOWSPC>0) && TESTBENCH
+#if TESTBENCH
         else {
-            StartupStore(_T(". TerrainRenderer: malloc(%d) ok%s"), sizeof (unsigned short)*ixs*iys, NEWLINE);
+            StartupStore(_T(". TerrainRenderer: malloc(%u) ok"), (unsigned)(sizeof(unsigned short)*ixs*iys));
         }
 #endif
 
@@ -197,21 +192,17 @@ public:
         if (colorBuf == NULL) {
             OutOfMemory(_T(__FILE__), __LINE__);
             ToggleMultimapTerrain();
-            delete sbuf;
-            sbuf = NULL;
-            free(hBuf);
-            hBuf = NULL;
             return;
         }
         // Reset this, so ColorTable will reload colors
         lastColorRamp = NULL;
 
         // this is validating terrain construction
-        terrain_ready = true;
+        _ready = true;
     }
 
     ~TerrainRenderer() {
-#if (WINDOWSPC>0) && TESTBENCH
+#if TESTBENCH
         StartupStore(_T(".... Deinit TerrainRenderer\n"));
 #endif
         if (hBuf) {
@@ -222,11 +213,9 @@ public:
             free(colorBuf);
             colorBuf = NULL;
         }
-        if (sbuf) {
-            delete sbuf;
-            sbuf = NULL;
-        }
-        terrain_ready = false;
+
+        delete sbuf;
+        sbuf = nullptr;
     }
 
     void SetDirty() {
@@ -236,9 +225,14 @@ public:
     bool IsDirty() const {
         return _dirty;
     }
+    
+    bool IsReady() const {
+        return _ready;
+    }
 
 private:
     bool _dirty; // indicate sbuf is up-to-date
+    bool _ready; // indicate renderer is fully initialised
 
     unsigned int ixs, iys; // screen dimensions in coarse pixels
     unsigned int dtquant;
@@ -649,20 +643,14 @@ public:
 };
 
 
-TerrainRenderer *trenderer = NULL;
+static TerrainRenderer *trenderer = NULL;
 
+/**
+ * Require LockTerrainDataGraphics() everytime !
+ */
 void CloseTerrainRenderer() {
-#if TESTBENCH
-    if (!trenderer) {
-        StartupStore(_T(".... CANNOT CloseTerrainRenderer, trenderer null!!\n"));
-    }
-#endif
-
-    if (trenderer) {
-        delete trenderer;
-        trenderer = NULL;
-    }
-    terrain_ready = false;
+    delete trenderer;
+    trenderer = nullptr;
 }
 
 /**
@@ -698,6 +686,9 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
     return true;
 }
 
+/**
+ * Require LockTerrainDataGraphics() everytime !
+ */
 bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
         const double sunazimuth, const double sunelevation) {
     (void) sunelevation; // TODO feature: sun-based rendering option
@@ -707,20 +698,12 @@ bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Pr
         return false;
     }
 
-#if TESTBENCH
-    if (!trenderer && terrain_ready) {
-        LKASSERT(0);
-        StartupStore(_T("... DRAWTERRAIN trenderer null, but terrain is ready! Recovering.\n"));
-        terrain_ready = false;
-    }
-#endif
-
-    if (trenderer && !terrain_ready) {
+    if (trenderer && !trenderer->IsReady()) {
 #if BUGSTOP
         LKASSERT(0);
 #endif
         StartupStore(_T("... DRAWTERRAIN trenderer not null, but terrain not ready! Recovering.\n"));
-        LKSW_ResetTerrainRenderer = true;
+        CloseTerrainRenderer();
     }
 
 
@@ -729,31 +712,29 @@ _redo:
 
     if (!trenderer) {
         oldrc = rc;
-        trenderer = new TerrainRenderer(rc);
+        trenderer = new(std::nothrow) TerrainRenderer(rc);
         LKASSERT(trenderer);
-        if (!terrain_ready) {
+        if (trenderer && !trenderer->IsReady()) {
 #if TESTBENCH
             StartupStore(_T("... DrawTerrain: ERROR terrain not ready\n"));
 #endif
             CloseTerrainRenderer();
         }
-        if (!trenderer || !terrain_ready) return false;
+        
+        if (!trenderer) {
+            return false;
+        }
     }
 
     // Resolution has changed, probably PAN mode on with bottombar full opaque
     // We paint full screen, so we resize it.
-    if (LKSW_ResetTerrainRenderer || (rc.bottom != oldrc.bottom) || (rc.right != oldrc.right)
+    if ((rc.bottom != oldrc.bottom) || (rc.right != oldrc.right)
             || (rc.left != oldrc.left) || (rc.top != oldrc.top)) {
 #if TESTBENCH
-        if (LKSW_ResetTerrainRenderer) {
-            StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
-        } else {
-            StartupStore(_T("... Change vertical resolution from %d,%d,%d,%d  to %d,%d,%d,%d\n"),
+        StartupStore(_T("... Change vertical resolution from %d,%d,%d,%d  to %d,%d,%d,%d"),
                     oldrc.left, oldrc.top, oldrc.right, oldrc.bottom, rc.left, rc.top, rc.right, rc.bottom);
-        }
 #endif
         LKASSERT(rc.right > 0 && rc.bottom > 0);
-        LKSW_ResetTerrainRenderer = false; // in any case
         CloseTerrainRenderer();
         goto _redo;
     }

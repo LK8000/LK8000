@@ -942,11 +942,6 @@ GEXTERN bool LKSW_ResetLDRotary GEXTFALSE;
 // Force landing if we are stationary, or below 3kmh, otherwise ignore
 GEXTERN bool LKSW_ForceLanding GEXTFALSE;
 
-// Close and reopen TerrainRenderer, to quickly use a new screen resolution
-GEXTERN bool LKSW_ResetTerrainRenderer GEXTFALSE;
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // use this two inline form when we already lock Task Data...
 //  avoid recusive Lock overhead
