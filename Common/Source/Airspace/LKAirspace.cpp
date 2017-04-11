@@ -1593,23 +1593,23 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                             if (Name[0] != '\0') { // FIX: do not add airspaces with no name defined.
                                 if (Radius > 0) {
                                     // Last one was a circle
-                                    newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
+                                    newairspace = new (std::nothrow) CAirspace_Circle(Longitude, Latitude, Radius);
                                 } else {
                                     // Last one was an area
                                     CorrectGeoPoints(points);
                                     // Skip it if we dont have minimum 3 points
                                     if (points.size() > MIN_AS_SIZE) {
-                                        newairspace = new CAirspace_Area(std::move(points));
+                                        newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
                                     }
                                 }
                             }
-                            if (newairspace != NULL) {
+                            if (newairspace) {
                                 newairspace->Init(Name, Type, Base, Top, flyzone);
 
-                                if (1) {
+                                { // Begin Lock
                                     ScopeLock guard(_csairspaces);
                                     _airspaces.push_back(newairspace);
-                                }
+                                } // End Lock
                             }
 
                             Name[0] = '\0';
@@ -1818,24 +1818,30 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
         LKASSERT(!newairspace);
         if (Radius > 0) {
             // Last one was a circle
-            newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
+            newairspace = new (std::nothrow) CAirspace_Circle(Longitude, Latitude, Radius);
         } else {
             // Last one was an area
             CorrectGeoPoints(points);
             // Skip it if we dont have minimum 3 points
             if (points.size() > MIN_AS_SIZE) {
-              newairspace = new CAirspace_Area(std::move(points));
+              newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
             }
         }
         if(newairspace) {
           newairspace->Init(Name, Type, Base, Top, flyzone);
-          ScopeLock guard(_csairspaces);
-          _airspaces.push_back(newairspace);
+          { // Begin Lock
+            ScopeLock guard(_csairspaces);
+            _airspaces.push_back(newairspace);
+          } // End Lock
         }
     }
 
-    ScopeLock guard(_csairspaces);
-    StartupStore(TEXT(". Now we have %u airspaces%s"), (unsigned)_airspaces.size(), NEWLINE);
+    unsigned airspaces_count = 0;
+    { // Begin Lock
+        ScopeLock guard(_csairspaces);
+        airspaces_count = _airspaces.size();
+    }  // End Lock
+    StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
     // For debugging, dump all readed airspaces to runtime.log
     //CAirspaceList::iterator it;
     //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
@@ -2127,7 +2133,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         }
 
         // Build the new airspace
-        CAirspace* newairspace = new CAirspace_Area(std::move(points));
+        CAirspace* newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
         if(newairspace==nullptr) {
             StartupStore(TEXT(".. Failed to allocate new airspace.%s"), NEWLINE);
             return false;
@@ -2136,12 +2142,19 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         newairspace->Init(Name, Type, Base, Top, flyzone);
 
         // Add the new airspace
+        { // Begin Lock
         ScopeLock guard(_csairspaces);
         _airspaces.push_back(newairspace);
+        } // End Lock
     } // for each ASP
 
-    ScopeLock guard(_csairspaces);
-    StartupStore(TEXT(". Now we have %u airspaces%s"), (unsigned)_airspaces.size(), NEWLINE);
+    unsigned airspaces_count = 0;
+    { // Begin Lock
+        ScopeLock guard(_csairspaces);
+        airspaces_count = _airspaces.size();
+    } // End Lock
+        
+    StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
 
     return true;
 }
@@ -2457,6 +2470,10 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
 }
 
 inline bool airspace_sorter(const CAirspace *a, const CAirspace *b) {
+    assert(a);
+    assert(a->Top());
+    assert(b);
+    assert(b->Top());
     return (a->Top()->Altitude < b->Top()->Altitude);
 }
 
