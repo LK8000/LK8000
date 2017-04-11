@@ -14,6 +14,9 @@
 CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight) : RawBitmap(nWidth, nHeight) {
 #ifdef USE_TERRAIN_BLUR
     m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*GetHeight()*GetCorrectedWidth());
+    if(!m_pBufferTmp) {
+        throw std::bad_alloc();
+    }
 #endif
     std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(255, 255, 255));
 }
@@ -22,7 +25,7 @@ CSTScreenBuffer::~CSTScreenBuffer() {
 #ifdef USE_TERRAIN_BLUR
     if (m_pBufferTmp) {
         free(m_pBufferTmp);
-        m_pBufferTmp = NULL;
+        m_pBufferTmp = nullptr;
     }
 #endif
 }
