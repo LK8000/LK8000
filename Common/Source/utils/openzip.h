@@ -45,12 +45,18 @@ public:
     void close() {
         if(_fp) {
             zzip_close(_fp);
+            _fp = nullptr;
         }
     }
 
-    operator bool() { return !!(_fp); }
+    operator bool() { 
+        return !!(_fp); 
+    }
 
-    operator ZZIP_FILE*() { return _fp; }
+    operator ZZIP_FILE*() { 
+        assert(_fp);
+        return _fp; 
+    }
 
 private:
     ZZIP_FILE* _fp;
