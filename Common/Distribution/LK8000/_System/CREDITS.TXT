@@ -1,4 +1,4 @@
-#A9;
+#B0;
 [Welcome to LK8000]
 Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
 Join our free support forum at http://www.postfrontal.com/forum
@@ -13,6 +13,12 @@ Please advance to the next page to start reading about changes and enhancements.
 
 [Latest software changes]
 
+Version 6.1g:
+Fixed profile reset not working in 6.1f
+Fixed crash on PNA version using internal GPS device
+Other bug fixes and performance enhancements
+
+
 In summary what's up in current branch:
 
 Airspace Class Glider Sector "GldSec" added (GSEC open airspace, GLIDING OpenAIP)
@@ -24,7 +30,7 @@ New terrain auto-contrast in System config p.4
 New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
    (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
 
->> In details, in this version 6.1f  :
+[Version 6.1f  170407]
 New INFO button in menu Info 2/2 .
 (informations will automatically be displayed on first restart of LK after upgrade, if available)
 
