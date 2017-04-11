@@ -6,7 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Flarm.h"
-#ifdef UNDER_CE
+#if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
 #endif
 
@@ -186,7 +186,7 @@ class NMEAParser {
       RMZAvailable = false;
   }
 
-#ifdef UNDER_CE
+#if defined(PNA) && defined(UNDER_CE)
   static BOOL ParseGPS_POSITION(int portnum,
 			      const GPS_POSITION& loc, NMEA_INFO& GPSData);
   BOOL ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData);

@@ -59,7 +59,7 @@ void NMEAParser::_Reset(void) {
   LastTime = 0;
 }
 
-#ifdef UNDER_CE
+#if defined(PNA) && defined(UNDER_CE)
 BOOL NMEAParser::ParseGPS_POSITION(int Idx, const GPS_POSITION& loc, NMEA_INFO& GPSData) {
     LKASSERT(!ReplayLogger::IsEnabled());
 

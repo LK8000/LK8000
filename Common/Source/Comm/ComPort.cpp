@@ -124,9 +124,14 @@ bool ComPort::StartRxThread() {
           return false;
       }
       return true;
+  } catch(Poco::Exception& e) {
+      const std::string displayText(e.displayText());
+      const tstring error = to_tstring(displayText.c_str());
+      StartupStore(_T(". ComPort %u <%s> StartRxThread : %s"), (unsigned)(GetPortIndex() + 1), GetPortName(), error.c_str());
+      return false;
   } catch(std::exception& e) {
       const tstring error = to_tstring(e.what());
-      StartupStore(_T(". ComPort %u <%s> StartRxThread : %s" NEWLINE), (unsigned) (GetPortIndex() + 1), GetPortName(), error.c_str());
+      StartupStore(_T(". ComPort %u <%s> StartRxThread : %s"), (unsigned)(GetPortIndex() + 1), GetPortName(), error.c_str());
       return false;
   }
 }

@@ -49,10 +49,6 @@ bool GpsIdPort::Initialize() {
     StartupStore(_T("GPSID : MxPrefix %s%s"), dev.szGPSMultiplexPrefix, NEWLINE);
     StartupStore(_T("GPSID : Name:%s%s"), dev.szGPSFriendlyName, NEWLINE);
 
-    if (!StartRxThread()) {
-        StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
-        return false;
-    }
     return true;
 }
 
