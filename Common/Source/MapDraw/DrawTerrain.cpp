@@ -105,7 +105,7 @@ inline void TerrainShading(const short illum, uint8_t &r, uint8_t &g, uint8_t &b
 //  mapscale/(0.25*30)
 //  mapscale/7.5 terrain units/pixel
 //
-// this is for TerrainInfo->StepSize = 0.0025;
+// this is for TerrainInfo.StepSize = 0.0025;
 
 //
 // Returning from constructor without setting terrain_ready will result in no draw terrain.
