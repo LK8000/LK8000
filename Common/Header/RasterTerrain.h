@@ -142,11 +142,12 @@ short RasterMap::GetFieldFine(const double &Latitude, const double &Longitude) c
     const unsigned int lx = iround((Longitude - TerrainInfo.Left) * fXrounding) * Xrounding;
     const unsigned int ly = iround((TerrainInfo.Top - Latitude) * fYrounding) * Yrounding;
 
-    assert(((ly) * TerrainInfo.Columns + (lx)) < (TerrainInfo.Columns*TerrainInfo.Rows));
-
     if (gcc_unlikely(lx >= (TerrainInfo.Columns-1) || ly >= (TerrainInfo.Rows-1))) {
         return TERRAIN_INVALID;
     }
+
+    assert(((ly) * TerrainInfo.Columns + (lx)) < (TerrainInfo.Columns*TerrainInfo.Rows));
+
     return *(TerrainMem + ly * TerrainInfo.Columns + lx);
 }
 
