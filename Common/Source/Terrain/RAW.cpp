@@ -51,16 +51,14 @@ bool RasterMap::Open(const TCHAR* zfilename) {
      *  try to create buffer for store DEM data
      */
     pTerrainMem.reset(new(std::nothrow) short[nsize]);
-#ifdef UNDER_CE
-    /* 
-     * on WinCE platform, if available memory is less than 5MB 
+    /*
+     * if available memory is less than 5MB
      * after allocate buffer we don't load terrain.
      */
     if( CheckFreeRam() < (5*1024*1024) ) {
        pTerrainMem.reset();
     }
-#endif      
-  } 
+  }
   
   if(pTerrainMem) {
     StartupStore(_T("... Terrain : use heap memory"));
