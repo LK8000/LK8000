@@ -554,10 +554,11 @@ LKASSERT(d !=NULL);
             RadioPara.lowBAT = false;
           break;
           case 'J':  _stprintf(szTempStr,_T("RX_ON"));
-            RadioPara.RX_active = true;
+          
           break;
           case 'V':  _stprintf(szTempStr,_T("RX_OFF"));
             RadioPara.RX_active = false;
+            RadioPara.RX_standy = false;
           break;
           case 'K':  _stprintf(szTempStr,_T("TX_ON"));
             RadioPara.TX= true;
@@ -567,8 +568,6 @@ LKASSERT(d !=NULL);
 
           case 'Y': _stprintf(szTempStr,_T("RX_TX_OFF"));
             RadioPara.TX= false;
-            RadioPara.RX_active = false;
-            RadioPara.RX_standy = false;
           break;
           case 'M':  _stprintf(szTempStr,_T("RX_AF"));
             RadioPara.RX_active = true;
