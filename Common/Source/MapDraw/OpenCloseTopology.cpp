@@ -67,6 +67,7 @@ void OpenTopology() {
   long ShapeIcon;
   long ShapeField;
   TCHAR wShapeFilename[MAX_PATH];
+  TCHAR wCPGFilename[MAX_PATH];
   TCHAR *Stop;
   int numtopo = 0;
   int shapeIndex=0;
@@ -86,9 +87,12 @@ void OpenTopology() {
         _tcscpy(ShapeName, ctemp);
 
         _tcscpy(wShapeFilename, Directory);
-
         _tcscat(wShapeFilename,ShapeName);
         _tcscat(wShapeFilename,TEXT(".shp"));
+
+        _tcscpy(wCPGFilename, Directory);
+        _tcscat(wCPGFilename,ShapeName);
+        _tcscat(wCPGFilename,TEXT(".cpg"));
 
         // Shape range
         PExtractParameter(TempString, ctemp, 1);
@@ -235,6 +239,11 @@ void OpenTopology() {
         } else {
           TopologyLabel *newtopol;
           newtopol = new TopologyLabel(wShapeFilename, ShapeField);
+          ZZIP_FILE* zCPGFile = openzip(wCPGFilename, "rt");
+          if (zCPGFile) {
+            newtopol->bUTF8 = true;
+            zzip_fclose(zCPGFile);
+          }
           TopoStore[numtopo] = newtopol;
         }
 
