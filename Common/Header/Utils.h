@@ -67,7 +67,14 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
 
 
 double StrToDouble(TCHAR *Source, TCHAR **Stop);
-void PExtractParameter(TCHAR *Source, TCHAR *Destination, int DesiredFieldNumber);
+
+void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber);
+
+template<size_t dest_size>
+void PExtractParameter(TCHAR *Source, TCHAR (&Destination)[dest_size], int DesiredFieldNumber) {
+	PExtractParameter(Source, Destination, dest_size, DesiredFieldNumber);
+}
+
 void SaveWindToRegistry();
 void LoadWindFromRegistry();
 void SaveSoundSettings();

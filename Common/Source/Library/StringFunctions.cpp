@@ -16,44 +16,31 @@
 #include "Poco/TextConverter.h"
 #include "Util/Clamp.hpp"
 
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
-
-
-
-void PExtractParameter(TCHAR *Source, TCHAR *Destination, int DesiredFieldNumber)
+void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber)
 {
-  int index = 0;
-  int dest_index = 0;
+  size_t index = 0;
+  size_t dest_index = 0;
   int CurrentFieldNumber = 0;
-  int StringLength        = 0;
 
-  StringLength = _tcslen(Source);
+  size_t StringLength = _tcslen(Source);
 
-  while( (CurrentFieldNumber < DesiredFieldNumber) && (index < StringLength) )
-    {
-      if ( Source[ index ] == ',' )
-	{
-	  CurrentFieldNumber++;
+  while( (CurrentFieldNumber < DesiredFieldNumber) && (index < StringLength) ) {
+    if ( Source[ index ] == ',' ) {
+      CurrentFieldNumber++;
 	}
-      index++;
-    }
+    index++;
+  }
 
-  if ( CurrentFieldNumber == DesiredFieldNumber )
-    {
-      while( (index < StringLength)    &&
-	     (Source[ index ] != ',') &&
-	     (Source[ index ] != 0x00) )
+  if ( CurrentFieldNumber == DesiredFieldNumber ) {
+    while( (dest_index < dest_size) && (index < StringLength) &&
+            (Source[ index ] != ',') && (Source[ index ] != 0x00) )
 	{
 	  Destination[dest_index] = Source[ index ];
 	  index++; dest_index++;
 	}
-      Destination[dest_index] = '\0';
-    }
+    assert(dest_index < dest_size);
+    Destination[std::min(dest_index, dest_size-1)] = '\0';
+  }
 }
 
 #ifndef UNICODE
