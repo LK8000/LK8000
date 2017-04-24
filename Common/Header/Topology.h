@@ -52,7 +52,7 @@ class XShapeLabel: public XShape {
   }
 
   virtual void clear();
-  void setlabel(const char* src);
+  void setlabel(const char* src,bool bUTF8);
 
   virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const;
   virtual bool nearestItem(int category, double lon, double lat);
@@ -147,6 +147,7 @@ class TopologyLabel: public Topology {
   virtual XShape* addShape(const int i);
   void setField(int i);
   int field;
+  bool bUTF8;
 
 };
 

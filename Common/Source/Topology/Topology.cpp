@@ -22,6 +22,7 @@
 #include "ShapeSpecialRenderer.h"
 #include "NavFunctions.h"
 #include "ScreenGeometry.h"
+#include "utils/stringext.h"
 #include <functional>
 
 #ifdef ENABLE_OPENGL
@@ -705,7 +706,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   Surface.SelectObject(hfOld);
 }
 
-TopologyLabel::TopologyLabel(const TCHAR* shpname, int field1):Topology(shpname)
+TopologyLabel::TopologyLabel(const TCHAR* shpname, int field1):Topology(shpname),bUTF8()
 {
   setField(max(0,field1));
 };
@@ -724,7 +725,7 @@ XShape* TopologyLabel::addShape(const int i) {
   XShapeLabel* theshape = new XShapeLabel();
   LKASSERT(theshape);
   theshape->load(&shpfile,i);
-  theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field));
+  theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field),bUTF8);
   return theshape;
 }
 
@@ -824,7 +825,7 @@ bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surfa
 }
 
 
-void XShapeLabel::setlabel(const char* src) {
+void XShapeLabel::setlabel(const char* src, bool bUTF8) {
   // Case1 : NULL or not informative label, we show the shape without label
   if (
       (src == NULL) ||
@@ -859,29 +860,56 @@ void XShapeLabel::setlabel(const char* src) {
   }
 
 #ifdef UNICODE
-    // from Latin1 (ANSI) To UNICODE
-    int nChars = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
-    if (nChars) {
-        label = (TCHAR*) malloc(nChars * sizeof (TCHAR));
-        if (label) {
-            MultiByteToWideChar(CP_ACP, 0, src, -1, label, nChars);
-        }
+
+    if ( bUTF8 ) {
+      // from utf-8 to UNICODE
+      size_t size = strlen(src);
+      if(size) {
+        label = (TCHAR*) malloc(size * sizeof (TCHAR) + 1);
+        utf2TCHAR(src, label, size);
+      }
     }
+    else {
+      // from Latin1 (ANSI) To UNICODE
+      int nChars = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
+      if (nChars) {
+          label = (TCHAR*) malloc(nChars * sizeof (TCHAR));
+          if (label) {
+              MultiByteToWideChar(CP_ACP, 0, src, -1, label, nChars);
+          }
+      }
+    }
+
+
 #else
-    // from Latin1 (ISO-8859-1) To Utf8
-    tstring Latin1String(src);
-    tstring utf8String;
 
-    Poco::Latin1Encoding Latin1Encoding;
-    Poco::UTF8Encoding utf8Encoding;
 
-    Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
-    converter.convert(Latin1String, utf8String);
-    size_t size = utf8String.size();
-    if(size) {
+    if ( bUTF8 ) {
+      // do simple copy 
+      size_t size = strlen(src);
+      if(size) {
+        label = (TCHAR*) malloc(size * sizeof (TCHAR) + 1);
+        strcpy(label, src);
+      }
+    }
+    else {
+      tstring Latin1String(src);
+      tstring utf8String;
+
+      Poco::Latin1Encoding Latin1Encoding;
+      Poco::UTF8Encoding utf8Encoding;
+       
+      // from Latin1 (ISO-8859-1) To Utf8
+      Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
+      converter.convert(Latin1String, utf8String);
+      size_t size = utf8String.size();
+      if(size) {
         label = (TCHAR*) malloc(size * sizeof (TCHAR) + 1);
         strcpy(label, utf8String.c_str());
+      }
     }
+
+
 #endif
 
   hide=false;
