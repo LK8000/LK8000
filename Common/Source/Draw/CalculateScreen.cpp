@@ -255,7 +255,12 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
                     return ToScreen(pt);
                 });
 
+#ifdef ENABLE_OPENGL
+        // first point is center of polygon (OpenGL GL_TRIANGLE_FAN), polyline start is second point
+        assert((*std::next(Groundline.begin())) == Groundline.back());
+#else
         assert(Groundline.front() == Groundline.back());
+#endif
     }
 #ifdef GTL2
     static_assert(Groundline2.size() == array_size(GlideFootPrint2), "wrong array size");

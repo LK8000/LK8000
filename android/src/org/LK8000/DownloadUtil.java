@@ -35,13 +35,13 @@ import android.net.Uri;
 class DownloadUtil extends BroadcastReceiver {
   private static DownloadUtil instance;
 
-  static void Initialise(Context context) {
+  static synchronized void Initialise(Context context) {
     instance = new DownloadUtil();
     context.registerReceiver(instance,
                              new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
   }
 
-  static void Deinitialise(Context context) {
+  static synchronized void Deinitialise(Context context) {
     if (instance != null) {
       context.unregisterReceiver(instance);
       instance = null;

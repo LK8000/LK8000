@@ -21,12 +21,11 @@ class RasterMap final {
     Interpolate = false;
 
     TerrainMem = nullptr;
-    TerrainInfo = nullptr;
   }
   ~RasterMap() { Close(); }
 
   inline bool isMapLoaded() const {
-    return (TerrainMem && TerrainInfo);
+    return (TerrainMem);
   }
 
   bool GetMapCenter(double *lat, double *lon) const;
@@ -66,15 +65,13 @@ protected:
   double fXroundingFine, fYroundingFine;
   int Xrounding, Yrounding;
 
-  const TERRAIN_INFO* TerrainInfo;
+  TERRAIN_INFO TerrainInfo;
   const short* TerrainMem;
 
-#ifdef UNDER_CE
   std::unique_ptr<short[]> pTerrainMem;
-#endif
-
-
+#ifndef UNDER_CE
   memory_mapped_file::read_only_mmf TerrainFile;
+#endif
 };
 /**
  * JMW rounding further reduces data as required to speed up terrain display on low zoom levels
@@ -96,17 +93,18 @@ short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longi
     const unsigned ix = CombinedDivAndMod(lx);
     const unsigned iy = CombinedDivAndMod(ly);
 
-    if (gcc_unlikely(lx + 1 >= TerrainInfo->Columns || ly + 1 >= TerrainInfo->Rows)) {
+    if (gcc_unlikely(lx + 1 >= TerrainInfo.Columns || ly + 1 >= TerrainInfo.Rows)) {
         return TERRAIN_INVALID;
     }
-    const short *tm = TerrainMem + ly * TerrainInfo->Columns + lx;
+    assert(((ly+1) * TerrainInfo.Columns + (lx+1)) < (TerrainInfo.Columns*TerrainInfo.Rows));
+    const short *tm = TerrainMem + ly * TerrainInfo.Columns + lx;
 
 #ifdef _BILINEAR_INTERP
     // load the four neighboring pixels
     const short& h1 = tm[0];                        // (x  ,y)
     const short& h2 = tm[1];                        // (x+1,y)
-    const short& h3 = tm[TerrainInfo->Columns];     // (x  ,y+1)
-    const short& h4 = tm[1 + TerrainInfo->Columns]; // (x+1,y+1)
+    const short& h3 = tm[TerrainInfo.Columns];     // (x  ,y+1)
+    const short& h4 = tm[1 + TerrainInfo.Columns]; // (x+1,y+1)
 
     // Calculate the weights for each pixel
     const unsigned ix1 = 0x0ff - ix;
@@ -122,14 +120,14 @@ short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longi
 #else
     // perform piecewise linear interpolation
     const short &h1 = tm[0]; // (x,y)
-    const short &h3 = tm[TerrainInfo->Columns+1]; // (x+1,y+1)
+    const short &h3 = tm[TerrainInfo.Columns+1]; // (x+1,y+1)
     if (ix > iy) {
         // lower triangle
         const short &h2 = tm[1]; // (x+1,y)
         return (short) (h1 + ((ix * (h2 - h1) - iy * (h2 - h3)) >> 8));
     } else {
         // upper triangle
-        const short &h4 = tm[TerrainInfo->Columns]; // (x,y+1)
+        const short &h4 = tm[TerrainInfo.Columns]; // (x,y+1)
         return (short) (h1 + ((iy * (h4 - h1) - ix * (h4 - h3)) >> 8));
     }
 #endif
@@ -141,13 +139,16 @@ short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longi
  */
 inline
 short RasterMap::GetFieldFine(const double &Latitude, const double &Longitude) const {
-    const unsigned int lx = iround((Longitude - TerrainInfo->Left) * fXrounding) * Xrounding;
-    const unsigned int ly = iround((TerrainInfo->Top - Latitude) * fYrounding) * Yrounding;
+    const unsigned int lx = iround((Longitude - TerrainInfo.Left) * fXrounding) * Xrounding;
+    const unsigned int ly = iround((TerrainInfo.Top - Latitude) * fYrounding) * Yrounding;
 
-    if (gcc_unlikely(lx >= (TerrainInfo->Columns-1) || ly >= (TerrainInfo->Rows-1))) {
+    if (gcc_unlikely(lx >= (TerrainInfo.Columns-1) || ly >= (TerrainInfo.Rows-1))) {
         return TERRAIN_INVALID;
     }
-    return *(TerrainMem + ly * TerrainInfo->Columns + lx);
+
+    assert(((ly) * TerrainInfo.Columns + (lx)) < (TerrainInfo.Columns*TerrainInfo.Rows));
+
+    return *(TerrainMem + ly * TerrainInfo.Columns + lx);
 }
 
 inline
@@ -175,8 +176,10 @@ public:
   static void Lock(void);
   static void Unlock(void);
 
+  // RasterTerrain::Lock() Requiered
   static short GetTerrainHeight(const double &Latitude, const double &Longitude);
 
+  // RasterTerrain::Lock() Requiered
   static void SetTerrainRounding(double x, double y);
 
   static bool WaypointIsInTerrainRange(double latitude, double longitude);

@@ -20,60 +20,102 @@ bool RasterMap::Open(const TCHAR* zfilename) {
   if (_tcslen(zfilename)<=0) {
     return false;
   }
-
-  StartupStore(_T(". Terrain Open RasterMapRaw <%s>\n"),zfilename);
-
-  TerrainFile.open(zfilename, true);
-  if(TerrainFile.is_open() && TerrainFile.data()) {
-
-    TerrainInfo = reinterpret_cast<const TERRAIN_INFO*>(TerrainFile.data());
-    TerrainMem = reinterpret_cast<const short*>(TerrainFile.data() + sizeof(TERRAIN_INFO));
-
-    const size_t nsize = TerrainInfo->Rows*TerrainInfo->Columns;
-    if(sizeof(TERRAIN_INFO) + (nsize*sizeof(short)) != TerrainFile.mapped_size()) {
-      StartupStore(_T("... ERROR Terrain : Invalide file size\n"));
+  
+  StartupStore(_T(". Terrain Open RasterMapRaw <%s>"),zfilename);
+  FILE* file = _tfopen(zfilename, _T("rb"));
+  if(file) {
+    size_t read_size = fread(&TerrainInfo,1 , sizeof(TERRAIN_INFO), file);
+    fclose(file);
+    if(read_size != sizeof(TERRAIN_INFO)) {
+      StartupStore(_T("... ERROR Terrain : failed to read file header"));
+      return false;
+    }
+  }
+  if (!TerrainInfo.StepSize) {
+      StartupStore(_T("... ERROR Terrain StepSize failure"));
       Close();
-    } else if (!TerrainInfo->StepSize) {
-      StartupStore(_T("... ERROR Terrain StepSize failure\n"));
-      Close();
-    } else {
-      StartupStore(_T(". Terrain size is %ld\n"), (long)nsize*sizeof(short));
+      return false;
+  }
+  
+  const size_t nsize = TerrainInfo.Rows*TerrainInfo.Columns;
+  StartupStore(_T("... Terrain size is %u"), static_cast<unsigned>(nsize*sizeof(short)));
+  StartupStore(_T("... Available memory is %ukB"), static_cast<unsigned>(CheckFreeRam()/1024));
 
-#ifdef UNDER_CE
-      // head memory are faster than memory mapped file,
-      // if filesize are not to huge, store DEM data into heap memory.
+  /* 
+   * for small terrain file heap memory are faster (and more secure) 
+   * than memory mapped file,
+   * if file size less than 10MB, store DEM data into heap memory. 
+   */
+  if((nsize*sizeof(short)) < (10*1024*1024)) {
+    /*
+     *  try to create buffer for store DEM data
+     */
+    pTerrainMem.reset(new(std::nothrow) short[nsize]);
+    /*
+     * if available memory is less than 5MB
+     * after allocate buffer we don't load terrain.
+     */
+    if( CheckFreeRam() < (5*1024*1024) ) {
+       pTerrainMem.reset();
+    }
+  }
+  
+  if(pTerrainMem) {
+    StartupStore(_T("... Terrain : use heap memory"));
 
-      if (CheckFreeRam()>(nsize*sizeof(short)+5000000U)) {
-        // make sure there is 5 meg of ram left after allocating space
-        pTerrainMem.reset(new(std::nothrow) short[nsize]);
-        if(pTerrainMem) {
-            std::copy_n(TerrainMem, nsize, pTerrainMem.get());
-            TerrainMem = pTerrainMem.get();
-
-            TerrainFile.map(0, sizeof(TERRAIN_INFO));
-            TerrainInfo = reinterpret_cast<const TERRAIN_INFO*>(TerrainFile.data());
-        }
+    FILE* file = _tfopen(zfilename, _T("rb"));
+    if(file) {
+      size_t read_size = fread(pTerrainMem.get(), sizeof(short), nsize, file);
+      fclose(file);
+      if(read_size == nsize) {
+          TerrainMem = pTerrainMem.get();
+      } else {
+          pTerrainMem.reset();
       }
-#endif
-
     }
   } else {
-    StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE);
-  }
+    /* 
+     * Note : memory mapped file require SEH exception handling 
+     * Mingw32ce don't implement SEH, so this part of code is disabled
+     */
+#ifndef UNDER_CE
+    StartupStore(_T("... Terrain : use memory mapped file"));
 
-  return isMapLoaded();
+    TerrainFile.open(zfilename, false);
+    if(TerrainFile.is_open()) {
+      TerrainFile.map(sizeof(TERRAIN_INFO), nsize*sizeof(short));
+      if(TerrainFile.data()) {
+        TerrainMem = reinterpret_cast<const short*>(TerrainFile.data());
+      } else {
+        TerrainFile.close();
+      }
+    }
+#else
+    StartupStore(_T("... Terrain File to huge."));
+#endif    
+  }
+  
+  if(!isMapLoaded()) {
+    Close();
+    StartupStore(_T("... Terrain RasterMapRaw load failed"));
+    return false;
+  }
+  return true;
 }
 
 
 void RasterMap::Close(void) {
   TerrainMem = nullptr;
-  TerrainInfo = nullptr;
 
-#ifdef UNDER_CE
-  pTerrainMem = nullptr;
-#endif
+  // this 2 line are needed for debug diagnostics
+  TerrainInfo.Columns = 0;
+  TerrainInfo.Rows = 0;
 
+  pTerrainMem.reset();
+
+#ifndef UNDER_CE  
   if(TerrainFile.is_open()) {
     TerrainFile.close();
   }
+#endif
 }

@@ -63,7 +63,7 @@ public class LK8000 extends Activity {
 
   PowerManager.WakeLock wakeLock;
 
-  BatteryReceiver batteryReceiver = new BatteryReceiver();
+  BatteryReceiver batteryReceiver;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     if (serviceClass == null)
@@ -135,6 +135,7 @@ public class LK8000 extends Activity {
     tv.setText("Loading LK8000...");
     setContentView(tv);
 
+    batteryReceiver = new BatteryReceiver();
     registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
     SharedPreferences settings = getSharedPreferences("LK8000", 0);
@@ -269,7 +270,10 @@ public class LK8000 extends Activity {
   {
     Log.d(TAG, "in onDestroy()");
 
-    unregisterReceiver(batteryReceiver);
+    if(batteryReceiver != null) {
+      unregisterReceiver(batteryReceiver);
+      batteryReceiver = null;
+    }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
       DownloadUtil.Deinitialise(this);
