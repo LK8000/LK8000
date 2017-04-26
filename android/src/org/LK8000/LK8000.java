@@ -114,6 +114,10 @@ public class LK8000 extends Activity {
       // the DownloadManager was added in Android 2.3 "Gingerbread"
       DownloadUtil.Initialise(getApplicationContext());
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+      UsbSerialHelper.Initialise(this);
+    }
+
     // fullscreen mode
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
@@ -277,6 +281,10 @@ public class LK8000 extends Activity {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
       DownloadUtil.Deinitialise(getApplicationContext());
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+      UsbSerialHelper.Deinitialise(this);
+    }
 
     if (nativeView != null) {
       nativeView.exitApp();

@@ -32,9 +32,11 @@
 #include "Java/String.hxx"
 #include "Android/InternalPort.h"
 #include "Android/BluetoothHelper.hpp"
+#include "Android/UsbSerialHelper.h"
 #include <sstream>
 #include <Android/Main.hpp>
 #include <Android/IOIOUartPort.h>
+#include <Android/UsbSerialPort.h>
 
 #endif
 
@@ -339,43 +341,66 @@ void RefreshComPortList() {
 
 #ifdef ANDROID
 
-    JNIEnv *env = Java::GetEnv();
-    if(env && BluetoothHelper::isEnabled(env)) {
+  JNIEnv *env = Java::GetEnv();
+  if (env) {
+    if (BluetoothHelper::isEnabled(env)) {
 
-        COMMPort.push_back(_T("Bluetooth Server"));
+      COMMPort.push_back(_T("Bluetooth Server"));
 
 
-        jobjectArray jbonded = BluetoothHelper::list(env);
-        if (jbonded) {
-            Java::LocalRef<jobjectArray> bonded(env, jbonded);
+      jobjectArray jbonded = BluetoothHelper::list(env);
+      if (jbonded) {
+        Java::LocalRef<jobjectArray> bonded(env, jbonded);
 
-            jsize nBT = env->GetArrayLength(bonded) / 2;
-            for (jsize i = 0; i < nBT; ++i) {
-                Java::String j_address(env, (jstring) env->GetObjectArrayElement(bonded, i * 2));
-                if(!j_address)
-                    continue;
+        jsize nBT = env->GetArrayLength(bonded) / 2;
+        for (jsize i = 0; i < nBT; ++i) {
+          Java::String j_address(env, (jstring) env->GetObjectArrayElement(bonded, i * 2));
+          if (!j_address)
+            continue;
 
-                const std::string address = j_address.ToString();
-                if (address.empty())
-                    continue;
+          const std::string address = j_address.ToString();
+          if (address.empty())
+            continue;
 
-                Java::String j_name(env, (jstring) env->GetObjectArrayElement(bonded, i * 2 + 1));
-                std::stringstream prefixed_address, name;
+          Java::String j_name(env, (jstring) env->GetObjectArrayElement(bonded, i * 2 + 1));
+          std::stringstream prefixed_address, name;
 
-                prefixed_address << "BT:" << address;
-                name << "BT:" << ( j_name ? j_name.ToString() : std::string() );
+          prefixed_address << "BT:" << address;
+          name << "BT:" << (j_name ? j_name.ToString() : std::string());
 
-                COMMPort.push_back(COMMPortItem_t(prefixed_address.str(), name.str()));
-            }
+          COMMPort.push_back(COMMPortItem_t(prefixed_address.str(), name.str()));
         }
+      }
     }
 
-    if(ioio_helper) {
-        COMMPort.push_back(COMMPortItem_t("IOIOUart_0", "IOIO Uart 0"));
-        COMMPort.push_back(COMMPortItem_t("IOIOUart_1", "IOIO Uart 1"));
-        COMMPort.push_back(COMMPortItem_t("IOIOUart_2", "IOIO Uart 2"));
-        COMMPort.push_back(COMMPortItem_t("IOIOUart_3", "IOIO Uart 3"));
+    if(UsbSerialHelper::isEnabled(env)) {
+      jobjectArray jdevices = UsbSerialHelper::list(env);
+      if (jdevices) {
+        Java::LocalRef<jobjectArray> devices(env, jdevices);
+
+        const jsize device_count = env->GetArrayLength(devices);
+        for (jsize i = 0; i < device_count; ++i) {
+
+          Java::String j_name(env, (jstring) env->GetObjectArrayElement(devices, i));
+          if (!j_name) {
+            continue;
+          }
+
+          std::stringstream prefixed_name;
+          prefixed_name << "USB:" << j_name.ToString();
+          const std::string name = prefixed_name.str();
+          COMMPort.push_back(COMMPortItem_t(name.c_str(), name.c_str()));
+        }
+      }
     }
+  }
+
+  if(ioio_helper) {
+    COMMPort.push_back(COMMPortItem_t("IOIOUart_0", "IOIO Uart 0"));
+    COMMPort.push_back(COMMPortItem_t("IOIOUart_1", "IOIO Uart 1"));
+    COMMPort.push_back(COMMPortItem_t("IOIOUart_2", "IOIO Uart 2"));
+    COMMPort.push_back(COMMPortItem_t("IOIOUart_3", "IOIO Uart 3"));
+  }
 
 #endif
 
@@ -609,6 +634,10 @@ BOOL devInit() {
 #ifdef ANDROID
             unsigned ID = _tcstoul(Port+9, nullptr, 10);
             Com = new IOIOUartPort(i, Port, ID, dwSpeed[SpeedIndex]);
+#endif
+        } else if (_tcsncmp(Port, _T("USB:"), 4) == 0) {
+#ifdef ANDROID
+          Com = new UsbSerialPort(i, &Port[4], dwSpeed[SpeedIndex], BitIndex);
 #endif
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
