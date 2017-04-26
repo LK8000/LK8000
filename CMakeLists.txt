@@ -23,8 +23,8 @@ endif ()
 
 ExternalProject_Add (
     GeographicLib
-    URL https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.47-patch1.tar.gz
-    URL_HASH MD5=4fadb45c713ed87b3fc0c709cd9eba26
+    URL https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.48.tar.gz
+    URL_HASH MD5=e99153cf41bf64998cc4f91c00aea167
     PREFIX ${GEOGRAPHIC_PREFIX}
     BINARY_DIR ${GEOGRAPHIC_PREFIX}/build/${ANDROID_ABI}
     INSTALL_DIR ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}
@@ -54,8 +54,8 @@ set(BOOST_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-studio/app/Thirdparty/boost)
 
 ExternalProject_Add (
     boost
-    URL https://freefr.dl.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.zip
-    URL_HASH MD5=3c706b3fc749884ea5510c39474fd732
+    URL https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.zip
+    URL_HASH SHA256=b99973c805f38b549dbeaf88701c0abeff8b0e8eaa4066df47cac10a32097523
     PREFIX ${BOOST_PREFIX}
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
