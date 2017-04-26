@@ -13,7 +13,6 @@
 #include "Util/UTF8.hpp"
 
 //#define DEBUG_GETTEXT	1
-#define LKD_LANGUAGE	"_Language"
 #define MAX_HELP	1500	// complete help including several lines, and also for each single line
 				// Remember there is a limit in ReadULine, always careful with large strings
 
