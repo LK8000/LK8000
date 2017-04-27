@@ -30,8 +30,6 @@ import android.os.Build;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.location.GpsSatellite;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -131,8 +129,7 @@ public class InternalGPS
         return;
       }
 
-      sensorManager.registerListener(this, accelerometer,
-                                     sensorManager.SENSOR_DELAY_NORMAL);
+      sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
       setConnectedSafe(1); // waiting for fix
 

@@ -31,6 +31,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Binder;
 import android.util.Log;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.NotificationCompat;
 
 /**
  * All this Service implementation does is put itself in foreground.
@@ -53,9 +56,9 @@ public class MyService extends Service {
    * Hack: this is set by onCreate(), to support the "testing"
    * package.
    */
-  protected static Class mainActivityClass;
+  protected static Class<?> mainActivityClass;
 
-  private NotificationManager notificationManager;
+  private NotificationManagerCompat notificationManager;
 
   @Override public void onCreate() {
     if (mainActivityClass == null)
@@ -63,25 +66,26 @@ public class MyService extends Service {
 
     super.onCreate();
 
-    notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+    notificationManager = NotificationManagerCompat.from(this);
   }
 
   private void onStart() {
     /* add an icon to the notification area while LK8000 runs, to
        remind the user that we're sucking his battery empty */
-    Notification notification = new Notification(R.drawable.notification_icon, null,
-                                                 System.currentTimeMillis());
+    NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+
     Intent intent2 = new Intent(this, mainActivityClass);
     PendingIntent contentIntent =
       PendingIntent.getActivity(this, 0, intent2, 0);
-    notification.setLatestEventInfo(this, "LK8000", "LK8000 is running",
-                                    contentIntent);
-    notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
-    notificationManager.notify(1, notification);
+    notification.setSmallIcon(R.drawable.notification_icon);
+    notification.setLargeIcon(BitmapFactory.decodeResource( getResources(), R.drawable.notification_icon));
+    notification.setContentTitle("LK8000 is running");
+    notification.setContentIntent(contentIntent);
+    notification.setWhen(System.currentTimeMillis());
+    notification.setOngoing(true);
 
-    if (Build.VERSION.SDK_INT >= 5)
-      APILevel5.startForeground(this, 1, notification);
+    notificationManager.notify(1, notification.build());
   }
 
   @Override public void onStart(Intent intent, int startId) {

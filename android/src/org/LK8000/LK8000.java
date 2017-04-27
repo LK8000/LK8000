@@ -58,7 +58,7 @@ public class LK8000 extends Activity {
    * Hack: this is set by onCreate(), to support the "testing"
    * package.
    */
-  protected static Class serviceClass;
+  protected static Class<?> serviceClass;
   private static NativeView nativeView;
 
   PowerManager.WakeLock wakeLock;
