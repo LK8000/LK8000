@@ -407,11 +407,9 @@ void Units::NotifyUnitChanged(void){
   if (LIFTMODIFY==TOMETER) {
     SetUserVerticalSpeedUnit(unMeterPerSecond);
   }
-#if 1
   if (LIFTMODIFY==TOFEETPERMINUTE) { // 100128
     SetUserVerticalSpeedUnit(unFeetPerMinutes);
   }
-#endif
 
   if (TASKSPEEDMODIFY==TOMPH) {
     SetUserTaskSpeedUnit(unStatuteMilesPerHour);

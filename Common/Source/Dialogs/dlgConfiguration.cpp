@@ -2274,6 +2274,7 @@ DataField* dfe = wp->GetDataField();
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("knots"));
     dfe->addEnumText(TEXT("m/s"));
+    dfe->addEnumText(TEXT("ft/min"));
     dfe->Set(LiftUnit_Config);
     wp->RefreshDisplay();
   }

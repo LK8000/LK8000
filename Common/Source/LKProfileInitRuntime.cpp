@@ -109,9 +109,10 @@ void LKProfileInitRuntime(void) {
     default:
     case 1 : ALTITUDEMODIFY = TOMETER; break;
   }
+  
   switch(LiftUnit_Config) {
     case 0 : LIFTMODIFY = TOKNOTS; break;
-    case 2 : LIFTMODIFY = TOKNOTS; break;
+    case 2 : LIFTMODIFY = TOFEETPERMINUTE; break;
     default:
     case 1 : LIFTMODIFY = TOMETER; break;
   }
