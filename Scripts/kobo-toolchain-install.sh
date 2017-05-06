@@ -6,8 +6,17 @@
 # Created on Jan 1, 2015, 6:39:30 PM
 #
 
-mkdir ~/tmp
-cd ~/tmp
+set -ex
+
+
+[ -z "$TC"] && TC=arm-unknown-linux-gnueabi
+[ -z "$BUILD_DIR" ] && BUILD_DIR=$HOME/tmp
+[ -z "$TARGET_DIR" ] && TARGET_DIR=/opt/kobo/arm-unknown-linux-gnueabi
+
+USER_PATH=$PATH
+
+mkdir "$BUILD_DIR"
+cd "$BUILD_DIR"
 
 # install toolchain
 #wget http://max.kellermann.name/download/xcsoar/devel/x-tools/x-tools-arm-i386-2013-12-11.tar.xz
@@ -18,8 +27,8 @@ cd ~/tmp
 wget http://zlib.net/zlib-1.2.11.tar.gz
 tar -xvzf zlib-1.2.11.tar.gz 
 cd zlib-1.2.11
-CC=arm-unknown-linux-gnueabi-gcc CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
-./configure --prefix=/opt/kobo/arm-unknown-linux-gnueabi
+CC=$TC-gcc CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
+./configure --prefix=$TARGET_DIR
 make all
 sudo make install
 cd ..
@@ -30,20 +39,30 @@ tar xvjf zziplib-0.13.62.tar.bz2
 mkdir zzipbuild
 cd zzipbuild
 CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
-../zziplib-0.13.62/configure --host=arm-unknown-linux-gnueabi --target=arm-unknown-linux-gnueabi --prefix=/opt/kobo/arm-unknown-linux-gnueabi --with-zlib
+../zziplib-0.13.62/configure --host=$TC --target=$TC --prefix=$TARGET_DIR --with-zlib
 make all
-sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
+sudo PATH=$USER_PATH:$PATH \
     make install
 cd ..
 
 # install boostlib ( 1.64.0 - 2017-04-19 )
-wget https://dl.bintray.com/boostorg/release/1.64.0/source/:boost_1_64_0.tar.gz
+wget https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz
 tar xzf boost_1_64_0.tar.gz
 cd boost_1_64_0
 ./bootstrap.sh
-echo "using gcc : arm : arm-unknown-linux-gnueabi-g++ : cxxflags=-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations ;" > user-config.jam
-sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
-    ./bjam toolset=gcc target-os=linux variant=release link=shared runtime-link=shared --prefix=/opt/kobo/arm-unknown-linux-gnueabi --user-config=user-config.jam install
+echo "using gcc : arm : $TC-g++ : cxxflags=-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations ;" > user-config.jam
+sudo PATH=$USER_PATH:$PATH \
+    ./bjam toolset=gcc \
+           variant=release \
+           link=shared \
+           runtime-link=shared \
+           --prefix=$TARGET_DIR \
+           --without-python \
+           --without-context \
+           --without-coroutine \
+           --without-coroutine2 \
+           --user-config=user-config.jam \
+           install
 cd ..
 
 # install libpng ( 1.6.29 - 2017-03-16 )
@@ -52,16 +71,16 @@ tar xzf libpng-1.6.29.tar.gz
 mkdir libpng-build
 cd libpng-build
 ../libpng-1.6.29/configure \
-    --host=arm-unknown-linux-gnueabi \
-    CC=arm-unknown-linux-gnueabi-gcc \
-    AR=arm-unknown-linux-gnueabi-ar \
-    STRIP=arm-unknown-linux-gnueabi-strip \
-    RANLIB=arm-unknown-linux-gnueabi-ranlib \
-    CPPFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations -I/opt/kobo/arm-unknown-linux-gnueabi/include" \
-    LDFLAGS="-L/opt/kobo/arm-unknown-linux-gnueabi/lib"  \
-    --prefix=/opt/kobo/arm-unknown-linux-gnueabi 
+    --host=$TC \
+    CC=$TC-gcc \
+    AR=$TC-ar \
+    STRIP=$TC-strip \
+    RANLIB=$TC-ranlib \
+    CPPFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations -I$TARGET_DIR/include" \
+    LDFLAGS="-L$TARGET_DIR/lib"  \
+    --prefix=$TARGET_DIR 
 make
-sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
+sudo PATH=$USER_PATH:$PATH \
     make install
 cd ..
 
@@ -71,15 +90,15 @@ tar xzf freetype-2.7.1.tar.gz
 mkdir freetype-build
 cd freetype-build
 CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
-LDFLAGS="-L/opt/kobo/arm-unknown-linux-gnueabi/lib"  \
+LDFLAGS="-L$TARGET_DIR/lib"  \
 ../freetype-2.7.1/configure \
-    --host=arm-unknown-linux-gnueabi \
-    --target=arm-unknown-linux-gnueabi \
-    --prefix=/opt/kobo/arm-unknown-linux-gnueabi \
+    --host=$TC \
+    --target=$TC \
+    --prefix=$TARGET_DIR \
     --without-harfbuzz \
-    PKG_CONFIG_LIBDIR=/opt/kobo/arm-unknown-linux-gnueabi/lib/pkgconfig
+    PKG_CONFIG_LIBDIR=$TARGET_DIR/lib/pkgconfig
 make
-sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
+sudo PATH=$USER_PATH:$PATH \
     make install
 cd ..
 
@@ -89,12 +108,12 @@ tar xzf GeographicLib-1.48.tar.gz
 mkdir GeographicLib-build
 cd GeographicLib-build
 CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
-LDFLAGS="-L/opt/kobo/arm-unknown-linux-gnueabi/lib"  \
+LDFLAGS="-L$TARGET_DIR/lib"  \
 ../GeographicLib-1.48/configure \
-    --host=arm-unknown-linux-gnueabi \
-    --prefix=/opt/kobo/arm-unknown-linux-gnueabi \
-    PKG_CONFIG_LIBDIR=/opt/kobo/arm-unknown-linux-gnueabi/lib/pkgconfig
+    --host=$TC \
+    --prefix=$TARGET_DIR \
+    PKG_CONFIG_LIBDIR=$TARGET_DIR/lib/pkgconfig
 make
-sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
+sudo PATH=$USER_PATH:$PATH \
     make install
 cd ..
