@@ -14,10 +14,10 @@ cd ~/tmp
 #tar xJfC x-tools-arm-i386-2013-12-11.tar.xz /home/user
 #export PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH
 
-# install zlib ( 1.2.8 - 2013-04-28)
-wget http://zlib.net/zlib-1.2.8.tar.gz
-tar -xvzf zlib-1.2.8.tar.gz 
-cd zlib-1.2.8
+# install zlib ( 1.2.11 - 2017-01-15)
+wget http://zlib.net/zlib-1.2.11.tar.gz
+tar -xvzf zlib-1.2.11.tar.gz 
+cd zlib-1.2.11
 CC=arm-unknown-linux-gnueabi-gcc CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
 ./configure --prefix=/opt/kobo/arm-unknown-linux-gnueabi
 make all
@@ -36,22 +36,22 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     make install
 cd ..
 
-# install boostlib ( 1.62.0 - 2016-09-28 )
-wget http://netcologne.dl.sourceforge.net/project/boost/boost/1.62.0/boost_1_62_0.tar.gz
-tar xzf boost_1_62_0.tar.gz
-cd boost_1_62_0
+# install boostlib ( 1.64.0 - 2017-04-19 )
+wget https://dl.bintray.com/boostorg/release/1.64.0/source/:boost_1_64_0.tar.gz
+tar xzf boost_1_64_0.tar.gz
+cd boost_1_64_0
 ./bootstrap.sh
 echo "using gcc : arm : arm-unknown-linux-gnueabi-g++ : cxxflags=-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations ;" > user-config.jam
 sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     ./bjam toolset=gcc target-os=linux variant=release link=shared runtime-link=shared --prefix=/opt/kobo/arm-unknown-linux-gnueabi --user-config=user-config.jam install
 cd ..
 
-# install libpng ( 1.6.26 - 2016-10-20 )
-wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.26/libpng-1.6.26.tar.gz
-tar xzf libpng-1.6.26.tar.gz
+# install libpng ( 1.6.29 - 2017-03-16 )
+wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.29/libpng-1.6.29.tar.gz
+tar xzf libpng-1.6.29.tar.gz
 mkdir libpng-build
 cd libpng-build
-../libpng-1.6.26/configure \
+../libpng-1.6.29/configure \
     --host=arm-unknown-linux-gnueabi \
     CC=arm-unknown-linux-gnueabi-gcc \
     AR=arm-unknown-linux-gnueabi-ar \
@@ -65,14 +65,14 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     make install
 cd ..
 
-# install freetype2 ( 2.7 - 2016-09-08 )
-wget http://download.savannah.gnu.org/releases/freetype/freetype-2.7.tar.gz
-tar xzf freetype-2.7.tar.gz
+# install freetype2 ( 2.7.1 - 2016-12-30 )
+wget http://download.savannah.gnu.org/releases/freetype/freetype-2.7.1.tar.gz
+tar xzf freetype-2.7.1.tar.gz
 mkdir freetype-build
 cd freetype-build
 CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
 LDFLAGS="-L/opt/kobo/arm-unknown-linux-gnueabi/lib"  \
-../freetype-2.7/configure \
+../freetype-2.7.1/configure \
     --host=arm-unknown-linux-gnueabi \
     --target=arm-unknown-linux-gnueabi \
     --prefix=/opt/kobo/arm-unknown-linux-gnueabi \
@@ -83,14 +83,14 @@ sudo PATH=/home/user/x-tools/arm-unknown-linux-gnueabi/bin:$PATH \
     make install
 cd ..
 
-# install Geographiclib ( 1.46 - 2016-02-15 )
-wget https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.47-patch1.tar.gz
-tar xzf GeographicLib-1.47-patch1.tar.gz
+# install Geographiclib ( 1.48 - 2017-04-09 )
+wget https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.48.tar.gz
+tar xzf GeographicLib-1.48.tar.gz
 mkdir GeographicLib-build
 cd GeographicLib-build
 CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
 LDFLAGS="-L/opt/kobo/arm-unknown-linux-gnueabi/lib"  \
-../GeographicLib-1.47/configure \
+../GeographicLib-1.48/configure \
     --host=arm-unknown-linux-gnueabi \
     --prefix=/opt/kobo/arm-unknown-linux-gnueabi \
     PKG_CONFIG_LIBDIR=/opt/kobo/arm-unknown-linux-gnueabi/lib/pkgconfig
