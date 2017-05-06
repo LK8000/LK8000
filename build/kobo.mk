@@ -54,7 +54,7 @@ KOBO_KERNEL_SOURCES = \
     kobo/kernel/uImage-E60Q90 \
     kobo/kernel/uImage-E606B0 \
     kobo/kernel/uImage-E60QL0 \
-
+    kobo/kernel/uImage-E60610D \
 
 KOBO_KERNEL = \
  $(patsubst kobo/kernel/%, LK8000/kobo/%, $(KOBO_KERNEL_SOURCES))
