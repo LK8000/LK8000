@@ -47,9 +47,9 @@ void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int 
 static void DetectCharsetAndFixString (char* String, charset& cs) {
 
     // try to detect charset
-    if(cs == charset::unknown) {
+    if(cs == charset::unknown || cs == charset::utf8) {
         // 1 - string start with BOM switch charset to utf8
-        if(String[0] == (char)0xEF && String[0] == (char)0xBB && String[0] == (char)0xBF) {
+        if(String[0] == (char)0xEF && String[1] == (char)0xBB && String[2] == (char)0xBF) {
             cs = charset::utf8;
             strcpy(String, String+3); // skip BOM
         }
@@ -139,10 +139,22 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
   zzip_seek(zFile, dwFilePos+j, SEEK_SET);
   sTmp[Max-1] = '\0';
 #ifdef UNICODE
+  
+  char* pTmp = sTmp;
+  
+  // try to detect charset
+  if(cs == charset::unknown || cs == charset::utf8) {
+    // 1 - string start with BOM switch charset to utf8
+    if(sTmp[0] == (char)0xEF && sTmp[1] == (char)0xBB && sTmp[2] == (char)0xBF) {
+      cs = charset::utf8;
+      pTmp += 3; // skip BOM
+    }
+  }  
+  
   if(cs == charset::utf8) {
-      utf2TCHAR(sTmp,String, strlen(sTmp)+1);
+      utf2TCHAR(pTmp,String, strlen(pTmp)+1);
   } else {
-      mbstowcs(String, sTmp, strlen(sTmp)+1);
+      mbstowcs(String, pTmp, strlen(pTmp)+1);
   }
 #else
   strncpy(String, sTmp, strlen(sTmp)+1);

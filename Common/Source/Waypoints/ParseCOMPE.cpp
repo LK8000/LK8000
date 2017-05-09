@@ -314,23 +314,10 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   #endif
 
   i=p+1;
+  while(tString[p] != _T('\0')) {
+      ++p;
+  }
   // we are now on first char of comment
-  // search for line termination
-  for (p=i, ok=false; p<slen;p++) {
-	if ( (tString[p] == _T('\n')) ||
-	     (tString[p] == _T('\r'))
-        ) {
-		ok=true;
-		break;
-	}
-  }
-  if (!ok) {
-	#ifdef COMPEDEBUG
-	StartupStore(_T("Missing CRLF after comment%s"),NEWLINE);
-	#endif
-	return false;
-  }
-  // p points to CR or LF after comment
   if ( (p-i)>((COMMENT_SIZE*2)-1) ) {
 	#ifdef COMPEDEBUG
 	StartupStore(_T("Comment too long%s"),NEWLINE);

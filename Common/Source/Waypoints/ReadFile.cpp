@@ -56,8 +56,14 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
   int  slen=0; // 100204 WIP
   charset cs = charset::unknown;
   while ( ReadString(fp,READLINE_LENGTH,nTemp2String, cs) ) {
+    
+    // Ignore Encoding information line
 	slen=_tcslen(nTemp2String);
 	if (slen<1) continue;
+    if(nTemp2String[0] == _T('B')) {
+      // Skip Encoding;
+      continue;
+    }
 	if ( _tcsncmp(_T("G  WGS 84"),nTemp2String,9) == 0 ||
 	   _tcsncmp(_T("G WGS 84"),nTemp2String,8) == 0 ||
 	   // consider UCS header, 3 bytes in fact. This is a workaround.
