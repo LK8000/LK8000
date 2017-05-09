@@ -270,7 +270,6 @@ Units_t Units::SetUserDistanceUnit(Units_t NewUnit){
   Units_t last = UserDistanceUnit;
   if (UserDistanceUnit != NewUnit){
     UserDistanceUnit = NewUnit;
-    NotifyUnitChanged();
   }
   return(last);
 }
@@ -287,7 +286,6 @@ Units_t Units::SetUserAltitudeUnit(Units_t NewUnit){
   Units_t last = UserAltitudeUnit;
   if (UserAltitudeUnit != NewUnit){
     UserAltitudeUnit = NewUnit;
-    NotifyUnitChanged();
   }
   return(last);
 }
@@ -300,7 +298,6 @@ Units_t Units::SetUserHorizontalSpeedUnit(Units_t NewUnit){
   Units_t last = UserHorizontalSpeedUnit;
   if (UserHorizontalSpeedUnit != NewUnit){
     UserHorizontalSpeedUnit = NewUnit;
-    NotifyUnitChanged();
   }
   return(last);
 }
@@ -313,7 +310,6 @@ Units_t Units::SetUserTaskSpeedUnit(Units_t NewUnit){
   Units_t last = UserTaskSpeedUnit;
   if (UserTaskSpeedUnit != NewUnit){
     UserTaskSpeedUnit = NewUnit;
-    NotifyUnitChanged();
   }
   return(last);
 }
@@ -326,7 +322,6 @@ Units_t Units::SetUserVerticalSpeedUnit(Units_t NewUnit){
   Units_t last = UserVerticalSpeedUnit;
   if (UserVerticalSpeedUnit != NewUnit){
     UserVerticalSpeedUnit = NewUnit;
-    NotifyUnitChanged();
   }
   return(last);
 }
@@ -339,7 +334,6 @@ Units_t Units::SetUserWindSpeedUnit(Units_t NewUnit){
   Units_t last = UserWindSpeedUnit;
   if (UserWindSpeedUnit != NewUnit){
     UserWindSpeedUnit = NewUnit;
-    NotifyUnitChanged();
   }
   return(last);
 }
@@ -371,56 +365,84 @@ Units_t Units::GetUserUnitByGroup(UnitGroup_t UnitGroup){
 void Units::NotifyUnitChanged(void){
   // todo
 
-  if (SPEEDMODIFY==TOMPH) {
-    SetUserHorizontalSpeedUnit(unStatuteMilesPerHour);
-    SetUserWindSpeedUnit(unStatuteMilesPerHour);
-  }
-  if (SPEEDMODIFY==TOKNOTS) {
-    SetUserHorizontalSpeedUnit(unKnots);
-    SetUserWindSpeedUnit(unKnots);
-  }
-  if (SPEEDMODIFY==TOKPH) {
-    SetUserHorizontalSpeedUnit(unKiloMeterPerHour);
-    SetUserWindSpeedUnit(unKiloMeterPerHour);
-  }
-
-  if (DISTANCEMODIFY == TOMILES) {
-    SetUserDistanceUnit(unStatuteMiles);
-  }
-  if (DISTANCEMODIFY == TONAUTICALMILES) {
-    SetUserDistanceUnit(unNauticalMiles);
-  }
-  if (DISTANCEMODIFY == TOKILOMETER) {
-    SetUserDistanceUnit(unKiloMeter);
+  switch (SpeedUnit_Config) {
+    case 0 :
+      SPEEDMODIFY = TOMPH;
+      SetUserHorizontalSpeedUnit(unStatuteMilesPerHour);
+      SetUserWindSpeedUnit(unStatuteMilesPerHour);
+      break;
+    case 1 :
+      SPEEDMODIFY = TOKNOTS;
+      SetUserHorizontalSpeedUnit(unKnots);
+      SetUserWindSpeedUnit(unKnots);
+      break;
+    case 2 :
+    default:
+      SPEEDMODIFY = TOKPH;
+      SetUserHorizontalSpeedUnit(unKiloMeterPerHour);
+      SetUserWindSpeedUnit(unKiloMeterPerHour);
+      break;
   }
 
-  if (ALTITUDEMODIFY == TOFEET) {
-    SetUserAltitudeUnit(unFeet);
-  }
-  if (ALTITUDEMODIFY == TOMETER) {
-    SetUserAltitudeUnit(unMeter);
-  }
-
-  if (LIFTMODIFY==TOKNOTS) {
-    SetUserVerticalSpeedUnit(unKnots);
-  }
-  if (LIFTMODIFY==TOMETER) {
-    SetUserVerticalSpeedUnit(unMeterPerSecond);
-  }
-  if (LIFTMODIFY==TOFEETPERMINUTE) { // 100128
-    SetUserVerticalSpeedUnit(unFeetPerMinutes);
-  }
-
-  if (TASKSPEEDMODIFY==TOMPH) {
-    SetUserTaskSpeedUnit(unStatuteMilesPerHour);
-  }
-  if (TASKSPEEDMODIFY==TOKNOTS) {
-    SetUserTaskSpeedUnit(unKnots);
-  }
-  if (TASKSPEEDMODIFY==TOKPH) {
-    SetUserTaskSpeedUnit(unKiloMeterPerHour);
+  switch(DistanceUnit_Config) {
+    case 0 :
+      DISTANCEMODIFY = TOMILES;
+      SetUserDistanceUnit(unStatuteMiles);
+      break;
+    case 1 :
+      DISTANCEMODIFY = TONAUTICALMILES;
+      SetUserDistanceUnit(unNauticalMiles);
+      break;
+    default:
+    case 2 :
+      DISTANCEMODIFY = TOKILOMETER;
+      SetUserDistanceUnit(unKiloMeter);
+      break;
   }
 
+  switch(AltitudeUnit_Config) {
+    case 0 :
+      ALTITUDEMODIFY = TOFEET;
+      SetUserAltitudeUnit(unFeet);
+      break;
+    default:
+    case 1 :
+      SetUserAltitudeUnit(unMeter);
+      ALTITUDEMODIFY = TOMETER;
+      break;
+  }
+
+  switch(LiftUnit_Config) {
+    case 0 :
+      LIFTMODIFY = TOKNOTS;
+      SetUserVerticalSpeedUnit(unKnots);
+      break;
+    default:
+    case 1 :
+      LIFTMODIFY = TOMETER;
+      SetUserVerticalSpeedUnit(unMeterPerSecond);
+      break;
+    case 2 :
+      LIFTMODIFY = TOFEETPERMINUTE;
+      SetUserVerticalSpeedUnit(unFeetPerMinutes);
+      break;
+  }
+
+  switch(TaskSpeedUnit_Config) {
+    case 0 :
+      TASKSPEEDMODIFY = TOMPH;
+      SetUserTaskSpeedUnit(unStatuteMilesPerHour);
+      break;
+    case 1 :
+      TASKSPEEDMODIFY = TOKNOTS;
+      SetUserTaskSpeedUnit(unKnots);
+      break;
+    case 2 :
+    default:
+      TASKSPEEDMODIFY = TOKPH;
+      SetUserTaskSpeedUnit(unKiloMeterPerHour);
+      break;
+  }
 }
 
 const TCHAR *Units::GetHorizontalSpeedName(){

@@ -74,48 +74,6 @@ void LKProfileInitRuntime(void) {
   //
   // Units
   //
-  switch(SpeedUnit_Config) {
-    case 0 :
-	SPEEDMODIFY = TOMPH;
-	break;
-    case 1 :
-	SPEEDMODIFY = TOKNOTS;
-	break;
-    case 2 :
-    default:
-	SPEEDMODIFY = TOKPH;
-	break;
-  }
-  switch(TaskSpeedUnit_Config) {
-    case 0 :
-      TASKSPEEDMODIFY = TOMPH;
-      break;
-    case 1 :
-      TASKSPEEDMODIFY = TOKNOTS;
-      break;
-    case 2 :
-    default:
-      TASKSPEEDMODIFY = TOKPH;
-      break;
-  }
-  switch(DistanceUnit_Config) {
-    case 0 : DISTANCEMODIFY = TOMILES; break;
-    case 1 : DISTANCEMODIFY = TONAUTICALMILES; break;
-    default:
-    case 2 : DISTANCEMODIFY = TOKILOMETER; break;
-  }
-  switch(AltitudeUnit_Config) {
-    case 0 : ALTITUDEMODIFY = TOFEET; break;
-    default:
-    case 1 : ALTITUDEMODIFY = TOMETER; break;
-  }
-  
-  switch(LiftUnit_Config) {
-    case 0 : LIFTMODIFY = TOKNOTS; break;
-    case 2 : LIFTMODIFY = TOFEETPERMINUTE; break;
-    default:
-    case 1 : LIFTMODIFY = TOMETER; break;
-  }
   Units::NotifyUnitChanged(); // set unit strings
 
 

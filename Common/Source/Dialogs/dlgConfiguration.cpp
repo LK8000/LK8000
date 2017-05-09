@@ -3876,17 +3876,13 @@ int ival;
     if ((int)SpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       SpeedUnit_Config = wp->GetDataField()->GetAsInteger();
       Units::NotifyUnitChanged();
-      requirerestart = true;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLatLon"));
   if (wp) {
     if ((int)Units::CoordinateFormat != wp->GetDataField()->GetAsInteger()) {
-      Units::CoordinateFormat = (CoordinateFormats_t)
-        wp->GetDataField()->GetAsInteger();
-      Units::NotifyUnitChanged();
-      requirerestart = true;
+      Units::CoordinateFormat = (CoordinateFormats_t)wp->GetDataField()->GetAsInteger();
     }
   }
 
@@ -3895,7 +3891,6 @@ int ival;
     if ((int)TaskSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       TaskSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
       Units::NotifyUnitChanged();
-      requirerestart = true;
     }
   }
 
@@ -3904,7 +3899,6 @@ int ival;
     if ((int)DistanceUnit_Config != wp->GetDataField()->GetAsInteger()) {
       DistanceUnit_Config = wp->GetDataField()->GetAsInteger();
       Units::NotifyUnitChanged();
-      requirerestart = true;
     }
   }
 
@@ -3913,7 +3907,6 @@ int ival;
     if ((int)LiftUnit_Config != wp->GetDataField()->GetAsInteger()) {
       LiftUnit_Config = wp->GetDataField()->GetAsInteger();
       Units::NotifyUnitChanged();
-      requirerestart = true;
     }
   }
 
@@ -3922,7 +3915,6 @@ int ival;
     if ((int)AltitudeUnit_Config != wp->GetDataField()->GetAsInteger()) {
       AltitudeUnit_Config = wp->GetDataField()->GetAsInteger();
       Units::NotifyUnitChanged();
-      requirerestart = true;
     }
   }
 
