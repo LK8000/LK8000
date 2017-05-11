@@ -124,7 +124,6 @@ Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj) {
 
   OpenGL::Initialise();
   MainWindow.RunModalLoop();
-  MainWindow.Destroy();
 }
 
 extern "C"

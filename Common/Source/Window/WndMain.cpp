@@ -221,11 +221,6 @@ void BeforeShutdown(void) {
   StartupStore(foop);
 #endif
 
-  #if TESTBENCH
-  StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
-  #endif
-  CloseProgressDialog();
-
   MainWindow.PostQuit();
 #if TESTBENCH
   StartupLogFreeRamAndStorage();

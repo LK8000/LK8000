@@ -602,6 +602,12 @@ void Shutdown() {
   MainWindow.Destroy();
   Message::Destroy();
 
+#if TESTBENCH
+  StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
+#endif
+  CloseProgressDialog();
+
+
   DeInitLKFonts();
   LKObjects_Delete();
   LKUnloadProfileBitmaps();
