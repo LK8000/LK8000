@@ -8,27 +8,41 @@ This info dialog that you are reading can be found on:
 Menu - Info 2/2 - INFO button
 
 There are several pages that you can scroll using Next and Prev buttons.
-Please advance to the next page to start reading about changes and enhancements.
+Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 
 [Latest software changes]
 
 Version 6.1g:
+Added kernel support for Kobo Touch N905C
+Added android IOIO support
+Added UTF8 support for Topology labels
+Added units feet/minute (ft/min)
 Fixed profile reset not working in 6.1f
 Fixed crash on PNA version using internal GPS device
+Fixed CompeGPS waypoint loading
+Fixed KRT2 driver
+Terrain (DEM) can now be loaded on all platforms using
+ memory mapped files: no more DEM size limits.
+Changing system units does not require restart anymore
 Other bug fixes and performance enhancements
 
 
 In summary what's up in current branch:
 
-Airspace Class Glider Sector "GldSec" added (GSEC open airspace, GLIDING OpenAIP)
-Up to 6 devices can now be set in Device configuration
-New Aircraft symbols in Aircraft configuration, choose the best for you!
-New tracking mode in Pilot configuration
-Android screen orientation in System config p.22
-New terrain auto-contrast in System config p.4
-New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
-   (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
+. Airspace Class Glider Sector "GldSec" added (GSEC open airspace, GLIDING OpenAIP)
+. Up to 6 devices can now be set in Device configuration
+. Aircraft symbols in Aircraft configuration, choose the best for you!
+. tracking mode in Pilot configuration
+. Android screen orientation in System config p.22
+. terrain auto-contrast in System config p.4
+. Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
+  (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
+. Terrain loading, on all platforms you can load any DEM size. No more limits.
+. Topology labels use native UTF8 language and symbols
+. Android IOIO board support
+. Kernel support for Kobo Touch N905C
+. Units feet/minute (ft/min)
 
 [Version 6.1f  170407]
 New INFO button in menu Info 2/2 .
