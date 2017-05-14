@@ -13,7 +13,7 @@ extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDevic
 
 static BOOL _PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
 	(void)d;
-	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToAltitude((HexStrToInt(String)*1.0)))){
+	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)))){
 		TriggerVarioUpdate();
 	}
 	return TRUE;

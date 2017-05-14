@@ -148,10 +148,11 @@ bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile);
 int LookupSecondaryFLARMId(int id);
 
 double QNHAltitudeToStaticPressure(double alt);
+double StaticPressureToQNHAltitude(double ps);
+
 double FindQNH(double alt_raw, double alt_known);
 double AltitudeToQNHAltitude(double alt);
 double AltitudeToQNEAltitude(double alt);
-double StaticPressureToAltitude(double ps);
 double AirDensity(double altitude);
 double AirDensityRatio(double altitude);
 double AirDensity(double hr, double temp, double absp);

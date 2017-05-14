@@ -385,6 +385,6 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
                                                 kalman_filter.GetXVel());
 #endif
 
-    UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToAltitude(kalman_filter.GetXAbs() * 100));
+    UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100));
   }
 }

@@ -223,7 +223,7 @@ static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     NMEAParser::ExtractParameter(String,ctemp,1);
     if (ctemp[0] != '\0') {
         double abs_press = StrToDouble(ctemp,NULL);
-        UpdateBaroSource(pGPS, 0, d, StaticPressureToAltitude(abs_press));
+        UpdateBaroSource(pGPS, 0, d, StaticPressureToQNHAltitude(abs_press));
     }
 
     // Netto Vario

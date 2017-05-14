@@ -222,7 +222,7 @@ BOOL CDevCProbe::ParseData( tnmeastring& wiss, NMEA_INFO *pINFO ) {
     // the highest sea level air pressure ever recorded was 1084 mb (32.01 in.) 
     //  at Siberia associated with an extremely cold air mass.
 	if(abs_press > 0.0 && abs_press < 115000.0) {
-		UpdateBaroSource(pINFO, BARO__CPROBE, NULL, StaticPressureToAltitude(abs_press));
+		UpdateBaroSource(pINFO, BARO__CPROBE, NULL, StaticPressureToQNHAltitude(abs_press));
 	}
 	else {
 		if(pINFO->BaroAltitudeAvailable) {

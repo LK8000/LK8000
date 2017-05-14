@@ -50,7 +50,7 @@ double QNHAltitudeToStaticPressure(double alt) {
 }
 
 
-double StaticPressureToAltitude(double ps) {
+double StaticPressureToQNHAltitude(double ps) {
   // http://wahiduddin.net/calc/density_altitude.htm
   const double k1=0.190263;
   const double k2=8.417286e-5;
@@ -68,7 +68,7 @@ double AltitudeToQNHAltitude(double alt) {
   }
   const double k1=0.190263;
   double ps = pow((44330.8-alt)/4946.54,1.0/k1);
-  return StaticPressureToAltitude(ps);
+  return StaticPressureToQNHAltitude(ps);
 }
 
 

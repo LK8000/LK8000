@@ -135,7 +135,7 @@ static BOOL XTRC(PDeviceDescriptor_t d, TCHAR *String, TCHAR **params, size_t np
         pGPS->VarioAvailable = TRUE;
 
         const double abs_press = StrToDouble(params[17], nullptr); // rawpressure
-        UpdateBaroSource(pGPS, 0, d, StaticPressureToAltitude(abs_press * 100));
+        UpdateBaroSource(pGPS, 0, d, StaticPressureToQNHAltitude(abs_press * 100));
 
 
         pGPS->ExtBatt1_Voltage = _tcstol(params[18], nullptr, 10) + 1000; // batteryindication
