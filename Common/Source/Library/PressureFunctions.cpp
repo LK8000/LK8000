@@ -116,12 +116,9 @@ double AirDensity(double qne_altitude) {
   if (qne_altitude>44330){
       qne_altitude=44330;
   }
-  if (qne_altitude<-10) { // min altitude in the netherlans: -6.7m
-      TESTBENCH_DO_ONLY(1000,StartupStore(_T(".... INVALID ALTITUDE in AirDensity: %f FORCING QNH TO STANDARD PRESSURE!%s"),qne_altitude,NEWLINE));
-      QNH=PRESSURE_STANDARD;
-      // and no, we don't use UpdateQNH(PRESSURE_STANDARD), it is not thread safe, and normally called by comm thread.
-      // beside, we are under a critical position already here. 
-      qne_altitude=0;
+  if (qne_altitude<-200) { // min altitude
+      TESTBENCH_DO_ONLY(10,StartupStore(_T(".... INVALID ALTITUDE in AirDensity: %f%s"),qne_altitude,NEWLINE));
+      qne_altitude=-200;
   }
 
   double rho = pow((44330.8-qne_altitude)/42266.5,1.0/0.234969);
