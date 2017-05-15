@@ -112,19 +112,19 @@ double FindQNH(double alt_raw, double alt_known) {
 
 
 
-double AirDensity(double altitude) {
-  if (altitude>44330){
-      altitude=44330;
+double AirDensity(double qne_altitude) {
+  if (qne_altitude>44330){
+      qne_altitude=44330;
   }
-  if (altitude<-10) { // min altitude in the netherlans: -6.7m
-      TESTBENCH_DO_ONLY(1000,StartupStore(_T(".... INVALID ALTITUDE in AirDensity: %f FORCING QNH TO STANDARD PRESSURE!%s"),altitude,NEWLINE));
+  if (qne_altitude<-10) { // min altitude in the netherlans: -6.7m
+      TESTBENCH_DO_ONLY(1000,StartupStore(_T(".... INVALID ALTITUDE in AirDensity: %f FORCING QNH TO STANDARD PRESSURE!%s"),qne_altitude,NEWLINE));
       QNH=PRESSURE_STANDARD;
       // and no, we don't use UpdateQNH(PRESSURE_STANDARD), it is not thread safe, and normally called by comm thread.
       // beside, we are under a critical position already here. 
-      altitude=0;
+      qne_altitude=0;
   }
 
-  double rho = pow((44330.8-altitude)/42266.5,1.0/0.234969);
+  double rho = pow((44330.8-qne_altitude)/42266.5,1.0/0.234969);
   BUGSTOP_LKASSERT(rho>0);
   if (rho<=0) rho=1; // we always give some pressure for the boys
   return rho;
@@ -132,8 +132,8 @@ double AirDensity(double altitude) {
 
 
 // divide TAS by this number to get IAS
-double AirDensityRatio(double altitude) {
-  double rho = AirDensity(altitude);
+double AirDensityRatio(double qne_altitude) {
+  double rho = AirDensity(qne_altitude);
   double rho_rat = sqrt(1.225/rho);
   return rho_rat;
 }

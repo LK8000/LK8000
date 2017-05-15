@@ -155,8 +155,8 @@ double QNHAltitudeToQNEAltitude(double alt);
 
 double FindQNH(double alt_raw, double alt_known);
 
-double AirDensity(double altitude);
-double AirDensityRatio(double altitude);
+double AirDensity(double qne_altitude);
+double AirDensityRatio(double qne_altitude);
 double AirDensity(double hr, double temp, double absp);
 double AirDensitySinkRate(double ias, double qnhaltitude);
 double AirDensitySinkRate(double ias, double qnhaltitude, double gload);

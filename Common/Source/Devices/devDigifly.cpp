@@ -239,7 +239,7 @@ static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     NMEAParser::ExtractParameter(String,ctemp,3);
     if (ctemp[0] != '\0') {
         pGPS->TrueAirspeed = StrToDouble(ctemp,NULL) / 3600 * 1000;
-        pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(pGPS->Altitude);
+        pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(QNHAltitudeToQNEAltitude(pGPS->Altitude));
     } else {
         pGPS->TrueAirspeed = 0;
         pGPS->IndicatedAirspeed = 0;

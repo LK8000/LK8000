@@ -228,7 +228,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       #endif
       if (dt==0) dt=1;
       double vthis = (Calculated->LegDistanceCovered-dr_last)/dt;
-      vthis /= AirDensityRatio(Basic->Altitude);
+      vthis /= AirDensityRatio(QNHAltitudeToQNEAltitude(Basic->Altitude));
       
       dr_last = Calculated->LegDistanceCovered;
       double ttg = max(1.0, Calculated->LegTimeToGo);
