@@ -1566,9 +1566,9 @@ goto_bearing:
 			// Cant use NavAltitude, because FL should use Baro if available, despite
 			// user settings.
 			if (DrawInfo.BaroAltitudeAvailable)
-				value=(TOFEET*(AltitudeToQNEAltitude(DrawInfo.BaroAltitude)))/100.0;
+				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude)))/100.0;
 			else
-				value=(TOFEET*(AltitudeToQNEAltitude(DrawInfo.Altitude)))/100.0;
+				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.Altitude)))/100.0;
 
 			#if 0
 	if (DrawInfo.BaroAltitudeAvailable) {
@@ -2471,7 +2471,7 @@ olc_score:
 			_tcscpy(BufferTitle, MsgToken(2324));
 			value = -1;
 			if (DrawInfo.BaroAltitudeAvailable) {
-				value= AltitudeToQNEAltitude(DrawInfo.BaroAltitude);
+				value= QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude);
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
 			}
 			else {

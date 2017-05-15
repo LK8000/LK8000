@@ -144,7 +144,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 		// else continue entering initqnh until somebody changes qnh in either digifly or lk8000
 	}
   }
-  UpdateBaroSource( pGPS,0, d,  AltitudeToQNHAltitude(altqne));
+  UpdateBaroSource( pGPS,0, d,  QNEAltitudeToQNHAltitude(altqne));
 
 
   NMEAParser::ExtractParameter(String,ctemp,2);

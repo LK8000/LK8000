@@ -115,7 +115,7 @@ static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   palt=StrToDouble(ctemp,NULL);
-  UpdateBaroSource( apGPS, 0,d, AltitudeToQNHAltitude(palt));
+  UpdateBaroSource( apGPS, 0,d, QNEAltitudeToQNHAltitude(palt));
   return TRUE;
 }
 
@@ -135,7 +135,7 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 
   if (apGPS->BaroAltitudeAvailable)
   {
-    vias = vtas/AirDensityRatio(AltitudeToQNEAltitude(apGPS->BaroAltitude));
+    vias = vtas/AirDensityRatio(QNHAltitudeToQNEAltitude(apGPS->BaroAltitude));
 
   } else {
     vias = 0.0;
@@ -154,10 +154,10 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 {
   //$PZAN3,+,026,A,321,035,V*cc
-  //Windkomponente (+=Rückenwind, -=Gegenwind)
+  //Windkomponente (+=Rï¿½ckenwind, -=Gegenwind)
   //A=active (Messung Windkomponente ok) / V=void (Messung nicht verwendbar)
   //Windrichtung (true, Wind aus dieser Richtung))
-  //Windstärke (km/h)
+  //Windstï¿½rke (km/h)
   //A=active (Windmessung ok) / V=void (Windmessung nicht verwendbar)
   //Windmessung im Geradeausflug: mit ZS1-Kompass A,A, ohne Kompass A,V
   //Windmessung im Kreisflug: V,A

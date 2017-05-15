@@ -169,8 +169,8 @@ void CAirspaceBase::AirspaceAGLLookup(double av_lat, double av_lon, double *base
 // Called when QNH changed
 
 void CAirspaceBase::QnhChangeNotify() {
-    if (_top.Base == abFL) _top.Altitude = AltitudeToQNHAltitude((_top.FL * 100) / TOFEET);
-    if (_base.Base == abFL) _base.Altitude = AltitudeToQNHAltitude((_base.FL * 100) / TOFEET);
+    if (_top.Base == abFL) _top.Altitude = QNEAltitudeToQNHAltitude((_top.FL * 100) / TOFEET);
+    if (_base.Base == abFL) _base.Altitude = QNEAltitudeToQNHAltitude((_base.FL * 100) / TOFEET);
 }
 
 inline bool CheckInsideLongitude(const double &longitude, const double &lon_min, const double &lon_max) {
@@ -1254,7 +1254,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
             double d = StrToDouble(pToken, &Stop);
             if (Alt->Base == abFL) {
                 Alt->FL = d;
-                Alt->Altitude = AltitudeToQNHAltitude((Alt->FL * 100) / TOFEET);
+                Alt->Altitude = QNEAltitudeToQNHAltitude((Alt->FL * 100) / TOFEET);
             } else if (Alt->Base == abAGL) {
                 Alt->AGL = d;
             } else {
@@ -1325,7 +1325,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
             }
             Alt->Base = abFL;
             Alt->FL = (Alt->Altitude * TOFEET) / 100;
-            Alt->Altitude = AltitudeToQNHAltitude((Alt->FL * 100) / TOFEET);
+            Alt->Altitude = QNEAltitudeToQNHAltitude((Alt->FL * 100) / TOFEET);
 
         }
         else if (_tcscmp(pToken, TEXT("UNL")) == 0) {
@@ -1886,7 +1886,7 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode &node, AIRSPACE_ALT *Alt) con
             if(dataStr[1]=='T' && dataStr[2]=='D') {
                 Alt->Base=abFL;
                 Alt->FL = value;
-                Alt->Altitude = AltitudeToQNHAltitude(Alt->FL/conversion);
+                Alt->Altitude = QNEAltitudeToQNHAltitude(Alt->FL/conversion);
             }
             break;
         case 'G': // GND Ground

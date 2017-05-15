@@ -17,7 +17,7 @@ double AirDensitySinkRate(double ias, double qnhaltitude) {
 
     double sinkias=0;
 
-    sinkias=GlidePolar::SinkRate(ias)*AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
+    sinkias=GlidePolar::SinkRate(ias)*AirDensityRatio(QNHAltitudeToQNEAltitude(qnhaltitude));
 
     // this can actually happen with a bad polar file loaded!
     BUGSTOP_LKASSERT(sinkias<=0);
@@ -29,7 +29,7 @@ double AirDensitySinkRate(double ias, double qnhaltitude) {
 double AirDensitySinkRate(double ias, double qnhaltitude, double gload) {
 
     double w0 = GlidePolar::SinkRate(GlidePolar::polar_a,GlidePolar::polar_b,GlidePolar::polar_c,0.0,0.0,ias);
-    w0 *= AirDensityRatio(AltitudeToQNEAltitude(qnhaltitude));
+    w0 *= AirDensityRatio(QNHAltitudeToQNEAltitude(qnhaltitude));
     gload = max(0.1,fabs(gload));
     double v2 = GlidePolar::Vbestld()/max((double)GlidePolar::Vbestld()/2,ias);
 
@@ -61,7 +61,7 @@ double StaticPressureToQNHAltitude(double ps) {
 
 
 // Converts altitude with QNH=1013.25 reference to QNH adjusted altitude
-double AltitudeToQNHAltitude(double alt) {
+double QNEAltitudeToQNHAltitude(double alt) {
   // avoid overflow of double
   if (alt>44330){
       alt=44330;

@@ -277,7 +277,7 @@ if(_tcslen(String) < 180)
 	}
   }
 
-  UpdateBaroSource( pGPS, 0,d,  AltitudeToQNHAltitude(altqne));
+  UpdateBaroSource( pGPS, 0,d,  QNEAltitudeToQNHAltitude(altqne));
 
 
   // IAS and TAS
@@ -452,7 +452,7 @@ iReceiveSuppress = 1;
 
 static BOOL PWES2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
-//	$PWES2: Datenausgabe, Geräteparameter
+//	$PWES2: Datenausgabe, Gerï¿½teparameter
 //	$PWES2,DD,SSSS,YY,FFFF*CS<CR><LF>
 //	Symbol Inhalt Einheit Wertebereich Beispiel
 //	DD Device 20=VW1000,
@@ -460,7 +460,7 @@ static BOOL PWES2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 //	22=VW1020,
 //	23=VW1030,
 //	60=VW1150
-//	22 für VW1020
+//	22 fï¿½r VW1020
 //	SSSS Seriennummer 0 .. 9999
 //	YY Baujahr 0 .. 99 10 = 2010
 //	FFFF Firmware * 100 100 .. 9999 101 = 1.01

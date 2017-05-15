@@ -134,7 +134,7 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 	NMEAParser::ExtractParameter(String,ctemp,1);
 	double ba = StrToDouble(ctemp,NULL);
 	if (ba!=99999) {
-	    UpdateBaroSource( pGPS, 0,d,  AltitudeToQNHAltitude(ba));
+	    UpdateBaroSource( pGPS, 0,d,  QNEAltitudeToQNHAltitude(ba));
 	}
   }
 

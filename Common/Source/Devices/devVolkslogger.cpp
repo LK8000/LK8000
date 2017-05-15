@@ -34,12 +34,12 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
     if(InternalAltitude > 60000)
 	fBaroAltitude =
-        AltitudeToQNHAltitude(InternalAltitude - 65535);
+        QNEAltitudeToQNHAltitude(InternalAltitude - 65535);
     // Assuming that altitude has wrapped around.  60 000 m occurs at
     // QNH ~2000 hPa
     else
 	fBaroAltitude =
-        AltitudeToQNHAltitude(InternalAltitude);
+        QNEAltitudeToQNHAltitude(InternalAltitude);
     // typo corrected 21.04.07
     // Else the altitude is good enough.
     UpdateBaroSource( pGPS, 0,d,  fBaroAltitude);

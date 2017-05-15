@@ -150,9 +150,11 @@ int LookupSecondaryFLARMId(int id);
 double QNHAltitudeToStaticPressure(double alt);
 double StaticPressureToQNHAltitude(double ps);
 
+double QNEAltitudeToQNHAltitude(double alt);
+double QNHAltitudeToQNEAltitude(double alt);
+
 double FindQNH(double alt_raw, double alt_known);
-double AltitudeToQNHAltitude(double alt);
-double AltitudeToQNEAltitude(double alt);
+
 double AirDensity(double altitude);
 double AirDensityRatio(double altitude);
 double AirDensity(double hr, double temp, double absp);

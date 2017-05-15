@@ -139,7 +139,7 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
       info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
     }
 
-    UpdateBaroSource( info, 0,d,  AltitudeToQNHAltitude(alt));
+    UpdateBaroSource( info, 0,d,  QNEAltitudeToQNHAltitude(alt));
   }
 
   if (ParToDouble(sentence, 8, &info->Vario)) /* take the last value to be more recent */

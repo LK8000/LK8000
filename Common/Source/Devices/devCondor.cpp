@@ -150,7 +150,7 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   pGPS->IndicatedAirspeed = airspeed/AirDensityRatio(alt);
   pGPS->TrueAirspeed = airspeed;
 
-  UpdateBaroSource( pGPS, 0,d,  AltitudeToQNHAltitude(alt));
+  UpdateBaroSource( pGPS, 0,d,  QNEAltitudeToQNHAltitude(alt));
 
   NMEAParser::ExtractParameter(String,ctemp,3);
   pGPS->Vario = StrToDouble(ctemp,NULL);

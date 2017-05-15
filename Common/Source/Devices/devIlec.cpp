@@ -94,7 +94,7 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   if (_tcscmp(ctemp,_T("PDA1"))==0) {
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
-	UpdateBaroSource( pGPS, 0,d, AltitudeToQNHAltitude(StrToDouble(ctemp, NULL)));
+	UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(StrToDouble(ctemp, NULL)));
 
 	NMEAParser::ExtractParameter(String,ctemp,2);
 	pGPS->Vario = StrToDouble(ctemp,NULL);

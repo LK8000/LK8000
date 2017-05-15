@@ -559,7 +559,7 @@ BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   // We must wait for at least the first run to see if the sequencing pcaid-!w is done, no matter the order.
   if (!have_Qnhaltitude) {
       double ps = StrToDouble(ctemp,NULL);
-      UpdateBaroSource( pGPS ,0, d,  AltitudeToQNHAltitude(ps));
+      UpdateBaroSource( pGPS ,0, d,  QNEAltitudeToQNHAltitude(ps));
   }
 
   return TRUE;
@@ -618,7 +618,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   pGPS->TrueAirspeed = (StrToDouble(ctemp,NULL) / 100.0);
   // if qnhalt is zero, IAS is the TAS, more or less, so no problems
-  pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(AltitudeToQNEAltitude(qnhalt));
+  pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(QNHAltitudeToQNEAltitude(qnhalt));
 
 
   NMEAParser::ExtractParameter(String,ctemp,7);
