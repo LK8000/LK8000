@@ -57,39 +57,7 @@ using namespace std::placeholders;
 //  Thankfully WinCE "critical sections" are recursive locks.
 
 // this lock is used for protect DeviceList array.
-#if USELKASSERT
-class DeviceMutex : protected Poco::Mutex {
-    friend class DeviceScopeLock;
-    friend class Poco::ScopedLock<DeviceMutex>;
-public:
-    inline void Lock(const TCHAR* filename, int line) {
-        Poco::Mutex::lock();
-        // Check if we are not inside RXThread, otherwise, we can have deadlock when we stop RxThread.
-        for(DeviceDescriptor_t device : DeviceList) {
-            if(device.Com) {
-                if(device.Com->IsCurrentThread()) {
-                    StartupStore(_T("Err. LockComm inside RxThread %s  line(%d)"), filename, line);
-                    assert(false);
-                }
-            }
-        }
-    }
-    
-    inline void Unlock() { 
-        Poco::Mutex::unlock(); 
-    }    
-};
-
-class DeviceScopeLock : public Poco::ScopedLock<DeviceMutex> {
-public:
-    DeviceScopeLock(DeviceMutex& m) : Poco::ScopedLock<DeviceMutex>(m) { }
-
-};
-#else
-typedef Mutex DeviceMutex;
-typedef ScopeLock DeviceScopeLock;
-#endif
-static DeviceMutex  CritSec_Comm;        
+static Mutex CritSec_Comm;
 
 COMMPort_t COMMPort;
 
@@ -103,15 +71,9 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 
 int DeviceRegisterCount = 0;
 
-#if USELKASSERT
-void LockComm_d(const TCHAR* filename, int line) {
-  CritSec_Comm.Lock(filename, line);
-}
-#else
 void LockComm() {
   CritSec_Comm.Lock();
 }
-#endif
 
 void UnlockComm() {
   CritSec_Comm.Unlock();
@@ -130,7 +92,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) 
     }
     unsigned nbDeviceFailed = 0;
 
-    DeviceScopeLock Lock(CritSec_Comm);
+    ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
         if( !d.Disabled && d.Com && (d.*func) ) {
           nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
@@ -153,7 +115,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
     }
     unsigned nbDeviceFailed = 0;
 
-    DeviceScopeLock Lock(CritSec_Comm);
+    ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
         if( !d.Disabled && d.Com && (d.*func) ) {
           nbDeviceFailed +=  (d.*func)(&d, Val1) ? 0 : 1;
@@ -174,7 +136,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
     }
     unsigned nbDeviceFailed = 0;
 
-    DeviceScopeLock Lock(CritSec_Comm);
+    ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
         if( !d.Disabled && d.Com && (d.*func) ) {
           nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;

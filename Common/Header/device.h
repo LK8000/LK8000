@@ -152,13 +152,7 @@ PDeviceDescriptor_t devX(unsigned idx) {
 	return nullptr;
 }
 
-#if USELKASSERT
- #define LockComm() LockComm_d(_T(__FILE__), __LINE__)
- void LockComm_d(const TCHAR* filename, int line);
-#else
 void LockComm();
-#endif
-
 void UnlockComm();
 
 void RefreshComPortList();

@@ -31,12 +31,6 @@ public:
     virtual bool StopRxThread();
     virtual bool StartRxThread();
 
-#if USELKASSERT
-    inline bool IsCurrentThread() {
-        return (ReadThread.tid() == Poco::Thread::currentTid());
-    }
-#endif
-
     inline LPCTSTR GetPortName() const {
         return sPortName.c_str();
     }
