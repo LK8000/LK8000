@@ -599,8 +599,6 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devCondor.cpp
     Common/Source/Devices/devDigifly.cpp
     Common/Source/Devices/devDisabled.cpp
-    Common/Source/Devices/devDSX.cpp
-    Common/Source/Devices/devEye.cpp
     Common/Source/Devices/devEW.cpp
     Common/Source/Devices/devEWMicroRecorder.cpp
     Common/Source/Devices/devFlymasterF1.cpp
