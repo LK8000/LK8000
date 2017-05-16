@@ -15,13 +15,14 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 Version 6.1g:
 Added kernel support for Kobo Touch N905C
-Added android IOIO support
+Added android IOIO support (android only)
 Added UTF8 support for Topology labels
 Added units feet/minute (ft/min)
 Fixed profile reset not working in 6.1f
 Fixed crash on PNA version using internal GPS device
 Fixed CompeGPS waypoint loading
 Fixed KRT2 driver
+Fixed Auto QNH when takeoff altitude is lower than -10m QNE 
 Terrain (DEM) can now be loaded on all platforms using
  memory mapped files: no more DEM size limits.
 Changing system units does not require restart anymore
@@ -40,7 +41,11 @@ In summary what's up in current branch:
   (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
 . Terrain loading, on all platforms you can load any DEM size. No more limits.
 . Topology labels use native UTF8 language and symbols
-. Android IOIO board support
+. Android IOIO board support (android only)
+    Uart 0: pin3=out, pin4=in
+    Uart 1: pin5=out, pin6=in
+    Uart 2: pin10=out, pin11=in
+    Uart 3: pin12=out, pin13=in
 . Kernel support for Kobo Touch N905C
 . Units feet/minute (ft/min)
 
