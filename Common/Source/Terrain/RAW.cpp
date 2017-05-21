@@ -65,6 +65,7 @@ bool RasterMap::Open(const TCHAR* zfilename) {
 
     FILE* file = _tfopen(zfilename, _T("rb"));
     if(file) {
+      fseek(file, sizeof(TERRAIN_INFO), SEEK_SET);  
       size_t read_size = fread(pTerrainMem.get(), sizeof(short), nsize, file);
       fclose(file);
       if(read_size == nsize) {
