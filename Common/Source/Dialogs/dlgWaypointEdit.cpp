@@ -167,6 +167,25 @@ static void SetUnits(WndForm* wf) {
   case 4: // UTM (" 32T 123456 1234567 ")
     break;
   }
+
+  if(Units::CoordinateFormat == cfDDMMSSss) {
+    // change DisplayFormat, EditFormat and Step of DataField for allow imput of desimal seconds
+    for(const auto name : { TEXT("prpLongitudeS"), TEXT("prpLatitudeS") } ) {
+      wp = (WndProperty*)wf->FindByName(name);
+      if (wp) {
+        DataField* pDataField = wp->GetDataField();
+        if(pDataField) {
+            pDataField->SetDisplayFormat(TEXT("%.02fs"));
+            pDataField->SetEditFormat(TEXT("%.02fs"));
+            pDataField->SetStep(0.01);
+        }
+      }
+    }
+  } else {
+      /* no need to handle other case, because Unit can't be modified whenthis dialog is open
+       * default value are right for all other case.
+       */
+  }
 }
 static const TCHAR* cYZone[] = {
 		TEXT("C"),TEXT("D"),TEXT("E"),TEXT("F"),
@@ -418,7 +437,7 @@ static void GetValues(WndForm* wf) {
 		}
 		wp = (WndProperty*)wf->FindByName(TEXT("prpLongitudeS"));
 		if (wp) {
-		  ss = wp->GetDataField()->GetAsInteger();
+		  ss = wp->GetDataField()->GetAsFloat();
 		}
 		num = dd+mm/60.0+ss/3600.0;
 		break;
@@ -467,7 +486,7 @@ static void GetValues(WndForm* wf) {
 		}
 		wp = (WndProperty*)wf->FindByName(TEXT("prpLatitudeS"));
 		if (wp) {
-		  ss = wp->GetDataField()->GetAsInteger();
+		  ss = wp->GetDataField()->GetAsFloat();
 		}
 		num = dd+mm/60.0+ss/3600.0;
 		break;
