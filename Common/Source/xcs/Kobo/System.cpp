@@ -179,7 +179,7 @@ KoboWifiOn()
   Run("/sbin/ifconfig", szInterface, "up");
   Run("/sbin/iwconfig", szInterface, "power", "off");
   Run("/bin/wlarm_le", "-i", szInterface, "up");
-  Run("/bin/wpa_supplicant", "-i", szInterface,
+  Run("/bin/wpa_supplicant","-D","wext","-i", szInterface,
       "-c", "/etc/wpa_supplicant/wpa_supplicant.conf",
       "-C", "/var/run/wpa_supplicant", "-B");
 
