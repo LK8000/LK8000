@@ -43,7 +43,6 @@ void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int 
   }
 }
 
-#ifndef UNICODE
 static void DetectCharsetAndFixString (char* String, charset& cs) {
 
     // try to detect charset
@@ -58,6 +57,7 @@ static void DetectCharsetAndFixString (char* String, charset& cs) {
         // 2 - unknown and invalid utf8 char switch to latin1
         cs = charset::latin1;
     }
+#ifndef UNICODE
     if(cs == charset::latin1) {
         // from Latin1 (ISO-8859-1) To Utf8
         tstring Latin1String(String);
@@ -74,8 +74,8 @@ static void DetectCharsetAndFixString (char* String, charset& cs) {
         BUGSTOP_LKASSERT(false);
         strcpy(String, "");
     }
-}
 #endif
+}
 
 BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
 {
@@ -138,28 +138,17 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
   sTmp[i] = 0;
   zzip_seek(zFile, dwFilePos+j, SEEK_SET);
   sTmp[Max-1] = '\0';
+  
+  DetectCharsetAndFixString(sTmp, cs);
+  
 #ifdef UNICODE
-  
-  char* pTmp = sTmp;
-  
-  // try to detect charset
-  if(cs == charset::unknown || cs == charset::utf8) {
-    // 1 - string start with BOM switch charset to utf8
-    if(sTmp[0] == (char)0xEF && sTmp[1] == (char)0xBB && sTmp[2] == (char)0xBF) {
-      cs = charset::utf8;
-      pTmp += 3; // skip BOM
-    }
-  }  
-  
-  if(cs == charset::utf8) {
-      utf2TCHAR(pTmp,String, strlen(pTmp)+1);
+  if(cs == charset::latin1) {
+    mbstowcs(String, sTmp, strlen(sTmp)+1);
   } else {
-      mbstowcs(String, pTmp, strlen(pTmp)+1);
+    utf2TCHAR(sTmp,String, strlen(sTmp)+1);
   }
 #else
   strncpy(String, sTmp, strlen(sTmp)+1);
-
-  DetectCharsetAndFixString(String, cs);
 #endif
   return (dwTotalNumBytesRead>0);
 }
