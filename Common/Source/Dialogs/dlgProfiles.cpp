@@ -96,7 +96,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
 
   _tcscat(profile_name, profilesuffix);
   LocalPath(file_name,TEXT(LKD_CONF), profile_name);
-  dfe->Lookup(file_name);
+  dfe->Lookup(profile_name);
   file_index = dfe->GetAsInteger();
 
   if (file_index==0) {
@@ -125,7 +125,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
 			default:
 				return;
 		}
-		dfe->addFile(profile_name, file_name);
+		dfe->addFile(profile_name, profile_name);
 
 		MessageBoxX(
 		// LKTOKEN  _@M535_ = "Profile saved!"
