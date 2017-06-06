@@ -25,7 +25,6 @@ extern void LKDeviceSave(const TCHAR *szFile);
 static void OnSaveExistingClicked(WndButton* pWnd) {
 
   int file_index;
-  TCHAR file_name[MAX_PATH];
   WndProperty* wp;
   DataFieldFileReader *dfe;
 
@@ -45,24 +44,25 @@ static void OnSaveExistingClicked(WndButton* pWnd) {
   file_index = dfe->GetAsInteger();
 
   if (file_index>0) {
-	_tcscpy(file_name,dfe->GetAsString());
-	if(MessageBoxX(file_name,
+	if(MessageBoxX(dfe->GetAsString(),
 		// LKTOKEN  _@M509_ = "Overwrite profile?"
 		MsgToken(509),
 		mbYesNo) == IdYes) {
 
+                TCHAR file_name[MAX_PATH];
+                LocalPath(file_name,TEXT(LKD_CONF), dfe->GetPathFile());
 		switch (profilemode) {
 			case 0:
-				LKProfileSave(dfe->GetPathFile());
+				LKProfileSave(file_name);
 				break;
 			case 1:
-				LKPilotSave(dfe->GetPathFile());
+				LKPilotSave(file_name);
 				break;
 			case 2:
-				LKAircraftSave(dfe->GetPathFile());
+				LKAircraftSave(file_name);
 				break;
 			case 3:
-				LKDeviceSave(dfe->GetPathFile());
+				LKDeviceSave(file_name);
 				break;
 			default:
 				return;
