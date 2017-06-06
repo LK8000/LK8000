@@ -321,7 +321,14 @@ class DataFieldFileReader: public DataField {
   void Dec(void) override;
   int CreateComboList(void) override;
 
+  /**
+   * 
+   * @param fname : text to display in combo list
+   * @param fpname : file Path relative ScanDirectoryTop @subdir
+   */
   void addFile(const TCHAR *fname, const TCHAR *fpname);
+  
+  
   bool checkFilter(const TCHAR *fname, const TCHAR* filter);
   int GetNumFiles(void);
 
@@ -330,7 +337,17 @@ class DataFieldFileReader: public DataField {
 
   int GetLabelIndex(const TCHAR* label);
 
+  /**
+   * find and select existing item.
+   * 
+   * @param text : file Path relative ScanDirectoryTop @subdir
+   * @return : true if item exists
+   */
   bool Lookup(const TCHAR* text);
+  
+  /**
+   * @return file Path relative ScanDirectoryTop @subdir
+   */
   const TCHAR* GetPathFile(void) const;
 
   void Set(int Value) override;
