@@ -329,7 +329,7 @@ class DataFieldFileReader: public DataField {
   void addFile(const TCHAR *fname, const TCHAR *fpname);
   
   
-  bool checkFilter(const TCHAR *fname, const TCHAR* filter);
+  static bool checkFilter(const TCHAR *fname, const TCHAR* filter);
   int GetNumFiles(void);
 
   int GetAsInteger(void) override;
