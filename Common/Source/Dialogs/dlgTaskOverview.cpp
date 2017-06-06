@@ -415,7 +415,6 @@ static void OnSaveClicked(WndButton* pWnd){
 
   int file_index;
   TCHAR task_name[MAX_PATH];
-  TCHAR file_name[MAX_PATH];
   WndProperty* wp;
   DataFieldFileReader *dfe;
 
@@ -432,15 +431,14 @@ static void OnSaveClicked(WndButton* pWnd){
   if (_tcslen(task_name)>0) {
 
 	_tcscat(task_name, TEXT(LKS_TSK));
-	LocalPath(file_name,TEXT(LKD_TASKS), task_name);
 
-	dfe->Lookup(file_name);
+	dfe->Lookup(task_name);
 	file_index = dfe->GetAsInteger();
 
 	if (file_index==0) {
 		// good, this file is unique..
-		dfe->addFile(task_name, file_name);
-		dfe->Lookup(file_name);
+		dfe->addFile(task_name, task_name);
+		dfe->Lookup(task_name);
 		wp->RefreshDisplay();
 	}
 
@@ -451,13 +449,14 @@ static void OnSaveClicked(WndButton* pWnd){
 
   if (file_index>0) {
 	// file already exists! ask if want to overwrite
-	_stprintf(file_name, TEXT("%s: '%s'"),
+        TCHAR sTmp[500];
+	_sntprintf(sTmp, array_size(sTmp), TEXT("%s: '%s'"),
 	// LKTOKEN  _@M696_ = "Task file already exists"
 		MsgToken(696),
 		dfe->GetAsString());
 
 		if(MessageBoxX(
-			file_name,
+			sTmp,
 			// LKTOKEN  _@M510_ = "Overwrite?"
 			MsgToken(510),
 			mbYesNo) != IdYes) {
@@ -466,7 +465,10 @@ static void OnSaveClicked(WndButton* pWnd){
 		}
   }
 
-  SaveTask(dfe->GetPathFile());
+  TCHAR file_name[MAX_PATH];
+  LocalPath(file_name,TEXT(LKD_TASKS), task_name);
+
+  SaveTask(file_name);
   UpdateCaption();
 }
 
