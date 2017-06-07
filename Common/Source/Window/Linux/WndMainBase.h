@@ -35,24 +35,32 @@ public:
 
     virtual void Redraw(const RECT& Rect) { 
         __super::Redraw(Rect);
+        PostRedrawEvent();
+    }
+
+    virtual void Redraw() {
+        __super::Redraw();
+        PostRedrawEvent();
+    }
+
+    virtual void SetWndText(const TCHAR* lpszText) { assert(false); }
+    virtual const TCHAR* GetWndText() const { assert(false); return _T(""); }
+
+    void RunModalLoop() {
+        this->RunEventLoop();
+    }
+
+    static void PostRedrawEvent() {
 #if defined(ENABLE_SDL)
 #if !(SDL_MAJOR_VERSION >= 2)
         SDL_Event event;
         event.type = SDL_VIDEOEXPOSE;
         ::SDL_PushEvent(&event);
 #endif
+#else
+        Event event(Event::NOP);
+        event_queue->Push(event);
 #endif
-    }
-
-    virtual void Redraw() {
-        __super::Redraw();
-    }
-    
-    virtual void SetWndText(const TCHAR* lpszText) { assert(false); }
-    virtual const TCHAR* GetWndText() const { assert(false); return _T(""); }
-
-    void RunModalLoop() {
-        this->RunEventLoop();
     }
 };
 

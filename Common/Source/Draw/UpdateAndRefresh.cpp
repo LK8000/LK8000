@@ -18,7 +18,7 @@
 void MapWindow::RequestFastRefresh() {
 
 #ifdef ENABLE_OPENGL
-  MainWindow.Invalidate();
+  MainWindow.Redraw(MapRect);
 #else
   drawTriggerEvent.set();
 #endif
@@ -28,7 +28,7 @@ void MapWindow::RequestFastRefresh() {
 void MapWindow::RefreshMap() {
   MapDirty = true;
 #ifdef ENABLE_OPENGL
-  MainWindow.Invalidate();
+  MainWindow.Redraw(MapRect);
 #else
   drawTriggerEvent.set();
 #endif
