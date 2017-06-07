@@ -38,7 +38,9 @@ namespace memory_mapped_file
 
     base_mmf::~base_mmf()
     {
-        close();
+        if(is_open()) {
+            close();
+        }
     }
 
     void base_mmf::close()
