@@ -50,7 +50,8 @@ static void DetectCharsetAndFixString (char* String, charset& cs) {
         // 1 - string start with BOM switch charset to utf8
         if(String[0] == (char)0xEF && String[1] == (char)0xBB && String[2] == (char)0xBF) {
             cs = charset::utf8;
-            strcpy(String, String+3); // skip BOM
+            size_t len = strlen(String) + 1;
+            memmove(String, String+3, len-3); // skip BOM
         }
     }
     if(cs == charset::unknown && !ValidateUTF8(String) ) {
