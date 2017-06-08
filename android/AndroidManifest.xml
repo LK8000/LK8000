@@ -6,7 +6,7 @@
   <application android:icon="@drawable/icon" android:label="${applicationLabel}">
     <activity android:name=".LK8000"
               android:label="${applicationLabel}"
-              android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale"
+              android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection"
               android:launchMode="singleInstance">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
