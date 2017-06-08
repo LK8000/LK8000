@@ -24,10 +24,9 @@
 # include <config.h>
 #endif
 
-#include "md5internal.h"
-
 #include <stddef.h>
 #include <string.h>
+#include "md5internal.h"
 
 #if USE_UNLOCKED_IO
 # include "unlocked-io.h"
