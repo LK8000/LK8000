@@ -1013,7 +1013,7 @@ double scl = xtick;
       for(int j=i+1; j < nEntrys; j++)
       {
 	    LKASSERT(i<FLARM_MAX_TRAFFIC);
-		LKASSERT(aiSortArray>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
+		LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 		if(asFLARMPos[aiSortArray[i]].fAlt  > asFLARMPos[aiSortArray[j]].fAlt )
 		{
 		  LKASSERT(j<FLARM_MAX_TRAFFIC);
