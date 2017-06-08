@@ -321,8 +321,8 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             // why we are getting a wrong idx, eventually. If ever we got a wrong idx!
             // And then this "fix" should be changed to something more useful, instead of 
             // adopting a totally wrong waypoint for task.
-            assert(idx >= 0);
-            if(idx >= 0) {
+            assert(idx < WayPointList.size());
+            if(idx < WayPointList.size()) {
 
                 if (WayPointList[idx].Comment != NULL) {
                     LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
