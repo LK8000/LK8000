@@ -162,7 +162,7 @@ namespace lk {
             }
 
             virtual bool isDirectory() const {
-#ifdef  _DIRENT_HAVE_D_TYPE
+#if defined(_DIRENT_HAVE_D_TYPE) && defined(DTTOIF)
                 return S_ISDIR(DTTOIF(entry.d_type));
 #else
                 struct stat st;
