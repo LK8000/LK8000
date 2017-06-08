@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <unistd.h>
 #if defined(__BORLANDC__)
 #include <io.h>
 #endif
