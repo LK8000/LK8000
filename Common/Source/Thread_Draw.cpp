@@ -206,9 +206,7 @@ void MapWindow::DrawThread ()
                 WhiteRectH.top = WhiteRectH.bottom - fromY;
             }
 
-#ifndef USE_GDI
             ScopeLock Lock(BackBuffer_Mutex);
-#endif
 
             BackBufferSurface.Whiteness(WhiteRectV.left, WhiteRectV.top, WhiteRectV.GetSize().cx, WhiteRectV.GetSize().cy);
             BackBufferSurface.Whiteness(WhiteRectH.left, WhiteRectH.top, WhiteRectH.GetSize().cx, WhiteRectH.GetSize().cy);
@@ -229,9 +227,7 @@ void MapWindow::DrawThread ()
 			// The map was not dirty, and we are not in fastpanning mode.
 			// FastRefresh!  We simply redraw old bitmap.
 			//
-#ifndef USE_GDI
             ScopeLock Lock(BackBuffer_Mutex);
-#endif
             DrawSurface.CopyTo(BackBufferSurface);
 
 			lastdrawwasbitblitted=true;
@@ -261,9 +257,8 @@ void MapWindow::DrawThread ()
 				lasthere=LKHearthBeats;
 				goto _dontbitblt;
 			}
-#ifndef USE_GDI
+
             ScopeLock Lock(BackBuffer_Mutex);
-#endif
             DrawSurface.CopyTo(BackBufferSurface);
 
 			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
@@ -283,9 +278,7 @@ _dontbitblt:
 	RenderMapWindow(DrawSurface, MapRect);
 
     {
-#ifndef USE_GDI
         ScopeLock Lock(BackBuffer_Mutex);
-#endif
         if (!ForceRenderMap && !first_run) {
             DrawSurface.CopyTo(BackBufferSurface);
         }
