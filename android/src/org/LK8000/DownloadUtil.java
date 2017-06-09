@@ -31,27 +31,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 
 class DownloadUtil extends BroadcastReceiver {
-  private static final String TAG = "LK8000";
   private static DownloadUtil instance;
 
-  static void Initialise(Context context) {
+  static synchronized void Initialise(Context context) {
     instance = new DownloadUtil();
     context.registerReceiver(instance,
                              new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
   }
 
-  static void Deinitialise(Context context) {
-    try {
-      DownloadUtil unregister_instance = instance;
+  static synchronized void Deinitialise(Context context) {
+    if (instance != null) {
+      context.unregisterReceiver(instance);
       instance = null;
-      if (unregister_instance != null) {
-        context.unregisterReceiver(unregister_instance);
-      }
-    } catch (IllegalArgumentException e) {
-      Log.e(TAG, "DownloadUtil::Deinitialise()", e);
     }
   }
 
