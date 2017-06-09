@@ -12,20 +12,16 @@
 // Create a default task to home at startup if no task is present
 void DefaultTask(void) {
   LockTaskData();
-  TaskModified = true;
-  TargetModified = true;
   if ((Task[0].Index == -1)||(ActiveTaskPoint==-1)) {
-     if (HomeWaypoint >= 0) {
-        // Pure diagnostics
-        if ( HomeWaypoint == 0 )  // 091213
-           StartupStore(_T(". DefaultTask assigning TAKEOFF as default destination%s"),NEWLINE);
-        else
-           StartupStore(_T(". DefaultTask assigning Home (wp=%d) as default destination%s"),HomeWaypoint,NEWLINE); 
-
+     if (HomeWaypoint >= RESWP_FIRST_MARKER) {
+        StartupStore(_T(". DefaultTask assigning Home (wp=%d) as default destination"),HomeWaypoint);
         FlyDirectTo(HomeWaypoint);
-     } else
-        StartupStore(_T(". DefaultTask: no task, no active waypoint and no Home%s"),NEWLINE); // 091112
+        TaskModified = true;
+        TargetModified = true;
+        RefreshTask();
+     } else {
+       StartupStore(_T(". DefaultTask: no task, no active waypoint and no Home")); // 091112
+     }
   }
-  RefreshTask();
   UnlockTaskData();
 }
