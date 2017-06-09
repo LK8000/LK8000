@@ -2314,16 +2314,13 @@ olc_score:
 
 			if(ValidWayPoint(index))
 			{
-				_stprintf(BufferTitle,_T("<"));
-				if ( DisplayTextType == DISPLAYFIRSTTHREE)
-				{
-					 LK_tcsncpy(BufferTitle+1,WayPointList[index].Name,3);
+				if (DisplayTextType == DISPLAYFIRSTTHREE) {
+					_stprintf(BufferTitle, _T("<%.3s"), WayPointList[index].Name);
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
-					_stprintf(BufferTitle+1,TEXT("%d"), WayPointList[index].Number );
+					_stprintf(BufferTitle,TEXT("<%d"), WayPointList[index].Number );
 				} else {
-					LK_tcsncpy(BufferTitle+1,WayPointList[index].Name, 12);
-					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
+					_stprintf(BufferTitle, _T("<%.12s"), WayPointList[index].Name);
 					if (lktitle)
 						BufferTitle[12] = '\0'; // FIX TUNING
 					else
