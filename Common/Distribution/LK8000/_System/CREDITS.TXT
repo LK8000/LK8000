@@ -1,4 +1,4 @@
-#B0;
+#B1;
 [Welcome to LK8000]
 Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
 Join our free support forum at http://www.postfrontal.com/forum
@@ -13,21 +13,12 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 [Latest software changes]
 
-Version 6.1g:
-Added kernel support for Kobo Touch N905C
-Added android IOIO support (android only)
-Added UTF8 support for Topology labels
-Added units feet/minute (ft/min)
-Fixed profile reset not working in 6.1f
-Fixed crash on PNA version using internal GPS device
-Fixed CompeGPS waypoint loading
-Fixed KRT2 driver
-Fixed Auto QNH when takeoff altitude is lower than -10m QNE 
-Terrain (DEM) can now be loaded on all platforms using
- memory mapped files: no more DEM size limits.
-Changing system units does not require restart anymore
-Other bug fixes and performance enhancements
+Version 6.1i:
 
+Fix Wifi connection after kobo firmeware update
+Fix Waypoint coordinate using DDMMSS.ss format
+Support utf8 encoded Waypoint file
+Other bug fixes
 
 In summary what's up in current branch:
 
@@ -48,6 +39,21 @@ In summary what's up in current branch:
     Uart 3: pin12=out, pin13=in
 . Kernel support for Kobo Touch N905C
 . Units feet/minute (ft/min)
+
+[Version 6.1g 170516]
+Added kernel support for Kobo Touch N905C
+Added android IOIO support (android only)
+Added UTF8 support for Topology labels
+Added units feet/minute (ft/min)
+Fixed profile reset not working in 6.1f
+Fixed crash on PNA version using internal GPS device
+Fixed CompeGPS waypoint loading
+Fixed KRT2 driver
+Fixed Auto QNH when takeoff altitude is lower than -10m QNE 
+Terrain (DEM) can now be loaded on all platforms using
+ memory mapped files: no more DEM size limits.
+Changing system units does not require restart anymore
+Other bug fixes and performance enhancements
 
 [Version 6.1f  170407]
 New INFO button in menu Info 2/2 .
