@@ -35,12 +35,15 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 /**
  * AndroidPort implementation for Bluetooth Low Energy devices using the
  * GATT protocol.
  */
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothGattClientPort
     extends BluetoothGattCallback
     implements AndroidPort  {
@@ -190,8 +193,12 @@ public class BluetoothGattClientPort
         if (gatt.setCharacteristicNotification(dataCharacteristic, true)) {
           BluetoothGattDescriptor descriptor =
             dataCharacteristic.getDescriptor(RX_TX_DESCRIPTOR_UUID);
-          descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-          gatt.writeDescriptor(descriptor);
+          if(descriptor != null) {
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            gatt.writeDescriptor(descriptor);
+          } else {
+            Log.e(TAG, "Could not get RX_TX_DESCRIPTOR_UUID Descriptor");
+          }
           portState = STATE_READY;
         } else {
           Log.e(TAG, "Could not enable GATT characteristic notification");
@@ -270,16 +277,19 @@ public class BluetoothGattClientPort
       while (gattState != BluetoothGatt.STATE_DISCONNECTED) {
         long timeToWait = waitUntil - System.currentTimeMillis();
         if (timeToWait <= 0) {
+          Log.e(TAG, "GATT disconect timeout");
           break;
         }
         try {
           gattStateSync.wait(timeToWait);
         } catch (InterruptedException e) {
+          Log.e(TAG, "GATT disconect timeout", e);
           break;
         }
       }
     }
     gatt.close();
+    gatt = null;
   }
 
   @Override
