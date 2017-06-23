@@ -29,6 +29,8 @@ void MapWindow::DrawTerrainAbove(LKSurface& Surface, const RECT& rc) {
   // Second, if we are flying
   if (DerivedDrawInfo.Flying) goto _doit;
 
+  if (DerivedDrawInfo.GlideFootPrint_valid)  goto _doit;
+    
   return;
 
 _doit:

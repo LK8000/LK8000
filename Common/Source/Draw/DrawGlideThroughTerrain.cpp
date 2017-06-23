@@ -11,7 +11,6 @@
 #include <string.h>
 #include "RGB.h"
 #include "Multimap.h"
-extern void ClearGTL2(void);
 #include "LKObjects.h"
 #include "ScreenProjection.h"
 //
@@ -35,54 +34,31 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 
   bool ValidTP = ValidTaskPoint(ActiveTaskPoint);
 
-  // draw glide terrain line around next WP
-  bool DrawGTL2 = ValidTP && (FinalGlideTerrain > 2);
-  static bool LastDrewGTL2 = false;
-
-  if (DrawGTL2) {
-    int wp_index = (DoOptimizeRoute() || ACTIVE_WP_IS_AAT_AREA) ? 
-                   RESWP_OPTIMIZED : TASKINDEX;
-
-    double alt_arriv = WayPointCalc[wp_index].AltArriv[AltArrivMode];
-    
-    // Calculate arrival altitude at the next waypoint relative to
-    // the "terrain height" safety setting.
-
-    if (CheckSafetyAltitudeApplies(wp_index))
-      alt_arriv += SAFETYALTITUDEARRIVAL/10; // AGL
-    alt_arriv -= SAFETYALTITUDETERRAIN/10;   // rel. to "terrain height"
-
-    if (alt_arriv <= 0) DrawGTL2 = false;
-  }
-  
-  if (LastDrewGTL2 != DrawGTL2) {
-    LastDrewGTL2 = DrawGTL2;
-    if (!DrawGTL2) ClearGTL2(); // clear next-WP glide terrain line
-  }
-
   const auto hpOld = Surface.SelectObject(hpTerrainLineBg); 
 
-  // Draw the wide, solid part of the glide terrain line.
+  if (DerivedDrawInfo.GlideFootPrint_valid) {
+    // Draw the wide, solid part of the glide terrain line.
 #ifdef ENABLE_OPENGL
-  // first point is center of polygon (OpenGL GL_TRIANGLE_FAN), polyline start is second point
-  const auto polyline_start  = std::next(Groundline.begin());
+    // first point is center of polygon (OpenGL GL_TRIANGLE_FAN), polyline start is second point
+    const auto polyline_start  = std::next(Groundline.begin());
 #else
-  const auto polyline_start  = Groundline.begin();
+    const auto polyline_start  = Groundline.begin();
 #endif
-  const size_t polyline_size = std::distance(polyline_start,Groundline.end());
+    const size_t polyline_size = std::distance(polyline_start,Groundline.end());
 
-  Surface.Polyline(&(*polyline_start),polyline_size, rc);
-
-  // draw perimeter if selected and during a flight
-  if (((FinalGlideTerrain == 1) || (FinalGlideTerrain == 3)) ||
-          ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && FinalGlideTerrain)) {
-
-	  Surface.SelectObject(hpTerrainLine);
     Surface.Polyline(&(*polyline_start),polyline_size, rc);
+
+    // draw perimeter if selected and during a flight
+    if (((FinalGlideTerrain == 1) || (FinalGlideTerrain == 3)) ||
+            ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && FinalGlideTerrain)) {
+
+      Surface.SelectObject(hpTerrainLine);
+      Surface.Polyline(&(*polyline_start),polyline_size, rc);
+    }
   }
   
   // draw glide terrain line around next waypoint
-  if (DrawGTL2) {
+  if (DerivedDrawInfo.GlideFootPrint2_valid) {
     // Draw a solid white line.
     Surface.SelectObject(LKPen_White_N2);
     Surface.Polyline(Groundline2.data(), Groundline2.size(), rc);

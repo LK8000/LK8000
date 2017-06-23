@@ -195,6 +195,10 @@ typedef struct _DERIVED_INFO
 #else
   pointObj GlideFootPrint[NUMTERRAINSWEEPS+1];
 #endif
+  pointObj GlideFootPrint2[NUMTERRAINSWEEPS+1];  
+
+  bool GlideFootPrint_valid; // true if #GlideFootPrint well calculated
+  bool GlideFootPrint2_valid; // true if #GlideFootPrint2 well calculated
 
   TCHAR OwnTeamCode[10];
   double TeammateBearing;

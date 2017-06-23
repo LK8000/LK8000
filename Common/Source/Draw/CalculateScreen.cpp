@@ -246,7 +246,7 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
 
     const GeoToScreen<point_t> ToScreen(_Proj);
 
-    if (FinalGlideTerrain) {
+    if (DerivedDrawInfo.GlideFootPrint_valid) {
         std::transform(
                 std::begin(DerivedDrawInfo.GlideFootPrint),
                 std::end(DerivedDrawInfo.GlideFootPrint),
@@ -263,12 +263,13 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
 #endif
     }
 
-    static_assert(Groundline2.size() == array_size(GlideFootPrint2), "wrong array size");
+    static_assert(Groundline2.size() == array_size(DerivedDrawInfo.GlideFootPrint2), "wrong array size");
 
-    if (FinalGlideTerrain > 2) {// show next-WP line
+    if (DerivedDrawInfo.GlideFootPrint2_valid) {
+        // show next-WP line
         std::transform(
-                std::begin(GlideFootPrint2),
-                std::end(GlideFootPrint2),
+                std::begin(DerivedDrawInfo.GlideFootPrint2),
+                std::end(DerivedDrawInfo.GlideFootPrint2),
                 std::begin(Groundline2),
                 [&ToScreen](const pointObj & pt) {
                     return ToScreen(pt);
