@@ -31,12 +31,15 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   pointObj* out = Calculated->GlideFootPrint;
 
+  // this exist only for allow static_assert, compil time error instead of runtime error.
+  const decltype(Calculated->GlideFootPrint) GlideFootPrint_Test = {};
+  
 #ifdef ENABLE_OPENGL
-  LKASSERT(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +2); // #GlideFootPrint array to small
+  static_assert(array_size(GlideFootPrint_Test) == NUMTERRAINSWEEPS +2, "#GlideFootPrint invalid array size");
   // first point is current poisition
   *(out++) = (pointObj){Basic->Longitude,Basic->Latitude};
 #else
-  LKASSERT(array_size(Calculated->GlideFootPrint) >= NUMTERRAINSWEEPS +1); // #GlideFootPrint array to small  
+  static_assert(array_size(GlideFootPrint_Test) == NUMTERRAINSWEEPS +1, "#GlideFootPrint invalid array size");
 #endif
 
   const pointObj* first_out = out; // this is first polygon point (OpenGL or not), used for close polygon.
