@@ -34,9 +34,6 @@ extern double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO 
 extern void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void ConditionMonitorsUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#ifndef GTL2
-extern void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint); // VENTA3
-#endif
 extern void DistanceToHome(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -69,23 +66,19 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   AltitudeRequired(Basic, Calculated, MACCREADY);
   DoAlternates(Basic,Calculated,TASKINDEX); 
   if (IsMultiMapShared()) {
-	DoAlternates(Basic,Calculated,RESWP_LASTTHERMAL);
-	DoAlternates(Basic,Calculated,RESWP_TEAMMATE);
-	DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);
-	DoAlternates(Basic,Calculated,HomeWaypoint); 	
-	#ifdef GTL2
-	if (DoOptimizeRoute() || ACTIVE_WP_IS_AAT_AREA)
-		DoAlternates(Basic, Calculated, RESWP_OPTIMIZED);
-	#else
-	if (DoOptimizeRoute()) DoAlternates(Basic,Calculated,RESWP_OPTIMIZED); 	
-	#endif
-	for (int i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
-		if (WayPointList[i].Latitude==RESWP_INVALIDNUMBER) continue;
-		DoAlternates(Basic,Calculated,i);
-	}
-  #ifndef GTL2
-  }
-  #else
+    DoAlternates(Basic,Calculated,RESWP_LASTTHERMAL);
+    DoAlternates(Basic,Calculated,RESWP_TEAMMATE);
+    DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);
+    DoAlternates(Basic,Calculated,HomeWaypoint);
+
+    if (DoOptimizeRoute() || ACTIVE_WP_IS_AAT_AREA) {
+      DoAlternates(Basic, Calculated, RESWP_OPTIMIZED);
+    }
+
+    for (int i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
+      if (WayPointList[i].Latitude==RESWP_INVALIDNUMBER) continue;
+      DoAlternates(Basic,Calculated,i);
+    }
   } else {
     // The following is needed only for the next-WP glide terrain line,
     // not for the main/primary glide terrain line.
@@ -93,7 +86,6 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     if ((FinalGlideTerrain > 2) && (DoOptimizeRoute() || ACTIVE_WP_IS_AAT_AREA))
       DoAlternates(Basic, Calculated, RESWP_OPTIMIZED);
   }
-  #endif
 
   if (!TargetDialogOpen) {
     // don't calculate these if optimise function being invoked or

@@ -42,9 +42,7 @@
   extern void Globals_Init(void);
 #endif
 
-#ifdef GTL2
 GEXTERN pointObj GlideFootPrint2[NUMTERRAINSWEEPS+1];
-#endif
 
 #ifdef RADIO_ACTIVE
 typedef struct _Radio_t

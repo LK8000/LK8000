@@ -253,9 +253,7 @@ typedef struct _DERIVED_INFO
 } DERIVED_INFO;
 
 
-#ifdef GTL2
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
-#endif
 bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -346,14 +344,10 @@ bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin
 void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThBase,double ThTop, double ThAvg);
 void InitThermalHistory(void);
 
-#ifdef GTL2
 double FinalGlideThroughTerrain(const double bearing,
                                 const double start_lat,
                                 const double start_lon,
                                 const double start_alt,
-#else
-double FinalGlideThroughTerrain(const double bearing, NMEA_INFO *Basic, 
-#endif
                                 DERIVED_INFO *Calculated,
                                 double *retlat, double *retlon,
                                 const double maxrange,

@@ -2079,12 +2079,10 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(393));
 	// LKTOKEN  _@M609_ = "Shade" 
     dfe->addEnumText(MsgToken(609));
-    #ifdef GTL2
         // "Line+NextWP"
     dfe->addEnumText(MsgToken(1805));
         // "Shade+NextWP"
     dfe->addEnumText(MsgToken(1806));
-    #endif
     dfe->Set(FinalGlideTerrain);
     wp->RefreshDisplay();
   }

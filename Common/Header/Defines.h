@@ -940,10 +940,9 @@ static const double PI = (4*atan(1));
 #define CURMODE ModeTable[ModeIndex][CURTYPE]
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
 #define TASKINDEX       Task[ActiveTaskPoint].Index
-#ifdef GTL2
+
 #define ACTIVE_WP_IS_AAT_AREA (AATEnabled && (ActiveTaskPoint > 0) \
                               && ValidTaskPoint(ActiveTaskPoint + 1))
-#endif
 
 #define DONTDRAWTHEMAP  (!MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP)
 #define MAPMODE8000     (!MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP)

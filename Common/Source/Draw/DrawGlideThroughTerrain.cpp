@@ -9,12 +9,10 @@
 #include "externs.h"
 #include "Bitmaps.h"
 #include <string.h>
-#ifdef GTL2
 #include "RGB.h"
 #include "Multimap.h"
 extern void ClearGTL2(void);
 #include "LKObjects.h"
-#endif
 #include "ScreenProjection.h"
 //
 // Glide through terrain will paint a cross over the first and last obstacle to
@@ -35,7 +33,6 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
     doinit=false;
   }
 
-  #ifdef GTL2
   bool ValidTP = ValidTaskPoint(ActiveTaskPoint);
 
   // draw glide terrain line around next WP
@@ -62,15 +59,10 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
     LastDrewGTL2 = DrawGTL2;
     if (!DrawGTL2) ClearGTL2(); // clear next-WP glide terrain line
   }
-  #endif
 
   const auto hpOld = Surface.SelectObject(hpTerrainLineBg); 
 
-  #ifdef GTL2
   // Draw the wide, solid part of the glide terrain line.
-  #else
-  // draw a dashed perimetral line first
-  #endif
 #ifdef ENABLE_OPENGL
   // first point is center of polygon (OpenGL GL_TRIANGLE_FAN), polyline start is second point
   const auto polyline_start  = std::next(Groundline.begin());
@@ -82,17 +74,13 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   Surface.Polyline(&(*polyline_start),polyline_size, rc);
 
   // draw perimeter if selected and during a flight
-  #ifdef GTL2
-  if (((FinalGlideTerrain == 1) || (FinalGlideTerrain == 3)) || 
-     ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && FinalGlideTerrain)) { 
-  #else
-  if ((FinalGlideTerrain==1) || ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && (FinalGlideTerrain==2))) { 
-  #endif
-	Surface.SelectObject(hpTerrainLine);
+  if (((FinalGlideTerrain == 1) || (FinalGlideTerrain == 3)) ||
+          ((!IsMultimapTerrain() || !DerivedDrawInfo.Flying) && FinalGlideTerrain)) {
+
+	  Surface.SelectObject(hpTerrainLine);
     Surface.Polyline(&(*polyline_start),polyline_size, rc);
   }
   
-  #ifdef GTL2  
   // draw glide terrain line around next waypoint
   if (DrawGTL2) {
     // Draw a solid white line.
@@ -102,17 +90,11 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
     // Draw a dashed red line.
     Surface.DrawDashPoly(NIBLSCALE(2), RGB_RED, Groundline2.data(), Groundline2.size(), rc);
   }
-  #endif
 
   // draw red cross obstacles only if destination looks reachable!
   // only if using OVT_TASK of course!
-
-  #ifdef GTL2
   if ((OvertargetMode == OVT_TASK) && DerivedDrawInfo.Flying && ValidTP)
-  #else
-  if ( (OvertargetMode==OVT_TASK) && DerivedDrawInfo.Flying && ValidTaskPoint(ActiveTaskPoint))
-  #endif
-  if (WayPointCalc[TASKINDEX].AltArriv[AltArrivMode] >0) { 
+  if (WayPointCalc[TASKINDEX].AltArriv[AltArrivMode] >0) {
 
 	// If calculations detected an obstacle...
 	if ((DerivedDrawInfo.TerrainWarningLatitude != 0.0) &&(DerivedDrawInfo.TerrainWarningLongitude != 0.0)) {

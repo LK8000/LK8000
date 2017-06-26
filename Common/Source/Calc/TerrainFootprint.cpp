@@ -14,17 +14,12 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double bearing, distance;
   double lat, lon;
   bool out_of_range;
-  #ifdef GTL2
+
   double ScreenRange = MapWindow::GetApproxScreenRange();
-  #endif
 
   // estimate max range (only interested in at most one screen distance away)
   // except we need to scan for terrain base, so 20km search minimum is required
-  #ifdef GTL2
   double mymaxrange = max(20000.0, ScreenRange);
-  #else
-  double mymaxrange = max(20000.0, MapWindow::GetApproxScreenRange());
-  #endif
 
   Calculated->TerrainBase = Calculated->TerrainAlt;
 
@@ -46,13 +41,9 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   for (int i=0; i<NUMTERRAINSWEEPS; i++) {
     bearing = (i*360.0)/NUMTERRAINSWEEPS;
     distance = FinalGlideThroughTerrain(bearing, 
-                                      #ifdef GTL2
                                         Basic->Latitude,
                                         Basic->Longitude,
                                         Calculated->NavAltitude,
-                                      #else
-                                        Basic, 
-                                      #endif
                                         Calculated, &lat, &lon,
                                         mymaxrange, &out_of_range,
 					&Calculated->TerrainBase);
@@ -68,8 +59,6 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   Calculated->Experimental = Calculated->TerrainBase;
   
-  #ifdef GTL2
-
   LockTaskData();
   
   // Now calculate the 2nd glide footprint, which is the glide range
@@ -130,7 +119,7 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
                       PanLongitude, &mymaxrange, NULL);
       mymaxrange += ScreenRange;
       
-      for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
+      for (int i=0; i < NUMTERRAINSWEEPS; i++) {
         bearing = (i * 360.0) / NUMTERRAINSWEEPS;
 
         distance = FinalGlideThroughTerrain(bearing, lat_wp, lon_wp,
@@ -139,17 +128,20 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
                                             mymaxrange, &out_of_range,
                                             NULL);
 
-        if (out_of_range)
-          FindLatitudeLongitude(lat_wp, lon_wp, 
+        if (out_of_range) {
+          FindLatitudeLongitude(lat_wp, lon_wp,
                                 bearing, distance,
                                 &lat, &lon);
+        }
 
         GlideFootPrint2[i].x = lon;
         GlideFootPrint2[i].y = lat;
       }
+
+      GlideFootPrint2[NUMTERRAINSWEEPS] = GlideFootPrint2[0];
+
     } // if reachable above "terrain height"
   } // if valid task point
   UnlockTaskData();
-  #endif
 }
 

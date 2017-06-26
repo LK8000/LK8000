@@ -115,12 +115,6 @@
 
 // #define LKCOMPETITION	1	// Will disable TRI
 
-// Draws a glide terrain line around the next (active) task waypoint.
-// Includes addition of MSG tokens "Line+NextWP" & "Shade+NextWP"
-// and change in HELP message 194 (for "Glide Terrain Line" setting).
-// Eric Carden, September 13, 2012
-#define GTL2
-
 // Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
 // In v5 this is practically unused. Should be removed asap.
 #define USEBIGZOOM	1

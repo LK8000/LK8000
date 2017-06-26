@@ -838,14 +838,10 @@ protected:
 
 #ifdef ENABLE_OPENGL
   static std::array<FloatPoint, NUMTERRAINSWEEPS+2> Groundline;
-#ifdef GTL2
   static std::array<FloatPoint, NUMTERRAINSWEEPS+1> Groundline2;
-#endif
 #else
   static std::array<RasterPoint, NUMTERRAINSWEEPS+1> Groundline;
-#ifdef GTL2
   static std::array<RasterPoint, NUMTERRAINSWEEPS+1> Groundline2;
-#endif
 #endif
 
   static bool targetMoved;

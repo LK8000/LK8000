@@ -36,13 +36,9 @@ void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	}
 
 	distance_soarable = 
-	#ifdef GTL2
 		FinalGlideThroughTerrain(Calculated->WaypointBearing, Basic->Latitude,
-                Basic->Longitude, Calculated->NavAltitude, Calculated, &lat, &lon, 
-	#else
-		FinalGlideThroughTerrain(Calculated->WaypointBearing, Basic, Calculated, &lat, &lon, 
-	#endif
-		Calculated->WaypointDistance, &out_of_range, NULL);
+														Basic->Longitude, Calculated->NavAltitude, Calculated, &lat, &lon,
+														Calculated->WaypointDistance, &out_of_range, NULL);
 
 	// Calculate obstacles ONLY if we are in glide range, otherwise it is useless 
 	if ((!out_of_range)&&(distance_soarable< Calculated->WaypointDistance)) {

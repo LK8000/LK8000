@@ -179,12 +179,7 @@ QuickRedraw:
         }
         if (!QUICKDRAW) {
             // SHADED terrain unreachable, aka glide amoeba. This is not the outlined perimeter!
-#ifdef GTL2
-            if (((FinalGlideTerrain == 2) || (FinalGlideTerrain == 4)) &&
-                    DerivedDrawInfo.TerrainValid) {
-#else
-            if ((FinalGlideTerrain == 2) && DerivedDrawInfo.TerrainValid) {
-#endif
+            if (((FinalGlideTerrain == 2) || (FinalGlideTerrain == 4)) && DerivedDrawInfo.TerrainValid) {
                 DrawTerrainAbove(Surface, DrawRect);
             }
         }

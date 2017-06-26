@@ -8,9 +8,7 @@
 
 #include "externs.h"
 #include "CriticalSection.h"
-#ifdef GTL2
 #include "Waypointparser.h"
-#endif
 #include "NavFunctions.h"
 
 /*
@@ -20,7 +18,6 @@
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
    CScopeLock(LockTaskData, UnlockTaskData);
    
-  #ifdef GTL2
   // If flying an AAT and working on the RESWP_OPTIMIZED waypoint, then use
   // this "optimized" waypoint to store data for the AAT virtual waypoint.
 
@@ -32,7 +29,6 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
 	_sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[Task[ActiveTaskPoint].Index].Name);
     WayPointList[RESWP_OPTIMIZED].Name[NAME_SIZE] = _T('\0');
   }
-  #endif
 
   // handle virtual wps as alternates
   if (AltWaypoint<=RESWP_END) {

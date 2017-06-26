@@ -16,14 +16,12 @@ extern AATDistance aatdistance;
 
 
 
-#ifdef GTL2
 void ClearGTL2(void) {
   for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
     GlideFootPrint2[i].x = 0;
     GlideFootPrint2[i].y = 0;
   }
 }
-#endif
 
 
 //
@@ -94,10 +92,9 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       Calculated->GlideFootPrint[i].x = 0;
       Calculated->GlideFootPrint[i].y = 0;
     }
-    #ifdef GTL2
+
     ClearGTL2(); // clear GlideFootPrint2
-    #endif
-    
+
     Calculated->TerrainWarningLatitude = 0.0;
     Calculated->TerrainWarningLongitude = 0.0;
 

@@ -11,11 +11,6 @@
 
 
 extern void InsertCommonList(int newwp);
-#ifndef GTL2
-extern void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
-#endif
-
-
 
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
