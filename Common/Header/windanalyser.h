@@ -6,7 +6,7 @@
 **
 ************************************************************************
 **
-**   Copyright (c):  2002 by André Somers
+**   Copyright (c):  2002 by AndrÃ© Somers
 **
 **   This file is distributed under the terms of the General Public
 **   Licence. See the file COPYING for more information.
@@ -23,7 +23,7 @@
 #include "windstore.h"
 
 /**The windanalyser analyses the list of flightsamples looking for windspeed and direction.
-  *@author André Somers
+  *@author AndrÃ© Somers
   */
 
 
@@ -33,9 +33,6 @@ class WindSample {
   double t;
   double mag;
 };
-
-
-#define MAXWINDSAMPLES 50
 
 
 class WindAnalyser  {
@@ -97,8 +94,7 @@ private: // Private attributes
     double climbstarttime;
     double climbendtime;
 
-    WindSample windsamples[MAXWINDSAMPLES];
-    int numwindsamples;
+    std::vector<WindSample> windsamples;
 
 private: // Private memberfunctions
     void _calcWind(NMEA_INFO *nmeaInfo,
