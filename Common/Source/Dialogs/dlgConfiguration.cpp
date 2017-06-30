@@ -38,6 +38,10 @@
 #include "Android/Main.hpp"
 #include "Android/NativeView.hpp"
 #include "Android/Context.hpp"
+#include "Android/BluetoothHelper.hpp"
+#include "Android/BluetoothLeScan.h"
+#include "Util/ScopeExit.hxx"
+#include <sstream>
 #endif
 using namespace std::placeholders;
 
@@ -1492,8 +1496,10 @@ static void GetInfoBoxSelector(int item, int mode)
 static  TCHAR temptext[MAX_PATH];
 
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
-    RefreshComPortList();
-    
+#ifdef ANDROID
+    ScopeLock lock(COMMPort_mutex);
+#endif
+
     if (wp) {
         DataField* dfe =  wp->GetDataField();
         if(dfe) {
@@ -3315,8 +3321,63 @@ wp->RefreshDisplay();
   }
 }
 
+#ifdef ANDROID
 
+#define UPDATE_COM_PORT 1
 
+static void OnLeScan(WndForm* pWndForm, const char *address, const char *name) {
+#ifdef ANDROID
+  ScopeLock lock(COMMPort_mutex);
+#endif
+
+  std::stringstream prefixed_address_stream;
+  prefixed_address_stream << "BT:" << address;
+  const std::string prefixed_address(prefixed_address_stream.str());
+
+  COMMPort_t::const_iterator It = std::find_if(COMMPort.begin(),
+                                               COMMPort.end(),
+                                               std::bind(&COMMPortItem_t::IsSamePort, _1,
+                                                         prefixed_address.c_str()));
+
+  if (It == COMMPort.end()) {
+    std::stringstream prefixed_name_stream;
+    prefixed_name_stream << "BT:" << ((strlen(name)>0)? name : address);
+    const std::string prefixed_name(prefixed_name_stream.str());
+
+    COMMPort.push_back(COMMPortItem_t(std::move(prefixed_address), std::move(prefixed_name)));
+  }
+  if(pWndForm) {
+    pWndForm->SendUser(UPDATE_COM_PORT);
+  }
+}
+
+static bool OnUser(WndForm * pWndForm, unsigned id) {
+  switch(id) {
+    case UPDATE_COM_PORT: {
+      WndProperty *pWnd = static_cast<WndProperty *>(pWndForm->FindByName(TEXT("prpComPort1")));
+      if (pWnd) {
+        DataField * dataField = pWnd->GetDataField();
+        if(dataField) {
+
+#ifdef ANDROID
+          ScopeLock lock(COMMPort_mutex);
+#endif
+          for( const auto& item : COMMPort ) {
+            if(dataField->Find(item.GetName()) == -1) {
+              dataField->addEnumText(item.GetName(), item.GetLabel());
+            }
+          }
+        }
+      }
+      return true;
+    }
+    default:
+      break;
+  }
+  return false;
+}
+
+#endif
 
 void dlgConfigurationShowModal(short mode){
 
@@ -3344,7 +3405,11 @@ void dlgConfigurationShowModal(short mode){
   
   static_assert(array_size(dlgTemplate_L) == array_size(dlgTemplate_P), "check array size");
   
-  StartHourglassCursor(); 
+  StartHourglassCursor();
+
+  if (configMode==CONFIGMODE_DEVICE) {
+    RefreshComPortList();
+  }
 
   if(configMode >= 0 && configMode < (int)array_size(dlgTemplate_L)) {
     
@@ -3359,7 +3424,17 @@ void dlgConfigurationShowModal(short mode){
   if (!wf) {
 	return;
   }
-  
+
+#ifdef ANDROID
+  wf->SetOnUser(OnUser);
+
+  std::unique_ptr<BluetoothLeScan> BluetoothLeScanPtr;
+  if((configMode==CONFIGMODE_DEVICE)) {
+    // Start Bluetooth LE device scan before Open Dialog
+    BluetoothLeScanPtr.reset(new BluetoothLeScan(wf, OnLeScan));
+  }
+#endif
+
   wf->SetKeyDownNotify(FormKeyDown);
 
   LKASSERT((WndButton *)wf->FindByName(TEXT("cmdClose")));
@@ -3425,6 +3500,11 @@ void dlgConfigurationShowModal(short mode){
 
   StopHourglassCursor();
   wf->ShowModal();
+
+#ifdef ANDROID
+    // stop LE Scaner first aftar dialog close
+    BluetoothLeScanPtr.reset();
+#endif
 
 #ifdef _WGS84
   wp = static_cast<WndProperty*>(wf->FindByName(_T("prpEarthModel")));
@@ -4584,10 +4664,9 @@ int ival;
 		   TEXT("Configuration"), mbOk);
     }
 
-  delete wf;
 
+  delete wf;
   wf = NULL;
-  
 
 }
 

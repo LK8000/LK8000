@@ -546,7 +546,11 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   unsigned dwIdxPort;
   PREAD(sname,svalue,szRegistryPort1Index,&dwIdxPort);
     if(matchedstring) {
-        if(COMMPort.size() == 0) {
+#ifdef ANDROID
+      ScopeLock lock(COMMPort_mutex);
+#endif
+
+      if(COMMPort.size() == 0) {
             RefreshComPortList();
         }
         if(dwIdxPort < COMMPort.size()) {
@@ -557,7 +561,10 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   
   PREAD(sname,svalue,szRegistryPort2Index,&dwIdxPort);
     if(matchedstring) {
-        if(COMMPort.size() == 0) {
+#ifdef ANDROID
+      ScopeLock lock(COMMPort_mutex);
+#endif
+      if(COMMPort.size() == 0) {
             RefreshComPortList();
         }
         if(dwIdxPort < COMMPort.size()) {

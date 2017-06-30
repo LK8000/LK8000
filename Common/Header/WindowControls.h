@@ -150,6 +150,8 @@ class DataField{
   virtual void addEnumTextNoLF(const TCHAR *Text) { assert(false); }
   virtual void Sort(int startindex=0) { assert(false); }
 
+  virtual int Find(const TCHAR *Text) { assert(false); return -1; }
+
   void Use(void){
     mUsageCounter++;
   }
@@ -271,6 +273,8 @@ class DataFieldEnum: public DataField {
 
   void addEnumTextNoLF(const TCHAR *Text) override;
   void addEnumText(const TCHAR *Text, const TCHAR *Label) override ;
+
+  int Find(const TCHAR *Text) override ;
 
   int GetAsInteger(void) override;
   const TCHAR *GetAsString(void) override;
@@ -799,6 +803,7 @@ class WndForm:public WindowControl{
     typedef bool (*OnTimerNotify_t)(WndForm* pWnd);
     typedef bool (*OnKeyDownNotify_t)(WndForm* pWnd, unsigned KeyCode);
     typedef bool (*OnKeyUpNotify_t)(WndForm* pWnd, unsigned KeyCode);
+    typedef bool (*OnUser_t)(WndForm* pWndForm, unsigned id);
 
   protected:
 
@@ -815,6 +820,7 @@ class WndForm:public WindowControl{
     OnTimerNotify_t mOnTimerNotify;
     OnKeyDownNotify_t mOnKeyDownNotify;
     OnKeyUpNotify_t mOnKeyUpNotify;
+    OnUser_t mOnUser;
 
     virtual void Paint(LKSurface& Surface) override;
 
@@ -870,7 +876,11 @@ class WndForm:public WindowControl{
         }
     }
 
-    void ReinitialiseLayout(const RECT& Rect) { }
+    void SetOnUser(OnUser_t OnUser) {
+        mOnUser = OnUser;
+    }
+
+  void ReinitialiseLayout(const RECT& Rect) { }
 
 protected:
     bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode);
@@ -883,6 +893,10 @@ protected:
         if(mOnTimerNotify) {
             mOnTimerNotify(this);
         }
+    }
+
+    bool OnUser(unsigned id) {
+      return (mOnUser && mOnUser(this, id));
     }
 
     virtual void OnDestroy() override {

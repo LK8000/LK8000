@@ -25,11 +25,14 @@ package org.LK8000;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 /**
  * An #BluetoothAdapter.LeScanCallback implementation that passes
  * method calls to native code.
  */
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 class NativeLeScanCallback implements BluetoothAdapter.LeScanCallback {
   /**
    * A native pointer.

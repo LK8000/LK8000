@@ -574,6 +574,17 @@ void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
   mEntries.push_back({idx, std::move(szTmp)});
 }
 
+int DataFieldEnum::Find(const TCHAR *Text) {
+  const auto it = std::find_if(mEntries.begin(), mEntries.end(), [Text](const DataFieldEnumEntry &item) {
+    return (item.mText.compare(Text) == 0);
+  });
+
+  if(it != mEntries.end()) {
+    return it->index;
+  }
+  return -1;
+}
+
 const TCHAR *DataFieldEnum::GetAsString(void) {
   if (mValue<mEntries.size()) {
     return(mEntries[mValue].mText.c_str());
@@ -1699,6 +1710,7 @@ WndForm::WndForm(const TCHAR *Name, const TCHAR *Caption,
   mOnTimerNotify = NULL;
   mOnKeyDownNotify = NULL;
   mOnKeyUpNotify = NULL;
+  mOnUser = NULL;
 
   mColorTitle = RGB_MENUTITLEBG;
 

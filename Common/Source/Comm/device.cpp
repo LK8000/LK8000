@@ -61,6 +61,9 @@ using namespace std::placeholders;
 // this lock is used for protect DeviceList array.
 static Mutex CritSec_Comm;
 
+#ifdef ANDROID
+Mutex COMMPort_mutex; // needed for Bluetooth LE scan
+#endif
 COMMPort_t COMMPort;
 
 static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200};
@@ -233,6 +236,10 @@ static BOOL devIsFalseReturn(PDeviceDescriptor_t d){
 }
 
 void RefreshComPortList() {
+#ifdef ANDROID
+    ScopeLock lock(COMMPort_mutex);
+#endif
+
     COMMPort.clear();
 #ifdef WIN32    
     TCHAR szPort[10];

@@ -27,6 +27,8 @@ import java.util.UUID;
 import java.util.Set;
 import java.io.IOException;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -120,10 +122,12 @@ final class BluetoothHelper {
     return addresses;
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   public static boolean startLeScan(BluetoothAdapter.LeScanCallback cb) {
     return hasLe && adapter.startLeScan(cb);
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   public static void stopLeScan(BluetoothAdapter.LeScanCallback cb) {
     if (hasLe)
       adapter.stopLeScan(cb);

@@ -135,7 +135,9 @@ typedef	struct{
   BOOL   (*Installer)(PDeviceDescriptor_t d);
 } DeviceRegister_t;
 
-
+#ifdef ANDROID
+extern Mutex COMMPort_mutex; // needed for Bluetooth LE scan
+#endif
 extern COMMPort_t COMMPort;
 
 extern DeviceDescriptor_t	DeviceList[NUMDEV];

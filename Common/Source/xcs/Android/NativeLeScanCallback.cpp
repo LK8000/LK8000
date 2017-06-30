@@ -42,7 +42,7 @@ Java_org_LK8000_NativeLeScanCallback_onLeScan(JNIEnv *env, jobject obj,
   if (ptr == 0)
     return;
 
-  char address[64], name[256];
+  char address[64]={}, name[256]={};
   Java::String::CopyTo(env, _address, address, sizeof(address));
   Java::String::CopyTo(env, _name, name, sizeof(name));
 
