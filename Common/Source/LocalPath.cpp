@@ -299,18 +299,20 @@ void LocalPath(TCHAR* buffer, const TCHAR* file) {
  *  requiered for compatibilty with old config file
  */
 void RemoveFilePathPrefix(const TCHAR* szPrefix, TCHAR* szFilePath) {
-    /***************************************************/
-    /* for compatibilty with old file                  */
-    const TCHAR* code = szPrefix;
-    const TCHAR* ptr = _tcsstr(szFilePath, code);
-    if(ptr) {
-        ptr += _tcslen(code);
+    const TCHAR* ptr = _tcsstr(szFilePath, szPrefix);
+    if(ptr && szFilePath == ptr) {
+        ptr += _tcslen(szPrefix);
+    } else {
+        ptr = nullptr;
     }
+
+    // remove prefix only if followed by directory separator
+    bool found = false;
     while (ptr && ((*ptr) == '\\' || (*ptr) == '/')) {
         ++ptr;
+        found = true;
     }
-    if(ptr) {
+    if(found && ptr) {
         _tcscpy(szFilePath, ptr);
     }
-    /***************************************************/
 }
