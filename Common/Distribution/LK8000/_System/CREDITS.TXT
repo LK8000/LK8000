@@ -1,4 +1,4 @@
-#B1;
+#B2;
 [Welcome to LK8000]
 Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
 Join our free support forum at http://www.postfrontal.com/forum
@@ -13,12 +13,13 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 [Latest software changes]
 
-Version 6.1i:
+Version 6.1j
 
-Fix Wifi connection after kobo firmeware update
-Fix Waypoint coordinate using DDMMSS.ss format
-Support utf8 encoded Waypoint file
-Other bug fixes
+fix Circling Wind calcuation with GPS rate > 1Hz
+. android : support GPSBip device
+. android : scan for available Bluetooth LE device when device config is open.
+. few other minor fix
+
 
 In summary what's up in current branch:
 
@@ -39,6 +40,12 @@ In summary what's up in current branch:
     Uart 3: pin12=out, pin13=in
 . Kernel support for Kobo Touch N905C
 . Units feet/minute (ft/min)
+
+[Version 6.1i 170612]:
+Fix Wifi connection after kobo firmeware update
+Fix Waypoint coordinate using DDMMSS.ss format
+Support utf8 encoded Waypoint file
+Other bug fixes
 
 [Version 6.1g 170516]
 Added kernel support for Kobo Touch N905C
