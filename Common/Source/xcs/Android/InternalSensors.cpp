@@ -182,7 +182,6 @@ Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj,
 {
 
   unsigned index = getDeviceIndex(env, obj);
-  LockComm();
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
     pdev->HB = LKHearthBeats;
@@ -207,7 +206,6 @@ Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj,
     }
     GPS_INFO.NAVWarning = !(pdev->nmeaParser.gpsValid);
   }
-  UnlockComm();
 }
 
 extern "C"
