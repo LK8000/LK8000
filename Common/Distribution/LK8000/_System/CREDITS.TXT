@@ -1,4 +1,4 @@
-#B2;
+#B3;
 [Welcome to LK8000]
 Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
 Join our free support forum at http://www.postfrontal.com/forum
@@ -13,9 +13,17 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 [Latest software changes]
 
+Version 6.1l
+
+. fix "Application Not Responding" on shutdown or ComPort restart
+
+Version 6.1k
+
+. fix "red screen" artefact on some device
+
 Version 6.1j
 
-fix Circling Wind calcuation with GPS rate > 1Hz
+. fix Circling Wind calcuation with GPS rate > 1Hz
 . android : support GPSBip device
 . android : scan for available Bluetooth LE device when device config is open.
 . few other minor fix
