@@ -84,7 +84,6 @@ static int Events_count=0;				// How many have we defined
 // Labels - defined per mode
 typedef struct {
   const TCHAR *label;
-  unsigned MenuId;
   int event;
 } ModeLabelSTRUCT;
 
@@ -543,7 +542,6 @@ void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, in
         }
 
         ModeLabel[mode_id][LabelIdx].label = label;
-        ModeLabel[mode_id][LabelIdx].MenuId = MenuId;
         ModeLabel[mode_id][LabelIdx].event = event_id;
     } else {
         LKASSERT(0);
@@ -632,13 +630,7 @@ void InputEvents::drawButtons(int Mode) {
     if (!(ProgramStarted == psNormalOp)) return;
 
     for (unsigned i = 0; i < array_size(ModeLabel[Mode]); i++) {
-        if ((ModeLabel[Mode][i].MenuId > 0)) {
-            LKASSERT(i == (ModeLabel[Mode][i].MenuId - 1));
-
-            ButtonLabel::SetLabelText(
-                    ModeLabel[Mode][i].MenuId,
-                    ModeLabel[Mode][i].label );
-        }
+      ButtonLabel::SetLabelText( i+1, ModeLabel[Mode][i].label );
     }
 
 #ifdef USE_GDI
@@ -676,7 +668,6 @@ bool InputEvents::processButton(unsigned MenuId) {
     int thismode = getModeID();
     unsigned i = MenuId - 1;
     LKASSERT(i < array_size(ModeLabel[thismode])); // Invalid MenuId
-    LKASSERT(ModeLabel[thismode][i].MenuId == MenuId); // Invalid ModeLabel
 
     int lastMode = thismode;
 
@@ -754,9 +745,8 @@ bool InputEvents::processKey(int KeyID) {
 
     for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
       if (ModeLabel[mode][i].event == event_id) {
-        MenuId = ModeLabel[mode][i].MenuId;
 #ifdef LXMINIMAP
-        SelectedButtonId = MenuId;
+        SelectedButtonId = i + 1;
 #endif
         pLabelText = ModeLabel[mode][i].label;
       }
