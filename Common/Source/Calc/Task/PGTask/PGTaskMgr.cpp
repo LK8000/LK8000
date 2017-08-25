@@ -37,21 +37,23 @@ inline double deg2rad(double deg) {
 
 const ProjPt ProjPt::null;
 
-// WGS84 data
-const PGTaskMgr::DATUM PGTaskMgr::m_Datum = (PGTaskMgr::DATUM){
 #ifdef _WGS84
+// WGS84 data
+const PGTaskMgr::DATUM PGTaskMgr::m_Datum_WGS84 = (PGTaskMgr::DATUM) {
     6378137.0, // a
     6356752.3142, // b
     0.00335281066474748, // f = 1/298.257223563
     0.006694380004260807, // esq
     0.0818191909289062, // e    
-#else
+};
+#endif
+
+const PGTaskMgr::DATUM PGTaskMgr::m_Datum_FAI = (PGTaskMgr::DATUM) {
     6371000.0, // a
     6371000.0, // b
     0, // f = 1/298.257223563
     0, // esq
     0, // e
-#endif
 };
 
 PGTaskMgr::PGTaskMgr() {
@@ -339,8 +341,14 @@ void PGTaskMgr::UpdateTaskPoint(const int i, TASK_POINT& TskPt ) const {
 
 void PGTaskMgr::Grid2LatLon(double N, double E, double& lat, double& lon) const {
 
-    double a = m_Datum.a; // Semi-major axis of reference ellipsoid
-    double f = m_Datum.f; // Ellipsoidal flattening
+#ifdef _WGS84
+    const DATUM& Datum = earth_model_wgs84 ? m_Datum_WGS84 : m_Datum_FAI;
+#else
+    const DATUM& Datum = m_Datum_FAI;
+#endif
+    
+    double a = Datum.a; // Semi-major axis of reference ellipsoid
+    double f = Datum.f; // Ellipsoidal flattening
     double b = a * (1 - f);
 
     double lat0 = m_Grid.lat0;
@@ -409,9 +417,15 @@ void PGTaskMgr::Grid2LatLon(double N, double E, double& lat, double& lon) const 
 
 void PGTaskMgr::LatLon2Grid(double lat, double lon, double& N, double& E) const {
     // Datum data for Lat/Lon to TM conversion
-
-    double a = m_Datum.a; // Semi-major axis of reference ellipsoid
-    double f = m_Datum.f; // Ellipsoidal flattening
+  
+#ifdef _WGS84
+    const DATUM& Datum = earth_model_wgs84 ? m_Datum_WGS84 : m_Datum_FAI;
+#else
+    const DATUM& Datum = m_Datum_FAI;
+#endif
+    
+    double a = Datum.a; // Semi-major axis of reference ellipsoid
+    double f = Datum.f; // Ellipsoidal flattening
 
     double lat0 = m_Grid.lat0;
     double lon0 = m_Grid.lon0;
