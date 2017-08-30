@@ -42,36 +42,48 @@ void WeightOffset(double wload) {
 }
 
 
-void PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]) {
-  double d;
-  double v1,v2,v3;
-  double w1,w2,w3;
+bool PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]) {
 
-  v1 = dPOLARV[0]/3.6; v2 = dPOLARV[1]/3.6; v3 = dPOLARV[2]/3.6;
-  //	w1 = -POLARV[0]/POLARLD[0];
-  //    w2 = -POLARV[1]/POLARLD[1];
-  //    w3 = -POLARV[2]/POLARLD[2];
-  w1 = dPOLARW[0]; w2 = dPOLARW[1]; w3 = dPOLARW[2];
+  const double v1 = dPOLARV[0]/3.6; 
+  const double v2 = dPOLARV[1]/3.6; 
+  const double v3 = dPOLARV[2]/3.6;
+  
+  const double w1 = dPOLARW[0]; 
+  const double w2 = dPOLARW[1]; 
+  const double w3 = dPOLARW[2];
 
-  d = v1*v1*(v2-v3)+v2*v2*(v3-v1)+v3*v3*(v1-v2);
-  if (d == 0.0)
-    {
-      POLAR[0]=0;
-    }
-  else
-    {
-      POLAR[0]=((v2-v3)*(w1-w3)+(v3-v1)*(w2-w3))/d;
-    }
-  d = v2-v3;
-  if (d == 0.0)
-    {
-      POLAR[1]=0;
-    }
-  else
-    {
-      POLAR[1] = (w2-w3-POLAR[0]*(v2*v2-v3*v3))/d;
-    }
-
+  double d = v1 * v1 * (v2 - v3) + v2 * v2 * (v3 - v1) + v3 * v3 * (v1 - v2);
+  if (d == 0.0) {
+    POLAR[0] = 0.;
+  } else {
+    POLAR[0] = ((v2 - v3)*(w1 - w3)+(v3 - v1)*(w2 - w3)) / d;
+  }
+  d = v2 - v3;
+  if (d == 0.0) {
+    POLAR[1] = 0.;
+  } else {
+    POLAR[1] = (w2 - w3 - POLAR[0]*(v2 * v2 - v3 * v3)) / d;
+  }
+  POLAR[2] = (w3 - POLAR[0] *v3*v3 - POLAR[1]*v3);
+  
+  // check polar validity : 
+  if(POLAR[0] > 0.) {
+    // "a"  must be negative
+    return false;
+  }
+  
+  const double x = -1. * (POLAR[1]/ (2 *  POLAR[0]));
+  if( x < 0 )  {
+    // minsink speed must be positive
+    return false;
+  }
+  
+  const double y = POLAR[0] *x*x + POLAR[1]*x + POLAR[2];
+  if(y > 0.) {
+    // minsink must be negative
+    return false;
+  }
+  
   // these 0 and 1 are always used as a single weight: always 0+1 everywhere
   // If WEIGHT 0 is used also WEIGHT 1 is used together, so it is unnecessary to keep both values.
   // however it doesnt hurt .
@@ -81,14 +93,15 @@ void PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]) {
   WEIGHTS[1] = ww[0]-WEIGHTS[0];        // Glider empty weight
   WEIGHTS[2] = ww[1];                   // Ballast weight
 
-  POLAR[2] = (double)(w3 - POLAR[0] *v3*v3 - POLAR[1]*v3);
 
   // now scale off weight
   BUGSTOP_LKASSERT((WEIGHTS[0] + WEIGHTS[1])>=0);
   if((WEIGHTS[0] + WEIGHTS[1])>=0) {
-      POLAR[0] = POLAR[0] * (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
-      POLAR[2] = POLAR[2] / (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
+    POLAR[0] = POLAR[0] * (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
+    POLAR[2] = POLAR[2] / (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
   }
+  
+  return true;
 }
 
 
@@ -211,11 +224,10 @@ bool ReadWinPilotPolar(void) {
 			// StartupStore(_T("... WARNING found invalid Polar line, skipping%s"),NEWLINE);
 			continue; // read another line searching for polar
 		} else {
-			foundline = true;
 			if (GlidePolar::WingArea == 0) {
 				StartupStore(_T("... WARNING Polar file has NO wing area%s"),NEWLINE);
 			}
-			PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
+			foundline = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
 		}
             }
         }
@@ -285,7 +297,8 @@ bool ReadWinPilotPolar(void) {
 		dPOLARV[2]= 205.1;
 		dPOLARW[2]= -4.2;
 		GlidePolar::WingArea = 10.04;
-		PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
+		gcc_unused bool bok = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
+		assert(bok);
 
         _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
 	} // !foundline

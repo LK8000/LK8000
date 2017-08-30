@@ -622,8 +622,7 @@ Ask to your device dealer for more information
 @300
 Specifies how much of the water ballast is loaded in the glider.
 The total volume of the water ballast is defined in a glider polar data.
-Press DUMP BALLAST button to toggle countdown of the ballast volume according to the dump rate specified in s
-ystem configuration.
+Press DUMP BALLAST button to toggle countdown of the ballast volume according to the dump rate specified in system configuration.
 
 @301
 Wing loading for this glider. It depends on your weight, on additional equipments installed, etc.

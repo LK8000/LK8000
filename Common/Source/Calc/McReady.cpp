@@ -81,7 +81,7 @@ void GlidePolar::SetBallast() {
   // to fly slower than min sink speed)
 
   minsink = 10000.0;
-  double tmp_bestld = 0.0;
+  bestld = 0.0;
 
   // Rounding errors could make SAFTEYSPEED 0.00xx and not 0
   // Now below 3kmh we consider the speed wrong
@@ -97,10 +97,11 @@ void GlidePolar::SetBallast() {
      double thesinkrate = -SinkRate(polar_a,polar_b,polar_c,0,0,vtrack);
 
      BUGSTOP_LKASSERT(thesinkrate>0);
-     if (thesinkrate<=0) thesinkrate=0.001;
-     double ld = vtrack/thesinkrate;
-     if (ld>=tmp_bestld) {
-        tmp_bestld=ld;
+     if (thesinkrate<=0) {
+       thesinkrate=0.001;
+     }
+     const double ld = vtrack/thesinkrate;
+     if (ld>=bestld) {
         bestld = ld;
         _Vbestld = _i;
      }

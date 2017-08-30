@@ -58,8 +58,10 @@ protected:
 
     typedef std::vector<PGTaskPt*> Task_t;
 
-    // WGS84 data
-    static const DATUM m_Datum;
+#ifdef _WGS84
+    static const DATUM m_Datum_WGS84;
+#endif
+    static const DATUM m_Datum_FAI;
     GRID m_Grid;
 
     Task_t m_Task;
