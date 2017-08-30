@@ -348,7 +348,6 @@ void SerialPort::UpdateStatus() {
         ClearCommError(hPort, &dwErrors, &comStat);
         if (dwErrors & CE_FRAME) {
             //StartupStore(_T("... Com port %d, dwErrors=%ld FRAME (old status=%d)\n"),
-            //	GetPortIndex(),dwErrors,ComPortStatus[GetPortIndex()]);
             SetPortStatus(CPS_EFRAME);
             AddStatErrRx(1);
             valid_frames = 0;

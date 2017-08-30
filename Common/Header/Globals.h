@@ -467,15 +467,6 @@ GEXTERN int time_in_flight;
 GEXTERN int time_on_ground;
 GEXTERN double TakeOffSpeedThreshold;
 
-// Com port diagnostic - see Utils2.h
-GEXTERN int ComPortStatus[NUMDEV+1];
-GEXTERN long ComPortRx[NUMDEV+1];
-GEXTERN long ComPortErrRx[NUMDEV+1];
-GEXTERN long ComPortTx[NUMDEV+1];
-GEXTERN long ComPortErrTx[NUMDEV+1];
-// Com ports hearth beats, based on LKHearthBeats
-GEXTERN unsigned ComPortHB[NUMDEV+1];
-
 GEXTERN double	NearestAirspaceHDist;
 GEXTERN double	NearestAirspaceVDist;
 GEXTERN TCHAR    NearestAirspaceName[NAME_SIZE+1];
