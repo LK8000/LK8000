@@ -38,7 +38,7 @@
 bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *uiArg);
 int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len);
 #ifdef TESTBENCH
-int  iATR833DebugLevel = 2;
+int  iATR833DebugLevel = 1;
 #else
 int  iATR833DebugLevel = 0;
 #endif
@@ -228,10 +228,8 @@ BOOL ATR833StationSwap(PDeviceDescriptor_t d) {
 
 
 BOOL ATR833RadioMode(PDeviceDescriptor_t d, int mode) {
-static uint8_t Val=0;
-if(Val == (int8_t)mode)
-  return false;
-Val = (int8_t) mode;
+ uint8_t Val= (int8_t) mode;
+
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
@@ -471,7 +469,7 @@ int Idx=0;
     break;
     /*****************************************************************************************/
     case 0x1A:               // NF
-      RadioPara.Dual = szCommand[1] ;
+   //   RadioPara.Dual = szCommand[1] ;
       RadioPara.Changed = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 NF %i %s"),   RadioPara.Volume, NEWLINE);
       processed  = 2;
