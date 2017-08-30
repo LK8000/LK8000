@@ -1,4 +1,4 @@
-/***********************************************************************
+ï»¿/***********************************************************************
  **
  **   vlapi2.h
  **
@@ -74,9 +74,9 @@ class VLAPI_DATA {
     int16  rs;  // sector radius in meters   (0..15000m)
     // the API will round this to the next lower 1000m-step
     int16  ws;  // sector direction in degrees
-    // 0..358ø directly specifies the direction
-    // into which the 90°-FAI-sector points
-    // 360ø means automatic calculation of the direction inside
+    // 0..358Ã¸ directly specifies the direction
+    // into which the 90Â°-FAI-sector points
+    // 360Ã¸ means automatic calculation of the direction inside
     // the VL, according to FAI-rules
     OZTYP oztyp;
   protected:

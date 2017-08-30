@@ -65,7 +65,7 @@ char *strtrim(char *st) {
 }
 
 
-// Aus einer 2byte-Binärzahl einen base-36 Seriennummernstring machen
+// Aus einer 2byte-BinÃ¤rzahl einen base-36 Seriennummernstring machen
 char *wordtoserno(word Binaer) {
  char SerNStr[4];
  static char Seriennummer[4];
@@ -88,7 +88,7 @@ char *wordtoserno(word Binaer) {
 
 
 /*
-genaue Umrechnung von Druckwert nach Höhe.
+genaue Umrechnung von Druckwert nach HÃ¶he.
 Druckwert ist ein innerhalb des Loggers temperaturkompensierter Wert, der
 proportional zum gemessenen Umgebungsdruck am Logger ist.
 1100 mbar entsprechen einem Druckwert von 4096;
@@ -104,7 +104,7 @@ double p;
 double hoehe;
  // Umrechnung von normierten ADC-Werten in hPa
  p = 1100.0*druck/4096;
- // Berechnen der Druckhöhe anhand des Druckes
+ // Berechnen der DruckhÃ¶he anhand des Druckes
  if (p>p11)
    hoehe = (t0 * (exp((tgrad/GMR)*log(p0/p)) - 1) / tgrad);
  else

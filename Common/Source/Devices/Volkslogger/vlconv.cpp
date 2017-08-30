@@ -19,10 +19,10 @@
 
   Konvertierroutinen
 
-  vom binären Volkslogger-Format  GCS
+  vom binÃ¤ren Volkslogger-Format  GCS
   ins IGC-Format
 
-  vom binären Directory-Format ins Directory-Array
+  vom binÃ¤ren Directory-Format ins Directory-Array
 
 
 
@@ -60,23 +60,23 @@
 #define rectyp_end   0x60 //Security
 #define	rectyp_pos   0x80 //Pos-DS (Fix)
 #define	rectyp_tnd   0xA0 //Time&Date
-#define rectyp_fil   0xC0 //Füllzeichen
+#define rectyp_fil   0xC0 //FÃ¼llzeichen
 #define rectyp_poc   0xE0 //komprimierter Pos-DS
 
 
 
-// höchste, von diesem Programm verdaute Binärdateiversion
+// hÃ¶chste, von diesem Programm verdaute BinÃ¤rdateiversion
 // bfw = "binary file version"
 const int max_bfv=1;
 
-// Größe der Fix-Datensätze in den verschiedenen Binärdateiversionen
+// GrÃ¶ÃŸe der Fix-DatensÃ¤tze in den verschiedenen BinÃ¤rdateiversionen
 const int  pos_ds_size[max_bfv+1][2] = {
   {11,0},
   {12,9}
 };
 
 // Struktur einer Koordinate
-// bestehend aus Längen- und Breitengrad in 1/1000'
+// bestehend aus LÃ¤ngen- und Breitengrad in 1/1000'
 class KOORD {
 // Strukturvariablen
 public:
@@ -103,7 +103,7 @@ public:
   }
 };
 
-// Struktur eines WPTs für C-Records
+// Struktur eines WPTs fÃ¼r C-Records
 class C2 {
 public:
 	char        name[7];
@@ -139,7 +139,7 @@ public:
     }
 };
 
-// Struktur für Flugaufgabe
+// Struktur fÃ¼r Flugaufgabe
 //
 class C_RECORD {
   public:
@@ -164,14 +164,14 @@ class C_RECORD {
 
     if (hasdeclaration) {
       strcpy(sTDECL,"            ");
-      if (TID>9999) TID=9999;  // Größenbegrenzungen wg. Ausdruck
+      if (TID>9999) TID=9999;  // GrÃ¶ÃŸenbegrenzungen wg. Ausdruck
       if (NTP>12) NTP = 12;
 
 
 //JMW TODO??? strftime(sTDECL,sizeof sTDECL,"%d%m%y%H%M%S",&TDECL);
 
       // Wenn kein FDT-Feld vom Logger kam  (Logger ab FW 161)
-      // dann muß eben eines erzeugt werden
+      // dann muÃŸ eben eines erzeugt werden
       if (!(FDT[0]|FDT[1]|FDT[2])) {
 	// TDECL als Basis nehmen
 	memcpy(&T_FDT, &TDECL, sizeof T_FDT);
@@ -238,7 +238,7 @@ class C_RECORD {
 };
 
 
-// Struktur für IGC-Header
+// Struktur fÃ¼r IGC-Header
 struct IGCHEADER {
   char A[10],
        DTE[10],
@@ -289,7 +289,7 @@ struct IGCHEADER {
     //init();
     ausgabe = stderr;
   }
-// Einstellung des Ausgabestreams für die IGC-Dateien
+// Einstellung des Ausgabestreams fÃ¼r die IGC-Dateien
   void redirect(FILE *opf) {
     ausgabe = opf;
   }
@@ -304,7 +304,7 @@ struct IGCHEADER {
     igc_filter(CID);
 
     igc_filter(A);
-    if ( (version < 413) || (version >= 416) ){ // aus Kompatibilität zu alten Versionen
+    if ( (version < 413) || (version >= 416) ){ // aus KompatibilitÃ¤t zu alten Versionen
       fprintf(ausgabe,"A%s%s\n",MFR_ID,A);
     }
     else {     // ab Ver.1: Anzeige der Konverterversion im A-Record
@@ -344,7 +344,7 @@ struct IGCHEADER {
     if (TZN[0])
       fprintf(ausgabe,"HFTZNTIMEZONE:%s\n",TZN);
 
-    if ( // Für alte Dateien
+    if ( // FÃ¼r alte Dateien
 	    ( (version < 413) || (version >= 416 ))
 	 && (strcmp(RHW,"3.3")<0)
     )
@@ -368,9 +368,9 @@ struct IGCHEADER {
 
 
 /*
-mehr oder weniger willkührliche Umrechnung von HDOP in Fix-Accuracy
-muß nicht unbedingt richtig sein !
-Ist eventuell nochmal zu ändern
+mehr oder weniger willkÃ¼hrliche Umrechnung von HDOP in Fix-Accuracy
+muÃŸ nicht unbedingt richtig sein !
+Ist eventuell nochmal zu Ã¤ndern
 */
 word hdop2fxa(byte hdop) {
 //  return (float) hdop * 100.0/3);
@@ -391,7 +391,7 @@ int enlflt(int enl) {
 }
 
 int enllim(int enl) {
-  // abschließende Begrenzung
+  // abschlieÃŸende Begrenzung
   if (enl>999)
     enl = 999;
   return enl;
@@ -399,23 +399,23 @@ int enllim(int enl) {
 
 
 /*
-Binären Datenblock *bin_puffer in das IGC-Format umwandeln und in der
+BinÃ¤ren Datenblock *bin_puffer in das IGC-Format umwandeln und in der
 Datei *Ausgabedatei speichern
 
 
 Konvertierung erfolgt in 2 Phasen:
-1) Auffüllen der HFxxx-Records mit den Daten aus GCS-Datei
-   Auffüllen der C-Records mit den Daten aus der GCS-Datei
+1) AuffÃ¼llen der HFxxx-Records mit den Daten aus GCS-Datei
+   AuffÃ¼llen der C-Records mit den Daten aus der GCS-Datei
 2) Ausdrucken der Hxxxx-Records in der vorgeschriebenen Reihenfolge,
    leere, aber vorgeschriebene H-Records werden als HO-Records ausgedruckt
 
    Ausdrucken des I-Records (I013638FXA)
    Ausdrucken des ersten C-Records in der vorgeschriebenen Reihenfolge
-   Konvertierung und Ausdrucken der B- und E-Datensätze
+   Konvertierung und Ausdrucken der B- und E-DatensÃ¤tze
 
-Binärdatensatztypen (Achtung: aktuelles Datenformat siehe Firmwarelisting):
+BinÃ¤rdatensatztypen (Achtung: aktuelles Datenformat siehe Firmwarelisting):
   T mit rel. Zeit  / ohne rel. Zeit
-  V variable Länge / feste Länge
+  V variable LÃ¤nge / feste LÃ¤nge
      TV  L
 sep        1  Flugtrennzeichen
 pos  x    11  Positionsdatensatz
@@ -429,19 +429,19 @@ tnd  x     8  Zeit und Datum
 /* Parameter
   igcfile_version:
     Version von DATA-GCS, die der Konverter simulieren soll
-    dies ist aus Kompatibilitätsgründen erforderlich
+    dies ist aus KompatibilitÃ¤tsgrÃ¼nden erforderlich
   Ausgabedatei:
     Datei, in die das Ergebnis der Konvertierung (IGC-Datei) geschrieben
     wird
   bin_puffer:
-    Zeiger auf den Speicherbereich, in dem die binäre formatierte IGC-
+    Zeiger auf den Speicherbereich, in dem die binÃ¤re formatierte IGC-
     Datei, so wie sie vom Logger kommt, liegt
   oo_fillin:
     ???
   *serno:
     Seriennummer des Loggers, aus dem die Datei stammt
   *sp:
-    Position, an der die Signatur in der Binärdatei liegt
+    Position, an der die Signatur in der BinÃ¤rdatei liegt
 
 */
 
@@ -485,13 +485,13 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
  char		PILOT[40];
  int            tzh,tzm;
 // word           keysn;
- int            bfv = 0; // Binärdatenformat-Version
+ int            bfv = 0; // BinÃ¤rdatenformat-Version
  long           delta_lat,delta_lon;
  // Zeitzone in Minuten aus Feld FDT
  int            tzn = 4000; // Ini-Wert zur Erkennung, ob es das Feld gab
  // aus Position berechnete Zeitzone
  float          ftz = 0;
- // Flag, ob ftz aus gültiger Position stammt
+ // Flag, ob ftz aus gÃ¼ltiger Position stammt
  int		tzset = 0;
 
 	// Initialize firsttime structure to fix compiler warning
@@ -524,7 +524,7 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
     Haupttyp = p[0] & rectyp_msk;
     switch (Haupttyp) {
       case rectyp_tnd :
-	// errechnet rückwärts die Zeit des 1. Fixes
+	// errechnet rÃ¼ckwÃ¤rts die Zeit des 1. Fixes
 	time_relative += p[1];
 	temptime = 65536L * p[2] + 256L * p[3] + p[4];
 	firsttime.tm_sec   = temptime % 3600;
@@ -583,8 +583,8 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
 			    delta_lon = -delta_lon;
 			  igcfix.lon += delta_lon;
 			}
-			// ftz mit Längengrad füllen
-			// der erste gültige ist der letzte,
+			// ftz mit LÃ¤ngengrad fÃ¼llen
+			// der erste gÃ¼ltige ist der letzte,
 			// der in ftz gespeichert wird
 			if (!tzset) {
 			  ftz = float(igcfix.lon);
@@ -600,7 +600,7 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
 			}
 			l = 1;
 			break;
-      case 0xC0       : l = 1; // Füllzeichen
+      case 0xC0       : l = 1; // FÃ¼llzeichen
 			break;
       case rectyp_end : *sp = (p-bin_puffer) + 1;
 			l = 41;
@@ -720,7 +720,7 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
 			    igcheader.CID[(sizeof igcheader.CID)-1] = 0;
 			    break;
 			  case FLDHDR :  // Seriennummer und anderes einlesen
-			    // Public-Key erst mal löschen
+			    // Public-Key erst mal lÃ¶schen
 			    // 19.10.99 weggemacht, weil schon in main vorhanden
 			    //dsa_y_b[0] = 2; dsa_y_b[1] = 0;
 			    //memset(&dsa_y_b[2],0,(sizeof dsa_y_b)-2);
@@ -751,7 +751,7 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
   pl = p - bin_puffer;
 
 
-  // Zeitzone/Stunden = floor (LON+7.5°) / 15° des 1. gültigen Fixes
+  // Zeitzone/Stunden = floor (LON+7.5Â°) / 15Â° des 1. gÃ¼ltigen Fixes
   ftz = ftz + 450000L;
   ftz = ftz / 900000L;
   task.zz_min = int(60 * floor(ftz));
@@ -898,10 +898,10 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
 			);
 
 			if ( // erst bei ENL im I-Record aktivieren
-			// waren irrtümlich schon mal aktiv
+			// waren irrtÃ¼mlich schon mal aktiv
 			(igcfile_version >= 413) && (igcfile_version <416))
 			  fprintf(Ausgabedatei,"999");
-			// müssen auf jeden Fall aktiv sein, wenn Sensor da
+			// mÃ¼ssen auf jeden Fall aktiv sein, wenn Sensor da
 			if (strcmp(igcheader.RHW,"3.3")>=0)
 			  fprintf(Ausgabedatei,"%03u",igcfix.enl);
 
@@ -959,7 +959,7 @@ char *gen_filename(DIRENTRY *de, int flightnum) {
   strcat(tempfn,temps);
   itoa(dd,temps,36);
   strcat(tempfn,temps);
-  strcat(tempfn,MFR_ID2);   // Einbuchstabenkürzel für Hersteller
+  strcat(tempfn,MFR_ID2);   // EinbuchstabenkÃ¼rzel fÃ¼r Hersteller
   strcat(tempfn,wordtoserno(de->serno));
   if (flightnum < 36)             // Flugnummer, sofern zwischen 0 und 35
     itoa(flightnum,temps,36);	  // sonst "_"
@@ -983,7 +983,7 @@ int conv_dir(DIRENTRY* flights, lpb p, int countonly) {
   int number_of_flights;
 	DIRENTRY de; // Verzeichniseintrag
 	byte Haupttyp,Untertyp;
-	byte l; // Länge des DS
+	byte l; // LÃ¤nge des DS
 	lpb p2; // Zeiger auf Beginn des Inhalts eines vrb oder vrt
 	tm olddate = { 0, };
 	int	olddate_flg = 0;

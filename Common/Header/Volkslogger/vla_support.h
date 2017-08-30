@@ -105,7 +105,7 @@ protected:
 		cmd_GFS = 0x03,// Flug lesen mit Signatur
 		cmd_RDB = 0x04,// Datenbank lesen
 		cmd_WPR = 0x05,// Parameter schreiben
-		cmd_CFL = 0x06,// Flugspeicher löschen
+		cmd_CFL = 0x06,// Flugspeicher lÃ¶schen
 		cmd_PDB = 0x07,// Datenbank schreiben
 		cmd_SIG = 0x08,// Signatur berechnen und ausgeben
 		cmd_ERO = 0x09,// Emergency readout (Memorydump lesen)
