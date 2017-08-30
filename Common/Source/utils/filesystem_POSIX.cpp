@@ -130,7 +130,7 @@ namespace lk {
             directory_iterator_impl_POSIX(const TCHAR* szPath) {
 
                 std::string strPath(szPath);
-                unsigned found = strPath.find_last_of("/\\");
+                const std::string::size_type found = strPath.find_last_of("/\\");
                 _sPattern = strPath.substr(found + 1);
                 strPath.erase(found + 1);
 

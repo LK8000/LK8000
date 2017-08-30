@@ -46,7 +46,7 @@ bool lk::filesystem::createDirectory(const TCHAR* szPath) {
             // remove trailing directory separators.
             sPath.erase(sPath.length() - 1);
         }
-        unsigned found = sPath.find_last_of(_T("\\"));
+        const tstring::size_type found = sPath.find_last_of(_T("\\"));
         if (found != sPath.npos) {
             // make recursive call with parent directory path !
             if (!createDirectory(sPath.substr(0, found).c_str())) {
