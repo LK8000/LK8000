@@ -21,6 +21,8 @@
 #include <commctrl.h>
 #include <stdlib.h>
 
+#include "mingw32compat/gmtime_r.h"
+
 #ifndef ASSERT
 #define ASSERT(x) assert(x)
 #endif

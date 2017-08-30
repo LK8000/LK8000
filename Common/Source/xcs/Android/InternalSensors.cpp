@@ -230,7 +230,8 @@ Java_org_LK8000_InternalGPS_setLocation(JNIEnv *env, jobject obj,
   if(pdev && pdev->nmeaParser.activeGPS) {
 
     const time_t utcTime = time/1000;
-    struct tm* utc = gmtime(&utcTime);
+    struct tm tm_temp = {0};
+    struct tm* utc = gmtime_r(&utcTime, &tm_temp);
 
     GPS_INFO.Time = utc->tm_hour * 3600 + utc->tm_min * 60 + utc->tm_sec;
     GPS_INFO.Year = utc->tm_year + 1900;
