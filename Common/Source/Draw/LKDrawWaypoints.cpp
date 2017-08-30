@@ -17,6 +17,7 @@
 #include "ScreenGeometry.h"
 #include <string.h>
 #include "Draw/ScreenProjection.h"
+#include "Util/TruncateString.hpp"
 
 MapWaypointLabel_t MapWaypointLabelList[200];
 MapWaypointLabel_t* SortedWaypointLabelList[200];
@@ -333,7 +334,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		if (DisplayTextType == DISPLAYNAME) {
 			_tcscpy(Buffer2,WayPointList[i].Name);
 		} else {
-			LK_tcsncpy(Buffer2, WayPointList[i].Name, resizer[DisplayTextType]);
+			CopyTruncateString(Buffer2, array_size(Buffer2), WayPointList[i].Name, resizer[DisplayTextType]);
 		}
 
 		if (draw_alt) {
