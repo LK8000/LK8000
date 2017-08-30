@@ -295,6 +295,7 @@ protected:
     virtual bool OnLButtonUpNotify(Window* pWnd, const POINT& Pos) { return false; }
 
     virtual void OnTimer() { }
+    virtual bool OnUser(unsigned id) { return false; }
 };
 
 typedef Window ContainerWindow;

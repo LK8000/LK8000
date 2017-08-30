@@ -895,7 +895,7 @@ protected:
         }
     }
 
-    bool OnUser(unsigned id) {
+    bool OnUser(unsigned id) override {
       return (mOnUser && mOnUser(this, id));
     }
 
