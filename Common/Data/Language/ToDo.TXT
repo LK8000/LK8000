@@ -413,6 +413,9 @@ _@M2322_ "Enable Radar"
 +_@M2334_ in Flight Only
 +_@M2335_ permanent
 
++_@M2190_ "Distance to Next Turnpoint Cylinder Radius"
++_@M2191_ "Cyl Dist"
+
 
    
 HELP FILE

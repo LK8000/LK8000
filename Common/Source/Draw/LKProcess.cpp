@@ -2477,6 +2477,58 @@ olc_score:
 			}
 			valid=true;
 			break;
+      
+    case LK_NEXT_DIST_RADIUS:
+      value = NAN;
+      if ( ValidTaskPoint(ActiveTaskPoint)) {
+        const double Distance = WayPointCalc[Task[ActiveTaskPoint].Index].Distance;
+        if (ActiveTaskPoint == 0) {
+          if (StartLine == 0) {
+            value = Distance - StartRadius;
+          }
+        } else if (ValidTaskPoint(ActiveTaskPoint + 1)) {
+          if (!AATEnabled && !DoOptimizeRoute()) {
+            if(SectorType == CIRCLE) {
+              value = Distance - SectorRadius;
+            }
+          } else {
+            switch(Task[ActiveTaskPoint].AATType) {
+              case CIRCLE : // CIRCLE
+              case 2 : // CONE
+              case 3 : // ESS_CIRCLE
+                value = Distance - Task[ActiveTaskPoint].AATCircleRadius;
+                break;
+            }
+          }
+        } else {
+          if(FinishLine == 0) {
+            value = DerivedDrawInfo.WaypointDistance - FinishRadius;
+          }
+        }
+      }
+      
+      if(value != NAN) {
+        value=Units::ToUserDistance(value);
+        valid=true;
+        if (value>99 || value==0)
+          _stprintf(BufferValue, TEXT("%.0f"),value);
+        else {
+          if (ISPARAGLIDER) {
+            if (value>10)
+              _stprintf(BufferValue, TEXT("%.1f"),value);
+            else 
+              _stprintf(BufferValue, TEXT("%.2f"),value);
+          } else {
+            _stprintf(BufferValue, TEXT("%.1f"),value);
+          }
+        }          
+      } else {
+        _tcscpy(BufferValue, TEXT(NULLMEDIUM)); // 091221
+      }
+      
+      _tcscpy(BufferUnit, Units::GetDistanceName());
+      _tcscpy(BufferTitle, Data_Options[lkindex].Title );
+      break;
 
 		// B141
 		case LK_WIND:

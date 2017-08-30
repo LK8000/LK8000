@@ -703,6 +703,7 @@
 #define LK_SPEED_ME      133		// Maximum efficiency speed to fly
 #define LK_TARGET_RE     134		// Target Req. Efficicency
 #define LK_QNE           135		// Barometric QNE Altitude
+#define LK_NEXT_DIST_RADIUS   136	  // Distance to Next turnpoint minus turnpoint cylindre radius (center for line and sector turnpoint)
 
 // The following values are not available for custom configuration
 

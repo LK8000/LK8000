@@ -307,10 +307,11 @@ void FillDataOptions()
 	SetDataOption(133, ugHorizontalSpeed,TEXT("_@M2312_"), TEXT("_@M2313_")); // Speed of maximum efficiency
 	SetDataOption(134, ugNone,TEXT("_@M2314_"), TEXT("_@M2315_")); // Target Req. Efficicency
 	SetDataOption(135, ugAltitude,TEXT("_@M2323_"), TEXT("_@M2324_"));  // Altitude QNE
-
+	SetDataOption(135, ugAltitude,TEXT("_@M2323_"), TEXT("_@M2324_"));  // Altitude QNE
+	SetDataOption(LK_NEXT_DIST_RADIUS, ugDistance, TEXT("_@M2190_"), TEXT("_@M2191_")); // Dist to next Cylinder turnpoint
 
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
-    static_assert(135 < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
+  static_assert(LK_NEXT_DIST_RADIUS < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
 
 
     // Fill all null string pointer with empty string, avoid to check all time is used.

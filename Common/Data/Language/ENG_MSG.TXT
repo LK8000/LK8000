@@ -2129,6 +2129,9 @@ _@M2188_ "Thermal Min"
 
 _@M2189_ "Circle ESS"
 
+_@M2190_ "Next Distance To Radius "
+_@M2191_ "RadDist"
+
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"
