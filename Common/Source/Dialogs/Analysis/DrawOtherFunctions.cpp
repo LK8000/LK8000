@@ -157,15 +157,16 @@ void Statistics::DrawLine(LKSurface& Surface, const RECT& rc,
 
 void Statistics::DrawBarChart(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata) {
   int i;
-LKColor Col;
+  LKColor Col;
   if (unscaled_x || unscaled_y) {
     return;
   }
 
-if(INVERTCOLORS || IsDithered())
-  Col = RGB_GREEN.ChangeBrightness(0.5);
-else
-  Col = RGB_WHITE;
+  if(INVERTCOLORS || IsDithered()) {
+    Col = RGB_GREEN.ChangeBrightness(0.5);
+  } else {
+    Col = RGB_WHITE;
+  }
 
   LKPen hpBar(PEN_SOLID, IBLSCALE(1), Col);
   LKBrush hbBar(Col);

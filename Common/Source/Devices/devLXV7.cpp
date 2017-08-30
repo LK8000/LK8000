@@ -430,7 +430,7 @@ bool DevLXV7::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
   TCHAR ctemp[180];
   static int NoMsg=0;
   static int oldSerial=0;
-if(_tcslen(String) < 180)
+if(_tcslen(String) < 180) {
   if((( pGPS->SerialNumber == 0)  || ( pGPS->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
 	NoMsg++ ;
@@ -460,6 +460,7 @@ if(_tcslen(String) < 180)
     _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  pGPS->SoftwareVer, (double)(pGPS->HardwareId)/10.0);
     DoStatusMessage(ctemp);
   }
+}
   // nothing to do
   #endif
   return(true);  

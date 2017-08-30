@@ -496,12 +496,13 @@ static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mod
     case DataField::daPut:
     case DataField::daChange:
       wp = (WndProperty*)wf->FindByName(TEXT("prpAspPermDisable"));
-      if (wp)
+      if (wp) {
     	  AspPermanentChanged=(wp->GetDataField()->GetAsInteger());
-          #ifdef TESTBENCH 
-          StartupStore(_T(".......AspPermanentChanged %i %s"),AspPermanentChanged,NEWLINE);
-          #endif
-          break;
+      }
+#ifdef TESTBENCH 
+      StartupStore(_T(".......AspPermanentChanged %i %s"),AspPermanentChanged,NEWLINE);
+#endif
+      break;
     default:
                 #ifdef TESTBENCH
 		StartupStore(_T("........... DBG-908%s"),NEWLINE);

@@ -1084,11 +1084,12 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 #ifdef RADIO_ACTIVE
 
 bool devDriverActivated(const TCHAR *DeviceName) {
-  for(int i=0; i <NUMDEV; i++)
+  for(int i=0; i <NUMDEV; i++) {
     if ((_tcscmp(dwDeviceName[i], DeviceName) == 0)) {
             return true;        
     }
-    return false;
+  }
+  return false;
 }
 
 /**

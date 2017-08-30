@@ -142,16 +142,16 @@ static void OnPrevClicked(WndButton* pWnd) {
 }
 
 static void OnNextClicked(WndButton* pWnd) {
-  if(!stopped)
+  if(!stopped) {
     OnStopClicked(pWnd);
+  }
+  SelectedDevice++;
+  if(SelectedDevice==NUMDEV) {
+    SelectedDevice = 0;
+  }
 
-    SelectedDevice++;
-    if(SelectedDevice==NUMDEV)
-      SelectedDevice = 0;
-
-    OnPortClicked(pWnd);
+  OnPortClicked(pWnd);
   //  OnStopClicked(pWnd);
-
 }
 
 

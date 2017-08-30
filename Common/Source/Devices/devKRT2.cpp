@@ -95,12 +95,12 @@ if(Command == NULL )
     return false;
   if(Station != NULL)
   {
-    if( len > _tcslen(Station))
+    if( len > _tcslen(Station)) {
       len =_tcslen(Station);
-
-      for (i= 0; i < len ; i++) {
-        Airfield[i] = Station[i];
-      }
+    }
+    for (i= 0; i < len ; i++) {
+      Airfield[i] = Station[i];
+    }
    }
   len =0;
   Command[len++] = STX;

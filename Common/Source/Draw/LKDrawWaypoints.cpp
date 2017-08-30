@@ -349,9 +349,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
-		  } else
-			TextDisplayMode.WhiteBold = 1; // outlined
-			TextDisplayMode.Color=RGB_WHITE;
+		  } else {
+            TextDisplayMode.WhiteBold = 1; // outlined
+          }
+          TextDisplayMode.Color=RGB_WHITE;
 		} else {
 			//_stprintf(Buffer, TEXT("%s"),Buffer2);
 			_tcscpy(Buffer,Buffer2);
@@ -377,9 +378,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
-		  } else
+		  } else {
 			TextDisplayMode.WhiteBold = 1; // outlined
-			TextDisplayMode.Color=RGB_WHITE;
+          }
+          TextDisplayMode.Color=RGB_WHITE;
 		} else {
 		  _stprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
 		  if (islandable && isairport) {
@@ -415,9 +417,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
-		  } else
+		  } else {
 			TextDisplayMode.WhiteBold = 1; // outlined
-			TextDisplayMode.Color=RGB_WHITE;
+          }
+          TextDisplayMode.Color=RGB_WHITE;
 
 		  }
 		  else {

@@ -434,7 +434,7 @@ if (iOpposite >0)
   /********************************************************************
    * right  threshold extender 2
    ********************************************************************/
-if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
+if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold) {
   if(bBigFAISector && (fDistMin < FAI28_45Threshold))
   {
     fMaxLeg = FAI28_45Threshold*FAI_BIG_MAX_PERCENTAGE;
@@ -460,6 +460,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
       fDist_a += fDelta_Dist;
     }
   }
+}
   /********************************************************************
    * right  above threshold  3
    ********************************************************************/
@@ -570,7 +571,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
   /********************************************************************
    * LEFT threshold extender
    ********************************************************************/
-if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
+if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold) {
   if((fDistMin < FAI28_45Threshold) && (FAI28_45Threshold <= fDistMax) && (bBigFAISector))
   {
     fMaxLeg = FAI28_45Threshold*FAI_BIG_MAX_PERCENTAGE;
@@ -596,7 +597,7 @@ if((fDist_c / FAI_NORMAL_PERCENTAGE) >= FAI28_45Threshold)
       fDist_b += fDelta_Dist;
     }
   }
-
+}
 
   /********************************************************************
    * LEFT below threshold 7

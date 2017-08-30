@@ -223,13 +223,15 @@ if(bValid == false)
 // ToDo raw 2.5% may cause circular updates due to inaccurate steps
 // can be solved later update from LX to LK works
 BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs){
-TCHAR  szTmp[254];
+  TCHAR  szTmp[254];
 
-if(bValid == false)
-  return false;
+  if(bValid == false) {
+    return false;
+  }
 
-  if(Bugs < 0.7)
+  if(Bugs < 0.7) {
     Bugs = 0.7;
+  }
 
   _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0+BALLAST),(1.00-Bugs)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
@@ -498,7 +500,7 @@ if(BugsUpdateTimeout > 0)
 {
   BugsUpdateTimeout--;
 }
-else
+else {
   if(ParToDouble(sentence, 2, &fTmp))
   {
 	int iTmp2 = 100-(int)(fTmp+0.5);
@@ -509,7 +511,7 @@ else
       iLX16xx_RxUpdateTime = 5;
     }
   }
-
+}
   if (ParToDouble(sentence, 3, &fTmp))
     fPolar_a = fTmp;
   if (ParToDouble(sentence, 4, &fTmp))

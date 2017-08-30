@@ -189,11 +189,12 @@ static uint16_t CRCBitwise(uint8_t *data, size_t len)
  *****************************************************************************/
 int  SetAR620xStation(uint8_t *Command ,int Active_Passive, double fFrequency, TCHAR* Station)
 {
-unsigned int len = 0;
-LKASSERT(Station !=NULL)
-LKASSERT(Command !=NULL)
-if(Command == NULL )
-  return false;
+  unsigned int len = 0;
+  LKASSERT(Station !=NULL)
+  LKASSERT(Command !=NULL)
+  if(Command == NULL ) {
+    return false;
+  }
 
   IntConvertStruct ActiveFreqIdx;  ActiveFreqIdx.intVal16  = Frq2Idx(RadioPara.ActiveFrequency );
   IntConvertStruct PassiveFreqIdx; PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveFrequency);
