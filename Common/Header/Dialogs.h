@@ -90,7 +90,6 @@ void dlgMultimapsShowModal(void);
 void dlgIgcFileShowModal(void);
 
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width=0);
-void dlgNumEntryShowModal(TCHAR *text, int width,bool WPKeyRed);
 void dlgRadioSettingsShowModal(void);
 #ifndef NO_BLUETOOTH
 namespace DlgBluetooth {

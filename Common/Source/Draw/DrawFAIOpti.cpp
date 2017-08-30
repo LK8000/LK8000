@@ -32,8 +32,6 @@ typedef RasterPoint ScreenPoint;
 
 #define MAX_FAI_SECTOR_PTS (8*FAI_SECTOR_STEPS)
 extern LKColor taskcolor;
-extern BOOL CheckFAILeg(double leg, double total);
-
 
 class AnalysisProjection {
 public:
@@ -288,10 +286,6 @@ Surface.SetBackgroundTransparent();
   Surface.SelectObject(hpOldBrush);
   hpSectorPen.Release();
 }
-
-
-
-extern BOOL CheckFAILeg(double leg, double total);
 
 void FAI_Sector::FreeFAISectorMem(void)
 {

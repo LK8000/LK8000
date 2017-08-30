@@ -38,7 +38,6 @@ extern void DistanceToHome(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-extern void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern bool TargetDialogOpen;
 
 

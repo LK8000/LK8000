@@ -1594,9 +1594,6 @@ void WindowControl::PaintSelector(LKSurface& Surface){
 #endif
 }
 
-extern void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
-
-
 int WindowControl::OnHelp() {
     if (mHelpText) {
       dlgHelpShowModal(GetWndText(), mHelpText);

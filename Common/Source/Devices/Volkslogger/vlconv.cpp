@@ -953,21 +953,21 @@ char *gen_filename(DIRENTRY *de, int flightnum) {
   yy = de->firsttime.tm_year % 10;
   mm = de->firsttime.tm_mon  % 12 + 1;
   dd = de->firsttime.tm_mday % 32;
-  itoa(yy,temps,10);
+  volkslogger::itoa(yy,temps,10);
   strcpy(tempfn,temps);
-  itoa(mm,temps,36);
+  volkslogger::itoa(mm,temps,36);
   strcat(tempfn,temps);
-  itoa(dd,temps,36);
+  volkslogger::itoa(dd,temps,36);
   strcat(tempfn,temps);
   strcat(tempfn,MFR_ID2);   // Einbuchstabenkürzel für Hersteller
   strcat(tempfn,wordtoserno(de->serno));
   if (flightnum < 36)             // Flugnummer, sofern zwischen 0 und 35
-    itoa(flightnum,temps,36);	  // sonst "_"
+    volkslogger::itoa(flightnum,temps,36);	  // sonst "_"
   else
     strcpy(temps,"_");
   strcat(tempfn,temps);
   strcat(tempfn,".IGC");
-  strupr(tempfn);
+  volkslogger::strupr(tempfn);
 
   // Der Dateiname sollte auch gesichert werden ...
   //                           Heiner Lamprecht

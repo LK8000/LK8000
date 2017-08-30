@@ -17,10 +17,11 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include "Volkslogger/utils.h"
 
 #include "utils/heapcheck.h"
 
-char *utoa(unsigned value, char *digits, int base)
+char *volkslogger::utoa(unsigned value, char *digits, int base)
 {
     const char *s = "0123456789abcdefghijklmnopqrstuvwxyz";
 
@@ -41,7 +42,7 @@ char *utoa(unsigned value, char *digits, int base)
     return digits;
 }
 
-char *itoa(int value, char *digits, int base)
+char *volkslogger::itoa(int value, char *digits, int base)
 {
   unsigned u;
 
@@ -62,7 +63,7 @@ char *itoa(int value, char *digits, int base)
 }
 
 
-char *ltoa(long value, char *digits, int base)
+char *volkslogger::ltoa(long value, char *digits, int base)
 {
   char *d;
   unsigned u;
@@ -84,7 +85,7 @@ char *ltoa(long value, char *digits, int base)
   return digits;
 }
 
-char *strupr(char *str)
+char *volkslogger::strupr(char *str)
 {
   char *string = str;
 

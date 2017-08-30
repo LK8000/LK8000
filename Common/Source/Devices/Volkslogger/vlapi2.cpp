@@ -842,7 +842,7 @@ void VLAPI_DATA::WPT::get(lpb p) {
   int32 ll;
   memcpy(name,p,6);
   name[6] = 0;
-  strupr(name);
+  volkslogger::strupr(name);
   typ = (WPTTYP) p[6] & 0x7f;
   ll =  (int32) (65536.0*(p[7]&0x7f) + 256.0 * p[8] + p[9]);
   lat = ll / 60000.0;
@@ -862,7 +862,7 @@ void VLAPI_DATA::WPT::put(lpb p) {
   int32 llat,llon;
   int16 i,l;
   // String, evtl. mit Blanks aufgefüllt, zurückschreiben
-  strupr(name);
+  volkslogger::strupr(name);
   memcpy(p,name,6);
   l = strlen((char *)p);
   for(i=l; i<6; i++)
@@ -931,14 +931,14 @@ void VLAPI_DATA::DCLWPT::put(lpb p) {
 void VLAPI_DATA::ROUTE::get(lpb p) {
   memcpy(name,p,14);
   name[14] = 0;
-  strupr(name);
+  volkslogger::strupr(name);
   for(int i=0; i<10; i++)
     wpt[i].get(p + 14 + i*13);
 }
 
 void VLAPI_DATA::ROUTE::put(lpb p) {
 	int i;
-  strupr(name);
+  volkslogger::strupr(name);
   memcpy(p,name,14);
   for(i=strlen((char *)p); i<14; i++)
     p[i] = ' ';
@@ -951,12 +951,12 @@ void VLAPI_DATA::ROUTE::put(lpb p) {
 void VLAPI_DATA::PILOT::get(lpb p) {
   memcpy(name,p,16);
   name[16] = 0;
-  strupr(name);
+  volkslogger::strupr(name);
 }
 
 void VLAPI_DATA::PILOT::put(lpb p) {
 
-  strupr(name);
+  volkslogger::strupr(name);
   memcpy(p,name,16);
   for(int i=strlen((char *)p); i<16; i++)
     p[i] = ' ';
@@ -1014,11 +1014,11 @@ void VLAPI_DATA::DECLARATION::get(DBB *dbb) {
 
 
 void VLAPI_DATA::DECLARATION::put(DBB *dbb) {
-  strupr(flightinfo.pilot);
-  strupr(flightinfo.glidertype);
-  strupr(flightinfo.gliderid);
-  strupr(flightinfo.competitionclass);
-  strupr(flightinfo.competitionid);
+  volkslogger::strupr(flightinfo.pilot);
+  volkslogger::strupr(flightinfo.glidertype);
+  volkslogger::strupr(flightinfo.gliderid);
+  volkslogger::strupr(flightinfo.competitionclass);
+  volkslogger::strupr(flightinfo.competitionid);
 
   char name[65];
   char name2[17];

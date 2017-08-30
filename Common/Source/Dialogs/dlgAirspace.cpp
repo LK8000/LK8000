@@ -15,8 +15,6 @@
 
 static bool colormode = false;
 
-int dlgAirspaceColoursShowModal(void);
-
 
 static void UpdateList(WndListFrame* pWnd){
   if(pWnd) {

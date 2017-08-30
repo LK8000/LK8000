@@ -36,7 +36,6 @@ void WaypointLongitudeToString(double Longitude, TCHAR *Buffer);
 void WaypointLatitudeToString(double Latitude, TCHAR *Buffer);
 void LongitudeToCUPString(double Longitude, TCHAR *Buffer);
 void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
-int dlgWaypointOutOfTerrain(TCHAR *Message);
 double ReadAltitude(TCHAR *temp);
 double ReadLength(TCHAR *temp);
 double CUPToLat(TCHAR *temp);

@@ -18,8 +18,6 @@
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
 
 extern void InsertCommonList(int newwp);
-extern void InsertRecentList(int newwp);
-extern void RemoveRecentList(int newwp);
 
 // #define LOGBEST 1 // DEBUG inside Runtime log. 
 

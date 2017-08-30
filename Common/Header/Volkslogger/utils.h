@@ -15,18 +15,14 @@
 **
 ***********************************************************************/
 
-#if defined(__BORLANDC__)
+#ifndef DEVICES_VOLKSLOGGER_UTILS_H
+#define DEVICES_VOLKSLOGGER_UTILS_H
 
-#include <stdlib.h>
+namespace volkslogger {
+	char *utoa(unsigned value, char *digits, int base);
+	char *itoa(int value, char *digits, int base);
+	char *ltoa(long value, char *digits, int base);
+	char *strupr(char *str);
+}
 
-#else
-
-char *utoa(unsigned value, char *digits, int base);
-
-char *itoa(int value, char *digits, int base);
-
-char *ltoa(long value, char *digits, int base);
-
-char *strupr(char *str);
-
-#endif
+#endif // DEVICES_VOLKSLOGGER_UTILS_H

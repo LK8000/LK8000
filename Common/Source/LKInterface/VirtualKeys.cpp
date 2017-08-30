@@ -17,7 +17,6 @@
 #include "Multimap.h"
 #include "Sound/Sound.h"
 
-void BottomSounds();
 extern int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode);
 long VKtime=0;
 

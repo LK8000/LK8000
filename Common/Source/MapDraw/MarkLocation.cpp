@@ -12,8 +12,6 @@
 #include "utils/stringext.h"
 
 
-extern void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
-extern void LongitudeToCUPString(double Latitude, TCHAR *Buffer);
 extern int GetVirtualWaypointMarkerSlot(void);
 
 
