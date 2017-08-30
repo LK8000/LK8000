@@ -752,14 +752,12 @@ int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
 
   // first check if UTF8 is correct (utf8to16() may not be called on invalid string)
   if (utf8::find_invalid(utf, utf + len) == (utf + len)) {
-    array_back_insert_iterator<wchar_t> iter = array_back_insert_iterator<wchar_t>(unicode, maxChars - 1);
+    array_back_insert_iterator<wchar_t> iter(unicode, maxChars - 1);
 
     iter = utf8::unchecked::utf8to16(utf, utf + len, iter);
 
-    if (!iter.overflowed()) {
-      unicode[iter.length()] = '\0';
-      return(iter.length());
-    }
+    unicode[iter.length()] = '\0';
+    return(iter.length());
   }
 
   // for safety reasons, return empty string
