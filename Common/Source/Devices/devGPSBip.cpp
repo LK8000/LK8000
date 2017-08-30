@@ -25,12 +25,12 @@ static const TCHAR* DeviceNameList[] = {
 };
 
 static
-std::array<DeviceDescriptor_t, array_size(DeviceNameList)> DeviceDesciptorList = { };
+std::array<DeviceDescriptor_t, array_size(DeviceNameList)> DeviceDesciptorList;
 
 
 static
 BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *GPS_INFO) {
-  for(auto Dev : DeviceDesciptorList) {
+  for(auto& Dev : DeviceDesciptorList) {
     if(Dev.ParseNMEA && Dev.ParseNMEA(d, String, GPS_INFO)) {
       return TRUE;
     }

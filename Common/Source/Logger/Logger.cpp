@@ -961,7 +961,7 @@ void LoggerDeviceDeclare() {
 
   DeclaredToDevice = false;
 
-  for(auto dev : DeviceList) {
+  for(auto& dev : DeviceList) {
     if (LoggerDeclare(&dev, &Decl)) {
       found_logger = true;
     }  

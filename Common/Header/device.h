@@ -73,7 +73,15 @@ typedef struct Declaration {
   const WAYPOINT *waypoint[MAXTASKPOINTS];
 } Declaration_t;
 
-typedef	struct DeviceDescriptor_t{
+typedef	struct DeviceDescriptor_t {
+  
+  DeviceDescriptor_t() = default;
+  
+  DeviceDescriptor_t(DeviceDescriptor_t&) = delete;
+  DeviceDescriptor_t(DeviceDescriptor_t&&) = delete;
+  DeviceDescriptor_t& operator= (DeviceDescriptor_t&) = delete;
+  DeviceDescriptor_t& operator= (DeviceDescriptor_t&&) = delete;
+  
   ComPort *Com;
   TCHAR	Name[DEVNAMESIZE+1];
 
