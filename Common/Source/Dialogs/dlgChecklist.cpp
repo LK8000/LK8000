@@ -318,12 +318,12 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
 #endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Reads checklist from file encoded in UTF-8.
+/// Reads checklist from file encoded in UTF-8 or Latin-1.
 ///
 /// @retval true  data loaded
 /// @retval false data load error
 ///
-static bool LoadUtfChecklist(const TCHAR* fileName, bool warn) {
+static bool LoadChecklist(const TCHAR* fileName, bool warn) {
 
   ZZIP_FILE *fp=openzip(fileName, "rb");
   if(!fp) {
@@ -344,7 +344,7 @@ static bool LoadUtfChecklist(const TCHAR* fileName, bool warn) {
   Name[0]= 0;
   TempString[0]=0;
 
-  charset cs = charset::utf8;
+  charset cs = charset::unknown;
   while(ReadString(fp,MAXNOTETITLE,TempString, cs)) {
     // skip comment lines
     if (TempString[0] == _T('#')) {
@@ -373,27 +373,27 @@ bool LoadChecklist(short checklistmode) {
 		LocalPath(filename, TEXT(LKD_CONF), _T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),MsgToken(878));  // notepad
 
-		if (LoadUtfChecklist(filename,false)) return true;
+		if (LoadChecklist(filename,false)) return true;
                 // if no user file, look for demo file
 		LocalPath(filename, TEXT(LKD_CONF), _T(LKF_CHECKLISTDEMO));
-		return LoadUtfChecklist(filename,true);
+		return LoadChecklist(filename,true);
 	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS), _T(LKF_LOGBOOKTXT));
 		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
-		 return LoadUtfChecklist(filename,true);
+		 return LoadChecklist(filename,true);
 	// logbook LST
 	case 2:
 		LocalPath(filename, TEXT(LKD_LOGS), _T(LKF_LOGBOOKLST));
 		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
-		return LoadUtfChecklist(filename,true);
+		return LoadChecklist(filename,true);
 		break;
 	case 3:
 		SystemPath(filename, TEXT(LKD_SYSTEM));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CREDITS));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("Info")));
-		return LoadUtfChecklist(filename,true);
+		return LoadChecklist(filename,true);
 		break;
   default:
     StartupStore(_T("... Invalid checklist mode (%d)%s"),checklistmode,NEWLINE);
