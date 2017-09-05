@@ -195,6 +195,5 @@ dependencies {
 
 crashlytics {
     enableNdk true
-    androidNdkOut 'build/intermediates/cmake/fat/beta/obj'
-    androidNdkLibsOut 'build/intermediates/cmake/fat/beta/obj'
+    manifestPath '../../android/AndroidManifest.xml'
 }
