@@ -781,9 +781,31 @@ add_library( LK8000 SHARED
     Common/Source/Sound/Android/Sound.cpp
 
     Common/Source/Resource/resource_data.S
-    Common/Source/Resource/resource_bmp.S
     Common/Source/Resource/resource_xml.S
 )
+
+# resource_xml.S dependencies
+file(
+    GLOB xml_files
+    Common/Data/Dialogs/*.xml
+)
+
+set_source_files_properties (
+    Common/Source/Resource/resource_xml.S
+     PROPERTIES OBJECT_DEPENDS "${xml_files}"
+)
+
+# resource_data.S dependencies
+file(
+    GLOB data_files
+    Common/Data/Bitmaps/egm96s.dem
+)
+
+set_source_files_properties (
+    Common/Source/Resource/resource_data.S
+     PROPERTIES OBJECT_DEPENDS "${data_files}"
+)
+
 
 target_include_directories( LK8000 PRIVATE
     Common/Header/linuxcompat

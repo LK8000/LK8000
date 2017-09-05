@@ -1593,7 +1593,7 @@ $(BIN)/%.o: $(SRC)/%.cpp
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
 	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
-$(BIN)/resource.a: $(BIN)/Resource/resource_data.o $(BIN)/Resource/resource_xml.o $(BITMAP_RES_O) 
+$(BIN)/resource.a: $(BIN)/Resource/resource_wave.o $(BIN)/Resource/resource_data.o $(BIN)/Resource/resource_xml.o $(BITMAP_RES_O) 
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
@@ -1611,6 +1611,12 @@ $(BIN)/Resource/resource_bmp.o:  $(BIN)/Resource/resource_bmp.png.S
 	@$(NQ)echo "  AS     $@"
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(AS) $(OUTPUT_OPTION) $<
+
+$(BIN)/Resource/resource_wave.o:  $(RSCSRC)/resource_wave.S
+	@$(NQ)echo "  AS     $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)$(AS) $(OUTPUT_OPTION) $<
+
 
 $(BIN)/Resource/resource_bmp.png.S : $(RSCSRC)/resource_bmp.S $(patsubst Common/Data/Bitmaps/%.bmp,$(BIN)/Data/Bitmaps/%.png,$(BITMAP_RES))
 	@$(NQ)echo "  update $@"
