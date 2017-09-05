@@ -14,24 +14,9 @@
 #include "utils/TextWrapArray.h"
 #include "resource.h"
 
-static WndForm *wf=NULL;
-static WndListFrame *wHelp=NULL;
-static WndOwnerDrawFrame *wHelpEntry = NULL;
-
 static int DrawListIndex=0;
 
 static TextWrapArray aTextLine;
-
-static void InitHelp(void) {
-  wf=(WndForm *)NULL;
-  wHelp=(WndListFrame *)NULL;
-  wHelpEntry = (WndOwnerDrawFrame *)NULL;
-  DrawListIndex=0;
-
-  aTextLine.clear();
-}
-
-
 
 static void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
@@ -76,46 +61,49 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   if (!Caption || !HelpText) {
     return;
   }
-  InitHelp();
 
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_HELP_L : IDR_XML_HELP_P);
+  std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_HELP_L : IDR_XML_HELP_P));
+  if(!wf) {
+    return;
+  }
+  WndListFrame* wHelp = static_cast<WndListFrame*>(wf->FindByName(TEXT("frmDetails")));
+  if(!wHelp) {
+    return;
+  }
+  wHelp->SetBorderKind(BORDERLEFT);
 
-  LKASSERT(wf);
-  if (!wf) goto _getout;
+  WndOwnerDrawFrame* wHelpEntry = static_cast<WndOwnerDrawFrame*>(wf->FindByName(TEXT("frmDetailsEntry")));
+  if (!wHelpEntry) {
+    return;
+  };
+  wHelpEntry->SetCanFocus(true);
+
+  DrawListIndex=0;
 
   TCHAR fullcaption[100];
   _stprintf(fullcaption,TEXT("%s: %s"), MsgToken(336), Caption); // Help
   wf->SetCaption(fullcaption);
 
-  wHelp = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
-  wHelpEntry = (WndOwnerDrawFrame *)NULL;
-  DrawListIndex=0;
-
-  LKASSERT(wHelp!=NULL);
-  if (!wHelp) goto _getout;
-
-  wHelp->SetBorderKind(BORDERLEFT);
-
-  wHelpEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
-  LKASSERT(wHelpEntry);
-  if (!wHelpEntry) goto _getout;
-  wHelpEntry->SetCanFocus(true);
+  aTextLine.clear();
 
   {
     LKWindowSurface Surface(*wHelpEntry);
-    Surface.SelectObject(wHelpEntry->GetFont());
+
+    const auto oldFont = Surface.SelectObject(wHelpEntry->GetFont());
+    const int minHeight = Surface.GetTextHeight(_T("dp")) + 2 * DLGSCALE(2);
+    const int wHeight = wHelpEntry->GetHeight();
+    if(minHeight != wHeight) {
+      wHelpEntry->SetHeight(minHeight);
+    }
+
     aTextLine.update(Surface, wHelpEntry->GetWidth(), LKgethelptext(HelpText));
+
+    Surface.SelectObject(oldFont);
   }
 
   wHelp->ResetList();
   wHelp->Redraw();
   wf->ShowModal();
-  delete wf;
 
   aTextLine.clear();
-
-
-_getout:
-  wf = NULL;
-
 }
