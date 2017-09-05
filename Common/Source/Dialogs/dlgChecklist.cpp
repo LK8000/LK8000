@@ -404,45 +404,54 @@ bool LoadChecklist(short checklistmode) {
 // checklistmode: 0=notepad 1=logbook 2=...
 void dlgChecklistShowModal(short checklistmode){
 
-  WndListFrame* wDetails = NULL;
-  WndOwnerDrawFrame* wDetailsEntry = NULL;
-
-  InitNotepad();
-  LoadChecklist(checklistmode); // check if loaded really something
-
-  WndForm* wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P);
-
-  aTextLine.clear();
-
-  if (!wf) goto deinit;
-
+  std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P));
+  if(!wf) {
+    StartupStore(_T("..... NOTEPAD ERROR Failed To Load Dialog!\n"));
+    return;
+  }
   wf->SetKeyDownNotify(FormKeyDown);
 
-  ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
+  WndButton* wndClose =  static_cast<WndButton*>(wf->FindByName(TEXT("cmdClose")));
+  if(!wndClose) {
+    StartupStore(_T("..... NOTEPAD ERROR NULL cmdClose!\n"));
+    return;
+  }
+  wndClose->SetOnClickNotify(OnCloseClicked);
 
-  wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
+
+  WndListFrame* wDetails = static_cast<WndListFrame*>(wf->FindByName(TEXT("frmDetails")));
   if (!wDetails) {
     StartupStore(_T("..... NOTEPAD ERROR NULL frmDetails!\n"));
-    goto deinit;
+    return;
   }
   wDetails->SetBorderKind(BORDERLEFT);
 
-  wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
+
+  WndOwnerDrawFrame* wDetailsEntry = static_cast<WndOwnerDrawFrame*>(wf->FindByName(TEXT("frmDetailsEntry")));
   if (!wDetailsEntry) {
     StartupStore(_T("..... NOTEPAD ERROR NULL frmDetailsEntry!\n"));
-    goto deinit;
+    return;
   }
   wDetailsEntry->SetCanFocus(true);
 
+  // calculate text line height
+  LKWindowSurface Surface(*wDetailsEntry);
+  const auto oldFont = Surface.SelectObject(wDetailsEntry->GetFont());
+  const int minHeight = Surface.GetTextHeight(_T("dp")) + 2 * DLGSCALE(2);
+  Surface.SelectObject(oldFont);
+  const int wHeight = wDetailsEntry->GetHeight();
+  if(minHeight != wHeight) {
+    wDetailsEntry->SetHeight(minHeight);
+  }
+
+  InitNotepad();
+  LoadChecklist(checklistmode); // check if loaded really something
+  aTextLine.clear();
+
   page = 0;
-  NextPage(wf, 0);
+  NextPage(wf.get(), 0);
 
   wf->ShowModal();
 
-
-deinit:
-
-  delete wf;
-  wf=NULL;
   DeinitNotepad();
 }
