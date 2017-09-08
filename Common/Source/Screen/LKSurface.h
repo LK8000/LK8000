@@ -178,7 +178,7 @@ public:
 
     void DrawDashLine(const int, const POINT&, const POINT&, const LKColor&, const RECT& rc);
 
-    int Segment(long x, long y, int radius, const RECT& rc, double start, double end, bool horizon = false);
+    void Segment(long x, long y, int radius, const RECT& rc, double start, double end);
 
     int DrawArc(long x, long y, int radius, const RECT& rc, double start, double end);
 

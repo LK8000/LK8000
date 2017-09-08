@@ -21,6 +21,7 @@
 #include "MathFunctions.h"
 #include "utils/2dpclip.h"
 #include "utils/array_adaptor.h"
+#include "utils/stl_utils.h"
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Texture.hpp"
@@ -804,68 +805,70 @@ void LKSurface::DrawCircle(long x, long y, int radius, bool fill) {
     }
 }
 
-int LKSurface::Segment(long x, long y, int radius, const RECT& rc, double start, double end, bool horizon) {
-    RasterPoint pt[66];
-    int i;
-    int istart;
-    int iend;
-
-    if ((x - radius) > rc.right) return false;
-    if ((x + radius) < rc.left) return false;
-    if ((y - radius) > rc.bottom) return false;
-    if ((y + radius) < rc.top) return false;
+void LKSurface::Segment(long x, long y, int radius, const RECT& rc, double start, double end) {
 
     // JMW added faster checking...
+    if ((x - radius) > rc.right) return;
+    if ((x + radius) < rc.left) return;
+    if ((y - radius) > rc.bottom) return;
+    if ((y + radius) < rc.top) return;
 
-    start = AngleLimit360(start);
-    end = AngleLimit360(end);
+    
+    bool EmptySector = end == start;
+    if(EmptySector) {
+      RasterPoint pt[2];
+      
+      start = AngleLimit360(start);
 
-    istart = iround(start / 360.0 * 64);
-    iend = iround(end / 360.0 * 64);
-
-    int npoly = 0;
-
-    if (istart > iend) {
-        iend += 64;
-    }
-    istart++;
-    iend--;
-
-    if (!horizon) {
-        pt[0].x = x;
-        pt[0].y = y;
-        npoly = 1;
-    }
-    pt[npoly].x = x + (long) (radius * fastsine(start));
-    pt[npoly].y = y - (long) (radius * fastcosine(start));
-    npoly++;
-
-    for (i = 0; i < 64; i++) {
-        if (i <= iend - istart) {
-            pt[npoly].x = x + (long) (radius * xcoords[(i + istart) % 64]);
-            pt[npoly].y = y - (long) (radius * ycoords[(i + istart) % 64]);
-            npoly++;
-        }
-    }
-    pt[npoly].x = x + (long) (radius * fastsine(end));
-    pt[npoly].y = y - (long) (radius * fastcosine(end));
-    npoly++;
-
-    if (!horizon) {
-        pt[npoly].x = x;
-        pt[npoly].y = y;
-        npoly++;
+      pt[0].x = x;
+      pt[0].y = y;
+      
+      pt[1].x = x + (long) (radius * fastsine(start));
+      pt[1].y = y - (long) (radius * fastcosine(start));
+      
+      Polyline(pt, array_size(pt), rc);
+      
     } else {
-        pt[npoly].x = pt[0].x;
-        pt[npoly].y = pt[0].y;
-        npoly++;
+      RasterPoint pt[66];
+
+      start = AngleLimit360(start);
+      end = AngleLimit360(end);
+
+      const int istart = std::ceil(start / 360.0 * 64);
+      const int iend = std::floor(((end > start) ? end : end + 360) / 360 * 64);
+
+      int npoly = 0;
+
+      // Center point
+      pt[npoly].x = x;
+      pt[npoly].y = y;
+      npoly++;
+
+      // first Segment point
+      pt[npoly].x = x + (long) (radius * fastsine(start));
+      pt[npoly].y = y - (long) (radius * fastcosine(start));
+      npoly++;
+
+      for (int i = 0; i < 64; i++) {
+          if (i <= iend - istart) {
+              pt[npoly].x = x + (long) (radius * xcoords[(i + istart) % 64]);
+              pt[npoly].y = y - (long) (radius * ycoords[(i + istart) % 64]);
+              npoly++;
+          }
+      }
+
+      // Last Segment Point
+      pt[npoly].x = x + (long) (radius * fastsine(end));
+      pt[npoly].y = y - (long) (radius * fastcosine(end));
+      npoly++;
+
+      // Close Polygon ( center point )
+      pt[npoly].x = x;
+      pt[npoly].y = y;
+      npoly++;
+
+      Polygon(pt, npoly, rc);
     }
-    if (npoly > 2) {
-        Polygon(pt, npoly, rc);
-    } else if (npoly > 1) {
-        Polyline(pt, npoly, rc);
-    }
-    return true;
 }
 
 /*
