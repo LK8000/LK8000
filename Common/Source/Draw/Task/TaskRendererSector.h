@@ -22,7 +22,7 @@ public:
     TaskRendererSector(const GeoPoint& center, double radius, double start, double end);
 
     bool IsPolygon() const override { 
-        return true; 
+        return (_GeoPoints.size() > 2); 
     }
 };
 

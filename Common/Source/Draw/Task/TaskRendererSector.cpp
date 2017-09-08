@@ -13,20 +13,24 @@
 
 TaskRendererSector::TaskRendererSector(const GeoPoint& center, double radius, double start, double end) {
 
-    const int start_bearing = std::ceil(start);
-    const int end_bearing = std::floor((end > start) ? end : end + 360);
-    LKASSERT(end_bearing > start_bearing);
+    
+    if(start != end) { // Empty Sector ?
+        const int start_bearing = std::ceil(start);
+        const int end_bearing = std::floor((end > start) ? end : end + 360);
 
-    _GeoPoints.reserve(3 + (end_bearing - start_bearing));
+        _GeoPoints.reserve(3 + (end_bearing - start_bearing));
+
+        for (int i = start_bearing; i <= end_bearing; ++i) {
+            _GeoPoints.push_back(center.Direct(static_cast<double> (i), radius));
+        }
+
+        _GeoPoints.push_back(center.Direct(end, radius));
+    } else {
+      _GeoPoints.reserve(2);
+    }
 
     _GeoPoints.push_back(center);
     _GeoPoints.push_back(center.Direct(start, radius));
-
-    for (int i = start_bearing; i <= end_bearing; ++i) {
-        _GeoPoints.push_back(center.Direct(static_cast<double> (i), radius));
-    }
-
-    _GeoPoints.push_back(center.Direct(end, radius));
 
 
     _bounds.minx = _bounds.maxx = center.longitude;
