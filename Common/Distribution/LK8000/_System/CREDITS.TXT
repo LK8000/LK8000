@@ -1,4 +1,4 @@
-#B3;
+#B4;
 [Welcome to LK8000]
 Hello! You have just installed or updated LK8000, and starting from this version we can provide more informations about changes and improvements.
 Join our free support forum at http://www.postfrontal.com/forum
@@ -12,6 +12,17 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 
 [Latest software changes]
+
+Version 6.1m
+
+. Optimized screen layout on portrait. 
+. Fix task sector renderer for sector angle = 0° or 360°
+. New "Info Box" distance to turnpoint radius available
+. Check List : allow to use "Latin 1" encoded file.
+. Fix Battery indicator ( android only )
+. Fix PG task optimizer when earth model is FAI sphere  ( Android and kobo only)
+. Fix LiveTrack24 : speed in m/s instead of km/h
+. Few other minor fix
 
 Version 6.1l
 
