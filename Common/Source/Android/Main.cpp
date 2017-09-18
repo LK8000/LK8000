@@ -107,8 +107,13 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
   event_queue = new EventQueue();
 
-  if (have_ioio)
-    ioio_helper = new IOIOHelper(env);
+  if (have_ioio) {
+    try {
+      ioio_helper = new IOIOHelper(env);
+    } catch (Java::Exception e) {
+      StartupStore("IOIO unavailable : \"%s\"\n", e.what());
+    }
+  }
 
   SoundUtil::Initialise(env);
 

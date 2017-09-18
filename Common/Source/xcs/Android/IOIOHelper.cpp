@@ -70,6 +70,7 @@ IOIOHelper::openUart(JNIEnv *env, unsigned ID, unsigned baud)
 IOIOHelper::IOIOHelper(JNIEnv *env)
 {
   jobject obj = env->NewObject(cls, ctor);
+  Java::RethrowException(env);
   assert(obj != nullptr);
 
   Set(env, obj);
