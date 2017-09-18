@@ -70,5 +70,7 @@ NativeInputListener::Create(JNIEnv *env, DataHandler &handler)
 {
   assert(cls != nullptr);
 
-  return env->NewObject(cls, ctor, (jlong)&handler);
+  jobject obj = env->NewObject(cls, ctor, (jlong)&handler);
+  Java::RethrowException(env);
+  return obj;
 }
