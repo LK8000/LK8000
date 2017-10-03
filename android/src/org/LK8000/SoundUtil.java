@@ -23,54 +23,101 @@ Copyright_License {
 
 package org.LK8000;
 
+import android.annotation.TargetApi;
 import android.content.res.AssetFileDescriptor;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.content.Context;
+import android.media.SoundPool;
+import android.media.SoundPool.OnLoadCompleteListener;
+import android.os.Build;
+import android.support.annotation.Nullable;
 import android.util.Log;
+
+import java.util.HashMap;
 
 public class SoundUtil {
 
-    private static final String TAG = "LK8000";
+    private static final String TAG = "SoundUtil";
 
-    private static  class playSoundThread implements Runnable {
-        Context _context;
-        String _name;
-        public playSoundThread(Context context, String name) {
-            _context = context;
-            _name = name;
-        }
+    private static SoundUtil instance;
 
-        public void run() {
-            try {
-                MediaPlayer m = new MediaPlayer();
-                AssetFileDescriptor descriptor = _context.getAssets().openFd("sounds/" + _name );
-                m.setDataSource(descriptor.getFileDescriptor(),descriptor.getStartOffset(), descriptor.getLength());
-                descriptor.close();
+    private SoundPool soundPool;
+    private HashMap<String, Integer> loadedSound = new HashMap<>();
 
-                m.prepare();
-                m.setLooping(false);
-                m.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                m.start();
+    public static void Initialise() {
+        instance = new SoundUtil();
+    }
 
-                while (m.isPlaying()) {
-                    Thread.sleep(10);
-                }
-                Thread.sleep(10);
-                m.release();
-                m = null;
-
-            } catch (Exception e) {
-                Log.e(TAG, e.toString());
-                return ;
-            }
+    public static void Deinitialise() {
+        if (instance != null) {
+            instance = null;
         }
     }
 
+    public static boolean play(Context context, String name) {
+        if (instance != null) {
+            return instance._play(context, name);
+        }
+        return false;
+    }
 
-  public static boolean play(Context context, String name) {
-    Runnable r = new playSoundThread(context,name);
-    new Thread(r).start();
-    return true;
-  }
+    @Nullable @TargetApi(21)
+    private static SoundPool createSoundPool() {
+        AudioAttributes attributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        return new SoundPool.Builder()
+                .setAudioAttributes(attributes)
+                .setMaxStreams(5) // only five simultaneous sound ...
+                .build();
+    }
+
+    @Nullable @SuppressWarnings("deprecation")
+    private static SoundPool createSoundPoolCompat() {
+        return new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+    }
+
+
+    SoundUtil() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                soundPool = createSoundPool();
+            } else {
+                soundPool = createSoundPoolCompat();
+            }
+
+            soundPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
+                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                    soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+            soundPool = null;
+        }
+    }
+
+    private boolean _play(Context context, String name) {
+        if (soundPool == null) {
+            return false;
+        }
+        Integer soundId = loadedSound.get(name);
+        if (soundId == null) {
+            try {
+                AssetFileDescriptor descriptor = context.getAssets().openFd("sounds/" + name);
+                soundId = soundPool.load(descriptor, 0);
+                loadedSound.put(name, soundId);
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
+                return false;
+            }
+        } else {
+            soundPool.play(soundId.intValue(), 1.0f, 1.0f, 0, 0, 1.0f);
+        }
+        return true;
+    }
+
 }
