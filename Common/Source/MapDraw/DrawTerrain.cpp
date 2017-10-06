@@ -19,6 +19,7 @@
 
 #include "./ColorRamps.h"
 #include "Kobo/Model.hpp"
+#include "Util/Clamp.hpp"
 
 //
 // Choose the scale threshold for disabling shading. This happens at low zoom levels.
@@ -31,8 +32,6 @@
 #else
 #define NOSHADING_REALSCALE  14.3 // After 20Km  zoom 14.3
 #endif
-
-unsigned short minalt = TERRAIN_INVALID;
 
 static short autobr=128;
 
@@ -47,8 +46,9 @@ extern void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float lightness);
 
 
 static const COLORRAMP* lastColorRamp = NULL;
+static unsigned last_height_scale = 0;
 
-static void ColorRampLookup(const short h,
+static void ColorRampLookup(const int16_t h,
         uint8_t &r, uint8_t &g, uint8_t &b,
         const COLORRAMP* ramp_colors, const int numramp,
         const unsigned char interp_levels)
@@ -58,9 +58,9 @@ static void ColorRampLookup(const short h,
 
     for (unsigned int i = numramp - 1; i--;) {
         if (h >= ramp_colors[i].h) {
-            const unsigned short f = (h - ramp_colors[i].h) * is / (ramp_colors[i + 1].h - ramp_colors[i].h);
+            const int16_t f = (h - ramp_colors[i].h) * is / (ramp_colors[i + 1].h - ramp_colors[i].h);
 
-            const unsigned short of = is - f;
+            const int16_t of = is - f;
 
             r = (f * ramp_colors[i + 1].r + of * ramp_colors[i].r) >> interp_levels;
             g = (f * ramp_colors[i + 1].g + of * ramp_colors[i].g) >> interp_levels;
@@ -172,9 +172,9 @@ public:
 
         TESTBENCH_DO_ONLY(5,StartupStore(_T("... Terrain quant=%d ixs=%d iys=%d  TOTAL=%d\n"),dtquant,ixs,iys,ixs*iys));
 
-        hBuf = (unsigned short*) malloc(sizeof (unsigned short)*ixs * iys);
+        hBuf = (int16_t*) malloc(sizeof(int16_t)*ixs * iys);
         if (!hBuf) {
-            StartupStore(_T("------ TerrainRenderer: malloc(%u) failed!%s"), (unsigned)(sizeof(unsigned short)*ixs*iys), NEWLINE);
+            StartupStore(_T("------ TerrainRenderer: malloc(%u) failed!%s"), (unsigned)(sizeof(int16_t)*ixs*iys), NEWLINE);
             OutOfMemory(_T(__FILE__), __LINE__);
             //
             // We *must* disable terrain at this point.
@@ -184,7 +184,7 @@ public:
         }
 #if TESTBENCH
         else {
-            StartupStore(_T(". TerrainRenderer: malloc(%u) ok"), (unsigned)(sizeof(unsigned short)*ixs*iys));
+            StartupStore(_T(". TerrainRenderer: malloc(%u) ok"), (unsigned)(sizeof(int16_t)*ixs*iys));
         }
 #endif
 
@@ -196,6 +196,7 @@ public:
         }
         // Reset this, so ColorTable will reload colors
         lastColorRamp = NULL;
+        last_height_scale = 0;
 
         // this is validating terrain construction
         _ready = true;
@@ -250,12 +251,15 @@ private:
     static constexpr int oversampling = 1; //no oversampling if no "Blur"
 #endif
 
-    unsigned short *hBuf;
+    int16_t *hBuf;
     BGRColor *colorBuf;
     bool do_shading;
     static constexpr int interp_levels = 8;
     const COLORRAMP* color_ramp;
-    static constexpr unsigned int height_scale = 4;
+
+    unsigned height_scale; // scale factor  ((height - height_min + 1) << height_scale) must be in [0 - 255] range
+    int16_t height_min; // lower height visible terrain
+    int16_t height_max; // highter height visible terrain
 
 public:
 
@@ -375,8 +379,14 @@ public:
         const double ac2 = sint*InvDrawScale;
         const double ac3 = cost*InvDrawScale;
 
+        height_scale = 0;
+
+        // we need local variable for compatibility with all implementation of opemmp reduction
+        int16_t _height_min = std::numeric_limits<int16_t>::max();
+        int16_t _height_max = std::numeric_limits<int16_t>::min();
+
 #if defined(_OPENMP)
-				#pragma omp parallel for
+        #pragma omp parallel for reduction(max : _height_max) reduction(min : _height_min)
 #endif
         for (unsigned int iy=0; iy < iys; iy++) {
             const int y = Y0 + (iy*dtquant);
@@ -388,33 +398,49 @@ public:
                 const double Y = ac1 - x*ac2;
                 const double X = PanLongitude + (invfastcosine(Y) * ((x * ac3) - cc1));
 
-                unsigned short& hDst = hBuf[iy*ixs+ix];
-                // this is setting to 0 any negative terrain value and can be a problem for dutch people
-                // myhbuf cannot load negative values!
-                hDst = std::max<short>(GetHeight(Y, X),0);
+                int16_t& hDst = hBuf[iy*ixs+ix];
+
+                /*
+                 * Terrain height can be negative.
+                 * do not clip height to 0 here, otherwise all height below 0 
+                 * will be painted like sea if topology does not contains coast_area
+                 *
+                 * all height will be sifted by #height_min in #TerrainRenderer::Slope method for ColorRamp lookup.
+                 */
+                hDst = GetHeight(Y, X);
+
+                if(hDst != TERRAIN_INVALID) {
+                  _height_min = std::min(_height_min, hDst);
+                  _height_max = std::max(_height_max, hDst);
+                }
             }
         }
+        height_min = _height_min;
+        height_max = _height_max;
 
         if (!terrain_minalt[TerrainRamp]) {
-            minalt = 0; //@ 101110
-        } else {
-            minalt = *std::min_element(hBuf, hBuf+(ixs*iys));
+          // if ColorRamp is not relative to min height of visible terrain, we only use negative height_min.
+          height_min = std::min<int16_t>(0, height_min);
         }
 
-
-        if (TerrainRamp == 13) {
+        if (TerrainRamp == 13) { // GA Relative
             if (!GPS_INFO.NAVWarning) {
                 if (CALCULATED_INFO.Flying) {
-                    minalt = (unsigned short) GPS_INFO.Altitude - 150; // 500ft
+                    height_min = (int16_t) GPS_INFO.Altitude - 150; // 500ft
                 } else {
-                    minalt = (unsigned short) GPS_INFO.Altitude + 100; // 330ft
+                    height_min = (int16_t) GPS_INFO.Altitude + 100; // 330ft
                 }
             } else {
-                minalt += 150;
+                height_min += 150;
             }
         }
 
-        // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt)));
+        const int16_t height_span = height_max - height_min + 1;
+        while((height_span >> height_scale) >= 255) {
+          ++height_scale;
+        }
+
+//        StartupStore(_T("... MinAlt=%d MaxAlt=%d height_scale=%d\n"),height_min, height_max, height_scale);
 
     }
 
@@ -436,7 +462,7 @@ public:
         const unsigned int ixsepx = cixs*epx;
         const unsigned int ixsright = cixs - 1 - iepx;
         const unsigned int iysbottom = ciys - iepx;
-        const int hscale = max(1, (int) (pixelsize_d));
+        const int hscale = std::max<int>(1, pixelsize_d);
 
         int tc=1;
      if (AutoContrast) {
@@ -472,7 +498,7 @@ public:
         const BGRColor* oColorBuf = colorBuf + 64 * 256;
         if (!sbuf->GetBuffer()) return;
 
-#if defined(_OPENMP)				
+#if defined(_OPENMP)
         #pragma omp parallel for
 #endif
         for (unsigned int y = 0; y < ciys; ++y) {
@@ -499,15 +525,15 @@ public:
             p31s = p31*hscale;
 
             BGRColor* RowBuf = sbuf->GetRow(y);
-            unsigned short *RowthBuf = &hBuf[y*cixs];
+            int16_t *RowthBuf = &hBuf[y*cixs];
 
             for (unsigned int x = 0; x < cixs; ++x) {
 
                 BGRColor* imageBuf = &RowBuf[x];
-                unsigned short *thBuf = &RowthBuf[x];
+                int16_t *thBuf = &RowthBuf[x];
 
-                unsigned short h = *thBuf;
-                // FIX here Netherland dutch terrain problem
+                int16_t h = *thBuf;
+
                 // if >=0 then the sea disappears...
                 if (h != TERRAIN_INVALID) {
                     // if (h==0 && LKWaterThreshold==0) { // no LKM coasts, and water altitude
@@ -515,13 +541,18 @@ public:
                         *imageBuf = BGRColor(85, 160, 255); // set water color #55 A0 FF
                         continue;
                     }
-                    h = h - minalt + 1;
+
+                    // this fix rendering of negative elevation terrain ( 45 country are concerned ... )
+                    h = h - height_min + 1;
+                    assert(TerrainRamp == 13 || h >= 0); // height_min is wrong... 
+
+                    h = h >> height_scale;
+                    assert(TerrainRamp == 13 || h < 256); // height_scale is wrong ...
+
+                    h = Clamp<int16_t>(h, 0, 254); // avoid buffer overflow....
 
                     int p20, p22;
-
-                    h = min(255, h >> height_scale);
                     // no need to calculate slope if undefined height or sea level
-
                     if (do_shading) {
                         if (x < ixsright) {
                             p20 = iepx;
@@ -561,7 +592,7 @@ public:
 
                             // p20 and p31 are never 0... so only p22 or p32 can be zero
                             // if both are zero, the vector is 0,0,1 so there is no need
-                            // to normalise the vector
+                            // to normalize the vector
                             int dd0 = p22*p31;
                             int dd1 = p20*p32;
                             int dd2 = p20*p31s;
@@ -575,7 +606,7 @@ public:
                             int mag = isqrt4(dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
                             if (mag > 0) {
                                 mag = (dd2 * sz + dd0 * sx + dd1 * sy) / mag;
-                                mag = max(-64, min(63, (mag - sz) * tc_in_use / 128));
+                                mag = Clamp((mag - sz) * tc_in_use / 128, -64, 63);
                                 *imageBuf = oColorBuf[h + mag * 256];
                             } else {
                                 *imageBuf = oColorBuf[h];
@@ -596,11 +627,12 @@ public:
 
     void ColorTable() {
         color_ramp = &terrain_colors[TerrainRamp][0];
-        if (color_ramp == lastColorRamp) {
+        if (color_ramp == lastColorRamp && height_scale == last_height_scale) {
             // no need to update the color table
             return;
         }
         lastColorRamp = color_ramp;
+        last_height_scale = height_scale;
 
         for (int i = 0; i < 256; i++) {
             for (int mag = -64; mag < 64; mag++) {
@@ -757,11 +789,14 @@ _redo:
         thighlight_b = terrain_highlight[TerrainRamp].b;
         thighlight_h = terrain_highlight[TerrainRamp].h;
 
-        trenderer->SetShading();
-        trenderer->ColorTable();
-        // step 1: fill height buffer
+        // step 0: fill height buffer
         trenderer->Height({rc.left, rc.top}, _Proj);
 
+        // step 1: update color table
+        //   need to be done after fill height buffer because depends of min 
+        //   and max height of terrain
+        trenderer->SetShading();
+        trenderer->ColorTable();
 
         // step 2: calculate sunlight vector
 
