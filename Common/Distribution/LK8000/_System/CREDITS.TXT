@@ -13,6 +13,9 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 [Latest software changes]
 
+Version 6.1o
+Very important performance fix!
+
 Version 6.1n
 . Fix crash on task edit
 
