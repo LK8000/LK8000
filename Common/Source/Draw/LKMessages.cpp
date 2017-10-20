@@ -17,12 +17,9 @@
 
 
 void MSG_NotEnoughMemory(void) {
-
-  MessageBoxX(
+  DoStatusMessage(
     MsgToken(1663),  // NOT ENOUGH MEMORY
-    MsgToken(1662),  // SYSTEM ERROR
-    mbOk);
-
+    MsgToken(1662));  // SYSTEM ERROR
 }
 
 #if USELKASSERT
