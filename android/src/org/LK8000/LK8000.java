@@ -49,6 +49,9 @@ import android.provider.Settings;
 import android.view.View;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.ndk.CrashlyticsNdk;
+
+import java.lang.reflect.Method;
+
 import io.fabric.sdk.android.Fabric;
 
 public class LK8000 extends Activity {
@@ -261,7 +264,19 @@ public class LK8000 extends Activity {
   @Override protected void onResume() {
     super.onResume();
 
-    startService(new Intent(this, serviceClass));
+    Intent intent = new Intent(this, serviceClass);
+
+    try {
+      // startForegroundService was introduced in Android Oreo (API 26).
+      // Use reflection to maintain compatibility with API < 14.
+      Method method = Context.class.getMethod("startForegroundService", Intent.class);
+      method.invoke(this, intent);
+
+    } catch (Throwable x) {
+      // fallback to start #startService on Android API < 26
+      startService(intent);
+	}
+
 
     if (nativeView != null)
       nativeView.onResume();

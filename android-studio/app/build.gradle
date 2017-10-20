@@ -16,8 +16,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "26.0.0"
+    compileSdkVersion 25 // can't be greater than 25, otherwise minSdkVersion must be >=14
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "org.lk8000"
         minSdkVersion 9
