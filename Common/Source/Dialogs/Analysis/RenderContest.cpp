@@ -264,7 +264,7 @@ static FAI_Sector ContestFAISector[10];
 
 
 
-  if(result.Type() ==  CContestMgr::TYPE_FAI_TRIANGLE)
+  if(result.Type() ==  CContestMgr::TYPE_FAI_TRIANGLE && !points.empty())
   {
     for(ui=0; ui<points.size()-1; ui++)
     {
