@@ -30,7 +30,6 @@ if((contestType == CContestMgr::TYPE_FAI_TRIANGLE)
 }
 else
 {
-  unsigned int ui;
   double fXY_Scale = 1.0;
 
 
@@ -52,7 +51,7 @@ else
 
   CPointGPSArray trace;
   CContestMgr::Instance().Trace(trace);
-  for(ui=0; ui<trace.size(); ui++)
+  for(unsigned ui=0; ui<trace.size(); ui++)
   {
     lat1 = trace[ui].Latitude();
     lon1 = trace[ui].Longitude();
@@ -74,7 +73,7 @@ else
   y1 = (lat1-lat_c);
   ScaleXFromValue(rc, x1*fXY_Scale);
   ScaleYFromValue(rc, y1*fXY_Scale);
-  for(ui=0; ui<trace.size(); ui++)
+  for(unsigned ui=0; ui<trace.size(); ui++)
   {
     lat1 = trace[ui].Latitude();
     lon1 = trace[ui].Longitude();
@@ -89,17 +88,18 @@ else
 
 
   // draw track
-  for(ui=0; trace.size() && ui<trace.size()-1; ui++)
-  {
-    lat1 = trace[ui].Latitude();
-    lon1 = trace[ui].Longitude();
-    lat2 = trace[ui+1].Latitude();
-    lon2 = trace[ui+1].Longitude();
-    x1 = (lon1-lon_c)*fastcosine(lat1);
-    y1 = (lat1-lat_c);
-    x2 = (lon2-lon_c)*fastcosine(lat2);
-    y2 = (lat2-lat_c);
-    DrawLine(Surface, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
+  if(!trace.empty()) {
+    for(unsigned ui=0; trace.size() && ui<trace.size()-1; ui++) {
+      lat1 = trace[ui].Latitude();
+      lon1 = trace[ui].Longitude();
+      lat2 = trace[ui+1].Latitude();
+      lon2 = trace[ui+1].Longitude();
+      x1 = (lon1-lon_c)*fastcosine(lat1);
+      y1 = (lat1-lat_c);
+      x2 = (lon2-lon_c)*fastcosine(lat2);
+      y2 = (lat2-lat_c);
+      DrawLine(Surface, rc,  x1, y1, x2, y2, STYLE_MEDIUMBLACK);
+    }
   }
   // Draw aircraft on top
 double  lat_p = GPS_INFO.Latitude;
@@ -108,9 +108,9 @@ double  xp = (lon_p-lon_c)*fastcosine(lat_p);
 double  yp = (lat_p-lat_c);
 
 
-  if(result.Type() == contestType)
+  if(result.Type() == contestType && !points.empty())
   {
-    for(ui=0; ui<points.size()-1; ui++)
+    for(unsigned ui=0; ui<points.size()-1; ui++)
     {
       lat1 = points[ui].Latitude();
       lon1 = points[ui].Longitude();
