@@ -839,7 +839,7 @@ int numlegs=0;
 #ifdef  FIVEPOINT_OPTIMIZER
 	 || (sType ==  CContestMgr::TYPE_FAI_TRIANGLE5)
 #endif
-	 ) && (iSize>0))
+	 ) && (iSize>2))
   {
     LKASSERT(iSize<100);
     LockTaskData(); // protect from external task changes

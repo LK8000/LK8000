@@ -662,7 +662,7 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
     static short old_TerrainBrightness(TerrainBrightness);
     static short old_TerrainRamp(TerrainRamp);
     static short old_Shading(Shading);
-    static float old_TerrainWhiteness=0;
+    static double old_TerrainWhiteness=0;
     static ScreenProjection old_ScreenProjection(_Proj);
 
     if( old_ScreenProjection != _Proj

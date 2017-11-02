@@ -22,17 +22,13 @@
 
 package org.LK8000;
 
-import android.app.Service;
 import android.app.Notification;
-import android.app.NotificationManager;
+import android.app.Service;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Binder;
-import android.util.Log;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.NotificationCompat;
 
 /**
@@ -58,18 +54,15 @@ public class MyService extends Service {
    */
   protected static Class<?> mainActivityClass;
 
-  private NotificationManagerCompat notificationManager;
-
   @Override public void onCreate() {
     if (mainActivityClass == null)
       mainActivityClass = LK8000.class;
 
     super.onCreate();
-
-    notificationManager = NotificationManagerCompat.from(this);
   }
 
-  private void onStart() {
+  @Override public int onStartCommand(Intent intent, int flags, int startId) {
+
     /* add an icon to the notification area while LK8000 runs, to
        remind the user that we're sucking his battery empty */
     NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
@@ -85,19 +78,7 @@ public class MyService extends Service {
     notification.setWhen(System.currentTimeMillis());
     notification.setOngoing(true);
 
-    notificationManager.notify(1, notification.build());
-  }
-
-  @Override public void onStart(Intent intent, int startId) {
-    /* used by API level 4 (Android 1.6) */
-
-    onStart();
-  }
-
-  @Override public int onStartCommand(Intent intent, int flags, int startId) {
-    /* used by API level 5 (Android 2.0 and newer) */
-
-    onStart();
+    startForeground(1, notification.build());
 
     /* We want this service to continue running until it is explicitly
        stopped, so return sticky */
@@ -105,9 +86,10 @@ public class MyService extends Service {
   }
 
   @Override public void onDestroy() {
-    super.onDestroy();
 
-    notificationManager.cancel(1);
+    stopForeground(true);
+
+    super.onDestroy();
   }
 
   @Override public IBinder onBind(Intent intent) {
