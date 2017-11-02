@@ -1893,5 +1893,31 @@ tracking as long as LK8000 runs and has a valid GPS signal.
 We recomend in flight only because it transfers the takeoff and landing information for a correct log. (default)
 while permanent can be used to test your tracking settings on ground. (Note: Tracking need a falid GPS fix)
 
+@1299
+[Messaging Phone Numbers]
+Entered phone numbers will recieve SMS notification when you takeoff or land, depending on predefined settings.
+Numbers should be period delimited, for example: 050123456789.050123456780.050123456781
+Most cell providers limit their users from sending multiple text messages in a short time, so you should test this out before flight, and it's best to have a short list of numbers.
+
+@1300
+[Takeoff/Landing Text messages]
+Text messages will be sent out to your phone numbers list, according to these conditions:
+*Takeoff message:ON - The Takeoff message will be sent out to your phone number list, as soon as LK8000 registers a takeoff.
+
+*Emergency landing message:ON - As soon as LK8000 registers a landing, it will ask "Safe Landing?"
+Answering NO will ask another question "SEND EMERGENCY MESSAGE TO CONTACTS?" 
+Answering YES will send the Emergency message to your contacts.
+The Emergency Dialog timeout will time out the first question with NO after half the predefined time (IE, if set to 10 minutes, it will automatically answer with NO after 5 minutes.)
+The Emergency Dialog timeout will time out the second question with YES when the timeout time is up, and thus send out the emergency message.
+
+*Safe landing message:ON - If emergency landing message is set to OFF, the safe landing message will be sent automatically as soon as LK8000 registers a landing. (Simply to notify that you landed)
+However when both Safe landing message AND emergency landing message are set to ON, either safe or emergency landing message will be sent out, according to how the message boxes are answered.
+
+Notes:
+A single text message is limited to 160 ASCII characters, or 70 Unicode characters. if your message is longer than that, it will get devided to multiple messages.
+(max message buffer is 918 characters, but idealy stay under the 160 limit.)
+Currently LK8000 only tries to send out each text message once, and it does not indicate if the message was successfuly sent!
+
 @9999
 No help available on this item!
+

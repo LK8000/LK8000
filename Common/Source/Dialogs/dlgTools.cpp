@@ -17,10 +17,16 @@
 #include "utils/stl_utils.h"
 #include "LKInterface.h"
 #include "Event/Event.h"
+#include "Sound/Sound.h"
 
 #ifdef KOBO
     #include <linux/input.h>
 #endif
+
+int messageboxTimerCounter;
+MsgReturn_t OntimerButtonReturn;
+//WndForm *temp_wf;
+//MsgReturn_t *temp_res;
 
 static void OnButtonClick(WndButton* pWnd){
   if(pWnd) {
@@ -55,9 +61,180 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode){
     return false;
 }
 
-MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen){
+
+static bool OnTimer(WndForm* pWnd) {
+  // Auto close dialog after some time
+    if (!(--messageboxTimerCounter)) {
+      if (pWnd) {
+      pWnd->SetModalResult(OntimerButtonReturn);
+    }
+    return true;
+  }
+  if (messageboxTimerCounter % 20 == 0)
+    LKSound(_T("LK_3HITONES.WAV"));        // while messagebox timer hasn't expired, play warning sound every 20s. todo: should be configurable?
+  return true;
+}
+
+
+/*
+void tempFunction(int temptimer) {
+    messageboxTimerCounter = temptimer;
+    drawMessageBox("SEND EMERGENCY MESSAGE TO CONTACTS?", "unsafe landing", mbYesNo, true);
+
+    temp_wf->SetKeyDownNotify(FormKeyDown);
+    if (temptimer > 0){
+        temp_wf->SetTimerNotify(1000, OnTimer);
+
+        //temp_wf = wf;
+        //temp_wButton = wButtons[0];
+    }
+    *temp_res = static_cast<MsgReturn_t>(temp_wf->ShowModal());
+    //delete temp_wf;
+    //return(temp_res);
+}
+*/
+
+// note: defaultButton is only used in case timeout > 0
+MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen, int timeout,MsgReturn_t defaultButton){
+
 
   WndForm *wf=NULL;
+  WndFrame *wText=NULL;
+  int X, Y, Width, Height;
+  WndButton *wButtons[10];
+  int ButtonCount = 0;
+  int i,x,y,d,w,h,dY;
+  MsgReturn_t res;
+  RECT rc = MainWindow.GetClientRect();
+
+  if (wfullscreen) {
+    Width = rc.right;
+    Height = rc.bottom;
+  } else
+  if (ScreenLandscape) {
+    Width = DLGSCALE(280);
+    Height = DLGSCALE(160);
+  } else {
+    Width = DLGSCALE(230);
+    Height = DLGSCALE(160);
+  }
+
+  X = ((rc.right-rc.left) - Width)/2;
+  Y = ((rc.bottom-rc.top) - Height)/2;
+
+  if (wfullscreen) {
+    dY=0;
+    y = DLGSCALE(ScreenLandscape?160:200);
+  } else {
+    dY = DLGSCALE(-40);
+    y = DLGSCALE(100);
+  }
+  w = DLGSCALE(60);
+  h = DLGSCALE(32);
+
+  Height += dY;
+
+  wf = new WndForm(TEXT("frmXcSoarMessageDlg"),
+                   lpCaption, X, Y, Width, Height);
+  wf->SetFont(MapWindowBoldFont);
+  wf->SetTitleFont(MapWindowBoldFont);
+  wf->SetBackColor(RGB_WINBACKGROUND);
+  wf->SetBorderKind(BORDERTOP|BORDERRIGHT|BORDERBOTTOM|BORDERLEFT);
+
+  wText = new WndFrame(wf,
+                       TEXT("frmMessageDlgText"),
+                       0,
+                       DLGSCALE(5),
+                       Width,
+                       Height - DLGSCALE(5));
+
+  wText->SetCaption(lpText);
+  wText->SetFont(MapWindowBoldFont);
+  wText->SetCaptionStyle(
+          DT_EXPANDTABS
+          | DT_CENTER
+          | DT_NOCLIP
+          | DT_WORDBREAK
+  );
+
+  y += dY;
+
+  if (uType == mbOk
+      || uType == mbOkCancel)
+  {
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), TEXT("OK"), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount]->SetTag(IdOk);
+    ButtonCount++;
+  }
+
+  if (uType == mbYesNo
+      || uType == mbYesNoCancel)
+  {
+    // LKTOKEN  _@M827_ = "Yes"
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), MsgToken(827), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount]->SetTag(IdYes);
+    ButtonCount++;
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(890), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount]->SetTag(IdNo);
+    ButtonCount++;
+  }
+
+  if (uType == mbAbortRetryIgnore
+      || uType == mbRetryCancel)
+  {
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), MsgToken(566), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount]->SetTag(IdRetry);
+    ButtonCount++;
+  }
+
+  if (uType == mbOkCancel
+      || uType == mbRetryCancel
+      || uType == mbYesNoCancel)
+  {
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(161), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount]->SetTag(IdCancel);
+    ButtonCount++;
+  }
+
+  if (uType == mbAbortRetryIgnore)
+  {
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(47), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount]->SetTag(IdAbort);
+    ButtonCount++;
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), MsgToken(349), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount]->SetTag(IdIgnore);
+    ButtonCount++;
+  }
+
+  LKASSERT(ButtonCount!=0);
+  d = Width / (ButtonCount);
+  x = d/2-w/2;
+
+  for (i=0; i<ButtonCount; i++){
+    wButtons[i]->SetLeft(x);
+    x += d;
+  }
+
+
+  wf->SetKeyDownNotify(FormKeyDown);
+
+  if (timeout > 0){
+    wf->SetTimerNotify(1000, OnTimer);
+    messageboxTimerCounter = timeout;       // Auto closing dialog in x secs
+    OntimerButtonReturn = defaultButton;
+  }
+
+
+  res = static_cast<MsgReturn_t>(wf->ShowModal());
+  delete wf;
+  return(res);
+}
+
+// ORG:
+/*
+MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen){
+
+      WndForm *wf=NULL;
   WndFrame *wText=NULL;
   int X, Y, Width, Height;
   WndButton *wButtons[10];
@@ -183,8 +360,135 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   return(res);
 
 }
+*/
+/*
+void drawMessageBox(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen){
 
+    WndForm *wf=NULL;
+    WndFrame *wText=NULL;
+    int X, Y, Width, Height;
+    WndButton *wButtons[10];
+    int ButtonCount = 0;
+    int i,x,y,d,w,h,dY;
+    //MsgReturn_t res;
+    RECT rc = MainWindow.GetClientRect();
 
+    if (wfullscreen) {
+        Width = rc.right;
+        Height = rc.bottom;
+    } else
+    if (ScreenLandscape) {
+        Width = DLGSCALE(280);
+        Height = DLGSCALE(160);
+    } else {
+        Width = DLGSCALE(230);
+        Height = DLGSCALE(160);
+    }
+
+    X = ((rc.right-rc.left) - Width)/2;
+    Y = ((rc.bottom-rc.top) - Height)/2;
+
+    if (wfullscreen) {
+        dY=0;
+        y = DLGSCALE(ScreenLandscape?160:200);
+    } else {
+        dY = DLGSCALE(-40);
+        y = DLGSCALE(100);
+    }
+    w = DLGSCALE(60);
+    h = DLGSCALE(32);
+
+    Height += dY;
+
+    wf = new WndForm(TEXT("frmXcSoarMessageDlg"),
+                     lpCaption, X, Y, Width, Height);
+    wf->SetFont(MapWindowBoldFont);
+    wf->SetTitleFont(MapWindowBoldFont);
+    wf->SetBackColor(RGB_WINBACKGROUND);
+    wf->SetBorderKind(BORDERTOP|BORDERRIGHT|BORDERBOTTOM|BORDERLEFT);
+
+    wText = new WndFrame(wf,
+                         TEXT("frmMessageDlgText"),
+                         0,
+                         DLGSCALE(5),
+                         Width,
+                         Height - DLGSCALE(5));
+
+    wText->SetCaption(lpText);
+    wText->SetFont(MapWindowBoldFont);
+    wText->SetCaptionStyle(
+            DT_EXPANDTABS
+            | DT_CENTER
+            | DT_NOCLIP
+            | DT_WORDBREAK
+    );
+
+    y += dY;
+
+    if (uType == mbOk
+        || uType == mbOkCancel)
+    {
+        wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), TEXT("OK"), 0, y, w, h, OnButtonClick);
+        wButtons[ButtonCount]->SetTag(IdOk);
+        ButtonCount++;
+    }
+
+    if (uType == mbYesNo
+        || uType == mbYesNoCancel)
+    {
+        // LKTOKEN  _@M827_ = "Yes"
+
+        TCHAR stmp2[40];
+        _stprintf(stmp2,TEXT("%s (%d)"), MsgToken(186), messageboxTimerCounter);
+
+        wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), stmp2, 0, y, w, h, OnButtonClick);  //stmp2= MsgToken(827)
+        wButtons[ButtonCount]->SetTag(IdYes);
+        ButtonCount++;
+        wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(890), 0, y, w, h, OnButtonClick);
+        wButtons[ButtonCount]->SetTag(IdNo);
+        ButtonCount++;
+    }
+
+    if (uType == mbAbortRetryIgnore
+        || uType == mbRetryCancel)
+    {
+        wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), MsgToken(566), 0, y, w, h, OnButtonClick);
+        wButtons[ButtonCount]->SetTag(IdRetry);
+        ButtonCount++;
+    }
+
+    if (uType == mbOkCancel
+        || uType == mbRetryCancel
+        || uType == mbYesNoCancel)
+    {
+        wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(161), 0, y, w, h, OnButtonClick);
+        wButtons[ButtonCount]->SetTag(IdCancel);
+        ButtonCount++;
+    }
+
+    if (uType == mbAbortRetryIgnore)
+    {
+        wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(47), 0, y, w, h, OnButtonClick);
+        wButtons[ButtonCount]->SetTag(IdAbort);
+        ButtonCount++;
+        wButtons[ButtonCount] = new WndButton(wf, TEXT(""), MsgToken(349), 0, y, w, h, OnButtonClick);
+        wButtons[ButtonCount]->SetTag(IdIgnore);
+        ButtonCount++;
+    }
+
+    LKASSERT(ButtonCount!=0);
+    d = Width / (ButtonCount);
+    x = d/2-w/2;
+
+    for (i=0; i<ButtonCount; i++){
+        wButtons[i]->SetLeft(x);
+        x += d;
+    }
+
+    wf->ShowModal();
+    }
+
+ */
 
 
 long StringToIntDflt(const TCHAR *String, long Default){
