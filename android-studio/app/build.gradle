@@ -23,8 +23,8 @@ android {
         applicationId "org.lk8000"
         minSdkVersion 9
         targetSdkVersion 19
-        versionCode 36
-        versionName "6.1n"
+        versionCode 35
+        versionName "6.1m"
         setProperty("archivesBaseName", "LK8000-$versionName")
         manifestPlaceholders = [applicationLabel: "@string/app_name"]
         externalNativeBuild {
@@ -185,9 +185,11 @@ dependencies {
         transitive = true;
     }
     compile 'com.android.support:support-compat:25.3.1'
+
     compile 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
     compile 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
     compile 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'
+
     compile 'com.github.felHR85:UsbSerial:4.5'
 }
 
