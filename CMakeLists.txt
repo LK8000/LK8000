@@ -87,6 +87,7 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Android/EventBridge.cpp
     Common/Source/xcs/Android/InternalSensors.cpp
     Common/Source/xcs/Android/SoundUtil.cpp
+    Common/Source/xcs/Android/SmsUtil.cpp
     Common/Source/xcs/Android/BluetoothHelper.cpp
     Common/Source/xcs/Android/NativeLeScanCallback.cpp
     Common/Source/xcs/Android/PortBridge.cpp
@@ -779,6 +780,7 @@ add_library( LK8000 SHARED
     Common/Source/Library/glutess/tessmono.c
 
     Common/Source/Sound/Android/Sound.cpp
+    Common/Source/Sms/Android/Sms.cpp
 
     Common/Source/Resource/resource_data.S
     Common/Source/Resource/resource_xml.S

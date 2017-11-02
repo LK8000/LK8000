@@ -59,8 +59,6 @@ static bool waypointneedsave = false;
 static bool fontschanged= false;
 static bool snailchanged= false;
 
-
-
 static  int dwDeviceIndex[NUMDEV] = {0,0,0,0,0,0};
 
 #define CONFIGMODE_SYSTEM   0
@@ -112,11 +110,14 @@ const ConfigPageNames_t ConfigPageNames[4][NUMOFCONFIGPAGES] = {
       /*17*/  { _T("frmLogger"),              _T("_@M24_"), false },  // "20 Logger" 
       /*18*/  { _T("frmWaypointEdit"),        _T("_@M25_"), false },  // "21 Waypoint Edit" 
       /*19*/  { _T("frmSpecials1"),           _T("_@M26_"), false },  // "22 System" 
-      /*20*/  { _T("frmSpecials2"),           _T("_@M27_"), false },  // "23 Paragliders/Delta specials" 
+      /*20*/  { _T("frmSpecials2"),           _T("_@M27_"), false },  // "23 Paragliders/Delta specials"
       /*21*/  { _T("frmEngineering1"),        _T("24 Engineering Menu"), false },
     }, 
     { // config Pilot
       /*0 */  { _T("frmPilot"),                _T("_@M1785_"), false }, // pilot configuration
+#ifdef ANDROID // sms messaging config is only relevant for Android
+      /*1 */  { _T("frmMessagingCfg"),         _T("Notification messages config"), false }, //todo: move text to language file
+#endif
               {},
     }, 
     { // config aircraft
@@ -147,6 +148,11 @@ static WndButton *buttonCompetitionClass=NULL;
 static WndButton *buttonCompetitionID=NULL;
 static WndButton *buttonCopy=NULL;
 static WndButton *buttonPaste=NULL;
+static WndButton *buttonPhoneNumbers=NULL;
+static WndButton *buttonTakeoffMsg=NULL;
+static WndButton *buttonSafeLandingMsg=NULL;
+static WndButton *buttonEmergencyLandingMsg=NULL;
+
 
 short numPages=0;
 
@@ -590,6 +596,45 @@ int ival;
     }
 }
 
+static void OnPhoneNumbersClicked(WndButton* pWnd) {
+    TCHAR Temp[PHONENUMBERSBUF];
+    if (buttonPhoneNumbers) {
+        _tcscpy(Temp, PhoneNumbers_Config);
+        dlgNumEntryShowModal(Temp,PHONENUMBERSBUF,false);
+        _tcscpy(PhoneNumbers_Config, Temp);
+    }
+    UpdateButtons(pWnd->GetParentWndForm());
+}
+
+static void OnTakeoffMsgClicked(WndButton* pWnd) {
+    TCHAR Temp[TEXTMESSAGEBUF];
+    if (buttonTakeoffMsg) {
+        _tcscpy(Temp, TakeoffMsg_Config);
+        dlgTextEntryShowModal(Temp, TEXTMESSAGEBUF);
+        _tcscpy(TakeoffMsg_Config, Temp);
+    }
+    UpdateButtons(pWnd->GetParentWndForm());
+}
+
+static void OnSafeLandingMsgClicked(WndButton* pWnd) {
+    TCHAR Temp[TEXTMESSAGEBUF];
+    if (buttonSafeLandingMsg) {
+        _tcscpy(Temp, SafeLandingMsg_Config);
+        dlgTextEntryShowModal(Temp, TEXTMESSAGEBUF);
+        _tcscpy(SafeLandingMsg_Config, Temp);
+    }
+    UpdateButtons(pWnd->GetParentWndForm());
+}
+
+static void OnEmergencyLandingMsgClicked(WndButton* pWnd) {
+    TCHAR Temp[TEXTMESSAGEBUF];
+    if (buttonEmergencyLandingMsg) {
+        _tcscpy(Temp, EmergencyLandingMsg_Config);
+        dlgTextEntryShowModal(Temp, TEXTMESSAGEBUF);
+        _tcscpy(EmergencyLandingMsg_Config, Temp);
+    }
+    UpdateButtons(pWnd->GetParentWndForm());
+}
 
 static void OnAircraftRegoClicked(WndButton* pWnd) {
     TCHAR Temp[100];
@@ -1597,6 +1642,22 @@ static void setVariables( WndForm *pOwner) {
 
   LKASSERT(pOwner);
 
+  buttonPhoneNumbers = ((WndButton *)pOwner->FindByName(TEXT("cmdPhoneNumbers")));
+  if (buttonPhoneNumbers) {
+      buttonPhoneNumbers->SetOnClickNotify(OnPhoneNumbersClicked);
+  }
+  buttonTakeoffMsg = ((WndButton *)pOwner->FindByName(TEXT("cmdTakeoffMsg")));
+  if (buttonTakeoffMsg) {
+      buttonTakeoffMsg->SetOnClickNotify(OnTakeoffMsgClicked);
+  }
+  buttonSafeLandingMsg = ((WndButton *)pOwner->FindByName(TEXT("cmdSafeLandingMsg")));
+  if (buttonSafeLandingMsg) {
+      buttonSafeLandingMsg->SetOnClickNotify(OnSafeLandingMsgClicked);
+  }
+  buttonEmergencyLandingMsg = ((WndButton *)pOwner->FindByName(TEXT("cmdEmergencyLandingMsg")));
+  if (buttonEmergencyLandingMsg) {
+      buttonEmergencyLandingMsg->SetOnClickNotify(OnEmergencyLandingMsgClicked);
+  }
   buttonPilotName = ((WndButton *)pOwner->FindByName(TEXT("cmdPilotName")));
   if (buttonPilotName) {
     buttonPilotName->SetOnClickNotify(OnPilotNameClicked);
@@ -1649,7 +1710,7 @@ static void setVariables( WndForm *pOwner) {
 			     TEXT("19200"),TEXT("38400"),TEXT("57600"),TEXT("115200")};
 
   TCHAR szPort[MAX_PATH];
-  
+
   ReadPortSettings(SelectedDevice,szPort,NULL, NULL);
   UpdateComPortList((WndProperty*)pOwner->FindByName(TEXT("prpComPort1")), szPort);
 
@@ -1657,7 +1718,7 @@ static void setVariables( WndForm *pOwner) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1, nullptr));
-    
+
     dfe->Set(dwSpeedIndex[SelectedDevice]);
     wp->SetReadOnly(false);
     wp->RefreshDisplay();
@@ -1675,7 +1736,7 @@ static void setVariables( WndForm *pOwner) {
     wp->GetDataField()->Set(UseExtSound[SelectedDevice]);
     wp->RefreshDisplay();
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
   if (wp) {
     wp->GetDataField()->Set(szIpAddress[SelectedDevice]);
@@ -1711,7 +1772,7 @@ static void setVariables( WndForm *pOwner) {
   }
 
 #ifdef TESTBENCH
-  
+
   if (configMode==CONFIGMODE_DEVICE) for(int devIdx=0; devIdx < NUMDEV; devIdx++)
   {
       ReadDeviceSettings(devIdx, deviceName1);
@@ -1744,12 +1805,12 @@ static void setVariables( WndForm *pOwner) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M79_ = "All on" 
+	// LKTOKEN  _@M79_ = "All on"
     dfe->addEnumText(MsgToken(79));
-	// LKTOKEN  _@M184_ = "Clip" 
+	// LKTOKEN  _@M184_ = "Clip"
     dfe->addEnumText(MsgToken(184));
     dfe->addEnumText(TEXT("Auto"));
-	// LKTOKEN  _@M77_ = "All below" 
+	// LKTOKEN  _@M77_ = "All below"
     dfe->addEnumText(MsgToken(77));
     dfe->Set(AltitudeMode_Config);
     wp->RefreshDisplay();
@@ -1777,7 +1838,7 @@ static void setVariables( WndForm *pOwner) {
     dfe->Set((int)MapWindow::GetAirSpaceFillType());
     wp->RefreshDisplay();
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOpacity"));
   if (wp) {
     wp->SetVisible(true);
@@ -1794,7 +1855,7 @@ static void setVariables( WndForm *pOwner) {
     dfe->addEnumText(TEXT("90 %"));
     dfe->addEnumText(TEXT("100 %"));
     dfe->Set(MapWindow::GetAirSpaceOpacity() / 10);
-    
+
     wp->SetVisible( (MapWindow::GetAirSpaceFillType() == (int)MapWindow::asp_fill_ablend_full) || (MapWindow::GetAirSpaceFillType() == (int)MapWindow::asp_fill_ablend_borders) );
     wp->RefreshDisplay();
   }
@@ -1922,7 +1983,7 @@ DataField* dfe = wp->GetDataField();
     #endif
     wp->RefreshDisplay();
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAspPermDisable"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -1936,9 +1997,9 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M382_ = "Landables only" 
+	// LKTOKEN  _@M382_ = "Landables only"
     dfe->addEnumText(MsgToken(382));
-	// LKTOKEN  _@M380_ = "Landables and Turnpoints" 
+	// LKTOKEN  _@M380_ = "Landables and Turnpoints"
     dfe->addEnumText(MsgToken(380));
     dfe->Set(SafetyAltitudeMode);
     wp->RefreshDisplay();
@@ -1957,7 +2018,7 @@ DataField* dfe = wp->GetDataField();
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
-    
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(AltWarningMargin*ALTITUDEMODIFY/10));
@@ -2004,29 +2065,29 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointLabels"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M454_ = "Names" 
+	// LKTOKEN  _@M454_ = "Names"
     dfe->addEnumText(MsgToken(454));
 
-	// LKTOKEN  _@M488_ = "Numbers" 
+	// LKTOKEN  _@M488_ = "Numbers"
     dfe->addEnumText(MsgToken(488));
 
-	// LKTOKEN  _@M453_ = "Names in task" 
+	// LKTOKEN  _@M453_ = "Names in task"
     dfe->addEnumText(MsgToken(453));
 
-	// LKTOKEN  _@M301_ = "First 3" 
+	// LKTOKEN  _@M301_ = "First 3"
     dfe->addEnumText(MsgToken(301));
 
-	// LKTOKEN  _@M302_ = "First 5" 
+	// LKTOKEN  _@M302_ = "First 5"
     dfe->addEnumText(MsgToken(302));
 
-	// LKTOKEN  _@M838_ = "First 8" 
+	// LKTOKEN  _@M838_ = "First 8"
     dfe->addEnumText(MsgToken(838));
-	// LKTOKEN  _@M839_ = "First 10" 
+	// LKTOKEN  _@M839_ = "First 10"
     dfe->addEnumText(MsgToken(839));
-	// LKTOKEN  _@M840_ = "First 12" 
+	// LKTOKEN  _@M840_ = "First 12"
     dfe->addEnumText(MsgToken(840));
 
-	// LKTOKEN  _@M479_ = "None" 
+	// LKTOKEN  _@M479_ = "None"
     dfe->addEnumText(MsgToken(479));
     dfe->Set(DisplayTextType);
     wp->RefreshDisplay();
@@ -2041,17 +2102,17 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpOrientation"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M737_ = "Track up" 
+	// LKTOKEN  _@M737_ = "Track up"
     dfe->addEnumText(MsgToken(737));
-	// LKTOKEN  _@M483_ = "North up" 
+	// LKTOKEN  _@M483_ = "North up"
     dfe->addEnumText(MsgToken(483));
-	// LKTOKEN  _@M482_ = "North circling" 
+	// LKTOKEN  _@M482_ = "North circling"
     dfe->addEnumText(MsgToken(482));
-	// LKTOKEN  _@M682_ = "Target circling" 
+	// LKTOKEN  _@M682_ = "Target circling"
     dfe->addEnumText(MsgToken(682));
-	// LKTOKEN  _@M484_ = "North/track" 
+	// LKTOKEN  _@M484_ = "North/track"
     dfe->addEnumText(MsgToken(484));
-	// LKTOKEN  _@M481_ = "North Smart" 
+	// LKTOKEN  _@M481_ = "North Smart"
     dfe->addEnumText(MsgToken(481)); // 100417
     dfe->Set(DisplayOrientation_Config);
     wp->RefreshDisplay();
@@ -2080,11 +2141,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinalGlideTerrain"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M959_ = "OFF" 
+	// LKTOKEN  _@M959_ = "OFF"
     dfe->addEnumText(MsgToken(959));
-	// LKTOKEN  _@M393_ = "Line" 
+	// LKTOKEN  _@M393_ = "Line"
     dfe->addEnumText(MsgToken(393));
-	// LKTOKEN  _@M609_ = "Shade" 
+	// LKTOKEN  _@M609_ = "Shade"
     dfe->addEnumText(MsgToken(609));
         // "Line+NextWP"
     dfe->addEnumText(MsgToken(1805));
@@ -2123,12 +2184,12 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoWind"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M418_ = "Manual" 
+	// LKTOKEN  _@M418_ = "Manual"
     dfe->addEnumText(MsgToken(418));
-	// LKTOKEN  _@M175_ = "Circling" 
+	// LKTOKEN  _@M175_ = "Circling"
     dfe->addEnumText(MsgToken(175));
     dfe->addEnumText(TEXT("ZigZag"));
-	// LKTOKEN  _@M149_ = "Both" 
+	// LKTOKEN  _@M149_ = "Both"
     dfe->addEnumText(MsgToken(149));
     dfe->addEnumText(MsgToken(1793)); // External
 
@@ -2150,11 +2211,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointsOutOfRange"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M100_ = "Ask" 
+	// LKTOKEN  _@M100_ = "Ask"
     dfe->addEnumText(MsgToken(100));
-	// LKTOKEN  _@M350_ = "Include" 
+	// LKTOKEN  _@M350_ = "Include"
     dfe->addEnumText(MsgToken(350));
-	// LKTOKEN  _@M269_ = "Exclude" 
+	// LKTOKEN  _@M269_ = "Exclude"
     dfe->addEnumText(MsgToken(269));
     wp->GetDataField()->Set(WaypointsOutOfRange);
     wp->RefreshDisplay();
@@ -2182,7 +2243,7 @@ DataField* dfe = wp->GetDataField();
       dfe->addEnumText(buf1);
     }
     dfe->Set(PGClimbZoom);
-    // if (!ISPARAGLIDER) wp->SetVisible(false); 
+    // if (!ISPARAGLIDER) wp->SetVisible(false);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGCruiseZoom"));
@@ -2198,14 +2259,14 @@ DataField* dfe = wp->GetDataField();
       }
     }
     dfe->Set(PGCruiseZoom);
-    // if (!ISPARAGLIDER) wp->SetVisible(false); 
+    // if (!ISPARAGLIDER) wp->SetVisible(false);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGAutoZoomThreshold"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(DISTANCEMODIFY*PGAutoZoomThreshold);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    // if (!ISPARAGLIDER) wp->SetVisible(false); 
+    // if (!ISPARAGLIDER) wp->SetVisible(false);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoOrientScale"));
@@ -2213,15 +2274,15 @@ DataField* dfe = wp->GetDataField();
     wp->GetDataField()->SetAsFloat(AutoOrientScale);
     wp->RefreshDisplay();
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsSpeed"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M667_ = "Statute" 
+	// LKTOKEN  _@M667_ = "Statute"
     dfe->addEnumText(MsgToken(667));
-	// LKTOKEN  _@M455_ = "Nautical" 
+	// LKTOKEN  _@M455_ = "Nautical"
     dfe->addEnumText(MsgToken(455));
-	// LKTOKEN  _@M436_ = "Metric" 
+	// LKTOKEN  _@M436_ = "Metric"
     dfe->addEnumText(MsgToken(436));
     dfe->Set((int)SpeedUnit_Config);
     wp->RefreshDisplay();
@@ -2242,11 +2303,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsTaskSpeed"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M667_ = "Statute" 
+	// LKTOKEN  _@M667_ = "Statute"
     dfe->addEnumText(MsgToken(667));
-	// LKTOKEN  _@M455_ = "Nautical" 
+	// LKTOKEN  _@M455_ = "Nautical"
     dfe->addEnumText(MsgToken(455));
-	// LKTOKEN  _@M436_ = "Metric" 
+	// LKTOKEN  _@M436_ = "Metric"
     dfe->addEnumText(MsgToken(436));
     dfe->Set(TaskSpeedUnit_Config);
     wp->RefreshDisplay();
@@ -2255,11 +2316,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsDistance"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M667_ = "Statute" 
+	// LKTOKEN  _@M667_ = "Statute"
     dfe->addEnumText(MsgToken(667));
-	// LKTOKEN  _@M455_ = "Nautical" 
+	// LKTOKEN  _@M455_ = "Nautical"
     dfe->addEnumText(MsgToken(455));
-	// LKTOKEN  _@M436_ = "Metric" 
+	// LKTOKEN  _@M436_ = "Metric"
     dfe->addEnumText(MsgToken(436));
     dfe->Set(DistanceUnit_Config);
     wp->RefreshDisplay();
@@ -2293,11 +2354,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpThermalLocator"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M959_ = "OFF" 
+	// LKTOKEN  _@M959_ = "OFF"
     dfe->addEnumText(MsgToken(959));
-	// LKTOKEN  _@M427_ = "Mark center" 
+	// LKTOKEN  _@M427_ = "Mark center"
     dfe->addEnumText(MsgToken(427));
-	// LKTOKEN  _@M518_ = "Pan to center" 
+	// LKTOKEN  _@M518_ = "Pan to center"
     dfe->addEnumText(MsgToken(518));
     dfe->Set(EnableThermalLocator);
     wp->RefreshDisplay();
@@ -2332,7 +2393,7 @@ DataField* dfe = wp->GetDataField();
     wp->GetDataField()->SetUnits(TEXT("sec"));
     wp->RefreshDisplay();
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
     wp->GetDataField()->Set(LiveTrackerRadar_config);
@@ -2359,13 +2420,13 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrail"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M499_ = "Off" 
+	// LKTOKEN  _@M499_ = "Off"
     dfe->addEnumText(MsgToken(499));
-	// LKTOKEN  _@M410_ = "Long" 
+	// LKTOKEN  _@M410_ = "Long"
     dfe->addEnumText(MsgToken(410));
-	// LKTOKEN  _@M612_ = "Short" 
+	// LKTOKEN  _@M612_ = "Short"
     dfe->addEnumText(MsgToken(612));
-	// LKTOKEN  _@M312_ = "Full" 
+	// LKTOKEN  _@M312_ = "Full"
     dfe->addEnumText(MsgToken(312));
     dfe->Set(TrailActive_Config);
     wp->RefreshDisplay();
@@ -2445,7 +2506,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  if (_tcscmp(szPolarFile,_T(""))==0) 
+  if (_tcscmp(szPolarFile,_T(""))==0)
     _tcscpy(temptext,_T(LKD_DEFAULT_POLAR));
   else
     _tcscpy(temptext,szPolarFile);
@@ -2593,7 +2654,7 @@ DataField* dfe = wp->GetDataField();
       /**
        * Add entry from system directory not exist in data directory.
        */
-#ifdef ANDROID      
+#ifdef ANDROID
       dfe->ScanZipDirectory(_T(LKD_SYS_LANGUAGE), _T("*" LKS_LANGUAGE));
 #else
 #warning "not implemented"
@@ -2643,13 +2704,13 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftCategory"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M328_ = "Glider" 
+	// LKTOKEN  _@M328_ = "Glider"
     dfe->addEnumText(MsgToken(328));
-	// LKTOKEN  _@M520_ = "Paraglider/Delta" 
+	// LKTOKEN  _@M520_ = "Paraglider/Delta"
     dfe->addEnumText(MsgToken(520));
-	// LKTOKEN  _@M163_ = "Car" 
+	// LKTOKEN  _@M163_ = "Car"
     dfe->addEnumText(MsgToken(2148));
-	// LKTOKEN  _@M313_ = "GA Aircraft" 
+	// LKTOKEN  _@M313_ = "GA Aircraft"
     dfe->addEnumText(MsgToken(313));
     dfe->Set(AircraftCategory);
     wp->RefreshDisplay();
@@ -2661,13 +2722,13 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldEnum* dfe;
     dfe = wp->GetDataField();
-	// LKTOKEN  _@M768_ = "Use MacCready" 
+	// LKTOKEN  _@M768_ = "Use MacCready"
      dfe->addEnumText(MsgToken(768));
-	// LKTOKEN  _@M90_ = "Always use MC=0" 
+	// LKTOKEN  _@M90_ = "Always use MC=0"
      dfe->addEnumText(MsgToken(90));
-	// LKTOKEN  _@M91_ = "Always use safety MC" 
+	// LKTOKEN  _@M91_ = "Always use safety MC"
      dfe->addEnumText(MsgToken(91));
-	// LKTOKEN  _@M769_ = "Use aver.efficiency" 
+	// LKTOKEN  _@M769_ = "Use aver.efficiency"
      dfe->addEnumText(MsgToken(769));
      dfe->Set(AltArrivMode);
     wp->RefreshDisplay();
@@ -2677,9 +2738,9 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpCheckSum"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
+	// LKTOKEN  _@M239_ = "Disabled"
     dfe->addEnumText(MsgToken(239));
-	// LKTOKEN  _@M259_ = "Enabled" 
+	// LKTOKEN  _@M259_ = "Enabled"
     dfe->addEnumText(MsgToken(259));
     dfe->Set(CheckSum);
     wp->RefreshDisplay();
@@ -2688,9 +2749,9 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpIphoneGestures"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M364_ = "Inverted" 
+	// LKTOKEN  _@M364_ = "Inverted"
     dfe->addEnumText(MsgToken(364));
-	// LKTOKEN  _@M480_ = "Normal" 
+	// LKTOKEN  _@M480_ = "Normal"
     dfe->addEnumText(MsgToken(480));
     dfe->Set(IphoneGestures);
     wp->RefreshDisplay();
@@ -2712,13 +2773,21 @@ DataField* dfe = wp->GetDataField();
     wp->SetVisible(false);
 #endif
   }
+    wp = (WndProperty *) wf->FindByName(TEXT("prpLandingDlgTimeout"));
+    if (wp) {
+#ifdef ANDROID
+        wp->SetVisible(true);
+#else
+        wp->SetVisible(false);
+#endif
+    }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPollingMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M480_ = "Normal" 
+	// LKTOKEN  _@M480_ = "Normal"
     dfe->addEnumText(MsgToken(480));
-	// LKTOKEN  _@M529_ = "Polling" 
+	// LKTOKEN  _@M529_ = "Polling"
     dfe->addEnumText(MsgToken(529));
     dfe->Set(PollingMode);
     wp->RefreshDisplay();
@@ -2728,15 +2797,15 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     TCHAR newtoken[150];
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
+	// LKTOKEN  _@M239_ = "Disabled"
     dfe->addEnumText(MsgToken(239));
-	// LKTOKEN  _@M782_ = "Vario rainbow" 
+	// LKTOKEN  _@M782_ = "Vario rainbow"
     dfe->addEnumText(MsgToken(782));
-	// LKTOKEN  _@M780_ = "Vario black" 
+	// LKTOKEN  _@M780_ = "Vario black"
     dfe->addEnumText(MsgToken(780));
-	// LKTOKEN  _@M783_ = "Vario red+blue" 
+	// LKTOKEN  _@M783_ = "Vario red+blue"
     dfe->addEnumText(MsgToken(783));
-	// LKTOKEN  _@M781_ = "Vario green+red" 
+	// LKTOKEN  _@M781_ = "Vario green+red"
     dfe->addEnumText(MsgToken(781));
 
     _stprintf(newtoken,_T("%s %s"),MsgToken(953),MsgToken(782) );
@@ -2774,15 +2843,15 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpDeclutterMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
+	// LKTOKEN  _@M239_ = "Disabled"
     dfe->addEnumText(MsgToken(239));
-	// LKTOKEN  _@M414_ = "Low" 
+	// LKTOKEN  _@M414_ = "Low"
     dfe->addEnumText(MsgToken(414));
-	// LKTOKEN  _@M433_ = "Medium" 
+	// LKTOKEN  _@M433_ = "Medium"
     dfe->addEnumText(MsgToken(433));
-	// LKTOKEN  _@M339_ = "High" 
+	// LKTOKEN  _@M339_ = "High"
     dfe->addEnumText(MsgToken(339));
-	// LKTOKEN  _@M786_ = "Very High" 
+	// LKTOKEN  _@M786_ = "Very High"
     dfe->addEnumText(MsgToken(786));
     dfe->Set(DeclutterMode);
     wp->RefreshDisplay();
@@ -2817,7 +2886,7 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpThermalBar")); // 091122
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
+	// LKTOKEN  _@M239_ = "Disabled"
     dfe->addEnumText(MsgToken(239));
 	// LKTOKEN  +_@M2149_ = "in thermal"
     dfe->addEnumText(MsgToken(2149));
@@ -2831,9 +2900,9 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayClock"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    // LKTOKEN  _@M239_ = "Disabled" 
+    // LKTOKEN  _@M239_ = "Disabled"
     dfe->addEnumText(MsgToken(239));
-    // LKTOKEN  _@M259_ = "Enabled" 
+    // LKTOKEN  _@M259_ = "Enabled"
     dfe->addEnumText(MsgToken(259));
     dfe->Set(OverlayClock);
     wp->RefreshDisplay();
@@ -2877,11 +2946,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpOutlinedTp"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M78_ = "All black" 
+	// LKTOKEN  _@M78_ = "All black"
     dfe->addEnumText(MsgToken(78));
-	// LKTOKEN  _@M778_ = "Values white" 
+	// LKTOKEN  _@M778_ = "Values white"
     dfe->addEnumText(MsgToken(778));
-	// LKTOKEN  _@M81_ = "All white" 
+	// LKTOKEN  _@M81_ = "All white"
     dfe->addEnumText(MsgToken(81));
     dfe->Set(OutlinedTp_Config);
     wp->RefreshDisplay();
@@ -2890,11 +2959,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTpFilter"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M473_ = "No landables" 
+	// LKTOKEN  _@M473_ = "No landables"
     dfe->addEnumText(MsgToken(473));
-	// LKTOKEN  _@M80_ = "All waypoints" 
+	// LKTOKEN  _@M80_ = "All waypoints"
     dfe->addEnumText(MsgToken(80));
-	// LKTOKEN  _@M211_ = "DAT Turnpoints" 
+	// LKTOKEN  _@M211_ = "DAT Turnpoints"
     dfe->addEnumText(MsgToken(211));
     dfe->Set(TpFilter);
     wp->RefreshDisplay();
@@ -2903,33 +2972,33 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverColor"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M816_ = "White" 
+	// LKTOKEN  _@M816_ = "White"
     dfe->addEnumText(MsgToken(816));
-	// LKTOKEN  _@M144_ = "Black" 
+	// LKTOKEN  _@M144_ = "Black"
     dfe->addEnumText(MsgToken(144));
-	// LKTOKEN  _@M218_ = "DarkBlue" 
+	// LKTOKEN  _@M218_ = "DarkBlue"
     dfe->addEnumText(MsgToken(218));
-	// LKTOKEN  _@M825_ = "Yellow" 
+	// LKTOKEN  _@M825_ = "Yellow"
     dfe->addEnumText(MsgToken(825));
-	// LKTOKEN  _@M331_ = "Green" 
+	// LKTOKEN  _@M331_ = "Green"
     dfe->addEnumText(MsgToken(331));
-	// LKTOKEN  _@M505_ = "Orange" 
+	// LKTOKEN  _@M505_ = "Orange"
     dfe->addEnumText(MsgToken(505));
-	// LKTOKEN  _@M209_ = "Cyan" 
+	// LKTOKEN  _@M209_ = "Cyan"
     dfe->addEnumText(MsgToken(209));
-	// LKTOKEN  _@M417_ = "Magenta" 
+	// LKTOKEN  _@M417_ = "Magenta"
     dfe->addEnumText(MsgToken(417));
-	// LKTOKEN  _@M332_ = "Grey" 
+	// LKTOKEN  _@M332_ = "Grey"
     dfe->addEnumText(MsgToken(332));
-	// LKTOKEN  _@M215_ = "Dark Grey" 
+	// LKTOKEN  _@M215_ = "Dark Grey"
     dfe->addEnumText(MsgToken(215));
-	// LKTOKEN  _@M216_ = "Dark White" 
+	// LKTOKEN  _@M216_ = "Dark White"
     dfe->addEnumText(MsgToken(216));
-	// LKTOKEN  _@M92_ = "Amber" 
+	// LKTOKEN  _@M92_ = "Amber"
     dfe->addEnumText(MsgToken(92));
-	// LKTOKEN  _@M391_ = "Light Green" 
+	// LKTOKEN  _@M391_ = "Light Green"
     dfe->addEnumText(MsgToken(391));
-	// LKTOKEN  _@M522_ = "Petrol" 
+	// LKTOKEN  _@M522_ = "Petrol"
     dfe->addEnumText(MsgToken(522));
     dfe->Set(OverColor);
     wp->RefreshDisplay();
@@ -2938,13 +3007,13 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapBox"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M763_ = "Unboxed, no units" 
+	// LKTOKEN  _@M763_ = "Unboxed, no units"
     dfe->addEnumText(MsgToken(763));
-	// LKTOKEN  _@M764_ = "Unboxed, with units" 
+	// LKTOKEN  _@M764_ = "Unboxed, with units"
     dfe->addEnumText(MsgToken(764));
-	// LKTOKEN  _@M152_ = "Boxed, no units" 
+	// LKTOKEN  _@M152_ = "Boxed, no units"
     dfe->addEnumText(MsgToken(152));
-	// LKTOKEN  _@M153_ = "Boxed, with units" 
+	// LKTOKEN  _@M153_ = "Boxed, with units"
     dfe->addEnumText(MsgToken(153));
     dfe->Set(MapBox);
     wp->RefreshDisplay();
@@ -2953,9 +3022,9 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlaySize"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M842_ = "Big font " 
+	// LKTOKEN  _@M842_ = "Big font "
     dfe->addEnumText(MsgToken(842));
-	// LKTOKEN  _@M843_ = "Small font " 
+	// LKTOKEN  _@M843_ = "Small font "
     dfe->addEnumText(MsgToken(843));
     dfe = wp->GetDataField();
     dfe->Set(OverlaySize);
@@ -2965,11 +3034,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpGlideBarMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
+	// LKTOKEN  _@M239_ = "Disabled"
     dfe->addEnumText(MsgToken(239));
-	// LKTOKEN  _@M461_ = "Next turnpoint" 
+	// LKTOKEN  _@M461_ = "Next turnpoint"
     dfe->addEnumText(MsgToken(461));
-	// LKTOKEN  _@M299_ = "Finish" 
+	// LKTOKEN  _@M299_ = "Finish"
     dfe->addEnumText(MsgToken(299));
     dfe->Set(GlideBarMode);
     wp->RefreshDisplay();
@@ -2978,9 +3047,9 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpArrivalValue"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M98_ = "ArrivalAltitude" 
+	// LKTOKEN  _@M98_ = "ArrivalAltitude"
     dfe->addEnumText(MsgToken(98));
-	// LKTOKEN  _@M254_ = "EfficiencyReq" 
+	// LKTOKEN  _@M254_ = "EfficiencyReq"
     dfe->addEnumText(MsgToken(254));
     dfe->Set(ArrivalValue);
     wp->RefreshDisplay();
@@ -2989,11 +3058,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpNewMapDeclutter"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
+	// LKTOKEN  _@M239_ = "Disabled"
     dfe->addEnumText(MsgToken(239));
-	// LKTOKEN  _@M414_ = "Low" 
+	// LKTOKEN  _@M414_ = "Low"
     dfe->addEnumText(MsgToken(414));
-	// LKTOKEN  _@M339_ = "High" 
+	// LKTOKEN  _@M339_ = "High"
     dfe->addEnumText(MsgToken(339));
     dfe->Set(NewMapDeclutter);
     wp->RefreshDisplay();
@@ -3005,18 +3074,18 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(1775)); // 3 sec
     dfe->addEnumText(MsgToken(1776)); // 5 sec
     dfe->addEnumText(MsgToken(1777)); // 10 sec
-	// LKTOKEN  _@M17_ = "15 seconds" 
+	// LKTOKEN  _@M17_ = "15 seconds"
     dfe->addEnumText(MsgToken(17));
-	// LKTOKEN  _@M30_ = "30 seconds" 
+	// LKTOKEN  _@M30_ = "30 seconds"
     dfe->addEnumText(MsgToken(30));
     dfe->addEnumText(MsgToken(1778)); // 45 sec
-	// LKTOKEN  _@M35_ = "60 seconds" 
+	// LKTOKEN  _@M35_ = "60 seconds"
     dfe->addEnumText(MsgToken(35));
-	// LKTOKEN  _@M39_ = "90 seconds" 
+	// LKTOKEN  _@M39_ = "90 seconds"
     dfe->addEnumText(MsgToken(39));
-	// LKTOKEN  _@M23_ = "2 minutes" 
+	// LKTOKEN  _@M23_ = "2 minutes"
     dfe->addEnumText(MsgToken(23));
-	// LKTOKEN  _@M29_ = "3 minutes" 
+	// LKTOKEN  _@M29_ = "3 minutes"
     dfe->addEnumText(MsgToken(29));
     dfe->Set(AverEffTime);
     wp->RefreshDisplay();
@@ -3025,25 +3094,25 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpBgMapcolor"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M816_ = "White" 
+	// LKTOKEN  _@M816_ = "White"
     dfe->addEnumText(MsgToken(816));
-	// LKTOKEN  _@M392_ = "Light grey" 
+	// LKTOKEN  _@M392_ = "Light grey"
     dfe->addEnumText(MsgToken(392));
-	// LKTOKEN  _@M374_ = "LCD green" 
+	// LKTOKEN  _@M374_ = "LCD green"
     dfe->addEnumText(MsgToken(374));
-	// LKTOKEN  _@M373_ = "LCD darkgreen" 
+	// LKTOKEN  _@M373_ = "LCD darkgreen"
     dfe->addEnumText(MsgToken(373));
-	// LKTOKEN  _@M332_ = "Grey" 
+	// LKTOKEN  _@M332_ = "Grey"
     dfe->addEnumText(MsgToken(332));
-	// LKTOKEN  _@M147_ = "Blue lake" 
+	// LKTOKEN  _@M147_ = "Blue lake"
     dfe->addEnumText(MsgToken(147));
-	// LKTOKEN  _@M256_ = "Emerald green" 
+	// LKTOKEN  _@M256_ = "Emerald green"
     dfe->addEnumText(MsgToken(256));
-	// LKTOKEN  _@M217_ = "Dark grey" 
+	// LKTOKEN  _@M217_ = "Dark grey"
     dfe->addEnumText(MsgToken(217));
-	// LKTOKEN  _@M567_ = "Rifle grey" 
+	// LKTOKEN  _@M567_ = "Rifle grey"
     dfe->addEnumText(MsgToken(567));
-	// LKTOKEN  _@M144_ = "Black" 
+	// LKTOKEN  _@M144_ = "Black"
     dfe->addEnumText(MsgToken(144));
     dfe->Set(BgMapColor_Config);
     wp->RefreshDisplay();
@@ -3063,9 +3132,9 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInverseInfoBox"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M958_ = "ON" 
+	// LKTOKEN  _@M958_ = "ON"
     dfe->addEnumText(MsgToken(958));
-	// LKTOKEN  _@M959_ = "OFF" 
+	// LKTOKEN  _@M959_ = "OFF"
     dfe->addEnumText(MsgToken(959));
     dfe->Set(InverseInfoBox_Config);
     wp->RefreshDisplay();
@@ -3100,25 +3169,25 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainRamp"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M413_ = "Low lands" 
+	// LKTOKEN  _@M413_ = "Low lands"
     dfe->addEnumText(MsgToken(413));
-	// LKTOKEN  _@M439_ = "Mountainous" 
+	// LKTOKEN  _@M439_ = "Mountainous"
     dfe->addEnumText(MsgToken(439));
     dfe->addEnumText(TEXT("Imhof 7"));
     dfe->addEnumText(TEXT("Imhof 4"));
     dfe->addEnumText(TEXT("Imhof 12"));
     dfe->addEnumText(TEXT("Imhof Atlas"));
-    dfe->addEnumText(TEXT("ICAO")); 
-	// LKTOKEN  _@M377_ = "LKoogle lowlands" 
-    dfe->addEnumText(MsgToken(377)); 
-	// LKTOKEN  _@M378_ = "LKoogle mountains" 
+    dfe->addEnumText(TEXT("ICAO"));
+	// LKTOKEN  _@M377_ = "LKoogle lowlands"
+    dfe->addEnumText(MsgToken(377));
+	// LKTOKEN  _@M378_ = "LKoogle mountains"
     dfe->addEnumText(MsgToken(378));
-	// LKTOKEN  _@M412_ = "Low Alps" 
+	// LKTOKEN  _@M412_ = "Low Alps"
     dfe->addEnumText(MsgToken(412));
-	// LKTOKEN  _@M338_ = "High Alps" 
+	// LKTOKEN  _@M338_ = "High Alps"
     dfe->addEnumText(MsgToken(338));
     dfe->addEnumText(TEXT("YouSee"));
-	// LKTOKEN  _@M340_ = "HighContrast" 
+	// LKTOKEN  _@M340_ = "HighContrast"
     dfe->addEnumText(MsgToken(340));
     dfe->addEnumText(TEXT("GA Relative"));
     dfe->addEnumText(TEXT("LiteAlps"));
@@ -3152,11 +3221,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M210_ = "Cylinder" 
+	// LKTOKEN  _@M210_ = "Cylinder"
     dfe->addEnumText(MsgToken(210));
-	// LKTOKEN  _@M393_ = "Line" 
+	// LKTOKEN  _@M393_ = "Line"
     dfe->addEnumText(MsgToken(393));
-	// LKTOKEN  _@M274_ = "FAI Sector" 
+	// LKTOKEN  _@M274_ = "FAI Sector"
     dfe->addEnumText(MsgToken(274));
     dfe->Set(FinishLine);
     wp->RefreshDisplay();
@@ -3172,11 +3241,11 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M210_ = "Cylinder" 
+	// LKTOKEN  _@M210_ = "Cylinder"
     dfe->addEnumText(MsgToken(210));
-	// LKTOKEN  _@M393_ = "Line" 
+	// LKTOKEN  _@M393_ = "Line"
     dfe->addEnumText(MsgToken(393));
-	// LKTOKEN  _@M274_ = "FAI Sector" 
+	// LKTOKEN  _@M274_ = "FAI Sector"
     dfe->addEnumText(MsgToken(274));
     dfe->Set(StartLine);
     wp->RefreshDisplay();
@@ -3192,13 +3261,13 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M210_ = "Cylinder" 
+	// LKTOKEN  _@M210_ = "Cylinder"
     dfe->addEnumText(MsgToken(210));
-	// LKTOKEN  _@M274_ = "FAI Sector" 
+	// LKTOKEN  _@M274_ = "FAI Sector"
     dfe->addEnumText(MsgToken(274));
     dfe->addEnumText(gettext(TEXT("DAe 0.5/10")));
     dfe->addEnumText(MsgToken(393));
-    
+
     dfe->Set(SectorType);
     wp->RefreshDisplay();
   }
@@ -3308,11 +3377,25 @@ wp->RefreshDisplay();
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu")); 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu"));
   if (wp) {
     wp->GetDataField()->Set(EngineeringMenu);
     wp->RefreshDisplay();
   }
+
+#ifndef ANDROID     // Remove "Prev" and "Next" buttons, from Pilot Setup menu for all targets except Android (removes sms setting menu)
+    wp = (WndProperty *) wf->FindByName(TEXT("frmPilot"));
+    if (wp) {
+        wp = (WndProperty *) wf->FindByName(TEXT("cmdNext"));
+        if (wp) {
+            wp->SetVisible(false);
+        }
+        wp = (WndProperty *) wf->FindByName(TEXT("cmdPrev"));
+        if (wp) {
+            wp->SetVisible(false);
+        }
+    }
+#endif
 
 
   for (int i=0; i<4; i++) {
@@ -3389,23 +3472,23 @@ void dlgConfigurationShowModal(short mode){
   typedef struct {
       const unsigned resid;
   }  dlgTemplate_t;
-  
-  static const dlgTemplate_t dlgTemplate_L [] = { 
+
+  static const dlgTemplate_t dlgTemplate_L [] = {
       { IDR_XML_CONFIGURATION_L },
       { IDR_XML_CONFIGPILOT_L },
       { IDR_XML_CONFIGAIRCRAFT_L },
       { IDR_XML_CONFIGDEVICE_L }
   };
-  
-  static const dlgTemplate_t dlgTemplate_P [] = { 
+
+  static const dlgTemplate_t dlgTemplate_P [] = {
       { IDR_XML_CONFIGURATION_P },
       { IDR_XML_CONFIGPILOT_P },
       { IDR_XML_CONFIGAIRCRAFT_P },
       { IDR_XML_CONFIGDEVICE_P }
   };
-  
+
   static_assert(array_size(dlgTemplate_L) == array_size(dlgTemplate_P), "check array size");
-  
+
   StartHourglassCursor();
 
   if (configMode==CONFIGMODE_DEVICE) {
@@ -3413,15 +3496,15 @@ void dlgConfigurationShowModal(short mode){
   }
 
   if(configMode >= 0 && configMode < (int)array_size(dlgTemplate_L)) {
-    
+
     auto dlgTemplate = (ScreenLandscape ? dlgTemplate_L[configMode] : dlgTemplate_P[configMode]);
-  
+
     wf = dlgLoadFromXML(CallBackTable, dlgTemplate.resid);
-    
+
   } else {
       wf = nullptr;
   }
-  
+
   if (!wf) {
 	return;
   }
@@ -3524,7 +3607,7 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (!DisableAutoLogger
 	!= wp->GetDataField()->GetAsBoolean()) {
-      DisableAutoLogger = 
+      DisableAutoLogger =
 	!(wp->GetDataField()->GetAsBoolean());
     }
   }
@@ -3544,7 +3627,7 @@ void dlgConfigurationShowModal(short mode){
       requirerestart = true;
     }
   }
-  
+
   double val;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyMacCready"));
@@ -3628,13 +3711,13 @@ double dval;
       PGAutoZoomThreshold = dval;
     }
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGClimbZoom"));
   if (wp) {
     if ( PGClimbZoom != wp->GetDataField()->GetAsInteger()) {
       PGClimbZoom = wp->GetDataField()->GetAsInteger();
       MapWindow::zoom.Reset();
-        requirerestart=true; 
+        requirerestart=true;
     }
   }
 
@@ -3662,7 +3745,7 @@ double dval;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLockSettingsInFlight"));
   if (wp) {
-    if (LockSettingsInFlight != 
+    if (LockSettingsInFlight !=
 	wp->GetDataField()->GetAsBoolean()) {
       LockSettingsInFlight = wp->GetDataField()->GetAsBoolean();
     }
@@ -3670,7 +3753,7 @@ double dval;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLoggerShortName"));
   if (wp) {
-    if (LoggerShortName != 
+    if (LoggerShortName !=
 	wp->GetDataField()->GetAsBoolean()) {
       LoggerShortName = wp->GetDataField()->GetAsBoolean();
     }
@@ -3678,7 +3761,7 @@ double dval;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableFLARMMap"));
   if (wp) {
-    if ((int)EnableFLARMMap != 
+    if ((int)EnableFLARMMap !=
 	wp->GetDataField()->GetAsInteger()) {
       EnableFLARMMap = wp->GetDataField()->GetAsInteger();
     }
@@ -3697,7 +3780,7 @@ double dval;
       MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)wp->GetDataField()->GetAsInteger());
     }
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOpacity"));
   if (wp) {
     if (MapWindow::GetAirSpaceOpacity() != wp->GetDataField()->GetAsInteger()*10) {
@@ -3712,7 +3795,7 @@ double dval;
     }
   }
 
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapWaypoint"));
   if (wp) {
       if (FontMapWaypoint != wp->GetDataField()->GetAsInteger() ) {
@@ -3785,23 +3868,23 @@ double dval;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontRenderer"));
   if (wp) {
-    if (FontRenderer != wp->GetDataField()->GetAsInteger() ) 
+    if (FontRenderer != wp->GetDataField()->GetAsInteger() )
     {
 	    FontRenderer = wp->GetDataField()->GetAsInteger();
       requirerestart = true;
     }
   }
-  
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
-    if (AutoZoom_Config != 
+    if (AutoZoom_Config !=
 	wp->GetDataField()->GetAsBoolean()) {
       AutoZoom_Config = wp->GetDataField()->GetAsBoolean();
       MapWindow::zoom.AutoZoom(AutoZoom_Config);
     }
   }
 
-int ival; 
+int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUTCOffset"));
   if (wp) {
@@ -4169,7 +4252,7 @@ int ival;
   }
   #endif
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCheckSum")); 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpCheckSum"));
   if (wp) {
     if (CheckSum != (CheckSum_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4178,7 +4261,7 @@ int ival;
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIphoneGestures")); 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpIphoneGestures"));
   if (wp) {
     if (IphoneGestures != (IphoneGestures_t) (wp->GetDataField()->GetAsInteger())) {
       IphoneGestures = (IphoneGestures_t) (wp->GetDataField()->GetAsInteger());
@@ -4195,14 +4278,14 @@ int ival;
   }
 #endif
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPollingMode")); 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPollingMode"));
   if (wp) {
     if (PollingMode != (PollingMode_t) (wp->GetDataField()->GetAsInteger())) {
       PollingMode = (PollingMode_t) (wp->GetDataField()->GetAsInteger());
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioBar")); 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioBar"));
   if (wp) {
     const LKVarioBar_t tmpValue = static_cast<LKVarioBar_t>(wp->GetDataField()->GetAsInteger());
     if (LKVarioBar != tmpValue) {
@@ -4210,7 +4293,7 @@ int ival;
       Reset_Single_DoInits(MDI_DRAWVARIO);
     }
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioVal")); 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioVal"));
   if (wp) {
     if (LKVarioVal != (LKVarioVal_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4351,14 +4434,14 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpNewMapDeclutter")); // VENTA6
   if (wp) {
-    if (NewMapDeclutter != 
+    if (NewMapDeclutter !=
 	(wp->GetDataField()->GetAsInteger())) {
-      NewMapDeclutter = 
+      NewMapDeclutter =
 	(wp->GetDataField()->GetAsInteger());
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpGPSAltitudeOffset")); 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpGPSAltitudeOffset"));
   if (wp) {
     ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000.0);
     if(((int) GPSAltitudeOffset) != ival) {
@@ -4382,9 +4465,9 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAverEffTime"));
   if (wp) {
-    if (AverEffTime != 
+    if (AverEffTime !=
 	(wp->GetDataField()->GetAsInteger())) {
-      AverEffTime = 
+      AverEffTime =
 	(wp->GetDataField()->GetAsInteger());
         LKSW_ResetLDRotary=true;
     }
@@ -4411,12 +4494,12 @@ int ival;
     if (GlobalToBoxType(Appearance.InfoBoxModel) != (InfoBoxModelAppearance_t)
         (wp->GetDataField()->GetAsInteger())) {
 
-      // We temporarily set it to the index 
+      // We temporarily set it to the index
       Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)
         (wp->GetDataField()->GetAsInteger());
 
       switch (Appearance.InfoBoxModel) {
-      case apImPnaGeneric: 
+      case apImPnaGeneric:
 	GlobalModelType = MODELTYPE_PNA_PNA;
 	break;
       case apImPnaHp31x:
@@ -4467,7 +4550,7 @@ int ival;
       default:
 	GlobalModelType = MODELTYPE_UNKNOWN; // Can't happen, troubles ..
 	break;
-	
+
       }
       // we set it correctly yo global value , ex. 10001
       Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)GlobalModelType;
@@ -4496,7 +4579,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpGliderScreenPosition"));
   if (wp) {
-    if (MapWindow::GliderScreenPosition != 
+    if (MapWindow::GliderScreenPosition !=
 	wp->GetDataField()->GetAsInteger()) {
       MapWindow::GliderScreenPosition = wp->GetDataField()->GetAsInteger();
 	MapWindow::GliderScreenPositionY=MapWindow::GliderScreenPosition;
@@ -4520,7 +4603,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainContrast"));
   if (wp) {
-    if (iround(TerrainContrast*100/255) != 
+    if (iround(TerrainContrast*100/255) !=
 	wp->GetDataField()->GetAsInteger()) {
       TerrainContrast = (short)iround(wp->GetDataField()->GetAsInteger()*255.0/100);
     }
@@ -4528,7 +4611,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainBrightness"));
   if (wp) {
-    if (iround(TerrainBrightness*100/255) != 
+    if (iround(TerrainBrightness*100/255) !=
 	wp->GetDataField()->GetAsInteger()) {
       TerrainBrightness = (short)iround(wp->GetDataField()->GetAsInteger()*255.0/100);
     }
@@ -4619,12 +4702,12 @@ int ival;
 
   if (waypointneedsave) {
     if(MessageBoxX(
-    // LKTOKEN  _@M581_ = "Save changes to waypoint file?" 
+    // LKTOKEN  _@M581_ = "Save changes to waypoint file?"
                    MsgToken(581),
-	// LKTOKEN  _@M809_ = "Waypoints edited" 
+	// LKTOKEN  _@M809_ = "Waypoints edited"
                    MsgToken(809),
                    mbYesNo) == IdYes) {
-    
+
       AskWaypointSave();
 
     }
@@ -4660,8 +4743,8 @@ int ival;
 
     if (requirerestart) {
       MessageBoxX (
-	// LKTOKEN  _@M561_ = "Restart LK8000 to apply changes." 
-		   MsgToken(561), 
+	// LKTOKEN  _@M561_ = "Restart LK8000 to apply changes."
+		   MsgToken(561),
 		   TEXT("Configuration"), mbOk);
     }
 
@@ -4672,7 +4755,7 @@ int ival;
 }
 
 //
-// We must call this update also before saving profiles during config showmodal, otherwise we 
+// We must call this update also before saving profiles during config showmodal, otherwise we
 // wont be updating the current set values! This is why we keep separated function for polar.
 // IN 3.1 we Call it only on exit, because saving is done externally, always.
 //
@@ -4690,7 +4773,7 @@ void UpdateAircraftConfig(void){
       requirerestart = true;
       AIRCRAFTTYPECHANGED=true;
 
-        if (ISPARAGLIDER) AATEnabled=TRUE; // NOT SURE THIS IS NEEDED ANYMORE. 
+        if (ISPARAGLIDER) AATEnabled=TRUE; // NOT SURE THIS IS NEEDED ANYMORE.
     }
   }
 
@@ -4768,3 +4851,4 @@ void InitDlgDevice(WndForm *pWndForm) {
     }
   }
 }
+

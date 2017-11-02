@@ -16,6 +16,7 @@
 #include "Android/NativeView.hpp"
 #include "Android/Bitmap.hpp"
 #include "Android/SoundUtil.hpp"
+#include "Android/SmsUtil.hpp"
 #include "Android/TextUtil.hpp"
 #include "Android/Context.hpp"
 #include "Android/Environment.hpp"
@@ -123,7 +124,7 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   }
 
   SoundUtil::Initialise(env);
-
+  SmsUtil::Initialise(env);
 
   ScreenInitialized();
 

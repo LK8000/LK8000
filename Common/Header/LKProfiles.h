@@ -274,6 +274,22 @@ char szRegistryLiveTrackersrv[]=  "LiveTrackersrv";
 char szRegistryLiveTrackerport[]=  "LiveTrackerport";
 char szRegistryLiveTrackerusr[]=  "LiveTrackerusr";
 char szRegistryLiveTrackerpwd[]=  "LiveTrackerpwd";
+
+char szRegistryPhoneNumbers[]=  "PhoneNumbersList";
+char szRegistryTakeoffMsg[]=  "TakeoffMsg";
+char szRegistrySafeLandingMsg[]=  "SafeLandingMsg";
+char szRegistryEmergencyLandingMsg[]=  "EmergencyLandingMsg";
+char szRegistrySendTakeoffMsg[]=  "SendTakeoffMsg";
+char szRegistrySendSafeLandingMsg[]=  "SendSafeLandingMsg";
+char szRegistrySendEmergencyLandingMsg[]=  "SendEmergencyLandingMsg";
+
+
+
+
+
+
+
+
 char szRegistryPolarFile[] = "PolarFile1";
 char szRegistryPollingMode[]= "PollingMode";
 char szRegistryPort1Index[]= "PortIndex";
@@ -621,6 +637,23 @@ extern const char szRegistryLiveTrackersrv[];
 extern const char szRegistryLiveTrackerport[];
 extern const char szRegistryLiveTrackerusr[];
 extern const char szRegistryLiveTrackerpwd[];
+
+extern const char szRegistryPhoneNumbers[];
+extern const char szRegistryTakeoffMsg[];
+extern const char szRegistrySafeLandingMsg[];
+extern const char szRegistryEmergencyLandingMsg[];
+extern const char szRegistrySendTakeoffMsg[];
+extern const char szRegistrySendSafeLandingMsg[];
+extern const char szRegistrySendEmergencyLandingMsg[];
+
+
+
+
+
+
+
+
+
 extern const char szRegistryPolarFile[];
 extern const char szRegistryPollingMode[];
 extern const char szRegistryPort1Index[];

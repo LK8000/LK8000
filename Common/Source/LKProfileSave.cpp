@@ -531,6 +531,16 @@ void LKPilotSave(const TCHAR *szFile)
   rprintf(szRegistryLiveTrackerusr,LiveTrackerusr_Config);
   rprintf(szRegistryLiveTrackerpwd,LiveTrackerpwd_Config);
 
+  rprintf(szRegistryPhoneNumbers,PhoneNumbers_Config);
+  rprintf(szRegistryTakeoffMsg,TakeoffMsg_Config);
+  rprintf(szRegistrySafeLandingMsg,SafeLandingMsg_Config);
+  rprintf(szRegistryEmergencyLandingMsg,EmergencyLandingMsg_Config);
+  rprintf(szRegistrySendTakeoffMsg,SendTakeoffMsg);
+
+
+
+
+
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);
   fclose(pfp);
