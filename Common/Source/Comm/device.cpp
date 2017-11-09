@@ -263,7 +263,7 @@ void RefreshComPortList() {
 #endif
 #endif
     
-#ifdef __linux__
+#if defined(__linux__) && !defined(ANDROID)
   
   struct dirent **namelist;
   int n;
