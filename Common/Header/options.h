@@ -135,13 +135,15 @@
 // ----------------------------------------------------------------------------------------
 #define RADIO_ACTIVE
 
-//#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
+#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
-  #define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
-  #define BUTTONS_MS
+//  #define GOTO_AS_SIMPLETASK  // even a single goto will be listed in multiselect
+
   #define OWN_POS_MS
+  #define ORACLE_MS
+  #define TEAM_CODE_MS
   #define OWN_FLARM_TRACES
-//  #define FLARM_MS    // not implemented inside Multiselect dialog.
+  #define FLARM_MS    // not implemented inside Multiselect dialog.
   #define OUTLINE_2ND		// double outline airspaces
 //  #define FIVEPOINT_OPTIMIZER
 #endif
