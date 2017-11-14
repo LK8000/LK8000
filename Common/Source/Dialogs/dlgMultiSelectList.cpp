@@ -300,9 +300,9 @@ int j;
 double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pFlarm->Latitude,  pFlarm->Longitude, &Distance, &Bear);
   if(_tcscmp(pFlarm->Name,_T("?")) ==0)
-    _stprintf(text1,TEXT("%X"),pFlarm->ID);
+    _stprintf(text1,TEXT("%X"),(unsigned int)pFlarm->ID);
   else
-    _stprintf(text1,TEXT("[%s] %X"),pFlarm->Name, pFlarm->ID);
+    _stprintf(text1,TEXT("[%s] %X"),pFlarm->Name, (unsigned int)pFlarm->ID);
 
   flarmId = file->GetFlarmIdItem(pFlarm->ID);
   if(flarmId != NULL)
@@ -389,6 +389,20 @@ if (iTaskIdx == 0) {
                    Units::GetAltitudeName());
      }
    }
+  return 0;
+}
+
+int ShowTextEntries(LKSurface& Surface, const RECT& rc, TCHAR* text1,TCHAR* text2)
+{
+  /********************
+   * show text
+   ********************/
+  Surface.SetBackgroundTransparent();
+  Surface.SetTextColor(RGB_BLACK);
+  Surface.DrawText(rc.right + DLGSCALE(2), DLGSCALE(2), text1);
+  int ytext2 = Surface.GetTextHeight(text1);
+  Surface.SetTextColor(RGB_DARKBLUE);
+  Surface.DrawText(rc.right + DLGSCALE(2), ytext2, text2);
   return 0;
 }
 
@@ -536,7 +550,9 @@ FLARM_TRAFFIC* pFlarm;
                  * original data are shared ressources !
                  * for that we need to grant all called methods are thread safe
                  ****************************************************************/
+                ShowTextEntries(Surface, rc,  text1, text2);
                 pAS->DrawPicto(Surface, rc);
+
             }
             break;
 
@@ -553,12 +569,14 @@ FLARM_TRAFFIC* pFlarm;
             UnlockFlightData();
             pFlarm= ( FLARM_TRAFFIC* )  &Target;
             LKASSERT(pFlarm);
+            BuildFLARMText(pFlarm,text1,text2);
+            ShowTextEntries(Surface, rc,  text1, text2);
 #ifdef FLARM_PICTO_THREADSAFE
             MapWindow::DrawFlarmPicto(Surface, rc, pFlarm);   // draw MAP icons
 #else
             DrawUTF8FlarmPicto(Surface, rc, pFlarm);          // use alternate UTF8 icons
 #endif
-            BuildFLARMText(pFlarm,text1,text2);
+
             break;
 #endif // FLARM_MS
 
@@ -569,7 +587,12 @@ FLARM_TRAFFIC* pFlarm;
         case IM_TEAM:
             _stprintf(text1,_T("%s:"),gettext(_T("_@M700_"))); //_@M700_ "Team code"
             _stprintf(text2,_T("%s"), CALCULATED_INFO.OwnTeamCode );
-            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("⛳"), RGB_ORANGE);
+            ShowTextEntries(Surface, rc,  text1, text2);
+#ifdef KOBO
+              UTF8Pictorial( Surface,  rc, (TCHAR*)_T("♥"), RGB_BLACK);
+#else
+              UTF8Pictorial( Surface,  rc, (TCHAR*)_T("⛳"), RGB_ORANGE);
+#endif
             break;
 #endif
 #ifdef ORACLE_MS
@@ -582,6 +605,7 @@ FLARM_TRAFFIC* pFlarm;
               _stprintf(text2,_T("%s: %s"),    gettext(_T("_@M456_")), WayPointList[Elements[i].iIdx].Name);// _@M456_ "Near"
             else
               _stprintf(text2,_T("%s"),   gettext(_T("_@M1690_"))); //_@M1690_ "THE LK8000 ORACLE"
+            ShowTextEntries(Surface, rc,  text1, text2);
             UTF8Pictorial( Surface,  rc, (TCHAR*)_T("♛"),RGB_BLUE);
             break;
 #endif
@@ -606,6 +630,7 @@ FLARM_TRAFFIC* pFlarm;
                _stprintf(text2,TEXT("%s %6.0f%s"),Comment, GPS_INFO.Altitude*TOFEET,Units::GetUnitName(unFeet));
                UnlockFlightData();
              }
+             ShowTextEntries(Surface, rc,  text1, text2);
              MapWindow::DrawAircraft(Surface, (POINT) { (rc.right-rc.left)/2,(rc.bottom-rc.top)/2} );
           break;
 #endif // OWN_POS_MS
@@ -642,6 +667,7 @@ FLARM_TRAFFIC* pFlarm;
                                                            (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                                                            Units::GetAltitudeName());
               }
+              ShowTextEntries(Surface, rc,  text1, text2);
             }
             break;
             /************************************************************************************************
@@ -660,6 +686,7 @@ FLARM_TRAFFIC* pFlarm;
               if(idx < WayPointList.size())
               {
                 BuildTaskPointText( iTaskIdx,  text1, text2);
+                ShowTextEntries(Surface, rc,  text1, text2);
                 MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc, 3000);
               }
               UnlockTaskData(); // protect from external task changes
@@ -667,15 +694,6 @@ FLARM_TRAFFIC* pFlarm;
             break;
         }
 
-        /********************
-         * show text
-         ********************/
-        Surface.SetBackgroundTransparent();
-        Surface.SetTextColor(RGB_BLACK);
-        Surface.DrawText(rc.right + DLGSCALE(2), DLGSCALE(2), text1);
-        int ytext2 = Surface.GetTextHeight(text1);
-        Surface.SetTextColor(RGB_DARKBLUE);
-        Surface.DrawText(rc.right + DLGSCALE(2), ytext2, text2);
 
     }
 }
