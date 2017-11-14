@@ -291,6 +291,10 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
 #ifdef FLARM_MS
 int BuildFLARMText(FLARM_TRAFFIC* pFlarm, TCHAR* text1,TCHAR* text2)
 {
+if(pFlarm == NULL) return -1;
+if(text1 == NULL) return -1;
+if(text2 == NULL) return -1;
+
 TCHAR Comment[100] = _T("");;
 FlarmId* flarmId ;
 int j;
@@ -336,6 +340,8 @@ double Distance, Bear;
 
 int BuildTaskPointText(int iTaskIdx, TCHAR* text1,TCHAR* text2)
 {
+if(text1 == NULL) return -1;
+if(text2 == NULL) return -1;
 int idx=0;
 if(ValidTaskPointFast(iTaskIdx)) {
     idx = Task[iTaskIdx].Index;
@@ -390,6 +396,8 @@ if (iTaskIdx == 0) {
 
 int BuildLandableText(int idx, double Distance, TCHAR* text1,TCHAR* text2)
 {
+if(text1 == NULL) return -1;
+if(text2 == NULL) return -1;
 TCHAR Comment[100] = _T("");
 int j;
 
@@ -437,7 +445,31 @@ int j;
  return 0;
 }
 
+void UTF8Pictorial(LKSurface& Surface, const RECT& rc, TCHAR *Pict ,const LKColor& Color)
+{
+  Surface.SetBackgroundTransparent();
+  const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
 
+  Surface.SetTextColor(Color);
+  int xtext = Surface.GetTextWidth(Pict);
+  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , DLGSCALE(2), Pict);
+  Surface.SelectObject(OldFont);
+}
+
+void DrawUTF8FlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf)
+{
+extern  LKColor MixColors(const LKColor& Color2, double fFact1) ;
+
+if (pTraf == NULL) return;
+double fFact = fabs(pTraf->Average30s + 5.0) /10.0;
+if(fFact > 1.0 ) fFact = 1.0;
+if(fFact < 0.0 ) fFact = 0.0;
+LKColor BaseColor = RGB_GREEN ;
+BaseColor =  BaseColor.MixColors( RGB_BLUE, fFact);
+if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc,(TCHAR*) _T("■") ,BaseColor); else
+  if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc, (TCHAR*) _T("●") ,BaseColor);else
+    UTF8Pictorial( Surface,  rc,(TCHAR*) _T("✈") ,BaseColor);
+}
 
 static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 #define PICTO_WIDTH 50
@@ -513,7 +545,11 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             LockFlightData();
               memcpy( &Target, &GPS_INFO.FLARM_Traffic[Elements[i].iIdx], sizeof(     FLARM_TRAFFIC));
             UnlockFlightData();
-            MapWindow::DrawFlarmPicto(Surface, rc, &Target);
+#ifdef FLARM_PICTO_THREADSAFE
+            MapWindow::DrawFlarmPicto(Surface, rc, &Target);   // draw MAP icons
+#else
+            DrawUTF8FlarmPicto(Surface, rc, &Target);          // use alternate UTF8 icons
+#endif
             BuildFLARMText(&Target,text1,text2);
             break;
 #endif // FLARM_MS
@@ -525,17 +561,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         case IM_TEAM:
             _stprintf(text1,_T("%s:"), MsgToken(700)); //_@M700_ "Team code"
             _stprintf(text2,_T("%s"), CALCULATED_INFO.OwnTeamCode );
-            _stprintf(Comment,_T("⛳"));
-
-            Surface.SetBackgroundTransparent(); 
-            {
-                auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
-
-                Surface.SetTextColor(RGB_BLUE);
-                int xtext = Surface.GetTextWidth(Comment);
-                Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , DLGSCALE(2), Comment);
-                Surface.SelectObject(OldFont);
-            }
+            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("⛳"),LKColor(90,150,90));
             break;
 #endif
 #ifdef ORACLE_MS
@@ -548,15 +574,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
               _stprintf(text2,_T("%s: %s"), MsgToken(456), WayPointList[Elements[i].iIdx].Name);// _@M456_ "Near"
             else
               _stprintf(text2,_T("%s"), MsgToken(1690)); //_@M1690_ "THE LK8000 ORACLE"
-            _stprintf(Comment,_T("♛"));
-            Surface.SetBackgroundTransparent();
-            {
-                auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
-                Surface.SetTextColor(RGB_DARKGREEN);
-                int xtext = Surface.GetTextWidth(Comment);
-                Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , DLGSCALE(2), Comment);
-                Surface.SelectObject(OldFont);
-            }
+            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("♛"),RGB_BLUE);
             break;
 #endif
 #ifdef OWN_POS_MS
@@ -564,8 +582,6 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
              * IM_OWN_POS
              ************************************************************************************************/
           case IM_OWN_POS:
-
-      //       LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, Comment, (WCHAR*) NULL);
              _stprintf(text1,_T("%s [%s]"), AircraftRego_Config,AircraftType_Config);
              if (ISPARAGLIDER || ISCAR)
              {
