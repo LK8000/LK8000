@@ -930,6 +930,19 @@ void InputEvents::processPopupDetails_real() {
 
                 LastDoTraffic = 0;
                 break;
+            case PopupOracle:
+                // Do not update Traffic while in details mode, max 10m
+                extern void dlgOracleShowModal(void);
+                dlgOracleShowModal();
+                break;
+            case PopupTeam:
+                // Do not update Traffic while in details mode, max 10m
+                dlgTeamCodeShowModal();
+                break;
+            case PopupBasic:
+                // Do not update Traffic while in details mode, max 10m
+                dlgBasicSettingsShowModal();
+                break;
             default:
                 LKASSERT(false);
                 break;
