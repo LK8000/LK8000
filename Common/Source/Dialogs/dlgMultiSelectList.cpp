@@ -19,8 +19,7 @@
 
 #include "Dialogs.h"
 
-extern void dlgOracleShowModal(void);
-extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
+
 
 #define MAX_LIST_ITEMS 50
 ListElement* pResult = NULL;
@@ -447,6 +446,7 @@ int j;
 
 void UTF8Pictorial(LKSurface& Surface, const RECT& rc, TCHAR *Pict ,const LKColor& Color)
 {
+if (Pict == NULL) return;
   Surface.SetBackgroundTransparent();
   const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
 
@@ -458,18 +458,19 @@ void UTF8Pictorial(LKSurface& Surface, const RECT& rc, TCHAR *Pict ,const LKColo
 
 void DrawUTF8FlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf)
 {
-extern  LKColor MixColors(const LKColor& Color2, double fFact1) ;
-
 if (pTraf == NULL) return;
 double fFact = fabs(pTraf->Average30s + 5.0) /10.0;
-if(fFact > 1.0 ) fFact = 1.0;
-if(fFact < 0.0 ) fFact = 0.0;
+if(fFact > 1.0 ) fFact = 1.0; else
+  if(fFact < 0.0 ) fFact = 0.0;
 LKColor BaseColor = RGB_GREEN ;
+extern  LKColor MixColors(const LKColor& Color2, double fFact1) ;
 BaseColor =  BaseColor.MixColors( RGB_BLUE, fFact);
 if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc,(TCHAR*) _T("■") ,BaseColor); else
   if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc, (TCHAR*) _T("●") ,BaseColor);else
     UTF8Pictorial( Surface,  rc,(TCHAR*) _T("✈") ,BaseColor);
 }
+
+
 
 static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 #ifdef FLARM_MS
@@ -568,7 +569,7 @@ FLARM_TRAFFIC* pFlarm;
         case IM_TEAM:
             _stprintf(text1,_T("%s:"),gettext(_T("_@M700_"))); //_@M700_ "Team code"
             _stprintf(text2,_T("%s"), CALCULATED_INFO.OwnTeamCode );
-            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("⛳"),LKColor(90,150,90));
+            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("⛳"), RGB_ORANGE);
             break;
 #endif
 #ifdef ORACLE_MS
@@ -594,6 +595,7 @@ FLARM_TRAFFIC* pFlarm;
              {
                int utmzone; char utmchar;
                double easting, northing;
+               extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
                LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
                _stprintf(text2,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
              }
