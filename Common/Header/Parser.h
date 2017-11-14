@@ -22,7 +22,7 @@ typedef struct _FLARM_TRAFFIC
   double RelativeNorth;
   double RelativeEast;
   double RelativeAltitude;
-  long ID;
+  int ID;
   TCHAR Name[MAXFLARMNAME+1];
   TCHAR Cn[MAXFLARMCN+1];
   unsigned short IDType;
