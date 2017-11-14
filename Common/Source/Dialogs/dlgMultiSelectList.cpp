@@ -392,6 +392,20 @@ if (iTaskIdx == 0) {
   return 0;
 }
 
+int ShowTextEntries(LKSurface& Surface, const RECT& rc, TCHAR* text1,TCHAR* text2)
+{
+  /********************
+   * show text
+   ********************/
+  Surface.SetBackgroundTransparent();
+  Surface.SetTextColor(RGB_BLACK);
+  Surface.DrawText(rc.right + DLGSCALE(2), DLGSCALE(2), text1);
+  int ytext2 = Surface.GetTextHeight(text1);
+  Surface.SetTextColor(RGB_DARKBLUE);
+  Surface.DrawText(rc.right + DLGSCALE(2), ytext2, text2);
+  return 0;
+}
+
 
 int BuildLandableText(int idx, double Distance, TCHAR* text1,TCHAR* text2)
 {
@@ -531,7 +545,9 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                  * original data are shared ressources !
                  * for that we need to grant all called methods are thread safe
                  ****************************************************************/
+                ShowTextEntries(Surface, rc,  text1, text2);
                 pAS->DrawPicto(Surface, rc);
+
             }
             break;
 
@@ -546,12 +562,14 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             LockFlightData();
               memcpy( &Target, &GPS_INFO.FLARM_Traffic[Elements[i].iIdx], sizeof(     FLARM_TRAFFIC));
             UnlockFlightData();
+
+            BuildFLARMText(&Target,text1,text2);
+            ShowTextEntries(Surface, rc,  text1, text2);
 #ifdef FLARM_PICTO_THREADSAFE
             MapWindow::DrawFlarmPicto(Surface, rc, &Target);   // draw MAP icons
 #else
             DrawUTF8FlarmPicto(Surface, rc, &Target);          // use alternate UTF8 icons
 #endif
-            BuildFLARMText(&Target,text1,text2);
             break;
 #endif // FLARM_MS
 
@@ -562,7 +580,12 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         case IM_TEAM:
             _stprintf(text1,_T("%s:"), MsgToken(700)); //_@M700_ "Team code"
             _stprintf(text2,_T("%s"), CALCULATED_INFO.OwnTeamCode );
+            ShowTextEntries(Surface, rc,  text1, text2);
+#ifdef KOBO
+            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("♥"), RGB_BLACK);
+#else
             UTF8Pictorial( Surface,  rc, (TCHAR*)_T("⛳"), RGB_ORANGE);
+#endif
             break;
 #endif
 #ifdef ORACLE_MS
@@ -575,6 +598,8 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
               _stprintf(text2,_T("%s: %s"), MsgToken(456), WayPointList[Elements[i].iIdx].Name);// _@M456_ "Near"
             else
               _stprintf(text2,_T("%s"), MsgToken(1690)); //_@M1690_ "THE LK8000 ORACLE"
+
+            ShowTextEntries(Surface, rc,  text1, text2);
             UTF8Pictorial( Surface,  rc, (TCHAR*)_T("♛"),RGB_BLUE);
             break;
 #endif
@@ -599,6 +624,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                _stprintf(text2,TEXT("%s %6.0f%s"),Comment, GPS_INFO.Altitude*TOFEET,Units::GetUnitName(unFeet));
                UnlockFlightData();
              }
+             ShowTextEntries(Surface, rc,  text1, text2);
              MapWindow::DrawAircraft(Surface, (POINT) { (rc.right-rc.left)/2,(rc.bottom-rc.top)/2} );
           break;
 #endif // OWN_POS_MS
@@ -637,6 +663,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                             (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                             Units::GetAltitudeName());
               }
+              ShowTextEntries(Surface, rc,  text1, text2);
             }
             break;
             /************************************************************************************************
@@ -655,6 +682,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
               if(idx < WayPointList.size())
               {
                 BuildTaskPointText( iTaskIdx,  text1, text2);
+                ShowTextEntries(Surface, rc,  text1, text2);
                 MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc, 3000);
               }
               UnlockTaskData(); // protect from external task changes
@@ -662,15 +690,6 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             break;
         }
 
-        /********************
-         * show text
-         ********************/
-        Surface.SetBackgroundTransparent();
-        Surface.SetTextColor(RGB_BLACK);
-        Surface.DrawText(rc.right + DLGSCALE(2), DLGSCALE(2), text1);
-        int ytext2 = Surface.GetTextHeight(text1);
-        Surface.SetTextColor(RGB_DARKBLUE);
-        Surface.DrawText(rc.right + DLGSCALE(2), ytext2, text2);
 
     }
 }
