@@ -137,7 +137,7 @@ start_search:
             DoStatusMessage(MsgToken(2248));  // _@M2248_  "No Near Object found!"
         }
     } else {
-        LKSound(TEXT("LK_GREEN.WAV"));
+        LKSound(TEXT("LK_TOCK.WAV"));
         dlgMultiSelectListShowModal();
         return true;
     }
