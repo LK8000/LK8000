@@ -460,7 +460,7 @@ int j;
  return 0;
 }
 
-void UTF8Pictorial(LKSurface& Surface, const RECT& rc, TCHAR *Pict ,const LKColor& Color)
+void UTF8Pictorial(LKSurface& Surface, const RECT& rc,const TCHAR *Pict ,const LKColor& Color)
 {
 if (Pict == NULL) return;
   Surface.SetBackgroundTransparent();
@@ -481,9 +481,9 @@ if(fFact > 1.0 ) fFact = 1.0; else
 LKColor BaseColor = RGB_GREEN ;
 extern  LKColor MixColors(const LKColor& Color2, double fFact1) ;
 BaseColor =  BaseColor.MixColors( RGB_BLUE, fFact);
-if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc,(TCHAR*) _T("■") ,BaseColor); else
-  if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc, (TCHAR*) _T("●") ,BaseColor);else
-    UTF8Pictorial( Surface,  rc,(TCHAR*) _T("✈") ,BaseColor);
+if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc, _T("■") ,BaseColor); else
+  if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc,  _T("●") ,BaseColor);else
+    UTF8Pictorial( Surface,  rc, _T("✈") ,BaseColor);
 }
 
 
@@ -592,7 +592,7 @@ FLARM_TRAFFIC* pFlarm;
             _stprintf(text2,_T("%s"), CALCULATED_INFO.OwnTeamCode );
             ShowTextEntries(Surface, rc,  text1, text2);
 
-            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("@"), RGB_ORANGE);
+            UTF8Pictorial( Surface,  rc, _T("@"), RGB_ORANGE);
             break;
 #endif
 #ifdef ORACLE_MS
@@ -606,7 +606,7 @@ FLARM_TRAFFIC* pFlarm;
             else
               _stprintf(text2,_T("%s"),   gettext(_T("_@M1690_"))); //_@M1690_ "THE LK8000 ORACLE"
             ShowTextEntries(Surface, rc,  text1, text2);
-            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("?"),RGB_BLUE);
+            UTF8Pictorial( Surface,  rc, _T("?"),RGB_BLUE);
             break;
 #endif
 #ifdef OWN_POS_MS
