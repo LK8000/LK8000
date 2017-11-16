@@ -15,7 +15,7 @@
 #include "NavFunctions.h"
 #include "Draw/ScreenProjection.h"
 #include "InputEvents.h"
-
+#include "Sound/Sound.h"
 
 #include "Dialogs.h"
 
@@ -73,6 +73,7 @@ static void OnUpClicked(WndButton* Sender) {
         LKASSERT(iNO_ELEMENTS>0);
         ItemIndex = (iNO_ELEMENTS - 1);
     }
+    LKSound(TEXT("LK_TICK.WAV"));
     wMultiSelectListList->SetItemIndexPos(ItemIndex);
     wMultiSelectListList->Redraw();
     wMultiSelectListListEntry->SetFocus();
@@ -86,6 +87,7 @@ static void OnDownClicked(WndButton* pWnd) {
     } else {
         ItemIndex = 0;
     }
+    LKSound(TEXT("LK_TOCK.WAV"));
     wMultiSelectListList->SetItemIndexPos(ItemIndex);
     wMultiSelectListList->Redraw();
     wMultiSelectListListEntry->SetFocus();
@@ -571,6 +573,7 @@ FLARM_TRAFFIC* pFlarm;
             LKASSERT(pFlarm);
             BuildFLARMText(pFlarm,text1,text2);
             ShowTextEntries(Surface, rc,  text1, text2);
+#define FLARM_PICTO_THREADSAFE
 #ifdef FLARM_PICTO_THREADSAFE
             MapWindow::DrawFlarmPicto(Surface, rc, pFlarm);   // draw MAP icons
 #else
@@ -588,11 +591,8 @@ FLARM_TRAFFIC* pFlarm;
             _stprintf(text1,_T("%s:"),gettext(_T("_@M700_"))); //_@M700_ "Team code"
             _stprintf(text2,_T("%s"), CALCULATED_INFO.OwnTeamCode );
             ShowTextEntries(Surface, rc,  text1, text2);
-#ifdef KOBO
-              UTF8Pictorial( Surface,  rc, (TCHAR*)_T("♥"), RGB_BLACK);
-#else
-              UTF8Pictorial( Surface,  rc, (TCHAR*)_T("⛳"), RGB_ORANGE);
-#endif
+
+            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("@"), RGB_ORANGE);
             break;
 #endif
 #ifdef ORACLE_MS
@@ -606,7 +606,7 @@ FLARM_TRAFFIC* pFlarm;
             else
               _stprintf(text2,_T("%s"),   gettext(_T("_@M1690_"))); //_@M1690_ "THE LK8000 ORACLE"
             ShowTextEntries(Surface, rc,  text1, text2);
-            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("♛"),RGB_BLUE);
+            UTF8Pictorial( Surface,  rc, (TCHAR*)_T("?"),RGB_BLUE);
             break;
 #endif
 #ifdef OWN_POS_MS
@@ -846,8 +846,6 @@ FLARM_TRAFFIC* pFlarm;
             }
             break;
         }
-
-
     }
 }
 
