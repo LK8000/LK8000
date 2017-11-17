@@ -558,8 +558,8 @@ BOOL devInit() {
             ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
         }
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
-
-        if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
+        if (_tcsncmp(Port, _T("COM"),3) == 0) {  // shared ports for COM Ports only
+          if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
             unsigned int j;
             for( j = 0; j < i ; j++)
             {
@@ -583,6 +583,7 @@ BOOL devInit() {
               }
             }
             continue;
+          }
         }
         UsedPort.insert(Port);
         
