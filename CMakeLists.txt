@@ -715,22 +715,12 @@ add_library( LK8000 SHARED
     Common/Source/Devices/Volkslogger/vlconv.cpp
     Common/Source/Devices/Volkslogger/vlutils.cpp
 
-
-    Common/Source/Library/zzip/adler32.c
-    Common/Source/Library/zzip/crc32.c
     Common/Source/Library/zzip/err.c
     Common/Source/Library/zzip/fetch.c
     Common/Source/Library/zzip/file.c
-    Common/Source/Library/zzip/infback.c
-    Common/Source/Library/zzip/inffast.c
-    Common/Source/Library/zzip/inflate.c
     Common/Source/Library/zzip/info.c
-    Common/Source/Library/zzip/inftrees.c
     Common/Source/Library/zzip/plugin.c
-    Common/Source/Library/zzip/uncompr.c
     Common/Source/Library/zzip/zip.c
-    Common/Source/Library/zzip/zstat.c
-    Common/Source/Library/zzip/zutil.c
 
     Common/Source/Library/poco/Debugger.cpp
     Common/Source/Library/poco/Bugcheck.cpp
@@ -820,6 +810,7 @@ add_dependencies(LK8000 boost)
 find_library( log-lib log )
 find_library( android-lib android )
 find_library( gles-lib GLESv1_CM )
+find_library( zlib-lib z )
 
 target_link_libraries(
     LK8000
@@ -827,4 +818,5 @@ target_link_libraries(
     ${android-lib}
     ${log-lib}
     ${gles-lib}
+    ${zlib-lib}
 )

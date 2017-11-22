@@ -5,7 +5,7 @@
 
 /* @(#) $Id: zutil.c,v 1.2 2007/09/14 17:12:07 jwharington Exp $ */
 
-#include "zzip/zutil.h"
+#include "zutil.h"
 
 #include "utils/heapcheck.h"
 

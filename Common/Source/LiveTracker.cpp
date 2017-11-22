@@ -12,7 +12,6 @@
 #include <winsock.h>
 #else
 #include <winsock2.h>
-#include <zzip/zlib.h>
 #endif
 #endif
 
@@ -24,7 +23,6 @@
 	#include <netdb.h>
 	#include <unistd.h>
 	#include <sys/ioctl.h>
-	#include <zlib.h>
 
 	#define SOCKET int
 	#define SOCKET_ERROR -1
@@ -38,6 +36,7 @@
 #include <cctype>
 #include <sstream>
 #include <time.h>
+#include <zlib.h>
 
 #include "externs.h"
 #include "LiveTracker.h"

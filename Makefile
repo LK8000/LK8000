@@ -598,7 +598,7 @@ endif
 ifeq ($(CONFIG_LINUX),y)
  INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
- INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR)/libzzip -I$(HDR) -I$(SRC)
+ INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR)/mingw32compat/zlib -I$(HDR)/libzzip -I$(HDR) -I$(SRC)
  ifneq ($(CONFIG_PC),y)
   INCLUDES	+= -I$(HDR)/mingw32compat/WinCE
  endif
@@ -1383,16 +1383,22 @@ RSCSRC  := $(SRC)/Resource
 
 ZZIPSRC	:=$(LIB)/zzip
 ZZIP	:=\
-	$(ZZIPSRC)/adler32.c	 	\
-	$(ZZIPSRC)/crc32.c 		\
-	$(ZZIPSRC)/err.c 		$(ZZIPSRC)/fetch.c \
-	$(ZZIPSRC)/file.c 		\
-	$(ZZIPSRC)/infback.c 		$(ZZIPSRC)/inffast.c \
-	$(ZZIPSRC)/inflate.c 		$(ZZIPSRC)/info.c \
-	$(ZZIPSRC)/inftrees.c 		$(ZZIPSRC)/plugin.c \
-	$(ZZIPSRC)/uncompr.c \
-	$(ZZIPSRC)/zip.c 		$(ZZIPSRC)/zstat.c \
-	$(ZZIPSRC)/zutil.c
+	$(ZZIPSRC)/err.c \
+	$(ZZIPSRC)/fetch.c \
+	$(ZZIPSRC)/file.c \
+	$(ZZIPSRC)/info.c \
+	$(ZZIPSRC)/plugin.c \
+	$(ZZIPSRC)/zip.c \
+	$(LIB)/zlib/adler32.c \
+	$(LIB)/zlib/crc32.c \
+	$(LIB)/zlib/infback.c \
+	$(LIB)/zlib/inffast.c \
+	$(LIB)/zlib/inflate.c \
+	$(LIB)/zlib/inftrees.c \
+	$(LIB)/zlib/zstat.c \
+	$(LIB)/zlib/zutil.c \
+	$(LIB)/zlib/uncompr.c \
+
 
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
