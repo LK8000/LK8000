@@ -542,7 +542,8 @@ private:
   CAirspaceList _detail_queue;
 
   //Openair parsing functions, internal use
-  void FillAirspacesFromOpenAir(ZZIP_FILE *fp);
+  bool FillAirspacesFromOpenAir(const TCHAR* szFile);
+  
   bool StartsWith(const TCHAR *Text, const TCHAR *LookFor) const;
   void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const;
   bool ReadCoords(TCHAR *Text, double *X, double *Y) const;
@@ -550,8 +551,8 @@ private:
   bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const;
   void CorrectGeoPoints(CPoint2DArray &points);
 
-  bool FillAirspacesFromOpenAIP(ZZIP_FILE *fp);
-  bool ReadAltitudeOpenAIP(XMLNode &node, AIRSPACE_ALT *Alt) const;
+  bool FillAirspacesFromOpenAIP(const TCHAR* szFile);
+  bool ReadAltitudeOpenAIP(XMLNode & node, AIRSPACE_ALT *Alt) const;
 
   //Airspace setting save/restore functions
   void SaveSettings() const;

@@ -26,6 +26,7 @@
 #include "Util/TruncateString.hpp"
 
 #include "Topology/shapelib/mapserver.h"
+#include "utils/zzip_stream.h"
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
@@ -1543,7 +1544,15 @@ void CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points) {
 }
 
 // Reading and parsing OpenAir airspace file
-void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
+bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
+
+    zzip_stream stream(szFile, "rt");
+    if(!stream) {
+      StartupStore(TEXT("... Unable to open airspace file : %s\n"), szFile);
+      return false;
+    }    
+
+  
     TCHAR *Comment;
     int nSize;
     TCHAR Text[READLINE_LENGTH + 1];
@@ -1572,8 +1581,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
     bool InsideMap = false;
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
-    charset cs = charset::unknown;
-    while (ReadString(fp, READLINE_LENGTH, Text, cs)) {
+    while (stream.read_line(Text)) {
         ++linecount;
         p = Text;
         //Skip whitespaces
@@ -1741,7 +1749,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                 _sntprintf(sTmp, READLINE_LENGTH,TEXT("Parse error 10 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
                             // LKTOKEN  _@M68_ = "Airspace"
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
 			}
                         break;
                 } //sw
@@ -1761,7 +1769,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                 InsideMap = true;
                               }
                             }
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
                         }
                         break;
 
@@ -1776,7 +1784,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                 InsideMap = true;
                               }
                             }
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
                         }
                         break;
 
@@ -1808,7 +1816,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         } else {
                             _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
                         }
                         break;
 
@@ -1823,7 +1831,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 			    maxwarning--;
 
                             // LKTOKEN  _@M68_ = "Airspace"
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
 			}
                         break;
                 } //sw
@@ -1855,7 +1863,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                 _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 6 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                 // LKTOKEN  _@M68_ = "Airspace"
-                if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
+                if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
                 break;
 
             case _T('S'): // ignore the SB,SP ...
@@ -1873,7 +1881,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                     maxwarning--;
                     // LKTOKEN  _@M68_ = "Airspace"
-                    if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
+                    if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
 		}
                 break;
         }//sw
@@ -1924,6 +1932,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     // For debugging, dump all readed airspaces to runtime.log
     //CAirspaceList::iterator it;
     //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
+    return true;
 }
 
 bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode &node, AIRSPACE_ALT *Alt) const {
@@ -1983,7 +1992,12 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode &node, AIRSPACE_ALT *Alt) con
 }
 
 // Reads airspaces from an OpenAIP file
-bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
+bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
+    zzip_file_ptr fp(openzip(szFile, "rt"));
+    if(!fp) {
+      StartupStore(TEXT("... Unable to open airspace file : %s\n"), szFile);
+      return false;
+    }
     StartupStore(TEXT(". Reading OpenAIP airspace file%s"), NEWLINE);
     unsigned int skiped_cnt=0;
     unsigned int accept_cnt=0;
@@ -2296,24 +2310,16 @@ void CAirspaceManager::ReadAirspaces() {
             bool readOk=false;
 
             if(wextension != nullptr) { // Check if we have a file extension
-                ZZIP_FILE* fp = openzip(szFile, "rt");
-                if(fp != nullptr) { // Check if it possible to open the file
+                if(_tcsicmp(wextension,_T(".txt"))==0) { // TXT file: should be an OpenAir
+                    readOk = FillAirspacesFromOpenAir(szFile);
+                } else if(_tcsicmp(wextension,_T(".aip"))==0) { // AIP file: should be an OpenAIP
+                    readOk=FillAirspacesFromOpenAIP(szFile);
+                }  else {
+                    StartupStore(TEXT("... Unknown airspace file %d extension: %s%s"), fileCounter, wextension, NEWLINE);
+                }
 
-                    if(_tcsicmp(wextension,_T(".txt"))==0) { // TXT file: should be an OpenAir
-                        FillAirspacesFromOpenAir(fp);
-                        readOk=true;
-                    } else if(_tcsicmp(wextension,_T(".aip"))==0) { // AIP file: should be an OpenAIP
-                        readOk=FillAirspacesFromOpenAIP(fp);
-                    }  else {
-                        StartupStore(TEXT("... Unknown airspace file %d extension: %s%s"), fileCounter, wextension, NEWLINE);
-                    }
-
-                    if(!readOk) { // if file was OK remember otherwise forget it
-                        StartupStore(TEXT("... Failed to parse airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
-                    }
-                    zzip_fclose(fp);
-                } else {
-                    StartupStore(TEXT("... Unable to open airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
+                if(!readOk) { // if file was OK remember otherwise forget it
+                    StartupStore(TEXT("... Failed to parse airspace file %d: %s%s"), fileCounter, szFile, NEWLINE);
                 }
             } else {
                 StartupStore(TEXT("... Airspace file %d without extension.%s"), fileCounter, NEWLINE);
