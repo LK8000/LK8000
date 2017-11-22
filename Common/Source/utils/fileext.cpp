@@ -11,7 +11,7 @@
 #include "fileext.h"
 #include "stringext.h"
 
-#include "utils/heapcheck.h"
+#include "utils/make_unique.h"
 
 extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
 
@@ -125,83 +125,41 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
   return(false);
 } // Open()
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Reads one line from UTF-8 encoded file and converts it to TCHAR Unicode
-/// string.
-/// maxChars-1 characters are returned at most, leaving 1 char for
-/// terminating '\0'.
-///
-/// The method strips any newline character ('\r' and '\n').
-///
-/// @param unicode    output buffer (will be terminated with '\0'); must be
-///                   large enough to contain full line (otherwise rest
-///                   of line will be discarded)
-/// @param maxChars   output buffer size (nb of TCHARs)
-///
-/// @retval true  line has been read successfully
-/// @retval false error during reading from the file
-///
-bool Utf8File::ReadLn(TCHAR* unicode, int maxChars)
-{
-  if (fp == NULL)
-    return(false);
-
-  // in worst case each char can be encoded in 4 bytes
-  char cstr[4 * maxChars];
-
-  if (fgets(cstr, countof(cstr), fp) == NULL)
-    return(false);
-
-  // strip new-line separators
-  size_t len = strlen(cstr);
-
-  while (len > 0) {
-    char last = cstr[len - 1];
-    if (last == '\r' || last == '\n')
-      cstr[--len] = '\0';
-    else
-      break;
-  }
-
-  if (utf2TCHAR(cstr, unicode, maxChars) < 0 && !convErReported) {
-    StartupStore(_T("Invalid UTF8-WC conversion for '%s'%s"), path, NEWLINE);
-    convErReported = true;
-  }
-
-  return(true);
-} // ReadLn()
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Write zero terminated line into the file.
 /// Newline character will be added automatically.
 ///
 /// @param unicode    zero terminated string
 ///
-void Utf8File::WriteLn(const TCHAR* unicode)
-{
-  if (fp == NULL)
+void Utf8File::WriteLn(const TCHAR* unicode) {
+  if (!fp) {
     return;
+  }
+  if(unicode) {
 
-  if (unicode != NULL) {
-    size_t len = _tcslen(unicode);
-    // in worst case each char can be encoded in 4 bytes
-    char cstr[4 * len + 1];
-
+#ifdef UNICODE
+    
+    // in worst case each characters can be encoded in 4 bytes
+    const size_t max_char = _tcslen(unicode) * 4 + 1;
+    std::unique_ptr<char[]> utf = std::make_unique<char[]>(max_char);
+    char* cstr = utf.get();
+    
     // (conversion and file error is ignored now, maybe in future it should
     // throw exception)
-    if (TCHAR2utf(unicode, cstr, sizeof(cstr)) < 0 && !convErReported) {
-      StartupStore(_T("Invalid WC-UTF8 conversion for '%s'%s"), path, NEWLINE);
+    if (TCHAR2utf(unicode, cstr, max_char) < 0 && !convErReported) {
+      StartupStore(_T("Invalid WC-UTF8 conversion for '%s'\n"), path);
       convErReported = true;
     }
-
+    
+#else
+    const char* cstr = unicode;
+#endif
+  
     if (fputs(cstr, fp) == EOF && !writeErReported) {
-      StartupStore(_T("Cannot wite to file '%s'%s"), path, NEWLINE);
+      StartupStore(_T("Cannot wite to file '%s'\n"), path);
       writeErReported = true;
     }
   }
-
   fputc('\n', fp);
 } // WriteLn()
 
