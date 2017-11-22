@@ -258,7 +258,7 @@ const TCHAR *Units::GetUnitName(Units_t Unit) {
     return (szName ? szName : _T(""));
 }
 
-Units_t Units::GetUserDistanceUnit(void){
+Units_t Units::GetUserDistanceUnit() {
   return(UserDistanceUnit);
 }
 
@@ -270,11 +270,11 @@ Units_t Units::SetUserDistanceUnit(Units_t NewUnit){
   return(last);
 }
 
-Units_t Units::GetUserAltitudeUnit(void){
+Units_t Units::GetUserAltitudeUnit() {
   return(UserAltitudeUnit);
 }
 
-Units_t Units::GetUserInvAltitudeUnit(void){ // 100126
+Units_t Units::GetUserInvAltitudeUnit() { // 100126
   return(UserAltitudeUnit==unFeet?unMeter:unFeet);
 }
 
@@ -286,7 +286,7 @@ Units_t Units::SetUserAltitudeUnit(Units_t NewUnit){
   return(last);
 }
 
-Units_t Units::GetUserHorizontalSpeedUnit(void){
+Units_t Units::GetUserHorizontalSpeedUnit() {
   return(UserHorizontalSpeedUnit);
 }
 
@@ -298,7 +298,7 @@ Units_t Units::SetUserHorizontalSpeedUnit(Units_t NewUnit){
   return(last);
 }
 
-Units_t Units::GetUserTaskSpeedUnit(void){
+Units_t Units::GetUserTaskSpeedUnit() {
   return(UserTaskSpeedUnit);
 }
 
@@ -310,7 +310,7 @@ Units_t Units::SetUserTaskSpeedUnit(Units_t NewUnit){
   return(last);
 }
 
-Units_t Units::GetUserVerticalSpeedUnit(void){
+Units_t Units::GetUserVerticalSpeedUnit() {
   return(UserVerticalSpeedUnit);
 }
 
@@ -322,7 +322,7 @@ Units_t Units::SetUserVerticalSpeedUnit(Units_t NewUnit){
   return(last);
 }
 
-Units_t Units::GetUserWindSpeedUnit(void){
+Units_t Units::GetUserWindSpeedUnit() {
   return(UserWindSpeedUnit);
 }
 
@@ -358,7 +358,7 @@ Units_t Units::GetUserUnitByGroup(UnitGroup_t UnitGroup){
 }
 
 
-void Units::NotifyUnitChanged(void){
+void Units::NotifyUnitChanged() {
   // todo
 
   switch (SpeedUnit_Config) {

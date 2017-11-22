@@ -77,39 +77,32 @@ public:
 
   static CoordinateFormats_t CoordinateFormat;
 
-  static const TCHAR *GetUnitName(Units_t Unit);
+  static const TCHAR *GetUnitName(Units_t Unit) gcc_pure;
 
-  static Units_t GetUserDistanceUnit(void);
+  static Units_t GetUserDistanceUnit() gcc_pure;
   static Units_t SetUserDistanceUnit(Units_t NewUnit);
 
-  static Units_t GetUserAltitudeUnit(void);
-  static Units_t GetUserInvAltitudeUnit(void); // 100126
+  static Units_t GetUserAltitudeUnit() gcc_pure;
+  static Units_t GetUserInvAltitudeUnit() gcc_pure; // 100126
   static Units_t SetUserAltitudeUnit(Units_t NewUnit);
 
-  static Units_t GetUserHorizontalSpeedUnit(void);
+  static Units_t GetUserHorizontalSpeedUnit() gcc_pure;
   static Units_t SetUserHorizontalSpeedUnit(Units_t NewUnit);
 
-  static Units_t GetUserTaskSpeedUnit(void);
+  static Units_t GetUserTaskSpeedUnit() gcc_pure;
   static Units_t SetUserTaskSpeedUnit(Units_t NewUnit);
 
-  static Units_t GetUserVerticalSpeedUnit(void);
+  static Units_t GetUserVerticalSpeedUnit() gcc_pure;
   static Units_t SetUserVerticalSpeedUnit(Units_t NewUnit);
 
-  static Units_t GetUserWindSpeedUnit(void);
+  static Units_t GetUserWindSpeedUnit() gcc_pure;
   static Units_t SetUserWindSpeedUnit(Units_t NewUnit);
 
-  static Units_t GetUserUnitByGroup(UnitGroup_t UnitGroup);
+  static Units_t GetUserUnitByGroup(UnitGroup_t UnitGroup) gcc_pure;
 
-  static void LongitudeToDMS(double Longitude,
-                             int *dd,
-                             int *mm,
-                             int *ss,
-                             bool *east);
-  static void LatitudeToDMS(double Latitude,
-                            int *dd,
-                            int *mm,
-                            int *ss,
-                            bool *north);
+  static void LongitudeToDMS(double Longitude, int *dd, int *mm, int *ss, bool *east) gcc_nonnull(2,3,4,5);
+  static void LatitudeToDMS(double Latitude, int *dd, int *mm, int *ss, bool *north) gcc_nonnull(2,3,4,5);
+
 
   static bool CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer, size_t size);
 
@@ -119,7 +112,7 @@ public:
     return CoordinateToString(Longitude, Latitude, Buffer, size);
   }
 
-  static bool LongitudeToString(double Longitude, TCHAR *Buffer, size_t size);
+  static bool LongitudeToString(double Longitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
 
   template<size_t size>
   static bool LongitudeToString(double Longitude, TCHAR (&Buffer)[size]) {
@@ -127,7 +120,7 @@ public:
     return LongitudeToString(Longitude, Buffer, size);
   }
 
-  static bool LatitudeToString(double Latitude, TCHAR *Buffer, size_t size);
+  static bool LatitudeToString(double Latitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
 
   template<size_t size>
   static bool LatitudeToString(double Latitude, TCHAR (&Buffer)[size]) {
@@ -138,62 +131,57 @@ public:
 
   static void NotifyUnitChanged(void);
 
-  static const TCHAR *GetHorizontalSpeedName();
+  static const TCHAR *GetHorizontalSpeedName() gcc_pure;
+  static const TCHAR *GetVerticalSpeedName() gcc_pure;
+  static const TCHAR *GetDistanceName() gcc_pure;
+  static const TCHAR *GetAltitudeName() gcc_pure;
+  static const TCHAR *GetInvAltitudeName() gcc_pure;
+  static const TCHAR *GetTaskSpeedName() gcc_pure;
+  static const TCHAR *GetWindSpeedName() gcc_pure;
 
-  static const TCHAR *GetVerticalSpeedName();
-
-  static const TCHAR *GetDistanceName();
-
-  static const TCHAR *GetAltitudeName();
-  static const TCHAR *GetInvAltitudeName();
-
-  static const TCHAR *GetTaskSpeedName();
-	
-  static const TCHAR *GetWindSpeedName();
-
-  static bool FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size);
-  static bool FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size);
-  static bool FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size); // VENTA3
-  static bool FormatUserDistance(double Distance, TCHAR *Buffer, size_t size);
-  static bool FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, size_t size);
+  static bool FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
+  static bool FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
+  static bool FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2); // VENTA3
+  static bool FormatUserDistance(double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(2);
+  static bool FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(3);
 
 
   /**
    * convert value from System Unit to @unit
    */
-  static double ToUser(Units_t unit, double value);
+  static double ToUser(Units_t unit, double value) gcc_pure;
 
   /**
    * convert value from System Unit to User Unit
    */
-  static double ToUserAltitude(double Altitude);
-  static double ToInvUserAltitude(double Altitude);
-  static double ToUserDistance(double Distance);
-  static double ToUserWindSpeed(double speed);
-  static double ToUserHorizontalSpeed(double speed);
-  static double ToUserVerticalSpeed(double speed);
-  static double ToUserTaskSpeed(double speed);
+  static double ToUserAltitude(double Altitude) gcc_pure;
+  static double ToInvUserAltitude(double Altitude) gcc_pure;
+  static double ToUserDistance(double Distance) gcc_pure;
+  static double ToUserWindSpeed(double speed) gcc_pure;
+  static double ToUserHorizontalSpeed(double speed) gcc_pure;
+  static double ToUserVerticalSpeed(double speed) gcc_pure;
+  static double ToUserTaskSpeed(double speed) gcc_pure;
 
   /**
    * convert value from @unit to System Unit
    */
-  static double ToSys(Units_t unit, double value);
+  static double ToSys(Units_t unit, double value) gcc_pure;
 
   /**
    * convert value from User Unit to System Unit
    */
-  static double ToSysAltitude(double Altitude);
-  static double ToSysDistance(double Distance);
-  static double ToSysWindSpped(double speed);
-  static double ToSysHorizontalSpeed(double speed);
-  static double ToSysVerticalSpeed(double speed);
-  static double ToSysTaskSpeed(double speed);
+  static double ToSysAltitude(double Altitude) gcc_pure;
+  static double ToSysDistance(double Distance) gcc_pure;
+  static double ToSysWindSpped(double speed) gcc_pure;
+  static double ToSysHorizontalSpeed(double speed) gcc_pure;
+  static double ToSysVerticalSpeed(double speed) gcc_pure;
+  static double ToSysTaskSpeed(double speed) gcc_pure;
 
 
-  static void TimeToText(TCHAR* text, int d);
-  static void TimeToTextSimple(TCHAR* text, int d);
-  static bool TimeToTextDown(TCHAR* text, int d);
-  static void TimeToTextS(TCHAR* text, int d);
+  static void TimeToText(TCHAR* text, int d) gcc_nonnull(1);
+  static void TimeToTextSimple(TCHAR* text, int d) gcc_nonnull(1);
+  static bool TimeToTextDown(TCHAR* text, int d) gcc_nonnull(1);
+  static void TimeToTextS(TCHAR* text, int d) gcc_nonnull(1);
 
 };
 
