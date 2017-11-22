@@ -10,6 +10,7 @@
 #include "Waypointparser.h"
 #include "Dialogs/dlgProgress.h"
 #include "resource.h"
+#include "utils/zzip_stream.h"
 
 
 extern int globalFileNum;
@@ -19,43 +20,19 @@ static TCHAR nTemp2String[READLINE_LENGTH*2];
 
 
 // returns -1 if error, or the WpFileType
-int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
+int ReadWayPointFile(zzip_stream& stream, int fileformat)
 {
   WAYPOINT new_waypoint {};
   int nLineNumber=0;
-  short fileformat=LKW_DAT;
 
   CreateProgressDialog(MsgToken(903)); // Loading Waypoints File...
-
-#ifdef WIN32
-  // zzip_file_size only exist in private version of zziplib
-  zzip_off_t fSize = zzip_file_size(fp);
-  if (fSize <10) {
-	StartupStore(_T("... ReadWayPointFile: waypoint file %s type=%d is empty%s"), CurrentWpFileName,fileformat,NEWLINE);
-	return -1;
-  }
-#endif
-
-  fileformat=GetWaypointFileFormatType(CurrentWpFileName);
-
-  if (fileformat<0) {
-	StartupStore(_T("... Unknown file format in waypoint file <%s\n"),CurrentWpFileName);
-	// We do NOT return, because first we analyze the content.
-  }
-
-  if (fileformat==LKW_OPENAIP) {
-      StartupStore(_T(". Waypoint file %d format: OpenAIP%s"),globalFileNum+1,NEWLINE);
-      ParseOpenAIP(fp);
-      return LKW_OPENAIP;
-  }
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
   // check file format
   bool fempty=true;
   int  slen=0; // 100204 WIP
-  charset cs = charset::unknown;
-  while ( ReadString(fp,READLINE_LENGTH,nTemp2String, cs) ) {
+  while (stream.read_line(nTemp2String) ) {
     
     // Ignore Encoding information line
 	slen=_tcslen(nTemp2String);
@@ -68,7 +45,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 	   _tcsncmp(_T("G WGS 84"),nTemp2String,8) == 0 ||
 	   // consider UCS header, 3 bytes in fact. This is a workaround.
 	   _tcsncmp(_T("G  WGS 84"),&nTemp2String[3],9) == 0) {
-		if ( !ReadString(fp,READLINE_LENGTH,nTemp2String,cs) ) {
+		if ( !stream.read_line(nTemp2String) ) {
 			StartupStore(_T(". Waypoint file %d format: CompeGPS truncated, rejected%s"),globalFileNum+1,NEWLINE);
 			return -1;
 		}
@@ -150,7 +127,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
-  while(ReadString(fp, READLINE_LENGTH, nTemp2String, cs)){
+  while(stream.read_line(nTemp2String)){
 goto_inloop:
 	nLineNumber++;
 	nTemp2String[READLINE_LENGTH]=_T('\0');
