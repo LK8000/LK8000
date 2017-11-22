@@ -445,56 +445,39 @@ void Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
   FormatUserAltitude(Altitude, Buffer, size);
 }
 
-bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
+void Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size) {
+  int prec = 0;
 
-  int prec;
-  TCHAR sTmp[512];
-
-  Units_t Unit = UserDistanceUnit;
-  UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
-  double value = Distance * pU->ToUserFact; // + pU->ToUserOffset;
-
-  if (value >= 100)
+  Units_t UnitIdx = GetUserDistanceUnit();
+  double value = ToUser(UnitIdx, Distance);
+  if (value >= 100) {
     prec = 0;
-  else if (value > 10)
+  } else if (value > 10) {
     prec = 1;
-  else if (value > 1)
+  } else if (value > 1) {
     prec = 2;
-  else {
+  } else {
     prec = 3;
-    if (UserDistanceUnit == unKiloMeter){
+    if (UnitIdx == unKiloMeter) {
       prec = 0;
-      Unit = unMeter;
-      pU = &UnitDescriptors[unMeter];
-      value = Distance * pU->ToUserFact;
+      UnitIdx = unMeter;
+      value = ToUser(UnitIdx, Distance);
     }
-    if (UserDistanceUnit == unNauticalMiles
-            || UserDistanceUnit == unStatuteMiles) {
+    if (UnitIdx == unNauticalMiles
+            || UnitIdx == unStatuteMiles) {
 
-      Unit = unFeet;
-      pU = &UnitDescriptors[unFeet];
-      value = Distance * pU->ToUserFact;
-      if (value<1000) {
+      const double ftValue = ToUser(unFeet, Distance);  
+      if (value < 1000) {
         prec = 0;
+        UnitIdx = unFeet;
+        value = ftValue;
       } else {
         prec = 1;
-        Unit = UserDistanceUnit;
-        pU = &UnitDescriptors[UserDistanceUnit];
-        value = Distance* pU->ToUserFact;
       }
     }
   }
 
-  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, GetUnitName(Unit));
-
-  if (_tcslen(sTmp) < size-1){
-    _tcscpy(Buffer, sTmp);
-    return true;
-  } else {
-    LK_tcsncpy(Buffer, sTmp, size-1);
-    return false;
-  }
-
+  lk::snprintf(Buffer, size, _T("%.*f%s"), prec, value, GetUnitName(UnitIdx));
 }
 
 bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, size_t size){
