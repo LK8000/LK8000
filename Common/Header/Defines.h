@@ -901,7 +901,6 @@ static const double PI = (4*atan(1));
 
 // meters to.. conversion
 #define TOFEET          (1.0 / 0.3048)
-#define TOMETER         (1.0)
 
 // Pressures
 #define PRESSURE_STANDARD	1013.25		// hPa

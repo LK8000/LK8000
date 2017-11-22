@@ -1887,10 +1887,8 @@ goto_bearing:
 				_tcscpy(BufferTitle, MsgToken<1170>());
 			else
 				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
-			if (Units::GetUserAltitudeUnit()==unMeter)
-				value=TOFEET*DerivedDrawInfo.NavAltitude;
-			else
-				value=TOMETER*DerivedDrawInfo.NavAltitude;
+
+			value=Units::ToInvUserAltitude(DerivedDrawInfo.NavAltitude);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetInvAltitudeName()));
