@@ -192,7 +192,14 @@ public:
     TimeToTextSimple(text, N, d);
   }  
 
-  static bool TimeToTextDown(TCHAR* text, int d) gcc_nonnull(1);
+  static bool TimeToTextDown(TCHAR* text, size_t cb, int d) gcc_nonnull(1);
+
+  template<size_t N>
+  static bool TimeToTextDown(TCHAR (&text)[N], int d) {
+    return TimeToTextDown(text, N, d);
+  }  
+
+
   static void TimeToTextS(TCHAR* text, int d) gcc_nonnull(1);
 };
 

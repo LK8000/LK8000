@@ -735,31 +735,23 @@ void Units::TimeToTextSimple(TCHAR* text, size_t cb, int d) {
 // Not for displaying a clock time, good for a countdown
 // will display either
 // Returns true if hours, false if minutes
-bool Units::TimeToTextDown(TCHAR* text, int d) {
+bool Units::TimeToTextDown(TCHAR* text, size_t cb, int d) {
   int hours, mins, seconds;
-  bool negative = (d<0);
-  int dd = abs(d) % (3600*24);
-  bool ishours;
-  hours = (dd/3600);
-  mins = (dd/60-hours*60);
+  bool negative = (d < 0);
+  int dd = abs(d) % (3600 * 24);
+
+  hours = (dd / 3600);
+  mins = (dd / 60 - hours * 60);
   hours = hours % 24;
-  seconds = (dd-mins*60-hours*3600);
+  seconds = (dd - mins * 60 - hours * 3600);
 
-  if (hours==0) {
-	_stprintf(text, TEXT("%02d:%02d"), mins, seconds);
-	ishours=false;
+  if (hours == 0) {
+    lk::snprintf(text, cb, _T("%s%02d:%02d"), (negative ? _T("-") : _T("")), mins, seconds);
+    return false;
   } else {
-	_stprintf(text, TEXT("%02d:%02d"), hours, mins);
-	ishours=true;
+    lk::snprintf(text, cb, _T("%s%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins);
+    return true;
   }
-
-  if (negative) {
-	TCHAR t[20];
-	_stprintf(t,TEXT("-%s"),text);
-	_tcscpy(text,t);
-  }
-  return ishours;
-
 }
 
 // LK8000
