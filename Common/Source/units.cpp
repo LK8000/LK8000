@@ -721,20 +721,15 @@ void Units::TimeToText(TCHAR* text, size_t cb, int d) {
   lk::snprintf(text, cb, TEXT("%s%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins);
 }
 
-void Units::TimeToTextSimple(TCHAR* text, int d) {
+void Units::TimeToTextSimple(TCHAR* text, size_t cb, int d) {
   int hours, mins;
   bool negative = (d<0);
   int dd = abs(d) % (3600*24);
   hours = (dd/3600);
   mins = (dd/60-hours*60);
   hours = hours % 24;
-  if (negative) {
-    _stprintf(text, TEXT("-%02d%02d"),
-              hours, mins);
-  } else {
-    _stprintf(text, TEXT("%02d%02d"),
-              hours, mins);
-  }
+
+  lk::snprintf(text, cb, TEXT("%s%02d%02d"), (negative ? _T("-") : _T("")), hours, mins);
 }
 
 // Not for displaying a clock time, good for a countdown
