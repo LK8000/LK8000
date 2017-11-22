@@ -37,6 +37,7 @@
 #include "Time/PeriodClock.hpp"
 #include "Library/Utm.h"
 #include "utils/tokenizer.h"
+#include "utils/lookup_table.h"
 
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
@@ -117,14 +118,6 @@ PeriodClock LastActiveSelectMode;
 bool IsMultimapConfigShown=false;
 
 // Mapping text names of events to the real thing
-typedef struct {
-  const TCHAR *text;
-  pt2Event event;
-} Text2EventSTRUCT;
-Text2EventSTRUCT Text2Event[MAX_TEXT2EVENTS_COUNT];
-size_t Text2Event_count=0;
-
-// Mapping text names of events to the real thing
 const TCHAR *Text2GCE[GCE_COUNT+1];
 
 // Mapping text names of events to the real thing
@@ -151,9 +144,6 @@ void InputEvents::readFile() {
   if (!InitONCE) {
 	#include "InputEvents_LK8000.cpp"
 	#include "InputEvents_Text2Event.cpp"
-        #ifdef TESTBENCH
-        StartupStore(_T("... Loaded %d Text2Event (max is %u)%s"),(unsigned)Text2Event_count,MAX_TEXT2EVENTS_COUNT,NEWLINE);
-        #endif
     InitONCE = true;
   }
 
@@ -468,15 +458,6 @@ int InputEvents::findKey(const TCHAR *data) {
   else
     return 0;
 
-}
-
-pt2Event InputEvents::findEvent(const TCHAR *data) {
-  LKASSERT(Text2Event_count<MAX_TEXT2EVENTS_COUNT);
-  for (size_t i = 0; i < Text2Event_count; i++) {
-    if (_tcscmp(data, Text2Event[i].text) == 0)
-      return Text2Event[i].event;
-  }
-  return NULL;
 }
 
 int InputEvents::findGCE(const TCHAR *data) {
@@ -3678,4 +3659,90 @@ void InputEvents::eventModeType(const TCHAR *misc) {
 
 void InputEvents::eventShowMultiselect(const TCHAR*) {
     dlgMultiSelectListShowModal();
+}
+
+namespace {
+
+  #define DELARE_EVENT(Name) { _T(#Name), &InputEvents::event ## Name }
+  // Mapping text names of events to the real thing
+
+  const auto Text2Event = lookup_table<tstring_view, pt2Event>({
+    DELARE_EVENT(AbortTask),
+    DELARE_EVENT(AdjustForecastTemperature),
+    DELARE_EVENT(AdjustWaypoint),
+    DELARE_EVENT(Analysis),
+    DELARE_EVENT(ArmAdvance),
+    DELARE_EVENT(Ballast),
+    DELARE_EVENT(Bugs),
+    DELARE_EVENT(Calculator),
+    DELARE_EVENT(Checklist),
+    DELARE_EVENT(DLLExecute),
+    DELARE_EVENT(FlightMode),
+    DELARE_EVENT(Logger),
+    DELARE_EVENT(MacCready),
+    DELARE_EVENT(MarkLocation),
+    DELARE_EVENT(Mode),
+    DELARE_EVENT(NearestAirspaceDetails),
+    DELARE_EVENT(NearestWaypointDetails),
+    DELARE_EVENT(Null),
+    DELARE_EVENT(Pan),
+    DELARE_EVENT(PlaySound),
+    DELARE_EVENT(ProfileLoad),
+    DELARE_EVENT(ProfileSave),
+    DELARE_EVENT(RepeatStatusMessage),
+    DELARE_EVENT(Run),
+    DELARE_EVENT(ScreenModes),
+    DELARE_EVENT(SendNMEA),
+    DELARE_EVENT(SendNMEAPort1),
+    DELARE_EVENT(SendNMEAPort2),
+    DELARE_EVENT(Setup),
+    DELARE_EVENT(SnailTrail),
+    DELARE_EVENT(VisualGlide),
+    DELARE_EVENT(AirSpace),
+    DELARE_EVENT(Sounds),
+    DELARE_EVENT(Status),
+    DELARE_EVENT(StatusMessage),
+    DELARE_EVENT(TaskLoad),
+    DELARE_EVENT(TaskSave),
+    DELARE_EVENT(TerrainTopology),
+    DELARE_EVENT(WaypointDetails),
+    DELARE_EVENT(Wind),
+    DELARE_EVENT(Zoom),
+    DELARE_EVENT(DeclutterLabels),
+    DELARE_EVENT(Exit),
+    DELARE_EVENT(Beep),
+    DELARE_EVENT(UserDisplayModeForce),
+    DELARE_EVENT(AirspaceDisplayMode),
+    DELARE_EVENT(AutoLogger),
+    DELARE_EVENT(MyMenu),
+    DELARE_EVENT(AddWaypoint),
+    DELARE_EVENT(Orientation),
+    DELARE_EVENT(CalcWind),
+    DELARE_EVENT(InvertColor),
+    DELARE_EVENT(ChangeBack),
+    DELARE_EVENT(ResetTask),
+    DELARE_EVENT(ResetQFE),
+    DELARE_EVENT(RestartCommPorts),
+    DELARE_EVENT(MoveGlider),
+    DELARE_EVENT(ActiveMap),
+    DELARE_EVENT(ChangeWindCalcSpeed),
+    DELARE_EVENT(TimeGates),
+    DELARE_EVENT(ChangeMultitarget),
+    DELARE_EVENT(BaroAltitude),
+    DELARE_EVENT(ChangeHGPS),
+    DELARE_EVENT(ChangeGS),
+    DELARE_EVENT(ChangeTurn),
+    DELARE_EVENT(Service),
+    DELARE_EVENT(MinimapKey),
+    DELARE_EVENT(InfoStripe),
+    DELARE_EVENT(InfoPage),
+    DELARE_EVENT(ModeType),
+    DELARE_EVENT(ShowMultiselect),
+    DELARE_EVENT(ChangeNettoVario),
+    DELARE_EVENT(Wifi),
+  });
+}
+
+pt2Event InputEvents::findEvent(const TCHAR *data) {
+  return Text2Event.get(data, &eventNull);
 }
