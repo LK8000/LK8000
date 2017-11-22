@@ -45,10 +45,10 @@ sudo PATH=$USER_PATH:$PATH \
     make install
 cd ..
 
-# install boostlib ( 1.64.0 - 2017-04-19 )
-wget https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz
-tar xzf boost_1_64_0.tar.gz
-cd boost_1_64_0
+# install boostlib ( 1.66.0 - 2017-12-18 )
+wget https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.gz
+tar xzf boost_1_66_0.tar.gz
+cd boost_1_66_0
 ./bootstrap.sh
 echo "using gcc : arm : $TC-g++ : cxxflags=-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations ;" > user-config.jam
 sudo PATH=$USER_PATH:$PATH \
@@ -60,7 +60,6 @@ sudo PATH=$USER_PATH:$PATH \
            --without-python \
            --without-context \
            --without-coroutine \
-           --without-coroutine2 \
            --user-config=user-config.jam \
            install
 cd ..

@@ -49,8 +49,8 @@ set(BOOST_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-studio/app/Thirdparty/boost)
 
 ExternalProject_Add (
     boost
-    URL https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.zip
-    URL_HASH SHA256=b99973c805f38b549dbeaf88701c0abeff8b0e8eaa4066df47cac10a32097523
+    URL http://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.zip
+    URL_HASH SHA256=e1c55ebb00886c1a96528e4024be98a38b815115f62ecfe878fcf587ba715aad
     PREFIX ${BOOST_PREFIX}
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
