@@ -521,7 +521,7 @@ class MapWindow {
   static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
   static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 
-  static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,DrawBmp_t *BmpValue = NULL,DrawBmp_t *BmpTitle = NULL);
+  static bool LKFormatValue(const short lkindex, const bool lktitle, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT], TCHAR (&BufferTitle)[LKSIZEBUFFERTITLE], DrawBmp_t *BmpValue = nullptr, DrawBmp_t *BmpTitle = nullptr);
   static void LKgetOLCBmp(CContestMgr::TType Type,DrawBmp_t *BmpValue,TCHAR *BufferValue = NULL);
   static void LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
 

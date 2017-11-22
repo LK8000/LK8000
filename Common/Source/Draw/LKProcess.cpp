@@ -118,7 +118,11 @@ void MapWindow::LKgetOLCBmp(CContestMgr::TType Type,DrawBmp_t *Bmp,TCHAR *Buffer
 //
 // Keep this list sorted, so that the compiler can use a jump (branch) table 
 //
-bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,DrawBmp_t *BmpValue,DrawBmp_t *BmpTitle) {
+bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, 
+			TCHAR (&BufferValue)[LKSIZEBUFFERVALUE],
+			TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT],
+			TCHAR (&BufferTitle)[LKSIZEBUFFERTITLE],
+			DrawBmp_t *BmpValue, DrawBmp_t *BmpTitle) {
 
   int	index=-1;
   double value;

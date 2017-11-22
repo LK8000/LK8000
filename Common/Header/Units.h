@@ -178,11 +178,16 @@ public:
   static double ToSysTaskSpeed(double speed) gcc_pure;
 
 
-  static void TimeToText(TCHAR* text, int d) gcc_nonnull(1);
+  static void TimeToText(TCHAR* text, size_t cb, int d) gcc_nonnull(1);
+
+  template<size_t N>
+  static void TimeToText(TCHAR (&text)[N], int d) {
+    TimeToText(text, N, d);
+  }
+
   static void TimeToTextSimple(TCHAR* text, int d) gcc_nonnull(1);
   static bool TimeToTextDown(TCHAR* text, int d) gcc_nonnull(1);
   static void TimeToTextS(TCHAR* text, int d) gcc_nonnull(1);
-
 };
 
 #endif
