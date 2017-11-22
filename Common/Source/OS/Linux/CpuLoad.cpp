@@ -49,17 +49,21 @@ public:
             if(read_fields()) {
                 total_tick = std::accumulate(std::begin(fields), std::end(fields), (uint64_t) 0);
                 idle = fields[3]; /* idle ticks index */
+
+                lastValue.Update();
             }
             fclose(_fp);
         }
-        
-        lastValue.Update();
     }
 
     ~GetCpuLoad_Singleton() {
     }
 
     int operator()() {
+
+        if(!lastValue.IsDefined()) {
+          return INVALID_VALUE;
+        }
 
         // only calculate each 1s  
         if(lastValue.CheckUpdate(1*1000)) {
