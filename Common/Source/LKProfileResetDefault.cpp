@@ -59,7 +59,6 @@ void LKProfileResetDefault() {
   #endif
 
 
-  Units::CoordinateFormat = (CoordinateFormats_t)cfDDMMSS;
 
   // Units
   SpeedUnit_Config = 2;         // default is kmh
@@ -67,7 +66,8 @@ void LKProfileResetDefault() {
   DistanceUnit_Config = 2;      // default is km
   LiftUnit_Config = 1;          // default m/s
   AltitudeUnit_Config = 1;      // default m
-
+  LatLonUnits_Config = 0;       // default is  DDMMSS;
+  
   //
   // Default infobox groups configuration
   // Should be different for each aircraft category

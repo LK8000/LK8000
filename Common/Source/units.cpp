@@ -18,8 +18,6 @@
 #include "Library/Utm.h"
 #include "utils/printf.h"
 
-CoordinateFormats_t Units::CoordinateFormat;
-
 struct UnitDescriptor_t {
   const TCHAR * const Name;
   double  ToUserFact;
@@ -46,6 +44,7 @@ static UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
     {_T(""),   1.0,                       0},    // unLastUnit
 };
 
+static CoordinateFormats_t CoordinateFormat;
 static Units_t UserDistanceUnit = unKiloMeter;
 static Units_t UserAltitudeUnit = unMeter;
 static Units_t UserHorizontalSpeedUnit = unKiloMeterPerHour;
@@ -264,6 +263,10 @@ const TCHAR *Units::GetUnitName(Units_t Unit) {
     return (szName ? szName : _T(""));
 }
 
+CoordinateFormats_t Units::GetUserCoordinateFormat() {
+  return CoordinateFormat;
+}
+
 Units_t Units::GetUserDistanceUnit() {
   return UserDistanceUnit;
 }
@@ -430,6 +433,25 @@ void Units::NotifyUnitChanged() {
     default:
       SetUserTaskSpeedUnit(unKiloMeterPerHour);
       break;
+  }
+  
+  switch(LatLonUnits_Config) {
+    case 0:
+      default:
+        CoordinateFormat = cfDDMMSS;
+        break;
+      case 1:
+        CoordinateFormat = cfDDMMSSss;
+        break;
+      case 2:
+        CoordinateFormat = cfDDMMmmm;
+        break;
+      case 3:
+        CoordinateFormat = cfDDdddd;
+        break;
+      case 4:
+        CoordinateFormat = cfUTM;
+        break;
   }
 }
 

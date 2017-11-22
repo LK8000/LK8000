@@ -380,7 +380,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryLanguageCode, szLanguageCode)) {
     return;
   }
-  if (settings::read(sname, svalue, szRegistryLatLonUnits, Units::CoordinateFormat)) return;
+  if (settings::read(sname, svalue, szRegistryLatLonUnits, LatLonUnits_Config)) return;
 
   if (settings::read(sname, svalue, szRegistryLiftUnitsValue, LiftUnit_Config)) return;
   if (settings::read(sname, svalue, szRegistryLockSettingsInFlight, LockSettingsInFlight)) return;

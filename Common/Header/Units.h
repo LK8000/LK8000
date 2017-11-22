@@ -54,9 +54,7 @@ enum UnitGroup_t {
 
 namespace Units {
 
-  extern CoordinateFormats_t CoordinateFormat;
-
-  const TCHAR *GetUnitName(Units_t Unit) gcc_pure;
+  CoordinateFormats_t GetUserCoordinateFormat() gcc_pure;
 
   Units_t GetUserDistanceUnit() gcc_pure;
   Units_t SetUserDistanceUnit(Units_t NewUnit);

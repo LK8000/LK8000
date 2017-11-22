@@ -2194,7 +2194,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("DDMM.mmm"));
     dfe->addEnumText(TEXT("DD.dddd"));
     dfe->addEnumText(TEXT("UTM"));
-    dfe->Set(Units::CoordinateFormat);
+    dfe->Set(LatLonUnits_Config);
     wp->RefreshDisplay();
   }
 
@@ -3930,8 +3930,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLatLon"));
   if (wp) {
-    if ((int)Units::CoordinateFormat != wp->GetDataField()->GetAsInteger()) {
-      Units::CoordinateFormat = (CoordinateFormats_t)wp->GetDataField()->GetAsInteger();
+    if ((int)LatLonUnits_Config != wp->GetDataField()->GetAsInteger()) {
+      LatLonUnits_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
     }
   }

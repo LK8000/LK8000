@@ -805,6 +805,8 @@ GEXTERN unsigned TaskSpeedUnit_Config;
 GEXTERN unsigned DistanceUnit_Config;
 GEXTERN unsigned LiftUnit_Config;
 GEXTERN unsigned AltitudeUnit_Config;
+GEXTERN unsigned LatLonUnits_Config;
+
 
 // Logger
 GEXTERN TCHAR PilotName_Config[100];
