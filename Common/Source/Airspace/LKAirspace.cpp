@@ -1479,7 +1479,7 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
     double lat = 0, lon = 0;
 
     // TODO 110307 FIX problem of StrToDouble returning 0.0 in case of error , and not setting Stop!!
-    double Radius = NAUTICALMILESTOMETRES * (double) StrToDouble(Text, &Stop);
+    double Radius = Units::ToSys(unNauticalMiles, StrToDouble(Text, &Stop));
     if(!Stop) {
         return false;
     }
@@ -1919,7 +1919,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++;
                         p++;
                         Radius = StrToDouble(p, NULL);
-                        Radius = (Radius * NAUTICALMILESTOMETRES);
+                        Radius = Units::ToSys(unNauticalMiles, Radius);
                         Center = { CenterY, CenterX };
                         if(!InsideMap) {
                           if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {

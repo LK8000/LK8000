@@ -50,8 +50,8 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
     } compassMarks[72][10]; //72 compass marks (one every 5 degrees), 10 possible cases
     static POINT hdgMark[4]; //Coordinates of heading marker (red triangle on the top of compass rose)
 
-    static const double fiveNauticalMiles=(5.0*NAUTICALMILESTOMETRES); //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
-    static const double smallCDIscale=(0.3*NAUTICALMILESTOMETRES); //Narrow (zoomed) CDI scale: 0.3 nautical miles (557 m)
+    static const double fiveNauticalMiles = Units::ToSys(unNauticalMiles, 5.0); //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
+    static const double smallCDIscale = Units::ToSys(unNauticalMiles, 0.3); //Narrow (zoomed) CDI scale: 0.3 nautical miles (557 m)
 
     static const TCHAR* label[]= { //labels of the compass rose
             TEXT("N"),

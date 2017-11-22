@@ -899,7 +899,6 @@ static const double PI = (4*atan(1));
 #define RAD_TO_DEG  (180 / PI)
 #endif
 
-#define NAUTICALMILESTOMETRES (double)1851.96
 #define KNOTSTOMETRESSECONDS (double)0.5144
 
 #define TOKNOTS (double)1.944
