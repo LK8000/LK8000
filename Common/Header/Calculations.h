@@ -51,13 +51,16 @@ void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 double GetAzimuth(void);
-unsigned int GetWpChecksum(unsigned int);
-bool SaveRecentList();
-bool LoadRecentList();
-void ResetRecentList();
+
 void ResetTask(bool showConfirmMsg);
-void InsertRecentList(int newwp);
-void RemoveRecentList(int newwp);
+
+void SaveRecentList();
+void LoadRecentList();
+void InsertRecentList(int wp_idx);
+void RemoveRecentList(int wp_idx);
+void ResetRecentList();
+
+
 double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int thepoint); // VENTA3
 double GetCurrentEfficiency(DERIVED_INFO *Calculated, short effmode);
 
