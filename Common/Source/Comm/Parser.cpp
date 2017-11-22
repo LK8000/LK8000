@@ -890,16 +890,16 @@ BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, const char* String, char **params,
   }
 
   if(*params[0] != _T('\0')) {
-    double wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
+    const double wnet = Units::ToSys(unKnots, (StrToDouble(params[0],NULL) - 200.0) / 10);
     UpdateVarioSource(*pGPS, d, wnet);
   }
 
   if(*params[2] != _T('\0')) {
-    double qne_altitude = (StrToDouble(params[2],NULL)-2000)/TOFEET;
+    double qne_altitude = Units::ToSys(unFeet, StrToDouble(params[2],NULL) - 2000);
     UpdateBaroSource(pGPS, &d,  QNEAltitudeToQNHAltitude(qne_altitude));
 
     if(*params[3] != _T('\0')) {
-      double vtas = StrToDouble(params[3],NULL)/TOKNOTS;
+      const double vtas = Units::ToSys(unKnots, StrToDouble(params[3],NULL));
       pGPS->AirspeedAvailable = TRUE;
       pGPS->TrueAirspeed = vtas;
       pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);

@@ -76,9 +76,9 @@ std::string GenerateRMB(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) 
     return {};
   }
 
-  double speed = Basic.Speed * TOKNOTS;
+  double speed = Units::ToUser(unKnots, Basic.Speed);
   char dir = (xtd < 0) ? 'R' : 'L';
-  xtd = std::min(9.9, std::abs(xtd * TONAUTICALMILES));
+  xtd = std::min(9.9, std::abs(Units::ToUser(unNauticalMiles, xtd)));
 
   /*
   eg1. $GPRMB,A,0.66,L,003,004,4917.24,N,12309.57,W,001.3,052.5,000.5,V*0B
