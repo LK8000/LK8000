@@ -150,13 +150,33 @@ namespace Units {
   /**
    * convert value from System Unit to User Unit
    */
-  double ToUserAltitude(double Altitude) gcc_pure;
-  double ToInvUserAltitude(double Altitude) gcc_pure;
-  double ToUserDistance(double Distance) gcc_pure;
-  double ToUserWindSpeed(double speed) gcc_pure;
-  double ToUserHorizontalSpeed(double speed) gcc_pure;
-  double ToUserVerticalSpeed(double speed) gcc_pure;
-  double ToUserTaskSpeed(double speed) gcc_pure;
+  inline double ToUserAltitude(double Altitude) {
+    return ToUser(GetUserAltitudeUnit(), Altitude); 
+  }
+
+  inline double ToInvUserAltitude(double Altitude) {
+    return ToUser(GetUserInvAltitudeUnit(), Altitude);
+  }
+
+  inline double ToUserDistance(double Distance) {
+    return ToUser(GetUserDistanceUnit(), Distance);
+  }
+
+  inline double ToUserWindSpeed(double speed) {
+    return ToUser(GetUserWindSpeedUnit(), speed);
+  }
+
+  inline double ToUserHorizontalSpeed(double speed) {
+    return ToUser(GetUserHorizontalSpeedUnit(), speed);
+  }
+
+  inline double ToUserVerticalSpeed(double speed) {
+    return ToUser(GetUserVerticalSpeedUnit(), speed);
+  }
+
+  inline double ToUserTaskSpeed(double speed) {
+    return ToUser(GetUserTaskSpeedUnit(), speed);
+  }
 
   /**
    * convert value from @unit to System Unit
@@ -166,12 +186,29 @@ namespace Units {
   /**
    * convert value from User Unit to System Unit
    */
-  double ToSysAltitude(double Altitude) gcc_pure;
-  double ToSysDistance(double Distance) gcc_pure;
-  double ToSysWindSpped(double speed) gcc_pure;
-  double ToSysHorizontalSpeed(double speed) gcc_pure;
-  double ToSysVerticalSpeed(double speed) gcc_pure;
-  double ToSysTaskSpeed(double speed) gcc_pure;
+  inline double ToSysAltitude(double Altitude) {
+    return ToSys(GetUserAltitudeUnit(), Altitude);
+  }
+
+  inline double ToSysDistance(double Distance) {
+    return ToSys(GetUserDistanceUnit(), Distance);
+  }
+
+  inline double ToSysWindSpped(double speed) {
+    return ToSys(GetUserWindSpeedUnit(), speed);
+  }
+
+  inline double ToSysHorizontalSpeed(double speed) {
+    return ToSys(GetUserHorizontalSpeedUnit(), speed);
+  }
+
+  inline double ToSysVerticalSpeed(double speed) {
+    return ToSys(GetUserVerticalSpeedUnit(), speed);
+  }
+
+  inline double ToSysTaskSpeed(double speed) {
+    return ToSys(GetUserTaskSpeedUnit(), speed);
+  }
 
 
   void TimeToText(TCHAR* text, size_t cb, int d) gcc_nonnull(1);

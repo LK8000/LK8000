@@ -629,64 +629,11 @@ double Units::ToUser(Units_t unit, double value) {
   return value * pU->ToUserFact + pU->ToUserOffset;
 }
 
-double Units::ToUserAltitude(double Altitude) {
-  return ToUser(GetUserAltitudeUnit(), Altitude);
-}
-
-double Units::ToInvUserAltitude(double Altitude) {
-  return ToUser(GetUserInvAltitudeUnit(), Altitude);
-}
-
-double Units::ToUserDistance(double Distance){
-  return ToUser(GetUserDistanceUnit(), Distance);
-}
-
-double Units::ToUserWindSpeed(double speed) {
-  return ToUser(GetUserWindSpeedUnit(), speed);
-}
-
-double Units::ToUserHorizontalSpeed(double speed) {
-  return ToUser(GetUserHorizontalSpeedUnit(), speed);
-}
-
-double Units::ToUserVerticalSpeed(double speed) {
-  return ToUser(GetUserVerticalSpeedUnit(), speed);
-}
-
-double Units::ToUserTaskSpeed(double speed) {
-  return ToUser(GetUserTaskSpeedUnit(), speed);
-}
-
 
 double Units::ToSys(Units_t unit, double value) {
   const UnitDescriptor_t *pU = &UnitDescriptors[unit];
   return (value - pU->ToUserOffset) / pU->ToUserFact;
 }
-
-double Units::ToSysAltitude(double Altitude){
-  return ToSys(GetUserAltitudeUnit(), Altitude);
-}
-
-double Units::ToSysDistance(double Distance){
-  return ToSys(GetUserDistanceUnit(), Distance);
-}
-
-double Units::ToSysWindSpped(double speed) {
-  return ToSys(GetUserWindSpeedUnit(), speed);
-}
-
-double Units::ToSysHorizontalSpeed(double speed) {
-  return ToSys(GetUserHorizontalSpeedUnit(), speed);
-}
-
-double Units::ToSysVerticalSpeed(double speed) {
-  return ToSys(GetUserVerticalSpeedUnit(), speed);
-}
-
-double Units::ToSysTaskSpeed(double speed) {
-  return ToSys(GetUserTaskSpeedUnit(), speed);
-}
-
 
 void Units::TimeToText(TCHAR* text, size_t cb, int d) {
   int hours, mins;
