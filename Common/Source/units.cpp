@@ -433,73 +433,13 @@ void Units::NotifyUnitChanged() {
   }
 }
 
-bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
-
-  int prec;
-  TCHAR sTmp[512];
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
-
-  Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
-
-//  prec = 4-log10(Altitude);
-//  prec = max(prec, 0);
-  prec = 0;
-
-  _stprintf(sTmp, TEXT("%.*f%s"), prec, Altitude, GetUnitName(UserAltitudeUnit));
-
-  if (_tcslen(sTmp) < size-1){
-    _tcscpy(Buffer, sTmp);
-    return true;
-  } else {
-    LK_tcsncpy(Buffer, sTmp, size-1);
-    return false;
-  }
-
+void Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
+  lk::snprintf(Buffer, size, _T("%.0f%s"), ToUserAltitude(Altitude), GetAltitudeName());
 }
 
-#if 100126
-// I don't think it is a good idea to change, even if for a short time, a global variable at all effect here,
-// just to be able to call the function above with a parameter missing!
-bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
-  Units_t useUnit;
-  TCHAR sTmp[512];
-
-  if (UserAltitudeUnit == unMeter)
-	useUnit=unFeet;
-  else
-	useUnit=unMeter;
-
-  UnitDescriptor_t *pU = &UnitDescriptors[useUnit];
-  Altitude = Altitude * pU->ToUserFact;
-  _stprintf(sTmp, TEXT("%.*f%s"), 0, Altitude, GetUnitName(useUnit));
-
-  if (_tcslen(sTmp) < size-1){
-	_tcscpy(Buffer, sTmp);
-	return true;
-  } else {
-	LK_tcsncpy(Buffer, sTmp, size-1);
-	return false;
-  }
+void Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
+  lk::snprintf(Buffer, size, TEXT("%.0f%s"), ToInvUserAltitude(Altitude), GetInvAltitudeName());
 }
-
-#else
-bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
-  Units_t saveUnit = UserAltitudeUnit;
-  bool res;
-
-  if (saveUnit == unMeter)
-    UserAltitudeUnit = unFeet;
-  if (saveUnit == unFeet)
-    UserAltitudeUnit = unMeter;
-
-  res = FormatUserAltitude(Altitude, Buffer, size);
-
-  UserAltitudeUnit = saveUnit;
-
-  return res;
-
-}
-#endif
 
 bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
 
