@@ -34,7 +34,7 @@ sudo make install
 cd ..
 
 # install zziplib ( 0.13.62 - 2012-03-11)
-wget http://liquidtelecom.dl.sourceforge.net/project/zziplib/zziplib13/0.13.62/zziplib-0.13.62.tar.bz2
+wget https://freefr.dl.sourceforge.net/project/zziplib/zziplib13/0.13.62/zziplib-0.13.62.tar.bz2
 tar xvjf zziplib-0.13.62.tar.bz2 
 mkdir zzipbuild
 cd zzipbuild
