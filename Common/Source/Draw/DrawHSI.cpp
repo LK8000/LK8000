@@ -631,9 +631,11 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
     if(!usingQFU && !landing && validPreviousWP) { //... only if not using glide slope and not lading
         //Calculate expected altitude in route
         double expectedAlt=WPaltitude;
-        if(WPleg>0 && WPaltitude!=prevWPaltitude) expectedAlt=(WPaltitude-prevWPaltitude)/WPleg*DerivedDrawInfo.LegDistanceCovered+prevWPaltitude;
-        expectedAlt*=TOFEET;
-        const double diff=(DrawInfo.Altitude*TOFEET)-expectedAlt; //difference with current altitude
+        if(WPleg>0 && WPaltitude!=prevWPaltitude) {
+            expectedAlt=(WPaltitude-prevWPaltitude)/WPleg*DerivedDrawInfo.LegDistanceCovered+prevWPaltitude;
+        }
+        
+        const double diff = Units::ToUser(unFeet, DrawInfo.Altitude-expectedAlt); //difference with current altitude
 
         //Find out a proper scale to display the difference on the VSI bar
         double scale=fabs(diff);
@@ -651,7 +653,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
 
         //Draw VSI background
         if(DerivedDrawInfo.TerrainValid) {
-            const double altAGLft=DerivedDrawInfo.AltitudeAGL*TOFEET;
+            const double altAGLft = Units::ToUser(unFeet, DerivedDrawInfo.AltitudeAGL);
             int groundLevel=VSIscaleInPixel;
             if(fabs(altAGLft)<scale) groundLevel=(int)round(altAGLft*pixelPerFeet);
             else if(altAGLft<0) groundLevel=-VSIscaleInPixel;

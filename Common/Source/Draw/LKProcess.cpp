@@ -1648,9 +1648,9 @@ goto_bearing:
 			// Cant use NavAltitude, because FL should use Baro if available, despite
 			// user settings.
 			if (BaroAltitudeAvailable(DrawInfo))
-				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude)))/100.0;
+				value = Units::ToUser(unFligthLevel,QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude));
 			else
-				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.Altitude)))/100.0;
+				value = Units::ToUser(unFligthLevel,QNHAltitudeToQNEAltitude(DrawInfo.Altitude));
 
 			if (value>=1) {
 				valid=true;

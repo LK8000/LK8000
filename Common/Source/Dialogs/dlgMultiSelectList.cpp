@@ -706,7 +706,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              {
                LockFlightData();
                Units::CoordinateToString( GPS_INFO.Longitude,GPS_INFO.Latitude, Comment, sizeof(text2)-1);
-               lk::snprintf(text2, _T("%s %6.0f%s"),Comment, GPS_INFO.Altitude*TOFEET,Units::GetUnitName(unFeet));
+               lk::snprintf(text2, _T("%s %6.0f%s"),Comment, Units::ToUser(unFeet, GPS_INFO.Altitude), Units::GetUnitName(unFeet));
                UnlockFlightData();
              }
              ShowTextEntries(Surface, rc,  text1, text2);

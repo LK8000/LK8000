@@ -182,7 +182,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     // Set the vertical range
     double vscale;
     if (Units::GetUserAltitudeUnit() == unFeet)
-        vscale = (1000 / TOFEET);
+        vscale = Units::ToSys(unFeet, 1000);
     else
         vscale = 300.0;
 #endif

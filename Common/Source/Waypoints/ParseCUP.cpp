@@ -294,7 +294,7 @@ double ReadLength(const TCHAR *temp)
 		return len;
 	}
 	if ( (*stop == 'f') || (*stop == 'F') ) {
-		len = len / TOFEET;
+		len = Units::ToSys(unFeet, len);
 		return len;
 	}
 	if ( (*stop == 'm') || (*stop == '\0') ) {
