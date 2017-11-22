@@ -290,7 +290,7 @@ double ReadLength(const TCHAR *temp)
 		return len;
 	}
 	if ( (*stop == 'm') && (*(stop+1) == 'l') ) {
-		len = len / TOMILES;
+		len = Units::ToSys(unStatuteMiles, len);
 		return len;
 	}
 	if ( (*stop == 'f') || (*stop == 'F') ) {

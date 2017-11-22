@@ -900,7 +900,6 @@ static const double PI = (4*atan(1));
 #endif
 
 // meters to.. conversion
-#define TOMILES         (1.0 / 1609.344)
 #define TOKILOMETER     (0.001)
 #define TOFEET          (1.0 / 0.3048)
 #define TOMETER         (1.0)
