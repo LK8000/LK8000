@@ -137,7 +137,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
         GPSData.Longitude = loc.dblLongitude;
     }
     if (loc.dwValidFields & GPS_VALID_SPEED) {
-        GPSData.Speed = KNOTSTOMETRESSECONDS * loc.flSpeed;
+        GPSData.Speed = Units::ToSys(unKnots, loc.flSpeed);
     }
     if (loc.dwValidFields & GPS_VALID_HEADING) {
       	if (GPSData.Speed > GetTrackBearingMinSpeed()) {
@@ -472,7 +472,7 @@ BOOL NMEAParser::VTG(const char* String, char** params, size_t nparams, NMEA_INF
   // if no valid fix, we dont get speed either!
   if (gpsValid) {
     double speed = StrToDouble(params[4], NULL);
-    pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
+    pGPS->Speed = Units::ToSys(unKnots, speed);
 
     if (ISCAR) {
       if (pGPS->Speed > GetTrackBearingMinSpeed()) {
@@ -611,7 +611,7 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
 		pGPS->Longitude = tmplon;
 	}
   
-	pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
+	pGPS->Speed = Units::ToSys(unKnots, speed);;
   
 	if (pGPS->Speed > GetTrackBearingMinSpeed()) {
 		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));

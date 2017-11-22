@@ -131,7 +131,7 @@ BOOL cai302ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 static BOOL cai302PutMacCready(DeviceDescriptor_t* d, double MacCready) {
   TCHAR szTmp[32];
 
-  _stprintf(szTmp, TEXT("!g,m%d\r"), int(((MacCready * 10) / KNOTSTOMETRESSECONDS) + 0.5));
+  _stprintf(szTmp, TEXT("!g,m%d\r"), static_cast<int>(round(Units::ToUser(unKnots, MacCready) * 10.0)));
   d->Com->WriteString(szTmp);
   return (TRUE);
 }
@@ -546,11 +546,11 @@ BOOL cai_w(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
 
   NMEAParser::ExtractParameter(String,ctemp,7);
-  double Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
+  double Vario = Units::ToSys(unKnots, (StrToDouble(ctemp,NULL) - 200.0) / 10.0);;
   UpdateVarioSource(*pGPS, *d, Vario);
 
   NMEAParser::ExtractParameter(String,ctemp,10);
-  d->RecvMacCready((StrToDouble(ctemp, nullptr) / 10.0) * KNOTSTOMETRESSECONDS);
+  d->RecvMacCready(Units::ToSys(unKnots, StrToDouble(ctemp, nullptr) / 10.0));
 
   NMEAParser::ExtractParameter(String,ctemp,11);
   d->RecvBallast(StrToDouble(ctemp, nullptr) / 100.0);

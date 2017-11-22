@@ -175,7 +175,7 @@ BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS) {
 
 BOOL PutMacCready(DeviceDescriptor_t* d, double McReady) {
   char szTmp[32];
-  sprintf(szTmp, "!g,m%d\r", iround(McReady / KNOTSTOMETRESSECONDS * 10));
+  sprintf(szTmp, "!g,m%d\r", iround(Units::ToUser(unKnots, McReady) * 10));
   d->Com->WriteString(szTmp);
   return TRUE;
 }
