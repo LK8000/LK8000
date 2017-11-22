@@ -261,7 +261,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
         double deviation = DerivedDrawInfo.LegCrossTrackError;
         if(finalWP==currentWP) { //if we are flying to the final destination
             approach=true;
-            const double varioFtMin=DerivedDrawInfo.Vario*TOFEETPERMINUTE; //Convert vertical speed to Ft/min
+            const double varioFtMin=Units::ToUser(unFeetPerMinutes, DerivedDrawInfo.Vario); //Convert vertical speed to Ft/min
 
             //Print vertical speed in Ft/min
             _tcscpy(Buffer,MsgToken<784>()); //"Vario"

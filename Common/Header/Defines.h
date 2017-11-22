@@ -899,7 +899,6 @@ static const double PI = (4*atan(1));
 #define RAD_TO_DEG  (180 / PI)
 #endif
 
-#define TOFEETPERMINUTE (double)196.9
 #define TOMPH   (double)2.237
 #define TOKPH   (double)3.6
 
