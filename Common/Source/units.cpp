@@ -441,28 +441,8 @@ void Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t s
   lk::snprintf(Buffer, size, TEXT("%.0f%s"), ToInvUserAltitude(Altitude), GetInvAltitudeName());
 }
 
-bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
-
-  int prec;
-  TCHAR sTmp[512];
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
-
-  Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
-
-//  prec = 4-log10(Altitude);
-//  prec = max(prec, 0);
-  prec = 0;
-
-  _stprintf(sTmp, TEXT("%+.*f%s"), prec, Altitude, GetUnitName(UserAltitudeUnit));
-
-  if (_tcslen(sTmp) < size-1){
-    _tcscpy(Buffer, sTmp);
-    return true;
-  } else {
-    LK_tcsncpy(Buffer, sTmp, size-1);
-    return false;
-  }
-
+void Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
+  FormatUserAltitude(Altitude, Buffer, size);
 }
 
 bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){

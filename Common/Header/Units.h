@@ -138,7 +138,7 @@ namespace Units {
 
   void FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
   void FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
-  bool FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2); // VENTA3
+  void FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2); // VENTA3
   bool FormatUserDistance(double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(2);
   bool FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(3);
 
