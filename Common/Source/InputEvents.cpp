@@ -30,7 +30,7 @@
 #include "TraceThread.h"
 #include "CTaskFileHelper.h"
 #include "utils/stringext.h"
-#include "utils/openzip.h"
+#include "utils/zzip_stream.h"
 #include "Asset.hpp"
 #include "Event/Event.h"
 #include "MapWindow.h"
@@ -165,18 +165,18 @@ void InputEvents::readFile() {
   // Read in user defined configuration file
 
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
-  ZZIP_FILE *fp=NULL;
+  zzip_stream stream;
 
   //
   // ENGINEERING MODE: SELECTED XCI HAS PRIORITY
   //
   if (_tcslen(szInputFile)>0) {
     LocalPath(szFile1, _T(LKD_CONF), szInputFile);
-    fp=openzip(szFile1, "rb");
+    stream.open(szFile1, "rb");
   }
 
   const TCHAR * xcifile = nullptr;
-  if (fp == NULL) {
+  if (!stream) {
 
     // invalide ENGINEERING MODE: SELECTED XCI, reset config.
     _tcscpy(szInputFile, _T(""));
@@ -205,18 +205,17 @@ void InputEvents::readFile() {
     TCHAR xcifilepath[MAX_PATH];
 
     SystemPath(xcifilepath,_T(LKD_SYSTEM), xcifile);
-	fp=openzip(xcifilepath, "rt");
-	if (fp == NULL) {
-        SystemPath(xcifilepath,_T(LKD_SYSTEM), _T("DEFAULT_MENU.TXT"));
-		fp=openzip(xcifilepath, "rt");
-		if (fp == NULL) {
-			// This cannot happen
-			StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifilepath);
-			return;
-		}
-	} else {
-		StartupStore(_T(". Loaded menu <%s>\n"),xcifilepath);
-	}
+
+    if (!stream.open(xcifilepath, "rt")) {
+      SystemPath(xcifilepath,_T(LKD_SYSTEM), _T("DEFAULT_MENU.TXT"));
+      if (!stream.open(xcifilepath, "rt")) {
+        // This cannot happen
+        StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifilepath);
+        return;
+      }
+    } else {
+      StartupStore(_T(". Loaded menu <%s>\n"),xcifilepath);
+    }
   }
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
@@ -244,7 +243,7 @@ void InputEvents::readFile() {
   //		Better way is to separate the check for # and the scanf
   // ! _stscanf works differently on WinPC and WinCE (on WinCE it returns EOF on empty string)
 
-  while (ReadULine(fp, buffer, array_size(buffer)) && (buffer[0] == '\0' ||
+  while (stream.read_line(buffer) && (buffer[0] == '\0' ||
 	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF))
   ) {
     line++;
@@ -411,7 +410,6 @@ void InputEvents::readFile() {
   #ifdef TESTBENCH
   StartupStore(_T("... Loaded %d Menu Events (Max is %d)%s"),Events_count,MAX_EVENTS,NEWLINE);
   #endif
-  zzip_fclose(fp);
 #endif
 }
 
