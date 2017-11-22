@@ -2130,7 +2130,7 @@ DataField* dfe = wp->GetDataField();
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
-      MapWindow::zoom.GetInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]));
+      MapWindow::zoom.GetInitMapScaleText(i, buf1);
       dfe->addEnumText(buf1);
     }
     dfe->Set(ClimbZoom);
@@ -2141,12 +2141,8 @@ DataField* dfe = wp->GetDataField();
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
-      if (MapWindow::zoom.GetInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
-	dfe->addEnumText(buf1);
-      } else {
-	_stprintf(buf1,TEXT("%d"),i);
-	dfe->addEnumText(buf1);
-      }
+      MapWindow::zoom.GetInitMapScaleText(i, buf1);
+	    dfe->addEnumText(buf1);
     }
     dfe->Set(CruiseZoom);
     wp->RefreshDisplay();
@@ -2163,12 +2159,8 @@ DataField* dfe = wp->GetDataField();
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
-      if (MapWindow::zoom.GetInitMapScaleText(i,buf1,sizeof(buf1) / sizeof(buf1[0]))) {
-        dfe->addEnumText(buf1);
-      } else {
-        _stprintf(buf1,TEXT("%d"),i);
-        dfe->addEnumText(buf1);
-      }
+      MapWindow::zoom.GetInitMapScaleText(i, buf1);
+      dfe->addEnumText(buf1);
     }
     dfe->Set(MaxAutoZoom);
     wp->RefreshDisplay();

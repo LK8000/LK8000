@@ -336,7 +336,12 @@ class MapWindow {
     void UpdateMapScale();
     void ModifyMapScale();
 
-    bool GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
+    void GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
+
+    template<size_t size>
+    void GetInitMapScaleText(int init_parameter, TCHAR (&out)[size]) const {
+      GetInitMapScaleText(init_parameter, out, size);
+    }
 
   };
 

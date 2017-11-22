@@ -237,7 +237,7 @@ _skip2:
     }
     double mapScale=Units::ToSysDistance(zoom.Scale());
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
-    Units::FormatUserMapScale(NULL, mapScale, Scale1, std::size(Scale1));
+    Units::FormatUserMapScale(mapScale, Scale1, std::size(Scale1));
     _tcscat(Scale,Scale1);
 
     SIZE tsize;

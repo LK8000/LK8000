@@ -480,15 +480,12 @@ void Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size) {
   lk::snprintf(Buffer, size, _T("%.*f%s"), prec, value, GetUnitName(UnitIdx));
 }
 
-bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, size_t size){
+void Units::FormatUserMapScale(double Distance, TCHAR *Buffer, size_t size){
 
-  int prec;
-  double value;
-  TCHAR sTmp[512];
-  Units_t UnitIdx = UserDistanceUnit;
-  UnitDescriptor_t *pU = &UnitDescriptors[UnitIdx];
+  int prec = 0;
+  Units_t UnitIdx = GetUserDistanceUnit();
 
-  value = Distance * pU->ToUserFact; // + pU->ToUserOffset;
+  double value = ToUser(UnitIdx, Distance);
 
   if (value >= 9.999) {
     prec = 0;
@@ -496,32 +493,18 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
     prec = 1;
   } else {
     prec = 2;
-    if (UserDistanceUnit == unKiloMeter){
+    if (UnitIdx == unKiloMeter){
       prec = 0;
       UnitIdx = unMeter;
-    } else if ((UserDistanceUnit == unNauticalMiles || UserDistanceUnit == unStatuteMiles) && (value < 0.160)) {
+      value = ToUser(UnitIdx, Distance);
+    } else if ((UnitIdx == unNauticalMiles || UnitIdx == unStatuteMiles) && (value < 0.160)) {
       prec = 0;
       UnitIdx = unFeet;
+      value = ToUser(UnitIdx, Distance);
     }
   }
 
-  if (Unit != NULL) {
-    *Unit = UnitIdx;
-  }
-
-  pU = &UnitDescriptors[UnitIdx];
-  value = Distance * pU->ToUserFact;
-
-  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, GetUnitName(UnitIdx));
-
-  if (_tcslen(sTmp) < size-1){
-    _tcscpy(Buffer, sTmp);
-    return true;
-  } else {
-    LK_tcsncpy(Buffer, sTmp, size-1);
-    return false;
-  }
-
+  lk::snprintf(Buffer, size, _T("%.*f%s"), prec, value, GetUnitName(UnitIdx));
 }
 
 

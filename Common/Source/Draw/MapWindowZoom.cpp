@@ -297,12 +297,12 @@ void MapWindow::Zoom::ModifyMapScale()
 }
 
 
-bool MapWindow::Zoom::GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
+void MapWindow::Zoom::GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
 {
   double mapscale = GetZoomInitValue(init_parameter);
   // Get nearest discrete value
   double ms = MapWindow::FindMapScale(mapscale);
-  return Units::FormatUserMapScale(NULL, Units::ToSysDistance(ms), out, size);
+  Units::FormatUserMapScale(Units::ToSysDistance(ms), out, size);
 }
 
 
