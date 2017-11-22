@@ -271,14 +271,6 @@ Units_t Units::GetUserDistanceUnit() {
   return UserDistanceUnit;
 }
 
-Units_t Units::SetUserDistanceUnit(Units_t NewUnit){
-  Units_t last = UserDistanceUnit;
-  if (UserDistanceUnit != NewUnit){
-    UserDistanceUnit = NewUnit;
-  }
-  return last;
-}
-
 Units_t Units::GetUserAltitudeUnit() {
   return UserAltitudeUnit;
 }
@@ -287,60 +279,20 @@ Units_t Units::GetUserInvAltitudeUnit() { // 100126
   return UserAltitudeUnit==unFeet?unMeter:unFeet;
 }
 
-Units_t Units::SetUserAltitudeUnit(Units_t NewUnit){
-  Units_t last = UserAltitudeUnit;
-  if (UserAltitudeUnit != NewUnit){
-    UserAltitudeUnit = NewUnit;
-  }
-  return last;
-}
-
 Units_t Units::GetUserHorizontalSpeedUnit() {
   return UserHorizontalSpeedUnit;
-}
-
-Units_t Units::SetUserHorizontalSpeedUnit(Units_t NewUnit){
-  Units_t last = UserHorizontalSpeedUnit;
-  if (UserHorizontalSpeedUnit != NewUnit){
-    UserHorizontalSpeedUnit = NewUnit;
-  }
-  return last;
 }
 
 Units_t Units::GetUserTaskSpeedUnit() {
   return UserTaskSpeedUnit;
 }
 
-Units_t Units::SetUserTaskSpeedUnit(Units_t NewUnit){
-  Units_t last = UserTaskSpeedUnit;
-  if (UserTaskSpeedUnit != NewUnit){
-    UserTaskSpeedUnit = NewUnit;
-  }
-  return last;
-}
-
 Units_t Units::GetUserVerticalSpeedUnit() {
   return UserVerticalSpeedUnit;
 }
 
-Units_t Units::SetUserVerticalSpeedUnit(Units_t NewUnit){
-  Units_t last = UserVerticalSpeedUnit;
-  if (UserVerticalSpeedUnit != NewUnit){
-    UserVerticalSpeedUnit = NewUnit;
-  }
-  return last;
-}
-
 Units_t Units::GetUserWindSpeedUnit() {
   return UserWindSpeedUnit;
-}
-
-Units_t Units::SetUserWindSpeedUnit(Units_t NewUnit){
-  Units_t last = UserWindSpeedUnit;
-  if (UserWindSpeedUnit != NewUnit){
-    UserWindSpeedUnit = NewUnit;
-  }
-  return last;
 }
 
 Units_t Units::GetUserUnitByGroup(UnitGroup_t UnitGroup){
@@ -368,90 +320,88 @@ Units_t Units::GetUserUnitByGroup(UnitGroup_t UnitGroup){
 
 
 void Units::NotifyUnitChanged() {
-  // todo
-
   switch (SpeedUnit_Config) {
     case 0 :
-      SetUserHorizontalSpeedUnit(unStatuteMilesPerHour);
-      SetUserWindSpeedUnit(unStatuteMilesPerHour);
+      UserHorizontalSpeedUnit = unStatuteMilesPerHour;
+      UserWindSpeedUnit = unStatuteMilesPerHour;
       break;
     case 1 :
-      SetUserHorizontalSpeedUnit(unKnots);
-      SetUserWindSpeedUnit(unKnots);
+      UserHorizontalSpeedUnit = unKnots;
+      UserWindSpeedUnit = unKnots;
       break;
     case 2 :
     default:
-      SetUserHorizontalSpeedUnit(unKiloMeterPerHour);
-      SetUserWindSpeedUnit(unKiloMeterPerHour);
+      UserHorizontalSpeedUnit = unKiloMeterPerHour;
+      UserWindSpeedUnit = unKiloMeterPerHour;
       break;
   }
 
   switch(DistanceUnit_Config) {
     case 0 :
-      SetUserDistanceUnit(unStatuteMiles);
+      UserDistanceUnit = unStatuteMiles;
       break;
     case 1 :
-      SetUserDistanceUnit(unNauticalMiles);
+      UserDistanceUnit = unNauticalMiles;
       break;
     default:
     case 2 :
-      SetUserDistanceUnit(unKiloMeter);
+      UserDistanceUnit = unKiloMeter;
       break;
   }
 
   switch(AltitudeUnit_Config) {
     case 0 :
-      SetUserAltitudeUnit(unFeet);
+      UserAltitudeUnit = unFeet;
       break;
     default:
     case 1 :
-      SetUserAltitudeUnit(unMeter);
+      UserAltitudeUnit = unMeter;
       break;
   }
 
   switch(LiftUnit_Config) {
     case 0 :
-      SetUserVerticalSpeedUnit(unKnots);
+      UserVerticalSpeedUnit = unKnots;
       break;
     default:
     case 1 :
-      SetUserVerticalSpeedUnit(unMeterPerSecond);
+      UserVerticalSpeedUnit = unMeterPerSecond;
       break;
     case 2 :
-      SetUserVerticalSpeedUnit(unFeetPerMinutes);
+      UserVerticalSpeedUnit = unFeetPerMinutes;
       break;
   }
 
   switch(TaskSpeedUnit_Config) {
     case 0 :
-      SetUserTaskSpeedUnit(unStatuteMilesPerHour);
+      UserTaskSpeedUnit = unStatuteMilesPerHour;
       break;
     case 1 :
-      SetUserTaskSpeedUnit(unKnots);
+      UserTaskSpeedUnit = unKnots;
       break;
     case 2 :
     default:
-      SetUserTaskSpeedUnit(unKiloMeterPerHour);
+      UserTaskSpeedUnit = unKiloMeterPerHour;
       break;
   }
   
   switch(LatLonUnits_Config) {
     case 0:
-      default:
-        CoordinateFormat = cfDDMMSS;
-        break;
-      case 1:
-        CoordinateFormat = cfDDMMSSss;
-        break;
-      case 2:
-        CoordinateFormat = cfDDMMmmm;
-        break;
-      case 3:
-        CoordinateFormat = cfDDdddd;
-        break;
-      case 4:
-        CoordinateFormat = cfUTM;
-        break;
+    default:
+      CoordinateFormat = cfDDMMSS;
+      break;
+    case 1:
+      CoordinateFormat = cfDDMMSSss;
+      break;
+    case 2:
+      CoordinateFormat = cfDDMMmmm;
+      break;
+    case 3:
+      CoordinateFormat = cfDDdddd;
+      break;
+    case 4:
+      CoordinateFormat = cfUTM;
+      break;
   }
 }
 

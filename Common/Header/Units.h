@@ -57,23 +57,12 @@ namespace Units {
   CoordinateFormats_t GetUserCoordinateFormat() gcc_pure;
 
   Units_t GetUserDistanceUnit() gcc_pure;
-  Units_t SetUserDistanceUnit(Units_t NewUnit);
-
   Units_t GetUserAltitudeUnit() gcc_pure;
   Units_t GetUserInvAltitudeUnit() gcc_pure; // 100126
-  Units_t SetUserAltitudeUnit(Units_t NewUnit);
-
   Units_t GetUserHorizontalSpeedUnit() gcc_pure;
-  Units_t SetUserHorizontalSpeedUnit(Units_t NewUnit);
-
   Units_t GetUserTaskSpeedUnit() gcc_pure;
-  Units_t SetUserTaskSpeedUnit(Units_t NewUnit);
-
   Units_t GetUserVerticalSpeedUnit() gcc_pure;
-  Units_t SetUserVerticalSpeedUnit(Units_t NewUnit);
-
   Units_t GetUserWindSpeedUnit() gcc_pure;
-  Units_t SetUserWindSpeedUnit(Units_t NewUnit);
 
   Units_t GetUserUnitByGroup(UnitGroup_t UnitGroup) gcc_pure;
 
