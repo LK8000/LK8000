@@ -199,8 +199,12 @@ public:
     return TimeToTextDown(text, N, d);
   }  
 
+  static void TimeToTextS(TCHAR* text, size_t cb, int d) gcc_nonnull(1);
 
-  static void TimeToTextS(TCHAR* text, int d) gcc_nonnull(1);
+  template<size_t N>
+  static void TimeToTextS(TCHAR (&text)[N], int d) {
+    TimeToTextS(text, N, d);
+  }
 };
 
 #endif
