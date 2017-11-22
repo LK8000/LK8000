@@ -64,20 +64,21 @@ sudo PATH=$USER_PATH:$PATH \
            install
 cd ..
 
-# install libpng ( 1.6.29 - 2017-03-16 )
-wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.29/libpng-1.6.29.tar.gz
-tar xzf libpng-1.6.29.tar.gz
+# install libpng ( 1.6.34 - 2017-09-29 )
+wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.34/libpng-1.6.34.tar.gz
+tar xzf libpng-1.6.34.tar.gz
 mkdir libpng-build
 cd libpng-build
-../libpng-1.6.29/configure \
+../libpng-1.6.34/configure \
     --host=$TC \
     CC=$TC-gcc \
     AR=$TC-ar \
     STRIP=$TC-strip \
     RANLIB=$TC-ranlib \
     CPPFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations -I$TARGET_DIR/include" \
-    LDFLAGS="-L$TARGET_DIR/lib"  \
-    --prefix=$TARGET_DIR 
+    LDFLAGS="-L$TARGET_DIR/lib" \
+    --prefix=$TARGET_DIR \
+    --enable-arm-neon
 make
 sudo PATH=$USER_PATH:$PATH \
     make install
