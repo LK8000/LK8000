@@ -12,6 +12,7 @@
 
 #include "FlightDataRec.h"
 #include "utils/stringext.h"
+#include <time.h>
 
 #define NO_ENTRYS 26
 
@@ -145,8 +146,10 @@ void InitFlightDataRecorder(void)
   	return;
   } 
 
-  SYSTEMTIME pda_time;
-  GetSystemTime(&pda_time);
+  time_t sysTime = time(nullptr);
+  struct tm tm_temp = {0};
+  struct tm* utc = gmtime_r(&sysTime, &tm_temp);
+
   // FROM NOW ON, we can write on the file and on LK exit we must close the file.
   fprintf(FlightDataRecorderFile,"******************************************************************\r");
   fprintf(FlightDataRecorderFile,"* LK8000 Tactical Flight Computer -  WWW.LK8000.IT\r");
@@ -154,7 +157,7 @@ void InitFlightDataRecorder(void)
   fprintf(FlightDataRecorderFile,"* Flight Data Recorder Output\r");
   fprintf(FlightDataRecorderFile,"* GNU 2012 by Ulrich Heynen / Paolo Ventafridda\r");
   fprintf(FlightDataRecorderFile,"*\r");
-  fprintf(FlightDataRecorderFile,"* flight recorded on: %02d:%02d:%04d starting at %02d:%02d:%02d UTC\r", pda_time.wDay,pda_time.wMonth,pda_time.wYear , pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
+  fprintf(FlightDataRecorderFile,"* flight recorded on: %02d:%02d:%04d starting at %02d:%02d:%02d UTC\r", utc->tm_mday, utc->tm_mon+1, utc->tm_year+1900, utc->tm_hour,  utc->tm_min,  utc->tm_sec );
   fprintf(FlightDataRecorderFile,"*\r");
   fprintf(FlightDataRecorderFile,"******************************************************************\r\r");
 
@@ -245,9 +248,10 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   if (LKHearthBeats < nextHB) return;
   nextHB=LKHearthBeats+2;       // 2hz to 1hz
 
-  SYSTEMTIME pda_time;
-  GetSystemTime(&pda_time);
-
+  time_t sysTime = time(nullptr);
+  struct tm tm_temp = {0};
+  struct tm* utc = gmtime_r(&sysTime, &tm_temp);
+  
   int idx=0;
   LKASSERT(iLogDelay<32767);
 
@@ -258,7 +262,7 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
 
   // Shutdown will set LogDelay to zero before closing the file descriptor
 
-  if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
+  if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", utc->tm_hour, utc->tm_min, utc->tm_sec );
 
   idx=0;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.ExtBatt1_Voltage     );
