@@ -26,22 +26,24 @@ struct UnitDescriptor_t {
   double  ToUserOffset;
 };
 
-static UnitDescriptor_t UnitDescriptors[unLastUnit] ={
-  {NULL,       1,          0},
-  {TEXT("km"), 0.001,      0},
-  {TEXT("nm"), 0.00053996, 0},
-  {TEXT("mi"), 0.0006214,  0},
-  {TEXT("kh"), 0.0036,     0}, // 091219
-  {TEXT("kt"), 0.001944,   0},
-  {TEXT("mh"), 0.002237,   0},
-  {TEXT("ms"), 1.0,        0},
-  {TEXT("fm"), 3.281*60.0, 0},
-  {TEXT("m"),  1.0,        0},
-  {TEXT("ft"), 3.281,      0},
-  {TEXT("K"),  1,          0},
-  {NULL,       1.0,        -273.15}, // name is contruct by GetUnitName()
-  {NULL,       1.8,        -459.67}, // name is contruct by GetUnitName()
-  {TEXT("fs"), 3.281,      0} // 100128
+static UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
+    {_T(""),   1.0,                       0},    // unUndef
+    {_T("km"), 0.001,                     0},    // unKiloMeter
+    {_T("nm"), 1.0 / 1852,                0},    // unNauticalMiles
+    {_T("mi"), 1.0 / 1609.344,            0},    // unStatuteMiles
+    {_T("kh"), 3.6,                       0},    // unKiloMeterPerHour
+    {_T("kt"), 1.0 / (1852.0 / 3600.0),   0},    // unKnots
+    {_T("mh"), 1.0 / (1609.344 / 3600.0), 0},    // unStatuteMilesPerHour
+    {_T("ms"), 1.0                      , 0},    // unMeterPerSecond
+    {_T("fm"), 1.0 / 0.3048 * 60.0,       0},    // unFeetPerMinutes
+    {_T("m"),  1.0,                       0},    // unMeter
+    {_T("ft"), 1.0 / 0.3048,              0},    // unFeet
+    {_T("FL"), 1.0 / 0.3048 / 100,        0},    // unFligthLevel
+    {_T("K"),  1.0,                       0},    // unKelvin
+    {_T("°C"), 1.0,                    -273.15}, // unGradCelcius
+    {_T("°F"), 9.0 / 5.0,              -459.67}, // unGradFahrenheit
+    {_T("fs"), 1.0 / 0.3048,              0},    // unFeetPerSecond
+    {_T(""),   1.0,                       0},    // unLastUnit
 };
 
 static Units_t UserDistanceUnit = unKiloMeter;
@@ -231,11 +233,12 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
 }
 
 const TCHAR *Units::GetUnitName(Units_t Unit) {
-    //  return LKGetText(UnitDescriptors[Unit].Name);
     // JMW adjusted this because units are pretty standard internationally
     // so don't need different names in different languages.
-
     const TCHAR *szName = nullptr;
+
+    // switch is used to check "Unit" is in the enum range...
+    //   tips : no default to have warning if value is missing.
     switch (Unit) {
         case unUndef:
         case unKiloMeter:
@@ -250,15 +253,11 @@ const TCHAR *Units::GetUnitName(Units_t Unit) {
         case unFeet:
         case unFligthLevel:
         case unKelvin:
-            szName = UnitDescriptors[Unit].Name;
-            break;
         case unGradCelcius:
-            szName = MsgToken<2180>();
-            break;
         case unGradFahrenheit:
-            szName = MsgToken<2181>();
-            break;
+        case unFeetPerSecond:
         case unLastUnit:
+            szName = UnitDescriptors[Unit].Name;
             break;
     }
     assert(szName);

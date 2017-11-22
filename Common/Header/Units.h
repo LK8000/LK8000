@@ -34,9 +34,10 @@ enum Units_t {
   unFeet,
   unFligthLevel,
   unKelvin,
-  unGradCelcius,                    // K = °C + 273,15
-  unGradFahrenheit,                 // K = (°F + 459,67) / 1,8
-  unLastUnit
+  unGradCelcius,    // K = °C + 273,15
+  unGradFahrenheit, // K = (°F + 459,67) / 1,8
+  unFeetPerSecond,
+  unLastUnit // must be the last
 };
 
 
