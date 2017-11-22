@@ -899,8 +899,6 @@ static const double PI = (4*atan(1));
 #define RAD_TO_DEG  (180 / PI)
 #endif
 
-#define TOKPH   (double)3.6
-
 // meters to.. conversion
 #define TONAUTICALMILES (1.0 / 1852.0)
 #define TOMILES         (1.0 / 1609.344)

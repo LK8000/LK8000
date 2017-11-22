@@ -61,7 +61,7 @@ static void OnWindSpeedData(DataField *Sender, DataField::DataAccessKind_t Mode)
 
   switch(Mode){
     case DataField::daGet:
-      Sender->SetMax(Units::ToUserWindSpeed(200.0/TOKPH));
+      Sender->SetMax(Units::ToUserWindSpeed(Units::ToSys(unKiloMeterPerHour,200.0)));
       Sender->Set(Units::ToUserWindSpeed(CALCULATED_INFO.WindSpeed));
     break;
     case DataField::daPut:

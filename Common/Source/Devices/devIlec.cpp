@@ -68,7 +68,7 @@ BOOL PILC(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS)
 
 			pGPS->ExternalWindAvailable = TRUE;
 			if (wconfidence>=1) {
-				pGPS->ExternalWindSpeed = wspeed/TOKPH;
+				pGPS->ExternalWindSpeed = Units::ToSys(unKiloMeterPerHour, wspeed);
 				pGPS->ExternalWindDirection = wfrom;
 			}
 

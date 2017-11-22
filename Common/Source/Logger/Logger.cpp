@@ -556,7 +556,7 @@ void LogPoint(const NMEA_INFO& info) {
     info.Longitude,
     Clamp<int>(((GPSAltitudeOffset == 0) ? info.Altitude : 0) * TOMETER, 0, 99999),
     Clamp<int>((BaroAltitudeAvailable(info) ? QNHAltitudeToQNEAltitude(info.BaroAltitude) : 0)  * TOMETER, -9999, 99999),
-    Clamp<int>(info.Speed * TOKPH * 100, 0, 99999),
+    Clamp<int>(Units::ToUser(unKiloMeterPerHour, info.Speed) * 100, 0, 99999),
     static_cast<int>(AngleLimit360(info.TrackBearing)),
     info.Year, info.Month, info.Day,
     info.Hour, info.Minute, info.Second

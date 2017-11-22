@@ -298,8 +298,14 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
 		}
 		#if DEBUG_EQMC
 		StartupStore(_T(".. eMC=%.2f (=%.1f)  Averias=%f Avertas=%f kmh, sinktas=%.1f ms  sinkmc0=%.1f ms Vbestld=%.1f Vminsink=%.1f\n"),
-		Calculated->EqMc, Calculated->EqMc, averias*TOKPH, avertas*TOKPH,-1*GlidePolar::SinkRateFast(0,avertas),
-		GlidePolar::SinkRateBestLd(), GlidePolar::Vbestld()*TOKPH, GlidePolar::Vminsink()*TOKPH);
+                        Calculated->EqMc, 
+                        Calculated->EqMc, 
+                        Units::ToUser(unKiloMeterPerHour, averias), 
+                        Units::ToUser(unKiloMeterPerHour, avertas),
+                        -1*GlidePolar::SinkRateFast(0,avertas),
+                        GlidePolar::SinkRateBestLd(), 
+                        Units::ToUser(unKiloMeterPerHour, GlidePolar::Vbestld()), 
+                        Units::ToUser(unKiloMeterPerHour, GlidePolar::Vminsink()));
 		#endif
 
 	} else {
