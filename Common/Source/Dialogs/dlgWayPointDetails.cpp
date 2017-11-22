@@ -489,7 +489,7 @@ void dlgWayPointDetailsShowModal(short mypage){
 
           _stprintf(sTmp,_T("  (%.1fkm)"), distance*TOKILOMETER);
       } else {
-	  _stprintf(sTmp,_T("  (%.1fnm)"), distance*TONAUTICALMILES);
+	  _stprintf(sTmp,_T("  (%.1fnm)"), Units::ToUser(unNauticalMiles, distance));
       }
       _tcscat(DistanceText,sTmp);
   } else {

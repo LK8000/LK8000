@@ -58,7 +58,7 @@ std::string GenerateRMB(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) 
 
         const GeoPoint current = GetCurrentPosition(Basic);
         current.Reverse(next_pos, bearing, distance);
-        distance *= TONAUTICALMILES;
+        distance =  Units::ToUser(unNauticalMiles, distance);
 
         if (ValidWayPointFast(prev_index)) {
           const WAYPOINT& prev_tp = WayPointList[prev_index];

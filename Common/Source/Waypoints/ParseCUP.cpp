@@ -286,7 +286,7 @@ double ReadLength(const TCHAR *temp)
   if (stop){	// number converted endpointer is set
 
 	if ( *stop == 'n' ) {
-		len = len / TONAUTICALMILES;
+		len = Units::ToSys(unNauticalMiles, len);
 		return len;
 	}
 	if ( (*stop == 'm') && (*(stop+1) == 'l') ) {

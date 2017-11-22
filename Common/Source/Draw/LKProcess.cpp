@@ -1305,9 +1305,11 @@ goto_bearing:
 		case LK_HOME_DISTNM:
 			if (HomeWaypoint>=0) {
 				if ( ValidWayPoint(HomeWaypoint) != false ) {
-					value=Units::ToUserDistance(DerivedDrawInfo.HomeDistance);
 					if (lkindex == LK_HOME_DISTNM)
-						value=DerivedDrawInfo.HomeDistance*TONAUTICALMILES;
+						value = Units::ToUser(unNauticalMiles, DerivedDrawInfo.HomeDistance);
+					else 
+						value = Units::ToUserDistance(DerivedDrawInfo.HomeDistance);
+
 					valid=true;
 					if (value>99)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -2458,7 +2460,7 @@ olc_score:
 					else
 						BufferTitle[8] = '\0';  // FIX TUNING
 				}
-				value=TONAUTICALMILES*WayPointCalc[index].Distance;
+				value= Units::ToUser(unNauticalMiles, WayPointCalc[index].Distance);
 				valid=true;
 			}
 
