@@ -84,14 +84,14 @@ sudo PATH=$USER_PATH:$PATH \
     make install
 cd ..
 
-# install freetype2 ( 2.7.1 - 2016-12-30 )
-wget http://download.savannah.gnu.org/releases/freetype/freetype-2.7.1.tar.gz
-tar xzf freetype-2.7.1.tar.gz
+# install freetype2 ( 2.9 - 2018-01-08 )
+wget https://download.savannah.gnu.org/releases/freetype/freetype-2.9.tar.gz
+tar xzf freetype-2.9.tar.gz
 mkdir freetype-build
 cd freetype-build
 CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
 LDFLAGS="-L$TARGET_DIR/lib"  \
-../freetype-2.7.1/configure \
+../freetype-2.9/configure \
     --host=$TC \
     --target=$TC \
     --prefix=$TARGET_DIR \
