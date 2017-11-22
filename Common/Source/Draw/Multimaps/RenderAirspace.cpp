@@ -521,11 +521,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         switch (GetMMNorthUp(getsideviewpage)) {
             case NORTHUP:
             default:
-                DrawXGrid(Surface, rc, xtick / DISTANCEMODIFY, xtick, 0, TEXT_ABOVE_LEFT, Sideview_TextColor, &sDia, text);
+                DrawXGrid(Surface, rc, Units::ToSysDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, Sideview_TextColor, &sDia, text);
                 break;
 
             case TRACKUP:
-                DrawXGrid(Surface, rci, xtick / DISTANCEMODIFY, xtick, 0, TEXT_ABOVE_LEFT, Sideview_TextColor, &sDia, text);
+                DrawXGrid(Surface, rci, Units::ToSysDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, Sideview_TextColor, &sDia, text);
                 break;
         }
     Surface.SetTextColor(Sideview_TextColor);
@@ -541,11 +541,11 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     if (Units::GetUserAltitudeUnit() == unFeet)
         ytick = ytick * FEET_FACTOR;
 
-    _stprintf(text, TEXT("%s"), Units::GetUnitName(Units::GetUserAltitudeUnit()));
+    _stprintf(text, TEXT("%s"), Units::GetAltitudeName());
 
     // Draw only if topview is not fullscreen
     if (Current_Multimap_SizeY < SIZE4)
-        DrawYGrid(Surface, rcc, ytick / ALTITUDEMODIFY, ytick, 0, TEXT_UNDER_RIGHT, Sideview_TextColor, &sDia, text);
+        DrawYGrid(Surface, rcc, Units::ToSysAltitude(ytick), ytick, 0, TEXT_UNDER_RIGHT, Sideview_TextColor, &sDia, text);
 
     POINT line[4];
 
@@ -765,7 +765,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
         if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL / 10);
 
-        _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY * fMC0));
+        _stprintf(text, TEXT("Mc %3.1f: "), Units::ToUserVerticalSpeed(fMC0));
         if (wpt_altarriv_mc0 > ALTDIFFLIMIT) {
             Units::FormatUserArrival(wpt_altarriv_mc0, buffer, 7);
             _tcscat(text, buffer);
@@ -814,7 +814,7 @@ _skip_mc0:
         // ALTITUDE ARRIVAL AT CURRENT MACCREADY
         //
 
-        _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY * MACCREADY));
+        _stprintf(text, TEXT("Mc %3.1f: "), Units::ToUserVerticalSpeed(MACCREADY));
         if (wpt_altarriv > ALTDIFFLIMIT) {
             Units::FormatUserArrival(wpt_altarriv, buffer, 7);
             _tcscat(text, buffer);
@@ -851,7 +851,10 @@ _skip_mc0:
   if(bConicalFinal) {
     double mc = (Sink * Slope + VOpt) / Slope;
     if( fabs(mc-MACCREADY) > 0.05 ) {
-      _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),(LIFTMODIFY*mc), SPEEDMODIFY*VOpt, (Units::GetHorizontalSpeedName()));
+      _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),
+                Units::ToUserVerticalSpeed(mc),
+                Units::ToUserHorizontalSpeed(VOpt),
+                Units::GetHorizontalSpeedName());
 
       x = BestReach.x - tsize.cx - NIBLSCALE(5);
       if (bDrawRightSide) {
@@ -909,8 +912,10 @@ _skip_mc0:
                     NULL, 1.0e6, 1.0);
 
 
-            _stprintf(text, TEXT("Mc %3.1f @%.0f%s"), (LIFTMODIFY * mc_pirker), SPEEDMODIFY*mcspeed,
-                    (Units::GetHorizontalSpeedName()));
+            _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),
+                      Units::ToUserVerticalSpeed(mc_pirker),
+                      Units::ToUserHorizontalSpeed(mcspeed),
+                      Units::GetHorizontalSpeedName());
 
             x = line[0].x - tsize.cx - NIBLSCALE(5);
             if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);

@@ -363,18 +363,15 @@ void Units::NotifyUnitChanged(void){
 
   switch (SpeedUnit_Config) {
     case 0 :
-      SPEEDMODIFY = TOMPH;
       SetUserHorizontalSpeedUnit(unStatuteMilesPerHour);
       SetUserWindSpeedUnit(unStatuteMilesPerHour);
       break;
     case 1 :
-      SPEEDMODIFY = TOKNOTS;
       SetUserHorizontalSpeedUnit(unKnots);
       SetUserWindSpeedUnit(unKnots);
       break;
     case 2 :
     default:
-      SPEEDMODIFY = TOKPH;
       SetUserHorizontalSpeedUnit(unKiloMeterPerHour);
       SetUserWindSpeedUnit(unKiloMeterPerHour);
       break;
@@ -382,60 +379,49 @@ void Units::NotifyUnitChanged(void){
 
   switch(DistanceUnit_Config) {
     case 0 :
-      DISTANCEMODIFY = TOMILES;
       SetUserDistanceUnit(unStatuteMiles);
       break;
     case 1 :
-      DISTANCEMODIFY = TONAUTICALMILES;
       SetUserDistanceUnit(unNauticalMiles);
       break;
     default:
     case 2 :
-      DISTANCEMODIFY = TOKILOMETER;
       SetUserDistanceUnit(unKiloMeter);
       break;
   }
 
   switch(AltitudeUnit_Config) {
     case 0 :
-      ALTITUDEMODIFY = TOFEET;
       SetUserAltitudeUnit(unFeet);
       break;
     default:
     case 1 :
       SetUserAltitudeUnit(unMeter);
-      ALTITUDEMODIFY = TOMETER;
       break;
   }
 
   switch(LiftUnit_Config) {
     case 0 :
-      LIFTMODIFY = TOKNOTS;
       SetUserVerticalSpeedUnit(unKnots);
       break;
     default:
     case 1 :
-      LIFTMODIFY = TOMETER;
       SetUserVerticalSpeedUnit(unMeterPerSecond);
       break;
     case 2 :
-      LIFTMODIFY = TOFEETPERMINUTE;
       SetUserVerticalSpeedUnit(unFeetPerMinutes);
       break;
   }
 
   switch(TaskSpeedUnit_Config) {
     case 0 :
-      TASKSPEEDMODIFY = TOMPH;
       SetUserTaskSpeedUnit(unStatuteMilesPerHour);
       break;
     case 1 :
-      TASKSPEEDMODIFY = TOKNOTS;
       SetUserTaskSpeedUnit(unKnots);
       break;
     case 2 :
     default:
-      TASKSPEEDMODIFY = TOKPH;
       SetUserTaskSpeedUnit(unKiloMeterPerHour);
       break;
   }
@@ -463,6 +449,10 @@ const TCHAR *Units::GetInvAltitudeName(){ // 100126
 
 const TCHAR *Units::GetTaskSpeedName(){
   return(GetUnitName(GetUserTaskSpeedUnit()));
+}
+
+const TCHAR *Units::GetWindSpeedName(){
+  return(GetUnitName(GetUserWindSpeedUnit()));
 }
 
 bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
@@ -654,38 +644,70 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
 }
 
 
-double Units::ToUserAltitude(double Altitude){
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
 
-  Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
+double Units::ToUser(Units_t unit, double value) {
+  const UnitDescriptor_t *pU = &UnitDescriptors[unit];
+  return value * pU->ToUserFact + pU->ToUserOffset;
+}
 
-  return(Altitude);
+double Units::ToUserAltitude(double Altitude) {
+  return ToUser(GetUserAltitudeUnit(), Altitude);
+}
+
+double Units::ToInvUserAltitude(double Altitude) {
+  return ToUser(GetUserInvAltitudeUnit(), Altitude);
+}
+
+double Units::ToUserDistance(double Distance){
+  return ToUser(GetUserDistanceUnit(), Distance);
+}
+
+double Units::ToUserWindSpeed(double speed) {
+  return ToUser(GetUserWindSpeedUnit(), speed);
+}
+
+double Units::ToUserHorizontalSpeed(double speed) {
+  return ToUser(GetUserHorizontalSpeedUnit(), speed);
+}
+
+double Units::ToUserVerticalSpeed(double speed) {
+  return ToUser(GetUserVerticalSpeedUnit(), speed);
+}
+
+double Units::ToUserTaskSpeed(double speed) {
+  return ToUser(GetUserTaskSpeedUnit(), speed);
+}
+
+
+double Units::ToSys(Units_t unit, double value) {
+  const UnitDescriptor_t *pU = &UnitDescriptors[unit];
+  return (value - pU->ToUserOffset) / pU->ToUserFact;
 }
 
 double Units::ToSysAltitude(double Altitude){
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
-
-  Altitude = Altitude / pU->ToUserFact; // + pU->ToUserOffset;
-
-  return(Altitude);
-}
-
-
-double Units::ToUserDistance(double Distance){
-  UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
-
-  Distance = Distance * pU->ToUserFact; // + pU->ToUserOffset;
-
-  return(Distance);
+  return ToSys(GetUserAltitudeUnit(), Altitude);
 }
 
 double Units::ToSysDistance(double Distance){
-  UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
-
-  Distance = Distance / pU->ToUserFact; // + pU->ToUserOffset;
-
-  return(Distance);
+  return ToSys(GetUserDistanceUnit(), Distance);
 }
+
+double Units::ToSysWindSpped(double speed) {
+  return ToSys(GetUserWindSpeedUnit(), speed);
+}
+
+double Units::ToSysHorizontalSpeed(double speed) {
+  return ToSys(GetUserHorizontalSpeedUnit(), speed);
+}
+
+double Units::ToSysVerticalSpeed(double speed) {
+  return ToSys(GetUserVerticalSpeedUnit(), speed);
+}
+
+double Units::ToSysTaskSpeed(double speed) {
+  return ToSys(GetUserTaskSpeedUnit(), speed);
+}
+
 
 void Units::TimeToText(TCHAR* text, int d) {
   int hours, mins;

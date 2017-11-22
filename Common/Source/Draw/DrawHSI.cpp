@@ -538,7 +538,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
                      else _stprintf(Buffer,TEXT("%d km"),(int)round(xtk));
                  } else _stprintf(Buffer,TEXT("%d m"),(int)round(xtk));
             } else { //Miles or Nautical miles
-                xtk*=DISTANCEMODIFY;
+                xtk = Units::ToUserDistance(xtk);
                 if(xtk<1) _stprintf(Buffer, TEXT("%.2f %s"),xtk,Units::GetDistanceName());
                 else if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f %s"),xtk,Units::GetDistanceName());
                 else _stprintf(Buffer,TEXT("%d %s"),(int)round(xtk),Units::GetDistanceName());

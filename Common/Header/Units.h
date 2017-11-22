@@ -148,6 +148,8 @@ public:
   static const TCHAR *GetInvAltitudeName();
 
   static const TCHAR *GetTaskSpeedName();
+	
+  static const TCHAR *GetWindSpeedName();
 
   static bool FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size);
   static bool FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size);
@@ -155,11 +157,39 @@ public:
   static bool FormatUserDistance(double Distance, TCHAR *Buffer, size_t size);
   static bool FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, size_t size);
 
-  static double ToUserAltitude(double Altitude);
-  static double ToSysAltitude(double Altitude);
 
+  /**
+   * convert value from System Unit to @unit
+   */
+  static double ToUser(Units_t unit, double value);
+
+  /**
+   * convert value from System Unit to User Unit
+   */
+  static double ToUserAltitude(double Altitude);
+  static double ToInvUserAltitude(double Altitude);
   static double ToUserDistance(double Distance);
+  static double ToUserWindSpeed(double speed);
+  static double ToUserHorizontalSpeed(double speed);
+  static double ToUserVerticalSpeed(double speed);
+  static double ToUserTaskSpeed(double speed);
+
+  /**
+   * convert value from @unit to System Unit
+   */
+  static double ToSys(Units_t unit, double value);
+
+  /**
+   * convert value from User Unit to System Unit
+   */
+  static double ToSysAltitude(double Altitude);
   static double ToSysDistance(double Distance);
+  static double ToSysWindSpped(double speed);
+  static double ToSysHorizontalSpeed(double speed);
+  static double ToSysVerticalSpeed(double speed);
+  static double ToSysTaskSpeed(double speed);
+
+
   static void TimeToText(TCHAR* text, int d);
   static void TimeToTextSimple(TCHAR* text, int d);
   static bool TimeToTextDown(TCHAR* text, int d);

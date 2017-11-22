@@ -21,7 +21,7 @@ static WndForm *wf=NULL;
 // Correction factor for topology zoom levels, which are in Km.
 // Using non-metric distances, these values should be changed accordingly.
 // new=old*DISTANCEMODIFY*1000
-#define RZC	(DISTANCEMODIFY*1000)
+#define RZC	Units::ToUserDistance(1000)
 
 
 static void OnTopoActiveData(DataField *Sender, DataField::DataAccessKind_t Mode){

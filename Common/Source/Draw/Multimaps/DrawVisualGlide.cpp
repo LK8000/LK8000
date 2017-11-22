@@ -372,7 +372,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
         TCHAR value[40], unit[30];
         TCHAR line2[140], line3[50];
         TCHAR name[NAME_SIZE + 1];
-        double ar = (WayPointCalc[wp].AltArriv[AltArrivMode] * ALTITUDEMODIFY);
+        double ar = Units::ToUserAltitude(WayPointCalc[wp].AltArriv[AltArrivMode]);
         _tcscpy(name, WayPointList[wp].Name);
         CharUpper(name);
 

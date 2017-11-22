@@ -49,8 +49,8 @@ void UpdateAnalysis(WndForm* pForm){
         _stprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s"),
 	// LKTOKEN  _@M823_ = "Working band"
                   MsgToken<823>(),
-                  flightstats.Altitude_Base.y_ave*ALTITUDEMODIFY,
-                  flightstats.Altitude_Ceiling.y_ave*ALTITUDEMODIFY,
+                  Units::ToUserAltitude(flightstats.Altitude_Base.y_ave),
+                  Units::ToUserAltitude(flightstats.Altitude_Ceiling.y_ave),
                   Units::GetAltitudeName());
 
       } else {
@@ -58,12 +58,12 @@ void UpdateAnalysis(WndForm* pForm){
         _stprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s\r\n\r\n%s:\r\n  %.0f %s/hr"),
 	// LKTOKEN  _@M823_ = "Working band"
                   MsgToken<823>(),
-                  flightstats.Altitude_Base.y_ave*ALTITUDEMODIFY,
-                  flightstats.Altitude_Ceiling.y_ave*ALTITUDEMODIFY,
+                  Units::ToUserAltitude(flightstats.Altitude_Base.y_ave),
+                  Units::ToUserAltitude(flightstats.Altitude_Ceiling.y_ave),
                   Units::GetAltitudeName(),
 	// LKTOKEN  _@M165_ = "Ceiling trend"
                   MsgToken<165>(),
-                  flightstats.Altitude_Ceiling.m*ALTITUDEMODIFY,
+                  Units::ToUserAltitude(flightstats.Altitude_Ceiling.m),
                   Units::GetAltitudeName());
       }
       waInfo->SetCaption(sTmp);
@@ -83,18 +83,18 @@ void UpdateAnalysis(WndForm* pForm){
         _stprintf(sTmp, TEXT("%s:\r\n  %3.1f %s"),
 	// LKTOKEN  _@M116_ = "Av climb"
                   MsgToken<116>(),
-                  flightstats.ThermalAverage.y_ave*LIFTMODIFY,
+                  Units::ToUserVerticalSpeed(flightstats.ThermalAverage.y_ave),
                   Units::GetVerticalSpeedName()
                   );
       } else {
         _stprintf(sTmp, TEXT("%s:\r\n  %3.1f %s\r\n\r\n%s:\r\n  %3.2f %s"),
 	// LKTOKEN  _@M116_ = "Av climb"
                   MsgToken<116>(),
-                  flightstats.ThermalAverage.y_ave*LIFTMODIFY,
+                  Units::ToUserVerticalSpeed(flightstats.ThermalAverage.y_ave),
                   Units::GetVerticalSpeedName(),
 	// LKTOKEN  _@M181_ = "Climb trend"
                   MsgToken<181>(),
-                  flightstats.ThermalAverage.m*LIFTMODIFY,
+                  Units::ToUserVerticalSpeed(flightstats.ThermalAverage.m),
                   Units::GetVerticalSpeedName()
                   );
       }
@@ -143,11 +143,11 @@ void UpdateAnalysis(WndForm* pForm){
     _stprintf(sTmp, TEXT("%s:\r\n  %5.0f %s\r\n\r\n%s:\r\n  %5.0f %s\r\n"),
 	// LKTOKEN  _@M714_ = "Thermal height"
 	      MsgToken<714>(),
-	      CuSonde::thermalHeight*ALTITUDEMODIFY,
+          Units::ToUserAltitude(CuSonde::thermalHeight),
 	      Units::GetAltitudeName(),
 	// LKTOKEN  _@M187_ = "Cloud base"
 	      MsgToken<187>(),
-	      CuSonde::cloudBase*ALTITUDEMODIFY,
+          Units::ToUserAltitude(CuSonde::cloudBase),
 	      Units::GetAltitudeName());
 
     waInfo->SetCaption(sTmp);
@@ -173,9 +173,9 @@ void UpdateAnalysis(WndForm* pForm){
               MsgToken<93>(),
 	// LKTOKEN  _@M699_ = "Task"
               MsgToken<699>(),
-		  DISTANCEMODIFY*CALCULATED_INFO.TaskTotalDistance,
-		  Units::GetDistanceName(),
-		  FAI);
+              Units::ToUserDistance(CALCULATED_INFO.TaskTotalDistance),
+              Units::GetDistanceName(),
+              FAI);
     pForm->SetCaption(sTmp);
 
     RefreshTaskStatistics();
@@ -207,11 +207,11 @@ void UpdateAnalysis(WndForm* pForm){
                     timetext2,
 	// LKTOKEN  _@M242_ = "Dist to go"
                     MsgToken<242>(),
-                    DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance,
+                    Units::ToUserDistance(CALCULATED_INFO.AATTargetDistance),
                     Units::GetDistanceName(),
 	// LKTOKEN  _@M626_ = "Sp "
                     MsgToken<626>(),
-                    TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed,
+                    Units::ToUserTaskSpeed(CALCULATED_INFO.AATTargetSpeed),
                     Units::GetTaskSpeedName()
                     );
         } else {
@@ -225,25 +225,25 @@ void UpdateAnalysis(WndForm* pForm){
                     timetext2,
 	// LKTOKEN  _@M242_ = "Dist to go"
                     MsgToken<242>(),
-                    DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance,
+                    Units::ToUserDistance(CALCULATED_INFO.AATTargetDistance),
                     Units::GetDistanceName(),
 	// LKTOKEN  _@M681_ = "Targ.speed"
                     MsgToken<681>(),
-                    TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed,
+                    Units::ToUserTaskSpeed(CALCULATED_INFO.AATTargetSpeed),
                     Units::GetTaskSpeedName()
                     );
         }
       } else {
         _stprintf(sTmp, TEXT("%.0f%s %s\r\n\r\n%s: %s\r\n%s: %.0f%s\r\n"),
-			  DISTANCEMODIFY*CALCULATED_INFO.TaskTotalDistance,
-			  Units::GetDistanceName(),
-			  FAI ,
+                  Units::ToUserDistance(CALCULATED_INFO.TaskTotalDistance),
+                  Units::GetDistanceName(),
+                  FAI ,
 	// LKTOKEN  _@M698_ = "Task to go"
                   MsgToken<698>(),
                   timetext1,
 	// LKTOKEN  _@M242_ = "Dist to go"
                   MsgToken<242>(),
-                  DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceToGo,
+                  Units::ToUserDistance(CALCULATED_INFO.TaskDistanceToGo),
                   Units::GetDistanceName()
         );
       }
@@ -300,28 +300,28 @@ void UpdateAnalysis(WndForm* pForm){
           if (bFAI) {
             _stprintf(distStr,
                       _T("D:%.0f%s\r\nD*:%.0f%s FAI\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"),
-                      DISTANCEMODIFY * fDist, Units::GetDistanceName(),
-                      DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(),
-                      DISTANCEMODIFY * fCPDist, percC,
-                      DISTANCEMODIFY * fB_CPDist, percB);
+                      Units::ToUserDistance(fDist), Units::GetDistanceName(),
+                      Units::ToUserDistance(fTotalDistance), Units::GetDistanceName(),
+                      Units::ToUserDistance(fCPDist), percC,
+                      Units::ToUserDistance(fB_CPDist), percB);
           } else {
             _stprintf(distStr, _T("Not FAI yet\r\n"));
           }
 
-          _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
+          _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToUserTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
         } else {
           if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE || contestType == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
             const double percC = 100 * (fTotalDistance == 0 ? 0 : fCPDist / (double) fTotalDistance);
             const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
             _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"),
-                      DISTANCEMODIFY * fDist, Units::GetDistanceName(),
-                      DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(),
-                      DISTANCEMODIFY * fCPDist, percC,
-                      DISTANCEMODIFY * fB_CPDist, percB);
-            _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
+                      Units::ToUserDistance(fDist), Units::GetDistanceName(),
+                      Units::ToUserDistance(fTotalDistance), Units::GetDistanceName(),
+                      Units::ToUserDistance(fCPDist), percC,
+                      Units::ToUserDistance(fB_CPDist), percB);
+            _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToUserTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
           } else {
-            _stprintf(distStr, _T("D: %.1f %s\r\n"), DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName());
-            _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
+            _stprintf(distStr, _T("D: %.1f %s\r\n"), Units::ToUserDistance(fTotalDistance), Units::GetDistanceName());
+            _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToUserTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
 
           }
         }

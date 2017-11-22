@@ -99,7 +99,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
   MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
 /*******/
 
-  zoom.RequestedScale((m_Dia.fXMax -m_Dia.fXMin)  * fFact *  (DISTANCEMODIFY)/10.0f);
+  zoom.RequestedScale(Units::ToUserDistance(m_Dia.fXMax -m_Dia.fXMin)  * fFact / 10.0f);
 
   POINT Orig           =  { CalcDistanceCoordinat(0.0,  (DiagrammStruct*) &m_Dia),(rct.bottom-rct.top)/2};
   POINT Orig_Aircraft= {0,0};

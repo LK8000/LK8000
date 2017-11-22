@@ -82,7 +82,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 			DrawBitmapIn(Surface, sc, hTerrainWarning);
 
 			if (DerivedDrawInfo.FarObstacle_AltArriv <=-50 ||  DerivedDrawInfo.FarObstacle_Dist<5000 ) {
-				_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.FarObstacle_AltArriv);
+				_stprintf(hbuf,_T(" %.0f"),Units::ToUserAltitude(DerivedDrawInfo.FarObstacle_AltArriv));
 				TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, &tmode,false); 
 				wrotevalue=true;
 			}
@@ -99,7 +99,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 			RasterTerrain::Unlock();
 			if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX but unused
 			dh = CALCULATED_INFO.NavAltitude - h - (SAFETYALTITUDETERRAIN/10);
-			_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*dh);
+			_stprintf(hbuf,_T(" %.0f"),Units::ToUserAltitude(dh));
 			TextInBox(hDC,&rc,hbuf,sc.x+NIBLSCALE(10), sc.y, 0, tmode,false); 
 #else
 			// if far obstacle was painted with value...
@@ -111,7 +111,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 					if ( DerivedDrawInfo.ObstacleAltArriv <=-50)
 					// and there is a significant difference in the numbers, then paint value also for nearest
 					if (  fabs(DerivedDrawInfo.ObstacleAltArriv - DerivedDrawInfo.FarObstacle_AltArriv) >100 ) {
-						_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.ObstacleAltArriv);
+						_stprintf(hbuf,_T(" %.0f"),Units::ToUserAltitude(DerivedDrawInfo.ObstacleAltArriv));
 						TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, &tmode,false); 
 					}
 				}
@@ -123,7 +123,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
 				if (DerivedDrawInfo.ObstacleAltArriv <=-50 ||  
 				 ((DerivedDrawInfo.ObstacleAltArriv<0) && (DerivedDrawInfo.ObstacleDistance<5000)) ) {
 
-					_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.ObstacleAltArriv);
+					_stprintf(hbuf,_T(" %.0f"),Units::ToUserAltitude(DerivedDrawInfo.ObstacleAltArriv));
 					TextInBox(Surface,&rc,hbuf,sc.x+NIBLSCALE(15), sc.y, &tmode,false); 
 				}
 			}

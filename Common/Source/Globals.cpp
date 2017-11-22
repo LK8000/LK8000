@@ -144,12 +144,6 @@ void Globals_Init(void) {
 
   GlobalRunning = false;
 
-  SPEEDMODIFY = TOKNOTS;
-  LIFTMODIFY  = TOKNOTS;
-  DISTANCEMODIFY = TONAUTICALMILES;
-  ALTITUDEMODIFY = TOFEET;
-  TASKSPEEDMODIFY = TOKPH;
-
   MACCREADY = 0; // in m/s
   QNH = (double)PRESSURE_STANDARD;
   BUGS = 1; // This is the runtime Efficiency that can be changed by basic settings 1=100% 0.5=50%

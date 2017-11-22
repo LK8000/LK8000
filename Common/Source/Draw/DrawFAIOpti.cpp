@@ -710,9 +710,9 @@ int iCnt = 0;
     {
     TCHAR text[180];
     if(bFirstUnit)
-      _stprintf(text, TEXT("%i%s"), (int)(fDistTri*DISTANCEMODIFY+0.5), Units::GetUnitName(Units::GetUserDistanceUnit()));
+      _stprintf(text, TEXT("%i%s"), (int)Units::ToUserDistance(fDistTri+0.5), Units::GetDistanceName());
     else
-      _stprintf(text, TEXT("%i"), (int)(fDistTri*DISTANCEMODIFY+0.5));
+      _stprintf(text, TEXT("%i"), (int)Units::ToUserDistance(fDistTri+0.5));
     bFirstUnit = false;
 
 
@@ -748,7 +748,7 @@ int iCnt = 0;
       fDelta_Dist =  (fA-fB) / (double)(FAI_SECTOR_STEPS-1);
     }
     GPS_Gridline_t NewGrid;
-    NewGrid.fValue = (int)(fDistTri*DISTANCEMODIFY+0.5);
+    NewGrid.fValue = (int)Units::ToUserDistance(fDistTri+0.5);
     _tcscpy(NewGrid.szLable, text);
 
     for(i =0 ;i < FAI_SECTOR_STEPS; i++)
@@ -903,8 +903,8 @@ void MapWindow::DrawFAIOptimizer(LKSurface &Surface, const RECT &rc, const Scree
   if (fZoom > 50) fTic = 100;
   else if (fZoom > 20) fTic = 50;
   else if (fZoom > 10) fTic = 25; else fTic = 25;
-  if (DISTANCEMODIFY > 0.0)
-    fTic = fTic / DISTANCEMODIFY;
+
+  fTic = Units::ToSysDistance(fTic);
 
   const auto whitecolor = RGB_WHITE;
   const auto origcolor = Surface.SetTextColor(whitecolor);

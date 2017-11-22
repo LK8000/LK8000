@@ -74,35 +74,35 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(FinishMinHeight*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToUserAltitude(FinishMinHeight / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxHeight*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToUserAltitude(StartMaxHeight / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxHeightMargin*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToUserAltitude(StartMaxHeightMargin / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxSpeed*SPEEDMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToUserHorizontalSpeed(StartMaxSpeed / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxSpeedMargin*SPEEDMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToUserHorizontalSpeed(StartMaxSpeedMargin / 1000)));
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
@@ -184,7 +184,7 @@ bool dlgTaskRules(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {
-    ival = iround((wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000);
+    ival = iround(Units::ToSysAltitude(wp->GetDataField()->GetAsInteger())*1000);
     if ((int)FinishMinHeight != ival) {
       FinishMinHeight = ival;
       changed = true;
@@ -193,7 +193,7 @@ bool dlgTaskRules(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
   if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000);
+    ival = iround(Units::ToSysAltitude(wp->GetDataField()->GetAsInteger())*1000);
     if ((int)StartMaxHeight != ival) {
       StartMaxHeight = ival;
       changed = true;
@@ -202,7 +202,7 @@ bool dlgTaskRules(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
   if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0 ); // 100315
+    ival = iround(Units::ToSysAltitude(wp->GetDataField()->GetAsInteger())*1000); // 100315
     if ((int)StartMaxHeightMargin != ival) {
       StartMaxHeightMargin = ival;
       changed = true;
@@ -211,7 +211,7 @@ bool dlgTaskRules(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
   if (wp) {
-    ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000);
+    ival = iround(Units::ToSysHorizontalSpeed(wp->GetDataField()->GetAsInteger())*1000);
     if ((int)StartMaxSpeed != ival) {
       StartMaxSpeed = ival;
       changed = true;
@@ -220,7 +220,7 @@ bool dlgTaskRules(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
   if (wp) {
-    ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
+    ival = iround(Units::ToSysHorizontalSpeed(wp->GetDataField()->GetAsInteger())*1000);
     if ((int)StartMaxSpeedMargin != ival) {
       StartMaxSpeedMargin = ival;
       changed = true;

@@ -92,11 +92,13 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		}
 		TCHAR qmes[80];
 		if (PressureHg) 
-			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH/TOHPA,fixaltitude*ALTITUDEMODIFY,
-			Units::GetUnitName(Units::GetUserAltitudeUnit()));
+			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH/TOHPA,
+								Units::ToUserAltitude(fixaltitude),
+								Units::GetAltitudeName());
 		else
-			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH,fixaltitude*ALTITUDEMODIFY,
-			Units::GetUnitName(Units::GetUserAltitudeUnit()));
+			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH,
+								Units::ToUserAltitude(fixaltitude),
+								Units::GetAltitudeName());
 		DoStatusMessage(qmes);
 		#if TESTBENCH
 		StartupStore(_T("%s%s"),qmes,NEWLINE);

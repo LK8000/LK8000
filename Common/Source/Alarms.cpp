@@ -173,8 +173,11 @@ void CheckAltitudeAlarms(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated)
 
 		// Display new alarms message
 		TCHAR textalarm[100];
-		_stprintf(textalarm,_T("%s %d: %s %d"), MsgToken<1650>(), active_alarm, MsgToken<1651>(),  // ALARM ALTITUDE
-										((int)((double)LKalarms[active_alarm-1].triggervalue*ALTITUDEMODIFY)));
+		_stprintf(textalarm,_T("%s %d: %s %d"),
+              MsgToken<1650>(),
+              active_alarm,
+              MsgToken<1651>(),  // ALARM ALTITUDE
+              iround(Units::ToUserAltitude(LKalarms[active_alarm-1].triggervalue)));
 
 		Message::AddMessage(12000, MSG_ALARM, textalarm); // Message for 12 sec.
 

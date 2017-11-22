@@ -409,11 +409,11 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     switch (GetMMNorthUp(getsideviewpage)) {
         case NORTHUP:
         default:
-            DrawXGrid(Surface, rc, xtick / DISTANCEMODIFY, xtick, 0, TEXT_ABOVE_LEFT, RGB_BLACK, &sDia, text);
+            DrawXGrid(Surface, rc, Units::ToSysDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, RGB_BLACK, &sDia, text);
             break;
 
         case TRACKUP:
-            DrawXGrid(Surface, rci, xtick / DISTANCEMODIFY, xtick, 0, TEXT_ABOVE_LEFT, RGB_BLACK, &sDia, text);
+            DrawXGrid(Surface, rci, Units::ToSysDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, RGB_BLACK, &sDia, text);
             break;
     }
 
@@ -430,10 +430,10 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     if (Units::GetUserAltitudeUnit() == unFeet)
         ytick = ytick * FEET_FACTOR;
 
-    _stprintf(text, TEXT("%s"), Units::GetUnitName(Units::GetUserAltitudeUnit()));
+    _stprintf(text, TEXT("%s"), Units::GetAltitudeName());
     if (sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
         rc.bottom -= SV_BORDER_Y; /* scale witout sea  */
-    DrawYGrid(Surface, rc, ytick / ALTITUDEMODIFY, ytick, 0, TEXT_UNDER_RIGHT, Sideview_TextColor, &sDia, text);
+    DrawYGrid(Surface, rc, Units::ToSysAltitude(ytick), ytick, 0, TEXT_UNDER_RIGHT, Sideview_TextColor, &sDia, text);
 
 
     Surface.SetBkColor(RGB_WHITE);

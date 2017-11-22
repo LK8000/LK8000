@@ -347,14 +347,14 @@ static void RefreshCalculator(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSpeedRemaining"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(v1*TASKSPEEDMODIFY);
+    wp->GetDataField()->SetAsFloat(Units::ToUserTaskSpeed(v1));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSpeedAchieved"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(CALCULATED_INFO.TaskSpeed*TASKSPEEDMODIFY);
+    wp->GetDataField()->SetAsFloat(Units::ToUserTaskSpeed(CALCULATED_INFO.TaskSpeed));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
   }

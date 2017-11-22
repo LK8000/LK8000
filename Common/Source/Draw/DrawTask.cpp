@@ -478,8 +478,7 @@ double         fTic = 100;
 if(fZoom > 50) fTic = 100; else
 if(fZoom > 20) fTic = 50;  else
 if(fZoom > 10) fTic = 25;  else fTic = 25;
-if( DISTANCEMODIFY > 0.0)
-  fTic =  fTic/ DISTANCEMODIFY;
+fTic =  Units::ToSysDistance(fTic);
 
 double	lat1 = WayPointList[Task[a].Index].Latitude;
 double	lon1 = WayPointList[Task[a].Index].Longitude;

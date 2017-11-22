@@ -89,7 +89,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(AirspaceWarningVerticalMargin*ALTITUDEMODIFY/10));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToUserAltitude(AirspaceWarningVerticalMargin / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -162,7 +162,7 @@ void dlgAirspaceWarningParamsShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
+    ival = iround(Units::ToSysAltitude(wp->GetDataField()->GetAsInteger())*10);
     if (AirspaceWarningVerticalMargin != ival) {
       AirspaceWarningVerticalMargin = ival;
     }

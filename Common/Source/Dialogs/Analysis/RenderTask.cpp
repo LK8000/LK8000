@@ -181,9 +181,6 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
       }
     }
 
-#ifdef FAI_GRID_DEBUG
-    StartupStore(_T("RenderContest yscale:%f  fZoom:%f  fTic:%f DISTANCEMODIFY:%f %s"), yscale,fZoom, fTic, DISTANCEMODIFY, NEWLINE);
-#endif
   if (!UseAATTarget())
   {
 	for (i=MAXTASKPOINTS-1; i>0; i--)
@@ -212,12 +209,12 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 
             double fTic,fDist_c, fAngle ;
             DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
-			fTic= 1/DISTANCEMODIFY;
-			if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
-			if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
-			if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
+			fTic= Units::ToSysDistance(1);
+			if(fDist_c > Units::ToSysDistance(5))   fTic = Units::ToSysDistance(10);
+			if(fDist_c > Units::ToSysDistance(50))  fTic = Units::ToSysDistance(25);
+			if(fDist_c > Units::ToSysDistance(100)) fTic = Units::ToSysDistance(50);
 			//  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
-			if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
+			if(fDist_c > Units::ToSysDistance(500)) fTic = Units::ToSysDistance(250);
 
 
 		  if (!IsDithered()) {
@@ -245,12 +242,11 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 	  lon2 = WayPointList[Task[1].Index].Longitude;
             double fTic,fDist_c, fAngle ;
             DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
-			fTic= 1/DISTANCEMODIFY;
-			if(fDist_c > 5/DISTANCEMODIFY)   fTic = 10/DISTANCEMODIFY;
-			if(fDist_c > 50/DISTANCEMODIFY)  fTic = 25/DISTANCEMODIFY;
-			if(fDist_c > 100/DISTANCEMODIFY) fTic = 50/DISTANCEMODIFY;
-			//  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
-			if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
+			fTic= Units::ToSysDistance(1);
+			if(fDist_c > Units::ToSysDistance(5))   fTic = Units::ToSysDistance(10);
+			if(fDist_c > Units::ToSysDistance(50))  fTic = Units::ToSysDistance(25);
+			if(fDist_c > Units::ToSysDistance(100)) fTic = Units::ToSysDistance(50);
+			if(fDist_c > Units::ToSysDistance(500)) fTic = Units::ToSysDistance(250);
 
 
 // RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );

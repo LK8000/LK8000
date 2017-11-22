@@ -28,7 +28,7 @@ MapWindow::Zoom::Zoom():
 void MapWindow::Zoom::CalculateTargetPanZoom()
 {
   // set scale exactly so that waypoint distance is the zoom factor across the screen
-  *_requestedScale = LimitMapScale(TargetZoomDistance * DISTANCEMODIFY / 6.0);
+  *_requestedScale = LimitMapScale(Units::ToUserDistance(TargetZoomDistance / 6.0));
 }
 
 
@@ -50,7 +50,7 @@ void MapWindow::Zoom::CalculateAutoZoom() {
             && mode.Is(Mode::MODE_CIRCLING))) {
       AutoZoomFactor = 2.5;
     }
-    _modeScale[SCALE_CRUISE] = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
+    _modeScale[SCALE_CRUISE] = LimitMapScale(Units::ToUserDistance(wpd) / AutoZoomFactor);
   } else {
     _modeScale[SCALE_CRUISE] = GetZoomInitValue(CruiseZoom);
   }
@@ -87,7 +87,7 @@ void MapWindow::Zoom::Reset()
 
   _requestedScale = &_modeScale[SCALE_CRUISE];
   _scale = *_requestedScale;
-  _realscale = *_requestedScale/DISTANCEMODIFY/1000;
+  _realscale = Units::ToSysDistance(*_requestedScale)/1000;
 
   _inited = true;
   SwitchMode();
@@ -287,13 +287,13 @@ void MapWindow::Zoom::ModifyMapScale()
   }
 
   const double mapFactor = GetMapResolutionFactor();
-  const double scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
+  const double scaleOverDistanceModify = Units::ToSysDistance(*_requestedScale);
 
   _resScaleOverDistanceModify = mapFactor / scaleOverDistanceModify;
   _drawScale = mapFactor / (scaleOverDistanceModify / 111194); // what is this const value ?
   _invDrawScale = 1.0 / _drawScale;
   _scale = *_requestedScale;
-  _realscale = *_requestedScale / DISTANCEMODIFY / 1000;
+  _realscale = Units::ToSysDistance(*_requestedScale) / 1000;
 }
 
 

@@ -61,9 +61,9 @@ void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
   rci.top += BORDER_Y;
 
   if(Units::GetUserInvAltitudeUnit() == unFeet) {
-    DrawYGrid(Surface, rci, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
+    DrawYGrid(Surface, rci, Units::ToSysAltitude(500.0), 0, STYLE_THINDASHPAPER, 500.0, true);
   } else {
-    DrawYGrid(Surface, rci, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
+    DrawYGrid(Surface, rci, Units::ToSysAltitude(1000.0), 0, STYLE_THINDASHPAPER, 1000.0, true);
   }
   DrawLineGraph(Surface, rc, &flightstats.Altitude,
                 STYLE_MEDIUMBLACK);

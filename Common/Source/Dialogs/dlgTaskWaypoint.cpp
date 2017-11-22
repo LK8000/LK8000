@@ -65,16 +65,14 @@ static void SetWaypointValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].AATCircleRadius
-                                         *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetAsFloat(round(Units::ToUserDistance(Task[twItemIndex].AATCircleRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATSectorRadius"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].AATSectorRadius
-                                         *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetAsFloat(round(Units::ToUserDistance(Task[twItemIndex].AATSectorRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -233,7 +231,7 @@ static void SetValues(bool first) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(round(FinishRadius*DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetAsFloat(round(Units::ToUserDistance(FinishRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -256,7 +254,7 @@ static void SetValues(bool first) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(round(StartRadius*DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetAsFloat(round(Units::ToUserDistance(StartRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -283,7 +281,7 @@ static void SetValues(bool first) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));
   if (wp) {
     wp->SetVisible(gTaskType==TSK_DEFAULT);
-    wp->GetDataField()->SetAsFloat(lround(SectorRadius*DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetAsFloat(round(Units::ToUserDistance(SectorRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -380,13 +378,13 @@ static void GetWaypointValues(void) {
     wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
     if (wp) {
       changed = CHECK_CHANGED(Task[twItemIndex].AATCircleRadius,
-                    round(wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY));
+                    round(Units::ToSysDistance(wp->GetDataField()->GetAsFloat())));
     }
     
     wp = (WndProperty*)wf->FindByName(TEXT("prpAATSectorRadius"));
     if (wp) {
       changed = CHECK_CHANGED(Task[twItemIndex].AATSectorRadius,
-                    round(wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY));
+                    round(Units::ToSysDistance(wp->GetDataField()->GetAsFloat())));
     }
     
     wp = (WndProperty*)wf->FindByName(TEXT("prpAATStartRadial"));
@@ -399,7 +397,7 @@ static void GetWaypointValues(void) {
     if (wp) {
       changed = CHECK_CHANGED(Task[twItemIndex].AATFinishRadial, 
                     round(wp->GetDataField()->GetAsFloat()));
-    }  
+    }
 
     if (changed) {
       TaskModified = true;
@@ -435,8 +433,8 @@ static void ReadValues(void) {
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
   if (wp) {
-    changed = CHECK_CHANGED(FinishRadius, 
-                  wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY);
+    changed = CHECK_CHANGED(FinishRadius,
+                  Units::ToSysDistance(wp->GetDataField()->GetAsFloat()));
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
@@ -448,8 +446,8 @@ static void ReadValues(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
   if (wp) {
-    changed = CHECK_CHANGED(StartRadius, 
-                  wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY);
+    changed = CHECK_CHANGED(StartRadius,
+                  Units::ToSysDistance(wp->GetDataField()->GetAsFloat()));
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
@@ -462,7 +460,7 @@ static void ReadValues(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));
   if (wp) {
     changed = CHECK_CHANGED(SectorRadius,
-                  round(wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY));
+                  round(Units::ToSysDistance(wp->GetDataField()->GetAsFloat())));
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoAdvance"));

@@ -337,9 +337,7 @@ static void SetValues(WndForm* wf) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(
-				   iround(global_wpt->Altitude
-					  *ALTITUDEMODIFY));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToUserAltitude(global_wpt->Altitude)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -509,7 +507,7 @@ static void GetValues(WndForm* wf) {
     if (ss==0) {
       WaypointAltitudeFromTerrain(global_wpt);
     } else {
-      global_wpt->Altitude = ss/ALTITUDEMODIFY;
+      global_wpt->Altitude = Units::ToSysAltitude(ss);
     }
   }
 

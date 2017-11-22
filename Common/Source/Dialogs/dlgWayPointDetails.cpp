@@ -522,8 +522,9 @@ void dlgWayPointDetailsShowModal(short mypage){
   if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable)
 	alt-=(SAFETYALTITUDEARRIVAL/10);
 
-  _stprintf(sTmp, TEXT("%.0f %s"), alt*ALTITUDEMODIFY,
-	    Units::GetAltitudeName());
+  _stprintf(sTmp, TEXT("%.0f %s"),
+            Units::ToUserAltitude(alt),
+            Units::GetAltitudeName());
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc0")));
   if (wp) wp->SetText(sTmp);
@@ -544,8 +545,9 @@ void dlgWayPointDetailsShowModal(short mypage){
   if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable)
 	alt-=(SAFETYALTITUDEARRIVAL/10);
 
-  _stprintf(sTmp, TEXT("%.0f %s"), alt*ALTITUDEMODIFY,
-	    Units::GetAltitudeName());
+  _stprintf(sTmp, TEXT("%.0f %s"),
+            Units::ToUserAltitude(alt),
+            Units::GetAltitudeName());
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc2")));
   if (wp) {
