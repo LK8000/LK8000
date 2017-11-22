@@ -533,7 +533,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
             double xtk=fabs(deviation); //here is in meters
             if(DistanceUnit_Config==2) { //Km
                 if(xtk>1000) {
-                     xtk*=TOKILOMETER;
+                     xtk = Units::ToUser(unKiloMeter, xtk);
                      if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f km"),xtk);
                      else _stprintf(Buffer,TEXT("%d km"),(int)round(xtk));
                  } else _stprintf(Buffer,TEXT("%d m"),(int)round(xtk));

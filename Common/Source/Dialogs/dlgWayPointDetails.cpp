@@ -487,7 +487,7 @@ void dlgWayPointDetailsShowModal(short mypage){
       if ( Units::GetUserDistanceUnit() == unNauticalMiles ||
            Units::GetUserDistanceUnit() == unStatuteMiles ) {
 
-          _stprintf(sTmp,_T("  (%.1fkm)"), distance*TOKILOMETER);
+          _stprintf(sTmp,_T("  (%.1fkm)"), Units::ToUser(unKiloMeter, distance));
       } else {
 	  _stprintf(sTmp,_T("  (%.1fnm)"), Units::ToUser(unNauticalMiles, distance));
       }
