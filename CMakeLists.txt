@@ -281,11 +281,12 @@ add_library( LK8000 SHARED
     Common/Source/Logger/ReplayLogger.cpp
     Common/Source/Logger/StartStopLogger.cpp
 
+    Common/Source/Topology/shapelib/mapalloc.c
     Common/Source/Topology/shapelib/mapbits.c
-    Common/Source/Topology/shapelib/maperror.c
     Common/Source/Topology/shapelib/mapprimitive.c
     Common/Source/Topology/shapelib/mapsearch.c
     Common/Source/Topology/shapelib/mapshape.c
+    Common/Source/Topology/shapelib/mapstring.c
     Common/Source/Topology/shapelib/maptree.c
     Common/Source/Topology/shapelib/mapxbase.c
 

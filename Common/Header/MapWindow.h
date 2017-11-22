@@ -14,7 +14,6 @@
 #include "Defines.h"
 #include "Parser.h"
 #include "Calculations.h"
-#include "mapprimitive.h"
 #include "Screen/BrushReference.h"
 #include "Screen/PenReference.h"
 #include "Screen/LKBitmap.h"

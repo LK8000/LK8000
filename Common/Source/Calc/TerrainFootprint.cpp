@@ -21,7 +21,7 @@ void FillGlideFootPrint(double latitude, double longitude, double altitude, DERI
     if (out_of_range) {
       FindLatitudeLongitude(latitude, longitude, bearing, distance, &lat, &lon);
     }
-    *(out++) = (pointObj){lon, lat, 0};
+    *(out++) = (pointObj){lon, lat};
   }
   (*out) = (*first_out); // close polygon
 }

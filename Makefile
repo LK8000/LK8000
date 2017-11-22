@@ -1331,12 +1331,13 @@ SRC_FILES :=\
 	$(SRC)/Logger/ReplayLogger.cpp \
 	$(SRC)/Logger/StartStopLogger.cpp \
 	$(SHP)/mapbits.cpp \
-	$(SHP)/maperror.cpp 	\
 	$(SHP)/mapprimitive.cpp \
 	$(SHP)/mapsearch.cpp\
 	$(SHP)/mapshape.cpp \
 	$(SHP)/maptree.cpp\
 	$(SHP)/mapxbase.cpp \
+	$(SHP)/mapalloc.cpp \
+	$(SHP)/mapstring.cpp \
 	$(SRC)/Message.cpp \
 	$(SRC)/MessageLog.cpp	\
 	$(SRC)/Models.cpp\

@@ -27,6 +27,7 @@
 
 #ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"
+#include "shapelib/mapshape.h"
 #endif
 
 //#define DEBUG_TFC
@@ -168,7 +169,8 @@ Topology::Topology(const TCHAR* shpname) {
   in_scale = false;
 
   // filename aleady points to _MAPS subdirectory!
-  _tcscpy( filename, shpname );
+  TCHAR2utf(shpname, filename, array_size(filename));
+
   Open();
 }
 
@@ -279,7 +281,7 @@ void Topology::Open() {
     }
   } else {
   #endif
-    if (msSHPOpenFile(&shpfile, "rb", filename) == -1) {
+    if (msShapefileOpen(&shpfile, "rb", filename, true) == -1) {
       StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),filename,NEWLINE);
       return;
     }
@@ -314,7 +316,7 @@ void Topology::Close() {
 	  }
       free(shps); shps = NULL;
     }
-    msSHPCloseFile(&shpfile);
+    msShapefileClose(&shpfile);
     shapefileopen = false;  // added sgi
   }
 }
@@ -422,7 +424,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
         }//for
       } else {
         //In this case we have to run the original algoritm
-        msSHPWhichShapes(&shpfile, thebounds, 0);
+        msShapefileWhichShapes(&shpfile, thebounds, 0);
         shapes_visible_count = 0;
         for (int i=0; i<shpfile.numshapes; i++) {
           if (msGetBit(shpfile.status, i)) {
