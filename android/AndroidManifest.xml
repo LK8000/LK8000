@@ -3,7 +3,10 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="org.LK8000"
           android:installLocation="auto">
-  <application android:icon="@drawable/icon" android:label="${applicationLabel}">
+
+  <application android:icon="${applicationIcon}"
+               android:label="${applicationLabel}">
+
     <activity android:name=".LK8000"
               android:label="${applicationLabel}"
               android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection"
