@@ -3430,7 +3430,7 @@ void dlgConfigurationShowModal(short mode){
   wf->SetOnUser(OnUser);
 
   std::unique_ptr<BluetoothLeScan> BluetoothLeScanPtr;
-  if((configMode==CONFIGMODE_DEVICE)) {
+  if(configMode==CONFIGMODE_DEVICE) {
     // Start Bluetooth LE device scan before Open Dialog
     BluetoothLeScanPtr.reset(new BluetoothLeScan(wf, OnLeScan));
   }

@@ -2,11 +2,6 @@ cmake_minimum_required(VERSION 3.4.1)
 
 project(assembler C CXX ASM)
 
-if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpu=neon")
-endif ()
-
 include(ExternalProject)
 
 set(GEOGRAPHIC_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-studio/app/Thirdparty/GeographicLib)
