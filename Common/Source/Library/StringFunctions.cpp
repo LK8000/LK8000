@@ -145,13 +145,16 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
   
 #ifdef UNICODE
   if(cs == charset::latin1) {
-    mbstowcs(String, sTmp, strlen(sTmp)+1);
+    mbstowcs(String, sTmp, Max);
   } else {
-    utf2TCHAR(sTmp,String, strlen(sTmp)+1);
+    utf2TCHAR(sTmp,String, Max);
   }
 #else
-  strncpy(String, sTmp, strlen(sTmp)+1);
+  strncpy(String, sTmp, Max);
 #endif
+  
+  String[Max-1] = _T('\0');
+  
   return (dwTotalNumBytesRead>0);
 }
 
