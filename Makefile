@@ -23,23 +23,25 @@ else
 endif
 
 SRC=Common/Source
-DEV=Common/Source/Devices
-DLG=Common/Source/Dialogs
-LIB=Common/Source/Library
-DRW=Common/Source/Draw
-MAP=Common/Source/MapDraw
-TOP=Common/Source/Topology
-SHP=Common/Source/Topology/shapelib
-TER=Common/Source/Terrain
-NTR=Common/Source/LKInterface
-CLC=Common/Source/Calc
-TSK=Common/Source/Calc/Task
-CMM=Common/Source/Comm
-WPT=Common/Source/Waypoints
-RSC=Common/Source/Resources
 HDR=Common/Header
+
+DEV=$(SRC)/Devices
+DLG=$(SRC)/Dialogs
+LIB=$(SRC)/Library
+DRW=$(SRC)/Draw
+MAP=$(SRC)/MapDraw
+TOP=$(SRC)/Topology
+SHP=$(TOP)/shapelib
+TER=$(SRC)/Terrain
+NTR=$(SRC)/LKInterface
+CLC=$(SRC)/Calc
+TSK=$(CLC)/Task
+CMM=$(SRC)/Comm
+WPT=$(SRC)/Waypoints
+RSC=$(SRC)/Resources
 SRC_SCREEN=$(SRC)/Screen
 SRC_WINDOW=$(SRC)/Window
+
 
 ifeq ($(TARGET),)
  override TARGET=LINUX
@@ -268,7 +270,7 @@ ifneq ($(TARGET),OPENVARIO)
  SIZE		:=$(TCPATH)size$(EXE)
  WINDRES	:=$(TCPATH)windres$(EXE)
  LD		:=$(TCPATH)ld$(EXE)
- OBJCOPY		:=$(TCPATH)objcopy$(EXE)
+ OBJCOPY	:=$(TCPATH)objcopy$(EXE)
 endif
 	
 SYNCE_PCP	:=synce-pcp
@@ -341,16 +343,17 @@ ifeq ($(TARGET_IS_PI),y)
  USE_X11 :=n
  ENABLE_MESA_KMS :=n
  USE_CONSOLE :=y
-  #USE_LIBINPUT :=n
+
  CE_DEFS += -DUSE_VIDEOCORE
  CE_DEFS += -isystem $(PI)/opt/vc/include -isystem $(PI)/opt/vc/include/interface/vcos/pthreads
  CE_DEFS += -isystem $(PI)/opt/vc/include/interface/vmcs_host/linux
+
+ ifneq ($(HOST_IS_PI),y)
+  CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include 
+ endif
  
  ifeq ($(HOST_HAS_NEON),y)
   MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
- endif
- ifneq ($(HOST_IS_PI),y)
-  CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include 
  endif
 endif
 
