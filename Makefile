@@ -1,4 +1,27 @@
 #
+string_equals = $(if $(and $(findstring $(2),$(1)),$(findstring $(1),$(2))),y,n)
+string_contains = $(if $(findstring $(2),$(1)),y,n)
+
+UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
+
+HOST_IS_LINUX := $(call string_equals,$(UNAME_S),Linux)
+HOST_IS_ARM := $(call string_contains,$(UNAME_M),armv)
+HOST_IS_ARMV7 := $(call string_equals,$(UNAME_M),armv7l)
+
+ifeq ($(HOST_IS_ARMV7),y)
+ HOST_HAS_NEON := $(call string_contains,$(shell grep -E ^Features /proc/cpuinfo),neon)
+else
+ HOST_HAS_NEON := n
+endif
+
+ifeq ($(HOST_IS_LINUX)$(HOST_IS_ARM),yy)
+# Check for VideoCore headers present on a Raspberry Pi
+ HOST_IS_PI := $(call string_equals,$(shell test -f /opt/vc/include/interface/vmcs_host/vc_dispmanx.h && echo y),y)
+else
+ HOST_IS_PI := n
+endif
+
 SRC=Common/Source
 DEV=Common/Source/Devices
 DLG=Common/Source/Dialogs
@@ -18,6 +41,9 @@ HDR=Common/Header
 SRC_SCREEN=$(SRC)/Screen
 SRC_WINDOW=$(SRC)/Window
 
+ifeq ($(TARGET),)
+ override TARGET=LINUX
+endif
 
 BIN=Bin/$(TARGET)
 
@@ -95,6 +121,8 @@ ifeq ($(TARGET),LINUX)
   CONFIG_ANDROID :=n
   MINIMAL        :=n
   OPENMP         :=y
+  TARGET_IS_PI   :=$(HOST_IS_PI)
+	
 endif
 
 ifeq ($(TARGET),KOBO)
@@ -149,8 +177,7 @@ else ifeq ($(CONFIG_WINE),y)
  MCPU   := -mcpu=$(CPU)
 else ifeq ($(TARGET_IS_KOBO),y)
  TCPATH := arm-unknown-linux-gnueabi-
- MCPU   := -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations
-else ifeq ($(TARGET_IS_PI),y)
+else ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
  TCPATH := arm-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
 else ifeq ($(TARGET_IS_CUBIE),y)
@@ -158,6 +185,7 @@ else ifeq ($(TARGET_IS_CUBIE),y)
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 else ifeq ($(CONFIG_LINUX),y)
  TCPATH :=
+ MCPU   := -mtune=native -march=native
 else
  TCPATH	:=arm-mingw32ce-
 endif
@@ -312,13 +340,18 @@ ifeq ($(TARGET_IS_PI),y)
  USE_SDL :=n
  USE_X11 :=n
  ENABLE_MESA_KMS :=n
+ USE_CONSOLE :=y
+  #USE_LIBINPUT :=n
  CE_DEFS += -DUSE_VIDEOCORE
  CE_DEFS += -isystem $(PI)/opt/vc/include -isystem $(PI)/opt/vc/include/interface/vcos/pthreads
  CE_DEFS += -isystem $(PI)/opt/vc/include/interface/vmcs_host/linux
- USE_CONSOLE = y	
-
- CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include 
-
+ 
+ ifeq ($(HOST_HAS_NEON),y)
+  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
+ endif
+ ifneq ($(HOST_IS_PI),y)
+  CE_DEFS += --sysroot=$(PI) -isystem $(PI)/usr/include/arm-linux-gnueabihf -isystem $(PI)/usr/include 
+ endif
 endif
 
 ifeq ($(TARGET_HAS_MALI),y)
@@ -326,7 +359,7 @@ ifeq ($(TARGET_HAS_MALI),y)
  OPENGL	 :=y
  GLES    :=y
  USE_X11 :=n
- USE_CONSOLE = y	
+ USE_CONSOLE :=y	
 	
  CE_DEFS += -DHAVE_MALI
 endif
@@ -377,7 +410,7 @@ ifeq ($(CONFIG_LINUX),y)
  endif
 
  ifeq ($(TARGET_IS_PI),y)
- EGL_LDLIBS += -L$(PI)/opt/vc/lib -lvchostif -lvchiq_arm -lvcos -lbcm_host
+  EGL_LDLIBS += -L$(PI)/opt/vc/lib -lvchostif -lvchiq_arm -lvcos -lbcm_host
  endif
 
  ifeq ($(USE_WAYLAND),y)
@@ -396,7 +429,7 @@ ifeq ($(CONFIG_LINUX),y)
   GBM_CPPFLAGS := $(patsubst -I%,-isystem %,$(GBM_CPPFLAGS))
   CE_DEFS += -DMESA_KMS $(DRM_CPPFLAGS) $(GBM_CPPFLAGS)
   EGL_LDLIBS += $(DRM_LDLIBS) $(GBM_LDLIBS)
-  USE_CONSOLE = y
+  USE_CONSOLE :=y
   USE_X11 = n
   USE_SDL = n
  else ifeq ($(USE_X11),y)
@@ -404,9 +437,9 @@ ifeq ($(CONFIG_LINUX),y)
   CE_DEFS += $(X11_CPPFLAGS) -DUSE_X11
  endif
 
+
  ifeq ($(USE_CONSOLE),y)
   CE_DEFS += -DUSE_CONSOLE
-
   USE_LIBINPUT ?= $(shell $(PKG_CONFIG) --exists libinput && echo y)
  endif
 
@@ -630,7 +663,7 @@ ifeq ($(TARGET_IS_KOBO),y)
  LDFLAGS += -Wl,--rpath=/opt/LK8000/lib
 endif
 
-ifeq ($(TARGET_IS_PI),y)
+ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
  LDFLAGS		+= --sysroot=$(PI) -L$(PI)/usr/lib/arm-linux-gnueabihf
 endif
 
