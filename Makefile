@@ -829,6 +829,12 @@ SCREEN += \
 	$(SRC_SCREEN)/GDI/AlphaBlend.cpp \
 	
 endif
+
+ifeq ($(TARGET_HAS_MALI),y)
+SCREEN += \
+	$(SRC_SCREEN)/Sunxi/mali.cpp \
+
+endif
 	
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \
