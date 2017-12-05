@@ -78,8 +78,29 @@ to rebuild bitmaps for use without opengl
 
 --------------------------------------------------------------------------------
 Raspberry Pi 2
+
+    dependencies : 
+      zlib1g-dev
+      libzzip-dev
+      libpng-dev
+      libfreetype6-dev
+      libgeographic-dev
+      libboost-dev
+      libinput-dev
+      libudev-dev
+      libglm-dev
+      libsndfile1-dev
+      libasound2-dev
+      xsltproc
+      imagemagick
+
+
+
     PI=<rPi rootfs directory>
         required only for cross compile.
+
+
+
 
 --------------------------------------------------------------------------------
 Desktop Target ( LINUX or PC ) :

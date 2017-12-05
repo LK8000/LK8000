@@ -136,7 +136,7 @@ ifeq ($(TARGET),KOBO)
 endif
 
 ifeq ($(TARGET),PI)
-  HOST_IS_PI     :=n
+  HOST_IS_PI     :=$(HOST_IS_PI)
   TARGET_IS_PI   :=y
   CONFIG_LINUX   :=y
   CONFIG_ANDROID :=n
@@ -406,14 +406,13 @@ ifeq ($(CONFIG_LINUX),y)
   endif
  endif
 
- ifeq ($(OPENGL)$(USE_EGL),yy)
-   EGL_LDLIBS += -lEGL
-    USE_X11 ?=$(shell $(PKG_CONFIG) --exists x11 && echo y)
-  USE_SDL ?=n
- endif
-
  ifeq ($(TARGET_IS_PI),y)
-  EGL_LDLIBS += -L$(PI)/opt/vc/lib -lvchostif -lvchiq_arm -lvcos -lbcm_host
+  $(eval $(call pkg-config-library,BRCMEGL,brcmegl)) 
+  EGL_LDLIBS += $(BRCMEGL_LDLIBS)
+ else ifeq ($(OPENGL)$(USE_EGL),yy)
+  EGL_LDLIBS += -lEGL
+  USE_X11 ?=$(shell $(PKG_CONFIG) --exists x11 && echo y)
+  USE_SDL ?=n
  endif
 
  ifeq ($(USE_WAYLAND),y)
@@ -504,10 +503,21 @@ ifeq ($(CONFIG_LINUX),y)
 
   ifeq ($(GLES2),y)
    CE_DEFS += -DHAVE_GLES -DHAVE_GLES2 -DUSE_GLSL
-   OPENGL_LDLIBS = -lGLESv2 -ldl
+   ifeq ($(TARGET_IS_PI),y)
+    $(eval $(call pkg-config-library,OPENGL,brcmglesv2))
+    $(eval $(call pkg-config-library,GLM,glm))
+    OPENGL_LDLIBS += -ldl
+   else
+    OPENGL_LDLIBS = -lGLESv2 -ldl
+   endif
   else ifeq ($(GLES),y)
    CE_DEFS += -DHAVE_GLES
-   OPENGL_LDLIBS = -lGLESv1_CM -ldl
+   ifeq ($(TARGET_IS_PI),y)
+    $(eval $(call pkg-config-library,OPENGL,brcmglesv2))
+    OPENGL_LDLIBS += -ldl
+   else
+    OPENGL_LDLIBS = -lGLESv1_CM -ldl
+   endif
   else
    OPENGL_LDLIBS = -lGL
   endif

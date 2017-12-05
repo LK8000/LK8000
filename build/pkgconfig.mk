@@ -12,8 +12,11 @@ ifeq ($(TARGET_IS_KOBO),y)
   PKG_CONFIG := PKG_CONFIG_LIBDIR=$(KOBO)/lib/pkgconfig $(PKG_CONFIG)
 endif
 
-ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
-  PKG_CONFIG := PKG_CONFIG_LIBDIR=$(PI)/usr/lib/arm-linux-gnueabihf/pkgconfig:$(PI)/usr/lib/pkgconfig:$(PI)/usr/share/pkgconfig $(PKG_CONFIG) --define-variable=prefix=$(PI)/usr
+ifeq ($(TARGET_IS_PI),y)
+ PKG_CONFIG := PKG_CONFIG_LIBDIR=$(PI)/usr/lib/arm-linux-gnueabihf/pkgconfig:$(PI)/usr/lib/pkgconfig:$(PI)/usr/share/pkgconfig:$(PI)/opt/vc/lib/pkgconfig $(PKG_CONFIG)
+ ifneq ($(HOST_IS_PI),y)
+  PKG_CONFIG += --define-variable=prefix=$(PI)/usr
+ endif
 endif
 
 ifeq ($(HOST_IS_ARM)$(TARGET_HAS_MALI),ny)
@@ -42,7 +45,7 @@ $(1)_CPPFLAGS := $$(shell $$(PKG_CONFIG) --cflags $(2))
 $(1)_LDLIBS := $$(shell $$(PKG_CONFIG) --libs $(2))
 $(1)_MODVERSION := $$(shell $$(PKG_CONFIG) --modversion $(2))
 
-ifeq ($$($(1)_CPPFLAGS)$$($(1)_LDLIBS),)
+ifeq ($$($(1)_CPPFLAGS)$$($(1)_LDLIBS)$$($(1)_MODVERSION),)
 $$(error library not found: $(2))
 endif
 $$(info build with $$(shell $$(PKG_CONFIG) --print-provides $(2)) Library)
