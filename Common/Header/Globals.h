@@ -47,8 +47,8 @@ typedef struct _Radio_t
 {
 	double ActiveFrequency;    //active station frequency
 	double PassiveFrequency;   // passive (or standby) station frequency
-	TCHAR PassiveName[30] ;    // passive (or standby) station name
-	TCHAR ActiveName[30] ;     //active station name
+	TCHAR PassiveName[NAME_SIZE] ;    // passive (or standby) station name
+	TCHAR ActiveName[NAME_SIZE] ;     //active station name
 	int Volume ;               // Radio Volume
 	int Squelch ;              // Radio Squelch
 	int Vox ;                  // Radio Intercom Volume
