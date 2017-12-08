@@ -44,7 +44,9 @@ Java_org_LK8000_NativeLeScanCallback_onLeScan(JNIEnv *env, jobject obj,
 
   char address[64]={}, name[256]={};
   Java::String::CopyTo(env, _address, address, sizeof(address));
-  Java::String::CopyTo(env, _name, name, sizeof(name));
+  if(_name) {
+    Java::String::CopyTo(env, _name, name, sizeof(name));
+  }
 
   LeScanCallback &cb = *(LeScanCallback *)(void *)ptr;
   cb.OnLeScan(address, name);
