@@ -2935,6 +2935,7 @@ bool WndFrame::OnLButtonDown(const POINT& Pos) {
 // JMW needed to support mouse/touchscreen
 bool WndFrame::OnLButtonUp(const POINT& Pos) {
   if(mLButtonDown) {
+    mLButtonDown = false;
 
     if (mIsListItem && GetParent() != NULL) {
 
@@ -2944,7 +2945,6 @@ bool WndFrame::OnLButtonUp(const POINT& Pos) {
         wlf->SelectItemFromScreen(Pos.x, Pos.y, &Rc, false);
       }
     }
-    mLButtonDown = false;
   }
   return true;
 }
@@ -3045,6 +3045,7 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
 
 bool WndListFrame::OnLButtonDown(const POINT& Pos) {
   mMouseDown=true;
+  SetCapture();
   if (PtInRect(&rcScrollBarButton, Pos))  // see if click is on scrollbar handle
   {
     mMouseScrollBarYOffset = max(0, (int)Pos.y - (int)rcScrollBarButton.top);  // start mouse drag
@@ -3072,6 +3073,7 @@ bool WndListFrame::OnLButtonUp(const POINT& Pos) {
   ReleaseCapture();
 
   if(mMouseDown) {
+    mMouseDown=false;
     if(!mCaptureScrollButton) {
 
       if (!mClients.empty()) {
@@ -3080,7 +3082,6 @@ bool WndListFrame::OnLButtonUp(const POINT& Pos) {
         mClients.front()->SetFocus();
       }
     }
-    mMouseDown=false;
   }
   mCaptureScrollButton = false;
   return true;

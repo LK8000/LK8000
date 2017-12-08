@@ -722,7 +722,9 @@ class WndListFrame:public WndFrame{
     void RedrawScrolled(bool all);
     bool RecalculateIndices(bool bigscroll);
     void Redraw(void);
-    int GetItemIndex(void){return(mListInfo.ItemIndex);}
+    int GetItemIndex(void) { 
+      return (mListInfo.ScrollIndex + mListInfo.ItemIndex);
+    }
     void SetItemIndexPos(int iValue);
     void SetItemIndex(int iValue);
     void SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool select);

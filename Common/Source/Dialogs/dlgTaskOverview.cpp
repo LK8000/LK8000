@@ -196,7 +196,7 @@ static void OverviewRefreshTask(void) {
   UpLimit = 0;
   lengthtotal = 0;
   for (i=0; i<MAXTASKPOINTS; i++) {
-  if (Task[i].Index != -1) {
+    if (Task[i].Index != -1) {
       lengthtotal += Task[i].Leg;
       UpLimit = i+1;
     }
@@ -207,10 +207,10 @@ static void OverviewRefreshTask(void) {
   if (lengthtotal>0) {
     for (i=0; i<MAXTASKPOINTS; i++) {
       if (Task[i].Index != -1) {
-	double lrat = Task[i].Leg/lengthtotal;
-	if ((lrat>0.45)||(lrat<0.10)) {
-	  fai_ok = false;
-	}
+        double lrat = Task[i].Leg/lengthtotal;
+        if ((lrat>0.45)||(lrat<0.10)) {
+          fai_ok = false;
+        }
       }
     }
   } else {
@@ -236,9 +236,10 @@ static void OverviewRefreshTask(void) {
     wp->RefreshDisplay();
   }
 
+  int SelectedIndex = wTaskList->GetItemIndex();  
   LowLimit =0;
   wTaskList->ResetList();
-  wTaskList->Redraw();
+  wTaskList->SetItemIndex(SelectedIndex);
 
   UpdateCaption();
   UnlockTaskData();
