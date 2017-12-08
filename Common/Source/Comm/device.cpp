@@ -1147,7 +1147,7 @@ BOOL devPutFreqSwap() {
 BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
   if (SIMMODE) {
     RadioPara.ActiveFrequency=  Freq;
-    _stprintf( RadioPara.ActiveName, _T("%s") , StationName);
+    _sntprintf( RadioPara.ActiveName, NAME_SIZE,_T("%s") , StationName);
     return TRUE;
   }
   return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
@@ -1164,7 +1164,7 @@ BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
 BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
   if (SIMMODE) {
      RadioPara.PassiveFrequency=  Freq;
-     _stprintf( RadioPara.PassiveName, _T("%s") , StationName);
+     _sntprintf( RadioPara.PassiveName, NAME_SIZE,_T("%s") , StationName);
     return TRUE;
   }
   return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
