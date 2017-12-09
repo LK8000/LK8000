@@ -10,8 +10,6 @@
 class CAirspace;
 
 MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false, int timeout=0, MsgReturn_t defaultButton=IdOk);
-//MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false);
-//void drawMessageBox(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false);
 
 void StartupScreen();
 
