@@ -99,7 +99,6 @@
 #define LKVERSION	"6"
 #define LKRELEASE	"1q"
 
-
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
 #define LKAIRCRAFT	"DEFAULT_AIRCRAFT.acf"
