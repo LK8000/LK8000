@@ -16,11 +16,8 @@
 #include "Dialogs.h"
 
 
-//char phoneNumbers[160] = "0548841311,0522929386"; //"0548841311,0522929386"; //tab delimited currently //"0546738539";  //period-delimited phone numbers
-//char takeOffMessage[160] =  "Hey, I Just Took off! livetrack24.com/user/lshachar";
 char SafeLandingMessage[160] =  "I safely landed :)";
-char EmergencyLandingMessage[160] =  "Emergency landing. :( please help. livetrack24.com/user/lshachar";
-//int LandingDlgTimeoutfixed = 600;
+char EmergencyLandingMessage[160] =  "Emergency landing. :( please help. livetrack24.com/user/PUT_YOUR_USER_NAME_HERE";
 
 
 void LKTakeoffSms() {
@@ -67,11 +64,11 @@ void LKSLandingSms() {
 
 
 // Sends SMS through Android phone.
-// Todo:sms: get proper sent/not sent sms status from java code
-// Todo:sms: keep trying to send message if failed.
+// Todo:sms: get proper sent/not sent sms status from java code? or maybe just forget about it.
+// Todo:sms: keep trying to send message if failed. (should probably just be in Java and never tell lk anything about it)
 void LKSms(const char *phoneNumber, const char *textMessage) {
   if (strcmp(phoneNumber, "") == 0)
-    return;           // todo:sms: should return unsent status.
+    return;
 
   SmsUtil::SendSms(Java::GetEnv(),phoneNumber, textMessage);
 }
