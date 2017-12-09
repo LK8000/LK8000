@@ -121,6 +121,8 @@ public class LK8000 extends Activity {
       UsbSerialHelper.Initialise(this);
     }
 
+    SoundUtil.Initialise();
+
     // fullscreen mode
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
@@ -300,6 +302,8 @@ public class LK8000 extends Activity {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
       UsbSerialHelper.Deinitialise(this);
     }
+
+    SoundUtil.Deinitialise();
 
     if (nativeView != null) {
       nativeView.exitApp();

@@ -70,7 +70,8 @@ int RasterMap::GetEffectivePixelSize(double *pixel_D,
 
 int RasterMap::GetEffectivePixelSize(double dist) const {
   int grounding;
-  LKASSERT(dist!=0);
+  BUGSTOP_LKASSERT(dist!=0);
+  if (dist==0) return 1;
   grounding = iround(2.0*(GetFieldStepSize()/1000.0)/dist);
   if (grounding<1) {
     grounding = 1;

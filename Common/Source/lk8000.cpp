@@ -552,7 +552,9 @@ bool Startup(const TCHAR* szCmdLine) {
   StartupStore(TEXT(".... ProgramStarted=InitDone%s"),NEWLINE);
   #endif
   ProgramStarted = psInitDone;
-
+#ifdef ENABLE_OPENGL
+  MainWindow.Invalidate();
+#endif
   GlobalRunning = true;
 	
 	InitAirspaceSonar();
@@ -586,6 +588,7 @@ bool Startup(const TCHAR* szCmdLine) {
             MessageBoxX(MsgToken(155), TEXT("Warning!"), mbOk);
         }
     }
+
     return true;
 }
 

@@ -15,6 +15,7 @@
 #include "Poco/UTF8Encoding.h"
 #include "Poco/TextConverter.h"
 #include "Util/Clamp.hpp"
+#include "Util/TruncateString.hpp"
 
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber)
 {
@@ -43,7 +44,7 @@ void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int 
   }
 }
 
-static void DetectCharsetAndFixString (char* String, charset& cs) {
+static void DetectCharsetAndFixString (char* String, size_t size, charset& cs) {
 
     // try to detect charset
     if(cs == charset::unknown || cs == charset::utf8) {
@@ -61,22 +62,22 @@ static void DetectCharsetAndFixString (char* String, charset& cs) {
 #ifndef UNICODE
     if(cs == charset::latin1) {
         // from Latin1 (ISO-8859-1) To Utf8
-        tstring Latin1String(String);
         tstring utf8String;
 
         Poco::Latin1Encoding Latin1Encoding;
         Poco::UTF8Encoding utf8Encoding;
 
         Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
-        converter.convert(Latin1String, utf8String);
-        strcpy(String, utf8String.c_str());
-    }
-    if (!ValidateUTF8(String)) {
-        BUGSTOP_LKASSERT(false);
-        strcpy(String, "");
+        converter.convert(String, strlen(String), utf8String);
+        CopyTruncateString(String, size, utf8String.c_str());
     }
 #endif
 }
+template<size_t size>
+static void DetectCharsetAndFixString (char (&String)[size], charset& cs) {
+  DetectCharsetAndFixString (String, size, cs);
+}
+
 
 BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
 {
@@ -144,13 +145,16 @@ BOOL ReadString(ZZIP_FILE *zFile, int Max, TCHAR *String, charset& cs)
   
 #ifdef UNICODE
   if(cs == charset::latin1) {
-    mbstowcs(String, sTmp, strlen(sTmp)+1);
+    mbstowcs(String, sTmp, Max);
   } else {
-    utf2TCHAR(sTmp,String, strlen(sTmp)+1);
+    utf2TCHAR(sTmp,String, Max);
   }
 #else
-  strncpy(String, sTmp, strlen(sTmp)+1);
+  strncpy(String, sTmp, Max);
 #endif
+  
+  String[Max-1] = _T('\0');
+  
   return (dwTotalNumBytesRead>0);
 }
 
@@ -183,7 +187,7 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String, charset& cs){
     }
 
 #ifndef UNICODE
-    DetectCharsetAndFixString(String, cs);
+    DetectCharsetAndFixString(String, Max, cs);
 #endif
 
     return (1);

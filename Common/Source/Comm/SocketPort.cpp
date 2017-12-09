@@ -71,6 +71,10 @@ int SocketPort::SetRxTimeout(int TimeOut) {
 
 size_t SocketPort::Read(void *szString, size_t size) {
 
+    if(mSocket == INVALID_SOCKET) {
+        return false; // socket not connect,that can happen with TCPServer Port.
+    }
+
     struct timeval timeout;
     fd_set readfs;
     timeout.tv_sec = mTimeout / 1000;

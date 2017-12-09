@@ -1,4 +1,4 @@
-#B6;
+#B7;
 
 [Welcome to LK8000]
 Hello! It seems that you have just installed or updated LK8000, and here we can provide more informations about changes and improvements.
@@ -12,159 +12,65 @@ There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 
-[Latest software changes]
-
-
-Version 6.1o
-. Very important performance fix!
-. Update for compatibility with Android 8.0
-
-Version 6.1n
-. Fix crash on task edit
-
-
-Version 6.1m
+[version 6.1p changes from 6.0]
 
 . Optimized screen layout on portrait. 
-. Fix TrueWind no more working correctly since 2016
-. Fix task sector renderer for sector angle = 0° or 360°
+
 . New "Info Box" distance to turnpoint radius available
-. Check List : allow to use "Latin 1" encoded file.
-. Fix Battery indicator ( android only )
-. Fix PG task optimizer when earth model is FAI sphere  ( Android and kobo only)
-. Fix LiveTrack24 : speed in m/s instead of km/h
-. Few other minor fix
 
-Version 6.1l
+. AIRSPACE Class Glider Sector "GldSec" added (GSEC open airspace, GLIDING OpenAIP)
 
-. fix "Application Not Responding" on shutdown or ComPort restart
+. Up to 6 DEVICES can now be set in Device configuration
 
-Version 6.1k
+. NEW AIRCRAFT SHAPES in Aircraft configuration, choose the best for you!
 
-. fix "red screen" artefact on some device
+. TERRAIN AUTO-CONTRAST in System config p.4
+  If ON, contrast and brightness are automatically adjusted for best results, dynamically.
 
-Version 6.1j
-
-. fix Circling Wind calcuation with GPS rate > 1Hz
-. android : support GPSBip device
-. android : scan for available Bluetooth LE device when device config is open.
-. few other minor fix
-
-
-In summary what's up in current branch:
-
-. Airspace Class Glider Sector "GldSec" added (GSEC open airspace, GLIDING OpenAIP)
-. Up to 6 devices can now be set in Device configuration
-. Aircraft symbols in Aircraft configuration, choose the best for you!
-. tracking mode in Pilot configuration
-. Android screen orientation in System config p.22
-. terrain auto-contrast in System config p.4
-. Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
+. TERRAIN LUMEN: Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
   (Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
-. Terrain loading, on all platforms you can load any DEM size. No more limits.
+
+. TERRAIN LOADING, on all platforms you can load any DEM size. NO MORE LIMITS.
+
+. Added units feet/minute (ft/min)
+  Changing system units does not require restart anymore
+
+. Check List : allow to use "Latin 1" encoded file.
+. Support utf8 encoded Waypoint file
 . Topology labels use native UTF8 language and symbols
-. Android IOIO board support (android only)
+
+. New INFO button in menu Info 2/2 .
+  (informations will automatically be displayed on first restart of LK after upgrade, if available)
+
+(ANDROID ONLY)
+.  IOIO board support
     Uart 0: pin3=out, pin4=in
     Uart 1: pin5=out, pin6=in
     Uart 2: pin10=out, pin11=in
     Uart 3: pin12=out, pin13=in
-. Kernel support for Kobo Touch N905C
-. Units feet/minute (ft/min)
+. Screen orientation in System config p.22
 
-[Version 6.1i 170612]:
-Fix Wifi connection after kobo firmeware update
-Fix Waypoint coordinate using DDMMSS.ss format
-Support utf8 encoded Waypoint file
-Other bug fixes
+. PROFILES are now compatible between all platforms, and can be copied from a PNA to Android for example.
 
-[Version 6.1g 170516]
-Added kernel support for Kobo Touch N905C
-Added android IOIO support (android only)
-Added UTF8 support for Topology labels
-Added units feet/minute (ft/min)
-Fixed profile reset not working in 6.1f
-Fixed crash on PNA version using internal GPS device
-Fixed CompeGPS waypoint loading
-Fixed KRT2 driver
-Fixed Auto QNH when takeoff altitude is lower than -10m QNE 
-Terrain (DEM) can now be loaded on all platforms using
- memory mapped files: no more DEM size limits.
-Changing system units does not require restart anymore
-Other bug fixes and performance enhancements
+. New TRACKING mode in Pilot configuration.
+  Here you can select how you want to be tracked.
+  in flight only: tracking starts after takeoff and ends after landing detection.
+  permanent: tracking as long as LK8000 runs and has a valid GPS signal.
+  We recommend in flight only because it transfers the takeoff and landing information for a correct log. (default)
+  while permanent can be used to test your tracking settings on ground. (Note: Tracking need a falid GPS fix)
 
-[Version 6.1f  170407]
-New INFO button in menu Info 2/2 .
-(informations will automatically be displayed on first restart of LK after upgrade, if available)
+. FAI optimizer has been improved
+. FAI analysis, grid scale made better.
 
-New Screen View menus LUMEN +- to make terrain colors lighter or darker in realtime.
-(Setting is automatically saved to profile if Save Runtime is enabled in System menu 22).
+. GPS Altitude offset was moved to engineering mode.
 
-Profiles are now compatible between all platforms, and can be copied from a PNA to Android for example.
-
-Disabled airspaces are painted with a grey line, not black. Good expecially on Kobo.
-
-Bugfix "GPS NO FIX" on some smartphones.
-Bugfix LX Nano task declaration on 64bit devices
-Bugfix on loading AIRCRAFT profiles
-Bugfix with EW logger
-Bluetooth fixes on android
-BugFix missing topology icons
-Many critical bug fixes leading to crashes
-Many internal fixes and improvements.
-
-Please advance to next item to see informations about previous versions.
-
-[Version 6.1e 170310]
-Fix default task not loaded automatically if missing
-Many important bug fixes leading to possible crashes, and stability issues.
-
-
-[Version 6.1d 170228]
-New tracking mode in Pilot configuration.
-Here you can select how you want to be tracked.
-in flight only: tracking starts after takeoff and ends after landing detection.
-permanent: tracking as long as LK8000 runs and has a valid GPS signal.
-We recomend in flight only because it transfers the takeoff and landing information for a correct log. (default)
-while permanent can be used to test your tracking settings on ground. (Note: Tracking need a falid GPS fix)
----
-New Snail trail (the colored track), size rescaled correctly on android
-Snail trail size changes are immediate, no need to restart LK.
-Better FAI optimizer
----
-FAI analysis, grid scale made better.
----
-Device configuration, new buttons Led style
----
-GPS Altitude offset is moved to engineering mode.
-Other minor cosmetic changes
----
-
-Fix wrong track value in replay mode with WGS84 earth model
-Fix waypoint names in OpenAIP
-Fix bug in menu buttons showing inverted status of Total energy in use
-Fix bug from v6.0, reloading fonts when not needed upon exiting config
-
-Many bug fixes leading to possible crashes
-
-[Version 6.1c 170228]
-
-Android BlueTooth fixes
-Android screen orientation in System menu 22.
-Terrain auto-contrast in System config page 4
-If ON, contrast and brightness are automatically adjusted for best results, dynamically.
-
-Terrain quantization reworked
-
-Refresh heading waypoints on dialog only every 5 seconds, not every second, otherwise no chance to select anything!
-New glider symbol "Black glider" in Aircraft setup.
-
-Iphone gestures configuration moved to engineering, default is now Normal, as on all smartphones.
-
+Many minor bug fixes and performance enhancements.
 
 
 [Team Announces]
 For suggestions, bug reporting, any question, please join our free support forum at:
-www.postfrontal.com/forum/default.asp?CAT_ID=11
+www.postfrontal.com/forum
+(LK8000 International Support forum)
 
 
 

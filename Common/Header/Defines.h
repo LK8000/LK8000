@@ -97,7 +97,7 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"6"
-#define LKRELEASE	"2a0"
+#define LKRELEASE	"1q"
 
 
 #define LKDATADIR	"LK8000"
