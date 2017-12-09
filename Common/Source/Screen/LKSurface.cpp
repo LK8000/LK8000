@@ -829,7 +829,7 @@ void LKSurface::Segment(long x, long y, int radius, const RECT& rc, double start
       Polyline(pt, array_size(pt), rc);
       
     } else {
-      RasterPoint pt[66];
+      RasterPoint pt[68];
 
       start = AngleLimit360(start);
       end = AngleLimit360(end);
@@ -866,7 +866,9 @@ void LKSurface::Segment(long x, long y, int radius, const RECT& rc, double start
       pt[npoly].x = x;
       pt[npoly].y = y;
       npoly++;
-
+        
+      assert(npoly <= (int)array_size(pt));
+	  
       Polygon(pt, npoly, rc);
     }
 }
