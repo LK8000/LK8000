@@ -1689,21 +1689,22 @@ static void setVariables( WndForm *pOwner) {
   }
 
   TCHAR deviceName1[MAX_PATH];
-  //  TCHAR deviceName2[MAX_PATH];
-  wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
-
-
-
-
   ReadDeviceSettings(SelectedDevice, deviceName1);
+  wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<DeviceRegisterCount; i++) {
       LPCTSTR DeviceName = devRegisterGetName(i);
       dfe->addEnumText(DeviceName);
 
-      if (_tcscmp(DeviceName, deviceName1) == 0)
-        dwDeviceIndex[SelectedDevice] = i;
+      static_assert(array_size(dwDeviceIndex) ==  array_size(dwDeviceName), "Invalid array size");
+      for (unsigned j=0; j< array_size(dwDeviceName); j++) {
+        LPCTSTR DeviceName = devRegisterGetName(i);
+        if (_tcscmp(DeviceName, dwDeviceName[j]) == 0) {
+          dwDeviceIndex[j] = i;
+          break;
+        }
+      }  
     }
     dfe->Sort(3);
     dfe->Set(dwDeviceIndex[SelectedDevice]);
