@@ -76,24 +76,6 @@ static bool OnTimer(WndForm* pWnd) {
 }
 
 
-/*
-void tempFunction(int temptimer) {
-    messageboxTimerCounter = temptimer;
-    drawMessageBox("SEND EMERGENCY MESSAGE TO CONTACTS?", "unsafe landing", mbYesNo, true);
-
-    temp_wf->SetKeyDownNotify(FormKeyDown);
-    if (temptimer > 0){
-        temp_wf->SetTimerNotify(1000, OnTimer);
-
-        //temp_wf = wf;
-        //temp_wButton = wButtons[0];
-    }
-    *temp_res = static_cast<MsgReturn_t>(temp_wf->ShowModal());
-    //delete temp_wf;
-    //return(temp_res);
-}
-*/
-
 // note: defaultButton is only used in case timeout > 0
 MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen, int timeout,MsgReturn_t defaultButton){
 
