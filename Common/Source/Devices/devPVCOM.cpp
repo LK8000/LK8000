@@ -279,14 +279,14 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
 	NMEAParser::ExtractParameter(String,para1,3);
 	NMEAParser::ExtractParameter(String,para2,4);
 	RadioPara.ActiveFrequency = StrToDouble(para1,NULL);
-	_stprintf(RadioPara.ActiveName,_T("%s"),para2);
+	_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),para2);
       } else
       if(_tcscmp(_T("PF"), cmd) == 0)
       {
 	NMEAParser::ExtractParameter(String,para1,3);
 	NMEAParser::ExtractParameter(String,para2,4);
 	RadioPara.PassiveFrequency = StrToDouble(para1,NULL);
-	_stprintf(RadioPara.PassiveName,_T("%s"),para2);
+	_sntprintf(RadioPara.PassiveName,NAME_SIZE,_T("%s"),para2);
       }  else
       if(_tcscmp(_T("VOL"), cmd) == 0)
       {
@@ -304,12 +304,12 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
 		NMEAParser::ExtractParameter(String,para1,3);
 		NMEAParser::ExtractParameter(String,para2,4);
 	RadioPara.ActiveFrequency = StrToDouble(para1,NULL);
-	_stprintf(RadioPara.ActiveName,_T("%s"),para2);
+	_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),para2);
 
 		NMEAParser::ExtractParameter(String,para1,5);
 		NMEAParser::ExtractParameter(String,para2,6);
 	RadioPara.PassiveFrequency = StrToDouble(para1,NULL);
-	_stprintf(RadioPara.PassiveName,_T("%s"),para2);
+	_sntprintf(RadioPara.PassiveName,NAME_SIZE,_T("%s"),para2);
 
 	  } else
       if(_tcscmp(_T("STA"), cmd) == 0)

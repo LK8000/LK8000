@@ -208,7 +208,7 @@ uint8_t Arg[2];
         Send_Command( d, 0x12 , 2, Arg);  // Send Activ      
         RadioPara.PassiveFrequency =  Freq;
         if(StationName != NULL)
-          _stprintf(RadioPara.PassiveName  ,_T("%s"),StationName) ;
+          _sntprintf(RadioPara.PassiveName  ,NAME_SIZE,_T("%s"),StationName) ;
          if(iATR833DebugLevel) StartupStore(_T(". ATR833 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
       }
   return(TRUE);
@@ -404,10 +404,10 @@ int Idx=0;
       RadioPara.ActiveFrequency = fTmp;
       Idx = SearchStation(RadioPara.ActiveFrequency);
       if(Idx != 0)
-        _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
+        _sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
       Idx = SearchStation(RadioPara.PassiveFrequency);
       if(Idx != 0)
-        _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
+        _sntprintf(RadioPara.PassiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Swap %s"),    NEWLINE);
       processed  = 1;
     break;
@@ -418,7 +418,7 @@ int Idx=0;
       if (iATR833DebugLevel)  StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
       Idx = SearchStation(RadioPara.PassiveFrequency);
       if(Idx != 0)
-        _stprintf(RadioPara.PassiveName ,_T("%s"),WayPointList[Idx].Name);
+        _sntprintf(RadioPara.PassiveName,NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
 
       RadioPara.Changed = true;
       processed  = 3;
@@ -430,7 +430,7 @@ int Idx=0;
       if (iATR833DebugLevel)StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
       Idx = SearchStation(RadioPara.ActiveFrequency);
       if(Idx != 0)
-        _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
+        _sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
       RadioPara.Changed = true;
       processed  = 3;
     break;
