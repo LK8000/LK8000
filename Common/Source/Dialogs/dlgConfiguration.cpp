@@ -4764,7 +4764,7 @@ void InitDlgDevice(WndForm *pWndForm) {
       pWnd->SetLeft(lx);
       ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
       ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
-
+      if(i==0) OnA((WndButton*)pWnd);
       lx += w + SPACEBORDER;
     }
   }
