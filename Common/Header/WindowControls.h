@@ -670,7 +670,6 @@ class WndFrame:public WindowControl{
 
 
     virtual bool OnLButtonDown(const POINT& Pos);
-    virtual bool OnLButtonUp(const POINT& Pos);
 
     virtual void Paint(LKSurface& Surface);
 
@@ -763,7 +762,8 @@ private:
     POINT mScrollStart;
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
     bool mMouseDown;
-    bool mCaptureScrollButton;
+    bool mCaptureScrollButton; // scrolling using scrollbar in progress
+    bool mCaptureScroll; // "Smartphone like" scrolling in progress
 
 };
 
