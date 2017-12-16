@@ -2975,7 +2975,11 @@ void WndListFrame::SetItemIndex(int iValue){
 }
 
 void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool select) {
-  (void)xPos;
+   if (PtInRect(&rcScrollBar, {xPos, yPos})) {
+     // ignore if click inside scrollbar
+     return;
+   }
+  
   WindowControl * pChild = NULL;
   if(!mClients.empty()) {
       pChild = mClients.front();
@@ -3057,7 +3061,6 @@ bool WndListFrame::OnLButtonDown(const POINT& Pos) {
 }
 
 bool WndListFrame::OnLButtonUp(const POINT& Pos) {
-  printf("WndListFrame::OnLButtonUp\n");
   ReleaseCapture();
 
   if(mMouseDown) {
