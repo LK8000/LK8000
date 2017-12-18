@@ -30,6 +30,7 @@
 #include "devLX.h"
 #include "devLXMiniMap.h"
 #include "devLX16xx.h"
+#include "devVaulter.h"
 #include "devLXV7.h"
 #include "devLXV7_EXP.h"
 #include "devLXNano.h"
@@ -505,6 +506,7 @@ bool Startup(const TCHAR* szCmdLine) {
   AR620xRegister();
   ATR833Register();
 #endif  // RADIO_ACTIVE
+  DevVaulter::Register();
 
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
