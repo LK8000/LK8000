@@ -208,16 +208,20 @@ const TCHAR *StringToStringDflt(const TCHAR *String, const TCHAR *Default){
 void GetDefaultWindowControlProps(XMLNode *Node, TCHAR *Name, int *X, int *Y, int *Width, int *Height, int *Popup, int *Font, TCHAR *Caption){
 
   *Popup = StringToIntDflt(Node->getAttribute(TEXT("Popup")), 0); // don't make wndForm block entire screen
-  *X = DLGSCALE(StringToIntDflt(Node->getAttribute(TEXT("X")), 0));
+
+  *X = StringToIntDflt(Node->getAttribute(TEXT("X")), 0);
+  if (*X>=0) { // negative value are "magic number" don't scale 
+    (*X) = DLGSCALE(*X);
+  }
+
   *Y = StringToIntDflt(Node->getAttribute(TEXT("Y")), 0);
-  if (*Y>=0) { // not -1
+  if (*Y>=0) { // negative value are "magic number" don't scale
     (*Y) = DLGSCALE(*Y);
   }
+
   *Width = DLGSCALE(StringToIntDflt(Node->getAttribute(TEXT("Width")), 50));
-  *Height = StringToIntDflt(Node->getAttribute(TEXT("Height")), 50);
-  if (*Height>=0) {
-    (*Height) = DLGSCALE(*Height);
-  }
+  *Height = DLGSCALE(StringToIntDflt(Node->getAttribute(TEXT("Height")), 50));
+
   *Font = StringToIntDflt(Node->getAttribute(TEXT("Font")), -1);
   _tcscpy(Name, StringToStringDflt(Node->getAttribute(TEXT("Name")), TEXT("")));
   _tcscpy(Caption,LKGetText(StringToStringDflt(Node->getAttribute(TEXT("Caption")), TEXT(""))));
