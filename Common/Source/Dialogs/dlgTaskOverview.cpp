@@ -565,7 +565,11 @@ static void OnDeleteClicked(WndButton* pWnd){
   }
 
   if (file_index>0) {
-    lk::filesystem::deleteFile(dfe->GetPathFile());
+
+    TCHAR file_name[MAX_PATH];
+    LocalPath(file_name,TEXT(LKD_TASKS), dfe->GetPathFile());
+
+    lk::filesystem::deleteFile(file_name);
     // Cannot update dfe list, so we force exit.
     ItemIndex = -1;
     if(pWnd) {
