@@ -194,31 +194,35 @@ bool DevVaulter::PITV3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
 //  5 1.1 Lastenvielfaches (g)
   double alt=0, tmp=0;
 
-  if (ParToDouble(sentence, 3, &tmp))
-  {
-    bVaulterValid = true;
-    tmp /= TOKPH;
-    info->IndicatedAirspeed = tmp;
-    info->TrueAirspeed = tmp * AirDensityRatio(alt);;
-    info->AirspeedAvailable = TRUE;
-  }
-  if(VaulterAltitudeUpdateTimeout >0)
-	  VaulterAltitudeUpdateTimeout--;
-
   if (ParToDouble(sentence, 0, &tmp))
   {
     info->Roll = tmp;
     info->GyroscopeAvailable = true;
   }
 
-  if (ParToDouble(sentence, 0, &tmp))
+  if (ParToDouble(sentence, 1, &tmp))
     info->Pitch = tmp;
 
-  if (ParToDouble(sentence, 0, &tmp))
+  if (ParToDouble(sentence, 2, &tmp))
   {
     info->MagneticHeading  = tmp;
     info->MagneticHeadingAvailable = true;
   }
+
+  if (ParToDouble(sentence, 3, &tmp))
+  {
+    bVaulterValid = true;
+    info->IndicatedAirspeed = tmp;
+    info->TrueAirspeed = tmp * AirDensityRatio(alt);;
+    info->AirspeedAvailable = TRUE;
+  }
+
+
+  if(VaulterAltitudeUpdateTimeout >0)
+	  VaulterAltitudeUpdateTimeout--;
+
+
+
 
   return(true);
 } // LXWP0()
@@ -251,7 +255,11 @@ bool DevVaulter::PITV4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
     info->Vario = tmp;
     info->VarioAvailable = true;
   }
-
+  if (ParToDouble(sentence, 1, &tmp))
+  {
+    info->NettoVario = tmp;
+    info->NettoVarioAvailable = true;
+  }
   if (ParToDouble(sentence, 3, &tmp))
   {
     info->BaroAltitude = tmp;
@@ -309,5 +317,5 @@ double fTmp;
     }
   }
   return(true);
-} // LXWP2()
+} // PITV5()
 
