@@ -4,8 +4,8 @@
     <WndButton Name="cmdClose"  Caption="_@M595_"    X="5" Y="100" Width="70"  Height="35" Font="2" OnClickNotify="OnCloseClicked"/>
     <WndButton  Name="cmdCancel"  Caption="_@M161_"    X="5" Y="140" Width="70"  Height="35" Font="2" OnClickNotify="OnCancelClicked"/>
     <WndButton  Name="cmdHelp"  Caption="_@M336_"    X="5" Y="180" Width="70"  Height="35" Font="2" OnClickNotify="OnHelpClicked"/>
-    <WndListFrame Name="frmComboPopupList" X="80" Y="0" Width="-5" Height="222" Font="2" OnListInfo="OnComboPopupListInfo">
-      <WndOwnerDrawFrame Name="frmComboPopupListEntry" X="2" Y="2" Width="-2" Height="25" Font="2"  OnPaint="OnPaintComboPopupListItem"/>
+    <WndListFrame Name="frmComboPopupList" X="80" Y="1" Width="-1" Height="-1" Font="2" OnListInfo="OnComboPopupListInfo">
+      <WndOwnerDrawFrame Name="frmComboPopupListEntry" X="1" Y="1" Width="-1" Height="25" Font="2"  OnPaint="OnPaintComboPopupListItem"/>
     </WndListFrame>
   </WndForm>
 </PMML>

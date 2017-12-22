@@ -18,7 +18,7 @@
       <WndOwnerDrawFrame Name="frmTaskListEntry" X="2" Y="2" Width="-2" Height="25" Font="2"  OnPaint="OnTaskPaintListItem"/>
     </WndListFrame>
     <!-- Hidden -->
-    <WndProperty Name="prpFile" Caption=""   X="2" Y="-1"  Width="10" Height="10" CaptionWidth="0" Font="2" Help="">
+    <WndProperty Name="prpFile" Caption="_@M285_"   X="2" Y="-1"  Width="10" Height="10" CaptionWidth="0" Font="2" Help="">
       <DataField name="" DataType="filereader" Min="0" Max="200" Step="1"/>
     </WndProperty>
     <!-- -->

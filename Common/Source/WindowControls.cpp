@@ -1376,40 +1376,66 @@ WindowControl *WindowControl::GetCanFocus(void) {
 
 void WindowControl::CalcChildRect(int& x, int& y, int& cx, int& cy) const {
     
-    // use negative value to space down items
-    // -999 to stay on the same line
-    // -998 to advance one line with spacing IBLSCALE 3
-    // -997 to advance one line with spacing IBLSCALE 6
-    // -991 advance with spacing IBLSCALE 1
-    // -992 advance with spacing IBLSCALE 2
-    // other -n   advance exactly height*n . 
+    // use negative value to space down or right items
+    // -999 to stay on the same line or column
+    // -998 to advance one line or column with spacing IBLSCALE 3
+    // -997 to advance one line or column with spacing IBLSCALE 6
+    // -991 to advance one or column line with spacing IBLSCALE 1
+    // -992 to advance one or column line with spacing IBLSCALE 2
+    // other -n   advance exactly ((height or width) * n). 
 
-    if (y < 0 && !mClients.empty()) {
+    if (!mClients.empty()) {
+      if (y < 0) {
         WindowControl * pPrev = mClients.back();
         switch (y) {
             case -999: //@ 101008
                 y = pPrev->GetTop();
                 break;
             case -998: //@ 101115
-                y = (pPrev->GetTop() + pPrev->GetHeight() + DLGSCALE(3));
+                y = (pPrev->GetBottom() + DLGSCALE(3));
                 break;
             case -997: //@ 101115
-                y = (pPrev->GetTop() + pPrev->GetHeight() + DLGSCALE(6));
+                y = (pPrev->GetBottom() + DLGSCALE(6));
                 break;
             case -992: 
-                y = (pPrev->GetTop() + pPrev->GetHeight() + DLGSCALE(2));
+                y = (pPrev->GetBottom() + DLGSCALE(2));
                 break;
             case -991: 
-                y = (pPrev->GetTop() + pPrev->GetHeight() + DLGSCALE(1));
+                y = (pPrev->GetBottom() + DLGSCALE(1));
                 break;
             default:
                 y = (pPrev->GetTop() - ((pPrev->GetHeight()) * y));
                 break;
+          }
+      }
+      if (x < 0) {
+        WindowControl * pPrev = mClients.back();
+        switch (x) {
+            case -999: //@ 101008
+                x = pPrev->GetRight();
+                break;
+            case -998: //@ 101115
+                x = (pPrev->GetRight() + DLGSCALE(3));
+                break;
+            case -997: //@ 101115
+                x = (pPrev->GetRight() + DLGSCALE(6));
+                break;
+            case -992: 
+                x = (pPrev->GetRight() + DLGSCALE(2));
+                break;
+            case -991: 
+                x = (pPrev->GetRight() + DLGSCALE(1));
+                break;
+            default:
+                x = (pPrev->GetRight() - ((pPrev->GetWidth()) * x));
+                break;
         }
-    }    
+      }
+    }
+
     if(y<0) y = 0;
     if(x<0) x = 0;
-    
+
     // negative value for cx is right margin relative to parent;
     if (cx<0) {
         cx = GetWidth() - x + cx;
