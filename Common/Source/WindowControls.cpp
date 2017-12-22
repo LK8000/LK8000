@@ -2932,23 +2932,6 @@ bool WndFrame::OnLButtonDown(const POINT& Pos) {
   return false;
 }
 
-// JMW needed to support mouse/touchscreen
-bool WndFrame::OnLButtonUp(const POINT& Pos) {
-  if(mLButtonDown) {
-    mLButtonDown = false;
-
-    if (mIsListItem && GetParent() != NULL) {
-
-      WndListFrame *wlf = ((WndListFrame *) GetParent());
-      if (wlf) {
-        RECT Rc = {};
-        wlf->SelectItemFromScreen(Pos.x, Pos.y, &Rc, false);
-      }
-    }
-  }
-  return true;
-}
-
 void WndListFrame::SetItemIndexPos(int iValue)
 {
 int Total = mListInfo.ItemCount;
@@ -2992,7 +2975,11 @@ void WndListFrame::SetItemIndex(int iValue){
 }
 
 void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool select) {
-  (void)xPos;
+   if (PtInRect(&rcScrollBar, {xPos, yPos})) {
+     // ignore if click inside scrollbar
+     return;
+   }
+  
   WindowControl * pChild = NULL;
   if(!mClients.empty()) {
       pChild = mClients.front();
@@ -3001,14 +2988,16 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool sel
     int index = yPos / pChild->GetHeight(); // yPos is offset within ListEntry item!
 
     if ((index>=0)&&(index<mListInfo.BottomIndex)) {
-      if (!select) {
-        if (mOnListEnterCallback) {
-          mOnListEnterCallback(this, &mListInfo);
-        }
-        RedrawScrolled(false);
-      } else {
+      if(mListInfo.ItemIndex != index) {
         mListInfo.ItemIndex = index;
         RecalculateIndices(false);
+      } else {
+        if(!select) {
+          if (mOnListEnterCallback) {
+            mOnListEnterCallback(this, &mListInfo);
+          }
+          RedrawScrolled(false);
+        }
       }
     }
   }
@@ -3036,6 +3025,7 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
       if(newIndex != mListInfo.ScrollIndex) {
         mListInfo.ScrollIndex = newIndex;
         mScrollStart = Pos;
+        mCaptureScroll = true;
       }
       Redraw();
     }
@@ -3045,6 +3035,7 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
 
 bool WndListFrame::OnLButtonDown(const POINT& Pos) {
   mMouseDown=true;
+  mCaptureScroll = false;
   SetCapture();
   if (PtInRect(&rcScrollBarButton, Pos))  // see if click is on scrollbar handle
   {
@@ -3078,11 +3069,12 @@ bool WndListFrame::OnLButtonUp(const POINT& Pos) {
 
       if (!mClients.empty()) {
         RECT Rc = {};
-        SelectItemFromScreen(Pos.x, Pos.y, &Rc, true);
+        SelectItemFromScreen(Pos.x, Pos.y, &Rc, mCaptureScroll);
         mClients.front()->SetFocus();
       }
     }
   }
+  mCaptureScroll = false;
   mCaptureScrollButton = false;
   return true;
 }
