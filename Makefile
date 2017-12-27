@@ -362,7 +362,7 @@ ifeq ($(TARGET_HAS_MALI),y)
  OPENGL	 :=y
  GLES    :=y
  USE_X11 :=n
- USE_CONSOLE :=y	
+ USE_CONSOLE :=y
 	
  CE_DEFS += -DHAVE_MALI
 endif
