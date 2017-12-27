@@ -228,7 +228,7 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
 }
 
 const TCHAR *Units::GetUnitName(Units_t Unit) {
-    //  return(gettext(UnitDescriptors[Unit].Name));
+    //  return(LKGetText(UnitDescriptors[Unit].Name));
     // JMW adjusted this because units are pretty standard internationally
     // so don't need different names in different languages.
 

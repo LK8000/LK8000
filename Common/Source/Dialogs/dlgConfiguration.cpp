@@ -3198,7 +3198,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
     dfe->addEnumText(MsgToken(274));
-    dfe->addEnumText(gettext(TEXT("DAe 0.5/10")));
+    dfe->addEnumText(LKGetText(TEXT("DAe 0.5/10")));
     dfe->addEnumText(MsgToken(393));
     
     dfe->Set(SectorType);

@@ -810,7 +810,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   ItemIndex = -1;
 	//Manual fillup, do not change indexes!
 	//If you add more items don't forget to change TYPEFILTERSNUM and UpdateList() also
-	TypeFilter[0] = gettext(TEXT("*"));
+	TypeFilter[0] = LKGetText(TEXT("*"));
 	// LKTOKEN _@M1224_ "Airport"
 	TypeFilter[1] = MsgToken(1224);
 	// LKTOKEN _@M1225_ "Landable"

@@ -203,7 +203,7 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
             currentButton.SetVisible(false);
             currentButton.Enable(false);
         } else {
-            currentButton.SetWndText(gettext(s));
+            currentButton.SetWndText(LKGetText(s));
             currentButton.SetTopWnd();
             currentButton.SetVisible(true);
             currentButton.Enable(true);

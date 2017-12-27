@@ -30,7 +30,7 @@ static void OnSelectClicked(WndButton* pWnd) {
   }
 
   if (!ThermalHistory[s_selected].Valid) {
-	DoStatusMessage(gettext(TEXT("ERR-127 invalid thermal selection")));
+	DoStatusMessage(LKGetText(TEXT("ERR-127 invalid thermal selection")));
 	return;
   }
 

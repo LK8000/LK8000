@@ -126,7 +126,7 @@ void dlgWindSettingsShowModal(void){
       dfe->addEnumText(MsgToken(418));
 	// LKTOKEN  _@M175_ = "Circling"
       dfe->addEnumText(MsgToken(175));
-      dfe->addEnumText(gettext(TEXT("ZigZag")));
+      dfe->addEnumText(LKGetText(TEXT("ZigZag")));
 	// LKTOKEN  _@M149_ = "Both"
       dfe->addEnumText(MsgToken(149));
       dfe->addEnumText(MsgToken(1793)); // External

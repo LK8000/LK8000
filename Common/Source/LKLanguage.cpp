@@ -202,9 +202,6 @@ static TCHAR * COPYLKMessages[MAX_MESSAGES+1];
 #endif
 
 //  Tokenized Language support for LK8000
-//  gettext is now a definition for LKGetText
-//  101208
-
 const TCHAR *LKGetText(const TCHAR *TextIn) {
     // quick preliminar checks
     if (TextIn == NULL) return TextIn;
