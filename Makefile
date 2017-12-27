@@ -343,6 +343,7 @@ ifeq ($(TARGET_IS_PI),y)
  USE_X11 :=n
  ENABLE_MESA_KMS :=n
  USE_CONSOLE :=y
+ FULLSCREEN:=y
 
  CE_DEFS += -DUSE_VIDEOCORE
  CE_DEFS += -isystem $(PI)/opt/vc/include -isystem $(PI)/opt/vc/include/interface/vcos/pthreads
@@ -363,7 +364,7 @@ ifeq ($(TARGET_HAS_MALI),y)
  GLES    :=y
  USE_X11 :=n
  USE_CONSOLE :=y
-	
+ FULLSCREEN:=y
  CE_DEFS += -DHAVE_MALI
 endif
 
