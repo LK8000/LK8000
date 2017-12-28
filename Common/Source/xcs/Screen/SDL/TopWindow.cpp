@@ -29,20 +29,85 @@ Copyright_License {
 #include "Event/Queue.hpp"
 #include "Screen/Custom/TopCanvas.hpp"
 #include "Util/ConvertString.hpp"
-
-#if SDL_MAJOR_VERSION >= 2
 #include "Util/UTF8.hpp"
+
+
+#if defined(__MACOSX__) && __MACOSX__
+#include <SDL_syswm.h>
+#import <AppKit/AppKit.h>
+#include <alloca.h>
 #endif
 
-#if SDL_MAJOR_VERSION < 2
-void
-TopWindow::SetCaption(const TCHAR *caption)
+gcc_const
+static Uint32
+MakeSDLFlags(bool full_screen, bool resizable)
 {
-  WideToUTF8Converter caption2(caption);
-  if (caption2.IsValid())
-    ::SDL_WM_SetCaption(caption2, nullptr);
-}
+  Uint32 flags = 0;
+
+#ifdef ENABLE_OPENGL
+  flags |= SDL_WINDOW_OPENGL;
+#else /* !ENABLE_OPENGL */
+  flags |= SDL_SWSURFACE;
+#endif /* !ENABLE_OPENGL */
+
+#if !defined(__MACOSX__) || !(__MACOSX__)
+  if (full_screen)
+    flags |= SDL_WINDOW_FULLSCREEN;
 #endif
+
+  if (resizable)
+    flags |= SDL_WINDOW_RESIZABLE;
+
+#if defined(__IPHONEOS__) && __IPHONEOS__
+  /* Hide status bar on iOS devices */
+  flags |= SDL_WINDOW_BORDERLESS;
+#endif
+
+#ifdef HAVE_HIGHDPI_SUPPORT
+  flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+#endif
+
+  return flags;
+}
+
+void
+TopWindow::CreateNative(const TCHAR *_text, PixelSize new_size, TopWindowStyle style)
+{
+  const char *text = _text;
+  const bool full_screen = style.GetFullScreen();
+  const bool resizable = style.GetResizable();
+  const Uint32 flags = MakeSDLFlags(full_screen, resizable);
+
+  window = ::SDL_CreateWindow(text, SDL_WINDOWPOS_UNDEFINED,
+                              SDL_WINDOWPOS_UNDEFINED, new_size.cx,
+                              new_size.cy, flags);
+  if (window == nullptr) {
+    fprintf(stderr,
+            "SDL_CreateWindow(%s, %u, %u, %u, %u, %#x) has failed: %s\n",
+            text, (unsigned) SDL_WINDOWPOS_UNDEFINED,
+            (unsigned) SDL_WINDOWPOS_UNDEFINED, (unsigned) new_size.cx,
+            (unsigned) new_size.cy, (unsigned)flags,
+            ::SDL_GetError());
+    return;
+  }
+
+#if defined(__MACOSX__) && __MACOSX__
+  SDL_SysWMinfo *wm_info =
+      reinterpret_cast<SDL_SysWMinfo *>(alloca(sizeof(SDL_SysWMinfo)));
+  SDL_VERSION(&wm_info->version);
+  if ((SDL_GetWindowWMInfo(window, wm_info)) &&
+      (wm_info->subsystem == SDL_SYSWM_COCOA)) {
+    if (resizable) {
+      [wm_info->info.cocoa.window
+          setCollectionBehavior: NSWindowCollectionBehaviorFullScreenPrimary];
+    }
+    if (full_screen) {
+      [wm_info->info.cocoa.window toggleFullScreen: nil];
+    }
+  }
+#endif
+
+}
 
 void
 TopWindow::Invalidate()
@@ -56,13 +121,6 @@ TopWindow::OnEvent(const SDL_Event &event)
   switch (event.type) {
     Window *w;
 
-#if SDL_MAJOR_VERSION < 2
-  case SDL_VIDEOEXPOSE:
-    invalidated = false;
-    Expose();
-    return true;
-#endif
-
   case SDL_KEYDOWN:
     w = GetFocusedWindow();
     if (w == nullptr)
@@ -71,15 +129,8 @@ TopWindow::OnEvent(const SDL_Event &event)
     if (!w->IsEnabled())
       return false;
 
-#if SDL_MAJOR_VERSION >= 2
     return w->OnKeyDown(event.key.keysym.sym);
-#else
-    return w->OnKeyDown(event.key.keysym.sym) ||
-      (event.key.keysym.unicode != 0 &&
-       w->OnCharacter(event.key.keysym.unicode));
-#endif
 
-#if SDL_MAJOR_VERSION >= 2
   case SDL_TEXTINPUT:
     w = GetFocusedWindow();
     if (w == nullptr)
@@ -98,7 +149,6 @@ TopWindow::OnEvent(const SDL_Event &event)
       return handled;
     } else
       return false;
-#endif
 
   case SDL_KEYUP:
     w = GetFocusedWindow();
@@ -129,39 +179,18 @@ TopWindow::OnEvent(const SDL_Event &event)
     return OnMouseMove(event.motion.x, event.motion.y, 0);
 
   case SDL_MOUSEBUTTONDOWN:
-#if SDL_MAJOR_VERSION < 2
-    if (event.button.button == SDL_BUTTON_WHEELUP)
-      return OnMouseWheel(event.button.x, event.button.y, 1);
-    else if (event.button.button == SDL_BUTTON_WHEELDOWN)
-      return OnMouseWheel(event.button.x, event.button.y, -1);
-#endif
-
     return double_click.Check(RasterPoint(event.button.x, event.button.y))
       ? OnMouseDouble(event.button.x, event.button.y)
       : OnMouseDown(event.button.x, event.button.y);
 
   case SDL_MOUSEBUTTONUP:
-#if SDL_MAJOR_VERSION < 2
-    if (event.button.button == SDL_BUTTON_WHEELUP ||
-        event.button.button == SDL_BUTTON_WHEELDOWN)
-      /* the wheel has already been handled in SDL_MOUSEBUTTONDOWN */
-      return false;
-#endif
-
     double_click.Moved(RasterPoint(event.button.x, event.button.y));
-
     return OnMouseUp(event.button.x, event.button.y);
 
   case SDL_QUIT:
     return OnClose();
 
-#if SDL_MAJOR_VERSION < 2
-  case SDL_VIDEORESIZE:
-    Resize(event.resize.w, event.resize.h);
-    return true;
-#endif
 
-#if SDL_MAJOR_VERSION >= 2
   case SDL_MOUSEWHEEL:
     int x, y;
     SDL_GetMouseState(&x, &y);
@@ -184,8 +213,31 @@ TopWindow::OnEvent(const SDL_Event &event)
           int w, h;
           SDL_GetWindowSize(event_window, &w, &h);
           if ((w >= 0) && (h >= 0)) {
+#ifdef HAVE_HIGHDPI_SUPPORT
+            int real_w, real_h;
+            SDL_GL_GetDrawableSize(event_window, &real_w, &real_h);
+            point_to_real_x = static_cast<float>(real_w) /
+                              static_cast<float>(w);
+            point_to_real_y = static_cast<float>(real_h) /
+                              static_cast<float>(h);
+            w = real_w;
+            h = real_h;
+#endif
             Resize(w, h);
           }
+
+#if defined(__MACOSX__) && __MACOSX__
+          SDL_SysWMinfo *wm_info =
+              reinterpret_cast<SDL_SysWMinfo *>(alloca(sizeof(SDL_SysWMinfo)));
+          SDL_VERSION(&wm_info->version);
+          if ((SDL_GetWindowWMInfo(event_window, wm_info)) &&
+              (wm_info->subsystem == SDL_SYSWM_COCOA)) {
+            [wm_info->info.cocoa.window
+                setCollectionBehavior:
+                    NSWindowCollectionBehaviorFullScreenPrimary];
+          }
+          Invalidate();
+#endif
         }
       }
       return true;
@@ -195,7 +247,6 @@ TopWindow::OnEvent(const SDL_Event &event)
       Expose();
       return true;
     }
-#endif
   }
 
   return false;
@@ -227,4 +278,3 @@ TopWindow::OnResize(PixelSize new_size)
 
   screen->OnResize(new_size);
 }
-

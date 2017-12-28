@@ -152,6 +152,8 @@ class TopWindow : public ContainerWindow {
 #elif defined(USE_WAYLAND)
   struct wl_display *native_display;
   struct wl_egl_window *native_window;
+#elif defined(ENABLE_SDL)
+  SDL_Window *window;
 #endif
 
 #ifndef USE_GDI
@@ -233,7 +235,7 @@ public:
               TopWindowStyle style=TopWindowStyle());
 #endif
 
-#if defined(USE_X11) || defined(USE_WAYLAND)
+#if defined(USE_X11) || defined(USE_WAYLAND) || defined(ENABLE_SDL)
 private:
   void CreateNative(const TCHAR *text, PixelSize size, TopWindowStyle style);
 
@@ -253,7 +255,7 @@ public:
   void CheckResize() {}
 #endif
 
-#if !defined(USE_GDI) && !(defined(ENABLE_SDL) && (SDL_MAJOR_VERSION >= 2))
+#if !defined(USE_GDI) && !defined(ENABLE_SDL)
 #if defined(ANDROID) || defined(USE_FB) || defined(USE_EGL) || defined(USE_VFB)
   void SetCaption(gcc_unused const TCHAR *caption) {}
 #else

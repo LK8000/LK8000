@@ -379,8 +379,8 @@ ifeq ($(CONFIG_LINUX),y)
  CE_DEFS += -DHAVE_POSIX
  CE_DEFS += -D__STDC_FORMAT_MACROS
 
- GREYSCALE ?= n
- USE_SOUND_EXTDEV ?= n
+ GREYSCALE ?=n
+ USE_SOUND_EXTDEV ?=n
 
 # by default use OpenGL if available
  OPENGL  ?=$(shell $(PKG_CONFIG) --exists gl && echo y)
@@ -461,24 +461,8 @@ ifeq ($(CONFIG_LINUX),y)
  ifeq ($(USE_SDL),y)
   CE_DEFS += -DENABLE_SDL
     
-  # check if libSDL2 exist
-  USE_SDL2 ?= $(shell $(PKG_CONFIG) --exists sdl2 && echo y)
-  ifeq ($(USE_SDL2),y)
-   # if libSDL2 exist check for libSDL2_mixer
-   USE_SDL2 = $(shell $(PKG_CONFIG) --exists SDL2_mixer && echo y)
-  endif
-
-  ifeq ($(USE_SDL2),y)
-   # use libSDL2 & libSDL2_mixer if exist
-
-   $(eval $(call pkg-config-library,SDL,sdl2))
-   $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
-  else
-   # otherwise use libSDL1.2 & libSDL1.2_mixer
-
-   $(eval $(call pkg-config-library,SDL,sdl))
-   $(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
-  endif
+  $(eval $(call pkg-config-library,SDL,sdl2))
+  $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
 
   CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
   CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_MIXER_CPPFLAGS))

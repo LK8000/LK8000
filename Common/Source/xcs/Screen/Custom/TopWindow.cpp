@@ -29,10 +29,6 @@ Copyright_License {
 #include "Screen/Memory/Canvas.hpp"
 #endif
 
-#if defined(UNICODE) && SDL_MAJOR_VERSION >= 2
-#include "Util/ConvertString.hpp"
-#endif
-
 TopWindow::~TopWindow()
 {
   delete screen;
@@ -44,20 +40,15 @@ TopWindow::Create(const TCHAR *text, PixelSize size,
 {
   invalidated = true;
 
-#if defined(USE_X11) || defined(USE_WAYLAND)
+#if defined(USE_X11) || defined(USE_WAYLAND) || defined(ENABLE_SDL)
   CreateNative(text, size, style);
 #endif
 
   delete screen;
   screen = new TopCanvas();
 
-#if defined(ENABLE_SDL) && (SDL_MAJOR_VERSION >= 2)
-#ifdef UNICODE
-  const WideToUTF8Converter text2(text);
-#else
-  const char* text2 = text;
-#endif
-  screen->Create(text2, size, style.GetFullScreen(), style.GetResizable());
+#if defined(ENABLE_SDL)
+  screen->Create(window, size);
 #elif defined(USE_X11)
   screen->Create(x_display, x_window);
 #elif defined(USE_WAYLAND)
@@ -73,10 +64,6 @@ TopWindow::Create(const TCHAR *text, PixelSize size,
   }
 
   ContainerWindow::Create(nullptr, screen->GetRect(), style);
-
-#if defined(ENABLE_SDL) && (SDL_MAJOR_VERSION < 2)
-  SetCaption(text);
-#endif
 }
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
@@ -160,29 +147,3 @@ TopWindow::OnClose()
   Destroy();
   return true;
 }
-
-void
-TopWindow::OnDestroy() {
-  
-#ifdef KOBO
-  /* clear the screen before exiting XCSoar */
-  Canvas canvas = screen->Lock();
-  if (canvas.IsDefined()) {
-    canvas.Clear(COLOR_BLACK);
-    screen->Flip();
-    screen->Wait();
-
-    canvas.ClearWhite();
-    screen->Unlock();
-    screen->Flip();
-  }
-#endif
-
-#ifndef USE_GDI    
-  delete screen;
-  screen = nullptr;
-#endif
-  
-  ContainerWindow::OnDestroy();
-}
-

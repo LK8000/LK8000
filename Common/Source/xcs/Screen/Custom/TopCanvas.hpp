@@ -59,10 +59,6 @@ Copyright_License {
 
 #include <stdint.h>
 
-#ifdef ENABLE_SDL
-#include <SDL_version.h>
-#endif
-
 #ifdef SOFTWARE_ROTATE_DISPLAY
 enum class DisplayOrientation_t : uint8_t;
 #endif
@@ -119,19 +115,12 @@ class TopCanvas
 #endif
 
 #ifdef ENABLE_SDL
-#if SDL_MAJOR_VERSION >= 2
   SDL_Window *window;
-#endif
-
 #ifdef USE_MEMORY_CANVAS
-#if SDL_MAJOR_VERSION >= 2
   SDL_Renderer *renderer;
   SDL_Texture *texture;
-#else
-  SDL_Surface *surface;
-#endif
-#endif
-#endif
+#endif /* USE_MEMORY_CANVAS */
+#endif /* ENABLE_SDL */
 
 #ifdef USE_MEMORY_CANVAS
 
@@ -186,7 +175,7 @@ class TopCanvas
   static const Poco::Timespan unghost_delay;
 
   
-#endif
+#endif /* KOBO */
 
 public:
 #ifdef USE_FB
@@ -200,11 +189,14 @@ public:
     , enable_dither(true)
     , frame_sync(true)
     , unghost(false)
+#endif /* KOBO */
+#ifdef ENABLE_SDL
+    , window(nullptr)
 #endif
   {}
 #elif defined(USE_TTY)
   TopCanvas():tty_fd(-1) {}
-#endif
+#endif /* USE_TTY */
 
 #ifndef ANDROID
   ~TopCanvas() {
@@ -212,16 +204,12 @@ public:
   }
 
   void Destroy();
-#endif
+#endif /* ANDROID */
 
 #ifdef USE_MEMORY_CANVAS
   bool IsDefined() const {
 #ifdef ENABLE_SDL
-#if SDL_MAJOR_VERSION >= 2
     return window != nullptr;
-#else
-    return surface != nullptr;
-#endif
 #elif defined(USE_VFB)
     return true;
 #else
@@ -231,11 +219,10 @@ public:
 
   gcc_pure
   PixelRect GetRect() const;
-#endif
+#endif /* USE_MEMORY_CANVAS */
 
-#if defined(ENABLE_SDL) && (SDL_MAJOR_VERSION >= 2)
-  void Create(const char *text, PixelSize new_size,
-              bool full_screen, bool resizable);
+#if defined(ENABLE_SDL)
+  void Create(SDL_Window *_window, PixelSize new_size);
 #elif defined(USE_X11) || defined(USE_WAYLAND)
   void Create(EGLNativeDisplayType native_display,
               EGLNativeWindowType native_window) {

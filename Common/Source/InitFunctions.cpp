@@ -146,18 +146,13 @@ BOOL InitInstance()
   }
 
 #if defined(ENABLE_SDL) && defined(USE_FULLSCREEN)
- #if (SDL_MAJOR_VERSION >= 2)
   SDL_DisplayMode mode = {};
   if(SDL_GetCurrentDisplayMode(0, &mode) == 0) {
-	ScreenSizeX = mode.w;
+    ScreenSizeX = mode.w;
     ScreenSizeY = mode.h;
   } else {
-	fprintf(stderr, "SDL_GetCurrentDisplayMode() has failed: %s\n", ::SDL_GetError());
+    StartupStore("SDL_GetCurrentDisplayMode() has failed: %s", ::SDL_GetError());
   }
-  #else
-	ScreenSizeX = 0;
-    ScreenSizeY = 0;
-  #endif
 #endif
 
   PreloadInitialisation(true);

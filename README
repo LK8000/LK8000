@@ -63,9 +63,6 @@ LINUX Target :
     USE_SDL=[y|n]
        default = "y" if "libegl" not available or OPENGL=n
 
-    USE_SDL2=[y|n]
-        "y" by default if USE_SDL=y or OPENGL=n or USE_EGL=n and libSDL2 are available. 
-
     ENABLE_MESA_KMS=[y|n]
         "n" by default,
         if "y" is specified, use GBM/DRM instead of X11
