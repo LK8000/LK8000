@@ -85,7 +85,7 @@ bool RotateScreen(short angle) {
     }
 
 #ifdef KOBO
-    event_queue->SetMouseRotation(orientation);
+    event_queue->SetDisplayOrientation(orientation);
 #endif
     
     MainWindow.CheckResize();

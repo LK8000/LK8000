@@ -200,9 +200,15 @@ TopWindow::OnEvent(const SDL_Event &event)
     switch (event.window.event) {
 
     case SDL_WINDOWEVENT_RESIZED:
+#ifndef HAVE_HIGHDPI_SUPPORT
+#ifdef ENABLE_OPENGL
+      if (screen->CheckResize(PixelSize(event.window.data1, event.window.data2)))
+        Resize(screen->GetSize());
+#else
       Resize(event.window.data1, event.window.data2);
+#endif
       return true;
-
+#endif
     case SDL_WINDOWEVENT_RESTORED:
     case SDL_WINDOWEVENT_MOVED:
     case SDL_WINDOWEVENT_SHOWN:
@@ -223,7 +229,12 @@ TopWindow::OnEvent(const SDL_Event &event)
             w = real_w;
             h = real_h;
 #endif
+#ifdef ENABLE_OPENGL
+            if (screen->CheckResize(PixelSize(w, h)))
+              Resize(screen->GetSize());
+#else
             Resize(w, h);
+#endif
           }
 
 #if defined(__MACOSX__) && __MACOSX__
@@ -276,5 +287,7 @@ TopWindow::OnResize(PixelSize new_size)
 {
   ContainerWindow::OnResize(new_size);
 
+#ifdef USE_MEMORY_CANVAS
   screen->OnResize(new_size);
+#endif
 }

@@ -112,23 +112,30 @@ public:
   }
 #endif
 
-#if !defined(NON_INTERACTIVE) && !defined(USE_X11) && !defined(USE_WAYLAND)
-
   void SetScreenSize(unsigned width, unsigned height) {
+#if !defined(NON_INTERACTIVE) && !defined(USE_X11) && !defined(USE_WAYLAND)
     input_queue.SetScreenSize(width, height);
+#endif
   }
 
-#ifndef USE_LIBINPUT
-  void SetMouseRotation(bool swap, bool invert_x, bool invert_y) {
-    input_queue.SetMouseRotation(swap, invert_x, invert_y);
+  void SetDisplayOrientation(DisplayOrientation_t orientation) {
+#if !defined(NON_INTERACTIVE) && !defined(USE_X11) && !defined(USE_WAYLAND) && !defined(USE_LIBINPUT)
+    input_queue.SetDisplayOrientation(orientation);
+#endif
   }
 
-  void SetMouseRotation(DisplayOrientation_t orientation) {
-    input_queue.SetMouseRotation(orientation);
-  }
-
+#if !defined(NON_INTERACTIVE) && !defined(USE_X11) && !defined(USE_WAYLAND)
   bool HasPointer() const {
     return input_queue.HasPointer();
+  }
+
+#ifdef USE_LIBINPUT
+  bool HasTouchScreen() const {
+    return input_queue.HasTouchScreen();
+  }
+
+  bool HasKeyboard() const {
+    return input_queue.HasKeyboard();
   }
 #endif
 

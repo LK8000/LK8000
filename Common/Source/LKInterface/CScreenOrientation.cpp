@@ -131,7 +131,7 @@ bool CScreenOrientation::SetScreenSetting(unsigned short NewO) {
     }
 #elif defined(KOBO)
     if(Display::Rotate(static_cast<DisplayOrientation_t>(NewO))) {
-      event_queue->SetMouseRotation(static_cast<DisplayOrientation_t>(NewO));
+      event_queue->SetDisplayOrientation(static_cast<DisplayOrientation_t>(NewO));
       return true;
     }
 #endif

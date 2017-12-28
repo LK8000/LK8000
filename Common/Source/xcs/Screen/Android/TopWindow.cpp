@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2015 The XCSoar Project
+  Copyright (C) 2000-2016 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -39,12 +39,11 @@ TopWindow::Invalidate()
 }
 
 void
-TopWindow::AnnounceResize(UPixelScalar width, UPixelScalar height)
+TopWindow::AnnounceResize(PixelSize _new_size)
 {
   ScopeLock protect(paused_mutex);
   resized = true;
-  new_width = width;
-  new_height = height;
+  new_size = _new_size;
 }
 
 bool
@@ -82,7 +81,7 @@ TopWindow::CheckResumeSurface()
 void
 TopWindow::RefreshSize()
 {
-  UPixelScalar width, height;
+  PixelSize new_size_copy;
 
   {
     ScopeLock protect(paused_mutex);
@@ -90,20 +89,18 @@ TopWindow::RefreshSize()
       return;
 
     resized = false;
-    width = new_width;
-    height = new_height;
+    new_size_copy = new_size;
   }
 
-  Resize(width, height);
+  if (screen->CheckResize(new_size_copy))
+    Resize(new_size_copy);
 }
 
 void
 TopWindow::OnResize(PixelSize new_size)
 {
-  if (native_view != nullptr) {
+  if (native_view != nullptr)
     native_view->SetSize(new_size.cx, new_size.cy);
-    screen->OnResize(new_size);
-  }
 
   ContainerWindow::OnResize(new_size);
 }
@@ -222,10 +219,8 @@ TopWindow::OnEvent(const Event &event)
          resumed */
       return true;
 
-    if (unsigned(event.point.x) == GetWidth() &&
-        unsigned(event.point.y) == GetHeight())
-      /* no-op */
-      return true;
+    if (screen->CheckResize(PixelSize(event.point.x, event.point.y)))
+      Resize(screen->GetSize());
 
     /* it seems the first page flip after a display orientation change
        is ignored on Android (tested on a Dell Streak / Android

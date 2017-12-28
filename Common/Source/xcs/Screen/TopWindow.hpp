@@ -184,7 +184,7 @@ class TopWindow : public ContainerWindow {
    */
   bool resized;
 
-  UPixelScalar new_width, new_height;
+  PixelSize new_size;
 #endif
 
   DoubleClick double_click;
@@ -249,11 +249,14 @@ public:
   /**
    * Check if the screen has been resized.
    */
-#ifdef USE_FB
-  void CheckResize();
-#else
-  void CheckResize() {}
+  void CheckResize() {
+#ifndef USE_GDI
+    assert(screen);
+    if(screen->CheckResize()) {
+      Resize(screen->GetSize());
+    }
 #endif
+  }
 
 #if !defined(USE_GDI) && !defined(ENABLE_SDL)
 #if defined(ANDROID) || defined(USE_FB) || defined(USE_EGL) || defined(USE_VFB)
@@ -364,7 +367,7 @@ public:
    * that this has happened.  The caller should also submit the RESIZE
    * event to the event queue.  This method is thread-safe.
    */
-  void AnnounceResize(UPixelScalar width, UPixelScalar height);
+  void AnnounceResize(PixelSize _new_size);
 
   bool ResumeSurface();
 

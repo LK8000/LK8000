@@ -25,6 +25,7 @@ Copyright_License {
 #define XCSOAR_SCREEN_TOP_CANVAS_HPP
 
 #include "Compiler.h"
+#include "Screen/Point.hpp"
 
 #ifdef USE_MEMORY_CANVAS
 #include "Screen/Memory/PixelTraits.hpp"
@@ -233,23 +234,37 @@ public:
               bool full_screen, bool resizable);
 #endif
 
-#ifdef USE_FB
+#ifndef USE_GDI
+  /**
+   * Obtain the native (non-software-rotated) size of the OpenGL
+   * drawable.
+   */
+  gcc_pure
+  PixelSize GetNativeSize() const;
+#endif
+
+#if defined(USE_MEMORY_CANVAS) || defined(ENABLE_OPENGL)
+  /**
+   * Check if the screen has been resized.
+   *
+   * @param new_native_size the new screen size reported by the
+   * windowing system library
+   * @return true if the screen has been resized
+   */
+  bool CheckResize(PixelSize new_native_size);
+#endif
+
+#ifndef USE_GDI
   /**
    * Check if the screen has been resized.
    *
    * @return true if the screen has been resized
    */
-  bool CheckResize();
 
-  gcc_pure
-  unsigned GetWidth() const {
-    return buffer.width;
+  bool CheckResize() {
+    return CheckResize(GetNativeSize());
   }
 
-  gcc_pure
-  unsigned GetHeight() const {
-    return buffer.height;
-  }
 #endif
 
 #ifdef ENABLE_OPENGL
@@ -259,9 +274,15 @@ public:
   void Resume();
 #endif
 
+#if defined(ENABLE_SDL) && defined(USE_MEMORY_CANVAS)
   void OnResize(PixelSize new_size);
+#endif
 
 #ifdef USE_MEMORY_CANVAS
+  PixelSize GetSize() const {
+    return PixelSize(buffer.width, buffer.height);
+  }
+
   Canvas Lock();
   void Unlock();
 #endif
@@ -290,6 +311,10 @@ public:
 #endif
 
 private:
+#ifdef ENABLE_OPENGL
+  void SetupViewport(PixelSize native_size);
+#endif
+
 #ifdef USE_EGL
   void CreateEGL(EGLNativeDisplayType native_display,
                  EGLNativeWindowType native_window);

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2015 The XCSoar Project
+  Copyright (C) 2000-2016 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -51,6 +51,22 @@ Copyright_License {
 
 #ifdef KOBO  
 const Poco::Timespan TopCanvas::unghost_delay(1,0); // 1s + 0 to gps fix interval delay before do unghost
+
+static unsigned
+GetWidth(const struct fb_var_screeninfo &vinfo) {
+  return vinfo.xres;
+}
+
+static unsigned
+GetHeight(const struct fb_var_screeninfo &vinfo) {
+  return vinfo.yres;
+}
+
+static PixelSize
+GetSize(const struct fb_var_screeninfo &vinfo) {
+  return PixelSize(GetWidth(vinfo), GetHeight(vinfo));
+}
+
 #endif
 
 void
@@ -215,34 +231,36 @@ TopCanvas::Create(PixelSize new_size,
 
 #ifdef USE_FB
 
-bool
-TopCanvas::CheckResize()
+PixelSize
+TopCanvas::GetNativeSize() const
 {
-  /* get new frame buffer dimensions and check if they have changed */
   struct fb_var_screeninfo vinfo;
   ioctl(fd, FBIOGET_VSCREENINFO, &vinfo);
-
-  if (vinfo.xres == buffer.width && vinfo.yres == buffer.height)
-    return false;
-
-  /* yes, they did change: update the size and allocate a new buffer */
-
-  struct fb_fix_screeninfo finfo;
-  ioctl(fd, FBIOGET_FSCREENINFO, &finfo);
-
-  map_pitch = finfo.line_length;
-
-  buffer.Free();
-  buffer.Allocate(vinfo.xres, vinfo.yres);
-  return true;
+  return ::GetSize(vinfo);
 }
 
 #endif
 
-void
-TopCanvas::OnResize(PixelSize new_size)
+bool
+TopCanvas::CheckResize(const PixelSize new_native_size)
 {
-  // TODO: is this even possible?
+  const PixelSize new_size = new_native_size;
+  if (new_size == GetSize())
+    /* no change */
+    return false;
+
+  /* changed: update the size and allocate a new buffer */
+
+#ifdef USE_FB
+  struct fb_fix_screeninfo finfo;
+  ioctl(fd, FBIOGET_FSCREENINFO, &finfo);
+
+  map_pitch = finfo.line_length;
+#endif
+
+  buffer.Free();
+  buffer.Allocate(new_size.cx, new_size.cy);
+  return true;
 }
 
 Canvas

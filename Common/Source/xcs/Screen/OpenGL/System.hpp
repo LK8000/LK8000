@@ -37,11 +37,11 @@ Copyright_License {
 #include <SDL_opengl.h>
 #endif
 #elif defined(HAVE_GLES2)
-#include <GLES2/gl2.h>
+ #include <GLES2/gl2.h>
 #elif defined(HAVE_GLES)
-#include <GLES/gl.h>
+ #include <GLES/gl.h>
 #else
-#include <GL/gl.h>
+ #include <GL/gl.h>
 #endif
 
 #endif

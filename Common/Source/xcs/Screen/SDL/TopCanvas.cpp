@@ -105,9 +105,9 @@ TopCanvas::Create(SDL_Window *_window, PixelSize new_size)
   }
 
   OpenGL::SetupContext();
-  OpenGL::SetupViewport(Point2D<unsigned>(new_size.cx, new_size.cy));
-  Canvas::Create(new_size);
-#endif /* ENABLE_OPENGL */
+
+  SetupViewport(GetNativeSize());
+#endif
 
 #ifdef GREYSCALE
   buffer.Allocate(new_size.cx, new_size.cy);
@@ -126,14 +126,23 @@ TopCanvas::Destroy()
 #endif
 }
 
+#ifdef ENABLE_OPENGL
+
+PixelSize
+TopCanvas::GetNativeSize() const
+{
+  int w, h;
+  SDL_GL_GetDrawableSize(window, &w, &h);
+  return PixelSize(w, h);
+}
+
+#endif
+
+#ifdef USE_MEMORY_CANVAS
+
 void
 TopCanvas::OnResize(PixelSize new_size)
 {
-#ifdef ENABLE_OPENGL
-  if (new_size == GetSize())
-    return;
-
-#else
   int texture_width, texture_height;
   Uint32 texture_format;
   if (SDL_QueryTexture(texture, &texture_format, NULL, &texture_width, &texture_height) != 0)
@@ -147,22 +156,17 @@ TopCanvas::OnResize(PixelSize new_size)
   if (t == nullptr)
     return;
 
-#endif
-
-#ifdef ENABLE_OPENGL
-  OpenGL::SetupViewport(Point2D<unsigned>(new_size.cx, new_size.cy));
-  Canvas::Create(new_size);
-#else
   if (texture != nullptr)
       SDL_DestroyTexture(texture);
   texture = t;
-#endif
 
 #ifdef GREYSCALE
   buffer.Free();
   buffer.Allocate(new_size.cx, new_size.cy);
 #endif
 }
+
+#endif
 
 #ifdef GREYSCALE
 

@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2015 The XCSoar Project
+  Copyright (C) 2000-2016 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -25,11 +25,10 @@ Copyright_License {
 #define XCSOAR_SCREEN_OPENGL_INIT_HPP
 
 #include <stdint.h>
+#include "Math/Point2D.hpp"
 
-enum class DisplayOrientation_t : uint8_t;
-
-template<typename T>
-struct Point2D;
+typedef Point2D<unsigned> UnsignedPoint2D;
+enum class DisplayOrientation : uint8_t;
 
 namespace OpenGL {
   /**
@@ -44,18 +43,13 @@ namespace OpenGL {
   void SetupContext();
 
   /**
-   * Set up the viewport and the matrices for 2D drawing.
-   */
-  void SetupViewport(Point2D<unsigned> size);
-
-  /**
    * Set up the viewport and the matrices for 2D drawing.  Apply the
    * #DisplayOrientation via glRotatef() (OpenGL projection matrix).
    *
-   * @param size the screen size in pixels; may be edited by the
-   * function to apply the #DisplayOrientation
+   * @param size the native screen size in pixels
+   * @return the logical screen size (after rotation)
    */
-  void SetupViewport(Point2D<unsigned> &size, DisplayOrientation_t orientation);
+  UnsignedPoint2D SetupViewport(UnsignedPoint2D size);
 
   /**
    * Deinitialize our OpenGL library.  Call before shutdown.

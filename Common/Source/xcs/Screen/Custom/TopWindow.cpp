@@ -75,7 +75,7 @@ TopWindow::SetDisplayOrientation(DisplayOrientation_t orientation)
   assert(screen->IsDefined());
 
   screen->SetDisplayOrientation(orientation);
-  Resize(screen->GetWidth(), screen->GetHeight());
+  Resize(screen->GetSize());
 }
 
 #endif
