@@ -118,11 +118,10 @@ TopWindow::OnPause()
 
   native_view->deinitSurface();
 
-  paused_mutex.Lock();
+  const ScopeLock lock(paused_mutex);
   paused = true;
   resumed = false;
   paused_cond.Signal();
-  paused_mutex.Unlock();
 }
 
 void
@@ -150,10 +149,9 @@ TopWindow::Pause()
   event_queue->Purge(match_pause_and_resume, nullptr);
   event_queue->Push(Event::PAUSE);
 
-  paused_mutex.Lock();
+  const ScopeLock lock(paused_mutex);
   while (!paused)
     paused_cond.Wait(paused_mutex);
-  paused_mutex.Unlock();
 }
 
 void
