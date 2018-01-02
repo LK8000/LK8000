@@ -2477,19 +2477,24 @@ void WndProperty::Paint(LKSurface& Surface){
 
   if (!IsVisible()) return;
 
-  WindowControl::Paint(Surface);
+  PixelRect rc(GetClientRect());
+  rc.right += 2;
+  rc.bottom += 2;
 
-  // r.left = 0;
-  // r.top = 0;
-  // r.right = GetWidth();
-  // r.bottom = GetHeight();
+  Surface.FillRect(&rc, GetBackBrush());
+  
 
-  Surface.SetTextColor(GetForeColor());
-  // JMW make it look
-  if (!HasFocus()) {
-    Surface.SetBkColor(GetBackColor());
+
+  if(HasFocus() && mCanFocus) {
+    auto oldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
+    auto oldPen = Surface.SelectObject(LKPen_Higlighted);
+    Surface.Rectangle(rc.left, rc.top, rc.right-3, rc.bottom-3);
+    Surface.SelectObject(oldPen);
+    Surface.SelectObject(oldBrush);
   }
 
+  Surface.SetTextColor(GetForeColor());
+  Surface.SetBkColor(GetBackColor());
   Surface.SetBackgroundTransparent();
   const auto oldFont = Surface.SelectObject(GetFont());
 
