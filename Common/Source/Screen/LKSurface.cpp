@@ -866,9 +866,9 @@ void LKSurface::Segment(long x, long y, int radius, const RECT& rc, double start
       pt[npoly].x = x;
       pt[npoly].y = y;
       npoly++;
-      
+        
       assert(npoly <= (int)array_size(pt));
-      
+	  
       Polygon(pt, npoly, rc);
     }
 }

@@ -9,7 +9,7 @@
 #include "Enums.h"
 class CAirspace;
 
-MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false);
+MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false, int timeout=0, MsgReturn_t defaultButton=IdOk);
 
 void StartupScreen();
 

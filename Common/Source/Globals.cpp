@@ -579,6 +579,10 @@ void Globals_Init(void) {
   CompetitionClass_Config[0]=_T('\0');
   CompetitionID_Config[0]=_T('\0');
 
+  PhoneNumbers_Config[0]=_T('\0');
+  TakeoffMsg_Config[0]=_T('\0');
+
+
   LockSettingsInFlight = false;
   LoggerShortName = false;
 

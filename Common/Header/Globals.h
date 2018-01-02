@@ -866,6 +866,20 @@ GEXTERN TCHAR AircraftRego_Config[50];
 GEXTERN TCHAR CompetitionClass_Config[50];
 GEXTERN TCHAR CompetitionID_Config[50];
 
+#define TEXTMESSAGEBUF 612
+#define PHONENUMBERSBUF 120
+// Sms messages, for Android only
+GEXTERN TCHAR PhoneNumbers_Config[PHONENUMBERSBUF];
+GEXTERN TCHAR TakeoffMsg_Config[TEXTMESSAGEBUF];
+GEXTERN TCHAR SafeLandingMsg_Config[TEXTMESSAGEBUF];
+GEXTERN TCHAR EmergencyLandingMsg_Config[TEXTMESSAGEBUF];
+GEXTERN bool SendTakeoffMsg;
+GEXTERN bool SendSafeLandingMsg;
+GEXTERN bool SendEmergencyLandingMsg;
+
+
+GEXTERN int LandingDlgTimeout;
+
 GEXTERN bool LockSettingsInFlight;
 GEXTERN bool LoggerShortName;
 

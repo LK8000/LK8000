@@ -265,7 +265,7 @@ passthrough:
 		return true;
 	case ckNotepad:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		InputEvents::eventChecklist(_T(""));
+                InputEvents::eventChecklist(_T(""));
 		return true;
 	case ckTerrainColors:
 		PlayResource(TEXT("IDR_WAV_CLICK"));

@@ -536,6 +536,20 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config, array_size(LiveTrackerpwd_Config));
   if (matchedstring) return;
 
+  PREAD(sname,svalue,szRegistryPhoneNumbers,&*PhoneNumbers_Config, array_size(PhoneNumbers_Config));
+  PREAD(sname,svalue,szRegistryTakeoffMsg,&*TakeoffMsg_Config, array_size(TakeoffMsg_Config));
+  PREAD(sname,svalue,szRegistrySafeLandingMsg,&*SafeLandingMsg_Config, array_size(SafeLandingMsg_Config));
+  PREAD(sname,svalue,szRegistryEmergencyLandingMsg,&*EmergencyLandingMsg_Config, array_size(EmergencyLandingMsg_Config));
+  PREAD(sname,svalue,szRegistrySendTakeoffMsg,&SendTakeoffMsg);
+  PREAD(sname,svalue,szRegistrySendSafeLandingMsg,&SendSafeLandingMsg);
+  PREAD(sname,svalue,szRegistrySendEmergencyLandingMsg,&SendEmergencyLandingMsg);
+
+  //PREAD(sname,svalue,szLandingDlgTimeout,&LandingDlgTimeout);  //todo:sms:this is where I stopped
+
+
+
+  if (matchedstring) return;
+
   PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile, array_size(szPolarFile));
   if (matchedstring) {
     RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szPolarFile);

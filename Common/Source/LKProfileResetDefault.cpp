@@ -426,6 +426,17 @@ void LKProfileResetDefault(void) {
   _tcscpy(CompetitionClass_Config,_T("CLUB"));
   _tcscpy(CompetitionID_Config,_T("WH"));
 
+  _tcscpy(PhoneNumbers_Config,_T(""));
+  _tcscpy(TakeoffMsg_Config,_T("I Just Took Off :)"));
+  _tcscpy(SafeLandingMsg_Config,_T("I Just Safely Landed :)"));
+  _tcscpy(EmergencyLandingMsg_Config,_T("Emergency Landing :( Please Help!"));
+  SendTakeoffMsg = false;
+  SendSafeLandingMsg = false;
+  SendEmergencyLandingMsg = false;
+  LandingDlgTimeout = 600;
+
+
+
   LockSettingsInFlight = false;
   LoggerShortName = false;
 

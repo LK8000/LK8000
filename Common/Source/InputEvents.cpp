@@ -6,6 +6,7 @@
   $Id: InputEvents.cpp,v 8.11 2011/01/01 23:21:36 root Exp root $
 */
 
+#include <Sms/Sms.h>
 #include "externs.h"
 #include "InputEvents.h"
 #include "LKInterface.h"
@@ -1966,16 +1967,26 @@ void InputEvents::eventService(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("TAKEOFF")) == 0) {
 	// No MESSAGE on screen, only a sound
 	if (ISCAR)
-		DoStatusMessage(MsgToken(571),NULL,false); // START
+      DoStatusMessage(MsgToken(571),NULL,false); // START
 	else {
-		if (SIMMODE) DoStatusMessage(MsgToken(930),NULL,false); // Takeoff
+	  if (SIMMODE)
+      DoStatusMessage(MsgToken(930),NULL,false); // Takeoff
 	}
     LKSound(_T("LK_TAKEOFF.WAV"));
+
+    #ifdef ANDROID
+    LKTakeoffSms();
+#endif
 	return;
   }
   if (_tcscmp(misc, TEXT("LANDING")) == 0) {
-	DoStatusMessage(MsgToken(931),NULL,false);
     LKSound(_T("LK_LANDING.WAV"));
+
+#ifdef ANDROID
+     LKSLandingSms();
+#else
+    DoStatusMessage(MsgToken(931),NULL,false); // Landing
+#endif
 	return;
   }
 
