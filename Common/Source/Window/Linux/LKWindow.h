@@ -81,8 +81,6 @@ public:
         }
     }
 
-    static Window* GetFocus();
-
     void StartTimer(unsigned uTime /*millisecond*/) {
         Schedule(uTime);
     }
