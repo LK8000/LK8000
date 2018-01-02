@@ -291,8 +291,8 @@ void Topology::Open() {
   scaleThreshold = 1000.0;
   shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
   if (shpCache) {
+    initCache();
     shapefileopen = true;
-	initCache();
   } else {
 	StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
   }
@@ -336,6 +336,9 @@ void Topology::TriggerIfScaleNowVisible(void) {
   triggerUpdateCache |= (CheckScale() != in_scale);
 }
 
+//
+// Always check shpCache is not NULL before calling flushCache!
+//
 void Topology::flushCache() {
 #ifdef DEBUG_TFC
   StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
@@ -364,7 +367,7 @@ void Topology::flushCache() {
 void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   if (!triggerUpdateCache) return;
 
-  if (!shapefileopen) return;
+  if (!shapefileopen || !shpCache) return;
 
   in_scale = CheckScale();
 
@@ -506,6 +509,7 @@ XShape* Topology::addShape(const int i) {
 }
 
 
+// Be sure shpCache is not NULL before calling removeShape
 void Topology::removeShape(const int i) {
   if (shpCache[i]) {
     delete shpCache[i];
