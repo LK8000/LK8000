@@ -11,20 +11,29 @@
 #include "TraceThread.h"
 #include "Screen/LKSurface.h"
 #include "Window/WndTextEdit.h"
+#include "Event/Event.h"
 
 class WndMessage : public WndTextEdit {
 public:
     WndMessage() : WndTextEdit() { }
 
 protected:
-    virtual bool OnLButtonDown(const POINT& Pos) {
+    bool OnLButtonDown(const POINT& Pos) override {
         // requiered otherwise on Win32 this windows capture all event and never release.
         return true;
     }
 
-    virtual bool OnLButtonUp(const POINT& Pos) {
+    bool OnLButtonUp(const POINT& Pos) override {
         Message::Acknowledge(0);
         return true;
+    }
+
+    bool OnKeyDown(unsigned KeyCode) override {
+        if(KeyCode == KEY_RETURN) {
+            Message::Acknowledge(0);
+            return true;
+        }
+        return false;
     }
 };
 
