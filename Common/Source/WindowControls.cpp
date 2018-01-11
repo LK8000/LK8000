@@ -1988,7 +1988,7 @@ bool WndForm::OnKeyDownNotify(Window* pWnd, unsigned KeyCode) {
     if (ActiveControl) {
         WindowControl * pCtrl = ActiveControl->GetParent();
         if (pCtrl) {
-            switch (KeyCode & 0xffff) {
+            switch (KeyCode) {
                 case KEY_UP:
                     pCtrl->FocusPrev(ActiveControl);
                     return true;
@@ -2360,7 +2360,7 @@ bool WndProperty::OnKeyDown(unsigned KeyCode) {
                     return true;
                 }
             } else {
-                if (KeyTimer(true, KeyCode & 0xffff) && OnHelp()) {
+                if (KeyTimer(true, KeyCode) && OnHelp()) {
                     return true;
                 }
             }
