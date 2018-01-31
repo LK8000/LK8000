@@ -341,10 +341,9 @@ TCHAR Tmp[255];
      double ASFrequency = ExtractFrequency((TCHAR*)aCommentTextLine[ItemIndex]);
       if((ASFrequency >= 118) && (ASFrequency <= 138))
       {
-          LKSound(TEXT("LK_TICK.WAV"));
+        LKSound(TEXT("LK_TICK.WAV"));
         _stprintf(Tmp,_T("RADIO: %s %7.3f"),(TCHAR*)aCommentTextLine[ItemIndex],ASFrequency);
-        StartupStore(Tmp);
-        devPutFreqActive(ASFrequency, (TCHAR*)(TCHAR*)aCommentTextLine[ItemIndex]);
+        devPutFreqActive(ASFrequency, (TCHAR*)aCommentTextLine[ItemIndex]);
         DoStatusMessage(_T(""), Tmp );
       }
     }
@@ -375,7 +374,6 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   wMultiSelect = (WndListFrame*) wf->FindByName(TEXT("frmWpComment"));
   LKASSERT(wMultiSelect != NULL);
-  wMultiSelect->SetBorderKind(BORDERLEFT);
   wMultiSelect->SetEnterCallback(OnMultiSelectEnter);
 
   LKASSERT(wInfo!=NULL);
