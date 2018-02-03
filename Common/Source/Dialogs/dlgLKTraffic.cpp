@@ -187,8 +187,6 @@ static void OnFlarmFreqSelectEnter(WndButton*  Sender
                                        ) {
     (void) Sender;
 
-    StartupStore(_T("Flarm Freq !!!!!!"));
-
 #ifdef RADIO_ACTIVE
 
 TCHAR Tmp[255];
@@ -229,9 +227,6 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnFlarmFreqSelectEnter),
   EndCallBackEntry()
 };
-
-
-
 
 
 static void SetValues(int indexid) {
@@ -370,7 +365,6 @@ static void SetValues(int indexid) {
 		wp->RefreshDisplay();
 	}
 
-	_stprintf(flarmId->freq, _T("118.250"));
 	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
         wFreq->SetVisible(false) ;
 	if(RadioPara.Enabled)
@@ -379,7 +373,6 @@ static void SetValues(int indexid) {
 	  if((ASFrequency >= 118) && (ASFrequency <= 138))
 	  {
 	    _stprintf(buffer,_T("%sMHz"),flarmId->freq );
-	    wFreq->SetBorderKind(BORDERLEFT);
 	    wFreq->SetCaption(buffer);
             wFreq->SetVisible(true) ;
 	    wFreq->Redraw();
