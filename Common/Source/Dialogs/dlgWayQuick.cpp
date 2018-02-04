@@ -128,7 +128,7 @@ static void OnRadioFrequencyClicked(WndButton* pWnd){
   _stprintf(szFreq,_T(" %6.3fMHz ") ,Ferquency);
 
   DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );
-  DoStatusMessage(_T("RADIO:"), szFreq );
+  DoStatusMessage(_T(""), szFreq );
   retStatus=3;
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();

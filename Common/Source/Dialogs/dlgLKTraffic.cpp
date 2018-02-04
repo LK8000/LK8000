@@ -198,7 +198,7 @@ TCHAR Tmp[255];
       if((ASFrequency >= 118) && (ASFrequency <= 138))
       {
         LKSound(TEXT("LK_TICK.WAV"));
-        _stprintf(Tmp,_T("RADIO: %s %7.3f"),(TCHAR*)flarmId->reg   ,ASFrequency);
+        _stprintf(Tmp,_T("%s  %s %7.3fMHz"),(TCHAR*)flarmId->reg , NEWLINE  ,ASFrequency);
         StartupStore(Tmp);
         devPutFreqActive(ASFrequency, (TCHAR*)flarmId->reg );
         DoStatusMessage(_T(""), Tmp );
@@ -366,17 +366,25 @@ static void SetValues(int indexid) {
 	}
 
 	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
-        wFreq->SetVisible(false) ;
+    _stprintf(buffer,_T("%sMHz"),flarmId->freq );
+    wFreq->SetVisible(false) ;
 	if(RadioPara.Enabled)
 	{
 	  double ASFrequency = ExtractFrequency((TCHAR*)flarmId->freq);
 	  if((ASFrequency >= 118) && (ASFrequency <= 138))
 	  {
-	    _stprintf(buffer,_T("%sMHz"),flarmId->freq );
 	    wFreq->SetCaption(buffer);
-            wFreq->SetVisible(true) ;
+        wFreq->SetVisible(true) ;
 	    wFreq->Redraw();
 	  }
+	}
+	else
+    {
+      wp = (WndProperty*)wf->FindByName(TEXT("prpFreq"));
+      if (wp) {
+        wp->SetText(buffer);
+        wp->RefreshDisplay();
+      }
 	}
 
   }

@@ -161,7 +161,7 @@ TCHAR Tmp[255];
     {
       _stprintf(Tmp,_T("%7.3fMHz"),ASFrequency);
       devPutFreqActive(ASFrequency, (TCHAR*)airspace_copy.Name());
-        DoStatusMessage(_T("RADIO:"), Tmp );
+        DoStatusMessage(_T(""), Tmp );
     }
   }
 #endif  // RADIO_ACTIVE        

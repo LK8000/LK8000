@@ -334,6 +334,7 @@ static void OnMultiSelectEnter(WindowControl * Sender,
 #ifdef RADIO_ACTIVE
 int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 TCHAR Tmp[255];
+TCHAR Tmp2[20];
   if(ItemIndex >=0)
   {
    if(RadioPara.Enabled)
@@ -342,8 +343,10 @@ TCHAR Tmp[255];
       if((ASFrequency >= 118) && (ASFrequency <= 138))
       {
         LKSound(TEXT("LK_TICK.WAV"));
-        _stprintf(Tmp,_T("RADIO: %s %7.3f"),(TCHAR*)aCommentTextLine[ItemIndex],ASFrequency);
-        devPutFreqActive(ASFrequency, (TCHAR*)aCommentTextLine[ItemIndex]);
+        _sntprintf(Tmp2, 10, (TCHAR*)aCommentTextLine[ItemIndex]);
+        Tmp2[10]=0;
+        _stprintf(Tmp,_T("%s%s%7.3fMHz"),Tmp2,NEWLINE,ASFrequency);
+        devPutFreqActive(ASFrequency, Tmp2);
         DoStatusMessage(_T(""), Tmp );
       }
     }
