@@ -162,7 +162,7 @@ short dlgWayQuickShowModal(void){
   if (!wf) return 0;
 
   retStatus=0;
-  if (/*WPLSEL.Format == LKW_CUP && */WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
+  if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP)&& WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
         TCHAR ttmp[50];
 
                 _stprintf(sTmp, TEXT("%s "), WPLSEL.Name);
