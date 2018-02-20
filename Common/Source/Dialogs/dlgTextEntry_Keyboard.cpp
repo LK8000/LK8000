@@ -27,8 +27,13 @@ static TCHAR edittext[MAX_TEXTENTRY];
 #define MAXENTRYLETTERS (sizeof(EntryLetters)/sizeof(EntryLetters[0])-1)
 
 void ReduceKeysByWaypointList(void);
+void  ReduceKeysByAirspaceList(void);
 void RemoveKeys(char *EnabledKeyString, unsigned char size);
-bool WaypointKeyRed = false;
+#define KEYRED_NONE     0
+#define KEYRED_WAYPOINT 1
+#define KEYRED_AIRSPACE 2
+
+uint8_t  WaypointKeyRed = KEYRED_NONE;
 
  int IdenticalIndex=-1;
  int IdenticalOffset = 0;
@@ -54,7 +59,7 @@ static void UpdateTextboxProp(void)
   if (wp) {
     wp->SetText(edittext);
 
-    if(WaypointKeyRed)
+    if(WaypointKeyRed > KEYRED_NONE)
       wp->SetCaption(MsgToken(949));
     else
       wp->SetCaption(TEXT("Text"));
@@ -74,14 +79,31 @@ static void UpdateTextboxProp(void)
 
   {
     WndButton *wb;
-    if(WaypointKeyRed)
+    if(WaypointKeyRed == KEYRED_WAYPOINT)
     {
       ReduceKeysByWaypointList();
 
 	  wb =  (WndButton*) wf->FindByName(TEXT("prpDate")); if(wb != NULL) wb->SetVisible(false);
 	  wb =  (WndButton*) wf->FindByName(TEXT("prpTime")); if(wb != NULL) wb->SetVisible(false);
     }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpMatch"));; if(wp != NULL) wp->SetVisible(WaypointKeyRed);
+
+    if(WaypointKeyRed == KEYRED_AIRSPACE)
+    {
+        ReduceKeysByAirspaceList();
+
+          wb =  (WndButton*) wf->FindByName(TEXT("prpDate")); if(wb != NULL) wb->SetVisible(false);
+          wb =  (WndButton*) wf->FindByName(TEXT("prpTime")); if(wb != NULL) wb->SetVisible(false);
+    }
+    
+    wp = (WndProperty*)wf->FindByName(TEXT("prpMatch")); 
+    if(WaypointKeyRed == KEYRED_NONE)
+    {
+      if(wp != NULL) wp->SetVisible(false);
+    }
+    else
+    {
+      if(wp != NULL) wp->SetVisible(true);
+    }
 /*
     CharUpper(szLanguageFile);
     BOOL bGerChar = false;
@@ -263,6 +285,15 @@ int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 	return IdenticalIndex;
 }
 
+int  dlgTextEntryShowModalAirspace(TCHAR *text, int width)
+{
+        first = false;
+
+        WaypointKeyRed = KEYRED_AIRSPACE;
+        dlgTextEntryKeyboardShowModal(text, width, ScreenLandscape ? IDR_XML_TEXTENTRY_KEYBOARD_L : IDR_XML_TEXTENTRY_KEYBOARD_P);
+        return IdenticalIndex;
+}
+
 void dlgNumEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 {  
     first = true;
@@ -412,6 +443,153 @@ IdenticalIndex = -1;
     wp->SetCaption(Found);
   }
 }
+
+
+/*********************************************************
+
+const CAirspaceList CAirspaceManager::GetAllAirspaces() const {
+    ScopeLock guard(_csairspaces);
+    return _airspaces;
+}
+
+**********************************************************************************/
+void ReduceKeysByAirspaceList(void)
+{
+#define MAX_SEL_LIST_SIZE       60
+char SelList[MAX_SEL_LIST_SIZE]={""};
+unsigned int NumChar=0;
+bool CharEqual = true;
+char Charlist[MAX_SEL_LIST_SIZE]={"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_ \xD6\xDC\xC4"};
+
+unsigned int i,j,EqCnt=WayPointList.size();
+
+CAirspaceList airspaclist =   CAirspaceManager::Instance().GetAllAirspaces();
+WndProperty *wp;
+TCHAR Found[NAME_SIZE + 1];
+SelList[0] = '\0';
+unsigned int NameLen=0;
+ int Offset=0;
+unsigned int k =0;
+IdenticalOffset =999;
+//IdenticalIndex = -1;
+TCHAR IdenticalName[255]= _T("");
+TCHAR AS_Name[255];
+
+
+  if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
+  {
+    RemoveKeys((char*)Charlist, sizeof(Charlist));
+  }
+  else
+  {
+    EqCnt=0; /* reset number of found waypoints */
+    NumChar =0;
+
+
+    CAirspaceList::const_iterator it;
+
+    for (it = airspaclist.begin(); it != airspaclist.end(); ++it)
+    {
+
+      _stprintf(AS_Name,_T("%s"),(*it)->Name());
+
+      NameLen =  _tcslen(AS_Name);
+      Offset = 0;
+      if(cursor > NameLen)
+        CharEqual = false;
+      else
+      {
+        do
+        {
+          k=0;
+          CharEqual = true;
+          while((k < (cursor)) && ((k+Offset) < NameLen) && CharEqual)
+          {
+            LKASSERT(k < MAX_TEXTENTRY);
+            LKASSERT((k+Offset) < NameLen);
+            char ac = (char)AS_Name[k+Offset];
+            char bc = (char)edittext[k];
+            if(  ToUpper(ac) !=   ToUpper(bc) ) /* waypoint has string ?*/
+            {
+              CharEqual = false;
+            }
+            k++;
+          }
+          Offset++;
+        }
+        while(((Offset-1+cursor) < NameLen) && !CharEqual );
+        Offset--;
+      }
+
+
+      if(CharEqual)
+      {
+
+        if(Offset < IdenticalOffset)
+        {
+          _stprintf(IdenticalName ,_T("%s"),AS_Name);
+          IdenticalOffset = Offset; /* remember first found equal name */
+                   // StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
+        }
+        EqCnt++;
+        LKASSERT((cursor+Offset)<=NAME_SIZE);
+    //    LKASSERT(i<=WayPointList.size());
+        TCHAR newChar = ToUpper(AS_Name[cursor+Offset]);
+        bool existing = false;
+        j=0;
+        while(( j < NumChar) && (!existing))  /* new character already in list? */
+        {
+     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
+          LKASSERT(j<MAX_SEL_LIST_SIZE);
+          if(SelList[j] == (unsigned char)newChar)
+                existing = true;
+          j++;
+        }
+
+        if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+        {
+     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
+          LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+          SelList[NumChar++] = newChar;
+        }
+      }
+    }
+
+    SelList[NumChar++] = '\0';
+    RemoveKeys((char*)SelList, NumChar);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
+
+    if (wp)
+    {
+      if(EqCnt ==1)
+      {
+        LKASSERT(IdenticalIndex<= (int)WayPointList.size());
+            wp->SetText(IdenticalName  );
+      }
+      else
+      {
+        if((cursor >0) &&  (EqCnt >0))
+        {
+          LKASSERT(cursor < NAME_SIZE);
+
+          _stprintf(Found,_T("%s"),IdenticalName );
+          for( i = 0; i < cursor; i++)
+             Found[i+IdenticalOffset] = toupper(IdenticalName[i+IdenticalOffset]);
+          wp->SetText(Found);
+        }
+      }
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMatch"));
+  if (wp)
+  {
+    _stprintf(Found,_T("%s:%i"),MsgToken(948),EqCnt); /* _@M948_ Found */
+    wp->SetCaption(Found);
+  }
+}
+
+
 
 
 void RemoveKeys(char *EnabledKeyString, unsigned char size)
