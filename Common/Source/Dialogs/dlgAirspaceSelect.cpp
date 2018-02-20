@@ -244,7 +244,7 @@ static void PrepareData(void){
 static void UpdateList(void){
   int i;
  ItemIndex = 0;
-bool  distancemode = true;
+
   UpLimit= NumberOfAirspaces;
   LowLimit =0;
   FullFlag=false;
@@ -261,7 +261,7 @@ bool  distancemode = true;
   }
 
   if (DistanceFilterIdx != 0){
-    distancemode = true;
+
     qsort(AirspaceSelectInfo, UpLimit,
         sizeof(AirspaceSelectInfo_t), AirspaceDistanceCompare);
     for (i=0; i<(int)UpLimit; i++){
@@ -273,7 +273,7 @@ bool  distancemode = true;
   }
 
   if (DirectionFilterIdx != 0){
-    distancemode = true;
+
     qsort(AirspaceSelectInfo, UpLimit,
         sizeof(AirspaceSelectInfo_t), AirspaceDirectionCompare);
     for (i=0; i<UpLimit; i++){
@@ -300,7 +300,7 @@ bool  distancemode = true;
   for (i=0; i<UpLimit; i++){
     // compare entire name which may be more than 4 chars
 
-      LKASSERT(AirspaceSelectInfo[i].Index>=0 && AirspaceSelectInfo[i].Index< NumberOfAirspaces);
+      LKASSERT(i>=0 && i< NumberOfAirspaces);
       LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name() , NAME_SIZE);
       CharUpper(wname);
 
@@ -313,7 +313,7 @@ bool  distancemode = true;
   if (_tcscmp(sTmp, TEXT("")) != 0) { // if it's blanks, then leave UpLimit at end of list
     for (; i<UpLimit; i++){
 
-        LKASSERT(AirspaceSelectInfo[i].Index>=0 && AirspaceSelectInfo[i].Index< NumberOfAirspaces);
+        LKASSERT(i>=0 && i< NumberOfAirspaces);
       LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name(), NAME_SIZE);
       CharUpper(wname);
 
@@ -330,7 +330,7 @@ bool  distancemode = true;
       // now we create a secondary index pointing to this list
       for (i=0, matches=0; i<UpLimit; i++) {
 
-          LKASSERT(AirspaceSelectInfo[i].Index>=0 && AirspaceSelectInfo[i].Index< NumberOfAirspaces);
+          LKASSERT(i>=0 && i< NumberOfAirspaces);
               LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name(), NAME_SIZE);
               CharUpper(wname);
 
