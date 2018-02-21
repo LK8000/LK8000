@@ -704,7 +704,7 @@ static void OnWPSCloseClicked(WndButton* pWnd){
       pForm->SetModalResult(mrCancel);
     }
   }
-
+  wf->SetTimerNotify(0,NULL);
 
 }
 
@@ -830,7 +830,7 @@ void dlgAirspaceSelect(void) {
   }else
         ItemIndex = -1;
 
-  wf->SetTimerNotify(1000, OnTimerNotify);
+  wf->SetTimerNotify(10000, OnTimerNotify);
 
 
 
