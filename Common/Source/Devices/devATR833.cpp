@@ -38,7 +38,7 @@
 bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *uiArg);
 int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len);
 #ifdef TESTBENCH
-int  iATR833DebugLevel = 1;
+int  iATR833DebugLevel = 2;
 #else
 int  iATR833DebugLevel = 0;
 #endif
@@ -187,7 +187,7 @@ uint8_t Arg[2];
       if (d->Com)
       {
         Arg[0] = (int) Freq;
-        Arg[1] =((Freq- (double)Arg[0] ) *1000.0) /5;
+        Arg[1] =iround((Freq- (double)Arg[0] ) *1000.0) /5;
         Send_Command( d, 0x13 , 2, Arg);  // Send Activ
         RadioPara.ActiveFrequency =  Freq;
         if(iATR833DebugLevel) StartupStore(_T(". ATR833 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
@@ -204,7 +204,7 @@ uint8_t Arg[2];
       if (d->Com)
       {
         Arg[0] = (int) Freq;
-        Arg[1] =((Freq- (double)Arg[0] ) *1000.0) /5;
+        Arg[1] =iround((Freq- (double)Arg[0] ) *1000.0) /5;
         Send_Command( d, 0x12 , 2, Arg);  // Send Activ      
         RadioPara.PassiveFrequency =  Freq;
         if(StationName != NULL)
@@ -265,6 +265,10 @@ if(d == NULL) return 0;
 if(String == NULL) return 0;
 if(len == 0) return 0;
 
+
+if (iATR833DebugLevel==2) StartupStore(_T("ATR833 ==== receive =====%s"), NEWLINE);
+for(int i=0; i < len; i++)
+  if (iATR833DebugLevel==2) StartupStore(_T("0x%02X%s"),  (uint8_t)String[i]   , NEWLINE);
 
 #define REC_BUFSIZE 128
 static uint8_t  converted[REC_BUFSIZE];
