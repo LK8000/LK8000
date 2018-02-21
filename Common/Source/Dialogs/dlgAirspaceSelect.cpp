@@ -15,6 +15,7 @@
 #include "Dialogs.h"
 #include "Event/Event.h"
 #include "resource.h"
+#include "Sound/Sound.h"
 
 typedef struct{
   CAirspace *airspace;
@@ -75,6 +76,7 @@ static void OnEnableClicked(WndButton* pWnd)
       CAirspace *airspace = AirspaceSelectInfo[i].airspace;
       if (airspace) {
           wf->SetTimerNotify(0,NULL);
+          LKSound(TEXT("LK_TICK.WAV"));
           CAirspaceManager::Instance().PopupAirspaceDetail(airspace);
       }
     }
@@ -106,8 +108,10 @@ if (airspace) {
 
   if(airspace->Enabled())
   {
+      LKSound(TEXT("LK_BEEP0.WAV"));
      CAirspaceManager::Instance().AirspaceDisable(*airspace);
   }else{
+      LKSound(TEXT("LK_BEEP1.WAV"));
      CAirspaceManager::Instance().AirspaceEnable(*airspace);
   }
 
