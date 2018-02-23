@@ -103,6 +103,7 @@ typedef enum{
 	ckResetComm,
 	ckDspMode,
 	ckOtimizerPointsToggle,
+	ckAirspaceLookup,
 	ckTOP,
 } CustomKeyMode_t;
 

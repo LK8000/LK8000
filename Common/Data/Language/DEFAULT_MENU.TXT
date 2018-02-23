@@ -558,9 +558,8 @@ location=7
 mode=Nav3
 type=key
 data=9
-event=Run ext2
-# label=_@M2023_$(DISABLED)
-label=$(AC03)
+event=Service AIRSPACELU
+label=_@M2336_
 location=8
 
 mode=Nav3

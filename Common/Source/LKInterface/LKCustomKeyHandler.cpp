@@ -320,7 +320,10 @@ passthrough:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventWaypointDetails(_T("select"));
 		return true;
-
+    case ckAirspaceLookup:
+        PlayResource(TEXT("IDR_WAV_CLICK"));
+        dlgAirspaceSelect();
+        return true;
 	case ckPan:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventPan(_T("toggle"));
