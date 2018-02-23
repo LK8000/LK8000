@@ -59,10 +59,14 @@ static void UpdateTextboxProp(void)
   if (wp) {
     wp->SetText(edittext);
 
-    if(WaypointKeyRed > KEYRED_NONE)
-      wp->SetCaption(MsgToken(949));
+    if(WaypointKeyRed == KEYRED_WAYPOINT)
+      wp->SetCaption(MsgToken(1226));
     else
-      wp->SetCaption(TEXT("Text"));
+      if(WaypointKeyRed == KEYRED_AIRSPACE)
+        wp->SetCaption(MsgToken(68));
+      else
+        wp->SetCaption(MsgToken(711));
+
   }
 
 
