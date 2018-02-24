@@ -424,7 +424,7 @@ int Idx=0;
   {  
     case 0x10:               // keep alive
       RadioPara.Changed = true;
-      if(DeviceTimeout > 5)
+      if(DeviceTimeout > 2)
       {        
         ATR833RequestAllData(d);
         StartupStore(_T("ATR833 detected! %s"),  NEWLINE);
@@ -450,7 +450,7 @@ int Idx=0;
     break;
     /*****************************************************************************************/
     case 0x12:               // Standby Frequency
-      RadioPara.PassiveFrequency = (double)szCommand[1] +((double) (szCommand[2] * 5) / 1000.0);
+      RadioPara.PassiveFrequency = (double)szCommand[1] +(((double) szCommand[2] * 5.0) / 1000.0);
       _stprintf(szTempStr,_T("ATR833 Passive: %7.3fMHz"),  RadioPara.PassiveFrequency );
       if (iATR833DebugLevel)  StartupStore(_T("%s %s"),szTempStr, NEWLINE);
       Idx = SearchStation(RadioPara.PassiveFrequency);
@@ -463,7 +463,7 @@ int Idx=0;
     break;
     /*****************************************************************************************/
     case 0x13:               // Active Frequency
-      RadioPara.ActiveFrequency = (double) szCommand[1] +((double) (szCommand[2] * 5) /1000.0);
+      RadioPara.ActiveFrequency = (double) szCommand[1] +(((double) szCommand[2] * 5.0) /1000.0);
       _stprintf(szTempStr,_T("ATR833 Active:  %7.3fMHz"),  RadioPara.ActiveFrequency );
       Idx = SearchStation(RadioPara.ActiveFrequency);
       if(Idx != 0)_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
@@ -525,11 +525,15 @@ int Idx=0;
     /*****************************************************************************************/
     case 0x41:               // ErrorStatus
       processed  = 2;
+      if(szCommand[1] >0)   // request data on Error
+        ATR833RequestAllData(d);
+      StartupStore(_T("ATR833 Error Code 0x%x %s"),   szCommand[1], NEWLINE);
+
     break;
     /*****************************************************************************************/
     case 0x42:               // All Data
-      RadioPara.ActiveFrequency  = (double) szCommand[1] +((double) (szCommand[2] * 5) /1000.0);
-      RadioPara.PassiveFrequency = (double) szCommand[3] +((double) (szCommand[4] * 5) /1000.0);
+      RadioPara.ActiveFrequency  = (double) szCommand[1] +(((double) szCommand[2] * 5.0) /1000.0);
+      RadioPara.PassiveFrequency = (double) szCommand[3] +(((double) szCommand[4] * 5.0) /1000.0);
       RadioPara.Volume  = szCommand[5] ;
       RadioPara.Squelch = szCommand[6] ;
       RadioPara.Vox = szCommand[7];
