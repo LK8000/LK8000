@@ -38,10 +38,14 @@
 bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *uiArg);
 int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len);
 #ifdef TESTBENCH
-int  iATR833DebugLevel = 2;
+int  iATR833DebugLevel = 1;
 #else
 int  iATR833DebugLevel = 0;
 #endif
+
+
+
+BOOL ATR833_KeepAlive(PDeviceDescriptor_t d) ;
 
 BOOL ATR833Install(PDeviceDescriptor_t d){
 
@@ -55,6 +59,7 @@ BOOL ATR833Install(PDeviceDescriptor_t d){
   d->ParseNMEA      = NULL;
   d->ParseStream    = ATR833ParseString;
   d->PutRadioMode   = ATR833RadioMode;
+  d->HeartBeat      = ATR833_KeepAlive;  // called every 5s from UpdateMonitor to keep in contact with the ATR833
   RadioPara.Enabled8_33  = true;  
   if(iATR833DebugLevel) StartupStore(_T("ATR833 Install & Data Request%s"),  NEWLINE);
   ATR833RequestAllData(d);
@@ -236,6 +241,20 @@ BOOL ATR833RadioMode(PDeviceDescriptor_t d, int mode) {
       {
         Send_Command( d, 0x19 , 1, &Val);  // Send Activ
         if(iATR833DebugLevel) StartupStore(_T(". ATR833  Dual %ui  %s"), Val, NEWLINE);
+      }
+  return(TRUE);
+}
+
+
+
+BOOL ATR833_KeepAlive(PDeviceDescriptor_t d) {
+
+  if(d != NULL)
+    if(!d->Disabled)
+      if (d->Com)
+      {
+         Send_Command( d, 0x10 , 0, NULL);  // Send Keep alive
+         if(iATR833DebugLevel==2)  StartupStore(_T("ATR833 ==== Keep ALive  ====== %s"),  NEWLINE);
       }
   return(TRUE);
 }

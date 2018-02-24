@@ -110,6 +110,7 @@ typedef	struct DeviceDescriptor_t {
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
   BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
+  BOOL (*HeartBeat)(DeviceDescriptor_t     *d);
 
   int iSharedPort;
   int PortNumber;
@@ -200,6 +201,7 @@ BOOL devIsGPSSource(PDeviceDescriptor_t	d);
 BOOL devIsBaroSource(PDeviceDescriptor_t d);
 BOOL devIsRadio(PDeviceDescriptor_t d);
 
+BOOL devHeartBeat(PDeviceDescriptor_t d);
 BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH);
 BOOL devOnSysTicker(DeviceDescriptor_t *d);
 
