@@ -39,9 +39,9 @@ int DeviceTimeout = 2;
 bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *uiArg);
 int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len);
 #ifdef TESTBENCH
-int  iATR833DebugLevel = 1;
+int  iATR833DebugLevel = 2;
 #else
-int  iATR833DebugLevel = 0;
+int  iATR833DebugLevel = 1;
 #endif
 
 
@@ -57,7 +57,6 @@ BOOL ATR833Install(PDeviceDescriptor_t d){
   d->PutFreqActive  = ATR833PutFreqActive;
   d->PutFreqStandby = ATR833PutFreqStandby;
   d->StationSwap    = ATR833StationSwap;
-  d->ParseNMEA      = NULL;
   d->ParseStream    = ATR833ParseString;
   d->PutRadioMode   = ATR833RadioMode;
   d->HeartBeat      = ATR833_KeepAlive;  // called every 5s from UpdateMonitor to keep in contact with the ATR833
@@ -225,7 +224,7 @@ BOOL ATR833StationSwap(PDeviceDescriptor_t d) {
       if (d->Com)
       {
         Send_Command( d, 0x11 , 0, NULL);  // Send Activ
-        if(iATR833DebugLevel) StartupStore(_T(". ATR833  station swap %s"), NEWLINE);
+        if(iATR833DebugLevel) StartupStore(_T(". ATR833 send station swap %s"), NEWLINE);
       }
   return(TRUE);
 }
@@ -239,7 +238,7 @@ BOOL ATR833RadioMode(PDeviceDescriptor_t d, int mode) {
       if (d->Com)
       {
         Send_Command( d, 0x19 , 1, &Val);  // Send Activ
-        if(iATR833DebugLevel) StartupStore(_T(". ATR833  Dual %u  %s"), Val, NEWLINE);
+        if(iATR833DebugLevel) StartupStore(_T(". ATR833  send Dual %u  %s"), Val, NEWLINE);
       }
   return(TRUE);
 }
@@ -255,13 +254,13 @@ BOOL ATR833_KeepAlive(PDeviceDescriptor_t d) {
          if(DeviceTimeout < 10)
            DeviceTimeout++;
 
-         if(DeviceTimeout == 8)
+         if(DeviceTimeout == 4)
          {
            StartupStore(_T("ATR833 No Response !%s"),  NEWLINE);
            if(MsgCnt++ < 10) DoStatusMessage( _T(" ATR833"), MsgToken(959)); // ATR833T OFF
          }
          Send_Command( d, 0x10 , 0, NULL);  // Send Keep alive
-         if(iATR833DebugLevel==2)  StartupStore(_T("ATR833 ====== Keep ALive ====== %s"),  NEWLINE);
+         if(iATR833DebugLevel==2)  StartupStore(_T("ATR833 ====== Keep Alive ====== %s"),  NEWLINE);
       }
   return(TRUE);
 }
@@ -424,12 +423,11 @@ int Idx=0;
   switch (szCommand[0])
   {  
     case 0x10:               // keep alive
-   //   Send_Command( d, 0x10 , 0, NULL);  // reply
       RadioPara.Changed = true;
-      if(DeviceTimeout > 2)
+      if(DeviceTimeout > 5)
       {        
         ATR833RequestAllData(d);
-        if(DeviceTimeout == 8)    StartupStore(_T("ATR833 detected! %s"),  NEWLINE);
+        StartupStore(_T("ATR833 detected! %s"),  NEWLINE);
         if(MsgCnt++ < 10) DoStatusMessage( _T(" ATR833"), MsgToken(958)); // _@M947_ "found ATR833T"
       }
       DeviceTimeout = 0;
@@ -452,24 +450,26 @@ int Idx=0;
     break;
     /*****************************************************************************************/
     case 0x12:               // Standby Frequency
-      RadioPara.PassiveFrequency = (double)szCommand[1] +((double) szCommand[2] * 5.0 / 1000.0);
+      RadioPara.PassiveFrequency = (double)szCommand[1] +((double) (szCommand[2] * 5) / 1000.0);
       _stprintf(szTempStr,_T("ATR833 Passive: %7.3fMHz"),  RadioPara.PassiveFrequency );
-      if (iATR833DebugLevel)  StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
+      if (iATR833DebugLevel)  StartupStore(_T("%s %s"),szTempStr, NEWLINE);
       Idx = SearchStation(RadioPara.PassiveFrequency);
-      if(Idx != 0)
-        _sntprintf(RadioPara.PassiveName,NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
+      if(Idx != 0) _sntprintf(RadioPara.PassiveName,NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
+      else _sntprintf(RadioPara.PassiveName, NAME_SIZE, _T(""));
+      if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.PassiveName, NEWLINE);
 
       RadioPara.Changed = true;
       processed  = 3;
     break;
     /*****************************************************************************************/
     case 0x13:               // Active Frequency
-      RadioPara.ActiveFrequency = (double) szCommand[1] +((double) szCommand[2] * 5.0 /1000.0);
+      RadioPara.ActiveFrequency = (double) szCommand[1] +((double) (szCommand[2] * 5) /1000.0);
       _stprintf(szTempStr,_T("ATR833 Active:  %7.3fMHz"),  RadioPara.ActiveFrequency );
-      if (iATR833DebugLevel)StartupStore(_T(" %s %s"),szTempStr, NEWLINE);
       Idx = SearchStation(RadioPara.ActiveFrequency);
-      if(Idx != 0)
-        _sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
+      if(Idx != 0)_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
+      else _sntprintf(RadioPara.ActiveName, NAME_SIZE, _T(""));
+      if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.ActiveName, NEWLINE);
+
       RadioPara.Changed = true;
       processed  = 3;
     break;
@@ -539,7 +539,25 @@ int Idx=0;
         RadioPara.Enabled8_33  = true;
       RadioPara.Dual = szCommand[12];
       RadioPara.Changed = true;
-      if (iATR833DebugLevel) StartupStore(_T("All Data %s"),  NEWLINE);
+      if (iATR833DebugLevel) StartupStore(_T("ATR833 received all Data %s"),  NEWLINE);
+
+      _stprintf(szTempStr,_T("ATR833 Active: %7.3fMHz"),  RadioPara.ActiveFrequency );
+      Idx = SearchStation(RadioPara.ActiveFrequency);
+      if(Idx != 0)_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
+      else _sntprintf(RadioPara.ActiveName, NAME_SIZE, _T(""));
+      if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.ActiveName, NEWLINE);
+
+
+      _stprintf(szTempStr,_T("ATR833 Passive: %7.3fMHz"),  RadioPara.PassiveFrequency );
+      Idx = SearchStation(RadioPara.PassiveFrequency);
+      if(Idx != 0) _sntprintf(RadioPara.PassiveName,NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
+      else _sntprintf(RadioPara.PassiveName, NAME_SIZE, _T(""));
+      if (iATR833DebugLevel)  StartupStore(_T("%s %s %s"),szTempStr,RadioPara.PassiveName, NEWLINE);
+
+      if (iATR833DebugLevel) StartupStore(_T("ATR833 Volume %i %s"),   RadioPara.Volume, NEWLINE);
+      if (iATR833DebugLevel) StartupStore(_T("ATR833 Squelch %i %s"),   RadioPara.Squelch, NEWLINE);
+      if (iATR833DebugLevel) StartupStore(_T("ATR833 Vox %i %s"),   RadioPara.Vox , NEWLINE);
+      if (iATR833DebugLevel) StartupStore(_T("ATR833 Dual %i %s"),   RadioPara.Dual, NEWLINE);
       processed  = 13;
     break;
     /*****************************************************************************************/
