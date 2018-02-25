@@ -147,6 +147,12 @@ static int AirspaceTypeCompare(const void *elem1, const void *elem2 ){
   return (+1);
 }
 
+static int AirspaceDisabledCompare(const void *elem1, const void *elem2 ){
+  if(((AirspaceSelectInfo_t *)elem1)->airspace !=NULL)
+    if (((const AirspaceSelectInfo_t *)elem1)->airspace->Enabled())
+      return (+1);
+  return (-1);
+}
 
 static int AirspaceDirectionCompare(const void *elem1, const void *elem2 ){
 
@@ -254,12 +260,27 @@ static void UpdateList(void){
   FullFlag=false;
   if (TypeFilterIdx>0) {
 
-    qsort(AirspaceSelectInfo, NumberOfAirspaces,
-        sizeof(AirspaceSelectInfo_t), AirspaceTypeCompare);
-    for (i=0; i<(int)NumberOfAirspaces; i++){
-      if (!(AirspaceSelectInfo[i].Type == TypeFilterIdx-1)){
-        UpLimit = i;
-        break;
+
+    if(TypeFilterIdx == AIRSPACECLASSCOUNT+1)
+    {
+        qsort(AirspaceSelectInfo, NumberOfAirspaces,
+               sizeof(AirspaceSelectInfo_t), AirspaceDisabledCompare);
+      for (i=0; i<(int)NumberOfAirspaces; i++){
+        if (AirspaceSelectInfo[i].airspace->Enabled()  ){
+          UpLimit = i;
+          break;
+        }
+    }
+    }
+    else
+    {
+      qsort(AirspaceSelectInfo, NumberOfAirspaces,
+          sizeof(AirspaceSelectInfo_t), AirspaceTypeCompare);
+      for (i=0; i<(int)NumberOfAirspaces; i++){
+        if (!(AirspaceSelectInfo[i].Type == TypeFilterIdx-1)){
+          UpLimit = i;
+          break;
+        }
       }
     }
   }
@@ -599,7 +620,7 @@ static void OnFilterType(DataField *Sender,
     break;
     case DataField::daDec:
       if (TypeFilterIdx == 0)
-        TypeFilterIdx = AIRSPACECLASSCOUNT;		//Need to limit+1 because idx shifted with +1
+        TypeFilterIdx = AIRSPACECLASSCOUNT+1;		//Need to limit+1 because idx shifted with +1
       else
         TypeFilterIdx--;
       FilterMode(false);
@@ -610,6 +631,9 @@ static void OnFilterType(DataField *Sender,
   }
 
   if (TypeFilterIdx>0) {
+      if( TypeFilterIdx == AIRSPACECLASSCOUNT+1)
+        _tcscpy(sTmp, MsgToken(239));
+      else
 	LK_tcsncpy(sTmp, CAirspaceManager::GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0])-1);
   } else {
 	_tcscpy(sTmp, TEXT("*"));
