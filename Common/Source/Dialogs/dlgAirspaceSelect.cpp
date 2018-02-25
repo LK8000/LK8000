@@ -614,7 +614,7 @@ static void OnFilterType(DataField *Sender,
     break;
     case DataField::daInc:
       TypeFilterIdx++;
-      if (TypeFilterIdx > AIRSPACECLASSCOUNT) TypeFilterIdx = 0;		//Need to limit+1 because idx shifted with +1
+      if (TypeFilterIdx > (AIRSPACECLASSCOUNT+1)) TypeFilterIdx = 0;		//Need to limit+1 because idx shifted with +1
       FilterMode(false);
       UpdateList();
     break;
