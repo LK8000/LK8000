@@ -3086,14 +3086,15 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainContrast"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(TerrainContrast*100/255));
+
+    wp->GetDataField()->SetAsFloat(iround((TerrainContrast*100.0)/255.0));
     if (AutoContrast) wp->SetReadOnly(true); // needed on dlg startup
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainBrightness"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(TerrainBrightness*100/255));
+    wp->GetDataField()->SetAsFloat(iround((TerrainBrightness*100.0)/255.0));
     if (AutoContrast) wp->SetReadOnly(true); // needed on dlg startup
     wp->RefreshDisplay();
   }
@@ -4521,7 +4522,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainContrast"));
   if (wp) {
-    if (iround(TerrainContrast*100/255) != 
+    if (iround((TerrainContrast*100)/255) != 
 	wp->GetDataField()->GetAsInteger()) {
       TerrainContrast = (short)iround(wp->GetDataField()->GetAsInteger()*255.0/100);
     }
@@ -4529,7 +4530,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainBrightness"));
   if (wp) {
-    if (iround(TerrainBrightness*100/255) != 
+    if (iround((TerrainBrightness*100)/255) != 
 	wp->GetDataField()->GetAsInteger()) {
       TerrainBrightness = (short)iround(wp->GetDataField()->GetAsInteger()*255.0/100);
     }
