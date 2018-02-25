@@ -631,10 +631,10 @@ static void OnFilterType(DataField *Sender,
   }
 
   if (TypeFilterIdx>0) {
-      if( TypeFilterIdx == AIRSPACECLASSCOUNT+1)
-        _tcscpy(sTmp, MsgToken(239));
-      else
-	LK_tcsncpy(sTmp, CAirspaceManager::GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0])-1);
+    if( TypeFilterIdx == AIRSPACECLASSCOUNT+1)
+      _tcscpy(sTmp, MsgToken(239));
+    else
+      LK_tcsncpy(sTmp, CAirspaceManager::GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0])-1);
   } else {
 	_tcscpy(sTmp, TEXT("*"));
   }
