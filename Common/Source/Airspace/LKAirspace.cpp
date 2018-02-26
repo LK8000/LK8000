@@ -1987,8 +1987,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         // Airspace category
         dataStr=ASPnode.getAttribute(TEXT("CATEGORY"));
         if(dataStr==nullptr) {
-            StartupStore(TEXT("..  ASP with no CATEGORY attribute.%s"), NEWLINE);
-         //   Type = OTHER;
+            StartupStore(TEXT(".. Skipping ASP with no CATEGORY attribute.%s"), NEWLINE);
+            continue;
         }
         size_t len=_tcslen(dataStr);
         int Type=-1;
@@ -2043,18 +2043,17 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             if (_tcsicmp(dataStr,_T("WAVE"))==0) Type=WAVE; //WAVE
             break;
         case 'U':
-            if (_tcsicmp(dataStr,_T("UIR"))==0)  Type = OTHER;; //TODO: UIR missing in LK8000
+            if (_tcsicmp(dataStr,_T("UIR"))==0) continue; //TODO: UIR missing in LK8000
             break;
         default:
             break;
         } else {
-            StartupStore(TEXT(".. ASP with CATEGORY attribute empty.%s"), NEWLINE);
-            Type = OTHER;
+            StartupStore(TEXT(".. Skipping ASP with CATEGORY attribute empty.%s"), NEWLINE);
+            continue;
         }
         if(Type<0) {
-            StartupStore(TEXT("..  ASP with unknown CATEGORY attribute: %s.%s"), dataStr, NEWLINE);
-        //    continue;
-            Type = OTHER;
+            StartupStore(TEXT(".. Skipping ASP with unknown CATEGORY attribute: %s.%s"), dataStr, NEWLINE);
+            continue;
         }
 
         // Airspace country
@@ -2065,9 +2064,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         // Airspace name
         node=ASPnode.getChildNode(TEXT("NAME"),0);
         if(node.isEmpty() || (dataStr=node.getText(0))==nullptr || dataStr[0]=='\0') {
-            StartupStore(TEXT(".. ASP without NAME.%s"), NEWLINE); // don't skip if no name
-            if( dataStr[0]=='\0')
-              dataStr = _T("noname");
+            StartupStore(TEXT(".. Skipping ASP without NAME.%s"), NEWLINE);
+            continue;
         }
         TCHAR Name[NAME_SIZE + 1] = {0};
         LK_tcsncpy(Name, dataStr, NAME_SIZE);
