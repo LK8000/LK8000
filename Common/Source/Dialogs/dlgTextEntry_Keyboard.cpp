@@ -46,8 +46,6 @@ char ToUpper(char in)
 	if(in == '\xF6') return '\xD6'; // ö -> Ö
 	if(in == '\xFC') return '\xDC'; // ü -> Ü
 	if(in == '\xE4') return '\xC4'; // ä -> Ä
-	if(in == ' ') return '_';
-	if(in == '_') return '_';
 	return toupper(in);
 }
 
@@ -162,6 +160,24 @@ static void OnKey(WndButton* pWnd) {
 
 
 
+static void OnSpace(WndButton* pWnd) {
+    LKASSERT(pWnd);
+    if(!pWnd) return;
+
+    if (first) {
+        ClearText();
+        first = false;
+    }
+    PlayResource(TEXT("IDR_WAV_CLICK"));
+    TCHAR Caption = ' ';
+
+    if(WaypointKeyRed == KEYRED_NONE) Caption = '_';
+    if (cursor < max_width - 1) {
+        edittext[cursor++] = ToUpper(Caption);
+    }
+    UpdateTextboxProp();
+}
+
 
 static void OnDel(WndButton* pWnd)
 {
@@ -239,6 +255,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnClear),
   ClickNotifyCallbackEntry(OnOk),
   ClickNotifyCallbackEntry(OnDel),
+  ClickNotifyCallbackEntry(OnSpace),
   ClickNotifyCallbackEntry(OnDate),
   ClickNotifyCallbackEntry(OnTime),
   OnHelpCallbackEntry(OnHelpClicked),
@@ -368,8 +385,9 @@ IdenticalIndex = -1;
           {
             LKASSERT(k < MAX_TEXTENTRY);
             LKASSERT((k+Offset) < NameLen);
-            char ac = (char)ExtName[k+Offset];
-            char bc = (char)edittext[k];
+		    TCHAR ac = (TCHAR)ExtName[k+Offset];
+            TCHAR bc = (TCHAR)edittext[k];
+
             if(  ToUpper(ac) !=   ToUpper(bc) ) /* waypoint has string ?*/
             {
               CharEqual = false;
@@ -442,6 +460,7 @@ IdenticalIndex = -1;
           _stprintf(Found,_T("%s"),TmpName);
 	  for( i = 0; i < cursor; i++)
 	     Found[i+IdenticalOffset] = toupper(TmpName[i+IdenticalOffset]);
+
           wp->SetText(Found);
         }
       }
@@ -519,8 +538,8 @@ TCHAR AS_Name[255];
           {
             LKASSERT(k < MAX_TEXTENTRY);
             LKASSERT((k+Offset) < NameLen);
-            char ac = (char)AS_Name[k+Offset];
-            char bc = (char)edittext[k];
+            TCHAR ac = (TCHAR)AS_Name[k+Offset];
+            TCHAR bc = (TCHAR)edittext[k];
             if(  ToUpper(ac) !=   ToUpper(bc) ) /* waypoint has string ?*/
             {
               CharEqual = false;
@@ -575,7 +594,7 @@ TCHAR AS_Name[255];
     {
       if(EqCnt ==1)
       {
-        LKASSERT(IdenticalIndex<= (int)WayPointList.size());
+        LKASSERT(IdenticalIndex<= (int)airspaclist.size());
             wp->SetText(IdenticalName  );
       }
       else
@@ -586,8 +605,7 @@ TCHAR AS_Name[255];
 
           _stprintf(Found,_T("%s"),IdenticalName );
           for( i = 0; i < cursor; i++)
-             Found[i+IdenticalOffset] = toupper(IdenticalName[i+IdenticalOffset]);
-          wp->SetText(Found);
+             Found[i+IdenticalOffset] = ToUpper(IdenticalName[i+IdenticalOffset]);
         }
       }
     }
@@ -611,7 +629,7 @@ bool bA=false, bB=false, bC=false, bD=false, bE=false, bF=false, bG=false, bH=fa
 	 bJ=false, bK=false, bL=false, bM=false, bN=false, bO=false, bP=false, bQ=false, bR=false,
 	 bS=false, bT=false, bU=false, bV=false, bW=false, bX=false, bY=false, bZ=false, b0=false,
 	 b1=false, b2=false, b3=false, b4=false, b5=false, b6=false, b7=false, b8=false, b9=false,
-	 bUe=false, bOe=false, bAe=false, bDot=false, bMin=false, bAt=false,  bUn=false ;
+	 bUe=false, bOe=false, bAe=false, bDot=false, bMin=false, bAt=false,  bUn=false,  bSpace=false ;
 
 unsigned int i=0;
 
@@ -665,7 +683,7 @@ unsigned int i=0;
 	  case '-':  bMin = true; break;
 	  case '@':  bAt  = true; break;
 	  case '_':  bUn  = true; break;
-//	  case ' ':  bSpace = true; break;
+	  case ' ':  bSpace = true; break;
 
 	  default: break;
 	}
@@ -717,7 +735,7 @@ unsigned int i=0;
 
 	wb =  (WndButton*) wf->FindByName(TEXT("prpDot"))   ; if(wb != NULL) wb->SetVisible(bDot);
 	wb =  (WndButton*) wf->FindByName(TEXT("prpUn"))    ; if(wb != NULL) wb->SetVisible(bUn);
-	wb =  (WndButton*) wf->FindByName(TEXT("prpSpace")) ; if(wb != NULL) wb->SetVisible(bUn);
+	wb =  (WndButton*) wf->FindByName(TEXT("prpSpace")) ; if(wb != NULL) wb->SetVisible(bSpace);
 
 	wb =  (WndButton*) wf->FindByName(TEXT("prpMin"))   ; if(wb != NULL) wb->SetVisible(bMin);
 	wb =  (WndButton*) wf->FindByName(TEXT("prpAt"))    ; if(wb != NULL) wb->SetVisible(bAt);
