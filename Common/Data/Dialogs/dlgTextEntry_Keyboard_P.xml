@@ -48,7 +48,7 @@
     <WndButton  Name="prp8" Caption="8"    X="40" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton  Name="prp9"  Caption="9"    X="80" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton  Name="prp0" Caption="0"    X="120" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpSpace"  Caption="_@M831_"    X="160" Y="230" Width="80"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton  Name="prpSpace"  Caption="_@M831_"    X="160" Y="230" Width="80"  Height="35" Font="2" OnClickNotify="OnSpace"/>
 
     <WndButton  Name="prpDate" Caption="_@M219_"    X="0" Y="265" Width="60"  Height="35" Font="2" OnClickNotify="OnDate"/>
     <WndButton  Name="prpTime" Caption="_@M720_"    X="60" Y="265" Width="60"  Height="35" Font="2" OnClickNotify="OnTime"/>

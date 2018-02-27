@@ -51,7 +51,7 @@
     <!--  <WndButton   Name="prpUn" Caption="_"    X="300" Y="142" Width="30"  Height="39" Font="2" OnClickNotify="OnKey"/>	-->
     <WndButton   Name="prpDate" Caption="_@M219_" X="0"   Y="181" Width="60"  Height="39" Font="2" OnClickNotify="OnDate"/>	
     <WndButton   Name="prpTime" Caption="_@M720_" X="60"  Y="181" Width="60"  Height="39" Font="2" OnClickNotify="OnTime"/>
-    <WndButton   Name="prpSpace" Caption="_@M831_" X="120" Y="181" Width="80"  Height="39" Font="2" OnClickNotify="OnKey"/>
+    <WndButton   Name="prpSpace" Caption="_@M831_" X="120" Y="181" Width="80"  Height="39" Font="2" OnClickNotify="OnSpace"/>
     <WndButton   Name="prpClear" Caption="_@M180_" X="200" Y="181" Width="60"  Height="39" Font="2" OnClickNotify="OnClear"/>
     <WndButton   Name="prpOk" Caption="OK" X="260" Y="181" Width="58"  Height="39" Font="2" OnClickNotify="OnOk"/>
   </WndForm>
