@@ -2067,6 +2067,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         // Airspace name
         node=ASPnode.getChildNode(TEXT("NAME"),0);
         if(node.isEmpty() || (dataStr=node.getText(0))==nullptr || dataStr[0]=='\0') {
+
             StartupStore(TEXT(".. ASP without NAME.%s"), NEWLINE); // don't skip if no name
            if( dataStr == nullptr) continue;
            if( dataStr[0]=='\0')
