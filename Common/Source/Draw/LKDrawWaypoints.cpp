@@ -693,10 +693,12 @@ turnpoint:
       else
       {
         RECT rctmp;
+        const unsigned IconSize = (UseHiresBitmap ? IBLSCALE(10) : 20);
         rctmp.left = E->Pos.x;
         rctmp.top = E->Pos.y;
-        rctmp.right =  E->Pos.x ;
-        rctmp.bottom = E->Pos.y;
+
+        rctmp.right =  E->Pos.x-IconSize/2 ;
+        rctmp.bottom = E->Pos.y+IconSize/2;
         DrawMAPWaypointPictoUTF8( Surface, rctmp, E->style);
       }
       }
@@ -838,7 +840,6 @@ if (pPict ==NULL) return Col;
 return Col;
 }
 
-extern void UTF8WaypointPictorial(LKSurface& Surface, const RECT& rc, TCHAR *Pict ,const LKColor& Color);
 
 
 
@@ -857,8 +858,6 @@ const auto OldColor = Surface.SetTextColor(Color);
 
 void DrawMAPWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, int Style)
 {
-//  UTF8WaypointPictorial( Surface, rc, (TCHAR*) _T("o") ,RGB_DARKBLUE);
-
 TCHAR Pictor;
   LKColor Col =  GetUTF8WaypointSymbol((TCHAR*)&Pictor, Style);
   UTF8DrawWaypointPictorial( Surface, rc, &Pictor ,Col);
@@ -877,7 +876,8 @@ if (wp == NULL) return;
 
   const auto OldCol = Surface.SetTextColor(NewCol);
   int xtext = Surface.GetTextWidth(Pict);
-  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , DLGSCALE(2), Pict);
+  int ytext = Surface.GetTextHeight(Pict);
+  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , rc.top+(rc.bottom-rc.top-1.1*ytext)/2 , Pict);
   Surface.SelectObject(OldFont);
   Surface.SetTextColor(OldCol);
 }
