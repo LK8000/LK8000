@@ -660,6 +660,29 @@ static unsigned int DrawListIndex=0;
 
 // Painting elements after init
 
+
+
+void UTF8WaypointPictorial(LKSurface& Surface, const RECT& rc, TCHAR *Pict ,const LKColor& Color)
+{
+if (Pict == NULL) return;
+
+const auto OldColor = Surface.SetTextColor(Color);
+  int xtext = Surface.GetTextWidth(Pict);
+  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , DLGSCALE(2), Pict);
+  Surface.SetTextColor(OldColor);
+}
+
+
+
+extern LKColor GetUTF8WaypointSymbol(TCHAR* pPict, int Style);
+
+void DrawWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
+{
+TCHAR Pictor;
+  LKColor Col =  GetUTF8WaypointSymbol((TCHAR*)&Pictor, wp->Style);
+  UTF8WaypointPictorial( Surface, rc, (TCHAR*)&Pictor ,Col);
+}
+
 static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     if (!Sender) {
         return;
@@ -698,7 +721,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         if (WayPointCalc[idx].IsLandable) {
             MapWindow::DrawRunway(Surface, &WayPointList[idx], PictoRect, nullptr, 1 , true);
         } else {
-            MapWindow::DrawWaypointPicto(Surface, PictoRect, &WayPointList[idx]);
+           MapWindow::DrawWaypointPicto(Surface, PictoRect, &WayPointList[idx]);
         }
 
         // Draw Name

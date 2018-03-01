@@ -130,6 +130,14 @@
 #define COM_DISCARD 0
 // en-/disable Com Port discard for Testbench on PC
 
+#ifdef  UNDER_CE
+#define UTF8PICTORIALS  false
+#define  FLARM_PICTO_THREADSAFE
+#else
+#define  UTF8PICTORIALS  true
+#define  FLARM_PICTO_THREADSAFE
+#endif
+
 // ----------------------------------------------------------------------------------------
 //
 // OPTIONALs not in use within official LK versions, but still available for custom version

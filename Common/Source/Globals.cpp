@@ -515,6 +515,10 @@ void Globals_Init(void) {
   Appearance.BestCruiseTrack=ctBestCruiseTrackAltA;
   // Landables style
   Appearance.IndLandable=wpLandableDefault;
+
+  Appearance.UTF8Pictorials = UTF8PICTORIALS;
+
+
   // Black/White inversion
   Appearance.InverseInfoBox=false;
   InverseInfoBox_Config=false;

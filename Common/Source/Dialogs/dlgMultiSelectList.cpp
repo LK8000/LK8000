@@ -573,7 +573,7 @@ FLARM_TRAFFIC* pFlarm;
             LKASSERT(pFlarm);
             BuildFLARMText(pFlarm,text1,text2);
             ShowTextEntries(Surface, rc,  text1, text2);
-#define FLARM_PICTO_THREADSAFE
+
 #ifdef FLARM_PICTO_THREADSAFE
             MapWindow::DrawFlarmPicto(Surface, rc, pFlarm);   // draw MAP icons
 #else

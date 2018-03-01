@@ -23,7 +23,7 @@ MapWaypointLabel_t MapWaypointLabelList[200];
 MapWaypointLabel_t* SortedWaypointLabelList[200];
 
 size_t MapWaypointLabelListCount=0;
-
+void DrawMAPWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, int Style);
 
 inline bool MapWaypointLabelListCompare(const MapWaypointLabel_t* elem1, const MapWaypointLabel_t* elem2 ){
   // Now sorts elements in task preferentially.
@@ -657,12 +657,23 @@ turnpoint:
 
 		} // switch estyle
 	} // below zoom threshold
-
-    if(pWptBmp) {
-        // TODO
-        const unsigned IconSize = (UseHiresBitmap ? IBLSCALE(10) : 20); 
-        pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
-    }
+      if(Appearance.UTF8Pictorials == false)
+      {
+        if(pWptBmp) {
+            // TODO
+            const unsigned IconSize = (UseHiresBitmap ? IBLSCALE(10) : 20);
+            pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
+        }
+      }
+      else
+      {
+        RECT rctmp;
+        rctmp.left = E->Pos.x;
+        rctmp.top = E->Pos.y;
+        rctmp.right =  E->Pos.x ;
+        rctmp.bottom = E->Pos.y;
+        DrawMAPWaypointPictoUTF8( Surface, rctmp, E->style);
+      }
       }
     }
   }
@@ -675,6 +686,7 @@ turnpoint:
 //
 
 void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
+
     if (!hLKPictori)
         return;
     const int cx = rc.right - rc.left;
@@ -694,8 +706,166 @@ void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
     Surface.DrawBitmapCopy(x, y, cx, cy, hLKPictori, cxSrc, cySrc);
 }
 
+
+
+
+
+LKColor GetUTF8WaypointSymbol(TCHAR* pPict, const int Style)
+{
+
+LKColor Col = RGB_BLACK;
+if (pPict ==NULL) return Col;
+  switch(Style)
+  {
+    case STYLE_NORMAL:
+      _stprintf(pPict, _T("◎"));
+      Col = RGB_DARKGREEN;
+    break;
+
+    // These are not used here in fact
+    case STYLE_AIRFIELDGRASS:
+    case STYLE_OUTLANDING:
+    case STYLE_GLIDERSITE:
+    case STYLE_AIRFIELDSOLID:
+      _stprintf(pPict, _T("✈"));
+      Col = LKColor(131,111,255);
+    break;
+
+    case STYLE_MTPASS:
+      _stprintf(pPict, _T("◠"));
+      Col = RGB_ORANGE;
+    break;
+
+    case STYLE_MTTOP:
+      _stprintf(pPict, _T("▴"));
+      Col = RGB_BLACK;
+    break;
+
+    case STYLE_SENDER:
+      _stprintf(pPict, _T("⭻"));
+      Col = RGB_DARKGREY;
+    break;
+
+    case STYLE_VOR:
+      _stprintf(pPict, _T("⬡"));
+      Col = RGB_DARKGREY;
+    break;
+
+    case STYLE_NDB:
+      _stprintf(pPict, _T("✺"));
+      Col = RGB_DARKGREY;
+    break;
+
+    case STYLE_COOLTOWER:
+      _stprintf(pPict, _T("♜"));
+      Col = LKColor(82,82,82);
+    break;
+
+    case STYLE_DAM:
+      _stprintf(pPict, _T("⛊"));
+      Col = RGB_DARKBLUE;
+    break;
+
+    case STYLE_TUNNEL:
+      _stprintf(pPict, _T("∩"));
+      Col = RGB_BLACK;
+    break;
+
+    case STYLE_BRIDGE:
+      _stprintf(pPict, _T("⋒"));
+      Col = RGB_DARKGREY;
+    break;
+
+    case STYLE_POWERPLANT:
+      _stprintf(pPict, _T("⚡"));
+      Col = LKColor(82,82,82);
+    break;
+
+    case STYLE_CASTLE:
+      _stprintf(pPict, _T("⛪"));
+      Col = LKColor(139,54,38);
+    break;
+
+    case STYLE_INTERSECTION:
+      _stprintf(pPict, _T("⛌"));
+      Col = RGB_BLACK;
+    break;
+
+    case STYLE_TRAFFIC:
+      _stprintf(pPict, _T("⛟"));
+      Col = RGB_BLACK;
+    break;
+    case STYLE_THERMAL:
+      _stprintf(pPict, _T("♨"));
+      Col = LKColor(210,105,30);
+    break;
+
+    case STYLE_MARKER:
+      _stprintf(pPict, _T("⚑"));
+      Col = LKColor(199,21,133);
+    break;
+
+    default:
+      _stprintf(pPict, _T("✈"));
+      Col = LKColor(199,21,133);
+    break;
+  } // switch estyle
+return Col;
+}
+
+extern void UTF8WaypointPictorial(LKSurface& Surface, const RECT& rc, TCHAR *Pict ,const LKColor& Color);
+
+
+
+void UTF8DrawWaypointPictorial(LKSurface& Surface, const RECT& rc,const TCHAR *Pict ,const LKColor& Color)
+{
+if (Pict == NULL) return;
+
+const auto OldColor = Surface.SetTextColor(Color);
+  int xtext = Surface.GetTextWidth(Pict);
+  int ytext = Surface.GetTextHeight(Pict);
+  Surface.DrawText(rc.left -xtext/2 , rc.top-ytext/2, Pict);
+  Surface.SetTextColor(OldColor);
+}
+
+
+
+void DrawMAPWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, int Style)
+{
+//  UTF8WaypointPictorial( Surface, rc, (TCHAR*) _T("o") ,RGB_DARKBLUE);
+
+TCHAR Pictor;
+  LKColor Col =  GetUTF8WaypointSymbol((TCHAR*)&Pictor, Style);
+  UTF8DrawWaypointPictorial( Surface, rc, &Pictor ,Col);
+}
+
+
+void UTF8WaypointPictorial(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp )
+{
+if (wp == NULL) return;
+  TCHAR Pict[10];
+  extern    LKColor GetUTF8WaypointSymbol(TCHAR* pPict, const int Style);
+
+  const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
+
+  LKColor NewCol = GetUTF8WaypointSymbol((TCHAR*) &Pict, wp->Style);
+
+  const auto OldCol = Surface.SetTextColor(NewCol);
+  int xtext = Surface.GetTextWidth(Pict);
+  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , DLGSCALE(2), Pict);
+  Surface.SelectObject(OldFont);
+  Surface.SetTextColor(OldCol);
+}
+
+
+
+
 void MapWindow::DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
 {
+
+  if(Appearance.UTF8Pictorials)
+    return UTF8WaypointPictorial( Surface,  rc, wp);
+
     const LKIcon* pWptBmp = NULL;
 
 switch(wp->Style) {
