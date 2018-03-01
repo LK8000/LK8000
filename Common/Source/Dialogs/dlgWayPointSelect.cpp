@@ -675,15 +675,6 @@ const auto OldColor = Surface.SetTextColor(Color);
 
 
 
-extern LKColor GetUTF8WaypointSymbol(TCHAR* pPict, int Style);
-
-void DrawWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
-{
-TCHAR Pictor;
-  LKColor Col =  GetUTF8WaypointSymbol((TCHAR*)&Pictor, wp->Style);
-  UTF8WaypointPictorial( Surface, rc, (TCHAR*)&Pictor ,Col);
-}
-
 static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     if (!Sender) {
         return;
