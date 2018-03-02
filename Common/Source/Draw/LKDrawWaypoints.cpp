@@ -694,9 +694,9 @@ turnpoint:
       {
         RECT rctmp;
         int ytext = Surface.GetTextHeight(_T("X"));
-        rctmp.left = E->Pos;
-        rctmp.top = E->Pos.y-ytext ;;
-        rctmp.right =  E->Pos.x;
+        rctmp.left   = E->Pos.x;
+        rctmp.top    = E->Pos.y-ytext ;;
+        rctmp.right  = E->Pos.x;
         rctmp.bottom = E->Pos.y;
 
         DrawMAPWaypointPictoUTF8( Surface, rctmp, E->style);
