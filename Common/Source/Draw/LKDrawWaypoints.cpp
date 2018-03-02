@@ -794,7 +794,7 @@ if (pPict ==NULL) return Col;
     break;
 
     case STYLE_TUNNEL:
-      _stprintf(pPict, _T("∩"));
+      _stprintf(pPict, _T("⯊"));
       Col = RGB_BLACK;
     break;
 
@@ -837,6 +837,9 @@ if (pPict ==NULL) return Col;
       Col = LKColor(199,21,133);
     break;
   } // switch estyle
+#ifdef KOBO
+  Col = LKColor(30,30,30);
+#endif
 return Col;
 }
 
