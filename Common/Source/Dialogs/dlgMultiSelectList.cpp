@@ -422,7 +422,7 @@ int j;
       _tcscpy(Comment, TEXT(""));
   }
 
-  if (WayPointCalc[idx].IsAirport) {
+  if (_tcslen(WayPointList[idx].Freq) > 0) {
       // remove spaces from frequency
       for (j = 1; j < (CUPSIZE_FREQ); j++)
           if (WayPointList[idx].Freq[CUPSIZE_FREQ - j] == ' ')
