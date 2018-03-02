@@ -422,7 +422,7 @@ int j;
       _tcscpy(Comment, TEXT(""));
   }
 
-  if (WayPointCalc[idx].IsAirport) {
+  if (_tcslen(WayPointList[idx].Freq) > 0) {
       // remove spaces from frequency
       for (j = 1; j < (CUPSIZE_FREQ); j++)
           if (WayPointList[idx].Freq[CUPSIZE_FREQ - j] == ' ')
@@ -646,19 +646,12 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
               }
               DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,
                               WayPointList[idx].Longitude, &Distance, NULL);
-
+              BuildLandableText(idx, Distance,text1,text2);
               if (WayPointCalc[idx].IsLandable) {
                   MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 1.5, true);
-
-                  BuildLandableText(idx, Distance,text1,text2);
               }// waypoint isLandable
               else {
                   MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[idx]);
-                  _sntprintf(text1,MAX_LEN, TEXT("%s %s"), WayPointList[idx].Name, Comment);
-                  _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s (%i%s)"), Distance * DISTANCEMODIFY,
-                            Units::GetDistanceName(),
-                            (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
-                            Units::GetAltitudeName());
               }
               ShowTextEntries(Surface, rc,  text1, text2);
             }
