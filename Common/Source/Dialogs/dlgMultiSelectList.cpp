@@ -591,8 +591,11 @@ FLARM_TRAFFIC* pFlarm;
           _sntprintf(text1,MAX_LEN,_T("%s:"),gettext(_T("_@M700_"))); //_@M700_ "Team code"
           _sntprintf(text2,MAX_LEN,_T("%s"), CALCULATED_INFO.OwnTeamCode );
             ShowTextEntries(Surface, rc,  text1, text2);
+            if(Appearance.UTF8Pictorials)
+              UTF8Pictorial( Surface,  rc, _T("⚑"), RGB_VDARKRED);
+            else
+              UTF8Pictorial( Surface,  rc, _T("@"), RGB_VDARKRED);
 
-            UTF8Pictorial( Surface,  rc, _T("@"), RGB_ORANGE);
             break;
 #endif
 #ifdef ORACLE_MS
@@ -606,7 +609,10 @@ FLARM_TRAFFIC* pFlarm;
             else
               _sntprintf(text2,MAX_LEN,_T("%s"),   gettext(_T("_@M1690_"))); //_@M1690_ "THE LK8000 ORACLE"
             ShowTextEntries(Surface, rc,  text1, text2);
-            UTF8Pictorial( Surface,  rc, _T("?"),RGB_BLUE);
+            if(Appearance.UTF8Pictorials)
+              UTF8Pictorial( Surface,  rc, _T("♕"),RGB_BLUE);
+            else
+              UTF8Pictorial( Surface,  rc, _T("?"),RGB_BLUE);
             break;
 #endif
 #ifdef OWN_POS_MS
@@ -654,13 +660,14 @@ FLARM_TRAFFIC* pFlarm;
               DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,
                               WayPointList[idx].Longitude, &Distance, NULL);
               BuildLandableText(idx, Distance,text1,text2);
+              ShowTextEntries(Surface, rc,  text1, text2);
               if (WayPointCalc[idx].IsLandable) {
                   MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 1.5, true);
               }// waypoint isLandable
               else {
                   MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[idx]);
               }
-              ShowTextEntries(Surface, rc,  text1, text2);
+
             }
             break;
             /************************************************************************************************
