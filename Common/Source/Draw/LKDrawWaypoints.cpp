@@ -693,12 +693,12 @@ turnpoint:
       else
       {
         RECT rctmp;
-        const unsigned IconSize = (UseHiresBitmap ? IBLSCALE(10) : 20);
-        rctmp.left = E->Pos.x;
-        rctmp.top = E->Pos.y;
+        int ytext = Surface.GetTextHeight(_T("X"));
+        rctmp.left = E->Pos;
+        rctmp.top = E->Pos.y-ytext ;;
+        rctmp.right =  E->Pos.x;
+        rctmp.bottom = E->Pos.y;
 
-        rctmp.right =  E->Pos.x-IconSize/2 ;
-        rctmp.bottom = E->Pos.y+IconSize/2;
         DrawMAPWaypointPictoUTF8( Surface, rctmp, E->style);
       }
       }
@@ -850,7 +850,7 @@ if (Pict == NULL) return;
 const auto OldColor = Surface.SetTextColor(Color);
   int xtext = Surface.GetTextWidth(Pict);
   int ytext = Surface.GetTextHeight(Pict);
-  Surface.DrawText(rc.left -xtext/2 , rc.top-ytext/2, Pict);
+  Surface.DrawText(rc.left -xtext/2 , rc.top+ytext/2, Pict);
   Surface.SetTextColor(OldColor);
 }
 
@@ -877,7 +877,7 @@ if (wp == NULL) return;
   const auto OldCol = Surface.SetTextColor(NewCol);
   int xtext = Surface.GetTextWidth(Pict);
   int ytext = Surface.GetTextHeight(Pict);
-  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , rc.top+(rc.bottom-rc.top-1.1*ytext)/2 , Pict);
+  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , rc.top+(rc.bottom-rc.top-ytext)/2 , Pict);
   Surface.SelectObject(OldFont);
   Surface.SetTextColor(OldCol);
 }
