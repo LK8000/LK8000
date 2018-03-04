@@ -200,7 +200,7 @@ static void PrepareData(void){
   if (NumberOfAirspaces==0) return;
 
 
-  _stprintf(sNameFilter,_T(""));
+  _tcscpy(sNameFilter,_T(""));
   AirspaceSelectInfo = (AirspaceSelectInfo_t*)
     malloc(sizeof(AirspaceSelectInfo_t) * NumberOfAirspaces);
 
