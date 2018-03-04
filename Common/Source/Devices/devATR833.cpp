@@ -455,7 +455,7 @@ int Idx=0;
       if (iATR833DebugLevel)  StartupStore(_T("%s %s"),szTempStr, NEWLINE);
       Idx = SearchStation(RadioPara.PassiveFrequency);
       if(Idx != 0) _sntprintf(RadioPara.PassiveName,NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
-      else _sntprintf(RadioPara.PassiveName, NAME_SIZE, _T(""));
+      else _sntprintf(RadioPara.PassiveName, NAME_SIZE, _T(" "));
       if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.PassiveName, NEWLINE);
 
       RadioPara.Changed = true;
@@ -467,7 +467,7 @@ int Idx=0;
       _stprintf(szTempStr,_T("ATR833 Active:  %7.3fMHz"),  RadioPara.ActiveFrequency );
       Idx = SearchStation(RadioPara.ActiveFrequency);
       if(Idx != 0)_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
-      else _sntprintf(RadioPara.ActiveName, NAME_SIZE, _T(""));
+      else _sntprintf(RadioPara.ActiveName, NAME_SIZE, _T(" "));
       if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.ActiveName, NEWLINE);
 
       RadioPara.Changed = true;
@@ -548,14 +548,14 @@ int Idx=0;
       _stprintf(szTempStr,_T("ATR833 Active: %7.3fMHz"),  RadioPara.ActiveFrequency );
       Idx = SearchStation(RadioPara.ActiveFrequency);
       if(Idx != 0)_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
-      else _sntprintf(RadioPara.ActiveName, NAME_SIZE, _T(""));
+      else _sntprintf(RadioPara.ActiveName, NAME_SIZE, _T(" "));
       if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.ActiveName, NEWLINE);
 
 
       _stprintf(szTempStr,_T("ATR833 Passive: %7.3fMHz"),  RadioPara.PassiveFrequency );
       Idx = SearchStation(RadioPara.PassiveFrequency);
       if(Idx != 0) _sntprintf(RadioPara.PassiveName,NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
-      else _sntprintf(RadioPara.PassiveName, NAME_SIZE, _T(""));
+      else _sntprintf(RadioPara.PassiveName, NAME_SIZE, _T(" "));
       if (iATR833DebugLevel)  StartupStore(_T("%s %s %s"),szTempStr,RadioPara.PassiveName, NEWLINE);
 
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Volume %i %s"),   RadioPara.Volume, NEWLINE);
