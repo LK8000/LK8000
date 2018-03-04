@@ -490,7 +490,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   //#endif
 
   _stscanf(nString,
-	  TEXT("%hu,%lf,%lf,%lf,%hu,%lx,%lf,%lf,%lf,%lf,%hu"),
+	  TEXT("%hu,%lf,%lf,%lf,%hu,%x,%lf,%lf,%lf,%lf,%hu"),
 	  &pGPS->FLARM_Traffic[flarm_slot].AlarmLevel, // unsigned short 0
 	  &pGPS->FLARM_Traffic[flarm_slot].RelativeNorth, //  1	
 	  &pGPS->FLARM_Traffic[flarm_slot].RelativeEast, //   2
