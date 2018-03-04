@@ -199,8 +199,7 @@ static void PrepareData(void){
 
   if (NumberOfAirspaces==0) return;
 
-
-  _tcscpy(sNameFilter,_T(""));
+  sNameFilter[0] =_T('\0');
   AirspaceSelectInfo = (AirspaceSelectInfo_t*)
     malloc(sizeof(AirspaceSelectInfo_t) * NumberOfAirspaces);
 
