@@ -745,7 +745,7 @@ if (pPict ==NULL) return Col;
   switch(Style)
   {
     case STYLE_NORMAL:
-      _stprintf(pPict, _T("◎"));
+      _stprintf(pPict, MsgToken(2361));    // _@M2361_ "◎"
       Col = RGB_DARKGREEN;
     break;
 
@@ -754,88 +754,89 @@ if (pPict ==NULL) return Col;
     case STYLE_OUTLANDING:
     case STYLE_GLIDERSITE:
     case STYLE_AIRFIELDSOLID:
-      _stprintf(pPict, _T("✈"));
+      _stprintf(pPict, MsgToken(2362));      // _@M2362_ "✈"
       Col = LKColor(131,111,255);
     break;
 
     case STYLE_MTPASS:
-      _stprintf(pPict, _T("◠"));
+      _stprintf(pPict, MsgToken(2363));      // _@M2363_ "◠"
       Col = RGB_ORANGE;
     break;
 
     case STYLE_MTTOP:
-      _stprintf(pPict, _T("▴"));
+      _stprintf(pPict,MsgToken(2364));    //  _@M2364_ "▴"
       Col = RGB_BLACK;
     break;
 
     case STYLE_SENDER:
-      _stprintf(pPict, _T("⭻"));
+      _stprintf(pPict, MsgToken(2365));    // _@M2365_ "⭻"
       Col = RGB_DARKGREY;
     break;
 
     case STYLE_VOR:
-      _stprintf(pPict, _T("⬡"));
+      _stprintf(pPict, MsgToken(2366));  // _@M2366_ "⬡"
       Col = RGB_DARKGREY;
     break;
 
     case STYLE_NDB:
-      _stprintf(pPict, _T("✺"));
+      _stprintf(pPict, MsgToken(2367));    // _@M2367_ "✺"
       Col = RGB_DARKGREY;
     break;
 
     case STYLE_COOLTOWER:
-      _stprintf(pPict, _T("♜"));
+      _stprintf(pPict, MsgToken(2368));    //  _@M2368_ "♜"
       Col = LKColor(82,82,82);
     break;
 
     case STYLE_DAM:
-      _stprintf(pPict, _T("⛊"));
+      _stprintf(pPict, MsgToken(2369)); // _@M2369_ "⛊"
       Col = RGB_DARKBLUE;
     break;
 
     case STYLE_TUNNEL:
-      _stprintf(pPict, _T("⯊"));
+      _stprintf(pPict, MsgToken(2370));  // _@M2370_ "⯊"
       Col = RGB_BLACK;
     break;
 
     case STYLE_BRIDGE:
-      _stprintf(pPict, _T("⋒"));
+      _stprintf(pPict, MsgToken(2371));   // _@M2371_ "⋒"
       Col = RGB_DARKGREY;
     break;
 
     case STYLE_POWERPLANT:
-      _stprintf(pPict, _T("⚡"));
+      _stprintf(pPict, MsgToken(2372));    // _@M2372_ "⚡"
       Col = LKColor(82,82,82);
     break;
 
     case STYLE_CASTLE:
-      _stprintf(pPict, _T("⛪"));
+      _stprintf(pPict, MsgToken(2373));  // _@M2373_ "⛪"
       Col = LKColor(139,54,38);
     break;
 
     case STYLE_INTERSECTION:
-      _stprintf(pPict, _T("⛌"));
+      _stprintf(pPict, MsgToken(2374));  // _@M2374_ "⛌"
       Col = RGB_BLACK;
     break;
 
     case STYLE_TRAFFIC:
-      _stprintf(pPict, _T("⛟"));
+      _stprintf(pPict, MsgToken(2375));   // _@M2375_ "⛟"
       Col = RGB_BLACK;
     break;
     case STYLE_THERMAL:
-      _stprintf(pPict, _T("♨"));
+      _stprintf(pPict, MsgToken(2376));   // _@M2376_ "♨"
       Col = LKColor(210,105,30);
     break;
 
     case STYLE_MARKER:
-      _stprintf(pPict, _T("⚑"));
+      _stprintf(pPict, MsgToken(2377));  // _@M2377_ "⚑"
       Col = LKColor(199,21,133);
     break;
 
     default:
-      _stprintf(pPict, _T("✈"));
+      _stprintf(pPict, MsgToken(2378));  // _@M2378_ "✈"
       Col = LKColor(199,21,133);
     break;
+
   } // switch estyle
 #ifdef KOBO
   Col = LKColor(30,30,30);
