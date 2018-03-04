@@ -836,9 +836,9 @@ const auto OldColor = Surface.SetTextColor(Color);
 
 void DrawMAPWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, int Style)
 {
-TCHAR Pictor;
+TCHAR Pictor[10];
   LKColor Col =  GetUTF8WaypointSymbol((TCHAR*)&Pictor, Style);
-  UTF8DrawWaypointPictorial( Surface, rc, &Pictor ,Col);
+  UTF8DrawWaypointPictorial( Surface, rc, Pictor ,Col);
 }
 
 
