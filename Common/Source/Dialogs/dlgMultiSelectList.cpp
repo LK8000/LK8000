@@ -16,6 +16,7 @@
 #include "Draw/ScreenProjection.h"
 #include "InputEvents.h"
 #include "Sound/Sound.h"
+#include "LKStyle.h"
 
 #include "Dialogs.h"
 
@@ -434,6 +435,9 @@ int j;
       else
         _sntprintf(text1,MAX_LEN, TEXT("%s"), WayPointList[idx].Name);
   } else {
+      if( WayPointList[idx].Style ==  STYLE_THERMAL)
+        _sntprintf(text1, MAX_LEN, TEXT("%s: %s"), MsgToken(905), WayPointList[idx].Name);
+      else
       if (WayPointList[idx].Comment != NULL)
         _sntprintf(text1, MAX_LEN, TEXT("%s %s"), WayPointList[idx].Name, Comment);
       else
