@@ -662,18 +662,6 @@ static unsigned int DrawListIndex=0;
 
 
 
-void UTF8WaypointPictorial(LKSurface& Surface, const RECT& rc, TCHAR *Pict ,const LKColor& Color)
-{
-if (Pict == NULL) return;
-
-const auto OldColor = Surface.SetTextColor(Color);
-  int xtext = Surface.GetTextWidth(Pict);
-  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , DLGSCALE(2), Pict);
-  Surface.SetTextColor(OldColor);
-}
-
-
-
 static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     if (!Sender) {
         return;
@@ -706,14 +694,8 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
         const int w1 = width - w0 - w2 - w3; // Max Name width
 
-        // Draw Picto
+
         int idx = WayPointSelectInfo[i].Index;
-        const RECT PictoRect = {0, 0, w0, LineHeight};
-        if (WayPointCalc[idx].IsLandable) {
-            MapWindow::DrawRunway(Surface, &WayPointList[idx], PictoRect, nullptr, 1 , true);
-        } else {
-           MapWindow::DrawWaypointPicto(Surface, PictoRect, &WayPointList[idx]);
-        }
 
         // Draw Name
         Surface.DrawTextClip(w0, TextPos, WayPointList[WayPointSelectInfo[i].Index].Name, w1);
@@ -727,6 +709,15 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         _stprintf(sTmp, TEXT("%d%s"), iround(WayPointSelectInfo[i].Direction), MsgToken(2179));
         const int x3 = width - Surface.GetTextWidth(sTmp);
         Surface.DrawText(x3, TextPos, sTmp);
+
+        // Draw Picto
+        const RECT PictoRect = {0, 0, w0, LineHeight};
+        if (WayPointCalc[idx].IsLandable) {
+            MapWindow::DrawRunway(Surface, &WayPointList[idx], PictoRect, nullptr, 1 , true);
+        } else {
+           MapWindow::DrawWaypointPicto(Surface, PictoRect, &WayPointList[idx]);
+        }        
+
     } else {
         if (DrawListIndex == 0) {
             // LKTOKEN  _@M466_ = "No Match!"
