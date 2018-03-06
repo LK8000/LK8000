@@ -789,7 +789,7 @@ if (pPict ==NULL) return Col;
     break;
 
     case STYLE_DAM:
-      _stprintf(pPict, MsgToken(2369)); // _@M2369_ "⍫"
+      _stprintf(pPict, MsgToken(2369)); // _@M2369_ "≊"
       Col = RGB_DARKBLUE;
     break;
 

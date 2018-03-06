@@ -2285,7 +2285,7 @@ _@M2365_ "☨"   # antenna
 _@M2366_ "⬡"  # VOR
 _@M2367_ "✺"   # NDB
 _@M2368_ "⛃"  # cooltower
-_@M2369_ "⍫"  # dam
+_@M2369_ "≊"  # dam
 _@M2370_ "⋒"  # tunel
 _@M2371_ "≍"  #bridge
 _@M2372_ "⚡"  # powerplant
