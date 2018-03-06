@@ -2242,7 +2242,7 @@ _@M2334_ "in Flight Only (default)"
 _@M2335_ "permanent"
 
 # Multimap symbols
-_@M2350_ "Ⓜ"
+_@M2350_ "M"
 _@M2351_ "①"
 _@M2352_ "②"
 _@M2353_ "③"
@@ -2255,30 +2255,30 @@ _@M2359_ "⑨"
 _@M2360_ "⑩"
 
 # waypoint symbols
-_@M2361_ "◎"
-_@M2362_ "✈"
-_@M2363_ "◠"
-_@M2364_ "▴"
-_@M2365_ "⭻"
-_@M2366_ "⬡"
-_@M2367_ "✺"
-_@M2368_ "♜"
-_@M2369_ "⛊"
-_@M2370_ "⯊"
-_@M2371_ "⋒"
-_@M2372_ "⚡"
-_@M2373_ "⛪"
-_@M2374_ "⛌"
-_@M2375_ "⛟"
-_@M2376_ "♨"
-_@M2377_ "⚑"
-_@M2378_ "✈"
+_@M2361_ "◎"   # waypoint
+_@M2362_ "✈"   # airfield
+_@M2363_ "◠"   # mountain pass
+_@M2364_ "▴"   # mountain top
+_@M2365_ "☨"   # antenna
+_@M2366_ "⬡"  # VOR
+_@M2367_ "✺"   # NDB
+_@M2368_ "⛃"  # cooltower
+_@M2369_ "⍫"  # dam
+_@M2370_ "⋒"  # tunel
+_@M2371_ "≍"  #bridge
+_@M2372_ "⚡"  # powerplant
+_@M2373_ "♜"  # castle
+_@M2374_ "⨯"  # intersection
+_@M2375_ "✈"  # traffic
+_@M2376_ "♨"  # thermal
+_@M2377_ "⚑"  # Marker
+_@M2378_ "✈"  # all others
 
-# Multiselect symbols
-_@M2380_ "⚑"
-_@M2381_ "♕"
-_@M2382_ "■"
-_@M2383_ "●"
-_@M2384_ "✈"
+# other Multiselect symbols
+_@M2380_ "⚑"  # Team
+_@M2381_ "♕"  # Oracle
+_@M2382_ "■"  # ghost
+_@M2383_ "●"  # zombie
+_@M2384_ "✈"  # traffic
 
 
