@@ -64,7 +64,7 @@
 #include "devBlueFlyVario.h"
 #include "devLXV7easy.h"
 #include "ComCheck.h"
-
+#include "devOpenVario.h"
 
 #include "TraceThread.h"
 #include "Poco/NamedEvent.h"
@@ -507,7 +507,7 @@ bool Startup(const TCHAR* szCmdLine) {
   ATR833Register();
 #endif  // RADIO_ACTIVE
   DevVaulter::Register();
-
+  DevOpenVario::Register();
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<
