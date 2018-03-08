@@ -12,15 +12,8 @@
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
-int iOpenVario_RxUpdateTime = 0;
-double OpenVario_oldMC = MACCREADY;
-int OpenVario_MacCreadyUpdateTimeout = 0;
-int OpenVario_BugsUpdateTimeout = 0;
-int OpenVario_BallastUpdateTimeout = 0;
-
 
 //double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
-BOOL OpenVario_bValid = false;
 int OpenVarioNMEAddCheckSumStrg(TCHAR szStrg[]);
 BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready);
 BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast);
@@ -119,16 +112,10 @@ int OpenVarioNMEAddCheckSumStrg(TCHAR szStrg[]) {
 
 BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
   TCHAR szTmp[254];
-  if (OpenVario_bValid == false)
-    return false;
 
   _stprintf(szTmp, TEXT("POV,C,MC,%0.2f"), (double) MacCready);
   OpenVarioNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-
-
-  OpenVario_MacCreadyUpdateTimeout = 5;
-
 
   return true;
 
@@ -136,17 +123,11 @@ BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
 
 BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
   TCHAR szTmp[254];
-  if (OpenVario_bValid == false)
-    return false;
 
   _stprintf(szTmp, TEXT("POV,C,WL,%3f"), (1.0 + Ballast));
   OpenVarioNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
-
-
-
-  OpenVario_BallastUpdateTimeout = 10;
   return (TRUE);
 
 }
@@ -154,16 +135,10 @@ BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
 BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs) {
   TCHAR szTmp[254];
 
-  if (OpenVario_bValid == false)
-    return false;
-
-
-
   _stprintf(szTmp, TEXT("$POV,C,BU,%0.2f"), Bugs);
   OpenVarioNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
-  OpenVario_BugsUpdateTimeout = 5;
   return (TRUE);
 
 }
