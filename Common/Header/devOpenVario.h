@@ -4,7 +4,7 @@
    See CREDITS.TXT file for authors and copyrights
 
    $Id: devLX16xx.h,v 1.1 2011/12/21 10:35:29 root Exp root $
-*/
+ */
 //__________________________________________________________compilation_control_
 
 #ifndef __DevOpenVario_H_
@@ -17,38 +17,35 @@
 //___________________________________________________________class_declarations_
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 ///
-class DevOpenVario : public DevBase
-{
+class DevOpenVario : public DevBase {
+//----------------------------------------------------------------------------
+public:
+
+  /// Registers device into device subsystem.
+  static bool Register();
 
 
-  //----------------------------------------------------------------------------
-  public:
+  static bool SendInfos(PDeviceDescriptor_t d);
+//----------------------------------------------------------------------------
+protected:
 
-    /// Registers device into device subsystem.
-    static bool Register();
+  /// Protected only constructor - class should not be instantiated.
 
+  DevOpenVario() { }
 
-    static bool SendInfos(PDeviceDescriptor_t d);
-  //----------------------------------------------------------------------------
-  protected:
-
-    /// Protected only constructor - class should not be instantiated.
-    DevOpenVario() {}
-
-    /// Installs device specific handlers.
-    static BOOL Install(PDeviceDescriptor_t d);
+  /// Installs device specific handlers.
+  static BOOL Install(PDeviceDescriptor_t d);
 
 
-    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+  static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
-    /// Parses POV sentence.
-    static bool POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+  /// Parses POV sentence.
+  static bool POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
 
-    /// Returns device name (max length is @c DEVNAMESIZE).
-    static const TCHAR* GetName();
+  /// Returns device name (max length is @c DEVNAMESIZE).
+  static const TCHAR* GetName();
 
 
 };
