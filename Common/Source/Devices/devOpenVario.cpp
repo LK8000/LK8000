@@ -13,17 +13,6 @@
 #include "InputEvents.h"
 #include <iostream>
 
-#include <fcntl.h>
-
-void LKBeep(int freq, int delay) {
-#ifdef __linux__
-
-  //  ioctl(fd, KDMKTONE, (delay<<16 | 1193180/freq));
-#else
-  Beep(freq, delay);
-#endif
-}
-
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 extern bool UpdateQNH(const double newqnh);
 
@@ -254,10 +243,6 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
         info->VarioAvailable = TRUE;
         if (OV_DebugLevel > 0) StartupStore(TEXT(" OpenVario Vario :%5.2fm/s %s"), value, NEWLINE);
         TriggerVarioUpdate();
-        if ((info->Vario) > 0.1)
-          LKBeep(1500 + info->Vario * 100, 100);
-        else
-          LKBeep(1500 + info->Vario * 100, 200);
       }
       break;
 
