@@ -113,7 +113,7 @@ int OpenVarioNMEAddCheckSumStrg(TCHAR szStrg[]) {
 BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
   TCHAR szTmp[254];
 
-  _stprintf(szTmp, TEXT("POV,C,MC,%0.2f"), (double) MacCready);
+  _stprintf(szTmp, TEXT("$POV,C,MC,%0.2f"), (double) MacCready);
   OpenVarioNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
@@ -124,7 +124,7 @@ BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
 BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
   TCHAR szTmp[254];
 
-  _stprintf(szTmp, TEXT("POV,C,WL,%3f"), (1.0 + Ballast));
+  _stprintf(szTmp, TEXT("$POV,C,WL,%3f"), (1.0 + Ballast));
   OpenVarioNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
