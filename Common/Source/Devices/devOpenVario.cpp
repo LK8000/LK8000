@@ -13,7 +13,6 @@
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
-//double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
 int OpenVarioNMEAddCheckSumStrg(TCHAR szStrg[]);
 BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready);
 BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast);
@@ -29,7 +28,6 @@ int OV_DebugLevel = 0;
 /// @retval false device cannot be registered
 ///
 //static
-
 bool DevOpenVario::Register() {
 
   return (devRegister(GetName(),
@@ -47,7 +45,6 @@ bool DevOpenVario::Register() {
 /// @retval false device cannot be installed
 ///
 //static
-
 BOOL DevOpenVario::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA = ParseNMEA;
@@ -76,22 +73,9 @@ BOOL DevOpenVario::Install(PDeviceDescriptor_t d) {
 /// Returns device name (max length is @c DEVNAMESIZE).
 ///
 //static
-
 const TCHAR* DevOpenVario::GetName() {
   return (_T("OpenVario"));
 } // GetName()
-//                                 Polar
-//        MC     BAL    BUG%     a      b      c     Volume
-//$PFLX2,1.80,  1.00,   30,    1.71,  -2.43,  1.46, 0*15
-
-
-//GEXTERN double BUGS;
-//GEXTERN double BALLAST;
-//GEXTERN int POLARID;
-//GEXTERN double POLAR[POLARSIZE];
-//GEXTERN double WEIGHTS[POLARSIZE];
-//GEXTERN double POLARV[POLARSIZE];
-//GEXTERN double POLARLD[POLARSIZE];
 
 int OpenVarioNMEAddCheckSumStrg(TCHAR szStrg[]) {
   int i, iCheckSum = 0;
@@ -158,7 +142,6 @@ BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs) {
 /// @retval true if the sentence has been parsed
 ///
 //static
-
 BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
 
 
@@ -179,7 +162,6 @@ BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
 
 
 // altitude= 44330* ( (1-(p/p0)^(1/5.255) )
-
 double StaticPressureToAltitude(double ps) {
 
   const double k1 = 0.190263; // 1/5.255
@@ -264,6 +246,3 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
   }
   return (true);
 } // POV()
-
-
-
