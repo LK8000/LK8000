@@ -11,8 +11,6 @@
 #include "devOpenVario.h"
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
-extern bool UpdateQNH(const double newqnh);
-
 
 int iOpenVario_RxUpdateTime = 0;
 double OpenVario_oldMC = MACCREADY;
