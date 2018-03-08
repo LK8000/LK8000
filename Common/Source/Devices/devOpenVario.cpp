@@ -9,9 +9,6 @@
 
 #include "externs.h"
 #include "devOpenVario.h"
-#include "LKInterface.h"
-#include "InputEvents.h"
-#include <iostream>
 
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 extern bool UpdateQNH(const double newqnh);
