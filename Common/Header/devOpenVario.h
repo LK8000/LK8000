@@ -25,8 +25,6 @@ public:
   /// Registers device into device subsystem.
   static bool Register();
 
-
-  static bool SendInfos(PDeviceDescriptor_t d);
 //----------------------------------------------------------------------------
 protected:
 
