@@ -13,7 +13,6 @@
 extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
-int OpenVarioNMEAddCheckSumStrg(TCHAR szStrg[]);
 BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready);
 BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs);
@@ -77,28 +76,11 @@ const TCHAR* DevOpenVario::GetName() {
   return (_T("OpenVario"));
 } // GetName()
 
-int OpenVarioNMEAddCheckSumStrg(char szStrg[]) {
-  int i, iCheckSum = 0;
-  char szCheck[254];
-
-  if (szStrg[0] != '$')
-    return -1;
-
-  iCheckSum = szStrg[1];
-  for (i = 2; i < (int) strlen(szStrg); i++) {
-    //  if(szStrgi0] != ' ')
-    iCheckSum ^= szStrg[i];
-  }
-  sprintf(szCheck, "*%02X\r\n", iCheckSum);
-  strcat(szStrg, szCheck);
-  return iCheckSum;
-}
-
 BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
-  char szTmp[254];
+  char szTmp[80];
 
-  sprintf(szTmp, "$POV,C,MC,%0.2f", MacCready);
-  OpenVarioNMEAddCheckSumStrg(szTmp);
+  sprintf(szTmp, "$POV,C,MC,%0.2f", MacCready); // 14 + 5 + 1 char
+  NMEAParser::AppendChecksum(szTmp);
   d->Com->WriteString(szTmp);
 
   return true;
@@ -106,10 +88,10 @@ BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
 }
 
 BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
-  char szTmp[254];
+  char szTmp[80];
 
-  sprintf(szTmp, "$POV,C,WL,%3f", (1.0 + Ballast));
-  OpenVarioNMEAddCheckSumStrg(szTmp);
+  sprintf(szTmp, "$POV,C,WL,%3f", (1.0 + Ballast)); // 13 + 5 + 1 char
+  NMEAParser::AppendChecksum(szTmp);
   d->Com->WriteString(szTmp);
 
   return (TRUE);
@@ -117,10 +99,10 @@ BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
 }
 
 BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs) {
-  char szTmp[254];
+  char szTmp[80];
 
-  sprintf(szTmp, "$POV,C,BU,%0.2f", Bugs);
-  OpenVarioNMEAddCheckSumStrg(szTmp);
+  sprintf(szTmp, "$POV,C,BU,%0.2f", Bugs); // 14 + 5 + 1 char
+  NMEAParser::AppendChecksum(szTmp);
   d->Com->WriteString(szTmp);
 
   return (TRUE);
