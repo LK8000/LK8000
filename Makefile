@@ -1184,7 +1184,7 @@ DEVS	:=\
 	$(DEV)/devGPSBip.cpp \
 	$(DEV)/devAR620x.cpp \
 	$(DEV)/devATR833.cpp \
-
+	$(DEV)/devOpenVario.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
