@@ -214,6 +214,13 @@ class NMEAParser {
 			       TCHAR *Destination,
 			       int DesiredFieldNumber);
 
+  static uint8_t AppendChecksum(char *String, size_t size);
+
+  template<size_t size>
+  static uint8_t AppendChecksum(char (&String)[size]) {
+    return AppendChecksum(String, size);
+  }
+
  private:
   BOOL GGAAvailable;
   bool RMZAvailable;

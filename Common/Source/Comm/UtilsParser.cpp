@@ -218,3 +218,39 @@ BOOL NMEAParser::NMEAChecksum(const TCHAR *String)
   else
     return FALSE;
 }
+
+
+uint8_t NMEAParser::AppendChecksum(char *String, size_t size) {
+  constexpr char hex_chars[16] = {
+          '0', '1', '2', '3', '4', '5', '6', '7',
+          '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+  };
+  
+  if(!String) {
+    return 0xFF;
+  }
+  
+  char* it = String;
+  char* end = std::next(String,size);
+
+  if (*(it++) != '$') {
+    return -1;
+  }
+  uint8_t iCheckSum = 0;
+  while( (*it) != '\0' && it != end ) {
+    iCheckSum ^= *(it++);
+  }
+  if(std::distance(it, end) < 5) {
+    assert(false); // buffer overflow
+    return 0xFF;
+  }
+  
+  *(it++) = '*';
+  *(it++) = (hex_chars[(iCheckSum & 0xF0) >> 4]);
+  *(it++) = (hex_chars[(iCheckSum & 0x0F) >> 0]);  
+  *(it++) = '\r';
+  *(it++) = '\n';
+  *(it) = '\0';
+
+  return iCheckSum;  
+}
