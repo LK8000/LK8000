@@ -146,76 +146,78 @@ BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
    * T: temperature in deg C
    */
 
-  NMEAParser::ExtractParameter(sentence, szTmp1, 0);
-  char type = szTmp1[0];
+  int FieldIndex = 0;
+  do {
+    NMEAParser::ExtractParameter(sentence, szTmp1, FieldIndex++);
+    if (_tcslen(szTmp1) != 1) {
+      break; // we are on CRC field or sentence is invalid : stop parsing
+    }
+    double value = 0;
+    if (!ParToDouble(sentence, FieldIndex++, &value)) {
+      break; // Invalid Field : stop parsing
+    }
 
-  double value = 0;
-
-  switch (type) {
-    case 'E':
-      if (ParToDouble(sentence, 1, &value)) {
+    const char& type = szTmp1[0];
+    switch (type) {
+      case 'E':
         info->Vario = value;
         info->VarioAvailable = TRUE;
         if (OV_DebugLevel > 0) {
           StartupStore(TEXT(" OpenVario Vario :%5.2fm/s"), value);
         }
         TriggerVarioUpdate();
-      }
-      break;
+        break;
 
-    case 'P':
-      if (ParToDouble(sentence, 1, &value)) {
-        const double AltQNH = StaticPressureToQNHAltitude(value);
-        if (OV_DebugLevel > 0) {
-          StartupStore(TEXT(" OpenVario QNE %6.1fhPa Altitude QNH :%6.1fm GPS: %6.1fm"), value, AltQNH, info->Altitude);
+      case 'P':
+        {
+          const double AltQNH = StaticPressureToQNHAltitude(value);
+          UpdateBaroSource(info, 0, d, AltQNH);
+          if (OV_DebugLevel > 0) {
+            StartupStore(TEXT(" OpenVario QNE %6.1fhPa Altitude QNH :%6.1fm GPS: %6.1fm"), value, AltQNH, info->Altitude);
+          }
         }
-        UpdateBaroSource(info, 0, d, AltQNH);
-      }
-      break;
-    case 'Q':
-      break;
+        break;
 
-    case 'R':
-      break;
+      case 'Q':
+        break;
 
-    case 'S':
-      if (ParToDouble(sentence, 1, &value)) {
+      case 'R':
+        break;
+
+      case 'S':
         info->TrueAirspeed = value/3.6;
         info->AirspeedAvailable = TRUE;
-        
-        const double AltQNH = (info->BaroAltitudeAvailable ? info->BaroAltitude : info->Altitude);
-        info->IndicatedAirspeed = info->TrueAirspeed / AirDensityRatio(QNHAltitudeToQNEAltitude(AltQNH));        
-
+        {
+          const double AltQNH = (info->BaroAltitudeAvailable ? info->BaroAltitude : info->Altitude);
+          info->IndicatedAirspeed = info->TrueAirspeed / AirDensityRatio(QNHAltitudeToQNEAltitude(AltQNH));
+        }
         if (OV_DebugLevel > 0) {
           StartupStore(TEXT(" OpenVario Airspeed :%5.2fkm/h"), value);
         }
-      }
-      break;
+        break;
 
-    case 'T':
-      if (ParToDouble(sentence, 1, &value)) {
+      case 'T':
         info->OutsideAirTemperature = value;
         info->TemperatureAvailable = TRUE;
         if (OV_DebugLevel > 0) {
           StartupStore(TEXT(" OpenVario OAT :%5.2f°C"), value);
         }
-      }
-      break;
+        break;
 
-    case 'V':
-      if (ParToDouble(sentence, 1, &value)) {
+      case 'V':
         info->ExtBatt1_Voltage = value;
         if (OV_DebugLevel > 0) {
           StartupStore(TEXT(" OpenVario Voltage :%5.2fV"), value);
         }
-      }
-      break;
-    default:
-      if (ParToDouble(sentence, 1, &value)) {
-        StartupStore(TEXT(" OpenVario unsupported command %s :%7.2f"), szTmp1, value);
-      }
-      break;
+        break;
+      default:
+        if (OV_DebugLevel > 0) {
+          StartupStore(TEXT(" OpenVario unsupported command %s :%7.2f"), szTmp1, value);
+        }
+        break;
+    }
 
-  }
+  } while (true); // loop is break a the begining in case of invalid input values.
+
   return TRUE;
 } // POV()
