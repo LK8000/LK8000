@@ -143,13 +143,6 @@ BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
 } // ParseNMEA()
 
 
-// altitude= 44330* ( (1-(p/p0)^(1/5.255) )
-double StaticPressureToAltitude(double ps) {
-
-  const double k1 = 0.190263; // 1/5.255
-  return 44330.0 * (1.0 - pow(ps / PRESSURE_STANDARD, k1));
-}
-
 bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
   TCHAR szTmp1[80];
 
@@ -184,13 +177,11 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
 
     case 'P':
       if (ParToDouble(sentence, 1, &value)) {
-        info->BaroAltitude = StaticPressureToAltitude(value);
-        info->BaroAltitudeAvailable = true;
+        const double AltQNH = StaticPressureToQNHAltitude(value);
         if (OV_DebugLevel > 0) {
-          StartupStore(TEXT(" OpenVario QNH %6.1fhPa Altitude :%6.1fm GPS: %6.1fm"), value, info->BaroAltitude, info->Altitude);
+          StartupStore(TEXT(" OpenVario QNE %6.1fhPa Altitude QNH :%6.1fm GPS: %6.1fm"), value, AltQNH, info->Altitude);
         }
-        UpdateBaroSource(info, 0, d, info->BaroAltitude);
-
+        UpdateBaroSource(info, 0, d, AltQNH);
       }
       break;
     case 'Q':
