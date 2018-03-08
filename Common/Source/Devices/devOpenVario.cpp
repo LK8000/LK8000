@@ -248,7 +248,6 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
       break;
     default:
       if (ParToDouble(sentence, 1, &value)) {
-        info->ExtBatt1_Voltage = value;
         StartupStore(TEXT(" OpenVario unsupported command %s :%7.2f"), szTmp1, value);
       }
       break;
