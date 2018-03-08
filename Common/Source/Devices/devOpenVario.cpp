@@ -146,13 +146,17 @@ BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
 
 
   if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)) {
-    if (OV_DebugLevel > 0) StartupStore(TEXT(" OpenVario Checksum Error %s"), NEWLINE);
+    if (OV_DebugLevel > 0) {
+      StartupStore(TEXT(" OpenVario Checksum Error"));
+    }
     return FALSE;
   }
 
   if (_tcsncmp(_T("$POV"), sentence, 4) == 0) {
     return POV(d, sentence + 5, info);
-    if (OV_DebugLevel > 0) StartupStore(TEXT(" OpenVario POV %s"), NEWLINE);
+    if (OV_DebugLevel > 0){
+      StartupStore(TEXT(" OpenVario POV"));
+    }
     return true;
   }
 
@@ -193,7 +197,9 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
       if (ParToDouble(sentence, 1, &value)) {
         info->Vario = value;
         info->VarioAvailable = TRUE;
-        if (OV_DebugLevel > 0) StartupStore(TEXT(" OpenVario Vario :%5.2fm/s %s"), value, NEWLINE);
+        if (OV_DebugLevel > 0) {
+          StartupStore(TEXT(" OpenVario Vario :%5.2fm/s"), value);
+        }
         TriggerVarioUpdate();
       }
       break;
@@ -202,7 +208,9 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
       if (ParToDouble(sentence, 1, &value)) {
         info->BaroAltitude = StaticPressureToAltitude(value);
         info->BaroAltitudeAvailable = true;
-        if (OV_DebugLevel > 0) StartupStore(TEXT(" OpenVario QNH %6.1fhPa Altitude :%6.1fm GPS: %6.1fm %s"), value, info->BaroAltitude, info->Altitude, NEWLINE);
+        if (OV_DebugLevel > 0) {
+          StartupStore(TEXT(" OpenVario QNH %6.1fhPa Altitude :%6.1fm GPS: %6.1fm"), value, info->BaroAltitude, info->Altitude);
+        }
         UpdateBaroSource(info, 0, d, info->BaroAltitude);
 
       }
@@ -218,7 +226,9 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
         info->IndicatedAirspeed = value;
         info->AirspeedAvailable = TRUE;
         if (value > 0) info->TrueAirspeed = value * AirDensityRatio(info->BaroAltitude);
-        if (OV_DebugLevel > 0) StartupStore(TEXT(" OpenVario Airspeed :%5.2fkm/h %s"), value, NEWLINE);
+        if (OV_DebugLevel > 0) {
+          StartupStore(TEXT(" OpenVario Airspeed :%5.2fkm/h"), value);
+        }
       }
       break;
 
@@ -226,20 +236,24 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
       if (ParToDouble(sentence, 1, &value)) {
         info->OutsideAirTemperature = value;
         info->TemperatureAvailable = TRUE;
-        if (OV_DebugLevel > 0) StartupStore(TEXT(" OpenVario OAT :%5.2f°C %s"), value, NEWLINE);
+        if (OV_DebugLevel > 0) {
+          StartupStore(TEXT(" OpenVario OAT :%5.2f°C"), value);
+        }
       }
       break;
 
     case 'V':
       if (ParToDouble(sentence, 1, &value)) {
         info->ExtBatt1_Voltage = value;
-        if (OV_DebugLevel > 0) StartupStore(TEXT(" OpenVario Voltage :%5.2fV %s"), value, NEWLINE);
+        if (OV_DebugLevel > 0) {
+          StartupStore(TEXT(" OpenVario Voltage :%5.2fV"), value);
+        }
       }
       break;
     default:
       if (ParToDouble(sentence, 1, &value)) {
         info->ExtBatt1_Voltage = value;
-        StartupStore(TEXT(" OpenVario unsupported command %s :%7.2f %s"), szTmp1, value, NEWLINE);
+        StartupStore(TEXT(" OpenVario unsupported command %s :%7.2f"), szTmp1, value);
       }
       break;
 
