@@ -40,29 +40,20 @@ bool DevOpenVario::Register() {
 ///
 /// @param d  device descriptor to be installed
 ///
-/// @retval true  when device has been installed successfully
-/// @retval false device cannot be installed
+/// @retval TRUE  when device has been installed successfully
+/// @retval FALSE device cannot be installed
 ///
 //static
 BOOL DevOpenVario::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA = ParseNMEA;
   d->PutMacCready = OpenVarioPutMacCready;
-  d->PutBugs = OpenVarioPutBugs; // removed to prevent cirvular updates
+  d->PutBugs = OpenVarioPutBugs;
   d->PutBallast = OpenVarioPutBallast;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
-  d->LinkTimeout = GetTrue;
-  d->Declare = NULL;
-  d->IsLogger = NULL;
   d->IsGPSSource = GetTrue;
   d->IsBaroSource = GetTrue;
-  d->DirectLink = NULL;
 
-
-
-  return (true);
+  return TRUE;
 } // Install()
 
 
