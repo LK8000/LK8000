@@ -18,7 +18,7 @@ BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready);
 BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs);
 
-int OV_DebugLevel = 0;
+constexpr int OV_DebugLevel = 0;
 //____________________________________________________________class_definitions_
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
