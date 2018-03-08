@@ -154,10 +154,6 @@ BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
 
   if (_tcsncmp(_T("$POV"), sentence, 4) == 0) {
     return POV(d, sentence + 5, info);
-    if (OV_DebugLevel > 0){
-      StartupStore(TEXT(" OpenVario POV"));
-    }
-    return true;
   }
 
 
