@@ -219,9 +219,12 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
 
     case 'S':
       if (ParToDouble(sentence, 1, &value)) {
-        info->IndicatedAirspeed = value;
+        info->TrueAirspeed = value/3.6;
         info->AirspeedAvailable = TRUE;
-        if (value > 0) info->TrueAirspeed = value * AirDensityRatio(info->BaroAltitude);
+        
+        const double AltQNH = (info->BaroAltitudeAvailable ? info->BaroAltitude : info->Altitude);
+        info->IndicatedAirspeed = info->TrueAirspeed / AirDensityRatio(QNHAltitudeToQNEAltitude(AltQNH));        
+
         if (OV_DebugLevel > 0) {
           StartupStore(TEXT(" OpenVario Airspeed :%5.2fkm/h"), value);
         }
