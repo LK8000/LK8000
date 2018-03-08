@@ -74,8 +74,7 @@ BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
   NMEAParser::AppendChecksum(szTmp);
   d->Com->WriteString(szTmp);
 
-  return true;
-
+  return TRUE;
 }
 
 BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
@@ -85,8 +84,7 @@ BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
   NMEAParser::AppendChecksum(szTmp);
   d->Com->WriteString(szTmp);
 
-  return (TRUE);
-
+  return TRUE;
 }
 
 BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs) {
@@ -96,8 +94,7 @@ BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs) {
   NMEAParser::AppendChecksum(szTmp);
   d->Com->WriteString(szTmp);
 
-  return (TRUE);
-
+  return TRUE;
 }
 
 
@@ -112,7 +109,7 @@ BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs) {
 /// @param sentence  received NMEA sentence
 /// @param info      GPS info to be updated
 ///
-/// @retval true if the sentence has been parsed
+/// @retval TRUE if the sentence has been parsed
 ///
 //static
 BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
@@ -130,11 +127,11 @@ BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
   }
 
 
-  return (false);
+  return FALSE;
 } // ParseNMEA()
 
 
-bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
   TCHAR szTmp1[80];
 
 
@@ -220,5 +217,5 @@ bool DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
       break;
 
   }
-  return (true);
+  return TRUE;
 } // POV()

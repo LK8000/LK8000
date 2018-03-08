@@ -39,7 +39,7 @@ protected:
   static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
   /// Parses POV sentence.
-  static bool POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+  static BOOL POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
 
   /// Returns device name (max length is @c DEVNAMESIZE).
