@@ -268,6 +268,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
   } FileSection = none;
   FILE * stream = _tfopen(szFileName, _T("rt"));
   iNO_Tasks =0;
+  TaskIndex =0;
   for (int i =0 ; i< MAX_TASKS;i++)
     szTaskStrings[ i] = NULL;
 #define MULTITASKS_CUP
@@ -296,7 +297,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
                       if(  szTaskStrings[ iNO_Tasks] != NULL)
                       {
                         _tcscpy(szTaskStrings[ iNO_Tasks] , szString);  // copy task string
-                        StartupStore(_T("..Cup Task : %s  %s"), szTaskStrings[ iNO_Tasks], NEWLINE);
+                         // StartupStore(_T("..Cup Task : %s  %s"), szTaskStrings[ iNO_Tasks], NEWLINE);
                         iNO_Tasks++;
                       }
                       else
@@ -317,6 +318,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
   for (int i =0 ; i< MAX_TASKS;i++)    // free dynamic memory
     if(szTaskStrings[i] != NULL)
       {
+        // StartupStore(_T("..Cup Task : delete dynamic memoryLine %i %s"), i,NEWLINE);
         delete szTaskStrings[i];
         szTaskStrings[i] = NULL;
       }
