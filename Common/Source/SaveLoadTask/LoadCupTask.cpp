@@ -267,8 +267,8 @@ bool LoadCupTask(LPCTSTR szFileName) {
     } FileSection = none;
     FILE * stream = _tfopen(szFileName, _T("rt"));
     iNO_Tasks =0;
-#define RRRRR
-#ifdef RRRRR
+#define MULTITASKS_CUP
+#ifdef MULTITASKS_CUP
     if (stream) {
         charset cs = charset::unknown;
         while (ReadStringX(stream, READLINE_LENGTH, szString, cs)) {
@@ -281,32 +281,36 @@ bool LoadCupTask(LPCTSTR szFileName) {
                 FileSection = TaskTp;
                 continue;
             }
+
+
             if(  FileSection == TaskTp)
             {
-              if(iNO_Tasks < MAX_TASKS)
+              if(_tcsstr(szString, _T("\",\""))!= NULL)   // really a task? (not an option)
               {
-                _tcscpy(szTaskStrings[ iNO_Tasks] , szString);
+              if(iNO_Tasks < MAX_TASKS)   // Space in List left
+              {
+                _tcscpy(szTaskStrings[ iNO_Tasks] , szString);  // copy task string
                 StartupStore(_T("..Cup Task : %s  %s"), szTaskStrings[ iNO_Tasks], NEWLINE);
                 iNO_Tasks++;
               }
               else
                 StartupStore(_T("..Cup Task Too many Tasks (more than %i) %s"), MAX_TASKS, NEWLINE);
+              }
             }
         }
-        dlgTaskSelectListShowModal();
-        _tcscpy(szString, szTaskStrings[ TaskIndex] );
-        StartupStore(_T("..Cup Selected Task:%i %s  %s"), TaskIndex, szString, NEWLINE);
+        if(iNO_Tasks >1)   // Selection only if more than one task found
+          dlgTaskSelectListShowModal();
+        StartupStore(_T("..Cup Selected Task:%i %s  %s"), TaskIndex, szTaskStrings[ TaskIndex] , NEWLINE);
       }
         fclose(stream);
-
-
+        /***********************************************************************************/
 
         stream = _tfopen(szFileName, _T("rt"));
 #endif
-        /***********************************************************************************/
+
         FileSection = none;
         int i=0;
-if (stream) {
+   if (stream) {
      charset cs = charset::unknown;
      while (ReadStringX(stream, READLINE_LENGTH, szString, cs)) {
 
@@ -333,20 +337,21 @@ if (stream) {
                     }
                     break;
                 case TaskTp:
-                if (i++ == TaskIndex)
-                {
                     // 1. Description
                     //       First column is the description of the task. If filled it should be double quoted.
                     //       If left empty, then SeeYou will determine the task type on runtime.
                     if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) == NULL) {
-                        UnlockTaskData();
-                        return false;
+                      //  UnlockTaskData();  // no need to skip if only name missing!!!
+                      //  return false;
                     }
 
                     // 2. and all successive columns, separated by commas
                     //       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
                     //       same as the Long name of a waypoint listed above the Related tasks.
                     WPtoAdd=NULL;
+
+                    if (i++ == TaskIndex)  // load selected task
+                    {
                     while (bLoadComplet && (pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
                         if (idxTP < MAXTASKPOINTS) {
                             _tcsncpy(TpCode, pToken, NAME_SIZE);
@@ -429,7 +434,7 @@ if (stream) {
                         }
                     }
                     FileSection = Option;
-                }
+                  }
                 break;
                 case Option:
                     if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) != NULL) {
@@ -639,6 +644,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
     if (TaskDrawListIndex < iNO_Tasks)  {
         TCHAR *pToken = NULL;
         TCHAR *pWClast = NULL;
+        TCHAR *pWClast2 = NULL;
         TCHAR text[180] = {TEXT("empty")};
         TCHAR text1[180] = {TEXT("empty")};
         TCHAR text2[180] = {TEXT("empty")};
@@ -647,16 +653,21 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         if(text != NULL)
         {
           unsigned int i=0;
-          while (i < _tcslen(text) )
+          while (i < _tcslen(text) )  // remove all quotations "
             {
-              if(text[i]== '"')
-                for (unsigned int j= i ; j < _tcslen(text)-1; j++)
+              if(text[i]== '"')    //  quotations found ?
+              {
+                for (unsigned int j= i ; j < _tcslen(text); j++)
                   text[j] =  text[j+1];
+              }
               i++;
             }
           pToken = strsep_r(text, TEXT(","), &pWClast) ;
           _tcscpy(text1, pToken );
-          _tcscpy(text2, pWClast );
+          if(*text1 == '\0')   _tcscpy(text1, _T("???") );
+
+          pToken = strsep_r(pWClast, TEXT(","), &pWClast2) ;  // remove takeof point
+          _tcscpy(text2, pWClast2);
         }
 
         Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
