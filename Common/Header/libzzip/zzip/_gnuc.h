@@ -204,16 +204,21 @@
 #define _zzip_restrict
 #endif
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
-/* #undef size_t */
+#ifdef __MINGW32__
+  /* Define to `unsigned int' if <sys/types.h> does not define. */
+  /* #undef size_t */
+  #ifndef _zzip_size_t
+  #define _zzip_size_t  unsigned int
+  #endif
 
-/* Define to `int' if <sys/types.h> does not define. */
-#ifndef _zzip_ssize_t
-#define _zzip_ssize_t  int
+  /* Define to `int' if <sys/types.h> does not define. */
+  #ifndef _zzip_ssize_t
+  #define _zzip_ssize_t  int
+  #endif
+
+  #define __int64 long long
+  #define _int64 __int64
 #endif
-
-#define __int64 long long
-#define _int64 __int64
 
 /* once: _ZZIP__MSVC_H */
 #endif

@@ -339,8 +339,8 @@ __zzip_fetch_disk_trailer(int fd, zzip_off_t filesize,
 _zzip_inline char* __zzip_aligned4(char* p)
 {
 #define aligned4   __zzip_aligned4
-    p += ((long)p)&1;            /* warnings about truncation of a "pointer" */
-    p += ((long)p)&2;            /* to a "long int" may be safely ignored :) */
+    p += ((intptr_t)p)&1;            /* warnings about truncation of a "pointer" */
+    p += ((intptr_t)p)&2;            /* to a "long int" may be safely ignored :) */
     return p;
 }
 
