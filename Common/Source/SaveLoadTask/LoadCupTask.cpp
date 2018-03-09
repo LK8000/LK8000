@@ -25,7 +25,8 @@ static WndForm *wf = NULL;
 static WndListFrame *wTaskSelectListList = NULL;
 static WndOwnerDrawFrame *wTaskSelectListListEntry = NULL;
 #define MAX_TASKS 100
-TCHAR szTaskStrings[MAX_TASKS][READLINE_LENGTH + 1];
+TCHAR* szTaskStrings[MAX_TASKS];
+
 
 int TaskIndex =0;
 int iNO_Tasks =0;
@@ -267,6 +268,8 @@ bool LoadCupTask(LPCTSTR szFileName) {
   } FileSection = none;
   FILE * stream = _tfopen(szFileName, _T("rt"));
   iNO_Tasks =0;
+  for (int i =0 ; i< MAX_TASKS;i++)
+    szTaskStrings[ i] = NULL;
 #define MULTITASKS_CUP
 #ifdef MULTITASKS_CUP
   if (stream) {
@@ -288,10 +291,16 @@ bool LoadCupTask(LPCTSTR szFileName) {
               if(_tcsstr(szString, _T("\",\""))!= NULL)   // really a task? (not an option)
                 {
                   if(iNO_Tasks < MAX_TASKS)   // Space in List left
-                    {
-                      _tcscpy(szTaskStrings[ iNO_Tasks] , szString);  // copy task string
-                      StartupStore(_T("..Cup Task : %s  %s"), szTaskStrings[ iNO_Tasks], NEWLINE);
-                      iNO_Tasks++;
+                    {//[READLINE_LENGTH + 1];
+                      szTaskStrings[ iNO_Tasks] =  new TCHAR[READLINE_LENGTH + 1];
+                      if(  szTaskStrings[ iNO_Tasks] != NULL)
+                      {
+                        _tcscpy(szTaskStrings[ iNO_Tasks] , szString);  // copy task string
+                        StartupStore(_T("..Cup Task : %s  %s"), szTaskStrings[ iNO_Tasks], NEWLINE);
+                        iNO_Tasks++;
+                      }
+                      else
+                        StartupStore(_T("..Cup Task: no memory %s"), NEWLINE);
                     }
                   else
                     StartupStore(_T("..Cup Task Too many Tasks (more than %i) %s"), MAX_TASKS, NEWLINE);
@@ -301,10 +310,18 @@ bool LoadCupTask(LPCTSTR szFileName) {
       StartupStore(_T("..Cup Selected Task:%i %s  %s"), TaskIndex, szTaskStrings[ TaskIndex] , NEWLINE);
   }
   fclose(stream);
-
+  int res = 0;
   if(iNO_Tasks >1)   // Selection only if more than one task found
-    if( dlgTaskSelectListShowModal() == mrCancel)
-      return false;
+    res = dlgTaskSelectListShowModal();
+
+  for (int i =0 ; i< MAX_TASKS;i++)    // free dynamic memory
+    if(szTaskStrings[i] != NULL)
+      {
+        delete szTaskStrings[i];
+        szTaskStrings[i] = NULL;
+      }
+   if(res == mrCancel)
+     return false;
 
   /***********************************************************************************/
 
