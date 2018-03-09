@@ -19,12 +19,12 @@
 #include "dlgTools.h"
 #include "resource.h"
 
-ListElement* dlgTaskSelectListShowModal(void) ;
+int dlgTaskSelectListShowModal(void) ;
 
 static WndForm *wf = NULL;
 static WndListFrame *wTaskSelectListList = NULL;
 static WndOwnerDrawFrame *wTaskSelectListListEntry = NULL;
-ListElement* pTaskResult = NULL;
+
 int TaskIndex =0;
 int iNO_Tasks =0;
 static int TaskDrawListIndex = 0;
@@ -242,11 +242,11 @@ public:
 TCHAR szTaskStrings[MAX_TASKS][READLINE_LENGTH + 1];
 
 bool LoadCupTask(LPCTSTR szFileName) {
-    LockTaskData();
+  //  LockTaskData();
 
     mapCode2Waypoint_t mapWaypoint;
 
-    ClearTask();
+  //  ClearTask();
     size_t idxTP = 0;
     bool bTakeOff = true;
     bool bLoadComplet = true;
@@ -298,13 +298,18 @@ bool LoadCupTask(LPCTSTR szFileName) {
               }
             }
         }
-        if(iNO_Tasks >1)   // Selection only if more than one task found
-          dlgTaskSelectListShowModal();
         StartupStore(_T("..Cup Selected Task:%i %s  %s"), TaskIndex, szTaskStrings[ TaskIndex] , NEWLINE);
       }
         fclose(stream);
+
+        if(iNO_Tasks >1)   // Selection only if more than one task found
+          if( dlgTaskSelectListShowModal() == mrCancel)
+            return false;
+
         /***********************************************************************************/
 
+        LockTaskData();
+        ClearTask();
         stream = _tfopen(szFileName, _T("rt"));
 #endif
 
@@ -696,29 +701,23 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
 
 static void OnTaskSelectListListEnter(WindowControl * Sender,
-                                       WndListFrame::ListInfo_t *ListInfo) {
-    (void) Sender;
+    WndListFrame::ListInfo_t *ListInfo) {
+  (void) Sender;
 
-    TaskIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-    if (TaskIndex >= iNO_Tasks) {
-        TaskIndex = iNO_Tasks - 1;
-    }
+  TaskIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+  if (TaskIndex >= iNO_Tasks) {
+      TaskIndex = iNO_Tasks - 1;
+  }
 
 
-    if (TaskIndex >= 0) {
+  if (TaskIndex >= 0) {
       if(Sender) {
-        WndForm * pForm = Sender->GetParentWndForm();
-        if(pForm) {
-          pForm->SetModalResult(mrOK);
-        }
+          WndForm * pForm = Sender->GetParentWndForm();
+          if(pForm) {
+              pForm->SetModalResult(mrOK);
+          }
       }
-    }
-
-/*
-    if ((TaskIndex >= 0) && (TaskIndex < iNO_Tasks)) {
-        dlgAddMultiSelectListDetailsDialog(TaskIndex);
-    }*/
-
+  }
 }
 
 
@@ -733,19 +732,19 @@ static CallBackTableEntry_t TaskCallBackTable[] = {
 };
 
 
-ListElement* dlgTaskSelectListShowModal(void) {
+int dlgTaskSelectListShowModal(void) {
 
-    TaskIndex = -1;
+  TaskIndex = -1;
 
   if (iNO_Tasks == 0)
   {
 
-        return NULL;
+        return mrCancel;
   }
 
     wf = dlgLoadFromXML(TaskCallBackTable, ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
-    if (!wf) return NULL;
+    if (!wf)   return mrCancel;
 
     wTaskSelectListList = (WndListFrame*) wf->FindByName(TEXT("frmMultiSelectListList"));
     LKASSERT(wTaskSelectListList != NULL);
@@ -772,7 +771,7 @@ ListElement* dlgTaskSelectListShowModal(void) {
 
     UpdateList();
 
-    wf->ShowModal();
+   int result = wf->ShowModal();
     wTaskSelectListList->Redraw();
     delete wf;
 
@@ -781,8 +780,8 @@ ListElement* dlgTaskSelectListShowModal(void) {
     iNO_Tasks = 0;
 
 
+  return result;
 
-    return pTaskResult;
 }
 
 
