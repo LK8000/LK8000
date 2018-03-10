@@ -170,7 +170,7 @@ BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
 
       case 'P':
         {
-          const double AltQNH = StaticPressureToQNHAltitude(value);
+          const double AltQNH = StaticPressureToQNHAltitude(value*100.0);
           UpdateBaroSource(info, 0, d, AltQNH);
           if (OV_DebugLevel > 0) {
             StartupStore(TEXT(" OpenVario QNE %6.1fhPa Altitude QNH :%6.1fm GPS: %6.1fm"), value, AltQNH, info->Altitude);
