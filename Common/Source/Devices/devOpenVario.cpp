@@ -169,7 +169,7 @@ BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
         break;
 
       case 'P':
-        {
+        if( value >= 0.0 && value <= 2000.0 ) {
           const double AltQNH = StaticPressureToQNHAltitude(value*100.0);
           UpdateBaroSource(info, 0, d, AltQNH);
           if (OV_DebugLevel > 0) {
@@ -179,12 +179,22 @@ BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
         break;
 
       case 'Q':
+      	if ((value >= -999.0) && (value <= 9998.0)) {
+          info->AirspeedAvailable = TRUE;
+          info->IndicatedAirspeed = sqrt(2 * value / 1.225);
+          info->TrueAirspeed = info->IndicatedAirspeed * AirDensityRatio(QNHAltitudeToQNEAltitude(info->Altitude));
+          if (OV_DebugLevel > 0) {
+            StartupStore(TEXT(" OpenVario Dynamic Pressure :%6.1fhPa IAS :%4.1fkm/h"), value/100.0, info->IndicatedAirspeed*3.6);
+          }
+        }
         break;
 
       case 'R':
+        // 2018-03-13 : this value is never sent by sensord
         break;
 
       case 'S':
+        // 2018-03-13 : this value is never sent by sensord
         info->TrueAirspeed = value/3.6;
         info->AirspeedAvailable = TRUE;
         {
