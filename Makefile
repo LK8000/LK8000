@@ -368,6 +368,10 @@ ifeq ($(TARGET_HAS_MALI),y)
  CE_DEFS += -DHAVE_MALI
 endif
 
+ifeq ($(TARGET),OPENVARIO)
+ CE_DEFS += -DOPENVARIO
+endif
+
 ifeq ($(TARGET_IS_CUBIE),y)
  CE_DEFS += --sysroot=$(CUBIE) 
  CE_DEFS += -isystem $(CUBIE)/usr/include/c++/4.8.2 

@@ -771,7 +771,7 @@ short dlgStartupShowModal(void) {
         goto _exit;
     }
 
-#ifndef ANDROID
+#if !defined(ANDROID) && !defined(OPENVARIO)
     if (!CheckDataDir()) {
         TCHAR mydir[MAX_PATH];
         TCHAR mes[MAX_PATH];

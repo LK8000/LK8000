@@ -128,6 +128,16 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
 
 }
 
+void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
+  
+  TCHAR buffer[MAX_PATH] = TEXT("\0");
+  SystemPath(buffer, subdir);
+  ScanDirectories(buffer,_T(""), filter);
+  Sort();
+
+}
+
+
 #ifdef ANDROID
 void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* filter) { // 091101
 
@@ -203,8 +213,9 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdi
               _tcscat(FileName, TEXT(DIRSEP));
             }
             _tcscat(FileName, It.getName());
-
-            addFile(It.getName(), FileName);
+            if(GetLabelIndex(FileName) <= 0) { // do not add same file twice...
+              addFile(It.getName(), FileName);
+            }
         }
     }
 

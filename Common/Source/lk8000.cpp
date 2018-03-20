@@ -277,13 +277,11 @@ bool Startup(const TCHAR* szCmdLine) {
   }
 #endif
 
-  #if TESTBENCH
   TCHAR szPath[MAX_PATH] = {0};
   lk::filesystem::getExePath(szPath, MAX_PATH);
   StartupStore(_T(". Program execution path :   <%s>"), szPath);
   StartupStore(_T(". Program system directory : <%s>"), LKGetSystemPath());
   StartupStore(_T(". Program data directory :   <%s>"), LKGetLocalPath());
-  #endif
 
   InstallSystem();
 
