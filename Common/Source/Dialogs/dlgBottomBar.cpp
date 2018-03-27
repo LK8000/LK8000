@@ -93,8 +93,11 @@ static void setVariables(WndForm* wf) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0Auto"));
   if (wp) {
-    DataField* dfb = wp->GetDataField();
-    dfb->Set(ConfBB0Auto);
+    DataField* dfe = wp->GetDataField();
+    dfe->addEnumText(MsgToken(2094));  //  OFF
+    dfe->addEnumText(MsgToken(2252)); //   ONLY TERMALING
+    dfe->addEnumText(MsgToken(2253)); //  FULL AUTO
+    dfe->Set(ConfBB0Auto);
     wp->RefreshDisplay();
   }
 
@@ -202,10 +205,10 @@ void dlgBottomBarShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0Auto"));
   if (wp) {
-	if (ConfBB0Auto != (wp->GetDataField()->GetAsBoolean())) {
-		ConfBB0Auto = (wp->GetDataField()->GetAsBoolean());
-		changed=true; // not needed really
-	}
+    if (ConfBB0Auto != wp->GetDataField()->GetAsInteger() )
+    {
+      ConfBB0Auto = wp->GetDataField()->GetAsInteger();
+    }
   }
 
   if (changed) {

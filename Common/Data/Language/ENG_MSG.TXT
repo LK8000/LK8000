@@ -2189,6 +2189,9 @@ _@M2249_  "DspMode"
 _@M2250_ "Ext. Sound"
 _@M2251_  "Optimizer\nmode"
 
+_@M2252_ "ONLY TERMALING"
+_@M2253_ "FULL AUTO"
+
 
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)
@@ -2240,3 +2243,4 @@ _@M2332_ "Big Glider Black"
 _@M2333_ "Tracking mode "
 _@M2334_ "in Flight Only (default)"
 _@M2335_ "permanent"
+
