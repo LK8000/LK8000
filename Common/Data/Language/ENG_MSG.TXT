@@ -2189,7 +2189,7 @@ _@M2249_  "DspMode"
 _@M2250_ "Ext. Sound"
 _@M2251_  "Optimizer\nmode"
 
-_@M2252_ "ONLY TERMALING"
+_@M2252_ "ONLY THERMALLING"
 _@M2253_ "FULL AUTO"
 
 

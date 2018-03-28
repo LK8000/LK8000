@@ -95,7 +95,7 @@ static void setVariables(WndForm* wf) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(2094));  //  OFF
-    dfe->addEnumText(MsgToken(2252)); //   ONLY TERMALING
+    dfe->addEnumText(MsgToken(2252)); //   ONLY THERMALLING
     dfe->addEnumText(MsgToken(2253)); //  FULL AUTO
     dfe->Set(ConfBB0Auto);
     wp->RefreshDisplay();
