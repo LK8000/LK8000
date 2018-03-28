@@ -1851,7 +1851,7 @@ _@M1819_ "Device Profiles"
 # page name
 _@M1820_ "Device configuration"
 # Bottom bar configuration button
-_@M1821_ "AUTO"
+_@M1821_ "MODE"
 _@M1822_ "Configure Multimaps"
 // leave a space after Ack
 _@M1823_ "Group Ack "
@@ -2189,8 +2189,9 @@ _@M2249_  "DspMode"
 _@M2250_ "Ext. Sound"
 _@M2251_  "Optimizer\nmode"
 
-_@M2252_ "ONLY THERMALLING"
-_@M2253_ "FULL AUTO"
+_@M2252_ "MANUAL"
+_@M2253_ "AUTO THERMALLING"
+_@M2254_ "FULL AUTO"
 
 
 # MAX 2500! 

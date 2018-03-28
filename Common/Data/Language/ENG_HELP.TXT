@@ -1720,7 +1720,7 @@ This alarm will be armed again only after landing.
 
 @1263
 Control the bottom bar switching mode
-[OFF] Completely manual BottomBar switching
+[MANUAL] Completely manual BottomBar switching
 [ONLY THERMALLING]. If enabled, TRM0 bottom bar will be automatically activated while thermalling,
 and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
 [FULL AUTO]. In this mode CRU7,FIN8 and TMR0 will be automatically activated (even if  disabled) when the flying mode is respectively CRUISE,FINAL and THERMALLING

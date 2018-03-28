@@ -94,9 +94,9 @@ static void setVariables(WndForm* wf) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0Auto"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(2094));  //  OFF
-    dfe->addEnumText(MsgToken(2252)); //   ONLY THERMALLING
-    dfe->addEnumText(MsgToken(2253)); //  FULL AUTO
+    dfe->addEnumText(MsgToken(2252));  // MANUAL
+    dfe->addEnumText(MsgToken(2253)); //  AUTO THERMALLING
+    dfe->addEnumText(MsgToken(2254)); //  FULL AUTO
     dfe->Set(ConfBB0Auto);
     wp->RefreshDisplay();
   }
