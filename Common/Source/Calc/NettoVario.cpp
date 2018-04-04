@@ -13,6 +13,11 @@
 
 void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
+  if (!Calculated->Flying) {
+    Calculated->NettoVario = 0.0;
+    return;
+  }
+
   double n;
   // get load factor
   if (Basic->AccelerationAvailable) {

@@ -868,7 +868,7 @@ goto_bearing:
 		case LK_SPEED_DOLPHIN:
 			value=SPEEDMODIFY*DerivedDrawInfo.VOpt;
 			if (value<0||value>999) value=0; else valid=true;
-			_stprintf(BufferValue, TEXT("%d"),(int)value);
+			_stprintf(BufferValue, TEXT("%d"),(int)round(value));
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
