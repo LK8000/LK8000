@@ -204,6 +204,8 @@ BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
         return(TRUE);
       }
     }
+    else
+      Poco::Thread::sleep(1);
 
     if( timeout++ >= TIMEOUT)
     {
