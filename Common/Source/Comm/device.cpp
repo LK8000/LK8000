@@ -177,26 +177,41 @@ BOOL devGetBaroAltitude(double *Value){
 #endif
 
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
-
-  int i=0, ch;
+#define TIMEOUT 500
+#define TMP_STR_SIZE 512
+#define FLARMDECL_DEBUG 1
+  unsigned int i=0;
+  int ch;
+  TCHAR rec[TMP_STR_SIZE] =_T("");
+  unsigned int timeout=0;
 
   if (!d->Com)
     return FALSE;
+  i=0;rec[i] =0;
 
-  while ((ch = d->Com->GetChar()) != EOF){
+  while ((ch = d->Com->GetChar()) != 10 )
+  {
+    if(ch != EOF)
+    {
+      if(ch == '$') i=0;
 
-    if (token[i] == (TCHAR)ch) 
-      i++;
-    else
-      i=0;
+      rec[i++] =(TCHAR)ch;
+      rec[i] =0;
 
-    if ((unsigned)i == _tcslen(token))
-      return(TRUE);
+      if (_tcsnicmp(rec,token,   _tcslen(token)-2)==0)
+      {
+        if(FLARMDECL_DEBUG) StartupStore(_T("... Flarm Declare received: %s %s"),rec, NEWLINE);
+        return(TRUE);
+      }
+    }
 
+    if( timeout++ >= TIMEOUT)
+    {
+      if(FLARMDECL_DEBUG) StartupStore(_T("... Flarm Declare   timeout while receive: %s: %s %s "),token,rec, NEWLINE);
+      return(FALSE);
+    }
   }
-
   return(FALSE);
-
 }
 
 
@@ -1175,21 +1190,27 @@ BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
 
 static BOOL 
 FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
-  //devWriteNMEAString(d, Buffer);
 
-  TCHAR tmp[512];
+  TCHAR tmp[TMP_STR_SIZE];
+  TCHAR tmp2[TMP_STR_SIZE];
 
-  _sntprintf(tmp, 512, TEXT("$%s\r\n"), Buffer);
+  _sntprintf(tmp, TMP_STR_SIZE, TEXT("%s"), Buffer);
+  devFormatNMEAString(tmp2, TMP_STR_SIZE, tmp );
+  if(FLARMDECL_DEBUG) StartupStore(_T("... ===================== %s"), NEWLINE);
+  if(FLARMDECL_DEBUG) StartupStore(_T("... Flarm Declare     send: %s %s"),tmp2, NEWLINE);
 
   if (d->Com)
-    d->Com->WriteString(tmp);
-
-  Buffer[6]= _T('A');
-  for(int i=0; i < 20; i++) /* try to get expected answer max 20 times*/
   {
-    if (ExpectString(d, Buffer))
-	  return true;
-    Poco::Thread::sleep(20);
+    d->Com->WriteString(tmp2);
+  }
+ 
+  tmp[6]= _T('A');
+  devFormatNMEAString(tmp2, TMP_STR_SIZE, tmp );
+  if(FLARMDECL_DEBUG)StartupStore(_T("... Flarm Declare expected: %s %s"),tmp2, NEWLINE);
+  for(int i=0; i < 20; i++) /* try to get expected answer max 5 times*/
+  {
+    if (ExpectString(d, tmp2))
+      return true;
   }
 
   return false;
