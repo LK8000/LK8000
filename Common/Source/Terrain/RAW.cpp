@@ -9,8 +9,10 @@
 #include "externs.h"
 #include "RasterTerrain.h"
 #include "OS/Memory.h"
+#include "OS/ByteOrder.hpp"
 #include "utils/make_unique.h"
 
+static_assert(IsLittleEndian(), "Big-Endian Arch is not supported");
 
 ////// Field access ////////////////////////////////////////////////////
 
