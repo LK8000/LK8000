@@ -73,6 +73,7 @@ public class InternalGPS
   private WindowManager windowManager;
   private Sensor accelerometer;
   private double acceleration;
+  private boolean hasAcceleration;
   private static boolean queriedLocationSettings = false;
   Context _context;
 
@@ -109,6 +110,7 @@ public class InternalGPS
     sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     acceleration = 1.0;
+    hasAcceleration = false;
 
     update();
   }
@@ -134,7 +136,11 @@ public class InternalGPS
         return;
       }
 
-      sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+      if(accelerometer != null) {
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        hasAcceleration = true;
+      }
+
 
       setConnectedSafe(1); // waiting for fix
 
@@ -191,7 +197,7 @@ public class InternalGPS
                 location.hasBearing(), location.getBearing(),
                 location.hasSpeed(), location.getSpeed(),
                 location.hasAccuracy(), location.getAccuracy(),
-                true, acceleration);
+                hasAcceleration, acceleration);
   }
 
   private void setConnectedSafe(int connected) {
@@ -260,23 +266,34 @@ public class InternalGPS
   public void onSensorChanged(SensorEvent event) {
     acceleration = Math.sqrt((double) event.values[0]*event.values[0] +
                              (double) event.values[1]*event.values[1] +
-                             (double) event.values[2]*event.values[2]) /
-                   SensorManager.GRAVITY_EARTH;
-    switch (windowManager.getDefaultDisplay().getOrientation()) {
-      case Surface.ROTATION_0:   // g = -y
-        acceleration *= Math.signum(event.values[1]);
-        break;
-      case Surface.ROTATION_90:  // g = -x
-        acceleration *= Math.signum(event.values[0]);
-        break;
-      case Surface.ROTATION_180:  // g = y
-        acceleration *= Math.signum(-event.values[1]);
-        break;
-      case Surface.ROTATION_270:  // g = x
-        acceleration *= Math.signum(-event.values[0]);
-        break;
+                             (double) event.values[2]*event.values[2]) / SensorManager.GRAVITY_EARTH;
+
+    try {
+      switch (windowManager.getDefaultDisplay().getOrientation()) {
+        case Surface.ROTATION_0:   // g = -y
+          acceleration *= Math.signum(event.values[1]);
+          break;
+        case Surface.ROTATION_90:  // g = -x
+          acceleration *= Math.signum(event.values[0]);
+          break;
+        case Surface.ROTATION_180:  // g = y
+          acceleration *= Math.signum(-event.values[1]);
+          break;
+        case Surface.ROTATION_270:  // g = x
+          acceleration *= Math.signum(-event.values[0]);
+          break;
+      }
+      hasAcceleration = true;
+      // TODO: do lowpass filtering to remove vibrations?!?
+
+    } catch (RuntimeException e) {
+      /* this Exception was reported by Android Vitals
+          Device : Samsung Galaxy J7(2016) (j7xelte), 2048MB RAM, Android 7.0
+          throw by android.hardware.display.DisplayManagerGlobal.getDisplayInfo
+         no idea why ...
+       */
+      hasAcceleration = false;
     }
-    // TODO: do lowpass filtering to remove vibrations?!?
   }
 
   public class GPSFixChangeReceiver extends BroadcastReceiver {
