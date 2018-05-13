@@ -1567,7 +1567,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     double lat = 0, lon = 0;
     bool flyzone = false;
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
-
+    bool InsideMap = false;
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
     charset cs = charset::unknown;
     while (ReadString(fp, READLINE_LENGTH, Text, cs)) {
@@ -1626,13 +1626,15 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                     }
                                 }
                             }
-                            if (newairspace) {
-                                newairspace->Init(Name, Type, Base, Top, flyzone, ASComment);
+                            if(InsideMap) {
+                              if (newairspace) {
+                                newairspace->Init(Name, Type, Base, Top, flyzone);
 
                                 { // Begin Lock
                                     ScopeLock guard(_csairspaces);
                                     _airspaces.push_back(newairspace);
                                 } // End Lock
+                              }
                             }
 
                             Name[0] = '\0';
@@ -1646,6 +1648,10 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                             flyzone = false;
                             newairspace = NULL;
                             parsing_state = 0;
+                            if( WaypointsOutOfRange > 1) // exclude?
+                              InsideMap = false;
+                            else
+                              InsideMap = true;
                         }
                         // New AC
                         p++; //Skip space
@@ -1742,6 +1748,11 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
                             _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 1 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
+                            if(!InsideMap) {
+                              if (RasterTerrain::WaypointIsInTerrainRange(CenterX,CenterY)) {
+                                InsideMap = true;
+                              }
+                            }
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
@@ -1752,6 +1763,11 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
                             _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 2 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
+                            if(!InsideMap) {
+                              if (RasterTerrain::WaypointIsInTerrainRange(CenterX,CenterY)) {
+                                InsideMap = true;
+                              }
+                            }
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
@@ -1763,12 +1779,23 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         Radius = (Radius * NAUTICALMILESTOMETRES);
                         Latitude = CenterX;
                         Longitude = CenterY;
+
+                        if(!InsideMap) {
+                          if (RasterTerrain::WaypointIsInTerrainRange(Latitude,Longitude)) {
+                            InsideMap = true;
+                          } 
+                        }
                         break;
 
                     case _T('P'): //DP - polygon point
                         p++;
                         p++; // skip P and space
                         if (ReadCoords(p, &lon, &lat)) {
+                            if(InsideMap == false) {
+                              if (RasterTerrain::WaypointIsInTerrainRange(lat,lon))  {
+                                InsideMap = true;
+                              } 
+                            }
                             points.push_back(CPoint2D(lat, lon));
                         } else {
                             _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
@@ -1859,12 +1886,16 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
               newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
             }
         }
-        if(newairspace) {
-          newairspace->Init(Name, Type, Base, Top, flyzone , ASComment   );
-          { // Begin Lock
-            ScopeLock guard(_csairspaces);
-            _airspaces.push_back(newairspace);
-          } // End Lock
+
+        if(InsideMap)
+        {
+          if(newairspace) {
+            newairspace->Init(Name, Type, Base, Top, flyzone , ASComment   );
+            { // Begin Lock
+              ScopeLock guard(_csairspaces);
+              _airspaces.push_back(newairspace);
+            } // End Lock
+          }
         }
     }
 
@@ -2151,7 +2182,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         CPoint2DArray points;
         TCHAR* remaining;
         TCHAR* point = _tcstok_r((TCHAR*)subNode.getText(0),TEXT(","),&remaining);
+        bool InsideMap = false;
         bool error = (point==nullptr);
+        if( WaypointsOutOfRange > 1) // exclude?
+          InsideMap = false;
+        else
+          InsideMap = true;
         while(point!=nullptr && !error) {
             TCHAR* other;
             TCHAR* coord=_tcstok_r(point,TEXT(" "),&other);
@@ -2162,9 +2198,26 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             if ((error=(coord==nullptr))) break;
             double lat=_tcstod(coord,nullptr);
             if ((error=(lat<-90 || lat>90))) break;
+
+            if(!InsideMap)
+            {
+
+              if (RasterTerrain::WaypointIsInTerrainRange(lat,lon))
+              {
+                InsideMap = true;
+              } else {};
+            }
             points.push_back(CPoint2D(lat, lon));
             point = _tcstok_r(nullptr,TEXT(","),&remaining);
         }
+
+        if(!InsideMap) {
+#ifdef WORKBENCH
+            StartupStore(TEXT(".. Skipping ASP because outside of loaded Terrain.%s"), NEWLINE);
+#endif
+            continue;
+        }
+
         if(error) {
             StartupStore(TEXT(".. Skipping ASP because failed to parse POLYGON points list.%s"), NEWLINE);
             continue;
