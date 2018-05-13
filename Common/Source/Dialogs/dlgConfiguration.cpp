@@ -3897,6 +3897,7 @@ int ival;
     if (WaypointsOutOfRange != wp->GetDataField()->GetAsInteger()) {
       WaypointsOutOfRange = wp->GetDataField()->GetAsInteger();
       WAYPOINTFILECHANGED= true;
+      AIRSPACEFILECHANGED = true;
     }
   }
 
