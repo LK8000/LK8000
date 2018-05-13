@@ -21,10 +21,12 @@ bool RasterMap::GetMapCenter(double *lat, double *lon) const {
 }
 
 bool RasterMap::IsInside(double lat, double lon) const {
-  return ((lat <= TerrainInfo.Top) &&
-          (lat >= TerrainInfo.Bottom) &&
-          (lon <= TerrainInfo.Right) &&
-          (lon >= TerrainInfo.Left));
+  double dlat = fabs( TerrainInfo.Top- TerrainInfo.Bottom) * 0.05f;
+  double dlon = fabs( TerrainInfo.Right- TerrainInfo.Left) * 0.05f;
+  return ((lat <= TerrainInfo.Top   + dlat) &&
+          (lat >= TerrainInfo.Bottom- dlat) &&
+          (lon <= TerrainInfo.Right +dlon) &&
+          (lon >= TerrainInfo.Left  -dlon));
 }
 
 
