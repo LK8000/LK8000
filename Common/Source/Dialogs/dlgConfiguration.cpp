@@ -76,7 +76,7 @@ static WndForm *wf=NULL;
 #define NUMOFCONFIGPAGES 22 // total number of config pages including engineering
 #define NUMENGPAGES 1       // number of engineering hidden pages, part of NUMOFCONFIGPAGES
 #define FIRST_INFOBOX_PAGE 13 
-#define MAXNUMDEVICES 6     // A B C D E F
+
 
 static WndFrame *wConfig[NUMOFCONFIGPAGES]={};
 
@@ -1702,7 +1702,6 @@ static void setVariables( WndForm *pOwner) {
         LPCTSTR DeviceName = devRegisterGetName(i);
         if (_tcscmp(DeviceName, dwDeviceName[j]) == 0) {
           dwDeviceIndex[j] = i;
-          break;
         }
       }  
     }
@@ -4751,18 +4750,27 @@ void InitDlgDevice(WndForm *pWndForm) {
 
   // spacing between buttons and left&right
   const unsigned int SPACEBORDER = DLGSCALE(2);
-  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES + 1))) / MAXNUMDEVICES;
+  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (NUMDEV + 1))) / NUMDEV;
   unsigned int lx = SPACEBORDER; // count from 0
 
-  static_assert(MAXNUMDEVICES == array_size(DeviceList), "wrong array size");
+  static_assert(NUMDEV == array_size(DeviceList), "wrong array size");
 
-  for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
+  for(unsigned i = 0; i < NUMDEV; i++) {
     TCHAR szWndName[5];
     _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
     WindowControl * pWnd = pWndForm->FindByName(szWndName);
     if(pWnd) {
       pWnd->SetWidth(w);
       pWnd->SetLeft(lx);
+
+      if(_tcslen(dwDeviceName[i]) == 0)
+      {
+        DeviceList[i].Disabled = true;
+      }
+      else
+      {
+        DeviceList[i].Disabled = false;
+      }
       ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
       ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
       if(i==0) OnA((WndButton*)pWnd);
