@@ -195,7 +195,7 @@ static void OnSpace(WndButton* pWnd) {
     PlayResource(TEXT("IDR_WAV_CLICK"));
     TCHAR Caption = ' ';
 
-    if(WaypointKeyRed == KEYRED_NONE) Caption = '_';
+    if(WaypointKeyRed == KEYRED_NONE) Caption = ' ';
     if (cursor < max_width - 1) {
         edittext[cursor++] = ToUpper(Caption);
     }
