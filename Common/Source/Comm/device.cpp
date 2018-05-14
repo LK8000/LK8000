@@ -848,7 +848,15 @@ BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable)
  * @return FALSE if error on one device.
  */
 BOOL devPutMacCready(double MacCready) {
-    return for_all_device(&DeviceDescriptor_t::PutMacCready, MacCready);
+  BOOL res= true;
+  static int OldMC  =-1;
+  int NewMC = (int)(MacCready*10);
+  if ( NewMC != OldMC )
+  {
+    OldMC  = NewMC;
+    res = for_all_device(&DeviceDescriptor_t::PutMacCready, MacCready);
+  }
+  return res;
 }
 
 

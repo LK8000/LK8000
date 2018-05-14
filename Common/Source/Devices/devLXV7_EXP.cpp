@@ -527,11 +527,17 @@ BOOL DevLXV7_EXP::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* i
   //    d->Com->WriteString(szTmp);
     }
   }
+
+
   if(LXV7_EXP_iGPSBaudrate ==0)
   {
+    static int retrys = 0;
+    if(retrys++ < 20)
+    {
     _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
     LXV7_EXPNMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
+    }
   }
 
 if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)

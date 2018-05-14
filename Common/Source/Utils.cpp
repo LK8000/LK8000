@@ -131,6 +131,7 @@ void CheckSetMACCREADY(const double value) {
             MACCREADY=12;
         else
             MACCREADY=value;
+   devPutMacCready(MACCREADY);            
 }
 
 void SetOverColorRef() {
