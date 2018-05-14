@@ -533,8 +533,9 @@ void Globals_Init(void) {
   PDABatteryFlag=0;
 
   szPolarFile[0] = TEXT('\0');
-  szAirspaceFile[0] = TEXT('\0');
-  szAdditionalAirspaceFile[0] = TEXT('\0');
+
+  for(unsigned int i = 0; i < NO_AS_FILES; i++)
+    szAirspaceFile[i][0] = TEXT('\0');
   szWaypointFile[0] = TEXT('\0');
   szAdditionalWaypointFile[0] = TEXT('\0');
   szTerrainFile[0] = TEXT('\0');

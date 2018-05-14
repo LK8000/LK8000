@@ -19,12 +19,15 @@
       <WndProperty Name="prpAdditionalWaypointFile" Caption="_@M807_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H104_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
+<!--       
       <WndProperty Name="prpAirspaceFile" Caption="_@M63_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
       <WndProperty Name="prpAdditionalAirspaceFile" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H106_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
+-->
+      <WndButton Name="cmdAirspaceFiles"  Caption="_@M63_" X="103" Y="-1" Width="120"  Height="22" Font="2" OnClickNotify="OnAirspaceFilesClicked" />      
       <WndProperty Name="prpAirfieldFile" Caption="_@M799_"  X="2" Y="-1"   Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H107_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
