@@ -1717,7 +1717,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                             _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if(!InsideMap) {
-                              if (RasterTerrain::WaypointIsInTerrainRange(CenterX,CenterY)) {
+                              if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
                                 InsideMap = true;
                               }
                             }
@@ -1732,7 +1732,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                             _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if(!InsideMap) {
-                              if (RasterTerrain::WaypointIsInTerrainRange(CenterX,CenterY)) {
+                              if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
                                 InsideMap = true;
                               }
                             }
@@ -1745,11 +1745,11 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         Radius = StrToDouble(p, NULL);
                         Radius = (Radius * NAUTICALMILESTOMETRES);
-                        Latitude = CenterX;
-                        Longitude = CenterY;
+                    //    Latitude = CenterX;
+                   //     Longitude = CenterY;
 
                         if(!InsideMap) {
-                          if (RasterTerrain::WaypointIsInTerrainRange(Latitude,Longitude)) {
+                          if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
                             InsideMap = true;
                           } 
                         }
@@ -1759,7 +1759,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         p++; // skip P and space
                         if (ReadCoords(p, &lon, &lat)) {
-                            if(InsideMap == false) {
+                            if(!InsideMap) {
                               if (RasterTerrain::WaypointIsInTerrainRange(lat,lon))  {
                                 InsideMap = true;
                               } 
