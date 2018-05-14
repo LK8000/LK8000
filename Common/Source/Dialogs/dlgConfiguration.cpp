@@ -797,6 +797,10 @@ static void OnAirspaceWarningParamsClicked(WndButton* pWnd) {
     dlgAirspaceWarningParamsShowModal();
 }
 
+static void OnAirspaceFilesClicked(WndButton* pWnd) {
+  dlgAirspaceFilesShowModal();
+}
+
 static void OnAirspaceModeClicked(WndButton* pWnd) {
     if (dlgAirspaceShowModal(false)) {
         requirerestart = true;
@@ -1355,6 +1359,7 @@ static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnAirspaceColoursClicked),
+  ClickNotifyCallbackEntry(OnAirspaceFilesClicked),
   ClickNotifyCallbackEntry(OnAirspaceModeClicked),
   ClickNotifyCallbackEntry(OnAirspaceWarningParamsClicked),
   DataAccessCallbackEntry(OnUTCData),
@@ -2471,7 +2476,7 @@ DataField* dfe = wp->GetDataField();
     }
     wp->RefreshDisplay();
   }
-
+/*
   _tcscpy(temptext,szAirspaceFile);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
   if (wp) {
@@ -2495,7 +2500,7 @@ DataField* dfe = wp->GetDataField();
     }
     wp->RefreshDisplay();
   }
-
+*/
   _tcscpy(temptext,szWaypointFile);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
   if (wp) {
@@ -2507,6 +2512,9 @@ DataField* dfe = wp->GetDataField();
       dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_COMPE));
       dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_OPENAIP));
       dfe->Lookup(temptext);
+
+
+      
     }
     wp->RefreshDisplay();
   }
@@ -4019,7 +4027,7 @@ int ival;
       WAYPOINTFILECHANGED= true;
     }
   }
-
+/*
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
@@ -4039,7 +4047,7 @@ int ival;
       AIRSPACEFILECHANGED= true;
     }
   }
-
+*/
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();

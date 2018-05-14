@@ -825,8 +825,8 @@ GEXTERN LKFont   LK8PanelUnitFont;
 // File names and paths
 //
 GEXTERN TCHAR szPolarFile[MAX_PATH];
-GEXTERN TCHAR szAirspaceFile[MAX_PATH];
-GEXTERN TCHAR szAdditionalAirspaceFile[MAX_PATH];
+GEXTERN TCHAR szAirspaceFile[NO_AS_FILES][MAX_PATH];
+//GEXTERN TCHAR szAdditionalAirspaceFile[MAX_PATH];
 GEXTERN TCHAR szWaypointFile[MAX_PATH];
 GEXTERN TCHAR szAdditionalWaypointFile[MAX_PATH];
 GEXTERN TCHAR szTerrainFile[MAX_PATH];

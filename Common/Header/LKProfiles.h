@@ -107,7 +107,11 @@ char szRegistryAircraftCategory[]= "AircraftCategory1";
 char szRegistryAircraftRego[]=  "AircraftRego1";
 char szRegistryAircraftType[]=  "AircraftType1";
 char szRegistryAirfieldFile[]=  "AirfieldFile";
-char szRegistryAirspaceFile[]=  "AirspaceFile";
+
+
+char *szRegistryAirspaceFile[]=  {"AirspaceFile1","AirspaceFile2","AirspaceFile3","AirspaceFile4","AirspaceFile5",
+                                              "AirspaceFile6","AirspaceFile7","AirspaceFile8","AirspaceFile9"};
+
 char szRegistryAirspaceFillType[]= "AirspaceFillType";
 char szRegistryAirspaceOpacity[]= "AirspaceOpacity";
 char szRegistryAirspaceWarningDlgTimeout[]= "AirspaceWarningDlgTimeout";
@@ -456,7 +460,7 @@ extern const char szRegistryAircraftCategory[];
 extern const char szRegistryAircraftRego[];
 extern const char szRegistryAircraftType[];
 extern const char szRegistryAirfieldFile[];
-extern const char szRegistryAirspaceFile[];
+extern const char *szRegistryAirspaceFile[];
 extern const char szRegistryAirspaceFillType[];
 extern const char szRegistryAirspaceOpacity[];
 extern const char szRegistryAirspaceWarningDlgTimeout[];

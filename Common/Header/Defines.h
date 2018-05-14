@@ -960,5 +960,8 @@ static const double PI = (4*atan(1));
 #define MAX_PATH 260
 #endif
 
+#ifndef NO_AS_FILES
+#define NO_AS_FILES 9
+#endif
 
 #endif

@@ -86,6 +86,7 @@ void dlgBottomBarShowModal(void);
 void dlgInfoPagesShowModal(void);
 void dlgProfilesShowModal(short mode);
 void dlgAirspaceWarningParamsShowModal(void);
+void dlgAirspaceFilesShowModal(void);
 void dlgMultimapsShowModal(void);
 void dlgIgcFileShowModal(void);
 

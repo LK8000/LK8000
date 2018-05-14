@@ -82,14 +82,15 @@ void LKProfileSave(const TCHAR *szFile)
 
 
   rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
-  rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
+
   rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
 //  >> Moved to AircraftFile <<
 //  rprintf(szRegistryAircraftCategory, AircraftCategory);
 //  rprintf(szRegistryAircraftRego, AircraftRego_Config);
 //  rprintf(szRegistryAircraftType, AircraftType_Config);
   rprintf(szRegistryAirfieldFile, szAirfieldFile);
-  rprintf(szRegistryAirspaceFile, szAirspaceFile);
+  for(unsigned int i = 0; i < NO_AS_FILES; i++)
+    rprintf(szRegistryAirspaceFile[i], szAirspaceFile[i]);
   rprintf(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType());
   rprintf(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity());
   rprintf(szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout);

@@ -416,7 +416,9 @@ _@M2322_ "Enable Radar"
 +_@M2190_ "Distance to Next Turnpoint Cylinder Radius"
 +_@M2191_ "Cyl Dist"
 
-
+change into
+_@M63_ "Airspace Files"
+_@M64_ "Airspace File "
    
 HELP FILE
 
@@ -443,4 +445,6 @@ Screen Orientation (see help)
 
 @1298
 Tracking Mode (see help)
+
+
 
