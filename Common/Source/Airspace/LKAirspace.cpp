@@ -2170,12 +2170,13 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
 
 void CAirspaceManager::ReadAirspaces() {
     int fileCounter=0;
-    for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
+  //  for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
+    for(unsigned int i = 0; i < NO_AS_FILES; i++) {
         fileCounter++;
-        if(_tcslen(airSpaceFile) > 0) { // Check if there is a filename present
+        if(_tcslen(szAirspaceFile[i]) > 0) { // Check if there is a filename present
             
             TCHAR szFile[MAX_PATH] = TEXT("\0");
-            LocalPath(szFile, _T(LKD_AIRSPACES), airSpaceFile);
+            LocalPath(szFile, _T(LKD_AIRSPACES), szAirspaceFile[i]);
             LPCTSTR wextension = _tcsrchr(szFile, _T('.'));
 
             bool readOk=false;
@@ -2204,7 +2205,7 @@ void CAirspaceManager::ReadAirspaces() {
                 StartupStore(TEXT("... Airspace file %d without extension.%s"), fileCounter, NEWLINE);
             }
             if(!readOk) { // if file was OK remember otherwise forget it
-                _tcscpy(airSpaceFile, _T(""));
+                _tcscpy(szAirspaceFile[i], _T(""));
             }
 
         } else {

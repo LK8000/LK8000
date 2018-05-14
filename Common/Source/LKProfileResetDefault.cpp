@@ -388,8 +388,10 @@ void LKProfileResetDefault(void) {
 
 
   _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
-  _tcscpy(szAirspaceFile,_T("DEMO.txt"));
-  szAdditionalAirspaceFile[0] = TEXT('\0');
+  for(unsigned int i = 0; i < NO_AS_FILES; i++)
+    _tcscpy(szAirspaceFile[0],_T(""));
+  _tcscpy(szAirspaceFile[0],_T("DEMO.txt"));
+
   _tcscpy(szWaypointFile,_T("DEMO.cup"));
   szAdditionalWaypointFile[0] = TEXT('\0');
   _tcscpy(szTerrainFile,_T("DEMO.DEM"));
