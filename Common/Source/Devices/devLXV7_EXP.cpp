@@ -5,7 +5,7 @@
 
    $Id$
 */
-//_____________________________________________________________________includes_
+
 
 #include "externs.h"
 #include "devLXV7_EXP.h"
@@ -809,7 +809,7 @@ bool DevLXV7_EXP::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*
 {
 
 
-// $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
+// $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
 // Sc  float (m/s)
 // Netto  float (m/s)
 // Relativ  float (m/s)
