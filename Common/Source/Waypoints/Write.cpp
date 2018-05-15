@@ -222,12 +222,12 @@ void WriteWayPointFile(FILE *fp) {
 void WaypointWriteFiles(void) {
     LockTaskData();
 
-    TCHAR* WaypointFileList[] = {
+ /*   TCHAR* WaypointFileList[] = {
             szWaypointFile,
             szAdditionalWaypointFile
-    };
+    };*/
     globalFileNum = 0;
-    for( TCHAR* szFile : WaypointFileList) {
+    for( TCHAR* szFile : szWaypointFile) {
 
         const int type = WpFileType[globalFileNum+1];
 

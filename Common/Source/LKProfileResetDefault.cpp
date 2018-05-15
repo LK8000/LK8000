@@ -392,7 +392,9 @@ void LKProfileResetDefault(void) {
     _tcscpy(szAirspaceFile[0],_T(""));
   _tcscpy(szAirspaceFile[0],_T("DEMO.txt"));
 
-  _tcscpy(szWaypointFile,_T("DEMO.cup"));
+  for(unsigned int i = 0; i < NO_WP_FILES; i++)
+    _tcscpy(szWaypointFile[0],_T(""));
+  _tcscpy(szWaypointFile[0],_T("DEMO.cup"));
   szAdditionalWaypointFile[0] = TEXT('\0');
   _tcscpy(szTerrainFile,_T("DEMO.DEM"));
   _tcscpy(szAirfieldFile,_T("WAYNOTES.txt"));

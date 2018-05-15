@@ -972,5 +972,9 @@ static const double PI = (4*atan(1));
 #ifndef NO_AS_FILES
 #define NO_AS_FILES 9
 #endif
+#ifndef NO_WP_FILES
+#define NO_WP_FILES 9
+#endif
+
 
 #endif

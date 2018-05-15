@@ -167,5 +167,5 @@
     binfile IDR_XML_THERMALDETAILS, Common/Data/Dialogs/dlgThermalDetails.xml
     binfile IDR_XML_PROFILES, Common/Data/Dialogs/dlgProfiles.xml
     binfile IDR_XML_AIRSPACEWARNINGPARAMS, Common/Data/Dialogs/dlgAirspaceWarningParams.xml
-    binfile IDR_XML_AIRSPACEFILES_L, Common/Data/Dialogs/dlgFiles_L.xml
-    binfile IDR_XML_AIRSPACEFILES_P, Common/Data/Dialogs/dlgFiles_P.xml
+    binfile IDR_XML_FILES_L, Common/Data/Dialogs/dlgFiles_L.xml
+    binfile IDR_XML_FILES_P, Common/Data/Dialogs/dlgFiles_P.xml
