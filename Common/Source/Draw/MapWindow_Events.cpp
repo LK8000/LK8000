@@ -20,7 +20,7 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat) {
     double Dist;
     unsigned int i;
     const double range = zoom.RealScale()*500;
-    double dyn_range = std::max(5000.0, range*3.5);
+    double dyn_range = std::max(5000.0, range*1.0);
 
     //StartupStore(_T("RANGE=%f\n"),dyn_range);
     //LKSound(TEXT("LK_BELL.WAV"));
