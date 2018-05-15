@@ -132,7 +132,7 @@
 #define UTF8PICTORIALS  false
 #define  FLARM_PICTO_THREADSAFE
 #else
-#define  UTF8PICTORIALS  true
+#define  UTF8PICTORIALS  false
 #define  FLARM_PICTO_THREADSAFE
 #endif
 
