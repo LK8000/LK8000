@@ -801,6 +801,10 @@ static void OnAirspaceFilesClicked(WndButton* pWnd) {
   dlgAirspaceFilesShowModal();
 }
 
+static void OnWaypointFilesClicked(WndButton* pWnd) {
+  dlgWaypointFilesShowModal();
+}
+
 static void OnAirspaceModeClicked(WndButton* pWnd) {
     if (dlgAirspaceShowModal(false)) {
         requirerestart = true;
@@ -1360,6 +1364,7 @@ static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnAirspaceColoursClicked),
   ClickNotifyCallbackEntry(OnAirspaceFilesClicked),
+  ClickNotifyCallbackEntry(OnWaypointFilesClicked),
   ClickNotifyCallbackEntry(OnAirspaceModeClicked),
   ClickNotifyCallbackEntry(OnAirspaceWarningParamsClicked),
   DataAccessCallbackEntry(OnUTCData),
@@ -2472,63 +2477,6 @@ DataField* dfe = wp->GetDataField();
 #endif
 #endif
       dfe->Sort();
-      dfe->Lookup(temptext);
-    }
-    wp->RefreshDisplay();
-  }
-/*
-  _tcscpy(temptext,szAirspaceFile);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_AIRSPACES));
-      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_OPENAIP));
-      dfe->Lookup(temptext);
-    }
-    wp->RefreshDisplay();
-  }
-
-  _tcscpy(temptext,szAdditionalAirspaceFile);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalAirspaceFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_AIRSPACES));
-      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_OPENAIP));
-      dfe->Lookup(temptext);
-    }
-    wp->RefreshDisplay();
-  }
-*/
-  _tcscpy(temptext,szWaypointFile);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_WINPILOT));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_XCSOAR));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_CUP));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_COMPE));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_OPENAIP));
-      dfe->Lookup(temptext);
-
-
-      
-    }
-    wp->RefreshDisplay();
-  }
-
-  _tcscpy(temptext,szAdditionalWaypointFile);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalWaypointFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_WINPILOT));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_XCSOAR));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_CUP));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_COMPE));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_OPENAIP));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -4007,47 +3955,6 @@ int ival;
     }
   }
 
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szWaypointFile)) {
-      _tcscpy(szWaypointFile,temptext);
-      WAYPOINTFILECHANGED= true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalWaypointFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szAdditionalWaypointFile)) {
-      _tcscpy(szAdditionalWaypointFile,temptext);
-      WAYPOINTFILECHANGED= true;
-    }
-  }
-/*
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szAirspaceFile)) {
-      _tcscpy(szAirspaceFile,temptext);
-      AIRSPACEFILECHANGED= true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalAirspaceFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szAdditionalAirspaceFile)) {
-      _tcscpy(szAdditionalAirspaceFile,temptext);
-      AIRSPACEFILECHANGED= true;
-    }
-  }
-*/
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();

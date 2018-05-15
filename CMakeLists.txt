@@ -633,7 +633,8 @@ add_library( LK8000 SHARED
 
     Common/Source/Dialogs/AddCustomKeyList.cpp
     Common/Source/Dialogs/dlgAirspace.cpp
-    Common/Source/Dialogs/dlgAirspaceFiles.cpp    
+    Common/Source/Dialogs/dlgAirspaceFiles.cpp 
+    Common/Source/Dialogs/dlgWaypointFiles.cpp      
     Common/Source/Dialogs/dlgAirspaceWarningParams.cpp
     Common/Source/Dialogs/dlgAirspaceColours.cpp
     Common/Source/Dialogs/dlgMultiSelectList.cpp

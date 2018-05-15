@@ -26,13 +26,13 @@ void ReadWayPoints(void)
     InitVirtualWaypoints();	// 091103
 
     globalFileNum = 0;
-
+/*
     TCHAR* WaypointFileList[] = {
         szWaypointFile,
         szAdditionalWaypointFile
-    };
+    };*/
 
-    for( TCHAR* szFile : WaypointFileList) {
+    for( TCHAR* szFile : szWaypointFile) {
 
         if (_tcslen(szFile) > 0) {
             TCHAR szFilePath[MAX_PATH];

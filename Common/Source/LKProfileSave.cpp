@@ -83,7 +83,7 @@ void LKProfileSave(const TCHAR *szFile)
 
   rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
 
-  rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
+//  rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
 //  >> Moved to AircraftFile <<
 //  rprintf(szRegistryAircraftCategory, AircraftCategory);
 //  rprintf(szRegistryAircraftRego, AircraftRego_Config);
@@ -318,7 +318,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryUseUngestures,UseUngestures);
   rprintf(szRegistryUseTotalEnergy,UseTotalEnergy_Config);
   rprintf(szRegistryWarningTime,WarningTime);
-  rprintf(szRegistryWayPointFile,szWaypointFile);
+  for(unsigned int i = 0; i < NO_WP_FILES; i++)
+    rprintf(szRegistryWayPointFile[i],szWaypointFile[i]);
   rprintf(szRegistryWaypointsOutOfRange,WaypointsOutOfRange);
   rprintf(szRegistryWindCalcSpeed,WindCalcSpeed*1000); // m/s x1000
   rprintf(szRegistryWindCalcTime,WindCalcTime);
