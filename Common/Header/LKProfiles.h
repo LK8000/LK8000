@@ -101,15 +101,14 @@ const char *szRegistryAirspaceMode[] =     {  "AirspaceMode0",
 };
 
 char szRegistryAcknowledgementTime[]=	 "AcknowledgementTime1";
-char szRegistryAdditionalAirspaceFile[]=  "AdditionalAirspaceFile";
-char szRegistryAdditionalWayPointFile[]=  "AdditionalWPFile";
+
 char szRegistryAircraftCategory[]= "AircraftCategory1";
 char szRegistryAircraftRego[]=  "AircraftRego1";
 char szRegistryAircraftType[]=  "AircraftType1";
 char szRegistryAirfieldFile[]=  "AirfieldFile";
 
 
-char *szRegistryAirspaceFile[]=  {"AirspaceFile1","AirspaceFile2","AirspaceFile3","AirspaceFile4","AirspaceFile5",
+const char *szRegistryAirspaceFile[]=  {"AirspaceFile","AdditionalAirspaceFile","AirspaceFile3","AirspaceFile4","AirspaceFile5",
                                               "AirspaceFile6","AirspaceFile7","AirspaceFile8","AirspaceFile9"};
 
 char szRegistryAirspaceFillType[]= "AirspaceFillType";
@@ -349,7 +348,7 @@ char szRegistryUseExtSound6[] = "UseExtSound6";
 char szRegistryUseUngestures[] = "UseUngestures";
 char szRegistryUseTotalEnergy[] = "UseTotalEnergy";
 char szRegistryWarningTime[]=		 "WarnTime";
-char szRegistryWayPointFile[]=  "WPFile";
+const char *szRegistryWayPointFile[]= { "WPFile", "AdditionalWPFile","WPFile3","WPFile4","WPFile5","WPFile6","WPFile7","WPFile8","WPFile9"};
 char szRegistryWaypointsOutOfRange[] = "WaypointsOutOfRange2";
 char szRegistryWindCalcSpeed[] =          "WindCalcSpeed";
 char szRegistryWindCalcTime[] =          "WindCalcTime";
@@ -701,7 +700,7 @@ extern const char szRegistryUseExtSound6[];
 extern const char szRegistryUseUngestures[];
 extern const char szRegistryUseTotalEnergy[];
 extern const char szRegistryWarningTime[];
-extern const char szRegistryWayPointFile[];
+extern const char *szRegistryWayPointFile[];
 extern const char szRegistryWaypointsOutOfRange[];
 extern const char szRegistryWindCalcSpeed[];
 extern const char szRegistryWindCalcTime[];

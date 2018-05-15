@@ -1204,6 +1204,7 @@ DLGS	:=\
 	$(DLG)/AddCustomKeyList.cpp \
 	$(DLG)/dlgAirspace.cpp \
 	$(DLG)/dlgAirspaceFiles.cpp \
+	$(DLG)/dlgWaypointFiles.cpp \
 	$(DLG)/dlgAirspaceWarningParams.cpp \
 	$(DLG)/dlgAirspaceColours.cpp \
 	$(DLG)/dlgMultiSelectList.cpp \
