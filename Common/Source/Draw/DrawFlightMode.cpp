@@ -22,57 +22,57 @@ LKColor Col = RGB_BLACK;
     switch(Number)
     {
       case 0:
-        _stprintf(pPict, MsgToken(2350));  // _@M2350_ "Ⓜ"
+        _stprintf(pPict,_T("%s"), MsgToken(2350));  // _@M2350_ "Ⓜ"
         Col = LKColor(0,245,255);
       break;
 
       case 1:
-        _stprintf(pPict, MsgToken(2351)); // _@M2351_ "①"
+        _stprintf(pPict,_T("%s"), MsgToken(2351)); // _@M2351_ "①"
         Col = LKColor(0,255,127);
       break;
 
       case 2:
-        _stprintf(pPict,MsgToken(2352));  // _@M2352_ "②"
+        _stprintf(pPict,_T("%s"), MsgToken(2352));  // _@M2352_ "②"
         Col = LKColor(205,0,0);
       break;
 
       case 3:
-        _stprintf(pPict, MsgToken(2353));  // _@M2353_ "③"
+        _stprintf(pPict,_T("%s"), MsgToken(2353));  // _@M2353_ "③"
         Col = LKColor(255,130,71);
       break;
 
       case 4:
-        _stprintf(pPict, MsgToken(2354));  // _@M2354_ "④"
+        _stprintf(pPict,_T("%s"), MsgToken(2354));  // _@M2354_ "④"
         Col = LKColor(255,165,0);
       break;
 
       case 5:
-        _stprintf(pPict, MsgToken(2355));  // _@M2354_ "⑤"
+        _stprintf(pPict,_T("%s"), MsgToken(2355));  // _@M2354_ "⑤"
         Col = LKColor(255,130,71);
       break;
 
       case 6:
-        _stprintf(pPict, MsgToken(2356));   // _@M2354_ "⑥"
+        _stprintf(pPict,_T("%s"), MsgToken(2356));   // _@M2354_ "⑥"
         Col = LKColor(82,82,82);
       break;
 
       case 7:
-        _stprintf(pPict, MsgToken(2357));    // _@M2354_ "⑦"
+        _stprintf(pPict,_T("%s"), MsgToken(2357));    // _@M2354_ "⑦"
         Col = RGB_DARKBLUE;
       break;
 
       case 8:
-        _stprintf(pPict, MsgToken(2358));   // _@M2354_ "⑧"
+        _stprintf(pPict,_T("%s"), MsgToken(2358));   // _@M2354_ "⑧"
         Col = RGB_BLACK;
       break;
 
       case 9:
-        _stprintf(pPict, MsgToken(2359));    // _@M2354_ "⑨"
+        _stprintf(pPict,_T("%s"), MsgToken(2359));    // _@M2354_ "⑨"
         Col = RGB_BLACK;
       break;
 
       default:
-        _stprintf(pPict, MsgToken(2360));   // _@M2354_ "⑩"
+        _stprintf(pPict,_T("%s"), MsgToken(2360));   // _@M2354_ "⑩"
         Col = RGB_BLACK;
       break;
     }
