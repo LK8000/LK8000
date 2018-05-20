@@ -343,7 +343,7 @@ TCHAR Tmp2[20];
       if((ASFrequency >= 118) && (ASFrequency <= 138))
       {
         LKSound(TEXT("LK_TICK.WAV"));
-        _sntprintf(Tmp2, 10, (TCHAR*)aCommentTextLine[ItemIndex]);
+        _sntprintf(Tmp2, 10, _T("%s"),(TCHAR*)aCommentTextLine[ItemIndex]);
         Tmp2[10]=0;
         _stprintf(Tmp,_T("%s%s%7.3fMHz"),Tmp2,NEWLINE,ASFrequency);
         devPutFreqActive(ASFrequency, Tmp2);
@@ -401,7 +401,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   LKASSERT(SelectedWaypoint>=0);
 
   // if SeeYou waypoint and it is landable
-  if (WPLSEL.Format == LKW_CUP && WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
+  if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP) &&  WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
      TCHAR ttmp[50];
 		_stprintf(sTmp, TEXT("%s "), WPLSEL.Name);
 		// ICAO name probably, let's print it
