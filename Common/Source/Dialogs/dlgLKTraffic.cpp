@@ -199,7 +199,7 @@ TCHAR Tmp[255];
       {
         LKSound(TEXT("LK_TICK.WAV"));
         _stprintf(Tmp,_T("%s  %s %7.3fMHz"),(TCHAR*)flarmId->reg , NEWLINE  ,ASFrequency);
-        StartupStore(Tmp);
+        StartupStore(_T("%s"),Tmp);
         devPutFreqActive(ASFrequency, (TCHAR*)flarmId->reg );
         DoStatusMessage(_T(""), Tmp );
       }
