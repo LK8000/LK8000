@@ -130,10 +130,10 @@
 
 #ifdef  UNDER_CE
 #define UTF8PICTORIALS  false
-#define  FLARM_PICTO_THREADSAFE
+//#define  FLARM_PICTO_THREADSAFE
 #else
 #define  UTF8PICTORIALS  false
-#define  FLARM_PICTO_THREADSAFE
+//#define  FLARM_PICTO_THREADSAFE
 #endif
 
 // ----------------------------------------------------------------------------------------
