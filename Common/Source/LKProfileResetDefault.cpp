@@ -266,6 +266,7 @@ void LKProfileResetDefault(void) {
   InverseInfoBox_Config=true; // black
   Appearance.InfoBoxModel=apImPnaGeneric;
 
+  Appearance.UTF8Pictorials = false;
 
   AutoAdvance_Config = 1;
 
