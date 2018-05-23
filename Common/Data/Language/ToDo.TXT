@@ -444,3 +444,5 @@ Screen Orientation (see help)
 @1298
 Tracking Mode (see help)
 
+_@M2385_ "Map Symbols"
+_@M2386_ "UTF8"  

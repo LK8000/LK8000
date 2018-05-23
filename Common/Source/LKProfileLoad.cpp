@@ -271,6 +271,13 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 	Appearance.IndLandable = (IndLandable_t)ival;
 	return;
   }
+
+  if (!strcmp( szRegistryUTF8Symbolsl  ,sname)) {
+        ival=strtol(svalue, NULL, 10);
+        Appearance.UTF8Pictorials = (IndLandable_t)ival;
+        return;
+  }
+
   if (!strcmp(szRegistryAppInfoBoxModel,sname)) {
 	ival=strtol(svalue, NULL, 10);
 	Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)ival;
