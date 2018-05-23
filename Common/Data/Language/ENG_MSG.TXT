@@ -2303,5 +2303,7 @@ _@M2382_ "■"  # ghost
 _@M2383_ "●"  # zombie
 _@M2384_ "✈"  # traffic
 
+_@M2385_ "Map Symbols"
+_@M2386_ "UTF8"  
 
 

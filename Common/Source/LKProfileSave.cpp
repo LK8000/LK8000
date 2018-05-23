@@ -109,6 +109,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAlternate2, Alternate2);
   rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
   rprintf(szRegistryAppIndLandable,Appearance.IndLandable);
+  rprintf(szRegistryUTF8Symbolsl,Appearance.UTF8Pictorials);
+
 //  rprintf(szRegistryAppInfoBoxModel,GlobalModelType); // We save GlobalModelType, not InfoBoxModel
   rprintf(szRegistryAppInverseInfoBox,InverseInfoBox_Config);
   rprintf(szRegistryArrivalValue,ArrivalValue);
