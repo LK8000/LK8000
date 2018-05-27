@@ -385,8 +385,15 @@ static void UpdateList(void){
 		CharUpper(wname);
 
 		if ( _tcsstr(  wname,sTmp ) ) {
-			StrIndex[matches++]=i;
+
+		    StrIndex[matches++]=i;
 		}
+                LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Code, NAME_SIZE);
+                CharUpper(wname);
+
+                if ( _tcsstr(  wname,sTmp ) ) {
+                        StrIndex[matches++]=i;
+                }
 	}
 	// No need to set flag if no results
 	if (matches>0) {
