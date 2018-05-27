@@ -336,7 +336,7 @@ static void UpdateList(void){
 
 #if 100502
     TCHAR sTmp[NAMEFILTERLEN+1];
-    TCHAR wname[NAME_SIZE+1];
+    TCHAR wname[EXT_NAMESIZE];
     LowLimit = UpLimit;
     qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointNameCompare);
@@ -381,7 +381,8 @@ static void UpdateList(void){
 	for (i=0, matches=0; i<UpLimit; i++) {
 
 		LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)WayPointList.size());
-		LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
+	//	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
+		 _sntprintf(wname,EXT_NAMESIZE, _T("%s %s"), WayPointList[WayPointSelectInfo[i].Index].Name, WayPointList[WayPointSelectInfo[i].Index].Code);
 		CharUpper(wname);
 
 		if ( _tcsstr(  wname,sTmp ) ) {
@@ -667,7 +668,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
     unsigned int n = UpLimit - LowLimit;
     TCHAR sTmp[50];
-
+    TCHAR TmpName[EXT_NAMESIZE];
     Surface.SetTextColor(RGB_BLACK);
 
     const int LineHeight = Sender->GetHeight();
@@ -702,7 +703,11 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         }
 
         // Draw Name
-        Surface.DrawTextClip(w0, TextPos, WayPointList[WayPointSelectInfo[i].Index].Name, w1);
+        if( _tcslen(WayPointList[WayPointSelectInfo[i].Index].Code ) >1)
+          _sntprintf(TmpName, EXT_NAMESIZE, _T("%s (%s)"), WayPointList[WayPointSelectInfo[i].Index].Name,  WayPointList[WayPointSelectInfo[i].Index].Code);
+        else
+          _sntprintf(TmpName, EXT_NAMESIZE, _T("%s"), WayPointList[WayPointSelectInfo[i].Index].Name);
+        Surface.DrawTextClip(w0, TextPos, TmpName, w1);
 
         // Draw Distance : right justified after waypoint Name
         _stprintf(sTmp, TEXT("%.0f%s"), WayPointSelectInfo[i].Distance, Units::GetDistanceName());

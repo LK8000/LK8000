@@ -31,6 +31,7 @@
 
 // max length airspace and waypoint names
 #define NAME_SIZE 30
+#define EXT_NAMESIZE (NAME_SIZE+16+1)
 
 // Do not change, it is fixed in AddSnailPoint.
 #define NUMSNAILCOLORS 15
