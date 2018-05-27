@@ -300,7 +300,8 @@ unsigned int i,j,EqCnt=WayPointList.size();
 
 
 WndProperty *wp;
-TCHAR Found[NAME_SIZE + 1];
+TCHAR Found[EXT_NAMESIZE];
+TCHAR ExtName[EXT_NAMESIZE];
 SelList[0] = '\0';
 unsigned int NameLen=0;
  int Offset=0;
@@ -317,7 +318,8 @@ IdenticalIndex = -1;
     NumChar =0;
     for (i=NUMRESWP; i< WayPointList.size(); i++)
     {
-      NameLen =  _tcslen(WayPointList[i].Name);
+      _sntprintf( ExtName ,EXT_NAMESIZE,_T("%s %s"),WayPointList[i].Name, WayPointList[i].Code);
+      NameLen =  _tcslen(ExtName);
       Offset = 0;
       if(cursor > NameLen)
 	CharEqual = false;
@@ -331,7 +333,7 @@ IdenticalIndex = -1;
           {
             LKASSERT(k < MAX_TEXTENTRY);
             LKASSERT((k+Offset) < NameLen);
-            char ac = (char)WayPointList[i].Name[k+Offset];
+            char ac = (char)ExtName[k+Offset];
             char bc = (char)edittext[k];
             if(  ToUpper(ac) !=   ToUpper(bc) ) /* waypoint has string ?*/
             {
@@ -358,7 +360,7 @@ IdenticalIndex = -1;
         EqCnt++;
         LKASSERT((cursor+Offset)<=NAME_SIZE);
         LKASSERT(i<=WayPointList.size());
-        TCHAR newChar = ToUpper(WayPointList[i].Name[cursor+Offset]);
+        TCHAR newChar = ToUpper(ExtName[cursor+Offset]);
         bool existing = false;
         j=0;
         while(( j < NumChar) && (!existing))  /* new character already in list? */
@@ -385,10 +387,16 @@ IdenticalIndex = -1;
 
     if (wp)
     {
+      TCHAR TmpName[EXT_NAMESIZE];
+      if( _tcslen(WayPointList[IdenticalIndex].Code) >1)
+        _sntprintf(TmpName, EXT_NAMESIZE, _T("%s (%s)"), WayPointList[IdenticalIndex].Name,  WayPointList[IdenticalIndex].Code);
+      else
+        _sntprintf(TmpName, EXT_NAMESIZE, _T("%s"), WayPointList[IdenticalIndex].Name);
+
       if(EqCnt ==1)
       {
 	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
-	    wp->SetText(WayPointList[IdenticalIndex].Name);
+	    wp->SetText(TmpName);
       }
       else
       {
@@ -396,9 +404,9 @@ IdenticalIndex = -1;
         {
           LKASSERT(cursor < NAME_SIZE);
           LKASSERT(IdenticalIndex<=(int)WayPointList.size());
-          _stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
+          _stprintf(Found,_T("%s"),TmpName);
 	  for( i = 0; i < cursor; i++)
-	     Found[i+IdenticalOffset] = toupper(WayPointList[IdenticalIndex].Name[i+IdenticalOffset]);
+	     Found[i+IdenticalOffset] = toupper(TmpName[i+IdenticalOffset]);
           wp->SetText(Found);
         }
       }
