@@ -294,6 +294,7 @@ void ReduceKeysByWaypointList(void)
 char SelList[MAX_SEL_LIST_SIZE]={""};
 unsigned int NumChar=0;
 bool CharEqual = true;
+bool CodeEqual = true;
 char Charlist[MAX_SEL_LIST_SIZE]={"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_ \xD6\xDC\xC4"};
 
 unsigned int i,j,EqCnt=WayPointList.size();
@@ -345,7 +346,6 @@ IdenticalIndex = -1;
         Offset--;
       }
 
-
       if(CharEqual)
       {
 
@@ -377,6 +377,72 @@ IdenticalIndex = -1;
           SelList[NumChar++] = newChar;
         }
       }
+/*************************************************************/
+/* now search for airport code *******************************/
+/*************************************************************/
+
+      NameLen =  _tcslen(WayPointList[i].Code);
+      Offset = 0;
+      if(cursor > NameLen)
+        CodeEqual = false;
+      else
+      {
+        do
+        {
+          k=0;
+          CodeEqual = true;
+          while((k < (cursor)) && ((k+Offset) < NameLen) && CodeEqual)
+          {
+            LKASSERT(k < MAX_TEXTENTRY);
+            LKASSERT((k+Offset) < NameLen);
+            char ac = (char)WayPointList[i].Code[k+Offset];
+            char bc = (char)edittext[k];
+            if(  ToUpper(ac) !=   ToUpper(bc) ) /* waypoint has string ?*/
+            {
+              CodeEqual = false;
+            }
+            k++;
+          }
+          Offset++;
+        }
+        while(((Offset-1+cursor) < NameLen) && !CodeEqual );
+        Offset--;
+      }
+
+      if(CodeEqual)
+      {
+
+        if(Offset < IdenticalOffset)
+        {
+          IdenticalIndex = i; /* remember first found equal name */
+          IdenticalOffset = Offset; /* remember first found equal name */
+                   // StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
+        }
+        if(!CharEqual)
+          EqCnt++;
+        LKASSERT((cursor+Offset)<=NAME_SIZE);
+        LKASSERT(i<=WayPointList.size());
+        TCHAR newChar = ToUpper(WayPointList[i].Code[cursor+Offset]);
+        bool existing = false;
+        j=0;
+        while(( j < NumChar) && (!existing))  /* new character already in list? */
+        {
+     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
+          LKASSERT(j<MAX_SEL_LIST_SIZE);
+          if(SelList[j] == (unsigned char)newChar)
+                existing = true;
+          j++;
+        }
+
+        if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+        {
+     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
+          LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+          SelList[NumChar++] = newChar;
+        }
+      }
+/*************************************************************/
+
     }
 
     SelList[NumChar++] = '\0';
