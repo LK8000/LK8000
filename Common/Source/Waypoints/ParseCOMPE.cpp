@@ -117,23 +117,18 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   i++;
 
   // we are now on the first digit of latitude
-
-  /*
-  // aaaaaaaahhhhh f**k unicode
-  TCHAR tdeg[5];
-  char  sdeg[5];
-  sprintf(sdeg,"%c",0xBA);
-  _stprintf(tdeg,_T("%s"),sdeg);
-  */
-  TCHAR cDeg = _T('\xBA');
+#ifdef UNICODE
+  const TCHAR szDeg[] = {0x00BA, 0x0000}; // UTF16
+#else
+  const TCHAR szDeg[] = {(TCHAR)0xC2, (TCHAR)0xBA, 0x00}; // UTF8
+#endif
+  // search for szDeg delimiter
   unsigned int p;
-
-  // search for cDeg delimiter
-  for (p=i, ok=false; p<(i+20);p++) {
-	if (tString[p] == cDeg) {
-		ok=true;
-		break;
-	}
+  ok = false;
+  const TCHAR* cp = _tcsstr(&(tString[i]), szDeg);
+  if(cp) {
+    p = cp - tString;
+    ok = true;
   }
   if (!ok) {
 	#ifdef COMPEDEBUG
@@ -153,7 +148,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   }
   LK_tcsncpy(tLatitude,&tString[i],p-i);
 
-  i=p+1;
+  i = p + _tcslen(szDeg); // skip delimiter
   // i points to NS
 
   bool north=false;
@@ -179,12 +174,12 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   }
   i++;
   // we are now on the first digit of longitude
-  // search for cDeg delimiter
-  for (p=i, ok=false; p<(i+20);p++) {
-	if (tString[p] == cDeg) {
-		ok=true;
-		break;
-	}
+  // search for szDeg delimiter
+  ok = false;
+  cp = _tcsstr(&(tString[i]), szDeg);
+  if(cp) {
+    p = cp - tString;
+    ok = true;
   }
   if (!ok) {
 	#ifdef COMPEDEBUG
@@ -203,7 +198,8 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   }
   LK_tcsncpy(tLongitude,&tString[i],p-i);
 
-  i=p+1;
+  i = p + _tcslen(szDeg); // skip delimiter
+  
   // i points to EW
   bool east=false;
   TCHAR tEW = tString[i];
