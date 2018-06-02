@@ -360,11 +360,9 @@ int DataFieldFileReader::CreateComboList(void) {
                                           i,
                                           fields[i].mTextFile,
                                           fields[i].mTextFile);
-    if (i == mValue) {
-      mComboList.ComboPopupItemSavedIndex=i;
-    }
   }
   mComboList.ComboPopupItemCount=i;
+  mComboList.PropertyDataFieldIndexSaved = (mValue < i) ? mValue : 0;
   return mComboList.ComboPopupItemCount;
 }
 
@@ -456,19 +454,10 @@ void DataField::CopyString(TCHAR * szbuffOut, bool bFormatted) {
 // DataField boolean
 //----------------------------------------------------------
 int DataFieldBoolean::CreateComboList(void) {
-  int i=0;
-  mComboList.ComboPopupItemList[i] = mComboList.CreateItem(i, 
-                                                  i,
-                                                  mTextFalse,
-                                                  mTextFalse);
-
-  i=1;
-  mComboList.ComboPopupItemList[i] = mComboList.CreateItem(i, 
-                                                  i,
-                                                  mTextTrue,
-                                                  mTextTrue);
+  mComboList.ComboPopupItemList[0] = mComboList.CreateItem(0, 0, mTextFalse, mTextFalse);
+  mComboList.ComboPopupItemList[1] = mComboList.CreateItem(1, 1, mTextTrue, mTextTrue);
   mComboList.ComboPopupItemCount=2;
-  mComboList.ComboPopupItemSavedIndex=GetAsInteger();
+  mComboList.PropertyDataFieldIndexSaved = (GetAsInteger() < 2) ? GetAsInteger() : 0;
   return mComboList.ComboPopupItemCount;
 }
 
@@ -673,12 +662,9 @@ int DataFieldEnum::CreateComboList(void) {
                                           entry.index,
                                           entry.mText.c_str(),
                                           entry.mLabel.empty() ? entry.mText.c_str() : entry.mLabel.c_str() );
-//    if (mEntries[i].index == mValue) {
-//      mComboList.ComboPopupItemSavedIndex=i;
-//    }
   }
-  mComboList.ComboPopupItemSavedIndex=mValue;
   mComboList.ComboPopupItemCount=i;
+  mComboList.PropertyDataFieldIndexSaved = (mValue < i) ? mValue : 0;
   return mComboList.ComboPopupItemCount;
 }
 
@@ -829,7 +815,7 @@ int DataField::CreateComboListStepping(void) { // for DataFieldInteger and DataF
   if (iSelectedIndex >=0) {
     SetAsFloat(fSavedValue);
   }
-  mComboList.ComboPopupItemSavedIndex = iSelectedIndex;
+  mComboList.PropertyDataFieldIndexSaved = iSelectedIndex;
  
   return mComboList.ComboPopupItemCount;
 }

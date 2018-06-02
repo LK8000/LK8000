@@ -65,7 +65,9 @@ class ComboList{
     ComboList(void) {
       ComboPopupDrawListIndex=0;
       ComboPopupItemIndex=-1;
-      ComboPopupItemSavedIndex=-1;
+      ComboPopupItemCount=0;
+      PropertyDataFieldIndexSaved=-1; 
+      std::fill(std::begin(ComboPopupItemList), std::end(ComboPopupItemList), nullptr);
     }
 
 #define ComboPopupLISTMAX 2000   // CAREFUL!
@@ -79,7 +81,6 @@ class ComboList{
 
     int ComboPopupDrawListIndex;
     int ComboPopupItemIndex;
-    int ComboPopupItemSavedIndex;
     int ComboPopupItemCount;
     ComboListEntry_t * ComboPopupItemList[ComboPopupLISTMAX]; // RLD make this dynamic later
 

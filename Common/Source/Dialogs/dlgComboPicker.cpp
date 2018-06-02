@@ -62,7 +62,7 @@ static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_
 
     ListInfo->ItemCount = ComboListPopup->ComboPopupItemCount;
     ListInfo->ScrollIndex = 0;
-    ListInfo->ItemIndex = ComboListPopup->ComboPopupItemSavedIndex;
+    ListInfo->ItemIndex = ComboListPopup->PropertyDataFieldIndexSaved;
 
   }
   else {
@@ -168,10 +168,10 @@ int dlgComboPicker(WndProperty* theProperty){
 
     ComboPopupDataField->CreateComboList();
     wComboPopupListFrame->ResetList();
-    wComboPopupListFrame->SetItemIndex(ComboListPopup->ComboPopupItemSavedIndex);
+    wComboPopupListFrame->SetItemIndex(ComboListPopup->PropertyDataFieldIndexSaved);
     if (bInitialPage) { // save values for "Cancel" from first page only
       bInitialPage=false;
-      iSavedInitialDataIndex=ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemSavedIndex]->DataFieldIndex;
+      iSavedInitialDataIndex=ComboListPopup->ComboPopupItemList[ComboListPopup->PropertyDataFieldIndexSaved]->DataFieldIndex;
       ComboPopupDataField->CopyString(sSavedInitialValue,false);
     }
 
