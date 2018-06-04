@@ -103,7 +103,11 @@ typedef enum{
 	ckResetComm,
 	ckDspMode,
 	ckOtimizerPointsToggle,
-	ckTOP,
+        ckDeviceC,
+        ckDeviceD,
+        ckDeviceE,
+        ckDeviceF,
+	ckTOP
 } CustomKeyMode_t;
 
 

@@ -103,6 +103,10 @@ void AddCustomKeyList( DataField* dfe) {
     dfe->addEnumTextNoLF(MsgToken(928)); //Restarting Comm Ports
     dfe->addEnumTextNoLF(MsgToken(2249)); // DspMode , not to be translated
     dfe->addEnumTextNoLF(MsgToken(2251)); // Optimizer Mode
+    dfe->addEnumTextNoLF(MsgToken(2350)); // Device C Config
+    dfe->addEnumTextNoLF(MsgToken(2351)); // Device D Config
+    dfe->addEnumTextNoLF(MsgToken(2352)); // Device E Config
+    dfe->addEnumTextNoLF(MsgToken(2353)); // Device F Config
 
     dfe->Sort(0);
 

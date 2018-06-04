@@ -103,4 +103,5 @@
 #define IDR_XML_TERMINAL_L          691
 #define IDR_XML_PROGRESS_P          692
 #define IDR_XML_PROGRESS_L          693
-#define IDR_XML_RADIOSETTINGS           694
+#define IDR_XML_RADIOSETTINGS       694
+#define IDR_XML_DEVFLARM            695

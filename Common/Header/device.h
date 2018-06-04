@@ -13,9 +13,9 @@
 #define	NUMDEV		 6
 
 #ifdef RADIO_ACTIVE
-#define	NUMREGDEV	 41 // Max number of registered devices
+#define	NUMREGDEV	 42 // Max number of registered devices
 #else
-#define	NUMREGDEV	 37 // Max number of registered devices
+#define	NUMREGDEV	 38 // Max number of registered devices
 #endif // RADIO_ACTIVE
 
 #define	devA()	    (&DeviceList[0])
@@ -133,6 +133,10 @@ typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 
 #define Port1WriteNMEA(s)	devWriteNMEAString(devA(), s)
 #define Port2WriteNMEA(s)	devWriteNMEAString(devB(), s)
+#define Port3WriteNMEA(s)       devWriteNMEAString(devC(), s)
+#define Port4WriteNMEA(s)       devWriteNMEAString(devD(), s)
+#define Port5WriteNMEA(s)       devWriteNMEAString(devE(), s)
+#define Port6WriteNMEA(s)       devWriteNMEAString(devF(), s)
 
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
 void VarioWriteSettings(void);

@@ -155,6 +155,7 @@ IDR_XML_TERMINAL_P      XMLDIALOG                "../Data/Dialogs/dlgTerminal_P.
 IDR_XML_PROGRESS_P      XMLDIALOG                "../Data/Dialogs/dlgProgress_L.xml"
 IDR_XML_PROGRESS_L      XMLDIALOG                "../Data/Dialogs/dlgProgress_P.xml"
 IDR_XML_RADIOSETTINGS   XMLDIALOG                "../Data/Dialogs/dlgRadioSettings.xml"
+IDR_XML_DEVFLARM        XMLDIALOG                "../Data/Dialogs/dlgDevFlarm.xml"
 
 /////////////////////////////////////////////////////////////////////////////
 //

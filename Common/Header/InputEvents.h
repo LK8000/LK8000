@@ -80,6 +80,10 @@ public:
   static void eventSendNMEA(const TCHAR *misc);
   static void eventSendNMEAPort1(const TCHAR *misc);
   static void eventSendNMEAPort2(const TCHAR *misc);
+  static void eventSendNMEAPort3(const TCHAR *misc);
+  static void eventSendNMEAPort4(const TCHAR *misc);
+  static void eventSendNMEAPort5(const TCHAR *misc);
+  static void eventSendNMEAPort6(const TCHAR *misc);
   static void eventSetup(const TCHAR *misc);
   static void eventSnailTrail(const TCHAR *misc);
   static void eventVisualGlide(const TCHAR *misc); // VENTA3

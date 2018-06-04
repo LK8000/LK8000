@@ -134,3 +134,11 @@ void CreateProgressDialog(const TCHAR* text) {
         pWndProgress->SetProgressText(text);
     }
 }
+
+
+void ProgressDialogText(const TCHAR* text) {
+
+    if(pWndProgress) {
+        pWndProgress->SetProgressText(text);
+    }
+}

@@ -1722,7 +1722,29 @@ void InputEvents::eventSendNMEAPort2(const TCHAR *misc) {
   }
 }
 
+void InputEvents::eventSendNMEAPort3(const TCHAR *misc) {
+  if (misc) {
+    Port3WriteNMEA(misc);
+  }
+}
 
+void InputEvents::eventSendNMEAPort4(const TCHAR *misc) {
+  if (misc) {
+    Port4WriteNMEA(misc);
+  }
+}
+
+void InputEvents::eventSendNMEAPort5(const TCHAR *misc) {
+  if (misc) {
+    Port5WriteNMEA(misc);
+  }
+}
+
+void InputEvents::eventSendNMEAPort6(const TCHAR *misc) {
+  if (misc) {
+    Port6WriteNMEA(misc);
+  }
+}
 // AdjustWaypoint
 // Adjusts the active waypoint of the task
 //  next: selects the next waypoint, stops at final waypoint
