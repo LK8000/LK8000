@@ -20,12 +20,12 @@
 
 bool deb_ = false;
 int IGC_Index =0;
-int iNoIGCFiles=5;
+int iNoIGCFiles=0;
 int IGC_DrawListIndex=0;
 uint16_t Sequence=0;
 
 #define MAX_IGCFILES 100
-#define REC_TIMEOUT 100
+#define REC_TIMEOUT 500
 #define REC_CRC_ERROR     2
 #define REC_TIMEOUT_ERROR 1
 #define REC_NO_ERROR      0
@@ -117,6 +117,7 @@ uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
   while(OutCnt == InCnt)
   {
     Poco::Thread::sleep(1);
+    Poco::Thread::Thread::yield();
     if(TimeCnt++ > Timeout)
     {
       {StartupStore(TEXT("REC_TIMEOUT_ERROR" ));}
@@ -382,18 +383,6 @@ TCHAR Tmp[200 ];
         IGC_Index = iNoIGCFiles - 1;
     }
 
-
-/*
-    if (IGC_Index >= 0) {
-      if(pWnd) {
-        WndForm * pForm = pWnd->GetParentWndForm();
-        if(pForm) {
-          pForm->SetModalResult(mrOK);
-
-
-        }
-      }
-    }*/
     _stprintf(Tmp, _T("Dolanload IGC File: %s ?"),szIGCStrings[IGC_Index ]);
      if (MessageBoxX(Tmp, TEXT("IGC Download"), mbYesNo) == IdYes)
      {
@@ -802,35 +791,46 @@ uint16_t CRC_in, CRC_calc=0;
 
 
 ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
-
-  d->Com->WriteString(TEXT("$PFLAX\r"));  // set to binary
-  if(deb_)   StartupStore(TEXT("$PFLAX\r "));
-//  Sleep(100);
-
   LockComm();
 
+
+
     IGC_Index = -1;
-    iNoIGCFiles = 8;
+  //  iNoIGCFiles = 0;
     uint8_t blk[10];
     uint16_t RecSequence;
     uint8_t RecCommand;
     uint8_t pBlock[100];
     uint16_t blocksize;
-
+    TCHAR  TempString[255];
+    bool err; uint8_t retry = 0;
     if (d && d->Com)
     {
-
-      if(deb_)StartupStore(TEXT("PING "));
-      SendBinBlock(d, Sequence++, PING, NULL, 0);
-
-      RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
-
-
-      int IGCCnt =0;
-      bool err; uint8_t retry = 0;
 #ifdef PRPGRESS_DLG
       CreateProgressDialog(TEXT("..."));
 #endif
+
+        d->Com->WriteString(TEXT("$PFLAX\r\n"));  // set to binary
+      /*  if(deb_)   */ StartupStore(TEXT("$PFLAX\r "));
+
+
+   /*   if(deb_)*/ StartupStore(TEXT("PING "));
+   retry=0;
+
+     do{
+
+       _sntprintf(TempString, 255, _T("PING Flarm %u..."), retry);
+#ifdef PRPGRESS_DLG
+         ProgressDialogText(TempString) ;
+#endif
+      SendBinBlock(d, Sequence++, PING, NULL, 0);
+      err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, 250);
+     }while ((err != REC_NO_ERROR) && retry++ < 10);
+
+
+      int IGCCnt =0;
+
+      if (err == REC_NO_ERROR)
       do {
         retry=0;
         do{
@@ -852,7 +852,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
           pBlock[blocksize++] = 0;
           if(RecCommand == ACK)
           {
-            TCHAR  TempString[255];
+
             for(uint16_t i = 0; i < blocksize-2; i++)
                TempString[i]= (TCHAR) pBlock[i+2];
         /*    if(deb_) */  StartupStore(TEXT("%s "),TempString);
@@ -876,6 +876,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
         }
         IGCCnt++;
      } while (RecCommand == ACK);
+      iNoIGCFiles = IGCCnt;
 #ifdef PRPGRESS_DLG
      CloseProgressDialog();
 #endif
@@ -921,7 +922,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
     wf = NULL;
 
-    iNoIGCFiles = 0;
+
 
 
     if (MessageBoxX(TEXT("FLARM Reset?"), TEXT("Reset Flarm"), mbYesNo) == IdYes)
@@ -929,13 +930,12 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
         if(deb_)StartupStore(TEXT("EXIT "));
         SendBinBlock(d, Sequence++, EXIT, NULL, 0);
         RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
-        Poco::Thread::sleep(100);
     }
 
     UnlockComm();
     StartupStore(TEXT("Leaving IGC dialog "));
 
-  //  Sleep(100);
+
     return pIGCResult;
 }
 
@@ -965,15 +965,16 @@ public:
                 }
 protected:
     void run() {
-                  PeriodClock Timer;
+              //    PeriodClock Timer;
                   while(!bStop) {
                       ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
 
                    //      unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
 
-                     //     Sleep(1);
-                          Poco::Thread::sleep(50);
-                          Timer.Update();
+                        //  Sleep(5);
+                          Poco::Thread::sleep(5);
+                          Poco::Thread::Thread::yield();
+                      //    Timer.Update();
                   }
                 }
 
