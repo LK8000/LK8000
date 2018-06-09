@@ -12,9 +12,11 @@
 #include "WindowControls.h"
 #include "resource.h"
 #include "Dialogs/dlgProgress.h"
+#include "Util/Clamp.hpp"
+#include "OS/Sleep.h"
 
 #define PRPGRESS_DLG
-#define DIRECT_COM
+
 
 bool deb_ = false;
 int IGC_Index =0;
@@ -23,21 +25,28 @@ int IGC_DrawListIndex=0;
 uint16_t Sequence=0;
 
 #define MAX_IGCFILES 100
-TCHAR szIGCStrings[MAX_IGCFILES][90 + 1]={_T("IGC File 1"),_T("IGC File 2"),_T("IGC File 3")};
-TCHAR szIGCSubStrings[MAX_IGCFILES][90 + 1]={_T(""),_T(""),_T("")};
+#define REC_TIMEOUT 100
+#define REC_CRC_ERROR     2
+#define REC_TIMEOUT_ERROR 1
+#define REC_NO_ERROR      0
+
+TCHAR szIGCStrings[MAX_IGCFILES][90 + 1];
+TCHAR szIGCSubStrings[MAX_IGCFILES][90 + 1];
 ListElement* dlgIGCSelectListShowModal(  DeviceDescriptor_t *d) ;
 int ReadFlarmIGCFile( DeviceDescriptor_t *d, uint8_t IGC_Index);
 static WndForm *wf = NULL;
 static WndListFrame *wIGCSelectListList = NULL;
 static WndOwnerDrawFrame *wIGCSelectListListEntry = NULL;
 ListElement* pIGCResult = NULL;
-//DeviceDescriptor_t *global_d= NULL;
 
+void StartIGCReadThread() ;
+
+void StopIGCReadThread() ;
 
 
 
 void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command, uint8_t* pBlock, uint16_t blocksize);
-bool RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command, uint8_t* pBlock, uint16_t *blocksize);
+uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command, uint8_t* pBlock, uint16_t *blocksize, uint16_t Timeout);
 
 PDeviceDescriptor_t CDevFlarm::m_pDevice=NULL;
 BOOL CDevFlarm::m_bCompassCalOn=FALSE;
@@ -69,14 +78,86 @@ BOOL CDevFlarm::Install( PDeviceDescriptor_t d ) {
 	d->IsGPSSource = GetFalse;
 	d->IsBaroSource = GetTrue;
 	d->Config = Config;
-#ifndef DIRECT_COM
 	d->ParseStream  = FlarmParseString;
-#else
-	d->ParseStream  = NULL;
-#endif
+
 	return(TRUE);
 }
 
+
+#define REC_BUFFERSIZE 512
+uint8_t RingBuff[REC_BUFFERSIZE+1];
+volatile  uint16_t InCnt=0;
+volatile  uint16_t OutCnt=0;
+static bool recEnable = true;
+
+BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
+{
+if(d == NULL) return 0;
+if(String == NULL) return 0;
+if(len == 0) return 0;
+
+int cnt=0;
+
+if(recEnable)
+  while (cnt < len)
+  {
+    RingBuff[InCnt++] = (TCHAR) String[cnt++];
+    InCnt %= REC_BUFFERSIZE;
+  } //  (cnt < len)
+
+return  true;
+}
+
+
+uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
+{
+
+  uint16_t TimeCnt =0;
+  uint8_t Tmp;
+  while(OutCnt == InCnt)
+  {
+    Poco::Thread::sleep(1);
+    if(TimeCnt++ > Timeout)
+    {
+      {StartupStore(TEXT("REC_TIMEOUT_ERROR" ));}
+      return REC_TIMEOUT_ERROR;
+    }
+  }
+  Tmp = RingBuff[OutCnt++];
+  OutCnt %= REC_BUFFERSIZE;
+  if(inchar)
+    *inchar = Tmp;
+
+  return REC_NO_ERROR;
+}
+
+uint8_t RecChar8( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
+{
+  uint8_t Tmp;
+  uint8_t err;
+  err = RecChar(d, &Tmp, Timeout);
+
+  if(!err)
+  {
+    if(Tmp == ESCAPE)
+    {
+      err = RecChar(d, &Tmp, Timeout);
+      if(Tmp == ESC_ESC)
+      {
+        Tmp = 0x78;
+        if(deb_) { StartupStore(TEXT("ESC_ESC" ));};
+      }
+      if(Tmp == ESC_START)
+      {
+        Tmp = 0x73;
+        if(deb_) { StartupStore(TEXT("ESC_START"));};
+      }
+    }
+  }
+  *inchar = Tmp;
+  return err;
+
+}
 
 
 
@@ -239,6 +320,7 @@ void CDevFlarm::OnCloseClicked(WndButton* pWnd){
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
+      StopIGCReadThread();
       pForm->SetModalResult(mrOK);
     }
   }
@@ -293,7 +375,7 @@ void CDevFlarm::Update(WndForm* pWnd) {
 
 
 static void OnEnterClicked(WndButton* pWnd) {
-
+TCHAR Tmp[200 ];
     (void)pWnd;
 
     if (IGC_Index >= iNoIGCFiles) {
@@ -301,24 +383,29 @@ static void OnEnterClicked(WndButton* pWnd) {
     }
 
 
-    ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
+/*
     if (IGC_Index >= 0) {
       if(pWnd) {
         WndForm * pForm = pWnd->GetParentWndForm();
         if(pForm) {
-  //        pForm->SetModalResult(mrOK);
+          pForm->SetModalResult(mrOK);
 
 
         }
       }
-    }
+    }*/
+    _stprintf(Tmp, _T("Dolanload IGC File: %s ?"),szIGCStrings[IGC_Index ]);
+     if (MessageBoxX(Tmp, TEXT("IGC Download"), mbYesNo) == IdYes)
+     {
+       StartIGCReadThread();
+     }
 }
 
 
 static void OnCloseClicked(WndButton* pWnd) {
 
   IGC_Index = -1;
-
+  StopIGCReadThread();
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -421,91 +508,106 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
 }
 
+#define OPEN_STATE   1
+#define READ_STATE   2
+#define CLOSE_STATE  3
+#define EXIT_STATE   4
+static int ThreadState =  EXIT_STATE;
 
 int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_Index)
 {
 
-if(d)
+static FILE *f;
+static int retry =0;
+TCHAR Tmp[200];
+TCHAR Name[200];
+static  bool err = false;
+static uint8_t   Command = SELECTRECORD;
+static  uint8_t   pBlock[2000];
+pBlock[0] = IGC_Index;
+uint16_t  blocksize=1;
+uint16_t  Seq;
+
+
+if(d != NULL)
 {
-   TCHAR Tmp[200];
-   _stprintf(Tmp, _T("Dolanload IGC File: %s ?"),szIGCStrings[IGC_Index ]);
-    if (MessageBoxX(
-                     // LKTOKEN  _@M198_ = "Confirm Exit?"
-                     Tmp,
-                     TEXT("IGC Download"), mbYesNo) == IdYes)
-    {
 
-  _sntprintf(Tmp, 200, _T("%s: %s..."), MsgToken(1400), MsgToken(571));
-#ifdef PRPGRESS_DLG
-  CreateProgressDialog(Tmp);
-#endif
+  if (ThreadState == OPEN_STATE)
+  {
 
-
-  bool err = false;
-  uint8_t retry =0;
-  do{
-    StartupStore(TEXT("IGC Dowlnoad File : %s "),szIGCStrings[IGC_Index ]);
-
-    FILE *f;
-
+    _sntprintf(Name, 200, _T("%s"), szIGCStrings[IGC_Index ]);
     TCHAR* remaining;
-    TCHAR* Filename  = _tcstok_r(szIGCStrings[IGC_Index ],TEXT(" "),&remaining);
+    TCHAR* Filename  = _tcstok_r(Name ,TEXT(" "),&remaining);
     TCHAR filename[MAX_PATH];
     LocalPath(filename, _T(LKD_LOGS), Filename);
+    if(f) fclose(f);
     f = _tfopen(filename, TEXT("w"));
-
-    uint8_t   Command = SELECTRECORD;
-
-    uint8_t   pBlock[2048];
-    pBlock[0] = IGC_Index;
-    uint16_t  blocksize=1;
-
-    uint16_t  Seq;
+    _sntprintf(Tmp, 200, TEXT("IGC Dowlnoad File : %s "),szIGCStrings[IGC_Index ]);
+    StartupStore(Tmp);
     SendBinBlock(d,  Sequence++,  SELECTRECORD, &IGC_Index,  1);
-    err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize);
+    err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize, REC_TIMEOUT);
 
+  #ifdef PRPGRESS_DLG
+    CreateProgressDialog(Tmp);
+  #endif
+    ThreadState =  READ_STATE;
+    return 0;
+
+  }
+  /****************************************************************************************/
+  if (ThreadState == READ_STATE)
+  {
     blocksize = 0;
-    do
+    SendBinBlock(d,  Sequence++,  GETIGCDATA, &pBlock[0], 0);
+    err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize, 10000);
+    if(err==0)
+      _sntprintf(Tmp, 200, _T("Downloading %s: %u%%..."), Name,pBlock[2]);
+    if((Sequence %10) == 0)
+      StartupStore(TEXT("%s"),Tmp);
+#ifdef PRPGRESS_DLG
+    ProgressDialogText(Tmp) ;
+#endif
+
+    for(int i=0; i < blocksize-3; i++)
     {
-        Poco::Thread::sleep(5);
-      SendBinBlock(d,  Sequence++,  GETIGCDATA, &pBlock[0], 0);
-      err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize);
-      Poco::Thread::sleep(10);
-      if(Sequence % 10 == 0)
-        {
-          StartupStore(TEXT("IGC Dowlnoad: %04u %u%%"),Sequence ,pBlock[2]);
-          _sntprintf(Tmp, 200, _T("Downloading %s: %u%%..."), szIGCStrings[IGC_Index],pBlock[2]);
-#ifdef PRPGRESS_DLG
-          ProgressDialogText(Tmp) ;
-#endif
-        }
-      for(int i=0; i < blocksize-3; i++)
-      {
-        fputc(pBlock[3+i],f);
-        if(pBlock[3+i] == EOF_)
-          Command = EOF_;
-      }
+      fputc(pBlock[3+i],f);
+      if(pBlock[3+i] == EOF_)
+        Command = EOF_;
     }
-    while((Command == ACK) && !err);
 
-  retry++;
-  fclose(f);
-  } while (err && (retry < 3));
-#ifdef PRPGRESS_DLG
-  CloseProgressDialog();
-#endif
-}
-}
-  return 0;
+    if ((Command == ACK) && !err)
+      ThreadState =  READ_STATE;
+    else
+      ThreadState =  CLOSE_STATE;
 
+    if(err)
+    {
+      if(retry++ < 4)
+        ThreadState =  OPEN_STATE;
+      else
+        ThreadState =  CLOSE_STATE;
+    }
+    return 0;
+  }
+
+  if (ThreadState == CLOSE_STATE)
+  {
+    fclose(f);
+  #ifdef PRPGRESS_DLG
+    CloseProgressDialog();
+  #endif
+    retry=0;
+    StopIGCReadThread();
+    ThreadState =  EXIT_STATE;
+    return 0;
+  }
+
+}  // if(d)
+return 0;
 }
 
-static void OnIGCListEnter(WindowControl * Sender,
-                                       WndListFrame::ListInfo_t *ListInfo) {
+static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo) {
     (void) Sender;
-
-
-
     IGC_Index = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 
 
@@ -524,8 +626,6 @@ static void OnIGCListEnter(WindowControl * Sender,
         }
       }
     }
-
-
 }
 
 
@@ -622,77 +722,28 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command, uin
   {
     SendEscChar(d,pBlock[i]);
   }
+
   if(deb_)StartupStore(TEXT("\r\n===="));
-}
 
-
-#define REC_BUFFERSIZE 5000
-uint8_t RingBuff[REC_BUFFERSIZE+1];
-volatile  uint16_t InCnt=0;
-volatile  uint16_t OutCnt=0;
-static bool recEnable = false;
-
-BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
-{
-if(d == NULL) return 0;
-if(String == NULL) return 0;
-if(len == 0) return 0;
-
-
-int cnt=0;
-
-if(recEnable)
-  while (cnt < len)
-  {
- //   if(deb_)  {StartupStore(TEXT("< %02x"), (uint8_t)String[cnt]);}
-    RingBuff[InCnt++] = (TCHAR) String[cnt++];
-    InCnt %= REC_BUFFERSIZE;
-  } //  (cnt < len)
-
-return  true;
-}
-
-
-
-bool RecChar8( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
-{
-#ifdef DIRECT_COM
-  Poco::Thread::sleep(1);
-  *inchar = d->Com->GetChar();
-#else
-  uint16_t TimeCnt =0;
-  uint8_t Tmp;
-  while(OutCnt == InCnt)
-  {
-    Poco::Thread::sleep(5);
-    if(TimeCnt++ > Timeout)
-      return true;
-  }
-  Tmp = RingBuff[OutCnt++];
-  OutCnt %= REC_BUFFERSIZE;
-  if(inchar)
-    *inchar = Tmp;
-  else
-    return true;
-#endif
- return false;
 }
 
 
 
 
 
-bool RecChar16( DeviceDescriptor_t *d,uint16_t *inchar, uint16_t Timeout)
+
+uint8_t RecChar16( DeviceDescriptor_t *d,uint16_t *inchar, uint16_t Timeout)
 {
   ConvUnion tmp;
   bool error  = RecChar8(d, &(tmp.byte[0]), Timeout);
-       error |= RecChar8(d, &(tmp.byte[1]), Timeout);
+       if(error == REC_NO_ERROR)
+         error = RecChar8(d, &(tmp.byte[1]), Timeout);
   *inchar =  tmp.val;
 return error;
 }
 
 
-bool RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command, uint8_t* pBlock, uint16_t *blocksize)
+uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command, uint8_t* pBlock, uint16_t *blocksize, uint16_t Timeout)
 {
 
 bool error  = false;
@@ -700,9 +751,9 @@ uint8_t inchar;
 uint8_t Version;
 uint16_t CRC_in, CRC_calc=0;
 
-#define REC_TIMEOUT 5000
   do{
-    error = RecChar8(d, &inchar, REC_TIMEOUT);
+    error = RecChar(d, &inchar, Timeout);
+
     if(error)
     {
         { if(deb_)StartupStore(TEXT("STARTFRAME timeout!" )); }
@@ -711,48 +762,38 @@ uint16_t CRC_in, CRC_calc=0;
   } while( (inchar != STARTFRAME) && !error);
 
   if(!error)
-    { if(deb_ )StartupStore(TEXT("STARTFRAME timeout!"));}
+    { if(deb_ )StartupStore(TEXT("STARTFRAME OK!"));}
   else
     { if(deb_)StartupStore(TEXT("STARTFRAME fail!" )); }
 
-  error |= RecChar16(d, blocksize , REC_TIMEOUT); CRC_calc = crc_update16 (CRC_calc,*blocksize);{ if(deb_)StartupStore(TEXT("Block Size %u"  ), *blocksize); }
-  error |= RecChar8(d, &Version   , REC_TIMEOUT); CRC_calc = crc_update   (CRC_calc,Version)   ;{ if(deb_)StartupStore(TEXT("Block Ver %u"   ), Version);    }
-  error |= RecChar16(d, Sequence  , REC_TIMEOUT); CRC_calc = crc_update16 (CRC_calc,*Sequence) ;{ if(deb_)StartupStore(TEXT("Block Seq %u"   ), *Sequence);  }
-  error |= RecChar8(d, Command    , REC_TIMEOUT); CRC_calc = crc_update   (CRC_calc,*Command)  ;{ if(deb_)StartupStore(TEXT("Block Cmd %02X" ), *Command);   }
-  error |= RecChar16(d,&CRC_in   , REC_TIMEOUT);                                               { if(deb_)StartupStore(TEXT("Block CRC %04X" ), CRC_in);     }
+  error |= RecChar16(d, blocksize , Timeout); CRC_calc = crc_update16 (CRC_calc,*blocksize);{ if(deb_)StartupStore(TEXT("Block Size %u"  ), *blocksize); }if(error != REC_NO_ERROR)  return error;
+  error |= RecChar8(d, &Version   , Timeout); CRC_calc = crc_update   (CRC_calc,Version)   ;{ if(deb_)StartupStore(TEXT("Block Ver %u"   ), Version);    }if(error != REC_NO_ERROR)  return error;
+  error |= RecChar16(d, Sequence  , Timeout); CRC_calc = crc_update16 (CRC_calc,*Sequence) ;{ if(deb_)StartupStore(TEXT("Block Seq %u"   ), *Sequence);  }if(error != REC_NO_ERROR)  return error;
+  error |= RecChar8(d, Command    , Timeout); CRC_calc = crc_update   (CRC_calc,*Command)  ;{ if(deb_)StartupStore(TEXT("Block Cmd %02X" ), *Command);   }if(error != REC_NO_ERROR)  return error;
+  error |= RecChar16(d,&CRC_in    , Timeout);                                               { if(deb_)StartupStore(TEXT("Block CRC %04X" ), CRC_in);     }if(error != REC_NO_ERROR)  return error;
   if(deb_) {StartupStore(TEXT("Header  received!" ));}
+
   if(*blocksize > 8)
     for (uint16_t i = 0 ; i < (*blocksize-8) ; i++)
     {
-       error |= RecChar8(d,&inchar   , REC_TIMEOUT);
-       if(inchar == ESCAPE)
-       {
-         error |= RecChar8(d,&inchar   , REC_TIMEOUT);
-         if(inchar == ESC_ESC)
-         {
-           pBlock[i] = 0x78;
-         }
-         if(inchar == ESC_START)
-         {
-           pBlock[i] = 0x73;
-         }
-       }
-       else
+       error |= RecChar8(d,&inchar   , Timeout);
+
          pBlock[i] = inchar;
-       CRC_calc = crc_update (CRC_calc,pBlock[i]);
+       CRC_calc = crc_update (CRC_calc,pBlock[i]); if(error)  return error;
    //    if(deb_) { StartupStore(TEXT("Block[%u]  %02X" ),i, pBlock[i]);}
     }
 *blocksize -= 8;
  if(CRC_calc != CRC_in)
  {
    {StartupStore(TEXT("Rec Block CRC error!" ));}
-   error = true;
+    error = REC_CRC_ERROR;
  }
  else
   if(error)
     {StartupStore(TEXT("Rec Block error  received!" ));}
   else
     {if(deb_) StartupStore(TEXT("Rec Block received OK!" ));}
+
   return error;
 }
 
@@ -762,32 +803,27 @@ uint16_t CRC_in, CRC_calc=0;
 
 ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
-#ifdef DIRECT_COM
-  d->Com->StopRxThread();
-  d->Com->SetRxTimeout(10000);                     // set RX timeout to 50[ms]
+  d->Com->WriteString(TEXT("$PFLAX\r"));  // set to binary
+  if(deb_)   StartupStore(TEXT("$PFLAX\r "));
+//  Sleep(100);
+
   LockComm();
-#endif
 
     IGC_Index = -1;
     iNoIGCFiles = 8;
     uint8_t blk[10];
     uint16_t RecSequence;
     uint8_t RecCommand;
-    uint8_t pBlock[1024];
+    uint8_t pBlock[100];
     uint16_t blocksize;
 
     if (d && d->Com)
     {
-//        global_d = d;
-      d->Com->WriteString(TEXT("$PFLAX\r"));  // set to binary
-      if(deb_)   StartupStore(TEXT("$PFLAX\r "));
 
-      recEnable = true;
-
-Sleep(100);
       if(deb_)StartupStore(TEXT("PING "));
       SendBinBlock(d, Sequence++, PING, NULL, 0);
-      RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize);
+
+      RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
 
 
       int IGCCnt =0;
@@ -796,19 +832,21 @@ Sleep(100);
       CreateProgressDialog(TEXT("..."));
 #endif
       do {
-        blk[0] =IGCCnt;
+        retry=0;
         do{
+           blk[0] =IGCCnt;
            SendBinBlock(d, Sequence++, SELECTRECORD, &blk[0], 1);
-           err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize);
-        } while (err && (retry++ <4));
+           err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+        } while ((err== REC_CRC_ERROR) && (retry++ <4));
 
+        if(err == REC_NO_ERROR)
         if(RecCommand == ACK)
         {
           retry = 0;
           do{
             SendBinBlock(d, Sequence++, GETRECORDINFO, NULL, 0);
-            err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize);
-          } while (err && (retry++ <4));
+            err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+          } while ((err== REC_CRC_ERROR) && (retry++ <4));
 
 
           pBlock[blocksize++] = 0;
@@ -842,8 +880,6 @@ Sleep(100);
      CloseProgressDialog();
 #endif
     }
-
-
 
     if (iNoIGCFiles == 0)
     {
@@ -886,19 +922,75 @@ Sleep(100);
     wf = NULL;
 
     iNoIGCFiles = 0;
-/*
-    if(deb_)StartupStore(TEXT("EXiT "));
-    SendBinBlock(d, Sequence++, EXIT, NULL, 0);
-    RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize);
-    Poco::Thread::sleep(205);*/
 
 
-    StartupStore(TEXT("Leaving IGC dialog "));
-#ifdef DIRECT_COM
+    if (MessageBoxX(TEXT("FLARM Reset?"), TEXT("Reset Flarm"), mbYesNo) == IdYes)
+    {
+        if(deb_)StartupStore(TEXT("EXIT "));
+        SendBinBlock(d, Sequence++, EXIT, NULL, 0);
+        RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+        Poco::Thread::sleep(100);
+    }
+
     UnlockComm();
-    d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
-    d->Com->StartRxThread();                       // restart RX thread/
-#endif
+    StartupStore(TEXT("Leaving IGC dialog "));
 
+  //  Sleep(100);
     return pIGCResult;
+}
+
+
+
+
+
+
+class IGCReadThread : public Poco::Runnable
+{
+public:
+
+    void Start() {
+        bStop = false;
+        if(!Thread.isRunning())
+        {
+      //    Thread.setPriority(PRIO_LOW);
+       //   Thread.setStackSize( 2000);
+          Thread.start(*this);
+        }
+    }
+
+    void Stop() {
+
+                bStop = true;
+          //      Thread.join();
+                }
+protected:
+    void run() {
+                  PeriodClock Timer;
+                  while(!bStop) {
+                      ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
+
+                   //      unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
+
+                     //     Sleep(1);
+                          Poco::Thread::sleep(50);
+                          Timer.Update();
+                  }
+                }
+
+                bool bStop;
+
+    Poco::Thread Thread;
+};
+
+IGCReadThread IGCReadThreadThreadInstance;
+
+void StartIGCReadThread() {
+  ThreadState = OPEN_STATE;
+  StartupStore(TEXT("Start Thread !"));
+  IGCReadThreadThreadInstance.Start();
+}
+
+void StopIGCReadThread() {
+  StartupStore(TEXT("Stop Thread !"));
+  IGCReadThreadThreadInstance.Stop();
 }
