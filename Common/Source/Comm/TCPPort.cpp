@@ -27,6 +27,9 @@ using namespace std::placeholders;
 #ifdef __linux__
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/socket.h>
+
 #endif
 
 static LPCTSTR GetAddress(unsigned idx) {
@@ -43,6 +46,34 @@ static uint16_t GetPort(unsigned idx) {
  return 0U;
 }
 
+
+
+
+int hostname_to_ip(const char * hostname , char* ip)
+{
+struct hostent *he;
+struct in_addr **addr_list;
+int i;
+
+if ( (he = gethostbyname( hostname ) ) == NULL)
+{
+// get the host info
+	StartupStore(_T("... gethostbyname failed") );
+//herror("gethostbyname");
+return 1;
+}
+
+addr_list = (struct in_addr **) he->h_addr_list;
+
+for(i = 0; addr_list[i] != NULL; i++)
+{
+//Return the first one;
+strcpy(ip , inet_ntoa(*addr_list[i]) );
+return 0;
+}
+
+return 1;
+}
 
 bool TCPClientPort::Connect() {
     
@@ -61,15 +92,18 @@ bool TCPClientPort::Connect() {
 #endif
 #endif
 
-#ifdef UNICODE    
-    char szaddr[16];
-    TCHAR2ascii(GetAddress(GetPortIndex()), szaddr, 16);
+#ifdef UNICODE
+    char szaddr[MAX_URL_LEN];
+    TCHAR2ascii(GetAddress(GetPortIndex()), szaddr, MAX_URL_LEN);
 #else
     const char* szaddr = GetAddress(GetPortIndex());
 #endif
-    
+    char IPadr[16];
     SOCKADDR_IN sin = { 0 };
-    sin.sin_addr.s_addr = inet_addr(szaddr);
+    if(hostname_to_ip(szaddr,IPadr ) == 0)  // convert URL to IP address
+      sin.sin_addr.s_addr = inet_addr(IPadr);
+    else
+      sin.sin_addr.s_addr = inet_addr(szaddr);
     sin.sin_port = htons(GetPort(GetPortIndex()));
     sin.sin_family = AF_INET;
 

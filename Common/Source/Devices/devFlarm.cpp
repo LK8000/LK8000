@@ -11,7 +11,7 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "resource.h"
-#include "Dialogs/dlgProgress.h"
+#include "dlgIGCProgress.h"
 #include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
 
@@ -383,11 +383,12 @@ TCHAR Tmp[200 ];
         IGC_Index = iNoIGCFiles - 1;
     }
 
-    _stprintf(Tmp, _T("Dolanload IGC File: %s ?"),szIGCStrings[IGC_Index ]);
-     if (MessageBoxX(Tmp, TEXT("IGC Download"), mbYesNo) == IdYes)
+    _stprintf(Tmp, _T("%s %s ?"),MsgToken(2355),szIGCStrings[IGC_Index ]);
+     if (MessageBoxX(Tmp, MsgToken(2355),  mbYesNo) == IdYes)  // _@M2355_ "IGC Download"
      {
        StartIGCReadThread();
      }
+
 }
 
 
@@ -537,7 +538,7 @@ if(d != NULL)
     err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize, REC_TIMEOUT);
 
   #ifdef PRPGRESS_DLG
-    CreateProgressDialog(Tmp);
+    CreateIGCProgressDialog(Tmp);
   #endif
     ThreadState =  READ_STATE;
     return 0;
@@ -554,7 +555,7 @@ if(d != NULL)
     if((Sequence %10) == 0)
       StartupStore(TEXT("%s"),Tmp);
 #ifdef PRPGRESS_DLG
-    ProgressDialogText(Tmp) ;
+    IGCProgressDialogText(Tmp) ;
 #endif
 
     for(int i=0; i < blocksize-3; i++)
@@ -583,7 +584,7 @@ if(d != NULL)
   {
     fclose(f);
   #ifdef PRPGRESS_DLG
-    CloseProgressDialog();
+    CloseIGCProgressDialog();
   #endif
     retry=0;
     StopIGCReadThread();
@@ -713,7 +714,7 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command, uin
   }
 
   if(deb_)StartupStore(TEXT("\r\n===="));
-
+ Poco::Thread::sleep(10);
 }
 
 
@@ -807,7 +808,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
     if (d && d->Com)
     {
 #ifdef PRPGRESS_DLG
-      CreateProgressDialog(TEXT("..."));
+      CreateIGCProgressDialog(TEXT("..."));
 #endif
 
         d->Com->WriteString(TEXT("$PFLAX\r\n"));  // set to binary
@@ -821,7 +822,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
        _sntprintf(TempString, 255, _T("PING Flarm %u..."), retry);
 #ifdef PRPGRESS_DLG
-         ProgressDialogText(TempString) ;
+         IGCProgressDialogText(TempString) ;
 #endif
       SendBinBlock(d, Sequence++, PING, NULL, 0);
       err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, 250);
@@ -839,7 +840,16 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
            err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
         } while ((err== REC_CRC_ERROR) && (retry++ <4));
 
-        if(err == REC_NO_ERROR)
+        if(err != REC_NO_ERROR)
+        {
+            if (MessageBoxX(MsgToken(2358), MsgToken(2358), mbOk) == IdYes)
+            {
+                if(deb_)StartupStore(TEXT("EXIT "));
+                SendBinBlock(d, Sequence++, EXIT, NULL, 0);
+                RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+            }
+        }
+        else
         if(RecCommand == ACK)
         {
           retry = 0;
@@ -870,7 +880,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
             _sntprintf(TempString, 255, _T("Getting Info %u..."), IGCCnt);
 #ifdef PRPGRESS_DLG
-            ProgressDialogText(TempString) ;
+            IGCProgressDialogText(TempString) ;
 #endif
           }
         }
@@ -878,7 +888,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
      } while (RecCommand == ACK);
       iNoIGCFiles = IGCCnt;
 #ifdef PRPGRESS_DLG
-     CloseProgressDialog();
+     CloseIGCProgressDialog();
 #endif
     }
 
@@ -924,8 +934,8 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
 
 
-
-    if (MessageBoxX(TEXT("FLARM Reset?"), TEXT("Reset Flarm"), mbYesNo) == IdYes)
+     _sntprintf(TempString, 255, _T("%s?"), MsgToken(2360)); // _@M2360_ "Reset FLARM"
+    if (MessageBoxX(MsgToken(2360), TempString, mbYesNo) == IdYes)  // _@M2360_ "Reset FLARM"
     {
         if(deb_)StartupStore(TEXT("EXIT "));
         SendBinBlock(d, Sequence++, EXIT, NULL, 0);
@@ -972,8 +982,8 @@ protected:
                    //      unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
 
                         //  Sleep(5);
-                          Poco::Thread::sleep(5);
-                          Poco::Thread::Thread::yield();
+                          Poco::Thread::sleep(20);
+                 //         Poco::Thread::Thread::yield();
                       //    Timer.Update();
                   }
                 }

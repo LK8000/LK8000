@@ -105,3 +105,5 @@
 #define IDR_XML_PROGRESS_L          693
 #define IDR_XML_RADIOSETTINGS       694
 #define IDR_XML_DEVFLARM            695
+#define IDR_XML_IGC_PROGRESS_L      696
+#define IDR_XML_IGC_PROGRESS_P      697 

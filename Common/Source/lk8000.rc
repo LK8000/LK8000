@@ -156,7 +156,8 @@ IDR_XML_PROGRESS_P      XMLDIALOG                "../Data/Dialogs/dlgProgress_L.
 IDR_XML_PROGRESS_L      XMLDIALOG                "../Data/Dialogs/dlgProgress_P.xml"
 IDR_XML_RADIOSETTINGS   XMLDIALOG                "../Data/Dialogs/dlgRadioSettings.xml"
 IDR_XML_DEVFLARM        XMLDIALOG                "../Data/Dialogs/dlgDevFlarm.xml"
-
+IDR_XML_IGC_PROGRESS_P  XMLDIALOG                "../Data/Dialogs/dlgIGCProgress_L.xml"
+IDR_XML_IGC_PROGRESS_L  XMLDIALOG                "../Data/Dialogs/dlgIGCProgress_P.xml"
 /////////////////////////////////////////////////////////////////////////////
 //
 // RASTERDATA 

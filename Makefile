@@ -1280,6 +1280,7 @@ DLGS	:=\
 	$(DLG)/dlgBluetooth.cpp\
 	$(DLG)/dlgIgcFile.cpp\
 	$(DLG)/dlgProgress.cpp \
+	$(DLG)/dlgIGCProgress.cpp \
 	
 SRC_FILES :=\
 	$(WINDOW) \
