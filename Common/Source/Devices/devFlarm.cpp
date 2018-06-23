@@ -25,7 +25,7 @@ int IGC_DrawListIndex=0;
 uint16_t Sequence=0;
 
 #define MAX_IGCFILES 100
-#define REC_TIMEOUT 500
+#define REC_TIMEOUT 800
 #define REC_CRC_ERROR     2
 #define REC_TIMEOUT_ERROR 1
 #define REC_NO_ERROR      0
@@ -812,10 +812,10 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 #endif
 
         d->Com->WriteString(TEXT("$PFLAX\r\n"));  // set to binary
-      /*  if(deb_)   */ StartupStore(TEXT("$PFLAX\r "));
+        if(deb_)  StartupStore(TEXT("$PFLAX\r "));
 
 
-   /*   if(deb_)*/ StartupStore(TEXT("PING "));
+      if(deb_) StartupStore(TEXT("PING "));
    retry=0;
 
      do{
@@ -825,8 +825,8 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
          IGCProgressDialogText(TempString) ;
 #endif
       SendBinBlock(d, Sequence++, PING, NULL, 0);
-      err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, 250);
-     }while ((err != REC_NO_ERROR) && retry++ < 10);
+      err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+     }while ((err != REC_NO_ERROR) && retry++ < 15);
 
 
       int IGCCnt =0;
