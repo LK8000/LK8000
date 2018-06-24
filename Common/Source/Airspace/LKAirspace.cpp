@@ -34,7 +34,7 @@
 
 extern	  double  ExtractFrequency(TCHAR*);
 
-static const int k_nAreaCount = 16;
+static const int k_nAreaCount = 17;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("R"),
     _T("Q"),
@@ -51,6 +51,7 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("CTR"),
     _T("TMZ"),
     _T("RMZ"),
+    _T("NOTAM"),
     _T("GSEC")
 };
 static const int k_nAreaType[k_nAreaCount] = {
@@ -69,6 +70,7 @@ static const int k_nAreaType[k_nAreaCount] = {
     CTR,
     CLASSTMZ,
     CLASSRMZ,
+    CLASSNOTAM,
     GLIDERSECT
 };
 
@@ -1690,9 +1692,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     default:
 			if (maxwarning>0) {
 			    if (maxwarning==1)
-                                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
+                                _stprintf(sTmp, TEXT("Parse error 9 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
 			    else
-                                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                                _stprintf(sTmp, TEXT("Parse error 10 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
@@ -1708,7 +1710,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         p++; // skip A and space
                         if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
-                            _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _stprintf(sTmp, TEXT("Parse error 1 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
@@ -1718,7 +1720,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         p++; // skip B and space
                         if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
-                            _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _stprintf(sTmp, TEXT("Parse error 2 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
@@ -1739,7 +1741,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         if (ReadCoords(p, &lon, &lat)) {
                             points.push_back(CPoint2D(lat, lon));
                         } else {
-                            _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _stprintf(sTmp, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
@@ -1750,9 +1752,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     default:
 			if (maxwarning>0) {
 			    if (maxwarning==1)
-                                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
+                                _stprintf(sTmp, TEXT("Parse error 4 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
 			    else
-                                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                                _stprintf(sTmp, TEXT("Parse error 5 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
 
                             // LKTOKEN  _@M68_ = "Airspace"
@@ -1786,7 +1788,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     break;
                 }
 
-                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                _stprintf(sTmp, TEXT("Parse error 6 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                 // LKTOKEN  _@M68_ = "Airspace"
                 if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                 break;
@@ -1800,9 +1802,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             default:
 		if (maxwarning>0) {
 		    if (maxwarning==1)
-                        _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
+                        _stprintf(sTmp, TEXT("Parse error 7 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
 		    else
-                        _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                        _stprintf(sTmp, TEXT("Parse error 8 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 
                     maxwarning--;
                     // LKTOKEN  _@M68_ = "Airspace"
@@ -2022,6 +2024,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
               if (_tcsicmp(dataStr,_T("GSEC"))==0)    Type=GLIDERSECT;
               if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDERSECT;
             }
+            break;
+        case 'N':
+          /*  if (_tcsicmp(dataStr,_T("NOTAM"))==0) */ Type=CLASSNOTAM; // Prohibited area
             break;
         //case 'O':
             //if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
@@ -2983,6 +2988,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
             return TEXT("TMZ");
 	case CLASSRMZ:
 	    return TEXT("RMZ");
+	case CLASSNOTAM:
+	    return TEXT("NOTAM");
 	case GLIDERSECT:
 	    return TEXT("GldSect");
 
@@ -3028,6 +3035,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
             return TEXT("TMZ");
         case CLASSRMZ:
             return TEXT("RMZ");
+        case CLASSNOTAM:
+            return TEXT("Notam");
         case GLIDERSECT:
             return TEXT("GldSec");
         default:
