@@ -30,7 +30,7 @@
 // and we want to leave a little free.
 
 // max length airspace and waypoint names
-#define NAME_SIZE 30
+#define NAME_SIZE 1023
 #define EXT_NAMESIZE (NAME_SIZE+16+1)
 
 // Do not change, it is fixed in AddSnailPoint.
@@ -150,8 +150,8 @@
 
 #define NUMBUTTONLABELS 16
 
-// change 300 to 500 to fix problem with airspace lines and long comments
-#define READLINE_LENGTH 500
+// change 300 to 1023 to fix problem with airspace lines and long comments
+#define READLINE_LENGTH 1023
 
 // Size of Status message cache - Note 1000 messages may not be enough...
 // TODO If we continue with the reading one at a time - then consider using
