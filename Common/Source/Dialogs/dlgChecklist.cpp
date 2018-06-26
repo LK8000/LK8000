@@ -395,6 +395,11 @@ bool LoadChecklist(short checklistmode) {
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("Info")));
 		return LoadChecklist(filename,true);
 		break;
+
+	case 4:
+		_stprintf(NoteModeTitle,_T("%s"),MsgToken(878));  // notepad
+		return true;
+		break;
   default:
     StartupStore(_T("... Invalid checklist mode (%d)%s"),checklistmode,NEWLINE);
     return false;
@@ -444,8 +449,11 @@ void dlgChecklistShowModal(short checklistmode){
     wDetailsEntry->SetHeight(minHeight);
   }
 
-  InitNotepad();
-  LoadChecklist(checklistmode); // check if loaded really something
+  if(checklistmode < 4)
+  {
+  	InitNotepad();
+  	LoadChecklist(checklistmode); // check if loaded really something
+  }
   aTextLine.clear();
 
   page = 0;
@@ -454,4 +462,22 @@ void dlgChecklistShowModal(short checklistmode){
   wf->ShowModal();
 
   DeinitNotepad();
+}
+
+
+void AddAirspaceInfos(TCHAR* name, TCHAR* details) {
+  InitNotepad();
+  if (nLists<MAXNOTES) {
+    ChecklistTitle[nLists] = (TCHAR*)malloc((_tcslen(name)+1)*sizeof(TCHAR));
+    ChecklistText[nLists] = (TCHAR*)malloc((_tcslen(details)+1)*sizeof(TCHAR));
+    LKASSERT(ChecklistTitle[nLists]!=NULL);
+    LKASSERT(ChecklistText[nLists]!=NULL);
+    _tcscpy(ChecklistTitle[nLists], name);
+    if (_tcslen(name)>=MAXNOTETITLE)
+	  ChecklistTitle[nLists][MAXNOTETITLE-1]= 0;
+    _tcscpy(ChecklistText[nLists], details);
+    if (_tcslen(details)>=MAXNOTEDETAILS)
+	  ChecklistText[nLists][MAXNOTEDETAILS-1]= 0;
+    nLists++;
+  }
 }
