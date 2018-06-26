@@ -19,7 +19,7 @@
 #include "resource.h"
 
 static CAirspaceBase airspace_copy;
-
+static void OnDetailsClicked(WndButton* pWnd);
 static void SetValues(WndForm* wf);
 
 static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
@@ -175,6 +175,7 @@ TCHAR Tmp[255];
 
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnAcknowledgeClicked),
+  ClickNotifyCallbackEntry(OnDetailsClicked),
   ClickNotifyCallbackEntry(OnFlyClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnSelectClicked),
@@ -427,3 +428,33 @@ void dlgAirspaceDetails() {
   return;
 }
 
+
+extern void AddAirspaceInfos(TCHAR* name, TCHAR* details) ;
+
+static void OnDetailsClicked(WndButton* pWnd){
+
+#define 	MAXNOTETITLE 200
+#define 	MAXNOTEDETAILS 5000
+
+	  TCHAR Details[MAXNOTEDETAILS+1] = _T("");
+	  TCHAR Name[MAXNOTETITLE+1]= _T("");;
+
+
+  (void)pWnd;
+  {
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    if(airspace) {
+
+  	  _stprintf(Details, _T("%s"), (TCHAR*)airspace->Name());
+  	  _stprintf(Name, _T("INFO") );
+
+    }
+  }
+#if TESTBENCH
+      StartupStore(_T(". Airspace Name <%s>%s"),Details,NEWLINE);
+
+#endif
+      AddAirspaceInfos(Name, Details);
+  	  dlgChecklistShowModal(4);
+}
