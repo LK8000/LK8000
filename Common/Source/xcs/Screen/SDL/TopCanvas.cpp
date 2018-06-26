@@ -126,14 +126,33 @@ TopCanvas::Destroy()
 #endif
 }
 
-#ifdef ENABLE_OPENGL
 
 PixelSize
 TopCanvas::GetNativeSize() const
 {
   int w, h;
+#ifdef ENABLE_OPENGL
   SDL_GL_GetDrawableSize(window, &w, &h);
+#else
+  SDL_GetWindowSize(window, &w, &h);
+#endif
   return PixelSize(w, h);
+}
+
+#ifndef ENABLE_OPENGL
+
+bool
+TopCanvas::CheckResize(const PixelSize new_native_size)
+{
+  const PixelSize new_size = new_native_size;
+  if (new_size == GetSize())
+    /* no change */
+    return false;
+
+  /* changed: update the size and allocate a new buffer */
+  buffer.Free();
+  buffer.Allocate(new_size.cx, new_size.cy);
+  return true;
 }
 
 #endif
