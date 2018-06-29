@@ -741,8 +741,37 @@ void CAirspaceBase::ResetWarnings() {
 
 // Initialize instance attributes
 
-void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) {
+void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
     CopyTruncateString(_name, NAME_SIZE, name);
+
+int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+1);
+ iLen = READLINE_LENGTH;
+// iLen *=sizeof(TCHAR);
+  if(comment != NULL)
+  {
+#ifdef DYN_MEM_COMMENT
+	if(_comment != NULL)
+	{
+	 delete[] _comment; _comment = NULL;
+	}
+
+    if(_tcslen(comment) > 1 )
+      _comment = new TCHAR [iLen+8];
+    else
+      _comment = NULL;
+#endif
+
+	if( _comment  != NULL)
+	{
+	  CopyTruncateString(_comment,min( READLINE_LENGTH, (int) _tcslen(comment)), comment);
+//	  StartupStore(TEXT("new _comment: %s %u %s"), _comment, _tcslen(_comment), NEWLINE);
+	}
+  }
+
+
+
+
+	
     _type = type;
     memcpy(&_base, &base, sizeof (_base));
     memcpy(&_top, &top, sizeof (_top));
@@ -757,7 +786,7 @@ CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &
 CAirspace(),
 _center(Center_Latitude, Center_Longitude),
 _radius(Airspace_Radius) {
-
+	_comment =NULL;
     _bounds.minx = _center.longitude;
     _bounds.maxx = _center.longitude;
     _bounds.miny = _center.latitude;
@@ -955,7 +984,7 @@ void CAirspace::Draw(LKSurface& Surface, bool fill) const {
 //
 CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace() {
     std::swap(_geopoints, Area_Points);
-
+    _comment =NULL;
     _screenpoints.reserve(_geopoints.size());
     _screenpoints_clipped.reserve(_geopoints.size());
 
@@ -1532,7 +1561,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     int parsing_state = 0;
     CAirspace *newairspace = NULL;
     // Variables to store airspace parameters
-    TCHAR Name[NAME_SIZE + 1] = {0};
+    TCHAR ASComment[READLINE_LENGTH + 1] = {0};
+    TCHAR Name[NAME_SIZE +1] = {0};
     CPoint2DArray points;
     double Radius = 0;
     double Latitude = 0;
@@ -1606,7 +1636,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                 }
                             }
                             if (newairspace) {
-                                newairspace->Init(Name, Type, Base, Top, flyzone);
+                                newairspace->Init(Name, Type, Base, Top, flyzone, ASComment);
 
                                 { // Begin Lock
                                     ScopeLock guard(_csairspaces);
@@ -1642,8 +1672,14 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     case _T('N'): //AN - Airspace name
                         p++;
                         p++;
+
                         if (parsing_state == 10) {
-                            LK_tcsncpy(Name, p, NAME_SIZE);
+                        	Name[0] = {0};
+                            CopyTruncateString(Name, NAME_SIZE-1, p);
+
+                            ASComment[0] = {0};
+                            if( _tcslen(p) > NAME_SIZE)
+                              CopyTruncateString(ASComment, READLINE_LENGTH-1, p);
                         }
                         break;
 
@@ -1830,7 +1866,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             }
         }
         if(newairspace) {
-          newairspace->Init(Name, Type, Base, Top, flyzone);
+          newairspace->Init(Name, Type, Base, Top, flyzone , ASComment   );
           { // Begin Lock
             ScopeLock guard(_csairspaces);
             _airspaces.push_back(newairspace);
@@ -2072,8 +2108,13 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             StartupStore(TEXT(".. Skipping ASP without NAME.%s"), NEWLINE);
             continue;
         }
-        TCHAR Name[NAME_SIZE + 1] = {0};
-        LK_tcsncpy(Name, dataStr, NAME_SIZE);
+        TCHAR Name[READLINE_LENGTH + 1] = {0};
+        CopyTruncateString(Name, NAME_SIZE, dataStr);
+        
+        TCHAR ASComment[READLINE_LENGTH + 1] = {0};
+        if( _tcslen(dataStr) > NAME_SIZE)
+          CopyTruncateString(ASComment, READLINE_LENGTH, dataStr);
+
 
         // Airspace top altitude
         AIRSPACE_ALT Top;
@@ -2144,7 +2185,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             return false;
         }
         bool flyzone=true; //TODO: initialize this properly...
-        newairspace->Init(Name, Type, Base, Top, flyzone);
+        newairspace->Init(dataStr, Type, Base, Top, flyzone, ASComment);
 
         // Add the new airspace
         { // Begin Lock

@@ -18,6 +18,8 @@
 #include "Screen/LKSurface.h"
 #include "Geographic/GeoPoint.h"
 
+#define DYN_MEM_COMMENT
+
 class ScreenProjection;
 struct XMLNode;
 
@@ -93,6 +95,11 @@ class CAirspaceBase
 public:
   CAirspaceBase() :
             _name(),
+#ifdef DYN_MEM_COMMENT
+            _comment(NULL),
+#else
+            _comment(),
+#endif            
             _type( 0 ),
             _base(),
             _top(),
@@ -117,8 +124,21 @@ public:
             _hwarninglabel_hide(false),
             _enabled(true),
             _selected(false)
-            {}
-  virtual ~CAirspaceBase() {}
+            {
+#ifdef DYN_MEM_COMMENT
+             _comment = NULL;
+#endif
+            }
+
+  virtual ~CAirspaceBase() {
+    if(_comment  != NULL)
+    {
+#ifdef DYN_MEM_COMMENT
+ //     StartupStore(TEXT("deleting comment: %s %u %s"), _comment, _tcslen(_comment), NEWLINE);
+      delete []_comment; _comment = NULL;
+#endif
+    }
+  }
 
 
   // Check if an altitude vertically inside in this airspace
@@ -139,14 +159,16 @@ public:
 
   // Attributes interface
   // Initialize instance attributes
-  void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone);
-
+//  void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone);
+  void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment= NULL) ;
 
   const TCHAR* TypeName(void) const;
   const LKColor& TypeColor(void) const;
   const LKBrush& TypeBrush(void) const;
 
   const TCHAR* Name() const { return _name; }
+  const TCHAR* Comment() const { return _comment; }
+
   const AIRSPACE_ALT* Top() const { return &_top; }
   const AIRSPACE_ALT* Base() const { return &_base; }
   const rectObj& Bounds() const { return _bounds; }
@@ -194,6 +216,11 @@ public:
 
 protected:
   TCHAR _name[NAME_SIZE + 1];                    // Name
+#ifdef DYN_MEM_COMMENT
+  TCHAR* _comment  ;                            // extended airspace informations e.g. for Notams
+#else
+  TCHAR _comment[READLINE_LENGTH + 1];   ;                            // extended airspace informations e.g. for Notams
+#endif
   int _type;                                    // type (class) of airspace
   AIRSPACE_ALT _base;                            // base altitude
   AIRSPACE_ALT _top;                            // top altitude
@@ -250,9 +277,9 @@ protected:
 class CAirspace : public CAirspaceBase {
 public:
 
-    CAirspace() : CAirspaceBase() { }
+    CAirspace() : CAirspaceBase() { /*_comment  =NULL;*/}
 
-    virtual ~CAirspace() { }
+    virtual ~CAirspace() {/*delete [] _comment;_comment =NULL;*/}
 
     // Check if a point horizontally inside in this airspace
     virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const = 0;
@@ -352,7 +379,7 @@ typedef struct
 class CAirspace_Area: public CAirspace {
 public:
   CAirspace_Area(CPoint2DArray &&Area_Points);
-  virtual ~CAirspace_Area() {};
+  virtual ~CAirspace_Area()  {/*delete [] _comment;_comment =NULL;*/}
 
   // Check if a point horizontally inside in this airspace
   virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const override ;
@@ -387,7 +414,7 @@ class CAirspace_Circle: public CAirspace
 {
 public:
   CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius);
-  virtual ~CAirspace_Circle() {}
+  virtual ~CAirspace_Circle()  {/*delete [] _comment;_comment =NULL;*/}
 
   // Check if a point horizontally inside in this airspace
   virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const override;
