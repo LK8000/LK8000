@@ -275,6 +275,30 @@ static void SetValues(WndForm* wf) {
     wp->SetText(buffer2);
     wp->RefreshDisplay();
   }
+
+
+  WindowControl* wDetails = wf->FindByName(TEXT("cmdDetails"));
+  {
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+  	if(airspace->Comment() != NULL)
+  	{
+      if(_tcslen(airspace->Comment()) > 10 )    
+      {
+        WindowControl* wSelect = wf->FindByName(TEXT("cmdSelect"));
+        if(wSelect) {
+          wSelect->SetLeft(IBLSCALE(155));
+          wSelect->SetWidth(IBLSCALE(80));
+        }
+
+        wDetails->SetLeft(IBLSCALE(80));
+        wDetails->SetWidth(IBLSCALE(75));
+        wDetails->Enable(true);
+      }
+      else wDetails->Enable(false);
+    }
+  }
+
 #ifdef  RADIO_ACTIVE
 
   WindowControl* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
@@ -433,21 +457,19 @@ extern void AddAirspaceInfos(TCHAR* name, TCHAR* details) ;
 
 static void OnDetailsClicked(WndButton* pWnd){
 
-#define 	MAXNOTETITLE 200
-#define 	MAXNOTEDETAILS 5000
+	  TCHAR Details[READLINE_LENGTH +1] = _T("");
+	  TCHAR Name[NAME_SIZE +1]= _T("");;
 
-	  TCHAR Details[MAXNOTEDETAILS+1] = _T("");
-	  TCHAR Name[MAXNOTETITLE+1]= _T("");;
-
-
-  (void)pWnd;
+  
   {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
-
-  	  _stprintf(Details, _T("%s"), (TCHAR*)airspace->Name());
-  	  _stprintf(Name, _T("INFO") );
+    	if(airspace->Comment() != NULL)
+  	      _stprintf(Details, _T("%s"), airspace->Comment());
+    	else
+    	  _stprintf(Details, _T("%s"), (TCHAR*)airspace->TypeName());
+  	  _stprintf(Name, _T("%s"), (TCHAR*)airspace->TypeName() );
 
     }
   }
