@@ -511,7 +511,7 @@ static FILE *f;
 static int retry =0;
 TCHAR Tmp[200];
 TCHAR Name[200];
-static  bool err = false;
+static  uint8_t err = false;
 static uint8_t   Command = SELECTRECORD;
 static  uint8_t   pBlock[2000];
 pBlock[0] = IGC_Index;
@@ -524,14 +524,25 @@ if(d != NULL)
 
   if (ThreadState == OPEN_STATE)
   {
-
+	if(f) {fclose(f); f = NULL;}
+	err = false;
     _sntprintf(Name, 200, _T("%s"), szIGCStrings[IGC_Index ]);
     TCHAR* remaining;
     TCHAR* Filename  = _tcstok_r(Name ,TEXT(" "),&remaining);
+    if(Filename == NULL)
+    {
+      ThreadState = CLOSE_STATE;  // No valid filename = end thread
+      return 0;
+    }
     TCHAR filename[MAX_PATH];
     LocalPath(filename, _T(LKD_LOGS), Filename);
-    if(f) fclose(f);
-    f = _tfopen(filename, TEXT("w"));
+     f = _tfopen(filename, TEXT("w"));
+    if(f == NULL)   
+    {
+      ThreadState = CLOSE_STATE;  // No valid filediscriptor = end thread
+      return 0;
+    }
+
     _sntprintf(Tmp, 200, TEXT("IGC Dowlnoad File : %s "),szIGCStrings[IGC_Index ]);
     StartupStore(Tmp);
     SendBinBlock(d,  Sequence++,  SELECTRECORD, &IGC_Index,  1);
@@ -582,7 +593,7 @@ if(d != NULL)
 
   if (ThreadState == CLOSE_STATE)
   {
-    fclose(f);
+    if(f) fclose(f);
   #ifdef PRPGRESS_DLG
     CloseIGCProgressDialog();
   #endif
@@ -736,7 +747,7 @@ return error;
 uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command, uint8_t* pBlock, uint16_t *blocksize, uint16_t Timeout)
 {
 
-bool error  = false;
+uint8_t error  = REC_NO_ERROR ;
 uint8_t inchar;
 uint8_t Version;
 uint16_t CRC_in, CRC_calc=0;
@@ -767,8 +778,12 @@ uint16_t CRC_in, CRC_calc=0;
     for (uint16_t i = 0 ; i < (*blocksize-8) ; i++)
     {
        error |= RecChar8(d,&inchar   , Timeout);
-
-         pBlock[i] = inchar;
+       if(error != REC_NO_ERROR)
+       {
+    	 StartupStore(TEXT("Rec Block Body error: %u!"), error);
+         return error;
+       }
+       pBlock[i] = inchar;
        CRC_calc = crc_update (CRC_calc,pBlock[i]); if(error)  return error;
    //    if(deb_) { StartupStore(TEXT("Block[%u]  %02X" ),i, pBlock[i]);}
     }
@@ -804,7 +819,8 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
     uint8_t pBlock[100];
     uint16_t blocksize;
     TCHAR  TempString[255];
-    bool err; uint8_t retry = 0;
+    uint8_t retry = 0;
+    uint8_t err  = REC_NO_ERROR ;
     if (d && d->Com)
     {
 #ifdef PRPGRESS_DLG
@@ -866,13 +882,14 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
             for(uint16_t i = 0; i < blocksize-2; i++)
                TempString[i]= (TCHAR) pBlock[i+2];
         /*    if(deb_) */  StartupStore(TEXT("%s "),TempString);
+            TCHAR empty[3] = _T("");
             TCHAR* remaining=NULL;
-            TCHAR* Filename  = _tcstok_r(TempString,TEXT("|"),&remaining);
-            TCHAR* Date      = _tcstok_r(NULL,TEXT("|"),&remaining);
-            TCHAR* Takeoff   = _tcstok_r(NULL,TEXT("|"),&remaining);
-            TCHAR* Duration  = _tcstok_r(NULL,TEXT("|"),&remaining);
-            TCHAR* Pilot     = _tcstok_r(NULL,TEXT("|"),&remaining);
-            TCHAR* CN        = _tcstok_r(NULL,TEXT("|"),&remaining);
+            TCHAR* Filename  = _tcstok_r(TempString,TEXT("|"),&remaining); if(Filename == NULL)  {Filename = empty;};
+            TCHAR* Date      = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Date     == NULL)  {Date     = empty;};
+            TCHAR* Takeoff   = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Takeoff  == NULL)  {Takeoff  = empty;};
+            TCHAR* Duration  = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Duration == NULL)  {Duration = empty;};
+            TCHAR* Pilot     = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Pilot    == NULL)  {Pilot    = empty;};
+            TCHAR* CN        = _tcstok_r(NULL,TEXT("|"),&remaining);       if(CN       == NULL)  {CN       = empty;};
             _stprintf( szIGCStrings[IGCCnt]   ,_T("%s (%s  [%5s])"),Filename, Date,Takeoff);
             _stprintf( szIGCSubStrings[IGCCnt],_T("%s"),Duration);
             if(Pilot) { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" ") );_tcscat( szIGCSubStrings[IGCCnt] ,Pilot);}
