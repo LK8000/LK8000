@@ -8,7 +8,7 @@
 
 #include "externs.h"
 
-#ifndef NO_DATARECORDER
+
 
 #include "FlightDataRec.h"
 #include "utils/stringext.h"
@@ -145,8 +145,22 @@ void InitFlightDataRecorder(void)
   	return;
   } 
 
+#ifdef __linux__
+  time_t timer;
+  struct tm y2k = {0};
+
+  y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+  y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+
+  time(&timer);  /* get current time; same as: timer = time(NULL)  */
+
+  difftime(timer,mktime(&y2k));
+
+#else
   SYSTEMTIME pda_time;
   GetSystemTime(&pda_time);
+#endif
+
   // FROM NOW ON, we can write on the file and on LK exit we must close the file.
   fprintf(FlightDataRecorderFile,"******************************************************************\r");
   fprintf(FlightDataRecorderFile,"* LK8000 Tactical Flight Computer -  WWW.LK8000.IT\r");
@@ -154,7 +168,12 @@ void InitFlightDataRecorder(void)
   fprintf(FlightDataRecorderFile,"* Flight Data Recorder Output\r");
   fprintf(FlightDataRecorderFile,"* GNU 2012 by Ulrich Heynen / Paolo Ventafridda\r");
   fprintf(FlightDataRecorderFile,"*\r");
+#ifdef __linux__
+  fprintf(FlightDataRecorderFile,"* flight recorded on: %02d:%02d:%04d starting at %02d:%02d:%02d UTC\r", y2k.tm_wday ,y2k.tm_mon ,y2k.tm_year , y2k.tm_hour ,  y2k.tm_min,  y2k.tm_sec  );
+#else
   fprintf(FlightDataRecorderFile,"* flight recorded on: %02d:%02d:%04d starting at %02d:%02d:%02d UTC\r", pda_time.wDay,pda_time.wMonth,pda_time.wYear , pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
+#endif
+
   fprintf(FlightDataRecorderFile,"*\r");
   fprintf(FlightDataRecorderFile,"******************************************************************\r\r");
 
@@ -244,10 +263,20 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   static unsigned nextHB=0;
   if (LKHearthBeats < nextHB) return;
   nextHB=LKHearthBeats+2;       // 2hz to 1hz
+#ifdef __linux__
+  time_t timer;
+  struct tm y2k = {0};
 
+  y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+  y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+
+  time(&timer);  /* get current time; same as: timer = time(NULL)  */
+
+  difftime(timer,mktime(&y2k));
+#else
   SYSTEMTIME pda_time;
   GetSystemTime(&pda_time);
-
+#endif
   int idx=0;
   LKASSERT(iLogDelay<32767);
 
@@ -257,9 +286,11 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   if (FlightDataRecorderFile==NULL) return;
 
   // Shutdown will set LogDelay to zero before closing the file descriptor
-
+#ifdef __linux__
+  if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", y2k.tm_hour,  y2k.tm_min,  y2k.tm_sec  );
+#else
   if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
-
+#endif
   idx=0;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.ExtBatt1_Voltage     );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.ExtBatt2_Voltage     );
@@ -456,4 +487,4 @@ void CloseFlightDataRecorder(void)
   if (FlightDataRecorderFile) fclose(FlightDataRecorderFile);
 }
 
-#endif
+
