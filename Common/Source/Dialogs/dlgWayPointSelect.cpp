@@ -50,8 +50,8 @@ static int DirectionFilter[] = {0, DirHDG, 360, 30, 60, 90, 120, 150, 180, 210, 
 static unsigned DirectionFilterIdx=0;
 static int lastHeading=0;
 
-#define TYPEFILTERSNUM	6
-static const TCHAR *TypeFilter[TYPEFILTERSNUM];
+#define TYPEFILTERSNUM	(4+NO_WP_FILES)
+static  TCHAR TypeFilter[TYPEFILTERSNUM][50];
 static unsigned TypeFilterIdx=0;
 
 static int UpLimit=0;
@@ -297,7 +297,7 @@ static void UpdateList(void){
         break;
       }
     }
-  } else if (TypeFilterIdx == 4 || TypeFilterIdx == 5){
+  } else if (TypeFilterIdx >= 4 || TypeFilterIdx < (4+NO_WP_FILES)){
     // distancemode = true;
     SelectedWayPointFileIdx = TypeFilterIdx-4;
     qsort(WayPointSelectInfo, UpLimit,
@@ -815,17 +815,25 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   ItemIndex = -1;
 	//Manual fillup, do not change indexes!
 	//If you add more items don't forget to change TYPEFILTERSNUM and UpdateList() also
-	TypeFilter[0] = LKGetText(TEXT("*"));
+//	TypeFilter[0] = gettext(TEXT("*"));
+	 _stprintf(TypeFilter[0], TEXT("*"));
 	// LKTOKEN _@M1224_ "Airport"
-	TypeFilter[1] = MsgToken(1224);
+//	TypeFilter[1] = MsgToken(1224);
+	 _stprintf(TypeFilter[1], TEXT("%s"), MsgToken(1224));
 	// LKTOKEN _@M1225_ "Landable"
-	TypeFilter[2] = MsgToken(1225);
+//	TypeFilter[2] = MsgToken(1225);
+	 _stprintf(TypeFilter[2], TEXT("%s"), MsgToken(1225));
 	// LKTOKEN _@M1226_ "Turnpoint"
-	TypeFilter[3] = MsgToken(1226);
+//	TypeFilter[3] = MsgToken(1226);
+	 _stprintf(TypeFilter[3], TEXT("%s"), MsgToken(1226));
 	// LKTOKEN _@M1227_ "File 1"
-	TypeFilter[4] = MsgToken(1227);
-	// LKTOKEN _@M1228_ "File 2"
-	TypeFilter[5] = MsgToken(1228);
+	for (int i = 0 ; i < NO_WP_FILES; i++)
+	  _stprintf(TypeFilter[4+i], TEXT("%s %i"), MsgToken(1227), i+1);
+
+
+//	// LKTOKEN _@M1228_ "File 2"
+//	TypeFilter[5] = MsgToken(1228);
+
 
 
   if (lon==0.0 && lat==90.0) {

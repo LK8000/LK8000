@@ -1279,7 +1279,7 @@ _@M1223_ "Topology reset to default values"
 _@M1224_ "Airport"
 _@M1225_ "Landable"
 _@M1226_ "Turnpoint"
-_@M1227_ "File 1"
+_@M1227_ "File"
 _@M1228_ "File 2"
 _@M1229_ "HDG"
 
