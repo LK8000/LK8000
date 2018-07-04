@@ -40,8 +40,7 @@
 #endif
 
 #ifdef __linux__
- // temporary disable, need to be port...
- #define NO_DATARECORDER
+ 
 
 // Cpu load : use averaged number of processes in the system run queue instead of real cpu usage
 // #define USE_LOADAVG_CPU
@@ -130,6 +129,14 @@
 #define COM_DISCARD 0
 // en-/disable Com Port discard for Testbench on PC
 
+#ifdef  UNDER_CE
+#define UTF8PICTORIALS  false
+#define  FLARM_PICTO_THREADSAFE
+#else
+#define  UTF8PICTORIALS  false
+#define  FLARM_PICTO_THREADSAFE
+#endif
+
 // ----------------------------------------------------------------------------------------
 //
 // OPTIONALs not in use within official LK versions, but still available for custom version
@@ -137,13 +144,15 @@
 // ----------------------------------------------------------------------------------------
 #define RADIO_ACTIVE
 
-//#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
+#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
-  #define GOTO_AS_SIMPLETASK  // even a singel goto will be listed in multiselect
-  #define BUTTONS_MS
+//  #define GOTO_AS_SIMPLETASK  // even a single goto will be listed in multiselect
+
   #define OWN_POS_MS
+  #define ORACLE_MS
+  #define TEAM_CODE_MS
   #define OWN_FLARM_TRACES
-//  #define FLARM_MS    // not implemented inside Multiselect dialog.
+  #define FLARM_MS    // not implemented inside Multiselect dialog.
   #define OUTLINE_2ND		// double outline airspaces
 //  #define FIVEPOINT_OPTIMIZER
 #endif
