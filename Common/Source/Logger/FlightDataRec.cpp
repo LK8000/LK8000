@@ -14,6 +14,9 @@
 #include "utils/stringext.h"
 
 #define NO_ENTRYS 26
+#ifdef PNA
+  #define PNA_TIME
+#endif
 
 FILE *FlightDataRecorderFile=NULL;
 
@@ -145,17 +148,14 @@ void InitFlightDataRecorder(void)
   	return;
   } 
 
-#ifdef __linux__
-  time_t timer;
-  struct tm y2k = {0};
+#ifndef PNA_TIME
 
-  y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
-  y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+  time_t rawtime;
+  struct tm * ptm;
 
-  time(&timer);  /* get current time; same as: timer = time(NULL)  */
+  time ( &rawtime );
 
-  difftime(timer,mktime(&y2k));
-
+  ptm = gmtime ( &rawtime );
 #else
   SYSTEMTIME pda_time;
   GetSystemTime(&pda_time);
@@ -168,8 +168,8 @@ void InitFlightDataRecorder(void)
   fprintf(FlightDataRecorderFile,"* Flight Data Recorder Output\r");
   fprintf(FlightDataRecorderFile,"* GNU 2012 by Ulrich Heynen / Paolo Ventafridda\r");
   fprintf(FlightDataRecorderFile,"*\r");
-#ifdef __linux__
-  fprintf(FlightDataRecorderFile,"* flight recorded on: %02d:%02d:%04d starting at %02d:%02d:%02d UTC\r", y2k.tm_wday ,y2k.tm_mon ,y2k.tm_year , y2k.tm_hour ,  y2k.tm_min,  y2k.tm_sec  );
+#ifndef PNA_TIME
+  fprintf(FlightDataRecorderFile,"* flight recorded on: %02d:%02d:%04d starting at %02d:%02d:%02d UTC\r", ptm->tm_mday ,ptm->tm_mon+1 ,ptm->tm_year+1900 , ptm->tm_hour ,  ptm->tm_min,  ptm->tm_sec  );
 #else
   fprintf(FlightDataRecorderFile,"* flight recorded on: %02d:%02d:%04d starting at %02d:%02d:%02d UTC\r", pda_time.wDay,pda_time.wMonth,pda_time.wYear , pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
 #endif
@@ -263,16 +263,13 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   static unsigned nextHB=0;
   if (LKHearthBeats < nextHB) return;
   nextHB=LKHearthBeats+2;       // 2hz to 1hz
-#ifdef __linux__
-  time_t timer;
-  struct tm y2k = {0};
+#ifndef PNA_TIME
+  time_t rawtime;
+  struct tm * ptm;
 
-  y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
-  y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+  time ( &rawtime );
 
-  time(&timer);  /* get current time; same as: timer = time(NULL)  */
-
-  difftime(timer,mktime(&y2k));
+  ptm = gmtime ( &rawtime );
 #else
   SYSTEMTIME pda_time;
   GetSystemTime(&pda_time);
@@ -286,8 +283,8 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   if (FlightDataRecorderFile==NULL) return;
 
   // Shutdown will set LogDelay to zero before closing the file descriptor
-#ifdef __linux__
-  if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", y2k.tm_hour,  y2k.tm_min,  y2k.tm_sec  );
+#ifndef PNA_TIME
+  if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", ptm->tm_hour,  ptm->tm_min,  ptm->tm_sec  );
 #else
   if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
 #endif
