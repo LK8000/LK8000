@@ -416,12 +416,13 @@ _@M2322_ "Enable Radar"
 +_@M2190_ "Distance to Next Turnpoint Cylinder Radius"
 +_@M2191_ "Cyl Dist"
 
-change entries into
+change entries into (number removed)
 _@M63_ "Airspace Files"
 _@M64_ "Airspace File "
 _@M806_ "Waypoint Files"
 _@M807_ "Waypoint File"   
-   
+_@M1227_ "File"
+
 HELP FILE
 
 +@933
