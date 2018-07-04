@@ -64,7 +64,11 @@ void InitFlightDataRecorder(void)
 
   LocalPath(szBatLogFileName,TEXT(LKD_CONF),_T("FlightRecorder.CFG"));
   fpDataRecConfigFile = _tfopen(szBatLogFileName, TEXT("r"));
-
+  if(fpDataRecConfigFile == NULL)
+  {
+	LocalPath(szBatLogFileName,TEXT(LKD_CONF),_T("FlightRecorder.cfg"));
+	fpDataRecConfigFile = _tfopen(szBatLogFileName, TEXT("r"));
+  }
   if(fpDataRecConfigFile == NULL)
   {
 	// We shall no more check for dataconfig, unless we reset DoInit
