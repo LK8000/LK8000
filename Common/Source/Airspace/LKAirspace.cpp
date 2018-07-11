@@ -765,7 +765,7 @@ int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+1);
 
 	if( _comment  != NULL)
 	{
-	  CopyTruncateString(_comment,min( READLINE_LENGTH, (int) _tcslen(comment)), comment);
+	  CopyTruncateString(_comment,min( READLINE_LENGTH, (int) _tcslen(comment)+1), comment);
 //	  StartupStore(TEXT("new _comment: %s %u %s"), _comment, _tcslen(_comment), NEWLINE);
 	}
   }
