@@ -746,9 +746,8 @@ void CAirspaceBase::ResetWarnings() {
 void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
     CopyTruncateString(_name, NAME_SIZE, name);
 
-int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+1);
- iLen = READLINE_LENGTH;
-// iLen *=sizeof(TCHAR);
+int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+3);
+
   if(comment != NULL)
   {
 #ifdef DYN_MEM_COMMENT
@@ -765,7 +764,7 @@ int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+1);
 
 	if( _comment  != NULL)
 	{
-	  CopyTruncateString(_comment,min( READLINE_LENGTH, (int) _tcslen(comment)+1), comment);
+	  CopyTruncateString(_comment,min( READLINE_LENGTH, (int) _tcslen(comment)+2), comment);
 //	  StartupStore(TEXT("new _comment: %s %u %s"), _comment, _tcslen(_comment), NEWLINE);
 	}
   }
