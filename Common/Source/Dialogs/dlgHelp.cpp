@@ -57,7 +57,7 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
+void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText, bool bHelpCapt ) {
   if (!Caption || !HelpText) {
     return;
   }
@@ -80,9 +80,15 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
 
   DrawListIndex=0;
 
-  TCHAR fullcaption[100];
-  _stprintf(fullcaption,TEXT("%s: %s"), MsgToken(336), Caption); // Help
-  wf->SetCaption(fullcaption);
+
+  if( bHelpCapt)
+  {
+    TCHAR fullcaption[100];
+    _stprintf(fullcaption,TEXT("%s: %s"), MsgToken(336), Caption); // Help
+    wf->SetCaption(fullcaption);
+  }
+  else
+    wf->SetCaption(Caption);
 
   aTextLine.clear();
 
@@ -95,9 +101,10 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
     if(minHeight != wHeight) {
       wHelpEntry->SetHeight(minHeight);
     }
-
-    aTextLine.update(Surface, wHelpEntry->GetWidth(), LKgethelptext(HelpText));
-
+    if( bHelpCapt)
+      aTextLine.update(Surface, wHelpEntry->GetWidth(), LKgethelptext(HelpText));
+    else
+      aTextLine.update(Surface, wHelpEntry->GetWidth(), HelpText);
     Surface.SelectObject(oldFont);
   }
 
