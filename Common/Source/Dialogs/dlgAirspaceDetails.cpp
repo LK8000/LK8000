@@ -477,6 +477,7 @@ static void OnDetailsClicked(WndButton* pWnd){
       StartupStore(_T(". Airspace Name <%s>%s"),Details,NEWLINE);
 
 #endif
-      AddAirspaceInfos(Name, Details);
-  	  dlgChecklistShowModal(4);
+
+       dlgHelpShowModal(Name, Details);
+
 }
