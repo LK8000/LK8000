@@ -18,14 +18,14 @@ void MapWindow::CalculateOrientationNormal(void) {
   if( (DisplayOrientation == NORTHUP) ||
       ((DisplayOrientation == NORTHTRACK) &&(!mode.Is(Mode::MODE_CIRCLING)))
 	|| (DisplayOrientation == NORTHSMART) ||
-	( ((DisplayOrientation == NORTHCIRCLE) ||(DisplayOrientation==TRACKCIRCLE)) && (mode.Is(Mode::MODE_CIRCLING)) ) )
+	( ((DisplayOrientation == NORTHCIRCLE) ||(DisplayOrientation==TARGETCIRCLE)) && (mode.Is(Mode::MODE_CIRCLING)) ) )
   {
 		if (mode.Is(Mode::MODE_CIRCLING))
 			GliderCenter=true;
 		else
 			GliderCenter=false;
 
-		if (DisplayOrientation == TRACKCIRCLE) {
+		if (DisplayOrientation == TARGETCIRCLE) {
 			DisplayAngle = DerivedDrawInfo.WaypointBearing;
 			DisplayAircraftAngle = trackbearing-DisplayAngle;
 		} else {

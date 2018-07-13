@@ -3102,8 +3102,8 @@ int iOrientation = DisplayOrientation ;
   else if (_tcscmp(misc, TEXT("northcircle")) == 0){
 	iOrientation = NORTHCIRCLE;
   }
-  else if (_tcscmp(misc, TEXT("trackcircle")) == 0){
-	iOrientation = TRACKCIRCLE;
+  else if (_tcscmp(misc, TEXT("targetcircle")) == 0){
+	iOrientation = TARGETCIRCLE;
   }
   else if (_tcscmp(misc, TEXT("trackup")) == 0){
 	iOrientation = TRACKUP;

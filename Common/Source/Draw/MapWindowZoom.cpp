@@ -54,7 +54,7 @@ void MapWindow::Zoom::CalculateAutoZoom()
     if( (DisplayOrientation == NORTHTRACK && !mode.Is(Mode::MODE_CIRCLING)) ||
         DisplayOrientation == NORTHUP ||
         DisplayOrientation == NORTHSMART ||
-        ((DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE) && mode.Is(Mode::MODE_CIRCLING)) )
+        ((DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TARGETCIRCLE) && mode.Is(Mode::MODE_CIRCLING)) )
       AutoZoomFactor = 2.5;
     else
       AutoZoomFactor = 4;

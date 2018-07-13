@@ -30,9 +30,10 @@
 #include "Poco/Event.h"
 #endif
 
+#define TARGETUP   6
 #define NORTHSMART 5
 #define NORTHTRACK 4
-#define TRACKCIRCLE 3
+#define TARGETCIRCLE 3
 #define NORTHCIRCLE 2
 #define NORTHUP 1
 #define TRACKUP 0
