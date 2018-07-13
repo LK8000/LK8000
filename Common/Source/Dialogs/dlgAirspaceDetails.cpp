@@ -469,7 +469,7 @@ static void OnDetailsClicked(WndButton* pWnd){
   	      _stprintf(Details, _T("%s"), airspace->Comment());
     	else
     	  _stprintf(Details, _T("%s"), (TCHAR*)airspace->TypeName());
-  	  _stprintf(Name, _T("%s"), (TCHAR*)airspace->TypeName() );
+  	  _stprintf(Name, _T("%s %s:"), (TCHAR*)airspace->TypeName(), MsgToken(231) );
 
     }
   }
@@ -478,6 +478,6 @@ static void OnDetailsClicked(WndButton* pWnd){
 
 #endif
 
-       dlgHelpShowModal(Name, Details);
+       dlgHelpShowModal(Name, Details, false);
 
 }
