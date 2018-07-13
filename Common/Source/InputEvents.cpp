@@ -3113,6 +3113,9 @@ int iOrientation = DisplayOrientation ;
   }
   else if (_tcscmp(misc, TEXT("northsmart")) == 0){ // 100417
 	iOrientation = NORTHSMART;
+  }
+  else if (_tcscmp(misc, TEXT("targetup")) == 0){
+	iOrientation = TARGETUP;
 	/*
 	if (InfoBoxLayout::landscape)
 		DisplayOrientation = NORTHSMART;
