@@ -81,18 +81,20 @@ bool  UpdateMonitor(void)
   }
 
   /* check if Flarm disappeared after 30 seconds no activity */
-  if (GPS_INFO.FLARM_Available && ((GPS_INFO.Time -LastFlarmCommandTime)> (LKTime_Real*2)) ) {
-    static unsigned short MessageCnt =0;
-    if(MessageCnt < 10) {
-      MessageCnt++;
-      StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
-      DoStatusMessage(MsgToken(947)); // _@M947_ "FLARM SIGNAL LOST"
+  if(LastFlarmCommandTime !=0)
+  {
+    if (GPS_INFO.FLARM_Available && ((GPS_INFO.Time -LastFlarmCommandTime)> (LKTime_Real*2)) ) {
+      static unsigned short MessageCnt =0;
+      if(MessageCnt < 10) {
+        MessageCnt++;
+        StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
+        DoStatusMessage(MsgToken(947)); // _@M947_ "FLARM SIGNAL LOST"
+      }
+      GPS_INFO.FLARM_Available = false;
+      GPS_INFO.FLARM_HW_Version =0.0;
+      GPS_INFO.FLARM_SW_Version =0.0;
     }
-    GPS_INFO.FLARM_Available = false;
-    GPS_INFO.FLARM_HW_Version =0.0;
-    GPS_INFO.FLARM_SW_Version =0.0;
   }
-
   short invalidGps = 0;
   short invalidBaro = 0;
   short validBaro = 0;

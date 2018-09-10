@@ -259,6 +259,7 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
       ++flarm_count;
     }
   }
+#ifndef ALLOW_MULTIPLE_FLARM
   if (flarm_count > 1) {
     DoStatusMessage(_T("FLARM DETECTED ON MULTIPLE COM PORTS! AUTO-EXCLUDING."));
     StartupStore(_T("......... WARNING! FLARM DETECTED ON TWO COM PORTS! %s\n"), WhatTimeIsIt());
@@ -267,6 +268,7 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
     conflict=true;
     return FALSE;
   }
+#endif
 
   if(!pGPS->FLARM_Available)
 	sayflarmavailable = true;
