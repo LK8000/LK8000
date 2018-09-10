@@ -253,7 +253,6 @@ private:
 
     int16_t *hBuf;
     BGRColor *colorBuf;
-    bool do_shading;
     static constexpr int interp_levels = 8;
     const COLORRAMP* color_ramp;
 
@@ -261,11 +260,35 @@ private:
     int16_t height_min; // lower height visible terrain
     int16_t height_max; // highter height visible terrain
 
-public:
+    bool DoShading() const {
 
-    void SetShading() {
-        do_shading = (Shading && terrain_doshading[TerrainRamp]);
+        /*
+        // We might accelerate drawing by disabling shading while quickdrawing,
+        // but really this wouldnt change much the things now in terms of speed,
+        // while instead creating a confusing effect.
+        if (QUICKDRAW) {
+            do_shading=false;
+        } else ...
+        */
+
+        if (epx > min(ixs, iys) / 4) {
+            return false;
+        } else {
+            if (AutoContrast) {
+                if (MapWindow::zoom.RealScale() > 18) {
+                    return false;
+                }
+            } else {
+                if (MapWindow::zoom.RealScale() > NOSHADING_REALSCALE) {
+                    return false;
+                }
+            }
+        }
+
+        return (Shading && terrain_doshading[TerrainRamp]);
     }
+
+public:
 
     /**
      * Fill height Buffer with according to map projection
@@ -317,25 +340,6 @@ public:
         // set resolution
         DisplayMap->SetFieldRounding(dX/3, dY/3);
         epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d, ymiddle, xmiddle);
-
-        /*
-        // We might accelerate drawing by disabling shading while quickdrawing,
-        // but really this wouldnt change much the things now in terms of speed,
-        // while instead creating a confusing effect.
-        if (QUICKDRAW) {
-            do_shading=false;
-        } else ...
-        */
-
-        if (epx > min(ixs, iys) / 4) {
-            do_shading = false;
-        } else {
-            if (AutoContrast) {
-               if (MapWindow::zoom.RealScale() > 18) do_shading = false;
-            } else {
-               if (MapWindow::zoom.RealScale() > NOSHADING_REALSCALE) do_shading = false;
-            }
-        }
 
         POINT orig = MapWindow::GetOrigScreen();
         orig.x -= offset.x;
@@ -464,6 +468,8 @@ public:
         const unsigned int iysbottom = ciys - iepx;
         const int hscale = std::max<int>(1, pixelsize_d);
 
+        const bool do_shading = DoShading();
+
         int tc=1;
      if (AutoContrast) {
         //
@@ -494,6 +500,11 @@ public:
         // StartupStore(_T("CONTRAST=%d  BRIGHT=%d  scale=%f \n"),TerrainContrast,TerrainBrightness, MapWindow::zoom.RealScale());
      }
 
+
+#ifndef NDEBUG
+        const int16_t* hBuf_end = std::next(hBuf, ixs * iys);
+        const int16_t* hBuf_begin = hBuf;
+#endif
         const int tc_in_use = tc;
         const BGRColor* oColorBuf = colorBuf + 64 * 256;
         if (!sbuf->GetBuffer()) return;
@@ -525,12 +536,16 @@ public:
             p31s = p31*hscale;
 
             BGRColor* RowBuf = sbuf->GetRow(y);
-            int16_t *RowthBuf = &hBuf[y*cixs];
+            const int16_t *RowthBuf = &hBuf[y*cixs];
+            assert(RowthBuf < hBuf_end);
+            assert(RowthBuf >= hBuf_begin);
 
             for (unsigned int x = 0; x < cixs; ++x) {
 
                 BGRColor* imageBuf = &RowBuf[x];
-                int16_t *thBuf = &RowthBuf[x];
+                const int16_t *thBuf = &RowthBuf[x];
+                assert(thBuf < hBuf_end);
+                assert(thBuf >= hBuf_begin);
 
                 int16_t h = *thBuf;
 
@@ -549,22 +564,28 @@ public:
                     h = h >> height_scale;
                     assert(TerrainRamp == 13 || h < 256); // height_scale is wrong ...
 
-                    h = Clamp<int16_t>(h, 0, 254); // avoid buffer overflow....
+                    h = Clamp<int16_t>(h, 0, 255); // avoid buffer overflow....
 
                     int p20, p22;
                     // no need to calculate slope if undefined height or sea level
                     if (do_shading) {
                         if (x < ixsright) {
                             p20 = iepx;
+                            assert((thBuf + iepx) < hBuf_end);
+                            assert((thBuf + iepx) >= hBuf_begin);
                             p22 = *(thBuf + iepx);
                         } else {
                             int itss_x = cixs - x - 2;
                             p20 = itss_x;
+                            assert((thBuf + itss_x) < hBuf_end);
+                            assert((thBuf + itss_x) >= hBuf_begin);
                             p22 = *(thBuf + itss_x);
                         }
 
                         if (x >= (unsigned int) iepx) {
                             p20 += iepx;
+                            assert((thBuf - iepx) < hBuf_end);
+                            assert((thBuf - iepx) >= hBuf_begin);
                             p22 -= *(thBuf - iepx);
                         } else {
                             p20 += x;
@@ -572,14 +593,22 @@ public:
                         }
 
                         if (ybottom) {
+                            assert((thBuf + ixsepx) < hBuf_end);
+                            assert((thBuf + ixsepx) >= hBuf_begin);
                             p32 = *(thBuf + ixsepx);
                         } else {
+                            assert((thBuf + itss_y_ixs) < hBuf_end);
+                            assert((thBuf + itss_y_ixs) >= hBuf_begin);
                             p32 = *(thBuf + itss_y_ixs);
                         }
 
                         if (ytop) {
+                            assert((thBuf - yixs) < hBuf_end);
+                            assert((thBuf - yixs) >= hBuf_begin);
                             p32 -= *(thBuf - yixs);
                         } else {
+                            assert((thBuf - ixsepx) < hBuf_end);
+                            assert((thBuf - ixsepx) >= hBuf_begin);
                             p32 -= *(thBuf - ixsepx);
                         }
 
@@ -795,7 +824,6 @@ _redo:
         // step 1: update color table
         //   need to be done after fill height buffer because depends of min 
         //   and max height of terrain
-        trenderer->SetShading();
         trenderer->ColorTable();
 
         // step 2: calculate sunlight vector
