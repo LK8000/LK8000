@@ -218,8 +218,8 @@ void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 
 #include "InputEvents.h"
 
-double FLARM_NorthingToLatitude = 0.0;
-double FLARM_EastingToLongitude = 0.0;
+double FLARM_NorthingToLatitude = 1.0;
+double FLARM_EastingToLongitude = 1.0;
 
 BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
@@ -316,8 +316,8 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
     FLARM_NorthingToLatitude = delta_lat / dlat;
     FLARM_EastingToLongitude = delta_lon / dlon;
   } else {
-    FLARM_NorthingToLatitude=0.0;
-    FLARM_EastingToLongitude=0.0;
+    FLARM_NorthingToLatitude=1.0;
+    FLARM_EastingToLongitude=1.0;
   }
 
   _stscanf(String,
@@ -442,8 +442,11 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
     // max index used is 5...
     return FALSE;
   }
-  static  bool sayflarmavailable=true; // 100325
+
   int flarm_slot = 0;
+
+  static  bool sayflarmavailable=true; // 100325
+
 
   if(!pGPS->FLARM_Available)
 	sayflarmavailable = true;
