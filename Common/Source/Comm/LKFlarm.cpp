@@ -218,8 +218,8 @@ void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 
 #include "InputEvents.h"
 
-double FLARM_NorthingToLatitude = 1.0;
-double FLARM_EastingToLongitude = 1.0;
+double FLARM_NorthingToLatitude = 0.0;
+double FLARM_EastingToLongitude = 0.0;
 
 BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
@@ -238,6 +238,39 @@ StartupStore(_T("FLARM  found SW:%4.2f  HW:%4.2f  OBS:%s%s"),pGPS->FLARM_SW_Vers
 return true;
 }
 
+
+void CalcFlarmScale( NMEA_INFO *pGPS)
+{
+static double  LastCalcTime=0;
+if((FLARM_NorthingToLatitude == 0.0) ||  (fabs(pGPS->Time - LastCalcTime) > 10.0))
+{
+  LastCalcTime = pGPS->Time ;
+  // calculate relative east and north projection to lat/lon
+
+  double delta_lat = 0.01;
+  double delta_lon = 0.01;
+
+  double dlat;
+  DistanceBearing(pGPS->Latitude, pGPS->Longitude,
+                  pGPS->Latitude+delta_lat, pGPS->Longitude,
+                  &dlat, NULL);
+  double dlon;
+  DistanceBearing(pGPS->Latitude, pGPS->Longitude,
+                  pGPS->Latitude, pGPS->Longitude+delta_lon,
+                  &dlon, NULL);
+
+  if ((fabs(dlat)>0.0)&&(fabs(dlon)>0.0)) {
+    FLARM_NorthingToLatitude = delta_lat / dlat;
+    FLARM_EastingToLongitude = delta_lon / dlon;
+//	StartupStore(_T("---- FLARM_NorthingToLatitude %f %s"),FLARM_NorthingToLatitude, NEWLINE);
+//	StartupStore(_T("---- FLARM_EastingToLongitude %f %s"),FLARM_EastingToLongitude, NEWLINE);
+
+  } else {
+    FLARM_NorthingToLatitude=0.0;
+    FLARM_EastingToLongitude=0.0;
+  }
+}
+}
 
 BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
@@ -298,27 +331,8 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   }
 
 
-  // calculate relative east and north projection to lat/lon
+  CalcFlarmScale(pGPS);
 
-  double delta_lat = 0.01;
-  double delta_lon = 0.01;
-
-  double dlat;
-  DistanceBearing(pGPS->Latitude, pGPS->Longitude,
-                  pGPS->Latitude+delta_lat, pGPS->Longitude,
-                  &dlat, NULL);
-  double dlon;
-  DistanceBearing(pGPS->Latitude, pGPS->Longitude,
-                  pGPS->Latitude, pGPS->Longitude+delta_lon,
-                  &dlon, NULL);
-
-  if ((fabs(dlat)>0.0)&&(fabs(dlon)>0.0)) {
-    FLARM_NorthingToLatitude = delta_lat / dlat;
-    FLARM_EastingToLongitude = delta_lon / dlon;
-  } else {
-    FLARM_NorthingToLatitude=1.0;
-    FLARM_EastingToLongitude=1.0;
-  }
 
   _stscanf(String,
 	  TEXT("%hu,%hu,%hu,%hu"),
@@ -454,17 +468,19 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   pGPS->FLARM_Available = true;
   LastFlarmCommandTime = pGPS->Time;
   isFlarm = true;
-
-  if ( sayflarmavailable ) {
-	pGPS->FLARM_SW_Version =0.0;
-	pGPS->FLARM_HW_Version =0.0;
-	static int MessageCnt =0;
-	if(MessageCnt < 10)
-	{
-	  MessageCnt++;
-	  DoStatusMessage(MsgToken(279)); // FLARM DETECTED
-	}
-	sayflarmavailable=false;
+  if(LastFlarmCommandTime ==0)
+  {
+    if ( sayflarmavailable ) {
+  	  pGPS->FLARM_SW_Version =0.0;
+	  pGPS->FLARM_HW_Version =0.0;
+	  static int MessageCnt =0;
+	  if(MessageCnt < 10)
+	  {
+	    MessageCnt++;
+	    DoStatusMessage(MsgToken(279)); // FLARM DETECTED
+  	  }
+	  sayflarmavailable=false;
+  }
   }
 
 
@@ -523,6 +539,11 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	  &pGPS->FLARM_Traffic[flarm_slot].Speed, // double              8 m/s
 	  &pGPS->FLARM_Traffic[flarm_slot].ClimbRate, // double          9 m/s
 	  &pGPS->FLARM_Traffic[flarm_slot].Type); // unsigned short     10
+
+
+
+  CalcFlarmScale(pGPS);
+
   // 1 relativenorth, meters  
   pGPS->FLARM_Traffic[flarm_slot].Latitude = 
     pGPS->FLARM_Traffic[flarm_slot].RelativeNorth *FLARM_NorthingToLatitude + pGPS->Latitude;
