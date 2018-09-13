@@ -87,6 +87,7 @@ bool  UpdateMonitor(void)
       static unsigned short MessageCnt =0;
       if(MessageCnt < 10) {
         MessageCnt++;
+        LastFlarmCommandTime = GPS_INFO.Time;
         StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
         DoStatusMessage(MsgToken(947)); // _@M947_ "FLARM SIGNAL LOST"
       }

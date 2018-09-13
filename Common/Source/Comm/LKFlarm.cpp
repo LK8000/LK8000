@@ -466,7 +466,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	sayflarmavailable = true;
 
   pGPS->FLARM_Available = true;
-  LastFlarmCommandTime = pGPS->Time;
+//  LastFlarmCommandTime = pGPS->Time;
   isFlarm = true;
   if(LastFlarmCommandTime ==0)
   {
