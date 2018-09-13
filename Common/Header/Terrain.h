@@ -3,17 +3,6 @@
 #include "externs.h"
 #include "Topology.h"
 
-#define NUM_COLOR_RAMP_LEVELS 13
-#define NUMRAMPS        16
-
-typedef struct _COLORRAMP
-{
-  int16_t h;
-  unsigned char r;
-  unsigned char g;
-  unsigned char b;
-} COLORRAMP;
-
 #if USETOPOMARKS
 extern bool reset_marks;
 #endif

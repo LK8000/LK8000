@@ -273,6 +273,9 @@
 // Number of background colors available in MapWindow.h for NON-terrain maps
 #define LKMAXBACKGROUNDS        10
 
+// Number of color ramp available for draw terrain
+#define NUMRAMPS        16
+
 // Task format version
 #define LKTASKVERSION	'3'
 // How many chars at the beginning of file are reserved

@@ -29,6 +29,7 @@ class Canvas;
 #endif
 
 #include <stdint.h>
+#include <utility>
 #include "Compiler.h"
 
 
@@ -51,11 +52,17 @@ struct BGRColor
   constexpr BGRColor(uint8_t R, uint8_t G, uint8_t B)
     :value(R, G, B) {}
 
+    constexpr explicit BGRColor(Luminosity8&& _value)
+    :value(std::forward<Luminosity8>(_value)) {}
+
 #elif defined(HAVE_GLES)
   RGB565Color value;
 
   constexpr BGRColor(uint8_t R, uint8_t G, uint8_t B)
     :value(R, G, B) {}
+
+  constexpr explicit BGRColor(const RGB8Color& _value)
+    :value(_value.Red(), _value.Green(), _value.Blue()) {}
 
 #elif defined(USE_MEMORY_CANVAS) || defined(ENABLE_SDL) || defined(USE_EGL)
 
@@ -66,6 +73,10 @@ struct BGRColor
 
   constexpr BGRColor(uint8_t R, uint8_t G, uint8_t B)
     :dummy(), value(R, G, B) {}
+
+  constexpr explicit BGRColor(const RGB8Color& _value)
+    :dummy(), value(_value.Red(), _value.Green(), _value.Blue()) {}  
+
 #else
   /* little-endian */
   BGR8Color value;
@@ -73,6 +84,10 @@ struct BGRColor
 
   constexpr BGRColor(uint8_t R, uint8_t G, uint8_t B)
     :value(R, G, B), dummy() {}
+
+  constexpr explicit BGRColor(const RGB8Color& _value)
+    :value(_value.Red(), _value.Green(), _value.Blue()), dummy() {}
+
 #endif
 
 #else /* !SDL */
@@ -82,6 +97,8 @@ struct BGRColor
   constexpr BGRColor(uint8_t R, uint8_t G, uint8_t B)
     :value(R, G, B) {}
 
+  constexpr explicit BGRColor(const RGB8Color& _value)
+    :value(_value.Red(), _value.Green(), _value.Blue()) {}  
 #endif
 };
 
