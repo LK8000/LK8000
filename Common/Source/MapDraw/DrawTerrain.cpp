@@ -17,7 +17,7 @@
 
 // #define TDEBUG 1
 
-#include "./ColorRamps.h"
+#include "ColorRamps.h"
 #include "Kobo/Model.hpp"
 #include "Util/Clamp.hpp"
 
@@ -39,59 +39,128 @@ extern bool FastZoom;
 
 Topology* TopoStore[MAXTOPOLOGY] = {};
 
-uint8_t tshadow_r, tshadow_g, tshadow_b, tshadow_h;
-uint8_t thighlight_r, thighlight_g, thighlight_b, thighlight_h;
+static COLORRAMP tshadow;
+static COLORRAMP thighlight;
 
-extern void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float lightness);
-
-
-static const COLORRAMP* lastColorRamp = NULL;
+static const COLORRAMP (*lastColorRamp)[NUM_COLOR_RAMP_LEVELS] = nullptr;
 static unsigned last_height_scale = 0;
+static double last_terrain_whiteness = 0;
 
-static void ColorRampLookup(const int16_t h,
-        uint8_t &r, uint8_t &g, uint8_t &b,
-        const COLORRAMP* ramp_colors, const int numramp,
-        const unsigned char interp_levels)
-{
+extern void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float light);
 
-    const unsigned short is = 1 << interp_levels;
+#ifdef GREYSCALE
 
-    for (unsigned int i = numramp - 1; i--;) {
-        if (h >= ramp_colors[i].h) {
-            const int16_t f = (h - ramp_colors[i].h) * is / (ramp_colors[i + 1].h - ramp_colors[i].h);
-
-            const int16_t of = is - f;
-
-            r = (f * ramp_colors[i + 1].r + of * ramp_colors[i].r) >> interp_levels;
-            g = (f * ramp_colors[i + 1].g + of * ramp_colors[i].g) >> interp_levels;
-            b = (f * ramp_colors[i + 1].b + of * ramp_colors[i].b) >> interp_levels;
-            return;
-        }
-    }
-
-    r = ramp_colors[0].r;
-    g = ramp_colors[0].g;
-    b = ramp_colors[0].b;
+static Luminosity8 terrain_lightness( const Luminosity8& color, double lightness) {
+  if(lightness == 1.0) {
+    return color;
+  }
+  return {static_cast<uint8_t >(std::min<uint32_t>(color.GetLuminosity() * lightness, 255)) };
 }
 
+#else
 
+static RGB8Color terrain_lightness( const RGB8Color& color, float lightness) {
+  if(lightness == 1.0F) {
+    return color;
+  }
 
-#define MIX(x,y,i) (uint8_t)((x*i+y*((1<<7)-i))>>7)
+  uint8_t r = color.Red();
+  uint8_t g = color.Green();
+  uint8_t b = color.Blue();
+  rgb_lightness(r, g, b, lightness);
+  
+  return { r, g, b };
+}
 
-inline void TerrainShading(const short illum, uint8_t &r, uint8_t &g, uint8_t &b) {
-    char x;
-    if (illum < 0) { // shadow to blue
-        x = min((int) tshadow_h, -illum);
-        r = MIX(tshadow_r, r, x);
-        g = MIX(tshadow_g, g, x);
-        b = MIX(tshadow_b, b, x);
-    } else if (illum > 0) { // highlight to yellow
-        if (thighlight_h == 255) return; // 101016
-        x = min((int) thighlight_h, illum / 2);
-        r = MIX(thighlight_r, r, x);
-        g = MIX(thighlight_g, g, x);
-        b = MIX(thighlight_b, b, x);
+#endif
+
+template<typename T>
+constexpr bool is_power_of_two(T v) {
+  static_assert(std::is_integral<T>::value, "is_power_of_two : T must be integral");
+  return v && ((v & (v - 1)) == 0);
+}
+
+template<uint32_t level>
+static uint8_t linear_interpolation(uint8_t a, uint8_t b, uint32_t f) {
+  static_assert(is_power_of_two(level), "linear_interpolation : level must be power of 2");
+  const uint32_t of = level - f;
+
+  return (f * b + of * a) / level;
+}
+
+template<uint32_t level>
+static RGB8Color linear_interpolation(const RGB8Color& a, const RGB8Color& b, uint32_t f) {
+  return {
+    linear_interpolation<level>(a.Red(), b.Red(), f),
+    linear_interpolation<level>(a.Green(), b.Green(), f),
+    linear_interpolation<level>(a.Blue(), b.Blue(), f)
+  };
+}
+
+template<uint32_t level>
+static Luminosity8 linear_interpolation(const Luminosity8& a, const Luminosity8& b, unsigned f) {
+  return  linear_interpolation<level>(a.GetLuminosity(), b.GetLuminosity(), f);
+}
+
+#if !defined(NDEBUG) || defined(TESTBENCH)
+static bool IsValidColorRamp(const COLORRAMP(&ramp_colors)[NUM_COLOR_RAMP_LEVELS]) {
+
+  const auto begin = std::begin(ramp_colors);
+  const auto end = std::end(ramp_colors);
+  
+  bool is_sorted = std::is_sorted(begin, end, [](const COLORRAMP& a, const COLORRAMP& b) {
+    return a.height < b.height; 
+  } );
+  
+  return is_sorted;
+}
+#endif
+
+static TerrainColor ColorRampLookup(const int16_t h, const COLORRAMP(&ramp_colors)[NUM_COLOR_RAMP_LEVELS]) {
+
+  constexpr uint32_t interp_level = 1<<16;
+
+  const auto begin = std::begin(ramp_colors);
+  const auto end = std::end(ramp_colors);
+
+  TerrainColor color;
+
+  // find first value with height > h
+  auto it = std::upper_bound(begin, end, h, [](int16_t height, const COLORRAMP& v){
+    return height < v.height;
+  });
+
+  if(it != begin) { 
+    auto prev = std::prev(it);
+    if(it != end && it->height != prev->height) {
+      // interpolate color
+      const uint32_t f = (h - prev->height) * interp_level / (it->height - prev->height);
+      color = linear_interpolation<interp_level>(prev->color, it->color, f);
+    } else {
+      color = prev->color; // last defined color or no need to interpolate
     }
+  } else {
+    color = begin->color; // first defined color
+  }
+
+  return color;
+}
+
+template<class T>
+inline T TerrainShading(const int16_t illum, const T& color) {
+
+  constexpr uint32_t interp_level = 128;
+
+  if (illum < 0) { // shadow to blue
+    const uint32_t x = std::min<uint32_t>(tshadow.height, -illum);
+    return linear_interpolation<interp_level>(color, tshadow.color, x);
+  } else if (illum > 0) { // highlight to yellow
+    if (thighlight.height != 255) {
+      const uint32_t x = std::min<uint32_t>(thighlight.height, illum / 2);
+      return linear_interpolation<interp_level>(color, tshadow.color, x);
+    }
+  }
+  return color;
 }
 
 
@@ -115,7 +184,17 @@ class TerrainRenderer {
     TerrainRenderer &operator=(const TerrainRenderer &) = delete; // disallowed
 public:
 
-    TerrainRenderer(const RECT& rc) : _dirty(true), _ready(), sbuf(), hBuf(), colorBuf()  {
+    explicit TerrainRenderer(const RECT& rc) : _dirty(true), _ready(), sbuf(), hBuf(), colorBuf()  {
+
+#if !defined(NDEBUG) || defined(TESTBENCH)
+      // check if all colors_ramps are valid.
+      for( const auto& ramp : terrain_colors) {
+        if(!IsValidColorRamp(ramp)) {
+          StartupStore(_T(".... Invalid Color Ramp : %u"), (unsigned)std::distance(terrain_colors, &ramp) );
+          assert(false);
+        }
+      }
+#endif
 
 #if (WINDOWSPC>0) && TESTBENCH
         StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"), rc.left, rc.top, rc.right, rc.bottom);
@@ -188,12 +267,6 @@ public:
         }
 #endif
 
-        colorBuf = (BGRColor*) malloc(256 * 128 * sizeof (BGRColor));
-        if (colorBuf == NULL) {
-            OutOfMemory(_T(__FILE__), __LINE__);
-            ToggleMultimapTerrain();
-            return;
-        }
         // Reset this, so ColorTable will reload colors
         lastColorRamp = NULL;
         last_height_scale = 0;
@@ -209,10 +282,6 @@ public:
         if (hBuf) {
             free(hBuf);
             hBuf = NULL;
-        }
-        if (colorBuf) {
-            free(colorBuf);
-            colorBuf = NULL;
         }
 
         delete sbuf;
@@ -252,9 +321,9 @@ private:
 #endif
 
     int16_t *hBuf;
-    BGRColor *colorBuf;
+    BGRColor colorBuf[128][256];
     static constexpr int interp_levels = 8;
-    const COLORRAMP* color_ramp;
+    const COLORRAMP (*color_ramp)[NUM_COLOR_RAMP_LEVELS];
 
     unsigned height_scale; // scale factor  ((height - height_min + 1) << height_scale) must be in [0 - 255] range
     int16_t height_min; // lower height visible terrain
@@ -267,7 +336,7 @@ private:
         // but really this wouldnt change much the things now in terms of speed,
         // while instead creating a confusing effect.
         if (QUICKDRAW) {
-            do_shading=false;
+            return false;
         } else ...
         */
 
@@ -348,14 +417,14 @@ public:
         if(DisplayMap->interpolate()) {
 
             FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y,
-                    [DisplayMap](const double &X, const double &Y){
-                        return DisplayMap->GetFieldInterpolate(X,Y);
+                    [DisplayMap](const double &lat, const double &lon){
+                        return DisplayMap->GetFieldInterpolate(lat,lon);
                     });
         } else {
 
             FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y,
-                    [DisplayMap](const double &X, const double &Y){
-                        return DisplayMap->GetFieldFine(X,Y);
+                    [DisplayMap](const double &lat, const double &lon){
+                        return DisplayMap->GetFieldFine(lat,lon);
                     });
         }
 
@@ -454,7 +523,6 @@ public:
     // (gridding of display) This is why epx is used instead of 1
     // previously.  for large zoom levels, epx=1
 
-    gcc_noinline
     void Slope(const int sx, const int sy, const int sz) {
 
         LKASSERT(hBuf != NULL);
@@ -506,7 +574,6 @@ public:
         const int16_t* hBuf_begin = hBuf;
 #endif
         const int tc_in_use = tc;
-        const BGRColor* oColorBuf = colorBuf + 64 * 256;
         if (!sbuf->GetBuffer()) return;
 
 #if defined(_OPENMP)
@@ -615,7 +682,7 @@ public:
                         if ((p22 == 0) && (p32 == 0)) {
 
                             // slope is zero, so just look up the color
-                            *imageBuf = oColorBuf[h];
+                            *imageBuf = GetColor(h);
 
                         } else {
 
@@ -636,52 +703,66 @@ public:
                             if (mag > 0) {
                                 mag = (dd2 * sz + dd0 * sx + dd1 * sy) / mag;
                                 mag = Clamp((mag - sz) * tc_in_use / 128, -64, 63);
-                                *imageBuf = oColorBuf[h + mag * 256];
+                                *imageBuf = GetColor(h, mag);
                             } else {
-                                *imageBuf = oColorBuf[h];
+                                *imageBuf = GetColor(h);
                             }
                         }
                     } else {
                         // not using shading, so just look up the color
-                        *imageBuf = oColorBuf[h];
+                        *imageBuf = GetColor(h);
                     }
                 } else {
                     // old: we're in the water, so look up the color for water
                     // new: h is TERRAIN_INVALID here
-                    *imageBuf = oColorBuf[255];
+                    *imageBuf = GetColor(255);
                 }
             } // for
         } // for
     };
 
+
+private:
+
+    inline 
+    const BGRColor& GetColor(int16_t height, int mag = 0) const {
+        return colorBuf[mag + 64][height];
+    }
+
+    inline 
+    void SetColor(int16_t height, int mag, BGRColor&& color) {
+        colorBuf[mag + 64][height] = std::forward<BGRColor>(color);
+    }
+
+
+public:
     void ColorTable() {
-        color_ramp = &terrain_colors[TerrainRamp][0];
-        if (color_ramp == lastColorRamp && height_scale == last_height_scale) {
+        color_ramp = &terrain_colors[TerrainRamp];
+        if (color_ramp == lastColorRamp &&
+                height_scale == last_height_scale &&
+                last_terrain_whiteness == TerrainWhiteness)
+        {
             // no need to update the color table
             return;
         }
         lastColorRamp = color_ramp;
         last_height_scale = height_scale;
+        last_terrain_whiteness = TerrainWhiteness;
 
-        for (int i = 0; i < 256; i++) {
+        for (int h = 0; h < 256; h++) {
+
+            const TerrainColor height_color = ColorRampLookup(h << height_scale, *color_ramp);
+
             for (int mag = -64; mag < 64; mag++) {
-                uint8_t r, g, b;
                 // i=255 means TERRAIN_INVALID. Water is colored in Slope
-                if (i == 255) {
+                if (h == 255) {
                     #ifdef DITHER
-                    colorBuf[i + (mag + 64)*256] = BGRColor(255, 255, 255); // LCD green terrain invalid
+                    SetColor(h, mag, BGRColor(255, 255, 255)); // White terrain invalid
                     #else
-                    colorBuf[i + (mag + 64)*256] = BGRColor(194, 223, 197); // LCD green terrain invalid
+                    SetColor(h, mag, BGRColor(194, 223, 197)); // LCD green terrain invalid
                     #endif
                 } else {
-                    // height_scale, color_ramp interp_levels  used only for weather
-                    // ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing
-
-                    ColorRampLookup(i << height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
-                    TerrainShading(mag, r, g, b);
-                    rgb_lightness(r,g,b,TerrainWhiteness);
-
-                    colorBuf[i + (mag + 64)*256] = BGRColor(r, g, b);
+                    SetColor(h, mag, BGRColor(terrain_lightness(TerrainShading(mag, height_color),TerrainWhiteness)) );
                 }
             }
         }
@@ -723,7 +804,7 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
     static short old_TerrainBrightness(TerrainBrightness);
     static short old_TerrainRamp(TerrainRamp);
     static short old_Shading(Shading);
-    static double old_TerrainWhiteness=0;
+    static double old_TerrainWhiteness(TerrainWhiteness);
     static ScreenProjection old_ScreenProjection(_Proj);
 
     if( old_ScreenProjection != _Proj
@@ -733,7 +814,6 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
             || old_TerrainRamp != TerrainRamp
             || old_Shading != Shading ) {
 
-        if (old_TerrainWhiteness != TerrainWhiteness) lastColorRamp=NULL; // reload color table
         old_TerrainContrast = TerrainContrast;
         old_TerrainBrightness = TerrainBrightness;
         old_TerrainWhiteness = TerrainWhiteness;
@@ -808,15 +888,8 @@ _redo:
 
         // load terrain shading parameters
         // Make them instead dynamically calculated based on previous average terrain illumination
-        tshadow_r = terrain_shadow[TerrainRamp].r;
-        tshadow_g = terrain_shadow[TerrainRamp].g;
-        tshadow_b = terrain_shadow[TerrainRamp].b;
-        tshadow_h = terrain_shadow[TerrainRamp].h;
-
-        thighlight_r = terrain_highlight[TerrainRamp].r;
-        thighlight_g = terrain_highlight[TerrainRamp].g;
-        thighlight_b = terrain_highlight[TerrainRamp].b;
-        thighlight_h = terrain_highlight[TerrainRamp].h;
+        tshadow = terrain_shadow[TerrainRamp];
+        thighlight = terrain_highlight[TerrainRamp];
 
         // step 0: fill height buffer
         trenderer->Height({rc.left, rc.top}, _Proj);
