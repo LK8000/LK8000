@@ -77,9 +77,9 @@ typedef	struct DeviceDescriptor_t {
   
   DeviceDescriptor_t() = default;
   
-  DeviceDescriptor_t(DeviceDescriptor_t&) = delete;
+  DeviceDescriptor_t(const DeviceDescriptor_t&) = delete;
   DeviceDescriptor_t(DeviceDescriptor_t&&) = delete;
-  DeviceDescriptor_t& operator= (DeviceDescriptor_t&) = delete;
+  DeviceDescriptor_t& operator= (const DeviceDescriptor_t&) = delete;
   DeviceDescriptor_t& operator= (DeviceDescriptor_t&&) = delete;
   
   ComPort *Com;
