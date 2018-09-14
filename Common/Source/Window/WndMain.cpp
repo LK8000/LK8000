@@ -47,7 +47,6 @@ WndMain::~WndMain() {
 }
 
 extern void WaitThreadCalculation();
-extern void StartupLogFreeRamAndStorage();
 
 void BeforeShutdown(void) {
 
