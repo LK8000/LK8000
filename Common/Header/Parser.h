@@ -83,7 +83,7 @@ typedef struct _NMEA_INFO
   double Longitude;
   double TrackBearing;
   double Speed;
-  double Altitude;
+  double Altitude; // GPS Altitude
   //  TCHAR  WaypointID[WAY_POINT_ID_SIZE + 1];
   //  double WaypointBearing;
   //  double WaypointDistance;
