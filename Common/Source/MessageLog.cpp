@@ -16,14 +16,6 @@
 #include <android/log.h>
 #endif
 
-void StartupLogFreeRamAndStorage() {
-  size_t freeram = CheckFreeRam()/1024;
-  TCHAR buffer[MAX_PATH];
-  LocalPath(buffer);
-  size_t freestorage = FindFreeSpace(buffer);
-  StartupStore(TEXT(". Free ram=%u K  storage=%u K") NEWLINE, (unsigned int)freeram,(unsigned int)freestorage);
-}
-
 /**
  * it's for debug build only.
  *  - file are cleared by first use.
@@ -124,19 +116,8 @@ void StartupStore(const TCHAR *Str, ...)
 
   buf[array_size(buf) -1] = _T('\0'); // grant string is null terminated.
 
-  /* remove trailing space
-   *   ' '	(0x20)	space (SPC)
-   *   '\t'	(0x09)	horizontal tab (TAB)
-   *   '\n'	(0x0a)	newline (LF)
-   *   '\v'	(0x0b)	vertical tab (VT)
-   *   '\f'	(0x0c)	feed (FF)
-   *   '\r'	(0x0d)	carriage return (CR)
-   */
-  for(size_t i = _tcslen(buf)-1; _istspace(buf[i]); --i) {
-      buf[i] = '\0';
-  }  
-  
-  
+  TrimRight(buf);
+
 #ifdef ANDROID
   __android_log_print(ANDROID_LOG_INFO, "LK8000","%s\n", buf);
 #elif defined(__linux__) && !defined(NDEBUG)
@@ -189,4 +170,10 @@ tstring toHexString(const void* data, size_t size) {
     szHex += ' ';
   }
   return szHex;
+}
+
+void StartupLogFreeRamAndStorage() {
+    size_t freeram = CheckFreeRam()/1024;
+    size_t freestorage = FindFreeSpace(LKGetLocalPath());
+    StartupStore(TEXT(". Free ram=%u K  storage=%u K"), (unsigned int)freeram,(unsigned int)freestorage);
 }
