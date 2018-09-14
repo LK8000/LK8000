@@ -25,7 +25,7 @@
 #endif
 
 LKIcon& LKIcon::operator=(LKBitmap&& orig) { 
-    _bitmap = std::move(orig); 
+    _bitmap = std::forward<LKBitmap>(orig);
     _size = _bitmap.GetSize();
 #ifndef ENABLE_OPENGL
     _size.cx /= 2;
