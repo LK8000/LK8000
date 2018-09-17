@@ -2649,7 +2649,7 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
                            OnListCallback_t OnListCallback):
   WndFrame(Owner, Name, X, Y, Width, Height)
 {
-
+  mListInfo.ScrollIndex = 0;
   mListInfo.ItemIndex = 0;
   mListInfo.DrawIndex = 0;
   mListInfo.ItemInPageCount = 0;
