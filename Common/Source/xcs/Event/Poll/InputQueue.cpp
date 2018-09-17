@@ -25,6 +25,7 @@ Copyright_License {
 #include "../Shared/Event.hpp"
 #include "DisplayOrientation.hpp"
 #include "OS/Sleep.h"
+#include <cstdio>
 
 InputEventQueue::InputEventQueue(IOLoop &io_loop, EventQueue &queue)
   :
