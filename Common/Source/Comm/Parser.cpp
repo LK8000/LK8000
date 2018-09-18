@@ -362,7 +362,7 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
   // If simulating, we might be in the future already.
   // We CANNOT check for <= because this check may be done by several GGA RMC GLL etc. sentences
   // among the same quantum time
-  if(ThisTime< (LastTime-5)) {
+  if(ThisTime< (LastTime)) {
     #if TESTBENCH
     StartupStore(_T("... TimeHasAdvanced BACK in time: Last=%f This=%f   %s\n"), LastTime, ThisTime,WhatTimeIsIt());
     #endif
