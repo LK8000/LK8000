@@ -131,6 +131,13 @@ class NMEAParser {
   BOOL PFLAV(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAU(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
+
+  void UpdateFlarmScale(NMEA_INFO *pGPS);
+
+private:
+  double FLARM_NorthingToLatitude = 0.0;
+  double FLARM_EastingToLongitude = 0.0;
+  GeoPoint FLARM_lastPosition;
 };
 
 void Fanet_RefreshSlots(NMEA_INFO *pGPS);

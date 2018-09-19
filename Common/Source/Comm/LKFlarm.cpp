@@ -208,8 +208,7 @@ void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 
 #include "InputEvents.h"
 
-double FLARM_NorthingToLatitude = 0.0;
-double FLARM_EastingToLongitude = 0.0;
+
 
 BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
@@ -376,29 +375,6 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 #endif
   }
 
-
-  // calculate relative east and north projection to lat/lon
-
-  double delta_lat = 0.01;
-  double delta_lon = 0.01;
-
-  double dlat;
-  DistanceBearing(pGPS->Latitude, pGPS->Longitude,
-                  pGPS->Latitude+delta_lat, pGPS->Longitude,
-                  &dlat, NULL);
-  double dlon;
-  DistanceBearing(pGPS->Latitude, pGPS->Longitude,
-                  pGPS->Latitude, pGPS->Longitude+delta_lon,
-                  &dlon, NULL);
-
-  if ((fabs(dlat)>0.0)&&(fabs(dlon)>0.0)) {
-    FLARM_NorthingToLatitude = delta_lat / dlat;
-    FLARM_EastingToLongitude = delta_lon / dlon;
-  } else {
-    FLARM_NorthingToLatitude=0.0;
-    FLARM_EastingToLongitude=0.0;
-  }
-
   unsigned short power;
   _stscanf(String,
 	  TEXT("%hu,%hu,%hu,%hu,%hu"),
@@ -514,7 +490,31 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, uint32_t RadioId)
 }
 
 
+// calculate relative east and north projection to lat/lon
+void NMEAParser::UpdateFlarmScale( NMEA_INFO *pGPS) {
 
+	const GeoPoint currentPostion (pGPS->Latitude, pGPS->Longitude);
+	if (FLARM_lastPosition != currentPostion) {
+
+		FLARM_lastPosition = currentPostion;
+
+		constexpr double delta_coord = 0.01; // ~1.11 km 
+
+		const double dist_lat = currentPostion.Distance({pGPS->Latitude + delta_coord, pGPS->Longitude});
+		if (std::abs(dist_lat) > 0.0) {
+			FLARM_NorthingToLatitude = delta_coord / dist_lat;
+		} else {
+			FLARM_NorthingToLatitude = 0.0;
+		}
+
+		const double dist_lon = currentPostion.Distance({pGPS->Latitude, pGPS->Longitude + delta_coord});
+		if (std::abs(dist_lon) > 0.0) {
+			FLARM_EastingToLongitude = delta_coord / dist_lon;
+		} else {
+			FLARM_EastingToLongitude = 0.0;
+		}
+	}
+}
 
 BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
@@ -646,6 +646,9 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	  &pGPS->FLARM_Traffic[flarm_slot].Speed, // double              8 m/s
 	  &pGPS->FLARM_Traffic[flarm_slot].ClimbRate, // double          9 m/s
 	  &pGPS->FLARM_Traffic[flarm_slot].Type); // unsigned short     10
+
+  UpdateFlarmScale(pGPS);
+
   // 1 relativenorth, meters  
   pGPS->FLARM_Traffic[flarm_slot].Latitude = RelativeNorth *FLARM_NorthingToLatitude + pGPS->Latitude;
   // 2 relativeeast, meters

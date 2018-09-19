@@ -31,6 +31,10 @@ struct GeoPoint {
         return (longitude == point.longitude && latitude == point.latitude);
     }
 
+    bool operator != (const GeoPoint& point) const {
+      return !(*this == point);
+    }
+
     GeoPoint operator- (const GeoPoint &point) const {
         return {
             latitude - point.latitude, 
