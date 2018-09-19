@@ -272,6 +272,31 @@ BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	return true;
 }
 
+void NMEAParser::setFlarmAvailable(NMEA_INFO *pGPS) {
+	bool sayflarmavailable = (!pGPS->FLARM_Available);
+
+	pGPS->FLARM_Available = true;
+	LastFlarmCommandTime = pGPS->Time;
+	isFlarm = true;
+
+	if ( sayflarmavailable ) {
+		pGPS->FLARM_SW_Version =0.0;
+		pGPS->FLARM_HW_Version =0.0;
+		static int MessageCnt =0;
+		if(MessageCnt < 10) {
+			MessageCnt++;
+			DoStatusMessage(MsgToken(279)); // FLARM DETECTED
+		}
+#if FLARMDEADLOCK
+		for(const auto& dev : DeviceList) {
+			if(dev.nmeaParser.isFlarm) {
+				devRequestFlarmVersion(&dev);
+				break; // we have got first available Flarm device, ingore next device.
+			}
+		}
+#endif
+	}
+}
 
 BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
@@ -322,7 +347,6 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 
   static int old_flarm_rx = 0;
-  static bool sayflarmavailable=true; // 100325
   static bool conflict=false;
 
   // It can happen that both port auto/exclude themselves, or one will succeed to survive.
@@ -348,32 +372,7 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
     return FALSE;
   }
 
-  if(!pGPS->FLARM_Available)
-	sayflarmavailable = true;
-
-  pGPS->FLARM_Available = true;
-  LastFlarmCommandTime = pGPS->Time;
-  isFlarm = true;
-
-  if ( sayflarmavailable ) {
-	pGPS->FLARM_SW_Version =0.0;
-	pGPS->FLARM_HW_Version =0.0;
-	static int MessageCnt =0;
-	if(MessageCnt < 10)
-	{
-	  MessageCnt++;
-	  DoStatusMessage(MsgToken(279)); // FLARM DETECTED
-	}
-	sayflarmavailable=false;
-#if FLARMDEADLOCK
-  for(const auto& dev : DeviceList) {
-    if(dev.nmeaParser.isFlarm) {
-      devRequestFlarmVersion(&dev);
-      break; // we have got first available Flarm device, ingore next device.
-    }
-  }
-#endif
-  }
+  setFlarmAvailable(pGPS);
 
   unsigned short power;
   _stscanf(String,
@@ -589,7 +588,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   
   int flarm_slot = 0;
 
-  isFlarm = true;
+  setFlarmAvailable(pGPS);
 
   // 5 id, 6 digit hex
   uint32_t RadioId = _tcstoul(params[5], nullptr, 16);

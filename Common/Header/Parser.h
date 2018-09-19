@@ -132,6 +132,7 @@ class NMEAParser {
   BOOL PFLAU(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 
+  void setFlarmAvailable(NMEA_INFO *GPS_INFO);
   void UpdateFlarmScale(NMEA_INFO *pGPS);
 
 private:
