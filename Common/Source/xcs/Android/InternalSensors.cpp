@@ -31,6 +31,7 @@ Copyright_License {
 #include "OS/Clock.hpp"
 #include "Compiler.h"
 #include "Thread/Mutex.hpp"
+#include "Baro.h"
 
 
 
