@@ -16,6 +16,7 @@
 
 
 #include "externs.h"
+#include "Baro.h"
 #include "devLK8EX1.h"
 #include "devFlyNet.h"
 #include "Dialogs.h"
@@ -471,6 +472,14 @@ BOOL BlueFlyConfig(PDeviceDescriptor_t d) {
     return FALSE;
 }
 
+static BOOL PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
+	(void)d;
+	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)))){
+		TriggerVarioUpdate();
+	}
+	return TRUE;
+}
+
 BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     if( RequestParamTimer == 1 ) {
         if(!RequestConfig(d)) {
@@ -480,6 +489,10 @@ BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS
     if(RequestParamTimer > 0){
         --RequestParamTimer;
     }
+
+    if(_tcsncmp(TEXT("PRS "), String, 4)==0){
+        return PRS(d, &String[4], pGPS);
+    } 
 
     if (LK8EX1ParseNMEA(d, String, pGPS)) {
         return TRUE;
