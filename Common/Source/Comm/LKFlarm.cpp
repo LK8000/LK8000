@@ -318,11 +318,13 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
     FLARM_EastingToLongitude=0.0;
   }
 
+  unsigned short power;
   _stscanf(String,
-	  TEXT("%hu,%hu,%hu,%hu"),
+	  TEXT("%hu,%hu,%hu,%hu,%hu"),
 	  &pGPS->FLARM_RX, // number of received FLARM devices
 	  &pGPS->FLARM_TX, // Transmit status
 	  &pGPS->FLARM_GPS, // GPS status
+	  &power, // <Power> : unused
 	  &pGPS->FLARM_AlarmLevel); // Alarm level of FLARM (0-3)
 
   // process flarm updates
