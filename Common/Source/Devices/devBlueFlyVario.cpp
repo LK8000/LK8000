@@ -334,19 +334,17 @@ namespace dlgBlueFlyConfig {
                         pData->Set(Param.ValueBool());
                         break;
                     case TYPE_DOUBLE:
-                        pData->SetMax((double)Param.Max());
-                        pData->SetMin((double)Param.Min());
+                        pData->SetMax(Param.Max());
+                        pData->SetMin(Param.Min());
                         pData->Set(Param.ValueDouble());
                         break;
                     case TYPE_INT:
                     case TYPE_INTOFFSET:
-                        pData->SetMax((int)Param.Max());
-                        pData->SetMin((int)Param.Min());
+                        pData->SetMax(Param.Max());
+                        pData->SetMin(Param.Min());
                         pData->Set(Param.ValueInt());
                         break;
                     case TYPE_INTLIST:
-                        pData->SetMax((int)Param.Max());
-                        pData->SetMin((int)Param.Min());
                         pData->Set(Param.ValueInt());
                         break;
                 }
