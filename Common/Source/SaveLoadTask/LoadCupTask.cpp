@@ -423,7 +423,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
                             TCHAR *sz = NULL;
                             CupObsZoneUpdater TmpZone;
                             TmpZone.mIdx = _tcstol(pToken + 8, &sz, 10);
-                            if (TmpZone.mIdx < MAXSTARTPOINTS) {
+                            if (TmpZone.mIdx < MAXTASKPOINTS) {
                                 while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
                                     if (_tcsstr(pToken, _T("Style=")) == pToken) {
                                         // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point
