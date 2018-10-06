@@ -7,9 +7,8 @@
 */
 
 #include <externs.h>
+#include "Baro.h"
 #include <devFlyNet.h>
-
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 static BOOL _PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
 	(void)d;

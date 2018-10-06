@@ -8,11 +8,11 @@
 //_____________________________________________________________________includes_
 
 #include "externs.h"
+#include "Baro.h"
 #include "devLXV7_EXP.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 extern bool UpdateQNH(const double newqnh);
 
 

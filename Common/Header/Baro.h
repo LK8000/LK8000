@@ -19,12 +19,13 @@
 #define BARO__GM130             4
 #define BARO__ROYALTEK3200      5
 #define BARO__TASMAN            6
-//#define BARO__CPROBE          7
+#define BARO__CPROBE            7
 #define BARO__CUSTOMTO          7
 #define BARO__END               8       // marking the limit
 
 // Verbose debugging test
 // #define DEBUGBARO    1
 
+bool UpdateBaroSource( NMEA_INFO* pGPS, short parserid, const PDeviceDescriptor_t d, double fAlt);
 
 #endif
