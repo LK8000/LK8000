@@ -442,28 +442,10 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
     // max index used is 5...
     return FALSE;
   }
-  static  bool sayflarmavailable=true; // 100325
+  
   int flarm_slot = 0;
 
-  if(!pGPS->FLARM_Available)
-	sayflarmavailable = true;
-
-  pGPS->FLARM_Available = true;
-  LastFlarmCommandTime = pGPS->Time;
   isFlarm = true;
-
-  if ( sayflarmavailable ) {
-	pGPS->FLARM_SW_Version =0.0;
-	pGPS->FLARM_HW_Version =0.0;
-	static int MessageCnt =0;
-	if(MessageCnt < 10)
-	{
-	  MessageCnt++;
-	  DoStatusMessage(MsgToken(279)); // FLARM DETECTED
-	}
-	sayflarmavailable=false;
-  }
-
 
   // 5 id, 6 digit hex
   long ID;
