@@ -40,18 +40,18 @@ class CHardwareParameter {
 public:
 
     CHardwareParameter()
-            : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal() {
+            : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal(), available() {
     }
 
     CHardwareParameter(const tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
-            : _Code(code), _MinHWVersion(minHWVersion), _Type(type), _Factor(factor), _MinHWVal(minHWVal), _MaxHWVal(maxHWVal) {
+            : _Code(code), _MinHWVersion(minHWVersion), _Type(type), _Factor(factor), _MinHWVal(minHWVal), _MaxHWVal(maxHWVal), available() {
     }
 
     ~CHardwareParameter() {
 
     }
 
-    inline void Value(const tstring& Val) { _Value = Val; }
+    inline void Value(const tstring& Val) { available = true; _Value = Val; }
     inline const tstring& Value() const { return _Value; }
 
     inline operator bool ()  const { return !_Code.empty(); }
@@ -104,6 +104,8 @@ public:
         return ValueInt()!=0;
     }
 
+    bool IsAvailable() const { return available; }
+
     void operator=(double v) {
         TCHAR szTmp[30] = {0};
         _stprintf(szTmp, _T("%d"), (int)(v/_Factor));
@@ -132,6 +134,7 @@ private:
     const int _MinHWVal;
     const int _MaxHWVal;
 
+    bool available;
     tstring _Value;
 };
 
@@ -183,9 +186,16 @@ public:
                 {
 
                     if (PosKey > PrevPosKey) {
-                        ParameterList_t::iterator It = _ParameterList.find(_Keys.substr(PrevPosKey, PosKey-PrevPosKey));
+                        const std::string key = _Keys.substr(PrevPosKey, PosKey-PrevPosKey);
+                        const std::string value = _Values.substr(PrevPosVal, PosVal-PrevPosVal);
+
+                        ParameterList_t::iterator It = _ParameterList.find(key);
                         if (It != _ParameterList.end()) {
-                            (*It).second.Value(_Values.substr(PrevPosVal, PosVal-PrevPosVal));
+                            (*It).second.Value(value);
+                        } else {
+#ifndef NDEBUG
+                            printf("BlueFly unknown param <%s : %s> \n", key.c_str(), value.c_str());
+#endif
                         }
                     }
                     PrevPosKey = ++PosKey;
@@ -349,7 +359,9 @@ namespace dlgBlueFlyConfig {
                         break;
                 }
             }
+            pWnd->SetVisible(Param.IsAvailable());
             pWnd->RefreshDisplay();
+            
         }
     }
 
