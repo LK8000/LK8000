@@ -177,17 +177,17 @@ public:
         _Values = line;
         if (!_Keys.empty() && !_Values.empty()) {
 
-            std::string::size_type PrevPosKey = 0, PosKey = 0;
-            std::string::size_type PrevPosVal = 0, PosVal = 0;
-            if(((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != std::string::npos)) { //skip first Value
+            tstring::size_type PrevPosKey = 0, PosKey = 0;
+            tstring::size_type PrevPosVal = 0, PosVal = 0;
+            if(((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != tstring::npos)) { //skip first Value
                 PrevPosVal = ++PosVal;
-                while ( ((PosKey = _Keys.find_first_of(_T(" \n"), PosKey)) != std::string::npos)
-                        && ((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != std::string::npos) )
+                while ( ((PosKey = _Keys.find_first_of(_T(" \n"), PosKey)) != tstring::npos)
+                        && ((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != tstring::npos) )
                 {
 
                     if (PosKey > PrevPosKey) {
-                        const std::string key = _Keys.substr(PrevPosKey, PosKey-PrevPosKey);
-                        const std::string value = _Values.substr(PrevPosVal, PosVal-PrevPosVal);
+                        const tstring key = _Keys.substr(PrevPosKey, PosKey-PrevPosKey);
+                        const tstring value = _Values.substr(PrevPosVal, PosVal-PrevPosVal);
 
                         ParameterList_t::iterator It = _ParameterList.find(key);
                         if (It != _ParameterList.end()) {
