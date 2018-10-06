@@ -6,8 +6,6 @@
  * File:   PGEssCircle.cpp
  * Author: Bruno de Lacheisserie
  *
- * Author: bruno
- * 
  * Created on September 20, 2016, 11:47 PM
  */
 

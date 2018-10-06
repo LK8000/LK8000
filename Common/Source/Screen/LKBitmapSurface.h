@@ -4,7 +4,7 @@
  * See CREDITS.TXT file for authors and copyrights
  *
  * File:   LKBitmapSurface.h
- * Author: Bruno
+ * Author: Bruno de Lacheisserie
  *
  * Created on 16 octobre 2014, 21:49
  */
