@@ -10,8 +10,7 @@
 #include "externs.h"
 #include "devLX16xx.h"
 #include "LKInterface.h"
-
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+#include "Baro.h"
 
 int iLX16xx_RxUpdateTime=0;
 double oldMC = MACCREADY;

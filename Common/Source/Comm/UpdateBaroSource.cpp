@@ -27,7 +27,7 @@ bool GotFirstBaroAltitude=false;
  */
 
 
-bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt)
+bool UpdateBaroSource( NMEA_INFO* pGPS, short parserid, const PDeviceDescriptor_t d, double fAlt)
 {
 
   //static double	lastBaroHB=0;		// updated only when baro is assigned as valid

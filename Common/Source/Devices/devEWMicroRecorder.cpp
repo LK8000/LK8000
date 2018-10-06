@@ -8,11 +8,9 @@
 
 
 #include "externs.h"
+#include "Baro.h"
 #include "Dialogs/dlgProgress.h"
 #include "devEWMicroRecorder.h"
-
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
-
 
 // Additional sentance for EW support
 

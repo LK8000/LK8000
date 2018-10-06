@@ -14,11 +14,8 @@
  */
 
 #include <externs.h>
+#include "Baro.h"
 #include <nmeaistream.h>
-
-
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
-
 
 static const TCHAR DeviceName[] = TEXT("XCTracer");
 

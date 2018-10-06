@@ -7,10 +7,9 @@
 */
 
 #include "externs.h"
+#include "Baro.h"
 #include "devBase.h"
 #include "devLXV7easy.h"
-
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 static bool LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
