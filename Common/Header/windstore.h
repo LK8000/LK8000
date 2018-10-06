@@ -6,7 +6,7 @@
 **
 ************************************************************************
 **
-**   Copyright (c):  2002 by André Somers
+**   Copyright (c):  2002 by AndrÃ© Somers
 **
 **   This file is distributed under the terms of the General Public
 **   Licence. See the file COPYING for more information.
@@ -24,7 +24,7 @@
   * WindStore receives single windmeasurements and stores these. It uses
   * single measurements to provide a mean value, differentiated for altitude.
   *
-  * @author André Somers
+  * @author AndrÃ© Somers
   */
 
 
