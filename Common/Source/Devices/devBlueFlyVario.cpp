@@ -192,10 +192,6 @@ public:
                         ParameterList_t::iterator It = _ParameterList.find(key);
                         if (It != _ParameterList.end()) {
                             (*It).second.Value(value);
-                        } else {
-#ifndef NDEBUG
-                            printf("BlueFly unknown param <%s : %s> \n", key.c_str(), value.c_str());
-#endif
                         }
                     }
                     PrevPosKey = ++PosKey;
