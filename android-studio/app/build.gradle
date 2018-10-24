@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.25.4'
+        classpath 'io.fabric.tools:gradle:1.26.1'
     }
 }
 
@@ -23,8 +23,8 @@ android {
         applicationId "org.lk8000"
         minSdkVersion 9
         targetSdkVersion 19
-        versionCode 45
-        versionName "6.1u1"
+        versionCode 46
+        versionName "7.0"
         setProperty("archivesBaseName", "LK8000-$versionName")
         manifestPlaceholders = [
                 applicationLabel: "@string/app_name",
@@ -115,7 +115,8 @@ android {
         main {
             java.srcDirs += ["../../android/src"]
             manifest.srcFile "../../android/AndroidManifest.xml"
-            res.srcDirs += ["../../android/res"]
+            res.srcDirs = ["src/main/res",
+                           "../../android/res"]
         }
     }
     flavorDimensions "full"
@@ -133,8 +134,15 @@ android {
             applicationIdSuffix ".debug"
             manifestPlaceholders = [
                     applicationLabel: "@string/app_name_debug",
-                    applicationIcon: "@drawable/icon" // change this when new icon for debug version will be available
+                    applicationIcon: "@drawable/icon_debug"
             ]
+            sourceSets {
+                debug {
+                    res.srcDirs = ["src/main/res",
+                                   "../../android/res",
+                                   "../../android/res_debug"]
+                }
+            }
             debuggable true
             jniDebuggable true
             renderscriptDebuggable true
@@ -142,11 +150,18 @@ android {
         beta {
             initWith(buildTypes.release)
 
-            applicationIdSuffix ".beta" // change this after 6.2 release.
+            applicationIdSuffix ".test"
             manifestPlaceholders = [
                     applicationLabel: "@string/app_name_beta",
-                    applicationIcon: "@drawable/icon" // change this after 6.2 release
+                    applicationIcon: "@drawable/icon_beta"
             ]
+            sourceSets {
+                beta {
+                    res.srcDirs = ["src/main/res",
+                                   "../../android/res",
+                                   "../../android/res_beta"]
+                }
+            }
         }
     }
     productFlavors {

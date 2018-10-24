@@ -1,4 +1,4 @@
-#BA;
+#BB;
 [Welcome to LK8000]
 Hello! It seems that you have just installed or updated LK8000, and here we can provide more informations about changes and improvements.
 Join our free support forum at www.postfrontal.com/forum
@@ -10,36 +10,8 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
-version 6.1u changes :
 
-. updated BlueFly driver : parse "PRS" sentence
-
-. updated XCTracer driver : parse "LXWP0" sentence
-
-. fix terrain color calculation
-
-. fix some possible crash
-
-version 6.1t changes :
-
-. Fix Crash at low zoom level if terrain shading is anabled
-
-. Update for compatibility with "OGN view" stream [issue #1206]
-
-. Fix waypoint edit in DDdddd Format
-
-version 6.1s changes :
-
-. fix TCP port device config
-
-. fix segfault after restart Comm port if UDP port is used
-
-. Enable Flight Recorder on Linux and Android platforms
-
-. Fix Terrain Drawing for Altitude lower than 0 and greater than 4095m 
-
-
-[version 6.1r changes from 6.0]
+[version 7.0 changes from 6.0]
 
 . NEW device VAULTER
 
@@ -94,6 +66,9 @@ version 6.1s changes :
 . FAI analysis, grid scale made better.
 
 . GPS Altitude offset was moved to engineering mode.
+
+. Updated BlueFly driver : support "PRS" sentence
+. Updated XCTracer driver : support "LXWP0" sentence
 
 Many minor bug fixes and performance enhancements.
 
