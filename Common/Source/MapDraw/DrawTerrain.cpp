@@ -37,8 +37,6 @@ static short autobr=128;
 
 extern bool FastZoom;
 
-Topology* TopoStore[MAXTOPOLOGY] = {};
-
 static COLORRAMP tshadow;
 static COLORRAMP thighlight;
 

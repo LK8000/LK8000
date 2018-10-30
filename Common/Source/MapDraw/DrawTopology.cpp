@@ -11,8 +11,7 @@
 #include "Topology/ShapeSpecialRenderer.h"
 
 
-
-extern Topology* TopoStore[MAXTOPOLOGY];
+Topology* TopoStore[MAXTOPOLOGY] = {};
 
 
 void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const bool wateronly)
