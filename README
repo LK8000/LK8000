@@ -1,37 +1,15 @@
 *** WELCOME TO THE LK8000 DEVELOPMENT HUB ***
 
-THIS IS THE (FUTURE) V7.0 BRANCH. ONLY BUG FIXES WILL BE COMMITTED TO THIS BRANCH,
-AND EVENTUALLY MINOR ENHANCEMENTS THAT DO NO REQUIRE BETA TESTING.
-
-V7.0a
-
-
-HISTORY OF V7 THROUGH ALL BETA VERSIONS 6.1
-(Development of master started on September 16, 2016)
-
-6.1d  February  28  2017
-6.1e  March     10  2017
-6.1f  April      6  2017
-6.1g  May       16  2017
-6.1h  May       29  2017
-6.1i  Jun       13  2017
-6.1j  Jul       18  2017
-6.1k  Jul       24  2017 ( Android only )
-6.1l  Aug       03  2017 ( Android only )
-6.1m  Sep       21  2017 ( Android only )
-6.1n  oct       02  2017 ( Android only )
-6.1o  oct       30  2017 ( Android only )
-6.1p  nov       24  2017 ( Android only )
-6.1q  nov       27  2017 ( Android only )
-6.1r  feb       26  2018 ( all platforms, final beta)
+THIS IS THE DEVELOPEMENT BRANCH.
+(Development of master started on October 30, 2018)
 
 ================================================================================
 = Build Target                                                                 =
 ================================================================================
 
-TARGET=[PPC2002|PPC2003|PNA|PC|PCX64|LINUX|KOBO|PI]
+TARGET=[PPC2003|PNA|PC|PCX64|LINUX|KOBO|PI]
 
-for Linux build, if "install" is added to command lin, LK8000-LINUX and all file 
+for Linux build, if "install" is added to command line, LK8000-LINUX and all file 
 needed for run software are installed into $HOME/LK8000
 
 ================================================================================
