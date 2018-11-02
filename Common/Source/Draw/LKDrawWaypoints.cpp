@@ -331,16 +331,17 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		if ( (islandable && !isairport) && MapWindow::zoom.RealScale() >=10 ) dowrite=0; // FIX then no need to go further
 
 		// 101215
-		if (DisplayTextType == DISPLAYNAME) {
-			_tcscpy(Buffer2,WayPointList[i].Name);
-		} else {
-			CopyTruncateString(Buffer2, array_size(Buffer2), WayPointList[i].Name, resizer[DisplayTextType]);
-		}
-
-
 		if (DisplayTextType == DISPLAYICAO) {
 			_tcscpy(Buffer2,WayPointList[i].Code);
+		} else {
+		  if (DisplayTextType == DISPLAYNAME) {
+			 _tcscpy(Buffer2,WayPointList[i].Name);
+		  } else {
+			CopyTruncateString(Buffer2, array_size(Buffer2), WayPointList[i].Name, resizer[DisplayTextType]);
+		  }
 		}
+
+
 
 
 
@@ -348,7 +349,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		  switch ( ArrivalValue )
 		  {
 		    case avNone :
-		      _stprintf(Buffer, TEXT("%s"), Buffer2);
+		      _tcscpy(Buffer,Buffer2);
 		    break;
 
 		    case avGR :
@@ -474,7 +475,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 				   (int)(WayPointCalc[i].GR) );
 		    break;
 
-		    default: _stprintf(Buffer, TEXT(""));
+		    default: Buffer[0] = '\0';
 		    break;
           }
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
