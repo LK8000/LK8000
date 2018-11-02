@@ -105,6 +105,7 @@ Determines how labels are displayed with each waypoint:
 [Names in task] Names are only displayed for waypoints that are in the active task as well as the home airfield.
 [First Three] The first 3 letters of the waypoint name are displayed.
 [First Five] The first 5 letters of the waypoint name are displayed.
+[ICAO Code] The ICAO airfield letter code (e.g. ‎EGLL for London Heathrow)
 
 @124
 Determines whether and how long a snail trail is drawn behind the glider
@@ -385,6 +386,7 @@ Choose how to display values for landable waypoints. With or without a box aroun
 
 @186
 Can show arrival altitude over safety, or required efficiency to arrive over safety.
+OFF don't display any value 
 
 @187
 If ON, bottom bar and LK pages are white with black text. The overlay text color will be reversed, so if you have set black they will be white. You can reverse these colors with a custom key. DEFAULT IS OFF.
