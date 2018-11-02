@@ -2030,7 +2030,7 @@ DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M479_ = "None" 
     dfe->addEnumText(MsgToken(479));
 
-    dfe->addEnumText(_T("ICAO Code"));
+    dfe->addEnumText(MsgToken(2336));
     dfe->Set(DisplayTextType);
     wp->RefreshDisplay();
   }

@@ -417,6 +417,8 @@ _@M2322_ "Enable Radar"
 +_@M2191_ "Cyl Dist"
 
 
+_@M2336_
+ICAO Code 
    
 HELP FILE
 
@@ -444,3 +446,9 @@ Screen Orientation (see help)
 @1298
 Tracking Mode (see help)
 
+
+@123
+[ICAO Code] The ICAO airfield letter code (e.g. ‎EGLL for London Heathrow) (see help)
+
+@186
+OFF don't display any value (see help)
