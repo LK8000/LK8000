@@ -2029,6 +2029,8 @@ DataField* dfe = wp->GetDataField();
 
 	// LKTOKEN  _@M479_ = "None" 
     dfe->addEnumText(MsgToken(479));
+
+    dfe->addEnumText(_T("ICAO Code"));
     dfe->Set(DisplayTextType);
     wp->RefreshDisplay();
   }
@@ -2983,6 +2985,8 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(98));
 	// LKTOKEN  _@M254_ = "EfficiencyReq" 
     dfe->addEnumText(MsgToken(254));
+	// LKTOKEN  _@M491_ = "Off"
+    dfe->addEnumText(MsgToken(491));
     dfe->Set(ArrivalValue);
     wp->RefreshDisplay();
   }
