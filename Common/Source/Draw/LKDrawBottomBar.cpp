@@ -57,7 +57,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   SIZE TextSize;
 
 
-  static bool wascircling=false; // init not circling of course
+  static short lastMode=-1; // init to not existing mode
   static short OldBottomMode=BM_FIRST;
 
   LKColor barTextColor=RGB_WHITE; // default bottom bar text color, reversable
@@ -76,7 +76,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 
   if (DoInit[MDI_DRAWBOTTOMBAR]) {
 
-	wascircling=false;
+    lastMode=-1;
 	OldBottomMode=BM_FIRST;
 
 	Surface.SelectObject(LK8BottomBarTitleFont);
@@ -181,21 +181,34 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 
   bool showunit=false;
 
-  if (!ConfBB0Auto) goto _afterautotrm;
-
-  if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {
-	// switch to thermal mode
-	OldBottomMode=BottomMode;
-	BottomMode=BM_TRM;
-	wascircling=true;
+  if (ConfBB0Auto == BBSM_AUTO_THERMALLING) {
+    if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
+        && lastMode != MapWindow::Mode::MODE_CIRCLING) {
+      OldBottomMode = BottomMode;
+      BottomMode = BM_TRM;
+    }
+    else if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
+        && lastMode == MapWindow::Mode::MODE_CIRCLING) {
+      BottomMode = OldBottomMode;
+    }
+    lastMode = MapWindow::mode.Fly();
+  } else if (ConfBB0Auto == BBSM_FULL_AUTO) {
+    if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
+        && lastMode != MapWindow::Mode::MODE_CIRCLING) {
+      BottomMode = BM_TRM;
+    }
+    else if (MapWindow::mode.Is(MapWindow::Mode::MODE_CRUISE)
+        && lastMode != MapWindow::Mode::MODE_CRUISE) {
+      BottomMode = BM_CUS2;
+    }
+    else if (MapWindow::mode.Is(MapWindow::Mode::MODE_FINAL_GLIDE)
+        && lastMode != MapWindow::Mode::MODE_FINAL_GLIDE) {
+      BottomMode = BM_CUS3;
+    }
+    lastMode = MapWindow::mode.Fly();
   }
-  if ( !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && wascircling) {
-	// back to cruise mode
-	BottomMode=OldBottomMode;
-	wascircling=false;
-  }
 
-_afterautotrm:
+
 
   /*
    *   FIRST VALUE

@@ -40,7 +40,7 @@
       <DataField Name="" DataType="boolean" />
     </WndProperty>
     <WndProperty Name="prpConfBB0Auto" Caption="_@M1821_" X="120" Y="-999" Width="118" Height="22" CaptionWidth="60" Font="2" Help="_@H1263_">
-      <DataField Name="" DataType="boolean" />
+      <DataField Name="" DataType="enum" />
     </WndProperty>
 
   </WndForm>
