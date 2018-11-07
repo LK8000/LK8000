@@ -31,6 +31,7 @@ Copyright_License {
 #include "OS/Clock.hpp"
 #include "Compiler.h"
 #include "Thread/Mutex.hpp"
+#include "Baro.h"
 
 
 
@@ -337,7 +338,6 @@ ComputeNoncompVario(const double pressure, const double d_pressure)
 }
 #endif
 
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 static BOOL IsBaroSource(PDeviceDescriptor_t d) { return TRUE; }
 
 extern "C"

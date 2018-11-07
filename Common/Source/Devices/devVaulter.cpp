@@ -10,8 +10,6 @@
 #include "devVaulter.h"
 #include "LKInterface.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
-
 int iVaulter_RxUpdateTime=0;
 double oldVaulterMC = MACCREADY;
 int  VaulterMacCreadyUpdateTimeout = 0;

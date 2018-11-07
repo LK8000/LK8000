@@ -11,9 +11,8 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "resource.h"
+#include "Baro.h"
 
-#define BARO__CPROBE		7
-extern bool UpdateBaroSource( NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 PDeviceDescriptor_t CDevCProbe::m_pDevice=NULL;
 BOOL CDevCProbe::m_bCompassCalOn=FALSE;

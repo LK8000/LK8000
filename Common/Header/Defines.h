@@ -96,8 +96,8 @@
 #endif
 
 #define LKFORK		"LK8000"
-#define LKVERSION	"6"
-#define LKRELEASE	"1s0"
+#define LKVERSION	"7"
+#define LKRELEASE	"1a"
 
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
@@ -272,6 +272,9 @@
 
 // Number of background colors available in MapWindow.h for NON-terrain maps
 #define LKMAXBACKGROUNDS        10
+
+// Number of color ramp available for draw terrain
+#define NUMRAMPS        16
 
 // Task format version
 #define LKTASKVERSION	'3'

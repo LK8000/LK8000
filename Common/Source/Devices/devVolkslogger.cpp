@@ -9,9 +9,8 @@
 
 #include "externs.h"
 #include "Dialogs/dlgProgress.h"
+#include "Baro.h"
 #include "devVolkslogger.h"
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
-
 #include "Volkslogger/vlapi2.h"
 #include "Volkslogger/vlapihlp.h"
 #include "utils/stringext.h"

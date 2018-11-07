@@ -2245,3 +2245,4 @@ _@M2333_ "Tracking mode "
 _@M2334_ "in Flight Only (default)"
 _@M2335_ "permanent"
 
+_@M2336_ "ICAO Code"

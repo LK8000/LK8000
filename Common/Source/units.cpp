@@ -472,7 +472,7 @@ const TCHAR *Units::GetTaskSpeedName(){
 bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
 
   int prec;
-  TCHAR sTmp[32];
+  TCHAR sTmp[512];
   UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
 
   Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
@@ -498,7 +498,7 @@ bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
 // just to be able to call the function above with a parameter missing!
 bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
   Units_t useUnit;
-  TCHAR sTmp[32];
+  TCHAR sTmp[512];
 
   if (UserAltitudeUnit == unMeter)
 	useUnit=unFeet;
@@ -540,7 +540,7 @@ bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t s
 bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
 
   int prec;
-  TCHAR sTmp[32];
+  TCHAR sTmp[512];
   UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
 
   Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
@@ -564,7 +564,7 @@ bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
 bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
 
   int prec;
-  TCHAR sTmp[32];
+  TCHAR sTmp[512];
 
   Units_t Unit = UserDistanceUnit;
   UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
@@ -617,7 +617,7 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
 
   int prec;
   double value;
-  TCHAR sTmp[32];
+  TCHAR sTmp[512];
   Units_t UnitIdx = UserDistanceUnit;
   UnitDescriptor_t *pU = &UnitDescriptors[UnitIdx];
 

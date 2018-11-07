@@ -10,6 +10,9 @@
 #include "McReady.h"
 #include "devWesterboer.h"
 #include "InputEvents.h"
+#include "Baro.h"
+
+
 #define VW_BIDIRECTIONAL
 static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
@@ -18,7 +21,6 @@ BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc);
 BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bus);
 BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload);
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 extern bool UpdateQNH(const double newqnh);
 
 

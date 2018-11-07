@@ -40,8 +40,6 @@
 #endif
 
 #ifdef __linux__
- // temporary disable, need to be port...
- #define NO_DATARECORDER
 
 // Cpu load : use averaged number of processes in the system run queue instead of real cpu usage
 // #define USE_LOADAVG_CPU
@@ -86,14 +84,14 @@
  //#define YDEBUG       1       // Force using assert() instead of LKASSERT even if DEBUG is off.
                                 // See above. Should not be necessary, but it is a reminder.
 
-// #define BUGSTOP	1   	// STOP by LKASSERT even if the condition was managed, to show
+#define BUGSTOP	1   	// STOP by LKASSERT even if the condition was managed, to show
 				// the problem during alpha stages.
 				// Normally these conditions should not exist
 
-// #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD
+#define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD
 				// FOR DEVELOPMENT VERSIONS. CAN BE USED FOR SPECIAL BETAs,
 				// but normally should not be used for public releases.
-// #define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
+#define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
 				// For TESTBENCH and beta versions this should be always ENABLED.
 				// Only in official stable versions it should be disabled.
 
@@ -178,8 +176,8 @@
 #if !defined(UNDER_CE)
     #define _WGS84
     #ifdef __cplusplus
-        #include <GeographicLib/Constants.hpp>
-        #if !(GEOGRAPHICLIB_VERSION >= GEOGRAPHICLIB_VERSION_NUM(1,37,0))
+        #include <GeographicLib/Config.h>
+        #if !((GEOGRAPHICLIB_VERSION_MAJOR >= 1) && (GEOGRAPHICLIB_VERSION_MINOR >= 37))
             #error "GeographicLib version >= 1.37 are required"
         #endif
     #endif

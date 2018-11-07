@@ -43,16 +43,11 @@ class GetCpuLoad_Singleton {
 public:
 
     GetCpuLoad_Singleton() {
-        FILE* _fp = fopen("/proc/stat", "r");
+        if(read_fields()) {
+            total_tick = std::accumulate(std::begin(fields), std::end(fields), (uint64_t) 0);
+            idle = fields[3]; /* idle ticks index */
 
-        if (_fp) {
-            if(read_fields()) {
-                total_tick = std::accumulate(std::begin(fields), std::end(fields), (uint64_t) 0);
-                idle = fields[3]; /* idle ticks index */
-
-                lastValue.Update();
-            }
-            fclose(_fp);
+            lastValue.Update();
         }
     }
 
@@ -67,10 +62,6 @@ public:
 
         // only calculate each 1s  
         if(lastValue.CheckUpdate(1*1000)) {
-            if (!read_fields()) {
-                return INVALID_VALUE;
-            }
-
             total_tick_old = total_tick;
             idle_old = idle;
 

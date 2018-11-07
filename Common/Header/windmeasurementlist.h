@@ -6,7 +6,7 @@
 **
 ************************************************************************
 **
-**   Copyright (c):  2002 by André Somers
+**   Copyright (c):  2002 by AndrÃ© Somers
 **
 **   This file is distributed under the terms of the General Public
 **   Licence. See the file COPYING for more information.
@@ -19,7 +19,7 @@
 #define WINDMEASUREMENTLIST_H
 
 /**The WindMeasurementList is a list that can contain and process windmeasurements.
-  *@author André Somers
+  *@author AndrÃ© Somers
   */
 
 #include "vector.h"

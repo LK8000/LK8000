@@ -439,6 +439,11 @@ bool MapWindow::checkLabelBlock(RECT *rc) {
   // Max number of labels on screen
   if (nLabelBlocks>LKMaxLabels) return false;
 
+  assert(slot);
+  if(!slot) {
+    return false;
+  }
+
   // rc.top is searched in its slot, but the label could also spread to the next slot...
 
   unsigned int vslot=(char)slot[rc->top];

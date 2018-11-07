@@ -384,7 +384,7 @@ class NativeView extends SurfaceView
   protected native void deinitializeNative();
   protected native void resizedNative(int width, int height);
 
-  protected native void pauseNative();
+  protected native boolean pauseNative();
   protected native void resumeNative();
 
   protected native void setBatteryPercent(int level, int plugged);
@@ -523,7 +523,9 @@ class NativeView extends SurfaceView
   }
 
   public void onPause() {
-    pauseNative();
+    if(!pauseNative()) {
+      quitHandler.sendMessage(quitHandler.obtainMessage());
+    }
   }
 
   public void exitApp() {

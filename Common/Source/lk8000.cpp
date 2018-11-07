@@ -104,7 +104,6 @@ char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
 BOOL	InitInstance    ();
 
 extern void CreateCalculationThread();
-extern void StartupLogFreeRamAndStorage();
 extern void PreloadInitialisation(bool ask);
 #ifdef PNA
 extern bool LoadModelFromProfile(void);

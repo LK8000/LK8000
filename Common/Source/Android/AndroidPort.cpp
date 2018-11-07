@@ -231,7 +231,9 @@ unsigned AndroidPort::RxThread() {
         }
 
         if(!bridge) {
-            d->Status = CPS_OPENKO;
+            if(d) {
+                d->Status = CPS_OPENKO;
+            }
             // port is Closed.
             break;
         }

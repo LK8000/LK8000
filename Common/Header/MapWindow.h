@@ -46,6 +46,7 @@
 #define DISPLAYFIRST10 6
 #define DISPLAYFIRST12 7
 #define DISPLAYNONE 8
+#define DISPLAYICAO 9
 
 #define AIRPORT		0x01
 #define TURNPOINT	0x02

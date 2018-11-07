@@ -838,7 +838,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
                 value = WayPointCalc[rli].GR;
                 if (value < 1 || value >= MAXEFFICIENCYSHOW) {
-                    _stprintf(Buffer4[i][curpage], _T("---"));
+                    _stprintf(Buffer4[i][curpage], _T("----"));
                 } else {
                     if (value > 99) _stprintf(text, _T("%.0f"), value);
                     else _stprintf(text, _T("%.1f"), value);
@@ -847,7 +847,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
                 value = ALTITUDEMODIFY * WayPointCalc[rli].AltArriv[AltArrivMode];
                 if (value <-9999 || value > 9999)
-                    _tcscpy(text, _T("---"));
+                    _tcscpy(text, _T("----"));
                 else
                     _stprintf(text, _T("%+.0f"), value);
                 if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%s %s"), text, Units::GetAltitudeName());
@@ -855,10 +855,10 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
             } else { // !Valid
                 _stprintf(Buffer1[i][curpage], _T("------------"));
-                _stprintf(Buffer2[i][curpage], _T("---"));
-                _stprintf(Buffer3[i][curpage], _T("---"));
-                _stprintf(Buffer4[i][curpage], _T("---"));
-                _stprintf(Buffer5[i][curpage], _T("---"));
+                _stprintf(Buffer2[i][curpage], _T("----"));
+                _stprintf(Buffer3[i][curpage], _T("----"));
+                _stprintf(Buffer4[i][curpage], _T("----"));
+                _stprintf(Buffer5[i][curpage], _T("----"));
             }
 
 _KeepOldCommonsValues:
@@ -979,8 +979,7 @@ _KeepOldCommonsValues:
                 else _stprintf(Buffer5[i][curpage], TEXT("%s"), aspflags);
 
             } else {
-                _stprintf(Buffer1[i][curpage], _T("----------------------------")); // max 30
-                Buffer1[i][curpage][s_maxnlname[curmapspace] + 7] = '\0'; // some more dashes
+                _stprintf(Buffer1[i][curpage], _T("------------")); // max 12
                 _stprintf(Buffer2[i][curpage], _T("----"));
                 _stprintf(Buffer3[i][curpage], _T("----"));
                 _stprintf(Buffer4[i][curpage], _T("----"));
@@ -1060,7 +1059,7 @@ _KeepOldAirspacesValues:
                 // Average lift
                 value = LIFTMODIFY * CopyThermalHistory[rli].Lift;
                 if (value<-99 || value > 99)
-                    _stprintf(Buffer4[i][curpage], _T("---"));
+                    _stprintf(Buffer4[i][curpage], _T("----"));
                 else {
                     _stprintf(Buffer4[i][curpage], _T("%+.1f"), value);
                 }
@@ -1068,7 +1067,7 @@ _KeepOldAirspacesValues:
                 // Altitude
                 value = ALTITUDEMODIFY * CopyThermalHistory[rli].Arrival;
                 if (value<-1000 || value > 45000)
-                    _stprintf(Buffer5[i][curpage], _T("---"));
+                    _stprintf(Buffer5[i][curpage], _T("----"));
                 else {
                     if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"), value, Units::GetAltitudeName());
                     else _stprintf(Buffer5[i][curpage], TEXT("%.0f"), value);
@@ -1078,10 +1077,10 @@ _KeepOldAirspacesValues:
             } else {
                 // Empty thermals, fill in all empty data and maybe break loop
                 _stprintf(Buffer1[i][curpage], _T("------------"));
-                _stprintf(Buffer2[i][curpage], _T("---"));
-                _stprintf(Buffer3[i][curpage], _T("---"));
-                _stprintf(Buffer4[i][curpage], _T("---"));
-                _stprintf(Buffer5[i][curpage], _T("---"));
+                _stprintf(Buffer2[i][curpage], _T("----"));
+                _stprintf(Buffer3[i][curpage], _T("----"));
+                _stprintf(Buffer4[i][curpage], _T("----"));
+                _stprintf(Buffer5[i][curpage], _T("----"));
             }
 
             if ((rli >= 0) && (CopyThermalHistory[rli].Valid == true)) {
@@ -1173,7 +1172,7 @@ _KeepOldAirspacesValues:
                 // Vario
                 value = LIFTMODIFY * LKTraffic[rli].Average30s;
                 if (value<-6 || value > 6)
-                    _tcscpy(Buffer4[i][curpage], _T("---"));
+                    _tcscpy(Buffer4[i][curpage], _T("----"));
                 else {
                     _stprintf(Buffer4[i][curpage], _T("%+.1f"), value);
                 }
@@ -1181,7 +1180,7 @@ _KeepOldAirspacesValues:
                 // Altitude
                 value = ALTITUDEMODIFY * LKTraffic[rli].Altitude;
                 if (value<-1000 || value > 45000)
-                    _tcscpy(Buffer5[i][curpage], _T("---"));
+                    _tcscpy(Buffer5[i][curpage], _T("----"));
                 else {
                     if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"), value, Units::GetAltitudeName());
                     else _stprintf(Buffer5[i][curpage], TEXT("%.0f"), value);
@@ -1191,10 +1190,10 @@ _KeepOldAirspacesValues:
             } else {
                 // Empty traffic, fill in all empty data and maybe break loop
                 _tcscpy(Buffer1[i][curpage], _T("------------"));
-                _tcscpy(Buffer2[i][curpage], _T("---"));
-                _tcscpy(Buffer3[i][curpage], _T("---"));
-                _tcscpy(Buffer4[i][curpage], _T("---"));
-                _tcscpy(Buffer5[i][curpage], _T("---"));
+                _tcscpy(Buffer2[i][curpage], _T("----"));
+                _tcscpy(Buffer3[i][curpage], _T("----"));
+                _tcscpy(Buffer4[i][curpage], _T("----"));
+                _tcscpy(Buffer5[i][curpage], _T("----"));
             }
 
 

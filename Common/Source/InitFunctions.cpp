@@ -53,7 +53,6 @@ WndMain MainWindow; // Main Window singleton
 
 BOOL	InitInstance    (int);
 
-extern void StartupLogFreeRamAndStorage();
 extern bool ScreenHasChanged(void);
 
 void PreloadInitialisation(bool ask) {
