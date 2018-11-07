@@ -9,8 +9,8 @@
 #ifndef TOPOLOGY_H
 #define TOPOLOGY_H
 
-#include "mapshape.h"
 #include "Poco/Thread.h"
+#include "Topology/shapelib/mapserver.h"
 
 class ShapeSpecialRenderer;
 
@@ -100,8 +100,6 @@ class Topology {
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);
 
-  TCHAR filename[MAX_PATH];
-
   virtual void removeShape(const int i);
   virtual XShape* addShape(const int i);
 
@@ -124,6 +122,7 @@ class Topology {
   rectObj lastBounds;
   bool in_scale_last;
 
+  char filename[MAX_PATH];
 };
 
 #if USETOPOMARKS

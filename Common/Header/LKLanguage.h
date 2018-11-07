@@ -21,7 +21,4 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn);
 const TCHAR *LKGetText(const TCHAR *TextIn);
 const TCHAR *MsgToken(unsigned tindex);
 
-
-#define gettext LKGetText
-
 #endif	/* LKLANGUAGE_H */

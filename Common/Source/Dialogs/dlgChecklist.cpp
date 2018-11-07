@@ -392,7 +392,7 @@ bool LoadChecklist(short checklistmode) {
 		SystemPath(filename, TEXT(LKD_SYSTEM));
 		_tcscat(filename,_T(DIRSEP));
 		_tcscat(filename,_T(LKF_CREDITS));
-		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("Info")));
+		_stprintf(NoteModeTitle,_T("%s"),LKGetText(_T("Info")));
 		return LoadChecklist(filename,true);
 		break;
   default:

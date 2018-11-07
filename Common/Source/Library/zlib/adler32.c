@@ -6,7 +6,7 @@
 /* @(#) $Id: adler32.c,v 1.2 2007/09/14 17:12:06 jwharington Exp $ */
 
 #define ZLIB_INTERNAL
-#include "zzip/zlib.h"
+#include "zlib.h"
 
 #include "utils/heapcheck.h"
 

@@ -14,7 +14,7 @@
 #include <deque>
 #include <list>
 #include <algorithm>
-
+#include <zzip/zzip.h>
 #include "Screen/LKSurface.h"
 #include "Geographic/GeoPoint.h"
 

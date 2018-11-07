@@ -28,6 +28,8 @@ public:
         style.EnableDoubleClicks();
 #ifdef USE_FULLSCREEN
         style.FullScreen();
+#else
+        style.Resizable();
 #endif
         __super::Create(_T("LK8000"), rect.GetSize(), style);
         return this->IsDefined();
@@ -51,13 +53,7 @@ public:
     }
 
     static void PostRedrawEvent() {
-#if defined(ENABLE_SDL)
-#if !(SDL_MAJOR_VERSION >= 2)
-        SDL_Event event;
-        event.type = SDL_VIDEOEXPOSE;
-        ::SDL_PushEvent(&event);
-#endif
-#else
+#ifndef ENABLE_SDL
         Event event(Event::NOP);
         event_queue->Push(event);
 #endif

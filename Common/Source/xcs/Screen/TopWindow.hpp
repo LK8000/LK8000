@@ -152,6 +152,8 @@ class TopWindow : public ContainerWindow {
 #elif defined(USE_WAYLAND)
   struct wl_display *native_display;
   struct wl_egl_window *native_window;
+#elif defined(ENABLE_SDL)
+  SDL_Window *window;
 #endif
 
 #ifndef USE_GDI
@@ -182,7 +184,7 @@ class TopWindow : public ContainerWindow {
    */
   bool resized;
 
-  UPixelScalar new_width, new_height;
+  PixelSize new_size;
 #endif
 
   DoubleClick double_click;
@@ -233,7 +235,7 @@ public:
               TopWindowStyle style=TopWindowStyle());
 #endif
 
-#if defined(USE_X11) || defined(USE_WAYLAND)
+#if defined(USE_X11) || defined(USE_WAYLAND) || defined(ENABLE_SDL)
 private:
   void CreateNative(const TCHAR *text, PixelSize size, TopWindowStyle style);
 
@@ -247,13 +249,16 @@ public:
   /**
    * Check if the screen has been resized.
    */
-#ifdef USE_FB
-  void CheckResize();
-#else
-  void CheckResize() {}
+  void CheckResize() {
+#ifndef USE_GDI
+    assert(screen);
+    if(screen->CheckResize()) {
+      Resize(screen->GetSize());
+    }
 #endif
+  }
 
-#if !defined(USE_GDI) && !(defined(ENABLE_SDL) && (SDL_MAJOR_VERSION >= 2))
+#if !defined(USE_GDI) && !defined(ENABLE_SDL)
 #if defined(ANDROID) || defined(USE_FB) || defined(USE_EGL) || defined(USE_VFB)
   void SetCaption(gcc_unused const TCHAR *caption) {}
 #else
@@ -362,7 +367,7 @@ public:
    * that this has happened.  The caller should also submit the RESIZE
    * event to the event queue.  This method is thread-safe.
    */
-  void AnnounceResize(UPixelScalar width, UPixelScalar height);
+  void AnnounceResize(PixelSize _new_size);
 
   bool ResumeSurface();
 
@@ -397,7 +402,9 @@ protected:
 
   virtual bool OnClose();
   
-  virtual void OnDestroy() override;
+#ifdef KOBO
+  void OnDestroy() override;
+#endif
 
 #ifdef DRAW_MOUSE_CURSOR
   virtual void OnPaint(Canvas &canvas) override;

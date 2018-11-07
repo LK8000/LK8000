@@ -100,12 +100,13 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   wf->SetBackColor(RGB_WINBACKGROUND);
   wf->SetBorderKind(BORDERTOP|BORDERRIGHT|BORDERBOTTOM|BORDERLEFT);
 
+  const PixelRect clientRect(wf->GetClientRect());
   wText = new WndFrame(wf,
                        TEXT("frmMessageDlgText"),
                        0,
                        DLGSCALE(5),
-                       Width,
-                       Height - DLGSCALE(5));
+                       clientRect.GetSize().cx,
+                       clientRect.GetSize().cy - y - dY - DLGSCALE(5));
 
   wText->SetCaption(lpText);
   wText->SetFont(MapWindowBoldFont);

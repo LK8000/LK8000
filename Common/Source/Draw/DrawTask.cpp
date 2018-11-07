@@ -203,7 +203,6 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
     // Draw All Task Sector Except first
 	for (int i = 1; ValidTaskPoint(i); i++) {
 		const TaskRenderer* pItem = gTaskSectorRenderer.GetRenderer(i);
-		assert(pItem);
 		if(pItem) {
 			if (!ValidTaskPoint(i + 1)) { // final waypoint
 				if (ActiveTaskPoint > 1 || !ValidTaskPoint(2)) {

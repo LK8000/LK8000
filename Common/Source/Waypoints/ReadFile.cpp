@@ -173,8 +173,8 @@ goto_inloop:
 	if ( fileformat == LKW_DAT || fileformat== LKW_XCW ) {
 		if (ParseDAT(nTemp2String, &new_waypoint)) {
 
-			if ( (_tcscmp(new_waypoint.Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
-				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
+			if ( (_tcscmp(new_waypoint.Name, LKGetText(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
+				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 				assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
 				assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
 				memcpy(&WayPointList[RESWP_TAKEOFF],&new_waypoint,sizeof(WAYPOINT));
@@ -193,8 +193,8 @@ goto_inloop:
 			break;
 		}
 		if (ParseCUPWayPointString(nTemp2String, &new_waypoint)) {
-			if ( (_tcscmp(new_waypoint.Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
-				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
+			if ( (_tcscmp(new_waypoint.Name, LKGetText(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
+				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 				assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
 				assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
 				memcpy(&WayPointList[RESWP_TAKEOFF],&new_waypoint,sizeof(WAYPOINT));
@@ -210,8 +210,8 @@ goto_inloop:
 	}
 	if ( fileformat == LKW_COMPE ) {
 		if (ParseCOMPEWayPointString(nTemp2String, &new_waypoint)) {
-			if ( (_tcscmp(new_waypoint.Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
-				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
+			if ( (_tcscmp(new_waypoint.Name, LKGetText(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
+				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 				assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
 				assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
 				memcpy(&WayPointList[RESWP_TAKEOFF],&new_waypoint,sizeof(WAYPOINT));
@@ -232,8 +232,8 @@ goto_inloop:
 			continue;
 
 		if(ParseOZIWayPointString(nTemp2String, &new_waypoint)){
-			if ( (_tcscmp(new_waypoint.Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
-				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
+			if ( (_tcscmp(new_waypoint.Name, LKGetText(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
+				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 				assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
 				assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
 				memcpy(&WayPointList[RESWP_TAKEOFF],&new_waypoint,sizeof(WAYPOINT));

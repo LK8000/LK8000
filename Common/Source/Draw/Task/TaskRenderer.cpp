@@ -13,6 +13,7 @@
 #include "TaskRenderer.h"
 #include "Draw/ScreenProjection.h"
 #include "Math/Point2D.hpp"
+#include "Topology/shapelib/mapserver.h"
 
 void TaskRenderer::Draw(LKSurface& Surface, const RECT &rc, bool bFill) const {
     if (!_Visible || _ScreenPoints.empty()) {

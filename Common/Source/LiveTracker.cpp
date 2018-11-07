@@ -12,7 +12,6 @@
 #include <winsock.h>
 #else
 #include <winsock2.h>
-#include <zzip/zlib.h>
 #endif
 #endif
 
@@ -24,7 +23,6 @@
 	#include <netdb.h>
 	#include <unistd.h>
 	#include <sys/ioctl.h>
-	#include <zlib.h>
 
 	#define SOCKET int
 	#define SOCKET_ERROR -1
@@ -38,6 +36,7 @@
 #include <cctype>
 #include <sstream>
 #include <time.h>
+#include <zlib.h>
 
 #include "externs.h"
 #include "LiveTracker.h"
@@ -1193,7 +1192,7 @@ static bool LiveTrack24_Radar() {
 			Time_Fix = GPS_INFO.Time;
 
 		if (!flarmwasinit) {
-			DoStatusMessage(gettext(TEXT("_@M279_")), TEXT("LiveTrack24")); // FLARM DETECTED from LiveTrack24
+			DoStatusMessage(LKGetText(TEXT("_@M279_")), TEXT("LiveTrack24")); // FLARM DETECTED from LiveTrack24
 			flarmwasinit = true;
 		}
 

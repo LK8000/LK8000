@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2015 The XCSoar Project
+  Copyright (C) 2000-2016 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -76,21 +76,31 @@ public:
   #endif
   }
 
-#ifndef USE_LIBINPUT
-  
 #ifdef KOBO
   void ResetTouchScreen();
 #endif
-  
-  void SetMouseRotation(bool swap, bool invert_x, bool invert_y) {
-    merge_mouse.SetSwap(swap);
-    merge_mouse.SetInvert(invert_x, invert_y);
-  }
 
-  void SetMouseRotation(DisplayOrientation_t orientation);
+#ifndef USE_LIBINPUT
+  void SetDisplayOrientation(DisplayOrientation_t orientation) {
+    merge_mouse.SetDisplayOrientation(orientation);
+  }
+#endif
 
   bool HasPointer() const {
+#ifdef USE_LIBINPUT
+    return libinput_handler.HasPointer();
+#else
     return merge_mouse.HasPointer();
+#endif
+  }
+  
+#ifdef USE_LIBINPUT
+  bool HasTouchScreen() const {
+    return libinput_handler.HasTouchScreen();
+  }
+
+  bool HasKeyboard() const {
+    return libinput_handler.HasKeyboard();
   }
 #endif
 

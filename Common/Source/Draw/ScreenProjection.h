@@ -14,7 +14,6 @@
 
 #include "Screen/Point.hpp"
 #include "Math/Point2D.hpp"
-#include "mapprimitive.h"
 #include "Geographic/GeoPoint.h"
 
 class ScreenProjection final {

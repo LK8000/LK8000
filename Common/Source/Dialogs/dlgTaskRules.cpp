@@ -65,8 +65,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("AGL")));
-    dfe->addEnumText(gettext(TEXT("MSL")));
+    dfe->addEnumText(LKGetText(TEXT("AGL")));
+    dfe->addEnumText(LKGetText(TEXT("MSL")));
     dfe->Set(StartHeightRef);
     wp->RefreshDisplay();
   }
@@ -110,8 +110,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAI28_45Threshold"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("500km (DMSt/OLC)")));
-    dfe->addEnumText(gettext(TEXT("750km (FAI)")));
+    dfe->addEnumText(LKGetText(TEXT("500km (DMSt/OLC)")));
+    dfe->addEnumText(LKGetText(TEXT("750km (FAI)")));
     if(FAI28_45Threshold > FAI_BIG_THRESHOLD)
       dfe->Set(1);
     else

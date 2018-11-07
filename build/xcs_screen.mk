@@ -7,6 +7,7 @@ XCS_SCREEN_MEMORY := \
 	$(SRC)/xcs/Screen/Memory/VirtualCanvas.cpp \
 	$(SRC)/xcs/Screen/Memory/RawBitmap.cpp \
 	$(SRC)/xcs/Screen/Memory/Dither.cpp \
+	$(SRC)/xcs/Screen/Memory/Export.cpp \
 	
 XCS_SCREEN_FB := \
 	$(SRC)/xcs/Screen/FB/Window.cpp \
@@ -54,6 +55,7 @@ XCS_SCREEN_OPENGL := \
 	$(SRC)/xcs/Screen/OpenGL/Buffer.cpp \
 	$(SRC)/xcs/Screen/OpenGL/BufferCanvas.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Canvas.cpp \
+	$(SRC)/xcs/Screen/OpenGL/TopCanvas.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Extension.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Globals.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Init.cpp \
@@ -66,9 +68,9 @@ XCS_SCREEN_OPENGL := \
 	$(SRC)/xcs/Screen/OpenGL/Triangulate.cpp \
 	$(SRC)/xcs/Screen/OpenGL/VertexArray.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Rotate.cpp \
-    $(SRC)/xcs/Screen/OpenGL/FBO.cpp \
-    $(SRC)/xcs/Screen/OpenGL/Dynamic.cpp \
-    \
+	$(SRC)/xcs/Screen/OpenGL/FBO.cpp \
+	$(SRC)/xcs/Screen/OpenGL/Dynamic.cpp \
+	\
 	$(SRC)/xcs/Math/Angle.cpp \
 
 ifeq ($(GLES2),y)	

@@ -27,9 +27,7 @@
 #endif
 
 bool CanRotateScreen() {
-#if defined(ENABLE_SDL) && !defined(USE_FULLSCREEN)
-    return true;
-#elif defined(USE_EGL) && !defined(USE_FULLSCREEN)
+#if (defined(ENABLE_SDL) || defined(USE_EGL)) && !defined(USE_FULLSCREEN)
     return false;
 #elif defined(ANDROID)
     /**
@@ -87,7 +85,7 @@ bool RotateScreen(short angle) {
     }
 
 #ifdef KOBO
-    event_queue->SetMouseRotation(orientation);
+    event_queue->SetDisplayOrientation(orientation);
 #endif
     
     MainWindow.CheckResize();

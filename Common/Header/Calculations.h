@@ -13,7 +13,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "mapshape.h"
+#include "Topology/shapelib/mapserver.h"
 
 #define NUMTHERMALBUCKETS 10
 #define MAX_THERMAL_SOURCES 20

@@ -31,7 +31,7 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound)
   }
 
   tstring temp_string; // for store [text + " " + data] if needed.
-  const TCHAR* szText = gettext(text); // get translated text
+  const TCHAR* szText = LKGetText(text); // get translated text
 
   if (data && _tcslen(data) > 0) {
     // if concat translated text and data if data is not enpty string

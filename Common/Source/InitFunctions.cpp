@@ -43,6 +43,11 @@
 #include <bcm_host.h>
 #endif
 
+#ifdef HAVE_MALI
+#include "Screen/Sunxi/mali.h"
+#include "Hardware/RotateDisplay.hpp"
+#endif
+
 #ifdef ANDROID
 #include "Android/Main.hpp"
 #include "Android/NativeView.hpp"
@@ -145,18 +150,13 @@ BOOL InitInstance()
   }
 
 #if defined(ENABLE_SDL) && defined(USE_FULLSCREEN)
- #if (SDL_MAJOR_VERSION >= 2)
   SDL_DisplayMode mode = {};
   if(SDL_GetCurrentDisplayMode(0, &mode) == 0) {
-	ScreenSizeX = mode.w;
+    ScreenSizeX = mode.w;
     ScreenSizeY = mode.h;
   } else {
-	fprintf(stderr, "SDL_GetCurrentDisplayMode() has failed: %s\n", ::SDL_GetError());
+    StartupStore("SDL_GetCurrentDisplayMode() has failed: %s", ::SDL_GetError());
   }
-  #else
-	ScreenSizeX = 0;
-    ScreenSizeY = 0;
-  #endif
 #endif
 
   PreloadInitialisation(true);
@@ -171,6 +171,13 @@ BOOL InitInstance()
     ScreenSizeY=iHeight;
   }
 #endif
+
+#ifdef HAVE_MALI
+  const PixelSize size = mali::GetScreenSize();
+  ScreenSizeX = size.cx;
+  ScreenSizeY = size.cy;
+#endif
+
 #ifdef ANDROID
   const PixelSize Size = native_view->GetSize();
   ScreenSizeX=Size.cx;
@@ -212,6 +219,10 @@ BOOL InitInstance()
   ButtonLabel::SetFont(MapWindowBoldFont);
 
   Message::Initialize(rc); // creates window, sets fonts
+
+#ifdef HAVE_MALI
+    Display::Rotate(mali::GetScreenOrientation());
+#endif
 
   MainWindow.SetVisible(true);
 

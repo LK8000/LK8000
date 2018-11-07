@@ -362,6 +362,10 @@ class DataFieldFileReader: public DataField {
 
   gcc_nonnull_all
   void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
+
+  gcc_nonnull_all
+  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
+
 #ifdef ANDROID
   gcc_nonnull_all
   void ScanZipDirectory(const TCHAR *subdir, const TCHAR *filter);

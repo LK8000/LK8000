@@ -399,10 +399,10 @@ LKASSERT(d !=NULL);
         bFound = true;
         iDetected++;
         if(iDetected < 10)
-          DoStatusMessage(gettext(TEXT("RADIO DETECTED"))); // RADIO DETECTED
+          DoStatusMessage(LKGetText(TEXT("RADIO DETECTED"))); // RADIO DETECTED
         else
             if(iDetected == 10)
-               DoStatusMessage(gettext(TEXT("Radio Message disabled")));
+               DoStatusMessage(LKGetText(TEXT("Radio Message disabled")));
 
       }
       else
