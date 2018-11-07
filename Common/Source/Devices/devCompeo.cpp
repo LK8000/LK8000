@@ -7,11 +7,8 @@
 */
 
 #include "externs.h"
-
+#include "Baro.h"
 #include "devCompeo.h"
-
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
-
 
 static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 

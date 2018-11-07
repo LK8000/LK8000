@@ -8,11 +8,11 @@
 //_____________________________________________________________________includes_
 
 #include "externs.h"
+#include "Baro.h"
 #include "devLXV7_EXP.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 extern bool UpdateQNH(const double newqnh);
 
 
@@ -30,7 +30,6 @@ int LXV7_EXPNMEAddCheckSumStrg( TCHAR szStrg[] );
 BOOL LXV7_EXPPutMacCready(PDeviceDescriptor_t d, double MacCready);
 BOOL LXV7_EXPPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL LXV7_EXPPutBugs(PDeviceDescriptor_t d, double Bugs);
-
 
 //____________________________________________________________class_definitions_
 
@@ -809,7 +808,7 @@ bool DevLXV7_EXP::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*
 {
 
 
-// $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
+// $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
 // Sc  float (m/s)
 // Netto  float (m/s)
 // Relativ  float (m/s)

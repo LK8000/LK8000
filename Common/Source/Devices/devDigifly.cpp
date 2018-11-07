@@ -7,11 +7,10 @@
 */
 
 #include "externs.h"
-
+#include "Baro.h"
 #include "devDigifly.h"
 #include "MathFunctions.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 extern bool UpdateQNH(const double newqnh);
 
 static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);

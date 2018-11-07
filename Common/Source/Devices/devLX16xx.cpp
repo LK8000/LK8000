@@ -10,8 +10,7 @@
 #include "externs.h"
 #include "devLX16xx.h"
 #include "LKInterface.h"
-
-extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+#include "Baro.h"
 
 int iLX16xx_RxUpdateTime=0;
 double oldMC = MACCREADY;
@@ -26,7 +25,6 @@ int LX16xxNMEAddCheckSumStrg( TCHAR szStrg[] );
 BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready);
 BOOL LX16xxPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs);
-
 
 //____________________________________________________________class_definitions_
 
@@ -627,7 +625,7 @@ return(true);
 bool DevLX16xx::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
-// $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
+// $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
 // Sc  float (m/s)
 // Netto  float (m/s)
 // Relativ  float (m/s)

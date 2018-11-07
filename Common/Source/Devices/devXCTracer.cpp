@@ -14,11 +14,8 @@
  */
 
 #include <externs.h>
+#include "Baro.h"
 #include <nmeaistream.h>
-
-
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
-
 
 static const TCHAR DeviceName[] = TEXT("XCTracer");
 
@@ -72,6 +69,16 @@ ReadCheckedRange(TCHAR *String, double &value_r, double min, double max) {
     return true;
 }
 
+static bool
+ReadChecked(TCHAR *String, double &value_r) {
+    if (_tcslen(String) == 0) {
+        return false; // empty stringg
+    }
+    value_r = StrToDouble(String, nullptr);
+
+    return true;
+}
+
 /*
  * Native XTRC sentences
  * $XCTRC,2015,1,5,16,34,33,36,46.947508,7.453117,540.32,12.35,270.4,2.78,,,,964.93,98*67
@@ -79,7 +86,7 @@ ReadCheckedRange(TCHAR *String, double &value_r, double min, double max) {
  * $XCTRC,year,month,day,hour,minute,second,centisecond,latitude,longitude,altitude,speedoverground,
  *      course,climbrate,res,res,res,rawpressure,batteryindication*checksum
  */
-static BOOL XTRC(PDeviceDescriptor_t d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS) {
+static BOOL XTRC(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGPS) {
 
     if (nparams < 19) {
         return FALSE;
@@ -158,13 +165,73 @@ static BOOL XTRC(PDeviceDescriptor_t d, TCHAR *String, TCHAR **params, size_t np
     return TRUE;
 }
 
+bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+{
+    // $LXWP0,logger_stored, airspeed, airaltitude,
+    //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
+    //
+    // 1 logger_stored : [Y|N] (not used XCTracer)
+    // 2 IAS [km/h]
+    // 3 baroaltitude [m]
+    // 4-9 vario values [m/s] (only first are available in XCTracer)
+    // 10 heading of plane
+    // 11 windcourse [deg]
+    // 12 windspeed [km/h]
+    //
+    // e.g.:
+    // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
+
+    double alt=0, airspeed=0;
+
+    if (ReadChecked(params[2], airspeed))
+    {
+        airspeed /= TOKPH;
+        pGPS->TrueAirspeed = airspeed;
+        pGPS->AirspeedAvailable = TRUE;
+    }
+
+    if (ReadChecked(params[3], alt))
+    {
+        if (airspeed>0) {
+            LKASSERT(AirDensityRatio(alt)!=0);
+            pGPS->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
+        }
+
+        UpdateBaroSource(pGPS, 0,d,  QNEAltitudeToQNHAltitude(alt));
+    }
+
+    for(int i = 4; i <= 9; ++i) {
+        if (ReadChecked(params[i], pGPS->Vario)) { /* take the last value to be more recent */
+            pGPS->VarioAvailable = TRUE;
+            TriggerVarioUpdate();
+        }
+    }
+
+    if (ReadChecked(params[10], pGPS->MagneticHeading))
+        pGPS->MagneticHeadingAvailable=TRUE;
+
+    if (ReadChecked(params[11], pGPS->ExternalWindDirection) &&
+            ReadChecked(params[12], pGPS->ExternalWindSpeed))
+    {
+        pGPS->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
+        pGPS->ExternalWindAvailable = TRUE;
+    }
+
+    return(true);
+} // LXWP0()
+
 static BOOL XCTracerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO) {
     TCHAR ctemp[MAX_NMEA_LEN];
     TCHAR * params[MAX_NMEA_PARAMS];
 
     size_t n_params = NMEAParser::ValidateAndExtract(String, ctemp, MAX_NMEA_LEN, params, MAX_NMEA_PARAMS);
-    if (n_params>0 && _tcscmp(params[0], TEXT("$XCTRC")) == 0) {
-        return XTRC(d, &String[7], params, n_params, _INFO);
+    if (n_params>0) {
+        if(_tcscmp(params[0], TEXT("$XCTRC")) == 0) {
+            return XTRC(d, params, n_params, _INFO);
+        }
+        if(_tcscmp(params[0], TEXT("$LXWP0")) == 0) {
+            return LXWP0(d, params, n_params, _INFO);
+        }
     }
     return FALSE;
 }

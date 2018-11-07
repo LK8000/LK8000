@@ -198,18 +198,20 @@ Java_org_LK8000_NativeView_resizedNative(JNIEnv *env, jobject obj,
 
 extern "C"
 gcc_visibility_default
-JNIEXPORT void JNICALL
+JNIEXPORT jboolean JNICALL
 Java_org_LK8000_NativeView_pauseNative(JNIEnv *env, jobject obj)
 {
-  if (event_queue == nullptr)
+  if (event_queue == nullptr) {
     /* pause before we have initialized the event subsystem does not
        work - let's bail out, nothing is lost anyway */
-    exit(0);
+    return false;
+  }
 
   MainWindow.Pause();
 
   assert(num_textures == 0);
   assert(num_buffers == 0);
+  return true;
 }
 
 extern "C"

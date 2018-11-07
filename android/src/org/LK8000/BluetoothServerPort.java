@@ -43,8 +43,6 @@ final class BluetoothServerPort extends MultiPort
   private static final String TAG = "LK8000";
 
   private BluetoothServerSocket serverSocket;
-  private Collection<BluetoothSocket> sockets =
-    new LinkedList<BluetoothSocket>();
 
   private final Thread thread = new Thread(this, "Bluetooth server");
 
@@ -78,17 +76,19 @@ final class BluetoothServerPort extends MultiPort
   @Override public void run() {
     while (true) {
       try {
-        BluetoothSocket socket = serverSocket.accept();
-        Log.i(TAG, "Accepted Bluetooth connection from " +
-              BluetoothHelper.getDisplayString(socket));
-        BluetoothPort port = new BluetoothPort(socket);
+        synchronized (this) {
+          BluetoothSocket socket = serverSocket.accept();
+          Log.i(TAG, "Accepted Bluetooth connection from " +
+                  BluetoothHelper.getDisplayString(socket));
+          BluetoothPort port = new BluetoothPort(socket);
 
         /* make writes non-blocking and potentially lossy, to avoid
            blocking when one of the peers doesn't receive quickly
            enough */
-        port.setWriteTimeout(5);
+          port.setWriteTimeout(5);
 
-        add(port);
+          add(port);
+        }
       } catch (IOException e) {
         Log.e(TAG, "Bluetooth server socket has failed", e);
         closeServerSocket();
@@ -112,8 +112,10 @@ final class BluetoothServerPort extends MultiPort
   }
 
   @Override public int getState() {
-    if (serverSocket == null)
-      return STATE_FAILED;
+    synchronized (this) {
+      if (serverSocket == null)
+        return STATE_FAILED;
+    }
 
     return super.getState();
   }

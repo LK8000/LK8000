@@ -92,6 +92,8 @@ public:
         if(depth < OpenGL::max_attrib_stack_depth) {
             ::glPushAttrib(mask); 
             stack = true;
+        } else {
+            stack = false;
         }
     }
 

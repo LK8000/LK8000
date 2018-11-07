@@ -16,6 +16,7 @@
 
 
 #include "externs.h"
+#include "Baro.h"
 #include "devLK8EX1.h"
 #include "devFlyNet.h"
 #include "Dialogs.h"
@@ -39,18 +40,18 @@ class CHardwareParameter {
 public:
 
     CHardwareParameter()
-            : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal() {
+            : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal(), available() {
     }
 
     CHardwareParameter(const tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
-            : _Code(code), _MinHWVersion(minHWVersion), _Type(type), _Factor(factor), _MinHWVal(minHWVal), _MaxHWVal(maxHWVal) {
+            : _Code(code), _MinHWVersion(minHWVersion), _Type(type), _Factor(factor), _MinHWVal(minHWVal), _MaxHWVal(maxHWVal), available() {
     }
 
     ~CHardwareParameter() {
 
     }
 
-    inline void Value(const tstring& Val) { _Value = Val; }
+    inline void Value(const tstring& Val) { available = true; _Value = Val; }
     inline const tstring& Value() const { return _Value; }
 
     inline operator bool ()  const { return !_Code.empty(); }
@@ -103,6 +104,8 @@ public:
         return ValueInt()!=0;
     }
 
+    bool IsAvailable() const { return available; }
+
     void operator=(double v) {
         TCHAR szTmp[30] = {0};
         _stprintf(szTmp, _T("%d"), (int)(v/_Factor));
@@ -131,6 +134,7 @@ private:
     const int _MinHWVal;
     const int _MaxHWVal;
 
+    bool available;
     tstring _Value;
 };
 
@@ -173,18 +177,21 @@ public:
         _Values = line;
         if (!_Keys.empty() && !_Values.empty()) {
 
-            std::string::size_type PrevPosKey = 0, PosKey = 0;
-            std::string::size_type PrevPosVal = 0, PosVal = 0;
-            if(((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != std::string::npos)) { //skip first Value
+            tstring::size_type PrevPosKey = 0, PosKey = 0;
+            tstring::size_type PrevPosVal = 0, PosVal = 0;
+            if(((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != tstring::npos)) { //skip first Value
                 PrevPosVal = ++PosVal;
-                while ( ((PosKey = _Keys.find_first_of(_T(" \n"), PosKey)) != std::string::npos)
-                        && ((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != std::string::npos) )
+                while ( ((PosKey = _Keys.find_first_of(_T(" \n"), PosKey)) != tstring::npos)
+                        && ((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != tstring::npos) )
                 {
 
                     if (PosKey > PrevPosKey) {
-                        ParameterList_t::iterator It = _ParameterList.find(_Keys.substr(PrevPosKey, PosKey-PrevPosKey));
+                        const tstring key = _Keys.substr(PrevPosKey, PosKey-PrevPosKey);
+                        const tstring value = _Values.substr(PrevPosVal, PosVal-PrevPosVal);
+
+                        ParameterList_t::iterator It = _ParameterList.find(key);
                         if (It != _ParameterList.end()) {
-                            (*It).second.Value(_Values.substr(PrevPosVal, PosVal-PrevPosVal));
+                            (*It).second.Value(value);
                         }
                     }
                     PrevPosKey = ++PosKey;
@@ -333,24 +340,24 @@ namespace dlgBlueFlyConfig {
                         pData->Set(Param.ValueBool());
                         break;
                     case TYPE_DOUBLE:
-                        pData->SetMax((double)Param.Max());
-                        pData->SetMin((double)Param.Min());
+                        pData->SetMax(Param.Max());
+                        pData->SetMin(Param.Min());
                         pData->Set(Param.ValueDouble());
                         break;
                     case TYPE_INT:
                     case TYPE_INTOFFSET:
-                        pData->SetMax((int)Param.Max());
-                        pData->SetMin((int)Param.Min());
+                        pData->SetMax(Param.Max());
+                        pData->SetMin(Param.Min());
                         pData->Set(Param.ValueInt());
                         break;
                     case TYPE_INTLIST:
-                        pData->SetMax((int)Param.Max());
-                        pData->SetMin((int)Param.Min());
                         pData->Set(Param.ValueInt());
                         break;
                 }
             }
+            pWnd->SetVisible(Param.IsAvailable());
             pWnd->RefreshDisplay();
+            
         }
     }
 
@@ -471,6 +478,14 @@ BOOL BlueFlyConfig(PDeviceDescriptor_t d) {
     return FALSE;
 }
 
+static BOOL PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
+	(void)d;
+	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)))){
+		TriggerVarioUpdate();
+	}
+	return TRUE;
+}
+
 BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     if( RequestParamTimer == 1 ) {
         if(!RequestConfig(d)) {
@@ -480,6 +495,10 @@ BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS
     if(RequestParamTimer > 0){
         --RequestParamTimer;
     }
+
+    if(_tcsncmp(TEXT("PRS "), String, 4)==0){
+        return PRS(d, &String[4], pGPS);
+    } 
 
     if (LK8EX1ParseNMEA(d, String, pGPS)) {
         return TRUE;

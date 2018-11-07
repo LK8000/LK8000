@@ -26,5 +26,7 @@ void StartupStore(const TCHAR *Str, ...)
 
 tstring toHexString(const void* data, size_t size);
 
+void StartupLogFreeRamAndStorage();
+
 #endif	/* MESSAGELOG_H */
 

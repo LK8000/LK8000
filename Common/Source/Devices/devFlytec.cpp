@@ -7,15 +7,13 @@
 */
 
 #include "externs.h"
-
+#include "Baro.h"
 #include "devFlytec.h"
 #include "Parser.h"
 
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
 extern double MixedFormatToDegrees(double mixed);
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
-
 
 static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 

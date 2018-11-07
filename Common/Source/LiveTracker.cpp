@@ -353,7 +353,13 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	  newpoint.flying = Calculated.Flying;
 	newpoint.latitude = Basic.Latitude;
 	newpoint.longitude = Basic.Longitude;
-	newpoint.alt = Calculated.NavAltitude;
+
+	/* TODO : GPS Altitude or Baro Altitude if Available ?
+	 *  nothing mentioned about that in Livetrack24 API documentation
+	 *  in all case we need to use same altitude for push Track data and Pull "Radar' track data.
+	 */
+	newpoint.alt = Basic.Altitude;
+
 	newpoint.ground_speed = Basic.Speed;
 	newpoint.course_over_ground = Calculated.Heading;
 

@@ -143,17 +143,19 @@ public:
             const WAYPOINT *CurrPt = TaskWayPoint(mIdx);
             const WAYPOINT *PrevPt = TaskWayPoint(mIdx - 1);
             const WAYPOINT *NextPt = TaskWayPoint(mIdx + 1);
-            double InB = 0;
-            double OutB = 0;
-            // bearing to prev
-            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
-                    PrevPt->Latitude, PrevPt->Longitude, NULL, &InB);
-            // bearing to next
-            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
-                    NextPt->Latitude, NextPt->Longitude, NULL, &OutB);
-            mA12 = BiSector(InB, OutB);
+            if(CurrPt && PrevPt && NextPt) {
+                double InB = 0;
+                double OutB = 0;
+                // bearing to prev
+                DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                                PrevPt->Latitude, PrevPt->Longitude, NULL, &InB);
+                // bearing to next
+                DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                                NextPt->Latitude, NextPt->Longitude, NULL, &OutB);
+                mA12 = BiSector(InB, OutB);
 
-            UpdateFixedSector();
+                UpdateFixedSector();
+            }
         }
     }
 
@@ -171,11 +173,13 @@ public:
         if (ValidTaskPoint(mIdx + 1)) {
             const WAYPOINT *CurrPt = TaskWayPoint(mIdx);
             const WAYPOINT *NextPt = TaskWayPoint(mIdx + 1);
-            // bearing to next
-            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
-                    NextPt->Latitude, NextPt->Longitude, NULL, &mA12);
+            if(CurrPt && NextPt) {
+                // bearing to next
+                DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                                NextPt->Latitude, NextPt->Longitude, NULL, &mA12);
 
-            UpdateFixedSector();
+                UpdateFixedSector();
+            }
         }
     }
 
@@ -193,11 +197,13 @@ public:
         if (ValidTaskPoint(mIdx - 1)) {
             const WAYPOINT *CurrPt = TaskWayPoint(mIdx);
             const WAYPOINT *PrevPt = TaskWayPoint(mIdx - 1);
-            // bearing to prev
-            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
-                    PrevPt->Latitude, PrevPt->Longitude, NULL, &mA12);
+            if(CurrPt && PrevPt) {
+                // bearing to prev
+                DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                                PrevPt->Latitude, PrevPt->Longitude, NULL, &mA12);
 
-            UpdateFixedSector();
+                UpdateFixedSector();
+            }
         }
     }
 
@@ -215,11 +221,13 @@ public:
         if (mIdx > 0) {
             const WAYPOINT *CurrPt = TaskWayPoint(mIdx);
             const WAYPOINT *StartPt = TaskWayPoint(0);
-            // bearing to prev
-            DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
-                    StartPt->Latitude, StartPt->Longitude, NULL, &mA12);
+            if(CurrPt && StartPt) {
+                // bearing to prev
+                DistanceBearing(CurrPt->Latitude, CurrPt->Longitude,
+                                StartPt->Latitude, StartPt->Longitude, NULL, &mA12);
 
-            UpdateFixedSector();
+                UpdateFixedSector();
+            }
         }
     }
 };
@@ -415,7 +423,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
                             TCHAR *sz = NULL;
                             CupObsZoneUpdater TmpZone;
                             TmpZone.mIdx = _tcstol(pToken + 8, &sz, 10);
-                            if (TmpZone.mIdx < MAXSTARTPOINTS) {
+                            if (TmpZone.mIdx < MAXTASKPOINTS) {
                                 while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
                                     if (_tcsstr(pToken, _T("Style=")) == pToken) {
                                         // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point

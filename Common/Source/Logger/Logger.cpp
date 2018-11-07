@@ -714,7 +714,14 @@ void LoggerHeader(void)
     sprintf(temp,"HFFTYFRTYPE:%sC LINUX\r\n", LKFORK);
 	#endif
   #endif
-// Kobo AFTER __linux__
+// Kobo & android AFTER __linux__
+  #ifdef ANDROID
+    #ifndef LKCOMPETITION
+      sprintf(temp,"HFFTYFRTYPE:%s ANDROID\r\n", LKFORK);
+    #else
+      sprintf(temp,"HFFTYFRTYPE:%sC ANDROID\r\n", LKFORK);
+    #endif
+  #endif
   #ifdef KOBO
 	#ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s KOBO\r\n", LKFORK);

@@ -588,10 +588,10 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress[0], array_size(szIpAddress[0]));
   PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress[1], array_size(szIpAddress[1]));
-  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress[2], array_size(szIpAddress[2]));
-  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress[3], array_size(szIpAddress[3]));
-  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress[4], array_size(szIpAddress[4]));
-  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress[5], array_size(szIpAddress[5]));
+  PREAD(sname,svalue,szRegistryIpAddress3,szIpAddress[2], array_size(szIpAddress[2]));
+  PREAD(sname,svalue,szRegistryIpAddress4,szIpAddress[3], array_size(szIpAddress[3]));
+  PREAD(sname,svalue,szRegistryIpAddress5,szIpAddress[4], array_size(szIpAddress[4]));
+  PREAD(sname,svalue,szRegistryIpAddress6,szIpAddress[5], array_size(szIpAddress[5]));
 
   PREAD(sname,svalue,szRegistryIpPort1,&dwIpPort[0]);
   PREAD(sname,svalue,szRegistryIpPort2,&dwIpPort[1]);

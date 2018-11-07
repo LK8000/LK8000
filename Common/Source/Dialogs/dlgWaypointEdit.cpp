@@ -456,6 +456,8 @@ static void GetValues(WndForm* wf) {
 		wp = (WndProperty*)wf->FindByName(TEXT("prpLongitudeDDDD"));
 		if (wp) {
 		  mm = wp->GetDataField()->GetAsInteger();
+		  while((mm) >= 10000)
+		    mm /=10;
 		}
 		num = dd+mm/10000;
 		break;
@@ -505,6 +507,8 @@ static void GetValues(WndForm* wf) {
 		wp = (WndProperty*)wf->FindByName(TEXT("prpLatitudeDDDD"));
 		if (wp) {
 		  mm = wp->GetDataField()->GetAsInteger();
+		  while((mm) >= 10000)
+		    mm /=10;
 		}
 		num = dd+mm/10000;
 		break;
