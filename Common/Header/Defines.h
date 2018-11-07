@@ -416,6 +416,12 @@
 #define BM_FIRST	0
 #define BM_LAST		9
 
+// BottomBar Switching mode
+#define BBSM_MANUAL           0
+#define BBSM_AUTO_THERMALLING 1
+#define BBSM_FULL_AUTO        2
+
+
 // Global MapSpaceModes : order is not important and you can also have unused modes
 //
 #define MSM_WELCOME		0

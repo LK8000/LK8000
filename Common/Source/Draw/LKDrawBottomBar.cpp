@@ -181,7 +181,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 
   bool showunit=false;
 
-  if (ConfBB0Auto == 1) {
+  if (ConfBB0Auto == BBSM_AUTO_THERMALLING) {
     if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
         && lastMode != MapWindow::Mode::MODE_CIRCLING) {
       OldBottomMode = BottomMode;
@@ -192,7 +192,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       BottomMode = OldBottomMode;
     }
     lastMode = MapWindow::mode.Fly();
-  } else if (ConfBB0Auto == 2) {
+  } else if (ConfBB0Auto == BBSM_FULL_AUTO) {
     if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
         && lastMode != MapWindow::Mode::MODE_CIRCLING) {
       BottomMode = BM_TRM;
