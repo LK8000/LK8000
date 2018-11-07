@@ -419,7 +419,11 @@ _@M2322_ "Enable Radar"
 
 _@M2336_
 ICAO Code 
-   
+
+_@M2252_ "MANUAL"
+_@M2253_ "AUTO THERMALLING"
+_@M2254_ "FULL AUTO"
+
 HELP FILE
 
 +@933
@@ -449,6 +453,8 @@ Tracking Mode (see help)
 
 @123
 [ICAO Code] The ICAO airfield letter code (e.g. ‎EGLL for London Heathrow) (see help)
+
+@1263 BottomBar Switching mode
 
 @186
 OFF don't display any value (see help)

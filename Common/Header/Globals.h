@@ -630,7 +630,7 @@ GEXTERN bool ConfBB6;
 GEXTERN bool ConfBB7;
 GEXTERN bool ConfBB8;
 GEXTERN bool ConfBB9;
-GEXTERN bool ConfBB0Auto;
+GEXTERN short ConfBB0Auto;
 GEXTERN bool ConfMP[10];
 GEXTERN bool ConfIP[10][10];
 GEXTERN bool ConfIP11;
