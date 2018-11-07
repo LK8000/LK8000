@@ -135,7 +135,7 @@ namespace lk {
                 strPath.erase(found + 1);
 
                 dirp = opendir(strPath.c_str());
-                result = &entry;
+                entry = nullptr;
                 if (dirp) {
                     ++(*this); // advance to first
                 }
@@ -149,24 +149,26 @@ namespace lk {
 
             virtual void operator++() {
                 do {
-                    if (readdir_r(dirp, &entry, &result) || !result) {
+                    entry = readdir(dirp);
+                    if (!entry) {
                         // no Next close directory
                         closedir(dirp);
-                        dirp = NULL;
+                        dirp = nullptr;
+                        entry = nullptr;
                     }
-                } while ((*this) && (isDots(getName()) || ((fnmatch(_sPattern.c_str(), entry.d_name, FNM_CASEFOLD)) != 0)));
+                } while ((*this) && (isDots(getName()) || ((fnmatch(_sPattern.c_str(), getName(), FNM_CASEFOLD)) != 0)));
             }
 
             virtual operator bool() {
-                return (NULL != dirp);
+                return (dirp);
             }
 
             virtual bool isDirectory() const {
 #if defined(_DIRENT_HAVE_D_TYPE) && defined(DTTOIF)
-                return S_ISDIR(DTTOIF(entry.d_type));
+                return (entry && S_ISDIR(DTTOIF(entry->d_type)));
 #else
                 struct stat st;
-                if (fstatat(dirfd(dirp), entry.d_name, &st, 0) == 0) {
+                if (fstatat(dirfd(dirp), getName(), &st, 0) == 0) {
                     return S_ISDIR(st.st_mode);
                 }
                 return false;
@@ -174,12 +176,12 @@ namespace lk {
             }
 
             virtual const TCHAR * getName() const {
-                return entry.d_name;
+                return entry ? entry->d_name : "";
             }
 
         private:
             DIR *dirp;
-            struct dirent *result, entry;
+            struct dirent *entry;
             std::string _sPattern;
         };
     };
