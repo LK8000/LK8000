@@ -326,27 +326,44 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 	     case DISPLAYFIRST8:
 	     case DISPLAYFIRST10:
 	     case DISPLAYFIRST12:
-
+	     case DISPLAYICAO:
 		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
 		if ( (islandable && !isairport) && MapWindow::zoom.RealScale() >=10 ) dowrite=0; // FIX then no need to go further
 
 		// 101215
-		if (DisplayTextType == DISPLAYNAME) {
-			_tcscpy(Buffer2,WayPointList[i].Name);
+		if (DisplayTextType == DISPLAYICAO) {
+			_tcscpy(Buffer2,WayPointList[i].Code);
 		} else {
+		  if (DisplayTextType == DISPLAYNAME) {
+			 _tcscpy(Buffer2,WayPointList[i].Name);
+		  } else {
 			CopyTruncateString(Buffer2, array_size(Buffer2), WayPointList[i].Name, resizer[DisplayTextType]);
+		  }
 		}
 
+
+
+
+
 		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
-			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-				_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
-			else
-				_stprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
-		  } else
-			_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)WayPointCalc[i].GR);
+		  switch ( ArrivalValue )
+		  {
+		    case avNone :
+		      _tcscpy(Buffer,Buffer2);
+		    break;
 
+		    case avGR :
+			  _stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)WayPointCalc[i].GR);
+			break;
 
+		    case avAltitude :
+			  if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
+			  	_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+			  else
+			  	_stprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+	        break;
+
+		  }
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
@@ -441,18 +458,26 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 	      case DISPLAYNONE:
 		dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable;
 		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
-			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-			  _stprintf(Buffer, TEXT("%d"),
+		  switch(ArrivalValue)
+          {
+		    case  avAltitude:		    
+			  if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
+			    _stprintf(Buffer, TEXT("%d"),
 				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
-			else
-			  _stprintf(Buffer, TEXT("%d%s"),
+			  else
+			    _stprintf(Buffer, TEXT("%d%s"),
 				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
 				   sAltUnit);
-		  } else
+		    break;
+
+		    case avGR:
 			  _stprintf(Buffer, TEXT("%d"),
 				   (int)(WayPointCalc[i].GR) );
+		    break;
 
+		    default: Buffer[0] = '\0';
+		    break;
+          }
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;

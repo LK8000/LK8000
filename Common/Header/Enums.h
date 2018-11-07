@@ -191,6 +191,7 @@ typedef enum{
 typedef enum{
 	avAltitude=0,
 	avGR,
+	avNone,
 	// avDistance,
 } ArrivalValue_t;
 
