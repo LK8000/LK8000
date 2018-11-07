@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2015 The XCSoar Project
+  Copyright (C) 2000-2016 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -317,30 +317,7 @@ OpenGL::SetupContext()
 #endif
 }
 
-void
-OpenGL::SetupViewport(Point2D<unsigned> size)
-{
-  window_size = size;
-  viewport_size = size;
-
-  glViewport(0, 0, size.x, size.y);
-
-#ifdef USE_GLSL
-  projection_matrix = glm::ortho<float>(0, size.x, size.y, 0, -1, 1);
-  UpdateShaderProjectionMatrix();
-#else
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-#ifdef HAVE_GLES
-  glOrthox(0, size.x << 16, size.y << 16, 0, -(1<<16), 1<<16);
-#else
-  glOrtho(0, size.x, size.y, 0, -1, 1);
-#endif
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-#endif
-}
+#ifdef SOFTWARE_ROTATE_DISPLAY
 
 /**
  * Determine the projection rotation angle (in degrees) of the
@@ -373,40 +350,37 @@ OrientationToRotation(DisplayOrientation_t orientation)
  * Swap x and y if the given orientation specifies it.
  */
 static void
-OrientationSwap(Point2D<unsigned> &p, DisplayOrientation_t orientation)
+OrientationSwap(UnsignedPoint2D &p, DisplayOrientation_t orientation)
 {
-  switch (orientation) {
-  case DisplayOrientation_t::DEFAULT:
-  case DisplayOrientation_t::LANDSCAPE:
-  case DisplayOrientation_t::REVERSE_LANDSCAPE:
-    break;
-
-  case DisplayOrientation_t::PORTRAIT:
-  case DisplayOrientation_t::REVERSE_PORTRAIT:
+  if (AreAxesSwapped(orientation))
     std::swap(p.x, p.y);
-    break;
-  }
 }
 
-void
-OpenGL::SetupViewport(Point2D<unsigned> &size, DisplayOrientation_t orientation)
+#endif /* SOFTWARE_ROTATE_DISPLAY */
+
+UnsignedPoint2D
+OpenGL::SetupViewport(UnsignedPoint2D size)
 {
   window_size = size;
 
   glViewport(0, 0, size.x, size.y);
 
 #ifdef USE_GLSL
+#ifdef SOFTWARE_ROTATE_DISPLAY
   projection_matrix = glm::rotate(glm::mat4(),
-                                  OrientationToRotation(orientation),
+                                  OrientationToRotation(display_orientation),
                                   glm::vec3(0, 0, 1));
-  OrientationSwap(size, orientation);
+  OrientationSwap(size, display_orientation);
+#endif
   projection_matrix = glm::ortho<float>(0, size.x, size.y, 0, -1, 1);
   UpdateShaderProjectionMatrix();
 #else
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glRotatef(OrientationToRotation(orientation), 0, 0, 1);
-  OrientationSwap(size, orientation);
+#ifdef SOFTWARE_ROTATE_DISPLAY
+  glRotatef(OrientationToRotation(display_orientation), 0, 0, 1);
+  OrientationSwap(size, display_orientation);
+#endif
 #ifdef HAVE_GLES
   glOrthox(0, size.x << 16, size.y << 16, 0, -(1<<16), 1<<16);
 #else
@@ -419,9 +393,7 @@ OpenGL::SetupViewport(Point2D<unsigned> &size, DisplayOrientation_t orientation)
 
   viewport_size = size;
 
-#ifdef SOFTWARE_ROTATE_DISPLAY
-  OpenGL::display_orientation = orientation;
-#endif
+  return size;
 }
 
 void

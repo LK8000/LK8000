@@ -34,17 +34,17 @@ protected:
     bool _EnableMenu;
     bool _LButtonDown;
 
-    virtual bool OnLButtonDblClick(const POINT& Pos) {
+    bool OnLButtonDblClick(const POINT& Pos) override {
         _LButtonDown = true;
         return true;
     }
 
-    virtual bool OnLButtonDown(const POINT& Pos) {
+    bool OnLButtonDown(const POINT& Pos) override {
         _LButtonDown = true;
         return true;
     }
     
-    virtual bool OnLButtonUp(const POINT& Pos) {
+    bool OnLButtonUp(const POINT& Pos) override {
         if(_EnableMenu && _LButtonDown) {
             InputEvents::processButton(_MenuId);
         }
@@ -115,7 +115,7 @@ const struct {
 };
 static_assert(NUMBUTTONLABELS == array_size(PortraitLayout), "Check array size");
 
-
+static
 PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
     PixelRect rc = rcScreen;
     rc.Grow(-1); // remove Margin
@@ -139,8 +139,8 @@ PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
     const double y_interval = (rc.GetSize().cy - size.cy * nbRow) / (nbRow-1);
 
     const RasterPoint origin = {
-        rc.left + (PixelScalar)(col * (size.cx + x_interval)),
-        rc.top + (PixelScalar)(row * (size.cy + y_interval))
+        rc.left + static_cast<PixelScalar>(col * (size.cx + x_interval)),
+        rc.top + static_cast<PixelScalar>(row * (size.cy + y_interval))
     };
 
     return PixelRect(origin, size);
@@ -203,7 +203,7 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
             currentButton.SetVisible(false);
             currentButton.Enable(false);
         } else {
-            currentButton.SetWndText(gettext(s));
+            currentButton.SetWndText(LKGetText(s));
             currentButton.SetTopWnd();
             currentButton.SetVisible(true);
             currentButton.Enable(true);

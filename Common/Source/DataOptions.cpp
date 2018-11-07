@@ -20,8 +20,8 @@ bool SetDataOption( int index, UnitGroup_t UnitGroup, const TCHAR *Description, 
 
     Data_Options[index] = {
         UnitGroup,
-        gettext(Description),
-        gettext(Title)
+        LKGetText(Description),
+        LKGetText(Title)
     };
 	if (NumDataOptions<=index) NumDataOptions=index+1; //No. of items = max index+1
 

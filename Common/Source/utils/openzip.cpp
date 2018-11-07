@@ -12,23 +12,28 @@
 #include <zzip/lib.h>
 #include <tchar.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 static zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
 
-ZZIP_FILE * openzip(const TCHAR* szFile, const char *mode) {
-#ifdef WIN32
-    return zzip_fopen(szFile, mode);
-#else
+ZZIP_FILE * openzip(const char* szFile, const char *mode) {
     int o_flags = 0;
     int o_modes = 0664;
     if (!mode) mode = "rb";
 
+#ifndef O_NOCTTY
+#define O_NOCTTY 0
+#endif
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
+#ifndef O_SYNC
+#define O_SYNC 0
+#endif
+#ifndef O_NONBLOCK
+#define O_NONBLOCK 0
+#endif
+    
     for (; *mode; mode++) {
         switch (*mode) {
             case '0': case '1': case '2': case '3': case '4':
@@ -69,9 +74,6 @@ ZZIP_FILE * openzip(const TCHAR* szFile, const char *mode) {
         }
     }
     return zzip_open_ext_io(szFile, o_flags, o_modes, ext, 0);
-#endif
 }
 
-#ifdef __cplusplus
 }
-#endif

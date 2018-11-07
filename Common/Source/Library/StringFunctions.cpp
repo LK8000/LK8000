@@ -553,7 +553,7 @@ TCHAR* StringMallocParse(const TCHAR* old_string) {
   *pstart = _T('\0');
 
   const TCHAR *tokentext;
-  tokentext = gettext(lktoken);
+  tokentext = LKGetText(lktoken);
   size_t new_len;
   new_len = _tcslen(buffer) + _tcslen(tokentext) + _tcslen(pnext);
   new_string = (TCHAR *)malloc((new_len+1)*sizeof(TCHAR));

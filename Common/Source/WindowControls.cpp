@@ -128,6 +128,16 @@ void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* fil
 
 }
 
+void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
+  
+  TCHAR buffer[MAX_PATH] = TEXT("\0");
+  SystemPath(buffer, subdir);
+  ScanDirectories(buffer,_T(""), filter);
+  Sort();
+
+}
+
+
 #ifdef ANDROID
 void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* filter) { // 091101
 
@@ -203,8 +213,9 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdi
               _tcscat(FileName, TEXT(DIRSEP));
             }
             _tcscat(FileName, It.getName());
-
-            addFile(It.getName(), FileName);
+            if(GetLabelIndex(FileName) <= 0) { // do not add same file twice...
+              addFile(It.getName(), FileName);
+            }
         }
     }
 
@@ -1796,7 +1807,7 @@ int WndForm::ShowModal(void) {
 
     mModalResult = 0;
 
-    Window* oldFocus = Window::GetFocusedWindow();
+    Window* oldFocus = MainWindow.GetFocusedWindow();
     FocusNext(NULL);
 
     Redraw();
@@ -1988,7 +1999,7 @@ bool WndForm::OnKeyDownNotify(Window* pWnd, unsigned KeyCode) {
     if (ActiveControl) {
         WindowControl * pCtrl = ActiveControl->GetParent();
         if (pCtrl) {
-            switch (KeyCode & 0xffff) {
+            switch (KeyCode) {
                 case KEY_UP:
                     pCtrl->FocusPrev(ActiveControl);
                     return true;
@@ -2360,7 +2371,7 @@ bool WndProperty::OnKeyDown(unsigned KeyCode) {
                     return true;
                 }
             } else {
-                if (KeyTimer(true, KeyCode & 0xffff) && OnHelp()) {
+                if (KeyTimer(true, KeyCode) && OnHelp()) {
                     return true;
                 }
             }
@@ -2477,19 +2488,24 @@ void WndProperty::Paint(LKSurface& Surface){
 
   if (!IsVisible()) return;
 
-  WindowControl::Paint(Surface);
+  PixelRect rc(GetClientRect());
+  rc.right += 2;
+  rc.bottom += 2;
 
-  // r.left = 0;
-  // r.top = 0;
-  // r.right = GetWidth();
-  // r.bottom = GetHeight();
+  Surface.FillRect(&rc, GetBackBrush());
+  
 
-  Surface.SetTextColor(GetForeColor());
-  // JMW make it look
-  if (!HasFocus()) {
-    Surface.SetBkColor(GetBackColor());
+
+  if(HasFocus() && mCanFocus) {
+    auto oldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
+    auto oldPen = Surface.SelectObject(LKPen_Higlighted);
+    Surface.Rectangle(rc.left, rc.top, rc.right-3, rc.bottom-3);
+    Surface.SelectObject(oldPen);
+    Surface.SelectObject(oldBrush);
   }
 
+  Surface.SetTextColor(GetForeColor());
+  Surface.SetBkColor(GetBackColor());
   Surface.SetBackgroundTransparent();
   const auto oldFont = Surface.SelectObject(GetFont());
 

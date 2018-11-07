@@ -25,6 +25,8 @@
 #include "NavFunctions.h"
 #include "Util/TruncateString.hpp"
 
+#include "Topology/shapelib/mapserver.h"
+
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
 #if TESTBENCH

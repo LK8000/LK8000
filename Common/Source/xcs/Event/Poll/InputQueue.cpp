@@ -76,33 +76,6 @@ InputEventQueue::ResetTouchScreen() {
 
 #endif
 
-#ifndef USE_LIBINPUT
-
-void
-InputEventQueue::SetMouseRotation(DisplayOrientation_t orientation)
-{
-  switch (orientation) {
-  case DisplayOrientation_t::DEFAULT:
-  case DisplayOrientation_t::PORTRAIT:
-    SetMouseRotation(true, true, false);
-    break;
-
-  case DisplayOrientation_t::LANDSCAPE:
-    SetMouseRotation(false, false, false);
-    break;
-
-  case DisplayOrientation_t::REVERSE_PORTRAIT:
-    SetMouseRotation(true, false, true);
-    break;
-
-  case DisplayOrientation_t::REVERSE_LANDSCAPE:
-    SetMouseRotation(false, true, true);
-    break;
-  }
-}
-
-#endif
-
 bool
 InputEventQueue::Generate(Event &event)
 {

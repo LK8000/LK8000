@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2015 The XCSoar Project
+  Copyright (C) 2000-2016 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -25,6 +25,8 @@ Copyright_License {
 #define XCSOAR_EVENT_ROTATE_POINTER_HPP
 
 #include "Screen/Point.hpp"
+#include "DisplayOrientation.hpp"
+#include "Compiler.h"
 
 #include <algorithm>
 
@@ -75,12 +77,37 @@ public:
     invert_y = _invert_y;
   }
 
-  void DoRelative(int &x, int &y) {
+  void SetDisplayOrientation(DisplayOrientation_t orientation) {
+    SetSwap(AreAxesSwapped(orientation));
+
+    switch (TranslateDefaultDisplayOrientation(orientation)) {
+    case DisplayOrientation_t::DEFAULT:
+    case DisplayOrientation_t::PORTRAIT:
+      SetInvert(true, false);
+      break;
+
+    case DisplayOrientation_t::LANDSCAPE:
+      SetInvert(false, false);
+      break;
+
+    case DisplayOrientation_t::REVERSE_PORTRAIT:
+      SetInvert(false, true);
+      break;
+
+    case DisplayOrientation_t::REVERSE_LANDSCAPE:
+      SetInvert(true, true);
+      break;
+    }
+  }
+
+  gcc_pure
+  void DoRelative(int &x, int &y) const {
     if (swap)
       std::swap(x, y);
   }
 
-  void DoAbsolute(int &x, int &y) {
+  gcc_pure
+  void DoAbsolute(int &x, int &y) const {
     DoRelative(x, y);
 
     if (invert_x)
@@ -90,7 +117,8 @@ public:
       y = height - y;
   }
 
-  void Do(RasterPoint &p) {
+  gcc_pure
+  void Do(RasterPoint &p) const {
     if (swap)
       std::swap(p.x, p.y);
 

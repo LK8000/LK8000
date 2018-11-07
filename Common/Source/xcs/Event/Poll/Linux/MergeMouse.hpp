@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2015 The XCSoar Project
+  Copyright (C) 2000-2016 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ Copyright_License {
 #define XCSOAR_EVENT_MERGE_MOUSE_HPP
 
 #include "../../Shared/RotatePointer.hpp"
-
+#include "DisplayOrientation.hpp"
 #include <assert.h>
 
 class IOLoop;
@@ -69,12 +69,8 @@ public:
 
   void SetScreenSize(unsigned width, unsigned height);
 
-  void SetSwap(bool _swap) {
-    rotate.SetSwap(_swap);
-  }
-
-  void SetInvert(bool _invert_x, bool _invert_y) {
-    rotate.SetInvert(_invert_x, _invert_y);
+  void SetDisplayOrientation(DisplayOrientation_t orientation) {
+    rotate.SetDisplayOrientation(orientation);
   }
 
   void AddPointer() {

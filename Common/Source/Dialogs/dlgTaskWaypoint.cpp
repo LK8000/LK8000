@@ -123,7 +123,7 @@ static void SetValues(bool first=false) {
       dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
       dfe->addEnumText(MsgToken(274));
-      dfe->addEnumText(gettext(TEXT("DAe 0.5/10")));
+      dfe->addEnumText(LKGetText(TEXT("DAe 0.5/10")));
       	// LKTOKEN  _@M393_ = "Line" 
       dfe->addEnumText(MsgToken(393));
     }

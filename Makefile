@@ -187,7 +187,7 @@ else ifeq ($(TARGET_IS_CUBIE),y)
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 else ifeq ($(CONFIG_LINUX),y)
  TCPATH :=
- MCPU   := -mtune=native -march=native
+ MCPU   :=
 else
  TCPATH	:=arm-mingw32ce-
 endif
@@ -343,6 +343,7 @@ ifeq ($(TARGET_IS_PI),y)
  USE_X11 :=n
  ENABLE_MESA_KMS :=n
  USE_CONSOLE :=y
+ FULLSCREEN:=y
 
  CE_DEFS += -DUSE_VIDEOCORE
  CE_DEFS += -isystem $(PI)/opt/vc/include -isystem $(PI)/opt/vc/include/interface/vcos/pthreads
@@ -362,9 +363,13 @@ ifeq ($(TARGET_HAS_MALI),y)
  OPENGL	 :=y
  GLES    :=y
  USE_X11 :=n
- USE_CONSOLE :=y	
-	
+ USE_CONSOLE :=y
+ FULLSCREEN:=y
  CE_DEFS += -DHAVE_MALI
+endif
+
+ifeq ($(TARGET),OPENVARIO)
+ CE_DEFS += -DOPENVARIO
 endif
 
 ifeq ($(TARGET_IS_CUBIE),y)
@@ -379,8 +384,8 @@ ifeq ($(CONFIG_LINUX),y)
  CE_DEFS += -DHAVE_POSIX
  CE_DEFS += -D__STDC_FORMAT_MACROS
 
- GREYSCALE ?= n
- USE_SOUND_EXTDEV ?= n
+ GREYSCALE ?=n
+ USE_SOUND_EXTDEV ?=n
 
 # by default use OpenGL if available
  OPENGL  ?=$(shell $(PKG_CONFIG) --exists gl && echo y)
@@ -461,24 +466,8 @@ ifeq ($(CONFIG_LINUX),y)
  ifeq ($(USE_SDL),y)
   CE_DEFS += -DENABLE_SDL
     
-  # check if libSDL2 exist
-  USE_SDL2 ?= $(shell $(PKG_CONFIG) --exists sdl2 && echo y)
-  ifeq ($(USE_SDL2),y)
-   # if libSDL2 exist check for libSDL2_mixer
-   USE_SDL2 = $(shell $(PKG_CONFIG) --exists SDL2_mixer && echo y)
-  endif
-
-  ifeq ($(USE_SDL2),y)
-   # use libSDL2 & libSDL2_mixer if exist
-
-   $(eval $(call pkg-config-library,SDL,sdl2))
-   $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
-  else
-   # otherwise use libSDL1.2 & libSDL1.2_mixer
-
-   $(eval $(call pkg-config-library,SDL,sdl))
-   $(eval $(call pkg-config-library,SDL_MIXER,SDL_mixer))
-  endif
+  $(eval $(call pkg-config-library,SDL,sdl2))
+  $(eval $(call pkg-config-library,SDL_MIXER,SDL2_mixer))
 
   CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_CPPFLAGS))
   CE_DEFS += $(patsubst -I%,-isystem %,$(SDL_MIXER_CPPFLAGS))
@@ -598,7 +587,7 @@ endif
 ifeq ($(CONFIG_LINUX),y)
  INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
- INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR)/libzzip -I$(HDR) -I$(SRC)
+ INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR)/mingw32compat/zlib -I$(HDR)/libzzip -I$(HDR) -I$(SRC)
  ifneq ($(CONFIG_PC),y)
   INCLUDES	+= -I$(HDR)/mingw32compat/WinCE
  endif
@@ -844,6 +833,12 @@ ifeq ($(CONFIG_WIN32),y)
 SCREEN += \
 	$(SRC_SCREEN)/GDI/AlphaBlend.cpp \
 	
+endif
+
+ifeq ($(TARGET_HAS_MALI),y)
+SCREEN += \
+	$(SRC_SCREEN)/Sunxi/mali.cpp \
+
 endif
 	
 LIBRARY	:=\
@@ -1193,7 +1188,7 @@ DEVS	:=\
 	$(DEV)/devGPSBip.cpp \
 	$(DEV)/devAR620x.cpp \
 	$(DEV)/devATR833.cpp \
-
+	$(DEV)/devOpenVario.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
@@ -1331,12 +1326,13 @@ SRC_FILES :=\
 	$(SRC)/Logger/ReplayLogger.cpp \
 	$(SRC)/Logger/StartStopLogger.cpp \
 	$(SHP)/mapbits.cpp \
-	$(SHP)/maperror.cpp 	\
 	$(SHP)/mapprimitive.cpp \
 	$(SHP)/mapsearch.cpp\
 	$(SHP)/mapshape.cpp \
 	$(SHP)/maptree.cpp\
 	$(SHP)/mapxbase.cpp \
+	$(SHP)/mapalloc.cpp \
+	$(SHP)/mapstring.cpp \
 	$(SRC)/Message.cpp \
 	$(SRC)/MessageLog.cpp	\
 	$(SRC)/Models.cpp\
@@ -1383,16 +1379,22 @@ RSCSRC  := $(SRC)/Resource
 
 ZZIPSRC	:=$(LIB)/zzip
 ZZIP	:=\
-	$(ZZIPSRC)/adler32.c	 	\
-	$(ZZIPSRC)/crc32.c 		\
-	$(ZZIPSRC)/err.c 		$(ZZIPSRC)/fetch.c \
-	$(ZZIPSRC)/file.c 		\
-	$(ZZIPSRC)/infback.c 		$(ZZIPSRC)/inffast.c \
-	$(ZZIPSRC)/inflate.c 		$(ZZIPSRC)/info.c \
-	$(ZZIPSRC)/inftrees.c 		$(ZZIPSRC)/plugin.c \
-	$(ZZIPSRC)/uncompr.c \
-	$(ZZIPSRC)/zip.c 		$(ZZIPSRC)/zstat.c \
-	$(ZZIPSRC)/zutil.c
+	$(ZZIPSRC)/err.c \
+	$(ZZIPSRC)/fetch.c \
+	$(ZZIPSRC)/file.c \
+	$(ZZIPSRC)/info.c \
+	$(ZZIPSRC)/plugin.c \
+	$(ZZIPSRC)/zip.c \
+	$(LIB)/zlib/adler32.c \
+	$(LIB)/zlib/crc32.c \
+	$(LIB)/zlib/infback.c \
+	$(LIB)/zlib/inffast.c \
+	$(LIB)/zlib/inflate.c \
+	$(LIB)/zlib/inftrees.c \
+	$(LIB)/zlib/zstat.c \
+	$(LIB)/zlib/zutil.c \
+	$(LIB)/zlib/uncompr.c \
+
 
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\

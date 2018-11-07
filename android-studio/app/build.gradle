@@ -18,7 +18,7 @@ repositories {
 
 android {
     compileSdkVersion 25 // can't be greater than 25, otherwise minSdkVersion must be >=14
-    buildToolsVersion "27.0.1"
+    buildToolsVersion "27.0.2"
     defaultConfig {
         applicationId "org.lk8000"
         minSdkVersion 9
@@ -221,7 +221,7 @@ dependencies {
     implementation 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'
-    implementation 'com.github.felHR85:UsbSerial:4.5'
+    implementation 'com.github.felHR85:UsbSerial:4.5.1'
 }
 
 crashlytics {

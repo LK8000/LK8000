@@ -883,13 +883,8 @@ extern void SimFastForward(void);
 static bool GetShiftKeyState() {
 
 #ifdef ENABLE_SDL
-#if SDL_MAJOR_VERSION >= 2
     const Uint8 *keystate = ::SDL_GetKeyboardState(NULL);
     return keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT];
-#else
-    const Uint8 *keystate = ::SDL_GetKeyState(NULL);
-    return (keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT]);
-#endif
 #elif defined(WIN32)
     short nVirtKey = GetKeyState(VK_SHIFT);
     return (nVirtKey & 0x8000);

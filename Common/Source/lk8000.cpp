@@ -64,7 +64,7 @@
 #include "devBlueFlyVario.h"
 #include "devLXV7easy.h"
 #include "ComCheck.h"
-
+#include "devOpenVario.h"
 
 #include "TraceThread.h"
 #include "Poco/NamedEvent.h"
@@ -276,13 +276,11 @@ bool Startup(const TCHAR* szCmdLine) {
   }
 #endif
 
-  #if TESTBENCH
   TCHAR szPath[MAX_PATH] = {0};
   lk::filesystem::getExePath(szPath, MAX_PATH);
   StartupStore(_T(". Program execution path :   <%s>"), szPath);
   StartupStore(_T(". Program system directory : <%s>"), LKGetSystemPath());
   StartupStore(_T(". Program data directory :   <%s>"), LKGetLocalPath());
-  #endif
 
   InstallSystem();
 
@@ -506,7 +504,7 @@ bool Startup(const TCHAR* szCmdLine) {
   ATR833Register();
 #endif  // RADIO_ACTIVE
   DevVaulter::Register();
-
+  DevOpenVario::Register();
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<

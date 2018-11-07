@@ -1,73 +1,120 @@
-/*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
-   See CREDITS.TXT file for authors and copyrights
+/******************************************************************************
+ * $Id$
+ *
+ * Project:  MapServer
+ * Purpose:  Implementation of bit array functions.
+ * Author:   Steve Lime and the MapServer team.
+ *
+ * Notes: Derived from code placed in the public domain by Bob Stout, for more
+ * information see http://c.snippets.org/snip_lister.php?fname=bitarray.c.
+ *
+ ******************************************************************************
+ * Copyright (c) 1996-2005 Regents of the University of Minnesota.
 
-   $Id$
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies of this Software or works derived from this Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ ****************************************************************************/
 
-   This part of the code is taken from ShapeLib 1.1.5
-   Copyright (c) 1999, Frank Warmerdam
+#include "mapserver.h"
 
-   This software is available under the following "MIT Style" license, or at the option
-   of the licensee under the LGPL (see LICENSE.LGPL).
-   This option is discussed in more detail in shapelib.html.
 
-   Permission is hereby granted, free of charge, to any person obtaining a copy of this software
-   and associated documentation files (the "Software"), to deal in the Software without restriction,
-   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
-   subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included in all copies
-   or substantial portions of the Software.
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-*/
-#include <stdlib.h>
 #include <limits.h>
-#include "options.h"
+#include <malloc.h>
+#include <string.h>
 
-#include "utils/heapcheck.h"
+/*
+ * Hardcoded size of our bit array.
+ * See function msGetNextBit for another hardcoded value.
+ */
 
-#if MAPSHAPEERROR
-/* originally found at http://www.snippets.org/ */
+/* #define msGetBit(array, index) (*((array) + (index)/MS_ARRAY_BIT) & ( 1 << ((index) % MS_ARRAY_BIT))) */
+
 size_t msGetBitArraySize(int numbits)
 {
-  return((numbits + CHAR_BIT - 1) / CHAR_BIT);
+  return((numbits + MS_ARRAY_BIT - 1) / MS_ARRAY_BIT);
 }
-#endif
 
-char *msAllocBitArray(int numbits)
+ms_bitarray msAllocBitArray(int numbits)
 {
-  char *array = (char*)calloc((numbits + CHAR_BIT - 1) / CHAR_BIT, sizeof(char));
+  ms_bitarray array = calloc((numbits + MS_ARRAY_BIT - 1) / MS_ARRAY_BIT, MS_ARRAY_BIT);
 
   return(array);
 }
 
-int msGetBit(char *array, int index)
+int msGetBit(ms_const_bitarray array, int index)
 {
-  array += index / CHAR_BIT;
-  return (*array & (1 << (index % CHAR_BIT))) != 0;    /* 0 or 1 */
+  array += index / MS_ARRAY_BIT;
+  return (*array & (1 << (index % MS_ARRAY_BIT))) != 0;    /* 0 or 1 */
 }
 
-void msSetBit(char *array, int index, int value)
+/*
+** msGetNextBit( status, start, size)
+**
+** Quickly find the next bit set. If start == 0 and 0 is set, will return 0.
+** If hits end of bitmap without finding set bit, will return -1.
+**
+*/
+int msGetNextBit(ms_const_bitarray array, int i, int size)
 {
-  array += index / CHAR_BIT;
+
+  register ms_uint32 b;
+
+  while(i < size) {
+    b = *(array + (i/MS_ARRAY_BIT));
+    if( b && (b >> (i % MS_ARRAY_BIT)) ) {
+      /* There is something in this byte */
+      /* And it is not to the right of us */
+      if( b & ( 1 << (i % MS_ARRAY_BIT)) ) {
+        /* There is something at this bit! */
+        return i;
+      } else {
+        i++;
+      }
+    } else {
+      /* Nothing in this byte, move to start of next byte */
+      i += MS_ARRAY_BIT - (i % MS_ARRAY_BIT);
+    }
+  }
+
+  /* Got to the last byte with no hits! */
+  return -1;
+}
+
+void msSetBit(ms_bitarray array, int index, int value)
+{
+  array += index / MS_ARRAY_BIT;
   if (value)
-    *array |= 1 << (index % CHAR_BIT);           /* set bit */
+    *array |= 1 << (index % MS_ARRAY_BIT);           /* set bit */
   else
-    *array &= ~(1 << (index % CHAR_BIT));        /* clear bit */
+    *array &= ~(1 << (index % MS_ARRAY_BIT));        /* clear bit */
 }
 
-#if MAPSHAPEERROR
-void msFlipBit(char *array, int index)
+void msSetAllBits(ms_bitarray array, int numbits, int value)
 {
-  array += index / CHAR_BIT;
-  *array ^= 1 << (index % CHAR_BIT);                   /* flip bit */
+  if (value)
+    memset(array, 0xff, ((numbits + 7) / 8) ); /* set bit */
+  else
+    memset(array, 0x0,  ((numbits + 7) / 8) ); /* clear bit */
 }
-#endif
+
+void msFlipBit(ms_bitarray array, int index)
+{
+  array += index / MS_ARRAY_BIT;
+  *array ^= 1 << (index % MS_ARRAY_BIT);                   /* flip bit */
+}

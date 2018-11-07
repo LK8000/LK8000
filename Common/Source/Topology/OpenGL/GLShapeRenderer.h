@@ -16,7 +16,6 @@
 #include <list>
 #include <array>
 #include <vector>
-#include "mapshape.h"
 #include "Screen/Point.hpp"
 #include "Screen/LKSurface.h"
 #include "../ShapeSpecialRenderer.h"

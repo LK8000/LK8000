@@ -5,7 +5,7 @@
 
 
 #define ZLIB_INTERNAL
-#include "zzip/zlib.h"
+#include "zlib.h"
 
 #include "utils/heapcheck.h"
 
