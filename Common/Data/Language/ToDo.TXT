@@ -419,7 +419,16 @@ _@M2322_ "Enable Radar"
 
 _@M2336_
 ICAO Code 
-   
+
+_@M811_ 
+changed "Waypoints" to "Data"  outside terrain
+
+_@M824_ 
+changed "Wpt" to "Data"  
+
+
+_@M2312  "airspaces excluded!"   
+
 HELP FILE
 
 +@933
@@ -452,3 +461,9 @@ Tracking Mode (see help)
 
 @186
 OFF don't display any value (see help)
+
+
+@236  
+Changed to:
+This option defines how waypoints and airspaces outside the terrain range are handled: 
+They can be always included or excluded. It is recomended to exclude it and define the flying area data just by the terrain.

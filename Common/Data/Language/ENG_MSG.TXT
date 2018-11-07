@@ -852,7 +852,8 @@ _@M807_ "Waypoints 2 "
 _@M808_ "Waypoints Text style "
 _@M809_ "Waypoints edited"
 _@M810_ "Waypoints excluded, save anyway?"
-_@M811_ "Waypoints outside terrain"
+ # 811 chaned after V7.0
+_@M811_ "Data outside terrain"
 _@M812_ "Weather Forecast"
 _@M813_ "Weather parameters"
 _@M814_ "Weight"
@@ -867,7 +868,8 @@ _@M821_ "Wing load "
 # 822 REMOVED after 3.0
 _@M822_ "Winpilot"
 _@M823_ "Working band"
-_@M824_ "Wpt outside terrain "
+# 824 chaned after V7.0
+_@M824_ "Data outside terrain "  
 _@M825_ "Yellow"
 _@M826_ "Yes All"
 _@M827_ "Yes"
@@ -2210,6 +2212,7 @@ _@M2309_  "RADIO"
 _@M2310_  "Vol"
 _@M2311_  "Sqw"
 
+_@M2312  "airspaces excluded!"
 # New infoboxes
 _@M2312_ "Speed of maximum efficiency"
 _@M2313_ "SpMe"
