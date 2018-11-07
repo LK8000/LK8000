@@ -23,6 +23,7 @@ Copyright_License {
 
 #include "Screen/SubCanvas.hpp"
 #include "Globals.hpp"
+#include <algorithm>
 
 #ifdef USE_GLSL
 #include "Shaders.hpp"

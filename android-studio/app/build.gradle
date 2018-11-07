@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        google()
         maven { url 'https://maven.fabric.io/public' }
     }
 
@@ -12,17 +13,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
     google()
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 android {
-    compileSdkVersion 25 // can't be greater than 25, otherwise minSdkVersion must be >=14
-    buildToolsVersion "27.0.2"
+    compileSdkVersion 26
     defaultConfig {
         applicationId "org.lk8000"
-        minSdkVersion 9
-        targetSdkVersion 19
+        minSdkVersion 14
+        targetSdkVersion 26
         versionCode 46
         versionName "7.1a"
         setProperty("archivesBaseName", "LK8000-$versionName")
@@ -33,7 +33,14 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_TOOLCHAIN=gcc", "-DANDROID_ARM_NEON=TRUE"
+                // Passes optional arguments to CMake.
+                arguments "-DANDROID_ARM_NEON=TRUE"
+
+                // Sets a flag to enable format macro constants for the C compiler.
+                cFlags "-D__STDC_FORMAT_MACROS"
+
+                // Sets optional flags for the C++ compiler.
+                cppFlags "-fexceptions", "-frtti", "-std=c++17"
             }
         }
         copy {
@@ -189,16 +196,10 @@ android {
                 abiFilter "arm64-v8a"
             }
         }
-        arm {
-            dimension "full"
-            ndk {
-                abiFilter "armeabi"
-            }
-        }
         fat {
             dimension "full"
             ndk {
-                abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+                abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
             }
         }
     }
@@ -217,7 +218,7 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics-ndk:2.0.5@aar') {
         transitive = true
     }
-    implementation 'com.android.support:support-compat:25.4.0'
+    implementation 'com.android.support:support-compat:26.1.0'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'

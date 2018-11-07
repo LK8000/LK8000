@@ -24,8 +24,10 @@ ExternalProject_Add (
     BINARY_DIR ${GEOGRAPHIC_PREFIX}/build/${ANDROID_ABI}
     INSTALL_DIR ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}
     CMAKE_ARGS
+        "-DANDROID_STL=${ANDROID_STL}"
         "-DANDROID_ABI=${ANDROID_ABI}"
         "-DANDROID_NDK=${ANDROID_NDK}"
+        "-DANDROID_ARM_NEON=${ANDROID_ARM_NEON}"
         "-DCMAKE_INSTALL_PREFIX=${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}"
         "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
         "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
@@ -62,7 +64,7 @@ ExternalProject_Add (
 ExternalProject_Get_Property(boost source_dir)
 set(BOOST_INCLUDE ${source_dir})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++11 -fexceptions -frtti -Wall -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -fopenmp")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wparentheses -Wuninitialized -Wredundant-decls")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_NO_IOSTREAM -DBOOST_NO_IOSFWD -DBOOST_NO_STRINGSTREAM -DBOOST_NO_WSTREAMBUF ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__linux__ -DHAVE_POSIX -DANDROID -D__STDC_FORMAT_MACROS ")

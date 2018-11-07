@@ -8,7 +8,7 @@
 #include "externs.h"
 #include "TTYPort.h"
 #include "utils/stl_utils.h"
-#include <tr1/functional>
+#include <functional>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -23,7 +23,7 @@
 #endif
 
 
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 
 TTYPort::TTYPort(int idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
         ComPort(idx, sName),
@@ -277,7 +277,7 @@ unsigned TTYPort::RxThread() {
 
         int nRecv = ReadData(szString);
         if (nRecv > 0) {
-            std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::tr1::bind(&TTYPort::ProcessChar, this, _1));
+            std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&TTYPort::ProcessChar, this, _1));
             dwWaitTime = 5; // avoid cpu overhead;
         } else {
             dwWaitTime = 50; // if no more data wait 50ms ( max data rate 20Hz )

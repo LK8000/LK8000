@@ -29,6 +29,7 @@ Copyright_License {
  */
 class LeScanCallback {
 public:
+  virtual ~LeScanCallback() = default;
   virtual void OnLeScan(const char *address, const char *name) = 0;
 };
 
