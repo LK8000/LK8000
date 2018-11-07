@@ -29,7 +29,10 @@
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
+
 #define LINE_LEN 1023
+
+unsigned int OutsideAirspaceCnt =0;
 
 #if TESTBENCH
 //#define DEBUG_NEAR_POINTS	1
@@ -1559,6 +1562,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     double Latitude = 0;
     double Longitude = 0;
     int Type = 0;
+    unsigned int skiped_cnt =0;
+    unsigned int accept_cnt =0;
     AIRSPACE_ALT Base;
     AIRSPACE_ALT Top;
     int Rotation = 1;
@@ -1626,16 +1631,21 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                     }
                                 }
                             }
-                            if(InsideMap) {
-                              if (newairspace) {
+                            if(newairspace) {
+                              if (InsideMap) {
                                 newairspace->Init(Name, Type, Base, Top, flyzone);
 
                                 { // Begin Lock
                                     ScopeLock guard(_csairspaces);
                                     _airspaces.push_back(newairspace);
+                                    accept_cnt++;
                                 } // End Lock
+                              } else {
+                            	  delete newairspace;
+                            	  newairspace = NULL;
+                                  skiped_cnt++;
                               }
-                            }
+                            };
 
                             Name[0] = '\0';
                             Radius = 0;
@@ -1887,6 +1897,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             }
         }
 
+      if(newairspace)
+      {
         if(InsideMap)
         {
           if(newairspace) {
@@ -1905,6 +1917,11 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
         airspaces_count = _airspaces.size();
     }  // End Lock
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
+    TCHAR msgbuf[128];
+   _sntprintf(msgbuf,128,TEXT("OpenAir: %u airspaces of %u excluded by Terrain Filter"), skiped_cnt, skiped_cnt+accept_cnt);
+ //   DoStatusMessage(msgbuf);
+    StartupStore(TEXT(". %s"),msgbuf);
+    OutsideAirspaceCnt += skiped_cnt;
     // For debugging, dump all readed airspaces to runtime.log
     //CAirspaceList::iterator it;
     //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
@@ -1969,7 +1986,8 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode &node, AIRSPACE_ALT *Alt) con
 // Reads airspaces from an OpenAIP file
 bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
     StartupStore(TEXT(". Reading OpenAIP airspace file%s"), NEWLINE);
-
+    unsigned int skiped_cnt=0;
+    unsigned int accept_cnt=0;
     // Allocate buffer to read the file
     zzip_seek(fp, 0, SEEK_END); // seek to end of file
     long size = zzip_tell(fp); // get current file pointer
@@ -2215,6 +2233,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
 #ifdef WORKBENCH
             StartupStore(TEXT(".. Skipping ASP because outside of loaded Terrain.%s"), NEWLINE);
 #endif
+               skiped_cnt++;
             continue;
         }
 
@@ -2245,6 +2264,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         { // Begin Lock
         ScopeLock guard(_csairspaces);
         _airspaces.push_back(newairspace);
+        accept_cnt++;
         } // End Lock
     } // for each ASP
 
@@ -2255,7 +2275,11 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
     } // End Lock
         
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
-
+    TCHAR msgbuf[128];
+   _sntprintf(msgbuf,128,TEXT("OpenAIP: %u of %u airspaces excluded by Terrain Filer"), skiped_cnt, skiped_cnt+ accept_cnt);
+ //   DoStatusMessage(msgbuf);
+    StartupStore(TEXT(".%s"),msgbuf);
+    OutsideAirspaceCnt += skiped_cnt;
     return true;
 }
 
@@ -2302,6 +2326,23 @@ void CAirspaceManager::ReadAirspaces() {
         } else {
             StartupStore(TEXT("... No airspace file %d%s"),fileCounter, NEWLINE);
         }
+    }
+
+    unsigned airspaces_count = 0;
+    { // Begin Lock
+        ScopeLock guard(_csairspaces);
+        airspaces_count = _airspaces.size();
+    } //
+    if((OutsideAirspaceCnt +airspaces_count) > 0)
+    {
+      TCHAR msgbuf[128];
+     _sntprintf(msgbuf,128,TEXT(" %u of %u (%u%%) %s"), OutsideAirspaceCnt,
+		                                         OutsideAirspaceCnt+airspaces_count,
+		                                         (100*OutsideAirspaceCnt)/(OutsideAirspaceCnt +airspaces_count),
+		                                         MsgToken(2312));  //_@M2312  "airspaces excluded!"
+      if(OutsideAirspaceCnt > 0)
+        DoStatusMessage(msgbuf);
+      StartupStore(TEXT(".%s"),msgbuf);
     }
 #if ASPWAVEOFF
     AirspaceDisableWaveSectors();
