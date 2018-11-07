@@ -401,7 +401,7 @@ namespace dlgBlueFlyConfig {
             // Set Value to all WndProperty
             CHardwareParameters& HardwareParameters = gHardwareParameters[pDevice];
             AssocFieldParam.clear();
-            std::for_each(HardwareParameters.begin(), HardwareParameters.end(), std::ptr_fun(FillProperty));
+            std::for_each(HardwareParameters.begin(), HardwareParameters.end(), std::ref(FillProperty));
 
             Init = false;
             if (wfDlg->ShowModal()) {

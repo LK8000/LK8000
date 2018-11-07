@@ -32,13 +32,15 @@
 #ifndef MAKE_UNIQUE_H
 #define	MAKE_UNIQUE_H
 
+#include <memory>
+
+#if __cplusplus <= 201103L
 
 // make_unique<T>(args...)
 // make_unique<T[]>(n)
 // make_unique<T[N]>(args...) = delete
 
 #include <cstddef>
-#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -72,6 +74,6 @@ namespace std {
         typename _Unique_if<T>::_Known_bound
         make_unique(Args&&...) = delete;
 }
-
+#endif
 #endif	/* MAKE_UNIQUE_H */
 

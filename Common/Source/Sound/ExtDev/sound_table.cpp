@@ -12,8 +12,8 @@
 
 #include "externs.h"
 #include "sound_table.h"
-#include <tr1/functional>
-using namespace std::tr1::placeholders;
+#include <functional>
+using namespace std::placeholders;
 
 void sound_table::set(sound_code_t code, const TCHAR * nmeaStr) {
     table[code] = nmeaStr;

@@ -37,7 +37,7 @@ public:
         }
     }
 
-    inline void OnLeScan(const char *address, const char *name) {
+    inline void OnLeScan(const char *address, const char *name) override {
         _callback(_pWndForm, address, name);
     }
 
