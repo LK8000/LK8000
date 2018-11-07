@@ -2152,6 +2152,8 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointsOutOfRange"));
   if (wp) {
+
+  // ToDo: Remove Ask ?
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M100_ = "Ask" 
     dfe->addEnumText(MsgToken(100));
