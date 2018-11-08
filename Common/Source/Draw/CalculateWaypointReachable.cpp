@@ -121,7 +121,7 @@ void MapWindow::LKCalculateWaypointReachable(const bool forced)
 	WayPointCalc[i].Distance=waypointDistance; 
 	WayPointCalc[i].Bearing=waypointBearing;
 
-	CalculateGlideRatio(waypointDistance,
+	WayPointCalc[i].GR = CalculateGlideRatio(waypointDistance,
 		 DerivedDrawInfo.NavAltitude - WayPointList[i].Altitude - GetSafetyAltitude(i));
 
 
