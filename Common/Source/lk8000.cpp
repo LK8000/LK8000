@@ -89,6 +89,10 @@
 #include <sys/utsname.h>
 #endif
 
+#ifdef ANDROID
+#include "Android/LK8000Activity.h"
+#endif
+
 using std::min;
 using std::max;
 
@@ -313,6 +317,15 @@ bool Startup(const TCHAR* szCmdLine) {
     StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
     return -1;
   }
+
+#ifdef ANDROID
+  LK8000Activity* activity = LK8000Activity::Get();
+  assert(activity);
+  if(activity) {
+    activity->RequestPermission();
+    activity->WaitPermission();
+  }
+#endif
 
 #ifdef RADIO_ACTIVE
   memset( &(RadioPara), 0, sizeof(Radio_t));

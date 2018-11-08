@@ -108,6 +108,8 @@ add_library( LK8000 SHARED
     Common/Source/Android/UsbSerialHelper.cpp
     Common/Source/Android/UsbSerialPort.cpp
 
+	Common/Source/Android/LK8000Activity.cpp
+
     Common/Source/Window/WndMain.cpp
 
     Common/Source/xcs/Event/Shared/Timer.cpp
