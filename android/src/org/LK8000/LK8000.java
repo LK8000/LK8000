@@ -22,10 +22,11 @@
 
 package org.LK8000;
 
+import android.Manifest;
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
@@ -37,20 +38,22 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.os.Handler;
 import android.os.Message;
-import android.os.IBinder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.BroadcastReceiver;
-import android.content.ServiceConnection;
-import android.content.ComponentName;
 import android.util.Log;
 import android.provider.Settings;
-import android.view.View;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.ndk.CrashlyticsNdk;
 
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -102,7 +105,8 @@ public class LK8000 extends Activity {
       return;
     }
 
-    LKDistribution.copyLKDistribution(this.getApplication(),false);
+    initialiseNative();
+
     NetUtil.initialise(this);
     InternalGPS.Initialize();
     NonGPSSensors.Initialize();
@@ -318,6 +322,8 @@ public class LK8000 extends Activity {
 
     IOIOHelper.onDestroyContext();
 
+    deinitialiseNative();
+
     super.onDestroy();
     Log.d(TAG, "System.exit()");
     System.exit(0);
@@ -352,5 +358,79 @@ public class LK8000 extends Activity {
     } else
       return super.dispatchTouchEvent(ev);
   }
+
+  /**
+   * permissions request code
+   */
+  private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+  /**
+   * Permissions that need to be explicitly requested from end user.
+   */
+  private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
+          Manifest.permission.BLUETOOTH,
+          Manifest.permission.BLUETOOTH_ADMIN,
+          Manifest.permission.WRITE_EXTERNAL_STORAGE,
+          Manifest.permission.ACCESS_FINE_LOCATION,
+          Manifest.permission.WAKE_LOCK,
+          Manifest.permission.INTERNET,
+          Manifest.permission.ACCESS_NETWORK_STATE,
+          Manifest.permission.VIBRATE
+  };
+
+  /**
+   * Checks the dynamically-controlled permissions and requests missing permissions from end user.
+   */
+  protected void checkPermissions() {
+    final List<String> missingPermissions = new ArrayList<String>();
+    // check all required dynamic permissions
+    for (final String permission : REQUIRED_SDK_PERMISSIONS) {
+      final int result = ContextCompat.checkSelfPermission(this, permission);
+      if (result != PackageManager.PERMISSION_GRANTED) {
+        missingPermissions.add(permission);
+      }
+    }
+    if (!missingPermissions.isEmpty()) {
+      // request all missing permissions
+      final String[] permissions = missingPermissions
+              .toArray(new String[missingPermissions.size()]);
+      ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
+    } else {
+      final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+      Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
+      onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+              grantResults);
+    }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                         @NonNull int[] grantResults) {
+    switch (requestCode) {
+      case REQUEST_CODE_ASK_PERMISSIONS:
+        for (int index = permissions.length - 1; index >= 0; --index) {
+          if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+            // exit the app if one permission is not granted
+            onRuntimePermissionDenied();
+            return;
+          }
+        }
+        // all permissions are granted
+        onRuntimePermissionGranted();
+        break;
+    }
+  }
+
+  private void onRuntimePermissionGranted() {
+    LKDistribution.copyLKDistribution(this.getApplication(), false);
+
+    onRuntimePermissionGrantedNative();
+  }
+
+
+  private native void onRuntimePermissionDenied();
+  private native void onRuntimePermissionGrantedNative();
+
+  private native void initialiseNative();
+  private native void deinitialiseNative();
 
 }
