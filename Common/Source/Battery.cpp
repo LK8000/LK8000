@@ -213,14 +213,12 @@ Java_org_LK8000_BatteryReceiver_setBatteryPercent(JNIEnv *env, jclass cls, jint 
 		case 3 : // BATTERY_STATUS_DISCHARGING = 3;
 		case 4 :  // BATTERY_STATUS_NOT_CHARGING = 4;
 		case 5 :  // BATTERY_STATUS_FULL = 5;
-			if (BatteryLifePercent >= 0) {
-				if (BatteryLifePercent > 30) {
-					chargeStatus = Battery::HIGH;
-				} else if (BatteryLifePercent > 30) {
-					chargeStatus = Battery::LOW;
-				} else {
-					chargeStatus = Battery::CRITICAL;
-				}
+			if (BatteryLifePercent > 30) {
+				chargeStatus = Battery::HIGH;
+			} else if (BatteryLifePercent > 30) {
+				chargeStatus = Battery::LOW;
+			} else {
+				chargeStatus = Battery::CRITICAL;
 			}
 			break;
 	}
