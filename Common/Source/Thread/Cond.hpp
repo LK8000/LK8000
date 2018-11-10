@@ -29,12 +29,7 @@ public:
 
     inline
     bool Wait(Mutex &mutex, unsigned timeout_ms) {
-        try {
-            Poco::Condition::wait<Mutex>(mutex, timeout_ms);
-        } catch(Poco::TimeoutException& e) {
-            return false;
-        }
-        return true;
+        return Poco::Condition::tryWait<Mutex>(mutex, timeout_ms);
     }
 
     inline
