@@ -106,11 +106,11 @@ bool RasterMap::Open(const TCHAR* zfilename) {
 
 
 void RasterMap::Close(void) {
-  TerrainMem = nullptr;
-
   // this 2 line are needed for debug diagnostics
   TerrainInfo.Columns = 0;
   TerrainInfo.Rows = 0;
+
+  TerrainMem = nullptr;
 
   pTerrainMem.reset();
 

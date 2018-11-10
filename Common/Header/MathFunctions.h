@@ -12,6 +12,8 @@
 #ifndef MATHFUNCTIONS_H
 #define	MATHFUNCTIONS_H
 
+#include "Math/Util.hpp" // for iround and uround
+
 void rotate(double &xin, double &yin, const double &angle);
 void rotatescale(double &xin, double &yin, const double &angle, const double &scale);
 
@@ -90,10 +92,6 @@ inline short _MulDiv<short>(short nNumber, short nNumerator, short nDenominator)
     res *= nNumerator;
     res /= nDenominator;
     return res;
-}
-
-inline int iround(double i) {
-    return lround(i);
 }
 
 inline int64_t _lround(double i) {

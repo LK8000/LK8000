@@ -93,7 +93,7 @@ short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longi
     const unsigned ix = CombinedDivAndMod(lx);
     const unsigned iy = CombinedDivAndMod(ly);
 
-    if (gcc_unlikely(lx + 1 >= TerrainInfo.Columns || ly + 1 >= TerrainInfo.Rows)) {
+    if (gcc_unlikely((lx + 1) >= TerrainInfo.Columns || (ly + 1) >= TerrainInfo.Rows)) {
         return TERRAIN_INVALID;
     }
     assert(((ly+1) * TerrainInfo.Columns + (lx+1)) < (TerrainInfo.Columns*TerrainInfo.Rows));
@@ -139,10 +139,10 @@ short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longi
  */
 inline
 short RasterMap::GetFieldFine(const double &Latitude, const double &Longitude) const {
-    const unsigned int lx = iround((Longitude - TerrainInfo.Left) * fXrounding) * Xrounding;
-    const unsigned int ly = iround((TerrainInfo.Top - Latitude) * fYrounding) * Yrounding;
+    const unsigned int lx = uround((Longitude - TerrainInfo.Left) * fXrounding) * Xrounding;
+    const unsigned int ly = uround((TerrainInfo.Top - Latitude) * fYrounding) * Yrounding;
 
-    if (gcc_unlikely(lx >= (TerrainInfo.Columns-1) || ly >= (TerrainInfo.Rows-1))) {
+    if (gcc_unlikely(lx >= (TerrainInfo.Columns) || ly >= (TerrainInfo.Rows))) {
         return TERRAIN_INVALID;
     }
 
