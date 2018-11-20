@@ -102,10 +102,12 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
     private void AddAvailable(UsbDevice device) {
         if (device != null && UsbSerialDevice.isSupported(device)) {
-            //if (device.getVendorId() == 5840 && device.getProductId() == 2985) {
-                Log.v(TAG,"UsbDevice Found : GPSBip " + device);
+            // we only support known devices to avoid ghost port problem
+            if ( ( device.getVendorId() == 5840 && device.getProductId() == 2985) ||        // GPSBip
+                 ( device.getVendorId() == 1027 && device.getProductId() == 24597 ) )  {    // Digifly AIR
+                Log.v(TAG,"UsbDevice Found : " + device);
                 _AvailableDevices.put(device.getDeviceName(), device);
-            //}
+            }
         }
     }
 
