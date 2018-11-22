@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "LKInterface.h"
 #include "McReady.h"
 #include "Modeltype.h"
 #include "LKProfiles.h"
@@ -868,20 +869,54 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryOverlay_TopDown,&Overlay_TopDown);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryOverlay_LeftTop,&Overlay_LeftTop);
-  if (matchedstring) return;
+  if (matchedstring) {
+    if ( Overlay_LeftTop == 2 ) { // old Customs
+      Overlay_LeftTop = GetInfoboxType(4)+1000;
+    }
+    return;
+  }
   PREAD(sname,svalue,szRegistryOverlay_LeftMid,&Overlay_LeftMid);
-  if (matchedstring) return;
+  if (matchedstring) {
+    if ( Overlay_LeftMid == 2 ) { // old Customs
+      Overlay_LeftMid = GetInfoboxType(5)+1000;
+    }
+    return;
+  }
   PREAD(sname,svalue,szRegistryOverlay_LeftBottom,&Overlay_LeftBottom);
-  if (matchedstring) return;
+  if (matchedstring) {
+    if ( Overlay_LeftBottom == 2 ) { // old Customs
+      Overlay_LeftBottom = GetInfoboxType(6)+1000;
+    }
+    return;
+  }
   PREAD(sname,svalue,szRegistryOverlay_LeftDown,&Overlay_LeftDown);
-  if (matchedstring) return;
+  if (matchedstring) {
+    if ( Overlay_LeftDown == 2 ) { // old Customs
+      Overlay_LeftDown = GetInfoboxType(7)+1000;
+    }
+    return;
+  }
   PREAD(sname,svalue,szRegistryOverlay_RightTop,&Overlay_RightTop);
-  if (matchedstring) return;
+  if (matchedstring) {
+    if ( Overlay_RightTop == 2 ) { // old Customs
+      Overlay_RightTop = GetInfoboxType(1)+1000;
+    }
+    return;
+  }
   PREAD(sname,svalue,szRegistryOverlay_RightMid,&Overlay_RightMid);
-  if (matchedstring) return;
+  if (matchedstring) {
+    if ( Overlay_RightMid == 2 ) { // old Customs
+      Overlay_RightMid = GetInfoboxType(2)+1000;
+    }
+    return;
+  }
   PREAD(sname,svalue,szRegistryOverlay_RightBottom,&Overlay_RightBottom);
-  if (matchedstring) return;
-
+  if (matchedstring) {
+    if ( Overlay_RightBottom == 2 ) { // old Customs
+      Overlay_RightBottom = GetInfoboxType(3)+1000;
+    }
+    return;
+  }
 #ifdef _WGS84
   PREAD(sname,svalue,szRegistry_earth_model_wgs84,&earth_model_wgs84);
   if (matchedstring) return;
