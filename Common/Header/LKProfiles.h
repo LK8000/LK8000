@@ -428,13 +428,13 @@ char szRegistryOverlay_TopLeft[]       = "Overlay_TopLeft";
 char szRegistryOverlay_TopMid[]       = "Overlay_TopMid";
 char szRegistryOverlay_TopRight[]       = "Overlay_TopRight";
 char szRegistryOverlay_TopDown[]       = "Overlay_TopDown";
-char szRegistryOverlay_LeftTop[]       = "Overlay_LeftTop";
-char szRegistryOverlay_LeftMid[]       = "Overlay_LeftMid";
-char szRegistryOverlay_LeftBottom[]       = "Overlay_LeftBottom";
-char szRegistryOverlay_LeftDown[]       = "Overlay_LeftDown";
-char szRegistryOverlay_RightTop[]       = "Overlay_RightTop";
-char szRegistryOverlay_RightMid[]       = "Overlay_RightMid";
-char szRegistryOverlay_RightBottom[]       = "Overlay_RightBottom";
+char szRegistryOverlay_LeftTop[]       = "OverlayNew_LeftTop";
+char szRegistryOverlay_LeftMid[]       = "OverlayNew_LeftMid";
+char szRegistryOverlay_LeftBottom[]       = "OverlayNew_LeftBottom";
+char szRegistryOverlay_LeftDown[]       = "OverlayNew_LeftDown";
+char szRegistryOverlay_RightTop[]       = "OverlayNew_RightTop";
+char szRegistryOverlay_RightMid[]       = "OverlayNew_RightMid";
+char szRegistryOverlay_RightBottom[]       = "OverlayNew_RightBottom";
 #ifdef _WGS84
 char szRegistry_earth_model_wgs84[] = "earth_model_wgs84";
 #endif

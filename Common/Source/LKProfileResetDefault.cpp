@@ -468,13 +468,13 @@ void LKProfileResetDefault(void) {
   Overlay_TopMid=1;
   Overlay_TopRight=1;
   Overlay_TopDown=1;
-  Overlay_LeftTop=1;
-  Overlay_LeftMid=1;
-  Overlay_LeftBottom=1;
-  Overlay_LeftDown=1;
-  Overlay_RightTop=1;
-  Overlay_RightMid=1;
-  Overlay_RightBottom=1;
+  Overlay_LeftTop=-1;
+  Overlay_LeftMid=-1;
+  Overlay_LeftBottom=-1;
+  Overlay_LeftDown=-1;
+  Overlay_RightTop=-1;
+  Overlay_RightMid=-1;
+  Overlay_RightBottom=-1;
 
 
 #ifdef _WGS84
