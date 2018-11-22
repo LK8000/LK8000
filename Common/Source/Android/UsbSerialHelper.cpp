@@ -33,7 +33,7 @@ UsbSerialHelper::Initialise(JNIEnv *env) {
   isEnabled_method = env->GetStaticMethodID(cls, "isEnabled", "()Z");
   list_method = env->GetStaticMethodID(cls, "list", "()[Ljava/lang/String;");
   connect_method = env->GetStaticMethodID(cls, "connect",
-                                          "(Ljava/lang/String;)Lorg/LK8000/AndroidPort;");
+                                          "(Ljava/lang/String;I)Lorg/LK8000/AndroidPort;");
 
   return true;
 }

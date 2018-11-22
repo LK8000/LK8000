@@ -26,8 +26,9 @@ import com.felhr.usbserial.UsbSerialInterface;
 public final class UsbSerialPort implements AndroidPort {
     private static final String TAG = "UsbSerialPort";
 
-    public UsbSerialPort(UsbDevice device) {
+    public UsbSerialPort(UsbDevice device,int baud) {
         _UsbDevice = device;
+        _baudRate = baud;
     }
 
     private UsbDevice _UsbDevice;
@@ -35,6 +36,7 @@ public final class UsbSerialPort implements AndroidPort {
     private UsbSerialDevice _SerialPort;
     private PortListener portListener;
     private InputListener inputListener;
+    private int _baudRate;
 
     public synchronized void open(UsbManager manager) {
         Log.v(TAG, "open()");
@@ -44,7 +46,7 @@ public final class UsbSerialPort implements AndroidPort {
             _SerialPort = UsbSerialDevice.createUsbSerialDevice(_UsbDevice, _UsbConnection);
             if (_SerialPort != null) {
                 if (_SerialPort.open()) {
-                    _SerialPort.setBaudRate(9600);
+                    _SerialPort.setBaudRate(getBaudRate());
                     _SerialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
                     _SerialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
                     _SerialPort.setParity(UsbSerialInterface.PARITY_NONE);
@@ -94,12 +96,13 @@ public final class UsbSerialPort implements AndroidPort {
 
     @Override
     public int getBaudRate() {
-        return 0;
+        return _baudRate;
     }
 
     @Override
     public boolean setBaudRate(int baud) {
-        return false;
+        _baudRate =  baud;
+        return true;
     }
 
     @Override
