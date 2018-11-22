@@ -57,9 +57,9 @@ public class UsbSerialHelper extends BroadcastReceiver {
         return (_instance != null);
     }
 
-    static AndroidPort connect(String name) {
+    static AndroidPort connect(String name,int baud) {
         assert(_instance != null);
-        return _instance.connectDevice(name);
+        return _instance.connectDevice(name,baud);
     }
 
     static String[] list() {
@@ -102,8 +102,10 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
     private void AddAvailable(UsbDevice device) {
         if (device != null && UsbSerialDevice.isSupported(device)) {
-            if (device.getVendorId() == 5840 && device.getProductId() == 2985) {
-                Log.v(TAG,"UsbDevice Found : GPSBip " + device);
+            // we only support known devices to avoid ghost port problem
+            if ( ( device.getVendorId() == 5840 && device.getProductId() == 2985) ||        // GPSBip
+                 ( device.getVendorId() == 1027 && device.getProductId() == 24597 ) )  {    // Digifly AIR
+                Log.v(TAG,"UsbDevice Found : " + device);
                 _AvailableDevices.put(device.getDeviceName(), device);
             }
         }
@@ -158,7 +160,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
         _Context.unregisterReceiver(this);
     }
 
-    private AndroidPort connectDevice(String name) {
+    private AndroidPort connectDevice (String name , int baud) {
 
         UsbManager usbmanager = (UsbManager) _Context.getSystemService(Context.USB_SERVICE);
         UsbSerialPort port = null;
@@ -167,7 +169,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
             UsbDevice device = GetAvailable(name);
             if (device != null) {
-                port = new UsbSerialPort(device);
+                port = new UsbSerialPort(device,baud);
                 if (usbmanager.hasPermission(device)) {
                     port.open(usbmanager);
 
