@@ -205,7 +205,11 @@ static char* UrlEncode(const char *szText, char* szDst, int bufsize) {
 
 // Init Live Tracker services, if available
 void LiveTrackerInit() {
-	if (((LiveTrackerInterval == 0) || (SIMMODE))
+	if (((LiveTrackerInterval == 0) 
+#ifndef TESTBENCH	     // if not compiled as testbench
+	     || (SIMMODE)    // disable tracking for simulation mode
+#endif	     
+	    )
 			&& (!LiveTrackerRadar_config || !EnableFLARMMap)) {
 		// If livetracker is not enabled at startup, we do nothing,
 		// but in this case LK must be restarted, if user enables it!
