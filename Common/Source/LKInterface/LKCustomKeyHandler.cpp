@@ -320,10 +320,6 @@ passthrough:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventWaypointDetails(_T("select"));
 		return true;
-    case ckAirspaceLookup:
-        PlayResource(TEXT("IDR_WAV_CLICK"));
-        dlgAirspaceSelect();
-        return true;
 	case ckPan:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventPan(_T("toggle"));
@@ -476,6 +472,10 @@ passthrough:
 		InputEvents::setMode(_T("Display3"));
 		return true;
 
+    case ckAirspaceLookup:
+        PlayResource(TEXT("IDR_WAV_CLICK"));
+        dlgAirspaceSelect();
+        return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"),ckeymode);
@@ -556,6 +556,7 @@ CustomKeyLabel[58]=2038;	// Map Orientation
 CustomKeyLabel[59]=928;		// Restarting Comm Ports
 CustomKeyLabel[60]=2249;	// DspMode
 CustomKeyLabel[61]=2251;	// Optimizer Mode
+CustomKeyLabel[62]=68;	    // Airspace lookup
 
-static_assert(60 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
+static_assert(62 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
 }
