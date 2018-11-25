@@ -1,0 +1,4 @@
+* LK8000 polar for: Hi performance Hang glider competition 2018 ( T2C, Laminal, Combat ...)
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 100, 0, 35.500,-0.850,47.500,-0.970,80.000,-2.540, 12.6
+
