@@ -233,7 +233,6 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
 
       // Send complete declaration to logger
       for (int ii = 0; ii < i ; ii++){
-        _stprintf(buffer, TEXT(" %s "),DeclStrings[ii]);
         if (status)
           status = status && DevLXNanoIII::SendDecl(d, ii+1, totalLines,
                                    DeclStrings[ii], errBufSize, errBuf);
@@ -426,8 +425,8 @@ bool DevLXNanoIII::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows
                    TCHAR content[], unsigned errBufSize, TCHAR errBuf[]){
   TCHAR buffer[256];
   char retstr[20];
-  _stprintf(buffer, TEXT("PLXVC,DECL,W,%u,%u,%s,"), row, n_rows, content);
-  bool status = DevLXNanoIII::SendNmea(d, buffer, errBufSize, errBuf);
+  _stprintf(buffer, TEXT("PLXVC,DECL,W,%u,%u,%s"), row, n_rows, content);
+  bool status = DevLXNanoIII::SendNmea(d, buffer, errBufSize, errBuf); 
   if (status) {
     sprintf(retstr, "$PLXVC,DECL,C,%u", row);
     status = status && ComExpect(d, retstr, 512, NULL, errBufSize, errBuf);
