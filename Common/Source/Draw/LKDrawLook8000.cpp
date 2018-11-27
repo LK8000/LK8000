@@ -32,9 +32,13 @@
 #define RIGHTMARGIN   NIBLSCALE(2) // spacing on right border
 #define MAPSCALE_SIZE NIBLSCALE(46)
 
-#define isOverlayHidden(Overlay) (Overlay==0)         // For Overlay we use :  0       : Hidden
-#define isOverlayCustom(Overlay) (Overlay>=1000)      // For Overlay we use :  1       : Default
-#define getCustomOverlay(Overlay) (Overlay-1000)      // For Overlay we use :  >= 1000 : LKValue+1000
+// For Overlay we use :  0       : Hidden
+//                       1       : Default
+//                       >= 1000 : Custom LKValue+1000
+//
+constexpr bool isOverlayHidden(int Overlay) {return (Overlay==0);}
+constexpr bool isOverlayCustom(int Overlay) {return (Overlay>=1000);}
+constexpr int  getCustomOverlay(int Overlay) {return (Overlay-1000);}
 
 /*
  * Draw Text Overlay.
