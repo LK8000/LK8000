@@ -678,7 +678,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         // SAFETY MAC CREADY INDICATOR
         //
         extern bool IsSafetyMacCreadyInUse(int val);
-        if (Overlay_RightTop<0 && IsSafetyMacCreadyInUse(GetOvertargetIndex()) && GlidePolar::SafetyMacCready > 0) {
+        if (!isOverlayCustom(Overlay_RightTop) && IsSafetyMacCreadyInUse(GetOvertargetIndex()) && GlidePolar::SafetyMacCready > 0) {
             Surface.SelectObject(LK8OverlaySmallFont);
             _stprintf(BufferValue, _T(" %.1f %s "), GlidePolar::SafetyMacCready*LIFTMODIFY,
                 Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
