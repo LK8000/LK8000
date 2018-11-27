@@ -2246,3 +2246,4 @@ _@M2334_ "in Flight Only (default)"
 _@M2335_ "permanent"
 
 _@M2336_ "ICAO Code"
+_@M2337_ "Airspace\nLookup"

@@ -458,3 +458,5 @@ Tracking Mode (see help)
 
 @186
 OFF don't display any value (see help)
+
+@M2337 "Airspace\nLookup"
