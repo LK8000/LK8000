@@ -2105,6 +2105,11 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("AIRSPACELU")) == 0) {
+    CustomKeyHandler(ckAirspaceLookup+1000); // passthrough mode
+    return;
+  }
+
   if (_tcscmp(misc, TEXT("TERRCOL")) == 0) {
 	if (TerrainRamp+1>=NUMRAMPS)
 		TerrainRamp=0;  // 15 = NUMRAMPS -1
