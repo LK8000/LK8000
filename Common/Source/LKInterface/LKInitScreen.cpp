@@ -357,9 +357,17 @@ int GetScreenDensity(void) {
 #ifdef KOBO
     switch (DetectKoboModel()) {
         case KoboModel::GLOHD:
+        case KoboModel::CLARAHD:
             return 300;
         case KoboModel::TOUCH2:
             return 167;
+        case KoboModel::AURA2:
+        case KoboModel::GLO:
+            return 212;
+        case KoboModel::AURA:
+            return 213;
+        case KoboModel::TOUCH:
+            return 170;
         default:
             return 200; // Kobo Mini 200 dpi; Kobo Glo 212 dpi (according to Wikipedia)
     }
