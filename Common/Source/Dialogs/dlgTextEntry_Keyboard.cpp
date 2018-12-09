@@ -358,7 +358,7 @@ IdenticalIndex = -1;
 		   // StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
         }
         EqCnt++;
-        LKASSERT((cursor+Offset)<=NAME_SIZE);
+        LKASSERT((cursor+Offset)<=EXT_NAMESIZE);
         LKASSERT(i<=WayPointList.size());
         TCHAR newChar = ToUpper(ExtName[cursor+Offset]);
         bool existing = false;
