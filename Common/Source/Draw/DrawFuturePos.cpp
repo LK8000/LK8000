@@ -27,7 +27,7 @@ void MapWindow::DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT&
 
         POINT p1,p2;
 
-        if(!headUpLine && (DisplayOrientation==TRACKUP || DisplayOrientation==NORTHCIRCLE || DisplayOrientation==TRACKCIRCLE)) { //Track up map view
+        if(!headUpLine && (DisplayOrientation==TRACKUP || DisplayOrientation==NORTHCIRCLE || DisplayOrientation==TARGETCIRCLE || DisplayOrientation==TARGETUP)) { //Track up map view
             p1.x=Orig.x-NIBLSCALE(4);
             p2.x=Orig.x+NIBLSCALE(4);
             p1.y=p2.y=Orig.y-(int)round(dist2min);

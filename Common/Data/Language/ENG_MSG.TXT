@@ -2247,3 +2247,5 @@ _@M2335_ "permanent"
 
 _@M2336_ "ICAO Code"
 _@M2337_ "Airspace\nLookup"
+
+_@M2400_ "Target up"
