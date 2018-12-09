@@ -36,7 +36,7 @@ void RemoveKeys(char *EnabledKeyString, unsigned char size);
 #define NO_LAYOUTS 2
 #define UPPERCASE 0
 #define LOWERCASE 1
-uint8_t  KeyboardLayout =LOWERCASE;
+uint8_t  KeyboardLayout =UPPERCASE;
 uint8_t  WaypointKeyRed = KEYRED_NONE;
 
  int IdenticalIndex=-1;
@@ -396,7 +396,9 @@ IdenticalIndex = -1;
     NumChar =0;
     for (i=NUMRESWP; i< WayPointList.size(); i++)
     {
-      NameLen =  _tcslen(WayPointList[i].Name);
+      TCHAR wname[EXT_NAMESIZE];
+      _sntprintf(wname,EXT_NAMESIZE, _T("%s %s"), WayPointList[i].Name, WayPointList[i].Code);
+      NameLen =  _tcslen(wname);
       Offset = 0;
       if(cursor > NameLen)
 	CharEqual = false;
@@ -410,7 +412,7 @@ IdenticalIndex = -1;
           {
             LKASSERT(k < MAX_TEXTENTRY);
             LKASSERT((k+Offset) < NameLen);
-            TCHAR ac = (TCHAR)WayPointList[i].Name[k+Offset];
+            TCHAR ac = (TCHAR)wname[k+Offset];
             TCHAR bc = (TCHAR)edittext[k];
             if(  toupper(ac) !=   toupper(bc) ) /* waypoint has string ?*/
             {
@@ -435,9 +437,9 @@ IdenticalIndex = -1;
 		   // StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
         }
         EqCnt++;
-        LKASSERT((cursor+Offset)<=NAME_SIZE);
+        LKASSERT((cursor+Offset)<=EXT_NAMESIZE);
         LKASSERT(i<=WayPointList.size());
-        TCHAR newChar = ToUpper(WayPointList[i].Name[cursor+Offset]);
+        TCHAR newChar = ToUpper(wname[cursor+Offset]);
         bool existing = false;
         j=0;
         while(( j < NumChar) && (!existing))  /* new character already in list? */
@@ -445,7 +447,7 @@ IdenticalIndex = -1;
      //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
           LKASSERT(j<MAX_SEL_LIST_SIZE);
           if(SelList[j] == (unsigned char)newChar)
-		existing = true;
+		  existing = true;
           j++;
         }
 
@@ -453,8 +455,8 @@ IdenticalIndex = -1;
         {
      //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
           LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-          SelList[NumChar++] = toupper(newChar);
-          SelList[NumChar++] = tolower(newChar);
+          SelList[NumChar++] = ToUpper(newChar);
+     //     SelList[NumChar++] = ToUpper(newChar);
         }
       }
     }
