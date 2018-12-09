@@ -128,7 +128,7 @@ static void OnRadioFrequencyClicked(WndButton* pWnd){
   _stprintf(szFreq,_T(" %6.3fMHz ") ,Ferquency);
 
   DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );
-  DoStatusMessage(_T("RADIO:"), szFreq );
+  DoStatusMessage(_T(""), szFreq );
   retStatus=3;
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -160,7 +160,11 @@ short dlgWayQuickShowModal(void){
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P);
 
   if (!wf) return 0;
-
+  TCHAR buffer2[80];
+  WindowControl* wFreq = wf->FindByName(TEXT("cmdRadioFreq"));
+  _stprintf(buffer2,_T("%sMHz"),WPLSEL.Freq );
+  wFreq->SetCaption(buffer2);
+  wFreq->Redraw();
   retStatus=0;
   if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP)&& WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
         TCHAR ttmp[50];
