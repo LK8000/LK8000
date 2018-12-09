@@ -131,6 +131,14 @@ static void UpdateTextboxProp(void)
     wb = (WndButton*) wf->FindByName(TEXT("prpUe")); if(wb != NULL) wb->SetVisible(bGerChar);
 */
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("frmTextEntry_Keyboard"));
+  if (wp)
+  {
+	 TCHAR Entered[MAX_SEL_LIST_SIZE]=_T("");
+    _stprintf(Entered,_T("%s: %s"),MsgToken(251), edittext); /* _@251_ Edit Text */
+    wp->SetCaption(Entered);
+  }
 }
 
 static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
@@ -396,8 +404,11 @@ IdenticalIndex = -1;
     NumChar =0;
     for (i=NUMRESWP; i< WayPointList.size(); i++)
     {
-      TCHAR wname[EXT_NAMESIZE];
-      _sntprintf(wname,EXT_NAMESIZE, _T("%s %s"), WayPointList[i].Name, WayPointList[i].Code);
+      TCHAR wname[EXT_NAMESIZE] = _T("");
+      _tcsncat( wname,WayPointList[i].Name, EXT_NAMESIZE);
+      _tcsncat( wname,_T(" ")              ,EXT_NAMESIZE);
+      _tcsncat( wname,WayPointList[i].Code ,EXT_NAMESIZE);
+     // _sntprintf(wname,EXT_NAMESIZE, _T("%s %s"), WayPointList[i].Name, WayPointList[i].Code);
       NameLen =  _tcslen(wname);
       Offset = 0;
       if(cursor > NameLen)
@@ -464,23 +475,27 @@ IdenticalIndex = -1;
     SelList[NumChar++] = '\0';
     RemoveKeys((char*)SelList, NumChar);
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
+	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
 
+		LKASSERT(cursor < NAME_SIZE);
+		LKASSERT(IdenticalIndex<=(int)WayPointList.size());
+		_stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
+		if(_tcslen(WayPointList[IdenticalIndex].Code) > 1)
+		{
+			_stprintf(Found,_T("%s (%s)"),WayPointList[IdenticalIndex].Name, WayPointList[IdenticalIndex].Code);
+		}
     if (wp)
     {
       if(EqCnt ==1)
       {
-	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
-	    wp->SetText(WayPointList[IdenticalIndex].Name);
+	    wp->SetText(Found ); //WayPointList[IdenticalIndex].Name);
       }
       else
       {
         if((cursor >0) &&  (EqCnt >0))
         {
-          LKASSERT(cursor < NAME_SIZE);
-          LKASSERT(IdenticalIndex<=(int)WayPointList.size());
-          _stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
-	  for( i = 0; i < cursor; i++)
-	     Found[i+IdenticalOffset] = ToUpper(WayPointList[IdenticalIndex].Name[i+IdenticalOffset]);
+//	  for( i = 0; i < cursor; i++)
+//	     Found[i+IdenticalOffset] = toupper(Found[i+IdenticalOffset]);
           wp->SetText(Found);
         }
       }
@@ -493,6 +508,7 @@ IdenticalIndex = -1;
     _stprintf(Found,_T("%s:%i"),MsgToken(948),EqCnt); /* _@M948_ Found */
     wp->SetCaption(Found);
   }
+
 }
 
 
@@ -506,7 +522,7 @@ const CAirspaceList CAirspaceManager::GetAllAirspaces() const {
 **********************************************************************************/
 void ReduceKeysByAirspaceList(void)
 {
-char SelList[MAX_SEL_LIST_SIZE]={""};
+TCHAR SelList[MAX_SEL_LIST_SIZE]={_T("")};
 unsigned int NumChar=0;
 bool CharEqual = true;
 char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_?!+$%#/()=:* \xD6\xDC\xC4"};
