@@ -34,7 +34,6 @@ static void setVariables(void) {
 	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(MsgToken(491)); // OFF
         dfe->addEnumText(MsgToken(894)); // ON
-
 	dfe->Set(Overlay_TopLeft);
 	wp->RefreshDisplay();
   }
@@ -65,64 +64,106 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
-        dfe->addEnumText(_T("AUX 4"));
-	dfe->Set(Overlay_LeftTop);
+    dfe->addEnumText(MsgToken(491)); // OFF
+    dfe->addEnumText(MsgToken(2090)); // Default
+    for (int i=0; i<NumDataOptions; i++) {
+      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+    }
+    dfe->Sort(2);
+    if ( Overlay_LeftTop < 2 )
+	  dfe->Set(Overlay_LeftTop);
+    else
+      dfe->Set(Overlay_LeftTop - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
-        dfe->addEnumText(_T("AUX 5"));
-	dfe->Set(Overlay_LeftMid);
+    dfe->addEnumText(MsgToken(491)); // OFF
+    dfe->addEnumText(MsgToken(2090)); // Default
+    for (int i=0; i<NumDataOptions; i++) {
+      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+    }
+    dfe->Sort(2);
+    if ( Overlay_LeftMid < 2 )
+      dfe->Set(Overlay_LeftMid);
+    else
+      dfe->Set(Overlay_LeftMid - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
-        dfe->addEnumText(_T("AUX 6"));
-	dfe->Set(Overlay_LeftBottom);
+    dfe->addEnumText(MsgToken(491)); // OFF
+    dfe->addEnumText(MsgToken(2090)); // Default
+    for (int i=0; i<NumDataOptions; i++) {
+      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+    }
+    dfe->Sort(2);
+    if ( Overlay_LeftBottom < 2 )
+      dfe->Set(Overlay_LeftBottom);
+    else
+      dfe->Set(Overlay_LeftBottom - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
-        dfe->addEnumText(_T("AUX 7"));
-	dfe->Set(Overlay_LeftDown);
+    dfe->addEnumText(MsgToken(491)); // OFF
+    dfe->addEnumText(MsgToken(2090)); // Default
+    for (int i=0; i<NumDataOptions; i++) {
+      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+    }
+    dfe->Sort(2);
+    if ( Overlay_LeftDown < 2 )
+      dfe->Set(Overlay_LeftDown);
+    else
+      dfe->Set(Overlay_LeftDown - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
-        dfe->addEnumText(_T("AUX 1"));
-	dfe->Set(Overlay_RightTop);
+    dfe->addEnumText(MsgToken(491)); // OFF
+    dfe->addEnumText(MsgToken(2090)); // Default
+    for (int i=0; i<NumDataOptions; i++) {
+      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+    }
+    dfe->Sort(2);
+    if ( Overlay_RightTop < 2 )
+      dfe->Set(Overlay_RightTop);
+    else
+      dfe->Set(Overlay_RightTop - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
-        dfe->addEnumText(_T("AUX 2"));
-	dfe->Set(Overlay_RightMid);
+    dfe->addEnumText(MsgToken(491)); // OFF
+    dfe->addEnumText(MsgToken(2090)); // Default
+    for (int i=0; i<NumDataOptions; i++) {
+      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+    }
+    dfe->Sort(2);
+    if ( Overlay_RightMid < 2 )
+      dfe->Set(Overlay_RightMid);
+    else
+      dfe->Set(Overlay_RightMid - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
-        dfe->addEnumText(_T("AUX 3"));
-	dfe->Set(Overlay_RightBottom);
+    dfe->addEnumText(MsgToken(491)); // OFF
+    dfe->addEnumText(MsgToken(2090)); // Default
+    for (int i=0; i<NumDataOptions; i++) {
+      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+    }
+    dfe->Sort(2);
+    if ( Overlay_RightBottom < 2 )
+      dfe->Set(Overlay_RightBottom);
+    else
+      dfe->Set(Overlay_RightBottom - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
 }
@@ -235,25 +276,67 @@ void dlgOverlaysShowModal(void){
   if (wp) Overlay_TopDown = (wp->GetDataField()->GetAsInteger());
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
-  if (wp) Overlay_LeftTop = (wp->GetDataField()->GetAsInteger());
+  if (wp) {
+    int dataField = (wp->GetDataField()->GetAsInteger());
+    if ( dataField < 2 )
+      Overlay_LeftTop = dataField;
+    else
+      Overlay_LeftTop = dataField+1000-2; // Custom overlay have a code LKValue+1000
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
-  if (wp) Overlay_LeftMid = (wp->GetDataField()->GetAsInteger());
+  if (wp) {
+    int dataField = (wp->GetDataField()->GetAsInteger());
+    if ( dataField < 2 )
+      Overlay_LeftMid = dataField;
+    else
+      Overlay_LeftMid = dataField+1000-2; // Custom overlay have a code LKValue+1000
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
-  if (wp) Overlay_LeftBottom = (wp->GetDataField()->GetAsInteger());
+  if (wp) {
+    int dataField = (wp->GetDataField()->GetAsInteger());
+    if ( dataField < 2 )
+      Overlay_LeftBottom = dataField;
+    else
+      Overlay_LeftBottom = dataField+1000-2; // Custom overlay have a code LKValue+1000
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
-  if (wp) Overlay_LeftDown = (wp->GetDataField()->GetAsInteger());
+  if (wp) {
+    int dataField = (wp->GetDataField()->GetAsInteger());
+    if ( dataField < 2 )
+      Overlay_LeftDown = dataField;
+    else
+      Overlay_LeftDown = dataField+1000-2; // Custom overlay have a code LKValue+1000
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
-  if (wp) Overlay_RightTop = (wp->GetDataField()->GetAsInteger());
+  if (wp) {
+    int dataField = (wp->GetDataField()->GetAsInteger());
+    if ( dataField < 2 )
+      Overlay_RightTop = dataField;
+    else
+      Overlay_RightTop = dataField+1000-2; // Custom overlay have a code LKValue+1000
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
-  if (wp) Overlay_RightMid = (wp->GetDataField()->GetAsInteger());
+  if (wp) {
+    int dataField = (wp->GetDataField()->GetAsInteger());
+    if ( dataField < 2 )
+      Overlay_RightMid = dataField;
+    else
+      Overlay_RightMid = dataField+1000-2; // Custom overlay have a code LKValue+1000
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
-  if (wp) Overlay_RightBottom = (wp->GetDataField()->GetAsInteger());
+  if (wp) {
+    int dataField = (wp->GetDataField()->GetAsInteger());
+    if ( dataField < 2 )
+      Overlay_RightBottom = dataField;
+    else
+      Overlay_RightBottom = dataField+1000-2; // Custom overlay have a code LKValue+1000
+  }
 
   delete wf;
   wf = NULL;
