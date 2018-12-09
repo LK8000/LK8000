@@ -2056,6 +2056,9 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(484));
 	// LKTOKEN  _@M481_ = "North Smart" 
     dfe->addEnumText(MsgToken(481)); // 100417
+    // LKTOKEN  _@M2400_"Target up"
+    dfe->addEnumText(MsgToken(2400));
+
     dfe->Set(DisplayOrientation_Config);
     wp->RefreshDisplay();
   }
