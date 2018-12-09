@@ -13,6 +13,7 @@
 #include "dlgTools.h"
 #include "FlarmIdFile.h"
 #include "resource.h"
+#include "Sound/Sound.h"
 
 extern FlarmIdFile *file;
 
@@ -21,7 +22,7 @@ static void SetValues(int indexid);
 
 static int SelectedTraffic;
 static WndButton *buttonTarget=NULL;
-
+FlarmId* flarmId = NULL;
 static void OnTargetClicked(WndButton* pWnd) {
 
   if (SelectedTraffic<0 || SelectedTraffic>MAXTRAFFIC) {
@@ -178,6 +179,38 @@ static void OnRenameClicked(WndButton* pWnd){
 
 }
 
+
+
+extern    double  ExtractFrequency(TCHAR*);
+
+static void OnFlarmFreqSelectEnter(WndButton*  Sender
+                                       ) {
+    (void) Sender;
+
+#ifdef RADIO_ACTIVE
+
+TCHAR Tmp[255];
+  if(flarmId != NULL)
+  {
+   if(RadioPara.Enabled)
+   {
+      double ASFrequency = ExtractFrequency((TCHAR*)flarmId->freq);
+      if((ASFrequency >= 118) && (ASFrequency <= 138))
+      {
+        LKSound(TEXT("LK_TICK.WAV"));
+        _stprintf(Tmp,_T("%s  %s %7.3fMHz"),(TCHAR*)flarmId->reg , NEWLINE  ,ASFrequency);
+        StartupStore(_T("%s"),Tmp);
+        devPutFreqActive(ASFrequency, (TCHAR*)flarmId->reg );
+        DoStatusMessage(_T(""), Tmp );
+      }
+    }
+  }
+#endif  // RADIO_ACTIVE
+
+}
+
+
+
 static void OnCloseClicked(WndButton * pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -191,6 +224,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnRenameClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnTargetClicked),
+  ClickNotifyCallbackEntry(OnFlarmFreqSelectEnter),
   EndCallBackEntry()
 };
 
@@ -310,7 +344,7 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[indexid].ID);
+  flarmId = file->GetFlarmIdItem(LKTraffic[indexid].ID);
   if (flarmId != NULL) {
 	wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
 	if (wp) {
@@ -330,13 +364,28 @@ static void SetValues(int indexid) {
 		wp->SetText(buffer);
 		wp->RefreshDisplay();
 	}
-	wp = (WndProperty*)wf->FindByName(TEXT("prpFreq"));
-	if (wp) {
-		_stprintf(buffer,_T("%s"),flarmId->freq);
-		wp->SetText(buffer);
-		wp->RefreshDisplay();
-	}
 
+	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
+    _stprintf(buffer,_T("%sMHz"),flarmId->freq );
+    wFreq->SetVisible(false) ;
+	if(RadioPara.Enabled)
+	{
+	  double ASFrequency = ExtractFrequency((TCHAR*)flarmId->freq);
+	  if((ASFrequency >= 118) && (ASFrequency <= 138))
+	  {
+	    wFreq->SetCaption(buffer);
+        wFreq->SetVisible(true) ;
+	    wFreq->Redraw();
+	  }
+	}
+	else
+    {
+      wp = (WndProperty*)wf->FindByName(TEXT("prpFreq"));
+      if (wp) {
+        wp->SetText(buffer);
+        wp->RefreshDisplay();
+      }
+	}
 
   }
 		

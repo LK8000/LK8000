@@ -201,19 +201,19 @@ bool ParseAirports(XMLNode &airportsNode)
             if(GetAttribute(node,TEXT("CATEGORY"),dataStr) && GetContent(node,TEXT("TYPE"),type)) {
                 LPCTSTR freq=nullptr;
                 if(!GetContent(node, TEXT("FREQUENCY"), freq)) continue;
-                switch(dataStr[0]) {
+                switch(dataStr[0]) { //AlphaLima
                 case 'C': //COMMUNICATION Frequency used for communication
-                    comments<<"Comm "<<type<<": "<<freq<<" MHz "<<std::endl;
+                    comments <<type<< " "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
                     if(!found) toWrite=true;
                     break;
                 case 'I': //INFORMATION Frequency to automated information service
-                    comments<<"Info "<<type<<": "<<freq<<" MHz "<<std::endl;
+                    comments <<type<< " "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
                     break;
                 case 'N': //NAVIGATION Frequency used for navigation
-                    comments<<"Nav "<<type<<": "<<freq<<" MHz "<<std::endl;
+                    comments <<type<< " "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
                     break;
                 case 'O': //OHER Other frequency purpose
-                    comments<<"Other "<<type<<": "<<freq<<" MHz "<<std::endl;
+                    comments <<type<<" "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
                     break;
                 default:
                     continue;

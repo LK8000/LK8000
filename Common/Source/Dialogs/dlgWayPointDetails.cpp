@@ -19,6 +19,8 @@
 #include "utils/TextWrapArray.h"
 #include "resource.h"
 #include "LKStyle.h"
+#include "Sound/Sound.h"
+
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -148,6 +150,7 @@ static void OnWpCommentListInfo(WindowControl * Sender, WndListFrame::ListInfo_t
 	(void)Sender;
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = aCommentTextLine.size();
+    //AlphaLima
   } else {
     CommentDrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
   }
@@ -321,7 +324,38 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
+extern    double  ExtractFrequency(TCHAR*);
 
+static void OnMultiSelectEnter(WindowControl * Sender,
+                                       WndListFrame::ListInfo_t *ListInfo) {
+    (void) Sender;
+
+
+#ifdef RADIO_ACTIVE
+int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+TCHAR Tmp[255];
+TCHAR Tmp2[20];
+  if(ItemIndex >=0)
+  {
+   if(RadioPara.Enabled)
+   {
+     double ASFrequency = ExtractFrequency((TCHAR*)aCommentTextLine[ItemIndex]);
+      if((ASFrequency >= 118) && (ASFrequency <= 138))
+      {
+        LKSound(TEXT("LK_TICK.WAV"));
+        _sntprintf(Tmp2, 10, _T("%s"),(TCHAR*)aCommentTextLine[ItemIndex]);
+        Tmp2[10]=0;
+        _stprintf(Tmp,_T("%s%s%7.3fMHz"),Tmp2,NEWLINE,ASFrequency);
+        devPutFreqActive(ASFrequency, Tmp2);
+        DoStatusMessage(_T(""), Tmp );
+      }
+    }
+  }
+#endif  // RADIO_ACTIVE
+
+}
+
+static WndListFrame *wMultiSelect = NULL;
 
 void dlgWayPointDetailsShowModal(short mypage){
 
@@ -340,6 +374,10 @@ void dlgWayPointDetailsShowModal(short mypage){
   wCommand = ((WndFrame *)wf->FindByName(TEXT("frmCommands")));
   wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial")));
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
+
+  wMultiSelect = (WndListFrame*) wf->FindByName(TEXT("frmWpComment"));
+  LKASSERT(wMultiSelect != NULL);
+  wMultiSelect->SetEnterCallback(OnMultiSelectEnter);
 
   LKASSERT(wInfo!=NULL);
   LKASSERT(wCommand!=NULL);
