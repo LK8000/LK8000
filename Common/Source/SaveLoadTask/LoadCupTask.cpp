@@ -250,25 +250,25 @@ public:
 };
 
 bool LoadCupTask(LPCTSTR szFileName) {
-    LockTaskData();
+  //  LockTaskData();
 
-    mapCode2Waypoint_t mapWaypoint;
+  mapCode2Waypoint_t mapWaypoint;
 
-    ClearTask();
-    size_t idxTP = 0;
-    bool bTakeOff = true;
-    bool bLoadComplet = true;
-    bool bLastInvalid=true;
+  //  ClearTask();
+  size_t idxTP = 0;
+  bool bTakeOff = true;
+  bool bLoadComplet = true;
+  bool bLastInvalid=true;
 
-    TCHAR szString[READLINE_LENGTH + 1];
-    TCHAR TpCode[NAME_SIZE + 1];
+  TCHAR szString[READLINE_LENGTH + 1];
+  TCHAR TpCode[NAME_SIZE + 1];
 
-    szString[READLINE_LENGTH] = _T('\0');
-    TpCode[NAME_SIZE] = _T('\0');
+  szString[READLINE_LENGTH] = _T('\0');
+  TpCode[NAME_SIZE] = _T('\0');
 
-    memset(szString, 0, sizeof (szString)); // clear Temp Buffer
-    WAYPOINT newPoint = {0};
-    WAYPOINT* WPtoAdd=NULL;
+  memset(szString, 0, sizeof (szString)); // clear Temp Buffer
+  WAYPOINT newPoint = {0};
+  WAYPOINT* WPtoAdd=NULL;
 
   enum {
     none, Waypoint, TaskTp, Option
