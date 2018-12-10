@@ -41,7 +41,7 @@ void MapWindow::CalculateOrientationNormal(void) {
 	DisplayAircraftAngle = 0.0;
   }
 
-	if ( (DisplayOrientation == TARGETUP)) {
+	if (DisplayOrientation == TARGETUP) {
 		DisplayAngle = DerivedDrawInfo.WaypointBearing;
 		DisplayAircraftAngle = trackbearing-DisplayAngle;
 	}
