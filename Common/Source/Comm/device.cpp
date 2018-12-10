@@ -177,6 +177,30 @@ BOOL devGetBaroAltitude(double *Value){
 #endif
 
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
+
+  int i=0, ch;
+
+  if (!d->Com)
+    return FALSE;
+
+  while ((ch = d->Com->GetChar()) != EOF){
+
+    if (token[i] == (TCHAR)ch) 
+      i++;
+    else
+      i=0;
+
+    if ((unsigned)i == _tcslen(token))
+      return(TRUE);
+
+  }
+
+  return(FALSE);
+
+}
+
+
+BOOL ExpectFlarmString(PDeviceDescriptor_t d, const TCHAR *token){
 #define TIMEOUT 500
 #define TMP_STR_SIZE 512
 #define FLARMDECL_DEBUG 1
@@ -1211,7 +1235,7 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
   if(FLARMDECL_DEBUG)StartupStore(_T("... Flarm Declare expected: %s %s"),tmp2, NEWLINE);
   for(int i=0; i < 20; i++) /* try to get expected answer max 5 times*/
   {
-    if (ExpectString(d, tmp2))
+    if (ExpectFlarmString(d, tmp2)) 
       return true;
   }
 
