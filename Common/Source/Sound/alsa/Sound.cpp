@@ -49,6 +49,7 @@ SoundGlobalInit::~SoundGlobalInit() {
     if (pcm_handle) {
         snd_pcm_close(pcm_handle);
     }
+    snd_config_update_free_global();
 }
 
 bool IsSoundInit() {
