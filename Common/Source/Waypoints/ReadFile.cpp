@@ -183,8 +183,15 @@ goto_inloop:
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
 				if(!AddWaypoint(new_waypoint)) {
+					free(new_waypoint.Comment);
+					free(new_waypoint.Details);
 					return -1; // failed to allocate
 				}
+			} else {
+				free(new_waypoint.Comment);
+				free(new_waypoint.Details);
+				new_waypoint.Details = nullptr;
+				new_waypoint.Comment = nullptr;
 			}
 		}
 	}
@@ -203,8 +210,15 @@ goto_inloop:
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
 				if(!AddWaypoint(new_waypoint)) {
+					free(new_waypoint.Comment);
+					free(new_waypoint.Details);
 					return -1; // failed to allocate
 				}
+			} else {
+				free(new_waypoint.Comment);
+				free(new_waypoint.Details);
+				new_waypoint.Details = nullptr;
+				new_waypoint.Comment = nullptr;
 			}
 		}
 	}
@@ -220,8 +234,15 @@ goto_inloop:
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
 				if(!AddWaypoint(new_waypoint)) {
+					free(new_waypoint.Comment);
+					free(new_waypoint.Details);
 					return -1; // failed to allocate
 				}
+			} else {
+				free(new_waypoint.Comment);
+				free(new_waypoint.Details);
+				new_waypoint.Details = nullptr;
+				new_waypoint.Comment = nullptr;
 			}
 		}
 	}
@@ -242,8 +263,15 @@ goto_inloop:
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
 				if(!AddWaypoint(new_waypoint)) {
+					free(new_waypoint.Comment);
+					free(new_waypoint.Details);
 					return -1; // failed to allocate
 				}
+			} else {
+				free(new_waypoint.Comment);
+				free(new_waypoint.Details);
+				new_waypoint.Details = nullptr;
+				new_waypoint.Comment = nullptr;
 			}
 		}
 	}
