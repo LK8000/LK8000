@@ -70,6 +70,7 @@ void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
 int  dlgTextEntryShowModal(TCHAR *text, int width=0, bool WPKeyRed= false);
 void dlgNumEntryShowModal(TCHAR *text, int width, bool );
+int  dlgTextEntryShowModalAirspace(TCHAR *text, int width);
 void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 void dlgWaypointEditShowModal(WAYPOINT *wpt);
