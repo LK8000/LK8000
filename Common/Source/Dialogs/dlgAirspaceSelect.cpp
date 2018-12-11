@@ -15,6 +15,7 @@
 #include "Dialogs.h"
 #include "Event/Event.h"
 #include "resource.h"
+#include "Sound/Sound.h"
 
 typedef struct{
   CAirspace *airspace;
@@ -31,16 +32,19 @@ static double Longitude;
 static WndForm *wf=NULL;
 static WndListFrame *wAirspaceList=NULL;
 static WndOwnerDrawFrame *wAirspaceListEntry = NULL;
-
-static const TCHAR NameFilter[] = TEXT("*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
+#define NAMEFILTERLEN 10
+static TCHAR sNameFilter[NAMEFILTERLEN+1];
+static WndButton *wpnewName = NULL;
 static unsigned NameFilterIdx=0;
+
+static bool FullFlag=false; // 100502
 
 static const double DistanceFilter[] = {0.0, 25.0, 50.0, 75.0, 100.0, 150.0, 
                                   250.0, 500.0, 1000.0};
 static unsigned DistanceFilterIdx=0;
 
 #define DirHDG -1
-
+static int *StrIndex=NULL;
 static const int DirectionFilter[] = {0, DirHDG, 360, 30, 60, 90, 120, 150, 
                                 180, 210, 240, 270, 300, 330};
 static unsigned DirectionFilterIdx=0;
@@ -57,31 +61,66 @@ static int ItemIndex = -1;
 
 static AirspaceSelectInfo_t *AirspaceSelectInfo=NULL;
 
-static void OnAirspaceListEnter(WindowControl * Sender, 
-				WndListFrame::ListInfo_t *ListInfo){
-  (void)Sender; (void)ListInfo;
+
+
+
+static void OnEnableClicked(WndButton* pWnd)
+{
 
   if (ItemIndex != -1) {
-
+     const size_t i = (FullFlag) ? StrIndex[LowLimit + ItemIndex] : (LowLimit + ItemIndex);
     if ((UpLimit-LowLimit>0)
         && (ItemIndex >= 0)  // JMW fixed bug, was >0
         && (ItemIndex < (UpLimit - LowLimit))) {
 
-      CAirspace *airspace = AirspaceSelectInfo[LowLimit+ItemIndex].airspace;
+      CAirspace *airspace = AirspaceSelectInfo[i].airspace;
       if (airspace) {
           wf->SetTimerNotify(0,NULL);
+          LKSound(TEXT("LK_TICK.WAV"));
           CAirspaceManager::Instance().PopupAirspaceDetail(airspace);
       }
     }
   } else {
-    if(Sender) {
-      WndForm * pForm = Sender->GetParentWndForm();
+    if(pWnd) {
+      WndForm * pForm = pWnd->GetParentWndForm();
       if(pForm) {
         pForm->SetModalResult(mrCancel);
       }
     }    
   }
 }
+
+
+
+
+
+static void OnAirspaceListEnter(WindowControl * Sender,  WndListFrame::ListInfo_t *ListInfo)
+{
+
+if (ItemIndex != -1) {
+
+if ((UpLimit-LowLimit>0)
+&& (ItemIndex >= 0)  // JMW fixed bug, was >0
+&& (ItemIndex < (UpLimit - LowLimit))) {
+const size_t i = (FullFlag) ? StrIndex[LowLimit + ItemIndex] : (LowLimit + ItemIndex);
+CAirspace *airspace = AirspaceSelectInfo[i].airspace;
+if (airspace) {
+
+  if(airspace->Enabled())
+  {
+      LKSound(TEXT("LK_BEEP0.WAV"));
+     CAirspaceManager::Instance().AirspaceDisable(*airspace);
+  }else{
+      LKSound(TEXT("LK_BEEP1.WAV"));
+     CAirspaceManager::Instance().AirspaceEnable(*airspace);
+  }
+
+}
+}
+}
+}
+
+
 
 static int AirspaceNameCompare(const void *elem1, const void *elem2 ){
   if (((const AirspaceSelectInfo_t *)elem1)->FourChars < ((const AirspaceSelectInfo_t *)elem2)->FourChars)
@@ -108,6 +147,12 @@ static int AirspaceTypeCompare(const void *elem1, const void *elem2 ){
   return (+1);
 }
 
+static int AirspaceDisabledCompare(const void *elem1, const void *elem2 ){
+  if(((AirspaceSelectInfo_t *)elem1)->airspace !=NULL)
+    if (((const AirspaceSelectInfo_t *)elem1)->airspace->Enabled())
+      return (+1);
+  return (-1);
+}
 
 static int AirspaceDirectionCompare(const void *elem1, const void *elem2 ){
 
@@ -154,12 +199,20 @@ static void PrepareData(void){
 
   if (NumberOfAirspaces==0) return;
 
+  sNameFilter[0] =_T('\0');
   AirspaceSelectInfo = (AirspaceSelectInfo_t*)
     malloc(sizeof(AirspaceSelectInfo_t) * NumberOfAirspaces);
 
   if (AirspaceSelectInfo==NULL) {
 	OutOfMemory(_T(__FILE__),__LINE__);
 	return;
+  }
+
+  StrIndex = (int*)malloc(sizeof(int)*(NumberOfAirspaces+1));
+  if (StrIndex==NULL) {
+        OutOfMemory(_T(__FILE__),__LINE__);
+
+        return;
   }
 
   int index=0;
@@ -194,31 +247,45 @@ static void PrepareData(void){
 
 }
 
+
+
+
 static void UpdateList(void){
-
-//  TCHAR sTmp[128];
   int i;
-  bool distancemode = false;
-
-  ItemIndex = 0;
+ ItemIndex = 0;
 
   UpLimit= NumberOfAirspaces;
   LowLimit =0;
-
+  FullFlag=false;
   if (TypeFilterIdx>0) {
 
-    qsort(AirspaceSelectInfo, NumberOfAirspaces,
-        sizeof(AirspaceSelectInfo_t), AirspaceTypeCompare);
-    for (i=0; i<(int)NumberOfAirspaces; i++){
-      if (!(AirspaceSelectInfo[i].Type == TypeFilterIdx-1)){
-        UpLimit = i;
-        break;
+
+    if(TypeFilterIdx == AIRSPACECLASSCOUNT+1)
+    {
+        qsort(AirspaceSelectInfo, NumberOfAirspaces,
+               sizeof(AirspaceSelectInfo_t), AirspaceDisabledCompare);
+      for (i=0; i<(int)NumberOfAirspaces; i++){
+        if (AirspaceSelectInfo[i].airspace->Enabled()  ){
+          UpLimit = i;
+          break;
+        }
+    }
+    }
+    else
+    {
+      qsort(AirspaceSelectInfo, NumberOfAirspaces,
+          sizeof(AirspaceSelectInfo_t), AirspaceTypeCompare);
+      for (i=0; i<(int)NumberOfAirspaces; i++){
+        if (!(AirspaceSelectInfo[i].Type == TypeFilterIdx-1)){
+          UpLimit = i;
+          break;
+        }
       }
     }
   }
 
   if (DistanceFilterIdx != 0){
-    distancemode = true;
+
     qsort(AirspaceSelectInfo, UpLimit,
         sizeof(AirspaceSelectInfo_t), AirspaceDistanceCompare);
     for (i=0; i<(int)UpLimit; i++){
@@ -230,7 +297,7 @@ static void UpdateList(void){
   }
 
   if (DirectionFilterIdx != 0){
-    distancemode = true;
+
     qsort(AirspaceSelectInfo, UpLimit,
         sizeof(AirspaceSelectInfo_t), AirspaceDirectionCompare);
     for (i=0; i<UpLimit; i++){
@@ -241,36 +308,73 @@ static void UpdateList(void){
     }
   }
 
-  if (NameFilterIdx != 0){
-    TCHAR sTmp[8];
-    LowLimit = UpLimit;
-    qsort(AirspaceSelectInfo, UpLimit,
-        sizeof(AirspaceSelectInfo_t), AirspaceNameCompare);
-    sTmp[0] = NameFilter[NameFilterIdx];
-    sTmp[1] = '\0';
-    sTmp[2] = '\0';
-    CharUpper(sTmp);
-    for (i=0; i<UpLimit; i++){
-      if ((BYTE)(AirspaceSelectInfo[i].FourChars >> 24) >= (sTmp[0]&0xff)){
-        LowLimit = i;
-        break;
-      }
-    }
 
+  TCHAR sTmp[NAMEFILTERLEN+1];
+  TCHAR wname[NAME_SIZE+1];
+  LowLimit = UpLimit;
+  qsort(AirspaceSelectInfo, UpLimit,
+      sizeof(AirspaceSelectInfo_t), AirspaceNameCompare);
+
+  LK_tcsncpy(sTmp,sNameFilter, NAMEFILTERLEN);
+  CharUpper(sTmp);
+  int iFilterLen = _tcslen(sNameFilter);
+
+  if (iFilterLen<GC_SUB_STRING_THRESHOLD)
+  {
+  for (i=0; i<UpLimit; i++){
+    // compare entire name which may be more than 4 chars
+
+      LKASSERT(i>=0 && i< NumberOfAirspaces);
+      LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name() , NAME_SIZE);
+      CharUpper(wname);
+
+    if (_tcsnicmp(wname,sTmp,iFilterLen) >= 0) {
+      LowLimit = i;
+      break;
+    }
+  }
+
+  if (_tcscmp(sTmp, TEXT("")) != 0) { // if it's blanks, then leave UpLimit at end of list
     for (; i<UpLimit; i++){
-      if ((BYTE)(AirspaceSelectInfo[i].FourChars >> 24) != (sTmp[0]&0xff)){
+
+        LKASSERT(i>=0 && i< NumberOfAirspaces);
+      LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name(), NAME_SIZE);
+      CharUpper(wname);
+
+      if (_tcsnicmp(wname,sTmp,iFilterLen) != 0) {
         UpLimit = i;
         break;
       }
     }
   }
+  } else { // iFilterLen>3, fulltext search 100502
+      FullFlag=true;
+      int matches=0;
+      // the AirspaceSelectInfo list has been sorted by filters, and then sorted by name. 0-UpLimit is the size.
+      // now we create a secondary index pointing to this list
+      for (i=0, matches=0; i<UpLimit; i++) {
 
-  if (!distancemode) {
-    qsort(&AirspaceSelectInfo[LowLimit], UpLimit-LowLimit,
-	  sizeof(AirspaceSelectInfo_t), AirspaceNameCompare);
-  } else {
-    qsort(&AirspaceSelectInfo[LowLimit], UpLimit-LowLimit,
-	  sizeof(AirspaceSelectInfo_t), AirspaceDistanceCompare);
+          LKASSERT(i>=0 && i< NumberOfAirspaces);
+              LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name(), NAME_SIZE);
+              CharUpper(wname);
+
+              if ( _tcsstr(  wname,sTmp ) ) {
+                      StrIndex[matches++]=i;
+              }
+      }
+      // No need to set flag if no results
+      if (matches>0) {
+              LowLimit=0;
+              UpLimit=matches;
+/*
+              for (i=0; i<UpLimit; i++)
+                      StartupStore(_T("StrIndex[%d] = %d <%s>\n"), i, StrIndex[i], WayPointList[WayPointSelectInfo[StrIndex[i]].Index].Name);
+*/
+      } else {
+              LowLimit=0;
+              UpLimit=0;
+      }
+
   }
 
   wAirspaceList->ResetList();
@@ -279,7 +383,8 @@ static void UpdateList(void){
 }
 
 
-static WndProperty *wpName;
+
+//static WndProperty *wpName;
 static WndProperty *wpDistance;
 static WndProperty *wpDirection;
 
@@ -298,57 +403,96 @@ static void FilterMode(bool direction) {
     }
   } else {
     NameFilterIdx=0;
-    if (wpName) {
+/*    if (wpName) {
       wpName->GetDataField()->Set(TEXT("**"));
       wpName->RefreshDisplay();
-    }
+    }*/
   }
 }
 
 
+static void SetNameCaption(const TCHAR* tFilter) {
 
-static void OnFilterName(DataField *Sender, DataField::DataAccessKind_t Mode){
+  TCHAR namfilter[50];
+  if ( _tcscmp(tFilter,_T("*")) == 0)
+        _tcscpy(namfilter,_T("*"));
+  else {
+        if (_tcslen(tFilter) <GC_SUB_STRING_THRESHOLD)
+                _stprintf(namfilter,_T("%s*"),tFilter);
+        else
+          {
+                if (_tcslen(tFilter) <6)
+                        _stprintf(namfilter,_T("*%s*"),tFilter);
+                else {
+                        _tcscpy(namfilter,_T("*"));
+                        _tcsncat(namfilter,tFilter,5);
+                        namfilter[5]='\0';
+                        _tcscat(namfilter,_T("..*"));
+                }
+        }
 
-  TCHAR sTmp[12];
-  int siz;
+  }
+//  StartupStore(_T("SETCAPTION <%s>\n"),namfilter);
+  wpnewName->SetCaption(namfilter);
 
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    break;
-    case DataField::daChange:
-    break;
-    case DataField::daInc:
-      NameFilterIdx++;
-	siz=sizeof(NameFilter[0]);
-	LKASSERT(siz>0);
-      if (siz>0) // 100101
-      if (NameFilterIdx > sizeof(NameFilter)/sizeof(NameFilter[0])-2)
-        NameFilterIdx = 1;
-      FilterMode(true);
-      UpdateList();
-    break;
-    case DataField::daDec:
-      if (NameFilterIdx == 0) {
-	siz=sizeof(NameFilter[0]);
-	LKASSERT(siz>0);
-        if (siz>0) // 100101
-		NameFilterIdx = sizeof(NameFilter)/sizeof(NameFilter[0])-1;
+}
+
+static void OnFilterName(WndButton* pWnd) {
+
+  int SelectedAsp=-1;
+  int CursorPos=0;
+TCHAR newNameFilter[NAMEFILTERLEN+1];
+
+LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
+SelectedAsp =  dlgTextEntryShowModalAirspace(newNameFilter, NAMEFILTERLEN);
+
+
+
+int i= _tcslen(newNameFilter)-1;
+while (i>=0) {
+ if (newNameFilter[i]!=_T(' ')) {
+         break;
+ }
+ newNameFilter[i]=0;
+ i--;
+};
+
+LK_tcsncpy(sNameFilter, newNameFilter, NAMEFILTERLEN);
+
+
+if (wpnewName) {
+      if (sNameFilter[0]=='\0') {
+          SetNameCaption(TEXT("*"));
+      } else {
+          SetNameCaption(sNameFilter);
       }
-      else
-        NameFilterIdx--;
-      FilterMode(true);
-      UpdateList();
-    break;
-  case DataField::daSpecial:
-    break;
-  }
-
-  _stprintf(sTmp, TEXT("%c*"), NameFilter[NameFilterIdx]);
-  Sender->Set(sTmp);
-
 }
+
+FilterMode(true);
+UpdateList();
+
+if((SelectedAsp>=0) && (SelectedAsp < NumberOfAirspaces))
+{
+    CursorPos = SelectedAsp;
+    /*
+ for (i=0; i<UpLimit; i++)
+ {
+
+     if(AirspaceSelectInfo[i].Index == SelectedAsp)
+     {
+           CursorPos = i;
+     }
+     */
+ }
+
+
+ wAirspaceList->SetFocus();
+wAirspaceList->SetItemIndexPos(CursorPos);
+wAirspaceList->Redraw();
+}
+
+
+
 
 
 
@@ -469,13 +613,13 @@ static void OnFilterType(DataField *Sender,
     break;
     case DataField::daInc:
       TypeFilterIdx++;
-      if (TypeFilterIdx > AIRSPACECLASSCOUNT) TypeFilterIdx = 0;		//Need to limit+1 because idx shifted with +1
+      if (TypeFilterIdx > (AIRSPACECLASSCOUNT+1)) TypeFilterIdx = 0;		//Need to limit+1 because idx shifted with +1
       FilterMode(false);
       UpdateList();
     break;
     case DataField::daDec:
       if (TypeFilterIdx == 0)
-        TypeFilterIdx = AIRSPACECLASSCOUNT;		//Need to limit+1 because idx shifted with +1
+        TypeFilterIdx = AIRSPACECLASSCOUNT+1;		//Need to limit+1 because idx shifted with +1
       else
         TypeFilterIdx--;
       FilterMode(false);
@@ -486,7 +630,10 @@ static void OnFilterType(DataField *Sender,
   }
 
   if (TypeFilterIdx>0) {
-	LK_tcsncpy(sTmp, CAirspaceManager::GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0])-1);
+    if( TypeFilterIdx == AIRSPACECLASSCOUNT+1)
+      _tcscpy(sTmp, MsgToken(239));
+    else
+      LK_tcsncpy(sTmp, CAirspaceManager::GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0])-1);
   } else {
 	_tcscpy(sTmp, TEXT("*"));
   }
@@ -494,66 +641,72 @@ static void OnFilterType(DataField *Sender,
 
 }
 
-static int DrawListIndex=0;
 
-static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
-  (void)Sender;
-  int n = UpLimit - LowLimit;
-  TCHAR sTmp[12];
 
-  if (DrawListIndex < n){
+static unsigned int DrawListIndex=0;
 
-    int i = LowLimit + DrawListIndex;
+// Painting elements after init
+
+static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
+    if (!Sender) {
+        return;
+    }
+
+    unsigned int n = UpLimit - LowLimit;
+    TCHAR sTmp[50];
 
     Surface.SetTextColor(RGB_BLACK);
 
-// Poco::Thread::sleep(100);
-	const TCHAR *Name = NULL;
-	if (AirspaceSelectInfo[i].airspace) Name = AirspaceSelectInfo[i].airspace->Name();
-    if (Name) {
-      const PixelRect rcClient(Sender->GetClientRect());
-      const int w0 = rcClient.GetSize().cx;
-      const int w1 = Surface.GetTextWidth(TEXT("XXX")) + DLGSCALE(2);
-      
-      _stprintf(sTmp, TEXT(" 000%s"), Units::GetDistanceName());
-      const int w2 = Surface.GetTextWidth(sTmp) + DLGSCALE(2);
-      
-      _stprintf(sTmp, _T(" -000%s"), MsgToken(2179));
-      const int w3 = Surface.GetTextWidth(sTmp) + DLGSCALE(2);
-      
-      const int x1 = w0-w1-w2-w3;
+    const int LineHeight = Sender->GetHeight();
+    const int TextHeight = Surface.GetTextHeight(_T("dp"));
 
-      Surface.DrawTextClip(DLGSCALE(2), DLGSCALE(2), Name, x1-DLGSCALE(5));
-      
-      sTmp[0] = '\0';
-      sTmp[1] = '\0';
-      sTmp[2] = '\0';
-	  LK_tcsncpy(sTmp, CAirspaceManager::GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
-      // left justified
-     
-      Surface.DrawText(x1, DLGSCALE(2), sTmp);
+    const int TextPos = (LineHeight - TextHeight) / 2; // offset for text vertical center
 
-      // right justified after airspace type
-      _stprintf(sTmp, TEXT("%.0f%s"), AirspaceSelectInfo[i].Distance, Units::GetDistanceName());
-      const int x2 = w0-w3-Surface.GetTextWidth(sTmp);
-      Surface.DrawText(x2, DLGSCALE(2), sTmp);
-      
-      // right justified after distance
-      _stprintf(sTmp, TEXT("%d%s"),  iround(AirspaceSelectInfo[i].Direction), MsgToken(2179));
-      const int x3 = w0-Surface.GetTextWidth(sTmp);
-      Surface.DrawText(x3, DLGSCALE(2), sTmp);
+    if (DrawListIndex < n) {
+
+        const size_t i = (FullFlag) ? StrIndex[LowLimit + DrawListIndex] : (LowLimit + DrawListIndex);
+
+        // Poco::Thread::sleep(100);
+
+        const int width = Sender->GetWidth(); // total width
+
+        const int w0 = LineHeight; // Picto Width
+        const int w2 = Surface.GetTextWidth(TEXT(" 000km")); // distance Width
+        _stprintf(sTmp, _T(" 000%s "), MsgToken(2179));
+        const int w3 = Surface.GetTextWidth(sTmp); // bearing width
+
+        const int w1 = width - w0 - 2*w2 - w3; // Max Name width
+
+        // Draw Picto
+        const RECT PictoRect = {0, 0, w0, LineHeight};
+
+        AirspaceSelectInfo[i].airspace->DrawPicto(Surface, PictoRect);
+
+
+        // Draw Name
+        Surface.DrawTextClip(w0, TextPos, AirspaceSelectInfo[i].airspace->Name() , w1);
+
+        LK_tcsncpy(sTmp,  CAirspaceManager::GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type) , 4);
+        const int w4 = Surface.GetTextWidth(sTmp);
+
+        Surface.DrawTextClip(w1+w2, TextPos, sTmp,w4);
+
+        // Draw Distance : right justified after waypoint Name
+        _stprintf(sTmp, TEXT("%.0f%s"), AirspaceSelectInfo[i].Distance  , Units::GetDistanceName());
+        const int x2 = width - w3 - Surface.GetTextWidth(sTmp);
+        Surface.DrawText(x2, TextPos, sTmp);
+
+        // Draw Bearing right justified after distance
+        _stprintf(sTmp, TEXT("%d%s"), iround(AirspaceSelectInfo[i].Direction), MsgToken(2179));
+        const int x3 = width - Surface.GetTextWidth(sTmp);
+        Surface.DrawText(x3, TextPos, sTmp);
     } else {
-      // should never get here!
+        if (DrawListIndex == 0) {
+            // LKTOKEN  _@M466_ = "No Match!"
+            Surface.DrawText(IBLSCALE(2), TextPos, MsgToken(466));
+        }
     }
-  } else {
-    if (DrawListIndex == 0){
-      Surface.SetTextColor(RGB_BLACK);
-	// LKTOKEN  _@M466_ = "No Match!" 
-      Surface.DrawText(DLGSCALE(2), DLGSCALE(2), MsgToken(466));
-    }
-  }
 }
-
 // DrawListIndex = number of things to draw
 // ItemIndex = current selected item
 
@@ -578,7 +731,12 @@ static void OnWPSCloseClicked(WndButton* pWnd){
       pForm->SetModalResult(mrCancel);
     }
   }
+  wf->SetTimerNotify(0,NULL);
+
 }
+
+
+
 
 static bool OnTimerNotify(WndForm* pWnd) {
   if (DirectionFilterIdx == 1){
@@ -624,7 +782,6 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DataAccessCallbackEntry(OnFilterName),
   DataAccessCallbackEntry(OnFilterDistance),
   DataAccessCallbackEntry(OnFilterDirection),
   DataAccessCallbackEntry(OnFilterType),
@@ -636,7 +793,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgAirspaceSelect(void) {
 
-  StartHourglassCursor();
+//  StartHourglassCursor();
 
   UpLimit = 0;
   LowLimit = 0;
@@ -656,6 +813,16 @@ void dlgAirspaceSelect(void) {
    FindByName(TEXT("cmdClose")))->
     SetOnClickNotify(OnWPSCloseClicked);
 
+  ((WndButton *)wf->
+   FindByName(TEXT("cmdSelect")))->
+    SetOnClickNotify(OnEnableClicked);
+
+  ((WndButton *)wf->
+   FindByName(TEXT("cmdName")))->
+    SetOnClickNotify(OnFilterName);
+
+  wpnewName = (WndButton*)wf->FindByName(TEXT("cmdName"));
+
   wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));
   LKASSERT(wAirspaceList!=NULL);
   wAirspaceList->SetBorderKind(BORDERLEFT);
@@ -666,26 +833,41 @@ void dlgAirspaceSelect(void) {
   LKASSERT(wAirspaceListEntry!=NULL);
   wAirspaceListEntry->SetCanFocus(true);
 
-  wpName = (WndProperty*)wf->FindByName(TEXT("prpFltName"));
+//  wpName = (WndProperty*)wf->FindByName(TEXT("prpFltName"));
+
   wpDistance = (WndProperty*)wf->FindByName(TEXT("prpFltDistance"));
   wpDirection = (WndProperty*)wf->FindByName(TEXT("prpFltDirection"));
 
   PrepareData();
+
   if (AirspaceSelectInfo==NULL){
 	StopHourglassCursor();
 	goto _return;
   }
   UpdateList();
 
-  wf->SetTimerNotify(1000, OnTimerNotify);
 
-  StopHourglassCursor();
-  wf->ShowModal();
+  if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0)
+   && (ItemIndex < (UpLimit - LowLimit))) {
+
+        if (FullFlag)
+                ItemIndex = StrIndex[LowLimit + ItemIndex];
+        else
+                ItemIndex = LowLimit + ItemIndex;
+  }else
+        ItemIndex = -1;
+
+  wf->SetTimerNotify(10000, OnTimerNotify);
+
+
 
 _return:
   if (AirspaceSelectInfo!=NULL) free(AirspaceSelectInfo);
+  if (StrIndex!=NULL) free(StrIndex);
+  StrIndex = NULL;
   delete wf;
   wf = NULL;
+
   return;
 
 }
