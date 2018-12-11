@@ -120,9 +120,10 @@ bool ParseAirports(XMLNode &airportsNode)
         return false;
     } else StartupStore(TEXT(".. OpenAIP waypoints file contains: %u airports.%s"), (unsigned)numOfAirports, NEWLINE);
 
+    bool return_success = true;
     XMLNode AirportNode;
     LPCTSTR dataStr=nullptr;
-    for(int i=0;i<numOfAirports;i++) {
+    for(int i=0;i<numOfAirports && return_success;i++) {
         AirportNode=airportsNode.getChildNode(i);
 
         // Skip not valid AIRPORT tags and TYPE attributes
@@ -303,10 +304,21 @@ bool ParseAirports(XMLNode &airportsNode)
         }
 
         // Add the new waypoint
-        if (WaypointInTerrainRange(&new_waypoint))
-            if(!AddWaypoint(new_waypoint)) return false; // failed to allocate
+        if (WaypointInTerrainRange(&new_waypoint)) {
+            if(AddWaypoint(new_waypoint)) {
+                // ownership of this 2 pointer has benn transfered to WaypointList
+                new_waypoint.Details = nullptr;
+                new_waypoint.Comment = nullptr;
+            } else {
+                return_success = false;
+            }
+        } 
+        free(new_waypoint.Comment);
+        free(new_waypoint.Details);
+        new_waypoint.Details = nullptr;
+        new_waypoint.Comment = nullptr;
     }
-    return true;
+    return return_success;
 }
 
 bool ParseNavAids(XMLNode &navAidsNode)
@@ -323,7 +335,10 @@ bool ParseNavAids(XMLNode &navAidsNode)
 
     XMLNode NavAidNode;
     LPCTSTR dataStr=nullptr;
-    for(int i=0;i<numOfNavAids;i++) {
+
+    bool return_success = true;
+
+    for(int i=0;i<numOfNavAids && return_success ;i++) {
         NavAidNode=navAidsNode.getChildNode(i);
 
         // Skip not valid NAVAID tags and TYPE attributes
@@ -414,10 +429,21 @@ bool ParseNavAids(XMLNode &navAidsNode)
         }
 
         // Add the new waypoint
-        if (WaypointInTerrainRange(&new_waypoint))
-            if(!AddWaypoint(new_waypoint)) return false; // failed to allocate
+        if (WaypointInTerrainRange(&new_waypoint)) {
+            if(AddWaypoint(new_waypoint)) {
+                // ownership of this 2 pointer has been transfered to WaypointList
+                new_waypoint.Details = nullptr;
+                new_waypoint.Comment = nullptr;
+            } else {
+                return_success = false;
+            } 
+        } 
+        free(new_waypoint.Comment);
+        free(new_waypoint.Details);
+        new_waypoint.Details = nullptr;
+        new_waypoint.Comment = nullptr;
     } // end of for each nav aid
-    return true;
+    return return_success;
 }
 
 bool ParseHotSpots(XMLNode &hotSpotsNode) {
@@ -431,9 +457,10 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
         return false;
     } else StartupStore(TEXT(".. OpenAIP hot spots file contains: %u hot spots.%s"), (unsigned)numOfHotSpots, NEWLINE);
 
+    bool return_success = true;
     XMLNode HotSpotNode;
     LPCTSTR dataStr=nullptr;
-    for(int i=0;i<numOfHotSpots;i++) {
+    for(int i=0;i<numOfHotSpots && return_success;i++) {
         HotSpotNode=hotSpotsNode.getChildNode(i);
 
         // Skip not valid HOTSPOT tags and TYPE attributes
@@ -518,10 +545,21 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
         }
 
         // Add the new waypoint
-        if (WaypointInTerrainRange(&new_waypoint))
-            if(!AddWaypoint(new_waypoint)) return false; // failed to allocate
+        if (WaypointInTerrainRange(&new_waypoint)) {
+            if(AddWaypoint(new_waypoint)) {
+                // ownership of this 2 pointer has been transfered to WaypointList
+                new_waypoint.Details = nullptr;
+                new_waypoint.Comment = nullptr;
+            } else {
+                return_success = false;
+            } 
+        } 
+        free(new_waypoint.Comment);
+        free(new_waypoint.Details);
+        new_waypoint.Details = nullptr;
+        new_waypoint.Comment = nullptr;
     } // end of for each nav aid
-    return true;
+    return return_success;
 }
 
 bool GetGeolocation(XMLNode &parentNode, double &lat, double &lon, double &alt) {
