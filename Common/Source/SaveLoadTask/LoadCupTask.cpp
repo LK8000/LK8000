@@ -668,25 +668,22 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
       TCHAR text2[180] = {TEXT("empty")};
 
       _tcscpy(text, szTaskStrings [TaskDrawListIndex] );
-      if(text != NULL)
+    unsigned int i=0;
+    while (i < _tcslen(text) )  // remove all quotations "
+    {
+        if(text[i]== '"')    //  quotations found ?
         {
-          unsigned int i=0;
-          while (i < _tcslen(text) )  // remove all quotations "
-            {
-              if(text[i]== '"')    //  quotations found ?
-                {
-                  for (unsigned int j= i ; j < _tcslen(text); j++)
-                    text[j] =  text[j+1];
-                }
-              i++;
-            }
-          pToken = strsep_r(text, TEXT(","), &pWClast) ;
-          _tcscpy(text1, pToken );
-          if(*text1 == '\0')   _tcscpy(text1, _T("???") );
-
-          pToken = strsep_r(pWClast, TEXT(","), &pWClast2) ;  // remove takeof point
-          _tcscpy(text2, pWClast2);
+            for (unsigned int j= i ; j < _tcslen(text); j++)
+            text[j] =  text[j+1];
         }
+        i++;
+    }
+    pToken = strsep_r(text, TEXT(","), &pWClast) ;
+    _tcscpy(text1, pToken );
+    if(*text1 == '\0')   _tcscpy(text1, _T("???") );
+
+    pToken = strsep_r(pWClast, TEXT(","), &pWClast2) ;  // remove takeof point
+    _tcscpy(text2, pWClast2);
 
       Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
 
