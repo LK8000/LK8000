@@ -326,7 +326,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
     if(szTaskStrings[i] != NULL)
       {
         // StartupStore(_T("..Cup Task : delete dynamic memoryLine %i %s"), i,NEWLINE);
-        delete szTaskStrings[i];
+        delete[] szTaskStrings[i];
         szTaskStrings[i] = NULL;
       }
    if(res == mrCancel)
