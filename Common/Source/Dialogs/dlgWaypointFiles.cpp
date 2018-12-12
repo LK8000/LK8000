@@ -55,7 +55,7 @@ static void setVariables(void) {
 
 
 
-        _stprintf(tmp,_T("%s %1u "), MsgToken(2241),i+1);
+        _stprintf(tmp,_T("%s %1u "), MsgToken(2341),i+1);  // _@M2341_ "Waypoint File"   
         wp->SetCaption(tmp);
       }
       wp->RefreshDisplay();

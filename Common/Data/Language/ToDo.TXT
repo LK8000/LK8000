@@ -416,27 +416,19 @@ _@M2322_ "Enable Radar"
 +_@M2190_ "Distance to Next Turnpoint Cylinder Radius"
 +_@M2191_ "Cyl Dist"
 
-change entries into (number removed)
-_@M63_ "Airspace Files"
-_@M64_ "Airspace File "
-_@M806_ "Waypoint Files"
-_@M807_ "Waypoint File"   
-   
-
-_@M2336_
-ICAO Code 
-
-_@M2252_ "MANUAL"
-_@M2253_ "AUTO THERMALLING"
-_@M2254_ "FULL AUTO"
 
 
 
+_@M2336_ "ICAO Code"
+_@M2337_ "Airspace\nLookup"
 _@M2338_ "Airspace Files"   #_@M63_ 
 _@M2339_ "Airspace File "   #_@M64_   
-_@M2240_ "Waypoint Files"   #_@M806_
-_@M2241_ "Waypoint File"      #_@M807_
-_@M2242_ "File"           #_@M1227_ 
+_@M2340_ "Waypoint Files"   #_@M806_
+_@M2341_ "Waypoint File"    #_@M807_
+_@M2342_ "File"             #_@M1227_ 
+_@M2343_ "Include Data"
+_@M2344_ "Exclude Data" 
+
 _@M2400_ "Target up"
 
 

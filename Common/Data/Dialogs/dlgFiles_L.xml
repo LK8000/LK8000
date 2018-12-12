@@ -6,28 +6,28 @@
       <WndProperty Name="prpFile1" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpFile2" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile2" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpFile3" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile3" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpFile4" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile4" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpFile5" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile5" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpFile6" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile6" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpFile7" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile7" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpFile8" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile8" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpFile9" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile9" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
   </WndForm>
