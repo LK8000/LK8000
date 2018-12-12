@@ -705,6 +705,7 @@
 
 #define LK_OLC_FAI_CLOSE			125
 #define LK_OLC_FAI_CLOSE_PERCENT	126
+#define LK_OLC_FAI_CLOSE_PERCENT	126
 #define LK_BANK_ANGLE                   127
 #define LK_ALTERN1_RAD                  128
 #define LK_ALTERN2_RAD                  129
@@ -717,41 +718,46 @@
 #define LK_QNE           135		// Barometric QNE Altitude
 #define LK_NEXT_DIST_RADIUS   136	  // Distance to Next turnpoint minus turnpoint cylindre radius (center for line and sector turnpoint)
 
+
+#define LK_XC_FF_DIST       137     // Additional Contest FREE Flight distance
+#define LK_XC_FF_SCORE      138     // Additional Contest FREE Flight score
+#define LK_XC_FT_DIST       139     // Additional Contest FREE Triangle distance
+#define LK_XC_FT_SCORE      140     // Additional Contest FREE Triangle score
+#define LK_XC_FAI_DIST      141     // Additional Contest FAI Triangle distance
+#define LK_XC_FAI_SCORE     142     // Additional Contest FAI Triangle score
+#define LK_XC_DIST          143     // Additional Contest combined distance
+#define LK_XC_SCORE         144     // Additional Contest combined score
+#define LK_XC_CLOSURE_DIST       145     // Additional Contest combined closure distance
+#define LK_XC_CLOSURE_PERC       146     // Additional Contest combined closure %
+#define LK_XC_PREDICTED_DIST     147     // Additional Contest combined closure distance
+#define LK_XC_MEAN_SPEED     148     // Additional Contest mean speed
+
+
 // The following values are not available for custom configuration
 
-#define LK_WIND			141		//
-#define LK_FIN_ALTDIFF0		142		// final (task) altitude difference at MC=0
-#define LK_LKFIN_ETE		143		// real ETE
-#define LK_NEXT_ALTDIFF0	144		//
-#define LK_TIME_LOCALSEC	145		// with seconds displayed
+#define LK_WIND			    233		//
+#define LK_FIN_ALTDIFF0		234		// final (task) altitude difference at MC=0
+#define LK_LKFIN_ETE		235		// real ETE
+#define LK_NEXT_ALTDIFF0	236		//
+#define LK_TIME_LOCALSEC	237		// with seconds displayed
 // Target infos
-#define LK_TARGET_DIST		146		//
-#define LK_TARGET_TO		147		//
-#define LK_TARGET_BEARING	148		//
-#define LK_TARGET_SPEED		149		//
-#define LK_TARGET_ALT		150		//
-#define LK_TARGET_ALTDIFF	151		//
-#define LK_TARGET_VARIO		152		//
-#define LK_TARGET_AVGVARIO	153		//
-#define LK_TARGET_ALTARRIV	154		//
-#define LK_TARGET_GR		155		//
-#define LK_TARGET_EIAS		156		//
+#define LK_TARGET_DIST		238		//
+#define LK_TARGET_TO		239		//
+#define LK_TARGET_BEARING	240		//
+#define LK_TARGET_SPEED		241		//
+#define LK_TARGET_ALT		242		//
+#define LK_TARGET_ALTDIFF	243		//
+#define LK_TARGET_VARIO		244		//
+#define LK_TARGET_AVGVARIO	245		//
+#define LK_TARGET_ALTARRIV	246		//
+#define LK_TARGET_GR		247		//
+#define LK_TARGET_EIAS		248		//
 // Time gates
-#define LK_START_DIST		157		//
+#define LK_START_DIST		249		//
 
-// overtarget values  UNUSED
-// #define LK_ALT1_DIST		158		//
-// #define LK_ALT2_DIST		159		//
-// #define LK_BALT_DIST		160		//
-// #define LK_ALT1_BRGDIFF		161		//
-// #define LK_ALT2_BRGDIFF		162		//
-// #define LK_BALT_BRGDIFF		163		//
-// #define LK_LASTTHERMAL_DIST	164		//
-// #define LK_LASTTHERMAL_BRGDIFF	165		//
-
-#define LK_NEXT_CENTER_ALTDIFF 166  // Same As  LK_NEXT_ALTDIFF but always with Waypoint center
-#define LK_NEXT_CENTER_GR	167	// Same as LK_NEXT_GR but always with Waypoint center
-#define LK_START_SPEED		168	// Requiered speed for reach Start of task at Gate Time !
+#define LK_NEXT_CENTER_ALTDIFF 250  // Same As  LK_NEXT_ALTDIFF but always with Waypoint center
+#define LK_NEXT_CENTER_GR	251	// Same as LK_NEXT_GR but always with Waypoint center
+#define LK_START_SPEED		252	// Requiered speed for reach Start of task at Gate Time !
 
 
 // Service values

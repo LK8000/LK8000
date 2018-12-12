@@ -32,6 +32,7 @@
 #include "Sound/Sound.h"
 #include "resource.h"
 #include "LKStyle.h"
+#include "ContestMgr.h"
 
 #ifdef ANDROID
 #include <jni.h>
@@ -3250,6 +3251,18 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalContestRule"));
+  if (wp)
+  {
+    DataField* dfe = wp->GetDataField();
+    for (int i=0; i<CContestMgr::NUM_OF_XC_RULES; i++) {
+      dfe->addEnumText(CContestMgr::XCRuleToString(i));
+    }
+    dfe->Set(AdditionalContestRule);
+    wp->RefreshDisplay();
+  }
+
+
 #if 0  // no gear warning, just in case
 {
 GearWarningMode =0;
@@ -4551,6 +4564,12 @@ int ival;
     }
 
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalContestRule"));
+  if (wp) {
+      AdditionalContestRule = wp->GetDataField()->GetAsInteger();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
   if (wp) {
 	  unsigned tmp = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);

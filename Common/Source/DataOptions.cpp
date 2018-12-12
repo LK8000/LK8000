@@ -309,9 +309,21 @@ void FillDataOptions()
 	SetDataOption(135, ugAltitude,TEXT("_@M2323_"), TEXT("_@M2324_"));  // Altitude QNE
 	SetDataOption(135, ugAltitude,TEXT("_@M2323_"), TEXT("_@M2324_"));  // Altitude QNE
 	SetDataOption(LK_NEXT_DIST_RADIUS, ugDistance, TEXT("_@M2190_"), TEXT("_@M2191_")); // Dist to next Cylinder turnpoint
-
+	SetDataOption(LK_XC_FF_DIST, ugDistance, TEXT("_@M2255_"), TEXT("_@M2266_"));		// AdditionalContest FREE Fligth distance
+	SetDataOption(LK_XC_FF_SCORE, ugNone, TEXT("_@M2256_"), TEXT("_@M2267_"));		// AdditionalContest FREE Fligth score
+	SetDataOption(LK_XC_FT_DIST, ugDistance, TEXT("_@M2257_"), TEXT("_@M2268_"));		// AdditionalContest FREE Triangle distance
+	SetDataOption(LK_XC_FT_SCORE, ugNone, TEXT("_@M2258_"), TEXT("_@M2269_"));		// AdditionalContest FREE Triangle score
+	SetDataOption(LK_XC_FAI_DIST, ugDistance, TEXT("_@M2259_"), TEXT("_@M2270_"));		// AdditionalContest FAI Triangle distance
+	SetDataOption(LK_XC_FAI_SCORE, ugNone, TEXT("_@M2260_"), TEXT("_@M2271_"));		// AdditionalContest FAI Triangle score
+    SetDataOption(LK_XC_DIST, ugDistance, TEXT("_@M2261_"), TEXT("_@M2272_"));		// AdditionalContest combined distance
+    SetDataOption(LK_XC_SCORE, ugNone, TEXT("_@M2262_"), TEXT("_@M2273_"));		// AdditionalContest combined score
+    SetDataOption(LK_XC_CLOSURE_DIST, ugDistance, TEXT("_@M2263_"), TEXT("_@M2274_"));		   // AdditionalContest combined closure distance
+    SetDataOption(LK_XC_CLOSURE_PERC, ugDistance, TEXT("_@M2264_"), TEXT("_@M2275_"));		// AdditionalContest combined closure %
+    SetDataOption(LK_XC_PREDICTED_DIST, ugDistance, TEXT("_@M2265_"), TEXT("_@M2276_"));		   // Additional Contest combined distance
+	SetDataOption(LK_XC_MEAN_SPEED, ugDistance, TEXT("_@M2277_"), TEXT("_@M2278_"));		   // Additional Contest combined distance
+  
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
-  static_assert(LK_NEXT_DIST_RADIUS < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
+  static_assert(LK_XC_MEAN_SPEED < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
 
 
     // Fill all null string pointer with empty string, avoid to check all time is used.

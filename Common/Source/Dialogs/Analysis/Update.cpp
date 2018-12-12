@@ -280,67 +280,86 @@ void UpdateAnalysis(WndForm* pForm){
         double  fDist     = result.Distance();
         if(!bFAI && ( typeFAITriangle))  // was only !bFAI
 		fDist /=2.0;
-        double  fCPDist   = CContestMgr::Instance().GetClosingPointDist();
-        double  fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
-    // 	LKASSERT( fDist >0 );
-        if(fDist < 10.0)
-          fDist= 1000.0;
 
+        
+        double fCPDist;
+        double fB_CPDist;
+        double fTotalDistance;
 
-        TCHAR distStr[50];  TCHAR speedStr[50];
-        if(typeFAITriangle && bFAI)
-          _stprintf(distStr, _T("%.1f %s FAI\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
-        else
-          _stprintf(distStr, _T("%.1f %s\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName());
+        if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE) {
+            fCPDist = CContestMgr::Instance().GetFreeTriangleClosingPointDist();
+            fB_CPDist = CContestMgr::Instance().GetFreeTriangleBestClosingPointDist();
+            fTotalDistance = result.PredictedDistance();
+        } else if (contestType == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
+            fCPDist = CContestMgr::Instance().GetClosingPointDist();
+            fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
+            fTotalDistance = result.PredictedDistance();;
+        } else {  // FAI
+            fCPDist = CContestMgr::Instance().GetClosingPointDist();
+            fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
+            fTotalDistance = fDist;
+        }
+          
 
-        if(typeFAITriangle && bFAI )
-          _stprintf(speedStr, _T("%s%-.1f %s\r\n(%.1f %%)\r\n"),MsgToken(1508),  DISTANCEMODIFY * fCPDist, Units::GetDistanceName(),fCPDist/fDist*100.0);
-        else
-          _stprintf(speedStr, TEXT("%.1f %s\r\n"),TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
-        TCHAR timeTempStr[50];
+        TCHAR distStr[120];  TCHAR speedStr[120];
+        if (typeFAITriangle && bFAI) {
+            _stprintf(distStr, _T("Dist: %.1f %s FAI\r\n"), DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName());
+            const double ap = 100 * (fTotalDistance == 0 ? 0 : fCPDist / fTotalDistance);
+            _stprintf(speedStr, _T("C: %.1f %s (%.1f %%)\r\n"), DISTANCEMODIFY * fCPDist, Units::GetDistanceName(), ap);
+        } else {
+            if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE || contestType == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
+              const double percC = 100 * (fTotalDistance == 0 ? 0 : fCPDist / (double) fTotalDistance);
+              const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
+              _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName(),
+                        DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(), DISTANCEMODIFY * fCPDist, percC, DISTANCEMODIFY * fB_CPDist, percB);
+              _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
+            } else {
+              _stprintf(distStr, _T("D: %.1f %s\r\n"), DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName());
+              _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
+
+            }
+        }
+      
+        TCHAR timeTempStr[120];
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
+        _stprintf(timeStr, _T("T: %s\r\n"), timeTempStr);
 
-        if( typeFAITriangle && bFAI && ISPARAGLIDER)
-          _stprintf(timeStr, _T("\r\n%s%-.1f %s\r\n(%.1f %%)\r\n"),MsgToken(1511), DISTANCEMODIFY * fB_CPDist, Units::GetDistanceName(), fB_CPDist/fDist*100.0); //_@M1511_ = "B:"
-        else
-          _stprintf(timeStr, _T("%s\r\n"), timeTempStr);
 
         TCHAR scoreStr[50] = _T("");
-        if(result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
-           result.Type() != CContestMgr::TYPE_FAI_TRIANGLE &&
-           result.Type() != CContestMgr::TYPE_FAI_TRIANGLE4 &&
+        if (result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
+              result.Type() != CContestMgr::TYPE_FAI_TRIANGLE &&
+              result.Type() != CContestMgr::TYPE_FAI_TRIANGLE4 &&
 #ifdef  FIVEPOINT_OPTIMIZER
-           result.Type() != CContestMgr::TYPE_FAI_TRIANGLE5 &&
+              result.Type() != CContestMgr::TYPE_FAI_TRIANGLE5 &&
 #endif
-           result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED)
-          _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
+              result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED)
+            _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
 
         TCHAR plusStr[50] = _T("");
-        if(result.Type() == CContestMgr::TYPE_OLC_CLASSIC ||
-           result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
-           result.Type() == CContestMgr::TYPE_OLC_FAI ||
-           result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
-          CContestMgr::TType type = (result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
-                                     result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) ?
-            CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
-          CContestMgr::CResult resultPlus = CContestMgr::Instance().Result(type, false);
-          if(ScreenLandscape)
-            _stprintf(plusStr, TEXT("\r\n%s:\r\n%.2f pt"),
-                      CContestMgr::TypeToString(type),
-                      resultPlus.Score());
-          else
-            _stprintf(plusStr, TEXT("\r\n%s: %.2f pt"),
-                      CContestMgr::TypeToString(type),
-                      resultPlus.Score());
+        if (result.Type() == CContestMgr::TYPE_OLC_CLASSIC ||
+              result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
+              result.Type() == CContestMgr::TYPE_OLC_FAI ||
+              result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
+            CContestMgr::TType type = (result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
+                result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) ?
+                                      CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
+            CContestMgr::CResult resultPlus = CContestMgr::Instance().Result(type, false);
+            if (ScreenLandscape)
+              _stprintf(plusStr, TEXT("\r\n%s:\r\n%.2f pt"),
+                        CContestMgr::TypeToString(type),
+                        resultPlus.Score());
+            else
+              _stprintf(plusStr, TEXT("\r\n%s: %.2f pt"),
+                        CContestMgr::TypeToString(type),
+                        resultPlus.Score());
         }
 
-        _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, speedStr, timeStr, scoreStr, plusStr);
-      }
-      else {
-        _stprintf(sTmp, TEXT("%s\r\n"),
-                  // LKTOKEN  _@M477_ = "No valid path"
-                  MsgToken(477));
+          _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, speedStr, timeStr, scoreStr, plusStr);
+      } else {
+          _stprintf(sTmp, TEXT("%s\r\n"),
+              // LKTOKEN  _@M477_ = "No valid path"
+                    MsgToken(477));
       }
       waInfo->SetCaption(sTmp);
     }
