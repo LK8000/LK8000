@@ -79,8 +79,8 @@ _@M59_ "Aircraft type"
 _@M60_ "Aircraft type: "
 _@M61_ "Aircraft/wind speed "
 _@M62_ "Airfield"
-_@M63_ "Airspace Files"
-_@M64_ "Airspace File"
+_@M63_ "Airspace 1 "
+_@M64_ "Airspace 2 "
 _@M65_ "Airspace Details"
 _@M66_ "Airspace Warnings"
 _@M67_ "Airspace display "
@@ -847,8 +847,8 @@ _@M802_ "Waypoint\nNext"
 _@M803_ "Waypoint\nPrevious"
 _@M804_ "Waypoint\nStart"
 _@M805_ "Waypointfile Parse Error"
-_@M806_ "Waypoint Files"
-_@M807_ "Waypoint File"
+_@M806_ "Waypoints 1 "
+_@M807_ "Waypoints 2 "
 _@M808_ "Waypoints Text style "
 _@M809_ "Waypoints edited"
 _@M810_ "Waypoints excluded, save anyway?"
@@ -1279,7 +1279,7 @@ _@M1223_ "Topology reset to default values"
 _@M1224_ "Airport"
 _@M1225_ "Landable"
 _@M1226_ "Turnpoint"
-_@M1227_ "File"
+_@M1227_ "File 1"
 _@M1228_ "File 2"
 _@M1229_ "HDG"
 
@@ -2248,4 +2248,11 @@ _@M2335_ "permanent"
 _@M2336_ "ICAO Code"
 _@M2337_ "Airspace\nLookup"
 
+_@M2338_ "Airspace Files"   #_@M63_ 
+_@M2339_ "Airspace File "   #_@M64_   
+_@M2240_ "Waypoint Files"   #_@M806_
+_@M2241_ "Waypoint File"    #_@M807_
+_@M2242_ "File"             #_@M1227_ 
 _@M2400_ "Target up"
+
+

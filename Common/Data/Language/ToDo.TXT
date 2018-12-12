@@ -430,8 +430,15 @@ _@M2252_ "MANUAL"
 _@M2253_ "AUTO THERMALLING"
 _@M2254_ "FULL AUTO"
 
+
+
+_@M2338_ "Airspace Files"   #_@M63_ 
+_@M2339_ "Airspace File "   #_@M64_   
+_@M2240_ "Waypoint Files"   #_@M806_
+_@M2241_ "Waypoint File"      #_@M807_
+_@M2242_ "File"           #_@M1227_ 
 _@M2400_ "Target up"
-_@M1227_ "File"
+
 
 HELP FILE
 

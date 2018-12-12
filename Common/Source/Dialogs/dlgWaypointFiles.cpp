@@ -55,7 +55,7 @@ static void setVariables(void) {
 
 
 
-        _stprintf(tmp,_T("%s %1u "), MsgToken(807),i+1);
+        _stprintf(tmp,_T("%s %1u "), MsgToken(2241),i+1);
         wp->SetCaption(tmp);
       }
       wp->RefreshDisplay();
@@ -82,7 +82,7 @@ void dlgWaypointFilesShowModal(void){
   if (!wf) return;
 
   setVariables();
-  wf->SetCaption(MsgToken(806));
+  wf->SetCaption(MsgToken(2240));
   wf->ShowModal();
 
 
