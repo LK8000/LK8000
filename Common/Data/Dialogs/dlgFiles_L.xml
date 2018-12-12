@@ -3,7 +3,7 @@
   <WndForm Name="frmAirspaceFiles" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="?" Font="2"  >
     <WndFrame X="0" Y="0" Width="100" Height="20" Font="2" />
     <WndButton   Name="cmdClose" Caption="_@M186_"    X="2" Y="2" Width="98"  Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
-      <WndProperty Name="prpFile1" Caption="_@M64_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
+      <WndProperty Name="prpFile1" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
       <WndProperty Name="prpFile2" Caption="_@M2339_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H105_">

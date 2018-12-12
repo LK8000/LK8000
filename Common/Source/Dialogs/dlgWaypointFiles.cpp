@@ -82,7 +82,7 @@ void dlgWaypointFilesShowModal(void){
   if (!wf) return;
 
   setVariables();
-  wf->SetCaption(MsgToken(2240));
+  wf->SetCaption(MsgToken(2340)); 
   wf->ShowModal();
 
 

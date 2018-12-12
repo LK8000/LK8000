@@ -77,7 +77,7 @@ void dlgAirspaceFilesShowModal(void){
   if (!wf) return;
 
   setVariables();
-  wf->SetCaption(MsgToken(63));
+  wf->SetCaption(MsgToken(2338)); // _@M2338_ "Airspace Files" 
   wf->ShowModal();
 
 
