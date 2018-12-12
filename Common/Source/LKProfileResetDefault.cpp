@@ -481,6 +481,8 @@ void LKProfileResetDefault(void) {
   Overlay_RightMid=1;
   Overlay_RightBottom=1;
 
+  AdditionalContestRule= 0;  // OFF by defauly
+
 
 #ifdef _WGS84
   earth_model_wgs84 = true;

@@ -442,6 +442,7 @@ char szRegistryOverlay_LeftDown[]       = "Overlay_LeftDown";
 char szRegistryOverlay_RightTop[]       = "Overlay_RightTop";
 char szRegistryOverlay_RightMid[]       = "Overlay_RightMid";
 char szRegistryOverlay_RightBottom[]       = "Overlay_RightBottom";
+char szRegistryAdditionalContestRule[]       = "Additional_Contest_Rule";
 #ifdef _WGS84
 char szRegistry_earth_model_wgs84[] = "earth_model_wgs84";
 #endif
@@ -795,6 +796,7 @@ extern const char szRegistryOverlay_LeftDown[];
 extern const char szRegistryOverlay_RightTop[];
 extern const char szRegistryOverlay_RightMid[];
 extern const char szRegistryOverlay_RightBottom[];
+extern const char szRegistryAdditionalContestRule[];
 
 #ifdef _WGS84
 extern const char szRegistry_earth_model_wgs84[];

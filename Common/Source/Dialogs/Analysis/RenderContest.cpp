@@ -107,11 +107,17 @@ double  lon_p = GPS_INFO.Longitude;
 double  xp = (lon_p-lon_c)*fastcosine(lat_p);
 double  yp = (lat_p-lat_c);
 
-
+  int style_lastEdge = result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK;;
   if(result.Type() == contestType && !points.empty())
   {
     for(unsigned ui=0; ui<points.size()-1; ui++)
     {
+        
+      if ((result.Type() == CContestMgr::TYPE_XC_FAI_TRIANGLE ||
+               result.Type() == CContestMgr::TYPE_XC_FREE_TRIANGLE) &&
+            (ui == 0 || ui == 3))
+        continue;
+        
       lat1 = points[ui].Latitude();
       lon1 = points[ui].Longitude();
       lat2 = points[ui+1].Latitude();
@@ -131,6 +137,8 @@ double  yp = (lat_p-lat_c);
       }
       else if(result.Predicted() &&
               (result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED ||
+                result.Type() == CContestMgr::TYPE_XC_FAI_TRIANGLE ||
+                result.Type() == CContestMgr::TYPE_XC_FREE_TRIANGLE ||
                ui == points.size() - 2))
       {
         // predicted edge
@@ -141,6 +149,13 @@ double  yp = (lat_p-lat_c);
        (result.Type() == CContestMgr::TYPE_FAI_3_TPS_PREDICTED) )
       {
       }
+      if ((result.Predicted() &&                         // XContest not valid triangle
+            (result.Type() == CContestMgr::TYPE_XC_FAI_TRIANGLE ||
+                result.Type() == CContestMgr::TYPE_XC_FREE_TRIANGLE))
+            && result.Score() == 0) {
+          style = STYLE_THINDASHPAPER;
+          style_lastEdge = STYLE_THINDASHPAPER;
+      }
 
       if((contestType != CContestMgr::TYPE_FAI_TRIANGLE) )
         DrawLine(Surface, rc, x1, y1, x2, y2, style);
@@ -148,7 +163,9 @@ double  yp = (lat_p-lat_c);
 
 
   if(result.Type() == CContestMgr::TYPE_OLC_FAI ||
-     result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED)
+     result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED||
+          result.Type() == CContestMgr::TYPE_XC_FREE_TRIANGLE ||
+          result.Type() == CContestMgr::TYPE_XC_FAI_TRIANGLE)
   {
     // draw the last edge of a triangle
     lat1 = points[1].Latitude();
@@ -175,6 +192,25 @@ double  yp = (lat_p-lat_c);
   #endif
   Surface.SetBackgroundTransparent();
   DrawLabel(Surface, rc, TEXT("O"), xp, yp);
+  
+  // Render XContest Closure
+  if (result.Type() == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
+    lat2 = CContestMgr::Instance().GetBestClosingPoint().Latitude();
+    lon2 = CContestMgr::Instance().GetBestClosingPoint().Longitude();
+    x1 = (lon2 - lon_c) * fastcosine(lat2);
+    y1 = (lat2 - lat_c);
+    DrawLine(Surface, rc, xp, yp, x1, y1, STYLE_REDTHICK);
+  } else if (result.Type() == CContestMgr::TYPE_XC_FREE_TRIANGLE) {
+    lat1 = CContestMgr::Instance().GetFreeTriangleClosingPoint().Latitude();
+    lon1 = CContestMgr::Instance().GetFreeTriangleClosingPoint().Longitude();
+    lat2 = CContestMgr::Instance().GetFreeTriangleBestClosingPoint().Latitude();;
+    lon2 = CContestMgr::Instance().GetFreeTriangleBestClosingPoint().Longitude();
+    x1 = (lon2 - lon_c) * fastcosine(lat2);
+    y1 = (lat2 - lat_c);
+    x2 = (lon1 - lon_c) * fastcosine(lat1);
+    y2 = (lat1 - lat_c);
+    DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_REDTHICK);
+  }
 }
 }
 }

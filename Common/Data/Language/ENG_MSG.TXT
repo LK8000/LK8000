@@ -2194,6 +2194,35 @@ _@M2253_ "AUTO THERMALLING"
 _@M2254_ "FULL AUTO"
 
 
+_@M2255_ "XC FREE Fligth distance"
+_@M2256_ "XC FREE Fligth score"
+_@M2257_ "XC FREE Triangle distance"
+_@M2258_ "XC FREE Triangle score"
+_@M2259_ "XC FAI Triangle distance"
+_@M2260_ "XC FAI Triangle score"
+_@M2261_ "XC combined distance"
+_@M2262_ "XC combined score"
+_@M2263_ "XC Triangle closing distance"
+_@M2264_ "XC Triangle closing %"
+_@M2265_ "XC Triangle predicted distance"
+_@M2277_ "XC Mean Speed"
+
+_@M2266_ "FRE Dis"
+_@M2267_ "FRE Scr"
+_@M2268_ "TRI Dis"
+_@M2269_ "TRI Scr"
+_@M2270_ "FAI Dis"
+_@M2271_ "FAI Scr"
+_@M2272_ "XC Dis"
+_@M2273_ "XC Scr"
+_@M2274_ "XC C"
+_@M2275_ "XC C%"
+_@M2276_ "XC Dis*"
+_@M2278_ "XC Spd"
+
+
+_@M2279_ "XC Contest Rules"
+
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2500)

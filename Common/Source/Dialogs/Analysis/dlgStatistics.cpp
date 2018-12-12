@@ -44,8 +44,13 @@ void Statistics::Reset() {
   Altitude_Ceiling.Reset();
   Task_Speed.Reset();
   Altitude_Terrain.Reset();
-  for(int j=0;j<MAXTASKPOINTS;j++) {
+  for (int j = 0; j < MAXTASKPOINTS; j++) {
     LegStartTime[j] = -1;
+  }
+
+  if (AdditionalContestRule) {  // If there is an additional contest activated we start with this.
+    contestType = CContestMgr::TYPE_XC_FREE_TRIANGLE;
+    analysis_page = ANALYSIS_PAGE_CONTEST;
   }
 }
 
@@ -233,6 +238,7 @@ static void OnCalcClicked(WndButton* pWnd){
     pForm->SetVisible(true);
   }
   if (analysis_page==ANALYSIS_PAGE_CONTEST) {
+
     // Rotate presented contest
     switch(contestType) {
     case CContestMgr::TYPE_OLC_CLASSIC:
@@ -256,7 +262,6 @@ static void OnCalcClicked(WndButton* pWnd){
 #endif
       contestType = CContestMgr::TYPE_OLC_FAI;
       break;
-
     case CContestMgr::TYPE_OLC_FAI:
       contestType = CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
       break;
@@ -273,11 +278,25 @@ static void OnCalcClicked(WndButton* pWnd){
       contestType = CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
       break;
     case CContestMgr::TYPE_FAI_3_TPS_PREDICTED:
-      contestType = CContestMgr::TYPE_OLC_CLASSIC;
+      if ( !AdditionalContestRule)
+        contestType = CContestMgr::TYPE_OLC_CLASSIC;
+      else
+        contestType = CContestMgr::TYPE_XC_FREE_TRIANGLE;
       break;
-
+      case  CContestMgr::TYPE_XC_FREE_TRIANGLE:
+      contestType = CContestMgr::TYPE_XC_FAI_TRIANGLE;
+      break;
+    case  CContestMgr::TYPE_XC_FAI_TRIANGLE:
+        contestType = CContestMgr::TYPE_XC_FREE_FLIGHT;
+        break;
+    case  CContestMgr::TYPE_XC_FREE_FLIGHT:
+        contestType = CContestMgr::TYPE_OLC_CLASSIC;
+        break;
     default:
-      contestType = CContestMgr::TYPE_OLC_CLASSIC;
+      if ( !AdditionalContestRule)
+        contestType = CContestMgr::TYPE_OLC_CLASSIC;
+      else
+        contestType = CContestMgr::TYPE_XC_FAI_TRIANGLE;
     }
   }
 

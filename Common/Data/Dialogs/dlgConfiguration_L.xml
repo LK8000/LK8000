@@ -489,6 +489,9 @@
       <WndProperty Name="prpEngineeringMenu" Caption="_@M260_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H213_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
+      <WndProperty Name="prpAdditionalContestRule" Caption="_@M2279_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1299_">
+        <DataField Name="" DataType="enum"/>
+      </WndProperty>
     </WndFrame>
     <WndFrame Name="frmSpecials2" X="70" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpPGClimbZoom" Caption="_@M170_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H214_">

@@ -1512,12 +1512,67 @@ This is not MacCready STF (neither MC=0) that on the contrary tend to minimize t
 Use this speed if you want to maximize efficiency and glide distance
 
 @934
-[Target Req. Efficicency]
+[Target Req. Efficiency]
 Required efficiency to the current target
 
 @935
 [Altitude QNE]
 QNE refers to the indicated altitude at the landing runway threshold when 1013.25 mbar or 29.92 inHg is set in the altimeter's Kollsman window
+
+@937
+[XC FREE Flight distance]
+Free distance over 3 turnpoints.
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@938
+[XC FREE Flight score]
+Score of Free flight with 3 turnpoints.
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@939
+[XC FREE Triangle distance]
+Triangle distance which do not conform to FAI triangle specification.
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@940
+[XC FREE Triangle score]
+Score of FREE Triangle ( NOT FAI ).
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@941
+[XC FAI Triangle distance]
+Triangle distance conform to the FAI definition (the shortest leg of the triangle must be at least 28% of the total triangle).
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@942
+[XC FAI Triangle score]
+Score of FAI Triangle.
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@943
+[XC combined distance]
+Distance of the best scored contest ( FAI Triangle,FREE Triangle, FREE Flight) .
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@944
+[XC combined score]
+Maximum score of all contest ( FAI Triangle,FREE Triangle, FREE Flight).
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@945
+[XC Triangle closure distance]
+Distance to close the best scored contest triangle ( FAI or FREE )  in km
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@946
+[XC Triangle closure %]
+Distance to close the best scored contest triangle ( FAI or FREE ) in percentage
+This data is available only if the additional Contest Engine is activate in System menu n 22
+
+@947
+[XC Triangle predicted distance]
+Distance to close the best scored contest triangle ( FAI or FREE ) in km
+This data is available only if the additional Contest Engine is activate in System menu n 22
 
 #
 # END INFOBOXES 800 - 1199
@@ -1892,8 +1947,13 @@ in flight only:
 tracking starts after takeoff and ends after landing detection.
 permanent:
 tracking as long as LK8000 runs and has a valid GPS signal.
-We recomend in flight only because it transfers the takeoff and landing information for a correct log. (default)
+We recommend in flight only because it transfers the takeoff and landing information for a correct log. (default)
 while permanent can be used to test your tracking settings on ground. (Note: Tracking need a falid GPS fix)
+
+@1299
+[Additional Contest Rules]
+Select the scoring rule for the Cross Country Contest (XC). If OFF no contest other than OLC will be evaluated and available in the XC infoboxes.
+
 
 @9999
 No help available on this item!

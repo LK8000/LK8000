@@ -728,6 +728,9 @@ GEXTERN int LiveTrackerInterval;
 GEXTERN bool LiveTrackerRadar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
 GEXTERN int LiveTrackerStart_config;  // Livetracking only in flight or always
 
+GEXTERN int AdditionalContestRule;  	// Enum to Rules to use for the addition contest CContestMgr::ContestRule
+
+
 GEXTERN short TerrainContrast;
 GEXTERN short TerrainBrightness;
 GEXTERN short TerrainRamp;

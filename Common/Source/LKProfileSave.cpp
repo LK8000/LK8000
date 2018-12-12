@@ -428,6 +428,10 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryOverlay_RightTop, Overlay_RightTop);
   rprintf(szRegistryOverlay_RightMid, Overlay_RightMid);
   rprintf(szRegistryOverlay_RightBottom, Overlay_RightBottom);
+
+  rprintf(szRegistryAdditionalContestRule, AdditionalContestRule);
+
+
 #ifdef _WGS84
   rprintf(szRegistry_earth_model_wgs84,earth_model_wgs84);
 #endif
