@@ -826,9 +826,9 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 	// LKTOKEN _@M1226_ "Turnpoint"
 //	TypeFilter[3] = MsgToken(1226);
 	 _stprintf(TypeFilter[3], TEXT("%s"), MsgToken(1226));
-	// LKTOKEN _@M2242_ "File"
+	// LKTOKEN _@M2342_ "File"
 	for (int i = 0 ; i < NO_WP_FILES; i++)
-	  _stprintf(TypeFilter[4+i], TEXT("%s %i"), MsgToken(2242), i+1 );
+	  _stprintf(TypeFilter[4+i], TEXT("%s %i"), MsgToken(2342), i+1 );
 
 
 //	// LKTOKEN _@M1228_ "File 2"

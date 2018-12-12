@@ -14,9 +14,9 @@
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
 
-      <WndButton Name="cmdWaypointFiles"  Caption="_@M2240_" X="102" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnWaypointFilesClicked" />      
+      <WndButton Name="cmdWaypointFiles"  Caption="_@M2340_" X="102" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnWaypointFilesClicked" />      
 
-      <WndButton Name="cmdAirspaceFiles"  Caption="_@M2238_" X="102" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnAirspaceFilesClicked" />      
+      <WndButton Name="cmdAirspaceFiles"  Caption="_@M2338_" X="102" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnAirspaceFilesClicked" />      
       <WndProperty Name="prpAirfieldFile" Caption="_@M799_"  X="2" Y="-1"   Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H107_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>

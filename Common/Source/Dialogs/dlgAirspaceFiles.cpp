@@ -51,7 +51,7 @@ static void setVariables(void) {
         dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_OPENAIP));
         dfe->Lookup(temptext);
       }
-      _stprintf(tmp,_T("%s %1u "), MsgToken(64),i+1);
+      _stprintf(tmp,_T("%s %1u "), MsgToken(2339),i+1);  // _@M2339_ "Airspace File "
       wp->SetCaption(tmp);
       wp->RefreshDisplay();
     }

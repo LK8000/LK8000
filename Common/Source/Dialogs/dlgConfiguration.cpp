@@ -2168,10 +2168,10 @@ DataField* dfe = wp->GetDataField();
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M100_ = "Ask" 
     dfe->addEnumText(MsgToken(100));
-	// LKTOKEN  _@M350_ = "Include" 
-    dfe->addEnumText(MsgToken(350));
-	// LKTOKEN  _@M269_ = "Exclude" 
-    dfe->addEnumText(MsgToken(269));
+	// LKTOKEN  _@M350_ = "Include" _@M2343_ "Include Data" 
+    dfe->addEnumText(MsgToken(2243));
+	// LKTOKEN  _@M269_ = "Exclude" _@M2344_ "Exclude Data" 
+    dfe->addEnumText(MsgToken(2244));
     wp->GetDataField()->Set(WaypointsOutOfRange);
     wp->RefreshDisplay();
   }
