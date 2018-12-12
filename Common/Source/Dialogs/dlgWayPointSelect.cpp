@@ -51,7 +51,7 @@ static unsigned DirectionFilterIdx=0;
 static int lastHeading=0;
 
 #define TYPEFILTERSNUM	(4+NO_WP_FILES)
-static  TCHAR TypeFilter[TYPEFILTERSNUM][50];
+static   TCHAR* TypeFilter[TYPEFILTERSNUM];
 static unsigned TypeFilterIdx=0;
 
 static int UpLimit=0;
@@ -297,7 +297,7 @@ static void UpdateList(void){
         break;
       }
     }
-  } else if (TypeFilterIdx >= 4 || TypeFilterIdx < (4+NO_WP_FILES)){
+  } else if (TypeFilterIdx >= 4 && TypeFilterIdx < (4+NO_WP_FILES)){
     // distancemode = true;
     SelectedWayPointFileIdx = TypeFilterIdx-4;
     qsort(WayPointSelectInfo, UpLimit,
