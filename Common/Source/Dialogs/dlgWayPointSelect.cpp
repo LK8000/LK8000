@@ -51,7 +51,7 @@ static unsigned DirectionFilterIdx=0;
 static int lastHeading=0;
 
 #define TYPEFILTERSNUM	(4+NO_WP_FILES)
-static   TCHAR* TypeFilter[TYPEFILTERSNUM];
+static   TCHAR TypeFilter[TYPEFILTERSNUM][50];
 static unsigned TypeFilterIdx=0;
 
 static int UpLimit=0;
@@ -828,7 +828,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 	 _stprintf(TypeFilter[3], TEXT("%s"), MsgToken(1226));
 	// LKTOKEN _@M1227_ "File 1"
 	for (int i = 0 ; i < NO_WP_FILES; i++)
-	  _stprintf(TypeFilter[4+i], TEXT("%s %i"), MsgToken(1227), i+1);
+	  _stprintf(TypeFilter[4+i], TEXT("%s %i"), MsgToken(1227), i+1 );
 
 
 //	// LKTOKEN _@M1228_ "File 2"
