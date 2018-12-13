@@ -3255,7 +3255,7 @@ DataField* dfe = wp->GetDataField();
   if (wp)
   {
     DataField* dfe = wp->GetDataField();
-    for (int i=0; i<CContestMgr::NUM_OF_XC_RULES; i++) {
+    for (int i=0; i<static_cast<int>(CContestMgr::ContestRule::NUM_OF_XC_RULES); i++) {
       dfe->addEnumText(CContestMgr::XCRuleToString(i));
     }
     dfe->Set(AdditionalContestRule);

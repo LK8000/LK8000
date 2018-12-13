@@ -11,7 +11,7 @@
 #define RGB_BLACK	LKColor(0,0,0)
 #define RGB_WHITE	LKColor(255,255,255)
 #define RGB_WHITENOREV	LKColor(254,254,254)		// this color will not be reversed
-	#define RGB_BLUE	LKColor(0x00,0x00,0xff)
+#define RGB_BLUE	LKColor(0x00,0x00,0xff)
 #define RGB_LIGHTBLUE	LKColor(179,179,255)
 #define RGB_GREY	LKColor(0x99,0x99,0x99)
 #define RGB_LIGHTGREY	LKColor(0xcc,0xcc,0xcc)

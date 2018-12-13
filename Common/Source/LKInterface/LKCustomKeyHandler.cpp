@@ -386,42 +386,15 @@ passthrough:
         else
             LKSound(TEXT("LK_TONEDOWN.WAV"));
 		return true;
-	case ckOtimizerPointsToggle:
-		FAI_OptimizerMode++;
-#ifdef FIVEPOINT_OPTIMIZER
-		if(FAI_OptimizerMode > 5)
-#else
-		if(FAI_OptimizerMode > 4)
-#endif
-			FAI_OptimizerMode = 3;
-		TCHAR Optimizermsg[60];
-
-		switch(FAI_OptimizerMode)
-		{
-		  case 5:
-		   _stprintf(Optimizermsg,_T("%s: %s"),MsgToken(1296),MsgToken(1299)); // _@M1296_ "FAI Optimizer"  _@M1299_ "Mercedes star"
-		  break;
-		  case 4:
-		   _stprintf(Optimizermsg,_T("%s: %s"),MsgToken(1296),MsgToken(1298)); // _@M1296_ "FAI Optimizer"  "Start on leg"
-		  break;
-		  case 3:
-		  default:
-		   _stprintf(Optimizermsg,_T("%s: %s"),MsgToken(1296),MsgToken(1297)); // _@M1296_ "FAI Optimizer"  "Start on turnpoint"
-		   break;
-		}
-
-
-		 CContestMgr::Instance().RefreshFAIOptimizer();
-
-		DoStatusMessage(Optimizermsg,NULL,false);
-
-		if (EnableSoundModes) {
-			if (FAI_OptimizerMode == 5)
-				LKSound(TEXT("LK_TONEUP.WAV"));
-			else
-				LKSound(TEXT("LK_TONEDOWN.WAV"));
-		}
-		return true;
+    case ckDrawXCToggle:
+      Flags_DrawXC = !Flags_DrawXC;
+      if (EnableSoundModes) {
+        if (Flags_DrawXC == 0)
+          LKSound(TEXT("LK_TONEUP.WAV"));
+        else
+          LKSound(TEXT("LK_TONEDOWN.WAV"));
+      }
+      return true;
 	case ckResetView:
 		ModeType[LKMODE_MAP]    =       MP_MOVING;
 		ModeType[LKMODE_INFOMODE]=      IM_CRUISE;
@@ -558,7 +531,7 @@ CustomKeyLabel[57]=2246;	// Reset view
 CustomKeyLabel[58]=2038;	// Map Orientation
 CustomKeyLabel[59]=928;		// Restarting Comm Ports
 CustomKeyLabel[60]=2249;	// DspMode
-CustomKeyLabel[61]=2251;	// Optimizer Mode
+CustomKeyLabel[61]=2401;	// Toggle Draw XC
 CustomKeyLabel[62]=2337;	// Airspace lookup
 
 static_assert(62 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");

@@ -65,7 +65,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	short i;
 	i= (*(a+4)-'0')*10;
 	i+= *(a+5)-'0';
-	LKASSERT(i>=0 && i<41);
+	LKASSERT(i>=0 && i<42);
 
 	switch(i) {
 		case 0:	// LOCKMODE
@@ -473,6 +473,14 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
                 _tcscpy(OutBuffer,_T(""));
             }
             break;
+		case 41:
+			if (Flags_DrawXC )
+				_stprintf(OutBuffer,_T("%s"),MsgToken(2401));  //  "Draw\nXC"
+			else
+				_stprintf(OutBuffer,_T("%s"),MsgToken(2402));  //	"NoDraw\nXC"
+		break;
+
+
 		default:
 			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
 			break;

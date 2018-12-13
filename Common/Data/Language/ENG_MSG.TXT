@@ -2200,8 +2200,8 @@ _@M2257_ "XC FREE Triangle distance"
 _@M2258_ "XC FREE Triangle score"
 _@M2259_ "XC FAI Triangle distance"
 _@M2260_ "XC FAI Triangle score"
-_@M2261_ "XC combined distance"
-_@M2262_ "XC combined score"
+_@M2261_ "XC Best distance"
+_@M2262_ "XC Best score"
 _@M2263_ "XC Triangle closing distance"
 _@M2264_ "XC Triangle closing %"
 _@M2265_ "XC Triangle predicted distance"
@@ -2221,7 +2221,7 @@ _@M2276_ "XC Dis*"
 _@M2278_ "XC Spd"
 
 
-_@M2279_ "XC Contest Rules"
+_@M2279_ "Contest"
 
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)
@@ -2335,3 +2335,8 @@ _@M2385_ "Map Symbols"
 _@M2386_ "UTF8" # no need to translate 
 _@M2387_ "GND"  # instead of SFC, no need to translate
 _@M2388_ "Target up" 
+
+
+_@M2401_ "Draw XC\nOFF"
+_@M2402_ "Draw XC\nON"
+_@M2403_ "Toggle Draw XC"

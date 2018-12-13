@@ -102,7 +102,7 @@ void AddCustomKeyList( DataField* dfe) {
     dfe->addEnumTextNoLF(MsgToken(2038)); // Map Orient
     dfe->addEnumTextNoLF(MsgToken(928)); //Restarting Comm Ports
     dfe->addEnumTextNoLF(MsgToken(2249)); // DspMode , not to be translated
-    dfe->addEnumTextNoLF(MsgToken(2251)); // Optimizer Mode
+    dfe->addEnumTextNoLF(MsgToken(2403)); // Toggle Draw XC
     dfe->addEnumTextNoLF(MsgToken(2337)); // Airspace lookup
 
     dfe->Sort(0);

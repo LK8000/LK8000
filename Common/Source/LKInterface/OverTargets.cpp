@@ -185,8 +185,9 @@ _tryagain:
 	goto _tryagain;
   }
 
-  	// Skip Cross Country triangle closing if no AdditionContetest active or not valid optimized point ...
-  if( OvertargetMode==OVT_XC && ( !AdditionalContestRule  || !ValidResWayPoint(RESWP_FAIOPTIMIZED))) {
+  	// Skip Cross Country triangle closing if no Addition Contest active or not valid optimized point ...
+  if( OvertargetMode==OVT_XC &&
+      ( AdditionalContestRule==static_cast<int>(CContestMgr::ContestRule::NONE)  || !ValidResWayPoint(RESWP_FAIOPTIMIZED))) {
 		goto _tryagain;
   }
 

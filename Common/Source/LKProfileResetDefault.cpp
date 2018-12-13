@@ -343,7 +343,6 @@ void LKProfileResetDefault(void) {
   OverlayClock = 0;
   UseTwoLines = 1;
   SonarWarning_Config = 1; // sonar enabled by default on reset
-  FAI_OptimizerMode = 5;
   // default BB and IP is all ON
   ConfBB0 = 0; // TRM is off by default on v4
   ConfBB1 = 1;
@@ -453,6 +452,7 @@ void LKProfileResetDefault(void) {
 
   Flags_DrawTask=true;
   Flags_DrawFAI=false;
+  Flags_DrawXC=false;
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
   BottomMode=BM_CRU;
   iFlarmDirection=0;
@@ -481,7 +481,7 @@ void LKProfileResetDefault(void) {
   Overlay_RightMid=1;
   Overlay_RightBottom=1;
 
-  AdditionalContestRule= 0;  // OFF by defauly
+  AdditionalContestRule= 2;  // OLC by defauly
 
 
 #ifdef _WGS84
