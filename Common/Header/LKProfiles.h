@@ -425,7 +425,7 @@ char szRegistryGearMode[]         = "GearMode";
 char szRegistryGearAltitude[]     = "GearAltitude";
 char szRegistryBottomMode[]       = "ActiveBottomBar";
 char szRegistryBigFAIThreshold[]  = "FAI_28_45_Threshold";
-char szRegistryFAIOptiMode[]      = "FAI_OptimizerMode";
+char szRegistryDrawXC[]      = "DrawXC";
 
 char szRegistryScreenSize[]       = "ScreenSize";
 char szRegistryScreenSizeX[]      = "ScreenSizeX";
@@ -779,7 +779,7 @@ extern const char szRegistryGearMode[];
 extern const char szRegistryGearAltitude[];
 extern const char szRegistryBottomMode[];
 extern const char szRegistryBigFAIThreshold[];
-extern const char szRegistryFAIOptiMode[];
+extern const char szRegistryDrawXC[];
 
 extern const char szRegistryScreenSize[];
 extern const char szRegistryScreenSizeX[];

@@ -705,7 +705,6 @@
 
 #define LK_OLC_FAI_CLOSE			125
 #define LK_OLC_FAI_CLOSE_PERCENT	126
-#define LK_OLC_FAI_CLOSE_PERCENT	126
 #define LK_BANK_ANGLE                   127
 #define LK_ALTERN1_RAD                  128
 #define LK_ALTERN2_RAD                  129

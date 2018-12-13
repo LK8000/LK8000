@@ -2272,8 +2272,8 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
-  if (_tcscmp(misc, TEXT("OPTIMODE")) == 0) {
-	  CustomKeyHandler(ckOtimizerPointsToggle+1000); // passthrough mode
+  if (_tcscmp(misc, TEXT("DRAWXC")) == 0) {
+	  CustomKeyHandler(ckDrawXCToggle+1000); // passthrough mode
 	return;
   }
 

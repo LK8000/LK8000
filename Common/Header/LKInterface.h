@@ -102,7 +102,7 @@ typedef enum{
 	ckMapOrient,
 	ckResetComm,
 	ckDspMode,
-	ckOtimizerPointsToggle,
+	ckDrawXCToggle,
 	ckAirspaceLookup,
 	ckTOP,
 } CustomKeyMode_t;

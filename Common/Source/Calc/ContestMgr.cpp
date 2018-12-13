@@ -11,6 +11,7 @@
 
 #include "ContestMgr.h"
 #include <memory>
+#include <ContestMgr.h>
 #include "NavFunctions.h"
 #include "RasterTerrain.h"
 
@@ -37,20 +38,15 @@ const TCHAR *CContestMgr::TypeToString(TType type)
     _T("OLC-League"),
     _T("FAI 3 TPs"),
     _T("FAI 3 TPs (P)"),
-    MsgToken(1297) ,   //    _@M1297_ "FAI Start on turnpoint"
-    MsgToken(1298)  ,  //    _@M1298_ "FAI Start on leg"
-#ifdef   FIVEPOINT_OPTIMIZER
-  MsgToken(1299)  ,  //    _@M1299_ "FAI Mercedes star"
-#endif
+    _T("FAI ASSISTANT"),
     _T("XC FREE Triangle") ,
     _T("XC FAI Triangle"),
-    _T("XC FREE Fligth"),
+    _T("XC FREE Flight"),
     _T("XC Total"),
     _T("[invalid]")
   };
   return typeStr[type];
 }
-
 
 /**
  * @brief Returns the string representation of current contest rule
@@ -61,11 +57,13 @@ const TCHAR *CContestMgr::TypeToString(TType type)
  */
 const TCHAR *CContestMgr::XCRuleToString(int rule)
 {
-  const TCHAR *typeStr[] = {
-      _T("OFF"),                      // Onlt OLC evalueted
+  const TCHAR *typeStr[] = {          // No need to translate here
+      _T("OFF"),
+      _T("Only FAI assistant"),
+      _T("OLC"),
       _T("XContest 2018"),
       _T("XContest 2019"),
-      _T("French CFD ligue"),
+      _T("French CDF ligue"),
       _T("Leonardo XC"),
       _T("UK National League"),
       _T("[INVALID]")                 // Never use this. Used for iterate over rules
@@ -84,25 +82,27 @@ CContestMgr::CContestMgr():
   _traceLoop(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
   _prevFAIFront(), _prevFAIBack(),
   _prevFAIPredictedFront(), _prevFAIPredictedBack(),
-  _pgpsClosePoint(0,0,0,0),
-  _pgpsBestClosePoint(0,0,0,0),
-  _pgpsNearPoint(0,0,0,0),
+  _prevFreeTriangleFront(),_prevFreeTriangleBack(),
+  _bestXCType(XCFlightType::XC_INVALID),
+  _bestXCTriangleType(XCFlightType::XC_INVALID),
+  _XCFAIStatus(XCTriangleStatus::INVALID),
+  _XCFTStatus(XCTriangleStatus::INVALID),
+  _XCTriangleClosurePercentage(0),
+  _XCTriangleClosureDistance(0),
+  _XCTriangleDistance(0),
+  _XCMeanSpeed(0),
   _pgpsFreeTriangleClosePoint(0,0,0,0),
-  _pgpsFreeTriangleBestClosePoint(0,0,0,0)
+  _fFreeTriangleTogo(0),
+  _fFreeTriangleBestTogo(0),
+  _pgpsFAITriangleClosePoint(0, 0, 0, 0),
+  _fFAITriangleTogo(0),
+  _fFAITriangleBestTogo(0),
+  _bFAI(false),
+  _maxFAILeg(nullptr),
+  _bLooksLikeAFAITriangle(false),
+  _dFAITriangleClockwise(0)
 {
-  _fTogo     =  0;
-  _fBestTogo =  0;
-  _uiFAIDist  =0;
-  _bFAI              =false;
   _resultFREETriangle = CResult();
-  _bestXCTriangleType = XCFlightType::XC_INVALID;
-  _bestXCType = XCFlightType::XC_INVALID;
-  _XCFAIStatus= XCTriangleStatus::INVALID;
-  _XCFTStatus= XCTriangleStatus::INVALID;
-  _XCTriangleClosurePercentage = 0;
-  _XCTriangleDistance = 0;
-  _XCMeanSpeed = 0;
-
   ScopeLock guard(_resultsCS);
   for(unsigned i=0; i<TYPE_NUM; i++)
     _resultArray.push_back(CResult());
@@ -113,8 +113,7 @@ CContestMgr::CContestMgr():
  * 
  * @param handicap Glider handicap
  */
-void CContestMgr::Reset(unsigned handicap)
-{
+void CContestMgr::Reset(unsigned handicap) {
   ScopeLock guard(_mainCS);
   _handicap = handicap;
   {
@@ -122,22 +121,34 @@ void CContestMgr::Reset(unsigned handicap)
     _trace.reset(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
   }
   _traceSprint.reset(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM));
-  _traceLoop.reset(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
   _traceFreeTriangle.reset(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
+  _traceLoop.reset(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
   _prevFAIFront.reset(0);
   _prevFAIBack.reset(0);
   _prevFAIPredictedFront.reset(0);
   _prevFAIPredictedBack.reset(0);
   _prevFreeTriangleFront.reset(0);
   _prevFreeTriangleBack.reset(0);
+  _bestXCType = XCFlightType::XC_INVALID;
+  _bestXCTriangleType = XCFlightType::XC_INVALID;
+  _XCFAIStatus = XCTriangleStatus::INVALID;
+  _XCFTStatus = XCTriangleStatus::INVALID;
+  _XCTriangleClosurePercentage = 0;
+  _XCTriangleClosureDistance = 0;
+  _XCTriangleDistance = 0;
+  _XCMeanSpeed = 0;
+  _fFreeTriangleTogo = 0;
+  _fFreeTriangleBestTogo = 0;
+  _fFAITriangleTogo = 0;
+  _fFAITriangleBestTogo = 0;
   _bFAI = false;
-  _uiFAIDist =0;
-  _fTogo     = 0;
-  _fBestTogo = 0;
+  _maxFAILeg = nullptr;
+  _bLooksLikeAFAITriangle = false;
+  _dFAITriangleClockwise = 0;
   _resultFREETriangle = CResult();
   {
     ScopeLock Resultguard(_resultsCS);
-    for(unsigned i=0; i<TYPE_NUM; i++)
+    for (unsigned i = 0; i < TYPE_NUM; i++)
       _resultArray[i] = CResult();
   }
 }
@@ -242,6 +253,10 @@ bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool 
  */
 bool CContestMgr::FAITriangleEdgeCheck(unsigned length, unsigned best) const
 {
+
+  if (length< FAI_MIN_DISTANCE_THRESHOLD )
+    return false;
+
   unsigned length4 = length * 4;
   if(length4 < TRACE_FAI_BIG_TRIANGLE_LENGTH) { 
     // triangle to small to be a big FAI
@@ -272,6 +287,11 @@ bool CContestMgr::FAITriangleEdgeCheck(unsigned length, unsigned best) const
  */
 bool CContestMgr::FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const
 {
+  if (length1< FAI_MIN_DISTANCE_THRESHOLD ||
+      length2< FAI_MIN_DISTANCE_THRESHOLD ||
+      length3< FAI_MIN_DISTANCE_THRESHOLD )
+    return false;
+
   unsigned length = length1 + length2 + length3;
   if(length < TRACE_FAI_BIG_TRIANGLE_LENGTH) {
     unsigned lengthMin = std::min(length1, std::min(length2, length3));
@@ -282,10 +302,11 @@ bool CContestMgr::FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsig
     unsigned lengthMax = std::max(length1, std::max(length2, length3));
     return lengthMin * 4 > length && lengthMax * 20 < length * 9; // 25% && 45%
   }
+
 }
 
 /**
- * @brief Verifies if provided edges form a valid FLAT triangle
+ * @brief Verifies if provided edges form a valid FLAT triangle using current XC rule
  *
  * @param length1 First edge
  * @param length2 Second edge
@@ -295,22 +316,29 @@ bool CContestMgr::FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsig
  */
 bool CContestMgr::FREETriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const
 {
+
   bool valid = false;
 
   switch (AdditionalContestRule) {
-    case XContest2018:
+    case static_cast<int>(ContestRule::OLC):
       valid= true;            // No constrain on edge here
       break;
-    case XContest2019:
+    case static_cast<int>(ContestRule::FAI_ASSISTANT):
       valid= true;            // No constrain on edge here
       break;
-    case CFD:
+    case static_cast<int>(ContestRule::XContest2018):
       valid= true;            // No constrain on edge here
       break;
-    case LEONARDO_XC:
+    case static_cast<int>(ContestRule::XContest2019):
       valid= true;            // No constrain on edge here
       break;
-    case UK_NATIONAL_LEAGUE:
+    case static_cast<int>(ContestRule::CFD):
+      valid= true;            // No constrain on edge here
+      break;
+    case static_cast<int>(ContestRule::LEONARDO_XC):
+      valid= true;            // No constrain on edge here
+      break;
+    case static_cast<int>(ContestRule::UK_NATIONAL_LEAGUE):
       valid= true;            // and check
       const unsigned length = length1 + length2 + length3;
       const unsigned lengthMin = std::min(length1, std::min(length2, length3));
@@ -324,6 +352,7 @@ bool CContestMgr::FREETriangleEdgeCheck(unsigned length1, unsigned length2, unsi
       }
       break;
   }
+
   return valid;
 }
 
@@ -333,7 +362,7 @@ bool CContestMgr::FREETriangleEdgeCheck(unsigned length1, unsigned length2, unsi
  * @param type The type of the contest
  * @param traceResult The result data to set
  */
-void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
+void CContestMgr::PointsResultOLC(TType type, const CTrace &traceResult)
 {
   // prepare result
   CPointGPSArray pointArray;
@@ -368,18 +397,6 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
   }
 }
 
-
-void CContestMgr::RefreshFAIOptimizer(void)
-{
-      ScopeLock guard(_mainCS);
-      {
-        ScopeLock Traceguard(_traceCS);
-        _trace->Compress();
-      }
-    SolvePoints(*_trace, false, true);
-    SolveOLCPlus(true);
-
-}
 
 /** 
  * @brief Solve point based contest
@@ -448,8 +465,7 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
     ScopeLock guard(_resultsCS);
     _resultArray[TYPE_OLC_CLASSIC_PREDICTED] = CResult(TYPE_OLC_CLASSIC_PREDICTED, _resultArray[TYPE_OLC_CLASSIC]);
   }
-  PointsResult(type, traceResult);
-  
+  PointsResultOLC(type, traceResult);
 
   if(!sprint) {
     // calculate TYPE_FAI_3_TPS
@@ -465,113 +481,8 @@ else*/
       _resultArray[TYPE_FAI_3_TPS_PREDICTED] = CResult(TYPE_FAI_3_TPS_PREDICTED, _resultArray[TYPE_FAI_3_TPS]);
     }
 
-    PointsResult(predicted ? TYPE_FAI_3_TPS_PREDICTED : TYPE_FAI_3_TPS, traceResult);
+    PointsResultOLC(predicted ? TYPE_FAI_3_TPS_PREDICTED : TYPE_FAI_3_TPS, traceResult);
 
-    traceResult.Compress(FAI_OptimizerMode);
-    if(predicted)
-    {
-      // do it just in a case if predicted trace is worst than the current one
-      ScopeLock guard(_resultsCS);
-      _resultArray[TYPE_FAI_TRIANGLE] = CResult(TYPE_FAI_TRIANGLE, _resultArray[TYPE_OLC_FAI_PREDICTED]);
-    }
-
-    PointsResult(TYPE_FAI_TRIANGLE, traceResult);
-
-
-    const CPointGPSArray &points = _resultArray[TYPE_FAI_TRIANGLE]._pointArray;
-	double fDist=0, fAngle =0.0;
-	 _bFAI = false;
-	if(points.size() > 3)
-	{
-	  double fRelMin = FAI_NORMAL_PERCENTAGE; //   0.28    /*  % of FAI triangle if distance < 750km/500km */
-	  _bFAI = true;
-	  double fLeg1 = points[1].Distance(points[2]);
-	  double fLeg2 = points[2].Distance(points[3]);
-	  double fLeg3 = points[3].Distance(points[1]);
-	  double fFAIDist = fLeg1 + fLeg2 + fLeg3;
-	  if(fFAIDist <=0.0) fFAIDist = 1.0;
-	  if(fFAIDist > FAI28_45Threshold)
-		  fRelMin = FAI_BIG_PERCENTAGE; //   0.25    /*  % of FAI triangle if distance > 750km/500km */
-	  if ((fLeg1 / fFAIDist) < fRelMin) _bFAI = false;
-	  if ((fLeg2 / fFAIDist) < fRelMin) _bFAI = false;
-	  if ((fLeg3 / fFAIDist) < fRelMin) _bFAI = false;
-
-	  point = trace.Front();
-	  if(point)
-	  {
-	    DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &_fTogo, &fAngle);
-		_pgpsClosePoint = point->GPS();
-	  }
-
-	  if((unsigned int)(_uiFAIDist*100.0) != (unsigned int)(fFAIDist*100.0))  /* copare if still the same FAI ? */
-	  {
-		_uiFAIDist = fFAIDist;     /* reset previous  infos */
-		_pgpsBestClosePoint = _pgpsClosePoint;
-		_fBestTogo = _fTogo;
-		_pgpsBestClosePoint = _pgpsClosePoint;
-		_pgpsNearPoint      = trace.Back()->GPS();
-	  }
-
-	  while( (point->GPS().Time() <=  points[1].Time()) && (point != last) && point)
-	  {
-		DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, point->GPS().Latitude() , point->GPS().Longitude() , &fDist, &fAngle);
-	    if(fDist < _fTogo )
-	    {
-		  _pgpsClosePoint = point->GPS();
-		  _fTogo = fDist;
-	    }
-	    point = point->Next();
-	  }
-
-	  if((_fTogo < _fBestTogo) && trace.Back())     /* shorter than before ? */
-	  {
-		_fBestTogo          = _fTogo;               /* remember closest distance */
-		_pgpsBestClosePoint = _pgpsClosePoint;      /* best closing point        */
-		_pgpsNearPoint      = trace.Back()->GPS();  /* with current position     */
-
-	  }
-	}
-
-	static bool needfilling_notriangle=true;
-	static bool needfilling_yestriangle=true;
-	static double oldFAIDist=0;
-
-	if (_bFAI && (_uiFAIDist != oldFAIDist)) {
-		needfilling_yestriangle=true;
-		oldFAIDist=_uiFAIDist;
-	}
-
-    if ( ! AdditionalContestRule) {       // If XC is active RESWP_FAIOPTIMIZED is set by the XCSolve function
-
-      if(_bFAI)
-      {
-        needfilling_notriangle=true;
-        WayPointList[RESWP_FAIOPTIMIZED].Latitude=_pgpsClosePoint.Latitude();
-        WayPointList[RESWP_FAIOPTIMIZED].Longitude=_pgpsClosePoint.Longitude();
-        WayPointList[RESWP_FAIOPTIMIZED].Altitude=_pgpsClosePoint.Altitude();
-        if (WayPointList[RESWP_FAIOPTIMIZED].Altitude==0) WayPointList[RESWP_FAIOPTIMIZED].Altitude=0.001;
-        WayPointList[RESWP_FAIOPTIMIZED].Reachable=TRUE;
-        WayPointList[RESWP_FAIOPTIMIZED].Visible=TRUE;
-
-        if(needfilling_yestriangle) {
-          _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("%-.1f %s %s"),_uiFAIDist *DISTANCEMODIFY,Units::GetDistanceName(), MsgToken(1816)); // FAI triangle closing point
-          needfilling_yestriangle=false;
-        }
-
-      }
-      else
-      {
-        //WayPointList[RESWP_FAIOPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
-        //WayPointList[RESWP_FAIOPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
-        WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
-        WayPointList[RESWP_FAIOPTIMIZED].Reachable=false;
-        WayPointList[RESWP_FAIOPTIMIZED].Visible=false;
-        if (needfilling_notriangle) {
-          _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("no triangle closing point found!"));
-          needfilling_notriangle=false;
-        }
-      }
-    }
   }
 }
 
@@ -584,81 +495,78 @@ else*/
  * @param prevBack Loop back point of previous iteration
  * @param predicted @c true if a predicted path to the trace start should be calculated
  */
-void CContestMgr::SolveFAITriangle(const CTrace &trace,
-                                   const CPointGPS *prevFront,
-                                   const CPointGPS *prevBack,
-                                   bool predicted)
-{
+void CContestMgr::SolveFAITriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack, bool predicted) {
+
   TType type = predicted ? TYPE_OLC_FAI_PREDICTED : TYPE_OLC_FAI;
   CResult bestResult = _resultArray[type];
-  if(trace.Size() > 2) {
+  if (trace.Size() > 2) {
     // check for every trace point
     const CTrace::CPoint *point1st = trace.Front();
-    while(point1st) {
+    while (point1st) {
       // check if all edges should be analysed
       bool skip1 = prevFront && prevBack;
-      if(skip1 && (point1st->GPS() < *prevFront || point1st->GPS() > *prevBack))
+      if (skip1 && (point1st->GPS() < *prevFront || point1st->GPS() > *prevBack))
         skip1 = false;
-      
+
       // create a map of points that may form first edge of a better triangle
       CDistanceMap distanceMap1st;
       const CTrace::CPoint *next = 0;
-      for(next=point1st->Next(); next; next=next->Next()) {
+      for (next = point1st->Next(); next; next = next->Next()) {
         unsigned dist = point1st->GPS().DistanceXYZ(next->GPS());
         // check if 1st edge not too short
-        if(!FAITriangleEdgeCheck(dist, bestResult.Distance()))
+        if (!FAITriangleEdgeCheck(dist, bestResult.Distance()))
           continue;
         distanceMap1st.insert(std::make_pair(dist, next));
       }
-      
+
       // check all possible first edges of the triangle
-      for(CDistanceMap::reverse_iterator it1st=distanceMap1st.rbegin(); it1st!=distanceMap1st.rend(); ++it1st) {
+      for (CDistanceMap::reverse_iterator it1st = distanceMap1st.rbegin(); it1st != distanceMap1st.rend(); ++it1st) {
         bool skip2 = skip1;
-        if(skip2 && (it1st->second->GPS() < *prevFront || it1st->second->GPS() > *prevBack))
+        if (skip2 && (it1st->second->GPS() < *prevFront || it1st->second->GPS() > *prevBack))
           skip2 = false;
-        
+
         unsigned dist1st = it1st->first;
-        if(!FAITriangleEdgeCheck(dist1st, bestResult.Distance()))
+        if (!FAITriangleEdgeCheck(dist1st, bestResult.Distance()))
           // better solution found in the meantime
           break;
-        
+
         // create a map of points that may form second edge of a better triangle
         CDistanceMap distanceMap2nd;
         const CTrace::CPoint *point2nd = it1st->second;
-        for(next=point2nd->Next(); next; next=next->Next()) {
+        for (next = point2nd->Next(); next; next = next->Next()) {
           bool skip3 = skip2;
-          if(skip3 && (next->GPS() < *prevFront || next->GPS() > *prevBack))
+          if (skip3 && (next->GPS() < *prevFront || next->GPS() > *prevBack))
             skip3 = false;
-          if(skip3)
+          if (skip3)
             // that triangle was analysed already
             continue;
-          
+
           unsigned dist = point2nd->GPS().DistanceXYZ(next->GPS());
           // check if 2nd edge not too long
-          if(dist * 14 > dist1st * 20) // 45% > 25%
+          if (dist * 14 > dist1st * 20) // 45% > 25%
             continue;
           // check if 2nd edge not too short
-          if(!FAITriangleEdgeCheck(dist, bestResult.Distance()))
+          if (!FAITriangleEdgeCheck(dist, bestResult.Distance()))
             continue;
           distanceMap2nd.insert(std::make_pair(dist, next));
         }
-        
+
         // check all possible second and third edges of the triangle
-        for(CDistanceMap::reverse_iterator it2nd=distanceMap2nd.rbegin(); it2nd!=distanceMap2nd.rend(); ++it2nd) {
+        for (CDistanceMap::reverse_iterator it2nd = distanceMap2nd.rbegin(); it2nd != distanceMap2nd.rend(); ++it2nd) {
           unsigned dist2nd = it2nd->first;
-          if(!FAITriangleEdgeCheck(dist2nd, bestResult.Distance()))
+          if (!FAITriangleEdgeCheck(dist2nd, bestResult.Distance()))
             // better solution found in the meantime
             break;
-          
+
           const CTrace::CPoint *point3rd = it2nd->second;
           unsigned dist3rd = point3rd->GPS().DistanceXYZ(point1st->GPS());
           unsigned distance = dist1st + dist2nd + dist3rd;
-          if(distance > bestResult.Distance()) {
+          if (distance > bestResult.Distance()) {
             // check if valid FAI triangle
-            if(FAITriangleEdgeCheck(dist1st, dist2nd, dist3rd)) {
+            if (FAITriangleEdgeCheck(dist1st, dist2nd, dist3rd)) {
               // store new result
-              LKASSERT(_handicap>0);
-              if (_handicap==0) return; // UNMANAGED
+              LKASSERT(_handicap > 0);
+              if (_handicap == 0) return; // UNMANAGED
               float score = distance / 1000.0 * 0.3 * 100 / _handicap;
               CPointGPSArray pointArray;
               pointArray.push_back(trace.Front()->GPS());
@@ -666,50 +574,49 @@ void CContestMgr::SolveFAITriangle(const CTrace &trace,
               pointArray.push_back(point2nd->GPS());
               pointArray.push_back(point3rd->GPS());
               pointArray.push_back(trace.Back()->GPS());
-              
+
               bool predictedFAI = false;
-              if(type == TYPE_OLC_FAI_PREDICTED) {
+              if (type == TYPE_OLC_FAI_PREDICTED) {
                 const CResult &resultFAI = _resultArray[TYPE_OLC_FAI];
-                if(resultFAI.Type() == TYPE_OLC_FAI) {
+                if (resultFAI.Type() == TYPE_OLC_FAI) {
                   // check time range
                   const CPointGPSArray &pointsFAI = resultFAI.PointArray();
-                  if(pointsFAI[0].TimeDelta(pointArray[1]) > 0 ||
-                     pointArray[3].TimeDelta(pointsFAI[4]) > 0)
+                  if (pointsFAI[0].TimeDelta(pointArray[1]) > 0 ||
+                      pointArray[3].TimeDelta(pointsFAI[4]) > 0)
                     // result outside of not predicted loop
                     predictedFAI = true;
-                }
-                else
+                } else
                   // has to be predicted triangle as OLC-FAI invalid
                   predictedFAI = true;
               }
-              
+
               bestResult = CResult(type, predictedFAI, distance, score, pointArray);
             }
           }
         }
       }
-      
+
       point1st = point1st->Next();
     }
   }
-  
-  if(predicted && bestResult.Predicted()) {
+
+  if (predicted && bestResult.Predicted()) {
     // modify the last point and recalulate the result
     const CPointGPS &start = bestResult.PointArray().front();
     const CPointGPS &end = trace.Back()->GPS();
     float speed = _resultArray[TYPE_OLC_CLASSIC].Speed();
     unsigned time = end.Time();
-    if(speed) {
+    if (speed) {
       time += static_cast<unsigned>(end.DistanceXYZ(start) / speed);
       time %= CPointGPS::DAY_SECONDS;
     }
-    
+
     ScopeLock guard(_resultsCS);
     bestResult._pointArray[4] = CPointGPS(time, start.Latitude(), start.Longitude(), start.Altitude());
     bestResult.Update();
   }
-  
-  if(bestResult.Type() != TYPE_INVALID) {
+
+  if (bestResult.Type() != TYPE_INVALID) {
     ScopeLock guard(_resultsCS);
     _resultArray[type] = bestResult;
   }
@@ -717,15 +624,13 @@ void CContestMgr::SolveFAITriangle(const CTrace &trace,
 
 /**
  * @brief Solves XContest Free Triangle based contest
- * Tony 2018
+ * Tony 2019
  * @param trace The trace to use
  * @param prevFront Loop front point of previous iteration
  * @param prevBack Loop back point of previous iteration
  * @param predicted @c true if a predicted path to the trace start should be calculated
  */
-void CContestMgr::SolveFREETriangle(const CTrace &trace,
-                                    const CPointGPS *prevFront,
-                                    const CPointGPS *prevBack) {
+void CContestMgr::SolveFREETriangle(const CTrace &trace,const CPointGPS *prevFront,const CPointGPS *prevBack) {
   if (trace.Size() > 2) {
     // check for every trace point
     const CTrace::CPoint *point1st = trace.Front();
@@ -777,47 +682,15 @@ void CContestMgr::SolveFREETriangle(const CTrace &trace,
           if ( !FREETriangleEdgeCheck(dist1st, dist2nd, dist3rd) )
             break;
 
-          double fFreeTriangleBestTogo = 100e100; // PC does not compile  DBL_MAX;
-          double fAngle = 0;
-          CPointGPS pgpsBestClose(0,0,0,0) ;
-          CPointGPS pgpsClose(0,0,0,0) ;
-          double closure;
-          if (_resultFREETriangle.PointArray().size() > 0) {
-            const CTrace::CPoint *p = trace.Front();
-            while (p && p->GPS().Time() <= _resultFREETriangle.PointArray()[1].Time()) {
-              DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, p->GPS().Latitude(), p->GPS().Longitude(), &closure, &fAngle);
-              // Find best closure point
-              if (closure < fFreeTriangleBestTogo) {
-                pgpsBestClose = CPointGPS(GPS_INFO.Time,GPS_INFO.Latitude,GPS_INFO.Longitude,GPS_INFO.Altitude);
-                pgpsClose =  CPointGPS(p->GPS().Time(),p->GPS().Latitude(),p->GPS().Longitude(),p->GPS().Altitude());
-                fFreeTriangleBestTogo = closure;
-              }
-              p = p->Next();
-            }
-            _fFreeTriangleTogo = fFreeTriangleBestTogo;
-          }
-          if (total_distance <= _resultFREETriangle.PredictedDistance()) {   // just update distance to go with current triangle if necessary
-            if (_fFreeTriangleTogo < _fFreeTriangleBestTogo) {   // need only to update result
-              _fFreeTriangleBestTogo = _fFreeTriangleTogo;
-              _pgpsFreeTriangleBestClosePoint =  pgpsBestClose;
-              _pgpsFreeTriangleClosePoint = pgpsClose;
-              _resultFREETriangle.UpdateDistance(_resultFREETriangle.PredictedDistance() - _fFreeTriangleBestTogo);
-            }
-          }
-          else {  // bigger triangle found. Store it into pointArray
-            _fFreeTriangleBestTogo = _fFreeTriangleTogo;
-            const double current_distance = total_distance - _fFreeTriangleBestTogo;
+          if ( total_distance > _resultFREETriangle.PredictedDistance() ) {
             CPointGPSArray pointArray;
             pointArray.push_back(trace.Front()->GPS());
             pointArray.push_back(point1st->GPS());
             pointArray.push_back(point2nd->GPS());
             pointArray.push_back(point3rd->GPS());
             pointArray.push_back(trace.Back()->GPS());
-            _pgpsFreeTriangleBestClosePoint =  pgpsBestClose;
-            _pgpsFreeTriangleClosePoint = pgpsClose;
-
-            _resultFREETriangle.UpdateDistancesAndArray(current_distance, total_distance, pointArray);
-            }
+            _resultFREETriangle.UpdateDistancesAndArray(total_distance, total_distance, pointArray);
+          }
         }
       }
       point1st = point1st->Next();
@@ -849,23 +722,24 @@ void CContestMgr::SolveOLCPlus(bool predicted)
  * 
  * @param gps New GPS fix to use in analysis
  */
-void CContestMgr::Add(unsigned time, double lat, double lon, int alt)
-{
+void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
+
+  if ( AdditionalContestRule == static_cast<int>(ContestRule::NONE) ) {
+    return;
+  }
+
   static CPointGPS lastGps(0, 0, 0, 0);
   static unsigned step = 0;
-  unsigned STEPS_NUM;
-  if ( AdditionalContestRule == 0 ) // No additional Contest
-    STEPS_NUM = 7;
-  else
-    STEPS_NUM = 9;
+  const unsigned STEPS_NUM = 9;
+
 
   const CPointGPSSmart gps = make_CPointGPSSmart(time, lat, lon, alt);
-  
+
   // filter out GPS fix repeats
-  if(lastGps == *gps)
+  if (lastGps == *gps)
     return;
   lastGps = *gps;
-  
+
   ScopeLock guard(_mainCS);
   {
     // Update main trace
@@ -873,78 +747,81 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt)
     _trace->Push(gps);
     _trace->Compress();
   }
-  
-  // OLC-Plus
-  if(step % STEPS_NUM == 0) {
-    // Solve OLC-Classic and FAI 3TPs
+
+  // STEP 0 - Solve OLC-Classic and FAI 3TPs
+  if (step % STEPS_NUM == 0 && AdditionalContestRule!=static_cast<int>(ContestRule::FAI_ASSISTANT) ) {
     SolvePoints(*_trace, false, false);
     SolveOLCPlus(false);
   }
-  if(step % STEPS_NUM == 1) {
-    // Find FAI-OLC loop
+
+  // STEP 1 - Find FAI-OLC loop
+  if (step % STEPS_NUM == 1 && AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
     _traceLoop->Clear();
-    if(!BiggestLoopFind(*_trace, *_traceLoop, false))
+    if (!BiggestLoopFind(*_trace, *_traceLoop, false))
       _traceLoop->Clear();
   }
-  if(step % STEPS_NUM == 2) {
-    // Solve FAI-OLC
-    if(_traceLoop->Size()) {
+
+  // STEP 2 - Solve FAI-OLC
+  if (step % STEPS_NUM == 2 && AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+    if (_traceLoop->Size()) {
       SolveFAITriangle(*_traceLoop, _prevFAIFront.get(), _prevFAIBack.get(), false);
       _prevFAIFront.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
       _prevFAIBack.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Back()->GPS()) : 0);
       SolveOLCPlus(false);
     }
   }
-  
-  if(step % STEPS_NUM == 3) {
-    // Solve OLC-Classic and FAI 3TPs for predicted path
+
+  // STEP 3 - Solve OLC-Classic and FAI 3TPs for predicted path
+  if (step % STEPS_NUM == 3 && AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
     SolvePoints(*_trace, false, true);
     SolveOLCPlus(true);
   }
-  if(step % STEPS_NUM == 4) {
-    // Find FAI-OLC loop for predicted path
+
+  // STEP 4 - Find FAI-OLC loop for predicted path
+  if (step % STEPS_NUM == 4  ) {
     _traceLoop->Clear();
-    if(!BiggestLoopFind(*_trace, *_traceLoop, true))
+    if (!BiggestLoopFind(*_trace, *_traceLoop, true))
       _traceLoop->Clear();
   }
-  if(step % STEPS_NUM == 5) {
-    // Solve FAI-OLC for predicted path
-    if(_traceLoop->Size()) {
+
+  // STEP 5 - Solve FAI-OLC for predicted path
+  if (step % STEPS_NUM == 5  ) {
+    if (_traceLoop->Size()) {
       SolveFAITriangle(*_traceLoop, _prevFAIPredictedFront.get(), _prevFAIPredictedBack.get(), true);
       _prevFAIPredictedFront.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
       _prevFAIPredictedBack.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Back()->GPS()) : 0);
     }
-    SolveOLCPlus(true);
+    if (AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+      SolveOLCPlus(true);
+    }
   }
 
-  // Update sprint trace
-  _traceSprint->Push(gps);
-  _traceSprint->Compress();
-  
-  // OLC-League
-  if(step % STEPS_NUM == 6) {
-    // Solve OLC-Sprint
-    SolvePoints(*_traceSprint, true, false);
+  // STEP 6 - OLC-League
+  if (AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+    // Update sprint trace
+    _traceSprint->Push(gps);
+    _traceSprint->Compress();
+    if (step % STEPS_NUM == 6 && AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+      // Solve OLC-Sprint
+      SolvePoints(*_traceSprint, true, false);
+    }
   }
 
-  if ( AdditionalContestRule ) {
-
-    if (step % STEPS_NUM == 7) {
-      // Update XContest Free Triangle trace
+  // STEP 7 - Update XContest Free Triangle trace. Also needed for FAI_ASSISTANT
+  if (step % STEPS_NUM == 7 ) {
+    _traceFreeTriangle->Clear();
+    if (!BiggestLoopFind(*_trace, *_traceFreeTriangle, true))
       _traceFreeTriangle->Clear();
-      if (!BiggestLoopFind(*_trace, *_traceFreeTriangle, true))
-        _traceFreeTriangle->Clear();
-    }
+  }
 
-    if (step % STEPS_NUM == 8) {
-
-      if (_traceFreeTriangle->Size()) {
-        SolveFREETriangle(*_traceFreeTriangle,_prevFreeTriangleFront.get(), _prevFreeTriangleBack.get());
-        _prevFreeTriangleFront.reset(_traceFreeTriangle->Size() ? new CPointGPS(_traceFreeTriangle->Front()->GPS()) : 0);
-        _prevFreeTriangleBack.reset(_traceFreeTriangle->Size() ? new CPointGPS(_traceFreeTriangle->Back()->GPS()) : 0);
-      }
-      SolveXC();
+  // STEP 8 - Solve Free triangle and XC scoring. Also needed for FAI_ASSISTANT
+  if (step % STEPS_NUM == 8) {
+    if (_traceFreeTriangle->Size()) {
+      SolveFREETriangle(*_traceFreeTriangle, _prevFreeTriangleFront.get(), _prevFreeTriangleBack.get());
+      _prevFreeTriangleFront.reset(_traceFreeTriangle->Size() ? new CPointGPS(_traceFreeTriangle->Front()->GPS()) : 0);
+      _prevFreeTriangleBack.reset(_traceFreeTriangle->Size() ? new CPointGPS(_traceFreeTriangle->Back()->GPS()) : 0);
     }
+    SolveXC();
   }
 
   step++;
@@ -969,157 +846,290 @@ void CContestMgr::Trace(CPointGPSArray &array) const
   }
 }
 
+
 /**
- * @brief Sets all dummy  Contest results data
+ * @brief Find che nearest closing point for FAI triangle Tony 2019
+ *
+ * @param None will set member variables.
+ */
+void CContestMgr::FindFAITriangleClosingPoint() {
+
+  CResult &resfai = _resultArray[TYPE_OLC_FAI_PREDICTED];
+
+  static double dLastFAIDistance = std::numeric_limits<double>::max();
+  double fFAITriangleBestTogo = std::numeric_limits<double>::max(); // 100e100; // PC does not compile  DBL_MAX;
+  double fFAIAngle = 0;
+  //CPointGPS pgpsFAIBestClose(0, 0, 0, 0);
+  CPointGPS pgpsFAIClose(0, 0, 0, 0);
+  double dFAIclosure;
+  if (resfai.PointArray().size() > 0) {
+    const CTrace::CPoint *p = _trace->Front();
+    while (p && p->GPS().Time() <= resfai.PointArray()[1].Time() && p != _trace->Back()) {
+      DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, p->GPS().Latitude(), p->GPS().Longitude(), &dFAIclosure, &fFAIAngle);
+      // Find best closure point
+      if (dFAIclosure < fFAITriangleBestTogo) {
+        //pgpsFAIBestClose = CPointGPS(GPS_INFO.Time, GPS_INFO.Latitude, GPS_INFO.Longitude, GPS_INFO.Altitude);
+        pgpsFAIClose = CPointGPS(p->GPS().Time(), p->GPS().Latitude(), p->GPS().Longitude(), p->GPS().Altitude());
+        fFAITriangleBestTogo = dFAIclosure;
+      }
+      p = p->Next();
+    }
+    _fFAITriangleTogo = fFAITriangleBestTogo;
+    if ( pgpsFAIClose.Longitude() != _pgpsFAITriangleClosePoint.Longitude() || pgpsFAIClose.Latitude() != _pgpsFAITriangleClosePoint.Latitude() ) {
+      RasterTerrain::Lock();
+      RasterTerrain::SetTerrainRounding(0,0);
+      const short Alt = RasterTerrain::GetTerrainHeight(pgpsFAIClose.Latitude(),
+                                                        pgpsFAIClose.Longitude());
+      RasterTerrain::Unlock();
+      _pgpsFAITriangleClosePoint = CPointGPS( pgpsFAIClose.Time(),pgpsFAIClose.Latitude(),pgpsFAIClose.Longitude(),Alt);
+
+    }
+
+    if (dLastFAIDistance == resfai.Distance()) {
+      _fFAITriangleBestTogo = min(_fFAITriangleBestTogo, fFAITriangleBestTogo);
+    } else {
+      dLastFAIDistance = resfai.Distance();
+      _fFAITriangleBestTogo = fFAITriangleBestTogo;
+    }
+  }
+}
+
+/**
+ * @brief Find che nearest closing point for FREE triangle Tony 2019
+ *
+ * @param None will set member variables.
+ */
+void CContestMgr::FindFREETriangleClosingPoint() {
+
+  static double dLastFreeDistance = std::numeric_limits<double>::max();// 100e100;
+  double fFreeTriangleBestTogo = std::numeric_limits<double>::max(); // 100e100; // PC does not compile  DBL_MAX;
+  double fFreeAngle = 0;
+  //CPointGPS pgpsFreeBestClose(0, 0, 0, 0);
+  CPointGPS pgpsFreeClose(0, 0, 0, 0);
+  double dFreeclosure;
+  if (_resultFREETriangle.PointArray().size() > 0) {
+    const CTrace::CPoint *p = _trace->Front();
+    while (p && p->GPS().Time() <= _resultFREETriangle.PointArray()[1].Time() && p != _trace->Back()) {
+      DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, p->GPS().Latitude(), p->GPS().Longitude(), &dFreeclosure, &fFreeAngle);
+      // Find best closure point
+      if (dFreeclosure < fFreeTriangleBestTogo) {
+        //pgpsFreeBestClose = CPointGPS(GPS_INFO.Time, GPS_INFO.Latitude, GPS_INFO.Longitude, GPS_INFO.Altitude);
+        pgpsFreeClose = CPointGPS(p->GPS().Time(), p->GPS().Latitude(), p->GPS().Longitude(), p->GPS().Altitude());
+        fFreeTriangleBestTogo = dFreeclosure;
+      }
+      p = p->Next();
+    }
+    _fFreeTriangleTogo = fFreeTriangleBestTogo;
+    if (pgpsFreeClose.Longitude() != _pgpsFreeTriangleClosePoint.Longitude() || pgpsFreeClose.Latitude() != _pgpsFreeTriangleClosePoint.Latitude()) {
+      RasterTerrain::Lock();
+      RasterTerrain::SetTerrainRounding(0, 0);
+      const short Alt = RasterTerrain::GetTerrainHeight(pgpsFreeClose.Latitude(),
+                                                        pgpsFreeClose.Longitude());
+      RasterTerrain::Unlock();
+      _pgpsFreeTriangleClosePoint = CPointGPS(pgpsFreeClose.Time(), pgpsFreeClose.Latitude(), pgpsFreeClose.Longitude(), Alt);
+
+    }
+    if (dLastFreeDistance == _resultFREETriangle.PredictedDistance()) {
+      _fFreeTriangleBestTogo = min(_fFreeTriangleBestTogo, fFreeTriangleBestTogo);
+    } else {
+      dLastFreeDistance = _resultFREETriangle.PredictedDistance();
+      _fFreeTriangleBestTogo = fFreeTriangleBestTogo;
+    }
+  }
+
+}
+
+/**
+ * @brief Calculate all Contest results data based on current rule. Tony 2019
  *
  * @param
  */
 void CContestMgr::SolveXC() {
 
+  FindFAITriangleClosingPoint();
+  FindFREETriangleClosingPoint();
+
   ScopeLock guard(_resultsCS);
 
-  // FAI
-  CResult &resfai = _resultArray[TYPE_OLC_FAI_PREDICTED];
-  const double predicted_distance_fai = resfai.Distance();
-  const double togo_distance_fai =  _fBestTogo;
+  //
+  // Calculate results for FAI Triangle.
+  //
+  const double predicted_distance_fai = _resultArray[TYPE_OLC_FAI_PREDICTED].Distance();
+  const double togo_distance_fai = _fFAITriangleBestTogo;
   const double current_distance_fai = predicted_distance_fai - togo_distance_fai;
-  const double score_fai = ScoreXC(current_distance_fai,predicted_distance_fai,XCFlightType::XC_FAI_TRIANGLE,true);
-  _resultArray[TYPE_XC_FAI_TRIANGLE] =  CResult(TYPE_XC_FAI_TRIANGLE,_XCFAIStatus!=XCTriangleStatus::CLOSED,
-                                                _XCFAIStatus==XCTriangleStatus::INVALID?0:current_distance_fai,
-                                                current_distance_fai,predicted_distance_fai,score_fai,
-                                                CPointGPSArray(_resultArray[TYPE_OLC_FAI_PREDICTED].PointArray()));
+  const double score_fai = ScoreXC(current_distance_fai, predicted_distance_fai, XCFlightType::XC_FAI_TRIANGLE, true);
+  _resultArray[TYPE_XC_FAI_TRIANGLE] = CResult(TYPE_XC_FAI_TRIANGLE, _XCFAIStatus != XCTriangleStatus::CLOSED,
+                                               _XCFAIStatus == XCTriangleStatus::INVALID ? 0 : current_distance_fai,
+                                               current_distance_fai, predicted_distance_fai, score_fai,
+                                               _resultArray[TYPE_OLC_FAI_PREDICTED].PointArray());
 
-  // Free Triangle
-  const double predicted_distance_ft = (double)_resultFREETriangle.PredictedDistance();
-  const double current_distance_ft = (double)_resultFREETriangle.CurrentDistance();
-  const double score_ft =  ScoreXC(current_distance_ft,predicted_distance_ft,XCFlightType::XC_FREE_TRIANGLE,true);
-  _resultArray[TYPE_XC_FREE_TRIANGLE] =  CResult(TYPE_XC_FREE_TRIANGLE,_XCFTStatus!=XCTriangleStatus::CLOSED,
-                                                 _XCFTStatus==XCTriangleStatus::INVALID?0:current_distance_ft,
-                                                 current_distance_ft,predicted_distance_ft,score_ft,
-                                                 CPointGPSArray(_resultFREETriangle.PointArray()));
+  //
+  // Calculate results for FREE Triangle.
+  //
+  const double predicted_distance_ft = (double) _resultFREETriangle.PredictedDistance();
+  const double current_distance_ft = (double) _resultFREETriangle.PredictedDistance() - _fFreeTriangleBestTogo;
+  const double score_ft = ScoreXC(current_distance_ft, predicted_distance_ft, XCFlightType::XC_FREE_TRIANGLE, true);
+  _resultArray[TYPE_XC_FREE_TRIANGLE] = CResult(TYPE_XC_FREE_TRIANGLE, _XCFTStatus != XCTriangleStatus::CLOSED,
+                                                _XCFTStatus == XCTriangleStatus::INVALID ? 0 : current_distance_ft,
+                                                current_distance_ft, predicted_distance_ft, score_ft,
+                                                _resultFREETriangle.PointArray());
 
-  // Free flight
-  CResult resff = _resultArray[TYPE_FAI_3_TPS];
-  const double current_distance_ff  = resff.Distance();;
-  const double score_ff = ScoreXC(current_distance_ff,current_distance_ff,XCFlightType::XC_FREE_FLIGHT,true);
-  _resultArray[TYPE_XC_FREE_FLIGHT] =  CResult(TYPE_XC_FREE_FLIGHT,false,current_distance_ff,current_distance_ff,
-                                               current_distance_ff,score_ff,
-                                               CPointGPSArray(_resultArray[TYPE_FAI_3_TPS].PointArray()));
+  //
+  // Calculate results for Free flight
+  //
+  const double current_distance_ff = _resultArray[TYPE_FAI_3_TPS].Distance();
+  const double score_ff = ScoreXC(current_distance_ff, current_distance_ff, XCFlightType::XC_FREE_FLIGHT, true);
+  _resultArray[TYPE_XC_FREE_FLIGHT] = CResult(TYPE_XC_FREE_FLIGHT, false, current_distance_ff, current_distance_ff,
+                                              current_distance_ff, score_ff,
+                                              _resultArray[TYPE_FAI_3_TPS].PointArray());
 
+  //
   // Combined Result
-  if ( (score_fai >= score_ff) && (score_fai >= score_ft) ) {  // FAI
-    _bestXCType = CContestMgr::XC_FAI_TRIANGLE;
-    _resultArray[TYPE_XC] = CResult( _resultArray[TYPE_XC_FAI_TRIANGLE]);
-  }
-  else if ( (score_ff >= score_fai) && (score_ff >= score_ft) ) {   // Free Flight
-    _bestXCType = CContestMgr::XC_FREE_FLIGHT;
-    _resultArray[TYPE_XC] = CResult( _resultArray[TYPE_XC_FREE_FLIGHT]);
-  }
-  else {   // Free Triangle
-    _bestXCType = CContestMgr::XC_FREE_TRIANGLE;
-    _resultArray[TYPE_XC] = CResult( _resultArray[TYPE_XC_FREE_TRIANGLE]);
+  //
+  if ((score_fai >= score_ff) && (score_fai >= score_ft)) {  // FAI
+    _bestXCType = CContestMgr::XCFlightType::XC_FAI_TRIANGLE;
+    _resultArray[TYPE_XC] = CResult(_resultArray[TYPE_XC_FAI_TRIANGLE]);
+  } else if ((score_ff >= score_fai) && (score_ff >= score_ft)) {   // Free Flight
+    _bestXCType = CContestMgr::XCFlightType::XC_FREE_FLIGHT;
+    _resultArray[TYPE_XC] = CResult(_resultArray[TYPE_XC_FREE_FLIGHT]);
+  } else {   // Free Triangle
+    _bestXCType = CContestMgr::XCFlightType::XC_FREE_TRIANGLE;
+    _resultArray[TYPE_XC] = CResult(_resultArray[TYPE_XC_FREE_TRIANGLE]);
   }
 
+  //
   // Best Triangle data
+  //
   _bestXCTriangleType = XCFlightType::XC_INVALID;
-  double predicted_score_fai = ScoreXC(predicted_distance_fai,predicted_distance_fai,XCFlightType::XC_FAI_TRIANGLE,false);
-  double predicted_score_ft = ScoreXC(predicted_distance_ft,predicted_distance_ft,XCFlightType::XC_FREE_TRIANGLE,false);
-  if (predicted_score_fai > 0 && predicted_score_fai>=predicted_score_ft) {
+  double predicted_score_fai = ScoreXC(predicted_distance_fai, predicted_distance_fai, XCFlightType::XC_FAI_TRIANGLE, false);
+  double predicted_score_ft = ScoreXC(predicted_distance_ft, predicted_distance_ft, XCFlightType::XC_FREE_TRIANGLE, false);
+  if (predicted_score_fai > 0 && predicted_score_fai >= predicted_score_ft) {
     _bestXCTriangleType = XCFlightType::XC_FAI_TRIANGLE;
-    _XCTriangleClosurePercentage = 100. * ( (predicted_distance_fai-current_distance_fai) / predicted_distance_fai ) ;
+    _XCTriangleClosurePercentage = 100. * ((predicted_distance_fai - current_distance_fai) / predicted_distance_fai);
     _XCTriangleClosureDistance = predicted_distance_fai - current_distance_fai;
     _XCTriangleDistance = predicted_distance_fai;
 
-  }
-  else if (predicted_score_ft > 0) {
+    WayPointList[RESWP_FAIOPTIMIZED].Latitude = _pgpsFAITriangleClosePoint.Latitude();
+    WayPointList[RESWP_FAIOPTIMIZED].Longitude = _pgpsFAITriangleClosePoint.Longitude();
+    WayPointList[RESWP_FAIOPTIMIZED].Altitude = _pgpsFAITriangleClosePoint.Altitude();
+    if (WayPointList[RESWP_FAIOPTIMIZED].Altitude == 0) WayPointList[RESWP_FAIOPTIMIZED].Altitude = 0.001;
+    WayPointList[RESWP_FAIOPTIMIZED].Reachable = TRUE;
+    WayPointList[RESWP_FAIOPTIMIZED].Visible = TRUE;
+    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment, _T("Current FAI triangle closing point"));
+    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("FAI"));
+    switch (_XCFAIStatus) {
+      case XCTriangleStatus::INVALID:
+        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI*%.0f"),predicted_distance_fai/1000.);
+        break;
+      case XCTriangleStatus::VALID:
+        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI %.0f"),predicted_distance_fai/1000.);
+        break;
+      case XCTriangleStatus::CLOSED:
+        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI!%.0f"),predicted_distance_fai/1000.);
+        break;
+    }
+  } else if (predicted_score_ft > 0) {
     _bestXCTriangleType = XCFlightType::XC_FREE_TRIANGLE;
-    _XCTriangleClosurePercentage = 100. * ( (predicted_distance_ft-current_distance_ft) / predicted_distance_ft ) ;
+    _XCTriangleClosurePercentage = 100. * ((predicted_distance_ft - current_distance_ft) / predicted_distance_ft);
     _XCTriangleClosureDistance = predicted_distance_ft - current_distance_ft;
     _XCTriangleDistance = predicted_distance_ft;
+
+    WayPointList[RESWP_FAIOPTIMIZED].Latitude = _pgpsFreeTriangleClosePoint.Latitude();
+    WayPointList[RESWP_FAIOPTIMIZED].Longitude = _pgpsFreeTriangleClosePoint.Longitude();
+    WayPointList[RESWP_FAIOPTIMIZED].Altitude = _pgpsFreeTriangleClosePoint.Altitude();
+    if (WayPointList[RESWP_FAIOPTIMIZED].Altitude == 0) WayPointList[RESWP_FAIOPTIMIZED].Altitude = 0.001;
+    WayPointList[RESWP_FAIOPTIMIZED].Reachable = TRUE;
+    WayPointList[RESWP_FAIOPTIMIZED].Visible = TRUE;
+    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment, _T("Current Free triangle closing point"));
+    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("TRI"));
+    switch (_XCFTStatus) {
+      case XCTriangleStatus::INVALID:
+        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI*%.0f"),predicted_distance_ft/1000.);
+        break;
+      case XCTriangleStatus::VALID:
+        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI %.0f"),predicted_distance_ft/1000.);
+        break;
+      case XCTriangleStatus::CLOSED:
+        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI!%.0f"),predicted_distance_ft/1000.);
+        break;
+    }
+  } else {
+    WayPointList[RESWP_FAIOPTIMIZED].Altitude = RESWP_INVALIDNUMBER;
+    WayPointList[RESWP_FAIOPTIMIZED].Reachable = false;
+    WayPointList[RESWP_FAIOPTIMIZED].Visible = false;
+    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment, _T("no triangle closing point found!"));
+    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("NO TRIANGLE"));
   }
 
-  // Mean Speed
-  if ( resff.Duration() != 0 ) {
-    _XCMeanSpeed = resff.Distance() / resff.Duration();
+  // Mean Speed. We use current 3TP distance as XCTrack does here.
+  if (_resultArray[TYPE_FAI_3_TPS].Duration() != 0) {
+    _XCMeanSpeed = _resultArray[TYPE_FAI_3_TPS].Distance() / _resultArray[TYPE_FAI_3_TPS].Duration();
   }
 
-  // Set the RESWP_FAIOPTIMIZED
-  if ( _bestXCTriangleType == XCFlightType::XC_FAI_TRIANGLE) {
-    short Alt = 0;
-    RasterTerrain::Lock();
-    RasterTerrain::SetTerrainRounding(0,0);
-    Alt = RasterTerrain::GetTerrainHeight(_pgpsClosePoint.Latitude(),
-                                          _pgpsClosePoint.Longitude());
-    RasterTerrain::Unlock();
-    WayPointList[RESWP_FAIOPTIMIZED].Latitude=_pgpsClosePoint.Latitude();
-    WayPointList[RESWP_FAIOPTIMIZED].Longitude=_pgpsClosePoint.Longitude();
-    WayPointList[RESWP_FAIOPTIMIZED].Altitude=Alt;
-    if (WayPointList[RESWP_FAIOPTIMIZED].Altitude==0) WayPointList[RESWP_FAIOPTIMIZED].Altitude=0.001;
-    WayPointList[RESWP_FAIOPTIMIZED].Reachable=TRUE;
-    WayPointList[RESWP_FAIOPTIMIZED].Visible=TRUE;
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("Current FAI triangle closing point"));
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name,_T("FAI Close"));
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Code,_T("FAI"));
-
-  }
-  else if ( _bestXCTriangleType == XCFlightType::XC_FREE_TRIANGLE) {
-    short Alt = 0;
-    RasterTerrain::Lock();
-    RasterTerrain::SetTerrainRounding(0,0);
-    Alt = RasterTerrain::GetTerrainHeight(_pgpsFreeTriangleClosePoint.Latitude(),
-                                          _pgpsFreeTriangleClosePoint.Longitude());
-    RasterTerrain::Unlock();
-    WayPointList[RESWP_FAIOPTIMIZED].Latitude=_pgpsFreeTriangleClosePoint.Latitude();
-    WayPointList[RESWP_FAIOPTIMIZED].Longitude=_pgpsFreeTriangleClosePoint.Longitude();
-    WayPointList[RESWP_FAIOPTIMIZED].Altitude=Alt;
-    if (WayPointList[RESWP_FAIOPTIMIZED].Altitude==0) WayPointList[RESWP_FAIOPTIMIZED].Altitude=0.001;
-    WayPointList[RESWP_FAIOPTIMIZED].Reachable=TRUE;
-    WayPointList[RESWP_FAIOPTIMIZED].Visible=TRUE;
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("Current Free triangle closing point"));
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name,_T("TRI Close"));
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Code,_T("TRI"));
-  }
-  else {
-    WayPointList[RESWP_FAIOPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
-    WayPointList[RESWP_FAIOPTIMIZED].Reachable=false;
-    WayPointList[RESWP_FAIOPTIMIZED].Visible=false;
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment,_T("no triangle closing point found!"));
-  }
+  UpdateFAIAssistantData();
 
 }
+
 
 /**
  * @brief Score the Flight
  *
  * @param current_distance distance flight so far
- * @param total_distance Second edge
+ * @param total_distance predicted total distance
  * @param type Type of flight
- *
+ * Note. A separate function for each Contest that will be more maintainable when  adding  new contest
  * @return @c return score
  */
 double CContestMgr::ScoreXC(double current_distance,double total_distance ,CContestMgr::XCFlightType type, bool update_status) {
 
-  double score = 0;
+  if (total_distance==0)
+    return 0;
 
+  double score = 0;
   switch (AdditionalContestRule) {
-    case XContest2018:
+    case static_cast<int>(ContestRule::OLC):
+      score =  ScoreFAI(current_distance, total_distance, type, update_status);
+      break;
+    case static_cast<int>(ContestRule::FAI_ASSISTANT):
+      score =  ScoreFAI(current_distance, total_distance, type, update_status);
+      break;
+    case static_cast<int>(ContestRule::XContest2018):
       score =  ScoreXContest2018(current_distance, total_distance, type, update_status);
       break;
-    case XContest2019:
+    case static_cast<int>(ContestRule::XContest2019):
       score =  ScoreXContest2019(current_distance, total_distance, type, update_status);
       break;
-    case CFD:
+    case static_cast<int>(ContestRule::CFD):
       score =   ScoreCDF(current_distance, total_distance, type, update_status);
       break;
-    case LEONARDO_XC:
+    case static_cast<int>(ContestRule::LEONARDO_XC):
       score =   ScoreLEONARDO_XC(current_distance, total_distance, type, update_status);
       break;
-    case UK_NATIONAL_LEAGUE:
+    case static_cast<int>(ContestRule::UK_NATIONAL_LEAGUE):
       score =   ScoreUK_NATIONAL_LEAGUE(current_distance, total_distance, type, update_status);
+      break;
+    default:
       break;
   }
   return score;
 }
+
+// Just a fake scoring function to give 0 to FREE Triangles and so do not consider it.
+double CContestMgr::ScoreFAI(double current_distance, double total_distance, CContestMgr::XCFlightType type, bool update_status) {
+  double score = 0;
+  const double togo_distance = total_distance - current_distance;
+  if ( type == XCFlightType::XC_FAI_TRIANGLE ) {
+    score = togo_distance < TRACE_CLOSED_MAX_DIST ? total_distance / 1000.0 : 0;
+    if (update_status) {
+      if (togo_distance < TRACE_CLOSED_MAX_DIST)
+        _XCFAIStatus = XCTriangleStatus::CLOSED;
+      else
+        _XCFAIStatus = XCTriangleStatus::INVALID;
+    }
+  }
+  return score;
+}
+
 
 // XContest 2018
 // A flight may be scored as a triangle, when the distance between start point and
@@ -1392,6 +1402,130 @@ double CContestMgr::ScoreUK_NATIONAL_LEAGUE(double current_distance, double tota
 }
 
 
+CPointGPS CContestMgr::GetXCTriangleClosingPoint() {
+  switch ( _bestXCTriangleType ) {
+    case XCFlightType::XC_FREE_TRIANGLE:
+      return _pgpsFreeTriangleClosePoint;
+      break;
+    case XCFlightType::XC_FAI_TRIANGLE:
+      return _pgpsFAITriangleClosePoint;
+      break;
+    default:
+      break;
+  }
+  return CPointGPS(0,0,0,0);
+
+}
+
+/*
+ * Return the current distance from the best closing point to have a VALID triangle according to current rule
+*/
+ double CContestMgr::GetXCValidRadius() {
+
+  double radius = 0;
+  switch (AdditionalContestRule) {
+    case static_cast<int>(ContestRule::OLC):
+      radius= 1000.0;
+      break;
+    case static_cast<int>(ContestRule::FAI_ASSISTANT):
+      radius= 1000.0;
+      break;
+    case static_cast<int>(ContestRule::XContest2018):
+      radius = _XCTriangleDistance * 0.20;
+      break;
+    case static_cast<int>(ContestRule::XContest2019):
+      radius = _XCTriangleDistance * 0.20;
+      break;
+    case static_cast<int>(ContestRule::CFD):
+      radius = _XCTriangleDistance * 0.05;
+      break;
+    case static_cast<int>(ContestRule::LEONARDO_XC):
+      radius = _XCTriangleDistance * 0.20;
+      break;
+    case static_cast<int>(ContestRule::UK_NATIONAL_LEAGUE):
+      radius = _XCTriangleDistance * 0.20;
+      break;
+    default:
+      break;
+  }
+  return radius;
+}
+
+/*
+ * Return the current distance from the best closing point to have a CLOSED triangle according to current rule
+*/
+double CContestMgr::GetXCClosedRadius() {
+
+  double radius = 0;
+  switch (AdditionalContestRule) {
+    case static_cast<int>(ContestRule::OLC):
+      radius= 1000.0;
+      break;
+    case static_cast<int>(ContestRule::FAI_ASSISTANT):
+      radius= 1000.0;
+      break;
+    case static_cast<int>(ContestRule::XContest2018):
+      radius = 0;
+      break;
+    case static_cast<int>(ContestRule::XContest2019):
+      radius =_XCTriangleDistance* 0.05;
+      break;
+    case static_cast<int>(ContestRule::CFD):
+      radius = 3000.0;
+      break;
+    case static_cast<int>(ContestRule::LEONARDO_XC):
+      radius = 0;
+      break;
+    case static_cast<int>(ContestRule::UK_NATIONAL_LEAGUE):
+      radius = 0;
+      break;
+    default:
+      break;
+  }
+  return radius;
+}
+
+
+// Pre-calculate some FAI Assistant data (every 10 seconds)  to speed up drawing
+void CContestMgr::UpdateFAIAssistantData() {
+
+  _resultArray[TYPE_FAI_ASSISTANT] = CResult(_resultArray[TYPE_XC_FREE_TRIANGLE], true);
+  const CPointGPSArray &points = _resultArray[TYPE_FAI_ASSISTANT].PointArray();
+
+  if (points.size() != 5) {   // something went wrong here
+    return;
+  }
+
+  _faiAssistantTriangleLegs[0].FillLeg(1, points[1], points[2]);
+  _faiAssistantTriangleLegs[1].FillLeg(2, points[2], points[3]);
+  _faiAssistantTriangleLegs[2].FillLeg(3, points[3], points[1]);
+
+  _maxFAILeg = std::max_element(std::begin(_faiAssistantTriangleLegs),
+                                std::end(_faiAssistantTriangleLegs),
+                                [](const TriangleLeg &a, const TriangleLeg &b) {
+                                  return (a.LegDist < b.LegDist);
+                                });
+
+  _bFAI = FAITriangleEdgeCheck(_faiAssistantTriangleLegs[0].LegDist,
+                               _faiAssistantTriangleLegs[1].LegDist,
+                               _faiAssistantTriangleLegs[2].LegDist);
+
+
+  const double fAngleDiff = AngleLimit180(AngleDifference(_faiAssistantTriangleLegs[1].LegAngle,
+                                                          _faiAssistantTriangleLegs[0].LegAngle));
+
+  _bLooksLikeAFAITriangle = _faiAssistantTriangleLegs[0].LegDist > FAI_MIN_DISTANCE_THRESHOLD &&  // too short
+      _faiAssistantTriangleLegs[1].LegDist > FAI_MIN_DISTANCE_THRESHOLD &&                        // too short
+      _faiAssistantTriangleLegs[2].LegDist > FAI_MIN_DISTANCE_THRESHOLD &&                        // too short
+      abs(fAngleDiff) > 76 &&                                                                     // too wide FAI Triangle angles min=76.426 max=141.787
+      abs(fAngleDiff) < 142 &&                                                                    // too narrow
+      _faiAssistantTriangleLegs[1].LegDist < (_faiAssistantTriangleLegs[0].LegDist +
+          _faiAssistantTriangleLegs[1].LegDist +
+          _faiAssistantTriangleLegs[2].LegDist) * 0.44; // Too long
+
+  _dFAITriangleClockwise = fAngleDiff > 0 ? 1 : 0;
+
+};
 
 
 

@@ -287,7 +287,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     LKFormatDist(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
                     break;
                 case OVT_XC:
-                    LKFormatDist(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
+                    LKFormatDist(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
                 break;
                 case OVT_FLARM:
                     LKFormatDist(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
@@ -347,7 +347,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     LKFormatBrgDiff(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
                     break;
                 case OVT_XC:
-                    LKFormatBrgDiff(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
+                    LKFormatBrgDiff(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
                     break;
                 case OVT_FLARM:
                     LKFormatBrgDiff(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
@@ -403,7 +403,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     LKFormatGR(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
                     break;
                 case OVT_XC:
-                    LKFormatGR(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
+                    LKFormatGR(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
                     break;
                 case OVT_FLARM:
                     LKFormatGR(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
@@ -454,7 +454,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     LKFormatAltDiff(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
                     break;
                 case OVT_XC:
-                    LKFormatAltDiff(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
+                    LKFormatAltDiff(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
                     break;
                 case OVT_FLARM:
                     LKFormatAltDiff(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
@@ -580,8 +580,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     LKFormatAltDiff(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
                     break;
                 case OVT_XC:
-                  LKFormatAltDiff(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
-                break;
+                    LKFormatAltDiff(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
+                    break;
                 case OVT_FLARM:
                     LKFormatAltDiff(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
                     break;

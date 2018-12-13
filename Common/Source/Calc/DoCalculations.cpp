@@ -70,6 +70,10 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);
     DoAlternates(Basic,Calculated,HomeWaypoint);
 
+    if ( OvertargetMode == OVT_XC ) {
+      DoAlternates(Basic, Calculated, RESWP_FAIOPTIMIZED);    // In Contest mode the Triangle closing point is our Goal.
+    }
+
     if (DoOptimizeRoute() || ACTIVE_WP_IS_AAT_AREA) {
       DoAlternates(Basic, Calculated, RESWP_OPTIMIZED);
     }

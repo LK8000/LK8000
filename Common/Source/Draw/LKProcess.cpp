@@ -2255,7 +2255,7 @@ olc_score:
 		// B126
 		case LK_OLC_FAI_CLOSE_PERCENT:
 			bFAI = CContestMgr::Instance().FAI();
-			fDist =CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance();
+			fDist =CContestMgr::Instance().Result(CContestMgr::TYPE_OLC_FAI_PREDICTED, false).Distance();
 			fTogo =CContestMgr::Instance().GetClosingPointDist();
         		if((fDist >0) && (fTogo >0))
             		{
@@ -2649,11 +2649,11 @@ olc_score:
       case LK_XC_CLOSURE_PERC:
         _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
         _stprintf(BufferUnit, TEXT("%s"), TEXT("%"));
-        if (CContestMgr::Instance().GetXCTriangleClosurePercentuage() <= 0 ||
-            CContestMgr::Instance().GetXCTriangleClosurePercentuage() >= 100)
+        if (CContestMgr::Instance().GetXCTriangleClosurePercentage() <= 0 ||
+            CContestMgr::Instance().GetXCTriangleClosurePercentage() >= 100)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
-          const double dist = CContestMgr::Instance().GetXCTriangleClosurePercentuage()  ;
+          const double dist = CContestMgr::Instance().GetXCTriangleClosurePercentage()  ;
           _stprintf(BufferValue, TEXT("%5.1f"), dist);
           valid = true;
         }

@@ -255,31 +255,15 @@ void UpdateAnalysis(WndForm* pForm){
     pForm->SetCaption(sTmp);
 
     {
-      bool typeFAITriangle = false;
+      bool typeFAITriangle = (contestType == CContestMgr::TYPE_FAI_ASSISTANT);
 
       CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, false);
-      switch (contestType) /* temporary change optimizer mode for analyzer calculations */
-      {
-        case CContestMgr::TYPE_FAI_TRIANGLE:  typeFAITriangle = true; FAI_OptimizerMode =3; break;
-        case CContestMgr::TYPE_FAI_TRIANGLE4: typeFAITriangle = true; FAI_OptimizerMode =4; break;
-#ifdef  FIVEPOINT_OPTIMIZER
-        case CContestMgr::TYPE_FAI_TRIANGLE5: typeFAITriangle = true; FAI_OptimizerMode =5;	break;
-#endif
-        default: break;
-      }
-
-      if(typeFAITriangle)
-	  {
-		 result = CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false);
-		 CContestMgr::Instance().RefreshFAIOptimizer();
-	  }
 
       if ((result.Type() == contestType) || typeFAITriangle)
       {
         BOOL bFAI = CContestMgr::Instance().FAI();
         double  fDist     = result.Distance();
-        if(!bFAI && ( typeFAITriangle))  // was only !bFAI
-		fDist /=2.0;
+
 
         
         double fCPDist;
@@ -287,37 +271,60 @@ void UpdateAnalysis(WndForm* pForm){
         double fTotalDistance;
 
         if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE) {
-            fCPDist = CContestMgr::Instance().GetFreeTriangleClosingPointDist();
-            fB_CPDist = CContestMgr::Instance().GetFreeTriangleBestClosingPointDist();
-            fTotalDistance = result.PredictedDistance();
+          fCPDist = CContestMgr::Instance().GetFreeTriangleClosingPointDist();
+          fB_CPDist = CContestMgr::Instance().GetFreeTriangleBestClosingPointDist();
+          fTotalDistance = result.PredictedDistance();
         } else if (contestType == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
-            fCPDist = CContestMgr::Instance().GetClosingPointDist();
-            fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
-            fTotalDistance = result.PredictedDistance();;
-        } else {  // FAI
-            fCPDist = CContestMgr::Instance().GetClosingPointDist();
-            fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
-            fTotalDistance = fDist;
+          fCPDist = CContestMgr::Instance().GetFAITriangleClosingPointDist();
+          fB_CPDist = CContestMgr::Instance().GetFAITriangleBestClosingPointDist();
+          fTotalDistance = result.PredictedDistance();;
+        } else if (contestType == CContestMgr::TYPE_FAI_ASSISTANT) {
+          fCPDist = CContestMgr::Instance().GetFreeTriangleClosingPointDist();
+          fB_CPDist = CContestMgr::Instance().GetFreeTriangleBestClosingPointDist();
+          fTotalDistance = result.PredictedDistance();;
+        } else {  // OLC FAI
+          fCPDist = CContestMgr::Instance().GetClosingPointDist();
+          fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
+          fTotalDistance = fDist;
         }
-          
 
-        TCHAR distStr[120];  TCHAR speedStr[120];
-        if (typeFAITriangle && bFAI) {
-            _stprintf(distStr, _T("Dist: %.1f %s FAI\r\n"), DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName());
-            const double ap = 100 * (fTotalDistance == 0 ? 0 : fCPDist / fTotalDistance);
-            _stprintf(speedStr, _T("C: %.1f %s (%.1f %%)\r\n"), DISTANCEMODIFY * fCPDist, Units::GetDistanceName(), ap);
+
+        TCHAR distStr[120];
+        TCHAR speedStr[120];
+        if (typeFAITriangle) {
+
+          const double percC = 100 * (fTotalDistance == 0 ? 0 : fCPDist / (double) fTotalDistance);
+          const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
+
+          if (bFAI) {
+            _stprintf(distStr,
+                      _T("D:%.0f%s\r\nD*:%.0f%s FAI\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"),
+                      DISTANCEMODIFY * fDist,
+                      Units::GetDistanceName(),
+                      DISTANCEMODIFY * fTotalDistance,
+                      Units::GetDistanceName(),
+                      DISTANCEMODIFY * fCPDist,
+                      percC,
+                      DISTANCEMODIFY * fB_CPDist,
+                      percB);
+          } else {
+            _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName(),
+                      DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(), DISTANCEMODIFY * fCPDist, percC, DISTANCEMODIFY * fB_CPDist, percB);
+          }
+
+          _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
         } else {
-            if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE || contestType == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
-              const double percC = 100 * (fTotalDistance == 0 ? 0 : fCPDist / (double) fTotalDistance);
-              const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
-              _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName(),
-                        DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(), DISTANCEMODIFY * fCPDist, percC, DISTANCEMODIFY * fB_CPDist, percB);
-              _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
-            } else {
-              _stprintf(distStr, _T("D: %.1f %s\r\n"), DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName());
-              _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
+          if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE || contestType == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
+            const double percC = 100 * (fTotalDistance == 0 ? 0 : fCPDist / (double) fTotalDistance);
+            const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
+            _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName(),
+                      DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(), DISTANCEMODIFY * fCPDist, percC, DISTANCEMODIFY * fB_CPDist, percB);
+            _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
+          } else {
+            _stprintf(distStr, _T("D: %.1f %s\r\n"), DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName());
+            _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
 
-            }
+          }
         }
       
         TCHAR timeTempStr[120];
@@ -328,11 +335,6 @@ void UpdateAnalysis(WndForm* pForm){
 
         TCHAR scoreStr[50] = _T("");
         if (result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
-              result.Type() != CContestMgr::TYPE_FAI_TRIANGLE &&
-              result.Type() != CContestMgr::TYPE_FAI_TRIANGLE4 &&
-#ifdef  FIVEPOINT_OPTIMIZER
-              result.Type() != CContestMgr::TYPE_FAI_TRIANGLE5 &&
-#endif
               result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED)
             _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
 
