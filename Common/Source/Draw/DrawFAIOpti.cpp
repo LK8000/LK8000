@@ -788,6 +788,65 @@ int iCnt = 0;
 return true;
 }
 
+void MapWindow::DrawXCBestTriangle(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft) {
+
+  const GeoToScreen<ScreenPoint> ToScreen(_Proj);
+
+  CContestMgr::XCFlightType fType = CContestMgr::Instance().GetbestXCTriangleType();
+  CContestMgr::XCTriangleStatus fStatus ;
+  if (fType == CContestMgr::XCFlightType::XC_INVALID )
+    return;
+
+
+  CContestMgr::TType type;
+  if (fType == CContestMgr::XCFlightType::XC_FAI_TRIANGLE) {
+    type = CContestMgr::TType::TYPE_XC_FAI_TRIANGLE;
+    fStatus = CContestMgr::Instance().GetFAITriangleStatus();
+  } else {
+    type = CContestMgr::TType::TYPE_XC_FREE_TRIANGLE;
+    fStatus = CContestMgr::Instance().GetFTTriangleStatus();
+
+  }
+  CContestMgr::CResult result = CContestMgr::Instance().Result( type, true);
+  const CPointGPSArray &points = result.PointArray();
+  unsigned int iSize = points.size();
+
+  if (iSize != 5 ) return;
+
+  std::vector<ScreenPoint> triangle_polyline;
+
+  for ( int i = 1 ; i< iSize-1 ; i++ ) {
+    const ScreenPoint Pos = ToScreen(points[i].Latitude(), points[i].Longitude());
+    triangle_polyline.push_back(Pos);
+  }
+  const ScreenPoint Pos = ToScreen(points[1].Latitude(), points[1].Longitude());
+  triangle_polyline.push_back(Pos);
+
+  if ( fStatus == CContestMgr::XCTriangleStatus::INVALID ) {
+    LKPen hpPen_invalid(PEN_SOLID, IBLSCALE(2),  RGB_SBLACK );
+    const auto hpOldPen = Surface.SelectObject(hpPen_invalid);
+    Surface.Polyline(triangle_polyline.data(), triangle_polyline.size(), rc);
+    Surface.SelectObject(hpOldPen);
+    hpPen_invalid.Release();
+  }
+  else if ( fStatus == CContestMgr::XCTriangleStatus::VALID   ) {
+    LKPen hpPen_valid(PEN_SOLID, IBLSCALE(3),  RGB_GREEN );
+    const auto hpOldPen = Surface.SelectObject(hpPen_valid);
+    Surface.Polyline(triangle_polyline.data(), triangle_polyline.size(), rc);
+    Surface.SelectObject(hpOldPen);
+    hpPen_valid.Release();
+  }
+  else {      // fStatus == CContestMgr::XCTriangleStatus::CLOSED
+    LKPen hpPen_closed(PEN_SOLID, IBLSCALE(4),  RGB_RED );
+    const auto hpOldPen = Surface.SelectObject(hpPen_closed);
+    Surface.Polyline(triangle_polyline.data(), triangle_polyline.size(), rc);
+    Surface.SelectObject(hpOldPen);
+    hpPen_closed.Release();
+  }
+
+}
+
+
 void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft)
 {
 
@@ -922,7 +981,7 @@ int numlegs=0;
 
 
 
-      if (ISPARAGLIDER && bFAI) {
+      if (ISPARAGLIDER && bFAI && (OvertargetMode !=  OVT_XC)) {    // No need to draw the circle if we are targetting it
           LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2), FAI_SECTOR_COLOR);
           const auto hOldPen = Surface.SelectObject(hpSectorPen);
           const RasterPoint Pt1 = _Proj.ToRasterPoint(lat_CP, lon_CP);
