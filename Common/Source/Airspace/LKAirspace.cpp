@@ -1556,7 +1556,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     TCHAR *Comment;
     int nSize;
     TCHAR Text[READLINE_LENGTH + 1];
-    TCHAR sTmp[READLINE_LENGTH + 100];
+    TCHAR sTmp[READLINE_LENGTH + 1];
     TCHAR *p;
     int linecount = 0;
     int parsing_state = 0;
@@ -1679,7 +1679,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                             CopyTruncateString(Name, NAME_SIZE-1, p);
 
                             ASComment[0] = {0};
-                            if( _tcslen(p) > NAME_SIZE)
+                            if( _tcslen(p) > 15)
                               CopyTruncateString(ASComment, READLINE_LENGTH-1, p);
                         }
                         break;
