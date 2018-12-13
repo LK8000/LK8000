@@ -2453,6 +2453,9 @@ olc_score:
 				case OVT_MATE:
 					LKFormatGR(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
 					break;
+                case OVT_XC:
+                    LKFormatGR(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
+                    break;
 				case OVT_FLARM:
 					LKFormatGR(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
 					break;

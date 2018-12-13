@@ -73,11 +73,18 @@ int GetOvertargetIndex(void) {
 		return -1;
 		break;
 
+	case OVT_XC:
+		index=RESWP_FAIOPTIMIZED;
+	    if (ValidResWayPoint(index)) return index;
+	    return -1;
+	    break;
+
 	case OVT_FLARM:
 		index=RESWP_FLARMTARGET;
 		if (ValidResWayPoint(index)) return index;
 		return -1;
 		break;
+
 
 	// 4: home, 5: traffic, 6: mountain pass, last thermal, etc.
 	default:
@@ -136,6 +143,8 @@ TCHAR *GetOvertargetHeader(void) {
 	// LKTOKEN _@M1330_ "F>"
 	LK_tcsncpy(targetheader[OVT_FLARM], MsgToken(1330), OVERTARGETHEADER_MAX);
 
+	LK_tcsncpy(targetheader[OVT_XC], TEXT("X>"), OVERTARGETHEADER_MAX); // No need for translation here. X international code for Cross Country !
+
 	for (int i=0; i<OVT_MAXMODE+1; i++) targetheader[i][OVERTARGETHEADER_MAX]='\0';
 	DoInit[MDI_GETOVERTARGETHEADER]=false;
   }
@@ -174,6 +183,11 @@ _tryagain:
   // Skip Last Thermal if no thermal is detected ...
   if(OvertargetMode==OVT_THER && (!ValidResWayPoint(RESWP_LASTTHERMAL))) {
 	goto _tryagain;
+  }
+
+  	// Skip Cross Country triangle closing if no AdditionContetest active or not valid optimized point ...
+  if( OvertargetMode==OVT_XC && ( !AdditionalContestRule  || !ValidResWayPoint(RESWP_FAIOPTIMIZED))) {
+		goto _tryagain;
   }
 
   // Skip F rotation if no flarm or no valid flarm target

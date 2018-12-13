@@ -835,9 +835,10 @@
 #define OVT_HOME        5
 #define OVT_THER        6	// last thermal
 #define OVT_MATE        7	// team mate
-#define OVT_FLARM       8	// target flarm in LK mode
-#define OVT_MARK        9	// marked location
-#define OVT_PASS        10	// closer mountain pass
+#define OVT_XC          8	// target XC Closing triangle point
+#define OVT_FLARM       9	// target flarm in LK mode
+#define OVT_MARK        10	// marked location
+#define OVT_PASS        11	// closer mountain pass
 // this is not the number of modes, because 0 is not accounted, remember
 // Also, this is used for dimensioning array.
 #define OVT_MAXMODE	OVT_PASS

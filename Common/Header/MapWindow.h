@@ -605,6 +605,7 @@ class MapWindow {
   static void DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft);
   static void DrawTaskSectors(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) ;
   static void DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft) ;
+  static void DrawXCBestTriangle(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft);
   static void DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawTaskAAT(LKSurface& Surface, const RECT& rc);
