@@ -458,7 +458,7 @@ extern void AddAirspaceInfos(TCHAR* name, TCHAR* details) ;
 static void OnDetailsClicked(WndButton* pWnd){
 
 	  TCHAR Details[READLINE_LENGTH +1] = _T("");
-	  TCHAR Name[NAME_SIZE +1]= _T("");;
+	  TCHAR Name[NAME_SIZE +1]= _T("");
 
   
   {
@@ -466,18 +466,20 @@ static void OnDetailsClicked(WndButton* pWnd){
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
     	if(airspace->Comment() != NULL)
-  	      _stprintf(Details, _T("%s"), airspace->Comment());
+  	      _sntprintf(Details,READLINE_LENGTH, _T("%s"), airspace->Comment());
     	else
-    	  _stprintf(Details, _T("%s"), (TCHAR*)airspace->TypeName());
-  	  _stprintf(Name, _T("%s %s:"), (TCHAR*)airspace->TypeName(), MsgToken(231) );
+    	  _sntprintf(Details, READLINE_LENGTH,_T("%s"), (TCHAR*)airspace->TypeName());
+  	  _sntprintf(Name,NAME_SIZE, _T("%s %s:"), (TCHAR*)airspace->TypeName(), MsgToken(231) );
 
     }
-  }
-#if TESTBENCH
+//#if TESTBENCH
       StartupStore(_T(". Airspace Name <%s>%s"),Details,NEWLINE);
 
-#endif
-
+//#endif    
        dlgHelpShowModal(Name, Details, false);
 
+  }
+
+
+    
 }

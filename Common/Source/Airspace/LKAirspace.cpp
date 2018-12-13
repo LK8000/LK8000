@@ -1588,7 +1588,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
         if (*p == 0) continue;
         //Skip comment lines
         if (*p == '*') continue;
-        CharUpper(p);
+  //      CharUpper(p);
         // Strip comments and newline chars from end of line
         Comment = _tcschr(p, _T('*'));
         if (Comment != NULL) {
@@ -1702,7 +1702,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 						{
 							if(((int)(ExtractFrequency(p)*1000+0.5))  != ((int)(ExtractFrequency(Name)*1000+0.5)))
 							{
-							  _stprintf(sTmp, TEXT("%s %s"),  Name, p );
+							  _sntprintf(sTmp,READLINE_LENGTH, TEXT("%s %s"),  Name, p );
 							  LK_tcsncpy(Name, sTmp, NAME_SIZE);
 							}
 						}
@@ -1717,7 +1717,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                     case _T('G'): //AG - Ground station name
 						if (parsing_state == 10) {
-							_stprintf(sTmp, TEXT("%s %s"),  Name, p );
+							_sntprintf(sTmp,READLINE_LENGTH, TEXT("%s %s"),  Name, p );
 							LK_tcsncpy(Name, sTmp, NAME_SIZE);
 						}
                         continue;
@@ -1729,9 +1729,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     default:
 			if (maxwarning>0) {
 			    if (maxwarning==1)
-                                _stprintf(sTmp, TEXT("Parse error 9 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
+                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 9 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
 			    else
-                                _stprintf(sTmp, TEXT("Parse error 10 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                                _sntprintf(sTmp, READLINE_LENGTH,TEXT("Parse error 10 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
@@ -1747,7 +1747,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         p++; // skip A and space
                         if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
-                            _stprintf(sTmp, TEXT("Parse error 1 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 1 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
@@ -1757,7 +1757,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         p++; // skip B and space
                         if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
-                            _stprintf(sTmp, TEXT("Parse error 2 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 2 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
@@ -1778,7 +1778,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         if (ReadCoords(p, &lon, &lat)) {
                             points.push_back(CPoint2D(lat, lon));
                         } else {
-                            _stprintf(sTmp, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
@@ -1789,9 +1789,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     default:
 			if (maxwarning>0) {
 			    if (maxwarning==1)
-                                _stprintf(sTmp, TEXT("Parse error 4 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
+                                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 4 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
 			    else
-                                _stprintf(sTmp, TEXT("Parse error 5 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 5 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
 
                             // LKTOKEN  _@M68_ = "Airspace"
@@ -1825,7 +1825,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     break;
                 }
 
-                _stprintf(sTmp, TEXT("Parse error 6 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 6 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                 // LKTOKEN  _@M68_ = "Airspace"
                 if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                 break;

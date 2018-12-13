@@ -261,10 +261,10 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         int HorDist, Bearing, VertDist;
         double Distance;
         unsigned int idx = 0;
-        TCHAR text1[TEXT_LEN] = {TEXT("empty")};
-        TCHAR text2[TEXT_LEN] = {TEXT("empty")};
-        TCHAR Comment[TEXT_LEN] = {TEXT("")};
-        TCHAR Comment1[TEXT_LEN] = {TEXT("")};
+        TCHAR text1[TEXT_LEN+1] = {TEXT("empty")};
+        TCHAR text2[TEXT_LEN+1] = {TEXT("empty")};
+        TCHAR Comment[TEXT_LEN+1] = {TEXT("")};
+        TCHAR Comment1[TEXT_LEN+1] = {TEXT("")};
         Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
         LKASSERT(i < MAX_LIST_ITEMS);
 
@@ -285,8 +285,8 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                     _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
                 }
 
-                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, sizeof (Comment) / sizeof (Comment[0]), airspace_copy.Top());
-                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, sizeof (Comment1) / sizeof (Comment1[0]), airspace_copy.Base());
+                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, TEXT_LEN, airspace_copy.Top());
+                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, TEXT_LEN, airspace_copy.Base());
 
                 CAirspaceManager::Instance().AirspaceCalculateDistance((CAirspace*) pAS, &HorDist, &Bearing, &VertDist);
                 _sntprintf(text2, TEXT_LEN, TEXT("%3.1f%s (%s - %s)"), (double) HorDist*DISTANCEMODIFY, Units::GetDistanceName(), Comment1, Comment); //8 + 8+3   21
