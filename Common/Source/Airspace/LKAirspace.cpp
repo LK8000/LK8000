@@ -29,6 +29,8 @@
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
+#define LINE_LEN 1023
+
 #if TESTBENCH
 //#define DEBUG_NEAR_POINTS	1
 #define DEBUG_AIRSPACE
@@ -748,29 +750,16 @@ void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &
 
 int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+3);
 
-  if(comment != NULL)
-  {
-#ifdef DYN_MEM_COMMENT
-	if(_comment != NULL)
-	{
-	 delete[] _comment; _comment = NULL;
-	}
 
-    if(_tcslen(comment) > 1 )
-      _comment = new TCHAR [iLen+8];
-    else
-      _comment = NULL;
-#endif
-
-	if( _comment  != NULL)
-	{
-	  CopyTruncateString(_comment,min( READLINE_LENGTH, (int) _tcslen(comment)+2), comment);
-//	  StartupStore(TEXT("new _comment: %s %u %s"), _comment, _tcslen(_comment), NEWLINE);
-	}
-  }
+//     StartupStore(TEXT("new         comment: %s %u %s"),  comment, _tcslen( comment), NEWLINE);        
+     std::shared_ptr<TCHAR>  _shared_comment (new TCHAR[iLen+8], std::default_delete<TCHAR[]>());
 
 
-
+    if( (TCHAR*) _shared_comment.get()  != NULL)
+    {
+      CopyTruncateString( (TCHAR*) _shared_comment.get(),iLen, comment);
+      StartupStore(TEXT("new _shared_comment: %s %u %s"), (TCHAR*) _shared_comment.get(), _tcslen((TCHAR*) _shared_comment.get()), NEWLINE);
+    }
 
 	
     _type = type;
@@ -787,7 +776,7 @@ CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &
 CAirspace(),
 _center(Center_Latitude, Center_Longitude),
 _radius(Airspace_Radius) {
-	_comment =NULL;
+//	_comment =NULL;
     _bounds.minx = _center.longitude;
     _bounds.maxx = _center.longitude;
     _bounds.miny = _center.latitude;
@@ -985,7 +974,7 @@ void CAirspace::Draw(LKSurface& Surface, bool fill) const {
 //
 CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace() {
     std::swap(_geopoints, Area_Points);
-    _comment =NULL;
+ //   _comment =NULL;
     _screenpoints.reserve(_geopoints.size());
     _screenpoints_clipped.reserve(_geopoints.size());
 
@@ -1680,7 +1669,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                             ASComment[0] = {0};
                             if( _tcslen(p) > 15)
-                              CopyTruncateString(ASComment, READLINE_LENGTH-1, p);
+                              CopyTruncateString(ASComment, LINE_LEN-1, p);
+                              ASComment[LINE_LEN - 1]= {0};
+
                         }
                         break;
 
@@ -2116,12 +2107,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
            else
              continue;
         }
-        TCHAR Name[READLINE_LENGTH + 1] = {0};
+        TCHAR Name[LINE_LEN - 1] = {0};
         CopyTruncateString(Name, NAME_SIZE, dataStr);
         
-        TCHAR ASComment[READLINE_LENGTH + 1] = {0};
+        TCHAR ASComment[LINE_LEN - 1] = {0};
         if( _tcslen(dataStr) > NAME_SIZE)
-          CopyTruncateString(ASComment, READLINE_LENGTH, dataStr);
+          CopyTruncateString(ASComment, LINE_LEN, dataStr);
 
 
         // Airspace top altitude
