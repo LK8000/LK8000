@@ -744,21 +744,21 @@ void CAirspaceBase::ResetWarnings() {
 }
 
 // Initialize instance attributes
-
 void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
     CopyTruncateString(_name, NAME_SIZE, name);
 
-int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+3);
+int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+1);
 
 
-//     StartupStore(TEXT("new         comment: %s %u %s"),  comment, _tcslen( comment), NEWLINE);        
-     std::shared_ptr<TCHAR>  _shared_comment (new TCHAR[iLen+8], std::default_delete<TCHAR[]>());
+    if( _tcslen(comment) > 1)
+    {
+      _shared_comment = std::shared_ptr<TCHAR>(new TCHAR[iLen+2], std::default_delete<TCHAR[]>());                    
+    }
 
-
-    if( (TCHAR*) _shared_comment.get()  != NULL)
+    if( Comment()  != NULL)
     {
       CopyTruncateString( (TCHAR*) _shared_comment.get(),iLen, comment);
-      StartupStore(TEXT("new _shared_comment: %s %u %s"), (TCHAR*) _shared_comment.get(), _tcslen((TCHAR*) _shared_comment.get()), NEWLINE);
+   //   StartupStore(TEXT("new _shared_comment: %s %u %s"),  Comment(), _tcslen( Comment()), NEWLINE);
     }
 
 	
