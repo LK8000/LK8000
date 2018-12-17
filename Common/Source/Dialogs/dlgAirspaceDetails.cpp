@@ -453,7 +453,7 @@ void dlgAirspaceDetails() {
 }
 
 
-extern void AddAirspaceInfos(TCHAR* name, TCHAR* details) ;
+//extern void AddAirspaceInfos(TCHAR* name, TCHAR* details) ;
 
 static void OnDetailsClicked(WndButton* pWnd){
 

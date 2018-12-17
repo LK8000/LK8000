@@ -243,7 +243,7 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
 static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
 #define PICTO_WIDTH 50
-#define TEXT_LEN 180
+#define TEXT_LEN 80
     Surface.SetTextColor(RGB_BLACK);
     if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {
         int j;
@@ -284,6 +284,9 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                     // fixed strings max. 20 NAME_SIZE 30 => max. 30 char
                     _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
                 }
+
+         //       if( airspace_copy.Comment() != NULL)
+                   _sntprintf(text1, TEXT_LEN, TEXT("C %s"),  airspace_copy.Comment());
 
                 CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, TEXT_LEN, airspace_copy.Top());
                 CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, TEXT_LEN, airspace_copy.Base());

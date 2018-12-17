@@ -95,11 +95,6 @@ class CAirspaceBase
 public:
   CAirspaceBase() :
             _name(),
-#ifdef DYN_MEM_COMMENT
-            _comment(NULL),
-#else
-            _comment(),
-#endif            
             _type( 0 ),
             _base(),
             _top(),
@@ -126,19 +121,12 @@ public:
             _selected(false)
             {
 #ifdef DYN_MEM_COMMENT
-             _comment = NULL;
+//             _comment = NULL;
 #endif
             }
 
-  virtual ~CAirspaceBase() {
-    if(_comment  != NULL)
-    {
-#ifdef DYN_MEM_COMMENT
- //     StartupStore(TEXT("deleting comment: %s %u %s"), _comment, _tcslen(_comment), NEWLINE);
-      delete []_comment; _comment = NULL;
-#endif
-    }
-  }
+virtual ~CAirspaceBase() {
+}
 
 
   // Check if an altitude vertically inside in this airspace
@@ -167,7 +155,7 @@ public:
   const LKBrush& TypeBrush(void) const;
 
   const TCHAR* Name() const { return _name; }
-  const TCHAR* Comment() const { return _comment; }
+  const TCHAR* Comment() const { return (TCHAR*)_shared_comment.get(); }
 
   const AIRSPACE_ALT* Top() const { return &_top; }
   const AIRSPACE_ALT* Base() const { return &_base; }
@@ -217,7 +205,8 @@ public:
 protected:
   TCHAR _name[NAME_SIZE + 1];                    // Name
 #ifdef DYN_MEM_COMMENT
-  TCHAR* _comment  ;                            // extended airspace informations e.g. for Notams
+ // TCHAR* _comment  ;                            // extended airspace informations e.g. for Notams
+ std::shared_ptr <TCHAR[]> _shared_comment ;
 #else
   TCHAR _comment[READLINE_LENGTH + 1];   ;                            // extended airspace informations e.g. for Notams
 #endif
@@ -250,6 +239,7 @@ protected:
   bool _enabled;                // Airspace enabled for operations
   bool _selected;               // Airspace selected (for distance calc infoboxes)
 
+
   // Private functions
   void AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const;
 
@@ -277,9 +267,9 @@ protected:
 class CAirspace : public CAirspaceBase {
 public:
 
-    CAirspace() : CAirspaceBase() { /*_comment  =NULL;*/}
+   // CAirspace() : CAirspaceBase() { _comment  =NULL;}
 
-    virtual ~CAirspace() {/*delete [] _comment;_comment =NULL;*/}
+ //   virtual ~CAirspace() {/*delete [] _comment;_comment =NULL;*/}
 
     // Check if a point horizontally inside in this airspace
     virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const = 0;
@@ -379,7 +369,7 @@ typedef struct
 class CAirspace_Area: public CAirspace {
 public:
   CAirspace_Area(CPoint2DArray &&Area_Points);
-  virtual ~CAirspace_Area()  {/*delete [] _comment;_comment =NULL;*/}
+ // virtual ~CAirspace_Area()  {/*delete [] _comment;_comment =NULL;*/}
 
   // Check if a point horizontally inside in this airspace
   virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const override ;
@@ -414,7 +404,7 @@ class CAirspace_Circle: public CAirspace
 {
 public:
   CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius);
-  virtual ~CAirspace_Circle()  {/*delete [] _comment;_comment =NULL;*/}
+ // virtual ~CAirspace_Circle()  {/*delete [] _comment;_comment =NULL;*/}
 
   // Check if a point horizontally inside in this airspace
   virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const override;
