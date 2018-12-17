@@ -285,9 +285,6 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                     _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
                 }
 
-         //       if( airspace_copy.Comment() != NULL)
-                   _sntprintf(text1, TEXT_LEN, TEXT("C %s"),  airspace_copy.Comment());
-
                 CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, TEXT_LEN, airspace_copy.Top());
                 CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, TEXT_LEN, airspace_copy.Base());
 

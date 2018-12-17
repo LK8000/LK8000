@@ -18,7 +18,7 @@
 #include "Screen/LKSurface.h"
 #include "Geographic/GeoPoint.h"
 
-#define DYN_MEM_COMMENT
+
 
 class ScreenProjection;
 struct XMLNode;
@@ -120,9 +120,7 @@ public:
             _enabled(true),
             _selected(false)
             {
-#ifdef DYN_MEM_COMMENT
-//             _comment = NULL;
-#endif
+
             }
 
 virtual ~CAirspaceBase() {
@@ -204,12 +202,9 @@ virtual ~CAirspaceBase() {
 
 protected:
   TCHAR _name[NAME_SIZE + 1];                    // Name
-#ifdef DYN_MEM_COMMENT
- // TCHAR* _comment  ;                            // extended airspace informations e.g. for Notams
- std::shared_ptr <TCHAR[]> _shared_comment ;
-#else
-  TCHAR _comment[READLINE_LENGTH + 1];   ;                            // extended airspace informations e.g. for Notams
-#endif
+
+ std::shared_ptr <TCHAR> _shared_comment ;       // extended airspace informations e.g. for Notams
+
   int _type;                                    // type (class) of airspace
   AIRSPACE_ALT _base;                            // base altitude
   AIRSPACE_ALT _top;                            // top altitude
