@@ -182,7 +182,7 @@ class TerrainRenderer {
     TerrainRenderer &operator=(const TerrainRenderer &) = delete; // disallowed
 public:
 
-    explicit TerrainRenderer(const RECT& rc) : _dirty(true), _ready(), sbuf(), hBuf(), colorBuf()  {
+    explicit TerrainRenderer(const RECT& rc) : _dirty(true), _ready(), screen_buffer(), height_buffer(), color_table()  {
 
 #if !defined(NDEBUG) || defined(TESTBENCH)
       // check if all colors_ramps are valid.
@@ -237,20 +237,20 @@ public:
         const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
         const int res_y = iround((rc.bottom - rc.top) * oversampling / dtquant);
 
-        sbuf = new (std::nothrow) CSTScreenBuffer(res_x, res_y);
-        if(!sbuf) {
+        screen_buffer = new (std::nothrow) CSTScreenBuffer(res_x, res_y);
+        if(!screen_buffer) {
             OutOfMemory(_T(__FILE__), __LINE__);
             ToggleMultimapTerrain();
             return;
         }
 
-        ixs = sbuf->GetCorrectedWidth() / oversampling;
-        iys = sbuf->GetHeight() / oversampling;
+        ixs = screen_buffer->GetCorrectedWidth() / oversampling;
+        iys = screen_buffer->GetHeight() / oversampling;
 
         TESTBENCH_DO_ONLY(5,StartupStore(_T("... Terrain quant=%d ixs=%d iys=%d  TOTAL=%d\n"),dtquant,ixs,iys,ixs*iys));
 
-        hBuf = (int16_t*) malloc(sizeof(int16_t)*ixs * iys);
-        if (!hBuf) {
+        height_buffer = (int16_t*) malloc(sizeof(int16_t)*ixs * iys);
+        if (!height_buffer) {
             StartupStore(_T("------ TerrainRenderer: malloc(%u) failed!%s"), (unsigned)(sizeof(int16_t)*ixs*iys), NEWLINE);
             OutOfMemory(_T(__FILE__), __LINE__);
             //
@@ -277,13 +277,13 @@ public:
 #if TESTBENCH
         StartupStore(_T(".... Deinit TerrainRenderer\n"));
 #endif
-        if (hBuf) {
-            free(hBuf);
-            hBuf = NULL;
+        if (height_buffer) {
+            free(height_buffer);
+            height_buffer = NULL;
         }
 
-        delete sbuf;
-        sbuf = nullptr;
+        delete screen_buffer;
+        screen_buffer = nullptr;
     }
 
     void SetDirty() {
@@ -299,14 +299,14 @@ public:
     }
 
 private:
-    bool _dirty; // indicate sbuf is up-to-date
+    bool _dirty; // indicate screen_buffer is up-to-date
     bool _ready; // indicate renderer is fully initialised
 
     unsigned int ixs, iys; // screen dimensions in coarse pixels
     unsigned int dtquant;
     unsigned int epx; // step size used for slope calculations
 
-    CSTScreenBuffer *sbuf;
+    CSTScreenBuffer *screen_buffer;
 
     double pixelsize_d;
 
@@ -318,9 +318,10 @@ private:
     static constexpr int oversampling = 1; //no oversampling if no "Blur"
 #endif
 
-    int16_t *hBuf;
-    BGRColor colorBuf[128][256];
-    static constexpr int interp_levels = 8;
+    int16_t *height_buffer;
+
+    BGRColor color_table[128][256];
+
     const COLORRAMP (*color_ramp)[NUM_COLOR_RAMP_LEVELS];
 
     unsigned height_scale; // scale factor  ((height - height_min + 1) << height_scale) must be in [0 - 255] range
@@ -437,7 +438,7 @@ public:
     template<typename GetHeight_t>
     void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1, GetHeight_t GetHeight) {
         // fill the buffer
-        LKASSERT(hBuf != NULL);
+        LKASSERT(height_buffer != NULL);
 
         const double PanLatitude = MapWindow::GetPanLatitude();
         const double PanLongitude = MapWindow::GetPanLongitude();
@@ -469,7 +470,7 @@ public:
                 const double Y = ac1 - x*ac2;
                 const double X = PanLongitude + (invfastcosine(Y) * ((x * ac3) - cc1));
 
-                int16_t& hDst = hBuf[iy*ixs+ix];
+                int16_t& hDst = height_buffer[iy*ixs+ix];
 
                 /*
                  * Terrain height can be negative.
@@ -523,7 +524,7 @@ public:
 
     void Slope(const int sx, const int sy, const int sz) {
 
-        LKASSERT(hBuf != NULL);
+        LKASSERT(height_buffer != NULL);
         const int iepx = (int) epx;
         const unsigned int cixs = ixs;
 
@@ -568,11 +569,11 @@ public:
 
 
 #ifndef NDEBUG
-        const int16_t* hBuf_end = std::next(hBuf, ixs * iys);
-        const int16_t* hBuf_begin = hBuf;
+        const int16_t* hBuf_end = std::next(height_buffer, ixs * iys);
+        const int16_t* hBuf_begin = height_buffer;
 #endif
         const int tc_in_use = tc;
-        if (!sbuf->GetBuffer()) return;
+        if (!screen_buffer->GetBuffer()) return;
 
 #if defined(_OPENMP)
         #pragma omp parallel for
@@ -600,8 +601,8 @@ public:
             }
             p31s = p31*hscale;
 
-            BGRColor* RowBuf = sbuf->GetRow(y);
-            const int16_t *RowthBuf = &hBuf[y*cixs];
+            BGRColor* RowBuf = screen_buffer->GetRow(y);
+            const int16_t *RowthBuf = &height_buffer[y*cixs];
             assert(RowthBuf < hBuf_end);
             assert(RowthBuf >= hBuf_begin);
 
@@ -724,12 +725,12 @@ private:
 
     inline 
     const BGRColor& GetColor(int16_t height, int mag = 0) const {
-        return colorBuf[mag + 64][height];
+        return color_table[mag + 64][height];
     }
 
     inline 
     void SetColor(int16_t height, int mag, BGRColor&& color) {
-        colorBuf[mag + 64][height] = std::forward<BGRColor>(color);
+        color_table[mag + 64][height] = std::forward<BGRColor>(color);
     }
 
 
@@ -768,17 +769,17 @@ public:
 
     void Draw(LKSurface& Surface, const RECT& rc) {
         if(_dirty) {
-            sbuf->SetDirty();
+            screen_buffer->SetDirty();
 
 #ifdef USE_TERRAIN_BLUR
             if (blursize > 0) {
-                sbuf->Blur(blursize);
+                screen_buffer->Blur(blursize);
             }
 #endif
         }
 
         _dirty = false;
-        sbuf->DrawStretch(Surface, rc, oversampling);
+        screen_buffer->DrawStretch(Surface, rc, oversampling);
     }
 };
 
