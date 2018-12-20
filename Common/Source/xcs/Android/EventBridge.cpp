@@ -29,6 +29,8 @@ Copyright_License {
 #include "Compiler.h"
 #include <jni.h>
 
+#define ANDROID_KEYCODE_FIX
+
 /**
  * @see http://developer.android.com/reference/android/view/KeyEvent.html
  */
@@ -47,6 +49,7 @@ static constexpr unsigned KEYCODE_DPAD_DOWN = 0x14;
 static unsigned
 TranslateKeyCode(unsigned key_code)
 {
+#ifndef ANDROID_KEYCODE_FIX
   if (key_code == KEYCODE_BACK)
     /* the "back" key acts as escape */
     return KEYCODE_ESCAPE;
@@ -60,6 +63,9 @@ TranslateKeyCode(unsigned key_code)
     return 'A' + (key_code - KEYCODE_A);
 
   return key_code;
+#else
+  return key_code;
+#endif
 }
 
 constexpr
