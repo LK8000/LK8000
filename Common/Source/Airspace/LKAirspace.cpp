@@ -1669,9 +1669,10 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                             ASComment[0] = {0};
                             if( _tcslen(p) > 15)
+                            {
                               CopyTruncateString(ASComment, LINE_LEN-1, p);
                               ASComment[LINE_LEN - 1]= {0};
-
+                            }
                         }
                         break;
 
