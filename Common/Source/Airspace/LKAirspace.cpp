@@ -747,9 +747,10 @@ void CAirspaceBase::ResetWarnings() {
 void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
     CopyTruncateString(_name, NAME_SIZE, name);
 
-int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+1);
 
-
+ if (comment != NULL)
+ {
+	int iLen = min(READLINE_LENGTH,(int) _tcslen(comment)+1);
     if( _tcslen(comment) > 1)
     {
       _shared_comment = std::shared_ptr<TCHAR>(new TCHAR[iLen+2], std::default_delete<TCHAR[]>());                    
@@ -760,7 +761,7 @@ int iLen =   min(READLINE_LENGTH,(int) _tcslen(comment)+1);
       CopyTruncateString( (TCHAR*) _shared_comment.get(),iLen, comment);
    //   StartupStore(TEXT("new _shared_comment: %s %u %s"),  Comment(), _tcslen( Comment()), NEWLINE);
     }
-
+ }
 	
     _type = type;
     memcpy(&_base, &base, sizeof (_base));
