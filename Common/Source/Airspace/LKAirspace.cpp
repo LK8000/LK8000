@@ -1633,7 +1633,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                             }
                             if(newairspace) {
                               if (InsideMap) {
-                                newairspace->Init(Name, Type, Base, Top, flyzone);
+                                newairspace->Init(Name, Type, Base, Top, flyzone, ASComment);
 
                                 { // Begin Lock
                                     ScopeLock guard(_csairspaces);
@@ -1787,8 +1787,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         Radius = StrToDouble(p, NULL);
                         Radius = (Radius * NAUTICALMILESTOMETRES);
-                    //    Latitude = CenterX;
-                   //     Longitude = CenterY;
+                        Latitude = CenterX;
+                        Longitude = CenterY;
 
                         if(!InsideMap) {
                           if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
@@ -1909,6 +1909,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             } // End Lock
           }
         }
+      }
     }
 
     unsigned airspaces_count = 0;
@@ -2333,16 +2334,17 @@ void CAirspaceManager::ReadAirspaces() {
         ScopeLock guard(_csairspaces);
         airspaces_count = _airspaces.size();
     } //
-    if((OutsideAirspaceCnt +airspaces_count) > 0)
+
+    if((OutsideAirspaceCnt > 0) && ( WaypointsOutOfRange > 1) )
     {
       TCHAR msgbuf[128];
-     _sntprintf(msgbuf,128,TEXT(" %u of %u (%u%%) %s"), OutsideAirspaceCnt,
-		                                         OutsideAirspaceCnt+airspaces_count,
-		                                         (100*OutsideAirspaceCnt)/(OutsideAirspaceCnt +airspaces_count),
-		                                         MsgToken(2312));  //_@M2312  "airspaces excluded!"
-      if(OutsideAirspaceCnt > 0)
-        DoStatusMessage(msgbuf);
+      _sntprintf(msgbuf,128,TEXT(" %u of %u (%u%%) %s"), OutsideAirspaceCnt,
+		                                                 OutsideAirspaceCnt+airspaces_count,
+		                                                 (100*OutsideAirspaceCnt)/(OutsideAirspaceCnt +airspaces_count),
+		                                                 MsgToken(2347));  //_@M2347  "airspaces excluded!"
+      DoStatusMessage(msgbuf);
       StartupStore(TEXT(".%s"),msgbuf);
+
     }
 #if ASPWAVEOFF
     AirspaceDisableWaveSectors();
