@@ -387,7 +387,7 @@ unsigned int i,j,EqCnt=WayPointList.size();
 
 
 WndProperty *wp;
-TCHAR Found[EXT_EXT_SEARCH_SIZE + 1];
+TCHAR Found[EXT_SEARCH_SIZE + 1];
 SelList[0] = '\0';
 unsigned int NameLen=0;
  int Offset=0;
@@ -560,7 +560,7 @@ TCHAR AS_Name[EXT_SEARCH_SIZE];
     {
 
     if((*it)->Comment() != NULL)
-	  _sntprintf(AS_Name,EXT_EXT_SEARCH_SIZE,_T("%s"),(*it)->Comment());
+	  _sntprintf(AS_Name,EXT_SEARCH_SIZE,_T("%s"),(*it)->Comment());
     else
       _sntprintf(AS_Name,EXT_NAMESIZE, _T("%s"),(*it)->Name());
 
