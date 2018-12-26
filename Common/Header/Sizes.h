@@ -33,6 +33,8 @@
 #define NAME_SIZE 30
 #define EXT_NAMESIZE (NAME_SIZE+16+1)
 
+// define max string length for substring search in airspace description
+#define EXT_SEARCH_SIZE 1024
 // Do not change, it is fixed in AddSnailPoint.
 #define NUMSNAILCOLORS 15
 
