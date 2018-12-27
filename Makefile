@@ -282,7 +282,7 @@ FIND            :=find
 ETAGS           :=etags
 EBROWSE         :=ebrowse
 
-GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
+GCCVERSION = $(shell $(CXX) -dumpversion)
 GCC_GTEQ_480 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 40800)
 GCC_GTEQ_820 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 80200)
 
