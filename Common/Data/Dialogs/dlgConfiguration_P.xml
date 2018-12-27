@@ -21,7 +21,7 @@
       <WndProperty Name="prpAirfieldFile" Caption="_@M799_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H107_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpWaypointsOutOfRange" Caption="_@M824_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H236_">
+      <WndProperty Name="prpWaypointsOutOfRange" Caption="_@M2348_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H236_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
       <WndProperty Name="prpLanguageFile" Caption="_@M387_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H223_">
