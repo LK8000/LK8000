@@ -1855,6 +1855,18 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontSymbols"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+  //  FontSetEnums(dfe);
+    dfe->addEnumText(MsgToken(2327)); // LKTOKEN  _@M2327_ "Bitmap"
+    dfe->addEnumText(MsgToken(2386)); // LKTOKEN  _@M2386_ "UTF8"
+
+    dfe->Set(Appearance.UTF8Pictorials);
+
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapTopology"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -2173,8 +2185,8 @@ DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M100_ = "Ask" 
     dfe->addEnumText(MsgToken(100));
 #else
-    if(WaypointsOutOfRange > 0)
-      WaypointsOutOfRange--;
+    if(WaypointsOutOfRange == 1) WaypointsOutOfRange = 0;
+    if(WaypointsOutOfRange == 2) WaypointsOutOfRange = 1;
 #endif
 	// LKTOKEN  _@M350_ = "Include" _@M2343_ "Include Data" 
     dfe->addEnumText(MsgToken(2343));
@@ -3693,6 +3705,18 @@ double dval;
           fontschanged=true;
       }
   }
+
+
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontSymbols"));
+  if (wp) {
+    if (Appearance.UTF8Pictorials != (IndLandable_t)(wp->GetDataField()->GetAsInteger())) {
+      Appearance.UTF8Pictorials = (IndLandable_t)(wp->GetDataField()->GetAsInteger());
+      requirerestart = true;
+    }
+  }
+
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapTopology"));
   if (wp) {
       if (FontMapTopology != wp->GetDataField()->GetAsInteger() ) {
@@ -3868,7 +3892,8 @@ int ival;
     if (WaypointsOutOfRange != wp->GetDataField()->GetAsInteger()) {
       WaypointsOutOfRange = wp->GetDataField()->GetAsInteger();
 #ifndef ASK_WAYPOINTS
-      WaypointsOutOfRange++;
+      if(WaypointsOutOfRange == 1)  WaypointsOutOfRange = 2;
+      if(WaypointsOutOfRange == 0)  WaypointsOutOfRange = 1;
 #endif
       WAYPOINTFILECHANGED= true;
       AIRSPACEFILECHANGED = true;

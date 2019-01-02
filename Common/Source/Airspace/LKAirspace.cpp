@@ -2286,6 +2286,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
 
 void CAirspaceManager::ReadAirspaces() {
     int fileCounter=0;
+    OutsideAirspaceCnt = 0;
   //  for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
     for(unsigned int i = 0; i < NO_AS_FILES; i++) {
         fileCounter++;
