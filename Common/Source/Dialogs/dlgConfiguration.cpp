@@ -2185,8 +2185,8 @@ DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M100_ = "Ask" 
     dfe->addEnumText(MsgToken(100));
 #else
-    if(WaypointsOutOfRange > 0)
-      WaypointsOutOfRange--;
+    if(WaypointsOutOfRange == 1) WaypointsOutOfRange = 0;
+    if(WaypointsOutOfRange == 2) WaypointsOutOfRange = 1;
 #endif
 	// LKTOKEN  _@M350_ = "Include" _@M2343_ "Include Data" 
     dfe->addEnumText(MsgToken(2343));
@@ -3892,7 +3892,8 @@ int ival;
     if (WaypointsOutOfRange != wp->GetDataField()->GetAsInteger()) {
       WaypointsOutOfRange = wp->GetDataField()->GetAsInteger();
 #ifndef ASK_WAYPOINTS
-      WaypointsOutOfRange++;
+      if(WaypointsOutOfRange == 1)  WaypointsOutOfRange = 2;
+      if(WaypointsOutOfRange == 0)  WaypointsOutOfRange = 1;
 #endif
       WAYPOINTFILECHANGED= true;
       AIRSPACEFILECHANGED = true;
