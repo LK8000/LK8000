@@ -417,7 +417,9 @@ _@M2322_ "Enable Radar"
 +_@M2191_ "Cyl Dist"
 
 
-
+_@M2252_ "MANUAL"
+_@M2253_ "AUTO THERMALLING"
+_@M2254_ "FULL AUTO"
 
 _@M2336_ "ICAO Code"
 _@M2337_ "Airspace\nLookup"
