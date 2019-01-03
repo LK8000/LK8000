@@ -893,8 +893,9 @@ void MapWindow::DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYP
 {
 
   if(Appearance.UTF8Pictorials)
+  {
     return UTF8WaypointPictorial( Surface,  rc, wp);
-
+  }
     const LKIcon* pWptBmp = NULL;
 
 switch(wp->Style) {
