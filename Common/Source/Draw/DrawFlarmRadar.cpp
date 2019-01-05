@@ -1509,7 +1509,7 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
 			Surface.Rectangle(x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
 			break;
 		  case LKT_ZOMBIE:
-			Surface.DrawCircle(x, y, iCircleSize, rc, true, true );
+			Surface.DrawCircle(x, y, iCircleSize, rc, true );
 			break;
 		  default:
 			POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};

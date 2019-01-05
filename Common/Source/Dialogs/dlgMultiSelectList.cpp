@@ -14,8 +14,15 @@
 #include "resource.h"
 #include "NavFunctions.h"
 #include "Draw/ScreenProjection.h"
+#include "InputEvents.h"
+#include "Sound/Sound.h"
+#include "LKStyle.h"
 
-#define MAX_LIST_ITEMS 50
+#include "Dialogs.h"
+
+
+#define MAX_LEN 80
+#define MAX_LIST_ITEMS 25
 ListElement* pResult = NULL;
 
 ListElement Elements[MAX_LIST_ITEMS];
@@ -32,13 +39,18 @@ static int NoOutlands = 0;
 static int NoWaypoints = 0;
 static int NoTaskPoints = 0;
 static int NoAirspace = 0;
-
+#ifdef FLARM_MS
+#include "FlarmIdFile.h"
+static int NoFlarm = 0;
+extern FlarmIdFile *file;
+#endif
 
 #define MAX_AIRFILEDS 3
 #define MAX_OUTLAND   3
 #define MAX_WAYPOINTS 10
 #define MAX_TASK      3
 #define MAX_AIRSPACES 10
+#define MAX_FLARMS    5
 
 static void UpdateList(void) {
     wMultiSelectListList->ResetList();
@@ -62,6 +74,7 @@ static void OnUpClicked(WndButton* Sender) {
         LKASSERT(iNO_ELEMENTS>0);
         ItemIndex = (iNO_ELEMENTS - 1);
     }
+    LKSound(TEXT("LK_TICK.WAV"));
     wMultiSelectListList->SetItemIndexPos(ItemIndex);
     wMultiSelectListList->Redraw();
     wMultiSelectListListEntry->SetFocus();
@@ -75,6 +88,7 @@ static void OnDownClicked(WndButton* pWnd) {
     } else {
         ItemIndex = 0;
     }
+    LKSound(TEXT("LK_TOCK.WAV"));
     wMultiSelectListList->SetItemIndexPos(ItemIndex);
     wMultiSelectListList->Redraw();
     wMultiSelectListListEntry->SetFocus();
@@ -87,6 +101,33 @@ void dlgAddMultiSelectListDetailsDialog(int Index) {
     iLastTaskPoint--;
     if ((Index >= 0) && (Index < iNO_ELEMENTS)) {
         switch (Elements[Index].type) {
+
+#ifdef TEAM_CODE_MS
+        case IM_TEAM:
+            wf->SetTimerNotify(0,NULL);
+            InputEvents::processPopupDetails(InputEvents::PopupTeam,Elements[Index].iIdx);
+            break;
+#endif
+#ifdef ORACLE_MS
+        case IM_ORACLE:
+            wf->SetTimerNotify(0,NULL);
+            InputEvents::processPopupDetails(InputEvents::PopupOracle,Elements[Index].iIdx);
+            break;
+#endif
+#ifdef OWN_POS_MS
+        case IM_OWN_POS:
+            wf->SetTimerNotify(0,NULL);
+            InputEvents::processPopupDetails(InputEvents::PopupBasic,Elements[Index].iIdx);
+            break;
+#endif
+#ifdef FLARM_MS
+        case IM_FLARM:
+            wf->SetTimerNotify(0,NULL);
+            LKASSERT(Elements[Index].iIdx < (int)WayPointList.size());
+            InputEvents::processPopupDetails(InputEvents::PopupTraffic,Elements[Index].iIdx);
+            wf->SetTimerNotify(0,NULL);
+            break;
+#endif
         case IM_AIRSPACE:
             wf->SetTimerNotify(0,NULL);
             LKASSERT(Elements[Index].ptr);
@@ -174,7 +215,15 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
                 full = true;
 
             break;
+#ifdef FLARM_MS
+        case IM_FLARM:
+            if (NoFlarm < MAX_FLARMS)
+              NoFlarm++;
+            else
+                full = true;
 
+            break;
+#endif
         case IM_TASK_PT:
             if (NoTaskPoints < MAX_TASK)
                 NoTaskPoints++;
@@ -240,13 +289,214 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
     } // if no elements..
 }
 
-static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
+#ifdef FLARM_MS
+int BuildFLARMText(FLARM_TRAFFIC* pFlarm, TCHAR* text1,TCHAR* text2)
+{
+if(pFlarm == NULL) return -1;
+if(text1 == NULL) return -1;
+if(text2 == NULL) return -1;
+
+TCHAR Comment[MAX_LEN] = _T("");;
+FlarmId* flarmId ;
+int j;
+double Distance, Bear;
+  DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pFlarm->Latitude,  pFlarm->Longitude, &Distance, &Bear);
+  if(_tcscmp(pFlarm->Name,_T("?")) ==0)
+    _sntprintf(text1,MAX_LEN, TEXT("%X"), pFlarm->ID);
+  else
+    _sntprintf(text1,MAX_LEN, TEXT("[%s] %X"),pFlarm->Name, pFlarm->ID);
+
+  flarmId = file->GetFlarmIdItem(pFlarm->ID);
+  if(flarmId != NULL)
+  {
+
+    for(j=1; j < (FLARMID_SIZE_NAME-1); j++)
+      if(flarmId->type[FLARMID_SIZE_NAME-j] == ' ')
+        flarmId->type[FLARMID_SIZE_NAME-j] = '\0';
+    if(flarmId->freq[3] != ' ')
+      _sntprintf(Comment,MAX_LEN, TEXT("%s  %sMHz %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
+                                            , flarmId->freq     // FLARMID_SIZE_FREQ   8    r
+                                            , flarmId->name);   // FLARMID_SIZE_NAME   22 => max 52 char
+    else
+      _sntprintf(Comment,MAX_LEN, TEXT("%s %s"), flarmId->type            // FLARMID_SIZE_TYPE   22
+                                     , flarmId->name);          // FLARMID_SIZE_NAME   22 => max 52 char
+
+    _sntprintf(text1,MAX_LEN, TEXT("%s [%s] %s "), pFlarm->Cn,  pFlarm->Name            // MAXFLARMCN          3
+                                   , Comment);             //                     52  => 70
+  }
+  if(flarmId != NULL)  _sntprintf(Comment,MAX_LEN,TEXT("%s"), flarmId->airfield);
+  _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s  (%i%s  %3.1f%s  %i°) %s"), Distance*DISTANCEMODIFY                   //        6
+                                                          , Units::GetDistanceName()                          // 2+3=   5
+                                                          , (int)(pFlarm->Altitude * ALTITUDEMODIFY)  //        5
+                                                          , Units::GetAltitudeName()                          // 3+2=   5
+                                                          , pFlarm->Average30s *  LIFTMODIFY                  //        5
+                                                          , Units::GetVerticalSpeedName()                     // 3+2=   5
+                                                          , (int) Bear
+                                                          , Comment );         //FLARMID_SIZE_AIRFIELD           22  =>  53 char
+  return 0;
+}
+#endif
+
+
+
+int BuildTaskPointText(int iTaskIdx, TCHAR* text1,TCHAR* text2)
+{
+if(text1 == NULL) return -1;
+if(text2 == NULL) return -1;
+int idx=0;
+if(ValidTaskPointFast(iTaskIdx)) {
+    idx = Task[iTaskIdx].Index;
+} else return -1;
+
+int iLastTaskPoint = 0;
+
+while (ValidTaskPoint(iLastTaskPoint))
+    iLastTaskPoint++;
+
+iLastTaskPoint--;
+
+if (iTaskIdx == 0) {
+     // _@M2301_  "S"    # S = Start Task point
+    _sntprintf(text1, MAX_LEN, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
+    _sntprintf(text2, MAX_LEN, TEXT("Radius %3.1f%s (%i%s)"),
+               StartRadius * DISTANCEMODIFY, Units::GetDistanceName(),
+               (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+               Units::GetAltitudeName());
+ } else {
+     if (iTaskIdx == iLastTaskPoint) {
+         //  _@M2303_  "F"                 // max 30         30 => max 60 char
+         _sntprintf(text1,MAX_LEN, TEXT("%s: (%s) "), MsgToken(2303),
+                   WayPointList[idx].Name);
+         _sntprintf(text2, MAX_LEN, TEXT("Radius %3.1f%s (%i%s)"),
+                   FinishRadius * DISTANCEMODIFY, Units::GetDistanceName(),
+                   (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                   Units::GetAltitudeName());
+     } else {
+         //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
+         _sntprintf(text1,MAX_LEN,  TEXT("%s%i: (%s) "), MsgToken(2302), iTaskIdx,
+                   WayPointList[idx].Name);
+         double SecRadius = 0;
+
+         SecRadius = SectorRadius;
+         if (AATEnabled) {
+             if (Task[iTaskIdx].AATType == SECTOR)
+                 SecRadius = Task[iTaskIdx].AATSectorRadius;
+             else
+                 SecRadius = Task[iTaskIdx].AATCircleRadius;
+         }
+
+         _sntprintf(text2, MAX_LEN, TEXT("Radius %3.1f%s (%i%s)"),
+                   SecRadius * DISTANCEMODIFY, Units::GetDistanceName(),
+                   (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                   Units::GetAltitudeName());
+     }
+   }
+  return 0;
+}
+
+int ShowTextEntries(LKSurface& Surface, const RECT& rc, TCHAR* text1,TCHAR* text2)
+{
+  /********************
+   * show text
+   ********************/
+  Surface.SetBackgroundTransparent();
+  Surface.SetTextColor(RGB_BLACK);
+  Surface.DrawText(rc.right + DLGSCALE(2), DLGSCALE(2), text1);
+  int ytext2 = Surface.GetTextHeight(text1);
+  Surface.SetTextColor(RGB_DARKBLUE);
+  Surface.DrawText(rc.right + DLGSCALE(2), ytext2, text2);
+  return 0;
+}
+
+
+int BuildLandableText(int idx, double Distance, TCHAR* text1,TCHAR* text2)
+{
+if(text1 == NULL) return -1;
+if(text2 == NULL) return -1;
+TCHAR Comment[MAX_LEN] = _T("");
+int j;
+
+  if (WayPointList[idx].Comment != NULL) {
+      LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
+  } else {
+      _tcscpy(Comment, TEXT(""));
+  }
+
+  if (_tcslen(WayPointList[idx].Freq) > 0) {
+      // remove spaces from frequency
+      for (j = 1; j < (CUPSIZE_FREQ); j++)
+          if (WayPointList[idx].Freq[CUPSIZE_FREQ - j] == ' ')
+              WayPointList[idx].Freq[CUPSIZE_FREQ - j] = '\0';
+
+      if (_tcslen(WayPointList[idx].Freq) > 2)
+        _sntprintf(text1, MAX_LEN, TEXT("%s %s MHz"), WayPointList[idx].Name,
+                    WayPointList[idx].Freq);
+      else
+        _sntprintf(text1,MAX_LEN, TEXT("%s"), WayPointList[idx].Name);
+  } else {
+      if( WayPointList[idx].Style ==  STYLE_THERMAL)
+        _sntprintf(text1, MAX_LEN, TEXT("%s: %s"), MsgToken(905), WayPointList[idx].Name);
+      else
+      if (WayPointList[idx].Comment != NULL)
+        _sntprintf(text1, MAX_LEN, TEXT("%s %s"), WayPointList[idx].Name, Comment);
+      else
+        _sntprintf(text1, MAX_LEN,TEXT("%s"), WayPointList[idx].Name);
+  }
+
+  if ((WayPointList[idx].RunwayLen >= 10) ||
+      (WayPointList[idx].RunwayDir > 0)) {
+      _sntprintf(text2, MAX_LEN,TEXT("%3.1f%s (%i%s  %02i/%02i  %i%s)"),
+                Distance * DISTANCEMODIFY, Units::GetDistanceName(),
+                (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                Units::GetAltitudeName(),
+                (int) (WayPointList[idx].RunwayDir / 10.0 + 0.5),
+                (int) (AngleLimit360(WayPointList[idx].RunwayDir + 180.0) /
+                       10.0 + 0.5),
+                (int) ((double) WayPointList[idx].RunwayLen * ALTITUDEMODIFY),
+                Units::GetAltitudeName());
+  } else {
+      _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s (%i%s) "), Distance * DISTANCEMODIFY,
+                Units::GetDistanceName(),
+                (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
+                Units::GetAltitudeName());
+  }
+ return 0;
+}
+
+void UTF8Pictorial(LKSurface& Surface, const RECT& rc,const TCHAR *Pict ,const LKColor& Color)
+{
+if (Pict == NULL) return;
+  Surface.SetBackgroundTransparent();
+  const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
+
+  Surface.SetTextColor(Color);
+  int xtext = Surface.GetTextWidth(Pict);
+  Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , DLGSCALE(2), Pict);
+  Surface.SelectObject(OldFont);
+}
+
+void DrawUTF8FlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf)
+{
+if (pTraf == NULL) return;
+double fFact = fabs(pTraf->Average30s + 5.0) /10.0;
+if(fFact > 1.0 ) fFact = 1.0; else
+  if(fFact < 0.0 ) fFact = 0.0;
+LKColor BaseColor = RGB_GREEN ;
+extern  LKColor MixColors(const LKColor& Color2, double fFact1) ;
+BaseColor =  BaseColor.MixColors( RGB_BLUE, fFact);
+if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc, MsgToken(2382) ,BaseColor); else     // _@M2382_ "■"
+  if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc,  MsgToken(2383) ,BaseColor);else      // _@M2383_ "●"
+    UTF8Pictorial( Surface,  rc, MsgToken(2384)  ,BaseColor);    // _@M2384_ "●"
+}
+
+
+
+static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 #define PICTO_WIDTH 50
-#define TEXT_LEN 80
     Surface.SetTextColor(RGB_BLACK);
     if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {
-        int j;
+
         static CAirspaceBase airspace_copy;
         int i = DrawListIndex;
         LKASSERT(i < MAX_LIST_ITEMS);
@@ -261,14 +511,17 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         int HorDist, Bearing, VertDist;
         double Distance;
         unsigned int idx = 0;
-        TCHAR text1[TEXT_LEN+1] = {TEXT("empty")};
-        TCHAR text2[TEXT_LEN+1] = {TEXT("empty")};
-        TCHAR Comment[TEXT_LEN+1] = {TEXT("")};
-        TCHAR Comment1[TEXT_LEN+1] = {TEXT("")};
+        TCHAR text1[MAX_LEN] = {TEXT("empty")};
+        TCHAR text2[MAX_LEN] = {TEXT("empty")};
+        TCHAR Comment[MAX_LEN] = {TEXT("")};
+        TCHAR Comment1[MAX_LEN] = {TEXT("")};
         Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
         LKASSERT(i < MAX_LIST_ITEMS);
 
         switch (Elements[i].type) {
+            /************************************************************************************************
+             * IM_AIRSPACE
+             ************************************************************************************************/
         case IM_AIRSPACE:
             pAS = (CAirspace*) Elements[i].ptr;
             if (pAS) {
@@ -279,17 +532,17 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
                 // airspace type already in name?
                 if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
-                    _sntprintf(text1, TEXT_LEN, TEXT("%s"), airspace_copy.Name()); // yes, take name only
+                    _sntprintf(text1, MAX_LEN, TEXT("%s"), airspace_copy.Name()); // yes, take name only
                 } else {
                     // fixed strings max. 20 NAME_SIZE 30 => max. 30 char
-                    _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
+                    _sntprintf(text1, MAX_LEN, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
                 }
 
-                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, TEXT_LEN, airspace_copy.Top());
-                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, TEXT_LEN, airspace_copy.Base());
+                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, sizeof (Comment) / sizeof (Comment[0]), airspace_copy.Top());
+                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, sizeof (Comment1) / sizeof (Comment1[0]), airspace_copy.Base());
 
                 CAirspaceManager::Instance().AirspaceCalculateDistance((CAirspace*) pAS, &HorDist, &Bearing, &VertDist);
-                _sntprintf(text2, TEXT_LEN, TEXT("%3.1f%s (%s - %s)"), (double) HorDist*DISTANCEMODIFY, Units::GetDistanceName(), Comment1, Comment); //8 + 8+3   21
+                _sntprintf(text2, MAX_LEN, TEXT("%3.1f%s (%s - %s)"), (double) HorDist*DISTANCEMODIFY, Units::GetDistanceName(), Comment1, Comment); //8 + 8+3   21
 
                 /****************************************************************
                  * for drawing the airspace pictorial, we need the original data.
@@ -297,156 +550,147 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                  * original data are shared ressources !
                  * for that we need to grant all called methods are thread safe
                  ****************************************************************/
+                ShowTextEntries(Surface, rc,  text1, text2);
                 pAS->DrawPicto(Surface, rc);
+
             }
             break;
 
+#ifdef  FLARM_MS
+            /************************************************************************************************
+             * IM_FLARM
+             ************************************************************************************************/
+        case IM_FLARM:
+            LKASSERT(Elements[i].iIdx  < FLARM_MAX_TRAFFIC);
+            LKASSERT(Elements[i].iIdx  >= 0);
+            FLARM_TRAFFIC Target;
+            LockFlightData();
+              memcpy( &Target, &GPS_INFO.FLARM_Traffic[Elements[i].iIdx], sizeof(     FLARM_TRAFFIC));
+            UnlockFlightData();
 
-        case IM_TASK_PT:
+            BuildFLARMText(&Target,text1,text2);
+            ShowTextEntries(Surface, rc,  text1, text2);
+
+#ifdef FLARM_PICTO_THREADSAFE
+            MapWindow::DrawFlarmPicto(Surface, rc, &Target);   // draw MAP icons
+#else
+            DrawUTF8FlarmPicto(Surface, rc, &Target);          // use alternate UTF8 icons
+#endif
+            break;
+#endif // FLARM_MS
+
+#ifdef TEAM_CODE_MS
+            /************************************************************************************************
+             * IM_TEAM
+             ************************************************************************************************/
+        case IM_TEAM:
+          _sntprintf(text1,MAX_LEN,_T("%s:"),MsgToken(700)); //_@M700_ "Team code"
+          _sntprintf(text2,MAX_LEN,_T("%s"), CALCULATED_INFO.OwnTeamCode );
+            ShowTextEntries(Surface, rc,  text1, text2);
+            if(Appearance.UTF8Pictorials)
+              UTF8Pictorial( Surface,  rc, MsgToken(2380), RGB_VDARKRED);  // _@M2380_ "⚑"
+            else
+              UTF8Pictorial( Surface,  rc, _T("@"), RGB_VDARKRED);
+
+            break;
+#endif
+#ifdef ORACLE_MS
+            /************************************************************************************************
+             * IM_ORACLE
+             ************************************************************************************************/
+        case IM_ORACLE:
+          _sntprintf(text1,MAX_LEN,_T("%s"), MsgToken(2058)); //_@M2058_ "Oracle"
+            if(Elements[i].iIdx >= 0)
+              _sntprintf(text2,MAX_LEN,_T("%s: %s"), MsgToken(456), WayPointList[Elements[i].iIdx].Name);// _@M456_ "Near"
+            else
+              _sntprintf(text2,MAX_LEN,_T("%s"), MsgToken(1690)); //_@M1690_ "THE LK8000 ORACLE"
+            ShowTextEntries(Surface, rc,  text1, text2);
+            if(Appearance.UTF8Pictorials)
+              UTF8Pictorial( Surface,  rc, MsgToken(2381),RGB_BLUE);  // _@M2381_ "♕"
+            else
+              UTF8Pictorial( Surface,  rc, _T("?"),RGB_BLUE);
+            break;
+#endif
+#ifdef OWN_POS_MS
+            /************************************************************************************************
+             * IM_OWN_POS
+             ************************************************************************************************/
+          case IM_OWN_POS:
+            _sntprintf(text1,MAX_LEN,_T("%s [%s]"), AircraftRego_Config,AircraftType_Config);
+             if (ISPARAGLIDER || ISCAR)
+             {
+               int utmzone; char utmchar;
+               double easting, northing;
+               extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
+               LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
+               _sntprintf(text2,MAX_LEN,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
+             }
+             else
+             {
+               LockFlightData();
+               Units::CoordinateToString( GPS_INFO.Latitude,GPS_INFO.Longitude, Comment, sizeof(text2)-1);
+               _sntprintf(text2,MAX_LEN,TEXT("%s %6.0f%s"),Comment, GPS_INFO.Altitude*TOFEET,Units::GetUnitName(unFeet));
+               UnlockFlightData();
+             }
+             ShowTextEntries(Surface, rc,  text1, text2);
+             MapWindow::DrawAircraft(Surface, (POINT) { (rc.right-rc.left)/2,(rc.bottom-rc.top)/2} );
+          break;
+#endif // OWN_POS_MS
+            /************************************************************************************************
+             * IM_WAYPOINT
+             ************************************************************************************************/
         case IM_WAYPOINT:
             idx = -1;
-            LockTaskData(); // protect from external task changes
 
-            if (Elements[i].type == IM_TASK_PT) {
-                if(ValidTaskPointFast(Elements[i].iIdx)) {
-                    idx = Task[Elements[i].iIdx].Index;
-                }
-            } else {
-                if(ValidWayPointFast(Elements[i].iIdx)) {
-                    idx = Elements[i].iIdx;
-                }
+            if(ValidWayPointFast(Elements[i].iIdx)) {
+                idx = Elements[i].iIdx;
             }
 
-            // This is not a solution. It will avoid a crash but the solution is to understand
-            // why we are getting a wrong idx, eventually. If ever we got a wrong idx!
-            // And then this "fix" should be changed to something more useful, instead of 
-            // adopting a totally wrong waypoint for task.
             assert(idx < WayPointList.size());
-            if(idx < WayPointList.size()) {
+            if(idx < WayPointList.size())
+            {
+              if (WayPointList[idx].Comment != NULL) {
+                  LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
+              } else {
+                  _tcscpy(Comment, TEXT(""));
+              }
+              DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,
+                              WayPointList[idx].Longitude, &Distance, NULL);
+              BuildLandableText(idx, Distance,text1,text2);
+              ShowTextEntries(Surface, rc,  text1, text2);
+              if (WayPointCalc[idx].IsLandable) {
+                  MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 1.5, true);
+              }// waypoint isLandable
+              else {
+                  MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[idx]);
+              }
 
-                if (WayPointList[idx].Comment != NULL) {
-                    LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
-                } else {
-                    _tcscpy(Comment, TEXT(""));
-                }
-
-                DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,
-                                WayPointList[idx].Longitude, &Distance, NULL);
-
-                if (Elements[i].type != IM_TASK_PT) {
-                    if (WayPointCalc[idx].IsLandable) {
-                        MapWindow::DrawRunway(Surface, &WayPointList[idx], rc, nullptr, 1.5, true);
-
-                        if (WayPointCalc[idx].IsAirport) {
-                            // remove spaces from frequency
-                            for (j = 1; j < (CUPSIZE_FREQ); j++)
-                                if (WayPointList[idx].Freq[CUPSIZE_FREQ - j] == ' ')
-                                    WayPointList[idx].Freq[CUPSIZE_FREQ - j] = '\0';
-
-                            if (_tcslen(WayPointList[idx].Freq) > 2)
-                                _sntprintf(text1,TEXT_LEN, TEXT("%s %s MHz"), WayPointList[idx].Name,
-                                          WayPointList[idx].Freq);
-                            else
-                                _sntprintf(text1,TEXT_LEN, TEXT("%s"), WayPointList[idx].Name);
-                        } else {
-                            if (WayPointList[idx].Comment != NULL)
-                                _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), WayPointList[idx].Name, Comment);
-                            else
-                                _sntprintf(text1,TEXT_LEN,  TEXT("%s"), WayPointList[idx].Name);
-                        }
-
-                        if ((WayPointList[idx].RunwayLen >= 10) ||
-                            (WayPointList[idx].RunwayDir > 0)) {
-                            _sntprintf(text2,TEXT_LEN, TEXT("%3.1f%s (%i%s  %02i/%02i  %i%s)"),
-                                      Distance * DISTANCEMODIFY, Units::GetDistanceName(),
-                                      (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
-                                      Units::GetAltitudeName(),
-                                      (int) (WayPointList[idx].RunwayDir / 10.0 + 0.5),
-                                      (int) (AngleLimit360(WayPointList[idx].RunwayDir + 180.0) /
-                                             10.0 + 0.5),
-                                      (int) ((double) WayPointList[idx].RunwayLen * ALTITUDEMODIFY),
-                                      Units::GetAltitudeName());
-                        } else {
-                            _sntprintf(text2, TEXT_LEN, TEXT("%3.1f%s (%i%s) "), Distance * DISTANCEMODIFY,
-                                      Units::GetDistanceName(),
-                                      (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
-                                      Units::GetAltitudeName());
-                        }
-
-                    }// waypoint isLandable
-                    else {
-                        MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[idx]);
-                        _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), WayPointList[idx].Name, Comment);
-
-                        _sntprintf(text2,TEXT_LEN, TEXT("%3.1f%s (%i%s)"), Distance * DISTANCEMODIFY,
-                                  Units::GetDistanceName(),
-                                  (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
-                                  Units::GetAltitudeName());
-                    }
-
-                }// Elements IM_TASK
-                else {
-                    int iTaskIdx = Elements[i].iIdx;
-                    MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc, 3000);
-                    int iLastTaskPoint = 0;
-
-                    while (ValidTaskPoint(iLastTaskPoint))
-                        iLastTaskPoint++;
-
-                    iLastTaskPoint--;
-
-                    if (iTaskIdx == 0) {
-                        // _@M2301_  "S"    # S = Start Task point
-                        _sntprintf(text1,TEXT_LEN, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
-                        _sntprintf(text2,TEXT_LEN, TEXT("Radius %3.1f%s (%i%s)"),
-                                  StartRadius * DISTANCEMODIFY, Units::GetDistanceName(),
-                                  (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
-                                  Units::GetAltitudeName());
-                    } else {
-                        if (iTaskIdx == iLastTaskPoint) {
-                            //	_@M2303_  "F"                 // max 30         30 => max 60 char
-                            _sntprintf(text1, TEXT_LEN, TEXT("%s: (%s) "), MsgToken(2303),
-                                      WayPointList[idx].Name);
-                            _sntprintf(text2, TEXT_LEN, TEXT("Radius %3.1f%s (%i%s)"),
-                                      FinishRadius * DISTANCEMODIFY, Units::GetDistanceName(),
-                                      (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
-                                      Units::GetAltitudeName());
-                        } else {
-                            //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
-                            _sntprintf(text1, TEXT_LEN,TEXT("%s%i: (%s) "), MsgToken(2302), iTaskIdx,
-                                      WayPointList[idx].Name);
-                            double SecRadius = 0;
-
-                            SecRadius = SectorRadius;
-                            if (AATEnabled) {
-                                if (Task[iTaskIdx].AATType == SECTOR)
-                                    SecRadius = Task[iTaskIdx].AATSectorRadius;
-                                else
-                                    SecRadius = Task[iTaskIdx].AATCircleRadius;
-                            }
-
-                            _sntprintf(text2, TEXT_LEN, TEXT("Radius %3.1f%s (%i%s)"),
-                                      SecRadius * DISTANCEMODIFY, Units::GetDistanceName(),
-                                      (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
-                                      Units::GetAltitudeName());
-                        }
-                    }
-
-                }
             }
-            UnlockTaskData(); // protect from external task changes
+            break;
+            /************************************************************************************************
+             * IM_TASK
+             ************************************************************************************************/
+        case IM_TASK_PT:
+            {
+              idx = -1;
+              LockTaskData(); // protect from external task changes
+              int iTaskIdx = Elements[i].iIdx;
+              if(ValidTaskPointFast(iTaskIdx))
+              {
+                idx = Task[iTaskIdx].Index;
+              }
+              assert(idx < WayPointList.size());
+              if(idx < WayPointList.size())
+              {
+                BuildTaskPointText( iTaskIdx,  text1, text2);
+                ShowTextEntries(Surface, rc,  text1, text2);
+                MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc, 3000);
+              }
+              UnlockTaskData(); // protect from external task changes
+            }
             break;
         }
 
-        /********************
-         * show text
-         ********************/
-        Surface.SetBackgroundTransparent();
-        Surface.SetTextColor(RGB_BLACK);
-        Surface.DrawText(rc.right + DLGSCALE(2), DLGSCALE(2), text1);
-        int ytext2 = Surface.GetTextHeight(text1);
-        Surface.SetTextColor(RGB_DARKBLUE);
-        Surface.DrawText(rc.right + DLGSCALE(2), ytext2, text2);
 
     }
 }
@@ -584,6 +828,8 @@ ListElement* dlgMultiSelectListShowModal(void) {
     NoWaypoints = 0;
     NoAirspace = 0;
     NoTaskPoints = 0;
-
+#ifdef FLARM_MS
+    NoFlarm = 0;
+#endif
     return pResult;
 }
