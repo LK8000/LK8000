@@ -13,6 +13,94 @@
 
 extern bool FastZoom; // QUICKDRAW
 
+
+
+LKColor GetUTF8MultimapSymbol(TCHAR* pPict, const int Number)
+{
+LKColor Col = RGB_BLACK;
+  if (pPict ==NULL) return Col;
+    switch(Number)
+    {
+      case 0:
+        _stprintf(pPict,_T("%s"), MsgToken(2350));  // _@M2350_ "Ⓜ"
+        Col = LKColor(0,245,255);
+      break;
+
+      case 1:
+        _stprintf(pPict,_T("%s"), MsgToken(2351)); // _@M2351_ "①"
+        Col = LKColor(0,255,127);
+      break;
+
+      case 2:
+        _stprintf(pPict,_T("%s"), MsgToken(2352));  // _@M2352_ "②"
+        Col = LKColor(205,0,0);
+      break;
+
+      case 3:
+        _stprintf(pPict,_T("%s"), MsgToken(2353));  // _@M2353_ "③"
+        Col = LKColor(255,130,71);
+      break;
+
+      case 4:
+        _stprintf(pPict,_T("%s"), MsgToken(2354));  // _@M2354_ "④"
+        Col = LKColor(255,165,0);
+      break;
+
+      case 5:
+        _stprintf(pPict,_T("%s"), MsgToken(2355));  // _@M2354_ "⑤"
+        Col = LKColor(255,130,71);
+      break;
+
+      case 6:
+        _stprintf(pPict,_T("%s"), MsgToken(2356));   // _@M2354_ "⑥"
+        Col = LKColor(82,82,82);
+      break;
+
+      case 7:
+        _stprintf(pPict,_T("%s"), MsgToken(2357));    // _@M2354_ "⑦"
+        Col = RGB_DARKBLUE;
+      break;
+
+      case 8:
+        _stprintf(pPict,_T("%s"), MsgToken(2358));   // _@M2354_ "⑧"
+        Col = RGB_BLACK;
+      break;
+
+      case 9:
+        _stprintf(pPict,_T("%s"), MsgToken(2359));    // _@M2354_ "⑨"
+        Col = RGB_BLACK;
+      break;
+
+      default:
+        _stprintf(pPict,_T("%s"), MsgToken(2360));   // _@M2354_ "⑩"
+        Col = RGB_BLACK;
+      break;
+    }
+#ifdef KOBO
+    Col = RGB_LIGHTGREY;
+#endif
+
+    return Col;
+}
+
+
+
+void UTF8DrawMultimapSymbol(LKSurface& Surface, int x, int y, int Number)
+{
+TCHAR Pict[10];
+
+LKColor NewCol = GetUTF8MultimapSymbol((TCHAR*) &Pict,  Number);
+const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
+  const auto OldColor = Surface.SetTextColor(NewCol);
+
+  int xtext = Surface.GetTextWidth(Pict);
+  int ytext = Surface.GetTextHeight(Pict);
+  Surface.DrawText(x -xtext/4 , y-ytext/4, Pict);
+  Surface.SelectObject(OldFont);
+  Surface.SetTextColor(OldColor);
+}
+
+
 // locals
 static unsigned short use_rescale=0;
 static double newscale=1;
@@ -230,11 +318,17 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
          }
       }
   }
-
-  if(ptmpBitmap ) {
+  if(Appearance.UTF8Pictorials == false)
+  {
+    if(ptmpBitmap ) {
       ptmpBitmap->Draw(Surface, mmPoint.x, mmPoint.y, mmNewSize.cx,mmNewSize.cy);
+    }
   }
-
+  else
+  {
+   short i=ModeType[LKMODE_MAP]-1;
+   UTF8DrawMultimapSymbol( Surface, mmPoint.x, mmPoint.y, i);
+  }
   //
   // Battery indicator
   //

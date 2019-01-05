@@ -23,6 +23,9 @@ public:
     PopupWaypoint,
     PopupThermal,
     PopupTraffic,
+    PopupOracle,
+    PopupTeam,
+    PopupBasic,
   } PopupType;
 
 

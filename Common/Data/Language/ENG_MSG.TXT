@@ -2244,9 +2244,7 @@ _@M2332_ "Big Glider Black"
 _@M2333_ "Tracking mode "
 _@M2334_ "in Flight Only (default)"
 _@M2335_ "permanent"
-
-_@M2336_ "ICAO Code"
-_@M2337_ "Airspace\nLookup"
+_@M2336_ "Airspace\nLookup"
 
 _@M2338_ "Airspace Files"   #_@M63_ 
 _@M2339_ "Airspace File "   #_@M64_   
@@ -2254,10 +2252,52 @@ _@M2340_ "Waypoint Files"   #_@M806_
 _@M2341_ "Waypoint File"    #_@M807_
 _@M2342_ "File"             #_@M1227_ 
 _@M2343_ "incl. Waypoints & Airspaces"
-_@M2344_ "excl. Waypoints & Airspaces" 
+_@M2344_ "excl. Waypoints & Airspaces"
 _@M2345_ "and" 
 _@M2346_ "are identical" 
 _@M2347_ "airspaces excluded!"
 _@M2348_ "Outside terrain"
 
+# Multimap symbols
+_@M2350_ "M"
+_@M2351_ "①"
+_@M2352_ "②"
+_@M2353_ "③"
+_@M2354_ "④"
+_@M2355_ "⑤"
+_@M2356_ "⑥"
+_@M2357_ "⑦"
+_@M2358_ "⑧"
+_@M2359_ "⑨"
+_@M2360_ "⑩"
+
+# waypoint symbols
+_@M2361_ "◎"   # waypoint
+_@M2362_ "✈"   # airfield
+_@M2363_ "◠"   # mountain pass
+_@M2364_ "▴"   # mountain top
+_@M2365_ "☨"   # antenna
+_@M2366_ "⬡"  # VOR
+_@M2367_ "✺"   # NDB
+_@M2368_ "⛃"  # cooltower
+_@M2369_ "≊"  # dam
+_@M2370_ "⋒"  # tunel
+_@M2371_ "≍"  #bridge
+_@M2372_ "⚡"  # powerplant
+_@M2373_ "♜"  # castle
+_@M2374_ "⨯"  # intersection
+_@M2375_ "✈"  # traffic
+_@M2376_ "♨"  # thermal
+_@M2377_ "⚑"  # Marker
+_@M2378_ "✈"  # all others
+
+# other Multiselect symbols
+_@M2380_ "⚑"  # Team
+_@M2381_ "♕"  # Oracle
+_@M2382_ "■"  # ghost
+_@M2383_ "●"  # zombie
+_@M2384_ "✈"  # traffic
+
+_@M2385_ "Map Symbols"
+_@M2386_ "UTF8"  
 _@M2400_ "Target up"

@@ -378,7 +378,10 @@
       <WndProperty Name="prpOverlayValues" Caption="_@M1887_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
    <DataField Name="" DataType="enum"/>
       </WndProperty>
-      <WndProperty Name="prpFontMapWaypoint" Caption="_@M1880_" X="2" Y="-998"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
+      <WndProperty Name="prpFontMapWaypoint" Caption="_@M1880_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
+   <DataField Name="" DataType="enum"/>
+      </WndProperty>
+      <WndProperty Name="prpFontSymbols" Caption="_@M2385_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
    <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontMapTopology" Caption="_@M1881_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >

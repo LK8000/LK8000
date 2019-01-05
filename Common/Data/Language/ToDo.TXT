@@ -437,6 +437,8 @@ _@M2346_ "are identical"
 _@M2347_ "airspaces excluded!"
 _@M2348_ "Outside terrain"
 
+_@M2385_ "Map Symbols"
+_@M2386_ "UTF8"  
 _@M2400_ "Target up"
 
 HELP FILE
