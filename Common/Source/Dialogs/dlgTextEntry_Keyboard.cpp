@@ -387,7 +387,7 @@ unsigned int i,j,EqCnt=WayPointList.size();
 
 
 WndProperty *wp;
-TCHAR Found[NAME_SIZE + 1];
+TCHAR Found[EXT_SEARCH_SIZE + 1];
 SelList[0] = '\0';
 unsigned int NameLen=0;
  int Offset=0;
@@ -477,7 +477,7 @@ IdenticalIndex = -1;
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
 	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
 
-		LKASSERT(cursor < NAME_SIZE);
+		LKASSERT(cursor < EXT_SEARCH_SIZE);
 		LKASSERT(IdenticalIndex<=(int)WayPointList.size());
 		_stprintf(Found,_T("%s"),WayPointList[IdenticalIndex].Name);
 		if(_tcslen(WayPointList[IdenticalIndex].Code) > 1)
@@ -532,15 +532,15 @@ unsigned int i,j,EqCnt=WayPointList.size();
 
 CAirspaceList airspaclist =   CAirspaceManager::Instance().GetAllAirspaces();
 WndProperty *wp;
-TCHAR Found[NAME_SIZE + 1];
+TCHAR Found[EXT_SEARCH_SIZE + 1];
 SelList[0] = '\0';
 unsigned int NameLen=0;
  int Offset=0;
 unsigned int k =0;
 IdenticalOffset =999;
 //IdenticalIndex = -1;
-TCHAR IdenticalName[255]= _T("");
-TCHAR AS_Name[255];
+TCHAR IdenticalName[EXT_SEARCH_SIZE]= _T("");
+TCHAR AS_Name[EXT_SEARCH_SIZE];
 
 
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
@@ -559,7 +559,10 @@ TCHAR AS_Name[255];
     for (it = airspaclist.begin(); it != airspaclist.end(); ++it)
     {
 
-      _stprintf(AS_Name,_T("%s"),(*it)->Name());
+    if((*it)->Comment() != NULL)
+	  _sntprintf(AS_Name,EXT_SEARCH_SIZE,_T("%s"),(*it)->Comment());
+    else
+      _sntprintf(AS_Name,EXT_NAMESIZE, _T("%s"),(*it)->Name());
 
       NameLen =  _tcslen(AS_Name);
       Offset = 0;
@@ -600,7 +603,7 @@ TCHAR AS_Name[255];
                    // StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
         }
         EqCnt++;
-        LKASSERT((cursor+Offset)<=NAME_SIZE);
+        LKASSERT((cursor+Offset)<=EXT_SEARCH_SIZE);
     //    LKASSERT(i<=WayPointList.size());
         TCHAR newChar = ToUpper(AS_Name[cursor+Offset]);
         bool existing = false;
@@ -639,7 +642,7 @@ TCHAR AS_Name[255];
       {
         if((cursor >0) &&  (EqCnt >0))
         {
-          LKASSERT(cursor < NAME_SIZE);
+          LKASSERT(cursor < EXT_SEARCH_SIZE);
 
           _stprintf(Found,_T("%s"),IdenticalName );
           for( i = 0; i < cursor; i++)

@@ -309,8 +309,8 @@ static void UpdateList(void){
   }
 
 
-  TCHAR sTmp[NAMEFILTERLEN+1];
-  TCHAR wname[NAME_SIZE+1];
+  TCHAR sTmp[EXT_SEARCH_SIZE+1];
+  TCHAR wname[EXT_SEARCH_SIZE+1];
   LowLimit = UpLimit;
   qsort(AirspaceSelectInfo, UpLimit,
       sizeof(AirspaceSelectInfo_t), AirspaceNameCompare);
@@ -325,7 +325,11 @@ static void UpdateList(void){
     // compare entire name which may be more than 4 chars
 
       LKASSERT(i>=0 && i< NumberOfAirspaces);
-      LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name() , NAME_SIZE);
+	  if(AirspaceSelectInfo[i].airspace->Comment() != NULL)
+		_sntprintf(wname,EXT_SEARCH_SIZE,_T("%s"),AirspaceSelectInfo[i].airspace->Comment());
+	  else
+	    _sntprintf(wname,EXT_NAMESIZE, _T("%s"),AirspaceSelectInfo[i].airspace->Name());
+
       CharUpper(wname);
 
     if (_tcsnicmp(wname,sTmp,iFilterLen) >= 0) {
@@ -338,7 +342,11 @@ static void UpdateList(void){
     for (; i<UpLimit; i++){
 
         LKASSERT(i>=0 && i< NumberOfAirspaces);
-      LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name(), NAME_SIZE);
+	  if(AirspaceSelectInfo[i].airspace->Comment() != NULL)
+		_sntprintf(wname,EXT_SEARCH_SIZE,_T("%s"),AirspaceSelectInfo[i].airspace->Comment());
+	  else
+	    _sntprintf(wname,EXT_NAMESIZE, _T("%s"),AirspaceSelectInfo[i].airspace->Name());
+
       CharUpper(wname);
 
       if (_tcsnicmp(wname,sTmp,iFilterLen) != 0) {
@@ -355,7 +363,11 @@ static void UpdateList(void){
       for (i=0, matches=0; i<UpLimit; i++) {
 
           LKASSERT(i>=0 && i< NumberOfAirspaces);
-              LK_tcsncpy(wname,AirspaceSelectInfo[i].airspace->Name(), NAME_SIZE);
+		  if(AirspaceSelectInfo[i].airspace->Comment() != NULL)
+			_sntprintf(wname,EXT_SEARCH_SIZE,_T("%s"),AirspaceSelectInfo[i].airspace->Comment());
+		  else
+		    _sntprintf(wname,EXT_NAMESIZE, _T("%s"),AirspaceSelectInfo[i].airspace->Name());
+
               CharUpper(wname);
 
               if ( _tcsstr(  wname,sTmp ) ) {

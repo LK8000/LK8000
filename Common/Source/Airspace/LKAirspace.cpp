@@ -29,6 +29,11 @@
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
+
+#define LINE_LEN 1023
+
+unsigned int OutsideAirspaceCnt =0;
+
 #if TESTBENCH
 //#define DEBUG_NEAR_POINTS	1
 #define DEBUG_AIRSPACE
@@ -36,7 +41,7 @@
 
 extern	  double  ExtractFrequency(TCHAR*);
 
-static const int k_nAreaCount = 16;
+static const int k_nAreaCount = 17;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("R"),
     _T("Q"),
@@ -53,6 +58,7 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
     _T("CTR"),
     _T("TMZ"),
     _T("RMZ"),
+    _T("NOTAM"),
     _T("GSEC")
 };
 static const int k_nAreaType[k_nAreaCount] = {
@@ -71,6 +77,7 @@ static const int k_nAreaType[k_nAreaCount] = {
     CTR,
     CLASSTMZ,
     CLASSRMZ,
+    CLASSNOTAM,
     GLIDERSECT
 };
 
@@ -740,9 +747,25 @@ void CAirspaceBase::ResetWarnings() {
 }
 
 // Initialize instance attributes
-
-void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) {
+void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
     CopyTruncateString(_name, NAME_SIZE, name);
+
+
+ if (comment != NULL)
+ {
+	int iLen = min(READLINE_LENGTH,(int) _tcslen(comment)+1);
+    if( _tcslen(comment) > 1)
+    {
+      _shared_comment = std::shared_ptr<TCHAR>(new TCHAR[iLen+2], std::default_delete<TCHAR[]>());                    
+    }
+
+    if( Comment()  != NULL)
+    {
+      CopyTruncateString( (TCHAR*) _shared_comment.get(),iLen, comment);
+   //   StartupStore(TEXT("new _shared_comment: %s %u %s"),  Comment(), _tcslen( Comment()), NEWLINE);
+    }
+ }
+	
     _type = type;
     memcpy(&_base, &base, sizeof (_base));
     memcpy(&_top, &top, sizeof (_top));
@@ -757,7 +780,7 @@ CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &
 CAirspace(),
 _center(Center_Latitude, Center_Longitude),
 _radius(Airspace_Radius) {
-
+//	_comment =NULL;
     _bounds.minx = _center.longitude;
     _bounds.maxx = _center.longitude;
     _bounds.miny = _center.latitude;
@@ -955,7 +978,7 @@ void CAirspace::Draw(LKSurface& Surface, bool fill) const {
 //
 CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace() {
     std::swap(_geopoints, Area_Points);
-
+ //   _comment =NULL;
     _screenpoints.reserve(_geopoints.size());
     _screenpoints_clipped.reserve(_geopoints.size());
 
@@ -1526,18 +1549,21 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     TCHAR *Comment;
     int nSize;
     TCHAR Text[READLINE_LENGTH + 1];
-    TCHAR sTmp[READLINE_LENGTH + 100];
+    TCHAR sTmp[READLINE_LENGTH + 1];
     TCHAR *p;
     int linecount = 0;
     int parsing_state = 0;
     CAirspace *newairspace = NULL;
     // Variables to store airspace parameters
-    TCHAR Name[NAME_SIZE + 1] = {0};
+    TCHAR ASComment[READLINE_LENGTH + 1] = {0};
+    TCHAR Name[NAME_SIZE +1] = {0};
     CPoint2DArray points;
     double Radius = 0;
     double Latitude = 0;
     double Longitude = 0;
     int Type = 0;
+    unsigned int skiped_cnt =0;
+    unsigned int accept_cnt =0;
     AIRSPACE_ALT Base;
     AIRSPACE_ALT Top;
     int Rotation = 1;
@@ -1546,7 +1572,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
     double lat = 0, lon = 0;
     bool flyzone = false;
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
-
+    bool InsideMap = false;
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
     charset cs = charset::unknown;
     while (ReadString(fp, READLINE_LENGTH, Text, cs)) {
@@ -1557,7 +1583,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
         if (*p == 0) continue;
         //Skip comment lines
         if (*p == '*') continue;
-        CharUpper(p);
+  //      CharUpper(p);
         // Strip comments and newline chars from end of line
         Comment = _tcschr(p, _T('*'));
         if (Comment != NULL) {
@@ -1605,14 +1631,21 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                                     }
                                 }
                             }
-                            if (newairspace) {
-                                newairspace->Init(Name, Type, Base, Top, flyzone);
+                            if(newairspace) {
+                              if (InsideMap) {
+                                newairspace->Init(Name, Type, Base, Top, flyzone, ASComment);
 
                                 { // Begin Lock
                                     ScopeLock guard(_csairspaces);
                                     _airspaces.push_back(newairspace);
+                                    accept_cnt++;
                                 } // End Lock
-                            }
+                              } else {
+                            	  delete newairspace;
+                            	  newairspace = NULL;
+                                  skiped_cnt++;
+                              }
+                            };
 
                             Name[0] = '\0';
                             Radius = 0;
@@ -1625,6 +1658,10 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                             flyzone = false;
                             newairspace = NULL;
                             parsing_state = 0;
+                            if( WaypointsOutOfRange > 1) // exclude?
+                              InsideMap = false;
+                            else
+                              InsideMap = true;
                         }
                         // New AC
                         p++; //Skip space
@@ -1642,8 +1679,17 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     case _T('N'): //AN - Airspace name
                         p++;
                         p++;
+
                         if (parsing_state == 10) {
-                            LK_tcsncpy(Name, p, NAME_SIZE);
+                        	Name[0] = {0};
+                            CopyTruncateString(Name, NAME_SIZE-1, p);
+
+                            ASComment[0] = {0};
+                            if( _tcslen(p) > 15)
+                            {
+                              CopyTruncateString(ASComment, LINE_LEN-1, p);
+                              ASComment[LINE_LEN - 1]= {0};
+                            }
                         }
                         break;
 
@@ -1665,7 +1711,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 						{
 							if(((int)(ExtractFrequency(p)*1000+0.5))  != ((int)(ExtractFrequency(Name)*1000+0.5)))
 							{
-							  _stprintf(sTmp, TEXT("%s %s"),  Name, p );
+							  _sntprintf(sTmp,READLINE_LENGTH, TEXT("%s %s"),  Name, p );
 							  LK_tcsncpy(Name, sTmp, NAME_SIZE);
 							}
 						}
@@ -1680,7 +1726,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
 
                     case _T('G'): //AG - Ground station name
 						if (parsing_state == 10) {
-							_stprintf(sTmp, TEXT("%s %s"),  Name, p );
+							_sntprintf(sTmp,READLINE_LENGTH, TEXT("%s %s"),  Name, p );
 							LK_tcsncpy(Name, sTmp, NAME_SIZE);
 						}
                         continue;
@@ -1692,9 +1738,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     default:
 			if (maxwarning>0) {
 			    if (maxwarning==1)
-                                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
+                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 9 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
 			    else
-                                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                                _sntprintf(sTmp, READLINE_LENGTH,TEXT("Parse error 10 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
@@ -1710,8 +1756,13 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         p++; // skip A and space
                         if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
-                            _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 1 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
+                            if(!InsideMap) {
+                              if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
+                                InsideMap = true;
+                              }
+                            }
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
@@ -1720,8 +1771,13 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         p++;
                         p++; // skip B and space
                         if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
-                            _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 2 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
+                            if(!InsideMap) {
+                              if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
+                                InsideMap = true;
+                              }
+                            }
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
                         break;
@@ -1733,15 +1789,26 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                         Radius = (Radius * NAUTICALMILESTOMETRES);
                         Latitude = CenterX;
                         Longitude = CenterY;
+
+                        if(!InsideMap) {
+                          if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
+                            InsideMap = true;
+                          } 
+                        }
                         break;
 
                     case _T('P'): //DP - polygon point
                         p++;
                         p++; // skip P and space
                         if (ReadCoords(p, &lon, &lat)) {
+                            if(!InsideMap) {
+                              if (RasterTerrain::WaypointIsInTerrainRange(lat,lon))  {
+                                InsideMap = true;
+                              } 
+                            }
                             points.push_back(CPoint2D(lat, lon));
                         } else {
-                            _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                         }
@@ -1752,9 +1819,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     default:
 			if (maxwarning>0) {
 			    if (maxwarning==1)
-                                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
+                                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 4 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
 			    else
-                                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 5 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 			    maxwarning--;
 
                             // LKTOKEN  _@M68_ = "Airspace"
@@ -1788,7 +1855,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
                     break;
                 }
 
-                _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 6 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                 // LKTOKEN  _@M68_ = "Airspace"
                 if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return;
                 break;
@@ -1802,9 +1869,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
             default:
 		if (maxwarning>0) {
 		    if (maxwarning==1)
-                        _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
+                        _stprintf(sTmp, TEXT("Parse error 7 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
 		    else
-                        _stprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                        _stprintf(sTmp, TEXT("Parse error 8 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
 
                     maxwarning--;
                     // LKTOKEN  _@M68_ = "Airspace"
@@ -1829,13 +1896,20 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
               newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
             }
         }
-        if(newairspace) {
-          newairspace->Init(Name, Type, Base, Top, flyzone);
-          { // Begin Lock
-            ScopeLock guard(_csairspaces);
-            _airspaces.push_back(newairspace);
-          } // End Lock
+
+      if(newairspace)
+      {
+        if(InsideMap)
+        {
+          if(newairspace) {
+            newairspace->Init(Name, Type, Base, Top, flyzone , ASComment   );
+            { // Begin Lock
+              ScopeLock guard(_csairspaces);
+              _airspaces.push_back(newairspace);
+            } // End Lock
+          }
         }
+      }
     }
 
     unsigned airspaces_count = 0;
@@ -1844,6 +1918,11 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp) {
         airspaces_count = _airspaces.size();
     }  // End Lock
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
+    TCHAR msgbuf[128];
+   _sntprintf(msgbuf,128,TEXT("OpenAir: %u airspaces of %u excluded by Terrain Filter"), skiped_cnt, skiped_cnt+accept_cnt);
+ //   DoStatusMessage(msgbuf);
+    StartupStore(TEXT(". %s"),msgbuf);
+    OutsideAirspaceCnt += skiped_cnt;
     // For debugging, dump all readed airspaces to runtime.log
     //CAirspaceList::iterator it;
     //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
@@ -1908,7 +1987,8 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(XMLNode &node, AIRSPACE_ALT *Alt) con
 // Reads airspaces from an OpenAIP file
 bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
     StartupStore(TEXT(". Reading OpenAIP airspace file%s"), NEWLINE);
-
+    unsigned int skiped_cnt=0;
+    unsigned int accept_cnt=0;
     // Allocate buffer to read the file
     zzip_seek(fp, 0, SEEK_END); // seek to end of file
     long size = zzip_tell(fp); // get current file pointer
@@ -2025,6 +2105,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
               if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDERSECT;
             }
             break;
+        case 'N':
+          /*  if (_tcsicmp(dataStr,_T("NOTAM"))==0) */ Type=CLASSNOTAM; // Prohibited area
+            break;
         //case 'O':
             //if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
             //break;
@@ -2076,8 +2159,13 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
            else
              continue;
         }
-        TCHAR Name[NAME_SIZE + 1] = {0};
-        LK_tcsncpy(Name, dataStr, NAME_SIZE);
+        TCHAR Name[LINE_LEN - 1] = {0};
+        CopyTruncateString(Name, NAME_SIZE, dataStr);
+        
+        TCHAR ASComment[LINE_LEN - 1] = {0};
+        if( _tcslen(dataStr) > NAME_SIZE)
+          CopyTruncateString(ASComment, LINE_LEN, dataStr);
+
 
         // Airspace top altitude
         AIRSPACE_ALT Top;
@@ -2113,7 +2201,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
         CPoint2DArray points;
         TCHAR* remaining;
         TCHAR* point = _tcstok_r((TCHAR*)subNode.getText(0),TEXT(","),&remaining);
+        bool InsideMap = false;
         bool error = (point==nullptr);
+        if( WaypointsOutOfRange > 1) // exclude?
+          InsideMap = false;
+        else
+          InsideMap = true;
         while(point!=nullptr && !error) {
             TCHAR* other;
             TCHAR* coord=_tcstok_r(point,TEXT(" "),&other);
@@ -2124,9 +2217,27 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             if ((error=(coord==nullptr))) break;
             double lat=_tcstod(coord,nullptr);
             if ((error=(lat<-90 || lat>90))) break;
+
+            if(!InsideMap)
+            {
+
+              if (RasterTerrain::WaypointIsInTerrainRange(lat,lon))
+              {
+                InsideMap = true;
+              } else {};
+            }
             points.push_back(CPoint2D(lat, lon));
             point = _tcstok_r(nullptr,TEXT(","),&remaining);
         }
+
+        if(!InsideMap) {
+#ifdef WORKBENCH
+            StartupStore(TEXT(".. Skipping ASP because outside of loaded Terrain.%s"), NEWLINE);
+#endif
+               skiped_cnt++;
+            continue;
+        }
+
         if(error) {
             StartupStore(TEXT(".. Skipping ASP because failed to parse POLYGON points list.%s"), NEWLINE);
             continue;
@@ -2148,12 +2259,13 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
             return false;
         }
         bool flyzone=true; //TODO: initialize this properly...
-        newairspace->Init(Name, Type, Base, Top, flyzone);
+        newairspace->Init(dataStr, Type, Base, Top, flyzone, ASComment);
 
         // Add the new airspace
         { // Begin Lock
         ScopeLock guard(_csairspaces);
         _airspaces.push_back(newairspace);
+        accept_cnt++;
         } // End Lock
     } // for each ASP
 
@@ -2164,18 +2276,23 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(ZZIP_FILE *fp) {
     } // End Lock
         
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
-
+    TCHAR msgbuf[128];
+   _sntprintf(msgbuf,128,TEXT("OpenAIP: %u of %u airspaces excluded by Terrain Filer"), skiped_cnt, skiped_cnt+ accept_cnt);
+ //   DoStatusMessage(msgbuf);
+    StartupStore(TEXT(".%s"),msgbuf);
+    OutsideAirspaceCnt += skiped_cnt;
     return true;
 }
 
 void CAirspaceManager::ReadAirspaces() {
     int fileCounter=0;
-    for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
+  //  for (TCHAR* airSpaceFile : {szAirspaceFile, szAdditionalAirspaceFile}) {
+    for(unsigned int i = 0; i < NO_AS_FILES; i++) {
         fileCounter++;
-        if(_tcslen(airSpaceFile) > 0) { // Check if there is a filename present
+        if(_tcslen(szAirspaceFile[i]) > 0) { // Check if there is a filename present
             
             TCHAR szFile[MAX_PATH] = TEXT("\0");
-            LocalPath(szFile, _T(LKD_AIRSPACES), airSpaceFile);
+            LocalPath(szFile, _T(LKD_AIRSPACES), szAirspaceFile[i]);
             LPCTSTR wextension = _tcsrchr(szFile, _T('.'));
 
             bool readOk=false;
@@ -2204,12 +2321,30 @@ void CAirspaceManager::ReadAirspaces() {
                 StartupStore(TEXT("... Airspace file %d without extension.%s"), fileCounter, NEWLINE);
             }
             if(!readOk) { // if file was OK remember otherwise forget it
-                _tcscpy(airSpaceFile, _T(""));
+                _tcscpy(szAirspaceFile[i], _T(""));
             }
 
         } else {
             StartupStore(TEXT("... No airspace file %d%s"),fileCounter, NEWLINE);
         }
+    }
+
+    unsigned airspaces_count = 0;
+    { // Begin Lock
+        ScopeLock guard(_csairspaces);
+        airspaces_count = _airspaces.size();
+    } //
+
+    if((OutsideAirspaceCnt > 0) && ( WaypointsOutOfRange > 1) )
+    {
+      TCHAR msgbuf[128];
+      _sntprintf(msgbuf,128,TEXT(" %u of %u (%u%%) %s"), OutsideAirspaceCnt,
+		                                                 OutsideAirspaceCnt+airspaces_count,
+		                                                 (100*OutsideAirspaceCnt)/(OutsideAirspaceCnt +airspaces_count),
+		                                                 MsgToken(2347));  //_@M2347  "airspaces excluded!"
+      DoStatusMessage(msgbuf);
+      StartupStore(TEXT(".%s"),msgbuf);
+
     }
 #if ASPWAVEOFF
     AirspaceDisableWaveSectors();
@@ -2991,6 +3126,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
             return TEXT("TMZ");
 	case CLASSRMZ:
 	    return TEXT("RMZ");
+	case CLASSNOTAM:
+	    return TEXT("NOTAM");
 	case GLIDERSECT:
 	    return TEXT("GldSect");
 
@@ -3036,6 +3173,8 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
             return TEXT("TMZ");
         case CLASSRMZ:
             return TEXT("RMZ");
+        case CLASSNOTAM:
+            return TEXT("Notam");
         case GLIDERSECT:
             return TEXT("GldSec");
         default:

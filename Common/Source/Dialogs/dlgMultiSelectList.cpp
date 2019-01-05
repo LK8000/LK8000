@@ -242,8 +242,8 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
 
 static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
-    #define PICTO_WIDTH 50
-    
+#define PICTO_WIDTH 50
+#define TEXT_LEN 80
     Surface.SetTextColor(RGB_BLACK);
     if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {
         int j;
@@ -261,10 +261,10 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         int HorDist, Bearing, VertDist;
         double Distance;
         unsigned int idx = 0;
-        TCHAR text1[180] = {TEXT("empty")};
-        TCHAR text2[180] = {TEXT("empty")};
-        TCHAR Comment[80] = {TEXT("")};
-        TCHAR Comment1[80] = {TEXT("")};
+        TCHAR text1[TEXT_LEN+1] = {TEXT("empty")};
+        TCHAR text2[TEXT_LEN+1] = {TEXT("empty")};
+        TCHAR Comment[TEXT_LEN+1] = {TEXT("")};
+        TCHAR Comment1[TEXT_LEN+1] = {TEXT("")};
         Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
         LKASSERT(i < MAX_LIST_ITEMS);
 
@@ -279,17 +279,17 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
                 // airspace type already in name?
                 if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
-                    _stprintf(text1, TEXT("%s"), airspace_copy.Name()); // yes, take name only
+                    _sntprintf(text1, TEXT_LEN, TEXT("%s"), airspace_copy.Name()); // yes, take name only
                 } else {
                     // fixed strings max. 20 NAME_SIZE 30 => max. 30 char
-                    _stprintf(text1, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
+                    _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
                 }
 
-                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, sizeof (Comment) / sizeof (Comment[0]), airspace_copy.Top());
-                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, sizeof (Comment1) / sizeof (Comment1[0]), airspace_copy.Base());
+                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, TEXT_LEN, airspace_copy.Top());
+                CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, TEXT_LEN, airspace_copy.Base());
 
                 CAirspaceManager::Instance().AirspaceCalculateDistance((CAirspace*) pAS, &HorDist, &Bearing, &VertDist);
-                _stprintf(text2, TEXT("%3.1f%s (%s - %s)"), (double) HorDist*DISTANCEMODIFY, Units::GetDistanceName(), Comment1, Comment); //8 + 8+3   21
+                _sntprintf(text2, TEXT_LEN, TEXT("%3.1f%s (%s - %s)"), (double) HorDist*DISTANCEMODIFY, Units::GetDistanceName(), Comment1, Comment); //8 + 8+3   21
 
                 /****************************************************************
                  * for drawing the airspace pictorial, we need the original data.
@@ -344,20 +344,20 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                                     WayPointList[idx].Freq[CUPSIZE_FREQ - j] = '\0';
 
                             if (_tcslen(WayPointList[idx].Freq) > 2)
-                                _stprintf(text1, TEXT("%s %s MHz"), WayPointList[idx].Name,
+                                _sntprintf(text1,TEXT_LEN, TEXT("%s %s MHz"), WayPointList[idx].Name,
                                           WayPointList[idx].Freq);
                             else
-                                _stprintf(text1, TEXT("%s"), WayPointList[idx].Name);
+                                _sntprintf(text1,TEXT_LEN, TEXT("%s"), WayPointList[idx].Name);
                         } else {
                             if (WayPointList[idx].Comment != NULL)
-                                _stprintf(text1, TEXT("%s %s"), WayPointList[idx].Name, Comment);
+                                _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), WayPointList[idx].Name, Comment);
                             else
-                                _stprintf(text1, TEXT("%s"), WayPointList[idx].Name);
+                                _sntprintf(text1,TEXT_LEN,  TEXT("%s"), WayPointList[idx].Name);
                         }
 
                         if ((WayPointList[idx].RunwayLen >= 10) ||
                             (WayPointList[idx].RunwayDir > 0)) {
-                            _stprintf(text2, TEXT("%3.1f%s (%i%s  %02i/%02i  %i%s)"),
+                            _sntprintf(text2,TEXT_LEN, TEXT("%3.1f%s (%i%s  %02i/%02i  %i%s)"),
                                       Distance * DISTANCEMODIFY, Units::GetDistanceName(),
                                       (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                                       Units::GetAltitudeName(),
@@ -367,7 +367,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                                       (int) ((double) WayPointList[idx].RunwayLen * ALTITUDEMODIFY),
                                       Units::GetAltitudeName());
                         } else {
-                            _stprintf(text2, TEXT("%3.1f%s (%i%s) "), Distance * DISTANCEMODIFY,
+                            _sntprintf(text2, TEXT_LEN, TEXT("%3.1f%s (%i%s) "), Distance * DISTANCEMODIFY,
                                       Units::GetDistanceName(),
                                       (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                                       Units::GetAltitudeName());
@@ -376,9 +376,9 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                     }// waypoint isLandable
                     else {
                         MapWindow::DrawWaypointPicto(Surface, rc, &WayPointList[idx]);
-                        _stprintf(text1, TEXT("%s %s"), WayPointList[idx].Name, Comment);
+                        _sntprintf(text1, TEXT_LEN, TEXT("%s %s"), WayPointList[idx].Name, Comment);
 
-                        _stprintf(text2, TEXT("%3.1f%s (%i%s)"), Distance * DISTANCEMODIFY,
+                        _sntprintf(text2,TEXT_LEN, TEXT("%3.1f%s (%i%s)"), Distance * DISTANCEMODIFY,
                                   Units::GetDistanceName(),
                                   (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                                   Units::GetAltitudeName());
@@ -397,23 +397,23 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
                     if (iTaskIdx == 0) {
                         // _@M2301_  "S"    # S = Start Task point
-                        _stprintf(text1, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
-                        _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"),
+                        _sntprintf(text1,TEXT_LEN, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
+                        _sntprintf(text2,TEXT_LEN, TEXT("Radius %3.1f%s (%i%s)"),
                                   StartRadius * DISTANCEMODIFY, Units::GetDistanceName(),
                                   (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                                   Units::GetAltitudeName());
                     } else {
                         if (iTaskIdx == iLastTaskPoint) {
                             //	_@M2303_  "F"                 // max 30         30 => max 60 char
-                            _stprintf(text1, TEXT("%s: (%s) "), MsgToken(2303),
+                            _sntprintf(text1, TEXT_LEN, TEXT("%s: (%s) "), MsgToken(2303),
                                       WayPointList[idx].Name);
-                            _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"),
+                            _sntprintf(text2, TEXT_LEN, TEXT("Radius %3.1f%s (%i%s)"),
                                       FinishRadius * DISTANCEMODIFY, Units::GetDistanceName(),
                                       (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                                       Units::GetAltitudeName());
                         } else {
                             //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
-                            _stprintf(text1, TEXT("%s%i: (%s) "), MsgToken(2302), iTaskIdx,
+                            _sntprintf(text1, TEXT_LEN,TEXT("%s%i: (%s) "), MsgToken(2302), iTaskIdx,
                                       WayPointList[idx].Name);
                             double SecRadius = 0;
 
@@ -425,7 +425,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
                                     SecRadius = Task[iTaskIdx].AATCircleRadius;
                             }
 
-                            _stprintf(text2, TEXT("Radius %3.1f%s (%i%s)"),
+                            _sntprintf(text2, TEXT_LEN, TEXT("Radius %3.1f%s (%i%s)"),
                                       SecRadius * DISTANCEMODIFY, Units::GetDistanceName(),
                                       (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                                       Units::GetAltitudeName());
