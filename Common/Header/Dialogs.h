@@ -53,7 +53,7 @@ int dlgAirspacePatternsShowModal(void);
 #endif
 bool dlgAirspaceShowModal(bool colored);
 void dlgBasicSettingsShowModal(void);
-void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
+void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText, bool bHelpCapt = true);
 void dlgChecklistShowModal(short checklistmode);
 void dlgConfigurationShowModal(short mode);
 void dlgLoggerReplayShowModal(void);
@@ -87,6 +87,8 @@ void dlgBottomBarShowModal(void);
 void dlgInfoPagesShowModal(void);
 void dlgProfilesShowModal(short mode);
 void dlgAirspaceWarningParamsShowModal(void);
+void dlgAirspaceFilesShowModal(void);
+void dlgWaypointFilesShowModal(void);
 void dlgMultimapsShowModal(void);
 void dlgIgcFileShowModal(void);
 

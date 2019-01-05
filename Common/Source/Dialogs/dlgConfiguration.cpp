@@ -797,6 +797,14 @@ static void OnAirspaceWarningParamsClicked(WndButton* pWnd) {
     dlgAirspaceWarningParamsShowModal();
 }
 
+static void OnAirspaceFilesClicked(WndButton* pWnd) {
+  dlgAirspaceFilesShowModal();
+}
+
+static void OnWaypointFilesClicked(WndButton* pWnd) {
+  dlgWaypointFilesShowModal();
+}
+
 static void OnAirspaceModeClicked(WndButton* pWnd) {
     if (dlgAirspaceShowModal(false)) {
         requirerestart = true;
@@ -1355,6 +1363,8 @@ static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnAirspaceColoursClicked),
+  ClickNotifyCallbackEntry(OnAirspaceFilesClicked),
+  ClickNotifyCallbackEntry(OnWaypointFilesClicked),
   ClickNotifyCallbackEntry(OnAirspaceModeClicked),
   ClickNotifyCallbackEntry(OnAirspaceWarningParamsClicked),
   DataAccessCallbackEntry(OnUTCData),
@@ -2155,13 +2165,21 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointsOutOfRange"));
   if (wp) {
+
+  // ToDo: Remove Ask ?
     DataField* dfe = wp->GetDataField();
+//#define  ASK_WAYPOINTS
+#ifdef ASK_WAYPOINTS
 	// LKTOKEN  _@M100_ = "Ask" 
     dfe->addEnumText(MsgToken(100));
-	// LKTOKEN  _@M350_ = "Include" 
-    dfe->addEnumText(MsgToken(350));
-	// LKTOKEN  _@M269_ = "Exclude" 
-    dfe->addEnumText(MsgToken(269));
+#else
+    if(WaypointsOutOfRange == 1) WaypointsOutOfRange = 0;
+    if(WaypointsOutOfRange == 2) WaypointsOutOfRange = 1;
+#endif
+	// LKTOKEN  _@M350_ = "Include" _@M2343_ "Include Data" 
+    dfe->addEnumText(MsgToken(2343));
+	// LKTOKEN  _@M269_ = "Exclude" _@M2344_ "Exclude Data" 
+    dfe->addEnumText(MsgToken(2344));
     wp->GetDataField()->Set(WaypointsOutOfRange);
     wp->RefreshDisplay();
   }
@@ -2472,60 +2490,6 @@ DataField* dfe = wp->GetDataField();
 #endif
       dfe->Sort();
 #endif
-      dfe->Lookup(temptext);
-    }
-    wp->RefreshDisplay();
-  }
-
-  _tcscpy(temptext,szAirspaceFile);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_AIRSPACES));
-      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_OPENAIP));
-      dfe->Lookup(temptext);
-    }
-    wp->RefreshDisplay();
-  }
-
-  _tcscpy(temptext,szAdditionalAirspaceFile);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalAirspaceFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_AIRSPACES));
-      dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_OPENAIP));
-      dfe->Lookup(temptext);
-    }
-    wp->RefreshDisplay();
-  }
-
-  _tcscpy(temptext,szWaypointFile);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_WINPILOT));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_XCSOAR));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_CUP));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_COMPE));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_OPENAIP));
-      dfe->Lookup(temptext);
-    }
-    wp->RefreshDisplay();
-  }
-
-  _tcscpy(temptext,szAdditionalWaypointFile);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalWaypointFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_WINPILOT));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_XCSOAR));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_CUP));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_COMPE));
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_OPENAIP));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -3903,7 +3867,12 @@ int ival;
   if (wp) {
     if (WaypointsOutOfRange != wp->GetDataField()->GetAsInteger()) {
       WaypointsOutOfRange = wp->GetDataField()->GetAsInteger();
+#ifndef ASK_WAYPOINTS
+      if(WaypointsOutOfRange == 1)  WaypointsOutOfRange = 2;
+      if(WaypointsOutOfRange == 0)  WaypointsOutOfRange = 1;
+#endif
       WAYPOINTFILECHANGED= true;
+      AIRSPACEFILECHANGED = true;
     }
   }
 
@@ -4003,47 +3972,6 @@ int ival;
     if ((int)AltitudeUnit_Config != wp->GetDataField()->GetAsInteger()) {
       AltitudeUnit_Config = wp->GetDataField()->GetAsInteger();
       Units::NotifyUnitChanged();
-    }
-  }
-
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szWaypointFile)) {
-      _tcscpy(szWaypointFile,temptext);
-      WAYPOINTFILECHANGED= true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalWaypointFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szAdditionalWaypointFile)) {
-      _tcscpy(szAdditionalWaypointFile,temptext);
-      WAYPOINTFILECHANGED= true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szAirspaceFile)) {
-      _tcscpy(szAirspaceFile,temptext);
-      AIRSPACEFILECHANGED= true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalAirspaceFile"));
-  if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szAdditionalAirspaceFile)) {
-      _tcscpy(szAdditionalAirspaceFile,temptext);
-      AIRSPACEFILECHANGED= true;
     }
   }
 

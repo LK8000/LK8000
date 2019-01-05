@@ -424,6 +424,19 @@ _@M2252_ "MANUAL"
 _@M2253_ "AUTO THERMALLING"
 _@M2254_ "FULL AUTO"
 
+_@M2337_ "Airspace\nLookup"
+_@M2338_ "Airspace Files"   #_@M63_ 
+_@M2339_ "Airspace File "   #_@M64_   
+_@M2340_ "Waypoint Files"   #_@M806_
+_@M2341_ "Waypoint File"    #_@M807_
+_@M2342_ "File"             #_@M1227_ 
+_@M2343_ "incl. Waypoints & Airspaces"
+_@M2344_ "excl. Waypoints & Airspaces" 
+_@M2345_ "and" 
+_@M2346_ "are identical" 
+_@M2347_ "airspaces excluded!"
+_@M2348_ "Outside terrain"
+
 _@M2400_ "Target up"
 
 HELP FILE

@@ -200,19 +200,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 	AcknowledgementTime = max(10, AcknowledgementTime);
 	return;
   }
-  PREAD(sname,svalue,szRegistryAdditionalAirspaceFile, &*szAdditionalAirspaceFile, array_size(szAdditionalAirspaceFile));
-  if (matchedstring) { // every 10 or so PREADs we check for quick return
-    RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szAdditionalAirspaceFile);
-    RemoveFilePathPrefix(_T(LKD_AIRSPACES), szAdditionalAirspaceFile);
-    return;
-  }
-
-  PREAD(sname,svalue,szRegistryAdditionalWayPointFile, &*szAdditionalWaypointFile, array_size(szAdditionalWaypointFile));
-  if (matchedstring) {
-    RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szAdditionalWaypointFile);
-    RemoveFilePathPrefix(_T(LKD_WAYPOINTS), szAdditionalWaypointFile);
-    return;
-  }
 
   PREAD(sname,svalue,szRegistryAircraftCategory, &AircraftCategory);
   PREAD(sname,svalue,szRegistryAircraftRego, &*AircraftRego_Config, array_size(AircraftRego_Config));
@@ -228,11 +215,14 @@ void LKParseProfileString(const char *sname, const char *svalue) {
     return;
   }
 
-  PREAD(sname,svalue,szRegistryAirspaceFile, &*szAirspaceFile, array_size(szAirspaceFile));
-  if (matchedstring) { // every 10 or so PREADs we check for quick return
-    RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szAirspaceFile);
-    RemoveFilePathPrefix(_T(LKD_AIRSPACES), szAirspaceFile);
-    return;
+  for(unsigned int i = 0; i < NO_AS_FILES; i++)
+  {
+    PREAD(sname,svalue,szRegistryAirspaceFile[i], &*szAirspaceFile[i], array_size(szAirspaceFile[i]));
+    if (matchedstring) { // every 10 or so PREADs we check for quick return
+      RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szAirspaceFile[i]);
+      RemoveFilePathPrefix(_T(LKD_AIRSPACES), szAirspaceFile[i]);
+      return;
+    }
   }
 
   // Special cases with no global variable and a function to access the private variable.
@@ -702,11 +692,14 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryWarningTime,&WarningTime);
   if (matchedstring) return;
 
-  PREAD(sname,svalue,szRegistryWayPointFile,szWaypointFile, array_size(szWaypointFile));
-  if (matchedstring) {
-    RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szWaypointFile);
-    RemoveFilePathPrefix(_T(LKD_WAYPOINTS), szWaypointFile);
-    return;
+  for(unsigned int i = 0; i < NO_WP_FILES; i++)
+  {
+    PREAD(sname,svalue,szRegistryWayPointFile[i],szWaypointFile[i], array_size(szWaypointFile[i]));
+    if (matchedstring) {
+      RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szWaypointFile[i]);
+      RemoveFilePathPrefix(_T(LKD_WAYPOINTS), szWaypointFile[i]);
+      return;
+    }
   }
 
   PREAD(sname,svalue,szRegistryWaypointsOutOfRange,&WaypointsOutOfRange);

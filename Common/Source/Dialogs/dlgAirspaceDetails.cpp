@@ -19,7 +19,7 @@
 #include "resource.h"
 
 static CAirspaceBase airspace_copy;
-
+static void OnDetailsClicked(WndButton* pWnd);
 static void SetValues(WndForm* wf);
 
 static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
@@ -175,6 +175,7 @@ TCHAR Tmp[255];
 
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnAcknowledgeClicked),
+  ClickNotifyCallbackEntry(OnDetailsClicked),
   ClickNotifyCallbackEntry(OnFlyClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnSelectClicked),
@@ -274,6 +275,30 @@ static void SetValues(WndForm* wf) {
     wp->SetText(buffer2);
     wp->RefreshDisplay();
   }
+
+
+  WindowControl* wDetails = wf->FindByName(TEXT("cmdDetails"));
+  {
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+  	if(airspace->Comment() != NULL)
+  	{
+      if(_tcslen(airspace->Comment()) > 10 )    
+      {
+        WindowControl* wSelect = wf->FindByName(TEXT("cmdSelect"));
+        if(wSelect) {
+          wSelect->SetLeft(IBLSCALE(155));
+          wSelect->SetWidth(IBLSCALE(80));
+        }
+
+        wDetails->SetLeft(IBLSCALE(80));
+        wDetails->SetWidth(IBLSCALE(75));
+        wDetails->Enable(true);
+      }
+      else wDetails->Enable(false);
+    }
+  }
+
 #ifdef  RADIO_ACTIVE
 
   WindowControl* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
@@ -427,3 +452,34 @@ void dlgAirspaceDetails() {
   return;
 }
 
+
+//extern void AddAirspaceInfos(TCHAR* name, TCHAR* details) ;
+
+static void OnDetailsClicked(WndButton* pWnd){
+
+	  TCHAR Details[READLINE_LENGTH +1] = _T("");
+	  TCHAR Name[NAME_SIZE +1]= _T("");
+
+  
+  {
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    if(airspace) {
+    	if(airspace->Comment() != NULL)
+  	      _sntprintf(Details,READLINE_LENGTH, _T("%s"), airspace->Comment());
+    	else
+    	  _sntprintf(Details, READLINE_LENGTH,_T("%s"), (TCHAR*)airspace->TypeName());
+  	  _sntprintf(Name,NAME_SIZE, _T("%s %s:"), (TCHAR*)airspace->TypeName(), MsgToken(231) );
+
+    }
+//#if TESTBENCH
+      StartupStore(_T(". Airspace Name <%s>%s"),Details,NEWLINE);
+
+//#endif    
+       dlgHelpShowModal(Name, Details, false);
+
+  }
+
+
+    
+}
