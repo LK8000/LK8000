@@ -20,30 +20,36 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat) {
     double Dist;
     unsigned int i;
     const double range = zoom.RealScale()*500;
-    double dyn_range = std::max(5000.0, range*3.5);
+    double dyn_range = std::max(5000.0, range*1.0);
 
     //StartupStore(_T("RANGE=%f\n"),dyn_range);
-    LKSound(TEXT("LK_BELL.WAV"));
+    //LKSound(TEXT("LK_BELL.WAV"));
 
 start_search:
 
-#ifdef BUTTONS_MS
+
     LockFlightData();
     DistanceBearing(lat,lon, GPS_INFO.Latitude,GPS_INFO.Longitude, &Dist, NULL);
     UnlockFlightData();
 
     if(Dist < dyn_range) {
-	#ifdef OWN_POS_MS
+#ifdef OWN_POS_MS
 	dlgAddMultiSelectListItem(NULL,0, IM_OWN_POS, Dist);
-	#endif
-	#ifdef ORACLE_MS
-	dlgAddMultiSelectListItem(NULL,0, IM_ORACLE, Dist);
-	#endif
-	#ifdef TEAM_CODE_MS
+#endif
+#ifdef ORACLE_MS
+    LockFlightData();
+    int nearest_waypoint = FindNearestWayPoint(GPS_INFO.Longitude,
+                                               GPS_INFO.Latitude,
+                                               100000.0); // big range limit
+    UnlockFlightData();
+	dlgAddMultiSelectListItem(NULL,nearest_waypoint, IM_ORACLE, Dist);
+#endif
+#ifdef TEAM_CODE_MS
+	if(ValidWayPoint(TeamCodeRefWaypoint)) 
 	dlgAddMultiSelectListItem(NULL,0, IM_TEAM, Dist);
-	#endif
+#endif
     }
-#endif	// BUTTONS_MS
+
 
 
     for(size_t i=NUMRESWP;i<WayPointList.size();++i) {    // Consider only valid markers
@@ -56,15 +62,21 @@ start_search:
     }
 
 #ifdef FLARM_MS
-    if((MapWindow::mode.Is(MapWindow::Mode::MODE_PAN) || MapWindow::mode.Is(MapWindow::Mode::MODE_TARGET_PAN))) {
+//    if((MapWindow::mode.Is(MapWindow::Mode::MODE_PAN) || MapWindow::mode.Is(MapWindow::Mode::MODE_TARGET_PAN)))
+    {
         LastDoTraffic=0;
         DoTraffic(&DrawInfo,&DerivedDrawInfo);
         for (unsigned i=0; i<FLARM_MAX_TRAFFIC; ++i) {
 	    if (LKTraffic[i].Status != LKT_EMPTY) {
+	        LockFlightData();
                 DistanceBearing(lat,lon, LKTraffic[i].Latitude, LKTraffic[i].Longitude, &Dist, NULL);
-                if(Dist < range) {
+                UnlockFlightData();
+                StartupStore(_T("%s Dist=%6.0f\n"), LKTraffic[i].Name   ,Dist);
+                if(Dist < dyn_range/* 5*range*/) {
+                    StartupStore(_T("Inside=%6.0f\n"),dyn_range);
 	            dlgAddMultiSelectListItem((long*)&LKTraffic[i],i, IM_FLARM, Dist);
                 }
+
             }
         }
     }
@@ -125,7 +137,7 @@ start_search:
             DoStatusMessage(MsgToken(2248));  // _@M2248_  "No Near Object found!"
         }
     } else {
-        LKSound(TEXT("LK_GREEN.WAV"));
+        LKSound(TEXT("LK_TOCK.WAV"));
         dlgMultiSelectListShowModal();
         return true;
     }

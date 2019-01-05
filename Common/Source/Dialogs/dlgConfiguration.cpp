@@ -1855,6 +1855,18 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontSymbols"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+  //  FontSetEnums(dfe);
+    dfe->addEnumText(MsgToken(2327)); // LKTOKEN  _@M2327_ "Bitmap"
+    dfe->addEnumText(MsgToken(2386)); // LKTOKEN  _@M2386_ "UTF8"
+
+    dfe->Set(Appearance.UTF8Pictorials);
+
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapTopology"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -3693,6 +3705,18 @@ double dval;
           fontschanged=true;
       }
   }
+
+
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontSymbols"));
+  if (wp) {
+    if (Appearance.UTF8Pictorials != (IndLandable_t)(wp->GetDataField()->GetAsInteger())) {
+      Appearance.UTF8Pictorials = (IndLandable_t)(wp->GetDataField()->GetAsInteger());
+      requirerestart = true;
+    }
+  }
+
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontMapTopology"));
   if (wp) {
       if (FontMapTopology != wp->GetDataField()->GetAsInteger() ) {
