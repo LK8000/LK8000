@@ -454,7 +454,7 @@ passthrough:
             case TARGETCIRCLE: _stprintf(MapOrientMsg,_T("%s"),MsgToken(682)) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
             case NORTHTRACK  : _stprintf(MapOrientMsg,_T("%s"),MsgToken(484)) ; break;  // _@M484_ "North/track"
             case NORTHSMART  : _stprintf(MapOrientMsg,_T("%s"),MsgToken(481)) ; break;  // _@M481_ "North Smart"
-            case TARGETUP    : _stprintf(MapOrientMsg,_T("%s"),MsgToken(2400)); break;  // _@M2400_"Target up"
+            case TARGETUP    : _stprintf(MapOrientMsg,_T("%s"),MsgToken(2388)); break;  // _@M2388_"Target up"
 
 	      }
 	      DoStatusMessage(MapOrientMsg,NULL,false);
