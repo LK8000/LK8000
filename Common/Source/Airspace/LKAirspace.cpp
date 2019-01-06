@@ -3216,7 +3216,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
             break;
         case abAGL:
             if (alt->AGL <= 0)
-                _stprintf(intbuf, TEXT("SFC"));
+                _stprintf(intbuf, MsgToken(2387)); //_@M2387_ "GND"
             else {
                 Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
                 Units::FormatAlternateUserAltitude(alt->AGL, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
@@ -3254,7 +3254,7 @@ void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, co
             break;
         case abAGL:
             if (alt->AGL <= 0)
-                _stprintf(intbuf, TEXT("SFC"));
+                _stprintf(intbuf, MsgToken(2387)); // _@M2387_ "GND"
             else {
                 Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
                 _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
