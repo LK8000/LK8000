@@ -739,9 +739,8 @@ void MapWindow::DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc) {
 
 LKColor GetUTF8WaypointSymbol(TCHAR* pPict, const int Style)
 {
-
-LKColor Col = RGB_BLACK;
-if (pPict ==NULL) return Col;
+  LKColor Col = RGB_BLACK;
+  if (pPict ==NULL) return Col;
   switch(Style)
   {
     case STYLE_NORMAL:
@@ -848,9 +847,9 @@ return Col;
 
 void UTF8DrawWaypointPictorial(LKSurface& Surface, const RECT& rc,const TCHAR *Pict ,const LKColor& Color)
 {
-if (Pict == NULL) return;
+  if (Pict == NULL) return;
 
-const auto OldColor = Surface.SetTextColor(Color);
+  const auto OldColor = Surface.SetTextColor(Color);
   int xtext = Surface.GetTextWidth(Pict);
   int ytext = Surface.GetTextHeight(Pict);
   Surface.DrawText(rc.left -xtext/2 , rc.top+ytext/2, Pict);
@@ -861,7 +860,7 @@ const auto OldColor = Surface.SetTextColor(Color);
 
 void DrawMAPWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, int Style)
 {
-TCHAR Pictor[10];
+  TCHAR Pictor[10];
   LKColor Col =  GetUTF8WaypointSymbol((TCHAR*)&Pictor, Style);
   UTF8DrawWaypointPictorial( Surface, rc, Pictor ,Col);
 }
@@ -891,8 +890,9 @@ if (wp == NULL) return;
 void MapWindow::DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp)
 {
 
-  if(Appearance.UTF8Pictorials)
-    return UTF8WaypointPictorial( Surface,  rc, wp);
+    if(Appearance.UTF8Pictorials) {
+      return UTF8WaypointPictorial( Surface,  rc, wp);
+    }
 
     const LKIcon* pWptBmp = NULL;
 
