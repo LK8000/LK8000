@@ -628,7 +628,7 @@ void StartLogger()
 void LoggerHeader(void)
 {
   char datum[]= "HFDTM100GPSDATUM:WGS-84\r\n";
-  char temp[100];
+  char temp[300];
 
   // Flight recorder ID number MUST go first..
 
@@ -1268,7 +1268,7 @@ void AdditionalHeaders(void) {
 
 
     char tmpString[MAXHLINE + 1];
-    char tmps[MAXHLINE + 1];
+    char tmps[MAXHLINE + 1 + array_size(HFREMARK)];
     tmpString[MAXHLINE] = '\0';
 
     while(size_t nbRead = fread(tmpString, sizeof(tmpString[0]), array_size(tmpString) - 1U, stream)) {
