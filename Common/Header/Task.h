@@ -45,9 +45,7 @@ typedef struct _TASK_POINT
   double PGConeSlope; // Slope Ratio for PG Cone Turn point
   double PGConeBase; // Base Altitude of Cone Turn Point
   double PGConeBaseRadius; // radius At Base Altitude of Cone Turn Point
-  // always add new members at the End of this struct
-  //   needed for compatibility with old task file.
-}TASK_POINT;
+} TASK_POINT;
 
 typedef TASK_POINT Task_t[MAXTASKPOINTS +1];
 typedef START_POINT Start_t[MAXSTARTPOINTS +1];
@@ -86,10 +84,6 @@ void CalculateAATTaskSectors(void);
 void guiStartLogger(bool noAsk = false);
 void guiStopLogger(bool noAsk = false);
 void guiToggleLogger(bool noAsk = false);
-
-#ifdef OLDTASK_COMPAT
-void LoadNewTask(LPCTSTR FileName);
-#endif
 
 bool LoadCupTask(LPCTSTR FileName);
 bool LoadGpxTask(LPCTSTR FileName);

@@ -1348,7 +1348,6 @@ SRC_FILES :=\
 	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/SaveLoadTask/ClearTask.cpp\
 	$(SRC)/SaveLoadTask/DefaultTask.cpp\
-	$(SRC)/SaveLoadTask/LoadNewTask.cpp\
 	$(SRC)/SaveLoadTask/CTaskFileHelper.cpp\
 	$(SRC)/SaveLoadTask/SaveDefaultTask.cpp\
 	$(SRC)/SaveLoadTask/SaveTask.cpp\
