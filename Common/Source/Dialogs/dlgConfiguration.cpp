@@ -2184,15 +2184,16 @@ DataField* dfe = wp->GetDataField();
 #ifdef ASK_WAYPOINTS
 	// LKTOKEN  _@M100_ = "Ask" 
     dfe->addEnumText(MsgToken(100));
-#else
-    if(WaypointsOutOfRange == 1) WaypointsOutOfRange = 0;
-    if(WaypointsOutOfRange == 2) WaypointsOutOfRange = 1;
 #endif
 	// LKTOKEN  _@M350_ = "Include" _@M2343_ "Include Data" 
     dfe->addEnumText(MsgToken(2343));
 	// LKTOKEN  _@M269_ = "Exclude" _@M2344_ "Exclude Data" 
     dfe->addEnumText(MsgToken(2344));
+#ifdef ASK_WAYPOINTS
     wp->GetDataField()->Set(WaypointsOutOfRange);
+#else
+    wp->GetDataField()->Set(WaypointsOutOfRange-1);
+#endif
     wp->RefreshDisplay();
   }
 
@@ -3889,15 +3890,19 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointsOutOfRange"));
   if (wp) {
-    if (WaypointsOutOfRange != wp->GetDataField()->GetAsInteger()) {
-      WaypointsOutOfRange = wp->GetDataField()->GetAsInteger();
-#ifndef ASK_WAYPOINTS
-      if(WaypointsOutOfRange == 1)  WaypointsOutOfRange = 2;
-      if(WaypointsOutOfRange == 0)  WaypointsOutOfRange = 1;
+#ifdef ASK_WAYPOINTS
+	  if (WaypointsOutOfRange != wp->GetDataField()->GetAsInteger()) {
+		WaypointsOutOfRange = wp->GetDataField()->GetAsInteger();
+		WAYPOINTFILECHANGED= true;
+		AIRSPACEFILECHANGED = true;
+	  }
+#else  // option ASK  is removed but numbers  for WaypointsOutOfRange stay the same
+	  if (WaypointsOutOfRange != (wp->GetDataField()->GetAsInteger()+1)) {
+		WaypointsOutOfRange = wp->GetDataField()->GetAsInteger()+1;
+		WAYPOINTFILECHANGED= true;
+		AIRSPACEFILECHANGED = true;
+	  }
 #endif
-      WAYPOINTFILECHANGED= true;
-      AIRSPACEFILECHANGED = true;
-    }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoForceFinalGlide"));
