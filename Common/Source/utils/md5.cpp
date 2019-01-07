@@ -5,9 +5,13 @@
 
 */
 
+#include <assert.h>
+#include <iterator>
+#include "stl_utils.h"
 #include "md5.h"
 
-MD5::MD5() 
+
+MD5::MD5()
 {
     Init();
 }
@@ -44,8 +48,16 @@ void MD5::Update( const unsigned char *input, unsigned int inputLen)
 // Writes to digestRaw
 void MD5::Final()
 {
+  assert(array_size(digestChars) == (array_size(resbuf) * 2 + 1));
+  static constexpr char Digit[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+  
   md5_finish_ctx(&context, resbuf);
-  for ( int pos = 0 ; pos < 16 ; pos++ ) sprintf( digestChars+(pos*2), "%02x", resbuf[pos] ) ;
-  digestChars[32]=0;
+  
+  char * out_iterator = std::begin(digestChars);
+  for ( char c : resbuf) {
+    *(out_iterator++) = Digit[(c & 0xF0) >> 4];
+    *(out_iterator++) = Digit[(c & 0x0F) >> 0];
+  }
+  *out_iterator = '\0';
 }
 
