@@ -21,12 +21,6 @@
 #define NO_BLUETOOTH
 #endif
 
-#ifdef UNICODE
-// WAYPOINT struct can be read from binary file only if TCHAR size is 2 Byte !!
-    #define OLDTASK_COMPAT
-#endif
-
-
 // Disable internally generated sounds
 #if !defined(WIN32) && !defined(ENABLE_SDL) && !defined(USE_ALSA) && !defined(ANDROID)
     // audio is only implemented for WIN32 && SDL Enabled TARGET
