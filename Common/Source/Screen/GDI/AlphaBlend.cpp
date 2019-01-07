@@ -9,6 +9,7 @@
  * Created on 13 février 2014, 23:03
  */
 #include "StdAfx.h"
+#include <cstring>
 
 // original sources : http://support.microsoft.com/kb/303916
 

@@ -185,11 +185,6 @@
 #define LKS_IGC		".igc"
 #define LKS_OPENAIP ".aip"
 
-#ifdef OLDTASK_COMPAT
-    #define LKS_OLD_TSK		".tsk"
-#endif
-
-
 /*
  * LK8000 files (keep original suffixes)
  */

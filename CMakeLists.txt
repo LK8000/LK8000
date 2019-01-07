@@ -297,7 +297,6 @@ add_library( LK8000 SHARED
 
     Common/Source/SaveLoadTask/ClearTask.cpp
     Common/Source/SaveLoadTask/DefaultTask.cpp
-    Common/Source/SaveLoadTask/LoadNewTask.cpp
     Common/Source/SaveLoadTask/CTaskFileHelper.cpp
     Common/Source/SaveLoadTask/SaveDefaultTask.cpp
     Common/Source/SaveLoadTask/SaveTask.cpp

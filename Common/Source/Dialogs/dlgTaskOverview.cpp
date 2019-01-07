@@ -516,12 +516,6 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
               CTaskFileHelper helper;
               bOK = helper.Load(szFilePath);
           }
-#ifdef OLDTASK_COMPAT
-          else if (_tcsicmp(wextension,_T(LKS_OLD_TSK))==0) {
-              LoadNewTask(szFilePath);
-              bOK = true;
-          }
-#endif
           else if (_tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
               bOK = LoadCupTask(szFilePath);
           } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
@@ -650,13 +644,10 @@ void dlgTaskOverviewShowModal(int Idx){
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
       dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_TSK));
-#ifdef OLDTASK_COMPAT
-	  dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_OLD_TSK));
-#endif
-	  dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_CUP));
-	  dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_GPX));
+      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_CUP));
+      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_GPX));
     }
-	wp->RefreshDisplay();
+    wp->RefreshDisplay();
   }
   UpdateFilePointer();
 
