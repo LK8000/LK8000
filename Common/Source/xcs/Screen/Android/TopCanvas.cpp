@@ -26,14 +26,13 @@ Copyright_License {
 #include "Screen/OpenGL/Globals.hpp"
 #include "Android/Main.hpp"
 #include "Android/NativeView.hpp"
+#include <android/log.h>
 
 void
 TopCanvas::Create(PixelSize new_size, bool full_screen, bool resizable)
 {
-#ifdef USE_EGL
   display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   surface = eglGetCurrentSurface(EGL_DRAW);
-#endif
 
   OpenGL::SetupContext();
   SetupViewport(new_size);
@@ -42,12 +41,9 @@ TopCanvas::Create(PixelSize new_size, bool full_screen, bool resizable)
 void
 TopCanvas::Flip()
 {
-#ifdef USE_EGL
-  if (!eglSwapBuffers(display, surface))
-    LogFormat("eglSwapBuffers() failed: 0x%x", eglGetError());
-#else
-  native_view->swap();
-#endif
+  if (!eglSwapBuffers(display, surface)) {
+    __android_log_print(ANDROID_LOG_WARN, "LK8000", "eglSwapBuffers() failed: 0x%x", eglGetError());
+  }
 }
 
 PixelSize

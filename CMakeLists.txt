@@ -69,7 +69,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -fopenmp")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wparentheses -Wuninitialized -Wredundant-decls")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_NO_IOSTREAM -DBOOST_NO_IOSFWD -DBOOST_NO_STRINGSTREAM -DBOOST_NO_WSTREAMBUF ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__linux__ -DHAVE_POSIX -DANDROID -D__STDC_FORMAT_MACROS ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DUSE_EGL")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPOCO_NO_UNWINDOWS -DPOCO_ANDROID ")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu89 ")
@@ -819,6 +819,7 @@ find_library( log-lib log )
 find_library( android-lib android )
 find_library( gles-lib GLESv1_CM )
 find_library( zlib-lib z )
+find_library( egl-lib EGL )
 
 target_link_libraries(
     LK8000
@@ -827,4 +828,5 @@ target_link_libraries(
     ${log-lib}
     ${gles-lib}
     ${zlib-lib}
+	${egl-lib}
 )

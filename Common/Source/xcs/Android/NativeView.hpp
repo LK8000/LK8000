@@ -50,7 +50,6 @@ class NativeView {
   static jmethodID getRequestedOrientationID;
   static jmethodID getScreenOrientationID;
   static jmethodID getDisplayOrientationID;
-  static jmethodID swap_method;
   static jmethodID loadResourceBitmap_method;
   static jmethodID loadAssetsBitmap_method;
   static jmethodID loadFileBitmap_method;
@@ -142,10 +141,6 @@ public:
 
   int getScreenOrientation() {
     return env->CallIntMethod(obj, getScreenOrientationID);
-  }
-
-  void swap() {
-    env->CallVoidMethod(obj, swap_method);
   }
 
   jobject loadResourceBitmap(const char *name) {

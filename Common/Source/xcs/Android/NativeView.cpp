@@ -31,7 +31,6 @@ jmethodID NativeView::setScreenOrientationID;
 jmethodID NativeView::getRequestedOrientationID;
 jmethodID NativeView::getScreenOrientationID;
 jmethodID NativeView::getDisplayOrientationID;
-jmethodID NativeView::swap_method;
 jmethodID NativeView::loadResourceBitmap_method;
 jmethodID NativeView::loadAssetsBitmap_method;
 jmethodID NativeView::loadFileBitmap_method;
@@ -57,8 +56,6 @@ NativeView::Initialise(JNIEnv *env)
           env->GetMethodID(cls, "getRequestedOrientation", "()I");
   getDisplayOrientationID =
           env->GetMethodID(cls, "getDisplayOrientation", "()I");
-
-  swap_method = env->GetMethodID(cls, "swap", "()V");
 
   loadResourceBitmap_method = env->GetMethodID(cls, "loadResourceBitmap",
                                                "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
