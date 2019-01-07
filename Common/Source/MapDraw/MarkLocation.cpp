@@ -30,7 +30,7 @@ void MarkLocation(const double lon, const double lat, const double altitude)
   UnlockTerrainDataGraphics();
   #endif
 
-  char message[160];
+  char message[210];
 
   FILE *stream;
   TCHAR tstring[50];
