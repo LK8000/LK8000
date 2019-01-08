@@ -187,7 +187,7 @@ else ifeq ($(TARGET_IS_CUBIE),y)
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 else ifeq ($(CONFIG_LINUX),y)
  TCPATH :=
- MCPU   :=
+ MCPU   := -march=native
 else
  TCPATH	:=arm-mingw32ce-
 endif
@@ -685,7 +685,7 @@ endif
 LDFLAGS		+=$(PROFILE)
 
 ifeq ($(CONFIG_LINUX),y)
- LDLIBS += -lstdc++ -pthread -march=native -lrt -lm -lGeographic
+ LDLIBS += $(MCPU) -lstdc++ -pthread -lrt -lm -lGeographic
  LDLIBS += $(PNG_LDLIBS)
  LDLIBS += $(FREETYPE_LDLIBS)
  LDLIBS += $(ZZIP_LDLIBS)
