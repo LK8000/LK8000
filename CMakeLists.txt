@@ -27,6 +27,7 @@ ExternalProject_Add (
         "-DANDROID_STL=${ANDROID_STL}"
         "-DANDROID_ABI=${ANDROID_ABI}"
         "-DANDROID_NDK=${ANDROID_NDK}"
+		"-DANDROID_PLATFORM=${ANDROID_PLATFORM}"
         "-DANDROID_ARM_NEON=${ANDROID_ARM_NEON}"
         "-DCMAKE_INSTALL_PREFIX=${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}"
         "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
@@ -296,7 +297,6 @@ add_library( LK8000 SHARED
 
     Common/Source/SaveLoadTask/ClearTask.cpp
     Common/Source/SaveLoadTask/DefaultTask.cpp
-    Common/Source/SaveLoadTask/LoadNewTask.cpp
     Common/Source/SaveLoadTask/CTaskFileHelper.cpp
     Common/Source/SaveLoadTask/SaveDefaultTask.cpp
     Common/Source/SaveLoadTask/SaveTask.cpp

@@ -1,4 +1,7 @@
 #!/bin/sh
+
+set -e
+
 start=`date`
 
 NB_CORES=$(grep -c '^processor' /proc/cpuinfo)
@@ -14,7 +17,7 @@ make TARGET=PC clean
 make TARGET=PC distrib
 
 make TARGET=LINUX clean
-make TARGET=LINUX
+make TARGET=LINUX distrib
 
 make TARGET=KOBO clean
 make TARGET=KOBO
