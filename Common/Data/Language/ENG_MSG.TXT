@@ -2303,7 +2303,6 @@ _@M2383_ "●"  # zombie
 _@M2384_ "✈"  # traffic
 
 _@M2385_ "Map Symbols"
-_@M2386_ "UTF8"  
-_@M2387_ "GND" # instead of SFC
-
-_@M2400_ "Target up"
+_@M2386_ "UTF8" # no need to translate 
+_@M2387_ "GND"  # instead of SFC, no need to translate
+_@M2388_ "Target up" 
