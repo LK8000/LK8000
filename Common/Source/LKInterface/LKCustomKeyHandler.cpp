@@ -427,7 +427,7 @@ passthrough:
             case TARGETCIRCLE: _stprintf(MapOrientMsg,_T("%s"),MsgToken(682)) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
             case NORTHTRACK  : _stprintf(MapOrientMsg,_T("%s"),MsgToken(484)) ; break;  // _@M484_ "North/track"
             case NORTHSMART  : _stprintf(MapOrientMsg,_T("%s"),MsgToken(481)) ; break;  // _@M481_ "North Smart"
-            case TARGETUP    : _stprintf(MapOrientMsg,_T("%s"),MsgToken(2388)); break;  // _@M2388_"Target up"
+            case TARGETUP    : _stprintf(MapOrientMsg,_T("%s"),MsgToken(2349)); break;  // _@M2349_"Target up"
 
 	      }
 	      DoStatusMessage(MapOrientMsg,NULL,false);
@@ -531,7 +531,7 @@ CustomKeyLabel[57]=2246;	// Reset view
 CustomKeyLabel[58]=2038;	// Map Orientation
 CustomKeyLabel[59]=928;		// Restarting Comm Ports
 CustomKeyLabel[60]=2249;	// DspMode
-CustomKeyLabel[61]=2401;	// Toggle Draw XC
+CustomKeyLabel[61]=2388;	// Toggle Draw XC
 CustomKeyLabel[62]=2337;	// Airspace lookup
 
 static_assert(62 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");

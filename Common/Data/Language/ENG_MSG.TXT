@@ -2289,6 +2289,7 @@ _@M2346_ "are identical"
 _@M2347_ "airspaces excluded!"
 _@M2348_ "Outside terrain"
 
+_@M2349_ "Target up"
 
 
 # Multimap symbols
@@ -2334,9 +2335,8 @@ _@M2384_ "✈"  # traffic
 _@M2385_ "Map Symbols"
 _@M2386_ "UTF8" # no need to translate 
 _@M2387_ "GND"  # instead of SFC, no need to translate
-_@M2388_ "Target up" 
 
+_@M2388_ "Draw XC\nOFF"
+_@M2389_ "Draw XC\nON"
+_@M2290_ "Toggle Draw XC"
 
-_@M2401_ "Draw XC\nOFF"
-_@M2402_ "Draw XC\nON"
-_@M2403_ "Toggle Draw XC"
