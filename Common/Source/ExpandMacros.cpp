@@ -475,9 +475,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
             break;
 		case 41:
 			if (Flags_DrawXC )
-				_stprintf(OutBuffer,_T("%s"),MsgToken(2401));  //  "Draw\nXC"
+				_stprintf(OutBuffer,_T("%s"),MsgToken(2388));  //  "Draw\nXC"
 			else
-				_stprintf(OutBuffer,_T("%s"),MsgToken(2402));  //	"NoDraw\nXC"
+				_stprintf(OutBuffer,_T("%s"),MsgToken(2389));  //	"NoDraw\nXC"
 		break;
 
 
