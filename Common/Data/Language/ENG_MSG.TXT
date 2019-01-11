@@ -2260,7 +2260,7 @@ _@M2346_ "are identical"
 _@M2347_ "airspaces excluded!"
 _@M2348_ "Outside terrain"
 
-_@M2400_ "Target up"
+
 
 # Multimap symbols
 _@M2350_ "M"
@@ -2304,6 +2304,6 @@ _@M2384_ "✈"  # traffic
 
 _@M2385_ "Map Symbols"
 _@M2386_ "UTF8"  
+_@M2387_ "GND" # instead of SFC
 
-
-
+_@M2400_ "Target up"
