@@ -22,9 +22,11 @@
 
 package org.LK8000;
 
-import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
@@ -64,8 +66,21 @@ public class MyService extends Service {
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
 
     /* add an icon to the notification area while LK8000 runs, to
-       remind the user that we're sucking his battery empty */
-    NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+   remind the user that we're sucking his battery empty */
+
+    final String CHANNEL_ID = getApplicationContext().getPackageName() + "_NotificationChannel";
+    NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID);
+
+    NotificationManager manager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      // Support for Android Oreo: Notification Channels
+      NotificationChannel channel = new NotificationChannel(
+              CHANNEL_ID,
+              "LK8000",
+              NotificationManager.IMPORTANCE_HIGH);
+
+      manager.createNotificationChannel(channel);
+    }
 
     Intent intent2 = new Intent(this, mainActivityClass);
     PendingIntent contentIntent =
