@@ -216,8 +216,8 @@ namespace picojson {
     if (
 #ifdef _MSC_VER
         ! _finite(n)
-#elif __cplusplus>=201103L || !(defined(isnan) && defined(isinf))
-		std::isnan(n) || std::isinf(n)
+#elif __cplusplus>=201103L && !(defined(isnan) && defined(isinf))
+        std::isnan(n) || std::isinf(n)
 #else
         isnan(n) || isinf(n)
 #endif

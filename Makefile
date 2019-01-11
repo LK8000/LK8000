@@ -284,7 +284,7 @@ EBROWSE         :=ebrowse
 
 GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
 GCC_GTEQ_480 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 40800)
-
+GCC_GTEQ_820 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 80200)
 
 $(info GCC VERSION : $(GCCVERSION))
 
@@ -551,7 +551,7 @@ endif
 ifeq ($(CONFIG_WIN32),y)
  CE_DEFS += -DUSE_GDI
  #all win32 Targe are unicode
- CE_DEFS += -DUNICODE -D_UNICODE
+ CE_DEFS += -DUNICODE -D_UNICODE -DWIN32
  #use UNICODE for xml dialog template, avoid runtime convertion from utf8 to unicode.
  DLG-ENCODING := UTF-16LE
  	
@@ -707,7 +707,11 @@ ifeq ($(CONFIG_WIN32),y)
  ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid -lGeographic
  else
-  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl -lole32 -loleaut32 -luuid
+  LDLIBS := -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lcommctrl -lole32 -loleaut32 -luuid
+  ifeq ($(GCC_GTEQ_820),1) 
+    LDLIBS += -Wl,-Bstatic -latomic
+  endif
+
   ifeq ($(CONFIG_PPC2002), y)
    LDLIBS		+= -lwinsock
   else
@@ -1344,7 +1348,6 @@ SRC_FILES :=\
 	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/SaveLoadTask/ClearTask.cpp\
 	$(SRC)/SaveLoadTask/DefaultTask.cpp\
-	$(SRC)/SaveLoadTask/LoadNewTask.cpp\
 	$(SRC)/SaveLoadTask/CTaskFileHelper.cpp\
 	$(SRC)/SaveLoadTask/SaveDefaultTask.cpp\
 	$(SRC)/SaveLoadTask/SaveTask.cpp\

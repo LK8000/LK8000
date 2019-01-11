@@ -177,14 +177,16 @@ static unsigned long int mkgmtime(const struct tm *ptmbuf) {
 
 // Encode URLs in a standard form
 static char* UrlEncode(const char *szText, char* szDst, int bufsize) {
-	char ch;
-	char szHex[5];
-	int iMax, i, j;
+	static constexpr char hex_chars[16] = {
+		'0', '1', '2', '3', '4', '5', '6', '7',
+		'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+	};
 
-	iMax = bufsize - 2;
+	int iMax = bufsize - 2;
+	int j = 0;
 	szDst[0] = '\0';
-	for (i = 0, j = 0; szText[i] && j <= iMax; i++) {
-		ch = szText[i];
+	for (int i = 0; szText[i] && j <= iMax; i++) {
+		const char ch = szText[i];
 		if (isalnum(ch))
 			szDst[j++] = ch;
 		else if (ch == ' ')
@@ -193,9 +195,8 @@ static char* UrlEncode(const char *szText, char* szDst, int bufsize) {
 			if (j + 2 > iMax)
 				break;
 			szDst[j++] = '%';
-			sprintf(szHex, "%-2.2X", ch);
-			strncpy(szDst + j, szHex, 2);
-			j += 2;
+			szDst[j++] = (hex_chars[((ch) & 0xF0) >> 4]);
+			szDst[j++] = (hex_chars[((ch) & 0x0F) >> 0]);
 		}
 	}
 	szDst[j] = '\0';
@@ -631,8 +632,10 @@ static int GetUserIDFromServer() {
 
 static bool SendStartOfTrackPacket(unsigned int *packet_id,
 		unsigned int *session_id, int userid) {
-	char username[128];
-	char password[128];
+
+	char username[array_size(LiveTrackerusr_Config)]; 
+	char password[array_size(LiveTrackerpwd_Config)];
+
 	char txbuf[500];
 	char rxbuf[32];
 	int rxlen;
@@ -665,31 +668,31 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 		// 64=>"Powered flight"
 		// 17100=>"Car"
 		if (_tcslen(LiveTrackerusr_Config) > 0) {
-			TCHAR2ascii(LiveTrackerusr_Config, txbuf, sizeof(txbuf));
+			TCHAR2ascii(LiveTrackerusr_Config, txbuf, array_size(txbuf));
 		} else {
-			strncpy(txbuf, "guest", sizeof(txbuf));
+			strncpy(txbuf, "guest", array_size(txbuf));
 		}
-		UrlEncode(txbuf, username, sizeof(username));
+		UrlEncode(txbuf, username, array_size(username));
 		if (_tcslen(LiveTrackerpwd_Config) > 0) {
 			TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
 		} else {
-			strncpy(txbuf, "guest", sizeof(txbuf));
+			strncpy(txbuf, "guest", array_size(txbuf));
 		}
-		UrlEncode(txbuf, password, sizeof(password));
+		UrlEncode(txbuf, password, array_size(password));
 #ifdef PNA
-		TCHAR2ascii(GlobalModelName, txbuf, sizeof(txbuf));
-		UrlEncode(txbuf, phone, sizeof(phone));
+		TCHAR2ascii(GlobalModelName, txbuf, array_size(txbuf));
+		UrlEncode(txbuf, phone, array_size(phone));
 #else
 #if (WINDOWSPC>0)
-		UrlEncode("PC", phone, sizeof(phone));
+		UrlEncode("PC", phone, array_size(phone));
 #else
-		UrlEncode("PDA", phone, sizeof(phone));
+		UrlEncode("PDA", phone, array_size(phone));
 #endif
 #endif
 		if (SIMMODE)
-			UrlEncode("SIMULATED", gps, sizeof(gps));
+			UrlEncode("SIMULATED", gps, array_size(gps));
 		else
-			UrlEncode("GENERIC", gps, sizeof(gps));
+			UrlEncode("GENERIC", gps, array_size(gps));
 		/*
 		 What is this for?
 		 else {
@@ -699,8 +702,8 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 		 }
 		 */
 
-		TCHAR2ascii(AircraftType_Config, txbuf, sizeof(txbuf));
-		UrlEncode(txbuf, vehicle_name, sizeof(vehicle_name));
+		TCHAR2ascii(AircraftType_Config, txbuf, array_size(txbuf));
+		UrlEncode(txbuf, vehicle_name, array_size(vehicle_name));
 		vehicle_type = 8;
 		if (AircraftCategory == umParaglider)
 			vehicle_type = 1;
