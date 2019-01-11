@@ -172,6 +172,9 @@ public class LK8000 extends Activity {
       default:
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
+
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
   }
 
   private void quit() {
@@ -233,9 +236,10 @@ public class LK8000 extends Activity {
     PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
     // Create a WakeLock instance to keep the screen from timing out
-    // Note: FULL_WAKE_LOCK is deprecated in favor of FLAG_KEEP_SCREEN_ON
-    wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK|
-                              PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
+    final String LKTAG = "LK8000:" + BuildConfig.BUILD_TYPE;
+    wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK|
+            PowerManager.ACQUIRE_CAUSES_WAKEUP, LKTAG);
+
 
     // Activate the WakeLock
     wakeLock.acquire();
