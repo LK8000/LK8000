@@ -255,7 +255,7 @@ private:
 
   TriangleLeg* GetFAIAssistantMaxLeg() {return _maxFAILeg;};
   TriangleLeg* GetFAIAssistantLeg(int i) {return &_faiAssistantTriangleLegs[i];};
-  bool LooksLikeAFAITriangle() { return _bLooksLikeAFAITriangle;};
+  bool LooksLikeAFAITriangleAttempt() { return _bLooksLikeAFAITriangle;};
   int isFAITriangleClockwise() { return _dFAITriangleClockwise;};
   bool hasValidPath(TType type);
   static CContestMgr &Instance() { return _instance; }

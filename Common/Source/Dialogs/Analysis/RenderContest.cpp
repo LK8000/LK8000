@@ -250,7 +250,7 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
     const double distance = leg0->LegDist + leg1->LegDist + leg2->LegDist;
 
     double fTic;
-    if (!CContestMgr::Instance().LooksLikeAFAITriangle()) {
+    if (!CContestMgr::Instance().LooksLikeAFAITriangleAttempt()) {
       // Does not look like a FAI attempt. Just draw both FAI sectors on longest leg.
       fTic = 10 / DISTANCEMODIFY;
       if (max_leg->LegDist > 5 / DISTANCEMODIFY) fTic = 20 / DISTANCEMODIFY;
