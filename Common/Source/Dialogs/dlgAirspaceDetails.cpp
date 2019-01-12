@@ -17,6 +17,7 @@
 #include "LKObjects.h"
 #include "Sound/Sound.h"
 #include "resource.h"
+extern BOOL ValidFrequency(double Freq);
 
 static CAirspaceBase airspace_copy;
 static void OnDetailsClicked(WndButton* pWnd);
@@ -157,13 +158,17 @@ TCHAR Tmp[255];
  if(RadioPara.Enabled)
  {
    double ASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
-    if((ASFrequency >= 118) && (ASFrequency <= 138))
-    {
-      _stprintf(Tmp,_T("%7.3fMHz"),ASFrequency);
-      devPutFreqActive(ASFrequency, (TCHAR*)airspace_copy.Name());
-        DoStatusMessage(_T(""), Tmp );
-    }
-  }
+   if(!ValidFrequency(ASFrequency))
+   {
+	 ASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Comment());
+   }
+   if(ValidFrequency(ASFrequency))
+   {
+     _stprintf(Tmp,_T("%7.3fMHz"),ASFrequency);
+     devPutFreqActive(ASFrequency, (TCHAR*)airspace_copy.Name());
+     DoStatusMessage(_T(""), Tmp );
+   }
+ }
 #endif  // RADIO_ACTIVE        
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -307,8 +312,13 @@ static void SetValues(WndForm* wf) {
 
     if(RadioPara.Enabled) {
 
-      double fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
-      if(fASFrequency >0) {
+	  double fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
+	  if(!ValidFrequency(fASFrequency))
+	  {
+		fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Comment());
+	  }
+	  
+      if(ValidFrequency(fASFrequency)) {
 
         WindowControl* wClose = wf->FindByName(TEXT("cmdClose"));
         if(wClose) {
