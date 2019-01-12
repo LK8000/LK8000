@@ -77,7 +77,7 @@ LKColor Col = RGB_BLACK;
       break;
     }
 #ifdef KOBO
-    Col = RGB_LIGHTGREY;
+    Col =  INVERTCOLORS?RGB_WHITE:RGB_BLACK;
 #endif
 
     return Col;
@@ -93,9 +93,15 @@ LKColor NewCol = GetUTF8MultimapSymbol((TCHAR*) &Pict,  Number);
 const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
   const auto OldColor = Surface.SetTextColor(NewCol);
 
+
+#ifdef KOBO
+  Surface.DrawText(x  , y, Pict);
+#else
   int xtext = Surface.GetTextWidth(Pict);
   int ytext = Surface.GetTextHeight(Pict);
   Surface.DrawText(x -xtext/4 , y-ytext/4, Pict);
+#endif
+
   Surface.SelectObject(OldFont);
   Surface.SetTextColor(OldColor);
 }
