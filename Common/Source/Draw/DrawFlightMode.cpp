@@ -99,7 +99,7 @@ const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
 #else
   int xtext = Surface.GetTextWidth(Pict);
   int ytext = Surface.GetTextHeight(Pict);
-  Surface.DrawText(x -xtext/4 , y-ytext/4, Pict);
+  Surface.DrawText(x -xtext/6 , y-ytext/6, Pict);
 #endif
 
   Surface.SelectObject(OldFont);
