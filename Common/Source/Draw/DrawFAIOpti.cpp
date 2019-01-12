@@ -912,7 +912,7 @@ void MapWindow::DrawFAIOptimizer(LKSurface &Surface, const RECT &rc, const Scree
   const auto oldpen = Surface.SelectObject(hpStartFinishThin);
   const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
-  if (!CContestMgr::Instance().LooksLikeAFAITriangle()) {
+  if (!CContestMgr::Instance().LooksLikeAFAITriangleAttempt()) {
     // Does not look like a FAI attempt. Just draw both FAI sectors on longest leg.
     FAI_SectorCache[0].CalcSectorCache(max_leg->Lat1, max_leg->Lon1, max_leg->Lat2, max_leg->Lon2, fTic, 0);
     FAI_SectorCache[0].DrawFAISector(Surface, rc, _Proj, RGB_YELLOW);

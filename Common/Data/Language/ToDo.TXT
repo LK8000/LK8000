@@ -420,6 +420,8 @@ _@M2322_ "Enable Radar"
 _@M2336_
 ICAO Code 
 
+----------- after v7 ---------
+
 _@M2252_ "MANUAL"
 _@M2253_ "AUTO THERMALLING"
 _@M2254_ "FULL AUTO"
@@ -445,6 +447,19 @@ _@M2387_ "GND"   former SFC, normaly no need to translate
 _@M2388_ "Draw XC\nOFF"
 _@M2389_ "Draw XC\nON"
 _@M2290_ "Toggle Draw XC"
+
+_@M2255_ "XC FREE Fligth distance"
+_@M2256_ "XC FREE Fligth score"
+_@M2257_ "XC FREE Triangle distance"
+_@M2258_ "XC FREE Triangle score"
+_@M2259_ "XC FAI Triangle distance"
+_@M2260_ "XC FAI Triangle score"
+_@M2261_ "XC Best distance"
+_@M2262_ "XC Best score"
+_@M2263_ "XC Triangle closing distance"
+_@M2264_ "XC Triangle closing %"
+_@M2265_ "XC Triangle predicted distance"
+_@M2277_ "XC Mean Speed"
 
 HELP FILE
 
@@ -485,3 +500,63 @@ OFF don't display any value (see help)
 
 @1293
 Text has been modified for accounting new customization mechanism
+
+@937
+[XC FREE Flight distance]
+Free distance over 3 turnpoints.
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@938
+[XC FREE Flight score]
+Score of Free flight with 3 turnpoints.
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@939
+[XC FREE Triangle distance]
+Triangle distance which do not conform to FAI triangle specification.
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@940
+[XC FREE Triangle score]
+Score of FREE Triangle ( NOT FAI ).
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@941
+[XC FAI Triangle distance]
+Triangle distance conform to the FAI definition (the shortest leg of the triangle must be at least 28% of the total triangle).
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@942
+[XC FAI Triangle score]
+Score of FAI Triangle.
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@943
+[XC best distance]
+Distance of the best scored contest ( FAI Triangle,FREE Triangle, FREE Flight) .
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@944
+[XC best score]
+Maximum score of all contest ( FAI Triangle,FREE Triangle, FREE Flight).
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@945
+[XC Triangle closure distance]
+Distance to close the best scored contest triangle ( FAI or FREE )  in km
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@946
+[XC Triangle closure %]
+Distance to close the best scored contest triangle ( FAI or FREE ) in percentage
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@947
+[XC Triangle predicted distance]
+Distance to close the best scored contest triangle ( FAI or FREE ) in km
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+@948
+[XC mean speed]
+Cross country mean speed calculated on three turnpoints
+This data is available only if an additional XC Contest Engine is activate in System menu n 22
