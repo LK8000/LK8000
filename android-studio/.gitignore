@@ -5,6 +5,7 @@
 /.idea/libraries
 /.idea/misc.xml
 /.idea/encodings.xml
+/.idea/kotlinc.xml
 .DS_Store
 /build
 /captures
