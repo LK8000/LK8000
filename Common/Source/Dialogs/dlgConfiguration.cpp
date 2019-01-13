@@ -32,6 +32,7 @@
 #include "Sound/Sound.h"
 #include "resource.h"
 #include "LKStyle.h"
+#include "ContestMgr.h"
 
 #ifdef ANDROID
 #include <jni.h>
@@ -2078,8 +2079,8 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(484));
 	// LKTOKEN  _@M481_ = "North Smart" 
     dfe->addEnumText(MsgToken(481)); // 100417
-    // LKTOKEN  _@M22388_"Target up"
-    dfe->addEnumText(MsgToken(2388));
+    // LKTOKEN  _@M2349_"Target up"
+    dfe->addEnumText(MsgToken(2349));
 
     dfe->Set(DisplayOrientation_Config);
     wp->RefreshDisplay();
@@ -3249,6 +3250,18 @@ DataField* dfe = wp->GetDataField();
     dfe->Set(GearWarningMode);
     wp->RefreshDisplay();
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalContestRule"));
+  if (wp)
+  {
+    DataField* dfe = wp->GetDataField();
+    for (int i=0; i<static_cast<int>(CContestMgr::ContestRule::NUM_OF_XC_RULES); i++) {
+      dfe->addEnumText(CContestMgr::XCRuleToString(i));
+    }
+    dfe->Set(AdditionalContestRule);
+    wp->RefreshDisplay();
+  }
+
 
 #if 0  // no gear warning, just in case
 {
@@ -4551,6 +4564,12 @@ int ival;
     }
 
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalContestRule"));
+  if (wp) {
+      AdditionalContestRule = wp->GetDataField()->GetAsInteger();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
   if (wp) {
 	  unsigned tmp = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);

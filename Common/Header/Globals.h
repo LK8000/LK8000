@@ -728,6 +728,9 @@ GEXTERN int LiveTrackerInterval;
 GEXTERN bool LiveTrackerRadar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
 GEXTERN int LiveTrackerStart_config;  // Livetracking only in flight or always
 
+GEXTERN int AdditionalContestRule;  	// Enum to Rules to use for the addition contest CContestMgr::ContestRule
+
+
 GEXTERN short TerrainContrast;
 GEXTERN short TerrainBrightness;
 GEXTERN short TerrainRamp;
@@ -887,7 +890,7 @@ GEXTERN int  Multimap_SizeY[MP_TOP+1];
 // Global, not saved to profile
 GEXTERN bool Flags_DrawTask;
 GEXTERN bool Flags_DrawFAI;
-GEXTERN unsigned int FAI_OptimizerMode;
+GEXTERN unsigned int Flags_DrawXC;
 
 GEXTERN unsigned int Trip_Moving_Time;
 GEXTERN unsigned int Trip_Steady_Time;

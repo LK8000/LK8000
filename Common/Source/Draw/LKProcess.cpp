@@ -2239,7 +2239,7 @@ olc_score:
 			} else {
 				_stprintf(BufferValue, TEXT(NULLLONG));
 			}
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+			_stprintf(BufferUnit, TEXT("%s*"),(Units::GetDistanceName()));
 			if (lktitle)
 			{
 				if(bFAI)
@@ -2255,7 +2255,7 @@ olc_score:
 		// B126
 		case LK_OLC_FAI_CLOSE_PERCENT:
 			bFAI = CContestMgr::Instance().FAI();
-			fDist =CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false).Distance();
+			fDist =CContestMgr::Instance().Result(CContestMgr::TYPE_OLC_FAI_PREDICTED, false).Distance();
 			fTogo =CContestMgr::Instance().GetClosingPointDist();
         		if((fDist >0) && (fTogo >0))
             		{
@@ -2453,6 +2453,9 @@ olc_score:
 				case OVT_MATE:
 					LKFormatGR(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
 					break;
+                case OVT_XC:
+                    LKFormatGR(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
+                    break;
 				case OVT_FLARM:
 					LKFormatGR(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
 					break;
@@ -2530,7 +2533,157 @@ olc_score:
       _tcscpy(BufferTitle, Data_Options[lkindex].Title );
       break;
 
-		// B141
+        //
+      case LK_XC_FF_DIST:
+        ivalue = CContestMgr::TYPE_XC_FREE_FLIGHT;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+        if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * OlcResults[ivalue].Distance());
+          valid = true;
+        }
+        break;
+
+      case LK_XC_FF_SCORE:
+        ivalue = CContestMgr::TYPE_XC_FREE_FLIGHT;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("p"));
+        if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%5.0f"),  OlcResults[ivalue].Score());
+          valid = true;
+        }
+        break;
+
+      case LK_XC_FT_DIST:
+        ivalue = CContestMgr::TYPE_XC_FREE_TRIANGLE;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+        if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * OlcResults[ivalue].Distance());
+          valid = true;
+        }
+        break;
+
+      case LK_XC_FT_SCORE:
+        ivalue = CContestMgr::TYPE_XC_FREE_TRIANGLE;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("p"));
+        if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%3.0f"),  OlcResults[ivalue].Score());
+          valid = true;
+        }
+        break;
+
+
+      case LK_XC_FAI_DIST:
+        ivalue = CContestMgr::TYPE_XC_FAI_TRIANGLE;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+        if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * OlcResults[ivalue].Distance());
+          valid = true;
+        }
+        break;
+
+      case LK_XC_FAI_SCORE:
+        ivalue = CContestMgr::TYPE_XC_FAI_TRIANGLE;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("p"));
+        if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%5.0f"),  OlcResults[ivalue].Score());
+          valid = true;
+        }
+        break;
+
+      case LK_XC_DIST:
+        ivalue = CContestMgr::TYPE_XC;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+        if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * OlcResults[ivalue].Distance());
+          valid = true;
+        }
+        break;
+
+      case LK_XC_SCORE:
+        ivalue = CContestMgr::TYPE_XC;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("p"));
+        if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%5.0f"),  OlcResults[ivalue].Score());
+          valid = true;
+        }
+        break;
+
+      case LK_XC_CLOSURE_DIST:
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("%s"),Units::GetDistanceName());
+        if (CContestMgr::Instance().GetXCTriangleClosureDistance() == 0)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else if (OlcResults[ivalue].PredictedDistance() == 0 )  {
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        }
+        else {
+          const double dist =    DISTANCEMODIFY * CContestMgr::Instance().GetXCTriangleClosureDistance() ;
+          _stprintf(BufferValue, TEXT("%5.1f"), dist);
+          valid = true;
+        }
+        break;
+
+      case LK_XC_CLOSURE_PERC:
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("%s"), TEXT("%"));
+        if (CContestMgr::Instance().GetXCTriangleClosurePercentage() <= 0 ||
+            CContestMgr::Instance().GetXCTriangleClosurePercentage() >= 100)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          const double dist = CContestMgr::Instance().GetXCTriangleClosurePercentage()  ;
+          _stprintf(BufferValue, TEXT("%5.1f"), dist);
+          valid = true;
+        }
+        break;
+
+
+      case LK_XC_PREDICTED_DIST:
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferUnit, TEXT("%s*"), (Units::GetDistanceName()));
+        if (CContestMgr::Instance().GetXCTriangleDistance() == 0)
+          _stprintf(BufferValue, _T(NULLMEDIUM));
+        else {
+          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * CContestMgr::Instance().GetXCTriangleDistance() );
+          valid = true;
+        }
+        break;
+
+		case LK_XC_MEAN_SPEED:
+			ivalue = CContestMgr::TYPE_XC_FREE_TRIANGLE;
+		_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+		_stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
+		if (CContestMgr::Instance().GetXCMeanSpeed() == 0)
+			_stprintf(BufferValue, _T(NULLMEDIUM));
+		else {
+			_stprintf(BufferValue, TEXT("%5.0f"), SPEEDMODIFY * CContestMgr::Instance().GetXCMeanSpeed() );
+			valid = true;
+		}
+		break;
+
+        // B141
 		case LK_WIND:
 			// LKTOKEN  _@M1185_ = "Wind"
 			_tcscpy(BufferTitle, MsgToken(1185));
@@ -2579,6 +2732,10 @@ olc_score:
 			break;
 
 		// B143  091222 using old ETE corrected now
+
+
+
+
 		case LK_LKFIN_ETE:
 lkfin_ete:
 			_stprintf(BufferValue,_T(NULLTIME)); // 091222

@@ -44,9 +44,18 @@ void Statistics::Reset() {
   Altitude_Ceiling.Reset();
   Task_Speed.Reset();
   Altitude_Terrain.Reset();
-  for(int j=0;j<MAXTASKPOINTS;j++) {
+  for (int j = 0; j < MAXTASKPOINTS; j++) {
     LegStartTime[j] = -1;
   }
+
+  if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::OLC)) {
+    contestType = CContestMgr::TType::TYPE_OLC_CLASSIC;
+  } else if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::FAI_ASSISTANT)) {
+    contestType = CContestMgr::TType::TYPE_OLC_FAI_PREDICTED;
+  } else {
+    contestType = CContestMgr::TType::TYPE_XC_FREE_TRIANGLE;
+  }
+
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {
@@ -233,55 +242,32 @@ static void OnCalcClicked(WndButton* pWnd){
     pForm->SetVisible(true);
   }
   if (analysis_page==ANALYSIS_PAGE_CONTEST) {
-    // Rotate presented contest
-    switch(contestType) {
-    case CContestMgr::TYPE_OLC_CLASSIC:
-      contestType = CContestMgr::TYPE_FAI_TRIANGLE;
-      break;
 
-    case CContestMgr::TYPE_FAI_TRIANGLE:
-      contestType = CContestMgr::TYPE_FAI_TRIANGLE4;
-      FAI_OptimizerMode = 4;
-      CContestMgr::Instance().RefreshFAIOptimizer();
-      break;
-    case CContestMgr::TYPE_FAI_TRIANGLE4:
-#ifdef  FIVEPOINT_OPTIMIZER
-      contestType = CContestMgr::TYPE_FAI_TRIANGLE5;
-      FAI_OptimizerMode = 5;
+    if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::NONE))
+      return;
 
-      CContestMgr::Instance().RefreshFAIOptimizer();
-      break;
+    CContestMgr::TType t_start;
+    CContestMgr::TType t_end;
 
-    case CContestMgr::TYPE_FAI_TRIANGLE5:
-#endif
-      contestType = CContestMgr::TYPE_OLC_FAI;
-      break;
-
-    case CContestMgr::TYPE_OLC_FAI:
-      contestType = CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
-      break;
-    case CContestMgr::TYPE_OLC_CLASSIC_PREDICTED:
-      contestType = CContestMgr::TYPE_OLC_FAI_PREDICTED;
-      break;
-    case CContestMgr::TYPE_OLC_FAI_PREDICTED:
-      contestType = CContestMgr::TYPE_OLC_LEAGUE;
-      break;
-    case CContestMgr::TYPE_OLC_LEAGUE:
-      contestType = CContestMgr::TYPE_FAI_3_TPS;
-      break;
-    case CContestMgr::TYPE_FAI_3_TPS:
-      contestType = CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
-      break;
-    case CContestMgr::TYPE_FAI_3_TPS_PREDICTED:
-      contestType = CContestMgr::TYPE_OLC_CLASSIC;
-      break;
-
-    default:
-      contestType = CContestMgr::TYPE_OLC_CLASSIC;
+    if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::OLC)) {
+      t_start = CContestMgr::TType::TYPE_OLC_CLASSIC;
+      t_end = CContestMgr::TType::TYPE_FAI_ASSISTANT;
+    } else if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::FAI_ASSISTANT)) {
+      t_start = CContestMgr::TType::TYPE_FAI_ASSISTANT;
+      t_end = CContestMgr::TType::TYPE_FAI_ASSISTANT;
+    } else {
+      t_start = CContestMgr::TType::TYPE_FAI_ASSISTANT;
+      t_end = CContestMgr::TType::TYPE_XC_FREE_FLIGHT;
     }
+
+    contestType = static_cast<CContestMgr::TType>(static_cast<int>(contestType) + 1);
+    if (contestType > t_end || contestType < t_start)
+      contestType = t_start;
+
+    UpdateAnalysis(pForm);
+
   }
 
-  UpdateAnalysis(pForm);
 }
 
 static void OnAspBearClicked(WndButton* pWnd){
@@ -310,7 +296,6 @@ static bool entered = false;
 if (entered == true) /* prevent re entrance */
 	return;
 
-unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode of main map */
   entered = true;
 
   WndForm* pForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ANALYSIS_L : IDR_XML_ANALYSIS_P);
@@ -389,12 +374,6 @@ unsigned int iTmpMainMapOptMode = FAI_OptimizerMode ; /* remember optimizer mode
 
   penThinSignal.Release();
 
-  if(FAI_OptimizerMode != iTmpMainMapOptMode) /* Analysis let in a different optimizer mode */
-  {
-    FAI_OptimizerMode = iTmpMainMapOptMode; /* restore optimizer mode for main map */
-	CContestMgr::Instance().Result(CContestMgr::TYPE_FAI_TRIANGLE, false); /* recalc optimizer for main map */
-	CContestMgr::Instance().RefreshFAIOptimizer();
-  }
 
   MapWindow::RequestFastRefresh();
 

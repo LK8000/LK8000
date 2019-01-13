@@ -788,164 +788,152 @@ int iCnt = 0;
 return true;
 }
 
-void MapWindow::DrawFAIOptimizer(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft)
-{
 
-static	FAI_Sector FAI_SectorCache[6];
+// Draw the current FAI ( or FREE under XC rules ) Cross Country triangle
+void MapWindow::DrawXC(LKSurface &Surface, const RECT &rc, const ScreenProjection &_Proj, const POINT &Orig_Aircraft) {
+
+  const GeoToScreen<ScreenPoint> ToScreen(_Proj);
+
+  CContestMgr::XCFlightType fType = CContestMgr::Instance().GetBestXCTriangleType();
+  CContestMgr::XCTriangleStatus fStatus ;
+  if (fType == CContestMgr::XCFlightType::XC_INVALID )
+    return;
+
+
+  CContestMgr::TType type;
+  if (fType == CContestMgr::XCFlightType::XC_FAI_TRIANGLE) {
+    type = CContestMgr::TType::TYPE_XC_FAI_TRIANGLE;
+    fStatus = CContestMgr::Instance().GetFAITriangleStatus();
+  } else {
+    type = CContestMgr::TType::TYPE_XC_FREE_TRIANGLE;
+    fStatus = CContestMgr::Instance().GetFTTriangleStatus();
+  }
+  CContestMgr::CResult result = CContestMgr::Instance().Result( type, true);
+  const CPointGPSArray &points = result.PointArray();
+  unsigned int iSize = points.size();
+
+  if (iSize != 5 )    // Should never be unless not yet calculated
+    return;
+
+  std::vector<ScreenPoint> triangle_polyline;
+
+  for ( unsigned int i = 1 ; i< iSize-1 ; i++ ) {
+    const ScreenPoint Pos = ToScreen(points[i].Latitude(), points[i].Longitude());
+    triangle_polyline.push_back(Pos);
+  }
+  const ScreenPoint Pos = ToScreen(points[1].Latitude(), points[1].Longitude());
+  triangle_polyline.push_back(Pos);
+
+  double nextXCRadius = 0;   // the next circle radius to get a better XC scoring coefficient. 0 if we can not increase the scoring coefficient.
+  LKColor nextXCRadiusColor = RGB_BLACK;
+  if ( fStatus == CContestMgr::XCTriangleStatus::INVALID ) {
+    nextXCRadius = CContestMgr::Instance().GetXCValidRadius();
+    nextXCRadiusColor = IsDithered()?RGB_BLACK:RGB_GREEN;
+    LKPen hpPen_invalid(PEN_SOLID, IBLSCALE(2),  IsDithered()?RGB_BLACK:RGB_ORANGE);
+    const auto hpOldPen = Surface.SelectObject(hpPen_invalid);
+    Surface.Polyline(triangle_polyline.data(), triangle_polyline.size(), rc);
+    Surface.SelectObject(hpOldPen);
+    hpPen_invalid.Release();
+  }
+  else if ( fStatus == CContestMgr::XCTriangleStatus::VALID   ) {
+    nextXCRadius = CContestMgr::Instance().GetXCClosedRadius();
+    nextXCRadiusColor = IsDithered()?RGB_BLACK:RGB_RED;
+    LKPen hpPen_valid(PEN_SOLID, IBLSCALE(2),  IsDithered()?RGB_BLACK:RGB_GREEN );
+    const auto hpOldPen = Surface.SelectObject(hpPen_valid);
+    Surface.Polyline(triangle_polyline.data(), triangle_polyline.size(), rc);
+    Surface.SelectObject(hpOldPen);
+    hpPen_valid.Release();
+  }
+  else {      // fStatus == CContestMgr::XCTriangleStatus::CLOSED
+    LKPen hpPen_closed(PEN_SOLID, IBLSCALE(2),  IsDithered()?RGB_BLACK:RGB_RED );
+    const auto hpOldPen = Surface.SelectObject(hpPen_closed);
+    Surface.Polyline(triangle_polyline.data(), triangle_polyline.size(), rc);
+    Surface.SelectObject(hpOldPen);
+    hpPen_closed.Release();
+  }
+
+  if (  nextXCRadius > 0 ) {
+    const double lat_CP = CContestMgr::Instance().GetXCTriangleClosingPoint().Latitude();
+    const double lon_CP = CContestMgr::Instance().GetXCTriangleClosingPoint().Longitude();
+    if ( lat_CP !=0 && lon_CP!= 0) {
+      const ScreenPoint Pos = ToScreen(lat_CP, lon_CP);
+      int iRadius = (int) (nextXCRadius * zoom.ResScaleOverDistanceModify());
+
+      double fDist,fAngle;
+      DistanceBearing(lat_CP, lon_CP, GPS_INFO.Latitude, GPS_INFO.Longitude, &fDist, &fAngle);
+      if ( OvertargetMode ==  OVT_XC ) {
+        LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2), nextXCRadiusColor);
+        const auto hOldPen = Surface.SelectObject(hpSectorPen);
+        Surface.DrawArc(Pos.x, Pos.y, iRadius, rc, fAngle - 20 - DisplayAngle, fAngle + 20 - DisplayAngle);
+        Surface.SelectObject(hOldPen);
+      }
+      else {
+        LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), nextXCRadiusColor);
+        const auto hOldPen = Surface.SelectObject(hpSectorPen);
+        Surface.DrawCircle(Pos.x, Pos.y, iRadius, rc, false);
+        Surface.SelectObject(hOldPen);
+      }
+    }
+  }
+}
+
+void MapWindow::DrawFAIOptimizer(LKSurface &Surface, const RECT &rc, const ScreenProjection &_Proj, const POINT &Orig_Aircraft) {
+
+  static FAI_Sector FAI_SectorCache[5];
+  const GeoToScreen<ScreenPoint> ToScreen(_Proj);
+  CContestMgr::CResult result = CContestMgr::Instance().Result(CContestMgr::TYPE_XC_FREE_TRIANGLE, true);
+
+  const CPointGPSArray &points = result.PointArray();
+  unsigned int iSize = points.size();
+  if (iSize != 5) {// Something went wrong here
+    return;
+  }
+
+  const CContestMgr::TriangleLeg *max_leg = CContestMgr::Instance().GetFAIAssistantMaxLeg();
+  const CContestMgr::TriangleLeg *leg0 = CContestMgr::Instance().GetFAIAssistantLeg(0);
+  const CContestMgr::TriangleLeg *leg1 = CContestMgr::Instance().GetFAIAssistantLeg(1);
+  const CContestMgr::TriangleLeg *leg2 = CContestMgr::Instance().GetFAIAssistantLeg(2);
+  const double distance = leg0->LegDist + leg1->LegDist + leg2->LegDist;
+
+  if (max_leg == nullptr || max_leg->LegDist < FAI_MIN_DISTANCE_THRESHOLD) {
+    return;
+  }
+
+  float fZoom = MapWindow::zoom.RealScale();
+  double fTic = 100;
+  if (fZoom > 50) fTic = 100;
+  else if (fZoom > 20) fTic = 50;
+  else if (fZoom > 10) fTic = 25; else fTic = 25;
+  if (DISTANCEMODIFY > 0.0)
+    fTic = fTic / DISTANCEMODIFY;
 
   const auto whitecolor = RGB_WHITE;
   const auto origcolor = Surface.SetTextColor(whitecolor);
   const auto oldpen = Surface.SelectObject(hpStartFinishThin);
   const auto oldbrush = Surface.SelectObject(LKBrush_Hollow);
 
-  const GeoToScreen<ScreenPoint> ToScreen(_Proj);
-/********************************************************************/
-  unsigned int ui;
-  double lat1 = 0;
-  double lon1 = 0;
-  double lat2 = 0;
-  double lon2 = 0;
-  BOOL bFAI = false;
-  double fDist, fAngle;
-  LockTaskData(); // protect from external task changes
-    bFAI =  CContestMgr::Instance().FAI();
-    CContestMgr::CResult result = CContestMgr::Instance().Result( CContestMgr::TYPE_FAI_TRIANGLE, true);
-    const CPointGPSArray &points = result.PointArray();
-    unsigned int iSize = points.size();
-    CContestMgr::TType sType = result.Type();
-
-    double lat_CP = CContestMgr::Instance().GetClosingPoint().Latitude();
-    double lon_CP = CContestMgr::Instance().GetClosingPoint().Longitude();
-    double fFAIDistance = result.Distance();
-  UnlockTaskData(); // protect from external task changes
-
-  typedef struct
-  {
-    int    LegIdx;
-    double LegDist;
-    double LegAngle;
-  } legtype;
-  legtype  Legs[10];
-
-
-  for(int i=0; i< 10;  i++)
-  {
-    Legs[i].LegIdx  =0;
-    Legs[i].LegDist =0.0;
-  }
-int numlegs=0;
-  if(((sType ==  CContestMgr::TYPE_FAI_TRIANGLE)
-	 || (sType ==  CContestMgr::TYPE_FAI_TRIANGLE4)
-#ifdef  FIVEPOINT_OPTIMIZER
-	 || (sType ==  CContestMgr::TYPE_FAI_TRIANGLE5)
-#endif
-	 ) && (iSize>2))
-  {
-    LKASSERT(iSize<100);
-    LockTaskData(); // protect from external task changes
-    for(ui=0; ui< iSize-2; ui++)
-    {
-      lat1 = points[ui].Latitude();
-      lon1 = points[ui].Longitude();
-      lat2 = points[ui+1].Latitude();
-      lon2 = points[ui+1].Longitude();
-      DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
-      Legs[numlegs].LegIdx   = ui;
-      Legs[numlegs].LegDist  = fDist;
-
-      if(numlegs < 10)
-        numlegs ++;
-      LKASSERT (numlegs <10);
+  if (!CContestMgr::Instance().LooksLikeAFAITriangleAttempt()) {
+    // Does not look like a FAI attempt. Just draw both FAI sectors on longest leg.
+    FAI_SectorCache[0].CalcSectorCache(max_leg->Lat1, max_leg->Lon1, max_leg->Lat2, max_leg->Lon2, fTic, 0);
+    FAI_SectorCache[0].DrawFAISector(Surface, rc, _Proj, RGB_YELLOW);
+    FAI_SectorCache[1].CalcSectorCache(max_leg->Lat1, max_leg->Lon1, max_leg->Lat2, max_leg->Lon2, fTic, 1);
+    FAI_SectorCache[1].DrawFAISector(Surface, rc, _Proj, RGB_YELLOW);
+  } else {
+    if (leg0->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
+      // Draw the yellow sector on the best current direction.
+      FAI_SectorCache[2].CalcSectorCache(leg0->Lat1, leg0->Lon1, leg0->Lat2, leg0->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
+      FAI_SectorCache[2].DrawFAISector(Surface, rc, _Proj, RGB_YELLOW);
     }
-
-    std::sort(std::begin(Legs), std::next(Legs, numlegs), [](const legtype& a, const legtype& b) {
-        return (a.LegDist > b.LegDist);
-    } );
-
-    float fZoom = MapWindow::zoom.RealScale() ;
-
-    double         fTic = 100;
-    if(fZoom > 50) fTic = 100; else
-    if(fZoom > 20) fTic = 50;  else
-    if(fZoom > 10) fTic = 25;  else fTic = 25;
-   /* if(fZoom > 3)  fTic = 10;  else fTic = 10;  // FAI grid below 10km need to much CPU power in moving map and PAN mode!!!
-    if(fZoom > 1)  fTic = 5;   else   // on slow devices like MIO
-    if(fZoom > 0.5)fTic = 2;   else   // the user should use Analysis page for this
-    if(fZoom > 0.2)fTic = 1;*/
-    if( DISTANCEMODIFY > 0.0)
-      fTic =  fTic/ DISTANCEMODIFY;
-
-    for(int i= 0 ; i < min(numlegs,2); i++)
-    {
-        #ifndef DITHER
-            LKColor rgbCol = RGB_BLUE;
-            switch(i)
-            {
-              case 0: rgbCol = RGB_YELLOW; break;
-              case 1: rgbCol = RGB_CYAN  ; break;
-              case 2: rgbCol = RGB_GREEN ; break;
-              default:
-              break;
-            }
-                #else
-            LKColor rgbCol = RGB_DARKBLUE;
-            switch(i)
-            {
-              case 0: rgbCol = RGB_LIGHTGREY; break;
-              case 1: rgbCol = RGB_GREY  ; break;
-              case 2: rgbCol = RGB_MIDDLEGREY ; break;
-              default:
-              break;
-            }
-#endif
-      lat1 = points[Legs[i].LegIdx].Latitude();
-      lon1 = points[Legs[i].LegIdx].Longitude();
-      lat2 = points[Legs[i].LegIdx+1].Latitude();
-      lon2 = points[Legs[i].LegIdx+1].Longitude();
-      DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
-      if(fDist > FAI_MIN_DISTANCE_THRESHOLD)
-      {
-        FAI_SectorCache[2*i].CalcSectorCache( lat1,  lon1,  lat2,  lon2, fTic, 0);
-        FAI_SectorCache[2*i].DrawFAISector ( Surface, rc, _Proj, rgbCol );
-        FAI_SectorCache[2*i+1].CalcSectorCache( lat1,  lon1,  lat2,  lon2, fTic, 1);
-        FAI_SectorCache[2*i+1].DrawFAISector ( Surface, rc, _Proj,  rgbCol );
-      }
+    // Draw leg1 a bit before becoming a FAI one in the correct direction . We start drawing a bit before 28%
+    if (leg1->LegDist > distance * 0.25) {
+      FAI_SectorCache[3].CalcSectorCache(leg1->Lat1, leg1->Lon1, leg1->Lat2, leg1->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
+      FAI_SectorCache[3].DrawFAISector(Surface, rc, _Proj, RGB_CYAN);
     }
-
-      UnlockTaskData();
-
-/*********************************************************/
-
-	  // TODO : check if visible for avoid to far draw outside screen.
-	  // for 1000m radius cylinder, it's better to build cylinder in screen coordinate
-	  // and draw this like polygon ; cf. Task sector drawing
-
-
-
-      if (ISPARAGLIDER && bFAI) {
-          LKPen hpSectorPen(PEN_SOLID, IBLSCALE(2), FAI_SECTOR_COLOR);
-          const auto hOldPen = Surface.SelectObject(hpSectorPen);
-          const RasterPoint Pt1 = _Proj.ToRasterPoint(lat_CP, lon_CP);
-
-          int iRadius = (int) ((fFAIDistance * 0.20) * zoom.ResScaleOverDistanceModify());
-          Surface.DrawCircle(Pt1.x, Pt1.y, iRadius, rc, false);                    /* 20% destination circle */
-
-          iRadius = (int) ((500) * zoom. ResScaleOverDistanceModify());             /* 1000m circle  */
-          Surface.DrawCircle(Pt1.x, Pt1.y, iRadius, rc, false);
-
-          Surface.SelectObject(hOldPen);
-
-      }
-
-/*********************************************************/
-
   }
 
-/********************************************************************/
-    // restore original color
-    Surface.SetTextColor(origcolor);
-    Surface.SelectObject(oldpen);
-    Surface.SelectObject(oldbrush);
+  Surface.SetTextColor(origcolor);
+  Surface.SelectObject(oldpen);
+  Surface.SelectObject(oldbrush);
 
 }
 

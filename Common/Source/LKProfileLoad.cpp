@@ -854,7 +854,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryBigFAIThreshold, &FAI28_45Threshold);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryFAIOptiMode    , &FAI_OptimizerMode);
+  PREAD(sname,svalue,szRegistryDrawXC    , &Flags_DrawXC);
   if (matchedstring) return;
 
   PREAD(sname,svalue,szRegistrySonarWarning,&SonarWarning_Config);
@@ -917,6 +917,9 @@ void LKParseProfileString(const char *sname, const char *svalue) {
     }
     return;
   }
+  PREAD(sname,svalue,szRegistryAdditionalContestRule,&AdditionalContestRule);
+  if (matchedstring) return;
+
 #ifdef _WGS84
   PREAD(sname,svalue,szRegistry_earth_model_wgs84,&earth_model_wgs84);
   if (matchedstring) return;

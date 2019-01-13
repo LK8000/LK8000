@@ -425,7 +425,7 @@ char szRegistryGearMode[]         = "GearMode";
 char szRegistryGearAltitude[]     = "GearAltitude";
 char szRegistryBottomMode[]       = "ActiveBottomBar";
 char szRegistryBigFAIThreshold[]  = "FAI_28_45_Threshold";
-char szRegistryFAIOptiMode[]      = "FAI_OptimizerMode";
+char szRegistryDrawXC[]      = "DrawXC";
 
 char szRegistryScreenSize[]       = "ScreenSize";
 char szRegistryScreenSizeX[]      = "ScreenSizeX";
@@ -442,6 +442,7 @@ char szRegistryOverlay_LeftDown[]       = "Overlay_LeftDown";
 char szRegistryOverlay_RightTop[]       = "Overlay_RightTop";
 char szRegistryOverlay_RightMid[]       = "Overlay_RightMid";
 char szRegistryOverlay_RightBottom[]       = "Overlay_RightBottom";
+char szRegistryAdditionalContestRule[]       = "Additional_Contest_Rule";
 #ifdef _WGS84
 char szRegistry_earth_model_wgs84[] = "earth_model_wgs84";
 #endif
@@ -778,7 +779,7 @@ extern const char szRegistryGearMode[];
 extern const char szRegistryGearAltitude[];
 extern const char szRegistryBottomMode[];
 extern const char szRegistryBigFAIThreshold[];
-extern const char szRegistryFAIOptiMode[];
+extern const char szRegistryDrawXC[];
 
 extern const char szRegistryScreenSize[];
 extern const char szRegistryScreenSizeX[];
@@ -795,6 +796,7 @@ extern const char szRegistryOverlay_LeftDown[];
 extern const char szRegistryOverlay_RightTop[];
 extern const char szRegistryOverlay_RightMid[];
 extern const char szRegistryOverlay_RightBottom[];
+extern const char szRegistryAdditionalContestRule[];
 
 #ifdef _WGS84
 extern const char szRegistry_earth_model_wgs84[];

@@ -412,7 +412,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryGearMode      ,GearWarningMode);
   rprintf(szRegistryGearAltitude  ,GearWarningAltitude);
   rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
-  rprintf(szRegistryFAIOptiMode   ,FAI_OptimizerMode);
+  rprintf(szRegistryDrawXC   ,Flags_DrawXC);
 
   if (SaveRuntime) rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
@@ -428,6 +428,10 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryOverlay_RightTop, Overlay_RightTop);
   rprintf(szRegistryOverlay_RightMid, Overlay_RightMid);
   rprintf(szRegistryOverlay_RightBottom, Overlay_RightBottom);
+
+  rprintf(szRegistryAdditionalContestRule, AdditionalContestRule);
+
+
 #ifdef _WGS84
   rprintf(szRegistry_earth_model_wgs84,earth_model_wgs84);
 #endif

@@ -818,8 +818,8 @@ location=7
 mode=Display2
 type=key
 data=9
-event=Service OPTIMODE
-label=_@M2251_
+event=Service DRAWXC
+label=$(AC41)
 location=8
 
 mode=Display2
