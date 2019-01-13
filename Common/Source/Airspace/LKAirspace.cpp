@@ -811,7 +811,6 @@ void CAirspace_Circle::Dump() const {
 }
 
 // Calculate unique hash code for this airspace
-
 void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const {
     MD5 md5;
     md5.Update((const unsigned char*) &_type, sizeof (_type));
@@ -826,7 +825,7 @@ void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const {
     md5.Update((const unsigned char*) &_center.longitude, sizeof (_center.longitude));
     md5.Update((const unsigned char*) &_radius, sizeof (_radius));
     md5.Final();
-    memcpy(hashout, md5.digestChars, min(maxbufsize, 33));
+    memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, array_size(md5.digestChars)));
 }
 
 // Check if the given coordinate is inside the airspace
@@ -997,7 +996,6 @@ void CAirspace_Area::Dump() const {
 }
 
 // Calculate unique hash code for this airspace
-
 void CAirspace_Area::Hash(char *hashout, int maxbufsize) const {
     MD5 md5;
     double dtemp;
@@ -1017,7 +1015,7 @@ void CAirspace_Area::Hash(char *hashout, int maxbufsize) const {
         md5.Update((unsigned char*) &dtemp, sizeof (dtemp));
     }
     md5.Final();
-    memcpy(hashout, md5.digestChars, min(maxbufsize, 33));
+    memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, array_size(md5.digestChars)));
 }
 
 ///////////////////////////////////////////////////
