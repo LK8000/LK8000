@@ -31,9 +31,17 @@ TCHAR tmp[MAX_PATH];
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
     	  if(dfe->GetAsDisplayString() != NULL)
-            _sntprintf(szAirspaceFile[i], MAX_PATH ,_T("%s"), dfe->GetAsDisplayString());
+    	  {
+    		if(_tcscmp(szAirspaceFile[i], dfe->GetAsDisplayString())!= 0)
+    		{
+    	   	  StartupStore(_T(".dfe->GetAsDisplayString(): %s %s"),dfe->GetAsDisplayString(),NEWLINE);
+    	  	  StartupStore(_T(".        szAirspaceFile[%d]: %s %s"),i+1,szAirspaceFile[i],NEWLINE);
+              _sntprintf(szAirspaceFile[i], MAX_PATH ,_T("%s"), dfe->GetAsDisplayString());
+              AIRSPACEFILECHANGED= true;
+    		}
+    	  }
     	  else
-    		  szAirspaceFile[i][0] = {'\0'};
+    	    szAirspaceFile[i][0] = {'\0'};
       }
     }
   }
@@ -137,7 +145,7 @@ WndProperty *wp;
       _tcscpy(temptext, dfe->GetPathFile());
       if (_tcscmp(temptext,szAirspaceFile[i])) {
         _tcscpy(szAirspaceFile[i],temptext);
-        AIRSPACEFILECHANGED= true;
+
       }
     }
   }

@@ -32,9 +32,16 @@ static void getVariables(void) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
     	  if(dfe->GetAsDisplayString() != NULL)
-            _sntprintf(szWaypointFile[i], MAX_PATH ,_T("%s"), dfe->GetAsDisplayString());
+    	  {
+
+      		if(_tcscmp(szWaypointFile[i], dfe->GetAsDisplayString()) != 0)
+      		{
+              _sntprintf(szWaypointFile[i], MAX_PATH ,_T("%s"), dfe->GetAsDisplayString());
+    	       WAYPOINTFILECHANGED = true;
+      		}
+    	  }
     	  else
-    		  szWaypointFile[i][0] = {'\0'};
+    	    szWaypointFile[i][0] = {'\0'};
       }
     }
   }
@@ -144,7 +151,6 @@ WndProperty *wp;
       _tcscpy(temptext, dfe->GetPathFile());
       if (_tcscmp(temptext,szWaypointFile[i])) {
         _tcscpy(szWaypointFile[i],temptext);
-        WAYPOINTFILECHANGED= true;
       }
     }
   }
