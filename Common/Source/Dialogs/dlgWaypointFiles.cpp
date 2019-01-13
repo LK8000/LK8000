@@ -37,7 +37,7 @@ static void getVariables(void) {
       		if(_tcscmp(szWaypointFile[i], dfe->GetAsDisplayString()) != 0)
       		{
               _sntprintf(szWaypointFile[i], MAX_PATH ,_T("%s"), dfe->GetAsDisplayString());
-    	       WAYPOINTFILECHANGED = true;
+    	      WAYPOINTFILECHANGED = true;
       		}
     	  }
     	  else

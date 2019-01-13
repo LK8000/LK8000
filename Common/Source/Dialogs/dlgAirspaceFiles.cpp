@@ -34,8 +34,8 @@ TCHAR tmp[MAX_PATH];
     	  {
     		if(_tcscmp(szAirspaceFile[i], dfe->GetAsDisplayString())!= 0)
     		{
-    	   	  StartupStore(_T(".dfe->GetAsDisplayString(): %s %s"),dfe->GetAsDisplayString(),NEWLINE);
-    	  	  StartupStore(_T(".        szAirspaceFile[%d]: %s %s"),i+1,szAirspaceFile[i],NEWLINE);
+    	//   	  StartupStore(_T(".dfe->GetAsDisplayString(): %s %s"),dfe->GetAsDisplayString(),NEWLINE);
+    	//  	  StartupStore(_T(".        szAirspaceFile[%d]: %s %s"),i+1,szAirspaceFile[i],NEWLINE);
               _sntprintf(szAirspaceFile[i], MAX_PATH ,_T("%s"), dfe->GetAsDisplayString());
               AIRSPACEFILECHANGED= true;
     		}
