@@ -85,25 +85,22 @@ LKColor Col = RGB_BLACK;
 
 
 
-void UTF8DrawMultimapSymbol(LKSurface& Surface, int x, int y, int Number)
+void UTF8DrawMultimapSymbol(LKSurface& Surface, const RasterPoint& pos, const PixelSize& size, int Number)
 {
-TCHAR Pict[10];
+    TCHAR Pict[10];
+    LKColor NewCol = GetUTF8MultimapSymbol((TCHAR*) &Pict,  Number);
 
-LKColor NewCol = GetUTF8MultimapSymbol((TCHAR*) &Pict,  Number);
-const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
-  const auto OldColor = Surface.SetTextColor(NewCol);
+    const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
+    const auto OldColor = Surface.SetTextColor(NewCol);
 
+    PixelRect textRect(pos, size);
+    Surface.DrawText(Pict, &textRect, DT_CENTER|DT_VCENTER|DT_CALCRECT);
+    const PixelSize newSize = textRect.GetSize();
+    textRect.Offset((newSize.cx - size.cx) / 2, - ((newSize.cy - size.cy) / 2));
+    Surface.DrawText(Pict, &textRect, DT_CENTER|DT_VCENTER);
 
-#ifdef KOBO
-  Surface.DrawText(x  , y, Pict);
-#else
-  int xtext = Surface.GetTextWidth(Pict);
-  int ytext = Surface.GetTextHeight(Pict);
-  Surface.DrawText(x -xtext/6 , y-ytext/6, Pict);
-#endif
-
-  Surface.SelectObject(OldFont);
-  Surface.SetTextColor(OldColor);
+    Surface.SelectObject(OldFont);
+    Surface.SetTextColor(OldColor);
 }
 
 
@@ -136,7 +133,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 {
   static bool flip= true;
   static PixelSize loggerIconSize,mmIconSize, batteryIconSize;
-  static POINT loggerPoint, mmPoint, batteryPoint;
+  static RasterPoint loggerPoint, mmPoint, batteryPoint;
   static PixelSize loggerNewSize, mmNewSize, batteryNewSize;
   static int vsepar;
 
@@ -333,7 +330,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   else
   {
    short i=ModeType[LKMODE_MAP]-1;
-   UTF8DrawMultimapSymbol( Surface, mmPoint.x, mmPoint.y, i);
+   UTF8DrawMultimapSymbol( Surface, mmPoint, mmNewSize, i);
   }
   //
   // Battery indicator
