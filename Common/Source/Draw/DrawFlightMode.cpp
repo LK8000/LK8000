@@ -13,91 +13,70 @@
 
 extern bool FastZoom; // QUICKDRAW
 
+static constexpr unsigned mmUTF8Symbol[] = {
+    2350, // _@M2350_ "Ⓜ"
+    2351, // _@M2351_ "①"
+    2352, // _@M2352_ "②"
+    2353, // _@M2353_ "③"
+    2354, // _@M2354_ "④"
+    2355, // _@M2355_ "⑤"
+    2356, // _@M2356_ "⑥"
+    2357, // _@M2357_ "⑦"
+    2358, // _@M2358_ "⑧"
+    2359, // _@M2359_ "⑨"
+    2360, // _@M2360_ "⑩"
+};
 
+#ifndef DITHER
+static constexpr LKColor mmUTF8Color[] = {
+    LKColor(0,245,255),  // "Ⓜ"
+    LKColor(0,255,127),  // "①"
+    LKColor(205,0,0),    // "②"
+    LKColor(255,130,71), // "③"
+    LKColor(255,165,0),  // "④"
+    LKColor(255,130,71), // "⑤"
+    LKColor(82,82,82),   // "⑥"
+    RGB_DARKBLUE,        // "⑦"
+    RGB_BLACK,           // "⑧"
+    RGB_BLACK,           // "⑨"
+    RGB_BLACK,           // "⑩"
+};
 
-LKColor GetUTF8MultimapSymbol(TCHAR* pPict, const int Number)
-{
-LKColor Col = RGB_BLACK;
-  if (pPict ==NULL) return Col;
-    switch(Number)
-    {
-      case 0:
-       _tcscpy(pPict, MsgToken(2350));  // _@M2350_ "Ⓜ"
-        Col = LKColor(0,245,255);
-      break;
-
-      case 1:
-        _tcscpy(pPict, MsgToken(2351)); // _@M2351_ "①"
-        Col = LKColor(0,255,127);
-      break;
-
-      case 2:
-        _tcscpy(pPict,MsgToken(2352));  // _@M2352_ "②"
-        Col = LKColor(205,0,0);
-      break;
-
-      case 3:
-        _tcscpy(pPict, MsgToken(2353));  // _@M2353_ "③"
-        Col = LKColor(255,130,71);
-      break;
-
-      case 4:
-        _tcscpy(pPict, MsgToken(2354));  // _@M2354_ "④"
-        Col = LKColor(255,165,0);
-      break;
-
-      case 5:
-        _tcscpy(pPict, MsgToken(2355));  // _@M2354_ "⑤"
-        Col = LKColor(255,130,71);
-      break;
-
-      case 6:
-        _tcscpy(pPict, MsgToken(2356));   // _@M2354_ "⑥"
-        Col = LKColor(82,82,82);
-      break;
-
-      case 7:
-        _tcscpy(pPict, MsgToken(2357));    // _@M2354_ "⑦"
-        Col = RGB_DARKBLUE;
-      break;
-
-      case 8:
-        _tcscpy(pPict, MsgToken(2358));   // _@M2354_ "⑧"
-        Col = RGB_BLACK;
-      break;
-
-      case 9:
-        _tcscpy(pPict, MsgToken(2359));    // _@M2354_ "⑨"
-        Col = RGB_BLACK;
-      break;
-
-      default:
-        _tcscpy(pPict, MsgToken(2360));   // _@M2354_ "⑩"
-        Col = RGB_BLACK;
-      break;
-    }
-#ifdef KOBO
-    Col = RGB_LIGHTGREY;
+static_assert(array_size(mmUTF8Color) == array_size(mmUTF8Symbol), "invalide array size");
 #endif
 
-    return Col;
+static std::pair<const LKColor, const TCHAR*> GetUTF8MultimapSymbol(unsigned Number) {
+    assert(Number < array_size(mmUTF8Symbol));
+
+    const unsigned symbol_idx = Number < array_size(mmUTF8Symbol) ? Number : 0;
+    const TCHAR* symbol = MsgToken(mmUTF8Symbol[symbol_idx]);
+
+#ifndef DITHER
+    const LKColor color = mmUTF8Color[symbol_idx];
+#else
+    const LKColor color = INVERTCOLORS ? RGB_WHITE : RGB_BLACK;
+#endif
+
+    return std::make_pair(color, symbol);
 }
 
 
 
-void UTF8DrawMultimapSymbol(LKSurface& Surface, int x, int y, int Number)
+void UTF8DrawMultimapSymbol(LKSurface& Surface, const RasterPoint& pos, const PixelSize& size, int Number)
 {
-TCHAR Pict[10];
+    const auto Pict = GetUTF8MultimapSymbol(Number);
 
-LKColor NewCol = GetUTF8MultimapSymbol((TCHAR*) &Pict,  Number);
-const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
-  const auto OldColor = Surface.SetTextColor(NewCol);
+    const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
+    const auto OldColor = Surface.SetTextColor(Pict.first);
 
-  int xtext = Surface.GetTextWidth(Pict);
-  int ytext = Surface.GetTextHeight(Pict);
-  Surface.DrawText(x -xtext/4 , y-ytext/4, Pict);
-  Surface.SelectObject(OldFont);
-  Surface.SetTextColor(OldColor);
+    PixelRect textRect(pos, size);
+    Surface.DrawText(Pict.second, &textRect, DT_CENTER|DT_VCENTER|DT_CALCRECT);
+    const PixelSize newSize = textRect.GetSize();
+    textRect.Offset((newSize.cx - size.cx) / 2, - ((newSize.cy - size.cy) / 2));
+    Surface.DrawText(Pict.second, &textRect, DT_CENTER|DT_VCENTER);
+
+    Surface.SelectObject(OldFont);
+    Surface.SetTextColor(OldColor);
 }
 
 
@@ -130,7 +109,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 {
   static bool flip= true;
   static PixelSize loggerIconSize,mmIconSize, batteryIconSize;
-  static POINT loggerPoint, mmPoint, batteryPoint;
+  static RasterPoint loggerPoint, mmPoint, batteryPoint;
   static PixelSize loggerNewSize, mmNewSize, batteryNewSize;
   static int vsepar;
 
@@ -243,83 +222,83 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   //
   // Big icon
   //
+  if(Appearance.UTF8Pictorials == false) {
 
-  if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) {
-      ptmpBitmap = &hClimb;
-  } else {
-      //short i=Get_Current_Multimap_Type()-1;
-      short i=ModeType[LKMODE_MAP]-1;
-      if (i<0) i=0;
-      if (!IsMultiMap()) {
-          switch(i) {
-              case 0:
-                  ptmpBitmap = &hIMM0;
-                  break;
-              case 1:
-                  ptmpBitmap = &hIMM1;
-                  break;
-              case 2:
-                  ptmpBitmap = &hIMM2;
-                  break;
-              case 3:
-                  ptmpBitmap = &hIMM3;
-                  break;
-              case 4:
-                  ptmpBitmap = &hIMM4;
-                  break;
-              case 5:
-                  ptmpBitmap = &hIMM5;
-                  break;
-              case 6:
-                  ptmpBitmap = &hIMM6;
-                  break;
-              case 7:
-                  ptmpBitmap = &hIMM7;
-                  break;
-              case 8:
-                  ptmpBitmap = &hIMM8;
-                  break;
-              default:
-                  ptmpBitmap = &hIMM0;
-                  break;
-         }
-      } else {
-          switch(i) {
-              case 0:
-                  ptmpBitmap = &hMM0;
-                  break;
-              case 1:
-                  ptmpBitmap = &hMM1;
-                  break;
-              case 2:
-                  ptmpBitmap = &hMM2;
-                  break;
-              case 3:
-                  ptmpBitmap = &hMM3;
-                  break;
-              case 4:
-                  ptmpBitmap = &hMM4;
-                  break;
-              case 5:
-                  ptmpBitmap = &hMM5;
-                  break;
-              case 6:
-                  ptmpBitmap = &hMM6;
-                  break;
-              case 7:
-                  ptmpBitmap = &hMM7;
-                  break;
-              case 8:
-                  ptmpBitmap = &hMM8;
-                  break;
-              default:
-                  ptmpBitmap = &hMM0;
-                  break;
-         }
-      }
-  }
-  if(Appearance.UTF8Pictorials == false)
-  {
+    if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) {
+        ptmpBitmap = &hClimb;
+    } else {
+        //short i=Get_Current_Multimap_Type()-1;
+        short i=ModeType[LKMODE_MAP]-1;
+        if (i<0) i=0;
+        if (!IsMultiMap()) {
+            switch(i) {
+                case 0:
+                    ptmpBitmap = &hIMM0;
+                    break;
+                case 1:
+                    ptmpBitmap = &hIMM1;
+                    break;
+                case 2:
+                    ptmpBitmap = &hIMM2;
+                    break;
+                case 3:
+                    ptmpBitmap = &hIMM3;
+                    break;
+                case 4:
+                    ptmpBitmap = &hIMM4;
+                    break;
+                case 5:
+                    ptmpBitmap = &hIMM5;
+                    break;
+                case 6:
+                    ptmpBitmap = &hIMM6;
+                    break;
+                case 7:
+                    ptmpBitmap = &hIMM7;
+                    break;
+                case 8:
+                    ptmpBitmap = &hIMM8;
+                    break;
+                default:
+                    ptmpBitmap = &hIMM0;
+                    break;
+            }
+        } else {
+            switch(i) {
+                case 0:
+                    ptmpBitmap = &hMM0;
+                    break;
+                case 1:
+                    ptmpBitmap = &hMM1;
+                    break;
+                case 2:
+                    ptmpBitmap = &hMM2;
+                    break;
+                case 3:
+                    ptmpBitmap = &hMM3;
+                    break;
+                case 4:
+                    ptmpBitmap = &hMM4;
+                    break;
+                case 5:
+                    ptmpBitmap = &hMM5;
+                    break;
+                case 6:
+                    ptmpBitmap = &hMM6;
+                    break;
+                case 7:
+                    ptmpBitmap = &hMM7;
+                    break;
+                case 8:
+                    ptmpBitmap = &hMM8;
+                    break;
+                default:
+                    ptmpBitmap = &hMM0;
+                    break;
+            }
+        }
+    }
+
     if(ptmpBitmap ) {
       ptmpBitmap->Draw(Surface, mmPoint.x, mmPoint.y, mmNewSize.cx,mmNewSize.cy);
     }
@@ -327,7 +306,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   else
   {
    short i=ModeType[LKMODE_MAP]-1;
-   UTF8DrawMultimapSymbol( Surface, mmPoint.x, mmPoint.y, i);
+   UTF8DrawMultimapSymbol( Surface, mmPoint, mmNewSize, i);
   }
   //
   // Battery indicator
