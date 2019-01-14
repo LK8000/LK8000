@@ -1031,7 +1031,7 @@ _@M975_ " GPS data error "
 #
 # V6.2
 #
-_@M981_ "Auto-Contrast"
+_@M981_ "Auto-Contrast "
 _@M982_ "(reserved)"
 _@M983_ "Traffic on map "
 

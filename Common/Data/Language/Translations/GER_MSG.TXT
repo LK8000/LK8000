@@ -2968,6 +2968,13 @@ _@M974_ " GPS nicht verbunden "
 #_@M975_ " GPS data error "
 _@M975_ " GPS Datenfehler "
 
+#_@M981_ "Auto-Contrast "
+_@M981_ "Auto-Kontrast "
+
+#_@M982_ "(reserved)"
+_@M982_ "(reserviert)"
+
+#_@M983_ "Traffic on map "
 _@M983_ "Verkehr auf Karte "
 
 #
@@ -6021,13 +6028,13 @@ _@M2337_ "Lufträume"
 _@M2338_ "Luftraum Dateien"   #_@M63_
 
 #_@M2339_ "Airspace File "   #_@M64_  
-_@M2339_ "Luftraum Datei"   #_@M64_
+_@M2339_ "LR-Datei"   #_@M64_
 
 #_@M2340_ "Waypoint Files"   #_@M806_   
 _@M2340_ "Wegpunkt Dateien"   #_@M806_
 
 #_@M2341_ "Waypoint File"    #_@M807_
-_@M2341_ "Wegpunkt Datei"    #_@M807_
+_@M2341_ "WP-Datei"    #_@M807_
 
 #_@M2342_ "File"             #_@M1227
 _@M2342_ "Datei"             #_@M1227_
