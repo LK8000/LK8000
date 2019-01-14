@@ -5092,6 +5092,32 @@ _@M1860_ "HSI"
 #_@M1870_ "Airspace Sonar "
 _@M1870_ "Luftraum Sonar "
 
+# Menu 12 font edit
+#_@M1880_ "Map waypoints "
+_@M1880_ "Karten Wegpunkte "
+
+#_@M1881_ "Map topology "
+_@M1881_ "Karten Topologie "
+
+#_@M1882_ "Nearest "
+_@M1882_ "Nächste "
+
+#_@M1883_ "Bottom bar "
+_@M1883_ "Info Streifen "
+
+#_@M1884_ "Overlay type "
+_@M1884_ "Einblendung Typ"
+
+#_@M1885_ "Info on 2 lines "
+_@M1885_ "Info Streifen Zweizeilig "
+
+#_@M1886_ "Overlay target "
+_@M1886_ "Einblendung Ziel "
+
+#_@M1887_ "Overlay values "
+_@M1887_ "Einblendung Werte "
+
+_@M1888_ "Visual Glide "
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -5272,8 +5298,8 @@ _@M2056_ "Informat\n1/2"
 #_@M2057_ "Info\n2/2"
 _@M2057_ "Informat\n2/2"
 
-#_@M2058_ "Where\nAm I?"
-_@M2058_ "Wo bin\nich?"
+#_@M2058_ "Oracle"
+_@M2058_ "Orakel"
 
 #_@M2059_ "Nearest\nWaypoint"
 _@M2059_ "Nächster\nWegpunkt"
@@ -5873,10 +5899,6 @@ _@M2278_ "XC Geschw."
 
 #_@M2279_ "Contest"
 _@M2279_ "Contest"
-
-# MAX 2250! 
-# (Reserved for custom menus up to 2300!)
-# Note for developers: remember LKLanguage MAX_MESSAGE limit
 
 # S = Start Task point
 #_@M2301  "S" 
