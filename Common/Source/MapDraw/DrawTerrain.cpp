@@ -15,7 +15,7 @@
 #include "../Draw/ScreenProjection.h"
 #include "NavFunctions.h"
 
-// #define TDEBUG 1
+#define DRAW_TIMER
 
 #include "ColorRamps.h"
 #include "Kobo/Model.hpp"
@@ -33,16 +33,12 @@
 #define NOSHADING_REALSCALE  14.3 // After 20Km  zoom 14.3
 #endif
 
-static short autobr=128;
-
 extern bool FastZoom;
 
 static COLORRAMP tshadow;
 static COLORRAMP thighlight;
 
 static const COLORRAMP (*lastColorRamp)[NUM_COLOR_RAMP_LEVELS] = nullptr;
-static unsigned last_height_scale = 0;
-static double last_terrain_whiteness = 0;
 
 extern void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float light);
 
@@ -100,7 +96,7 @@ static Luminosity8 linear_interpolation(const Luminosity8& a, const Luminosity8&
   return  linear_interpolation<level>(a.GetLuminosity(), b.GetLuminosity(), f);
 }
 
-#if !defined(NDEBUG) || defined(TESTBENCH)
+#if !defined(NDEBUG) || TESTBENCH
 static bool IsValidColorRamp(const COLORRAMP(&ramp_colors)[NUM_COLOR_RAMP_LEVELS]) {
 
   const auto begin = std::begin(ramp_colors);
@@ -184,7 +180,7 @@ public:
 
     explicit TerrainRenderer(const RECT& rc) : _dirty(true), _ready(), screen_buffer(), height_buffer(), color_table()  {
 
-#if !defined(NDEBUG) || defined(TESTBENCH)
+#if !defined(NDEBUG) || TESTBENCH
       // check if all colors_ramps are valid.
       for( const auto& ramp : terrain_colors) {
         if(!IsValidColorRamp(ramp)) {
@@ -194,8 +190,8 @@ public:
       }
 #endif
 
-#if (WINDOWSPC>0) && TESTBENCH
-        StartupStore(_T(".... Init TerrainRenderer area (%ld,%ld) (%ld,%ld)\n"), rc.left, rc.top, rc.right, rc.bottom);
+#if TESTBENCH
+        StartupStore(_T(".... Init TerrainRenderer area (%d,%d) (%d,%d)\n"), (int)rc.left, (int)rc.top, (int)rc.right, (int)rc.bottom);
 #endif
         static bool error = false;
         // This will not disable terrain! So we shall get calling here again, but no problem.
@@ -265,9 +261,12 @@ public:
         }
 #endif
 
+        auto_brightness = 218;
+
         // Reset this, so ColorTable will reload colors
         lastColorRamp = NULL;
         last_height_scale = 0;
+        last_realscale = 0;
 
         // this is validating terrain construction
         _ready = true;
@@ -298,6 +297,10 @@ public:
         return _ready;
     }
 
+    short get_brightness() const {
+        return auto_brightness;
+    }
+
 private:
     bool _dirty; // indicate screen_buffer is up-to-date
     bool _ready; // indicate renderer is fully initialised
@@ -324,20 +327,18 @@ private:
 
     const COLORRAMP (*color_ramp)[NUM_COLOR_RAMP_LEVELS];
 
+    unsigned last_height_scale;
+    double last_terrain_whiteness;
+    double last_realscale;
+
     unsigned height_scale; // scale factor  ((height - height_min + 1) << height_scale) must be in [0 - 255] range
     int16_t height_min; // lower height visible terrain
     int16_t height_max; // highter height visible terrain
 
-    bool DoShading() const {
+    short auto_brightness;
 
-        /*
-        // We might accelerate drawing by disabling shading while quickdrawing,
-        // but really this wouldnt change much the things now in terms of speed,
-        // while instead creating a confusing effect.
-        if (QUICKDRAW) {
-            return false;
-        } else ...
-        */
+
+    bool DoShading() const {
 
         if (epx > min(ixs, iys) / 4) {
             return false;
@@ -537,42 +538,10 @@ public:
 
         const bool do_shading = DoShading();
 
-        int tc=1;
-     if (AutoContrast) {
-        //
-        // The more you zoom in (lower RealScale), the more you rise contrast and brightness.
-        // More details are visible at high zoom levels, automatically, and shading artifacts are not
-        // appearing at low zoom.
-        // Linear scaling not giving good enough results, going manual here.
-        //
-
-        // 100->255 %  (1:2.55) :
-        // 10=25.5 15=38 20=51 25=64 30=76.5 40=102 45=114 50=127.5 60=153 65=166 70=178.5 75=191 80=204 85=218 90=229
-        const double ftc=MapWindow::zoom.RealScale();
-        if (ftc>10.8) { tc=51; autobr=114; }                               // 20 km and up 20 45
-           else if (ftc>7.2) { tc=64; autobr=128; }                        // 15 km   25 50
-              else if (ftc>5.4) { tc=64; autobr=128; }                     //  10 km  25 50
-                 else if (ftc>3.58) { tc=64; autobr=166; }                 // 7.5 km  25 65
-                    else if (ftc>2.55) { tc=102; autobr=179; }             // 5.0 km  40 70
-                       else if (ftc>1.43) { tc=128; autobr=179; }          // 3.5 km  50 70
-                          else if (ftc>1.1) { tc=179; autobr=191; }        // 2.0 km  70 75
-                             else if (ftc>0.72) { tc=204; autobr=191; }    // 1.5 km  80 75
-                                else if (ftc>0.54) { tc=204; autobr=204; } // 1.0 km  80 80
-                                   else { tc=218; autobr=218; }            //  < 1km  85 85
-
-        // StartupStore(_T("AUTOC scale=%f  contrast=%d  brightness=%d\n"),MapWindow::zoom.RealScale(), tc,autobr);
-
-     } else { // NOT AUTOCONTRAST
-        tc = TerrainContrast;
-        // StartupStore(_T("CONTRAST=%d  BRIGHT=%d  scale=%f \n"),TerrainContrast,TerrainBrightness, MapWindow::zoom.RealScale());
-     }
-
-
 #ifndef NDEBUG
         const int16_t* hBuf_end = std::next(height_buffer, ixs * iys);
         const int16_t* hBuf_begin = height_buffer;
 #endif
-        const int tc_in_use = tc;
         if (!screen_buffer->GetBuffer()) return;
 
 #if defined(_OPENMP)
@@ -701,7 +670,7 @@ public:
                             int mag = isqrt4(dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
                             if (mag > 0) {
                                 mag = (dd2 * sz + dd0 * sx + dd1 * sy) / mag;
-                                mag = Clamp((mag - sz) * tc_in_use / 128, -64, 63);
+                                mag = Clamp((mag - sz), -64, 63);
                                 *imageBuf = GetColor(h, mag);
                             } else {
                                 *imageBuf = GetColor(h);
@@ -733,13 +702,22 @@ private:
         color_table[mag + 64][height] = std::forward<BGRColor>(color);
     }
 
+    static constexpr BGRColor GetInvalidColor() {
+#ifdef DITHER
+        return BGRColor(255, 255, 255); // White terrain invalid
+#else
+        return BGRColor(194, 223, 197); // LCD green terrain invalid
+#endif
+    }
+
 
 public:
     void ColorTable() {
         color_ramp = &terrain_colors[TerrainRamp];
         if (color_ramp == lastColorRamp &&
                 height_scale == last_height_scale &&
-                last_terrain_whiteness == TerrainWhiteness)
+                last_terrain_whiteness == TerrainWhiteness &&
+                last_realscale == MapWindow::zoom.RealScale())
         {
             // no need to update the color table
             return;
@@ -747,6 +725,33 @@ public:
         lastColorRamp = color_ramp;
         last_height_scale = height_scale;
         last_terrain_whiteness = TerrainWhiteness;
+        last_realscale = MapWindow::zoom.RealScale();
+
+
+        short auto_contrast = TerrainContrast;
+
+        if (AutoContrast) {
+            //
+            // The more you zoom in (lower RealScale), the more you rise contrast and brightness.
+            // More details are visible at high zoom levels, automatically, and shading artifacts are not
+            // appearing at low zoom.
+            // Linear scaling not giving good enough results, going manual here.
+            //
+
+            // 100->255 %  (1:2.55) :
+            // 10=25.5 15=38 20=51 25=64 30=76.5 40=102 45=114 50=127.5 60=153 65=166 70=178.5 75=191 80=204 85=218 90=229
+            if      (last_realscale > 10.8) { auto_contrast=51;  auto_brightness=114; } // 20 km and up 20 45
+            else if (last_realscale > 7.2)  { auto_contrast=64;  auto_brightness=128; } // 15 km   25 50
+            else if (last_realscale > 5.4)  { auto_contrast=64;  auto_brightness=128; } //  10 km  25 50
+            else if (last_realscale > 3.58) { auto_contrast=64;  auto_brightness=166; } // 7.5 km  25 65
+            else if (last_realscale > 2.55) { auto_contrast=102; auto_brightness=179; } // 5.0 km  40 70
+            else if (last_realscale > 1.43) { auto_contrast=128; auto_brightness=179; } // 3.5 km  50 70
+            else if (last_realscale > 1.1)  { auto_contrast=179; auto_brightness=191; } // 2.0 km  70 75
+            else if (last_realscale > 0.72) { auto_contrast=204; auto_brightness=191; } // 1.5 km  80 75
+            else if (last_realscale > 0.54) { auto_contrast=204; auto_brightness=204; } // 1.0 km  80 80
+            else                            { auto_contrast=218; auto_brightness=218; } //  < 1km  85 85
+
+        }
 
         for (int h = 0; h < 256; h++) {
 
@@ -755,16 +760,16 @@ public:
             for (int mag = -64; mag < 64; mag++) {
                 // i=255 means TERRAIN_INVALID. Water is colored in Slope
                 if (h == 255) {
-                    #ifdef DITHER
-                    SetColor(h, mag, BGRColor(255, 255, 255)); // White terrain invalid
-                    #else
-                    SetColor(h, mag, BGRColor(194, 223, 197)); // LCD green terrain invalid
-                    #endif
+                    SetColor(h, mag, GetInvalidColor());
                 } else {
-                    SetColor(h, mag, BGRColor(terrain_lightness(TerrainShading(mag, height_color),TerrainWhiteness)) );
+                    SetColor(h, mag, BGRColor(terrain_lightness(TerrainShading(mag * auto_contrast / 128, height_color),TerrainWhiteness)) );
                 }
             }
         }
+
+#ifdef DRAW_TIMER
+        StartupStore("Draw Terrain : updated ColorTable");
+#endif
     }
 
     void Draw(LKSurface& Surface, const RECT& rc) {
@@ -826,7 +831,6 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
     return true;
 }
 
-#define DRAW_TIMER
 
 /**
  * Require LockTerrainDataGraphics() everytime !
@@ -908,11 +912,7 @@ _redo:
         trenderer->ColorTable();
 
         // step 2: calculate sunlight vector
-        double fudgeelevation = 1;
-        if (AutoContrast)
-           fudgeelevation = (10.0 + 80.0 * autobr / 255.0);
-        else
-           fudgeelevation = (10.0 + 80.0 * TerrainBrightness / 255.0);
+        double fudgeelevation  = (10.0 + 80.0 * trenderer->get_brightness() / 255.0);
 
         // step 3: calculate derivatives of height buffer
         // step 4: calculate illumination and colors
