@@ -835,7 +835,7 @@ public:
                    typename SPT::const_rpointer_type src,
                    unsigned src_size,
                    PixelOperations operations) const {
-#if defined(__ARM_NEON__) && defined(GREYSCALE)
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && defined(GREYSCALE)
     if (dest_size == src_size * 2) {
       /* NEON-optimised special case */
       NEONBytesTwice neon;

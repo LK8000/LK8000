@@ -29,7 +29,7 @@ Copyright_License {
 #include "Screen/Custom/Cache.hpp"
 #include "Util/StringUtil.hpp"
 
-#ifdef __ARM_NEON__
+#if defined(__ARM_NEON) || defined(__ARM_NEON__)
 #include "NEON.hpp"
 #endif
 
