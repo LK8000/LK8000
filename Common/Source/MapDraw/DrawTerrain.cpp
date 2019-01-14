@@ -331,12 +331,13 @@ private:
     double last_terrain_whiteness;
     double last_realscale;
 
-    unsigned height_scale; // scale factor  ((height - height_min + 1) << height_scale) must be in [0 - 255] range
+    unsigned height_scale; // scale factor  ((height - height_min) << height_scale) must be in [0 - 255] range
     int16_t height_min; // lower height visible terrain
     int16_t height_max; // highter height visible terrain
 
     short auto_brightness;
 
+public:
 
     bool DoShading() const {
 
@@ -356,8 +357,6 @@ private:
 
         return (Shading && terrain_doshading[TerrainRamp]);
     }
-
-public:
 
     /**
      * Fill height Buffer with according to map projection
@@ -508,7 +507,7 @@ public:
             }
         }
 
-        const int16_t height_span = height_max - height_min + 1;
+        const int16_t height_span = height_max - height_min;
         while((height_span >> height_scale) >= 255) {
           ++height_scale;
         }
@@ -523,171 +522,112 @@ public:
     // (gridding of display) This is why epx is used instead of 1
     // previously.  for large zoom levels, epx=1
 
-    void Slope(const int sx, const int sy, const int sz) {
+    void Slope_shading(const int sx, const int sy, const int sz) {
 
         LKASSERT(height_buffer != NULL);
-        const int iepx = (int) epx;
-        const unsigned int cixs = ixs;
+        if(!height_buffer) {
+            return;
+        }
+        if (!screen_buffer->GetBuffer()) {
+            return;
+        }
 
-        const unsigned int ciys = iys;
-
-        const unsigned int ixsepx = cixs*epx;
-        const unsigned int ixsright = cixs - 1 - iepx;
-        const unsigned int iysbottom = ciys - iepx;
         const int hscale = std::max<int>(1, pixelsize_d);
-
-        const bool do_shading = DoShading();
-
-#ifndef NDEBUG
-        const int16_t* hBuf_end = std::next(height_buffer, ixs * iys);
-        const int16_t* hBuf_begin = height_buffer;
-#endif
-        if (!screen_buffer->GetBuffer()) return;
 
 #if defined(_OPENMP)
         #pragma omp parallel for
 #endif
-        for (unsigned int y = 0; y < ciys; ++y) {
-            const int itss_y = ciys - 1 - y;
-            const int itss_y_ixs = itss_y*cixs;
-            const int yixs = y*cixs;
-            bool ybottom = false;
-            bool ytop = false;
-            int p31, p32, p31s;
+        for(unsigned y = 0; y < iys; y++) {
+            BGRColor* screen_row = screen_buffer->GetRow(y);
 
-            if (y < iysbottom) {
-                p31 = iepx;
-                ybottom = true;
-            } else {
-                p31 = itss_y;
+            const unsigned prev_row_index =  (y < epx) ? 0 : y - epx;
+            const unsigned next_row_index =  (y + epx >= iys) ? iys - 1 : y + epx;
+
+            const int16_t* prev_row = &height_buffer[prev_row_index * ixs];
+            const int16_t* curr_row = &height_buffer[y * ixs];
+            const int16_t* next_row = &height_buffer[next_row_index * ixs];
+
+            const float p31 = next_row_index - prev_row_index;
+            const float p31s = p31 * hscale;
+
+            for (unsigned int x = 0; x < ixs; ++x) {
+                const unsigned prev_col_index =  (x < epx) ? 0 : x - epx;
+                const unsigned next_col_index =  (x + epx >= ixs) ? ixs - 1 : x + epx;
+
+                const int16_t up =     *(prev_row + x);
+                const int16_t bottom = *(next_row + x);
+                const int16_t left =   *(curr_row + prev_col_index);
+                const int16_t right =  *(curr_row + next_col_index);
+
+                const int32_t p20 = next_col_index - prev_col_index;
+                const int32_t p22 = right - left;
+                const int32_t p32 = bottom - up;
+
+                int32_t dd0 = p22 * p31;
+                int32_t dd1 = p20 * p32;
+                int32_t dd2 = p20 * p31s;
+
+                // prevent overflow of magnitude calculation
+                const int32_t scale = (dd2 / 512) + 1;
+                dd0 /= scale;
+                dd1 /= scale;
+                dd2 /= scale;
+
+                const int32_t sqr_mag = (dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
+                int32_t mag = (dd2 * sz + dd0 * sx + dd1 * sy) / isqrt4(sqr_mag);
+                mag = Clamp<int32_t >((mag - sz), -64, 63);
+
+                int16_t h =  *(curr_row + x);
+                h = ((h - height_min) >> height_scale);
+                h = Clamp<int16_t>(h, 0, 255);
+
+                screen_row[x] = GetColor(h, mag);
             }
+        }
+    }
 
-            if (y >= (unsigned int) iepx) {
-                p31 += iepx;
-            } else {
-                p31 += y;
-                ytop = true;
+    void Slope() {
+        LKASSERT(height_buffer != NULL);
+        if(!height_buffer) {
+            return;
+        }
+        if (!screen_buffer->GetBuffer()) {
+            return;
+        }
+
+#if defined(_OPENMP)
+        #pragma omp parallel for
+#endif
+        for (unsigned int y = 0; y < iys; ++y) {
+            BGRColor* screen_row = screen_buffer->GetRow(y);
+            const int16_t *height_row = &height_buffer[y*ixs];
+            
+            for (unsigned int x = 0; x < ixs; ++x) {
+                int16_t h = height_row[x];
+                h = ((h - height_min) >> height_scale);
+                h = Clamp<int16_t>(h, 0, 255);
+                screen_row[x] = GetColor(h);
             }
-            p31s = p31*hscale;
+        }
+    }
 
-            BGRColor* RowBuf = screen_buffer->GetRow(y);
-            const int16_t *RowthBuf = &height_buffer[y*cixs];
-            assert(RowthBuf < hBuf_end);
-            assert(RowthBuf >= hBuf_begin);
+    void FixOldMapWater() {
+        // this exist only for compatibility with old topology file without water shape
+        // in this case all altitude equal to zero are water.
+        // if topology file contain water shape this fonction have zero overhead in this case.
+        if(!LKWaterTopology) {
 
-            for (unsigned int x = 0; x < cixs; ++x) {
+            for (unsigned int y = 0; y < iys; ++y) {
+                BGRColor* screen_row = screen_buffer->GetRow(y);
+                const int16_t *height_row = &height_buffer[y*ixs];
 
-                BGRColor* imageBuf = &RowBuf[x];
-                const int16_t *thBuf = &RowthBuf[x];
-                assert(thBuf < hBuf_end);
-                assert(thBuf >= hBuf_begin);
-
-                int16_t h = *thBuf;
-
-                // if >=0 then the sea disappears...
-                if (h != TERRAIN_INVALID) {
-                    // if (h==0 && LKWaterThreshold==0) { // no LKM coasts, and water altitude
-                    if (h == LKWaterThreshold) { // see above.. h cannot be -1000.. so only when LKW is 0 h can be equal
-                        *imageBuf = BGRColor(85, 160, 255); // set water color #55 A0 FF
-                        continue;
-                    }
-
-                    // this fix rendering of negative elevation terrain ( 45 country are concerned ... )
-                    h = h - height_min + 1;
-                    assert(TerrainRamp == 13 || h >= 0); // height_min is wrong... 
-
-                    h = h >> height_scale;
-                    assert(TerrainRamp == 13 || h < 256); // height_scale is wrong ...
-
-                    h = Clamp<int16_t>(h, 0, 255); // avoid buffer overflow....
-
-                    int p20, p22;
-                    // no need to calculate slope if undefined height or sea level
-                    if (do_shading) {
-                        if (x < ixsright) {
-                            p20 = iepx;
-                            assert((thBuf + iepx) < hBuf_end);
-                            assert((thBuf + iepx) >= hBuf_begin);
-                            p22 = *(thBuf + iepx);
-                        } else {
-                            int itss_x = cixs - x - 2;
-                            p20 = itss_x;
-                            assert((thBuf + itss_x) < hBuf_end);
-                            assert((thBuf + itss_x) >= hBuf_begin);
-                            p22 = *(thBuf + itss_x);
-                        }
-
-                        if (x >= (unsigned int) iepx) {
-                            p20 += iepx;
-                            assert((thBuf - iepx) < hBuf_end);
-                            assert((thBuf - iepx) >= hBuf_begin);
-                            p22 -= *(thBuf - iepx);
-                        } else {
-                            p20 += x;
-                            p22 -= *(thBuf - x);
-                        }
-
-                        if (ybottom) {
-                            assert((thBuf + ixsepx) < hBuf_end);
-                            assert((thBuf + ixsepx) >= hBuf_begin);
-                            p32 = *(thBuf + ixsepx);
-                        } else {
-                            assert((thBuf + itss_y_ixs) < hBuf_end);
-                            assert((thBuf + itss_y_ixs) >= hBuf_begin);
-                            p32 = *(thBuf + itss_y_ixs);
-                        }
-
-                        if (ytop) {
-                            assert((thBuf - yixs) < hBuf_end);
-                            assert((thBuf - yixs) >= hBuf_begin);
-                            p32 -= *(thBuf - yixs);
-                        } else {
-                            assert((thBuf - ixsepx) < hBuf_end);
-                            assert((thBuf - ixsepx) >= hBuf_begin);
-                            p32 -= *(thBuf - ixsepx);
-                        }
-
-                        if ((p22 == 0) && (p32 == 0)) {
-
-                            // slope is zero, so just look up the color
-                            *imageBuf = GetColor(h);
-
-                        } else {
-
-                            // p20 and p31 are never 0... so only p22 or p32 can be zero
-                            // if both are zero, the vector is 0,0,1 so there is no need
-                            // to normalize the vector
-                            int dd0 = p22*p31;
-                            int dd1 = p20*p32;
-                            int dd2 = p20*p31s;
-
-                            // prevent overflow of magnitude calculation
-                            const int scale = (dd2 / 512) + 1;
-                            dd0 /= scale;
-                            dd1 /= scale;
-                            dd2 /= scale;
-
-                            int mag = isqrt4(dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
-                            if (mag > 0) {
-                                mag = (dd2 * sz + dd0 * sx + dd1 * sy) / mag;
-                                mag = Clamp((mag - sz), -64, 63);
-                                *imageBuf = GetColor(h, mag);
-                            } else {
-                                *imageBuf = GetColor(h);
-                            }
-                        }
-                    } else {
-                        // not using shading, so just look up the color
-                        *imageBuf = GetColor(h);
-                    }
-                } else {
-                    // old: we're in the water, so look up the color for water
-                    // new: h is TERRAIN_INVALID here
-                    *imageBuf = GetColor(255);
+                for (unsigned int x = 0; x < ixs; ++x) {
+                    int16_t h = height_row[x];
+                    screen_row[x] = (h == 0) ? BGRColor(85, 160, 255) : screen_row[x];
                 }
-            } // for
-        } // for
-    };
+            }
+        }
+    }
 
 
 private:
@@ -911,25 +851,31 @@ _redo:
         //   and max height of terrain
         trenderer->ColorTable();
 
-        // step 2: calculate sunlight vector
-        double fudgeelevation  = (10.0 + 80.0 * trenderer->get_brightness() / 255.0);
-
         // step 3: calculate derivatives of height buffer
         // step 4: calculate illumination and colors
 #ifdef DRAW_TIMER
         uint64_t slope_start=MonotonicClockUS();
 #endif
-        const int sx = (255 * (fastcosine(fudgeelevation) * fastsine(sunazimuth)));
-        const int sy = (255 * (fastcosine(fudgeelevation) * fastcosine(sunazimuth)));
-        const int sz = (255 * fastsine(fudgeelevation));
 
         // step 3: calculate derivatives of height buffer
         // step 4: calculate illumination and colors
-        trenderer->Slope(sx, sy, sz);
+        if(trenderer->DoShading()) {
+            // calculate sunlight vector
+            const double fudgeelevation  = (10.0 + 80.0 * trenderer->get_brightness() / 255.0);
+            const int sx = (255 * (fastcosine(fudgeelevation) * fastsine(sunazimuth)));
+            const int sy = (255 * (fastcosine(fudgeelevation) * fastcosine(sunazimuth)));
+            const int sz = (255 * fastsine(fudgeelevation));
+
+            trenderer->Slope_shading(sx, sy, sz);
+        } else {
+            trenderer->Slope();
+        }
 #ifdef DRAW_TIMER
         uint64_t slope_time=MonotonicClockUS()-slope_start;
         StartupStore(_T("Draw Terrain : slope time  < %u.%u ms >\n"),(int)slope_time/1000, (int)slope_time%1000);
 #endif
+
+        trenderer->FixOldMapWater();
     }
     // step 5: draw
     trenderer->Draw(Surface, rc);

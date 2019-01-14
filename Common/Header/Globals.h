@@ -361,8 +361,10 @@ GEXTERN int ActiveGate;
 // LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
 GEXTERN int LKTopo;
 
-// This threshold used in Terrain.cpp to distinguish water altitude
-GEXTERN short LKWaterThreshold;
+// This used in Terrain.cpp to draw water if "Coast Area" not available in topology file
+GEXTERN bool LKWaterTopology;
+
+
 GEXTERN double LKTopoZoomCat05;
 GEXTERN double LKTopoZoomCat10;
 GEXTERN double LKTopoZoomCat20;

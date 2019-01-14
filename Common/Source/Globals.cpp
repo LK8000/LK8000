@@ -391,8 +391,10 @@ void Globals_Init(void) {
 
   // LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
   LKTopo=0;
-  // This threshold used in Terrain.cpp to distinguish water altitude
-  LKWaterThreshold=0;
+  
+  // This used in Terrain.cpp to draw water if "Coast Area" not available in topology file
+  LKWaterTopology = false;
+
   LKTopoZoomCat05=0;
   LKTopoZoomCat10=0;
   LKTopoZoomCat20=0;

@@ -30,6 +30,7 @@ void OpenTopology() {
   static TCHAR Directory[MAX_PATH] = TEXT("\0");
 
   LKTopo=0;
+  LKWaterTopology=false;
 
   LockTerrainDataGraphics();
 
@@ -71,7 +72,6 @@ void OpenTopology() {
   TCHAR *Stop;
   int numtopo = 0;
   int shapeIndex=0;
-  LKWaterThreshold=0;
 
   charset cs = charset::unknown;
   while(ReadString(zFile,READLINE_LENGTH,TempString,cs)) {
@@ -123,8 +123,7 @@ void OpenTopology() {
 			case 5:
 				// Coast Area
 				ShapeRange=100;
-				// Below (<=) this values, it is water painted blue
-				LKWaterThreshold=-1000;
+				LKWaterTopology = true;
 				break;
 			case 10:
 				// Water Area
