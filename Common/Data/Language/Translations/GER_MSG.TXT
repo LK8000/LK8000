@@ -5786,6 +5786,94 @@ _@M2247_ "28/45 FAI Schwelle "
 #_@M2248_  "No Near Object found!"
 _@M2248_  "Kein nahes Objekt gefunden!"
 
+
+# DO NOT TRANSLATE 2249
+_@M2249_  "DspMode"
+
+_@M2250_ "Ext. Sound"
+_@M2251_  "Optimizer\nmode"
+
+_@M2252_ "MANUAL"
+_@M2253_ "AUTO THERMALLING"
+_@M2254_ "FULL AUTO"
+
+
+#_@M2255_ "XC FREE Fligth distance"
+_@M2255_ "XC FREIER Flug Entfernung"
+
+#_@M2256_ "XC FREE Fligth score"
+_@M2256_ "XC FREIER Flug Punkte"
+
+#_@M2257_ "XC FREE Triangle distance"
+_@M2257_ "XC FREIES Dreieck Entfernung"
+
+#_@M2258_ "XC FREE Triangle score"
+_@M2258_ "XC FREIES Dreieck Punkte"
+
+#_@M2259_ "XC FAI Triangle distance"
+_@M2259_ "XC FAI Dreieck Entfernung"
+
+#_@M2260_ "XC FAI Triangle score"
+_@M2260_ "XC FAI Dreieck Punkte"
+
+#_@M2261_ "XC Best distance"
+_@M2261_ "XC beste Entfernung"
+
+#_@M2262_ "XC Best score"
+_@M2262_ "XC beste Punktzahl"
+
+#_@M2263_ "XC Triangle closing distance"
+_@M2263_ "XC Dreieck Distanz zum Schließen"
+
+#_@M2264_ "XC Triangle closing %"
+_@M2264_ "XC Dreieck schließen %"
+
+#_@M2265_ "XC Triangle predicted distance"
+_@M2265_ "XC Dreieck vorhergesagete Distanz"
+
+#_@M2277_ "XC Mean Speed"
+_@M2277_ "XC mittlere Geschw."
+
+#_@M2266_ "FRE Dis"
+_@M2266_ "FREI Entf."
+
+#_@M2267_ "FRE Scr"
+_@M2267_ "FREI Pkt"
+
+#_@M2268_ "TRI Dis"
+_@M2268_ "3eck Entf."
+
+#_@M2269_ "TRI Scr"
+_@M2269_ "3eck Pkt"
+
+#_@M2270_ "FAI Dis"
+_@M2270_ "FAI Entf."
+
+#_@M2271_ "FAI Scr"
+_@M2271_ "FAI Pkt"
+
+#_@M2272_ "XC Dis"
+_@M2272_ "XC Entf"
+
+#_@M2273_ "XC Scr"
+_@M2273_ "XC Pkt"
+
+#_@M2274_ "XC C"
+_@M2274_ "XC C"
+
+#_@M2275_ "XC C%"
+_@M2275_ "XC C%"
+
+#_@M2276_ "XC Dis*"
+_@M2276_ "XC Entf.*"
+
+#_@M2278_ "XC Spd"
+_@M2278_ "XC Geschw."
+
+
+#_@M2279_ "Contest"
+_@M2279_ "Contest"
+
 # MAX 2250! 
 # (Reserved for custom menus up to 2300!)
 # Note for developers: remember LKLanguage MAX_MESSAGE limit
@@ -5804,3 +5892,200 @@ _@M2303_  "F"
 
 #_@M2304_  "GEAR WARNING DISABLED NOW!" 
 _@M2304_  "Jetzt KEINE Fahrwerkswarnung!"
+
+
+#_@M2305_  "Save runtime "
+_@M2305_  "Save runtime "
+
+#_@M2306_  "Setup\nRadio"
+_@M2306_  "Funk\nEinst."
+
+#_@M2307_  "Radio Settings"
+_@M2307_  "Funk Einstellungen"
+
+#_@M2308_  "Frequency"
+_@M2308_  "Frequenz"
+
+#_@M2309_  "RADIO"
+_@M2309_  "FUNK"
+
+#_@M2310_  "Vol"
+_@M2310_  "Vol"
+
+#_@M2311_  "Sqw""
+_@M2311_  "Sqw"
+
+# New infoboxes
+#_@M2312_ "Speed of maximum efficiency"
+_@M2312_ "Geschw. besten Gleitens"
+
+#_@M2313_ "SpMe"
+_@M2313_ "GeBG"
+
+#_@M2314_ "Target Req. Efficicency"
+_@M2314_ "benötigte Gleitzahl zum Ziel"
+
+#_@M2315_ "E.Tar"
+_@M2315_ "E.Ziel"
+
+#_@M2316_ "Aircraft symbol"
+_@M2316_ "Flugzeug symbol"
+
+#_@M2317_ "Triangle"
+_@M2317_ "Dreieck"
+
+#_@M2318_ "Paragleiter"
+_@M2318_ "Paraglider"
+
+#_@M2319_ "Hangglider"
+_@M2319_ "Hängegleiter"
+
+#_@M2320_ "Big Glider"
+_@M2320_ "großer Flgz."
+
+#_@M2321_ "Aircraft"
+_@M2321_ "Flugzeug"
+
+#_@M2322_ "Enable Radar"
+_@M2322_ "Radar ein"
+
+#_@M2323_ "Altitude QNE"
+_@M2323_ "Höhe QNE"
+
+#_@M2324_ "QNE"
+_@M2324_ "QNE"
+
+#_@M2325_ "Small Glider"
+_@M2325_ "kleiner Gleiter"
+
+#_@M2326_ "Gem"
+_@M2326_ "Gem"
+
+#_@M2327_ "Bitmap"
+_@M2327_ "Bitmap"
+
+#_@M2328_ "Install LKMAPS"
+_@M2328_ "Intalliere LKMAPS"
+
+#_@M2329_ "Open LKMAPS"
+_@M2329_ "Öffne LKMAPS"
+
+#_@M2330_ "Screen Orientation "
+_@M2330_ "Bildschirm Orientierung "
+
+#_@M2331_ "Glider Black"
+_@M2331_ "Flgz. schwarz"
+
+#_@M2332_ "Big Glider Black"
+_@M2332_ "großes Flgz. schwarz"
+
+
+#_@M2333_ "Tracking mode "
+_@M2333_ "Tracking mode "
+
+#_@M2334_ "in Flight Only (default)"
+_@M2334_ "nur im Flug (default)"
+#_@M2335_ "permanent"
+_@M2335_ "immer"
+
+
+#_@M2336_ "ICAO Code"
+_@M2336_ "ICAO Code"
+
+#_@M2337_ "Airspace\nLookup"
+_@M2337_ "Lufträume"
+
+#_@M2338_ "Airspace Files"   #_@M63_ 
+_@M2338_ "Luftraum Dateien"   #_@M63_
+
+#_@M2339_ "Airspace File "   #_@M64_  
+_@M2339_ "Luftraum Datei"   #_@M64_
+
+#_@M2340_ "Waypoint Files"   #_@M806_   
+_@M2340_ "Wegpunkt Dateien"   #_@M806_
+
+#_@M2341_ "Waypoint File"    #_@M807_
+_@M2341_ "Wegpunkt Datei"    #_@M807_
+
+#_@M2342_ "File"             #_@M1227
+_@M2342_ "Datei"             #_@M1227_
+
+#_@M2343_ "incl. Waypoints & Airspaces" 
+_@M2343_ "incl. Wegpunkte & Lufträume"
+
+#_@M2344_ "excl. Waypoints & Airspaces"
+_@M2344_ "excl. Wegpunkte & Lufträume" 
+
+#_@M2345_ "and"
+_@M2345_ "und"
+
+#_@M2346_ "are identical"  
+_@M2346_ "sind identisch"
+
+#_@M2347_ "airspaces excluded!" 
+_@M2347_ "Lufträume ignoriert!"
+
+#_@M2348_ "Outside terrain"
+_@M2348_ "außerhalb Terrain"
+
+#_@M2349_ "Target up"
+_@M2349_ "Ziel oben"
+
+
+# Multimap symbols
+_@M2350_ "M"
+_@M2351_ "①"
+_@M2352_ "②"
+_@M2353_ "③"
+_@M2354_ "④"
+_@M2355_ "⑤"
+_@M2356_ "⑥"
+_@M2357_ "⑦"
+_@M2358_ "⑧"
+_@M2359_ "⑨"
+_@M2360_ "⑩"
+
+# waypoint symbols
+_@M2361_ "◎"   # waypoint
+_@M2362_ "✈"   # airfield
+_@M2363_ "◠"   # mountain pass
+_@M2364_ "▴"   # mountain top
+_@M2365_ "☨"   # antenna
+_@M2366_ "⬡"  # VOR
+_@M2367_ "✺"   # NDB
+_@M2368_ "⛃"  # cooltower
+_@M2369_ "≊"  # dam
+_@M2370_ "⋒"  # tunel
+_@M2371_ "≍"  #bridge
+_@M2372_ "⚡"  # powerplant
+_@M2373_ "♜"  # castle
+_@M2374_ "⨯"  # intersection
+_@M2375_ "✈"  # traffic
+_@M2376_ "♨"  # thermal
+_@M2377_ "⚑"  # Marker
+_@M2378_ "✈"  # all others
+
+# other Multiselect symbols
+_@M2380_ "⚑"  # Team
+_@M2381_ "♕"  # Oracle
+_@M2382_ "■"  # ghost
+_@M2383_ "●"  # zombie
+_@M2384_ "✈"  # traffic
+
+#_@M2385_ "Map Symbols"
+_@M2385_ "Karten Symbole"
+
+#_@M2386_ "UTF8" # no need to translate
+_@M2386_ "UTF8" # muss nicht übersetzt werden
+ 
+#_@M2387_ "GND"  # instead of SFC, no need to translate
+_@M2387_ "GND"  # anstelle von SFC, muss nicht übersetzt werden
+
+#_@M2388_ "Draw XC\nOFF"
+_@M2388_ "Zeige XC\nAUS"
+
+#_@M2389_ "Draw XC\nON"
+_@M2389_ "Zeige XC\nAN"
+
+#_@M2290_ "Toggle Draw XC"
+_@M2290_ "XC Umschalten"

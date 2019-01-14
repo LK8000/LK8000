@@ -158,6 +158,7 @@ Bei vielen topologischen Merkmalen und Wegpunkten und einem langsamen Prozessor 
 #[Names in task] Names are only displayed for waypoints that are in the active task as well as the home airfield.
 #[First Three] The first 3 letters of the waypoint name are displayed.
 #[First Five] The first 5 letters of the waypoint name are displayed.
+#[ICAO Code] The ICAO airfield letter code (e.g. ‎EGLL for London Heathrow) (see help)
 Bestimmt wie die Wegpunktbezeichnungen dargestellt werden:
 [Namen] Der ganze Wegpunktname wird angezeigt.
 [Zahlen] Die Wegpunktnummer wird angezeigt.
@@ -165,6 +166,7 @@ Bestimmt wie die Wegpunktbezeichnungen dargestellt werden:
 [Namen in Aufgabe] Nur die Namen von Wegpunken in der aktiven Aufgabe sowie der Heimplatz werden angezeigt. 
 [Die ersten drei] Die ersten drei Buchstaben des Weppunktnamens werden angezeigt.
 [Die ersten fünf] Die ersten fünf Buchstaben des Wegpunktnamens werden angezeigt.
+[ICAO Code] Der ICAO Flugplatz Buchstabencode (zum Beispiel ‎EDDF für Frankfurt)
 
 @124
 #Determines whether and how long a snail trail is drawn behind the glider
@@ -595,7 +597,10 @@ Auswahl wie die Werte für die Landefelder dargestellt werden. Mit oder ohne Rah
 
 @186
 #Can show arrival altitude over safety, or required efficiency to arrive over safety.
+#OFF don't display any value (see help)
 Kann wahlweise die Ankunftshöhe über der Sicherheitsankunftshöhe oder die nötige Gleitzahl bis zur Ankunft über der Sicherheitsankunftshöhe darstellen.
+AUS: zeige keine Werte
+
 
 @187
 #If ON, bottom bar and LK pages are white with black text. The overlay text color will be reversed, so if you have set black they will be white. You can reverse these colors with a custom key. DEFAULT IS OFF.
@@ -920,7 +925,9 @@ Bestimmt wie man zur Texteingabe aufgefordert wird (Dateinamen, Team-Kode u.s.w.
 @236
 #This option defines how waypoints outside the terrain range are handled: the user can be asked when this occurs, 
 #or they can be always included or excluded.
-Diese Option bestimmt wie Wegpunkte außerhalb von verfügbarem Terrain dargestellt werden: Man kann gefragt werden wenn das passiert oder sie können immer aus- oder eingeschlossen werden.
+Diese Option bestimmt wie Wegpunkte und Lufträume außerhalb des eingestellten Karten Terrain behandelt werden: 
+incl. :Alle Lufträume und Wegpunkte werden unabhängig vom Terrain geldaden. 
+excl. :Nur Lufträume und Wegpunkte innerhalb des eingestallten Karten-Terrains werden geldaden.
 
 @237
 #Working only in Full Overlay mode: localtime clock is shown.
@@ -2240,6 +2247,121 @@ Gegenwindgeschwindigkeit auf dem aktuellen Kurs, die als Differenz aus der wahre
 Ein positiver Wert bedeutet Gegenwind, ein negativer Rückenwind. Ist die wahre Fahrt nicht verfügbar, wird die geschätzte wahre Fahrt benutzt und der Gegenwindwert ist
 dann ebenfalls geschätzt.
 
+
+@933
+#[Maximum efficiency speed to fly]
+#This is the speed to fly for maximizing distance in the current wind and netto vario conditions.
+#This is not MacCready STF (neither MC=0) that on the contrary tend to minimize task time and does not depend on current head wind conditions (except that on final glide). 
+#Use this speed if you want to maximize efficiency and glide distance
+[Geschwindigkeit besten Gleitens]
+Die ist die Geschwindigkeit um die maximale Distanz unter Berücksichtigung des Netto Steigens und des Windes zu erreichen,
+
+
+@934
+#[Target Req. Efficiency]
+#Required efficiency to the current target
+[Ziel erforderliche Gleitzahl]
+erforderliche Gleitzahl um das einstellte Navigationsziel zu erreichen.
+
+
+@937
+#[XC FREE Flight distance]
+#Free distance over 3 turnpoints.
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC FREIER Flug Entfernung]
+freie Distanz über drei Wegpunkte
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist. 
+
+@938
+#[XC FREE Flight score]
+#Score of Free flight with 3 turnpoints.
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC FREIER Flug Punkte]
+Punktzahl bei freiem Flug über drei Wegpunkte
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+@939
+#[XC FREE Triangle distance]
+#Triangle distance which do not conform to FAI triangle specification.
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC FREIES Dreieck Entfernung]
+Freie Dreiecksdistanz nach "nicht FAI" Wertung.
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+@940
+#[XC FREE Triangle score]
+#Score of FREE Triangle ( NOT FAI ).
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC FREIES Dreieck Punkte]
+Freie Dreiecksdistanz Punktwertung nach "nicht FAI" Wertung.
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+
+@941
+#[XC FAI Triangle distance]
+#Triangle distance conform to the FAI definition (the shortest leg of the triangle must be at least 28% of the total triangle).
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC FAI Dreieck Entfernung]
+zurückgelegte Entfernung nach FAI Dreieck Definition. (der kürzeste Schenkel darf 28% der Gesamtstrecke nicht unterschreiten) 
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+@942
+#[XC FAI Triangle score]
+#Score of FAI Triangle.
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC FAI Dreieck Punkte]
+erreichte Punktzahl nach FAI Dreieck Definition.  (der kürzeste Schenkel darf 28% der Gesamtstrecke nicht unterschreiten)
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+
+@943
+#[XC best distance]
+#Distance of the best scored contest ( FAI Triangle,FREE Triangle, FREE Flight) .
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC beste Entfernung]
+Distanz der besten Wertung (FAI Dreieck, FREIES DREIECK oder FREIER Flug)
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+@944
+#[XC best score]
+#Maximum score of all contest ( FAI Triangle,FREE Triangle, FREE Flight).
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC beste Punktzahl]
+Maximale Punktzahl aus allen Wettbewerben (FAI Dreieck, FREIES DREIECK oder FREIER Flug).
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+@945
+#[XC Triangle closure distance]
+#Distance to close the best scored contest triangle ( FAI or FREE )  in km
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC Dreieck Distanz zum Schließen]
+Minimale Entfernung um das "bessere" Dreieck ( FAI oder FREI )zu Schließen
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+@946
+#[XC Triangle closure %]
+#Distance to close the best scored contest triangle ( FAI or FREE ) in percentage
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC Dreieck schließen %]
+Minimale prozentuale Entfernung um das "bessere" Dreieck (FAI oder FREI) zu Schließen
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+@947
+#[XC Triangle predicted distance]
+#Distance to close the best scored contest triangle ( FAI or FREE ) in km
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC Dreieck vorhergesagete Distanz]
+vorrausichtlich erreichte beste Distanz (FAI oder FREI) bei Ankunft (schließen des Dreiecks) in km.
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
+@948
+#[XC mean speed]
+#Cross country mean speed calculated on three turnpoints
+#This data is available only if an additional XC Contest Engine is activate in System menu n 22
+[XC mittlere Geschw.]
+erreichte mittlere Geschwindigkeit über 3 Wendepunkte. 
+Dieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist.
+
 #
 # END INFOBOXES 800 - 1199
 #
@@ -2580,6 +2702,7 @@ Mit dem Wert 0 wird dieser Alarm unterdrückt ansonsten wird er nach Landung wie
 #and deactivated after exiting thermal, even if TRM0 is disabled from rotation.
 Falls aktiviert wird beim Kreisen automatisch die TRM0-Fußzele angezeigt.
 
+
 @1264
 [Bestät LR-Gr]
 #[Group Ack]
@@ -2767,6 +2890,88 @@ Basis ESS-Konus
 #This configuration is used to set sonar mode on startup. Changing the sonar mode with button will not affect this setting. 
 Sonar-Ton bei Annäherung an einen Luftraum, schnellste Abfolge = größte Nähe.
 Diese Einstellung gilt für das Sonar bei Programmstart. Die Änderung des Sonar-Modus über das Menü ändert diese Einstellung nicht. 
+
+
+
+@1291
+[Conical ESS Base Radius]
+
+@1292
+#[Use Two Lines]
+#In portrait mode only: infopages 2.1 2.2 etc. print items on two lines, instead of one, to make it with bigger fonts.
+[Zweizeilig]
+Bei der Portrait Bildschirmdarstellung werden die Informationen am unteren Bildschrimrand zweizeilig dargestellt. 
+
+
+@1293
+#[Overlays]
+#You can choose which values are shown on the screen when overlays are active.
+#You can disable a single overlay (OFF), or enable it using the default set (Default. Always the same as in LK v5) or you can select a custom parameter.
+#Be careful that only left overlays can show the units, not those on the right.
+#The first three overlays on top cannot be changed, only disabled.
+[Overlays]
+Hier kann eingestellt werden, welche zusätzlichen Daten auf der Karte eingeblendet werden werden. 
+Man kann die einzelne Einblendungen (sog. Overlays) ein- bzw. ausschalten.
+Es ist zu beachten, dass nur die linken Overlays mit Maßeinheiten darstellen, dies ist bei den rechten nicht der Fall.
+Die ersten drei Overlays am obern Bildrand können nicht verändert, jedoch ausgeschaltet werden. 
+
+@1294
+#[Aircraft symbol]
+#Choose the symbol you want to see on the main map
+[Flugzeug Symbol]
+Hier kann die Darstellung des "eigenen" Fluggerätes auf der Karte eingestellt werden.
+
+@1295
+#[LiveTrack24 Radar]
+#If enabled the FLARM system will be feed with data from LiveTrack24.com server
+[LiveTrack24 Radar]
+Wenn diese Option eingeschaltet ist, werden Positionsdaten anderer Flugzeuge aus LiveTrack24 angezeigt.
+
+@1296
+#[Auto-Contrast]
+#ON: contrast and brightness are automatically adjusted for best results.
+#OFF: Terrain contrast and brightness can be adjusted manually.
+#Default is ON.
+[Auto-Kontrast]
+Ein: Terrain Kontrast und Helligkeit werden automatisch justiert.
+AUS: Terrain Kontrast und Helligkeit können manuell eingestellt werden.
+Voreingestellt ist EIN.
+
+@1297
+#[Screen Orientation]
+#Select your prefered screen orientation. In Auto mode the screen will rotate occording to the device sensor. 
+[Bildschirm Orientierung]
+Einstellen der bevorzugten Bildschirmausrichtung. 
+Im Modus Auto wird die Ausrichtung nach dem Geräteinternen Sensor vorgenommen (sofern vorhanden) 
+
+@1298
+#[Tracking Mode]
+#Here you can select how you want to be tracked.
+#in flight only:
+#tracking starts after takeoff and ends after landing detection.
+#permanent:
+#tracking as long as LK8000 runs and has a valid GPS signal.
+#We recommend in flight only because it transfers the takeoff and landing information for a correct log. (default)
+#while permanent can be used to test your tracking settings on ground. (Note: Tracking need a falid GPS fix)
+[Tracking Modus]
+Hier wird die Flugverfolgung eingestellt
+[nur im Flug]
+Das Tracking startet erst mit der Freiflug- und endet mit der Landeerkennung.
+
+[immer]
+Es werden immer Positionsdaten übertragen, solange GPS Positionen vorliegen. Also auch wenn das Fluggerät am Boden "steht"
+ 
+Es wird empfohlen "nur im Flug" zu verwenden. Dadurch wird weniger Datenvolumen verbraucht.  
+"immer" dient nur zu Testzwecken damit das Tracken "am Boden" ausprobiert werden kann.
+
+@1299
+#[Additional Contest Rules]
+#Select the scoring rule for the Cross Country Contest (XC). If OFF no contest will be evaluated and available in the XC or OLC infoboxes.
+#If OFF no contest will be evaluated and available in the XC or OLC infoboxes.
+[zusätzliche Wertungsregeln]
+Wähle die Regeln für die Überlandflug Wertung (XC). Bei AUS wird keine Wertung für die Infoboxen berechnet. Werder OLC noch XC.
+
+
 
 
 @9999
