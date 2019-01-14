@@ -826,6 +826,8 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
     return true;
 }
 
+#define DRAW_TIMER
+
 /**
  * Require LockTerrainDataGraphics() everytime !
  */
@@ -891,21 +893,32 @@ _redo:
         thighlight = terrain_highlight[TerrainRamp];
 
         // step 0: fill height buffer
+#ifdef DRAW_TIMER
+        uint64_t height_start=MonotonicClockUS();
+#endif
         trenderer->Height({rc.left, rc.top}, _Proj);
 
+#ifdef DRAW_TIMER
+        uint64_t height_time=MonotonicClockUS()-height_start;
+        StartupStore(_T("Draw Terrain : height time < %u.%u ms >\n"),(int)height_time/1000, (int)height_time%1000);
+#endif
         // step 1: update color table
         //   need to be done after fill height buffer because depends of min 
         //   and max height of terrain
         trenderer->ColorTable();
 
         // step 2: calculate sunlight vector
-
         double fudgeelevation = 1;
         if (AutoContrast)
            fudgeelevation = (10.0 + 80.0 * autobr / 255.0);
         else
            fudgeelevation = (10.0 + 80.0 * TerrainBrightness / 255.0);
 
+        // step 3: calculate derivatives of height buffer
+        // step 4: calculate illumination and colors
+#ifdef DRAW_TIMER
+        uint64_t slope_start=MonotonicClockUS();
+#endif
         const int sx = (255 * (fastcosine(fudgeelevation) * fastsine(sunazimuth)));
         const int sy = (255 * (fastcosine(fudgeelevation) * fastcosine(sunazimuth)));
         const int sz = (255 * fastsine(fudgeelevation));
@@ -913,6 +926,10 @@ _redo:
         // step 3: calculate derivatives of height buffer
         // step 4: calculate illumination and colors
         trenderer->Slope(sx, sy, sz);
+#ifdef DRAW_TIMER
+        uint64_t slope_time=MonotonicClockUS()-slope_start;
+        StartupStore(_T("Draw Terrain : slope time  < %u.%u ms >\n"),(int)slope_time/1000, (int)slope_time%1000);
+#endif
     }
     // step 5: draw
     trenderer->Draw(Surface, rc);

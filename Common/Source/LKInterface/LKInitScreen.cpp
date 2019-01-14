@@ -10,6 +10,7 @@
 #include "LKInterface.h"
 #include "DoInits.h"
 #include "ScreenGeometry.h"
+#include "Util/Clamp.hpp"
 #ifdef ANDROID
 #include "Android/Main.hpp"
 #include "Android/NativeView.hpp"
@@ -23,7 +24,6 @@
 #ifdef USE_X11
 #include <X11/Xlib.h>
 #endif
-#include "ScreenGeometry.h"
 
 // Our reference DPI for scaling: we tuned objects for 320x240@3.5" (114dpi) and 480x272@5" (110dpi). 
 // So we can use 110.
@@ -446,9 +446,8 @@ unsigned int TerrainQuantization(void) {
   #endif
 
   // GENERAL PURPOSE APPROACH
-  dtquant = std::max<unsigned>(2, IBLSCALE(2));
-  if (dtquant>3) dtquant=3;
- 
+  dtquant = Clamp(IBLSCALE(2U), 2U, 3U);
+
   // .. And the values above are the used as defaults. Then we must dynamically check
   // if we can adjust to better values by checking drawing times.
   // We can do it for 6.1g 
