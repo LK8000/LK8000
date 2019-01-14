@@ -6087,5 +6087,5 @@ _@M2388_ "Zeige XC\nAUS"
 #_@M2389_ "Draw XC\nON"
 _@M2389_ "Zeige XC\nAN"
 
-#_@M2290_ "Toggle Draw XC"
-_@M2290_ "XC Umschalten"
+#_@M2390_ "Toggle Draw XC"
+_@M2390_ "XC Umschalten"
