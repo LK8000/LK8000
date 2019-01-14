@@ -41,7 +41,12 @@ TCHAR tmp[MAX_PATH];
     		}
     	  }
     	  else
-    		  szAirspaceFile[i][0] = {'\0'};
+    	  {
+			if ( szAirspaceFile[i][0] != '\0' ) {
+			  szAirspaceFile[i][0] = {'\0'};
+			  AIRSPACEFILECHANGED  = true;
+			}
+    	  }
       }
     }
   }

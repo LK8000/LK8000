@@ -41,7 +41,12 @@ static void getVariables(void) {
       		}
     	  }
     	  else
-    		  szWaypointFile[i][0] = {'\0'};
+    	  {
+			if ( szWaypointFile[i][0] != '\0' ) {
+			  szWaypointFile[i][0] = {'\0'};
+			  WAYPOINTFILECHANGED  = true;
+			}
+    	  }
       }
     }
   }
