@@ -531,7 +531,7 @@ CustomKeyLabel[57]=2246;	// Reset view
 CustomKeyLabel[58]=2038;	// Map Orientation
 CustomKeyLabel[59]=928;		// Restarting Comm Ports
 CustomKeyLabel[60]=2249;	// DspMode
-CustomKeyLabel[61]=2388;	// Toggle Draw XC
+CustomKeyLabel[61]=2390;	// Toggle Draw XC
 CustomKeyLabel[62]=2337;	// Airspace lookup
 
 static_assert(62 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");

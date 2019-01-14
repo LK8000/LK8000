@@ -2338,5 +2338,5 @@ _@M2387_ "GND"  # instead of SFC, no need to translate
 
 _@M2388_ "Draw XC\nOFF"
 _@M2389_ "Draw XC\nON"
-_@M2290_ "Toggle Draw XC"
+_@M2390_ "Toggle Draw XC"
 
