@@ -496,7 +496,7 @@ Tracking Mode (see help)
 @186
 OFF don't display any value (see help)
 
-@M2337 "Airspace\nLookup"
+
 
 @1293
 Text has been modified for accounting new customization mechanism
@@ -560,3 +560,9 @@ This data is available only if an additional XC Contest Engine is activate in Sy
 [XC mean speed]
 Cross country mean speed calculated on three turnpoints
 This data is available only if an additional XC Contest Engine is activate in System menu n 22
+
+
+@236  # CHANGED to:
+This option defines how waypoints outside the terrain range are handled:  
+incl. all waypoints and airspaces outside the terrain will be loaded
+excl. waypoints and airspaces inside the mapterrain will be loaded only

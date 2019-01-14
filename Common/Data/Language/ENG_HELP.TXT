@@ -598,8 +598,9 @@ If disabled, the command speed in cruise is set to the dolphin speed to fly, equ
 Determines how the user is prompted for text input (filename, teamcode etc.)
 
 @236
-This option defines how waypoints outside the terrain range are handled: the user can be asked when this occurs, 
-or they can be always included or excluded.
+This option defines how waypoints outside the terrain range are handled:  
+incl. all waypoints and airspaces outside the terrain will be loaded
+excl. waypoints and airspaces inside the mapterrain will be loaded only
 
 @237
 Working only in Full Overlay mode: localtime clock is shown.
