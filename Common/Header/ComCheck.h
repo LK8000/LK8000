@@ -21,7 +21,7 @@ extern bool ComCheck_BufferFull;
 
 extern void ComCheck_Init(void);
 extern void ComCheck_AddChar(TCHAR c);
-
+void ComCheck_AddText(const TCHAR* Text);
 
 
 
