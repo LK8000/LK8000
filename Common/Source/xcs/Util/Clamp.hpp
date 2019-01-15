@@ -46,4 +46,19 @@ Clamp(const T &value, const T &min, const T &max)
        ? max : value);
 }
 
+#if defined(__ARM_NEON__) || defined(__ARM_NEON)
+#include <arm_neon.h>
+
+static inline
+int16x4_t Clamp(int16x4_t value, int16x4_t min, int16x4_t max) {
+  return vmin_s16(vmax_s16(value, min), max);
+}
+
+static inline
+int32x4_t Clamp(int32x4_t value, int32x4_t min, int32x4_t max) {
+    return vminq_s32(vmaxq_s32(value, min), max);
+}
+
+#endif
+
 #endif

@@ -21,6 +21,10 @@
 #include "Kobo/Model.hpp"
 #include "Util/Clamp.hpp"
 
+#if defined(__ARM_NEON) ||defined(__ARM_NEON__)
+#include <arm_neon.h>
+#endif
+
 //
 // Choose the scale threshold for disabling shading. This happens at low zoom levels.
 // Values are in RealScale. Imperial and nautical distance units are using it too.
@@ -409,6 +413,7 @@ public:
         DisplayMap->SetFieldRounding(dX/3, dY/3);
         epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d, ymiddle, xmiddle);
 
+
         POINT orig = MapWindow::GetOrigScreen();
         orig.x -= offset.x;
         orig.y -= offset.y;
@@ -516,11 +521,212 @@ public:
 
     }
 
+
+#if defined(__ARM_NEON) || defined(__ARM_NEON__)
+
     // JMW: if zoomed right in (e.g. one unit is larger than terrain
     // grid), then increase the step size to be equal to the terrain
     // grid for purposes of calculating slope, to avoid shading problems
     // (gridding of display) This is why epx is used instead of 1
     // previously.  for large zoom levels, epx=1
+
+    void Slope_shading(const int sx, const int sy, const int sz) {
+
+        LKASSERT(height_buffer != NULL);
+        if(!height_buffer) {
+            return;
+        }
+        if (!screen_buffer->GetBuffer()) {
+            return;
+        }
+
+        const int hscale = std::max<int>(1, pixelsize_d);
+
+        const float32_t p20_left_offset[] = {
+                static_cast<float32_t>(epx),
+                static_cast<float32_t>(epx + 1),
+                static_cast<float32_t>(epx + 2),
+                static_cast<float32_t>(epx + 3)
+        };
+        const float32x4_t v_p20_left_offset = vld1q_f32(p20_left_offset);
+
+        const float32_t p20_right_offset[] = {
+                static_cast<float32_t>(epx + ixs - 1),
+                static_cast<float32_t>(epx + ixs - 2),
+                static_cast<float32_t>(epx + ixs - 3),
+                static_cast<float32_t>(epx + ixs - 3)
+        };
+        const float32x4_t v_p20_right_offset = vld1q_f32(p20_right_offset);
+
+        const int32x4_t mag_0 = vmovq_n_s32(0);
+        const int32x4_t mag_127 = vmovq_n_s32(127);
+
+        const int16x4_t height_0 = vmov_n_s16(0);
+        const int16x4_t height_255 = vmov_n_s16(255);
+        const int16x4_t v_height_min = vmov_n_s16(height_min);
+        const int16x4_t v_height_scale = vmov_n_s16(height_scale);
+
+        const float32x4_t v_sx = vmovq_n_f32(sx);
+        const float32x4_t v_sy = vmovq_n_f32(sy);
+        const float32x4_t v_sz = vmovq_n_f32(sz);
+
+        const unsigned int ixsright = std::max(4u, ixs - 1 - epx);
+        const unsigned int ixsleft = std::max(4u, epx);
+
+        for(unsigned y = 0; y < iys; y++) {
+            BGRColor* screen_row = screen_buffer->GetRow(y);
+
+            const unsigned prev_row_index =  (y < epx) ? 0 : y - epx;
+            const unsigned next_row_index =  (y + epx >= iys) ? iys - 1 : y + epx;
+
+            const int16_t* prev_row = &height_buffer[prev_row_index * ixs];
+            const int16_t* curr_row = &height_buffer[y * ixs];
+            const int16_t* next_row = &height_buffer[next_row_index * ixs];
+
+            const float32_t p31 = next_row_index - prev_row_index;
+            const float32_t p31s = p31 * hscale;
+
+            // left side
+            {
+                const int16x4_t left = vmov_n_s16(*(curr_row));
+                for (unsigned int x = 0; x < ixsleft; x+=4) {
+                    const int16x4_t up = vld1_s16(prev_row + x);
+                    const int16x4_t bottom = vld1_s16(next_row + x);
+                    const int16x4_t right = vld1_s16(curr_row + x + epx);
+
+                    const float32x4_t p20 = v_p20_left_offset + (float32_t)x;
+                    const float32x4_t p22 = vcvtq_f32_s32(vmovl_s16(right - left));
+                    const float32x4_t p32 = vcvtq_f32_s32(vmovl_s16(bottom - up));
+
+                    const float32x4_t dd0 = p22 * p31;
+                    const float32x4_t dd1 = p20 * p32;
+                    const float32x4_t dd2 = p20 * p31s;
+
+                    const float32x4_t sqr_mag = (dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
+                    const float32x4_t inv_mag = vrsqrteq_f32(sqr_mag);
+                    const float32x4_t fmag = (dd2 * v_sz + dd0 * v_sx + dd1 * v_sy) * inv_mag;
+
+                    int32x4_t mag = vcvtq_s32_f32(fmag - v_sz);
+
+                    mag = mag + 64;
+                    mag = Clamp(mag, mag_0, mag_127);
+
+                    int16x4_t h =  vld1_s16(curr_row + x);
+                    h = (h - v_height_min) >> v_height_scale;
+                    h = Clamp(h, height_0, height_255);
+
+                    screen_row[x]   = color_table[vgetq_lane_u32(mag,0)][vget_lane_s16(h, 0)];
+                    screen_row[x+1] = color_table[vgetq_lane_u32(mag,1)][vget_lane_s16(h, 1)];
+                    screen_row[x+2] = color_table[vgetq_lane_u32(mag,2)][vget_lane_s16(h, 2)];
+                    screen_row[x+3] = color_table[vgetq_lane_u32(mag,3)][vget_lane_s16(h, 3)];
+                }
+            }
+            // center
+            for (unsigned int x = ixsleft; x < ixsright; x+=4) {
+
+                const int16x4_t up = vld1_s16(prev_row + x);
+                const int16x4_t bottom = vld1_s16(next_row + x);
+                const int16x4_t left = vld1_s16(curr_row + x - epx);
+                const int16x4_t right = vld1_s16(curr_row + x + epx);
+
+                const float32_t p20 = epx+epx;
+                const float32x4_t p22 = vcvtq_f32_s32(vmovl_s16(right - left));
+                const float32x4_t p32 = vcvtq_f32_s32(vmovl_s16(bottom - up));
+
+                const float32x4_t dd0 = p22 * p31;
+                const float32x4_t dd1 = p20 * p32;
+                const float32_t dd2 = p20 * p31s;
+
+                const float32x4_t sqr_mag = (dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
+                const float32x4_t inv_mag = vrsqrteq_f32(sqr_mag);
+                const float32x4_t fmag = (dd2 * v_sz + dd0 * v_sx + dd1 * v_sy) * inv_mag;
+
+                int32x4_t mag = vcvtq_s32_f32(fmag - v_sz);
+
+                mag = mag + 64;
+                mag = Clamp(mag, mag_0, mag_127);
+
+                int16x4_t h =  vld1_s16(curr_row + x);
+                h = (h - height_min) >> height_scale;
+                h = Clamp(h, height_0, height_255);
+
+                screen_row[x]   = color_table[vgetq_lane_u32(mag,0)][vget_lane_s16(h, 0)];
+                screen_row[x+1] = color_table[vgetq_lane_u32(mag,1)][vget_lane_s16(h, 1)];
+                screen_row[x+2] = color_table[vgetq_lane_u32(mag,2)][vget_lane_s16(h, 2)];
+                screen_row[x+3] = color_table[vgetq_lane_u32(mag,3)][vget_lane_s16(h, 3)];
+            }
+
+
+            // right side
+            {
+                const int16x4_t right = vmov_n_s16(*(curr_row + ixs - 1));
+                for (unsigned int x = ixsright; x < ixs; x+=4) {
+                    const int16x4_t up = vld1_s16(prev_row + x);
+                    const int16x4_t bottom = vld1_s16(next_row + x);
+                    const int16x4_t left = vld1_s16(curr_row + x - epx);
+
+                    const float32x4_t p20 = v_p20_right_offset - (float32_t)x;
+                    const float32x4_t p22 = vcvtq_f32_s32(vmovl_s16(right - left));
+                    const float32x4_t p32 = vcvtq_f32_s32(vmovl_s16(bottom - up));
+
+                    const float32x4_t dd0 = p22 * p31;
+                    const float32x4_t dd1 = p20 * p32;
+                    const float32x4_t dd2 = p20 * p31s;
+
+                    const float32x4_t sqr_mag = (dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
+                    const float32x4_t inv_mag = vrsqrteq_f32(sqr_mag);
+                    const float32x4_t fmag = (dd2 * v_sz + dd0 * v_sx + dd1 * v_sy) * inv_mag;
+
+                    int32x4_t mag = vcvtq_s32_f32(fmag - v_sz);
+
+                    mag = mag + 64;
+                    mag = Clamp(mag, mag_0, mag_127);
+
+                    int16x4_t h =  vld1_s16(curr_row + x);
+                    h = (h - height_min) >> height_scale;
+                    h = Clamp(h, height_0, height_255);
+
+                    screen_row[x]   = color_table[vgetq_lane_u32(mag,0)][vget_lane_s16(h, 0)];
+                    screen_row[x+1] = color_table[vgetq_lane_u32(mag,1)][vget_lane_s16(h, 1)];
+                    screen_row[x+2] = color_table[vgetq_lane_u32(mag,2)][vget_lane_s16(h, 2)];
+                    screen_row[x+3] = color_table[vgetq_lane_u32(mag,3)][vget_lane_s16(h, 3)];
+                }
+            }
+        }
+    }
+
+    void Slope() {
+        LKASSERT(height_buffer != NULL);
+        if(!height_buffer) {
+            return;
+        }
+        if (!screen_buffer->GetBuffer()) {
+            return;
+        }
+
+        const int16x4_t height_0 = vmov_n_s16(0);
+        const int16x4_t height_255 = vmov_n_s16(255);
+        const int16x4_t v_height_min = vmov_n_s16(height_min);
+        const int16x4_t v_height_scale = vmov_n_s16(height_scale);
+
+        for (unsigned int y = 0; y < iys; ++y) {
+            BGRColor* screen_row = screen_buffer->GetRow(y);
+            const int16_t *height_row = &height_buffer[y*ixs];
+            
+            for (unsigned int x = 0; x < ixs; x+=4) {
+                int16x4_t h =  vld1_s16(height_row + x);
+                h = (h - v_height_min) >> v_height_scale;
+                h = Clamp(h, height_0, height_255);
+
+                screen_row[x]   = GetColor(vget_lane_s16(h, 0));
+                screen_row[x+1] = GetColor(vget_lane_s16(h, 1));
+                screen_row[x+2] = GetColor(vget_lane_s16(h, 2));
+                screen_row[x+3] = GetColor(vget_lane_s16(h, 3));
+            }
+        }
+    }
+
+#else
 
     void Slope_shading(const int sx, const int sy, const int sz) {
 
@@ -610,6 +816,7 @@ public:
             }
         }
     }
+#endif
 
     void FixOldMapWater() {
         // this exist only for compatibility with old topology file without water shape
@@ -844,7 +1051,7 @@ _redo:
 
 #ifdef DRAW_TIMER
         uint64_t height_time=MonotonicClockUS()-height_start;
-        StartupStore(_T("Draw Terrain : height time < %u.%u ms >\n"),(int)height_time/1000, (int)height_time%1000);
+        StartupStore(_T("Draw Terrain : height time        < %u.%u ms >\n"),(int)height_time/1000, (int)height_time%1000);
 #endif
         // step 1: update color table
         //   need to be done after fill height buffer because depends of min 
@@ -867,13 +1074,20 @@ _redo:
             const int sz = (255 * fastsine(fudgeelevation));
 
             trenderer->Slope_shading(sx, sy, sz);
+
+#ifdef DRAW_TIMER
+            uint64_t slope_time=MonotonicClockUS()-slope_start;
+            StartupStore(_T("Draw Terrain : slope shading time < %u.%u ms >\n"),(int)slope_time/1000, (int)slope_time%1000);
+#endif
+
         } else {
             trenderer->Slope();
-        }
+
 #ifdef DRAW_TIMER
-        uint64_t slope_time=MonotonicClockUS()-slope_start;
-        StartupStore(_T("Draw Terrain : slope time  < %u.%u ms >\n"),(int)slope_time/1000, (int)slope_time%1000);
+            uint64_t slope_time=MonotonicClockUS()-slope_start;
+            StartupStore(_T("Draw Terrain : slope              < %u.%u ms >\n"),(int)slope_time/1000, (int)slope_time%1000);
 #endif
+        }
 
         trenderer->FixOldMapWater();
     }
