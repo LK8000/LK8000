@@ -65,7 +65,7 @@ void LKProfileInitRuntime(void) {
 
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
   DisplayOrientation = DisplayOrientation_Config;
-  MapWindow::SetAutoOrientation(true); // reset old autoorientation
+  MapWindow::SetAutoOrientation(); // reset old autoorientation
 
   MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
 

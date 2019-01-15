@@ -51,10 +51,11 @@ void MapWindow::Zoom::CalculateAutoZoom()
   if (wait_for_new_wpt_distance>0) wait_for_new_wpt_distance--;		//This counter is needed to get new valid waypoint distance after wp changes
   if ( (wpd > 0) && (wait_for_new_wpt_distance==0) ) {
     double AutoZoomFactor;
-    if( (DisplayOrientation == NORTHTRACK && !mode.Is(Mode::MODE_CIRCLING)) ||
+    if ((DisplayOrientation == NORTHTRACK && !mode.Is(Mode::MODE_CIRCLING)) ||
         DisplayOrientation == NORTHUP ||
         DisplayOrientation == NORTHSMART ||
-        ((DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TARGETCIRCLE || DisplayOrientation == TARGETUP) && mode.Is(Mode::MODE_CIRCLING)) )
+        ((MapWindow::mode.autoNorthUP() || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TARGETCIRCLE || DisplayOrientation == TARGETUP)
+            && mode.Is(Mode::MODE_CIRCLING)))
       AutoZoomFactor = 2.5;
     else
       AutoZoomFactor = 4;

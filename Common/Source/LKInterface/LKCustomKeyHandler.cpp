@@ -418,7 +418,7 @@ passthrough:
 	      DisplayOrientation++;
 	      if(DisplayOrientation > TARGETUP)
 		DisplayOrientation = 0;
-	      MapWindow::SetAutoOrientation(true); // 101008 reset it
+	      MapWindow::SetAutoOrientation(); // 101008 reset it
 	      switch(DisplayOrientation)
 	      {
             case TRACKUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken(737)) ; break;  // _@M737_ "Track up"

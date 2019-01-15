@@ -3139,7 +3139,7 @@ int iOrientation = DisplayOrientation ;
     if  (MapSpaceMode==MSM_MAP)
     {
 	  DisplayOrientation = iOrientation;
-      MapWindow::SetAutoOrientation(true); // 101008 reset it
+      MapWindow::SetAutoOrientation(); // 101008 reset it
     }
     else
 	  SetMMNorthUp(GetSideviewPage(),iOrientation);
