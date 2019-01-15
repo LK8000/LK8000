@@ -1236,7 +1236,7 @@ _@M399_ "Lade Lufträume-Datei..."
 _@M400_ "Lade Fluplatzdetails-Datei..."
 
 #_@M401_ "Local time "
-_@M401_ "Ortszeit"
+_@M401_ "Ortszeit "
 
 #_@M402_ "Local time"
 _@M402_ "Ortszeit"
@@ -6055,7 +6055,7 @@ _@M2346_ "sind identisch"
 _@M2347_ "Lufträume ignoriert!"
 
 #_@M2348_ "Outside terrain"
-_@M2348_ "außerhalb Terrain"
+_@M2348_ "außerhalb Terrain "
 
 #_@M2349_ "Target up"
 _@M2349_ "Ziel oben"
@@ -6118,3 +6118,5 @@ _@M2389_ "Zeige XC\nAN"
 
 #_@M2390_ "Toggle Draw XC"
 _@M2390_ "XC Umschalten"
+_@M2391_ "Erdmodel "
+_@M2392_ "Fehler: Port nicht geöffnet!"
