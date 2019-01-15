@@ -215,7 +215,7 @@ WndProperty* wp = NULL;
 //	  TxText[0] = '$';
     AddCheckSumStrg(TxText);
 
-    if((ComCheck_ActivePort > 0)&& (DeviceList[active].Com))
+    if((ComCheck_ActivePort >= 0) && (DeviceList[active].Com))
     {
       DeviceList[active].Com->WriteString(TxText);
     }
