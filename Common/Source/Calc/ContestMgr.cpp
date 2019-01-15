@@ -1490,11 +1490,15 @@ double CContestMgr::GetXCClosedRadius() {
 void CContestMgr::UpdateFAIAssistantData() {
 
   _resultArray[TYPE_FAI_ASSISTANT] = CResult(_resultArray[TYPE_XC_FREE_TRIANGLE], true);
+  _resultArray[TYPE_FAI_ASSISTANT]._type = TYPE_FAI_ASSISTANT;
+
   const CPointGPSArray &points = _resultArray[TYPE_FAI_ASSISTANT].PointArray();
 
   if (points.size() != 5) {   // something went wrong here
     return;
   }
+
+  _resultArray[TYPE_FAI_ASSISTANT]._speed = _resultArray[TYPE_FAI_ASSISTANT]._current_distance / _resultArray[TYPE_FAI_ASSISTANT]._duration;
 
   _faiAssistantTriangleLegs[0].FillLeg(1, points[1], points[2]);
   _faiAssistantTriangleLegs[1].FillLeg(2, points[2], points[3]);

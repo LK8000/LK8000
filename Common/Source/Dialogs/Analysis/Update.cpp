@@ -245,31 +245,25 @@ void UpdateAnalysis(WndForm* pForm){
     }
     waInfo->SetCaption(sTmp);
     break;
-  case ANALYSIS_PAGE_CONTEST:
-    _stprintf(sTmp, TEXT("%s: %s - %s"),
-              // LKTOKEN  _@M93_ = "Analysis"
-              MsgToken(93),
-              // LKTOKEN  _@M1450_ = "Contest"
-              MsgToken(1450),
-              CContestMgr::TypeToString(contestType));
-    pForm->SetCaption(sTmp);
+    case ANALYSIS_PAGE_CONTEST:
+      _stprintf(sTmp, TEXT("%s: %s - %s"),
+          // LKTOKEN  _@M93_ = "Analysis"
+                MsgToken(93),
+          // LKTOKEN  _@M1450_ = "Contest"
+                MsgToken(1450),
+                CContestMgr::TypeToString(contestType));
+      pForm->SetCaption(sTmp);
 
-    {
-      bool typeFAITriangle = (contestType == CContestMgr::TYPE_FAI_ASSISTANT);
 
-      CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, false);
+      CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
 
-      if ((result.Type() == contestType) || typeFAITriangle)
-      {
+
+      if (result.PointArray().size() > 0) {
+
         BOOL bFAI = CContestMgr::Instance().FAI();
-        double  fDist     = result.Distance();
+        double fDist = result.Distance();
 
-
-        
-        double fCPDist;
-        double fB_CPDist;
-        double fTotalDistance;
-
+        double fCPDist, fB_CPDist, fTotalDistance;
         if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE) {
           fCPDist = CContestMgr::Instance().GetFreeTriangleClosingPointDist();
           fB_CPDist = CContestMgr::Instance().GetFreeTriangleBestClosingPointDist();
@@ -282,6 +276,7 @@ void UpdateAnalysis(WndForm* pForm){
           fCPDist = CContestMgr::Instance().GetFreeTriangleClosingPointDist();
           fB_CPDist = CContestMgr::Instance().GetFreeTriangleBestClosingPointDist();
           fTotalDistance = result.PredictedDistance();;
+          fDist = result.PredictedDistance() - fB_CPDist;
         } else {  // OLC FAI
           fCPDist = CContestMgr::Instance().GetClosingPointDist();
           fB_CPDist = CContestMgr::Instance().GetBestClosingPointDist();
@@ -291,7 +286,7 @@ void UpdateAnalysis(WndForm* pForm){
 
         TCHAR distStr[120];
         TCHAR speedStr[120];
-        if (typeFAITriangle) {
+        if (contestType == CContestMgr::TYPE_FAI_ASSISTANT) {
 
           const double percC = 100 * (fTotalDistance == 0 ? 0 : fCPDist / (double) fTotalDistance);
           const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
@@ -299,17 +294,12 @@ void UpdateAnalysis(WndForm* pForm){
           if (bFAI) {
             _stprintf(distStr,
                       _T("D:%.0f%s\r\nD*:%.0f%s FAI\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"),
-                      DISTANCEMODIFY * fDist,
-                      Units::GetDistanceName(),
-                      DISTANCEMODIFY * fTotalDistance,
-                      Units::GetDistanceName(),
-                      DISTANCEMODIFY * fCPDist,
-                      percC,
-                      DISTANCEMODIFY * fB_CPDist,
-                      percB);
+                      DISTANCEMODIFY * fDist, Units::GetDistanceName(),
+                      DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(),
+                      DISTANCEMODIFY * fCPDist, percC,
+                      DISTANCEMODIFY * fB_CPDist, percB);
           } else {
-            _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName(),
-                      DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(), DISTANCEMODIFY * fCPDist, percC, DISTANCEMODIFY * fB_CPDist, percB);
+            _stprintf(distStr, _T("Not FAI\r\n"));
           }
 
           _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
@@ -317,8 +307,11 @@ void UpdateAnalysis(WndForm* pForm){
           if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE || contestType == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
             const double percC = 100 * (fTotalDistance == 0 ? 0 : fCPDist / (double) fTotalDistance);
             const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
-            _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"), DISTANCEMODIFY * fDist, Units::GetDistanceName(),
-                      DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(), DISTANCEMODIFY * fCPDist, percC, DISTANCEMODIFY * fB_CPDist, percB);
+            _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"),
+                      DISTANCEMODIFY * fDist, Units::GetDistanceName(),
+                      DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName(),
+                      DISTANCEMODIFY * fCPDist, percC,
+                      DISTANCEMODIFY * fB_CPDist, percB);
             _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
           } else {
             _stprintf(distStr, _T("D: %.1f %s\r\n"), DISTANCEMODIFY * fTotalDistance, Units::GetDistanceName());
@@ -326,7 +319,7 @@ void UpdateAnalysis(WndForm* pForm){
 
           }
         }
-      
+
         TCHAR timeTempStr[120];
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
@@ -335,38 +328,39 @@ void UpdateAnalysis(WndForm* pForm){
 
         TCHAR scoreStr[50] = _T("");
         if (result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
-              result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED)
-            _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
+            result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED &&
+            result.Type() != CContestMgr::TYPE_FAI_ASSISTANT )
+          _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
 
         TCHAR plusStr[50] = _T("");
         if (result.Type() == CContestMgr::TYPE_OLC_CLASSIC ||
-              result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
-              result.Type() == CContestMgr::TYPE_OLC_FAI ||
-              result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
-            CContestMgr::TType type = (result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
-                result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) ?
-                                      CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
-            CContestMgr::CResult resultPlus = CContestMgr::Instance().Result(type, false);
-            if (ScreenLandscape)
-              _stprintf(plusStr, TEXT("\r\n%s:\r\n%.2f pt"),
-                        CContestMgr::TypeToString(type),
-                        resultPlus.Score());
-            else
-              _stprintf(plusStr, TEXT("\r\n%s: %.2f pt"),
-                        CContestMgr::TypeToString(type),
-                        resultPlus.Score());
+            result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
+            result.Type() == CContestMgr::TYPE_OLC_FAI ||
+            result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
+          CContestMgr::TType type = (result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
+              result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) ?
+                                    CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
+          CContestMgr::CResult resultPlus = CContestMgr::Instance().Result(type, false);
+          if (ScreenLandscape)
+            _stprintf(plusStr, TEXT("\r\n%s:\r\n%.2f pt"),
+                      CContestMgr::TypeToString(type),
+                      resultPlus.Score());
+          else
+            _stprintf(plusStr, TEXT("\r\n%s: %.2f pt"),
+                      CContestMgr::TypeToString(type),
+                      resultPlus.Score());
         }
 
-          _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, speedStr, timeStr, scoreStr, plusStr);
+        _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, speedStr, timeStr, scoreStr, plusStr);
       } else {
-          _stprintf(sTmp, TEXT("%s\r\n"),
-              // LKTOKEN  _@M477_ = "No valid path"
-                    MsgToken(477));
+        _stprintf(sTmp, TEXT("%s\r\n"),
+            // LKTOKEN  _@M477_ = "No valid path"
+                  MsgToken(477));
       }
       waInfo->SetCaption(sTmp);
-    }
 
-    break;
+
+      break;
 
   }
 

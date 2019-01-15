@@ -136,6 +136,7 @@ public:
     float Score() const        { return _score; }
     unsigned Duration() const  { return _duration; }
     float Speed() const        { return _speed; }
+
     const CPointGPSArray &PointArray() const { return _pointArray; }
     void UpdateDistance(double current_distance) {
       _current_distance=current_distance;
