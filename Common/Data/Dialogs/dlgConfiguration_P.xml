@@ -325,7 +325,7 @@
         <DataField Name="" DataType="double" DisplayFormat="%.2f" EditFormat="%.2f" Min="-13" Max="13" Step="0.25" OnDataAccess="OnUTCData"/>
       </WndProperty>
       <WndProperty Name="prpLocalTime" Caption="_@M402_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1"/>
-      <WndProperty Name="prpEarthModel" Caption="Earth Model" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
+      <WndProperty Name="prpEarthModel" Caption="_@M2391_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
         <DataField Name="" DataType="enum"/>
       </WndProperty>
     </WndFrame>

@@ -281,7 +281,7 @@ _@M256_ "Emerald green"
 _@M257_ "Empty mapcolor "
 _@M258_ "Enable"
 _@M259_ "Enabled"
-_@M260_ "Engineering Menu*"
+_@M260_ "Engineering Menu* "
 _@M261_ "Enter number"
 _@M262_ "Equivalent MC"
 _@M263_ "Error in saving task!"
@@ -1468,7 +1468,7 @@ _@M1423_ "Forbidden during flight!"
 #
 # Variometer Bar
 #
-_@M1424_ "VarioBar mode"
+_@M1424_ "VarioBar mode "
 _@M1425_ "Vario in thermal and cruise"
 _@M1426_ "Vario in thermal, Netto in cruise"
 _@M1427_ "Vario in thermal, STF in cruise"
@@ -1476,7 +1476,7 @@ _@M1427_ "Vario in thermal, STF in cruise"
 #
 # Contests
 #
-_@M1450_ "Contest"
+_@M1450_ "Contest "
 _@M1451_ "Change"
 _@M1452_ "FREE FLIGHT START detected"
 
@@ -2221,7 +2221,7 @@ _@M2276_ "XC Dis*"
 _@M2278_ "XC Spd"
 
 
-_@M2279_ "Contest"
+_@M2279_ "Contest "
 
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)
@@ -2287,7 +2287,7 @@ _@M2344_ "excl. Waypoints & Airspaces"
 _@M2345_ "and" 
 _@M2346_ "are identical" 
 _@M2347_ "airspaces excluded!"
-_@M2348_ "Outside terrain"
+_@M2348_ "Outside terrain "
 
 _@M2349_ "Target up"
 
@@ -2332,7 +2332,7 @@ _@M2382_ "■"  # ghost
 _@M2383_ "●"  # zombie
 _@M2384_ "✈"  # traffic
 
-_@M2385_ "Map Symbols"
+_@M2385_ "Map Symbols "
 _@M2386_ "UTF8" # no need to translate 
 _@M2387_ "GND"  # instead of SFC, no need to translate
 
@@ -2340,3 +2340,5 @@ _@M2388_ "Draw XC\nOFF"
 _@M2389_ "Draw XC\nON"
 _@M2390_ "Toggle Draw XC"
 
+_@M2391_ "Earth Model "
+_@M2392_ "Error: Port not opened!"
