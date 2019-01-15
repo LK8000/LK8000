@@ -93,7 +93,7 @@
     <WndButton  Name="prp_7" Caption="("    X="0" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton  Name="prp_8" Caption=")"    X="40" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton  Name="prp_9"  Caption="="    X="80" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_0" Caption="?"    X="120" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton  Name="prp_0" Caption=","    X="120" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     
     
     <WndButton  Name="prpSpace"  Caption="_@M831_"    X="160" Y="230" Width="80"  Height="35" Font="2" OnClickNotify="OnSpace"/>

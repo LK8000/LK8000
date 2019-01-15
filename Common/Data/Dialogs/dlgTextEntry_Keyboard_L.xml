@@ -56,7 +56,7 @@
     <WndButton   Name="prp_7" Caption="("    X="192" Y="25" Width="32"  Height="39" Font="2" OnClickNotify="OnKey"/>
     <WndButton   Name="prp_8" Caption=")"    X="224" Y="25" Width="32"  Height="39" Font="2" OnClickNotify="OnKey"/>	
     <WndButton   Name="prp_9" Caption="="    X="256" Y="25" Width="32"  Height="39" Font="2" OnClickNotify="OnKey"/>
-    <WndButton   Name="prp_0" Caption="?"    X="288" Y="25" Width="32"  Height="39" Font="2" OnClickNotify="OnKey"/>	
+    <WndButton   Name="prp_0" Caption=","    X="288" Y="25" Width="32"  Height="39" Font="2" OnClickNotify="OnKey"/>	
 	
     <WndButton   Name="prp_Q"  Caption="q"    X="0"   Y="64" Width="32"  Height="39" Font="2" OnClickNotify="OnKey"/>
     <WndButton   Name="prp_W"  Caption="w"    X="32"  Y="64" Width="32"  Height="39" Font="2" OnClickNotify="OnKey"/>
