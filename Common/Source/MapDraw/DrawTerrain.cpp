@@ -15,7 +15,7 @@
 #include "../Draw/ScreenProjection.h"
 #include "NavFunctions.h"
 
-#define DRAW_TIMER
+//#define DRAW_TIMER
 
 #include "ColorRamps.h"
 #include "Kobo/Model.hpp"
