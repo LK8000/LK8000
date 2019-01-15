@@ -172,6 +172,65 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
+
+
+
+int AddCheckSumStrg( TCHAR szStrg[] )
+{
+int i,iCheckSum=0;
+TCHAR  szCheck[254];
+
+ if(szStrg[0] != '$')
+   return -1;
+
+ iCheckSum = szStrg[1];
+  for (i=2; i < (int)_tcslen(szStrg); i++)
+  {
+	 if(szStrg[i] == '*')
+	 {
+		 szStrg[i] = 0;
+		 continue;
+	 }
+	 else
+	  iCheckSum ^= szStrg[i];
+  }
+  _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
+  _tcscat(szStrg,szCheck);
+  return iCheckSum;
+}
+
+
+static void OnSendClicked(WndButton* pWnd) {
+TCHAR TxText[200] =_T("");
+WndForm* pOwner = pWnd->GetParentWndForm();
+WndProperty* wp = NULL;
+  if(pOwner)
+	wp = (WndProperty*)pOwner->FindByName(TEXT("prpSendText"));
+
+  if(wp)
+  {
+    short active=ComCheck_ActivePort; // can change in thread
+    _tcsncpy(TxText, wp->GetDataField()->GetAsString(),190);
+
+//	  TxText[0] = '$';
+    AddCheckSumStrg(TxText);
+
+    if((ComCheck_ActivePort > 0)&& (DeviceList[active].Com))
+    {
+      DeviceList[active].Com->WriteString(TxText);
+    }
+    else
+	  _tcsncpy(TxText, _T("Error: Port not open!"),190);
+
+    wp->GetDataField()->Set(TxText);
+    wp->RefreshDisplay();
+/*  ((WndButton *)wf->FindByName(TEXT("cmdSendButton")))->SetCaption(  TxText	);*/
+  }
+}
+
+
+
+
 void dlgTerminal(int portnumber) {
 
   SHOWTHREAD(_T("dlgTerminal"));
@@ -185,6 +244,7 @@ void dlgTerminal(int portnumber) {
   ((WndButton *)wf->FindByName(TEXT("cmdSelectPort1")))->SetOnClickNotify(OnPrevClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdSelectPort2")))->SetOnClickNotify(OnNextClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetOnClickNotify(OnStopClicked);
+  ((WndButton *)wf->FindByName(TEXT("cmdSendButton")))->SetOnClickNotify(OnSendClicked);
 
   wTTYList = (WndListFrame*)wf->FindByName(TEXT("frmTTYList"));
   LKASSERT(wTTYList!=NULL);
