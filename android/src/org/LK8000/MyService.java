@@ -69,29 +69,35 @@ public class MyService extends Service {
    remind the user that we're sucking his battery empty */
 
     final String CHANNEL_ID = getApplicationContext().getPackageName() + "_NotificationChannel";
-    NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID);
 
     NotificationManager manager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       // Support for Android Oreo: Notification Channels
-      NotificationChannel channel = new NotificationChannel(
-              CHANNEL_ID,
-              "LK8000",
-              NotificationManager.IMPORTANCE_HIGH);
+      NotificationChannel channel = manager.getNotificationChannel(CHANNEL_ID);
+      if(channel == null) {
+        channel = new NotificationChannel(
+                CHANNEL_ID,
+                "LK8000",
+                NotificationManager.IMPORTANCE_LOW);
 
-      manager.createNotificationChannel(channel);
+        manager.createNotificationChannel(channel);
+      }
     }
 
     Intent intent2 = new Intent(this, mainActivityClass);
     PendingIntent contentIntent =
       PendingIntent.getActivity(this, 0, intent2, 0);
 
+    NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID);
     notification.setSmallIcon(R.drawable.notification_icon);
-    notification.setLargeIcon(BitmapFactory.decodeResource( getResources(), R.drawable.notification_icon));
+    notification.setLargeIcon(BitmapFactory.decodeResource( getResources(), getApplicationInfo().icon));
     notification.setContentTitle("LK8000 is running");
+    notification.setContentText("Touch to open");
     notification.setContentIntent(contentIntent);
     notification.setWhen(System.currentTimeMillis());
+    notification.setShowWhen(false);
     notification.setOngoing(true);
+    notification.setOnlyAlertOnce(true);
 
     startForeground(1, notification.build());
 
