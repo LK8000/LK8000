@@ -15,5 +15,8 @@
     <WndProperty Name="prpMultimap4" Caption="4 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1262_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
+    <WndProperty Name="prpMultimap5" Caption="5 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1262_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>        
   </WndForm>
 </PMML>

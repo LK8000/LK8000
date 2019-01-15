@@ -828,7 +828,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMultimap4,&Multimap4);
   if (matchedstring) return;
-
+  PREAD(sname,svalue,szRegistryMultimap5,&Multimap5);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMMNorthUp1 ,&MMNorthUp_Runtime[0]);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryMMNorthUp2 ,&MMNorthUp_Runtime[1]);

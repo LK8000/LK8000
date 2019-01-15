@@ -444,5 +444,6 @@ void Reset_Multimap_Mode(void) {
   Multimap2=mm_enabled_normal;
   Multimap3=mm_enabled_normal;
   Multimap4=mm_enabled_normal;
+  Multimap5=mm_enabled_normal;
 
 }

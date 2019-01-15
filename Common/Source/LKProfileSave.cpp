@@ -395,6 +395,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMultimap2,Multimap2);
   rprintf(szRegistryMultimap3,Multimap3);
   rprintf(szRegistryMultimap4,Multimap4);
+  rprintf(szRegistryMultimap5,Multimap5);
 
  if (SaveRuntime) {
   rprintf(szRegistryMMNorthUp1,MMNorthUp_Runtime[0]);

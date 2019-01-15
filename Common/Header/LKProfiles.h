@@ -411,6 +411,7 @@ char szRegistryMultimap1[]= "Multimap1a";
 char szRegistryMultimap2[]= "Multimap2a";
 char szRegistryMultimap3[]= "Multimap3a";
 char szRegistryMultimap4[]= "Multimap4a";
+char szRegistryMultimap5[]= "Multimap5a";
 
 char szRegistryMMNorthUp1[]= "MultimapNorthUp1";
 char szRegistryMMNorthUp2[]= "MultimapNorthUp2";
@@ -765,6 +766,7 @@ extern const char szRegistryMultimap1[];
 extern const char szRegistryMultimap2[];
 extern const char szRegistryMultimap3[];
 extern const char szRegistryMultimap4[];
+extern const char szRegistryMultimap5[];
 
 extern const char szRegistryMMNorthUp1[];
 extern const char szRegistryMMNorthUp2[];

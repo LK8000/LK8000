@@ -902,6 +902,7 @@ GEXTERN unsigned short Multimap1;
 GEXTERN unsigned short Multimap2;
 GEXTERN unsigned short Multimap3;
 GEXTERN unsigned short Multimap4;
+GEXTERN unsigned short Multimap5;
 
 GEXTERN int MMNorthUp_Runtime[NUMBER_OF_SHARED_MULTIMAPS];
 GEXTERN int AspPermanentChanged;
