@@ -54,7 +54,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
 
   unsigned int y=0, first, last;
 
-  _stprintf(tmps,_T("[ Rx=%u ErrRx=%u Tx=%u ErrTx=%u ]"),
+  _stprintf(tmps,_T("[ Rx=%u Tx=%u ErrRx=%u ErrTx=%u ]"),
       DeviceList[active].Rx ,  DeviceList[active].Tx,  DeviceList[active].ErrRx ,  DeviceList[active].ErrTx);
   Surface.DrawText(0, 0, tmps);
   y+=hline;
@@ -181,8 +181,10 @@ int i,iCheckSum=0;
 TCHAR  szCheck[254];
 
  if(szStrg[0] != '$')
+ {
+   _tcscat(szStrg,_T("\r\n"));
    return -1;
-
+ }
  iCheckSum = szStrg[1];
   for (i=2; i < (int)_tcslen(szStrg); i++)
   {
@@ -215,9 +217,11 @@ WndProperty* wp = NULL;
 //	  TxText[0] = '$';
     AddCheckSumStrg(TxText);
 
-    if((ComCheck_ActivePort > 0)&& (DeviceList[active].Com))
+    if((ComCheck_ActivePort >= 0) && (DeviceList[active].Com))
     {
       DeviceList[active].Com->WriteString(TxText);
+      ComCheck_AddText(_T("\r\n > "));
+      ComCheck_AddText(TxText);
     }
     else
 	  _tcsncpy(TxText, _T("Error: Port not open!"),190);

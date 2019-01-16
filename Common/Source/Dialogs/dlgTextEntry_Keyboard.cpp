@@ -110,7 +110,7 @@ static void UpdateTextboxProp(void)
    //   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
       {
 
-       char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyz?!+$%#/()=:*_ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@- \xD6\xDC\xC4"};
+       char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyz,!+$%#/()=:*_ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@- \xD6\xDC\xC4"};
 
         RemoveKeys((char*)Charlist , sizeof(Charlist));
       }
@@ -380,7 +380,7 @@ char SelList[MAX_SEL_LIST_SIZE]={""};
 unsigned int NumChar=0;
 bool CharEqual = true;
 
-char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_?!+$%#/()=:* \xD6\xDC\xC4"};
+char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_,!+$%#/()=:* \xD6\xDC\xC4"};
 
 
 unsigned int i,j,EqCnt=WayPointList.size();
@@ -777,7 +777,7 @@ unsigned int i=0;
           case '\xFC': case '\xDC': bOe = true; break;  //ö Ö
           case '\xE4': case '\xC4': bAe = true; break;  // ä Ä
 */
-          case '?':  b_0 = true; break;
+          case ',':  b_0 = true; break;
           case '!':  b_1 = true; break;
           case '+':  b_2 = true; break;
           case '$':  b_3 = true; break;

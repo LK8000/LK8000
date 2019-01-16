@@ -76,4 +76,14 @@ void ComCheck_AddChar(TCHAR c) {
 }
 
 
+void ComCheck_AddText(const TCHAR* Text)
+{
+  if(Text != NULL)
+  {
+    for(int i =0; i < min((int)_tcslen(Text),(CC_BUFSIZE-2)); i++)
+    {
+	  ComCheck_AddChar(Text[i]);
+    }
+  }
+}
 
