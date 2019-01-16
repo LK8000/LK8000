@@ -11,6 +11,53 @@ There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 
+[version 7.1 changes from 7.0]
+. New Overlay Configuration	
+
+. New Bottom Bar Mode configuration
+
+. Airspace/Waypoint data Management with up to 9 files each
+
+. Terrain as filter for waypoints and airspaces
+
+. improved Airspace Management dialog
+	
+. Airspace Group Acknowledge	
+
+. New airspace class Notam
+	
+. Airfield ICAO-Code Search
+	
+. New Multiselect Elements	
+    Flarm Target	
+    Own position	
+    Oracle	
+    Team	
+    
+. FLARM Radio Frequency send radio button
+
+. Airfield Additional Frequencies	
+
+. New Terminal Send Button for bidirectional testing
+	
+. New Lowercase Keyboard Layout
+	
+. New UTF8 Map Symbols
+	
+. New Task selection on loading CUP files
+	
+. New En-/Disable Multimap5 FLARM Radar	
+
+. New Multi Contests	
+     New Contest rules	
+     New Runtime option “Draw XC”	
+     New X> target
+     	
+. Improved FAI Assistant	
+
+. changes SFC (surface) to GND (ground) trigraph
+
+
 [version 7.0 changes from 6.0]
 
 . NEW device VAULTER
