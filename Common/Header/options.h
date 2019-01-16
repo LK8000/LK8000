@@ -124,28 +124,28 @@
 
 #ifdef  UNDER_CE
 #define UTF8PICTORIALS  false
-//#define  FLARM_PICTO_THREADSAFE
+#define  FLARM_PICTO_THREADSAFE
 #else
 #define  UTF8PICTORIALS  false
-//#define  FLARM_PICTO_THREADSAFE
+#define  FLARM_PICTO_THREADSAFE
 #endif
+
+#define RADIO_ACTIVE
+#define OWN_POS_MS
+#define ORACLE_MS
+#define TEAM_CODE_MS
+#define FLARM_MS
 
 // ----------------------------------------------------------------------------------------
 //
 // OPTIONALs not in use within official LK versions, but still available for custom version
 //
 // ----------------------------------------------------------------------------------------
-#define RADIO_ACTIVE
 
-#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
+//#define ULLIS_PRIVATE_FEATURES  // Ulli's individual features
 #ifdef ULLIS_PRIVATE_FEATURES
 //  #define GOTO_AS_SIMPLETASK  // even a single goto will be listed in multiselect
-
-  #define OWN_POS_MS
-  #define ORACLE_MS
-  #define TEAM_CODE_MS
   #define OWN_FLARM_TRACES
-  #define FLARM_MS    // not implemented inside Multiselect dialog.
   #define OUTLINE_2ND		// double outline airspaces
 //  #define FIVEPOINT_OPTIMIZER
 #endif

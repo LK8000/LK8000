@@ -57,6 +57,7 @@ redo:
 	if ( (CURMODE == MSM_MAPWPT) && (Multimap2==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_MAPASP) && (Multimap3==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_VISUALGLIDE) && (Multimap4==mm_disabled) ) goto redo;
+	if ( (CURMODE == MSM_MAPRADAR) && (Multimap5==mm_disabled) ) goto redo;
 
 	//if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
 finish:
@@ -105,6 +106,7 @@ redo:
 	if ( (CURMODE == MSM_MAPWPT) && (Multimap2==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_MAPASP) && (Multimap3==mm_disabled) ) goto redo;
 	if ( (CURMODE == MSM_VISUALGLIDE) && (Multimap4==mm_disabled) ) goto redo;
+	if ( (CURMODE == MSM_MAPRADAR) && (Multimap5==mm_disabled) ) goto redo;
 
 	//if (CURMODE==MSM_MAPWPT && GetOvertargetIndex()<0) goto redo;
 finish:
