@@ -615,7 +615,7 @@ und ALLES WEISS setzt einen weißen Rahmen für alles einschließlich Außenland
 
 @189
 #Choose the color of map overlays. Default is white, which becomes automatically black when reversed.  Some colors are reversable, some others are not. You may experiment with combinations. 
-Wählt die Farbe der Karteneinblendungen. Standard ist weiß und invertiert schwarz. Einige Farben kann man invertieren, andere nicht. Man kann mit Kombinationen experimentieren.
+Wählt die Farbe der Karteneinblendungen (Overlays). Standard ist weiß und invertiert schwarz. Einige Farben kann man invertieren, andere nicht. Man kann mit Kombinationen experimentieren.
 
 @190
 #LK Page 2.3 is listing nearest Turnpoints. Here you define what to list.
@@ -926,8 +926,10 @@ Bestimmt wie man zur Texteingabe aufgefordert wird (Dateinamen, Team-Kode u.s.w.
 #This option defines how waypoints outside the terrain range are handled: the user can be asked when this occurs, 
 #or they can be always included or excluded.
 Diese Option bestimmt wie Wegpunkte und Lufträume außerhalb des eingestellten Karten Terrain behandelt werden: 
-incl. :Alle Lufträume und Wegpunkte werden unabhängig vom Terrain geldaden. 
-excl. :Nur Lufträume und Wegpunkte innerhalb des eingestallten Karten-Terrains werden geldaden.
+[incl. Lufträume & Wegpunkte] 
+Alle Lufträume und Wegpunkte werden unabhängig vom Terrain geldaden. 
+[excl. Lufträume & Wegpunkte]
+Nur Lufträume und Wegpunkte innerhalb des eingestallten Karten-Terrains werden geldaden.
 
 @237
 #Working only in Full Overlay mode: localtime clock is shown.
@@ -935,7 +937,7 @@ Zeigt die Uhr mit Lokalzeit NUR bei Volleinblendung aller Daten
 
 @238
 #Size of overlay fonts.
-Größe der Schrift für Einblendungen
+Größe der Schrift für Einblendungen (Overlays)
 
 #
 # BASIC SETTINGS
@@ -2707,7 +2709,9 @@ Falls aktiviert wird beim Kreisen automatisch die TRM0-Fußzele angezeigt.
 [Bestät LR-Gr]
 #[Group Ack]
 #Acknowledgement of one airspace is valid for all airspaces with the same name and the same class.
-Bestätigung für eine Gruppe von Lufträumen der gleichen Klasse mit gleichem Namen.
+Bestätigung für eine Gruppe von Lufträumen der gleichen Klasse UND mit gleichem Namen.
+Lufträume werden oft in Teilsegmenten defineirt, um nicht vor jedem Segment gewarnt zu werden, können Änderungen/Bestätigungen auf alle Segmente angewendet werden 
+WICHTIG: Luftraum Name und Klasse müssen bei jedem Teilsegment identisch sein. 
 
 
 @1265
@@ -2715,7 +2719,8 @@ Bestätigung für eine Gruppe von Lufträumen der gleichen Klasse mit gleichem N
 #[Airspace changes]
 #"persistent" disabled airspaces stay disabled on next programm start
 #"for this time only" all airspaces will be re-enabled after next programm start
-"permanent" inaktive Lufträume bleiben bis zum nächsten Programmstart inaktiv.
+[nur heute] Änderrungen an Lufträumen (aktiv/inaktiv) werden nächsten Programmstart gelöscht.
+[permanent] Änderrungen an Lufträumen (aktiv/inaktiv) bleiben auch nächsten Programmstart erhalten.
 
 @1266
 [Startfenster]
@@ -2754,14 +2759,18 @@ Passt die Schwelle 28%/45% für große FAI-Dreiecke an.
 AUS: 
 Keine Fahrwerkswarnung
 
+Immer:
+Fahrwerkswarnung immer, bei Höhe geringer als gesetzte Höhe über Grund.
+
 Landefelder: (in den Bergen empfohlen)
 Fahrwerkswarnung bei Höhe geringer als gesetzte Höhe über dem besten alternativen Landefeld. Die Warnung erfolgt nur wenn man sich näher als 2 nautische Meilen (3,7km) an der besten Alternative befindet. 
+Dies verhindert Warnungen bei Gländeannäherungen, die beim Gebirgsflug nicht ungewöhnlich sind.
 
 @1270
 [Höhe Fahrwerkswarnung]
 #[Gear Warning Altitude]
 #altitude threshold for gear warning
-Höhe für Fahrwerkswarnung
+Höhenschwelle für Fahrwerkswarnung, unterhalb welcher die Warnung erfolgen soll.
 
 @1271 
 [Ausgabe QNH]
@@ -2909,7 +2918,7 @@ Bei der Portrait Bildschirmdarstellung werden die Informationen am unteren Bilds
 #You can disable a single overlay (OFF), or enable it using the default set (Default. Always the same as in LK v5) or you can select a custom parameter.
 #Be careful that only left overlays can show the units, not those on the right.
 #The first three overlays on top cannot be changed, only disabled.
-[Overlays]
+[Einblendungen]
 Hier kann eingestellt werden, welche zusätzlichen Daten auf der Karte eingeblendet werden werden. 
 Man kann die einzelne Einblendungen (sog. Overlays) ein- bzw. ausschalten.
 Es ist zu beachten, dass nur die linken Overlays mit Maßeinheiten darstellen, dies ist bei den rechten nicht der Fall.
@@ -2933,7 +2942,7 @@ Wenn diese Option eingeschaltet ist, werden Positionsdaten anderer Flugzeuge aus
 #OFF: Terrain contrast and brightness can be adjusted manually.
 #Default is ON.
 [Auto-Kontrast]
-Ein: Terrain Kontrast und Helligkeit werden automatisch justiert.
+EIN: Terrain Kontrast und Helligkeit werden automatisch justiert.
 AUS: Terrain Kontrast und Helligkeit können manuell eingestellt werden.
 Voreingestellt ist EIN.
 

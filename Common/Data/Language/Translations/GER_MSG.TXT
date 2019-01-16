@@ -5905,7 +5905,7 @@ _@M2278_ "XC Geschw."
 
 
 #_@M2279_ "Contest"
-_@M2279_ "Contest"
+_@M2279_ "Wettbewerb "
 
 # S = Start Task point
 #_@M2301  "S" 
