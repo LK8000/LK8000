@@ -809,7 +809,7 @@ _@M258_ "Luftr. wieder aktiv"
 #_@M259_ "Enabled"
 _@M259_ "Aktiviert"
 
-#_@M260_ "Engineering Menu*"
+#_@M260_ "Engineering Menu* "
 _@M260_ "Entwickler Menü*"
 
 #_@M261_ "Enter number"
@@ -5871,12 +5871,9 @@ _@M2276_ "XC Entf.*"
 _@M2278_ "XC Geschw."
 
 
-#_@M2279_ "Contest"
-_@M2279_ "Contest"
+#_@M2279_ "Contest "
+_@M2279_ "Wettbewerb "
 
-# MAX 2250! 
-# (Reserved for custom menus up to 2300!)
-# Note for developers: remember LKLanguage MAX_MESSAGE limit
 
 # S = Start Task point
 #_@M2301  "S" 

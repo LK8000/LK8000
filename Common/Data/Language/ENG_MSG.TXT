@@ -281,7 +281,7 @@ _@M256_ "Emerald green"
 _@M257_ "Empty mapcolor "
 _@M258_ "Enable"
 _@M259_ "Enabled"
-_@M260_ "Engineering Menu*"
+_@M260_ "Engineering Menu* "
 _@M261_ "Enter number"
 _@M262_ "Equivalent MC"
 _@M263_ "Error in saving task!"
@@ -2221,7 +2221,7 @@ _@M2276_ "XC Dis*"
 _@M2278_ "XC Spd"
 
 
-_@M2279_ "Contest"
+_@M2279_ "Contest "
 
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)
