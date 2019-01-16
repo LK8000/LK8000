@@ -139,6 +139,10 @@ short RasterMap::GetFieldInterpolate(const double &Latitude, const double &Longi
  */
 inline
 short RasterMap::GetFieldFine(const double &Latitude, const double &Longitude) const {
+    if(gcc_unlikely(Longitude < TerrainInfo.Left || Latitude > TerrainInfo.Top)) {
+        return TERRAIN_INVALID;
+    }
+
     const unsigned int lx = uround((Longitude - TerrainInfo.Left) * fXrounding) * Xrounding;
     const unsigned int ly = uround((TerrainInfo.Top - Latitude) * fYrounding) * Yrounding;
 

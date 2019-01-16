@@ -37,7 +37,7 @@ Copyright_License {
 
 /**
  * Returns minimum width that is greater then the given width and
- * that is acceptable as image width (not all numbers are acceptable)
+ * that is acceptable as image width (width must be multiple of 4)
  */
 static inline unsigned
 CorrectedWidth(unsigned nWidth)

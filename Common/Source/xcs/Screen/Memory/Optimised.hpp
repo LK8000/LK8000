@@ -26,7 +26,7 @@ Copyright_License {
 
 #include "PixelOperations.hpp"
 
-#ifdef __ARM_NEON__
+#if defined(__ARM_NEON) || defined(__ARM_NEON__)
 #include "NEON.hpp"
 #endif
 
@@ -93,7 +93,7 @@ struct TransparentPixelOperations
     :PortableTransparentPixelOperations<PixelTraits>(key) {}
 };
 
-#ifdef __ARM_NEON__
+#if defined(__ARM_NEON) || defined(__ARM_NEON__)
 
 template<>
 struct BitOrPixelOperations<GreyscalePixelTraits>
@@ -121,7 +121,7 @@ public:
     :PortableAlphaPixelOperations<PixelTraits>(alpha) {}
 };
 
-#ifdef __ARM_NEON__
+#if defined(__ARM_NEON) || defined(__ARM_NEON__)
 
 template<>
 class AlphaPixelOperations<GreyscalePixelTraits>
