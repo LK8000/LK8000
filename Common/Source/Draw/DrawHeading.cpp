@@ -22,10 +22,10 @@ void MapWindow::DrawHeading(LKSurface& Surface, const POINT& Orig, const RECT& r
 
     int tmp = isqrt4((ClipRect.GetSize().cx*ClipRect.GetSize().cx) + (ClipRect.GetSize().cy*ClipRect.GetSize().cy));
     POINT p2;
-    if (!(DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TARGETCIRCLE || DisplayOrientation == TARGETUP)) {
+    if (  MapWindow::mode.autoNorthUP() ||   !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TARGETCIRCLE || DisplayOrientation == TARGETUP)) {   // NorthUP
         p2.y= Orig.y - (int)(tmp*fastcosine(DrawInfo.TrackBearing));
         p2.x= Orig.x + (int)(tmp*fastsine(DrawInfo.TrackBearing));
-    } else {
+    } else {  // TrackUP
         p2.x=Orig.x;
         p2.y=Orig.y - (int)tmp;
     }

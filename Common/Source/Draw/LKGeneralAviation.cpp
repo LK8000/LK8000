@@ -154,6 +154,7 @@ void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc
 	if ( DisplayOrientation == NORTHSMART ||
 		DisplayOrientation == NORTHTRACK ||
 		DisplayOrientation == NORTHUP ||
+		MapWindow::mode.autoNorthUP() ||
 		MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
 		)
 	{

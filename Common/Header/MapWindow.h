@@ -359,9 +359,13 @@ class MapWindow {
     unsigned _mode;                    /**< @brief Current Map Display Mode */
     unsigned _lastMode;                /**< @brief Previous Map Display Mode */
     TModeFly _userForcedFlyMode;       /**< @brief Fly Mode forced by a user */
+    bool _autoNorthUP =false;
 
-  public:
+
+   public:
     Mode();
+    bool autoNorthUP(){return _autoNorthUP;};
+    void setAutoNorthUP(bool t_AutoNorthUP) {_autoNorthUP = t_AutoNorthUP;};
 
     TModeFly UserForcedMode() const    { return _userForcedFlyMode; }
     void UserForcedMode(TModeFly umode) { _userForcedFlyMode = umode; }
@@ -704,7 +708,7 @@ private:
   static double GetInvDrawScale() { return zoom.InvDrawScale(); }
   static double GetDrawScale() { return zoom.DrawScale(); }
   static double GetDisplayAngle() { return DisplayAngle; }
-  static void SetAutoOrientation(bool doreset);
+  static void SetAutoOrientation();
 
   static BrushReference hInvBackgroundBrush[LKMAXBACKGROUNDS]; // fixed number of backgrounds in MapWindow
 

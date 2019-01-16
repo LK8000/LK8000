@@ -87,7 +87,7 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 
   MapWindow::UpdateTimeStats(true);
 
-  SetAutoOrientation(false); // false for no reset Old values
+  SetAutoOrientation(); // false for no reset Old values
 
   //
   // When BigZoom trigger, we shall not calculate waypoints and olc.

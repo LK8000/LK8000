@@ -15,7 +15,7 @@ bool MapWindow::GliderCenter=false;
 void MapWindow::CalculateOrientationNormal(void) {
   double trackbearing = DrawInfo.TrackBearing;
 
-  if( (DisplayOrientation == NORTHUP) ||
+  if( ( MapWindow::mode.autoNorthUP() ||  DisplayOrientation == NORTHUP) ||
       ((DisplayOrientation == NORTHTRACK) &&(!mode.Is(Mode::MODE_CIRCLING)))
 	|| (DisplayOrientation == NORTHSMART) ||
 	( ((DisplayOrientation == NORTHCIRCLE) ||(DisplayOrientation==TARGETCIRCLE)) && (mode.Is(Mode::MODE_CIRCLING)) ) )
@@ -41,7 +41,7 @@ void MapWindow::CalculateOrientationNormal(void) {
 	DisplayAircraftAngle = 0.0;
   }
 
-	if (DisplayOrientation == TARGETUP) {
+	if ( ! MapWindow::mode.autoNorthUP() && DisplayOrientation == TARGETUP) {
 		DisplayAngle = DerivedDrawInfo.WaypointBearing;
 		DisplayAircraftAngle = trackbearing-DisplayAngle;
 	}
@@ -59,7 +59,8 @@ void MapWindow::CalculateOrientationTargetPan(void) {
   if ((ActiveTaskPoint==TargetPanIndex)
       &&(DisplayOrientation != NORTHUP)
       &&(DisplayOrientation != NORTHSMART) // 100419
-      &&(DisplayOrientation != NORTHTRACK)) {
+      &&(DisplayOrientation != NORTHTRACK)
+      &&(!MapWindow::mode.autoNorthUP())) {
     // target-up
     DisplayAngle = DerivedDrawInfo.WaypointBearing;
     DisplayAircraftAngle = DrawInfo.TrackBearing-DisplayAngle;
@@ -138,21 +139,12 @@ void MapWindow::CalculateOrigin(const RECT& rc, POINT *Orig) {
 
 // change dynamically the map orientation mode
 // set true flag for resetting DisplayOrientation mode and return
-void MapWindow::SetAutoOrientation(bool doreset) {
-
-  static bool doinit=true;
-  static int oldDisplayOrientation=0;
-
-  if (doinit||doreset) {
-	oldDisplayOrientation=DisplayOrientation;
-	doinit=false;
-  }
+void MapWindow::SetAutoOrientation() {
 
   // 1.4 because of correction if mapscale reported on screen in MapWindow2
   if (MapWindow::zoom.Scale() * 1.4 >= AutoOrientScale) {
-	// DisplayOrientation=NORTHSMART; // better to keep the glider centered on low zoom levels
-	DisplayOrientation=NORTHUP;
+    MapWindow::mode.setAutoNorthUP(true);
   } else {
-	DisplayOrientation=oldDisplayOrientation;
+	  MapWindow::mode.setAutoNorthUP(false);
   }
 }

@@ -3858,7 +3858,7 @@ int ival;
     if (DisplayOrientation_Config != wp->GetDataField()->GetAsInteger()) {
       DisplayOrientation_Config = wp->GetDataField()->GetAsInteger();
       DisplayOrientation=DisplayOrientation_Config;
-      MapWindow::SetAutoOrientation(true); // reset
+      MapWindow::SetAutoOrientation(); // reset
     }
   }
 
