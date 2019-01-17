@@ -6,7 +6,6 @@
 #endif // _MSC_VER > 1000
 
 
-void DoLogger(TCHAR *strAssetNumber);
 void StartLogger(void);
 void LogPoint(double Latitude, double Longitude, double Altitude,
               double BaroAltitude, int iHour, int iMin, int iSec);
@@ -16,8 +15,6 @@ void EndDeclaration(void);
 void LoggerHeader(void);
 void LoggerNote(const TCHAR *text);
 void LoggerDeviceDeclare();
-void EW_Strings(double Lattitude, double Longditude, TCHAR *ID);
-void EW_Download(TCHAR *strAssetNumber);
 
 void UpdateLogBook(bool welandedforsure);
 bool UpdateLogBookTXT(bool welandedforsure);
@@ -53,8 +50,9 @@ class ReplayLogger {
 
 bool LoggerClearFreeSpace();
 void StopLogger(void);
-bool IGCWriteRecord(const char *szIn);
 bool LoggerGActive();
+
+
 #define MAX_IGC_BUFF 255
 
 #if LOGFRECORD
