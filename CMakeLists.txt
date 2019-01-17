@@ -278,7 +278,7 @@ add_library( LK8000 SHARED
     Common/Source/LKSnailTrail.cpp
 
 
-    Common/Source/Logger/DoSignature.cpp
+    Common/Source/Logger/igc_file_writer.cpp
     Common/Source/Logger/FlightDataRec.cpp
     Common/Source/Logger/LogBook.cpp
     Common/Source/Logger/Logger.cpp

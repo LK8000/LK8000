@@ -10,18 +10,14 @@
 
 #include "md5internal.h"
 
-class MD5
-{
-private:
+class MD5_Base {
+protected:
   md5_ctx context;
-  unsigned char resbuf[16];
-  
-public:
-  // This version of the digest is actually a "printf'd" version of the digest.
-  char digestChars[33];
 
-  MD5();
-  MD5(unsigned int key1, unsigned int key2, unsigned int key3, unsigned int key4);
+public:
+
+  MD5_Base();
+  MD5_Base(unsigned int key1, unsigned int key2, unsigned int key3, unsigned int key4);
   
   void Init();
   void Init(unsigned int key1, unsigned int key2, unsigned int key3, unsigned int key4);
@@ -30,6 +26,19 @@ public:
   // operation, processing another message block, and updating the
   // context.
   void Update( const unsigned char *input, unsigned int inputLen);
+
+};
+
+class MD5 : public MD5_Base
+{
+  unsigned char resbuf[16];
+  
+public:
+  MD5() : MD5_Base() { }
+  explicit MD5(const MD5_Base& md5) : MD5_Base(md5) { }
+
+  // This version of the digest is actually a "printf'd" version of the digest.
+  char digestChars[33];
 
   // MD5 finalization. Ends an MD5 message-digest operation, writing the
   // the message digest and zeroizing the context.

@@ -11,22 +11,22 @@
 #include "md5.h"
 
 
-MD5::MD5()
+MD5_Base::MD5_Base()
 {
     Init();
 }
 
-MD5::MD5(unsigned int key1, unsigned int key2, unsigned int key3, unsigned int key4)
+MD5_Base::MD5_Base(unsigned int key1, unsigned int key2, unsigned int key3, unsigned int key4)
 {
   Init(key1, key2, key3, key4);
 }
 
-void MD5::Init()
+void MD5_Base::Init()
 {
   md5_init_ctx(&context);
 }
 
-void MD5::Init(unsigned int key1, unsigned int key2, unsigned int key3, unsigned int key4)
+void MD5_Base::Init(unsigned int key1, unsigned int key2, unsigned int key3, unsigned int key4)
 {
   md5_init_ctx(&context);
   context.A = key1;
@@ -38,7 +38,7 @@ void MD5::Init(unsigned int key1, unsigned int key2, unsigned int key3, unsigned
 // MD5 block update operation. Continues an MD5 message-digest
 // operation, processing another message block, and updating the
 // context.
-void MD5::Update( const unsigned char *input, unsigned int inputLen)
+void MD5_Base::Update( const unsigned char *input, unsigned int inputLen)
 {
  md5_process_bytes(input, inputLen, &context);
 }

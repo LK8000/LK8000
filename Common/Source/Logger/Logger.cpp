@@ -17,6 +17,8 @@
 #include "OS/Memory.h"
 #include "Util/Clamp.hpp"
 #include <time.h>
+#include "igc_file_writer.h"
+#include "utils/make_unique.h"
 // #define DEBUG_LOGGER	1
 
 //
@@ -44,7 +46,7 @@
 
 extern NMEA_INFO GPS_INFO;
 
-TCHAR NumToIGCChar(int n) {
+static TCHAR NumToIGCChar(int n) {
   if (n<10) {
     return _T('1') + (n-1);
   } else {
@@ -53,7 +55,7 @@ TCHAR NumToIGCChar(int n) {
 }
 
 
-int IGCCharToNum(TCHAR c) {
+static int IGCCharToNum(TCHAR c) {
   if ((c >= _T('1')) && (c<= _T('9'))) {
     return c- _T('1') + 1;
   } else if ((c >= _T('A')) && (c<= _T('Z'))) {
@@ -63,12 +65,8 @@ int IGCCharToNum(TCHAR c) {
   }
 }
 
-
-
-static TCHAR szLoggerFileName[MAX_PATH+1] = TEXT("\0");	 // LOGGER_TMP.IGC
 static TCHAR szFLoggerFileName[MAX_PATH+1] = TEXT("\0"); // final IGC name
-static TCHAR szSLoggerFileName[MAX_PATH+1] = TEXT("\0"); // LOGGER_SIG.IGC
-static TCHAR szFLoggerFileNameRoot[MAX_PATH+1] = TEXT("\0");
+
 #if LOGFRECORD
 static double FRecordLastTime = 0;
 static char szLastFRecord[MAX_IGC_BUFF];
@@ -114,148 +112,28 @@ typedef struct LoggerBuffer {
   #endif
 } LoggerBuffer_T;
 
-LoggerBuffer_T FirstPoint;
-LoggerBuffer_T LoggerBuffer[MAX_LOGGER_BUFFER];
+static LoggerBuffer_T FirstPoint;
+static LoggerBuffer_T LoggerBuffer[MAX_LOGGER_BUFFER];
 
 
+namespace {
+
+  // singleton instance of igc file writer
+  //  created by StartLogger
+  //  deleted by StopLogger
+  std::unique_ptr<igc_file_writer> igc_writer_ptr;
+
+  template<size_t size>
+  bool IGCWriteRecord(const char (&szIn)[size]) {
+    return igc_writer_ptr && igc_writer_ptr->append(szIn);
+  }
+
+}
 
 void StopLogger(void) {
-  TCHAR szMessage[(MAX_PATH*2)+1] = TEXT("\0");
-  int iLoggerError=0;  // see switch statement for error handler
-  TCHAR sztmplogfile[MAX_PATH+1] = TEXT("\0");
-  int retval=0;
-
-  _tcscpy(sztmplogfile,szLoggerFileName); // use LOGGER_TMP, unsigned
-
-  if (LoggerActive) {
+    igc_writer_ptr.reset();
     LoggerActive = false;
-    if (LoggerClearFreeSpace()) {
-
-    if (LoggerGActive()) {
-
-	extern int RunSignature();
-	retval = RunSignature();
-	if (retval!=0) {
-		StartupStore(_T(".... LOGGER SIGNATURE ERROR, CODE=%d%s"),retval,NEWLINE);
-		switch(retval) {
-			case -1:
-				StartupStore(_T(".... (EXEQ DEBUG FAILURE)%s"),NEWLINE);
-				break;
-			case 1:
-				StartupStore(_T(".... (SOURCE FILE DISAPPEARED)%s"),NEWLINE);
-				break;
-			case 3:
-				StartupStore(_T(".... (EXEQ WITH WRONG ARGUMENTS)%s"),NEWLINE);
-				break;
-			case 4:
-				StartupStore(_T(".... (BAD ENVIRONMENT)%s"),NEWLINE);
-				break;
-			case 11:
-				StartupStore(_T(".... (LOGGER_TMP DISAPPEARED)%s"),NEWLINE);
-				break;
-			case 12:
-				StartupStore(_T(".... (LOGGER_SIG ALREADY EXISTING)%s"),NEWLINE);
-				break;
-			case 21:
-				StartupStore(_T(".... (MUTEX FAILURE=)%s"),NEWLINE);
-				break;
-			case 259:
-				StartupStore(_T(".... (PROCESS DID NOT TERMINATE!)%s"),NEWLINE);
-				break;
-			default:
-				break;
-		}
-		// we shall be moving LOGGER_TMP, and leave LOGGER_SIG untouched. In fact we do not know
-		// if LOGGER_SIG is or will be available.
-	} else {
-		// RunSig ok, change logfile to new logger_sig
-		StartupStore(_T(". Logger OK, IGC signed with G-Record%s"),NEWLINE);
-		lk::filesystem::deleteFile(szLoggerFileName);	// remove old LOGGER_TMP
-		_tcscpy(sztmplogfile,szSLoggerFileName); // use LOGGER_SIG, signed
-	}
-
-	} // logger active
-
-      int imCount=0;
-      const int imMax=3;
-      for (imCount=0; imCount < imMax; imCount++) {
-        // MoveFile() nonzero==Success
-        if (lk::filesystem::moveFile(sztmplogfile, szFLoggerFileName)) {
-          iLoggerError=0;
-          break; // success
-        }
-        Poco::Thread::sleep(750); // wait for file system cache to fix itself?
-      }
-      if (imCount == imMax) { // MoveFile() failed all attempts
-
-        if (!lk::filesystem::moveFile(sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
-          iLoggerError=1; //Fail.  NoMoveNoRename
-        }
-        else {
-          iLoggerError=2; //NoMoveYesRename
-        }
-      }
-
-    } // logger clearfreespace
-    else { // Insufficient disk space.  // MoveFile() nonzero==Success
-      if (!lk::filesystem::moveFile(sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
-        iLoggerError=3; //Fail.  Insufficient Disk Space, NoRename
-      }
-      else {
-        iLoggerError=4; //Success.  Insufficient Disk Space, YesRename
-      }
-    }
-
-    switch (iLoggerError) { //0=Success 1=NoMoveNoRename 2=NoMoveYesRename 3=NoSpaceNoRename 4=NoSpaceYesRename
-    case 0:
-      StartupStore(TEXT(". Logger: File saved %s%s"),WhatTimeIsIt(),NEWLINE);
-      break;
-
-    case 1: // NoMoveNoRename
-      LK_tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device and called "),MAX_PATH);
-      _tcsncat(szMessage,sztmplogfile,MAX_PATH);
-
-      MessageBoxX(
-		LKGetText(szMessage),
-	// LKTOKEN  _@M404_ = "Logger Error"
-		MsgToken(404), mbOk);
-      StartupStore(_T("%s") NEWLINE, szMessage);
-      break;
-
-    case 2: // NoMoveYesRename
-      LK_tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device"),MAX_PATH);
-
-      MessageBoxX(
-		LKGetText(szMessage),
-	// LKTOKEN  _@M404_ = "Logger Error"
-		MsgToken(404), mbOk);
-      StartupStore(_T("%s") NEWLINE, szMessage);
-      break;
-
-    case 3: // Insufficient Storage.  NoRename
-      LK_tcsncpy(szMessage,TEXT("++++++ Insuff. storage. Logger file in device's root folder, called "),MAX_PATH);
-      _tcsncat(szMessage,sztmplogfile,MAX_PATH);
-
-      MessageBoxX(
-		LKGetText(szMessage),
-	// LKTOKEN  _@M404_ = "Logger Error"
-		MsgToken(404), mbOk);
-      StartupStore(_T("%s") NEWLINE, szMessage);
-      break;
-
-    case 4: // Insufficient Storage.  YesRename
-      LK_tcsncpy(szMessage,TEXT("++++++ Insufficient storage.  Logger file is in the root folder of your device"),MAX_PATH);
-
-      MessageBoxX(
-		LKGetText(szMessage),
-	// LKTOKEN  _@M404_ = "Logger Error"
-		MsgToken(404), mbOk);
-      StartupStore(_T("%s") NEWLINE, szMessage);
-      break;
-} // error handler
-
     NumLoggerBuffered = 0;
-  }
 }
 
 // BaroAltitude in this case is a QNE altitude (aka pressure altitude)
@@ -266,11 +144,11 @@ void StopLogger(void) {
 // In all other cases, the pressure altitude will be saved, and out IGC logger replay is converting it
 // to the desired QNH altitude back.
 #if LOGFRECORD
-void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
+static void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
                       double BaroAltitude, short Hour, short Minute, short Second,
                       int SatelliteIDs[]) {
 #else
-void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
+static void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
                       double BaroAltitude, short Hour, short Minute, short Second) {
 #endif
 
@@ -306,7 +184,7 @@ void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
 }
 
 
-void LogPointToFile(double Latitude, double Longitude, double Altitude,
+static void LogPointToFile(double Latitude, double Longitude, double Altitude,
                     double BaroAltitude, short Hour, short Minute, short Second)
 {
   char szBRecord[500];
@@ -485,7 +363,7 @@ bool LogFRecord(int SatelliteIDs[], bool bAlways )
 }
 #endif // LOGFRECORD
 
-bool IsAlphaNum (TCHAR c) {
+static bool IsAlphaNum (TCHAR c) {
   if (((c >= _T('A'))&&(c <= _T('Z')))
       ||((c >= _T('a'))&&(c <= _T('z')))
       ||((c >= _T('0'))&&(c <= _T('9')))) {
@@ -531,23 +409,6 @@ void StartLogger()
   if (TaskModified) {
     SaveDefaultTask();
   }
-  _stprintf(szLoggerFileName, TEXT("%s%sLOGGER_TMP.IGC"), path, _T(DIRSEP));
-
-  _stprintf(szSLoggerFileName, TEXT("%s%sLOGGER_SIG.IGC"), path, _T(DIRSEP));
-  TCHAR newfile[MAX_PATH+20];
-  if (lk::filesystem::exist(szLoggerFileName)) {
-	StartupStore(_T("---- Logger recovery: Existing LOGGER_TMP.IGC found, renamed to LOST%s"),NEWLINE);
-	_stprintf(newfile, TEXT("%s%sLOST_%02d%02d%02d.IGC"), path, _T(DIRSEP), GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-	lk::filesystem::copyFile(szLoggerFileName,newfile,false);
-	lk::filesystem::deleteFile(szLoggerFileName);
-  }
-  if (lk::filesystem::exist(szSLoggerFileName)) {
-	StartupStore(_T("---- Logger recovery (G): Existing LOGGER_SIG.IGC found, renamed to LOSTG%s"),NEWLINE);
-	_stprintf(newfile, TEXT("%s%sLOSTG_%02d%02d%02d.IGC"), path, _T(DIRSEP), GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-	lk::filesystem::copyFile(szSLoggerFileName,newfile,false);
-	lk::filesystem::deleteFile(szSLoggerFileName);
-  }
-
 
   for(i=1;i<99;i++)
     {
@@ -563,24 +424,12 @@ void StartLogger()
                  GPS_INFO.Year,
                  GPS_INFO.Month,
                  GPS_INFO.Day,
-		 _T(LOGGER_MANUFACTURER),
+                 _T(LOGGER_MANUFACTURER),
                  cAsset[0],
                  cAsset[1],
                  cAsset[2],
                  i);
 
-        _stprintf(szFLoggerFileNameRoot,
-                 TEXT("%s%s%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
-                 TEXT(""), // this creates it in root if MoveFile() fails
-                 _T(DIRSEP),
-                 GPS_INFO.Year,
-                 GPS_INFO.Month,
-                 GPS_INFO.Day,
-		 _T(LOGGER_MANUFACTURER),
-                 cAsset[0],
-                 cAsset[1],
-                 cAsset[2],
-                 i);
       } else {
         // Short file name
         TCHAR cyear, cmonth, cday, cflight;
@@ -599,23 +448,14 @@ void StartLogger()
                  cAsset[2],
                  cflight);
 
-        _stprintf(szFLoggerFileNameRoot,
-                 TEXT("%s%s%c%c%cX%c%c%c%c.IGC"),
-                 TEXT(""), // this creates it in root if MoveFile() fails
-                 _T(DIRSEP),
-                 cyear,
-                 cmonth,
-                 cday,
-                 cAsset[0],
-                 cAsset[1],
-                 cAsset[2],
-                 cflight);
       } // end if
 
       if(!lk::filesystem::exist(szFLoggerFileName)) {
         break;
       }
   } // end while
+
+  igc_writer_ptr = std::make_unique<igc_file_writer>(szFLoggerFileName, LoggerGActive());
 
   StartupStore(_T(". Logger Started %s  File <%s>%s"),
 	WhatTimeIsIt(), szFLoggerFileName,NEWLINE);
@@ -746,6 +586,11 @@ void LoggerHeader(void)
   sprintf(temp,"HFRFWFIRMWAREVERSION:%s.%s.COMPETITION\r\n", LKVERSION, LKRELEASE);
   #endif
   IGCWriteRecord(temp);
+
+  IGCWriteRecord("HFALGALTGPS:GEO\r\n");
+  if(GPS_INFO.BaroAltitudeAvailable) {
+    IGCWriteRecord("HFALPALTPRESSURE:ISA\r\n");
+  }
 
   IGCWriteRecord(datum);
 
@@ -1002,7 +847,7 @@ bool CheckDeclaration(void) {
 }
 
 
-time_t LogFileDate(const TCHAR* filename) {
+static time_t LogFileDate(const TCHAR* filename) {
   TCHAR asset[MAX_PATH+1];
   struct tm st ={};
   unsigned short year, month, day, num;
@@ -1063,14 +908,14 @@ time_t LogFileDate(const TCHAR* filename) {
 }
 
 
-bool LogFileIsOlder(const TCHAR *oldestname, const TCHAR *thisname) {
+static bool LogFileIsOlder(const TCHAR *oldestname, const TCHAR *thisname) {
   time_t ftold = LogFileDate(oldestname);
   time_t ftnew = LogFileDate(thisname);
   return ftold > ftnew;
 }
 
 
-bool DeleteOldIGCFile(TCHAR *pathname) {
+static bool DeleteOldIGCFile(TCHAR *pathname) {
   TCHAR searchpath[MAX_PATH+1];
   TCHAR fullname[MAX_PATH+1];
   _stprintf(searchpath, TEXT("%s*.igc"),pathname);
@@ -1158,62 +1003,6 @@ bool LoggerClearFreeSpace(void) {
   }
 }
 
-bool IsValidIGCChar(char c) //returns 1 if valid char for IGC files
-{//
-
-  if ( c >=0x20  && c <= 0x7E &&
-       c != 0x0D &&
-       c != 0x0A &&
-       c != 0x24 &&
-       c != 0x2A &&
-       c != 0x2C &&
-       c != 0x21 &&
-       c != 0x5C &&
-       c != 0x5E &&
-       c != 0x7E
-       )
-    return true;
-  else
-    return false;
-}
-
-char * CleanIGCRecord (char * szIn)
-{  // replace invalid chars w/ 0x20
-
-  int iLen = strlen(szIn);
-  for (int i = 0; i < iLen -2; i++)  // don't clean terminating \r\n!
-    if (!IsValidIGCChar(szIn[i]))
-      szIn[i]=' ';
-
-  return szIn;
-}
-
-bool IGCWriteRecord(const char *szIn) {
-    char charbuffer[MAX_IGC_BUFF];
-    bool bRetVal = false;
-
-    static bool bWriting = false;
-
-    // THIS IS NOT A SOLUTION. DATA LOSS GRANTED.
-    if (!bWriting) {
-        bWriting = true;
-
-        FILE* stream = _tfopen(szLoggerFileName, _T("ab"));
-        if (stream) {
-            strncpy(charbuffer, szIn, array_size(charbuffer));
-            charbuffer[array_size(charbuffer) - 1] = '\0';
-            CleanIGCRecord(charbuffer);
-            fwrite(charbuffer, sizeof(charbuffer[0]), strlen(charbuffer), stream);
-            fflush(stream);
-            fclose(stream);
-            bRetVal = true;
-        }
-        bWriting = false;
-    }
-    return bRetVal;
-}
-
-
 bool LoggerGActive() {
 #if defined(YDEBUG) || defined(DEBUG_LOGGER)
     return true;
@@ -1221,21 +1010,6 @@ bool LoggerGActive() {
     return (!SIMMODE);
 #endif
 }
-
-
-//
-//	259	still active, very bad
-//	0	is the only OK that we want!
-//	other values, very bad
-//
-int RunSignature() {
-    TCHAR homedir[MAX_PATH];
-    LocalPath(homedir, TEXT(LKD_LOGS));
-
-    extern int DoSignature(TCHAR * hpath);
-    return DoSignature(homedir);
-}
-
 
 //
 // Paolo+Durval: feed external headers to LK for PNAdump software

@@ -1324,8 +1324,8 @@ SRC_FILES :=\
 	$(SRC)/LKUtils.cpp \
 	$(SRC)/LocalPath.cpp\
 	$(SRC)/Locking.cpp\
-	$(SRC)/Logger/DoSignature.cpp 	\
-	$(SRC)/Logger/FlightDataRec.cpp 	\
+	$(SRC)/Logger/igc_file_writer.cpp\
+	$(SRC)/Logger/FlightDataRec.cpp\
 	$(SRC)/Logger/LogBook.cpp\
 	$(SRC)/Logger/Logger.cpp \
 	$(SRC)/Logger/NMEAlogger.cpp\
