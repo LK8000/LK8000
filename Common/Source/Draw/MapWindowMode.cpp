@@ -11,7 +11,7 @@
 
 
 MapWindow::Mode::Mode():
-  _mode(MODE_CRUISE), _lastMode(MODE_NONE), _userForcedFlyMode(MODE_FLY_NONE)
+  _mode(MODE_CRUISE), _lastMode(MODE_NONE), _userForcedFlyMode(MODE_FLY_NONE),_autoNorthUP(false)
 {
 }
 

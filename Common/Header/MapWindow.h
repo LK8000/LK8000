@@ -359,7 +359,7 @@ class MapWindow {
     unsigned _mode;                    /**< @brief Current Map Display Mode */
     unsigned _lastMode;                /**< @brief Previous Map Display Mode */
     TModeFly _userForcedFlyMode;       /**< @brief Fly Mode forced by a user */
-    bool _autoNorthUP =false;
+    bool _autoNorthUP ;
 
 
    public:
