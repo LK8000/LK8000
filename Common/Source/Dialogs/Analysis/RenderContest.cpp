@@ -242,12 +242,12 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
 
   // Draw FAI sectors
   const CContestMgr::TriangleLeg *max_leg = CContestMgr::Instance().GetFAIAssistantMaxLeg();
-  if ( max_leg != nullptr && max_leg->LegDist >= FAI_MIN_DISTANCE_THRESHOLD) {
+  if (max_leg != nullptr && max_leg->LegDist >= FAI_MIN_DISTANCE_THRESHOLD) {
 
     const CContestMgr::TriangleLeg *leg0 = CContestMgr::Instance().GetFAIAssistantLeg(0);
     const CContestMgr::TriangleLeg *leg1 = CContestMgr::Instance().GetFAIAssistantLeg(1);
     const CContestMgr::TriangleLeg *leg2 = CContestMgr::Instance().GetFAIAssistantLeg(2);
-    const double distance = leg0->LegDist + leg1->LegDist + leg2->LegDist;
+    //const double distance = leg0->LegDist + leg1->LegDist + leg2->LegDist;
 
     double fTic;
     if (!CContestMgr::Instance().LooksLikeAFAITriangleAttempt()) {
@@ -263,7 +263,7 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
       ContestFAISector[1].CalcSectorCache(max_leg->Lat1, max_leg->Lon1, max_leg->Lat2, max_leg->Lon2, fTic, 1);
       ContestFAISector[1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTYELLOW);
     } else {
-      if (CContestMgr::Instance().GetFAIAssistantLeg(0)->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
+      if (leg0->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
         fTic = 10 / DISTANCEMODIFY;
         if (leg0->LegDist > 5 / DISTANCEMODIFY) fTic = 20 / DISTANCEMODIFY;
         if (leg0->LegDist > 50 / DISTANCEMODIFY) fTic = 50 / DISTANCEMODIFY;
@@ -273,24 +273,24 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
         ContestFAISector[1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_YELLOW);
       }
       // If a valid second leg (or a leg that belong to the current best FAI triangle ) draw it in the correct direction
-      if (leg1->LegDist > distance * 0.25) {
+      if (leg1->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
         fTic = 10 / DISTANCEMODIFY;
         if (leg1->LegDist > 5 / DISTANCEMODIFY) fTic = 20 / DISTANCEMODIFY;
         if (leg1->LegDist > 50 / DISTANCEMODIFY) fTic = 50 / DISTANCEMODIFY;
         if (leg1->LegDist > 100 / DISTANCEMODIFY) fTic = 100 / DISTANCEMODIFY;
         ContestFAISector[3].CalcSectorCache(leg1->Lat1, leg1->Lon1, leg1->Lat2, leg1->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
         ContestFAISector[3].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_CYAN);
-        if (leg2->LegDist > distance * 0.25) {
-          fTic = 10 / DISTANCEMODIFY;
-          if (leg2->LegDist > 5 / DISTANCEMODIFY) fTic = 20 / DISTANCEMODIFY;
-          if (leg2->LegDist > 50 / DISTANCEMODIFY) fTic = 50 / DISTANCEMODIFY;
-          if (leg2->LegDist > 100 / DISTANCEMODIFY) fTic = 100 / DISTANCEMODIFY;
-          ContestFAISector[3].CalcSectorCache(leg2->Lat1, leg2->Lon1, leg2->Lat2, leg2->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
-          ContestFAISector[3].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_GREEN);
-        }
       }
-
+      if (leg2->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
+        fTic = 10 / DISTANCEMODIFY;
+        if (leg2->LegDist > 5 / DISTANCEMODIFY) fTic = 20 / DISTANCEMODIFY;
+        if (leg2->LegDist > 50 / DISTANCEMODIFY) fTic = 50 / DISTANCEMODIFY;
+        if (leg2->LegDist > 100 / DISTANCEMODIFY) fTic = 100 / DISTANCEMODIFY;
+        ContestFAISector[3].CalcSectorCache(leg2->Lat1, leg2->Lon1, leg2->Lat2, leg2->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
+        ContestFAISector[3].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_GREEN);
+      }
     }
+
     // draw triangle
     for (ui = 0; ui < 3; ui++) {
       lat1 = CContestMgr::Instance().GetFAIAssistantLeg(ui)->Lat1;

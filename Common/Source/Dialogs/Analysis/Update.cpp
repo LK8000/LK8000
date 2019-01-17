@@ -256,6 +256,7 @@ void UpdateAnalysis(WndForm* pForm){
 
 
       CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
+      CContestMgr::CResult resultFAI = CContestMgr::Instance().Result(CContestMgr::TYPE_XC_FAI_TRIANGLE, false);
 
 
       if (result.PointArray().size() > 0) {
@@ -299,7 +300,7 @@ void UpdateAnalysis(WndForm* pForm){
                       DISTANCEMODIFY * fCPDist, percC,
                       DISTANCEMODIFY * fB_CPDist, percB);
           } else {
-            _stprintf(distStr, _T("Not FAI\r\n"));
+            _stprintf(distStr, _T("Not FAI yet\r\n"));
           }
 
           _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), TASKSPEEDMODIFY * result.Speed(), Units::GetTaskSpeedName());
@@ -349,6 +350,9 @@ void UpdateAnalysis(WndForm* pForm){
             _stprintf(plusStr, TEXT("\r\n%s: %.2f pt"),
                       CContestMgr::TypeToString(type),
                       resultPlus.Score());
+        }
+        if ( result.Type() == CContestMgr::TYPE_FAI_ASSISTANT) {
+          _stprintf(plusStr, TEXT("\r\nCurrent FAI* %.0fkm"),resultFAI.PredictedDistance()/1000.0);
         }
 
         _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, speedStr, timeStr, scoreStr, plusStr);

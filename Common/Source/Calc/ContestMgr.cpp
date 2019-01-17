@@ -1517,15 +1517,17 @@ void CContestMgr::UpdateFAIAssistantData() {
 
   const double fAngleDiff = AngleLimit180(AngleDifference(_faiAssistantTriangleLegs[1].LegAngle,
                                                           _faiAssistantTriangleLegs[0].LegAngle));
+  const double tot_dist = _faiAssistantTriangleLegs[0].LegDist +
+      _faiAssistantTriangleLegs[1].LegDist +
+      _faiAssistantTriangleLegs[2].LegDist;
+
 
   _bLooksLikeAFAITriangle = _faiAssistantTriangleLegs[0].LegDist > FAI_MIN_DISTANCE_THRESHOLD &&  // too short
       _faiAssistantTriangleLegs[1].LegDist > FAI_MIN_DISTANCE_THRESHOLD &&                        // too short
       _faiAssistantTriangleLegs[2].LegDist > FAI_MIN_DISTANCE_THRESHOLD &&                        // too short
-      abs(fAngleDiff) > 76 &&                                                                     // too wide FAI Triangle angles min=76.426 max=141.787
+      abs(fAngleDiff) > 76 &&                                                                     // too wide FAI  angles min=76.426 max=141.787
       abs(fAngleDiff) < 142 &&                                                                    // too narrow
-      _faiAssistantTriangleLegs[1].LegDist < (_faiAssistantTriangleLegs[0].LegDist +
-          _faiAssistantTriangleLegs[1].LegDist +
-          _faiAssistantTriangleLegs[2].LegDist) * 0.44; // Too long
+      _faiAssistantTriangleLegs[0].LegDist > tot_dist * 0.28 - 1000;                              // 1 km margin
 
   _dFAITriangleClockwise = fAngleDiff > 0 ? 1 : 0;
 
