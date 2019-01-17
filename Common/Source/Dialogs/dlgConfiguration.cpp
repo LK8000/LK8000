@@ -4034,6 +4034,11 @@ int ival;
     if (_tcscmp(temptext,szTerrainFile)) {
       _tcscpy(szTerrainFile,temptext);
       TERRAINFILECHANGED= true;
+      if(WaypointsOutOfRange > 1)
+      {
+	    WAYPOINTFILECHANGED  = true;
+	    AIRSPACEFILECHANGED  = true;
+      }
     }
   }
 
