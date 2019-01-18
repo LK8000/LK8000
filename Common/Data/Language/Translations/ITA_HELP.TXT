@@ -1503,6 +1503,79 @@ A positive value indicates a HEAD WIND, and a negative value indicates a TAIL WI
 If true airspeed is not available, estimated TAS is used. 
 In this case the value is only guessed against the current wind set.
 
+@933
+[Maximum efficiency speed to fly]
+This is the speed to fly for maximizing distance in the current wind and netto vario conditions.
+This is not MacCready STF (neither MC=0) that on the contrary tend to minimize task time and does not depend on current head wind conditions (except that on final glide). 
+Use this speed if you want to maximize efficiency and glide distance
+
+@934
+[Efficienza richiesta al target]
+Efficienza richiesta al target corrente
+
+@935
+[Altitudine QNE]
+QNE si riferisce all'altezza indicata alla soglia della pista di atterraggio quando 1013.25 mbar o 29.92 inHg è impostato nella finestra di Kollsman dell'altimetro
+
+@937
+[XC Distanza percorso libero]
+Distanza libera su 3 punti di virata.
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@938
+[XC Punti percorso libero]
+Punti della distanza libera su 3 punti di virata.
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@939
+[XC Distanza triangolo piatto]
+Distanza totale del trianfolo piatto
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@940
+[XC Punti triangolo piatto]
+Punti del triangolo piatto
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+
+@941
+[XC Distanza triangolo FAI]
+Distanza del triangolo FAI
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@942
+[XC XC Punti triangolo FAI]
+Punti del triangolo FAI
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@943
+[XC Distanza]
+Distanza XC tolate
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@944
+[XC Punti]
+Punti XC.
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@945
+[XC Distanza dalla chiusra triangolo]
+Distanza per chudere il triangolo ( FAI o FREE )  in km
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@946
+[XC Percentuale dalla chiusura triangolo %]
+Percentuale restante per chiudere il triangono ( FAI o FREE ) in percentuale
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@947
+[XC Distanza totale triangolo corrente]
+Lunghezza totale del triangolo corrente se chiuso  ( FAI o FREE ) in km
+Questi dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
+
+@948
+[XC Velocità media]
+Velocità mediaQuesti dati sono disponibili solo se una regola XC è impostata nel menu di Sistema n. 22
 
 #
 # END INFOBOXES 800 - 1199

@@ -2135,3 +2135,147 @@ _@M2302_ "T"
 _@M2303_ "F" 
 _@M2304_ "ALLARME CARRELLO DISABILITATO!" 
 
+#_@M2252_ "MANUAL"
+_@M2252_ "MANUALE"
+
+#_@M2253_ "AUTO THERMALLING"
+_@M2253_ "AUTOMATICO IN TERMICA"
+
+#_@M2254_ "FULL AUTO"
+_@M2254_ "AUTOMATICO"
+
+
+#_@M2255_ "XC FREE Fligth distance"
+_@M2255_ "XC Distanza percorso libero"
+
+#_@M2256_ "XC FREE Fligth score"
+_@M2256_ "XC Punti percorso libero"
+
+#_@M2257_ "XC FREE Triangle distance"
+_@M2257_ "XC Distanza triangolo piatto"
+
+
+#_@M2258_ "XC FREE Triangle score"
+_@M2258_ "XC Punti triangolo piatto"
+
+#_@M2259_ "XC FAI Triangle distance"
+_@M2259_ "XC Distanza triangolo FAI"
+
+#_@M2260_ "XC FAI Triangle score"
+_@M2260_ "XC Punti triangolo FAI"
+
+#_@M2261_ "XC Best distance"
+_@M2261_ "XC Distanza"
+
+#_@M2262_ "XC Best score"
+_@M2262_ "XC Punti"
+
+#_@M2263_ "XC Triangle closing distance"
+_@M2263_ "XC Distanza dalla chiusra triangolo"
+
+
+#_@M2264_ "XC Triangle closing %"
+_@M2264_ "XC Percentuale dalla chiusura triangolo %"
+
+#_@M2265_ "XC Triangle predicted distance"
+_@M2265_ "XC Distanza totale triangolo corrente"
+
+#_@M2277_ "XC Mean Speed"
+_@M2277_ "XC Velocità media"
+
+#_@M2312_ "Velocità di massima efficienza"
+_@M2312_ "Speed of maximum efficiency"
+
+#_@M2314_ "Target Req. Efficicency"
+_@M2314_ "Efficienza richiesta al target"
+
+#_@M2316_ "Aircraft symbol"
+_@M2316_ "Simbolo velivolo"
+
+#_@M2317_ "Triangle"
+_@M2317_ "Trianglolo"
+
+#_@M2318_ "Paraglider"
+_@M2318_ "Parapendio"
+
+#_@M2319_ "Hangglider"
+_@M2319_ "Deltaplano"
+
+#_@M2320_ "Big Glider"
+_@M2320_ "Aliante grande"
+
+#_@M2321_ "Aircraft"
+_@M2321_ "Aereo"
+
+#_@M2322_ "Enable Radar"
+_@M2322_ "Abilita Radar"
+
+#_@M2323_ "Altitude QNE"
+_@M2323_ "Altezza QNE"
+
+#_@M2325_ "Small Glider"
+_@M2325_ "Aliante piccolo"
+
+#_@M2328_ "Install LKMAPS"
+_@M2328_ "Installa LKMAPS"
+
+#_@M2329_ "Open LKMAPS"
+_@M2329_ "Apri LKMAPS"
+
+#_@M2330_ "Screen Orientation "
+_@M2330_ "Oriantamento schermo"
+
+#_@M2331_ "Glider Black"
+_@M2331_ "Aliante nero"
+
+#_@M2332_ "Big Glider Black"
+_@M2332_ "Grande aliante nero"
+
+#_@M2333_ "Tracking mode "
+_@M2333_ "Modalità di tracking "
+
+#_@M2334_ "in Flight Only (default)"
+_@M2334_ "Solo in volo (default)"
+
+#_@M2335_ "permanent"
+_@M2335_ "Permanente"
+
+#_@M2336_ "ICAO Code"
+_@M2336_ "Codice ICAO"
+
+#_@M2337_ "Airspace\nLookup"
+_@M2337_ "Spazio aereo\nCerca"
+
+#_@M2338_ "Airspace Files"   #_@M63_ 
+_@M2338_ "Files spazi aerei"   #_@M63_ 
+
+#_@M2339_ "Airspace File "   #_@M64_   
+_@M2339_ "Spazio aereo"   #_@M64_
+
+#_@M2340_ "Waypoint Files"   #_@M806_
+_@M2340_ "Files dei waypoints"   #_@M806_
+
+#_@M2341_ "Waypoint File"    #_@M807_
+_@M2341_ "Waypoint"    #_@M807_
+
+#_@M2345_ "and" 
+_@M2345_ "e" 
+
+#_@M2346_ "are identical" 
+_@M2346_ "sono uguali" 
+
+#_@M2347_ "airspaces excluded!"
+_@M2347_ "Spazi aerei esclusi!"
+
+#_@M2348_ "Outside terrain"
+_@M2348_ "Fuori dal terreno"
+
+#_@M2385_ "Map Symbols"
+_@M2385_ "Simboli mappa"
+
+#_@M2388_ "Draw XC\nOFF"
+_@M2388_ "Disegna XC\nOFF"
+
+#_@M2389_ "Draw XC\nON"
+_@M2389_ "Disegna XC\nON"
+
