@@ -224,7 +224,7 @@ WndProperty* wp = NULL;
       ComCheck_AddText(TxText);
     }
     else
-	  _tcsncpy(TxText, _T("Error: Port not open!"),190);
+	  _tcsncpy(TxText, MsgToken(2392),190);  // _@M2392_ "Error: Port not opened!"
 
     wp->GetDataField()->Set(TxText);
     wp->RefreshDisplay();
