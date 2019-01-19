@@ -2270,12 +2270,23 @@ _@M2347_ "Spazi aerei esclusi!"
 #_@M2348_ "Outside terrain"
 _@M2348_ "Fuori dal terreno"
 
+#_@M2349_ "Target up"
+_@M2349_ "Target in alto"
+
 #_@M2385_ "Map Symbols"
 _@M2385_ "Simboli mappa"
 
 #_@M2388_ "Draw XC\nOFF"
-_@M2388_ "Disegna XC\nOFF"
+_@M2388_ "Mostra XC\nOFF"
 
 #_@M2389_ "Draw XC\nON"
-_@M2389_ "Disegna XC\nON"
+_@M2389_ "Mostra XC\nON"
 
+#_@M2390_ "Toggle Draw XC"
+_@M2390_ "Inverti mostra XC"
+
+#_@M2391_ "Earth Model"
+_@M2391_ "Modello Geodetico"
+
+#_@M2392_ "Error: Port not opened!"
+_@M2392_ "Errore: Porta non aperta!"
