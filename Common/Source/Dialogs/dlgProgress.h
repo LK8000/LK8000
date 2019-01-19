@@ -14,6 +14,6 @@
 
 void CreateProgressDialog(const TCHAR *text);
 void CloseProgressDialog();
-
+void ProgressDialogText(const TCHAR* text);
 
 #endif	/* DLGPROGRESS_H */

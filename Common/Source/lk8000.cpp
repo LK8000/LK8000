@@ -61,6 +61,7 @@
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "devCProbe.h"
+#include "devFlarm.h"
 #include "devBlueFlyVario.h"
 #include "devLXV7easy.h"
 #include "ComCheck.h"
@@ -506,6 +507,7 @@ bool Startup(const TCHAR* szCmdLine) {
   WesterboerRegister();
   FlyNetRegister();
   CDevCProbe::Register();
+  CDevFlarm::Register();
   BlueFlyRegister();
   LXV7easyRegister();
   DevLXNanoIII::Register();

@@ -1271,6 +1271,11 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
       }
     }
 
+
+    ShowWindowControl(wf, TEXT("cmdConfigDev"), DeviceList[SelectedDevice].Config);
+  //  ShowWindowControl(wf, TEXT("cmdConfigFlarm"),DeviceList[SelectedDevice].nmeaParser.isFlarm);
+
+
     if ((WndButton *)pOwner->FindByName(TEXT("cmdA")))
        ((WndButton *)pOwner->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
     if ((WndButton *)pOwner->FindByName(TEXT("cmdB")))
@@ -1348,6 +1353,23 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
 
 }
 
+
+  static void OnConfigDevClicked(WndButton* pWnd){
+//   if(DeviceList[SelectedDevice])
+     if(DeviceList[SelectedDevice].Config)
+       DeviceList[SelectedDevice].Config(&DeviceList[SelectedDevice]);
+}
+
+
+  static void OnConfigFlarmlicked(WndButton* pWnd){
+//   if(DeviceList[SelectedDevice])
+    // if(CDevFlarm::Config)
+  //     CDevFlarm::.Config(&DeviceList[SelectedDevice]);
+  //     CDevFlarm::Config(&DeviceList[SelectedDevice]);
+}
+
+
+
 static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
   switch(Mode){
     case DataField::daGet:
@@ -1410,6 +1432,8 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnD),
   ClickNotifyCallbackEntry(OnE),
   ClickNotifyCallbackEntry(OnF),
+  ClickNotifyCallbackEntry(OnConfigDevClicked),
+  ClickNotifyCallbackEntry(OnConfigFlarmlicked),
   ClickNotifyCallbackEntry(OnNextDevice),
   ClickNotifyCallbackEntry(OnTerminalClicked),
   EndCallBackEntry()

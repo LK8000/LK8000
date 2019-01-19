@@ -346,6 +346,26 @@ passthrough:
 			devB()->Config(devB());
 		}
 		return true;
+        case ckDeviceC:
+                if(devC() && devC()->Config) {
+                        devC()->Config(devC());
+                }
+                return true;
+        case ckDeviceD:
+                if(devD() && devD()->Config) {
+                        devD()->Config(devD());
+                }
+                return true;
+        case ckDeviceE:
+                if(devE() && devE()->Config) {
+                        devE()->Config(devE());
+                }
+                return true;
+        case ckDeviceF:
+                if(devF() && devF()->Config) {
+                        devF()->Config(devF());
+                }
+                return true;
 	case ckResetOdometer:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (MessageBoxX(MsgToken(2229), _T(""), mbYesNo) == IdYes) {
@@ -533,6 +553,11 @@ CustomKeyLabel[59]=928;		// Restarting Comm Ports
 CustomKeyLabel[60]=2249;	// DspMode
 CustomKeyLabel[61]=2390;	// Toggle Draw XC
 CustomKeyLabel[62]=2337;	// Airspace lookup
+CustomKeyLabel[63]=2393;        // Device C Config
+CustomKeyLabel[64]=2394;        // Device D Config
+CustomKeyLabel[65]=2395;        // Device E Config
+CustomKeyLabel[66]=2396;        // Device F Config
 
-static_assert(62 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
+
+static_assert(66 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
 }

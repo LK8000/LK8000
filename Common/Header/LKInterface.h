@@ -104,7 +104,11 @@ typedef enum{
 	ckDspMode,
 	ckDrawXCToggle,
 	ckAirspaceLookup,
-	ckTOP,
+    ckDeviceC,
+    ckDeviceD,
+    ckDeviceE,
+    ckDeviceF,
+	ckTOP
 } CustomKeyMode_t;
 
 
