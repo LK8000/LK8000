@@ -796,7 +796,7 @@ _radius(Airspace_Radius) {
         _bounds.miny = std::min(pt.latitude, _bounds.miny);
         _bounds.maxy = std::max(pt.latitude, _bounds.maxy);
 
-        _geopoints.push_back({pt.latitude, pt.longitude});
+        _geopoints.emplace_back(pt.latitude, pt.longitude);
     }
 
     _screenpoints.reserve(_geopoints.size());
@@ -976,9 +976,9 @@ void CAirspace::Draw(LKSurface& Surface, bool fill) const {
 //
 // CAIRSPACE AREA CLASS
 //
-CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) : CAirspace() {
-    std::swap(_geopoints, Area_Points);
- //   _comment =NULL;
+CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) 
+    : CAirspace(std::forward<CPoint2DArray>(Area_Points))
+{
     _screenpoints.reserve(_geopoints.size());
     _screenpoints_clipped.reserve(_geopoints.size());
 
@@ -1634,6 +1634,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                                     // Skip it if we dont have minimum 3 points
                                     if (points.size() > MIN_AS_SIZE) {
                                         newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
+                                        points.clear(); // required, otherwise vector state is undefined;
                                     }
                                 }
                             }
@@ -1900,6 +1901,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
             // Skip it if we dont have minimum 3 points
             if (points.size() > MIN_AS_SIZE) {
               newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
+              points.clear(); // required, otherwise vector state is undefined;
             }
         }
 
@@ -2266,6 +2268,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
 
         // Build the new airspace
         CAirspace* newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
+        points.clear(); // required, otherwise vector state is undefined;
         if(newairspace==nullptr) {
             StartupStore(TEXT(".. Failed to allocate new airspace.%s"), NEWLINE);
             return false;
