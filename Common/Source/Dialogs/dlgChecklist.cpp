@@ -15,7 +15,7 @@
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
 #include "resource.h"
-#include "utils/openzip.h"
+#include "utils/zzip_stream.h"
 
 
 #define MAXNOTETITLE 200	// max number of characters in a title note
@@ -325,8 +325,8 @@ static bool LoadAsciiChecklist(const TCHAR* fileName) {
 ///
 static bool LoadChecklist(const TCHAR* fileName, bool warn) {
 
-  ZZIP_FILE *fp=openzip(fileName, "rb");
-  if(!fp) {
+  zzip_stream stream(fileName, "rb");
+  if(!stream) {
     if (warn) StartupStore(_T("... Not found notes <%s>%s"),fileName,NEWLINE);
     return(false);
   }
@@ -344,8 +344,7 @@ static bool LoadChecklist(const TCHAR* fileName, bool warn) {
   Name[0]= 0;
   TempString[0]=0;
 
-  charset cs = charset::unknown;
-  while(ReadString(fp,MAXNOTETITLE,TempString, cs)) {
+  while(stream.read_line(TempString)) {
     // skip comment lines
     if (TempString[0] == _T('#')) {
       continue;
@@ -357,7 +356,6 @@ static bool LoadChecklist(const TCHAR* fileName, bool warn) {
     _tcscat(Details,TEXT(ENDOFLINE));
     addChecklist(Name, Details);
   }
-  zzip_fclose(fp);
 
   return(true);
 } // LoadUtfChecklist
