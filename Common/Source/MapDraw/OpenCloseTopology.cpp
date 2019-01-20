@@ -12,7 +12,7 @@
 #include "RGB.h"
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"
-#include "utils/openzip.h"
+#include "utils/zzip_stream.h"
 
 
 
@@ -53,9 +53,9 @@ void OpenTopology() {
 
 
   // Ready to open the file now..
-  ZZIP_FILE* zFile = openzip(szFile, "rt");
+  zzip_stream stream(szFile, "rt");
 
-  if (!zFile) {
+  if (!stream) {
     UnlockTerrainDataGraphics();
     StartupStore(TEXT(". No topology file <%s>%s"), szFile,NEWLINE);
     return;
@@ -73,8 +73,7 @@ void OpenTopology() {
   int numtopo = 0;
   int shapeIndex=0;
 
-  charset cs = charset::unknown;
-  while(ReadString(zFile,READLINE_LENGTH,TempString,cs)) {
+  while(stream.read_line(TempString)) {
 
     if(_tcslen(TempString) > 0 && _tcsstr(TempString,TEXT("*")) != TempString) // Look For Comment
       {
@@ -279,9 +278,6 @@ void OpenTopology() {
         numtopo++;
       }
   }
-
-  //  CloseHandle (hFile);
-  zzip_fclose(zFile);
 
   if (LKTopo>0) {
 	StartupStore(_T(". LKMAPS Advanced Topology file found%s"),NEWLINE);
