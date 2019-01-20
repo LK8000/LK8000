@@ -256,6 +256,8 @@ public:
 
     CAirspace() : CAirspaceBase() { }
 
+    CAirspace(CPoint2DArray&& points) : _geopoints(std::forward<CPoint2DArray>(points)) { }
+
     virtual ~CAirspace() { }
 
     // Check if a point horizontally inside in this airspace
