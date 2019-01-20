@@ -257,66 +257,6 @@ static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Nam
   } // not a new start line
 } // AddChecklistLine
 
-
-#if 0
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Reads checklist from file encoded in system code page.
-///
-/// @retval true  data loaded
-/// @retval false data load error
-///
-static bool LoadAsciiChecklist(const TCHAR* fileName) {
-  FILE * stream = _tfopen(fileName, _T("rt"));
-  if(!stream) {
-    StartupStore(_T("... Not found notes <%s>%s"),fileName,NEWLINE);
-    return(false);
-  }
-
-  #if TESTBENCH
-  StartupStore(_T(". Loading Ascii notes <%s>%s"),fileName,NEWLINE);
-  #endif
-
-  TCHAR TempString[MAXNOTEDETAILS+1];
-  TCHAR Details[MAXNOTEDETAILS+1];
-  TCHAR Name[MAXNOTETITLE+1];
-  bool inDetails = false;
-
-  Details[0]= 0;
-  Name[0]= 0;
-  TempString[0]=0;
-
-  charset cs = charset::unknown;
-  while (ReadStringX(stream, MAXNOTETITLE, TempString, cs)) {
-/*
-    size_t len = _tcslen(TempString);
-    if (len > 0) {
-      if (TempString[len - 1] == '\r') {
-        TempString[len - 1]= 0;
-        len--;
-      }
-    }
-    // On PNA we may have TWO trailing CR
-    if (len > 0) {
-      if (TempString[len - 1] == '\r') {
-        TempString[len - 1]= 0;
-      }
-    }
-*/
-
-    AddChecklistLine(TempString, Details, Name, inDetails);
-  } // while
-
-  if (inDetails) {
-    _tcscat(Details,TEXT(ENDOFLINE));
-    addChecklist(Name, Details);
-  }
-
-  fclose(stream);
-
-  return(true);
-} // LoadAsciiChecklist
-#endif
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads checklist from file encoded in UTF-8 or Latin-1.
 ///
