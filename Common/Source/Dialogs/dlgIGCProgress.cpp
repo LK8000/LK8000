@@ -148,7 +148,7 @@ void IGCProgressDialogText(const TCHAR* text) {
     }
 }
 
-extern void   StopIGCReadThread(void);
+extern void   StopIGCRead(void);
 
  void OnIGCAbortClicked(WndButton* pWnd) {
 TCHAR Tmp[200 ];
@@ -158,7 +158,7 @@ TCHAR Tmp[200 ];
        _stprintf(Tmp, _T("%s ?"),MsgToken(2359));  // _@M2359_ "Abort Dolanload"
         if (MessageBoxX(Tmp, Tmp, mbOk) == IdOk)
         {
-          StopIGCReadThread();
+          StopIGCRead();
         }
     
 }

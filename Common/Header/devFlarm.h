@@ -16,6 +16,15 @@
 class WindowControl;
 class WndButton;
 
+#define REC_BUFFERSIZE 512
+
+#define REC_NO_ERROR      0
+#define REC_TIMEOUT_ERROR 1
+#define REC_CRC_ERROR     2
+#define FILENAME_ERROR    4
+#define FILE_OPEN_ERROR   5
+#define IGC_RECEIVE_ERROR 6
+
 
 typedef union{
   uint16_t val;
@@ -43,6 +52,7 @@ typedef union{
 #define highbyte(a)  (((a)>>8) & 0xFF)
 #define lowbyte(a)   ((a) & 0xFF)
 
+uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout);
 
 
 class CDevFlarm : public DevBase
@@ -62,14 +72,13 @@ public:
 	static BOOL Open(PDeviceDescriptor_t d);
 	static BOOL Close (PDeviceDescriptor_t d);
 	static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
-
+	static void OnFlarmIdClicked(WndButton* pWnd);
 private:
 	static BOOL Install(PDeviceDescriptor_t d);
 
 // Receive data
 private:
 	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
-
 
 
 // Send Command

@@ -85,6 +85,7 @@
 
 #include "Airspace/Sonar.h"
 #include <OS/RotateScreen.h>
+#include <dlgFlarmIGCDownload.h>
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -573,7 +574,7 @@ bool Startup(const TCHAR* szCmdLine) {
   GlobalRunning = true;
 	
 	InitAirspaceSonar();
-
+	StartIGCReadThread() ;
 #ifndef ANDROID
     if (WarningHomeDir) {
         TCHAR nopath[MAX_PATH];
