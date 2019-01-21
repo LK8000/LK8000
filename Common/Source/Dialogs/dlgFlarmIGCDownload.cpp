@@ -665,7 +665,7 @@ if(d != NULL)
   {
     blocksize = 0;
     SendBinBlock(d,  Sequence++,  GETIGCDATA, &pBlock[0], 0);
-    err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize,  6* REC_TIMEOUT);
+    err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize,  10 * REC_TIMEOUT);
     if(err==REC_NO_ERROR)
       _sntprintf(Tmp, 200, _T("%s %s: %u%%..."),MsgToken(2400), Name,pBlock[2]); // _@M2400_ "Downloading"
     if((Sequence %10) == 0)
@@ -746,7 +746,7 @@ protected:
 		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
 		}
 //		unsigned n = Clamp<unsigned>(200U - Timer.ElapsedUpdate(), 0U, 400U);
-		Sleep(100);
+		Sleep(200);
 		Timer.Update();
 	  }
 	}
