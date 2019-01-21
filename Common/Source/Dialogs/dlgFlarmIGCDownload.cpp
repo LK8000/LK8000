@@ -25,7 +25,7 @@
 #define EXIT_STATE   4
 static volatile int ThreadState =  EXIT_STATE;
 
-
+static bool OnTimer(WndForm* pWnd);
 
 
 static WndListFrame *wIGCSelectListList = NULL;
@@ -317,8 +317,11 @@ TCHAR Tmp[200 ];
      {
        StartupStore(TEXT ("OnEnterClicked: %s"), szIGCStrings[IGC_Index]);
        ThreadState =  OPEN_STATE;
+        wf->SetTimerNotify(100, OnTimer);
+//#define WAIT_RESULT
+#ifdef WAIT_RESULT
        while (     ThreadState !=  EXIT_STATE)
-      	 Sleep(100);
+    	   Poco::Thread::sleep(500);
 
 	 //  if(DownloadError)
 	   {
@@ -338,7 +341,9 @@ TCHAR Tmp[200 ];
 		 }
 		 DownloadError = REC_NO_ERROR;
 	   }
+#endif
      }
+
 }
 
 
@@ -422,6 +427,44 @@ static void OnCloseClicked(WndButton* pWnd) {
 }
 
 
+static bool OnTimer(WndForm* pWnd) {
+
+
+//static void OnResultClicked(WndButton* pWnd) {
+TCHAR Tmp [255];
+
+
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+    //
+
+#define WAIT_RESULT2
+#ifdef WAIT_RESULT2
+       if( ThreadState ==  EXIT_STATE)
+	   {
+    	 wf->SetTimerNotify(0, NULL);    // reset Timer
+		 switch (DownloadError)
+		 {
+		   case REC_NO_ERROR     : _stprintf(Tmp, _T("%s\n%s"),  szIGCStrings[IGC_Index] ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
+		   case REC_TIMEOUT_ERROR: _stprintf(Tmp, _T("%s"), MsgToken(2407)); break;  // _@M2407_ "Error: receive timeout
+		   case REC_CRC_ERROR    : _stprintf(Tmp, _T("%s"), MsgToken(2408)); break;  // _@M2408_ "Error: CRC checksum fail"
+		   case FILENAME_ERROR   : _stprintf(Tmp, _T("%s"), MsgToken(2409)); break;  // _@M2409_ "Error: invalid filename"
+		   case FILE_OPEN_ERROR  : _stprintf(Tmp, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
+		   case IGC_RECEIVE_ERROR: _stprintf(Tmp, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
+		   default               : _stprintf(Tmp, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
+		 }
+		 if (MessageBoxX( Tmp, MsgToken(2398), mbOk) == IdYes)  // _@M2406_ "Error: communication timeout"Reboot"
+		 {
+		 }
+		 DownloadError = REC_NO_ERROR;
+	   }
+#endif
+    }
+  }
+  return false;
+}
+
 
 static CallBackTableEntry_t IGCCallBackTable[] = {
     OnPaintCallbackEntry(OnMultiSelectListPaintListItem),
@@ -430,6 +473,7 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
     ClickNotifyCallbackEntry(OnUpClicked),
     ClickNotifyCallbackEntry(OnEnterClicked),
     ClickNotifyCallbackEntry(OnDownClicked),
+
 
 	EndCallBackEntry()
 };
@@ -687,6 +731,7 @@ if(d != NULL)
       DownloadError = err;
       err = REC_NO_ERROR;
     }
+
   }
 }  // if(d)
 return 0;
@@ -700,6 +745,7 @@ public:
     void Start() {
         if(!Thread.isRunning())
         {
+          dDone = true;
           bStop = false;
           Thread.start(*this);
         }
@@ -716,19 +762,22 @@ public:
 protected:
     bool bStop;
     Poco::Thread Thread;
-
+    bool dDone;
     void run() {
 	  PeriodClock Timer;
 	  while(!bStop) {
-		if( ThreadState !=  EXIT_STATE)
+		if( 1) //ThreadState !=  EXIT_STATE)
 		{
 		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
-		//  unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
-
-		    Sleep(100);
+		  unsigned n = Clamp<unsigned>(500U - Timer.ElapsedUpdate(), 0U, 1000U);
+			 dDone = false;
+		    Sleep(n);
 		    Timer.Update();
 
-		};
+		}
+		else
+		{
+	    }
 	  }
 	}
 };

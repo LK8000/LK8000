@@ -67,7 +67,7 @@ static void OnIGCProgressPaint(WindowControl * Sender, LKSurface& Surface) {
    
 }
 
-CallBackTableEntry_t IGCCallBackTable[] = {
+CallBackTableEntry_t IGCProgressCallBackTable[] = {
     OnPaintCallbackEntry(OnIGCSplashPaint),
     OnPaintCallbackEntry(OnIGCProgressPaint),
     ClickNotifyCallbackEntry(OnIGCAbortClicked),
@@ -90,7 +90,7 @@ private:
 
 dlgIGCProgress::dlgIGCProgress() {
     
-    _WndForm = dlgLoadFromXML(IGCCallBackTable, ScreenLandscape ? IDR_XML_IGC_PROGRESS_L : IDR_XML_IGC_PROGRESS_P);
+    _WndForm = dlgLoadFromXML(IGCProgressCallBackTable, ScreenLandscape ? IDR_XML_IGC_PROGRESS_L : IDR_XML_IGC_PROGRESS_P);
     LKASSERT(_WndForm);
     if(_WndForm) {
         WindowControl* wSplash = _WndForm->FindByName(TEXT("frmIGCSplash")); 
