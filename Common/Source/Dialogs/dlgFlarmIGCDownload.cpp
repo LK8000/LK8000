@@ -385,6 +385,7 @@ static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 
 void   StopIGCRead(void)
 {
+
   ThreadState =  EXIT_STATE;
 }
 
@@ -396,8 +397,10 @@ static void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
+      wf->SetTimerNotify(0, NULL);    // reset Timer
       StopIGCRead();
       pForm->SetModalResult(mrCancel);
+
     }
   }
 }
@@ -430,7 +433,7 @@ TCHAR Tmp [MAX_LEN];
 	   }
     }
   }
-  return false;
+  return true;
 }
 
 
@@ -466,7 +469,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 #endif
 
         d->Com->WriteString(TEXT("$PFLAX\r\n"));  // set to binary
-     /*   if(deb_) */ StartupStore(TEXT("$PFLAX\r "));
+        if(deb_) StartupStore(TEXT("$PFLAX\r "));
 
 
    /*   if(deb_) */StartupStore(TEXT("PING "));
@@ -486,6 +489,8 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
       if (err == REC_NO_ERROR)
       {
+
+
       do {
         retry=0;
         do{
@@ -527,10 +532,12 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 #ifdef PRPGRESS_DLG
             IGCProgressDialogText(TempString) ;
 #endif
+
           }
         }
         IGCCnt++;
      } while (RecCommand == ACK);
+
      }
       iNoIGCFiles = IGCCnt;
 #ifdef PRPGRESS_DLG
@@ -658,7 +665,7 @@ if(d != NULL)
   {
     blocksize = 0;
     SendBinBlock(d,  Sequence++,  GETIGCDATA, &pBlock[0], 0);
-    err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize, 5*REC_TIMEOUT);
+    err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize,  6* REC_TIMEOUT);
     if(err==REC_NO_ERROR)
       _sntprintf(Tmp, 200, _T("%s %s: %u%%..."),MsgToken(2400), Name,pBlock[2]); // _@M2400_ "Downloading"
     if((Sequence %10) == 0)
@@ -738,8 +745,8 @@ protected:
 		{
 		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
 		}
-		unsigned n = Clamp<unsigned>(400U - Timer.ElapsedUpdate(), 0U, 1000U);
-		Sleep(n);
+//		unsigned n = Clamp<unsigned>(200U - Timer.ElapsedUpdate(), 0U, 400U);
+		Sleep(100);
 		Timer.Update();
 	  }
 	}
