@@ -316,32 +316,8 @@ TCHAR Tmp[200 ];
      if (MessageBoxX(Tmp, MsgToken(2404),  mbYesNo) == IdYes)  // _@2404 "Download"
      {
        StartupStore(TEXT ("OnEnterClicked: %s"), szIGCStrings[IGC_Index]);
-       ThreadState =  OPEN_STATE;
-        wf->SetTimerNotify(100, OnTimer);
-//#define WAIT_RESULT
-#ifdef WAIT_RESULT
-       while (     ThreadState !=  EXIT_STATE)
-    	   Poco::Thread::sleep(500);
-
-	 //  if(DownloadError)
-	   {
-		 switch (DownloadError)
-		 {
-		   case REC_NO_ERROR     : _stprintf(Tmp, _T("%s\n%s"),  szIGCStrings[IGC_Index] ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
-		   case REC_TIMEOUT_ERROR: _stprintf(Tmp, _T("%s"), MsgToken(2407)); break;  // _@M2407_ "Error: receive timeout
-		   case REC_CRC_ERROR    : _stprintf(Tmp, _T("%s"), MsgToken(2408)); break;  // _@M2408_ "Error: CRC checksum fail"
-		   case FILENAME_ERROR   : _stprintf(Tmp, _T("%s"), MsgToken(2409)); break;  // _@M2409_ "Error: invalid filename"
-		   case FILE_OPEN_ERROR  : _stprintf(Tmp, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
-		   case IGC_RECEIVE_ERROR: _stprintf(Tmp, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
-		   default               : _stprintf(Tmp, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
-		 }
-		 if (MessageBoxX( Tmp, MsgToken(2398), mbOk) == IdYes)  // _@M2406_ "Error: communication timeout"Reboot"
-		 {
-
-		 }
-		 DownloadError = REC_NO_ERROR;
-	   }
-#endif
+       ThreadState =  OPEN_STATE;        // start thread IGC download
+       wf->SetTimerNotify(100, OnTimer); // check for end of download every 100ms
      }
 
 }
@@ -428,38 +404,30 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 
 static bool OnTimer(WndForm* pWnd) {
-
-
-//static void OnResultClicked(WndButton* pWnd) {
-TCHAR Tmp [255];
-
+#define MAX_LEN 80
+TCHAR Tmp [MAX_LEN];
 
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
-    //
-
-#define WAIT_RESULT2
-#ifdef WAIT_RESULT2
        if( ThreadState ==  EXIT_STATE)
 	   {
     	 wf->SetTimerNotify(0, NULL);    // reset Timer
 		 switch (DownloadError)
 		 {
-		   case REC_NO_ERROR     : _stprintf(Tmp, _T("%s\n%s"),  szIGCStrings[IGC_Index] ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
-		   case REC_TIMEOUT_ERROR: _stprintf(Tmp, _T("%s"), MsgToken(2407)); break;  // _@M2407_ "Error: receive timeout
-		   case REC_CRC_ERROR    : _stprintf(Tmp, _T("%s"), MsgToken(2408)); break;  // _@M2408_ "Error: CRC checksum fail"
-		   case FILENAME_ERROR   : _stprintf(Tmp, _T("%s"), MsgToken(2409)); break;  // _@M2409_ "Error: invalid filename"
-		   case FILE_OPEN_ERROR  : _stprintf(Tmp, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
-		   case IGC_RECEIVE_ERROR: _stprintf(Tmp, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
-		   default               : _stprintf(Tmp, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
+		   case REC_NO_ERROR     : _sntprintf(Tmp, MAX_LEN, _T("%s\n%s"),  szIGCStrings[IGC_Index] ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
+		   case REC_TIMEOUT_ERROR: _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2407)); break;  // _@M2407_ "Error: receive timeout
+		   case REC_CRC_ERROR    : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2408)); break;  // _@M2408_ "Error: CRC checksum fail"
+		   case FILENAME_ERROR   : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2409)); break;  // _@M2409_ "Error: invalid filename"
+		   case FILE_OPEN_ERROR  : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
+		   case IGC_RECEIVE_ERROR: _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
+		   default               : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
 		 }
 		 if (MessageBoxX( Tmp, MsgToken(2398), mbOk) == IdYes)  // _@M2406_ "Error: communication timeout"Reboot"
 		 {
 		 }
 		 DownloadError = REC_NO_ERROR;
 	   }
-#endif
     }
   }
   return false;
@@ -745,7 +713,7 @@ public:
     void Start() {
         if(!Thread.isRunning())
         {
-          dDone = true;
+
           bStop = false;
           Thread.start(*this);
         }
@@ -762,22 +730,17 @@ public:
 protected:
     bool bStop;
     Poco::Thread Thread;
-    bool dDone;
+
     void run() {
 	  PeriodClock Timer;
 	  while(!bStop) {
-		if( 1) //ThreadState !=  EXIT_STATE)
+		if( ThreadState !=  EXIT_STATE)
 		{
 		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
-		  unsigned n = Clamp<unsigned>(500U - Timer.ElapsedUpdate(), 0U, 1000U);
-			 dDone = false;
-		    Sleep(n);
-		    Timer.Update();
-
 		}
-		else
-		{
-	    }
+		unsigned n = Clamp<unsigned>(400U - Timer.ElapsedUpdate(), 0U, 1000U);
+		Sleep(n);
+		Timer.Update();
 	  }
 	}
 };
