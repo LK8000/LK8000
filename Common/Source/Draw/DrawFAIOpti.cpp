@@ -915,19 +915,19 @@ void MapWindow::DrawFAIOptimizer(LKSurface &Surface, const RECT &rc, const Scree
   if (!CContestMgr::Instance().LooksLikeAFAITriangleAttempt()) {
     // Does not look like a FAI attempt. Just draw both FAI sectors on longest leg.
     FAI_SectorCache[0].CalcSectorCache(max_leg->Lat1, max_leg->Lon1, max_leg->Lat2, max_leg->Lon2, fTic, 0);
-    FAI_SectorCache[0].DrawFAISector(Surface, rc, _Proj, RGB_YELLOW);
+    FAI_SectorCache[0].DrawFAISector(Surface, rc, _Proj, IsDithered()?RGB_BLACK:RGB_YELLOW);
     FAI_SectorCache[1].CalcSectorCache(max_leg->Lat1, max_leg->Lon1, max_leg->Lat2, max_leg->Lon2, fTic, 1);
-    FAI_SectorCache[1].DrawFAISector(Surface, rc, _Proj, RGB_YELLOW);
+    FAI_SectorCache[1].DrawFAISector(Surface, rc, _Proj, IsDithered()?RGB_BLACK:RGB_YELLOW);
   } else {
     if (leg0->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
       // Draw the yellow sector on the best current direction.
       FAI_SectorCache[2].CalcSectorCache(leg0->Lat1, leg0->Lon1, leg0->Lat2, leg0->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
-      FAI_SectorCache[2].DrawFAISector(Surface, rc, _Proj, RGB_YELLOW);
+      FAI_SectorCache[2].DrawFAISector(Surface, rc, _Proj, IsDithered()?RGB_BLACK:RGB_YELLOW);
     }
     // Draw leg1 a bit before becoming a FAI one in the correct direction . We start drawing a bit before 28%
     if (leg1->LegDist > distance * 0.25) {
       FAI_SectorCache[3].CalcSectorCache(leg1->Lat1, leg1->Lon1, leg1->Lat2, leg1->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
-      FAI_SectorCache[3].DrawFAISector(Surface, rc, _Proj, RGB_CYAN);
+      FAI_SectorCache[3].DrawFAISector(Surface, rc, _Proj, IsDithered()?RGB_BLACK:RGB_CYAN);
     }
   }
 
