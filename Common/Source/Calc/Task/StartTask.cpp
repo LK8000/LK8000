@@ -17,8 +17,18 @@ extern AATDistance aatdistance;
 void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
 	       const bool do_advance,
                const bool do_announce) {
+
+  double TaskStartTime = Basic->Time;
+  if (UseGates() && HaveGates()) {
+    const int gateTime = GateTime(ActiveGate);
+    if ( gateTime > 0 ) {
+      TaskStartTime = gateTime - GetUTCOffset();
+    }
+  }
+
+
   Calculated->ValidFinish = false;
-  Calculated->TaskStartTime = Basic->Time ;
+  Calculated->TaskStartTime = TaskStartTime ;
   Calculated->TaskStartSpeed = Basic->Speed;
   Calculated->TaskStartAltitude = Calculated->NavAltitude;
   Calculated->LegStartTime = Basic->Time;
