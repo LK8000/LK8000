@@ -6119,5 +6119,22 @@ _@M2389_ "Zeige XC\nAN"
 
 #_@M2390_ "Toggle Draw XC"
 _@M2390_ "XC Umschalten"
+
+_@M2401_ "No Device found"
 _@M2391_ "Erdmodel"
 _@M2392_ "Fehler: Port nicht geöffnet!"
+
+
+_@M2404_ "Download"
+_@M2405_ "Eigene FLARM Id:"
+
+_@M2406_ "IGC File download fertig!"
+_@M2407_ "Error: receive timeout!"
+_@M2408_ "Error: CRC checksumme falsch!"
+_@M2409_ "Error: ungültiger Dateiname!"
+_@M2410_ "Error:Datei kann nicht geöffnet werden"
+_@M2411_ "Error: communication timeout!"
+_@M2412_ "Error: unbekannt"
+_@M2413_ "FLARM benötigt Neustartor für normale Funktion\n Jetzt neu starten?"
+_@M2414_ "Konf."
+_@M2415_ "IGC Download abgebrochen!"
