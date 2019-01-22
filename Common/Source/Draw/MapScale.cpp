@@ -17,16 +17,15 @@ double MapWindow::LimitMapScale(double value) {
   if (mode.Is(Mode::MODE_CIRCLING)) {
       // during circling
       minreasonable = 50.0;
-      if ( ISPARAGLIDER ) minreasonable = 10.0;
   } else {
       // if not circling
       minreasonable = 100.0;
-      if ( ISPARAGLIDER || ISCAR ) minreasonable = 10.0;
+      if ( ISCAR ) minreasonable = 10.0;
       if (zoom.AutoZoom()) {
 	if (AATEnabled && (ActiveTaskPoint>0)) {
-	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 1200.0;
+	  if ( ISPARAGLIDER ) minreasonable = 500; else minreasonable = 1200.0;
 	} else {
-	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 600.0;
+	  if ( ISPARAGLIDER ) minreasonable = 500; else minreasonable = 600.0;
 	}
       }
   }
