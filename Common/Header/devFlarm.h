@@ -21,6 +21,7 @@ class WndButton;
 #define REC_NO_ERROR      0
 #define REC_TIMEOUT_ERROR 1
 #define REC_CRC_ERROR     2
+#define REC_ABORTED       3
 #define FILENAME_ERROR    4
 #define FILE_OPEN_ERROR   5
 #define IGC_RECEIVE_ERROR 6

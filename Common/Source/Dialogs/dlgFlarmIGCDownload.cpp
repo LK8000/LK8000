@@ -16,9 +16,9 @@
 #include "OS/Sleep.h"
 #include "dlgFlarmIGCDownload.h"
 
-
+#define STATUS_TXT_LEN  100
 #define PRPGRESS_DLG
-
+//#define PRPGRESS_DLG_P
 #define OPEN_STATE   1
 #define READ_STATE   2
 #define CLOSE_STATE  3
@@ -51,6 +51,7 @@ TCHAR szIGCSubStrings[MAX_IGCFILES][90 + 1];
 int ReadFlarmIGCFile( DeviceDescriptor_t *d, uint8_t IGC_Index);
 static WndForm *wf = NULL;
 ListElement* pIGCResult = NULL;
+TCHAR szStatusText[STATUS_TXT_LEN];
 
 
 
@@ -303,6 +304,8 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
 
 
+extern void dlgOracleShowModal(void);
+
 static void OnEnterClicked(WndButton* pWnd) {
 TCHAR Tmp[200 ];
     (void)pWnd;
@@ -317,7 +320,12 @@ TCHAR Tmp[200 ];
      {
        StartupStore(TEXT ("OnEnterClicked: %s"), szIGCStrings[IGC_Index]);
        ThreadState =  OPEN_STATE;        // start thread IGC download
-       wf->SetTimerNotify(100, OnTimer); // check for end of download every 100ms
+       wf->SetTimerNotify(200, OnTimer); // check for end of download every 100ms
+#ifdef PRPGRESS_DLG
+ CreateIGCProgressDialog(Tmp);
+
+#endif
+
      }
 
 }
@@ -383,10 +391,10 @@ static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 }
 
 
-void   StopIGCRead(void)
+void StopIGCRead(void )
 {
-
-  ThreadState =  EXIT_STATE;
+  DownloadError =  REC_ABORTED;
+  ThreadState   =  EXIT_STATE;
 }
 
 
@@ -410,27 +418,42 @@ static bool OnTimer(WndForm* pWnd) {
 #define MAX_LEN 80
 TCHAR Tmp [MAX_LEN];
 
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
+//  if(pWnd)
+  {
+ //   WndForm * pForm = pWnd->GetParentWndForm();
+ //   if(pForm)
+    {
        if( ThreadState ==  EXIT_STATE)
 	   {
+		#ifdef PRPGRESS_DLG
+		  CloseIGCProgressDialog();
+		#endif
     	 wf->SetTimerNotify(0, NULL);    // reset Timer
 		 switch (DownloadError)
 		 {
 		   case REC_NO_ERROR     : _sntprintf(Tmp, MAX_LEN, _T("%s\n%s"),  szIGCStrings[IGC_Index] ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
 		   case REC_TIMEOUT_ERROR: _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2407)); break;  // _@M2407_ "Error: receive timeout
 		   case REC_CRC_ERROR    : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2408)); break;  // _@M2408_ "Error: CRC checksum fail"
+		   case REC_ABORTED      : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2415)); break;  // _@M2415_ "IGC Download aborted!"
 		   case FILENAME_ERROR   : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2409)); break;  // _@M2409_ "Error: invalid filename"
 		   case FILE_OPEN_ERROR  : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
 		   case IGC_RECEIVE_ERROR: _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
+
+
 		   default               : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
+
 		 }
 		 if (MessageBoxX( Tmp, MsgToken(2398), mbOk) == IdYes)  // _@M2406_ "Error: communication timeout"Reboot"
 		 {
 		 }
 		 DownloadError = REC_NO_ERROR;
 	   }
+       else
+       {
+#ifdef PRPGRESS_DLG
+    IGCProgressDialogText(szStatusText) ;  // update progress dialog text
+#endif
+       }
     }
   }
   return true;
@@ -464,7 +487,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
     uint8_t err  = REC_NO_ERROR ;
     if (d && d->Com)
     {
-#ifdef PRPGRESS_DLG
+#ifdef PRPGRESS_DLG_P
       CreateIGCProgressDialog(TEXT("..."));
 #endif
 
@@ -477,7 +500,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
      do{
        _sntprintf(TempString, 255, _T("PING Flarm %u/15..."), retry);
-#ifdef PRPGRESS_DLG
+#ifdef PRPGRESS_DLG_P
          IGCProgressDialogText(TempString) ;
 #endif
       SendBinBlock(d, Sequence++, PING, NULL, 0);
@@ -529,7 +552,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
             if(CN)    { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" "));_tcscat( szIGCSubStrings[IGCCnt] ,CN);}
 
             _sntprintf(TempString, 255, _T("Getting Info %u..."), IGCCnt);
-#ifdef PRPGRESS_DLG
+#ifdef PRPGRESS_DLG_P
             IGCProgressDialogText(TempString) ;
 #endif
 
@@ -540,7 +563,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
      }
       iNoIGCFiles = IGCCnt;
-#ifdef PRPGRESS_DLG
+#ifdef PRPGRESS_DLG_P
      CloseIGCProgressDialog();
 #endif
      if (err != REC_NO_ERROR)
@@ -617,7 +640,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_Index)
 {
 
 static FILE *f;
-TCHAR Tmp[200];
+
 TCHAR Name[200];
 static  uint8_t err = 0;
 static uint8_t   Command = SELECTRECORD;
@@ -647,16 +670,14 @@ if(d != NULL)
      f = _tfopen(filename, TEXT("w"));
     if(f == NULL)   { err = FILE_OPEN_ERROR;  }   // #define FILE_OPEN_ERROR 5
 
-    _sntprintf(Tmp, 200, TEXT("IGC Dowlnoad File : %s "),szIGCStrings[IGC_Index ]);
-    StartupStore(Tmp);
+    _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),szIGCStrings[IGC_Index ]);
+    StartupStore(szStatusText);
     SendBinBlock(d,  Sequence++,  SELECTRECORD, &IGC_Index,  1);
     err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize, REC_TIMEOUT);
 
     if(err != REC_NO_ERROR) err =  IGC_RECEIVE_ERROR;
 
-  #ifdef PRPGRESS_DLG
-    CreateIGCProgressDialog(Tmp);
-  #endif
+
     ThreadState =  READ_STATE;
 
   }
@@ -667,13 +688,11 @@ if(d != NULL)
     SendBinBlock(d,  Sequence++,  GETIGCDATA, &pBlock[0], 0);
     err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize,  10 * REC_TIMEOUT);
     if(err==REC_NO_ERROR)
-      _sntprintf(Tmp, 200, _T("%s %s: %u%%..."),MsgToken(2400), Name,pBlock[2]); // _@M2400_ "Downloading"
+      _sntprintf(szStatusText, STATUS_TXT_LEN, _T("%s %s: %u%%..."),MsgToken(2400), Name,pBlock[2]); // _@M2400_ "Downloading"
     if((Sequence %10) == 0)
-      StartupStore(TEXT("%s"),Tmp);
+      StartupStore(TEXT("%s"),szStatusText);
 
-#ifdef PRPGRESS_DLG
-    IGCProgressDialogText(Tmp) ;  // update progress dialog text
-#endif
+
 
     for(int i=0; i < blocksize-3; i++)
     {
@@ -693,9 +712,6 @@ if(d != NULL)
   /******CLOSE STATE *********************************************************************************/
   if (ThreadState == CLOSE_STATE)
   {
-#ifdef PRPGRESS_DLG
-  CloseIGCProgressDialog();
-#endif
     if(f) {fclose(f); f = NULL;}
 
     ThreadState =  EXIT_STATE;
