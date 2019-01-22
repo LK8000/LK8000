@@ -18,12 +18,17 @@
 
 #define STATUS_TXT_LEN  100
 #define PRPGRESS_DLG
-//#define PRPGRESS_DLG_P
-#define OPEN_STATE   1
-#define READ_STATE   2
-#define CLOSE_STATE  3
-#define EXIT_STATE   4
-static volatile int ThreadState =  EXIT_STATE;
+
+#define OPEN_STATE         1
+#define READ_STATE         2
+#define CLOSE_STATE        3
+#define IDLE_STATE         4
+#define OPEN_BIN_STATE     10
+#define PING_STATE         11
+#define GET_RECORD_STATE   12
+#define ALL_RECEIVED_STATE 13
+#define ERROR_STATE        14
+static volatile int ThreadState =  IDLE_STATE;
 
 static bool OnTimer(WndForm* pWnd);
 
@@ -382,9 +387,7 @@ static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
       if(Sender) {
         WndForm * pForm = Sender->GetParentWndForm();
         if(pForm) {
-
-             OnEnterClicked(NULL) ;
-
+           OnEnterClicked(NULL) ;
         }
       }
     }
@@ -394,7 +397,7 @@ static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 void StopIGCRead(void )
 {
   DownloadError =  REC_ABORTED;
-  ThreadState   =  EXIT_STATE;
+  ThreadState   =  IDLE_STATE;
 }
 
 
@@ -415,15 +418,16 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 
 static bool OnTimer(WndForm* pWnd) {
-#define MAX_LEN 80
+
+#define MAX_LEN 127
 TCHAR Tmp [MAX_LEN];
 
-//  if(pWnd)
+  if(pWnd)
   {
- //   WndForm * pForm = pWnd->GetParentWndForm();
- //   if(pForm)
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm)
     {
-       if( ThreadState ==  EXIT_STATE)
+       if( ThreadState ==  IDLE_STATE)
 	   {
 		#ifdef PRPGRESS_DLG
 		  CloseIGCProgressDialog();
@@ -439,7 +443,6 @@ TCHAR Tmp [MAX_LEN];
 		   case FILE_OPEN_ERROR  : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
 		   case IGC_RECEIVE_ERROR: _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
 
-
 		   default               : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
 
 		 }
@@ -451,7 +454,7 @@ TCHAR Tmp [MAX_LEN];
        else
        {
 #ifdef PRPGRESS_DLG
-    IGCProgressDialogText(szStatusText) ;  // update progress dialog text
+         IGCProgressDialogText(szStatusText) ;  // update progress dialog text
 #endif
        }
     }
@@ -473,113 +476,24 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 };
 
 
+
 ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
   LockComm();
 
-    IGC_Index = -1;
-    uint8_t blk[10];
-    uint16_t RecSequence;
-    uint8_t RecCommand;
-    uint8_t pBlock[100];
-    uint16_t blocksize;
-    TCHAR  TempString[255];
-    uint8_t retry = 0;
-    uint8_t err  = REC_NO_ERROR ;
-    if (d && d->Com)
-    {
-#ifdef PRPGRESS_DLG_P
-      CreateIGCProgressDialog(TEXT("..."));
-#endif
 
-        d->Com->WriteString(TEXT("$PFLAX\r\n"));  // set to binary
-        if(deb_) StartupStore(TEXT("$PFLAX\r "));
+	IGC_Index = -1;
+
+	uint16_t RecSequence;
+	uint8_t RecCommand;
+	uint8_t pBlock[100];
+	uint16_t blocksize;
+	TCHAR  TempString[255];
 
 
-   /*   if(deb_) */StartupStore(TEXT("PING "));
-   retry=0;
 
-     do{
-       _sntprintf(TempString, 255, _T("PING Flarm %u/15..."), retry);
-#ifdef PRPGRESS_DLG_P
-         IGCProgressDialogText(TempString) ;
-#endif
-      SendBinBlock(d, Sequence++, PING, NULL, 0);
-      err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
-     }while ((err != REC_NO_ERROR) && retry++ < 15);
-
-
-      int IGCCnt =0;
-
-      if (err == REC_NO_ERROR)
-      {
-
-
-      do {
-        retry=0;
-        do{
-           blk[0] =IGCCnt;
-           SendBinBlock(d, Sequence++, SELECTRECORD, &blk[0], 1);
-           err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
-        } while ((err== REC_CRC_ERROR) && (retry++ <4));
-
-        if(RecCommand == ACK)
-        {
-          retry = 0;
-          do{
-            SendBinBlock(d, Sequence++, GETRECORDINFO, NULL, 0);
-            err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
-          } while ((err== REC_CRC_ERROR) && (retry++ <4));
-
-
-          pBlock[blocksize++] = 0;
-          if(RecCommand == ACK)
-          {
-
-            for(uint16_t i = 0; i < blocksize-2; i++)
-               TempString[i]= (TCHAR) pBlock[i+2];
-        /*    if(deb_) */  StartupStore(TEXT("%s "),TempString);
-            TCHAR empty[3] = _T("");
-            TCHAR* remaining=NULL;
-            TCHAR* Filename  = _tcstok_r(TempString,TEXT("|"),&remaining); if(Filename == NULL)  {Filename = empty;};
-            TCHAR* Date      = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Date     == NULL)  {Date     = empty;};
-            TCHAR* Takeoff   = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Takeoff  == NULL)  {Takeoff  = empty;};
-            TCHAR* Duration  = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Duration == NULL)  {Duration = empty;};
-            TCHAR* Pilot     = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Pilot    == NULL)  {Pilot    = empty;};
-            TCHAR* CN        = _tcstok_r(NULL,TEXT("|"),&remaining);       if(CN       == NULL)  {CN       = empty;};
-            _stprintf( szIGCStrings[IGCCnt]   ,_T("%s (%s  [%5s])"),Filename, Date,Takeoff);
-            _stprintf( szIGCSubStrings[IGCCnt],_T("%s"),Duration);
-            if(Pilot) { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" ") );_tcscat( szIGCSubStrings[IGCCnt] ,Pilot);}
-            if(CN)    { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" "));_tcscat( szIGCSubStrings[IGCCnt] ,CN);}
-
-            _sntprintf(TempString, 255, _T("Getting Info %u..."), IGCCnt);
-#ifdef PRPGRESS_DLG_P
-            IGCProgressDialogText(TempString) ;
-#endif
-
-          }
-        }
-        IGCCnt++;
-     } while (RecCommand == ACK);
-
-     }
-      iNoIGCFiles = IGCCnt;
-#ifdef PRPGRESS_DLG_P
-     CloseIGCProgressDialog();
-#endif
-     if (err != REC_NO_ERROR)
-     {
-		  if (MessageBoxX(MsgToken(2401), MsgToken(2401), mbOk) == IdYes)  // _@M2401_ "No Device found"
-		  {
-
-		  }
-     }
-    }
-
-    if (iNoIGCFiles == 0)
-    {
-      return NULL;
-    }
-
+    /*************************************************/
+    ThreadState =  OPEN_BIN_STATE;
+    /*************************************************/
     wf = dlgLoadFromXML(IGCCallBackTable, ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
     if (!wf) return NULL;
@@ -628,7 +542,7 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
     UnlockComm();
     StartupStore(TEXT("Leaving IGC dialog "));
-    ThreadState =  EXIT_STATE;
+    ThreadState =  IDLE_STATE;
 
     return pIGCResult;
 }
@@ -639,21 +553,131 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_Index)
 {
 
-static FILE *f;
+if (d==NULL)
+	return 0;
+
+static FILE *f= NULL;
 
 TCHAR Name[200];
-static  uint8_t err = 0;
+
 static uint8_t   Command = SELECTRECORD;
 static  uint8_t   pBlock[2000];
 pBlock[0] = IGC_Index;
 uint16_t  blocksize=1;
 uint16_t  Seq;
 
-if (ThreadState == EXIT_STATE)
+
+static  int IGCCnt =0;
+static  uint8_t retry = 0;
+  //  IGC_Index = -1;
+    uint8_t blk[10];
+    uint16_t RecSequence;
+    uint8_t RecCommand;
+
+
+    TCHAR  TempString[255];
+
+    uint8_t err  = REC_NO_ERROR ;
+
+if (ThreadState == IDLE_STATE)
 	return 0;
 
 if(d != NULL)
 {
+
+  /******************************  OPEN_BIN_STATE ************************************/
+  if( ThreadState ==  OPEN_BIN_STATE)
+  {
+#ifdef PRPGRESS_DLG_P
+    CreateIGCProgressDialog(TEXT("..."));
+#endif
+    retry =1;
+    d->Com->WriteString(TEXT("$PFLAX\r\n"));  // set to binary
+    if(deb_) StartupStore(TEXT("$PFLAX\r "));
+    ThreadState =  PING_STATE;
+    return 0;
+  }
+
+  /******************************  PING_STATE     ************************************/
+  if( ThreadState ==  PING_STATE)
+  {
+    if(deb_) StartupStore(TEXT("PING "));
+    IGCCnt =0;
+    iNoIGCFiles =1;
+
+    _sntprintf(szIGCStrings[IGCCnt]    , 60, _T("        PING Flarm %u/15"), retry);
+    _sntprintf( szIGCSubStrings[IGCCnt], 60, _T("        ... "));
+    UpdateList();
+    SendBinBlock(d, Sequence++, PING, NULL, 0);
+    err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+    if(err == REC_NO_ERROR )
+    ThreadState =  GET_RECORD_STATE;
+    if( retry++ > 15)
+      ThreadState = ERROR_STATE;
+    return 0;
+  }
+
+  /******************************  GET_RECORD_STATE     ************************************/
+  if( ThreadState ==  GET_RECORD_STATE)
+  {
+    retry=0;
+    do{
+       blk[0] =IGCCnt;
+       SendBinBlock(d, Sequence++, SELECTRECORD, &blk[0], 1);
+       err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+    } while ((err== REC_CRC_ERROR) && (retry++ <4));
+
+    if(RecCommand == ACK)
+    {
+      retry = 0;
+      do{
+        SendBinBlock(d, Sequence++, GETRECORDINFO, NULL, 0);
+        err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+      } while ((err== REC_CRC_ERROR) && (retry++ <4));
+
+
+      pBlock[blocksize++] = 0;
+      if(RecCommand == ACK)
+      {
+
+        for(uint16_t i = 0; i < blocksize-2; i++)
+           TempString[i]= (TCHAR) pBlock[i+2];
+      /*    if(deb_) */  StartupStore(TEXT("> %s "),TempString);
+        TCHAR empty[3] = _T("");
+        TCHAR* remaining=NULL;
+        TCHAR* Filename  = _tcstok_r(TempString,TEXT("|"),&remaining); if(Filename == NULL)  {Filename = empty;};
+        TCHAR* Date      = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Date     == NULL)  {Date     = empty;};
+        TCHAR* Takeoff   = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Takeoff  == NULL)  {Takeoff  = empty;};
+        TCHAR* Duration  = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Duration == NULL)  {Duration = empty;};
+        TCHAR* Pilot     = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Pilot    == NULL)  {Pilot    = empty;};
+        TCHAR* CN        = _tcstok_r(NULL,TEXT("|"),&remaining);       if(CN       == NULL)  {CN       = empty;};
+        _stprintf( szIGCStrings[IGCCnt]   ,_T("%s (%s  [%5s])"),Filename, Date,Takeoff);
+        _stprintf( szIGCSubStrings[IGCCnt],_T("%s"),Duration);
+        if(Pilot) { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" ") );_tcscat( szIGCSubStrings[IGCCnt] ,Pilot);}
+        if(CN)    { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" "));_tcscat( szIGCSubStrings[IGCCnt] ,CN);}
+        UpdateList();
+      }
+    }
+    IGCCnt++;
+    iNoIGCFiles = IGCCnt;
+
+    if (RecCommand != ACK)
+	  ThreadState = ALL_RECEIVED_STATE;
+  }
+  /******************************  ALL_RECEIVED_STATE *********************************/
+  if( ThreadState ==  ALL_RECEIVED_STATE)
+  {
+    ThreadState =  IDLE_STATE;
+  }
+  /******************************  ERROR_STATE     ************************************/
+  if( ThreadState ==  ERROR_STATE)
+  {
+	_sntprintf(szIGCStrings[IGCCnt]    , 60, _T("        Error:"));
+	_sntprintf( szIGCSubStrings[IGCCnt], 60, _T("         %s"),MsgToken(2401)); // _@M2401_ "No Device found"
+	UpdateList();
+    ThreadState =  IDLE_STATE;
+  }
+
   /******OPEN STATE *********************************************************************************/
   if (ThreadState == OPEN_STATE)
   {
@@ -675,12 +699,11 @@ if(d != NULL)
     SendBinBlock(d,  Sequence++,  SELECTRECORD, &IGC_Index,  1);
     err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize, REC_TIMEOUT);
 
-    if(err != REC_NO_ERROR) err =  IGC_RECEIVE_ERROR;
-
-
+    if(err != REC_NO_ERROR)
+      err =  IGC_RECEIVE_ERROR;
     ThreadState =  READ_STATE;
-
   }
+
   /******READ STATE *********************************************************************************/
   if (ThreadState == READ_STATE)
   {
@@ -692,8 +715,6 @@ if(d != NULL)
     if((Sequence %10) == 0)
       StartupStore(TEXT("%s"),szStatusText);
 
-
-
     for(int i=0; i < blocksize-3; i++)
     {
       fputc(pBlock[3+i],f);
@@ -701,9 +722,10 @@ if(d != NULL)
         Command = EOF_;
     }
 
-    if ((Command == ACK) && !err)
-      ThreadState =  READ_STATE;
-    else
+    if (err)
+      ThreadState = CLOSE_STATE;
+
+    if (Command != ACK)
       ThreadState = CLOSE_STATE;
   }
   /******CLOSE ON ERROR *********************************************************************************/
@@ -714,15 +736,22 @@ if(d != NULL)
   {
     if(f) {fclose(f); f = NULL;}
 
-    ThreadState =  EXIT_STATE;
-    StartupStore(TEXT ("EXIT_STATE"));
+    ThreadState =  IDLE_STATE;
+    StartupStore(TEXT ("IDLE_STATE"));
     if(err != REC_NO_ERROR)
     {
-      StartupStore(TEXT ("Error Code:%u"), err);
+      _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("Error Code:%u"), err);
       DownloadError = err;
       err = REC_NO_ERROR;
     }
-
+    else
+    {
+      _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"), MsgToken(2406)); // _@M2406_ "IGC File download complete!"
+    }
+    StartupStore(szStatusText);
+#ifdef PRPGRESS_DLG
+    IGCProgressDialogText(szStatusText) ;  // update progress dialog text
+#endif
   }
 }  // if(d)
 return 0;
@@ -757,12 +786,12 @@ protected:
     void run() {
 	  PeriodClock Timer;
 	  while(!bStop) {
-		if( ThreadState !=  EXIT_STATE)
+		if( ThreadState !=  IDLE_STATE)
 		{
 		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
 		}
 //		unsigned n = Clamp<unsigned>(200U - Timer.ElapsedUpdate(), 0U, 400U);
-		Sleep(200);
+		Sleep(50);
 		Timer.Update();
 	  }
 	}
