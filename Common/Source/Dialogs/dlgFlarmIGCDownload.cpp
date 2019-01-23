@@ -436,14 +436,15 @@ void StopIGCRead(void )
 
 
 static void OnCloseClicked(WndButton* pWnd) {
-
+StopIGCRead();
 if( ThreadState ==  IDLE_STATE)
 {
+  ThreadState =  IDLE_STATE;
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
       if(wf)wf->SetTimerNotify(0, NULL);    // reset Timer
-      StopIGCRead();
+   //   StopIGCRead();
       pForm->SetModalResult(mrCancel);
 
     }
@@ -641,9 +642,6 @@ if(d != NULL)
   /******************************  OPEN_BIN_STATE ************************************/
   if( ThreadState ==  OPEN_BIN_STATE)
   {
-#ifdef PRPGRESS_DLG_P
-    CreateIGCProgressDialog(TEXT("..."));
-#endif
     retry =1;
     d->Com->WriteString(TEXT("$PFLAX\r\n"));  // set to binary
     if(deb_) StartupStore(TEXT("$PFLAX\r "));
@@ -668,7 +666,7 @@ if(d != NULL)
     ThreadState =  GET_RECORD_STATE;
     if( retry++ >= 15)
       ThreadState = ERROR_STATE;
-  //  return 0;
+    return 0;
   }
 
   /******************************  GET_RECORD_STATE     ************************************/
