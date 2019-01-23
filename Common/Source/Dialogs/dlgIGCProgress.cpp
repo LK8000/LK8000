@@ -177,7 +177,7 @@ TCHAR Tmp[80 ];
 	StartupStore(_T("Abort pressed%s"), NEWLINE);
 	_sntprintf(Tmp,80,  _T("%s ?"),MsgToken(2402));  // _@M2402_ "Abort Download"
 
-	if (MessageBoxX(Tmp, Tmp, mbYesNo) == IdYes)
+	if (MessageBoxX(Tmp, MsgToken(2398), mbYesNo) == IdYes)
 	{
 	  CloseIGCProgressDialog();
 	  StopIGCRead();

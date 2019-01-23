@@ -37,11 +37,12 @@ static WndListFrame *wIGCSelectListList = NULL;
 static WndOwnerDrawFrame *wIGCSelectListListEntry = NULL;
 
 bool deb_ = false;
+bool bPingOK = false;
 int IGC_Index =0;
 int iNoIGCFiles=0;
 int IGC_DrawListIndex=0;
 uint16_t Sequence=0;
-
+int iNoListLine =0;
 #define MAX_IGCFILES 100
 #define REC_TIMEOUT 800
 
@@ -325,7 +326,7 @@ TCHAR Tmp[200 ];
      {
        StartupStore(TEXT ("OnEnterClicked: %s"), szIGCStrings[IGC_Index]);
        ThreadState =  OPEN_STATE;        // start thread IGC download
-       wf->SetTimerNotify(200, OnTimer); // check for end of download every 100ms
+       wf->SetTimerNotify(600, OnTimer); // check for end of download every 100ms
 #ifdef PRPGRESS_DLG
  CreateIGCProgressDialog(Tmp);
 
@@ -342,7 +343,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
     #define PICTO_WIDTH 50
     Surface.SetTextColor(RGB_BLACK);
 
-    if (IGC_DrawListIndex < iNoIGCFiles)  {
+    if (IGC_DrawListIndex < iNoListLine)  {
 
         TCHAR text1[180] = {TEXT("IGC File")};
         TCHAR text2[180] = {TEXT("date")};
@@ -396,7 +397,8 @@ static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 
 void StopIGCRead(void )
 {
-  DownloadError =  REC_ABORTED;
+  if(ThreadState  != IDLE_STATE)
+    DownloadError =  REC_ABORTED;
   ThreadState   =  IDLE_STATE;
 }
 
@@ -442,6 +444,8 @@ TCHAR Tmp [MAX_LEN];
 		   case FILENAME_ERROR   : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2409)); break;  // _@M2409_ "Error: invalid filename"
 		   case FILE_OPEN_ERROR  : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
 		   case IGC_RECEIVE_ERROR: _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
+		   case REC_NO_DEVICE    : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2401)); break;  // _@M2401_ "No Device found"
+
 
 		   default               : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
 
@@ -528,16 +532,18 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
     delete wf;
 
     wf = NULL;
-
-     _sntprintf(TempString, 255, _T("%s?"), MsgToken(2403)); // _@M2403_ "Reset FLARM"
-    if (MessageBoxX(MsgToken(2413), TempString, mbYesNo) == IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot now?"
+    if(bPingOK)
     {
+      _sntprintf(TempString, 255, _T("%s"), MsgToken(2403)); // _@M2403_ "Reset FLARM"
+      if (MessageBoxX(MsgToken(2413), TempString, mbYesNo) == IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot now?"
+      {
         if(deb_)StartupStore(TEXT("EXIT "));
         SendBinBlock(d, Sequence++, EXIT, NULL, 0);
         RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
 
         d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
         StartupStore(TEXT("$PFLAR,0*55\r\n"));
+      }
     }
 
     UnlockComm();
@@ -601,10 +607,11 @@ if(d != NULL)
   /******************************  PING_STATE     ************************************/
   if( ThreadState ==  PING_STATE)
   {
+	bPingOK = false;
     if(deb_) StartupStore(TEXT("PING "));
     IGCCnt =0;
-    iNoIGCFiles =1;
-
+    iNoIGCFiles =0;
+    iNoListLine =1;
     _sntprintf(szIGCStrings[IGCCnt]    , 60, _T("        PING Flarm %u/15"), retry);
     _sntprintf( szIGCSubStrings[IGCCnt], 60, _T("        ... "));
     UpdateList();
@@ -612,7 +619,7 @@ if(d != NULL)
     err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
     if(err == REC_NO_ERROR )
     ThreadState =  GET_RECORD_STATE;
-    if( retry++ > 15)
+    if( retry++ >= 15)
       ThreadState = ERROR_STATE;
     return 0;
   }
@@ -620,6 +627,7 @@ if(d != NULL)
   /******************************  GET_RECORD_STATE     ************************************/
   if( ThreadState ==  GET_RECORD_STATE)
   {
+	bPingOK = true;
     retry=0;
     do{
        blk[0] =IGCCnt;
@@ -660,7 +668,7 @@ if(d != NULL)
     }
     IGCCnt++;
     iNoIGCFiles = IGCCnt;
-
+    iNoListLine = IGCCnt;
     if (RecCommand != ACK)
 	  ThreadState = ALL_RECEIVED_STATE;
   }
@@ -676,6 +684,7 @@ if(d != NULL)
 	_sntprintf( szIGCSubStrings[IGCCnt], 60, _T("         %s"),MsgToken(2401)); // _@M2401_ "No Device found"
 	UpdateList();
     ThreadState =  IDLE_STATE;
+    DownloadError = REC_NO_DEVICE;
   }
 
   /******OPEN STATE *********************************************************************************/
@@ -741,7 +750,8 @@ if(d != NULL)
     if(err != REC_NO_ERROR)
     {
       _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("Error Code:%u"), err);
-      DownloadError = err;
+      if(DownloadError ==REC_NO_ERROR)  // no prvious error=
+        DownloadError = err;
       err = REC_NO_ERROR;
     }
     else
@@ -791,7 +801,7 @@ protected:
 		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
 		}
 //		unsigned n = Clamp<unsigned>(200U - Timer.ElapsedUpdate(), 0U, 400U);
-		Sleep(50);
+		Sleep(100);
 		Timer.Update();
 	  }
 	}

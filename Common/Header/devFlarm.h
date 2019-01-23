@@ -25,7 +25,7 @@ class WndButton;
 #define FILENAME_ERROR    4
 #define FILE_OPEN_ERROR   5
 #define IGC_RECEIVE_ERROR 6
-
+#define REC_NO_DEVICE     7
 
 typedef union{
   uint16_t val;
