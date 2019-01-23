@@ -309,9 +309,6 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
 
 
-
-extern void dlgOracleShowModal(void);
-
 static void OnEnterClicked(WndButton* pWnd) {
 TCHAR Tmp[200 ];
     (void)pWnd;
@@ -321,10 +318,29 @@ TCHAR Tmp[200 ];
     }
 
     _stprintf(Tmp, _T("%s %s ?"),MsgToken(2404),szIGCStrings[IGC_Index ]);
-
      if (MessageBoxX(Tmp, MsgToken(2404),  mbYesNo) == IdYes)  // _@2404 "Download"
      {
-       StartupStore(TEXT ("OnEnterClicked: %s"), szIGCStrings[IGC_Index]);
+        /** check if file already exist and is not empty ************/
+		_sntprintf(Tmp, 200, _T("%s"), szIGCStrings[IGC_Index ]);
+		TCHAR* remaining;
+		TCHAR* Filename  = _tcstok_r(Tmp ,TEXT(" "),&remaining);
+		TCHAR filename[MAX_PATH];
+
+		LocalPath(filename, _T(LKD_LOGS), Filename);
+		FILE* f = _tfopen(filename, TEXT("r")) ;
+		if(  f  != NULL)       // file exists
+		{
+		  fseek(f,0,SEEK_END);  // check file not empty
+		  int size = ftell(f);
+		  fclose(f); f = NULL;
+		  if(size > 10)         // is larger than 10 bytes (not empty)
+		    if (MessageBoxX(MsgToken(2416), MsgToken(2398), mbYesNo) == IdNo) // _@M2416_ "File already exits\n download anyway?"
+		    {
+			  ThreadState = IDLE_STATE;
+			  return ;
+		    }
+		}
+		/************************************************************/
        ThreadState =  OPEN_STATE;        // start thread IGC download
        wf->SetTimerNotify(600, OnTimer); // check for end of download every 100ms
 #ifdef PRPGRESS_DLG
@@ -482,7 +498,7 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 
 
 ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
-  LockComm();
+
 
 
 	IGC_Index = -1;
@@ -492,8 +508,8 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 	uint8_t pBlock[100];
 	uint16_t blocksize;
 	TCHAR  TempString[255];
-
-
+MapWindow::SuspendDrawingThread();
+    LockComm();
 
     /*************************************************/
     ThreadState =  OPEN_BIN_STATE;
@@ -545,8 +561,8 @@ ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
         StartupStore(TEXT("$PFLAR,0*55\r\n"));
       }
     }
-
     UnlockComm();
+MapWindow::ResumeDrawingThread();
     StartupStore(TEXT("Leaving IGC dialog "));
     ThreadState =  IDLE_STATE;
 
@@ -575,7 +591,7 @@ uint16_t  Seq;
 
 static  int IGCCnt =0;
 static  uint8_t retry = 0;
-  //  IGC_Index = -1;
+
     uint8_t blk[10];
     uint16_t RecSequence;
     uint8_t RecCommand;

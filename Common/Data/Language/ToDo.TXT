@@ -518,7 +518,7 @@ _@M2412_ "Error: unknown"
 _@M2413_ "FLARM need reboot for normal operation\n reboot now?"
 _@M2414_ "Conf."
 _@M2415_ "IGC Download aborted!"
-
+_@M2416_ "File already exits\n download anyway?"
 
 HELP FILE
 
