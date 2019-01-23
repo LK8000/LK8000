@@ -712,12 +712,13 @@ if(d != NULL)
           if(Pilot) { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" ") );_tcscat( szIGCSubStrings[IGCCnt] ,Pilot);}
           if(CN)    { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" "));_tcscat( szIGCSubStrings[IGCCnt] ,CN);}
         }
+        UpdateList();
       }
     }
     IGCCnt++;
     iNoIGCFiles = IGCCnt;
     iNoListLine = IGCCnt;
-    UpdateList();
+
     if (RecCommand != ACK)
 	  ThreadState = ALL_RECEIVED_STATE;
 
