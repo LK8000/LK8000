@@ -3404,6 +3404,16 @@ void NextUpDown(int UpDown)
     if(ActiveTaskPoint >0) {
 
       ActiveTaskPoint --;
+
+      // if it is a back to start and we have TimeGates ask if pilot wants to reset the Task
+      if (ActiveTaskPoint == 0 && UseGates()) {
+        if (MessageBoxX(MsgToken(563),MsgToken(562),mbYesNo) == IdYes) {  // LKTOKEN  _@M563_ = "Restart task?" _@M562_ = "Restart task"
+          LockTaskData();
+          ResetTask(true);
+          UnlockTaskData();
+        }
+      }
+
       /*
 	XXX How do we know what the last one is?
 	} else if (UpDown == -2) {
