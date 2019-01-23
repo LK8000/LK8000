@@ -28,6 +28,7 @@
 #define GET_RECORD_STATE   12
 #define ALL_RECEIVED_STATE 13
 #define ERROR_STATE        14
+#define ABORT_STATE        15
 static volatile int ThreadState =  IDLE_STATE;
 
 static bool OnTimer(WndForm* pWnd);
@@ -50,7 +51,7 @@ int iNoListLine =0;
 
 
 int DownloadError =REC_NO_ERROR;
-
+TCHAR IGCFilename[MAX_PATH];
 TCHAR szIGCStrings[MAX_IGCFILES][90 + 1];
 TCHAR szIGCSubStrings[MAX_IGCFILES][90 + 1];
 
@@ -310,7 +311,8 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
 
 static void OnEnterClicked(WndButton* pWnd) {
-TCHAR Tmp[200 ];
+TCHAR Tmp[MAX_PATH ];
+
     (void)pWnd;
 
     if (IGC_Index >= iNoIGCFiles) {
@@ -324,10 +326,9 @@ TCHAR Tmp[200 ];
 		_sntprintf(Tmp, 200, _T("%s"), szIGCStrings[IGC_Index ]);
 		TCHAR* remaining;
 		TCHAR* Filename  = _tcstok_r(Tmp ,TEXT(" "),&remaining);
-		TCHAR filename[MAX_PATH];
 
-		LocalPath(filename, _T(LKD_LOGS), Filename);
-		FILE* f = _tfopen(filename, TEXT("r")) ;
+		LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
+		FILE* f = _tfopen(IGCFilename, TEXT("r")) ;
 		if(  f  != NULL)       // file exists
 		{
 		  fseek(f,0,SEEK_END);  // check file not empty
@@ -414,8 +415,9 @@ static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
 void StopIGCRead(void )
 {
   if(ThreadState  != IDLE_STATE)
-    DownloadError =  REC_ABORTED;
-  ThreadState   =  IDLE_STATE;
+  {
+    ThreadState   =  ABORT_STATE ;
+  }
 }
 
 
@@ -702,7 +704,22 @@ if(d != NULL)
     ThreadState =  IDLE_STATE;
     DownloadError = REC_NO_DEVICE;
   }
+  /******************************  ABORT STATE     ************************************/
+  if( ThreadState ==  ABORT_STATE)
+  {
+	 if(f != NULL)
+	 {
+	   fclose(f);
+	   f = NULL;
 
+	   f = _tfopen(IGCFilename, TEXT("w")); // open second time to delete content
+	   fclose(f);
+	   f = NULL;
+	 }
+
+    DownloadError =  REC_ABORTED;
+    ThreadState =  IDLE_STATE;
+  }
   /******OPEN STATE *********************************************************************************/
   if (ThreadState == OPEN_STATE)
   {
@@ -711,12 +728,9 @@ if(d != NULL)
 	err = REC_NO_ERROR;
     _sntprintf(Name, 200, _T("%s"), szIGCStrings[IGC_Index ]);
     TCHAR* remaining;
-    TCHAR* Filename  = _tcstok_r(Name ,TEXT(" "),&remaining);
-    if(Filename == NULL)  err = FILENAME_ERROR;
+    _tcstok_r(Name ,TEXT(" "),&remaining);
 
-    TCHAR filename[MAX_PATH];
-    LocalPath(filename, _T(LKD_LOGS), Filename);
-     f = _tfopen(filename, TEXT("w"));
+     f = _tfopen( IGCFilename, TEXT("w"));
     if(f == NULL)   { err = FILE_OPEN_ERROR;  }   // #define FILE_OPEN_ERROR 5
 
     _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),szIGCStrings[IGC_Index ]);
