@@ -16,6 +16,7 @@
 #include "OS/Sleep.h"
 #include "dlgFlarmIGCDownload.h"
 
+#define LST_STRG_LEN    100
 #define STATUS_TXT_LEN  100
 #define PRPGRESS_DLG
 
@@ -51,9 +52,9 @@ int iNoListLine =0;
 
 
 int DownloadError =REC_NO_ERROR;
-TCHAR IGCFilename[MAX_PATH];
-TCHAR szIGCStrings[MAX_IGCFILES][90 + 1];
-TCHAR szIGCSubStrings[MAX_IGCFILES][90 + 1];
+TCHAR* IGCFilename = NULL;
+TCHAR* szIGCStrings[MAX_IGCFILES];
+TCHAR* szIGCSubStrings[MAX_IGCFILES];
 
 int ReadFlarmIGCFile( DeviceDescriptor_t *d, uint8_t IGC_Index);
 static WndForm *wf = NULL;
@@ -261,8 +262,11 @@ uint16_t CRC_in, CRC_calc=0;
 
 
 static void UpdateList(void) {
+if(wIGCSelectListList != NULL)
+{
   wIGCSelectListList->ResetList();
   wIGCSelectListList->Redraw();
+}
 }
 
 static void OnUpClicked(WndButton* Sender) {
@@ -272,9 +276,13 @@ static void OnUpClicked(WndButton* Sender) {
         LKASSERT(iNoIGCFiles>0);
         IGC_Index = (iNoIGCFiles - 1);
     }
-    wIGCSelectListList->SetItemIndexPos(IGC_Index);
-    wIGCSelectListList->Redraw();
-    wIGCSelectListListEntry->SetFocus();
+    if(wIGCSelectListList != NULL)
+    {
+      wIGCSelectListList->SetItemIndexPos(IGC_Index);
+      wIGCSelectListList->Redraw();
+      if(wIGCSelectListListEntry)
+        wIGCSelectListListEntry->SetFocus();
+    }
 }
 
 static void OnDownClicked(WndButton* pWnd) {
@@ -286,9 +294,13 @@ static void OnDownClicked(WndButton* pWnd) {
     } else {
         IGC_Index = 0;
     }
-    wIGCSelectListList->SetItemIndexPos(IGC_Index);
-    wIGCSelectListList->Redraw();
-    wIGCSelectListListEntry->SetFocus();
+    if(wIGCSelectListList != NULL)
+    {
+      wIGCSelectListList->SetItemIndexPos(IGC_Index);
+      wIGCSelectListList->Redraw();
+      if(wIGCSelectListListEntry)
+        wIGCSelectListListEntry->SetFocus();
+    }
 }
 
 
@@ -318,8 +330,9 @@ TCHAR Tmp[MAX_PATH ];
     if (IGC_Index >= iNoIGCFiles) {
         IGC_Index = iNoIGCFiles - 1;
     }
+    if(szIGCStrings[IGC_Index ] == NULL) return;
 
-    _stprintf(Tmp, _T("%s %s ?"),MsgToken(2404),szIGCStrings[IGC_Index ]);
+      _stprintf(Tmp, _T("%s %s ?"),MsgToken(2404),szIGCStrings[IGC_Index ]);
      if (MessageBoxX(Tmp, MsgToken(2404),  mbYesNo) == IdYes)  // _@2404 "Download"
      {
         /** check if file already exist and is not empty ************/
@@ -343,7 +356,7 @@ TCHAR Tmp[MAX_PATH ];
 		}
 		/************************************************************/
        ThreadState =  OPEN_STATE;        // start thread IGC download
-       wf->SetTimerNotify(600, OnTimer); // check for end of download every 100ms
+       if(wf) wf->SetTimerNotify(600, OnTimer); // check for end of download every 100ms
 #ifdef PRPGRESS_DLG
  CreateIGCProgressDialog(Tmp);
 
@@ -364,9 +377,10 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
         TCHAR text1[180] = {TEXT("IGC File")};
         TCHAR text2[180] = {TEXT("date")};
-
-       _stprintf(text1, _T("%s"), szIGCStrings [IGC_DrawListIndex] );
-       _stprintf(text2, _T("%s"), szIGCSubStrings[IGC_DrawListIndex] );
+        if(szIGCStrings [IGC_DrawListIndex] != NULL)
+         _stprintf(text1, _T("%s"), szIGCStrings [IGC_DrawListIndex] );
+        if(szIGCSubStrings [IGC_DrawListIndex] != NULL)
+         _stprintf(text2, _T("%s"), szIGCSubStrings[IGC_DrawListIndex] );
         Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
 
         PixelRect rc = {
@@ -423,24 +437,25 @@ void StopIGCRead(void )
 
 static void OnCloseClicked(WndButton* pWnd) {
 
-  IGC_Index = -1;
-
+if( ThreadState ==  IDLE_STATE)
+{
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
-      wf->SetTimerNotify(0, NULL);    // reset Timer
+      if(wf)wf->SetTimerNotify(0, NULL);    // reset Timer
       StopIGCRead();
       pForm->SetModalResult(mrCancel);
 
     }
   }
 }
+}
 
 
 static bool OnTimer(WndForm* pWnd) {
 
-#define MAX_LEN 127
-TCHAR Tmp [MAX_LEN];
+
+TCHAR Tmp [STATUS_TXT_LEN];
 
   if(pWnd)
   {
@@ -452,20 +467,20 @@ TCHAR Tmp [MAX_LEN];
 		#ifdef PRPGRESS_DLG
 		  CloseIGCProgressDialog();
 		#endif
-    	 wf->SetTimerNotify(0, NULL);    // reset Timer
+    	 if(wf) wf->SetTimerNotify(0, NULL);    // reset Timer
 		 switch (DownloadError)
 		 {
-		   case REC_NO_ERROR     : _sntprintf(Tmp, MAX_LEN, _T("%s\n%s"),  szIGCStrings[IGC_Index] ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
-		   case REC_TIMEOUT_ERROR: _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2407)); break;  // _@M2407_ "Error: receive timeout
-		   case REC_CRC_ERROR    : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2408)); break;  // _@M2408_ "Error: CRC checksum fail"
-		   case REC_ABORTED      : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2415)); break;  // _@M2415_ "IGC Download aborted!"
-		   case FILENAME_ERROR   : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2409)); break;  // _@M2409_ "Error: invalid filename"
-		   case FILE_OPEN_ERROR  : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
-		   case IGC_RECEIVE_ERROR: _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
-		   case REC_NO_DEVICE    : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2401)); break;  // _@M2401_ "No Device found"
+		   case REC_NO_ERROR     : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s\n%s"),  szIGCStrings[IGC_Index] ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
+		   case REC_TIMEOUT_ERROR: _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2407)); break;  // _@M2407_ "Error: receive timeout
+		   case REC_CRC_ERROR    : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2408)); break;  // _@M2408_ "Error: CRC checksum fail"
+		   case REC_ABORTED      : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2415)); break;  // _@M2415_ "IGC Download aborted!"
+		   case FILENAME_ERROR   : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2409)); break;  // _@M2409_ "Error: invalid filename"
+		   case FILE_OPEN_ERROR  : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2410)); break;  // _@M2410_ "Error: can't open file"
+		   case IGC_RECEIVE_ERROR: _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2411)); break;  // _@M2411_ "Error: Block invalid"
+		   case REC_NO_DEVICE    : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2401)); break;  // _@M2401_ "No Device found"
 
 
-		   default               : _sntprintf(Tmp, MAX_LEN, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
+		   default               : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2412)); break;  // _@M2412_ "Error: unknown"
 
 		 }
 		 if (MessageBoxX( Tmp, MsgToken(2398), mbOk) == IdYes)  // _@M2406_ "Error: communication timeout"Reboot"
@@ -501,10 +516,18 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 
 ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
+for (int i = 0; i < MAX_IGCFILES; i++)
+{
+  szIGCStrings[i] = NULL;
+  szIGCSubStrings[i] = NULL;
+}
 
-
+szIGCStrings[0]    = new TCHAR[LST_STRG_LEN];
+szIGCSubStrings[0] = new TCHAR[LST_STRG_LEN];
+IGCFilename        = new TCHAR[MAX_PATH];
+if(IGCFilename == NULL) return NULL;
 	IGC_Index = -1;
-
+	iNoListLine =-1;
 	uint16_t RecSequence;
 	uint8_t RecCommand;
 	uint8_t pBlock[100];
@@ -565,8 +588,14 @@ MapWindow::SuspendDrawingThread();
     }
     UnlockComm();
 MapWindow::ResumeDrawingThread();
-    StartupStore(TEXT("Leaving IGC dialog "));
+
     ThreadState =  IDLE_STATE;
+    for (int i = 0; i < MAX_IGCFILES; i++)
+    {
+      if( szIGCStrings[i] != NULL) { delete [] szIGCStrings[i]; szIGCStrings[i] = NULL;}
+      if( szIGCSubStrings[i] != NULL) {delete [] szIGCSubStrings[i]; szIGCSubStrings[i] = NULL;}
+    }
+    delete [] IGCFilename; IGCFilename = NULL;
 
     return pIGCResult;
 }
@@ -630,8 +659,8 @@ if(d != NULL)
     IGCCnt =0;
     iNoIGCFiles =0;
     iNoListLine =1;
-    _sntprintf(szIGCStrings[IGCCnt]    , 60, _T("        PING Flarm %u/15"), retry);
-    _sntprintf( szIGCSubStrings[IGCCnt], 60, _T("        ... "));
+    if(szIGCStrings[0] != NULL){ _sntprintf(szIGCStrings[0]    , 60, _T("        PING Flarm %u/15"), retry);}
+    if(szIGCSubStrings[0] != NULL){  _sntprintf( szIGCSubStrings[0], 60, _T("        ... "));}
     UpdateList();
     SendBinBlock(d, Sequence++, PING, NULL, 0);
     err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
@@ -639,7 +668,7 @@ if(d != NULL)
     ThreadState =  GET_RECORD_STATE;
     if( retry++ >= 15)
       ThreadState = ERROR_STATE;
-    return 0;
+  //  return 0;
   }
 
   /******************************  GET_RECORD_STATE     ************************************/
@@ -677,18 +706,23 @@ if(d != NULL)
         TCHAR* Duration  = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Duration == NULL)  {Duration = empty;};
         TCHAR* Pilot     = _tcstok_r(NULL,TEXT("|"),&remaining);       if(Pilot    == NULL)  {Pilot    = empty;};
         TCHAR* CN        = _tcstok_r(NULL,TEXT("|"),&remaining);       if(CN       == NULL)  {CN       = empty;};
-        _stprintf( szIGCStrings[IGCCnt]   ,_T("%s (%s  [%5s])"),Filename, Date,Takeoff);
-        _stprintf( szIGCSubStrings[IGCCnt],_T("%s"),Duration);
-        if(Pilot) { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" ") );_tcscat( szIGCSubStrings[IGCCnt] ,Pilot);}
-        if(CN)    { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" "));_tcscat( szIGCSubStrings[IGCCnt] ,CN);}
-        UpdateList();
+        if(szIGCStrings[IGCCnt] == NULL) szIGCStrings[IGCCnt]  = new TCHAR[LST_STRG_LEN];
+        if(szIGCStrings[IGCCnt] != NULL) {_stprintf( szIGCStrings[IGCCnt]   ,_T("%s (%s  [%5s])"),Filename, Date,Takeoff);}
+        if(szIGCSubStrings[IGCCnt] == NULL) szIGCSubStrings[IGCCnt]  =new TCHAR[LST_STRG_LEN];
+        if(szIGCSubStrings[IGCCnt] != NULL)
+        { _stprintf( szIGCSubStrings[IGCCnt],_T("%s"),Duration);
+          if(Pilot) { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" ") );_tcscat( szIGCSubStrings[IGCCnt] ,Pilot);}
+          if(CN)    { _tcscat( szIGCSubStrings[IGCCnt] ,_T(" "));_tcscat( szIGCSubStrings[IGCCnt] ,CN);}
+        }
       }
     }
     IGCCnt++;
     iNoIGCFiles = IGCCnt;
     iNoListLine = IGCCnt;
+    UpdateList();
     if (RecCommand != ACK)
 	  ThreadState = ALL_RECEIVED_STATE;
+
   }
   /******************************  ALL_RECEIVED_STATE *********************************/
   if( ThreadState ==  ALL_RECEIVED_STATE)
@@ -698,8 +732,8 @@ if(d != NULL)
   /******************************  ERROR_STATE     ************************************/
   if( ThreadState ==  ERROR_STATE)
   {
-	_sntprintf(szIGCStrings[IGCCnt]    , 60, _T("        Error:"));
-	_sntprintf( szIGCSubStrings[IGCCnt], 60, _T("         %s"),MsgToken(2401)); // _@M2401_ "No Device found"
+	if(szIGCStrings[0] != NULL)   {_sntprintf(szIGCStrings[0]    , 60, _T("        Error:"));}
+	if(szIGCSubStrings[0] != NULL){_sntprintf( szIGCSubStrings[0], 60, _T("         %s"),MsgToken(2401));} // _@M2401_ "No Device found"
 	UpdateList();
     ThreadState =  IDLE_STATE;
     DownloadError = REC_NO_DEVICE;
@@ -723,6 +757,7 @@ if(d != NULL)
   /******OPEN STATE *********************************************************************************/
   if (ThreadState == OPEN_STATE)
   {
+	if( szIGCStrings[IGC_Index] == NULL) return 0;
     StartupStore(TEXT ("OPEN_STATE: %s"), szIGCStrings[IGC_Index]);
 	if(f) {fclose(f); f = NULL;}
 	err = REC_NO_ERROR;
