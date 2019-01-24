@@ -24,15 +24,11 @@
 static WndForm *wf = NULL;
 
 
-
-
 PDeviceDescriptor_t CDevFlarm::m_pDevice=NULL;
-BOOL CDevFlarm::m_bCompassCalOn=FALSE;
-Mutex* CDevFlarm::m_pCritSec_DeviceData=NULL;
-double CDevFlarm::m_abs_press=0.0;
-double CDevFlarm::m_delta_press=0.0;
 
-TCHAR CDevFlarm::m_szVersion[15]={0};
+
+
+
 
 
 
@@ -62,7 +58,7 @@ BOOL CDevFlarm::Install( PDeviceDescriptor_t d ) {
 }
 
 
-#define REC_BUFFERSIZE 512
+
 uint8_t RingBuff[REC_BUFFERSIZE+1];
 volatile  uint16_t InCnt=0;
 volatile  uint16_t OutCnt=0;
@@ -114,75 +110,28 @@ uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
 
 BOOL CDevFlarm::Open( PDeviceDescriptor_t d) {
 	m_pDevice = d;
-
-	m_pCritSec_DeviceData = new Mutex();
-
+	StartupStore(TEXT(".... =================%s"),NEWLINE);
+	StartupStore(TEXT(".... StartIGCReadThread%s"),NEWLINE);
+	StartupStore(TEXT(".... =================%s"),NEWLINE);
+	StartIGCReadThread() ;
 	return TRUE;
 }
 
 BOOL CDevFlarm::Close (PDeviceDescriptor_t d) {
+	StartupStore(TEXT(".... =================%s"),NEWLINE);
+	StartupStore(TEXT(".... StopIGCReadThread%s"),NEWLINE);
+	StartupStore(TEXT(".... =================%s"),NEWLINE);
+	StopIGCReadThread() ;
 	m_pDevice = NULL;
 
-	delete m_pCritSec_DeviceData;
-	m_pCritSec_DeviceData = NULL;
+
+
 
 	return TRUE;
 }
 
 
-inline double int16toDouble(int v) {
-	return (double)(int16_t)v;
-};
 
-inline double int24toDouble(int v) {
-	if(v > (1<<23)){
-		v = -(v - (1<<24)+1);
-	}
-	return v;
-};
-
-void CDevFlarm::LockDeviceData(){
-	if(m_pCritSec_DeviceData) {
-		m_pCritSec_DeviceData->Lock();
-	}
-}
-
-
-void CDevFlarm::UnlockDeviceData(){
-	if(m_pCritSec_DeviceData) {
-		m_pCritSec_DeviceData->Unlock();
-	}
-}
-
-BOOL CDevFlarm::ParseNMEA( DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO ) {
-
-	return FALSE;
-}
-
-
-
-
-
-
-
-
-
-
-BOOL CDevFlarm::GetDeviceName( PDeviceDescriptor_t d ){
-  /*  if (d && d->Com) {
-    	d->Com->WriteString(TEXT("$PCPILOT,C,GETNAME\r\n"));
-    }*/
-	return TRUE;
-}
-
-
-
-BOOL CDevFlarm::GetFirmwareVersion(PDeviceDescriptor_t d) {
-/*    if (d && d->Com) {
-        d->Com->WriteString(TEXT("$PCPILOT,C,GETFW\r\n"));
-    }*/
-	return TRUE;
-}
 
 
 
@@ -236,9 +185,6 @@ BOOL CDevFlarm::Config(PDeviceDescriptor_t d){
 
 
 
-        GetFirmwareVersion(m_pDevice);
-
-//              wf->SetTimerNotify(1000, OnTimer);
                 wf->ShowModal();
 
                 delete wf;
@@ -291,13 +237,7 @@ BOOL CDevFlarm::FlarmReboot(PDeviceDescriptor_t d) {
 void CDevFlarm::Update(WndForm* pWnd) {
 	TCHAR Temp[50] = {0};
 
-	LockFlightData();
 
-	UnlockFlightData();
-
-	LockDeviceData();
-	_stprintf(Temp, TEXT("Flarm - Version: %s"), m_szVersion);
-	UnlockDeviceData();
 
 	pWnd->SetCaption(Temp);
 

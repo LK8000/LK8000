@@ -574,7 +574,7 @@ bool Startup(const TCHAR* szCmdLine) {
   GlobalRunning = true;
 	
 	InitAirspaceSonar();
-	StartIGCReadThread() ;
+
 #ifndef ANDROID
     if (WarningHomeDir) {
         TCHAR nopath[MAX_PATH];

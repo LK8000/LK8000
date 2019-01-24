@@ -79,29 +79,13 @@ private:
 
 // Receive data
 private:
-	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
-
-
+//	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
+    static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
 // Send Command
-	static BOOL GetDeviceName( PDeviceDescriptor_t d );
-	static BOOL SetDeviceName( PDeviceDescriptor_t d, const tstring& strName );
-	static BOOL GetFirmwareVersion( PDeviceDescriptor_t d );
 	static BOOL FlarmReboot(PDeviceDescriptor_t d);
-	static BOOL SetZeroDeltaPressure( PDeviceDescriptor_t d );
 
 
-	static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
-	static BOOL m_bCompassCalOn;
 
-	static double m_abs_press;
-	static double m_delta_press;
-
-	static TCHAR m_szVersion[15];
-
-	static Mutex* m_pCritSec_DeviceData;
-
-	static void LockDeviceData();
-	static void UnlockDeviceData();
 
 // Config
 	static BOOL Config(PDeviceDescriptor_t d);
@@ -109,7 +93,7 @@ private:
 
 
 	static void OnIGCDownloadClicked(WndButton* pWnd);
-        static void OnRebootClicked(WndButton* pWnd);
+    static void OnRebootClicked(WndButton* pWnd);
 	static bool OnTimer(WndForm* pWnd);
 
 	static void Update(WndForm* pWnd);

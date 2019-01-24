@@ -1361,12 +1361,6 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
 }
 
 
-  static void OnConfigFlarmlicked(WndButton* pWnd){
-//   if(DeviceList[SelectedDevice])
-    // if(CDevFlarm::Config)
-  //     CDevFlarm::.Config(&DeviceList[SelectedDevice]);
-  //     CDevFlarm::Config(&DeviceList[SelectedDevice]);
-}
 
 
 
@@ -1433,7 +1427,6 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnE),
   ClickNotifyCallbackEntry(OnF),
   ClickNotifyCallbackEntry(OnConfigDevClicked),
-  ClickNotifyCallbackEntry(OnConfigFlarmlicked),
   ClickNotifyCallbackEntry(OnNextDevice),
   ClickNotifyCallbackEntry(OnTerminalClicked),
   EndCallBackEntry()

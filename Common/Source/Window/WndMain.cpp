@@ -36,7 +36,7 @@
 
 #include "Airspace/Sonar.h"
 #include <OS/RotateScreen.h>
-#include <dlgFlarmIGCDownload.h>
+
 
 extern bool ScreenHasChanged(void);
 extern void ReinitScreen(void);
@@ -74,7 +74,7 @@ void BeforeShutdown(void) {
   #endif
 
 	DeinitAirspaceSonar();
-	StopIGCReadThread();
+
   // turn off all displays
   GlobalRunning = false;
 
