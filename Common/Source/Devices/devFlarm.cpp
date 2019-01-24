@@ -110,22 +110,13 @@ uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
 
 BOOL CDevFlarm::Open( PDeviceDescriptor_t d) {
 	m_pDevice = d;
-	StartupStore(TEXT(".... =================%s"),NEWLINE);
-	StartupStore(TEXT(".... StartIGCReadThread%s"),NEWLINE);
-	StartupStore(TEXT(".... =================%s"),NEWLINE);
-	StartIGCReadThread() ;
+
 	return TRUE;
 }
 
 BOOL CDevFlarm::Close (PDeviceDescriptor_t d) {
-	StartupStore(TEXT(".... =================%s"),NEWLINE);
-	StartupStore(TEXT(".... StopIGCReadThread%s"),NEWLINE);
-	StartupStore(TEXT(".... =================%s"),NEWLINE);
-	StopIGCReadThread() ;
+
 	m_pDevice = NULL;
-
-
-
 
 	return TRUE;
 }

@@ -517,6 +517,10 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 
 ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
+MapWindow::SuspendDrawingThread();
+StartupStore(TEXT(".... StartIGCReadThread%s"),NEWLINE);
+StartIGCReadThread() ;
+
 for (int i = 0; i < MAX_IGCFILES; i++)
 {
   szIGCStrings[i] = NULL;
@@ -527,6 +531,7 @@ szIGCStrings[0]    = new TCHAR[LST_STRG_LEN];
 szIGCSubStrings[0] = new TCHAR[LST_STRG_LEN];
 IGCFilename        = new TCHAR[MAX_PATH];
 if(IGCFilename == NULL) return NULL;
+
 	IGC_Index = -1;
 	iNoListLine =-1;
 	uint16_t RecSequence;
@@ -534,7 +539,7 @@ if(IGCFilename == NULL) return NULL;
 	uint8_t pBlock[100];
 	uint16_t blocksize;
 	TCHAR  TempString[255];
-MapWindow::SuspendDrawingThread();
+
     LockComm();
 
     /*************************************************/
@@ -588,7 +593,7 @@ MapWindow::SuspendDrawingThread();
       }
     }
     UnlockComm();
-MapWindow::ResumeDrawingThread();
+
 
     ThreadState =  IDLE_STATE;
     for (int i = 0; i < MAX_IGCFILES; i++)
@@ -597,6 +602,11 @@ MapWindow::ResumeDrawingThread();
       if( szIGCSubStrings[i] != NULL) {delete [] szIGCSubStrings[i]; szIGCSubStrings[i] = NULL;}
     }
     delete [] IGCFilename; IGCFilename = NULL;
+
+
+    StartupStore(TEXT(".... StopIGCReadThread%s"),NEWLINE);
+    StopIGCReadThread() ;
+    MapWindow::ResumeDrawingThread();
 
     return pIGCResult;
 }
