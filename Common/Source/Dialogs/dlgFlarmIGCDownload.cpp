@@ -61,7 +61,7 @@ static WndForm *wf = NULL;
 ListElement* pIGCResult = NULL;
 TCHAR szStatusText[STATUS_TXT_LEN];
 
-
+bool bShowMsg = false;
 
 void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command, uint8_t* pBlock, uint16_t blocksize);
 uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command, uint8_t* pBlock, uint16_t *blocksize, uint16_t Timeout);
@@ -326,7 +326,7 @@ static void OnEnterClicked(WndButton* pWnd) {
 TCHAR Tmp[MAX_PATH ];
 
     (void)pWnd;
-
+bShowMsg = true;
     if (IGC_Index >= iNoIGCFiles) {
         IGC_Index = iNoIGCFiles - 1;
     }
@@ -354,7 +354,6 @@ TCHAR Tmp[MAX_PATH ];
        if(wf) wf->SetTimerNotify(600, OnTimer); // check for end of download every 100ms
 #ifdef PRPGRESS_DLG
  CreateIGCProgressDialog();
-
 #endif
 
      }
@@ -439,7 +438,6 @@ if( ThreadState ==  IDLE_STATE)
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
       if(wf)wf->SetTimerNotify(0, NULL);    // reset Timer
-   //   StopIGCRead();
       pForm->SetModalResult(mrCancel);
 
     }
@@ -449,8 +447,6 @@ if( ThreadState ==  IDLE_STATE)
 
 
 static bool OnTimer(WndForm* pWnd) {
-
-
 TCHAR Tmp [STATUS_TXT_LEN];
 
   if(pWnd)
@@ -466,7 +462,7 @@ TCHAR Tmp [STATUS_TXT_LEN];
 		  CloseIGCProgressDialog();
 		#endif
     	 if(wf) wf->SetTimerNotify(0, NULL);    // reset Timer
-    	 if(DownloadError != REC_NOMSG)
+    	 if(bShowMsg)
     	 {
 		 switch (DownloadError)
 		 {
@@ -513,14 +509,31 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 	EndCallBackEntry()
 };
 
-
+class ResourceLock{
+public:
+	ResourceLock(){
+		StartupStore(TEXT(".... Enter ResourceLock%s"),NEWLINE);
+		MapWindow::SuspendDrawingThread();
+	    LockComm();
+	    StartIGCReadThread() ;
+	    IGCFilename  = new TCHAR[MAX_PATH];
+	};
+	~ResourceLock(){
+		StartupStore(TEXT(".... Leave ResourceLock%s"),NEWLINE);
+		StopIGCReadThread() ;
+	    UnlockComm();
+		MapWindow::ResumeDrawingThread();
+		if(wf)wf->SetTimerNotify(0, NULL);    // reset Timer
+		delete [] IGCFilename; IGCFilename = NULL;
+	};
+};
 
 ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
-MapWindow::SuspendDrawingThread();
+ResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
 StartupStore(TEXT(".... StartIGCReadThread%s"),NEWLINE);
-StartIGCReadThread() ;
 
+bShowMsg = false;
 for (int i = 0; i < MAX_IGCFILES; i++)
 {
   szIGCStrings[i] = NULL;
@@ -529,7 +542,7 @@ for (int i = 0; i < MAX_IGCFILES; i++)
 
 szIGCStrings[0]    = new TCHAR[LST_STRG_LEN];
 szIGCSubStrings[0] = new TCHAR[LST_STRG_LEN];
-IGCFilename        = new TCHAR[MAX_PATH];
+
 if(IGCFilename == NULL) return NULL;
 
 	IGC_Index = -1;
@@ -540,7 +553,6 @@ if(IGCFilename == NULL) return NULL;
 	uint16_t blocksize;
 
 
-    LockComm();
 
     /*************************************************/
     ThreadState =  OPEN_BIN_STATE;
@@ -580,7 +592,6 @@ if(IGCFilename == NULL) return NULL;
 
    	  wf->SetTimerNotify(600, OnTimer); // check for end of download every 600ms
       wf->ShowModal();
-//    wIGCSelectListList->Redraw();
       delete wf;
       wf = NULL;
     }
@@ -594,10 +605,10 @@ if(IGCFilename == NULL) return NULL;
         RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
 
         d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
-        StartupStore(TEXT("$PFLAR,0*55\r\n"));
+        if (deb_) StartupStore(TEXT("$PFLAR,0*55\r\n"));
       }
     }
-    UnlockComm();
+
 
 
     ThreadState =  IDLE_STATE;
@@ -606,12 +617,8 @@ if(IGCFilename == NULL) return NULL;
       if( szIGCStrings[i] != NULL) { delete [] szIGCStrings[i]; szIGCStrings[i] = NULL;}
       if( szIGCSubStrings[i] != NULL) {delete [] szIGCSubStrings[i]; szIGCSubStrings[i] = NULL;}
     }
-    delete [] IGCFilename; IGCFilename = NULL;
 
 
-    StartupStore(TEXT(".... StopIGCReadThread%s"),NEWLINE);
-    StopIGCReadThread() ;
-    MapWindow::ResumeDrawingThread();
 
     return pIGCResult;
 }
@@ -755,13 +762,13 @@ if(d != NULL)
   /******************************  ABORT STATE     ************************************/
   if( ThreadState ==  ABORT_STATE)
   {
-	if(f != NULL)
+	if(f != NULL) // file incomplete?
 	{
 	  fclose(f);
 	  f = NULL;
+	  lk::filesystem::deleteFile(IGCFilename);  // delete incomplete file (after abort) to prevent "file exists warning
 	}
-	lk::filesystem::deleteFile(IGCFilename);  // delete incomplete file (after abort) to prevent file exits warning
-
+    
     DownloadError =  REC_ABORTED;
     ThreadState =  IDLE_STATE;
   }
@@ -886,13 +893,12 @@ IGCReadThread IGCReadThreadThreadInstance;
 
 
 void StartIGCReadThread() {
-
-  StartupStore(TEXT("Start IGC Thread !"));
+  if (deb_)StartupStore(TEXT("Start IGC Thread !"));
   IGCReadThreadThreadInstance.Start();
 }
 
 void StopIGCReadThread() {
 
-  StartupStore(TEXT("Stop IGC Thread !"));
+  if (deb_) StartupStore(TEXT("Stop IGC Thread !"));
   IGCReadThreadThreadInstance.Stop();
 }
