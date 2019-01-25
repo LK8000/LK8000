@@ -89,21 +89,6 @@ CallBackTableEntry_t IGCProgressCallBackTable[] = {
     EndCallBackEntry()
 };
 
-class dlgIGCProgress final  {
-public:
-    dlgIGCProgress();
-    ~dlgIGCProgress();
-    
-    dlgIGCProgress( const dlgIGCProgress& ) = delete;
-    dlgIGCProgress& operator=( const dlgIGCProgress& ) = delete;
-
-};
-
-
-
-
-
-dlgIGCProgress::dlgIGCProgress() {};
 void dlgIGCProgressShowModal(void){
     
 	bClose = false;
@@ -133,12 +118,6 @@ void dlgIGCProgressShowModal(void){
     _WndForm = NULL;
 
 }
-
-dlgIGCProgress::~dlgIGCProgress() {
-    _WndForm->SetTimerNotify(0,NULL); // delete Timer
-    delete _WndForm; 
-}
-
 
 
 
