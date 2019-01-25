@@ -19,6 +19,7 @@
 #include "LKStyle.h"
 
 #include "Dialogs.h"
+#include "Asset.hpp"
 
 
 #define MAX_LEN 80
