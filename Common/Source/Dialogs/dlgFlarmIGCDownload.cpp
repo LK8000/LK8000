@@ -460,10 +460,14 @@ TCHAR Tmp [STATUS_TXT_LEN];
     {
        if( ThreadState ==  IDLE_STATE)
 	   {
+    	  WndButton* wb = (WndButton*)pForm->FindByName(TEXT("cmdClose"));
+    	  wb->SetCaption(MsgToken(186));  // _@M186_ "Close"
 		#ifdef PRPGRESS_DLG
 		  CloseIGCProgressDialog();
 		#endif
     	 if(wf) wf->SetTimerNotify(0, NULL);    // reset Timer
+    	 if(DownloadError != REC_NOMSG)
+    	 {
 		 switch (DownloadError)
 		 {
 		   case REC_NO_ERROR     : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s\n%s"),  szIGCStrings[IGC_Index] ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
@@ -482,6 +486,7 @@ TCHAR Tmp [STATUS_TXT_LEN];
 		 if (MessageBoxX( Tmp, MsgToken(2398), mbOk) == IdYes)  // _@M2406_ "Error: communication timeout"Reboot"
 		 {
 		 }
+    	 }
 		 DownloadError = REC_NO_ERROR;
 	   }
        else
@@ -542,16 +547,18 @@ if(IGCFilename == NULL) return NULL;
     /*************************************************/
     wf = dlgLoadFromXML(IGCCallBackTable, ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
-    if (!wf)
-      throw std::runtime_error("wf == NULL  inside dlgIGCSelectListShowModal");
+    if (wf)
+    {
+      WndButton* wb = (WndButton*)wf->FindByName(TEXT("cmdClose"));
+      wb->SetCaption(MsgToken(670));  // _@M670_ "Stop"
 
-    wIGCSelectListList = (WndListFrame*) wf->FindByName(TEXT("frmMultiSelectListList"));
-    LKASSERT(wIGCSelectListList != NULL);
-    wIGCSelectListList->SetBorderKind(BORDERLEFT);
-    wIGCSelectListList->SetEnterCallback(OnIGCListEnter);
+      wIGCSelectListList = (WndListFrame*) wf->FindByName(TEXT("frmMultiSelectListList"));
+      LKASSERT(wIGCSelectListList != NULL);
+      wIGCSelectListList->SetBorderKind(BORDERLEFT);
+      wIGCSelectListList->SetEnterCallback(OnIGCListEnter);
 
-    wIGCSelectListListEntry = (WndOwnerDrawFrame*) wf->FindByName(TEXT("frmMultiSelectListListEntry"));
-    if(wIGCSelectListListEntry) {
+      wIGCSelectListListEntry = (WndOwnerDrawFrame*) wf->FindByName(TEXT("frmMultiSelectListListEntry"));
+      if(wIGCSelectListListEntry) {
         /*
          * control height must contains 2 text Line
          * Check and update Height if necessary
@@ -566,15 +573,18 @@ if(IGCFilename == NULL) return NULL;
             wIGCSelectListListEntry->SetHeight(minHeight);
         }
         wIGCSelectListListEntry->SetCanFocus(true);
-    } else LKASSERT(0);
+      } else LKASSERT(0);
 
-    UpdateList();
 
-    wf->ShowModal();
-    wIGCSelectListList->Redraw();
-    delete wf;
+      UpdateList();
 
-    wf = NULL;
+   	  wf->SetTimerNotify(600, OnTimer); // check for end of download every 600ms
+      wf->ShowModal();
+//    wIGCSelectListList->Redraw();
+      delete wf;
+      wf = NULL;
+    }
+    DownloadError = REC_NOMSG;               // don't show an error msg on initialisation
     if(bPingOK)
     {
       if (MessageBoxX(MsgToken(2413), MsgToken(2403), mbYesNo) == IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot now?"
@@ -700,7 +710,7 @@ if(d != NULL)
 
         for(uint16_t i = 0; i < blocksize-2; i++)
            TempString[i]= (TCHAR) pBlock[i+2];
-      /*    if(deb_) */  StartupStore(TEXT("> %s "),TempString);
+        if(deb_) StartupStore(TEXT("> %s "),TempString);
         TCHAR empty[3] = _T("");
         TCHAR* remaining=NULL;
         TCHAR* Filename  = _tcstok_r(TempString,TEXT("|"),&remaining); if(Filename == NULL)  {Filename = empty;};
@@ -745,15 +755,12 @@ if(d != NULL)
   /******************************  ABORT STATE     ************************************/
   if( ThreadState ==  ABORT_STATE)
   {
-	 if(f != NULL)
-	 {
-	   fclose(f);
-	   f = NULL;
-
-	   f = _tfopen(IGCFilename, TEXT("w")); // open second time to delete content
-	   fclose(f);
-	   f = NULL;
-	 }
+	if(f != NULL)
+	{
+	  fclose(f);
+	  f = NULL;
+	}
+	lk::filesystem::deleteFile(IGCFilename);  // delete incomplete file (after abort) to prevent file exits warning
 
     DownloadError =  REC_ABORTED;
     ThreadState =  IDLE_STATE;
