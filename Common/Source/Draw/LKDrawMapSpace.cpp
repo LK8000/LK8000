@@ -34,25 +34,25 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 #endif
 
 
-#ifndef DITHER
-  if (MapSpaceMode==MSM_WELCOME) {
-	if (INVERTCOLORS)
-		hB=LKBrush_Petrol;
-	  else
-		hB=LKBrush_Mlight;
-  } else {
-	if (INVERTCOLORS)
-	  hB=LKBrush_Mdark;
-	else
-	  hB=LKBrush_Mlight;
+  if (!IsDithered()) {
+    if (MapSpaceMode == MSM_WELCOME) {
+      if (INVERTCOLORS)
+        hB = LKBrush_Petrol;
+      else
+        hB = LKBrush_Mlight;
+    } else {
+      if (INVERTCOLORS)
+        hB = LKBrush_Mdark;
+      else
+        hB = LKBrush_Mlight;
 
+    }
+  } else {
+    if (INVERTCOLORS)
+      hB = LKBrush_Black;
+    else
+      hB = LKBrush_White;
   }
-#else
-  if (INVERTCOLORS)
-      hB=LKBrush_Black;
-  else
-      hB=LKBrush_White;
-#endif
 
   const auto oldfont = Surface.SelectObject(LKINFOFONT); // save font
   if (MapSpaceMode==MSM_WELCOME) {
@@ -64,25 +64,21 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
       Surface.FillRect(&rc, hB);
   }
 
-  // Paint borders in green, but only in nearest pages and welcome, and not in DITHER mode
-  // In case we want it in dithered mode, some changes are ready to be used.
-  #ifndef DITHER
-  if (MapSpaceMode==MSM_WELCOME || (!IsMultiMap() && MapSpaceMode!=MSM_MAP) )
-  {
-     #ifdef DITHER
-     LKPen BorderPen(PEN_SOLID, ScreenThinSize, INVERTCOLORS?RGB_WHITE:RGB_BLACK);
-     #else
-     LKPen BorderPen(PEN_SOLID, ScreenThinSize, INVERTCOLORS?RGB_GREEN:RGB_DARKGREEN);
-     #endif
-     auto OldPen = Surface.SelectObject(BorderPen);
-     auto OldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
+  // Paint borders in green, but only in nearest pages and welcome
+  if (MapSpaceMode == MSM_WELCOME || (!IsMultiMap() && MapSpaceMode != MSM_MAP)) {
+    LKColor color = INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN;;
+    if (IsDithered()) {
+      color = INVERTCOLORS ? RGB_WHITE : RGB_BLACK;
+    }
+    LKPen BorderPen(PEN_SOLID, ScreenThinSize, color);
+    auto OldPen = Surface.SelectObject(BorderPen);
+    auto OldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
 
-     Surface.Rectangle(rc.left, rc.top, rc.right, rc.bottom - BottomSize);
+    Surface.Rectangle(rc.left, rc.top, rc.right, rc.bottom - BottomSize);
 
-     Surface.SelectObject(OldPen);
-     Surface.SelectObject(OldBrush);
+    Surface.SelectObject(OldPen);
+    Surface.SelectObject(OldBrush);
   }
-  #endif
 
 
 #ifdef DRAWLKSTATUS

@@ -727,34 +727,33 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     else {
         cursortbox = SortedMode[curmapspace];
         Surface.FillRect(&s_sortBox[cursortbox],
-#ifndef DITHER
-                INVERTCOLORS ? LKBrush_LightGreen : LKBrush_DarkGreen);
-#else
-                INVERTCOLORS ? LKBrush_White : LKBrush_Black);
-#endif
+                       !IsDithered() ? (INVERTCOLORS ? LKBrush_LightGreen : LKBrush_DarkGreen) :
+                       (INVERTCOLORS ? LKBrush_White : LKBrush_Black));
     }
 
     // PAGE INDEX, example: 2.1
     //
     Surface.SelectObject(LK8PanelMediumFont);
     _stprintf(Buffer, TEXT("%d.%d"), ModeIndex, CURTYPE + 1);
-    LKWriteText(Surface, Buffer, rc.left + LEFTLIMITER, rc.top + TOPLIMITER, WTMODE_NORMAL, WTALIGN_LEFT,
-#ifndef DITHER
-            RGB_LIGHTGREEN, false);
-#else
-            RGB_WHITE, false);
-#endif
+    LKWriteText(Surface,
+              Buffer,
+              rc.left + LEFTLIMITER,
+              rc.top + TOPLIMITER,
+              WTMODE_NORMAL,
+              WTALIGN_LEFT,
+              !IsDithered() ? RGB_LIGHTGREEN : RGB_WHITE,
+              false);
 
 
-    LKColor tmpcolor;
+    LKColor tmpcolor = (cursortbox == 0) ? RGB_BLACK : RGB_LIGHTGREEN;;
+    if (IsDithered()) {
+      tmpcolor = (cursortbox == 0) ? RGB_BLACK : RGB_WHITE;
+    }
+
     Surface.SelectObject(LK8InfoNearestFont);
 
     _stprintf(Buffer, TEXT("%s %d/%d"), MsgToken(headertoken[0]), curpage + 1, Numpages);
-#ifndef DITHER
-    tmpcolor = cursortbox == 0 ? RGB_BLACK : RGB_LIGHTGREEN;
-#else
-    tmpcolor = cursortbox == 0 ? RGB_BLACK : RGB_WHITE;
-#endif
+
     LKWriteText(Surface, Buffer, Column0[curmapspace], rc.top + HEADRAW - NIBLSCALE(1), WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
     if (cursortbox == 99) cursortbox = 0;
 
