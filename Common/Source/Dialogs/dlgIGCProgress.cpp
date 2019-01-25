@@ -171,13 +171,13 @@ void IGCProgressDialogText(const TCHAR* text) {
 
 
  void OnIGCAbortClicked(WndButton* pWnd) {
-TCHAR Tmp[80 ];
+
     (void)pWnd;
 
 	StartupStore(_T("Abort pressed%s"), NEWLINE);
-	_sntprintf(Tmp,80,  _T("%s ?"),MsgToken(2402));  // _@M2402_ "Abort Download"
 
-	if (MessageBoxX(Tmp, MsgToken(2398), mbYesNo) == IdYes)
+
+	if (MessageBoxX(MsgToken(2417), MsgToken(2398), mbYesNo) == IdYes) // _@M2417_ "Abort Download ?"
 	{
 	  CloseIGCProgressDialog();
 	  StopIGCRead();

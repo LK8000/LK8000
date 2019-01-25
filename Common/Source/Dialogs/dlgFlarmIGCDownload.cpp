@@ -336,24 +336,19 @@ TCHAR Tmp[MAX_PATH ];
      if (MessageBoxX(Tmp, MsgToken(2404),  mbYesNo) == IdYes)  // _@2404 "Download"
      {
         /** check if file already exist and is not empty ************/
+
 		_sntprintf(Tmp, 200, _T("%s"), szIGCStrings[IGC_Index ]);
 		TCHAR* remaining;
 		TCHAR* Filename  = _tcstok_r(Tmp ,TEXT(" "),&remaining);
 
 		LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
-		FILE* f = _tfopen(IGCFilename, TEXT("r")) ;
-		if(  f  != NULL)       // file exists
-		{
-		  fseek(f,0,SEEK_END);  // check file not empty
-		  int size = ftell(f);
-		  fclose(f); f = NULL;
-		  if(size > 10)         // is larger than 10 bytes (not empty)
+
+		  if(lk::filesystem::exist(IGCFilename))
 		    if (MessageBoxX(MsgToken(2416), MsgToken(2398), mbYesNo) == IdNo) // _@M2416_ "File already exits\n download anyway?"
 		    {
 			  ThreadState = IDLE_STATE;
 			  return ;
 		    }
-		}
 		/************************************************************/
        ThreadState =  OPEN_STATE;        // start thread IGC download
        if(wf) wf->SetTimerNotify(600, OnTimer); // check for end of download every 100ms
@@ -538,7 +533,7 @@ if(IGCFilename == NULL) return NULL;
 	uint8_t RecCommand;
 	uint8_t pBlock[100];
 	uint16_t blocksize;
-	TCHAR  TempString[255];
+
 
     LockComm();
 
@@ -547,7 +542,8 @@ if(IGCFilename == NULL) return NULL;
     /*************************************************/
     wf = dlgLoadFromXML(IGCCallBackTable, ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
-    if (!wf) return NULL;
+    if (!wf)
+      throw std::runtime_error("wf == NULL  inside dlgIGCSelectListShowModal");
 
     wIGCSelectListList = (WndListFrame*) wf->FindByName(TEXT("frmMultiSelectListList"));
     LKASSERT(wIGCSelectListList != NULL);
@@ -581,9 +577,8 @@ if(IGCFilename == NULL) return NULL;
     wf = NULL;
     if(bPingOK)
     {
-      _sntprintf(TempString, 255, _T("%s"), MsgToken(2403)); // _@M2403_ "Reset FLARM"
-      if (MessageBoxX(MsgToken(2413), TempString, mbYesNo) == IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot now?"
-      {
+      if (MessageBoxX(MsgToken(2413), MsgToken(2403), mbYesNo) == IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot now?"
+      {                                                                  // _@M2403_ "Reset FLARM"
         if(deb_)StartupStore(TEXT("EXIT "));
         SendBinBlock(d, Sequence++, EXIT, NULL, 0);
         RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
@@ -868,15 +863,14 @@ protected:
     Poco::Thread Thread;
 
     void run() {
-	  PeriodClock Timer;
+
 	  while(!bStop) {
 		if( ThreadState !=  IDLE_STATE)
 		{
 		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
 		}
-//		unsigned n = Clamp<unsigned>(200U - Timer.ElapsedUpdate(), 0U, 400U);
-		Sleep(100);
-		Timer.Update();
+		Sleep(50);
+
 	  }
 	}
 };
