@@ -13,6 +13,8 @@
 #include "DoInits.h"
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
+#include "Asset.hpp"
+
 
 #ifndef LKCOMPETITION
 //

@@ -18,6 +18,8 @@
 #include <string.h>
 #include "Draw/ScreenProjection.h"
 #include "Util/TruncateString.hpp"
+#include "Asset.hpp"
+
 
 MapWaypointLabel_t MapWaypointLabelList[200];
 MapWaypointLabel_t* SortedWaypointLabelList[200];
