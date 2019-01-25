@@ -12,7 +12,7 @@
 #ifndef DLG_IGC_PROGRESS_H
 #define	DLG_IGC_PROGRESS_H
 
-void CreateIGCProgressDialog(const TCHAR *text);
+void CreateIGCProgressDialog();
 void CloseIGCProgressDialog();
 void IGCProgressDialogText(const TCHAR* text);
 void OnIGCAbortClicked(WndButton* pWnd);

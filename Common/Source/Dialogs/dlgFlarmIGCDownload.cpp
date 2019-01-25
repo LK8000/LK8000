@@ -353,7 +353,7 @@ TCHAR Tmp[MAX_PATH ];
        ThreadState =  OPEN_STATE;        // start thread IGC download
        if(wf) wf->SetTimerNotify(600, OnTimer); // check for end of download every 100ms
 #ifdef PRPGRESS_DLG
- CreateIGCProgressDialog(Tmp);
+ CreateIGCProgressDialog();
 
 #endif
 

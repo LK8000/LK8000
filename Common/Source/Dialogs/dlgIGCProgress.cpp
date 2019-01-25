@@ -126,9 +126,8 @@ void CloseIGCProgressDialog() {
 
 }
 
-void CreateIGCProgressDialog(const TCHAR* text) {
+void CreateIGCProgressDialog() {
    dlgIGCProgressShowModal();
-   IGCProgressDialogText(text);
 }
 
 
