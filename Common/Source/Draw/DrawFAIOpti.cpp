@@ -137,10 +137,9 @@ void FAI_Sector::AnalysisDrawFAISector (LKSurface& Surface, const RECT& rc, cons
 void FAI_Sector::DrawFAISector (LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj ,const LKColor& InFfillcolor) {
 
 LKColor fillcolor = InFfillcolor;
-#ifdef KOBO
+if (IsDithered()) {
   fillcolor = RGB_SBLACK;
-#endif
-
+}
 const PixelRect ScreenRect(rc);
 const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 

@@ -836,9 +836,9 @@ LKColor GetUTF8WaypointSymbol(TCHAR* pPict, const int Style)
       Col = LKColor(199,21,133);
     break;
   } // switch estyle
-#ifdef KOBO
-  Col = LKColor(30,30,30);
-#endif
+	if (IsDithered()) {
+		Col = LKColor(30, 30, 30);
+	}
 return Col;
 }
 

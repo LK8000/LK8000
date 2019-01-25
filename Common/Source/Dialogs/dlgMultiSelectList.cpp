@@ -485,11 +485,12 @@ if(fFact > 1.0 ) fFact = 1.0; else
 LKColor BaseColor = RGB_GREEN ;
 extern  LKColor MixColors(const LKColor& Color2, double fFact1) ;
 
-#ifdef KOBO
-BaseColor = RGB_BLACK;
-#else
-BaseColor =  BaseColor.MixColors( RGB_BLUE, fFact);
-#endif
+if (IsDithered()) {
+  BaseColor = RGB_BLACK;
+} else {
+  BaseColor = BaseColor.MixColors(RGB_BLUE, fFact);
+}
+
 if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc, MsgToken(2382) ,BaseColor); else     // _@M2382_ "■"
   if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc,  MsgToken(2383) ,BaseColor);else      // _@M2383_ "●"
     UTF8Pictorial( Surface,  rc, MsgToken(2384)  ,BaseColor);    // _@M2384_ "●"
