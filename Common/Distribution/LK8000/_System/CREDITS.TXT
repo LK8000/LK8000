@@ -24,7 +24,7 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 	
 . Airspace Group Acknowledge	
 
-. New airspace class Notam
+. New airspace class Notam with additional informations in Aispace details.
 	
 . Airfield ICAO-Code Search
 	
@@ -53,9 +53,12 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
      New Runtime option “Draw XC”	
      New X> target
      	
+. New FLARM configuration dialog with IGC download from device 
+
 . Improved FAI Assistant	
 
 . changes SFC (surface) to GND (ground) trigraph
+
 
 
 [version 7.0 changes from 6.0]

@@ -46,7 +46,7 @@ int IGC_DrawListIndex=0;
 uint16_t Sequence=0;
 int iNoListLine =0;
 #define MAX_IGCFILES 100
-#define REC_TIMEOUT 800
+#define REC_TIMEOUT 1000
 
 
 
