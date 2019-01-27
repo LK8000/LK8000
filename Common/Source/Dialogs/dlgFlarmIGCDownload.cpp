@@ -39,7 +39,7 @@ static WndListFrame *wIGCSelectListList = NULL;
 static WndOwnerDrawFrame *wIGCSelectListListEntry = NULL;
 
 bool deb_ = false;
-bool bPingOK = false;
+
 int IGC_Index =0;
 int iNoIGCFiles=0;
 int IGC_DrawListIndex=0;
@@ -601,20 +601,13 @@ if(IGCFilename == NULL) return NULL;
       wf = NULL;
     }
     DownloadError = REC_NOMSG;               // don't show an error msg on initialisation
-    if(bPingOK)
-    {  
-      {                                                                 
-        if(deb_)StartupStore(TEXT("EXIT "));
-        SendBinBlock(d, Sequence++, EXIT, NULL, 0);
-        RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
-        GPS_INFO.FLARM_Available = false;
-        d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
-        if (deb_) StartupStore(TEXT("$PFLAR,0*55\r\n"));
-      }
-   //   else goto restart;*
-    }
 
-
+	if(deb_)StartupStore(TEXT("EXIT "));
+	SendBinBlock(d, Sequence++, EXIT, NULL, 0);
+	RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+	GPS_INFO.FLARM_Available = false;
+	d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
+	if (deb_) StartupStore(TEXT("$PFLAR,0*55\r\n"));
 
     ThreadState =  IDLE_STATE;
     return pIGCResult;
@@ -671,7 +664,6 @@ if(d != NULL)
   /******************************  PING_STATE     ************************************/
   if( ThreadState ==  PING_STATE)
   {
-	bPingOK = false;
     if(deb_) StartupStore(TEXT("PING "));
     IGCCnt =0;
     iNoIGCFiles =0;
@@ -697,7 +689,6 @@ if(d != NULL)
   /******************************  GET_RECORD_STATE     ************************************/
   if( ThreadState ==  GET_RECORD_STATE)
   {
-	bPingOK = true;
     retry=0;
     do{
        blk[0] =IGCCnt;
