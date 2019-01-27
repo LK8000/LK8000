@@ -276,6 +276,7 @@ if(wIGCSelectListList != NULL)
 }
 
 static void OnUpClicked(WndButton* Sender) {
+if(iNoIGCFiles < 0) return;
     if (IGC_Index > 0) {
         IGC_Index--;
     } else {
@@ -294,7 +295,7 @@ static void OnUpClicked(WndButton* Sender) {
 static void OnDownClicked(WndButton* pWnd) {
 
     (void)pWnd;
-
+if(iNoIGCFiles < 0) return;
     if (IGC_Index < (iNoIGCFiles - 1)) {
         IGC_Index++;
     } else {
@@ -330,7 +331,7 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
 static void OnEnterClicked(WndButton* pWnd) {
 TCHAR Tmp[MAX_PATH ];
-
+if(iNoIGCFiles < 0) return;
     (void)pWnd;
 bShowMsg = true;
     if (IGC_Index >= iNoIGCFiles) {
@@ -604,7 +605,7 @@ if(IGCFilename == NULL) return NULL;
         if(deb_)StartupStore(TEXT("EXIT "));
         SendBinBlock(d, Sequence++, EXIT, NULL, 0);
         RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
-
+        GPS_INFO.FLARM_Available = false;
         d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
         if (deb_) StartupStore(TEXT("$PFLAR,0*55\r\n"));
       }

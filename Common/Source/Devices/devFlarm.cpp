@@ -160,11 +160,6 @@ BOOL CDevFlarm::Config(PDeviceDescriptor_t d){
                 wBt->SetOnClickNotify(OnRebootClicked);
         }
 /*
-        wBt = (WndButton *)wf->FindByName(TEXT("prpFlarmId"));
-        if(wBt){
-                wBt->SetOnClickNotify(OnFlarmIdClicked);
-        }*/
-
         WndProperty* wp;
         wp = (WndProperty*)wf->FindByName(TEXT("prpFlarmId"));
         if (wp) {
@@ -172,7 +167,7 @@ BOOL CDevFlarm::Config(PDeviceDescriptor_t d){
 
           wp->RefreshDisplay();
         }
-
+*/
 
 
 
@@ -185,10 +180,7 @@ BOOL CDevFlarm::Config(PDeviceDescriptor_t d){
 }
 
 
-bool CDevFlarm::OnTimer(WndForm* pWnd){
-  Update(pWnd);
-  return true;
-}
+
 
 void CDevFlarm::OnCloseClicked(WndButton* pWnd){
   if(pWnd) {
@@ -203,6 +195,11 @@ void CDevFlarm::OnCloseClicked(WndButton* pWnd){
 
 void CDevFlarm::OnIGCDownloadClicked(WndButton* pWnd) {
 	(void)pWnd;
+	if(!GPS_INFO.FLARM_Available)
+	{
+		 MessageBoxX(MsgToken(2401), MsgToken(2403), mbOk);
+		   return;
+	}
 	if(m_pDevice) {
 	dlgIGCSelectListShowModal(m_pDevice);
 	}
@@ -211,6 +208,11 @@ void CDevFlarm::OnIGCDownloadClicked(WndButton* pWnd) {
 
 void CDevFlarm::OnRebootClicked(WndButton* pWnd) {
         (void)pWnd;
+    	if(!GPS_INFO.FLARM_Available)
+    	{
+    		 MessageBoxX(MsgToken(2401), MsgToken(2403), mbOk);
+    		   return;
+    	}
         StartupStore(TEXT("OnRebootClicked"));
         if(m_pDevice) {
             FlarmReboot(m_pDevice);
@@ -221,6 +223,7 @@ BOOL CDevFlarm::FlarmReboot(PDeviceDescriptor_t d) {
     if (d && d->Com) {
         d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
         StartupStore(TEXT("$PFLAR,0*55\r\n"));
+        GPS_INFO.FLARM_Available = false;
     }
     return TRUE;
 }
