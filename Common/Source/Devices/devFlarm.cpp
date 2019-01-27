@@ -197,7 +197,7 @@ void CDevFlarm::OnIGCDownloadClicked(WndButton* pWnd) {
 	(void)pWnd;
 	if(!GPS_INFO.FLARM_Available)
 	{
-		 MessageBoxX(MsgToken(2401), MsgToken(2403), mbOk);
+		 MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
 		   return;
 	}
 	if(m_pDevice) {
@@ -210,7 +210,7 @@ void CDevFlarm::OnRebootClicked(WndButton* pWnd) {
         (void)pWnd;
     	if(!GPS_INFO.FLARM_Available)
     	{
-    		 MessageBoxX(MsgToken(2401), MsgToken(2403), mbOk);
+    		 MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
     		   return;
     	}
         StartupStore(TEXT("OnRebootClicked"));
