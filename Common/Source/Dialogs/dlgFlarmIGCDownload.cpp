@@ -442,12 +442,15 @@ StopIGCRead();
 if( ThreadState ==  IDLE_STATE)
 {
   ThreadState =  IDLE_STATE;
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
-      if(wf)wf->SetTimerNotify(0, NULL);    // reset Timer
-      pForm->SetModalResult(mrCancel);
+  if (MessageBoxX(MsgToken(2413), MsgToken(2403), mbYesNo) == IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot now?"
+  {
+    if(pWnd) {
+      WndForm * pForm = pWnd->GetParentWndForm();
+      if(pForm) {
+        if(wf)wf->SetTimerNotify(0, NULL);    // reset Timer
+        pForm->SetModalResult(mrCancel);
 
+      }
     }
   }
 }
@@ -599,9 +602,8 @@ if(IGCFilename == NULL) return NULL;
     }
     DownloadError = REC_NOMSG;               // don't show an error msg on initialisation
     if(bPingOK)
-    {
-      if (MessageBoxX(MsgToken(2413), MsgToken(2403), mbYesNo) == IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot now?"
-      {                                                                  // _@M2403_ "Reset FLARM"
+    {  
+      {                                                                 
         if(deb_)StartupStore(TEXT("EXIT "));
         SendBinBlock(d, Sequence++, EXIT, NULL, 0);
         RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
@@ -609,6 +611,7 @@ if(IGCFilename == NULL) return NULL;
         d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
         if (deb_) StartupStore(TEXT("$PFLAR,0*55\r\n"));
       }
+   //   else goto restart;*
     }
 
 
