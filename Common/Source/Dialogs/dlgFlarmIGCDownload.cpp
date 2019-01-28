@@ -465,6 +465,7 @@ TCHAR Tmp [STATUS_TXT_LEN];
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm)
     {
+       UpdateList();
        if( ThreadState ==  IDLE_STATE)
 	   {
     	  WndButton* wb = (WndButton*)pForm->FindByName(TEXT("cmdClose"));
@@ -674,8 +675,7 @@ if(d != NULL)
     _sntprintf(NewElement.Line1, 60, _T("        PING Flarm %u/15"), retry);
     _sntprintf(NewElement.Line2, 60, _T("        ... "));
 	IGCFileList.clear();
-	IGCFileList.push_back(NewElement);    
-    UpdateList();
+	IGCFileList.push_back(NewElement);
     SendBinBlock(d, Sequence++, PING, NULL, 0);
     err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
     if(err == REC_NO_ERROR )
@@ -727,7 +727,6 @@ if(d != NULL)
          if(Pilot) { _tcscat( NewElement.Line2 ,_T(" ") );_tcscat( NewElement.Line2 ,Pilot);};
          if(CN)    { _tcscat( NewElement.Line2 ,_T(" ")); _tcscat( NewElement.Line2 ,CN);};
         IGCFileList.push_back(NewElement);
-        UpdateList();
       }
     }
     IGCCnt++;
@@ -751,7 +750,6 @@ if(d != NULL)
 	{_sntprintf(NewElement.Line2, 60, _T("         %s"),MsgToken(2401));} // _@M2401_ "No Device found"
 	IGCFileList.clear();
 	IGCFileList.push_back(NewElement);
-	UpdateList();
     ThreadState =  IDLE_STATE;
     DownloadError = REC_NO_DEVICE;
   }
