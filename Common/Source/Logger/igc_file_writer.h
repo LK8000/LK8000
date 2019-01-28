@@ -12,6 +12,7 @@
 #ifndef _LOGGER_IGC_FILE_WRITER_H_
 #define _LOGGER_IGC_FILE_WRITER_H_
 
+#include "Compiler.h"
 #include "md5.h"
 #include "tchar.h"
 
