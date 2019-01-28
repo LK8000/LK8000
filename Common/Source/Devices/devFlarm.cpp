@@ -227,7 +227,9 @@ BOOL CDevFlarm::FlarmReboot(PDeviceDescriptor_t d) {
     if (d && d->Com) {
         d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
         StartupStore(TEXT("$PFLAR,0*55\r\n"));
+        LockFlightData();
         GPS_INFO.FLARM_Available = false;
+        UnlockFlightData();
     }
     return TRUE;
 }
