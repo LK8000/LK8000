@@ -195,10 +195,12 @@ void CDevFlarm::OnCloseClicked(WndButton* pWnd){
 
 void CDevFlarm::OnIGCDownloadClicked(WndButton* pWnd) {
 	(void)pWnd;
-	if(!GPS_INFO.FLARM_Available)
-	{
-		 MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
-		   return;
+LockFlightData();
+bool bFlarmActive = GPS_INFO.FLARM_Available;
+UnlockFlightData();
+	if(!bFlarmActive)	{
+	  MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
+	  return;
 	}
 	if(m_pDevice) {
 	dlgIGCSelectListShowModal(m_pDevice);
@@ -208,15 +210,17 @@ void CDevFlarm::OnIGCDownloadClicked(WndButton* pWnd) {
 
 void CDevFlarm::OnRebootClicked(WndButton* pWnd) {
         (void)pWnd;
-    	if(!GPS_INFO.FLARM_Available)
-    	{
-    		 MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
-    		   return;
-    	}
-        StartupStore(TEXT("OnRebootClicked"));
-        if(m_pDevice) {
-            FlarmReboot(m_pDevice);
-        }
+LockFlightData();
+bool bFlarmActive = GPS_INFO.FLARM_Available;
+UnlockFlightData();
+	if(!bFlarmActive)	{
+	  MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
+	  return;
+	}
+    StartupStore(TEXT("OnRebootClicked"));
+    if(m_pDevice) {
+        FlarmReboot(m_pDevice);
+    }
 }
 
 BOOL CDevFlarm::FlarmReboot(PDeviceDescriptor_t d) {

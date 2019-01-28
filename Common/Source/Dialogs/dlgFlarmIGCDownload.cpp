@@ -605,7 +605,9 @@ if(IGCFilename == NULL) return NULL;
 	if(deb_)StartupStore(TEXT("EXIT "));
 	SendBinBlock(d, Sequence++, EXIT, NULL, 0);
 	RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+    LockFlightData();
 	GPS_INFO.FLARM_Available = false;
+    UnlockFlightData();
 	d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
 	if (deb_) StartupStore(TEXT("$PFLAR,0*55\r\n"));
 
