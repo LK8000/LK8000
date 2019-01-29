@@ -24,7 +24,7 @@ extern void   StopIGCRead(void);
 
 static bool OnIGCProgressTimer(WndForm* pWnd);
 static bool bClose = false;
-static LKBitmap SplashBitmap;
+
 WndForm* _WndForm = NULL;
 
 static bool OnIGCProgressTimer(WndForm* pWnd)
@@ -39,13 +39,16 @@ static bool OnIGCProgressTimer(WndForm* pWnd)
 
 
 static void OnIGCSplashPaint(WindowControl * Sender, LKSurface& Surface) {
+LKBitmap SplashBitmap;
     if(!SplashBitmap) {
         SplashBitmap = LoadSplash(_T("LKSTART"));
     }
     DrawSplash(Surface, Sender->GetClientRect(), SplashBitmap);
+
 }
 
 static void OnIGCProgressPaint(WindowControl * Sender, LKSurface& Surface) {
+
   RECT PrintAreaR = Sender->GetClientRect();
     
   const auto oldFont = Surface.SelectObject(MapWindowBoldFont);
@@ -107,16 +110,13 @@ void dlgIGCProgressShowModal(void){
             wText->SetWidth(_WndForm->GetWidth());
             wText->SetTop(_WndForm->GetHeight() - wText->GetHeight());
         }
-        _WndForm->Show();
-        _WndForm->Redraw();
+//        _WndForm->Show();
+//        _WndForm->Redraw();
         _WndForm->SetTimerNotify(200, OnIGCProgressTimer); // check for end of download every 200ms
+        _WndForm->ShowModal();
+        delete _WndForm;
+        _WndForm = NULL;
     }
-    _WndForm->SetTimerNotify(200, OnIGCProgressTimer); // check for end of download every 200ms
-    _WndForm->ShowModal();
-
-    delete _WndForm;
-    _WndForm = NULL;
-
 }
 
 
