@@ -40,11 +40,9 @@ static WndOwnerDrawFrame *wIGCSelectListListEntry = NULL;
 
 bool deb_ = false;
 
-int IGC_Index =0;
-int iNoIGCFiles=0;
-int IGC_DrawListIndex=0;
-uint16_t Sequence=0;
-int iNoListLine =0;
+unsigned int IGC_Index =0;
+unsigned int IGC_DrawListIndex=0;
+
 #define MAX_IGCFILES 100
 #define REC_TIMEOUT 1000
 
@@ -276,12 +274,12 @@ if(wIGCSelectListList != NULL)
 }
 
 static void OnUpClicked(WndButton* Sender) {
-if(iNoIGCFiles < 0) return;
+if(IGCFileList.size() == 0) return;
     if (IGC_Index > 0) {
         IGC_Index--;
     } else {
-        LKASSERT(iNoIGCFiles>0);
-        IGC_Index = (iNoIGCFiles - 1);
+        LKASSERT(IGCFileList.size()>0);
+        IGC_Index = (IGCFileList.size() - 1);
     }
     if(wIGCSelectListList != NULL)
     {
@@ -295,8 +293,8 @@ if(iNoIGCFiles < 0) return;
 static void OnDownClicked(WndButton* pWnd) {
 
     (void)pWnd;
-if(iNoIGCFiles < 0) return;
-    if (IGC_Index < (iNoIGCFiles - 1)) {
+if(IGCFileList.size() == 0) return;
+    if (IGC_Index < (IGCFileList.size() - 1)) {
         IGC_Index++;
     } else {
         IGC_Index = 0;
@@ -318,7 +316,7 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
     (void) Sender;
 
     if (ListInfo->DrawIndex == -1) {
-        ListInfo->ItemCount = iNoIGCFiles;
+        ListInfo->ItemCount = IGCFileList.size();
 
     } else {
         IGC_DrawListIndex = ListInfo->DrawIndex + ListInfo->ScrollIndex;
@@ -331,11 +329,11 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
 static void OnEnterClicked(WndButton* pWnd) {
 TCHAR Tmp[MAX_PATH ];
-if(iNoIGCFiles < 0) return;
+if(IGCFileList.size() == 0) return;
     (void)pWnd;
 bShowMsg = true;
-    if (IGC_Index >= iNoIGCFiles) {
-        IGC_Index = iNoIGCFiles - 1;
+    if (IGC_Index >= IGCFileList.size()) {
+        IGC_Index = IGCFileList.size() - 1;
     }
     if(IGCFileList.size() < (uint)IGC_Index) return;
 
@@ -376,7 +374,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
     if(IGCFileList.size() == 0 ) return;
     if(IGCFileList.size() < (uint)IGC_DrawListIndex) return;
-    if (IGC_DrawListIndex < iNoListLine)
+    if (IGC_DrawListIndex < IGCFileList.size())
     {
 
         TCHAR text1[180] = {TEXT("IGC File")};
@@ -412,8 +410,8 @@ static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Lis
     IGC_Index = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 
 
-    if (IGC_Index >= iNoIGCFiles) {
-        IGC_Index = iNoIGCFiles - 1;
+    if (IGC_Index >= IGCFileList.size()) {
+        IGC_Index = IGCFileList.size() - 1;
     }
 
 
@@ -541,6 +539,27 @@ public:
 	}
 };
 
+void LeaveBinModeWithReset(DeviceDescriptor_t *d)
+{
+
+int Sequence = 0;
+uint16_t RecSequence;
+uint8_t RecCommand;
+uint8_t pBlock[100];
+uint16_t blocksize;
+
+  if(deb_)StartupStore(TEXT("EXIT "));
+  SendBinBlock(d, Sequence++, EXIT, NULL, 0);
+  RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
+
+  LockFlightData();
+    GPS_INFO.FLARM_Available = false;
+  UnlockFlightData();
+  d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
+  if (deb_) StartupStore(TEXT("$PFLAR,0*55\r\n"));
+}
+
+
 ListElement* dlgIGCSelectListShowModal( DeviceDescriptor_t *d) {
 
 ResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
@@ -552,11 +571,6 @@ bShowMsg = false;
 if(IGCFilename == NULL) return NULL;
 
 	IGC_Index = -1;
-	iNoListLine =-1;
-	uint16_t RecSequence;
-	uint8_t RecCommand;
-	uint8_t pBlock[100];
-	uint16_t blocksize;
 
 
 
@@ -602,15 +616,7 @@ if(IGCFilename == NULL) return NULL;
       wf = NULL;
     }
     DownloadError = REC_NOMSG;               // don't show an error msg on initialisation
-
-	if(deb_)StartupStore(TEXT("EXIT "));
-	SendBinBlock(d, Sequence++, EXIT, NULL, 0);
-	RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
-    LockFlightData();
-	GPS_INFO.FLARM_Available = false;
-    UnlockFlightData();
-	d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
-	if (deb_) StartupStore(TEXT("$PFLAR,0*55\r\n"));
+    LeaveBinModeWithReset(d);                // reset Flarm after leaving dialog
 
     ThreadState =  IDLE_STATE;
     return pIGCResult;
@@ -635,8 +641,8 @@ pBlock[0] = IGC_Index;
 uint16_t  blocksize=1;
 uint16_t  Seq;
 
-
-static  int IGCCnt =0;
+static uint16_t Sequence;
+//static  int IGCCnt =0;
 static  uint8_t retry = 0;
 
     uint8_t blk[10];
@@ -668,9 +674,9 @@ if(d != NULL)
   if( ThreadState ==  PING_STATE)
   {
     if(deb_) StartupStore(TEXT("PING "));
-    IGCCnt =0;
-    iNoIGCFiles =0;
-    iNoListLine =1;
+//    IGCCnt =0;
+//    iNoIGCFiles =0;
+//    iNoListLine =1;
     ListElementType NewElement;
     _sntprintf(NewElement.Line1, 60, _T("        PING Flarm %u/15"), retry);
     _sntprintf(NewElement.Line2, 60, _T("        ... "));
@@ -693,7 +699,7 @@ if(d != NULL)
   {
     retry=0;
     do{
-       blk[0] =IGCCnt;
+       blk[0] =IGCFileList.size();
        SendBinBlock(d, Sequence++, SELECTRECORD, &blk[0], 1);
        err = RecBinBlock(d, &RecSequence, &RecCommand, &pBlock[0], &blocksize, REC_TIMEOUT);
     } while ((err== REC_CRC_ERROR) && (retry++ <4));
@@ -729,9 +735,9 @@ if(d != NULL)
         IGCFileList.push_back(NewElement);
       }
     }
-    IGCCnt++;
-    iNoIGCFiles = IGCCnt;
-    iNoListLine = IGCCnt;
+//    IGCCnt++;
+//    iNoIGCFiles = IGCCnt;
+//    iNoListLine = IGCCnt;
 
     if (RecCommand != ACK)
 	  ThreadState = ALL_RECEIVED_STATE;
