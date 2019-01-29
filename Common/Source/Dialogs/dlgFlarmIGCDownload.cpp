@@ -45,7 +45,8 @@ static WndOwnerDrawFrame *wIGCSelectListListEntry = NULL;
 
 bool deb_ = false;                   // debug output switch
 
-unsigned int IGC_Index =0;           // selected File index
+unsigned int IGC_DLIndex =0;         // selected File download index
+unsigned int IGC_CurIndex =0;           // selected File index
 unsigned int IGC_DrawListIndex=0;
 
 int DownloadError =REC_NO_ERROR;     // global error variable
@@ -275,15 +276,15 @@ if(wIGCSelectListList != NULL)
 
 static void OnUpClicked(WndButton* Sender) {
 if(IGCFileList.size() == 0) return;
-    if (IGC_Index > 0) {
-        IGC_Index--;
+    if (IGC_CurIndex > 0) {
+    	IGC_CurIndex--;
     } else {
         LKASSERT(IGCFileList.size()>0);
-        IGC_Index = (IGCFileList.size() - 1);
+        IGC_CurIndex = (IGCFileList.size() - 1);
     }
     if(wIGCSelectListList != NULL)
     {
-      wIGCSelectListList->SetItemIndexPos(IGC_Index);
+      wIGCSelectListList->SetItemIndexPos(IGC_CurIndex);
       wIGCSelectListList->Redraw();
       if(wIGCSelectListListEntry)
         wIGCSelectListListEntry->SetFocus();
@@ -294,14 +295,14 @@ static void OnDownClicked(WndButton* pWnd) {
 
     (void)pWnd;
 if(IGCFileList.size() == 0) return;
-    if (IGC_Index < (IGCFileList.size() - 1)) {
-        IGC_Index++;
+    if (IGC_CurIndex < (IGCFileList.size() - 1)) {
+    	IGC_CurIndex++;
     } else {
-        IGC_Index = 0;
+    	IGC_CurIndex = 0;
     }
     if(wIGCSelectListList != NULL)
     {
-      wIGCSelectListList->SetItemIndexPos(IGC_Index);
+      wIGCSelectListList->SetItemIndexPos(IGC_CurIndex);
       wIGCSelectListList->Redraw();
       if(wIGCSelectListListEntry)
         wIGCSelectListListEntry->SetFocus();
@@ -320,7 +321,7 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
     } else {
         IGC_DrawListIndex = ListInfo->DrawIndex + ListInfo->ScrollIndex;
-        IGC_Index = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+        IGC_CurIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
     }
 
 }
@@ -331,7 +332,7 @@ if(IGCFilename == NULL)
   return false;
 TCHAR Tmp[MAX_PATH];
 
-  _sntprintf(Tmp, MAX_PATH, _T("%s"), IGCFileList.at(IGC_Index).Line1 );
+  _sntprintf(Tmp, MAX_PATH, _T("%s"), IGCFileList.at(Idx).Line1 );
   TCHAR* remaining;
   TCHAR* Filename  = _tcstok_r(Tmp ,TEXT(" "),&remaining);
   LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
@@ -344,17 +345,17 @@ TCHAR Tmp[MAX_PATH ];
 if(IGCFileList.size() == 0) return;
     (void)pWnd;
 bShowMsg = true;
-    if (IGC_Index >= IGCFileList.size()) {
-        IGC_Index = IGCFileList.size() - 1;
+    if ( IGC_CurIndex  >= IGCFileList.size()) {
+    	IGC_CurIndex = IGCFileList.size() - 1;
     }
-    if(IGCFileList.size() < (uint)IGC_Index) return;
-
-      _stprintf(Tmp, _T("%s %s ?"),MsgToken(2404),IGCFileList.at(IGC_Index).Line1 );
+    if(IGCFileList.size() < (uint)IGC_CurIndex) return;
+    IGC_DLIndex = IGC_CurIndex;
+      _stprintf(Tmp, _T("%s %s ?"),MsgToken(2404),IGCFileList.at(IGC_DLIndex).Line1 );
      if (MessageBoxX(Tmp, MsgToken(2404),  mbYesNo) == IdYes)  // _@2404 "Download"
      {
         /** check if file already exist and is not empty ************/
     	TCHAR IGCFilename[MAX_PATH];
-    	if(GetIGCFilename(IGCFilename, IGC_Index))
+    	if(GetIGCFilename(IGCFilename, IGC_DLIndex))
     	{
 		  if(lk::filesystem::exist(IGCFilename))
 		    if (MessageBoxX(MsgToken(2416), MsgToken(2398), mbYesNo) == IdNo) // _@M2416_ "File already exits\n download anyway?"
@@ -412,19 +413,21 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
 static void OnIGCListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo) {
     (void) Sender;
-    IGC_Index = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+    IGC_CurIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 
 
-    if (IGC_Index >= IGCFileList.size()) {
-        IGC_Index = IGCFileList.size() - 1;
+    if (IGC_CurIndex >= IGCFileList.size()) {
+    	IGC_CurIndex = IGCFileList.size() - 1;
     }
 
 
-    if (IGC_Index >= 0) {
+    if (IGC_CurIndex >= 0) {
       if(Sender) {
         WndForm * pForm = Sender->GetParentWndForm();
         if(pForm) {
+           IGC_DLIndex = IGC_CurIndex;
            OnEnterClicked(NULL) ;
+
         }
       }
     }
@@ -481,7 +484,7 @@ TCHAR Tmp [STATUS_TXT_LEN];
     	 {
 		   switch (DownloadError)
 		   {
-		     case REC_NO_ERROR     : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s\n%s"), IGCFileList.at(IGC_Index).Line1  ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
+		     case REC_NO_ERROR     : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s\n%s"), IGCFileList.at(IGC_DLIndex).Line1  ,MsgToken(2406)); break; // 	_@M2406_ "IGC File download complete"
 		     case REC_TIMEOUT_ERROR: _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2407)); break;  // _@M2407_ "Error: receive timeout
 		     case REC_CRC_ERROR    : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2408)); break;  // _@M2408_ "Error: CRC checksum fail"
 		     case REC_ABORTED      : _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s"), MsgToken(2415)); break;  // _@M2415_ "IGC Download aborted!"
@@ -573,7 +576,7 @@ bShowMsg = false;
 
 
 
-	IGC_Index = -1;
+
 
     /*************************************************/
     ThreadState =  OPEN_BIN_STATE;
@@ -626,7 +629,7 @@ bShowMsg = false;
 
 
 
-int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_Index)
+int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex)
 {
 
 if (d==NULL)
@@ -638,7 +641,7 @@ static FILE *f= NULL;
 
 uint8_t   Command = SELECTRECORD;
 uint8_t   pBlock[2000];
-pBlock[0] = IGC_Index;
+pBlock[0] = IGC_FileIndex;
 uint16_t  blocksize=1;
 uint16_t  Seq;
 
@@ -764,7 +767,7 @@ if(d != NULL)
  	  f = NULL;
 
  	  TCHAR IGCFilename[MAX_PATH];
- 	  if(GetIGCFilename(IGCFilename, IGC_Index))
+ 	  if(GetIGCFilename(IGCFilename, IGC_FileIndex))
  	  {
 	    lk::filesystem::deleteFile(IGCFilename);  // delete incomplete file (after abort) to prevent "file exists warning
 	   /* if(deb_)*/ StartupStore(TEXT("delete incomplete File: %s "),IGCFilename);
@@ -777,21 +780,21 @@ if(d != NULL)
   /******OPEN STATE *********************************************************************************/
   if (ThreadState == OPEN_STATE)
   {
-	 if(IGCFileList.size() < IGC_Index)
+	 if(IGCFileList.size() < IGC_FileIndex)
 		 return 0;
 
-    StartupStore(TEXT ("OPEN_STATE: %s"), IGCFileList.at(IGC_Index).Line1);
+    StartupStore(TEXT ("OPEN_STATE: %s"), IGCFileList.at(IGC_FileIndex).Line1);
 	if(f) {fclose(f); f = NULL;}
 	err = REC_NO_ERROR;
 
 	TCHAR IGCFilename[MAX_PATH];
-	GetIGCFilename(IGCFilename, IGC_Index);
+	GetIGCFilename(IGCFilename, IGC_FileIndex);
 	f = _tfopen( IGCFilename, TEXT("w"));
     if(f == NULL)   { err = FILE_OPEN_ERROR;  }   // #define FILE_OPEN_ERROR 5
 
-    _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),IGCFileList.at(IGC_Index).Line1);
+    _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),IGCFileList.at(IGC_FileIndex).Line1);
     StartupStore(szStatusText);
-    SendBinBlock(d,  Sequence++,  SELECTRECORD, &IGC_Index,  1);
+    SendBinBlock(d,  Sequence++,  SELECTRECORD, &IGC_FileIndex,  1);
     err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize, REC_TIMEOUT);
 
     if(err != REC_NO_ERROR)
@@ -806,7 +809,7 @@ if(d != NULL)
     SendBinBlock(d,  Sequence++,  GETIGCDATA, &pBlock[0], 0);
     err = RecBinBlock(d,  &Seq, &Command, &pBlock[0], &blocksize,  10 * REC_TIMEOUT);
     if(err==REC_NO_ERROR)
-      _sntprintf(szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), pBlock[2], IGCFileList.at(IGC_Index).Line1); // _@M2400_ "Downloading"
+      _sntprintf(szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), pBlock[2], IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
     if((Sequence %10) == 0)
       StartupStore(TEXT("%s"),szStatusText);
 
@@ -884,7 +887,7 @@ protected:
 	  while(!bStop) {
 		if( ThreadState !=  IDLE_STATE)
 		{
-		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_Index);
+		  ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_DLIndex);
 		}
 		Sleep(100);
 
