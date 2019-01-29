@@ -1295,8 +1295,6 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     }
     else
     {
-    bManageExtAudio &= IsSoundInit();
-
     bool bBt = ((_tcslen(szPortName) > 3) && ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || (_tcsncmp(szPortName, _T("Bluetooth Server"), 3) == 0)));
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);

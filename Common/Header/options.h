@@ -28,7 +28,7 @@
 #endif
 
 // Disable externally generated sounds
-#if !defined(KOBO)
+#if !defined(KOBO) && !defined(ANDROID)
     // audio can be also implemented for external device
     #define DISABLEEXTAUDIO
 #endif
