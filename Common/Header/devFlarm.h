@@ -55,7 +55,7 @@ typedef union{
 #define lowbyte(a)   ((a) & 0xFF)
 
 uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout);
-
+bool BlockReceived(void);
 
 class CDevFlarm : public DevBase
 {

@@ -82,6 +82,13 @@ if(recEnable)
 return  true;
 }
 
+bool BlockReceived(void)
+{
+	if(OutCnt == InCnt)
+	  return false;
+	else
+	 return true;
+}
 
 uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
 {
@@ -197,6 +204,7 @@ void CDevFlarm::OnIGCDownloadClicked(WndButton* pWnd) {
 	(void)pWnd;
 LockFlightData();
 bool bFlarmActive = GPS_INFO.FLARM_Available;
+//bFlarmActive = true;
 UnlockFlightData();
 	if(!bFlarmActive)	{
 	  MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
