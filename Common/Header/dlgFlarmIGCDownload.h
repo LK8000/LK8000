@@ -12,7 +12,8 @@
 ListElement* dlgIGCSelectListShowModal(  DeviceDescriptor_t *d) ;
 void StartIGCReadThread();
 void StopIGCReadThread(void) ;
-
+void LeaveBinModeWithReset(DeviceDescriptor_t *d);
+bool IsInBinaryMode (void);
 #endif
 
 

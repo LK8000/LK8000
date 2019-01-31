@@ -124,10 +124,10 @@ BOOL CDevFlarm::Open( PDeviceDescriptor_t d) {
 BOOL CDevFlarm::Close (PDeviceDescriptor_t d) {
 
 	LockFlightData();
-	if(GPS_INFO.FLARM_Available) // if flarm not preset?
+	if(IsInBinaryMode()) // if FLARM in Bin Modet?
 	{
 	  if(d != NULL)
-		FlarmReboot(d);            // reboot (maybe in binary mode)
+		FlarmReboot(d);
 	}
 	UnlockFlightData();
 	m_pDevice = NULL;
@@ -221,7 +221,7 @@ UnlockFlightData();
 	}
 }
 
-extern void LeaveBinModeWithReset(DeviceDescriptor_t *d);
+
 void CDevFlarm::OnRebootClicked(WndButton* pWnd) {
         (void)pWnd;
 
