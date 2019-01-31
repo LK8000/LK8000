@@ -123,6 +123,13 @@ BOOL CDevFlarm::Open( PDeviceDescriptor_t d) {
 
 BOOL CDevFlarm::Close (PDeviceDescriptor_t d) {
 
+	LockFlightData();
+	if(GPS_INFO.FLARM_Available) // if flarm not preset?
+	{
+	  if(d != NULL)
+		FlarmReboot(d);            // reboot (maybe in binary mode)
+	}
+	UnlockFlightData();
 	m_pDevice = NULL;
 
 	return TRUE;
