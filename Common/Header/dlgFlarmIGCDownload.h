@@ -14,6 +14,7 @@ void StartIGCReadThread();
 void StopIGCReadThread(void) ;
 void LeaveBinModeWithReset(DeviceDescriptor_t *d);
 bool IsInBinaryMode (void);
+bool SetBinaryModeFlag (bool bBinMode);
 #endif
 
 

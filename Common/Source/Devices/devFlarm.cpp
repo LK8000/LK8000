@@ -211,13 +211,22 @@ void CDevFlarm::OnIGCDownloadClicked(WndButton* pWnd) {
 	(void)pWnd;
 LockFlightData();
 bool bFlarmActive = GPS_INFO.FLARM_Available;
+bool bInFlight    = CALCULATED_INFO.Flying;
 UnlockFlightData();
+
+bInFlight = true;
+
+	if(bInFlight)	{
+	  MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
+	  return;
+	}
+
 	if(!bFlarmActive)	{
 	  MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
 	  return;
 	}
 	if(m_pDevice) {
-	dlgIGCSelectListShowModal(m_pDevice);
+	  dlgIGCSelectListShowModal(m_pDevice);
 	}
 }
 

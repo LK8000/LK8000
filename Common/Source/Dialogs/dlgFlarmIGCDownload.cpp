@@ -555,7 +555,14 @@ void LeaveBinModeWithReset(DeviceDescriptor_t *d)
 
 bool IsInBinaryMode (void)
 {
-	return bFLARM_BinMode;
+  return bFLARM_BinMode;
+}
+
+bool SetBinaryModeFlag (bool bBinMode)
+{
+bool OldVal =	bFLARM_BinMode;
+	 bFLARM_BinMode = bBinMode;
+	 return OldVal;
 }
 
 class ResourceLock{

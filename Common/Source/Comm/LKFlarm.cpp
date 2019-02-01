@@ -15,7 +15,7 @@
 
 FlarmCalculations flarmCalculations;
 
-
+extern bool SetBinaryModeFlag (bool);
 void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
 
 //#define DEBUG_LKT	1
@@ -272,6 +272,8 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	sayflarmavailable = true;
 
   pGPS->FLARM_Available = true;
+
+  SetBinaryModeFlag (false);
   LastFlarmCommandTime = pGPS->Time;
   isFlarm = true;
 
