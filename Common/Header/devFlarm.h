@@ -82,6 +82,7 @@ private:
 private:
 //	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
     static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+    static BOOL FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 // Send Command
 	static BOOL FlarmReboot(PDeviceDescriptor_t d);
 

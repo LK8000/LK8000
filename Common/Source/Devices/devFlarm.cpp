@@ -40,7 +40,7 @@ bool CDevFlarm::Register(){
 BOOL CDevFlarm::Install( PDeviceDescriptor_t d ) {
   StartupStore(_T("Flarm Drvier Install %s"), NEWLINE);
 	_tcscpy(d->Name, GetName());
-	d->ParseNMEA = NULL ; // ParseNMEA;
+	d->ParseNMEA = FlarmParse ; // ParseNMEA;
 	d->PutMacCready = NULL;
 	d->PutBugs = NULL;
 	d->PutBallast = NULL;
@@ -58,11 +58,26 @@ BOOL CDevFlarm::Install( PDeviceDescriptor_t d ) {
 }
 
 
-
 uint8_t RingBuff[REC_BUFFERSIZE+1];
 volatile  uint16_t InCnt=0;
 volatile  uint16_t OutCnt=0;
 static bool recEnable = true;
+
+
+
+BOOL CDevFlarm::FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+{
+	if(IsInBinaryMode ())
+	{
+	  if (_tcsncmp(_T("$PFLAU"), sentence, 6) == 0)
+	  {
+		StartupStore(TEXT("$PFLAU detected, disable binary mode!" ));
+		SetBinaryModeFlag (false);
+	  }
+	}
+  return false;
+}
+
 
 BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
 {
@@ -213,8 +228,6 @@ LockFlightData();
 bool bFlarmActive = GPS_INFO.FLARM_Available;
 bool bInFlight    = CALCULATED_INFO.Flying;
 UnlockFlightData();
-
-bInFlight = true;
 
 	if(bInFlight)	{
 	  MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
