@@ -9,12 +9,12 @@
 #ifndef _DLGFLARMIGCDOWNLOAD_H_
 #define _DLGFLARMIGCDOWNLOAD_H_
 
-ListElement* dlgIGCSelectListShowModal(  DeviceDescriptor_t *d) ;
-void StartIGCReadThread();
-void StopIGCReadThread(void) ;
-void LeaveBinModeWithReset(DeviceDescriptor_t *d);
-bool IsInBinaryMode (void);
-bool SetBinaryModeFlag (bool bBinMode);
+  ListElement* dlgIGCSelectListShowModal(  DeviceDescriptor_t *d) ;
+  void StartIGCReadThread();
+  void StopIGCReadThread(void) ;
+  void LeaveBinModeWithReset(DeviceDescriptor_t *d);
+  bool IsInBinaryMode (void);
+  bool SetBinaryModeFlag (bool bBinMode);
 #endif
 
 

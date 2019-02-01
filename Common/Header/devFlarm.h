@@ -60,48 +60,48 @@ bool BlockReceived(void);
 class CDevFlarm : public DevBase
 {
 private:
-	// no ctor
-	CDevFlarm() {}
+  // no ctor
+  CDevFlarm() {}
 
-	// no copy
-	CDevFlarm(const CDevFlarm&) {}
-	void operator=(const CDevFlarm&) {}
+  // no copy
+  CDevFlarm(const CDevFlarm&) {}
+  void operator=(const CDevFlarm&) {}
 
 //Init
 public:
-	static bool Register();
-	static const TCHAR* GetName() { return TEXT("Flarm"); }
-	static BOOL Open(PDeviceDescriptor_t d);
-	static BOOL Close (PDeviceDescriptor_t d);
-	static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
-	static void OnFlarmIdClicked(WndButton* pWnd);
+  static bool Register();
+  static const TCHAR* GetName() { return TEXT("Flarm"); }
+  static BOOL Open(PDeviceDescriptor_t d);
+  static BOOL Close (PDeviceDescriptor_t d);
+  static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
+  static void OnFlarmIdClicked(WndButton* pWnd);
 private:
-	static BOOL Install(PDeviceDescriptor_t d);
+  static BOOL Install(PDeviceDescriptor_t d);
 
 // Receive data
 private:
-//	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
-    static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
-    static BOOL FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
-// Send Command
-	static BOOL FlarmReboot(PDeviceDescriptor_t d);
+  //	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
+  static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+  static BOOL FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+  // Send Command
+  static BOOL FlarmReboot(PDeviceDescriptor_t d);
 
 
 
 
-// Config
-	static BOOL Config(PDeviceDescriptor_t d);
-	static void OnCloseClicked(WndButton* pWnd);
+  // Config
+  static BOOL Config(PDeviceDescriptor_t d);
+  static void OnCloseClicked(WndButton* pWnd);
 
 
-	static void OnIGCDownloadClicked(WndButton* pWnd);
-    static void OnRebootClicked(WndButton* pWnd);
-	static bool OnTimer(WndForm* pWnd);
+  static void OnIGCDownloadClicked(WndButton* pWnd);
+  static void OnRebootClicked(WndButton* pWnd);
+  static bool OnTimer(WndForm* pWnd);
 
-	static void Update(WndForm* pWnd);
+  static void Update(WndForm* pWnd);
 
-	static CallBackTableEntry_t CallBackTable[];
-	static PDeviceDescriptor_t m_pDevice;
+  static CallBackTableEntry_t CallBackTable[];
+  static PDeviceDescriptor_t m_pDevice;
 };
 
 typedef struct
@@ -123,7 +123,4 @@ typedef struct
 
 
 
-
-#define NO_BLK_ERROR  0
-#define CRC_BLKERROR 1
-#endif // devCProbe_h__
+#endif // devFlarm_h__

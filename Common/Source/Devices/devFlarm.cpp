@@ -67,14 +67,14 @@ static bool recEnable = true;
 
 BOOL CDevFlarm::FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
-	if(IsInBinaryMode ())
-	{
-	  if (_tcsncmp(_T("$PFLAU"), sentence, 6) == 0)
-	  {
-		StartupStore(TEXT("$PFLAU detected, disable binary mode!" ));
-		SetBinaryModeFlag (false);
-	  }
-	}
+  if(IsInBinaryMode ())
+  {
+    if (_tcsncmp(_T("$PFLAU"), sentence, 6) == 0)
+    {
+	  StartupStore(TEXT("$PFLAU detected, disable binary mode!" ));
+	  SetBinaryModeFlag (false);
+    }
+  }
   return false;
 }
 
@@ -138,16 +138,16 @@ BOOL CDevFlarm::Open( PDeviceDescriptor_t d) {
 
 BOOL CDevFlarm::Close (PDeviceDescriptor_t d) {
 
-	LockFlightData();
-	if(IsInBinaryMode()) // if FLARM in Bin Modet?
-	{
-	  if(d != NULL)
-		FlarmReboot(d);
-	}
-	UnlockFlightData();
-	m_pDevice = NULL;
+  LockFlightData();
+  if(IsInBinaryMode()) // if FLARM in Bin Modet?
+  {
+    if(d != NULL)
+	  FlarmReboot(d);
+  }
+  UnlockFlightData();
+  m_pDevice = NULL;
 
-	return TRUE;
+  return TRUE;
 }
 
 
