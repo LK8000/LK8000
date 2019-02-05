@@ -8,30 +8,18 @@
 
 #include "externs.h"
 
-
-
 double MapWindow::LimitMapScale(double value) {
 
-  double minreasonable=5.0;		// give minreasonable values in system units, in meters! (what you would like to see on the mapscale)
+  double minreasonable= MapWindow::zoom.GetZoomInitValue(0)*1000;
 
-  if (mode.Is(Mode::MODE_CIRCLING)) {
-      // during circling
-      minreasonable = 50.0;
-      if ( ISPARAGLIDER ) minreasonable = 10.0;
-  } else {
-      // if not circling
-      minreasonable = 100.0;
-      if ( ISPARAGLIDER || ISCAR ) minreasonable = 10.0;
-      if (zoom.AutoZoom()) {
-	if (AATEnabled && (ActiveTaskPoint>0)) {
-	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 1200.0;
-	} else {
-	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 600.0;
-	}
-      }
+  if ( !(MapWindow::zoom.CircleZoom() &&
+      mode.Is(Mode::MODE_CIRCLING))
+      && zoom.AutoZoom() &&
+      mode.Special() == Mode::MODE_SPECIAL_NONE ) {
+      minreasonable = MapWindow::zoom.GetZoomInitValue(MaxAutoZoom) * 1000;
   }
 
-  minreasonable = Units::ToUserDistance(minreasonable / 1.4);		// 1.4 for mapscale symbol
+  minreasonable = Units::ToUserDistance(minreasonable / 1.4);        // 1.4 for mapscale symbol
 
   // return value in user distance units!!!
   if (ScaleListCount>0) {
@@ -93,94 +81,32 @@ double MapWindow::FindMapScale(double Value){
   return(Value);
 }
 
+int MapWindow::GetScaleListCount()
+{
+  return ScaleListCount;
+}
+
+
 void MapWindow::FillScaleListForEngineeringUnits(void)
 {
-  int i;
 
   // Fill up discrete map scales
-  // Consider scalelist size!!!
+  ScaleListCount = SCALELISTSIZE;
+
   switch (Units::GetUserDistanceUnit()) {
     default:
-      ScaleListCount = 0;
-      ScaleList[ScaleListCount++] = 0.01;		// km
-      ScaleList[ScaleListCount++] = 0.015;
-      ScaleList[ScaleListCount++] = 0.025;
-      ScaleList[ScaleListCount++] = 0.040;
-      ScaleList[ScaleListCount++] = 0.070;
-      ScaleList[ScaleListCount++] = 0.1;
-      ScaleList[ScaleListCount++] = 0.15;
-      ScaleList[ScaleListCount++] = 0.2;
-      ScaleList[ScaleListCount++] = 0.35;
-      ScaleList[ScaleListCount++] = 0.5;
-      ScaleList[ScaleListCount++] = 0.75;
-      ScaleList[ScaleListCount++] = 1.0;
-      ScaleList[ScaleListCount++] = 1.5;
-      ScaleList[ScaleListCount++] = 2.0;
-      ScaleList[ScaleListCount++] = 3.5;
-      ScaleList[ScaleListCount++] = 5.0;
-      ScaleList[ScaleListCount++] = 7.5;
-      ScaleList[ScaleListCount++] = 10.0;
-      ScaleList[ScaleListCount++] = 15.0;
-      ScaleList[ScaleListCount++] = 20.0;
-      ScaleList[ScaleListCount++] = 25.0;
-      ScaleList[ScaleListCount++] = 40.0;
-      ScaleList[ScaleListCount++] = 50.0;
-      ScaleList[ScaleListCount++] = 75.0;
+      std::copy(std::begin(ScaleListArrayMeters), std::end(ScaleListArrayMeters), std::begin(ScaleList));
       break;
 
     case unStatuteMiles:
-      ScaleListCount = 0;
-      ScaleList[ScaleListCount++] = 50.0  * (0.0006214 / 3.281);		// to ft;
-      ScaleList[ScaleListCount++] = 80.0  * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 130.0 * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 200.0 * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 350.0 * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 500.0 * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 800.0 * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 0.2;
-      ScaleList[ScaleListCount++] = 0.35;
-      ScaleList[ScaleListCount++] = 0.5;
-      ScaleList[ScaleListCount++] = 0.75;
-      ScaleList[ScaleListCount++] = 1.0;
-      ScaleList[ScaleListCount++] = 1.5;
-      ScaleList[ScaleListCount++] = 2.0;
-      ScaleList[ScaleListCount++] = 3.5;
-      ScaleList[ScaleListCount++] = 5.0;
-      ScaleList[ScaleListCount++] = 7.5;
-      ScaleList[ScaleListCount++] = 10.0;
-      ScaleList[ScaleListCount++] = 15.0;
-      ScaleList[ScaleListCount++] = 20.0;
-      ScaleList[ScaleListCount++] = 25.0;
-      ScaleList[ScaleListCount++] = 40.0;
+      std::copy(std::begin(ScaleListArrayStatuteMiles), std::end(ScaleListArrayStatuteMiles), std::begin(ScaleList));
       break;
 
     case unNauticalMiles:
-      ScaleListCount = 0;
-      ScaleList[ScaleListCount++] = 50.0  * (0.00053996 / 3.281);	// to ft;
-      ScaleList[ScaleListCount++] = 100.0 * (0.00053996 / 3.281);	// to ft;
-      ScaleList[ScaleListCount++] = 150.0 * (0.00053996 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 250.0 * (0.00053996 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 400.0 * (0.00053996 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 600.0 * (0.00053996 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 900.0 * (0.00053996 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 0.2;
-      ScaleList[ScaleListCount++] = 0.35;
-      ScaleList[ScaleListCount++] = 0.5;
-      ScaleList[ScaleListCount++] = 0.75;
-      ScaleList[ScaleListCount++] = 1.0;
-      ScaleList[ScaleListCount++] = 1.5;
-      ScaleList[ScaleListCount++] = 2.0;
-      ScaleList[ScaleListCount++] = 3.5;
-      ScaleList[ScaleListCount++] = 5.0;
-      ScaleList[ScaleListCount++] = 7.5;
-      ScaleList[ScaleListCount++] = 10.0;
-      ScaleList[ScaleListCount++] = 15.0;
-      ScaleList[ScaleListCount++] = 20.0;
-      ScaleList[ScaleListCount++] = 25.0;
-      ScaleList[ScaleListCount++] = 40.0;
+      std::copy(std::begin(ScaleListNauticalMiles), std::end(ScaleListNauticalMiles), std::begin(ScaleList));
       break;
   } //sw units
 
   double scalefactor = (double)GetMapResolutionFactor() / (double)IBLSCALE(DrawRect.right) * 1.4;
-  for (i=0; i<ScaleListCount; i++) ScaleList[i] /= scalefactor;
+  for (int i=0; i<ScaleListCount; i++) ScaleList[i] /= scalefactor;
 }

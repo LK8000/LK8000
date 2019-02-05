@@ -22,12 +22,14 @@
 #include "Screen/LKWindowSurface.h"
 #include "Time/PeriodClock.hpp"
 #include <array>
+#include "RGB.h"
 
 #ifndef ENABLE_OPENGL
 #include "Poco/ThreadTarget.h"
 #include "Poco/Thread.h"
 #include "Poco/Event.h"
 #endif
+#define SCALELISTSIZE  24
 
 #define TARGETUP   6
 #define NORTHSMART 5
@@ -70,33 +72,85 @@
 #define TEXT_MIDDLE_CENTER  9
 
 
-#include "RGB.h"
-
-// NOT USED ANYMORE, USE RGB_xxx as color definition
-// Used by MapWindow::TextColor
-// 5 bits (0-30) . Some colors unused
-// #define TEXTBLACK 0
-// #define TEXTWHITE 1
-// #define TEXTGREEN 2
-// #define TEXTRED 3
-// #define TEXTBLUE 4
-// #define TEXTYELLOW 5
-// #define TEXTCYAN 6
-// #define TEXTMAGENTA 7
-// #define TEXTGREY 8
-// #define TEXTORANGE 9
-// #define TEXTLIGHTGREEN 10
-// #define TEXTLIGHTRED 11
-// #define TEXTLIGHTBLUE 12
-// #define TEXTLIGHTYELLOW 13
-// #define TEXTLIGHTCYAN 14
-// #define TEXTLIGHTGREY 15
-// #define TEXTLIGHTORANGE 16
-
-// VENTA3 note> probably it would be a good idea to separate static WP data to dynamic values,
-// by moving things like Reachable, AltArival , etc to WPCALC
-// Currently at 5.2.2 the whole structure is saved into the task file, so everytime we
-// change the struct all old taks files become invalid... (there's a bug, btw, in this case)
+// The following 3 const vectors define map scale range and levels for each unit type.
+static constexpr double ScaleListArrayMeters[SCALELISTSIZE] = {
+    0.01,
+    0.015,
+    0.025,
+    0.040,
+    0.070,
+    0.1,
+    0.15,
+    0.2,
+    0.35,
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.5,
+    5.0,
+    7.5,
+    10.0,
+    15.0,
+    20.0,
+    25.0,
+    40.0,
+    50.0,
+    75.0
+};
+static constexpr double ScaleListArrayStatuteMiles[SCALELISTSIZE] = {
+    50.0 * (0.0006214 / 3.281),
+    80.0 * (0.0006214 / 3.281),
+    130.0 * (0.0006214 / 3.281),
+    200.0 * (0.0006214 / 3.281),
+    350.0 * (0.0006214 / 3.281),
+    500.0 * (0.0006214 / 3.281),
+    800.0 * (0.0006214 / 3.281),
+    0.2,
+    0.35,
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.5,
+    5.0,
+    7.5,
+    10.0,
+    15.0,
+    20.0,
+    25.0,
+    40.0,
+    50.0,
+    75.0,
+};
+static constexpr double ScaleListNauticalMiles[SCALELISTSIZE] = {
+    50.0 * (0.00053996 / 3.281),
+    100.0 * (0.00053996 / 3.281),
+    150.0 * (0.00053996 / 3.281),
+    250.0 * (0.00053996 / 3.281),
+    400.0 * (0.00053996 / 3.281),
+    600.0 * (0.00053996 / 3.281),
+    900.0 * (0.00053996 / 3.281),
+    0.2,
+    0.35,
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.5,
+    5.0,
+    7.5,
+    10.0,
+    15.0,
+    20.0,
+    25.0,
+    40.0,
+    50.0,
+    75.0
+};
 
 typedef struct _WAYPOINT_INFO
 {
@@ -269,8 +323,7 @@ class MapWindow {
     double DrawScale() const             { return _drawScale; }
     double InvDrawScale() const          { return _invDrawScale; }
 
-    double GetPgClimbZoomInitValue(int parameter_number) const;
-    double GetPgCruiseZoomInitValue(int parameter_number) const;
+    double GetZoomInitValue(int parameter_number) const;
 
   public:
 
@@ -298,8 +351,7 @@ class MapWindow {
     void UpdateMapScale();
     void ModifyMapScale();
 
-    bool GetPgClimbInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
-    bool GetPgCruiseInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
+    bool GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
 
   };
 
@@ -710,6 +762,8 @@ private:
   static double GetDisplayAngle() { return DisplayAngle; }
   static void SetAutoOrientation();
 
+  static int GetScaleListCount();
+
   static BrushReference hInvBackgroundBrush[LKMAXBACKGROUNDS]; // fixed number of backgrounds in MapWindow
 
   static      PenReference hpAircraft;
@@ -742,7 +796,6 @@ private:
   static void RenderMapWindowBg(LKSurface& Surface, const RECT& rc);
   static double findMapScaleBarSize(const RECT& rc);
 
-  #define SCALELISTSIZE  30
   static int ScaleListCount;
   static int ScaleCurrent;
   static double ScaleList[SCALELISTSIZE];
@@ -751,7 +804,9 @@ private:
   static void FillScaleListForEngineeringUnits(void);
 
 
-public:
+
+
+ public:
 	static void FreeSlot();
 private:
   // How many slots in screen, divided by horizontal blocks on vertical positions

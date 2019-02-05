@@ -218,9 +218,10 @@ GEXTERN short GlideBarOffset; // offset to the right for drawing LK8000 with GB 
 GEXTERN bool  EngineeringMenu; // not saved in registry
 GEXTERN short DeclutterMode;
 
-GEXTERN int PGClimbZoom;
-GEXTERN int PGCruiseZoom;
-GEXTERN double PGAutoZoomThreshold;
+GEXTERN int ClimbZoom;
+GEXTERN int CruiseZoom;
+GEXTERN double AutoZoomThreshold;
+GEXTERN int MaxAutoZoom;
 
 // This is the gauge bar on the left for variometer
 GEXTERN int LKVarioBar;
