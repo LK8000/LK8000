@@ -1708,12 +1708,12 @@ In airspace warning dialog, you can see a decrementing counter on the close butt
 [Airspace warning map labels]
 If this is on, airspace warning labels shows on the map indicating airspace name and vertical distance.
 
-@1213
-[PG autozoom threshold]
-When using autozoom in PG mode, autozoom gets working only if the next waypoint gets closer than this limit.
+@1214
+[Autozoom threshold]
+When using autozoom , autozoom gets working only if the next waypoint gets closer than this limit.
 For example if you choose 5km, it means when you're 5km to the next waypoint the autozoom will start working.
 It's zoom out to 5km zoom range, and it will keep zoom in as you're approaching the waypoint.
-After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
+After you reach the waypoint the Cruise zoom is restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
 
 @1220
 [Bottom Bar Configuration]
@@ -1982,6 +1982,12 @@ while permanent can be used to test your tracking settings on ground. (Note: Tra
 @1299
 [Additional Contest Rules]
 Select the scoring rule for the Cross Country Contest (XC). If OFF no contest will be evaluated and available in the XC or OLC infoboxes.
+
+@1300
+[Max Autozoom level]
+When autozoom feature is active it will not zoom beyond this zoom level
+
+
 
 
 @9999

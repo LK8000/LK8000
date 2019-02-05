@@ -10,11 +10,6 @@
 #include "externs.h"
 #include "Multimap.h"
 
-const double MapWindow::Zoom::SCALE_CRUISE_INIT      = 3.5;
-const double MapWindow::Zoom::SCALE_CIRCLING_INIT    = 0.1;
-const double MapWindow::Zoom::SCALE_PANORAMA_INIT    = 10.0;
-const double MapWindow::Zoom::SCALE_PG_PANORAMA_INIT = 7.5;
-const double MapWindow::Zoom::SCALE_INVALID_INIT     = 50.0;
 
 MapWindow::Zoom::Zoom():
   _bMapScale (true),
@@ -42,117 +37,59 @@ void MapWindow::Zoom::CalculateTargetPanZoom()
 /**
  * @brief Sets requested zoom scale for AUTO_ZOOM mode
  */
-void MapWindow::Zoom::CalculateAutoZoom()
-{
-  static int autoMapScaleTaskIndex = -1;
-  static int wait_for_new_wpt_distance = 0;
+void MapWindow::Zoom::CalculateAutoZoom() {
+
+  // Do not AutoZoom if we have CircleZoom enabled  and we are Circling
+  if ( CircleZoom() && mode.Is(Mode::MODE_CIRCLING) )
+    return;
+
   double wpd = DerivedDrawInfo.ZoomDistance;
-
-  if (wait_for_new_wpt_distance>0) wait_for_new_wpt_distance--;		//This counter is needed to get new valid waypoint distance after wp changes
-  if ( (wpd > 0) && (wait_for_new_wpt_distance==0) ) {
-    double AutoZoomFactor;
-    if ((DisplayOrientation == NORTHTRACK && !mode.Is(Mode::MODE_CIRCLING)) ||
-        DisplayOrientation == NORTHUP ||
-        DisplayOrientation == NORTHSMART ||
-        ((MapWindow::mode.autoNorthUP() || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TARGETCIRCLE || DisplayOrientation == TARGETUP)
-            && mode.Is(Mode::MODE_CIRCLING)))
+  if ((wpd > 0) && wpd < AutoZoomThreshold) {
+    double AutoZoomFactor = 4;
+    if ((DisplayOrientation == NORTHTRACK) || DisplayOrientation == NORTHUP || DisplayOrientation == NORTHSMART ||
+        ( (MapWindow::mode.autoNorthUP() || DisplayOrientation == NORTHCIRCLE ||
+            DisplayOrientation == TARGETCIRCLE || DisplayOrientation == TARGETUP)
+            && mode.Is(Mode::MODE_CIRCLING))) {
       AutoZoomFactor = 2.5;
-    else
-      AutoZoomFactor = 4;
-
-    if ( ( !ISPARAGLIDER && (wpd < AutoZoomFactor * _scaleOverDistanceModify) ) ||
-	 ( ISPARAGLIDER  && (wpd < PGAutoZoomThreshold)) ) {
-      // waypoint is too close, so zoom in
-      LKASSERT(AutoZoomFactor!=0);
-      _modeScale[SCALE_CRUISE] = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
     }
+    _modeScale[SCALE_CRUISE] = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
+  } else {
+    _modeScale[SCALE_CRUISE] = GetZoomInitValue(CruiseZoom) / 1.4;
   }
 
-  LockTaskData();  // protect from external task changes
-    // if we aren't looking at a waypoint, see if we are now
-    if(autoMapScaleTaskIndex == -1) {
-      if(ValidTaskPoint(ActiveTaskPoint))
-        autoMapScaleTaskIndex = ActiveTaskPoint;
-    }
-
-    if(ValidTaskPoint(ActiveTaskPoint)) {
-      // if the current zoom focused waypoint has changed...
-      if(autoMapScaleTaskIndex != ActiveTaskPoint) {
-        autoMapScaleTaskIndex = ActiveTaskPoint;
-        wait_for_new_wpt_distance = 3;
-        // zoom back out to where we were before
-        _modeScale[SCALE_CRUISE] = _modeScale[SCALE_AUTO_ZOOM];
-      }
-    }
-     {
-       UnlockTaskData();
-     }
 }
 
-double MapWindow::Zoom::GetPgClimbZoomInitValue(int parameter_number) const
+double MapWindow::Zoom::GetZoomInitValue(int parameter_number) const
 {
-  // Initial PG circling zoom map scales. Parameter number equal to config dlg item index
+  // Initial cruise/Climb zoom map scales. Parameter number equal to config dlg item index
   // Values are given in user units, km or mi what is selected.
-  switch(parameter_number) {
-    case 0: return 0.015;
-    case 1: return 0.025;
-    case 2: return 0.04;
-    case 3: return 0.07;
-    case 4: return 0.1;
-    case 5: return 0.15;
-    default: return 0.025;
-  }
+  // These values used to select the best available mapscale from scalelist. See MapWindow::FillScaleListForEngineeringUnits(
+
+  switch (Units::GetUserDistanceUnit()) {
+    default:
+        return ScaleListArrayMeters[parameter_number];
+      break;
+    case unStatuteMiles:
+      return ScaleListArrayStatuteMiles[parameter_number];
+      break;
+    case unNauticalMiles:
+      return ScaleListNauticalMiles[parameter_number];
+      break;
+  } //sw units
+
+
 }
 
-double MapWindow::Zoom::GetPgCruiseZoomInitValue(int parameter_number) const
-{
-  // Initial PG cruise zoom map scales. Parameter number equal to config dlg item index
-  // Values are given in user units, km or mi what is selected.
-  // These values used to select the best available mapscale from scalelist. See MapWindow::FillScaleListForEngineeringUnits()
-  switch(parameter_number) { // 091108
-    case 0: return 0.04;
-    case 1: return 0.07;
-    case 2: return 0.10;
-    case 3: return 0.15;
-    case 4: return 0.20;
-    case 5: return 0.35;
-    case 6: return 0.50;
-    case 7: return 0.75;
-    case 8: return 1.00;
-    case 9: return 1.50;
-    case 10: return 2.00;
-    case 11: return 3.50;
-    case 12: return 5.00;
-    case 13: return 7.50;
-    case 14: return 10.00;
-    default: return 0.35;
-  }
-}
 /**
  * @brief Resets Map Zoom to initial values
  */
 void MapWindow::Zoom::Reset()
 {
-  switch(AircraftCategory) {
-  case umGlider:
-  case umGAaircraft:
-    _modeScale[SCALE_CRUISE]   = SCALE_CRUISE_INIT;
-    _modeScale[SCALE_CIRCLING] = SCALE_CIRCLING_INIT;
-    _modeScale[SCALE_PANORAMA] = SCALE_PANORAMA_INIT;
-    break;
+  const double SCALE_PANORAMA_INIT    = 10.0;
 
-  case umParaglider:
-  case umCar:
-    _modeScale[SCALE_CRUISE]   = GetPgCruiseZoomInitValue(PGCruiseZoom);
-    _modeScale[SCALE_CIRCLING] = GetPgClimbZoomInitValue(PGClimbZoom);
-    _modeScale[SCALE_PANORAMA] = SCALE_PG_PANORAMA_INIT;
-    break;
-
-  default:
-    // make it an evident problem
-    _modeScale[SCALE_CRUISE] = _modeScale[SCALE_CIRCLING] = _modeScale[SCALE_PANORAMA] = SCALE_INVALID_INIT;
-    break;
-  }
+  _modeScale[SCALE_CRUISE]   = GetZoomInitValue(CruiseZoom);
+  _modeScale[SCALE_CIRCLING] = GetZoomInitValue(ClimbZoom);
+  _modeScale[SCALE_PANORAMA] = SCALE_PANORAMA_INIT;
 
   // Correct _modeScale[] values for internal use
   // You have to give values in user units (km,mi, what is selected), we need to divide it by 1.4
@@ -330,7 +267,6 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
  */
 void MapWindow::Zoom::UpdateMapScale()
 {
-  static bool pg_autozoom_turned_on = false;
 
   if(mode.Is(Mode::MODE_TARGET_PAN)) {
     // update TARGET_PAN
@@ -340,18 +276,6 @@ void MapWindow::Zoom::UpdateMapScale()
     return;
   }
 
-  // in PG mode if autozoom is set to on, and waypoint distance drops below
-  // PGAutoZoomThreshold, we should turn on autozoom if it is off. Do this only once, let the user able to turn it off near WP
-  if ( ISPARAGLIDER && AutoZoom_Config && !_autoZoom && (DerivedDrawInfo.ZoomDistance>0) && (DerivedDrawInfo.ZoomDistance < PGAutoZoomThreshold)) {
-    if (!pg_autozoom_turned_on) {
-      EventAutoZoom(1);
-      pg_autozoom_turned_on = true;
-    }
-  }
-  if (DerivedDrawInfo.ZoomDistance > (PGAutoZoomThreshold + 200.0)) {
-    // Set state variable back to false, with some distance hysteresis
-    pg_autozoom_turned_on = false;
-  }
 
   if(_autoZoom &&
      mode.Special() == Mode::MODE_SPECIAL_NONE &&
@@ -393,20 +317,14 @@ void MapWindow::Zoom::ModifyMapScale()
 }
 
 
-bool MapWindow::Zoom::GetPgClimbInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
+bool MapWindow::Zoom::GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
 {
-  double mapscale = GetPgClimbZoomInitValue(init_parameter);
+  double mapscale = GetZoomInitValue(init_parameter);
+  //double mapscale = ScaleList[init_parameter];
 
   // Get nearest discrete value
   double ms = MapWindow::FindMapScale(mapscale/1.4)*1.4;
   return Units::FormatUserMapScale(NULL, Units::ToSysDistance(ms), out, size);
 }
 
-bool MapWindow::Zoom::GetPgCruiseInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
-{
-  double mapscale = GetPgCruiseZoomInitValue(init_parameter);
 
-  // Get nearest discrete value
-  double ms = MapWindow::FindMapScale(mapscale/1.4)*1.4;
-  return Units::FormatUserMapScale(NULL, Units::ToSysDistance(ms), out, size);
-}

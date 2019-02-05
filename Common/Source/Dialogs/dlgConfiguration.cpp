@@ -95,8 +95,8 @@ const ConfigPageNames_t ConfigPageNames[4][NUMOFCONFIGPAGES] = {
     { // config system
       /*0 */  { _T("frmSite"),                _T("_@M10_"), false },  // "1 Site"
       /*1 */  { _T("frmAirspace"),            _T("_@M22_"), false },  // "2 Airspace"
-      /*2 */  { _T("frmDisplay"),             _T("_@M28_"), false },  // "3 Map Display" 
-      /*3 */  { _T("frmTerrain"),             _T("_@M32_"), false },  // "4 Terrain Display" 
+      /*2 */  { _T("frmDisplay"),             _T("_@M28_"), false },  // "3 Map Display"
+      /*3 */  { _T("frmTerrain"),             _T("_@M32_"), false },  // "4 Terrain Display"
       /*4 */  { _T("frmFinalGlide"),          _T("_@M33_"), false },  // "5 Glide Computer" 
       /*5 */  { _T("frmSafety"),              _T("_@M34_"), false },  // "6 Safety factors" 
       /*6 */  { _T("frmUnits"),               _T("_@M38_"), false },  // "9 Units" 
@@ -113,7 +113,7 @@ const ConfigPageNames_t ConfigPageNames[4][NUMOFCONFIGPAGES] = {
       /*17*/  { _T("frmLogger"),              _T("_@M24_"), false },  // "20 Logger" 
       /*18*/  { _T("frmWaypointEdit"),        _T("_@M25_"), false },  // "21 Waypoint Edit" 
       /*19*/  { _T("frmSpecials1"),           _T("_@M26_"), false },  // "22 System" 
-      /*20*/  { _T("frmSpecials2"),           _T("_@M27_"), false },  // "23 Paragliders/Delta specials" 
+      /*20*/  { _T("frmSpecials2"),           _T("_@M94_"), false },  // "23 Map Scale"
       /*21*/  { _T("frmEngineering1"),        _T("24 Engineering Menu"), false },
     }, 
     { // config Pilot
@@ -2228,41 +2228,56 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGClimbZoom"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpClimbZoom"));
   if (wp) {
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
-    for (int i=0; i<=5; ++i) {
-      MapWindow::zoom.GetPgClimbInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]));
+    for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
+      MapWindow::zoom.GetInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]));
       dfe->addEnumText(buf1);
     }
-    dfe->Set(PGClimbZoom);
-    // if (!ISPARAGLIDER) wp->SetVisible(false); 
+    dfe->Set(ClimbZoom);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGCruiseZoom"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpCruiseZoom"));
   if (wp) {
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
-    for (int i=0; i<=14; ++i) {
-      if (MapWindow::zoom.GetPgCruiseInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
+    for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
+      if (MapWindow::zoom.GetInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
 	dfe->addEnumText(buf1);
       } else {
 	_stprintf(buf1,TEXT("%d"),i);
 	dfe->addEnumText(buf1);
       }
     }
-    dfe->Set(PGCruiseZoom);
-    // if (!ISPARAGLIDER) wp->SetVisible(false); 
+    dfe->Set(CruiseZoom);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGAutoZoomThreshold"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoomThreshold"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(DISTANCEMODIFY*PGAutoZoomThreshold);
+    wp->GetDataField()->SetAsFloat(DISTANCEMODIFY*AutoZoomThreshold);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    // if (!ISPARAGLIDER) wp->SetVisible(false); 
     wp->RefreshDisplay();
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMaxAutoZoom"));
+  if (wp) {
+    TCHAR buf1[32];
+    DataField* dfe = wp->GetDataField();
+    for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
+      if (MapWindow::zoom.GetInitMapScaleText(i,buf1,sizeof(buf1) / sizeof(buf1[0]))) {
+        dfe->addEnumText(buf1);
+      } else {
+        _stprintf(buf1,TEXT("%d"),i);
+        dfe->addEnumText(buf1);
+      }
+    }
+    dfe->Set(MaxAutoZoom);
+    wp->RefreshDisplay();
+  }
+
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoOrientScale"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AutoOrientScale);
@@ -3626,33 +3641,43 @@ void dlgConfigurationShowModal(short mode){
   }
 
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGCruiseZoom"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpCruiseZoom"));
   if (wp) {
-    if ( PGCruiseZoom != wp->GetDataField()->GetAsInteger()) {
-      PGCruiseZoom = wp->GetDataField()->GetAsInteger();
+    if ( CruiseZoom != wp->GetDataField()->GetAsInteger()) {
+      CruiseZoom = wp->GetDataField()->GetAsInteger();
       MapWindow::zoom.Reset();
         requirerestart=true;
     }
   }
 
-double dval;
+  wp = (WndProperty*)wf->FindByName(TEXT("prpClimbZoom"));
+  if (wp) {
+    if ( ClimbZoom != wp->GetDataField()->GetAsInteger()) {
+      ClimbZoom = wp->GetDataField()->GetAsInteger();
+      MapWindow::zoom.Reset();
+      requirerestart=true;
+    }
+  }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGAutoZoomThreshold"));
+
+  double dval;
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoomThreshold"));
   if (wp) {
     dval = wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY;
-    if (PGAutoZoomThreshold != dval) {
-      PGAutoZoomThreshold = dval;
+    if (AutoZoomThreshold != dval) {
+      AutoZoomThreshold = dval;
     }
   }
-  
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGClimbZoom"));
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMaxAutoZoom"));
   if (wp) {
-    if ( PGClimbZoom != wp->GetDataField()->GetAsInteger()) {
-      PGClimbZoom = wp->GetDataField()->GetAsInteger();
+    if ( MaxAutoZoom != wp->GetDataField()->GetAsInteger()) {
+      MaxAutoZoom = wp->GetDataField()->GetAsInteger();
       MapWindow::zoom.Reset();
-        requirerestart=true; 
+      requirerestart=true;
     }
   }
+
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoOrientScale"));
   if (wp) {
