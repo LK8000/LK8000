@@ -104,6 +104,10 @@ void AddCustomKeyList( DataField* dfe) {
     dfe->addEnumTextNoLF(MsgToken(2249)); // DspMode , not to be translated
     dfe->addEnumTextNoLF(MsgToken(2390)); // Toggle Draw XC
     dfe->addEnumTextNoLF(MsgToken(2337)); // Airspace lookup
+    dfe->addEnumTextNoLF(MsgToken(2393)); // Device C Config
+    dfe->addEnumTextNoLF(MsgToken(2394)); // Device D Config
+    dfe->addEnumTextNoLF(MsgToken(2395)); // Device E Config
+    dfe->addEnumTextNoLF(MsgToken(2396)); // Device F Config
 
     dfe->Sort(0);
 

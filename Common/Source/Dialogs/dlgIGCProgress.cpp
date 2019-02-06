@@ -3,30 +3,52 @@
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
  *
- * File:   dlgProgress.cpp
+ * File:   dlgIGCProgress.cpp
  * Author: Bruno de Lacheisserie
  * 
  * Created on 23 novembre 2014, 17:36
  */
 
+
 #include "externs.h"
-#include "dlgProgress.h"
+#include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "LKObjects.h"
 #include "resource.h"
 #include "Draw/LoadSplash.h"
+#include "dlgTools.h"
+#include "dlgIGCProgress.h"
 
-static LKBitmap SplashBitmap;
+extern void   StopIGCRead(void);
 
-static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
+static bool OnIGCProgressTimer(WndForm* pWnd);
+static bool bClose = false;
+
+WndForm* _WndForm = NULL;
+
+static bool OnIGCProgressTimer(WndForm* pWnd)
+{
+	if(pWnd)
+	{
+	  if(bClose)
+	    pWnd->SetModalResult(mrOK);
+	}
+ return true;
+}
+
+
+static void OnIGCSplashPaint(WindowControl * Sender, LKSurface& Surface) {
+LKBitmap SplashBitmap;
     if(!SplashBitmap) {
         SplashBitmap = LoadSplash(_T("LKSTART"));
     }
     DrawSplash(Surface, Sender->GetClientRect(), SplashBitmap);
+
 }
 
-static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
+static void OnIGCProgressPaint(WindowControl * Sender, LKSurface& Surface) {
+
   RECT PrintAreaR = Sender->GetClientRect();
     
   const auto oldFont = Surface.SelectObject(MapWindowBoldFont);
@@ -60,78 +82,85 @@ static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
   Surface.SelectObject(ohB);
   Surface.SelectObject(ohP);
   Surface.SelectObject(oldFont);
-   
+
 }
 
-CallBackTableEntry_t CallBackTable[] = {
-    OnPaintCallbackEntry(OnSplashPaint),
-    OnPaintCallbackEntry(OnProgressPaint),
+CallBackTableEntry_t IGCProgressCallBackTable[] = {
+    OnPaintCallbackEntry(OnIGCSplashPaint),
+    OnPaintCallbackEntry(OnIGCProgressPaint),
+    ClickNotifyCallbackEntry(OnIGCAbortClicked),
     EndCallBackEntry()
 };
 
-class dlgProgress final  {
-public:
-    dlgProgress();
-    ~dlgProgress();
+void dlgIGCProgressShowModal(void){
     
-    dlgProgress( const dlgProgress& ) = delete;
-    dlgProgress& operator=( const dlgProgress& ) = delete;    
+	bClose = false;
 
-    void SetProgressText(const TCHAR* szText);
+    _WndForm = dlgLoadFromXML(IGCProgressCallBackTable, ScreenLandscape ? IDR_XML_IGC_PROGRESS_P : IDR_XML_IGC_PROGRESS_L);
 
-private:
-    WndForm* _WndForm;
-};
-
-dlgProgress::dlgProgress() {
-    
-    _WndForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_PROGRESS_L : IDR_XML_PROGRESS_P);
     LKASSERT(_WndForm);
     if(_WndForm) {
-        WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 
+        WindowControl* wSplash = _WndForm->FindByName(TEXT("frmIGCSplash")); 
         if(wSplash) {
             wSplash->SetWidth(_WndForm->GetWidth());
             wSplash->SetHeight(_WndForm->GetHeight());
         }
-        WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
+        WindowControl* wText = _WndForm->FindByName(TEXT("frmIGCText")); 
         if(wText) {
             wText->SetWidth(_WndForm->GetWidth());
             wText->SetTop(_WndForm->GetHeight() - wText->GetHeight());
         }
-        _WndForm->Show();
-        _WndForm->Redraw();
+//        _WndForm->Show();
+//        _WndForm->Redraw();
+        _WndForm->SetTimerNotify(200, OnIGCProgressTimer); // check for end of download every 200ms
+        _WndForm->ShowModal();
+        delete _WndForm;
+        _WndForm = NULL;
     }
 }
 
-dlgProgress::~dlgProgress() {
-    delete _WndForm; 
+
+
+void CloseIGCProgressDialog() {
+    bClose = true;
+
 }
 
-void dlgProgress::SetProgressText(const TCHAR* szText) {
-    WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
-    if(wText) {
-        wText->SetCaption(szText);
+void CreateIGCProgressDialog() {
+   dlgIGCProgressShowModal();
+}
+
+
+void IGCProgressDialogText(const TCHAR* text) {
+  if(_WndForm)
+  {
+	 WindowControl* wText = _WndForm->FindByName(TEXT("frmIGCText"));
+    if(wText)
+    {
+        wText->SetCaption(text);
         wText->Redraw();
 #ifndef USE_GDI
         MainWindow.Refresh();
 #endif
     }
+  }
 }
 
-static dlgProgress* pWndProgress = NULL;
 
-void CloseProgressDialog() {
-    delete pWndProgress;
-    pWndProgress = NULL;
-    SplashBitmap.Release();
+
+ void OnIGCAbortClicked(WndButton* pWnd) {
+
+    (void)pWnd;
+
+	StartupStore(_T("Abort pressed%s"), NEWLINE);
+
+
+	if (MessageBoxX(MsgToken(2417), MsgToken(2398), mbYesNo) == IdYes) // _@M2417_ "Abort Download ?"
+	{
+	  CloseIGCProgressDialog();
+	  StopIGCRead();
+	}
+
 }
 
-void CreateProgressDialog(const TCHAR* text) {
-    if(!pWndProgress) {
-        pWndProgress = new dlgProgress();
-    } 
-    if(pWndProgress) {
-        pWndProgress->SetProgressText(text);
-    }
-}
 

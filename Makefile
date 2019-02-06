@@ -1185,6 +1185,7 @@ DEVS	:=\
 	$(DEV)/LKRoyaltek3200.cpp	\
 	$(DEV)/devFlyNet.cpp \
 	$(DEV)/devCProbe.cpp \
+	$(DEV)/devFlarm.cpp \
 	$(DEV)/devBlueFlyVario.cpp\
 	$(DEV)/devPVCOM.cpp \
 	$(DEV)/devKRT2.cpp \
@@ -1281,6 +1282,8 @@ DLGS	:=\
 	$(DLG)/dlgBluetooth.cpp\
 	$(DLG)/dlgIgcFile.cpp\
 	$(DLG)/dlgProgress.cpp \
+	$(DLG)/dlgIGCProgress.cpp \
+	$(DLG)/dlgFlarmIGCDownload.cpp \
 	
 SRC_FILES :=\
 	$(WINDOW) \

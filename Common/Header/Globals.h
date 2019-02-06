@@ -844,7 +844,7 @@ GEXTERN unsigned  SelectedDevice;
 GEXTERN TCHAR szPort[NUMDEV][MAX_PATH];
 GEXTERN unsigned dwSpeedIndex[NUMDEV];
 GEXTERN unsigned dwBitIndex[NUMDEV];
-GEXTERN TCHAR szIpAddress[NUMDEV][16];
+GEXTERN TCHAR szIpAddress[NUMDEV][MAX_URL_LEN];
 GEXTERN unsigned dwIpPort[NUMDEV];
 GEXTERN TCHAR dwDeviceName[NUMDEV][DEVNAMESIZE+1];
 GEXTERN bool UseExtSound[NUMDEV];

@@ -465,6 +465,35 @@ _@M2391_ "Earth Model "
 _@M2392_ "Error: Port not opened!"
 
 
+_@M2393_ "Device C Config"
+_@M2394_ "Device D Config"
+_@M2395_ "Device E Config"
+_@M2396_ "Device F Config"
+_@M2397_ "Flarm Config"
+_@M2398_ "IGC Download"
+_@M2399_ "Reboot"
+_@M2400_ "Downloading"
+_@M2401_ "No FLARM Device found!\n(or reset in progress)"
+_@M2402_ "Abort Download"
+_@M2403_ "Reset FLARM"
+_@M2404_ "Download"
+_@M2405_ "Own FLARM Id:"
+
+		 
+_@M2406_ "IGC File download complete!"
+_@M2407_ "Error: receive timeout!"
+_@M2408_ "Error: CRC checksum fail!"
+_@M2409_ "Error: invalid filename!"
+_@M2410_ "Error: can't open file!"
+_@M2411_ "Error: communication timeout!"
+_@M2412_ "Error: unknown"
+_@M2413_ "FLARM need reboot for normal operation\n reboot now?"
+_@M2414_ "Conf."
+_@M2415_ "IGC Download aborted!"
+_@M2416_ "File already exits\n download anyway?"
+_@M2417_ "Abort Download?"
+_@M2418_ "This option is locked while flying!"
+
 HELP FILE
 
 +@933

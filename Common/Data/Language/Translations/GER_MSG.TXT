@@ -869,8 +869,8 @@ _@M278_ "FALSCH"
 #_@M279_ "FLARM DETECTED"
 _@M279_ "FLARM ERKANNT!"
 
-#_@M280_ "FLARM on map" // UNUSED
-#_@M280_ "Verkehr auf Karte"
+_@M280_ "FLARM on map" // UNUSED
+_@M280_ "Verkehr auf Karte" // unused
 
 #_@M281_ "FLY"
 _@M281_ "FLIEGEN"
@@ -1230,7 +1230,7 @@ _@M397_ "Dieses Profil laden?"
 _@M398_ "Lade"
 
 #_@M399_ "Loading Airspace File..."
-_@M399_ "Lade Lufträume-Datei..."
+_@M399_ "Lade Luftram-Dateien..."
 
 #_@M400_ "Loading Waypoint Notes File..."
 _@M400_ "Lade Fluplatzdetails-Datei..."
@@ -2724,7 +2724,7 @@ _@M897_ "Auto"
 #_@M898_ "ALL OFF"
 _@M898_ "ALLES AUS"
 
-#_@M899_ "ALL ON"
+#_@M899_ "ALL ON" 
 _@M899_ "ALLES EIN"
 
 #_@M900_ "Loading Terrain File..."
@@ -2737,7 +2737,7 @@ _@M901_ "Lade Terrain-Kacheln..."
 _@M902_ "Lade Topologie-Datei..."
 
 #_@M903_ "Loading Waypoints File..."
-_@M903_ "Lade Wegpunkt-Datei..."
+_@M903_ "Lade Wegpunkt-Dateien..."
 
 #_@M904_ "Tactical Flight Computer"
 _@M904_ "Taktischer Flugrechner"
@@ -3919,6 +3919,17 @@ _@M1294_ "Sonar AUS"
 _@M1295_ "Seitenansicht"
 
 
+#_@M1296_ "Optimizer"
+_@M1296_  "Optimierer"
+
+#_@M1297_ "FAI Start on turnpoint"
+_@M1297_ "FAI Start auf Wendepunkt"
+
+#_@M1298_ "FAI Start on leg"
+_@M1298_ "FAI Start auf Schenkel"
+
+#_@M1299_ "FAI Mercedes star"
+_@M1299_ "FAI Mercedes Stern"
 #--------------------------------------------------------------------------------------------------------------------
 
 # LK info page headers, try to use the same or less number of chars here,
@@ -5079,6 +5090,20 @@ _@M1837_ "Verbinden"
 #_@M1838_ "Unpair"
 _@M1838_ "Lösen"
 
+#_@M1840_ "BestAlternate:"
+_@M1840_ "BesteAltern:"
+#infobox
+#_@M1841_ "Alternate1 radial"
+_@M1841_ "Alternative1 Radial"
+
+#_@M1842_ "Alternate2 radial"
+_@M1842_ "Alternative2 Radial"
+
+#_@M1843_ "Alternate1 dist.nm"
+_@M1843_ "Alternative1 Entf. NM"
+#_@M1844_ "Alternate2 dist.nm"
+_@M1844_ "Alternative2 Entf. NM"
+
 # Reverse task
 #_@M1850_ "Reverse\nTask"
 _@M1850_ "Aufgabe\numdrehen"
@@ -5099,32 +5124,73 @@ _@M1860_ "HSI"
 #_@M1870_ "Airspace Sonar"
 _@M1870_ "Luftraum Sonar"
 
+
+#_@M1871_ "Terminal"
+_@M1871_ "Terminal"
+
+#_@M1872_ "NO DATA RECEIVED"
+_@M1872_ "KEINE DATEN EMPFANGEN"
+
 # Menu 12 font edit
-#_@M1880_ "Map waypoints "
-_@M1880_ "Karten Wegpunkte "
+#_@M1880_ "Map waypoints"
+_@M1880_ "Karten Wegpunkte"
 
-#_@M1881_ "Map topology "
-_@M1881_ "Karten Topologie "
+#_@M1881_ "Map topology"
+_@M1881_ "Karten Topologie"
 
-#_@M1882_ "Nearest "
-_@M1882_ "Nächste "
+#_@M1882_ "Nearest"
+_@M1882_ "Nächste"
 
-#_@M1883_ "Bottom bar "
-_@M1883_ "Info Streifen "
+#_@M1883_ "Bottom bar"
+_@M1883_ "Info Streifen"
 
-#_@M1884_ "Overlay type "
+#_@M1884_ "Overlay type"
 _@M1884_ "Einblendung Typ"
 
-#_@M1885_ "Info on 2 lines "
-_@M1885_ "Info Streifen Zweizeilig "
+#_@M1885_ "Info on 2 lines"
+_@M1885_ "Info Streifen Zweizeilig"
 
-#_@M1886_ "Overlay target "
-_@M1886_ "Einblendung Ziel "
+#_@M1886_ "Overlay target"
+_@M1886_ "Einblendung Ziel"
 
-#_@M1887_ "Overlay values "
-_@M1887_ "Einblendung Werte "
+#_@M1887_ "Overlay values"
+_@M1887_ "Einblendung Werte"
 
-_@M1888_ "Visual Glide "
+#_@M1888_ "Visual Glide"
+_@M1888_ "Erreichbare Ziele"
+
+#_@M1891_ "Top Left"
+_@M1891_ "Oben links"
+
+#_@M1892_ "Top Center"
+_@M1892_ "Oben Mitte"
+
+#_@M1893_ "Top Right"
+_@M1893_ "Oben Rechts"
+
+#_@M1894_ "Right Top"
+_@M1894_ "Rechts Oben"
+
+#_@M1895_ "Right Center"
+_@M1895_ "Rechts Mitte"
+
+#_@M1896_ "Right Bottom"
+_@M1896_ "Rechts Unten"
+
+#_@M1897_ "Left Top"
+_@M1897_ "Links Oben"
+
+#_@M1898_ "Left Center"
+_@M1898_ "Links Mitte"
+
+#_@M1899_ "Left Bottom"
+_@M1899_ "Links Unten"
+
+#_@M1900_ "Left Corner"
+_@M1900_ "Linke Ecke"
+
+#_@M1901_ "POWER OFF"
+_@M1901_ "GERÄT AUS"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -5670,6 +5736,19 @@ _@M2184_ "‹"
 _@M2185_ "›"
 
 
+_@M2186_ "*"
+_@M2187_ "Geschw. Opt."
+_@M2188_ "Thermik Min."
+
+#_@M2189_ "Circle ESS"
+_@M2189_ "Kreis ESS"
+
+#_@M2190_ "Next Distance To Radius"
+_@M2190_ "Min. Distanz zum Zielkreis"
+
+_@M2191_ "RadDist"
+_@M2191_ "KreisEntf."
+
 # New CustomKey labels for Custom Menu
 #_@M2200_ "----"
 _@M2200_ "----"
@@ -6053,7 +6132,7 @@ _@M2345_ "und"
 _@M2346_ "sind identisch"
 
 #_@M2347_ "airspaces excluded!" 
-_@M2347_ "Lufträume ignoriert!"
+_@M2347_ "Lufträume außerhalb Karte ignoriert!"
 
 #_@M2348_ "Outside terrain"
 _@M2348_ "außerhalb Terrain"
@@ -6119,5 +6198,36 @@ _@M2389_ "Zeige XC\nAN"
 
 #_@M2390_ "Toggle Draw XC"
 _@M2390_ "XC Umschalten"
+
 _@M2391_ "Erdmodel"
 _@M2392_ "Fehler: Port nicht geöffnet!"
+
+
+_@M2393_ "Gerät C Konfig"
+_@M2394_ "Gerät D Konfig"
+_@M2395_ "Gerät E Konfig"
+_@M2396_ "Gerät F Konfig"
+_@M2397_ "Flarm Konfig"
+_@M2398_ "IGC Auslesen"
+_@M2399_ "Neustart"
+_@M2400_ "Lese"
+_@M2401_ "Kein Flarm gefunden!\n(oder startet gerade)"
+_@M2402_ "Auslesen Abbrechen"
+_@M2403_ "Reset FLARM"
+_@M2404_ "Auslesen"
+_@M2405_ "Eigene FLARM Id:"
+
+_@M2406_ "IGC File auslesen fertig!"
+_@M2407_ "Error: receive timeout!"
+_@M2408_ "Error: CRC checksumme falsch!"
+_@M2409_ "Error: ungültiger Dateiname!"
+_@M2410_ "Error:Datei kann nicht geöffnet werden"
+_@M2411_ "Error: communication timeout!"
+_@M2412_ "Error: unbekannt"
+_@M2413_ "FLARM benötigt Neustart für normale Funktion\n Jetzt neu starten?"
+_@M2414_ "Konf."
+_@M2415_ "IGC Datei Lesen abgebrochen!"
+_@M2416_ "Datei existiert bereits\n trotzdem auslesen?"
+_@M2417_ "Auslesen abbrechen?"
+#_@M2418_ "This option is locked while flying!"
+_@M2418_ "Diese Option ist im Flug gesperrt!"

@@ -12,6 +12,8 @@
     <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="194" Width="70"  Height="28" Font="2" Tag="3" />
     <WndFrame Name="frmComm" X="0" Y="40" Width="-2" Height="98" Font="2">
       <WndFrame Name="frmCommName" Caption="_@M232_" X="0" Y="1" Width="-1" Height="128" Font="2" Border="30">        
+        <WndButton Name="cmdConfigDev" Caption="_@M2414_" X="3" Y="20" Width="50"  Height="28" Font="2" Tag="3" OnClickNotify="OnConfigDevClicked" />
+   <!--     <WndButton Name="cmdConfigFlarm" Caption="_@M2354_" X="3" Y="55" Width="70"  Height="28" Font="2" Tag="2" OnClickNotify="OnConfigFlarmClicked" />  -->       
         <WndProperty Name="prpComDevice1" Caption="_@M450_" X="60" Y="1" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H153_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnDeviceAData" />
         </WndProperty>
@@ -27,7 +29,7 @@
         <WndProperty Name="prpComBit1" Caption=" "  X="215" Y="-999"  Width="-1" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
           <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
         </WndProperty>
-        <WndProperty Name="prpComIpAddr1" Caption="IP"  X="60" Y="-999"  Width="170" Height="22" CaptionWidth="70" Font="2" Keyboard="1">
+        <WndProperty Name="prpComIpAddr1" Caption="IP"  X="60" Y="-999"  Width="220" Height="22" CaptionWidth="70" Font="2" Keyboard="1">
           <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s"/>
         </WndProperty>
         <WndProperty Name="prpComIpPort1" Caption="Port"  X="230" Y="-999"  Width="-1" Height="22" CaptionWidth="30" Font="2" Keyboard="1">

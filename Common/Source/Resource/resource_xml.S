@@ -147,7 +147,8 @@
 
     binfile IDR_XML_PROGRESS_L, Common/Data/Dialogs/dlgProgress_L.xml
     binfile IDR_XML_PROGRESS_P, Common/Data/Dialogs/dlgProgress_P.xml
-   binfile IDR_XML_RADIOSETTINGS , Common/Data/Dialogs/dlgRadioSettings.xml
+    binfile IDR_XML_RADIOSETTINGS , Common/Data/Dialogs/dlgRadioSettings.xml
+    binfile IDR_XML_DEVFLARM, Common/Data/Dialogs/dlgDevFlarm.xml
     binfile IDR_XML_LOGGERREPLAY, Common/Data/Dialogs/dlgLoggerReplay.xml
     binfile IDR_XML_STATUS, Common/Data/Dialogs/dlgStatus.xml
     binfile IDR_XML_TASKCALCULATOR, Common/Data/Dialogs/dlgTaskCalculator.xml
@@ -169,3 +170,5 @@
     binfile IDR_XML_AIRSPACEWARNINGPARAMS, Common/Data/Dialogs/dlgAirspaceWarningParams.xml
     binfile IDR_XML_FILES_L, Common/Data/Dialogs/dlgFiles_L.xml
     binfile IDR_XML_FILES_P, Common/Data/Dialogs/dlgFiles_P.xml
+    binfile IDR_XML_IGC_PROGRESS_P, Common/Data/Dialogs/dlgIGCProgress_L.xml
+    binfile IDR_XML_IGC_PROGRESS_L, Common/Data/Dialogs/dlgIGCProgress_P.xml

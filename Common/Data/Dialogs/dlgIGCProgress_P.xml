@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+ <WndForm Name="frmIGCProgress" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="" Popup="1" BackColor="0" Font="2" >  
+    <WndOwnerDrawFrame Name="frmIGCSplash" X="0" Y="0" Width="240" Height="255" Font="0" OnPaint="OnIGCSplashPaint" />  
+    <WndOwnerDrawFrame Name="frmIGCText" X="0" Y="285" Width="240" Height="35" Font="0" OnPaint="OnIGCProgressPaint" />
+    <WndButton Name="cmdIGCAbort" Caption="_@M2402_" X="45" Y="240" Width="150"  Height="32" Font="2" OnClickNotify="OnIGCAbortClicked" />
+  </WndForm>
+</PMML>
