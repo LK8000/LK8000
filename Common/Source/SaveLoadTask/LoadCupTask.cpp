@@ -13,6 +13,7 @@
 #include "Waypointparser.h"
 #include "Util/tstring.hpp"
 #include "NavFunctions.h"
+#include "utils/zzip_stream.h"
 
 #include "WindowControls.h"
 #include "Dialogs.h"
@@ -273,16 +274,15 @@ bool LoadCupTask(LPCTSTR szFileName) {
   enum {
     none, Waypoint, TaskTp, Option
   } FileSection = none;
-  FILE * stream = _tfopen(szFileName, _T("rt"));
+  zzip_stream stream(szFileName, "rt");
   iNO_Tasks =0;
   TaskIndex =0;
   for (int i =0 ; i< MAX_TASKS;i++)
     szTaskStrings[ i] = NULL;
 #define MULTITASKS_CUP
 #ifdef MULTITASKS_CUP
-  if (stream) {
-      charset cs = charset::unknown;
-      while (ReadStringX(stream, READLINE_LENGTH, szString, cs)) {
+    if (stream) {
+      while (stream.read_line(szString)) {
 
           if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
               (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
@@ -315,9 +315,10 @@ bool LoadCupTask(LPCTSTR szFileName) {
                 }
             }
       }
+      stream.close();
       StartupStore(_T("..Cup Selected Task:%i %s  %s"), TaskIndex, szTaskStrings[ TaskIndex] , NEWLINE);
-  }
-  fclose(stream);
+    }
+
   int res = 0;
   if(iNO_Tasks >1)   // Selection only if more than one task found
     res = dlgTaskSelectListShowModal();
@@ -336,14 +337,13 @@ bool LoadCupTask(LPCTSTR szFileName) {
 
   LockTaskData();
   ClearTask();
-  stream = _tfopen(szFileName, _T("rt"));
+  stream.open(szFileName, "rt");
 #endif
 
   FileSection = none;
   int i=0;
   if (stream) {
-      charset cs = charset::unknown;
-      while (ReadStringX(stream, READLINE_LENGTH, szString, cs)) {
+      while (stream.read_line(szString)) {
 
           if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
               (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
@@ -549,8 +549,6 @@ bool LoadCupTask(LPCTSTR szFileName) {
           }
           memset(szString, 0, sizeof (szString)); // clear Temp Buffer
       }
-
-      fclose(stream);
   }
   if(!ISGAAIRCRAFT) {
       // Landing don't exist in LK Task Systems, so Remove It;

@@ -38,7 +38,6 @@ class Utf8File
 
     bool Open(const TCHAR* fileName, Mode ioMode);
     void Close();
-    bool ReadLn(TCHAR* unicode, int maxChars);
     void WriteLn(const TCHAR* unicode = NULL);
 
     static bool Exists(const TCHAR* fileName);

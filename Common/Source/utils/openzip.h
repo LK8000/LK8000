@@ -14,6 +14,7 @@
 
 #include <zzip/zzip.h>
 #include <tchar.h>
+#include <assert.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,16 +62,16 @@ public:
         }
     }
 
-    operator bool() { 
-        return !!(_fp); 
+    operator bool() const {
+        return (_fp != nullptr); 
     }
 
-    operator ZZIP_FILE*() { 
+    operator ZZIP_FILE*() const { 
         assert(_fp);
         return _fp; 
     }
 
-private:
+protected:
     ZZIP_FILE* _fp;
 };
 #endif

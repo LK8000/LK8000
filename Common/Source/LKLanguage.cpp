@@ -11,6 +11,7 @@
 #include "utils/stl_utils.h"
 #include "utils/openzip.h"
 #include "Util/UTF8.hpp"
+#include "utils/zzip_stream.h"
 
 //#define DEBUG_GETTEXT	1
 #define MAX_HELP	1500	// complete help including several lines, and also for each single line
@@ -70,12 +71,12 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	TCHAR sNum[11];
 	_stprintf(sNum,_T("%u"),inumber);
 
-    ZZIP_FILE *helpFile = openzip(sFile, "rb");
+    zzip_stream helpFile(sFile, "rb");
 	if (!helpFile) {
 #ifdef LKD_SYS_LANGUAGE
 		SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
 		_stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
-		helpFile = openzip(sFile, "rt");
+		helpFile.open(sFile, "rb");
 #endif
 
 		if(!helpFile) {
@@ -89,7 +90,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 
 	// search for beginning of code index   @000
 	bool found=false;
-	while (ReadULine(helpFile, sTmp, array_size(sTmp))) {
+	while (helpFile.read_line(sTmp)) {
 		unsigned slen=_tcslen(sTmp); // includes cr or lf or both
 		if (slen<3|| slen>8) {
 			#if DEBUG_GETTEXT
@@ -148,7 +149,7 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	// now load the help text for this index
 	_tcscpy(sHelp,_T(""));
 	int hlen=0;
-	while (ReadULine(helpFile, sTmp, array_size(sTmp))) {
+	while (helpFile.read_line(sTmp)) {
 
 		int slen=_tcslen(sTmp); // including cr or lf or both
 		if (slen==0 || sTmp[0]=='#') continue;
@@ -256,34 +257,34 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
 
   TCHAR szFilePath[MAX_PATH] = _T("\0");
   _tcscpy(szFilePath,szFile1);
-  ZZIP_FILE* langFile = openzip(szFilePath, "rt");
+  zzip_stream langFile(szFilePath, "rt");
   if(!langFile) {
 	  // failed to open absolute. try LocalPath
 	  LocalPath(szFilePath, _T(LKD_LANGUAGE), szFile1);
-	  langFile = openzip(szFilePath, "rt");
+	  langFile.open(szFilePath, "rt");
   }
   if(!langFile) {
 	// failed to open lOCAL. try SystemPath
     SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), szFile1);
-    langFile = openzip(szFilePath, "rt");
+    langFile.open(szFilePath, "rt");
   }
 
   if (!langFile) {
-	if (english) {
-		StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
-		// critic point, no default language! BIG PROBLEM here!
-		return;
-	} else {
-		StartupStore(_T("--- NO LANGUAGE FILE FOUND <%s>, retrying with ENGlish!%s"),szFile1,NEWLINE);
-		_tcscpy(szFile1,_T(""));
-		goto tryeng;
-	}
+    if (english) {
+      StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
+      // critic point, no default language! BIG PROBLEM here!
+      return;
+    } else {
+      StartupStore(_T("--- NO LANGUAGE FILE FOUND <%s>, retrying with ENGlish!%s"),szFile1,NEWLINE);
+      _tcscpy(szFile1,_T(""));
+      goto tryeng;
+    }
   }
 
   bool found=false;
   TCHAR sTmp[200];
   TCHAR mylang[30];
-  while (ReadULine(langFile, sTmp, array_size(sTmp))) {
+  while (langFile.read_line(sTmp)) {
 	if (_tcslen(sTmp)<3) continue;
 	if ((sTmp[0]=='L')&&(sTmp[1]=='=')) {
 		_tcscpy(mylang,&sTmp[2]);
@@ -326,8 +327,6 @@ void LKReadLanguageFile(const TCHAR* szFileName) {
 		}
 	}
   }
-  zzip_fclose(langFile);
-
   FillDataOptions(); // Load infobox list
   return;
 }
@@ -367,14 +366,14 @@ bool LKLoadMessages(bool fillup) {
   _tcscpy(suffix,_T("_MSG.TXT"));
   _stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
 
-  ZZIP_FILE *hFile = openzip(sFile, "rt");
-  if (hFile == NULL) {
+  zzip_stream stream(sFile, "rt");
+  if (!stream) {
      #ifdef LKD_SYS_LANGUAGE
      SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
      _stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
-     hFile = openzip(sFile, "rt");
+     stream.open(sFile, "rt");
      #endif
-     if(!hFile) {
+     if(!stream) {
         StartupStore(_T("... LoadText Missing Language File: <%s>%s"), sFile, NEWLINE);
         return false;
      }
@@ -391,7 +390,7 @@ bool LKLoadMessages(bool fillup) {
   TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
 
   bool havewarned=false;
-  while (ReadULine(hFile, sTmp, array_size(sTmp))) {
+  while (stream.read_line(sTmp)) {
      unsigned int slen=_tcslen(sTmp); // includes cr or lf or both
      if ( (slen<9) || (sTmp[0]!='_') || (sTmp[1]!='@') || (sTmp[2]!='M') ) {
         #if DEBUG_GETTEXT
@@ -525,7 +524,6 @@ bool LKLoadMessages(bool fillup) {
      #endif
 
   }
-  zzip_fclose(hFile);
   return true;
 }
 

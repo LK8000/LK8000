@@ -568,6 +568,7 @@ add_library( LK8000 SHARED
     Common/Source/utils/md5.cpp
     Common/Source/utils/filesystem.cpp
     Common/Source/utils/openzip.cpp
+    Common/Source/utils/zzip_stream.cpp
     Common/Source/utils/TextWrapArray.cpp
     Common/Source/utils/hmac_sha2.cpp
 

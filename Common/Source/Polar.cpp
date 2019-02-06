@@ -11,6 +11,7 @@
 #include "LKProfiles.h"
 #include "Dialogs.h"
 #include "utils/openzip.h"
+#include "utils/zzip_stream.h"
 
 
 bool ReadWinPilotPolarInternal(int i);
@@ -147,11 +148,11 @@ bool ReadWinPilotPolar(void) {
 
     tstring str (szPolarFile);
     _tcscpy(szFile, str.c_str());
-    ZZIP_FILE* stream = openzip(szFile, "rt");
+    zzip_stream stream(szFile, "rt");
     if(!stream) {
         // failed to open absolute. try LocalPath
         LocalPath(szFile, _T(LKD_POLARS), str.c_str());
-        stream = openzip(szFile, "rt");
+        stream.open(szFile, "rt");
     }
     if(!stream){
         // failed to open Local. try with converted file name to new file name.
@@ -165,20 +166,19 @@ bool ReadWinPilotPolar(void) {
 
         if(bRetry) {
             LocalPath(szFile,_T(LKD_POLARS), str.c_str());
-            stream = openzip(szFile, "rt");
+            stream.open(szFile, "rt");
         }
     }
     if(!stream) {
         // all previous failed. try SystemPath
         SystemPath(szFile, _T(LKD_SYS_POLAR), str.c_str());
-        stream = openzip(szFile, "rt");
+        stream.open(szFile, "rt");
     }
 
     StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
     if (stream){
 
-        charset cs = charset::unknown;
-        while(ReadString(stream,READLINE_LENGTH,TempString, cs) && (!foundline)){
+        while(stream.read_line(TempString) && (!foundline)){
 
 		if (_tcslen(TempString) <10) continue;
 
@@ -279,9 +279,9 @@ bool ReadWinPilotPolar(void) {
            currentFlapsPos++;
            GlidePolar::FlapsPosCount = currentFlapsPos;
 	   break;
-	} while(ReadString(stream,READLINE_LENGTH,TempString, cs));
+	} while(stream.read_line(TempString));
 
-	zzip_close(stream);
+	stream.close();
   } else {
         StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);
   }

@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-#include "utils/openzip.h"
+#include "utils/zzip_stream.h"
 
 int globalFileNum = 0;
 
@@ -32,12 +32,26 @@ void ReadWayPoints(void)
         if (_tcslen(szFile) > 0) {
             TCHAR szFilePath[MAX_PATH];
             LocalPath(szFilePath, _T(LKD_WAYPOINTS), szFile);
-            ZZIP_FILE* fp = openzip(szFilePath, "rt");
-            if (fp) {
-                WpFileType[globalFileNum+1] = ReadWayPointFile(fp, szFilePath);
-                zzip_fclose(fp);
-                fp = nullptr;
+            int fileformat=GetWaypointFileFormatType(szFilePath);
+            bool not_found = true;
+            if(fileformat == LKW_OPENAIP) {
+                zzip_file_ptr file(openzip(szFilePath, "rt"));
+                if(file) {
+                  StartupStore(_T(". Waypoint file %d format: OpenAIP%s"),globalFileNum+1,NEWLINE);
+                  if(ParseOpenAIP(file)) {
+                    WpFileType[globalFileNum+1] = LKW_OPENAIP;
+                    not_found = false;
+                  }
+                }
             } else {
+              zzip_stream stream(szFilePath, "rt");
+              if (stream) {
+                WpFileType[globalFileNum+1] = ReadWayPointFile(stream, fileformat);
+                not_found = false;
+              }
+            }
+            
+            if (not_found) {
                 StartupStore(TEXT("--- No waypoint file %d"), globalFileNum+1);
                 // file not found : reset config
                 _tcscpy(szFile, _T(""));

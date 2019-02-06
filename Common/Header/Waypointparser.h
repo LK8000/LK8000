@@ -5,7 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-
+class zzip_stream;
+class zzip_file_ptr;
 
 
 #define wpTerrainBoundsYes    100
@@ -40,14 +41,14 @@ double ReadAltitude(TCHAR *temp);
 double ReadLength(TCHAR *temp);
 double CUPToLat(TCHAR *temp);
 double CUPToLon(TCHAR *temp);
-int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName);
+int ReadWayPointFile(zzip_stream& stream, int fileformat);
 int ParseDAT(TCHAR *String,WAYPOINT *Temp);
 void CleanCupCode(TCHAR* TpCode);
 bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp);
 bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool WaypointInTerrainRange(WAYPOINT *List);
-bool ParseOpenAIP(ZZIP_FILE *fp);
+bool ParseOpenAIP(zzip_file_ptr& file);
 
 
 

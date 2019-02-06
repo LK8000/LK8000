@@ -44,25 +44,6 @@ bool SetModelType();
 void ReadUUID(void);
 void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top, TCHAR *szMessageBuffer, TCHAR *TileBuffer );
 
-
-/**
- * charset is used for detect encoding of file, use variable with charset::unknown for first ReadString call.
- * next ReadString call need use charset returned by fist call.
- *  - with that, file are loaded as utf8 file until only valid utf8 char is read and
- *    as latin1 (iso8859) if invalid utf8 char is read.
- */
-enum charset {
-    unknown,
-    utf8,
-    latin1
-};
-
-BOOL ReadString(ZZIP_FILE* zFile, int Max, TCHAR *String, charset& cs);
-BOOL ReadStringX(FILE *fp, int Max, TCHAR *String, charset& cs);
-
-bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
-
-
 double StrToDouble(TCHAR *Source, TCHAR **Stop);
 
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber);

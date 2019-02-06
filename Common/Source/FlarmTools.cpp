@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "FlarmIdFile.h"
+#include "utils/zzip_stream.h"
 
 FlarmIdFile *file=NULL;
 
@@ -49,7 +50,7 @@ void OpenFLARMDetails() {
   StartupStore(TEXT("... OpenFLARMDetails: <%s>%s"),filename,NEWLINE);
   #endif
 
-  FILE * stream = _tfopen(filename, _T("rt"));
+  zzip_stream stream(filename, "rt");
   if( !stream ) {
 	#if TESTBENCH
 	StartupStore(_T("... No flarm details local file found%s"),NEWLINE);
@@ -58,9 +59,7 @@ void OpenFLARMDetails() {
   }
 
   TCHAR line[READLINE_LENGTH];
-  charset cs = charset::unknown;
-
-  while (ReadStringX(stream,READLINE_LENGTH, line, cs)) {
+  while (stream.read_line(line)) {
     long id;
     TCHAR Name[MAX_PATH];
 
@@ -75,9 +74,6 @@ void OpenFLARMDetails() {
   if (NumberOfFLARMNames>0) {
     StartupStore(_T(". Local IDFLARM, found %d IDs%s"),NumberOfFLARMNames,NEWLINE);
   }
-
-  fclose(stream);
-
 }
 
 

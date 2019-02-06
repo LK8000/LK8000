@@ -11,6 +11,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "utils/stringext.h"
+#include "utils/openzip.h"
 #include "xmlParser.h"
 #include <sstream>
 #include "LKStyle.h"
@@ -27,16 +28,16 @@ bool GetAttribute(XMLNode &node, LPCTSTR attributeName, LPCTSTR &outputString);
 bool GetValue(XMLNode &parentNode, LPCTSTR tagName, double &value);
 bool GetMeasurement(XMLNode &parentNode, LPCTSTR tagName, char expectedUnit, double &value);
 
-bool ParseOpenAIP(ZZIP_FILE *fp)
+bool ParseOpenAIP(zzip_file_ptr& file)
 {
     // Allocate buffer to read the file
-    zzip_seek(fp, 0, SEEK_END); // seek to end of file
-    long size = zzip_tell(fp); // get current file pointer
+    zzip_seek(file, 0, SEEK_END); // seek to end of file
+    long size = zzip_tell(file); // get current file pointer
     if (size < 0) {
        StartupStore(_T(". ParseOpenAIP, size failure!%s"),NEWLINE);
        return false;
     }
-    zzip_seek(fp, 0, SEEK_SET); // seek back to beginning of file
+    zzip_seek(file, 0, SEEK_SET); // seek back to beginning of file
     char* buff = (char*) calloc(size + 1, sizeof(char));
     if(buff==nullptr) {
         StartupStore(TEXT(".. Failed to allocate buffer to read OpenAIP waypoints file.%s"), NEWLINE);
@@ -44,7 +45,7 @@ bool ParseOpenAIP(ZZIP_FILE *fp)
     }
 
     // Read the file
-    long nRead = zzip_fread(buff, sizeof (char), size, fp);
+    long nRead = zzip_fread(buff, sizeof (char), size, file);
     // fread can return -1...
     if (nRead < 0) {
        StartupStore(_T(". ParseOpenAIP, fread failure!%s"),NEWLINE);

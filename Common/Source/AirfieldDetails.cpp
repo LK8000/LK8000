@@ -10,30 +10,7 @@
 #include "externs.h"
 #include "Dialogs/dlgProgress.h"
 #include "AirfieldDetails.h"
-#include "utils/openzip.h"
-
-ZZIP_FILE* OpenAirfieldDetails() {
-
-  ZZIP_FILE * fp = nullptr;
-
-  if (_tcslen(szAirfieldFile)>0) {
-    TCHAR zfilename[MAX_PATH];
-    LocalPath(zfilename, _T(LKD_WAYPOINTS), szAirfieldFile);
-    fp = openzip(zfilename, "rb");
-    StartupStore(_T(". open AirfieldFile %s <%s> "), fp ? _T("") : _T("FAILED"),  szAirfieldFile);
-  }
-
-
-  return fp;
-}
-
-
-void CloseAirfieldDetails(ZZIP_FILE* fp) {
-  if (fp) {
-    zzip_fclose(fp);
-  }
-};
-
+#include "utils/zzip_stream.h"
 
 void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
   TCHAR UName[100];
@@ -107,12 +84,23 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
  * fix: if empty lines, do not set details for the waypoint
  * fix: remove CR from text appearing as a spurious char in waypoint details
  */
-void ParseAirfieldDetails(ZZIP_FILE* fp) {
+void ParseAirfieldDetails() {
 
-  assert(fp);
-  if(!fp) {
+
+  zzip_stream stream;
+
+  if (_tcslen(szAirfieldFile)>0) {
+    TCHAR zfilename[MAX_PATH];
+    LocalPath(zfilename, _T(LKD_WAYPOINTS), szAirfieldFile);
+    stream.open(zfilename, "rb");
+  }
+
+  if(!stream) {
+    StartupStore(_T(". open AirfieldFile FAILED <%s>"), szAirfieldFile);
     return;
   }
+
+  StartupStore(_T(". open AirfieldFile <%s>"), szAirfieldFile);
 
   TCHAR TempString[READLINE_LENGTH+1];
   TCHAR CleanString[READLINE_LENGTH+1];
@@ -129,8 +117,7 @@ void ParseAirfieldDetails(ZZIP_FILE* fp) {
   int i, n;
   unsigned int j;
 
-  charset cs = charset::unknown;
-  while(ReadString(fp,READLINE_LENGTH,TempString, cs))
+  while(stream.read_line(TempString))
     {
       if(TempString[0]=='[') { // Look for start
 
@@ -187,16 +174,7 @@ void ParseAirfieldDetails(ZZIP_FILE* fp) {
 
 
 void ReadAirfieldFile() {
-  #if TESTBENCH
-  StartupStore(TEXT(". ReadAirfieldFile"));
-  #endif
-
 	// LKTOKEN  _@M400_ = "Loading Waypoint Notes File..."
   CreateProgressDialog(MsgToken(400));
-
-  ZZIP_FILE* fp = OpenAirfieldDetails();
-  if(fp) {
-    ParseAirfieldDetails(fp);
-    CloseAirfieldDetails(fp);
-  }
+  ParseAirfieldDetails();
 }

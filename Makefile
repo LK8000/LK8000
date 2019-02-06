@@ -1123,6 +1123,7 @@ UTILS	:=\
 	$(SRC)/utils/md5.cpp \
 	$(SRC)/utils/filesystem.cpp \
 	$(SRC)/utils/openzip.cpp \
+	$(SRC)/utils/zzip_stream.cpp \
 	$(SRC)/utils/TextWrapArray.cpp \
 	$(SRC)/utils/hmac_sha2.cpp \
 
