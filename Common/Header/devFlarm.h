@@ -98,8 +98,6 @@ private:
   static void OnRebootClicked(WndButton* pWnd);
   static bool OnTimer(WndForm* pWnd);
 
-  static void Update(WndForm* pWnd);
-
   static CallBackTableEntry_t CallBackTable[];
   static PDeviceDescriptor_t m_pDevice;
 };

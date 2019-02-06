@@ -21,8 +21,6 @@
 
 
 
-static WndForm *wf = NULL;
-
 
 PDeviceDescriptor_t CDevFlarm::m_pDevice=NULL;
 
@@ -264,23 +262,3 @@ BOOL CDevFlarm::FlarmReboot(PDeviceDescriptor_t d) {
     }
     return TRUE;
 }
-
-void CDevFlarm::Update(WndForm* pWnd) {
-	TCHAR Temp[50] = {0};
-
-
-
-	pWnd->SetCaption(Temp);
-
-	TCHAR Tmp[255];
-	        WndProperty* wp;
-	        wp = (WndProperty*)wf->FindByName(TEXT("prpFlarmId"));
-	        if (wp) {
-
-	            StartupStore(TEXT("DD1234\r\n"));
-	            _tcsncpy(Tmp, wp->GetDataField()->GetAsString(),190);
-	            StartupStore(Tmp);
-	        }
-
-}
-

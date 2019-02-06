@@ -134,6 +134,9 @@ public class InternalGPS
            was: "provider=gps" - no idea what that means */
         setConnectedSafe(0);
         return;
+      } catch (SecurityException e) {
+        setConnectedSafe(0);
+        return;
       }
 
       if(accelerometer != null) {
@@ -217,15 +220,8 @@ public class InternalGPS
       return;
 
     try {
-      /* older Android versions, onStatusChanged() doesn't get called
-         when the GPS signal is lost; checking the accuracy is a
-         kludge */
-      if (Build.VERSION.SDK_INT >= 11 || newLocation.getAccuracy() < 100) {
-        setConnected(2); // fix found
-        sendLocation(newLocation);
-      } else
-        /* low accuracy: waiting for new GPS fix */
-        setConnected(1);
+      setConnected(2); // fix found
+      sendLocation(newLocation);
     } finally {
       safeDestruct.Decrement();
     }

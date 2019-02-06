@@ -850,7 +850,7 @@ uint8_t err  = REC_NO_ERROR ;
       if(f == NULL)   { err = FILE_OPEN_ERROR;  }   // #define FILE_OPEN_ERROR 5
 
       _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),IGCFileList.at(IGC_FileIndex).Line1);
-      if(deb_)StartupStore(szStatusText);
+      if(deb_)StartupStore(_T("%s"), szStatusText);
       SendBinBlock(d,  Sequence++,  SELECTRECORD, &IGC_FileIndex,  1);
       err = RecBinBlock(d,  &RecSequence, &RecCommand, &pByteBlk[0], &blocksize, REC_TIMEOUT);
 

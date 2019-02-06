@@ -636,6 +636,7 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devATR833.cpp
     Common/Source/Devices/devVaulter.cpp
     Common/Source/Devices/devOpenVario.cpp
+    Common/Source/Devices/devFlarm.cpp
 
     Common/Source/Dialogs/AddCustomKeyList.cpp
     Common/Source/Dialogs/dlgAirspace.cpp
@@ -690,6 +691,8 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgBluetooth.cpp
     Common/Source/Dialogs/dlgIgcFile.cpp
     Common/Source/Dialogs/dlgProgress.cpp
+    Common/Source/Dialogs/dlgFlarmIGCDownload.cpp
+    Common/Source/Dialogs/dlgIGCProgress.cpp
 
     Common/Source/Dialogs/Analysis/DrawOtherFunctions.cpp
     Common/Source/Dialogs/Analysis/DrawXYGrid.cpp
