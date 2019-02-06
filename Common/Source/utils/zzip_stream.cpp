@@ -13,9 +13,11 @@
 
 #include <string.h>
 
-#include "stl_utils.h"
-#include "make_unique.h"
-#include "stringext.h"
+#include <cstring>
+
+#include "utils/make_unique.h"
+#include "utils/stl_utils.h"
+#include "utils/stringext.h"
 
 #include "Util/UTF8.hpp"
 
@@ -89,7 +91,8 @@ bool zzip_stream::read_line_raw(char* string, size_t size) {
   if (out_it != out_end) {
     *(out_it) = '\0';
   } else {
-    out_it[size - 1] = '\0';
+    assert(false); // output string to small
+    return false;
   }
 
   if (_cs == charset::unknown && !ValidateUTF8(string)) {
@@ -115,9 +118,13 @@ bool zzip_stream::read_line(char* string, size_t size) {
 
     Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
     converter.convert(string, strlen(string), utf8String);
-    assert(utf8String.size() <= size); // out string to small
-    strncpy(string, utf8String.c_str(), size - 1);
-    string[size - 1] = '\0';
+    if(utf8String.size() < (size - 1)) {
+      // copy all charaters and append zero terminator.
+      (*std::copy(utf8String.begin(), utf8String.end(), string)) = '\0';
+    } else {
+      assert(false); // output string to small
+      return false;
+    }
   }
   return true;
 }
@@ -135,12 +142,12 @@ bool zzip_stream::read_line(wchar_t* string, size_t size) {
     // from Latin1 (ANSI) To UNICODE
     int nChars = MultiByteToWideChar(CP_ACP, 0, raw_string.begin(), -1, string, size);
     if (!nChars) {
-      // out string to small, 
+      // output string to small, 
       assert(false);
       return false;
     }
   } else {
-    utf2TCHAR(raw_string.begin(), string, size);
+    utf2unicode(raw_string.begin(), string, size);
   }
   return true;
 }

@@ -37,20 +37,15 @@ public:
     return (*this);
   }
 
-  bool read_line(char* string, size_t size);
-
-  template<size_t size>
-  bool read_line(char (&string)[size]) {
+  template<typename char_type, size_t size>
+  bool read_line(char_type (&string)[size]) {
     return read_line(string, size);
   }
+
+  bool read_line(char* string, size_t size);
 
 #ifdef UNICODE
   bool read_line(wchar_t* string, size_t size);
-
-  template<size_t size>
-  bool read_line(wchar_t(&string)[size]) {
-    return read_line(string, size);
-  }
 
 private:
   AllocatedArray<char> raw_string; // temporary buffer for store data before convert to wchar_t
@@ -69,7 +64,7 @@ private:
       latin1   // latin1 (invalid utf8 code point detected) -> convert to utf8
   };  
 
-  char _buffer[64];
+  char _buffer[1024];
   const char* _begin; // first "unread" char
   const char* _end; // end of buffer
   charset _cs; 
