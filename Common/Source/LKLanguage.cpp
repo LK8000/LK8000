@@ -142,7 +142,6 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 		StartupStore(_T("... index <%s> not found in help file <%s>\n"),sNum,sFile);
 		#endif
 		_stprintf(sHelp,_T("ERROR: index <%s> not found in language help file:\r\n%s\r\n"),sNum,sFile);
-		zzip_fclose(helpFile);
 		return (sHelp);
 	}
 
@@ -185,7 +184,6 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 		_tcscat(sHelp,_T("\r\n"));
 	}
 
-	zzip_fclose(helpFile);
 	return (sHelp);
 
   } // end ttype == H
