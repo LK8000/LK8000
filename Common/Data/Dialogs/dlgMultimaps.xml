@@ -2,20 +2,20 @@
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmSetMultimaps" Type="Dialog" X="0" Y="0" Width="240" Height="240" Caption="_@M1822_" Font="2" >
     <WndButton   Caption="_@M186_"    X="2" Y="2" Width="60"  Height="22" Font="2" OnClickNotify="OnCloseClicked" Tag="1"/>
-    <WndProperty Name="prpMultimap1" Caption="1 " X="63" Y="-999" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1262_">
+    <WndProperty Name="prpMultimap1" Caption="_@M2419_" X="63" Y="-999" Width="177" Height="22" CaptionWidth="140" Font="2" Help="_@H1262_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpMultimap2" Caption="2 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1262_">
+    <WndProperty Name="prpMultimap2" Caption="_@M2420_" X="63" Y="-1" Width="177" Height="22" CaptionWidth="140" Font="2" Help="_@H1262_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
     <WndButton  Caption="_@M560_" X="2" Y="-1" Width="60"  Height="22" Font="2" OnClickNotify="OnResetClicked" Tag="1"/>
-    <WndProperty Name="prpMultimap3" Caption="3 " X="63" Y="-999" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1262_">
+    <WndProperty Name="prpMultimap3" Caption="_@M2421_" X="63" Y="-999" Width="177" Height="22" CaptionWidth="140" Font="2" Help="_@H1262_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpMultimap4" Caption="4 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1262_">
+    <WndProperty Name="prpMultimap4" Caption="_@M2422_" X="63" Y="-1" Width="177" Height="22" CaptionWidth="140" Font="2" Help="_@H1262_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpMultimap5" Caption="5 " X="63" Y="-1" Width="177" Height="22" CaptionWidth="15" Font="2" Help="_@H1262_">
+    <WndProperty Name="prpMultimap5" Caption="_@M2423_" X="63" Y="-1" Width="177" Height="22" CaptionWidth="140" Font="2" Help="_@H1262_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>        
   </WndForm>
