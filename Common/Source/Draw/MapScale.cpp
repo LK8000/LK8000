@@ -86,27 +86,33 @@ int MapWindow::GetScaleListCount()
   return ScaleListCount;
 }
 
+// Fill up discrete map scales
+void MapWindow::FillScaleListForEngineeringUnits(void) {
 
-void MapWindow::FillScaleListForEngineeringUnits(void)
-{
-
-  // Fill up discrete map scales
-  ScaleListCount = SCALELISTSIZE;
+  double scalefactor = (double) GetMapResolutionFactor() / (double) IBLSCALE(DrawRect.right) * 1.4;
 
   switch (Units::GetUserDistanceUnit()) {
     default:
-      std::copy(std::begin(ScaleListArrayMeters), std::end(ScaleListArrayMeters), std::begin(ScaleList));
+      std::transform(std::begin(ScaleListArrayMeters), std::end(ScaleListArrayMeters), std::begin(ScaleList),
+                     [scalefactor](double value) {
+                       return value / scalefactor;
+                     });
       break;
-
     case unStatuteMiles:
-      std::copy(std::begin(ScaleListArrayStatuteMiles), std::end(ScaleListArrayStatuteMiles), std::begin(ScaleList));
+      std::transform(std::begin(ScaleListArrayStatuteMiles),std::end(ScaleListArrayStatuteMiles),std::begin(ScaleList),
+                     [scalefactor](double value) {
+                       return value / scalefactor;
+                     });
       break;
 
     case unNauticalMiles:
-      std::copy(std::begin(ScaleListNauticalMiles), std::end(ScaleListNauticalMiles), std::begin(ScaleList));
+      std::transform(std::begin(ScaleListNauticalMiles), std::end(ScaleListNauticalMiles), std::begin(ScaleList),
+                     [scalefactor](double value) {
+                       return value / scalefactor;
+                     });
       break;
   } //sw units
 
-  double scalefactor = (double)GetMapResolutionFactor() / (double)IBLSCALE(DrawRect.right) * 1.4;
-  for (int i=0; i<ScaleListCount; i++) ScaleList[i] /= scalefactor;
+  ScaleListCount = SCALELISTSIZE;  // ToDo Remove ScaleListCount global variable
+
 }
