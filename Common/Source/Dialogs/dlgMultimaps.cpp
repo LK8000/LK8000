@@ -31,8 +31,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(259)); // Enabled
+	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
 
 
 	dfe->Set(Multimap1);
@@ -42,8 +42,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(259)); // Enabled
+	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
 
 
 	dfe->Set(Multimap2);
@@ -53,8 +53,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(259)); // Enabled
+	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
 
 
 	dfe->Set(Multimap3);
@@ -64,9 +64,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(259)); // Enabled
-
+	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
 
 	dfe->Set(Multimap4);
 	wp->RefreshDisplay();
@@ -75,8 +74,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(239)); // Disabled
-	dfe->addEnumText(MsgToken(259)); // Enabled
+	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
 
 
 	dfe->Set(Multimap5);
@@ -120,7 +119,12 @@ static void OnResetClicked(WndButton* pWnd){
 	dfe->Set(Multimap4);
 	wp->RefreshDisplay();
   }
-
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap5"));
+  if (wp) {
+	DataField* dfe = wp->GetDataField();
+	dfe->Set(Multimap5);
+	wp->RefreshDisplay();
+  }
 }
 
 static CallBackTableEntry_t CallBackTable[]={
