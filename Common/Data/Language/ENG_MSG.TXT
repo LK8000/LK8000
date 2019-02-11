@@ -110,8 +110,7 @@ _@M90_ "Always use MC=0"
 _@M91_ "Always use safety MC"
 _@M92_ "Amber"
 _@M93_ "Analysis"
-# 94 REMOVED after v2.3
-_@M94_ "Animation"
+_@M94_ "23 Map Scale"
 _@M95_ "Append to task"
 _@M96_ "Arm start"
 _@M97_ "Arm"
@@ -2344,6 +2343,7 @@ _@M2390_ "Toggle Draw XC"
 _@M2391_ "Earth Model"
 _@M2392_ "Error: Port not opened!"
 
+
 _@M2393_ "Device C Config"
 _@M2394_ "Device D Config"
 _@M2395_ "Device E Config"
@@ -2378,3 +2378,5 @@ _@M2420_ "Side Target MM2"
 _@M2421_ "Side Airspace MM3"
 _@M2422_ "Visual Glide MM4"
 _@M2423_ "Flarm Radar MM5"
+
+_@M2424_ "Max Autozoom level"
