@@ -89,17 +89,11 @@
       <WndProperty Name="prpAutoOrientScale" Caption="_@M485_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H126_">
         <DataField Name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min="1" Max="100" Step="0.5"/>
       </WndProperty>
-      <WndProperty Name="prpAutoZoom" Caption="_@M115_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H127_">
-        <DataField Name="" DataType="boolean"/>
-      </WndProperty>
       <WndProperty Name="prpTrailDrift" Caption="_@M739_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H128_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
       <WndProperty Name="prpSnailScale" Caption="_@M741_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H129_">
         <DataField Name="" DataType="enum"/>
-      </WndProperty>
-      <WndProperty Name="prpCirclingZoom" Caption="_@M174_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H130_">
-        <DataField Name="" DataType="boolean"/>
       </WndProperty>
       <WndProperty Name="prpDeclutterMode" Caption="_@M225_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H131_">
         <DataField Name="" DataType="enum" Min="0" Max="10" Step="1"/>
@@ -451,6 +445,9 @@
       <WndProperty Name="prpTaskFinishRadius" Caption="_@M295_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H206_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="100" Step="0.01" />
       </WndProperty>
+      <WndProperty Name="prpPGOptimizeRoute" Caption="_@M1686_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H9999_">
+        <DataField Name="" DataType="boolean"/>
+      </WndProperty>
       <WndButton Name="cmdTaskRules" Caption="_@M690_" X="70" Y="-997" Width="-1"  Height="30" Font="2" OnClickNotify="OnTaskRulesClicked" />
     </WndFrame>
     <WndFrame Name="frmLogger" X="70" Y="0" Width="-1" Height="222" Font="2">
@@ -489,25 +486,31 @@
       <WndProperty Name="prpEngineeringMenu" Caption="_@M260_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H213_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
+      <WndProperty Name="prpUseUngestures" Caption="_@M1792_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1260_">
+        <DataField Name="" DataType="boolean"/>
+      </WndProperty>
       <WndProperty Name="prpAdditionalContestRule" Caption="_@M2279_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1299_">
         <DataField Name="" DataType="enum"/>
       </WndProperty>
     </WndFrame>
     <WndFrame Name="frmSpecials2" X="70" Y="0" Width="-1" Height="222" Font="2">
-      <WndProperty Name="prpPGClimbZoom" Caption="_@M170_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H214_">
+      <WndProperty Name="prpClimbZoom" Caption="_@M170_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H214_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpPGCruiseZoom" Caption="_@M202_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H215_">
+      <WndProperty Name="prpCruiseZoom" Caption="_@M202_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H215_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpPGAutoZoomThreshold" Caption="_@M1697_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1213_">
+      <WndProperty Name="prpCirclingZoom" Caption="_@M174_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H130_">
+        <DataField Name="" DataType="boolean"/>
+      </WndProperty>
+      <WndProperty Name="prpAutoZoom" Caption="_@M115_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H127_">
+        <DataField Name="" DataType="boolean"/>
+      </WndProperty>
+      <WndProperty Name="prpAutoZoomThreshold" Caption="_@M1697_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1214_">
+        <DataField Name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min="1.0" Max="40.0" Step="0.5" />
+      </WndProperty>
+      <WndProperty Name="prpMaxAutoZoom" Caption="_@M2424_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1300_">
         <DataField Name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min="1.0" Max="20.0" Step="0.5" />
-      </WndProperty>
-      <WndProperty Name="prpUseUngestures" Caption="_@M1792_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1260_">
-        <DataField Name="" DataType="boolean"/>
-      </WndProperty>
-      <WndProperty Name="prpPGOptimizeRoute" Caption="_@M1686_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H9999_">
-        <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
     <WndFrame Name="frmEngineering1" X="70" Y="0" Width="-1" Height="222" Font="1">
