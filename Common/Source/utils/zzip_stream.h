@@ -2,10 +2,10 @@
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
  * See CREDITS.TXT file for authors and copyrights
- * 
+ *
  * File:   zzip_file.h
  * Author: Bruno de Lacheisserie
- * 
+ *
  * Created on 21 novembre 2017, 20:31
  */
 
@@ -16,25 +16,23 @@
 #include <string>
 #include "Util/AllocatedArray.hpp"
 
-class zzip_stream : public zzip_file_ptr {
+class zzip_stream {
 public:
-  zzip_stream() : _begin(nullptr), _end(nullptr), _cs(charset::detect) { }
-  
-  zzip_stream(const TCHAR* szFile, const char *mode) 
-          : zzip_file_ptr(openzip(szFile, mode)),
-            _begin(nullptr), 
-            _end(nullptr), 
-            _cs(charset::detect) {
-  }
+  zzip_stream() : _current_char(nullptr), _end(nullptr), _cs(charset::detect) { }
+
+  zzip_stream(const TCHAR* szFile, const char *mode);
 
   zzip_stream(const zzip_stream&) = delete;
   zzip_stream(zzip_stream&&) = delete;
 
-  bool open(const TCHAR* szFile, const char *mode) {
-    _fp = openzip(szFile, mode);
-    _end = _begin = nullptr;
-    _cs = charset::detect;
-    return (*this);
+  bool open(const TCHAR* szFile, const char *mode);
+
+  void close() { 
+    _fp.close();
+  }
+
+  operator bool() const {
+    return (_fp); 
   }
 
   template<typename char_type, size_t size>
@@ -52,8 +50,9 @@ private:
 
 #endif
 
-
 private:
+  char read_char();
+  void read_buffer();
 
   bool read_line_raw(char* string, size_t size);
 
@@ -64,13 +63,15 @@ private:
       latin1   // latin1 (invalid utf8 code point detected) -> convert to utf8
   };  
 
+  zzip_file_ptr _fp;
+
   char _buffer[1024];
-  const char* _begin; // first "unread" char
-  const char* _end; // end of buffer
-  charset _cs; 
+  const char* _current_char; // first "unread" char
+  const char* _end;          // end of buffer
+  bool _end_of_file;         // true if end of file is reached.
+
+  charset _cs; // file charset
 
   std::string utf8String; // temporary member used for convert Latin1 to utf8
-
 };
 #endif /* ZZIP_FILE_H */
-
