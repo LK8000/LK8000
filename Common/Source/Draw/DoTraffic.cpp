@@ -64,7 +64,11 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    #endif
    // No Need to lock, we are copying the drawinfo..copy of the real Basic.
    //LockFlightData();
+
+   static_assert(sizeof(LKTraffic) == sizeof(Basic->FLARM_Traffic), "invalid sizeof");
    memcpy(LKTraffic, Basic->FLARM_Traffic, sizeof(LKTraffic));
+
+
    //UnlockFlightData();
 
 

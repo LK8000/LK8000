@@ -307,13 +307,13 @@ GEXTERN int PortMonitorMessages;
 GEXTERN int FlarmNetCount;
 
 // Copy of runtime traffic for instant use
-GEXTERN FLARM_TRAFFIC LKTraffic[FLARM_MAX_TRAFFIC+1];
+GEXTERN FLARM_TRAFFIC LKTraffic[FLARM_MAX_TRAFFIC];
 
 // Number of IDs (items) of existing traffic updated from DoTraffic
 GEXTERN int LKNumTraffic;
 
 // Pointer to FLARM struct, ordered by DoTraffic, from 0 to LKNumTraffic-1
-GEXTERN int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
+GEXTERN int LKSortedTraffic[FLARM_MAX_TRAFFIC];
 
 GEXTERN int LKTargetIndex;
 GEXTERN int LKTargetType;
