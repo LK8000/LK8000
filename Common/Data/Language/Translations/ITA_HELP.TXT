@@ -1669,12 +1669,12 @@ In airspace warning dialog, you can see a decrementing counter on the close butt
 [Airspace warning map labels]
 If this is on, airspace warning labels shows on the map indicating airspace name and vertical distance.
 
-@1213
-[PG autozoom threshold]
-When using autozoom in PG mode, autozoom gets working only if the next waypoint gets closer than this limit.
-For example if you choose 5km, it means when you're 5km to the next waypoint the autozoom will start working.
-It's zoom out to 5km zoom range, and it will keep zoom in as you're approaching the waypoint.
-After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
+@1214
+[Autozoom threshold]
+Quando si utilizza autozoom, autozoom funziona solo se il prossimo waypoint si avvicina a questo limite.
+Ad esempio, se scegli 5 km, significa che quando sei a 5 km dal waypoint successivo, l'autozoom inizierà a funzionare.
+Si riduce lo zoom a una distanza di zoom di 5 km e si manterrà lo zoom mentre ci si avvicina al waypoint.
+Dopo aver raggiunto il waypoint viene ripristinato il precedente zoom di crociera.
 
 @1220
 [Bottom Bar Configuration]
@@ -1877,6 +1877,10 @@ Tempo di attesa massimo perchè si attivi la connessione bluetooth
 [Sonar spazi aerei]
 Il suono del sonar si sente quandi ci si avvicina ad uno spazio aereo. Piu è veloce, più si è vicini. Questa configurazione è usata quando si lancia il programma, ed è poi possibile cambiarla in volo con l'apposito bottone.
 
+
+@1300
+[Autozoom]
+Quando l'autozoom è attivivo zommerà solo fino a questo valore
 
 @9999
 Nessun aiuto disponibile per questo argomento!
