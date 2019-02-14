@@ -264,6 +264,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAutoZoomThreshold,AutoZoomThreshold);
   rprintf(szRegistryClimbZoom,ClimbZoom);
   rprintf(szRegistryCruiseZoom,CruiseZoom);
+  rprintf(szRegistryMaxAutoZoom,MaxAutoZoom);
   rprintf(szRegistryPGOptimizeRoute,PGOptimizeRoute_Config);
   rprintf(szRegistryGliderSymbol,GliderSymbol);
 
