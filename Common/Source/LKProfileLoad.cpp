@@ -517,7 +517,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryAutoZoomThreshold,&AutoZoomThreshold);
   PREAD(sname,svalue,szRegistryClimbZoom,&ClimbZoom);
   PREAD(sname,svalue,szRegistryCruiseZoom,&CruiseZoom);
- // PREAD(sname,svalue,szRegistryPGGateIntervalTime,&PGGateIntervalTime);
+  PREAD(sname,svalue,szRegistryMaxAutoZoom,&MaxAutoZoom);
+  // PREAD(sname,svalue,szRegistryPGGateIntervalTime,&PGGateIntervalTime);
   if (matchedstring) return;
  // PREAD(sname,svalue,szRegistryPGNumberOfGates,&PGNumberOfGates);
  // PREAD(sname,svalue,szRegistryPGOpenTimeH,&PGOpenTimeH);

@@ -3646,7 +3646,6 @@ void dlgConfigurationShowModal(short mode){
     if ( CruiseZoom != wp->GetDataField()->GetAsInteger()) {
       CruiseZoom = wp->GetDataField()->GetAsInteger();
       MapWindow::zoom.Reset();
-        requirerestart=true;
     }
   }
 
@@ -3655,7 +3654,6 @@ void dlgConfigurationShowModal(short mode){
     if ( ClimbZoom != wp->GetDataField()->GetAsInteger()) {
       ClimbZoom = wp->GetDataField()->GetAsInteger();
       MapWindow::zoom.Reset();
-      requirerestart=true;
     }
   }
 
@@ -3674,7 +3672,6 @@ void dlgConfigurationShowModal(short mode){
     if ( MaxAutoZoom != wp->GetDataField()->GetAsInteger()) {
       MaxAutoZoom = wp->GetDataField()->GetAsInteger();
       MapWindow::zoom.Reset();
-      requirerestart=true;
     }
   }
 
