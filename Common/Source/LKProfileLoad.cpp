@@ -844,9 +844,9 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryFlarmDirection , &iFlarmDirection    );
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryDrawTask       , &Flags_DrawTask     );
-  if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryDrawFAI        , &Flags_DrawFAI      );
+//  PREAD(sname,svalue,szRegistryDrawTask       , &Flags_DrawTask     );  // DrawTask not any more a runtime save option . v7.1
+//  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryDrawFAI        , &Flags_DrawFAI_config      );
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryGearMode       , &GearWarningMode    );
   if (matchedstring) return;
@@ -856,7 +856,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryBigFAIThreshold, &FAI28_45Threshold);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryDrawXC    , &Flags_DrawXC);
+  PREAD(sname,svalue,szRegistryDrawXC    , &Flags_DrawXC_config);
   if (matchedstring) return;
 
   PREAD(sname,svalue,szRegistrySonarWarning,&SonarWarning_Config);

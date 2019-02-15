@@ -61,6 +61,9 @@ void LKProfileInitRuntime(void) {
   BUGS				= BUGS_Config;
   SonarWarning			= SonarWarning_Config;
 
+  Flags_DrawFAI = Flags_DrawFAI_config;
+  Flags_DrawXC = Flags_DrawXC_config;
+
   MapWindow::zoom.AutoZoom(AutoZoom_Config);
 
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;

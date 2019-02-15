@@ -452,9 +452,9 @@ void LKProfileResetDefault(void) {
    UseWindRose=false;	// use wind rose (ex: NNE) for wind direction, instead of degrees
                         // only Changed by custom Key
 
-  Flags_DrawTask=true;
-  Flags_DrawFAI=false;
-  Flags_DrawXC=false;
+  Flags_DrawTask = true;
+  Flags_DrawFAI_config = false;
+  Flags_DrawXC_config = false;
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
   BottomMode=BM_CRU;
   iFlarmDirection=0;
@@ -483,7 +483,7 @@ void LKProfileResetDefault(void) {
   Overlay_RightMid=1;
   Overlay_RightBottom=1;
 
-  AdditionalContestRule= 2;  // OLC by defauly
+  AdditionalContestRule= 2;  // OLC by default
 
 
 #ifdef _WGS84

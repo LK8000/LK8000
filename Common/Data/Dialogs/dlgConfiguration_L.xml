@@ -86,9 +86,6 @@
       <WndProperty Name="prpOrientation" Caption="_@M506_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H125_">
         <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpAutoOrientScale" Caption="_@M485_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H126_">
-        <DataField Name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min="1" Max="100" Step="0.5"/>
-      </WndProperty>
       <WndProperty Name="prpTrailDrift" Caption="_@M739_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H128_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
@@ -101,9 +98,17 @@
       <WndProperty Name="prpNewMapDeclutter" Caption="_@M224_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H132_">
         <DataField Name="" DataType="enum" Min="0" Max="10" Step="1"/>
       </WndProperty>
+
+
+      <WndProperty Name="prpDrawFAI" Caption="_@M2425_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1301_">
+        <DataField Name="" DataType="boolean"/>
+      </WndProperty>
+      <WndProperty Name="prpDrawXC" Caption="_@M2426_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1302_">
+        <DataField Name="" DataType="boolean"/>
+      </WndProperty>
+
     </WndFrame>
     <WndFrame Name="frmInfoBoxCruise" X="70" Y="0" Width="-1" Height="222" Font="2">
-
       <WndProperty Name="prpInfoBoxCruise0" Caption="1" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="20" Font="2" OnHelp="OnInfoBoxHelp">
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
@@ -511,6 +516,9 @@
       </WndProperty>
       <WndProperty Name="prpMaxAutoZoom" Caption="_@M2424_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1300_"> 
          <DataField Name="" DataType="enum"  Min="0" Max="20" Step="1"/> 
+      </WndProperty>
+      <WndProperty Name="prpAutoOrientScale" Caption="_@M485_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H126_">
+        <DataField Name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min="1" Max="100" Step="0.5"/>
       </WndProperty>
     </WndFrame>
     <WndFrame Name="frmEngineering1" X="70" Y="0" Width="-1" Height="222" Font="1">

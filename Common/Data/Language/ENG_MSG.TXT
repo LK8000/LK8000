@@ -2380,3 +2380,6 @@ _@M2422_ "Visual Glide MM4"
 _@M2423_ "Flarm Radar MM5"
 
 _@M2424_ "Max Autozoom level"
+
+_@M2425_ "Draw FAI Assistant"
+_@M2426_ "Draw XC Triangle"
