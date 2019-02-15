@@ -409,7 +409,7 @@ passthrough:
     case ckDrawXCToggle:
       Flags_DrawXC = !Flags_DrawXC;
       if (EnableSoundModes) {
-        if (Flags_DrawXC == 0)
+        if (!Flags_DrawXC)
           LKSound(TEXT("LK_TONEUP.WAV"));
         else
           LKSound(TEXT("LK_TONEDOWN.WAV"));

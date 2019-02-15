@@ -407,14 +407,13 @@ void LKProfileSave(const TCHAR *szFile)
 
   rprintf(szRegistryAspPermanent  ,AspPermanentChanged);
   rprintf(szRegistryFlarmDirection,iFlarmDirection);
- if (SaveRuntime) {
-  rprintf(szRegistryDrawTask      ,Flags_DrawTask);
-  rprintf(szRegistryDrawFAI       ,Flags_DrawFAI);
- }
+  //rprintf(szRegistryDrawTask      ,Flags_DrawTask);  // DrawTask not any more a runtime save option . v7.1
+  rprintf(szRegistryDrawFAI       ,Flags_DrawFAI_config);
+  rprintf(szRegistryDrawXC   ,Flags_DrawXC_config);
+
   rprintf(szRegistryGearMode      ,GearWarningMode);
   rprintf(szRegistryGearAltitude  ,GearWarningAltitude);
   rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
-  rprintf(szRegistryDrawXC   ,Flags_DrawXC);
 
   if (SaveRuntime) rprintf(szRegistryBottomMode    ,BottomMode);
   rprintf(szRegistrySonarWarning    ,SonarWarning_Config);

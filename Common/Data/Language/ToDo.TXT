@@ -500,9 +500,10 @@ _@M2421_ "Side Airspace MM3"
 _@M2422_ "Visual Glide MM4"
 _@M2423_ "Flarm Radar MM5"
 
-
 _@M2424_ "Max Autozoom level"
 
+_@M2425_ "Draw FAI Assistant"
+_@M2426_ "Draw XC Triangle"
 
 HELP FILE
 
@@ -620,3 +621,11 @@ After you reach the waypoint the previous Cruise zoom restored. And as soon you 
 @1300
 [Autozoom Limit]
 When autozoom feature is active it will not zoom beyond this zoom level
+
+@1301
+[Draw FAI Assistant]
+Show on the map the FAI Assistant sectors. To be able to see it assure that the FAI Assistant ( or at least one Contest rule) is active in Contest setting on page 22
+
+@1302
+[Draw XC Triangle]
+Show on the map the best cross country triangle. To be able to see it assure that at least one Contest rule is active in Contest setting on page 22

@@ -2012,6 +2012,18 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpDrawFAI"));
+  if (wp) {
+    wp->GetDataField()->Set(Flags_DrawFAI_config);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpDrawXC"));
+  if (wp) {
+    wp->GetDataField()->Set(Flags_DrawXC_config);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpLockSettingsInFlight"));
   if (wp) {
     wp->GetDataField()->Set(LockSettingsInFlight);
@@ -3850,6 +3862,23 @@ void dlgConfigurationShowModal(short mode){
       MapWindow::zoom.AutoZoom(AutoZoom_Config);
     }
   }
+
+  wp = (WndProperty *) wf->FindByName(TEXT("prpDrawFAI"));
+  if (wp) {
+    if (Flags_DrawFAI_config != wp->GetDataField()->GetAsBoolean()) {
+      Flags_DrawFAI_config = wp->GetDataField()->GetAsBoolean();
+      Flags_DrawFAI = Flags_DrawFAI_config;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpDrawXC"));
+  if (wp) {
+    if (Flags_DrawXC_config !=  wp->GetDataField()->GetAsBoolean()) {
+      Flags_DrawXC_config = wp->GetDataField()->GetAsBoolean();
+      Flags_DrawXC = Flags_DrawXC_config;
+    }
+  }
+
 
 int ival; 
 

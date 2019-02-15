@@ -668,8 +668,13 @@ void Globals_Init(void) {
   Rotary_Distance=0;
 
   Flags_DrawTask=true;
-  Flags_DrawFAI=false;
+
+  // Runtime
+  Flags_DrawFAI = false;
   Flags_DrawXC = false;
+  //Config
+  Flags_DrawFAI_config = false;
+  Flags_DrawXC_config = false;
 
   iFlarmDirection=0;
   AspPermanentChanged=0;

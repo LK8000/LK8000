@@ -890,10 +890,13 @@ GEXTERN unsigned short Multimap_Labels[MP_TOP+1];
 
 GEXTERN int  Multimap_SizeY[MP_TOP+1];
 
+GEXTERN bool Flags_DrawFAI_config;
+GEXTERN bool Flags_DrawXC_config;
+
 // Global, not saved to profile
 GEXTERN bool Flags_DrawTask;
 GEXTERN bool Flags_DrawFAI;
-GEXTERN unsigned int Flags_DrawXC;
+GEXTERN bool Flags_DrawXC;
 
 GEXTERN unsigned int Trip_Moving_Time;
 GEXTERN unsigned int Trip_Steady_Time;
