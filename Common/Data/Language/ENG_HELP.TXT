@@ -1987,7 +1987,13 @@ Select the scoring rule for the Cross Country Contest (XC). If OFF no contest wi
 [Max Autozoom level]
 When autozoom feature is active it will not zoom beyond this zoom level
 
+@1301
+[Draw FAI Assistant]
+Show on the map the FAI Assistant sectors. To be able to see it make sure that the FAI Assistant ( or at least one Contest rule) is active in Contest setting on page 22
 
+@1302
+[Draw XC Triangle]
+Show on the map the best cross country triangle according to the contest rule set in system menu 22. To be able to see it make sure that at least one Contest rule is active in Contest setting on page 22
 
 
 @9999
