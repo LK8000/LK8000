@@ -11,7 +11,6 @@
 
 #include "ContestMgr.h"
 #include <memory>
-#include <ContestMgr.h>
 #include "NavFunctions.h"
 #include "RasterTerrain.h"
 
