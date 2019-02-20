@@ -187,7 +187,7 @@ else ifeq ($(TARGET_IS_CUBIE),y)
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 else ifeq ($(CONFIG_LINUX),y)
  TCPATH :=
- MCPU   := -march=native
+ MCPU   :=
 else
  TCPATH	:=arm-mingw32ce-
 endif
