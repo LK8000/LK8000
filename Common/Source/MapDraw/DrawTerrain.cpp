@@ -615,10 +615,10 @@ public:
                     h = (h - v_height_min) >> v_height_scale;
                     h = Clamp(h, height_0, height_255);
 
-                    screen_row[x]   = color_table[vgetq_lane_u32(mag,0)][vget_lane_s16(h, 0)];
-                    screen_row[x+1] = color_table[vgetq_lane_u32(mag,1)][vget_lane_s16(h, 1)];
-                    screen_row[x+2] = color_table[vgetq_lane_u32(mag,2)][vget_lane_s16(h, 2)];
-                    screen_row[x+3] = color_table[vgetq_lane_u32(mag,3)][vget_lane_s16(h, 3)];
+                    screen_row[x]   = color_table[vgetq_lane_s32(mag,0)][vget_lane_s16(h, 0)];
+                    screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
+                    screen_row[x+2] = color_table[vgetq_lane_s32(mag,2)][vget_lane_s16(h, 2)];
+                    screen_row[x+3] = color_table[vgetq_lane_s32(mag,3)][vget_lane_s16(h, 3)];
                 }
             }
             // center
@@ -650,10 +650,10 @@ public:
                 h = (h - height_min) >> height_scale;
                 h = Clamp(h, height_0, height_255);
 
-                screen_row[x]   = color_table[vgetq_lane_u32(mag,0)][vget_lane_s16(h, 0)];
-                screen_row[x+1] = color_table[vgetq_lane_u32(mag,1)][vget_lane_s16(h, 1)];
-                screen_row[x+2] = color_table[vgetq_lane_u32(mag,2)][vget_lane_s16(h, 2)];
-                screen_row[x+3] = color_table[vgetq_lane_u32(mag,3)][vget_lane_s16(h, 3)];
+                screen_row[x]   = color_table[vgetq_lane_s32(mag,0)][vget_lane_s16(h, 0)];
+                screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
+                screen_row[x+2] = color_table[vgetq_lane_s32(mag,2)][vget_lane_s16(h, 2)];
+                screen_row[x+3] = color_table[vgetq_lane_s32(mag,3)][vget_lane_s16(h, 3)];
             }
 
 
@@ -686,10 +686,10 @@ public:
                     h = (h - height_min) >> height_scale;
                     h = Clamp(h, height_0, height_255);
 
-                    screen_row[x]   = color_table[vgetq_lane_u32(mag,0)][vget_lane_s16(h, 0)];
-                    screen_row[x+1] = color_table[vgetq_lane_u32(mag,1)][vget_lane_s16(h, 1)];
-                    screen_row[x+2] = color_table[vgetq_lane_u32(mag,2)][vget_lane_s16(h, 2)];
-                    screen_row[x+3] = color_table[vgetq_lane_u32(mag,3)][vget_lane_s16(h, 3)];
+                    screen_row[x]   = color_table[vgetq_lane_s32(mag,0)][vget_lane_s16(h, 0)];
+                    screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
+                    screen_row[x+2] = color_table[vgetq_lane_s32(mag,2)][vget_lane_s16(h, 2)];
+                    screen_row[x+3] = color_table[vgetq_lane_s32(mag,3)][vget_lane_s16(h, 3)];
                 }
             }
         }
