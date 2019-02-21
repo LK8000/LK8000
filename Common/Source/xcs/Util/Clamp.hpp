@@ -46,7 +46,7 @@ Clamp(const T &value, const T &min, const T &max)
        ? max : value);
 }
 
-#if defined(__ARM_NEON__) || defined(__ARM_NEON)
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
 #include <arm_neon.h>
 
 static inline

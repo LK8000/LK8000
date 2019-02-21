@@ -21,7 +21,7 @@
 #include "Kobo/Model.hpp"
 #include "Util/Clamp.hpp"
 
-#if defined(__ARM_NEON) ||defined(__ARM_NEON__)
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
 #include <arm_neon.h>
 #endif
 
@@ -522,7 +522,7 @@ public:
     }
 
 
-#if defined(__ARM_NEON) || defined(__ARM_NEON__)
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO) 
 
     // JMW: if zoomed right in (e.g. one unit is larger than terrain
     // grid), then increase the step size to be equal to the terrain
