@@ -779,10 +779,11 @@ public:
                 dd1 /= scale;
                 dd2 /= scale;
 
-                const int32_t sqr_mag = (dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
-                int32_t mag = (dd2 * sz + dd0 * sx + dd1 * sy) / isqrt4(sqr_mag);
-                mag = Clamp<int32_t >((mag - sz), -64, 63);
+                const uint32_t sqr_mag = (dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
+                int32_t mag = (dd2 * sz + dd0 * sx + dd1 * sy) / (isqrt4(sqr_mag)|1);
+                mag = Clamp<int32_t>((mag - sz), -64, 63);
 
+                // when h is invalid, result is clamped to 255 so we have invalid terrain color 
                 int16_t h =  *(curr_row + x);
                 h = ((h - height_min) >> height_scale);
                 h = Clamp<int16_t>(h, 0, 255);
