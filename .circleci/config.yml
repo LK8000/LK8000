@@ -1,0 +1,69 @@
+version: 2.1
+
+commands:
+  build_ppc2003:
+    steps:
+      - run: make -j2 TARGET=PPC2003 distrib
+
+  build_pna:
+    steps:
+      - run: make -j2 TARGET=PNA distrib
+
+  build_pc:
+    steps:
+      - run: make -j2 TARGET=PC distrib
+
+  build_kobo:
+    steps:
+      - run: make -j2 TARGET=KOBO
+
+  build_linux:
+    steps:
+      - run: make -j2 TARGET=LINUX distrib
+
+executors:
+  build_executor:
+    docker:
+      - image: lk8000/lk8000:build
+
+jobs:
+  build-all:
+    executor: build_executor
+    steps:
+      - checkout
+
+      - build_linux
+      - store_artifacts:
+          path: LINUX-install.zip
+
+      - build_ppc2003
+      - store_artifacts:
+          path: PPC2003-install.zip
+
+      - build_pna
+      - store_artifacts:
+          path: PNA-install.zip
+
+      - build_pc
+      - store_artifacts:
+          path: PC-install.zip
+
+      - build_kobo
+      - store_artifacts:
+          path: Kobo-install.zip
+      - store_artifacts:
+          path: Kobo-install-otg.zip
+
+
+workflows:
+  version: 2
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build-all
