@@ -31,7 +31,11 @@ static int ItemIndex = -1;
 
 static int DrawListIndex = 0;
 
+// lengthtotal is the total length from start to goal
 static double lengthtotal = 0.0;
+// lengthtotal_home is the total length for PG/HG task where also distance from HOME to start is taken into account
+static double lengthtotal_home = 0.0;
+
 static bool fai_ok = false;
 
 static void UpdateFilePointer(void) {
@@ -152,32 +156,50 @@ static void OnTaskPaintListItem(WindowControl *Sender, LKSurface &Surface) {
       Surface.DrawText(rc.right + DLGSCALE(2), TextMargin, sTmp);
     } else if ((DrawListIndex == n + 1) && ValidTaskPoint(0)) {
 
-      if (!AATEnabled || ISPARAGLIDER) {
-        // LKTOKEN  _@M735_ = "Total:"
-        Surface.DrawText(rc.right + DLGSCALE(2), TextMargin, MsgToken(735));
-        _stprintf(sTmp, TEXT("%.0f %s%s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), fai_ok ? _T(" FAI") : _T(""));
+      if (ISPARAGLIDER) {
 
-        Surface.DrawText(rc.right + p1 + w1 - Surface.GetTextWidth(sTmp), TextMargin, sTmp);
+        if (lengthtotal_home > 0) {     // LKTOKEN  _@M735_ = "Total:"
+          _stprintf(sTmp, TEXT("%s %.1f%s (%.1f%s)"), MsgToken(735), lengthtotal * DISTANCEMODIFY,
+                    Units::GetDistanceName(), lengthtotal_home * DISTANCEMODIFY, Units::GetDistanceName());
+        } else {
+          _stprintf(sTmp, TEXT("%s %.1f %s"), MsgToken(735),lengthtotal*DISTANCEMODIFY, Units::GetDistanceName());
+        }
+
+        Surface.DrawText(rc.right + DLGSCALE(2), TextMargin, sTmp);
 
       } else {
 
-        double d1 = CALCULATED_INFO.TaskDistanceToGo;
-        if ((CALCULATED_INFO.TaskStartTime > 0.0) && (CALCULATED_INFO.Flying) && (ActiveTaskPoint > 0)) {
-          d1 += CALCULATED_INFO.TaskDistanceCovered;
-        }
+        if (!AATEnabled) {
+          // LKTOKEN  _@M735_ = "Total:"
+          Surface.DrawText(rc.right + DLGSCALE(2), TextMargin, MsgToken(735));
+          _stprintf(sTmp,
+                    TEXT("%.0f %s%s"),
+                    lengthtotal * DISTANCEMODIFY,
+                    Units::GetDistanceName(),
+                    fai_ok ? _T(" FAI") : _T(""));
 
-        if (d1 == 0.0) {
-          d1 = CALCULATED_INFO.AATTargetDistance;
-        }
+          Surface.DrawText(rc.right + p1 + w1 - Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
-        _stprintf(sTmp, TEXT("%s %.0f min %.0f (%.0f) %s"),
-            // LKTOKEN  _@M735_ = "Total:"
-                  MsgToken(735),
-                  AATTaskLength * 1.0,
-                  DISTANCEMODIFY * lengthtotal,
-                  DISTANCEMODIFY * d1,
-                  Units::GetDistanceName());
-        Surface.DrawText(rc.right + DLGSCALE(2), TextMargin, sTmp);
+        } else {
+
+          double d1 = CALCULATED_INFO.TaskDistanceToGo;
+          if ((CALCULATED_INFO.TaskStartTime > 0.0) && (CALCULATED_INFO.Flying) && (ActiveTaskPoint > 0)) {
+            d1 += CALCULATED_INFO.TaskDistanceCovered;
+          }
+
+          if (d1 == 0.0) {
+            d1 = CALCULATED_INFO.AATTargetDistance;
+          }
+
+          _stprintf(sTmp, TEXT("%s %.0f min %.0f (%.0f) %s"),
+              // LKTOKEN  _@M735_ = "Total:"
+                    MsgToken(735),
+                    AATTaskLength * 1.0,
+                    DISTANCEMODIFY * lengthtotal,
+                    DISTANCEMODIFY * d1,
+                    Units::GetDistanceName());
+          Surface.DrawText(rc.right + DLGSCALE(2), TextMargin, sTmp);
+        }
       }
     }
   }
@@ -195,6 +217,7 @@ static void OverviewRefreshTask(void) {
   // as the order of other taskpoints hasn't changed
   UpLimit = 0;
   lengthtotal = 0;
+  lengthtotal_home = 0;
   for (i = 0; i < MAXTASKPOINTS; i++) {
     if (Task[i].Index != -1) {
       lengthtotal += Task[i].Leg;
@@ -213,8 +236,20 @@ static void OverviewRefreshTask(void) {
         }
       }
     }
+    if (ISPARAGLIDER && ValidWayPoint(HomeWaypoint) && Task[1].Index != -1) {
+      double dist_to_start = 0;
+      DistanceBearing(WayPointList[Task[1].Index].Latitude,
+                      WayPointList[Task[1].Index].Longitude,
+                      WayPointList[HomeWaypoint].Latitude,
+                      WayPointList[HomeWaypoint].Longitude,
+                      &dist_to_start, NULL);
+      lengthtotal_home = lengthtotal + dist_to_start;
+    } else {
+      lengthtotal_home = 0;
+    }
   } else {
     fai_ok = false;
+    lengthtotal_home = 0;
   }
 
   RefreshTaskStatistics();
