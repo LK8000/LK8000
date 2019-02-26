@@ -100,13 +100,11 @@ public:
     }
   }
 
-  gcc_pure
   void DoRelative(int &x, int &y) const {
     if (swap)
       std::swap(x, y);
   }
 
-  gcc_pure
   void DoAbsolute(int &x, int &y) const {
     DoRelative(x, y);
 
@@ -117,7 +115,6 @@ public:
       y = height - y;
   }
 
-  gcc_pure
   void Do(RasterPoint &p) const {
     if (swap)
       std::swap(p.x, p.y);
