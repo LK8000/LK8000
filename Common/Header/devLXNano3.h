@@ -16,6 +16,9 @@
 //_____________________________________________________________________includes_
 
 #include "devLX.h"
+#include "dlgTools.h"
+#include "Dialogs.h"
+#include "WindowControls.h"
 
 
 //______________________________________________________________________defines_
@@ -34,6 +37,9 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// LX Nano 3 device (parsing LXWPn sentences and declaring tasks).
 ///
+
+
+
 class DevLXNanoIII : public DevLX
 {
   //----------------------------------------------------------------------------
@@ -42,6 +48,12 @@ class DevLXNanoIII : public DevLX
     /// Registers device into device subsystem.
     static bool Register();
 
+    static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
+
+    /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
+    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
+    static bool OnStartIGC_FileRead(TCHAR Filename[]) ;
+    static BOOL AbortLX_IGC_FileRead(void);
 
   //----------------------------------------------------------------------------
   protected:
@@ -69,13 +81,25 @@ class DevLXNanoIII : public DevLX
     /// Converts TCHAR[] string into US-ASCII string.
     static bool Wide2LxAscii(const TCHAR* input, int outSize, char* output);
 
-    /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
-    static bool SendNmea(PDeviceDescriptor_t d, TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
-
     /// Send one line of ceclaration to logger
     static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
 
+   static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
+   static BOOL Config(PDeviceDescriptor_t d);
+   static void OnCloseClicked(WndButton* pWnd);
+
+   static void OnIGCDownloadClicked(WndButton* pWnd);
+   static BOOL Open( PDeviceDescriptor_t d);
+   static BOOL Close( PDeviceDescriptor_t d);
+   static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+
+   static CallBackTableEntry_t CallBackTable[];
+   static PDeviceDescriptor_t m_pDevice;
+  // static TCHAR m_Filename[200];
+
+  //  static bool PutMacCready(PDeviceDescriptor_t d, double MacCready);
 
   //----------------------------------------------------------------------------
   //private:
@@ -96,6 +120,9 @@ class DevLXNanoIII : public DevLX
 /// LX task declaration data.
 /// This data are byte-by-byte sent to device.
 ///
+
+
+
 class DevLXNanoIII::Decl
 {
   //----------------------------------------------------------------------------

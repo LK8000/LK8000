@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="LXNav Config" Popup="1" Font="2" >   
+    <WndButton Name="cmdClose"       Caption="_@M186_"     X="2" Y="1"  Width="110"  Height="28" Font="2" Tag="3" />
+    <WndButton Name="cmdIGCDownload" Caption="_@M2398_"    X="2" Y="-1" Width="110"  Height="28" Font="2" Tag="3" />   
+ <!--     <WndButton Name="cmdFlarmReboot" Caption="_@M2399_"    X="2" Y="-1" Width="110"  Height="28" Font="2" Tag="3" />
+    
+    <WndProperty Name="prpComSpeed" Caption="_@M135_"  X="90" Y="-1"  Width="250" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
+      <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
+    </WndProperty>       
+    <WndProperty Name="prpFlarmId" Caption="_@M2405_"  X="2" Y="-1"  Width="180" Height="22" CaptionWidth="100" Font="2" Keyboard="1" Help="_@H1300_">
+      <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s"/>
+    </WndProperty>        
+-->    
+  </WndForm>
+</PMML>

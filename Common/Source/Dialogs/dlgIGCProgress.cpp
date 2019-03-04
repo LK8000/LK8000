@@ -21,6 +21,7 @@
 #include "dlgIGCProgress.h"
 
 extern void   StopIGCRead(void);
+extern void  OnAbort_IGC_FileRead(void);
 
 static bool OnIGCProgressTimer(WndForm* pWnd);
 static bool bClose = false;
@@ -159,6 +160,7 @@ void IGCProgressDialogText(const TCHAR* text) {
 	{
 	  CloseIGCProgressDialog();
 	  StopIGCRead();
+	  OnAbort_IGC_FileRead();
 	}
 
 }

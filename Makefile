@@ -1284,6 +1284,8 @@ DLGS	:=\
 	$(DLG)/dlgProgress.cpp \
 	$(DLG)/dlgIGCProgress.cpp \
 	$(DLG)/dlgFlarmIGCDownload.cpp \
+	$(DLG)/dlgLXIGCDownload.cpp \
+	
 	
 SRC_FILES :=\
 	$(WINDOW) \

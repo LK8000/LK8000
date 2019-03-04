@@ -16,13 +16,30 @@
 #include "utils/stringext.h"
 #include "devLXNano3.h"
 
+
+#include "dlgTools.h"
+#include "Dialogs.h"
+#include "WindowControls.h"
+#include "resource.h"
+#include "dlgIGCProgress.h"
+#include "Util/Clamp.hpp"
+#include "OS/Sleep.h"
+#include "dlgLXIGCDownload.h"
+
+#define PRPGRESS_DLG
+#define BLOCK_SIZE 25
+
+PDeviceDescriptor_t DevLXNanoIII::m_pDevice=NULL;
+bool bIGC_Download = false;
+static FILE *f= NULL;
+uint uTimeout =0;
 //______________________________________________________________________defines_
 
 /// polynom for LX data CRC
 #define LX_CRC_POLY 0x69
 
-/// helper for ToStream() functions
-#define LX_ADD_TO_STREAM(var) { memcpy(dst, &var, sizeof(var)); dst += sizeof(var); }
+TCHAR m_Filename[200];
+
 
 //____________________________________________________________class_definitions_
 
@@ -93,7 +110,7 @@ bool DevLXNanoIII::Register(){
 } // Register()
 
 
-
+BOOL PutMacCready(PDeviceDescriptor_t d, double MacCready);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
@@ -106,10 +123,10 @@ bool DevLXNanoIII::Register(){
 BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
-  d->PutMacCready = NULL;
+  d->PutMacCready = PutMacCready;
   d->PutBugs      = NULL;
   d->PutBallast   = NULL;
-  d->Open         = NULL;
+  d->Open         = Open;
   d->Close        = NULL;
   d->Init         = NULL;
   d->LinkTimeout  = GetTrue;
@@ -117,12 +134,86 @@ BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
+  d->Config       = Config;
   StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
     GetName(),
     PlatfEndian::IsBE() ? _T("be") : _T("le"),
     PlatfEndian::To32BE(0x01000000), NEWLINE);
   return(true);
 } // Install()
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Parses LXWPn sentences.
+///
+/// @param d         device descriptor
+/// @param sentence  received NMEA sentence
+/// @param info      GPS info to be updated
+///
+/// @retval true if the sentence has been parsed
+///
+//static
+
+
+BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+{
+  return PLXVC( d,  sentence, info);
+} // ParseNMEA()
+
+
+
+BOOL DevLXNanoIII::Open( PDeviceDescriptor_t d) {
+  m_pDevice = d;
+  return TRUE;
+}
+
+
+
+BOOL PutMacCready(PDeviceDescriptor_t d, double MacCready){
+
+  return true;
+
+}
+
+
+CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
+  EndCallBackEntry()
+};
+
+BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
+  if(m_pDevice != d) {
+	  StartupStore(_T(" Config : Invalide device descriptor%s"), NEWLINE);
+	  return FALSE;
+  }
+
+
+  WndForm* wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DEV_LXNAV_L : IDR_XML_DEV_LXNAV_P);
+  if(wf) {
+
+  WndButton *wBt = NULL;
+
+  wBt = (WndButton *)wf->FindByName(TEXT("cmdClose"));
+  if(wBt){
+	  wBt->SetOnClickNotify(OnCloseClicked);
+  }
+
+
+  wBt = (WndButton *)wf->FindByName(TEXT("cmdIGCDownload"));
+  if(wBt){
+	  wBt->SetOnClickNotify(OnIGCDownloadClicked);
+  }
+
+
+
+    wf->ShowModal();
+
+    delete wf;
+    wf=NULL;
+  }
+  return TRUE;
+}
+
 
 
 
@@ -169,6 +260,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
 
     // Establish connecttion and check two-way communication...
     _stprintf(buffer, _T("PLXVC,INFO,R"));
+  	StartupStore(_T(". NANO Decl: %s %s "),   buffer, NEWLINE);
     status = status && DevLXNanoIII::SendNmea(d, buffer, errBufSize, errBuf);
     if (status)
       status = status && ComExpect(d, "$PLXVC,INFO,A,", 256, NULL, errBufSize, errBuf);
@@ -211,26 +303,30 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
       _stprintf(DeclStrings[i++], TEXT("C%02d%02d%02d%02d%02d%02d000000%04d%02d"),
 	                // DD    MM    YY    HH    MM    SS (DD MM YY) IIII  TT
 	                 t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,              1, wpCount-2);
-
+//#ifdef TAKEOFF
 	    // TakeOff point
       if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_takeoff);
       }
-
+//#endif
       // TurnPoints
       for (int ii = 0; ii < wpCount; ii++) {
         decl.WpFormat(DeclStrings[i++], lkDecl->waypoint[ii], Decl::tp_regular);
       }
 
+//#ifdef LANDING
       // Landing point
       if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_landing);
       }
-
+//#endif
+      for (int ii = 0; ii < i ; ii++){
+	  StartupStore(_T(". NANO Decl: %s %s "),   DeclStrings[ii], NEWLINE);
+      }
       // Send complete declaration to logger
       for (int ii = 0; ii < i ; ii++){
         if (status)
@@ -343,7 +439,7 @@ void DevLXNanoIII::Decl::WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type){
     }
   }
   _stprintf(buf, TEXT("C%02d%05.0f%c%03d%05.0f%c%s"),
-             DegLat, MinLat*60000,NS,DegLon, MinLon*60000, EW, wpName);
+             DegLat, MinLat*60000,NS,DegLon, MinLon*60000, EW,wpName  );
 } // WpFormat()
 
 
@@ -389,7 +485,7 @@ void DevLXNanoIII::Class::SetName(const TCHAR* text){
 /// @retval false error (description in @p errBuf)
 ///
 // static
-bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]){
+bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]){
   unsigned char chksum = 0;
   unsigned int i;
   char asciibuf[256];
@@ -402,8 +498,13 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, TCHAR buf[], unsigned errBufS
   sprintf(asciibuf, "*%02X\r\n",chksum);
   for(i = 0; i < strlen(asciibuf); i++)
 	  if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) return (false);
+
+//  StartupStore(_T("request: $%s*%02X %s "),   buf,chksum, NEWLINE);
+
   return (true);
 } // SendNmea()
+
+
 
 
 
@@ -433,3 +534,197 @@ bool DevLXNanoIII::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows
   }
   return status;
 } // SendDecl()
+
+
+
+
+
+void DevLXNanoIII::OnCloseClicked(WndButton* pWnd){
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
+}
+
+
+
+void DevLXNanoIII::OnIGCDownloadClicked(WndButton* pWnd) {
+(void)pWnd;
+LockFlightData();
+
+bool bInFlight    = CALCULATED_INFO.Flying;
+UnlockFlightData();
+
+  if(bInFlight)	{
+    MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
+    return;
+  }
+  TCHAR szTmp[MAX_NMEA_LEN];
+
+  _stprintf(szTmp, _T("PLXVC,LOGBOOKSIZE,R"));
+  TCHAR errBuf[10];
+  TCHAR errBufSize=10;
+
+  SendNmea(m_pDevice, szTmp, errBufSize, errBuf);
+
+  if(m_pDevice) {
+      dlgLX_IGCSelectListShowModal(m_pDevice);
+  }
+}
+
+
+
+
+bool  DevLXNanoIII::OnStartIGC_FileRead(TCHAR Filename[]) {
+
+TCHAR szTmp[MAX_NMEA_LEN];
+
+TCHAR errBuf[10];
+TCHAR errBufSize=10;
+TCHAR IGCFilename[MAX_PATH];
+LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
+
+
+
+f = _tfopen( IGCFilename, TEXT("w"));
+if(f == NULL)   return false;
+// SendNmea(m_pDevice, _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
+
+StartupStore(_T(" ******* NANO3  IGC Download START ***** %s") , NEWLINE);
+
+_stprintf(szTmp, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
+_stprintf(m_Filename, _T("%s"),Filename);
+SendNmea(m_pDevice, szTmp, errBufSize, errBuf);
+StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
+bIGC_Download = true;
+
+CreateIGCProgressDialog();
+
+return true;
+
+}
+
+
+
+BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
+{
+  if(f != NULL)
+  {
+    fclose(f); f= NULL;
+  }
+  bool bWasInProgress = bIGC_Download ;
+  bIGC_Download = false;
+
+  CloseIGCProgressDialog();
+
+  return bWasInProgress;
+}
+
+
+BOOL DevLXNanoIII::Close (PDeviceDescriptor_t d) {
+  m_pDevice = NULL;
+
+  return TRUE;
+}
+
+
+
+
+BOOL DevLXNanoIII::PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+TCHAR errBuf[10];
+uint errBufSize=10;
+static uint CurLine=0;   // musat be static to remember the last correct line in case of checksum error
+BOOL RepeatRequest = false;
+
+if (!NMEAParser::NMEAChecksum(sentence) /*|| (info == NULL)*/){
+    StartupStore(_T("NANO3: Checksum Error %s %s") ,sentence, NEWLINE);
+    RepeatRequest = true;
+}
+
+
+if(bIGC_Download) // IGC Download in progress?
+{
+  if(uTimeout++ > 20)
+  {
+    StartupStore(_T("NANO3: TIMEOUT while IGC File Download!!!%s") , NEWLINE);
+    uTimeout =0;
+    RepeatRequest = true;
+  }
+  if(  RepeatRequest == true)
+  {
+     TCHAR szTmp[MAX_NMEA_LEN];
+     RepeatRequest = false;
+     _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,CurLine+1,CurLine+BLOCK_SIZE+1);
+     bIGC_Download = true;
+     uTimeout      = 0;
+     SendNmea(m_pDevice, szTmp, errBufSize, errBuf);
+     StartupStore(_T("NANO3 request repeat: %s %s") ,szTmp, NEWLINE);
+     return false;
+  }
+}
+
+if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
+{
+  TCHAR Par[10][MAX_NMEA_LEN];
+
+  for(uint i=0; i < 10 ; i++)
+    NMEAParser::ExtractParameter(sentence,Par[i],i);
+
+  if (_tcsncmp(_T("LOGBOOKSIZE"), Par[1],11) == 0)
+  {
+    _sntprintf(Par[0],MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"), _ttoi(Par[3])+1);
+    SendNmea(d, Par[0], errBufSize, errBuf);
+  }
+  else
+    if (_tcsncmp(_T("LOGBOOK"), Par[1],7) == 0)  // PLXVC but not declaration = IGC File transfer
+    {
+	TCHAR Line[2][MAX_NMEA_LEN];
+	_sntprintf( Line[0],MAX_NMEA_LEN, _T("%s"),Par[5]);
+	_sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), Par[6] ,Par[7] ,Par[8], _ttoi(Par[9])/1024);
+	AddElement(Line[0], Line[1]);
+    }
+    else
+    {
+//	StopRxThread(d, errBufSize, errBuf);
+      if (bIGC_Download &&(_tcsncmp(_T("FLIGHT"), Par[1],6) == 0))
+      {
+	uTimeout=0;
+	if(_tcslen( Par[3]) > 0)
+	  StartupStore(_T(">>>> %s %s") ,sentence, NEWLINE);
+
+	_ftprintf(f,_T("%s\n"),Par[6]);
+       CurLine = _ttoi(Par[4]);
+       uint TotalLines = _ttoi(Par[5]);
+       if((CurLine % (BLOCK_SIZE)==0))
+       {
+	 uint uPercent = 0;
+	 if(TotalLines > 0)
+	   uPercent = (CurLine*100) / TotalLines;
+	   _sntprintf(Par[1],MAX_NMEA_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
+
+	 IGCProgressDialogText(Par[1]);
+
+	 _sntprintf(Par[0], MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,CurLine+1,CurLine+BLOCK_SIZE+1);
+	 bIGC_Download = true;
+	 uTimeout      = 0;
+	 SendNmea(m_pDevice, Par[0], errBufSize, errBuf);
+       }
+       if(CurLine == TotalLines)  // reach end of file?
+       {
+	 if(f != NULL) { fclose(f); f= NULL; }
+	 StartupStore(_T(" ******* NANO3  IGC Download END ***** %s") , NEWLINE);
+	 bIGC_Download = false;
+	// MessageBoxX(  MsgToken(2406), MsgToken(2398), mbOk) ;  // // _@M2398_ "IGC Download"
+
+	 CloseIGCProgressDialog();
+//	 StartRxThread(d,  errBufSize , errBuf);
+       }
+     }
+    }
+  }
+  return(true);
+}
+
