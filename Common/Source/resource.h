@@ -109,5 +109,7 @@
 #define IDR_XML_DEVFLARM            697
 #define IDR_XML_IGC_PROGRESS_P      698
 #define IDR_XML_IGC_PROGRESS_L      699
+#define IDR_XML_DEV_LXNAV_P         700
+#define IDR_XML_DEV_LXNAV_L         701
 
 
