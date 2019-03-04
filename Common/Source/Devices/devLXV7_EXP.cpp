@@ -13,6 +13,9 @@
 #include "LKInterface.h"
 #include "InputEvents.h"
 
+#define PLANEDRY 0
+#define PILOT    1
+#define WATER    2
 extern bool UpdateQNH(const double newqnh);
 
 
@@ -254,7 +257,7 @@ TCHAR  szTmp[254];
 if(LXV7_EXP_bValid == false)
   return false;
 
-
+  Ballast =  (double)WEIGHTS[WATER]*Ballast /(double)(WEIGHTS[PLANEDRY] + WEIGHTS[PILOT]);
   _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),(1.0+Ballast));
 
  LXV7_EXPNMEAddCheckSumStrg(szTmp);
@@ -720,8 +723,12 @@ if(LXV7_EXP_BallastUpdateTimeout > 0)
 else
   if (ParToDouble(sentence, 1, &fTmp))
   {
-	fTmp -= 1.0;
-	if(  fabs(fTmp -BALLAST) >= 0.05)
+#define PLANEDRY 0
+#define PILOT    1
+#define WATER    2
+    fTmp = (fTmp)  /(double)(WEIGHTS[PLANEDRY] + WEIGHTS[PILOT]);
+    fTmp = (fTmp) / WEIGHTS[WATER];
+    if(  fabs(fTmp -BALLAST) >= 0.01)
     {
       CheckSetBallast(fTmp);
       iLXV7_EXP_RxUpdateTime = 5;
