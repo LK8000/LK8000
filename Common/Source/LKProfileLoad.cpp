@@ -15,6 +15,7 @@
 #include "Asset.hpp"
 #include "Screen/Init.hpp"
 
+
 // #define DEBUGPROF	1
 void LKParseProfileString(const char *sname, const char *svalue);
 
@@ -598,6 +599,47 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryIpPort4,&dwIpPort[3]);
   PREAD(sname,svalue,szRegistryIpPort5,&dwIpPort[4]);
   PREAD(sname,svalue,szRegistryIpPort6,&dwIpPort[5]);
+
+
+
+#define IO_PARAM_SIZE 160
+  for(int n = 0; n < NUMDEV; n++)
+  {
+    int i =0;
+
+    TCHAR szTmp[IO_PARAM_SIZE] = _T("");
+    TCHAR szItem[10];
+
+    char szKey[20] = ("");
+     sprintf(szKey , "%s%u",szRegistryIOValues,n+1);
+    PREAD(sname,svalue,szKey, szTmp, IO_PARAM_SIZE);
+    if(_tcslen(szTmp) > 0)
+    {
+      StartupStore(TEXT(" Load : szRegistryIOValues[%u] (%s) %s  %s"), n, szKey, szTmp, NEWLINE);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].MCDir     = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BUGDir    = (DataBiIoDir) atoi((char*)szItem); // (String, NULL, 0)
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BALDir    = (DataBiIoDir) atoi((char*)szItem);
+
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].STFDir    = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].WINDDir   = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BARODir   = (DataBiIoDir) atoi((char*)szItem);
+
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].VARIODir  = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].SPEEDDir  = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].TARGETDir = (DataBiIoDir) atoi((char*)szItem);
+
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].RADIODir  = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].TRAFDir   = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].GYRODir   = (DataBiIoDir) atoi((char*)szItem);
+
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].GFORCEDir = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].OATDir    = (DataBiIoDir) atoi((char*)szItem);
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BAT1Dir   = (DataBiIoDir) atoi((char*)szItem);
+
+      NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BAT2Dir   = (DataBiIoDir) atoi((char*)szItem);
+    }
+  }
+
 
   PREAD(sname,svalue,szRegistryPressureHg,&PressureHg);
   PREAD(sname,svalue,szRegistrySafetyAltitudeArrival,&SAFETYALTITUDEARRIVAL);

@@ -52,6 +52,7 @@ class DevLXNanoIII : public DevLX
 
     /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
     static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
+    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[]);
     static bool OnStartIGC_FileRead(TCHAR Filename[]) ;
     static BOOL AbortLX_IGC_FileRead(void);
 
@@ -88,13 +89,24 @@ class DevLXNanoIII : public DevLX
 
    static BOOL Config(PDeviceDescriptor_t d);
    static void OnCloseClicked(WndButton* pWnd);
-
+   static void OnCancelClicked(WndButton* pWnd);
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static BOOL Open( PDeviceDescriptor_t d);
    static BOOL Close( PDeviceDescriptor_t d);
    static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
-
+   static BOOL LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
+   static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
+   static BOOL PutTarget(PDeviceDescriptor_t d);
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
   // static TCHAR m_Filename[200];

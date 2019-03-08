@@ -233,12 +233,21 @@ Surface.SetTextColor(RGB_BLACK);
 
     TCHAR PathAndFilename[MAX_PATH];
     LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);   // add path
-    if(lk::filesystem::exist(PathAndFilename))               // check if file exists
-      _sntprintf(text1, MAX_NMEA_LEN,_T("%s *"), IGCFilename);
+    if(Appearance.UTF8Pictorials)                             // use UTF8 symbols?
+    {
+      if(lk::filesystem::exist(PathAndFilename))               // check if file exists
+	_sntprintf(text1, MAX_NMEA_LEN,_T("%s ✔"), IGCFilename); // already copied
+      else
+	_sntprintf(text1, MAX_NMEA_LEN,_T("%s ⚠"), IGCFilename);// missing
+    }
     else
-      _sntprintf(text1, MAX_NMEA_LEN,_T("%s"), IGCFilename);
+    {
+      if(lk::filesystem::exist(PathAndFilename))               // check if file exists
+	_sntprintf(text1, MAX_NMEA_LEN,_T("%s *"), IGCFilename);// already copied
+      else
+	_sntprintf(text1, MAX_NMEA_LEN,_T("%s x"), IGCFilename);// missing
+    }
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-
     PixelRect rc = { 0, 0, 0, // DLGSCALE(PICTO_WIDTH),
     static_cast<PixelScalar>(Sender->GetHeight())
   };
