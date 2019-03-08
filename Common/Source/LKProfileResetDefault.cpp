@@ -415,7 +415,30 @@ void LKProfileResetDefault(void) {
     dwBitIndex  [i]   = (BitIndex_t)bit8N1;
     dwIpPort    [i]   = 23;
     UseExtSound [i]   = false;
+
+    PortIO[i].MCDir    = BiDirInOut;
+    PortIO[i].BUGDir   = BiDirInOut;
+    PortIO[i].BALDir   = BiDirInOut;
+
+    PortIO[i].STFDir   = BiDirIn;
+    PortIO[i].WINDDir  = BiDirIn;
+    PortIO[i].BARODir  = BiDirIn;
+
+    PortIO[i].VARIODir = BiDirOff;
+    PortIO[i].SPEEDDir = BiDirIn;
+    PortIO[i].TARGETDir= BiDirOut;
+
+    PortIO[i].RADIODir = BiDirInOut;
+    PortIO[i].TRAFDir   = BiDirIn;
+    PortIO[i].GYRODir   = BiDirIn;
+
+    PortIO[i].GFORCEDir = BiDirIn;
+    PortIO[i].OATDir    = BiDirIn;
+    PortIO[i].BAT1Dir   = BiDirIn;
+
+    PortIO[i].BAT2Dir   = BiDirIn;
   }
+
 
   #ifdef ANDROID
   _tcscpy(dwDeviceName[0], _T("Internal"));
