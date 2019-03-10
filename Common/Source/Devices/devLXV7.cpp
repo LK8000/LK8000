@@ -237,7 +237,7 @@ BOOL LXV7PutBallast(PDeviceDescriptor_t d, double Ballast) {
 #define PILOT    1
 #define WATER    2
     Ballast =  1.0 + (double)WEIGHTS[WATER]*Ballast /(double)(WEIGHTS[PLANEDRY] + WEIGHTS[PILOT]);
-    _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),(1.0+Ballast));
+    _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
 
     LXV7NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
