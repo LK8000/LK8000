@@ -257,8 +257,8 @@ TCHAR  szTmp[254];
 if(LXV7_EXP_bValid == false)
   return false;
 
-  Ballast =  (double)WEIGHTS[WATER]*Ballast /(double)(WEIGHTS[PLANEDRY] + WEIGHTS[PILOT]);
-  _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),(1.0+Ballast));
+  Ballast =  1.0f + (double)WEIGHTS[WATER]*Ballast /(double)(WEIGHTS[PLANEDRY] + WEIGHTS[PILOT]);
+  _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
 
  LXV7_EXPNMEAddCheckSumStrg(szTmp);
  d->Com->WriteString(szTmp);
