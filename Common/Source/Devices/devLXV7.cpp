@@ -234,8 +234,8 @@ BOOL LXV7PutBallast(PDeviceDescriptor_t d, double Ballast) {
     if(LXV7_bValid == false)
         return false;
 
-
-    _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),(1.0+Ballast));
+    Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
+    _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
 
     LXV7NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
@@ -520,8 +520,10 @@ if(LXV7_BallastUpdateTimeout > 0)
 else
   if (ParToDouble(sentence, 1, &fTmp))
   {
-	fTmp -= 1.0;
-	if(  fabs(fTmp -BALLAST) >= 0.05)
+    fTmp = (fTmp) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
+    fTmp = (fTmp) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
+    fTmp = (fTmp) / (double)WEIGHTS[WEIGHT_WATER];                              // = % of WEIGHT_WATER (0.0 .. 1.0)
+    if(  fabs(fTmp -BALLAST) >= 0.01)
     {
       CheckSetBallast(fTmp);
       iLXV7_RxUpdateTime = 5;
