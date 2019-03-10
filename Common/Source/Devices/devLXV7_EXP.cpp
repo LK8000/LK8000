@@ -723,9 +723,6 @@ if(LXV7_EXP_BallastUpdateTimeout > 0)
 else
   if (ParToDouble(sentence, 1, &fTmp))
   {
-#define PLANEDRY 0
-#define PILOT    1
-#define WATER    2
     fTmp = (fTmp)  /(double)(WEIGHTS[PLANEDRY] + WEIGHTS[PILOT]);
     fTmp = (fTmp) / WEIGHTS[WATER];
     if(  fabs(fTmp -BALLAST) >= 0.01)
