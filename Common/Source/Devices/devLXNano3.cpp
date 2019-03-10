@@ -1323,8 +1323,10 @@ int iTmp;
     {
       if (ParToDouble(sentence, 1, &fTmp))
       {
-	    fTmp -= 1.0;
-	    if(  fabs(fTmp -BALLAST) >= 0.05)
+	fTmp = (fTmp) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
+	fTmp = (fTmp) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
+	fTmp = (fTmp) / (double)WEIGHTS[WEIGHT_WATER];                              // = % of WEIGHT_WATER (0.0 .. 1.0)
+	if(  fabs(fTmp -BALLAST) >= 0.01)
 	{
 	  CheckSetBallast(fTmp);
 	  iRxUpdateTime = 5;
@@ -1635,7 +1637,8 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   if(!d)  return false;
   if(Nano3_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].BALDir)) return false;
-  _stprintf(szTmp, TEXT("PLXV0,BAL,W,%4.2f"),(1.0+Ballast));
+  Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
+  _stprintf(szTmp, TEXT("PLXV0,BAL,W,%4.2f"),Ballast);
 
   DevLXNanoIII::SendNmea(d,szTmp);
   Nano3_BallastUpdateTimeout =10;
