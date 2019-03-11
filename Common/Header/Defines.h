@@ -337,8 +337,8 @@
 #define D_AUTOWIND_EXTERNAL	4	// from an external instrument only
 
 // Polar weights index
-#define WEIGHT_PLANEDRY 0
-#define WEIGHT_PILOT    1
+#define WEIGHT_PILOT    0
+#define WEIGHT_PLANEDRY 1
 #define WEIGHT_WATER    2
 
 // WriteText modalities
