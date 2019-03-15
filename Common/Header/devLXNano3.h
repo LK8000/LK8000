@@ -104,6 +104,8 @@ class DevLXNanoIII : public DevLX
    static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXV0_POLAR(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);

@@ -332,7 +332,7 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
   PutTarget(d);
 
   /* configure LX after 10 GPS positions */
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
+  if (_tcsncmp(_T("$GNGGA"), sentence, 6) == 0)
   {
     if(i++ > 10)
     {
@@ -387,7 +387,7 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
           else
             if(_tcsncmp(_T("$PLXVTARG"), sentence, 9) == 0)
               return PLXVTARG(d, sentence + 10, info);
-            else
+	    else
 	      if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
 	      {
 		Nano3_bValid = true;
@@ -421,6 +421,8 @@ CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 {
  SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,0,10,1,0,0"));
+ SendNmea(d, TEXT("PLXVC,INFO,R"));
+
   return true;
 }
 
@@ -1104,6 +1106,9 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
   for(uint i=0; i < 10 ; i++)
     NMEAParser::ExtractParameter(sentence,Par[i],i);
 
+  if (_tcsncmp(_T("INFO"), Par[1],4) == 0)
+    return PLXVC_INFO(d,sentence,info);
+
   if (_tcsncmp(_T("LOGBOOKSIZE"), Par[1],11) == 0)
   {
     _sntprintf(Par[0],MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"), atoi((char*)Par[3])+1);
@@ -1190,11 +1195,12 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 
 
- /*
-  if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
-      ParToDouble(sentence, 11, &info->ExternalWindSpeed))
-    info->ExternalWindAvailable = TRUE;
-*/
+  if(IsDirInput(PortIO[d->PortNumber].WINDDir  ))
+  {
+    if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
+	ParToDouble(sentence, 11, &info->ExternalWindSpeed))
+      info->ExternalWindAvailable = TRUE;
+  }
 //  TriggerVarioUpdate();
 
   return(false);
@@ -1335,6 +1341,9 @@ int iTmp;
     }
   }
 
+
+
+
  if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
  {
     if(Nano3_BugsUpdateTimeout > 0)
@@ -1355,18 +1364,32 @@ int iTmp;
       }
     }
   }
-/*
-  if (ParToDouble(sentence, 3, &fTmp))
-    fPolar_a = fTmp;
-  if (ParToDouble(sentence, 4, &fTmp))
-    fPolar_b = fTmp;
-  if (ParToDouble(sentence, 5, &fTmp))
-    fPolar_c = fTmp;
-  if (ParToDouble(sentence, 6, &fTmp))
-  {
-    fVolume = fTmp;
-  }
-*/
+
+ if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
+ {
+     if(ParToDouble(sentence, 3, &fTmp))
+     {
+//	POLAR[0] = fTmp;
+     }
+     if(ParToDouble(sentence, 4, &fTmp))
+     {
+//	POLAR[0] = fTmp;
+     }
+     if(ParToDouble(sentence, 5, &fTmp))
+     {
+//	POLAR[0] = fTmp;
+     }
+     if(ParToDouble(sentence, 6, &fTmp))
+     {
+
+     }
+     if(ParToDouble(sentence, 6, &fTmp))
+     {
+
+     }
+
+ }
+
   return(true);
 } // LXWP2()
 
@@ -1768,5 +1791,99 @@ if(!IsDirInput(PortIO[d->PortNumber].TARGETDir)) return false;
   return true;
 
 }
+
+
+BOOL DevLXNanoIII::PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+TCHAR  szTmp[MAX_NMEA_LEN];
+
+  NMEAParser::ExtractParameter(sentence,szTmp,2);
+  if  (_tcscmp(szTmp,_T("A"))!=0)  // no answer flag received
+   return false;
+
+  NMEAParser::ExtractParameter(sentence,szTmp,0);
+  {
+    NMEAParser::ExtractParameter(sentence,szTmp,5);
+    {
+      info->SerialNumber = (int) StrToDouble(szTmp,NULL);
+    }
+    NMEAParser::ExtractParameter(sentence,szTmp,7);
+    if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
+    {
+      info->ExtBatt1_Voltage = StrToDouble(szTmp,NULL);
+//	StartupStore(_T("Nano3 BATT1: %5.2f"),info->ExtBatt1_Voltage);
+    }
+
+    NMEAParser::ExtractParameter(sentence,szTmp,8);
+    if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
+    {
+      info->ExtBatt2_Voltage = StrToDouble(szTmp,NULL);
+//	StartupStore(_T("Nano3 BATT2: %5.2f"),info->ExtBatt2_Voltage);
+    }
+  }
+  return true;
+
+} // PLXVC
+
+
+
+BOOL DevLXNanoIII::PLXV0_POLAR(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+TCHAR  szTmp[MAX_NMEA_LEN];
+
+  NMEAParser::ExtractParameter(sentence,szTmp,2);
+  if  (_tcscmp(szTmp,_T("W"))!=0)  // no answer flag received
+   return false;
+
+  if(IsDirInput(PortIO[d->PortNumber].BALDir))
+ // NMEAParser::ExtractParameter(sentence,szTmp,0);
+  {
+    NMEAParser::ExtractParameter(sentence,szTmp,3);
+    {
+      POLAR[ POLAR_A] = StrToDouble(szTmp,NULL);
+    }
+    NMEAParser::ExtractParameter(sentence,szTmp,4);
+    {
+      POLAR[ POLAR_B] = StrToDouble(szTmp,NULL);
+    }
+    NMEAParser::ExtractParameter(sentence,szTmp,5);
+    {
+      POLAR[ POLAR_C] = StrToDouble(szTmp,NULL);
+    }
+  /*
+#define WEIGHT_PILOT    0
+#define WEIGHT_PLANEDRY 1
+#define WEIGHT_WATER    2
+*/
+    int iPolarLoad=0; int iMaxLoad;
+    NMEAParser::ExtractParameter(sentence,szTmp,6);    // current polar weight
+    {
+      iPolarLoad = (int) StrToDouble(szTmp,NULL);
+    }
+
+    NMEAParser::ExtractParameter(sentence,szTmp,7);    // max weigt
+    {
+      iMaxLoad = (int) StrToDouble(szTmp,NULL);
+    }
+
+    NMEAParser::ExtractParameter(sentence,szTmp,8);    // empty weight
+    {
+      WEIGHTS[ WEIGHT_PLANEDRY] = StrToDouble(szTmp,NULL);
+    }
+
+    NMEAParser::ExtractParameter(sentence,szTmp,9);    // empty weight
+    {
+      WEIGHTS[ WEIGHT_PILOT] = StrToDouble(szTmp,NULL);
+    }
+    WEIGHTS[ WEIGHT_WATER] = iPolarLoad - ( WEIGHTS[ WEIGHT_PLANEDRY] +  WEIGHTS[ WEIGHT_PILOT]);
+    iMaxLoad =  iMaxLoad -( WEIGHTS[ WEIGHT_PLANEDRY] +  WEIGHTS[ WEIGHT_PILOT]);
+  }
+
+  return true;
+
+} // PLXVC
+
+
+
 
 
