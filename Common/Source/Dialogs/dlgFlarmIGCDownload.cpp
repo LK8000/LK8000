@@ -926,9 +926,6 @@ uint8_t err  = REC_NO_ERROR ;
 	_sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"), MsgToken(2406)); // _@M2406_ "IGC File download complete!"
       }
       if(deb_)StartupStore(_T("IGC downlload complete"));
-  #ifdef PRPGRESS_DLG
-      IGCProgressDialogText(szStatusText) ;  // update progress dialog text
-  #endif
     }
   }  // if(d)
 return 0;

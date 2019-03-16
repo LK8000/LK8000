@@ -22,21 +22,8 @@
 
 extern void   StopIGCRead(void);
 
-static bool OnIGCProgressTimer(WndForm* pWnd);
-static bool bClose = false;
 
 WndForm* _WndForm = NULL;
-
-static bool OnIGCProgressTimer(WndForm* pWnd)
-{
-	if(pWnd)
-	{
-	  if(bClose)
-	    pWnd->SetModalResult(mrOK);
-	}
- return true;
-}
-
 
 static void OnIGCSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 LKBitmap SplashBitmap;
@@ -94,8 +81,6 @@ CallBackTableEntry_t IGCProgressCallBackTable[] = {
 
 void dlgIGCProgressShowModal(void){
     
-	bClose = false;
-
     _WndForm = dlgLoadFromXML(IGCProgressCallBackTable, ScreenLandscape ? IDR_XML_IGC_PROGRESS_P : IDR_XML_IGC_PROGRESS_L);
 
     LKASSERT(_WndForm);
@@ -110,9 +95,6 @@ void dlgIGCProgressShowModal(void){
             wText->SetWidth(_WndForm->GetWidth());
             wText->SetTop(_WndForm->GetHeight() - wText->GetHeight());
         }
-//        _WndForm->Show();
-//        _WndForm->Redraw();
-        _WndForm->SetTimerNotify(200, OnIGCProgressTimer); // check for end of download every 200ms
         _WndForm->ShowModal();
         delete _WndForm;
         _WndForm = NULL;
@@ -122,8 +104,8 @@ void dlgIGCProgressShowModal(void){
 
 
 void CloseIGCProgressDialog() {
-    bClose = true;
-
+  if(_WndForm)
+    _WndForm->SetModalResult(mrOK);
 }
 
 void CreateIGCProgressDialog() {
@@ -160,7 +142,6 @@ void IGCProgressDialogText(const TCHAR* text) {
 	  CloseIGCProgressDialog();
 	  StopIGCRead();
 	}
-
 }
 
 
