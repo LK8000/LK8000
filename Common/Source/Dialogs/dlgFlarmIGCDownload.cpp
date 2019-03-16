@@ -857,6 +857,8 @@ uint8_t err  = REC_NO_ERROR ;
       if(err != REC_NO_ERROR)
 	err =  IGC_RECEIVE_ERROR;
       ThreadState =  READ_STATE_TX;
+      Sequence =0;
+      retrys =0;
     }
 
     /******READ STATE TX *******************************************************************************/
@@ -864,8 +866,8 @@ uint8_t err  = REC_NO_ERROR ;
     {
       blocksize = 0;
       ThreadState = READ_STATE_RX;
-      SendBinBlock(d,  Sequence++,  GETIGCDATA, &pByteBlk[0], 0);
-	  TimeCnt =0;
+      SendBinBlock(d,  Sequence,  GETIGCDATA, &pByteBlk[0], 0);
+      TimeCnt =0;
     }
 
     /******READ STATE RX *******************************************************************************/
@@ -875,14 +877,18 @@ uint8_t err  = REC_NO_ERROR ;
       {
 	if(TimeCnt++ > (GC_BLK_RECTIMEOUT/GC_IDLETIM))
 	{
-	      err = REC_TIMEOUT_ERROR;
-	  ThreadState = ABORT_STATE;
+	  err = REC_TIMEOUT_ERROR;
+	  if(retrys++ > 4)
+	    ThreadState = ABORT_STATE;
+	  else
+	    ThreadState = READ_STATE_TX;
 	}
 	return 0; // no data? leave thread and wait for next call
       }
-
+      Sequence++;
+      retrys =0;
       err = RecBinBlock(d,  &RecSequence, &RecCommand, &pByteBlk[0], &blocksize,10* REC_TIMEOUT);
-	  ThreadState = READ_STATE_TX;
+      ThreadState = READ_STATE_TX;
 
       if(err==REC_NO_ERROR)
 	_sntprintf(szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), pByteBlk[2], IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
@@ -926,9 +932,7 @@ uint8_t err  = REC_NO_ERROR ;
 	_sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"), MsgToken(2406)); // _@M2406_ "IGC File download complete!"
       }
       if(deb_)StartupStore(_T("IGC downlload complete"));
-  #ifdef PRPGRESS_DLG
-      IGCProgressDialogText(szStatusText) ;  // update progress dialog text
-  #endif
+
     }
   }  // if(d)
 return 0;
