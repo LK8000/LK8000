@@ -383,9 +383,21 @@ Surface.SetTextColor(RGB_BLACK);
   if(IGCFileList.size() < (uint)IGC_DrawListIndex) return;
   if (IGC_DrawListIndex < IGCFileList.size())
   {
+    TCHAR IGCFilename[MAX_PATH];
+    TCHAR FileExist[5] = _T("");
+    if( GetIGCFilename(IGCFilename, IGC_DrawListIndex))
+    {
+       if(lk::filesystem::exist(IGCFilename))    // file exists
+       {
+	 if(Appearance.UTF8Pictorials)           // use UTF8 symbols?
+	   _sntprintf(FileExist, 5,_T("✔"));   // check! already copied
+	 else
+	   _sntprintf(FileExist, 5,_T("*"));	 // * already copied
+       }
+    }
     TCHAR text1[180] = {TEXT("IGC File")};
     TCHAR text2[180] = {TEXT("date")};
-    _stprintf(text1, _T("%s"), IGCFileList.at(IGC_DrawListIndex).Line1 );
+    _stprintf(text1, _T("%s %s"), FileExist, IGCFileList.at(IGC_DrawListIndex).Line1 );
     _stprintf(text2, _T("%s"), IGCFileList.at(IGC_DrawListIndex).Line2);
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
 
