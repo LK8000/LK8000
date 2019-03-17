@@ -356,12 +356,12 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
     info->VarioAvailable = FALSE;
 
 
-
- /*
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
+  {
+    info->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
     info->ExternalWindAvailable = TRUE;
-*/
+  }
   TriggerVarioUpdate();
 
   return(true);

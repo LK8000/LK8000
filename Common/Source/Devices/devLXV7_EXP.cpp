@@ -547,11 +547,10 @@ else
       else
         if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
           return LXWP1(d, sentence + 7, info);
-
-#ifdef OLD_LX_SENTENCES
 	else
-      if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
-        return LXWP0(d, sentence + 7, info);
+	  if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+	    return LXWP0(d, sentence + 7, info);
+#ifdef OLD_LX_SENTENCES
       else
         if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
           return LXWP1(d, sentence + 7, info);
@@ -594,11 +593,14 @@ bool DevLXV7_EXP::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*
 
 
 
- /*
+
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
+  {
+    info->ExternalWindSpeed /=  TOKPH;
     info->ExternalWindAvailable = TRUE;
-*/
+  }
+
 //  TriggerVarioUpdate();
 
   return(false);
