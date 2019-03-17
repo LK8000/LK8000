@@ -103,6 +103,7 @@ typedef struct{
   DataBiIoDir OATDir   ; // Outside air temperature
   DataBiIoDir BAT1Dir  ; // Battery 1 voltage
   DataBiIoDir BAT2Dir  ; // Battery 2 voltage
+  DataBiIoDir POLARDir ; // Polar 2 voltage
 
 } DeviceIO;
 

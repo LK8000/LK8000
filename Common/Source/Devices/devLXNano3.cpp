@@ -45,7 +45,7 @@ uint uTimeout =0;
 #define LX_CRC_POLY 0x69
 
 TCHAR m_Filename[200];
-
+#define NANO_PROGRESS_DLG
 
 int iRxUpdateTime=0;
 int iNano3_RxUpdateTime=0;
@@ -385,14 +385,17 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
           if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
             return LXWP2(d, sentence + 7, info);
           else
-            if(_tcsncmp(_T("$PLXVTARG"), sentence, 9) == 0)
-              return PLXVTARG(d, sentence + 10, info);
+            if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+              return LXWP0(d, sentence + 7, info);
 	    else
-	      if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-	      {
-		Nano3_bValid = true;
-		return LXWP1(d, sentence + 7, info);
-	      }
+	      if(_tcsncmp(_T("$PLXVTARG"), sentence, 9) == 0)
+		return PLXVTARG(d, sentence + 10, info);
+	      else
+		if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+		{
+		  Nano3_bValid = true;
+		  return LXWP1(d, sentence + 7, info);
+		}
 
 
 return false;
@@ -566,6 +569,25 @@ StartupStore(_T(" Config : Device Number %i %s"),PortNum, NEWLINE);
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2432)); // LKTOKEN  _@M2432_ "IN"
     dfe->Set((uint) PortIO[PortNum].BAT1Dir);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken(2432)); // LKTOKEN  _@M2432_ "IN"
+    dfe->Set((uint) PortIO[PortNum].BAT2Dir);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken(2432)); // LKTOKEN  _@M2432_ "IN"
+    dfe->addEnumText(MsgToken(2433)); // LKTOKEN  _@M2433_ "OUT"
+    dfe->Set((uint) PortIO[PortNum].BAT2Dir);
     wp->RefreshDisplay();
   }
     wf->ShowModal();
@@ -876,7 +898,7 @@ TCHAR errBufSize=10;
     DoStatusMessage(errBuf);
     return false;
   }
-  StartupStore(_T(" Nano3 SenadNmea %s %s"),buf, NEWLINE);
+ // StartupStore(_T(" Nano3 SenadNmea %s %s"),buf, NEWLINE);
   return true;
 } // SendNmea()
 
@@ -987,6 +1009,17 @@ void DevLXNanoIII::OnCloseClicked(WndButton* pWnd){
 	DataField* dfe = wp->GetDataField();
 	PortIO[PortNum].BAT1Dir =  (DataBiIoDir) dfe->GetAsInteger();
       }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));
+      if (wp) {
+	DataField* dfe = wp->GetDataField();
+	PortIO[PortNum].BAT2Dir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));
+      if (wp) {
+	DataField* dfe = wp->GetDataField();
+	PortIO[PortNum].POLARDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+
       wf->SetModalResult(mrOK);
     }
   }
@@ -1036,8 +1069,9 @@ LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
   SendNmea(m_pDevice, szTmp, errBufSize, errBuf);
   StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
   bIGC_Download = true;
+#ifdef  NANO_PROGRESS_DLG
   CreateIGCProgressDialog();
-
+#endif
 return true;
 
 }
@@ -1052,7 +1086,9 @@ BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
   }
   bool bWasInProgress = bIGC_Download ;
   bIGC_Download = false;
+#ifdef  NANO_PROGRESS_DLG
   CloseIGCProgressDialog();
+#endif
   return bWasInProgress;
 }
 
@@ -1140,9 +1176,9 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
 	 if(TotalLines > 0)
 	   uPercent = (CurLine*100) / TotalLines;
 	   _sntprintf(Par[1],MAX_NMEA_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
-
+#ifdef NANO_PROGRESS_DLG
 	 IGCProgressDialogText(Par[1]);
-
+#endif
 	 _sntprintf(Par[0], MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,CurLine+1,CurLine+BLOCK_SIZE+1);
 	 bIGC_Download = true;
 	 uTimeout      = 0;
@@ -1193,13 +1229,14 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   // e.g.:
   // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
-
-
   if(IsDirInput(PortIO[d->PortNumber].WINDDir  ))
   {
     if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
 	ParToDouble(sentence, 11, &info->ExternalWindSpeed))
+    {
+      info->ExternalWindSpeed /=  TOKPH;
       info->ExternalWindAvailable = TRUE;
+    }
   }
 //  TriggerVarioUpdate();
 
@@ -1835,7 +1872,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   if  (_tcscmp(szTmp,_T("W"))!=0)  // no answer flag received
    return false;
 
-  if(IsDirInput(PortIO[d->PortNumber].BALDir))
+  if(IsDirInput(PortIO[d->PortNumber].POLARDir))
  // NMEAParser::ExtractParameter(sentence,szTmp,0);
   {
     NMEAParser::ExtractParameter(sentence,szTmp,3);

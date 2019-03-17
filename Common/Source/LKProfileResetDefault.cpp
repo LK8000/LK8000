@@ -437,6 +437,8 @@ void LKProfileResetDefault(void) {
     PortIO[i].BAT1Dir   = BiDirIn;
 
     PortIO[i].BAT2Dir   = BiDirIn;
+    PortIO[i].POLARDir  = BiDirOff;
+
   }
 
 
