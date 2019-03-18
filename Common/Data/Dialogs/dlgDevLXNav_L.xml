@@ -6,46 +6,46 @@
     <WndButton Name="cmdCancel"      Caption="_@M161_"     X="2" Y="-1"  Width="110"  Height="28" Font="2" Tag="3" />                
 
     
-     <WndProperty Name="prpMCDir" Caption="_@M2427_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+     <WndProperty Name="prpMCDir" Caption="_@M2427_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
       </WndProperty> 
-      <WndProperty Name="prpTARGDir" Caption="_@M2438_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpTARGDir" Caption="_@M2438_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>        
       </WndProperty>                  
-     <WndProperty Name="prpBALDir" Caption="_@M2428_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+     <WndProperty Name="prpBALDir" Caption="_@M2428_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
       </WndProperty>    
-      <WndProperty Name="prpGFORCEDir" Caption="_@M2442_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpGFORCEDir" Caption="_@M2442_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>         
-      <WndProperty Name="prpBUGDir" Caption="_@M2429_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpBUGDir" Caption="_@M2429_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
       </WndProperty> 
-      <WndProperty Name="prpOATDir" Caption="_@M2443_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpOATDir" Caption="_@M2443_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>                
-      <WndProperty Name="prpSTFDir" Caption="_@M2430_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpSTFDir" Caption="_@M2430_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>  
-      <WndProperty Name="prpBAT1Dir" Caption="_@M2444_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpBAT1Dir" Caption="_@M2444_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>             
-      <WndProperty Name="prpWINDDir" Caption="_@M2431_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpWINDDir" Caption="_@M2431_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>  
-      <WndProperty Name="prpBAT2Dir" Caption="_@M2445_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpBAT2Dir" Caption="_@M2445_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>            
-      <WndProperty Name="prpBARODir" Caption="_@M2435_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpBARODir" Caption="_@M2435_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty> 
-      <WndProperty Name="prpPOLARDir" Caption="_@M2446_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpPOLARDir" Caption="_@M2446_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>        
-      <WndProperty Name="prpSPEEDDir" Caption="_@M2436_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+      <WndProperty Name="prpSPEEDDir" Caption="_@M2436_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>       
-       <WndProperty Name="prpVARIODir" Caption="_@M2437_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H161_">
+       <WndProperty Name="prpVARIODir" Caption="_@M2437_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>    
             

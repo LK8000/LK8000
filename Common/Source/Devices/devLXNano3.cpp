@@ -332,7 +332,7 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
   PutTarget(d);
 
   /* configure LX after 10 GPS positions */
-  if (_tcsncmp(_T("$GNGGA"), sentence, 6) == 0)
+  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
   {
     if(i++ > 10)
     {
