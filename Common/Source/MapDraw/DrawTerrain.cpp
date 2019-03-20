@@ -412,6 +412,7 @@ public:
         // set resolution
         DisplayMap->SetFieldRounding(dX/3, dY/3);
         epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d, ymiddle, xmiddle);
+        epx = std::max(4u, (epx / 4 ) * 4);
 
 
         POINT orig = MapWindow::GetOrigScreen();
@@ -570,8 +571,8 @@ public:
         const float32x4_t v_sy = vmovq_n_f32(sy);
         const float32x4_t v_sz = vmovq_n_f32(sz);
 
-        const unsigned int ixsright = std::max(4u, ixs - 1 - epx);
         const unsigned int ixsleft = std::max(4u, epx);
+        const unsigned int ixsright = ixs - std::max(4u, epx);
 
         for(unsigned y = 0; y < iys; y++) {
             BGRColor* screen_row = screen_buffer->GetRow(y);
@@ -619,6 +620,8 @@ public:
                     screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
                     screen_row[x+2] = color_table[vgetq_lane_s32(mag,2)][vget_lane_s16(h, 2)];
                     screen_row[x+3] = color_table[vgetq_lane_s32(mag,3)][vget_lane_s16(h, 3)];
+
+                    assert(x+3 < ixs);
                 }
             }
             // center
@@ -654,13 +657,15 @@ public:
                 screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
                 screen_row[x+2] = color_table[vgetq_lane_s32(mag,2)][vget_lane_s16(h, 2)];
                 screen_row[x+3] = color_table[vgetq_lane_s32(mag,3)][vget_lane_s16(h, 3)];
+
+                assert(x+3 < ixs);
             }
 
 
             // right side
             {
                 const int16x4_t right = vmov_n_s16(*(curr_row + ixs - 1));
-                for (unsigned int x = ixsright; x < ixs; x+=4) {
+                for (unsigned int x = ixsright; x < (ixs-3); x+=4) {
                     const int16x4_t up = vld1_s16(prev_row + x);
                     const int16x4_t bottom = vld1_s16(next_row + x);
                     const int16x4_t left = vld1_s16(curr_row + x - epx);
@@ -690,6 +695,8 @@ public:
                     screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
                     screen_row[x+2] = color_table[vgetq_lane_s32(mag,2)][vget_lane_s16(h, 2)];
                     screen_row[x+3] = color_table[vgetq_lane_s32(mag,3)][vget_lane_s16(h, 3)];
+
+                	assert(x+3 < ixs);
                 }
             }
         }
@@ -712,8 +719,8 @@ public:
         for (unsigned int y = 0; y < iys; ++y) {
             BGRColor* screen_row = screen_buffer->GetRow(y);
             const int16_t *height_row = &height_buffer[y*ixs];
-            
-            for (unsigned int x = 0; x < ixs; x+=4) {
+
+            for (unsigned int x = 0; x < (ixs-3); x+=4) {
                 int16x4_t h =  vld1_s16(height_row + x);
                 h = (h - v_height_min) >> v_height_scale;
                 h = Clamp(h, height_0, height_255);
@@ -722,6 +729,8 @@ public:
                 screen_row[x+1] = GetColor(vget_lane_s16(h, 1));
                 screen_row[x+2] = GetColor(vget_lane_s16(h, 2));
                 screen_row[x+3] = GetColor(vget_lane_s16(h, 3));
+
+                assert(x+3 < ixs);
             }
         }
     }
