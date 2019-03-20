@@ -498,10 +498,6 @@ class NativeView extends SurfaceView
     }
   }
 
-  private int getNetState() {
-    return NetUtil.getNetState();
-  }
-
   private final String getPackagePath() {
     Context context = getContext();
 

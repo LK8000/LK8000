@@ -37,6 +37,7 @@
 #include "Screen/OpenGL/Buffer.hpp"
 #include "UsbSerialHelper.h"
 #include "AndroidFileUtils.h"
+#include "NetUtil.h"
 
 unsigned android_api_level;
 
@@ -93,8 +94,8 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   BluetoothHelper::Initialise(env);
   NativeLeScanCallback::Initialise(env);
   UsbSerialHelper::Initialise(env);
-
   AndroidFileUtils::Initialise(env);
+  NetUtil::Initialise(env);
 
   const bool have_ioio = IOIOHelper::Initialise(env);
 
@@ -165,6 +166,7 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   delete ioio_helper;
   ioio_helper = nullptr;
 
+  NetUtil::Deinitialise(env);
   AndroidFileUtils::Deinitialise(env);
   TextUtil::Deinitialise(env);
   OpenGL::Deinitialise();

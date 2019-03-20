@@ -130,6 +130,8 @@ add_library( LK8000 SHARED
     Common/Source/Android/UsbSerialHelper.cpp
     Common/Source/Android/UsbSerialPort.cpp
 
+    Common/Source/Android/NetUtil.cpp
+
     Common/Source/Android/LK8000Activity.cpp
 
     Common/Source/Android/Vario/OscillatorSquare.h
