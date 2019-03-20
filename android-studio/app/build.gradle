@@ -126,7 +126,6 @@ android {
                            "../../android/res"]
         }
     }
-    flavorDimensions "full"
     buildTypes {
         release {
             minifyEnabled false
@@ -183,38 +182,6 @@ android {
                     cFlags "-DANDROID_VARIANT_BETA"
                     cppFlags "-DANDROID_VARIANT_BETA"
                 }
-            }
-        }
-    }
-    productFlavors {
-        x86 {
-            dimension "full"
-            ndk {
-                abiFilter "x86"
-            }
-        }
-        x86_64 {
-            dimension "full"
-            ndk {
-                abiFilter "x86_64"
-            }
-        }
-        armv7 {
-            dimension "full"
-            ndk {
-                abiFilter "armeabi-v7a"
-            }
-        }
-        arm64 {
-            dimension "full"
-            ndk {
-                abiFilter "arm64-v8a"
-            }
-        }
-        fat {
-            dimension "full"
-            ndk {
-                abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
             }
         }
     }
