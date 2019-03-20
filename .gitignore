@@ -54,3 +54,5 @@ output.map
 /PPC2003-install.zip
 /PPC2002-install.zip
 /LINUX-install.zip
+/android-studio/app/fabric.properties
+/android-studio/.idea/caches/
