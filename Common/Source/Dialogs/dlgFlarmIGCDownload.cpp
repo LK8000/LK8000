@@ -383,9 +383,21 @@ Surface.SetTextColor(RGB_BLACK);
   if(IGCFileList.size() < (uint)IGC_DrawListIndex) return;
   if (IGC_DrawListIndex < IGCFileList.size())
   {
+    TCHAR IGCFilename[MAX_PATH];
+    TCHAR FileExist[5] = _T("");
+    if( GetIGCFilename(IGCFilename, IGC_DrawListIndex))
+    {
+       if(lk::filesystem::exist(IGCFilename))    // file exists
+       {
+	 if(Appearance.UTF8Pictorials)           // use UTF8 symbols?
+	   _sntprintf(FileExist, 5,_T("✔"));   // check! already copied
+	 else
+	   _sntprintf(FileExist, 5,_T("*"));	 // * already copied
+       }
+    }
     TCHAR text1[180] = {TEXT("IGC File")};
     TCHAR text2[180] = {TEXT("date")};
-    _stprintf(text1, _T("%s"), IGCFileList.at(IGC_DrawListIndex).Line1 );
+    _stprintf(text1, _T("%s %s"), FileExist, IGCFileList.at(IGC_DrawListIndex).Line1 );
     _stprintf(text2, _T("%s"), IGCFileList.at(IGC_DrawListIndex).Line2);
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
 
@@ -857,6 +869,8 @@ uint8_t err  = REC_NO_ERROR ;
       if(err != REC_NO_ERROR)
 	err =  IGC_RECEIVE_ERROR;
       ThreadState =  READ_STATE_TX;
+      Sequence =0;
+      retrys =0;
     }
 
     /******READ STATE TX *******************************************************************************/
@@ -864,8 +878,8 @@ uint8_t err  = REC_NO_ERROR ;
     {
       blocksize = 0;
       ThreadState = READ_STATE_RX;
-      SendBinBlock(d,  Sequence++,  GETIGCDATA, &pByteBlk[0], 0);
-	  TimeCnt =0;
+      SendBinBlock(d,  Sequence,  GETIGCDATA, &pByteBlk[0], 0);
+      TimeCnt =0;
     }
 
     /******READ STATE RX *******************************************************************************/
@@ -875,14 +889,18 @@ uint8_t err  = REC_NO_ERROR ;
       {
 	if(TimeCnt++ > (GC_BLK_RECTIMEOUT/GC_IDLETIM))
 	{
-	      err = REC_TIMEOUT_ERROR;
-	  ThreadState = ABORT_STATE;
+	  err = REC_TIMEOUT_ERROR;
+	  if(retrys++ > 4)
+	    ThreadState = ABORT_STATE;
+	  else
+	    ThreadState = READ_STATE_TX;
 	}
 	return 0; // no data? leave thread and wait for next call
       }
-
+      Sequence++;
+      retrys =0;
       err = RecBinBlock(d,  &RecSequence, &RecCommand, &pByteBlk[0], &blocksize,10* REC_TIMEOUT);
-	  ThreadState = READ_STATE_TX;
+      ThreadState = READ_STATE_TX;
 
       if(err==REC_NO_ERROR)
 	_sntprintf(szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), pByteBlk[2], IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
@@ -926,9 +944,7 @@ uint8_t err  = REC_NO_ERROR ;
 	_sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"), MsgToken(2406)); // _@M2406_ "IGC File download complete!"
       }
       if(deb_)StartupStore(_T("IGC downlload complete"));
-  #ifdef PRPGRESS_DLG
-      IGCProgressDialogText(szStatusText) ;  // update progress dialog text
-  #endif
+
     }
   }  // if(d)
 return 0;
