@@ -2407,3 +2407,6 @@ _@M2443_ "OAT"
 _@M2444_ "BAT1"
 _@M2445_ "BAT2"
 _@M2446_ "POLAR"
+
+_@M2447_ "Values"
+_@M2448_ "Direction"

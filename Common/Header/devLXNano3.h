@@ -91,6 +91,8 @@ class DevLXNanoIII : public DevLX
    static void OnCloseClicked(WndButton* pWnd);
    static void OnCancelClicked(WndButton* pWnd);
    static void OnIGCDownloadClicked(WndButton* pWnd);
+   static void OnValuesClicked(WndButton* pWnd);
+
    static BOOL Open( PDeviceDescriptor_t d);
    static BOOL Close( PDeviceDescriptor_t d);
    static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
@@ -109,8 +111,16 @@ class DevLXNanoIII : public DevLX
    static BOOL Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
+
+   static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
+   static BOOL ShowDataValue(WndForm* wf ,const TCHAR[],  const TCHAR[]);
+   static void GetDirections(WndButton* pWnd);
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
+/*
+   static BOOL m_bValues;
+   BOOL ValueDisplay(void) { return m_bValues;};
+   void ValueDisplay(BOOL val) {  m_bValues = val;};*/
   // static TCHAR m_Filename[200];
 
   //  static bool PutMacCready(PDeviceDescriptor_t d, double MacCready);
