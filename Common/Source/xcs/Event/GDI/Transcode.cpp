@@ -50,16 +50,16 @@ static constexpr KeyMap hp31x_key_map[] = {
 };
 
 static constexpr KeyMap medion_p5_key_map[] = {
-  { VK_F6, 0x26 }, // + key = pg up
-  { VK_F7, 0x28 }, // - key = pg down
+  { VK_F6, VK_UP }, // + key = pg up
+  { VK_F7, VK_DOWN }, // - key = pg down
   { VK_F8, VK_RETURN }, // middle key = enter
   { 0 }
 };
 
 static constexpr KeyMap nokia_500_key_map[] = {
   { 0xc1, VK_RETURN }, // middle key = enter
-  { 0xc5, 0x26 }, // + key = pg down
-  { 0xc6, 0x28 }, // - key = pg up
+  { 0xc5, VK_UP }, // + key = pg down
+  { 0xc6, VK_DOWN }, // - key = pg up
   { 0 }
 };
 

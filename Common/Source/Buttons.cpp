@@ -17,7 +17,11 @@
 #include "dlgTools.h"
 #include "ScreenGeometry.h"
 #include "Asset.hpp"
+#include "Modeltype.h"
+
 using std::placeholders::_1;
+
+namespace {
 
 class MenuButton : public WndTextLabel {
 public:
@@ -73,10 +77,10 @@ protected:
  *               4 |   5  |   6  |   7  |   8  |   9  |
  *                 +------+------+------+------+------+
  */
-static std::array<MenuButton, NUMBUTTONLABELS> MenuButtons;
-const struct {
-    int row;
-    int col;
+std::array<MenuButton, NUMBUTTONLABELS> MenuButtons;
+constexpr struct {
+    PixelScalar row;
+    PixelScalar col;
 } LandscapeLayout[] {
     {0,4},{1,4},{2,4},{3,4},
     {4,0},{4,1},{4,2},{4,3},
@@ -84,6 +88,14 @@ const struct {
     {0,3},{1,0},{2,0},{3,0}
 };
 static_assert(NUMBUTTONLABELS == array_size(LandscapeLayout), "Check array size");
+
+constexpr unsigned LandscapeMenuOrder[] = {
+    1, 2, 3, 4, 
+    9, 8, 7, 6, 
+    5, 16, 15, 14,
+    10, 11, 12, 13
+};
+static_assert(NUMBUTTONLABELS == array_size(LandscapeMenuOrder), "Check array size");
 
 /* Portrait :
  * 
@@ -105,9 +117,9 @@ static_assert(NUMBUTTONLABELS == array_size(LandscapeLayout), "Check array size"
  *                     +------+------+------+------+
  * 
  */
-const struct {
-    int row;
-    int col;
+constexpr struct {
+    PixelScalar row;
+    PixelScalar col;
 } PortraitLayout[] {
     {6,0},{6,1},{6,2},{6,3},
     {1,3},{2,3},{3,3},{4,3},
@@ -116,7 +128,15 @@ const struct {
 };
 static_assert(NUMBUTTONLABELS == array_size(PortraitLayout), "Check array size");
 
-static
+constexpr unsigned PortraitMenuOrder[] = {
+    13, 5, 6, 7, 
+    8, 9, 4, 3, 
+    2, 1, 16, 15,
+    14, 10, 11, 12
+};
+static_assert(NUMBUTTONLABELS == array_size(PortraitMenuOrder), "Check array size");
+
+
 PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
     PixelRect rc = rcScreen;
     rc.Grow(-1); // remove Margin
@@ -145,6 +165,47 @@ PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
     };
 
     return PixelRect(origin, size);
+}
+
+template<typename iterator>
+unsigned GetNextMenuId(iterator begin, iterator end, unsigned MenuID) {
+    auto current = std::find(begin, end, MenuID);
+    if(current != end) {
+        auto next = std::next(current);
+        if(next != end) {
+            return (*next);
+        }
+    }
+    return (*begin);
+}
+
+template<typename iterator>
+unsigned GetNextEnabledMenuId(iterator begin, iterator end, unsigned MenuID) {
+
+    unsigned NextID = MenuID;
+
+    for (unsigned i = 0; i < MenuButtons.size(); ++i) {
+        NextID = ::GetNextMenuId(begin, end, NextID);
+        if(ButtonLabel::IsVisible(NextID) && ButtonLabel::IsEnabled(NextID)) {
+            return NextID;
+        }
+    }
+
+    return NextID;
+}
+
+} // unamed namespace
+
+unsigned ButtonLabel::GetNextMenuId(unsigned MenuID) {
+    const auto begin_MenuOrder = ScreenLandscape ? std::begin(LandscapeMenuOrder) : std::begin(PortraitMenuOrder);
+    const auto end_MenuOrder = ScreenLandscape ? std::end(LandscapeMenuOrder) : std::end(PortraitMenuOrder);
+    return ::GetNextEnabledMenuId(begin_MenuOrder, end_MenuOrder, MenuID);
+}
+
+unsigned ButtonLabel::GetPrevMenuId(unsigned MenuID) {
+    const auto begin_MenuOrder = ScreenLandscape ? std::rbegin(LandscapeMenuOrder) : std::rbegin(PortraitMenuOrder);
+    const auto end_MenuOrder = ScreenLandscape ? std::rend(LandscapeMenuOrder) : std::rend(PortraitMenuOrder);
+    return ::GetNextEnabledMenuId(begin_MenuOrder, end_MenuOrder, MenuID);
 }
 
 void ButtonLabel::CreateButtonLabels(const PixelRect& rcScreen) {
@@ -184,11 +245,14 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
         currentButton.SetVisible(false);
         currentButton.Enable(false);
     } else {
-#ifdef LXMINIMAP
-        if (InputEvents::getSelectedButtonId() == MenuID) {
-            currentButton.SetBkColor(RGB_DARKYELLOW2);
+
+        if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
+            if (InputEvents::getSelectedButtonId() == MenuID) {
+                currentButton.SetBkColor(RGB_DARKYELLOW2);
+            } else {
+                currentButton.SetBkColor(RGB_BUTTONS);
+            }
         }
-#endif
 
         TCHAR s[100];
         bool greyed = ExpandMacros(text, s, array_size(s));
@@ -210,6 +274,15 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
             currentButton.Enable(true);
         }
     }
+}
+
+bool ButtonLabel::IsVisible() {
+    for(auto& item : MenuButtons) {
+        if(item.IsVisible()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool ButtonLabel::IsVisible(unsigned MenuID) {

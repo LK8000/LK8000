@@ -23,6 +23,7 @@
 #include "TunedParameter.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
+#include "InfoBoxLayout.h"
 
 #ifndef ENABLE_OPENGL
 #include "Screen/LKBitmapSurface.h"
@@ -989,62 +990,6 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         }
     }
 
-#ifdef UNDER_CE
-    if (GlobalModelType == MODELTYPE_PNA_HP31X) {
-        //		if (wParam == 0x7b) wParam=0xc1;  // VK_APP1
-        if (KeyCode == 0x7b) KeyCode = 0x1b; // VK_ESCAPE
-        //		if (wParam == 0x7b) wParam=0x27;  // VK_RIGHT
-        //		if (wParam == 0x7b) wParam=0x25;  // VK_LEFT
-    } else
-        if (GlobalModelType == MODELTYPE_PNA_PN6000) {
-        switch (KeyCode) {
-            case 0x79: // Upper Silver key short press
-                KeyCode = 0xc1; // F10 -> APP1
-                break;
-            case 0x7b: // Lower Silver key short press
-                KeyCode = 0xc2; // F12 -> APP2
-                break;
-            case 0x72: // Back key plus
-                KeyCode = 0xc3; // F3  -> APP3
-                break;
-            case 0x71: // Back key minus
-                KeyCode = 0xc4; // F2  -> APP4
-                break;
-            case 0x7a: // Upper silver key LONG press
-                KeyCode = 0x70; // F11 -> F1
-                break;
-            case 0x7c: // Lower silver key LONG press
-                KeyCode = 0x71; // F13 -> F2
-                break;
-        }
-    }
-    if (GlobalModelType == MODELTYPE_PNA_NOKIA_500) {
-        switch (KeyCode) {
-            case 0xc1:
-                KeyCode = 0x0d; // middle key = enter
-                break;
-            case 0xc5:
-                KeyCode = 0x26; // + key = pg Up
-                break;
-            case 0xc6:
-                KeyCode = 0x28; // - key = pg Down
-                break;
-        }
-    }
-    if (GlobalModelType == MODELTYPE_PNA_MEDION_P5) {
-        switch (KeyCode) {
-            case 0x79:
-                KeyCode = 0x0d; // middle key = enter
-                break;
-            case 0x75:
-                KeyCode = 0x26; // + key = pg Up
-                break;
-            case 0x76:
-                KeyCode = 0x28; // - key = pg Down
-                break;
-        }
-    }
-
     //
     // LX MINIMAP II HARDWARE KEYS
     // From left to right, top mode, we find:
@@ -1058,89 +1003,108 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // THIS IS AN ALTERNATE LXMINIMAP USAGE, will not work for official release
 #ifndef LXMINIMAP
     if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
-        switch (KeyCode) {
 
-                // Button A is generating a C
-            case 67:
-                key_enter();
-                return;
-                // Button B is generating alternate codes 68 and 27
-                // we use both as a single one
-            case 68:
-            case 27:
-                if (CustomKeyHandler(CKI_BOTTOMLEFT)) {
-                    PlayResource(TEXT("IDR_WAV_CLICK"));
-                    // MapWindow::RefreshMap();
-                    return;
-                }
-                // else transcode here
-                break;
-                // Button C is generating a RETURN
-            case 13:
-                if (CustomKeyHandler(CKI_BOTTOMCENTER)) {
-                    PlayResource(TEXT("IDR_WAV_CLICK"));
-                    // MapWindow::RefreshMap();
-                    return;
-                }
-                // else transcode here
-                break;
-                // Button D is generating a SPACE
-            case 32:
-                if (CustomKeyHandler(CKI_BOTTOMRIGHT)) {
-                    PlayResource(TEXT("IDR_WAV_CLICK"));
+      switch (KeyCode) {
 
-                    // MapWindow::RefreshMap();
-                    return;
-                }
-                // else transcode here
-                break;
+      case KEY_APP1: // L : NAV
+      case KEY_APP2: // N : TSK/TRG
+      case KEY_APP3: // C : SET/SYS
+      case KEY_APP4: // P : INFO
+      case KEY_F1: // F : AN/CLC (long press)
+      case KEY_F2: // H : START/R (long press)
+      case KEY_F3: // R : INFO (long press)
+      case KEY_F4: // M : NAV (long press)
+      case KEY_F5: // E : AN/CLC
+      case KEY_F6: // G : START/R
+      case KEY_F7: // O : TSK/TRG (long press)
+      case KEY_F8: // I : SET/SYS (long press)
+        break;
 
-                // Rotary knob A is generating a 38 (turn left) and 40 (turn right)
-                // v5> careful not the same as _key gotos.
-            case 38:
-                if (!MapWindow::mode.AnyPan() && MapSpaceMode != 1) { // dontdrawthemap
-                    if (MapSpaceMode <= MSM_MAP) {
-                        return;
-                    }
-
-                    PlayResource(TEXT("IDR_WAV_CLICK"));
-
-                    LKevent = LKEVENT_UP;
-                    MapWindow::RefreshMap();
-                } else {
-                    MapWindow::zoom.EventScaleZoom(-1);
-                }
-                return;
-
-            case 40:
-                if (!MapWindow::mode.AnyPan() && MapSpaceMode != 1) { // dontdrawthemap
-                    if (MapSpaceMode <= MSM_MAP) {
-                        return;
-                    }
-
-                    PlayResource(TEXT("IDR_WAV_CLICK"));
-
-                    LKevent = LKEVENT_DOWN;
-                    MapWindow::RefreshMap();
-                } else {
-                    MapWindow::zoom.EventScaleZoom(1);
-                }
-                return;
-
-                // Rotary knob E is generating a 37 (turn left) and 39 (turn right)
-            case 37:
-                key_previous_mode();
-                return;
-            case 39:
-                key_next_mode();
-                return;
-
-            default:
-                break;
+      case 'D':
+      case KEY_ESCAPE:
+        // Button B is generating alternate codes 68 and 27
+        // we use both as a single one
+        PlayResource(TEXT("IDR_WAV_CLICK"));
+        // Toggle Menu
+        if (ButtonLabel::IsVisible()) {
+          InputEvents::setMode(_T("default"));
+          return;
         }
+        if (!CustomKeyHandler(CKI_BOTTOMLEFT)) {
+          InputEvents::setMode(_T("Menu"));
+          return;
+        }
+        break;
+
+      case KEY_RETURN:
+        // Button C is generating a RETURN
+        if (ButtonLabel::IsVisible()) {
+          InputEvents::triggerSelectedButton();
+          return;
+        }
+        if (CustomKeyHandler(CKI_BOTTOMCENTER)) {
+          PlayResource(TEXT("IDR_WAV_CLICK"));
+          return;
+        }
+        break;
+
+      case KEY_MENU: // press rotary knop (left buttom)
+        if (CustomKeyHandler(CKI_BOTTOMRIGHT)) {
+          PlayResource(TEXT("IDR_WAV_CLICK"));
+          return;
+        }
+        break;
+
+      case KEY_UP:
+        // Rotary knob A is generating a 38 (turn left) and 40 (turn right)
+        // v5> careful not the same as _key gotos.
+        if (ButtonLabel::IsVisible()) {
+          PlayResource(TEXT("IDR_WAV_CLICK"));
+          InputEvents::selectPrevButton();
+        } else if (!MapWindow::mode.AnyPan() && MapSpaceMode != 1) {
+          // dontdrawthemap
+          if (MapSpaceMode > MSM_MAP) {
+
+            PlayResource(TEXT("IDR_WAV_CLICK"));
+
+            LKevent = LKEVENT_UP;
+            MapWindow::RefreshMap();
+          }
+        } else {
+          MapWindow::zoom.EventScaleZoom(-1);
+        }
+        return;
+
+      case KEY_DOWN:
+        if (ButtonLabel::IsVisible()) {
+          PlayResource(TEXT("IDR_WAV_CLICK"));
+          InputEvents::selectNextButton();
+        } else if (!MapWindow::mode.AnyPan() && MapSpaceMode != 1) {
+          // dontdrawthemap
+          if (MapSpaceMode > MSM_MAP) {
+            PlayResource(TEXT("IDR_WAV_CLICK"));
+            LKevent = LKEVENT_DOWN;
+            MapWindow::RefreshMap();
+          }
+        } else {
+          MapWindow::zoom.EventScaleZoom(1);
+        }
+        return;
+
+      case KEY_LEFT:
+        // Rotary knob E is generating a 37 (turn left) and 39 (turn right)
+        key_previous_mode();
+        return;
+
+      case KEY_RIGHT:
+        key_next_mode();
+        return;
+
+      default:
+        break;
+      }
     }
 #endif // not LXMINIMAP
-#endif // not UNDER_CE
     //
     // This is the handler for bluetooth keyboards
     //

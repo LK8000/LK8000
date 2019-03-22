@@ -137,8 +137,12 @@ public:
 
   static void showErrors();
 
-#ifdef LXMINIMAP
   static unsigned getSelectedButtonId();
+  static void selectNextButton();
+  static void selectPrevButton();
+  static void triggerSelectedButton();
+
+#ifdef LXMINIMAP
   static void eventChangeSorting(const TCHAR *misc);
   static bool isSelectMode();
 #endif
