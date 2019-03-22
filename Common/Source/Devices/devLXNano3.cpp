@@ -586,8 +586,8 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2432)); // LKTOKEN  _@M2432_ "IN"
-    dfe->addEnumText(MsgToken(2433)); // LKTOKEN  _@M2433_ "OUT"
+//    dfe->addEnumText(MsgToken(2432)); // LKTOKEN  _@M2432_ "IN"
+//    dfe->addEnumText(MsgToken(2433)); // LKTOKEN  _@M2433_ "OUT"
     dfe->Set((uint) PortIO[PortNum].BAT2Dir);
     wp->RefreshDisplay();
   }
@@ -1317,6 +1317,51 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
   double fDir,fSpeed;
+
+  if (ParToDouble(sentence, 1, &fSpeed))
+  {
+
+    if(m_bValues)
+    { TCHAR szTmp[MAX_NMEA_LEN];
+      _stprintf(szTmp, _T("%5.1fkm/h ($LXWP0)"),fSpeed);
+      ShowDataValue( wf ,_T("prpSPEEDDir"),   szTmp);
+    }
+    if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
+    {
+      info->Speed = fSpeed;
+      info->AirspeedAvailable = TRUE;
+    }
+  }
+
+  if (ParToDouble(sentence, 2, &fSpeed))
+  {
+    if(m_bValues)
+    { TCHAR szTmp[MAX_NMEA_LEN];
+      _stprintf(szTmp, _T("%5.1fm ($LXWP0)"),fSpeed);
+      ShowDataValue( wf ,_T("prpBARODir"),   szTmp);
+    }
+    if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
+    {
+      info->Altitude = fSpeed;
+      info->BaroAltitudeAvailable = TRUE;
+    }
+  }
+
+  if (ParToDouble(sentence, 3, &fSpeed))
+  {
+    if(m_bValues)
+    { TCHAR szTmp[MAX_NMEA_LEN];
+      _stprintf(szTmp, _T("%5.1fm ($LXWP0)"),fSpeed/TOKPH);
+      ShowDataValue( wf ,_T("prpVARIODir"),   szTmp);
+    }
+    if(IsDirInput(PortIO[d->PortNumber].VARIODir  ))
+    {
+      info->Vario = fSpeed;
+      info->VarioAvailable = TRUE;
+      TriggerVarioUpdate();
+    }
+  }
+
   if (ParToDouble(sentence, 10, &fDir) &&
 	ParToDouble(sentence, 11, &fSpeed))
   {
@@ -1402,6 +1447,18 @@ if(_tcslen(String) < 180)
 } // LXWP1()
 
 
+double BalFactToPercent(double fOverweightFact)
+{
+double fBALPerc = fOverweightFact;
+  fBALPerc = (fBALPerc) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
+  fBALPerc = (fBALPerc) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
+  if(WEIGHTS[WEIGHT_WATER] > 0)
+    fBALPerc = (fBALPerc) / (double)WEIGHTS[WEIGHT_WATER];                            // = % of WEIGHT_WATER (0.0 .. 1.0)
+  else
+    fBALPerc = 0;
+  if ( fBALPerc > 1.0)	fBALPerc =1.0;
+return (fBALPerc);
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWP2 sentence.
@@ -1469,10 +1526,7 @@ TCHAR szTmp[MAX_NMEA_LEN];
   {
     if (ParToDouble(sentence, 1, &fTmp))
     {
-      double fBALPerc = fTmp;
-      fBALPerc = (fBALPerc) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
-      fBALPerc = (fBALPerc) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
-      fBALPerc = (fBALPerc) / (double)WEIGHTS[WEIGHT_WATER];                              // = % of WEIGHT_WATER (0.0 .. 1.0)
+      double fBALPerc = BalFactToPercent(fTmp);
       if(m_bValues)
       {
 	_stprintf(szTmp, _T("%5.2f = %3.0f%% ($LXWP2)"),fTmp,(fBALPerc*100.0));
@@ -1526,13 +1580,17 @@ TCHAR szTmp[MAX_NMEA_LEN];
 	    {
 	      _stprintf(szTmp, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
 	      ShowDataValue( wf ,_T("prpPOLARDir"),  szTmp);
+	 //     _stprintf(szTmp, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),   POLAR[POLAR_A],   POLAR[POLAR_B],   POLAR[POLAR_C]);
+	//      ShowDataValue( wf ,_T("prpBAT2Dir"),  szTmp);
 	    }
+	    /*
 	    if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
 	    {
 	      POLAR[POLAR_A] = fa;
 	      POLAR[POLAR_B] = fb;
 	      POLAR[POLAR_C] = fc;
 	    }
+	    */
 	 }
 
 
@@ -1614,110 +1672,110 @@ BOOL DevLXNanoIII::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 TCHAR szTmp[MAX_NMEA_LEN];
 double alt=0, airspeed=0;
 
- if((m_bValues) || (IsDirInput(PortIO[d->PortNumber].GFORCEDir)))
- {
-   double fX,fY,fZ;
-   if (ParToDouble(sentence, 1, &fX))
-     if (ParToDouble(sentence, 2, &fY))
-       if (ParToDouble(sentence, 3, &fZ))
-       {
-	if(m_bValues)
-	{
-	  _stprintf(szTmp, _T("%5.2f %5.2f %5.2f ($PLXVF)"),fZ,fY,fX);
-	  ShowDataValue( wf ,_T("prpGFORCEDir"),  szTmp);
-	}
-	if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
-	{
-	   info->AccelX  = fX;
-	   info->AccelY  = fY;
-	   info->AccelZ  = fZ;
-	   info->AccelerationAvailable = true;
-	}
-       }
+  if((m_bValues) || (IsDirInput(PortIO[d->PortNumber].GFORCEDir)))
+  {
+    double fX,fY,fZ;
+    if(ParToDouble(sentence, 1, &fX) &&
+      ParToDouble(sentence, 2, &fY) &&
+      ParToDouble(sentence, 3, &fZ))
+    {
+      if(m_bValues)
+      {
+	_stprintf(szTmp, _T("%5.2f %5.2f %5.2f ($PLXVF)"),fZ,fY,fX);
+	ShowDataValue( wf ,_T("prpGFORCEDir"),  szTmp);
+      }
+      if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
+      {
+	info->AccelX  = fX;
+	info->AccelY  = fY;
+	info->AccelZ  = fZ;
+	info->AccelerationAvailable = true;
+      }
+    }
   }
 
 
-    if (ParToDouble(sentence, 5, &airspeed))
+  if (ParToDouble(sentence, 5, &airspeed))
+  {
+    if(m_bValues)
     {
-      if(m_bValues)
-      {
-	_stprintf(szTmp, _T("%3.0fkm/h ($PLXVF)"),airspeed*TOKPH);
-	ShowDataValue( wf ,_T("prpSPEEDDir"),  szTmp);
-      }
+      _stprintf(szTmp, _T("%3.0fkm/h ($PLXVF)"),airspeed*TOKPH);
+      ShowDataValue( wf ,_T("prpSPEEDDir"),  szTmp);
+    }
 //	airspeed = 135.0/TOKPH;
-      if(IsDirInput(PortIO[d->PortNumber].SPEEDDir ))
-      {
-        info->IndicatedAirspeed = airspeed;
-        info->AirspeedAvailable = TRUE;
-      }
+    if(IsDirInput(PortIO[d->PortNumber].SPEEDDir ))
+    {
+      info->IndicatedAirspeed = airspeed;
+      info->AirspeedAvailable = TRUE;
+    }
+  }
+
+
+  if (ParToDouble(sentence, 6, &alt))
+  {
+    if(m_bValues)
+    {
+      _stprintf(szTmp, _T("%5.0fm ($PLXVF)"),alt);
+      ShowDataValue( wf ,_T("prpBARODir"),  szTmp);
+    }
+    if(IsDirInput(PortIO[d->PortNumber].BARODir))
+    {
+      UpdateBaroSource( info, 0, d, QNEAltitudeToQNHAltitude(alt));
+      if (  info->IndicatedAirspeed>0)
+	info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
+    }
+  }
+
+
+  if (ParToDouble(sentence, 4, &alt))
+  {
+    if(m_bValues)
+    {
+      _stprintf(szTmp, _T("%5.2fm/s ($PLXVF)"),alt);
+      ShowDataValue( wf ,_T("prpVARIODir"),  szTmp);
+    }
+    if(IsDirInput(PortIO[d->PortNumber].VARIODir))
+    {
+      info->Vario = alt;
+      info->VarioAvailable = TRUE;
+      TriggerVarioUpdate();
+    }
+  }
+
+
+// Get STF switch
+  double fTmp;
+  if (ParToDouble(sentence, 7, &fTmp))
+  {
+    int  iTmp = (int)(fTmp+0.1);
+    if(m_bValues)
+    {
+      if(iTmp == 1)
+	ShowDataValue( wf ,_T("prpSTFDir"),  _T("STF ($PLXVF)"));
+      else
+	ShowDataValue( wf ,_T("prpSTFDir"),  _T("VARIO ($PLXVF)"));
     }
 
-
-    if (ParToDouble(sentence, 6, &alt))
+    static int  iOldVarioSwitch=0;
+    if(IsDirInput(PortIO[d->PortNumber].STFDir))
     {
-      if(m_bValues)
+      EnableExternalTriggerCruise = true;
+      if(iTmp != iOldVarioSwitch)
       {
-	_stprintf(szTmp, _T("%5.0fm ($PLXVF)"),alt);
-	ShowDataValue( wf ,_T("prpBARODir"),  szTmp);
-      }
-      if(IsDirInput(PortIO[d->PortNumber].BARODir))
-      {
-	UpdateBaroSource( info, 0, d, QNEAltitudeToQNHAltitude(alt));
-	if (  info->IndicatedAirspeed>0)
-	  info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
-      }
-    }
-
-
-    if (ParToDouble(sentence, 4, &alt))
-    {
-      if(m_bValues)
-      {
-	_stprintf(szTmp, _T("%5.2fm/s ($PLXVF)"),alt);
-	ShowDataValue( wf ,_T("prpVARIODir"),  szTmp);
-      }
-      if(IsDirInput(PortIO[d->PortNumber].VARIODir))
-      {
-	info->Vario = alt;
-        info->VarioAvailable = TRUE;
-        TriggerVarioUpdate();
-      }
-    }
-
-
-  // Get STF switch
-    double fTmp;
-    if (ParToDouble(sentence, 7, &fTmp))
-    {
-      int  iTmp = (int)(fTmp+0.1);
-      if(m_bValues)
-      {
-	if(iTmp == 1)
-	  ShowDataValue( wf ,_T("prpSTFDir"),  _T("STF ($PLXVF)"));
-	else
-	  ShowDataValue( wf ,_T("prpSTFDir"),  _T("VARIO ($PLXVF)"));
-      }
-
-      static int  iOldVarioSwitch=0;
-      if(IsDirInput(PortIO[d->PortNumber].STFDir))
-      {
-	EnableExternalTriggerCruise = true;
-	if(iTmp != iOldVarioSwitch)
+	iOldVarioSwitch = iTmp;
+	if(iTmp==1)
 	{
-	  iOldVarioSwitch = iTmp;
-	  if(iTmp==1)
-	  {
-	    ExternalTriggerCruise = true;
-	    ExternalTriggerCircling = false;
-	  }
-	  else
-	  {
-	    ExternalTriggerCruise = false;
-	    ExternalTriggerCircling = true;
-	  }
+	  ExternalTriggerCruise = true;
+	  ExternalTriggerCircling = false;
+	}
+	else
+	{
+	  ExternalTriggerCruise = false;
+	  ExternalTriggerCircling = true;
 	}
       }
     }
+  }
 
 
   return(true);
@@ -1804,22 +1862,24 @@ TCHAR  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
       iRxUpdateTime--;
       return false;
     }
-    NMEAParser::ExtractParameter(sentence,szTmp2,2);
-    double fTmp = StrToDouble(szTmp2,NULL);
-    TCHAR szTmp[20];
-    if(m_bValues)
+    double fTmp;
+    if(ParToDouble(sentence, 2, &fTmp))
     {
-      _stprintf(szTmp, _T("%5.2f PLXV0"),fTmp);
-      ShowDataValue( wf ,_T("prpMCDir"),  szTmp);
-    }
-    if(IsDirInput(PortIO[d->PortNumber].MCDir))
-    {
-      if(fabs(MACCREADY - fTmp)> 0.001)
+      if(m_bValues)
       {
-	CheckSetMACCREADY(fTmp);
-	iRxUpdateTime =5;
-	StartupStore(_T("Nano3 MC: %5.2f"),fTmp);
-	return true;
+	TCHAR szTmp[20];
+	_stprintf(szTmp, _T("%5.2f PLXV0"),fTmp);
+	ShowDataValue( wf ,_T("prpMCDir"),  szTmp);
+      }
+      if(IsDirInput(PortIO[d->PortNumber].MCDir))
+      {
+	if(fabs(MACCREADY - fTmp)> 0.001)
+	{
+	  CheckSetMACCREADY(fTmp);
+	  iRxUpdateTime =5;
+	  StartupStore(_T("Nano3 MC: %5.2f"),fTmp);
+	  return true;
+	}
       }
     }
     return false;
@@ -1835,22 +1895,26 @@ TCHAR  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
 	Nano3_BallastUpdateTimeout--;
       return false;
     }
-    NMEAParser::ExtractParameter(sentence,szTmp2,2);
-    double fTmp = StrToDouble(szTmp2,NULL);
-    TCHAR szTmp[20];
-    if(m_bValues)
+
+    double fTmp;
+    if(ParToDouble(sentence, 2, &fTmp))
     {
-      _stprintf(szTmp, _T("%5.2f PLXV0"),fTmp);
-      ShowDataValue( wf ,_T("prpBALDir"),  szTmp);
-    }
-    if(IsDirInput(PortIO[d->PortNumber].BALDir))
-    {
-      if(fabs(BALLAST - fTmp)> 0.001)
+      double fBALPerc = BalFactToPercent(fTmp);
+      if(m_bValues)
       {
-	  Nano3_BallastUpdateTimeout =5;
-	return true;
+	TCHAR szTmp[20];
+	_stprintf(szTmp, _T("%2.1 %3.0f PLXV0"),fTmp, fBALPerc);
+	ShowDataValue( wf ,_T("prpBALDir"),  szTmp);
       }
-      StartupStore(_T("Nano3 BAL: %5.2f"),fTmp);
+      if(IsDirInput(PortIO[d->PortNumber].BALDir))
+      {
+	if(fabs(BALLAST - fTmp)> 0.001)
+	{
+	  Nano3_BallastUpdateTimeout =5;
+	  return true;
+	}
+	StartupStore(_T("Nano3 BAL: %5.2f"),fTmp);
+      }
     }
     return false;
   }
@@ -1864,21 +1928,23 @@ TCHAR  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
 	Nano3_BugsUpdateTimeout--;
         return false;
       }
-      NMEAParser::ExtractParameter(sentence,szTmp2,2);
-      double fTmp = StrToDouble(szTmp2,NULL);
-      TCHAR szTmp[20];
-      if(m_bValues)
+      double fTmp;
+      if(ParToDouble(sentence, 2, &fTmp))
       {
-        _stprintf(szTmp, _T("%3.0f%% ($PLXV0)"),fTmp);
-        ShowDataValue( wf ,_T("prpBUGDir"),  szTmp);
-      }
-      if(IsDirInput(PortIO[d->PortNumber].BUGDir))
-      {
-	if(fabs(BUGS - fTmp)> 0.001)
+	if(m_bValues)
 	{
-	  Nano3_BugsUpdateTimeout =5;
-	  StartupStore(_T("Nano3 BUG: %5.2f"),fTmp);
-	  return true;
+	  TCHAR szTmp[20];
+	  _stprintf(szTmp, _T("%3.0f%% ($PLXV0)"),fTmp);
+	  ShowDataValue( wf ,_T("prpBUGDir"),  szTmp);
+	}
+	if(IsDirInput(PortIO[d->PortNumber].BUGDir))
+	{
+	  if(fabs(BUGS - fTmp)> 0.001)
+	  {
+	    Nano3_BugsUpdateTimeout =5;
+	    StartupStore(_T("Nano3 BUG: %5.2f"),fTmp);
+	    return true;
+	  }
 	}
       }
       return false;
@@ -1887,9 +1953,9 @@ TCHAR  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
 
   if (_tcscmp(szTmp1,_T("VOL"))==0)
   {
-    NMEAParser::ExtractParameter(sentence,szTmp2,2);
-    int iTmp = (int) StrToDouble(szTmp2,NULL);
-    StartupStore(_T("Nano3 VOL: %i"),iTmp);
+    double fTmp;
+    if(ParToDouble(sentence, 2, &fTmp))
+      StartupStore(_T("Nano3 VOL: %i"),(int)fTmp);
     return true;
   }
 
@@ -1898,25 +1964,34 @@ TCHAR  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
    ****************************************************************/
   if (_tcscmp(szTmp1,_T("POLAR"))==0)
   {
-    NMEAParser::ExtractParameter(sentence,szTmp2,2);
-    int iTmp = (int) StrToDouble(szTmp2,NULL);
-    StartupStore(_T("Nano3 POLAR: %i"),iTmp);
+    double fLoad,fWeight,fMaxW, fEmptyW,fPilotW, fa,fb,fc;
+    if(
+       (ParToDouble(sentence, 2, &fa)) &&
+       (ParToDouble(sentence, 3, &fb)) &&
+       (ParToDouble(sentence, 4, &fc)) &&
+       (ParToDouble(sentence, 5, &fLoad)) &&
+       (ParToDouble(sentence, 6, &fWeight)) &&
+       (ParToDouble(sentence, 7, &fMaxW)) &&
+       (ParToDouble(sentence, 8, &fEmptyW)) &&
+       (ParToDouble(sentence, 9, &fPilotW))
+       )
+       StartupStore(_T("Nano3 POLAR: a:%5.2f b:%5.2f c:%5.2f L:%3.1f W:%3.1f E:%3.1f P:%3.1f"),fa,fb,fc, fLoad,fWeight,fEmptyW,fPilotW)  ;
     return true;
   }
 
   if (_tcscmp(szTmp1,_T("CONNECTION"))==0)
   {
-    NMEAParser::ExtractParameter(sentence,szTmp2,2);
-    int iTmp = (int) StrToDouble(szTmp2,NULL);
-    StartupStore(_T("Nano3 CONNECTION: %i"),iTmp);
+    double fTmp;
+    if(ParToDouble(sentence, 2, &fTmp))
+      StartupStore(_T("Nano3 CONNECTION: %i"),(int)fTmp);
     return true;
   }
 
   if (_tcscmp(szTmp1,_T("NMEARATE"))==0)
   {
-    NMEAParser::ExtractParameter(sentence,szTmp2,2);
-    int iTmp = (int) StrToDouble(szTmp2,NULL);
-    StartupStore(_T("Nano3 NMEARATE: %i"),iTmp);
+    double fTmp;
+    if(ParToDouble(sentence, 2, &fTmp))
+      StartupStore(_T("Nano3 NMEARATE: %i"),(int)fTmp);
     return true;
   }
 
@@ -1946,11 +2021,14 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   if(!d)  return false;
   if(Nano3_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].BALDir)) return false;
-  Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
-  _stprintf(szTmp, TEXT("PLXV0,BAL,W,%4.2f"),Ballast);
+  if(((WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT])) > 0)
+  {
+    Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
+    _stprintf(szTmp, TEXT("PLXV0,BAL,W,%4.2f"),Ballast);
 
-  DevLXNanoIII::SendNmea(d,szTmp);
-  Nano3_BallastUpdateTimeout =10;
+    DevLXNanoIII::SendNmea(d,szTmp);
+    Nano3_BallastUpdateTimeout =10;
+  }
 return(TRUE);
 }
 
@@ -2134,71 +2212,4 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   return true;
 
 } // PLXVC
-
-
-
-BOOL DevLXNanoIII::PLXV0_POLAR(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
-{
-TCHAR  szTmp[MAX_NMEA_LEN];
-
-  NMEAParser::ExtractParameter(sentence,szTmp,2);
-  if  (_tcscmp(szTmp,_T("W"))!=0)  // no answer flag received
-   return false;
-
-
-
-
-  double fA,fB,fC;
-  if(ParToDouble(sentence, 3, &fA))
-    if(ParToDouble(sentence, 4, &fB))
-      if(ParToDouble(sentence, 5, &fC))
-      {
-	if(m_bValues)
-	{
-	  _stprintf(szTmp, _T("a:%5.2f b:%5.2f c:%5.2f(&PLXV0_POLAR)"),fA,fB,fC);
-	  ShowDataValue( wf ,_T("prpPOLARDir"),  szTmp);
-	}
-	if(IsDirInput(PortIO[d->PortNumber].POLARDir))
-	{
-	  POLAR[ POLAR_A] = fA;
-	  POLAR[ POLAR_B] = fB;
-	  POLAR[ POLAR_C] = fC;
-	}
-      }
-  /*
-#define WEIGHT_PILOT    0
-#define WEIGHT_PLANEDRY 1
-#define WEIGHT_WATER    2
-*/
-    int iPolarLoad=0; int iMaxLoad;
-    NMEAParser::ExtractParameter(sentence,szTmp,6);    // current polar weight
-    {
-      iPolarLoad = (int) StrToDouble(szTmp,NULL);
-    }
-
-    NMEAParser::ExtractParameter(sentence,szTmp,7);    // max weigt
-    {
-      iMaxLoad = (int) StrToDouble(szTmp,NULL);
-    }
-
-    NMEAParser::ExtractParameter(sentence,szTmp,8);    // empty weight
-    {
-      WEIGHTS[ WEIGHT_PLANEDRY] = StrToDouble(szTmp,NULL);
-    }
-
-    NMEAParser::ExtractParameter(sentence,szTmp,9);    // empty weight
-    {
-      WEIGHTS[ WEIGHT_PILOT] = StrToDouble(szTmp,NULL);
-    }
-    WEIGHTS[ WEIGHT_WATER] = iPolarLoad - ( WEIGHTS[ WEIGHT_PLANEDRY] +  WEIGHTS[ WEIGHT_PILOT]);
-    iMaxLoad =  iMaxLoad -( WEIGHTS[ WEIGHT_PLANEDRY] +  WEIGHTS[ WEIGHT_PILOT]);
-
-
-  return true;
-
-} // PLXVC
-
-
-
-
 
