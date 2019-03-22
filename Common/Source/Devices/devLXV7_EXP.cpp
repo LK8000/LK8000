@@ -251,20 +251,21 @@ if(LXV7_EXP_bValid == false)
 
 BOOL LXV7_EXPPutBallast(PDeviceDescriptor_t d, double Ballast){
 TCHAR  szTmp[254];
-if(LXV7_EXP_bValid == false)
-  return false;
+  if(LXV7_EXP_bValid == false)
+  {
+    return false;
+  }
+  if((WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]) > 0)
+  {
+    Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
+    _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
 
-  Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
-  _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
-
- LXV7_EXPNMEAddCheckSumStrg(szTmp);
- d->Com->WriteString(szTmp);
-
-
-
-
- LXV7_EXP_BallastUpdateTimeout =10;
- return(TRUE);
+    LXV7_EXPNMEAddCheckSumStrg(szTmp);
+    d->Com->WriteString(szTmp);
+    LXV7_EXP_BallastUpdateTimeout =10;
+    return(TRUE);
+  }
+ return(FALSE);
 
 }
 
@@ -670,6 +671,19 @@ if(_tcslen(String) < 180)
 
 
 
+double BalFactToPercent(double fOverweightFact)
+{
+double fBALPerc = fOverweightFact;
+  fBALPerc = (fBALPerc) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
+  fBALPerc = (fBALPerc) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
+  if(WEIGHTS[WEIGHT_WATER] > 0)
+    fBALPerc = (fBALPerc) / (double)WEIGHTS[WEIGHT_WATER];                            // = % of WEIGHT_WATER (0.0 .. 1.0)
+  else
+    fBALPerc = 0;
+  if ( fBALPerc > 1.0)	fBALPerc =1.0;
+return (fBALPerc);
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWP2 sentence.
 ///
@@ -722,9 +736,7 @@ if(LXV7_EXP_BallastUpdateTimeout > 0)
 else
   if (ParToDouble(sentence, 1, &fTmp))
   {
-    fTmp = (fTmp) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
-    fTmp = (fTmp) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
-    fTmp = (fTmp) / (double)WEIGHTS[WEIGHT_WATER];                              // = % of WEIGHT_WATER (0.0 .. 1.0)
+    fTmp = BalFactToPercent(fTmp);
     if(  fabs(fTmp -BALLAST) >= 0.01)
     {
       CheckSetBallast(fTmp);

@@ -234,15 +234,17 @@ BOOL LXV7PutBallast(PDeviceDescriptor_t d, double Ballast) {
     if(LXV7_bValid == false)
         return false;
 
-    Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
-    _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
+    if((WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]) > 0)
+    {
+      Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
+      _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
 
-    LXV7NMEAddCheckSumStrg(szTmp);
-    d->Com->WriteString(szTmp);
-    //DevLXV7::PutGPRMB(d);
-
-    LXV7_BallastUpdateTimeout =10;
-    return(TRUE);
+      LXV7NMEAddCheckSumStrg(szTmp);
+      d->Com->WriteString(szTmp);
+      LXV7_BallastUpdateTimeout =10;
+      return(TRUE);
+    }
+   return(FALSE);
 }
 
 
@@ -479,6 +481,9 @@ if(_tcslen(String) < 180) {
 /// @retval true if the sentence has been parsed
 ///
 //static
+
+extern double BalFactToPercent(double fOverweightFact);
+
 bool DevLXV7::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
@@ -521,9 +526,7 @@ if(LXV7_BallastUpdateTimeout > 0)
 else
   if (ParToDouble(sentence, 1, &fTmp))
   {
-    fTmp = (fTmp) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
-    fTmp = (fTmp) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
-    fTmp = (fTmp) / (double)WEIGHTS[WEIGHT_WATER];                              // = % of WEIGHT_WATER (0.0 .. 1.0)
+    fTmp = BalFactToPercent(fTmp);
     if(  fabs(fTmp -BALLAST) >= 0.01)
     {
       CheckSetBallast(fTmp);
