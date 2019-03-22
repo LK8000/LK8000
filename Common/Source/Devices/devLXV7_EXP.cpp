@@ -250,22 +250,20 @@ if(LXV7_EXP_bValid == false)
 
 
 BOOL LXV7_EXPPutBallast(PDeviceDescriptor_t d, double Ballast){
-TCHAR  szTmp[254];
-if(LXV7_EXP_bValid == false)
-  return false;
+  if(!LXV7_EXP_bValid) {
+    return false;
+  }
 
   Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
+
+  TCHAR  szTmp[254];
   _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
 
- LXV7_EXPNMEAddCheckSumStrg(szTmp);
- d->Com->WriteString(szTmp);
+  LXV7_EXPNMEAddCheckSumStrg(szTmp);
+  d->Com->WriteString(szTmp);
 
-
-
-
- LXV7_EXP_BallastUpdateTimeout =10;
- return(TRUE);
-
+  LXV7_EXP_BallastUpdateTimeout =10;
+  return(TRUE);
 }
 
 
