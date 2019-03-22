@@ -249,7 +249,7 @@ Canvas::CalcTextSize(const TCHAR *text) const
 #endif
 
   PixelSize size = { 0, 0 };
-
+  assert(font);
   if (font == nullptr)
     return size;
 

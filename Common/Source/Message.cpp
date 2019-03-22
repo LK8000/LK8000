@@ -135,6 +135,8 @@ void Message::Resize() {
                                               : MapWindowBoldFont);
 
     Surface.GetTextSize(msgText.c_str(), &tsize);
+    assert(tsize.cx > 0);
+    assert(tsize.cy > 0);
 
     Surface.SelectObject(oldfont); // 100215
 
