@@ -112,7 +112,7 @@ class DevLXNanoIII : public DevLX
    static BOOL PutTarget(PDeviceDescriptor_t d);
 
    static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
-   static BOOL ShowDataValue(WndForm* wf ,const TCHAR[],  const TCHAR[]);
+   static BOOL ShowDataValue(WndForm* wf , PDeviceDescriptor_t d ,const TCHAR Select[],  const TCHAR ValueText[]);
    static void GetDirections(WndButton* pWnd);
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
