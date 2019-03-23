@@ -303,24 +303,61 @@ void TraceThread(const TCHAR *mes) {
 #endif
 
 
+double CalculateLXBalastFactor(double Ballast)
+{
+	double CurrentWeight = WEIGHTS[0] +WEIGHTS[1] + (WEIGHTS[2]*Ballast) +  GlidePolar::WeightOffset;
+	double WithoutBallastWeight =  WEIGHTS[0] +WEIGHTS[1] +  GlidePolar::WeightOffset;
+
+	if(WithoutBallastWeight == 0)
+		WithoutBallastWeight = 1;
+
+	return   CurrentWeight/WithoutBallastWeight;
+
+
+}
+double CalculateBalastFromLX(double Factor)
+{
+	double TotalAvailableBallast  = WEIGHTS[2];
+	if(TotalAvailableBallast == 0)
+		TotalAvailableBallast = 1;
+
+	return ((Factor-1) * (WEIGHTS[0] +WEIGHTS[1] +  GlidePolar::WeightOffset))/ TotalAvailableBallast;
+}
+
+double CalculateLXBugs(double Bugs)
+{
+  return (1.0-Bugs )*100;
+}
+
+double CalculateBugsFromLX(double LXBug)
+{
+  return (100.0 - LXBug)/100.0;
+}
+
+
+
 // All values in the range 100% (1) to 0% (0);
 
 double CheckSetBallast(double val) {
     if ((val >= 0) && (val <= 1)) {
         BALLAST = val;
-        return val;
+    }
+    else
+    {
+#if TESTBENCH
+      static short counter = 0;
+      if (counter < 10) {
+	  StartupStore(_T(". CHECKSETBALLAST ERROR, input=%f output=%f\n"), val, BALLAST);
+	  counter++;
+      }
+#endif
     }
 
     if (val < 0) BALLAST = 0.0;
     else if (val > 1) BALLAST = 1.0;
 
-#if TESTBENCH
-    static short counter = 0;
-    if (counter < 10) {
-        StartupStore(_T(". CHECKSETBALLAST ERROR, input=%f output=%f\n"), val, BALLAST);
-        counter++;
-    }
-#endif
+
+    GlidePolar::SetBallast();
     return BALLAST;
 }
 

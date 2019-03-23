@@ -11,6 +11,7 @@
 #include "devLX16xx.h"
 #include "LKInterface.h"
 #include "Baro.h"
+#include "Utils.h"
 
 int iLX16xx_RxUpdateTime=0;
 double oldMC = MACCREADY;
@@ -192,7 +193,7 @@ TCHAR  szTmp[254];
 if(bValid == false)
   return false;
 
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,(1.0+BALLAST),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,CalculateLXBalastFactor(BALLAST),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
@@ -208,7 +209,7 @@ if(bValid == false)
   return false;
 
 
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,(1.0+Ballast),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,CalculateLXBalastFactor(Ballast),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
  LX16xxNMEAddCheckSumStrg(szTmp);
  d->Com->WriteString(szTmp);
@@ -231,7 +232,7 @@ BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs){
     Bugs = 0.7;
   }
 
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0+BALLAST),(1.00-Bugs)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , CalculateLXBalastFactor(BALLAST),CalculateLXBugs(Bugs),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
@@ -356,12 +357,12 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
     info->VarioAvailable = FALSE;
 
 
+
+ /*
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
-  {
-    info->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
     info->ExternalWindAvailable = TRUE;
-  }
+*/
   TriggerVarioUpdate();
 
   return(true);
@@ -486,10 +487,10 @@ if(BallastUpdateTimeout > 0)
 else
   if (ParToDouble(sentence, 1, &fTmp))
   {
-	fTmp -= 1.0;
-	if(  fabs(fTmp -BALLAST) >= 0.05)
+    double newBallast = CalculateBalastFromLX(fTmp);
+    if(fabs(newBallast- BALLAST) > 0.01 )
     {
-      CheckSetBallast(fTmp);
+      CheckSetBallast(newBallast);
       iLX16xx_RxUpdateTime = 5;
     }
   }
@@ -501,11 +502,10 @@ if(BugsUpdateTimeout > 0)
 else {
   if(ParToDouble(sentence, 2, &fTmp))
   {
-	int iTmp2 = 100-(int)(fTmp+0.5);
-	fTmp =  (double)iTmp2/100.0;
-	if(  fabs(fTmp -BUGS) >= 0.03)
+    double newBug = CalculateBugsFromLX(fTmp);
+	if(  fabs(newBug -BUGS) >= 0.03)
     {
-      CheckSetBugs(fTmp);
+      CheckSetBugs(newBug);
       iLX16xx_RxUpdateTime = 5;
     }
   }
