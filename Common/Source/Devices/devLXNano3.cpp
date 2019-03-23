@@ -1449,18 +1449,6 @@ if(_tcslen(String) < 180)
 } // LXWP1()
 
 
-double BalFactToPercent(double fOverweightFact)
-{
-double fBALPerc = fOverweightFact;
-  fBALPerc = (fBALPerc) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
-  fBALPerc = (fBALPerc) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
-  if(WEIGHTS[WEIGHT_WATER] > 0)
-    fBALPerc = (fBALPerc) / (double)WEIGHTS[WEIGHT_WATER];                            // = % of WEIGHT_WATER (0.0 .. 1.0)
-  else
-    fBALPerc = 0;
-  if ( fBALPerc > 1.0)	fBALPerc =1.0;
-return (fBALPerc);
-}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWP2 sentence.
@@ -1528,7 +1516,7 @@ TCHAR szTmp[MAX_NMEA_LEN];
   {
     if (ParToDouble(sentence, 1, &fTmp))
     {
-      double fBALPerc = CalculateLXBalast(fTmp);
+      double fBALPerc = CalculateBalastFromLX(fTmp);
       if(m_bValues)
       {
 	_stprintf(szTmp, _T("%5.2f = %3.0f%% ($LXWP2)"),fTmp,(fBALPerc*100.0));
@@ -1900,17 +1888,18 @@ TCHAR  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
     double fTmp;
     if(ParToDouble(sentence, 2, &fTmp))
     {
-      double fBALPerc = BalFactToPercent(fTmp);
+      double fNewBal = CalculateBalastFromLX(fTmp);
       if(m_bValues)
       {
 	TCHAR szTmp[20];
-	_stprintf(szTmp, _T("%2.1f %3.0f PLXV0"),fTmp, fBALPerc);
+	_stprintf(szTmp, _T("%2.1f %3.0f PLXV0"),fTmp, fNewBal);
 	ShowDataValue( wf ,d,_T("prpBALDir"),  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BALDir))
       {
-	if(fabs(BALLAST - fTmp)> 0.001)
+	if(fabs(BALLAST - fNewBal)> 0.001)
 	{
+	  CheckSetBallast(fNewBal);
 	  Nano3_BallastUpdateTimeout =5;
 	  return true;
 	}
