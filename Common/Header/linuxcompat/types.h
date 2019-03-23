@@ -1,4 +1,3 @@
-
 /*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
    Released under GNU/GPL License v.2
@@ -6,30 +5,30 @@
 
    $Id$
 */
-#ifndef	_TYPES_H_
-#define _TYPES_H_
+#ifndef	_LINUXCOMPAT_TYPES_H_
+#define _LINUXCOMPAT_TYPES_H_
 
 #include "tchar.h"
 #include "stdint.h"
 #include "ScreenCoordinate.h"
 #include "wingdi.h"
 
-#define	BYTE	unsigned char
-#define BOOL	bool
-#define LONG	long
+/* we use typedef instead of define to avoid hell of macro conflict */
 
-#define FALSE false
-#define TRUE true
+typedef uint8_t	BYTE;
+typedef int32_t LONG; //windows is LLP64 system so long is 32bit signed integer
 
-//typedef unsigned long DWORD;
-typedef unsigned short WORD;
-typedef unsigned int UNINT32;
-typedef unsigned int UINT;
+typedef bool BOOL;
 
-typedef int INT;
+constexpr BOOL FALSE = false;
+constexpr BOOL TRUE  = true;
+
+typedef uint16_t WORD;
+
+typedef uint32_t UINT;
+typedef int32_t INT;
 
 typedef char* LPTSTR, LPSTR;
 typedef const char* LPCTSTR;
 
-#endif	
-
+#endif	// _LINUXCOMPAT_TYPES_H_

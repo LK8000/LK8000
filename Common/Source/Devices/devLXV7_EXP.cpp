@@ -250,6 +250,7 @@ if(LXV7_EXP_bValid == false)
 
 
 BOOL LXV7_EXPPutBallast(PDeviceDescriptor_t d, double Ballast){
+
 TCHAR  szTmp[254];
 if(LXV7_EXP_bValid == false)
  {
@@ -263,7 +264,6 @@ if(LXV7_EXP_bValid == false)
 
  LXV7_EXP_BallastUpdateTimeout =10;
  return(TRUE);
-
 }
 
 
