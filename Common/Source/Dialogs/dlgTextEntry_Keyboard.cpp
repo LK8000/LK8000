@@ -681,12 +681,14 @@ bool bA=false, bB=false, bC=false, bD=false, bE=false, bF=false, bG=false, bH=fa
 
 unsigned int i=0;
 
-
+BOOL bCaseDontCare = true;
     if(KeyboardLayout == UPPERCASE)
     {
       for (i = 0; i < size; i++ )
       {
-	switch  (EnabledKeyString[i])
+	TCHAR Sel = EnabledKeyString[i];
+	if(bCaseDontCare) Sel = toupper(EnabledKeyString[i]);
+	switch (Sel)
 	{
 	  case 'A': bA = true; break;
 	  case 'B': bB = true; break;
@@ -744,7 +746,9 @@ unsigned int i=0;
     {
       for (i = 0; i < size; i++ )
       {
-        switch  (EnabledKeyString[i])
+	TCHAR Sel = EnabledKeyString[i];
+	if(bCaseDontCare) Sel = tolower(EnabledKeyString[i]);
+	switch (Sel)
         {
           case 'a': b_A = true; break;
           case 'b': b_B = true; break;
