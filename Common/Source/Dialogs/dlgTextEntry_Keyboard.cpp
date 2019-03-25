@@ -373,12 +373,31 @@ BOOL dlgKeyboard(WndProperty* theProperty){
 
 
 
+int FindFirstIn(const TCHAR Txt[] ,const TCHAR Sub[])
+{
+int SubLen = _tcslen(Sub);
+int TxtLen = _tcslen(Txt);
+int Pos =  0;
+int res = -1;
+
+  while ((Pos + SubLen) <= TxtLen)
+  {
+    res = _tcsnicmp(&Txt[Pos], Sub, SubLen);
+    if(res == 0)
+      return  Pos;
+    Pos++;
+  }
+
+  return -1;  // not found
+
+}
+
 void ReduceKeysByWaypointList(void)
 {
 
 char SelList[MAX_SEL_LIST_SIZE]={""};
 unsigned int NumChar=0;
-bool CharEqual = true;
+
 
 char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_,!+$%#/()=:* \xD6\xDC\xC4"};
 
@@ -391,7 +410,8 @@ TCHAR Found[EXT_SEARCH_SIZE + 1];
 SelList[0] = '\0';
 unsigned int NameLen=0;
  int Offset=0;
-unsigned int k =0;
+
+
 IdenticalOffset =999;
 IdenticalIndex = -1;
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
@@ -411,68 +431,56 @@ IdenticalIndex = -1;
      // _sntprintf(wname,EXT_NAMESIZE, _T("%s %s"), WayPointList[i].Name, WayPointList[i].Code);
       NameLen =  _tcslen(wname);
       Offset = 0;
-      if(cursor > NameLen)
-	CharEqual = false;
-      else
+
+
+      BOOL bFound = false;
+      int Sart =0;
+      do
       {
-        do
-        {
-          k=0;
-          CharEqual = true;
-          while((k < (cursor)) && ((k+Offset) < NameLen) && CharEqual)
-          {
-            LKASSERT(k < MAX_TEXTENTRY);
-            LKASSERT((k+Offset) < NameLen);
-            TCHAR ac = (TCHAR)wname[k+Offset];
-            TCHAR bc = (TCHAR)edittext[k];
-            if(  toupper(ac) !=   toupper(bc) ) /* waypoint has string ?*/
-            {
-              CharEqual = false;
-            }
-            k++;
-          }
-          Offset++;
-        }
-        while(((Offset-1+cursor) < NameLen) && !CharEqual );
-        Offset--;
-      }
+	Sart =  FindFirstIn((&wname[Offset]),( edittext));
+	if( Sart != -1)  // substring found?
+	{
+	  bFound = true;
+	  Sart += Offset;
+	  TCHAR newChar = ToUpper(wname[cursor+Sart]);
+	  bool existing = false;
+	  j=0;
+	  while(( j < NumChar) && (!existing))  /* new character already in list? */
+	  {
+	    LKASSERT(j<MAX_SEL_LIST_SIZE);
+	    if(SelList[j] == (unsigned char)newChar)
+		    existing = true;
+	    j++;
+	  }
 
+	  if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+	  {
+	    LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+	    SelList[NumChar++] = newChar;
+	  }
+	  if((Sart +cursor) < NameLen) // place for another substring?
+	    Offset = Sart +cursor;     // search for another substring after first one
+	  else
+	    Sart = -1;
+	}
+      } while( Sart != -1 );
 
-      if(CharEqual)
+      if(bFound)
       {
-
+	EqCnt++;
+	LKASSERT(i<=WayPointList.size());
 	if(Offset < IdenticalOffset)
-        {
-          IdenticalIndex = i; /* remember first found equal name */
-          IdenticalOffset = Offset; /* remember first found equal name */
-		   // StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
-        }
-        EqCnt++;
-        LKASSERT((cursor+Offset)<=EXT_NAMESIZE);
-        LKASSERT(i<=WayPointList.size());
-        TCHAR newChar = ToUpper(wname[cursor+Offset]);
-        bool existing = false;
-        j=0;
-        while(( j < NumChar) && (!existing))  /* new character already in list? */
-        {
-     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
-          LKASSERT(j<MAX_SEL_LIST_SIZE);
-          if(SelList[j] == (unsigned char)newChar)
-		  existing = true;
-          j++;
-        }
-
-        if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
-        {
-     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
-          LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-          SelList[NumChar++] = ToUpper(newChar);
-     //     SelList[NumChar++] = ToUpper(newChar);
-        }
+	{
+	  IdenticalIndex = i; /* remember first found equal name */
+	  IdenticalOffset = Offset; /* remember first found equal name */
+	}
       }
     }
 
+
     SelList[NumChar++] = '\0';
+
+    StartupStore(_T(".SelList= %s\n"),SelList);
     RemoveKeys((char*)SelList, NumChar);
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
 	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
@@ -524,7 +532,7 @@ void ReduceKeysByAirspaceList(void)
 {
 TCHAR SelList[MAX_SEL_LIST_SIZE]={_T("")};
 unsigned int NumChar=0;
-bool CharEqual = true;
+
 char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_?!+$%#/()=:* \xD6\xDC\xC4"};
 
 
@@ -536,16 +544,14 @@ TCHAR Found[EXT_SEARCH_SIZE + 1];
 SelList[0] = '\0';
 unsigned int NameLen=0;
  int Offset=0;
-unsigned int k =0;
+
 IdenticalOffset =999;
-//IdenticalIndex = -1;
 TCHAR IdenticalName[EXT_SEARCH_SIZE]= _T("");
 TCHAR AS_Name[EXT_SEARCH_SIZE];
 
 
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
-  //  RemoveKeys((char*)Charlist, sizeof(Charlist));
     RemoveKeys((char*)Charlist , sizeof(Charlist));
   }
   else
@@ -560,70 +566,48 @@ TCHAR AS_Name[EXT_SEARCH_SIZE];
     {
 
     if((*it)->Comment() != NULL)
-	  _sntprintf(AS_Name,EXT_SEARCH_SIZE,_T("%s"),(*it)->Comment());
+      _sntprintf(AS_Name,EXT_SEARCH_SIZE,_T("%s"),(*it)->Comment());
     else
       _sntprintf(AS_Name,EXT_NAMESIZE, _T("%s"),(*it)->Name());
 
       NameLen =  _tcslen(AS_Name);
       Offset = 0;
-      if(cursor > NameLen)
-        CharEqual = false;
-      else
+
+      BOOL bFound = false;
+      int Sart =0;
+      do
       {
-        do
-        {
-          k=0;
-          CharEqual = true;
-          while((k < (cursor)) && ((k+Offset) < NameLen) && CharEqual)
-          {
-            LKASSERT(k < MAX_TEXTENTRY);
-            LKASSERT((k+Offset) < NameLen);
-            TCHAR ac = (TCHAR)AS_Name[k+Offset];
-            TCHAR bc = (TCHAR)edittext[k];
-            if(  toupper(ac) !=   toupper(bc) ) /* waypoint has string ?*/
-            {
-              CharEqual = false;
-            }
-            k++;
-          }
-          Offset++;
-        }
-        while(((Offset-1+cursor) < NameLen) && !CharEqual );
-        Offset--;
-      }
+	Sart =  FindFirstIn((&AS_Name[Offset]),( edittext));
+	if( Sart != -1)  // substring found?
+	{
+	  bFound = true;
+	  Sart += Offset;
+	  TCHAR newChar = ToUpper(AS_Name[cursor+Sart]);
+	  bool existing = false;
+	  j=0;
+	  while(( j < NumChar) && (!existing))  /* new character already in list? */
+	  {
+	    LKASSERT(j<MAX_SEL_LIST_SIZE);
+	    if(SelList[j] == (unsigned char)newChar)
+		    existing = true;
+	    j++;
+	  }
 
+	  if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+	  {
+	    LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+	    SelList[NumChar++] = newChar;
+	  }
+	  if((Sart +cursor) < NameLen) // place for another substring?
+	    Offset = Sart +cursor;     // search for another substring after first one
+	  else
+	    Sart = -1;
+	}
+      } while( Sart != -1 );
 
-      if(CharEqual)
+      if(bFound)
       {
-
-        if(Offset < IdenticalOffset)
-        {
-          _stprintf(IdenticalName ,_T("%s"),AS_Name);
-          IdenticalOffset = Offset; /* remember first found equal name */
-                   // StartupStore(_T("Found Best Fit %i Idx %i %s\n"), i, IdenticalIndex, WayPointList[IdenticalIndex].Name);
-        }
-        EqCnt++;
-        LKASSERT((cursor+Offset)<=EXT_SEARCH_SIZE);
-    //    LKASSERT(i<=WayPointList.size());
-        TCHAR newChar = ToUpper(AS_Name[cursor+Offset]);
-        bool existing = false;
-        j=0;
-        while(( j < NumChar) && (!existing))  /* new character already in list? */
-        {
-     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
-          LKASSERT(j<MAX_SEL_LIST_SIZE);
-          if(SelList[j] == (unsigned char)newChar)
-                existing = true;
-          j++;
-        }
-
-        if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
-        {
-     //     StartupStore(_T(". j=%i  MAX_SEL_LIST_SIZE= %i\n"),j,MAX_SEL_LIST_SIZE);
-          LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-          SelList[NumChar++] = toupper(newChar);
-          SelList[NumChar++] = tolower(newChar);
-        }
+	EqCnt++;
       }
     }
 
