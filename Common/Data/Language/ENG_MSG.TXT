@@ -2383,3 +2383,30 @@ _@M2424_ "Max Autozoom level"
 
 _@M2425_ "Draw FAI Assistant"
 _@M2426_ "Draw XC Triangle"
+
+_@M2427_ "MC"
+_@M2428_ "BAL"
+_@M2429_ "BUGS"
+_@M2430_ "STF-SW"
+_@M2431_ "WIND"
+
+_@M2432_ "IN"
+_@M2433_ "OUT"
+_@M2434_ "IN & OUT"
+
+_@M2435_ "BARO"
+_@M2436_ "SPEED"
+_@M2437_ "VARIO"
+_@M2438_ "TARGET"
+
+_@M2439_ "RADIO"
+_@M2440_ "TRAFFIC"
+_@M2441_ "GYRO"
+_@M2442_ "G-FORCE"
+_@M2443_ "OAT"
+_@M2444_ "BAT1"
+_@M2445_ "BAT2"
+_@M2446_ "POLAR"
+
+_@M2447_ "Values"
+_@M2448_ "Direction"

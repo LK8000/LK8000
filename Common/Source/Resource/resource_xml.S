@@ -172,3 +172,5 @@
     binfile IDR_XML_FILES_P, Common/Data/Dialogs/dlgFiles_P.xml
     binfile IDR_XML_IGC_PROGRESS_P, Common/Data/Dialogs/dlgIGCProgress_L.xml
     binfile IDR_XML_IGC_PROGRESS_L, Common/Data/Dialogs/dlgIGCProgress_P.xml
+    binfile IDR_XML_DEV_LXNAV_L, Common/Data/Dialogs/dlgDevLXNav_L.xml
+    binfile IDR_XML_DEV_LXNAV_P, Common/Data/Dialogs/dlgDevLXNav_P.xml

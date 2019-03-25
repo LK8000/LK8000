@@ -614,6 +614,23 @@ void LKDeviceSave(const TCHAR *szFile)
   rprintf(szRegistryIpPort5,dwIpPort[4]);
   rprintf(szRegistryIpPort6,dwIpPort[5]);
 
+#define IO_PARAM_SIZE 160
+
+  for(int n = 0; n < NUMDEV; n++)
+  {
+    TCHAR szTmp[IO_PARAM_SIZE];
+    _sntprintf(szTmp,IO_PARAM_SIZE, _T("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u"),
+	       (uint)PortIO[n].MCDir    ,(uint)PortIO[n].BUGDir  ,(uint)PortIO[n].BALDir   ,
+	       (uint)PortIO[n].STFDir   ,(uint)PortIO[n].WINDDir ,(uint)PortIO[n].BARODir  ,
+	       (uint)PortIO[n].VARIODir ,(uint)PortIO[n].SPEEDDir,(uint)PortIO[n].TARGETDir,
+	       (uint)PortIO[n].RADIODir ,(uint)PortIO[n].TRAFDir ,(uint)PortIO[n].GYRODir  ,
+	       (uint)PortIO[n].GFORCEDir,(uint)PortIO[n].OATDir  ,(uint)PortIO[n].BAT1Dir  ,
+	       (uint)PortIO[n].BAT2Dir  ,(uint)PortIO[n].POLARDir);
+    char szKey[20] = ("");
+    sprintf(szKey ,("%s%u"),szRegistryIOValues,n+1);
+    rprintf(szKey,szTmp);
+  }
+
   rprintf(szRegistryUseExtSound1,UseExtSound[0]);
   rprintf(szRegistryUseExtSound2,UseExtSound[1]);
   rprintf(szRegistryUseExtSound3,UseExtSound[2]);
