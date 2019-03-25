@@ -41,6 +41,7 @@ extern bool UpdateQNH(const double newqnh);
 #define BLOCK_SIZE 25
 
 PDeviceDescriptor_t DevLXNanoIII::m_pDevice=NULL;
+BOOL DevLXNanoIII::m_bLXNavS_series = false;
 bool bIGC_Download = false;
 static FILE *f= NULL;
 uint uTimeout =0;
@@ -58,6 +59,7 @@ double Nano3_oldMC = MACCREADY;
 int Nano3_MacCreadyUpdateTimeout = 0;
 int Nano3_BugsUpdateTimeout = 0;
 int Nano3_BallastUpdateTimeout =0;
+int iS_SeriesTimeout =0;
 int iNano3_GPSBaudrate = 0;
 int iNano3_PDABaudrate = 0;
 //double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
@@ -308,11 +310,7 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
   static int i=40;
   TCHAR  szTmp[MAX_NMEA_LEN];
 
-/*
-  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
-    return FALSE;
-  }
-*/
+
 
   if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
   {
@@ -347,6 +345,9 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
     }
 
 
+      if(iS_SeriesTimeout-- < 0)
+        S_Series(false);
+
     static int oldQFEOff =0;
     static int iOldQNH   =0;
 
@@ -377,8 +378,13 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
   }
 #endif
   if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
+  {
     return PLXVC( d,  sentence, info);
-  else
+  }
+
+    if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+      return FALSE;
+    }
     if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
       return PLXVF(d, sentence + 7, info);
     else
@@ -429,9 +435,10 @@ CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 
 BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 {
- SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,0,10,1,0,0"));
- SendNmea(d, TEXT("PLXVC,INFO,R"));
-
+  if(S_Series())
+  {
+    SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,10,10,1,5,5"));
+  }
   return true;
 }
 
@@ -1660,7 +1667,7 @@ BOOL DevLXNanoIII::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 {
 TCHAR szTmp[MAX_NMEA_LEN];
 double alt=0, airspeed=0;
-
+S_Series(true);
   if((m_bValues) || (IsDirInput(PortIO[d->PortNumber].GFORCEDir)))
   {
     double fX,fY,fZ;
@@ -1776,7 +1783,8 @@ BOOL DevLXNanoIII::PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 double Batt;
 double OAT;
 TCHAR szTmp[MAX_NMEA_LEN];
-
+S_Series(true);
+iS_SeriesTimeout = 30;
   if (ParToDouble(sentence, 0, &OAT))
   {
     if(m_bValues)
@@ -1997,9 +2005,11 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   if(!d)  return false;
   if(Nano3_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].MCDir)) return false;
-
-  _stprintf(szTmp, TEXT("PLXV0,MC,W,%3.1f"), MacCready );
-  DevLXNanoIII::SendNmea(d,szTmp);
+  if(DevLXNanoIII::S_Series())
+    _stprintf(szTmp, TEXT("PLXV0,MC,W,%3.1f"), MacCready );
+  else
+    _stprintf(szTmp, TEXT("PFLX2,%.2f,,,,,"), MacCready);
+    DevLXNanoIII::SendNmea(d,szTmp);
   Nano3_MacCreadyUpdateTimeout = 5;
 return true;
 
@@ -2011,14 +2021,18 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   if(!d)  return false;
   if(Nano3_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].BALDir)) return false;
-  if(((WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT])) > 0)
-  {
-    Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
-    _stprintf(szTmp, TEXT("PLXV0,BAL,W,%4.2f"),Ballast);
 
-    DevLXNanoIII::SendNmea(d,szTmp);
-    Nano3_BallastUpdateTimeout =10;
-  }
+
+
+  double BallastFact =  CalculateLXBalastFactor(Ballast);
+  if(DevLXNanoIII::S_Series())
+    _stprintf(szTmp, TEXT("PLXV0,BAL,W,%4.2f"),BallastFact);
+  else
+    _stprintf(szTmp, TEXT("PFLX2,,%.2f,,,,"), BallastFact);
+  DevLXNanoIII::SendNmea(d,szTmp);
+
+  Nano3_BallastUpdateTimeout =10;
+
 return(TRUE);
 }
 
@@ -2029,8 +2043,13 @@ BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs){
   if(!d)  return false;
   if(Nano3_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].BUGDir)) return false;
+  double LXBugs = CalculateLXBugs( Bugs);
 
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,BUGS,W,%3.1f"),(1.00-Bugs)*100.0);
+  if(DevLXNanoIII::S_Series())
+    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,BUGS,W,%3.1f"),LXBugs);
+  else
+    _stprintf(szTmp, TEXT("PFLX2,,,%d,,,"), (int)LXBugs);
+
   DevLXNanoIII::SendNmea(d,szTmp);
   Nano3_BugsUpdateTimeout = 5;
 return(TRUE);

@@ -55,7 +55,8 @@ class DevLXNanoIII : public DevLX
     static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[]);
     static bool OnStartIGC_FileRead(TCHAR Filename[]) ;
     static BOOL AbortLX_IGC_FileRead(void);
-
+    static BOOL S_Series(void){return  m_bLXNavS_series;};
+    static void S_Series(BOOL Mode){  m_bLXNavS_series = Mode;};
   //----------------------------------------------------------------------------
   protected:
 
@@ -116,6 +117,7 @@ class DevLXNanoIII : public DevLX
    static void GetDirections(WndButton* pWnd);
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
+   static BOOL m_bLXNavS_series;
 /*
    static BOOL m_bValues;
    BOOL ValueDisplay(void) { return m_bValues;};
