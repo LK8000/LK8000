@@ -73,6 +73,40 @@ typedef struct Declaration {
   const WAYPOINT *waypoint[MAXTASKPOINTS];
 } Declaration_t;
 
+
+
+
+// Filter switches for different Data directions coming sending from/to external devices
+typedef enum
+{
+  BiDirOff   =0,	 // OFF    no data exchange with this data (ignore data)
+  BiDirIn    =1,	 // IN     only reading of this data from external device
+  BiDirOut   =2,	 // OUT    only sending this data to external device
+  BiDirInOut =3		 // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
+}DataBiIoDir;
+
+typedef struct{
+  DataBiIoDir MCDir;     // Mac Cready
+  DataBiIoDir BUGDir;    // BUG aka efficency
+  DataBiIoDir BALDir;    // Ballast
+  DataBiIoDir STFDir;    // Speed to fly switch Vario/Sollfahrt
+  DataBiIoDir WINDDir;   // Wind
+  DataBiIoDir BARODir;   // barometric heigt
+  DataBiIoDir VARIODir;  // Variometer
+  DataBiIoDir SPEEDDir;  // IAS indicated airspeed
+  DataBiIoDir TARGETDir; // Navigation Target information
+
+  DataBiIoDir RADIODir ; // Radio Informations Frequency etc.
+  DataBiIoDir TRAFDir  ; // Traffix Information (FLARM)
+  DataBiIoDir GYRODir  ; // Gyroskop information
+  DataBiIoDir GFORCEDir; // G-Force values
+  DataBiIoDir OATDir   ; // Outside air temperature
+  DataBiIoDir BAT1Dir  ; // Battery 1 voltage
+  DataBiIoDir BAT2Dir  ; // Battery 2 voltage
+  DataBiIoDir POLARDir ; // Polar 2 voltage
+
+} DeviceIO;
+
 typedef	struct DeviceDescriptor_t {
   
   DeviceDescriptor_t() = default;
@@ -126,7 +160,7 @@ typedef	struct DeviceDescriptor_t {
   unsigned HB;
   
   NMEAParser nmeaParser;
-	
+//  DeviceIO PortIO[NUMDEV];
   void InitStruct(int i);
 }DeviceDescriptor_t;
 

@@ -21,20 +21,30 @@
 #include "dlgIGCProgress.h"
 
 extern void   StopIGCRead(void);
+extern void  OnAbort_IGC_FileRead(void);
 
 static bool OnIGCProgressTimer(WndForm* pWnd);
 static bool bClose = false;
 
 WndForm* _WndForm = NULL;
 
-static bool OnIGCProgressTimer(WndForm* pWnd)
-{
-	if(pWnd)
-	{
-	  if(bClose)
-	    pWnd->SetModalResult(mrOK);
-	}
- return true;
+TCHAR m_szTmp[50] =_T("...");
+
+static bool OnIGCProgressTimer(WndForm *pWnd) {
+  if (pWnd) {
+      WindowControl *wText = pWnd->FindByName(TEXT("frmIGCText"));
+      if (wText) {
+        wText->SetCaption(m_szTmp);
+     wText->Redraw();
+#ifndef USE_GDI
+     MainWindow.Refresh();
+#endif
+      }
+
+    if (bClose)
+      pWnd->SetModalResult(mrOK);
+  }
+  return true;
 }
 
 
@@ -122,6 +132,7 @@ void dlgIGCProgressShowModal(void){
 
 
 void CloseIGCProgressDialog() {
+  _stprintf(m_szTmp, TEXT("..."));
     bClose = true;
 
 }
@@ -131,21 +142,11 @@ void CreateIGCProgressDialog() {
 }
 
 
-void IGCProgressDialogText(const TCHAR* text) {
-  if(_WndForm)
-  {
-	 WindowControl* wText = _WndForm->FindByName(TEXT("frmIGCText"));
-    if(wText)
-    {
-        wText->SetCaption(text);
-        wText->Redraw();
-#ifndef USE_GDI
-        MainWindow.Refresh();
-#endif
-    }
-  }
-}
+void IGCProgressDialogText(const TCHAR *text) {
 
+  _stprintf(m_szTmp, TEXT("%s"),text);
+
+}
 
 
  void OnIGCAbortClicked(WndButton* pWnd) {
@@ -159,6 +160,7 @@ void IGCProgressDialogText(const TCHAR* text) {
 	{
 	  CloseIGCProgressDialog();
 	  StopIGCRead();
+	  OnAbort_IGC_FileRead();
 	}
 
 }

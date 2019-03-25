@@ -341,6 +341,11 @@
 #define WEIGHT_PLANEDRY 1
 #define WEIGHT_WATER    2
 
+// Polar polynom index
+#define POLAR_A   			2
+#define POLAR_B   			1
+#define POLAR_C      		0
+
 // WriteText modalities
 #define WTALIGN_LEFT	0
 #define WTALIGN_RIGHT	1
