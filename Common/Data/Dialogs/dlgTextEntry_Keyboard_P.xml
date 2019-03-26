@@ -7,7 +7,7 @@
     <WndButton   Caption="_@M228_"    X="200" Y="2" Width="40"  Height="22" Font="2" OnClickNotify="OnDel"/>
     <WndButton  Name="prpA" Caption="A"    X="0" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton  Name="prpB" Caption="B"    X="40" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpB" Caption="C"    X="80" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton  Name="prpC" Caption="C"    X="80" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton  Name="prpD" Caption="D"    X="120" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton  Name="prpE" Caption="E"    X="160" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton  Name="prpF" Caption="F"    X="200" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
