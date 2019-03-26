@@ -193,6 +193,12 @@ void CheckSetMACCREADY(const double value);
 
 double CheckSetBugs(double val);
 double CheckSetBallast(double val);
+double CalculateLXBalastFactor(double Ballast);
+double CalculateBalastFromLX(double Factor);
+
+double CalculateLXBugs(double Bugs);
+double CalculateBugsFromLX(double LXBug);
+
 bool   IsThermalBarVisible(void);
 
 extern bool CheckClubVersion(void);
