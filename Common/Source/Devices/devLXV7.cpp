@@ -230,20 +230,23 @@ BOOL LXV7PutMacCready(PDeviceDescriptor_t d, double MacCready) {
 
 
 BOOL LXV7PutBallast(PDeviceDescriptor_t d, double Ballast) {
-    TCHAR  szTmp[254];
-    if(LXV7_bValid == false)
-        return false;
 
-    Ballast =  1.0 + (double)WEIGHTS[WEIGHT_WATER]*Ballast /(double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]);
-    _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),Ballast);
+TCHAR  szTmp[254];
+  if(LXV7_bValid == false)
+  {
+    return false;
+  }
+   double fLXBalFact = CalculateLXBalastFactor(Ballast);
+  _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),fLXBalFact);
 
-    LXV7NMEAddCheckSumStrg(szTmp);
-    d->Com->WriteString(szTmp);
-    //DevLXV7::PutGPRMB(d);
+  LXV7NMEAddCheckSumStrg(szTmp);
+  d->Com->WriteString(szTmp);
 
-    LXV7_BallastUpdateTimeout =10;
-    return(TRUE);
+  LXV7_BallastUpdateTimeout =10;
+  return(TRUE);
 }
+
+
 
 
 BOOL LXV7PutBugs(PDeviceDescriptor_t d, double Bugs){
@@ -252,7 +255,7 @@ BOOL LXV7PutBugs(PDeviceDescriptor_t d, double Bugs){
     if(LXV7_bValid == false)
         return false;
 
-    _stprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),(1.00-Bugs)*100.0);
+    _stprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),CalculateLXBugs(Bugs));
 
     LXV7NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
@@ -521,12 +524,10 @@ if(LXV7_BallastUpdateTimeout > 0)
 else
   if (ParToDouble(sentence, 1, &fTmp))
   {
-    fTmp = (fTmp) * (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_PLANEDRY + WEIGHT_PILOT +WEIGHT_WATER
-    fTmp = (fTmp) - (double)(WEIGHTS[WEIGHT_PLANEDRY] + WEIGHTS[WEIGHT_PILOT]); // = WEIGHT_WATER
-    fTmp = (fTmp) / (double)WEIGHTS[WEIGHT_WATER];                              // = % of WEIGHT_WATER (0.0 .. 1.0)
-    if(  fabs(fTmp -BALLAST) >= 0.01)
+    double newBallast = CalculateBalastFromLX(fTmp);
+    if(  fabs(newBallast -BALLAST) >= 0.01)
     {
-      CheckSetBallast(fTmp);
+      CheckSetBallast(newBallast);
       iLXV7_RxUpdateTime = 5;
     }
   }
@@ -538,11 +539,10 @@ if(LXV7_BugsUpdateTimeout > 0)
 else
   if(ParToDouble(sentence, 2, &fTmp))
   {
-	int iTmp2 = 100-(int)(fTmp+0.5);
-	fTmp =  (double)iTmp2/100.0;
-	if(  fabs(fTmp -BUGS) >= 0.03)
+    double newBugs = CalculateBalastFromLX(fTmp);
+	if(  fabs(newBugs -BUGS) >= 0.03)
     {
-      CheckSetBugs(fTmp);
+      CheckSetBugs(newBugs);
       iLXV7_RxUpdateTime = 5;
     }
   }
