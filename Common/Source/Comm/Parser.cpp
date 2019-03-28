@@ -207,66 +207,66 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
 
       if(_tcscmp(params[0] + 1,TEXT("PTAS1"))==0)
         {
-          return PTAS1(&String[7], params + 1, n_params, pGPS);
+          return PTAS1(&String[7], params + 1, n_params-1, pGPS);
         }
 
       // FLARM sentences
 
       if(_tcscmp(params[0] + 1,TEXT("PFLAV"))==0)
         {
-          return PFLAV(&String[7], params + 1, n_params, pGPS);
+          return PFLAV(&String[7], params + 1, n_params-1, pGPS);
         }
 
       if(_tcscmp(params[0] + 1,TEXT("PFLAA"))==0)
         {
-          return PFLAA(&String[7], params + 1, n_params, pGPS);
+          return PFLAA(&String[7], params + 1, n_params-1, pGPS);
         }
 
       if(_tcscmp(params[0] + 1,TEXT("PFLAU"))==0)
         {
-          return PFLAU(&String[7], params + 1, n_params, pGPS);
+          return PFLAU(&String[7], params + 1, n_params-1, pGPS);
         }
 
       if(_tcscmp(params[0] + 1,TEXT("PGRMZ"))==0)
 	{
-	  return RMZ(&String[7], params + 1, n_params, pGPS);
+	  return RMZ(&String[7], params + 1, n_params-1, pGPS);
 	}
       if(_tcscmp(params[0] + 1,TEXT("PLKAS"))==0)
         {
-          return PLKAS(&String[7], params + 1, n_params, pGPS);
+          return PLKAS(&String[7], params + 1, n_params-1, pGPS);
         }
       return FALSE;
     }
 
   if(_tcscmp(params[0] + 3,TEXT("GSA"))==0)
     {
-      return GSA(&String[7], params + 1, n_params, pGPS);
+      return GSA(&String[7], params + 1, n_params-1, pGPS);
     }
   if(_tcscmp(params[0] + 3,TEXT("GLL"))==0)
     {
-      //    return GLL(&String[7], params + 1, n_params, pGPS);
+      //    return GLL(&String[7], params + 1, n_params-1, pGPS);
       return FALSE;
     }
   if(_tcscmp(params[0] + 3,TEXT("RMB"))==0)
     {
-      //return RMB(&String[7], params + 1, n_params, pGPS);
+      //return RMB(&String[7], params + 1, n_params-1, pGPS);
           return FALSE;
       }
   if(_tcscmp(params[0] + 3,TEXT("RMC"))==0)
     {
-      return RMC(&String[7], params + 1, n_params, pGPS);
+      return RMC(&String[7], params + 1, n_params-1, pGPS);
     }
   if(_tcscmp(params[0] + 3,TEXT("GGA"))==0)
     {
-      return GGA(&String[7], params + 1, n_params, pGPS);
+      return GGA(&String[7], params + 1, n_params-1, pGPS);
     }
   if(_tcscmp(params[0] + 3,TEXT("VTG"))==0)
     {
-      return VTG(&String[7], params + 1, n_params, pGPS);
+      return VTG(&String[7], params + 1, n_params-1, pGPS);
     }
   if(_tcscmp(params[0] + 1,TEXT("HCHDG"))==0)
     {
-      return HCHDG(&String[7], params + 1, n_params, pGPS);
+      return HCHDG(&String[7], params + 1, n_params-1, pGPS);
     }
 
   return FALSE;
@@ -724,7 +724,7 @@ force_advance:
 BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 11) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GGA sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
+    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GGA sentence, nparams=%u <%s>"),(unsigned)nparams,String));
     // max index used is 10...
     return FALSE;
   }
