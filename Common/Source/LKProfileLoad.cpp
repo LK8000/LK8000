@@ -615,7 +615,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
     PREAD(sname,svalue,szKey, szTmp, IO_PARAM_SIZE);
     if(_tcslen(szTmp) > 0)
     {
-      StartupStore(TEXT(" Load : szRegistryIOValues[%u] (%s) %s  %s"), n, szKey, szTmp, NEWLINE);
+//      StartupStore(TEXT(" Load : szRegistryIOValues[%u] (%s) %s  %s"), n, szKey, szTmp, NEWLINE);
       NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].MCDir     = (DataBiIoDir) atoi((char*)szItem);
       NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BUGDir    = (DataBiIoDir) atoi((char*)szItem); // (String, NULL, 0)
       NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BALDir    = (DataBiIoDir) atoi((char*)szItem);
