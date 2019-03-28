@@ -213,6 +213,7 @@ bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGP
     if (ReadChecked(params[11], pGPS->ExternalWindDirection) &&
             ReadChecked(params[12], pGPS->ExternalWindSpeed))
     {
+        pGPS->ExternalWindDirection = AngleLimit360(pGPS->ExternalWindDirection + 180);
         pGPS->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
         pGPS->ExternalWindAvailable = TRUE;
     }
