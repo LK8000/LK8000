@@ -79,6 +79,8 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
     //rgb_text=RGB_MAGENTA;
     bool moreoutline = false;
 
+    Surface.SetBackgroundTransparent();
+
     if(lwmode) { // WTMODE_OUTLINED:
         //
         // First set a background color for outlining
