@@ -2273,7 +2273,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
             StartupStore(TEXT(".. Failed to allocate new airspace.%s"), NEWLINE);
             return false;
         }
-        bool flyzone=true; //TODO: initialize this properly...
+        bool flyzone=false; //by default all airspaces are no-fly zones!!!
         newairspace->Init(dataStr, Type, Base, Top, flyzone, ASComment);
 
         // Add the new airspace
