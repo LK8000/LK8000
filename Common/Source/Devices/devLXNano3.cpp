@@ -166,7 +166,7 @@ bool DevLXNanoIII::Register(){
 } // Register()
 
 
-BOOL PutMacCready(PDeviceDescriptor_t d, double MacCready);
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
@@ -346,7 +346,7 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
 
 
       if(iS_SeriesTimeout-- < 0)
-        S_Series(false);
+        devSetAdvancedMode(d,false);
 
     static int oldQFEOff =0;
     static int iOldQNH   =0;
@@ -435,7 +435,7 @@ CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 
 BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 {
-  if(S_Series())
+  if(devGetAdvancedMode(d))
   {
     SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,10,10,1,5,5"));
   }
@@ -1331,6 +1331,8 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
   double fDir,fSpeed;
 
+if( !devGetAdvancedMode(d))
+{
   if (ParToDouble(sentence, 1, &fSpeed))
   {
 
@@ -1374,6 +1376,7 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       TriggerVarioUpdate();
     }
   }
+}
 
   if (ParToDouble(sentence, 10, &fDir) &&
 	ParToDouble(sentence, 11, &fSpeed))
@@ -1671,7 +1674,7 @@ BOOL DevLXNanoIII::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 {
 TCHAR szTmp[MAX_NMEA_LEN];
 double alt=0, airspeed=0;
-S_Series(true);
+devSetAdvancedMode(d,true);
   if((m_bValues) || (IsDirInput(PortIO[d->PortNumber].GFORCEDir)))
   {
     double fX,fY,fZ;
@@ -1787,7 +1790,7 @@ BOOL DevLXNanoIII::PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 double Batt;
 double OAT;
 TCHAR szTmp[MAX_NMEA_LEN];
-S_Series(true);
+devSetAdvancedMode(d,true);
 iS_SeriesTimeout = 30;
   if (ParToDouble(sentence, 0, &OAT))
   {
@@ -2009,7 +2012,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   if(!d)  return false;
   if(Nano3_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].MCDir)) return false;
-  if(DevLXNanoIII::S_Series())
+  if(devGetAdvancedMode(d))
     _stprintf(szTmp, TEXT("PLXV0,MC,W,%3.1f"), MacCready );
   else
     _stprintf(szTmp, TEXT("PFLX2,%.2f,,,,,"), MacCready);
@@ -2029,7 +2032,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
 
   double BallastFact =  CalculateLXBalastFactor(Ballast);
-  if(DevLXNanoIII::S_Series())
+  if(devGetAdvancedMode(d))
     _stprintf(szTmp, TEXT("PLXV0,BAL,W,%4.2f"),BallastFact);
   else
     _stprintf(szTmp, TEXT("PFLX2,,%.2f,,,,"), BallastFact);
@@ -2049,7 +2052,7 @@ BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs){
   if(!IsDirOutput(PortIO[d->PortNumber].BUGDir)) return false;
   double LXBugs = CalculateLXBugs( Bugs);
 
-  if(DevLXNanoIII::S_Series())
+  if(devGetAdvancedMode(d))
     _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,BUGS,W,%3.1f"),LXBugs);
   else
     _stprintf(szTmp, TEXT("PFLX2,,,%d,,,"), (int)LXBugs);
@@ -2160,10 +2163,16 @@ if(m_bValues)
   ShowDataValue( wf ,d,_T("prpTARGDir"),  szTmp);
 }
 
-if(!IsDirInput(PortIO[d->PortNumber].TARGETDir)) return false;
+if(!IsDirInput(PortIO[d->PortNumber].TARGETDir))
+{
+  if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
+    Alternate2 = -1;                 // clear external =re-enable!
+  return false;
+}
+
 
 _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
-  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
+_tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
 
 
 
