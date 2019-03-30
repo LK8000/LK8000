@@ -145,7 +145,8 @@ typedef	struct DeviceDescriptor_t {
   BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
   BOOL (*HeartBeat)(DeviceDescriptor_t     *d);
-
+ 
+  bool m_bAdvancedMode;
   int iSharedPort;
   int PortNumber;
   bool Disabled;
@@ -247,5 +248,7 @@ BOOL devGetBaroAltitude(double *Value);
 
 BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence);
 
+BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode);
+BOOL devGetAdvancedMode(PDeviceDescriptor_t d);
 
 #endif
