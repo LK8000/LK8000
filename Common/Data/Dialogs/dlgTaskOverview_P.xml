@@ -3,12 +3,13 @@
   <WndForm Name="frmTaskOverview" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M688_" Font="2" >
     <WndButton Name="cmdClose"   Caption="_@M186_" X="1"   Y="1" Width="60" Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
     <WndButton Name="cmdClear"   Caption="_@M180_" X="61"  Y="1" Width="60" Height="22" Font="2" OnClickNotify="OnClearClicked"/>
-    <WndButton Name="cmdCalc"    Caption="_@M160_" X="121" Y="1" Width="60" Height="22" Font="2" OnClickNotify="OnCalcClicked" Tag="4" />
+    <WndButton Name="cmdCalc"    Caption="_@M1851_" X="121" Y="1" Width="60" Height="22" Font="2" OnClickNotify="OnReverseClicked" Tag="4" />
     <WndButton Name="cmdDeclare" Caption="_@M222_" X="181" Y="1" Width="59" Height="22" Font="2" OnClickNotify="OnDeclareClicked"/>
-	
+<!--    	
     <WndProperty Name="prpAATEst" Caption="_@M247_" X="1" Y="24"  Width="120" Height="22" CaptionWidth="45" Font="2" ReadOnly="1">
       <DataField DataType="double" DisplayFormat="%.0fmin" EditFormat="%.0f" ReadOnly="1"/>
     </WndProperty>
+-->    
     <WndButton Name="cmdTimegates" Caption="_@M1747_" X="149" Y="24" Width="90" Height="22" Font="2" OnClickNotify="OnTimegatesClicked"/>
     <WndButton Name="cmdDelete"    Caption="_@M230_"  X="149" Y="24" Width="90" Height="22" Font="2" OnClickNotify="OnDeleteClicked"/>
 

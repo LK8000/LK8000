@@ -101,7 +101,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       rcClient.GetSize().cy
   };
   
-  if (DrawListIndex < n){
+  if (DrawListIndex < (n-1)){
     int i = LowLimit + DrawListIndex;
 //    if ((WayPointList[Task[i].Index].Flags & LANDPOINT) >0)
 //      MapWindow::DrawRunway(hDC,  &WayPointList[Task[i].Index],  rc, 3000,true);
@@ -141,23 +141,30 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
     }
 
   } else {
-
+    RefreshTaskStatistics();
     Surface.SetTextColor(RGB_BLACK);
 
      // if (DrawListIndex==n) { // patchout 091126
-     if (DrawListIndex==n && UpLimit < MAXTASKPOINTS) { // patch 091126
+     if (DrawListIndex==(n-1) && UpLimit < MAXTASKPOINTS) { // patch 091126
 
 	// LKTOKEN  _@M832_ = "add waypoint"
       _stprintf(sTmp, TEXT("  (%s)"), MsgToken(832));
       Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
-    } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
+    } else if ((DrawListIndex==n) && ValidTaskPoint(0)) {
+
+	int Minutes=  (int)(CALCULATED_INFO.TaskTimeToGo )/60;
+	if(MACCREADY ==0)
+	  Minutes = 24*60;
+	int Hours = (int)(Minutes/60);
+	Minutes = Minutes - (Hours*60);
 
       if (!AATEnabled || ISPARAGLIDER) {
         // LKTOKEN  _@M735_ = "Total:"
         Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken(735));
-	   _stprintf(sTmp, TEXT("%.0f %s%s"), lengthtotal*DISTANCEMODIFY, Units::GetDistanceName(), fai_ok?_T(" FAI"):_T(""));
+	   _stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""),lengthtotal*DISTANCEMODIFY, Units::GetDistanceName());
 	
        Surface.DrawText(rc.right +p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
+       
 
       } else {
 
@@ -178,8 +185,21 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 		  DISTANCEMODIFY*d1,
 		  Units::GetDistanceName());
 	Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
-      }
+      } 
     }
+
+    if(n >1)
+      if (DrawListIndex==(n+1) && UpLimit < MAXTASKPOINTS)
+      {
+	double dd = CALCULATED_INFO.TaskTimeToGo;
+	if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) /*&&(ActiveWayPoint>0)*/) { // patch 091126
+	  dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
+	}
+	dd= min(24.0*60.0,dd/60.0);
+	int idd = (int) (dd+0.5);
+	_stprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken(247),  MsgToken(1022)  ,  MACCREADY*LIFTMODIFY,Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
+	Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
+      }
   }
   UnlockTaskData();
 
@@ -198,27 +218,15 @@ static void OverviewRefreshTask(void) {
   for (i=0; i<MAXTASKPOINTS; i++) {
     if (Task[i].Index != -1) {
       lengthtotal += Task[i].Leg;
-      UpLimit = i+1;
+      UpLimit = i+2;
     }
   }
 
-  // Simple FAI 2004 triangle rules
-  fai_ok = true;
-  if (lengthtotal>0) {
-    for (i=0; i<MAXTASKPOINTS; i++) {
-      if (Task[i].Index != -1) {
-        double lrat = Task[i].Leg/lengthtotal;
-        if ((lrat>0.45)||(lrat<0.10)) {
-          fai_ok = false;
-        }
-      }
-    }
-  } else {
-    fai_ok = false;
-  }
+
+  fai_ok = CALCULATED_INFO.TaskFAI	;
 
   RefreshTaskStatistics();
-
+#ifdef OLD_TIME_ESTIMATE
   WndProperty* wp;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATEst"));
@@ -235,8 +243,8 @@ static void OverviewRefreshTask(void) {
     wp->GetDataField()->SetAsFloat(dd);
     wp->RefreshDisplay();
   }
-
-  int SelectedIndex = wTaskList->GetItemIndex();  
+#endif
+  int SelectedIndex = wTaskList->GetItemIndex();
   LowLimit =0;
   wTaskList->ResetList();
   wTaskList->SetItemIndex(SelectedIndex);
@@ -263,7 +271,7 @@ static void OnTaskListEnter(WindowControl * Sender,
   ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
 
   // If we are clicking on Add Waypoint
-  if ((ItemIndex>=0) && (ItemIndex == UpLimit) && (UpLimit<MAXTASKPOINTS)) {
+  if ((ItemIndex>=0) && (ItemIndex == (UpLimit-1)) && ((UpLimit-1)<MAXTASKPOINTS)) {
 
 	// add new waypoint
 	if (CheckDeclaration()) {
@@ -325,7 +333,7 @@ static void OnTaskListEnter(WindowControl * Sender,
 
   } // Index==UpLimit, clicking on Add Waypoint
 
-  if (ItemIndex<UpLimit) {
+  if (ItemIndex<UpLimit-1) {
 
 	if (ItemIndex==0) {
 		dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
@@ -337,6 +345,21 @@ static void OnTaskListEnter(WindowControl * Sender,
 		}
 	}
 	  OverviewRefreshTask();
+  }
+
+  if (ItemIndex==(UpLimit))
+  {
+    wf->SetVisible(false);
+    dlgAnalysisShowModal(ANALYSIS_PAGE_TASK);
+    wf->SetVisible(true);
+  }
+  
+  if (ItemIndex==(UpLimit+1))
+  {
+    wf->SetVisible(false);
+    dlgTaskCalculatorShowModal();
+    OverviewRefreshTask();
+    wf->SetVisible(true);
   }
 
 } // OnTaskListEnter
@@ -380,6 +403,22 @@ static void OnClearClicked(WndButton* pWnd){
       UpdateCaption();
     }
   }
+}
+
+
+static void OnReverseClicked(WndButton* pWnd){
+
+
+    if (MessageBoxX(
+      MsgToken(1852), // LKTOKEN  _@M1852_ = "Reverse task?"
+      MsgToken(1851), // LKTOKEN  _@M1851_ = "Reverse task"
+      mbYesNo) == IdYes)
+    {
+      LockTaskData();
+      ReverseTask();
+      UnlockTaskData();
+      OverviewRefreshTask();
+    }
 }
 
 static void OnCalcClicked(WndButton* pWnd){
@@ -589,6 +628,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnDeclareClicked),
   ClickNotifyCallbackEntry(OnCalcClicked),
   ClickNotifyCallbackEntry(OnClearClicked),
+  ClickNotifyCallbackEntry(OnReverseClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnAdvancedClicked),
   ClickNotifyCallbackEntry(OnSaveClicked),
