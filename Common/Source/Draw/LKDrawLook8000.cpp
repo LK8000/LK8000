@@ -424,7 +424,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             // RIGHT BOTTOM  AUX-3
             // (GLIDERS) ALTITUDE DIFFERENCE  at current MC
             //
-            if (isOverlayHidden(Overlay_RightMid)) goto _skip_glider_RightBottom;
+            if (isOverlayHidden(Overlay_RightBottom)) goto _skip_glider_RightBottom;
             if (isOverlayCustom(Overlay_RightBottom))
                 LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
             else
