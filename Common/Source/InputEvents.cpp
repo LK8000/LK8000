@@ -1688,38 +1688,32 @@ void InputEvents::eventWind(const TCHAR *misc) {
 // For the simple SendNMEA without port specified, we assume it is a FLARM
 // commanded action from menu buttons.
 //
+
+
 void InputEvents::eventSendNMEA(const TCHAR *misc) {
-  #if TESTBENCH
-  StartupStore(_T("... SendNMEA: <%s>\n"),misc);
-  #endif
   //
   // We might consider strings starting with PF being FLARM stuff.
   // But since we only manage FLARM buttons in v5, no reason to complicate life.
   // if ( strncmp  misc PF ..)
-  short flarmfoundonport=-1;
- for(const auto& dev : DeviceList) {
-    if(dev.nmeaParser.isFlarm) {
-      flarmfoundonport = dev.nmeaParser.isFlarm;
-      break; // we have got first available Flarm device, ingore next device.
-    }
-  }  
-  if (flarmfoundonport==-1) {
-      DoStatusMessage(_T("NO FLARM"));
-      #if TESTBENCH
-      StartupStore(_T("... NO FLARM\n"));
-      #endif
-      return;
-  }
-  #if TESTBENCH
-  StartupStore(_T("... SendNMEA sent to port %d\n"),flarmfoundonport);
-  #endif
+
   if (misc) {
-    PDeviceDescriptor_t found_flarm = devX(flarmfoundonport);
+    PDeviceDescriptor_t found_flarm = nullptr;
+    for ( auto &dev : DeviceList) {
+      if (dev.nmeaParser.isFlarm) {
+        found_flarm = &dev;
+        break; // we have got first available Flarm device, ingore next device.
+      }
+    }
     if (found_flarm) {
-       devWriteNMEAString(found_flarm, misc);
+      devWriteNMEAString(found_flarm, misc);
+    } else {
+      DoStatusMessage(_T("NO FLARM"));
+      StartupStore(_T("eventSendNMEA : NO FLARM\n"));
     }
   }
 }
+
+
 
 void InputEvents::eventSendNMEAPort1(const TCHAR *misc) {
   if (misc) {
