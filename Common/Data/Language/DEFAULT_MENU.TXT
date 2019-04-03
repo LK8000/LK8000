@@ -1923,14 +1923,14 @@ location=7
 mode=FlarmStealth
 type=key
 data=9
-event=SendNMEAPort1 PFLAC,S,NOTRACK,1
+event=SendNMEA PFLAC,S,NOTRACK,1
 label=Tracking\n_@M2094_
 location=8
 
 mode=FlarmStealth
 type=key
 data=0
-event=SendNMEAPort1 PFLAC,S,NOTRACK,0
+event=SendNMEA PFLAC,S,NOTRACK,0
 label=Tracking\n_@M2093_
 location=9
 
