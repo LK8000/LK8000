@@ -101,7 +101,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       rcClient.GetSize().cy
   };
   
-  if (DrawListIndex < (n-1)){
+  if (DrawListIndex < (n-3)){
     int i = LowLimit + DrawListIndex;
 //    if ((WayPointList[Task[i].Index].Flags & LANDPOINT) >0)
 //      MapWindow::DrawRunway(hDC,  &WayPointList[Task[i].Index],  rc, 3000,true);
@@ -145,12 +145,13 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
     Surface.SetTextColor(RGB_BLACK);
 
      // if (DrawListIndex==n) { // patchout 091126
-     if (DrawListIndex==(n-1) && UpLimit < MAXTASKPOINTS) { // patch 091126
+     if (DrawListIndex==(n-3) && UpLimit < MAXTASKPOINTS) { // patch 091126
 
 	// LKTOKEN  _@M832_ = "add waypoint"
       _stprintf(sTmp, TEXT("  (%s)"), MsgToken(832));
       Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
-    } else if ((DrawListIndex==n) && ValidTaskPoint(0)) {
+    } else
+      if ((DrawListIndex==(n-2)) && ValidTaskPoint(1)) {
 
 	int Minutes=  (int)(CALCULATED_INFO.TaskTimeToGo )/60;
 	if(MACCREADY ==0)
@@ -161,46 +162,44 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       if (!AATEnabled || ISPARAGLIDER) {
         // LKTOKEN  _@M735_ = "Total:"
         Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken(735));
-	   _stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""),lengthtotal*DISTANCEMODIFY, Units::GetDistanceName());
-	
-       Surface.DrawText(rc.right +p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
-       
-
-      } else {
-
-      double d1 = CALCULATED_INFO.TaskDistanceToGo;
-      if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) && (ActiveTaskPoint>0)) {
-                   d1 += CALCULATED_INFO.TaskDistanceCovered;
+	_stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""),lengthtotal*DISTANCEMODIFY, Units::GetDistanceName());
+	Surface.DrawText(rc.right +p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
       }
-
-	if (d1==0.0) {
-	  d1 = CALCULATED_INFO.AATTargetDistance;
-	}
-
-	_stprintf(sTmp, TEXT("%s %.0f min %.0f (%.0f) %s"),
-	// LKTOKEN  _@M735_ = "Total:"
-                  MsgToken(735),
-                  AATTaskLength*1.0,
-		  DISTANCEMODIFY*lengthtotal,
-		  DISTANCEMODIFY*d1,
-		  Units::GetDistanceName());
-	Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
-      } 
-    }
-
-    if(n >1)
-      if (DrawListIndex==(n+1) && UpLimit < MAXTASKPOINTS)
+      else
       {
-	double dd = CALCULATED_INFO.TaskTimeToGo;
-	if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) /*&&(ActiveWayPoint>0)*/) { // patch 091126
-	  dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
+	double d1 = CALCULATED_INFO.TaskDistanceToGo;
+	if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) && (ActiveTaskPoint>0)) {
+	  d1 += CALCULATED_INFO.TaskDistanceCovered;
 	}
-	dd= min(24.0*60.0,dd/60.0);
-	int idd = (int) (dd+0.5);
-	_stprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken(247),  MsgToken(1022)  ,  MACCREADY*LIFTMODIFY,Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
-	Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
+	if (d1==0.0) {
+	    d1 = CALCULATED_INFO.AATTargetDistance;
+	  }
+	  _stprintf(sTmp, TEXT("%s %.0f min %.0f (%.0f) %s"),
+	  // LKTOKEN  _@M735_ = "Total:"
+		    MsgToken(735),
+		    AATTaskLength*1.0,
+		    DISTANCEMODIFY*lengthtotal,
+		    DISTANCEMODIFY*d1,
+		    Units::GetDistanceName());
+	  Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
       }
+     }
+     else
+     {
+       if ((DrawListIndex==(n-1)) && ValidTaskPoint(1))
+       {
+	 double dd = CALCULATED_INFO.TaskTimeToGo;
+	 if ( (CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying) /*&&(ActiveWayPoint>0)*/) { // patch 091126
+	   dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
+	 }
+	 dd= min(24.0*60.0,dd/60.0);
+	 int idd = (int) (dd+0.5);
+	 _stprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken(247),  MsgToken(1022)  ,  MACCREADY*LIFTMODIFY,Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
+	 Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
+       }
+     }
   }
+ 
   UnlockTaskData();
 
 }
@@ -218,10 +217,11 @@ static void OverviewRefreshTask(void) {
   for (i=0; i<MAXTASKPOINTS; i++) {
     if (Task[i].Index != -1) {
       lengthtotal += Task[i].Leg;
-      UpLimit = i+2;
+    
+      UpLimit = i+1;
     }
   }
-
+  UpLimit +=3;
 
   fai_ok = CALCULATED_INFO.TaskFAI	;
 
@@ -271,7 +271,8 @@ static void OnTaskListEnter(WindowControl * Sender,
   ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
 
   // If we are clicking on Add Waypoint
-  if ((ItemIndex>=0) && (ItemIndex == (UpLimit-1)) && ((UpLimit-1)<MAXTASKPOINTS)) {
+  if(UpLimit>=3)
+  if ((ItemIndex>=0) && (ItemIndex == (UpLimit-3)) && ((UpLimit-3)<MAXTASKPOINTS)) {
 
 	// add new waypoint
 	if (CheckDeclaration()) {
@@ -333,7 +334,7 @@ static void OnTaskListEnter(WindowControl * Sender,
 
   } // Index==UpLimit, clicking on Add Waypoint
 
-  if (ItemIndex<UpLimit-1) {
+  if (ItemIndex<UpLimit-3) {
 
 	if (ItemIndex==0) {
 		dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
@@ -346,29 +347,30 @@ static void OnTaskListEnter(WindowControl * Sender,
 	}
 	  OverviewRefreshTask();
   }
-
-  if (ItemIndex==(UpLimit))
+ if( ValidTaskPoint(1)) // min 2 waypoints
+ {
+  if (ItemIndex==(UpLimit-2))
   {
     wf->SetVisible(false);
     dlgAnalysisShowModal(ANALYSIS_PAGE_TASK);
     wf->SetVisible(true);
   }
   
-  if (ItemIndex==(UpLimit+1))
+  if (ItemIndex==(UpLimit-1))
   {
     wf->SetVisible(false);
     dlgTaskCalculatorShowModal();
     OverviewRefreshTask();
     wf->SetVisible(true);
   }
-
+ }
 } // OnTaskListEnter
 
 
 
 
 static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-	(void)Sender;
+(void)Sender;
 
   if (ListInfo->DrawIndex == -1) {
 	ListInfo->ItemCount = UpLimit-LowLimit+2;
@@ -649,7 +651,10 @@ void dlgTaskOverviewShowModal(int Idx){
   ItemIndex = Idx; //-1;
 
   showAdvanced = false;
-
+  
+  if(MACCREADY < 0.1)
+    MACCREADY = GlidePolar::SafetyMacCready;
+    
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_TASKOVERVIEW_L : IDR_XML_TASKOVERVIEW_P);
 
   if (!wf) return;
