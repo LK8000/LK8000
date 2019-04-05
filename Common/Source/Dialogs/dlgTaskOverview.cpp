@@ -174,10 +174,11 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
 	if (d1==0.0) {
 	    d1 = CALCULATED_INFO.AATTargetDistance;
 	  }
-	  _stprintf(sTmp, TEXT("%s %.0f min %.0f (%.0f) %s"),
+	  _stprintf(sTmp, TEXT("%s %2i:%02ih %.0f (%.0f) %s"),
 	  // LKTOKEN  _@M735_ = "Total:"
 		    MsgToken(735),
-		    AATTaskLength*1.0,
+		    (int)AATTaskLength/60,
+		    (int)AATTaskLength%60,
 		    DISTANCEMODIFY*lengthtotal,
 		    DISTANCEMODIFY*d1,
 		    Units::GetDistanceName());
@@ -333,19 +334,21 @@ static void OnTaskListEnter(WindowControl * Sender,
 	return;
 
   } // Index==UpLimit, clicking on Add Waypoint
-
-  if (ItemIndex<UpLimit-3) {
-
-	if (ItemIndex==0) {
-		dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
-	} else {
-		if (ItemIndex==UpLimit-1) {
-			dlgTaskWaypointShowModal(ItemIndex, 2); // finish waypoint
-		} else {
-			dlgTaskWaypointShowModal(ItemIndex, 1); // turnpoint
-		}
-	}
-	  OverviewRefreshTask();
+if(UpLimit > 3)
+  if (ItemIndex<(UpLimit-3)) {
+    if (ItemIndex==0) {
+//	StartupStore(_T(". %i %i // start waypoint%s"), ItemIndex, UpLimit,NEWLINE);
+      dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
+    } else {
+      if (ItemIndex==(UpLimit-4)) {
+//	  StartupStore(_T(". %i %i // finish waypoint%s"), ItemIndex, UpLimit,NEWLINE);
+	dlgTaskWaypointShowModal(ItemIndex, 2); // finish waypoint
+      } else {
+//	  StartupStore(_T(". %i %i // normal waypoint%s"), ItemIndex, UpLimit,NEWLINE);
+	dlgTaskWaypointShowModal(ItemIndex, 1); // turnpoint
+      }
+    }
+    OverviewRefreshTask();
   }
  if( ValidTaskPoint(1)) // min 2 waypoints
  {
