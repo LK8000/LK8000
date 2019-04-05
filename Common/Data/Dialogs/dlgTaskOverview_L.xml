@@ -3,15 +3,17 @@
   <WndForm Name="frmTaskOverview" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M688_" Font="2" >
     <WndFrame X="0" Y="0" Width="100" Height="20" Font="2" />
     <WndButton   Name="cmdClose" Caption="_@M186_"    X="2" Y="2" Width="98"  Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
+<!--    
     <WndProperty Name="prpAATEst" Caption="_@M247_" X="2" Y="-1"  Width="98" Height="22" CaptionWidth="35" Font="2" ReadOnly="1" min="0" max="600" step="10">
       <DataField name="" DataType="double" DisplayFormat="%.0fmin" EditFormat="%.0f" readonly="1"/>
     </WndProperty>
+-->    
     <WndButton  Name="cmdClear" Caption="_@M180_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnClearClicked"/>
     <WndButton  Name="cmdCalc"  Caption="_@M160_" X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnCalcClicked" Tag="4" />
     <WndButton  Name="cmdLoad" Caption="_@M398_"    X="2" Y="-1" Width="98"  Height="44" Font="2" OnClickNotify="OnLoadClicked"/>
     <WndButton  Name="cmdSave" Caption="_@M583_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnSaveClicked"/>
     <WndButton  Name="cmdDeclare" Caption="_@M222_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnDeclareClicked"/>
-    <WndButton  Name="cmdAnalysis" Caption="_@M93_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnAnalysisClicked"/>
+    <WndButton  Name="cmdAnalysis" Caption="_@M1851_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnReverseClicked"/>
     <WndButton  Name="cmdTimegates" Caption="_@M1747_" X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnTimegatesClicked"/>
     <WndButton  Name="cmdDelete" Caption="_@M230_" X="2" Y="-999" Width="98"  Height="22" Font="2" OnClickNotify="OnDeleteClicked"/>
     <WndListFrame Name="frmTaskList" X="102" Y="0" Width="-2" Height="222" Font="2" OnListInfo="OnTaskListInfo">
