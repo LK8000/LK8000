@@ -618,8 +618,7 @@ class MapWindow {
   static void DrawInfoPage(LKSurface& Surface, const RECT& rc, const bool forceinit);
   static void DrawTraffic(LKSurface& Surface, const RECT& rc);
   static void DrawThermalHistory(LKSurface& Surface, const RECT& rc);
-  static int DrawCompassArc(LKSurface& Surface, long x, long y, int radius, const RECT& rc, double bearing);
-  static void DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc );
+  static void DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const RECT& rc);
   static void DrawHeadUpLine(LKSurface& Surface, const POINT& Orig, const RECT& rc , double, double);
   static void DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT& rc, const bool headUpLine = false);
 

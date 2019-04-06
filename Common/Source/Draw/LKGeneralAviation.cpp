@@ -4,22 +4,17 @@
    See CREDITS.TXT file for authors and copyrights
 
    $Id: LKGeneralAviation.cpp,v 1.1 2010/12/11 19:06:34 root Exp root $
+   $Id: LKGeneralAviation.cpp,v 1.2 2019/03/31 21:12:56 aircaft now at the center of the compass rose $
 
-   LKGeneralAviation.cpp by Oren
+   LKGeneralAviation.cpp original work by Oren
+   Improved by Alberto Realis-Luc
 */
-
-/////////////////////////////
 
 #include "externs.h"
 #include "LKObjects.h"
 #include "RGB.h"
 
-
-
-
-////////////////////////////////////////////////////////////////////////////////////
-void drawOutlineText(LKSurface& Surface,int x,int y,const TCHAR * textBuffer, const LKColor& color )
-{
+void drawOutlineText(LKSurface& Surface, int x, int y, const TCHAR * textBuffer) {
 #ifdef USE_FREETYPE
 #warning "to slow, rewrite using freetype outline"
 #endif
@@ -28,194 +23,117 @@ void drawOutlineText(LKSurface& Surface,int x,int y,const TCHAR * textBuffer, co
 	Surface.DrawText(x +1, y +1, textBuffer);
 	Surface.DrawText(x -1, y   , textBuffer);
 	Surface.DrawText(x   , y +1, textBuffer);
-
-	Surface.SetTextColor(color);
-	Surface.DrawText(x , y , textBuffer);
+	Surface.SetTextColor(RGB_WHITE);
+	Surface.DrawText(x, y, textBuffer);
 }
 
-
-////////////////////////////////////////////////////////////////////////////////////
-int MapWindow::DrawCompassArc(LKSurface& Surface, long x, long y, int radius, const RECT& rc,
-	    double bearing)
-
-{
-		const int indicatorStep = 10;
-
-		// For Oren: remember to always DeleteObject you create with Create, or in 1 hour any
-		// device will run out of GDI space, including your PC...
-		// Meanwhile, I have created LKObjects, so anytime we should use them . No need to delete them.
-		//HPEN hPenBlack = ::CreatePen(PEN_SOLID, (5), LKColor(0x00,0x0,0x0));
-		//HPEN hPenWhite = (HPEN)CreatePen(PEN_SOLID, (2), LKColor(0xff,0xff,0xff));
-		const PenReference hPenBlack = LKPen_Black_N5;
-		const PenReference hPenWhite = LKPen_White_N2;
-
-		const auto oldpen=Surface.SelectObject(hPenBlack);
-		Surface.DrawArc(x, y,radius, rc, 300, 60);
-
-		int heading = (int)(bearing +0.5);
-
-		// -----------Draw the detents around the circle-----------------------------
-
-		double angleDiff = heading % indicatorStep;
-
-		int screenAngle = (int)(300 - angleDiff);
-		int curHeading = (int)(heading - 60 - angleDiff);
-		TCHAR textBuffer[32];
-
-		POINT pt[2];
-		int i;
-
-		const auto oldfont = Surface.SelectObject(LK8MediumFont); // always remember to save object or we miss font
-
-		for(i = - 60; i<= 60;
-				i+=indicatorStep,screenAngle += indicatorStep,curHeading += indicatorStep)
-		{
-
-			if ( (screenAngle < 300) && (screenAngle > 60) )
-			{
-				continue;
-			}
-
-			screenAngle  = (int)AngleLimit360(screenAngle);
-
-			pt[0].x = x + (long) (radius * fastsine(screenAngle) );
-			pt[0].y = y - (long) (radius * fastcosine(screenAngle) );
-
-			// The length of the tickmarks on the compass rose
-			double tickLength;
-
-			// Make sure the display heading is between 0 and 360
-			int displayHeading = (int)AngleLimit360(curHeading);
-
-			// If the heading is a multiple of ten, it gets a long tick
-			if(displayHeading%30==0)
-			{
-				tickLength = 15;
-
-				if(displayHeading%30==0)
-				{
-
-					int drawHdg = displayHeading/10;
-					switch ( drawHdg )
-					{
-					case 0:
-						_stprintf( textBuffer, _T("N"));
-						break;
-					case 9:
-						_stprintf( textBuffer, _T("E"));
-						break;
-					case 18:
-						_stprintf( textBuffer, _T("S"));
-						break;
-					case 27:
-						_stprintf( textBuffer, _T("W"));
-						break;
-					default:
-						_stprintf( textBuffer, _T("%d"), displayHeading/10 );
-						break;
-					}
-
-					SIZE textSize;
-					Surface.GetTextSize(textBuffer, &textSize);
-
-					int textX = x + (long) ((radius - (textSize.cy/2)-2) * fastsine(screenAngle) ) - textSize.cx/2;
-					int textY = y - (long) ((radius - (textSize.cy/2)-2) * fastcosine(screenAngle) );
-					drawOutlineText(Surface, textX,textY ,textBuffer,RGB_WHITE);
-				}
-			}
-			else // Otherwise it gets a short tick
-				tickLength = 10;
-
-			pt[1].x = x + (long) ((radius -tickLength) * fastsine(screenAngle) );
-			pt[1].y = y - (long) ((radius -tickLength) * fastcosine(screenAngle) );
-			Surface.SelectObject(hPenBlack);
-			Surface.Polyline(pt,2);
-			Surface.SelectObject(hPenWhite);
-			Surface.Polyline(pt,2);
-		}
-
-		Surface.SelectObject(hPenWhite);
-		Surface.DrawArc(x, y,radius, rc, 300, 60);
-		Surface.SelectObject(oldfont);
-		Surface.SelectObject(oldpen);
-		return 0;
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////////
-void MapWindow::DrawHSIarc(LKSurface& Surface, const POINT& Orig, const RECT& rc )
-{
-	// short rcHeight = rc.bottom;
-	short rcx=rc.left+rc.right/2;
-	short rad=(rc.right/2) - (rcx/10);
-	short rcy= rad;
-
-	if ( DisplayOrientation == NORTHSMART ||
+void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const RECT& rc) {
+	// Only for Trackup and compatible modes
+	if (DisplayOrientation == NORTHSMART ||
 		DisplayOrientation == NORTHTRACK ||
 		DisplayOrientation == NORTHUP ||
 		MapWindow::mode.autoNorthUP() ||
 		MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
-		)
+	) return;
+
+	// The aircraft symbol must be horizontally in the center
+	LKASSERT(AircraftPos.x == rc.right/2);
+
+	// Print current heading
+	TCHAR textBuffer[4];
+	const auto oldfont = Surface.SelectObject(LK8InfoNormalFont); // always remember to save object or we miss font
+	const int hdg = (int)round(DrawInfo.TrackBearing);
+	_stprintf(textBuffer,_T("%03d"), hdg);
+	SIZE textSize;
+	Surface.GetTextSize(textBuffer, &textSize); // get size of heading printed digits
+	const int halfBrgSize = textSize.cx/2;
+	const int screenOrientYoffset = ScreenLandscape ? 0 : 44;
+	const int brgYoffset = textSize.cy + screenOrientYoffset;
+	drawOutlineText(Surface, AircraftPos.x - halfBrgSize, screenOrientYoffset, textBuffer);
+
+	// Calculate compass radius: consider the offset below heading pointer
+	const int radius = AircraftPos.y - brgYoffset - 12;
+
+	// Draw heading pointer on the top of the compass
+	const auto oldpen=Surface.SelectObject(LKPen_Black_N3);
 	{
-		return; //Only for Trackup and compatible modes
+		const int deciBrgSize = textSize.cx/10;
+		const POINT hdgPointer[7] = {
+				{AircraftPos.x - halfBrgSize - 5, brgYoffset - 5},
+				{AircraftPos.x - halfBrgSize - 5, brgYoffset + 2},
+				{AircraftPos.x - deciBrgSize    , brgYoffset + 2},
+				{AircraftPos.x                  , brgYoffset + 7},
+				{AircraftPos.x + deciBrgSize    , brgYoffset + 2},
+				{AircraftPos.x + halfBrgSize + 5, brgYoffset + 2},
+				{AircraftPos.x + halfBrgSize + 5, brgYoffset - 5}
+		};
+
+		Surface.Polyline(hdgPointer,7);
+		Surface.SelectObject(LKPen_White_N2);
+		Surface.Polyline(hdgPointer,7);
 	}
 
+	// Calculate the angle covered by the compass on each side
+	const int rightArc = ScreenLandscape ? 60 : (ScreenSize == ss272x480 || ScreenSize == ss480x800 ? 25 : 30) ;
+	const int leftArc = (int)AngleLimit360(-rightArc);
 
-	//XXXOREN - move to globals
-	//HPEN hPenBlack = ::CreatePen(PEN_SOLID, (5), LKColor(0x00,0x0,0x0));
-	//HPEN hPenWhite = (HPEN)CreatePen(PEN_SOLID, (2), LKColor(0xff,0xff,0xff));
-	const PenReference hPenBlack = LKPen_Black_N3;
-	const PenReference hPenWhite = LKPen_White_N2;
+	// Draw black part of the compass arc
+	Surface.SelectObject(LKPen_Black_N5);
+	Surface.DrawArc(AircraftPos.x, AircraftPos.y,radius, rc, leftArc, rightArc);
 
-	const auto oldfont = Surface.SelectObject(LK8InfoNormalFont);
+	// Draw the dents around the circle
+	const int step = ScreenLandscape ? 10 : 5;
+	const int bigStep = ScreenLandscape ? 30 : 10;
+	const int diff = (int)round(hdg % step);
+	Surface.SelectObject(LK8MediumFont);
+	for(int i = -rightArc, screenAngle = leftArc - diff, curHdg = hdg - rightArc - diff; i <= rightArc; i += step, screenAngle += step, curHdg += step) {
+		screenAngle = (int)AngleLimit360(screenAngle);
+		if (screenAngle < leftArc && screenAngle > rightArc) continue;
+		const int displayHeading = (int)AngleLimit360(curHdg);
+		int tickLength = radius - 10; // the length of the tickmarks on the compass rose
+		const double& sinus = fastsine(screenAngle);
+		const double& cosinus = fastcosine(screenAngle);
+		if (displayHeading % bigStep == 0) {
+			tickLength -= 8; // make longer ticks
+			const int drawHdg = displayHeading/10;
+			switch (drawHdg) {
+			case 0:
+				_stprintf(textBuffer, _T("N"));
+				break;
+			case 9:
+				_stprintf(textBuffer, _T("E"));
+				break;
+			case 18:
+				_stprintf(textBuffer, _T("S"));
+				break;
+			case 27:
+				_stprintf(textBuffer, _T("W"));
+				break;
+			default:
+				_stprintf(textBuffer, _T("%d"), drawHdg);
+				break;
+			}
+			Surface.GetTextSize(textBuffer, &textSize);
+			const int textX = AircraftPos.x + (int) ((radius - (textSize.cy/2)-2) * sinus) - textSize.cx/2;
+			const int textY = AircraftPos.y - (int) ((radius - (textSize.cy/2)-2) * cosinus);
+			drawOutlineText(Surface, textX, textY, textBuffer);
+		}
+		const POINT dent[2] = {
+			{ AircraftPos.x + (int)(radius     * sinus), AircraftPos.y - (int)(radius     * cosinus) },
+			{ AircraftPos.x + (int)(tickLength * sinus), AircraftPos.y - (int)(tickLength * cosinus) }
+		};
+		Surface.SelectObject(LKPen_Black_N5);
+		Surface.Polyline(dent,2);
+		Surface.SelectObject(LKPen_White_N2);
+		Surface.Polyline(dent,2);
+	}
 
-	//Draw current heading
-	///////////////////
+	// Draw white part of the compass arc
+	Surface.SelectObject(LKPen_White_N2);
+	Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, leftArc, rightArc);
 
-	TCHAR brgText[LKSIZEBUFFERLARGE];
-	int bearing= (int) (DrawInfo.TrackBearing+0.5);
-	_stprintf(brgText,_T("%03d"),bearing);
-
-	SIZE brgSize;
-	Surface.GetTextSize(brgText, &brgSize);
-	drawOutlineText(Surface, rcx -(brgSize.cx/2), 0 ,brgText,RGB_WHITE);
-
-	//Draw pointer
-	POINT pt[7];
-	pt[0].x = rcx - (brgSize.cx/2) -5;
-	pt[0].y = brgSize.cy - 5;
-
-	pt[1].x = rcx - (brgSize.cx/2) -5;
-	pt[1].y = brgSize.cy + 2;
-
-	pt[2].x = rcx - (brgSize.cx/10);
-	pt[2].y = brgSize.cy + 2;
-
-	pt[3].x = rcx;
-	pt[3].y = brgSize.cy + 7;
-
-	pt[4].x = rcx + (brgSize.cx/10);
-	pt[4].y = brgSize.cy + 2;
-
-	pt[5].x = rcx + (brgSize.cx/2) +5;
-	pt[5].y = brgSize.cy + 2;
-
-	pt[6].x = rcx + (brgSize.cx/2) +5;
-	pt[6].y = brgSize.cy - 5;
-
-	const auto oldpen=Surface.SelectObject(hPenBlack);
-	Surface.Polyline(pt,7);
-	Surface.SelectObject(hPenWhite);
-	Surface.Polyline(pt,7);
-
-	//Offset arc below heading
-	rcy += brgSize.cy +10;
-
-	DrawCompassArc(Surface,Orig.x,rcy,rad,rc,DrawInfo.TrackBearing);
-
+	// Restore previous text color, pen and font
 	Surface.SetTextColor(RGB_BLACK);
 	Surface.SelectObject(oldpen);
 	Surface.SelectObject(oldfont);
-
 }

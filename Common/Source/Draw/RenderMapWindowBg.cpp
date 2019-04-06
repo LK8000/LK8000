@@ -10,7 +10,6 @@
 #include "Message.h"
 #include "Terrain.h"
 #include "RasterTerrain.h"
-#include "LKGeneralAviation.h"
 #include "Multimap.h"
 #include "Sound/Sound.h"
 #include "ScreenProjection.h"
@@ -325,7 +324,7 @@ _skip_2:
         }
 
         if (ISGAAIRCRAFT) {
-            DrawHSIarc(Surface, Orig, DrawRect);
+            DrawGAscreen(Surface, Orig_Aircraft, DrawRect);
         }
 
         if (IsMultimapOverlaysText()) {
