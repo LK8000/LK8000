@@ -771,6 +771,55 @@ add_library( LK8000 SHARED
     Common/Source/Resource/resource_xml.S
 
 	Common/Source/Tracking/LiveTrack24.cpp
+	Common/Source/Tracking/Tracking.cpp
+
+    Common/Source/xcs/Util/CRC.cpp
+    Common/Source/xcs/Util/CRC.hpp
+
+	Common/Source/xcs/Tracking/SkyLines/Client.hpp
+    Common/Source/xcs/Tracking/SkyLines/Client.cpp
+    Common/Source/xcs/Tracking/SkyLines/Data.hpp
+    Common/Source/xcs/Tracking/SkyLines/Export.hpp
+    Common/Source/xcs/Tracking/SkyLines/Features.hpp
+	Common/Source/xcs/Tracking/SkyLines/Glue.hpp
+    Common/Source/xcs/Tracking/SkyLines/Glue.cpp
+    Common/Source/xcs/Tracking/SkyLines/Handler.hpp
+    Common/Source/xcs/Tracking/SkyLines/Import.hpp
+	Common/Source/xcs/Tracking/SkyLines/Key.hpp
+	Common/Source/xcs/Tracking/SkyLines/Key.cpp
+    Common/Source/xcs/Tracking/SkyLines/Protocol.hpp
+    Common/Source/xcs/Tracking/SkyLines/Queue.hpp
+    Common/Source/xcs/Tracking/SkyLines/Settings.hpp
+	Common/Source/xcs/Tracking/SkyLines/Assemble.hpp
+	Common/Source/xcs/Tracking/SkyLines/Assemble.cpp
+
+	Common/Source/xcs/Tracking/Features.hpp
+	Common/Source/xcs/Tracking/TrackingGlue.hpp
+	Common/Source/xcs/Tracking/TrackingGlue.cpp
+	Common/Source/xcs/Tracking/TrackingSettings.hpp
+	Common/Source/xcs/Tracking/TrackingSettings.cpp
+
+	Common/Source/xcs/IO/Async/GlobalIOThread.hpp
+	Common/Source/xcs/IO/Async/GlobalIOThread.cpp
+	Common/Source/xcs/IO/Async/IOThread.hpp
+	Common/Source/xcs/IO/Async/IOThread.cpp
+
+	Common/Source/xcs/Time/GPSClock.hpp
+
+	Common/Source/xcs/Net/AllocatedSocketAddress.cxx
+	Common/Source/xcs/Net/AllocatedSocketAddress.hxx
+	Common/Source/xcs/Net/Features.hxx
+	Common/Source/xcs/Net/IPv4Address.cxx
+	Common/Source/xcs/Net/IPv4Address.hxx
+	Common/Source/xcs/Net/SocketAddress.cxx
+	Common/Source/xcs/Net/SocketAddress.hxx
+	Common/Source/xcs/Net/SocketDescriptor.cpp
+	Common/Source/xcs/Net/SocketDescriptor.hpp
+	Common/Source/xcs/Net/SocketError.hpp
+	Common/Source/xcs/Net/State.cpp
+	Common/Source/xcs/Net/State.hpp
+	Common/Source/xcs/Net/StaticSocketAddress.cxx
+	Common/Source/xcs/Net/StaticSocketAddress.hxx
 )
 
 # resource_xml.S dependencies

@@ -90,6 +90,8 @@
 #include <dlgFlarmIGCDownload.h>
 #include <memory>
 #include "Calc/Vario.h"
+#include "IO/Async/GlobalIOThread.hpp"
+#include "Tracking/Tracking.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -527,7 +529,9 @@ bool Startup(const TCHAR* szCmdLine) {
   // we need devInit for all devices. Missing initialization otherwise.
   devInit();
 
-  LiveTrackerInit();
+  InitialiseIOThread();
+  tracking::Initialize(tracking::skylines_aero);
+
   InitFlightDataRecorder();
 
   // re-set polar in case devices need the data

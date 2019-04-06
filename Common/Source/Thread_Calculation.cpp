@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
-#include "Tracking/LiveTrack24.h"
+#include "Tracking/Tracking.h"
 #include "FlightDataRec.h"
 #include "TraceThread.h"
 #include "Hardware/CPU.hpp"
@@ -146,7 +146,7 @@ public:
 
             // update live tracker with new values
             // this is a nonblocking call, live tracker runs on different thread
-            LiveTrackerUpdate(tmpGPS, tmpCALCULATED);
+            tracking::Update(tmpGPS, tmpCALCULATED);
 
             UpdateFlightDataRecorder(tmpGPS, tmpCALCULATED);
             CheckAltitudeAlarms(tmpGPS, tmpCALCULATED);

@@ -1,0 +1,87 @@
+/*
+Copyright_License {
+
+  XCSoar Glide Computer - http://www.xcsoar.org/
+  Copyright (C) 2000-2015 The XCSoar Project
+  A detailed list of copyright holders can be found in the file "AUTHORS".
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+}
+*/
+
+#ifndef XCSOAR_TRACKING_SKYLINES_GLUE_HPP
+#define XCSOAR_TRACKING_SKYLINES_GLUE_HPP
+
+#include "Client.hpp"
+#include "Time/GPSClock.hpp"
+
+struct DERIVED_INFO;
+
+namespace SkyLinesTracking {
+
+struct Settings;
+class Queue;
+
+class Glue {
+  Client client;
+  unsigned interval;
+  GPSClock clock;
+
+#ifdef HAVE_SKYLINES_TRACKING_HANDLER
+  GPSClock traffic_clock;
+  bool traffic_enabled;
+  bool near_traffic_enabled;
+#endif
+
+  bool roaming;
+
+  Queue *queue;
+
+  Client cloud_client;
+  GPSClock cloud_clock;
+
+  fixed last_climb_time;
+
+public:
+  Glue();
+  ~Glue();
+
+#ifdef HAVE_SKYLINES_TRACKING_HANDLER
+  void SetHandler(Handler *handler) {
+    client.SetHandler(handler);
+  }
+#endif
+
+  void SetSettings(const Settings &settings);
+
+  void Tick(const NMEA_INFO &basic, const DERIVED_INFO &calculated);
+
+#ifdef HAVE_SKYLINES_TRACKING_HANDLER
+  void RequestUserName(uint32_t user_id) {
+    client.SendUserNameRequest(user_id);
+  }
+#endif
+
+private:
+  gcc_pure
+  bool IsConnected() const;
+
+  void SendFixes(const NMEA_INFO &basic);
+  void SendCloudFix(const NMEA_INFO &basic, const DERIVED_INFO &calculated);
+};
+
+} /* namespace SkyLinesTracking */
+
+#endif

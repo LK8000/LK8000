@@ -25,7 +25,6 @@
 #include "RGB.h"
 #include "LKProfiles.h"
 #include "Logger.h"
-#include "Tracking/LiveTrack24.h"
 #include "FlightDataRec.h"
 
 #include "Event/Event.h"
@@ -37,6 +36,8 @@
 #include "Airspace/Sonar.h"
 #include "OS/RotateScreen.h"
 #include "ChangeScreen.h"
+#include "IO/Async/GlobalIOThread.hpp"
+#include "Tracking/Tracking.h"
 
 WndMain::WndMain() : WndMainBase(), _MouseButtonDown(), _isRunning() {
 }
@@ -138,7 +139,9 @@ void BeforeShutdown(void) {
   RasterTerrain::CloseTerrain();
   UnlockTerrainDataGraphics();
 
-  LiveTrackerShutdown();
+  tracking::DeInitialize();
+  DeinitialiseIOThread();
+
   CloseFlightDataRecorder();
 
   // Stop COM devices

@@ -13,6 +13,9 @@ XCS_OS_LINUX := \
 	$(SRC)/xcs/IO/InflateLineReader.cpp \
 	$(SRC)/xcs/IO/InflateSource.cpp \
 	$(SRC)/xcs/IO/LineSplitter.cpp \
+	\
+	$(SRC)/xcs/IO/Async/GlobalIOThread.cpp \
+	$(SRC)/xcs/IO/Async/IOThread.cpp \
 
 XCS_UTIL := \
 	$(SRC)/xcs/Util/tstring.cpp \
