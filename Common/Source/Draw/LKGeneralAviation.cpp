@@ -28,7 +28,6 @@ void drawOutlineText(LKSurface& Surface, int x, int y, const TCHAR * textBuffer)
 }
 
 void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const RECT& rc) {
-
 	// Only for Trackup and compatible modes
 	if (DisplayOrientation == NORTHSMART ||
 		DisplayOrientation == NORTHTRACK ||
@@ -48,7 +47,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	SIZE textSize;
 	Surface.GetTextSize(textBuffer, &textSize); // get size of heading printed digits
 	const int halfBrgSize = textSize.cx/2;
-	const int screenOrientYoffset = ScreenLandscape ? 0 : 30;
+	const int screenOrientYoffset = ScreenLandscape ? 0 : 44;
 	const int brgYoffset = textSize.cy + screenOrientYoffset;
 	drawOutlineText(Surface, AircraftPos.x - halfBrgSize, screenOrientYoffset, textBuffer);
 
