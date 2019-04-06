@@ -45,31 +45,33 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	SIZE textSize;
 	Surface.GetTextSize(textBuffer, &textSize); // get size of heading printed digits
 	const int halfBrgSize = textSize.cx/2;
-	const int deciBrgSize = textSize.cx/10;
-	const int brgYoffset = textSize.cy + (ScreenLandscape ? 0 : 30);
-	drawOutlineText(Surface, AircraftPos.x - halfBrgSize, ScreenLandscape ? 0 : 30, textBuffer);
-
+	const int screenOrientYoffset = ScreenLandscape ? 0 : 30;
+	const int brgYoffset = textSize.cy + screenOrientYoffset;
+	drawOutlineText(Surface, AircraftPos.x - halfBrgSize, screenOrientYoffset, textBuffer);
 
 	// Calculate compass radius: consider the offset below heading pointer
 	const int radius = AircraftPos.y - brgYoffset - 12;
 
-
 	// Draw heading pointer on the top of the compass
-	const POINT hdgPointer[7] = {
-			{AircraftPos.x - halfBrgSize - 5, brgYoffset - 5},
-			{AircraftPos.x - halfBrgSize - 5, brgYoffset + 2},
-			{AircraftPos.x - deciBrgSize    , brgYoffset + 2},
-			{AircraftPos.x                  , brgYoffset + 7},
-			{AircraftPos.x + deciBrgSize,     brgYoffset + 2},
-			{AircraftPos.x + halfBrgSize + 5, brgYoffset + 2},
-			{AircraftPos.x + halfBrgSize + 5, brgYoffset - 5}
-	};
 	const auto oldpen=Surface.SelectObject(LKPen_Black_N3);
-	Surface.Polyline(hdgPointer,7);
-	Surface.SelectObject(LKPen_White_N2);
-	Surface.Polyline(hdgPointer,7);
+	{
+		const int deciBrgSize = textSize.cx/10;
+		const POINT hdgPointer[7] = {
+				{AircraftPos.x - halfBrgSize - 5, brgYoffset - 5},
+				{AircraftPos.x - halfBrgSize - 5, brgYoffset + 2},
+				{AircraftPos.x - deciBrgSize    , brgYoffset + 2},
+				{AircraftPos.x                  , brgYoffset + 7},
+				{AircraftPos.x + deciBrgSize    , brgYoffset + 2},
+				{AircraftPos.x + halfBrgSize + 5, brgYoffset + 2},
+				{AircraftPos.x + halfBrgSize + 5, brgYoffset - 5}
+		};
 
-	// Draw black part of 120 degree arc
+		Surface.Polyline(hdgPointer,7);
+		Surface.SelectObject(LKPen_White_N2);
+		Surface.Polyline(hdgPointer,7);
+	}
+
+	// Draw black part of the compass arc
 	static const int rightArc = ScreenLandscape ? 60 : 30;
 	static const int leftArc = (int)AngleLimit360(-rightArc);
 	Surface.SelectObject(LKPen_Black_N5);
@@ -120,7 +122,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 		Surface.Polyline(dent,2);
 	}
 
-	// Draw white part of the 120 degree arc
+	// Draw white part of the compass arc
 	Surface.SelectObject(LKPen_White_N2);
 	Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, leftArc, rightArc);
 
