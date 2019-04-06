@@ -44,38 +44,40 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	_stprintf(textBuffer,_T("%03d"), hdg);
 	SIZE textSize;
 	Surface.GetTextSize(textBuffer, &textSize); // get size of heading printed digits
-
-	// Calculate center and radius of compass rose
-	const int cx = AircraftPos.x; // center of compass arc : the plane
-	const int cy = AircraftPos.y;
-	const int radius = cy - textSize.cy - 12; // to calculate the radius consider the offset below heading pointer
-
-	// Draw heading pointer on the top of the compass
 	const int halfBrgSize = textSize.cx/2;
 	const int deciBrgSize = textSize.cx/10;
-	drawOutlineText(Surface, cx - halfBrgSize, 0, textBuffer);
+	const int brgYoffset = textSize.cy + (ScreenLandscape ? 0 : 30);
+	drawOutlineText(Surface, AircraftPos.x - halfBrgSize, ScreenLandscape ? 0 : 30, textBuffer);
+
+
+	// Calculate compass radius: consider the offset below heading pointer
+	const int radius = AircraftPos.y - brgYoffset - 12;
+
+
+	// Draw heading pointer on the top of the compass
 	const POINT hdgPointer[7] = {
-			{cx - halfBrgSize - 5, textSize.cy - 5},
-			{cx - halfBrgSize - 5, textSize.cy + 2},
-			{cx - deciBrgSize, textSize.cy + 2},
-			{cx , textSize.cy + 7},
-			{cx + deciBrgSize, textSize.cy + 2},
-			{cx + halfBrgSize +5, textSize.cy + 2},
-			{cx + halfBrgSize +5, textSize.cy - 5}
+			{AircraftPos.x - halfBrgSize - 5, brgYoffset - 5},
+			{AircraftPos.x - halfBrgSize - 5, brgYoffset + 2},
+			{AircraftPos.x - deciBrgSize    , brgYoffset + 2},
+			{AircraftPos.x                  , brgYoffset + 7},
+			{AircraftPos.x + deciBrgSize,     brgYoffset + 2},
+			{AircraftPos.x + halfBrgSize + 5, brgYoffset + 2},
+			{AircraftPos.x + halfBrgSize + 5, brgYoffset - 5}
 	};
 	const auto oldpen=Surface.SelectObject(LKPen_Black_N3);
 	Surface.Polyline(hdgPointer,7);
 	Surface.SelectObject(LKPen_White_N2);
 	Surface.Polyline(hdgPointer,7);
 
-	// Draw black part of 120 degree arac
-	static const int rightArc = 60;
+	// Draw black part of 120 degree arc
+	static const int rightArc = ScreenLandscape ? 60 : 30;
 	static const int leftArc = (int)AngleLimit360(-rightArc);
 	Surface.SelectObject(LKPen_Black_N5);
-	Surface.DrawArc(cx, cy,radius, rc, leftArc, rightArc);
+	Surface.DrawArc(AircraftPos.x, AircraftPos.y,radius, rc, leftArc, rightArc);
 
 	// Draw the dents around the circle
-	static const int step = 10;
+	static const int step = ScreenLandscape ? 10 : 5;
+	static const int bigStep = ScreenLandscape ? 30 : 10;
 	const int diff = (int)round(hdg % step);
 	Surface.SelectObject(LK8MediumFont);
 	for(int i = -rightArc, screenAngle = leftArc - diff, curHdg = hdg - rightArc - diff; i <= rightArc; i += step, screenAngle += step, curHdg += step) {
@@ -83,8 +85,8 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 		if (screenAngle < leftArc && screenAngle > rightArc) continue;
 		const int displayHeading = (int)AngleLimit360(curHdg);
 		int tickLength = radius - 10; // the length of the tickmarks on the compass rose
-		if(displayHeading % 30 == 0) {
-			tickLength -= 8; // if the heading is a multiple of ten, it gets a long tick
+		if (displayHeading % bigStep == 0) {
+			tickLength -= 8; // make longer ticks
 			const int drawHdg = displayHeading/10;
 			switch (drawHdg) {
 			case 0:
@@ -104,13 +106,13 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 				break;
 			}
 			Surface.GetTextSize(textBuffer, &textSize);
-			const int textX = cx + (int) ((radius - (textSize.cy/2)-2) * fastsine(screenAngle)) - textSize.cx/2;
-			const int textY = cy - (int) ((radius - (textSize.cy/2)-2) * fastcosine(screenAngle));
+			const int textX = AircraftPos.x + (int) ((radius - (textSize.cy/2)-2) * fastsine(screenAngle)) - textSize.cx/2;
+			const int textY = AircraftPos.y - (int) ((radius - (textSize.cy/2)-2) * fastcosine(screenAngle));
 			drawOutlineText(Surface, textX, textY, textBuffer);
 		}
 		const POINT dent[2] = {
-			{ cx + (int)(radius     * fastsine(screenAngle)), cy - (int)(radius     * fastcosine(screenAngle)) },
-			{ cx + (int)(tickLength * fastsine(screenAngle)), cy - (int)(tickLength * fastcosine(screenAngle)) }
+			{ AircraftPos.x + (int)(radius     * fastsine(screenAngle)), AircraftPos.y - (int)(radius     * fastcosine(screenAngle)) },
+			{ AircraftPos.x + (int)(tickLength * fastsine(screenAngle)), AircraftPos.y - (int)(tickLength * fastcosine(screenAngle)) }
 		};
 		Surface.SelectObject(LKPen_Black_N5);
 		Surface.Polyline(dent,2);
@@ -120,7 +122,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 
 	// Draw white part of the 120 degree arc
 	Surface.SelectObject(LKPen_White_N2);
-	Surface.DrawArc(cx, cy, radius, rc, leftArc, rightArc);
+	Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, leftArc, rightArc);
 
 	// Restore previous text color, pen and font
 	Surface.SetTextColor(RGB_BLACK);
