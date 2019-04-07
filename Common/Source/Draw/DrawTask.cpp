@@ -366,13 +366,12 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
     LKPen ArrowPen(PEN_SOLID, size_tasklines-IBLSCALE(1), taskcolor);
     LKBrush ArrowBrush(taskcolor);
 
-    for (unsigned i = ActiveTaskPoint; i < task_polyline.size()-1; i++) {
+    // In case of GA airplane draw also current routeline, otherwise draw routelines only from next WP
+    for (int i = ISGAAIRCRAFT ? (ActiveTaskPoint > 0 ? ActiveTaskPoint-1 : 0) : ActiveTaskPoint; i < (int)task_polyline.size()-1; i++) {
         ScreenPoint sct1 = task_polyline[i];
         ScreenPoint sct2 = task_polyline[i+1];
                 
         if(LKGeom::ClipLine(rc, sct1, sct2)) {
-            // draw small arrow along task direction
-
             const RasterPoint Pt1(sct1.x, sct1.y);
             const RasterPoint Pt2(sct2.x, sct2.y);
 
@@ -380,26 +379,22 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
             // TODO : remove after implement OpenGL Textured Line
             DrawMulticolorDashLine(Surface, size_tasklines, Pt1, Pt2, taskcolor, RGB_BLACK, rc);
 #endif
+            // Draw small arrow along task direction
+            if (!ISGAAIRCRAFT || i != ActiveTaskPoint - 1) { // ... for GA draw the arrow only after next WP
+              RasterPoint p_p;
+              RasterPoint Arrow[] = {{8, 0},{-2, -5},{0, 0},{-2, 5},{8, 0}};
 
-            RasterPoint p_p;
-            RasterPoint Arrow[] = {
-                {8, 0},
-                {-2, -5},
-                {0, 0},
-                {-2, 5},
-                {8, 0}
-            };
-            
-            const ScreenPoint Vect = sct2 - sct1;
-            const double angle = (atan2(Vect.y,Vect.x)*RAD_TO_DEG);
+              const ScreenPoint Vect = sct2 - sct1;
+              const double angle = atan2(Vect.y,Vect.x) * RAD_TO_DEG;
 
-            ScreenClosestPoint(Pt1, Pt2, Orig_Aircraft, &p_p, NIBLSCALE(25));
-            PolygonRotateShift(Arrow, array_size(Arrow), p_p.x, p_p.y, angle);
+              ScreenClosestPoint(Pt1, Pt2, Orig_Aircraft, &p_p, NIBLSCALE(25));
+              PolygonRotateShift(Arrow, array_size(Arrow), p_p.x, p_p.y, angle);
 
-            Surface.SelectObject(ArrowBrush);
-            Surface.SelectObject(ArrowPen);
+              Surface.SelectObject(ArrowBrush);
+              Surface.SelectObject(ArrowPen);
+              Surface.Polygon(Arrow, array_size(Arrow), rc);
+            }
 
-            Surface.Polygon(Arrow, array_size(Arrow), rc);
         }
     }
 
