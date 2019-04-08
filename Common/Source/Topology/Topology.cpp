@@ -748,6 +748,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 		break;
 	case 70:
 	case 80:
+	case 110:
 		item=&NearestBigCity;
 		break;
 	case 90:

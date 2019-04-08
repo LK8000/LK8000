@@ -137,7 +137,7 @@ void WhereAmI::run(void) {
     if (TopoStore[z]) {
       // See also CheckScale for category checks! We should use a function in fact.
       if ( TopoStore[z]->scaleCategory == 10 ||
-        (TopoStore[z]->scaleCategory >= 70 && TopoStore[z]->scaleCategory <=100)) {
+        (TopoStore[z]->scaleCategory >= 70 && TopoStore[z]->scaleCategory <=110)) {
         TopoStore[z]->SearchNearest(bounds);
       }
     }
