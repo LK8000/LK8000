@@ -551,7 +551,7 @@ private:
   bool ReadCoords(TCHAR *Text, double *X, double *Y) const;
   bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const;
   bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const;
-  void CorrectGeoPoints(CPoint2DArray &points);
+  bool CorrectGeoPoints(CPoint2DArray &points);
 
   bool FillAirspacesFromOpenAIP(const TCHAR* szFile);
   bool ReadAltitudeOpenAIP(XMLNode & node, AIRSPACE_ALT *Alt) const;

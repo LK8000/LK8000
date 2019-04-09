@@ -1521,26 +1521,24 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
 // Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
 // Also delete adjacent duplicated vertexes
 
-void CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points) {
-    if (points.size() == 0) return;
+bool CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points) {
+
+    // Here we expect at least 3 points
+    if(points.size() < MIN_AS_SIZE) return false;
 
     // Close polygon if not closed
-    CPoint2D first = points.front();
-    CPoint2D last = points.back();
-    if ((first.Latitude() != last.Latitude()) || (first.Longitude() != last.Longitude())) points.push_back(first);
+    const CPoint2D first = points.front();
+    if (first != points.back()) points.push_back(first);
 
-    // Delete duplicated vertexes
-    bool firstrun = true;
-    CPoint2DArray::iterator it = points.begin();
-    while (it != points.end()) {
-        if (!firstrun && ((*it).Latitude() == last.Latitude()) && ((*it).Longitude() == last.Longitude())) {
-            it = points.erase(it);
-            continue;
-        }
-        last = *it;
-        ++it;
-        firstrun = false;
+    // Delete duplicated vertexes and equal to first one
+    CPoint2DArray::iterator it = std::next(points.begin()); // Start from second point
+    while(it != std::prev(points.end())) { // until the point before last one
+        if (first == (*it) || (*std::prev(it)) == (*it)) it = points.erase(it);
+        else it++;
     }
+
+    // For a valid closed polygon we need at least 3 points plus closing point
+    return points.size() > 3;
 }
 
 // Reading and parsing OpenAir airspace file
@@ -1630,9 +1628,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                                     newairspace = new (std::nothrow) CAirspace_Circle(Longitude, Latitude, Radius);
                                 } else {
                                     // Last one was an area
-                                    CorrectGeoPoints(points);
-                                    // Skip it if we dont have minimum 3 points
-                                    if (points.size() > MIN_AS_SIZE) {
+                                    if (CorrectGeoPoints(points)) { // Skip it if we don't have minimum 3 points
                                         newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
                                         points.clear(); // required, otherwise vector state is undefined;
                                     }
@@ -1897,9 +1893,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
             newairspace = new (std::nothrow) CAirspace_Circle(Longitude, Latitude, Radius);
         } else {
             // Last one was an area
-            CorrectGeoPoints(points);
-            // Skip it if we dont have minimum 3 points
-            if (points.size() > MIN_AS_SIZE) {
+            if (CorrectGeoPoints(points)) { // Skip it if we dont have minimum 3 points
               newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
               points.clear(); // required, otherwise vector state is undefined;
             }
@@ -2257,11 +2251,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
             continue;
         }
 
-        // Ensure that the polygon is closed (it should be already)
-        CorrectGeoPoints(points);
-
-        // Skip it if we don't have minimum 3 points
-        if (points.size() < MIN_AS_SIZE+1) { // +1 because first and last are the same to close the polygon
+        // Ensure that the polygon is closed (it should be already) and skip it if we don't have minimum 3 points
+        if (!CorrectGeoPoints(points)) {
             StartupStore(TEXT(".. Skipping ASP with POLYGON with less than 3 points.%s"), NEWLINE);
             continue;
         }
