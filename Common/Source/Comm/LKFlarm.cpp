@@ -256,7 +256,8 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   unsigned flarm_count = 0;
   for(const auto& dev : DeviceList) {
     if(dev.nmeaParser.gpsValid && dev.nmeaParser.isFlarm) {
-      ++flarm_count;
+	if(!dev.iSharedPort)
+          ++flarm_count;
     }
   }
   if (flarm_count > 1) {
