@@ -1527,7 +1527,7 @@ bool CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points) {
     if(points.size() < MIN_AS_SIZE) return false;
 
     // Close polygon if not closed
-    const CPoint2D first = points.front();
+    const CPoint2D& first = points.front();
     if (first != points.back()) points.push_back(first);
 
     // Delete duplicated vertexes and equal to first one
