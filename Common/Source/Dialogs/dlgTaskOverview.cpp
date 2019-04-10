@@ -633,6 +633,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnDeclareClicked),
   ClickNotifyCallbackEntry(OnCalcClicked),
   ClickNotifyCallbackEntry(OnClearClicked),
+  ClickNotifyCallbackEntry(OnAdvancedClicked),
   ClickNotifyCallbackEntry(OnReverseClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnAdvancedClicked),
