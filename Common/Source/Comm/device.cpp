@@ -550,6 +550,36 @@ static BOOL devInit(PDeviceDescriptor_t d){
     return(TRUE);
 }
 
+
+
+bool IsIdenticalPort(int i, int j)
+{
+  if (_tcscmp(szPort[i], _T("UDPServer")) == 0)
+  {
+    if (dwIpPort[i] == dwIpPort[j])
+      return true;
+  }
+  else
+  if (_tcscmp(szPort[i], _T("TCPServer")) == 0)
+  {
+    if (dwIpPort[i] == dwIpPort[j])
+      return true;
+  }
+  else
+  if (_tcscmp(szPort[i], _T("TCPClient")) == 0)
+  {
+    if (_tcscmp(szIpAddress[i], szIpAddress[j]) == 0)
+      if (dwIpPort[i] == dwIpPort[j])
+        return true;
+  }
+  else
+  {
+    if( _tcscmp(szPort[i] , szPort[j])==0)
+     return true;
+  }
+  return false;
+}
+
 BOOL devInit() {
     LockComm();
 
@@ -599,18 +629,21 @@ BOOL devInit() {
             ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
         }
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
+        /*
         if ((_tcsncmp(Port, _T("COM"),3)           == 0) ||
             (_tcsncmp(Port, _T("IOIOUart_"), 9)    == 0) ||
             (_tcsncmp(Port, _T("USB:"), 4)         == 0) ||
+	    (_tcsncmp(Port, _T("TCPClient"), 9)    == 0) ||
             (_tcscmp(Port, _T("Bluetooth Server")) == 0)
-           )
+           )*/
         {  // shared ports for COM Ports only
           if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
             unsigned int j;
+
             for( j = 0; j < i ; j++)
             {
               if(!DeviceList[i].Disabled)
-              if( (_tcscmp(szPort[i] , szPort[j])==0)  &&  DeviceList[j].iSharedPort <0)
+              if( (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0)
               {
                 devInit(&DeviceList[i]);
                 DeviceList[i].iSharedPort =j;
@@ -804,19 +837,20 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
 bool  ret = FALSE;
 PDeviceDescriptor_t din = devGetDeviceOnPort(portNum);
 PDeviceDescriptor_t d = NULL;
-
-    for(int dev =0; dev < NUMDEV; dev++)
+return false;
+//    for(int dev =0; dev < NUMDEV; dev++)
     {
-      d = &DeviceList[dev];
+      d = &DeviceList[portNum];
       if (din && d && d->ParseStream)
       {
        if((d->iSharedPort == portNum) ||  (d->PortNumber == portNum))
        {
          d->HB=LKHearthBeats;
-         if (d->ParseStream(din, stream, length, pGPS)) {
-          
+     //    if (d->ParseStream(din, stream, length, pGPS))
+         {
+           ret =TRUE;
          }
-         ret =TRUE;
+        
        }
      }
    }
@@ -835,6 +869,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
     return FALSE;
   }
   
+
   d->HB=LKHearthBeats;
 
   // intercept device specific parser routines 
@@ -844,7 +879,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
         if ( d2.ParseNMEA && d2.ParseNMEA(d, String, pGPS) ) {
           //GPSCONNECT  = TRUE; // NO! 121126
             ret = TRUE;
-        } else if( &d2 == d) {
+        } else if(( &d2 == d) && (d->iSharedPort < portNum) ) {
           // call ParseNMEAString_Internal only for master port if string are not device specific.
           if(String[0]=='$') {  // Additional "if" to find GPS strings
             if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
