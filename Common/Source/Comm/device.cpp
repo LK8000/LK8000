@@ -598,7 +598,6 @@ BOOL devInit() {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
- //   std::set<tstring> UsedPort; // list of already used port
     
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
