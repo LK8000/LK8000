@@ -550,6 +550,36 @@ static BOOL devInit(PDeviceDescriptor_t d){
     return(TRUE);
 }
 
+
+
+bool IsIdenticalPort(int i, int j)
+{
+  if (_tcscmp(szPort[i], _T("UDPServer")) == 0)
+  {
+    if (dwIpPort[i] == dwIpPort[j])
+      return true;
+  }
+  else
+  if (_tcscmp(szPort[i], _T("TCPServer")) == 0)
+  {
+    if (dwIpPort[i] == dwIpPort[j])
+      return true;
+  }
+  else
+  if (_tcscmp(szPort[i], _T("TCPClient")) == 0)
+  {
+    if (_tcscmp(szIpAddress[i], szIpAddress[j]) == 0)
+      if (dwIpPort[i] == dwIpPort[j])
+        return true;
+  }
+  else
+  {
+    if( _tcscmp(szPort[i] , szPort[j])==0)
+     return true;
+  }
+  return false;
+}
+
 BOOL devInit() {
     LockComm();
 
@@ -568,7 +598,7 @@ BOOL devInit() {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
-    std::set<tstring> UsedPort; // list of already used port
+ //   std::set<tstring> UsedPort; // list of already used port
     
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
@@ -598,45 +628,37 @@ BOOL devInit() {
             BitIndex = bit8N1;
             ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
         }
-        // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
-        if ((_tcsncmp(Port, _T("COM"),3)           == 0) ||
-            (_tcsncmp(Port, _T("IOIOUart_"), 9)    == 0) ||
-            (_tcsncmp(Port, _T("USB:"), 4)         == 0) ||
-            (_tcscmp(Port, _T("Bluetooth Server")) == 0)
-           )
-        {  // shared ports for COM Ports only
-          if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
-            unsigned int j;
-            for( j = 0; j < i ; j++)
-            {
-              if(!DeviceList[i].Disabled)
-              if( (_tcscmp(szPort[i] , szPort[j])==0)  &&  DeviceList[j].iSharedPort <0)
-              {
-                devInit(&DeviceList[i]);
-                DeviceList[i].iSharedPort =j;
-                StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
-                DeviceList[i].Com = DeviceList[j].Com ;
-                DeviceList[i].Status = CPS_OPENOK;
-                pDev->Installer(&DeviceList[i]);
-                if (pDev->Flags & (1l << dfNmeaOut)) {
-                    DeviceList[i].bNMEAOut = true;
-                }
-                if(devIsRadio(&DeviceList[i]))
-                {
-                  RadioPara.Enabled = true;
-                  StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
-                }
-              }
-            }
-            continue;
-          }
-        }
-        UsedPort.insert(Port);
-        
-        // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
+
+	unsigned int j;
+	DeviceList[i].iSharedPort =-1;
+	for( j = 0; j < i ; j++)
+	{
+	  if(!DeviceList[i].Disabled)
+	  if(!DeviceList[j].Disabled)
+	  if( (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0)
+	  {
+	    devInit(&DeviceList[i]);
+	    DeviceList[i].iSharedPort =j;
+	    StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
+	    DeviceList[i].Com = DeviceList[j].Com ;
+	    DeviceList[i].Status = CPS_OPENOK;
+	    pDev->Installer(&DeviceList[i]);
+	    if (pDev->Flags & (1l << dfNmeaOut)) {
+		DeviceList[i].bNMEAOut = true;
+	    }
+	    if(devIsRadio(&DeviceList[i]))
+	    {
+	      RadioPara.Enabled = true;
+	      StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
+	    }
+	  }
+	}
+
+	if(DeviceList[i].iSharedPort >=0) // skip making new device on shared ports
+	 continue;
+
         StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), DeviceName, Port, NEWLINE);
-        
-        ComPort *Com = nullptr;
+    ComPort *Com = nullptr;
         if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
 #ifdef NO_BLUETOOTH
             bool bStartOk = true;
