@@ -550,6 +550,36 @@ static BOOL devInit(PDeviceDescriptor_t d){
     return(TRUE);
 }
 
+
+
+bool IsIdenticalPort(int i, int j)
+{
+  if (_tcscmp(szPort[i], _T("UDPServer")) == 0)
+  {
+    if (dwIpPort[i] == dwIpPort[j])
+      return true;
+  }
+  else
+  if (_tcscmp(szPort[i], _T("TCPServer")) == 0)
+  {
+    if (dwIpPort[i] == dwIpPort[j])
+      return true;
+  }
+  else
+  if (_tcscmp(szPort[i], _T("TCPClient")) == 0)
+  {
+    if (_tcscmp(szIpAddress[i], szIpAddress[j]) == 0)
+      if (dwIpPort[i] == dwIpPort[j])
+        return true;
+  }
+  else
+  {
+    if( _tcscmp(szPort[i] , szPort[j])==0)
+     return true;
+  }
+  return false;
+}
+
 BOOL devInit() {
     LockComm();
 
@@ -599,18 +629,21 @@ BOOL devInit() {
             ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
         }
         // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
+        /*
         if ((_tcsncmp(Port, _T("COM"),3)           == 0) ||
             (_tcsncmp(Port, _T("IOIOUart_"), 9)    == 0) ||
             (_tcsncmp(Port, _T("USB:"), 4)         == 0) ||
+	    (_tcsncmp(Port, _T("TCPClient"), 9)    == 0) ||
             (_tcscmp(Port, _T("Bluetooth Server")) == 0)
-           )
+           )*/
         {  // shared ports for COM Ports only
           if(std::find(UsedPort.begin(), UsedPort.end(), Port) != UsedPort.end()) {
             unsigned int j;
+
             for( j = 0; j < i ; j++)
             {
               if(!DeviceList[i].Disabled)
-              if( (_tcscmp(szPort[i] , szPort[j])==0)  &&  DeviceList[j].iSharedPort <0)
+              if( (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0)
               {
                 devInit(&DeviceList[i]);
                 DeviceList[i].iSharedPort =j;
