@@ -1526,19 +1526,18 @@ bool CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points) {
     // Here we expect at least 3 points
     if(points.size() < MIN_AS_SIZE) return false;
 
-    // Close polygon if not closed
-    const CPoint2D& first = points.front();
-    if (first != points.back()) points.push_back(first);
-
-    // Delete duplicated vertexes and equal to first one
+    // First delete consecutive duplicated vertexes
     CPoint2DArray::iterator it = std::next(points.begin()); // Start from second point
-    while(it != std::prev(points.end())) { // until the point before last one
-        if (first == (*it) || (*std::prev(it)) == (*it)) it = points.erase(it);
+    while(it != points.end()) {
+        if ((*std::prev(it)) == (*it)) it = points.erase(it);
         else it++;
     }
 
-    // For a valid closed polygon we need at least 3 points plus closing point
-    return points.size() > 3;
+    // Then close polygon if not already closed
+    if (points.front() != points.back()) points.push_back(points.front());
+
+    // For a valid closed polygon we need at least 3 points plus the closing one
+    return points.size() > MIN_AS_SIZE;
 }
 
 // Reading and parsing OpenAir airspace file
