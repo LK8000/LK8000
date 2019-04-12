@@ -98,6 +98,9 @@ public:
   unsigned DistanceXYZ(int x, int y, int z) const;
   unsigned DistanceXYZ(const CPoint2D &ref) const;
   unsigned DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, int *nearest_x = 0, int *nearest_y = 0, int *nearest_z = 0) const;
+
+  inline bool operator==(const CPoint2D& other) const { return other._lat == _lat && other._lon == _lon; }
+  inline bool operator!=(const CPoint2D& other) const { return other._lat != _lat || other._lon != _lon; }
 };
 
 typedef std::shared_ptr<const CPoint2D> CPoint2DSmart;
