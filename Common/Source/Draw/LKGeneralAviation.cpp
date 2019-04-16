@@ -3,11 +3,12 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: LKGeneralAviation.cpp,v 1.1 2010/12/11 19:06:34 root Exp root $
-   $Id: LKGeneralAviation.cpp,v 1.2 2019/03/31 21:12:56 aircaft now at the center of the compass rose $
+   $Id: LKGeneralAviation.cpp, v1.1 2010/12/11 19:06:34 root Exp root $
+   $Id: LKGeneralAviation.cpp, v1.2 2019/03/31 by Alus Fixed: aircraft now always at the center of the compass rose $
+   $Id: LKGeneralAviation.cpp, v1.3 2019/04/10 by Alus added rate of turn indication on the compass$
 
    LKGeneralAviation.cpp original work by Oren
-   Improved by Alberto Realis-Luc
+   Improved by Alberto Realis-Luc (Alus)
 */
 
 #include "externs.h"
@@ -131,6 +132,20 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	// Draw white part of the compass arc
 	Surface.SelectObject(LKPen_White_N2);
 	Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, leftArc, rightArc);
+
+	// Draw rate of turn indication on the compass
+	if (DerivedDrawInfo.TurnRate != 0) {
+		double displayROTangle = fabs(DerivedDrawInfo.TurnRate);
+		if (displayROTangle <= rightArc) {
+			const double absTurn6sec = displayROTangle * 6; // to point to the heading we will have in 6 seconds
+			const bool is6secTurnScale(absTurn6sec <= rightArc); // if the 6 seconds turn fits on the compass scale
+			if (is6secTurnScale) displayROTangle = absTurn6sec;
+			LKPen Pen(PEN_SOLID, NIBLSCALE(3), is6secTurnScale ? RGB_MAGENTA : RGB_RED); // Color: purple for the deg/6 sec turn otherwise red for deg/sec
+			Surface.SelectObject(Pen);
+			if (DerivedDrawInfo.TurnRate > 0) Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, 0, displayROTangle); // turning right
+			else Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, -displayROTangle, 0); // turning left
+		}
+	}
 
 	// Restore previous text color, pen and font
 	Surface.SetTextColor(RGB_BLACK);
