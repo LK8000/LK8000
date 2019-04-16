@@ -162,6 +162,31 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FAIOPTIMIZED].Format= LKW_VIRTUAL;
 
 	//
+	// VIRTUAL EXTERNAL WAYPOINT
+	//
+	
+	WayPointList[RESWP_EXT_TARGET].Number=RESWP_EXT_TARGET+1;
+	_tcscpy(WayPointList[RESWP_FREEFLY].Name, _T("") );
+	WayPointList[RESWP_EXT_TARGET].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_EXT_TARGET].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_EXT_TARGET].Altitude=RESWP_INVALIDNUMBER;
+
+	WayPointList[RESWP_EXT_TARGET].Flags=TURNPOINT;
+	WayPointList[RESWP_EXT_TARGET].FarVisible=false;
+	WayPointList[RESWP_EXT_TARGET].FileNum=-1;
+	WayPointList[RESWP_EXT_TARGET].Format= LKW_VIRTUAL;
+
+	WayPointList[RESWP_EXT_TARGET].Reachable=FALSE;
+	WayPointList[RESWP_EXT_TARGET].AltArivalAGL=0.0;
+	WayPointList[RESWP_EXT_TARGET].Visible=FALSE;
+	WayPointList[RESWP_EXT_TARGET].InTask=false;
+	WayPointList[RESWP_EXT_TARGET].Details=(TCHAR *)NULL;
+
+	WayPointList[RESWP_EXT_TARGET].FarVisible=false;
+	WayPointList[RESWP_EXT_TARGET].FileNum=-1;
+	WayPointList[RESWP_EXT_TARGET].Format= LKW_VIRTUAL;
+
+	//
 	// VIRTUAL FREEFLY START
 	//
 	WayPointList[RESWP_FREEFLY].Number=RESWP_FREEFLY+1;
