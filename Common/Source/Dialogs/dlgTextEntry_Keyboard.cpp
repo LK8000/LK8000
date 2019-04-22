@@ -160,7 +160,7 @@ static void OnKey(WndButton* pWnd) {
     PlayResource(TEXT("IDR_WAV_CLICK"));
     const TCHAR *Caption = pWnd->GetWndText();
     if (cursor < max_width - 1) {
-        edittext[cursor++] = toupper(Caption[0]);
+        edittext[cursor++] = Caption[0];
     }
     UpdateTextboxProp();
 }
@@ -191,7 +191,7 @@ static void OnSpace(WndButton* pWnd) {
 
     if(WaypointKeyRed == KEYRED_NONE) Caption = ' ';
     if (cursor < max_width - 1) {
-        edittext[cursor++] = toupper(Caption);
+        edittext[cursor++] = Caption;
     }
     UpdateTextboxProp();
 }
@@ -439,7 +439,7 @@ IdenticalIndex = -1;
 	  }
 	  bFound = true;
 	  Sart += Offset;
-	  TCHAR newChar = toupper(wname[cursor+Sart]);
+	  TCHAR newChar = (wname[cursor+Sart]);
 	  bool existing = false;
 	  uint j=0;
 	  while(( j < NumChar) && (!existing))  /* new character already in list? */
@@ -567,7 +567,7 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 	  }
 	  bFound = true;
 	  Sart += Offset;
-	  TCHAR newChar = toupper(AS_Name[cursor+Sart]);
+	  TCHAR newChar = (AS_Name[cursor+Sart]);
 	  bool existing = false;
 	  uint j=0;
 	  while(( j < NumChar) && (!existing))  /* new character already in list? */
