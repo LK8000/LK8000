@@ -20,7 +20,7 @@
 
 #include "Dialogs.h"
 #include "Asset.hpp"
-
+#include "Util/TruncateString.hpp"
 
 #define MAX_LEN 80
 #define MAX_LIST_ITEMS 25
@@ -419,7 +419,7 @@ TCHAR Comment[MAX_LEN] = _T("");
 int j;
 
   if (WayPointList[idx].Comment != NULL) {
-      LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
+    CopyTruncateString(Comment,MAX_LEN, WayPointList[idx].Comment);
   } else {
       _tcscpy(Comment, TEXT(""));
   }
@@ -657,7 +657,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             if(idx < WayPointList.size())
             {
               if (WayPointList[idx].Comment != NULL) {
-                  LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
+                CopyTruncateString(Comment,MAX_LEN, WayPointList[idx].Comment);
               } else {
                   _tcscpy(Comment, TEXT(""));
               }
