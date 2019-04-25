@@ -419,7 +419,7 @@ TCHAR Comment[MAX_LEN] = _T("");
 int j;
 
   if (WayPointList[idx].Comment != NULL) {
-      LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
+      _sntprintf(Comment, MAX_LEN,WayPointList[idx].Comment);
   } else {
       _tcscpy(Comment, TEXT(""));
   }
@@ -657,7 +657,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             if(idx < WayPointList.size())
             {
               if (WayPointList[idx].Comment != NULL) {
-                  LK_tcsncpy(Comment, WayPointList[idx].Comment, 30);
+                  _sntprintf(Comment, MAX_LEN,WayPointList[idx].Comment);
               } else {
                   _tcscpy(Comment, TEXT(""));
               }
