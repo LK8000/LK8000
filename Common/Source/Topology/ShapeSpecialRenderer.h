@@ -23,8 +23,8 @@ public:
   ShapeSpecialRenderer();
   ~ShapeSpecialRenderer();
   
-  void Add(const RasterPoint& pt, const TCHAR* szLabel) {
-    lstLabel.push_back({pt, szLabel});
+  void Add(RasterPoint&& pt, const TCHAR* szLabel) {
+    lstLabel.push_back({std::forward<RasterPoint>(pt), szLabel});
   }
   
   void Render(LKSurface& Surface) const;
