@@ -62,10 +62,10 @@ public:
 
     double Min() const {
         if(Type() == TYPE_DOUBLE) {
-            return ((double)_MinHWVal) * _Factor;
+            return _MinHWVal / _Factor;
         }
         if(Type() == TYPE_INT) {
-            return _MinHWVal * _Factor;
+            return _MinHWVal / _Factor;
         }
         if(Type() == TYPE_INTOFFSET) {
             return _MinHWVal + _Factor;
@@ -75,10 +75,10 @@ public:
 
     double Max() const {
         if(Type() == TYPE_DOUBLE) {
-            return ((double)_MaxHWVal) * _Factor;
+            return _MaxHWVal / _Factor;
         }
         if(Type() == TYPE_INT) {
-            return _MaxHWVal * _Factor;
+            return _MaxHWVal / _Factor;
         }
         if(Type() == TYPE_INTOFFSET) {
             return _MaxHWVal + _Factor;
@@ -87,7 +87,7 @@ public:
     }
 
     double ValueDouble() const {
-        return _tcstod(_Value.c_str(), NULL) * _Factor;
+        return _tcstod(_Value.c_str(), NULL) / _Factor;
     }
 
     int ValueInt() const {
@@ -95,7 +95,7 @@ public:
         if(Type() == TYPE_INTOFFSET) {
             val += _Factor;
         } else {
-            val *= _Factor;
+            val /= _Factor;
         }
         return val;
     }
@@ -108,7 +108,7 @@ public:
 
     void operator=(double v) {
         TCHAR szTmp[30] = {0};
-        _stprintf(szTmp, _T("%d"), (int)(v/_Factor));
+        _stprintf(szTmp, _T("%d"), (int)(v * _Factor));
         _Value = szTmp;
     }
 
@@ -117,7 +117,7 @@ public:
         if(Type() == TYPE_INTOFFSET) {
             _stprintf(szTmp, _T("%d"), (int)(v - _Factor));
         } else {
-            _stprintf(szTmp, _T("%d"), (int)(v / _Factor));
+            _stprintf(szTmp, _T("%d"), (int)(v * _Factor));
         }
         _Value = szTmp;
     }
@@ -231,7 +231,7 @@ namespace dlgBlueFlyConfig {
     PDeviceDescriptor_t pDevice;
     bool Init = true;
 
-    const TCHAR* lstPageName [] = { _T("1"), _T("2"), _T("3") };
+    const TCHAR* lstPageName [] = { _T("1"), _T("2"), _T("3"), _T("4"), _T("5") };
     typedef std::vector<WindowControl*> lstPageWnd_t;
     lstPageWnd_t lstPageWnd;
     unsigned CurrentPage = 0;
@@ -428,24 +428,36 @@ BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d) {
     HardwareParameters.Clear();
 
     HardwareParameters.Add(_T("BQH"), 7, TYPE_INTOFFSET, 80000.0, 0, 65535);
-    HardwareParameters.Add(_T("BFL"), 6, TYPE_DOUBLE, 1.0/100.0, 0, 1000);
-    HardwareParameters.Add(_T("BOL"), 6, TYPE_DOUBLE, 1.0/100.0, 0, 1000);
-    HardwareParameters.Add(_T("BFS"), 6, TYPE_DOUBLE, 1.0/100.0, 0, 1000);
-    HardwareParameters.Add(_T("BOS"), 6, TYPE_DOUBLE, 1.0/100.0, 0, 1000);
-    HardwareParameters.Add(_T("BFK"), 6, TYPE_DOUBLE, 1.0/1000.0, 10, 10000);
+    HardwareParameters.Add(_T("BFL"), 6, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add(_T("BOL"), 6, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add(_T("BFS"), 6, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add(_T("BOS"), 6, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add(_T("BFK"), 6, TYPE_DOUBLE, 1000.0, 10, 10000);
 
     HardwareParameters.Add(_T("BFQ"), 6, TYPE_INT, 1.0, 500, 2000);
     HardwareParameters.Add(_T("BFI"), 6, TYPE_INT, 1.0, 0, 1000);
     HardwareParameters.Add(_T("BSQ"), 6, TYPE_INT, 1.0, 250, 1000);
     HardwareParameters.Add(_T("BSI"), 6, TYPE_INT, 1.0, 0, 1000);
-    HardwareParameters.Add(_T("BVL"), 6, TYPE_DOUBLE, 1.0/1000.0, 1, 1000);
-    HardwareParameters.Add(_T("BRM"), 6, TYPE_DOUBLE, 1.0/100.0, 10, 100);
+    HardwareParameters.Add(_T("BVL"), 6, TYPE_DOUBLE, 1000.0, 1, 1000);
+    HardwareParameters.Add(_T("BRM"), 6, TYPE_DOUBLE, 100.0, 10, 100);
 
     HardwareParameters.Add(_T("BAC"), 6, TYPE_BOOLEAN, 1.0, 0, 1);
     HardwareParameters.Add(_T("BAD"), 6, TYPE_BOOLEAN, 1.0, 0, 1);
     HardwareParameters.Add(_T("BTH"), 6, TYPE_INT, 1.0, 0, 10000);
     HardwareParameters.Add(_T("BOM"), 7, TYPE_INTLIST, 1.0, 0, 3);
     HardwareParameters.Add(_T("BOF"), 7, TYPE_INT, 20.0, 1, 50);
+
+    HardwareParameters.Add(_T("BHV"), 10, TYPE_INT, 1.0, 0, 10000);
+    HardwareParameters.Add(_T("BHT"), 10, TYPE_INT, 1.0, 0, 10000);
+    HardwareParameters.Add(_T("BLD"), 9, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add(_T("BBZ"), 10, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add(_T("BZT"), 10, TYPE_DOUBLE, 100.0, 0, 1000);
+
+    HardwareParameters.Add(_T("BUP"), 11, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add(_T("BRB"), 8, TYPE_INT, 1.0, 0, 655535);
+    HardwareParameters.Add(_T("BR2"), 9, TYPE_INT, 1.0, 0, 655535);
+    HardwareParameters.Add(_T("BPT"), 9, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add(_T("BUR"), 9, TYPE_BOOLEAN, 1.0, 0, 1);
 
     char szFirstString[128] = {0};
     d->Com->Read(szFirstString, sizeof(szFirstString));

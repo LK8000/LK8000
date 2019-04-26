@@ -62,5 +62,39 @@
 		<DataField DataType="double" DisplayFormat="%.0f ms" EditFormat="%.0f" Step="20" OnDataAccess="OnParamData"/>
 	  </WndProperty>
 	</WndFrame>
+	<WndFrame Name="4" X="0" Y="0" Width="235" Height="222">
+	  <WndProperty Name="BHV" Caption="_@M1903_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1305_" Keyboard="1">
+		<DataField DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+	  <WndProperty Name="BHT" Caption="_@M1904_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1306_" Keyboard="1">
+		<DataField DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+      <WndProperty Name="BLD" Caption="_@M1905_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1307_">
+		<DataField DataType="boolean" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+      <WndProperty Name="BBZ" Caption="_@M1906_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1308_">
+		<DataField DataType="boolean" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+      <WndProperty Name="BZT" Caption="_@M1907_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H001309_" Keyboard="1">
+		<DataField DataType="double" DisplayFormat="%.2f m/s" EditFormat="%.0f" Step="0.01" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+	</WndFrame>
+	<WndFrame Name="5" X="0" Y="0" Width="235" Height="222">
+      <WndProperty Name="BUP" Caption="_@M1908_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1340_">
+		<DataField DataType="boolean" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+      <WndProperty Name="BRB" Caption="_@M1909_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1341_" Keyboard="1">
+		<DataField DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+      <WndProperty Name="BR2" Caption="_@M1910_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1342_" Keyboard="1">
+		<DataField DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Step="1" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+      <WndProperty Name="BPT" Caption="_@M1911_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1343_">
+		<DataField DataType="boolean" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+      <WndProperty Name="BUR" Caption="_@M1912_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1344_">
+		<DataField DataType="boolean" OnDataAccess="OnParamData"/>
+	  </WndProperty>
+	</WndFrame>
   </WndForm>
 </PMML>

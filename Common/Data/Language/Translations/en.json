@@ -2519,5 +2519,26 @@
     "_@M002467_": "Values",
     "_@M002468_": "Direction",
     "_@M002469_": "EXT Target",
-    "_@M002470_": "Ahead"
+    "_@M002470_": "Ahead",
+
+    "_@M001903_": "heightSensitivityDm (dm)",
+    "_@H001305_": "How far you have to move in dm to reset the idle timeout",
+    "_@M001904_": "heightSeconds (s)",
+    "_@H001306_": "Idle timeout",
+    "_@M001905_": "greenLED",
+    "_@H001307_": "Check to make green LED flash with beep",
+    "_@M001906_": "useAudioBuzzer",
+    "_@H001308_": "Check to use the experimental audio buzzer",
+    "_@M001907_": "buzzerThreshold (m/s)",
+    "_@H001309_": "The value in m/s below the liftThreshold when the buzzer will start.",
+    "_@M001908_": "usePitot",
+    "_@H001340_": "Check to use the experimental MS4525DO pitot connected via I2C",
+    "_@M001909_": "uart1BRG",
+    "_@H001341_": "BRG setting for UART1, baud = 2000000/(BRG-1) (default of 207 = approx 9600 baud)",
+    "_@M001910_": "uart2BRG",
+    "_@H001342_": "BRG setting for UART1, baud = 2000000/(BRG-1) (default of 34 = approx 57.6k baud)",
+    "_@M001911_": "uartPassthrough",
+    "_@H001343_": "Check to pass data received by U2 into U1",
+    "_@M001912_": "uart1Raw",
+    "_@H001344_": "Check to make U1 data transferred raw instead of line by line"
 }
