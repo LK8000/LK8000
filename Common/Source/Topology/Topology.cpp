@@ -566,7 +566,7 @@ static T shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _P
 }
 // Paint a single topology element
 
-void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
+void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) const {
 
   if (!shapefileopen) return;
   bool nolabels=false;

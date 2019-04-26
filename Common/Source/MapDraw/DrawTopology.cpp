@@ -17,8 +17,8 @@ Topology* TopoStore[MAXTOPOLOGY] = {};
 void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const bool wateronly)
 {
   LockTerrainDataGraphics();
-  ShapeSpecialRenderer renderer;
-  for(Topology* topo: TopoStore) {
+  static ShapeSpecialRenderer renderer;
+  for(const Topology* topo: TopoStore) {
     if(!topo) {
       continue;
     }

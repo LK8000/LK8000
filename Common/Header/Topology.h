@@ -79,7 +79,7 @@ class Topology {
   void Close();
 
   void updateCache(rectObj thebounds, bool purgeonly=false);
-  void Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
+  void Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) const;
 
   void SearchNearest(const rectObj& bounds);
 
@@ -95,7 +95,7 @@ class Topology {
 
   XShape** shpCache;
 
-  bool checkVisible(const shapeObj& shape, const rectObj &screenRect);
+  static bool checkVisible(const shapeObj& shape, const rectObj &screenRect);
 
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);
