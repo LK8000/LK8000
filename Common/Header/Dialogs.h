@@ -92,7 +92,6 @@ void dlgWaypointFilesShowModal(void);
 void dlgMultimapsShowModal(void);
 void dlgIgcFileShowModal(void);
 
-void dlgTextEntryKeyboardShowModal(TCHAR *text, int width=0);
 void dlgRadioSettingsShowModal(void);
 #ifndef NO_BLUETOOTH
 namespace DlgBluetooth {

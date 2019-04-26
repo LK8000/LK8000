@@ -295,7 +295,7 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID)
+static void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID)
 {
   wf = NULL;
   if (width==0) {
