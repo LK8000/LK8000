@@ -150,7 +150,8 @@ struct CDevIMI::TMsg {
   IMIWORD payloadSize;
   IMIBYTE payload[COMM_MAX_PAYLOAD_SIZE];
   IMIWORD crc16;
-};
+} PACKED;
+
 #define IMICOMM_MAX_MSG_SIZE (sizeof(TMsg))
 #define IMICOMM_MSG_HEADER_SIZE ((size_t)(&(((TMsg *)0)->payload)))
 #define IMICOMM_BIGPARAM1(param) ((IMIBYTE)((param) >> 16))
@@ -504,8 +505,9 @@ bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
                    IMIBYTE msgID, const void *payload /* =0 */, IMIWORD payloadSize /* =0 */,
                    IMIBYTE parameter1 /* =0 */, IMIWORD parameter2 /* =0 */, IMIWORD parameter3 /* =0 */)
 {
-  if(!payload || payloadSize > COMM_MAX_PAYLOAD_SIZE)
+  if(payloadSize > COMM_MAX_PAYLOAD_SIZE) {
     return false;
+  }
 
   TMsg msg;
   memset(&msg, 0, sizeof(msg));
@@ -518,7 +520,11 @@ bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
   msg.parameter2 = parameter2;
   msg.parameter3 = parameter3;
   msg.payloadSize = payloadSize;
-  memcpy(msg.payload, payload, payloadSize);
+
+  if(payloadSize > 0) {
+    assert(payload);
+    memcpy(msg.payload, payload, payloadSize);
+  }
 
   IMIWORD crc = CRC16Checksum(((IMIBYTE*)&msg) + 2, payloadSize + IMICOMM_MSG_HEADER_SIZE - 2);
   msg.payload[payloadSize] = (IMIBYTE)(crc >> 8);
