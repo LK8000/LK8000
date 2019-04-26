@@ -89,7 +89,10 @@
 				// For TESTBENCH and beta versions this should be always ENABLED.
 				// Only in official stable versions it should be disabled.
 
-
+#if !defined(UNDER_CE)
+// Enable Topology Cache 2 (full topology in memory)
+  #define USE_TOPOLOGY_CACHE_LEVEL2
+#endif
  //
  // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
  // When expire date is reached, unnecessary old stuff can be removed, even if commented

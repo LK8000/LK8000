@@ -223,23 +223,11 @@ void OpenTopology() {
           blue =  255;
         }
 
-        if (ShapeField<0) {
-          Topology* newtopo = new Topology(wShapeFilename);
-          TopoStore[numtopo] = newtopo;
-        } else {
-          TopologyLabel* newtopol = new TopologyLabel(wShapeFilename, ShapeField);
-          ZZIP_FILE* zCPGFile = openzip(wCPGFilename, "rt");
-          if (zCPGFile) {
-            newtopol->bUTF8 = true;
-            zzip_fclose(zCPGFile);
-          }
-          TopoStore[numtopo] = newtopol;
-        }
-
+        TopoStore[numtopo] = new Topology(wShapeFilename, ShapeField);
 
         TopoStore[numtopo]->scaleCategory = shapeIndex;
         TopoStore[numtopo]->scaleDefaultThreshold = ShapeRange;
-	TopoStore[numtopo]->scaleThreshold = ShapeRange;
+        TopoStore[numtopo]->scaleThreshold = ShapeRange;
 
         if (ShapeIcon!=0)
           TopoStore[numtopo]->loadBitmap(ShapeIcon);
