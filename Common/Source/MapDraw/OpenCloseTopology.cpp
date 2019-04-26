@@ -26,8 +26,8 @@ void OpenTopology() {
   CreateProgressDialog(MsgToken(902)); // Loading Topology File...
 
   // Start off by getting the names and paths
-  static TCHAR szFile[MAX_PATH] = TEXT("\0");
-  static TCHAR Directory[MAX_PATH] = TEXT("\0");
+  TCHAR szFile[MAX_PATH] = TEXT("\0");
+  TCHAR Directory[MAX_PATH] = TEXT("\0");
 
   LKTopo=0;
   LKWaterTopology=false;
@@ -37,20 +37,15 @@ void OpenTopology() {
   std::fill(std::begin(TopoStore), std::end(TopoStore), nullptr);
 
      // Topology is inside the LKM map file
-     TCHAR  szmapFile[MAX_PATH];
-    LocalPath(szmapFile, _T(LKD_MAPS), szMapFile);
-    if (_tcslen(szmapFile)==0) {
-      UnlockTerrainDataGraphics();
-      return;
-    }
+  LocalPath(Directory, _T(LKD_MAPS), szMapFile);
+  if (Directory[0]== _T('\0')) {
+    UnlockTerrainDataGraphics();
+    return;
+  }
 
-    // Look for the file within the map zip file...
-    _tcscpy(Directory,szmapFile);
-    _tcscat(Directory,TEXT("/"));
-    szFile[0]=0;
-    _tcscat(szFile,Directory);
-    _tcscat(szFile,TEXT("topology.tpl"));
-
+  // Look for the file within the map zip file...
+  _tcscat(Directory,TEXT("/"));
+  _stprintf(szFile, _T("%stopology.tpl"), Directory);
 
   // Ready to open the file now..
   zzip_stream stream(szFile, "rt");
@@ -75,27 +70,26 @@ void OpenTopology() {
 
   while(stream.read_line(TempString)) {
 
-    if(_tcslen(TempString) > 0 && _tcsstr(TempString,TEXT("*")) != TempString) // Look For Comment
-      {
+    if(TempString[0] == _T('\0')) {
+      continue; // Skip empty line
+    }
+    if(TempString[0] == _T('*')) {
+      continue; // Skip Comment
+    }
 
-        BYTE red, green, blue;
-        // filename,range,icon,field
+    BYTE red, green, blue;
+    // filename,range,icon,field
 
-        // File name
-        PExtractParameter(TempString, ctemp, 0);
-        _tcscpy(ShapeName, ctemp);
+    // File name
+    PExtractParameter(TempString, ctemp, 0);
+    _tcscpy(ShapeName, ctemp);
 
-        _tcscpy(wShapeFilename, Directory);
-        _tcscat(wShapeFilename,ShapeName);
-        _tcscat(wShapeFilename,TEXT(".shp"));
+    _stprintf(wShapeFilename, _T("%s%s.shp"), Directory, ShapeName);
+    _stprintf(wCPGFilename, _T("%s%s.cpg"), Directory, ShapeName);
 
-        _tcscpy(wCPGFilename, Directory);
-        _tcscat(wCPGFilename,ShapeName);
-        _tcscat(wCPGFilename,TEXT(".cpg"));
-
-        // Shape range
-        PExtractParameter(TempString, ctemp, 1);
-        ShapeRange = StrToDouble(ctemp,NULL);
+    // Shape range
+    PExtractParameter(TempString, ctemp, 1);
+    ShapeRange = StrToDouble(ctemp,NULL);
 
 	// Normally ShapeRange is indicating km threshold for items to be drawn.
 	// If over 5000, we identify an LKmap topology and subtract 5000 to get the type.
@@ -231,12 +225,10 @@ void OpenTopology() {
         }
 
         if (ShapeField<0) {
-          Topology* newtopo;
-          newtopo = new Topology(wShapeFilename);
+          Topology* newtopo = new Topology(wShapeFilename);
           TopoStore[numtopo] = newtopo;
         } else {
-          TopologyLabel *newtopol;
-          newtopol = new TopologyLabel(wShapeFilename, ShapeField);
+          TopologyLabel* newtopol = new TopologyLabel(wShapeFilename, ShapeField);
           ZZIP_FILE* zCPGFile = openzip(wCPGFilename, "rt");
           if (zCPGFile) {
             newtopol->bUTF8 = true;
@@ -275,8 +267,7 @@ void OpenTopology() {
 		TopoStore[numtopo]->scaleThreshold,TopoStore[numtopo]->scaleDefaultThreshold,NEWLINE);
 	#endif
 
-        numtopo++;
-      }
+    numtopo++;
   }
 
   if (LKTopo>0) {
