@@ -64,7 +64,7 @@ GLShapeRenderer::~GLShapeRenderer() {
     gluDeleteTess(tess);
 }
 
-void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, Brush& brush, const ScreenProjection& _Proj) {
+void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, const Brush& brush, const ScreenProjection& _Proj) {
   /*
    OpenGL cannot draw complex polygons so we need to use a Tessallator to draw the polygon using a GL_TRIANGLE_FAN
    */  

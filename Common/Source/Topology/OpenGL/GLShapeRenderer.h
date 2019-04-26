@@ -37,7 +37,7 @@ public:
         noLabel = b;
     }
     
-    void renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, Brush& brush, const ScreenProjection& _Proj);
+    void renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, const Brush& brush, const ScreenProjection& _Proj);
     
 private:
     GLUtesselator* tess;
