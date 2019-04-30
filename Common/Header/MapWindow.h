@@ -255,15 +255,7 @@ typedef struct
   RECT rc;
 } DiagrammStruct;
 
-typedef struct
-{
-	bool usingQFU;
-	bool approach;
-	bool landing;
-} HSIreturnStruct;
-
 class ScreenProjection;
-
 
 class MapWindow {
  public:
@@ -621,13 +613,7 @@ class MapWindow {
   static void DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const RECT& rc);
   static void DrawHeadUpLine(LKSurface& Surface, const POINT& Orig, const RECT& rc , double, double);
   static void DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT& rc, const bool headUpLine = false);
-
-  //Here the staff for the new HSI info screen: remove after what is not needed
-  static HSIreturnStruct DrawHSI(LKSurface& Surface, const RECT& rc);
-  static void DrawHSIAHRS(LKSurface& Surface, const RECT& rc);
-  static void DrawHSICompassRose(LKSurface& Surface, const RECT& rc, double direction);
-  static void DrawHSIAcceleration(LKSurface& Surface, const RECT& rc);
-
+  static void DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool& approach, bool& landing);
   static void WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
                                 short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
   // static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);

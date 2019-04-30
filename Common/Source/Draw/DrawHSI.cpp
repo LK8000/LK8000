@@ -19,7 +19,8 @@
 
 extern int InfoPageTopLineSeparator;
 
-HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
+
+void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool& approach, bool& landing) {
     static short centerX, centerY; //center coordinates of HSI gauge
     static short radius; //HSI gauge size radius
     static short innerradius; //internal radius of big marks on the compass rose
@@ -66,7 +67,9 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             TEXT("33")
     };
 
-    HSIreturnStruct returnStruct = {false, false, false};
+    usingQFU = false;
+    approach = false;
+    landing = false;
 
     if(DoInit[MDI_DRAWHSI]) { //All the dimensions must be recalculated in case of screen resolution change
         centerX=(rc.right+rc.left)/2;
@@ -128,8 +131,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
 
         //Initialize position of Vertical speed indication
         if (ScreenSize==ss800x480 || ScreenSize==ss480x272) VertSpeedX=centerX+radius+NIBLSCALE(100);
-        else
-        VertSpeedX=rc.right-RIGHTLIMITER;
+        else VertSpeedX=rc.right-RIGHTLIMITER;
 
         VertSpeedLabelY=centerY-NIBLSCALE(28);
         VertSpeedValueY=centerY-NIBLSCALE(19);
@@ -259,7 +261,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         double course = DerivedDrawInfo.LegActualTrueCourse;
         double deviation = DerivedDrawInfo.LegCrossTrackError;
         if(finalWP==currentWP) { //if we are flying to the final destination
-            returnStruct.approach=true;
+            approach=true;
             const double varioFtMin=DerivedDrawInfo.Vario*TOFEETPERMINUTE; //Convert vertical speed to Ft/min
 
             //Print vertical speed in Ft/min
@@ -278,7 +280,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             Surface.SelectObject(LK8PanelUnitFont);
             LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedUnitY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
             if(DerivedDrawInfo.WaypointDistance<fiveNauticalMiles && WPstyle>=STYLE_AIRFIELDGRASS && WPstyle<=STYLE_AIRFIELDSOLID) { //if we are close to the destination airport
-                if(DerivedDrawInfo.WaypointDistance<1500) returnStruct.landing=true; //if at less than 1.5 Km don't show glide slope bar
+                if(DerivedDrawInfo.WaypointDistance<1500) landing=true; //if at less than 1.5 Km don't show glide slope bar
                 else { //Build glide slope bar
                     //Calculate glide slope inclination to reach the destination runaway
                     const double halfRunaway=RunwayLen/2;
@@ -368,7 +370,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
             //Determine if to give HSI indication respect destination runaway (QFU)
             if(finalWP==0 || DerivedDrawInfo.WaypointDistance<fiveNauticalMiles) {//if direct GOTO or below 5 NM
                 if(QFU>0 && QFU<=360) { //valid QFU
-                    returnStruct.usingQFU=true;
+                    usingQFU=true;
                     course=QFU;
                     deviation=DerivedDrawInfo.WaypointDistance*fastsine(AngleDifference(course,DerivedDrawInfo.WaypointBearing)); //flat cross track error
                 }
@@ -436,7 +438,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
         #endif
 
         //Course Deviation Indicator
-        if(currentWP>0 || returnStruct.usingQFU) { //we are flying on a predefined routeline or we have the info for landing: draw CDI
+        if(currentWP>0 || usingQFU) { //we are flying on a predefined routeline or we have the info for landing: draw CDI
             int dev; //deviation in pixel
             #ifndef DITHER
             LKColor cdiColor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW; //color of CDI
@@ -581,7 +583,7 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
     #endif
 
     //Draw VSI: Vertical Situation Indicator...
-    if(!returnStruct.usingQFU && !returnStruct.landing && validPreviousWP) { //... only if not using glide slope and not lading
+    if(!usingQFU && !landing && validPreviousWP) { //... only if not using glide slope and not lading
         //Calculate expected altitude in route
         double expectedAlt=WPaltitude;
         if(WPleg>0 && WPaltitude!=prevWPaltitude) expectedAlt=(WPaltitude-prevWPaltitude)/WPleg*DerivedDrawInfo.LegDistanceCovered+prevWPaltitude;
@@ -702,5 +704,4 @@ HSIreturnStruct MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc) {
 
     Surface.SelectObject(hbOld);
     Surface.SelectObject(hpOld);
-    return returnStruct;
 }

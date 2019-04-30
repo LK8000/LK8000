@@ -982,17 +982,16 @@ label_HSI:
         #else
 	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
         #endif
-	static bool showQFU=false;
-	static bool showVFRlanding=false;
-	HSIreturnStruct HSI;
-	HSI=DrawHSI(Surface,rc);
-	if(HSI.landing) {
+	static bool showQFU=false, showVFRlanding=false;
+	static bool usingQFU, approach, landing;
+	DrawHSI(Surface,rc,usingQFU,approach,landing);
+	if(landing) {
 		showVFRlanding=!showVFRlanding; //make it blinking
-		if(HSI.usingQFU) showQFU=!showVFRlanding;
+		if(usingQFU) showQFU=!showVFRlanding;
 		else showQFU=false;
 	} else {
 		showVFRlanding=false;
-		if(HSI.usingQFU) showQFU=!showQFU; //make it blinking
+		if(usingQFU) showQFU=!showQFU; //make it blinking
 		else showQFU=false;
 	}
 	if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
@@ -1037,7 +1036,7 @@ label_HSI:
 		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
 		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-		if(!HSI.approach) { //if not landing print also dist, ETE and ETA respect task end
+		if(!approach) { //if not landing print also dist, ETE and ETA respect task end
 			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
 			_tcscpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
@@ -1075,7 +1074,7 @@ label_HSI:
 		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
 		_tcscpy(BufferUnit,_T(""));
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-		if(!HSI.approach) { //if not landing print also dist, ETE and ETA respect task end
+		if(!approach) { //if not landing print also dist, ETE and ETA respect task end
 			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
 			_tcscpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
