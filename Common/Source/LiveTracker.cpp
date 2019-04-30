@@ -1219,15 +1219,44 @@ static bool LiveTrack24_Radar() {
 		CheckBackTarget(&GPS_INFO, flarm_slot);
 
 		if (newtraffic) {
+			TCHAR u[100];
 			GPS_INFO.FLARM_Traffic[flarm_slot].ID = userID;
 			GPS_INFO.FLARM_Traffic[flarm_slot].RelativeNorth = 2;
 			GPS_INFO.FLARM_Traffic[flarm_slot].RelativeEast = 2;
 			GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel = 0;
 			GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate = 0;
 			TCHAR *name = GPS_INFO.FLARM_Traffic[flarm_slot].Name;
-			TCHAR u[100];
-			ascii2TCHAR(username.c_str(), u, 100);
-			LK_tcsncpy(name, u, MAXFLARMNAME);
+			TCHAR *cn = GPS_INFO.FLARM_Traffic[flarm_slot].Cn;
+
+			GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
+			TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
+			if (fname) {
+				LK_tcsncpy(name,fname,MAXFLARMNAME);
+				//  Now we have the name, so lookup also for the Cn
+				// This will return either real Cn or Name, again
+				TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
+				if (cname) {
+					int cnamelen=_tcslen(cname);
+					if (cnamelen<=MAXFLARMCN) {
+						_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, cname);
+					} else {
+						// else probably it is the Name again, and we create a fake Cn
+						ascii2TCHAR(username.c_str(), u, 100);
+						LK_tcsncpy(cn, u, MAXFLARMCN);
+					}
+				} else {
+					_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, _T("Err"));
+				}
+
+			} else {
+				// Else we NEED to set a name, otherwise it will constantly search for it over and over..
+				ascii2TCHAR(username.c_str(), u, 100);
+				LK_tcsncpy(name, u, MAXFLARMNAME);
+				ascii2TCHAR(username.c_str(), u, 100);
+				LK_tcsncpy(cn, u, MAXFLARMCN);
+			}
+
+
 		}
 
 		double Average30s = 0;
