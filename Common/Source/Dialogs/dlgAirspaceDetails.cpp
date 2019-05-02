@@ -141,9 +141,9 @@ double  ExtractFrequency(TCHAR *text)
 			       if((text[i+6] >= '0') && (text[i+6] <= '9'))
 			    	   kHz += (text[i+6]-'0');
 
+		    	 fFreq = (double) Mhz+ (double)kHz/1000.0f;
+		    	 return fFreq;
 		       }
-		       fFreq = (double) Mhz+ (double)kHz/1000.0f;
-		       return fFreq;
 	         }
 	   }
    }
