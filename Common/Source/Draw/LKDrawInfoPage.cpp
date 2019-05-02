@@ -983,114 +983,116 @@ label_HSI:
 	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
         #endif
 	static bool showQFU=false, showVFRlanding=false;
-	static bool usingQFU, approach, landing;
-	DrawHSI(Surface,rc,usingQFU,approach,landing);
-	if(landing) {
-		showVFRlanding=!showVFRlanding; //make it blinking
-		if(usingQFU) showQFU=!showVFRlanding;
-		else showQFU=false;
-	} else {
-		showVFRlanding=false;
-		if(usingQFU) showQFU=!showQFU; //make it blinking
-		else showQFU=false;
-	}
-	if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
-		if(showVFRlanding) {
-			_stprintf(Buffer,TEXT("VFR %s"),MsgToken(931)); //TODO: toupper()
-			#ifndef DITHER
-			icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
-			#else
-			icolor=RGB_WHITE;
-			#endif
+	{
+		bool usingQFU=false, approach=false, landing=false;
+		DrawHSI(Surface,rc,usingQFU,approach,landing);
+		if(landing) {
+			showVFRlanding=!showVFRlanding; //make it blinking
+			if(usingQFU) showQFU=!showVFRlanding;
+			else showQFU=false;
+		} else {
+			showVFRlanding=false;
+			if(usingQFU) showQFU=!showQFU; //make it blinking
+			else showQFU=false;
 		}
-		if(showQFU) {
-			_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken(2179));
-			#ifndef DITHER
-			icolor=RGB_GREEN;
-			#else
+		if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
+			if(showVFRlanding) {
+				_stprintf(Buffer,TEXT("VFR %s"),MsgToken(931)); //TODO: toupper()
+				#ifndef DITHER
+				icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
+				#else
+				icolor=RGB_WHITE;
+				#endif
+			}
+			if(showQFU) {
+				_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken(2179));
+				#ifndef DITHER
+				icolor=RGB_GREEN;
+				#else
+				icolor=RGB_WHITE;
+				#endif
+			}
+		} else { //show next waypoint name
 			icolor=RGB_WHITE;
-			#endif
-		}
-	} else { //show next waypoint name
-		icolor=RGB_WHITE;
-		if(ValidTaskPoint(ActiveTaskPoint)) {
-			if(Task[ActiveTaskPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveTaskPoint].Index].Name);
-			else {
+			if(ValidTaskPoint(ActiveTaskPoint)) {
+				if(Task[ActiveTaskPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveTaskPoint].Index].Name);
+				else {
+					_tcscpy(Buffer,MsgToken(912)); // [no dest]
+					icolor=AMBERCOLOR;
+				}
+			} else {
 				_tcscpy(Buffer,MsgToken(912)); // [no dest]
 				icolor=AMBERCOLOR;
 			}
-		} else {
-			_tcscpy(Buffer,MsgToken(912)); // [no dest]
-			icolor=AMBERCOLOR;
 		}
-	}
-	Surface.SelectObject(LK8PanelMediumFont);
-	LKWriteText(Surface,  Buffer, qcolumn[8],qrow[1], WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
-	showunit=true;
-	if (ScreenLandscape) {
-		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
-		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
-		LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
-		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[7],&qrow[8],&qrow[6]);
-		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
-		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-		if(!approach) { //if not landing print also dist, ETE and ETA respect task end
-			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
+		Surface.SelectObject(LK8PanelMediumFont);
+		LKWriteText(Surface,  Buffer, qcolumn[8],qrow[1], WTMODE_NORMAL, WTALIGN_CENTER, icolor, false);
+		showunit=true;
+		if (ScreenLandscape) {
+			LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
 			_tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
-			LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
-			if(ScreenSize==ss800x480 || ScreenSize==ss480x272)
-				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[7],&qrow[8],&qrow[6]);
-			else {
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
+			LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[7],&qrow[8],&qrow[6]);
+			LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
+			_tcscpy(BufferUnit,_T(""));
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
+			if(!approach) { //if not landing print also dist, ETE and ETA respect task end
+				LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
 				_tcscpy(BufferUnit,_T(""));
-				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[7],&qrow[8],&qrow[6]);
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
+				LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
+				if(ScreenSize==ss800x480 || ScreenSize==ss480x272)
+					WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[7],&qrow[8],&qrow[6]);
+				else {
+					_tcscpy(BufferUnit,_T(""));
+					WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[7],&qrow[8],&qrow[6]);
+				}
+				LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
+				_tcscpy(BufferUnit,_T(""));
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+			} else { //show other interesting things for landing
+				int col=16;
+				bool unitInvisible=true;
+				if(ScreenSize==ss800x480 || ScreenSize==ss480x272) {
+					col=15;
+					unitInvisible=false;
+				}
+				LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
+				if(unitInvisible) _tcscpy(BufferUnit,_T(""));
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[3],&qrow[4],&qrow[2]);
+				LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
+				if(unitInvisible) _tcscpy(BufferUnit,_T(""));
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[12],&qrow[13],&qrow[11]);
 			}
-			LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
-		} else { //show other interesting things for landing
-			int col=16;
-			bool unitInvisible=true;
-			if(ScreenSize==ss800x480 || ScreenSize==ss480x272) {
-				col=15;
-				unitInvisible=false;
-			}
-			LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
-			if(unitInvisible) _tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[3],&qrow[4],&qrow[2]);
-			LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
-			if(unitInvisible) _tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[12],&qrow[13],&qrow[11]);
-		}
-	} else {
-		LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
-		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
-		LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
-		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
-		LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
-		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
-		if(!approach) { //if not landing print also dist, ETE and ETA respect task end
-			LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
-			LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
-			LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
 		} else {
-			LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
+			LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
 			_tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
-			LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
+			LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
 			_tcscpy(BufferUnit,_T(""));
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
+			LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
+			_tcscpy(BufferUnit,_T(""));
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
+			if(!approach) { //if not landing print also dist, ETE and ETA respect task end
+				LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
+				_tcscpy(BufferUnit,_T(""));
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
+				LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
+				_tcscpy(BufferUnit,_T(""));
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
+				LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
+				_tcscpy(BufferUnit,_T(""));
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+			} else {
+				LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
+				_tcscpy(BufferUnit,_T(""));
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
+				LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
+				_tcscpy(BufferUnit,_T(""));
+				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+			}
 		}
 	}
 	goto label_End; // End of HSI
