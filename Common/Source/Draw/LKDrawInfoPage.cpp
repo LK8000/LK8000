@@ -983,7 +983,7 @@ label_HSI:
 	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
         #endif
 	static bool showQFU=false, showVFRlanding=false;
-	bool usingQFU=false, approach=false, landing=false;
+	static bool usingQFU, approach, landing;
 	DrawHSI(Surface,rc,usingQFU,approach,landing);
 	if(landing) {
 		showVFRlanding=!showVFRlanding; //make it blinking
