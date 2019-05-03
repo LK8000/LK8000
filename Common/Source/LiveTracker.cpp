@@ -86,6 +86,7 @@ static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789+/";
 
+
 // Data point definition to send to the server
 typedef struct {
 	unsigned long int unix_timestamp;     // Unix timestamp
@@ -150,6 +151,24 @@ static long monthtoseconds(int isleap, int month) {
 	}
 	return ret;
 }
+
+static std::string random_string( size_t length )
+{
+  auto randchar = []() -> char
+  {
+    const char charset[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+    const size_t max_index = (sizeof(charset) - 1);
+    return charset[ std::rand() % max_index ];
+  };
+  std::string str(length,0);
+  std::generate_n( str.begin(), length, randchar );
+  return str;
+}
+static std::string  DeviceID =  random_string(10);
+
 
 static unsigned long int yeartoseconds(int y) {
 	unsigned long int ret, ltemp;
@@ -1581,6 +1600,9 @@ static std::string DeltaRLE(std::vector<int> data) {
 	return res;
 }
 
+
+
+
 static bool SendGPSPointPacket2(unsigned int *packet_id) {
 
 	char rxbuf[32];
@@ -1607,7 +1629,7 @@ static bool SendGPSPointPacket2(unsigned int *packet_id) {
 	std::ostringstream stringStream;
 	stringStream << "/api/d/lt/track/";
 	stringStream << appKey << "/";
-	stringStream << LKVERSION << "/" << LKRELEASE << "/";
+	stringStream << LKVERSION << "." << LKRELEASE  << "/" << DeviceID << "/";
 	stringStream << sid << "/";				// SID
 	stringStream << userid << "/";				// UserID
 	stringStream << pwt << "/";					// Password Token
