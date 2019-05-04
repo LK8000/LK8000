@@ -92,7 +92,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   StartupStore(_T("NEW:<%s>%s"),TempString,NEWLINE);
   #endif
   // ---------------- NAME ----------------
-  pToken = _tcstok(TempString, TEXT(","));
+  pToken = _tcstok(TempString, TEXT("\""));
   if (pToken == NULL) return false;
 
   if (_tcslen(pToken)>NAME_SIZE) {

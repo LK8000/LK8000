@@ -381,7 +381,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
 
             if (i++ == TaskIndex)  // load selected task
               {
-                while (bLoadComplet && (pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
+                while (bLoadComplet && (pToken = strsep_r(NULL, TEXT("\""), &pWClast)) != NULL) {
                     if (idxTP < MAXTASKPOINTS) {
                         _tcsncpy(TpCode, pToken, NAME_SIZE);
                         CleanCupCode(TpCode);
