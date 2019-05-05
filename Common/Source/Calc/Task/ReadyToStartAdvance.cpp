@@ -27,7 +27,13 @@ bool ReadyToStart(DERIVED_INFO *Calculated) {
   
   if (!ValidGate()) return false; // 100509
   if (AutoAdvance== AUTOADVANCE_AUTO || AutoAdvance== AUTOADVANCE_ARMTPS) {  
-    return true;
+      int LastTaskPnt = 0;
+      for(int i = 1; ValidTaskPoint(i); i++)
+	LastTaskPnt = i;
+    if(ActiveTaskPoint < LastTaskPnt) // no auto advance if Task already closed! (in order to keep statistics)
+      return true;
+    else
+      return false;
   }
   if ((AutoAdvance== AUTOADVANCE_ARM) || (AutoAdvance==AUTOADVANCE_ARMSTART)) {
     if (AdvanceArmed) {
