@@ -369,10 +369,24 @@ bool LoadCupTask(LPCTSTR szFileName) {
             // 1. Description
             //       First column is the description of the task. If filled it should be double quoted.
             //       If left empty, then SeeYou will determine the task type on runtime.
-            if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) == NULL) {
-                //  UnlockTaskData();  // no need to skip if only name missing!!!
-                //  return false;
+
+            StartupStore(_T(". Start %s pToken <%s>  pWClast  <%s> %s"),szString, pToken,pWClast, NEWLINE);
+            if (szString[0] == ',')
+  	    {
+  	      pToken = strsep_r(szString, TEXT(","), &pWClast);
+  	      StartupStore(_T(". no Task name %s"), NEWLINE);
+  	      //  UnlockTaskData();  // no need to skip if only name missing!!!
+  	      //  return false;
+  	    }
+            else
+            {
+              pToken = strsep_r(szString, TEXT("\""), &pWClast);
+      	      StartupStore(_T(". Task name: %s %s"), pToken, NEWLINE);
+              strsep_r(NULL, TEXT(","), &pWClast);
             }
+            strsep_r(NULL, TEXT("\""), &pWClast);
+
+
 
             // 2. and all successive columns, separated by commas
             //       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
@@ -381,7 +395,11 @@ bool LoadCupTask(LPCTSTR szFileName) {
 
             if (i++ == TaskIndex)  // load selected task
               {
-                while (bLoadComplet && (pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
+                while (bLoadComplet && (pToken = strsep_r(NULL, TEXT("\""), &pWClast)) != NULL)
+                {
+		  strsep_r(NULL, TEXT(","), &pWClast);
+		  strsep_r(NULL, TEXT("\""), &pWClast);
+           //	  StartupStore(_T(". loop: Comma %s pToken <%s>  pWClast  <%s> %s"),szString, pToken,pWClast, NEWLINE);
                     if (idxTP < MAXTASKPOINTS) {
                         _tcsncpy(TpCode, pToken, NAME_SIZE);
                         CleanCupCode(TpCode);
