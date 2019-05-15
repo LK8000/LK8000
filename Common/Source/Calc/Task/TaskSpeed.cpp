@@ -143,12 +143,10 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       dFinal = 0;
     }
 
-    double dc = max(0.0, dr-dFinal); 
-    // amount of extra distance to travel in cruise/climb before final glide
 
     // actual task speed achieved so far
     v1 = d1/t1;
-    
+#define OLDTASKSPEED
 #ifdef OLDTASKSPEED  
     // time at end of final glide
     // equivalent time elapsed after final glide
@@ -171,6 +169,8 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     // been earned.
 
     // this will be bogus at fast starts though...
+    double dc = max(0.0, dr-dFinal);
+    // amount of extra distance to travel in cruise/climb before final glide
 
     LKASSERT((t1+dc/v1+dFinal/Vfinal)!=0);
     LKASSERT((t1+dFinal/Vfinal)!=0);
