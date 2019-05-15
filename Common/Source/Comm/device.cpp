@@ -554,6 +554,16 @@ static BOOL devInit(PDeviceDescriptor_t d){
 
 bool IsIdenticalPort(int i, int j)
 {
+  if (_tcscmp(dwDeviceName[i], _T("Internal")) == 0)
+  {
+    return false;
+  }
+  else
+  if (_tcscmp(dwDeviceName[j], _T("Internal")) == 0)
+  {
+    return false;
+  }
+  else
   if (_tcscmp(szPort[i], _T("UDPServer")) == 0)
   {
     if (dwIpPort[i] == dwIpPort[j])
