@@ -20,7 +20,8 @@ extern AATDistance aatdistance;
 void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
                     const double this_maccready)
 {
-
+if( Calculated->ValidFinish)  // don't update statistics after task finished
+  return;
   if (!ValidTaskPoint(ActiveTaskPoint) || 
       ((ActiveTaskPoint>0) && !ValidTaskPoint(ActiveTaskPoint-1))) {
 
