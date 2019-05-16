@@ -425,7 +425,10 @@ if( Calculated->ValidFinish)  // don't update statistics after task finished
   Calculated->TaskAltitudeDifference = total_energy_height - Calculated->TaskAltitudeRequired; 
   Calculated->TaskAltitudeDifference0 = total_energy_height - TaskAltitudeRequired0;
   Calculated->NextAltitudeDifference0 = total_energy_height - Calculated->NextAltitudeRequired0;
-
+  if( Calculated->TaskStartTime > 0)
+    Calculated->TaskElapsedTime =  Basic->Time-  Calculated->TaskStartTime;
+  else
+    Calculated->TaskElapsedTime =0;
   Calculated->TaskAltitudeArrival += Calculated->TaskAltitudeDifference;
 
   Calculated->GRFinish= CalculateGlideRatio(Calculated->TaskDistanceToGo, Calculated->NavAltitude - final_height);

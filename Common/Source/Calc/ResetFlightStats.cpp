@@ -93,6 +93,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->ValidFinish = false;
     Calculated->ValidStart = false;
     Calculated->TaskStartTime = 0;
+    Calculated->TaskElapsedTime =0;
     Calculated->TaskStartSpeed = 0;
     Calculated->TaskStartAltitude = 0;
     Calculated->LegStartTime = 0;

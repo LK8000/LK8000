@@ -2383,3 +2383,5 @@ _@M2424_ "Max Autozoom level"
 
 _@M2425_ "Draw FAI Assistant"
 _@M2426_ "Draw XC Triangle"
+_@M2427_ "Task Elapsed Time" 
+_@M2428_ "TskTime"
