@@ -734,7 +734,7 @@
 #define LK_XC_CLOSURE_PERC       146     // Additional Contest combined closure %
 #define LK_XC_PREDICTED_DIST     147     // Additional Contest combined closure distance
 #define LK_XC_MEAN_SPEED     148     // Additional Contest mean speed
-
+#define LK_TIMETASK          149     // elapsed time since task start
 
 // The following values are not available for custom configuration
 

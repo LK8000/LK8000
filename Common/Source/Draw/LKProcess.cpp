@@ -786,6 +786,26 @@ goto_bearing:
 			break;
 
 
+		case LK_TIMETASK:
+			_stprintf(BufferValue,_T(NULLTIME));
+			if (lktitle)
+				//  _@M2427_  "Task elapsed time" LKTOKEN _@M2428_ "TskTime"
+				_tcscpy(BufferTitle, MsgToken(2428));
+			else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+
+			if (DerivedDrawInfo.TaskElapsedTime > 0) {
+				valid=true;
+				if (Units::TimeToTextDown(BufferValue, DerivedDrawInfo.TaskElapsedTime)) // 091112
+					_stprintf(BufferUnit, TEXT("h"));
+				else
+					_stprintf(BufferUnit, TEXT("m"));
+			} else {
+				_stprintf(BufferValue, TEXT(NULLTIME));
+			}
+
+			break;
+
 		// B37
 		case LK_GLOAD:
 			if ( DrawInfo.AccelerationAvailable) { 

@@ -91,6 +91,7 @@ typedef struct _DERIVED_INFO
   double TaskDistanceCovered;
   double TaskTimeToGo;
   double TaskStartTime;
+  double TaskElapsedTime;
   double TaskSpeed;
   double TaskSpeedInstantaneous;
   double TaskAltitudeRequired;
