@@ -13,36 +13,69 @@
 
 extern int globalFileNum;
 
-void CleanCupCode(TCHAR* TpCode) {
-    TCHAR Tname[NAME_SIZE + 1];
-    // remove trailing spaces
-    for (size_t i = _tcslen(TpCode) - 1; i > 1; i--) {
-        if (TpCode[i] == ' ') {
-            TpCode[i] = 0;
-        } else {
-            break;
-        }
-    }
+enum class CSVState {
+    UnquotedField,
+    QuotedField,
+    QuotedQuote,
+};
 
-    // now remove " " (if there)
-    _tcscpy(Tname, TpCode);
-    size_t j = 0;
-    for (size_t i = 0; i < _tcslen(Tname); i++) {
-        if (Tname[i] != '\"') {
-            TpCode[j++] = Tname[i];
+std::vector<std::basic_string<TCHAR> > CupStringToFieldArray(const TCHAR *row) {
+
+    CSVState state = CSVState::UnquotedField;
+    std::vector<std::basic_string<TCHAR> > fields = {_T("")};
+
+    size_t i = 0; // index of the current field
+    if(row != NULL)
+
+      for( size_t n =0 ; n < _tcslen(row); n++)
+      {
+	TCHAR c = row [n];
+        switch (state) {
+            case CSVState::UnquotedField:
+                switch (c) {
+                    case ',': // end of field
+                              fields.push_back(_T("")); i++;
+                              break;
+                    case '"': state = CSVState::QuotedField;
+                              break;
+
+                    default:  fields[i].push_back(c);
+                              break; }
+                break;
+            case CSVState::QuotedField:
+                switch (c) {
+                    case '"': state = CSVState::QuotedQuote;
+                              break;
+                    default:  fields[i].push_back(c);
+                              break; }
+                break;
+            case CSVState::QuotedQuote:
+                switch (c) {
+                    case ',': // , after closing quote
+                              fields.push_back(_T("")); i++;
+                              state = CSVState::UnquotedField;
+                              break;
+                    case '"': // "" -> "
+                              fields[i].push_back('"');
+                              state = CSVState::QuotedField;
+                              break;
+                    default:  // end of quote
+                              fields[i].push_back(c);
+                              state = CSVState::QuotedField;
+                              break; }
+                break;
         }
     }
-    TpCode[j] = _T('\0');
+    return fields;
 }
 
 //#define CUPDEBUG
 bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 {
-  TCHAR ctemp[(COMMENT_SIZE*2)+1]; // must be bigger than COMMENT_SIZE!
-  TCHAR *pToken;
   TCHAR TempString[READLINE_LENGTH+1];
   TCHAR OrigString[READLINE_LENGTH+1];
-  TCHAR Tname[NAME_SIZE+1];
+  #define   MAXBUF 128
+  TCHAR Buffer[MAXBUF];
   int flags=0;
 
   unsigned int i, j;
@@ -92,75 +125,34 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   StartupStore(_T("NEW:<%s>%s"),TempString,NEWLINE);
   #endif
   // ---------------- NAME ----------------
-  pToken = _tcstok(TempString, TEXT(","));
-  if (pToken == NULL) return false;
+  std::vector<std::basic_string<TCHAR>> Entries =   CupStringToFieldArray(TempString);
 
-  if (_tcslen(pToken)>NAME_SIZE) {
-	pToken[NAME_SIZE-1]= _T('\0');
-  }
 
-  _tcscpy(Temp->Name, pToken);
-  CleanCupCode(Temp->Name);
+  _sntprintf(Temp->Name,NAME_SIZE, _T("%s"), Entries[0].c_str() );
 
-  #ifdef CUPDEBUG
+
+#ifdef CUPDEBUG
   StartupStore(_T("   CUP NAME=<%s>%s"),Temp->Name,NEWLINE);
-  #endif
+#endif
 
 
   // ---------------- CODE ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-
-  if (_tcslen(pToken)>CUPSIZE_CODE) {
-      pToken[CUPSIZE_CODE-1]= _T('\0');
-  }
-  _tcscpy(Temp->Code, pToken);
-  for (i=_tcslen(Temp->Code)-1; i>1; i--) { 
-      if (Temp->Code[i]==' ') {
-          Temp->Code[i]=0;  
-      } else {
-          break;
-      }
-  }
-  _tcscpy(Tname,Temp->Code);
-  for (j=0, i=0; i<_tcslen(Tname); i++) {
-	//if (Tname[i]!='\"') Temp->Code[j++]=Tname[i];
-	if ( (Tname[i]!='\"') && (Tname[i]!=DUMCHAR) ){
-       Temp->Code[j++]=Tname[i];
-    } 
-  }
-  Temp->Code[j]= _T('\0');
-
-  if (_tcslen(Temp->Code)>5) { // 100310
-	if (  _tcscmp(Temp->Code,_T("LKHOME")) == 0 ) {
-		StartupStore(_T(". Found LKHOME inside CUP waypoint <%s>%s"),Temp->Name,NEWLINE);
-		ishome=true;
-	}
-  }
+  _sntprintf(Temp->Code,CUPSIZE_CODE, _T("%s"), Entries[1].c_str() );
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP CODE=<%s>%s"),Temp->Code,NEWLINE);
   #endif
 
 
   // ---------------- COUNTRY ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-  LK_tcsncpy(Temp->Country,pToken,CUPSIZE_COUNTRY);
-  if (_tcslen(Temp->Country)>3) {
-	Temp->Country[3]= _T('\0');
-  }
-  if ((_tcslen(Temp->Country) == 1) && Temp->Country[0]==DUMCHAR) Temp->Country[0]=_T('\0');
-
+  _sntprintf(Temp->Country,CUPSIZE_COUNTRY, _T("%s"), Entries[2].c_str() );
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP COUNTRY=<%s>%s"),Temp->Country,NEWLINE);
   #endif
 
 
   // ---------------- LATITUDE  ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-
-  Temp->Latitude = CUPToLat(pToken);
+  _tcsncpy(Buffer,Entries[3].c_str(),MAXBUF );
+  Temp->Latitude = CUPToLat( Buffer );
 
   if((Temp->Latitude > 90) || (Temp->Latitude < -90)) {
 	return false;
@@ -171,9 +163,8 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 
 
   // ---------------- LONGITUDE  ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-  Temp->Longitude  = CUPToLon(pToken);
+  _tcsncpy(Buffer,Entries[4].c_str(),MAXBUF );
+  Temp->Longitude  = CUPToLon( Buffer);
   if((Temp->Longitude  > 180) || (Temp->Longitude  < -180)) {
 	return false;
   }
@@ -182,11 +173,9 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   #endif
 
 
-
   // ---------------- ELEVATION  ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-  Temp->Altitude = ReadAltitude(pToken);
+  _tcsncpy(Buffer,Entries[5].c_str(),MAXBUF );
+  Temp->Altitude = ReadAltitude(Buffer);
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP ELEVATION=<%f>%s"),Temp->Altitude,NEWLINE);
   #endif
@@ -196,10 +185,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 
 
   // ---------------- STYLE  ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-
-  Temp->Style = (int)_tcstol(pToken,NULL,10);
+  Temp->Style = (int)_tcstol(Entries[6].c_str(),NULL,10);
   switch(Temp->Style) {
 	case STYLE_AIRFIELDGRASS:	// airfield grass
 	case STYLE_GLIDERSITE:		// glider site
@@ -222,24 +208,24 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   #endif
 
   // ---------------- RWY DIRECTION   ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-  if ((_tcslen(pToken) == 1) && (pToken[0]==DUMCHAR))
+  if ((Entries[7].length()) == 1)
 	Temp->RunwayDir=-1;
   else
-	Temp->RunwayDir = (int)AngleLimit360(_tcstol(pToken, NULL, 10));
+	Temp->RunwayDir = (int)AngleLimit360(_tcstol(Entries[7].c_str(), NULL, 10));
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP RUNWAY DIRECTION=<%d>%s"),Temp->RunwayDir,NEWLINE);
   #endif
 
 
   // ---------------- RWY LENGTH   ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-  if ((_tcslen(pToken) == 1) && (pToken[0]==DUMCHAR))
+
+  if (Entries[8].length() == 1)
 	Temp->RunwayLen = -1;
   else
-	Temp->RunwayLen = (int)ReadLength(pToken);
+  {
+    _tcsncpy(Buffer,Entries[8].c_str(),MAXBUF );
+    Temp->RunwayLen = (int)ReadLength(Buffer);
+  }
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP RUNWAY LEN=<%d>%s"),Temp->RunwayLen,NEWLINE);
   #endif
@@ -247,15 +233,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 
 
   // ---------------- AIRPORT FREQ   ------------------
-  pToken = _tcstok(NULL, TEXT(","));
-  if (pToken == NULL) return false;
-  if (_tcslen(pToken)>CUPSIZE_FREQ) pToken[CUPSIZE_FREQ-1]= _T('\0');
-  _tcscpy(Temp->Freq, pToken);
-  TrimRight(Temp->Freq);
-  _tcscpy(Tname,Temp->Freq);
-  for (j=0, i=0; i<_tcslen(Tname); i++)
-	if ( (Tname[i]!='\"') && (Tname[i]!=DUMCHAR) ) Temp->Freq[j++]=Tname[i];
-  Temp->Freq[j]= _T('\0');
+  _sntprintf(Temp->Freq,CUPSIZE_FREQ, _T("%s"), Entries[9].c_str() );
 
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP FREQ=<%s>%s"),Temp->Freq,NEWLINE);
@@ -263,37 +241,20 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 
 
   // ---------------- COMMENT   ------------------
-  pToken = _tcstok(NULL, TEXT("\n\r"));
-  if (pToken != NULL) {
+  if (Entries[10].length() >0 ) {
+    if (Temp->Comment) {
+      free(Temp->Comment);
+    }
+    Temp->Comment = _tcsdup( Entries[10].c_str());
 
-	if (_tcslen(pToken)>=COMMENT_SIZE) pToken[COMMENT_SIZE-1]= _T('\0');
 
-	// remove trailing spaces and CR LF
-	_tcscpy(ctemp, pToken);
-	for (i=_tcslen(ctemp)-1; i>1; i--) {
-		if ( (ctemp[i]==' ') || (ctemp[i]=='\r') || (ctemp[i]=='\n') ) ctemp[i]=0;
-		else
-			break;
-	}
-
-	// now remove " " (if there)
-	for (j=0, i=0; i<_tcslen(ctemp); i++)
-		if (ctemp[i]!='\"') ctemp[j++]=ctemp[i];
-	ctemp[j]= _T('\0');
-	if (_tcslen(ctemp) >0 ) {
-		if (Temp->Comment) {
-			free(Temp->Comment);
-		}
-		Temp->Comment = (TCHAR*)malloc((_tcslen(ctemp)+1)*sizeof(TCHAR));
-		if (Temp->Comment) _tcscpy(Temp->Comment, ctemp);
-	}
-
-	#ifdef CUPDEBUG
-	StartupStore(_T("   CUP COMMENT=<%s>%s"),Temp->Comment,NEWLINE);
-	#endif
+    #ifdef CUPDEBUG
+    StartupStore(_T("   CUP COMMENT=<%s>%s"),Temp->Comment,NEWLINE);
+    #endif
   } else {
 	Temp->Comment=NULL; // useless
-  }
+  }  
+
 
   if(Temp->Altitude <= 0) {
 	WaypointAltitudeFromTerrain(Temp);

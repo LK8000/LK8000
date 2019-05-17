@@ -260,7 +260,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
   bool bTakeOff = true;
   bool bLoadComplet = true;
   bool bLastInvalid=true;
-
+  std::vector<std::basic_string<TCHAR>> Entries;
   TCHAR szString[READLINE_LENGTH + 1];
   TCHAR TpCode[NAME_SIZE + 1];
 
@@ -369,22 +369,23 @@ bool LoadCupTask(LPCTSTR szFileName) {
             // 1. Description
             //       First column is the description of the task. If filled it should be double quoted.
             //       If left empty, then SeeYou will determine the task type on runtime.
-            if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) == NULL) {
-                //  UnlockTaskData();  // no need to skip if only name missing!!!
-                //  return false;
-            }
-
             // 2. and all successive columns, separated by commas
             //       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
             //       same as the Long name of a waypoint listed above the Related tasks.
             WPtoAdd=NULL;
+            Entries =   CupStringToFieldArray(szString);
+            if(Entries[0].size() == 0)
+              StartupStore(_T(". no Task name %s"), NEWLINE);
+            else
+              StartupStore(_T(". Task name %s %s"), Entries[0].c_str()  ,NEWLINE);
 
             if (i++ == TaskIndex)  // load selected task
               {
-                while (bLoadComplet && (pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
+                uint Idx =1;
+
+                while (bLoadComplet && (Idx < (Entries.size()))) {
                     if (idxTP < MAXTASKPOINTS) {
-                        _tcsncpy(TpCode, pToken, NAME_SIZE);
-                        CleanCupCode(TpCode);
+                    _sntprintf(TpCode,NAME_SIZE, _T("%s"), Entries[Idx++].c_str() );
                         mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
                         if(!ISGAAIRCRAFT) {
                             if (It != mapWaypoint.end()) {
@@ -405,11 +406,12 @@ bool LoadCupTask(LPCTSTR szFileName) {
                                     else LKASSERT(0); // .. else is unmanaged, TODO
 #endif
                                 } else {
-                                    int ix =  FindOrAddWaypoint(&(It->second),false);
-                                    if (ix>=0) Task[idxTP++].Index = ix;
-#if BUGSTOP
-                                    else LKASSERT(0); // .. else is unmanaged, TODO
-#endif
+                                  if(Idx < Entries.size())
+                                    if( _tcscmp(Entries[Idx].c_str(), TpCode) !=0) // doublets?
+                                    {
+                                      int ix =  FindOrAddWaypoint(&(It->second),false);
+                                      if (ix>=0) Task[idxTP++].Index = ix;
+                                    }
                                 }
                                 bLastInvalid=false;
                             } else {
