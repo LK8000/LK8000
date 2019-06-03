@@ -404,7 +404,7 @@ bool ParseNavAids(XMLNode &navAidsNode)
         XMLNode node=NavAidNode.getChildNode(TEXT("RADIO"));
         if(node.isEmpty()) continue;
         if(!GetContent(node, TEXT("FREQUENCY"), dataStr)) continue;
-        comments<<"Frequency: "<<dataStr<<" MHz";
+        comments << "Frequency: " << dataStr << (new_waypoint.Style != STYLE_NDB ? " MHz" : " kHz");
         LK_tcsncpy(new_waypoint.Freq, dataStr, CUPSIZE_FREQ);
         if (_tcslen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
         if(GetContent(node, TEXT("CHANNEL"), dataStr)) comments<<" Channel: "<<dataStr;
@@ -418,7 +418,7 @@ bool ParseNavAids(XMLNode &navAidsNode)
         if(GetValue(node,TEXT("DECLINATION"),value)) comments<<"Declination: "<<value<<MsgToken(2179);
         if(GetContent(node,TEXT("ALIGNEDTOTRUENORTH"),dataStr)) {
             if(_tcsicmp(dataStr,_T("TRUE"))==0) comments<<" True north";
-            else if(_tcsicmp(dataStr,_T("TRUE"))==0) comments<<" Magnetic north";
+            else if(_tcsicmp(dataStr,_T("FALSE"))==0) comments<<" Magnetic north";
         }
 
         // Add the comments
