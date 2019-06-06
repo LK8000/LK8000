@@ -13,10 +13,6 @@
 #include "utils/openzip.h"
 #include "utils/zzip_stream.h"
 
-
-bool ReadWinPilotPolarInternal(int i);
-
-
 // This is calculating the weight difference for the chosen wingloading
 // Remember that polar files have a weight indicated that includes the pilot..
 // Check that WingArea is NOT zero! Winpilot polars had no WingArea configurable!
@@ -307,11 +303,6 @@ bool ReadWinPilotPolar(void) {
 }
 
 
-
-typedef double PolarCoefficients_t[3];
-typedef double WeightCoefficients_t[3];
-
-
 void CalculateNewPolarCoef(void)
 {
 
@@ -336,61 +327,5 @@ void CalculateNewPolarCoef(void)
   MessageBoxX(MsgToken(920), // Error loading Polar file!
               MsgToken(791), // Warning
               mbOk);
-
-}
-
-
-
-typedef struct WinPilotPolarInternal {
-  TCHAR name[50];
-  double ww0;
-  double ww1;
-  double v0;
-  double w0;
-  double v1;
-  double w1;
-  double v2;
-  double w2;
-  double wing_area;
-} WinPilotPolarInternal;
-
-
-// REMEMBER: add new polars at the bottom, or old configuration will get a different polar value
-// Also remember, currently 300 items limit in WindowControls.h DFE_  enums.
-// THIS IS NOW UNUSED
-WinPilotPolarInternal WinPilotPolars[] =
-{
-  {TEXT("ERROR"), 670,100,100,-1.29,120,-1.61,150,-2.45,15.3},
-  }; //   0-x
-
-TCHAR* GetWinPilotPolarInternalName(int i) {
-  if ( (unsigned) i >= (sizeof(WinPilotPolars)/sizeof(WinPilotPolarInternal)) ) {
-    return NULL; // error
-  }
-  return WinPilotPolars[i].name;
-}
-
-bool ReadWinPilotPolarInternal(int i) {
-  double dPOLARV[3];
-  double dPOLARW[3];
-  double ww[2];
-
-  if (!(i < (int)(sizeof(WinPilotPolars) / sizeof(WinPilotPolars[0])))) {
-	return(FALSE);
-  }
-
-  // 0 is glider+pilot,  1 is ballast
-  ww[0] = WinPilotPolars[i].ww0;
-  ww[1] = WinPilotPolars[i].ww1;
-  dPOLARV[0] = WinPilotPolars[i].v0;
-  dPOLARV[1] = WinPilotPolars[i].v1;
-  dPOLARV[2] = WinPilotPolars[i].v2;
-  dPOLARW[0] = WinPilotPolars[i].w0;
-  dPOLARW[1] = WinPilotPolars[i].w1;
-  dPOLARW[2] = WinPilotPolars[i].w2;
-  PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
-  GlidePolar::WingArea = WinPilotPolars[i].wing_area;
-
-  return(TRUE);
 
 }
