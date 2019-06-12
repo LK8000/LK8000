@@ -14,17 +14,20 @@
 #include "Multimap.h"
 #include "../Draw/ScreenProjection.h"
 #include "NavFunctions.h"
-
-//#define DRAW_TIMER
-
 #include "ColorRamps.h"
 #include "Kobo/Model.hpp"
 #include "Util/Clamp.hpp"
 #include "Asset.hpp"
+#include <utility>
+#include "../utils/make_unique.h"
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
 #include <arm_neon.h>
 #endif
+
+//#define DRAW_TIMER
+//#define DRAW_TIMER_TOTAL
+
 
 //
 // Choose the scale threshold for disabling shading. This happens at low zoom levels.
@@ -329,6 +332,8 @@ private:
 #endif
 
     int16_t *height_buffer;
+    std::unique_ptr<uint8_t[]> prev_iso_band;
+    std::unique_ptr<uint8_t[]> current_iso_band;
 
     BGRColor color_table[128][256];
 
@@ -876,6 +881,66 @@ public:
         }
     }
 
+    void DrawIsoLine() {
+
+#ifdef DRAW_TIMER
+        uint64_t contour_start = MonotonicClockUS();
+#endif
+
+        struct {
+            uint8_t operator()(int16_t height) {
+                return static_cast<uint16_t>(std::max<int16_t>(0, height)) >> 6; // 64m, can't be smaller to avoid uint8_t overflow.
+                // return static_cast<uint16_t>(std::max<int16_t>(0, height)) >> 7; // 128m
+                // return static_cast<uint16_t>(std::max<int16_t>(0, height)) >> 8; // 256m
+            }
+        } IsoBand;
+
+        if(!prev_iso_band) {
+            // array used to store iso band value of previous row
+            prev_iso_band = std::make_unique<uint8_t[]>(ixs);
+        }
+        if(!current_iso_band) {
+            // array used to store iso band value of current row
+            //   this become previous row in next loop.
+            current_iso_band = std::make_unique<uint8_t[]>(ixs);
+        }
+
+        // initialize previous row with first height row
+        std::transform(height_buffer, height_buffer+ixs, prev_iso_band.get(), IsoBand);
+
+        for (unsigned int y = 1; y < iys; ++y) {
+            BGRColor* screen_row = screen_buffer->GetRow(y);
+
+            const int16_t *height_row = &height_buffer[y*ixs];
+
+            // iso band value of first column
+            prev_iso_band[0] = IsoBand(height_row[0]);
+
+            for (unsigned int x = 1; x < ixs; ++x) {
+                // iso band value of current pixel
+                const uint8_t& h = current_iso_band[x] = IsoBand(height_row[x]);
+
+                const uint8_t& h1 = prev_iso_band[x-1]; // top left value
+                const uint8_t& h2 = prev_iso_band[x]; // top value
+                const uint8_t& h3 = current_iso_band[x-1]; // left value
+
+                if (h != h1 || h != h2 || h != h3) {
+                    // if one of this 4 point is in other iso band ( upper or lower than iso line )
+                    // this point is a iso line.
+                    screen_row[x] = GetIsoLineColor();
+                }
+            }
+            // swap prev & current iso band value
+            // current become prev and old prev will be used for store value of next row.
+            std::swap(prev_iso_band, current_iso_band);
+        }
+
+#ifdef DRAW_TIMER
+        uint64_t contour_time=MonotonicClockUS()-contour_start;
+        StartupStore(_T("Draw Terrain : contour            < %u.%u ms >\n"),(int)contour_time/1000, (int)contour_time%1000);
+#endif
+    }
+
 
 private:
 
@@ -895,7 +960,12 @@ private:
                  : BGRColor(194, 223, 197); // LCD green terrain invalid
     }
 
-  public:
+
+    static constexpr BGRColor GetIsoLineColor() {
+        return BGRColor(100, 70, 26); // brown : #64461a
+    }
+
+public:
     void ColorTable() {
         color_ramp = &terrain_colors[TerrainRamp];
         if (color_ramp == lastColorRamp &&
@@ -906,6 +976,11 @@ private:
             // no need to update the color table
             return;
         }
+
+#ifdef DRAW_TIMER
+        uint64_t start_time = MonotonicClockUS();
+#endif
+
         lastColorRamp = color_ramp;
         last_height_scale = height_scale;
         last_terrain_whiteness = TerrainWhiteness;
@@ -952,7 +1027,8 @@ private:
         }
 
 #ifdef DRAW_TIMER
-        StartupStore("Draw Terrain : updated ColorTable");
+        uint64_t end_time=MonotonicClockUS()-start_time;
+        StartupStore(_T("Draw Terrain : updated ColorTable < %u.%u ms >\n"),(int)end_time/1000, (int)end_time%1000);
 #endif
     }
 
@@ -1069,6 +1145,9 @@ _redo:
         goto _redo;
     }
 
+#ifdef DRAW_TIMER_TOTAL
+    uint64_t draw_time_start=MonotonicClockUS();
+#endif
     if(trenderer->IsDirty() || (!UpToDate(TerrainContrast, TerrainBrightness, TerrainRamp, Shading, _Proj))) {
         trenderer->SetDirty();
     }
@@ -1127,9 +1206,15 @@ _redo:
         }
 
         trenderer->FixOldMapWater();
+        trenderer->DrawIsoLine();
     }
     // step 5: draw
     trenderer->Draw(Surface, rc);
+
+#ifdef DRAW_TIMER_TOTAL
+    uint64_t draw_time_end=MonotonicClockUS()-draw_time_start;
+    StartupStore(_T("Draw Terrain : Total              < %u.%u ms >\n"),(int)draw_time_end/1000, (int)draw_time_end%1000);
+#endif
 
     return true;
 }
