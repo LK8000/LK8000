@@ -43,13 +43,14 @@ double CUPToLat(TCHAR *temp);
 double CUPToLon(TCHAR *temp);
 int ReadWayPointFile(zzip_stream& stream, int fileformat);
 int ParseDAT(TCHAR *String,WAYPOINT *Temp);
-void CleanCupCode(TCHAR* TpCode);
-bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp);
+
+bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp);
 bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool WaypointInTerrainRange(WAYPOINT *List);
 bool ParseOpenAIP(zzip_file_ptr& file);
 
+std::vector<tstring> CupStringToFieldArray(const TCHAR *row) ;
 
 
 
