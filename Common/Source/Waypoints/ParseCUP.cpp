@@ -70,70 +70,26 @@ std::vector<tstring> CupStringToFieldArray(const TCHAR *row) {
 }
 
 //#define CUPDEBUG
-bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
+bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 {
-  TCHAR TempString[READLINE_LENGTH+1];
-  TCHAR OrigString[READLINE_LENGTH+1];
   #define   MAXBUF 128
   TCHAR Buffer[MAXBUF];
   int flags=0;
-
-  unsigned int i, j;
   bool ishome=false; // 100310
-
-  // strtok does not return empty fields. we create them here with special char
-  #define DUMCHAR	'|'
 
   Temp->Visible = true; // default all waypoints visible at start
   Temp->FarVisible = true;
   Temp->Format = LKW_CUP;
   Temp->Number = WayPointList.size();
-
   Temp->FileNum = globalFileNum;
 
-  #if BUGSTOP
-  // This should never happen
-  LKASSERT(_tcslen(String) < sizeof(OrigString));
-  #endif
-  LK_tcsncpy(OrigString, String,READLINE_LENGTH);
-  // if string is too short do nothing
-  if (_tcslen(OrigString)<11) return false;
+  std::vector<tstring> Entries =   CupStringToFieldArray(String);
 
-  #ifdef CUPDEBUG
-  StartupStore(_T("OLD:<%s>%s"),OrigString,NEWLINE);
-  #endif
-
-  for (i=0,j=0; i<_tcslen(OrigString); i++) {
-
-	// skip last comma, and avoid overruning the end
-	if (  (i+1)>= _tcslen(OrigString)) break;
-	if ( (OrigString[i] == _T(',')) && (OrigString[i+1] == _T(',')) ) {
-		TempString[j++] = _T(',');
-		TempString[j++] = _T(DUMCHAR);
-		continue;
-	}
-	/* we need terminations for comments
-	if ( OrigString[i] == _T('\r') ) continue;
-	if ( OrigString[i] == _T('\n') ) continue;
-	*/
-
-	TempString[j++] = OrigString[i];
-  }
-  TempString[j] = _T('\0');
-
-  #ifdef CUPDEBUG
-  StartupStore(_T("NEW:<%s>%s"),TempString,NEWLINE);
-  #endif
-
-  std::vector<tstring> Entries =   CupStringToFieldArray(TempString);
-  
   // ---------------- NAME ----------------
   _sntprintf(Temp->Name,NAME_SIZE, _T("%s"), Entries[0].c_str() );
-
-
-#ifdef CUPDEBUG
+  #ifdef CUPDEBUG
   StartupStore(_T("   CUP NAME=<%s>%s"),Temp->Name,NEWLINE);
-#endif
+  #endif
 
 
   // ---------------- CODE ------------------

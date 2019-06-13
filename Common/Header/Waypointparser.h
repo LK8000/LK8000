@@ -44,7 +44,7 @@ double CUPToLon(TCHAR *temp);
 int ReadWayPointFile(zzip_stream& stream, int fileformat);
 int ParseDAT(TCHAR *String,WAYPOINT *Temp);
 
-bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp);
+bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp);
 bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool WaypointInTerrainRange(WAYPOINT *List);
