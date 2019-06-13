@@ -134,8 +134,7 @@ void SettingsLeave() {
 	#if TESTBENCH
 	StartupStore(_T(".... POLARFILECHANGED from configuration\n"));
 	#endif
-	CalculateNewPolarCoef();
-	GlidePolar::SetBallast();
+	ReadWinPilotPolar();
   }
 
   if (AIRFIELDFILECHANGED

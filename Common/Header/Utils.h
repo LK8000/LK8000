@@ -29,7 +29,7 @@ void StoreType(int Index,int InfoType);
 
 
 void SectorEndPoint(double StartLat, double StartLon, double  Radial, double Dist, double *EndLat, double *EndLon);
-void CalculateNewPolarCoef(void);
+bool ReadWinPilotPolar(void);
 void ConvertFlightLevels(void);
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc);
 void ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index);

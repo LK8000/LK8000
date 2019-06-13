@@ -126,6 +126,8 @@ bool ReadWinPilotPolar(void) {
   dPOLARV[2]= 205.1;
   dPOLARW[2]= -4.2;
 
+  GlidePolar::WeightOffset=0;
+
     if (_tcscmp(szPolarFile,_T(""))==0) {
         StartupStore(_T("... Empty polar file, using Default" NEWLINE));
         _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
@@ -295,37 +297,14 @@ bool ReadWinPilotPolar(void) {
 		GlidePolar::WingArea = 10.04;
 		gcc_unused bool bok = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
 		assert(bok);
+		_tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
 
-        _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
+		MessageBoxX(MsgToken(920), // Error loading Polar file!
+								MsgToken(791), // Warning
+								mbOk);
 	} // !foundline
-  return(foundline);
 
-}
+	GlidePolar::SetBallast();
 
-
-void CalculateNewPolarCoef(void)
-{
-
-  // StartupStore(TEXT(". Calculate New Polar Coef%s"),NEWLINE);
-
-  GlidePolar::WeightOffset=0; // 100131
-
-  // Load polar file
-  if (ReadWinPilotPolar()) return;
-
-  // Polar File error, we load a Ka6 just to be safe
-
-  POLAR[0]=-0.0538770500225782443497;
-  POLAR[1]=0.1323114348;
-  POLAR[2]=-0.1273364037098239098543;
-  WEIGHTS[0]=70;
-  WEIGHTS[1]=190;
-  WEIGHTS[2]=1;
-  GlidePolar::WingArea = 12.4;
-
-  // Probably called from wrong thread - check
-  MessageBoxX(MsgToken(920), // Error loading Polar file!
-              MsgToken(791), // Warning
-              mbOk);
-
+	return(foundline);
 }

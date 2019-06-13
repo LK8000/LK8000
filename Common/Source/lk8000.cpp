@@ -391,8 +391,7 @@ bool Startup(const TCHAR* szCmdLine) {
   GPS_INFO.Minute = pda_time->tm_min;
   GPS_INFO.Second = pda_time->tm_sec;
 
-  CalculateNewPolarCoef();
-  GlidePolar::SetBallast();
+  ReadWinPilotPolar();
 
 #ifdef PNA // VENTA-ADDON
     TCHAR sTmp[250];
