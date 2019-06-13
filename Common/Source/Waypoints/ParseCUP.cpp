@@ -21,50 +21,53 @@ enum class CSVState {
 
 std::vector<tstring> CupStringToFieldArray(const TCHAR *row) {
 
-    CSVState state = CSVState::UnquotedField;
     std::vector<tstring> fields = {_T("")};
 
-    size_t i = 0; // index of the current field
-    if(row != NULL)
+    if(row) {
+
+      CSVState state = CSVState::UnquotedField;
 
       for( size_t n =0 ; n < _tcslen(row); n++)
       {
-	TCHAR c = row [n];
+        const TCHAR c = row [n];
         switch (state) {
             case CSVState::UnquotedField:
                 switch (c) {
                     case ',': // end of field
-                              fields.push_back(_T("")); i++;
+                              fields.push_back(_T(""));
                               break;
                     case '"': state = CSVState::QuotedField;
                               break;
-
-                    default:  fields[i].push_back(c);
-                              break; }
+                    default:  fields.back().push_back(c);
+                              break; 
+                }
                 break;
             case CSVState::QuotedField:
                 switch (c) {
                     case '"': state = CSVState::QuotedQuote;
                               break;
-                    default:  fields[i].push_back(c);
-                              break; }
+                    default:  fields.back().push_back(c);
+                              break; 
+                }
                 break;
             case CSVState::QuotedQuote:
                 switch (c) {
                     case ',': // , after closing quote
-                              fields.push_back(_T("")); i++;
+                              fields.push_back(_T(""));
                               state = CSVState::UnquotedField;
                               break;
                     case '"': // "" -> "
-                              fields[i].push_back('"');
+                              fields.back().push_back('"');
                               state = CSVState::QuotedField;
                               break;
                     default:  // end of quote
-                              fields[i].push_back(c);
+                              fields.back().push_back(c);
                               state = CSVState::QuotedField;
-                              break; }
+                              break; 
+                }
                 break;
         }
+      }
     }
     return fields;
 }
@@ -84,6 +87,10 @@ bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
   Temp->FileNum = globalFileNum;
 
   std::vector<tstring> Entries =   CupStringToFieldArray(String);
+
+  if(Entries.size() < 11) {
+    return false;
+  }
 
   // ---------------- NAME ----------------
   _sntprintf(Temp->Name,NAME_SIZE, _T("%s"), Entries[0].c_str() );
