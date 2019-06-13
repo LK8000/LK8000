@@ -49,7 +49,8 @@ bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool WaypointInTerrainRange(WAYPOINT *List);
 bool ParseOpenAIP(zzip_file_ptr& file);
-std::vector<std::basic_string<TCHAR> > CupStringToFieldArray(const TCHAR *row) ;
+
+std::vector<tstring> CupStringToFieldArray(const TCHAR *row) ;
 
 
 

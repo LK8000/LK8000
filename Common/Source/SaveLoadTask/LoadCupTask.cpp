@@ -260,7 +260,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
   bool bTakeOff = true;
   bool bLoadComplet = true;
   bool bLastInvalid=true;
-  std::vector<std::basic_string<TCHAR>> Entries;
+  std::vector<tstring> Entries;
   TCHAR szString[READLINE_LENGTH + 1];
   TCHAR TpCode[NAME_SIZE + 1];
 

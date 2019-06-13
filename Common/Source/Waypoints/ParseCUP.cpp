@@ -19,10 +19,10 @@ enum class CSVState {
     QuotedQuote,
 };
 
-std::vector<std::basic_string<TCHAR> > CupStringToFieldArray(const TCHAR *row) {
+std::vector<tstring> CupStringToFieldArray(const TCHAR *row) {
 
     CSVState state = CSVState::UnquotedField;
-    std::vector<std::basic_string<TCHAR> > fields = {_T("")};
+    std::vector<tstring> fields = {_T("")};
 
     size_t i = 0; // index of the current field
     if(row != NULL)
@@ -124,10 +124,10 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   #ifdef CUPDEBUG
   StartupStore(_T("NEW:<%s>%s"),TempString,NEWLINE);
   #endif
+
+  std::vector<tstring> Entries =   CupStringToFieldArray(TempString);
+  
   // ---------------- NAME ----------------
-  std::vector<std::basic_string<TCHAR>> Entries =   CupStringToFieldArray(TempString);
-
-
   _sntprintf(Temp->Name,NAME_SIZE, _T("%s"), Entries[0].c_str() );
 
 
