@@ -250,6 +250,49 @@ public:
     }
 };
 
+
+
+
+bool ExtractOption(const TCHAR *Source,
+				  TCHAR *Destination,
+				  int DesiredFieldNumber)
+{
+  int dest_index = 0;
+  int CurrentFieldNumber = 0;
+  int StringLength = _tcslen(Source);
+  const TCHAR *sptr = Source;
+  const TCHAR *eptr = Source+StringLength;
+
+  if (!Destination) return false;
+
+  while( (CurrentFieldNumber < DesiredFieldNumber) && (sptr<eptr) )
+    {
+      if (*sptr == ','  )
+        {
+          CurrentFieldNumber++;
+        }
+      ++sptr;
+    }
+
+  Destination[0] = '\0'; // set to blank in case it's not found..
+  BOOL found = false;
+  if ( CurrentFieldNumber == DesiredFieldNumber )
+    {
+      found = true;
+      while( (sptr < eptr)    &&
+             (*sptr != ',') &&
+             (*sptr != '*') &&
+             (*sptr != '\0') )
+        {
+          Destination[dest_index] = *sptr;
+          ++sptr; ++dest_index;
+        }
+      Destination[dest_index] = '\0';
+    }
+  return found;
+}
+
+
 bool LoadCupTask(LPCTSTR szFileName) {
   //  LockTaskData();
 
@@ -262,6 +305,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
   bool bLastInvalid=true;
   std::vector<tstring> Entries;
   TCHAR szString[READLINE_LENGTH + 1];
+  TCHAR szTmp[READLINE_LENGTH + 1];
   TCHAR TpCode[NAME_SIZE + 1];
 
   szString[READLINE_LENGTH] = _T('\0');
@@ -315,8 +359,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
                 }
             }
       }
-      stream.close();
-      StartupStore(_T("..Cup Selected Task:%i %s  %s"), TaskIndex, szTaskStrings[ TaskIndex] , NEWLINE);
+      stream.close(); 
     }
 
   int res = 0;
@@ -339,12 +382,13 @@ bool LoadCupTask(LPCTSTR szFileName) {
   ClearTask();
   stream.open(szFileName, "rt");
 #endif
-
+  bool TaskValid = false;
   FileSection = none;
   int i=0;
   if (stream) {
       while (stream.read_line(szString)) {
 
+	  _tcsncpy(szTmp,szString,READLINE_LENGTH);
           if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
               (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
               FileSection = Waypoint;
@@ -354,10 +398,16 @@ bool LoadCupTask(LPCTSTR szFileName) {
 
               continue;
           }
+          if( FileSection == TaskTp)
+            if(_tcsstr(szString, _T("\",\""))== NULL)   // really a task? (not an option)
+              FileSection = Option;
+          if( FileSection == Option)
+            if(_tcsstr(szString, _T("\",\""))!= NULL)   // really a task! (not an option)
+              FileSection = TaskTp;
 
           TCHAR *pToken = NULL;
           TCHAR *pWClast = NULL;
-
+          int hh,mm,ss;
           switch (FileSection) {
           case Waypoint:
             memset(&newPoint, 0, sizeof(newPoint));
@@ -374,14 +424,21 @@ bool LoadCupTask(LPCTSTR szFileName) {
             //       same as the Long name of a waypoint listed above the Related tasks.
             WPtoAdd=NULL;
             Entries =   CupStringToFieldArray(szString);
-            if(Entries[0].size() == 0)
-              StartupStore(_T(". no Task name %s"), NEWLINE);
-            else
-              StartupStore(_T(". Task name %s %s"), Entries[0].c_str()  ,NEWLINE);
 
-            if (i++ == TaskIndex)  // load selected task
-              {
+
+            if (i++ != (TaskIndex))  // load selected task
+            {
+              TaskValid = false;
+            }
+            else
+            {
+        	TaskValid = true;
+        	SectorType=SECTOR;  // normal sector by default if no other ObsZone parameter
                 uint Idx =1;
+                if(Entries[0].size() == 0)
+                  StartupStore(_T(". no Task name %s"), NEWLINE);
+                else
+                  StartupStore(_T(". Task name %s %s"), Entries[0].c_str()  ,NEWLINE);
 
                 while (bLoadComplet && (Idx < (Entries.size()))) {
                     if (idxTP < MAXTASKPOINTS) {
@@ -468,15 +525,28 @@ bool LoadCupTask(LPCTSTR szFileName) {
               }
             break;
           case Option:
-            if ((pToken = strsep_r(szString, TEXT(","), &pWClast)) != NULL) {
+            if (TaskValid)  // load option for selected task only
+            {
+              if ((pToken = strsep_r(szTmp, TEXT(","), &pWClast)) != NULL) {
                 if (_tcscmp(pToken, _T("Options")) == 0) {
-                    while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
+                    StartupStore(_T("..Cup Task Options: %s %s"),szString, NEWLINE);
+                      int ParIdx=0;
+                      while (ExtractOption(szString, szTmp, ParIdx++))
+                      {
+#if TESTBENCH                            
+                        StartupStore(_T("..Cup Task Options Par%i: %s %s"),ParIdx,pToken, NEWLINE);
+#endif
+                        pToken = szTmp;
                         if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
                             // Opening of start line
                             PGNumberOfGates = 1;
                             StrToTime(pToken + 8, &PGOpenTimeH, &PGOpenTimeM);
                         } else if (_tcsstr(pToken, _T("TaskTime=")) == pToken) {
                             // Designated Time for the task
+                            StrToTime(pToken + 9, &hh, &mm, &ss);
+                            StartupStore(_T("..Cup Task Time:(%02i:%02i) %imin  %s"),hh,mm,(hh*60+mm), NEWLINE);
+                            AATTaskLength =  hh*60+mm+ss/60;
+
                             // TODO :
                         } else if (_tcsstr(pToken, _T("WpDis=")) == pToken) {
                             // Task distance calculation. False = use fixes, True = use waypoints
@@ -513,9 +583,16 @@ bool LoadCupTask(LPCTSTR szFileName) {
                 } else if (_tcsstr(pToken, _T("ObsZone=")) == pToken) {
                     TCHAR *sz = NULL;
                     CupObsZoneUpdater TmpZone;
+                    ExtractOption(szString, szTmp, 0);  pToken = szTmp;
                     TmpZone.mIdx = _tcstol(pToken + 8, &sz, 10);
                     if (TmpZone.mIdx < MAXTASKPOINTS) {
-                        while ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) != NULL) {
+                          int ParIdx=1;
+                          while (ExtractOption(szString, szTmp, ParIdx++))
+                          {
+                            pToken = szTmp;
+#if TESTBENCH                            
+                            StartupStore(_T("..Cup Task ObsZone %i Par%i: %s %s"),(int)TmpZone.mIdx ,ParIdx,pToken, NEWLINE);
+#endif                            
                             if (_tcsstr(pToken, _T("Style=")) == pToken) {
                                 // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point
                                 TmpZone.mType = _tcstol(pToken + 6, &sz, 10);
@@ -525,6 +602,9 @@ bool LoadCupTask(LPCTSTR szFileName) {
                             } else if (_tcsstr(pToken, _T("A1=")) == pToken) {
                                 // Angle 1 in degrees
                                 TmpZone.mA1 = _tcstod(pToken + 3, &sz);
+                                if( TmpZone.mR1 > 179.5)  //  180° = Circle sector
+                                  if( TmpZone.mR1 < 180.5)
+                                    SectorType=CIRCLE;
                             } else if (_tcsstr(pToken, _T("R2=")) == pToken) {
                                 // Radius 2
                                 TmpZone.mR2 = ReadLength(pToken + 3);
@@ -534,15 +614,30 @@ bool LoadCupTask(LPCTSTR szFileName) {
                             } else if (_tcsstr(pToken, _T("A12=")) == pToken) {
                                 // Angle 12
                                 TmpZone.mA12 = _tcstod(pToken + 4, &sz);
+                            } else if (_tcsstr(pToken, _T("AAT=")) == pToken) {
+                                // AAT
+                                if( _tcstod(pToken + 4, &sz) > 0) // AAT = 1?
+                                  SectorType=CIRCLE;
                             } else if (_tcsstr(pToken, _T("Line=")) == pToken) {
                                 // true For Line Turmpoint type
                                 // Exist only for start an Goalin LK
                                 TmpZone.mLine = (_tcstol(pToken + 5, &sz, 10) == 1);
                             }
                         }
+                        if(  TmpZone.mR1 >0)   // if both radius defined
+                          if(  TmpZone.mR2 >0) // must be keyhole definition
+                            SectorType=DAe;    // the only similar sectortype in LK
+
+                        if( TmpZone.mLine) // line has priority (Start & Finish) if multiple definitions
+			{
+			  TmpZone.mA1 = 90;
+			  TmpZone.mA2 = 0;
+			  TmpZone.mA12 =0;
+			}
                         TmpZone.UpdateTask();
                     }
                 }
+              }
             }
             break;
           case none:
