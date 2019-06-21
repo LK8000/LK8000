@@ -306,9 +306,6 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
 	      } else {
 
 		  // An invalid takeoff, probably a "???" , which we ignore
-  #if TESTBENCH
-		  if (bTakeOff) StartupStore(_T("....... CUP Takeoff not found: <%s>\n"),TpCode);
-  #endif
 		  // in any case bTakeOff now is false
 		  bTakeOff=false;
 
@@ -424,8 +421,8 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
             Entries = CupStringToFieldArray(szString);
             pToken = (TCHAR*)Entries[0].c_str() ;
 #if TESTBENCH
-            for(size_t idx=0; idx < Entries.size(); idx ++)
-              StartupStore(_T(". Task  %i %s %s"), idx, Entries[idx].c_str()  ,NEWLINE);
+     //       for(size_t idx=0; idx < Entries.size(); idx ++)
+     //         StartupStore(_T(". Task  %i %s %s"), idx, Entries[idx].c_str()  ,NEWLINE);
 #endif
           }
 
@@ -458,11 +455,19 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
         	AATEnabled = false; // racing task by default, if AAT will overwrite this
 
                 if(Entries[0].size() == 0)
-                  StartupStore(_T(". no Task name %s"), NEWLINE);
+                {
+                  StartupStore(_T(". no Task name, named it %s%i %s"), MsgToken(699),i, NEWLINE);// _@M699_ "Task"
+                  if(TaskLine != NULL)
+                    _sntprintf(TaskLine,READLINE_LENGTH,_T("%s%i%s"),MsgToken(699),i,szString);  // _@M699_ "Task"
+                }
                 else
-                  StartupStore(_T(". Task name %s %s"), Entries[0].c_str()  ,NEWLINE);
-                if(TaskLine != NULL)
-		  _tcscpy(TaskLine, szString );
+                {
+                  StartupStore(_T(". read Task %s %s"), Entries[0].c_str()  ,NEWLINE);
+                  if(TaskLine != NULL)
+		    _tcscpy(TaskLine, szString );
+                }
+
+
 
                 bLoadComplet = ConvertStringToTask( szString, mapWaypoint);
                 FileSection = Option;
@@ -477,9 +482,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 		  while ( ParIdx <  Entries.size() )
 		  {
 		    pToken = (TCHAR*)Entries[ParIdx++].c_str() ;
-#if TESTBENCH                            
-		    StartupStore(_T("..Cup Task Options Par%i: %s %s"),ParIdx,pToken, NEWLINE);
-#endif
+
 		    if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
 			// Opening of start line
 			PGNumberOfGates = 1;
@@ -487,7 +490,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 		    } else if (_tcsstr(pToken, _T("TaskTime=")) == pToken) {
 			// Designated Time for the task
 			StrToTime(pToken + 9, &hh, &mm, &ss);
-			StartupStore(_T("..Cup Task Time:(%02i:%02i) %imin  %s"),hh,mm,(hh*60+mm), NEWLINE);
+//			StartupStore(_T("..Cup Task Time:(%02i:%02i) %imin  %s"),hh,mm,(hh*60+mm), NEWLINE);
 			AATTaskLength =  hh*60+mm+ss/60;
 
 			// TODO :
@@ -532,9 +535,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                           while ( ParIdx <  Entries.size() )
                           {
                             pToken = (TCHAR*)Entries[ParIdx++].c_str() ;
-#if TESTBENCH                            
-                            StartupStore(_T("..Cup Task ObsZone %i Par%i: %s %s"),(int)TmpZone.mIdx ,ParIdx,pToken, NEWLINE);
-#endif                            
+
                             if (_tcsstr(pToken, _T("Style=")) == pToken) {
                                 // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point
                                 TmpZone.mType = _tcstol(pToken + 6, &sz, 10);
