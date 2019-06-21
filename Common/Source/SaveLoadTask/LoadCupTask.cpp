@@ -655,12 +655,11 @@ TCHAR szString[READLINE_LENGTH + 1];
     iNO_Tasks++;
   }
   TaskIndex =0;
-  if(iNO_Tasks >1)   // Selection only if more than one task found
-  {
-    dlgTaskSelectListShowModal();
-    if((TaskIndex >= 0) && (TaskIndex < MAX_TASKS))
-      LoadCupTaskSingle(szFileName,szString, TaskIndex);
-  }
+
+  dlgTaskSelectListShowModal();
+  if((TaskIndex >= 0) && (TaskIndex < MAX_TASKS))
+    LoadCupTaskSingle(szFileName,szString, TaskIndex);
+
   LoadCupTaskSingle(szFileName,szString, TaskIndex);
 
   for (int i =0 ; i< MAX_TASKS;i++)    // free dynamic memory
