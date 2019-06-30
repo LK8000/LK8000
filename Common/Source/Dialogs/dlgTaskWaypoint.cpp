@@ -42,6 +42,7 @@ static void SetWaypointValues(bool first=false) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (first) {
+      dfe->Clear();
 	// LKTOKEN  _@M210_ = "Cylinder"
       dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M590_ = "Sector"
@@ -105,6 +106,7 @@ static void SetWaypointValues(bool first=false) {
 	  DataField* dfe = wp->GetDataField();
 	  if (dfe) {
 		  if (first) {
+		          dfe->Clear();
 			  // LKTOKEN  _@M2226_ = "Enter"
 			  dfe->addEnumText(MsgToken(2145));
 			  // LKTOKEN  _@M2227_ = "Exit"
