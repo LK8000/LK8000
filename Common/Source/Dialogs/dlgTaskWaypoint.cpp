@@ -16,7 +16,7 @@
 #include "resource.h"
 
 extern void ResetTaskWaypoint(int j);
-
+static void SetValues(bool first = false) ;
 static int twItemIndex= 0;
 static WndForm *wf=NULL;
 static int twType = 0; // start, turnpoint, finish
@@ -30,7 +30,211 @@ static WndFrame *wFinish=NULL;
 
 
 //frmTaskPointPicto
+
+
+BOOL bMoveallowed = false;
+BOOL bAddonly = false;
+
+static void SetWaypointValues(bool first=false) {
+  WndProperty* wp;
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAATType"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+    if (first) {
+      dfe->Clear();
+	// LKTOKEN  _@M210_ = "Cylinder"
+      dfe->addEnumText(MsgToken(210));
+	// LKTOKEN  _@M590_ = "Sector"
+      dfe->addEnumText(MsgToken(590));
+      if(DoOptimizeRoute()) {
+        // Conical ESS
+        dfe->addEnumText(MsgToken(2175));
+        // Circle ESS
+        dfe->addEnumText(MsgToken(2189));
+      }
+    }
+    dfe->SetDetachGUI(true); // disable call to OnAATEnabled
+    dfe->Set(Task[twItemIndex].AATType);
+    dfe->SetDetachGUI(false);
+    wp->RefreshDisplay();
+  }
+
+  WindowControl* pFrm = wf->FindByName(_T("frmCircle"));
+  if(pFrm) {
+    pFrm->SetVisible((Task[twItemIndex].AATType==0) || (Task[twItemIndex].AATType==3));
+  }
+  pFrm = wf->FindByName(_T("frmSector"));
+  if(pFrm) {
+    pFrm->SetVisible(Task[twItemIndex].AATType==1);
+  }
+  pFrm = wf->FindByName(_T("frmCone"));
+  if(pFrm) {
+    pFrm->SetVisible(Task[twItemIndex].AATType==2);
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].AATCircleRadius
+                                          *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetUnits(Units::GetDistanceName());
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAATSectorRadius"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].AATSectorRadius
+                                          *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetUnits(Units::GetDistanceName());
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAATStartRadial"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATStartRadial);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAATFinishRadial"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATFinishRadial);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOutCircle"));
+  if (wp) {
+	  DataField* dfe = wp->GetDataField();
+	  if (dfe) {
+		  if (first) {
+		          dfe->Clear();
+			  // LKTOKEN  _@M2226_ = "Enter"
+			  dfe->addEnumText(MsgToken(2145));
+			  // LKTOKEN  _@M2227_ = "Exit"
+			  dfe->addEnumText(MsgToken(2146));
+		  }
+		  dfe->Set(Task[twItemIndex].OutCircle);
+	  }
+	  wp->SetVisible(DoOptimizeRoute());
+	  wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConeSlope"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeSlope);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConeBase"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeBase*ALTITUDEMODIFY);
+    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+    wp->RefreshDisplay();
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConeRadius"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].PGConeBaseRadius
+                                          *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetUnits(Units::GetDistanceName());
+    wp->RefreshDisplay();
+  }
+
+}
+
 static void UpdateCaption(void) {
+
+
+  if(!bMoveallowed)
+  {
+	wMove    = ((WndFrame *)wf->FindByName(TEXT("frmMoveTurnpoint")));
+        LKASSERT(wMove!=NULL);
+    wMove->SetVisible(FALSE);
+  }
+  wStart     = ((WndFrame *)wf->FindByName(TEXT("frmStart")));
+  wTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmTurnpoint")));
+  wAATTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmAATTurnpoint")));
+  wFinish    = ((WndFrame *)wf->FindByName(TEXT("frmFinish")));
+
+  LKASSERT(wStart!=NULL);
+  LKASSERT(wTurnpoint!=NULL);
+  LKASSERT(wAATTurnpoint!=NULL);
+  LKASSERT(wFinish!=NULL);
+
+  WndButton* wb;
+  if (bAddonly) {
+    wb = (WndButton *)wf->FindByName(TEXT("butSelect"));
+    if (wb) {
+      wb->SetVisible(false);
+    }
+    wb = (WndButton *)wf->FindByName(TEXT("butRemove"));
+    if (wb) {
+      wb->SetVisible(false);
+    }
+    wb = (WndButton *)wf->FindByName(TEXT("butDetails"));
+    if (wb) {
+      wb->SetVisible(false);
+    }
+    wb = (WndButton *)wf->FindByName(TEXT("butDown"));
+    if (wb) {
+      wb->SetVisible(false);
+    }
+    wb = (WndButton *)wf->FindByName(TEXT("butUp"));
+    if (wb) {
+      wb->SetVisible(false);
+    }
+  } else {
+      wb = (WndButton *)wf->FindByName(TEXT("butUp"));
+      if (wb) {
+        wb->SetVisible(ValidTaskPoint(twItemIndex-1));
+      }
+
+      wb = (WndButton *)wf->FindByName(TEXT("butDown"));
+      if (wb) {
+        wb->SetVisible(ValidTaskPoint(twItemIndex+1));
+      }
+
+      wb = (WndButton *)wf->FindByName(TEXT("butPrev"));
+      if (wb) {
+        wb->SetVisible(ValidTaskPoint(twItemIndex-1));
+      }
+
+      wb = (WndButton *)wf->FindByName(TEXT("butNext"));
+      if (wb) {
+        wb->SetVisible(ValidTaskPoint(twItemIndex+1));
+      }
+  }
+
+  SetWaypointValues(true);
+
+  switch (twType) {
+    case 0:
+      wStart->SetVisible(1);
+      wTurnpoint->SetVisible(0);
+      wAATTurnpoint->SetVisible(0);
+      wFinish->SetVisible(0);
+      break;
+    case 1:
+      wStart->SetVisible(0);
+      if (AATEnabled) {
+	wTurnpoint->SetVisible(0);
+	wAATTurnpoint->SetVisible(1);
+      } else {
+	wTurnpoint->SetVisible(1);
+	wAATTurnpoint->SetVisible(0);
+      }
+      wTurnpoint->SetVisible(1);
+      wFinish->SetVisible(0);
+    break;
+    case 2:
+      wStart->SetVisible(0);
+      wTurnpoint->SetVisible(0);
+      wAATTurnpoint->SetVisible(0);
+      wFinish->SetVisible(1);
+    break;
+  }
+  // set properties...
+
+  SetValues(true);
+//******************************************************/
   TCHAR sTmp[128];
   TCHAR title[128];
   if (ValidTaskPoint(twItemIndex)) {
@@ -40,8 +244,8 @@ static void UpdateCaption(void) {
       _tcscpy(title, MsgToken(657));
       break;
     case 1:
-	// LKTOKEN  _@M749_ = "Turnpoint" 
-      _tcscpy(title, MsgToken(749));
+	// LKTOKEN  _@M749_ = "Turnpoint"
+      _stprintf(title, TEXT("%s %i"),  MsgToken(749),twItemIndex);
       break;
     case 2:
 	// LKTOKEN  _@M299_ = "Finish" 
@@ -63,13 +267,15 @@ static void UpdateCaption(void) {
   }
 }
 
-static void SetValues(bool first=false) {
+static void SetValues(bool first) {
   WndProperty* wp;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
+
     if (first) {
+      dfe->Clear();
 	// LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M393_ = "Line" 
@@ -92,6 +298,7 @@ static void SetValues(bool first=false) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (first) {
+      dfe->Clear();
 	// LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M393_ = "Line" 
@@ -119,6 +326,7 @@ static void SetValues(bool first=false) {
   //  wp->SetVisible((AATEnabled==0) || (twItemIndex >0) );
     DataField* dfe = wp->GetDataField();
     if (first) {
+      dfe->Clear();
 	// LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(MsgToken(210));
 	// LKTOKEN  _@M274_ = "FAI Sector" 
@@ -145,6 +353,7 @@ static void SetValues(bool first=false) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (first) {
+      dfe->Clear();
 	// LKTOKEN  _@M418_ = "Manual" 
       dfe->addEnumText(MsgToken(418));
 	// LKTOKEN _@M897_ "Auto"
@@ -270,109 +479,6 @@ static void GetWaypointValues(void) {
   }
 }
 
-
-static void SetWaypointValues(bool first=false) {
-  WndProperty* wp;
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATType"));
-  if (wp) {
-    DataField* dfe = wp->GetDataField();
-    if (first) {
-	// LKTOKEN  _@M210_ = "Cylinder" 
-      dfe->addEnumText(MsgToken(210));
-	// LKTOKEN  _@M590_ = "Sector" 
-      dfe->addEnumText(MsgToken(590));
-      if(DoOptimizeRoute()) {
-        // Conical ESS
-        dfe->addEnumText(MsgToken(2175));
-        // Circle ESS
-        dfe->addEnumText(MsgToken(2189));
-      }
-    }
-    dfe->SetDetachGUI(true); // disable call to OnAATEnabled
-    dfe->Set(Task[twItemIndex].AATType);
-    dfe->SetDetachGUI(false);
-    wp->RefreshDisplay();
-  }
-
-  WindowControl* pFrm = wf->FindByName(_T("frmCircle"));
-  if(pFrm) {
-    pFrm->SetVisible((Task[twItemIndex].AATType==0) || (Task[twItemIndex].AATType==3));
-  }
-  pFrm = wf->FindByName(_T("frmSector"));
-  if(pFrm) {
-    pFrm->SetVisible(Task[twItemIndex].AATType==1);
-  }
-  pFrm = wf->FindByName(_T("frmCone"));
-  if(pFrm) {
-    pFrm->SetVisible(Task[twItemIndex].AATType==2);
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].AATCircleRadius
-                                          *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
-    wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATSectorRadius"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].AATSectorRadius
-                                          *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
-    wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    wp->RefreshDisplay();    
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATStartRadial"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATStartRadial);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATFinishRadial"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATFinishRadial);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOutCircle"));
-  if (wp) {
-	  DataField* dfe = wp->GetDataField();
-	  if (dfe) {
-		  if (first) {
-			  // LKTOKEN  _@M2226_ = "Enter" 
-			  dfe->addEnumText(MsgToken(2145));
-			  // LKTOKEN  _@M2227_ = "Exit" 
-			  dfe->addEnumText(MsgToken(2146));
-		  }
-		  dfe->Set(Task[twItemIndex].OutCircle);
-	  }
-	  wp->SetVisible(DoOptimizeRoute());
-	  wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpConeSlope"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeSlope);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpConeBase"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeBase*ALTITUDEMODIFY);
-    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
-    wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpConeRadius"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].PGConeBaseRadius
-                                          *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
-    wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    wp->RefreshDisplay();
-  }
-  
-}
 
 
 static void ReadValues(void) {
@@ -596,6 +702,47 @@ static void OnTaskPointPicto(WindowControl * Sender, LKSurface& Surface) {
 
 
 
+static void OnPrevClicked(WndButton* pWnd){
+
+ LockTaskData();
+
+  if (ValidTaskPoint(twItemIndex-1))
+  {
+    twItemIndex--;
+  }
+  if (twItemIndex<0) {
+      twItemIndex= 0;
+  }
+
+  twType =1;
+  if (!ValidTaskPoint(twItemIndex+1))
+    twType = 2;
+  if(twItemIndex == 0)
+    twType =0;
+
+
+  UpdateCaption();
+  UnlockTaskData();
+}
+
+
+static void OnNextClicked(WndButton* pWnd){
+  LockTaskData();
+
+  if (ValidTaskPoint(twItemIndex+1))
+  {
+    twItemIndex++;
+  }
+
+  twType =1;
+  if (!ValidTaskPoint(twItemIndex+1))
+    twType = 2;
+  if(twItemIndex == 0)
+    twType =0;
+
+  UpdateCaption();
+  UnlockTaskData();
+}
 
 static CallBackTableEntry_t CallBackTable[]={
 
@@ -607,6 +754,11 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnStartPointClicked),
   ClickNotifyCallbackEntry(OnMoveAfterClicked),
   ClickNotifyCallbackEntry(OnMoveBeforeClicked),
+
+
+  ClickNotifyCallbackEntry(OnPrevClicked),
+  ClickNotifyCallbackEntry(OnNextClicked),
+
   DataAccessCallbackEntry(OnAATEnabled),
   ClickNotifyCallbackEntry(OnTaskRulesClicked),
   OnPaintCallbackEntry(OnTaskPointPicto),
@@ -618,6 +770,8 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
 
     wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_TASKWAYPOINT_L : IDR_XML_TASKWAYPOINT_P);
 
+  bMoveallowed = Moveallowed;
+  bAddonly = addonly;
   if (ISPARAGLIDER) {
     if(DoOptimizeRoute()) 
 		AATEnabled=TRUE;
@@ -631,90 +785,7 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
 
   //ASSERT(wf!=NULL);
   //  wf->SetKeyDownNotify(FormKeyDown);
-  if(!Moveallowed)
-  {
-	wMove    = ((WndFrame *)wf->FindByName(TEXT("frmMoveTurnpoint")));
-        LKASSERT(wMove!=NULL);
-    wMove->SetVisible(FALSE);
-  }
-  wStart     = ((WndFrame *)wf->FindByName(TEXT("frmStart")));
-  wTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmTurnpoint")));
-  wAATTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmAATTurnpoint")));
-  wFinish    = ((WndFrame *)wf->FindByName(TEXT("frmFinish")));
 
-  LKASSERT(wStart!=NULL);
-  LKASSERT(wTurnpoint!=NULL);
-  LKASSERT(wAATTurnpoint!=NULL);
-  LKASSERT(wFinish!=NULL);
-
-  WndButton* wb;
-  if (addonly) {
-    wb = (WndButton *)wf->FindByName(TEXT("butSelect"));
-    if (wb) {
-      wb->SetVisible(false);
-    }
-    wb = (WndButton *)wf->FindByName(TEXT("butRemove"));
-    if (wb) {
-      wb->SetVisible(false);
-    }
-    wb = (WndButton *)wf->FindByName(TEXT("butDetails"));
-    if (wb) {
-      wb->SetVisible(false);
-    }
-    wb = (WndButton *)wf->FindByName(TEXT("butDown"));
-    if (wb) {
-      wb->SetVisible(false);
-    }
-    wb = (WndButton *)wf->FindByName(TEXT("butUp"));
-    if (wb) {
-      wb->SetVisible(false);
-    }
-  } else {
-    if (!ValidTaskPoint(twItemIndex-1)) {
-      wb = (WndButton *)wf->FindByName(TEXT("butUp"));
-      if (wb) {
-        wb->SetVisible(false);
-      }
-    }
-    if (!ValidTaskPoint(twItemIndex+1)) {
-      wb = (WndButton *)wf->FindByName(TEXT("butDown"));
-      if (wb) {
-        wb->SetVisible(false);
-      }
-    }
-  }
-
-  SetWaypointValues(true);
-
-  switch (twType) {
-    case 0:
-      wStart->SetVisible(1);
-      wTurnpoint->SetVisible(0);
-      wAATTurnpoint->SetVisible(0);
-      wFinish->SetVisible(0);
-      break;
-    case 1:
-      wStart->SetVisible(0);
-      if (AATEnabled) {
-	wTurnpoint->SetVisible(0);
-	wAATTurnpoint->SetVisible(1);
-      } else {
-	wTurnpoint->SetVisible(1);
-	wAATTurnpoint->SetVisible(0);
-      }
-      wTurnpoint->SetVisible(1);
-      wFinish->SetVisible(0);
-    break;
-    case 2:
-      wStart->SetVisible(0);
-      wTurnpoint->SetVisible(0);
-      wAATTurnpoint->SetVisible(0);
-      wFinish->SetVisible(1);
-    break;
-  }
-  // set properties...
-
-  SetValues(true);
 
   UpdateCaption();
 
@@ -731,6 +802,5 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
   wf = NULL;
 
 }
-
 
 
