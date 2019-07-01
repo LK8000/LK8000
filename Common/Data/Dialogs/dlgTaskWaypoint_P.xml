@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmTaskWaypoint" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M800_" Font="2" >
-    <WndButton Caption="_@M186_" X="2" Y="0" Width="70" Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
-    <WndButton Name="butSelect" Caption="_@M595_" X="2" Y="25" Width="70" Height="22" Font="2" OnClickNotify="OnSelectClicked"/>
-    <WndButton Name="butRemove" Caption="_@M553_" X="2" Y="50" Width="70" Height="22" Font="2" OnClickNotify="OnRemoveClicked"/>
-    <WndButton Name="butDetails" Caption="_@M231_" X="80" Y="0" Width="90" Height="22" Font="2" OnClickNotify="OnDetailsClicked"/>
-    <WndButton Name="butDown" Caption="_@M440_" X="80" Y="25" Width="90" Height="22" Font="2" OnClickNotify="OnMoveAfterClicked"/>
-    <WndButton Name="butUp" Caption="_@M441_" X="80" Y="50" Width="90" Height="22" Font="2" OnClickNotify="OnMoveBeforeClicked"/>
+    <WndButton Caption="_@M186_" X="2" Y="0" Width="80" Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
+    <WndButton Name="butSelect" Caption="_@M595_" X="2" Y="25" Width="80" Height="22" Font="2" OnClickNotify="OnSelectClicked"/>
+    <WndButton Name="butRemove" Caption="_@M553_" X="2" Y="50" Width="80" Height="22" Font="2" OnClickNotify="OnRemoveClicked"/>
+    <WndButton Name="butDetails" Caption="_@M231_" X="90" Y="0" Width="80" Height="22" Font="2" OnClickNotify="OnDetailsClicked"/>
+    <WndButton Name="butDown" Caption="_@M440_" X="90" Y="25" Width="80" Height="22" Font="2" OnClickNotify="OnMoveAfterClicked"/>
+    <WndButton Name="butUp" Caption="_@M441_" X="90" Y="50" Width="80" Height="22" Font="2" OnClickNotify="OnMoveBeforeClicked"/>
     
-    <WndButton Name="butPrev" Caption="&lt;" X="180" Y="50" Width="25" Height="22" Font="2" OnClickNotify="OnPrevClicked"/>
-    <WndButton Name="butNext" Caption="&gt;" X="210" Y="50" Width="25" Height="22" Font="2" OnClickNotify="OnNextClicked"/>
+    
+    <WndButton Name="butPrev" Caption="_@M6_" X="20" Y="310" Width="90" Height="25" Font="2" OnClickNotify="OnPrevClicked"/>
+    <WndButton Name="butNext" Caption="_@M460_" X="130" Y="310" Width="90" Height="25" Font="2" OnClickNotify="OnNextClicked"/>
     
         
-    <WndFrame Name="frmStart" X="0" Y="80" Width="240" Height="220" Font="2">
+    <WndFrame Name="frmStart" X="0" Y="85" Width="240" Height="220" Font="2">
       <WndProperty Name="prpTaskStartLine" Caption="_@M656_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H500_">
         <DataField name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
@@ -34,7 +35,7 @@
       </WndProperty>
       <WndButton Name="butRules" Caption="_@M690_" X="150" Y="-1" Width="80" Height="22" Font="2" OnClickNotify="OnTaskRulesClicked"/>
     </WndFrame>
-    <WndFrame Name="frmTurnpoint" X="0" Y="80" Width="240" Height="220" Font="2">
+    <WndFrame Name="frmTurnpoint" X="0" Y="85" Width="240" Height="220" Font="2">
       <WndProperty Name="prpTaskFAISector" Caption="_@M589_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H505_">
         <DataField name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
@@ -42,7 +43,7 @@
         <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01"/>
       </WndProperty>	 
     </WndFrame>
-    <WndFrame Name="frmAATTurnpoint" X="0" Y="80" Width="240" Height="220" Font="2">
+    <WndFrame Name="frmAATTurnpoint" X="0" Y="100" Width="240" Height="220" Font="2">
       <WndProperty Name="prpAATType" Caption="_@M752_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H508_">
         <DataField name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnAATEnabled"/>
       </WndProperty>
@@ -77,7 +78,7 @@
         </WndProperty>
       </WndFrame>
     </WndFrame>
-    <WndFrame Name="frmFinish" X="0" Y="80" Width="240" Height="220" Font="2">
+    <WndFrame Name="frmFinish" X="0" Y="85" Width="240" Height="220" Font="2">
       <WndProperty Name="prpTaskFinishLine" Caption="_@M298_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H513_">
         <DataField name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
@@ -86,6 +87,6 @@
       </WndProperty>
     </WndFrame>
     <WndOwnerDrawFrame Name="frmTaskPointPicto" X="185" Y="3" Width="45" Height="45" Font="2" OnPaint="OnTaskPointPicto"/>
-    <WndButton Name="frmMoveTurnpoint" Caption="_@M444_" X="175" Y="-1" Width="60" Height="22" Font="2" OnClickNotify="OnMoveClicked"/>
+    <WndButton Name="frmMoveTurnpoint" Caption="_@M444_" X="175" Y="50" Width="60" Height="22" Font="2" OnClickNotify="OnMoveClicked"/>    
   </WndForm>
 </PMML>
