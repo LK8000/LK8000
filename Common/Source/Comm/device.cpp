@@ -599,23 +599,23 @@ BOOL devInit() {
     TCHAR Port[MAX_PATH] = {_T('\0')};
     unsigned SpeedIndex = 2U;
     BitIndex_t BitIndex = bit8N1;
-#ifdef RADIO_ACTIVE    
+#ifdef RADIO_ACTIVE
      RadioPara.Enabled = false;
      if(SIMMODE)
        RadioPara.Enabled = true;
-#endif     
+#endif
 
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
-    
+
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
 
         if (SIMMODE){
             continue;
         }
-        
+
         ReadDeviceSettings(i, DeviceName);
         DeviceList[i].Disabled = (_tcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
         if (DeviceList[i].Disabled) {
@@ -638,34 +638,31 @@ BOOL devInit() {
             ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
         }
 
-	DeviceList[i].iSharedPort =-1;
-	for(uint j = 0; j < i ; j++)
-	{
+        DeviceList[i].iSharedPort =-1;
+        for(uint j = 0; j < i ; j++) {
+            if((!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
+                devInit(&DeviceList[i]);
+                DeviceList[i].iSharedPort =j;
+                StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
+                DeviceList[i].Com = DeviceList[j].Com ;
+                DeviceList[i].Status = CPS_OPENOK;
+                pDev->Installer(&DeviceList[i]);
+                if (pDev->Flags & (1l << dfNmeaOut)) {
+                    DeviceList[i].bNMEAOut = true;
+                }
+                if(devIsRadio(&DeviceList[i])) {
+                    RadioPara.Enabled = true;
+                    StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
+                }
+            }
+        }
 
-	  if((!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0)
-	  {
-	    devInit(&DeviceList[i]);
-	    DeviceList[i].iSharedPort =j;
-	    StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
-	    DeviceList[i].Com = DeviceList[j].Com ;
-	    DeviceList[i].Status = CPS_OPENOK;
-	    pDev->Installer(&DeviceList[i]);
-	    if (pDev->Flags & (1l << dfNmeaOut)) {
-		DeviceList[i].bNMEAOut = true;
-	    }
-	    if(devIsRadio(&DeviceList[i]))
-	    {
-	      RadioPara.Enabled = true;
-	      StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
-	    }
-	  }
-	}
-
-	if(DeviceList[i].iSharedPort >=0) // skip making new device on shared ports
-	 continue;
+        if(DeviceList[i].iSharedPort >=0) { // skip making new device on shared ports
+            continue;
+        }
 
         StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), DeviceName, Port, NEWLINE);
-    ComPort *Com = nullptr;
+        ComPort *Com = nullptr;
         if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
 #ifdef NO_BLUETOOTH
             bool bStartOk = true;
@@ -720,7 +717,7 @@ BOOL devInit() {
 #endif
         } else if (_tcsncmp(Port, _T("USB:"), 4) == 0) {
 #ifdef ANDROID
-          Com = new UsbSerialPort(i, &Port[4], dwSpeed[SpeedIndex], BitIndex);
+            Com = new UsbSerialPort(i, &Port[4], dwSpeed[SpeedIndex], BitIndex);
 #endif
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
@@ -754,20 +751,17 @@ BOOL devInit() {
             delete Com;
             DeviceList[i].Status = CPS_OPENKO;
         }
-#ifdef RADIO_ACTIVE    
-       if(devIsRadio(&DeviceList[i]))
-       {       
-          RadioPara.Enabled = true;         
+#ifdef RADIO_ACTIVE
+       if(devIsRadio(&DeviceList[i])) {
+          RadioPara.Enabled = true;
           StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
        }
-       if(devDriverActivated(TEXT("PVCOM")))
-       {       
-          RadioPara.Enabled = true;         
+       if(devDriverActivated(TEXT("PVCOM"))) {
+          RadioPara.Enabled = true;
           StartupStore(_T(".  RADIO  %c  PVCOM over  shared <%s>%s"), (_T('A') + i),  Port, NEWLINE);
-       }        
-#endif          
+       }
+#endif
     }
-
 
     UnlockComm();
     return (TRUE);
