@@ -319,14 +319,14 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
   #if BUGSTOP
 		      else LKASSERT(0); // .. else is unmanaged, TODO
   #endif
-		      StartupStore(_T("....... bTakeOff: %i %i \n"),idxTP-1, Task[idxTP-1].Index );
+		      StartupStore(_T("....... bTakeOff: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
 		  }
 		  if (bTakeOff) { //it's the first: may be we have a corresponding airfield
 		      //look for departure airfield and add it
 		      int ix = FindOrAddWaypoint(&(It->second),true);
 		      if (ix>=0) {
 			  Task[idxTP++].Index = ix;
-			  StartupStore(_T("....... bTakeOff: %i %i \n"),idxTP-1, Task[idxTP-1].Index );
+			  StartupStore(_T("....... bTakeOff: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
 			  bTakeOff = false;
 		      }
   #if BUGSTOP
@@ -345,7 +345,7 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
 	      int ix=FindOrAddWaypoint(WPtoAdd,true); //look for arrival airport and add it
 	      if (ix>=0) {
 		  Task[idxTP++].Index= ix;
-		  StartupStore(_T("....... ISGAAIRCRAFT: %i %i \n"),idxTP-1, Task[idxTP-1].Index );
+		  StartupStore(_T("....... ISGAAIRCRAFT: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
 	      }
   #if BUGSTOP
 	      else LKASSERT(0); // .. else is unmanaged, TODO
