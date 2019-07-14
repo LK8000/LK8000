@@ -631,13 +631,11 @@ TCHAR szString[READLINE_LENGTH + 1];
     int iLastIdx = -1;
     bool bClosedTask = false;
     for (size_t i=0; i<MAXTASKPOINTS; i++) {
-	if (Task[i].Index != -1) {
-	{
-	  lengthtotal += Task[i].Leg;
-	  NoPts =i;
-	  iLastIdx =  Task[i].Index ;
-	}
-      }
+        if (Task[i].Index != -1) {
+            lengthtotal += Task[i].Leg;
+            NoPts = i;
+            iLastIdx = Task[i].Index;
+        }
     }
     if(iLastIdx == Task[0].Index )
     {
@@ -651,13 +649,12 @@ TCHAR szString[READLINE_LENGTH + 1];
     {
       if(bClosedTask)
       {
-	if (AATEnabled)
-	  _sntprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[AAT %.1f%s] %s"),  lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString);  // _@M699_ "Task"
-	else
-	  if(CALCULATED_INFO.TaskFAI)
-	    _sntprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[FAI %s %.1f%s] %s"),MsgToken(2432)   , lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
-	  else
-	    _sntprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[%s %.1f%s] %s") ,MsgToken(2430+NoPts), lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString);
+          if (AATEnabled)
+              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M699_ "Task"
+          else if (CALCULATED_INFO.TaskFAI)
+              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken(2432), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
+          else
+              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), MsgToken(2430 + NoPts), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString);
       }
       else
       {
