@@ -111,21 +111,26 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
                 WayPointList[Task[i].Index].Name,
                 (WayPointList[Task[i].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
 
-      if (AATEnabled && ValidTaskPoint(i+1) && (i>0)) {
+      if (AATEnabled &&  ValidTaskPoint(i+1) && (i>0)) {
         if (Task[i].AATType==0 || Task[i].AATType==3) {
-          _stprintf(sTmp, TEXT("%s %.1f"),
-                    wpName, Task[i].AATCircleRadius*DISTANCEMODIFY);
+          _stprintf(sTmp, TEXT("%.1f %s"),
+                    Task[i].AATCircleRadius*DISTANCEMODIFY, wpName);
         } else {
           if(Task[i].AATType==2 && DoOptimizeRoute()) {
-             _stprintf(sTmp, TEXT("%s %.1f/1"),
-                    wpName, Task[i].PGConeSlope);
+             _stprintf(sTmp, TEXT("%.1f/1 %s"),
+                    Task[i].PGConeSlope,wpName);
           } else {
-             _stprintf(sTmp, TEXT("%s %.1f"),
-                    wpName, Task[i].AATSectorRadius*DISTANCEMODIFY);
+             _stprintf(sTmp, TEXT("%.1f %s"),
+                    Task[i].AATSectorRadius*DISTANCEMODIFY,wpName);
           }
         }
       } else {
-        _stprintf(sTmp, TEXT("%s"), wpName);
+        if (i == 0)
+          _stprintf(sTmp, TEXT("%.1f %s"), StartRadius * DISTANCEMODIFY, wpName);
+        else if (i < (n - 4))
+          _stprintf(sTmp, TEXT("%.1f %s"), SectorRadius * DISTANCEMODIFY, wpName);
+        else
+          _stprintf(sTmp, TEXT("%.1f %s"), FinishRadius * DISTANCEMODIFY, wpName);
       }
 
       Surface.SetBackgroundTransparent();
