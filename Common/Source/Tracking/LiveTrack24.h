@@ -4,8 +4,8 @@
    See CREDITS.TXT file for authors and copyrights
 */
 
-#ifndef LIVETRACKER_H
-#define LIVETRACKER_H
+#ifndef TRACKING_LIVETRACK24_H
+#define TRACKING_LIVETRACK24_H
 
 
 // Init Live Tracker services
@@ -17,4 +17,4 @@ void LiveTrackerShutdown();
 // Update live tracker data, non blocking
 void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
-#endif // LIVETRACKER_H
+#endif // TRACKING_LIVETRACK24_H

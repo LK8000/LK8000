@@ -41,6 +41,7 @@ WPT=$(SRC)/Waypoints
 RSC=$(SRC)/Resources
 SRC_SCREEN=$(SRC)/Screen
 SRC_WINDOW=$(SRC)/Window
+SRC_TRACKING=$(SRC)/Tracking
 
 
 ifeq ($(TARGET),)
@@ -1308,8 +1309,10 @@ DLGS	:=\
 	$(DLG)/dlgWeatherStDetails.cpp \
 	$(DLG)/dlgNMEAReplay.cpp \
 	$(DLG)/dlgRadioPriSecSel.cpp \
-	
-	
+
+TRACKING := \
+	$(SRC_TRACKING)/LiveTrack24.cpp \
+
 SRC_FILES :=\
 	$(WINDOW) \
 	$(SCREEN) \
@@ -1337,7 +1340,6 @@ SRC_FILES :=\
 	$(SRC)/InitFunctions.cpp\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/lk8000.cpp\
-	$(SRC)/LiveTracker.cpp \
 	$(SRC)/Airspace/LKAirspace.cpp	\
 	$(SRC)/Airspace/Sonar.cpp	\
 	$(SRC)/LKInstall.cpp 		\
@@ -1396,6 +1398,7 @@ SRC_FILES :=\
 	$(SRC)/Geographic/GeoPoint.cpp \
 	$(SRC)/Geographic/TransverseMercator.cpp \
 	\
+	$(TRACKING) \
 	$(LKINTER) \
 	$(LIBRARY) \
 	$(WAYPT) \

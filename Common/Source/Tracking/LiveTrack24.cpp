@@ -39,7 +39,7 @@
 #include <zlib.h>
 
 #include "externs.h"
-#include "LiveTracker.h"
+#include "LiveTrack24.h"
 #include "LiveTrack24APIKey.h"
 #include "utils/stringext.h"
 #include "Poco/Event.h"

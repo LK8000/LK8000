@@ -260,7 +260,6 @@ add_library( LK8000 SHARED
     Common/Source/InitFunctions.cpp
     Common/Source/InputEvents.cpp
     Common/Source/lk8000.cpp
-    Common/Source/LiveTracker.cpp
     Common/Source/LKInstall.cpp
     Common/Source/LKLanguage.cpp
     Common/Source/LKObjects.cpp
@@ -770,6 +769,8 @@ add_library( LK8000 SHARED
 
     Common/Source/Resource/resource_data.S
     Common/Source/Resource/resource_xml.S
+
+	Common/Source/Tracking/LiveTrack24.cpp
 )
 
 # resource_xml.S dependencies

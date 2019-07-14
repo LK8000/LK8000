@@ -4,10 +4,10 @@
    See CREDITS.TXT file for authors and copyrights
 */
 
-#ifndef LIVETRACKER24APIKEY_H
-#define LIVETRACKER24APIKEY_H
+#ifndef TRACKING_LIVETRACK24APIKEY_H
+#define TRACKING_LIVETRACK24APIKEY_H
 
 const char appKey[] = "o42Sc";
 const char appSecret[] = "fasf45gvldTGgdD6h7563HndydhhmsNJsdmhsn4KKSsF45hGS5ggdgdHhhsd67";
 
-#endif // LIVETRACKER24APIKEY_H
+#endif // TRACKING_LIVETRACK24APIKEY_H
