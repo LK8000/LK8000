@@ -252,136 +252,143 @@ public:
 
 
 
-
-bool ExtractOption(const TCHAR *Source,
-				  TCHAR *Destination,
-				  int DesiredFieldNumber)
+bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoint)
 {
-  int dest_index = 0;
-  int CurrentFieldNumber = 0;
-  int StringLength = _tcslen(Source);
-  const TCHAR *sptr = Source;
-  const TCHAR *eptr = Source+StringLength;
+  std::vector<tstring>  Entries =   CupStringToFieldArray(szTaskSteing);
+  bool bTakeOff = true;
+  bool bLoadComplet = true;
 
-  if (!Destination) return false;
+  size_t Idx =0;
+  size_t idxTP = 0;
+  TCHAR TpCode[NAME_SIZE + 1];
 
-  while( (CurrentFieldNumber < DesiredFieldNumber) && (sptr<eptr) )
-    {
-      if (*sptr == ','  )
-        {
-          CurrentFieldNumber++;
-        }
-      ++sptr;
-    }
+  WAYPOINT* WPtoAdd=NULL;
 
-  Destination[0] = '\0'; // set to blank in case it's not found..
-  BOOL found = false;
-  if ( CurrentFieldNumber == DesiredFieldNumber )
-    {
-      found = true;
-      while( (sptr < eptr)    &&
-             (*sptr != ',') &&
-             (*sptr != '*') &&
-             (*sptr != '\0') )
-        {
-          Destination[dest_index] = *sptr;
-          ++sptr; ++dest_index;
-        }
-      Destination[dest_index] = '\0';
-    }
-  return found;
+  while (bLoadComplet && (Idx < (Entries.size()))) {
+
+      if (idxTP < MAXTASKPOINTS) {
+          _sntprintf(TpCode,NAME_SIZE, _T("%s"), Entries[Idx++].c_str() );
+	  mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
+	    if(!ISGAAIRCRAFT)
+	    {
+	        if (It != mapWaypoint.end())
+		{
+
+		  if (bTakeOff) {
+		      // skip TakeOff Set At Home Waypoint
+		      int ix = FindOrAddWaypoint(&(It->second),false);
+		      if (ix>=0) {
+  #if 0 // REMOVE
+			  // We must not change HomeWaypoint without user knowing!
+			  // The takeoff and homewaypoint are independent from task.
+			  // In addition, this is a bug because on next run the index is invalid
+			  // and we have no more HowWaypoint!
+			  HomeWaypoint = ix;
+  #endif
+			  bTakeOff = false;
+		      }
+  #if BUGSTOP
+		      else LKASSERT(0); // .. else is unmanaged, TODO
+  #endif
+		  } else {
+
+		    if(Idx < Entries.size())
+		    {
+		      if( _tcscmp(Entries[Idx].c_str(), TpCode) !=0) // doublets?
+		      {
+			int ix =  FindOrAddWaypoint(&(It->second),false);
+			if (ix>=0) Task[idxTP++].Index = ix;
+
+		      }
+		    }
+		  }
+
+	      } else {
+
+		  // An invalid takeoff, probably a "???" , which we ignore
+		  // in any case bTakeOff now is false
+		  bTakeOff=false;
+
+	      }
+	  } else { //ISGAIRRCRAFT
+	      if(It != mapWaypoint.end()) {
+		  if(WPtoAdd!=NULL) {
+		      //add what we found in previous cycle: it was not the last one
+		      int ix = FindOrAddWaypoint(WPtoAdd,false);
+		      if (ix>=0) Task[idxTP++].Index = ix;
+  #if BUGSTOP
+		      else LKASSERT(0); // .. else is unmanaged, TODO
+  #endif
+		      StartupStore(_T("....... bTakeOff: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
+		  }
+		  if (bTakeOff) { //it's the first: may be we have a corresponding airfield
+		      //look for departure airfield and add it
+		      int ix = FindOrAddWaypoint(&(It->second),true);
+		      if (ix>=0) {
+			  Task[idxTP++].Index = ix;
+			  StartupStore(_T("....... bTakeOff: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
+			  bTakeOff = false;
+		      }
+  #if BUGSTOP
+		      else LKASSERT(0); // .. else is unmanaged, TODO
+  #endif
+		  } else WPtoAdd=&(It->second); //store it for next cycle (may be it is the last one)
+	      }
+	  }
+      } else {
+	  bLoadComplet = false;
+      }
+  }
+  if(ISGAAIRCRAFT) { //For GA: check if we have an airport corresponding to the last WP
+      if(WPtoAdd!=NULL) { //if we have the last one (probably an airfield) still to add...
+	  if(idxTP<MAXTASKPOINTS) {
+	      int ix=FindOrAddWaypoint(WPtoAdd,true); //look for arrival airport and add it
+	      if (ix>=0) {
+		  Task[idxTP++].Index= ix;
+		  StartupStore(_T("....... ISGAAIRCRAFT: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
+	      }
+  #if BUGSTOP
+	      else LKASSERT(0); // .. else is unmanaged, TODO
+  #endif
+	  }
+	  else bLoadComplet=false;
+      }
+  }
+   return bLoadComplet;
 }
 
 
-bool LoadCupTask(LPCTSTR szFileName) {
-  //  LockTaskData();
+
+bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskIndex) {
+
 
   mapCode2Waypoint_t mapWaypoint;
 
-  //  ClearTask();
-  size_t idxTP = 0;
-  bool bTakeOff = true;
+  bool TaskFound = false;
   bool bLoadComplet = true;
   bool bLastInvalid=true;
   std::vector<tstring> Entries;
   TCHAR szString[READLINE_LENGTH + 1];
   TCHAR szTmp[READLINE_LENGTH + 1];
-  TCHAR TpCode[NAME_SIZE + 1];
+
 
   szString[READLINE_LENGTH] = _T('\0');
-  TpCode[NAME_SIZE] = _T('\0');
+
 
   memset(szString, 0, sizeof (szString)); // clear Temp Buffer
   WAYPOINT newPoint = {0};
-  WAYPOINT* WPtoAdd=NULL;
+
 
   enum {
     none, Waypoint, TaskTp, Option
   } FileSection = none;
   zzip_stream stream(szFileName, "rt");
-  iNO_Tasks =0;
-  TaskIndex =0;
-  for (int i =0 ; i< MAX_TASKS;i++)
-    szTaskStrings[ i] = NULL;
-#define MULTITASKS_CUP
-#ifdef MULTITASKS_CUP
-    if (stream) {
-      while (stream.read_line(szString)) {
 
-          if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
-              (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
-              FileSection = Waypoint;
-              continue;
-          } else if ((FileSection == Waypoint) && (_tcscmp(szString, _T("-----Related Tasks-----")) == 0)) {
-              FileSection = TaskTp;
-              continue;
-          }
-
-
-          if(  FileSection == TaskTp)
-            {
-              if(_tcsstr(szString, _T("\",\""))!= NULL)   // really a task? (not an option)
-                {
-                  if(iNO_Tasks < MAX_TASKS)   // Space in List left
-                    {//[READLINE_LENGTH + 1];
-                      szTaskStrings[ iNO_Tasks] =  new TCHAR[READLINE_LENGTH + 1];
-                      if(  szTaskStrings[ iNO_Tasks] != NULL)
-                      {
-                        _tcscpy(szTaskStrings[ iNO_Tasks] , szString);  // copy task string
-                         // StartupStore(_T("..Cup Task : %s  %s"), szTaskStrings[ iNO_Tasks], NEWLINE);
-                        iNO_Tasks++;
-                      }
-                      else
-                        StartupStore(_T("..Cup Task: no memory %s"), NEWLINE);
-                    }
-                  else
-                    StartupStore(_T("..Cup Task Too many Tasks (more than %i) %s"), MAX_TASKS, NEWLINE);
-                }
-            }
-      }
-      stream.close(); 
-    }
-
-  int res = 0;
-  if(iNO_Tasks >1)   // Selection only if more than one task found
-    res = dlgTaskSelectListShowModal();
-
-  for (int i =0 ; i< MAX_TASKS;i++)    // free dynamic memory
-    if(szTaskStrings[i] != NULL)
-      {
-        // StartupStore(_T("..Cup Task : delete dynamic memoryLine %i %s"), i,NEWLINE);
-        delete[] szTaskStrings[i];
-        szTaskStrings[i] = NULL;
-      }
-   if(res == mrCancel)
-     return false;
-
-  /***********************************************************************************/
 
   LockTaskData();
   ClearTask();
   stream.open(szFileName, "rt");
-#endif
+
   bool TaskValid = false;
   FileSection = none;
   int i=0;
@@ -406,9 +413,21 @@ bool LoadCupTask(LPCTSTR szFileName) {
               FileSection = TaskTp;
 
           TCHAR *pToken = NULL;
-          TCHAR *pWClast = NULL;
+
           int hh,mm,ss;
+
+          if(FileSection !=Waypoint)
+          {
+            Entries = CupStringToFieldArray(szString);
+            pToken = (TCHAR*)Entries[0].c_str() ;
+#if TESTBENCH
+     //       for(size_t idx=0; idx < Entries.size(); idx ++)
+     //         StartupStore(_T(". Task  %i %s %s"), idx, Entries[idx].c_str()  ,NEWLINE);
+#endif
+          }
+
           switch (FileSection) {
+
           case Waypoint:
             memset(&newPoint, 0, sizeof(newPoint));
             if (ParseCUPWayPointString(szString, &newPoint)) {
@@ -422,177 +441,101 @@ bool LoadCupTask(LPCTSTR szFileName) {
             // 2. and all successive columns, separated by commas
             //       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
             //       same as the Long name of a waypoint listed above the Related tasks.
-            WPtoAdd=NULL;
-            Entries =   CupStringToFieldArray(szString);
 
 
-            if (i++ != (TaskIndex))  // load selected task
+            if (i++ != (SelectedTaskIndex))  // load selected task
             {
               TaskValid = false;
             }
             else
             {
-        	TaskValid = true;
+                TaskValid = true;
+        	TaskFound = true;
         	SectorType=SECTOR;  // normal sector by default if no other ObsZone parameter
-                uint Idx =1;
-                if(Entries[0].size() == 0)
-                  StartupStore(_T(". no Task name %s"), NEWLINE);
-                else
-                  StartupStore(_T(". Task name %s %s"), Entries[0].c_str()  ,NEWLINE);
+        	AATEnabled = false; // racing task by default, if AAT will overwrite this
 
-                while (bLoadComplet && (Idx < (Entries.size()))) {
-                    if (idxTP < MAXTASKPOINTS) {
-                    _sntprintf(TpCode,NAME_SIZE, _T("%s"), Entries[Idx++].c_str() );
-                        mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
-                        if(!ISGAAIRCRAFT) {
-                            if (It != mapWaypoint.end()) {
-                                if (bTakeOff) {
-                                    // skip TakeOff Set At Home Waypoint
-                                    int ix = FindOrAddWaypoint(&(It->second),false);
-                                    if (ix>=0) {
-#if 0 // REMOVE
-                                        // We must not change HomeWaypoint without user knowing!
-                                        // The takeoff and homewaypoint are independent from task.
-                                        // In addition, this is a bug because on next run the index is invalid
-                                        // and we have no more HowWaypoint!
-                                        HomeWaypoint = ix;
-#endif
-                                        bTakeOff = false;
-                                    }
-#if BUGSTOP
-                                    else LKASSERT(0); // .. else is unmanaged, TODO
-#endif
-                                } else {
-                                  if(Idx < Entries.size())
-                                    if( _tcscmp(Entries[Idx].c_str(), TpCode) !=0) // doublets?
-                                    {
-                                      int ix =  FindOrAddWaypoint(&(It->second),false);
-                                      if (ix>=0) Task[idxTP++].Index = ix;
-                                    }
-                                }
-                                bLastInvalid=false;
-                            } else {
-                                // An invalid takeoff, probably a "???" , which we ignore
-#if TESTBENCH
-                                if (bTakeOff) StartupStore(_T("....... CUP Takeoff not found: <%s>\n"),TpCode);
-#endif
-                                // in any case bTakeOff now is false
-                                bTakeOff=false;
-                                bLastInvalid=true;
-                            }
-                        } else { //ISGAIRRCRAFT
-                            if(It != mapWaypoint.end()) {
-                                if(WPtoAdd!=NULL) {
-                                    //add what we found in previous cycle: it was not the last one
-                                    int ix = FindOrAddWaypoint(WPtoAdd,false);
-                                    if (ix>=0) Task[idxTP++].Index = ix;
-#if BUGSTOP
-                                    else LKASSERT(0); // .. else is unmanaged, TODO
-#endif
-                                }
-                                if (bTakeOff) { //it's the first: may be we have a corresponding airfield
-                                    //look for departure airfield and add it
-                                    int ix = FindOrAddWaypoint(&(It->second),true);
-                                    if (ix>=0) {
-                                        Task[idxTP++].Index = ix;
-                                        bTakeOff = false;
-                                    }
-#if BUGSTOP
-                                    else LKASSERT(0); // .. else is unmanaged, TODO
-#endif
-                                } else WPtoAdd=&(It->second); //store it for next cycle (may be it is the last one)
-                            }
-                        }
-                    } else {
-                        bLoadComplet = false;
-                    }
+                if(Entries[0].size() == 0)
+                {
+                  StartupStore(_T(". no Task name, named it %s%i %s"), MsgToken(699),i, NEWLINE);// _@M699_ "Task"
+                  if(TaskLine != NULL)
+                    _sntprintf(TaskLine,READLINE_LENGTH,_T("%s%i%s"),MsgToken(699),i,szString);  // _@M699_ "Task"
                 }
-                if(ISGAAIRCRAFT) { //For GA: check if we have an airport corresponding to the last WP
-                    if(WPtoAdd!=NULL) { //if we have the last one (probably an airfield) still to add...
-                        if(idxTP<MAXTASKPOINTS) {
-                            int ix=FindOrAddWaypoint(WPtoAdd,true); //look for arrival airport and add it
-                            if (ix>=0) {
-                                Task[idxTP++].Index= ix;
-                            }
-#if BUGSTOP
-                            else LKASSERT(0); // .. else is unmanaged, TODO
-#endif
-                        }
-                        else bLoadComplet=false;
-                    }
+                else
+                {
+                  StartupStore(_T(". read Task %s %s"), Entries[0].c_str()  ,NEWLINE);
+                  if(TaskLine != NULL)
+		    _tcscpy(TaskLine, szString );
                 }
+
+
+
+                bLoadComplet = ConvertStringToTask( szString, mapWaypoint);
                 FileSection = Option;
               }
             break;
           case Option:
             if (TaskValid)  // load option for selected task only
             {
-              if ((pToken = strsep_r(szTmp, TEXT(","), &pWClast)) != NULL) {
-                if (_tcscmp(pToken, _T("Options")) == 0) {
-                    StartupStore(_T("..Cup Task Options: %s %s"),szString, NEWLINE);
-                      int ParIdx=0;
-                      while (ExtractOption(szString, szTmp, ParIdx++))
-                      {
-#if TESTBENCH                            
-                        StartupStore(_T("..Cup Task Options Par%i: %s %s"),ParIdx,pToken, NEWLINE);
-#endif
-                        pToken = szTmp;
-                        if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
-                            // Opening of start line
-                            PGNumberOfGates = 1;
-                            StrToTime(pToken + 8, &PGOpenTimeH, &PGOpenTimeM);
-                        } else if (_tcsstr(pToken, _T("TaskTime=")) == pToken) {
-                            // Designated Time for the task
-                            StrToTime(pToken + 9, &hh, &mm, &ss);
-                            StartupStore(_T("..Cup Task Time:(%02i:%02i) %imin  %s"),hh,mm,(hh*60+mm), NEWLINE);
-                            AATTaskLength =  hh*60+mm+ss/60;
+	      if (_tcsstr(pToken, _T("Options")) == pToken)
+	      {
+		  size_t ParIdx=1;
+		  while ( ParIdx <  Entries.size() )
+		  {
+		    pToken = (TCHAR*)Entries[ParIdx++].c_str() ;
 
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("WpDis=")) == pToken) {
-                            // Task distance calculation. False = use fixes, True = use waypoints
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("NearDis=")) == pToken) {
-                            // Distance tolerance
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("NearAlt=")) == pToken) {
-                            // Altitude tolerance
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("MinDis=")) == pToken) {
-                            // Uncompleted leg.
-                            // False = calculate maximum distance from last observation zone.
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("RandomOrder=")) == pToken) {
-                            // if true, then Random order of waypoints is checked
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("MaxPts=")) == pToken) {
-                            // Maximum number of points
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("BeforePts=")) == pToken) {
-                            // Number of mandatory waypoints at the beginning. 1 means start line only, two means
-                            //      start line plus first point in task sequence (Task line).
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("AfterPts=")) == pToken) {
-                            // Number of mandatory waypoints at the end. 1 means finish line only, two means finish line
-                            //      and one point before finish in task sequence (Task line).
-                            // TODO :
-                        } else if (_tcsstr(pToken, _T("Bonus=")) == pToken) {
-                            // Bonus for crossing the finish line
-                            // TODO :
-                        }
-                    }
+		    if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
+			// Opening of start line
+			PGNumberOfGates = 1;
+			StrToTime(pToken + 8, &PGOpenTimeH, &PGOpenTimeM);
+		    } else if (_tcsstr(pToken, _T("TaskTime=")) == pToken) {
+			// Designated Time for the task
+			StrToTime(pToken + 9, &hh, &mm, &ss);
+//			StartupStore(_T("..Cup Task Time:(%02i:%02i) %imin  %s"),hh,mm,(hh*60+mm), NEWLINE);
+			AATTaskLength =  hh*60+mm+ss/60;
+
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("WpDis=")) == pToken) {
+			// Task distance calculation. False = use fixes, True = use waypoints
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("NearDis=")) == pToken) {
+			// Distance tolerance
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("NearAlt=")) == pToken) {
+			// Altitude tolerance
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("MinDis=")) == pToken) {
+			// Uncompleted leg.
+			// False = calculate maximum distance from last observation zone.
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("RandomOrder=")) == pToken) {
+			// if true, then Random order of waypoints is checked
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("MaxPts=")) == pToken) {
+			// Maximum number of points
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("BeforePts=")) == pToken) {
+			// Number of mandatory waypoints at the beginning. 1 means start line only, two means
+			//      start line plus first point in task sequence (Task line).
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("AfterPts=")) == pToken) {
+			// Number of mandatory waypoints at the end. 1 means finish line only, two means finish line
+			//      and one point before finish in task sequence (Task line).
+			// TODO :
+		    } else if (_tcsstr(pToken, _T("Bonus=")) == pToken) {
+			// Bonus for crossing the finish line
+			// TODO :
+		    }
+		}
                 } else if (_tcsstr(pToken, _T("ObsZone=")) == pToken) {
                     TCHAR *sz = NULL;
                     CupObsZoneUpdater TmpZone;
-                    ExtractOption(szString, szTmp, 0);  pToken = szTmp;
-                    TmpZone.mIdx = _tcstol(pToken + 8, &sz, 10);
+                    TmpZone.mIdx = _tcstol(pToken + 8, NULL, 10);
                     if (TmpZone.mIdx < MAXTASKPOINTS) {
-                          int ParIdx=1;
-                          while (ExtractOption(szString, szTmp, ParIdx++))
+                          size_t ParIdx=1;
+                          while ( ParIdx <  Entries.size() )
                           {
-                            pToken = szTmp;
-#if TESTBENCH                            
-                            StartupStore(_T("..Cup Task ObsZone %i Par%i: %s %s"),(int)TmpZone.mIdx ,ParIdx,pToken, NEWLINE);
-#endif                            
+                            pToken = (TCHAR*)Entries[ParIdx++].c_str() ;
+
                             if (_tcsstr(pToken, _T("Style=")) == pToken) {
                                 // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point
                                 TmpZone.mType = _tcstol(pToken + 6, &sz, 10);
@@ -616,6 +559,7 @@ bool LoadCupTask(LPCTSTR szFileName) {
                                 TmpZone.mA12 = _tcstod(pToken + 4, &sz);
                             } else if (_tcsstr(pToken, _T("AAT=")) == pToken) {
                                 // AAT
+                        	AATEnabled = true;
                                 if( _tcstod(pToken + 4, &sz) > 0) // AAT = 1?
                                   SectorType=CIRCLE;
                             } else if (_tcsstr(pToken, _T("Line=")) == pToken) {
@@ -638,7 +582,6 @@ bool LoadCupTask(LPCTSTR szFileName) {
                     }
                 }
               }
-            }
             break;
           case none:
           default:
@@ -664,12 +607,82 @@ bool LoadCupTask(LPCTSTR szFileName) {
   }
   mapWaypoint.clear();
 
-  return ValidTaskPoint(0);
+  return TaskFound;
 }
 
 
 
 
+bool LoadCupTask(LPCTSTR szFileName) {
+TCHAR szString[READLINE_LENGTH + 1];
+  for (int i =0 ; i< MAX_TASKS;i++)
+    szTaskStrings[ i] = NULL;
+
+  iNO_Tasks=0;
+
+
+  while(LoadCupTaskSingle(szFileName,szString, iNO_Tasks)&&( iNO_Tasks < MAX_TASKS ))
+  {
+    LockTaskData();
+    RefreshTask();
+    szTaskStrings[ iNO_Tasks] =  new TCHAR[READLINE_LENGTH + 1];
+    size_t NoPts = 0;
+    double lengthtotal =0;
+    int iLastIdx = -1;
+    bool bClosedTask = false;
+    for (size_t i=0; i<MAXTASKPOINTS; i++) {
+        if (Task[i].Index != -1) {
+            lengthtotal += Task[i].Leg;
+            NoPts = i;
+            iLastIdx = Task[i].Index;
+        }
+    }
+    if(iLastIdx == Task[0].Index )
+    {
+      bClosedTask = true;
+    }
+
+    NoPts-=1;
+    if(NoPts > 7) NoPts =7;
+    if(NoPts < 0) NoPts =0;
+    if(  szTaskStrings[ iNO_Tasks] != NULL)
+    {
+      if(bClosedTask)
+      {
+          if (AATEnabled)
+              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M699_ "Task"
+          else if (CALCULATED_INFO.TaskFAI)
+              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken(2432), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
+          else
+              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), MsgToken(2430 + NoPts), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString);
+      }
+      else
+      {
+        _sntprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[%s %.1f%s] %s") , MsgToken(2429) ,lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString); // MsgToken(2432)   ,
+      }
+    }
+    UnlockTaskData();
+    iNO_Tasks++;
+  }
+  TaskIndex =0;
+
+  dlgTaskSelectListShowModal();
+  if((TaskIndex >= 0) && (TaskIndex < MAX_TASKS))
+    LoadCupTaskSingle(szFileName,szString, TaskIndex);
+
+  LoadCupTaskSingle(szFileName,szString, TaskIndex);
+
+  for (int i =0 ; i< MAX_TASKS;i++)    // free dynamic memory
+    if(szTaskStrings[i] != NULL)
+      {
+        // StartupStore(_T("..Cup Task : delete dynamic memoryLine %i %s"), i,NEWLINE);
+        delete[] szTaskStrings[i];
+        szTaskStrings[i] = NULL;
+      }
+
+  return true;
+
+}
 
 
 static void OnEnterClicked(WndButton* pWnd) {
@@ -881,5 +894,4 @@ int dlgTaskSelectListShowModal(void) {
 
   return result;
 }
-
 
