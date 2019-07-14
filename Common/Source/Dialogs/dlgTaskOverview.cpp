@@ -125,13 +125,12 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
           }
         }
       } else {
-	 if(i==0)
- 	   _stprintf(sTmp, TEXT("%.1f %s"),  StartRadius*DISTANCEMODIFY,wpName);
-	 else
-	   if(i < (n-4))
-             _stprintf(sTmp, TEXT("%.1f %s"), SectorRadius*DISTANCEMODIFY, wpName);
-	   else
-	     _stprintf(sTmp, TEXT("%.1f %s"), FinishRadius*DISTANCEMODIFY, wpName);
+        if (i == 0)
+          _stprintf(sTmp, TEXT("%.1f %s"), StartRadius * DISTANCEMODIFY, wpName);
+        else if (i < (n - 4))
+          _stprintf(sTmp, TEXT("%.1f %s"), SectorRadius * DISTANCEMODIFY, wpName);
+        else
+          _stprintf(sTmp, TEXT("%.1f %s"), FinishRadius * DISTANCEMODIFY, wpName);
       }
 
       Surface.SetBackgroundTransparent();
