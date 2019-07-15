@@ -25,14 +25,7 @@ int DetectCurrentTime() {
 
 // simple localtime with no 24h exceeding
 int LocalTime() {
-  int localtime = (int)GPS_INFO.Time;
+  int localtime = GPS_INFO.Time;
   localtime += GetUTCOffset();
-  if (localtime<0) {
-	localtime+= 86400;
-  } else {
-	if (localtime>86400) {
-		localtime -=86400;
-	}
-  }
-  return localtime;
+  return (localtime % 86400);
 }
