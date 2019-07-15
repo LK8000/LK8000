@@ -152,6 +152,29 @@ final class BluetoothHelper {
     if (device == null)
       return null;
 
+
+    if (hasLe && BluetoothDevice.DEVICE_TYPE_UNKNOWN == device.getType()) {
+
+      BluetoothAdapter.LeScanCallback callback = (device1, rssi, scanRecord) -> {};
+      BluetoothHelper.startLeScan(callback);
+
+      int run = 0;
+      while( (run++ < 10) && BluetoothDevice.DEVICE_TYPE_UNKNOWN == device.getType()) {
+        Log.d(TAG, String.format(
+                "Bluetooth device \"%s\" (%s) is a UNKNOW device,wait scan ...",
+                device.getName(), device.getAddress()));
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+          break;
+        }
+      }
+
+      BluetoothHelper.stopLeScan(callback);
+    }
+
+
     if (hasLe && BluetoothDevice.DEVICE_TYPE_LE == device.getType()) {
       Log.d(TAG, String.format(
                                "Bluetooth device \"%s\" (%s) is a LE device, trying to connect using GATT...",
