@@ -593,16 +593,23 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 		return TRUE;
 	}
 
-	// Even with no valid position, we let RMC set the time and date if valid
+
 	long gy, gm, gd;
-	gy = _tcstol(&params[8][4], &Stop, 10) + 2000;   
+	gy = _tcstol(&params[8][4], &Stop, 10) ;
+	if(gpsValid) {
+	  gy += 2000;
+	}
+	else {
+	  gy += 1900;
+	}
+
 	params[8][4] = '\0';
 	gm = _tcstol(&params[8][2], &Stop, 10); 
 	params[8][2] = '\0';
 	gd = _tcstol(&params[8][0], &Stop, 10); 
 
 	// SeeYou PC is sending NMEA sentences with RMC date 2072-02-27
-	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) { 
+	if ( (gpsValid) && ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) {
 		pGPS->Year = gy;
 		pGPS->Month = gm;
 		pGPS->Day = gd;
