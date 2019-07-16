@@ -45,8 +45,8 @@ TCHAR *AltDiffToText(double youralt, double wpalt) {
 }
 #endif
 
-TCHAR *WhatTimeIsIt(void) {
-  static TCHAR time_temp[60];
+const TCHAR *WhatTimeIsIt(void) {
+  thread_local static TCHAR time_temp[48];
   TCHAR tlocal[20];
   TCHAR tutc[20];
 
