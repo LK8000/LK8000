@@ -43,6 +43,7 @@ void NMEAParser::_Reset(void) {
   expire = true;
   nSatellites = 0;
   gpsValid = false;
+  dateValid = false;
   isFlarm = false;
   activeGPS = true;
   GGAAvailable = FALSE;
@@ -585,13 +586,20 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   // say we are updated every time we get this,
   // so infoboxes get refreshed if GPS connected
   // the RMC sentence marks the start of a new fix, so we force the old data to be saved for calculations
-        // note that Condor sends no date..
-        if ((_tcslen(params[8]) <6) && !DevIsCondor) {
+
+	// note that Condor sends no date..
+	if ((_tcslen(params[8]) <6) && !DevIsCondor) {
 		#if TESTBENCH
 		StartupStore(_T(".... RMC date field empty, skip sentence!\n"));
 		#endif
 		return TRUE;
 	}
+
+	if(!gpsValid && !dateValid) {
+		// we have valid date with invalid fix only if we have already got valid fix ...
+		return TRUE;
+	}
+	dateValid = true;
 
 	// Even with no valid position, we let RMC set the time and date if valid
 	long gy, gm, gd;

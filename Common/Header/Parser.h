@@ -194,6 +194,7 @@ class NMEAParser {
   bool connected;
   bool expire; // false for device not sending data when no valid fix [ default is true ]
   bool gpsValid;
+  bool dateValid; // true if we got RMC sentence with valid fix.
   int nSatellites;
 
   bool activeGPS;
