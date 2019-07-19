@@ -114,6 +114,12 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
   event_queue = new EventQueue();
 
+
+#ifdef __arm__
+  is_dithered = StringIsEqual(native_view->GetProduct(), "Poke_Pro");
+#endif
+
+
   if (have_ioio) {
     try {
       ioio_helper = new IOIOHelper(env);
