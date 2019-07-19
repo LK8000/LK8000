@@ -22,6 +22,7 @@
 #include "Screen/BrushReference.h"
 #include "InputEvents.h"
 #include "ScreenGeometry.h"
+#include "Asset.hpp"
 
 extern POINT startScreen;
 
@@ -540,15 +541,9 @@ bool bInvCol =  INVERTCOLORS;
  *********************************************************************************/
 if(bInvCol)
 {
-#ifdef DITHER
-  rgbDrawColor = RGB_WHITENOREV;
-  rgbGridColor = RGB_WHITENOREV;
-  hGreenPen.Create(PEN_SOLID, ScreenThinSize,RGB_WHITENOREV);
-#else
-  rgbDrawColor = RGB_GREY;
-  rgbGridColor = RGB_GREY;
-  hGreenPen.Create(PEN_SOLID,ScreenThinSize,RGB_GREEN);
-#endif
+  rgbDrawColor = IsDithered() ? RGB_WHITENOREV : RGB_GREY;
+  rgbGridColor = IsDithered() ? RGB_WHITENOREV : RGB_GREY;
+  hGreenPen.Create(PEN_SOLID, ScreenThinSize, IsDithered() ? RGB_WHITENOREV : RGB_GREEN);
   rgb_targetlinecol = RGB_LIGHTBLUE;
   hDrawPen   = LKPen_Grey_N0;
   hDrawBrush = LKBrush_White;
@@ -556,15 +551,9 @@ if(bInvCol)
 }
 else
 {
-#ifdef DITHER
-  rgbDrawColor = RGB_BLACK;
-  rgbGridColor = RGB_BLACK;
-  hGreenPen.Create(PEN_SOLID, ScreenThinSize,RGB_SBLACK);
-#else
-  rgbDrawColor = RGB_DARKGREY;
-  rgbGridColor = RGB_DARKGREY;
-  hGreenPen.Create(PEN_SOLID, NIBLSCALE (1),RGB_DARKGREY);
-#endif
+  rgbDrawColor = IsDithered() ? RGB_BLACK : RGB_DARKGREY;
+  rgbGridColor = IsDithered() ? RGB_BLACK : RGB_DARKGREY;
+  hGreenPen.Create(PEN_SOLID, ScreenThinSize,IsDithered() ? RGB_SBLACK : RGB_DARKGREY);
   rgb_targetlinecol = RGB_BLUE;
   hDrawPen   = LKPen_Grey_N0; // GetStockObject( WHITE_PEN );
   hDrawBrush = LKBrush_Black;

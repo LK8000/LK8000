@@ -1204,8 +1204,6 @@ WindowControl *LastFocusControl = NULL;
 
 void InitWindowControlModule(void);
 
-static LKColor bkColor = RGB_WINBACKGROUND; // PETROL
-static LKColor fgColor = RGB_WINFOREGROUND; // WHITE
 int WindowControl::InstCount=0;
 
 WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name, 
@@ -1232,8 +1230,8 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 
   InitWindowControlModule();
 
-  mColorBack = bkColor; // PETROL
-  mColorFore = fgColor; // WHITE
+  mColorBack = RGB_WINBACKGROUND; // PETROL
+  mColorFore = RGB_WINFOREGROUND; // WHITE
 
   InstCount++;
 

@@ -16,6 +16,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "LKStyle.h"
+#include "Asset.hpp"
 
 extern int InfoPageTopLineSeparator;
 

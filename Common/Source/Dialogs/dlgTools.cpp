@@ -17,6 +17,7 @@
 #include "utils/stl_utils.h"
 #include "LKInterface.h"
 #include "Event/Event.h"
+#include "Asset.hpp"
 
 #ifdef KOBO
     #include <linux/input.h>

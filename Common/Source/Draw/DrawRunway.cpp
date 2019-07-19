@@ -13,6 +13,7 @@
 #include <string.h>
 #include "ScreenGeometry.h"
 #include "Draw/ScreenProjection.h"
+#include "Asset.hpp"
 
 /**
  * @brief Draw Runway on map

@@ -20,6 +20,7 @@
 #include "ColorRamps.h"
 #include "Kobo/Model.hpp"
 #include "Util/Clamp.hpp"
+#include "Asset.hpp"
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
 #include <arm_neon.h>
@@ -859,16 +860,13 @@ private:
         color_table[mag + 64][height] = std::forward<BGRColor>(color);
     }
 
-    static constexpr BGRColor GetInvalidColor() {
-#ifdef DITHER
-        return BGRColor(255, 255, 255); // White terrain invalid
-#else
-        return BGRColor(194, 223, 197); // LCD green terrain invalid
-#endif
+    static BGRColor GetInvalidColor() {
+      return IsDithered()
+                 ? BGRColor(255, 255, 255) // White terrain invalid
+                 : BGRColor(194, 223, 197); // LCD green terrain invalid
     }
 
-
-public:
+  public:
     void ColorTable() {
         color_ramp = &terrain_colors[TerrainRamp];
         if (color_ramp == lastColorRamp &&

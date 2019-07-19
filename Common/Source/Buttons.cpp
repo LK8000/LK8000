@@ -16,6 +16,7 @@
 #include "Window/WndTextLabel.h"
 #include "dlgTools.h"
 #include "ScreenGeometry.h"
+#include "Asset.hpp"
 using std::placeholders::_1;
 
 class MenuButton : public WndTextLabel {

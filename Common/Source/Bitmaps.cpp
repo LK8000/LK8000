@@ -14,6 +14,7 @@
 #define STATIC_BITMAPS
 #include "Bitmaps.h"
 #include "resource_data.h"
+#include "Asset.hpp"
 
 
 using std::placeholders::_1;

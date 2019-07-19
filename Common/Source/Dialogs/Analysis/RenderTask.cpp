@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKObjects.h"
 #include "DrawFAIOpti.h"
+#include "Asset.hpp"
 
 void Statistics::RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode)
 {

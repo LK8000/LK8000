@@ -15,6 +15,7 @@
 #include "DoInits.h"
 #include "McReady.h"
 #include "Util/UTF8.hpp"
+#include "Asset.hpp"
 
 
 extern void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col);
@@ -172,9 +173,9 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
     } else {
         barTextColor = RGB_WHITE;
         Surface.FillRect(&nrc, brush_bar);
-        #ifdef DITHER
-        VDrawLine(Surface,rc, rc.left,rc.bottom-BottomSize,rc.right,rc.bottom-BottomSize,INVERTCOLORS?RGB_WHITE:RGB_BLACK);
-        #endif
+        if(IsDithered()) {
+            VDrawLine(Surface,rc, rc.left,rc.bottom-BottomSize,rc.right,rc.bottom-BottomSize,INVERTCOLORS?RGB_WHITE:RGB_BLACK);
+        }
     }
 
   // NAVBOXES

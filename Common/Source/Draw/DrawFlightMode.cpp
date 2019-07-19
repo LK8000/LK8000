@@ -10,6 +10,8 @@
 #include "DoInits.h"
 #include "Bitmaps.h"
 #include "Multimap.h"
+#include "Asset.hpp"
+
 
 extern bool FastZoom; // QUICKDRAW
 
@@ -209,12 +211,9 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
               ptmpBitmap = &hLoggerDisabled;
       }
   }
-  #ifdef DITHER
-  if ( (!DisableAutoLogger && (LoggerActive || !flip)) && ptmpBitmap)
-  #else
-  if (ptmpBitmap)
-  #endif
+  if ( (!DisableAutoLogger && (LoggerActive || !flip)) && ptmpBitmap) {
       ptmpBitmap->Draw(Surface, loggerPoint.x, loggerPoint.y, loggerNewSize.cx, loggerNewSize.cy);
+  }
 
   //
   // Big icon

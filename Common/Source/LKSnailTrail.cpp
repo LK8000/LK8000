@@ -10,8 +10,8 @@
 
 #include "LKObjects.h"
 #include "ScreenGeometry.h"
-
 #include <functional>
+#include "Asset.hpp"
 using std::placeholders::_1;
 
 

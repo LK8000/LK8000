@@ -86,19 +86,11 @@
 #define RGB_TASKLINECOL RGB_DGREEN1
 
 
-#ifdef GREYSCALE
-#define RGB_BUTTONS	RGB_WHITE // Color of Menu Buttons
-#define RGB_WINBACKGROUND	RGB_WHITE // default BackGronud color for WndForm
-#define RGB_WINFOREGROUND	RGB_BLACK // default foreground color for WndForm (text color)
-#define RGB_HIGHTLIGHT      RGB_GREY // default color for Active Window
-#define RGB_LISTBG          RGB_WHITE
-#else
-#define RGB_BUTTONS	RGB_BUTTGREEN
-#define RGB_WINBACKGROUND	RGB_PETROL
-#define RGB_WINFOREGROUND	RGB_WHITE
-#define RGB_HIGHTLIGHT      RGB_YELLOW // default color for Active Window
-#define RGB_LISTBG          RGB_LCDGREEN
-#endif
+#define RGB_BUTTONS	      (IsDithered() ? RGB_WHITE : RGB_BUTTGREEN) // Color of Menu Buttons
+#define RGB_WINBACKGROUND	(IsDithered() ? RGB_WHITE : RGB_PETROL) // default BackGronud color for WndForm
+#define RGB_WINFOREGROUND	(IsDithered() ? RGB_BLACK : RGB_WHITE) // default foreground color for WndForm (text color)
+#define RGB_HIGHTLIGHT     (IsDithered() ? RGB_GREY :  RGB_YELLOW) // default color for Active Window
+#define RGB_LISTBG         (IsDithered() ? RGB_WHITE : RGB_LCDGREEN)
 
 
 // The box title background, originally yellow

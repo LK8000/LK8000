@@ -14,6 +14,7 @@
 #include "Sound/Sound.h"
 #include "Topology.h"
 #include "resource.h"
+#include "Asset.hpp"
 
 static WndForm *wf=NULL;
 

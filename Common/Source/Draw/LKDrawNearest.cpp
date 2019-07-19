@@ -13,6 +13,7 @@
 #include "DoInits.h"
 #include "InputEvents.h"
 #include "ScreenGeometry.h"
+#include "Asset.hpp"
 
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 
@@ -709,11 +710,10 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
     }
 
-    #ifdef DITHER
-    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p1, p2, (INVERTCOLORS ? RGB_WHITE : RGB_BLACK), rc);
-    #else
-    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p1, p2, (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN), rc);
-    #endif
+    LKColor color = IsDithered()
+            ? (INVERTCOLORS ? RGB_WHITE : RGB_BLACK)
+            : (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN);
+    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p1, p2, color, rc);
     Surface.SelectObject(LK8InfoNearestFont); // Heading line
 
     //
@@ -1277,11 +1277,13 @@ _KeepOldAirspacesValues:
         // HIGHLIGHT user selection. Bordering will not be the same, under the sun not visible!
         // TO BE CHECKED CAREFULLY
 #ifdef ENABLE_OPENGL
-#ifdef DITHER
-        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_WHITE : RGB_BLACK));
-#else
-        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN));
-#endif
+
+        LKColor color = IsDithered()
+                        ? (INVERTCOLORS ? RGB_WHITE : RGB_BLACK)
+                        : (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN);
+
+        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), color);
+
         Surface.SelectObject(SelectBorder);
         Surface.SelectObject(LK_HOLLOW_BRUSH);
         invsel.left -= NIBLSCALE(2); invsel.right += NIBLSCALE(2);

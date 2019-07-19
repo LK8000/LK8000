@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Sideview.h"
 #include "LKObjects.h"
+#include "Asset.hpp"
 
 
 // draw aircraft

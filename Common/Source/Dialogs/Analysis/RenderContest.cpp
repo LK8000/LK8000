@@ -11,6 +11,7 @@
 #include "LKObjects.h"
 #include "NavFunctions.h"
 #include "DrawFAIOpti.h"
+#include "Asset.hpp"
 CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
 
 /*****************************************************************
