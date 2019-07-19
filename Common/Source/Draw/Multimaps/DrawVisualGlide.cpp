@@ -201,19 +201,19 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     // Top part of visual rect, target is over us=unreachable=red
     trc.top = rci.top;
     trc.bottom = center.y - 1;
-    #ifndef DITHER
-    RenderSky(Surface, trc, RGB_WHITE, LKColor(150, 255, 150), GC_NO_COLOR_STEPS / 2);
-    #else
-    RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE, GC_NO_COLOR_STEPS / 2);
-    #endif
+    if (!IsDithered()) {
+        RenderSky(Surface, trc, RGB_WHITE, LKColor(150, 255, 150), GC_NO_COLOR_STEPS / 2);
+    } else {
+        RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE, GC_NO_COLOR_STEPS / 2);
+    }
     // Bottom part, target is below us=reachable=green
     trc.top = center.y + 1;
     trc.bottom = rci.bottom;
-    #ifndef DITHER
-    RenderSky(Surface, trc, LKColor(255, 150, 150), RGB_WHITE, GC_NO_COLOR_STEPS / 2);
-    #else
-    RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE,GC_NO_COLOR_STEPS / 2);
-    #endif
+    if (!IsDithered()) {
+        RenderSky(Surface, trc, LKColor(255, 150, 150), RGB_WHITE, GC_NO_COLOR_STEPS / 2);
+    } else {
+        RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE, GC_NO_COLOR_STEPS / 2);
+    }
 
     // Draw center line
     p1.x = rci.left + 1;

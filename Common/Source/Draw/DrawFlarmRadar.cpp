@@ -843,10 +843,10 @@ DiagrammStruct sDia;
    * draw sky
    *******************************************************/
 
-#ifndef DITHER
-   if(!bInvCol)
-     RenderSky( Surface, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
-#endif
+  if (!IsDithered()) {
+    if (!bInvCol)
+      RenderSky(Surface, rc, SKY_HORIZON_COL, SKY_SPACE_COL, GC_NO_COLOR_STEPS);
+  }
 
 
   double xtick = 0.001;

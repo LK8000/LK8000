@@ -27,7 +27,6 @@ static constexpr unsigned mmUTF8Symbol[] = {
     2360, // _@M2360_ "⑩"
 };
 
-#ifndef DITHER
 static constexpr LKColor mmUTF8Color[] = {
     LKColor(0,245,255),  // "Ⓜ"
     LKColor(0,255,127),  // "①"
@@ -43,7 +42,6 @@ static constexpr LKColor mmUTF8Color[] = {
 };
 
 static_assert(array_size(mmUTF8Color) == array_size(mmUTF8Symbol), "invalide array size");
-#endif
 
 static std::pair<const LKColor, const TCHAR*> GetUTF8MultimapSymbol(unsigned Number) {
     assert(Number < array_size(mmUTF8Symbol));
@@ -51,11 +49,10 @@ static std::pair<const LKColor, const TCHAR*> GetUTF8MultimapSymbol(unsigned Num
     const unsigned symbol_idx = Number < array_size(mmUTF8Symbol) ? Number : 0;
     const TCHAR* symbol = MsgToken(mmUTF8Symbol[symbol_idx]);
 
-#ifndef DITHER
-    const LKColor color = mmUTF8Color[symbol_idx];
-#else
-    const LKColor color = INVERTCOLORS ? RGB_WHITE : RGB_BLACK;
-#endif
+    LKColor color = mmUTF8Color[symbol_idx];
+    if (IsDithered()) {
+      color = INVERTCOLORS ? RGB_WHITE : RGB_BLACK ;
+    }
 
     return std::make_pair(color, symbol);
 }

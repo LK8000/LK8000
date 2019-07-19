@@ -221,12 +221,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_stprintf(Buffer,_T("error"));
 			break;
 	}
-        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], WTMODE_NORMAL, WTALIGN_LEFT,
-            #ifndef DITHER
-            RGB_LIGHTGREEN, false);
-            #else
-            RGB_WHITE, false);
-            #endif
+        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], WTMODE_NORMAL, WTALIGN_LEFT,IsDithered()?RGB_WHITE:RGB_LIGHTGREEN,false);
 
 	// R0 C1
 	icolor=RGB_WHITE;
@@ -998,19 +993,15 @@ label_HSI:
 		if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 			if(showVFRlanding) {
 				_stprintf(Buffer,TEXT("VFR %s"),MsgToken(931)); //TODO: toupper()
-				#ifndef DITHER
-				icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
-				#else
-				icolor=RGB_WHITE;
-				#endif
+				if (!IsDithered()) {
+					icolor = INVERTCOLORS ? RGB_YELLOW : RGB_DARKYELLOW;
+				} else {
+					icolor = RGB_WHITE;
+				}
 			}
 			if(showQFU) {
 				_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken(2179));
-				#ifndef DITHER
-				icolor=RGB_GREEN;
-				#else
-				icolor=RGB_WHITE;
-				#endif
+				icolor = IsDithered() ? RGB_WHITE : RGB_GREEN;
 			}
 		} else { //show next waypoint name
 			icolor=RGB_WHITE;
@@ -1225,10 +1216,10 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
         LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
   }
   Surface.SelectObject(LK8PanelSmallFont);
-  #ifndef DITHER
-  LKWriteText(Surface, BufferTitle, *columntitle,*row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
-  #else
-  LKWriteText(Surface, BufferTitle, *columntitle,*row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-  #endif
+	if (!IsDithered()) {
+		LKWriteText(Surface, BufferTitle, *columntitle, *row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
+	} else {
+		LKWriteText(Surface, BufferTitle, *columntitle, *row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+	}
 
 }
