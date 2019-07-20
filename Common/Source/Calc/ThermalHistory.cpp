@@ -78,7 +78,7 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
   ThermalHistory[i].Valid=false;
 
   TCHAR tstring[10];
-  Units::TimeToTextSimple(tstring,TimeLocal((int)ThTime));
+  Units::TimeToTextSimple(tstring,LocalTime(ThTime));
   
   _stprintf(ThermalHistory[i].Name,_T("th%s"),tstring);
   ThermalHistory[i].Time = ThTime;

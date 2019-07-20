@@ -922,13 +922,10 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
 }
 
 static void SetLocalTime(void) {
-  WndProperty* wp;
-  TCHAR temp[20];
-  Units::TimeToText(temp, 
-		    (int)TimeLocal((int)(GPS_INFO.Time)));
-  
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLocalTime"));
+  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpLocalTime"));
   if (wp) {
+    TCHAR temp[20];
+    Units::TimeToText(temp, LocalTime());
     wp->SetText(temp);
     wp->RefreshDisplay();
   }

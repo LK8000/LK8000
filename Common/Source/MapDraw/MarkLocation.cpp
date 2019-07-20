@@ -56,7 +56,7 @@ void MarkLocation(const double lon, const double lat, const double altitude)
 	}
 
 	char marktime[10], slat[20], slon[20], snear[50];
-	Units::TimeToTextSimple(tstring,TimeLocal((int)GPS_INFO.Time));
+	Units::TimeToTextSimple(tstring,LocalTime());
 	TCHAR2ascii(tstring,marktime,10);
 
 	LatitudeToCUPString(lat,tstring);

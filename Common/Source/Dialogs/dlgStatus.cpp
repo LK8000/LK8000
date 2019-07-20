@@ -399,15 +399,14 @@ static void UpdateValuesTimes(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLocalTime"));
   if (wp) {
-    Units::TimeToText(Temp, (int)DetectCurrentTime());
+    Units::TimeToText(Temp, LocalTime());
     wp->SetText(Temp);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTakeoffTime"));
   if (wp) {
     if (CALCULATED_INFO.FlightTime>0) {
-      Units::TimeToText(Temp,
-                        (int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
+      Units::TimeToText(Temp, LocalTime(CALCULATED_INFO.TakeOffTime));
       wp->SetText(Temp);
     } else {
       wp->SetText(TEXT(""));
@@ -417,9 +416,7 @@ static void UpdateValuesTimes(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLandingTime"));
   if (wp) {
     if (!CALCULATED_INFO.Flying) {
-      Units::TimeToText(Temp,
-                        (int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime
-                                              +CALCULATED_INFO.FlightTime)));
+      Units::TimeToText(Temp, LocalTime(CALCULATED_INFO.TakeOffTime + CALCULATED_INFO.FlightTime));
       wp->SetText(Temp);
     } else {
       wp->SetText(TEXT(""));
@@ -571,7 +568,7 @@ static void UpdateValuesRules(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartTime"));
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
-      Units::TimeToText(Temp, (int)TimeLocal((int)(CALCULATED_INFO.TaskStartTime)));
+      Units::TimeToText(Temp, LocalTime(CALCULATED_INFO.TaskStartTime));
       wp->SetText(Temp);
     } else {
       wp->SetText(TEXT(""));

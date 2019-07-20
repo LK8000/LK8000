@@ -337,7 +337,7 @@ void TaskStartMessage(void) {
   TCHAR TempTime[40];
   TCHAR TempAlt[40];
   TCHAR TempSpeed[40];
-  Units::TimeToText(TempTime, (int)TimeLocal((int)CALCULATED_INFO.TaskStartTime));
+  Units::TimeToText(TempTime, LocalTime(CALCULATED_INFO.TaskStartTime));
   _stprintf(TempAlt, TEXT("%.0f %s"), CALCULATED_INFO.TaskStartAltitude*ALTITUDEMODIFY, Units::GetAltitudeName());
   _stprintf(TempSpeed, TEXT("%.0f %s"), CALCULATED_INFO.TaskStartSpeed*TASKSPEEDMODIFY, Units::GetTaskSpeedName());
 
@@ -365,7 +365,7 @@ void TaskFinishMessage(void) {
   TCHAR TempSpeed[40];
   TCHAR TempTskSpeed[40];
 
-  Units::TimeToText(TempTime, (int)TimeLocal((int)GPS_INFO.Time));
+  Units::TimeToText(TempTime, LocalTime());
   _stprintf(TempAlt, TEXT("%.0f %s"), CALCULATED_INFO.NavAltitude*ALTITUDEMODIFY, Units::GetAltitudeName());
   _stprintf(TempSpeed, TEXT("%.0f %s"), GPS_INFO.Speed*TASKSPEEDMODIFY, Units::GetTaskSpeedName());
   _stprintf(TempTskSpeed, TEXT("%.2f %s"), CALCULATED_INFO.TaskSpeedAchieved*TASKSPEEDMODIFY, Units::GetTaskSpeedName());

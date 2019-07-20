@@ -213,10 +213,11 @@ protected:
       = DoSunEphemeris(
                        WayPointList[Task[ActiveTaskPoint].Index].Longitude,
                        WayPointList[Task[ActiveTaskPoint].Index].Latitude);
-    double d1 = (Calculated->TaskTimeToGo+DetectCurrentTime())/3600;
-    double d0 = (DetectCurrentTime())/3600;
 
-    bool past_sunset = (d1>sunsettime) && (d0<sunsettime);
+    const double d1 = (Calculated->TaskTimeToGo + LocalTime()) / 3600;
+    const double d0 = (LocalTime() / 3600);
+
+    const bool past_sunset = (d1>sunsettime) && (d0<sunsettime);
 
     if (past_sunset && !DevIsCondor) {
       // notify on change only

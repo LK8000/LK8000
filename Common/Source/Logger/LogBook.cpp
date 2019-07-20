@@ -135,8 +135,8 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   //
   // Takeoff time
   //
-  Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
-  Units::TimeToText(TUtc, (int)CALCULATED_INFO.TakeOffTime);
+  Units::TimeToTextS(Temp, LocalTime(CALCULATED_INFO.TakeOffTime));
+  Units::TimeToText(TUtc, CALCULATED_INFO.TakeOffTime);
 
   _stprintf(line,_T("%s:  %s  (UTC %s)"),MsgToken(680),Temp,TUtc);
   file.WriteLn(line);
@@ -147,8 +147,9 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   // Landing time
   //
   if (!CALCULATED_INFO.Flying || welandedforsure ) {
-    Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
-    Units::TimeToText(TUtc, (int)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime));
+    const int utc_landing_time = CALCULATED_INFO.TakeOffTime + CALCULATED_INFO.FlightTime;
+    Units::TimeToTextS(Temp, LocalTime(utc_landing_time));
+    Units::TimeToText(TUtc,  utc_landing_time);
     _stprintf(line,_T("%s:  %s  (UTC %s)"),MsgToken(386),Temp,TUtc);
     file.WriteLn(line);
 
@@ -177,7 +178,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   if (ISGLIDER) {
     // Attention, FFStartTime is 0 for CAR,SIMMODE and other situations
     if ( CALCULATED_INFO.FreeFlightStartTime>0 ) {
-        Units::TimeToTextS(Temp, (int)TimeLocal((long)CALCULATED_INFO.FreeFlightStartTime));
+        Units::TimeToTextS(Temp, LocalTime(CALCULATED_INFO.FreeFlightStartTime));
         _stprintf(line,_T("%s: %s  @%.0f%s QNH"),
             MsgToken(1754),
             Temp,
@@ -277,12 +278,13 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   }
 
 
-  Units::TimeToTextS(stakeoff,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
-  Units::TimeToTextS(stakeoffutc, (int)CALCULATED_INFO.TakeOffTime);
+  Units::TimeToTextS(stakeoff,LocalTime(CALCULATED_INFO.TakeOffTime));
+  Units::TimeToTextS(stakeoffutc, CALCULATED_INFO.TakeOffTime);
 
   if (!CALCULATED_INFO.Flying || welandedforsure) {
-    Units::TimeToTextS(slanding,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
-    Units::TimeToTextS(slandingutc, (int)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime));
+    const int utc_landing_time = CALCULATED_INFO.TakeOffTime + CALCULATED_INFO.FlightTime;
+    Units::TimeToTextS(slanding, LocalTime(utc_landing_time));
+    Units::TimeToTextS(slandingutc, utc_landing_time);
   } else {
     #if TESTBENCH
     StartupStore(_T(".... LogBookCSV, logging but still flying!%s"),NEWLINE);
@@ -370,13 +372,14 @@ bool UpdateLogBookLST(bool welandedforsure) {
     file.WriteLn(line);
   }
 
-  Units::TimeToTextS(stakeoff,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
-  Units::TimeToText(Temp, (int)CALCULATED_INFO.TakeOffTime);
+  Units::TimeToTextS(stakeoff,LocalTime(CALCULATED_INFO.TakeOffTime));
+  Units::TimeToText(Temp, CALCULATED_INFO.TakeOffTime);
   _stprintf(stakeoffutc,_T("(UTC %s)"),Temp);
 
   if (!CALCULATED_INFO.Flying || welandedforsure) {
-    Units::TimeToTextS(slanding,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
-    Units::TimeToText(Temp, (int)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime));
+    const int utc_landing_time = CALCULATED_INFO.TakeOffTime + CALCULATED_INFO.FlightTime;
+    Units::TimeToTextS(slanding,LocalTime(utc_landing_time));
+    Units::TimeToText(Temp, utc_landing_time);
     _stprintf(slandingutc,_T("(UTC %s)"),Temp);
   } else {
     #if TESTBENCH

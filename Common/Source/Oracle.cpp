@@ -50,8 +50,8 @@ const TCHAR *WhatTimeIsIt(void) {
   TCHAR tlocal[20];
   TCHAR tutc[20];
 
-  Units::TimeToTextS(tlocal, (int)TimeLocal((int)(GPS_INFO.Time))),
-  Units::TimeToText(tutc, (int)GPS_INFO.Time);
+  Units::TimeToTextS(tlocal, LocalTime()),
+  Units::TimeToText(tutc, GPS_INFO.Time);
   _stprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
   if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0))
      _stprintf(time_temp, _T("h%s (NO FIX)"), tlocal);

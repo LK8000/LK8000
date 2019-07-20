@@ -15,8 +15,8 @@ void	MacCreadyProcessing(int UpDown);
 void	NextUpDown(int UpDown);
 
 int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-int DetectCurrentTime(void);
-int LocalTime(void);
-int TimeLocal(int d);
+
+int LocalTime();
+int LocalTime(int utc_time);
 
 #endif

@@ -8,24 +8,14 @@
 
 #include "externs.h"
 
-
-
-int TimeLocal(int localtime) {
-  localtime += GetUTCOffset();
-  if (localtime<0) {
-    localtime+= 3600*24;
-  }
-  return localtime;
-}
-
-int DetectCurrentTime() {
-  int localtime = (int)GPS_INFO.Time;
-  return TimeLocal(localtime);
-}
-
 // simple localtime with no 24h exceeding
-int LocalTime() {
-  int localtime = GPS_INFO.Time;
-  localtime += GetUTCOffset();
-  return (localtime % 86400);
+int LocalTime(int utc_time) {
+  int localtime = utc_time + GetUTCOffset();
+  return (localtime % (24 * 3600));
 }
+
+int LocalTime() {
+  return LocalTime(GPS_INFO.Time);
+}
+
+

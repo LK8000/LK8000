@@ -829,7 +829,7 @@ goto_bearing:
 
 		// B39
 		case LK_TIME_LOCAL:
-			Units::TimeToText(BufferValue, (int)DetectCurrentTime());
+			Units::TimeToText(BufferValue, LocalTime());
 			valid=true;
 			if (lktitle)
 				// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
@@ -917,7 +917,7 @@ goto_bearing:
 			    if ( ValidTaskPoint(ActiveTaskPoint) && DerivedDrawInfo.ValidStart ) {
 				if (DerivedDrawInfo.LKTaskETE > 0) {
 					valid=true;
-					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LKTaskETE+DetectCurrentTime());
+					Units::TimeToText(BufferValue, DerivedDrawInfo.LKTaskETE + LocalTime());
 				} else
 					_stprintf(BufferValue, TEXT(NULLTIME));
 			    }
@@ -925,7 +925,7 @@ goto_bearing:
 			    if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) {
 					valid=true;
-					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo+DetectCurrentTime());
+					Units::TimeToText(BufferValue, DerivedDrawInfo.TaskTimeToGo + LocalTime());
 				} else
 					_stprintf(BufferValue, TEXT(NULLTIME));
 			    }
@@ -949,7 +949,7 @@ goto_bearing:
 				if ( (ValidTaskPoint(ActiveTaskPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
 					if (WayPointCalc[index].NextETE > 0) {
 						valid=true;
-						Units::TimeToText(BufferValue, (int)(WayPointCalc[index].NextETE+DetectCurrentTime()));
+						Units::TimeToText(BufferValue, WayPointCalc[index].NextETE + LocalTime());
 					} else
 						_stprintf(BufferValue, TEXT(NULLTIME));
 				}
@@ -961,7 +961,7 @@ goto_bearing:
 			    if ( ValidTaskPoint(ActiveTaskPoint) && (WayPointCalc[TASKINDEX].NextETE< 0.9*ERROR_TIME)) {
 				if (WayPointCalc[TASKINDEX].NextETE > 0) {
 					valid=true;
-					Units::TimeToText(BufferValue, (int)(WayPointCalc[TASKINDEX].NextETE+DetectCurrentTime()));
+					Units::TimeToText(BufferValue, WayPointCalc[TASKINDEX].NextETE + LocalTime());
 				} else
 					_stprintf(BufferValue, TEXT(NULLTIME));
 			    }
@@ -972,7 +972,7 @@ goto_bearing:
 			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
 				if (DerivedDrawInfo.LegTimeToGo > 0) {
 					valid=true;
-					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LegTimeToGo+DetectCurrentTime());
+					Units::TimeToText(BufferValue, DerivedDrawInfo.LegTimeToGo + LocalTime());
 				} else
 					_stprintf(BufferValue, TEXT(NULLTIME));
 			}
@@ -2834,7 +2834,7 @@ lkfin_ete:
 
 		// B145
 		case LK_TIME_LOCALSEC:
-			Units::TimeToTextS(BufferValue, (int)DetectCurrentTime());
+			Units::TimeToTextS(BufferValue, LocalTime());
 			valid=true;
 			// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
 			_tcscpy(BufferTitle, MsgToken(1080));

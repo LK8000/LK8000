@@ -27,7 +27,7 @@ double GetAzimuth() {
 	int sunoffset=0; // 0 for southern emisphere, 180 for northern. 
 	if (GPS_INFO.Latitude>=0) sunoffset=180; 
 
-	int dd = abs(DetectCurrentTime()) % (3600*24);
+	int dd = LocalTime();
 	int hours = (dd/3600);
 	int mins = (dd/60-hours*60);
 	hours = hours % 24;

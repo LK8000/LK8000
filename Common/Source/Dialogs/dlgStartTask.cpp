@@ -55,7 +55,7 @@ void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double A
 
     wp = (WndProperty*)wf->FindByName(TEXT("prpTime"));
     if (wp) {
-      Units::TimeToText(Temp, (int)TimeLocal((int)Time));
+      Units::TimeToText(Temp, LocalTime(Time));
       wp->SetText(Temp);
     }
 

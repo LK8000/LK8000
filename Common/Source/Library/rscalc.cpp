@@ -113,7 +113,7 @@ class SunEphemeris {
     h = (h % 24);
     UnlockFlightData();
 
-    // TODO code: use TimeLocal function from Process here?
+    // TODO code: use LocalTime function from Process here?
     tzone = GetUTCOffset()/3600.0;
 
     d = FNday(y, m, day, (float)h);

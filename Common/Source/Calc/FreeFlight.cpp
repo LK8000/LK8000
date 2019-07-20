@@ -355,13 +355,11 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         WayPointList[RESWP_FREEFLY].Visible = TRUE;
         WayPointList[RESWP_FREEFLY].Format = LKW_VIRTUAL;
 
-        TCHAR Temp[30];
-        Units::TimeToTextS(Temp, (int) TimeLocal((long) Calculated->FreeFlightStartTime));
+        BUGSTOP_LKASSERT(WayPointList[RESWP_FREEFLY].Comment != NULL);
 
-#if BUGSTOP
-        LKASSERT(WayPointList[RESWP_FREEFLY].Comment != NULL);
-#endif
         if (WayPointList[RESWP_FREEFLY].Comment) {
+            TCHAR Temp[30];
+            Units::TimeToTextS(Temp, LocalTime(Calculated->FreeFlightStartTime));          
             _sntprintf(WayPointList[RESWP_FREEFLY].Comment, 99, _T("%s: %s  @%.0f%s QNH"),
                     MsgToken(1754), // Free flight start
                     Temp,
