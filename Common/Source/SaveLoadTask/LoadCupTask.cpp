@@ -19,6 +19,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "resource.h"
+#include "InputEvents.h"
 
 int dlgTaskSelectListShowModal(void) ;
 
@@ -620,7 +621,7 @@ TCHAR szString[READLINE_LENGTH + 1];
 
   iNO_Tasks=0;
 
-
+  SaveDefaultTask(); // save current task for restore if no task load
   while(LoadCupTaskSingle(szFileName,szString, iNO_Tasks)&&( iNO_Tasks < MAX_TASKS ))
   {
     LockTaskData();
@@ -668,9 +669,17 @@ TCHAR szString[READLINE_LENGTH + 1];
 
   dlgTaskSelectListShowModal();
   if((TaskIndex >= 0) && (TaskIndex < MAX_TASKS))
-    LoadCupTaskSingle(szFileName,szString, TaskIndex);
+  {     TCHAR file_name[80];
+	_stprintf(file_name, TEXT("%s %s ?"), MsgToken(891), MsgToken(907)); // Clear old task and load
+	if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
+	    InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK));
+	}
+	else
+          LoadCupTaskSingle(szFileName,szString, TaskIndex);
+  }
+  else
+    InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK));
 
-  LoadCupTaskSingle(szFileName,szString, TaskIndex);
 
   for (int i =0 ; i< MAX_TASKS;i++)    // free dynamic memory
     if(szTaskStrings[i] != NULL)

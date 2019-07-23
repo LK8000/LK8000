@@ -393,6 +393,7 @@ static void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
+      SaveDefaultTask(); // save  changed task
       pForm->SetModalResult(mrOK);
     }
   }
@@ -538,8 +539,11 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
   int file_index = dfe->GetAsInteger();
+   LPCTSTR szFileName = dfe->GetPathFile();
+   LPCTSTR wextension = _tcsrchr(szFileName, _T('.'));
+    
   if (file_index>0) {
-	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
+	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1) &&   (_tcsicmp(wextension,_T(LKS_WP_CUP))!=0)) {
 		_stprintf(file_name, TEXT("%s '%s' ?"), MsgToken(891), dfe->GetAsString()); // Clear old task and load
 		if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
 			return;
@@ -553,8 +557,6 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
 
   if (file_index>0) {
 
-      LPCTSTR szFileName = dfe->GetPathFile();
-      LPCTSTR wextension = _tcsrchr(szFileName, _T('.'));
       if(wextension) {
 
           TCHAR szFilePath[MAX_PATH];
