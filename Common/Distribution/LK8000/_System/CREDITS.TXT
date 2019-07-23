@@ -12,6 +12,12 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 
 [version 7.1 changes from 7.0]
+. show task sector size in task overview
+
+. easy task waypoint change with new prev/next buttons
+
+. improved CUP file task loading with task informations and multiple tasks
+
 . New Overlay Configuration	
 
 . New Bottom Bar Mode configuration
