@@ -19,6 +19,7 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "resource.h"
+#include "InputEvents.h"
 
 int dlgTaskSelectListShowModal(void) ;
 
@@ -620,7 +621,7 @@ TCHAR szString[READLINE_LENGTH + 1];
 
   iNO_Tasks=0;
 
-
+  SaveDefaultTask(); // save current task for restore if no task load
   while(LoadCupTaskSingle(szFileName,szString, iNO_Tasks)&&( iNO_Tasks < MAX_TASKS ))
   {
     LockTaskData();
@@ -665,12 +666,22 @@ TCHAR szString[READLINE_LENGTH + 1];
     iNO_Tasks++;
   }
   TaskIndex =0;
-
+  InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //  restore old task
   dlgTaskSelectListShowModal();
   if((TaskIndex >= 0) && (TaskIndex < MAX_TASKS))
-    LoadCupTaskSingle(szFileName,szString, TaskIndex);
+  {     TCHAR file_name[80];
+        TCHAR *pWClast = NULL;
+        TCHAR * pToken = strsep_r(szString, TEXT(","), &pWClast) ;  // extract taskname
+        if((pToken) && (_tcslen (pToken)>1))
+	  _stprintf(file_name, TEXT("%s %s ?"), MsgToken(891), pToken ); // Clear old task and load taskname
+        else
+          _stprintf(file_name, TEXT("%s %s ?"), MsgToken(891), MsgToken(907)); // Clear old task and load task
+	if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdYes) {
+	  LoadCupTaskSingle(szFileName,szString, TaskIndex); // load new task
+	}
+  }
 
-  LoadCupTaskSingle(szFileName,szString, TaskIndex);
+
 
   for (int i =0 ; i< MAX_TASKS;i++)    // free dynamic memory
     if(szTaskStrings[i] != NULL)
