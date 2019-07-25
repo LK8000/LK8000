@@ -179,6 +179,11 @@ Copyright_License {
 #define final
 #endif
 
+/* support for c++11 thread_local was added in gcc 4.8 */
+#if GCC_OLDER_THAN(4,8)
+#define thread_local __thread
+#endif
+
 #if CLANG_OR_GCC_VERSION(4,8)
 #define gcc_alignas(T, fallback) alignas(T)
 #else
