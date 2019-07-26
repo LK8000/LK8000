@@ -682,6 +682,13 @@ void dlgWayPointDetailsShowModal(short mypage){
     wb->SetWidth(wSpecial->GetWidth()-wb->GetLeft()*2);
   }
 
+  if(WayPointList[SelectedWaypoint].Format == LKW_VIRTUAL)
+  {
+    WindowControl*pWnd = wf->FindByName(TEXT("cmdNext"));
+    if(pWnd) {    pWnd->SetVisible(false);}
+    pWnd = wf->FindByName(TEXT("cmdPrev"));
+    if(pWnd) {    pWnd->SetVisible(false);}
+  }
   page = mypage;
 
   NextPage(0);
