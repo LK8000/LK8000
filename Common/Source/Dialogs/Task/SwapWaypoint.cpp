@@ -9,6 +9,14 @@
 #include "externs.h"
 #include "Logger.h"
 
+void CopyTaskPnt(TASK_POINT* dest, TASK_POINT* src)
+{
+  if(dest != NULL) {
+    if(src != NULL) {
+      memcpy(dest, src, sizeof(TASK_POINT));
+    }
+  }
+}
 
 // Swaps waypoint at current index with next one.
 void SwapWaypoint(int index) {
@@ -26,9 +34,12 @@ void SwapWaypoint(int index) {
   }
   if ((Task[index].Index != -1)&&(Task[index+1].Index != -1)) {
     TASK_POINT tmpPoint;
-    tmpPoint = Task[index];
-    Task[index] = Task[index+1];
-    Task[index+1] = tmpPoint;
+  //  tmpPoint = Task[index];
+    CopyTaskPnt(&tmpPoint, &Task[index]);
+  //  Task[index] = Task[index+1];
+    CopyTaskPnt(&Task[index] , &Task[index+1] );
+  //  Task[index+1] = tmpPoint;
+    CopyTaskPnt(&Task[index+1] , &tmpPoint );
   }
   RefreshTask();
   UnlockTaskData();
