@@ -282,7 +282,11 @@ short dlgWayQuickShowModal(void){
       }
     }
   }
-
+  if(WayPointList[SelectedWaypoint].Format == LKW_VIRTUAL)
+  {
+    WindowControl*pWnd = wf->FindByName(TEXT("cmdTask"));
+    if(pWnd) {    pWnd->SetVisible(false);}
+  }
   wf->ShowModal();
 
   delete wf;
