@@ -169,7 +169,7 @@ Oznake točaka imaju prednost ispred topoloških oznaka tako da veliki broj okre
 @133
 Visina iznad terena na kojoj zrakoplov treba doći za sigurno slijetanje. Ne postavljaj ovu vrijednost na nulu! Preporučena vrijednost je 300m
 
-@13
+@134
 Postavljanje rezervne visine za sletišta i okretne točake ili smao za sletišta. Ukoliko se postavi samo za sletišta dolazna visina za okretne točke neće uračunati marginu rezerve visine.
 [sletišta] Dodaje rezervu visine samo za sletišta (def.).
 [slet. i točke] Dodaje rezervu visine na sve točke.
@@ -235,7 +235,7 @@ U slučaju kada je aktivno markiranje t.stupa, zvučni signal upozorava u trenut
 Ova opcija aktivira automatsko prebacivanje u final glide mod prije okretanja zadnje točke u slučaju kada zrakoplov ima dovoljno visine final glide.
 Ranije forsiranje final glide moda moguće je obaviti i pomoću tipki menija.
 
-@14
+@147
 Ukoliko postoji baro visina sve kalkulacije obavljaju se na osnovi baro visine (Nav sa HBAR).
 Inače se koristi GPS visina (HGPS).
 
@@ -1027,7 +1027,7 @@ Brzina u odnosu na zamlju mjerena GPS-om. Ukoliko je infobox aktivan u SIM modu,
 [Last Thermal Average]
 Ukupna visina dobijena (izgubljena) u zadnjem termičkom stupu podijeljena sa vremenom provedenim u kruženju.
 
-@80
+@808
 [Last Thermal Gain]
 Ukupna visina dobijena (izgubljena) u zadnjem termičkom stupu.
 

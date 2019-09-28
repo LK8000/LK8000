@@ -4,7 +4,7 @@
 # An entire help can be max 1024 characters total
 
 #
-# SYSTEM CONFIGURATION 
+# SYSTEM CONFIGURATION
 
 @100
 Sets the level of detail of the configuration settings.
@@ -12,7 +12,7 @@ Sets the level of detail of the configuration settings.
 [Expert]: Basic and advanced settings are shown.
 
 @101
-The name of the file containing TOPOLOGY, and only optionally also terrain, waypoints, airspaces. 
+The name of the file containing TOPOLOGY, and only optionally also terrain, waypoints, airspaces.
 The .LKM is really a ZIP file, renamed. If you change suffix to ZIP you can open it and change contents.
 Map files are located inside the _Maps subfolder.
 
@@ -105,7 +105,7 @@ Determines how labels are displayed with each waypoint:
 [Names in task] Names are only displayed for waypoints that are in the active task as well as the home airfield.
 [First Three] The first 3 letters of the waypoint name are displayed.
 [First Five] The first 5 letters of the waypoint name are displayed.
-[ICAO Code] The ICAO airfield letter code (e.g. ‎EGLL for London Heathrow)
+[ICAO Code] The ICAO airfield letter code (e.g. EGLL for London Heathrow)
 
 @124
 Determines whether and how long a snail trail is drawn behind the glider
@@ -1014,7 +1014,6 @@ Ground speed measured by the GPS.  If this infobox is active in simulation mode,
 Total altitude gain/loss in the last thermal divided by the time spent circling.
 
 @808
-
 [Last Thermal Gain]
 Total altitude gain/loss in the last thermal.
 
@@ -1708,6 +1707,9 @@ In airspace warning dialog, you can see a decrementing counter on the close butt
 [Airspace warning map labels]
 If this is on, airspace warning labels shows on the map indicating airspace name and vertical distance.
 
+@1213
+Deprecated
+
 @1214
 [Autozoom threshold]
 When using autozoom , autozoom gets working only if the next waypoint gets closer than this limit.
@@ -1839,7 +1841,7 @@ adjust the big FAI 28%/45% triangle threshold
 
 @1269
 [Gear Warning]
-Off:         
+Off:
 no Gear warning
 
 Landables:  (recommended in mountains)
@@ -1848,7 +1850,7 @@ Gear warning if altitude lower than set height above best alternate field elevat
 Always:  (recommended  in flat lands)
 Gear warning always if altitude above ground level (AGL) lower than set height
 
-The warning will be shown only once if below gear warning set height, and will only be re-enabled after climbing 100m (300ft) above set  height.”
+The warning will be shown only once if below gear warning set height, and will only be re-enabled after climbing 100m (300ft) above set  height.
 
 
 @1270
