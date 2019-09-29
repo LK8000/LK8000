@@ -43,80 +43,6 @@ android {
                 cppFlags "-fexceptions", "-frtti", "-std=c++17"
             }
         }
-        copy {
-            from "../../Common/Data/Language/Translations"
-            into "src/main/assets/language"
-        }
-        copy {
-            from "../../Common/Data/Language"
-            into "src/main/assets/language"
-            include "ENG_MSG.TXT"
-            include "ENG_HELP.TXT"
-            include "ENGLISH.LNG"
-        }
-        copy {
-            from "../../Common/Data/Language"
-            into "src/main/assets"
-            include "DEFAULT_MENU.TXT"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_System/"
-            into "src/main/assets"
-            include "CREDITS.TXT"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_Polars"
-            into "src/main/assets/polars"
-            include "*.plr"
-            exclude "Example.*"
-        }
-        copy {
-            from "../../Common/Data/Sounds", "../../Common/Distribution/LK8000/_System/_Sounds",
-                    "../../Common/Distribution/LK8000/_System/_Sounds/OPTIONALS"
-            into "src/main/assets/sounds"
-            include "*.wav"
-            include "*.WAV"
-        }
-        copy {
-            from "../../Common/Data/Fonts"
-            into "src/main/assets/fonts"
-            include "*.ttf"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_Maps"
-            into "src/main/assets/distribution/maps"
-            include "*.*"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_Waypoints"
-            into "src/main/assets/distribution/waypoints"
-            include "*.*"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_Airspaces"
-            into "src/main/assets/distribution/airspaces"
-            include "*.*"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_Tasks"
-            into "src/main/assets/distribution/tasks"
-            include "*.*"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_Logger"
-            into "src/main/assets/distribution/logger"
-            include "*.*"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_Configuration"
-            into "src/main/assets/distribution/configuration"
-            include "DEMO.prf", "CAR.prf", "TREKKING.prf", "NOTEDEMO.TXT", "IDFLARM.TXT"
-        }
-        copy {
-            from "../../Common/Distribution/LK8000/_Polars"
-            into "src/main/assets/distribution/polars"
-            include "Example.*"
-        }
     }
     sourceSets {
         main {
@@ -217,3 +143,88 @@ crashlytics {
     enableNdk true
     manifestPath '../../android/AndroidManifest.xml'
 }
+
+task syncAsset(type: Sync) {
+    from "../../Common/Data/Language",
+            "../../Common/Distribution/LK8000/_System/"
+    into "src/main/assets"
+    include "DEFAULT_MENU.TXT",
+            "CREDITS.TXT"
+    preserve {
+        include "bitmaps/**"
+    }
+}
+task syncAssetLanguages(type: Sync) {
+    from "../../Common/Data/Language/Translations",
+         "../../Common/Data/Language"
+    into "src/main/assets/language"
+    include "*_MSG.TXT",
+            "*_HELP.TXT",
+            "*.LNG"
+}
+task syncAssetPolars(type: Sync) {
+    from "../../Common/Distribution/LK8000/_Polars"
+    into "src/main/assets/polars"
+    include "*.plr"
+    exclude "Example.*"
+}
+task syncAssetSounds(type: Sync) {
+    from "../../Common/Data/Sounds",
+         "../../Common/Distribution/LK8000/_System/_Sounds",
+         "../../Common/Distribution/LK8000/_System/_Sounds/OPTIONALS"
+    into "src/main/assets/sounds"
+    include "*.wav",
+            "*.WAV"
+}
+task syncAssetFonts(type: Sync) {
+    from "../../Common/Data/Fonts"
+    into "src/main/assets/fonts"
+    include "*.ttf"
+}
+task syncAssetDistribtionMaps(type: Sync) {
+    from "../../Common/Distribution/LK8000/_Maps"
+    into "src/main/assets/distribution/maps"
+}
+task syncAssetDistribtionWaypoints(type: Sync) {
+    from "../../Common/Distribution/LK8000/_Waypoints"
+    into "src/main/assets/distribution/waypoints"
+}
+task syncAssetDistribtionAirspaces(type: Sync) {
+    from "../../Common/Distribution/LK8000/_Airspaces"
+    into "src/main/assets/distribution/airspaces"
+}
+task syncAssetDistribtionTasks(type: Sync) {
+    from "../../Common/Distribution/LK8000/_Tasks"
+    into "src/main/assets/distribution/tasks"
+}
+task syncAssetDistribtionLogger(type: Sync) {
+    from "../../Common/Distribution/LK8000/_Logger"
+    into "src/main/assets/distribution/logger"
+}
+task syncAssetDistribtionConfiguration(type: Sync) {
+    from "../../Common/Distribution/LK8000/_Configuration"
+    into "src/main/assets/distribution/configuration"
+    include "DEMO.prf",
+            "CAR.prf",
+            "TREKKING.prf", 
+            "NOTEDEMO.TXT",
+            "IDFLARM.TXT"
+}
+task syncAssetDistribtionPolars(type: Sync) {
+    from "../../Common/Distribution/LK8000/_Polars"
+    into "src/main/assets/distribution/polars"
+    include "Example.*"
+}
+
+preBuild.dependsOn(syncAsset)
+preBuild.dependsOn(syncAssetLanguages)
+preBuild.dependsOn(syncAssetPolars)
+preBuild.dependsOn(syncAssetSounds)
+preBuild.dependsOn(syncAssetFonts)
+preBuild.dependsOn(syncAssetDistribtionMaps)
+preBuild.dependsOn(syncAssetDistribtionWaypoints)
+preBuild.dependsOn(syncAssetDistribtionAirspaces)
+preBuild.dependsOn(syncAssetDistribtionTasks)
+preBuild.dependsOn(syncAssetDistribtionLogger)
+preBuild.dependsOn(syncAssetDistribtionConfiguration)
+preBuild.dependsOn(syncAssetDistribtionPolars)
