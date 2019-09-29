@@ -144,6 +144,16 @@ crashlytics {
     manifestPath '../../android/AndroidManifest.xml'
 }
 
+clean() {
+    delete "src/main/assets/language",
+           "src/main/assets/distribution",
+           "src/main/assets/fonts",
+           "src/main/assets/polars",
+           "src/main/assets/sounds",
+           "src/main/assets/CREDITS.TXT",
+           "src/main/assets/DEFAULT_MENU.TXT"
+}
+
 task syncAsset(type: Sync) {
     from "../../Common/Data/Language",
             "../../Common/Distribution/LK8000/_System/"
