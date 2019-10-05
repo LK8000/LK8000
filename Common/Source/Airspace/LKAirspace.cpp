@@ -28,6 +28,12 @@
 #include "Topology/shapelib/mapserver.h"
 #include "utils/zzip_stream.h"
 
+#ifdef _WGS84
+#include <GeographicLib/GeodesicLine.hpp>
+
+using GeographicLib::GeodesicLine;
+#endif
+
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
 
@@ -1520,6 +1526,66 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
     return true;
 }
 
+void CAirspaceManager::AddGeodesicLine(CPoint2DArray &points, double lat, double lon) {
+#ifdef _WGS84
+    if (earth_model_wgs84) {
+        AddGeodesicLine_WGS84(points, lat, lon);
+    } 
+    else 
+#endif
+    {
+        AddGeodesicLine_FAI(points, lat, lon);
+    }
+}
+
+#ifdef _WGS84
+void CAirspaceManager::AddGeodesicLine_WGS84(CPoint2DArray &points, double lat, double lon) {
+
+  if (!points.empty()) {
+    const CPoint2D &prev = points.back();
+    const Geodesic &geod = Geodesic::WGS84();
+
+    constexpr unsigned mask = Geodesic::AZIMUTH|Geodesic::LATITUDE|Geodesic::LONGITUDE;
+    constexpr double step = 2./60.; // ~ 2 nautical miles at equator
+
+    GeodesicLine line = geod.InverseLine(prev.Latitude(), prev.Longitude(), lat, lon, mask);
+
+    const unsigned numpoints = line.Arc() / step;
+    for (unsigned i = 0; i < numpoints; ++i) {
+        double i_lat, i_lon;
+        line.ArcPosition(i * step, i_lat, i_lon);
+        points.emplace_back(i_lat, i_lon);
+    }
+  }
+  points.emplace_back(lat, lon);
+}
+#endif
+
+void CAirspaceManager::AddGeodesicLine_FAI(CPoint2DArray &points, double lat, double lon) {
+
+  if (!points.empty()) {
+    const CPoint2D &prev = points.back();
+    // ~ 2 nautical miles at equator
+    const double step = DEG_TO_RAD * ((prev.Longitude() < lon) ? 2./60. : -2./60.);
+    const double lat1 = DEG_TO_RAD * prev.Latitude();
+    const double lon1 = DEG_TO_RAD * prev.Longitude();
+    const double lat2 = DEG_TO_RAD * lat;
+    const double lon2 = DEG_TO_RAD * lon;
+
+    const double cos_lat1 = std::cos(lat1);
+    const double cos_lat2 = std::cos(lat2);
+    const double A = std::sin(lat2) * cos_lat1;
+    const double B = std::sin(lat1) * cos_lat2;
+    const double C = cos_lat1 * cos_lat2 * std::sin(lon1 - lon2);
+
+    for (double i_lon = lon1; i_lon < lon2; i_lon += step) {
+      double i_lat = std::atan((B * std::sin(i_lon - lon2) - A * std::sin(i_lon - lon1)) / C);
+	  points.emplace_back(RAD_TO_DEG * i_lat, RAD_TO_DEG * i_lon);
+    }
+  }
+  points.emplace_back(lat, lon);
+}
+
 // Correcting geopointlist
 // All algorithms require non self-intersecting and closed polygons.
 // Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
@@ -1812,7 +1878,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                                 InsideMap = true;
                               } 
                             }
-                            points.emplace_back(lat, lon);
+                            AddGeodesicLine(points, lat, lon);
                         } else {
                             _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
@@ -2238,7 +2304,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
                 InsideMap = true;
               } else {};
             }
-            points.emplace_back(lat, lon);
+            AddGeodesicLine(points, lat, lon);
             point = _tcstok_r(nullptr,TEXT(","),&remaining);
         }
 

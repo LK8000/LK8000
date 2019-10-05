@@ -539,6 +539,12 @@ private:
   static bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation);
   static bool CorrectGeoPoints(CPoint2DArray &points);
 
+  static void AddGeodesicLine(CPoint2DArray &points, double lat, double lon);
+  static void AddGeodesicLine_FAI(CPoint2DArray &points, double lat, double lon);
+#ifdef _WGS84
+  static void AddGeodesicLine_WGS84(CPoint2DArray &points, double lat, double lon);
+#endif
+
   bool FillAirspacesFromOpenAIP(const TCHAR* szFile);
   bool ReadAltitudeOpenAIP(XMLNode & node, AIRSPACE_ALT *Alt) const;
 
