@@ -1576,7 +1576,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     double lat = 0, lon = 0;
     bool flyzone = false;
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
-    bool InsideMap = false;
+    bool InsideMap = !(WaypointsOutOfRange > 1); // exclude
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
     while (stream.read_line(Text)) {
         ++linecount;
@@ -1660,10 +1660,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             flyzone = false;
                             newairspace = NULL;
                             parsing_state = 0;
-                            if( WaypointsOutOfRange > 1) // exclude?
-                              InsideMap = false;
-                            else
-                              InsideMap = true;
+                            InsideMap = !( WaypointsOutOfRange > 1); // exclude?
                         }
                         // New AC
                         p++; //Skip space
@@ -2208,12 +2205,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
         CPoint2DArray points;
         TCHAR* remaining;
         TCHAR* point = _tcstok_r((TCHAR*)subNode.getText(0),TEXT(","),&remaining);
-        bool InsideMap = false;
+        bool InsideMap = !( WaypointsOutOfRange > 1); // exclude?
         bool error = (point==nullptr);
-        if( WaypointsOutOfRange > 1) // exclude?
-          InsideMap = false;
-        else
-          InsideMap = true;
         while(point!=nullptr && !error) {
             TCHAR* other;
             TCHAR* coord=_tcstok_r(point,TEXT(" "),&other);
