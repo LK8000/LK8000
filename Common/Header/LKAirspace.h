@@ -291,14 +291,14 @@ protected:
     // previous version draw circular airspace using circle, but it's wrong, circle in geographic coordinate are ellipsoid in screen coordinate.
     CPoint2DArray _geopoints;
 
-    // this 2 array is modified by DrawThread, never use it in another thread !!
+    // this 2 array are modified by DrawThread, never use it in another thread !!
     ScreenPointList _screenpoints; // this is member for reduce memory alloc, but is used only by CalculateScreenPosition();
     RasterPointList _screenpoints_clipped;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Draw Picto methods
     //  this methods are NEVER used at same time of airspace loading
-    //  therefore we can be considered is thread safe
+    //  therefore it can be considered is thread safe
 public:
     virtual void DrawPicto(LKSurface& Surface, const RECT &rc) const;
 protected:
@@ -307,20 +307,6 @@ protected:
 
     static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };
-
-typedef struct
-{
-long x;
-long y;
-} LPOINT;
-
-typedef struct
-{
-long left;
-long top;
-long right;
-long bottom;
-} LRECT;
 
 typedef struct
 {
@@ -358,17 +344,17 @@ typedef struct
 class CAirspace_Area: public CAirspace {
 public:
   CAirspace_Area(CPoint2DArray &&Area_Points);
-  virtual ~CAirspace_Area() {};
+  ~CAirspace_Area() {};
 
   // Check if a point horizontally inside in this airspace
-  virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const override ;
+  bool IsHorizontalInside(const double &longitude, const double &latitude) const override ;
   // Dump this airspace to runtime.log
-  virtual void Dump() const override;
+  void Dump() const override;
 
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
-  virtual double Range(const double &longitude, const double &latitude, double &bearing) const override;
+  double Range(const double &longitude, const double &latitude, double &bearing) const override;
   // Calculate unique hash code for this airspace
-  virtual void Hash(char *hashout, int maxbufsize) const override;
+  void Hash(char *hashout, int maxbufsize) const override;
 
 private:
 
@@ -382,7 +368,7 @@ private:
 //  this methods are NEVER used at same time of airspace loading
 //  therefore we can be considered is thread safe
 protected:
-  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, RasterPointList &screenpoints_picto) const override;
+  void CalculatePictPosition(const RECT& rcDraw,  double zoom, RasterPointList &screenpoints_picto) const override;
 ////////////////////////////////////////////////////////////////////////////////
 };
 
@@ -393,17 +379,17 @@ class CAirspace_Circle: public CAirspace
 {
 public:
   CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius);
-  virtual ~CAirspace_Circle() {}
+  ~CAirspace_Circle() {}
 
   // Check if a point horizontally inside in this airspace
-  virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const override;
+  bool IsHorizontalInside(const double &longitude, const double &latitude) const override;
   // Dump this airspace to runtime.log
-  virtual void Dump() const override;
+  void Dump() const override;
 
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
-  virtual double Range(const double &longitude, const double &latitude, double &bearing) const override;
+  double Range(const double &longitude, const double &latitude, double &bearing) const override;
   // Calculate unique hash code for this airspace
-  virtual void Hash(char *hashout, int maxbufsize) const override;
+  void Hash(char *hashout, int maxbufsize) const override;
 
 private:
 
@@ -415,7 +401,7 @@ private:
 //  this methods are NEVER used at same time of airspace loading
 //  therefore we can be considered is thread safe
 protected:
-  virtual void CalculatePictPosition(const RECT& rcDraw,  double zoom, RasterPointList &screenpoints_picto) const override;
+  void CalculatePictPosition(const RECT& rcDraw,  double zoom, RasterPointList &screenpoints_picto) const override;
 ////////////////////////////////////////////////////////////////////////////////
 };
 
@@ -546,12 +532,12 @@ private:
   //Openair parsing functions, internal use
   bool FillAirspacesFromOpenAir(const TCHAR* szFile);
   
-  bool StartsWith(const TCHAR *Text, const TCHAR *LookFor) const;
-  void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const;
-  bool ReadCoords(TCHAR *Text, double *X, double *Y) const;
-  bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const;
-  bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const;
-  bool CorrectGeoPoints(CPoint2DArray &points);
+  static bool StartsWith(const TCHAR *Text, const TCHAR *LookFor);
+  static void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt);
+  static bool ReadCoords(TCHAR *Text, double *X, double *Y);
+  static bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation);
+  static bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation);
+  static bool CorrectGeoPoints(CPoint2DArray &points);
 
   bool FillAirspacesFromOpenAIP(const TCHAR* szFile);
   bool ReadAltitudeOpenAIP(XMLNode & node, AIRSPACE_ALT *Alt) const;

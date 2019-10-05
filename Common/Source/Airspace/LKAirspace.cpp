@@ -1176,7 +1176,7 @@ void CAirspace_Area::CalcBounds() {
 // CAIRSPACEMANAGER CLASS
 //
 
-bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const {
+bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) {
     if (!(*LookFor)) return true;
     int count_look=_tcslen(LookFor);
     do {
@@ -1249,7 +1249,7 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
     return true;
 }
 
-void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const {
+void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
     TCHAR *Stop = NULL;
     TCHAR sTmp[128];
     TCHAR *pWClast = NULL;
@@ -1377,7 +1377,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const 
 
 }
 
-bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const {
+bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) {
     double Ydeg = 0, Ymin = 0, Ysec = 0;
     double Xdeg = 0, Xmin = 0, Xsec = 0;
     TCHAR *Stop = Text;
@@ -1440,7 +1440,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const {
     return true;
 }
 
-bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const {
+bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation) {
     double StartLat, StartLon;
     double EndLat, EndLon;
     double StartBearing;
@@ -1458,28 +1458,30 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, doub
 
     ReadCoords(&Comma[1], &EndLon, &EndLat);
 
-    DistanceBearing(CenterY, CenterX, StartLat, StartLon, &Radius, &StartBearing);
-    DistanceBearing(CenterY, CenterX, EndLat, EndLon, NULL, &EndBearing);
-    _geopoints->push_back(CPoint2D(StartLat, StartLon));
+    DistanceBearing(Center_lat, Center_lon, StartLat, StartLon, &Radius, &StartBearing);
+    DistanceBearing(Center_lat, Center_lon, EndLat, EndLon, NULL, &EndBearing);
+    _geopoints->emplace_back(StartLat, StartLon);
 
-    if (Rotation > 0) arc_bearing_range = EndBearing - StartBearing;
-    else arc_bearing_range = StartBearing - EndBearing;
-    if (arc_bearing_range > 360) arc_bearing_range -= 360;
-    if (arc_bearing_range < 0) arc_bearing_range += 360;
-
-    while (arc_bearing_range > 7.5) {
-        StartBearing += Rotation * 5;
-        arc_bearing_range -= 5;
-        if (StartBearing > 360) StartBearing -= 360;
-        if (StartBearing < 0) StartBearing += 360;
-        FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
-        _geopoints->push_back(CPoint2D(lat, lon));
+    if (Rotation > 0) {
+        arc_bearing_range = AngleLimit360(EndBearing - StartBearing);
+    } 
+    else {
+        arc_bearing_range = AngleLimit360(StartBearing - EndBearing);
     }
-    _geopoints->push_back(CPoint2D(EndLat, EndLon));
+
+    // TODO : use radius for calculate bearing increment.
+    while (arc_bearing_range > 7.5) {
+        StartBearing = AngleLimit360(StartBearing + Rotation * 5);
+        arc_bearing_range -= 5;
+
+        FindLatitudeLongitude(Center_lat, Center_lon, StartBearing, Radius, &lat, &lon);
+        _geopoints->emplace_back(lat, lon);
+    }
+    _geopoints->emplace_back(EndLat, EndLon);
     return true;
 }
 
-bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double CenterX, double CenterY, int Rotation) const {
+bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation) {
     double arc_bearing_range = 0.0;
     TCHAR *Stop = nullptr;
     double lat = 0, lon = 0;
@@ -1495,24 +1497,26 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
     }
     double EndBearing = (double) StrToDouble(&Stop[1], nullptr);
 
-    if (Rotation > 0) arc_bearing_range = EndBearing - StartBearing;
-    else arc_bearing_range = StartBearing - EndBearing;
-    if (arc_bearing_range > 360) arc_bearing_range -= 360;
-    if (arc_bearing_range < 0) arc_bearing_range += 360;
+    if (Rotation > 0) {
+        arc_bearing_range = AngleLimit360(EndBearing - StartBearing);
+    } 
+    else {
+        arc_bearing_range = AngleLimit360(StartBearing - EndBearing);
+    }
 
     while (arc_bearing_range > 7.5) {
         if (StartBearing >= 360) StartBearing -= 360;
         if (StartBearing < 0) StartBearing += 360;
 
-        FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
+        FindLatitudeLongitude(Center_lat, Center_lon, StartBearing, Radius, &lat, &lon);
 
-        _geopoints->push_back(CPoint2D(lat, lon));
+        _geopoints->emplace_back(lat, lon);
 
         StartBearing += Rotation * 5;
         arc_bearing_range -= 5;
     }
-    FindLatitudeLongitude(CenterY, CenterX, EndBearing, Radius, &lat, &lon);
-    _geopoints->push_back(CPoint2D(lat, lon));
+    FindLatitudeLongitude(Center_lat, Center_lon, EndBearing, Radius, &lat, &lon);
+    _geopoints->emplace_back(lat, lon);
     return true;
 }
 
@@ -1520,21 +1524,21 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
 // All algorithms require non self-intersecting and closed polygons.
 // Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
 // Also delete adjacent duplicated vertexes
-
 bool CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points) {
 
     // Here we expect at least 3 points
-    if(points.size() < MIN_AS_SIZE) return false;
-
-    // First delete consecutive duplicated vertexes
-    CPoint2DArray::iterator it = std::next(points.begin()); // Start from second point
-    while(it != points.end()) {
-        if ((*std::prev(it)) == (*it)) it = points.erase(it);
-        else it++;
+    if(points.size() < MIN_AS_SIZE) {
+        return false;
     }
 
+    // First delete consecutive duplicated vertexes
+    CPoint2DArray::iterator last = std::unique(std::next(points.begin()), points.end());
+    points.erase(last, points.end());
+
     // Then close polygon if not already closed
-    if (points.front() != points.back()) points.push_back(points.front());
+    if (points.front() != points.back()) {
+        points.push_back(points.front());
+    }
 
     // For a valid closed polygon we need at least 3 points plus the closing one
     return points.size() > MIN_AS_SIZE;
@@ -1735,15 +1739,18 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         continue;
 
                     default:
-			if (maxwarning>0) {
-			    if (maxwarning==1)
+                        if (maxwarning > 0) {
+                            if (maxwarning == 1) {
                                 _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 9 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
-			    else
-                                _sntprintf(sTmp, READLINE_LENGTH,TEXT("Parse error 10 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
-			    maxwarning--;
+                            } else {
+                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 10 at line  %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            }
+                            maxwarning--;
                             // LKTOKEN  _@M68_ = "Airspace"
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
-			}
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) {
+                                return false;
+                            }
+                        }
                         break;
                 } //sw
                 break;
@@ -1805,7 +1812,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                                 InsideMap = true;
                               } 
                             }
-                            points.push_back(CPoint2D(lat, lon));
+                            points.emplace_back(lat, lon);
                         } else {
                             _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
@@ -1816,16 +1823,19 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         // todo DY airway segment
                         // what about 'V T=' ?
                     default:
-			if (maxwarning>0) {
-			    if (maxwarning==1)
-                                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 4 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
-			    else
-                                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 5 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
-			    maxwarning--;
+                        if (maxwarning > 0) {
+                            if (maxwarning == 1) {
+                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 4 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
+                            } else {
+                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 5 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            }
+                            maxwarning--;
 
                             // LKTOKEN  _@M68_ = "Airspace"
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
-			}
+                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) {
+                                return false;
+                            }
+                        }
                         break;
                 } //sw
                 break;
@@ -1866,16 +1876,18 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                 // if none of the above, then falling to default
 
             default:
-		if (maxwarning>0) {
-		    if (maxwarning==1)
+                if (maxwarning > 0) {
+                    if (maxwarning == 1) {
                         _stprintf(sTmp, TEXT("Parse error 7 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
-		    else
+                    } else {
                         _stprintf(sTmp, TEXT("Parse error 8 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
-
+                    }
                     maxwarning--;
                     // LKTOKEN  _@M68_ = "Airspace"
-                    if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
-		}
+                    if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) {
+                        return false;
+                    }
+                }
                 break;
         }//sw
 
@@ -2226,7 +2238,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
                 InsideMap = true;
               } else {};
             }
-            points.push_back(CPoint2D(lat, lon));
+            points.emplace_back(lat, lon);
             point = _tcstok_r(nullptr,TEXT(","),&remaining);
         }
 
