@@ -196,13 +196,7 @@ public class LKDistribution {
         File dir = new File(dir_path);
         if(dir.exists() && dir.isDirectory()) {
             String[] files = dir.list();
-            if (files.length == 0) {
-                return true;
-            }
-            else {
-                return false;
-
-            }
+            return (files == null || files.length == 0);
         }
         return true;
     }
