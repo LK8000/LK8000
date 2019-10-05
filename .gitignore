@@ -56,3 +56,6 @@ output.map
 /LINUX-install.zip
 /android-studio/app/fabric.properties
 /android-studio/.idea/caches/
+/android-studio/app/.cxx/
+/android-thirdparty/
+/.vs/
