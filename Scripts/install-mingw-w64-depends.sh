@@ -1,6 +1,6 @@
 #!/bin/sh
 # 
-# File:   i686-mingw-w64.sh.sh
+# File:   install-mingw-w64-depends.sh
 # Author: Bruno de Lacheisserie
 #
 # Created on Dec 14, 2016, 10:48:50 PM
@@ -13,10 +13,10 @@ BUILD_DIR="${HOME}/tmp/build/"
 
 TOOLCHAINS="i686-w64-mingw32 x86_64-w64-mingw32"
 
-# this is valid for debian 8 
+# this is valid for debian
 PREFIX_DIR="/usr"
 
-GEOGRAPHICLIB_VER="1.46"
+GEOGRAPHICLIB_VER="1.49"
 
 
 # install additional library dependencies for PC target
@@ -62,7 +62,3 @@ for TC in ${TOOLCHAINS}; do
     make && sudo make install
 
 done
-
-
-
-
