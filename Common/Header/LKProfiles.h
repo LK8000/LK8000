@@ -298,6 +298,7 @@ char szRegistryIpAddress3[]= "IpAddress3";
 char szRegistryIpAddress4[]= "IpAddress4";
 char szRegistryIpAddress5[]= "IpAddress5";
 char szRegistryIpAddress6[]= "IpAddress6";
+char szRegistryIOValues[]= "Val_IO_Dir";
 char szRegistryIpPort1[]= "IpPort1";
 char szRegistryIpPort2[]= "IpPort2";
 char szRegistryIpPort3[]= "IpPort3";
@@ -659,6 +660,9 @@ extern const char szRegistryIpPort3[];
 extern const char szRegistryIpPort4[];
 extern const char szRegistryIpPort5[];
 extern const char szRegistryIpPort6[];
+
+extern const char szRegistryIOValues[];
+
 extern const char szRegistryPressureHg[];
 extern const char szRegistrySafetyAltitudeArrival[];
 extern const char szRegistrySafetyAltitudeMode[];

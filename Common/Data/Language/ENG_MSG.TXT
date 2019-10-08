@@ -2395,3 +2395,34 @@ _@M2434_ "4pt"
 _@M2435_ "5pt"
 _@M2436_ "6pt"
 _@M2437_ "Multipt"
+
+
+
+_@M2447_ "MC"
+_@M2448_ "BAL"
+_@M2449_ "BUGS"
+_@M2450_ "STF-SW"
+_@M2451_ "WIND"
+
+_@M2452_ "IN"
+_@M2453_ "OUT"
+_@M2454_ "IN & OUT"
+
+_@M2455_ "BARO"
+_@M2456_ "SPEED"
+_@M2457_ "VARIO"
+_@M2458_ "TARGET"
+
+_@M2459_ "RADIO"
+_@M2460_ "TRAFFIC"
+_@M2461_ "GYRO"
+_@M2462_ "G-FORCE"
+_@M2463_ "OAT"
+_@M2464_ "BAT1"
+_@M2465_ "BAT2"
+_@M2466_ "POLAR"
+
+_@M2467_ "Values"
+_@M2468_ "Direction"
+
+_@M2469_ "EXT Target"

@@ -223,16 +223,35 @@ short dlgWayQuickShowModal(void){
       pWnd->SetWidth(ScreenSizeX-NIBLSCALE(5)-left);
     }
 
+
 	pWnd = wf->FindByName(TEXT("cmdSetAlt1"));
     if(pWnd) {
-      pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
-	  pWnd->SetLeft(NIBLSCALE(3));
+      if(  Alternate2 == RESWP_EXT_TARGET)  // used for external logger target?
+      {
+	pWnd->SetWidth((ScreenSizeX)-NIBLSCALE(7));
+      }
+      else
+      {
+        pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
+	pWnd->SetLeft(NIBLSCALE(3));
+      }
     }
+
 
 	pWnd = wf->FindByName(TEXT("cmdSetAlt2"));
     if(pWnd) {
-      pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
-	  pWnd->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+
+      if( Alternate2 == RESWP_EXT_TARGET)  // used for external logger target?
+      {
+	pWnd->SetHeight(1);
+	pWnd->SetWidth(1);
+	pWnd->SetLeft(1);
+      }
+      else
+      {
+        pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
+	pWnd->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+      }
     }
 	pWnd = wf->FindByName(TEXT("cmdDetails"));
     if(pWnd) {

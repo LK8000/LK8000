@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="LXNav Config" Popup="1" Font="2" >   
+    <WndButton Name="cmdClose"       Caption="_@M186_"     X="2" Y="1"  Width="110"  Height="28" Font="2" Tag="3" />
+    <WndButton Name="cmdCancel"      Caption="_@M161_"     X="2" Y="-1"  Width="110"  Height="28" Font="2" Tag="3" />      
+    <WndButton Name="cmdIGCDownload" Caption="_@M2398_"    X="120" Y="1" Width="110"  Height="28" Font="2" Tag="3" />           
+    <WndButton Name="cmdValues"      Caption="_@M2467_"    X="120" Y="-1" Width="110"  Height="28" Font="2" Tag="3" />
+   
+     <WndProperty Name="prpMCDir" Caption="_@M2447_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
+      </WndProperty>  
+      <WndProperty Name="prpTARGDir" Caption="_@M2448_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>       
+     <WndProperty Name="prpBALDir" Caption="_@M2448_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
+      </WndProperty>  
+      <WndProperty Name="prpGFORCEDir" Caption="_@M2462_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>               
+      <WndProperty Name="prpBUGDir" Caption="_@M2449_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
+      </WndProperty>  
+      <WndProperty Name="prpOATDir" Caption="_@M2463_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>                    
+      <WndProperty Name="prpSTFDir" Caption="_@M2450_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty> 
+      <WndProperty Name="prpBAT1Dir" Caption="_@M2464_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>   
+      <WndProperty Name="prpWINDDir" Caption="_@M2451_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>      
+      <WndProperty Name="prpBAT2Dir" Caption="_@M2465_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>       
+      <WndProperty Name="prpBARODir" Caption="_@M2455_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty> 
+      <WndProperty Name="prpPOLARDir" Caption="_@M2466_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>       
+      <WndProperty Name="prpSPEEDDir" Caption="_@M2456_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>       
+       <WndProperty Name="prpVARIODir" Caption="_@M2457_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1303_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty>        
+     
+
+     
+     
+  </WndForm>
+</PMML>
