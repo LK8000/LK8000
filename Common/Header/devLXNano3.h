@@ -16,6 +16,9 @@
 //_____________________________________________________________________includes_
 
 #include "devLX.h"
+#include "dlgTools.h"
+#include "Dialogs.h"
+#include "WindowControls.h"
 
 
 //______________________________________________________________________defines_
@@ -34,6 +37,9 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// LX Nano 3 device (parsing LXWPn sentences and declaring tasks).
 ///
+
+
+
 class DevLXNanoIII : public DevLX
 {
   //----------------------------------------------------------------------------
@@ -42,6 +48,13 @@ class DevLXNanoIII : public DevLX
     /// Registers device into device subsystem.
     static bool Register();
 
+    static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
+
+    /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
+    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
+    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[]);
+    static bool OnStartIGC_FileRead(TCHAR Filename[]) ;
+    static BOOL AbortLX_IGC_FileRead(void);
 
   //----------------------------------------------------------------------------
   protected:
@@ -69,13 +82,48 @@ class DevLXNanoIII : public DevLX
     /// Converts TCHAR[] string into US-ASCII string.
     static bool Wide2LxAscii(const TCHAR* input, int outSize, char* output);
 
-    /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
-    static bool SendNmea(PDeviceDescriptor_t d, TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
-
     /// Send one line of ceclaration to logger
     static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
 
+   static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
+   static BOOL Config(PDeviceDescriptor_t d);
+   static void OnCloseClicked(WndButton* pWnd);
+   static void OnCancelClicked(WndButton* pWnd);
+   static void OnIGCDownloadClicked(WndButton* pWnd);
+   static void OnValuesClicked(WndButton* pWnd);
+
+   static BOOL Open( PDeviceDescriptor_t d);
+   static BOOL Close( PDeviceDescriptor_t d);
+   static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+   static BOOL LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
+   static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
+   static BOOL PutTarget(PDeviceDescriptor_t d);
+
+   static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
+   static BOOL ShowDataValue(WndForm* wf , PDeviceDescriptor_t d ,const TCHAR Select[],  const TCHAR ValueText[]);
+   static void GetDirections(WndButton* pWnd);
+   static CallBackTableEntry_t CallBackTable[];
+   static PDeviceDescriptor_t m_pDevice;
+   static BOOL m_bLXNavS_series;
+/*
+   static BOOL m_bValues;
+   BOOL ValueDisplay(void) { return m_bValues;};
+   void ValueDisplay(BOOL val) {  m_bValues = val;};*/
+  // static TCHAR m_Filename[200];
+
+  //  static bool PutMacCready(PDeviceDescriptor_t d, double MacCready);
 
   //----------------------------------------------------------------------------
   //private:
@@ -96,6 +144,9 @@ class DevLXNanoIII : public DevLX
 /// LX task declaration data.
 /// This data are byte-by-byte sent to device.
 ///
+
+
+
 class DevLXNanoIII::Decl
 {
   //----------------------------------------------------------------------------

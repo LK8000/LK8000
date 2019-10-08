@@ -490,6 +490,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
     nmeaParser._Reset();
     iSharedPort = -1;
+    m_bAdvancedMode = false;
     bNMEAOut     = false;
     static bool doinit = true;
     if (doinit) {
@@ -891,6 +892,20 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
     }
   return(ret);
 }
+
+
+BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode)
+{
+
+  d->m_bAdvancedMode = bAdvMode;
+  return true;
+}
+
+BOOL devGetAdvancedMode(PDeviceDescriptor_t d)
+{
+  return d->m_bAdvancedMode;
+}
+
 
 BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable)
 {

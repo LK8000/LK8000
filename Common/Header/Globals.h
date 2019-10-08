@@ -851,7 +851,7 @@ GEXTERN TCHAR dwDeviceName[NUMDEV][DEVNAMESIZE+1];
 GEXTERN bool UseExtSound[NUMDEV];
 GEXTERN double LastFlarmCommandTime;
 GEXTERN bool  DevIsCondor;
-
+GEXTERN DeviceIO PortIO[NUMDEV];
 // Units , configurable only in system config
 
 GEXTERN unsigned SpeedUnit_Config;
