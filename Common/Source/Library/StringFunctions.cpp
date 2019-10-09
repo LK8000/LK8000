@@ -92,80 +92,72 @@ int HexStrToInt(TCHAR *Source){
 	return nOut;
 }
 
-
-/*
- * WARNING: if you are using Stop pointer, remember that you MUST set it equal to *Source before
-   calling this function, because in case of null result, it will not be set!!
+/**
+ * Convert string to double
+ * 
+ * @str:    C-string beginning with the representation of a floating-point number.
+ * 
+ * @endptr: Reference to an already allocated object of type TCHAR*, 
+ *          whose value is set by the function to the character that stops the scan.
+ *          This parameter can also be a null pointer, in which case it is not used.
+ * 
+ * @return: On success, the function returns the converted floating point number as a value of type double.
+ *          If no valid conversion could be performed, the function returns zero (0.0).
+ * 
+ * A valid floating point number is formated by an optional signe character (+ or -), 
+ * followed by a sequence of digits, optionally containing a decimal-point character (.), 
+ * optionally followed by a sequence of digits.
  */
-double StrToDouble(const TCHAR *Source, const TCHAR **Stop)
-{
-  int index = 0;
-  int StringLength        = 0;
-  double Sum = 0;
-  double Divisor = 10;
-  int neg = 0;
+double StrToDouble(const TCHAR *str, const TCHAR **endptr) {
 
-  if (Source==NULL) return 0.0;
-  StringLength = _tcslen(Source);
-
-  while(((Source[index] == ' ')||(Source[index]=='+')||(Source[index]==9))
-        && (index<StringLength))
-    // JMW added skip for tab stop
-    // JMW added skip for "+"
-    {
-      index ++;
-    }
-  if (index>= StringLength) {
-	// WARNING> we are not setting Stop here!!
-    return 0.0; // Set 0.0 as error, probably not the best thing to do. TOFIX 110307
-  }
-  if (Source[index]=='-') {
-    neg=1;
-    index++;
+  if (!str) {
+    return 0.0;
   }
 
-  while( (index < StringLength)
-	 &&
-	 (
-	  (Source[index]>= '0') && (Source [index] <= '9')
-          )
-	 )
-    {
-      Sum = (Sum*10) + (Source[ index ] - '0');
-      index ++;
-    }
+  int64_t num = 0;
+  int64_t radix = 0;
+  int64_t divisor = 1;
+  int neg = 1;
 
-  if (index >= StringLength) goto _strtodouble_return;
-  if(Source[index] == '.')
-    {
-      index ++;
-      while( (index < StringLength)
-	     &&
-	     (
-	      (Source[index]>= '0') && (Source [index] <= '9')
-	      )
-	     )
-	{
-	  Sum = (Sum) + (double)(Source[ index ] - '0')/Divisor;
-	  index ++;Divisor = Divisor * 10;
-	}
-    }
+  // skip leading whitespace characters
+  while ((*str == _T(' ')) || (*str == _T('\t'))) {
+    ++str;
+  }
+  // skip explicit '+'
+  if(*str == _T('+')) {
+    ++str;
+  }
 
-_strtodouble_return:
-  if(Stop != NULL) {
-    if (index < StringLength) {
-        *Stop = &Source[index];
-    } else {
-        *Stop = &Source[StringLength];
+  if(*str == _T('\0')) {
+    // for compatibility with previous version, 
+    // we need to return without setting endptr in case of empty string
+    return 0.;
+  }
+
+  if (*str == _T('-')) {
+    neg = -1;
+    ++str;
+  }
+
+  while ((*str >= _T('0')) && (*str <= _T('9'))) {
+    num = (num * 10) + (*str - _T('0'));
+    ++str;
+  }
+
+  if (*str == _T('.')) {
+    ++str;
+    while ((*str >= _T('0')) && (*str <= _T('9'))) {
+      radix = (radix * 10) + (*str - _T('0'));
+      divisor *= 10;
+      ++str;
     }
   }
 
-
-  if (neg) {
-    return -Sum;
-  } else {
-    return Sum;
+  if(endptr) {
+    *endptr = str;
   }
+
+  return (((double) num) + ((double) radix / (double)divisor)) * (double)neg;
 }
 
 
