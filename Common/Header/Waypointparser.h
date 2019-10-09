@@ -38,7 +38,7 @@ void WaypointLatitudeToString(double Latitude, TCHAR *Buffer);
 void LongitudeToCUPString(double Longitude, TCHAR *Buffer);
 void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
 double ReadAltitude(const TCHAR *temp);
-double ReadLength(TCHAR *temp);
+double ReadLength(const TCHAR *temp);
 double CUPToLat(const TCHAR *str);
 double CUPToLon(const TCHAR *str);
 int ReadWayPointFile(zzip_stream& stream, int fileformat);

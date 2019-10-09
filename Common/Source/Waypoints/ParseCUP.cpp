@@ -75,8 +75,6 @@ std::vector<tstring> CupStringToFieldArray(const TCHAR *row) {
 //#define CUPDEBUG
 bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 {
-  #define   MAXBUF 128
-  TCHAR Buffer[MAXBUF];
   int flags=0;
   bool ishome=false; // 100310
 
@@ -186,8 +184,7 @@ bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 	Temp->RunwayLen = -1;
   else
   {
-    _tcsncpy(Buffer,Entries[8].c_str(),MAXBUF );
-    Temp->RunwayLen = (int)ReadLength(Buffer);
+    Temp->RunwayLen = (int)ReadLength(Entries[8].c_str());
   }
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP RUNWAY LEN=<%d>%s"),Temp->RunwayLen,NEWLINE);
@@ -232,7 +229,7 @@ bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 
 
 
-double ReadLength(TCHAR *temp)
+double ReadLength(const TCHAR *temp)
 {
   const TCHAR *stop=temp;
   double len = StrToDouble(temp, &stop);
