@@ -1256,10 +1256,10 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
 }
 
 void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
-    TCHAR *Stop = NULL;
+    const TCHAR *Stop = NULL;
     TCHAR sTmp[128];
     TCHAR *pWClast = NULL;
-    TCHAR *pToken;
+    const TCHAR *pToken;
     bool fHasUnit = false;
 
     LK_tcsncpy(sTmp, Text, sizeof (sTmp) / sizeof (sTmp[0]) - 1);
@@ -1386,7 +1386,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
 bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) {
     double Ydeg = 0, Ymin = 0, Ysec = 0;
     double Xdeg = 0, Xmin = 0, Xsec = 0;
-    TCHAR *Stop = Text;
+    const TCHAR *Stop = Text;
 
     // ToDo, add more error checking and making it more tolerant/robust
 
@@ -1489,7 +1489,7 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, doub
 
 bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation) {
     double arc_bearing_range = 0.0;
-    TCHAR *Stop = nullptr;
+    const TCHAR *Stop = nullptr;
     double lat = 0, lon = 0;
 
     // TODO 110307 FIX problem of StrToDouble returning 0.0 in case of error , and not setting Stop!!

@@ -44,7 +44,7 @@ bool SetModelType();
 void ReadUUID(void);
 void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top, TCHAR *szMessageBuffer, TCHAR *TileBuffer );
 
-double StrToDouble(TCHAR *Source, TCHAR **Stop);
+double StrToDouble(const TCHAR *Source, const TCHAR **Stop);
 
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber);
 

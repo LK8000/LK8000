@@ -14,7 +14,7 @@
 
 double ReadAltitude(TCHAR *temp)
 {
-  TCHAR *Stop=temp;
+  const TCHAR *Stop=temp;
   double Altitude=-9999;
   Altitude = StrToDouble(temp, &Stop);
 

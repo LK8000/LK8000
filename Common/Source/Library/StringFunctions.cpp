@@ -97,7 +97,7 @@ int HexStrToInt(TCHAR *Source){
  * WARNING: if you are using Stop pointer, remember that you MUST set it equal to *Source before
    calling this function, because in case of null result, it will not be set!!
  */
-double StrToDouble(TCHAR *Source, TCHAR **Stop)
+double StrToDouble(const TCHAR *Source, const TCHAR **Stop)
 {
   int index = 0;
   int StringLength        = 0;

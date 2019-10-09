@@ -161,7 +161,7 @@ void ExtractParameter(TCHAR *Source, TCHAR *Destination, int DesiredFieldNumber)
 static double CalculateAngle(TCHAR *temp)
 {
   TCHAR *Colon;
-  TCHAR *Stop;
+  const TCHAR *Stop;
   double Degrees, Mins;
 
   Colon = _tcschr(temp,':');
@@ -174,11 +174,11 @@ static double CalculateAngle(TCHAR *temp)
   *Colon = _T('\0');
   Colon ++;
 
-  Degrees = (double)_tcstol(temp, &Stop, 10);
-  Mins = (double)StrToDouble(Colon, &Stop);
+  Degrees = StrToDouble(temp, &Stop);
+  Mins = StrToDouble(Colon, &Stop);
   if (Stop && *Stop == ':') {
     Stop++;
-    Mins += ((double)_tcstol(Stop, &Stop, 10)/60.0);
+    Mins += (StrToDouble(Stop, &Stop)/60.0);
   }
 
   Degrees += (Mins/60);

@@ -235,9 +235,8 @@ bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 
 double ReadLength(TCHAR *temp)
 {
-  TCHAR *stop=temp;
-  double len;
-  len = StrToDouble(temp, &stop);
+  const TCHAR *stop=temp;
+  double len = StrToDouble(temp, &stop);
   if (temp == stop) {		// error at begin
 	len=-9999;
 	return len;

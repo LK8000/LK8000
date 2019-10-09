@@ -26,7 +26,7 @@ static BOOL isTrue(PDeviceDescriptor_t) {
 static bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
 {
   TCHAR  temp[80];
-  TCHAR* stop;
+  const TCHAR* stop;
 
   NMEAParser::ExtractParameter(sentence, temp, parIdx);
 

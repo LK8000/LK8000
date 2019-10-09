@@ -40,7 +40,7 @@
 bool DevBase::ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
 {
   TCHAR  temp[80];
-  TCHAR* stop;
+  const TCHAR* stop;
   LKASSERT(value!=NULL);
 
   NMEAParser::ExtractParameter(sentence, temp, parIdx);
