@@ -160,6 +160,8 @@ IDR_XML_FILES_P         XMLDIALOG                "../Data/Dialogs/dlgFiles_P.xml
 IDR_XML_DEVFLARM        XMLDIALOG                "../Data/Dialogs/dlgDevFlarm.xml"
 IDR_XML_IGC_PROGRESS_L  XMLDIALOG                "../Data/Dialogs/dlgIGCProgress_L.xml"
 IDR_XML_IGC_PROGRESS_P  XMLDIALOG                "../Data/Dialogs/dlgIGCProgress_P.xml"
+IDR_XML_DEV_LXNAV_L     XMLDIALOG                "../Data/Dialogs/dlgDevLXNav_L.xml"
+IDR_XML_DEV_LXNAV_P     XMLDIALOG                "../Data/Dialogs/dlgDevLXNav_P.xml"
 
 /////////////////////////////////////////////////////////////////////////////
 //

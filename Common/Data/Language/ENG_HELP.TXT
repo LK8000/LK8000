@@ -1998,5 +1998,29 @@ Show on the map the FAI Assistant sectors. To be able to see it make sure that t
 Show on the map the best cross country triangle according to the contest rule set in system menu 22. To be able to see it make sure that at least one Contest rule is active in Contest setting on page 22
 
 
+@1303
+[Data exchange options]
+Select which data is received or transmitted to external devices. 
+OFF     no data exchange
+IN      receive data from external device
+OUT     send data to external device
+IN/OUT  bi-directional data exchange
+Note: some data can only be received others can be transmitted. Only a few devices allow bi-directional exchange of some parameters (e.g. MC).
+MC      MacCready
+BAL     Ballast 
+BUGS    Bugs on wings in % glide ratio (100% = Clean optimal wings)
+STF-SW  Vario Speed to Fly (Sollfahrt) Switch
+WIND    wind speed and direction
+BARO    Barometric altitude
+SPEED   Indicated airspeed (STaudruck)
+VARIO   Variometer sink/climb rate
+TARGET  Information about navigation target (waypoint)
+G-FORCE 3 Axis g-maeter values
+OAT     outside air temperature
+BAT1    first external battery voltage
+BAT2    second external battery voltage  
+POLAR   polar coefficients
+
+
 @9999
 No help available on this item!
