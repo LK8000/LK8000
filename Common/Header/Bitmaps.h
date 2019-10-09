@@ -38,6 +38,7 @@ BEXTMODE LKIcon hLogger;
 BEXTMODE LKIcon hLoggerOff;
 BEXTMODE LKIcon hLoggerDisabled;
 BEXTMODE LKIcon hFLARMTraffic;
+
 BEXTMODE LKIcon hBatteryFull;
 BEXTMODE LKIcon hBatteryFullC;
 BEXTMODE LKIcon hBattery96;
@@ -48,17 +49,29 @@ BEXTMODE LKIcon hBattery48;
 BEXTMODE LKIcon hBattery36;
 BEXTMODE LKIcon hBattery24;
 BEXTMODE LKIcon hBattery12;
-#ifdef DITHER
-BEXTMODE LKIcon hKB_BatteryFull;
-BEXTMODE LKIcon hKB_BatteryFullC;
-BEXTMODE LKIcon hKB_Battery96;
-BEXTMODE LKIcon hKB_Battery84;
-BEXTMODE LKIcon hKB_Battery72;
-BEXTMODE LKIcon hKB_Battery60;
-BEXTMODE LKIcon hKB_Battery48;
-BEXTMODE LKIcon hKB_Battery36;
-BEXTMODE LKIcon hKB_Battery24;
-BEXTMODE LKIcon hKB_Battery12;
+
+#if defined(DITHER) || (defined(ANDROID) && defined(__arm__))
+  BEXTMODE LKIcon hKB_BatteryFull;
+  BEXTMODE LKIcon hKB_BatteryFullC;
+  BEXTMODE LKIcon hKB_Battery96;
+  BEXTMODE LKIcon hKB_Battery84;
+  BEXTMODE LKIcon hKB_Battery72;
+  BEXTMODE LKIcon hKB_Battery60;
+  BEXTMODE LKIcon hKB_Battery48;
+  BEXTMODE LKIcon hKB_Battery36;
+  BEXTMODE LKIcon hKB_Battery24;
+  BEXTMODE LKIcon hKB_Battery12;
+#else
+  #define hKB_BatteryFull   hBatteryFull
+  #define hKB_BatteryFullC  hBatteryFullC
+  #define hKB_Battery96     hBattery96
+  #define hKB_Battery84     hBattery84
+  #define hKB_Battery72     hBattery72
+  #define hKB_Battery60     hBattery60
+  #define hKB_Battery48     hBattery48
+  #define hKB_Battery36     hBattery36
+  #define hKB_Battery24     hBattery24
+  #define hKB_Battery12     hBattery12
 #endif
 
 BEXTMODE LKIcon hNoTrace;

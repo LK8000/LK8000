@@ -327,93 +327,104 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   #endif
 
   if ((PDABatteryPercent==0 || PDABatteryPercent>100) && PDABatteryStatus==Battery::ONLINE && PDABatteryFlag!=Battery::CHARGING) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_BatteryFullC; else
-#endif
-	ptmpBitmap = &hBatteryFullC;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_BatteryFullC; 
+    } else {
+	    ptmpBitmap = &hBatteryFullC;
+    }
 	goto _drawbattery;
   }
 
   if (PDABatteryPercent<=6) {
 	if (flip) return;
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery12; else
-#endif
-	ptmpBitmap = &hBattery12;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery12; 
+    } else {
+	    ptmpBitmap = &hBattery12;
+    }
 	goto _drawbattery;
   }
 
   if (PDABatteryPercent<=12) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery12; else
-#endif
-	ptmpBitmap = &hBattery12;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery12; 
+    } else {
+	    ptmpBitmap = &hBattery12;
+    }
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=24) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery24; else
-#endif
-	ptmpBitmap = &hBattery24;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery24; 
+    } else {
+	    ptmpBitmap = &hBattery24;
+    }
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=36) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery36; else
-#endif
-	ptmpBitmap = &hBattery36;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery36;
+    } else {
+    	ptmpBitmap = &hBattery36;
+    }
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=48) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery48; else
-#endif
-	ptmpBitmap = &hBattery48;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery48;
+    } else {
+    	ptmpBitmap = &hBattery48;
+    }
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=60) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery60; else
-#endif
-	ptmpBitmap = &hBattery60;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery60;
+    } else {
+	    ptmpBitmap = &hBattery60;
+    }
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=72) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery72; else
-#endif
-	ptmpBitmap = &hBattery72;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery72; 
+    } else {
+    	ptmpBitmap = &hBattery72;
+    }
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=84) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery84; else
-#endif
-	ptmpBitmap = &hBattery84;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery84; 
+    } else {
+	    ptmpBitmap = &hBattery84;
+    }
 	goto _drawbattery;
   }
   if (PDABatteryPercent<=96) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_Battery96; else
-#endif
-	ptmpBitmap = &hBattery96;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_Battery96;
+    } else {
+    	ptmpBitmap = &hBattery96;
+    }
 	goto _drawbattery;
   }
   if (PDABatteryStatus==Battery::ONLINE) {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_BatteryFullC; else
-#endif
-	ptmpBitmap = &hBatteryFullC;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_BatteryFullC; 
+    } else {
+	    ptmpBitmap = &hBatteryFullC;
+    }
   } else {
-#ifdef DITHER
-        if (!INVERTCOLORS) ptmpBitmap = &hKB_BatteryFull; else
-#endif
-	ptmpBitmap = &hBatteryFull;
+    if (IsDithered() && !INVERTCOLORS) {
+        ptmpBitmap = &hKB_BatteryFull; 
+    } else {
+	    ptmpBitmap = &hBatteryFull;
+    }
   }
 
 _drawbattery:
     if(ptmpBitmap) {
         ptmpBitmap->Draw(Surface, batteryPoint.x, batteryPoint.y, batteryNewSize.cx, batteryNewSize.cy);
     }
-
 }

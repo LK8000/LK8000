@@ -74,7 +74,7 @@ void LKLoadFixedBitmaps(void) {
   hSmall = LKLoadBitmap(_T("TPOINT_SML"), UseHiresBitmap);
   hInvSmall = LKLoadBitmap(_T("TPOINT_SML_INV"), UseHiresBitmap);
 
-#ifdef DITHER
+#if defined(DITHER) || (defined(ANDROID) && defined(__arm__))
   hKB_BatteryFull=LKLoadBitmap(_T("KB_BATTERY_FULL"));
   hKB_BatteryFullC=LKLoadBitmap(_T("KB_BATTERY_FULLC"));
   hKB_Battery96=LKLoadBitmap(_T("KB_BATTERY_96"));
@@ -204,9 +204,9 @@ void LKUnloadFixedBitmaps(void) {
     hLoggerOff.Release();
     hLoggerDisabled.Release();
     hFLARMTraffic.Release();
-#ifdef DITHER
-    hKB_BatteryFull.Release();
+#if defined(DITHER) || (defined(ANDROID) && defined(__arm__))
     hKB_BatteryFullC.Release();
+    hKB_BatteryFull.Release();
     hKB_Battery96.Release();
     hKB_Battery84.Release();
     hKB_Battery72.Release();
@@ -216,8 +216,8 @@ void LKUnloadFixedBitmaps(void) {
     hKB_Battery24.Release();
     hKB_Battery12.Release();
 #endif
-    hBatteryFull.Release();
     hBatteryFullC.Release();
+    hBatteryFull.Release();
     hBattery96.Release();
     hBattery84.Release();
     hBattery72.Release();
