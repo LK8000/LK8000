@@ -6,132 +6,97 @@
    $Id$
 */
 
-#include "externs.h"
-#include "Waypointparser.h"
+#include <ctype.h>
+#include "tchar.h"
 
+constexpr double invalid_angle = -9999;
 
-
-double CUPToLat(TCHAR *temp)
-{
-  TCHAR *dot, td;
-  TCHAR tdeg[4], tmin[4], tsec[5];
-  double degrees, mins, secs;
-  unsigned int slen;
-  bool north=false;
-
-  // lat is 4555.0X minimum
-  if (_tcslen(temp)<7||_tcslen(temp)>9) return -9999;
-  // check there is a dot, to be sure
-  dot = _tcschr(temp,'.');
-  if(!dot) return -9999;
-  *dot = _T('\0');
-  dot++;
-
-  _tcscpy(tsec,dot);
-  slen=_tcslen(tsec);
-
-  // seconds are 0X minimum including the letter
-  if (slen<2 || slen>4) return -9999;
-  td= tsec[slen-1];
-
-  if ( (td != _T('N')) && ( td != _T('S')) ) return -9999;
-  if ( td == _T('N') ) north=true;
-
-  td='\0';
-
-  tdeg[0]=temp[0];
-  tdeg[1]=temp[1];
-  tdeg[2]=_T('\0');
-
-  tmin[0]=temp[2];
-  tmin[1]=temp[3];
-  tmin[2]=_T('\0');
-
-  degrees = (double)_tcstol(tdeg, NULL, 10);
-  mins     = (double)_tcstol(tmin, NULL, 10);
-  secs     = (double)_tcstol(tsec, NULL, 10);
-
-  // if seconds are only a decimal, for example 3 , they really are 300
-  switch (slen) {
-	case 2:
-		// 3X
-		secs*=100;
-		break;
-	case 3:
-		// 33X
-		secs*=10;
-		break;
-	default:
-		break;
+double CUPToLat(const TCHAR *str) {
+  // latitude is 4555.0X minimum
+  if (!str) {
+	return invalid_angle;
   }
 
-  mins += secs / 1000.0;
-  degrees += mins / 60.0;
+  int degree = 0;
+  // first 2 digit are degree
+  if(_istdigit(str[0]) && _istdigit(str[1])) {
+    degree = (str[0] - _T('0'))*10 + (str[1] - _T('0'));
+  } else {
+    return invalid_angle;
+  }
 
-  if (!north) degrees *= -1;
+  int minute = 0;
+  // next 2 digit are minute
+  if(_istdigit(str[2]) && _istdigit(str[3])) {
+    minute = (str[2] - _T('0'))*10 + (str[3] - _T('0'));
+  } else {
+    return invalid_angle;
+  }
+  // next char is dot
+  if(str[4] != _T('.')) {
+    return invalid_angle;
+  }
 
-  return degrees;
+  int divisor = 1;
+  int radix = 0;
+  // next digit are decimal minutes
+  const TCHAR* next = &str[5];
+  for(; _istdigit(*next); ++next) {
+    radix = radix * 10 + (*next - _T('0'));
+	divisor *= 10;
+  }
+
+  double angle = degree + ((double)minute) / 60. + ((double)radix) / ((double)divisor);
+  if((*next) == _T('S')) {
+    return angle * -1;
+  } else if((*next) == _T('N')) {
+    return angle;
+  } 
+  // error
+  return invalid_angle;
 }
 
-double CUPToLon(TCHAR *temp)
-{
-  TCHAR *dot, td;
-  TCHAR tdeg[4], tmin[4], tsec[5];
-  double degrees, mins, secs;
-  unsigned int slen;
-  bool east=false;
-
-  // longit can be 01234.5X
-  if (_tcslen(temp)<8 || _tcslen(temp)>10) return -9999;
-
-  // check there is a dot, to be sure
-  dot = _tcschr(temp,'.');
-  if(!dot) return -9999;
-  *dot = _T('\0');
-  dot++;
-
-  _tcscpy(tsec,dot);
-  slen=_tcslen(tsec);
-  // seconds are 0X minimum including the letter
-  if (slen<2 || slen>4) return -9999;
-  td= tsec[slen-1];
-
-  if ( (td != _T('E')) && ( td != _T('W')) ) return -9999;
-  if ( td == _T('E') ) east=true;
-
-  td='\0';
-
-  tdeg[0]=temp[0];
-  tdeg[1]=temp[1];
-  tdeg[2]=temp[2];
-  tdeg[3]=_T('\0');
-
-  tmin[0]=temp[3];
-  tmin[1]=temp[4];
-  tmin[2]=_T('\0');
-
-  degrees = (double)_tcstol(tdeg, NULL, 10);
-  mins     = (double)_tcstol(tmin, NULL, 10);
-  secs     = (double)_tcstol(tsec, NULL, 10);
-
-  // if seconds are only a decimal, for example 3 , they really are 300
-  switch (slen) {
-	case 2:
-		// 3X
-		secs*=100;
-		break;
-	case 3:
-		// 33X
-		secs*=10;
-		break;
-	default:
-		break;
+double CUPToLon(const TCHAR *str) {
+  // longitude can be 01234.5X
+  if (!str) {
+    return invalid_angle;
   }
 
-  mins += secs / 1000.0;
-  degrees += mins / 60.0;
+  int degree = 0;
+  // first 3 digit are degree
+  if(_istdigit(str[0]) && _istdigit(str[1]) && _istdigit(str[2])) {
+    degree = (str[0] - _T('0'))*100 + (str[1] - _T('0'))*10 + (str[2] - _T('0'));
+  } else {
+    return invalid_angle;
+  }
 
-  if (!east) degrees *= -1;
+  int minute = 0;
+  // next 2 digit are minute
+  if(_istdigit(str[3]) && _istdigit(str[4])) {
+    minute = (str[3] - _T('0'))*10 + (str[4] - _T('0'));
+  } else {
+    return invalid_angle;
+  }
+  // next char is dot
+  if(str[5] != _T('.')) {
+    return invalid_angle;
+  }
 
-  return degrees;
+  int divisor = 1;
+  int radix = 0;
+  // next digit are decimal minutes
+  const TCHAR* next = &str[6];
+  for(; _istdigit(*next); ++next) {
+	radix = radix * 10 + (*next - _T('0'));
+	divisor *= 10;
+  }
+
+  double angle = degree + ((double)minute) / 60. + ((double)radix) / ((double)divisor);
+  if((*next) == _T('W')) {
+    return angle * -1;
+  } else if((*next) == _T('E')) {
+    return angle;
+  } 
+  // error
+  return invalid_angle;
 }

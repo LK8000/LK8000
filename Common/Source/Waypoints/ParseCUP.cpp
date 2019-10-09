@@ -114,8 +114,7 @@ bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 
 
   // ---------------- LATITUDE  ------------------
-  _tcsncpy(Buffer,Entries[3].c_str(),MAXBUF );
-  Temp->Latitude = CUPToLat( Buffer );
+  Temp->Latitude = CUPToLat(Entries[3].c_str() );
 
   if((Temp->Latitude > 90) || (Temp->Latitude < -90)) {
 	return false;
@@ -126,8 +125,10 @@ bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 
 
   // ---------------- LONGITUDE  ------------------
-  _tcsncpy(Buffer,Entries[4].c_str(),MAXBUF );
-  Temp->Longitude  = CUPToLon( Buffer);
+  Temp->Longitude  = CUPToLon(Entries[4].c_str());
+  #ifdef CUPDEBUG
+  StartupStore(_T("   CUP LONGITUDE=<%f>%s"),Temp->Longitude,Entries[4].c_str());
+  #endif
   if((Temp->Longitude  > 180) || (Temp->Longitude  < -180)) {
 	return false;
   }
