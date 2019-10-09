@@ -12,12 +12,10 @@
 
 
 
-double ReadAltitude(TCHAR *temp)
+double ReadAltitude(const TCHAR *temp)
 {
   const TCHAR *Stop=temp;
-  double Altitude=-9999;
-  Altitude = StrToDouble(temp, &Stop);
-
+  double Altitude = StrToDouble(temp, &Stop);
   if (temp == Stop)		// error at begin
 	Altitude=-9999;
   else {

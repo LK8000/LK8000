@@ -138,8 +138,7 @@ bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 
 
   // ---------------- ELEVATION  ------------------
-  _tcsncpy(Buffer,Entries[5].c_str(),MAXBUF );
-  Temp->Altitude = ReadAltitude(Buffer);
+  Temp->Altitude = ReadAltitude(Entries[5].c_str());
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP ELEVATION=<%f>%s"),Temp->Altitude,NEWLINE);
   #endif

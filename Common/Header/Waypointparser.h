@@ -37,7 +37,7 @@ void WaypointLongitudeToString(double Longitude, TCHAR *Buffer);
 void WaypointLatitudeToString(double Latitude, TCHAR *Buffer);
 void LongitudeToCUPString(double Longitude, TCHAR *Buffer);
 void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
-double ReadAltitude(TCHAR *temp);
+double ReadAltitude(const TCHAR *temp);
 double ReadLength(TCHAR *temp);
 double CUPToLat(const TCHAR *str);
 double CUPToLon(const TCHAR *str);
