@@ -21,9 +21,6 @@
 #define deb_                  (1)  // debug output switch
 
 
-static WndForm *wf = NULL;
-
-
 typedef struct {
   TCHAR Line1[LST_STRG_LEN];
   TCHAR Line2[LST_STRG_LEN];
@@ -217,7 +214,6 @@ static void OnEnterClicked(WndButton *pWnd) {
 
 
 static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Surface) {
-#define PICTO_WIDTH 50
 
   Surface.SetTextColor(RGB_BLACK);
 
@@ -351,7 +347,7 @@ ListElement *dlgLX_IGCSelectListShowModal(DeviceDescriptor_t *d) {
   ListElement *pIGCResult = NULL;
 
 
-  wf = dlgLoadFromXML(IGCCallBackTable,
+  WndForm* wf = dlgLoadFromXML(IGCCallBackTable,
                       ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
   if (wf) {

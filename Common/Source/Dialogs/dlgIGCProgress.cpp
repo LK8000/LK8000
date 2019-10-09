@@ -26,8 +26,6 @@ extern void  OnAbort_IGC_FileRead(void);
 static bool OnIGCProgressTimer(WndForm* pWnd);
 static bool bClose = false;
 
-WndForm* _WndForm = NULL;
-
 TCHAR m_szTmp[50] =_T("...");
 
 static bool OnIGCProgressTimer(WndForm *pWnd) {
@@ -106,7 +104,7 @@ void dlgIGCProgressShowModal(void){
     
 	bClose = false;
 
-    _WndForm = dlgLoadFromXML(IGCProgressCallBackTable, ScreenLandscape ? IDR_XML_IGC_PROGRESS_P : IDR_XML_IGC_PROGRESS_L);
+    WndForm* _WndForm = dlgLoadFromXML(IGCProgressCallBackTable, ScreenLandscape ? IDR_XML_IGC_PROGRESS_P : IDR_XML_IGC_PROGRESS_L);
 
     LKASSERT(_WndForm);
     if(_WndForm) {
@@ -125,7 +123,6 @@ void dlgIGCProgressShowModal(void){
         _WndForm->SetTimerNotify(200, OnIGCProgressTimer); // check for end of download every 200ms
         _WndForm->ShowModal();
         delete _WndForm;
-        _WndForm = NULL;
     }
 }
 
