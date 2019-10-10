@@ -40,12 +40,18 @@ void RenameIfVirtual(const unsigned int i) {
   if (i>RESWP_END) return;
   LKASSERT(i<WayPointList.size());
 
-  if ( _tcslen(WayPointList[i].Name)> (NAME_SIZE-5)) return;
 
-  TCHAR tmp[NAME_SIZE+10];
-  if(_tcsncmp( WayPointList[i].Name,_T("TSK_"), 1)!=0)
-    _stprintf(tmp,_T("TSK_%s"),WayPointList[i].Name);
-  LK_tcsncpy(WayPointList[i].Name,tmp,NAME_SIZE);
+
+
+  if(_tcsncmp( WayPointList[i].Name,_T("TSK_"), 4)!=0)
+  {
+    if ( _tcslen(WayPointList[i].Name) < (NAME_SIZE-5))
+    {
+      TCHAR tmp[NAME_SIZE+10];
+      _stprintf(tmp,_T("TSK_%s"),WayPointList[i].Name);
+      LK_tcsncpy(WayPointList[i].Name,tmp,NAME_SIZE);
+    }
+  }
   if (WayPointList[i].Latitude==RESWP_INVALIDNUMBER && WayPointList[i].Longitude==RESWP_INVALIDNUMBER) {
 	if (WayPointList[RESWP_TAKEOFF].Latitude!=RESWP_INVALIDNUMBER) {
 		WayPointList[i].Latitude=WayPointList[RESWP_TAKEOFF].Latitude;
