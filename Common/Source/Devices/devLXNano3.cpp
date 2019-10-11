@@ -211,7 +211,7 @@ long  StrTol(const  TCHAR *buff) {
 #else
   TCHAR *end;
    const long sl = _tcstol(buff, &end, 10);
-#define TCSTOL_DEBUG
+//#define TCSTOL_DEBUG
 #ifdef TCSTOL_DEBUG
   if (end == buff) {
       StartupStore(TEXT("StrTol: %s: not a decimal number\n"), buff);
