@@ -482,7 +482,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
     Status = CPS_UNUSED; // 100210
     HB = 0; // counter
 
-    nmeaParser._Reset();
     iSharedPort = -1;
     m_bAdvancedMode = false;
     bNMEAOut     = false;

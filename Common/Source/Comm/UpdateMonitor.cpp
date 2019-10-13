@@ -116,23 +116,17 @@ bool  UpdateMonitor(void)
       invalidGps++;
       // We want to be sure that if this device is silent, and it was providing Baro altitude,
       // now it is set to off.
-      if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
+      if (GPS_INFO.BaroAltitudeAvailable) {
         if ( &dev == pDevPrimaryBaroSource || dev.nmeaParser.IsValidBaroSource() ) {
           invalidBaro++;
         }
       }
 
-      bool dev_active = dev.nmeaParser.activeGPS;
-      bool dev_expire = dev.nmeaParser.expire;
-      dev.nmeaParser._Reset();
-      dev.nmeaParser.expire = dev_expire; // restore expire status (Reset is setting it to true)
+      dev.nmeaParser.Reset();
 
       if(!dev.nmeaParser.expire) {
         // if device never expire, is still connected & don't change activeGPS status.
         dev.nmeaParser.connected = true;
-        dev.nmeaParser.activeGPS = dev_active;
-      } else {
-        dev.nmeaParser.activeGPS=false; // because Reset is setting it to true
       }
 
       // We reset some flags globally only once in case of device gone silent 
@@ -183,9 +177,11 @@ bool  UpdateMonitor(void)
       GPS_INFO.NettoVarioAvailable=false;
       GPS_INFO.AccelerationAvailable = false;
       EnableExternalTriggerCruise = false;
+
       for(auto& dev : DeviceList) {
-        dev.nmeaParser._Reset();
+        dev.nmeaParser.Reset();
       }
+
       // 120824 Check this situation better> Reset is setting activeGPS true for both devices!
       lastvalidBaro=false;
     }
@@ -288,7 +284,7 @@ bool  UpdateMonitor(void)
           GPS_INFO.AccelerationAvailable = false;
           EnableExternalTriggerCruise = false;
           for(auto& dev : DeviceList) {
-            dev.nmeaParser._Reset();
+            dev.nmeaParser.Reset();
           }
           // 120824 Check this situation better> Reset is setting activeGPS true for both devices!
           lastvalidBaro=false;
