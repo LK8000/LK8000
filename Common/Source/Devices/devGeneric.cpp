@@ -11,33 +11,37 @@
 #include "devGeneric.h"
 
 
+static
+BOOL IsGPSSource(PDeviceDescriptor_t d) {
+  return TRUE;
+}
 
 BOOL genInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Generic"));
- return TRUE;
+  d->IsGPSSource = &IsGPSSource;
+  return TRUE;
 }
 
 
-BOOL genRegister(void){
+BOOL genRegister(){
   return(devRegister(
     TEXT("Generic"),
-      (1l << dfGPS)
-    ,
+    (1l << dfGPS),
     genInstall
   ));
 }
 
 BOOL internalInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Internal"));
+  d->IsGPSSource = &IsGPSSource;
   return TRUE;
 }
 
 
-BOOL InternalRegister(void){
+BOOL InternalRegister(){
   return(devRegister(
     TEXT("Internal"),
-      (1l << dfGPS)
-    ,
+    (1l << dfGPS),
     internalInstall
   ));
 }
