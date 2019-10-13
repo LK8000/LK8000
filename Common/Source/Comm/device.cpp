@@ -270,12 +270,6 @@ bool devIsDisabled(int Index) {
   return DeviceList[Index].Disabled;
 }
 
-static BOOL devIsFalseReturn(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);
-
-}
-
 void RefreshComPortList() {
 #ifdef ANDROID
     ScopeLock lock(COMMPort_mutex);
@@ -470,10 +464,10 @@ void DeviceDescriptor_t::InitStruct(int i) {
     Init = NULL;
     LinkTimeout = NULL;
     Declare = NULL;
-    IsLogger = devIsFalseReturn;
-    IsGPSSource = devIsFalseReturn;
-    IsBaroSource = devIsFalseReturn;
-    IsRadio = devIsFalseReturn;
+    IsLogger = NULL;
+    IsGPSSource = NULL;
+    IsBaroSource = NULL;
+    IsRadio = NULL;
 
     PutVoice = NULL;
     PortNumber = i;

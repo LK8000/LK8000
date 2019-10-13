@@ -14,23 +14,7 @@
 
 BOOL genInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Generic"));
-  d->ParseNMEA = NULL;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
-  d->LinkTimeout = NULL;
-  d->Declare = NULL;
-  d->IsLogger = NULL;
-  d->IsGPSSource = NULL;
-  d->IsBaroSource = NULL;
-  d->PutQNH = NULL;
-  d->OnSysTicker = NULL;
-
-  return(TRUE);
-
+ return TRUE;
 }
 
 
@@ -45,23 +29,7 @@ BOOL genRegister(void){
 
 BOOL internalInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Internal"));
-  d->ParseNMEA = NULL;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
-  d->LinkTimeout = NULL;
-  d->Declare = NULL;
-  d->IsLogger = NULL;
-  d->IsGPSSource = NULL;
-  d->IsBaroSource = NULL;
-  d->PutQNH = NULL;
-  d->OnSysTicker = NULL;
-
-  return(TRUE);
-
+  return TRUE;
 }
 
 
