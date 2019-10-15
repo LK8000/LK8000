@@ -37,8 +37,8 @@ BOOL m_bValues = false;
 WndForm* wf = NULL;
 extern bool UpdateQNH(const double newqnh);
 
-#define PRPGRESS_DLG
-#define BLOCK_SIZE 25
+#define NANO_PROGRESS_DLG
+#define BLOCK_SIZE 32
 
 PDeviceDescriptor_t DevLXNanoIII::m_pDevice=NULL;
 BOOL DevLXNanoIII::m_bLXNavS_series = false;
@@ -51,7 +51,8 @@ uint uTimeout =0;
 #define LX_CRC_POLY 0x69
 
 TCHAR m_Filename[200];
-#define NANO_PROGRESS_DLG
+uint m_CurLine =0;
+
 
 int iRxUpdateTime=0;
 int iNano3_RxUpdateTime=0;
@@ -202,6 +203,33 @@ BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
 
 
 
+long  StrTol(const  TCHAR *buff) {
+  errno = 0;
+
+#if 0
+  const long sl = _ttol(buff);
+#else
+  TCHAR *end;
+   const long sl = _tcstol(buff, &end, 10);
+//#define TCSTOL_DEBUG
+#ifdef TCSTOL_DEBUG
+  if (end == buff) {
+      StartupStore(TEXT("StrTol: %s: not a decimal number\n"), buff);
+  } else if ('\0' != *end) {
+      StartupStore(TEXT("StrTol: %s: extra characters at end of input: %s\n"), buff, end);
+  } else if ((LONG_MIN == sl || LONG_MAX == sl) && ERANGE == errno) {
+      StartupStore(TEXT("StrTol:%s out of range of type long\n"), buff);
+  } else if (sl > INT_MAX) {
+      StartupStore(TEXT("StrTol:%ld greater than INT_MAX\n"), sl);
+  } else if (sl < INT_MIN) {
+      StartupStore(TEXT("StrTol:%ld less than INT_MIN\n"), sl);
+  } else {
+  //    StartupStore(TEXT("StrTol: OK %s: = %ld\n"), buff, sl);
+  }
+#endif
+#endif
+  return sl;
+}
 
 
 long Nano3Baudrate(int iIdx)
@@ -622,6 +650,20 @@ int PortNum = d->PortNumber;
   return true;
 }
 
+
+
+//SendNmea(m_pDevice, LastCommand, errBufSize, errBuf);
+ bool  DevLXNanoIII::OnIGCTimeout(WndForm* pWnd){
+
+  if(m_pDevice == NULL) return false;
+
+  TCHAR Command[MAX_NMEA_LEN];
+  StartupStore(_T(" ******* NANO3  OnIGCTimeout resend last Block request ***** %s") , NEWLINE);
+  _sntprintf(Command, MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
+  SendNmea(m_pDevice, Command);
+
+  return true;
+}
 
 static bool OnTimer(WndForm* pWnd){
   WndProperty *wp = NULL;
@@ -1179,10 +1221,8 @@ UnlockFlightData();
   TCHAR szTmp[MAX_NMEA_LEN];
 
   _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,LOGBOOKSIZE,R"));
-  TCHAR errBuf[10];
-  TCHAR errBufSize=10;
 
-  SendNmea(m_pDevice, szTmp, errBufSize, errBuf);
+  SendNmea(m_pDevice, szTmp);
 
   if(m_pDevice) {
       dlgLX_IGCSelectListShowModal(m_pDevice);
@@ -1194,8 +1234,6 @@ UnlockFlightData();
 
 bool  DevLXNanoIII::OnStartIGC_FileRead(TCHAR Filename[]) {
 TCHAR szTmp[MAX_NMEA_LEN];
-TCHAR errBuf[10];
-TCHAR errBufSize=10;
 TCHAR IGCFilename[MAX_PATH];
 LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
 
@@ -1205,7 +1243,7 @@ LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
   StartupStore(_T(" ******* NANO3  IGC Download START ***** %s") , NEWLINE);
   _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
   _sntprintf(m_Filename, MAX_PATH, _T("%s"),Filename);
-  SendNmea(m_pDevice, szTmp, errBufSize, errBuf);
+  SendNmea(m_pDevice, szTmp);
   StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
   bIGC_Download = true;
 #ifdef  NANO_PROGRESS_DLG
@@ -1225,6 +1263,7 @@ BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
   }
   bool bWasInProgress = bIGC_Download ;
   bIGC_Download = false;
+  wf->SetTimerNotify(0, NULL);
 #ifdef  NANO_PROGRESS_DLG
   CloseIGCProgressDialog();
 #endif
@@ -1242,36 +1281,11 @@ BOOL DevLXNanoIII::Close (PDeviceDescriptor_t d) {
 
 BOOL DevLXNanoIII::PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
-TCHAR errBuf[10];
-uint errBufSize=10;
-static uint CurLine=0;   // musat be static to remember the last correct line in case of checksum error
-BOOL RepeatRequest = false;
-
-if (!NMEAParser::NMEAChecksum(sentence) /*|| (info == NULL)*/){
+  wf->SetTimerNotify(0, NULL);
+bool bCRCok = NMEAParser::NMEAChecksum(sentence);
+if (!bCRCok){
     StartupStore(_T("NANO3: Checksum Error %s %s") ,sentence, NEWLINE);
-    RepeatRequest = true;
-}
-
-
-if(bIGC_Download) // IGC Download in progress?
-{
-  if(uTimeout++ > 20)
-  {
-    StartupStore(_T("NANO3: TIMEOUT while IGC File Download!!!%s") , NEWLINE);
-    uTimeout =0;
-    RepeatRequest = true;
-  }
-  if(  RepeatRequest == true)
-  {
-     TCHAR szTmp[MAX_NMEA_LEN];
-     RepeatRequest = false;
-     _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,CurLine+1,CurLine+BLOCK_SIZE+1);
-     bIGC_Download = true;
-     uTimeout      = 0;
-     SendNmea(m_pDevice, szTmp, errBufSize, errBuf);
-     StartupStore(_T("NANO3 request repeat: %s %s") ,szTmp, NEWLINE);
-     return false;
-  }
+    
 }
 
 if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
@@ -1281,64 +1295,67 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
   for(uint i=0; i < 10 ; i++)
   {
     NMEAParser::ExtractParameter(sentence,Par[i],i);
-  /*  if(Par[i] != NULL)
-      StartupStore(_T(" >>>>  Par[%i] %s ***** %s") ,i ,Par[i], NEWLINE);*/
   }
   if (_tcsncmp(_T("INFO"), Par[1],4) == 0)
     return PLXVC_INFO(d,sentence,info);
 
   if (_tcsncmp(_T("LOGBOOKSIZE"), Par[1],11) == 0)
   {
-    _sntprintf(Par[0],MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"),(uint) _ttol(Par[3])+1);
-    SendNmea(d, Par[0], errBufSize, errBuf);
+    _sntprintf(Par[0],MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"),(uint) (StrTol(Par[3]))+1);
+    SendNmea(d, Par[0]);
   }
   else
     if (_tcsncmp(_T("LOGBOOK"), Par[1],7) == 0)  // PLXVC but not declaration = IGC File transfer
     {
       TCHAR Line[2][MAX_NMEA_LEN];
       _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s"),Par[5]);
-      _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), Par[6] ,Par[7] ,Par[8], (uint)_ttol(Par[9])/1024);
+      _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), Par[6] ,Par[7] ,Par[8], (uint)(StrTol(Par[9]))/1024);
       AddElement(Line[0], Line[1]);
     }
     else
     {
-//	StopRxThread(d, errBufSize, errBuf);
       if (bIGC_Download &&(_tcsncmp(_T("FLIGHT"), Par[1],6) == 0))
       {
-	uTimeout=0;
-	if(_tcslen( Par[3]) > 0)
-	  StartupStore(_T(">>>> %s %s") ,sentence, NEWLINE);
 
-	for(uint i=0; i < (uint)_tcslen(Par[6]); i++)	{
-	  fputc((char)Par[6][i],f); }
-	fputc((char)'\n',f);
-       CurLine = _ttol(Par[4]);
-       uint TotalLines = _ttol(Par[5]);
-       if((CurLine % (BLOCK_SIZE)==0))
-       {
-	 uint uPercent = 0;
-	 if(TotalLines > 0)
-	   uPercent = (CurLine*100) / TotalLines;
+	 if( bCRCok) // CRC OK?
+	 {
+	   if(_tcslen( Par[3]) > 0)
+	     StartupStore(_T(">>>> %s %s") ,sentence, NEWLINE);
+
+	   for(uint i=0; i < (uint)_tcslen(Par[6]); i++)	{
+	     fputc((char)Par[6][i],f); } fputc((char)'\n',f);
+	   m_CurLine = (uint) StrTol(Par[4]);
+	  uint TotalLines = (uint) StrTol(Par[5]);
+	   uint uPercent = 0;
+	   if(TotalLines > 0)
+	     uPercent = (m_CurLine*100) / TotalLines;
 	   _sntprintf(Par[1],MAX_NMEA_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
+
 #ifdef NANO_PROGRESS_DLG
-	 IGCProgressDialogText(Par[1]);
+	   IGCProgressDialogText(Par[1]);
 #endif
-	 _sntprintf(Par[0], MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,CurLine+1,CurLine+BLOCK_SIZE+1);
-	 bIGC_Download = true;
-	 uTimeout      = 0;
-	 SendNmea(m_pDevice, Par[0], errBufSize, errBuf);
-       }
-       if(CurLine == TotalLines)  // reach end of file?
-       {
-	 if(f != NULL) { fclose(f); f= NULL; }
-	 StartupStore(_T(" ******* NANO3  IGC Download END ***** %s") , NEWLINE);
+	   if((m_CurLine == TotalLines))  // reach end of file?
+	   {
+	     if(f != NULL) { fclose(f); f= NULL; }
+	     StartupStore(_T(" ******* NANO3  IGC Download END ***** %s") , NEWLINE);
+	     bIGC_Download = false;
+	//	 MessageBoxX(  MsgToken(2406), MsgToken(2398), mbOk) ;  // // _@M2398_ "IGC Download"
+#ifdef NANO_PROGRESS_DLG
+	     CloseIGCProgressDialog();
+#endif
+	   }
+	 }  // CRC OK?
 
-	 bIGC_Download = false;
-//	 MessageBoxX(  MsgToken(2406), MsgToken(2398), mbOk) ;  // // _@M2398_ "IGC Download"
-
-	 CloseIGCProgressDialog();
-//	 StartRxThread(d,  errBufSize , errBuf);
-       }
+         if(bIGC_Download)
+         {
+	   if((m_CurLine % (BLOCK_SIZE)==0) || !bCRCok)
+	   {
+	     bIGC_Download = true;
+	     _sntprintf(Par[6], MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
+	     SendNmea(m_pDevice, Par[6]);
+	     wf->SetTimerNotify(1000, DevLXNanoIII::OnIGCTimeout);
+	   }
+         }
      }
    }
  }
@@ -1402,8 +1419,7 @@ if( !devGetAdvancedMode(d))
     }
     if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
     {
-      info->BaroAltitude = fTmp;
-      info->BaroAltitudeAvailable = TRUE;
+      UpdateBaroSource( info, 0, d,fTmp);
     }
   }
 
@@ -1602,12 +1618,12 @@ int iTmp;
   {
     if(ParToDouble(sentence, 2, &fTmp))
     {
-      double tempBugs = 100.0-(fTmp);
-      tempBugs /=  100.0;
+   //   double tempBugs = 100.0-(fTmp);
+   //   tempBugs /=  100.0;
       if(m_bValues)
       {
         TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"),fTmp*100.0);
+        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"),fTmp);
 	ShowDataValue( wf ,d,_T("prpBUGDir"),  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
