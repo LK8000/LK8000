@@ -1083,8 +1083,11 @@ BOOL devIsGPSSource(PDeviceDescriptor_t d) {
  * used only in devInit() and UpdateMonitor() : already under LockComm ...
  */
 BOOL devIsBaroSource(PDeviceDescriptor_t d) {
-  if (d && d->IsBaroSource) {
-    return d->IsBaroSource(d);
+  if(d) {
+    if (d->IsBaroSource) {
+      return d->IsBaroSource(d);
+    }
+    return d->nmeaParser.IsValidBaroSource();
   }
   return false;
 }
