@@ -162,8 +162,8 @@ bool  UpdateMonitor(void)
   //
   if (validBaro==0) {
     if ( GPS_INFO.BaroAltitudeAvailable ) {
-      StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off  %s%s"),WhatTimeIsIt(),NEWLINE);
-      if (EnableNavBaroAltitude && active) {
+      StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off  %s"),WhatTimeIsIt());
+      if (EnableNavBaroAltitude) {
         // LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE" 
         DoStatusMessage(MsgToken(122));
         PortMonitorMessages++;
@@ -179,44 +179,29 @@ bool  UpdateMonitor(void)
       GPS_INFO.AccelerationAvailable = false;
       EnableExternalTriggerCruise = false;
 
-      for(auto& dev : DeviceList) {
-        dev.nmeaParser.Reset();
-      }
-
       // 120824 Check this situation better> Reset is setting activeGPS true for both devices!
       lastvalidBaro=false;
     }
-  } else {
-    if ( lastvalidBaro==false) {
+  } else if ( lastvalidBaro==false) {
 #if DEBUGBARO
-      const TCHAR* devname = (pDevPrimaryBaroSource) ? pDevPrimaryBaroSource->Name : _T("unknown");
-      StartupStore(_T("... GPS baro source back available from <%s>" NEWLINE),devname);
+    const TCHAR* devname = (pDevPrimaryBaroSource) ? pDevPrimaryBaroSource->Name : _T("unknown");
+    StartupStore(_T("... GPS baro source back available from <%s>" NEWLINE),devname);
 #endif
 
-      if (GotFirstBaroAltitude) {
+    if (GotFirstBaroAltitude) {
         if (EnableNavBaroAltitude) {
           DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
         } else {
           DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
         }
-        StartupStore(_T("... GPS baro source back available %s" NEWLINE),WhatTimeIsIt());
+        StartupStore(_T("... GPS baro source back available %s"),WhatTimeIsIt());
         lastvalidBaro=true;
       } else {
-        static bool said=false;
-        if (!said) {
-          StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s" NEWLINE),WhatTimeIsIt());
-          said=true;
-        }
-      }
-    } 
-    else {
-      // last baro was Ok, currently we still have a validbaro, but no HBs...
-      // Probably it is a special case when no gps fix was found on the secondary baro source.
-      if (invalidBaro||!GotFirstBaroAltitude) {
-        GPS_INFO.BaroAltitudeAvailable=FALSE;
-        #ifdef DEBUGNPM
-        StartupStore(_T(".... We still have valid baro, resetting BaroAltitude OFF %s" NEWLINE),WhatTimeIsIt());
-        #endif
+      static bool said = false;
+      if (!said) {
+        StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s"),
+                     WhatTimeIsIt());
+        said = true;
       }
     }
   }
