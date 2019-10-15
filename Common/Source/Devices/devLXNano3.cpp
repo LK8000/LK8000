@@ -1334,7 +1334,7 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
 #ifdef NANO_PROGRESS_DLG
 	   IGCProgressDialogText(Par[1]);
 #endif
-	   if((m_CurLine == TotalLines))  // reach end of file?
+	   if(m_CurLine == TotalLines)  // reach end of file?
 	   {
 	     if(f != NULL) { fclose(f); f= NULL; }
 	     StartupStore(_T(" ******* NANO3  IGC Download END ***** %s") , NEWLINE);
