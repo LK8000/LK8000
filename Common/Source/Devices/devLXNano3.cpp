@@ -1419,8 +1419,7 @@ if( !devGetAdvancedMode(d))
     }
     if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
     {
-      info->BaroAltitude = fTmp;
-      info->BaroAltitudeAvailable = TRUE;
+      UpdateBaroSource( info, 0, d,fTmp);
     }
   }
 
@@ -1619,12 +1618,12 @@ int iTmp;
   {
     if(ParToDouble(sentence, 2, &fTmp))
     {
-      double tempBugs = 100.0-(fTmp);
-      tempBugs /=  100.0;
+   //   double tempBugs = 100.0-(fTmp);
+   //   tempBugs /=  100.0;
       if(m_bValues)
       {
         TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"),fTmp*100.0);
+        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"),fTmp);
 	ShowDataValue( wf ,d,_T("prpBUGDir"),  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
