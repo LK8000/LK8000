@@ -57,5 +57,8 @@ output.map
 /android-studio/app/fabric.properties
 /android-studio/.idea/caches/
 /android-studio/app/.cxx/
+/android-studio/app/Thirdparty/
+/android-studio/app/release/
+/android-studio/app/build/
 /android-thirdparty/
 /.vs/
