@@ -7,6 +7,8 @@
 */
 
 #include "externs.h"
+#include <functional>
+using std::placeholders::_1;
 
 double MapWindow::LimitMapScale(double value) {
 
@@ -87,30 +89,26 @@ int MapWindow::GetScaleListCount()
 }
 
 // Fill up discrete map scales
-void MapWindow::FillScaleListForEngineeringUnits(void) {
+void MapWindow::FillScaleListForEngineeringUnits() {
 
-  double scalefactor = (double) GetMapResolutionFactor() / (double) IBLSCALE(DrawRect.right) * 1.4;
+  const double scalefactor = (double) GetMapResolutionFactor() / (double) IBLSCALE(DrawRect.right) * 1.4;
+
+  auto apply_scale = std::bind(std::divides<double>(), _1, scalefactor);
 
   switch (Units::GetUserDistanceUnit()) {
     default:
-      std::transform(std::begin(ScaleListArrayMeters), std::end(ScaleListArrayMeters), std::begin(ScaleList),
-                     [scalefactor](double value) {
-                       return value / scalefactor;
-                     });
-      break;
+      std::transform(std::begin(ScaleListArrayMeters), std::end(ScaleListArrayMeters),
+                     std::begin(ScaleList), apply_scale);
+          break;
     case unStatuteMiles:
-      std::transform(std::begin(ScaleListArrayStatuteMiles),std::end(ScaleListArrayStatuteMiles),std::begin(ScaleList),
-                     [scalefactor](double value) {
-                       return value / scalefactor;
-                     });
-      break;
+      std::transform(std::begin(ScaleListArrayStatuteMiles), std::end(ScaleListArrayStatuteMiles),
+                     std::begin(ScaleList), apply_scale);
+          break;
 
     case unNauticalMiles:
-      std::transform(std::begin(ScaleListNauticalMiles), std::end(ScaleListNauticalMiles), std::begin(ScaleList),
-                     [scalefactor](double value) {
-                       return value / scalefactor;
-                     });
-      break;
+      std::transform(std::begin(ScaleListNauticalMiles), std::end(ScaleListNauticalMiles),
+                     std::begin(ScaleList), apply_scale);
+          break;
   } //sw units
 
   ScaleListCount = SCALELISTSIZE;  // ToDo Remove ScaleListCount global variable
