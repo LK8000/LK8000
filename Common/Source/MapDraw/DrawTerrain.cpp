@@ -380,10 +380,10 @@ public:
 
         double X, Y;
 
-        const int X0 = (unsigned int) (dtquant / 2);
-        const int Y0 = (unsigned int) (dtquant / 2);
-        const int X1 = (unsigned int) (X0 + dtquant * ixs);
-        const int Y1 = (unsigned int) (Y0 + dtquant * iys);
+        const int X0 = dtquant / 2;
+        const int Y0 = dtquant / 2;
+        const int X1 = X0 + dtquant * ixs;
+        const int Y1 = Y0 + dtquant * iys;
 
         double pixelDX, pixelDY;
 
@@ -507,9 +507,9 @@ public:
         if (TerrainRamp == 13) { // GA Relative
             if (!GPS_INFO.NAVWarning) {
                 if (CALCULATED_INFO.Flying) {
-                    height_min = (int16_t) GPS_INFO.Altitude - 150; // 500ft
+                    height_min = static_cast<int16_t>(GPS_INFO.Altitude - 150); // 500ft
                 } else {
-                    height_min = (int16_t) GPS_INFO.Altitude + 100; // 330ft
+                    height_min = static_cast<int16_t>(GPS_INFO.Altitude + 100); // 330ft
                 }
             } else {
                 height_min += 150;
@@ -663,8 +663,6 @@ public:
 
                 assert(x+3 < ixs);
             }
-
-
             // right side
             {
                 const int16x4_t right = vmov_n_s16(*(curr_row + ixs - 1));
@@ -744,7 +742,6 @@ public:
                 screen_row[x+5] = GetColor(vgetq_lane_s16(h, 5));
                 screen_row[x+6] = GetColor(vgetq_lane_s16(h, 6));
                 screen_row[x+7] = GetColor(vgetq_lane_s16(h, 7));
-
             }
             // next to vectorize using neon
             for (; x < (ixs-4); x+=4) {
