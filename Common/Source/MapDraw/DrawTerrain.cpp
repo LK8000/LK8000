@@ -714,16 +714,40 @@ public:
             return;
         }
 
+        const int16x8_t qheight_0 = vmovq_n_s16(0);
+        const int16x8_t qheight_255 = vmovq_n_s16(255);
+        const int16x8_t qv_height_min = vmovq_n_s16(height_min);
+        const int16x8_t qv_height_scale = vmovq_n_s16(height_scale);
+
         const int16x4_t height_0 = vmov_n_s16(0);
         const int16x4_t height_255 = vmov_n_s16(255);
         const int16x4_t v_height_min = vmov_n_s16(height_min);
         const int16x4_t v_height_scale = vmov_n_s16(height_scale);
 
+
         for (unsigned int y = 0; y < iys; ++y) {
             BGRColor* screen_row = screen_buffer->GetRow(y);
             const int16_t *height_row = &height_buffer[y*ixs];
 
-            for (unsigned int x = 0; x < (ixs-3); x+=4) {
+            // first loop to vectorize using neon quad
+            unsigned int x;
+            for (x = 0; x < (ixs-8); x+=8) {
+                int16x8_t h =  vld1q_s16(height_row + x);
+                h = (h - qv_height_min) >> qv_height_scale;
+                h = Clamp(h, qheight_0, qheight_255);
+
+                screen_row[x]   = GetColor(vgetq_lane_s16(h, 0));
+                screen_row[x+1] = GetColor(vgetq_lane_s16(h, 1));
+                screen_row[x+2] = GetColor(vgetq_lane_s16(h, 2));
+                screen_row[x+3] = GetColor(vgetq_lane_s16(h, 3));
+                screen_row[x+4] = GetColor(vgetq_lane_s16(h, 4));
+                screen_row[x+5] = GetColor(vgetq_lane_s16(h, 5));
+                screen_row[x+6] = GetColor(vgetq_lane_s16(h, 6));
+                screen_row[x+7] = GetColor(vgetq_lane_s16(h, 7));
+
+            }
+            // next to vectorize using neon
+            for (; x < (ixs-4); x+=4) {
                 int16x4_t h =  vld1_s16(height_row + x);
                 h = (h - v_height_min) >> v_height_scale;
                 h = Clamp(h, height_0, height_255);
@@ -732,8 +756,14 @@ public:
                 screen_row[x+1] = GetColor(vget_lane_s16(h, 1));
                 screen_row[x+2] = GetColor(vget_lane_s16(h, 2));
                 screen_row[x+3] = GetColor(vget_lane_s16(h, 3));
+            }
+            // end without vector
+            for (; x < ixs; ++x) {
+                int16_t h =  *(height_row + x);
+                h = ((unsigned)(h - height_min)) >> height_scale;
+                h = Clamp<int16_t>(h, 0, 255);
 
-                assert(x+3 < ixs);
+                screen_row[x]   = GetColor(h);
             }
         }
     }

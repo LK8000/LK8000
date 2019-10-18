@@ -55,6 +55,11 @@ int16x4_t Clamp(int16x4_t value, int16x4_t min, int16x4_t max) {
 }
 
 static inline
+int16x8_t Clamp(int16x8_t value, int16x8_t min, int16x8_t max) {
+    return vminq_s16(vmaxq_s16(value, min), max);
+}
+
+static inline
 int32x4_t Clamp(int32x4_t value, int32x4_t min, int32x4_t max) {
     return vminq_s32(vmaxq_s32(value, min), max);
 }
