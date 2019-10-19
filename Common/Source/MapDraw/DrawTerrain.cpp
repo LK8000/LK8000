@@ -882,6 +882,11 @@ public:
     }
 
     void DrawIsoLine() {
+        const double current_scale = MapWindow::zoom.Scale() / DISTANCEMODIFY;
+        if (current_scale >= 2000 || current_scale <= 100) {
+            // No Iso line if zoom are too small or too huge
+            return;
+        }
 
 #ifdef DRAW_TIMER
         uint64_t contour_start = MonotonicClockUS();
