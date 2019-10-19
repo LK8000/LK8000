@@ -268,13 +268,6 @@ class MapWindow {
    */
   class Zoom {
   private:
-    // initial fixed zoom factors - in user distance units, km,mi what is selected!
-    // Values are used in dlgConfiguration, to show values in config options
-    static const double SCALE_CRUISE_INIT;
-    static const double SCALE_CIRCLING_INIT;
-    static const double SCALE_PANORAMA_INIT;
-    static const double SCALE_PG_PANORAMA_INIT;
-    static const double SCALE_INVALID_INIT;
 
     enum TMapScaleType {
       SCALE_CRUISE,             /**< @brief Basic zoom for flight mode used for:
@@ -302,7 +295,6 @@ class MapWindow {
     double _modeScale[SCALE_NUM];                 /**< @brief Requested scale for each of scale types */
     double *_requestedScale;                      /**< @brief Requested scale for current scale type */
     // performance related members
-    double _scaleOverDistanceModify;
     double _resScaleOverDistanceModify;
     double _drawScale;
     double _invDrawScale;

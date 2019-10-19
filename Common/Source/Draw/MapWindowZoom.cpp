@@ -14,13 +14,11 @@
 MapWindow::Zoom::Zoom():
   _bMapScale (true),
   _inited(false),
-  _autoZoom(false), _circleZoom(true), _bigZoom(false),
-  _scale(0), _realscale(0),  _requestedScale(&_modeScale[SCALE_CRUISE]),
-  _scaleOverDistanceModify(0),
+  _autoZoom(false), _circleZoom(true),
+  _scale(0), _realscale(0), _modeScale(),
+  _requestedScale(&_modeScale[SCALE_CRUISE]),
   _resScaleOverDistanceModify(0)
 {
-  for(unsigned i=0; i<SCALE_NUM; i++)
-    _modeScale[i] = 0;
 }
 
 
@@ -78,7 +76,7 @@ double MapWindow::Zoom::GetZoomInitValue(int parameter_number) const {
  */
 void MapWindow::Zoom::Reset()
 {
-  const double SCALE_PANORAMA_INIT    = 10.0;
+  constexpr double SCALE_PANORAMA_INIT    = 10.0;
 
   _modeScale[SCALE_CRUISE]   = GetZoomInitValue(CruiseZoom);
   _modeScale[SCALE_CIRCLING] = GetZoomInitValue(ClimbZoom);
@@ -96,7 +94,6 @@ void MapWindow::Zoom::Reset()
 
   _requestedScale = &_modeScale[SCALE_CRUISE];
   _scale = *_requestedScale;
-  _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
   _realscale = *_requestedScale/DISTANCEMODIFY/1000;
 
   _inited = true;
@@ -295,18 +292,18 @@ void MapWindow::Zoom::UpdateMapScale()
 void MapWindow::Zoom::ModifyMapScale()
 {
   // limit zoomed in so doesn't reach silly levels
-  if(_bMapScale)
+  if(_bMapScale) {
     *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
-  _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
-  LKASSERT(_scaleOverDistanceModify!=0);
-  _resScaleOverDistanceModify = GetMapResolutionFactor() / _scaleOverDistanceModify;
-  _drawScale = _scaleOverDistanceModify;
-  _drawScale = _drawScale / 111194;
-  LKASSERT(_drawScale!=0);
-  _drawScale = GetMapResolutionFactor() / _drawScale;
+  }
+
+  const double mapFactor = GetMapResolutionFactor();
+  const double scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
+
+  _resScaleOverDistanceModify = mapFactor / scaleOverDistanceModify;
+  _drawScale = mapFactor / (scaleOverDistanceModify / 111194); // what is this const value ?
   _invDrawScale = 1.0 / _drawScale;
   _scale = *_requestedScale;
-  _realscale = *_requestedScale/DISTANCEMODIFY/1000;
+  _realscale = *_requestedScale / DISTANCEMODIFY / 1000;
 }
 
 
