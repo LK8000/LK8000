@@ -59,27 +59,20 @@ void MapWindow::Zoom::CalculateAutoZoom() {
 
 }
 
-double MapWindow::Zoom::GetZoomInitValue(int parameter_number) const
-{
+double MapWindow::Zoom::GetZoomInitValue(int parameter_number) const {
   // Initial cruise/Climb zoom map scales. Parameter number equal to config dlg item index
   // Values are given in user units, km or mi what is selected.
   // These values used to select the best available mapscale from scalelist. See MapWindow::FillScaleListForEngineeringUnits(
 
   switch (Units::GetUserDistanceUnit()) {
     default:
-        return ScaleListArrayMeters[parameter_number];
-      break;
+      return ScaleListArrayMeters[parameter_number];
     case unStatuteMiles:
       return ScaleListArrayStatuteMiles[parameter_number];
-      break;
     case unNauticalMiles:
       return ScaleListNauticalMiles[parameter_number];
-      break;
-  } //sw units
-
-
+  }
 }
-
 /**
  * @brief Resets Map Zoom to initial values
  */
