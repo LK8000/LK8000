@@ -34,19 +34,18 @@ int NMEAParser::StartDay = -1;
 // #define DEBUGBARO	1
 
 NMEAParser::NMEAParser() {
-  _Reset();
+  expire = true;
+  activeGPS = false;
+  Reset();
 }
 
-void NMEAParser::_Reset(void) {
-
+void NMEAParser::Reset() {
   connected = false;
-  expire = true;
   nSatellites = 0;
   gpsValid = false;
   dateValid = false;
   isFlarm = false;
-  activeGPS = true;
-  GGAAvailable = FALSE;
+  GGAAvailable = false;
   RMZAvailable = false;
   RMZAltitude = 0;
   RMCAvailable = false;

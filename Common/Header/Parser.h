@@ -173,7 +173,7 @@ class NMEAParser {
   NMEAParser();
   static BOOL devParseStream(int portnum,
 			      char *String,int len, NMEA_INFO *GPS_INFO);
-  void _Reset(void);
+  void Reset();
 
   BOOL ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO);
 
@@ -223,7 +223,7 @@ class NMEAParser {
   }
 
  private:
-  BOOL GGAAvailable;
+  bool GGAAvailable;
   bool RMZAvailable;
   bool RMCAvailable;
   bool TASAvailable;

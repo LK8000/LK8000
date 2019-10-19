@@ -116,23 +116,17 @@ bool  UpdateMonitor(void)
       invalidGps++;
       // We want to be sure that if this device is silent, and it was providing Baro altitude,
       // now it is set to off.
-      if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
-        if ( &dev == pDevPrimaryBaroSource || dev.nmeaParser.IsValidBaroSource() ) {
+      if (GPS_INFO.BaroAltitudeAvailable) {
+        if (devIsBaroSource(&dev)) {
           invalidBaro++;
         }
       }
 
-      bool dev_active = dev.nmeaParser.activeGPS;
-      bool dev_expire = dev.nmeaParser.expire;
-      dev.nmeaParser._Reset();
-      dev.nmeaParser.expire = dev_expire; // restore expire status (Reset is setting it to true)
+      dev.nmeaParser.Reset();
 
       if(!dev.nmeaParser.expire) {
         // if device never expire, is still connected & don't change activeGPS status.
         dev.nmeaParser.connected = true;
-        dev.nmeaParser.activeGPS = dev_active;
-      } else {
-        dev.nmeaParser.activeGPS=false; // because Reset is setting it to true
       }
 
       // We reset some flags globally only once in case of device gone silent 
@@ -147,8 +141,9 @@ bool  UpdateMonitor(void)
     } else {
       wasSilent[dev.PortNumber]=false;
       // We have hearth beats, is baro available?
-      if ( devIsBaroSource(&dev) || dev.nmeaParser.IsValidBaroSource() ) // 100411
+      if (devIsBaroSource(&dev)) { // 100411
         validBaro++;
+      }
     }
   }
 
@@ -167,8 +162,8 @@ bool  UpdateMonitor(void)
   //
   if (validBaro==0) {
     if ( GPS_INFO.BaroAltitudeAvailable ) {
-      StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off  %s%s"),WhatTimeIsIt(),NEWLINE);
-      if (EnableNavBaroAltitude && active) {
+      StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off  %s"),WhatTimeIsIt());
+      if (EnableNavBaroAltitude) {
         // LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE" 
         DoStatusMessage(MsgToken(122));
         PortMonitorMessages++;
@@ -183,43 +178,30 @@ bool  UpdateMonitor(void)
       GPS_INFO.NettoVarioAvailable=false;
       GPS_INFO.AccelerationAvailable = false;
       EnableExternalTriggerCruise = false;
-      for(auto& dev : DeviceList) {
-        dev.nmeaParser._Reset();
-      }
+
       // 120824 Check this situation better> Reset is setting activeGPS true for both devices!
       lastvalidBaro=false;
     }
-  } else {
-    if ( lastvalidBaro==false) {
+  } else if ( lastvalidBaro==false) {
 #if DEBUGBARO
-      const TCHAR* devname = (pDevPrimaryBaroSource) ? pDevPrimaryBaroSource->Name : _T("unknown");
-      StartupStore(_T("... GPS baro source back available from <%s>" NEWLINE),devname);
+    const TCHAR* devname = (pDevPrimaryBaroSource) ? pDevPrimaryBaroSource->Name : _T("unknown");
+    StartupStore(_T("... GPS baro source back available from <%s>" NEWLINE),devname);
 #endif
 
-      if (GotFirstBaroAltitude) {
+    if (GotFirstBaroAltitude) {
         if (EnableNavBaroAltitude) {
           DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
         } else {
           DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
         }
-        StartupStore(_T("... GPS baro source back available %s" NEWLINE),WhatTimeIsIt());
+        StartupStore(_T("... GPS baro source back available %s"),WhatTimeIsIt());
         lastvalidBaro=true;
       } else {
-        static bool said=false;
-        if (!said) {
-          StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s" NEWLINE),WhatTimeIsIt());
-          said=true;
-        }
-      }
-    } 
-    else {
-      // last baro was Ok, currently we still have a validbaro, but no HBs...
-      // Probably it is a special case when no gps fix was found on the secondary baro source.
-      if (invalidBaro||!GotFirstBaroAltitude) {
-        GPS_INFO.BaroAltitudeAvailable=FALSE;
-        #ifdef DEBUGNPM
-        StartupStore(_T(".... We still have valid baro, resetting BaroAltitude OFF %s" NEWLINE),WhatTimeIsIt());
-        #endif
+      static bool said = false;
+      if (!said) {
+        StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s"),
+                     WhatTimeIsIt());
+        said = true;
       }
     }
   }
@@ -288,7 +270,7 @@ bool  UpdateMonitor(void)
           GPS_INFO.AccelerationAvailable = false;
           EnableExternalTriggerCruise = false;
           for(auto& dev : DeviceList) {
-            dev.nmeaParser._Reset();
+            dev.nmeaParser.Reset();
           }
           // 120824 Check this situation better> Reset is setting activeGPS true for both devices!
           lastvalidBaro=false;

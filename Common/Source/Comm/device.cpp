@@ -270,12 +270,6 @@ bool devIsDisabled(int Index) {
   return DeviceList[Index].Disabled;
 }
 
-static BOOL devIsFalseReturn(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);
-
-}
-
 void RefreshComPortList() {
 #ifdef ANDROID
     ScopeLock lock(COMMPort_mutex);
@@ -458,49 +452,47 @@ void RefreshComPortList() {
     }
 }
 
+DeviceDescriptor_t::DeviceDescriptor_t() {
+    Rx = 0;
+    Tx = 0;
+    ErrTx = 0;
+    ErrRx = 0;
+}
+
 void DeviceDescriptor_t::InitStruct(int i) {
-    Name[0] = '\0';
-    ParseNMEA = NULL;
-    PutMacCready = NULL;
-    DirectLink = NULL;
-    PutBugs = NULL;
-    PutBallast = NULL;
-    Open = NULL;
-    Close = NULL;
-    Init = NULL;
-    LinkTimeout = NULL;
-    Declare = NULL;
-    IsLogger = devIsFalseReturn;
-    IsGPSSource = devIsFalseReturn;
-    IsBaroSource = devIsFalseReturn;
-    IsRadio = devIsFalseReturn;
-
-    PutVoice = NULL;
     PortNumber = i;
-    PutQNH = NULL;
-    OnSysTicker = NULL;
 
-    PutVolume = NULL;
-    PutFreqActive = NULL;
-    PutFreqStandby = NULL;
+    Name[0] = '\0';
+    ParseNMEA = nullptr;
+    PutMacCready = nullptr;
+    DirectLink = nullptr;
+    PutBugs = nullptr;
+    PutBallast = nullptr;
+    Open = nullptr;
+    Close = nullptr;
+    Init = nullptr;
+    LinkTimeout = nullptr;
+    Declare = nullptr;
+    IsLogger = nullptr;
+    IsGPSSource = nullptr;
+    IsBaroSource = nullptr;
+    IsRadio = nullptr;
+
+    PutVoice = nullptr;
+    PutQNH = nullptr;
+    OnSysTicker = nullptr;
+
+    PutVolume = nullptr;
+    PutFreqActive = nullptr;
+    PutFreqStandby = nullptr;
     Disabled = true;
 
     Status = CPS_UNUSED; // 100210
     HB = 0; // counter
 
-    nmeaParser._Reset();
     iSharedPort = -1;
     m_bAdvancedMode = false;
     bNMEAOut     = false;
-    static bool doinit = true;
-    if (doinit) {
-        Rx = 0;
-        Tx = 0;
-        ErrTx = 0;
-        ErrRx = 0;
-
-        doinit = false;
-    }
 }
 
 bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
@@ -1091,8 +1083,11 @@ BOOL devIsGPSSource(PDeviceDescriptor_t d) {
  * used only in devInit() and UpdateMonitor() : already under LockComm ...
  */
 BOOL devIsBaroSource(PDeviceDescriptor_t d) {
-  if (d && d->IsBaroSource) {
-    return d->IsBaroSource(d);
+  if(d) {
+    if (d->IsBaroSource) {
+      return d->IsBaroSource(d);
+    }
+    return d->nmeaParser.IsValidBaroSource();
   }
   return false;
 }

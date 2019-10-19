@@ -107,9 +107,9 @@ typedef struct{
 
 } DeviceIO;
 
-typedef	struct DeviceDescriptor_t {
+struct DeviceDescriptor_t {
   
-  DeviceDescriptor_t() = default;
+  DeviceDescriptor_t();
   
   DeviceDescriptor_t(const DeviceDescriptor_t&) = delete;
   DeviceDescriptor_t(DeviceDescriptor_t&&) = delete;
@@ -163,7 +163,7 @@ typedef	struct DeviceDescriptor_t {
   NMEAParser nmeaParser;
 //  DeviceIO PortIO[NUMDEV];
   void InitStruct(int i);
-}DeviceDescriptor_t;
+};
 
 typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 
