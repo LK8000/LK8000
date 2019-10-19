@@ -258,7 +258,7 @@ _skip2:
 	_tcscat(Scale, sCoordinate);
 	_tcscat(Scale, _T(" "));
     }
-    double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
+    double mapScale=Units::ToSysDistance(zoom.Scale());
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
     Units::FormatUserMapScale(NULL, mapScale, Scale1, sizeof(Scale1)/sizeof(Scale1[0]));
     _tcscat(Scale,Scale1);

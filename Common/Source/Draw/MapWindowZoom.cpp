@@ -52,7 +52,7 @@ void MapWindow::Zoom::CalculateAutoZoom() {
     }
     _modeScale[SCALE_CRUISE] = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
   } else {
-    _modeScale[SCALE_CRUISE] = GetZoomInitValue(CruiseZoom) / 1.4;
+    _modeScale[SCALE_CRUISE] = GetZoomInitValue(CruiseZoom);
   }
 
 }
@@ -81,13 +81,6 @@ void MapWindow::Zoom::Reset()
   _modeScale[SCALE_CRUISE]   = GetZoomInitValue(CruiseZoom);
   _modeScale[SCALE_CIRCLING] = GetZoomInitValue(ClimbZoom);
   _modeScale[SCALE_PANORAMA] = SCALE_PANORAMA_INIT;
-
-  // Correct _modeScale[] values for internal use
-  // You have to give values in user units (km,mi, what is selected), we need to divide it by 1.4
-  // because of the size of the mapscale symbol
-  _modeScale[SCALE_CRUISE]   /= 1.4;
-  _modeScale[SCALE_CIRCLING] /= 1.4;
-  _modeScale[SCALE_PANORAMA] /= 1.4;
 
   if(_autoZoom)
     _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
@@ -310,10 +303,8 @@ void MapWindow::Zoom::ModifyMapScale()
 bool MapWindow::Zoom::GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
 {
   double mapscale = GetZoomInitValue(init_parameter);
-  //double mapscale = ScaleList[init_parameter];
-
   // Get nearest discrete value
-  double ms = MapWindow::FindMapScale(mapscale/1.4)*1.4;
+  double ms = MapWindow::FindMapScale(mapscale);
   return Units::FormatUserMapScale(NULL, Units::ToSysDistance(ms), out, size);
 }
 

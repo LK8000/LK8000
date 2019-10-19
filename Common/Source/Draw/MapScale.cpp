@@ -21,7 +21,7 @@ double MapWindow::LimitMapScale(double value) {
       minreasonable = MapWindow::zoom.GetZoomInitValue(MaxAutoZoom) * 1000;
   }
 
-  minreasonable = Units::ToUserDistance(minreasonable / 1.4);        // 1.4 for mapscale symbol
+  minreasonable = Units::ToUserDistance(minreasonable);
 
   // return value in user distance units!!!
   if (ScaleListCount>0) {
@@ -91,7 +91,7 @@ int MapWindow::GetScaleListCount()
 // Fill up discrete map scales
 void MapWindow::FillScaleListForEngineeringUnits() {
 
-  const double scalefactor = (double) GetMapResolutionFactor() / (double) IBLSCALE(DrawRect.right) * 1.4;
+  const double scalefactor = (double) GetMapResolutionFactor() / (double) IBLSCALE(DrawRect.right);
 
   auto apply_scale = std::bind(std::divides<double>(), _1, scalefactor);
 
