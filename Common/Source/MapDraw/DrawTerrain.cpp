@@ -149,13 +149,15 @@ inline T TerrainShading(const int16_t illum, const T& color) {
 
   constexpr uint32_t interp_level = 128;
 
-  if (illum < 0) { // shadow to blue
+  if (illum < 0) {
+    // shadow to "tshadow.color"
     const uint32_t x = std::min<uint32_t>(tshadow.height, -illum);
     return linear_interpolation<interp_level>(color, tshadow.color, x);
-  } else if (illum > 0) { // highlight to yellow
+  } else if (illum > 0) {
+    // highlight "thighlight.color"
     if (thighlight.height != 255) {
       const uint32_t x = std::min<uint32_t>(thighlight.height, illum / 2);
-      return linear_interpolation<interp_level>(color, tshadow.color, x);
+      return linear_interpolation<interp_level>(color, thighlight.color, x);
     }
   }
   return color;
