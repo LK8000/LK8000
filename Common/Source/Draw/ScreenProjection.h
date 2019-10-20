@@ -66,8 +66,6 @@ protected:
     RasterPoint _Origin;
     short _CosAngle;
     short _SinAngle;
-    
-    double _PixelSize;
 };
 
 
