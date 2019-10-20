@@ -342,6 +342,7 @@ void LKProfileResetDefault(void) {
 
   Orbiter_Config = 1;
   Shading_Config = 1;
+  IsoLine_Config = true;
   OverlayClock = 0;
   UseTwoLines = 1;
   SonarWarning_Config = 1; // sonar enabled by default on reset

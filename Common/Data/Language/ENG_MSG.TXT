@@ -2221,6 +2221,7 @@ _@M2278_ "XC Spd"
 
 
 _@M2279_ "Contest"
+_@M2280_ "Contour Line"
 
 # MAX 2500! 
 # (Reserved for custom menus up to 2300!)

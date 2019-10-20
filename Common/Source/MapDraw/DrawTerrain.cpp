@@ -1211,7 +1211,9 @@ _redo:
         }
 
         trenderer->FixOldMapWater();
-        trenderer->DrawIsoLine();
+        if(IsoLine_Config) {
+            trenderer->DrawIsoLine();
+        }
     }
     // step 5: draw
     trenderer->Draw(Surface, rc);

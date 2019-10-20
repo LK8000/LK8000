@@ -2169,6 +2169,11 @@ DataField* dfe = wp->GetDataField();
     wp->GetDataField()->Set(Shading_Config);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpIsoLine"));
+  if (wp) {
+    wp->GetDataField()->Set(IsoLine_Config);
+    wp->RefreshDisplay();
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpSonarWarning"));
   if (wp) {
     wp->GetDataField()->Set(SonarWarning_Config);
@@ -4018,6 +4023,12 @@ int ival;
     if (Shading_Config != wp->GetDataField()->GetAsBoolean()) {
       Shading_Config = wp->GetDataField()->GetAsBoolean();
       Shading=Shading_Config;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpIsoLine"));
+  if (wp) {
+    if (IsoLine_Config != wp->GetDataField()->GetAsBoolean()) {
+      IsoLine_Config = wp->GetDataField()->GetAsBoolean();
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpSonarWarning"));

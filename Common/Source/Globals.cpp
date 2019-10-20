@@ -265,6 +265,7 @@ void Globals_Init(void) {
   SonarWarning_Config=1;
   Shading=1;
   Shading_Config=1;
+  IsoLine_Config=true;
 
   for (i=0; i<10; i++) ConfMP[i]=1;
 

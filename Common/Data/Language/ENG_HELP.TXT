@@ -2021,6 +2021,9 @@ BAT1    first external battery voltage
 BAT2    second external battery voltage  
 POLAR   polar coefficients
 
+@1304
+[Contour Line]
+Draw terrain elevation contour line for zoom level between 2km to 100m
 
 @9999
 No help available on this item!

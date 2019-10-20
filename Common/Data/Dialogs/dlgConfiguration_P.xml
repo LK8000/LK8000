@@ -69,6 +69,9 @@
       <WndProperty Name="prpShading" Caption="_@M610_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H120_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
+      <WndProperty Name="prpIsoLine" Caption="_@M2280_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1304_">
+        <DataField Name="" DataType="boolean"/>
+      </WndProperty>
       <WndProperty Name="prpBgMapcolor" Caption="_@M257_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H121_">
         <DataField Name="" DataType="enum" Min="0" Max="9" Step="1"/>
       </WndProperty>
