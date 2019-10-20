@@ -65,6 +65,9 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 . changes SFC (surface) to GND (ground) trigraph
 
+. Add Terrain contour line for zoom level between 2km and 100m
+
+. Fix map scale indicator length
 
 
 [version 7.0 changes from 6.0]
