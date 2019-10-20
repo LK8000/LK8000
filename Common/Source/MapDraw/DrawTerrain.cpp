@@ -25,10 +25,6 @@
 #include <arm_neon.h>
 #endif
 
-//#define DRAW_TIMER
-//#define DRAW_TIMER_TOTAL
-
-
 //
 // Choose the scale threshold for disabling shading. This happens at low zoom levels.
 // Values are in RealScale. Imperial and nautical distance units are using it too.
@@ -888,10 +884,6 @@ public:
             return;
         }
 
-#ifdef DRAW_TIMER
-        uint64_t contour_start = MonotonicClockUS();
-#endif
-
         struct {
             uint8_t operator()(int16_t height) {
                 return static_cast<uint16_t>(std::max<int16_t>(0, height)) >> 6; // 64m, can't be smaller to avoid uint8_t overflow.
@@ -939,11 +931,6 @@ public:
             // current become prev and old prev will be used for store value of next row.
             std::swap(prev_iso_band, current_iso_band);
         }
-
-#ifdef DRAW_TIMER
-        uint64_t contour_time=MonotonicClockUS()-contour_start;
-        StartupStore(_T("Draw Terrain : contour            < %u.%u ms >\n"),(int)contour_time/1000, (int)contour_time%1000);
-#endif
     }
 
 
@@ -981,10 +968,6 @@ public:
             // no need to update the color table
             return;
         }
-
-#ifdef DRAW_TIMER
-        uint64_t start_time = MonotonicClockUS();
-#endif
 
         lastColorRamp = color_ramp;
         last_height_scale = height_scale;
@@ -1030,11 +1013,6 @@ public:
                 }
             }
         }
-
-#ifdef DRAW_TIMER
-        uint64_t end_time=MonotonicClockUS()-start_time;
-        StartupStore(_T("Draw Terrain : updated ColorTable < %u.%u ms >\n"),(int)end_time/1000, (int)end_time%1000);
-#endif
     }
 
     void Draw(LKSurface& Surface, const RECT& rc) {
@@ -1150,9 +1128,6 @@ _redo:
         goto _redo;
     }
 
-#ifdef DRAW_TIMER_TOTAL
-    uint64_t draw_time_start=MonotonicClockUS();
-#endif
     if(trenderer->IsDirty() || (!UpToDate(TerrainContrast, TerrainBrightness, TerrainRamp, Shading, _Proj))) {
         trenderer->SetDirty();
     }
@@ -1165,25 +1140,12 @@ _redo:
         thighlight = terrain_highlight[TerrainRamp];
 
         // step 0: fill height buffer
-#ifdef DRAW_TIMER
-        uint64_t height_start=MonotonicClockUS();
-#endif
         trenderer->Height({rc.left, rc.top}, _Proj);
 
-#ifdef DRAW_TIMER
-        uint64_t height_time=MonotonicClockUS()-height_start;
-        StartupStore(_T("Draw Terrain : height time        < %u.%u ms >\n"),(int)height_time/1000, (int)height_time%1000);
-#endif
         // step 1: update color table
         //   need to be done after fill height buffer because depends of min 
         //   and max height of terrain
         trenderer->ColorTable();
-
-        // step 3: calculate derivatives of height buffer
-        // step 4: calculate illumination and colors
-#ifdef DRAW_TIMER
-        uint64_t slope_start=MonotonicClockUS();
-#endif
 
         // step 3: calculate derivatives of height buffer
         // step 4: calculate illumination and colors
@@ -1195,19 +1157,8 @@ _redo:
             const int sz = (255 * fastsine(fudgeelevation));
 
             trenderer->Slope_shading(sx, sy, sz);
-
-#ifdef DRAW_TIMER
-            uint64_t slope_time=MonotonicClockUS()-slope_start;
-            StartupStore(_T("Draw Terrain : slope shading time < %u.%u ms >\n"),(int)slope_time/1000, (int)slope_time%1000);
-#endif
-
         } else {
             trenderer->Slope();
-
-#ifdef DRAW_TIMER
-            uint64_t slope_time=MonotonicClockUS()-slope_start;
-            StartupStore(_T("Draw Terrain : slope              < %u.%u ms >\n"),(int)slope_time/1000, (int)slope_time%1000);
-#endif
         }
 
         trenderer->FixOldMapWater();
@@ -1217,11 +1168,6 @@ _redo:
     }
     // step 5: draw
     trenderer->Draw(Surface, rc);
-
-#ifdef DRAW_TIMER_TOTAL
-    uint64_t draw_time_end=MonotonicClockUS()-draw_time_start;
-    StartupStore(_T("Draw Terrain : Total              < %u.%u ms >\n"),(int)draw_time_end/1000, (int)draw_time_end%1000);
-#endif
 
     return true;
 }
