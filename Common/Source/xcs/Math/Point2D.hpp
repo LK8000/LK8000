@@ -119,4 +119,11 @@ ManhattanDistance(P a, P b)
   return std::abs(a.x - b.x) + std::abs(a.y - b.y);
 }
 
+template<typename P, typename RT=typename P::scalar_type>
+static inline RT
+Distance(P a, P b)
+{
+  return std::sqrt( ((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y)) );
+}
+
 #endif
