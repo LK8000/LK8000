@@ -218,7 +218,8 @@ void MapWindow::DrawThread ()
 
 
 			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-			DrawMapScale(BackBufferSurface,MapRect,false);
+            const ScreenProjection _Proj;
+			DrawMapScale(BackBufferSurface,MapRect,_Proj);
 			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
 			lastdrawwasbitblitted=true;
 		} else {
@@ -262,7 +263,8 @@ void MapWindow::DrawThread ()
             DrawSurface.CopyTo(BackBufferSurface);
 
 			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-			DrawMapScale(BackBufferSurface,MapRect,false);
+            const ScreenProjection _Proj;
+			DrawMapScale(BackBufferSurface,MapRect,_Proj);
 			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
             MainWindow.Redraw(MapRect);
 			continue;
@@ -288,7 +290,8 @@ _dontbitblt:
         if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
             POINT centerscreen;
             centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-            DrawMapScale(BackBufferSurface,MapRect,false);
+            const ScreenProjection _Proj;
+            DrawMapScale(BackBufferSurface,MapRect,_Proj);
             DrawCompass(BackBufferSurface, MapRect, DisplayAngle);
             DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
         }

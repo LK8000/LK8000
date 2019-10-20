@@ -42,7 +42,6 @@
 	MDI_DRAWVARIO,			// screen change
 	MDI_GETOVERTARGETHEADER,	// language change
 	MDI_PROCESSVIRTUALKEY,		// screen change
-	MDI_DRAWMAPSCALE,		// screen change
 	MDI_CHECKLABELBLOCK,		// screen change
 	MDI_LKPROCESS,			// unit change
 	MDI_COMPASS,			// screen change

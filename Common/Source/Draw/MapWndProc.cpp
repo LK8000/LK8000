@@ -1900,7 +1900,8 @@ void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
         // Draw cross sight for pan mode, in the screen center,
         if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
             const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-            DrawMapScale(Surface,Rect,false);
+            const ScreenProjection _Proj;
+            DrawMapScale(Surface, Rect, _Proj);
             DrawCompass(Surface, Rect, GetDisplayAngle());
             DrawCrossHairs(Surface, centerscreen, Rect);
         }

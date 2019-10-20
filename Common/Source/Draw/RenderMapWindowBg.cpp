@@ -350,7 +350,7 @@ _skip_2:
 #endif
 
     if (!INPAN) {
-        DrawMapScale(Surface, rc, zoom.BigZoom()); // unused BigZoom
+        DrawMapScale(Surface, rc, _Proj); // unused BigZoom
         DrawCompass(Surface, rc, DisplayAngle);
     }
 

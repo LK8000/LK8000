@@ -647,7 +647,7 @@ class MapWindow {
                               double lon_start, double lat_start,
                               double lon_end, double lat_end);
 protected:
-  static void DrawMapScale(LKSurface& Surface, const RECT& rc, const bool ScaleChangeFeedback);
+  static void DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
   static void DrawCompass(LKSurface& Surface, const RECT& rc,const double angle);
 

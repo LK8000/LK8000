@@ -9,111 +9,90 @@
 #include "externs.h"
 #include "Logger.h"
 #include "RGB.h"
-#include "DoInits.h"
 #include "RasterTerrain.h"
 #include "LKObjects.h"
 #include "utils/stl_utils.h"
-#include "NavFunctions.h"
 #include "ScreenGeometry.h"
-//
-// SCALE SIZE: NIBLSCALE(42+4)
-//
-#define MAPSCALE_VSIZE  NIBLSCALE(42)
-#define MAPSCALE_HSIZE  NIBLSCALE(5)
-#define MAPSCALE_RIGHTMARGIN   (rc.right-NIBLSCALE(3))
+#include "ScreenProjection.h"
 
-/* in Landscape mode, we need to draw Scale upper for avoid menu overlap
- * this define are crap, but i don't have better way for do that now.
- * TODO : find right way for have menu size and visibility.
- * Bruno.
- */
-#define MAPSCALE_BOTTOMMARGIN  (rc.bottom-NIBLSCALE(4) - (inpanmode? \
-                                                                ( ScreenLandscape? \
-                                                                    std::min<PixelScalar>(((rc.bottom-rc.top)-4)/5, NIBLSCALE(40)) \
-                                                                    : 0) \
-                                                                : BottomSize))
 
-void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc /* the Map Rect*/, 
-                             const bool ScaleChangeFeedback)
+void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj)
 {
     static short terrainwarning=0;
-    
-    static RasterPoint ScaleLine[4];
-    static PixelRect   ScaleLineBck[3];
-    static int   ytext;
-    static bool flipflop=true;
-
     bool inpanmode= (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN));
-    static bool prevmode = inpanmode;
 
-    if (DoInit[MDI_DRAWMAPSCALE] || prevmode != inpanmode) {
-        ScaleLine[0] = { 
-            MAPSCALE_RIGHTMARGIN - MAPSCALE_HSIZE, 
-            MAPSCALE_BOTTOMMARGIN - MAPSCALE_VSIZE 
-        };
-        ScaleLine[1] = { 
-            MAPSCALE_RIGHTMARGIN, 
-            MAPSCALE_BOTTOMMARGIN - MAPSCALE_VSIZE
-        };
-        ScaleLine[2] = { 
-            MAPSCALE_RIGHTMARGIN, 
-            MAPSCALE_BOTTOMMARGIN 
-        };
-        ScaleLine[3] = { 
-            MAPSCALE_RIGHTMARGIN - MAPSCALE_HSIZE, 
-            MAPSCALE_BOTTOMMARGIN 
-        };
+    const GeoPoint geo_1(PanLatitude, PanLongitude);
+    const GeoPoint geo_2 = geo_1.Direct(DisplayAngle, zoom.Scale() * 1000);
+    const GeoToScreen<RasterPoint> ToScreen(_Proj);
+    PixelScalar mapscale_vsize = std::abs(Distance(ToScreen(geo_1), ToScreen(geo_2)));
+    PixelScalar mapscale_hsize = NIBLSCALE(5);
+    PixelScalar mapscale_right_margin = (rc.right - NIBLSCALE(3));
+    PixelScalar mapscale_bottom_margin = (rc.bottom - NIBLSCALE(4));
 
-        ScaleLineBck[0] = {
-            ScaleLine[0].x - IBLSCALE(1), 
-            ScaleLine[0].y - IBLSCALE(1), 
-            ScaleLine[1].x + IBLSCALE(2), 
-            ScaleLine[1].y + IBLSCALE(2)
-        };
-        ScaleLineBck[1] = {
-            ScaleLine[1].x - IBLSCALE(1), 
-            ScaleLine[1].y - IBLSCALE(1), 
-            ScaleLine[2].x + IBLSCALE(2), 
-            ScaleLine[2].y + IBLSCALE(2)
-        };
-        ScaleLineBck[2] = {
-            ScaleLine[3].x - IBLSCALE(1), 
-            ScaleLine[3].y - IBLSCALE(1), 
-            ScaleLine[2].x + IBLSCALE(2), 
-            ScaleLine[2].y + IBLSCALE(2)
-        }; 
-        
-        SIZE tsize;
-        const auto oldFont = Surface.SelectObject(MapScaleFont);
-        Surface.GetTextSize(_T("M"),&tsize);
-        int ofs=(MAPSCALE_VSIZE - (tsize.cy + tsize.cy))/2;
-        ytext=ScaleLine[0].y+ofs;
-        Surface.SelectObject(oldFont);
-
-
-        prevmode = inpanmode;
-    	DoInit[MDI_DRAWMAPSCALE]=false;
+    if (inpanmode) {
+        if(ScreenLandscape) {
+            /* in Landscape mode, we need to draw Scale upper for avoid menu overlap
+             * TODO : find right way for have menu size and visibility.
+             */
+            mapscale_bottom_margin -= std::min<PixelScalar>(((rc.bottom-rc.top)-4)/5, NIBLSCALE(40));
+        }
+    } else {
+        mapscale_bottom_margin -= BottomSize;
     }
+
+    const RasterPoint ScaleLine[] = {
+            {
+                    mapscale_right_margin - mapscale_hsize,
+                    mapscale_bottom_margin - mapscale_vsize
+            },
+            {
+                    mapscale_right_margin,
+                    mapscale_bottom_margin - mapscale_vsize
+            },
+            {
+                    mapscale_right_margin,
+                    mapscale_bottom_margin
+            },
+            {
+                    mapscale_right_margin - mapscale_hsize,
+                    mapscale_bottom_margin
+            }
+    };
+
+    const PixelRect ScaleLineBck[] = {
+            {
+                    ScaleLine[0].x - IBLSCALE(1),
+                    ScaleLine[0].y - IBLSCALE(1),
+                    ScaleLine[1].x + IBLSCALE(2),
+                    ScaleLine[1].y + IBLSCALE(2)
+            },
+            {
+                    ScaleLine[1].x - IBLSCALE(1),
+                    ScaleLine[1].y - IBLSCALE(1),
+                    ScaleLine[2].x + IBLSCALE(2),
+                    ScaleLine[2].y + IBLSCALE(2)
+            },
+            {
+                    ScaleLine[3].x - IBLSCALE(1),
+                    ScaleLine[3].y - IBLSCALE(1),
+                    ScaleLine[2].x + IBLSCALE(2),
+                    ScaleLine[2].y + IBLSCALE(2)
+            }
+    };
+
+    Surface.FillRect(&ScaleLineBck[0], LKBrush_Black);
+    Surface.FillRect(&ScaleLineBck[1], LKBrush_Black);
+    Surface.FillRect(&ScaleLineBck[2], LKBrush_Black);
+
+    const auto hpOld = Surface.SelectObject(LKPen_White_N0);
+    Surface.Polyline(ScaleLine, array_size(ScaleLine));
+    Surface.SelectObject(hpOld);
 
     TCHAR Scale[200] = {};
     TCHAR Scale1[200] = {};
     TCHAR Scale2[200] = {};
     TCHAR TEMP[20] = {};
 
-    Surface.FillRect(&ScaleLineBck[0], LKBrush_Black);
-    Surface.FillRect(&ScaleLineBck[1], LKBrush_Black);
-    Surface.FillRect(&ScaleLineBck[2], LKBrush_Black);
-   
-    #if 0 // TODO CHECK
-    auto hpOld = Surface.SelectObject(LKPen_White_N0);
-    if (ScreenDensity>=380) hpOld = Surface.SelectObject(LKPen_White_N1);
-    #else
-    const auto hpOld = Surface.SelectObject(LKPen_White_N0);
-    #endif
-    Surface.Polyline(ScaleLine, array_size(ScaleLine));
-    Surface.SelectObject(hpOld);
-
-    flipflop=!flipflop;
 
     if (inpanmode) {
 	if (DerivedDrawInfo.TerrainValid) {
@@ -270,24 +249,24 @@ _skip2:
     const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
     const auto oldBrush = Surface.SelectObject(LKBrush_Black);
 
+    LKColor mapscalecolor = ((OverColorRef==RGB_SBLACK) ? OverColorRef : RGB_WHITE);
+
+    PixelScalar text_y = mapscale_bottom_margin + NIBLSCALE(4);
+    PixelScalar text_x = ScaleLineBck[0].left - NIBLSCALE(1);
+
     Surface.GetTextSize(Scale, &tsize);
-
-    LKColor mapscalecolor = OverColorRef;
-    if (OverColorRef==RGB_SBLACK) mapscalecolor=RGB_WHITE;
-
-    LKWriteText(Surface, Scale, rc.right-NIBLSCALE(7)-tsize.cx, ytext, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
-
-    Surface.GetTextSize(Scale2, &tsize);
+    LKWriteText(Surface, Scale, text_x - tsize.cx, text_y - (tsize.cy * 2), WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
 
     if (!DerivedDrawInfo.TerrainValid) {
-	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
+    	if (terrainwarning>0 && terrainwarning<120) {
+            mapscalecolor = RGB_RED;
+        }
     }
 
-    LKWriteText(Surface, Scale2, rc.right-NIBLSCALE(7)-tsize.cx, ytext+tsize.cy, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
+    Surface.GetTextSize(Scale2, &tsize);
+    LKWriteText(Surface, Scale2, text_x - tsize.cx, text_y - tsize.cy, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true);
 
     Surface.SelectObject(oldPen);
     Surface.SelectObject(oldBrush);
     Surface.SelectObject(oldFont);
-
 }
-
