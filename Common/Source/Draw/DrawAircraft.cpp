@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKObjects.h"
 #include "Multimap.h"
+#include "Asset.hpp"
 
 //
 // List follows enums in dlgConfiguration. 
@@ -22,11 +23,6 @@
 #define AICON_GEM_BIG          7
 #define AICON_GLIDER_BLACK     8
 #define AICON_GLIDER_BIGBLACK     9
-
-#ifdef DITHER
-// the light color around the black shape, not white for sure!
-#define DBRUSHCOLOR LKBrush_Grey
-#endif
 
 void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
@@ -74,11 +70,7 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             hbPAircraftSolidBg = LKBrush_LightCyan;
          } else {
             hbPAircraftSolid = LK_WHITE_BRUSH;
-#ifdef DITHER
-            hbPAircraftSolidBg = LK_BLACK_BRUSH;
-#else
-            hbPAircraftSolidBg = LKBrush_Blue;
-#endif
+            hbPAircraftSolidBg = (IsDithered() ? LK_BLACK_BRUSH : LKBrush_Blue);
          }
 
          PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
@@ -114,19 +106,11 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
          PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
 
          Surface.SelectObject(LK_NULL_PEN);
-#ifdef DITHER
-         Surface.SelectObject(DBRUSHCOLOR);
-#else
-         Surface.SelectObject(LK_BLACK_BRUSH);
-#endif
 
+         Surface.SelectObject(IsDithered() ? LKBrush_Grey : LK_BLACK_BRUSH);
          Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
 
-#ifdef DITHER
-         Surface.SelectObject(LK_BLACK_BRUSH);
-#else
-         Surface.SelectObject(LK_WHITE_BRUSH);
-#endif
+         Surface.SelectObject(IsDithered() ? LK_BLACK_BRUSH : LK_WHITE_BRUSH);
          Surface.Polygon(AircraftInner, array_size(AircraftInner));
 
          break;
@@ -153,19 +137,11 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
          PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
 
          Surface.SelectObject(LK_NULL_PEN);
-#ifdef DITHER
-         Surface.SelectObject(DBRUSHCOLOR);
-#else
-         Surface.SelectObject(LK_BLACK_BRUSH);
-#endif
 
+         Surface.SelectObject(IsDithered() ? LKBrush_Grey : LK_BLACK_BRUSH);
          Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
 
-#ifdef DITHER
-         Surface.SelectObject(LK_BLACK_BRUSH);
-#else
-         Surface.SelectObject(LK_WHITE_BRUSH);
-#endif
+         Surface.SelectObject(IsDithered() ? LK_BLACK_BRUSH : LK_WHITE_BRUSH);
          Surface.Polygon(AircraftInner, array_size(AircraftInner));
 
          break;
@@ -229,19 +205,13 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             };
 
          Surface.SelectObject(LK_NULL_PEN);
-#ifdef DITHER
-         Surface.SelectObject(DBRUSHCOLOR);
-#else
-         Surface.SelectObject(LK_BLACK_BRUSH);
-#endif
+
+         Surface.SelectObject(IsDithered() ? LKBrush_Grey : LK_BLACK_BRUSH);
          PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
          Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
 
-#ifdef DITHER
-         Surface.SelectObject(LK_BLACK_BRUSH);
-#else
-         Surface.SelectObject(LK_WHITE_BRUSH);
-#endif
+
+         Surface.SelectObject(IsDithered() ? LK_BLACK_BRUSH : LK_WHITE_BRUSH);
          PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
          Surface.Polygon(AircraftInner, array_size(AircraftInner));
 
@@ -263,19 +233,11 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             };
 
          Surface.SelectObject(LK_NULL_PEN);
-#ifdef DITHER
-         Surface.SelectObject(DBRUSHCOLOR);
-#else
-         Surface.SelectObject(LK_BLACK_BRUSH);
-#endif
+         Surface.SelectObject(IsDithered() ? LKBrush_Grey : LK_BLACK_BRUSH);
          PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
          Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
 
-#ifdef DITHER
-         Surface.SelectObject(LK_BLACK_BRUSH);
-#else
-         Surface.SelectObject(LKBrush_Yellow);
-#endif
+         Surface.SelectObject(IsDithered() ? LK_BLACK_BRUSH : LKBrush_Yellow);
          PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
          Surface.Polygon(AircraftInner, array_size(AircraftInner));
 

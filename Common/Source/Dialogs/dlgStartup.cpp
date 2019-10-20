@@ -27,17 +27,10 @@
 #endif
 
 
-#ifdef DITHER
-#define RGBDARKWHITE RGB_WHITENOREV
-#define RGBLIGHTGREY RGB_WHITENOREV
-#define RGBICEWHITE  RGB_WHITENOREV
-#define RGBAMBER     RGB_WHITENOREV
-#else
-#define RGBDARKWHITE RGB_DARKWHITE
-#define RGBLIGHTGREY RGB_LIGHTGREY
-#define RGBICEWHITE  RGB_ICEWHITE
-#define RGBAMBER     RGB_AMBER
-#endif
+#define RGBDARKWHITE (IsDithered() ? RGB_WHITENOREV : RGB_DARKWHITE)
+#define RGBLIGHTGREY (IsDithered() ? RGB_WHITENOREV : RGB_LIGHTGREY)
+#define RGBICEWHITE  (IsDithered() ? RGB_WHITENOREV : RGB_ICEWHITE)
+#define RGBAMBER     (IsDithered() ? RGB_WHITENOREV : RGB_AMBER)
 
 #ifdef KOBO
 #warning "Temporary : remove when we have KoboMenu"
@@ -224,22 +217,14 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 #else
         _stprintf(mes, _T("%sC v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken(2054));
 #endif
-        #ifdef DITHER
-        RawWrite(Surface, mes, 1, 1, RGBLIGHTGREY, WTMODE_OUTLINED);
-        #else
-        RawWrite(Surface, mes, 1, 1, RGBLIGHTGREY, WTMODE_NORMAL);
-        #endif
+        RawWrite(Surface, mes, 1, 1, RGBLIGHTGREY, (IsDithered() ? WTMODE_OUTLINED : WTMODE_NORMAL));
 
         size_t freeram = CheckFreeRam() / 1024;
         TCHAR buffer[MAX_PATH];
         LocalPath(buffer);
         size_t freestorage = FindFreeSpace(buffer);
         _stprintf(mes, _T("free ram %.1uM  storage %.1uM"), (unsigned int) freeram / 1024, (unsigned int) freestorage / 1024);
-        #ifdef DITHER
-        RawWrite(Surface, mes, 3, 0, RGBLIGHTGREY, WTMODE_OUTLINED);
-        #else
-        RawWrite(Surface, mes, 3, 0, RGBLIGHTGREY, WTMODE_NORMAL);
-        #endif
+        RawWrite(Surface, mes, 3, 0, RGBLIGHTGREY, IsDithered() ? WTMODE_OUTLINED : WTMODE_NORMAL);
 
         if (ScreenSize != ss320x240 && ScreenLandscape)
             RawWrite(Surface, _T("_______________________"), 2, 2, RGBLIGHTGREY, WTMODE_NORMAL);

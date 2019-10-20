@@ -14,6 +14,7 @@
 #include "RGB.h"
 #include "LKStyle.h"
 #include "Screen/FontReference.h"
+#include "Asset.hpp"
 
 extern short GetVisualGlidePoints(unsigned short numslots);
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
@@ -201,19 +202,19 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     // Top part of visual rect, target is over us=unreachable=red
     trc.top = rci.top;
     trc.bottom = center.y - 1;
-    #ifndef DITHER
-    RenderSky(Surface, trc, RGB_WHITE, LKColor(150, 255, 150), GC_NO_COLOR_STEPS / 2);
-    #else
-    RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE, GC_NO_COLOR_STEPS / 2);
-    #endif
+    if (!IsDithered()) {
+        RenderSky(Surface, trc, RGB_WHITE, LKColor(150, 255, 150), GC_NO_COLOR_STEPS / 2);
+    } else {
+        RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE, GC_NO_COLOR_STEPS / 2);
+    }
     // Bottom part, target is below us=reachable=green
     trc.top = center.y + 1;
     trc.bottom = rci.bottom;
-    #ifndef DITHER
-    RenderSky(Surface, trc, LKColor(255, 150, 150), RGB_WHITE, GC_NO_COLOR_STEPS / 2);
-    #else
-    RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE,GC_NO_COLOR_STEPS / 2);
-    #endif
+    if (!IsDithered()) {
+        RenderSky(Surface, trc, LKColor(255, 150, 150), RGB_WHITE, GC_NO_COLOR_STEPS / 2);
+    } else {
+        RenderSky(Surface, trc, RGB_WHITE, RGB_WHITE, GC_NO_COLOR_STEPS / 2);
+    }
 
     // Draw center line
     p1.x = rci.left + 1;
@@ -358,11 +359,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
                         WayPointCalc[wp].Distance, WayPointCalc[wp].Bearing)) {
                     rgbcolor = RGB_LIGHTRED;
                 } else {
-#ifdef DITHER
-                    rgbcolor = RGB_WHITE;
-#else
-                    rgbcolor = RGB_LIGHTGREEN;
-#endif
+                    rgbcolor = IsDithered() ? RGB_WHITE : RGB_LIGHTGREEN;
                 }
             }
             bcolor.Create(rgbcolor);
@@ -374,11 +371,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
             if ((ty - offset) < downYtop) ty = downYtop + offset;
             if ((ty + offset) > downYbottom) ty = downYbottom - offset;
 
-#ifdef DITHER
-            rgbcolor = RGB_WHITE; // negative part, no need to render dark
-#else
-            rgbcolor = RGB_LIGHTRED;
-#endif
+            rgbcolor = IsDithered() ? RGB_WHITE : RGB_LIGHTRED; // negative part, no need to render dark
             bcolor.Create(rgbcolor);
         }
 

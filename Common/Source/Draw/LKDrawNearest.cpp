@@ -13,6 +13,7 @@
 #include "DoInits.h"
 #include "InputEvents.h"
 #include "ScreenGeometry.h"
+#include "Asset.hpp"
 
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 
@@ -709,11 +710,10 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
     }
 
-    #ifdef DITHER
-    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p1, p2, (INVERTCOLORS ? RGB_WHITE : RGB_BLACK), rc);
-    #else
-    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p1, p2, (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN), rc);
-    #endif
+    LKColor color = IsDithered()
+            ? (INVERTCOLORS ? RGB_WHITE : RGB_BLACK)
+            : (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN);
+    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p1, p2, color, rc);
     Surface.SelectObject(LK8InfoNearestFont); // Heading line
 
     //
@@ -727,34 +727,33 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     else {
         cursortbox = SortedMode[curmapspace];
         Surface.FillRect(&s_sortBox[cursortbox],
-#ifndef DITHER
-                INVERTCOLORS ? LKBrush_LightGreen : LKBrush_DarkGreen);
-#else
-                INVERTCOLORS ? LKBrush_White : LKBrush_Black);
-#endif
+                       !IsDithered() ? (INVERTCOLORS ? LKBrush_LightGreen : LKBrush_DarkGreen) :
+                       (INVERTCOLORS ? LKBrush_White : LKBrush_Black));
     }
 
     // PAGE INDEX, example: 2.1
     //
     Surface.SelectObject(LK8PanelMediumFont);
     _stprintf(Buffer, TEXT("%d.%d"), ModeIndex, CURTYPE + 1);
-    LKWriteText(Surface, Buffer, rc.left + LEFTLIMITER, rc.top + TOPLIMITER, WTMODE_NORMAL, WTALIGN_LEFT,
-#ifndef DITHER
-            RGB_LIGHTGREEN, false);
-#else
-            RGB_WHITE, false);
-#endif
+    LKWriteText(Surface,
+              Buffer,
+              rc.left + LEFTLIMITER,
+              rc.top + TOPLIMITER,
+              WTMODE_NORMAL,
+              WTALIGN_LEFT,
+              !IsDithered() ? RGB_LIGHTGREEN : RGB_WHITE,
+              false);
 
 
-    LKColor tmpcolor;
+    LKColor tmpcolor = (cursortbox == 0) ? RGB_BLACK : RGB_LIGHTGREEN;;
+    if (IsDithered()) {
+      tmpcolor = (cursortbox == 0) ? RGB_BLACK : RGB_WHITE;
+    }
+
     Surface.SelectObject(LK8InfoNearestFont);
 
     _stprintf(Buffer, TEXT("%s %d/%d"), MsgToken(headertoken[0]), curpage + 1, Numpages);
-#ifndef DITHER
-    tmpcolor = cursortbox == 0 ? RGB_BLACK : RGB_LIGHTGREEN;
-#else
-    tmpcolor = cursortbox == 0 ? RGB_BLACK : RGB_WHITE;
-#endif
+
     LKWriteText(Surface, Buffer, Column0[curmapspace], rc.top + HEADRAW - NIBLSCALE(1), WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
     if (cursortbox == 99) cursortbox = 0;
 
@@ -1278,11 +1277,13 @@ _KeepOldAirspacesValues:
         // HIGHLIGHT user selection. Bordering will not be the same, under the sun not visible!
         // TO BE CHECKED CAREFULLY
 #ifdef ENABLE_OPENGL
-#ifdef DITHER
-        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_WHITE : RGB_BLACK));
-#else
-        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN));
-#endif
+
+        LKColor color = IsDithered()
+                        ? (INVERTCOLORS ? RGB_WHITE : RGB_BLACK)
+                        : (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN);
+
+        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), color);
+
         Surface.SelectObject(SelectBorder);
         Surface.SelectObject(LK_HOLLOW_BRUSH);
         invsel.left -= NIBLSCALE(2); invsel.right += NIBLSCALE(2);

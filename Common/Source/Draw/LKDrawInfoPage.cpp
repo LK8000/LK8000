@@ -12,23 +12,24 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "ScreenGeometry.h"
+#include "Asset.hpp"
 
-#ifdef DITHER
-#define AMBERCOLOR RGB_WHITE
-#else
-#define AMBERCOLOR RGB_AMBER
-#endif
+#define AMBERCOLOR (IsDithered() ? RGB_WHITE : RGB_AMBER)
+
+
+inline static
+LKColor LineColor() {
+	return (IsDithered()
+		   ? (INVERTCOLORS ? RGB_WHITE : RGB_BLACK)
+		   : RGB_DARKGREEN);
+}
 
 int InfoPageTopLineSeparator=0;
 
 void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col) {
     const POINT p0({ x1, y1 });
     const POINT p1({ x2, y2 });
-    #ifdef DITHER
-    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p0, p1, col, rc);
-    #else
-    Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), p0, p1, col, rc);
-    #endif
+    Surface.DrawLine(PEN_SOLID, IsDithered() ? ScreenThinSize : NIBLSCALE(1), p0, p1, col, rc);
 }
 
 void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit )
@@ -221,12 +222,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_stprintf(Buffer,_T("error"));
 			break;
 	}
-        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], WTMODE_NORMAL, WTALIGN_LEFT,
-            #ifndef DITHER
-            RGB_LIGHTGREEN, false);
-            #else
-            RGB_WHITE, false);
-            #endif
+        LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], WTMODE_NORMAL, WTALIGN_LEFT,IsDithered()?RGB_WHITE:RGB_LIGHTGREEN,false);
 
 	// R0 C1
 	icolor=RGB_WHITE;
@@ -327,18 +323,10 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	if (curtype == IM_TRI) goto label_TRI;
 	if (curtype == IM_HSI) goto label_HSI;
 
-        #ifdef DITHER
-        if (INVERTCOLORS) {
-	   VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_WHITE);
-           VDrawLine(Surface,rc, qcolumn[0],qrow[8],qcolumn[16],qrow[8],RGB_WHITE);
-        } else {
-	   VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_BLACK);
-           VDrawLine(Surface,rc, qcolumn[0],qrow[8],qcolumn[16],qrow[8],RGB_BLACK);
-        }
-        #else
-	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
-	VDrawLine(Surface,rc, qcolumn[0],qrow[8],qcolumn[16],qrow[8],RGB_DARKGREEN);
-        #endif
+
+
+	VDrawLine(Surface, rc, qcolumn[0], qrow[2], qcolumn[16], qrow[2], LineColor());
+	VDrawLine(Surface, rc, qcolumn[0], qrow[8], qcolumn[16], qrow[8], LineColor());
 
 	// R1 C1
 	showunit=false;
@@ -908,11 +896,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	//
 label_TRI:
 #ifndef LKCOMPETITION
-        #ifdef DITHER
-	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],INVERTCOLORS?RGB_WHITE:RGB_BLACK);
-        #else
-	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
-        #endif
+	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],LineColor());
 	DrawTRI(Surface, rc);
 	showunit=true; // 091219
 	if (ScreenLandscape) {
@@ -977,11 +961,8 @@ label_TRI:
 
 	// This is the HSI page
 label_HSI:
-        #ifdef DITHER
-	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],INVERTCOLORS?RGB_WHITE:RGB_BLACK);
-        #else
-	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
-        #endif
+	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],LineColor());
+
 	static bool showQFU=false, showVFRlanding=false;
 	{
 		bool usingQFU=false, approach=false, landing=false;
@@ -998,19 +979,15 @@ label_HSI:
 		if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 			if(showVFRlanding) {
 				_stprintf(Buffer,TEXT("VFR %s"),MsgToken(931)); //TODO: toupper()
-				#ifndef DITHER
-				icolor=INVERTCOLORS?RGB_YELLOW:RGB_DARKYELLOW;
-				#else
-				icolor=RGB_WHITE;
-				#endif
+				if (!IsDithered()) {
+					icolor = INVERTCOLORS ? RGB_YELLOW : RGB_DARKYELLOW;
+				} else {
+					icolor = RGB_WHITE;
+				}
 			}
 			if(showQFU) {
 				_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken(2179));
-				#ifndef DITHER
-				icolor=RGB_GREEN;
-				#else
-				icolor=RGB_WHITE;
-				#endif
+				icolor = IsDithered() ? RGB_WHITE : RGB_GREEN;
 			}
 		} else { //show next waypoint name
 			icolor=RGB_WHITE;
@@ -1100,11 +1077,7 @@ label_HSI:
 	// Traffic Target page
 
 label_Target:
-        #ifdef DITHER
-	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],INVERTCOLORS?RGB_WHITE:RGB_BLACK);
-        #else
-	VDrawLine(Surface, rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
-        #endif
+	VDrawLine(Surface,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],LineColor());
 	// pass the sight rectangle to use on the screen. Warning: DrawTarget will cache these values
 	// and will not use them after the first run time anymore...
 	DrawTarget(Surface, rc, qrow[3],qrow[15],qcolumn[3],qcolumn[13]);
@@ -1225,10 +1198,10 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
         LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
   }
   Surface.SelectObject(LK8PanelSmallFont);
-  #ifndef DITHER
-  LKWriteText(Surface, BufferTitle, *columntitle,*row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
-  #else
-  LKWriteText(Surface, BufferTitle, *columntitle,*row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
-  #endif
+	if (!IsDithered()) {
+		LKWriteText(Surface, BufferTitle, *columntitle, *row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
+	} else {
+		LKWriteText(Surface, BufferTitle, *columntitle, *row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+	}
 
 }

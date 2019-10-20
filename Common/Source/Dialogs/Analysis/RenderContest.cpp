@@ -11,6 +11,7 @@
 #include "LKObjects.h"
 #include "NavFunctions.h"
 #include "DrawFAIOpti.h"
+#include "Asset.hpp"
 CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
 
 /*****************************************************************
@@ -157,11 +158,11 @@ void Statistics::RenderContest(LKSurface &Surface, const RECT &rc) {
       DrawYGrid(Surface, rc, 1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
 
       Surface.SelectObject(hfOldU);
-#ifndef DITHER
-      Surface.SetTextColor(RGB_MAGENTA);
-#else
-      Surface.SetTextColor(RGB_BLACK);
-#endif
+      if (!IsDithered()) {
+        Surface.SetTextColor(RGB_MAGENTA);
+      } else {
+        Surface.SetTextColor(RGB_BLACK);
+      }
       Surface.SetBackgroundTransparent();
       DrawLabel(Surface, rc, TEXT("O"), xp, yp);
     }
@@ -311,11 +312,11 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
         fTotalPercent -= fDist / result.Distance();
         _stprintf(text, TEXT("%3.1f%%"), (fDist / result.Distance() * 100.0));
         Surface.GetTextSize(text, &tsize);
-#ifndef DITHER
-        Surface.SetTextColor(RGB_BLUE);
-#else
-        Surface.SetTextColor(RGB_BLACK);
-#endif
+        if (!IsDithered()) {
+          Surface.SetTextColor(RGB_BLUE);
+        } else {
+          Surface.SetTextColor(RGB_BLACK);
+        }
         Surface.DrawText(ScaleX(rc, x1 + (x2 - x1) / 2) - tsize.cx / 2, ScaleY(rc, y1 + (y2 - y1) / 2), text);
       }
 #endif
@@ -358,13 +359,11 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
             1.0, 0, STYLE_THINDASHPAPER, 1.0, false);
   Surface.
       SetBackgroundTransparent();
-#ifndef DITHER
-  Surface.
-      SetTextColor(RGB_MAGENTA
-  );
-#else
-  Surface.SetTextColor(RGB_BLACK);
-#endif
+  if (!IsDithered()) {
+    Surface.SetTextColor(RGB_MAGENTA);
+  } else {
+    Surface.SetTextColor(RGB_BLACK);
+  }
   DrawLabel(Surface, rc,
             TEXT("O"), xp, yp);
   Surface.

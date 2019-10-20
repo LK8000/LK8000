@@ -13,6 +13,7 @@
 #include <string.h>
 #include "ScreenGeometry.h"
 #include "Draw/ScreenProjection.h"
+#include "Asset.hpp"
 
 /**
  * @brief Draw Runway on map
@@ -240,17 +241,17 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   };
 
   if(!bOutland) {
-#ifndef DITHER
-     if(solid)
-        Surface.SelectObject(LKBrush_DarkGrey );
-     else
+    if (!IsDithered()) {
+      if (solid)
+        Surface.SelectObject(LKBrush_DarkGrey);
+      else
         Surface.SelectObject(LKBrush_White);
-#else
-     if(solid)
+    } else {
+      if (solid)
         Surface.SelectObject(LKBrush_Black);
-     else
+      else
         Surface.SelectObject(LKBrush_White);
-#endif
+    }
   }
 
   if(picto) {
@@ -268,17 +269,17 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 
      const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
                                              ? LK8PanelUnitFont : LK8GenericVar02Font);
-#ifndef DITHER
-     if (INVERTCOLORS)
+    if (!IsDithered()) {
+      if (INVERTCOLORS)
         Surface.SelectObject(LKBrush_Petrol);
-     else
+      else
         Surface.SelectObject(LKBrush_LightCyan);
-#else
-     if (INVERTCOLORS)
+    } else {
+      if (INVERTCOLORS)
         Surface.SelectObject(LKBrush_Black);
-     else
+      else
         Surface.SelectObject(LKBrush_White);
-#endif
+    }
 
      unsigned int offset = irw_radius + NIBLSCALE(1);
 

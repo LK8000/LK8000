@@ -19,6 +19,7 @@
 
 #include "utils/stl_utils.h"
 #include <functional>
+#include "Asset.hpp"
 using std::placeholders::_1;
 
 extern void SnailTrail_Create(void);
@@ -33,36 +34,19 @@ void LKObjects_Create() {
 
   // CUSTOM BRUSHES
   LKBrush_Petrol.Create(RGB_PETROL);
-  #ifdef DITHER
-  LKBrush_LightGreen.Create(RGB_WHITE);
-  LKBrush_Petrol.Create(RGB_BLACK);
-  #else
-  LKBrush_LightGreen.Create(RGB_LIGHTGREEN);
-  LKBrush_Petrol.Create(RGB_PETROL);
-  #endif
+  LKBrush_LightGreen.Create(IsDithered() ? RGB_WHITE : RGB_LIGHTGREEN);
+  LKBrush_Petrol.Create(IsDithered() ? RGB_BLACK : RGB_PETROL);
   LKBrush_DarkGreen.Create(RGB_DARKGREEN);
   LKBrush_Ndark.Create(RGB_NDARK);
-  #ifdef DITHER
-  LKBrush_Nlight.Create(RGB_WHITE);
-  #else
-  LKBrush_Nlight.Create(RGB_NLIGHT);
-  #endif
+  LKBrush_Nlight.Create(IsDithered() ? RGB_WHITE : RGB_NLIGHT);
   LKBrush_Mdark.Create(RGB_MDARK);
   LKBrush_Mlight.Create(RGB_MLIGHT);
   LKBrush_Red.Create(RGB_RED);
   LKBrush_Yellow.Create(RGB_YELLOW);
-  #ifdef DITHER
-  LKBrush_LightYellow.Create(RGB_WHITE);
-  #else
-  LKBrush_LightYellow.Create(RGB_LIGHTYELLOW);
-  #endif
+  LKBrush_LightYellow.Create(IsDithered() ? RGB_WHITE : RGB_LIGHTYELLOW);
   LKBrush_Green.Create(RGB_GREEN);
   LKBrush_DarkYellow2.Create(RGB_DARKYELLOW2);
-  #ifdef DITHER
-  LKBrush_Orange.Create(RGB_GREY);
-  #else
-  LKBrush_Orange.Create(RGB_ORANGE);
-  #endif
+  LKBrush_Orange.Create(IsDithered() ? RGB_GREY : RGB_ORANGE);
   LKBrush_Lake.Create(RGB_LAKE);
   LKBrush_Blue.Create(RGB_BLUE);
   LKBrush_Indigo.Create(RGB_INDIGO);

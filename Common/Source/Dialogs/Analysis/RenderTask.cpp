@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKObjects.h"
 #include "DrawFAIOpti.h"
+#include "Asset.hpp"
 
 void Statistics::RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode)
 {
@@ -222,17 +223,17 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 			if(fDist_c > 500/DISTANCEMODIFY) fTic = 250/DISTANCEMODIFY;
 
 
-#ifndef DITHER
-	    TaskFAISector[2*i].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
-	    TaskFAISector[2*i].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTYELLOW) ;
-		TaskFAISector[2*i+1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
-		TaskFAISector[2*i+1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTCYAN) ;
-#else
-	    TaskFAISector[2*i].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
-	    TaskFAISector[2*i].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTGREY) ;
-		TaskFAISector[2*i+1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
-		TaskFAISector[2*i+1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_GREY) ;
-#endif
+		  if (!IsDithered()) {
+			  TaskFAISector[2 * i].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 1);
+			  TaskFAISector[2 * i].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTYELLOW);
+			  TaskFAISector[2 * i + 1].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 0);
+			  TaskFAISector[2 * i + 1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTCYAN);
+		  } else {
+			  TaskFAISector[2 * i].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 1);
+			  TaskFAISector[2 * i].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTGREY);
+			  TaskFAISector[2 * i + 1].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 0);
+			  TaskFAISector[2 * i + 1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_GREY);
+		  }
 	    skip_FAI:
 		DrawLine(Surface, rc, x1, y1, x2, y2, STYLE_DASHGREEN);
 		Surface.Segment((long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
@@ -257,18 +258,18 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 
 // RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );
 // RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_GREY   );
-          #ifndef DITHER
-	    TaskFAISector[MAXTASKPOINTS-1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
-	    TaskFAISector[MAXTASKPOINTS-1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTYELLOW) ;
-		TaskFAISector[MAXTASKPOINTS-2].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
-		TaskFAISector[MAXTASKPOINTS-2].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTCYAN) ;
-          #else
+      if (!IsDithered()) {
+        TaskFAISector[MAXTASKPOINTS - 1].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 1);
+        TaskFAISector[MAXTASKPOINTS - 1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTYELLOW);
+        TaskFAISector[MAXTASKPOINTS - 2].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 0);
+        TaskFAISector[MAXTASKPOINTS - 2].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTCYAN);
+      } else {
 
-	    TaskFAISector[MAXTASKPOINTS-1].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 1);
-	    TaskFAISector[MAXTASKPOINTS-1].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_LIGHTGREY) ;
-		TaskFAISector[MAXTASKPOINTS-2].CalcSectorCache(lat1,  lon1,  lat2,  lon2, fTic, 0);
-		TaskFAISector[MAXTASKPOINTS-2].AnalysisDrawFAISector ( Surface, rc,  GeoPoint(lat_c,lon_c) , RGB_GREY) ;
-          #endif
+        TaskFAISector[MAXTASKPOINTS - 1].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 1);
+        TaskFAISector[MAXTASKPOINTS - 1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTGREY);
+        TaskFAISector[MAXTASKPOINTS - 2].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 0);
+        TaskFAISector[MAXTASKPOINTS - 2].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_GREY);
+      }
 	}
   }
 	// draw task lines and label

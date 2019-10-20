@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "RGB.h"
 #include "DoInits.h"
-
+#include "Asset.hpp"
 
 // This is the 4.x Sight Traffic page aka LK F104 mode
 // Remember that when we are painting DrawTarget there is no
@@ -171,95 +171,91 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   if (disabled) {
 	if (notraffic) {
 		if (Appearance.InverseInfoBox) {
-                        #ifdef DITHER
-			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_WHITE,rc);
-			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_WHITE,rc);
-                        #else
-			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_GREY,rc);
-			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_GREY,rc);
-                        #endif
+            if(IsDithered()) {
+				Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_WHITE, rc);
+				Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_WHITE, rc);
+			} else {
+				Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_GREY, rc);
+				Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_GREY, rc);
+			}
 		} else {
-                        #ifdef DITHER
-			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_BLACK,rc);
-			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_BLACK,rc);
-                        #else
-			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
-			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
-                        #endif
+			if(IsDithered()) {
+				Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_BLACK,rc);
+				Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_BLACK,rc);
+			} else {
+				Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
+				Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
+			}
 		}
-                #ifdef DITHER
-		hscalecol=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
-		vscalecol=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
-                #else
-		hscalecol=RGB_DARKGREEN;
-		vscalecol=RGB_DARKGREEN;
-                #endif
+		if(IsDithered()) {
+			hscalecol=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
+			vscalecol=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
+		} else {
+			hscalecol=RGB_DARKGREEN;
+			vscalecol=RGB_DARKGREEN;
+		}
 	} else {
-                #ifdef DITHER
-		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_DARKGREY,rc);
-		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_DARKGREY,rc);
-		hscalecol=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
-		vscalecol=INVERTCOLORS?RGB_WHITE:RGB_BLACK;
-                #else
-		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
-		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
-		hscalecol=RGB_DARKGREEN;
-		vscalecol=RGB_DARKGREEN;
-                #endif
+		if(IsDithered()) {
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_DARKGREY, rc);
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_DARKGREY, rc);
+			hscalecol = INVERTCOLORS ? RGB_WHITE : RGB_BLACK;
+			vscalecol = INVERTCOLORS ? RGB_WHITE : RGB_BLACK;
+		} else {
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY, rc);
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY, rc);
+			hscalecol = RGB_DARKGREEN;
+			vscalecol = RGB_DARKGREEN;
+		}
 	}
   } else {
 	if (Appearance.InverseInfoBox) {
-                #ifdef DITHER
-		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_WHITE,rc);
-		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_WHITE,rc);
-		hscalecol=RGB_WHITE;
-		vscalecol=RGB_WHITE;
-                #else
-		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_ICEWHITE,rc);
-		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_ICEWHITE,rc);
-		hscalecol=RGB_GREEN;
-		vscalecol=RGB_GREEN;
-                #endif
+		if(IsDithered()) {
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_WHITE, rc);
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_WHITE, rc);
+			hscalecol = RGB_WHITE;
+			vscalecol = RGB_WHITE;
+		} else {
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_ICEWHITE, rc);
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_ICEWHITE, rc);
+			hscalecol = RGB_GREEN;
+			vscalecol = RGB_GREEN;
+		}
 	} else {
-                #ifdef DITHER
-		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_BLACK,rc);
-		Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_BLACK,rc);
-		hscalecol=RGB_BLACK;
-		vscalecol=RGB_BLACK;
-                #else
-		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY,rc);
-		Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY,rc);
-		hscalecol=RGB_DARKGREEN;
-		vscalecol=RGB_DARKGREEN;
-                #endif
+		if(IsDithered()) {
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_left, cross_right, RGB_BLACK, rc);
+			Surface.DrawLine(PEN_SOLID, ScreenThinSize, cross_top, cross_bottom, RGB_BLACK, rc);
+			hscalecol = RGB_BLACK;
+			vscalecol = RGB_BLACK;
+		} else {
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_left, cross_right, RGB_DARKGREY, rc);
+			Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), cross_top, cross_bottom, RGB_DARKGREY, rc);
+			hscalecol = RGB_DARKGREEN;
+			vscalecol = RGB_DARKGREEN;
+		}
 	}
   }
 
 
   // Then we draw the scales, degrees on horizontal line
-  #ifdef DITHER
-  #define SCALESIZE  ScreenThinSize
-  #else
-  #define SCALESIZE  NIBLSCALE(1)
-  #endif
+  const int ScaleSize =  (IsDithered() ? ScreenThinSize : NIBLSCALE(1));
 
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[0], degline_bottom[0], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[5], degline_bottom[5], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[1], degline_bottom[1], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[6], degline_bottom[6], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[2], degline_bottom[2], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[7], degline_bottom[7], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[3], degline_bottom[3], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[8], degline_bottom[8], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[4], degline_bottom[4], hscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, degline_top[9], degline_bottom[9], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[0], degline_bottom[0], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[5], degline_bottom[5], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[1], degline_bottom[1], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[6], degline_bottom[6], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[2], degline_bottom[2], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[7], degline_bottom[7], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[3], degline_bottom[3], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[8], degline_bottom[8], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[4], degline_bottom[4], hscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, degline_top[9], degline_bottom[9], hscalecol,rc);
   // altitudes on vertical line
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, altline_left[0], altline_right[0], vscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, altline_left[1], altline_right[1], vscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, altline_left[2], altline_right[2], vscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, altline_left[3], altline_right[3], vscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, altline_left[4], altline_right[4], vscalecol,rc);
-  Surface.DrawLine(PEN_SOLID, SCALESIZE, altline_left[5], altline_right[5], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, altline_left[0], altline_right[0], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, altline_left[1], altline_right[1], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, altline_left[2], altline_right[2], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, altline_left[3], altline_right[3], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, altline_left[4], altline_right[4], vscalecol,rc);
+  Surface.DrawLine(PEN_SOLID, ScaleSize, altline_left[5], altline_right[5], vscalecol,rc);
 
 
 

@@ -322,11 +322,11 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     // draw sea
     if (psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE) {
         RECT sea = {rc.left, rc.bottom, rc.right, rc.bottom + SV_BORDER_Y};
-        #ifndef DITHER
+      if (!IsDithered()) {
         RenderSky(Surface, sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE, 7);
-        #else
+      } else {
         RenderSky(Surface, sea, RGB_BLACK, RGB_BLACK, 2);
-        #endif
+      }
     }
 #else
     if (psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
