@@ -57,6 +57,8 @@ import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
+import com.onyx.android.sdk.api.device.epd.EpdController;
+
 public class LK8000 extends Activity {
   private static final String TAG = "LK8000";
 
@@ -76,8 +78,8 @@ public class LK8000 extends Activity {
       serviceClass = MyService.class;
 
     super.onCreate(savedInstanceState);
-//    Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 
+//    Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
     Fabric fabric = new Fabric.Builder(this).debuggable(true).kits(
             new Crashlytics(),
             new CrashlyticsNdk()
@@ -92,6 +94,12 @@ public class LK8000 extends Activity {
     Log.d(TAG, "DEVICE=" + Build.DEVICE);
     Log.d(TAG, "BOARD=" + Build.BOARD);
     Log.d(TAG, "FINGERPRINT=" + Build.FINGERPRINT);
+
+
+    try {
+      // change Onyx eInk device to 'A2' update mode
+      EpdController.applyApplicationFastMode(getApplicationInfo().packageName, true, true);
+    } catch (Exception ignored) { }
 
     if (!Loader.loaded) {
       TextView tv = new TextView(this);

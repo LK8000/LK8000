@@ -137,6 +137,8 @@ dependencies {
     implementation 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'
     implementation 'com.github.felHR85:UsbSerial:6.0.5'
+
+    implementation 'com.onyx.android.sdk:epdcontroller:0.1.0'
 }
 
 crashlytics {
