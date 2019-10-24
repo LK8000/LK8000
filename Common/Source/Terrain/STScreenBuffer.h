@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CSTScreenBuffer class provides fast drawing methods and offscreen buffer.
 
-class CSTScreenBuffer : public RawBitmap
+class CSTScreenBuffer final : public RawBitmap
 {
 public:
 	// Creates uninitialized buffer. Call Create or CreateRGB to
