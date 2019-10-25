@@ -1096,6 +1096,7 @@ TERRAIN	:=\
 	$(TER)/RasterTerrain.cpp	\
 	$(TER)/RAW.cpp	\
 	$(TER)/STScreenBuffer.cpp \
+	$(TER)/STHeightBuffer.cpp \
 
 TOPOL	:=\
 	$(TOP)/Topology.cpp		\

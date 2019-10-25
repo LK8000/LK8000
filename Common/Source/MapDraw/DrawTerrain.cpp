@@ -9,7 +9,8 @@
 #include "externs.h"
 #include "Terrain.h"
 #include "RasterTerrain.h"
-#include "STScreenBuffer.h"
+#include "Terrain/STScreenBuffer.h"
+#include "Terrain/STHeightBuffer.h"
 #include "RGB.h"
 #include "Multimap.h"
 #include "../Draw/ScreenProjection.h"
@@ -242,10 +243,10 @@ public:
 
             screen_buffer = std::make_unique<CSTScreenBuffer>(res_x, res_y);
 
-            ixs = screen_buffer->GetCorrectedWidth() / oversampling;
-            iys = screen_buffer->GetHeight() / oversampling;
+            const size_t ixs = screen_buffer->GetCorrectedWidth() / oversampling;
+            const size_t iys = screen_buffer->GetHeight() / oversampling;
 
-            height_buffer = std::make_unique<int16_t[]>(ixs * iys);
+            height_buffer = std::make_unique<CSTHeightBuffer>(ixs, iys);
 
             auto_brightness = 218;
 
@@ -296,7 +297,6 @@ private:
     bool _dirty; // indicate screen_buffer is up-to-date
     bool _ready; // indicate renderer is fully initialised
 
-    unsigned int ixs, iys; // screen dimensions in coarse pixels
     unsigned int dtquant;
     unsigned int epx; // step size used for slope calculations
 
@@ -310,7 +310,7 @@ private:
     static constexpr int oversampling = 1; //no oversampling if no "Blur"
 #endif
     std::unique_ptr<CSTScreenBuffer> screen_buffer;
-    std::unique_ptr<int16_t[]> height_buffer;
+    std::unique_ptr<CSTHeightBuffer> height_buffer;
     std::unique_ptr<int16_t[]> prev_iso_band;
     std::unique_ptr<int16_t[]> current_iso_band;
 
@@ -331,6 +331,10 @@ private:
 public:
 
     bool DoShading() const {
+        assert(height_buffer && height_buffer->GetBuffer());
+
+        const size_t ixs = height_buffer->GetWidth();
+        const size_t iys = height_buffer->GetHeight();
 
         if (epx > min(ixs, iys) / 4) {
             return false;
@@ -354,20 +358,21 @@ public:
      * @offset : {top, left} coordinate of Terrain Rendering Rect relative to DrawRect
      */
     void Height(const POINT& offset, const ScreenProjection& _Proj) {
+        assert(height_buffer && height_buffer->GetBuffer());
+
         RasterTerrain::Lock();
         RasterMap* DisplayMap = RasterTerrain::TerrainMap;
-        assert(DisplayMap);
-        if(!DisplayMap) {
+        assert(DisplayMap && DisplayMap->isMapLoaded());
+        if(!DisplayMap && DisplayMap->isMapLoaded()) {
             return;
         }
-        LKASSERT(DisplayMap->isMapLoaded());
 
         double X, Y;
 
         const int X0 = dtquant / 2;
         const int Y0 = dtquant / 2;
-        const int X1 = X0 + dtquant * ixs;
-        const int Y1 = Y0 + dtquant * iys;
+        const int X1 = X0 + dtquant * height_buffer->GetWidth();
+        const int Y1 = Y0 + dtquant * height_buffer->GetHeight();
 
         double pixelDX, pixelDY;
 
@@ -426,12 +431,12 @@ public:
     /**
      * Attention ! never call this without check if map is loaded.
      *
-     * template is needed for avoid to test if interpolation is needed for each pixel.
+     * template avoid to test if interpolation is needed for each pixel.
      */
     template<typename GetHeight_t>
     void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1, GetHeight_t GetHeight) {
         // fill the buffer
-        LKASSERT(height_buffer != NULL);
+        assert(height_buffer && height_buffer->GetBuffer());
 
         const double PanLatitude = MapWindow::GetPanLatitude();
         const double PanLongitude = MapWindow::GetPanLongitude();
@@ -450,20 +455,26 @@ public:
         int16_t _height_min = std::numeric_limits<int16_t>::max();
         int16_t _height_max = std::numeric_limits<int16_t>::min();
 
+        const size_t col_count = height_buffer->GetWidth();
+        const size_t row_count = height_buffer->GetHeight();
+
+
 #if defined(_OPENMP)
         #pragma omp parallel for reduction(max : _height_max) reduction(min : _height_min)
 #endif
-        for (unsigned int iy=0; iy < iys; iy++) {
+        for (size_t iy = 0; iy < row_count; ++iy) {
             const int y = Y0 + (iy*dtquant);
             const double ac1 = PanLatitude - y*ac3;
             const double cc1 = y * ac2;
 
-            for (unsigned int ix=0; ix < ixs; ix++) {
+            int16_t *height_row = height_buffer->GetRow(iy);
+
+            for (size_t ix = 0; ix < col_count; ++ix) {
                 const int x = X0 + (ix*dtquant);
                 const double Y = ac1 - x*ac2;
                 const double X = PanLongitude + (invfastcosine(Y) * ((x * ac3) - cc1));
 
-                int16_t& hDst = height_buffer[iy*ixs+ix];
+                int16_t& hDst = height_row[ix];
 
                 /*
                  * Terrain height can be negative.
@@ -504,9 +515,6 @@ public:
         while((height_span >> height_scale) >= 255) {
           ++height_scale;
         }
-
-//        StartupStore(_T("... MinAlt=%d MaxAlt=%d height_scale=%d\n"),height_min, height_max, height_scale);
-
     }
 
 
@@ -519,14 +527,11 @@ public:
     // previously.  for large zoom levels, epx=1
 
     void Slope_shading(const int sx, const int sy, const int sz) {
+        assert(height_buffer && height_buffer->GetBuffer());
+        assert(screen_buffer && screen_buffer->GetBuffer());
 
-        LKASSERT(height_buffer != NULL);
-        if(!height_buffer) {
-            return;
-        }
-        if (!screen_buffer->GetBuffer()) {
-            return;
-        }
+        const size_t ixs = height_buffer->GetWidth();
+        const size_t iys = height_buffer->GetHeight();
 
         const int hscale = std::max<int>(1, pixelsize_d);
 
@@ -567,9 +572,9 @@ public:
             const unsigned prev_row_index =  (y < epx) ? 0 : y - epx;
             const unsigned next_row_index =  (y + epx >= iys) ? iys - 1 : y + epx;
 
-            const int16_t* prev_row = &height_buffer[prev_row_index * ixs];
-            const int16_t* curr_row = &height_buffer[y * ixs];
-            const int16_t* next_row = &height_buffer[next_row_index * ixs];
+            const int16_t* prev_row = height_buffer->GetRow(prev_row_index);
+            const int16_t* curr_row = height_buffer->GetRow(y);
+            const int16_t* next_row = height_buffer->GetRow(next_row_index);
 
             const float32_t p31 = next_row_index - prev_row_index;
             const float32_t p31s = p31 * hscale;
@@ -688,13 +693,8 @@ public:
     }
 
     void Slope() {
-        LKASSERT(height_buffer != NULL);
-        if(!height_buffer) {
-            return;
-        }
-        if (!screen_buffer->GetBuffer()) {
-            return;
-        }
+        assert(height_buffer && height_buffer->GetBuffer());
+        assert(screen_buffer && screen_buffer->GetBuffer());
 
         const int16x8_t qheight_0 = vmovq_n_s16(0);
         const int16x8_t qheight_255 = vmovq_n_s16(255);
@@ -706,10 +706,12 @@ public:
         const int16x4_t v_height_min = vmov_n_s16(height_min);
         const int16x4_t v_height_scale = vmov_n_s16(height_scale);
 
+        const size_t ixs = height_buffer->GetWidth();
+        const size_t iys = height_buffer->GetHeight();
 
         for (unsigned int y = 0; y < iys; ++y) {
             BGRColor* screen_row = screen_buffer->GetRow(y);
-            const int16_t *height_row = &height_buffer[y*ixs];
+            const int16_t *height_row = height_buffer->GetRow(y);
 
             // first loop to vectorize using neon quad
             unsigned int x;
@@ -752,41 +754,38 @@ public:
 #else
 
     void Slope_shading(const int sx, const int sy, const int sz) {
-
-        LKASSERT(height_buffer != NULL);
-        if(!height_buffer) {
-            return;
-        }
-        if (!screen_buffer->GetBuffer()) {
-            return;
-        }
+        assert(height_buffer && height_buffer->GetBuffer());
+        assert(screen_buffer && screen_buffer->GetBuffer());
 
         const int hscale = std::max<int>(1, pixelsize_d);
+
+        const size_t ixs = screen_buffer->GetWidth();
+        const size_t iys = screen_buffer->GetHeight();
 
 #if defined(_OPENMP)
         #pragma omp parallel for
 #endif
-        for(unsigned y = 0; y < iys; y++) {
+        for(size_t y = 0; y < iys; y++) {
             BGRColor* screen_row = screen_buffer->GetRow(y);
 
             const unsigned prev_row_index =  (y < epx) ? 0 : y - epx;
             const unsigned next_row_index =  (y + epx >= iys) ? iys - 1 : y + epx;
 
-            const int16_t* prev_row = &height_buffer[prev_row_index * ixs];
-            const int16_t* curr_row = &height_buffer[y * ixs];
-            const int16_t* next_row = &height_buffer[next_row_index * ixs];
+            const int16_t* prev_row = height_buffer->GetRow(prev_row_index);
+            const int16_t* curr_row = height_buffer->GetRow(y);
+            const int16_t* next_row = height_buffer->GetRow(next_row_index);
 
             const float p31 = next_row_index - prev_row_index;
             const float p31s = p31 * hscale;
 
-            for (unsigned int x = 0; x < ixs; ++x) {
-                const unsigned prev_col_index =  (x < epx) ? 0 : x - epx;
-                const unsigned next_col_index =  (x + epx >= ixs) ? ixs - 1 : x + epx;
+            for (size_t x = 0; x < ixs; ++x) {
+                const size_t prev_col_index =  (x < epx) ? 0 : x - epx;
+                const size_t next_col_index =  (x + epx >= ixs) ? ixs - 1 : x + epx;
 
-                const int16_t up =     *(prev_row + x);
-                const int16_t bottom = *(next_row + x);
-                const int16_t left =   *(curr_row + prev_col_index);
-                const int16_t right =  *(curr_row + next_col_index);
+                const int16_t& up =     prev_row[x];
+                const int16_t& bottom = next_row[x];
+                const int16_t& left =   curr_row[prev_col_index];
+                const int16_t& right =  curr_row[next_col_index];
 
                 const int32_t p20 = next_col_index - prev_col_index;
                 const int32_t p22 = right - left;
@@ -817,22 +816,20 @@ public:
     }
 
     void Slope() {
-        LKASSERT(height_buffer != NULL);
-        if(!height_buffer) {
-            return;
-        }
-        if (!screen_buffer->GetBuffer()) {
-            return;
-        }
+        assert(height_buffer && height_buffer->GetBuffer() );
+        assert(screen_buffer && screen_buffer->GetBuffer() );
+
+        size_t ixs = height_buffer->GetWidth();
+        size_t iys = height_buffer->GetHeight();
 
 #if defined(_OPENMP)
         #pragma omp parallel for
 #endif
-        for (unsigned int y = 0; y < iys; ++y) {
+        for (size_t y = 0; y < iys; ++y) {
             BGRColor* screen_row = screen_buffer->GetRow(y);
-            const int16_t *height_row = &height_buffer[y*ixs];
+            const int16_t *height_row = height_buffer->GetRow(y);
             
-            for (unsigned int x = 0; x < ixs; ++x) {
+            for (size_t x = 0; x < ixs; ++x) {
                 int16_t h = height_row[x];
                 h = ((h - height_min) >> height_scale);
                 h = Clamp<int16_t>(h, 0, 255);
@@ -848,9 +845,12 @@ public:
         // if topology file contain water shape this fonction have zero overhead in this case.
         if(!LKWaterTopology) {
 
+            const size_t ixs = height_buffer->GetWidth();
+            const size_t iys = height_buffer->GetHeight();
+
             for (unsigned int y = 0; y < iys; ++y) {
                 BGRColor* screen_row = screen_buffer->GetRow(y);
-                const int16_t *height_row = &height_buffer[y*ixs];
+                const int16_t *height_row = height_buffer->GetRow(y);
 
                 for (unsigned int x = 0; x < ixs; ++x) {
                     int16_t h = height_row[x];
@@ -878,6 +878,9 @@ public:
 #endif
 
     void DrawIsoLine() {
+        assert(height_buffer && height_buffer->GetBuffer());
+        assert(screen_buffer && screen_buffer->GetBuffer());
+
         const double current_scale = MapWindow::zoom.Scale() / DISTANCEMODIFY;
         if (current_scale >= 2000 || current_scale <= 100) {
             // No Iso line if zoom are too small or too huge
@@ -886,6 +889,10 @@ public:
 
 
         int zoom = ((current_scale >= 750) ? 1 : 0 );
+
+
+        const size_t ixs = height_buffer->GetWidth();
+        const size_t iys = height_buffer->GetHeight();
 
         if(!prev_iso_band) {
             // array used to store iso band value of previous row
@@ -898,14 +905,13 @@ public:
         }
 
         // initialize previous row with first height row
-        std::transform(&height_buffer[0], &height_buffer[ixs], prev_iso_band.get(), [&](int16_t h){
+        std::transform(height_buffer->GetRow(0), height_buffer->GetRow(1), prev_iso_band.get(), [&](int16_t h){
             return IsoBand(h, zoom);
         });
 
-        for (unsigned int y = 1; y < iys; ++y) {
+        for (size_t y = 1; y < iys; ++y) {
             BGRColor* screen_row = screen_buffer->GetRow(y);
-
-            const int16_t *height_row = &height_buffer[y*ixs];
+            const int16_t *height_row = height_buffer->GetRow(y);
 
 
             size_t x = 1;

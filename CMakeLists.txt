@@ -548,6 +548,7 @@ add_library( LK8000 SHARED
     Common/Source/Terrain/RasterTerrain.cpp
     Common/Source/Terrain/RAW.cpp
     Common/Source/Terrain/STScreenBuffer.cpp
+    Common/Source/Terrain/STHeightBuffer.cpp
 
     Common/Source/Topology/Topology.cpp
     Common/Source/Topology/ShapeSpecialRenderer.cpp
