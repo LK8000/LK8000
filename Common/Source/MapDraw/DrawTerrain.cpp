@@ -330,8 +330,8 @@ private:
 #endif
 
     int16_t *height_buffer;
-    std::unique_ptr<uint8_t[]> prev_iso_band;
-    std::unique_ptr<uint8_t[]> current_iso_band;
+    std::unique_ptr<int16_t[]> prev_iso_band;
+    std::unique_ptr<int16_t[]> current_iso_band;
 
     BGRColor color_table[128][256];
 
@@ -486,7 +486,7 @@ public:
 
                 /*
                  * Terrain height can be negative.
-                 * do not clip height to 0 here, otherwise all height below 0 
+                 * do not clip height to 0 here, otherwise all height below 0
                  * will be painted like sea if topology does not contains coast_area
                  *
                  * all height will be sifted by #height_min in #TerrainRenderer::Slope method for ColorRamp lookup.
@@ -529,7 +529,7 @@ public:
     }
 
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO) 
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
 
     // JMW: if zoomed right in (e.g. one unit is larger than terrain
     // grid), then increase the step size to be equal to the terrain
@@ -825,7 +825,7 @@ public:
                 int32_t mag = (dd2 * sz + dd0 * sx + dd1 * sy) / (isqrt4(sqr_mag)|1);
                 mag = Clamp<int32_t>((mag - sz), -64, 63);
 
-                // when h is invalid, result is clamped to 255 so we have invalid terrain color 
+                // when h is invalid, result is clamped to 255 so we have invalid terrain color
                 int16_t h =  *(curr_row + x);
                 h = ((h - height_min) >> height_scale);
                 h = Clamp<int16_t>(h, 0, 255);
@@ -879,6 +879,23 @@ public:
         }
     }
 
+    static
+    int16_t IsoBand(int16_t height, int zoom) {
+        //return (std::max<int16_t>(0, height)) >> 6; // 64m, can't be smaller to avoid uint8_t overflow.
+        return (std::max<int16_t>(0, height)) >> (7 + zoom); // 128m
+        // return (std::max<int16_t>(0, height)) >> 8; // 256m
+    }
+
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
+
+    static
+    int16x8_t IsoBand(const int16_t* gcc_restrict height, int zoom) {
+        int16x8_t h = vld1q_s16(height);
+        h = vmaxq_s16(h, vdupq_n_s16(0));
+        return vshlq_s16(h, vdupq_n_s16(-(7U + zoom)));
+    }
+#endif
+
     void DrawIsoLine() {
         const double current_scale = MapWindow::zoom.Scale() / DISTANCEMODIFY;
         if (current_scale >= 2000 || current_scale <= 100) {
@@ -886,49 +903,75 @@ public:
             return;
         }
 
-        struct {
-            uint8_t operator()(int16_t height) {
-                return static_cast<uint16_t>(std::max<int16_t>(0, height)) >> 6; // 64m, can't be smaller to avoid uint8_t overflow.
-                // return static_cast<uint16_t>(std::max<int16_t>(0, height)) >> 7; // 128m
-                // return static_cast<uint16_t>(std::max<int16_t>(0, height)) >> 8; // 256m
-            }
-        } IsoBand;
+
+        int zoom = ((current_scale >= 750) ? 1 : 0 );
 
         if(!prev_iso_band) {
             // array used to store iso band value of previous row
-            prev_iso_band = std::make_unique<uint8_t[]>(ixs);
+            prev_iso_band = std::make_unique<int16_t[]>(ixs);
         }
         if(!current_iso_band) {
             // array used to store iso band value of current row
             //   this become previous row in next loop.
-            current_iso_band = std::make_unique<uint8_t[]>(ixs);
+            current_iso_band = std::make_unique<int16_t[]>(ixs);
         }
 
         // initialize previous row with first height row
-        std::transform(height_buffer, height_buffer+ixs, prev_iso_band.get(), IsoBand);
+        std::transform(height_buffer, height_buffer+ixs, prev_iso_band.get(), [&](int16_t h){
+            return IsoBand(h, zoom);
+        });
 
         for (unsigned int y = 1; y < iys; ++y) {
             BGRColor* screen_row = screen_buffer->GetRow(y);
 
             const int16_t *height_row = &height_buffer[y*ixs];
 
+
+            unsigned int x = 1;
+
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
+
+            static_assert((sizeof(BGRColor) == 2), "invalid color type");
+
+            const uint16x8_t line_color = vdupq_n_u16(GetIsoLineColor().value.GetNativeValue());
+
             // iso band value of first column
-            prev_iso_band[0] = IsoBand(height_row[0]);
+            vst1q_s16(&prev_iso_band[0], IsoBand(height_row, zoom));
 
-            for (unsigned int x = 1; x < ixs; ++x) {
+            for (; x < (ixs-8); x+=8) {
                 // iso band value of current pixel
-                const uint8_t& h = current_iso_band[x] = IsoBand(height_row[x]);
+                uint16x8_t h = IsoBand(&height_row[x], zoom);
+                vst1q_s16(&current_iso_band[x], h);
 
-                const uint8_t& h1 = prev_iso_band[x-1]; // top left value
-                const uint8_t& h2 = prev_iso_band[x]; // top value
-                const uint8_t& h3 = current_iso_band[x-1]; // left value
+                const int16x8_t h1 = vld1q_s16(&prev_iso_band[x-1]); // top left value
+                const int16x8_t h2 = vld1q_s16(&prev_iso_band[x]); // top value
+                const int16x8_t h3 = vld1q_s16(&current_iso_band[x-1]); // left value
 
-                if (h != h1 || h != h2 || h != h3) {
-                    // if one of this 4 point is in other iso band ( upper or lower than iso line )
-                    // this point is a iso line.
-                    screen_row[x] = GetIsoLineColor();
-                }
+                uint16x8_t mask_color = vceqq_s16(h, h1) & vceqq_s16(h, h2) & vceqq_s16(h, h3);
+                uint16x8_t mask_line = vmvnq_u16(mask_color);
+
+                uint16x8_t pixel = vld1q_u16(reinterpret_cast<uint16_t*>(&(screen_row[x].value)));
+                pixel = (pixel&mask_color) | (line_color&mask_line);
+                vst1q_u16(reinterpret_cast<uint16_t*>(&(screen_row[x])), pixel);
             }
+#else
+            // iso band value of first column
+            prev_iso_band[0] = IsoBand(height_row[0], zoom);
+#endif
+
+            for (; x < ixs; ++x) {
+                // iso band value of current pixel
+                const int16_t& h = current_iso_band[x] = IsoBand(height_row[x], zoom);
+
+                const int16_t& h1 = prev_iso_band[x-1]; // top left value
+                const int16_t& h2 = prev_iso_band[x]; // top value
+                const int16_t& h3 = current_iso_band[x-1]; // left value
+
+                // if one of this 4 point is in other iso band ( upper or lower than iso line )
+                // this point is a iso line.
+                screen_row[x] = (h != h1 || h != h2 || h != h3) ? GetIsoLineColor() : screen_row[x];
+            }
+
             // swap prev & current iso band value
             // current become prev and old prev will be used for store value of next row.
             std::swap(prev_iso_band, current_iso_band);
