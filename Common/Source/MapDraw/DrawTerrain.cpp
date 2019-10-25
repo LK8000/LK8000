@@ -182,6 +182,8 @@ inline T TerrainShading(const int16_t illum, const T& color) {
 class TerrainRenderer {
     TerrainRenderer(const TerrainRenderer &) = delete; // disallowed
     TerrainRenderer &operator=(const TerrainRenderer &) = delete; // disallowed
+    TerrainRenderer(TerrainRenderer &&) = delete; // disallowed
+    TerrainRenderer &operator=(TerrainRenderer &&) = delete; // disallowed
 public:
 
     explicit TerrainRenderer(const RECT& rc) : _dirty(true), _ready(), screen_buffer(), height_buffer(), color_table()  {
