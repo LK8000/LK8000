@@ -235,62 +235,45 @@ public:
            5    3    2    192    144     64  48     3072        27648
          */
 
+        try {
 
+            const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
+            const int res_y = iround((rc.bottom - rc.top) * oversampling / dtquant);
 
+            screen_buffer = std::make_unique<CSTScreenBuffer>(res_x, res_y);
 
-        const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
-        const int res_y = iround((rc.bottom - rc.top) * oversampling / dtquant);
+            ixs = screen_buffer->GetCorrectedWidth() / oversampling;
+            iys = screen_buffer->GetHeight() / oversampling;
 
-        screen_buffer = new (std::nothrow) CSTScreenBuffer(res_x, res_y);
-        if(!screen_buffer) {
+            height_buffer = std::make_unique<int16_t[]>(ixs * iys);
+
+            auto_brightness = 218;
+
+            // Reset this, so ColorTable will reload colors
+            lastColorRamp = nullptr;
+            last_height_scale = 0;
+            last_realscale = 0;
+
+            // this is validating terrain construction
+            _ready = true;
+
+        } catch (std::bad_alloc& e) {
+
+            screen_buffer = nullptr;
+            height_buffer = nullptr;
+            _ready = false;
+
+            const tstring error = to_tstring(e.what());
+            StartupStore(_T("TerrainRenderer : %s"), error.c_str());
             OutOfMemory(_T(__FILE__), __LINE__);
             ToggleMultimapTerrain();
-            return;
         }
-
-        ixs = screen_buffer->GetCorrectedWidth() / oversampling;
-        iys = screen_buffer->GetHeight() / oversampling;
-
-        TESTBENCH_DO_ONLY(5,StartupStore(_T("... Terrain quant=%d ixs=%d iys=%d  TOTAL=%d\n"),dtquant,ixs,iys,ixs*iys));
-
-        height_buffer = (int16_t*) malloc(sizeof(int16_t)*ixs * iys);
-        if (!height_buffer) {
-            StartupStore(_T("------ TerrainRenderer: malloc(%u) failed!%s"), (unsigned)(sizeof(int16_t)*ixs*iys), NEWLINE);
-            OutOfMemory(_T(__FILE__), __LINE__);
-            //
-            // We *must* disable terrain at this point.
-            //
-            ToggleMultimapTerrain();
-            return;
-        }
-#if TESTBENCH
-        else {
-            StartupStore(_T(". TerrainRenderer: malloc(%u) ok"), (unsigned)(sizeof(int16_t)*ixs*iys));
-        }
-#endif
-
-        auto_brightness = 218;
-
-        // Reset this, so ColorTable will reload colors
-        lastColorRamp = NULL;
-        last_height_scale = 0;
-        last_realscale = 0;
-
-        // this is validating terrain construction
-        _ready = true;
     }
 
     ~TerrainRenderer() {
 #if TESTBENCH
         StartupStore(_T(".... Deinit TerrainRenderer\n"));
 #endif
-        if (height_buffer) {
-            free(height_buffer);
-            height_buffer = NULL;
-        }
-
-        delete screen_buffer;
-        screen_buffer = nullptr;
     }
 
     void SetDirty() {
@@ -317,8 +300,6 @@ private:
     unsigned int dtquant;
     unsigned int epx; // step size used for slope calculations
 
-    CSTScreenBuffer *screen_buffer;
-
     double pixelsize_d;
 
 #ifdef USE_TERRAIN_BLUR
@@ -328,8 +309,8 @@ private:
 #else
     static constexpr int oversampling = 1; //no oversampling if no "Blur"
 #endif
-
-    int16_t *height_buffer;
+    std::unique_ptr<CSTScreenBuffer> screen_buffer;
+    std::unique_ptr<int16_t[]> height_buffer;
     std::unique_ptr<int16_t[]> prev_iso_band;
     std::unique_ptr<int16_t[]> current_iso_band;
 
@@ -917,7 +898,7 @@ public:
         }
 
         // initialize previous row with first height row
-        std::transform(height_buffer, height_buffer+ixs, prev_iso_band.get(), [&](int16_t h){
+        std::transform(&height_buffer[0], &height_buffer[ixs], prev_iso_band.get(), [&](int16_t h){
             return IsoBand(h, zoom);
         });
 
@@ -927,7 +908,7 @@ public:
             const int16_t *height_row = &height_buffer[y*ixs];
 
 
-            unsigned int x = 1;
+            size_t x = 1;
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
 
