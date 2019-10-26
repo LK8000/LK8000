@@ -50,10 +50,17 @@ public:
             static_cast<scalar_type>(_Origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024)
         };        
     }
-    
+
+    inline
+    GeoPoint ToGeoPoint(const RasterPoint& pt) const {
+        GeoPoint geoPoint;
+        Screen2LonLat(pt, geoPoint.longitude, geoPoint.latitude);
+        return geoPoint;
+    }
+
     void Screen2LonLat(const POINT& pt, double &Lon, double &Lat) const;
-    
-    bool operator!=(const ScreenProjection& _Proj) const; 
+
+    bool operator!=(const ScreenProjection& _Proj) const;
 
 protected:
     double GetPixelSize() const;
@@ -112,7 +119,4 @@ struct GeoToScreen {
     const ScreenProjection& _Proj;
 };
 
-
-
 #endif	/* SCREENPROJECTION_H */
-
