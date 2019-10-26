@@ -780,6 +780,8 @@ add_library( LK8000 SHARED
 
     Common/Source/Sound/Android/Sound.cpp
 
+    Common/Source/Geographic/GeoPoint.cpp
+
     Common/Source/Resource/resource_data.S
     Common/Source/Resource/resource_xml.S
 )

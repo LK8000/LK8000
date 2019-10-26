@@ -1369,6 +1369,7 @@ SRC_FILES :=\
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
 	$(SRC)/WindowControls.cpp \
+	$(SRC)/Geographic/GeoPoint.cpp \
 	\
 	$(LKINTER) \
 	$(LIBRARY) \

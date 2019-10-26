@@ -12,19 +12,16 @@
 #ifndef GEOGRAPHIC_GEOPOINT_H
 #define GEOGRAPHIC_GEOPOINT_H
 
-#include "NavFunctions.h"
+struct GeoPoint {
 
-class GeoPoint {
-public:
     GeoPoint() {}
     explicit GeoPoint(double lat, double lon) : latitude(lat), longitude(lon) {}
-    ~GeoPoint() {}
 
-    GeoPoint Direct(double bearing, double distance) const {
-      GeoPoint Out;
-      FindLatitudeLongitude(latitude, longitude, bearing, distance, &Out.latitude, &Out.longitude);
-      return Out;
-    }
+    GeoPoint Direct(double bearing, double distance) const;
+
+    void Reverse(const GeoPoint& point, double& bearing, double& distance) const;
+
+    double Distance(const GeoPoint& point) const;
 
     double latitude;
     double longitude;

@@ -21,9 +21,6 @@ double CrossTrackError(double lon1, double lat1,
                        double lon3, double lat3,
                        double *lon4, double *lat4);
 
-void ScreenClosestPoint(const POINT &p1, const POINT &p2,
-                        const POINT &p3, POINT *p4, int offset);
-
 double ProjectedDistance(double lon1, double lat1,
                          double lon2, double lat2,
                          double lon3, double lat3,

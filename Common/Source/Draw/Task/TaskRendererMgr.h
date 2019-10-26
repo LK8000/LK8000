@@ -14,7 +14,7 @@
 
 #include "TaskRenderer.h"
 
-class GeoPoint;
+struct GeoPoint;
 
 class TaskRendererMgr {
 public:

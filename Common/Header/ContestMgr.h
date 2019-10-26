@@ -12,6 +12,7 @@
 //#define FIVEPOINT_OPTIMIZER
 
 #include "Trace.h"
+#include "NavFunctions.h"
 #include <map>
 #include <memory>
 
