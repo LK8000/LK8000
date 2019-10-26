@@ -547,7 +547,7 @@ public:
                 static_cast<float32_t>(epx + ixs - 1),
                 static_cast<float32_t>(epx + ixs - 2),
                 static_cast<float32_t>(epx + ixs - 3),
-                static_cast<float32_t>(epx + ixs - 3)
+                static_cast<float32_t>(epx + ixs - 4)
         };
         const float32x4_t v_p20_right_offset = vld1q_f32(p20_right_offset);
 
