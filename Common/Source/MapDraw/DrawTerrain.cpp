@@ -357,7 +357,7 @@ public:
      * Fill height Buffer with according to map projection
      * @offset : {top, left} coordinate of Terrain Rendering Rect relative to DrawRect
      */
-    void Height(const POINT& offset, const ScreenProjection& _Proj) {
+    void Height(const RasterPoint& offset, const ScreenProjection& _Proj) {
         assert(height_buffer && height_buffer->GetBuffer());
 
         RasterTerrain::Lock();
@@ -367,60 +367,44 @@ public:
             return;
         }
 
-        double X, Y;
-
         const int X0 = dtquant / 2;
         const int Y0 = dtquant / 2;
         const int X1 = X0 + dtquant * height_buffer->GetWidth();
         const int Y1 = Y0 + dtquant * height_buffer->GetHeight();
 
-        double pixelDX, pixelDY;
-
-        RasterPoint Pt = {
-            (X0 + X1) / 2,
-            (Y0 + Y1) / 2
+        const RasterPoint ScreenCenter = {
+                (X0 + X1) / 2,
+                (Y0 + Y1) / 2
         };
-        _Proj.Screen2LonLat(Pt, X, Y);
-        double xmiddle = X;
-        double ymiddle = Y;
+        const GeoPoint GeoCenter = _Proj.ToGeoPoint(ScreenCenter);
 
-        Pt.x = (X0 + X1) / 2 + dtquant;
-        Pt.y = (Y0 + Y1) / 2;
-        _Proj.Screen2LonLat(Pt, X, Y);
+        const RasterPoint ScreenNearby = {
+                ScreenCenter.x + static_cast<PixelScalar>(dtquant),
+                ScreenCenter.y + static_cast<PixelScalar>(dtquant)
+        };
+        const GeoPoint GeoNearby = _Proj.ToGeoPoint(ScreenNearby);
 
-        double dX = std::abs(xmiddle - X);
-        DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDX, NULL);
-
-        Pt.x = (X0 + X1) / 2;
-        Pt.y = (Y0 + Y1) / 2 + dtquant;
-        _Proj.Screen2LonLat(Pt, X, Y);
-        double dY = std::abs(ymiddle - Y);
-        DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDY, NULL);
-
-        pixelsize_d = sqrt((pixelDX * pixelDX + pixelDY * pixelDY) / 2.0);
-
-        // OK, ready to start loading height
+        pixelsize_d = GeoCenter.Distance(GeoNearby) / 2.0;
 
         // set resolution
-        DisplayMap->SetFieldRounding(dX/3, dY/3);
-        epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d, ymiddle, xmiddle);
-        epx = std::max(4u, (epx / 4 ) * 4);
+        DisplayMap->SetFieldRounding(std::abs(GeoCenter.longitude - GeoNearby.longitude)/3,
+                                     std::abs(GeoCenter.latitude - GeoNearby.latitude)/3);
 
+        epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d, GeoCenter.latitude, GeoCenter.longitude);
+        epx = std::max(4u, (epx / 4u ) * 4u); // "epx" must be divisible by 4 for compatibility with ARM NEON vectorized shadding algorithm
 
-        POINT orig = MapWindow::GetOrigScreen();
-        orig.x -= offset.x;
-        orig.y -= offset.y;
+        RasterPoint orig = RasterPoint(MapWindow::GetOrigScreen()) - offset;
 
         if(DisplayMap->interpolate()) {
 
             FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y,
-                    [DisplayMap](const double &lat, const double &lon){
+                    [DisplayMap](const double &lat, const double &lon) {
                         return DisplayMap->GetFieldInterpolate(lat,lon);
                     });
         } else {
 
             FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y,
-                    [DisplayMap](const double &lat, const double &lon){
+                    [DisplayMap](const double &lat, const double &lon) {
                         return DisplayMap->GetFieldFine(lat,lon);
                     });
         }
