@@ -55,25 +55,21 @@ unsigned long CheckMaxHeapBlock(void) {
 }
 
 
-#if (WINDOWSPC>0)
-#if _DEBUG
+#if defined(UNDER_CE) && !defined(NDEBUG)
 _CrtMemState memstate_s1;
-#endif
 #endif
 
 void MemCheckPoint()
 {
-#if (WINDOWSPC>0)
-#if _DEBUG
+#if defined(UNDER_CE) && !defined(NDEBUG)
   _CrtMemCheckpoint( &memstate_s1 );
-#endif
 #endif
 }
 
 
 void MemLeakCheck() {
-#if (WINDOWSPC>0)
-#if _DEBUG
+#if defined(UNDER_CE) && !defined(NDEBUG)
+
   _CrtMemState memstate_s2, memstate_s3;
 
    // Store a 2nd memory checkpoint in s2
@@ -86,7 +82,6 @@ void MemLeakCheck() {
 
   _CrtCheckMemory();
 #endif
-#endif
 }
 
 
@@ -94,7 +89,7 @@ void MemLeakCheck() {
 // memory defragmentation, since on pocket pc platforms there is no
 // automatic defragmentation.
 void MyCompactHeaps() {
-#if (WINDOWSPC>0)
+#ifndef UNDER_CE
   HeapCompact(GetProcessHeap(),0);
 #else
   typedef DWORD (_stdcall *CompactAllHeapsFn) (void);
@@ -114,7 +109,7 @@ void MyCompactHeaps() {
 }
 
 
-unsigned long FindFreeSpace(const TCHAR *path) {
+size_t FindFreeSpace(const TCHAR *path) {
   // returns number of kb free on destination drive
 
   ULARGE_INTEGER FreeBytesAvailableToCaller;

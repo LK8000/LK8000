@@ -8,14 +8,14 @@
 #ifndef MEMORY_H
 #define	MEMORY_H
 
-size_t CheckFreeRam(void);
+size_t CheckFreeRam();
 size_t FindFreeSpace(const TCHAR *path);
 
 void MyCompactHeaps();
 
 #ifdef HC_DMALLOC
 // check maximum allocatable heap block
-size_t CheckMaxHeapBlock(void);
+size_t CheckMaxHeapBlock();
 #endif
 
 #ifdef WIN32
