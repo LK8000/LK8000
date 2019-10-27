@@ -108,6 +108,7 @@ typedef enum{
     ckDeviceD,
     ckDeviceE,
     ckDeviceF,
+    ckRadioDlg,
 	ckTOP
 } CustomKeyMode_t;
 

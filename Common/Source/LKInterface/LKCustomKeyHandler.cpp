@@ -472,6 +472,10 @@ passthrough:
         PlayResource(TEXT("IDR_WAV_CLICK"));
         dlgAirspaceSelect();
         return true;
+    case  ckRadioDlg:
+        PlayResource(TEXT("IDR_WAV_CLICK"));
+        dlgRadioSettingsShowModal();
+        return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"),ckeymode);
@@ -557,7 +561,7 @@ CustomKeyLabel[63]=2393;        // Device C Config
 CustomKeyLabel[64]=2394;        // Device D Config
 CustomKeyLabel[65]=2395;        // Device E Config
 CustomKeyLabel[66]=2396;        // Device F Config
+CustomKeyLabel[67]=2307;        // Radio Settings _@M2307_ "Radio Settings"
 
-
-static_assert(66 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
+static_assert(67 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
 }

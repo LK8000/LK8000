@@ -108,7 +108,7 @@ void AddCustomKeyList( DataField* dfe) {
     dfe->addEnumTextNoLF(MsgToken(2394)); // Device D Config
     dfe->addEnumTextNoLF(MsgToken(2395)); // Device E Config
     dfe->addEnumTextNoLF(MsgToken(2396)); // Device F Config
-
+    dfe->addEnumTextNoLF(MsgToken(2307)); // Radio Settings
     dfe->Sort(0);
 
 }
