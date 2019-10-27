@@ -448,6 +448,8 @@ void LKProfileSave(const TCHAR *szFile)
     rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
     rprintf(szRegistryScreenSizeY  ,ScreenSizeY);
   }
+  
+  rprintf(szRegistrySoundSwitch,EnableSoundModes);
 
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);

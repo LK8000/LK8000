@@ -448,6 +448,7 @@ char szRegistryAdditionalContestRule[]       = "Additional_Contest_Rule";
 #ifdef _WGS84
 char szRegistry_earth_model_wgs84[] = "earth_model_wgs84";
 #endif
+char szRegistrySoundSwitch[] = "SoundSwitch";
 //
 //
 //
@@ -805,7 +806,7 @@ extern const char szRegistryAdditionalContestRule[];
 #ifdef _WGS84
 extern const char szRegistry_earth_model_wgs84[];
 #endif
-
+extern const char szRegistrySoundSwitch[];
 //
 //
 #endif
