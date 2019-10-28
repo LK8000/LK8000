@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id$
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id$
+ */
 
 #include "externs.h"
 #include "McReady.h"
@@ -12,62 +12,25 @@
 #include "utils/stringext.h"
 #include "LKProfiles.h"
 #include "Asset.hpp"
+#include "Settings/write.h"
 
+extern bool CommandResolution;
 
-static FILE *pfp=NULL;
-
-#define PNEWLINE  "\r\n"
-#define rprintf LKWriteToProfile
-
-//
-// Overload write functions
-//
-void LKWriteToProfile(const char *varname, bool varvalue) {
-  fprintf(pfp,"%s=%d%s", varname, varvalue,PNEWLINE); // check we dont have fake bools
-}
-void LKWriteToProfile(const char *varname, int varvalue) {
-  fprintf(pfp,"%s=%d%s", varname, varvalue,PNEWLINE);
-}
-void LKWriteToProfile(const char *varname, unsigned int varvalue) {
-  fprintf(pfp,"%s=%u%s", varname, varvalue,PNEWLINE);
-}
-void LKWriteToProfile(const char *varname, double varvalue) {
-  fprintf(pfp,"%s=%.0f%s", varname, varvalue,PNEWLINE);
-}
-void LKWriteToProfile(const char *varname, TCHAR *varvalue) {
-#ifdef UNICODE
-  char stmp[MAX_PATH];
-  to_utf8(varvalue, stmp);
-  fprintf(pfp,"%s=\"%s\"%s", varname, stmp ,PNEWLINE);
-#else
-  fprintf(pfp,"%s=\"%s\"%s", varname, varvalue ,PNEWLINE);
+void LKProfileSave(const TCHAR *szFile) {
+#if TESTBENCH
+  StartupStore(_T("... SaveProfile <%s>%s"), szFile, NEWLINE);
 #endif
-}
 
-
-
-void LKProfileSave(const TCHAR *szFile)
-{
-  #if TESTBENCH
-  StartupStore(_T("... SaveProfile <%s>%s"),szFile,NEWLINE);
-  #endif
-
-
-  if (_tcslen(szFile)>0)
-	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
-
-  if(pfp == NULL) {
-	StartupStore(_T("...... SaveProfile <%s> open for write FAILED!%s"),szFile,NEWLINE);
-	return;
+  if (!szFile || !szFile[0]) {
+    // nullptr or empty string.
+    return;
+  }
+  settings::writer write_settings(szFile, "PROFILE");
+  if (!write_settings) {
+    StartupStore(_T("...... SaveProfile <%s> open for write FAILED!"), szFile);
+    return;
   }
 
-  //
-  // Standard header
-  //
-  fprintf(pfp,"### LK8000 PROFILE - DO NOT EDIT%s",PNEWLINE);
-  fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
-  fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
-  fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
 
   //
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
@@ -81,548 +44,495 @@ void LKProfileSave(const TCHAR *szFile)
 
 
 
-  rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
+  write_settings(szRegistryAcknowledgementTime, AcknowledgementTime);
 
-//  >> Moved to AircraftFile <<
-//  rprintf(szRegistryAircraftCategory, AircraftCategory);
-//  rprintf(szRegistryAircraftRego, AircraftRego_Config);
-//  rprintf(szRegistryAircraftType, AircraftType_Config);
-  rprintf(szRegistryAirfieldFile, szAirfieldFile);
-  for(unsigned int i = 0; i < NO_AS_FILES; i++) {
-    rprintf(szRegistryAirspaceFile[i], szAirspaceFile[i]);
+  write_settings(szRegistryAirfieldFile, szAirfieldFile);
+  for (unsigned int i = 0; i < NO_AS_FILES; i++) {
+    write_settings(szRegistryAirspaceFile[i], szAirspaceFile[i]);
   }
-  rprintf(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType());
-  rprintf(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity());
-  rprintf(szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout);
-  rprintf(szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels);
-  rprintf(szRegistryAirspaceAckAllSame, AirspaceAckAllSame);
-  rprintf(szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime);
-  rprintf(szRegistryAirspaceWarningVerticalMargin, AirspaceWarningVerticalMargin);
-  rprintf(szRegistryAirspaceWarning, AIRSPACEWARNINGS);
-  rprintf(szRegistryAlarmMaxAltitude1, AlarmMaxAltitude1); // saved *1000, /1000 when used
-  rprintf(szRegistryAlarmMaxAltitude2, AlarmMaxAltitude2);
-  rprintf(szRegistryAlarmMaxAltitude3, AlarmMaxAltitude3);
-  rprintf(szRegistryAlarmTakeoffSafety, AlarmTakeoffSafety);
-  rprintf(szRegistryAltMargin, AltWarningMargin);
-  rprintf(szRegistryAltMode, AltitudeMode_Config);
-  rprintf(szRegistryAlternate1, Alternate1); // these are not part of configuration, but saved all the same
-  rprintf(szRegistryAlternate2, Alternate2);
-  rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
-  rprintf(szRegistryAppIndLandable,Appearance.IndLandable);
-  rprintf(szRegistryUTF8Symbolsl,Appearance.UTF8Pictorials);
+  write_settings(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType());
+  write_settings(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity());
+  write_settings(szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout);
+  write_settings(szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels);
+  write_settings(szRegistryAirspaceAckAllSame, AirspaceAckAllSame);
+  write_settings(szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime);
+  write_settings(szRegistryAirspaceWarningVerticalMargin, AirspaceWarningVerticalMargin);
+  write_settings(szRegistryAirspaceWarning, AIRSPACEWARNINGS);
+  write_settings(szRegistryAlarmMaxAltitude1, AlarmMaxAltitude1); // saved *1000, /1000 when used
+  write_settings(szRegistryAlarmMaxAltitude2, AlarmMaxAltitude2);
+  write_settings(szRegistryAlarmMaxAltitude3, AlarmMaxAltitude3);
+  write_settings(szRegistryAlarmTakeoffSafety, AlarmTakeoffSafety);
+  write_settings(szRegistryAltMargin, AltWarningMargin);
+  write_settings(szRegistryAltMode, AltitudeMode_Config);
 
-//  rprintf(szRegistryAppInfoBoxModel,GlobalModelType); // We save GlobalModelType, not InfoBoxModel
-  rprintf(szRegistryAppInverseInfoBox,InverseInfoBox_Config);
-  rprintf(szRegistryArrivalValue,ArrivalValue);
-  rprintf(szRegistryAutoAdvance,AutoAdvance_Config);
-  rprintf(szRegistryAutoBacklight,EnableAutoBacklight);
-  rprintf(szRegistryAutoForceFinalGlide,AutoForceFinalGlide);
-  rprintf(szRegistryAutoMcMode,AutoMcMode_Config);
-/*
-  rprintf(szRegistryAutoMcMode,AutoMcMode);
-  int tmp = (int)(MACCREADY*100.0);
-  rprintf(szRegistryMacCready,tmp);*/
-  rprintf(szRegistryAutoMcStatus,AutoMacCready_Config);
- // rprintf(szRegistryAutoMcStatus,AutoMacCready);
-  rprintf(szRegistryAutoOrientScale,AutoOrientScale*10);
-  rprintf(szRegistryAutoSoundVolume,EnableAutoSoundVolume);
-  rprintf(szRegistryAutoWind,AutoWindMode_Config);
-  rprintf(szRegistryAutoZoom,AutoZoom_Config);
-  rprintf(szRegistryAverEffTime,AverEffTime);
-//  >> Moved to AircraftFile <<
-//  rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
-  rprintf(szRegistryBarOpacity,BarOpacity);
-  rprintf(szRegistryBestWarning,BestWarning);
-  rprintf(szRegistryBgMapColor,BgMapColor_Config);
-//  rprintf(szRegistryBit1Index,dwBit1Index);
-//  rprintf(szRegistryBit2Index,dwBit2Index);
-  rprintf(szRegistryBugs,BUGS_Config*100);
-//  rprintf(szRegistryCheckSum,CheckSum);
-  rprintf(szRegistryCircleZoom,MapWindow::zoom.CircleZoom());
-  rprintf(szRegistryClipAlt,ClipAltitude);
-//  >> Moved to AircraftFile <<
-//  rprintf(szRegistryCompetitionClass,CompetitionClass_Config);
-//  rprintf(szRegistryCompetitionID,CompetitionID_Config);
-  rprintf(szRegistryConfBB0,ConfBB0);
-  rprintf(szRegistryConfBB1,ConfBB1);
-  rprintf(szRegistryConfBB2,ConfBB2);
-  rprintf(szRegistryConfBB3,ConfBB3);
-  rprintf(szRegistryConfBB4,ConfBB4);
-  rprintf(szRegistryConfBB5,ConfBB5);
-  rprintf(szRegistryConfBB6,ConfBB6);
-  rprintf(szRegistryConfBB7,ConfBB7);
-  rprintf(szRegistryConfBB8,ConfBB8);
-  rprintf(szRegistryConfBB9,ConfBB9);
-  rprintf(szRegistryConfBB0Auto,ConfBB0Auto);
-  rprintf(szRegistryConfIP11,ConfIP11);
-  rprintf(szRegistryConfIP12,ConfIP12);
-  rprintf(szRegistryConfIP13,ConfIP13);
-  rprintf(szRegistryConfIP14,ConfIP14);
-  rprintf(szRegistryConfIP15,ConfIP15);
-  rprintf(szRegistryConfIP16,ConfIP16);
-  rprintf(szRegistryConfIP17,ConfIP17);
-  rprintf(szRegistryConfIP21,ConfIP21);
-  rprintf(szRegistryConfIP22,ConfIP22);
-  rprintf(szRegistryConfIP23,ConfIP23);
-  rprintf(szRegistryConfIP24,ConfIP24);
-  rprintf(szRegistryConfIP31,ConfIP31);
-  rprintf(szRegistryConfIP32,ConfIP32);
-  rprintf(szRegistryConfIP33,ConfIP33);
-  rprintf(szRegistryCustomKeyModeAircraftIcon,CustomKeyModeAircraftIcon);
-  rprintf(szRegistryCustomKeyModeCenterScreen,CustomKeyModeCenterScreen);
-  rprintf(szRegistryCustomKeyModeCenter,CustomKeyModeCenter);
-  rprintf(szRegistryCustomKeyModeLeftUpCorner,CustomKeyModeLeftUpCorner);
-  rprintf(szRegistryCustomKeyModeLeft,CustomKeyModeLeft);
-  rprintf(szRegistryCustomKeyModeRightUpCorner,CustomKeyModeRightUpCorner);
-  rprintf(szRegistryCustomKeyModeRight,CustomKeyModeRight);
-  rprintf(szRegistryCustomKeyTime,CustomKeyTime);
-  rprintf(szRegistryCustomMenu1,CustomMenu1);
-  rprintf(szRegistryCustomMenu2,CustomMenu2);
-  rprintf(szRegistryCustomMenu3,CustomMenu3);
-  rprintf(szRegistryCustomMenu4,CustomMenu4);
-  rprintf(szRegistryCustomMenu5,CustomMenu5);
-  rprintf(szRegistryCustomMenu6,CustomMenu6);
-  rprintf(szRegistryCustomMenu7,CustomMenu7);
-  rprintf(szRegistryCustomMenu8,CustomMenu8);
-  rprintf(szRegistryCustomMenu9,CustomMenu9);
-  rprintf(szRegistryCustomMenu10,CustomMenu10);
-  rprintf(szRegistryDebounceTimeout,debounceTimeout);
-  rprintf(szRegistryDeclutterMode,DeclutterMode);
-  ///rprintf(szRegistryDeviceA,dwDeviceName1);
-  ///rprintf(szRegistryDeviceB,dwDeviceName2);
-  rprintf(szRegistryDisableAutoLogger,DisableAutoLogger);
-  rprintf(szRegistryDisplayText,DisplayTextType);
+  // these are not part of configuration, but saved all the same
+  write_settings(szRegistryAlternate1, Alternate1);
+  write_settings(szRegistryAlternate2, Alternate2);
+
+  write_settings(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
+  write_settings(szRegistryAppIndLandable, Appearance.IndLandable);
+  write_settings(szRegistryUTF8Symbolsl, Appearance.UTF8Pictorials);
+
+  write_settings(szRegistryAppInverseInfoBox, InverseInfoBox_Config);
+  write_settings(szRegistryArrivalValue, ArrivalValue);
+  write_settings(szRegistryAutoAdvance, AutoAdvance_Config);
+  write_settings(szRegistryAutoBacklight, EnableAutoBacklight);
+  write_settings(szRegistryAutoForceFinalGlide, AutoForceFinalGlide);
+  write_settings(szRegistryAutoMcMode, AutoMcMode_Config);
+
+  write_settings(szRegistryAutoMcStatus, AutoMacCready_Config);
+
+  write_settings(szRegistryAutoOrientScale, AutoOrientScale * 10);
+  write_settings(szRegistryAutoSoundVolume, EnableAutoSoundVolume);
+  write_settings(szRegistryAutoWind, AutoWindMode_Config);
+  write_settings(szRegistryAutoZoom, AutoZoom_Config);
+  write_settings(szRegistryAverEffTime, AverEffTime);
+
+  write_settings(szRegistryBarOpacity, BarOpacity);
+  write_settings(szRegistryBestWarning, BestWarning);
+  write_settings(szRegistryBgMapColor, BgMapColor_Config);
+
+  write_settings(szRegistryBugs, BUGS_Config * 100);
+
+  write_settings(szRegistryCircleZoom, MapWindow::zoom.CircleZoom());
+  write_settings(szRegistryClipAlt, ClipAltitude);
+
+  write_settings(szRegistryConfBB0, ConfBB0);
+  write_settings(szRegistryConfBB1, ConfBB1);
+  write_settings(szRegistryConfBB2, ConfBB2);
+  write_settings(szRegistryConfBB3, ConfBB3);
+  write_settings(szRegistryConfBB4, ConfBB4);
+  write_settings(szRegistryConfBB5, ConfBB5);
+  write_settings(szRegistryConfBB6, ConfBB6);
+  write_settings(szRegistryConfBB7, ConfBB7);
+  write_settings(szRegistryConfBB8, ConfBB8);
+  write_settings(szRegistryConfBB9, ConfBB9);
+  write_settings(szRegistryConfBB0Auto, ConfBB0Auto);
+  write_settings(szRegistryConfIP11, ConfIP11);
+  write_settings(szRegistryConfIP12, ConfIP12);
+  write_settings(szRegistryConfIP13, ConfIP13);
+  write_settings(szRegistryConfIP14, ConfIP14);
+  write_settings(szRegistryConfIP15, ConfIP15);
+  write_settings(szRegistryConfIP16, ConfIP16);
+  write_settings(szRegistryConfIP17, ConfIP17);
+  write_settings(szRegistryConfIP21, ConfIP21);
+  write_settings(szRegistryConfIP22, ConfIP22);
+  write_settings(szRegistryConfIP23, ConfIP23);
+  write_settings(szRegistryConfIP24, ConfIP24);
+  write_settings(szRegistryConfIP31, ConfIP31);
+  write_settings(szRegistryConfIP32, ConfIP32);
+  write_settings(szRegistryConfIP33, ConfIP33);
+  write_settings(szRegistryCustomKeyModeAircraftIcon, CustomKeyModeAircraftIcon);
+  write_settings(szRegistryCustomKeyModeCenterScreen, CustomKeyModeCenterScreen);
+  write_settings(szRegistryCustomKeyModeCenter, CustomKeyModeCenter);
+  write_settings(szRegistryCustomKeyModeLeftUpCorner, CustomKeyModeLeftUpCorner);
+  write_settings(szRegistryCustomKeyModeLeft, CustomKeyModeLeft);
+  write_settings(szRegistryCustomKeyModeRightUpCorner, CustomKeyModeRightUpCorner);
+  write_settings(szRegistryCustomKeyModeRight, CustomKeyModeRight);
+  write_settings(szRegistryCustomKeyTime, CustomKeyTime);
+  write_settings(szRegistryCustomMenu1, CustomMenu1);
+  write_settings(szRegistryCustomMenu2, CustomMenu2);
+  write_settings(szRegistryCustomMenu3, CustomMenu3);
+  write_settings(szRegistryCustomMenu4, CustomMenu4);
+  write_settings(szRegistryCustomMenu5, CustomMenu5);
+  write_settings(szRegistryCustomMenu6, CustomMenu6);
+  write_settings(szRegistryCustomMenu7, CustomMenu7);
+  write_settings(szRegistryCustomMenu8, CustomMenu8);
+  write_settings(szRegistryCustomMenu9, CustomMenu9);
+  write_settings(szRegistryCustomMenu10, CustomMenu10);
+  write_settings(szRegistryDebounceTimeout, debounceTimeout);
+  write_settings(szRegistryDeclutterMode, DeclutterMode);
+
+  write_settings(szRegistryDisableAutoLogger, DisableAutoLogger);
+  write_settings(szRegistryDisplayText, DisplayTextType);
   if (SaveRuntime) {
-      rprintf(szRegistryDisplayUpValue, DisplayOrientation);
+    write_settings(szRegistryDisplayUpValue, DisplayOrientation);
   } else {
-      rprintf(szRegistryDisplayUpValue, DisplayOrientation_Config);
+    write_settings(szRegistryDisplayUpValue, DisplayOrientation_Config);
   }
-  rprintf(szRegistryDistanceUnitsValue,DistanceUnit_Config );
-  rprintf(szRegistryEnableFLARMMap,EnableFLARMMap);
-  rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude_Config);
-  rprintf(szRegistryFAIFinishHeight,EnableFAIFinishHeight);
-  rprintf(szRegistryFAISector,SectorType);
-  rprintf(szRegistryFinalGlideTerrain,FinalGlideTerrain);
-  rprintf(szRegistryFinishLine,FinishLine);
-  rprintf(szRegistryFinishMinHeight,FinishMinHeight); // saved *1000, /1000 when used
-  rprintf(szRegistryFinishRadius,FinishRadius);
-  rprintf(szRegistryFontRenderer,FontRenderer);
+  write_settings(szRegistryDistanceUnitsValue, DistanceUnit_Config);
+  write_settings(szRegistryEnableFLARMMap, EnableFLARMMap);
+  write_settings(szRegistryEnableNavBaroAltitude, EnableNavBaroAltitude_Config);
+  write_settings(szRegistryFAIFinishHeight, EnableFAIFinishHeight);
+  write_settings(szRegistryFAISector, SectorType);
+  write_settings(szRegistryFinalGlideTerrain, FinalGlideTerrain);
+  write_settings(szRegistryFinishLine, FinishLine);
+  write_settings(szRegistryFinishMinHeight, FinishMinHeight); // saved *1000, /1000 when used
+  write_settings(szRegistryFinishRadius, FinishRadius);
+  write_settings(szRegistryFontRenderer, FontRenderer);
 
-  rprintf(szRegistryFontMapWaypoint,FontMapWaypoint);
-  rprintf(szRegistryFontMapTopology,FontMapTopology);
-  rprintf(szRegistryFontInfopage1L,FontInfopage1L);
-  rprintf(szRegistryFontInfopage2L,FontInfopage2L);
-  rprintf(szRegistryFontBottomBar,FontBottomBar);
-  rprintf(szRegistryFontOverlayBig,FontOverlayBig);
-  rprintf(szRegistryFontOverlayMedium,FontOverlayMedium);
-  rprintf(szRegistryFontCustom1,FontCustom1);
-  rprintf(szRegistryFontVisualGlide,FontVisualGlide);
+  write_settings(szRegistryFontMapWaypoint, FontMapWaypoint);
+  write_settings(szRegistryFontMapTopology, FontMapTopology);
+  write_settings(szRegistryFontInfopage1L, FontInfopage1L);
+  write_settings(szRegistryFontInfopage2L, FontInfopage2L);
+  write_settings(szRegistryFontBottomBar, FontBottomBar);
+  write_settings(szRegistryFontOverlayBig, FontOverlayBig);
+  write_settings(szRegistryFontOverlayMedium, FontOverlayMedium);
+  write_settings(szRegistryFontCustom1, FontCustom1);
+  write_settings(szRegistryFontVisualGlide, FontVisualGlide);
 
-  rprintf(szRegistryGlideBarMode,GlideBarMode);
-  rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);
-  rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
-//  >> Moved to AircraftFile <<
-//  rprintf(szRegistryHandicap,Handicap);
-  rprintf(szRegistryHideUnits,HideUnits);
-  rprintf(szRegistryHomeWaypoint,HomeWaypoint);
-  rprintf(szRegistryDeclTakeOffLanding,DeclTakeoffLanding);
+  write_settings(szRegistryGlideBarMode, GlideBarMode);
+  write_settings(szRegistryGliderScreenPosition, MapWindow::GliderScreenPosition);
+  write_settings(szRegistryGpsAltitudeOffset, GPSAltitudeOffset);
+
+  write_settings(szRegistryHideUnits, HideUnits);
+  write_settings(szRegistryHomeWaypoint, HomeWaypoint);
+  write_settings(szRegistryDeclTakeOffLanding, DeclTakeoffLanding);
 
   // InfoType for infoboxes configuration
-  for (int i=0;i<MAXINFOWINDOWS;i++) rprintf(szRegistryDisplayType[i], InfoType[i]);
+  for (int i = 0; i < MAXINFOWINDOWS; i++) {
+    write_settings(szRegistryDisplayType[i], InfoType[i]);
+  }
 
-  rprintf(szRegistryInputFile,szInputFile);
-  rprintf(szRegistryIphoneGestures,IphoneGestures);
-  rprintf(szRegistryLKMaxLabels,LKMaxLabels);
-  rprintf(szRegistryLKTopoZoomCat05,LKTopoZoomCat05*1000);
-  rprintf(szRegistryLKTopoZoomCat100,LKTopoZoomCat100*1000);
-  rprintf(szRegistryLKTopoZoomCat10,LKTopoZoomCat10*1000);
-  rprintf(szRegistryLKTopoZoomCat110,LKTopoZoomCat110*1000);
-  rprintf(szRegistryLKTopoZoomCat20,LKTopoZoomCat20*1000);
-  rprintf(szRegistryLKTopoZoomCat30,LKTopoZoomCat30*1000);
-  rprintf(szRegistryLKTopoZoomCat40,LKTopoZoomCat40*1000);
-  rprintf(szRegistryLKTopoZoomCat50,LKTopoZoomCat50*1000);
-  rprintf(szRegistryLKTopoZoomCat60,LKTopoZoomCat60*1000);
-  rprintf(szRegistryLKTopoZoomCat70,LKTopoZoomCat70*1000);
-  rprintf(szRegistryLKTopoZoomCat80,LKTopoZoomCat80*1000);
-  rprintf(szRegistryLKTopoZoomCat90,LKTopoZoomCat90*1000);
-  rprintf(szRegistryLKVarioBar,LKVarioBar);
-  rprintf(szRegistryLKVarioVal,LKVarioVal);
-  rprintf(szRegistryLanguageCode,szLanguageCode);
-  rprintf(szRegistryLatLonUnits, Units::CoordinateFormat);
-  rprintf(szRegistryLiftUnitsValue,LiftUnit_Config );
-  rprintf(szRegistryLockSettingsInFlight,LockSettingsInFlight);
-  rprintf(szRegistryLoggerShort,LoggerShortName);
-  rprintf(szRegistryMapBox,MapBox);
-  rprintf(szRegistryMapFile,szMapFile);
-  rprintf(szRegistryMenuTimeout,MenuTimeout_Config);
-  rprintf(szRegistryNewMapDeclutter,NewMapDeclutter);
-  rprintf(szRegistryOrbiter,Orbiter_Config);
-  rprintf(szRegistryOutlinedTp,OutlinedTp_Config);
-  rprintf(szRegistryOverColor,OverColor);
-  rprintf(szRegistryOverlayClock,OverlayClock);
-  rprintf(szRegistryUseTwoLines,UseTwoLines);
-  rprintf(szRegistryOverlaySize,OverlaySize);
-  rprintf(szRegistryAutoZoomThreshold,AutoZoomThreshold);
-  rprintf(szRegistryClimbZoom,ClimbZoom);
-  rprintf(szRegistryCruiseZoom,CruiseZoom);
-  rprintf(szRegistryMaxAutoZoom,MaxAutoZoom);
-  rprintf(szRegistryTskOptimizeRoute,TskOptimizeRoute_Config);
-  rprintf(szRegistryGliderSymbol,GliderSymbol);
+  write_settings(szRegistryInputFile, szInputFile);
+  write_settings(szRegistryIphoneGestures, IphoneGestures);
+  write_settings(szRegistryLKMaxLabels, LKMaxLabels);
+  write_settings(szRegistryLKTopoZoomCat05, LKTopoZoomCat05 * 1000);
+  write_settings(szRegistryLKTopoZoomCat100, LKTopoZoomCat100 * 1000);
+  write_settings(szRegistryLKTopoZoomCat10, LKTopoZoomCat10 * 1000);
+  write_settings(szRegistryLKTopoZoomCat110, LKTopoZoomCat110 * 1000);
+  write_settings(szRegistryLKTopoZoomCat20, LKTopoZoomCat20 * 1000);
+  write_settings(szRegistryLKTopoZoomCat30, LKTopoZoomCat30 * 1000);
+  write_settings(szRegistryLKTopoZoomCat40, LKTopoZoomCat40 * 1000);
+  write_settings(szRegistryLKTopoZoomCat50, LKTopoZoomCat50 * 1000);
+  write_settings(szRegistryLKTopoZoomCat60, LKTopoZoomCat60 * 1000);
+  write_settings(szRegistryLKTopoZoomCat70, LKTopoZoomCat70 * 1000);
+  write_settings(szRegistryLKTopoZoomCat80, LKTopoZoomCat80 * 1000);
+  write_settings(szRegistryLKTopoZoomCat90, LKTopoZoomCat90 * 1000);
+  write_settings(szRegistryLKVarioBar, LKVarioBar);
+  write_settings(szRegistryLKVarioVal, LKVarioVal);
+  write_settings(szRegistryLanguageCode, szLanguageCode);
+  write_settings(szRegistryLatLonUnits, Units::CoordinateFormat);
+  write_settings(szRegistryLiftUnitsValue, LiftUnit_Config);
+  write_settings(szRegistryLockSettingsInFlight, LockSettingsInFlight);
+  write_settings(szRegistryLoggerShort, LoggerShortName);
+  write_settings(szRegistryMapBox, MapBox);
+  write_settings(szRegistryMapFile, szMapFile);
+  write_settings(szRegistryMenuTimeout, MenuTimeout_Config);
+  write_settings(szRegistryNewMapDeclutter, NewMapDeclutter);
+  write_settings(szRegistryOrbiter, Orbiter_Config);
+  write_settings(szRegistryOutlinedTp, OutlinedTp_Config);
+  write_settings(szRegistryOverColor, OverColor);
+  write_settings(szRegistryOverlayClock, OverlayClock);
+  write_settings(szRegistryUseTwoLines, UseTwoLines);
+  write_settings(szRegistryOverlaySize, OverlaySize);
+  write_settings(szRegistryAutoZoomThreshold, AutoZoomThreshold);
+  write_settings(szRegistryClimbZoom, ClimbZoom);
+  write_settings(szRegistryCruiseZoom, CruiseZoom);
+  write_settings(szRegistryMaxAutoZoom, MaxAutoZoom);
+  write_settings(szRegistryTskOptimizeRoute, TskOptimizeRoute_Config);
+  write_settings(szRegistryGliderSymbol, GliderSymbol);
 
-// >> Moved to PilotFile <<
-//  rprintf(szRegistryPilotName,PilotName_Config);
-//  >> Moved to AircraftFile <<
-//  rprintf(szRegistryPolarFile,szPolarFile);
-//  rprintf(szRegistryPollingMode,PollingMode);
-//  rprintf(szRegistryPort1Index,dwPortIndex1);
-//  rprintf(szRegistryPort2Index,dwPortIndex2);
-  rprintf(szRegistryPressureHg,PressureHg);
-  rprintf(szRegistrySafetyAltitudeArrival,SAFETYALTITUDEARRIVAL);
-  rprintf(szRegistrySafetyAltitudeMode,SafetyAltitudeMode);
-  rprintf(szRegistrySafetyAltitudeTerrain,SAFETYALTITUDETERRAIN);
-  rprintf(szRegistrySafetyMacCready,GlidePolar::SafetyMacCready*10);
-//  >> Moved to AircraftFile <<
-//  rprintf(szRegistrySafteySpeed,SAFTEYSPEED*1000); // m/s x1000
-  rprintf(szRegistrySectorRadius,SectorRadius);
+  write_settings(szRegistryPressureHg, PressureHg);
+  write_settings(szRegistrySafetyAltitudeArrival, SAFETYALTITUDEARRIVAL);
+  write_settings(szRegistrySafetyAltitudeMode, SafetyAltitudeMode);
+  write_settings(szRegistrySafetyAltitudeTerrain, SAFETYALTITUDETERRAIN);
+  write_settings(szRegistrySafetyMacCready, GlidePolar::SafetyMacCready * 10);
+
+  write_settings(szRegistrySectorRadius, SectorRadius);
 
 #if defined(PPC2003) || defined(PNA)
-  rprintf(szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS);
+  write_settings(szRegistrySetSystemTimeFromGPS, SetSystemTimeFromGPS);
 #endif
 
-  rprintf(szRegistrySaveRuntime,SaveRuntime);
-  rprintf(szRegistryShading,Shading_Config);
-  rprintf(szRegistryIsoLine,IsoLine_Config);
-  rprintf(szRegistrySnailTrail,TrailActive_Config);
-  rprintf(szRegistrySnailScale,SnailScale);
-//  rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
-//  rprintf(szRegistrySpeed2Index,dwSpeedIndex2);
-  rprintf(szRegistrySpeedUnitsValue,SpeedUnit_Config);
-  rprintf(szRegistryStartHeightRef,StartHeightRef);
-  rprintf(szRegistryStartLine,StartLine);
-  rprintf(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);	// saved *1000, /1000 when used
-  rprintf(szRegistryStartMaxHeight,StartMaxHeight);		// saved *1000, /1000 when used
-  rprintf(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);	// saved *1000, /1000 when used
-  rprintf(szRegistryStartMaxSpeed,StartMaxSpeed);		// saved *1000, /1000 when used
-  rprintf(szRegistryStartRadius,StartRadius);
-  rprintf(szRegistryTaskSpeedUnitsValue,TaskSpeedUnit_Config);
-  rprintf(szRegistryTeamcodeRefWaypoint,TeamCodeRefWaypoint);
-  rprintf(szRegistryTerrainBrightness,TerrainBrightness);
-  rprintf(szRegistryTerrainContrast,TerrainContrast);
-  rprintf(szRegistryTerrainFile,szTerrainFile);
-  rprintf(szRegistryTerrainRamp,TerrainRamp_Config);
+  write_settings(szRegistrySaveRuntime, SaveRuntime);
+  write_settings(szRegistryShading, Shading_Config);
+  write_settings(szRegistryIsoLine, IsoLine_Config);
+  write_settings(szRegistrySnailTrail, TrailActive_Config);
+  write_settings(szRegistrySnailScale, SnailScale);
 
-  if (SaveRuntime) rprintf(szRegistryTerrainWhiteness,TerrainWhiteness*100);
+  write_settings(szRegistrySpeedUnitsValue, SpeedUnit_Config);
+  write_settings(szRegistryStartHeightRef, StartHeightRef);
+  write_settings(szRegistryStartLine, StartLine);
+  write_settings(szRegistryStartMaxHeightMargin,
+             StartMaxHeightMargin); // saved *1000, /1000 when used
+  write_settings(szRegistryStartMaxHeight, StartMaxHeight); // saved *1000, /1000 when used
+  write_settings(szRegistryStartMaxSpeedMargin,
+             StartMaxSpeedMargin); // saved *1000, /1000 when used
+  write_settings(szRegistryStartMaxSpeed, StartMaxSpeed); // saved *1000, /1000 when used
+  write_settings(szRegistryStartRadius, StartRadius);
+  write_settings(szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config);
+  write_settings(szRegistryTeamcodeRefWaypoint, TeamCodeRefWaypoint);
+  write_settings(szRegistryTerrainBrightness, TerrainBrightness);
+  write_settings(szRegistryTerrainContrast, TerrainContrast);
+  write_settings(szRegistryTerrainFile, szTerrainFile);
+  write_settings(szRegistryTerrainRamp, TerrainRamp_Config);
 
-  rprintf(szRegistryThermalBar,ThermalBar);
-  rprintf(szRegistryThermalLocator,EnableThermalLocator);
-  rprintf(szRegistryTpFilter,TpFilter);
-  rprintf(szRegistryTrackBar,TrackBar);
-  rprintf(szRegistryTrailDrift,EnableTrailDrift_Config);
-  rprintf(szRegistryUTCOffset,UTCOffset);
-//  rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
-  rprintf(szRegistryUseUngestures,UseUngestures);
-  rprintf(szRegistryUseTotalEnergy,UseTotalEnergy_Config);
-  rprintf(szRegistryWarningTime,WarningTime);
-  for(unsigned int i = 0; i < NO_WP_FILES; i++) {
-    rprintf(szRegistryWayPointFile[i],szWaypointFile[i]);
+  if (SaveRuntime) {
+    write_settings(szRegistryTerrainWhiteness, TerrainWhiteness * 100);
   }
-  rprintf(szRegistryWaypointsOutOfRange,WaypointsOutOfRange);
-  rprintf(szRegistryWindCalcSpeed,WindCalcSpeed*1000); // m/s x1000
-  rprintf(szRegistryWindCalcTime,WindCalcTime);
 
-  for(int i=0;i<AIRSPACECLASSCOUNT;i++) {
-	rprintf(szRegistryAirspaceMode[i],MapWindow::iAirspaceMode[i]);
-	rprintf(szRegistryColour[i],MapWindow::iAirspaceColour[i]);
+  write_settings(szRegistryThermalBar, ThermalBar);
+  write_settings(szRegistryThermalLocator, EnableThermalLocator);
+  write_settings(szRegistryTpFilter, TpFilter);
+  write_settings(szRegistryTrackBar, TrackBar);
+  write_settings(szRegistryTrailDrift, EnableTrailDrift_Config);
+  write_settings(szRegistryUTCOffset, UTCOffset);
+
+  write_settings(szRegistryUseUngestures, UseUngestures);
+  write_settings(szRegistryUseTotalEnergy, UseTotalEnergy_Config);
+  write_settings(szRegistryWarningTime, WarningTime);
+
+  for (unsigned int i = 0; i < NO_WP_FILES; i++) {
+    write_settings(szRegistryWayPointFile[i], szWaypointFile[i]);
+  }
+
+  write_settings(szRegistryWaypointsOutOfRange, WaypointsOutOfRange);
+  write_settings(szRegistryWindCalcSpeed, WindCalcSpeed * 1000); // m/s x1000
+  write_settings(szRegistryWindCalcTime, WindCalcTime);
+
+  for (int i = 0; i < AIRSPACECLASSCOUNT; i++) {
+    write_settings(szRegistryAirspaceMode[i], MapWindow::iAirspaceMode[i]);
+    write_settings(szRegistryColour[i], MapWindow::iAirspaceColour[i]);
 #ifdef HAVE_HATCHED_BRUSH
-	rprintf(szRegistryBrush[i],MapWindow::iAirspaceBrush[i]);
+    write_settings(szRegistryBrush[i],MapWindow::iAirspaceBrush[i]);
 #endif
   }
 
-
-  rprintf(szRegistryUseWindRose,UseWindRose);
+  write_settings(szRegistryUseWindRose, UseWindRose);
 
   //
   // Multimaps added 121003
   //
 
- if (SaveRuntime) {
-  rprintf(szRegistryMultiTerr0,Multimap_Flags_Terrain[MP_MOVING]);
-  rprintf(szRegistryMultiTerr1,Multimap_Flags_Terrain[MP_MAPTRK]);
-  rprintf(szRegistryMultiTerr2,Multimap_Flags_Terrain[MP_MAPWPT]);
-  rprintf(szRegistryMultiTerr3,Multimap_Flags_Terrain[MP_MAPASP]);
-  rprintf(szRegistryMultiTerr4,Multimap_Flags_Terrain[MP_VISUALGLIDE]);
+  if (SaveRuntime) {
+    write_settings(szRegistryMultiTerr0, Multimap_Flags_Terrain[MP_MOVING]);
+    write_settings(szRegistryMultiTerr1, Multimap_Flags_Terrain[MP_MAPTRK]);
+    write_settings(szRegistryMultiTerr2, Multimap_Flags_Terrain[MP_MAPWPT]);
+    write_settings(szRegistryMultiTerr3, Multimap_Flags_Terrain[MP_MAPASP]);
+    write_settings(szRegistryMultiTerr4, Multimap_Flags_Terrain[MP_VISUALGLIDE]);
 
-  rprintf(szRegistryMultiTopo0,Multimap_Flags_Topology[MP_MOVING]);
-  rprintf(szRegistryMultiTopo1,Multimap_Flags_Topology[MP_MAPTRK]);
-  rprintf(szRegistryMultiTopo2,Multimap_Flags_Topology[MP_MAPWPT]);
-  rprintf(szRegistryMultiTopo3,Multimap_Flags_Topology[MP_MAPASP]);
-  rprintf(szRegistryMultiTopo4,Multimap_Flags_Topology[MP_VISUALGLIDE]);
+    write_settings(szRegistryMultiTopo0, Multimap_Flags_Topology[MP_MOVING]);
+    write_settings(szRegistryMultiTopo1, Multimap_Flags_Topology[MP_MAPTRK]);
+    write_settings(szRegistryMultiTopo2, Multimap_Flags_Topology[MP_MAPWPT]);
+    write_settings(szRegistryMultiTopo3, Multimap_Flags_Topology[MP_MAPASP]);
+    write_settings(szRegistryMultiTopo4, Multimap_Flags_Topology[MP_VISUALGLIDE]);
 
-  rprintf(szRegistryMultiAsp0,Multimap_Flags_Airspace[MP_MOVING]);
-  rprintf(szRegistryMultiAsp1,Multimap_Flags_Airspace[MP_MAPTRK]);
-  rprintf(szRegistryMultiAsp2,Multimap_Flags_Airspace[MP_MAPWPT]);
-  rprintf(szRegistryMultiAsp3,Multimap_Flags_Airspace[MP_MAPASP]);
-  rprintf(szRegistryMultiAsp4,Multimap_Flags_Airspace[MP_VISUALGLIDE]);
+    write_settings(szRegistryMultiAsp0, Multimap_Flags_Airspace[MP_MOVING]);
+    write_settings(szRegistryMultiAsp1, Multimap_Flags_Airspace[MP_MAPTRK]);
+    write_settings(szRegistryMultiAsp2, Multimap_Flags_Airspace[MP_MAPWPT]);
+    write_settings(szRegistryMultiAsp3, Multimap_Flags_Airspace[MP_MAPASP]);
+    write_settings(szRegistryMultiAsp4, Multimap_Flags_Airspace[MP_VISUALGLIDE]);
 
-  rprintf(szRegistryMultiLab0,Multimap_Labels[MP_MOVING]);
-  rprintf(szRegistryMultiLab1,Multimap_Labels[MP_MAPTRK]);
-  rprintf(szRegistryMultiLab2,Multimap_Labels[MP_MAPWPT]);
-  rprintf(szRegistryMultiLab3,Multimap_Labels[MP_MAPASP]);
-  rprintf(szRegistryMultiLab4,Multimap_Labels[MP_VISUALGLIDE]);
+    write_settings(szRegistryMultiLab0, Multimap_Labels[MP_MOVING]);
+    write_settings(szRegistryMultiLab1, Multimap_Labels[MP_MAPTRK]);
+    write_settings(szRegistryMultiLab2, Multimap_Labels[MP_MAPWPT]);
+    write_settings(szRegistryMultiLab3, Multimap_Labels[MP_MAPASP]);
+    write_settings(szRegistryMultiLab4, Multimap_Labels[MP_VISUALGLIDE]);
 
-  rprintf(szRegistryMultiWpt0,Multimap_Flags_Waypoints[MP_MOVING]);
-  rprintf(szRegistryMultiWpt1,Multimap_Flags_Waypoints[MP_MAPTRK]);
-  rprintf(szRegistryMultiWpt2,Multimap_Flags_Waypoints[MP_MAPWPT]);
-  rprintf(szRegistryMultiWpt3,Multimap_Flags_Waypoints[MP_MAPASP]);
-  rprintf(szRegistryMultiWpt4,Multimap_Flags_Waypoints[MP_VISUALGLIDE]);
+    write_settings(szRegistryMultiWpt0, Multimap_Flags_Waypoints[MP_MOVING]);
+    write_settings(szRegistryMultiWpt1, Multimap_Flags_Waypoints[MP_MAPTRK]);
+    write_settings(szRegistryMultiWpt2, Multimap_Flags_Waypoints[MP_MAPWPT]);
+    write_settings(szRegistryMultiWpt3, Multimap_Flags_Waypoints[MP_MAPASP]);
+    write_settings(szRegistryMultiWpt4, Multimap_Flags_Waypoints[MP_VISUALGLIDE]);
 
-  rprintf(szRegistryMultiOvrT0,Multimap_Flags_Overlays_Text[MP_MOVING]);
-  rprintf(szRegistryMultiOvrT1,Multimap_Flags_Overlays_Text[MP_MAPTRK]);
-  rprintf(szRegistryMultiOvrT2,Multimap_Flags_Overlays_Text[MP_MAPWPT]);
-  rprintf(szRegistryMultiOvrT3,Multimap_Flags_Overlays_Text[MP_MAPASP]);
-  rprintf(szRegistryMultiOvrT4,Multimap_Flags_Overlays_Text[MP_VISUALGLIDE]);
+    write_settings(szRegistryMultiOvrT0, Multimap_Flags_Overlays_Text[MP_MOVING]);
+    write_settings(szRegistryMultiOvrT1, Multimap_Flags_Overlays_Text[MP_MAPTRK]);
+    write_settings(szRegistryMultiOvrT2, Multimap_Flags_Overlays_Text[MP_MAPWPT]);
+    write_settings(szRegistryMultiOvrT3, Multimap_Flags_Overlays_Text[MP_MAPASP]);
+    write_settings(szRegistryMultiOvrT4, Multimap_Flags_Overlays_Text[MP_VISUALGLIDE]);
 
-  rprintf(szRegistryMultiOvrG0,Multimap_Flags_Overlays_Gauges[MP_MOVING]);
-  rprintf(szRegistryMultiOvrG1,Multimap_Flags_Overlays_Gauges[MP_MAPTRK]);
-  rprintf(szRegistryMultiOvrG2,Multimap_Flags_Overlays_Gauges[MP_MAPWPT]);
-  rprintf(szRegistryMultiOvrG3,Multimap_Flags_Overlays_Gauges[MP_MAPASP]);
-  rprintf(szRegistryMultiOvrG4,Multimap_Flags_Overlays_Gauges[MP_VISUALGLIDE]);
+    write_settings(szRegistryMultiOvrG0, Multimap_Flags_Overlays_Gauges[MP_MOVING]);
+    write_settings(szRegistryMultiOvrG1, Multimap_Flags_Overlays_Gauges[MP_MAPTRK]);
+    write_settings(szRegistryMultiOvrG2, Multimap_Flags_Overlays_Gauges[MP_MAPWPT]);
+    write_settings(szRegistryMultiOvrG3, Multimap_Flags_Overlays_Gauges[MP_MAPASP]);
+    write_settings(szRegistryMultiOvrG4, Multimap_Flags_Overlays_Gauges[MP_VISUALGLIDE]);
 
-  rprintf(szRegistryMultiSizeY1,Multimap_SizeY[MP_MAPTRK]);
-  rprintf(szRegistryMultiSizeY2,Multimap_SizeY[MP_MAPWPT]);
-  rprintf(szRegistryMultiSizeY3,Multimap_SizeY[MP_MAPASP]);
-  rprintf(szRegistryMultiSizeY4,Multimap_SizeY[MP_VISUALGLIDE]);
- }
+    write_settings(szRegistryMultiSizeY1, Multimap_SizeY[MP_MAPTRK]);
+    write_settings(szRegistryMultiSizeY2, Multimap_SizeY[MP_MAPWPT]);
+    write_settings(szRegistryMultiSizeY3, Multimap_SizeY[MP_MAPASP]);
+    write_settings(szRegistryMultiSizeY4, Multimap_SizeY[MP_VISUALGLIDE]);
+  }
 
-  rprintf(szRegistryMultimap1,Multimap1);
-  rprintf(szRegistryMultimap2,Multimap2);
-  rprintf(szRegistryMultimap3,Multimap3);
-  rprintf(szRegistryMultimap4,Multimap4);
-  rprintf(szRegistryMultimap5,Multimap5);
+  write_settings(szRegistryMultimap1, Multimap1);
+  write_settings(szRegistryMultimap2, Multimap2);
+  write_settings(szRegistryMultimap3, Multimap3);
+  write_settings(szRegistryMultimap4, Multimap4);
+  write_settings(szRegistryMultimap5, Multimap5);
 
- if (SaveRuntime) {
-  rprintf(szRegistryMMNorthUp1,MMNorthUp_Runtime[0]);
-  rprintf(szRegistryMMNorthUp2,MMNorthUp_Runtime[1]);
-  rprintf(szRegistryMMNorthUp3,MMNorthUp_Runtime[2]);
-  rprintf(szRegistryMMNorthUp4,MMNorthUp_Runtime[3]);
- }
+  if (SaveRuntime) {
+    write_settings(szRegistryMMNorthUp1, MMNorthUp_Runtime[0]);
+    write_settings(szRegistryMMNorthUp2, MMNorthUp_Runtime[1]);
+    write_settings(szRegistryMMNorthUp3, MMNorthUp_Runtime[2]);
+    write_settings(szRegistryMMNorthUp4, MMNorthUp_Runtime[3]);
+  }
 
-  rprintf(szRegistryAspPermanent  ,AspPermanentChanged);
-  rprintf(szRegistryFlarmDirection,iFlarmDirection);
-  //rprintf(szRegistryDrawTask      ,Flags_DrawTask);  // DrawTask not any more a runtime save option . v7.1
-  rprintf(szRegistryDrawFAI       ,Flags_DrawFAI_config);
-  rprintf(szRegistryDrawXC   ,Flags_DrawXC_config);
+  write_settings(szRegistryAspPermanent, AspPermanentChanged);
+  write_settings(szRegistryFlarmDirection, iFlarmDirection);
 
-  rprintf(szRegistryGearMode      ,GearWarningMode);
-  rprintf(szRegistryGearAltitude  ,GearWarningAltitude);
-  rprintf(szRegistryBigFAIThreshold,FAI28_45Threshold);
+  write_settings(szRegistryDrawFAI, Flags_DrawFAI_config);
+  write_settings(szRegistryDrawXC, Flags_DrawXC_config);
 
-  if (SaveRuntime) rprintf(szRegistryBottomMode    ,BottomMode);
-  rprintf(szRegistrySonarWarning    ,SonarWarning_Config);
+  write_settings(szRegistryGearMode, GearWarningMode);
+  write_settings(szRegistryGearAltitude, GearWarningAltitude);
+  write_settings(szRegistryBigFAIThreshold, FAI28_45Threshold);
 
-  rprintf(szRegistryOverlay_TopLeft, Overlay_TopLeft);
-  rprintf(szRegistryOverlay_TopMid, Overlay_TopMid);
-  rprintf(szRegistryOverlay_TopRight, Overlay_TopRight);
-  rprintf(szRegistryOverlay_TopDown, Overlay_TopDown);
-  rprintf(szRegistryOverlay_LeftTop, Overlay_LeftTop);
-  rprintf(szRegistryOverlay_LeftMid, Overlay_LeftMid);
-  rprintf(szRegistryOverlay_LeftBottom, Overlay_LeftBottom);
-  rprintf(szRegistryOverlay_LeftDown, Overlay_LeftDown);
-  rprintf(szRegistryOverlay_RightTop, Overlay_RightTop);
-  rprintf(szRegistryOverlay_RightMid, Overlay_RightMid);
-  rprintf(szRegistryOverlay_RightBottom, Overlay_RightBottom);
-  rprintf(szRegistryOverlay_Title, Overlay_Title);
+  if (SaveRuntime) {
+    write_settings(szRegistryBottomMode, BottomMode);
+  }
 
-  rprintf(szRegistryAdditionalContestRule, AdditionalContestRule);
+  write_settings(szRegistrySonarWarning, SonarWarning_Config);
 
+  write_settings(szRegistryOverlay_TopLeft, Overlay_TopLeft);
+  write_settings(szRegistryOverlay_TopMid, Overlay_TopMid);
+  write_settings(szRegistryOverlay_TopRight, Overlay_TopRight);
+  write_settings(szRegistryOverlay_TopDown, Overlay_TopDown);
+  write_settings(szRegistryOverlay_LeftTop, Overlay_LeftTop);
+  write_settings(szRegistryOverlay_LeftMid, Overlay_LeftMid);
+  write_settings(szRegistryOverlay_LeftBottom, Overlay_LeftBottom);
+  write_settings(szRegistryOverlay_LeftDown, Overlay_LeftDown);
+  write_settings(szRegistryOverlay_RightTop, Overlay_RightTop);
+  write_settings(szRegistryOverlay_RightMid, Overlay_RightMid);
+  write_settings(szRegistryOverlay_RightBottom, Overlay_RightBottom);
+  write_settings(szRegistryOverlay_Title, Overlay_Title);
+
+  write_settings(szRegistryAdditionalContestRule, AdditionalContestRule);
+  write_settings(szRegistryEnableAudioVario, EnableAudioVario);
 
 #ifdef _WGS84
-  rprintf(szRegistry_earth_model_wgs84,earth_model_wgs84);
+  write_settings(szRegistry_earth_model_wgs84, earth_model_wgs84);
 #endif
 
-  rprintf(szRegistryAutoContrast,AutoContrast);
-  rprintf(szRegistryEnableAudioVario, EnableAudioVario);
+  write_settings(szRegistryAutoContrast, AutoContrast);
 
-
-
-  extern bool CommandResolution;
-  if (SaveRuntime) if(!IsEmbedded() && !CommandResolution) {
-    rprintf(szRegistryScreenSize   ,ScreenSize);
-    rprintf(szRegistryScreenSizeX  ,ScreenSizeX);
-    rprintf(szRegistryScreenSizeY  ,ScreenSizeY);
+  if (SaveRuntime && !IsEmbedded() && !CommandResolution) {
+    write_settings(szRegistryScreenSize, ScreenSize);
+    write_settings(szRegistryScreenSizeX, ScreenSizeX);
+    write_settings(szRegistryScreenSizeY, ScreenSizeY);
   }
-  if (SaveRuntime)
-    rprintf(szRegistrySoundSwitch,EnableSoundModes);
-
-  fprintf(pfp,PNEWLINE); // end of file
-  fflush(pfp);
-  fclose(pfp);
-
+  if (SaveRuntime) {
+    write_settings(szRegistrySoundSwitch, EnableSoundModes);
+  }
 }
 
-
-void WriteDeviceSettings(const int devIdx, const TCHAR *Name){
-  if (devIdx >= 0)
-    if (devIdx < NUMDEV)
-      _tcscpy(dwDeviceName[devIdx],Name);
+void WriteDeviceSettings(const int devIdx, const TCHAR *Name) {
+  if (devIdx >= 0 && devIdx < NUMDEV) {
+    _tcscpy(dwDeviceName[devIdx], Name);
+  }
 }
 
 //
 // Save only Aircraft related parameters
 //
-void LKAircraftSave(const TCHAR *szFile)
-{
-  #if TESTBENCH
-  StartupStore(_T("... AircraftSave <%s>%s"),szFile,NEWLINE);
-  #endif
+void LKAircraftSave(const TCHAR *szFile) {
+#if TESTBENCH
+  StartupStore(_T("... AircraftSave <%s>%s"), szFile, NEWLINE);
+#endif
 
-
-  if (_tcslen(szFile)>0)
-	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
-
-  if(pfp == NULL) {
-	StartupStore(_T("......  AircraftSaveProfile <%s> open for write FAILED!%s"),szFile,NEWLINE);
-	return;
+  if (!szFile || !szFile[0]) {
+    // nullptr or empty string.
+    return;
+  }
+  settings::writer write_settings(szFile, "AIRCRAFT PROFILE");
+  if (!write_settings) {
+    StartupStore(_T("...... AircraftSaveProfile <%s> open for write FAILED!%s"), szFile, NEWLINE);
+    return;
   }
 
-  //
-  // Standard header
-  //
-  fprintf(pfp,"### LK8000 AICRAFT PROFILE - DO NOT EDIT%s",PNEWLINE);
-  fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
-  fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
-  fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
+  write_settings(szRegistryAircraftCategory, AircraftCategory);
+  write_settings(szRegistryPolarFile, szPolarFile);
+  write_settings(szRegistrySafteySpeed, SAFTEYSPEED * 1000); // Max speed V rough air m/s x1000
+  write_settings(szRegistryHandicap, Handicap);
+  write_settings(szRegistryBallastSecsToEmpty, BallastSecsToEmpty);
 
-  rprintf(szRegistryAircraftCategory, AircraftCategory);
-  rprintf(szRegistryPolarFile,szPolarFile);
-  rprintf(szRegistrySafteySpeed,SAFTEYSPEED*1000); // Max speed V rough air m/s x1000
-  rprintf(szRegistryHandicap,Handicap);
-  rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
-
-  rprintf(szRegistryAircraftType, AircraftType_Config);
-  rprintf(szRegistryAircraftRego, AircraftRego_Config);
-  rprintf(szRegistryCompetitionClass,CompetitionClass_Config);
-  rprintf(szRegistryCompetitionID,CompetitionID_Config);
-
-
-  fprintf(pfp,PNEWLINE); // end of file
-  fflush(pfp);
-  fclose(pfp);
-
+  write_settings(szRegistryAircraftType, AircraftType_Config);
+  write_settings(szRegistryAircraftRego, AircraftRego_Config);
+  write_settings(szRegistryCompetitionClass, CompetitionClass_Config);
+  write_settings(szRegistryCompetitionID, CompetitionID_Config);
 }
 
 
 //
 // Save only Pilot related parameters
 //
-void LKPilotSave(const TCHAR *szFile)
-{
-  #if TESTBENCH
-  StartupStore(_T("... PilotSave <%s>%s"),szFile,NEWLINE);
-  #endif
+void LKPilotSave(const TCHAR *szFile) {
+#if TESTBENCH
+  StartupStore(_T("... PilotSave <%s>%s"), szFile, NEWLINE);
+#endif
 
-  if (_tcslen(szFile)>0)
-	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
-
-  if(pfp == NULL) {
-	StartupStore(_T("......  PilotSaveProfile <%s> open for write FAILED!%s"),szFile,NEWLINE);
-	return;
+  if (!szFile || !szFile[0]) {
+    // nullptr or empty string.
+    return;
+  }
+  settings::writer write_settings(szFile, "PILOT PROFILE");
+  if (!write_settings) {
+    StartupStore(_T("...... PilotSaveProfile <%s> open for write FAILED!"), szFile);
+    return;
   }
 
-  //
-  // Standard header
-  //
-  fprintf(pfp,"### LK8000 PILOT PROFILE - DO NOT EDIT%s",PNEWLINE);
-  fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
-  fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
-  fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
-
-  rprintf(szRegistryPilotName,PilotName_Config);
-  rprintf(szRegistryLiveTrackerInterval,LiveTrackerInterval);
-  rprintf(szRegistryLiveTrackerRadar_config,LiveTrackerRadar_config);
-  rprintf(szRegistryLiveTrackerStart_config,LiveTrackerStart_config);
-  rprintf(szRegistryLiveTrackersrv,LiveTrackersrv_Config);
-  rprintf(szRegistryLiveTrackerport,LiveTrackerport_Config);
-  rprintf(szRegistryLiveTrackerusr,LiveTrackerusr_Config);
-  rprintf(szRegistryLiveTrackerpwd,LiveTrackerpwd_Config);
-
-  fprintf(pfp,PNEWLINE); // end of file
-  fflush(pfp);
-  fclose(pfp);
-
+  write_settings(szRegistryPilotName, PilotName_Config);
+  write_settings(szRegistryLiveTrackerInterval, LiveTrackerInterval);
+  write_settings(szRegistryLiveTrackerRadar_config, LiveTrackerRadar_config);
+  write_settings(szRegistryLiveTrackerStart_config, LiveTrackerStart_config);
+  write_settings(szRegistryLiveTrackersrv, LiveTrackersrv_Config);
+  write_settings(szRegistryLiveTrackerport, LiveTrackerport_Config);
+  write_settings(szRegistryLiveTrackerusr, LiveTrackerusr_Config);
+  write_settings(szRegistryLiveTrackerpwd, LiveTrackerpwd_Config);
 }
+
+#define IO_PARAM_SIZE 160
 
 //
 // Save only Device related parameters
 //
-void LKDeviceSave(const TCHAR *szFile)
-{
-  #if TESTBENCH
-  StartupStore(_T("... DeviceSave <%s>%s"),szFile,NEWLINE);
-  #endif
+void LKDeviceSave(const TCHAR *szFile) {
+#if TESTBENCH
+  StartupStore(_T("... DeviceSave <%s>%s"), szFile, NEWLINE);
+#endif
 
-  if (_tcslen(szFile)>0)
-	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
-
-  if(pfp == NULL) {
-	StartupStore(_T("......  DeviceSaveProfile <%s> open for write FAILED!%s"),szFile,NEWLINE);
-	return;
+  if (!szFile || !szFile[0]) {
+    // nullptr or empty string.
+    return;
+  }
+  settings::writer write_settings(szFile, "DEVICE PROFILE");
+  if (!write_settings) {
+    StartupStore(_T("...... DeviceSaveProfile <%s> open for write FAILED!%s"), szFile, NEWLINE);
+    return;
   }
 
-  //
-  // Standard header
-  //
-  fprintf(pfp,"### LK8000 DEVICE PROFILE - DO NOT EDIT%s",PNEWLINE);
-  fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
-  fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
-  fprintf(pfp,"PROFILEVERSION=2%s",PNEWLINE);
+  write_settings(szRegistryDeviceA, dwDeviceName[0]);
+  write_settings(szRegistryDeviceB, dwDeviceName[1]);
+  write_settings(szRegistryDeviceC, dwDeviceName[2]);
+  write_settings(szRegistryDeviceD, dwDeviceName[3]);
+  write_settings(szRegistryDeviceE, dwDeviceName[4]);
+  write_settings(szRegistryDeviceF, dwDeviceName[5]);
 
-  rprintf(szRegistryDeviceA,dwDeviceName[0]);
-  rprintf(szRegistryDeviceB,dwDeviceName[1]);
-  rprintf(szRegistryDeviceC,dwDeviceName[2]);
-  rprintf(szRegistryDeviceD,dwDeviceName[3]);
-  rprintf(szRegistryDeviceE,dwDeviceName[4]);
-  rprintf(szRegistryDeviceF,dwDeviceName[5]);
+  write_settings(szRegistryPort1Name, szPort[0]);
+  write_settings(szRegistryPort2Name, szPort[1]);
+  write_settings(szRegistryPort3Name, szPort[2]);
+  write_settings(szRegistryPort4Name, szPort[3]);
+  write_settings(szRegistryPort5Name, szPort[4]);
+  write_settings(szRegistryPort6Name, szPort[5]);
 
-  rprintf(szRegistryPort1Name,szPort[0]);
-  rprintf(szRegistryPort2Name,szPort[1]);
-  rprintf(szRegistryPort3Name,szPort[2]);
-  rprintf(szRegistryPort4Name,szPort[3]);
-  rprintf(szRegistryPort5Name,szPort[4]);
-  rprintf(szRegistryPort6Name,szPort[5]);
+  write_settings(szRegistrySpeed1Index, dwSpeedIndex[0]);
+  write_settings(szRegistrySpeed2Index, dwSpeedIndex[1]);
+  write_settings(szRegistrySpeed3Index, dwSpeedIndex[2]);
+  write_settings(szRegistrySpeed4Index, dwSpeedIndex[3]);
+  write_settings(szRegistrySpeed5Index, dwSpeedIndex[4]);
+  write_settings(szRegistrySpeed6Index, dwSpeedIndex[5]);
 
-  rprintf(szRegistrySpeed1Index,dwSpeedIndex[0]);
-  rprintf(szRegistrySpeed2Index,dwSpeedIndex[1]);
-  rprintf(szRegistrySpeed3Index,dwSpeedIndex[2]);
-  rprintf(szRegistrySpeed4Index,dwSpeedIndex[3]);
-  rprintf(szRegistrySpeed5Index,dwSpeedIndex[4]);
-  rprintf(szRegistrySpeed6Index,dwSpeedIndex[5]);
+  write_settings(szRegistryBit1Index, dwBitIndex[0]);
+  write_settings(szRegistryBit2Index, dwBitIndex[1]);
+  write_settings(szRegistryBit3Index, dwBitIndex[2]);
+  write_settings(szRegistryBit4Index, dwBitIndex[3]);
+  write_settings(szRegistryBit5Index, dwBitIndex[4]);
+  write_settings(szRegistryBit6Index, dwBitIndex[5]);
 
-  rprintf(szRegistryBit1Index,dwBitIndex[0]);
-  rprintf(szRegistryBit2Index,dwBitIndex[1]);
-  rprintf(szRegistryBit3Index,dwBitIndex[2]);
-  rprintf(szRegistryBit4Index,dwBitIndex[3]);
-  rprintf(szRegistryBit5Index,dwBitIndex[4]);
-  rprintf(szRegistryBit6Index,dwBitIndex[5]);
+  write_settings(szRegistryIpAddress1, szIpAddress[0]);
+  write_settings(szRegistryIpAddress2, szIpAddress[1]);
+  write_settings(szRegistryIpAddress3, szIpAddress[2]);
+  write_settings(szRegistryIpAddress4, szIpAddress[3]);
+  write_settings(szRegistryIpAddress5, szIpAddress[4]);
+  write_settings(szRegistryIpAddress6, szIpAddress[5]);
 
-  rprintf(szRegistryIpAddress1,szIpAddress[0]);
-  rprintf(szRegistryIpAddress2,szIpAddress[1]);
-  rprintf(szRegistryIpAddress3,szIpAddress[2]);
-  rprintf(szRegistryIpAddress4,szIpAddress[3]);
-  rprintf(szRegistryIpAddress5,szIpAddress[4]);
-  rprintf(szRegistryIpAddress6,szIpAddress[5]);
+  write_settings(szRegistryIpPort1, dwIpPort[0]);
+  write_settings(szRegistryIpPort2, dwIpPort[1]);
+  write_settings(szRegistryIpPort3, dwIpPort[2]);
+  write_settings(szRegistryIpPort4, dwIpPort[3]);
+  write_settings(szRegistryIpPort5, dwIpPort[4]);
+  write_settings(szRegistryIpPort6, dwIpPort[5]);
 
-  rprintf(szRegistryIpPort1,dwIpPort[0]);
-  rprintf(szRegistryIpPort2,dwIpPort[1]);
-  rprintf(szRegistryIpPort3,dwIpPort[2]);
-  rprintf(szRegistryIpPort4,dwIpPort[3]);
-  rprintf(szRegistryIpPort5,dwIpPort[4]);
-  rprintf(szRegistryIpPort6,dwIpPort[5]);
-
-#define IO_PARAM_SIZE 160
-
-  for(int n = 0; n < NUMDEV; n++)
-  {
+  for (int n = 0; n < NUMDEV; n++) {
     TCHAR szTmp[IO_PARAM_SIZE];
     _sntprintf(szTmp,IO_PARAM_SIZE, _T("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u"),
 	       (uint)PortIO[n].MCDir    ,(uint)PortIO[n].BUGDir  ,(uint)PortIO[n].BALDir   ,
@@ -635,53 +545,49 @@ void LKDeviceSave(const TCHAR *szFile)
 	     );
 
     char szKey[20] = ("");
-    sprintf(szKey ,("%s%u"),szRegistryIOValues,n+1);
-    rprintf(szKey,szTmp);
+    sprintf(szKey, ("%s%u"), szRegistryIOValues, n + 1);
+    write_settings(szKey, szTmp);
   }
 
-  rprintf(szRegistryUseExtSound1,UseExtSound[0]);
-  rprintf(szRegistryUseExtSound2,UseExtSound[1]);
-  rprintf(szRegistryUseExtSound3,UseExtSound[2]);
-  rprintf(szRegistryUseExtSound4,UseExtSound[3]);
-  rprintf(szRegistryUseExtSound5,UseExtSound[4]);
-  rprintf(szRegistryUseExtSound6,UseExtSound[5]);
+  write_settings(szRegistryUseExtSound1, UseExtSound[0]);
+  write_settings(szRegistryUseExtSound2, UseExtSound[1]);
+  write_settings(szRegistryUseExtSound3, UseExtSound[2]);
+  write_settings(szRegistryUseExtSound4, UseExtSound[3]);
+  write_settings(szRegistryUseExtSound5, UseExtSound[4]);
+  write_settings(szRegistryUseExtSound6, UseExtSound[5]);
 
-  rprintf(szRegistryReplayFileA ,Replay_FileName[0]);
-  rprintf(szRegistryReplayFileB ,Replay_FileName[1]);
-  rprintf(szRegistryReplayFileC ,Replay_FileName[2]);
-  rprintf(szRegistryReplayFileD ,Replay_FileName[3]);
-  rprintf(szRegistryReplayFileE ,Replay_FileName[4]);
-  rprintf(szRegistryReplayFileF ,Replay_FileName[5]);
+  write_settings(szRegistryReplayFileA ,Replay_FileName[0]);
+  write_settings(szRegistryReplayFileB ,Replay_FileName[1]);
+  write_settings(szRegistryReplayFileC ,Replay_FileName[2]);
+  write_settings(szRegistryReplayFileD ,Replay_FileName[3]);
+  write_settings(szRegistryReplayFileE ,Replay_FileName[4]);
+  write_settings(szRegistryReplayFileF ,Replay_FileName[5]);
 
-  rprintf(szRegistryReplaySpeedA,ReplaySpeed[0]);
-  rprintf(szRegistryReplaySpeedB,ReplaySpeed[1]);
-  rprintf(szRegistryReplaySpeedC,ReplaySpeed[2]);
-  rprintf(szRegistryReplaySpeedD,ReplaySpeed[3]);
-  rprintf(szRegistryReplaySpeedE,ReplaySpeed[4]);
-  rprintf(szRegistryReplaySpeedF,ReplaySpeed[5]);
+  write_settings(szRegistryReplaySpeedA,ReplaySpeed[0]);
+  write_settings(szRegistryReplaySpeedB,ReplaySpeed[1]);
+  write_settings(szRegistryReplaySpeedC,ReplaySpeed[2]);
+  write_settings(szRegistryReplaySpeedD,ReplaySpeed[3]);
+  write_settings(szRegistryReplaySpeedE,ReplaySpeed[4]);
+  write_settings(szRegistryReplaySpeedF,ReplaySpeed[5]);
 
-  rprintf(szRegistryReplayRawA,RawByteData[0]);
-  rprintf(szRegistryReplayRawB,RawByteData[1]);
-  rprintf(szRegistryReplayRawC,RawByteData[2]);
-  rprintf(szRegistryReplayRawD,RawByteData[3]);
-  rprintf(szRegistryReplayRawE,RawByteData[4]);
-  rprintf(szRegistryReplayRawF,RawByteData[5]);
+  write_settings(szRegistryReplayRawA,RawByteData[0]);
+  write_settings(szRegistryReplayRawB,RawByteData[1]);
+  write_settings(szRegistryReplayRawC,RawByteData[2]);
+  write_settings(szRegistryReplayRawD,RawByteData[3]);
+  write_settings(szRegistryReplayRawE,RawByteData[4]);
+  write_settings(szRegistryReplayRawF,RawByteData[5]);
   
-  rprintf(szRegistryReplaySyncA,ReplaySync[0]);
-  rprintf(szRegistryReplaySyncB,ReplaySync[1]);
-  rprintf(szRegistryReplaySyncC,ReplaySync[2]);
-  rprintf(szRegistryReplaySyncD,ReplaySync[3]);
-  rprintf(szRegistryReplaySyncE,ReplaySync[4]);
-  rprintf(szRegistryReplaySyncF,ReplaySync[5]);
+  write_settings(szRegistryReplaySyncA,ReplaySync[0]);
+  write_settings(szRegistryReplaySyncB,ReplaySync[1]);
+  write_settings(szRegistryReplaySyncC,ReplaySync[2]);
+  write_settings(szRegistryReplaySyncD,ReplaySync[3]);
+  write_settings(szRegistryReplaySyncE,ReplaySync[4]);
+  write_settings(szRegistryReplaySyncF,ReplaySync[5]);
 
-  rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
-  rprintf(szRegistryPollingMode,PollingMode);
-  rprintf(szRegistryCheckSum,CheckSum);
+  write_settings(szRegistryUseGeoidSeparation, UseGeoidSeparation);
+  write_settings(szRegistryPollingMode, PollingMode);
+  write_settings(szRegistryCheckSum, CheckSum);
 
-  rprintf(szRegistryAppInfoBoxModel,GlobalModelType); // We save GlobalModelType, not InfoBoxModel
-
-  fprintf(pfp,PNEWLINE); // end of file
-  fflush(pfp);
-  fclose(pfp);
-
+  // We save GlobalModelType, not InfoBoxModel
+  write_settings(szRegistryAppInfoBoxModel, GlobalModelType);
 }
