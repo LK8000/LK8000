@@ -994,6 +994,17 @@ void LKParseProfileString(const char *sname, const char *svalue) {
     }
   }
 
+  if(!SaveRuntime) {
+    EnableSoundModes =true;
+  }
+  else
+  {
+    PREAD(sname,svalue,szRegistrySoundSwitch,&EnableSoundModes);
+    if (matchedstring) {
+     return;
+    }
+  }
+
   #if TESTBENCH
   if (!strcmp(sname,"LKVERSION") && !strcmp(sname,"PROFILEVERSION")) {
       StartupStore(_T("... UNMANAGED PARAMETER inside profile: <%s>=<%s>\n"),sname,svalue);
