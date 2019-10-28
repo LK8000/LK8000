@@ -8,7 +8,6 @@
 
 #define STATIC_GLOBALS
 #include "externs.h"
-#define STATIC_PGLOBALS
 #include "LKProfiles.h"
 #include "LKMapWindow.h"
 #include "Modeltype.h"

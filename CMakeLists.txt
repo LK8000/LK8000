@@ -250,6 +250,7 @@ add_library( LK8000 SHARED
     Common/Source/LKInstall.cpp
     Common/Source/LKLanguage.cpp
     Common/Source/LKObjects.cpp
+	Common/Source/LKProfiles.cpp
     Common/Source/LKProfileInitRuntime.cpp
     Common/Source/LKProfileLoad.cpp
     Common/Source/LKProfileResetDefault.cpp

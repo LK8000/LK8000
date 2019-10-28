@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "LKProfiles.h"
 #include "McReady.h"
 #include "Modeltype.h"
 #include "LKInterface.h"
@@ -28,7 +29,7 @@
 // * values must be normalized with ProfileAdjustVariables()
 // * Runtime values must be initialised with InitRuntime()
 //
-void LKProfileResetDefault(void) {
+void LKProfileResetDefault() {
 
   int i;
 

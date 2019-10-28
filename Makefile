@@ -1321,6 +1321,7 @@ SRC_FILES :=\
 	$(SRC)/LKInstall.cpp 		\
 	$(SRC)/LKLanguage.cpp		\
 	$(SRC)/LKObjects.cpp \
+	$(SRC)/LKProfiles.cpp\
 	$(SRC)/LKProfileInitRuntime.cpp\
 	$(SRC)/LKProfileLoad.cpp\
 	$(SRC)/LKProfileResetDefault.cpp\

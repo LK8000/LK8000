@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "LKProfiles.h"
 #include "McReady.h"
 #include "Modeltype.h"
 
@@ -25,7 +26,7 @@
 //
 // Be careful, like AdjustVariables this function is called twice or more times on startup
 //
-void LKProfileInitRuntime(void) {
+void LKProfileInitRuntime() {
 
   #if TESTBENCH
   StartupStore(_T("... LKProfileInitRuntime\n"));
