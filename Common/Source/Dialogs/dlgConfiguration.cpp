@@ -3372,9 +3372,7 @@ wp->RefreshDisplay();
 #define UPDATE_COM_PORT 1
 
 static void OnLeScan(WndForm* pWndForm, const char *address, const char *name) {
-#ifdef ANDROID
   ScopeLock lock(COMMPort_mutex);
-#endif
 
   std::stringstream prefixed_address_stream;
   prefixed_address_stream << "BT:" << address;
@@ -3405,9 +3403,8 @@ static bool OnUser(WndForm * pWndForm, unsigned id) {
         DataField * dataField = pWnd->GetDataField();
         if(dataField) {
 
-#ifdef ANDROID
           ScopeLock lock(COMMPort_mutex);
-#endif
+
           for( const auto& item : COMMPort ) {
             if(dataField->Find(item.GetName()) == -1) {
               dataField->addEnumText(item.GetName(), item.GetLabel());
