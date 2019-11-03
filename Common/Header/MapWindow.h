@@ -152,7 +152,7 @@ static constexpr double ScaleListNauticalMiles[SCALELISTSIZE] = {
     75.0
 };
 
-typedef struct _WAYPOINT_INFO
+struct WAYPOINT
 {
   // Number is used as an alternate short name, and can also be duplicated
   int Number;
@@ -178,13 +178,13 @@ typedef struct _WAYPOINT_INFO
   int   RunwayDir;
   TCHAR Country[CUPSIZE_COUNTRY+1];
   short Style;
-} WAYPOINT;
+};
 
-// This struct is separated from _WAYPOINT_INFO and will not be used in task files.
+// This struct is separated from 'WAYPOINT' and will not be used in task files.
 // It is managed by the same functions that manage WayPointList, only add variables here
 // and use them like  WayPointCalc[n].Distance  for example.
 // THIS STRUCTURE MUST BE INITIALIZED inside waypointparser function!!
-typedef struct _WAYPOINT_CALCULATED
+struct WPCALC
 {
 //  long timeslot;
   double GR;       // GR from current position
@@ -201,7 +201,7 @@ typedef struct _WAYPOINT_CALCULATED
   // if on, then they are also landable for sure
   bool IsAirport;
   bool IsOutlanding;
-} WPCALC;
+};
 
 typedef struct _SNAIL_POINT
 {

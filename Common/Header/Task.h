@@ -22,7 +22,7 @@ typedef struct _START_POINT
 } START_POINT;
 
 
-typedef struct _TASK_POINT
+struct TASK_POINT
 {
   int Index;
   double InBound;
@@ -45,7 +45,7 @@ typedef struct _TASK_POINT
   double PGConeSlope; // Slope Ratio for PG Cone Turn point
   double PGConeBase; // Base Altitude of Cone Turn Point
   double PGConeBaseRadius; // radius At Base Altitude of Cone Turn Point
-} TASK_POINT;
+};
 
 typedef TASK_POINT Task_t[MAXTASKPOINTS +1];
 typedef START_POINT Start_t[MAXSTARTPOINTS +1];

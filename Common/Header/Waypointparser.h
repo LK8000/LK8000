@@ -5,8 +5,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <vector>
+#include "tchar.h"
+#include "Util/tstring.hpp"
+
 class zzip_stream;
 class zzip_file_ptr;
+struct WAYPOINT;
+struct TASK_POINT;
 
 
 #define wpTerrainBoundsYes    100
