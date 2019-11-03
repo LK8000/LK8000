@@ -5,17 +5,9 @@
 
    $Id$
 */
-
 #include "externs.h"
 #include <ctype.h>
-#include "utils/stl_utils.h"
-#include "utils/stringext.h"
-#include "Util/UTF8.hpp"
-#include "Poco/Latin1Encoding.h"
-#include "Poco/UTF8Encoding.h"
-#include "Poco/TextConverter.h"
 #include "Util/Clamp.hpp"
-#include "Util/TruncateString.hpp"
 
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber)
 {
