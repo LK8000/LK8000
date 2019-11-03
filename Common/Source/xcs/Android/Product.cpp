@@ -32,7 +32,8 @@ bool has_cursor_keys;
 
 #ifdef __arm__
 
-bool is_nook, is_dithered;
+bool is_nook = false; 
+bool is_dithered = false;
 
 bool
 IsGalaxyTab22()
