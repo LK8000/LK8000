@@ -4,7 +4,6 @@
 RCS
 UNUSED
 TMP
-TEST
 TAGS
 BROWSE
 dolang
@@ -62,3 +61,5 @@ output.map
 /android-studio/app/build/
 /android-thirdparty/
 /.vs/
+/Common/Test/.vs/
+/Common/Test/out/

@@ -74,6 +74,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPOCO_NO_UNWINDOWS -DPOCO_ANDROID ")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu89 ")
 
+add_subdirectory( Common/Source/Library/poco Library )
+
 add_library( LK8000 SHARED
     Common/Source/xcs/Android/Assert.cpp
     Common/Source/xcs/Android/Bitmap.cpp
@@ -737,36 +739,6 @@ add_library( LK8000 SHARED
     Common/Source/Library/zzip/plugin.c
     Common/Source/Library/zzip/zip.c
 
-    Common/Source/Library/poco/Debugger.cpp
-    Common/Source/Library/poco/Bugcheck.cpp
-    Common/Source/Library/poco/ErrorHandler.cpp
-    Common/Source/Library/poco/Event.cpp
-    Common/Source/Library/poco/NamedEvent.cpp
-    Common/Source/Library/poco/Exception.cpp
-    Common/Source/Library/poco/Mutex.cpp
-    Common/Source/Library/poco/NamedMutex.cpp
-    Common/Source/Library/poco/Runnable.cpp
-    Common/Source/Library/poco/RWLock.cpp
-    Common/Source/Library/poco/Thread.cpp
-    Common/Source/Library/poco/ThreadLocal.cpp
-    Common/Source/Library/poco/ThreadTarget.cpp
-    Common/Source/Library/poco/Timestamp.cpp
-    Common/Source/Library/poco/Timespan.cpp
-    Common/Source/Library/poco/UnicodeConverter.cpp
-    Common/Source/Library/poco/UTF8Encoding.cpp
-    Common/Source/Library/poco/UTF16Encoding.cpp
-    Common/Source/Library/poco/TextEncoding.cpp
-    Common/Source/Library/poco/ASCIIEncoding.cpp
-    Common/Source/Library/poco/Latin1Encoding.cpp
-    Common/Source/Library/poco/Latin9Encoding.cpp
-    Common/Source/Library/poco/Windows1252Encoding.cpp
-    Common/Source/Library/poco/TextIterator.cpp
-    Common/Source/Library/poco/TextConverter.cpp
-    Common/Source/Library/poco/Ascii.cpp
-    Common/Source/Library/poco/AtomicCounter.cpp
-    Common/Source/Library/poco/RefCountedObject.cpp
-    Common/Source/Library/poco/Condition.cpp
-
     Common/Source/Library/glutess/dict.c
     Common/Source/Library/glutess/geom.c
     Common/Source/Library/glutess/memalloc.c
@@ -838,4 +810,5 @@ target_link_libraries(
     ${gles-lib}
     ${zlib-lib}
 	${egl-lib}
+    LK8000_POCO
 )
