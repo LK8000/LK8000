@@ -3,15 +3,9 @@
 #include "externs.h"
 #include "Topology.h"
 
-#if USETOPOMARKS
-extern bool reset_marks;
-#endif
 
 void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj,  const bool force=false);
-#if USETOPOMARKS
-void TopologyInitialiseMarks();
-void TopologyCloseMarks();
-#endif
+
 void OpenTopology();
 void CloseTopology();
 void ChangeZoomTopology(int iCategory, double newScale, short cztmode);
@@ -20,11 +14,7 @@ bool HaveZoomTopology(int iCategory);
 void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const bool wateronly=false);
 bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const double sunazimuth, const double sunelevation);
 
-#if USETOPOMARKS
-void DrawMarks(const HDC hdc, const RECT rc);
-void MarkLocation(const double lon, const double lat);
-#else
 void MarkLocation(const double lon, const double lat, const double altitude);
-#endif
+
 void CloseTerrainRenderer();
 #endif

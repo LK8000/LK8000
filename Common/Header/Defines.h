@@ -190,10 +190,6 @@
  */
 #define LKF_RECENTS	"History.txt"
 #define LKF_DEFAULTASK	"Default.lkt"
-#if USETOPOMARKS
- #define LKF_MARKS	"Markers.txt"
- #define LKF_SMARKS	"Markers"
-#endif
 #define LKF_FLARMIDS	"IDFLARM.TXT"
 #define LKF_RUNLOG	"RUNTIME.log"
 #define LKF_FAILLOG	"FAILURES.log"

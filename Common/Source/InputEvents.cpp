@@ -1006,21 +1006,19 @@ void InputEvents::processGo(int eventid) {
 
 // TODO code: Keep marker text for use in log file etc.
 void InputEvents::eventMarkLocation(const TCHAR *misc) {
+
   if (_tcscmp(misc, TEXT("reset")) == 0) {
-	#if USETOPOMARKS
-	reset_marks = true;
-	#endif
-	LockTaskData();
-	for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
-		WayPointList[i].Latitude=RESWP_INVALIDNUMBER;
-		WayPointList[i].Longitude=RESWP_INVALIDNUMBER;
-		WayPointList[i].Altitude=RESWP_INVALIDNUMBER;
-	        WayPointList[i].Visible=FALSE;
-	        WayPointList[i].FarVisible=FALSE;
-	        WayPointCalc[i].WpType = WPT_UNKNOWN;
-	}
-	UnlockTaskData();
-	return;
+    LockTaskData();
+    for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
+      WayPointList[i].Latitude=RESWP_INVALIDNUMBER;
+      WayPointList[i].Longitude=RESWP_INVALIDNUMBER;
+      WayPointList[i].Altitude=RESWP_INVALIDNUMBER;
+      WayPointList[i].Visible=FALSE;
+      WayPointList[i].FarVisible=FALSE;
+      WayPointCalc[i].WpType = WPT_UNKNOWN;
+    }
+    UnlockTaskData();
+    return;
   }
 
   LKSound(TEXT("DROPMARKER.WAV"));
@@ -1035,11 +1033,7 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), th );
 	ForceRenderMap=true;
   } else {
-	#if USETOPOMARKS
-	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude);
-	#else
 	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude, CALCULATED_INFO.NavAltitude );
-	#endif
   }
 
   UnlockFlightData();

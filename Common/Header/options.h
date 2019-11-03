@@ -206,10 +206,6 @@
 				// support external switches through NMEA input.
 
 
-// TopologyWriter for adding topo labels dynamically, previously used for markers
-// May be sill used for custom user's topology, so let's keep it for a while.
-// #define USETOPOMARKS	1
-
 // LKAIRSPACE OPTIM STUFF
 // Recalculate airspace positions only if the draw area has changed by more than 2 pixels
 // There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.

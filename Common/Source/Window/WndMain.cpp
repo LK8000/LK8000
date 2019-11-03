@@ -141,9 +141,6 @@ void BeforeShutdown(void) {
 
   LockTerrainDataGraphics();
   CloseTopology();
-  #if USETOPOMARKS
-  TopologyCloseMarks();
-  #endif
   CloseTerrainRenderer();
   RasterTerrain::CloseTerrain();
   UnlockTerrainDataGraphics();

@@ -146,15 +146,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 
 }
 
-#if USETOPOMARKS
-Topology::Topology(const TCHAR* shpname, bool doappend) {
-#else
 Topology::Topology(const TCHAR* shpname) {
-#endif
-
-  #if USETOPOMARKS
-  append = doappend;
-  #endif
   memset((void*)&shpfile, 0 ,sizeof(shpfile));
   shapefileopen = false;
   triggerUpdateCache = false;
@@ -273,22 +265,10 @@ void Topology::initCache()
 void Topology::Open() {
   shapefileopen = false;
 
-  #if USETOPOMARKS
-  if (append) {
-    if (msSHPOpenFile(&shpfile, (char*)"rb+", filename) == -1) {
-      // StartupStore(_T(". Topology: Open: append failed for <%s> (this can be normal)%s"),filename,NEWLINE);
-      return;
-    }
-  } else {
-  #endif
-    if (msShapefileOpen(&shpfile, "rb", filename, true) == -1) {
-      StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),filename,NEWLINE);
-      return;
-    }
-  #if USETOPOMARKS
+  if (msShapefileOpen(&shpfile, "rb", filename, true) == -1) {
+    StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),filename,NEWLINE);
+    return;
   }
-  #endif
-  // StartupStore(_T(". Topology: Open <%s>%s"),filename,NEWLINE);
 
   scaleThreshold = 1000.0;
   shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
@@ -931,80 +911,6 @@ void XShapeLabel::clear() {
   }
 }
 
-//       _stprintf(Scale,TEXT("%1.2f%c"),MapScale, autozoomstring);
-
-// //////////////////////////////////////////////////////////////
-// TOPOLOGY WRITER USED ONLY BY OLD MARKERS, not by LK anymore
-// //////////////////////////////////////////////////////////////
-#if USETOPOMARKS
-//
-TopologyWriter::~TopologyWriter() {
-  if (shapefileopen) {
-    Close();
-    DeleteFiles();
-  }
-}
-
-
-TopologyWriter::TopologyWriter(const TCHAR* shpname, LKColor thecolor):
-  Topology(shpname, thecolor, true) {
-
-  Reset();
-}
-
-void TopologyWriter::DeleteFiles(void) {
-  // Delete all files, since zziplib interface doesn't handle file modes
-  // properly
-  if (_tcslen(filename)>0) {
-    TCHAR fname[MAX_PATH];
-    _tcscpy(fname, filename);
-    _tcscat(fname, _T(".shp"));
-    DeleteFile(fname);
-    _tcscpy(fname, filename);
-    _tcscat(fname, _T(".shx"));
-    DeleteFile(fname);
-    _tcscpy(fname, filename);
-    _tcscat(fname, _T(".dbf"));
-    DeleteFile(fname);
-  }
-}
-
-void TopologyWriter::CreateFiles(void) {
-  // by default, now, this overwrites previous contents
-  if (msSHPCreateFile(&shpfile, filename, SHP_POINT) == -1) {
-  } else {
-    TCHAR dbfname[100];
-    _tcscpy(dbfname, filename);
-    _tcscat(dbfname, _T(".dbf"));
-    shpfile.hDBF = msDBFCreate(dbfname);
-    if (shpfile.hDBF == NULL)
-	StartupStore(_T("------ TopologyWriter: msDBFCreate error%s"),NEWLINE);
-
-    shapefileopen=true;
-    Close();
-  }
-}
-
-void TopologyWriter::Reset(void) {
-  if (shapefileopen) {
-    Close();
-  }
-  DeleteFiles();
-  CreateFiles();
-  Open();
-}
-
-void TopologyWriter::addPoint(double x, double y) {
-  pointObj p = {x,y};
-
-  if (shapefileopen) {
-    msSHPWritePoint(shpfile.hSHP, &p);
-    Close();
-  }
-  Open();
-
-}
-#endif // USETOPOMARKS
 // //////////////////////////////////////////////////////////////
 
 void Topology::SearchNearest(const rectObj& bounds) {

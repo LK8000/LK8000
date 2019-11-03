@@ -342,13 +342,6 @@ _skip_2:
         DrawAircraft(Surface, Orig_Aircraft);
     }
 
-
-
-#if USETOPOMARKS
-    // marks on top...
-    DrawMarks(hdc, rc);
-#endif
-
     if (!INPAN) {
         DrawMapScale(Surface, rc, _Proj); // unused BigZoom
         DrawCompass(Surface, rc, DisplayAngle);

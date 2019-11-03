@@ -104,11 +104,6 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
 	TopoStore[z]->triggerUpdateCache=true;
       }
     }
-    #if USETOPOMARKS
-    if (topo_marks) {
-      topo_marks->triggerUpdateCache = true;
-    }
-    #endif
 
     // now update visibility of objects in the map window
     MapWindow::ScanVisibility(&bounds_active);
@@ -147,13 +142,6 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
       TopoStore[z]->TriggerIfScaleNowVisible();
     }
   }
-
-  // ok, now update the caches
-  #if USETOPOMARKS
-  if (topo_marks) {
-    topo_marks->updateCache(bounds_active);
-  }
-  #endif
 
     // check if any needs to have cache updates because wasnt
     // visible previously when bounds moved

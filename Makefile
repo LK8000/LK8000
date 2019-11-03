@@ -1114,7 +1114,6 @@ MAPDRAW	:=\
 	$(MAP)/MarkLocation.cpp		\
 	$(MAP)/OpenCloseTopology.cpp		\
 	$(MAP)/SetTopologyBounds.cpp		\
-	$(MAP)/TopoMarks.cpp		\
 	$(MAP)/ZoomTopology.cpp		\
 
 UTILS	:=\

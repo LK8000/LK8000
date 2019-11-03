@@ -66,11 +66,7 @@ protected:
 class Topology {
 
  public:
-#if USETOPOMARKS
-  Topology(const TCHAR* shpname,  bool doappend=false);
-#else
   Topology(const TCHAR* shpname);
-#endif
   Topology() {};
 
   virtual ~Topology();
@@ -106,9 +102,7 @@ class Topology {
  protected:
 
   void flushCache();
-#if USETOPOMARKS
-  bool append;
-#endif
+
   bool in_scale;
   LKPen hPen;
   LKBrush hbBrush;
@@ -124,20 +118,6 @@ class Topology {
 
   char filename[MAX_PATH];
 };
-
-#if USETOPOMARKS
-class TopologyWriter: public Topology {
- public:
-  TopologyWriter(const TCHAR *shpname);
-  virtual ~TopologyWriter();
-
-  void addPoint(double x, double y);
-  void Reset(void);
-  void CreateFiles(void);
-  void DeleteFiles(void);
-};
-#endif
-
 
 class TopologyLabel: public Topology {
  public:

@@ -15,21 +15,7 @@
 extern int GetVirtualWaypointMarkerSlot(void);
 
 
-#if USETOPOMARKS
-void MarkLocation(const double lon, const double lat)
-#else
-void MarkLocation(const double lon, const double lat, const double altitude)
-#endif
-{
-  #if USETOPOMARKS
-  LockTerrainDataGraphics();
-  if (topo_marks) {
-    topo_marks->addPoint(lon, lat);
-    topo_marks->triggerUpdateCache = true;
-  }
-  UnlockTerrainDataGraphics();
-  #endif
-
+void MarkLocation(const double lon, const double lat, const double altitude) {
   char message[210];
 
   FILE *stream;

@@ -459,9 +459,6 @@ bool Startup(const TCHAR* szCmdLine) {
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
   OpenTopology();
-  #if USETOPOMARKS
-  TopologyInitialiseMarks();
-  #endif
 
   CreateProgressDialog(MsgToken(1808));	// Loading FLARMNET database
   OpenFLARMDetails();
