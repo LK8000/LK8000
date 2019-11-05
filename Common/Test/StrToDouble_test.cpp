@@ -32,14 +32,32 @@ TEST_CASE("testing the StrToDouble function") {
 		CHECK(StrToDouble("2.2a", nullptr) == 2.2);
 		CHECK(StrToDouble("1234567890.0123456789a", nullptr) == 1234567890.0123456789);
 		CHECK(StrToDouble("-1.1a", nullptr) == -1.1);
-	}
+
+        const char *sz = nullptr;
+        CHECK(StrToDouble("0a", &sz) == 0);
+        CHECK((sz && sz[0] == 'a') == true);
+
+        CHECK(StrToDouble("1b", &sz) == 1);
+        CHECK((sz && sz[0] == 'b') == true);
+
+        CHECK(StrToDouble("2.2c", &sz) == 2.2);
+        CHECK((sz && sz[0] == 'c') == true);
+
+        CHECK(StrToDouble("1234567890.0123456789d", &sz) == 1234567890.0123456789);
+        CHECK((sz && sz[0] == 'd') == true);
+
+        CHECK(StrToDouble("-1.1e", &sz) == -1.1);
+        CHECK((sz && sz[0] == 'e') == true);
+    }
 
 	SUBCASE("invalid literal string imput") {
 		const char* sz = nullptr;
 		CHECK(StrToDouble("a", &sz) == 0);
 		CHECK((sz && sz[0] == 'a') == true);
-		CHECK(StrToDouble(" aa", &sz) == 0);
-		CHECK((sz && sz[0] == 'a') == true);
+
+		CHECK(StrToDouble(" ba", &sz) == 0);
+		CHECK((sz && sz[0] == 'b') == true);
+
 		CHECK(StrToDouble(",2", &sz) == 0);
 		CHECK((sz && sz[0] == ',') == true);
 	}
@@ -48,6 +66,7 @@ TEST_CASE("testing the StrToDouble function") {
 		const char* sz = nullptr;
 		CHECK(StrToDouble("", &sz) == 0);
 		CHECK(sz == nullptr);
+
 		CHECK(StrToDouble(nullptr, nullptr) == 0);
 	}
 }
