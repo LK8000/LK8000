@@ -46,7 +46,7 @@ double CUPToLat(const TCHAR *str) {
 	divisor *= 10;
   }
 
-  double angle = degree + ((double)minute) / 60. + ((double)radix) / ((double)divisor);
+  double angle = degree + ((minute + (static_cast<double>(radix) / divisor)) / 60.);
   if((*next) == _T('S')) {
     return angle * -1;
   } else if((*next) == _T('N')) {
@@ -91,7 +91,7 @@ double CUPToLon(const TCHAR *str) {
 	divisor *= 10;
   }
 
-  double angle = degree + ((double)minute) / 60. + ((double)radix) / ((double)divisor);
+  double angle = degree + ((minute + (static_cast<double>(radix) / divisor)) / 60.);
   if((*next) == _T('W')) {
     return angle * -1;
   } else if((*next) == _T('E')) {
