@@ -64,6 +64,10 @@ Copyright_License {
 #  if GCC_OLDER_THAN(4,6)
 #    error Sorry, your gcc version is too old.  You need at least version 4.6.
 #  endif
+#elif defined(_MSC_VER)
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+#pragma message(__FILE__ "(" STRING(__LINE__) "): warning: Untested compiler.  Use at your own risk!")
 #else
 #  warning Untested compiler.  Use at your own risk!
 #endif
