@@ -743,8 +743,8 @@ public:
 
         const int hscale = std::max<int>(1, pixelsize_d);
 
-        const size_t ixs = screen_buffer->GetWidth();
-        const size_t iys = screen_buffer->GetHeight();
+        const size_t ixs = height_buffer->GetWidth();
+        const size_t iys = height_buffer->GetHeight();
 
 #if defined(_OPENMP)
         #pragma omp parallel for
