@@ -19,6 +19,8 @@ repositories {
 
 android {
     compileSdkVersion 28
+    ndkVersion "20.1.5948944"
+
     defaultConfig {
         applicationId "org.lk8000"
         minSdkVersion 16
