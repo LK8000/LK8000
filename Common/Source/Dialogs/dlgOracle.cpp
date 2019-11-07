@@ -16,8 +16,6 @@
 #include "resource.h"
 #include "Asset.hpp"
 
-static WndForm *wf=NULL;
-
 static void OnCloseClicked(WndButton* pWnd){
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -32,12 +30,9 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-short WaitToCallForce=0;
-
-//#define DEBUG_ORTIMER
-
-WhereAmI _WhereAmI;
-
+namespace {
+  WhereAmI _WhereAmI;
+}
 // Remember that this function is called at 10hz
 static bool OnTimerNotify(WndForm* pWnd) {
 
@@ -45,18 +40,18 @@ static bool OnTimerNotify(WndForm* pWnd) {
     return false;
   }
 
-  wf->SetTimerNotify(0, NULL);
+  pWnd->SetTimerNotify(0, NULL);
 
   // Bell, and print results
   LKSound(TEXT("LK_GREEN.WAV"));
-  wf->SetBackColor(RGB_WINBACKGROUND);
+  pWnd->SetBackColor(RGB_WINBACKGROUND);
 
-  WindowControl* pWndClose = wf->FindByName(_T("cmdClose"));
+  WindowControl* pWndClose = pWnd->FindByName(_T("cmdClose"));
   if(pWndClose) {
     pWndClose->SetVisible(true);
     pWndClose->SetFocus();
   }
-  WndFrame* pWndText = static_cast<WndFrame*>(wf->FindByName(_T("WndText")));
+  WndFrame* pWndText = static_cast<WndFrame*>(pWnd->FindByName(_T("WndText")));
   if (pWndText) {
     pWndText->SetBackColor(RGB_WINBACKGROUND);
     pWndText->SetCaption(_WhereAmI.getText());
@@ -70,11 +65,10 @@ void dlgOracleShowModal(void){
 
   SHOWTHREAD(_T("dlgOracleShowModal"));
 
-  wf=NULL;
-
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ORACLE_L : IDR_XML_ORACLE_P);
-
-  if (!wf) return;
+  WndForm* wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ORACLE_L : IDR_XML_ORACLE_P);
+  if (!wf) {
+    return;
+  }
   MapWindow::SuspendDrawingThread();
   _WhereAmI.Start();
 
@@ -97,5 +91,4 @@ void dlgOracleShowModal(void){
   MapWindow::ResumeDrawingThread();
 
   delete wf;
-  wf = NULL;
 }
