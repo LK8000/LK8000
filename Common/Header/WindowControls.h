@@ -717,6 +717,7 @@ class WndListFrame:public WndFrame{
     bool OnItemKeyDown(WindowControl *Sender, unsigned KeyCode);
     int PrepareItemDraw(void);
     void ResetList(void);
+    int GetClientWidth(void);
 
     void SetEnterCallback(OnListCallback_t OnListCallback) {
         mOnListEnterCallback = OnListCallback;

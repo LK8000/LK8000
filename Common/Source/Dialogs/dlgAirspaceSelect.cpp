@@ -680,7 +680,9 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
         // Poco::Thread::sleep(100);
 
-        const int width = Sender->GetWidth(); // total width
+        int width = Sender->GetWidth(); // total width
+        if(wAirspaceList)
+          width = wAirspaceList->GetClientWidth(); // Sender->GetWidth()-100; // total width
 
         const int w0 = LineHeight; // Picto Width
         const int w2 = Surface.GetTextWidth(TEXT(" 000km")); // distance Width

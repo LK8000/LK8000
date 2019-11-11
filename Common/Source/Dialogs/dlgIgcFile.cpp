@@ -142,6 +142,9 @@ namespace DlgIgcFile {
             FileList_t::const_iterator ItFileName = FileList.begin();
             std::advance(ItFileName, DrawListIndex);
             int w0 = Sender->GetWidth();
+            WndListFrame* wndFileList = (WndListFrame*) wfDlg->FindByName(TEXT("frmIgcFileList"));
+            if(wndFileList)
+              w0 = wndFileList->GetClientWidth();
 
             Surface.SetTextColor(RGB_BLACK);
             Surface.DrawTextClip(DLGSCALE(2), DLGSCALE(2), ItFileName->c_str(), w0 - DLGSCALE(2));

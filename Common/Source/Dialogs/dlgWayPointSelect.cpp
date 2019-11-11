@@ -691,7 +691,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         const int w0 = LineHeight; // Picto Width
         const int w2 = Surface.GetTextWidth(TEXT(" 000km")); // distance Width
         _stprintf(sTmp, _T(" 000%s "), MsgToken(2179));
-        const int w3 = Surface.GetTextWidth(sTmp); // bearing width
+        const int w3 = wWayPointList->GetClientWidth();  // Surface.GetTextWidth(sTmp); // bearing width
 
         const int w1 = width - w0 - w2 - w3; // Max Name width
 

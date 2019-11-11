@@ -83,8 +83,10 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
   LockTaskData();
 
   const PixelRect rcClient(Sender->GetClientRect());
-  
-  const int w0 = rcClient.GetSize().cx - DLGSCALE(1);
+  int w0 = rcClient.GetSize().cx - DLGSCALE(1);
+  if(wTaskList) {
+    w0 = wTaskList->GetClientWidth()- DLGSCALE(2);}
+
   const int w1 = Surface.GetTextWidth(TEXT(" 000km"));
   _stprintf(sTmp, _T("  000%s"), MsgToken(2179));
   const int w2 = Surface.GetTextWidth(sTmp);
