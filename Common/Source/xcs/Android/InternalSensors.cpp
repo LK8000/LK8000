@@ -312,10 +312,9 @@ Java_org_LK8000_NonGPSSensors_setMagneticField(
   */
 }
 
-#if 0
 /**
  * Helper function for
- * Java_org_xcsoar_NonGPSSensors_setBarometricPressure: Given a
+ * Java_org_LK8000_NonGPSSensors_setBarometricPressure: Given a
  * current measurement of the atmospheric pressure and the rate of
  * change of atmospheric pressure (in millibars and millibars per
  * second), compute the uncompensated vertical speed of the glider in
@@ -329,14 +328,12 @@ Java_org_LK8000_NonGPSSensors_setMagneticField(
  * is the pressure change rate.
  */
 gcc_pure
-static inline double
-ComputeNoncompVario(const double pressure, const double d_pressure)
-{
+static inline
+double ComputeNoncompVario(const double pressure, const double d_pressure) {
   static constexpr double FACTOR(-2260.389548275485);
   static constexpr double EXPONENT(-0.8097374740609689);
   return FACTOR * pow(pressure, EXPONENT) * d_pressure;
 }
-#endif
 
 static BOOL IsBaroSource(PDeviceDescriptor_t d) { return TRUE; }
 
@@ -377,12 +374,11 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
        unduly. */
     kalman_filter.Update(pressure, sensor_noise_variance);
 
-
-
-#if 0
-    double NoncompVario = ComputeNoncompVario(kalman_filter.GetXAbs(),
-                                                kalman_filter.GetXVel());
-#endif
+    if(pdev->nmeaParser.activeGPS) {
+      GPS_INFO.VarioAvailable = true;
+      GPS_INFO.Vario = ComputeNoncompVario(kalman_filter.GetXAbs(),
+                                           kalman_filter.GetXVel());
+    }
 
     UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100));
   }
