@@ -246,7 +246,7 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
         currentButton.Enable(false);
     } else {
 
-        if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
+        if (HasKeyboard()) {
             if (InputEvents::getSelectedButtonId() == MenuID) {
                 currentButton.SetBkColor(RGB_DARKYELLOW2);
             } else {

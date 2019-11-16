@@ -900,8 +900,8 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     //
     // Special SIM mode keys for PC
     //
-    if(HasKeyboard()) {
-        if (SIMMODE && IsMultiMapShared() && (!ReplayLogger::IsEnabled())) {
+    if(HasKeyboard() && SIMMODE && IsMultiMapShared()) {
+        if (!ReplayLogger::IsEnabled()) {
             switch (KeyCode) {
                 case KEY_PRIOR: // VK_PRIOR PAGE UP
                     if (GetShiftKeyState()) {
@@ -916,7 +916,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                             GPS_INFO.Altitude += 10;
                     }
                     TriggerGPSUpdate();
-                    return;
+                return;
                 case KEY_NEXT: // VK_NEXT PAGE DOWN
                     if (GetShiftKeyState()) {
                         if (Units::GetUserAltitudeUnit() == unFeet)
@@ -929,7 +929,9 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                         else
                             GPS_INFO.Altitude -= 10;
                     }
-                    if (GPS_INFO.Altitude <= 0) GPS_INFO.Altitude = 0;
+                    if (GPS_INFO.Altitude <= 0) {
+                        GPS_INFO.Altitude = 0;
+                    }
                     TriggerGPSUpdate();
                     return;
                 case KEY_UP: // VK_UP
@@ -962,16 +964,14 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                     } else {
                         GPS_INFO.TrackBearing += 5;
                     }
-                    if (GPS_INFO.TrackBearing < 0) GPS_INFO.TrackBearing += 360;
-                    else if (GPS_INFO.TrackBearing > 359) GPS_INFO.TrackBearing -= 360;
+                    GPS_INFO.TrackBearing = AngleLimit360(GPS_INFO.TrackBearing);
 
                     TriggerGPSUpdate();
                     return;
             }
-        }
-
-        extern double ReplayTime;
-        if (SIMMODE && IsMultiMapShared() && ReplayLogger::IsEnabled()) {
+        } else {
+            // ReplayLogger::IsEnabled()
+            extern double ReplayTime;
             switch (KeyCode) {
                 case KEY_PRIOR: // VK_PRIOR PAGE UP
                     ReplayTime += 300;
@@ -990,6 +990,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         }
     }
 
+#ifndef LXMINIMAP
     //
     // LX MINIMAP II HARDWARE KEYS
     // From left to right, top mode, we find:
@@ -1000,8 +1001,6 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     //    D		button Zoom sel
     //    E		rotary knob Esc
     //
-    // THIS IS AN ALTERNATE LXMINIMAP USAGE, will not work for official release
-#ifndef LXMINIMAP
     if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
 
       switch (KeyCode) {
@@ -1680,6 +1679,54 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
             default:
                 break;
         }
+    }
+
+    if(HasKeyboard()) {
+      PlayResource(TEXT("IDR_WAV_CLICK"));
+      // default keyboard usage
+      switch (KeyCode) {
+      case KEY_F1:
+        // Toggle Menu
+        InputEvents::setMode(ButtonLabel::IsVisible() ? _T("default") : _T("Menu")); 
+        MenuTimeOut = 0;
+        return;
+      case KEY_ESCAPE:
+        if (ButtonLabel::IsVisible()) {
+          // Close Menu
+          InputEvents::setMode(_T("default"));
+          return;
+        }
+        // TODO : return to default moving map ?
+        break;
+      case KEY_RETURN:
+        if (ButtonLabel::IsVisible()) {
+          InputEvents::triggerSelectedButton();
+          MenuTimeOut = 0;
+          return;
+        }
+        break;
+      case KEY_UP:
+      case KEY_RIGHT:
+          if (ButtonLabel::IsVisible()) {
+            InputEvents::selectPrevButton();
+            MenuTimeOut = 0;
+            return;
+          }
+          // TODO :
+          break;
+      case KEY_DOWN:
+      case KEY_LEFT:
+          if (ButtonLabel::IsVisible()) {
+            InputEvents::selectNextButton();
+            MenuTimeOut = 0;
+            return;
+          }
+          // TODO :
+          break;
+       // always mapped to zoom
+      default:
+          break;
+      } 
     }
 
     InputEvents::processKey(KeyCode);

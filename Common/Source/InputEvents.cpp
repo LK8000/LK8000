@@ -561,53 +561,50 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
   return -1;
 }
 
-
 void InputEvents::setMode(const TCHAR *mode) {
   static int lastmode = -1;
-  int thismode;
 
-    if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
-        if (_tcscmp(mode, TEXT("default")) == 0) {
-            SelectedButtonId = 1;
-        }
+  if (HasKeyboard()) {
+    if (_tcscmp(mode, TEXT("default")) == 0) {
+      SelectedButtonId = 1;
     }
+  }
 
-  LK_tcsncpy(mode_current, mode, MAX_MODE_STRING-1);
+  LK_tcsncpy(mode_current, mode, MAX_MODE_STRING - 1);
 
   // Mode must already exist to use it here...
-  thismode = mode2int(mode,false);
-  if (thismode < 0)	// Technically an error in config (eg
-			// event=Mode DoesNotExist)
-    return;	// TODO enhancement: Add debugging here
+  int thismode = mode2int(mode, false);
+  if (thismode < 0) { // Technically an error in config (eg
+                    // event=Mode DoesNotExist)
+    return;         // TODO enhancement: Add debugging here
+  }
 
   if (thismode == lastmode) {
-	//
-	// Clicking again would switch menu off for these cases
-	//
-	if (
-	(_tcscmp(mode, TEXT("MMCONF")) == 0)	||
-	(_tcscmp(mode, TEXT("MTarget")) == 0) )
-	{
-		IsMultimapConfigShown=false;
-		_tcscpy(mode_current, _T("default"));
-		thismode = mode2int(_T("default"),false);
-	} else {
-	//
-	// For all other cases, simply do nothing
-	//
-		return;
-	}
+    //
+    // Clicking again would switch menu off for these cases
+    //
+    if ((_tcscmp(mode, TEXT("MMCONF")) == 0) ||
+        (_tcscmp(mode, TEXT("MTarget")) == 0))
+    {
+      IsMultimapConfigShown = false;
+      _tcscpy(mode_current, _T("default"));
+      thismode = mode2int(_T("default"), false);
+    } else {
+      //
+      // For all other cases, simply do nothing
+      //
+      return;
+    }
   }
 
   // Special flags cleanup..
   if (_tcscmp(mode, TEXT("MMCONF")) != 0) {
-	IsMultimapConfigShown=false;
+    IsMultimapConfigShown = false;
   }
 
   drawButtons(thismode);
 
   lastmode = thismode;
-
 }
 
 void InputEvents::drawButtons(int Mode) {
@@ -638,16 +635,12 @@ int InputEvents::getModeID() {
 
 // Input is a via the user touching the label on a touch screen / mouse
 bool InputEvents::processButton(unsigned MenuId) {
-    if (!(ProgramStarted==psNormalOp)) return false;
+    if (ProgramStarted != psNormalOp) {
+      return false;
+    }
 
-#if TESTBENCH
-    LKASSERT(MenuId > 0);
-#else
-    if (MenuId < 1) return false;
-#endif
-
-    if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
-        SelectedButtonId = MenuId;
+    if (HasKeyboard()) {
+      SelectedButtonId = MenuId;
     }
 
     int thismode = getModeID();
@@ -680,21 +673,28 @@ bool InputEvents::processButton(unsigned MenuId) {
   Return = We had a valid key (even if nothing happens because of Bounce)
 */
 bool InputEvents::processKey(int KeyID) {
-  if (!(ProgramStarted==psNormalOp)) return false;
-
-  int event_id = 0;
+  if (ProgramStarted != psNormalOp) {
+    return false;
+  }
 
   // get current mode
-  const int mode = InputEvents::getModeID();
+  unsigned mode = InputEvents::getModeID();
+  if(mode >= array_size(Key2Event)) {
+    mode = 0;
+  }
 
 #ifndef USE_GDI
 
+  int event_id = 0;
+
   auto It = Key2Event[mode].find(KeyID);
   if(It != Key2Event[mode].end()) {
+    // Valid input
     event_id = It->second;
   }
 
   if (event_id == 0) {
+    // fall back to default
     It = Key2Event[0].find(KeyID);
     if(It != Key2Event[0].end()) {
       event_id = It->second;
@@ -708,7 +708,7 @@ bool InputEvents::processKey(int KeyID) {
     return false;
 
   // Which key - can be defined locally or at default (fall back to default)
-  event_id = Key2Event[mode][KeyID];
+  int event_id = Key2Event[mode][KeyID];
   if (event_id == 0) {
     // go with default key..
     event_id = Key2Event[0][KeyID];
@@ -728,10 +728,12 @@ bool InputEvents::processKey(int KeyID) {
     }
     #endif
 
+
     for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
       if (ModeLabel[mode][i].event == event_id) {
-        if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
-          SelectedButtonId = i + 1;
+        MenuId = i + 1;
+        if (HasKeyboard()) {
+          SelectedButtonId = MenuId;
         }
         pLabelText = ModeLabel[mode][i].label;
       }
