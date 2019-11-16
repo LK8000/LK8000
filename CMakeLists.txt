@@ -72,7 +72,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__linux__ -DHAVE_POSIX -DANDROID -D__S
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DUSE_EGL")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPOCO_NO_UNWINDOWS -DPOCO_ANDROID ")
 
-add_subdirectory( Common/Source/Library/poco Library )
+add_subdirectory( Common/Source/Library/poco lib_poco )
+add_subdirectory( Common/Source/Library/glutess lib_glutess )
 
 add_library( LK8000 SHARED
     Common/Source/xcs/Android/Assert.cpp
@@ -736,18 +737,6 @@ add_library( LK8000 SHARED
     Common/Source/Library/zzip/plugin.c
     Common/Source/Library/zzip/zip.c
 
-    Common/Source/Library/glutess/dict.c
-    Common/Source/Library/glutess/geom.c
-    Common/Source/Library/glutess/memalloc.c
-    Common/Source/Library/glutess/mesh.c
-    Common/Source/Library/glutess/normal.c
-    Common/Source/Library/glutess/priorityq.c
-    Common/Source/Library/glutess/render.c
-    Common/Source/Library/glutess/sweep.c
-    Common/Source/Library/glutess/tess.c
-    Common/Source/Library/glutess/tessellate.c
-    Common/Source/Library/glutess/tessmono.c
-
     Common/Source/Sound/Android/Sound.cpp
 
     Common/Source/Geographic/GeoPoint.cpp
@@ -801,11 +790,12 @@ find_library( egl-lib EGL )
 
 target_link_libraries(
     LK8000
+	LK8000_POCO
+	LK8000_GLUTESS
     ${GEOGRAPHIC_LIB}
     ${android-lib}
     ${log-lib}
     ${gles-lib}
     ${zlib-lib}
 	${egl-lib}
-    LK8000_POCO
 )
