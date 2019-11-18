@@ -10,7 +10,6 @@
 #include "Logger.h"
 #include "McReady.h"
 
-
 void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (!Calculated->Flying) {
@@ -18,33 +17,28 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     return;
   }
 
-  double n;
   // get load factor
-  if (Basic->AccelerationAvailable) {
-	n = fabs(Basic->AccelZ);
-  } else {
-	n = fabs(Calculated->Gload);
-  }
+  const double GLoad = (Basic->AccelerationAvailable)
+          ? fabs(Basic->AccelZ)
+          : fabs(Calculated->Gload);
 
   // calculate sink rate of glider for calculating netto vario
+  const bool replay_disabled = !ReplayLogger::IsEnabled();
 
-  bool replay_disabled = !ReplayLogger::IsEnabled();
+  const double ias = (Basic->AirspeedAvailable && replay_disabled)
+          ? Basic->IndicatedAirspeed
+          : Calculated->IndicatedAirspeedEstimated;
 
-  double glider_sink_rate;    
-  if (Basic->AirspeedAvailable && replay_disabled) {
-    glider_sink_rate= AirDensitySinkRate(max((double)GlidePolar::Vminsink(), Basic->IndicatedAirspeed), Basic->Altitude, n);
-  } else {
-    glider_sink_rate= AirDensitySinkRate(max((double)GlidePolar::Vminsink(), Calculated->IndicatedAirspeedEstimated), Basic->Altitude,  n);
-  }
+  const double glider_sink_rate = AirDensitySinkRate(std::max(GlidePolar::Vminsink(), ias), Basic->Altitude, GLoad);
   Calculated->GliderSinkRate = glider_sink_rate;
 
   if (Basic->NettoVarioAvailable && replay_disabled) {
-	Calculated->NettoVario = Basic->NettoVario;
-  } else {
-	if (Basic->VarioAvailable && replay_disabled) {
-		Calculated->NettoVario = Basic->Vario - glider_sink_rate;
-	} else {
-		Calculated->NettoVario = Calculated->Vario - glider_sink_rate;
-	}
+    Calculated->NettoVario = Basic->NettoVario;
+  }
+  else if (Basic->VarioAvailable && replay_disabled) {
+    Calculated->NettoVario = Basic->Vario - glider_sink_rate;
+  }
+  else {
+    Calculated->NettoVario = Calculated->Vario - glider_sink_rate;
   }
 }
