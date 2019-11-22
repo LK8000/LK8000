@@ -146,12 +146,9 @@ public:
             // this is a nonblocking call, live tracker runs on different thread
             LiveTrackerUpdate(tmpGPS, tmpCALCULATED);
 
-#ifndef NO_DATARECORDER
             UpdateFlightDataRecorder(tmpGPS, tmpCALCULATED);
-#endif
             CheckAltitudeAlarms(tmpGPS, tmpCALCULATED);
         }
-
     }
 private:
     NMEA_INFO tmpGPS;

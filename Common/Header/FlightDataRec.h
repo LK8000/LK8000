@@ -1,12 +1,16 @@
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id$
+*/
 
 #ifndef	FLIGHT_DATA_REC_H
 #define	FLIGHT_DATA_REC_H
- 
-#ifndef NO_DATARECORDER
 
-void InitFlightDataRecorder(void);
+void InitFlightDataRecorder();
 void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
-void CloseFlightDataRecorder(void);
+void CloseFlightDataRecorder();
 
-#endif
 #endif

@@ -530,10 +530,7 @@ bool Startup(const TCHAR* szCmdLine) {
   devInit();
 
   LiveTrackerInit();
-
-#ifndef NO_DATARECORDER
   InitFlightDataRecorder();
-#endif
 
   // re-set polar in case devices need the data
   GlidePolar::SetBallast();

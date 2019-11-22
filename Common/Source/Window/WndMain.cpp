@@ -146,10 +146,8 @@ void BeforeShutdown(void) {
   UnlockTerrainDataGraphics();
 
   LiveTrackerShutdown();
-
-#ifndef NO_DATARECORDER
   CloseFlightDataRecorder();
-#endif
+
   // Stop COM devices
   StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
   devCloseAll();

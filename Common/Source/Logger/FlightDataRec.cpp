@@ -7,9 +7,6 @@
 */
 
 #include "externs.h"
-
-#ifndef NO_DATARECORDER
-
 #include "FlightDataRec.h"
 #include "utils/stringext.h"
 #include <time.h>
@@ -45,8 +42,7 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated);
 // This means that we can also give a message about FDR operative even in the splash screens
 // In case of re-run, it is self-checking for previous successful run
 //
-void InitFlightDataRecorder(void)
-{
+void InitFlightDataRecorder() {
 
   // Did we already found a config? If so, dont do anything else.
   if (FlightDataRecorderActive) {
@@ -333,8 +329,8 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
 // No need to lock, because we are using copied data, already thread safe.
 //
 static
-void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated)
-{
+void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
+ 
   if(!AlarmTick.CheckUpdate(1000)) {
     // don't check Alarms faster than 1Hz
     return;
@@ -452,8 +448,7 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated)
 // We call the Close from WndProc, in the Shutdown procedure.
 // This will tell Draw thread and Calc thread to stop bothering about FDR
 //
-void CloseFlightDataRecorder(void)
-{
+void CloseFlightDataRecorder() {
   if (!FlightDataRecorderActive) return;
 
   FlightDataRecorderActive=false;
@@ -463,5 +458,3 @@ void CloseFlightDataRecorder(void)
   iLogDelay=0;
   if (FlightDataRecorderFile) fclose(FlightDataRecorderFile);
 }
-
-#endif
