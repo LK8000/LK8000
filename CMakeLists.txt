@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.6.0)
 
 project(assembler C CXX ASM)
 
@@ -65,12 +65,38 @@ ExternalProject_Add (
 ExternalProject_Get_Property(boost source_dir)
 set(BOOST_INCLUDE ${source_dir})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -ffast-math -fopenmp")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wparentheses -Wuninitialized -Wredundant-decls")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_NO_IOSTREAM -DBOOST_NO_IOSFWD -DBOOST_NO_STRINGSTREAM -DBOOST_NO_WSTREAMBUF ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__linux__ -DHAVE_POSIX -DANDROID -D__STDC_FORMAT_MACROS ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DENABLE_OPENGL -DHAVE_GLES -DGL_GLEXT_PROTOTYPES -DUSE_EGL")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPOCO_NO_UNWINDOWS -DPOCO_ANDROID ")
+add_definitions(
+	-DBOOST_NO_IOSTREAM
+	-DBOOST_NO_IOSFWD
+	-DBOOST_NO_STRINGSTREAM
+	-DBOOST_NO_WSTREAMBUF
+	-D__linux__
+	-DHAVE_POSIX
+	-DANDROID
+	-D__STDC_FORMAT_MACROS
+	-DENABLE_OPENGL
+	-DHAVE_GLES
+	-DGL_GLEXT_PROTOTYPES
+	-DUSE_EGL
+	-DPOCO_NO_UNWINDOWS
+	-DPOCO_ANDROID
+)
+
+
+list(APPEND	BUILD_FLAGS
+	-Werror
+	-Wall
+	-ffast-math
+	-fopenmp
+	-Wparentheses
+	-Wuninitialized
+	-Wredundant-decls
+)
+string(REPLACE ";" " " BUILD_FLAGS "${BUILD_FLAGS}")
+
+set(CMAKE_C_FLAGS             "${CMAKE_C_FLAGS} ${BUILD_FLAGS} ")
+set(CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS} ${BUILD_FLAGS} ")
+
 
 add_subdirectory( Common/Source/Library/poco lib_poco )
 add_subdirectory( Common/Source/Library/glutess lib_glutess )
@@ -777,6 +803,18 @@ target_include_directories( LK8000 PRIVATE
     ./
     ${BOOST_INCLUDE}
     ${GEOGRAPHIC_INCLUDE}
+)
+
+target_compile_features( LK8000 PRIVATE
+	cxx_constexpr
+	cxx_auto_type
+	cxx_deleted_functions
+	cxx_defaulted_functions
+	cxx_nullptr
+	cxx_override
+	cxx_range_for
+	cxx_rvalue_references
+	cxx_static_assert
 )
 
 add_dependencies(LK8000 generate-GeographicLib)
