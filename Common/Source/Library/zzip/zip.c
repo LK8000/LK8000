@@ -79,7 +79,7 @@ int __zzip_parse_root_directory( int fd,
 				 struct zzip_dir_hdr ** hdr_return,
 				 zzip_plugin_io_t io);
 
-_zzip_inline char* __zzip_aligned4(char* p);
+_zzip_inline static char* __zzip_aligned4(char* p);
 
 /* ------------------------  harden routines ------------------------------ */
 
@@ -336,9 +336,8 @@ __zzip_fetch_disk_trailer(int fd, zzip_off_t filesize,
  * to pointer types but we do need only the lower bits in this implementation,
  * so we can just cast the value to a long value.
  */
-_zzip_inline char* __zzip_aligned4(char* p)
+_zzip_inline static char* __zzip_aligned4(char* p)
 {
-#define aligned4   __zzip_aligned4
     p += ((intptr_t)p)&1;            /* warnings about truncation of a "pointer" */
     p += ((intptr_t)p)&2;            /* to a "long int" may be safely ignored :) */
     return p;
@@ -467,7 +466,7 @@ __zzip_parse_root_directory(int fd,
         p_reclen = &hdr->d_reclen;
 
         {   register char* p = (char*) hdr;
-            register char* q = aligned4 (p + sizeof(*hdr) + u_namlen + 1);
+            register char* q = __zzip_aligned4(p + sizeof(*hdr) + u_namlen + 1);
             *p_reclen = (uint16_t)(q - p);
             hdr = (struct zzip_dir_hdr*) q;
         }

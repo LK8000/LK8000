@@ -647,7 +647,7 @@ endif
 CPPFLAGS += -DPOCO_STATIC
 
 CXXFLAGS	:= -std=gnu++0x $(OPTIMIZE) $(PROFILE)
-CFLAGS		:= -std=gnu89 $(OPTIMIZE) $(PROFILE)
+CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration
 LDLIBS :=
