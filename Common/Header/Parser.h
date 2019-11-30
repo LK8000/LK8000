@@ -10,52 +10,9 @@
 #include "lkgpsapi.h"
 #endif
 
+#include "NMEA/Info.h"
+
 struct DeviceDescriptor_t;
-
-typedef struct _FLARM_TRAFFIC
-{
-  double Latitude;
-  double Longitude;
-  double TrackBearing;
-  double Speed;
-  double Altitude;
-  double TurnRate;
-  double ClimbRate;
-  double RelativeNorth;
-  double RelativeEast;
-  double RelativeAltitude;
-  int ID;
-  TCHAR Name[MAXFLARMNAME+1];
-  TCHAR Cn[MAXFLARMCN+1];
-  unsigned short IDType;
-  unsigned short AlarmLevel;
-  double Time_Fix;
-  unsigned short Type;
-  unsigned short Status; // 100120
-  bool Locked; // 100120
-  // When set true, name has been changed and Cn must be updated
-  bool UpdateNameFlag;
-  double Average30s;
-  // These are calculated values, updated only inside an offline copy
-  double Distance;
-  double Bearing;
-  double AltArriv;
-  double GR;
-  double EIAS;
-} FLARM_TRAFFIC;
-
-//
-// FLARM TRACES
-//
-typedef struct
-{
-        double fLat;
-        double fLon;
-        double fAlt;
-//      double fIntegrator;
-        int iColorIdx;
-} FLARM_TRACE;
-
 
 #if USESWITCHES
 typedef struct _SWITCH_INFO
@@ -77,89 +34,6 @@ typedef struct _SWITCH_INFO
 } SWITCH_INFO;
 #endif
 
-struct NMEA_INFO
-{
-
-  double Latitude;
-  double Longitude;
-  double TrackBearing;
-  double Speed;
-  double Altitude; // GPS Altitude
-  //  TCHAR  WaypointID[WAY_POINT_ID_SIZE + 1];
-  //  double WaypointBearing;
-  //  double WaypointDistance;
-  //  double WaypointSpeed; IGNORED NOW
-  double CrossTrackError;
-  double Time;
-  int Hour;
-  int Minute;
-  int Second;
-  int Month;
-  int Day;
-  int Year;
-  bool NAVWarning;
-  double IndicatedAirspeed;
-  double TrueAirspeed;
-  double BaroAltitude;
-  double MacReady;
-  BOOL BaroAltitudeAvailable;
-  BOOL ExternalWindAvailable;
-  double ExternalWindSpeed;
-  double ExternalWindDirection;
-  BOOL NettoVarioAvailable;
-  BOOL AirspeedAvailable;
-
-  unsigned VarioSourceIdx;
-  double Vario;
-
-  double NettoVario;
-  double Ballast;
-  double Bugs;
-  BOOL AccelerationAvailable;
-  double AccelX;
-  double AccelY;
-  double AccelZ;
-  int SatellitesUsed;
-  BOOL TemperatureAvailable;
-  double OutsideAirTemperature;
-  BOOL HumidityAvailable;
-  double RelativeHumidity;
-
-  int	ExtBatt_Bank;
-  double ExtBatt1_Voltage;
-  double ExtBatt2_Voltage;
-
-  unsigned short FLARM_RX;
-  unsigned short FLARM_TX;
-  unsigned short FLARM_GPS;
-  unsigned short FLARM_AlarmLevel;
-  bool FLARM_Available;
-  bool haveRMZfromFlarm;
-  double FLARM_SW_Version;
-  double FLARM_HW_Version;
-  FLARM_TRAFFIC FLARM_Traffic[FLARM_MAX_TRAFFIC];
-  FLARM_TRACE	FLARM_RingBuf[MAX_FLARM_TRACES];
-  bool FLARMTRACE_bBuffFull;
-  int  FLARMTRACE_iLastPtr;
-  FANET_WEATHER FANET_Weather[MAXFANETWEATHER];
-  FANET_NAME FanetName[MAXFANETDEVICES];
-
-  double SupplyBatteryVoltage;
-
-  #if USESWITCHES
-  SWITCH_INFO SwitchState;
-  #endif
-
-  double StallRatio;
-
-  BOOL MagneticHeadingAvailable;
-  double MagneticHeading;
-
-  BOOL GyroscopeAvailable;
-  double Pitch;
-  double Roll;
-
-};
 
 
 GeoPoint GetCurrentPosition(const NMEA_INFO& Info);

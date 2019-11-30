@@ -10,7 +10,6 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "devFlytec.h"
-#include "Parser.h"
 
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);

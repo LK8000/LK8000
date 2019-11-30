@@ -940,10 +940,6 @@ static const double PI = (4*atan(1));
 #define MAPLABELS_END           3       // mark limit
 
 
-//
-// FLARM STUFF
-//
-#define MAX_FLARM_TRACES	5000
 
 //
 // TextInBox and LKDrawWaypoint

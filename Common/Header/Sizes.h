@@ -53,8 +53,6 @@
 
 #define POLARSIZE 3
 
-#define MAXFLAPSNAME 10
-
 #if LKCLIP
 // this value is used also by DrawTrail, to be optimized!
 #define MAXCLIPPOLYGON 5000
@@ -62,8 +60,6 @@
 #define MAXCLIPPOLYGON 5000
 #endif
 
-// Size of array for ias values AverageClimbRate and AverageClimbRateN calculations
-#define MAXAVERAGECLIMBRATESIZE  200
 
 // #define FLARM_MAX_TRAFFIC 15
 #define MAXSATELLITES 12
@@ -113,13 +109,6 @@
 
 // ratio of smoothed bitmap size to pixel grid
 #define OVS 2
-
-// number of radials to do range footprint calculation on
-#ifndef UNDER_CE
-#define NUMTERRAINSWEEPS 40
-#else
-#define NUMTERRAINSWEEPS 20
-#endif
 
 // number of points along final glide to scan for terrain
 #define NUMFINALGLIDETERRAIN 30
