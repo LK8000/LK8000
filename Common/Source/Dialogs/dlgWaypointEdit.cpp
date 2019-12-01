@@ -52,7 +52,9 @@ static void UpdateButtons(WndForm* pForm) {
     } else {
       // LKTOKEN  _@M190_ = "Comment"
       _stprintf(text,TEXT("%s: %.30s"), MsgToken(190), global_wpt->Comment);
+#ifndef UNICODE
       CropIncompleteUTF8(text);
+#endif
     }
     wndComment->SetCaption(text);
   }
