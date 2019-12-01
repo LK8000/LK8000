@@ -16,6 +16,8 @@
 #include <functional>
 #include "resource.h"
 #include "LKStyle.h"
+#include "Util/UTF8.hpp"
+
 
 using namespace std::placeholders;
 
@@ -27,35 +29,32 @@ static WAYPOINT *global_wpt=NULL;
 static void UpdateButtons(WndForm* pForm) {
   TCHAR text[MAX_PATH];
 
-  WndButton* buttonName = ((WndButton *)pForm->FindByName(TEXT("cmdName")));
-  if (buttonName) {
-	if (_tcslen(global_wpt->Name)<=0) {
-		// LKTOKEN  _@M451_ = "Name"
-		_stprintf(text,TEXT("%s: %s"), MsgToken(451),
-		// LKTOKEN  _@M7_ = "(blank)"
-		MsgToken(7));
-	} else {
-		// LKTOKEN  _@M451_ = "Name"
-		_stprintf(text,TEXT("%s: %s"), MsgToken(451),
-		global_wpt->Name);
-	}
-	buttonName->SetCaption(text);
+  WindowControl* wndName = pForm->FindByName(TEXT("cmdName"));
+  if (wndName) {
+    if (_tcslen(global_wpt->Name)<=0) {
+      // LKTOKEN  _@M451_ = "Name"
+      // LKTOKEN  _@M7_ = "(blank)"
+      _stprintf(text,TEXT("%s: %s"), MsgToken(451), MsgToken(7));
+    } else {
+      // LKTOKEN  _@M451_ = "Name"
+      _stprintf(text,TEXT("%s: %s"), MsgToken(451), global_wpt->Name);
+    }
+    wndName->SetCaption(text);
   }
 
 
-  WndButton* buttonComment = ((WndButton *)pForm->FindByName(TEXT("cmdComment")));
-  if (buttonComment) {
-	if ((global_wpt->Comment==NULL) || (_tcslen(global_wpt->Comment)<=0) ) {
-		// LKTOKEN  _@M190_ = "Comment"
-		_stprintf(text,TEXT("%s: %s"), MsgToken(190),
-		// LKTOKEN  _@M7_ = "(blank)"
-		MsgToken(7));
-	} else {
-		// LKTOKEN  _@M190_ = "Comment"
-		_stprintf(text,TEXT("%s: %s"), MsgToken(190),
-		global_wpt->Comment);
-	}
-	buttonComment->SetCaption(text);
+  WindowControl* wndComment = pForm->FindByName(TEXT("cmdComment"));
+  if (wndComment) {
+    if ((!global_wpt->Comment) || (_tcslen(global_wpt->Comment)<=0) ) {
+      // LKTOKEN  _@M190_ = "Comment"
+      // LKTOKEN  _@M7_ = "(blank)"
+      _stprintf(text,TEXT("%s: %s"), MsgToken(190), MsgToken(7));
+    } else {
+      // LKTOKEN  _@M190_ = "Comment"
+      _stprintf(text,TEXT("%s: %.30s"), MsgToken(190), global_wpt->Comment);
+      CropIncompleteUTF8(text);
+    }
+    wndComment->SetCaption(text);
   }
 }
 
