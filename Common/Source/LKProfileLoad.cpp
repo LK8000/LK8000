@@ -16,6 +16,7 @@
 #include "Screen/Init.hpp"
 #include "Util/Clamp.hpp"
 #include "Settings/read.h"
+#include <Tracking/Tracking.h>
 
 extern bool CommandResolution;
 
@@ -275,9 +276,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryDeclutterMode, DeclutterMode)) return;
 
   if (settings::read(sname, svalue, szRegistryDisableAutoLogger, DisableAutoLogger)) return;
-  if (settings::read(sname, svalue, szRegistryLiveTrackerInterval, LiveTrackerInterval)) return;
-  if (settings::read(sname, svalue, szRegistryLiveTrackerRadar_config, LiveTrackerRadar_config)) return;
-  if (settings::read(sname, svalue, szRegistryLiveTrackerStart_config, LiveTrackerStart_config)) return;
   if (settings::read(sname, svalue, szRegistryDisplayText, DisplayTextType)) return;
   if (settings::read(sname, svalue, szRegistryDisplayUpValue, DisplayOrientation_Config)) return;
   if (settings::read(sname, svalue, szRegistryDistanceUnitsValue, DistanceUnit_Config)) return;
@@ -407,10 +405,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryTskOptimizeRoute, TskOptimizeRoute_Config)) return;
   if (settings::read(sname, svalue, szRegistryGliderSymbol, GliderSymbol)) return;
   if (settings::read(sname, svalue, szRegistryPilotName, PilotName_Config)) return;
-  if (settings::read(sname, svalue, szRegistryLiveTrackersrv, LiveTrackersrv_Config)) return;
-  if (settings::read(sname, svalue, szRegistryLiveTrackerport, LiveTrackerport_Config)) return;
-  if (settings::read(sname, svalue, szRegistryLiveTrackerusr, LiveTrackerusr_Config)) return;
-  if (settings::read(sname, svalue, szRegistryLiveTrackerpwd, LiveTrackerpwd_Config)) return;
   if (settings::read(sname, svalue, szRegistryPolarFile, szPolarFile)) {
     RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szPolarFile);
     RemoveFilePathPrefix(_T(LKD_POLARS), szPolarFile);
@@ -787,6 +781,10 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   if (settings::read(sname, svalue, szRegistrySoundSwitch, EnableSoundModes)) return;
+
+  if(tracking::LoadSettings(sname,svalue)) {
+    return;
+  }
 
 #if TESTBENCH
   if (!strcmp(sname, "LKVERSION") && !strcmp(sname, "PROFILEVERSION")) {

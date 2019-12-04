@@ -12,6 +12,7 @@
 #include "utils/stringext.h"
 #include "LKProfiles.h"
 #include "Asset.hpp"
+#include "Tracking/Tracking.h"
 #include "Settings/write.h"
 
 extern bool CommandResolution;
@@ -461,13 +462,7 @@ void LKPilotSave(const TCHAR *szFile) {
   }
 
   write_settings(szRegistryPilotName, PilotName_Config);
-  write_settings(szRegistryLiveTrackerInterval, LiveTrackerInterval);
-  write_settings(szRegistryLiveTrackerRadar_config, LiveTrackerRadar_config);
-  write_settings(szRegistryLiveTrackerStart_config, LiveTrackerStart_config);
-  write_settings(szRegistryLiveTrackersrv, LiveTrackersrv_Config);
-  write_settings(szRegistryLiveTrackerport, LiveTrackerport_Config);
-  write_settings(szRegistryLiveTrackerusr, LiveTrackerusr_Config);
-  write_settings(szRegistryLiveTrackerpwd, LiveTrackerpwd_Config);
+  tracking::SaveSettings(write_settings);
 }
 
 #define IO_PARAM_SIZE 160

@@ -530,7 +530,7 @@ bool Startup(const TCHAR* szCmdLine) {
   devInit();
 
   InitialiseIOThread();
-  tracking::Initialize(tracking::skylines_aero);
+  tracking::Initialize(tracking::GetPlatform());
 
   InitFlightDataRecorder();
 

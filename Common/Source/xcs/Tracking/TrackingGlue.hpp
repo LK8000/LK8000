@@ -28,9 +28,9 @@ Copyright_License {
 
 #ifdef HAVE_TRACKING
 
+#include "Tracking/SkyLines/Glue.hpp"
 #include "Tracking/TrackingSettings.hpp"
 #include "Tracking/SkyLines/Handler.hpp"
-#include "Tracking/SkyLines/Glue.hpp"
 #include "Tracking/SkyLines/Data.hpp"
 #include "Time/PeriodClock.hpp"
 #include "Geographic/GeoPoint.h"
@@ -40,10 +40,7 @@ struct DERIVED_INFO;
 
 class TrackingGlue final
 #if defined(HAVE_SKYLINES_TRACKING_HANDLER)
-  :
-#endif
-#ifdef HAVE_SKYLINES_TRACKING_HANDLER
-  private SkyLinesTracking::Handler
+  : private SkyLinesTracking::Handler
 #endif
 {
   PeriodClock clock;
