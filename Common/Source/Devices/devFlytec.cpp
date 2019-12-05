@@ -183,62 +183,12 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   // TIME
   // ignoring 00:00.00
   // We need to manage UTC time
-#ifndef OLD_TIME_MODIFY
   static int StartDay=-1;
   if (pGPS->SatellitesUsed>0) {
       NMEAParser::ExtractParameter(String,ctemp,0+offset);
       pGPS->Time = TimeModify(ctemp, pGPS, StartDay);
   }
   // TODO : check if TimeHasAdvanced check is needed (cf. Parser.cpp)
-#else
-  NMEAParser::ExtractParameter(String,ctemp,0+offset);
-  double fixTime = StrToDouble(ctemp,NULL);
-
-  static  int day_difference=0, previous_months_day_difference=0;
-  static int startday=-1;
-
-  if (fixTime>0 && pGPS->SatellitesUsed>0) {
-	double hours, mins,secs;
-	hours = fixTime / 10000;
-	pGPS->Hour = (int)hours;
-	mins = fixTime / 100;
-	mins = mins - (pGPS->Hour*100);
-	pGPS->Minute = (int)mins;
-	secs = fixTime - (pGPS->Hour*10000) - (pGPS->Minute*100);
-	pGPS->Second = (int)secs;
-
-        fixTime = secs + (pGPS->Minute*60) + (pGPS->Hour*3600);
-
-        if ((startday== -1) && (pGPS->Day != 0)) {
-	   if (offset)
-              StartupStore(_T(". FLYSEN First GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
-	   else
-              StartupStore(_T(". FLYSEN No Date, using PNA GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
-           startday = pGPS->Day;
-           day_difference=0;
-           previous_months_day_difference=0;
-        }
-        if (startday != -1) {
-           if (pGPS->Day < startday) {
-              // detect change of month (e.g. day=1, startday=26)
-              previous_months_day_difference=day_difference+1;
-              day_difference=0;
-              startday = pGPS->Day;
-              StartupStore(_T(". FLYSEN Change GPS DATE to NEW MONTH: %d-%d-%d  (%d days running)%s"),
-              pGPS->Year, pGPS->Month, pGPS->Day,previous_months_day_difference,NEWLINE);
-           }
-           if ( (pGPS->Day-startday)!=day_difference) {
-              StartupStore(_T(". FLYSEN Change GPS DATE: %d-%d-%d%s"), pGPS->Year, pGPS->Month, pGPS->Day,NEWLINE);
-           }
-
-           day_difference = pGPS->Day-startday;
-           if ((day_difference+previous_months_day_difference)>0) {
-              fixTime += (day_difference+previous_months_day_difference) * 86400;
-           }
-        }
-	pGPS->Time = fixTime;
-  }
-#endif
 
   // HPA from the pressure sensor
   //   NMEAParser::ExtractParameter(String,ctemp,10+offset);

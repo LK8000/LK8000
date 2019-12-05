@@ -97,8 +97,6 @@
 
 #define DEVICE_SERIAL          // switch for external Hardware/Firmware Revision informations
 
-//#define OLD_TIME_MODIFY // retore old TimeModify(...) Funtion
-
 // Feedback is giving acoustic sound when long click has triggered the multiselection.
 // It is introducing a TIMER in event processed inside MapWndProc.
 //#define LONGCLICK_FEEDBACK
