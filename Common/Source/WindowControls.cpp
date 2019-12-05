@@ -963,7 +963,7 @@ const TCHAR *DataFieldFloat::GetAsDisplayString(void) {
 }
 
 void DataFieldFloat::Set(double Value){
-  mValue = Value;
+  mValue = Clamp(Value, mMin, mMax);
 }
 
 double DataFieldFloat::SetMin(double Value){
@@ -1001,10 +1001,7 @@ int DataFieldFloat::SetAsInteger(int Value){
 
 double DataFieldFloat::SetAsFloat(double Value){
   double res = mValue;
-  if (Value < mMin)
-    Value = mMin;
-  if (Value > mMax)
-    Value = mMax;
+  Value = Clamp(Value, mMin, mMax);
   if (res != Value){
     mValue = Value;
     if (!GetDetachGUI()) (mOnDataAccess)(this, daChange);
