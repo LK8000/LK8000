@@ -4713,12 +4713,6 @@ int ival;
       snailchanged=false;
   }
 
-#if (WINDOWSPC>0)
-  if (COMPORTCHANGED) {
-    requirerestart = true;
-  }
-#endif
-
   InitActiveGate();
 
     if (requirerestart) {
