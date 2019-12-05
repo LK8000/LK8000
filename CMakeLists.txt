@@ -622,6 +622,9 @@ add_library( LK8000 SHARED
 
     Common/Source/Comm/Obex/CObexPush.cpp
 
+	Common/Source/Comm/GpsWeekNumberFix.h
+	Common/Source/Comm/GpsWeekNumberFix.cpp
+
     Common/Source/Devices/devBase.cpp
     Common/Source/Devices/devBorgeltB50.cpp
     Common/Source/Devices/devCAI302.cpp

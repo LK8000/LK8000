@@ -11,6 +11,8 @@
 #include "Baro.h"
 #include "Logger.h"
 #include "Geoid.h"
+#include "GpsWeekNumberFix.h"
+
 #if defined(PNA) && defined(UNDER_CE)
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
@@ -493,10 +495,6 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 } // END VTG
 
-
-
-
-
 BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 9) {
@@ -504,9 +502,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
     // max index used is 8...
     return FALSE;
   }
-  
-  TCHAR *Stop;
-  static bool logbaddate=true;
+
   double speed=0;
 
   gpsValid = !NAVWarn(params[1][0]);
@@ -579,49 +575,16 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	dateValid = true;
 
 	// Even with no valid position, we let RMC set the time and date if valid
-	long gy, gm, gd;
-	gy = _tcstol(&params[8][4], &Stop, 10) + 2000;   
-	params[8][4] = '\0';
-	gm = _tcstol(&params[8][2], &Stop, 10); 
-	params[8][2] = '\0';
-	gd = _tcstol(&params[8][0], &Stop, 10); 
+	parse_rmc_date(params[8], pGPS->Year, pGPS->Month, pGPS->Day);
 
-	// SeeYou PC is sending NMEA sentences with RMC date 2072-02-27
-	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) { 
-		pGPS->Year = gy;
-		pGPS->Month = gm;
-		pGPS->Day = gd;
-
-force_advance:
-		RMCtime = StrToDouble(params[0],NULL);
-		double ThisTime = TimeModify(params[0], pGPS, StartDay);
-		// RMC time has priority on GGA and GLL etc. so if we have it we use it at once
-		if (!TimeHasAdvanced(ThisTime, pGPS)) {
-			#if DEBUGSEQ
-			StartupStore(_T("..... RMC time not advanced, skipping \n")); // 31C
-			#endif
-			return FALSE;
-		}
-			
-	}  else {
-		if (DevIsCondor) {
-			#if DEBUGSEQ
-			StartupStore(_T(".. Condor not sending valid date, using 1.1.2012%s"),NEWLINE);
-			#endif
-			gy=2012; gm=1; gd=1;
-			goto force_advance;
-		}
-
-		if (gpsValid && logbaddate) { // 091115
-			StartupStore(_T("------ NMEAParser:RMC Receiving an invalid or null DATE from GPS%s"),NEWLINE);
-			StartupStore(_T("------ NMEAParser: Date received is y=%ld m=%ld d=%ld%s"),gy,gm,gd,NEWLINE); // 100422
-			StartupStore(_T("------ This message will NOT be repeated. %s%s"),WhatTimeIsIt(),NEWLINE);
-			DoStatusMessage(MsgToken(875));
-			logbaddate=false;
-		}
-		gy=2012; gm=2; gd=30;	// an impossible date!
-		goto force_advance;
-		 
+	RMCtime = StrToDouble(params[0],NULL);
+	double ThisTime = TimeModify(params[0], pGPS, StartDay);
+	// RMC time has priority on GGA and GLL etc. so if we have it we use it at once
+	if (!TimeHasAdvanced(ThisTime, pGPS)) {
+#if DEBUGSEQ
+		StartupStore(_T("..... RMC time not advanced, skipping \n")); // 31C
+#endif
+		return FALSE;
 	}
 
   if (gpsValid) { 
