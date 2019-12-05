@@ -32,6 +32,7 @@ Copyright_License {
 #include "Compiler.h"
 #include "Thread/Mutex.hpp"
 #include "Baro.h"
+#include "ComCheck.h"
 
 
 
@@ -209,67 +210,6 @@ Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj,
   }
 }
 
-extern "C"
-gcc_visibility_default
-JNIEXPORT void JNICALL
-Java_org_LK8000_InternalGPS_setLocation(JNIEnv *env, jobject obj,
-                                        jlong time, jint n_satellites,
-                                        jdouble longitude, jdouble latitude,
-                                        jboolean hasAltitude, jdouble altitude,
-                                        jboolean hasBearing, jdouble bearing,
-                                        jboolean hasSpeed, jdouble ground_speed,
-                                        jboolean hasAccuracy, jdouble accuracy,
-                                        jboolean hasAcceleration, jdouble acceleration)
-{
-  unsigned index = getDeviceIndex(env, obj);
-
-  PDeviceDescriptor_t pdev = devX(index);
-  if(pdev) {
-    pdev->nmeaParser.connected = true;
-    pdev->HB = LKHearthBeats;
-  }
-  if(pdev && pdev->nmeaParser.activeGPS) {
-
-    const time_t utcTime = time/1000;
-    struct tm tm_temp = {0};
-    struct tm* utc = gmtime_r(&utcTime, &tm_temp);
-
-    GPS_INFO.Time = utc->tm_hour * 3600 + utc->tm_min * 60 + utc->tm_sec;
-    GPS_INFO.Year = utc->tm_year + 1900;
-
-    GPS_INFO.Month = utc->tm_mon + 1;
-    GPS_INFO.Day = utc->tm_mday;
-    GPS_INFO.Hour = utc->tm_hour;
-    GPS_INFO.Minute = utc->tm_min;
-    GPS_INFO.Second = utc->tm_sec;
-
-    static int startday = -1;
-    GPS_INFO.Time = TimeModify(&GPS_INFO, startday) + unsigned(time % 1000) / 1000.;
-
-
-
-    GPS_INFO.Latitude = latitude;
-    GPS_INFO.Longitude = longitude;
-    GPS_INFO.SatellitesUsed = (n_satellites > 0) ? n_satellites : -1;
-
-    if (hasAltitude) {
-      GPS_INFO.Altitude = altitude;
-      if (UseGeoidSeparation) {
-        double GeoidSeparation = LookupGeoidSeparation(GPS_INFO.Latitude, GPS_INFO.Longitude);
-        GPS_INFO.Altitude -= GeoidSeparation;
-      }
-
-    }
-    if (hasBearing) {
-      GPS_INFO.TrackBearing = bearing;
-    }
-    if(hasSpeed) {
-      GPS_INFO.Speed = ground_speed;
-    }
-    TriggerGPSUpdate();
-  }
-}
-
 // Implementations of the various C++ functions called by NonGPSSensors.java.
 
 extern "C"
@@ -382,4 +322,28 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
 
     UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100));
   }
+}
+
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_LK8000_InternalGPS_parseNMEA(JNIEnv *env, jobject instance, jstring jnmea) {
+  const char* c_nmea = env->GetStringUTFChars(jnmea, 0);
+  int index = getDeviceIndex(env, instance);
+
+  if (ComCheck_ActivePort >= 0 && index == ComCheck_ActivePort) {
+    for( auto it = c_nmea; (*it); ++it) {
+      ComCheck_AddChar(*it);
+    }
+  }
+
+  char* nmea = strdup(c_nmea);
+
+  LockFlightData();
+  devParseNMEA(index, nmea, &GPS_INFO);
+  UnlockFlightData();
+
+  free(nmea);
+
+  env->ReleaseStringUTFChars(jnmea, c_nmea);
 }
