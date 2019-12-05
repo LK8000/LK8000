@@ -1107,12 +1107,7 @@ const TCHAR *DataFieldString::GetAsString(void){
 }
 
 bool DataFieldString::CreateKeyboard(void){
-	TCHAR szText[EDITSTRINGSIZE];
-	_tcscpy(szText, GetAsString());
-	dlgTextEntryShowModal(szText,EDITSTRINGSIZE, false);
-
-    this->Set(szText);
-
+	dlgTextEntryShowModal(mValue,array_size(mValue), false);
 	return true;
 }
 
