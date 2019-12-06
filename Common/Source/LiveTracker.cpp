@@ -1491,7 +1491,6 @@ static int GetUserIDFromServer2() {
 
 static bool SendEndOfTrackPacket2(unsigned int *packet_id) {
 	char rxbuf[32];
-	int rxlen;
 
 	std::ostringstream stringStream;
 	stringStream << "/api/t/lt/trackEnd/";
@@ -1501,14 +1500,7 @@ static bool SendEndOfTrackPacket2(unsigned int *packet_id) {
 	stringStream << "0/0";
 
 	std::string command = stringStream.str();
-
-	char txbuf[500]; // = new char[command.length() + 1];
-
-	sprintf(txbuf, "%s", command.c_str());
-
-	rxlen = DoTransactionToServer("t2.livetrack24.com", 80, txbuf, rxbuf,
-			sizeof(rxbuf));
-
+	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, command.c_str(), rxbuf, sizeof(rxbuf));
 	if (rxlen > 0) {
 		rxbuf[rxlen] = 0;
 
