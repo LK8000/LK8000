@@ -1590,24 +1590,31 @@ static std::string DeltaRLE(std::vector<int> data) {
 static bool SendGPSPointPacket2(unsigned int *packet_id) {
 
 	char rxbuf[32];
-	int nPoints = 0;
 
-	if (1) {
-		ScopeLock guard(_t_mutex);
-		nPoints = _t_points.size();
-		if (nPoints == 0)
-			return false;
-	}
-
+	unsigned long _last_unix_timestamp = 0;
 	std::vector<int> TimeList, LatList, LonList, AltList, SOGlist, COGlist;
 
-	for (int i = 0; i < nPoints; i++) {
-		TimeList.push_back((_t_points[i].unix_timestamp));
-		LatList.push_back((int) std::floor((_t_points[i].latitude * 60000.)));
-		LonList.push_back((int) std::floor((_t_points[i].longitude * 60000.)));
-		AltList.push_back((int) _t_points[i].alt);
-		SOGlist.push_back((int) _t_points[i].ground_speed * 3.6 ) ;
-		COGlist.push_back((int) _t_points[i].course_over_ground);
+	{
+		ScopeLock guard(_t_mutex);
+
+		if(_t_points.empty()) {
+			return false;
+		}
+
+		// save last available point time
+		//  used to remove successfully sent point a the end.
+		//  we can't use point count because queue size is limited
+		//  and some points can be removed by insert.
+		_last_unix_timestamp = _t_points.back().unix_timestamp;
+
+		for(const auto& point : _t_points) {
+			TimeList.emplace_back(point.unix_timestamp);
+			LatList.emplace_back(std::floor(point.latitude * 60000.));
+			LonList.emplace_back(std::floor(point.longitude * 60000.));
+			AltList.emplace_back(point.alt);
+			SOGlist.emplace_back(point.ground_speed * 3.6 ) ;
+			COGlist.emplace_back(point.course_over_ground);
+		}
 	}
 
 	std::ostringstream stringStream;
@@ -1641,17 +1648,19 @@ static bool SendGPSPointPacket2(unsigned int *packet_id) {
 			strings.push_back(s);
 		}
 
-		if (strings.size() < 1 || strings[0] != "0;OK")
+		if (strings.size() < 1 || strings[0] != "0;OK") {
 			return false;
+		}
 
-		if (1) {
+		{
 			ScopeLock guard(_t_mutex);
-
-			for (int i = 0; i < nPoints - 1; i++) {
+			// all points older than "_last_unix_timestamp" was succesfully sent.
+			//   -> remove them from queue.
+			while(!_t_points.empty() && _t_points.front().unix_timestamp <= _last_unix_timestamp) {
 				_t_points.pop_front();
 			}
-			(*packet_id)++;
 		}
+		(*packet_id)++;
 #ifdef LT_DEBUG
 		StartupStore(TEXT(".Livetrack24 TRACKER sent %d points %s"), nPoints,
 				NEWLINE);
