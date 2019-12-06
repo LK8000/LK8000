@@ -275,7 +275,7 @@ void Init_Fonts_1(void)
     propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,4,2,Tahoma"), &logfontMapScaleFont);
   }
   else if ( ScreenSize==(ScreenSize_t)ss480x234 ||
-       (ScreenSize==0 && ScreenLandscape && ScreenGeometry==SCREEN_GEOMETRY_21) )
+       (ScreenSize==0 && ScreenGeometry==SCREEN_GEOMETRY_21) )
   { // e.g. Messada 2440
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontCDIWindowLogFont);
@@ -450,7 +450,7 @@ void Init_Fonts_1(void)
 	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowLogFont);
 	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointFont);
 	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWaypointBoldFont);
-	    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowBoldLogFont);
+      propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), &logfontMapWindowBoldLogFont);
     }
   }
 
