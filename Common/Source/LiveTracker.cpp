@@ -340,10 +340,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 //	if (!Calculated->Flying)
 //		return;  // Do not feed if not necessary
 
-	livetracker_point_t newpoint;
 	static int logtime = 0;
-
-	ScopeLock guard(_t_mutex);
 
 	//Check if sending needed (time interval)
 	if (Basic.Time >= logtime) {
@@ -352,12 +349,6 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 			logtime -= 86400;
 	} else
 		return;
-
-	// Half hour FIFO must be enough
-	if (_t_points.size() > (unsigned int) (1800 / LiveTrackerInterval)) {
-		// points in queue are full, drop oldest point
-		_t_points.pop_front();
-	}
 
 	struct tm t;
 	time_t t_of_day;
@@ -370,10 +361,14 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	t.tm_isdst = 0; // Is DST on? 1 = yes, 0 = no, -1 = unknown
 	t_of_day = mkgmtime(&t);
 
+	livetracker_point_t newpoint;
+
 	newpoint.unix_timestamp = t_of_day;
-	newpoint.flying = true;
-	if(LiveTrackerStart_config == 0)
-	  newpoint.flying = Calculated.Flying;
+	if(LiveTrackerStart_config == 0) {
+		newpoint.flying = Calculated.Flying;
+	} else {
+		newpoint.flying = true;
+	}
 	newpoint.latitude = Basic.Latitude;
 	newpoint.longitude = Basic.Longitude;
 
@@ -386,7 +381,15 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	newpoint.ground_speed = Basic.Speed;
 	newpoint.course_over_ground = Calculated.Heading;
 
-	_t_points.push_back(newpoint);
+	{
+		ScopeLock guard(_t_mutex);
+		// Half hour FIFO must be enough
+		if (_t_points.size() > static_cast<size_t>(1800 / LiveTrackerInterval)) {
+			// points in queue are full, drop oldest point
+			_t_points.pop_front();
+		}
+		_t_points.emplace_back(newpoint);
+	}
 	NewDataEvent.set();
 }
 
