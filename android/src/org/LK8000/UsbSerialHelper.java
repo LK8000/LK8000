@@ -105,7 +105,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
             // we only support known devices to avoid ghost port problem
             if ( ( device.getVendorId() == 5840 && device.getProductId() ==  2985 ) ||      // GPSBip
                  ( device.getVendorId() == 1027 && device.getProductId() == 24597 ) ||      // Digifly AIR
-                 ( device.getVendorId() == ‭1155‬ && device.getProductId() == ‭22336‬ ) )  {    // SoftRF Dongle
+                 ( device.getVendorId() == 1155 && device.getProductId() == 22336 )) {    // SoftRF Dongle
                 Log.v(TAG,"UsbDevice Found : " + device);
                 _AvailableDevices.put(device.getDeviceName(), device);
             }
