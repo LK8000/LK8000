@@ -1144,6 +1144,7 @@ COMMS	:=\
 	$(CMM)/UpdateQNH.cpp \
 	$(CMM)/UtilsParser.cpp \
 	$(CMM)/device.cpp \
+	$(CMM)/GpsWeekNumberFix.cpp \
 	$(CMM)/Bluetooth/BtHandler.cpp \
 	$(CMM)/Bluetooth/BtHandlerWince.cpp \
 	$(CMM)/Bluetooth/BthPort.cpp \

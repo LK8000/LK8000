@@ -1,0 +1,109 @@
+/******************************************************************************
+ *
+ * Copyright (C) u-blox AG
+ * u-blox AG, Thalwil, Switzerland
+ *
+ * All rights reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose without fee is hereby granted, provided that this entire notice is
+ * included in all copies of any software which is or includes a copy or
+ * modification of this software and in all copies of the supporting
+ * documentation for such software.
+ *
+ * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTY. IN PARTICULAR, NEITHER THE AUTHOR NOR U-BLOX MAKES ANY
+ * REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY OF
+ * THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+ *
+ *****************************************************************************/
+
+#include "GpsWeekNumberFix.h"
+#include <cassert>
+
+/** 
+ * GPS week number roll-over workaround
+ * Application Note : UBX-19016936 - R01 - 16-Jul-2019
+ * https://www.u-blox.com/sites/default/files/GPS-WeekNumber-Rollover-Workaround_AppNote_%28UBX-19016936%29.pdf
+ */
+
+
+/**
+ * known day_of_year for each month:
+ * Major index 0 is for non-leap years, and 1 is for leap years
+ * Minor index is for month number 1 .. 12, 0 at index 0 is number of days
+ * before January
+ */
+static constexpr int32_t month_days[2][13] = {
+    {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365},
+    {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366}};
+
+/**
+ * Count the days since start of 1980
+ * Counts year * 356 days + leap days + month lengths + days in month
+ * The leap days counting needs the "+ 1" because GPS year 0 (i.e. 1980) was a leap year
+ */
+static int32_t day_number_1980(int32_t year, int32_t month, int32_t day) {
+  int32_t gps_years = year - 1980;
+  int32_t leap_year = (gps_years % 4 == 0) ? 1 : 0;
+  int32_t day_of_year = month_days[leap_year][month - 1] + day;
+  if (gps_years == 0) {
+    return day_of_year;
+  }
+  return gps_years * 365 + ((gps_years - 1) / 4) + 1 + day_of_year;
+}
+
+/**
+ * Convert day_number since start of 1980 to year, month, and day:
+ * - integer division of (day_number - 1) by 365.25 gives year number for 1980 to 2099
+ * - day number - (year number * 365 days + leap days) gives day of year
+ *   The leap days needs "+ 1" because GPS year 0 (i.e. 1980) was a leap year
+ * - (day_of_year - 1) / 31 + 1 gives lower limit for month, but this may be one too low
+ *   the guessed month is adjusted by checking the month lengths
+ * - days in month is left when the month lengths are subtracted
+ * - year must still be adjusted by 1980
+ */
+static void date_1980(int32_t day_number, int32_t &year, int32_t &month,
+               int32_t &day) {
+  int32_t gps_years = ((day_number - 1) * 100) / 36525;
+  int32_t leap_year = (gps_years % 4 == 0) ? 1 : 0;
+  int32_t day_of_year = day_number;
+  if (gps_years > 0) {
+    day_of_year = day_number - (gps_years * 365 + ((gps_years - 1) / 4) + 1);
+  }
+  int32_t month_of_year = (day_of_year - 1) / 31 + 1;
+  if (day_of_year > month_days[leap_year][month_of_year]) {
+    month_of_year++;
+  }
+  day = day_of_year - month_days[leap_year][month_of_year - 1];
+  month = month_of_year;
+  year = 1980 + gps_years;
+}
+
+/**
+ * workaround for the GPS week number roll-over issue
+ */
+static void week_number_rollover_workaround(int32_t &year, int32_t &month, int32_t &day) {
+  // calculate how many days there are since start of 1980
+  int32_t day_num = day_number_1980(year, month, day);
+
+  // adjust date only if it is before previous GPS week number roll-over
+  // which happened 2019-04-06. That is 14341 days after start of 1980
+  if (day_num <= 14341) {
+    day_num = day_num + 1024 * 7;
+  }
+
+  // convert the day number back to integer year, month and day
+  date_1980(day_num, year, month, day);
+}
+
+void parse_rmc_date(const char *gprmc, int32_t &year, int32_t &month, int32_t &day) {
+  day = 10 * (gprmc[0] - '0') + (gprmc[1] - '0');
+  month = 10 * (gprmc[2] - '0') + (gprmc[3] - '0');
+  year = 10 * (gprmc[4] - '0') + (gprmc[5] - '0');
+  assert(year >= 0 && year <= 99 && month >= 1 && month <= 12 && day >= 1 && day <= 31);
+  // NMEA $GPRMC year number has only 2 digits
+  year = year + ((year > 79) ? 1900 : 2000);
+
+  week_number_rollover_workaround(year, month, day);
+}

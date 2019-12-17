@@ -22,32 +22,25 @@
 
 package org.LK8000;
 
-import android.content.BroadcastReceiver;
-import android.content.IntentFilter;
-import android.os.Handler;
-import android.os.Bundle;
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.view.WindowManager;
-import android.view.Surface;
+import android.location.OnNmeaMessageListener;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
-import java.lang.Math;
 
 /**
  * Code to support the internal GPS receiver via #LocationManager.
  */
 public class InternalGPS
-  implements LocationListener, SensorEventListener, Runnable {
+  implements LocationListener, Runnable {
   private static final String TAG = "LK8000";
 
   private static Handler handler;
@@ -65,15 +58,10 @@ public class InternalGPS
   private final int index;
 
   /** the name of the currently selected location provider */
-  String locationProvider = LocationManager.GPS_PROVIDER;
+  private String locationProvider = LocationManager.GPS_PROVIDER;
   //String locationProvider = LocationManager.NETWORK_PROVIDER;
 
   private LocationManager locationManager;
-  private SensorManager sensorManager;
-  private WindowManager windowManager;
-  private Sensor accelerometer;
-  private double acceleration;
-  private boolean hasAcceleration;
   private static boolean queriedLocationSettings = false;
   Context _context;
 
@@ -106,12 +94,6 @@ public class InternalGPS
       Log.e(TAG, "GPS Unavailable", e);
     }
 
-    windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-    accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    acceleration = 1.0;
-    hasAcceleration = false;
-
     update();
   }
 
@@ -119,37 +101,33 @@ public class InternalGPS
    * Called by the #Handler, indirectly by update().  Updates the
    * LocationManager subscription inside the main thread.
    */
+  @SuppressLint("MissingPermission")
   @Override public void run() {
     Log.d(TAG, "Updating GPS subscription...");
     locationManager.removeUpdates(this);
-    sensorManager.unregisterListener(this);
 
     if (locationProvider != null) {
       Log.d(TAG, "Subscribing to GPS updates.");
+
       try {
-        locationManager.requestLocationUpdates(locationProvider,
-                                               1000, 0, this);
+        locationManager.requestLocationUpdates(locationProvider,1000, 0, this);
       } catch (IllegalArgumentException e) {
-        /* this exception was recorded on the Android Market, message
-           was: "provider=gps" - no idea what that means */
+      /* this exception was recorded on the Android Market, message
+         was: "provider=gps" - no idea what that means */
         setConnectedSafe(0);
         return;
       }
 
-      if(accelerometer != null) {
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        hasAcceleration = true;
+      if(Build.VERSION.SDK_INT < 24) {
+        locationManager.addNmeaListener((GpsStatus.NmeaListener) (timestamp, nmea) -> {
+          InternalGPS.this.parseNMEA(nmea);
+        });
+      } else {
+        locationManager.addNmeaListener((OnNmeaMessageListener) (message, timestamp) -> {
+          InternalGPS.this.parseNMEA(message);
+        });
       }
-
-
       setConnectedSafe(1); // waiting for fix
-
-      GPSFixChangeReceiver receiver = new GPSFixChangeReceiver();
-      IntentFilter filter = new IntentFilter("android.location.GPS_ENABLED_CHANGE");
-      filter.addAction("android.location.GPS_FIX_CHANGE");
-      _context.registerReceiver(receiver, filter);
-
-
     } else {
       Log.d(TAG, "Unsubscribing from GPS updates.");
       setConnectedSafe(0); // not connected
@@ -167,7 +145,7 @@ public class InternalGPS
     handler.post(this);
   }
 
-  public void setLocationProvider(String _locationProvider) {
+  private void setLocationProvider(String _locationProvider) {
     locationProvider = _locationProvider;
     update();
   }
@@ -179,26 +157,8 @@ public class InternalGPS
   }
 
   private native void setConnected(int connected);
-  private native void setLocation(long time, int n_satellites,
-                                  double longitude, double latitude,
-                                  boolean hasAltitude, double altitude,
-                                  boolean hasBearing, double bearing,
-                                  boolean hasSpeed, double speed,
-                                  boolean hasAccuracy, double accuracy,
-                                  boolean hasAcceleration, double acceleration);
 
-  private void sendLocation(Location location) {
-    Bundle extras = location.getExtras();
-
-    setLocation(location.getTime(),
-                extras != null ? extras.getInt("satellites", -1) : -1,
-                location.getLongitude(), location.getLatitude(),
-                location.hasAltitude(), location.getAltitude(),
-                location.hasBearing(), location.getBearing(),
-                location.hasSpeed(), location.getSpeed(),
-                location.hasAccuracy(), location.getAccuracy(),
-                hasAcceleration, acceleration);
-  }
+  private native void parseNMEA(String nmea);
 
   private void setConnectedSafe(int connected) {
     if (!safeDestruct.Increment())
@@ -206,26 +166,6 @@ public class InternalGPS
 
     try {
       setConnected(connected);
-    } finally {
-      safeDestruct.Decrement();
-    }
-  }
-
-  /** from LocationListener */
-  @Override public void onLocationChanged(Location newLocation) {
-    if (!safeDestruct.Increment())
-      return;
-
-    try {
-      /* older Android versions, onStatusChanged() doesn't get called
-         when the GPS signal is lost; checking the accuracy is a
-         kludge */
-      if (Build.VERSION.SDK_INT >= 11 || newLocation.getAccuracy() < 100) {
-        setConnected(2); // fix found
-        sendLocation(newLocation);
-      } else
-        /* low accuracy: waiting for new GPS fix */
-        setConnected(1);
     } finally {
       safeDestruct.Decrement();
     }
@@ -241,71 +181,12 @@ public class InternalGPS
     setConnectedSafe(1); // waiting for fix
   }
 
-  /** from LocationListener */
+  /** from LocationListener (unused) */
+  @Override public void onLocationChanged(Location newLocation) {
+  }
+
+  /** from LocationListener (unused) */
   @Override public void onStatusChanged(String provider, int status,
                                         Bundle extras) {
-    switch (status) {
-    case LocationProvider.OUT_OF_SERVICE:
-      setConnectedSafe(0); // not connected
-      break;
-
-    case LocationProvider.TEMPORARILY_UNAVAILABLE:
-      setConnectedSafe(1); // waiting for fix
-      break;
-
-    case LocationProvider.AVAILABLE:
-      break;
-    }
-  }
-
-  /** from sensorEventListener */
-  public void onAccuracyChanged(Sensor sensor, int accuracy) {
-  }
-
-  /** from sensorEventListener */
-  public void onSensorChanged(SensorEvent event) {
-    acceleration = Math.sqrt((double) event.values[0]*event.values[0] +
-                             (double) event.values[1]*event.values[1] +
-                             (double) event.values[2]*event.values[2]) / SensorManager.GRAVITY_EARTH;
-
-    try {
-      switch (windowManager.getDefaultDisplay().getOrientation()) {
-        case Surface.ROTATION_0:   // g = -y
-          acceleration *= Math.signum(event.values[1]);
-          break;
-        case Surface.ROTATION_90:  // g = -x
-          acceleration *= Math.signum(event.values[0]);
-          break;
-        case Surface.ROTATION_180:  // g = y
-          acceleration *= Math.signum(-event.values[1]);
-          break;
-        case Surface.ROTATION_270:  // g = x
-          acceleration *= Math.signum(-event.values[0]);
-          break;
-      }
-      hasAcceleration = true;
-      // TODO: do lowpass filtering to remove vibrations?!?
-
-    } catch (RuntimeException e) {
-      /* this Exception was reported by Android Vitals
-          Device : Samsung Galaxy J7(2016) (j7xelte), 2048MB RAM, Android 7.0
-          throw by android.hardware.display.DisplayManagerGlobal.getDisplayInfo
-         no idea why ...
-       */
-      hasAcceleration = false;
-    }
-  }
-
-  public class GPSFixChangeReceiver extends BroadcastReceiver {
-    // on some devices onStatusChanged is never called. we use a BroadcastReceiver in this case
-    // to receive android.location.GPS_FIX_CHANGE messages
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      Bundle bundle = intent.getExtras();
-      if(bundle != null) {
-        boolean bFix = bundle.getBoolean("enabled");
-        if (!bFix) setConnectedSafe(1); // waiting for fix
-      }
-    }
   }
 }
