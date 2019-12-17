@@ -340,10 +340,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 //	if (!Calculated->Flying)
 //		return;  // Do not feed if not necessary
 
-	livetracker_point_t newpoint;
 	static int logtime = 0;
-
-	ScopeLock guard(_t_mutex);
 
 	//Check if sending needed (time interval)
 	if (Basic.Time >= logtime) {
@@ -352,12 +349,6 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 			logtime -= 86400;
 	} else
 		return;
-
-	// Half hour FIFO must be enough
-	if (_t_points.size() > (unsigned int) (1800 / LiveTrackerInterval)) {
-		// points in queue are full, drop oldest point
-		_t_points.pop_front();
-	}
 
 	struct tm t;
 	time_t t_of_day;
@@ -370,10 +361,14 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	t.tm_isdst = 0; // Is DST on? 1 = yes, 0 = no, -1 = unknown
 	t_of_day = mkgmtime(&t);
 
+	livetracker_point_t newpoint;
+
 	newpoint.unix_timestamp = t_of_day;
-	newpoint.flying = true;
-	if(LiveTrackerStart_config == 0)
-	  newpoint.flying = Calculated.Flying;
+	if(LiveTrackerStart_config == 0) {
+		newpoint.flying = Calculated.Flying;
+	} else {
+		newpoint.flying = true;
+	}
 	newpoint.latitude = Basic.Latitude;
 	newpoint.longitude = Basic.Longitude;
 
@@ -386,7 +381,15 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	newpoint.ground_speed = Basic.Speed;
 	newpoint.course_over_ground = Calculated.Heading;
 
-	_t_points.push_back(newpoint);
+	{
+		ScopeLock guard(_t_mutex);
+		// Half hour FIFO must be enough
+		if (_t_points.size() > static_cast<size_t>(1800 / LiveTrackerInterval)) {
+			// points in queue are full, drop oldest point
+			_t_points.pop_front();
+		}
+		_t_points.emplace_back(newpoint);
+	}
 	NewDataEvent.set();
 }
 
@@ -664,87 +667,83 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	char vehicle_name[64];
 	int rnd;
 
-	if (1) {
-		ScopeLock guard(_t_mutex);
-		// START OF TRACK PACKET
-		// /track.php?leolive=2&sid=42664778&pid=1&client=YourProgramName&v=1&user=yourusername&pass=yourpass&phone=Nokia 2600c&gps=BT GPS&trk1=4&vtype=16388&vname=vehicle name and model
-		// PARAMETERS
-		// leolive=2  // 2 means this is the start of track packet
-		// sid=42664778 // the session ID , see below on sessionID section for more information
-		// pid=1 // the packet numner of this packet, we start with 1 and increase with each packet send either start/end or with GPS data.
-		// client=YourClientName// fixed value use only alphanumerics no spaces, first Letter of words in capitals
-		// user=yourusername // there is no need to have a registered user, the user can input his preferred username on the fly, he will be displayed in black instead of blue if not registered.
-		// pass=yourpass
-		// v=1 // version of your program you can use free text like 1.4.5
-		// trk1=4 // the interval in secs that we will be sending gps points
-		// phone=Nokia 2600c // the phone model as it is acquired from a system  call
-		// &gps=BT GPS // the GPS name , use the string Internal GPS for phones with integrated GPS
-		// vname // the brand + name of the vehicle/glider ie Gradient Golden 2 26
-		//
-		// Values for vtype
-		// 1=>"Paraglider"
-		// 8=>"Glider"
-		// 64=>"Powered flight"
-		// 17100=>"Car"
-		if (_tcslen(LiveTrackerusr_Config) > 0) {
-			TCHAR2ascii(LiveTrackerusr_Config, txbuf, array_size(txbuf));
-		} else {
-			strncpy(txbuf, "guest", array_size(txbuf));
-		}
-		UrlEncode(txbuf, username, array_size(username));
-		if (_tcslen(LiveTrackerpwd_Config) > 0) {
-			TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
-		} else {
-			strncpy(txbuf, "guest", array_size(txbuf));
-		}
-		UrlEncode(txbuf, password, array_size(password));
+	// START OF TRACK PACKET
+	// /track.php?leolive=2&sid=42664778&pid=1&client=YourProgramName&v=1&user=yourusername&pass=yourpass&phone=Nokia 2600c&gps=BT GPS&trk1=4&vtype=16388&vname=vehicle name and model
+	// PARAMETERS
+	// leolive=2  // 2 means this is the start of track packet
+	// sid=42664778 // the session ID , see below on sessionID section for more information
+	// pid=1 // the packet numner of this packet, we start with 1 and increase with each packet send either start/end or with GPS data.
+	// client=YourClientName// fixed value use only alphanumerics no spaces, first Letter of words in capitals
+	// user=yourusername // there is no need to have a registered user, the user can input his preferred username on the fly, he will be displayed in black instead of blue if not registered.
+	// pass=yourpass
+	// v=1 // version of your program you can use free text like 1.4.5
+	// trk1=4 // the interval in secs that we will be sending gps points
+	// phone=Nokia 2600c // the phone model as it is acquired from a system  call
+	// &gps=BT GPS // the GPS name , use the string Internal GPS for phones with integrated GPS
+	// vname // the brand + name of the vehicle/glider ie Gradient Golden 2 26
+	//
+	// Values for vtype
+	// 1=>"Paraglider"
+	// 8=>"Glider"
+	// 64=>"Powered flight"
+	// 17100=>"Car"
+	if (_tcslen(LiveTrackerusr_Config) > 0) {
+		TCHAR2ascii(LiveTrackerusr_Config, txbuf, array_size(txbuf));
+	} else {
+		strncpy(txbuf, "guest", array_size(txbuf));
+	}
+	UrlEncode(txbuf, username, array_size(username));
+	if (_tcslen(LiveTrackerpwd_Config) > 0) {
+		TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
+	} else {
+		strncpy(txbuf, "guest", array_size(txbuf));
+	}
+	UrlEncode(txbuf, password, array_size(password));
 #ifdef PNA
-		TCHAR2ascii(GlobalModelName, txbuf, array_size(txbuf));
-		UrlEncode(txbuf, phone, array_size(phone));
+	TCHAR2ascii(GlobalModelName, txbuf, array_size(txbuf));
+	UrlEncode(txbuf, phone, array_size(phone));
 #else
 #if (WINDOWSPC>0)
-		UrlEncode("PC", phone, array_size(phone));
+	UrlEncode("PC", phone, array_size(phone));
 #else
-		UrlEncode("PDA", phone, array_size(phone));
+	UrlEncode("PDA", phone, array_size(phone));
 #endif
 #endif
-		if (SIMMODE)
-			UrlEncode("SIMULATED", gps, array_size(gps));
-		else
-			UrlEncode("GENERIC", gps, array_size(gps));
-		/*
-		 What is this for?
-		 else {
-		 GetBaroDeviceName(_t_barodevice, wgps);
-		 unicode2ascii(wgps, txbuf, sizeof(txbuf));
-		 UrlEncode(txbuf, gps, sizeof(gps));
-		 }
-		 */
+	if (SIMMODE)
+		UrlEncode("SIMULATED", gps, array_size(gps));
+	else
+		UrlEncode("GENERIC", gps, array_size(gps));
+	/*
+	 What is this for?
+	 else {
+	 GetBaroDeviceName(_t_barodevice, wgps);
+	 unicode2ascii(wgps, txbuf, sizeof(txbuf));
+	 UrlEncode(txbuf, gps, sizeof(gps));
+	 }
+	 */
 
-		TCHAR2ascii(AircraftType_Config, txbuf, array_size(txbuf));
-		UrlEncode(txbuf, vehicle_name, array_size(vehicle_name));
-		vehicle_type = 8;
-		if (AircraftCategory == umParaglider)
-			vehicle_type = 1;
-		if (AircraftCategory == umCar)
-			vehicle_type = 17100;
-		if (AircraftCategory == umGAaircraft)
-			vehicle_type = 64;
+	TCHAR2ascii(AircraftType_Config, txbuf, array_size(txbuf));
+	UrlEncode(txbuf, vehicle_name, array_size(vehicle_name));
+	vehicle_type = 8;
+	if (AircraftCategory == umParaglider)
+		vehicle_type = 1;
+	if (AircraftCategory == umCar)
+		vehicle_type = 17100;
+	if (AircraftCategory == umGAaircraft)
+		vehicle_type = 64;
 
-		*packet_id = 1;
-		rnd = rand();
-		*session_id = ((rnd << 24) & 0x7F000000) | (userid & 0x00ffffff)
-				| 0x80000000;
+	*packet_id = 1;
+	rnd = rand();
+	*session_id = ((rnd << 24) & 0x7F000000) | (userid & 0x00ffffff)
+			| 0x80000000;
 
-		sprintf(txbuf,
-				"/track.php?leolive=2&sid=%u&pid=1&client=%s&v=%s%s&user=%s&pass=%s&phone=%s&gps=%s&trk1=%u&vtype=%u&vname=%s",
-				*session_id,
-				LKFORK, LKVERSION, LKRELEASE, username, password, phone, gps,
-				LiveTrackerInterval, vehicle_type, vehicle_name);
-	}
+	sprintf(txbuf,
+			"/track.php?leolive=2&sid=%u&pid=1&client=%s&v=%s%s&user=%s&pass=%s&phone=%s&gps=%s&trk1=%u&vtype=%u&vname=%s",
+			*session_id,
+			LKFORK, LKVERSION, LKRELEASE, username, password, phone, gps,
+			LiveTrackerInterval, vehicle_type, vehicle_name);
 
-	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf,
-			sizeof(rxbuf));
+	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf, sizeof(rxbuf));
 	if (rxlen == 2 && rxbuf[0] == 'O' && rxbuf[1] == 'K') {
 		(*packet_id)++;
 		return true;
@@ -758,24 +757,20 @@ static bool SendEndOfTrackPacket(unsigned int *packet_id,
 	char rxbuf[32];
 	int rxlen;
 
-	if (1) {
-		ScopeLock guard(_t_mutex);
-		// END OF TRACK PACKET
-		//  /track.php?leolive=3&sid=42664778&pid=453&prid=0
-		// PARAMETERS
-		//  leolive=3  // 3 means this is the end of track packet
-		//  prid=0 // the  status of the user
-		//   0-> "Everything OK"
-		//   1-> "Need retrieve"
-		//   2-> "Need some help, nothing broken"
-		//   3-> "Need help, maybe something broken"
-		//   4-> "HELP, SERIOUS INJURY"
-		sprintf(txbuf, "/track.php?leolive=3&sid=%u&pid=%u&prid=0", *session_id,
-				*packet_id);
-	}
+	// END OF TRACK PACKET
+	//  /track.php?leolive=3&sid=42664778&pid=453&prid=0
+	// PARAMETERS
+	//  leolive=3  // 3 means this is the end of track packet
+	//  prid=0 // the  status of the user
+	//   0-> "Everything OK"
+	//   1-> "Need retrieve"
+	//   2-> "Need some help, nothing broken"
+	//   3-> "Need help, maybe something broken"
+	//   4-> "HELP, SERIOUS INJURY"
+	sprintf(txbuf, "/track.php?leolive=3&sid=%u&pid=%u&prid=0", *session_id,
+			*packet_id);
 
-	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf,
-			sizeof(rxbuf));
+	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf, sizeof(rxbuf));
 	if (rxlen == 2 && rxbuf[0] == 'O' && rxbuf[1] == 'K') {
 		(*packet_id)++;
 		return true;
@@ -789,25 +784,22 @@ static bool SendGPSPointPacket(unsigned int *packet_id,
 	char rxbuf[32];
 	int rxlen;
 
-	if (1) {
-		ScopeLock guard(_t_mutex);
-		// GPS POINT PACKET
-		//  /track.php?leolive=4&sid=42664778&pid=321&lat=22.3&lon=40.2&alt=23&sog=40&cog=160&tm=1241422845
-		// PARAMETERS
-		// leolive=4  // 4 means this is a gps point
-		// lat=22.3 // the latitude in decimal notation, use negative numbers for west
-		// lon=40.2 // lon in decimal, use negative numbers for south
-		// alt=23 // altitude in meters above the MSL (not the geoid if it is possible) , no decimals
-		// sog=40 // speed over ground in km/h  no decimals
-		// cog=160 // course over ground in degrees 0-360, no decimals
-		// tm=1241422845 // the unixt timestamp in GMT of the GPS time, not the phone's time.
-		sprintf(txbuf,
-				"/track.php?leolive=4&sid=%u&pid=%u&lat=%.5f&lon=%.5f&alt=%.0f&sog=%.0f&cog=%.0f&tm=%lu",
-				*session_id, *packet_id, sendpoint->latitude,
-				sendpoint->longitude, sendpoint->alt,
-				sendpoint->ground_speed * 3.6, sendpoint->course_over_ground,
-				sendpoint->unix_timestamp);
-	}
+	// GPS POINT PACKET
+	//  /track.php?leolive=4&sid=42664778&pid=321&lat=22.3&lon=40.2&alt=23&sog=40&cog=160&tm=1241422845
+	// PARAMETERS
+	// leolive=4  // 4 means this is a gps point
+	// lat=22.3 // the latitude in decimal notation, use negative numbers for west
+	// lon=40.2 // lon in decimal, use negative numbers for south
+	// alt=23 // altitude in meters above the MSL (not the geoid if it is possible) , no decimals
+	// sog=40 // speed over ground in km/h  no decimals
+	// cog=160 // course over ground in degrees 0-360, no decimals
+	// tm=1241422845 // the unixt timestamp in GMT of the GPS time, not the phone's time.
+	sprintf(txbuf,
+			"/track.php?leolive=4&sid=%u&pid=%u&lat=%.5f&lon=%.5f&alt=%.0f&sog=%.0f&cog=%.0f&tm=%lu",
+			*session_id, *packet_id, sendpoint->latitude,
+			sendpoint->longitude, sendpoint->alt,
+			sendpoint->ground_speed * 3.6, sendpoint->course_over_ground,
+			sendpoint->unix_timestamp);
 
 	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf,
 			sizeof(rxbuf));
@@ -1499,7 +1491,6 @@ static int GetUserIDFromServer2() {
 
 static bool SendEndOfTrackPacket2(unsigned int *packet_id) {
 	char rxbuf[32];
-	int rxlen;
 
 	std::ostringstream stringStream;
 	stringStream << "/api/t/lt/trackEnd/";
@@ -1509,14 +1500,7 @@ static bool SendEndOfTrackPacket2(unsigned int *packet_id) {
 	stringStream << "0/0";
 
 	std::string command = stringStream.str();
-
-	char txbuf[500]; // = new char[command.length() + 1];
-
-	sprintf(txbuf, "%s", command.c_str());
-
-	rxlen = DoTransactionToServer("t2.livetrack24.com", 80, txbuf, rxbuf,
-			sizeof(rxbuf));
-
+	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, command.c_str(), rxbuf, sizeof(rxbuf));
 	if (rxlen > 0) {
 		rxbuf[rxlen] = 0;
 
@@ -1606,24 +1590,31 @@ static std::string DeltaRLE(std::vector<int> data) {
 static bool SendGPSPointPacket2(unsigned int *packet_id) {
 
 	char rxbuf[32];
-	int nPoints = 0;
 
-	if (1) {
-		ScopeLock guard(_t_mutex);
-		nPoints = _t_points.size();
-		if (nPoints == 0)
-			return false;
-	}
-
+	unsigned long _last_unix_timestamp = 0;
 	std::vector<int> TimeList, LatList, LonList, AltList, SOGlist, COGlist;
 
-	for (int i = 0; i < nPoints; i++) {
-		TimeList.push_back((_t_points[i].unix_timestamp));
-		LatList.push_back((int) std::floor((_t_points[i].latitude * 60000.)));
-		LonList.push_back((int) std::floor((_t_points[i].longitude * 60000.)));
-		AltList.push_back((int) _t_points[i].alt);
-		SOGlist.push_back((int) _t_points[i].ground_speed * 3.6 ) ;
-		COGlist.push_back((int) _t_points[i].course_over_ground);
+	{
+		ScopeLock guard(_t_mutex);
+
+		if(_t_points.empty()) {
+			return false;
+		}
+
+		// save last available point time
+		//  used to remove successfully sent point a the end.
+		//  we can't use point count because queue size is limited
+		//  and some points can be removed by insert.
+		_last_unix_timestamp = _t_points.back().unix_timestamp;
+
+		for(const auto& point : _t_points) {
+			TimeList.emplace_back(point.unix_timestamp);
+			LatList.emplace_back(std::floor(point.latitude * 60000.));
+			LonList.emplace_back(std::floor(point.longitude * 60000.));
+			AltList.emplace_back(point.alt);
+			SOGlist.emplace_back(point.ground_speed * 3.6 ) ;
+			COGlist.emplace_back(point.course_over_ground);
+		}
 	}
 
 	std::ostringstream stringStream;
@@ -1657,17 +1648,19 @@ static bool SendGPSPointPacket2(unsigned int *packet_id) {
 			strings.push_back(s);
 		}
 
-		if (strings.size() < 1 || strings[0] != "0;OK")
+		if (strings.size() < 1 || strings[0] != "0;OK") {
 			return false;
+		}
 
-		if (1) {
+		{
 			ScopeLock guard(_t_mutex);
-
-			for (int i = 0; i < nPoints - 1; i++) {
+			// all points older than "_last_unix_timestamp" was succesfully sent.
+			//   -> remove them from queue.
+			while(!_t_points.empty() && _t_points.front().unix_timestamp <= _last_unix_timestamp) {
 				_t_points.pop_front();
 			}
-			(*packet_id)++;
 		}
+		(*packet_id)++;
 #ifdef LT_DEBUG
 		StartupStore(TEXT(".Livetrack24 TRACKER sent %d points %s"), nPoints,
 				NEWLINE);
