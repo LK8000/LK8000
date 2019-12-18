@@ -10,20 +10,14 @@
  */
 
 #ifndef _THREAD_HANDLE_HPP_
-#define	_THREAD_HANDLE_HPP_
+#define _THREAD_HANDLE_HPP_
 
-#include "Poco/Thread.h"
+#if defined(__GNUC__) && defined(__MINGW32__) && !defined(__STDCPP_THREADS__)
+// c++11 thread is not available with mingw
+#include "Poco/Handle.hpp"
+#else
+#include "stdcpp/Handle.hpp"
+#endif
 
-class ThreadHandle {
-public:
-    ThreadHandle() = default;
-    
-    explicit ThreadHandle(Poco::Thread* thread) : _thread(thread) {}
-    bool IsInside() const { return _thread == Poco::Thread::current(); }
-    
-    static ThreadHandle GetCurrent() { return ThreadHandle(Poco::Thread::current()); }
-private:
-    Poco::Thread* _thread;
-};
+#endif /* _THREAD_HANDLE_HPP_ */
 
-#endif	/* _THREAD_HANDLE_HPP_ */

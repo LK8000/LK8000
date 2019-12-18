@@ -226,7 +226,6 @@ uint8_t EOSRecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
 
   while(EOSbuffered_data.empty()) {
     Sleep(1);
-    Poco::Thread::yield();
 
     if(!EOScond.Wait(EOSmutex, Timeout)) 
     {

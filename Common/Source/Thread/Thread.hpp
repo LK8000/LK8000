@@ -10,59 +10,24 @@
 #ifndef _THREAD_THREAD_HPP_
 #define _THREAD_THREAD_HPP_
 
-#include "Poco/Thread.h"
+#if defined(__GNUC__) && defined(__MINGW32__) && !defined(__STDCPP_THREADS__)
+// c++11 thread is not available with mingw
+#include "Poco/Thread.hpp"
+#else
+#include "stdcpp/Thread.hpp"
+#endif
 #include <functional>
 
-#ifdef __linux__
-#include <linux/prctl.h>  /* Definition of PR_* constants */
-#include <sys/prctl.h>
-#endif
-
-class Thread : protected Poco::Runnable {
-public:
-    explicit Thread(const char* name) : _thread(name) {}
-
-    virtual bool Start() {
-        _thread.start(*this);
-        return _thread.isRunning();
-    }
-
-    void Join() {
-        _thread.join();
-    }
-
-    bool IsInside() const {
-        return (_thread.currentTid() == _thread.tid());
-    }
-
-    bool IsDefined() const {
-        return _thread.isRunning();
-    }
-
-protected:
-    virtual void Run() = 0;
-
-    void run() override {
-#ifdef __linux__
-        prctl(PR_SET_NAME, _thread.name().c_str());
-#endif
-        Run();
-    }
-
-private:
-    Poco::Thread _thread;
-};
-
 class InvokeThread : public Thread {
-public:
-    InvokeThread(const char* name, std::function<void()>&& func) : Thread(name) , _func(std::move(func)) {}
+ public:
+  InvokeThread(const char* name, std::function<void()>&& func) : Thread(name), _func(std::move(func)) {}
 
-    void Run() override {
-        _func();
-    }
+  void Run() override {
+    _func();
+  }
 
-private:
-    std::function<void()> _func;
+ private:
+  std::function<void()> _func;
 };
 
-#endif //_THREAD_THREAD_HPP_
+#endif  //_THREAD_THREAD_HPP_

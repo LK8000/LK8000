@@ -17,6 +17,7 @@
 #include "LiveTrack24APIKey.h"
 #include "utils/stringext.h"
 #include "Poco/Event.h"
+#include "Poco/Thread.h"
 #include "Poco/ThreadTarget.h"
 #include "picojson.h"
 #include "utils/hmac_sha2.h"

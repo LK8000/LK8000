@@ -117,14 +117,6 @@ tstring toHexString(const void* data, size_t size) {
   return szHex;
 }
 
-tstring thread_name() {
-  Poco::Thread* pThread = Poco::Thread::current();
-  if (pThread) {
-    return to_tstring(pThread->getName());
-  }
-  return _T("unknown");
-}
-
 namespace {
 
 bool has_non_printable(const char* bytes, size_t size) {
