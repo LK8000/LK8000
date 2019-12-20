@@ -21,11 +21,12 @@
 #define _COMM_GPSWEEKNUMBERFIX_H_
 
 #include <cstdint>
+#include "tchar.h"
 
 /**
  * Convert NMEA $GPRMC date string to integer components 
  * and apply workaround for the GPS week number roll-over issue
  */
-void parse_rmc_date(const char *gprmc, int32_t &year, int32_t &month, int32_t &day);
+void parse_rmc_date(const TCHAR *gprmc, int32_t &year, int32_t &month, int32_t &day);
 
 #endif // _COMM_GPSWEEKNUMBERFIX_H_

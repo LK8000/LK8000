@@ -97,10 +97,17 @@ static void week_number_rollover_workaround(int32_t &year, int32_t &month, int32
   date_1980(day_num, year, month, day);
 }
 
-void parse_rmc_date(const char *gprmc, int32_t &year, int32_t &month, int32_t &day) {
-  day = 10 * (gprmc[0] - '0') + (gprmc[1] - '0');
-  month = 10 * (gprmc[2] - '0') + (gprmc[3] - '0');
-  year = 10 * (gprmc[4] - '0') + (gprmc[5] - '0');
+/**
+ * convert character ['0' .. '9'] to uint32_t
+ */
+static int32_t to_num(TCHAR c) {
+  return (c - _T('0'));
+}
+
+void parse_rmc_date(const TCHAR *gprmc, int32_t &year, int32_t &month, int32_t &day) {
+  day = 10 * to_num(gprmc[0]) + to_num(gprmc[1]);
+  month = 10 * to_num(gprmc[2]) + to_num(gprmc[3]);
+  year = 10 * to_num(gprmc[4]) + to_num(gprmc[5]);
   assert(year >= 0 && year <= 99 && month >= 1 && month <= 12 && day >= 1 && day <= 31);
   // NMEA $GPRMC year number has only 2 digits
   year = year + ((year > 79) ? 1900 : 2000);
