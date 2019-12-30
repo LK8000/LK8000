@@ -63,3 +63,5 @@ output.map
 /.vs/
 /Common/Test/.vs/
 /Common/Test/out/
+/Common/Utils/language-convert/.vs/
+/Common/Utils/language-convert/out/
