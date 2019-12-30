@@ -11,6 +11,10 @@
 #include "utils/zzip_stream.h"
 #include "picojson.h"
 #include <istream>
+#ifdef ANDROID
+  #include "Android/Main.hpp"
+  #include "Android/NativeView.hpp"
+#endif
 
 namespace json = picojson;
 
@@ -182,9 +186,19 @@ void LKReadLanguageFile() {
 
   LKUnloadMessage();
 
+#ifdef ANDROID
   if (szLanguageCode[0] == _T('\0')) {
-    // use default language
-    // TODO : for android get device language
+    // use device language
+    if(native_view) {
+      const char* default_language = native_view->GetDefaultLanguage();
+      if(default_language) {
+        _tcscpy(szLanguageCode, default_language);
+      }
+    }
+  }
+#endif
+
+  if (szLanguageCode[0] == _T('\0')) {
     _tcscpy(szLanguageCode, _T(LKD_DEFAULT_LANGUAGE));
   }
 
