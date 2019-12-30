@@ -10,11 +10,18 @@ typedef std::wstring tstring;
 
 tstring to_tstring( const char* sz);
 
+tstring utf8_to_tstring(const char* sz);
+
 #else
 typedef std::string tstring;
 
 inline
 tstring to_tstring( const char* sz) {
+  return sz;
+}
+
+inline
+tstring utf8_to_tstring(const char* sz) {
   return sz;
 }
 

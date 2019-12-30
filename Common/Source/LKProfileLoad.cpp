@@ -476,11 +476,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryLKVarioBar,&LKVarioBar);
   PREAD(sname,svalue,szRegistryLKVarioVal,&LKVarioVal);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile, array_size(szLanguageFile));
+  PREAD(sname,svalue,szRegistryLanguageCode,&*szLanguageCode, array_size(szLanguageCode));
   if (matchedstring) {
-    RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szLanguageFile);
-    RemoveFilePathPrefix(_T(LKD_LANGUAGE), szLanguageFile);
-    RemoveFilePathPrefix(_T(LKD_SYS_LANGUAGE), szLanguageFile);
     return;
   }
 

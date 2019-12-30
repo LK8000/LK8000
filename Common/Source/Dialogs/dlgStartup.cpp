@@ -786,10 +786,10 @@ short dlgStartupShowModal(void) {
     if (!CheckLanguageEngMsg()) {
         TCHAR mydir[MAX_PATH];
         TCHAR mes[MAX_PATH];
-        StartupStore(_T("... CHECK LANGUAGE ENG_MSG FAILED!%s"), NEWLINE);
+        StartupStore(_T("... CHECK LANGUAGE en.json FAILED!%s"), NEWLINE);
         LocalPath(mydir, _T(LKD_LANGUAGE));
-        _stprintf(mes, _T("%s/ENG_MSG.TXT"), mydir);
-        MessageBoxX(_T("ENG_MSG.TXT MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), mbOk);
+        _stprintf(mes, _T("%s/en.json"), mydir);
+        MessageBoxX(_T("en.json MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
         BeforeShutdown();

@@ -30,5 +30,15 @@ tstring to_tstring(const char* sz) {
   return tsz;
 //  return static_cast<TCHAR*>(converter);
 }
+
+tstring utf8_to_tstring(const char* sz) {
+  tstring tsz;
+  const UTF8ToWideConverter converter(sz);
+  if(converter.IsValid()) {
+    tsz = converter;
+  }
+  return tsz;
+//  return static_cast<TCHAR*>(converter);
+}
+
 #endif
- 

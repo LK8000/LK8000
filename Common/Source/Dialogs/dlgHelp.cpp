@@ -102,7 +102,7 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText, bool bHelpCap
       wHelpEntry->SetHeight(minHeight);
     }
     if( bHelpCapt)
-      aTextLine.update(Surface, wHelpEntry->GetWidth(), LKgethelptext(HelpText));
+      aTextLine.update(Surface, wHelpEntry->GetWidth(), LKgethelptext(HelpText).c_str());
     else
       aTextLine.update(Surface, wHelpEntry->GetWidth(), HelpText);
     Surface.SelectObject(oldFont);

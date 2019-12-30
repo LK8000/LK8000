@@ -246,7 +246,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryLKTopoZoomCat90,LKTopoZoomCat90*1000);
   rprintf(szRegistryLKVarioBar,LKVarioBar);
   rprintf(szRegistryLKVarioVal,LKVarioVal);
-  rprintf(szRegistryLanguageFile,szLanguageFile);
+  rprintf(szRegistryLanguageCode,szLanguageCode);
   rprintf(szRegistryLatLonUnits, Units::CoordinateFormat);
   rprintf(szRegistryLiftUnitsValue,LiftUnit_Config );
   rprintf(szRegistryLockSettingsInFlight,LockSettingsInFlight);

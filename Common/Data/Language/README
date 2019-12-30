@@ -1,10 +1,7 @@
+- language.json contains list of available language
+- Translation sub directory only contains language json files
 
-CAREFUL! ALL *_MSG.TXT should be UCS-2 big endian : use Notepad++ from Windows to
-change them eventually, after changing and committing new ENG stuff from linux!
-
-
-DO NOT EVEN THINK ABOUT REMOVING OR CHANGING ANYTHING ALREADY EXISTING
-IN HELP, MENU OR MESSAGES, BECAUSE THEY WILL MAKE THE CODE NON-REVERSIBLE.
-WE DO GARBAGE COLLECTION ALL TOGETHER, ONCE IN A YEAR, IF NEEDED.
-
+- never remove unsed token, mark them deprecated by changing there contents
+- never reuse deprecated token for avoid translation mistake.
+- if string is not translated, remove them from translation files.
 

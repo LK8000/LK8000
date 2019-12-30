@@ -172,9 +172,7 @@ task syncAssetLanguages(type: Sync) {
     from "../../Common/Data/Language/Translations",
          "../../Common/Data/Language"
     into "src/main/assets/language"
-    include "*_MSG.TXT",
-            "*_HELP.TXT",
-            "*.LNG"
+    include "*.json"
 }
 task syncAssetPolars(type: Sync) {
     from "../../Common/Distribution/LK8000/_Polars"

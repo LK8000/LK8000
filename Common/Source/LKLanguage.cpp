@@ -1,548 +1,219 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: LKLanguage.cpp,v 1.4 2010/12/20 23:35:24 root Exp root $
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: LKLanguage.cpp,v 1.4 2010/12/20 23:35:24 root Exp root $
  */
 
 #include "externs.h"
-#include "DoInits.h"
 #include "utils/stl_utils.h"
-#include "utils/openzip.h"
-#include "Util/UTF8.hpp"
 #include "utils/zzip_stream.h"
+#include "picojson.h"
+#include <istream>
 
-//#define DEBUG_GETTEXT	1
-#define MAX_HELP	1500	// complete help including several lines, and also for each single line
-				// Remember there is a limit in ReadULine, always careful with large strings
+namespace json = picojson;
 
-#define MAX_MESSAGES		2500 //2250 // Max number of MSG items
-#define MAX_MESSAGE_SIZE	150 // just for setting a limit
+extern void FillDataOptions();
 
-TCHAR LKLangSuffix[4];
+namespace {
 
-bool LKLoadMessages(bool fillup);
+  constexpr size_t MAX_MESSAGES = 2500; // Max number of MSG items
+  TCHAR *LKMessages[MAX_MESSAGES] = {};
 
-extern void FillDataOptions(void);
+  template<typename CharT>
+  unsigned GetTextIndex(const CharT *key, size_t size, char type) {
+    if ((size >= 5) && (key[0] == '_') && (key[1] == '@')
+        && (key[2] == type) && (key[size - 1] == '_')) {
 
-// _@Hnnnn@
-// minimal: _@H1_  maximal: _@H1234_
-// this function is not thread safe ...
-const TCHAR *LKgethelptext(const TCHAR *TextIn) {
-
-  static TCHAR sFile[MAX_PATH];
-  static TCHAR sPath[MAX_PATH];
-  static TCHAR sTmp[MAX_HELP+1];
-  static TCHAR sHelp[MAX_HELP+1];
-
-  bool foundnotfound=false;
-
-  if (TextIn == NULL) return TextIn;
-  short tlen=_tcslen(TextIn);
-  if ( (tlen<5) || (TextIn[0]!='_') || (TextIn[1]!='@') || (TextIn[tlen-1]!='_') ) return TextIn;
-
-    // get the item index number, quick conversion from unicode
-    unsigned short inumber = 0;
-    for (short i = 0; i < tlen - 4; i++) {
-        inumber = (inumber * 10) + ((char)TextIn[3 + i] - '0');
+      // get the item index number
+      unsigned index = 0;
+      for (unsigned int i = 3; i < size - 1; i++) {
+        if (!isdigit(key[i])) {
+          // invalid token
+          return std::numeric_limits<unsigned>::max();
+        }
+        index = (index * 10U) + (key[i] - '0');
+      }
+      return index;
     }
+    return std::numeric_limits<unsigned>::max();
+  }
 
-  // get the item index number, quick conversion from unicode
+  unsigned GetTextIndex(const TCHAR *key, char type) {
+    return (key
+        ? GetTextIndex(key, _tcslen(key), type)
+        : std::numeric_limits<unsigned>::max());
+  }
 
-  #if DEBUG_GETTEXT
-  StartupStore(_T(".... Help item TextIn=<%s> number=%d \n"),TextIn, inumber);
-  #endif
+  unsigned GetTextIndex(const std::string &key, char type) {
+    return GetTextIndex(key.c_str(), key.size(), type);
+  }
 
-  // get the type character
-  char ttype = TextIn[2];
-  TCHAR suffix[20];
+  void LKLoadMessages(const json::value &lang_json) {
+    if(lang_json.is<json::object>()) {
+      for (const auto &obj : lang_json.get<json::object>()) {
+        // get the item index number
+        const unsigned index = GetTextIndex(obj.first, 'M');
+        if (index < array_size(LKMessages) && !LKMessages[index]) {
+          if(obj.second.is<std::string>()) {
+            const tstring value = utf8_to_tstring(obj.second.get<std::string>().c_str());
+            LKMessages[index] = _tcsdup(value.c_str());
+          }
+        }
+      }
+    }
+  }
 
-  if (ttype=='H') {
-	_tcscpy(suffix,_T("_HELP.TXT"));
-	LocalPath(sPath,_T(LKD_LANGUAGE));
-	_stprintf(sFile,_T("%s%s%s%s"),sPath, _T(DIRSEP), LKLangSuffix, suffix);
+  void LoadLanguageList(const TCHAR* szFilePath, std::map<tstring, tstring>& language) {
+    zzip_stream file(szFilePath, "rb");
+    if (file) {
+      std::istream stream(&file);
+      json::value lang_json;
+      std::string error = json::parse(lang_json, stream);
+      if(error.empty()) {
+        if(lang_json.is<json::object>()) {
+          for (const auto &obj : lang_json.get<json::object>()) {
+            if(obj.second.is<std::string>()) {
+              const tstring code = utf8_to_tstring(obj.first.c_str());
+              const tstring name = utf8_to_tstring(obj.second.get<std::string>().c_str());
 
-	// Help File, dynamically handled
-	#if DEBUG_GETTEXT
-	StartupStore(_T("... Open Language file type <%C>: <%s>%s"),ttype,sFile,NEWLINE);
-	#endif
+              /*
+               * would be better to use std::map::emplace() instead of insert() to
+               * avoid intermediate pair construction, but "emplace" does not exist
+               * in gcc 4.6.3 ( used for WinCE target )
+               *
+               *  language.emplace(std::piecewise_construct,
+               *                   std::forward_as_tuple(code),
+               *                   std::forward_as_tuple(name));
+               */
 
-	TCHAR sNum[11];
-	_stprintf(sNum,_T("%u"),inumber);
+              language.insert(std::make_pair(code, name));
+            }
+          }
+        } else {
+          StartupStore(_T("language : %s <%s>"), szFilePath , to_tstring(lang_json.to_str().c_str()).c_str());
+        }
+      } else {
+        StartupStore(_T("language : %s"), to_tstring(error.c_str()).c_str());
+      }
+    }
+  }
 
-    zzip_stream helpFile(sFile, "rb");
-	if (!helpFile) {
-#ifdef LKD_SYS_LANGUAGE
-		SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
-		_stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
-		helpFile.open(sFile, "rb");
-#endif
+  json::value GetLanguageJson(const TCHAR* code) {
+    json::value json_lang;
 
-		if(!helpFile) {
-			StartupStore(_T("... Missing HELP FILE <%s>%s"), sFile, NEWLINE);
-			// we can only have one Help call at a time, from the user interface. Ok static sHelp.
-			_stprintf(sHelp, _T("ERROR, help file not found:\r\n%s\r\nCheck configuration!"),
-					  sFile);
-			return (sHelp);
-		}
-	}
+    TCHAR szFileName[MAX_PATH] = {};
+    TCHAR szFilePath[MAX_PATH] = {};
+    _stprintf(szFileName, _T("%s.json"), code);
+    LocalPath(szFilePath, _T(LKD_LANGUAGE), szFileName);
 
-	// search for beginning of code index   @000
-	bool found=false;
-	while (helpFile.read_line(sTmp)) {
-		unsigned slen=_tcslen(sTmp); // includes cr or lf or both
-		if (slen<3|| slen>8) {
-			#if DEBUG_GETTEXT
-			StartupStore(_T("... skip line <3||>8 : %s\n"),sTmp);
-			#endif
-			continue;
-		}
+    zzip_stream file(szFilePath, "rb");
+    if (!file) {
+      SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), szFileName);
+      file.open(szFilePath, "rb");
+    }
+    if(file) {
+      std::istream stream(&file);
+      std::string error = json::parse(json_lang, stream);
+      if(!error.empty()) {
+        StartupStore(_T("language : %s"), to_tstring(error.c_str()).c_str());
+      }
+    } else {
+      StartupStore(_T("... Missing Language FILE <%s>"), szFilePath);
+    }
+    return json_lang;
+  }
 
-		if (sTmp[0]=='#') {
-			#if DEBUG_GETTEXT
-			StartupStore(_T("... skip remark: %s\n"),sTmp);
-			#endif
-			continue;
-		}
-		if (sTmp[0]=='@') {
-			for (unsigned i=1; i<slen; i++) {
-				if ( sTmp[i] < '0' || sTmp[i] > '9' )  {
-					sTmp[i] = '\0';
-					break;
-				}
-			}
-			// sTmp[slen-1]='\0'; // remove cr
-			if ( _tcscmp(&sTmp[1],sNum) == 0 ) {
-				#if DEBUG_GETTEXT
-				StartupStore(_T("... found correct index: %s\n"),sTmp);
-				#endif
-				found=true;
-				break;
-			} else {
-				// this one should be the very last line in the help file
-				if ( _tcscmp(&sTmp[1],_T("9999")) == 0 ) {
-					foundnotfound=true;
-					#if DEBUG_GETTEXT
-					StartupStore(_T("... found NOTFOUND index: %s\n"),&sTmp[1]);
-					#endif
-					// warning this means that placing 9999 not at the end of HELP file will
-					// make all other messages ignored! always check HELP file to have 9999 at the end
-					break;
-				} else {
-					#if DEBUG_GETTEXT
-					StartupStore(_T("... found wrong index: %s not %s\n"),&sTmp[1],sNum);
-					#endif
-				}
-			}
-		}
-	}
-	if (!found && !foundnotfound) {
-		#if DEBUG_GETTEXT
-		StartupStore(_T("... index <%s> not found in help file <%s>\n"),sNum,sFile);
-		#endif
-		_stprintf(sHelp,_T("ERROR: index <%s> not found in language help file:\r\n%s\r\n"),sNum,sFile);
-		return (sHelp);
-	}
+} // namespace
 
-	// now load the help text for this index
-	_tcscpy(sHelp,_T(""));
-	int hlen=0;
-	while (helpFile.read_line(sTmp)) {
 
-		int slen=_tcslen(sTmp); // including cr or lf or both
-		if (slen==0 || sTmp[0]=='#') continue;
-		if (slen>2 && slen<9) {
-			// is it another index marker?
-			if (sTmp[0]=='@') {
-				if (hlen==0)
-					continue; // multihelp section, continue loading help
-				else
-					break; // another marker, close the help
-			}
-		}
-		if ( sTmp[slen-1]=='\r' ) {
-			sTmp[slen-1]='\0';
-			slen--;
-		}
+// _@Hnnnn_
+// minimal: _@H1_  maximal: _@H999999_
+tstring LKgethelptext(const TCHAR *TextIn) {
+  const unsigned index = GetTextIndex(TextIn, 'H');
+  if (index > 999999) {
+    return TextIn;
+  }
 
-		// add it to the help, if possible
-		if ( (hlen+slen+2) > MAX_HELP) {
-			#if DEBUG_GETTEXT
-			StartupStore(_T("... help too long: truncating line <%s>\n"),sTmp);
-            #endif
-            size_t  freespace = array_size(sHelp) - _tcslen(sHelp) - 1;
-			_tcsncat(sHelp, sTmp, freespace);
-			break;
-		}
+  char sToken[11];
+  sprintf(sToken, "_@H%06u_", index);
 
-		hlen+=slen;
-		#if DEBUG_GETTEXT
-		//StartupStore(_T(".. adding line <%s>\n"),sTmp);
-		#endif
-		_tcscat(sHelp,sTmp);
-		_tcscat(sHelp,_T("\r\n"));
-	}
+  tstring sHelpString;
 
-	return (sHelp);
+  json::value lang_json = GetLanguageJson(szLanguageCode);
+  auto string = lang_json.get(sToken);
+  if(string.is<json::null>()) {
+    // token not found in user language, try system language
+    lang_json = GetLanguageJson(_T(LKD_DEFAULT_LANGUAGE));
+    string = lang_json.get(sToken);
+  }
+  if (string.is<std::string>()) {
+    sHelpString = utf8_to_tstring(string.get<std::string>().c_str());
+  } else {
+    StartupStore(_T(".... Unknown Text token <%s>"), TextIn);
+    sHelpString = TextIn;
+  }
 
-  } // end ttype == H
-
-  StartupStore(_T(".... Unknown Text type <%c> in <%s>%s"),ttype,TextIn,NEWLINE);
-  return TextIn;
-
+  return sHelpString;
 }
 
-
-
-static TCHAR * LKMessages[MAX_MESSAGES+1];
-#ifdef TESTBENCH
-static TCHAR * COPYLKMessages[MAX_MESSAGES+1];
-#endif
-
-//  Tokenized Language support for LK8000
+///  Tokenized Language support for LK8000
+// token must be "_@Mxxxx_" with xxxx a valid number.
+// return TextIn if token is not valid
 const TCHAR *LKGetText(const TCHAR *TextIn) {
-    // quick preliminar checks
-    if (TextIn == NULL) return TextIn;
-    short tlen = _tcslen(TextIn);
-    if ((tlen < 5) || (TextIn[0] != '_') || (TextIn[1] != '@') || (TextIn[2] != 'M') || (TextIn[tlen - 1] != '_')) return TextIn;
-
-    // get the item index number, quick conversion from unicode
-    unsigned short inumber = 0;
-    for (short i = 0; i < tlen - 4; i++) {
-        inumber = (inumber * 10) + ((char)TextIn[3 + i] - '0');
-    }
-
-    if (inumber >= MAX_MESSAGES) return TextIn; // safe check
-    if(LKMessages[inumber]) {
-        return LKMessages[inumber];
-    }
-    return _T("");
+  const unsigned index = GetTextIndex(TextIn, 'M');
+  if (index < array_size(LKMessages) && LKMessages[index]) {
+    return LKMessages[index];
+  }
+  return TextIn;
 }
 
-//
-// Direct token access, with range check, faster than LKGetText of course
-//
-const TCHAR *MsgToken(unsigned inumber) {
-  if (inumber<=MAX_MESSAGES && LKMessages[inumber]) {
-    return LKMessages[inumber];
+/// Direct token access, with range check, faster than LKGetText
+// return empty string if token is not found
+const TCHAR *MsgToken(unsigned index) {
+  if (index < array_size(LKMessages) && LKMessages[index]) {
+    return LKMessages[index];
   }
   return _T("");
 }
 
+void LKReadLanguageFile() {
 
+  LKUnloadMessage();
 
-void LKReadLanguageFile(const TCHAR* szFileName) {
-  static TCHAR oldLang[4];
-
-  if (DoInit[MDI_READLANGUAGEFILE]) {
-	_tcscpy(LKLangSuffix,_T(""));
-	_tcscpy(oldLang,_T("XXX"));
-	DoInit[MDI_READLANGUAGEFILE]=false;
+  if (szLanguageCode[0] == _T('\0')) {
+    // use default language
+    // TODO : for android get device language
+    _tcscpy(szLanguageCode, _T(LKD_DEFAULT_LANGUAGE));
   }
 
-  bool english=false;
-  TCHAR szFile1[MAX_PATH] = _T("\0");
-  _tcscpy(LKLangSuffix,_T(""));
+  LKLoadMessages(GetLanguageJson(szLanguageCode));
 
-
-  _tcscpy(szFile1,szFileName);
-  tryeng:
-  if (_tcslen(szFile1)==0) {
-	_tcscpy(szFile1, _T(LKD_DEFAULT_LANGUAGE));
-	english=true;
+  if (_tcscmp(szLanguageCode, _T(LKD_DEFAULT_LANGUAGE)) != 0) {
+    // fill up with default language
+    LKLoadMessages(GetLanguageJson(_T(LKD_DEFAULT_LANGUAGE)));
   }
 
-  TCHAR szFilePath[MAX_PATH] = _T("\0");
-  _tcscpy(szFilePath,szFile1);
-  zzip_stream langFile(szFilePath, "rt");
-  if(!langFile) {
-	  // failed to open absolute. try LocalPath
-	  LocalPath(szFilePath, _T(LKD_LANGUAGE), szFile1);
-	  langFile.open(szFilePath, "rt");
-  }
-  if(!langFile) {
-	// failed to open lOCAL. try SystemPath
-    SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), szFile1);
-    langFile.open(szFilePath, "rt");
-  }
-
-  if (!langFile) {
-    if (english) {
-      StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
-      // critic point, no default language! BIG PROBLEM here!
-      return;
-    } else {
-      StartupStore(_T("--- NO LANGUAGE FILE FOUND <%s>, retrying with ENGlish!%s"),szFile1,NEWLINE);
-      _tcscpy(szFile1,_T(""));
-      goto tryeng;
-    }
-  }
-
-  bool found=false;
-  TCHAR sTmp[200];
-  TCHAR mylang[30];
-  while (langFile.read_line(sTmp)) {
-	if (_tcslen(sTmp)<3) continue;
-	if ((sTmp[0]=='L')&&(sTmp[1]=='=')) {
-		_tcscpy(mylang,&sTmp[2]);
-
-		for (unsigned short i=0; i<_tcslen(mylang); i++) {
-			if (mylang[i]=='\r' || mylang[i]=='\n') {
-				mylang[i]='\0';
-				break;
-			}
-		}
-		found=true;
-		break;
-	}
-  }
-
-  if (found) {
-	if (_tcslen(mylang)>3) mylang[3]='\0';
-	_tcscpy(LKLangSuffix,mylang);
-  }
-
-  if (_tcscmp(oldLang,LKLangSuffix)!=0) {
-
-	if ( !LKLoadMessages(false) ) {
-		// force reload of english
-		if (_tcscmp(_T("ENG"),LKLangSuffix) == 0 ) {
-			StartupStore(_T("... CRITICAL, no english langauge available!%s"),NEWLINE);
-		} else {
-			StartupStore(_T("... LoadText failed, fallback to english language\n"));
-			_tcscpy(LKLangSuffix,_T("ENG"));
-			LKLoadMessages(false);
-		}
-	} else  {
-		_tcscpy(oldLang,mylang);
-		// Now overload english messages filling gaps in translations
-		// only if current lang is not english of course: no reason to load it twice
-		if (_tcscmp(_T("ENG"),LKLangSuffix) != 0 ) {
-			_tcscpy(LKLangSuffix,_T("ENG"));
-			LKLoadMessages(true);
-			_tcscpy(LKLangSuffix,oldLang);
-		}
-	}
-  }
   FillDataOptions(); // Load infobox list
-  return;
 }
 
-
-/**
- * @brief Load language MSG file into memory
- *
- * @param fillup Switch value:
- *	- false - load from scratch removing anything existing
- *	-  true - load over existing messages, adding only missing items filling up gaps
- *
- * @return @c false if language file problem, in this case english is reloaded from calling function
- */
-bool LKLoadMessages(bool fillup) {
-  TCHAR sFile[MAX_PATH];
-  TCHAR sPath[MAX_PATH];
-  TCHAR suffix[20];
-  #if DEBUG_GETTEXT
-  int maxsize=0;
-  #endif
-
-  static bool doinit=true;
-
-  if (doinit) {
-    std::fill(std::begin(LKMessages), std::end(LKMessages), (TCHAR*)NULL);
-    doinit=false;
-  } else {
-     if (!fillup) {
-        // init data when reloading language files or changing it
-        // but not in fillup mode of course
-        LKUnloadMessage();
-     }
-  }
-
-  LocalPath(sPath,_T(LKD_LANGUAGE));
-  _tcscpy(suffix,_T("_MSG.TXT"));
-  _stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
-
-  zzip_stream stream(sFile, "rt");
-  if (!stream) {
-     #ifdef LKD_SYS_LANGUAGE
-     SystemPath(sPath, _T(LKD_SYS_LANGUAGE));
-     _stprintf(sFile,_T("%s%s%s%s"), sPath, _T(DIRSEP), LKLangSuffix, suffix);
-     stream.open(sFile, "rt");
-     #endif
-     if(!stream) {
-        StartupStore(_T("... LoadText Missing Language File: <%s>%s"), sFile, NEWLINE);
-        return false;
-     }
-  } else {
-     if (fillup)
-        StartupStore(_T(". Language fillup load file: <%s>%s"),sFile,NEWLINE);
-     else
-        StartupStore(_T(". Language load file: <%s>%s"),sFile,NEWLINE);
-  }
-
-  // search for beginning of code index, in the range _@M1_  _@M9999_
-  TCHAR sTmp[300];
-  TCHAR scapt[MAX_MESSAGE_SIZE+1];
-  TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
-
-  bool havewarned=false;
-  while (stream.read_line(sTmp)) {
-     unsigned int slen=_tcslen(sTmp); // includes cr or lf or both
-     if ( (slen<9) || (sTmp[0]!='_') || (sTmp[1]!='@') || (sTmp[2]!='M') ) {
-        #if DEBUG_GETTEXT
-        if(slen>0 && sTmp[0]!='#') {
-           StartupStore(_T(".... MSG_ENG missing _@M line <%s>\n"),sTmp);
-        }
-        #endif
-        continue;
-     }
-
-     // get the item index number, quick conversion from unicode
-     unsigned short inumber = 0;
-     for (unsigned int i = 0; i < slen - 4 && isdigit(sTmp[3 + i]); i++) {
-        inumber = (inumber * 10) + ((char)sTmp[3 + i] - '0');
-     }
-
-     if (inumber >=MAX_MESSAGES) {
-        if (!havewarned) {
-           StartupStore(_T("...... ERROR LOADING NON-COMPATIBLE MSG FILE!%s"),NEWLINE);
-           havewarned=true;
-        }
-        StartupStore(_T("...... MSG token <%d> over limit! <%s>%s"),inumber,sTmp,NEWLINE);
-        continue;
-     }
-
-     int start=0;
-     for (unsigned i=3; i<slen; i++) {
-        if (sTmp[i]=='\"') {
-           start=i;
-           break;
-        }
-     }
-
-     int end=0;
-     if (start==0) {
-        #if DEBUG_GETTEXT
-        StartupStore(_T(".... MSG_ENG no start\n"));
-        #endif
-        continue;
-     }
-     for (unsigned i=start+1; i<slen; i++) {
-        if (sTmp[i]=='\"') {
-           sTmp[i]='\0';
-           end=i;
-           break;
-        }
-     }
-     if (end==0) {
-        #if DEBUG_GETTEXT
-        StartupStore(_T(".... MSG_ENG no end <%s> start=%d\n"),sTmp,start);
-        #endif
-        continue;
-     }
-     int newlen;
-     newlen=_tcslen(&sTmp[start+1]);
-     if (newlen>MAX_MESSAGE_SIZE) {
-        #if DEBUG_GETTEXT
-        StartupStore(_T(".... MSG_ENG caption too big, len=%d\n"),newlen);
-        #endif
-        continue;
-     }
-     if (newlen==0) {
-        #if DEBUG_GETTEXT
-        StartupStore(_T(".... MSG_ENG TOKEN # %d : caption is empty, null text.\n"),inumber);
-        #endif
-        continue;
-     }
-     #if DEBUG_GETTEXT
-     if (newlen>maxsize) maxsize=newlen;
-     #endif
-
-     // transcode special charcaters while loading from file
-     TCHAR tcode;
-     bool donetcode;
-     _tcscpy(scaptraw,&sTmp[start+1]);
-     unsigned j=0;
-     for (unsigned i=0; i<_tcslen(scaptraw); i++) {
-        donetcode=false;
-        if (scaptraw[i] == '\\') {
-           if ( (i+1) <_tcslen(scaptraw)) {
-              switch(scaptraw[i+1]) {
-                 case 'n':
-                    tcode='\n';
-                    i++;
-                    break;
-                 case 'r':
-                    tcode='\r';
-                    i++;
-                    break;
-                 default:
-                    tcode='\\';
-                    break;
-              }
-              scapt[j++]=tcode;
-              donetcode=true;
-           }
-        }
-        if (!donetcode) {
-           scapt[j++]=scaptraw[i];
-        }
-     }
-     scapt[j]='\0';
-
-     if (LKMessages[inumber]) {
-        // only for debugging translations
-        #if TESTBENCH
-        if (!fillup) StartupStore(_T("... INVALID LANGUAGE MESSAGE INDEX <%d> duplicated!\n"),inumber);
-        #endif
-        continue;
-     }
-     #if TESTBENCH
-     #if (WINDOWSPC>0)
-     // CAUTION, on a PNA this would freeze the device if language file is not updated!
-     // StartupStore is locking and unlocking threads at each run!!
-     if (fillup) StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
-     #endif
-     #endif
-
-     #ifndef UNICODE
-     LKASSERT(ValidateUTF8(scapt));
-     #endif
-
-     LKMessages[inumber] = (TCHAR *)malloc((_tcslen(scapt)+1)*sizeof(TCHAR));
-     LKASSERT(LKMessages[inumber]!=NULL);
-     _tcscpy(LKMessages[inumber],scapt);
-
-     #ifdef TESTBENCH
-     for (int i=0; i<MAX_MESSAGES; i++) {
-        COPYLKMessages[i]=LKMessages[i];
-     }
-     #endif
-
-  }
-  return true;
+void LKUnloadMessage() {
+  std::for_each(std::begin(LKMessages), std::end(LKMessages), safe_free());
 }
 
-void LKUnloadMessage(){
+std::map<tstring, tstring> LoadLanguageList() {
 
-  #ifdef TESTBENCH
-  bool have_error=false;
-  for (int i=0; i<MAX_MESSAGES; i++) {
-     if (LKMessages[i] != COPYLKMessages[i]) {
-        StartupStore(_T("***** CRITICAL LKUnloadMessage, unmatched copy[%d]%s"),i,NEWLINE);
-        have_error=true;
-     }
-  }
-  if (have_error) return;
-  #endif
+  std::map<tstring, tstring> language;
+  TCHAR szFilePath[MAX_PATH] = {};
 
-  for (int i=0; i<MAX_MESSAGES; i++) {
-     if (LKMessages[i]) {
-        free(LKMessages[i]);
-     }
-  }
-  std::fill(std::begin(LKMessages), std::end(LKMessages), (TCHAR*)NULL);
+  // user language list
+  LocalPath(szFilePath, _T(LKD_LANGUAGE), _T("language.json"));
+  LoadLanguageList(szFilePath, language);
+
+  // fill up with system language
+  SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), _T("language.json"));
+  LoadLanguageList(szFilePath, language);
+
+  return language;
 }
-
