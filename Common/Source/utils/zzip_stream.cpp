@@ -31,8 +31,6 @@ bool zzip_stream::open(const TCHAR *szFile, const char *mode) {
 
   close(); // close previous opened file.
 
-  _end = _current_char = nullptr;
-  _end_of_file = false;
   _cs = charset::detect;
 
   if (!szFile) {
@@ -48,22 +46,17 @@ bool zzip_stream::open(const TCHAR *szFile, const char *mode) {
     return false;
   }
 
-  read_buffer();
-
-  if (!_end_of_file) {
+  if (traits_type::not_eof(underflow())) {
     // try to detect charset using utf8 BOM
-    size_t read_size = std::distance(_current_char, _end);
+    size_t read_size = std::distance(gptr(), egptr());
     if (read_size > 3) {
-      if (_buffer[0] == (char)0xEF && _buffer[1] == (char)0xBB &&
-          _buffer[2] == (char)0xBF) {
-        // string start with BOM switch charset to utf8
+      if (_buffer[0] == (char)0xEF && _buffer[1] == (char)0xBB && _buffer[2] == (char)0xBF) {
+        // file start with BOM switch charset to utf8
         _cs = charset::utf8;
-        _current_char += 3; // skip BOM
-        if (_current_char == _end) {
-          read_buffer(); // that can happen if we have empty utf8 file with BOM
-        }
+        setg(_buffer+3, _buffer+3, egptr());
       }
     }
+
     if (_cs == charset::detect) {
       _cs = charset::unknown;
     }
@@ -71,28 +64,18 @@ bool zzip_stream::open(const TCHAR *szFile, const char *mode) {
   return true;
 }
 
-void zzip_stream::read_buffer() {
+int zzip_stream::underflow() {
   assert(_fp);
-  assert(_current_char == _end);
-
-  _current_char = _end = _buffer; // reset buffer iterator
+  assert(gptr() == egptr());
 
   // read next chunk
   zzip_ssize_t read_size = zzip_read(_fp, _buffer, array_size(_buffer));
   if (read_size <= 0) {
-    _end_of_file = true; // end of file reached
+    return traits_type::eof();
   } else {
-    _end = _buffer + read_size;
+    setg(_buffer, _buffer, _buffer + read_size);
   }
-}
-
-char zzip_stream::read_char() {
-  assert(_current_char != _end);
-  char c = *(_current_char++);
-  if (_current_char == _end) {
-    read_buffer();
-  }
-  return c;
+  return traits_type::to_int_type(*_buffer);
 }
 
 bool zzip_stream::read_line_raw(char *string, size_t size) {
@@ -101,27 +84,25 @@ bool zzip_stream::read_line_raw(char *string, size_t size) {
     return false;
   }
 
-  if (_end_of_file) {
+  char *out_it = string;
+  const char *out_end = string + size;
+
+  auto ic = sbumpc();
+  if (!traits_type::not_eof(ic)) {
     return false;
   }
 
-  char *out_it = string;
-  const char *out_end = string + size;
-  bool end_of_line = false; // true when line ending or end of file is found
-
-  while (!end_of_line && !_end_of_file) {
-
-    char c = read_char();
+  do {
+    char c = traits_type::to_char_type(ic);
     if (c == '\r') {
       // Unix or Windows line ending
-      if (!_end_of_file && (*_current_char) == '\n') {
+      if (sgetc() == '\n') {
         // Windows line ending
-        read_char();
+        sbumpc();
       }
-      end_of_line = true;
-    } else if (c == '\n') {
-      // Mac line ending
-      end_of_line = true;
+      break;
+    } else if(c == '\n') {
+      break;
     } else {
       *(out_it++) = c;
 
@@ -130,7 +111,9 @@ bool zzip_stream::read_line_raw(char *string, size_t size) {
         return false;
       }
     }
-  }
+    ic = sbumpc();
+
+  } while (traits_type::not_eof(ic));
 
   *(out_it) = '\0';
 
@@ -158,7 +141,7 @@ bool zzip_stream::read_line(char *string, size_t size) {
     Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
     converter.convert(string, strlen(string), utf8String);
     if (utf8String.size() < (size - 1)) {
-      // copy all charaters and append zero terminator.
+      // copy all characters and append zero terminator.
       (*std::copy(utf8String.begin(), utf8String.end(), string)) = '\0';
     } else {
       assert(false); // output string to small
