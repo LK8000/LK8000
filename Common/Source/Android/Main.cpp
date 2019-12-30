@@ -78,7 +78,7 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
                                             jobject _context,
                                             jint width, jint height,
                                             jint xdpi, jint ydpi,
-                                            jint sdk_version, jstring product)
+                                            jint sdk_version, jstring product, jstring language)
 {
   android_api_level = sdk_version;
 
@@ -110,7 +110,7 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
   assert(native_view == nullptr);
   native_view = new NativeView(env, obj, width, height, xdpi, ydpi,
-                               product);
+                               product, language);
 
   event_queue = new EventQueue();
 

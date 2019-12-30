@@ -41,6 +41,7 @@ class NativeView {
   unsigned width, height;
   unsigned xdpi, ydpi;
   char product[20];
+  char default_language[20];
 
   static Java::TrivialClass cls;
   static jfieldID textureNonPowerOfTwo_field;
@@ -85,11 +86,12 @@ public:
 
   NativeView(JNIEnv *_env, jobject _obj, unsigned _width, unsigned _height,
              unsigned _xdpi, unsigned _ydpi,
-             jstring _product)
+             jstring _product, jstring _language)
     :env(_env), obj(env, _obj),
      width(_width), height(_height),
      xdpi(_xdpi), ydpi(_ydpi) {
     Java::String::CopyTo(env, _product, product, sizeof(product));
+    Java::String::CopyTo(env, _language, default_language, sizeof(default_language));
   }
 
 #ifndef NO_SCREEN
@@ -113,6 +115,10 @@ public:
 
   const char *GetProduct() {
     return product;
+  }
+
+  const char *GetDefaultLanguage() {
+    return default_language;
   }
 
   bool initSurface() {

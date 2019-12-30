@@ -3,4 +3,5 @@
   <string name="app_name" translatable="false">LK8000</string>
   <string name="app_name_beta" translatable="false">LK8000-beta</string>
   <string name="app_name_debug" translatable="false">LK8000-debug</string>
+  <string name="default_language_code">en</string>
 </resources>
