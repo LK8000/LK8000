@@ -453,7 +453,7 @@ bool Startup(const TCHAR* szCmdLine) {
   InitLK8000();
   ReadAirfieldFile();
   SetHome(false);
-  LKReadLanguageFile(szLanguageFile);
+  LKReadLanguageFile();
 
   CreateProgressDialog(MsgToken(399));
   CAirspaceManager::Instance().ReadAirspaces();

@@ -260,7 +260,7 @@ bool CheckLanguageDir() {
 
 bool CheckLanguageEngMsg() {
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcfile, _T(LKD_LANGUAGE), _T("ENG_MSG.TXT"));
+  LocalPath(srcfile, _T(LKD_LANGUAGE), _T("en.json"));
   return lk::filesystem::exist(srcfile);
 }
 

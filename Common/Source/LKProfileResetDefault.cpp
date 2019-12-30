@@ -402,7 +402,7 @@ void LKProfileResetDefault() {
   szAdditionalWaypointFile[0] = TEXT('\0');
   _tcscpy(szTerrainFile,_T("DEMO.DEM"));
   _tcscpy(szAirfieldFile,_T("WAYNOTES.txt"));
-  _tcscpy(szLanguageFile,_T(LKD_DEFAULT_LANGUAGE));
+  _tcscpy(szLanguageCode,_T(LKD_DEFAULT_LANGUAGE));
 
   szInputFile[0] = TEXT('\0');
   _tcscpy(szMapFile,_T("DEMO.LKM"));

@@ -175,7 +175,7 @@ extern const char szRegistryLKTopoZoomCat80[];
 extern const char szRegistryLKTopoZoomCat90[];
 extern const char szRegistryLKVarioBar[];
 extern const char szRegistryLKVarioVal[];
-extern const char szRegistryLanguageFile[];
+extern const char szRegistryLanguageCode[];
 extern const char szRegistryLatLonUnits[];
 extern const char szRegistryLiftUnitsValue[];
 extern const char szRegistryLockSettingsInFlight[];
