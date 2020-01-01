@@ -563,6 +563,9 @@ ifeq ($(CONFIG_WIN32),y)
   CE_DEFS +=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
   # UNIX like ressource don't work on CE5.
   WIN32_RESOURCE := y
+
+  AYGSHELL := Common/Distribution/LK8000/aygshell.dll
+
  endif
 
  ifeq ($(WIN32_RESOURCE), y)
@@ -1578,8 +1581,14 @@ distrib : $(OUTPUTS) $(SYSTEM_FILES) $(BITMAP_FILES) $(SOUND_FILES) \
 	
 	$(Q)install -p -m 0755 -d Distrib/$(TARGET)/LK8000/_System/_Bitmaps 
 	$(Q)install -p -m 0755 -d Distrib/$(TARGET)/LK8000/_System/_Sounds
+
 	@$(NQ)echo "  install $(OUTPUTS)"
 	$(Q)install -p -m 0755 $(OUTPUTS) Distrib/$(TARGET)/LK8000
+ifneq ($(AYGSHELL),)	
+	@$(NQ)echo "  install $(AYGSHELL)"
+	$(Q)install -p -m 0644 $(AYGSHELL) Distrib/$(TARGET)/LK8000
+endif
+
 	@$(NQ)echo "  install _System"
 	$(Q)install -p -m 0644 $(SYSTEM_FILES) Distrib/$(TARGET)/LK8000/_System
 	@$(NQ)echo "  install _System/_Bitmaps"
