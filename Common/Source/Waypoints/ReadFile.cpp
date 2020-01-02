@@ -27,7 +27,7 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 
   cup_header_t cup_header;
 
-  CreateProgressDialog(MsgToken(903)); // Loading Waypoints File...
+  CreateProgressDialog(MsgToken<903>()); // Loading Waypoints File...
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 

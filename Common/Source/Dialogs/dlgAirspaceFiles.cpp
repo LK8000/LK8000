@@ -50,13 +50,13 @@ static void OnCloseClicked(WndButton* pWnd){
             if (_tcslen(szAirspaceFile[j])> 0) {
               if (_tcscmp(szAirspaceFile[i],szAirspaceFile[j])==0) {
                 _sntprintf(tmp, MAX_PATH, _T("%s %u %s %u %s!"), 
-                                  MsgToken(2338), // _@M2338_ "Airspace Files"
+                                  MsgToken<2338>(), // _@M2338_ "Airspace Files"
                                   i+1,
-                                  MsgToken(2345) , //_@M2345_ "and"
+                                  MsgToken<2345>() , //_@M2345_ "and"
                                   j+1,
-                                  MsgToken(2346) //_@M2346_ "are identical"
+                                  MsgToken<2346>() //_@M2346_ "are identical"
                                 );
-                MessageBoxX(  tmp, MsgToken(356),  mbOk) ;  // _@M356_ "Information"
+                MessageBoxX(  tmp, MsgToken<356>(),  mbOk) ;  // _@M356_ "Information"
                 bIdenti = true;
               }
             }
@@ -106,6 +106,6 @@ void dlgAirspaceFilesShowModal(){
   if (!pForm) return;
 
   setVariables(pForm.get());
-  pForm->SetCaption(MsgToken(2338)); // _@M2338_ "Airspace Files" 
+  pForm->SetCaption(MsgToken<2338>()); // _@M2338_ "Airspace Files" 
   pForm->ShowModal();
 }

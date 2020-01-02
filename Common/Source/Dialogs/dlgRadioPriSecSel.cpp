@@ -36,7 +36,7 @@ static void OnCancelClicked(WndButton* pWnd){
 static void OnSelActiveButton(WndButton* pWnd){
 
   if(!ValidFrequency(frequency_khz)) {
-    MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
+    MessageBoxX(MsgToken<2490>(), MsgToken<2491>(), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
   }
   else {
     devPutFreqActive(frequency_khz, StationName);
@@ -48,7 +48,7 @@ static void OnSelActiveButton(WndButton* pWnd){
 static void OnSelPassiveButton(WndButton* pWnd){
 
   if(!ValidFrequency(frequency_khz)) {
-    MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
+    MessageBoxX(MsgToken<2490>(), MsgToken<2491>(), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
   }
   else {
     devPutFreqStandby(frequency_khz, StationName);

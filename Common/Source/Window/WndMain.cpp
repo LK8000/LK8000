@@ -51,7 +51,7 @@ extern void WaitThreadCalculation();
 void BeforeShutdown(void) {
 
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
-  CreateProgressDialog(MsgToken(1219));
+  CreateProgressDialog(MsgToken<1219>());
 
   LKSound(_T("LK_DISCONNECT.WAV"));
   Sleep(500); // real WAV length is 410+ms
@@ -79,7 +79,7 @@ void BeforeShutdown(void) {
   GlobalRunning = false;
 
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
-  CreateProgressDialog(MsgToken(1220));
+  CreateProgressDialog(MsgToken<1220>());
 
   // In case we quit while are still flying
   UpdateLogBook(false); // false=only log if still flying
@@ -87,7 +87,7 @@ void BeforeShutdown(void) {
   guiStopLogger(true);
 
   // LKTOKEN _@M1221_ "Shutdown, saving profile..."
-  CreateProgressDialog(MsgToken(1221));
+  CreateProgressDialog(MsgToken<1221>());
   LKPilotSave(defaultPilotFile);
   LKAircraftSave(defaultAircraftFile);
   LKProfileSave(defaultProfileFile);
@@ -98,7 +98,7 @@ void BeforeShutdown(void) {
 
   // Stop drawing
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
-  CreateProgressDialog(MsgToken(1219));
+  CreateProgressDialog(MsgToken<1219>());
 
   // Stop COM devices first to avoid mutex race condition...
   StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
@@ -114,7 +114,7 @@ void BeforeShutdown(void) {
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
-  CreateProgressDialog(MsgToken(1222));
+  CreateProgressDialog(MsgToken<1222>());
 
   #if TESTBENCH
   StartupStore(TEXT(".... Save default task%s"),NEWLINE);
@@ -131,7 +131,7 @@ void BeforeShutdown(void) {
   UnlockTaskData();
 
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
-  CreateProgressDialog(MsgToken(1219));
+  CreateProgressDialog(MsgToken<1219>());
   #if TESTBENCH
   StartupStore(TEXT(".... CloseTerrainTopology%s"),NEWLINE);
   #endif
@@ -232,7 +232,7 @@ bool WndMain::OnClose() {
     if(!_isRunning) {
         return WndMainBase::OnClose();
     }
-    if (MessageBoxX(MsgToken(198), // LKTOKEN  _@M198_ = "Confirm Exit?"
+    if (MessageBoxX(MsgToken<198>(), // LKTOKEN  _@M198_ = "Confirm Exit?"
                     TEXT("LK8000"),
                     mbYesNo) == IdYes) {
 

@@ -193,7 +193,7 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
                 break;
         }
         if (FullResetAsked) {
-            _stprintf(mes, _T("*** %s ***"), MsgToken(1757));
+            _stprintf(mes, _T("*** %s ***"), MsgToken<1757>());
             RawWrite(Surface, mes, pos, 1, RGBDARKWHITE, WTMODE_NORMAL);
         } else {
 #ifndef LKCOMPETITION
@@ -214,9 +214,9 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 
         TCHAR mes[100];
 #ifndef LKCOMPETITION
-        _stprintf(mes, _T("%s v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken(2054));
+        _stprintf(mes, _T("%s v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken<2054>());
 #else
-        _stprintf(mes, _T("%sC v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken(2054));
+        _stprintf(mes, _T("%sC v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken<2054>());
 #endif
         RawWrite(Surface, mes, 1, 1, RGBLIGHTGREY, (IsDithered() ? WTMODE_OUTLINED : WTMODE_NORMAL));
 
@@ -231,9 +231,9 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
             RawWrite(Surface, _T("_______________________"), 2, 2, RGBLIGHTGREY, WTMODE_NORMAL);
 
         if (FullResetAsked) {
-            _stprintf(mes, _T("%s"), MsgToken(1757)); // LK8000 PROFILES RESET
+            _stprintf(mes, _T("%s"), MsgToken<1757>()); // LK8000 PROFILES RESET
             RawWrite(Surface, mes, 5, 2, RGBICEWHITE, WTMODE_OUTLINED);
-            _stprintf(mes, _T("%s"), MsgToken(1759)); // SELECTED IN SYSTEM
+            _stprintf(mes, _T("%s"), MsgToken<1759>()); // SELECTED IN SYSTEM
             RawWrite(Surface, mes, 6, 2, RGBICEWHITE, WTMODE_OUTLINED);
         } else {
             _stprintf(mes, _T("%s"), PilotName_Config);
@@ -248,12 +248,12 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
             LKASSERT(szPolarFile[0]);
             LK_tsplitpath(szPolarFile, NULL, NULL, srcfile, NULL);
 
-            lk::snprintf(mes, _T("%s %s"), MsgToken(528), srcfile); // polar file
+            lk::snprintf(mes, _T("%s %s"), MsgToken<528>(), srcfile); // polar file
             RawWrite(Surface, mes, 7, 2, RGBAMBER, WTMODE_OUTLINED);
 
             LKASSERT(startProfileFile[0]);
             LK_tsplitpath(startProfileFile, NULL, NULL, srcfile, NULL);
-            lk::snprintf(mes, _T("%s: %s"), MsgToken(1746), srcfile);
+            lk::snprintf(mes, _T("%s: %s"), MsgToken<1746>(), srcfile);
             RawWrite(Surface, mes, 11, 1, RGBICEWHITE, WTMODE_NORMAL);
         }
 
@@ -456,7 +456,7 @@ static WndForm* InitFlySim() {
                 pWnd->SetWidth(w);
                 pWnd->SetLeft(lx);
 #ifdef KOBO
-                pWnd->SetCaption(MsgToken(1901)); // POWER OFF
+                pWnd->SetCaption(MsgToken<1901>()); // POWER OFF
 #endif
             }
 
@@ -522,7 +522,7 @@ static WndForm* InitFlySim() {
                 pWnd->SetHeight(IBLSCALE(40));
                 pWnd->SetWidth(w);
 #ifdef KOBO
-                pWnd->SetCaption(MsgToken(1901)); // POWER OFF
+                pWnd->SetCaption(MsgToken<1901>()); // POWER OFF
 #endif
             }
         }
@@ -680,7 +680,7 @@ static WndForm* InitStartup(BYTE mode) {
             if(dfe) {
                 if (mode == RUN_PROFILE) {
                     dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PRF));
-                    dfe->addFile(MsgToken(1741), _T("PROFILE_RESET"));
+                    dfe->addFile(MsgToken<1741>(), _T("PROFILE_RESET"));
                     dfe->Lookup(startProfileFile);
 
                 } else if (mode == RUN_AIRCRAFT) {
@@ -879,7 +879,7 @@ short dlgStartupShowModal(void) {
 #endif
                         _tcscpy(startProfileFile,szFileName);
 
-                        MessageBoxX(MsgToken(1758), MsgToken(1757), mbOk);
+                        MessageBoxX(MsgToken<1758>(), MsgToken<1757>(), mbOk);
                         FullResetAsked = true;
                         LKProfileResetDefault();
                     } else {
@@ -939,7 +939,7 @@ short dlgStartupShowModal(void) {
         LKSound(_T("LK_SLIDE.WAV"));
         if (MessageBoxX(
                 // LKTOKEN  _@M198_ = "Confirm Exit?"
-                MsgToken(198),
+                MsgToken<198>(),
                 TEXT("LK8000"), mbYesNo) == IdYes) {
             BeforeShutdown();
         } else {

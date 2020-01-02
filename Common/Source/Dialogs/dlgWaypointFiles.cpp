@@ -50,13 +50,13 @@ static void OnCloseClicked(WndButton* pWnd){
             if (_tcslen(szWaypointFile[j])> 0) {
               if (_tcscmp(szWaypointFile[i],szWaypointFile[j])==0) {
                 _sntprintf(tmp, MAX_PATH, _T("%s %u %s %u %s!"), 
-                                  MsgToken(2340), // _@M2340_ "Waypoint Files"
+                                  MsgToken<2340>(), // _@M2340_ "Waypoint Files"
                                   i+1,
-                                  MsgToken(2345) , //_@M2345_ "and"
+                                  MsgToken<2345>(), //_@M2345_ "and"
                                   j+1,
-                                  MsgToken(2346) //_@M2346_ "are identical"
+                                  MsgToken<2346>()//_@M2346_ "are identical"
                                 );
-                MessageBoxX(  tmp, MsgToken(356),  mbOk) ;  // _@M356_ "Information"
+                MessageBoxX(  tmp, MsgToken<356>(),  mbOk) ;  // _@M356_ "Information"
                 bIdenti = true;
               }
             }
@@ -109,6 +109,6 @@ void dlgWaypointFilesShowModal(){
   if (!pForm) return;
 
   setVariables(pForm.get());
-  pForm->SetCaption(MsgToken(2340)); // _@M2340_ "Waypoint Files",
+  pForm->SetCaption(MsgToken<2340>()); // _@M2340_ "Waypoint Files",
   pForm->ShowModal();
 }

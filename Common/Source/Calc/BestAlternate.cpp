@@ -619,14 +619,14 @@ void AlertBestAlternate(short soundmode) {
 			case 1:
 				LKSound(_T("LK_GREEN.WAV"));
 
-				_stprintf(mbuf,_T("%s %s  @%.0f%s"), MsgToken(1840), WayPointList[BestAlternate].Name,
+				_stprintf(mbuf,_T("%s %s  @%.0f%s"), MsgToken<1840>(), WayPointList[BestAlternate].Name,
 				DISTANCEMODIFY*WayPointCalc[BestAlternate].Distance,
 				(Units::GetDistanceName()) );
 				Message::AddMessage(2000, 3, mbuf);
 				break;
 			case 2: 
 				LKSound(_T("LK_RED.WAV"));
-				_stprintf(mbuf,_T("%s %s"), MsgToken(1840), MsgToken(916)); // WARNING, NO LANDINGS
+				_stprintf(mbuf,_T("%s %s"), MsgToken<1840>(), MsgToken<916>()); // WARNING, NO LANDINGS
 				// Do NOT disturb the pilot for 5 minutes with useless further messages
 				LastAlertTime += 180.0;
 				Message::AddMessage(2000, 3, mbuf);

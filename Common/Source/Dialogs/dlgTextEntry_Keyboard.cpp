@@ -68,7 +68,7 @@ void UpdateKeyLayout(WndForm* pForm) {
       wpText->SetCaption(key_filter->GetLabel());
     } else {
       wpText->SetText(edittext);
-      wpText->SetCaption(MsgToken(711)); // _@M711_ "Text:"
+      wpText->SetCaption(MsgToken<711>()); // _@M711_ "Text:"
     }
   }
 
@@ -82,7 +82,7 @@ void UpdateKeyLayout(WndForm* pForm) {
   }
 
   TCHAR Entered[MAX_SEL_LIST_SIZE]=_T("");
-  _sntprintf(Entered, MAX_SEL_LIST_SIZE, _T("%s: %s"), MsgToken(251), edittext); /* _@251_ Edit Text */
+  _sntprintf(Entered, MAX_SEL_LIST_SIZE, _T("%s: %s"), MsgToken<251>(), edittext); /* _@251_ Edit Text */
   pForm->SetCaption(Entered);
 
   auto wpMatch = wf->FindByName(TEXT("prpMatch"));
@@ -91,7 +91,7 @@ void UpdateKeyLayout(WndForm* pForm) {
 
     if(key_filter) {
       TCHAR Found[EXT_SEARCH_SIZE];
-      _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s:%u"),MsgToken(948), key_filter->GetMatchCount()); /* _@M948_ Found */
+      _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s:%u"),MsgToken<948>(), key_filter->GetMatchCount()); /* _@M948_ Found */
       wpMatch->SetCaption(Found);
     }
   }

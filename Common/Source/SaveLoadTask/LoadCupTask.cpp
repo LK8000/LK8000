@@ -381,9 +381,9 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 
                 if(Entries[0].size() == 0)
                 {
-                  StartupStore(_T(". no Task name, named it %s%i %s"), MsgToken(699),i, NEWLINE);// _@M699_ "Task"
+                  StartupStore(_T(". no Task name, named it %s%i %s"), MsgToken<699>(),i, NEWLINE);// _@M699_ "Task"
                   if(TaskLine != NULL)
-                    lk::snprintf(TaskLine, READLINE_LENGTH,_T("%s%i%s"),MsgToken(699),i,szString);  // _@M699_ "Task"
+                    lk::snprintf(TaskLine, READLINE_LENGTH,_T("%s%i%s"),MsgToken<699>(),i,szString);  // _@M699_ "Task"
                 }
                 else
                 {
@@ -578,13 +578,13 @@ TCHAR szString[READLINE_LENGTH + 1];
           if (gTaskType == TSK_AAT)
               lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M699_ "Task"
           else if (CALCULATED_INFO.TaskFAI)
-              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken(2432), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
+              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken<2432>(), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
           else
               lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), MsgToken(2430 + NoPts), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString);
       }
       else
       {
-        lk::snprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[%s %.1f%s] %s") , MsgToken(2429) ,lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString); // MsgToken(2432)   ,
+        lk::snprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[%s %.1f%s] %s") , MsgToken<2429>() ,lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString); // MsgToken<2432>()   ,
       }
     }
     UnlockTaskData();
@@ -598,9 +598,9 @@ TCHAR szString[READLINE_LENGTH + 1];
       TCHAR file_name[180];
       const TCHAR * pToken = lk::tokenizer<TCHAR>(szTaskStrings[TaskIndex]).Next({_T(',')});
       if((pToken) && (_tcslen (pToken)>1)) {
-          _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken(891), pToken ); // Clear old task and load taskname
+          _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken<891>(), pToken ); // Clear old task and load taskname
       } else {
-          _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken(891), MsgToken(907)); // Clear old task and load task
+          _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken<891>(), MsgToken<907>()); // Clear old task and load task
       }
       if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdYes) {
           LoadCupTaskSingle(szFileName,szString, TaskIndex); // load new task

@@ -405,7 +405,7 @@ void CDevCProbe::OnCompassCalClicked(WndButton* pWnd){
 		} else {
 			SetCompassCalOn(m_pDevice);
 
-			MessageBoxX(MsgToken(2136), TEXT("C-Probe"), mbOk, false);
+			MessageBoxX(MsgToken<2136>(), TEXT("C-Probe"), mbOk, false);
 
 			SetCompassCalOff(m_pDevice);
 		}
@@ -442,17 +442,17 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	WndProperty* wp;
 	wp = (WndProperty*)pWnd->FindByName(TEXT("prpPitch"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Pitch, MsgToken(2179));
+		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Pitch, MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)pWnd->FindByName(TEXT("prpHeading"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f%s"), _INFO.MagneticHeading, MsgToken(2179));
+		_stprintf(Temp, TEXT("%.2f%s"), _INFO.MagneticHeading, MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)pWnd->FindByName(TEXT("prpRoll"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Roll, MsgToken(2179));
+		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Roll, MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 
@@ -474,7 +474,7 @@ void CDevCProbe::Update(WndForm* pWnd) {
 
 	wp = (WndProperty*)pWnd->FindByName(TEXT("prpTemp"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature, MsgToken(2179));
+		_stprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature, MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 	wp = (WndProperty*)pWnd->FindByName(TEXT("prpRh"));

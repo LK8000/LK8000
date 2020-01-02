@@ -498,10 +498,10 @@ void dlgWayPointDetailsShowModal(short mypage){
   ((WndProperty *)wf->FindByName(TEXT("prpDistance")))->SetText(DistanceText);
 
   if (ScreenLandscape) {
-      _stprintf(sTmp, TEXT("%d%s  (R:%d%s)"),iround(bearing), MsgToken(2179),
-         iround(AngleLimit360(bearing+180)), MsgToken(2179));
+      _stprintf(sTmp, TEXT("%d%s  (R:%d%s)"),iround(bearing), MsgToken<2179>(),
+         iround(AngleLimit360(bearing+180)), MsgToken<2179>());
   } else {
-      _stprintf(sTmp, TEXT("%d%s"), iround(bearing),MsgToken(2179));
+      _stprintf(sTmp, TEXT("%d%s"), iround(bearing),MsgToken<2179>());
   }
   ((WndProperty *)wf->FindByName(TEXT("prpBearing")))->SetText(sTmp);
 
@@ -589,15 +589,15 @@ void dlgWayPointDetailsShowModal(short mypage){
 
     if ((ActiveTaskPoint<0) || !ValidTaskPoint(0)) {
 	// this is going to be the first tp (ActiveTaskPoint 0)
-	_stprintf(captmp,_T("%s"),MsgToken(1824)); // insert as START
+	_stprintf(captmp,_T("%s"),MsgToken<1824>()); // insert as START
     } else {
 	LKASSERT(ActiveTaskPoint>=0 && ValidTaskPoint(0));
 	int indexInsert = max(ActiveTaskPoint,0); // safe check
 	if (indexInsert==0) {
-		_stprintf(captmp,_T("%s"),MsgToken(1824)); // insert as START
+		_stprintf(captmp,_T("%s"),MsgToken<1824>()); // insert as START
 	} else {
 		LKASSERT(ValidWayPoint(Task[indexInsert].Index));
-		_stprintf(captmp,_T("%s <%s>"),MsgToken(1825),WayPointList[ Task[indexInsert].Index ].Name); // insert before xx
+		_stprintf(captmp,_T("%s <%s>"),MsgToken<1825>(),WayPointList[ Task[indexInsert].Index ].Name); // insert before xx
 	}
     }
     wb->SetCaption(captmp);
@@ -633,9 +633,9 @@ void dlgWayPointDetailsShowModal(short mypage){
     if(tmpIdx != -1)
     {
 	wb->SetOnClickNotify(OnReplaceClicked);
-	_stprintf(captmp,_T("%s <%s>"),MsgToken(1826),WayPointList[tmpIdx ].Name); // replace  xx
+	_stprintf(captmp,_T("%s <%s>"),MsgToken<1826>(),WayPointList[tmpIdx ].Name); // replace  xx
     } else {
-	_stprintf(captmp,_T("( %s )"),MsgToken(555));
+	_stprintf(captmp,_T("( %s )"),MsgToken<555>());
     }
     wb->SetCaption(captmp);
   }

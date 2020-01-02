@@ -200,7 +200,7 @@ int KRT2_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len) {
 
     TestLog(_T("KRT2 heartbeat: #%i"), counter++);
     if(!std::exchange(device_found, true)) {
-      DoStatusMessage(MsgToken(1358)); // RADIO DETECTED
+      DoStatusMessage(MsgToken<1358>()); // RADIO DETECTED
     }
     processed++;
   }
@@ -295,11 +295,11 @@ int KRT2_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len) {
 
               if(RadioPara.Volume != (int)szCommand[2]) {
                 RadioPara.Volume = (int)szCommand[2];
-                TestLog(_T("%s %i "),  MsgToken(2310), RadioPara.Volume );  // _@M2310_ Vol
+                TestLog(_T("%s %i "),  MsgToken<2310>(), RadioPara.Volume );  // _@M2310_ Vol
               }
               if( RadioPara.Squelch != (int)szCommand[3]) {
                 RadioPara.Squelch  = (int)szCommand[3];
-                TestLog(_T("%s %i "),  MsgToken(2311), RadioPara.Squelch );  //_@M2311_ Sqw
+                TestLog(_T("%s %i "),  MsgToken<2311>(), RadioPara.Squelch );  //_@M2311_ Sqw
               }
               if(RadioPara.Vox != (int)szCommand[4]) {
                 RadioPara.Vox= (int)szCommand[4];

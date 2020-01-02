@@ -359,7 +359,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         LKASSERT(_tcslen(near_airspace.Name()) < TBSIZE); // Diagnostic only in 3.1j, to be REMOVED
         LK_tcsncpy(Sideview_szNearAS, near_airspace.Name(), TBSIZE);
     } else {
-        _stprintf(text, TEXT("%s"), MsgToken(1259)); // LKTOKEN _@M1259_ "Too far, not calculated"
+        _stprintf(text, TEXT("%s"), MsgToken<1259>()); // LKTOKEN _@M1259_ "Too far, not calculated"
         Surface.GetTextSize(text, &tsize);
         TxYPt.x = (rc.right - rc.left - tsize.cx) / 2;
         TxYPt.y = (rc.bottom - rc.top) / 2;
@@ -446,7 +446,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     if (calc_altitudeagl - sDia.fYMin > 500) {
         Surface.SetTextColor(LIGHTBLUE_COL);
         Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
-        LK_tcsncpy(text, MsgToken(1742), TBSIZE - _tcslen(buffer)); // AGL:
+        LK_tcsncpy(text, MsgToken<1742>(), TBSIZE - _tcslen(buffer)); // AGL:
         _tcscat(text, buffer);
         Surface.GetTextSize(text, &tsize);
         TxYPt.x = CalcDistanceCoordinat(0, &sDia) - tsize.cx / 2;
@@ -465,7 +465,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     int x, y;
     if ((calc_terrainalt - sDia.fYMin) > 0) {
         Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
-        LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer)); // ELV:
+        LK_tcsncpy(text, MsgToken<1743>(), TBSIZE - _tcslen(buffer)); // ELV:
         _tcscat(text, buffer);
         Surface.GetTextSize(text, &tsize);
         x = CalcDistanceCoordinat(0, &sDia) - tsize.cx / 2;

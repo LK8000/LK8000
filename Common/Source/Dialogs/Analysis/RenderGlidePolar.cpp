@@ -109,19 +109,19 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   auto hfOldU = Surface.SelectObject(LK8InfoNormalFont);
   if( GlidePolar::WingArea>0.1 ) {
     _stprintf(text,TEXT("%s %.1f kg/m2"),
-	             MsgToken(821), // Wing load
+	             MsgToken<821>(), // Wing load
 	             GlidePolar::WingLoading);
     Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(90), text);
   }
   _stprintf(text, TEXT("%s: %3.1f  @ %3.0f %s"),
-		MsgToken(140), // Best LD
+		MsgToken<140>(), // Best LD
                   GlidePolar::bestld,
                   GlidePolar::Vbestld()*SPEEDMODIFY,
                   Units::GetHorizontalSpeedName());
   Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(70), text);
 
   _stprintf(text, TEXT("%s: %3.2f %s @ %3.0f %s"),
-		MsgToken(437), // Min sink
+		MsgToken<437>(), // Min sink
                   GlidePolar::minsink*LIFTMODIFY,
                   Units::GetVerticalSpeedName(),
                   GlidePolar::Vminsink()*SPEEDMODIFY,

@@ -578,7 +578,7 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
 				StartupStore(_T("------ NMEAParser: Date received is \"%04d-%02d-%02d\""), year, month, day); // 100422
 				StartupStore(_T("------ This message will NOT be repeated. %s"), WhatTimeIsIt());
 				// _@M875_ "WARNING: GPS IS SENDING INVALID DATE, AND PROBABLY WRONG TIME"
-				DoStatusMessage(MsgToken(875));
+				DoStatusMessage(MsgToken<875>());
 				logbaddate = false;
 			}
 		}

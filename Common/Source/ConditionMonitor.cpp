@@ -118,8 +118,8 @@ protected:
 
   void Notify(void) {
 	// LKTOKEN  _@M616_ = "Significant wind change"
-    DoStatusMessage(MsgToken(616));
-  }
+    DoStatusMessage(MsgToken<616>());
+  };
 
   void SaveLast(void) {
     last_wind_mag = wind_mag;
@@ -225,7 +225,7 @@ protected:
 
   void Notify(void) {
     // Expect arrival past sunset
-    DoStatusMessage(MsgToken(1531));
+    DoStatusMessage(MsgToken<1531>());
   };
 
   void SaveLast(void) {
@@ -256,7 +256,7 @@ protected:
 
   void Notify(void) {
 	// LKTOKEN  _@M270_ = "Expect early task arrival"
-    DoStatusMessage(MsgToken(270));
+    DoStatusMessage(MsgToken<270>());
   }
 
   void SaveLast(void) {
@@ -290,10 +290,10 @@ protected:
   void Notify(void) {
     if (withinMargin)
 	// LKTOKEN  _@M652_ = "Start rules violated\r\nbut within margin"
-      DoStatusMessage(MsgToken(652));
+      DoStatusMessage(MsgToken<652>());
     else
 	// LKTOKEN  _@M651_ = "Start rules violated"
-      DoStatusMessage(MsgToken(651));
+      DoStatusMessage(MsgToken<651>());
   }
 
   void SaveLast(void) {

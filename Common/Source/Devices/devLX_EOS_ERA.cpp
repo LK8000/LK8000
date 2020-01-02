@@ -365,10 +365,10 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->addEnumText(MsgToken<491>());  // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<2453>()); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken<2454>()); // LKTOKEN  _@M2454_ "IN & OUT"
     dfe->Set((uint) PortIO.QNHDir);
     wp->RefreshDisplay();
   }
@@ -376,10 +376,10 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->addEnumText(MsgToken<491>());  // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<2453>()); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken<2454>()); // LKTOKEN  _@M2454_ "IN & OUT"
     dfe->Set((uint) PortIO.MCDir);
     wp->RefreshDisplay();
   }
@@ -387,10 +387,10 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->addEnumText(MsgToken<491>());  // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<2453>()); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken<2454>()); // LKTOKEN  _@M2454_ "IN & OUT"
     dfe->Set((uint) PortIO.BUGDir);
     wp->RefreshDisplay();
   }
@@ -398,10 +398,10 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->addEnumText(MsgToken<491>());  // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<2453>()); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken<2454>()); // LKTOKEN  _@M2454_ "IN & OUT"
     dfe->Set((uint) PortIO.BALDir);
     wp->RefreshDisplay();
   }
@@ -409,10 +409,10 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<2453>()); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken<2454>()); // LKTOKEN  _@M2454_ "IN & OUT"
     dfe->Set((uint) PortIO.STFDir);
     wp->RefreshDisplay();
   }
@@ -420,9 +420,9 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<2453>()); // LKTOKEN  _@M2453_ "OUT"
     dfe->Set((uint) PortIO.WINDDir);
     wp->RefreshDisplay();
   }
@@ -430,16 +430,16 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO.BARODir);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO.SPEEDDir);
     wp->RefreshDisplay();
   }
@@ -447,8 +447,8 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
 
     dfe->Set((uint) PortIO.VARIODir);
     wp->RefreshDisplay();
@@ -456,7 +456,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(_T("$xxDT,GET,NAVIGATE")); // "IN" 
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
     dfe->Set((uint) PortIO.R_TRGTDir);
@@ -466,7 +466,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(_T("$xxDT,SET,NAVIGATE")); // "IN"
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
     dfe->Set((uint) PortIO.T_TRGTDir);
@@ -476,16 +476,16 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO.GFORCEDir);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO.OATDir);
     wp->RefreshDisplay();
   }
@@ -493,8 +493,8 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO.BAT1Dir);
     wp->RefreshDisplay();
   }
@@ -502,8 +502,8 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO.BAT2Dir);
     wp->RefreshDisplay();
   }
@@ -511,8 +511,8 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<2452>()); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO.POLARDir);
     wp->RefreshDisplay();
   }
@@ -520,8 +520,8 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
   wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
-    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(894)); // LKTOKEN  _@M894_": "ON"
+    dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken<894>()); // LKTOKEN  _@M894_": "ON"
     dfe->Set((uint) PortIO.DirLink);
     wp->RefreshDisplay();
   }
@@ -899,10 +899,10 @@ void DevLX_EOS_ERA::OnValuesClicked(WndButton* pWnd) {
       if (ShowValues()) {
         wf->SetTimerNotify(250, OnTimer); // update values 4 times a second
         GetDirections(pWnd);
-        wBt->SetCaption(MsgToken(2468));//  _@M2468_ "Direction"
+        wBt->SetCaption(MsgToken<2468>());//  _@M2468_ "Direction"
       } else {
         wf->SetTimerNotify(0, NULL);    // turn Off the timer
-        wBt->SetCaption(MsgToken(2467));// _@M2467_ "Values"
+        wBt->SetCaption(MsgToken<2467>());// _@M2467_ "Values"
         if (wf) ShowData(wf, Device());
       }
     }
@@ -938,7 +938,7 @@ void DevLX_EOS_ERA::OnIGCDownloadClicked(WndButton* pWnd) {
   UnlockFlightData();
 
   if(bInFlight) {
-    MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
+    MessageBoxX(MsgToken<2418>(), MsgToken<2397>(), mbOk);
     return;
   }
   m_bTriggered = true;

@@ -89,25 +89,25 @@ BOOL VLDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
 
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1404_ = "Opening connection"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1404));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken<1400>(), MsgToken<1404>());
   CreateProgressDialog(buffer);
   {
     ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
 
     if((err = vl.open(1, 20, 1, 38400L)) != VLA_ERR_NOERR) {
       // LKTOKEN  _@M1411_ = "Device not connected!"
-      _tcsncpy(errBuffer, MsgToken(1411), errBufferLen);
+      _tcsncpy(errBuffer, MsgToken<1411>(), errBufferLen);
       return FALSE;
     }
   }
 
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1405_ = "Testing connection"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1405));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken<1400>(), MsgToken<1405>());
   CreateProgressDialog(buffer);
   if((err = vl.read_info()) != VLA_ERR_NOERR) {
     // LKTOKEN  _@M1414_ = "Device not responsive!"
-    _tcsncpy(errBuffer, MsgToken(1414), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken<1414>(), errBufferLen);
     return FALSE;
   }
 
@@ -221,16 +221,16 @@ BOOL VLDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
 
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1403_ = "Sending  declaration"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken<1400>(), MsgToken<1403>());
   CreateProgressDialog(buffer);
   if((err = vl.write_db_and_declaration()) != VLA_ERR_NOERR) {
     // LKTOKEN  _@M1415_ = "Declaration not accepted!"
-    _tcsncpy(errBuffer, MsgToken(1415), errBufferLen);
+    _tcsncpy(errBuffer, MsgToken<1415>(), errBufferLen);
   }
 
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1406_ = "Closing connection"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1406));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken<1400>(), MsgToken<1406>());
   CreateProgressDialog(buffer);
   vl.close(1);
 

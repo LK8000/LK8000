@@ -685,7 +685,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         Surface.SetTextColor(RGB_BLACK);
         if ((calc_terrainalt - hmin) > 0) {
             Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
-            LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer));
+            LK_tcsncpy(text, MsgToken<1743>(), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
             Surface.GetTextSize(text, &tsize);
             x = CalcDistanceCoordinat(0, &sDia) - tsize.cx / 2;
@@ -700,7 +700,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         Surface.SetTextColor(RGB_BLACK);
         if ((wpt_altitude - hmin) > 0) {
             Units::FormatUserAltitude(wpt_altitude, buffer, 7);
-            LK_tcsncpy(text, MsgToken(1743), TBSIZE - _tcslen(buffer));
+            LK_tcsncpy(text, MsgToken<1743>(), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
             Surface.GetTextSize(text, &tsize);
             x0 = CalcDistanceCoordinat(wpt_dist, &sDia) - tsize.cx / 2;
@@ -796,7 +796,7 @@ _skip_mc0:
             if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL / 10);
             if (altarriv > 100) {
                 Units::FormatUserAltitude(altarriv, buffer, 7);
-                LK_tcsncpy(text, MsgToken(1742), TBSIZE - _tcslen(buffer));
+                LK_tcsncpy(text, MsgToken<1742>(), TBSIZE - _tcslen(buffer));
                 _tcscat(text, buffer);
                 Surface.GetTextSize(text, &tsize);
                 x = line[0].x - NIBLSCALE(5);
@@ -963,7 +963,7 @@ _after_additionals:
                 Surface.SetTextColor(RGB_BLACK);
             }
             Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
-            LK_tcsncpy(text, MsgToken(1742), TBSIZE - _tcslen(buffer));
+            LK_tcsncpy(text, MsgToken<1742>(), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
             Surface.GetTextSize(text, &tsize);
             x = CalcDistanceCoordinat(0, &sDia) - tsize.cx / 2;

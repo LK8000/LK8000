@@ -367,7 +367,7 @@ void LKBatteryManager() {
 	if (PDABatteryPercent <=50) {
 		last_time=GPS_INFO.Time;
 		// LKTOKEN _@M1352_ "BATTERY LEVEL"
-		_stprintf(mbuf,_T("%s %d%%"), MsgToken(1352), PDABatteryPercent);
+		_stprintf(mbuf,_T("%s %d%%"), MsgToken<1352>(), PDABatteryPercent);
 		DoStatusMessage(mbuf);
 		warn50=false;
 	}
@@ -375,7 +375,7 @@ void LKBatteryManager() {
 	if (PDABatteryPercent <1) {
 		StartupStore(_T("... LK Battery Manager disabled, low battery %s"),NEWLINE);
 		// LKTOKEN _@M1353_ "BATTERY MANAGER DISABLED"
-		DoStatusMessage(MsgToken(1353));
+		DoStatusMessage(MsgToken<1353>());
 		invalid=true;
 		return;
 	} else
@@ -393,17 +393,17 @@ void LKBatteryManager() {
 		if (PDABatteryStatus==Battery::OFFLINE) {
 			if (GiveBatteryWarnings())
 	// LKTOKEN  _@M514_ = "POWER SUPPLY OFF"
-			DoStatusMessage(MsgToken(514));
+			DoStatusMessage(MsgToken<514>());
 		} else {
 			if (PDABatteryStatus==Battery::ONLINE) {
 				if (GiveBatteryWarnings())
 	// LKTOKEN  _@M515_ = "POWER SUPPLY ON"
-				DoStatusMessage(MsgToken(515));
+				DoStatusMessage(MsgToken<515>());
 			} else {
 				if (PDABatteryStatus==Battery::BACKUP_POWER) {
 					if (GiveBatteryWarnings())
 	// LKTOKEN  _@M119_ = "BACKUP POWER SUPPLY ON"
-					DoStatusMessage(MsgToken(119));
+					DoStatusMessage(MsgToken<119>());
 				}
 			}
 		}
@@ -425,7 +425,7 @@ void LKBatteryManager() {
 		if (PDABatteryFlag==Battery::CHARGING || PDABatteryStatus==Battery::ONLINE) {
 			if (GiveBatteryWarnings())
 	// LKTOKEN  _@M124_ = "BATTERY IS RECHARGING"
-			DoStatusMessage(MsgToken(124));
+			DoStatusMessage(MsgToken<124>());
 			last_time=GPS_INFO.Time;
 		}
 	}
@@ -437,7 +437,7 @@ void LKBatteryManager() {
 	if (recharging && (PDABatteryPercent==100) && warn100) {
 		if (GiveBatteryWarnings())
 	// LKTOKEN  _@M123_ = "BATTERY 100% CHARGED"
-		DoStatusMessage(MsgToken(123));
+		DoStatusMessage(MsgToken<123>());
 		warn100=false;
 		last_time=GPS_INFO.Time;
 	}
@@ -450,7 +450,7 @@ void LKBatteryManager() {
   // Time to give a message to the user, if necessary
   if (PDABatteryPercent <=5) {
 	// LKTOKEN _@M1354_ "BATTERY LEVEL CRITIC!"
-	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, MsgToken(1354));
+	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, MsgToken<1354>());
 	DoStatusMessage(mbuf);
     LKSound(TEXT("LK_RED.WAV"));
 
@@ -461,7 +461,7 @@ void LKBatteryManager() {
   }
   if (PDABatteryPercent <=10) {
 	// LKTOKEN _@M1355_ "BATTERY LEVEL VERY LOW!"
-	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, MsgToken(1355));
+	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, MsgToken<1355>());
 	DoStatusMessage(mbuf);
 	// repeat after 2 minutes, forced
 	last_time=GPS_INFO.Time-(60*3);
@@ -470,7 +470,7 @@ void LKBatteryManager() {
   }
   if (PDABatteryPercent <=20) {
 	// LKTOKEN _@M1356_ "BATTERY LEVEL LOW!"
-	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, MsgToken(1356));
+	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, MsgToken<1356>());
 	DoStatusMessage(mbuf);
 	last_time=GPS_INFO.Time;
 	last_percent=PDABatteryPercent;
@@ -480,7 +480,7 @@ void LKBatteryManager() {
   if (PDABatteryPercent <=30) {
 	if (warn33) {
 		// LKTOKEN _@M1352_ "BATTERY LEVEL"
-		_stprintf(mbuf, _T("%s %d%%"), MsgToken(1352), PDABatteryPercent);
+		_stprintf(mbuf, _T("%s %d%%"), MsgToken<1352>(), PDABatteryPercent);
 		DoStatusMessage(mbuf);
 		warn33=false;
 	}
@@ -492,7 +492,7 @@ void LKBatteryManager() {
   if (PDABatteryPercent <=50) {
 	if (warn50) {
 		// LKTOKEN _@M1352_ "BATTERY LEVEL"
-	//	_stprintf(mbuf, _T("%s %d%%"), MsgToken(1352), PDABatteryPercent);
+	//	_stprintf(mbuf, _T("%s %d%%"), MsgToken<1352>(), PDABatteryPercent);
 	//	DoStatusMessage(mbuf);
 		warn50=false;
 	}
@@ -525,7 +525,7 @@ bool GiveBatteryWarnings(void)
 
   if (numwarn>MAXBATTWARN) {
 	// LKTOKEN _@M1357_ "BATTERY WARNINGS DISABLED"
-	DoStatusMessage(MsgToken(1357));
+	DoStatusMessage(MsgToken<1357>());
 	StartupStore(_T("... Too many battery warnings, disabling Battery Manager at %s%s"),WhatTimeIsIt(),NEWLINE);
 	toomany=true;
 	return false;

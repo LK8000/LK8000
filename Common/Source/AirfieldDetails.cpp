@@ -169,6 +169,6 @@ void ParseAirfieldDetails() {
 
 void ReadAirfieldFile() {
 	// LKTOKEN  _@M400_ = "Loading Waypoint Notes File..."
-  CreateProgressDialog(MsgToken(400));
+  CreateProgressDialog(MsgToken<400>());
   ParseAirfieldDetails();
 }

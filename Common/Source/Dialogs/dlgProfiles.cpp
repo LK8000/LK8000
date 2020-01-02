@@ -42,7 +42,7 @@ static void OnSaveExistingClicked(WndButton* pWnd) {
   if (file_index>0) {
 	if(MessageBoxX(dfe->GetAsString(),
 		// LKTOKEN  _@M509_ = "Overwrite profile?"
-		MsgToken(509),
+		MsgToken<509>(),
 		mbYesNo) == IdYes) {
 
                 TCHAR file_name[MAX_PATH];
@@ -64,7 +64,7 @@ static void OnSaveExistingClicked(WndButton* pWnd) {
 				return;
 		}
 		// LKTOKEN  _@M535_ = "Profile saved!"
-		MessageBoxX(MsgToken(535),_T(""), mbOk);
+		MessageBoxX(MsgToken<535>(),_T(""), mbOk);
 		return;
 	}
 	dfe->Set(0);
@@ -98,12 +98,12 @@ static void OnSaveNewClicked(WndButton* pWnd) {
   if (file_index==0) {
 	lk::snprintf(tmptext, TEXT("%s: %s"),
 		// LKTOKEN  _@M458_ = "New profile"
-		MsgToken(458),
+		MsgToken<458>(),
 		profile_name);
 
 	if(MessageBoxX(tmptext,
 		// LKTOKEN  _@M579_ = "Save ?"
-		MsgToken(579),
+		MsgToken<579>(),
 		mbYesNo) == IdYes) {
 		switch (profilemode) {
 			case 0:
@@ -125,7 +125,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
 
 		MessageBoxX(
 		// LKTOKEN  _@M535_ = "Profile saved!"
-		MsgToken(535),
+		MsgToken<535>(),
 		_T(""), mbOk);
 
 		dfe->Set(0);
@@ -136,18 +136,18 @@ static void OnSaveNewClicked(WndButton* pWnd) {
   if (file_index>0) {
 	lk::snprintf(tmptext, TEXT("%s: %s"),
 	// LKTOKEN  _@M533_ = "Profile already exists"
-		MsgToken(533),
+		MsgToken<533>(),
 		profile_name);
 
 	if (CheckClubVersion() ) {
 		MessageBoxX(tmptext,
 		// LKTOKEN  _@M162_ = "Cannot overwrite!"
-		MsgToken(162),
+		MsgToken<162>(),
 		mbOk);
 	} else {
 		if(MessageBoxX(tmptext,
 		// LKTOKEN  _@M510_ = "Overwrite?"
-		MsgToken(510),
+		MsgToken<510>(),
 		mbYesNo) == IdYes) {
 
 			switch (profilemode) {
@@ -168,7 +168,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
 			}
 			MessageBoxX(
 			// LKTOKEN  _@M535_ = "Profile saved!"
-			MsgToken(535),
+			MsgToken<535>(),
 			_T(""), mbOk);
 			return;
 		}
@@ -220,17 +220,17 @@ void dlgProfilesShowModal(short mode){
             dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PRF));
 			break;
 		case 1:
-			wf->SetCaption(MsgToken(1784)); // Aircraft profiles
+			wf->SetCaption(MsgToken<1784>()); // Aircraft profiles
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_PILOT));
             dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PILOT));
 			break;
 		case 2:
-			wf->SetCaption(MsgToken(1783)); // Pilot profiles
+			wf->SetCaption(MsgToken<1783>()); // Pilot profiles
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_AIRCRAFT));
             dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_AIRCRAFT));
 			break;
 		case 3:
-			wf->SetCaption(MsgToken(1819)); // Device profiles
+			wf->SetCaption(MsgToken<1819>()); // Device profiles
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_DEVICE));
             dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_DEVICE));
 			break;

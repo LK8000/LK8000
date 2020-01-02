@@ -195,13 +195,13 @@ passthrough:
 		if (ValidWayPoint(HomeWaypoint)) {
 			if ( (ValidTaskPoint(ActiveTaskPoint)) && (Task[ActiveTaskPoint].Index == HomeWaypoint )) {
 	// LKTOKEN  _@M82_ = "Already going home"
-				DoStatusMessage(MsgToken(82));
+				DoStatusMessage(MsgToken<82>());
 			} else {
 				GotoWaypoint(HomeWaypoint);
 			}
 		} else
 	// LKTOKEN  _@M465_ = "No Home to go!"
-			DoStatusMessage(MsgToken(465));
+			DoStatusMessage(MsgToken<465>());
 		return true;
 	case ckPanorama:
 		if (PGZoomTrigger==false)
@@ -286,9 +286,9 @@ passthrough:
 	case ckForceFreeFlightRestart:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (!CALCULATED_INFO.Flying) {
-			DoStatusMessage(MsgToken(922)); // NOT FLYING
+			DoStatusMessage(MsgToken<922>()); // NOT FLYING
 		} else {
-			if (MessageBoxX(MsgToken(1754), _T(""), mbYesNo) == IdYes) {
+			if (MessageBoxX(MsgToken<1754>(), _T(""), mbYesNo) == IdYes) {
 				LKSW_ForceFreeFlightRestart=true;
 			}
 		}
@@ -349,19 +349,19 @@ passthrough:
 		return devConfig<5>();
 	case ckResetOdometer:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		if (MessageBoxX(MsgToken(2229), _T(""), mbYesNo) == IdYes) {
+		if (MessageBoxX(MsgToken<2229>(), _T(""), mbYesNo) == IdYes) {
 			LKSW_ResetOdometer=true;
 		}
 		return true;
 	case ckForceLanding:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if ( !CALCULATED_INFO.Flying ) {
-			DoStatusMessage(MsgToken(922)); // NOT FLYING
+			DoStatusMessage(MsgToken<922>()); // NOT FLYING
 		} else {
 			if ( (GPS_INFO.Speed > TakeOffSpeedThreshold) && (!GPS_INFO.NAVWarning) ) {
-				DoStatusMessage(MsgToken(1799)); // STOP MOVING!
+				DoStatusMessage(MsgToken<1799>()); // STOP MOVING!
 			} else {
-				if (MessageBoxX(MsgToken(2230), _T(""), mbYesNo) == IdYes) {
+				if (MessageBoxX(MsgToken<2230>(), _T(""), mbYesNo) == IdYes) {
 					LKSW_ForceLanding=true;
 				}
 			}
@@ -369,18 +369,18 @@ passthrough:
 		return true;
 	case ckResetTripComputer:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		if (MessageBoxX(MsgToken(2236), _T(""), mbYesNo) == IdYes) {
+		if (MessageBoxX(MsgToken<2236>(), _T(""), mbYesNo) == IdYes) {
 			LKSW_ResetTripComputer=true;
 		}
 		return true;
 	case ckSonarToggle:
 		SonarWarning = !SonarWarning;
 		TCHAR sonarmsg[60];
-		_stprintf(sonarmsg,_T("%s "),MsgToken(1293)); // SONAR
+		_stprintf(sonarmsg,_T("%s "),MsgToken<1293>()); // SONAR
 		if (SonarWarning)
-			_tcscat(sonarmsg,MsgToken(1643)); // ENABLED
+			_tcscat(sonarmsg,MsgToken<1643>()); // ENABLED
 		else
-			_tcscat(sonarmsg,MsgToken(1600)); // DISABLED
+			_tcscat(sonarmsg,MsgToken<1600>()); // DISABLED
 		DoStatusMessage(sonarmsg,NULL,false);
         if (SonarWarning)
             LKSound(TEXT("LK_TONEUP.WAV"));
@@ -422,13 +422,13 @@ passthrough:
 	      MapWindow::SetAutoOrientation(); // 101008 reset it
 	      switch(DisplayOrientation)
 	      {
-            case TRACKUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken(737)) ; break;  // _@M737_ "Track up"
-            case NORTHUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken(483)) ; break;  // _@M483_ "North up"
-            case NORTHCIRCLE : _stprintf(MapOrientMsg,_T("%s"),MsgToken(482)) ; break;  // _@M482_ "North circling"
-            case TARGETCIRCLE: _stprintf(MapOrientMsg,_T("%s"),MsgToken(682)) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
-            case NORTHTRACK  : _stprintf(MapOrientMsg,_T("%s"),MsgToken(484)) ; break;  // _@M484_ "North/track"
-            case NORTHSMART  : _stprintf(MapOrientMsg,_T("%s"),MsgToken(481)) ; break;  // _@M481_ "North Smart"
-            case TARGETUP    : _stprintf(MapOrientMsg,_T("%s"),MsgToken(2349)); break;  // _@M2349_"Target up"
+            case TRACKUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken<737>()) ; break;  // _@M737_ "Track up"
+            case NORTHUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken<483>()) ; break;  // _@M483_ "North up"
+            case NORTHCIRCLE : _stprintf(MapOrientMsg,_T("%s"),MsgToken<482>()) ; break;  // _@M482_ "North circling"
+            case TARGETCIRCLE: _stprintf(MapOrientMsg,_T("%s"),MsgToken<682>()) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
+            case NORTHTRACK  : _stprintf(MapOrientMsg,_T("%s"),MsgToken<484>()) ; break;  // _@M484_ "North/track"
+            case NORTHSMART  : _stprintf(MapOrientMsg,_T("%s"),MsgToken<481>()) ; break;  // _@M481_ "North Smart"
+            case TARGETUP    : _stprintf(MapOrientMsg,_T("%s"),MsgToken<2349>()); break;  // _@M2349_"Target up"
 
 	      }
 	      DoStatusMessage(MapOrientMsg,NULL,false);

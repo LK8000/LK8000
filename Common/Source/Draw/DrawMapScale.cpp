@@ -113,15 +113,15 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     	if( DerivedDrawInfo.TaskFAI)
     	{
     	  Dist = DerivedDrawInfo.TaskFAIDistance;
-          _stprintf(Scale2, _T("FAI Task %.1f%s %s %.0f%s"),  Dist*DISTANCEMODIFY, Units::GetDistanceName(), Scale1 ,panbearing,MsgToken(2179) );
+          _stprintf(Scale2, _T("FAI Task %.1f%s %s %.0f%s"),  Dist*DISTANCEMODIFY, Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
     	}
         else
-    	  _stprintf(Scale2, _T("     Task %.1f%s %s %.0f%s"),  Dist*DISTANCEMODIFY, Units::GetDistanceName(), Scale1 ,panbearing,MsgToken(2179) );
+    	  _stprintf(Scale2, _T("     Task %.1f%s %s %.0f%s"),  Dist*DISTANCEMODIFY, Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
     }
     else
     {
 
-	  _stprintf(Scale2, _T(" %.1f%s %s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(),Scale1, panbearing, MsgToken(2179) );
+	  _stprintf(Scale2, _T(" %.1f%s %s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(),Scale1, panbearing, MsgToken<2179>() );
     }
 
 	goto _skip1;
@@ -135,11 +135,11 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     if (!DerivedDrawInfo.TerrainValid) {
 	if (terrainwarning < 120) {
 		// LKTOKEN _@M1335_ " TERRAIN?"
-		_tcscat(Scale2, MsgToken(1335));
+		_tcscat(Scale2, MsgToken<1335>());
 		terrainwarning++;
 	} else  {
 		// LKTOKEN _@M1336_ " T?"
-		_tcscat(Scale2, MsgToken(1336));
+		_tcscat(Scale2, MsgToken<1336>());
 		terrainwarning=120;
 	}
     } else terrainwarning=0;
@@ -149,7 +149,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     }
     if (zoom.AutoZoom()) {
 		// LKTOKEN _@M1337_ " AZM"
-      _tcscat(Scale2, MsgToken(1337));
+      _tcscat(Scale2, MsgToken<1337>());
     }
 
 _skip1:
@@ -160,50 +160,50 @@ _skip1:
 
     if (mode.AnyPan()) {
 		// LKTOKEN _@M1338_ " PAN"
-      _tcscat(Scale2, MsgToken(1338));
+      _tcscat(Scale2, MsgToken<1338>());
     }
 
     if (DrawBottom) {
 	switch(BottomMode) {
 		case BM_TRM:
 				// LKTOKEN _@M1340_ " TRM0"
-      			_tcscat(Scale2, MsgToken(1340));
+      			_tcscat(Scale2, MsgToken<1340>());
 			break;
 		case BM_CRU:
 				// LKTOKEN _@M1341_ " NAV1"
-      			_tcscat(Scale2, MsgToken(1341));
+      			_tcscat(Scale2, MsgToken<1341>());
 			break;
 		case BM_HGH:
 				// LKTOKEN _@M1342_ " ALT2"
-      			_tcscat(Scale2, MsgToken(1342));
+      			_tcscat(Scale2, MsgToken<1342>());
 			break;
 		case BM_AUX:
 				// LKTOKEN _@M1343_ " STA3"
-      			_tcscat(Scale2, MsgToken(1343));
+      			_tcscat(Scale2, MsgToken<1343>());
 			break;
 		case BM_TSK:
 				// LKTOKEN _@M1344_ " TSK4"
-      			_tcscat(Scale2, MsgToken(1344));
+      			_tcscat(Scale2, MsgToken<1344>());
 			break;
 		case BM_ALT:
 				// LKTOKEN _@M1345_ " ATN5"
-      			_tcscat(Scale2, MsgToken(1345));
+      			_tcscat(Scale2, MsgToken<1345>());
 			break;
 		case BM_SYS:
 				// LKTOKEN _@M1346_ " SYS6"
-      			_tcscat(Scale2, MsgToken(1346));
+      			_tcscat(Scale2, MsgToken<1346>());
 			break;
 		case BM_CUS2:
 				// LKTOKEN _@M1347_ " CRU7"
-      			_tcscat(Scale2, MsgToken(1347));
+      			_tcscat(Scale2, MsgToken<1347>());
 			break;
 		case BM_CUS3:
 				// LKTOKEN _@M1348_ " FIN8"
-      			_tcscat(Scale2, MsgToken(1348));
+      			_tcscat(Scale2, MsgToken<1348>());
 			break;
 		case BM_CUS:
 				// LKTOKEN _@M1349_ " AUX9"
-      			_tcscat(Scale2, MsgToken(1349));
+      			_tcscat(Scale2, MsgToken<1349>());
 			break;
 		default:
 			break;
@@ -214,13 +214,13 @@ _skip1:
 
     if (ReplayLogger::IsEnabled()) {
 	_stprintf(Scale,_T("%s %.0fX"),
-		MsgToken(1350), // " REPLAY"
+		MsgToken<1350>(), // " REPLAY"
 		ReplayLogger::TimeScale);
       _tcscat(Scale2, Scale);
     }
     if (BallastTimerActive) {
 		// LKTOKEN _@M1351_ " BALLAST"
-      _stprintf(TEMP,TEXT("%s %3.0fL"), MsgToken(1351), WEIGHTS[2]*BALLAST);
+      _stprintf(TEMP,TEXT("%s %3.0fL"), MsgToken<1351>(), WEIGHTS[2]*BALLAST);
       _tcscat(Scale2, TEMP);
     }
 

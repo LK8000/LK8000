@@ -76,7 +76,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			}
 
 			if (WayPointList[RESWP_TAKEOFF].Altitude==0) WayPointList[RESWP_TAKEOFF].Altitude=0.001; // 100227 BUGFIX?
-			SetWaypointComment(WayPointList[RESWP_TAKEOFF], MsgToken(1528));
+			SetWaypointComment(WayPointList[RESWP_TAKEOFF], MsgToken<1528>());
 			WayPointList[RESWP_TAKEOFF].Reachable=TRUE;
 			WayPointList[RESWP_TAKEOFF].Visible=TRUE;
 			if (!ValidWayPoint(HomeWaypoint)) {

@@ -84,12 +84,12 @@ public:
   dlgSelectWaypoint_t(int type, int FilterNear) {
     //If you add more items don't forget to change TYPEFILTERSNUM and UpdateList() also
     _stprintf(TypeFilter[0], TEXT("*"));	
-    _stprintf(TypeFilter[1], TEXT("%s"), MsgToken(1224)); // LKTOKEN _@M1224_ "Airport"
-    _stprintf(TypeFilter[2], TEXT("%s"), MsgToken(1225)); // LKTOKEN _@M1225_ "Landable"
-    _stprintf(TypeFilter[3], TEXT("%s"), MsgToken(1226)); // LKTOKEN _@M1226_ "Turnpoint"
+    _stprintf(TypeFilter[1], TEXT("%s"), MsgToken<1224>()); // LKTOKEN _@M1224_ "Airport"
+    _stprintf(TypeFilter[2], TEXT("%s"), MsgToken<1225>()); // LKTOKEN _@M1225_ "Landable"
+    _stprintf(TypeFilter[3], TEXT("%s"), MsgToken<1226>()); // LKTOKEN _@M1226_ "Turnpoint"
     for (unsigned i = 0 ; i < NO_WP_FILES; i++) {
       // TODO : do not add Empty File
-      _stprintf(TypeFilter[4+i], TEXT("%s %i"), MsgToken(2342), i+1 ); // LKTOKEN _@M2342_ "File"
+      _stprintf(TypeFilter[4+i], TEXT("%s %i"), MsgToken<2342>(), i+1 ); // LKTOKEN _@M2342_ "File"
     }
 
     if (type > -1) {
@@ -113,13 +113,13 @@ public:
   }
 
   const TCHAR* GetFilterLabel() const override {
-    return MsgToken(1226); // "_@M1226_": "Turnpoint"
+    return MsgToken<1226>(); // "_@M1226_": "Turnpoint"
   };
 
 protected:
 
   const TCHAR* GetCaption() const override {
-    return MsgToken(592);
+    return MsgToken<592>();
   };
 
   array_info_t PrepareData(const GeoPoint& position) override {

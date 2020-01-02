@@ -30,7 +30,7 @@ void Statistics::DrawNoData(LKSurface& Surface, const RECT& rc) {
   SIZE tsize;
   TCHAR text[80];
 	// LKTOKEN  _@M470_ = "No data"
-  _stprintf(text,TEXT("%s"), MsgToken(470));
+  _stprintf(text,TEXT("%s"), MsgToken<470>());
   Surface.GetTextSize(text, &tsize);
   int x = (int)(rc.left+rc.right-tsize.cx)/2;
   int y = (int)(rc.top+rc.bottom-tsize.cy)/2;

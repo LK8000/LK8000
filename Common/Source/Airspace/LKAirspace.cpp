@@ -1878,7 +1878,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             }
                             maxwarning--;
                             // LKTOKEN  _@M68_ = "Airspace"
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) {
+                            if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) {
                                 return false;
                             }
                         }
@@ -1900,7 +1900,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                                 InsideMap = true;
                               }
                             }
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
+                            if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) return false;
                         }
                         break;
 
@@ -1915,7 +1915,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                                 InsideMap = true;
                               }
                             }
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
+                            if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) return false;
                         }
                         break;
 
@@ -1945,7 +1945,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         } else {
                             _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
+                            if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) return false;
                         }
                         break;
 
@@ -1961,7 +1961,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             maxwarning--;
 
                             // LKTOKEN  _@M68_ = "Airspace"
-                            if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) {
+                            if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) {
                                 return false;
                             }
                         }
@@ -1995,7 +1995,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
                 _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 6 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                 // LKTOKEN  _@M68_ = "Airspace"
-                if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) return false;
+                if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) return false;
                 break;
 
             case _T('S'): // ignore the SB,SP ...
@@ -2013,7 +2013,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                     }
                     maxwarning--;
                     // LKTOKEN  _@M68_ = "Airspace"
-                    if (MessageBoxX(sTmp, MsgToken(68), mbOkCancel) == IdCancel) {
+                    if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) {
                         return false;
                     }
                 }
@@ -2440,7 +2440,7 @@ void CAirspaceManager::ReadAirspaces() {
       _sntprintf(msgbuf,128,TEXT(" %u of %u (%u%%) %s"), OutsideAirspaceCnt,
 		                                                 OutsideAirspaceCnt+airspaces_count,
 		                                                 (100*OutsideAirspaceCnt)/(OutsideAirspaceCnt +airspaces_count),
-		                                                 MsgToken(2347));  //_@M2347  "airspaces excluded!"
+		                                                 MsgToken<2347>());  //_@M2347  "airspaces excluded!"
       DoStatusMessage(msgbuf);
       StartupStore(TEXT(".%s"),msgbuf);
 
@@ -3194,13 +3194,13 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
     switch (type) {
         case RESTRICT:
             // LKTOKEN  _@M565_ = "Restricted"
-            return MsgToken(565);
+            return MsgToken<565>();
         case PROHIBITED:
             // LKTOKEN  _@M537_ = "Prohibited"
-            return MsgToken(537);
+            return MsgToken<537>();
         case DANGER:
             // LKTOKEN  _@M213_ = "Danger Area"
-            return MsgToken(213);
+            return MsgToken<213>();
         case CLASSA:
             return TEXT("Class A");
         case CLASSB:
@@ -3217,12 +3217,12 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
             return TEXT("Class G");
         case NOGLIDER:
             // LKTOKEN  _@M464_ = "No Glider"
-            return MsgToken(464);
+            return MsgToken<464>();
         case CTR:
             return TEXT("CTR");
         case WAVE:
             // LKTOKEN  _@M794_ = "Wave"
-            return MsgToken(794);
+            return MsgToken<794>();
         case AATASK:
             return TEXT("AAT");
         case CLASSTMZ:
@@ -3236,7 +3236,7 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
 
         case OTHER:
             // LKTOKEN  _@M765_ = "Unknown"
-            return MsgToken(765);
+            return MsgToken<765>();
         default:
             return TEXT("");
     }
@@ -3318,7 +3318,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
             break;
         case abAGL:
             if (alt->AGL <= 0)
-            	CopyTruncateString(intbuf, BUF_LEN, MsgToken(2387)); // _@M2387_ "GND"
+            	CopyTruncateString(intbuf, BUF_LEN, MsgToken<2387>()); // _@M2387_ "GND"
             else {
                 Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
                 Units::FormatAlternateUserAltitude(alt->AGL, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
@@ -3356,7 +3356,7 @@ void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, co
             break;
         case abAGL:
             if (alt->AGL <= 0)
-            	CopyTruncateString(intbuf, BUF_LEN, MsgToken(2387)); // _@M2387_ "GND"
+            	CopyTruncateString(intbuf, BUF_LEN, MsgToken<2387>()); // _@M2387_ "GND"
             else {
                 Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
                 _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);

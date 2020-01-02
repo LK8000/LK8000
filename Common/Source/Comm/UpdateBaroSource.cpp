@@ -26,7 +26,7 @@ void NotifyInvalidAltitude(unsigned index, double fAlt) {
   static bool notifyErr = true;
   if (notifyErr) {
     StartupStore(_T("...<device : %u> RECEIVING INVALID BARO ALTITUDE : %f"), index, fAlt);
-    DoStatusMessage(MsgToken(1530));
+    DoStatusMessage(MsgToken<1530>());
     notifyErr = false;
   }
 }

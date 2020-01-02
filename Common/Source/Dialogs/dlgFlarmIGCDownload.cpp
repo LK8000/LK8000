@@ -404,15 +404,15 @@ static void OnEnterClicked(WndButton *pWnd) {
   IGC_DLIndex = IGC_CurIndex;
   bAbort = false;
   bShowMsg = false;
-  _stprintf(Tmp, _T("%s %s ?"), MsgToken(2404),
+  _stprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(),
             IGCFileList.at(IGC_DLIndex).Line1);
-  if (MessageBoxX(Tmp, MsgToken(2404), mbYesNo) == IdYes) // _@2404 "Download"
+  if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes) // _@2404 "Download"
   {
     /** check if file already exist and is not empty ************/
     TCHAR IGCFilename[MAX_PATH];
     if (GetIGCFilename(IGCFilename, IGC_DLIndex)) {
       if (lk::filesystem::exist(IGCFilename))
-        if (MessageBoxX(MsgToken(2416), MsgToken(2398), mbYesNo) ==
+        if (MessageBoxX(MsgToken<2416>(), MsgToken<2398>(), mbYesNo) ==
             IdNo) // _@M2416_ "File already exits\n download anyway?"
         {
           FlarmReadIGC.state(IDLE_STATE);
@@ -499,7 +499,7 @@ void StopIGCRead(void) {
 static void OnCloseClicked(WndButton *pWnd) {
   StopIGCRead();
   if (FlarmReadIGC.state() == IDLE_STATE) {
-    if (MessageBoxX(MsgToken(2413), MsgToken(2403), mbYesNo) ==
+    if (MessageBoxX(MsgToken<2413>(), MsgToken<2403>(), mbYesNo) ==
         IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot
                // now?"
     {
@@ -524,7 +524,7 @@ static bool OnTimer(WndForm *pWnd) {
       UpdateList();
       if (FlarmReadIGC.state() == IDLE_STATE) {
         WndButton *wb = (WndButton *)pForm->FindByName(TEXT("cmdClose"));
-        wb->SetCaption(MsgToken(186)); // _@M186_ "Close"
+        wb->SetCaption(MsgToken<186>()); // _@M186_ "Close"
 #ifdef PRPGRESS_DLG
         CloseIGCProgressDialog();
 #endif
@@ -533,36 +533,36 @@ static bool OnTimer(WndForm *pWnd) {
           switch (DownloadError) {
           case REC_NO_ERROR:
             _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s\n%s"),
-                       IGCFileList.at(IGC_DLIndex).Line1, MsgToken(2406));
+                       IGCFileList.at(IGC_DLIndex).Line1, MsgToken<2406>());
             break; // 	_@M2406_ "IGC File download complete"
           case REC_TIMEOUT_ERROR:
-            _tcscpy(Tmp, MsgToken(2407));
+            _tcscpy(Tmp, MsgToken<2407>());
             break; // _@M2407_ "Error: receive timeout
           case REC_CRC_ERROR:
-            _tcscpy(Tmp, MsgToken(2408));
+            _tcscpy(Tmp, MsgToken<2408>());
             break; // _@M2408_ "Error: CRC checksum fail"
           case REC_ABORTED:
-            _tcscpy(Tmp, MsgToken(2415));
+            _tcscpy(Tmp, MsgToken<2415>());
             break; // _@M2415_ "IGC Download aborted!"
           case FILENAME_ERROR:
-            _tcscpy(Tmp, MsgToken(2409));
+            _tcscpy(Tmp, MsgToken<2409>());
             break; // _@M2409_ "Error: invalid filename"
           case FILE_OPEN_ERROR:
-            _tcscpy(Tmp, MsgToken(2410));
+            _tcscpy(Tmp, MsgToken<2410>());
             break; // _@M2410_ "Error: can't open file"
           case IGC_RECEIVE_ERROR:
-            _tcscpy(Tmp, MsgToken(2411));
+            _tcscpy(Tmp, MsgToken<2411>());
             break; // _@M2411_ "Error: Block invalid"
           case REC_NO_DEVICE:
-            _tcscpy(Tmp, MsgToken(2401));
+            _tcscpy(Tmp, MsgToken<2401>());
             break; // _@M2401_ "No Device found"
 
           default:
-            _tcscpy(Tmp, MsgToken(2412));
+            _tcscpy(Tmp, MsgToken<2412>());
             break; // _@M2412_ "Error: unknown"
           }
           bShowMsg = false;
-          if (MessageBoxX(Tmp, MsgToken(2398), mbOk) ==
+          if (MessageBoxX(Tmp, MsgToken<2398>(), mbOk) ==
               IdYes) // _@M2406_ "Error: communication timeout"Reboot"
           {
           }
@@ -644,7 +644,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t* d) {
 
   if (wf) {
     WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdClose"));
-    wb->SetCaption(MsgToken(670)); // _@M670_ "Stop"
+    wb->SetCaption(MsgToken<670>()); // _@M670_ "Stop"
 
     wIGCSelectListList =
         (WndListFrame *)wf->FindByName(TEXT("frmMultiSelectListList"));
@@ -922,7 +922,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
   //   ListElementType NewElement;
         _tcscpy(NewElement.Line1, _T("        Error:"));
         _sntprintf(NewElement.Line2, LST_STRG_LEN, _T("         %s"),
-                    MsgToken(2401)); // _@M2401_ "No Device found"
+                    MsgToken<2401>()); // _@M2401_ "No Device found"
         IGCFileList.clear();
         IGCFileList.push_back(NewElement);
         FlarmReadIGC.state( IDLE_STATE);
@@ -1065,7 +1065,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
             }
 
             _sntprintf(
-                  szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."), MsgToken(2400),
+                  szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."), MsgToken<2400>(),
                   pByteBlk[2],
                   IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
 
@@ -1105,7 +1105,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
           //    err = REC_NO_ERROR;
         } else {
           _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"),
-                      MsgToken(2406)); // _@M2406_ "IGC File download complete!"
+                      MsgToken<2406>()); // _@M2406_ "IGC File download complete!"
         }
         deb_Log(_T("IGC download complete"));
       break;

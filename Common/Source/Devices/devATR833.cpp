@@ -211,7 +211,7 @@ BOOL ATR833_KeepAlive(DeviceDescriptor_t* d) {
          if(DeviceTimeout == 4)
          {
            StartupStore(_T("ATR833 No Response !%s"),  NEWLINE);
-           if(MsgCnt++ < 10) DoStatusMessage( _T(" ATR833"), MsgToken(959)); // ATR833T OFF
+           if(MsgCnt++ < 10) DoStatusMessage( _T(" ATR833"), MsgToken<959>()); // ATR833T OFF
          }
          static uint8_t Alternate = 0;
          if((Alternate++ % 2) == 0)      
@@ -373,7 +373,7 @@ int ATR833_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len)
       {        
         ATR833RequestAllData(d);
         StartupStore(_T("ATR833 detected! %s"),  NEWLINE);
-        if(MsgCnt++ < 10) DoStatusMessage( _T(" ATR833"), MsgToken(958)); // _@M947_ "found ATR833T"
+        if(MsgCnt++ < 10) DoStatusMessage( _T(" ATR833"), MsgToken<958>()); // _@M947_ "found ATR833T"
       }
       DeviceTimeout = 0;
       processed  = 1;

@@ -1129,7 +1129,7 @@ static bool LiveTrack24_Radar() {
 			Time_Fix = GPS_INFO.Time;
 
 		if (!flarmwasinit) {
-			DoStatusMessage(LKGetText(TEXT("_@M279_")), TEXT("LiveTrack24")); // FLARM DETECTED from LiveTrack24
+			DoStatusMessage(MsgToken<279>(), TEXT("LiveTrack24")); // FLARM DETECTED from LiveTrack24
 			flarmwasinit = true;
 		}
 

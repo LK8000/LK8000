@@ -67,7 +67,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("cmd>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!"
-      _tcsncpy(errBuf, MsgToken(1414), errBufSize);
+      _tcsncpy(errBuf, MsgToken<1414>(), errBufSize);
       return false;
     }
     return true;
@@ -99,7 +99,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("up>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!"
-      _tcsncpy(errBuf, MsgToken(1414), errBufSize);
+      _tcsncpy(errBuf, MsgToken<1414>(), errBufSize);
       return false;
     }
     return true;
@@ -119,7 +119,7 @@ namespace {
   {
     if(!ExpectString(d, TEXT("dn>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!"
-      _tcsncpy(errBuf, MsgToken(1414), errBufSize);
+      _tcsncpy(errBuf, MsgToken<1414>(), errBufSize);
       return false;
     }
     return true;
@@ -353,7 +353,7 @@ BOOL CDevCAIGpsNav::DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl
   TCHAR buffer[BUFF_LEN];
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1404_ = "Opening connection"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1404));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken<1400>(), MsgToken<1404>());
   CreateProgressDialog(buffer);
 
   {
@@ -373,7 +373,7 @@ BOOL CDevCAIGpsNav::DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl
 
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1403_ = "Sending declaration"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken<1400>(), MsgToken<1403>());
   CreateProgressDialog(buffer);
 
   if(status) {
@@ -402,7 +402,7 @@ BOOL CDevCAIGpsNav::DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl
 
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M1406_ = "Closing connection"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1406));
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken<1400>(), MsgToken<1406>());
   CreateProgressDialog(buffer);
 
   // restore NMEA mode

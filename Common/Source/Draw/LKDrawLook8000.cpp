@@ -278,7 +278,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         }
         if (gateinuse < 0) {
             // LKTOKEN  _@M157_ = "CLOSED"
-            _tcscpy(Buffer, MsgToken(157));
+            _tcscpy(Buffer, MsgToken<157>());
         } else {
             const TCHAR* StartGateName = ScreenLandscape ? _T("Start ") : _T("ST ");
             _stprintf(Buffer, _T("%s%d/%d"), StartGateName, gateinuse + 1, PGNumberOfGates);
@@ -416,7 +416,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             _stprintf(BufferValue, _T("START %s"), BufferTitle);
         } else {
             // LKTOKEN  _@M316_ = "GATES CLOSED"
-            _tcscpy(BufferValue, MsgToken(316));
+            _tcscpy(BufferValue, MsgToken<316>());
         }
         rcy = yrightoffset - SizeBigFont.cy - (SizeGatesFont.cy * 2);
         rcx = rc.right - RIGHTMARGIN;
@@ -427,20 +427,20 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         if (HaveGates()) {
             if (!DerivedDrawInfo.Flying) {
                 // LKTOKEN  _@M922_ = "NOT FLYING"
-                _tcscpy(BufferValue, MsgToken(922));
+                _tcscpy(BufferValue, MsgToken<922>());
             } else {
                 bool from_inside = ExitStart(DerivedDrawInfo);
                 if (gatechrono > 0) {
                     // IsInSector works reversed!
                     if (!from_inside && DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M923_ = "WRONG inSIDE"
-                        _tcscpy(BufferValue, MsgToken(923));
+                        _tcscpy(BufferValue, MsgToken<923>());
                     } else if (from_inside && !DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M924_ = "WRONG outSIDE"
-                        _tcscpy(BufferValue, MsgToken(924));
+                        _tcscpy(BufferValue, MsgToken<924>());
                     } else {
                         // LKTOKEN  _@M921_ = "countdown"
-                        _tcscpy(BufferValue, MsgToken(921));
+                        _tcscpy(BufferValue, MsgToken<921>());
                     }
                 } else {
                     BufferValue[0] = _T('\0');
@@ -459,22 +459,22 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                             // IsInSector works reversed!
                             if (!from_inside && DerivedDrawInfo.IsInSector) {
                                 // LKTOKEN  _@M923_ = "WRONG inSIDE"
-                                _tcscpy(BufferValue, MsgToken(923));
+                                _tcscpy(BufferValue, MsgToken<923>());
                             } else if (from_inside && !DerivedDrawInfo.IsInSector) {
                                 // LKTOKEN  _@M924_ = "WRONG outSIDE"
-                                _tcscpy(BufferValue, MsgToken(924));
+                                _tcscpy(BufferValue, MsgToken<924>());
                             }
                         }
                     }
                     if (BufferValue[0] == _T('\0')) {
                         // LKTOKEN  _@M314_ = "GATE OPEN"
-                        _tcscpy(BufferValue, MsgToken(314));
+                        _tcscpy(BufferValue, MsgToken<314>());
                     }
                 }
             }
         } else {
             // LKTOKEN  _@M925_ = "NO TSK START"
-            _tcscpy(BufferValue, MsgToken(925));
+            _tcscpy(BufferValue, MsgToken<925>());
         }
         LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
@@ -696,19 +696,19 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 TCHAR amcmode[10];
                 switch (AutoMcMode) {
                     case amcFinalGlide:
-                        _tcscpy(amcmode, MsgToken(1676));
+                        _tcscpy(amcmode, MsgToken<1676>());
                         break;
                     case amcAverageClimb:
-                        _tcscpy(amcmode, MsgToken(1678));
+                        _tcscpy(amcmode, MsgToken<1678>());
                         break;
                     case amcFinalAndClimb:
                         if (DerivedDrawInfo.FinalGlide)
-                            _tcscpy(amcmode, MsgToken(1676));
+                            _tcscpy(amcmode, MsgToken<1676>());
                         else
-                            _tcscpy(amcmode, MsgToken(1678));
+                            _tcscpy(amcmode, MsgToken<1678>());
                         break;
                     case amcEquivalent:
-                        _tcscpy(amcmode, MsgToken(1680));
+                        _tcscpy(amcmode, MsgToken<1680>());
                         break;
                     default:
                         _tcscpy(amcmode, _T("?"));

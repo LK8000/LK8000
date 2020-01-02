@@ -89,7 +89,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     _stprintf(tmpT, _T("MMMM"));
     Surface.GetTextSize(tmpT, &textSizeTop);
     Surface.SelectObject(line2Font);
-    _stprintf(tmpT, _T("55.5%s 79%s%s "), Units::GetDistanceName(), MsgToken(2179), MsgToken(2183));
+    _stprintf(tmpT, _T("55.5%s 79%s%s "), Units::GetDistanceName(), MsgToken<2179>(), MsgToken<2183>());
     Surface.GetTextSize(tmpT, &textSizeBot);
 
     // we can cut the waypoint name, but not the value data, so we use the second row of data

@@ -681,13 +681,13 @@ bool CDevIMI::Connect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[]
     }
     else {
       // LKTOKEN  _@M1414_ = "Device not responsive!"
-      _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(1414));
+      _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken<1414>());
       return false;
     }
   }
   else if(errBuf[0] == '\0') {
     // LKTOKEN  _@M1414_ = "Device not responsive!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(1414));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken<1414>());
     return false;
   }
 
@@ -721,7 +721,7 @@ bool CDevIMI::Connect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[]
   }
   else if(errBuf[0] == '\0') {
     // LKTOKEN  _@M1414_ = "Device not responsive!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(1414));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken<1414>());
     return false;
   }
 
@@ -743,7 +743,7 @@ bool CDevIMI::DeclarationWrite(DeviceDescriptor_t* d, const Declaration_t &decl,
 {
   if(!_connected) {
     // LKTOKEN  _@M1411_ = "Device not connected!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(1411));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken<1411>());
     return false;
   }
 
@@ -776,7 +776,7 @@ bool CDevIMI::DeclarationWrite(DeviceDescriptor_t* d, const Declaration_t &decl,
   const TMsg *msg = SendRet(d, errBufSize, errBuf, MSG_DECLARATION, &imiDecl, sizeof(imiDecl), MSG_ACK_SUCCESS, 0, static_cast<IMIBYTE>(-1));
   if(!msg && errBuf[0] == '\0') {
     // LKTOKEN  _@M1415_ = "Declaration not accepted!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken(1415));
+    _sntprintf(errBuf, errBufSize, _T("%s"), MsgToken<1415>());
   }
 
   return msg;

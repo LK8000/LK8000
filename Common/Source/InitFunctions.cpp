@@ -79,7 +79,7 @@ void PreloadInitialisation(bool ask) {
 
     if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
         StartupStore(_T(". USER ASKED FOR PROFILE FULL RESET!%s"),NEWLINE);
-        DoStatusMessage(MsgToken(1757)); // LK8000 PROFILES RESET
+        DoStatusMessage(MsgToken<1757>()); // LK8000 PROFILES RESET
         LKProfileResetDefault();
 	// Notice: this is also resetting the default Aircraft and Pilot profiles to demo settings
     } else  {
@@ -114,7 +114,7 @@ void PreloadInitialisation(bool ask) {
     Message::InitFont();
 
     // LKTOKEN _@M1206_ "Initialising..."
-	CreateProgressDialog(MsgToken(1206));
+	CreateProgressDialog(MsgToken<1206>());
   }
 
   // Interface (before interface)

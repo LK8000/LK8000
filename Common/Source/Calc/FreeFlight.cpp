@@ -91,7 +91,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	#if TESTBENCH
 	StartupStore(_T("... Forced FreeFlight Restart!\n"));
 	#endif
-	DoStatusMessage(MsgToken(1452),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
+	DoStatusMessage(MsgToken<1452>(),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
 	goto confirmbacktrue;
   }
 
@@ -131,7 +131,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
           if(!nowGearWarning) {
               if(dist < 3700) { // show gear warning if 2Nautical Miles close to landable
 	          LKSound(_T("LK_GEARWARNING.WAV"));
-		  DoStatusMessage(MsgToken(1834),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
+		  DoStatusMessage(MsgToken<1834>(),NULL,false);  // LKTOKEN _@M1834_ "Prepare for landing !"
 		  nowGearWarning=true;
 		  noMessages++;
 
@@ -152,7 +152,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
               if (noMessages==MAX_NO_GEAR_WARN) {
                   StartupStore(_T("... GOING SILENT on too many Gear warnings.  %s%s"),WhatTimeIsIt(),NEWLINE);
 
-	          DoStatusMessage(MsgToken(2304)); // GOING SILENT ON GEAR REPORTING
+	          DoStatusMessage(MsgToken<2304>()); // GOING SILENT ON GEAR REPORTING
 	          noMessages++;	// we go to 11, and never be back here
 	      }
           }
@@ -331,7 +331,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   #if ( WINDOWSPC==0 )
   if (SIMMODE)
   #endif
-  DoStatusMessage(MsgToken(1452),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
+  DoStatusMessage(MsgToken<1452>(),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
 
   confirmbacktrue:
   // Always sound
@@ -363,7 +363,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             TCHAR Comment[100];
 
             _sntprintf(Comment, 99, _T("%s: %s  @%.0f%s QNH"),
-                    MsgToken(1754), // Free flight start
+                    MsgToken<1754>(), // Free flight start
                     Temp,
                     ALTITUDEMODIFY * Calculated->FreeFlightStartQNH,
                     Units::GetAltitudeName());

@@ -68,7 +68,7 @@ public:
 
   const TCHAR* GetTypeLabel(unsigned type) const override {
     if( type == AIRSPACECLASSCOUNT + 1) {
-      return MsgToken(239); // "_@M00239_": "Disabled"
+      return MsgToken<239>(); // "_@M00239_": "Disabled"
     } else if (type > 0) {
       return CAirspaceManager::GetAirspaceTypeText(type-1);
     } 
@@ -87,13 +87,13 @@ public:
   }  
 
   const TCHAR* GetFilterLabel() const override {
-    return MsgToken(68); // "_@M68_": "Airspace"
+    return MsgToken<68>(); // "_@M68_": "Airspace"
   };
 
 protected:
 
   const TCHAR* GetCaption() const override {
-    return MsgToken(591);
+    return MsgToken<591>();
   };
 
   array_info_t PrepareData(const GeoPoint& position) override {

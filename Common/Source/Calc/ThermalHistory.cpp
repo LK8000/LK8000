@@ -112,7 +112,7 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
   if (j>0)
     SetWaypointComment(WayPointList[RESWP_LASTTHERMAL],ThermalHistory[i].Name);
   else
-    SetWaypointComment(WayPointList[RESWP_LASTTHERMAL], MsgToken(1320)); // last good thermal
+    SetWaypointComment(WayPointList[RESWP_LASTTHERMAL], MsgToken<1320>()); // last good thermal
 
   UnlockTaskData();
 

@@ -188,21 +188,21 @@ static void UpdateCaption(void) {
     switch (twType) {
     case 0:
 	// LKTOKEN  _@M657_ = "Start" 
-      _tcscpy(title, MsgToken(657));
+      _tcscpy(title, MsgToken<657>());
       break;
     case 1:
 	// LKTOKEN  _@M749_ = "Turnpoint"
-      _stprintf(title, TEXT("%s %i"),  MsgToken(749),twItemIndex);
+      _stprintf(title, TEXT("%s %i"),  MsgToken<749>(),twItemIndex);
       break;
     case 2:
 	// LKTOKEN  _@M299_ = "Finish" 
-      _tcscpy(title, MsgToken(299));
+      _tcscpy(title, MsgToken<299>());
       break;
     };
 
     TCHAR landableStr[5] = TEXT(" [X]");
     // LKTOKEN _@M1238_ "L"
-    landableStr[2] = MsgToken(1238)[0];
+    landableStr[2] = MsgToken<1238>()[0];
     
     _stprintf(sTmp, TEXT("%s: %s%s"), title,
               WayPointList[Task[twItemIndex].Index].Name,
@@ -210,7 +210,7 @@ static void UpdateCaption(void) {
     wf->SetCaption(sTmp);
   } else {
 	// LKTOKEN  _@M9_ = "(invalid)" 
-    wf->SetCaption(MsgToken(9));
+    wf->SetCaption(MsgToken<9>());
   }
 }
 
@@ -294,15 +294,15 @@ static void SetValues(bool first) {
     if (first) {
       dfe->Clear();
       // LKTOKEN  _@M418_ = "Manual" 
-      dfe->addEnumText(MsgToken(418));
+      dfe->addEnumText(MsgToken<418>());
       // LKTOKEN _@M897_ "Auto"
-      dfe->addEnumText(MsgToken(897));
+      dfe->addEnumText(MsgToken<897>());
       // LKTOKEN  _@M97_ = "Arm" 
-      dfe->addEnumText(MsgToken(97));
+      dfe->addEnumText(MsgToken<97>());
       // LKTOKEN  _@M96_ = "Arm start" 
-      dfe->addEnumText(MsgToken(96));
+      dfe->addEnumText(MsgToken<96>());
       // LKTOKEN  _@M1798_ = "Arm TPs" 
-      dfe->addEnumText(MsgToken(1798));
+      dfe->addEnumText(MsgToken<1798>());
     }
     dfe->Set(AutoAdvance);
     wp->RefreshDisplay();
@@ -328,15 +328,15 @@ static void SetValues(bool first) {
     if (first) {
         dfe->Clear();
         // LKTOKEN  _@M1916_ "Default" 
-        dfe->addEnumText(MsgToken(1916));
+        dfe->addEnumText(MsgToken<1916>());
         // LKTOKEN _@M1902_ "AAT"
-        dfe->addEnumText(MsgToken(1918));
+        dfe->addEnumText(MsgToken<1918>());
         if(ISPARAGLIDER) {
             // LKTOKEN  _@M1904_ "Race To Goal / Min Time"
-            dfe->addEnumText(MsgToken(1915));
+            dfe->addEnumText(MsgToken<1915>());
         } else {
             // LKTOKEN  _@M1903_ "Grand Prix"
-            dfe->addEnumText(MsgToken(1914));
+            dfe->addEnumText(MsgToken<1914>());
         }
     }
     dfe->Set(gTaskType);

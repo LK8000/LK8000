@@ -275,7 +275,7 @@ void NMEAParser::setFlarmAvailable(NMEA_INFO *pGPS) {
 		static int MessageCnt =0;
 		if(MessageCnt < 10) {
 			MessageCnt++;
-			DoStatusMessage(MsgToken(279)); // FLARM DETECTED
+			DoStatusMessage(MsgToken<279>()); // FLARM DETECTED
 		}
 #if FLARMDEADLOCK
 		for(const auto& dev : DeviceList) {
@@ -357,7 +357,7 @@ BOOL NMEAParser::PFLAU(const char *String, char **params, size_t nparams, NMEA_I
 		}
 	}
 	if (flarm_count > 1) {
-		DoStatusMessage(MsgToken(1529));
+		DoStatusMessage(MsgToken<1529>());
 		StartupStore(_T("......... WARNING! FLARM DETECTED ON TWO COM PORTS! %s\n"), WhatTimeIsIt());
 		pGPS->FLARM_Available = false;
 		isFlarm = false;
@@ -667,7 +667,7 @@ void CheckBackTarget(NMEA_INFO &Info, int slot) {
 	// if more than 15 minutes ago, warn pilot with full message and sound
 	if ( (Info.Time - Info.FLARM_Traffic[slot].Time_Fix) >=900) {
 		// LKTOKEN  _@M674_ = "TARGET BACK VISIBLE" 
-		DoStatusMessage(MsgToken(674));
+		DoStatusMessage(MsgToken<674>());
 		if (!UseExtSound1 && !UseExtSound2) {
 			LKSound(_T("TARGVISIBLE.WAV"));
 		}

@@ -159,8 +159,8 @@ void dlgThermalDetails(int indexid) {
   if (_tcslen(ThermalHistory[indexid].Near) >0) {
 	TCHAR tcap[100];
 	_stprintf(tcap,_T("%s %s: %s"),
-		MsgToken(905), // Thermal
-		MsgToken(456), // Near
+		MsgToken<905>(), // Thermal
+		MsgToken<456>(), // Near
 		ThermalHistory[indexid].Near
 	);
 	wf->SetCaption(tcap);

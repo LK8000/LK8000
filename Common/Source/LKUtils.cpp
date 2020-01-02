@@ -98,9 +98,9 @@ void GotoWaypoint(const int wpnum) {
 
 	if (MessageBoxX(
 	// LKTOKEN  _@M158_ = "CONFIRM GOTO, ABORTING TASK?"
-	MsgToken(158),
+	MsgToken<158>(),
 	// LKTOKEN  _@M40_ = "A task is running!"
-	MsgToken(40),
+	MsgToken<40>(),
 	mbYesNo) == IdYes) {
 		LockTaskData();
 		FlyDirectTo(wpnum);
@@ -121,7 +121,7 @@ void ToggleBaroAltitude() {
 		InputEvents::eventBaroAltitude(_T("show"));
   }
   else {
-    DoStatusMessage(MsgToken(121)); // BARO ALTITUDE NOT AVAILABLE
+    DoStatusMessage(MsgToken<121>()); // BARO ALTITUDE NOT AVAILABLE
   }
 }
 
@@ -337,18 +337,18 @@ void TaskStartMessage() {
   TCHAR TempAll[300];
   _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
   // Altitude
-  MsgToken(89),
+  MsgToken<89>(),
   TempAlt,
   // Speed
-  MsgToken(632),
+  MsgToken<632>(),
   TempSpeed,
   // Time
-  MsgToken(720),
+  MsgToken<720>(),
   TempTime);
 
   // ALWAYS issue DoStatusMessage BEFORE sounds, if possible.
   // LKTOKEN  _@M692_ = "Task Start"
-  DoStatusMessage(MsgToken(692), TempAll);
+  DoStatusMessage(MsgToken<692>(), TempAll);
 }
 
 void TaskFinishMessage() {
@@ -367,20 +367,20 @@ void TaskFinishMessage() {
 
   _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s\r\n%s: %s"),
   // Altitude
-  MsgToken(89),
+  MsgToken<89>(),
   TempAlt,
   // Speed
-  MsgToken(632),
+  MsgToken<632>(),
   TempSpeed,
   // Time
-  MsgToken(720),
+  MsgToken<720>(),
   TempTime,
   // task speed
-  MsgToken(697),
+  MsgToken<697>(),
   TempTskSpeed);
 
   // LKTOKEN  _@M687_ = "Task Finish"
-  DoStatusMessage(MsgToken(687), TempAll);
+  DoStatusMessage(MsgToken<687>(), TempAll);
 
 }
 
@@ -389,6 +389,6 @@ void OutOfMemory(const TCHAR *where, int line) {
   StartupStore(_T(">>> OUT OF MEMORY in <%s> line %d%s"),where,line,NEWLINE);
  
   DoStatusMessage(
-    MsgToken(1663),  // NOT ENOUGH MEMORY
-    MsgToken(1662));  // SYSTEM ERROR  
+    MsgToken<1663>(),  // NOT ENOUGH MEMORY
+    MsgToken<1662>());  // SYSTEM ERROR  
 }

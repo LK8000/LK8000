@@ -22,7 +22,7 @@ void guiStartLogger(bool noAsk) {
 
 	if (!noAsk) {
 		TCHAR TaskMessage[1024];
-		_tcscpy(TaskMessage,MsgToken(876)); // Start Logger With Declaration\r\n;
+		_tcscpy(TaskMessage,MsgToken<876>()); // Start Logger With Declaration\r\n;
 		_tcscat(TaskMessage,_T("\r\n"));
 
 		if(ValidTaskPoint(0)) {
@@ -36,7 +36,7 @@ void guiStartLogger(bool noAsk) {
 		}
 
 		// LKTOKEN  _@M637_ = "Start Logger"
-		if (MessageBoxX(TaskMessage,MsgToken(637), mbYesNo) != IdYes) {
+		if (MessageBoxX(TaskMessage,MsgToken<637>(), mbYesNo) != IdYes) {
 			return;
 		}
 	}
@@ -46,7 +46,7 @@ void guiStartLogger(bool noAsk) {
 	} else {
 		// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!"
 		// LKTOKEN  _@M404_ = "Logger Error"
-		MessageBoxX(MsgToken(408), MsgToken(404), mbOk);
+		MessageBoxX(MsgToken<408>(), MsgToken<404>(), mbOk);
 		StartupStore(_T("------ Logger not started: Insufficient Storage"));
 	}
 
@@ -60,7 +60,7 @@ void guiStopLogger(bool noAsk) {
 	}
 
 	// LKTOKEN  _@M669_ = "Stop Logger"
-	if(noAsk || (MessageBoxX(MsgToken(669), MsgToken(669), mbYesNo) == IdYes)) {
+	if(noAsk || (MessageBoxX(MsgToken<669>(), MsgToken<669>(), mbYesNo) == IdYes)) {
 		StopLogger();
 		if (!noAsk) {
 			// force landing for paragliders..

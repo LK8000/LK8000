@@ -30,8 +30,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
+        dfe->addEnumText(MsgToken<491>()); // OFF
+        dfe->addEnumText(MsgToken<894>()); // ON
 	dfe->Set(Overlay_TopLeft);
 	wp->RefreshDisplay();
   }
@@ -39,8 +39,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpOvTitle"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
+        dfe->addEnumText(MsgToken<491>()); // OFF
+        dfe->addEnumText(MsgToken<894>()); // ON
 	dfe->Set(Overlay_Title);
 	wp->RefreshDisplay();
   }
@@ -48,32 +48,32 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
+        dfe->addEnumText(MsgToken<491>()); // OFF
+        dfe->addEnumText(MsgToken<894>()); // ON
 	dfe->Set(Overlay_TopMid);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
+        dfe->addEnumText(MsgToken<491>()); // OFF
+        dfe->addEnumText(MsgToken<894>()); // ON
 	dfe->Set(Overlay_TopRight);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-        dfe->addEnumText(MsgToken(491)); // OFF
-        dfe->addEnumText(MsgToken(894)); // ON
+        dfe->addEnumText(MsgToken<491>()); // OFF
+        dfe->addEnumText(MsgToken<894>()); // ON
 	dfe->Set(Overlay_TopDown);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(491)); // OFF
-    dfe->addEnumText(MsgToken(2090)); // Default
+    dfe->addEnumText(MsgToken<491>()); // OFF
+    dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
@@ -87,8 +87,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(491)); // OFF
-    dfe->addEnumText(MsgToken(2090)); // Default
+    dfe->addEnumText(MsgToken<491>()); // OFF
+    dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
@@ -102,8 +102,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(491)); // OFF
-    dfe->addEnumText(MsgToken(2090)); // Default
+    dfe->addEnumText(MsgToken<491>()); // OFF
+    dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
@@ -117,8 +117,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(491)); // OFF
-    dfe->addEnumText(MsgToken(2090)); // Default
+    dfe->addEnumText(MsgToken<491>()); // OFF
+    dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
@@ -132,8 +132,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(491)); // OFF
-    dfe->addEnumText(MsgToken(2090)); // Default
+    dfe->addEnumText(MsgToken<491>()); // OFF
+    dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
@@ -147,8 +147,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(491)); // OFF
-    dfe->addEnumText(MsgToken(2090)); // Default
+    dfe->addEnumText(MsgToken<491>()); // OFF
+    dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
@@ -162,8 +162,8 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(491)); // OFF
-    dfe->addEnumText(MsgToken(2090)); // Default
+    dfe->addEnumText(MsgToken<491>()); // OFF
+    dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }

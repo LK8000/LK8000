@@ -85,7 +85,7 @@ static void NextPage(WndForm* pForm, int Step){
 
   switch(checklist_data.size()) {
 	case 0:
-		_stprintf(buffer, _T("%s %s"),NoteModeTitle,MsgToken(1750)); // empty
+		_stprintf(buffer, _T("%s %s"),NoteModeTitle,MsgToken<1750>()); // empty
 		break;
 	case 1:
 		_stprintf(buffer, _T("%s"),NoteModeTitle);
@@ -288,7 +288,7 @@ bool LoadChecklist(short checklistmode) {
 	// notepad
 	case 0:
 		LocalPath(filename, TEXT(LKD_CONF), _T(LKF_CHECKLIST));
-		_stprintf(NoteModeTitle,_T("%s"),MsgToken(878));  // notepad
+		_stprintf(NoteModeTitle,_T("%s"),MsgToken<878>());  // notepad
 
 		if (LoadChecklist(filename,false)) return true;
                 // if no user file, look for demo file
@@ -297,12 +297,12 @@ bool LoadChecklist(short checklistmode) {
 	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS), _T(LKF_LOGBOOKTXT));
-		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
+		_stprintf(NoteModeTitle,_T("%s"),MsgToken<1748>());  // logbook
 		 return LoadChecklist(filename,true);
 	// logbook LST
 	case 2:
 		LocalPath(filename, TEXT(LKD_LOGS), _T(LKF_LOGBOOKLST));
-		_stprintf(NoteModeTitle,_T("%s"),MsgToken(1748));  // logbook
+		_stprintf(NoteModeTitle,_T("%s"),MsgToken<1748>());  // logbook
 		return LoadChecklist(filename,true);
 		break;
 	case 3:

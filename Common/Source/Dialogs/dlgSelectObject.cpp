@@ -221,18 +221,18 @@ void dlgSelectObject::SetDirectionData(DataField *Sender) {
       break;
     case DirHDG:
       _stprintf(sTmp, TEXT("%s(%d%s)"), 
-                  MsgToken(1229), // _@1229 HDG
+                  MsgToken<1229>(), // _@1229 HDG
                   iround(AngleLimit360(CALCULATED_INFO.Heading)),
-                  MsgToken(2179)); // _@M2179 °
+                  MsgToken<2179>()); // _@M2179 °
       break;
     case DirBRG:
       _stprintf(sTmp, TEXT("%s(%d%s)"),
-                  MsgToken(154), // _@M154 Brg
+                  MsgToken<154>(), // _@M154 Brg
                   iround(GetTaskBearing()),
-                  MsgToken(2179)); // _@M2179 °
+                  MsgToken<2179>()); // _@M2179 °
       break;
     default:
-      _stprintf(sTmp, TEXT("%d%s"), direction, MsgToken(2179)); // _@M2179 °
+      _stprintf(sTmp, TEXT("%d%s"), direction, MsgToken<2179>()); // _@M2179 °
       break;
   }
 
@@ -259,7 +259,7 @@ void dlgSelectObject::OnPaintListItem(WindowControl * Sender, LKSurface& Surface
   const int w0 = LineHeight; // Picto Width
 
   const int w2 = Surface.GetTextWidth(TEXT("0000km")); // distance Width
-  _stprintf(sTmp, _T(" 000%s"), MsgToken(2179));
+  _stprintf(sTmp, _T(" 000%s"), MsgToken<2179>());
   const int w3 = Surface.GetTextWidth(sTmp); // bearing width
   
   const int w4 = GetTypeWidth(Surface);
@@ -314,13 +314,13 @@ void dlgSelectObject::OnPaintListItem(WindowControl * Sender, LKSurface& Surface
     Surface.DrawText(x2, TextPos, sTmp);
 
     // Draw Bearing right justified after distance
-    _stprintf(sTmp, TEXT("%d%s"), iround(info.Direction), MsgToken(2179));
+    _stprintf(sTmp, TEXT("%d%s"), iround(info.Direction), MsgToken<2179>());
     const int x3 = width - Surface.GetTextWidth(sTmp);
     Surface.DrawText(x3, TextPos, sTmp);
   } else {
     if (DrawListIndex == 0) {
       // LKTOKEN  _@M466_ = "No Match!"
-      Surface.DrawText(IBLSCALE(2), TextPos, MsgToken(466));
+      Surface.DrawText(IBLSCALE(2), TextPos, MsgToken<466>());
     }
   }
 }

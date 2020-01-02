@@ -36,9 +36,9 @@ static void OnAirspacePaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surfa
     const PixelRect rcClient(Sender->GetClientRect());
     const int w0 = rcClient.GetSize().cx;
 	// LKTOKEN  _@M789_ = "Warn"
-    const int w1 = Surface.GetTextWidth(MsgToken(789)) + DLGSCALE(10);
+    const int w1 = Surface.GetTextWidth(MsgToken<789>()) + DLGSCALE(10);
 	// LKTOKEN  _@M241_ = "Display"
-    const int w2 = Surface.GetTextWidth(MsgToken(241)) + DLGSCALE(2);
+    const int w2 = Surface.GetTextWidth(MsgToken<241>()) + DLGSCALE(2);
     
     const int x0 = w0-w1-w2;
 
@@ -71,11 +71,11 @@ static void OnAirspacePaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surfa
       isdisplay = ((MapWindow::iAirspaceMode[i]%2)>0);
       if (iswarn) {
         // LKTOKEN  _@M789_ = "Warn"
-        Surface.DrawText(x0, DLGSCALE(2), MsgToken(789));
+        Surface.DrawText(x0, DLGSCALE(2), MsgToken<789>());
       }
       if (isdisplay) {
         // LKTOKEN  _@M241_ = "Display"
-        Surface.DrawText(w0-w2, DLGSCALE(2), MsgToken(241));
+        Surface.DrawText(w0-w2, DLGSCALE(2), MsgToken<241>());
       }
 
     }

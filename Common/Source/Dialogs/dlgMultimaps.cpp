@@ -32,8 +32,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
-	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
+	dfe->addEnumText(MsgToken<959>()); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken<958>()); //	_@M958_ "ON"
 
 
 	dfe->Set(Multimap1);
@@ -43,8 +43,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
-	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
+	dfe->addEnumText(MsgToken<959>()); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken<958>()); //	_@M958_ "ON"
 
 
 	dfe->Set(Multimap2);
@@ -54,8 +54,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
-	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
+	dfe->addEnumText(MsgToken<959>()); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken<958>()); //	_@M958_ "ON"
 
 
 	dfe->Set(Multimap3);
@@ -65,8 +65,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
-	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
+	dfe->addEnumText(MsgToken<959>()); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken<958>()); //	_@M958_ "ON"
 
 	dfe->Set(Multimap4);
 	wp->RefreshDisplay();
@@ -75,8 +75,8 @@ static void setVariables(void) {
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
-	dfe->addEnumText(MsgToken(959)); //	_@M959_ "OFF"
-	dfe->addEnumText(MsgToken(958)); //	_@M958_ "ON"
+	dfe->addEnumText(MsgToken<959>()); //	_@M959_ "OFF"
+	dfe->addEnumText(MsgToken<958>()); //	_@M958_ "ON"
 
 
 	dfe->Set(Multimap5);

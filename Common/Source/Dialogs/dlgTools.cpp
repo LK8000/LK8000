@@ -141,10 +141,10 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
       || uType == mbYesNoCancel)
   {
 	// LKTOKEN  _@M827_ = "Yes"
-    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), MsgToken(827), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), MsgToken<827>(), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdYes);
     ButtonCount++;
-    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(890), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken<890>(), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdNo);
     ButtonCount++;
   }
@@ -152,7 +152,7 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   if (uType == mbAbortRetryIgnore
       || uType == mbRetryCancel)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), MsgToken(566), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("OK"), MsgToken<566>(), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdRetry);
     ButtonCount++;
   }
@@ -161,17 +161,17 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
       || uType == mbRetryCancel
       || uType == mbYesNoCancel)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(161), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken<161>(), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdCancel);
     ButtonCount++;
   }
 
   if (uType == mbAbortRetryIgnore)
   {
-    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken(47), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT("CANCEL"), MsgToken<47>(), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdAbort);
     ButtonCount++;
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), MsgToken(349), 0, y, w, h, OnButtonClick);
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), MsgToken<349>(), 0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IdIgnore);
     ButtonCount++;
   }
@@ -423,7 +423,7 @@ void LoadChildsFromXML(WindowControl *Parent,
           );
         } else if (strcasecmp(DataType, "boolean")==0){
           W->SetDataField(
-              new DataFieldBoolean(*W, EditFormat, DisplayFmt, false, MsgToken(958), MsgToken(959), // ON OFF
+              new DataFieldBoolean(*W, EditFormat, DisplayFmt, false, MsgToken<958>(), MsgToken<959>(), // ON OFF
                     CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         } else if (strcasecmp(DataType, "double")==0){

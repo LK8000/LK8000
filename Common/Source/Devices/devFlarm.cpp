@@ -205,12 +205,12 @@ bool bInFlight    = CALCULATED_INFO.Flying;
 UnlockFlightData();
 
 	if(bInFlight)	{
-	  MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
+	  MessageBoxX(MsgToken<2418>(), MsgToken<2397>(), mbOk);
 	  return;
 	}
 
 	if(!bFlarmActive)	{
-	  MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
+	  MessageBoxX(MsgToken<2401>(), MsgToken<2397>(), mbOk);
 #ifdef NO_FAKE_FLARM
 	  return;
 #endif

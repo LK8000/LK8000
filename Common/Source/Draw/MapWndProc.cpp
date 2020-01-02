@@ -407,7 +407,7 @@ void MapWindow::_OnLButtonDblClick(const POINT& Pos) {
         if ((startScreen.x >= P_Doubleclick_bottomright.x)
                 && (startScreen.y >= P_Doubleclick_bottomright.y)) {
             LockMode(2);
-            DoStatusMessage(MsgToken(964)); // SCREEN IS UNLOCKED
+            DoStatusMessage(MsgToken<964>()); // SCREEN IS UNLOCKED
 
             // Careful! If you ignorenext, any event timed as double click of course will be affected.
             // and this means also fast clicking on bottombar!!
@@ -1103,7 +1103,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
             break;
         case KEY_R:
             // XCREMOTE WILL RESET IN 2 SECONDS
-            DoStatusMessage(MsgToken(1920));
+            DoStatusMessage(MsgToken<1920>());
             break;
         case KEY_X: // BottomLeft
             key_bottombar_next(); // bottom bar right click

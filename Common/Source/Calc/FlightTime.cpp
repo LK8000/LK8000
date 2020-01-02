@@ -50,7 +50,7 @@ void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if ((steady_start_time>(Basic->Time+1))||(Basic->Time<Calculated->TakeOffTime)) {
 	StartupStore(_T("... TripTimes back in time! Reset!\n"));
-	DoStatusMessage(MsgToken(1527)); // TRIP COMPUTER RESET
+	DoStatusMessage(MsgToken<1527>()); // TRIP COMPUTER RESET
 	LKSW_ResetTripComputer=true;
 	return;
   }

@@ -66,7 +66,7 @@ namespace DlgIgcFile {
                 if(nDevice == 0) {
                     StopHourglassCursor();
                     // No Device, Error
-                    MessageBoxX(MsgToken(1537), MsgToken(266), mbOk);
+                    MessageBoxX(MsgToken<1537>(), MsgToken<266>(), mbOk);
                     StartHourglassCursor();
                 } else {
                     WndProperty* wp = (WndProperty*)wfDlg->FindByName(TEXT("prpDeviceList"));
@@ -76,12 +76,12 @@ namespace DlgIgcFile {
                     }
                     if(dfe) {
                         dfe->Clear();
-                        dfe->addEnumText(MsgToken(479)); // None
+                        dfe->addEnumText(MsgToken<479>()); // None
                     }
                     for(size_t i = 0; i < nDevice; ++i) {
                         TCHAR szDeviceName[100] = {0};
                         if(!Obex.GetDeviceName(i, szDeviceName, std::size(szDeviceName))) {
-                            _stprintf(szDeviceName, _T("%s <%d>"), MsgToken(1538), i); // Unknown device
+                            _stprintf(szDeviceName, _T("%s <%d>"), MsgToken<1538>(), i); // Unknown device
                         }
                         StartupStore(_T("GetDeviceName <%d><%s> \n"), i, szDeviceName);
                         if(dfe) {
@@ -114,12 +114,12 @@ namespace DlgIgcFile {
                         if(!Obex.SendFile(DeviceIndex, szFileFullPath)) {
                             StopHourglassCursor();
                             // Send Failed, Error
-                            MessageBoxX(MsgToken(1539), MsgToken(266), mbOk);
+                            MessageBoxX(MsgToken<1539>(), MsgToken<266>(), mbOk);
                             StartHourglassCursor();
                         } else {
                             StopHourglassCursor();
                             // File sent! , Error
-                            MessageBoxX(MsgToken(1540), MsgToken(1524), mbOk);
+                            MessageBoxX(MsgToken<1540>(), MsgToken<1524>(), mbOk);
                             StartHourglassCursor();
                         }
                     }
@@ -127,7 +127,7 @@ namespace DlgIgcFile {
                 Obex.Shutdown();
             } else {
                 // "Unsupported on this device", "Error"
-                MessageBoxX(MsgToken(1534), MsgToken(266), mbOk);
+                MessageBoxX(MsgToken<1534>(), MsgToken<266>(), mbOk);
             }
 #elif defined(ANDROID)
 
@@ -142,7 +142,7 @@ namespace DlgIgcFile {
             }
 #else
             // "Unsupported on this device", "Error"
-            MessageBoxX(MsgToken(1534), MsgToken(266), mbOk);
+            MessageBoxX(MsgToken<1534>(), MsgToken<266>(), mbOk);
 #endif
             StopHourglassCursor();
         }

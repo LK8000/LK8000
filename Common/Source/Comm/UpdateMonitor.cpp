@@ -226,7 +226,7 @@ bool UpdateMonitor() {
     if(MessageCnt < 10) {
       MessageCnt++;
       StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
-      DoStatusMessage(MsgToken(947)); // _@M947_ "FLARM SIGNAL LOST"
+      DoStatusMessage(MsgToken<947>()); // _@M947_ "FLARM SIGNAL LOST"
     }
     GPS_INFO.FLARM_Available = false;
     GPS_INFO.FLARM_HW_Version =0.0;
@@ -301,11 +301,11 @@ bool UpdateMonitor() {
       StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off %s"), WhatTimeIsIt());
       if (EnableNavBaroAltitude) {
         // LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE"
-        DoStatusMessage(MsgToken(122));
+        DoStatusMessage(MsgToken<122>());
         PortMonitorMessages++;
       } else {
         // LKTOKEN  _@M121_ = "BARO ALTITUDE NOT AVAILABLE"
-        DoStatusMessage(MsgToken(121));
+        DoStatusMessage(MsgToken<121>());
       }
 
       // We also reset data availability, just in case we are through a mux
@@ -318,9 +318,9 @@ bool UpdateMonitor() {
 
     if (GotFirstBaroAltitude) {
       if (EnableNavBaroAltitude) {
-        DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
+        DoStatusMessage(MsgToken<1796>()); // USING BARO ALTITUDE
       } else {
-        DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
+        DoStatusMessage(MsgToken<1795>()); // BARO ALTITUDE IS AVAILABLE
       }
       StartupStore(_T("... GPS baro source back available %s"),WhatTimeIsIt());
       lastvalidBaro=true;
@@ -378,7 +378,7 @@ bool UpdateMonitor() {
       }
 
       if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude)>100.0) && !CALCULATED_INFO.OnGround ) {
-        DoStatusMessage(MsgToken(122)); // Baro not available, Using GPS ALTITUDE
+        DoStatusMessage(MsgToken<122>()); // Baro not available, Using GPS ALTITUDE
         EnableNavBaroAltitude=false;
         StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"), GPS_INFO.BaroAltitude, GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);
         lastBaroAltitude=-1;
@@ -426,14 +426,14 @@ bool UpdateMonitor() {
       if (last_active && active_dev.nmeaParser.gpsValid) {
         TCHAR vbuf[100];
 
-        _stprintf(vbuf,_T("%s %d\n< %s >"), MsgToken(277), active.value_or(0), active_dev.Name); // FALLBACK USING GPS ON PORT ..
+        _stprintf(vbuf,_T("%s %d\n< %s >"), MsgToken<277>(), active.value_or(0), active_dev.Name); // FALLBACK USING GPS ON PORT ..
         DoStatusMessage(vbuf);
         PortMonitorMessages++;
       } 
     } else {
       if (PortMonitorMessages==15) { 
         StartupStore(_T("... GOING SILENT on too many Com reportings.  %s" NEWLINE),WhatTimeIsIt());
-        DoStatusMessage(MsgToken(317)); // GOING SILENT ON COM REPORTING
+        DoStatusMessage(MsgToken<317>()); // GOING SILENT ON COM REPORTING
         PortMonitorMessages++;	// we go to 16, and never be back here
       }
     }

@@ -308,8 +308,8 @@ bool ReadWinPilotPolar(void) {
 		assert(bok);
 		_tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
 
-		MessageBoxX(MsgToken(920), // Error loading Polar file!
-								MsgToken(791), // Warning
+		MessageBoxX(MsgToken<920>(), // Error loading Polar file!
+								MsgToken<791>(), // Warning
 								mbOk);
 	} // !foundline
 

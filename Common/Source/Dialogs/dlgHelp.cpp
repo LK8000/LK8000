@@ -84,7 +84,7 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText, bool bHelpCap
   if( bHelpCapt)
   {
     TCHAR fullcaption[100];
-    _stprintf(fullcaption,TEXT("%s: %s"), MsgToken(336), Caption); // Help
+    _stprintf(fullcaption,TEXT("%s: %s"), MsgToken<336>(), Caption); // Help
     wf->SetCaption(fullcaption);
   }
   else

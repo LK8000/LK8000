@@ -30,14 +30,14 @@ static void OnTargetClicked(WndButton* pWnd) {
 	return;
   }
   if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].RadioId < 1) {
-	DoStatusMessage(MsgToken(879)); // SORRY TARGET JUST DISAPPEARED
+	DoStatusMessage(MsgToken<879>()); // SORRY TARGET JUST DISAPPEARED
 	return;
   }
 
   if ( LKTraffic[SelectedTraffic].Locked ) {
 #if 0
-	if (MessageBoxX(MsgToken(880), // UNLOCK current target?
-		MsgToken(881), // Target selection
+	if (MessageBoxX(MsgToken<880>(), // UNLOCK current target?
+		MsgToken<881>(), // Target selection
 	mbYesNo) == IdYes) {
 
 #endif
@@ -46,7 +46,7 @@ static void OnTargetClicked(WndButton* pWnd) {
 	UnlockFlightData();
 	LKTargetIndex=-1;
 	LKTargetType=LKT_TYPE_NONE;
-	DoStatusMessage(MsgToken(882)); // TARGET RELEASED
+	DoStatusMessage(MsgToken<882>()); // TARGET RELEASED
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -57,13 +57,13 @@ static void OnTargetClicked(WndButton* pWnd) {
   }
 #if 0
   if (MessageBoxX(
-    MsgToken(884), // LOCK this target?
-	MsgToken(881), // Target selection
+    MsgToken<884>(), // LOCK this target?
+	MsgToken<881>(), // Target selection
   mbYesNo) == IdYes) {
 #endif
 	// one more check for existance
 	if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].RadioId < 1 ) {
-		DoStatusMessage(MsgToken(883)); // TARGET DISAPPEARED!
+		DoStatusMessage(MsgToken<883>()); // TARGET DISAPPEARED!
 		return;
 	}
 
@@ -75,7 +75,7 @@ static void OnTargetClicked(WndButton* pWnd) {
 	GPS_INFO.FLARM_Traffic[SelectedTraffic].Locked=true;
 	UnlockFlightData();
 	// LKTOKEN  _@M675_ = "TARGET LOCKED" 
-	DoStatusMessage(MsgToken(675));
+	DoStatusMessage(MsgToken<675>());
 	LKTargetIndex=SelectedTraffic;
 	LKTargetType=LKT_TYPE_MASTER;
 	OvertargetMode=OVT_FLARM;
@@ -317,7 +317,7 @@ static void SetValues(int indexid) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
   if (wp) {
-	_stprintf(buffer, TEXT(" %d%s"), iround(LKTraffic[indexid].Bearing),MsgToken(2179));
+	_stprintf(buffer, TEXT(" %d%s"), iround(LKTraffic[indexid].Bearing),MsgToken<2179>());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
@@ -398,7 +398,7 @@ void dlgLKTrafficDetails(int indexid) {
   if (buttonTarget) {
 	if ( LKTraffic[indexid].Locked ) {
 	// LKTOKEN  _@M754_ = "UNLOCK" 
-		_tcscpy(status,MsgToken(754));
+		_tcscpy(status,MsgToken<754>());
 		buttonTarget->SetCaption(status);
 	}
   }
@@ -411,19 +411,19 @@ void dlgLKTrafficDetails(int indexid) {
   switch(LKTraffic[indexid].Status) {
 	case LKT_REAL:
 	// LKTOKEN  _@M394_ = "Live " 
-		_tcscat(status,MsgToken(394));
+		_tcscat(status,MsgToken<394>());
 		break;
 	case LKT_GHOST:
 	// LKTOKEN  _@M323_ = "Ghost " 
-		_tcscat(status,MsgToken(323));
+		_tcscat(status,MsgToken<323>());
 		break;
 	case LKT_ZOMBIE:
 	// LKTOKEN  _@M829_ = "Zombie " 
-		_tcscat(status,MsgToken(829));
+		_tcscat(status,MsgToken<829>());
 		break;
 	default:
 	// LKTOKEN  _@M753_ = "UNKNOWN! " 
-		_tcscat(status,MsgToken(753));
+		_tcscat(status,MsgToken<753>());
 		break;
   }
   Units::TimeToTextDown(tpas,(int)(GPS_INFO.Time - LKTraffic[indexid].Time_Fix));

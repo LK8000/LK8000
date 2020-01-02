@@ -112,23 +112,23 @@ TCHAR *GetOvertargetHeader(void) {
 
   if (DoInit[MDI_GETOVERTARGETHEADER]) {
 	// LKTOKEN _@M1323_ "T>"
-	LK_tcsncpy(targetheader[OVT_TASK], MsgToken(1323), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_TASK], MsgToken<1323>(), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1323_ "T>"
-	LK_tcsncpy(targetheader[OVT_TASKCENTER], MsgToken(1323), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_TASKCENTER], MsgToken<1323>(), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1324_ "B>"
-	LK_tcsncpy(targetheader[OVT_BALT], MsgToken(1324), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_BALT], MsgToken<1324>(), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1325_ "1>"
-	LK_tcsncpy(targetheader[OVT_ALT1], MsgToken(1325), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_ALT1], MsgToken<1325>(), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1326_ "2>"
-	LK_tcsncpy(targetheader[OVT_ALT2], MsgToken(1326), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_ALT2], MsgToken<1326>(), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1327_ "H>"
-	LK_tcsncpy(targetheader[OVT_HOME], MsgToken(1327), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_HOME], MsgToken<1327>(), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1328_ "L>"
-	LK_tcsncpy(targetheader[OVT_THER], MsgToken(1328), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_THER], MsgToken<1328>(), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1329_ "M"
-	LK_tcsncpy(targetheader[OVT_MATE], MsgToken(1329), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_MATE], MsgToken<1329>(), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1330_ "F>"
-	LK_tcsncpy(targetheader[OVT_FLARM], MsgToken(1330), OVERTARGETHEADER_MAX);
+	LK_tcsncpy(targetheader[OVT_FLARM], MsgToken<1330>(), OVERTARGETHEADER_MAX);
 
 	LK_tcsncpy(targetheader[OVT_XC], TEXT("X>"), OVERTARGETHEADER_MAX); // No need for translation here. X international code for Cross Country !
 
@@ -238,7 +238,7 @@ std::optional<WAYPOINT> GetTargetSyncData() {
     if (ValidTaskPointFast(ActiveTaskPoint)) {
       // active task turnpoint
       overindex = Task[ActiveTaskPoint].Index;
-      name = MsgToken(1323);
+      name = MsgToken<1323>();
     }
 
     if (overindex < 0) {

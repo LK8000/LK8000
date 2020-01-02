@@ -35,7 +35,7 @@ bool FilePort::Initialize() {
 
 	if (!FileStream) {
 		 StartupStore(_T(". FilePort  %u failed to open file %s Port <%s>"), GetPortIndex() + 1, file_name, GetPortName());
-		 StatusMessage(_T("%s %s"), MsgToken(762), GetPortName());
+		 StatusMessage(_T("%s %s"), MsgToken<762>(), GetPortName());
 		 return false;
 	}
 

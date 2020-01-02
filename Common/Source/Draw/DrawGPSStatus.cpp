@@ -36,24 +36,24 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
     
     const DeviceDescriptor_t& ComPort = *devA();
     if (ComPort.Status==CPS_OPENKO) {
-      TextInBox(Surface, &rc, MsgToken(971), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode); // No ComPort
+      TextInBox(Surface, &rc, MsgToken<971>(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode); // No ComPort
     } else {
     	if (ComPort.Status==CPS_OPENOK) {
             if ((ComPort.Rx>0) && !firstrun) {
 			// GPS IS MISSING
-			TextInBox(Surface, &rc, MsgToken(973), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
+			TextInBox(Surface, &rc, MsgToken<973>(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 			firstrun=false;
 		} else {
 			// NO DATA RX
-			TextInBox(Surface, &rc, MsgToken(972), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
+			TextInBox(Surface, &rc, MsgToken<972>(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 		}
 	} else  {
             if (ComPort.Status==CPS_EFRAME)  {
 			// DATA ERROR
-			TextInBox(Surface, &rc, MsgToken(975), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
+			TextInBox(Surface, &rc, MsgToken<975>(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 		} else {
 			// GPS NOT CONNECTED
-			TextInBox(Surface, &rc, MsgToken(974), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
+			TextInBox(Surface, &rc, MsgToken<974>(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 		}
 	}
 
@@ -70,7 +70,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
     TextInBoxMode.WhiteBorder = 1;
     TextInBoxMode.Border = 1;
     // NO VALID FIX
-    TextInBox(Surface, &rc, MsgToken(970), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
+    TextInBox(Surface, &rc, MsgToken<970>(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, &TextInBoxMode);
 
     }
 
@@ -88,10 +88,10 @@ goto_DrawLockModeStatus:
     TextInBoxModeL.WhiteBorder = 1;
     TextInBoxModeL.Border = 1;
     if (ISPARAGLIDER){
-        TextInBox(Surface, &rc,MsgToken(962), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), &TextInBoxModeL);
+        TextInBox(Surface, &rc,MsgToken<962>(), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), &TextInBoxModeL);
     }
     Surface.SelectObject(LK8MapFont);
-    TextInBox(Surface, &rc, MsgToken(1601), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), &TextInBoxModeL);
+    TextInBox(Surface, &rc, MsgToken<1601>(), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), &TextInBoxModeL);
   }
 
   Surface.SelectObject(oldfont);

@@ -23,7 +23,7 @@ static TCHAR tmps[100];
 TCHAR* DeviceName(int dev)
 {
   static TCHAR NewName[50];
-  _tcscpy(NewName,MsgToken(232));
+  _tcscpy(NewName,MsgToken<232>());
   NewName[(_tcslen(NewName))-1] ='A'+dev;
   return NewName;
 }
@@ -59,7 +59,7 @@ static void OnPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
 
   if (ComCheck_Reset>=0 || (ComCheck_LastLine==0 && ComCheck_BufferFull==false)) {
-      _stprintf(tmps,_T("%s"),MsgToken(1872)); // NO DATA RECEIVED
+      _stprintf(tmps,_T("%s"),MsgToken<1872>()); // NO DATA RECEIVED
       Surface.DrawText(0, y, tmps);
       return;
   }
@@ -92,13 +92,13 @@ static bool stopped=false;
 
 static void OnPortClicked(WndButton* pWnd) {
   // Name is available only in Fly mode, not inited in SIM mode because no devices, and not inited if disabled
-  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(SelectedDevice),
-     _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken(1600));
+  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken<1871>(),DeviceName(SelectedDevice),
+     _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken<1600>());
   wf->SetCaption(tmps);
   ComCheck_ActivePort=SelectedDevice; // needed
   ComCheck_Reset=ComCheck_ActivePort;
   wf->SetTimerNotify(500, OnTimerNotify);
-  ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
+  ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken<670>()); // Stop
   stopped=false;
 }
 
@@ -108,20 +108,20 @@ static void OnStopClicked(WndButton* pWnd) {
   stopped=!stopped;
   wf->SetCaption(tmps);
   if (stopped) {
-      _stprintf(tmps,_T("%s: %s  %s"),MsgToken(1871), MsgToken(670),
+      _stprintf(tmps,_T("%s: %s  %s"),MsgToken<1871>(), MsgToken<670>(),
           DeviceName(SelectedDevice));
       wf->SetCaption(tmps);
       wf->SetTimerNotify(0, NULL);
-      ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(1200)); // Start
+      ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken<1200>()); // Start
   } else {
       {
-        _stprintf(tmps,_T("%s: %s (%s)"),MsgToken(1871),DeviceName(SelectedDevice),
-        _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken(1600));
+        _stprintf(tmps,_T("%s: %s (%s)"),MsgToken<1871>(),DeviceName(SelectedDevice),
+        _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken<1600>());
 
       }
       wf->SetCaption(tmps);
       wf->SetTimerNotify(500, OnTimerNotify);
-      ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken(670)); // Stop
+      ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken<670>()); // Stop
   }
 }
 

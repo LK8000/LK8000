@@ -358,10 +358,10 @@ bool Startup(const TCHAR* szCmdLine) {
 
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
-    CreateProgressDialog(MsgToken(1208));
+    CreateProgressDialog(MsgToken<1208>());
     Sleep(ERRDELAY);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
-    CreateProgressDialog(MsgToken(1209));
+    CreateProgressDialog(MsgToken<1209>());
     Sleep(ERRDELAY);
   }
 #endif // non PNA
@@ -369,32 +369,32 @@ bool Startup(const TCHAR* szCmdLine) {
 // TODO until startup graphics are settled, no need to delay PC start
     if (AircraftCategory == (AircraftCategory_t) umParaglider) {
         // LKTOKEN _@M1210_ "PARAGLIDING MODE"
-        CreateProgressDialog(MsgToken(1210));
+        CreateProgressDialog(MsgToken<1210>());
         Sleep(MSGDELAY);
     }
     if (SIMMODE) {
         // LKTOKEN _@M1211_ "SIMULATION"
-        CreateProgressDialog(MsgToken(1211));
+        CreateProgressDialog(MsgToken<1211>());
         Sleep(MSGDELAY);
     }
 
 #ifdef PNA
   if ( SetBacklight() == true ) {
     // LKTOKEN _@M1212_ "AUTOMATIC BACKLIGHT CONTROL"
-    CreateProgressDialog(MsgToken(1212));
+    CreateProgressDialog(MsgToken<1212>());
   } else {
     // LKTOKEN _@M1213_ "NO BACKLIGHT CONTROL"
-    CreateProgressDialog(MsgToken(1213));
+    CreateProgressDialog(MsgToken<1213>());
   }
 #endif
 
   // this should work ok for all pdas as well
   if ( SetSoundVolume() == true ) {
     // LKTOKEN _@M1214_ "AUTOMATIC SOUND LEVEL CONTROL"
-    CreateProgressDialog(MsgToken(1214));
+    CreateProgressDialog(MsgToken<1214>());
   } else {
     // LKTOKENS _@M1215_ "NO SOUND LEVEL CONTROL"
-    CreateProgressDialog(MsgToken(1215));
+    CreateProgressDialog(MsgToken<1215>());
   }
 
   LockTerrainDataGraphics();
@@ -411,16 +411,16 @@ bool Startup(const TCHAR* szCmdLine) {
   SetHome(false);
   LKLoadLanguageFile();
 
-  CreateProgressDialog(MsgToken(399));
+  CreateProgressDialog(MsgToken<399>());
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
   OpenTopology();
 
-  CreateProgressDialog(MsgToken(1808));	// Loading FLARMNET database
+  CreateProgressDialog(MsgToken<1808>());	// Loading FLARMNET database
   OpenFLARMDetails();
 
   // LKTOKEN _@M1217_ "Starting devices"
-  CreateProgressDialog(MsgToken(1217));
+  CreateProgressDialog(MsgToken<1217>());
 
   ComCheck_Init();
   // we need devInit for all devices. Missing initialization otherwise.
@@ -435,7 +435,7 @@ bool Startup(const TCHAR* szCmdLine) {
   GlidePolar::SetBallast();
 
   // LKTOKEN _@M1218_ "Initialising display"
-  CreateProgressDialog(MsgToken(1218));
+  CreateProgressDialog(MsgToken<1218>());
 
   // Finally ready to go
   TestLog(TEXT(".... WinMain CreateDrawingThread"));
@@ -464,7 +464,7 @@ bool Startup(const TCHAR* szCmdLine) {
         TCHAR nopath[MAX_PATH];
         LocalPath(nopath, _T(""));
         // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
-        MessageBoxX(nopath, MsgToken(1209), mbOk);
+        MessageBoxX(nopath, MsgToken<1209>(), mbOk);
         WarningHomeDir = false;
     }
 #endif
@@ -475,7 +475,7 @@ bool Startup(const TCHAR* szCmdLine) {
         DWORD counts = GetTickCount();
         if (counts > (unsigned) 2073600000l) {
             // LKTOKEN  _@M527_ = "Please exit LK8000 and reset your device.\n"
-            MessageBoxX(MsgToken(527),
+            MessageBoxX(MsgToken<527>(),
                     TEXT("Device need reset!"),
                     mbOk);
         }
@@ -485,7 +485,7 @@ bool Startup(const TCHAR* szCmdLine) {
     if (!ISPARAGLIDER && !ISCAR) { // 100925
         if (SAFETYALTITUDEARRIVAL < 500) { // SAFETY is *10, so we check <50 really
             // LKTOKEN  _@M155_ = "CHECK safety arrival altitude\n"
-            MessageBoxX(MsgToken(155), TEXT("Warning!"), mbOk);
+            MessageBoxX(MsgToken<155>(), TEXT("Warning!"), mbOk);
         }
     }
 

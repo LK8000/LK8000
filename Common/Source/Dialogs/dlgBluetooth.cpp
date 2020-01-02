@@ -43,7 +43,7 @@ namespace DlgBluetooth {
 
                 if (!pBtHandler->Pair(SelectedDevice->m_ba, SelectedDevice->GetName().c_str(), szPin)) {
                     StartupStore(_T("Bluetooth pairing <%s> : Failed%s"), SelectedDevice->GetName().c_str(), NEWLINE);
-                    MessageBoxX(MsgToken(1835), TEXT("Bluetooth"), mbOk, false);
+                    MessageBoxX(MsgToken<1835>(), TEXT("Bluetooth"), mbOk, false);
                 } else {
                     StartupStore(_T("Bluetooth pairing <%s> : success%s"), SelectedDevice->GetName().c_str(), NEWLINE);
                     SelectedDevice->m_src |= BDSRC_REGNAV;

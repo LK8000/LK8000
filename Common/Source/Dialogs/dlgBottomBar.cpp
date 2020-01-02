@@ -94,9 +94,9 @@ static void setVariables(WndForm* wf) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0Auto"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(MsgToken(2252));  // MANUAL
-    dfe->addEnumText(MsgToken(2253)); //  AUTO THERMALLING
-    dfe->addEnumText(MsgToken(2254)); //  FULL AUTO
+    dfe->addEnumText(MsgToken<2252>());  // MANUAL
+    dfe->addEnumText(MsgToken<2253>()); //  AUTO THERMALLING
+    dfe->addEnumText(MsgToken<2254>()); //  FULL AUTO
     dfe->Set(ConfBB0Auto);
     wp->RefreshDisplay();
   }
@@ -216,14 +216,14 @@ void dlgBottomBarShowModal(void){
     if (!(ConfBB1 || ConfBB2 || ConfBB3 || ConfBB4 || ConfBB5 ||
         ConfBB6 || ConfBB7 || ConfBB8 || ConfBB9)) {
       MessageBoxX(
-                   MsgToken(16), // can't disable all non-TRM0
+                   MsgToken<16>(), // can't disable all non-TRM0
                    TEXT(""), mbOk);        // bottom bar stripes
       // Automatically enable NAV1 bottom bar
       ConfBB1 = true;
     }
 
     UpdateConfBB();
-    MessageBoxX (MsgToken(1607), // bottom bar config saved
+    MessageBoxX (MsgToken<1607>(), // bottom bar config saved
                  TEXT(""), mbOk);
 
     // If the user just disabled the currently-shown BB stripe, then

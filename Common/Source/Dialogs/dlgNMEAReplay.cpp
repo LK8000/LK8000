@@ -108,7 +108,7 @@ static void OnSyncNMEAModified(DataField *Sender, DataField::DataAccessKind_t Mo
 
     if(Sender->getCount() == 0) {
       Sender->addEnumList({
-          MsgToken(2482),	// _@M2334_ "In flight only (default)"
+          MsgToken<2482>(),	// _@M2334_ "In flight only (default)"
           _T("$GPRMC"),
           _T("$GPGGA")
         });

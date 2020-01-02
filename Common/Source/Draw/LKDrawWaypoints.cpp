@@ -67,44 +67,44 @@ namespace {
 		switch (style)
 		{
 		case STYLE_NORMAL:
-			return  MsgToken(2361); // _@M2361_ "◎"
+			return  MsgToken<2361>(); // _@M2361_ "◎"
 		case STYLE_AIRFIELDGRASS:
 		case STYLE_OUTLANDING:
 		case STYLE_GLIDERSITE:
 		case STYLE_AIRFIELDSOLID:
-			return MsgToken(2362); // _@M2362_ "✈"
+			return MsgToken<2362>(); // _@M2362_ "✈"
 		case STYLE_MTPASS:
-			return MsgToken(2363); // _@M2363_ "◠"
+			return MsgToken<2363>(); // _@M2363_ "◠"
 		case STYLE_MTTOP:
-			return MsgToken(2364); //  _@M2364_ "▴"
+			return MsgToken<2364>(); //  _@M2364_ "▴"
 		case STYLE_SENDER:
-			return MsgToken(2365); // _@M2365_ "☨"
+			return MsgToken<2365>(); // _@M2365_ "☨"
 		case STYLE_VOR:
-			return MsgToken(2366); // _@M2366_ "⬡"
+			return MsgToken<2366>(); // _@M2366_ "⬡"
 		case STYLE_NDB:
-			return MsgToken(2367); // _@M2367_ "✺"
+			return MsgToken<2367>(); // _@M2367_ "✺"
 		case STYLE_COOLTOWER:
-			return MsgToken(2368); //  _@M2368_ "⛃"
+			return MsgToken<2368>(); //  _@M2368_ "⛃"
 		case STYLE_DAM:
-			return MsgToken(2369); // _@M2369_ "≊"
+			return MsgToken<2369>(); // _@M2369_ "≊"
 		case STYLE_TUNNEL:
-			return MsgToken(2370); // _@M2370_ "⋒"
+			return MsgToken<2370>(); // _@M2370_ "⋒"
 		case STYLE_BRIDGE:
-			return MsgToken(2371); // _@M2371_ "≍"
+			return MsgToken<2371>(); // _@M2371_ "≍"
 		case STYLE_POWERPLANT:
-			return MsgToken(2372); // _@M2372_ "⚡"
+			return MsgToken<2372>(); // _@M2372_ "⚡"
 		case STYLE_CASTLE:
-			return MsgToken(2373); // _@M2373_ "♜"
+			return MsgToken<2373>(); // _@M2373_ "♜"
 		case STYLE_INTERSECTION:
-			return MsgToken(2374); // _@M2374_ "⨯"
+			return MsgToken<2374>(); // _@M2374_ "⨯"
 		case STYLE_TRAFFIC:
-			return MsgToken(2375); // _@M2375_ "✈"
+			return MsgToken<2375>(); // _@M2375_ "✈"
 		case STYLE_THERMAL:
-			return MsgToken(2376); // _@M2376_ "♨"
+			return MsgToken<2376>(); // _@M2376_ "♨"
 		case STYLE_MARKER:
-			return MsgToken(2377); // _@M2377_ "⚑"
+			return MsgToken<2377>(); // _@M2377_ "⚑"
 		default:
-			return MsgToken(2378); // _@M2378_ "✈"
+			return MsgToken<2378>(); // _@M2378_ "✈"
 		}
 	}
 

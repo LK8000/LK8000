@@ -157,7 +157,7 @@ void LKSimulator(void) {
 		SimFlarmTraffic(0xdd8944,31.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8a42,41.0+(double)(rand() % 32));
-		DoStatusMessage(MsgToken(279)); // FLARM DETECTED (in sim)
+		DoStatusMessage(MsgToken<279>()); // FLARM DETECTED (in sim)
 		flarmwasinit=true;
 	} else {
 		// Let one of the objects be a ghost and a zombie, and keep the rest real

@@ -582,7 +582,7 @@ static bool LoggerDeclare(DeviceDescriptor_t* dev, const Declaration_t *decl)
   LKDoNotResetComms=true;
 
   // LKTOKEN  _@M221_ = "Declare Task?"
-  if (MessageBoxX(MsgToken(221),
+  if (MessageBoxX(MsgToken<221>(),
 	dev->Name, mbYesNo) == IdYes) {
 
 	const unsigned ERROR_BUFFER_LEN = 64;
@@ -590,7 +590,7 @@ static bool LoggerDeclare(DeviceDescriptor_t* dev, const Declaration_t *decl)
 
 	if (devDeclare(dev, decl, ERROR_BUFFER_LEN, errorBuffer)) {
 		// LKTOKEN  _@M686_ = "Task Declared!"
-		MessageBoxX(MsgToken(686),
+		MessageBoxX(MsgToken<686>(),
 			dev->Name, mbOk);
 
 		DeclaredToDevice = true;
@@ -601,7 +601,7 @@ static bool LoggerDeclare(DeviceDescriptor_t* dev, const Declaration_t *decl)
 
 		if(errorBuffer[0] == '\0') {
 			// LKTOKEN  _@M1410_ = "Unknown error"
-			lk::snprintf(errorBuffer, _T("%s"), MsgToken(1410));
+			lk::snprintf(errorBuffer, _T("%s"), MsgToken<1410>());
 		} else {
 			// do it just to be sure
 			errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';
@@ -609,7 +609,7 @@ static bool LoggerDeclare(DeviceDescriptor_t* dev, const Declaration_t *decl)
     StartupStore(_T("Error! Task NOT declared : %s"), errorBuffer);
 
 		// LKTOKEN  _@M265_ = "Error! Task NOT declared!"
-		lk::snprintf(buffer, _T("%s\n%s"), MsgToken(265), errorBuffer);
+		lk::snprintf(buffer, _T("%s\n%s"), MsgToken<265>(), errorBuffer);
 		MessageBoxX(buffer, dev->Name, mbOk);
 
 		DeclaredToDevice = false;
@@ -628,7 +628,7 @@ void LoggerDeviceDeclare() {
   #if 0
   if (CALCULATED_INFO.Flying) {
     // LKTOKEN  _@M1423_ = "Forbidden during flight!"
-    MessageBoxX(MsgToken(1423), _T(""), mbOk);
+    MessageBoxX(MsgToken<1423>(), _T(""), mbOk);
     return;
   }
   #endif
@@ -656,7 +656,7 @@ void LoggerDeviceDeclare() {
 
   if (!found_logger) {
 	// LKTOKEN  _@M474_ = "No logger connected" 
-    MessageBoxX(MsgToken(474), _T(""), mbOk);
+    MessageBoxX(MsgToken<474>(), _T(""), mbOk);
     DeclaredToDevice = true; // testing only
   }
 
@@ -669,9 +669,9 @@ bool CheckDeclaration(void) {
   } else {
     if(MessageBoxX(
 	// LKTOKEN  _@M492_ = "OK to invalidate declaration?"
-		   MsgToken(492),
+		   MsgToken<492>(),
 	// LKTOKEN  _@M694_ = "Task declared"
-		   MsgToken(694),
+		   MsgToken<694>(),
 		   mbYesNo) == IdYes){
       DeclaredToDevice = false;
       return true;

@@ -23,7 +23,7 @@ void OpenTopology() {
   #if TESTBENCH
   StartupStore(TEXT(". OpenTopology%s"),NEWLINE);
   #endif
-  CreateProgressDialog(MsgToken(902)); // Loading Topology File...
+  CreateProgressDialog(MsgToken<902>()); // Loading Topology File...
 
   // Start off by getting the names and paths
   TCHAR szFile[MAX_PATH] = TEXT("\0");

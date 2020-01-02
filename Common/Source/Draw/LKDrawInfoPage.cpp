@@ -187,35 +187,35 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	Surface.SelectObject(LK8PanelMediumFont);
 	switch(curtype) {
 		case IM_THERMAL:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken(905)); // Thermal
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<905>()); // Thermal
 			break;
 		case IM_CRUISE:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken(906)); // Cruise
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<906>()); // Cruise
 			break;
 		case IM_TASK:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken(907)); // Task
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<907>()); // Task
 			break;
 		case IM_AUX:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken(908)); // Custom
+			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<908>()); // Custom
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken(909)); // Turn
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<909>()); // Turn
 #else
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken(1600)); // DISABLED
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<1600>()); // DISABLED
 #endif
 			break;
 		case IM_HSI:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken(1860)); // HSI
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<1860>()); // HSI
 			break;
 		case IM_CONTEST:
 			  _stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, CContestMgr::XCRuleToString(AdditionalContestRule)); // Contest
 			break;
 		case IM_TRF+IM_TOP:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, MsgToken(910)); // Target
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, MsgToken<910>()); // Target
 			break;
 		case IM_TARGET+IM_TOP:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, MsgToken(911)); // Sight
+			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, MsgToken<911>()); // Sight
 			break;
 		default:
 			_stprintf(Buffer,_T("error"));
@@ -235,17 +235,17 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				if ( index >=0 ) {
 					_tcscpy(Buffer, WayPointList[index].Name);
 				} else {
-					_tcscpy(Buffer,MsgToken(912)); // [no dest]
+					_tcscpy(Buffer,MsgToken<912>()); // [no dest]
 					icolor=AMBERCOLOR;
 				}
 			} else {
-				_tcscpy(Buffer,MsgToken(912)); // [no dest]
+				_tcscpy(Buffer,MsgToken<912>()); // [no dest]
 				icolor=AMBERCOLOR;
 			}
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			_tcscpy(Buffer,MsgToken(913)); // Experimental
+			_tcscpy(Buffer,MsgToken<913>()); // Experimental
 #else
 			_tcscpy(Buffer,_T("---"));
 #endif
@@ -276,7 +276,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				}
 
 			} else {
-				_tcscpy(Buffer,MsgToken(914)); // [no target]
+				_tcscpy(Buffer,MsgToken<914>()); // [no target]
 				icolor=AMBERCOLOR;
 			}
 
@@ -971,7 +971,7 @@ label_TRI:
 	
 	// NOT FOR IFR USAGE
 	Surface.SelectObject(LK8PanelSmallFont);
-	LKWriteText(Surface, MsgToken(915), qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
+	LKWriteText(Surface, MsgToken<915>(), qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
 
 #endif // not in LKCOMPETITION
 	goto label_End; // End of TRI
@@ -995,7 +995,7 @@ label_HSI:
 		}
 		if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 			if(showVFRlanding) {
-				_stprintf(Buffer,TEXT("VFR %s"),MsgToken(931)); //TODO: toupper()
+				_stprintf(Buffer,TEXT("VFR %s"),MsgToken<931>()); //TODO: toupper()
 				if (!IsDithered()) {
 					icolor = INVERTCOLORS ? RGB_YELLOW : RGB_DARKYELLOW;
 				} else {
@@ -1003,7 +1003,7 @@ label_HSI:
 				}
 			}
 			if(showQFU) {
-				_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken(2179));
+				_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken<2179>());
 				icolor = IsDithered() ? RGB_WHITE : RGB_GREEN;
 			}
 		} else { //show next waypoint name
@@ -1011,11 +1011,11 @@ label_HSI:
 			if(ValidTaskPoint(ActiveTaskPoint)) {
 				if(Task[ActiveTaskPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveTaskPoint].Index].Name);
 				else {
-					_tcscpy(Buffer,MsgToken(912)); // [no dest]
+					_tcscpy(Buffer,MsgToken<912>()); // [no dest]
 					icolor=AMBERCOLOR;
 				}
 			} else {
-				_tcscpy(Buffer,MsgToken(912)); // [no dest]
+				_tcscpy(Buffer,MsgToken<912>()); // [no dest]
 				icolor=AMBERCOLOR;
 			}
 		}

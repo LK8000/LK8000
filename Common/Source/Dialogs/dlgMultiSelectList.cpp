@@ -406,7 +406,7 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
 
   if (iTaskIdx == 0) {
      // _@M2301_  "S"    # S = Start Task point
-    lk::snprintf(text1, _T("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
+    lk::snprintf(text1, _T("%s: (%s)"), MsgToken<2301>(), WayPointList[idx].Name);
     lk::snprintf(text2, _T("Radius %3.1f%s (%i%s)"),
                StartRadius * DISTANCEMODIFY, Units::GetDistanceName(),
                (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
@@ -414,7 +414,7 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
   } else {
      if (iTaskIdx == iLastTaskPoint) {
          //  _@M2303_  "F"                 // max 30         30 => max 60 char
-         lk::snprintf(text1, _T("%s: (%s) "), MsgToken(2303),
+         lk::snprintf(text1, _T("%s: (%s) "), MsgToken<2303>(),
                    WayPointList[idx].Name);
          lk::snprintf(text2, _T("Radius %3.1f%s (%i%s)"),
                    FinishRadius * DISTANCEMODIFY, Units::GetDistanceName(),
@@ -422,7 +422,7 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
                    Units::GetAltitudeName());
      } else {
          //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
-         lk::snprintf(text1, _T("%s%i: (%s) "), MsgToken(2302), iTaskIdx,
+         lk::snprintf(text1, _T("%s%i: (%s) "), MsgToken<2302>(), iTaskIdx,
                    WayPointList[idx].Name);
          double SecRadius = 0;
 
@@ -482,7 +482,7 @@ int BuildLandableText(int idx, double Distance, TCHAR (&text1)[MAX_LEN], TCHAR (
         lk::snprintf(text1, _T("%s"), WayPointList[idx].Name);
   } else {
       if( WayPointList[idx].Style ==  STYLE_THERMAL)
-        lk::snprintf(text1, _T("%s: %s"), MsgToken(905), WayPointList[idx].Name);
+        lk::snprintf(text1, _T("%s: %s"), MsgToken<905>(), WayPointList[idx].Name);
       else
       if (WayPointList[idx].Comment != NULL)
         lk::snprintf(text1, _T("%s %s"), WayPointList[idx].Name, Comment);
@@ -535,9 +535,9 @@ if (IsDithered()) {
   BaseColor = BaseColor.MixColors(RGB_BLUE, fFact);
 }
 
-if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc, MsgToken(2382) ,BaseColor); else     // _@M2382_ "■"
-  if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc,  MsgToken(2383) ,BaseColor);else      // _@M2383_ "●"
-    UTF8Pictorial( Surface,  rc, MsgToken(2384)  ,BaseColor);    // _@M2384_ "●"
+if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc, MsgToken<2382>() ,BaseColor); else     // _@M2382_ "■"
+  if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc,  MsgToken<2383>() ,BaseColor);else      // _@M2383_ "●"
+    UTF8Pictorial( Surface,  rc, MsgToken<2384>()  ,BaseColor);    // _@M2384_ "●"
 }
 
 
@@ -657,11 +657,11 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              * IM_TEAM
              ************************************************************************************************/
         case IM_TEAM:
-          lk::snprintf(text1, _T("%s:"),MsgToken(700)); //_@M700_ "Team code"
+          lk::snprintf(text1, _T("%s:"),MsgToken<700>()); //_@M700_ "Team code"
           lk::snprintf(text2, _T("%s"), CALCULATED_INFO.OwnTeamCode );
             ShowTextEntries(Surface, rc,  text1, text2);
             if(Appearance.UTF8Pictorials)
-              UTF8Pictorial( Surface,  rc, MsgToken(2380), RGB_VDARKRED);  // _@M2380_ "⚑"
+              UTF8Pictorial( Surface,  rc, MsgToken<2380>(), RGB_VDARKRED);  // _@M2380_ "⚑"
             else
               UTF8Pictorial( Surface,  rc, _T("@"), RGB_VDARKRED);
 
@@ -672,14 +672,14 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              * IM_ORACLE
              ************************************************************************************************/
         case IM_ORACLE:
-          lk::snprintf(text1, _T("%s"), MsgToken(2058)); //_@M2058_ "Oracle"
+          lk::snprintf(text1, _T("%s"), MsgToken<2058>()); //_@M2058_ "Oracle"
             if(el.iIdx >= 0)
-              lk::snprintf(text2, _T("%s: %s"), MsgToken(456), WayPointList[el.iIdx].Name);// _@M456_ "Near"
+              lk::snprintf(text2, _T("%s: %s"), MsgToken<456>(), WayPointList[el.iIdx].Name);// _@M456_ "Near"
             else
-              lk::snprintf(text2, _T("%s"), MsgToken(1690)); //_@M1690_ "THE LK8000 ORACLE"
+              lk::snprintf(text2, _T("%s"), MsgToken<1690>()); //_@M1690_ "THE LK8000 ORACLE"
             ShowTextEntries(Surface, rc,  text1, text2);
             if(Appearance.UTF8Pictorials)
-              UTF8Pictorial( Surface,  rc, MsgToken(2381),RGB_BLUE);  // _@M2381_ "♕"
+              UTF8Pictorial( Surface,  rc, MsgToken<2381>(),RGB_BLUE);  // _@M2381_ "♕"
             else
               UTF8Pictorial( Surface,  rc, _T("?"),RGB_BLUE);
             break;

@@ -246,14 +246,14 @@ static void OnEnterClicked(WndButton *pWnd) {
   TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next(TEXT(" "));
   _tcscat(IGCFilename, _T(".IGC"));  
   _tcscpy(DownoadIGCFilename, IGCFilename);
-  _stprintf(Tmp, _T("%s %s ?"), MsgToken(2404), IGCFilename);
-  if (MessageBoxX(Tmp, MsgToken(2404), mbYesNo) == IdYes)  // _@2404 "Download"
+  _stprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(), IGCFilename);
+  if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes)  // _@2404 "Download"
   {
     /** check if file already exist and is not empty ************/
     TCHAR PathIGCFilename  [MAX_PATH];
     if (GetEOSIGCFilename(PathIGCFilename, IGCFilename)) {
       if (lk::filesystem::exist(PathIGCFilename))
-        if (MessageBoxX(MsgToken(2416), MsgToken(2398), mbYesNo) ==
+        if (MessageBoxX(MsgToken<2416>(), MsgToken<2398>(), mbYesNo) ==
             IdNo) // _@M2416_ "File already exits\n download anyway?"
         {
           EOS_ThreadState = IDLE_STATE;
@@ -741,7 +741,7 @@ uint16_t error= REC_NO_ERROR;
       
     case ALL_RECEIVED_STATE:      
       StartupStore(TEXT("EOS/ERA/10k IGC File Download end (%i Blocks)"),BlockNo);    
-      lk::snprintf(szEOS_DL_StatusText, _T("%s %s"), DownoadIGCFilename,MsgToken(2406));
+      lk::snprintf(szEOS_DL_StatusText, _T("%s %s"), DownoadIGCFilename,MsgToken<2406>());
       fclose (pf_IGCFile);
       pf_IGCFile = NULL;
       EOS_IGCReadDialog.DownloadError(REC_NO_ERROR);
@@ -753,7 +753,7 @@ uint16_t error= REC_NO_ERROR;
       fclose (pf_IGCFile);
        pf_IGCFile = NULL;
       GetEOSIGCFilename(PathIGCFilename, DownoadIGCFilename);   
-      lk::snprintf(szEOS_DL_StatusText, _T("%s %s"), DownoadIGCFilename,MsgToken(2415));
+      lk::snprintf(szEOS_DL_StatusText, _T("%s %s"), DownoadIGCFilename,MsgToken<2415>());
       lk::filesystem::deleteFile( PathIGCFilename); 
       EOS_IGCReadDialog.DownloadError(REC_ABORTED);
       EOS_ThreadState = SIGNAL_STATE;       
@@ -798,37 +798,37 @@ static bool OnTimer(WndForm *pWnd) {
           switch (EOS_IGCReadDialog.DownloadError()) {
           case REC_NO_ERROR:
             lk::snprintf(Tmp, STATUS_TXT_LEN, _T("%s\n%s"),
-                       DownoadIGCFilename, MsgToken(2406));
+                       DownoadIGCFilename, MsgToken<2406>());
             break; // 	_@M2406_ "IGC File download complete"
           case REC_TIMEOUT_ERROR:
-            _tcscpy(Tmp, MsgToken(2407));
+            _tcscpy(Tmp, MsgToken<2407>());
             break; // _@M2407_ "Error: receive timeout
           case REC_CRC_ERROR:
-            _tcscpy(Tmp, MsgToken(2408));
+            _tcscpy(Tmp, MsgToken<2408>());
             break; // _@M2408_ "Error: CRC checksum fail"
           case REC_ABORTED:
-            _tcscpy(Tmp, MsgToken(2415));
+            _tcscpy(Tmp, MsgToken<2415>());
             break; // _@M2415_ "IGC Download aborted!"
           case FILENAME_ERROR:
-            _tcscpy(Tmp, MsgToken(2409));
+            _tcscpy(Tmp, MsgToken<2409>());
             break; // _@M2409_ "Error: invalid filename"
           case FILE_OPEN_ERROR:
-            _tcscpy(Tmp, MsgToken(2410));
+            _tcscpy(Tmp, MsgToken<2410>());
             break; // _@M2410_ "Error: can't open file"
           case IGC_RECEIVE_ERROR:
-            _tcscpy(Tmp, MsgToken(2411));
+            _tcscpy(Tmp, MsgToken<2411>());
             break; // _@M2411_ "Error: Block invalid"
           case REC_NO_DEVICE:
-            _tcscpy(Tmp, MsgToken(2475));
+            _tcscpy(Tmp, MsgToken<2475>());
             break; // _@M2401_ "No Device found"
           case REC_WRONG_BLOCK: 
-             _tcscpy(Tmp, MsgToken(2474)); // _@M2474_ "wrong block received"
+             _tcscpy(Tmp, MsgToken<2474>()); // _@M2474_ "wrong block received"
             break;
           default:            
-            _tcscpy(Tmp, MsgToken(2412));
+            _tcscpy(Tmp, MsgToken<2412>());
             break; // _@M2412_ "Error: unknown"
           }
-          if (MessageBoxX(Tmp, MsgToken(2398), mbOk) ==
+          if (MessageBoxX(Tmp, MsgToken<2398>(), mbOk) ==
               IdYes) // _@M2406_ "Error: communication timeout"Reboot"
           {
 

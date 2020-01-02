@@ -155,7 +155,7 @@ void IGCProgressDialogText(const TCHAR *text) {
 	StartupStore(_T("Abort pressed%s"), NEWLINE);
 
 
-	if (MessageBoxX(MsgToken(2417), MsgToken(2398), mbYesNo) == IdYes) // _@M2417_ "Abort Download ?"
+	if (MessageBoxX(MsgToken<2417>(), MsgToken<2398>(), mbYesNo) == IdYes) // _@M2417_ "Abort Download ?"
 	{
 	  CloseIGCProgressDialog();
 	  StopIGCRead();

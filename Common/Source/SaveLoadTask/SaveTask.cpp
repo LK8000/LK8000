@@ -25,7 +25,7 @@ void SaveTask(const TCHAR *szFileName) {
 
         MessageBoxX(
                 // LKTOKEN  _@M263_ = "Error in saving task!"
-                MsgToken(263), LKGetText(TEXT("Save task")), mbOk);
+                MsgToken<263>(), LKGetText(TEXT("Save task")), mbOk);
 
         StartupStore(_T("++++++ SaveTask: ERROR saving task!%s"), NEWLINE);
     }

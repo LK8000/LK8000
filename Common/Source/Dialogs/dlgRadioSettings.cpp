@@ -180,14 +180,14 @@ static int OnUpdate(void) {
 
     WindowControl* wAuto = wf->FindByName(TEXT("cmdAutoActive"));
     if(bAutoActive) {
-      wAuto->SetCaption(MsgToken(1324));   //  M1324 "B>"
+      wAuto->SetCaption(MsgToken<1324>());   //  M1324 "B>"
     } else  {
       wAuto->SetCaption(_T(""));
     }
 
     wAuto = wf->FindByName(TEXT("cmdAutoPassive"));
     if(bAutoPassiv) {
-      wAuto->SetCaption(MsgToken(1324));   //  M1324 "B>"
+      wAuto->SetCaption(MsgToken<1324>());   //  M1324 "B>"
     } else  {
       wAuto->SetCaption(_T(""));
     }
@@ -229,7 +229,7 @@ static void OnActiveButton(WndButton* pWnd){
         HoldOff = HOLDOFF_TIME;
       }
       else {
-        MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
+        MessageBoxX(MsgToken<2490>(), MsgToken<2491>(), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
       }
     }
   }
@@ -242,7 +242,7 @@ static void OnPassiveButton(WndButton* pWnd){
     if(ValidWayPoint(res)) {
       unsigned khz = ExtractFrequency(WayPointList[res].Freq);
       if(!ValidFrequency(khz)) {
-        MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
+        MessageBoxX(MsgToken<2490>(), MsgToken<2491>(), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
       }
       else {
         devPutFreqStandby(khz, WayPointList[res].Name);
@@ -265,7 +265,7 @@ static void OnActiveFreq(WndButton* pWnd){
   unsigned khz = ExtractFrequency(szFreq);
 
   if (!ValidFrequency(khz)) {
-    MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); // "_@M002490_": "Invalid radio frequency/channel input!",
+    MessageBoxX(MsgToken<2490>(), MsgToken<2491>(), mbOk); // "_@M002490_": "Invalid radio frequency/channel input!",
   }
   else {
     UpdateStationName(RadioPara.ActiveName, khz);
@@ -284,7 +284,7 @@ static void OnPassiveFreq(WndButton* pWnd){
   unsigned khz = ExtractFrequency(szFreq);
 
   if (!ValidFrequency(khz)) {
-    MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); // "_@M002490_": "Invalid radio frequency/channel input!",
+    MessageBoxX(MsgToken<2490>(), MsgToken<2491>(), mbOk); // "_@M002490_": "Invalid radio frequency/channel input!",
   }
   else {
     UpdateStationName(RadioPara.PassiveName, khz);

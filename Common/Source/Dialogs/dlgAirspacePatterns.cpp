@@ -33,7 +33,7 @@ protected:
   }
 
   const TCHAR* GetTitle() const override {
-    return MsgToken(594);
+    return MsgToken<594>();
   }
 
 };

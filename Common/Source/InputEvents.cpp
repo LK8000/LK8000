@@ -852,10 +852,10 @@ void InputEvents::eventSounds(const TCHAR *misc) {
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (EnableSoundModes)
 	// LKTOKEN  _@M625_ = "Sounds ON"
-      DoStatusMessage(MsgToken(625));
+      DoStatusMessage(MsgToken<625>());
     else
 	// LKTOKEN  _@M624_ = "Sounds OFF"
-      DoStatusMessage(MsgToken(624));
+      DoStatusMessage(MsgToken<624>());
   }
 }
 
@@ -871,10 +871,10 @@ void InputEvents::eventBaroAltitude(const TCHAR *misc) {
   }
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (EnableNavBaroAltitude) {
-      DoStatusMessage(MsgToken(1796));  // USING BARO ALTITUDE
+      DoStatusMessage(MsgToken<1796>()); // USING BARO ALTITUDE
     }
     else {
-      DoStatusMessage(MsgToken(757));  // USING GPS ALTITUDE
+      DoStatusMessage(MsgToken<757>()); // USING GPS ALTITUDE
     }
   }
 }
@@ -912,16 +912,16 @@ void InputEvents::eventSnailTrail(const TCHAR *misc) {
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (TrailActive==0)
 	// LKTOKEN  _@M620_ = "SnailTrail OFF"
-      DoStatusMessage(MsgToken(620));
+      DoStatusMessage(MsgToken<620>());
     if (TrailActive==1)
 	// LKTOKEN  _@M622_ = "SnailTrail ON Long"
-      DoStatusMessage(MsgToken(622));
+      DoStatusMessage(MsgToken<622>());
     if (TrailActive==2)
 	// LKTOKEN  _@M623_ = "SnailTrail ON Short"
-      DoStatusMessage(MsgToken(623));
+      DoStatusMessage(MsgToken<623>());
     if (TrailActive==3)
 	// LKTOKEN  _@M621_ = "SnailTrail ON Full"
-      DoStatusMessage(MsgToken(621));
+      DoStatusMessage(MsgToken<621>());
   }
 }
 
@@ -955,9 +955,9 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
     LKSound(TEXT("LK_TONEUP.WAV"));
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
 	if (ActiveMap)
-		DoStatusMessage(MsgToken(854),NULL,false); // ActiveMap ON
+		DoStatusMessage(MsgToken<854>(),NULL,false); // ActiveMap ON
 	else
-		DoStatusMessage(MsgToken(855),NULL,false); // ActiveMap OFF
+		DoStatusMessage(MsgToken<855>(),NULL,false); // ActiveMap OFF
   }
 #endif
 }
@@ -998,10 +998,10 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (MapWindow::zoom.AutoZoom())
 	// 856 AutoZoom ON
-      DoStatusMessage(MsgToken(856));
+      DoStatusMessage(MsgToken<856>());
     else
 	// 857 AutoZoom OFF
-      DoStatusMessage(MsgToken(857));
+      DoStatusMessage(MsgToken<857>());
   }
   else if (_tcscmp(misc, TEXT("slowout")) == 0)
     MapWindow::zoom.EventScaleZoom(-4);
@@ -1031,10 +1031,10 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   } else if (_tcscmp(misc, TEXT("circlezoom show")) == 0) {
     if (MapWindow::zoom.CircleZoom())
 	// LKTOKEN  _@M173_ = "Circling Zoom ON"
-      DoStatusMessage(MsgToken(173));
+      DoStatusMessage(MsgToken<173>());
     else
 	// LKTOKEN  _@M172_ = "Circling Zoom OFF"
-      DoStatusMessage(MsgToken(172));
+      DoStatusMessage(MsgToken<172>());
   }
 }
 
@@ -1072,9 +1072,9 @@ void InputEvents::eventPan(const TCHAR *misc) {
     MapWindow::Event_PanCursor(0,-1);
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (MapWindow::mode.AnyPan())
-      DoStatusMessage(MsgToken(858)); // Pan mode ON
+      DoStatusMessage(MsgToken<858>()); // Pan mode ON
     else
-      DoStatusMessage(MsgToken(859)); // Pan mode OFF
+      DoStatusMessage(MsgToken<859>()); // Pan mode OFF
   }
 
 }
@@ -1114,47 +1114,47 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
     switch (AutoAdvance) {
     case 0:
 	// LKTOKEN  _@M105_ = "Auto Advance: Manual"
-      DoStatusMessage(MsgToken(105));
+      DoStatusMessage(MsgToken<105>());
       break;
     case 1:
 	// LKTOKEN  _@M103_ = "Auto Advance: Automatic"
-      DoStatusMessage(MsgToken(103));
+      DoStatusMessage(MsgToken<103>());
       break;
     case 2:
       if (AdvanceArmed) {
 	// LKTOKEN  _@M102_ = "Auto Advance: ARMED"
-        DoStatusMessage(MsgToken(102));
+        DoStatusMessage(MsgToken<102>());
       } else {
 	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED"
-        DoStatusMessage(MsgToken(104));
+        DoStatusMessage(MsgToken<104>());
       }
       break;
     case 3:
       if (ActiveTaskPoint<2) { // past start (but can re-start)
         if (AdvanceArmed) {
 	// LKTOKEN  _@M102_ = "Auto Advance: ARMED"
-          DoStatusMessage(MsgToken(102));
+          DoStatusMessage(MsgToken<102>());
         } else {
 	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED"
-          DoStatusMessage(MsgToken(104));
+          DoStatusMessage(MsgToken<104>());
         }
       } else {
 	// LKTOKEN  _@M103_ = "Auto Advance: Automatic"
-        DoStatusMessage(MsgToken(103));
+        DoStatusMessage(MsgToken<103>());
       }
       break;
     case 4:
       if (ActiveTaskPoint==0) { // past start (but can re-start)
 	// LKTOKEN  _@M103_ = "Auto Advance: Automatic"
-        DoStatusMessage(MsgToken(103));
+        DoStatusMessage(MsgToken<103>());
       }
       else {
         if (AdvanceArmed) {
 	// LKTOKEN  _@M102_ = "Auto Advance: ARMED"
-          DoStatusMessage(MsgToken(102));
+          DoStatusMessage(MsgToken<102>());
         } else {
 	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED"
-          DoStatusMessage(MsgToken(104));
+          DoStatusMessage(MsgToken<104>());
         }
       }
       break;
@@ -1238,7 +1238,7 @@ void InputEvents::eventWaypointDetails(const TCHAR *misc) {
     }
     if (SelectedWaypoint<0){
 	// LKTOKEN  _@M462_ = "No Active Waypoint!"
-      DoStatusMessage(MsgToken(462));
+      DoStatusMessage(MsgToken<462>());
       return;
     }
     PopupWaypointDetails();
@@ -1410,9 +1410,9 @@ void InputEvents::eventMacCready(const TCHAR *misc) {
     MacCreadyProcessing(-8);
   } else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (CALCULATED_INFO.AutoMacCready) {
-      DoStatusMessage(MsgToken(860)); // Auto MacCready ON
+      DoStatusMessage(MsgToken<860>()); // Auto MacCready ON
     } else {
-      DoStatusMessage(MsgToken(861)); // Auto MacCready OFF
+      DoStatusMessage(MsgToken<861>()); // Auto MacCready OFF
     }
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
@@ -1481,15 +1481,15 @@ void InputEvents::eventFlightMode(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("show")) == 0) {
     if (ForceFinalGlide) {
 	// LKTOKEN  _@M289_ = "Final glide forced ON"
-      DoStatusMessage(MsgToken(289));
+      DoStatusMessage(MsgToken<289>());
     } else {
 	// LKTOKEN  _@M288_ = "Final glide automatic"
-      DoStatusMessage(MsgToken(288));
+      DoStatusMessage(MsgToken<288>());
     }
   }
   if (ForceFinalGlide && ActiveTaskPoint == -1){
 	// LKTOKEN  _@M462_ = "No Active Waypoint!"
-    DoStatusMessage(MsgToken(462));
+    DoStatusMessage(MsgToken<462>());
   }
 }
 
@@ -1618,7 +1618,7 @@ void InputEvents::eventAdjustWaypoint(const TCHAR *misc) {
 void InputEvents::eventAbortTask(const TCHAR *misc) {
 
   if (ValidTaskPoint(ActiveTaskPoint)) {
-    if (MessageBoxX(MsgToken(179), MsgToken(178), mbYesNo) == IdYes) {
+    if (MessageBoxX(MsgToken<179>(), MsgToken<178>(), mbYesNo) == IdYes) {
       // LKTOKEN  _@M179_ = "Clear the task?"
       // LKTOKEN  _@M178_ = "Clear task"
     
@@ -1627,7 +1627,7 @@ void InputEvents::eventAbortTask(const TCHAR *misc) {
       SetHome(true);  // force home reload
     }
   } else { 
-    MessageBoxX(MsgToken(468), MsgToken(178), mbOk);
+    MessageBoxX(MsgToken<468>(), MsgToken<178>(), mbOk);
     // LKTOKEN  _@M468_ = "No Task"
     // LKTOKEN  _@M178_ = "Clear task"
   }
@@ -1678,31 +1678,31 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	switch(resw) {
 		case WCALC_INVALID_SPEED:
 	// LKTOKEN  _@M369_ = "KEEP SPEED LONGER PLEASE"
-			_tcscpy(mbuf,MsgToken(369));
+			_tcscpy(mbuf,MsgToken<369>());
 			reschedule=true;
 			break;
 		case WCALC_INVALID_TRACK:
 	// LKTOKEN  _@M367_ = "KEEP HEADING LONGER PLEASE"
-			_tcscpy(mbuf,MsgToken(367));
+			_tcscpy(mbuf,MsgToken<367>());
 			reschedule=true;
 			break;
 		case WCALC_INVALID_ALL:
 	// LKTOKEN  _@M368_ = "KEEP SPEED AND HEADING LONGER PLEASE"
-			_tcscpy(mbuf,MsgToken(368));
+			_tcscpy(mbuf,MsgToken<368>());
 			reschedule=true;
 			break;
 		case WCALC_INVALID_HEADING:
 	// LKTOKEN  _@M344_ = "INACCURATE HEADING OR TOO STRONG WIND"
-			_tcscpy(mbuf,MsgToken(344));
+			_tcscpy(mbuf,MsgToken<344>());
 			break;
 		case WCALC_INVALID_IAS:
 	// LKTOKEN  _@M366_ = "KEEP AIRSPEED CONSTANT LONGER PLEASE"
-			_tcscpy(mbuf,MsgToken(366));
+			_tcscpy(mbuf,MsgToken<366>());
 			reschedule=true;
 			break;
 		case WCALC_INVALID_NOIAS:
 	// LKTOKEN  _@M345_ = "INVALID AIRSPEED"
-			_tcscpy(mbuf,MsgToken(345));
+			_tcscpy(mbuf,MsgToken<345>());
 			break;
 		default:
 			_stprintf(mbuf,_T("INVALID DATA CALCULATING WIND %d"), resw);
@@ -1727,14 +1727,14 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
   }
 
   _stprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"),
-	wspeed/3.6*SPEEDMODIFY, Units::GetHorizontalSpeedName(), wfrom, MsgToken(2179));
+	wspeed/3.6*SPEEDMODIFY, Units::GetHorizontalSpeedName(), wfrom, MsgToken<2179>());
 
 #if 0
   if (reswp<80) _stprintf(ttmp,_T("TrueWind! Quality: low"));
   if (reswp<98) _stprintf(ttmp,_T("TrueWind! Quality: fair"));
   if (reswp>=98) _stprintf(ttmp,_T("TrueWind! Quality: good"));
 #else
-  _stprintf(ttmp,_T("TrueWind! %s: %d%%"),MsgToken(866),resw); // Quality
+  _stprintf(ttmp,_T("TrueWind! %s: %d%%"),MsgToken<866>(),resw); // Quality
 #endif
 
   if (MessageBoxX(mbuf, ttmp, mbYesNo) == IdYes) {
@@ -1745,7 +1745,7 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	CALCULATED_INFO.WindBearing=wfrom;
 
 	// LKTOKEN  _@M746_ = "TrueWind updated!"
-	DoStatusMessage(MsgToken(746));
+	DoStatusMessage(MsgToken<746>());
   }
 }
 
@@ -1771,9 +1771,9 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
   if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 	if (MessageBoxX(
 	// LKTOKEN  _@M563_ = "Restart task?"
-		MsgToken(563),
+		MsgToken<563>(),
 	// LKTOKEN  _@M562_ = "Restart task"
-		MsgToken(562),
+		MsgToken<562>(),
 		mbYesNo) == IdYes) {
 		LockTaskData();
 		ResetTask(true);
@@ -1782,9 +1782,9 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
   } else {
 	MessageBoxX(
 	// LKTOKEN  _@M468_ = "No Task"
-		MsgToken(468),
+		MsgToken<468>(),
 	// LKTOKEN  _@M562_ = "Restart task"
-		MsgToken(562),
+		MsgToken<562>(),
 		mbOk);
   }
 
@@ -1793,9 +1793,9 @@ void InputEvents::eventResetTask(const TCHAR *misc) { // 100117
 void InputEvents::eventResetQFE(const TCHAR *misc) { // 100211
 	if (MessageBoxX(
 	// LKTOKEN  _@M557_ = "Reset QFE?"
-		MsgToken(557),
+		MsgToken<557>(),
 	// LKTOKEN  _@M559_ = "Reset zero QFE"
-		MsgToken(559),
+		MsgToken<559>(),
 		mbYesNo) == IdYes) {
 			QFEAltitudeOffset=ALTITUDEMODIFY*CALCULATED_INFO.NavAltitude; // 100211
 	}
@@ -1805,9 +1805,9 @@ void InputEvents::eventResetQFE(const TCHAR *misc) { // 100211
 void InputEvents::eventRestartCommPorts(const TCHAR *misc) { // 100211
 	if (MessageBoxX(
 	// LKTOKEN  _@M558_ = "Reset and restart COM Ports?"
-		MsgToken(558),
+		MsgToken<558>(),
 	// LKTOKEN  _@M538_ = "RESET ALL COMM PORTS"
-		MsgToken(538),
+		MsgToken<538>(),
 		mbYesNo) == IdYes) {
 			LKForceComPortReset=true;
 			// also reset warnings
@@ -1822,22 +1822,22 @@ void InputEvents::eventService(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("TAKEOFF")) == 0) {
 	// No MESSAGE on screen, only a sound
 	if (ISCAR)
-		DoStatusMessage(MsgToken(571),NULL,false); // START
+		DoStatusMessage(MsgToken<571>(),NULL,false); // START
 	else {
-		if (SIMMODE) DoStatusMessage(MsgToken(930),NULL,false); // Takeoff
+		if (SIMMODE) DoStatusMessage(MsgToken<930>(),NULL,false); // Takeoff
 	}
     LKSound(_T("LK_TAKEOFF.WAV"));
 	return;
   }
   if (_tcscmp(misc, TEXT("LANDING")) == 0) {
-	DoStatusMessage(MsgToken(931),NULL,false);
+	DoStatusMessage(MsgToken<931>(),NULL,false);
     LKSound(_T("LK_LANDING.WAV"));
 	return;
   }
 
 
   if (_tcscmp(misc, TEXT("GPSRESTART")) == 0) {
-	DoStatusMessage(MsgToken(928),NULL,false);
+	DoStatusMessage(MsgToken<928>(),NULL,false);
 	return;
   }
 
@@ -1856,7 +1856,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("TASKNEXTWAYPOINT")) == 0) {
 	// LKTOKEN  _@M461_ = "Next turnpoint"
-	DoStatusMessage(MsgToken(461));
+	DoStatusMessage(MsgToken<461>());
 	LKSound(_T("LK_TASKPOINT.WAV"));
 	return;
   }
@@ -1864,9 +1864,9 @@ void InputEvents::eventService(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("ORBITER")) == 0) {
 	Orbiter=!Orbiter;
 	if (Orbiter)
-		DoStatusMessage(MsgToken(867)); // ORBITER ON
+		DoStatusMessage(MsgToken<867>()); // ORBITER ON
 	else
-		DoStatusMessage(MsgToken(868)); // ORBITER OFF
+		DoStatusMessage(MsgToken<868>()); // ORBITER OFF
 	return;
   }
 
@@ -1900,20 +1900,20 @@ void InputEvents::eventService(const TCHAR *misc) {
 	TCHAR mtext[80];
 	if (LockMode(1)) {
 		// LKTOKEN  _@M960_ = "CONFIRM SCREEN UNLOCK?"
-		_tcscpy(mtext, MsgToken(960));
+		_tcscpy(mtext, MsgToken<960>());
 	} else {
 		// LKTOKEN  _@M961_ = "CONFIRM SCREEN LOCK?"
-		_tcscpy(mtext, MsgToken(961));
+		_tcscpy(mtext, MsgToken<961>());
 	}
 	if (MessageBoxX(
 		mtext, _T(""),
 		mbYesNo) == IdYes) {
 			if (LockMode(2)) { // invert LockMode
 				if (ISPARAGLIDER)
-					DoStatusMessage(MsgToken(962)); // SCREEN IS LOCKED UNTIL TAKEOFF
-				DoStatusMessage(MsgToken(1601)); // DOUBLECLICK TO UNLOCK
+					DoStatusMessage(MsgToken<962>()); // SCREEN IS LOCKED UNTIL TAKEOFF
+				DoStatusMessage(MsgToken<1601>()); // DOUBLECLICK TO UNLOCK
 			} else
-				DoStatusMessage(MsgToken(964)); // SCREEN IS UNLOCKED
+				DoStatusMessage(MsgToken<964>()); // SCREEN IS UNLOCKED
 	}
 	return;
   }
@@ -1939,7 +1939,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("ORACLE")) == 0) {
 	if (GPS_INFO.NAVWarning) {
-		DoStatusMessage(MsgToken(1702)); // Oracle wants gps fix
+		DoStatusMessage(MsgToken<1702>()); // Oracle wants gps fix
 		return;
 	}
 
@@ -1951,9 +1951,9 @@ void InputEvents::eventService(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("TOTALEN")) == 0) {
 	UseTotalEnergy=!UseTotalEnergy;
 	if (UseTotalEnergy)
-		DoStatusMessage(MsgToken(1667)); // TOTAL ENERGY ON
+		DoStatusMessage(MsgToken<1667>()); // TOTAL ENERGY ON
 	else
-		DoStatusMessage(MsgToken(1668)); // TOTAL ENERGY OFF
+		DoStatusMessage(MsgToken<1668>()); // TOTAL ENERGY OFF
 	return;
   }
 
@@ -1992,9 +1992,9 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("LOGBRESET")) == 0) {
-	if (MessageBoxX(MsgToken(1751), _T(""), mbYesNo) == IdYes) {
+	if (MessageBoxX(MsgToken<1751>(), _T(""), mbYesNo) == IdYes) {
 		ResetLogBook();
-		DoStatusMessage(MsgToken(1752)); // Reset
+		DoStatusMessage(MsgToken<1752>()); // Reset
 	}
 	return;
   }
@@ -2070,7 +2070,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	Alternate2 = -1;
 	RefreshTask();
 	UnlockTaskData();
-	DoStatusMessage(MsgToken(177)); // clear alternates
+	DoStatusMessage(MsgToken<177>()); // clear alternates
 	return;
   }
   if (_tcscmp(misc, TEXT("PANREPOS")) == 0) {
@@ -2129,8 +2129,8 @@ void InputEvents::eventService(const TCHAR *misc) {
   if(_tcscmp(misc, TEXT("TASKREVERSE")) == 0) {
 	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 		if (MessageBoxX(
-			MsgToken(1852), // LKTOKEN  _@M1852_ = "Reverse task?"
-			MsgToken(1851), // LKTOKEN  _@M1851_ = "Reverse task"
+			MsgToken<1852>(), // LKTOKEN  _@M1852_ = "Reverse task?"
+			MsgToken<1851>(), // LKTOKEN  _@M1851_ = "Reverse task"
 			mbYesNo) == IdYes) {
 			LockTaskData();
 			ReverseTask();
@@ -2138,8 +2138,8 @@ void InputEvents::eventService(const TCHAR *misc) {
 		}
 	  } else {
 		MessageBoxX(
-			MsgToken(468),  // LKTOKEN  _@M468_ = "No Task"
-			MsgToken(1851), // LKTOKEN  _@M1851_ = "Reverse task"
+			MsgToken<468>(),  // LKTOKEN  _@M468_ = "No Task"
+			MsgToken<1851>(), // LKTOKEN  _@M1851_ = "Reverse task"
 			mbOk);
 	  }
 	return;
@@ -2301,7 +2301,7 @@ void InputEvents::eventLogger(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("nmea")) == 0) {
     EnableLogNMEA = !EnableLogNMEA;
     if (EnableLogNMEA) {
-      DoStatusMessage(MsgToken(864)); // NMEA Log ON
+      DoStatusMessage(MsgToken<864>()); // NMEA Log ON
       #if TESTBENCH
       StartupStore(_T("... NMEA LOG IS ON @%s%s"),WhatTimeIsIt(),NEWLINE);
       #endif
@@ -2309,14 +2309,14 @@ void InputEvents::eventLogger(const TCHAR *misc) {
       #if TESTBENCH
       StartupStore(_T("... NMEA LOG IS OFF @%s%s"),WhatTimeIsIt(),NEWLINE);
       #endif
-      DoStatusMessage(MsgToken(865)); // NMEA Log OFF
+      DoStatusMessage(MsgToken<865>()); // NMEA Log OFF
     }
     return;
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (LoggerActive) {
-      DoStatusMessage(MsgToken(862)); // Logger ON
+      DoStatusMessage(MsgToken<862>()); // Logger ON
     } else {
-      DoStatusMessage(MsgToken(863)); // Logger OFF
+      DoStatusMessage(MsgToken<863>()); // Logger OFF
     }
   }
 }
@@ -2821,23 +2821,23 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
 
   TCHAR tmode[50];
-  _stprintf(tmode,_T("%s: "), MsgToken(2249));
+  _stprintf(tmode,_T("%s: "), MsgToken<2249>());
 
   if (_tcscmp(misc, TEXT("unforce")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE);
-    _tcscat(tmode,MsgToken(2034));
+    _tcscat(tmode,MsgToken<2034>());
   }
   else if (_tcscmp(misc, TEXT("forceclimb")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING);
-    _tcscat(tmode,MsgToken(2031));
+    _tcscat(tmode,MsgToken<2031>());
   }
   else if (_tcscmp(misc, TEXT("forcecruise")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
-    _tcscat(tmode,MsgToken(2032));
+    _tcscat(tmode,MsgToken<2032>());
   }
   else if (_tcscmp(misc, TEXT("forcefinal")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-    _tcscat(tmode,MsgToken(2033));
+    _tcscat(tmode,MsgToken<2033>());
   }
   #if 0
   else if (_tcscmp(misc, TEXT("show")) == 0){ // UNUSED
@@ -2855,27 +2855,27 @@ void InputEvents::eventAirspaceDisplayMode(const TCHAR *misc){
 	switch(AltitudeMode) {
 		case 0:
 	// LKTOKEN  _@M71_ = "Airspaces: ALL ON"
-			DoStatusMessage(MsgToken(71));
+			DoStatusMessage(MsgToken<71>());
 			break;
 		case 1:
 	// LKTOKEN  _@M73_ = "Airspaces: CLIPPED"
-			DoStatusMessage(MsgToken(73));
+			DoStatusMessage(MsgToken<73>());
 			break;
 		case 2:
 	// LKTOKEN  _@M72_ = "Airspaces: AUTO"
-			DoStatusMessage(MsgToken(72));
+			DoStatusMessage(MsgToken<72>());
 			break;
 		case 3:
 	// LKTOKEN  _@M69_ = "Airspaces: ALL BELOW"
-			DoStatusMessage(MsgToken(69));
+			DoStatusMessage(MsgToken<69>());
 			break;
 		case 4:
 	// LKTOKEN  _@M74_ = "Airspaces: INSIDE"
-			DoStatusMessage(MsgToken(74));
+			DoStatusMessage(MsgToken<74>());
 			break;
 		case 5:
 	// LKTOKEN  _@M70_ = "Airspaces: ALL OFF"
-			DoStatusMessage(MsgToken(70));
+			DoStatusMessage(MsgToken<70>());
 			break;
 		default:
 			break;
@@ -3158,7 +3158,7 @@ void NextUpDown(int UpDown)
 
       // if it is a back to start and we have TimeGates ask if pilot wants to reset the Task
       if (ActiveTaskPoint == 0 && UseGates()) {
-        if (MessageBoxX(MsgToken(563),MsgToken(562),mbYesNo) == IdYes) {  // LKTOKEN  _@M563_ = "Restart task?" _@M562_ = "Restart task"
+        if (MessageBoxX(MsgToken<563>(),MsgToken<562>(),mbYesNo) == IdYes) {  // LKTOKEN  _@M563_ = "Restart task?" _@M562_ = "Restart task"
           LockTaskData();
           ResetTask(true);
           UnlockTaskData();

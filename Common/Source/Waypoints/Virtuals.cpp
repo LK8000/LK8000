@@ -40,7 +40,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_LASTTHERMAL].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Name, LKGetText(TEXT(RESWP_LASTTHERMAL_NAME)) );
 	// LKTOKEN _@M1320_ "LAST GOOD THERMAL"
-	SetWaypointComment(WayPointList[RESWP_LASTTHERMAL], MsgToken(1320));
+	SetWaypointComment(WayPointList[RESWP_LASTTHERMAL], MsgToken<1320>());
 	WayPointList[RESWP_LASTTHERMAL].Reachable=FALSE;
 	WayPointList[RESWP_LASTTHERMAL].AltArivalAGL=0.0;
 	WayPointList[RESWP_LASTTHERMAL].Visible=TRUE; // careful! 100929
@@ -63,7 +63,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TEAMMATE].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_TEAMMATE].Name, LKGetText(TEXT(RESWP_TEAMMATE_NAME)) );
 	// LKTOKEN _@M1321_ "TEAM MATE"
-	SetWaypointComment(WayPointList[RESWP_TEAMMATE], MsgToken(1321));
+	SetWaypointComment(WayPointList[RESWP_TEAMMATE], MsgToken<1321>());
 	WayPointList[RESWP_TEAMMATE].Reachable=FALSE;
 	WayPointList[RESWP_TEAMMATE].AltArivalAGL=0.0;
 	WayPointList[RESWP_TEAMMATE].Visible=FALSE;
@@ -85,7 +85,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FLARMTARGET].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name, LKGetText(TEXT(RESWP_FLARMTARGET_NAME)) );
 	// LKTOKEN _@M1322_ "FLARM TARGET"
-	SetWaypointComment(WayPointList[RESWP_FLARMTARGET], MsgToken(1322));
+	SetWaypointComment(WayPointList[RESWP_FLARMTARGET], MsgToken<1322>());
 	WayPointList[RESWP_FLARMTARGET].Reachable=FALSE;
 	WayPointList[RESWP_FLARMTARGET].AltArivalAGL=0.0;
 	WayPointList[RESWP_FLARMTARGET].Visible=FALSE;

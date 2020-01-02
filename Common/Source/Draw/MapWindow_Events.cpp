@@ -146,7 +146,7 @@ start_search:
             dyn_range *=2;
             goto start_search;
         } else {
-            DoStatusMessage(MsgToken(2248));  // _@M2248_  "No Near Object found!"
+            DoStatusMessage(MsgToken<2248>());  // _@M2248_  "No Near Object found!"
         }
     } else {
         LKSound(TEXT("LK_TOCK.WAV"));

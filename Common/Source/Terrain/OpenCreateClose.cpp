@@ -16,7 +16,7 @@ Mutex RasterTerrain::mutex;
 
 void RasterTerrain::OpenTerrain() {
   TestLog(_T(". Loading Terrain..."));
-  CreateProgressDialog(MsgToken(900));  // Loading Terrain File...
+  CreateProgressDialog(MsgToken<900>());  // Loading Terrain File...
 
   TCHAR szFile[MAX_PATH] = _T("\0");
   LocalPath(szFile, _T(LKD_MAPS), szTerrainFile);

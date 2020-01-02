@@ -178,6 +178,6 @@ JNIEXPORT void JNICALL
 Java_org_LK8000_LK8000_setKeyboardModelType(JNIEnv *env, jobject thiz, jstring jname) {
   std::string name = Java::String::ToString(env, jname);
   if (ModelType::Set(name.c_str())) {
-    DoStatusMessage((name + " " + MsgToken(199)).c_str()); // "XXXX Connected"
+    DoStatusMessage((name + " " + MsgToken<199>()).c_str()); // "XXXX Connected"
   }
 }

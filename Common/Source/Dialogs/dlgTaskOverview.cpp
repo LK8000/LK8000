@@ -57,11 +57,11 @@ static void UpdateCaption (WndForm* pWnd) {
 
   if (_tcslen(name)>0) {
   	// LKTOKEN  _@M688_ = "Task Overview"
-    lk::snprintf(title, _T("%s: %s"), MsgToken(688), name);
+    lk::snprintf(title, _T("%s: %s"), MsgToken<688>(), name);
   } else {
     _stprintf(title, TEXT("%s"),
 	// LKTOKEN  _@M688_ = "Task Overview"
-              MsgToken(688));
+              MsgToken<688>());
   }
 
   if (TaskModified) {
@@ -76,14 +76,14 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
   TCHAR wpName[40];
   TCHAR landableStr[] = TEXT(" [X]");
   // LKTOKEN _@M1238_ "L"
-  landableStr[2] = MsgToken(1238)[0]; // TODO : to fix : only work if string[0] is usascii char...
+  landableStr[2] = MsgToken<1238>()[0]; // TODO : to fix : only work if string[0] is usascii char...
   LockTaskData();
 
   const PixelRect rcClient(Sender->GetClientRect());
   
   const int w0 = rcClient.GetSize().cx - DLGSCALE(1);
   const int w1 = Surface.GetTextWidth(TEXT(" 000km"));
-  _stprintf(sTmp, _T("  000%s"), MsgToken(2179));
+  _stprintf(sTmp, _T("  000%s"), MsgToken<2179>());
   const int w2 = Surface.GetTextWidth(sTmp);
 
   const int TextMargin = (rcClient.GetSize().cy - Surface.GetTextHeight(TEXT("A"))) / 2;
@@ -130,7 +130,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
       _stprintf(sTmp, TEXT("%.0f %s"),Task[i].Leg*DISTANCEMODIFY,Units::GetDistanceName());
       Surface.DrawText(rc.right+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
-      _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),MsgToken(2179));
+      _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),MsgToken<2179>());
       Surface.DrawText(rc.right +p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
     }
@@ -141,13 +141,13 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
     if (DrawListIndex == UpLimit) {
 	    // LKTOKEN  _@M832_ = "add waypoint"
-      _stprintf(sTmp, TEXT("  (%s)"), MsgToken(832));
+      _stprintf(sTmp, TEXT("  (%s)"), MsgToken<832>());
       Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
     } else if ((DrawListIndex == (UpLimit + 1)) && ValidTaskPoint(1)) {
 
       if (gTaskType!=TSK_AAT) {
         // LKTOKEN  _@M735_ = "Total:"
-        Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken(735));
+        Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken<735>());
         _stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""),lengthtotal*DISTANCEMODIFY, Units::GetDistanceName());
         Surface.DrawText(rc.right +p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
       }
@@ -162,7 +162,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
         }
         _stprintf(sTmp, TEXT("%s %2i:%02ih %.0f (%.0f) %s"),
                   // LKTOKEN  _@M735_ = "Total:"
-                  MsgToken(735),
+                  MsgToken<735>(),
                   (int)AATTaskLength/60,
                   (int)AATTaskLength%60,
                   DISTANCEMODIFY*lengthtotal,
@@ -178,7 +178,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
           }
           dd= min(24.0*60.0,dd/60.0);
           int idd = (int) (dd+0.5);
-          _stprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken(247),  MsgToken(1022)  ,  MACCREADY*LIFTMODIFY,Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
+          _stprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken<247>(),  MsgToken<1022>(),  MACCREADY*LIFTMODIFY,Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
           Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
      }
   }
@@ -292,9 +292,9 @@ static void OnTaskListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Li
 #ifdef LAST_TASKPOINT_QUESTION
 			if (MessageBoxX(
 			// LKTOKEN  _@M817_ = "Will this be the finish?"
-			MsgToken(817),
+			MsgToken<817>(),
 			// LKTOKEN  _@M54_ = "Add Waypoint"
-			MsgToken(54),
+			MsgToken<54>(),
 			mbYesNo) == IdYes)
 #else
 		    if(0)
@@ -396,9 +396,9 @@ static void OnCloseClicked(WndButton* pWnd) {
 static void OnClearClicked(WndButton* pWnd){
   if (MessageBoxX(
 	// LKTOKEN  _@M179_ = "Clear the task?"
-                  MsgToken(179),
+                  MsgToken<179>(),
 	// LKTOKEN  _@M178_ = "Clear task"
-                  MsgToken(178),
+                  MsgToken<178>(),
                   mbYesNo) == IdYes) {
     if (CheckDeclaration()) {
       ClearTask();
@@ -418,8 +418,8 @@ static void OnReverseClicked(WndButton* pWnd){
 
 
     if (MessageBoxX(
-      MsgToken(1852), // LKTOKEN  _@M1852_ = "Reverse task?"
-      MsgToken(1851), // LKTOKEN  _@M1851_ = "Reverse task"
+      MsgToken<1852>(), // LKTOKEN  _@M1852_ = "Reverse task?"
+      MsgToken<1851>(), // LKTOKEN  _@M1851_ = "Reverse task"
       mbYesNo) == IdYes)
     {
       LockTaskData();
@@ -499,13 +499,13 @@ static void OnSaveClicked(WndButton* pWnd){
         TCHAR sTmp[500];
 	_sntprintf(sTmp, std::size(sTmp), TEXT("%s: '%s'"),
 	// LKTOKEN  _@M696_ = "Task file already exists"
-		MsgToken(696),
+		MsgToken<696>(),
 		dfe->GetAsString());
 
 		if(MessageBoxX(
 			sTmp,
 			// LKTOKEN  _@M510_ = "Overwrite?"
-			MsgToken(510),
+			MsgToken<510>(),
 			mbYesNo) != IdYes) {
 
 			return;
@@ -540,7 +540,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
     bool load_task = true;
     if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
       TCHAR msg[180];
-      _sntprintf(msg,180, TEXT("%s %s ?"), MsgToken(891), MsgToken(907)); // Clear old task and load task
+      _sntprintf(msg,180, TEXT("%s %s ?"), MsgToken<891>(), MsgToken<907>()); // Clear old task and load task
       if (MessageBoxX(msg, _T(" "), mbYesNo) != IdYes) {
         load_task = false;
       }
@@ -562,7 +562,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
 
   if (file_index>0) {
     if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1) && (_tcsicmp(wextension,_T(LKS_WP_CUP))!=0)) {
-      _stprintf(file_name, TEXT("%s '%s' ?"), MsgToken(891), dfe->GetAsString()); // Clear old task and load
+      _stprintf(file_name, TEXT("%s '%s' ?"), MsgToken<891>(), dfe->GetAsString()); // Clear old task and load
       if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
         return;
       }
@@ -584,7 +584,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
         bOK = LoadXctrackTask(szFilePath);
       }
       if(!bOK) {
-        MessageBoxX(MsgToken(467),_T(" "), mbOk);
+        MessageBoxX(MsgToken<467>(),_T(" "), mbOk);
       }
       OverviewRefreshTask(pForm);
       UpdateFilePointer(pForm);
@@ -592,7 +592,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
     }
   } else {
     // LKTOKEN  _@M467_ = "No Task to load"
-    MessageBoxX(MsgToken(467),_T(" "), mbOk);
+    MessageBoxX(MsgToken<467>(),_T(" "), mbOk);
   }
 }
 
@@ -610,12 +610,12 @@ static void OnDeleteClicked(WndButton* pWnd){
 
   int file_index = dfe->GetAsInteger();
   if (file_index>0) {
-	_stprintf(file_name, TEXT("%s '%s' ?"), MsgToken(1789), dfe->GetAsString()); // Delete task file?
+	_stprintf(file_name, TEXT("%s '%s' ?"), MsgToken<1789>(), dfe->GetAsString()); // Delete task file?
 	if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
 		return;
 	}
   } else {
-	MessageBoxX(MsgToken(1790),_T(" "), mbOk); // No task file to delete
+	MessageBoxX(MsgToken<1790>(),_T(" "), mbOk); // No task file to delete
 	return;
   }
 

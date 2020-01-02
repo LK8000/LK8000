@@ -198,14 +198,14 @@ static void OnEnterClicked(WndButton *pWnd) {
 
   TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next({_T(' ')});
 
-  _stprintf(Tmp, _T("%s %s ?"), MsgToken(2404), IGCFilename);
-  if (MessageBoxX(Tmp, MsgToken(2404), mbYesNo) == IdYes)  // _@2404 "Download"
+  _stprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(), IGCFilename);
+  if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes)  // _@2404 "Download"
   {
     /** check if file already exist and is not empty ************/
     TCHAR PathIGCFilename[MAX_PATH];
     if (GetLXIGCFilename(PathIGCFilename, IGCFilename)) {
       if (lk::filesystem::exist(PathIGCFilename))
-        if (MessageBoxX(MsgToken(2416), MsgToken(2398), mbYesNo) ==
+        if (MessageBoxX(MsgToken<2416>(), MsgToken<2398>(), mbYesNo) ==
             IdNo) // _@M2416_ "File already exits\n download anyway?"
         {
           return;

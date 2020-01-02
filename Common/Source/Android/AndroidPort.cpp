@@ -36,7 +36,7 @@ bool AndroidPort::Initialize() {
         const tstring what = to_tstring(e.what());
         StartupStore(_T("FAILED! <%s>" NEWLINE), what.c_str());
     }
-    StatusMessage(_T("%s %s"), MsgToken(762), GetPortName());
+    StatusMessage(_T("%s %s"), MsgToken<762>(), GetPortName());
     return false;
 }
 

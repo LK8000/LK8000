@@ -1016,7 +1016,7 @@ void CContestMgr::SolveXC() {
     WayPointList[RESWP_FAIOPTIMIZED].Reachable = TRUE;
     WayPointList[RESWP_FAIOPTIMIZED].Visible = TRUE;
 
-    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken(1541));
+    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken<1541>());
     _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("FAI"));
     switch (_XCFAIStatus) {
       case XCTriangleStatus::INVALID:
@@ -1041,7 +1041,7 @@ void CContestMgr::SolveXC() {
     if (WayPointList[RESWP_FAIOPTIMIZED].Altitude == 0) WayPointList[RESWP_FAIOPTIMIZED].Altitude = 0.001;
     WayPointList[RESWP_FAIOPTIMIZED].Reachable = TRUE;
     WayPointList[RESWP_FAIOPTIMIZED].Visible = TRUE;
-    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken(1525));
+    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken<1525>());
     _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("TRI"));
     switch (_XCFTStatus) {
       case XCTriangleStatus::INVALID:
@@ -1058,7 +1058,7 @@ void CContestMgr::SolveXC() {
     WayPointList[RESWP_FAIOPTIMIZED].Altitude = RESWP_INVALIDNUMBER;
     WayPointList[RESWP_FAIOPTIMIZED].Reachable = false;
     WayPointList[RESWP_FAIOPTIMIZED].Visible = false;
-    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken(1526));
+    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken<1526>());
     _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("NO TRIANGLE"));
   }
 

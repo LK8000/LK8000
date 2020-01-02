@@ -77,6 +77,7 @@ using MsgToken_t = std::function<const TCHAR*()>;
  * exist only for backward compatibility
  * TODO: remove it when all usages would be removed
  */
+gcc_deprecated
 const TCHAR *MsgToken(unsigned tindex);
 
 #endif	/* LKLANGUAGE_H */

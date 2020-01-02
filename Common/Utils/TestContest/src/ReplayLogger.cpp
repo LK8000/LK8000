@@ -415,9 +415,9 @@ void CReplayLogger::Start()
   if(!UpdateInternal()) {
     // MessageBoxX(
     //     // LKTOKEN  _@M201_ = "Could not open IGC file!"
-    //     	MsgToken(201),
+    //     	MsgToken<201>(),
     //     // LKTOKEN  _@M305_ = "Flight replay"
-    //     	MsgToken(305),
+    //     	MsgToken<305>(),
     //     	MB_OK| MB_ICONINFORMATION);
   }
 }
