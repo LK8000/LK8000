@@ -11,29 +11,28 @@
 #include "Bitmaps.h"
 #include "Multimap.h"
 #include "Asset.hpp"
-
+#include "Util/Clamp.hpp"
 
 extern bool FastZoom; // QUICKDRAW
 
 #define UTF_THERMALING 11
 #define UTF_CRUISE     12 
 #define UTF_FINALGLIDE 13
-static constexpr unsigned mmUTF8Symbol[] = {
-    2350, // _@M2350_ "Ⓜ"
-    2351, // _@M2351_ "①"
-    2352, // _@M2352_ "②"
-    2353, // _@M2353_ "③"
-    2354, // _@M2354_ "④"
-    2355, // _@M2355_ "⑤"
-    2356, // _@M2356_ "⑥"
-    2357, // _@M2357_ "⑦"
-    2358, // _@M2358_ "⑧"
-    2359, // _@M2359_ "⑨"
-    2360, // _@M2360_ "⑩"
-    2376, // _@M2376_ "☁️"    // THERMALING
-    2384, // _@M2384_ "✈"    // CRUISE
-    2377, // _@M2377_ "⚑"    // FINALGLIDE
-    
+static const MsgToken_t mmUTF8Symbol[] = {
+    &MsgToken<2350>, // _@M2350_ "Ⓜ"
+    &MsgToken<2351>, // _@M2351_ "①"
+    &MsgToken<2352>, // _@M2352_ "②"
+    &MsgToken<2353>, // _@M2353_ "③"
+    &MsgToken<2354>, // _@M2354_ "④"
+    &MsgToken<2355>, // _@M2355_ "⑤"
+    &MsgToken<2356>, // _@M2356_ "⑥"
+    &MsgToken<2357>, // _@M2357_ "⑦"
+    &MsgToken<2358>, // _@M2358_ "⑧"
+    &MsgToken<2359>, // _@M2359_ "⑨"
+    &MsgToken<2360>, // _@M2360_ "⑩"
+    &MsgToken<2376>, // _@M2376_ "☁️"    // THERMALING
+    &MsgToken<2384>, // _@M2384_ "✈"    // CRUISE
+    &MsgToken<2377>, // _@M2377_ "⚑"    // FINALGLIDE
 };
 
 static constexpr LKColor mmUTF8Color[] = {
@@ -56,10 +55,8 @@ static constexpr LKColor mmUTF8Color[] = {
 static_assert(std::size(mmUTF8Color) == std::size(mmUTF8Symbol), "invalide array size");
 
 static std::pair<const LKColor, const TCHAR*> GetUTF8MultimapSymbol(unsigned Number) {
-    assert(Number < std::size(mmUTF8Symbol));
-
-    const unsigned symbol_idx = Number < std::size(mmUTF8Symbol) ? Number : 0;
-    const TCHAR* symbol = MsgToken(mmUTF8Symbol[symbol_idx]);
+    size_t symbol_idx = Clamp<size_t>(Number, 0U, std::size(mmUTF8Symbol) - 1);
+    const TCHAR* symbol = mmUTF8Symbol[symbol_idx]();
 
     LKColor color = mmUTF8Color[symbol_idx];
     if (IsDithered()) {
