@@ -75,7 +75,7 @@ static void setVariables(void) {
     dfe->addEnumText(MsgToken<491>()); // OFF
     dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+      dfe->addEnumText(Data_Options[i].Description);
     }
     dfe->Sort(2);
     if ( Overlay_LeftTop < 2 )
@@ -90,7 +90,7 @@ static void setVariables(void) {
     dfe->addEnumText(MsgToken<491>()); // OFF
     dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+      dfe->addEnumText(Data_Options[i].Description);
     }
     dfe->Sort(2);
     if ( Overlay_LeftMid < 2 )
@@ -105,7 +105,7 @@ static void setVariables(void) {
     dfe->addEnumText(MsgToken<491>()); // OFF
     dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+      dfe->addEnumText(Data_Options[i].Description);
     }
     dfe->Sort(2);
     if ( Overlay_LeftBottom < 2 )
@@ -120,7 +120,7 @@ static void setVariables(void) {
     dfe->addEnumText(MsgToken<491>()); // OFF
     dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+      dfe->addEnumText(Data_Options[i].Description);
     }
     dfe->Sort(2);
     if ( Overlay_LeftDown < 2 )
@@ -135,7 +135,7 @@ static void setVariables(void) {
     dfe->addEnumText(MsgToken<491>()); // OFF
     dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+      dfe->addEnumText(Data_Options[i].Description);
     }
     dfe->Sort(2);
     if ( Overlay_RightTop < 2 )
@@ -150,7 +150,7 @@ static void setVariables(void) {
     dfe->addEnumText(MsgToken<491>()); // OFF
     dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+      dfe->addEnumText(Data_Options[i].Description);
     }
     dfe->Sort(2);
     if ( Overlay_RightMid < 2 )
@@ -165,7 +165,7 @@ static void setVariables(void) {
     dfe->addEnumText(MsgToken<491>()); // OFF
     dfe->addEnumText(MsgToken<2090>()); // Default
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+      dfe->addEnumText(Data_Options[i].Description);
     }
     dfe->Sort(2);
     if ( Overlay_RightBottom < 2 )

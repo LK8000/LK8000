@@ -1376,7 +1376,7 @@ static void SetInfoBoxSelector(int item, int mode)
   if (wp) {
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(LKGetText(Data_Options[i].Description));
+      dfe->addEnumText(Data_Options[i].Description);
     }
     dfe->Sort(0);
 
