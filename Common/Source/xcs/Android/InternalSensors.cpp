@@ -179,34 +179,14 @@ inline unsigned int getDeviceIndex(JNIEnv *env, jobject obj) {
 extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
-Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj,
-                                         jint connected)
+Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj, jboolean connected)
 {
-
   unsigned index = getDeviceIndex(env, obj);
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
     pdev->HB = LKHearthBeats;
-    switch (connected) {
-      case 0: /* not connected */
-        pdev->nmeaParser.connected = false;
-        pdev->nmeaParser.expire = true;
-        pdev->nmeaParser.gpsValid = false;
-        break;
-
-      case 1: /* waiting for fix */
-        pdev->nmeaParser.connected = true;
-        pdev->nmeaParser.expire = false;
-        pdev->nmeaParser.gpsValid = false;
-        break;
-
-      case 2: /* connected */
-        pdev->nmeaParser.connected = true;
-        pdev->nmeaParser.expire = false;
-        pdev->nmeaParser.gpsValid = true;
-        break;
-    }
-    GPS_INFO.NAVWarning = !(pdev->nmeaParser.gpsValid);
+    pdev->nmeaParser.connected = connected;
+    pdev->nmeaParser.gpsValid = false;
   }
 }
 

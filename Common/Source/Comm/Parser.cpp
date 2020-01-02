@@ -36,7 +36,6 @@ int NMEAParser::StartDay = -1;
 // #define DEBUGBARO	1
 
 NMEAParser::NMEAParser() {
-  expire = true;
   activeGPS = false;
   Reset();
 }

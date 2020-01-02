@@ -114,23 +114,19 @@ public class InternalGPS
       } catch (IllegalArgumentException e) {
       /* this exception was recorded on the Android Market, message
          was: "provider=gps" - no idea what that means */
-        setConnectedSafe(0);
+        setConnectedSafe(false);
         return;
       }
 
       if(Build.VERSION.SDK_INT < 24) {
-        locationManager.addNmeaListener((GpsStatus.NmeaListener) (timestamp, nmea) -> {
-          InternalGPS.this.parseNMEA(nmea);
-        });
+        locationManager.addNmeaListener((GpsStatus.NmeaListener) (timestamp, nmea) -> InternalGPS.this.parseNMEA(nmea));
       } else {
-        locationManager.addNmeaListener((OnNmeaMessageListener) (message, timestamp) -> {
-          InternalGPS.this.parseNMEA(message);
-        });
+        locationManager.addNmeaListener((OnNmeaMessageListener) (message, timestamp) -> InternalGPS.this.parseNMEA(message));
       }
-      setConnectedSafe(1); // waiting for fix
+      setConnectedSafe(true); // waiting for fix
     } else {
       Log.d(TAG, "Unsubscribing from GPS updates.");
-      setConnectedSafe(0); // not connected
+      setConnectedSafe(false); // not connected
     }
     Log.d(TAG, "Done updating GPS subscription...");
   }
@@ -156,11 +152,11 @@ public class InternalGPS
     safeDestruct.finishShutdown();
   }
 
-  private native void setConnected(int connected);
+  private native void setConnected(boolean connected);
 
   private native void parseNMEA(String nmea);
 
-  private void setConnectedSafe(int connected) {
+  private void setConnectedSafe(boolean connected) {
     if (!safeDestruct.Increment())
       return;
 
@@ -173,12 +169,12 @@ public class InternalGPS
 
   /** from LocationListener */
   @Override public void onProviderDisabled(String provider) {
-    setConnectedSafe(0); // not connected
+    setConnectedSafe(false); // not connected
   }
 
   /** from LocationListener */
   @Override public void onProviderEnabled(String provider) {
-    setConnectedSafe(1); // waiting for fix
+    setConnectedSafe(true); // waiting for fix
   }
 
   /** from LocationListener (unused) */

@@ -124,12 +124,7 @@ bool  UpdateMonitor(void)
 
       dev.nmeaParser.Reset();
 
-      if(!dev.nmeaParser.expire) {
-        // if device never expire, is still connected & don't change activeGPS status.
-        dev.nmeaParser.connected = true;
-      }
-
-      // We reset some flags globally only once in case of device gone silent 
+      // We reset some flags globally only once in case of device gone silent
       if (!dev.Disabled && !wasSilent[dev.PortNumber]) {
         GPS_INFO.AirspeedAvailable=false;
         GPS_INFO.VarioAvailable=false;
@@ -396,15 +391,12 @@ int ConnectionProcessTimer(int itimeout) {
         // no activity for 90/2 seconds (running at 2Hz), then reset.
         // This is needed only for virtual com ports..
         if (!(devIsDisabled(0) && devIsDisabled(1))) {
-
-          if(devA()->nmeaParser.expire) {
-            extGPSCONNECT = FALSE;
-            StartupStore(_T(". ComPort RESET ordered" NEWLINE));
-            if (MapSpaceMode != MSM_WELCOME) {
-              InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-            }
-            RestartCommPorts();
+          extGPSCONNECT = FALSE;
+          StartupStore(_T(". ComPort RESET ordered" NEWLINE));
+          if (MapSpaceMode != MSM_WELCOME) {
+            InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
           }
+          RestartCommPorts();
         }
 
         itimeout = 0;

@@ -191,7 +191,6 @@ class NMEAParser {
   BOOL ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData);
 #endif
   bool connected;
-  bool expire; // false for device not sending data when no valid fix [ default is true ]
   bool gpsValid;
   bool dateValid; // true if we got RMC sentence with valid fix.
   int nSatellites;
