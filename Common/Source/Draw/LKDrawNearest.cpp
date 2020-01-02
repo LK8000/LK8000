@@ -498,7 +498,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
     int *pSortedNumber;
     int *pSortedIndex=nullptr;
-    unsigned int headertoken[5];
+    const TCHAR* headertoken[5];
     double *pLastDoNearest;
     bool *pNearestDataReady;
 
@@ -508,101 +508,101 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             pSortedNumber = &SortedNumber;
             pLastDoNearest = &LastDoNearest;
             pNearestDataReady = &NearestDataReady;
-            headertoken[0] = ScreenLandscape ? 1312 : 1311; // LKTOKEN _@M1311_ "LND" _@M1312_ "LNDB"
-            headertoken[1] = compact_headers ? 1300 : 1304; // LKTOKEN _@M1300_ "Dist"  _@M1304_ "Distance"
-            headertoken[2] = compact_headers ? 1301 : 1305; // LKTOKEN _@M1301_ "Dir" LKTOKEN _@M1305_ "Direction"
-            headertoken[3] = compact_headers ? 1302 : 1306; // LKTOKEN _@M1302_ "rEff"  LKTOKEN _@M1306_ "ReqEff"
+            headertoken[0] = ScreenLandscape ? MsgToken<1312>() : MsgToken<1311>(); // LKTOKEN _@M1311_ "LND" _@M1312_ "LNDB"
+            headertoken[1] = compact_headers ? MsgToken<1300>() : MsgToken<1304>(); // LKTOKEN _@M1300_ "Dist"  _@M1304_ "Distance"
+            headertoken[2] = compact_headers ? MsgToken<1301>() : MsgToken<1305>(); // LKTOKEN _@M1301_ "Dir" LKTOKEN _@M1305_ "Direction"
+            headertoken[3] = compact_headers ? MsgToken<1302>() : MsgToken<1306>(); // LKTOKEN _@M1302_ "rEff"  LKTOKEN _@M1306_ "ReqEff"
             // In v5 using 1308 for landscape compact_headers. Now simplified because compact_headers is also for portrait
             // LKTOKEN _@M1303_ "AltA" LKTOKEN _@M1307_ "AltArr" LKTOKEN _@M1308_ "Arriv"
-            headertoken[4] = compact_headers ? 1303 : 1307;
+            headertoken[4] = compact_headers ? MsgToken<1303>() : MsgToken<1307>();
             break;
         case MSM_AIRPORTS:
             pSortedIndex = SortedAirportIndex;
             pSortedNumber = &SortedNumber;
             pLastDoNearest = &LastDoNearest;
             pNearestDataReady = &NearestDataReady;
-            headertoken[0] = ScreenLandscape ? 1314 : 1313; // LKTOKEN _@M1313_ "APT"  _@M1314_ "APTS"
-            headertoken[1] = compact_headers ? 1300 : 1304;
-            headertoken[2] = compact_headers ? 1301 : 1305;
-            headertoken[3] = compact_headers ? 1302 : 1306;
-            headertoken[4] = compact_headers ? 1303 : 1307;
+            headertoken[0] = ScreenLandscape ? MsgToken<1314>() : MsgToken<1313>(); // LKTOKEN _@M1313_ "APT"  _@M1314_ "APTS"
+            headertoken[1] = compact_headers ? MsgToken<1300>() : MsgToken<1304>();
+            headertoken[2] = compact_headers ? MsgToken<1301>() : MsgToken<1305>();
+            headertoken[3] = compact_headers ? MsgToken<1302>() : MsgToken<1306>();
+            headertoken[4] = compact_headers ? MsgToken<1303>() : MsgToken<1307>();
             break;
         case MSM_NEARTPS:
             pSortedIndex = SortedTurnpointIndex;
             pSortedNumber = &SortedNumber;
             pLastDoNearest = &LastDoNearest;
             pNearestDataReady = &NearestDataReady;
-            headertoken[0] = 1315; // LKTOKEN _@M1315_ "TPS"
-            headertoken[1] = compact_headers ? 1300 : 1304;
-            headertoken[2] = compact_headers ? 1301 : 1305;
-            headertoken[3] = compact_headers ? 1302 : 1306;
-            headertoken[4] = compact_headers ? 1303 : 1307;
+            headertoken[0] = MsgToken<1315>(); // LKTOKEN _@M1315_ "TPS"
+            headertoken[1] = compact_headers ? MsgToken<1300>() : MsgToken<1304>();
+            headertoken[2] = compact_headers ? MsgToken<1301>() : MsgToken<1305>();
+            headertoken[3] = compact_headers ? MsgToken<1302>() : MsgToken<1306>();
+            headertoken[4] = compact_headers ? MsgToken<1303>() : MsgToken<1307>();
             break;
         case MSM_COMMON:
             pSortedIndex = CommonIndex;
             pSortedNumber = &CommonNumber;
             pLastDoNearest = &LastDoCommon;
             pNearestDataReady = &CommonDataReady;
-            headertoken[0] = 1309; // LKTOKEN _@M1309_ "COMN"
-            headertoken[1] = compact_headers ? 1300 : 1304;
-            headertoken[2] = compact_headers ? 1301 : 1305;
-            headertoken[3] = compact_headers ? 1302 : 1306;
-            headertoken[4] = compact_headers ? 1303 : 1307;
+            headertoken[0] = MsgToken<1309>(); // LKTOKEN _@M1309_ "COMN"
+            headertoken[1] = compact_headers ? MsgToken<1300>() : MsgToken<1304>();
+            headertoken[2] = compact_headers ? MsgToken<1301>() : MsgToken<1305>();
+            headertoken[3] = compact_headers ? MsgToken<1302>() : MsgToken<1306>();
+            headertoken[4] = compact_headers ? MsgToken<1303>() : MsgToken<1307>();
             break;
         case MSM_RECENT:
             pSortedIndex = RecentIndex;
             pSortedNumber = &RecentNumber;
             pLastDoNearest = &LastDoCommon;
             pNearestDataReady = &RecentDataReady;
-            headertoken[0] = 1310; // LKTOKEN _@M1310_ "HIST"
-            headertoken[1] = compact_headers ? 1300 : 1304;
-            headertoken[2] = compact_headers ? 1301 : 1305;
-            headertoken[3] = compact_headers ? 1302 : 1306;
-            headertoken[4] = compact_headers ? 1303 : 1307;
+            headertoken[0] = MsgToken<1310>(); // LKTOKEN _@M1310_ "HIST"
+            headertoken[1] = compact_headers ? MsgToken<1300>() : MsgToken<1304>();
+            headertoken[2] = compact_headers ? MsgToken<1301>() : MsgToken<1305>();
+            headertoken[3] = compact_headers ? MsgToken<1302>() : MsgToken<1306>();
+            headertoken[4] = compact_headers ? MsgToken<1303>() : MsgToken<1307>();
             break;
         case MSM_AIRSPACES:
             pSortedIndex = nullptr;
             pSortedNumber = &LKNumAirspaces;
             pLastDoNearest = NULL;
             pNearestDataReady = NULL;
-            headertoken[0] = 1642; // LKTOKEN _@M1642_ "ASP"
-            headertoken[1] = 752; // Type
-            headertoken[2] = 1300; // Dist
-            headertoken[3] = 1301; // Dir
-            headertoken[4] = 2186; // *
+            headertoken[0] = MsgToken<1642>(); // LKTOKEN _@M1642_ "ASP"
+            headertoken[1] = MsgToken<752>(); // Type
+            headertoken[2] = MsgToken<1300>(); // Dist
+            headertoken[3] = MsgToken<1301>(); // Dir
+            headertoken[4] = MsgToken<2186>(); // *
             break;
         case MSM_THERMALS:
             pSortedIndex = LKSortedThermals;
             pSortedNumber = &LKNumThermals;
             pLastDoNearest = &LastDoThermalH;
             pNearestDataReady = NULL;
-            headertoken[0] = 1670; //  "THR"
-            headertoken[1] = compact_headers ? 1300 : 1304;
-            headertoken[2] = compact_headers ? 1301 : 1305;
-            headertoken[3] = 1673; // Avg
-            headertoken[4] = compact_headers ? 1303 : 1307;
+            headertoken[0] = MsgToken<1670>(); //  "THR"
+            headertoken[1] = compact_headers ? MsgToken<1300>() : MsgToken<1304>();
+            headertoken[2] = compact_headers ? MsgToken<1301>() : MsgToken<1305>();
+            headertoken[3] = MsgToken<1673>(); // Avg
+            headertoken[4] = compact_headers ? MsgToken<1303>() : MsgToken<1307>();
             break;
         case MSM_TRAFFIC:
             pSortedIndex = LKSortedTraffic;
             pSortedNumber = &LKNumTraffic;
             pLastDoNearest = &LastDoTraffic;
             pNearestDataReady = NULL;
-            headertoken[0] = 1331; // TRF
-            headertoken[1] = compact_headers ? 1300 : 1304;
-            headertoken[2] = compact_headers ? 1301 : 1305;
-            headertoken[3] = 1673; // Avg
-            headertoken[4] = 1334; // Alt
+            headertoken[0] = MsgToken<1331>(); // TRF
+            headertoken[1] = compact_headers ? MsgToken<1300>() : MsgToken<1304>();
+            headertoken[2] = compact_headers ? MsgToken<1301>() : MsgToken<1305>();
+            headertoken[3] = MsgToken<1673>(); // Avg
+            headertoken[4] = MsgToken<1334>(); // Alt
             break;
         default:
             pSortedIndex = CommonIndex;
             pSortedNumber = &CommonNumber;
             pLastDoNearest = &LastDoCommon;
             pNearestDataReady = &RecentDataReady;
-            headertoken[0] = 266; // LKTOKEN _@M266_ "Error"
-            headertoken[1] = compact_headers ? 1300 : 1304;
-            headertoken[2] = compact_headers ? 1301 : 1305;
-            headertoken[3] = compact_headers ? 1302 : 1306;
-            headertoken[4] = compact_headers ? 1303 : 1307;
+            headertoken[0] = MsgToken<266>(); // LKTOKEN _@M266_ "Error"
+            headertoken[1] = compact_headers ? MsgToken<1300>() : MsgToken<1304>();
+            headertoken[2] = compact_headers ? MsgToken<1301>() : MsgToken<1305>();
+            headertoken[3] = compact_headers ? MsgToken<1302>() : MsgToken<1306>();
+            headertoken[4] = compact_headers ? MsgToken<1303>() : MsgToken<1307>();
             break;
     }
 
@@ -772,26 +772,22 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
     Surface.SelectObject(LK8InfoNearestFont);
 
-    _stprintf(Buffer, TEXT("%s %d/%d"), MsgToken(headertoken[0]), curpage + 1, Numpages);
+    _stprintf(Buffer, TEXT("%s %d/%d"), headertoken[0], curpage + 1, Numpages);
 
     LKWriteText(Surface, Buffer, Column0[curmapspace], rc.top + HEADRAW - NIBLSCALE(1), WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
     if (cursortbox == 99) cursortbox = 0;
 
-    _tcscpy(Buffer, MsgToken(headertoken[1]));
     tmpcolor = cursortbox == 1 ? RGB_BLACK : RGB_WHITE;
-    LKWriteText(Surface, Buffer, hColumn2, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+    LKWriteText(Surface,  headertoken[1], hColumn2, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
-    _tcscpy(Buffer, MsgToken(headertoken[2]));
     tmpcolor = cursortbox == 2 ? RGB_BLACK : RGB_WHITE;
-    LKWriteText(Surface, Buffer, hColumn3, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+    LKWriteText(Surface, headertoken[2], hColumn3, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
-    _tcscpy(Buffer, MsgToken(headertoken[3]));
     tmpcolor = cursortbox == 3 ? RGB_BLACK : RGB_WHITE;
-    LKWriteText(Surface, Buffer, hColumn4, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+    LKWriteText(Surface, headertoken[3], hColumn4, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
-    _tcscpy(Buffer, MsgToken(headertoken[4]));
     tmpcolor = cursortbox == 4 ? RGB_BLACK : RGB_WHITE;
-    LKWriteText(Surface, Buffer, hColumn5, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
+    LKWriteText(Surface, headertoken[4], hColumn5, rc.top + HEADRAW, WTMODE_NORMAL, WTALIGN_RIGHT, tmpcolor, false);
 
     Surface.SelectObject(bigFont); // Text font for Nearest
 
