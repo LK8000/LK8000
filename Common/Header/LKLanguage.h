@@ -16,6 +16,9 @@
 #include "tchar.h"
 #include "Util/tstring.hpp"
 
+class DataField;
+
+
 /**
  * Load must be done in main thread before all others thread start
  * Unload must be done after all other thread end
@@ -79,5 +82,15 @@ using MsgToken_t = std::function<const TCHAR*()>;
  */
 gcc_deprecated
 const TCHAR *MsgToken(unsigned tindex);
+
+/**
+ * 
+ */
+void FillDataOptionDescription(DataField* dfe);
+
+/**
+ * 
+ */
+const TCHAR* DataOptionsTitle(unsigned index);
 
 #endif	/* LKLANGUAGE_H */

@@ -87,8 +87,6 @@ GEXTERN BYTE RUN_MODE;
 // infoboxes
 GEXTERN int  InfoType[MAXINFOWINDOWS];
 
-GEXTERN DATAOPTIONS Data_Options[NUMDATAOPTIONS_MAX];
-
 GEXTERN int NumDataOptions;
 GEXTERN BOOL InfoBoxesHidden;
 GEXTERN int numInfoWindows;

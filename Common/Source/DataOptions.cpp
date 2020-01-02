@@ -7,26 +7,34 @@
  */
 
 #include "externs.h"
+#include "WindowControls.h"
 
-//
-// LK Infobox list
-// Included by lk temporarily, only with CUTIBOX
-//
-template <int index, UnitGroup_t UnitGroup, unsigned DescriptionId, unsigned TitleId>
-bool SetDataOption() {
+namespace {
 
-	static_assert(index < NUMDATAOPTIONS_MAX, "invalid index or NUMDATAOPTIONS_MAX too small");
-
-	Data_Options[index] = {
-		UnitGroup,
-		MsgToken<DescriptionId>(),
-		MsgToken<TitleId>()
+	struct DATAOPTIONS {
+		UnitGroup_t UnitGroup;
+		MsgToken_t Description;
+		MsgToken_t Title;
 	};
 
-	if (NumDataOptions <= index) {
-		NumDataOptions = index + 1; //No. of items = max index+1
+	constexpr size_t NUMDATAOPTIONS_MAX = 157;
+	DATAOPTIONS Data_Options[NUMDATAOPTIONS_MAX];
+
+	template <int index, UnitGroup_t UnitGroup, unsigned DescriptionId, unsigned TitleId>
+	void SetDataOption() {
+
+		static_assert(index < NUMDATAOPTIONS_MAX, "invalid index or NUMDATAOPTIONS_MAX too small");
+
+		Data_Options[index] = {
+			UnitGroup,
+			&MsgToken<DescriptionId>,
+			&MsgToken<TitleId>
+		};
+
+		if (NumDataOptions <= index) {
+			NumDataOptions = index + 1; //No. of items = max index+1
+		}
 	}
-	return true;
 }
 
 void FillDataOptions() {
@@ -328,19 +336,27 @@ void FillDataOptions() {
 	SetDataOption<LK_XC_MEAN_SPEED, ugDistance, 2277, 2278>();		   // Additional Contest combined distance
 	SetDataOption<LK_XC_TYPE, ugDistance, 2495, 2495>();		   // Type of result in XC
 	SetDataOption<LK_TIMETASK, ugDistance, 2427, 2488>();		   // Elapsed task time (time since start
-
-
-	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
-	static_assert(LK_XC_TYPE < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
-
-
+  
 	// Fill all null string pointer with empty string, avoid to check all time is used.
 	for(auto& tag : Data_Options) {
 		if(!tag.Description) {
-			tag.Description = _T("");
+			tag.Description = []() { return _T(""); };
 		}
 		if(!tag.Title) {
-			tag.Title = _T("");
+			tag.Title = []() { return _T(""); };
 		}
 	}
+}
+
+void FillDataOptionDescription(DataField* dfe) {
+	for (int i=0; i<NumDataOptions; i++) {
+		dfe->addEnumText(Data_Options[i].Description());
+	}
+}
+
+const TCHAR* DataOptionsTitle(unsigned index) {
+	if(index < std::size(Data_Options)) {
+		return Data_Options[index].Title();
+	}
+	return _T("");
 }

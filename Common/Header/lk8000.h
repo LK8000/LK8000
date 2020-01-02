@@ -14,14 +14,6 @@
 #include "Thread/Mutex.hpp"
 #include "Modeltype.h"
 
-typedef struct _DATAOPTIONS
-{
-  UnitGroup_t UnitGroup;
-  const TCHAR* Description;
-  const TCHAR* Title;
-} DATAOPTIONS;
-
-
 extern Mutex  CritSec_FlightData;
 extern void UnlockFlightData();
 extern void LockFlightData();

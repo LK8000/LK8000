@@ -155,7 +155,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt", 
 				_tcscpy(BufferTitle, MsgToken<1002>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
 			value=ALTITUDEMODIFY*DerivedDrawInfo.NavAltitude;
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
@@ -168,7 +168,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				// LKTOKEN  _@M1003_ = "Altitude AGL", _@M1004_ = "HAGL"
 				_tcscpy(BufferTitle, MsgToken<1004>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if (!DerivedDrawInfo.TerrainValid) { 
 				_stprintf(BufferValue, TEXT(NULLLONG));
@@ -197,7 +197,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				// LKTOKEN  _@M1005_ = "Thermal last 30 sec", _@M1006_ = "TC.30\""
 				_tcscpy(BufferTitle, MsgToken<1006>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 		// B03
 		case LK_BRG:
@@ -206,7 +206,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
 				_tcscpy(BufferTitle, MsgToken<1008>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
@@ -237,7 +237,7 @@ goto_bearing:
 				// LKTOKEN  _@M1009_ = "Eff.last 20 sec", _@M1010_ = "E.20\""
 				_tcscpy(BufferTitle, MsgToken<1010>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
                         if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) { 
 			   if (DerivedDrawInfo.Flying)
@@ -264,7 +264,7 @@ goto_bearing:
 				// LKTOKEN  _@M1011_ = "Eff.cruise last therm", _@M1012_ = "E.Cru"
 				_tcscpy(BufferTitle, MsgToken<1012>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if (DerivedDrawInfo.Flying)
 				value=DerivedDrawInfo.CruiseLD;
 			else
@@ -290,7 +290,7 @@ goto_bearing:
 				// LKTOKEN  _@M1013_ = "Speed ground", _@M1014_ = "GS"
 				_tcscpy(BufferTitle, MsgToken<1014>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -309,7 +309,7 @@ goto_bearing:
 				// LKTOKEN  _@M1015_ = "Thermal Average Last", _@M1016_ = "TL.Avg"
 				_tcscpy(BufferTitle, MsgToken<1016>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B08 091216 091221
@@ -326,7 +326,7 @@ goto_bearing:
 				// LKTOKEN  _@M1017_ = "Thermal Gain Last", _@M1018_ = "TL.Gain"
 				_tcscpy(BufferTitle, MsgToken<1018>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 		// B09		Last thermal time
 		case LK_TL_TIME:
@@ -335,7 +335,7 @@ goto_bearing:
 				// LKTOKEN  _@M1019_ = "Thermal Time Last", _@M1020_ = "TL.Time"
 				_tcscpy(BufferTitle, MsgToken<1020>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if (DerivedDrawInfo.LastThermalTime > 0) {
 				valid=true;
@@ -357,13 +357,13 @@ goto_bearing:
 					// LKTOKEN  _@M1183_ = "ManMC"
 					_tcscpy(BufferTitle, MsgToken<1183>());
 				else
-					_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+					_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			} else {
 				if (lktitle)
 					// LKTOKEN  _@M1184_ = "AutMC"
 					_tcscpy(BufferTitle, MsgToken<1184>());
 				else
-					_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+					_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			}
 
 			break;
@@ -415,7 +415,7 @@ goto_bearing:
 				// LKTOKEN  _@M1023_ = "Next Distance", _@M1024_ = "Dist"
 				_tcscpy(BufferTitle, MsgToken<1024>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 		// B12
 		// Arrival altitude using current MC  and total energy. Does not use safetymc.
@@ -426,7 +426,7 @@ goto_bearing:
 				// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
 				_tcscpy(BufferTitle, MsgToken<1026>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
             LockTaskData();
 			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
@@ -452,7 +452,7 @@ goto_bearing:
 				// LKTOKEN  _@M1027_ = "Next Alt.Required", _@M1028_ = "NxtAltR"
 				_tcscpy(BufferTitle, MsgToken<1028>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
             LockTaskData();
 			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
@@ -481,7 +481,7 @@ goto_bearing:
 				// LKTOKEN  _@M1031_ = "Task Alt.Arrival", _@M1032_ = "TskArr"
 				_tcscpy(BufferTitle, MsgToken<1032>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
             LockTaskData();
 			if (ValidTaskPointFast(ActiveTaskPoint)) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
@@ -509,7 +509,7 @@ goto_bearing:
 				// LKTOKEN  _@M1033_ = "Task Alt.Required", _@M1034_ = "TskAltR"
 				_tcscpy(BufferTitle, MsgToken<1034>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
             LockTaskData();
 			if (ValidTaskPoint(ActiveTaskPoint)) {
 				index = Task[ActiveTaskPoint].Index;
@@ -531,7 +531,7 @@ goto_bearing:
 				// LKTOKEN  _@M1035_ = "Task Speed Average", _@M1036_ = "TskSpAv"
 				_tcscpy(BufferTitle, MsgToken<1036>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			value=0;
 			if ( ActiveTaskPoint >=1) {
 				if ( ValidTaskPoint(ActiveTaskPoint) ) {
@@ -573,7 +573,7 @@ goto_bearing:
 				// LKTOKEN  _@M1037_ = "Task Distance", _@M1038_ = "TskDis"
 				_tcscpy(BufferTitle, MsgToken<1038>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B19
@@ -594,7 +594,7 @@ goto_bearing:
 				// LKTOKEN  _@M1041_ = "Terrain Elevation", _@M1042_ = "Gnd"
 				_tcscpy(BufferTitle, MsgToken<1042>());
 			else 
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -613,7 +613,7 @@ goto_bearing:
 				// LKTOKEN  _@M1043_ = "Thermal Average", _@M1044_ = "TC.Avg"
 				_tcscpy(BufferTitle, MsgToken<1044>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B22 091221
@@ -630,7 +630,7 @@ goto_bearing:
 				// LKTOKEN  _@M1045_ = "Thermal Gain", _@M1046_ = "TC.Gain"
 				_tcscpy(BufferTitle, MsgToken<1046>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B23
@@ -641,7 +641,7 @@ goto_bearing:
 				// LKTOKEN  _@M1047_ = "Track", _@M1048_ = "Track"
 				_tcscpy(BufferTitle, MsgToken<1048>());
 			else
-				_tcscpy(BufferTitle, Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
 			value = AngleLimit360(DrawInfo.TrackBearing);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken<2179>());
@@ -661,13 +661,13 @@ goto_bearing:
 				// LKTOKEN  _@M1049_ = "Vario", _@M1050_ = "Vario"
 				_tcscpy(BufferTitle, MsgToken<1050>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
 		// B25
 		case LK_WIND_SPEED:
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			_stprintf(BufferUnit, TEXT("%s"),Units::GetHorizontalSpeedName());
 			
 			value=DerivedDrawInfo.WindSpeed*SPEEDMODIFY;
@@ -682,7 +682,7 @@ goto_bearing:
 
 		// B26
 		case LK_WIND_BRG:
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if (DerivedDrawInfo.WindSpeed*SPEEDMODIFY>=1) {
 				value = DerivedDrawInfo.WindBearing;
 				valid=true;
@@ -698,7 +698,7 @@ goto_bearing:
 		// B27
 		case LK_AA_TIME:
 			_stprintf(BufferValue,_T(NULLTIME));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if (ValidTaskPoint(ActiveTaskPoint) && UseAATTarget() && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
 
@@ -732,7 +732,7 @@ goto_bearing:
 				_stprintf(BufferValue, TEXT(NULLMEDIUM)); // 091221
 			}
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -757,7 +757,7 @@ goto_bearing:
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			}
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetTaskSpeedName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -768,7 +768,7 @@ goto_bearing:
 					// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
 					_tcscpy(BufferTitle, MsgToken<1066>());
 				else
-					_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+					_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 				value=SPEEDMODIFY*DrawInfo.IndicatedAirspeed;
 				if (value<0||value>999) value=0; else valid=true;
 			} else {
@@ -791,7 +791,7 @@ goto_bearing:
 			} else
 				_stprintf(BufferValue, TEXT(NULLLONG));
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -806,7 +806,7 @@ goto_bearing:
 				// LKTOKEN  _@M1069_ = "Speed MacReady", _@M1070_ = "SpMc"
 				_tcscpy(BufferTitle, MsgToken<1070>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -816,7 +816,7 @@ goto_bearing:
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%%"));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B36		TmFly
@@ -826,7 +826,7 @@ goto_bearing:
 				// LKTOKEN  _@M1073_ = "Time of flight", _@M1074_ = "FlyTime"
 				_tcscpy(BufferTitle, MsgToken<1074>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if (DerivedDrawInfo.FlightTime > 0) {
 				valid=true;
@@ -844,7 +844,7 @@ goto_bearing:
 				//  _@M2427_  "Task elapsed time" LKTOKEN _@M2428_ "TskTime"
 				_tcscpy(BufferTitle, MsgToken<2428>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if (DerivedDrawInfo.TaskElapsedTime > 0) {
 				valid=true;
@@ -882,7 +882,7 @@ goto_bearing:
  //  LKTOKEN "_@M001699_": "BrgMtg",              
 				_tcscpy(BufferTitle, MsgToken<1699>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
 			ivalue = GetOvertargetIndex(); // Current Multitarget
 			if(ivalue > 0) {
 			value = WayPointCalc[ivalue].Bearing;  //Bearing;
@@ -908,7 +908,7 @@ goto_bearing:
 				// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
 				_tcscpy(BufferTitle, MsgToken<1080>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			break;
 
@@ -920,7 +920,7 @@ goto_bearing:
 				// LKTOKEN  _@M1081_ = "Time UTC", _@M1082_ = "UTC"
 				_tcscpy(BufferTitle, MsgToken<1082>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			break;
 
@@ -934,7 +934,7 @@ goto_bearing:
 		case LK_NEXT_ETE:
 			_tcscpy(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1085_ = "Next Time To Go", _@M1086_ = "NextETE"
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
 			value = GetNextETE(DerivedDrawInfo);
 			if (value > 0) {
 				valid = true;
@@ -953,7 +953,7 @@ goto_bearing:
 			if (value<0||value>999) value=0; else valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)round(value));
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -963,7 +963,7 @@ goto_bearing:
 			if (value<-100||value>100) value=0; else valid=true;
 			_stprintf(BufferValue,varformat,value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetVerticalSpeedName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 				
@@ -974,7 +974,7 @@ goto_bearing:
 				// LKTOKEN  _@M1091_ = "Task Arrival Time", _@M1092_ = "TskETA"
 				_tcscpy(BufferTitle, MsgToken<1092>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if (ISCAR || ISGAAIRCRAFT) {
 			    if (ValidTaskPoint(ActiveTaskPoint)) {
@@ -1001,7 +1001,7 @@ goto_bearing:
 		case LK_NEXT_ETA:
 			_tcscpy(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1093_ = "Next Arrival Time", _@M1094_ = "NextETA"
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
 			value = GetNextETE(DerivedDrawInfo);
 			if(value > 0) {
 				valid = true;
@@ -1015,7 +1015,7 @@ goto_bearing:
 		case LK_MTG_BRG_DIFF:
             index =0;
 			_stprintf(BufferValue,_T(NULLMEDIUM)); // 091221
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
             if(lkindex == LK_MTG_BRG_DIFF)
             {
               // LKTOKEN  _@M2476_ = "Multitarget Bearing Difference", _@M2477_ = "DiffMtg"
@@ -1068,7 +1068,7 @@ goto_bearing:
 
 		// B48 091216  OAT Outside Air Temperature
 		case LK_OAT:
-                  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+                  _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
                   value = DrawInfo.OutsideAirTemperature;
                   if (!DrawInfo.TemperatureAvailable || value<-50||value>100) {
                     _stprintf(BufferValue, TEXT("---"));
@@ -1082,7 +1082,7 @@ goto_bearing:
                   
 		// B49
 		case LK_RELHUM:
-                  _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+                  _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
                   if(DrawInfo.HumidityAvailable) {
                     value = DrawInfo.RelativeHumidity;
                     _stprintf(BufferValue, TEXT("%.0lf"), value);
@@ -1116,7 +1116,7 @@ goto_bearing:
 				_stprintf(BufferValue, TEXT(NULLMEDIUM)); // 091221
 			}
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -1135,7 +1135,7 @@ goto_bearing:
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			}
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetTaskSpeedName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -1143,7 +1143,7 @@ goto_bearing:
 		case LK_LD_VARIO:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			//_stprintf(BufferUnit,TEXT(""));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
 			if (DrawInfo.AirspeedAvailable && VarioAvailable(DrawInfo)) {
 				value = DerivedDrawInfo.LDvario;
 				if (value <1 || value >=ALTERNATE_MAXVALIDGR )
@@ -1164,7 +1164,7 @@ goto_bearing:
 					// LKTOKEN  _@M1109_ = "Airspeed TAS", _@M1110_ = "TAS"
 					_tcscpy(BufferTitle, MsgToken<1110>());
 				else
-					_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+					_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 				value=SPEEDMODIFY*DrawInfo.TrueAirspeed;
 				if (value<0||value>999) {
 					_stprintf(BufferValue, TEXT("%s"),NULLMEDIUM);
@@ -1197,7 +1197,7 @@ goto_bearing:
 				// LKTOKEN  _@M1111_ = "Team Code", _@M1112_ = "TeamCode"
 				_tcscpy(BufferTitle, MsgToken<1112>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B56  Team Code 091216
@@ -1207,7 +1207,7 @@ goto_bearing:
 				// LKTOKEN  _@M1113_ = "Team Bearing", _@M1114_ = "TmBrng"
 				_tcscpy(BufferTitle, MsgToken<1114>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if(ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid) {
 				value=DerivedDrawInfo.TeammateBearing;
@@ -1229,7 +1229,7 @@ goto_bearing:
 				// LKTOKEN  _@M1115_ = "Team Bearing Diff", _@M1116_ = "TeamBd"
 				_tcscpy(BufferTitle, MsgToken<1116>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if (ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid) {
 				value = DerivedDrawInfo.TeammateBearing -  DrawInfo.TrackBearing;
@@ -1273,7 +1273,7 @@ goto_bearing:
 				// LKTOKEN  _@M1117_ = "Team Range", _@M1118_ = "TeamDis"
 				_tcscpy(BufferTitle, MsgToken<1118>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -1284,7 +1284,7 @@ goto_bearing:
 				// LKTOKEN  _@M1119_ = "Task Speed Instantaneous", _@M1120_ = "TskSpI"
 				_tcscpy(BufferTitle, MsgToken<1120>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			value=0;
 			if ( ActiveTaskPoint >=1) {
 				if ( ValidTaskPoint(ActiveTaskPoint) ) {
@@ -1330,7 +1330,7 @@ goto_bearing:
 				}
 			}
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -1341,7 +1341,7 @@ goto_bearing:
 				// LKTOKEN  _@M1123_ = "Task Speed", _@M1124_ = "TskSp"
 				_tcscpy(BufferTitle, MsgToken<1124>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			value=0;
 			if ( ActiveTaskPoint >=1) {
 				if ( ValidTaskPoint(ActiveTaskPoint) ) {
@@ -1360,7 +1360,7 @@ goto_bearing:
 		// B62
 		case LK_AA_DELTATIME:
 			_stprintf(BufferValue,_T(NULLTIME));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			_stprintf(BufferUnit,_T("h"));
 			// TODO This is in the wrong place, should be moved to calc thread! 090916
 			if (UseAATTarget() && IsValidTaskTimeToGo(DerivedDrawInfo) && ValidTaskPoint(ActiveTaskPoint)) {
@@ -1394,7 +1394,7 @@ goto_bearing:
 				// LKTOKEN  _@M1127_ = "Thermal All", _@M1128_ = "Th.All"
 				_tcscpy(BufferTitle, MsgToken<1128>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 		// B64
 		case LK_LOGGER:
@@ -1413,7 +1413,7 @@ goto_bearing:
 		// B65 FIXED 100125
 		case LK_BATTERY:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			value = PDABatteryPercent;
 			// We may choose this approach, but it is not as in V5.
@@ -1446,7 +1446,7 @@ goto_bearing:
 				// LKTOKEN  _@M1133_ = "Task Req.Efficiency", _@M1134_ = "TskReqE"
 				_tcscpy(BufferTitle, MsgToken<1134>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if ( (ValidTaskPoint(ActiveTaskPoint) != false) ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
@@ -1498,7 +1498,7 @@ goto_bearing:
 						break;
 				}//sw
 			} else {
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			}
 			switch(lkindex) {
 				case LK_ALTERN1_GR:
@@ -1574,7 +1574,7 @@ goto_bearing:
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -1585,7 +1585,7 @@ goto_bearing:
 				// LKTOKEN  _@M1143_ = "Average Efficiency", _@M1144_ = "E.Avg"
 				_tcscpy(BufferTitle, MsgToken<1144>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 				if (DerivedDrawInfo.Flying)
 					value=DerivedDrawInfo.AverageLD;
@@ -1673,7 +1673,7 @@ goto_bearing:
 				// LKTOKEN  _@M1149_ = "Task Covered distance", _@M1150_ = "TskCov"
 				_tcscpy(BufferTitle, MsgToken<1150>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
@@ -1703,7 +1703,7 @@ goto_bearing:
 						break;
 				} //sw
 			} else {
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			}
 			switch(lkindex) {
 				case LK_ALTERN1_ARRIV:
@@ -1776,7 +1776,7 @@ goto_bearing:
 				// LKTOKEN  _@M1157_ = "Home Radial", _@M1158_ = "Radial"
 				_tcscpy(BufferTitle, MsgToken<1158>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if ( ValidWayPoint(HomeWaypoint) != false ) {
 				if (DerivedDrawInfo.HomeDistance >10.0) {
@@ -1800,7 +1800,7 @@ goto_bearing:
 				// LKTOKEN  _@M1159_ = "Airspace Distance", _@M1160_ = "AirSpace"
 				_tcscpy(BufferTitle, MsgToken<1160>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 
 			value = fabs(DISTANCEMODIFY*NearestAirspaceHDist);
@@ -1820,7 +1820,7 @@ goto_bearing:
 		// B80
 		case LK_EXTBATTBANK:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			ivalue=DrawInfo.ExtBatt_Bank;
 			if (ivalue>0) {
 				_stprintf(BufferValue,TEXT("%d"), ivalue); // 091101
@@ -1835,7 +1835,7 @@ goto_bearing:
 		case LK_EXTBATT1VOLT:
 		case LK_EXTBATT2VOLT:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			value = (lkindex==LK_EXTBATT1VOLT?DrawInfo.ExtBatt1_Voltage:DrawInfo.ExtBatt2_Voltage);
 			// hack to display percentage instead of voltage
 			if (value>=1000) {
@@ -1874,7 +1874,7 @@ goto_bearing:
 				// LKTOKEN  _@M1167_ = "Odometer", _@M1168_ = "Odo"
 				_tcscpy(BufferTitle, MsgToken<1168>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B84  100126
@@ -1883,7 +1883,7 @@ goto_bearing:
 				// LKTOKEN  _@M1169_ = "Altern QNH", _@M1170_ = "aAlt"
 				_tcscpy(BufferTitle, MsgToken<1170>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if (ALTITUDEMODIFY==TOMETER)
 				value=TOFEET*DerivedDrawInfo.NavAltitude;
 			else
@@ -1899,7 +1899,7 @@ goto_bearing:
 				// LKTOKEN  _@M1171_ = "Altern AGL", _@M1172_ = "aHAGL"
 				_tcscpy(BufferTitle, MsgToken<1172>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if (!DerivedDrawInfo.TerrainValid) { //@ 101013
 				_stprintf(BufferValue, TEXT(NULLLONG));
 				_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
@@ -1922,7 +1922,7 @@ goto_bearing:
 				// LKTOKEN  _@M1173_ = "Altitude GPS", _@M1174_ = "HGPS"
 				_tcscpy(BufferTitle, MsgToken<1174>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
 				_stprintf(BufferValue, TEXT(NULLLONG));
 				valid=false;
@@ -1988,7 +1988,7 @@ goto_bearing:
 
 
 olc_dist:
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 
 			if (OlcResults[ivalue].Type()==CContestMgr::TYPE_INVALID)
@@ -2021,7 +2021,7 @@ olc_dist:
 		case LK_OLC_3TPS_PREDICTED_SPEED:
 			ivalue=CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
 olc_speed:
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 
 			if (OlcResults[ivalue].Type()==CContestMgr::TYPE_INVALID)
@@ -2064,7 +2064,7 @@ olc_speed:
 		case LK_OLC_PLUS_PREDICTED_SCORE:
 			ivalue=CContestMgr::TYPE_OLC_PLUS_PREDICTED;
 olc_score:
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			_stprintf(BufferUnit, TEXT("pt"));
 
 			if (OlcResults[ivalue].Type()==CContestMgr::TYPE_INVALID)
@@ -2092,7 +2092,7 @@ olc_score:
 			if (lktitle)
 				_tcscpy(BufferTitle, MsgToken<1286>()); // ArSpcV
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
 
 			if (NearestAirspaceVDist != 0 && (fabs(NearestAirspaceVDist)<=9999) ) { // 9999 m or ft is ok
 				value = ALTITUDEMODIFY*NearestAirspaceVDist;
@@ -2115,8 +2115,8 @@ olc_score:
 				// LKTOKEN  _@M1644_ = "Home Alt.Arrival", _@M1645_ = "HomeArr"
 				_tcscpy(BufferTitle, MsgToken<1645>());
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
+      
 			if ( ValidWayPoint(HomeWaypoint) != false ) {
 				value=WayPointCalc[HomeWaypoint].AltArriv[AltArrivMode]*ALTITUDEMODIFY;
 				if ( value > ALTDIFFLIMIT ) {
@@ -2140,7 +2140,7 @@ olc_score:
 		// B155
 		case LK_HOME_BRG:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
 			bShowWPname = true;
 			switch(lkindex) {
 				case LK_ALTERN1_BRG:
@@ -2198,7 +2198,7 @@ olc_score:
 		// B121
 		case LK_BESTALTERN_DIST:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			switch(lkindex) {
 				case LK_ALTERN1_DIST:
 					index=Alternate1;
@@ -2260,7 +2260,7 @@ olc_score:
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B123
@@ -2269,13 +2269,13 @@ olc_score:
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 
 		// B124
 		case LK_HEADWINDSPEED:
-			_tcscpy(BufferTitle, Data_Options[lkindex].Title);
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
 			_tcscpy(BufferUnit, Units::GetHorizontalSpeedName());
 
 			if (DerivedDrawInfo.HeadWind != -999) {
@@ -2313,7 +2313,7 @@ olc_score:
 		        		_stprintf(BufferTitle, TEXT("%s"),  MsgToken<1508>());
 		    	}
 		        else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 	    		break;
 
@@ -2340,7 +2340,7 @@ olc_score:
 		        		_stprintf(BufferTitle, TEXT("%s"),  MsgToken<1508>());
 		    	}
 		    	else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			break;
 
@@ -2364,7 +2364,7 @@ olc_score:
 		// B129
 		case LK_ALTERN2_RAD:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			switch(lkindex) {
 				case LK_ALTERN1_RAD:
 					index=Alternate1;
@@ -2431,7 +2431,7 @@ olc_score:
 		// B132
 		case LK_ALTERN2_DISTNM:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			switch(lkindex) {
 				case LK_ALTERN1_DISTNM:
 					index=Alternate1;
@@ -2488,7 +2488,7 @@ olc_score:
 			if (value<0||value>999) value=0; else valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
 		// B134 Target Req. Efficicency
@@ -2599,14 +2599,14 @@ olc_score:
       }
       
       _tcscpy(BufferUnit, Units::GetDistanceName());
-      _tcscpy(BufferTitle, Data_Options[lkindex].Title );
+      _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
       break;
 
         //
       case LK_XC_FF_DIST:
         ivalue = CContestMgr::TYPE_XC_FREE_FLIGHT;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
-        _stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+        _tcscpy(BufferUnit, Units::GetDistanceName());
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
@@ -2617,7 +2617,7 @@ olc_score:
 
       case LK_XC_FF_SCORE:
         ivalue = CContestMgr::TYPE_XC_FREE_FLIGHT;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
         _stprintf(BufferUnit, TEXT("p"));
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
@@ -2629,8 +2629,8 @@ olc_score:
 
       case LK_XC_FT_DIST:
         ivalue = CContestMgr::TYPE_XC_FREE_TRIANGLE;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
-        _stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+        _tcscpy(BufferUnit, Units::GetDistanceName());
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
@@ -2641,7 +2641,7 @@ olc_score:
 
       case LK_XC_FT_SCORE:
         ivalue = CContestMgr::TYPE_XC_FREE_TRIANGLE;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
         _stprintf(BufferUnit, TEXT("p"));
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
@@ -2654,8 +2654,8 @@ olc_score:
 
       case LK_XC_FAI_DIST:
         ivalue = CContestMgr::TYPE_XC_FAI_TRIANGLE;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
-        _stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+        _tcscpy(BufferUnit, Units::GetDistanceName());
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
@@ -2666,7 +2666,7 @@ olc_score:
 
       case LK_XC_FAI_SCORE:
         ivalue = CContestMgr::TYPE_XC_FAI_TRIANGLE;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
         _stprintf(BufferUnit, TEXT("p"));
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
@@ -2678,8 +2678,8 @@ olc_score:
 
       case LK_XC_DIST:
         ivalue = CContestMgr::TYPE_XC;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
-        _stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+        _tcscpy(BufferUnit, Units::GetDistanceName());
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
@@ -2696,7 +2696,7 @@ olc_score:
 
       case LK_XC_SCORE:
         ivalue = CContestMgr::TYPE_XC;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
         _stprintf(BufferUnit, TEXT("p"));
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
@@ -2714,16 +2714,16 @@ olc_score:
 
       case LK_XC_TYPE:
         ivalue = CContestMgr::TYPE_XC;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
         _tcscpy(BufferUnit, _T(""));
         LKgetOLCBmp(OlcResults[ivalue].Type(),BmpValue,BufferValue);
         valid = true;    
         break;
 
       case LK_XC_CLOSURE_DIST:
-	    ivalue = CContestMgr::TYPE_XC;
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
-        _stprintf(BufferUnit, TEXT("%s"),Units::GetDistanceName());
+        ivalue = CContestMgr::TYPE_XC;
+        _tcscpy(BufferUnit, Units::GetDistanceName());
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
         if (CContestMgr::Instance().GetXCTriangleClosureDistance() == 0)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else if (OlcResults[ivalue].PredictedDistance() == 0 )  {
@@ -2737,7 +2737,7 @@ olc_score:
         break;
 
       case LK_XC_CLOSURE_PERC:
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
         _stprintf(BufferUnit, TEXT("%s"), TEXT("%"));
         if (CContestMgr::Instance().GetXCTriangleClosurePercentage() <= 0 ||
             CContestMgr::Instance().GetXCTriangleClosurePercentage() >= 100)
@@ -2751,8 +2751,8 @@ olc_score:
 
 
       case LK_XC_PREDICTED_DIST:
-        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
-        _stprintf(BufferUnit, TEXT("%s*"), (Units::GetDistanceName()));
+        _tcscpy(BufferUnit, Units::GetDistanceName());
+        _tcscpy(BufferTitle, DataOptionsTitle(lkindex));
         if (CContestMgr::Instance().GetXCTriangleDistance() == 0)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
@@ -2763,7 +2763,7 @@ olc_score:
 
 		case LK_XC_MEAN_SPEED:
 			ivalue = CContestMgr::TYPE_XC_FREE_TRIANGLE;
-		_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+		_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 		_stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
 		if (CContestMgr::Instance().GetXCMeanSpeed() == 0)
 			_stprintf(BufferValue, _T(NULLMEDIUM));
@@ -2829,12 +2829,9 @@ olc_score:
 		case LK_LKFIN_ETE:
 lkfin_ete:
 			_stprintf(BufferValue,_T(NULLTIME)); // 091222
-			if (lktitle)
-				// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
-				_tcscpy(BufferTitle, MsgToken<1084>());
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_FIN_ETE].Title );
-				// ^^ Notice we use LK_FIN_ETE, NOT LK_LKFIN_ETE which does NOT exist in DataOptions!
+			// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
+			_tcscpy(BufferTitle, DataOptionsTitle(LK_FIN_ETE));
+			// ^^ Notice we use LK_FIN_ETE, NOT LK_LKFIN_ETE which does NOT exist in DataOptions!
 
 			if (ISCAR || ISGAAIRCRAFT) {
                 LockTaskData();
@@ -3206,11 +3203,9 @@ lkfin_ete:
 		// B250
 		case LK_NEXT_CENTER_ALTDIFF:
 			_stprintf(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
-				_tcscpy(BufferTitle, MsgToken<1026>());
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_NEXT_ALTDIFF].Title );
+			// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
+			_tcscpy(BufferTitle, DataOptionsTitle(LK_NEXT_ALTDIFF));
+			_tcscpy(BufferUnit, Units::GetAltitudeName());
             
             LockTaskData();
 			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
@@ -3225,18 +3220,13 @@ lkfin_ete:
 				}
 			}
             UnlockTaskData();
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
 		// B251
 		case LK_NEXT_CENTER_GR:
 			_stprintf(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
-				_tcscpy(BufferTitle, MsgToken<1146>());
-			else
-				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
-				_tcscpy(BufferTitle, MsgToken<1146>());
+			// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
+			_tcscpy(BufferTitle, MsgToken<1146>());
             LockTaskData();
 			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				index = Task[ActiveTaskPoint].Index;
@@ -3448,7 +3438,7 @@ lk_error:
 			if ( lkindex >=NumDataOptions || lkindex <1 )  // Notice NumDataOptions check!
 				_stprintf(BufferTitle, TEXT("BadErr"));
 			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 	}
 

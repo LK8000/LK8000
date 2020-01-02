@@ -1375,9 +1375,7 @@ static void SetInfoBoxSelector(int item, int mode)
   wp = (WndProperty*)wf->FindByName(name);
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    for (int i=0; i<NumDataOptions; i++) {
-      dfe->addEnumText(Data_Options[i].Description);
-    }
+    FillDataOptionDescription(dfe);
     dfe->Sort(0);
 
     int it=0;

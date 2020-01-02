@@ -12,9 +12,6 @@
  *  THIS FILE IS INCLUDED AUTOMATICALLY BY DEFINES.H
  */
 
-// Number of InfoBoxes
-#define NUMDATAOPTIONS_MAX                      157
-
 
 #define DISTANCE_ROUNDING 20.0
 // Rounding of task distances for entry (sector radius etc)
