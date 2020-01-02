@@ -20,12 +20,11 @@ namespace json = picojson;
 
 extern void FillDataOptions();
 
+LKLanguages_t LKMessages = {};
+
 namespace {
 
   constexpr auto InvalidTextIndex = std::numeric_limits<unsigned>::max();
-
-  constexpr size_t MAX_MESSAGES = 2500; // Max number of MSG items
-  TCHAR *LKMessages[MAX_MESSAGES] = {};
 
   template<typename CharT>
   unsigned GetTextIndex(const CharT *key, size_t size, char type) {
@@ -59,8 +58,8 @@ namespace {
         // get the item index number
         const unsigned index = GetTextIndex(obj.first, 'M');
         if (index < std::size(LKMessages)) {
-          if(!LKMessages[index]) {
-            if(obj.second.is<std::string>()) {
+          if (!LKMessages[index]) {
+            if (obj.second.is<std::string>()) {
               const tstring value = utf8_to_tstring(obj.second.get<std::string>().c_str());
               LKMessages[index] = _tcsdup(value.c_str());
             }
@@ -79,10 +78,10 @@ namespace {
       std::istream stream(&file);
       json::value lang_json;
       std::string error = json::parse(lang_json, stream);
-      if(error.empty()) {
-        if(lang_json.is<json::object>()) {
+      if (error.empty()) {
+        if (lang_json.is<json::object>()) {
           for (const auto &obj : lang_json.get<json::object>()) {
-            if(obj.second.is<std::string>()) {
+            if (obj.second.is<std::string>()) {
               const tstring code = utf8_to_tstring(obj.first);
               const tstring name = utf8_to_tstring(obj.second.get<std::string>());
 

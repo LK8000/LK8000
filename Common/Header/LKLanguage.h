@@ -12,6 +12,7 @@
 #define	LKLANGUAGE_H
 
 #include <map>
+#include <functional>
 #include "tchar.h"
 #include "Util/tstring.hpp"
 
@@ -45,8 +46,36 @@ tstring LKgethelptext(const TCHAR *TextIn);
 const TCHAR *LKGetText(const TCHAR *TextIn);
 
 /**
- * Direct token access, with range check, faster than LKGetText
- * @return empty string if token is not found
+ * array used to store all localized string with "_@Mxxx_" token
+ * decalred extern to allow compil time index check by MsgToken function
+ */
+using LKLanguages_t = std::array<TCHAR*, 2500>;
+extern LKLanguages_t LKMessages;
+
+/**
+ * Direct token access, with compile time range check, faster than LKGetText
+ */
+template <size_t tindex>
+inline const TCHAR* MsgToken() {
+  static_assert(tindex < std::size(LKMessages), "invalid message index");
+  /* if this assert is throw, we have bug in LKLoadLanguageFile code 
+   * or multithreading comflict */
+  assert(LKMessages[tindex]);
+  if (LKMessages[tindex]) {
+    return LKMessages[tindex];
+  }
+  return _T("");
+}
+
+/**
+ * #MsgToken function wrapper type
+ * used to store specialized #MsgToken inside array
+ */
+using MsgToken_t = std::function<const TCHAR*()>;
+
+/*
+ * exist only for backward compatibility
+ * TODO: remove it when all usages would be removed
  */
 const TCHAR *MsgToken(unsigned tindex);
 
