@@ -23,6 +23,7 @@
 #include "Util/UTF8.hpp"
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
+#include "Util/Clamp.hpp"
 
 int dlgTaskSelectListShowModal(void) ;
 
@@ -533,8 +534,21 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   return TaskFound;
 }
 
+static const TCHAR* TaskTypeLabel(size_t count) {
+  static const MsgToken_t label_array[] = {
+          &MsgToken<2430>,
+          &MsgToken<2431>,
+          &MsgToken<2432>,
+          &MsgToken<2433>,
+          &MsgToken<2434>,
+          &MsgToken<2435>,
+          &MsgToken<2436>,
+          &MsgToken<2437>,
+  };
 
-
+  size_t label_index = Clamp<size_t>(count, 1U, std::size(label_array)) - 1;
+  return label_array[label_index]();
+}
 
 bool LoadCupTask(LPCTSTR szFileName) {
 TCHAR szString[READLINE_LENGTH + 1];
@@ -565,12 +579,6 @@ TCHAR szString[READLINE_LENGTH + 1];
       bClosedTask = true;
     }
 
-    if (NoPts > 0) {
-        NoPts -= 1;
-    }
-    if(NoPts > 7) {
-        NoPts = 7;
-    }
     if(  szTaskStrings[ iNO_Tasks] != NULL)
     {
       if(bClosedTask)
@@ -580,7 +588,7 @@ TCHAR szString[READLINE_LENGTH + 1];
           else if (CALCULATED_INFO.TaskFAI)
               lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken<2432>(), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
           else
-              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), MsgToken(2430 + NoPts), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString);
+              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), TaskTypeLabel(NoPts), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString);
       }
       else
       {
