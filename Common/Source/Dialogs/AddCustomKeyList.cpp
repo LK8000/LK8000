@@ -36,10 +36,10 @@ void AddCustomKeyList( DataField* dfe) {
     dfe->addEnumText(MsgToken(738));
 	// TOKEN 363 = "Invert colors"
     dfe->addEnumText(MsgToken(363));
-    dfe->addEnumText(TEXT("TrueWind"));
+    dfe->addEnumText(MsgToken(1532));
 	// TOKEN 726 = "Toggle overlays"
     dfe->addEnumText(MsgToken(726));
-    dfe->addEnumText(TEXT("AutoZoom On/Off"));
+    dfe->addEnumText(MsgToken(1533));
 
     // We no longer use ActiveMap but we must preserve position in the enum in order to keep backward compatibility
     // with saved existing profiles..
@@ -48,8 +48,8 @@ void AddCustomKeyList( DataField* dfe) {
 
 	// TOKEN 426 = "Mark Location"
     dfe->addEnumText(MsgToken(426));
-    dfe->addEnumText(TEXT("PG/HG Time Gates"));
-    dfe->addEnumText(TEXT("Thermal Booster"));
+    dfe->addEnumText(MsgToken(513)); // "PG/HG Time Gates
+    dfe->addEnumText(MsgToken(1535)); // Thermal Booster
 	// TOKEN 329 = "Goto Home"
     dfe->addEnumText(MsgToken(329));
 	// TOKEN 519 = "Panorama trigger"
@@ -64,7 +64,7 @@ void AddCustomKeyList( DataField* dfe) {
     dfe->addEnumText(MsgToken(767));
 	// TOKEN 130 = "Basic Setup menu"
     dfe->addEnumText(MsgToken(130));
-    dfe->addEnumText(TEXT("SIMulation menu"));
+    dfe->addEnumText(MsgToken(1536)); // SIMulation menu
     dfe->addEnumText(MsgToken(1652)); // Airspace Analysis
     dfe->addEnumText(MsgToken(1653)); // toggle map Airspace
     dfe->addEnumText(MsgToken(1657)); // zoom in

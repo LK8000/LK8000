@@ -111,7 +111,7 @@ bool SerialPort::Initialize() {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
 		// @M759 = Unable to Change Settings on Port
-	StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(759), GetPortName());
+	StatusMessage(mbOk, MsgToken(266), TEXT("%s %s"), MsgToken(759), GetPortName());
 
         goto failed;
     }
@@ -120,7 +120,7 @@ bool SerialPort::Initialize() {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
         // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers"
-        StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(760), GetPortName());
+        StatusMessage(mbOk, MsgToken(266), TEXT("%s %s"), MsgToken(760), GetPortName());
 
         goto failed;
     }

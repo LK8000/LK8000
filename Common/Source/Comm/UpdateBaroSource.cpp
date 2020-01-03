@@ -51,7 +51,7 @@ bool UpdateBaroSource( NMEA_INFO* pGPS, short parserid, const PDeviceDescriptor_
   if (fAlt>30000 || fAlt<-1000) {
 	if (notifyErr) {
 		StartupStore(_T("... RECEIVING INVALID BARO ALTITUDE: %f\n"),fAlt);
-		DoStatusMessage(_T("INVALID BARO ALTITUDE!"));
+		DoStatusMessage(MsgToken(1530));
 		notifyErr=false;
 	}
   } else  {

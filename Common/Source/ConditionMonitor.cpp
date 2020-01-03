@@ -220,8 +220,9 @@ protected:
   }
 
   void Notify(void) {
-    DoStatusMessage(TEXT("Expect arrival past sunset"));
-  }
+    // Expect arrival past sunset
+    DoStatusMessage(MsgToken(1531));
+  };
 
   void SaveLast(void) {
 
