@@ -1199,7 +1199,7 @@ WndForm* pOwner = pWnd->GetParentWndForm();
 
 
 static void OnF(WndButton* pWnd) {
-WndForm* pOwner = pWnd->GetParentWndForm();
+  WndForm* pOwner = pWnd->GetParentWndForm();
   UpdateDeviceSetupButton(pOwner,SelectedDevice );
   SelectedDevice =5;
   UpdateDeviceEntries(pOwner, SelectedDevice);
@@ -1209,6 +1209,13 @@ void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
     WindowControl* pWnd = pOwner->FindByName(WndName);
     if(pWnd) {
         pWnd->SetVisible(bShow);
+    }
+}
+
+static void LedSetOnOff(WndForm* pOwner, const TCHAR* name, bool Enable) {
+    WndButton* pWnd = static_cast<WndButton*>(pOwner->FindByName(name));
+    if (pWnd) {
+       pWnd->LedSetOnOff(Enable);
     }
 }
 
@@ -1270,21 +1277,13 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
 
 
     ShowWindowControl(wf, TEXT("cmdConfigDev"), DeviceList[SelectedDevice].Config);
-  //  ShowWindowControl(wf, TEXT("cmdConfigFlarm"),DeviceList[SelectedDevice].nmeaParser.isFlarm);
 
-
-    if ((WndButton *)pOwner->FindByName(TEXT("cmdA")))
-       ((WndButton *)pOwner->FindByName(TEXT("cmdA")))->LedSetOnOff(!DeviceList[0].Disabled);
-    if ((WndButton *)pOwner->FindByName(TEXT("cmdB")))
-       ((WndButton *)pOwner->FindByName(TEXT("cmdB")))->LedSetOnOff(!DeviceList[1].Disabled);
-    if ((WndButton *)pOwner->FindByName(TEXT("cmdC")))
-       ((WndButton *)pOwner->FindByName(TEXT("cmdC")))->LedSetOnOff(!DeviceList[2].Disabled);
-    if ((WndButton *)pOwner->FindByName(TEXT("cmdD")))
-       ((WndButton *)pOwner->FindByName(TEXT("cmdD")))->LedSetOnOff(!DeviceList[3].Disabled);
-    if ((WndButton *)pOwner->FindByName(TEXT("cmdE")))
-       ((WndButton *)pOwner->FindByName(TEXT("cmdE")))->LedSetOnOff(!DeviceList[4].Disabled);
-    if ((WndButton *)pOwner->FindByName(TEXT("cmdF")))
-       ((WndButton *)pOwner->FindByName(TEXT("cmdF")))->LedSetOnOff(!DeviceList[5].Disabled);
+    LedSetOnOff(pOwner, _T("cmdA"), !DeviceList[0].Disabled);
+    LedSetOnOff(pOwner, _T("cmdB"), !DeviceList[1].Disabled);
+    LedSetOnOff(pOwner, _T("cmdC"), !DeviceList[2].Disabled);
+    LedSetOnOff(pOwner, _T("cmdD"), !DeviceList[3].Disabled);
+    LedSetOnOff(pOwner, _T("cmdE"), !DeviceList[4].Disabled);
+    LedSetOnOff(pOwner, _T("cmdF"), !DeviceList[5].Disabled);
 
     if(bHide)
     {
