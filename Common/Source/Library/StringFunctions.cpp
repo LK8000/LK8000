@@ -506,27 +506,29 @@ void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numof
 
 }
 
+const TCHAR *AngleToWindRose(int angle) {
 
+  if (angle < 0) {
+    angle = angle%360 + 360;
+  }
+  
+  // Valid index values: 0 - 16
+  static const TCHAR * const windrose[] = {
+    TEXT("N"), TEXT("NNE"), TEXT("NE"), TEXT("ENE"), 
+    TEXT("E"), TEXT("ESE"), TEXT("SE"), TEXT("SSE"), 
+    TEXT("S"), TEXT("SSW"), TEXT("SW"), TEXT("WSW"),
+    TEXT("W"), TEXT("WNW"), TEXT("NW"), TEXT("NNW"), 
+  };
 
-
-
-const TCHAR *WindAngleToText(double angle) {
-
- // Valid index values: 0 - 16,  17 is for Err
- static const TCHAR *const windrose[17]= {TEXT("N"),TEXT("NNE"),TEXT("NE"),TEXT("ENE"),TEXT("E"),TEXT("ESE"),
-			TEXT("SE"),TEXT("SSE"),TEXT("S"),TEXT("SSW"),TEXT("SW"),TEXT("WSW"),
-			TEXT("W"),TEXT("WNW"),TEXT("NW"),TEXT("NNW"),TEXT("---")};
-
- // We need 32 slots of 11.25 degrees for a full 360
- static unsigned short angleslot[32]={0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,0};
-
- if (angle<0) return(windrose[16]); // ---
- if (angle>=360) angle-=360;
-
- unsigned short direction= (unsigned short)(angle/11.25);
- LKASSERT(direction<32);
- return (windrose[angleslot[direction]]);
-
+  /*
+   * tricks : for avoid rounding error with fixed point calculation, we use 360*4 for full circle instead of 360
+   *   like that, slot_size = 90 instead of 22.5 and slot_offset = 45 instead of 11.25
+   */  
+  constexpr unsigned slot_size = 360 * 4 / array_size(windrose); // 22.5° for each sector
+  constexpr unsigned slot_offset = slot_size / 2; // 11.25° offset 
+  
+  const unsigned index = ((angle * 4 + slot_offset) / slot_size) & 0x000F;
+  return (windrose[index]);
 }
 
 ///////////////////////////////////////////////////////////////////////

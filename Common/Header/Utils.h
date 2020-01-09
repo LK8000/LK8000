@@ -151,6 +151,8 @@ int HexStrToInt(TCHAR *Source);
 void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec = NULL);
 
 
+const TCHAR *AngleToWindRose(int angle);
+
 const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[]);
 bool UseContestEngine(void);
 int  GetWaypointFileFormatType(const TCHAR* wextension);

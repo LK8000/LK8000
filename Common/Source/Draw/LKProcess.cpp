@@ -21,8 +21,6 @@
 #define NULLTIME	"--:--"
 #define INFINVAL	"oo"
 
-TCHAR *WindAngleToText(double angle);
-
 //
 // CAREFUL CAREFUL CAREFUL here:
 // lkindex can be much over the DataOption size, because some values here are not
@@ -2715,7 +2713,7 @@ olc_score:
 				valid=true;
 				if (UseWindRose) {
 					_stprintf(BufferValue,TEXT("%s/%1.0f"), 
-						WindAngleToText(value), SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+						AngleToWindRose(value), SPEEDMODIFY*DerivedDrawInfo.WindSpeed);
 				} else {
 					if (value==360) value=0;
 					if (HideUnits)
