@@ -2525,7 +2525,7 @@ olc_score:
           }
         } else {
           if(FinishLine == 0) {
-            value = DerivedDrawInfo.WaypointDistance - FinishRadius;
+            value = Distance - FinishRadius; 
           }
         }
       }
