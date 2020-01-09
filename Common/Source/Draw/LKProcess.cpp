@@ -19,7 +19,15 @@
 #define NULLMEDIUM	"---"
 #define NULLLONG	"---"
 #define NULLTIME	"--:--"
-#define INFINVAL	"oo"
+
+#ifdef UNICODE
+// utf16 Infinity symbol
+constexpr TCHAR infinity[] = { 0x221E, 0x00 };
+#else
+// utf8 Infinity symbol
+constexpr TCHAR infinity[] = { '\xE2', '\x88', '\x9E', '\0' };
+#endif
+
 
 //
 // CAREFUL CAREFUL CAREFUL here:
@@ -169,7 +177,7 @@ goto_bearing:
 			   else
 				value=0;
 			   if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
-				_stprintf(BufferValue, TEXT(INFINVAL));
+				_stprintf(BufferValue, infinity);
 				valid=true;
 			   } else {
 				if (value==0) _stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -194,7 +202,7 @@ goto_bearing:
 			else
 				value=0;
 			if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
-				_tcscpy(BufferValue,TEXT(INFINVAL)); 
+				_tcscpy(BufferValue,infinity); 
 				valid=true;
 			} else
 			if (value==0) _stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -1535,7 +1543,7 @@ goto_bearing:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					if (value <1 ||  value >=ALTERNATE_MAXVALIDGR ) {
-						_stprintf(BufferValue, TEXT(INFINVAL)); 
+						_stprintf(BufferValue, infinity); 
 						valid=true;
 					} else {
 
@@ -3182,7 +3190,7 @@ lkfin_ete:
                     const int RoundedSpeed = iround(SPEEDMODIFY*SpeedToGate);
                     if (SpeedToGate > 300) {
                         // ignore too fast speed
-                        _tcscpy(BufferValue, TEXT(INFINVAL));
+                        _tcscpy(BufferValue, infinity);
                         _tcscpy(BufferUnit, TEXT(""));
                     } else if (RoundedSpeed <= 0) {
                         _tcscpy(BufferValue, TEXT(NULLMEDIUM));
