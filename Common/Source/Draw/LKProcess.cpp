@@ -2500,19 +2500,21 @@ olc_score:
 			}
 			valid=true;
 			break;
-      
+
     case LK_NEXT_DIST_RADIUS:
-      value = NAN;
+	  valid=false;
       if ( ValidTaskPoint(ActiveTaskPoint)) {
         const double Distance = WayPointCalc[Task[ActiveTaskPoint].Index].Distance;
         if (ActiveTaskPoint == 0) {
           if (StartLine == 0) {
             value = Distance - StartRadius;
+			valid=true;
           }
         } else if (ValidTaskPoint(ActiveTaskPoint + 1)) {
           if (!AATEnabled && !DoOptimizeRoute()) {
             if(SectorType == CIRCLE) {
               value = Distance - SectorRadius;
+              valid=true;
             }
           } else {
             switch(Task[ActiveTaskPoint].AATType) {
@@ -2520,19 +2522,20 @@ olc_score:
               case 2 : // CONE
               case 3 : // ESS_CIRCLE
                 value = Distance - Task[ActiveTaskPoint].AATCircleRadius;
+                valid=true;
                 break;
             }
           }
         } else {
           if(FinishLine == 0) {
             value = Distance - FinishRadius; 
+            valid=true;
           }
         }
       }
-      
-      if(value != NAN) {
+
+      if(valid) {
         value=Units::ToUserDistance(value);
-        valid=true;
         if (value>99 || value==0)
           _stprintf(BufferValue, TEXT("%.0f"),value);
         else {
