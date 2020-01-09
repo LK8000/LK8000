@@ -25,8 +25,8 @@ android {
         applicationId "org.lk8000"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 52
-        versionName "7.1f"
+        versionCode 53
+        versionName "7.1g"
         setProperty("archivesBaseName", "LK8000-$versionName")
         manifestPlaceholders = [
                 applicationLabel: "@string/app_name",
