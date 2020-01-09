@@ -177,7 +177,7 @@ goto_bearing:
 			   else
 				value=0;
 			   if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
-				_stprintf(BufferValue, infinity);
+				_tcscpy(BufferValue, infinity);
 				valid=true;
 			   } else {
 				if (value==0) _stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -1543,7 +1543,7 @@ goto_bearing:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					if (value <1 ||  value >=ALTERNATE_MAXVALIDGR ) {
-						_stprintf(BufferValue, infinity); 
+						_tcscpy(BufferValue, infinity);
 						valid=true;
 					} else {
 
