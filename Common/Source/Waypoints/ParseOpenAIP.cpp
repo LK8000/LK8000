@@ -297,12 +297,7 @@ bool ParseAirports(XMLNode &airportsNode)
         }
 
         // Add the comments
-        std::basic_string<TCHAR> str(comments.str());
-        new_waypoint.Comment = (TCHAR*)malloc((str.length()+1)*sizeof(TCHAR));
-        if (new_waypoint.Comment != nullptr) {
-            std::copy(str.begin(),str.end(),new_waypoint.Comment);
-            new_waypoint.Comment[str.length()]='\0';
-        }
+        SetWaypointComment(new_waypoint, comments.str().c_str());
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
@@ -422,12 +417,7 @@ bool ParseNavAids(XMLNode &navAidsNode)
         }
 
         // Add the comments
-        std::basic_string<TCHAR> str(comments.str());
-        new_waypoint.Comment = (TCHAR*)malloc((str.length()+1)*sizeof(TCHAR));
-        if (new_waypoint.Comment != nullptr) {
-            std::copy(str.begin(),str.end(),new_waypoint.Comment);
-            new_waypoint.Comment[str.length()]='\0';
-        }
+        SetWaypointComment(new_waypoint, comments.str().c_str());
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
@@ -538,12 +528,7 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
         if(GetContent(HotSpotNode,TEXT("COMMENT"),dataStr)) comments<<dataStr;
 
         // Add the comments
-        std::basic_string<TCHAR> str(comments.str());
-        new_waypoint.Comment = (TCHAR*)malloc((str.length()+1)*sizeof(TCHAR));
-        if (new_waypoint.Comment != nullptr) {
-            std::copy(str.begin(),str.end(),new_waypoint.Comment);
-            new_waypoint.Comment[str.length()]='\0';
-        }
+        SetWaypointComment(new_waypoint, comments.str().c_str());
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {

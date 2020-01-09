@@ -344,21 +344,6 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   if (Temp->Altitude == -9999) return false;
 
   Temp->Flags = TURNPOINT;
-
-  if (_tcslen(tComment) >COMMENT_SIZE) {
-	tComment[COMMENT_SIZE-1]=_T('\0');
-  }
-  if (_tcslen(tComment) >0 ) {
-	if (Temp->Comment) {
-		free(Temp->Comment);
-	}
-	Temp->Comment = (TCHAR*)malloc((_tcslen(tComment)+1)*sizeof(TCHAR));
-	if (Temp->Comment) _tcscpy(Temp->Comment,tComment);
-  } else
-	Temp->Comment=NULL; //@ 101104
-
-
-
- return true;
-
+  SetWaypointComment(*Temp, tComment);
+  return true;
  }

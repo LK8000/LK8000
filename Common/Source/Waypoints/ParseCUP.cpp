@@ -201,20 +201,10 @@ bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp)
 
 
   // ---------------- COMMENT   ------------------
-  if (Entries[10].length() >0 ) {
-    if (Temp->Comment) {
-      free(Temp->Comment);
-    }
-    Temp->Comment = _tcsdup( Entries[10].c_str());
-
-
-    #ifdef CUPDEBUG
-    StartupStore(_T("   CUP COMMENT=<%s>%s"),Temp->Comment,NEWLINE);
-    #endif
-  } else {
-	Temp->Comment=NULL; // useless
-  }  
-
+  SetWaypointComment(*Temp, Entries[10].c_str());
+  #ifdef CUPDEBUG
+  StartupStore(_T("   CUP COMMENT=<%s>%s"),Temp->Comment,NEWLINE);
+  #endif
 
   if(Temp->Altitude <= 0) {
 	WaypointAltitudeFromTerrain(Temp);

@@ -620,20 +620,10 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *last
     GetAttribute(node, _T("altitude"), newPoint.Altitude);
     GetAttribute(node, _T("flags"), newPoint.Flags);
     GetAttribute(node, _T("comment"), szAttr);
-    if (szAttr) {
-        newPoint.Comment = (TCHAR*) malloc((_tcslen(szAttr) + 1) * sizeof (TCHAR));
-        if (newPoint.Comment) {
-            _tcscpy(newPoint.Comment, szAttr);
-        }
-    }
+    SetWaypointComment(newPoint, szAttr);
 #if TASK_DETAILS
     GetAttribute(node, _T("details"), szAttr);
-    if (szAttr) {
-        newPoint.Details = (TCHAR*) malloc((_tcslen(szAttr) + 1) * sizeof (TCHAR));
-        if (newPoint.Details) {
-            _tcscpy(newPoint.Details, szAttr);
-        }
-    }
+    SetWaypointDetails(newPoint, szAttr);
 #endif
     GetAttribute(node, _T("format"), newPoint.Format);
     GetAttribute(node, _T("freq"), szAttr);

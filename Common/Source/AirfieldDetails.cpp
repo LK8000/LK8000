@@ -10,6 +10,7 @@
 #include "externs.h"
 #include "Dialogs/dlgProgress.h"
 #include "AirfieldDetails.h"
+#include "Waypointparser.h"
 #include "utils/zzip_stream.h"
 
 void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
@@ -65,14 +66,7 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
 	    ||(_tcscmp(UName, NameD)==0)
 	    || isHome || isPreferred )
 	  {
-	    if (_tcslen(Details) >0 ) { // avoid setting empty details
-	      if (WayPointList[i].Details) {
-		free(WayPointList[i].Details);
-	      }
-	      WayPointList[i].Details = (TCHAR*)malloc((_tcslen(Details)+1)*sizeof(TCHAR));
-	      if (WayPointList[i].Details != NULL) _tcscpy(WayPointList[i].Details, Details);
-	    }
-	    return;
+		SetWaypointDetails(WayPointList[i], Details);
 	  }
     }
 }

@@ -91,20 +91,12 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                     }
                     detailNode=WPnode.getChildNode(TEXT("cmt"),0);
                     if(detailNode) {
-                        dataStr=detailNode.getText(0);
-                        if(dataStr) {
-                            newPoint.Comment = (TCHAR*) malloc((_tcslen(dataStr)+1)*sizeof(TCHAR));
-                            if(newPoint.Comment) _tcscpy(newPoint.Comment, dataStr);
-                        }
+                        SetWaypointComment(newPoint, detailNode.getText(0));
                     }
 #ifdef TASK_DETAILS
                     detailNode=WPnode.getChildNode(TEXT("desc"),0);
                     if(detailNode) {
-                        dataStr=detailNode.getText(0);
-                        if(dataStr) {
-                            newPoint.Details = (TCHAR*) malloc((_tcslen(dataStr)+1)*sizeof(TCHAR));
-                            if(newPoint.Details) _tcscpy(newPoint.Details, dataStr);
-                        }
+                        SetWaypointDetails(newPoint, detailNode.getText(0));
                     }
 #else
                     newPoint.Details=nullptr;

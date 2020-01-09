@@ -103,17 +103,12 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 		return false;
 
     if (_tcslen(pToken) >0 ) {
-	// remove trailing spaces
-	for (int i=_tcslen(pToken)-1; i>1; i--) if (pToken[i]==' ') pToken[i]=0; else break;
-
-	if (Temp->Comment) {
-		free(Temp->Comment);
-	}
-	Temp->Comment = (TCHAR*)malloc((_tcslen(pToken)+1)*sizeof(TCHAR));
-	if (Temp->Comment) _tcscpy(Temp->Comment, pToken);
+		// remove trailing spaces
+		for (int i=_tcslen(pToken)-1; i>1; i--) if (pToken[i]==' ') pToken[i]=0; else break;
+		SetWaypointComment(*Temp, pToken);
     }
     else {
-	Temp->Comment = NULL; // useless
+		SetWaypointComment(*Temp, _T(""));
     }
 
 	//	Field 12 : Pointer Direction

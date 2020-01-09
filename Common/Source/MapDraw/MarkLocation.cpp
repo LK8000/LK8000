@@ -70,6 +70,7 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
 
 	j=GetVirtualWaypointMarkerSlot();
 
+	WayPointCalc[j].WpType=WPT_TURNPOINT;
 	WayPointList[j].Latitude=lat;
 	WayPointList[j].Longitude=lon;
 	WayPointList[j].Altitude=altitude;
@@ -78,15 +79,11 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
 
     ascii2TCHAR(marktime, tstring,50);
 	_stprintf(WayPointList[j].Name,_T("MK%s%02d"),tstring,GPS_INFO.Second);
-    #if BUGSTOP
-    LKASSERT(WayPointList[j].Comment!=NULL);
-    #endif
-    if (WayPointList[j].Comment!=NULL) {
-        ascii2TCHAR(snear, tstring, 50);
-	    _stprintf(WayPointList[j].Comment,_T("Near: %s"),tstring);
-    }
+	ascii2TCHAR(snear, tstring, 50);
+	TCHAR comment[60];
+	_stprintf(comment, _T("Near: %s"), tstring);
+	SetWaypointComment(WayPointList[j], comment);
 
-	WayPointCalc[j].WpType=WPT_TURNPOINT;
 
 	// Force updating DoRange otherwise it will pass up to 3 minutes
 	// before this marker appears in the 2.3 tps page

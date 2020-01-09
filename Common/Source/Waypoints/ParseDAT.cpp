@@ -19,7 +19,6 @@ extern int globalFileNum;
 // This is converting DAT Winpilot
 int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 {
-  TCHAR ctemp[(COMMENT_SIZE*2)+1]; // 101102 BUGFIX, we let +1 for safety
   TCHAR *Number;
   TCHAR *pWClast = NULL;
   TCHAR *pToken;
@@ -93,19 +92,10 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 
   //ExtractParameter(TempString,ctemp,6); // Comment
   // DAT Comment
-  if ((pToken = _tcstok_r(NULL, TEXT("\n\r"), &pWClast)) != NULL){
-    LK_tcsncpy(ctemp, pToken, COMMENT_SIZE); //@ 101102 BUGFIX bad. ctemp was not sized correctly!
-
-    if (_tcslen(ctemp) >0 ) {
-	if (Temp->Comment) {
-		free(Temp->Comment);
-	}
-	Temp->Comment = (TCHAR*)malloc((_tcslen(ctemp)+1)*sizeof(TCHAR));
-	if (Temp->Comment) _tcscpy(Temp->Comment, ctemp);
-    }
-
+  if ((pToken = _tcstok_r(NULL, TEXT("\n\r"), &pWClast)) != NULL) {
+    SetWaypointComment(*Temp, pToken);
   } else {
-    Temp->Comment = NULL; // useless
+    SetWaypointComment(*Temp, _T(""));
   }
 
   if(Temp->Altitude <= 0) {
