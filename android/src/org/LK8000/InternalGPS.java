@@ -97,6 +97,9 @@ public class InternalGPS
     update();
   }
 
+  final private GpsStatus.NmeaListener listener = (timestamp, nmea) -> InternalGPS.this.parseNMEA(nmea);
+  final private OnNmeaMessageListener listener_v24 = (nmea, timestamp) -> InternalGPS.this.parseNMEA(nmea);
+
   /**
    * Called by the #Handler, indirectly by update().  Updates the
    * LocationManager subscription inside the main thread.
@@ -105,6 +108,13 @@ public class InternalGPS
   @Override public void run() {
     Log.d(TAG, "Updating GPS subscription...");
     locationManager.removeUpdates(this);
+
+    if(Build.VERSION.SDK_INT < 24) {
+      locationManager.removeNmeaListener(listener);
+    } else {
+      locationManager.removeNmeaListener(listener_v24);
+    }
+
 
     if (locationProvider != null) {
       Log.d(TAG, "Subscribing to GPS updates.");
@@ -119,10 +129,11 @@ public class InternalGPS
       }
 
       if(Build.VERSION.SDK_INT < 24) {
-        locationManager.addNmeaListener((GpsStatus.NmeaListener) (timestamp, nmea) -> InternalGPS.this.parseNMEA(nmea));
+        locationManager.addNmeaListener(listener);
       } else {
-        locationManager.addNmeaListener((OnNmeaMessageListener) (message, timestamp) -> InternalGPS.this.parseNMEA(message));
+        locationManager.addNmeaListener(listener_v24);
       }
+
       setConnectedSafe(true); // waiting for fix
     } else {
       Log.d(TAG, "Unsubscribing from GPS updates.");
