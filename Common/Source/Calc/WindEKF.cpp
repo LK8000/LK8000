@@ -102,9 +102,7 @@ void WindEKF::SerialUpdate(float Z[NUMV], float Y[NUMV])
     for (k = 0; k < NUMX; k++)
       HPHR += HP[k] * H[m][k];
 
-    #if BUGSTOP
-    LKASSERT(HPHR>0.0);
-    #endif
+    BUGSTOP_LKASSERT(HPHR>0.0);
     if (HPHR <= 0.0) continue;
 
     for (k = 0; k < NUMX; k++)

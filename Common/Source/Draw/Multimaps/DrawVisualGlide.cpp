@@ -56,9 +56,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 
     unsigned short numboxrows = 1;
 
-#if BUGSTOP
-    LKASSERT(Current_Multimap_SizeY < SIZE4);
-#endif
+    BUGSTOP_LKASSERT(Current_Multimap_SizeY < SIZE4);
     switch (Current_Multimap_SizeY) {
         case SIZE0:
         case SIZE1:
@@ -136,19 +134,15 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     // numSlotX is the number items we can print horizontally.
     unsigned short numSlotX = (rci.right - rci.left) / (boxSizeX + BOXINTERVAL);
     if (numSlotX > MAXBSLOT) numSlotX = MAXBSLOT;
-#if BUGSTOP
-    LKASSERT(numSlotX > 0);
-#endif
+    BUGSTOP_LKASSERT(numSlotX > 0);
     if (numSlotX == 0) return;
 
     unsigned short boxInterval = ((rci.right - rci.left)-(boxSizeX * numSlotX)) / (numSlotX + 1);
     unsigned short oddoffset = ( (rci.right-rci.left) - (boxSizeX * numSlotX) - boxInterval * (numSlotX + 1)) / 2;
 
     /*
-    #if BUGSTOP
     // not really harmful
-    LKASSERT(oddoffset<=boxInterval);
-    #endif
+    BUGSTOP_LKASSERT(oddoffset<=boxInterval);
      */
 
 #if DEBUG_SCR
@@ -389,9 +383,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 
         switch (numboxrows) {
             case 0:
-#if BUGSTOP
-                LKASSERT(0);
-#endif
+                BUGSTOP_LKASSERT(0);
                 return;
 
             case 1:
@@ -442,9 +434,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
                 VGTextInBox(Surface, n, 3, name, line2, line3, slotCenterX[n], ty, textcolor, bcolor);
                 break;
             default:
-#if BUGSTOP
-                LKASSERT(0);
-#endif
+                BUGSTOP_LKASSERT(0);
                 return;
         }
 
@@ -466,9 +456,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 
 void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numlines, const TCHAR* wText1, const TCHAR* wText2, const TCHAR *wText3, int x, int y, const LKColor& trgb, const LKBrush& bbrush) {
 
-#if BUGSTOP
-    LKASSERT(wText1 != NULL);
-#endif
+    BUGSTOP_LKASSERT(wText1 != NULL);
     if (!wText1) return;
 
     LKColor oldTextColor = Surface.SetTextColor(trgb);
@@ -508,9 +496,7 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     Surface.DrawText(tx, ty, wText1, &ClipRect);
 
     if (numlines == 1) goto _end;
-#if BUGSTOP
-    LKASSERT(wText2 != NULL);
-#endif
+    BUGSTOP_LKASSERT(wText2 != NULL);
     if (!wText2) goto _end;
 
     //
@@ -524,9 +510,7 @@ void MapWindow::VGTextInBox(LKSurface& Surface, unsigned short nslot, short numl
     Surface.DrawText(tx, ty, wText2);
 
     if (numlines == 2) goto _end;
-#if BUGSTOP
-    LKASSERT(wText3 != NULL);
-#endif
+    BUGSTOP_LKASSERT(wText3 != NULL);
     if (!wText3) goto _end;
 
     //

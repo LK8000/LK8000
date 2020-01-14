@@ -22,9 +22,7 @@ int Sideview_iNoHandeldSpaces = 0;
 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 void SetMMNorthUp(int iPage, int iVal) {
-#if BUGSTOP
-    LKASSERT(iPage < NUMBER_OF_SHARED_MULTIMAPS);
-#endif
+    BUGSTOP_LKASSERT(iPage < NUMBER_OF_SHARED_MULTIMAPS);
     if (iPage < 0) iPage = 0;
     if (iPage >= NUMBER_OF_SHARED_MULTIMAPS) iPage = NUMBER_OF_SHARED_MULTIMAPS - 1;
     MMNorthUp_Runtime[iPage] = iVal;

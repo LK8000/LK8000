@@ -39,11 +39,8 @@ int slotWpIndex[MAXBSLOT + 1];
 
 short MapWindow::GetVisualGlidePoints(unsigned short numslots) {
 
-#if BUGSTOP
-    LKASSERT(numslots <= MAXBSLOT);
-#else
+    BUGSTOP_LKASSERT(numslots <= MAXBSLOT);
     if (numslots > MAXBSLOT) numslots = MAXBSLOT;
-#endif
 
     static short currentFilledNumber = -1;
     static double tmpSlotBrgDiff[MAXBSLOT + 1];

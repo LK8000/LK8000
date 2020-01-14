@@ -67,9 +67,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     double av_thermal = -1;
     if (flightstats.ThermalAverage.y_ave > 0) {
         if (Calculated->Circling && (Calculated->AverageThermal > 0)) {
-#if BUGSTOP
-            LKASSERT((flightstats.ThermalAverage.sum_n + 1) != 0);
-#endif
+            BUGSTOP_LKASSERT((flightstats.ThermalAverage.sum_n + 1) != 0);
             if (flightstats.ThermalAverage.sum_n == -1) {
                 flightstats.ThermalAverage.sum_n = 0;
             }
@@ -99,9 +97,8 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             // otherwise when we are well below, it will wind Mc back to
             // zero
 
-#if BUGSTOP
-            LKASSERT((Calculated->WaypointDistance + 1) != 0);
-#endif
+            BUGSTOP_LKASSERT((Calculated->WaypointDistance + 1) != 0);
+
             if (Calculated->WaypointDistance < 0) Calculated->WaypointDistance = 0; // temporary but ok
             double slope =
                     (Calculated->NavAltitude + Calculated->EnergyHeight

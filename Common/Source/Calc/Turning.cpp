@@ -84,11 +84,8 @@ _forcereset:
   dT = Basic->Time - LastTime;
   LastTime = Basic->Time;
 
-  #if BUGSTOP
-  LKASSERT(dT!=0);
-  #else
+  BUGSTOP_LKASSERT(dT!=0);
   if (dT==0) dT=1;
-  #endif
 
   Rate = AngleLimit180(Basic->TrackBearing-LastTrack)/dT;
 

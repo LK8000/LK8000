@@ -15,9 +15,7 @@ void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
    if (Basic->Speed <1 || !Calculated->Flying || Calculated->Circling) {
        return;
    }
-   #if BUGSTOP
-   LKASSERT(ValidWayPoint(i));
-   #endif
+   BUGSTOP_LKASSERT(ValidWayPoint(i));
    if (!ValidWayPoint(i)) return;
 
    WayPointCalc[i].NextETE= WayPointCalc[i].Distance / Basic->Speed;

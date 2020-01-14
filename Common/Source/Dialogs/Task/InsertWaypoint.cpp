@@ -96,9 +96,7 @@ void InsertWaypoint(int index, unsigned short append) {
 		break;
 
 	default:
-		#if BUGSTOP
-		LKASSERT(0);
-		#endif
+		BUGSTOP_LKASSERT(0);
 		break;
   }
 

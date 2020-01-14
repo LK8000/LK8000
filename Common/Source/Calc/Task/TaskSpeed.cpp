@@ -133,9 +133,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     // through remaining turnpoints.  This will more correctly account
     // for wind.
 
-    #if BUGSTOP
-    LKASSERT(h0!=0);
-    #endif
+    BUGSTOP_LKASSERT(h0!=0);
     if (h0==0) h0=1;
     dFinal = min(dr, d0*min(1.0,max(0.0,h1/h0)));
 
@@ -223,9 +221,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       double mc_safe = max(0.1,this_maccready);
       double Vstar = max(1.0,Calculated->VMacCready);
 
-      #if BUGSTOP
-      LKASSERT(dt!=0);
-      #endif
+      BUGSTOP_LKASSERT(dt!=0);
       if (dt==0) dt=1;
       double vthis = (Calculated->LegDistanceCovered-dr_last)/dt;
       vthis /= AirDensityRatio(QNHAltitudeToQNEAltitude(Basic->Altitude));
@@ -246,9 +242,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       // circling percentage during cruise/climb
       double rho_cruise = max(0.0,min(1.0,mc_safe/(sr+mc_safe)));
       double rho_climb = 1.0-rho_cruise;
-      #if BUGSTOP
-      LKASSERT(mc_safe!=0);
-      #endif
+      BUGSTOP_LKASSERT(mc_safe!=0);
       if (mc_safe==0) mc_safe=0.1;
       double time_climb = height_diff/mc_safe;
 

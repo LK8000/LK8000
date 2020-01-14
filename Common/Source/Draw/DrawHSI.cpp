@@ -190,9 +190,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
 
     //Draw the compass rose markers
     int alpha=angle%10;
-    #if BUGSTOP
-    LKASSERT(alpha>=0 && alpha<10);
-    #endif
+    BUGSTOP_LKASSERT(alpha>=0 && alpha<10);
     if (angle<0) angle=0; // recovered
     POINT external,internal;
     for(int i=0,isBig=1;i<72;i++,isBig=!isBig) {

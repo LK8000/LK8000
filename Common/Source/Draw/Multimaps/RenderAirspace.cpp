@@ -956,9 +956,7 @@ _skip_mc0:
             LKASSERT((wpt_dist + 1) != 0);
 
             double slope = 1;
-#if BUGSTOP
-            LKASSERT(ValidWayPoint(overindex));
-#endif
+            BUGSTOP_LKASSERT(ValidWayPoint(overindex));
             if (ValidWayPoint(overindex)) {
                 slope =
                         (DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight

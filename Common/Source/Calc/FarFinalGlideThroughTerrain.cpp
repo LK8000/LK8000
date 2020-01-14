@@ -147,9 +147,8 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
       }
     } else if (dh<=0) {
       if ((dh<last_dh) && (last_dh>0)) {
-        #if BUGSTOP
-	LKASSERT((dh-last_dh)!=0);
-        #endif
+        BUGSTOP_LKASSERT((dh-last_dh)!=0);
+
 	if ( dh-last_dh==0 ) {
 		f = 0.0;
 	} else

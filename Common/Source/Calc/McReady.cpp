@@ -122,12 +122,11 @@ void GlidePolar::SetBallast() {
 
 inline double GlidePolar::_SinkRateFast(const double &MC, const unsigned &v) {
     if(iSAFETYSPEED >= array_size(_sinkratecache)){
-        iSAFETYSPEED = 0.; // avoid buffer overflow
+        iSAFETYSPEED = 0; // avoid buffer overflow
     }
-#if BUGSTOP
-    LKASSERT(iSAFETYSPEED > 8U);
-    LKASSERT(v >= 8U && v <= iSAFETYSPEED);
-#endif
+    BUGSTOP_LKASSERT(iSAFETYSPEED > 8U);
+    BUGSTOP_LKASSERT(v >= 8U && v <= iSAFETYSPEED);
+
     return _sinkratecache[Clamp(v, 8U, iSAFETYSPEED)] - MC;
 }
 
@@ -151,9 +150,7 @@ double GlidePolar::SinkRate(double V, double n) {
   n = max(0.1,fabs(n));
   //  double v1 = V/max(1,Vbestld);
   double v2 = Vbestld()/max(Vbestld()/2.0,V);
-  #if BUGSTOP
-  LKASSERT(bestld>0);
-  #endif
+  BUGSTOP_LKASSERT(bestld>0);
   if (bestld<=0) bestld=1; // UNMANAGED
   return w0-(V/(2*bestld))* (n*n-1)*(v2*v2);
 }
@@ -253,9 +250,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
 	// WE ARE REWRITING EMCREADY!
       emcready = max(MIN_MACCREADY,emcready);
       sinkrate = -_SinkRateFast(0.0, _i);
-      #if BUGSTOP
-      LKASSERT((sinkrate+emcready)!=0);
-      #endif
+      BUGSTOP_LKASSERT((sinkrate+emcready)!=0);
       if ( (sinkrate+emcready)==0 ) sinkrate+=0.1; // to check
       tc = max(0.0,min(1.0,emcready/(sinkrate+emcready)));
     }
@@ -292,9 +287,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
     } else {
       // time spent in cruise
       double Time_cruise = (tc/vtot)*Distance;
-      #if BUGSTOP
-      LKASSERT(emcready!=0);
-      #endif
+      BUGSTOP_LKASSERT(emcready!=0);
       if (emcready==0) emcready=0.1;
       double Time_climb = sinkrate*(Time_cruise/emcready);
 
@@ -457,9 +450,7 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
         // use law of sines to calc other triangle side lengths.
         // We�ll use multiplier twice, so calculate it just once:
 
-        #if BUGSTOP
-	LKASSERT(AngleBrg!=0);
-        #endif
+        BUGSTOP_LKASSERT(AngleBrg!=0);
 	if (AngleBrg==0) AngleBrg=1;
         Multiplier = Distance / fastsine(AngleBrg);
 
@@ -470,9 +461,8 @@ double GlidePolar::MacCreadyAltitude_internal(double emcready,
 
         // altitude gained while circling
 
-        #if BUGSTOP
-        LKASSERT(WindSpeed!=0);
-        #endif
+        BUGSTOP_LKASSERT(WindSpeed!=0);
+
         double WindSpeedCopy = (WindSpeed == 0) ? 0.01 : WindSpeed;
         AltGain = DistDrift * emcready / WindSpeedCopy;
 

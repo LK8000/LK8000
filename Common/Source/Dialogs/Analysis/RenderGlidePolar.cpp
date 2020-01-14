@@ -42,9 +42,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   bool v0valid = false;
   int i0=0;
 
-  #if BUGSTOP
-  LKASSERT(maxSpeed<MAXAVERAGECLIMBRATESIZE);
-  #endif
+  BUGSTOP_LKASSERT(maxSpeed<MAXAVERAGECLIMBRATESIZE);
   if (maxSpeed>=MAXAVERAGECLIMBRATESIZE) maxSpeed=MAXAVERAGECLIMBRATESIZE-1; // could be also without -1
 
   // Draw Polar curve

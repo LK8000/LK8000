@@ -104,10 +104,7 @@ int GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode) {
 // Used for calculation, but does not affect IsSafetyMacCreadyInUse so careful
 
 double GetMacCready(int wpindex, short wpmode) {
-
-#if BUGSTOP
-    LKASSERT(ValidWayPoint(wpindex));
-#endif
+    BUGSTOP_LKASSERT(ValidWayPoint(wpindex));
     if (!ValidWayPoint(wpindex)) return 0;
 
     if (WayPointCalc[wpindex].IsLandable) {

@@ -3428,9 +3428,7 @@ void NextUpDown(int UpDown)
     aatdistance.ResetEnterTrigger(ActiveTaskPoint);
   }
   else if (UpDown==0) {
-    #if BUGSTOP
-    LKASSERT(ActiveTaskPoint>=0);
-    #endif
+    BUGSTOP_LKASSERT(ActiveTaskPoint>=0);
     if (ActiveTaskPoint>=0) {
         SelectedWaypoint = Task[ActiveTaskPoint].Index;
         PopupWaypointDetails();

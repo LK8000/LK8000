@@ -2485,9 +2485,7 @@ int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], dou
                          * switch to next airspace section
                          *********************************************************************/
                         iSelAS = iNoFoundAS;
-#if BUGSTOP
-                        LKASSERT(iNoFoundAS < MAX_NO_SIDE_AS);
-#endif
+                        BUGSTOP_LKASSERT(iNoFoundAS < MAX_NO_SIDE_AS);
                         if (iNoFoundAS < MAX_NO_SIDE_AS - 1) iNoFoundAS++;
                         airspacetype[iNoFoundAS].psAS = NULL; // increment and reset head
                         /*********************************************************************/
@@ -3255,10 +3253,8 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
     TCHAR sUnitBuffer[24];
     TCHAR sAltUnitBuffer[24];
     TCHAR intbuf[BUF_LEN];
-    #if BUGSTOP
-    LKASSERT(buffer!=NULL);
-    LKASSERT(alt!=NULL);
-    #endif
+    BUGSTOP_LKASSERT(buffer!=NULL);
+    BUGSTOP_LKASSERT(alt!=NULL);
     if (buffer==NULL) return;
     if (alt==NULL) {
         _tcscpy(buffer,_T(""));

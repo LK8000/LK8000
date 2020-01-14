@@ -287,10 +287,9 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
 			  HomeWaypoint = ix;
   #endif
 			  bTakeOff = false;
+		      } else {
+		        BUGSTOP_LKASSERT(0); // .. else is unmanaged, TODO
 		      }
-  #if BUGSTOP
-		      else LKASSERT(0); // .. else is unmanaged, TODO
-  #endif
 		  } else {
 
 		    if(Idx < Entries.size())
@@ -316,10 +315,11 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
 		  if(WPtoAdd!=NULL) {
 		      //add what we found in previous cycle: it was not the last one
 		      int ix = FindOrAddWaypoint(WPtoAdd,false);
-		      if (ix>=0) Task[idxTP++].Index = ix;
-  #if BUGSTOP
-		      else LKASSERT(0); // .. else is unmanaged, TODO
-  #endif
+		      if (ix>=0) {
+		        Task[idxTP++].Index = ix;
+		      } else {
+		        BUGSTOP_LKASSERT(0); // .. else is unmanaged, TODO
+		      }
 		      StartupStore(_T("....... bTakeOff: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
 		  }
 		  if (bTakeOff) { //it's the first: may be we have a corresponding airfield
@@ -329,10 +329,9 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
 			  Task[idxTP++].Index = ix;
 			  StartupStore(_T("....... bTakeOff: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
 			  bTakeOff = false;
+		      } else {
+		        BUGSTOP_LKASSERT(0); // .. else is unmanaged, TODO
 		      }
-  #if BUGSTOP
-		      else LKASSERT(0); // .. else is unmanaged, TODO
-  #endif
 		  } else WPtoAdd=&(It->second); //store it for next cycle (may be it is the last one)
 	      }
 	  }
@@ -347,10 +346,9 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
 	      if (ix>=0) {
 		  Task[idxTP++].Index= ix;
 		  StartupStore(_T("....... ISGAAIRCRAFT: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
+	      } else {
+	        BUGSTOP_LKASSERT(0); // .. else is unmanaged, TODO
 	      }
-  #if BUGSTOP
-	      else LKASSERT(0); // .. else is unmanaged, TODO
-  #endif
 	  }
 	  else bLoadComplet=false;
       }

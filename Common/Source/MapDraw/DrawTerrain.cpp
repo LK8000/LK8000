@@ -1104,10 +1104,8 @@ bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Pr
     }
 
     if (trenderer && !trenderer->IsReady()) {
-#if BUGSTOP
-        LKASSERT(0);
-#endif
         StartupStore(_T("... DRAWTERRAIN trenderer not null, but terrain not ready! Recovering.\n"));
+        BUGSTOP_LKASSERT(0);
         CloseTerrainRenderer();
     }
 

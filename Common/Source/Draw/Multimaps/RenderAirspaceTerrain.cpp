@@ -68,9 +68,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         Sideview_iNoHandeldSpaces = CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled, MAX_NO_SIDE_AS); //  Sideview_pHandeled[GC_MAX_NO];
     else
         Sideview_iNoHandeldSpaces = 0;
-#if BUGSTOP
-    LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
-#endif
+    BUGSTOP_LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
     if (Sideview_iNoHandeldSpaces >= MAX_NO_SIDE_AS) Sideview_iNoHandeldSpaces = MAX_NO_SIDE_AS - 1;
 
     /********************************************************************************
@@ -81,13 +79,9 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         iSizeLookupTable[i] = i;
 
     for (i = 0; i < Sideview_iNoHandeldSpaces; i++) {
-#if BUGSTOP
-        LKASSERT(iSizeLookupTable[i] < MAX_NO_SIDE_AS);
-#endif
+        BUGSTOP_LKASSERT(iSizeLookupTable[i] < MAX_NO_SIDE_AS);
         for (j = i; j < Sideview_iNoHandeldSpaces; j++) {
-#if BUGSTOP
-            LKASSERT(iSizeLookupTable[j] < MAX_NO_SIDE_AS);
-#endif
+            BUGSTOP_LKASSERT(iSizeLookupTable[j] < MAX_NO_SIDE_AS);
             if (iSizeLookupTable[i] >= MAX_NO_SIDE_AS) continue;
             if (iSizeLookupTable[j] >= MAX_NO_SIDE_AS) continue;
 
@@ -115,9 +109,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         Sideview_pHandeled[i].iMinTop = Sideview_pHandeled[i].rc.top;
 
         int iN = Sideview_pHandeled[i].iNoPolyPts;
-#if BUGSTOP
-        LKASSERT(iN < GC_MAX_POLYGON_PTS);
-#endif
+        BUGSTOP_LKASSERT(iN < GC_MAX_POLYGON_PTS);
         if (iN >= GC_MAX_POLYGON_PTS) iN = GC_MAX_POLYGON_PTS - 1;
 
         if (Sideview_pHandeled[i].bRectAllowed == false) {
@@ -142,9 +134,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
     for (int m = 0; m < Sideview_iNoHandeldSpaces; m++) {
         int iSizeIdx = iSizeLookupTable[m];
-#if BUGSTOP
-        LKASSERT(iSizeIdx < MAX_NO_SIDE_AS && iSizeIdx >= 0);
-#endif
+        BUGSTOP_LKASSERT(iSizeIdx < MAX_NO_SIDE_AS && iSizeIdx >= 0);
         if (iSizeIdx >= MAX_NO_SIDE_AS) iSizeIdx = MAX_NO_SIDE_AS - 1;
 
         int type = Sideview_pHandeled[iSizeIdx].iType;
@@ -243,9 +233,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     for (int m = 0; m < Sideview_iNoHandeldSpaces; m++) {
         int iSizeIdx = iSizeLookupTable[Sideview_iNoHandeldSpaces - m - 1];
         if (Sideview_pHandeled[iSizeIdx].bEnabled) {
-#if BUGSTOP
-            LKASSERT(iSizeIdx < MAX_NO_SIDE_AS);
-#endif
+            BUGSTOP_LKASSERT(iSizeIdx < MAX_NO_SIDE_AS);
             if (iSizeIdx >= MAX_NO_SIDE_AS) iSizeIdx = MAX_NO_SIDE_AS - 1;
 
             int type = Sideview_pHandeled[iSizeIdx].iType;

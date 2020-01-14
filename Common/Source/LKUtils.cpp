@@ -172,9 +172,7 @@ void LKRunStartEnd(bool start) {
 const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
 {
   TCHAR name[MAX_PATH] = { _T('\0') };
-  #if BUGSTOP
-  LKASSERT(buffer!=NULL);
-  #endif
+  BUGSTOP_LKASSERT(buffer!=NULL);
   if (buffer==NULL) return NULL;
 
   LockTaskData();

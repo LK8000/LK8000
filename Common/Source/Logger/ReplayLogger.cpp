@@ -232,9 +232,7 @@ public:
       return;
     }
     double t=0.98;
-    #if BUGSTOP
-    LKASSERT( p[2].t != p[1].t );
-    #endif
+    BUGSTOP_LKASSERT( p[2].t != p[1].t );
     if ( p[2].t == p[1].t ) {
       *lat = p[1].lat;
       *lon = p[1].lon;

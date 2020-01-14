@@ -160,9 +160,7 @@ FILE *fp;
 _noautoreset:
 
     if((buf->start) < -1) {
-        #if BUGSTOP
-        LKASSERT(buf->start==-2);
-        #endif
+        BUGSTOP_LKASSERT(buf->start==-2);
         // this is the first run after reset,
         // save NavAltitude for calculate in AltDiff next run
         // and return;
