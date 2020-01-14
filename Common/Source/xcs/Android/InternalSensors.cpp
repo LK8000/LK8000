@@ -317,6 +317,11 @@ Java_org_LK8000_InternalGPS_parseNMEA(JNIEnv *env, jobject instance, jstring jnm
     }
   }
 
+  DeviceDescriptor_t* device = devGetDeviceOnPort(index);
+  if(device) {
+    device->Rx += strlen(c_nmea);
+  }
+
   char* nmea = strdup(c_nmea);
 
   LockFlightData();
