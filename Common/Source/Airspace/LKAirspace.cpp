@@ -2457,9 +2457,12 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH) {
     }
 }
 
-int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X],
-        double terrain_heights[AIRSPACE_SCANSIZE_X],
-        AirSpaceSideViewSTRUCT airspacetype[MAX_NO_SIDE_AS], int iMaxNoAs) const {
+int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X], const double (&lons)[AIRSPACE_SCANSIZE_X],
+        const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
+        AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const {
+
+    const int iMaxNoAs = array_size(airspacetype);
+
     int iNoFoundAS = 0; // number of found airspaces in scan line
     unsigned int iSelAS = 0; // current selected airspace for processing
     unsigned int i; // loop variable

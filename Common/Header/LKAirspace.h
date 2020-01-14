@@ -443,13 +443,10 @@ public:
   void AirspaceDisableWaveSectors();
   #endif
   void QnhChangeNotify(const double &newQNH);
-  /*
-  void ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X], double heights[AIRSPACE_SCANSIZE_H], double terrain_heights[AIRSPACE_SCANSIZE_X],
-		  AirSpaceSideViewSTRUCT [AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
-*/
-  int ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X],
-                        double terrain_heights[AIRSPACE_SCANSIZE_X],
-                        AirSpaceSideViewSTRUCT airspacetype[MAX_NO_SIDE_AS], int) const;
+
+  int ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X], const double (&lons)[AIRSPACE_SCANSIZE_X],
+                        const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
+                        AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const;
 
   CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
              double *nearestdistance, double *nearestbearing, double *height = NULL) const;

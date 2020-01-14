@@ -65,7 +65,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
      * scan line
      ********************************************************************************/
     if (IsMultimapAirspace())
-        Sideview_iNoHandeldSpaces = CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled, MAX_NO_SIDE_AS); //  Sideview_pHandeled[GC_MAX_NO];
+        Sideview_iNoHandeldSpaces = CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled); //  Sideview_pHandeled[GC_MAX_NO];
     else
         Sideview_iNoHandeldSpaces = 0;
     BUGSTOP_LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
