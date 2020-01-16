@@ -1591,6 +1591,8 @@ void InputEvents::eventChangeMultitarget(const TCHAR *misc) {
 	OvertargetMode=OVT_THER;
   } else if (_tcscmp(misc, TEXT("MATE")) == 0) {
 	OvertargetMode=OVT_MATE;
+  } else if (_tcscmp(misc, TEXT("XC")) == 0) {
+	OvertargetMode=OVT_XC;
   } else if (_tcscmp(misc, TEXT("FLARM")) == 0) {
 	OvertargetMode=OVT_FLARM;
   } else if (_tcscmp(misc, TEXT("MARK")) == 0) {

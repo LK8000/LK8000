@@ -2422,8 +2422,9 @@ location=9
 mode=MTarget
 type=key
 data=11
-label= 
-event=Null
+event=ChangeMultitarget XC
+event=Mode default
+label=_@M1902_
 location=10
 
 mode=MTarget

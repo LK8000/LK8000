@@ -1919,6 +1919,8 @@ _@M1899_ "Left Bottom"
 _@M1900_ "Left Corner"
 _@M1901_ "POWER OFF"
 
+_@M1902_ "X>\nXC Close"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
