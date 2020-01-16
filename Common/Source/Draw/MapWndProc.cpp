@@ -1908,10 +1908,11 @@ void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
         UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
         RenderMapWindow(Surface, Rect);
 
+        const ScreenProjection _Proj;
+
         // Draw cross sight for pan mode, in the screen center,
         if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
             const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-            const ScreenProjection _Proj;
             DrawMapScale(Surface, Rect, _Proj);
             DrawCompass(Surface, Rect, GetDisplayAngle());
             DrawCrossHairs(Surface, centerscreen, Rect);
@@ -1923,7 +1924,7 @@ void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
         // UpdateCaches is updating topology bounds when either forced (only here)
         // or because MapWindow::ForceVisibilityScan  is set true.
         static bool first_run = true;
-        UpdateCaches(ScreenProjection(), first_run);
+        UpdateCaches(_Proj, first_run);
         first_run=false;
     }
     UpdateTimeStats(false);
