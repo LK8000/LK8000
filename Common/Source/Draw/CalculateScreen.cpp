@@ -250,10 +250,7 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
         std::transform(
                 std::begin(DerivedDrawInfo.GlideFootPrint),
                 std::end(DerivedDrawInfo.GlideFootPrint),
-                std::begin(Groundline),
-                [&ToScreen](const pointObj & pt) {
-                    return ToScreen(pt);
-                });
+                std::begin(Groundline), std::ref(ToScreen));
 
 #ifdef ENABLE_OPENGL
         // first point is center of polygon (OpenGL GL_TRIANGLE_FAN), polyline start is second point
@@ -270,10 +267,7 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
         std::transform(
                 std::begin(DerivedDrawInfo.GlideFootPrint2),
                 std::end(DerivedDrawInfo.GlideFootPrint2),
-                std::begin(Groundline2),
-                [&ToScreen](const pointObj & pt) {
-                    return ToScreen(pt);
-                });
+                std::begin(Groundline2), std::ref(ToScreen));
 
         assert(Groundline2.front() == Groundline2.back());
     }
