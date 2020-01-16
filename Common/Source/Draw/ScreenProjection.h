@@ -77,8 +77,11 @@ protected:
 
 
 template<typename T>
-struct GeoToScreen {
+struct GeoToScreen final {
     GeoToScreen(const ScreenProjection& Proj) : _Proj(Proj) {}
+
+    GeoToScreen(const GeoToScreen&) = delete;
+    GeoToScreen(GeoToScreen&&) = delete;
 
     template<typename U = T>
     typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
