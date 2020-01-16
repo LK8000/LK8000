@@ -1604,6 +1604,7 @@ void InputEvents::eventChangeMultitarget(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("MENU")) == 0) {
 	InputEvents::setMode(_T("MTarget"));
   }
+  MapWindow::RefreshMap();
 }
 
 
