@@ -13,6 +13,7 @@
 #include "Sound/Sound.h"
 #include "CriticalSection.h"
 #include "NavFunctions.h"
+#include "Waypointparser.h"
 
 /* 
  * Detect start of free flight (FF) for both towing and winching.
@@ -360,12 +361,15 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         if (WayPointList[RESWP_FREEFLY].Comment) {
             TCHAR Temp[30];
             Units::TimeToTextS(Temp, LocalTime(Calculated->FreeFlightStartTime));          
-            _sntprintf(WayPointList[RESWP_FREEFLY].Comment, 99, _T("%s: %s  @%.0f%s QNH"),
+            TCHAR Comment[100];
+
+            _sntprintf(Comment, 99, _T("%s: %s  @%.0f%s QNH"),
                     MsgToken(1754), // Free flight start
                     Temp,
                     ALTITUDEMODIFY * Calculated->FreeFlightStartQNH,
                     Units::GetAltitudeName());
-            WayPointList[RESWP_FREEFLY].Comment[99] = _T('\0'); // for safety
+            Comment[99] = _T('\0'); // for safety
+            SetWaypointComment(WayPointList[RESWP_FREEFLY], Comment);
         }
     }
 

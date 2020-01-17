@@ -11,6 +11,7 @@
 
 #include "ContestMgr.h"
 #include <memory>
+#include "Waypointparser.h"
 #include "NavFunctions.h"
 #include "RasterTerrain.h"
 
@@ -1014,8 +1015,9 @@ void CContestMgr::SolveXC() {
     if (WayPointList[RESWP_FAIOPTIMIZED].Altitude == 0) WayPointList[RESWP_FAIOPTIMIZED].Altitude = 0.001;
     WayPointList[RESWP_FAIOPTIMIZED].Reachable = TRUE;
     WayPointList[RESWP_FAIOPTIMIZED].Visible = TRUE;
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment, _T("Current FAI triangle closing point"));
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("FAI"));
+
+    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], _T("Current FAI triangle closing point"));
+    _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("FAI"));
     switch (_XCFAIStatus) {
       case XCTriangleStatus::INVALID:
         _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI*%.0f"),predicted_distance_fai/1000.);
@@ -1039,8 +1041,8 @@ void CContestMgr::SolveXC() {
     if (WayPointList[RESWP_FAIOPTIMIZED].Altitude == 0) WayPointList[RESWP_FAIOPTIMIZED].Altitude = 0.001;
     WayPointList[RESWP_FAIOPTIMIZED].Reachable = TRUE;
     WayPointList[RESWP_FAIOPTIMIZED].Visible = TRUE;
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment, _T("Current Free triangle closing point"));
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("TRI"));
+    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], _T("Current Free triangle closing point"));
+    _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("TRI"));
     switch (_XCFTStatus) {
       case XCTriangleStatus::INVALID:
         _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI*%.0f"),predicted_distance_ft/1000.);
@@ -1056,8 +1058,9 @@ void CContestMgr::SolveXC() {
     WayPointList[RESWP_FAIOPTIMIZED].Altitude = RESWP_INVALIDNUMBER;
     WayPointList[RESWP_FAIOPTIMIZED].Reachable = false;
     WayPointList[RESWP_FAIOPTIMIZED].Visible = false;
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Comment, _T("no triangle closing point found!"));
-    _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("NO TRIANGLE"));
+
+    SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], _T("no triangle closing point found!"));
+    _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("NO TRIANGLE"));
   }
 
   // Mean Speed. We use current 3TP distance as XCTrack does here.

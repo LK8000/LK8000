@@ -51,8 +51,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			}
 
 			if (WayPointList[RESWP_TAKEOFF].Altitude==0) WayPointList[RESWP_TAKEOFF].Altitude=0.001; // 100227 BUGFIX?
-			LKASSERT(WayPointList[RESWP_TAKEOFF].Comment);
-			_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("LAST GROUND POSITION"));
+			SetWaypointComment(WayPointList[RESWP_TAKEOFF],_T("LAST GROUND POSITION"));
 			WayPointList[RESWP_TAKEOFF].Reachable=TRUE;
 			WayPointList[RESWP_TAKEOFF].Visible=TRUE;
 			if ( (!ValidWayPoint(HomeWaypoint)) || (ISPARAGLIDER && !SIMMODE) ) {

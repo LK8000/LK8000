@@ -107,11 +107,10 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
   WayPointList[RESWP_LASTTHERMAL].Latitude  = CALCULATED_INFO.ClimbStartLat;
   WayPointList[RESWP_LASTTHERMAL].Longitude = CALCULATED_INFO.ClimbStartLong;
   WayPointList[RESWP_LASTTHERMAL].Altitude  = CALCULATED_INFO.ClimbStartAlt;
-  LKASSERT(WayPointList[RESWP_LASTTHERMAL].Comment);
   if (j>0)
-  	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment,ThermalHistory[i].Name);
+    SetWaypointComment(WayPointList[RESWP_LASTTHERMAL],ThermalHistory[i].Name);
   else
-	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, MsgToken(1320)); // last good thermal
+    SetWaypointComment(WayPointList[RESWP_LASTTHERMAL], MsgToken(1320)); // last good thermal
 
   UnlockTaskData();
 
