@@ -944,46 +944,43 @@ goto_bearing:
 
 		// B46
 		case LK_NEXT_ETA:
-			_stprintf(BufferValue,_T(NULLLONG));
+			_tcscpy(BufferValue,_T(NULLLONG));
 			if (lktitle)
 				// LKTOKEN  _@M1093_ = "Next Arrival Time", _@M1094_ = "NextETA"
 				_tcscpy(BufferTitle, MsgToken(1094));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
+			LockTaskData();
 			if(ISPARAGLIDER) {
-                                LockTaskData();
-				index = DoOptimizeRoute()?RESWP_OPTIMIZED:Task[ActiveTaskPoint].Index;
-				if ( (ValidTaskPoint(ActiveTaskPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
-					if (WayPointCalc[index].NextETE > 0) {
-						valid=true;
-						Units::TimeToText(BufferValue, WayPointCalc[index].NextETE + LocalTime());
-					} else
-						_stprintf(BufferValue, TEXT(NULLTIME));
+				if (ValidTaskPoint(ActiveTaskPoint)) {
+					index = DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[ActiveTaskPoint].Index;
+					if (WayPointCalc[index].NextETE < 0.9 * ERROR_TIME) {
+						if (WayPointCalc[index].NextETE > 0) {
+							valid = true;
+							Units::TimeToText(BufferValue, WayPointCalc[index].NextETE + LocalTime());
+						} else
+							_tcscpy(BufferValue, TEXT(NULLTIME));
+					}
 				}
-                                UnlockTaskData();
-                                break;
-			} 
-                        if (ISCAR || ISGAAIRCRAFT) { 
-                            LockTaskData();
-			    if ( ValidTaskPoint(ActiveTaskPoint) && (WayPointCalc[TASKINDEX].NextETE< 0.9*ERROR_TIME)) {
-				if (WayPointCalc[TASKINDEX].NextETE > 0) {
-					valid=true;
-					Units::TimeToText(BufferValue, WayPointCalc[TASKINDEX].NextETE + LocalTime());
-				} else
-					_stprintf(BufferValue, TEXT(NULLTIME));
-			    }
-                            UnlockTaskData();
-                            break;
-			}
-
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
+			} else  if (ISCAR || ISGAAIRCRAFT) {
+				if ( ValidTaskPoint(ActiveTaskPoint) && (WayPointCalc[TASKINDEX].NextETE< 0.9*ERROR_TIME)) {
+					if (WayPointCalc[TASKINDEX].NextETE > 0) {
+						valid=true;
+						Units::TimeToText(BufferValue, WayPointCalc[TASKINDEX].NextETE + LocalTime());
+					} else {
+						_tcscpy(BufferValue, TEXT(NULLTIME));
+					}
+				}
+			} else  if (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME) {
 				if (DerivedDrawInfo.LegTimeToGo > 0) {
-					valid=true;
+					valid = true;
 					Units::TimeToText(BufferValue, DerivedDrawInfo.LegTimeToGo + LocalTime());
-				} else
-					_stprintf(BufferValue, TEXT(NULLTIME));
+				} else {
+					_tcscpy(BufferValue, TEXT(NULLTIME));
+				}
 			}
+			UnlockTaskData();
 			break;
 		// B47
 		case LK_BRGDIFF:
