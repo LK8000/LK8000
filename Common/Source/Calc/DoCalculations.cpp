@@ -63,7 +63,10 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   DoLogging(Basic, Calculated);
   TerrainHeight(Basic, Calculated);
   AltitudeRequired(Basic, Calculated, MACCREADY);
-  DoAlternates(Basic,Calculated,TASKINDEX); 
+
+  if(ValidTaskPoint(ActiveTaskPoint)) {
+    DoAlternates(Basic,Calculated,TASKINDEX);
+  }
   if (IsMultiMapShared()) {
     DoAlternates(Basic,Calculated,RESWP_LASTTHERMAL);
     DoAlternates(Basic,Calculated,RESWP_TEAMMATE);
