@@ -323,15 +323,15 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
 
         // Draw Negative Brick 
         for (unsigned i = 0; i < negative_brick_count && vario_value <= negative_vario_step[i]; ++i) {
-            const RECT& brc = negativeBricks[i];
+            const PixelRect& brc = negativeBricks[i];
             Surface.SelectObject(negativeBrush[i]);
             Surface.Rectangle(brc.left, brc.top, brc.right, brc.bottom);
         }
 
         // Draw MacCready Indicator
         const auto step_iterator = std::upper_bound(std::begin(positive_vario_step), std::end(positive_vario_step), mc_value);
-        size_t mc_brick_idx = std::distance(std::begin(positive_vario_step), step_iterator);
-        if (mc_brick_idx > 1) {
+        const size_t mc_brick_idx = std::distance(std::begin(positive_vario_step), step_iterator);
+        if (mc_brick_idx > 1 && mc_brick_idx < array_size(positiveBricks)) {
             const PixelRect& brc_next = positiveBricks[mc_brick_idx];
             const PixelRect& brc_Prev = positiveBricks[mc_brick_idx-1];
             
