@@ -865,28 +865,30 @@ goto_bearing:
 
 		// B42
 		case LK_NEXT_ETE:
-			_stprintf(BufferValue,_T(NULLLONG));
+			_tcscpy(BufferValue,_T(NULLLONG));
 			if (lktitle)
 				// LKTOKEN  _@M1085_ = "Next Time To Go", _@M1086_ = "NextETE"
 				_tcscpy(BufferTitle, MsgToken(1086));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-            LockTaskData();
-			index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())?RESWP_OPTIMIZED:Task[ActiveTaskPoint].Index;
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
-
-				if (WayPointCalc[index].NextETE > 0) {
-					valid=true;
-					if (Units::TimeToTextDown(BufferValue, (int)WayPointCalc[index].NextETE)) // 091112
-						_stprintf(BufferUnit, TEXT("h"));
-					else
-						_stprintf(BufferUnit, TEXT("m"));
-				} else
-					_stprintf(BufferValue, TEXT(NULLTIME));
+			LockTaskData();
+			if(ValidTaskPoint(ActiveTaskPoint)) {
+				index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) ? RESWP_OPTIMIZED
+																														 : Task[ActiveTaskPoint].Index;
+				if (WayPointCalc[index].NextETE < 0.9 * ERROR_TIME) {
+					if (WayPointCalc[index].NextETE > 0) {
+						valid = true;
+						if (Units::TimeToTextDown(BufferValue, (int) WayPointCalc[index].NextETE)) // 091112
+							_tcscpy(BufferUnit, TEXT("h"));
+						else
+							_tcscpy(BufferUnit, TEXT("m"));
+					} else {
+						_tcscpy(BufferValue, TEXT(NULLTIME));
+					}
+				}
 			}
-            UnlockTaskData();
-			// _stprintf(BufferUnit, TEXT("h")); 091112
+			UnlockTaskData();
 			break;
 
 
