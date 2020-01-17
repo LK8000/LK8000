@@ -137,11 +137,11 @@ void MapWindow::LKCalculateWaypointReachable(const bool forced)
 
 		WayPointList[i].Reachable = TRUE;
 
-	  	if (CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo, waypointDistance, waypointBearing)) {
-			if ((signed)i!=TASKINDEX) { 
-		  		LandableReachable = true;
+		if (CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo, waypointDistance, waypointBearing)) {
+			if(ValidTaskPoint(ActiveTaskPoint) && (i != (unsigned)TASKINDEX)) {
+				LandableReachable = true;
 			}
-	  	} else {
+		} else {
 			WayPointList[i].Reachable = FALSE;
 		}
 	} else {
