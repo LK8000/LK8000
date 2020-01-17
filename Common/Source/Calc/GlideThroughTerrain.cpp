@@ -16,7 +16,9 @@
 
 void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
-  if (ValidNotResWayPoint(TASKINDEX)) { 
+
+  if (ValidTaskPoint(ActiveTaskPoint) && ValidNotResWayPoint(TASKINDEX)) {
+
 	double lat, lon;
 	double farlat, farlon;
 	double oldfarlat, oldfarlon, oldfardist;
