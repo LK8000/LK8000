@@ -839,4 +839,5 @@ target_link_libraries(
     ${gles-lib}
     ${zlib-lib}
 	${egl-lib}
+	-static-openmp
 )
