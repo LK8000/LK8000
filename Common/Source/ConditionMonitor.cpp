@@ -28,11 +28,11 @@ public:
     if (Ready_Time_Check(Basic->Time, &restart)) {
       LastTime_Check = Basic->Time;
       if (CheckCondition(Basic, Calculated)) {
-	if (Ready_Time_Notification(Basic->Time) && !restart) {
-	  LastTime_Notification = Basic->Time;
-	  Notify();
-	  SaveLast();
-	}
+        if (Ready_Time_Notification(Basic->Time) && !restart) {
+          LastTime_Notification = Basic->Time;
+          Notify();
+          SaveLast();
+        }
       }
       if (restart) {
         SaveLast();
@@ -78,8 +78,7 @@ private:
       return true;
     }
     return false;
-  };
-
+  }
 };
 
 
@@ -115,17 +114,17 @@ protected:
       return true;
     }
     return false;
-  };
+  }
 
   void Notify(void) {
 	// LKTOKEN  _@M616_ = "Significant wind change"
     DoStatusMessage(MsgToken(616));
-  };
+  }
 
   void SaveLast(void) {
     last_wind_mag = wind_mag;
     last_wind_bearing = wind_bearing;
-  };
+  }
 
 private:
   double wind_mag;
@@ -169,13 +168,13 @@ protected:
         }
         if ((last_tad> 1) && (tad< -50)) {
           // dropped well below final glide, previously above
-	  last_tad = tad;
+          last_tad = tad;
           return true; // JMW this was true before
         }
       }
     }
     return false;
-  };
+  }
 
   void Notify(void) {
     if (tad>1) {
@@ -184,11 +183,11 @@ protected:
     if (tad<-1) {
       InputEvents::processGlideComputer(GCE_FLIGHTMODE_FINALGLIDE_BELOW);
     }
-  };
+  }
 
   void SaveLast(void) {
     last_tad = tad;
-  };
+  }
 
 private:
   double tad;
@@ -208,33 +207,25 @@ protected:
       return false;
     }
 
+    const int wpt_index = Task[ActiveTaskPoint].Index;
+    const WAYPOINT& wpt = WayPointList[wpt_index];
+
     // THIS IS BUGGY IN NORTHERN EMISPHERE, TODO DISCOVER WHY
-    double sunsettime
-      = DoSunEphemeris(
-                       WayPointList[Task[ActiveTaskPoint].Index].Longitude,
-                       WayPointList[Task[ActiveTaskPoint].Index].Latitude);
+    const double sunsettime = DoSunEphemeris( wpt.Longitude, wpt.Latitude);
 
-    const double d1 = (Calculated->TaskTimeToGo + LocalTime()) / 3600;
-    const double d0 = (LocalTime() / 3600);
+    const double d1 = (Calculated->TaskTimeToGo + LocalTime()) / 3600.;
+    const double d0 = (LocalTime() / 3600.);
 
-    const bool past_sunset = (d1>sunsettime) && (d0<sunsettime);
-
-    if (past_sunset && !DevIsCondor) {
-      // notify on change only
-      return true;
-    } else {
-      return false;
-    }
-  };
+    return (d1>sunsettime) && (d0<sunsettime);
+  }
 
   void Notify(void) {
     DoStatusMessage(TEXT("Expect arrival past sunset"));
-  };
+  }
 
   void SaveLast(void) {
-  };
 
-private:
+  }
 };
 
 
@@ -255,22 +246,17 @@ protected:
       // can't do much about it now, so don't give a warning
       return false;
     }
-    if (Calculated->TaskTimeToGo < Calculated->AATTimeToGo) {
-      return true;
-    } else {
-      return false;
-    }
-  };
+    return (Calculated->TaskTimeToGo < Calculated->AATTimeToGo);
+  }
 
   void Notify(void) {
 	// LKTOKEN  _@M270_ = "Expect early task arrival"
     DoStatusMessage(MsgToken(270));
-  };
+  }
 
   void SaveLast(void) {
-  };
 
-private:
+  }
 };
 
 
@@ -288,15 +274,13 @@ protected:
     if (Calculated->LegDistanceToGo>StartRadius) {
       return false;
     }
-    if (ValidStartSpeed(Basic, Calculated, StartMaxSpeedMargin) && InsideStartHeight(Basic, Calculated, StartMaxHeightMargin))
-    {
-      withinMargin = true;
-    } else {
-      withinMargin = false;
-    }
+
+    withinMargin = ValidStartSpeed(Basic, Calculated, StartMaxSpeedMargin) &&
+                   InsideStartHeight(Basic, Calculated, StartMaxHeightMargin);
+
     return !(ValidStartSpeed(Basic, Calculated)
 	     && InsideStartHeight(Basic, Calculated));
-  };
+  }
 
   void Notify(void) {
     if (withinMargin)
@@ -305,10 +289,11 @@ protected:
     else
 	// LKTOKEN  _@M651_ = "Start rules violated"
       DoStatusMessage(MsgToken(651));
-  };
+  }
 
   void SaveLast(void) {
-  };
+
+  }
 
 private:
   bool withinMargin;
@@ -337,15 +322,15 @@ protected:
       return true;
     }
     return false;
-  };
+  }
 
   void Notify(void) {
     InputEvents::processGlideComputer(GCE_FLIGHTMODE_FINALGLIDE_TERRAIN);
-  };
+  }
 
   void SaveLast(void) {
     fgtt_last = fgtt;
-  };
+  }
 
 private:
   bool fgtt;
@@ -354,19 +339,23 @@ private:
 
 
 
-ConditionMonitorWind       cm_wind;
-ConditionMonitorFinalGlide cm_finalglide;
-ConditionMonitorSunset     cm_sunset;
-ConditionMonitorAATTime    cm_aattime;
-ConditionMonitorStartRules cm_startrules;
-ConditionMonitorGlideTerrain cm_glideterrain;
+namespace {
+  ConditionMonitorWind         cm_wind;
+  ConditionMonitorFinalGlide   cm_finalglide;
+#if 0
+  ConditionMonitorSunset       cm_sunset;
+#endif
+  ConditionMonitorAATTime      cm_aattime;
+  ConditionMonitorStartRules   cm_startrules;
+  ConditionMonitorGlideTerrain cm_glideterrain;
+}
 
 void ConditionMonitorsUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   cm_wind.Update(Basic, Calculated);
   cm_finalglide.Update(Basic, Calculated);
-  #if 0
+#if 0
   cm_sunset.Update(Basic, Calculated); // it doesnt work in europe..
-  #endif
+#endif
   cm_aattime.Update(Basic, Calculated);
   cm_startrules.Update(Basic, Calculated);
   cm_glideterrain.Update(Basic, Calculated);

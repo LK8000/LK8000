@@ -204,6 +204,5 @@ SunEphemeris mysun;
 double DoSunEphemeris(double lon, double lat) {
 
   mysun.CalcSunTimes((float)lon, (float)lat);
-  return (double)mysun.settm;
-
+  return mysun.settm;
 }
