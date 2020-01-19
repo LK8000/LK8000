@@ -290,7 +290,7 @@ GEXTERN bool RepeatWindCalc;
 GEXTERN int LKTime_Real, LKTime_Ghost, LKTime_Zombie;
 
 // type of file format for waypoints files
-GEXTERN int WpFileType[3];
+GEXTERN int WpFileType[NO_WP_FILES];
 
 GEXTERN TCHAR WpHome_Name[NAME_SIZE+1];
 GEXTERN double WpHome_Lat;

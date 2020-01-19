@@ -38,12 +38,12 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 
   flags[0]=0;
 
-  if (globalFileNum<0 || globalFileNum>1) {
-	StartupStore(_T("++++++ WriteWayPoint error: impossible file index!%s"),NEWLINE);
-	return;
+  if ((globalFileNum < 0) || (globalFileNum > array_size(WpFileType))) {
+    StartupStore(_T("++++++ WriteWayPoint error: impossible file index!%s"),NEWLINE);
+    return;
   }
   // WpFileType use position 1 and 2 for file1 and file2. Position 0 is reserved
-  filemode=WpFileType[globalFileNum+1];
+  filemode=WpFileType[globalFileNum];
 
   if (filemode == LKW_DAT) {
 
@@ -167,31 +167,31 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
   }
 
 
-  StartupStore(_T("...... Invalid filemode=%d file=%d wp=%d%s"), filemode,globalFileNum,wpt->Number ,NEWLINE);
+  StartupStore(_T("...... Invalid filemode=%d file=%d wp=%d"), filemode,globalFileNum,wpt->Number);
 
 }
 
 
-// globalFileNum is 0 for file1 and 1 for file2
+// globalFileNum is 0 for file1 and 1 for file2 ...
 void WriteWayPointFile(FILE *fp) {
   // remove previous home if it exists in this file
   for (unsigned i=NUMRESWP; i<WayPointList.size(); i++) {  // BUGFIX 091206
     if (WayPointList[i].FileNum == globalFileNum) {
       if ((WayPointList[i].Flags & HOME) == HOME) {
-        WayPointList[i].Flags -= HOME;
+        WayPointList[i].Flags &= (~HOME);
       }
     }
   }
   // Write specific format header
-  if (globalFileNum>=0 && globalFileNum<2) { // 100208
-	if ( WpFileType[globalFileNum+1] == LKW_CUP ) {
+  if ((globalFileNum >= 0) && (globalFileNum < array_size(WpFileType))) { // 100208
+	if ( WpFileType[globalFileNum] == LKW_CUP ) {
 	 fprintf(fp,"name,code,country,lat,lon,elev,style,rwdir,rwlen,freq,desc\r\n");
 	}
-	if ( WpFileType[globalFileNum+1] == LKW_COMPE ) { // 100212
+	if ( WpFileType[globalFileNum] == LKW_COMPE ) { // 100212
 	 fprintf(fp,"G  WGS 84\r\n");
 	 fprintf(fp,"U  1\r\n");
 	}
-	if ( WpFileType[globalFileNum+1] == LKW_OZI ) {
+	if ( WpFileType[globalFileNum] == LKW_OZI ) {
 		//Always Use V1.1 file format
 		fprintf(fp,"OziExplorer Waypoint File Version 1.1\r\n");
 		fprintf(fp,"WGS 84\r\n");
@@ -208,7 +208,7 @@ void WriteWayPointFile(FILE *fp) {
       // set home flag if it's the home
       if (i==(unsigned)HomeWaypoint) {
         if ((WayPointList[i].Flags & HOME) != HOME) {
-          WayPointList[i].Flags += HOME;
+          WayPointList[i].Flags |= HOME;
         }
       }
 
@@ -222,10 +222,12 @@ void WriteWayPointFile(FILE *fp) {
 void WaypointWriteFiles(void) {
     LockTaskData();
 
+    static_assert(array_size(szWaypointFile) == array_size(WpFileType), "invalid array size");
+
     globalFileNum = 0;
     for( TCHAR* szFile : szWaypointFile) {
 
-        const int type = WpFileType[globalFileNum+1];
+        const int type = WpFileType[globalFileNum];
 
         // only few file type can be writed.
         if( type == LKW_CUP || type == LKW_COMPE|| type == LKW_OZI || type == LKW_DAT ) {

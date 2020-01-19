@@ -46,26 +46,26 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 	   // consider UCS header, 3 bytes in fact. This is a workaround.
 	   _tcsncmp(_T("G  WGS 84"),&nTemp2String[3],9) == 0) {
 		if ( !stream.read_line(nTemp2String) ) {
-			StartupStore(_T(". Waypoint file %d format: CompeGPS truncated, rejected%s"),globalFileNum+1,NEWLINE);
+			StartupStore(_T(". Waypoint file %d format: CompeGPS truncated, rejected"),globalFileNum);
 			return -1;
 		}
 		slen=_tcslen(nTemp2String);
 		if (slen<1) {
-			StartupStore(_T(". Waypoint file %d format: CompeGPS MISSING second U line, rejected%s"),globalFileNum+1,NEWLINE);
+			StartupStore(_T(". Waypoint file %d format: CompeGPS MISSING second U line, rejected"),globalFileNum);
 			return -1;
 		}
 		if ( (_tcsncmp(_T("U  0"),nTemp2String,4) == 0) ||
 		     (_tcsncmp(_T("U 0"),nTemp2String,3) == 0)) {
-			StartupStore(_T(". Waypoint file %d format: CompeGPS with UTM coordinates UNSUPPORTED%s"),globalFileNum+1,NEWLINE);
+			StartupStore(_T(". Waypoint file %d format: CompeGPS with UTM coordinates UNSUPPORTED"),globalFileNum);
 			return -1;
 		}
 		if ( _tcsncmp(_T("U  1"),nTemp2String,4) != 0 &&
 		     _tcsncmp(_T("U 1"),nTemp2String,3) != 0 ) {
-			StartupStore(_T(". Waypoint file %d format: CompeGPS unknown U field, rejected%s"),globalFileNum+1,NEWLINE);
+			StartupStore(_T(". Waypoint file %d format: CompeGPS unknown U field, rejected"),globalFileNum);
 			return -1;
 		}
 
-		StartupStore(_T(". Waypoint file %d format: CompeGPS, LatLon coordinates%s"),globalFileNum+1,NEWLINE);
+		StartupStore(_T(". Waypoint file %d format: CompeGPS, LatLon coordinates"),globalFileNum);
 		fempty=false;
 		fileformat=LKW_COMPE;
 		break;
@@ -73,7 +73,7 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 	if ( (_tcsncmp(_T("name,code,country"),nTemp2String,17) == 0) ||
 		(_tcsncmp(_T("Title,Code,Country"),nTemp2String,18) == 0)  // 100314
 	) {
-		StartupStore(_T(". Waypoint file %d format: SeeYou%s"),globalFileNum+1,NEWLINE);
+		StartupStore(_T(". Waypoint file %d format: SeeYou"),globalFileNum);
 		fempty=false;
 		fileformat=LKW_CUP;
 		break;
@@ -82,7 +82,7 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 	if ( ( _tcsstr(nTemp2String, _T("OziExplorer Waypoint File")) == nTemp2String )||
 			   // consider UCS header, 3 bytes in fact. This is a workaround.
 			(_tcsstr(&nTemp2String[3], _T("OziExplorer Waypoint File")) == &nTemp2String[3]) ) {
-		StartupStore(_T(". Waypoint file %d format: OziExplorer%s"),globalFileNum+1,NEWLINE);
+		StartupStore(_T(". Waypoint file %d format: OziExplorer"),globalFileNum);
 		fempty=false;
 		fileformat=LKW_OZI;
 		break;
@@ -95,7 +95,7 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 	_stprintf(virtualdatheader,_T("%d,"),RESWP_END+2);
 	if ( _tcsncmp(_T("1,"),nTemp2String,2) == 0 ||
 	  _tcsncmp(virtualdatheader,nTemp2String,3) == 0) {
-		StartupStore(_T(". Waypoint file %d format: WinPilot%s"),globalFileNum+1,NEWLINE);
+		StartupStore(_T(". Waypoint file %d format: WinPilot"),globalFileNum);
 		fempty=false;
 		fileformat=LKW_DAT;
 		break;

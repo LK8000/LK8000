@@ -26,6 +26,7 @@ void ReadWayPoints(void)
     InitVirtualWaypoints();	// 091103
 
     globalFileNum = 0;
+    static_assert(array_size(szWaypointFile) == array_size(WpFileType), "invalid array size");
 
     for( TCHAR* szFile : szWaypointFile) {
 
@@ -37,22 +38,22 @@ void ReadWayPoints(void)
             if(fileformat == LKW_OPENAIP) {
                 zzip_file_ptr file(openzip(szFilePath, "rt"));
                 if(file) {
-                  StartupStore(_T(". Waypoint file %d format: OpenAIP%s"),globalFileNum+1,NEWLINE);
+                  StartupStore(_T(". Waypoint file %d format: OpenAIP"),globalFileNum);
                   if(ParseOpenAIP(file)) {
-                    WpFileType[globalFileNum+1] = LKW_OPENAIP;
+                    WpFileType[globalFileNum] = LKW_OPENAIP;
                     not_found = false;
                   }
                 }
             } else {
               zzip_stream stream(szFilePath, "rt");
               if (stream) {
-                WpFileType[globalFileNum+1] = ReadWayPointFile(stream, fileformat);
+                WpFileType[globalFileNum] = ReadWayPointFile(stream, fileformat);
                 not_found = false;
               }
             }
             
             if (not_found) {
-                StartupStore(TEXT("--- No waypoint file %d"), globalFileNum+1);
+                StartupStore(TEXT("--- No waypoint file %d"), globalFileNum);
                 // file not found : reset config
                 _tcscpy(szFile, _T(""));
             }
