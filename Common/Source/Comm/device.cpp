@@ -544,43 +544,38 @@ static BOOL devInit(PDeviceDescriptor_t d){
 }
 
 
+static bool IsIdenticalPort(int i, int j) {
 
-bool IsIdenticalPort(int i, int j)
-{
-  if (_tcscmp(dwDeviceName[i], _T("Internal")) == 0)
-  {
+  // internal can't be shared
+  if (_tcscmp(dwDeviceName[i], _T("Internal")) == 0) {
     return false;
   }
-  else
-  if (_tcscmp(dwDeviceName[j], _T("Internal")) == 0)
-  {
+  // internal can't be shared
+  if (_tcscmp(dwDeviceName[j], _T("Internal")) == 0) {
     return false;
   }
-  else
-  if (_tcscmp(szPort[i], _T("UDPServer")) == 0)
-  {
-    if (dwIpPort[i] == dwIpPort[j])
-      return true;
+
+  if (_tcscmp(szPort[i], _T("UDPServer")) == 0) {
+    // two udp port on same port.
+    return ((_tcscmp(szPort[j], _T("UDPServer")) == 0)
+                && (dwIpPort[i] == dwIpPort[j]));
   }
-  else
-  if (_tcscmp(szPort[i], _T("TCPServer")) == 0)
-  {
-    if (dwIpPort[i] == dwIpPort[j])
-      return true;
+
+  if (_tcscmp(szPort[i], _T("TCPServer")) == 0) {
+    // two tcp server port on same port.
+    return ((_tcscmp(szPort[j], _T("TCPServer")) == 0)
+                && (dwIpPort[i] == dwIpPort[j]));
   }
-  else
-  if (_tcscmp(szPort[i], _T("TCPClient")) == 0)
-  {
-    if (dwIpPort[i] == dwIpPort[j])
-      if (_tcscmp(szIpAddress[i], szIpAddress[j]) == 0)
-        return true;
+
+  if (_tcscmp(szPort[i], _T("TCPClient")) == 0) {
+    // two tcp client port on same adress/port.
+    return ((_tcscmp(szPort[j], _T("TCPClient")) == 0)
+                && (dwIpPort[i] == dwIpPort[j])
+                && (_tcscmp(szIpAddress[i], szIpAddress[j]) == 0));
   }
-  else
-  {
-    if( _tcscmp(szPort[i] , szPort[j])==0)
-     return true;
-  }
-  return false;
+  
+  // same port name.
+  return ( _tcscmp(szPort[i] , szPort[j])==0);
 }
 
 BOOL devInit() {
