@@ -850,7 +850,9 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   if(!d) {
     return FALSE;
   }
-  
+
+  ScopeLock lock(CritSec_Comm);
+
   d->HB=LKHearthBeats;
 
   // intercept device specific parser routines 
@@ -876,7 +878,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
         
       for(DeviceDescriptor_t& d2 : DeviceList) {
           
-          if(!d2.Disabled && d2.bNMEAOut) { // NMEA out ! even on multiple ports    
+          if(d2.Com && !d2.Disabled && d2.bNMEAOut) { // NMEA out ! even on multiple ports
             // stream pipe, pass nmea to other device (NmeaOut)
             d2.Com->WriteString(String); // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
           }
