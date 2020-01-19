@@ -124,7 +124,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 		_tcscpy(comment,_T(""));
 	fprintf(fp,"\"" PF_ASCIISTR"\"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR ",%d.0m,%d," PF_ASCIISTR"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "\r\n",
 		wpt->Name,
-		wpt->Code,
+		cupCode,
 		wpt->Country,
 		latitude,
 		longitude,
