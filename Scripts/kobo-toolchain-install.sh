@@ -102,14 +102,14 @@ sudo PATH=$USER_PATH:$PATH \
     make install
 cd ..
 
-# install Geographiclib ( 1.49 - 2017-10-05 )
-wget https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.49.tar.gz
-tar xzf GeographicLib-1.49.tar.gz
+# install Geographiclib ( 1.50.1 -  2019-12-13 )
+wget https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.50.1.tar.gz
+tar xzf GeographicLib-1.50.1.tar.gz
 mkdir GeographicLib-build
 cd GeographicLib-build
 CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
 LDFLAGS="-L$TARGET_DIR/lib"  \
-../GeographicLib-1.49/configure \
+../GeographicLib-1.50.1/configure \
     --host=$TC \
     --prefix=$TARGET_DIR \
     PKG_CONFIG_LIBDIR=$TARGET_DIR/lib/pkgconfig

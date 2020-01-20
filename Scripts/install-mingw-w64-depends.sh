@@ -16,7 +16,7 @@ TOOLCHAINS="i686-w64-mingw32 x86_64-w64-mingw32"
 # this is valid for debian
 PREFIX_DIR="/usr"
 
-GEOGRAPHICLIB_VER="1.49"
+GEOGRAPHICLIB_VER="1.50.1"
 
 
 # install additional library dependencies for PC target
