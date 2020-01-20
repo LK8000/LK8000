@@ -196,9 +196,6 @@ const TCHAR *LKgethelptext(const TCHAR *TextIn) {
 
 
 static TCHAR * LKMessages[MAX_MESSAGES+1];
-#ifdef TESTBENCH
-static TCHAR * COPYLKMessages[MAX_MESSAGES+1];
-#endif
 
 //  Tokenized Language support for LK8000
 const TCHAR *LKGetText(const TCHAR *TextIn) {
@@ -511,38 +508,17 @@ bool LKLoadMessages(bool fillup) {
      LKASSERT(ValidateUTF8(scapt));
      #endif
 
-     LKMessages[inumber] = (TCHAR *)malloc((_tcslen(scapt)+1)*sizeof(TCHAR));
-     LKASSERT(LKMessages[inumber]!=NULL);
-     _tcscpy(LKMessages[inumber],scapt);
-
-     #ifdef TESTBENCH
-     for (int i=0; i<MAX_MESSAGES; i++) {
-        COPYLKMessages[i]=LKMessages[i];
-     }
-     #endif
-
+     LKMessages[inumber] = _tcsdup(scapt);
   }
   return true;
 }
 
 void LKUnloadMessage(){
 
-  #ifdef TESTBENCH
-  bool have_error=false;
-  for (int i=0; i<MAX_MESSAGES; i++) {
-     if (LKMessages[i] != COPYLKMessages[i]) {
-        StartupStore(_T("***** CRITICAL LKUnloadMessage, unmatched copy[%d]%s"),i,NEWLINE);
-        have_error=true;
-     }
+  for (auto& msg : LKMessages) {
+    if (msg) {
+      free(msg);
+      msg = nullptr;
+    }
   }
-  if (have_error) return;
-  #endif
-
-  for (int i=0; i<MAX_MESSAGES; i++) {
-     if (LKMessages[i]) {
-        free(LKMessages[i]);
-     }
-  }
-  std::fill(std::begin(LKMessages), std::end(LKMessages), (TCHAR*)NULL);
 }
-
