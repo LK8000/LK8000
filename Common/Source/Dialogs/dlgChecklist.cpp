@@ -47,24 +47,16 @@ static void InitNotepad(void) {
   aTextLine.clear();
 
   nLists=0;
-  for (int i=0; i<MAXNOTES; i++) {
-	ChecklistText[i]=(TCHAR *)NULL;
-	ChecklistTitle[i]=(TCHAR *)NULL;
-  }
+
+  std::fill(std::begin(ChecklistText), std::end(ChecklistText), nullptr);
+  std::fill(std::begin(ChecklistTitle), std::end(ChecklistTitle), nullptr);
 }
 
 
 static void DeinitNotepad(void) {
-  for (int i=0; i<MAXNOTES; i++) {
-    if (ChecklistText[i]) {
-      free(ChecklistText[i]);
-      ChecklistText[i]= NULL;
-    }
-    if (ChecklistTitle[i]) {
-      free(ChecklistTitle[i]);
-      ChecklistTitle[i]= NULL;
-    }
-  }
+  aTextLine.clear();
+  std::for_each(std::begin(ChecklistText), std::end(ChecklistText), safe_free());
+  std::for_each(std::begin(ChecklistTitle), std::end(ChecklistTitle), safe_free());
 }
 
 
@@ -194,17 +186,9 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 void addChecklist(TCHAR* name, TCHAR* details) {
-  if (nLists<MAXNOTES) {
-    ChecklistTitle[nLists] = (TCHAR*)malloc((_tcslen(name)+1)*sizeof(TCHAR));
-    ChecklistText[nLists] = (TCHAR*)malloc((_tcslen(details)+1)*sizeof(TCHAR));
-    LKASSERT(ChecklistTitle[nLists]!=NULL);
-    LKASSERT(ChecklistText[nLists]!=NULL);
-    _tcscpy(ChecklistTitle[nLists], name);
-    if (_tcslen(name)>=MAXNOTETITLE)
-	  ChecklistTitle[nLists][MAXNOTETITLE-1]= 0;
-    _tcscpy(ChecklistText[nLists], details);
-    if (_tcslen(details)>=MAXNOTEDETAILS)
-	  ChecklistText[nLists][MAXNOTEDETAILS-1]= 0;
+  if (nLists < MAXNOTES) {
+    ChecklistTitle[nLists] = _tcsdup(name);
+    ChecklistText[nLists] = _tcsdup(details);
     nLists++;
   }
 }
