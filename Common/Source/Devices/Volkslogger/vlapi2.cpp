@@ -968,35 +968,32 @@ void VLAPI_DATA::PILOT::put(lpb p) {
 //
 void VLAPI_DATA::DECLARATION::get(DBB *dbb) {
   int16 i,p;
-  char plt1[17];
-  char plt2[17];
-  char plt3[17];
-  char plt4[17];
-  plt1[0] = 0;
-  plt2[0] = 0;
-  plt3[0] = 0;
-  plt4[0] = 0;
+  char plt1[17] = {};
+  char plt2[17] = {};
+  char plt3[17] = {};
+  char plt4[17] = {};
   if ((p = dbb->fdf_findfield(FLDPLT1))>=0)
-    strncpy(plt1,(char*)(dbb->fdf+p+2),sizeof(plt1));
+    strncpy(plt1,(char*)(dbb->fdf+p+2), array_size(plt1) - 1);
   if ((p = dbb->fdf_findfield(FLDPLT2))>=0)
-    strncpy(plt2,(char*)(dbb->fdf+p+2),sizeof(plt2));
+    strncpy(plt2,(char*)(dbb->fdf+p+2), array_size(plt2) - 1);
   if ((p = dbb->fdf_findfield(FLDPLT3))>=0)
-    strncpy(plt3,(char*)(dbb->fdf+p+2),sizeof(plt3));
+    strncpy(plt3,(char*)(dbb->fdf+p+2), array_size(plt3) - 1);
   if ((p = dbb->fdf_findfield(FLDPLT4))>=0)
-    strncpy(plt4,(char*)(dbb->fdf+p+2),sizeof(plt4));
+    strncpy(plt4,(char*)(dbb->fdf+p+2), array_size(plt4) - 1);
+
   flightinfo.pilot[0] = 0;
   strcat(flightinfo.pilot,plt1);
   strcat(flightinfo.pilot,plt2);
   strcat(flightinfo.pilot,plt3);
   strcat(flightinfo.pilot,plt4);
   if ((p = dbb->fdf_findfield(FLDGTY))>=0)
-    strncpy(flightinfo.glidertype,(char*)(dbb->fdf+p+2),sizeof(flightinfo.glidertype));
+    strncpy(flightinfo.glidertype,(char*)(dbb->fdf+p+2), array_size(flightinfo.glidertype) - 1);
   if ((p = dbb->fdf_findfield(FLDGID))>=0)
-    strncpy(flightinfo.gliderid,(char*)(dbb->fdf+p+2),sizeof(flightinfo.gliderid));
+    strncpy(flightinfo.gliderid,(char*)(dbb->fdf+p+2), array_size(flightinfo.gliderid) - 1);
   if ((p = dbb->fdf_findfield(FLDCCL))>=0)
-    strncpy(flightinfo.competitionclass,(char*)(dbb->fdf+p+2),sizeof(flightinfo.competitionclass));
+    strncpy(flightinfo.competitionclass,(char*)(dbb->fdf+p+2), array_size(flightinfo.competitionclass) - 1);
   if ((p = dbb->fdf_findfield(FLDCID))>=0)
-    strncpy(flightinfo.competitionid,(char*)(dbb->fdf+p+2),sizeof(flightinfo.competitionid));
+    strncpy(flightinfo.competitionid,(char*)(dbb->fdf+p+2), array_size(flightinfo.competitionid) - 1);
   if ((p = dbb->fdf_findfield(FLDTKF))>=0)
     flightinfo.homepoint.get((byte *)(dbb->fdf+p+2));
 
