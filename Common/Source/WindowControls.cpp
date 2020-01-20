@@ -293,11 +293,8 @@ void DataFieldFileReader::addFile(const TCHAR *Text,
 				  const TCHAR *PText) {
   // TODO enhancement: remove duplicates?
   if (nFiles<DFE_MAX_FILES) {
-    fields[nFiles].mTextFile = (TCHAR*)malloc((_tcslen(Text)+1)*sizeof(TCHAR));
-    if (fields[nFiles].mTextFile) _tcscpy(fields[nFiles].mTextFile, Text); // MALLOC ALERT
-
-    fields[nFiles].mTextPathFile = (TCHAR*)malloc((_tcslen(PText)+1)*sizeof(TCHAR));
-    if (fields[nFiles].mTextPathFile) _tcscpy(fields[nFiles].mTextPathFile, PText); // MALLOC ALERT
+    fields[nFiles].mTextFile = _tcsdup(Text);
+    fields[nFiles].mTextPathFile = _tcsdup(PText);
 
     nFiles++;
   }
@@ -1119,7 +1116,6 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
                                         const TCHAR *StringValue,
                                         const TCHAR *StringValueFormatted)
 {
-  int iLen = -1;
   ComboListEntry_t * theItem;
 
   // Copy current strings into structure
@@ -1134,38 +1130,23 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
     theItem->DataFieldIndex=DataFieldIndex;
   }
 
-  if (StringValue == NULL)
-  {
-    theItem->StringValue = (TCHAR*)malloc((1) * sizeof(TCHAR));
-    LKASSERT(theItem->StringValue != NULL); 
-    theItem->StringValue[0]='\0';
+  if (StringValue) {
+    theItem->StringValue = _tcsdup(StringValue);
   }
-  else
-  {
-    iLen = _tcslen(StringValue);
-    theItem->StringValue = (TCHAR*)malloc((iLen + 1) * sizeof(TCHAR));
-    LKASSERT(theItem->StringValue != NULL);
-    _tcscpy(theItem->StringValue, StringValue);
+  else { 
+    theItem->StringValue = _tcsdup(_T(""));
   }
-
 
   // copy formatted display string
-  if (StringValueFormatted == NULL) 
-  {
-    theItem->StringValueFormatted = (TCHAR*)malloc((1) * sizeof(TCHAR));
-    LKASSERT(theItem->StringValueFormatted != NULL);
-    theItem->StringValueFormatted[0]='\0';
+  if (StringValueFormatted) {
+    theItem->StringValueFormatted = _tcsdup(StringValueFormatted);
   }
-  else
-  {
-    iLen = _tcslen(StringValueFormatted);
-    theItem->StringValueFormatted = (TCHAR*)malloc((iLen + 1) * sizeof(TCHAR));
-    LKASSERT(theItem->StringValueFormatted != NULL);
-    _tcscpy(theItem->StringValueFormatted, StringValueFormatted);
+  else {
+    theItem->StringValueFormatted = _tcsdup(_T(""));
   }
-
   return theItem;
 }
+
 void ComboList::FreeComboPopupItemList(void)
 {
   for (int i = 0; i < ComboPopupItemCount && i < ComboPopupLISTMAX; i++)
@@ -1470,16 +1451,11 @@ WindowControl *WindowControl::FindByName(const TCHAR *Name) {
 
 void WindowControl::SetHelpText(const TCHAR *Value) {  
   if (mHelpText) {
-	free(mHelpText);
-	mHelpText = NULL;
+    free(mHelpText);
+    mHelpText = NULL;
   }
-  if (Value == NULL) return;
-  int len = _tcslen(Value);
-  if (len==0) return;
-
-  mHelpText= (TCHAR*)malloc((len+1)*sizeof(TCHAR));
-  if (mHelpText != NULL) {
-	_tcscpy(mHelpText, Value);
+  if (Value) {
+    mHelpText = _tcsdup(Value);
   }
 }
 
