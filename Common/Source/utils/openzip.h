@@ -30,6 +30,7 @@ ZZIP_FILE * openzip(const char* szFile, const char *mode);
 #endif
 
 #ifdef __cplusplus
+#include <utility>
 
 #ifdef WIN32
 static inline
@@ -42,6 +43,18 @@ class zzip_file_ptr {
 public:
     zzip_file_ptr() : _fp() { }
     explicit zzip_file_ptr(ZZIP_FILE* fp) : _fp(fp) { }
+
+	zzip_file_ptr(const zzip_file_ptr&) = delete;
+
+	zzip_file_ptr(zzip_file_ptr&& src) {
+		_fp = src._fp;
+		src._fp = nullptr;
+	}
+
+	zzip_file_ptr& operator=(zzip_file_ptr&& src) {
+		std::swap(_fp, src._fp);
+	  return (*this);
+	}
 
     zzip_file_ptr& operator=(ZZIP_FILE* fp) {
         if(_fp != fp) {
