@@ -14,11 +14,12 @@
 
 #include "openzip.h"
 #include <string>
+#include <streambuf>
 #include "Util/AllocatedArray.hpp"
 
-class zzip_stream {
+class zzip_stream : public std::streambuf {
 public:
-  zzip_stream() : _current_char(nullptr), _end(nullptr), _cs(charset::detect) { }
+  zzip_stream() : _cs(charset::detect) { }
 
   zzip_stream(const TCHAR* szFile, const char *mode);
 
@@ -27,12 +28,12 @@ public:
 
   bool open(const TCHAR* szFile, const char *mode);
 
-  void close() { 
+  void close() {
     _fp.close();
   }
 
   operator bool() const {
-    return (_fp); 
+    return (_fp);
   }
 
   template<typename char_type, size_t size>
@@ -50,28 +51,24 @@ private:
 
 #endif
 
-private:
-  char read_char();
-  void read_buffer();
+protected:
+  int underflow() override;
 
+private:
   bool read_line_raw(char* string, size_t size);
 
   enum charset {
       detect,  // initial value : used for detect utf8 BOM
       unknown, // used for detect charset using content ( only if BOM not found on first line )
-      utf8,    // utf8 detected : -> convert 
+      utf8,    // utf8 detected : -> convert
       latin1   // latin1 (invalid utf8 code point detected) -> convert to utf8
-  };  
+  };
+  charset _cs; // file charset
 
   zzip_file_ptr _fp;
 
-  char _buffer[1024];
-  const char* _current_char; // first "unread" char
-  const char* _end;          // end of buffer
-  bool _end_of_file;         // true if end of file is reached.
-
-  charset _cs; // file charset
-
+  char_type _buffer[1024];
   std::string utf8String; // temporary member used for convert Latin1 to utf8
 };
+
 #endif /* ZZIP_FILE_H */
