@@ -611,7 +611,6 @@ void CContestMgr::SolveFAITriangle(const CTrace &trace, const CPointGPS *prevFro
       time %= CPointGPS::DAY_SECONDS;
     }
 
-    ScopeLock guard(_resultsCS);
     bestResult._pointArray[4] = CPointGPS(time, start.Latitude(), start.Longitude(), start.Altitude());
     bestResult.Update();
   }
