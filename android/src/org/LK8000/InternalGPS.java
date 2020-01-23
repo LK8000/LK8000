@@ -63,14 +63,12 @@ public class InternalGPS
 
   private LocationManager locationManager;
   private static boolean queriedLocationSettings = false;
-  Context _context;
 
 
   private final SafeDestruct safeDestruct = new SafeDestruct();
 
   InternalGPS(Context context, int _index) {
     index = _index;
-    _context = context;
 
     try {
       locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -97,8 +95,8 @@ public class InternalGPS
     update();
   }
 
-  final private GpsStatus.NmeaListener listener = (timestamp, nmea) -> InternalGPS.this.parseNMEA(nmea);
-  final private OnNmeaMessageListener listener_v24 = (nmea, timestamp) -> InternalGPS.this.parseNMEA(nmea);
+  private GpsStatus.NmeaListener listener = null;
+  private OnNmeaMessageListener listener_v24 = null;
 
   /**
    * Called by the #Handler, indirectly by update().  Updates the
@@ -110,9 +108,13 @@ public class InternalGPS
     locationManager.removeUpdates(this);
 
     if(Build.VERSION.SDK_INT < 24) {
-      locationManager.removeNmeaListener(listener);
+      if(listener != null) {
+        locationManager.removeNmeaListener(listener);
+      }
     } else {
-      locationManager.removeNmeaListener(listener_v24);
+      if(listener_v24 != null)  {
+        locationManager.removeNmeaListener(listener_v24);
+      }
     }
 
 
@@ -129,8 +131,14 @@ public class InternalGPS
       }
 
       if(Build.VERSION.SDK_INT < 24) {
+        if(listener == null) {
+          listener = (timestamp, nmea) -> InternalGPS.this.parseNMEA(nmea);
+        }
         locationManager.addNmeaListener(listener);
       } else {
+        if(listener_v24 == null) {
+          listener_v24 = (nmea, timestamp) -> InternalGPS.this.parseNMEA(nmea);
+        }
         locationManager.addNmeaListener(listener_v24);
       }
 
