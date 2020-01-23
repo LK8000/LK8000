@@ -559,22 +559,39 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   // so infoboxes get refreshed if GPS connected
   // the RMC sentence marks the start of a new fix, so we force the old data to be saved for calculations
 
+	if(!gpsValid && !dateValid) {
+		// we have valid date with invalid fix only if we have already got valid fix ...
+		return TRUE;
+	}
+
 	// note that Condor sends no date..
-	if ((_tcslen(params[8]) <6) && !DevIsCondor) {
+	const size_t size_date = _tcslen(params[8]);
+	if (size_date < 6 && !DevIsCondor) {
 		#if TESTBENCH
 		StartupStore(_T(".... RMC date field empty, skip sentence!\n"));
 		#endif
 		return TRUE;
 	}
 
-	if(!gpsValid && !dateValid) {
-		// we have valid date with invalid fix only if we have already got valid fix ...
-		return TRUE;
-	}
-
 	// Even with no valid position, we let RMC set the time and date if valid
-	if(!parse_rmc_date(params[8], pGPS->Year, pGPS->Month, pGPS->Day)) {
-		return FALSE;
+	int year, month, day;
+	if (parse_rmc_date(params[8], size_date, year, month, day)) {
+		pGPS->Year = year;
+		pGPS->Month = month;
+		pGPS->Day = day;
+	} else {
+		//.. Condor not sending valid date;
+		if (!DevIsCondor) {
+			static bool logbaddate = true;
+			if (gpsValid && logbaddate) { // 091115
+				StartupStore(_T("------ NMEAParser:RMC Receiving an invalid or null DATE from GPS"));
+				StartupStore(_T("------ NMEAParser: Date received is \"%04d-%02d-%02d\""), year, month, day); // 100422
+				StartupStore(_T("------ This message will NOT be repeated. %s"), WhatTimeIsIt());
+				// _@M875_ "WARNING: GPS IS SENDING INVALID DATE, AND PROBABLY WRONG TIME"
+				DoStatusMessage(MsgToken(875));
+				logbaddate = false;
+			}
+		}
 	}
 
 	dateValid = true;

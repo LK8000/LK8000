@@ -104,16 +104,18 @@ static int32_t to_num(TCHAR c) {
   return (c - _T('0'));
 }
 
-bool parse_rmc_date(const TCHAR *gprmc, int32_t &year, int32_t &month, int32_t &day) {
-  day = 10 * to_num(gprmc[0]) + to_num(gprmc[1]);
-  month = 10 * to_num(gprmc[2]) + to_num(gprmc[3]);
-  year = 10 * to_num(gprmc[4]) + to_num(gprmc[5]);
-  if (year >= 0 && year <= 99 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+bool parse_rmc_date(const TCHAR *gprmc, size_t gprmc_size, int32_t &year, int32_t &month, int32_t &day) {
+  if (gprmc_size >= 6) {
+    day = 10 * to_num(gprmc[0]) + to_num(gprmc[1]);
+    month = 10 * to_num(gprmc[2]) + to_num(gprmc[3]);
+    year = 10 * to_num(gprmc[4]) + to_num(gprmc[5]);
+    if (year >= 0 && year <= 99 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
       // NMEA $GPRMC year number has only 2 digits
       year = year + ((year > 79) ? 1900 : 2000);
       week_number_rollover_workaround(year, month, day);
 
       return true;
+    }
   }
   return false;
 }
