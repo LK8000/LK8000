@@ -21,12 +21,12 @@ extern HINSTANCE _hInstance;
 #else
 #include "resource_data.h"
 #endif
-const unsigned char* egm96data = NULL;
+const unsigned char* egm96data = nullptr;
 
-void OpenGeoid(void) {
+void OpenGeoid() {
 #ifdef WIN32_RESOURCE
         LKASSERT(!egm96data);
-        egm96data = NULL;
+        egm96data = nullptr;
         HRSRC hResInfo = FindResource(_hInstance, TEXT("IDR_RASTER_EGM96S"), TEXT("RASTERDATA"));
         if (hResInfo) {
             HGLOBAL hRes = LoadResource(_hInstance, hResInfo);
@@ -53,28 +53,27 @@ void OpenGeoid(void) {
             egm96data = IDR_RASTER_EGM96S_begin;
         }
 #endif
+        LKASSERT(egm96data);
 }
 
-void CloseGeoid(void) {
-  if (egm96data) {
-    egm96data = NULL;
-  }
+void CloseGeoid() {
+    egm96data = nullptr;
 }
 
-
-inline double getEGM96data(int x, int y) {
-    LKASSERT(egm96data);
+static inline 
+double getEGM96data(int x, int y) {
     return (double)(egm96data[x+y*EGM96_W])-127;
 }
 
 
-inline double interpolation2d(double x, double y, double z11, double z12, double z21, double z22) {
+static inline 
+double interpolation2d(double x, double y, double z11, double z12, double z21, double z22) {
     return (z22*y*x+z12*(1-y)*x+z21*y*(1-x)+z11*(1-y)*(1-x)); //x and y must be between 0 and 1
 }
 
 
 double LookupGeoidSeparation(double lat, double lon) {
-  LKASSERT(egm96data);
+  BUGSTOP_LKASSERT(egm96data); // OpenGeoid must be called before. 
   if (!egm96data) {
       return 0.0;
   }

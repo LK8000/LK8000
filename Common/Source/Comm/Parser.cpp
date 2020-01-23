@@ -804,12 +804,9 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   if (_tcslen(params[10])>0) {
     // No real need to parse this value,
     // but we do assume that no correction is required in this case
-//    double GeoidSeparation = ParseAltitude(params[10], params[11]);
-  } else {
-	if (UseGeoidSeparation) {
-            double GeoidSeparation = LookupGeoidSeparation(pGPS->Latitude, pGPS->Longitude);
-            pGPS->Altitude -= GeoidSeparation;
-	}
+    // double GeoidSeparation = ParseAltitude(params[10], params[11]);
+  } else if (UseGeoidSeparation) {
+      pGPS->Altitude -= LookupGeoidSeparation(pGPS->Latitude, pGPS->Longitude);
   }
 
   // if RMC would be Triggering update, we loose the relative altitude, which is coming AFTER rmc! 
