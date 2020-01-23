@@ -25,6 +25,10 @@ if(MSVC)
 		  string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
 	   endif(${flag_var} MATCHES "/MD")
 	endforeach(flag_var)
+
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+	
+
 endif()
 
 
@@ -39,10 +43,13 @@ add_executable(
 	../Source/Waypoints/CUPToLatLon.cpp
 	../Source/Waypoints/ReadAltitude.cpp
 	../Source/Waypoints/ParseCUP.cpp
+	../Source/Comm/GpsWeekNumberFix.cpp
+
 
 	temp_global.cpp
 	CUPToLatLon_test.cpp
 	StrToDouble_test.cpp
+	GpsWeekNumberFix_test.cpp
 )
 
 target_compile_features(LK8000_tests PRIVATE cxx_std_11)

@@ -13,3 +13,4 @@ void WaypointAltitudeFromTerrain(struct WAYPOINT*) { assert(false); }
 double __cdecl AngleLimit360(double) { assert(false);  return 0.; }
 int globalFileNum;
 std::vector<WAYPOINT> WayPointList;
+void SetWaypointComment(WAYPOINT& waypoint, const TCHAR* string) {}
