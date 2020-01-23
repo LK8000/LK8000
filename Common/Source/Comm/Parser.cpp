@@ -571,10 +571,13 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 		// we have valid date with invalid fix only if we have already got valid fix ...
 		return TRUE;
 	}
-	dateValid = true;
 
 	// Even with no valid position, we let RMC set the time and date if valid
-	parse_rmc_date(params[8], pGPS->Year, pGPS->Month, pGPS->Day);
+	if(!parse_rmc_date(params[8], pGPS->Year, pGPS->Month, pGPS->Day)) {
+		return FALSE;
+	}
+
+	dateValid = true;
 
 	RMCtime = StrToDouble(params[0],NULL);
 	double ThisTime = TimeModify(params[0], pGPS, StartDay);
