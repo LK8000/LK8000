@@ -29,6 +29,35 @@ constexpr TCHAR infinity[] = { '\xE2', '\x88', '\x9E', '\0' };
 #endif
 
 
+/**
+ * return -1 if NextETE is Invalid.
+ */
+static double GetNextETE(const DERIVED_INFO& info) {
+	double value = -1;
+	if(ISPARAGLIDER) {
+		LockTaskData();
+		if (ValidTaskPointFast(ActiveTaskPoint)) {
+			int index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) ? RESWP_OPTIMIZED: Task[ActiveTaskPoint].Index;
+			value = WayPointCalc[index].NextETE;
+		}
+		UnlockTaskData();
+	} else  if (ISCAR || ISGAAIRCRAFT) {
+		LockTaskData();
+		if (ValidTaskPointFast(ActiveTaskPoint)) {
+			value = WayPointCalc[TASKINDEX].NextETE;
+		}
+		UnlockTaskData();
+	} else {
+		value = info.LegTimeToGo;
+	}
+
+	if((value <= 0) || value >= (0.9*ERROR_TIME)) {
+		value = -1;
+	}
+	return value;
+} 
+
+
 //
 // CAREFUL CAREFUL CAREFUL here:
 // lkindex can be much over the DataOption size, because some values here are not
@@ -866,31 +895,19 @@ goto_bearing:
 		// B42
 		case LK_NEXT_ETE:
 			_tcscpy(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1085_ = "Next Time To Go", _@M1086_ = "NextETE"
-				_tcscpy(BufferTitle, MsgToken(1086));
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-
-			LockTaskData();
-			if(ValidTaskPoint(ActiveTaskPoint)) {
-				index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) ? RESWP_OPTIMIZED
-																														 : Task[ActiveTaskPoint].Index;
-				if (WayPointCalc[index].NextETE < 0.9 * ERROR_TIME) {
-					if (WayPointCalc[index].NextETE > 0) {
-						valid = true;
-						if (Units::TimeToTextDown(BufferValue, (int) WayPointCalc[index].NextETE)) // 091112
-							_tcscpy(BufferUnit, TEXT("h"));
-						else
-							_tcscpy(BufferUnit, TEXT("m"));
-					} else {
-						_tcscpy(BufferValue, TEXT(NULLTIME));
-					}
-				}
+			// LKTOKEN  _@M1085_ = "Next Time To Go", _@M1086_ = "NextETE"
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			value = GetNextETE(DerivedDrawInfo);
+			if (value > 0) {
+				valid = true;
+				if (Units::TimeToTextDown(BufferValue, value))  // 091112
+					_tcscpy(BufferUnit, TEXT("h"));
+				else
+					_tcscpy(BufferUnit, TEXT("m"));
+			} else {
+				_tcscpy(BufferValue, TEXT(NULLTIME));
 			}
-			UnlockTaskData();
 			break;
-
 
 		// B43 AKA STF
 		case LK_SPEED_DOLPHIN:
@@ -945,42 +962,15 @@ goto_bearing:
 		// B46
 		case LK_NEXT_ETA:
 			_tcscpy(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1093_ = "Next Arrival Time", _@M1094_ = "NextETA"
-				_tcscpy(BufferTitle, MsgToken(1094));
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-
-			LockTaskData();
-			if(ISPARAGLIDER) {
-				if (ValidTaskPoint(ActiveTaskPoint)) {
-					index = DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[ActiveTaskPoint].Index;
-					if (WayPointCalc[index].NextETE < 0.9 * ERROR_TIME) {
-						if (WayPointCalc[index].NextETE > 0) {
-							valid = true;
-							Units::TimeToText(BufferValue, WayPointCalc[index].NextETE + LocalTime());
-						} else
-							_tcscpy(BufferValue, TEXT(NULLTIME));
-					}
-				}
-			} else  if (ISCAR || ISGAAIRCRAFT) {
-				if ( ValidTaskPoint(ActiveTaskPoint) && (WayPointCalc[TASKINDEX].NextETE< 0.9*ERROR_TIME)) {
-					if (WayPointCalc[TASKINDEX].NextETE > 0) {
-						valid=true;
-						Units::TimeToText(BufferValue, WayPointCalc[TASKINDEX].NextETE + LocalTime());
-					} else {
-						_tcscpy(BufferValue, TEXT(NULLTIME));
-					}
-				}
-			} else  if (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME) {
-				if (DerivedDrawInfo.LegTimeToGo > 0) {
-					valid = true;
-					Units::TimeToText(BufferValue, DerivedDrawInfo.LegTimeToGo + LocalTime());
-				} else {
-					_tcscpy(BufferValue, TEXT(NULLTIME));
-				}
+			// LKTOKEN  _@M1093_ = "Next Arrival Time", _@M1094_ = "NextETA"
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			value = GetNextETE(DerivedDrawInfo);
+			if(value > 0) {
+				valid = true;
+				Units::TimeToText(BufferValue, value + LocalTime());
+			} else {
+				_tcscpy(BufferValue, TEXT(NULLTIME));
 			}
-			UnlockTaskData();
 			break;
 		// B47
 		case LK_BRGDIFF:
