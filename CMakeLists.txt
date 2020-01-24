@@ -823,21 +823,15 @@ target_compile_features( LK8000 PRIVATE
 add_dependencies(LK8000 generate-GeographicLib)
 add_dependencies(LK8000 boost)
 
-find_library( log-lib log )
-find_library( android-lib android )
-find_library( gles-lib GLESv1_CM )
-find_library( zlib-lib z )
-find_library( egl-lib EGL )
-
 target_link_libraries(
     LK8000
 	LK8000_POCO
 	LK8000_GLUTESS
     ${GEOGRAPHIC_LIB}
-    ${android-lib}
-    ${log-lib}
-    ${gles-lib}
-    ${zlib-lib}
-	${egl-lib}
+    android
+    log
+    z
+	EGL
+	GLESv1_CM
 	-static-openmp
 )
