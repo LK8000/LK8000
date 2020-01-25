@@ -96,7 +96,7 @@ public class InternalGPS
   }
 
   private GpsStatus.NmeaListener listener = null;
-  private OnNmeaMessageListener listener_v24 = null;
+  private OnNmeaMessageListener listener_N = null;
 
   /**
    * Called by the #Handler, indirectly by update().  Updates the
@@ -107,13 +107,13 @@ public class InternalGPS
     Log.d(TAG, "Updating GPS subscription...");
     locationManager.removeUpdates(this);
 
-    if(Build.VERSION.SDK_INT < 24) {
+    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
       if(listener != null) {
         locationManager.removeNmeaListener(listener);
       }
     } else {
-      if(listener_v24 != null)  {
-        locationManager.removeNmeaListener(listener_v24);
+      if(listener_N != null)  {
+        locationManager.removeNmeaListener(listener_N);
       }
     }
 
@@ -130,16 +130,16 @@ public class InternalGPS
         return;
       }
 
-      if(Build.VERSION.SDK_INT < 24) {
+      if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
         if(listener == null) {
           listener = (timestamp, nmea) -> InternalGPS.this.parseNMEA(nmea);
         }
         locationManager.addNmeaListener(listener);
       } else {
-        if(listener_v24 == null) {
-          listener_v24 = (nmea, timestamp) -> InternalGPS.this.parseNMEA(nmea);
+        if(listener_N == null) {
+          listener_N = (nmea, timestamp) -> InternalGPS.this.parseNMEA(nmea);
         }
-        locationManager.addNmeaListener(listener_v24);
+        locationManager.addNmeaListener(listener_N);
       }
 
       setConnectedSafe(true); // waiting for fix
