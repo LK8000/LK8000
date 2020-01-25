@@ -18,7 +18,7 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 . improved CUP file task loading with task informations and multiple tasks
 
-. New Overlay Configuration	
+. New Overlay Configuration
 
 . New Bottom Bar Mode configuration
 
@@ -27,41 +27,41 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 . Terrain as filter for waypoints and airspaces
 
 . improved Airspace Management dialog
-	
-. Airspace Group Acknowledge	
+
+. Airspace Group Acknowledge
 
 . New airspace class Notam with additional informations in Aispace details.
-	
+
 . Airfield ICAO-Code Search
-	
-. New Multiselect Elements	
-    Flarm Target	
-    Own position	
-    Oracle	
-    Team	
-    
+
+. New Multiselect Elements
+    Flarm Target
+    Own position
+    Oracle
+    Team
+
 . FLARM Radio Frequency send radio button
 
-. Airfield Additional Frequencies	
+. Airfield Additional Frequencies
 
 . New Terminal Send Button for bidirectional testing
-	
+
 . New Lowercase Keyboard Layout
-	
+
 . New UTF8 Map Symbols
-	
+
 . New Task selection on loading CUP files
-	
-. New En-/Disable Multimap5 FLARM Radar	
+
+. New En-/Disable Multimap5 FLARM Radar
 
 . New Multi Contests	
-     New Contest rules	
-     New Runtime option “Draw XC”	
+     New Contest rules
+     New Runtime option “Draw XC”
      New X> target
-     	
-. New FLARM configuration dialog with IGC download from device 
 
-. Improved FAI Assistant	
+. New FLARM configuration dialog with IGC download from device
+
+. Improved FAI Assistant
 
 . changes SFC (surface) to GND (ground) trigraph
 
@@ -71,7 +71,11 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 . support Onyx Boox Poke Pro and C68 eInk device
 
-. lot of minor fix and improvement
+. updated World Magnetic Model (WMM2020)
+
+. Fix Next ETE calculation in Glider Mode
+
+. lot of minor bug fix and improvement
 
 
 
