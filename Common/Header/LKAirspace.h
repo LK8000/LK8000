@@ -126,7 +126,7 @@ public:
   // QNH change nofitier, called when global qhn changed
   void QnhChangeNotify();
   // compare airspce name and type for grouping
-  bool IsSame( CAirspaceBase &as2 );
+  bool IsSame( CAirspaceBase &as2 ) const;
   // Warning system
   // Set ack validity timeout according to config prameter
   void SetAckTimeout();
