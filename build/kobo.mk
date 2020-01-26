@@ -32,7 +32,7 @@ KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libzzip-0.so.13
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libz.so.1
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libpng16.so.16
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libfreetype.so.6
-KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libGeographic.so.17
+KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libGeographic.so.19
 
 KOBO_POWER_OFF_BIN = PowerOff
 
