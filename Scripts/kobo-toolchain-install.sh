@@ -112,7 +112,7 @@ make && make install
 cd ..
 
 # install Geographiclib ( 1.50.1 -  2019-12-13 )
-[ ! -f GeographicLib-1.50.1.tar.gz ] && wget https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.49.tar.gz
+[ ! -f GeographicLib-1.50.1.tar.gz ] && wget https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.50.1.tar.gz
 [ -d GeographicLib-1.50.1 ] && rm -rf GeographicLib-1.50.1
 [ -d GeographicLib-build ] && rm -rf GeographicLib-build
 tar xzf GeographicLib-1.50.1.tar.gz
