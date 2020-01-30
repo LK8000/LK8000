@@ -3634,22 +3634,14 @@ void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, Rast
 
     const double dlon = _bounds.maxx - _bounds.minx;
     const double dlat = _bounds.maxy - _bounds.miny;
-#if (MIN_AS_SIZE > 2) // for this check an airspace must habe an area => at least three points
-    if (dlon == 0.) {
-        LKASSERT(FALSE); // wrong aispaces shape
+    if (dlon == 0. || dlat == 0.) {
+        BUGSTOP_LKASSERT(FALSE); // wrong aispaces shape ( bounding box is line or point )
         return;
     }
-
-
-    if (dlat == 0.) {
-        LKASSERT(FALSE); // wrong aispaces shape
-        return;
-    }
-#endif
 
     const double PanLatitudeCenter = _bounds.miny + dlat / 2.;
     if (fastcosine(PanLatitudeCenter) == 0) {
-        LKASSERT(FALSE); // wrong aispaces shape ( center of airspace at the pole ? )
+        BUGSTOP_LKASSERT(FALSE); // wrong aispaces shape ( center of airspace at the pole ? )
         return;
     }
 
@@ -3660,16 +3652,15 @@ void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, Rast
     const int xoff = rcDraw.left + cx / 2;
     const int yoff = rcDraw.top + cy / 2;
 
-    const double scaleX = ((double) cx) / dlon * zoom / (double) fastcosine(PanLatitudeCenter);
-    const double scaleY = ((double) cy) / dlat * zoom;
+    const double scaleX = cx / dlon * zoom / fastcosine(PanLatitudeCenter);
+    const double scaleY = cy / dlat * zoom;
     const double scale = (scaleX < scaleY) ? scaleX : scaleY;
 
     screenpoints_picto.reserve(_geopoints.size());
-    for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-        screenpoints_picto.push_back( {
-            xoff - iround((PanLongitudeCenter - it->Longitude()) * ((double) fastcosine(it->Latitude())) * scale),
-            yoff + iround((PanLatitudeCenter - it->Latitude()) * scale)
-        });
+    for (const auto point : _geopoints) {
+        screenpoints_picto.emplace_back(
+            xoff - iround((PanLongitudeCenter - point.Longitude()) * fastcosine(point.Latitude()) * scale),
+            yoff + iround((PanLatitudeCenter - point.Latitude()) * scale));
     }
 }
 ////////////////////////////////////////////////////////////////////////////////
