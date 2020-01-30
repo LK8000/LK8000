@@ -2205,25 +2205,19 @@ olc_score:
 
 		// B124
 		case LK_HEADWINDSPEED:
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			_stprintf(BufferUnit, TEXT("%s"),Units::GetHorizontalSpeedName());
+			_tcscpy(BufferTitle, Data_Options[lkindex].Title);
+			_tcscpy(BufferUnit, Units::GetHorizontalSpeedName());
 
-			if (DerivedDrawInfo.HeadWind==-999) {
-				_stprintf(BufferValue,TEXT(NULLMEDIUM)); 
-				break;
+			if (DerivedDrawInfo.HeadWind != -999) {
+				value = DerivedDrawInfo.HeadWind * SPEEDMODIFY;
+				if (std::abs(value) >= 1) {
+					_stprintf(BufferValue,TEXT("%+1.0f"), value);
+					valid=true;
+				}
+			} 
+			if(!valid) {
+				_tcscpy(BufferValue,TEXT(NULLMEDIUM));
 			}
-			
-			value=DerivedDrawInfo.HeadWind*SPEEDMODIFY;
-			if (value>=1 ) {
-				_stprintf(BufferValue,TEXT("%+1.0f"), value );
-				valid=true;
-			} else 
-			  if (value<=-1 ) {
-				_stprintf(BufferValue,TEXT("%-1.0f"), value );
-				valid=true;
-			  } else {
-				_stprintf(BufferValue,TEXT(NULLMEDIUM)); 
-			  }
 			break;
 
 		// B125
