@@ -30,6 +30,7 @@ public:
 
   void close() {
     _fp.close();
+    setg(nullptr, nullptr, nullptr);
   }
 
   operator bool() const {

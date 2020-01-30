@@ -28,7 +28,7 @@ zzip_stream::zzip_stream(const TCHAR *szFile, const char *mode) {
 }
 
 bool zzip_stream::open(const TCHAR *szFile, const char *mode) {
-
+  assert(!(*this)); // open new file without closing previous ?!
   close(); // close previous opened file.
 
   _cs = charset::detect;
