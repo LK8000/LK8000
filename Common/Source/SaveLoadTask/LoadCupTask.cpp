@@ -386,7 +386,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 
   LockTaskData();
   ClearTask();
-  stream.open(szFileName, "rt");
 
   bool TaskValid = false;
   FileSection = none;
