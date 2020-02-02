@@ -2926,6 +2926,26 @@ bool WndFrame::OnLButtonDown(const POINT& Pos) {
   return false;
 }
 
+void WndListFrame::CenterScrollCursor(void)
+{
+/*
+StartupStore(TEXT(" CenterScrollCursor.ItemInPageCount: %i %s"), mListInfo.ItemInPageCount, NEWLINE);
+StartupStore(TEXT(" CenterScrollCursor.ItemCount: %i %s"), mListInfo.ItemCount, NEWLINE);
+StartupStore(TEXT(" CenterScrollCursor.ScrollIndex: %i %s"), mListInfo.ScrollIndex, NEWLINE);
+StartupStore(TEXT(" CenterScrollCursor.ItemIndex: %i %s"), mListInfo.ItemIndex, NEWLINE);
+*/
+  if( mListInfo.ItemCount > mListInfo.ItemInPageCount)
+  {
+    if( mListInfo.ItemIndex > (mListInfo.ItemInPageCount/2))
+    {
+      mListInfo.ScrollIndex+=mListInfo.ItemInPageCount/2; // = Total  - mListInfo.ItemInPageCount +3;
+      mListInfo.ItemIndex-= mListInfo.ItemInPageCount/2;
+
+      RecalculateIndices(false);
+    }
+  }
+}
+
 void WndListFrame::SetItemIndexPos(int iValue)
 {
 int Total = mListInfo.ItemCount;

@@ -515,11 +515,13 @@ static void OnFilterNameButton(WndButton* pWnd) {
 		  CursorPos = i;
 	    }
 	}
-
-    wWayPointListEntry->SetFocus();
-    wWayPointList->SetItemIndexPos(CursorPos);
-    wWayPointList->Redraw();
   }
+  wWayPointListEntry->SetFocus();
+
+
+ // wWayPointList->RedrawScrolled(true);
+  wWayPointList->SetItemIndexPos(CursorPos);  
+  wWayPointList->CenterScrollCursor();
   wWayPointList->Redraw();
 
 }

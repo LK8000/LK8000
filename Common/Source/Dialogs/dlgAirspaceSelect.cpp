@@ -450,14 +450,11 @@ static void SetNameCaption(const TCHAR* tFilter) {
 }
 
 static void OnFilterName(WndButton* pWnd) {
-
-  int SelectedAsp=-1;
-  int CursorPos=0;
+int CursorPos=0;
 TCHAR newNameFilter[NAMEFILTERLEN+1];
 
 LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
-SelectedAsp =  dlgTextEntryShowModalAirspace(newNameFilter, NAMEFILTERLEN);
-
+CAirspace *airspace  =  dlgTextEntryShowModalAirspace(newNameFilter, NAMEFILTERLEN);
 
 
 int i= _tcslen(newNameFilter)-1;
@@ -472,6 +469,7 @@ while (i>=0) {
 LK_tcsncpy(sNameFilter, newNameFilter, NAMEFILTERLEN);
 
 
+
 if (wpnewName) {
       if (sNameFilter[0]=='\0') {
           SetNameCaption(TEXT("*"));
@@ -483,23 +481,21 @@ if (wpnewName) {
 FilterMode(true);
 UpdateList();
 
-if((SelectedAsp>=0) && (SelectedAsp < NumberOfAirspaces))
+
+if(airspace != NULL)
 {
-    CursorPos = SelectedAsp;
-    /*
- for (i=0; i<UpLimit; i++)
- {
+  for (i=0; i<UpLimit; i++)
+  {
+   if(AirspaceSelectInfo[StrIndex[i]].airspace == airspace)
+    {
+      CursorPos = i;
+    }
+  }
 
-     if(AirspaceSelectInfo[i].Index == SelectedAsp)
-     {
-           CursorPos = i;
-     }
-     */
- }
-
-
- wAirspaceList->SetFocus();
+}
+wAirspaceListEntry->SetFocus();
 wAirspaceList->SetItemIndexPos(CursorPos);
+wAirspaceList->CenterScrollCursor();
 wAirspaceList->Redraw();
 }
 
@@ -857,19 +853,19 @@ void dlgAirspaceSelect(void) {
 	goto _return;
   }
   UpdateList();
+//  wf->SetTimerNotify(5000, OnTimerNotify);
 
 
   if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0)
    && (ItemIndex < (UpLimit - LowLimit))) {
-
+/*
         if (FullFlag)
-                ItemIndex = StrIndex[LowLimit + ItemIndex];
+                ItemIndex = AirspaceSelectInfo[StrIndex[LowLimit + ItemIndex]].Index;;
         else
-                ItemIndex = LowLimit + ItemIndex;
+                ItemIndex = AirspaceSelectInfo[LowLimit + ItemIndex].Index;*/
   }else
         ItemIndex = -1;
 
-  wf->SetTimerNotify(10000, OnTimerNotify);
 
 
 
