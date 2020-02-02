@@ -40,7 +40,7 @@ uint8_t  KeyboardLayout =UPPERCASE;
 uint8_t  WaypointKeyRed = KEYRED_NONE;
 
  int IdenticalIndex=-1;
-
+ CAirspace *Selairspace= NULL;
 
 static void UpdateTextboxProp(void)
 {
@@ -323,13 +323,13 @@ int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 	return IdenticalIndex;
 }
 
-int  dlgTextEntryShowModalAirspace(TCHAR *text, int width)
+CAirspace * dlgTextEntryShowModalAirspace(TCHAR *text, int width)
 {
         first = false;
 
         WaypointKeyRed = KEYRED_AIRSPACE;
         dlgTextEntryKeyboardShowModal(text, width, ScreenLandscape ? IDR_XML_TEXTENTRY_KEYBOARD_L : IDR_XML_TEXTENTRY_KEYBOARD_P);
-        return IdenticalIndex;
+        return  Selairspace;
 }
 
 void dlgNumEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
@@ -408,6 +408,7 @@ IdenticalIndex = -1;
   {
     EqCnt=0; /* reset number of found waypoints */
     NumChar =0;
+    int MinStart = EXT_SEARCH_SIZE;
     for (uint i=NUMRESWP; i< WayPointList.size(); i++)
     {
       TCHAR wname[EXT_NAMESIZE] = _T("");
@@ -428,16 +429,17 @@ IdenticalIndex = -1;
       do
       {
 	Sart =  FindFirstIn((&wname[Offset]),( edittext));
-	if( Sart != -1)  // substring found?
+	if( Sart != -1)  // substring found?st
 	{
-	  if(!bFound) // remember first found item
-	  {
-	    IdenticalIndex = i; /* remember first found equal name */
-	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),wname );
-	    for(uint i = 0; i < cursor; i++)
-	      Found[i+Sart] =  toupper(Found[i+Sart]);
-	  }
 	  bFound = true;
+	  if(Sart < MinStart)
+	  {
+	    MinStart = Sart;
+	    IdenticalIndex = i; /* remember most left sub string  occurrence index */
+	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),wname );
+	     for(uint k = 0; k < cursor; k++)
+	       Found[k+Sart] =  toupper(Found[k+Sart]);
+	  }
 	  Sart += Offset;
 	  TCHAR newChar = (wname[cursor+Sart]);
 	  bool existing = false;
@@ -540,9 +542,9 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
     CAirspaceList::const_iterator it;
 
+    int MinStart = EXT_SEARCH_SIZE;
     for (it = airspaclist.begin(); it != airspaclist.end(); ++it)
     {
-
     if((*it)->Comment() != NULL)
       _sntprintf(AS_Name,EXT_SEARCH_SIZE,_T("%s"),(*it)->Comment());
     else
@@ -559,13 +561,17 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 	Sart =  FindFirstIn((&AS_Name[Offset]),( edittext));
 	if( Sart != -1)  // substring found?
 	{
-	  if(!bFound) // remember first found item
-	  {
-	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),AS_Name );
-	    for(uint i = 0; i < cursor; i++)
-	      Found[i+Sart] =  toupper(Found[i+Sart]);
-	  }
 	  bFound = true;
+	  if(Sart < MinStart)
+	  {
+	    Selairspace = (*it);
+	//    StartupStore(_T(">>>>>>>>> IdenticalIndex %i %s %s"),IdenticalIndex,(*it)->Name(),NEWLINE);
+	    MinStart = Sart;
+	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),AS_Name );
+	    for(uint k = 0; k < cursor; k++)
+	      Found[k+Sart] =  toupper(Found[k+Sart]);
+	  }
+
 	  Sart += Offset;
 	  TCHAR newChar = (AS_Name[cursor+Sart]);
 	  bool existing = false;
