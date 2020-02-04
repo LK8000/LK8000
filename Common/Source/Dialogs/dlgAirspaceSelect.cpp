@@ -450,26 +450,26 @@ static void SetNameCaption(const TCHAR* tFilter) {
 }
 
 static void OnFilterName(WndButton* pWnd) {
-
-  int SelectedAsp=-1;
-  int CursorPos=0;
+int CursorPos=0;
 TCHAR newNameFilter[NAMEFILTERLEN+1];
 
 LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
-SelectedAsp =  dlgTextEntryShowModalAirspace(newNameFilter, NAMEFILTERLEN);
+CAirspace *airspace  =  dlgTextEntryShowModalAirspace(newNameFilter, NAMEFILTERLEN);
 
-
-
-int i= _tcslen(newNameFilter)-1;
-while (i>=0) {
- if (newNameFilter[i]!=_T(' ')) {
-         break;
- }
- newNameFilter[i]=0;
- i--;
+int len = _tcslen(newNameFilter);
+if(len <= 0)
+{
+	int i = len;
+	while (i>=0) {
+	 if (newNameFilter[i]!=_T(' ')) {
+					 break;
+	 }
+	 newNameFilter[i]=0;
+	 i--;
+	};
 };
-
 LK_tcsncpy(sNameFilter, newNameFilter, NAMEFILTERLEN);
+
 
 
 if (wpnewName) {
@@ -483,23 +483,21 @@ if (wpnewName) {
 FilterMode(true);
 UpdateList();
 
-if((SelectedAsp>=0) && (SelectedAsp < NumberOfAirspaces))
+
+if((airspace != NULL)  && (len > 0))
 {
-    CursorPos = SelectedAsp;
-    /*
- for (i=0; i<UpLimit; i++)
- {
+  for (int i=0; i<UpLimit; i++)
+  {
+   if(AirspaceSelectInfo[StrIndex[i]].airspace == airspace)
+    {
+      CursorPos = i;
+    }
+  }
+}
 
-     if(AirspaceSelectInfo[i].Index == SelectedAsp)
-     {
-           CursorPos = i;
-     }
-     */
- }
-
-
- wAirspaceList->SetFocus();
+wAirspaceListEntry->SetFocus();
 wAirspaceList->SetItemIndexPos(CursorPos);
+wAirspaceList->CenterScrollCursor();
 wAirspaceList->Redraw();
 }
 
@@ -654,7 +652,7 @@ static void OnFilterType(DataField *Sender,
 }
 
 
-
+extern int FindFirstIn(const TCHAR Txt[] ,const TCHAR Sub[]);
 static unsigned int DrawListIndex=0;
 
 // Painting elements after init
@@ -696,7 +694,16 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
 
         // Draw Name
-        Surface.DrawTextClip(w0, TextPos, AirspaceSelectInfo[i].airspace->Name() , w1);
+        LK_tcsncpy(sTmp, AirspaceSelectInfo[i].airspace->Name(),EXT_NAMESIZE);
+        int iFilterLen = _tcslen(sNameFilter);
+        int Start = FindFirstIn(sTmp ,sNameFilter) ;
+        if(Start >= 0)
+        {
+          for(int i = 0; i < iFilterLen; i++)
+        	  sTmp[Start+i] = _toupper(sTmp[Start+i]);
+        }
+        
+        Surface.DrawTextClip(w0, TextPos, sTmp , w1);
 
         LK_tcsncpy(sTmp,  CAirspaceManager::GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type) , 4);
         const int w4 = Surface.GetTextWidth(sTmp);
@@ -857,19 +864,19 @@ void dlgAirspaceSelect(void) {
 	goto _return;
   }
   UpdateList();
+//  wf->SetTimerNotify(5000, OnTimerNotify);
 
 
   if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0)
    && (ItemIndex < (UpLimit - LowLimit))) {
-
+/*
         if (FullFlag)
-                ItemIndex = StrIndex[LowLimit + ItemIndex];
+                ItemIndex = AirspaceSelectInfo[StrIndex[LowLimit + ItemIndex]].Index;;
         else
-                ItemIndex = LowLimit + ItemIndex;
+                ItemIndex = AirspaceSelectInfo[LowLimit + ItemIndex].Index;*/
   }else
         ItemIndex = -1;
 
-  wf->SetTimerNotify(10000, OnTimerNotify);
 
 
 
