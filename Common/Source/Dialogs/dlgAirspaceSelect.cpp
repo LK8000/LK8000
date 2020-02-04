@@ -75,7 +75,6 @@ static void OnEnableClicked(WndButton* pWnd)
 
       CAirspace *airspace = AirspaceSelectInfo[i].airspace;
       if (airspace) {
-          wf->SetTimerNotify(0,NULL);
           LKSound(TEXT("LK_TICK.WAV"));
           CAirspaceManager::Instance().PopupAirspaceDetail(airspace);
       }
@@ -378,10 +377,7 @@ static void UpdateList(void){
       if (matches>0) {
               LowLimit=0;
               UpLimit=matches;
-/*
-              for (i=0; i<UpLimit; i++)
-                      StartupStore(_T("StrIndex[%d] = %d <%s>\n"), i, StrIndex[i], WayPointList[WayPointSelectInfo[StrIndex[i]].Index].Name);
-*/
+
       } else {
               LowLimit=0;
               UpLimit=0;
@@ -750,24 +746,12 @@ static void OnWPSCloseClicked(WndButton* pWnd){
       pForm->SetModalResult(mrCancel);
     }
   }
-  wf->SetTimerNotify(0,NULL);
-
 }
 
 
 
 
-static bool OnTimerNotify(WndForm* pWnd) {
-  if (DirectionFilterIdx == 1){
-    const int a = (lastHeading - iround(CALCULATED_INFO.Heading));
-    if (abs(a) > 0){
-      UpdateList();
-      SetDirectionData(NULL);
-      wpDirection->RefreshDisplay();
-    }
-  }
-  return true;
-}
+
 
 static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode){
   unsigned NewIndex = TypeFilterIdx;
@@ -852,7 +836,7 @@ void dlgAirspaceSelect(void) {
   LKASSERT(wAirspaceListEntry!=NULL);
   wAirspaceListEntry->SetCanFocus(true);
 
-//  wpName = (WndProperty*)wf->FindByName(TEXT("prpFltName"));
+
 
   wpDistance = (WndProperty*)wf->FindByName(TEXT("prpFltDistance"));
   wpDirection = (WndProperty*)wf->FindByName(TEXT("prpFltDirection"));
@@ -864,21 +848,10 @@ void dlgAirspaceSelect(void) {
 	goto _return;
   }
   UpdateList();
-//  wf->SetTimerNotify(5000, OnTimerNotify);
-
-
-  if ((wf->ShowModal() == mrOK) && (UpLimit - LowLimit > 0) && (ItemIndex >= 0)
-   && (ItemIndex < (UpLimit - LowLimit))) {
-/*
-        if (FullFlag)
-                ItemIndex = AirspaceSelectInfo[StrIndex[LowLimit + ItemIndex]].Index;;
-        else
-                ItemIndex = AirspaceSelectInfo[LowLimit + ItemIndex].Index;*/
-  }else
-        ItemIndex = -1;
 
 
 
+  wf->ShowModal();
 
 _return:
   if (AirspaceSelectInfo!=NULL) free(AirspaceSelectInfo);
