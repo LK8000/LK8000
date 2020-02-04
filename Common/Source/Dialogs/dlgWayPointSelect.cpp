@@ -160,16 +160,22 @@ static int WaypointDirectionCompare(const void *elem1, const void *elem2 ){
 
 static void SetWPNameCaption(const TCHAR* tFilter) {
 
-  TCHAR namfilter[50];
+  TCHAR namfilter[NAMEFILTERLEN];
   if ( _tcscmp(tFilter,_T("*")) == 0)
-	_tcscpy(namfilter,_T("*"));
+	_tcsncpy(namfilter,_T("*"),NAMEFILTERLEN);
   else {
 	if (_tcslen(tFilter) <GC_SUB_STRING_THRESHOLD)
-		_stprintf(namfilter,_T("%s*"),tFilter);
+	{
+	 _tcsncpy(namfilter,tFilter,NAMEFILTERLEN);
+	 _tcsncat(namfilter,_T("*"),NAMEFILTERLEN);
+	}
 	else
 	  {
-		if (_tcslen(tFilter) <6)
-			_stprintf(namfilter,_T("*%s*"),tFilter);
+		if (_tcslen(tFilter) <6) {
+      _tcsncpy(namfilter,_T("*"),NAMEFILTERLEN);
+      _tcsncat(namfilter,tFilter,NAMEFILTERLEN);
+	    _tcsncat(namfilter,_T("*"),NAMEFILTERLEN);
+		}
 		else {
 			_tcscpy(namfilter,_T("*"));
 			_tcsncat(namfilter,tFilter,5);
@@ -382,7 +388,9 @@ static void UpdateList(void){
 
 		LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)WayPointList.size());
 	//	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
-		 _sntprintf(wname,EXT_NAMESIZE, _T("%s %s"), WayPointList[WayPointSelectInfo[i].Index].Name, WayPointList[WayPointSelectInfo[i].Index].Code);
+		 _tcsncpy(wname, WayPointList[WayPointSelectInfo[i].Index].Name ,EXT_NAMESIZE);
+		 _tcsncat(wname, _T(" "),EXT_NAMESIZE);
+		 _tcsncat(wname, WayPointList[WayPointSelectInfo[i].Index].Code,EXT_NAMESIZE);
 		CharUpper(wname);
 
 		if ( _tcsstr(  wname,sTmp ) ) {
@@ -515,11 +523,13 @@ static void OnFilterNameButton(WndButton* pWnd) {
 		  CursorPos = i;
 	    }
 	}
-
-    wWayPointListEntry->SetFocus();
-    wWayPointList->SetItemIndexPos(CursorPos);
-    wWayPointList->Redraw();
   }
+  wWayPointListEntry->SetFocus();
+
+
+ // wWayPointList->RedrawScrolled(true);
+  wWayPointList->SetItemIndexPos(CursorPos);  
+  wWayPointList->CenterScrollCursor();
   wWayPointList->Redraw();
 
 }
@@ -556,7 +566,7 @@ static void OnFilterDistance(DataField *Sender, DataField::DataAccessKind_t Mode
   }
 
   if (DistanceFilterIdx == 0)
-    _stprintf(sTmp, TEXT("%c"), '*');
+    _tcsncpy(sTmp,_T("*"),NAMEFILTERLEN);
   else
     _stprintf(sTmp, TEXT("%.0f%s"),
               DistanceFilter[DistanceFilterIdx],
@@ -567,7 +577,7 @@ static void OnFilterDistance(DataField *Sender, DataField::DataAccessKind_t Mode
 
 static void SetDirectionData(DataField *Sender){
 
-  TCHAR sTmp[20];
+  TCHAR sTmp[30];
 
   if (Sender == NULL){
     Sender = wpDirection->GetDataField();
@@ -625,7 +635,7 @@ static void OnFilterDirection(DataField *Sender, DataField::DataAccessKind_t Mod
 
 static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
 
-  TCHAR sTmp[50];
+  TCHAR sTmp[NAMEFILTERLEN];
 
   switch(Mode){
     case DataField::daGet:
@@ -651,7 +661,7 @@ static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
   }
 
-  _stprintf(sTmp, TEXT("%s"), TypeFilter[TypeFilterIdx]);
+  _tcsncpy(sTmp, TypeFilter[TypeFilterIdx],NAMEFILTERLEN);
 
   Sender->Set(sTmp);
 
@@ -699,10 +709,14 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         int idx = WayPointSelectInfo[i].Index;
 
         // Draw Name
+
+         _tcsncpy(TmpName, WayPointList[WayPointSelectInfo[i].Index].Name ,EXT_NAMESIZE);
         if( _tcslen(WayPointList[WayPointSelectInfo[i].Index].Code ) >1)
-          _sntprintf(TmpName, EXT_NAMESIZE, _T("%s (%s)"), WayPointList[WayPointSelectInfo[i].Index].Name,  WayPointList[WayPointSelectInfo[i].Index].Code);
-        else
-          _sntprintf(TmpName, EXT_NAMESIZE, _T("%s"), WayPointList[WayPointSelectInfo[i].Index].Name);
+        {          
+					_tcsncat(TmpName, _T("  ("),EXT_NAMESIZE);
+					_tcsncat(TmpName, WayPointList[WayPointSelectInfo[i].Index].Code,EXT_NAMESIZE);
+					_tcsncat(TmpName, _T(")"),EXT_NAMESIZE);
+        }
         Surface.DrawTextClip(w0, TextPos, TmpName, w1);
 
         // Draw Distance : right justified after waypoint Name

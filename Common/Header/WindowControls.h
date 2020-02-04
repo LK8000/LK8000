@@ -730,6 +730,8 @@ class WndListFrame:public WndFrame{
       return (mListInfo.ScrollIndex + mListInfo.ItemIndex);
     }
     void SetItemIndexPos(int iValue);
+    void CenterScrollCursor(void);
+
     void SetItemIndex(int iValue);
     void SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool select);
 
