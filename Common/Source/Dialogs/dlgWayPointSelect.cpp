@@ -671,7 +671,7 @@ static unsigned int DrawListIndex=0;
 
 // Painting elements after init
 
-
+extern int FindFirstIn(const TCHAR Txt[] ,const TCHAR Sub[]);
 
 static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     if (!Sender) {
@@ -718,6 +718,28 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 					_tcsncat(TmpName, _T(")"),EXT_NAMESIZE);
         }
         Surface.DrawTextClip(w0, TextPos, TmpName, w1);
+
+        _tcsncpy(sTmp, TmpName ,EXT_NAMESIZE);
+
+
+        int Start = FindFirstIn(sTmp ,sNameFilter) ;
+
+        if(Start >= 0)
+        {
+          int iFilterLen = _tcslen(sNameFilter);
+          sTmp[Start]=0;
+          int wcol = LineHeight + Surface.GetTextWidth(sTmp);
+          _tcsncpy(sTmp, TmpName ,EXT_NAMESIZE);
+          for(int i = 0; i < iFilterLen+1; i++)
+         	{
+            sTmp[i] = sTmp[i+Start];
+       	  }
+          sTmp[iFilterLen]=0;
+          LKColor oldCol = Surface.SetTextColor(RGB_MAGENTA);
+          Surface.DrawTextClip(wcol, TextPos, sTmp , w1);
+          Surface.SetTextColor(oldCol);
+        }
+
 
         // Draw Distance : right justified after waypoint Name
         _stprintf(sTmp, TEXT("%.0f%s"), WayPointSelectInfo[i].Distance, Units::GetDistanceName());
