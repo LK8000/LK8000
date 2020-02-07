@@ -388,11 +388,14 @@ short ShowAirspaceWarningsToUser()
 
     case aweLeavingNonFly:
       // LKTOKEN _@M1241_ "Leaving"
+			 if(!airspace_copy.Acknowledged() )  // don't warn on leaving acknolaged airspaces
+			 {
 	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
 		_stprintf(msgbuf,TEXT("%s %s"),MsgToken(1241),airspace_copy.Name());
 	  else
 		_stprintf(msgbuf,TEXT("%s %s %s"),MsgToken(1241),airspace_copy.TypeName(),airspace_copy.Name());
       DoStatusMessage(msgbuf);
+			 }
       break;
 
   }

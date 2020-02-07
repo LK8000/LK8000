@@ -77,6 +77,7 @@ static void OnAcknowledgeClicked(WndButton* pWnd){
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
+      CAirspaceManager::Instance().AirspaceSetAckLevel(*airspace, awNone);
       if (airspace_copy.Enabled()) {
         CAirspaceManager::Instance().AirspaceDisable(*airspace);
       } else {
