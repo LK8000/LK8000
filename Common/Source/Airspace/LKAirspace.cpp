@@ -624,6 +624,12 @@ void CAirspaceBase::SetAckTimeout() {
     _warnacktimeout = _now + AcknowledgementTime;
 }
 
+bool  CAirspaceBase::Acknowledged(void) {
+	if (_warningacklevel >  awNone)
+		return true;
+	else
+		return false;
+}
 // Gets calculated distances, returns true if distances valid
 
 bool CAirspaceBase::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const {
@@ -951,7 +957,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
         // airspace is visible only if clipped polygon have more than 2 point.
         if (_screenpoints_clipped.size() > 2)  {
 
-            if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
+            if ( (((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && (_warninglevel == awNone) && (_warningacklevel ==  awNone))|| (_warninglevel > _warningacklevel)/*(_warningacklevel == awNone)*/)) {
                 _drawstyle = adsFilled;
             } else {
                 _drawstyle = adsOutline;

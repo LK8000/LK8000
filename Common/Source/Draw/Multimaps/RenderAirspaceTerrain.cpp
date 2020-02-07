@@ -143,7 +143,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         double fFrameColFact;
         int Framewidth = FRAMEWIDTH;
         if (Sideview_pHandeled[iSizeIdx].bEnabled) {
-            if (MapWindow::GetAirSpaceFillType() == MapWindow::asp_fill_border_only)
+            if ((MapWindow::GetAirSpaceFillType() == MapWindow::asp_fill_border_only) || (Sideview_pHandeled[iSizeIdx].psAS->DrawStyle()== adsOutline))
             {
 		  Surface.SelectObject(LKBrush_Hollow);
 		  Framewidth *=3;
