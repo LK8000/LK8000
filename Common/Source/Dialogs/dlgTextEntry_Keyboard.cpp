@@ -369,15 +369,16 @@ int SubLen = _tcslen(Sub);
 int TxtLen = _tcslen(Txt);
 int Pos =  0;
 int res = -1;
-
-  while ((Pos + SubLen) <= TxtLen)
+  if((TxtLen > 0) && (TxtLen > 0))
   {
-    res = _tcsnicmp(&Txt[Pos], Sub, SubLen);
-    if(res == 0)
-      return  Pos;
-    Pos++;
+    while ((Pos + SubLen) <= TxtLen)
+    {
+      res = _tcsnicmp(&Txt[Pos], Sub, SubLen);
+      if(res == 0)
+	return  Pos;
+      Pos++;
+    }
   }
-
   return -1;  // not found
 
 }
