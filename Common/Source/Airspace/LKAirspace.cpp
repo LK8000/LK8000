@@ -2189,9 +2189,6 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
               if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDERSECT;
             }
             break;
-        case 'N':
-          /*  if (_tcsicmp(dataStr,_T("NOTAM"))==0) */ Type=CLASSNOTAM; // Prohibited area
-            break;
         //case 'O':
             //if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
             //break;
