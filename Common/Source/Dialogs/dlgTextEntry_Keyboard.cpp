@@ -39,7 +39,7 @@ void RemoveKeys(char *EnabledKeyString, unsigned char size);
 uint8_t  KeyboardLayout =UPPERCASE;
 uint8_t  WaypointKeyRed = KEYRED_NONE;
 
- int IdenticalIndex=-1;
+ int IdenticalIndex=NUMRESWP;
  CAirspace *Selairspace= NULL;
 
 static void UpdateTextboxProp(void)
@@ -369,15 +369,16 @@ int SubLen = _tcslen(Sub);
 int TxtLen = _tcslen(Txt);
 int Pos =  0;
 int res = -1;
-
-  while ((Pos + SubLen) <= TxtLen)
+  if((TxtLen > 0) && (SubLen > 0))
   {
-    res = _tcsnicmp(&Txt[Pos], Sub, SubLen);
-    if(res == 0)
-      return  Pos;
-    Pos++;
+    while ((Pos + SubLen) <= TxtLen)
+    {
+      res = _tcsnicmp(&Txt[Pos], Sub, SubLen);
+      if(res == 0)
+	      return  Pos;
+      Pos++;
+    }
   }
-
   return -1;  // not found
 
 }
@@ -399,7 +400,7 @@ WndProperty *wp;
 TCHAR Found[EXT_SEARCH_SIZE + 1];
 SelList[0] = '\0';
 unsigned int NameLen=0;
- int Offset=0;
+int Offset=0;
 
 
 
@@ -416,7 +417,7 @@ IdenticalIndex = -1;
     for (uint i=NUMRESWP; i< WayPointList.size(); i++)
     {
       TCHAR wname[EXT_NAMESIZE] = _T("");
-      _tcsncat( wname,WayPointList[i].Name, EXT_NAMESIZE);
+      _tcsncpy( wname,WayPointList[i].Name, EXT_NAMESIZE);
       if(_tcslen (WayPointList[i].Code) >1)
       {
         _tcsncat( wname,_T(" ")              ,EXT_NAMESIZE);
@@ -432,64 +433,65 @@ IdenticalIndex = -1;
       if(NameLen >= _tcslen( edittext))
       do
       {
-	Sart =  FindFirstIn((&wname[Offset]),( edittext));
-	if( Sart != -1)  // substring found?st
-	{
-	  bFound = true;
-	  if(Sart < MinStart)
-	  {
-	    MinStart = Sart;
-	    IdenticalIndex = i; /* remember most left sub string  occurrence index */
-	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),wname );
-	     for(uint k = 0; k < cursor; k++)
-	       Found[k+Sart] =  toupper(Found[k+Sart]);
-	  }
-	  Sart += Offset;
-	  TCHAR newChar = (wname[cursor+Sart]);
-	  bool existing = false;
-	  uint j=0;
-	  while(( j < NumChar) && (!existing))  /* new character already in list? */
-	  {
-	    LKASSERT(j<MAX_SEL_LIST_SIZE);
-	    if(SelList[j] == (unsigned char)newChar)
-		    existing = true;
-	    j++;
-	  }
+        Sart =  FindFirstIn((&wname[Offset]),( edittext));
+        if( Sart != -1)  // substring found?st
+        {
+          bFound = true;
+          if((Sart+Offset) < MinStart)
+          {
+            MinStart = Sart+Offset;
+            IdenticalIndex = i; /* remember most left sub string  occurrence index */
+            _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),wname );
+             for(uint k = 0; k < cursor; k++)
+               Found[k+Sart] =  toupper(Found[k+Sart]);
+          }
+          Sart += Offset;
+          TCHAR newChar = (wname[cursor+Sart]);
+          bool existing = false;
+          uint j=0;
+          while(( j < NumChar) && (!existing))  /* new character already in list? */
+          {
+            LKASSERT(j<MAX_SEL_LIST_SIZE);
+            if(SelList[j] == (unsigned char)newChar)
+              existing = true;
+            j++;
+          }
 
-	  if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
-	  {
-	    LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-	    SelList[NumChar++] = newChar;
-	  }
-	  if((Sart +cursor) < NameLen) // place for another substring?
-	    Offset = Sart +cursor;     // search for another substring after first one
-	  else
-	    Sart = -1;
-	}
-      } while( Sart != -1 );
+          if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+          {
+            LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+            SelList[NumChar++] = newChar;
+          }
+          if((Sart +cursor) < NameLen) // place for another substring?
+            Offset = Sart +cursor;     // search for another substring after first one
+          else
+            Sart = -1;
+        }
+      }
+      while( Sart != -1 );
 
       if(bFound)
       {
-	EqCnt++;
-	LKASSERT(i<=WayPointList.size());
+        EqCnt++;
+        LKASSERT(i<=WayPointList.size());
       }
     }
 
     SelList[NumChar++] = '\0';
 
     RemoveKeys((char*)SelList, NumChar);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
-	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
 
-		LKASSERT(cursor < EXT_SEARCH_SIZE);
-		LKASSERT(IdenticalIndex<=(int)WayPointList.size());
-		_sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),WayPointList[IdenticalIndex].Name);
-		if(_tcslen(WayPointList[IdenticalIndex].Code) > 1)
-		{
-			_sntprintf(Found,EXT_SEARCH_SIZE,_T("%s (%s)"),WayPointList[IdenticalIndex].Name, WayPointList[IdenticalIndex].Code);
+
+		if((IdenticalIndex >=0) && (IdenticalIndex< (int) WayPointList.size())) {
+      if(_tcslen(WayPointList[IdenticalIndex].Code) < 2) {
+        _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),WayPointList[IdenticalIndex].Name);
+      }else{
+        _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s (%s)"),WayPointList[IdenticalIndex].Name, WayPointList[IdenticalIndex].Code);
+      }
 		}
 
-      if((wp)  &&  (EqCnt >0))
+    wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
+    if((wp)  &&  (EqCnt >0))
     {
       wp->SetText(Found);
     }
@@ -562,47 +564,46 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
       do
       {
-	Sart =  FindFirstIn((&AS_Name[Offset]),( edittext));
-	if( Sart != -1)  // substring found?
-	{
-	  bFound = true;
-	  if(Sart < MinStart)
-	  {
-	    Selairspace = (*it);
-	//    StartupStore(_T(">>>>>>>>> IdenticalIndex %i %s %s"),IdenticalIndex,(*it)->Name(),NEWLINE);
-	    MinStart = Sart;
-	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),AS_Name );
-	    for(uint k = 0; k < cursor; k++)
-	      Found[k+Sart] =  toupper(Found[k+Sart]);
-	  }
+        Sart =  FindFirstIn((&AS_Name[Offset]),( edittext));
+        if( Sart != -1)  // substring found?
+        {
+          bFound = true;
+          if((Sart+Offset) < MinStart)
+          {
+            Selairspace = (*it);
+            MinStart = Sart+Offset;
+            _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),AS_Name );
+            for(uint k = 0; k < cursor; k++)
+              Found[k+Sart] =  toupper(Found[k+Sart]);
+          }
 
-	  Sart += Offset;
-	  TCHAR newChar = (AS_Name[cursor+Sart]);
-	  bool existing = false;
-	  uint j=0;
-	  while(( j < NumChar) && (!existing))  /* new character already in list? */
-	  {
-	    LKASSERT(j<MAX_SEL_LIST_SIZE);
-	    if(SelList[j] == (unsigned char)newChar)
-		    existing = true;
-	    j++;
-	  }
+          Sart += Offset;
+          TCHAR newChar = (AS_Name[cursor+Sart]);
+          bool existing = false;
+          uint j=0;
+          while(( j < NumChar) && (!existing))  /* new character already in list? */
+          {
+            LKASSERT(j<MAX_SEL_LIST_SIZE);
+            if(SelList[j] == (unsigned char)newChar)
+              existing = true;
+            j++;
+          }
 
-	  if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
-	  {
-	    LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-	    SelList[NumChar++] = newChar;
-	  }
-	  if((Sart +cursor) < NameLen) // place for another substring?
-	    Offset = Sart +cursor;     // search for another substring after first one
-	  else
-	    Sart = -1;
-	}
-      } while( Sart != -1 );
+          if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+          {
+            LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+            SelList[NumChar++] = newChar;
+          }
+          if((Sart +cursor) < NameLen) // place for another substring?
+            Offset = Sart +cursor;     // search for another substring after first one
+          else
+            Sart = -1;
+        }
+      } while( Sart != -1);
 
       if(bFound)
       {
-	EqCnt++;
+	      EqCnt++;
       }
     }
 
