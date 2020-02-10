@@ -494,7 +494,7 @@ static void OnFilterNameButton(WndButton* pWnd) {
 
 
   int i= _tcslen(newNameFilter)-1;
-  while (i>=0) {
+  while (i>0) {
 	if (newNameFilter[i]!=_T(' ')) {
 		break;
 	}
@@ -513,21 +513,25 @@ static void OnFilterNameButton(WndButton* pWnd) {
   }
   FilterMode(true);
   UpdateList();
+
   if((SelectedWp>=0) && (SelectedWp < (int)WayPointList.size()))
   {
-	for (i=0; i<UpLimit; i++)
-	{
-
-	    if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
-	    {
-		  CursorPos = i;
-	    }
-	}
+    for (i=0; i<UpLimit; i++)
+    {
+      if(StrIndex != NULL)
+      {
+        if(( StrIndex[i] >= 0 ) && (StrIndex[i] < (int)WayPointList.size()))
+        {
+          if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
+          {
+            CursorPos = i;
+          }
+        }
+      }
+    }
   }
   wWayPointListEntry->SetFocus();
 
-
- // wWayPointList->RedrawScrolled(true);
   wWayPointList->SetItemIndexPos(CursorPos);  
   wWayPointList->CenterScrollCursor();
   wWayPointList->Redraw();
@@ -724,11 +728,13 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
         int Start = FindFirstIn(sTmp ,sNameFilter) ;
 
+        // redraw the found substring in different color
         if(Start >= 0)
         {
           int iFilterLen = _tcslen(sNameFilter);
           sTmp[Start]=0;
-          int wcol = LineHeight + Surface.GetTextWidth(sTmp);
+          int width = Surface.GetTextWidth(sTmp);
+          int wcol = LineHeight + width;
           _tcsncpy(sTmp, TmpName ,EXT_NAMESIZE);
           for(int i = 0; i < iFilterLen+1; i++)
          	{
@@ -736,7 +742,8 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
        	  }
           sTmp[iFilterLen]=0;
           LKColor oldCol = Surface.SetTextColor(RGB_MAGENTA);
-          Surface.DrawTextClip(wcol, TextPos, sTmp , w1);
+          int w1c = width - w0 - w2 - w3;
+          Surface.DrawTextClip(wcol, TextPos, sTmp ,w1c);
           Surface.SetTextColor(oldCol);
         }
 

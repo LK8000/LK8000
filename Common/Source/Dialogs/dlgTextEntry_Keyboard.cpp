@@ -483,14 +483,14 @@ IdenticalIndex = -1;
 	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
 
 		LKASSERT(cursor < EXT_SEARCH_SIZE);
-		LKASSERT(IdenticalIndex<=(int)WayPointList.size());
+
 		_sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),WayPointList[IdenticalIndex].Name);
 		if(_tcslen(WayPointList[IdenticalIndex].Code) > 1)
 		{
 			_sntprintf(Found,EXT_SEARCH_SIZE,_T("%s (%s)"),WayPointList[IdenticalIndex].Name, WayPointList[IdenticalIndex].Code);
 		}
 
-      if((wp)  &&  (EqCnt >0))
+    if((wp)  &&  (EqCnt >0))
     {
       wp->SetText(Found);
     }
