@@ -2182,12 +2182,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
             break;
         case 'G':
             if(len==1) Type=CLASSG; // G class airspace
-            else
-            {
-              if (_tcsicmp(dataStr,_T("GP"))==0)      Type=NOGLIDER;
-              if (_tcsicmp(dataStr,_T("GSEC"))==0)    Type=GLIDERSECT;
-              if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDERSECT;
-            }
+            else if (_tcsicmp(dataStr,_T("GLIDING"))==0) Type=GLIDERSECT;
             break;
         //case 'O':
             //if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
@@ -2210,7 +2205,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
             break;
         case 'U':
             if (_tcsicmp(dataStr,_T("UIR"))==0)
-            Type = OTHER;; //TODO: UIR missing in LK8000
+            Type = OTHER; //TODO: UIR missing in LK8000
             break;
         default:
             break;
