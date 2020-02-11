@@ -28,7 +28,7 @@ static TCHAR edittext[MAX_TEXTENTRY];
 
 void ReduceKeysByWaypointList(void);
 void  ReduceKeysByAirspaceList(void);
-void RemoveKeys(char *EnabledKeyString, unsigned char size);
+void RemoveKeys(TCHAR *EnabledKeyString, unsigned int size);
 #define KEYRED_NONE     0
 #define KEYRED_WAYPOINT 1
 #define KEYRED_AIRSPACE 2
@@ -39,7 +39,7 @@ void RemoveKeys(char *EnabledKeyString, unsigned char size);
 uint8_t  KeyboardLayout =UPPERCASE;
 uint8_t  WaypointKeyRed = KEYRED_NONE;
 
- int IdenticalIndex=-1;
+ int IdenticalIndex=NUMRESWP;
  CAirspace *Selairspace= NULL;
 
 static void UpdateTextboxProp(void)
@@ -96,9 +96,9 @@ static void UpdateTextboxProp(void)
    //   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
       {
 
-       char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyz,!+$%#/()=:*_ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@- \xD6\xDC\xC4"};
+       TCHAR Charlist[MAX_SEL_LIST_SIZE]={_T("abcdefghijklmnopqrstuvwxyz,!+$%#/()=:*_ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@- \xD6\xDC\xC4")};
 
-        RemoveKeys((char*)Charlist , sizeof(Charlist));
+        RemoveKeys(Charlist , sizeof(Charlist));
       }
       if(wp != NULL) wp->SetVisible(false);
     }
@@ -367,29 +367,37 @@ if(Txt == NULL) return -1;
 if(Sub == NULL) return -1;
 int SubLen = _tcslen(Sub);
 int TxtLen = _tcslen(Txt);
-int Pos =  0;
-int res = -1;
 
-  while ((Pos + SubLen) <= TxtLen)
+
+if((TxtLen > 0) && (SubLen > 0))
+{
+  for ( int i =0; i < (TxtLen-SubLen); i++ )
   {
-    res = _tcsnicmp(&Txt[Pos], Sub, SubLen);
-    if(res == 0)
-      return  Pos;
-    Pos++;
-  }
+    int j=0;
+    if(_totupper(Txt[i]) == _totupper(Sub[j]))
+    {
+      do{
+       j++;
+      } while ((_totupper(Txt[i+j]) == _totupper(Sub[j]) ) && (j < SubLen));
 
-  return -1;  // not found
+      if(j== SubLen)
+        return i;
+    }
+  }
+}
+
+return -1;  // not found
 
 }
 
 void ReduceKeysByWaypointList(void)
 {
 
-char SelList[MAX_SEL_LIST_SIZE]={""};
+TCHAR SelList[MAX_SEL_LIST_SIZE]={_T("")};
 unsigned int NumChar=0;
 
 
-char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_,!+$%#/()=:* \xD6\xDC\xC4"};
+TCHAR Charlist[MAX_SEL_LIST_SIZE]={_T("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_,!+$%#/()=:* \xD6\xDC\xC4")};
 
 
 unsigned int EqCnt=WayPointList.size();
@@ -397,16 +405,15 @@ unsigned int EqCnt=WayPointList.size();
 
 WndProperty *wp;
 TCHAR Found[EXT_SEARCH_SIZE + 1];
-SelList[0] = '\0';
 unsigned int NameLen=0;
- int Offset=0;
+int Offset=0;
 
 
 
 IdenticalIndex = -1;
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
-    RemoveKeys((char*)Charlist , sizeof(Charlist));
+    RemoveKeys(Charlist , sizeof(Charlist));
   }
   else
   {
@@ -416,80 +423,72 @@ IdenticalIndex = -1;
     for (uint i=NUMRESWP; i< WayPointList.size(); i++)
     {
       TCHAR wname[EXT_NAMESIZE] = _T("");
-      _tcsncat( wname,WayPointList[i].Name, EXT_NAMESIZE);
+      _tcsncpy( wname,WayPointList[i].Name, EXT_NAMESIZE);
       if(_tcslen (WayPointList[i].Code) >1)
       {
-        _tcsncat( wname,_T(" ")              ,EXT_NAMESIZE);
+        _tcsncat( wname,_T(" (")             ,EXT_NAMESIZE);
         _tcsncat( wname,WayPointList[i].Code ,EXT_NAMESIZE);
+        _tcsncat( wname,_T(")")              ,EXT_NAMESIZE);
       }
 
       NameLen =  _tcslen(wname);
       Offset = 0;
-
 
       BOOL bFound = false;
       int Sart =0;
       if(NameLen >= _tcslen( edittext))
       do
       {
-	Sart =  FindFirstIn((&wname[Offset]),( edittext));
-	if( Sart != -1)  // substring found?st
-	{
-	  bFound = true;
-	  if(Sart < MinStart)
-	  {
-	    MinStart = Sart;
-	    IdenticalIndex = i; /* remember most left sub string  occurrence index */
-	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),wname );
-	     for(uint k = 0; k < cursor; k++)
-	       Found[k+Sart] =  toupper(Found[k+Sart]);
-	  }
-	  Sart += Offset;
-	  TCHAR newChar = (wname[cursor+Sart]);
-	  bool existing = false;
-	  uint j=0;
-	  while(( j < NumChar) && (!existing))  /* new character already in list? */
-	  {
-	    LKASSERT(j<MAX_SEL_LIST_SIZE);
-	    if(SelList[j] == (unsigned char)newChar)
-		    existing = true;
-	    j++;
-	  }
+        Sart =  FindFirstIn((&wname[Offset]),( edittext));
+        if( Sart != -1)  // substring found?st
+        {
+          bFound = true;
+          if((Sart+Offset) < MinStart)
+          {
+            MinStart = Sart+Offset;
+            IdenticalIndex = i; /* remember most left sub string  occurrence index */
+            _tcsncpy( Found,wname, EXT_NAMESIZE);
+             for(uint k = 0; k < cursor; k++)
+               Found[k+Sart] =  _totupper(Found[k+Sart]);
+          }
+          Sart += Offset;
+          TCHAR newChar = (wname[cursor+Sart]);
+          bool existing = false;
+          uint j=0;
+          while(( j < NumChar) && (!existing))  /* new character already in list? */
+          {
+            LKASSERT(j<MAX_SEL_LIST_SIZE);
+            if(SelList[j] == newChar)
+              existing = true;
+            j++;
+          }
 
-	  if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
-	  {
-	    LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-	    SelList[NumChar++] = newChar;
-	  }
-	  if((Sart +cursor) < NameLen) // place for another substring?
-	    Offset = Sart +cursor;     // search for another substring after first one
-	  else
-	    Sart = -1;
-	}
-      } while( Sart != -1 );
+          if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+          {
+            LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+            SelList[NumChar++] = newChar;
+          }
+          if((Sart +cursor) < NameLen) // place for another substring?
+            Offset = Sart +cursor;     // search for another substring after first one
+          else
+            Sart = -1;
+        }
+      }
+      while( Sart != -1 );
 
       if(bFound)
       {
-	EqCnt++;
-	LKASSERT(i<=WayPointList.size());
+        EqCnt++;
+        LKASSERT(i<=WayPointList.size());
       }
     }
 
     SelList[NumChar++] = '\0';
 
-    RemoveKeys((char*)SelList, NumChar);
+    RemoveKeys(SelList, NumChar);
+
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
-	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
-
-		LKASSERT(cursor < EXT_SEARCH_SIZE);
-		LKASSERT(IdenticalIndex<=(int)WayPointList.size());
-		_sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),WayPointList[IdenticalIndex].Name);
-		if(_tcslen(WayPointList[IdenticalIndex].Code) > 1)
-		{
-			_sntprintf(Found,EXT_SEARCH_SIZE,_T("%s (%s)"),WayPointList[IdenticalIndex].Name, WayPointList[IdenticalIndex].Code);
-		}
-
-      if((wp)  &&  (EqCnt >0))
+    if((wp)  &&  (EqCnt >0))
     {
       wp->SetText(Found);
     }
@@ -518,7 +517,7 @@ void ReduceKeysByAirspaceList(void)
 TCHAR SelList[MAX_SEL_LIST_SIZE]={_T("")};
 unsigned int NumChar=0;
 
-char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_?!+$%#/()=:* \xD6\xDC\xC4"};
+TCHAR Charlist[MAX_SEL_LIST_SIZE]={_T("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_?!+$%#/()=:* \xD6\xDC\xC4")};
 
 
 unsigned int EqCnt=WayPointList.size();
@@ -536,7 +535,7 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
-    RemoveKeys((char*)Charlist , sizeof(Charlist));
+    RemoveKeys(Charlist , sizeof(Charlist));
   }
   else
   {
@@ -562,52 +561,51 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
       do
       {
-	Sart =  FindFirstIn((&AS_Name[Offset]),( edittext));
-	if( Sart != -1)  // substring found?
-	{
-	  bFound = true;
-	  if(Sart < MinStart)
-	  {
-	    Selairspace = (*it);
-	//    StartupStore(_T(">>>>>>>>> IdenticalIndex %i %s %s"),IdenticalIndex,(*it)->Name(),NEWLINE);
-	    MinStart = Sart;
-	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),AS_Name );
-	    for(uint k = 0; k < cursor; k++)
-	      Found[k+Sart] =  toupper(Found[k+Sart]);
-	  }
+        Sart =  FindFirstIn((&AS_Name[Offset]),( edittext));
+        if( Sart != -1)  // substring found?
+        {
+          bFound = true;
+          if((Sart+Offset) < MinStart)
+          {
+            Selairspace = (*it);
+            MinStart = Sart+Offset;
+            _tcsncpy( Found,AS_Name, EXT_SEARCH_SIZE);
+            for(uint k = 0; k < cursor; k++)
+              Found[k+Sart] =  _totupper(Found[k+Sart]);
+          }
 
-	  Sart += Offset;
-	  TCHAR newChar = (AS_Name[cursor+Sart]);
-	  bool existing = false;
-	  uint j=0;
-	  while(( j < NumChar) && (!existing))  /* new character already in list? */
-	  {
-	    LKASSERT(j<MAX_SEL_LIST_SIZE);
-	    if(SelList[j] == (unsigned char)newChar)
-		    existing = true;
-	    j++;
-	  }
+          Sart += Offset;
+          TCHAR newChar = (AS_Name[cursor+Sart]);
+          bool existing = false;
+          uint j=0;
+          while(( j < NumChar) && (!existing))  /* new character already in list? */
+          {
+            LKASSERT(j<MAX_SEL_LIST_SIZE);
+            if(SelList[j] == newChar)
+              existing = true;
+            j++;
+          }
 
-	  if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
-	  {
-	    LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-	    SelList[NumChar++] = newChar;
-	  }
-	  if((Sart +cursor) < NameLen) // place for another substring?
-	    Offset = Sart +cursor;     // search for another substring after first one
-	  else
-	    Sart = -1;
-	}
-      } while( Sart != -1 );
+          if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+          {
+            LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+            SelList[NumChar++] = newChar;
+          }
+          if((Sart +cursor) < NameLen) // place for another substring?
+            Offset = Sart +cursor;     // search for another substring after first one
+          else
+            Sart = -1;
+        }
+      } while( Sart != -1);
 
       if(bFound)
       {
-	EqCnt++;
+	      EqCnt++;
       }
     }
 
     SelList[NumChar++] = '\0';
-    RemoveKeys((char*)SelList, NumChar);
+    RemoveKeys(SelList, NumChar);
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
     if((wp)  &&  (EqCnt >0))
     {
@@ -626,7 +624,7 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
 
 
-void RemoveKeys(char *EnabledKeyString, unsigned char size)
+void RemoveKeys(TCHAR *EnabledKeyString, unsigned int size)
 {
 
 bool bA=false, bB=false, bC=false, bD=false, bE=false, bF=false, bG=false, bH=false, bI=false,
@@ -650,7 +648,7 @@ BOOL bCaseDontCare = true;
       for (i = 0; i < size; i++ )
       {
 	TCHAR Sel = EnabledKeyString[i];
-	if(bCaseDontCare) Sel = toupper(EnabledKeyString[i]);
+	if(bCaseDontCare) Sel = _totupper(EnabledKeyString[i]);
 	switch (Sel)
 	{
 	  case 'A': bA = true; break;
@@ -806,60 +804,60 @@ BOOL bCaseDontCare = true;
 	wb =  (WndButton*) wf->FindByName(TEXT("prp7")); if(wb != NULL) wb->SetVisible(b7);
 	wb =  (WndButton*) wf->FindByName(TEXT("prp8")); if(wb != NULL) wb->SetVisible(b8);
 	wb =  (WndButton*) wf->FindByName(TEXT("prp9")); if(wb != NULL) wb->SetVisible(b9);
-        wb =  (WndButton*) wf->FindByName(TEXT("prpDot"))   ; if(wb != NULL) wb->SetVisible(bDot);
-        wb =  (WndButton*) wf->FindByName(TEXT("prpMin"))   ; if(wb != NULL) wb->SetVisible(bMin);
-        wb =  (WndButton*) wf->FindByName(TEXT("prpAt"))    ; if(wb != NULL) wb->SetVisible(bAt);
+  wb =  (WndButton*) wf->FindByName(TEXT("prpDot"))   ; if(wb != NULL) wb->SetVisible(bDot);
+  wb =  (WndButton*) wf->FindByName(TEXT("prpMin"))   ; if(wb != NULL) wb->SetVisible(bMin);
+  wb =  (WndButton*) wf->FindByName(TEXT("prpAt"))    ; if(wb != NULL) wb->SetVisible(bAt);
 
-	/**************************** upercase **********************************************/
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_A")); if(wb != NULL) wb->SetVisible(b_A);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_B")); if(wb != NULL) wb->SetVisible(b_B);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_C")); if(wb != NULL) wb->SetVisible(b_C);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_D")); if(wb != NULL) wb->SetVisible(b_D);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_E")); if(wb != NULL) wb->SetVisible(b_E);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_F")); if(wb != NULL) wb->SetVisible(b_F);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_G")); if(wb != NULL) wb->SetVisible(b_G);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_H")); if(wb != NULL) wb->SetVisible(b_H);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_I")); if(wb != NULL) wb->SetVisible(b_I);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_J")); if(wb != NULL) wb->SetVisible(b_J);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_K")); if(wb != NULL) wb->SetVisible(b_K);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_L")); if(wb != NULL) wb->SetVisible(b_L);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_M")); if(wb != NULL) wb->SetVisible(b_M);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_N")); if(wb != NULL) wb->SetVisible(b_N);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_O")); if(wb != NULL) wb->SetVisible(b_O);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_P")); if(wb != NULL) wb->SetVisible(b_P);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_Q")); if(wb != NULL) wb->SetVisible(b_Q);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_R")); if(wb != NULL) wb->SetVisible(b_R);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_S")); if(wb != NULL) wb->SetVisible(b_S);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_T")); if(wb != NULL) wb->SetVisible(b_T);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_U")); if(wb != NULL) wb->SetVisible(b_U);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_V")); if(wb != NULL) wb->SetVisible(b_V);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_W")); if(wb != NULL) wb->SetVisible(b_W);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_X")); if(wb != NULL) wb->SetVisible(b_X);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_Y")); if(wb != NULL) wb->SetVisible(b_Y);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_Z")); if(wb != NULL) wb->SetVisible(b_Z);
+/**************************** upercase **********************************************/
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_A")); if(wb != NULL) wb->SetVisible(b_A);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_B")); if(wb != NULL) wb->SetVisible(b_B);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_C")); if(wb != NULL) wb->SetVisible(b_C);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_D")); if(wb != NULL) wb->SetVisible(b_D);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_E")); if(wb != NULL) wb->SetVisible(b_E);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_F")); if(wb != NULL) wb->SetVisible(b_F);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_G")); if(wb != NULL) wb->SetVisible(b_G);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_H")); if(wb != NULL) wb->SetVisible(b_H);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_I")); if(wb != NULL) wb->SetVisible(b_I);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_J")); if(wb != NULL) wb->SetVisible(b_J);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_K")); if(wb != NULL) wb->SetVisible(b_K);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_L")); if(wb != NULL) wb->SetVisible(b_L);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_M")); if(wb != NULL) wb->SetVisible(b_M);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_N")); if(wb != NULL) wb->SetVisible(b_N);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_O")); if(wb != NULL) wb->SetVisible(b_O);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_P")); if(wb != NULL) wb->SetVisible(b_P);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_Q")); if(wb != NULL) wb->SetVisible(b_Q);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_R")); if(wb != NULL) wb->SetVisible(b_R);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_S")); if(wb != NULL) wb->SetVisible(b_S);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_T")); if(wb != NULL) wb->SetVisible(b_T);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_U")); if(wb != NULL) wb->SetVisible(b_U);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_V")); if(wb != NULL) wb->SetVisible(b_V);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_W")); if(wb != NULL) wb->SetVisible(b_W);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_X")); if(wb != NULL) wb->SetVisible(b_X);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_Y")); if(wb != NULL) wb->SetVisible(b_Y);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_Z")); if(wb != NULL) wb->SetVisible(b_Z);
 
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_0")); if(wb != NULL) wb->SetVisible(b_0);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_1")); if(wb != NULL) wb->SetVisible(b_1);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_2")); if(wb != NULL) wb->SetVisible(b_2);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_3")); if(wb != NULL) wb->SetVisible(b_3);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_4")); if(wb != NULL) wb->SetVisible(b_4);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_5")); if(wb != NULL) wb->SetVisible(b_5);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_6")); if(wb != NULL) wb->SetVisible(b_6);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_7")); if(wb != NULL) wb->SetVisible(b_7);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_8")); if(wb != NULL) wb->SetVisible(b_8);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_9")); if(wb != NULL) wb->SetVisible(b_9);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_0")); if(wb != NULL) wb->SetVisible(b_0);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_1")); if(wb != NULL) wb->SetVisible(b_1);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_2")); if(wb != NULL) wb->SetVisible(b_2);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_3")); if(wb != NULL) wb->SetVisible(b_3);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_4")); if(wb != NULL) wb->SetVisible(b_4);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_5")); if(wb != NULL) wb->SetVisible(b_5);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_6")); if(wb != NULL) wb->SetVisible(b_6);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_7")); if(wb != NULL) wb->SetVisible(b_7);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_8")); if(wb != NULL) wb->SetVisible(b_8);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_9")); if(wb != NULL) wb->SetVisible(b_9);
 
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_Dot"))   ; if(wb != NULL) wb->SetVisible(b_Dot);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_Min"))   ; if(wb != NULL) wb->SetVisible(b_Min);
-        wb =  (WndButton*) wf->FindByName(TEXT("prp_At"))    ; if(wb != NULL) wb->SetVisible(b_At);
-        /***********************************************************************************************/
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_Dot"))   ; if(wb != NULL) wb->SetVisible(b_Dot);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_Min"))   ; if(wb != NULL) wb->SetVisible(b_Min);
+  wb =  (WndButton*) wf->FindByName(TEXT("prp_At"))    ; if(wb != NULL) wb->SetVisible(b_At);
+  /***********************************************************************************************/
 
-        wb =  (WndButton*) wf->FindByName(TEXT("prpUe")); if(wb != NULL) wb->SetVisible(bUe);
-        wb =  (WndButton*) wf->FindByName(TEXT("prpOe")); if(wb != NULL) wb->SetVisible(bOe);
-        wb =  (WndButton*) wf->FindByName(TEXT("prpAe")); if(wb != NULL) wb->SetVisible(bAe);
+  wb =  (WndButton*) wf->FindByName(TEXT("prpUe")); if(wb != NULL) wb->SetVisible(bUe);
+  wb =  (WndButton*) wf->FindByName(TEXT("prpOe")); if(wb != NULL) wb->SetVisible(bOe);
+  wb =  (WndButton*) wf->FindByName(TEXT("prpAe")); if(wb != NULL) wb->SetVisible(bAe);
 
 
 //      wb =  (WndButton*) wf->FindByName(TEXT("prpUn"))    ; if(wb != NULL) wb->SetVisible(bUn);
-        wb =  (WndButton*) wf->FindByName(TEXT("prpSpace")) ; if(wb != NULL) wb->SetVisible(bSpace);
+  wb =  (WndButton*) wf->FindByName(TEXT("prpSpace")) ; if(wb != NULL) wb->SetVisible(bSpace);
 
 }
