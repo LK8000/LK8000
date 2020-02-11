@@ -494,7 +494,7 @@ static void OnFilterNameButton(WndButton* pWnd) {
 
 
   int i= _tcslen(newNameFilter)-1;
-  while (i>=0) {
+  while (i>0) {
 	if (newNameFilter[i]!=_T(' ')) {
 		break;
 	}
@@ -513,23 +513,26 @@ static void OnFilterNameButton(WndButton* pWnd) {
   }
   FilterMode(true);
   UpdateList();
+  wWayPointListEntry->SetFocus();
+  wWayPointList->SetItemIndexPos(0);
   if((SelectedWp>=0) && (SelectedWp < (int)WayPointList.size()))
   {
-	for (i=0; i<UpLimit; i++)
-	{
-
-	    if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
-	    {
-		  CursorPos = i;
-	    }
-	}
+    for (i=0; i<UpLimit; i++)
+    {
+      if(StrIndex != NULL)
+      {
+        if(( StrIndex[i] >= 0 ) && (StrIndex[i] < (int)WayPointList.size()))
+        {
+          if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
+          {
+            CursorPos = i;
+            wWayPointList->SetItemIndexPos(CursorPos);
+            wWayPointList->CenterScrollCursor();
+          }
+        }
+      }
+    }
   }
-  wWayPointListEntry->SetFocus();
-
-
- // wWayPointList->RedrawScrolled(true);
-  wWayPointList->SetItemIndexPos(CursorPos);  
-  wWayPointList->CenterScrollCursor();
   wWayPointList->Redraw();
 
 }
@@ -671,7 +674,7 @@ static unsigned int DrawListIndex=0;
 
 // Painting elements after init
 
-
+extern int FindFirstIn(const TCHAR Txt[] ,const TCHAR Sub[]);
 
 static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     if (!Sender) {
@@ -718,6 +721,32 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 					_tcsncat(TmpName, _T(")"),EXT_NAMESIZE);
         }
         Surface.DrawTextClip(w0, TextPos, TmpName, w1);
+
+        _tcsncpy(sTmp, TmpName ,EXT_NAMESIZE);
+
+
+        int Start = FindFirstIn(sTmp ,sNameFilter) ;
+
+        // redraw the found substring in different color
+        if(Start >= 0)
+        {
+          int iFilterLen = _tcslen(sNameFilter);
+          sTmp[Start]=0;
+          int width = Surface.GetTextWidth(sTmp);
+          int wcol = LineHeight + width;
+          _tcsncpy(sTmp, TmpName ,EXT_NAMESIZE);
+          for(int i = 0; i < iFilterLen+1; i++)
+         	{
+            sTmp[i] = sTmp[i+Start];
+       	  }
+          sTmp[iFilterLen]=0;
+          LKColor oldCol = Surface.SetTextColor(RGB_MAGENTA);
+          int w1c = w1 + Surface.GetTextWidth(sTmp) - wcol;
+          if(wcol < w1)
+            Surface.DrawTextClip(wcol, TextPos, sTmp ,w1c);
+          Surface.SetTextColor(oldCol);
+        }
+
 
         // Draw Distance : right justified after waypoint Name
         _stprintf(sTmp, TEXT("%.0f%s"), WayPointSelectInfo[i].Distance, Units::GetDistanceName());

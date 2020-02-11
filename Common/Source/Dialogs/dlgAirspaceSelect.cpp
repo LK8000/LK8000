@@ -691,15 +691,27 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
         // Draw Name
         LK_tcsncpy(sTmp, AirspaceSelectInfo[i].airspace->Name(),EXT_NAMESIZE);
-        int iFilterLen = _tcslen(sNameFilter);
+
+        Surface.DrawTextClip(w0, TextPos, sTmp , w1);
+
         int Start = FindFirstIn(sTmp ,sNameFilter) ;
+
         if(Start >= 0)
         {
-          for(int i = 0; i < iFilterLen; i++)
-        	  sTmp[Start+i] = _toupper(sTmp[Start+i]);
+          int iFilterLen = _tcslen(sNameFilter);
+          sTmp[Start]=0;
+          int wcol = LineHeight + Surface.GetTextWidth(sTmp);
+          LK_tcsncpy(sTmp, AirspaceSelectInfo[i].airspace->Name(),EXT_NAMESIZE);
+          for(int i = 0; i < iFilterLen+1; i++)
+         	{
+            sTmp[i] = sTmp[i+Start];
+       	  }
+          sTmp[iFilterLen]=0;
+          LKColor oldCol = Surface.SetTextColor(RGB_MAGENTA);
+          Surface.DrawTextClip(wcol, TextPos, sTmp , w1);
+          Surface.SetTextColor(oldCol);
         }
-        
-        Surface.DrawTextClip(w0, TextPos, sTmp , w1);
+
 
         LK_tcsncpy(sTmp,  CAirspaceManager::GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type) , 4);
         const int w4 = Surface.GetTextWidth(sTmp);
