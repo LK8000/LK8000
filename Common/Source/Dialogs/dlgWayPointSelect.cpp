@@ -494,7 +494,7 @@ static void OnFilterNameButton(WndButton* pWnd) {
 
 
   int i= _tcslen(newNameFilter)-1;
-  while (i>=0) {
+  while (i>0) {
 	if (newNameFilter[i]!=_T(' ')) {
 		break;
 	}
@@ -513,23 +513,26 @@ static void OnFilterNameButton(WndButton* pWnd) {
   }
   FilterMode(true);
   UpdateList();
+  wWayPointListEntry->SetFocus();
+  wWayPointList->SetItemIndexPos(0);
   if((SelectedWp>=0) && (SelectedWp < (int)WayPointList.size()))
   {
-	for (i=0; i<UpLimit; i++)
-	{
-
-	    if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
-	    {
-		  CursorPos = i;
-	    }
-	}
+    for (i=0; i<UpLimit; i++)
+    {
+      if(StrIndex != NULL)
+      {
+        if(( StrIndex[i] >= 0 ) && (StrIndex[i] < (int)WayPointList.size()))
+        {
+          if(WayPointSelectInfo[StrIndex[i]].Index == SelectedWp)
+          {
+            CursorPos = i;
+            wWayPointList->SetItemIndexPos(CursorPos);
+            wWayPointList->CenterScrollCursor();
+          }
+        }
+      }
+    }
   }
-  wWayPointListEntry->SetFocus();
-
-
- // wWayPointList->RedrawScrolled(true);
-  wWayPointList->SetItemIndexPos(CursorPos);  
-  wWayPointList->CenterScrollCursor();
   wWayPointList->Redraw();
 
 }
@@ -671,7 +674,7 @@ static unsigned int DrawListIndex=0;
 
 // Painting elements after init
 
-
+extern int FindFirstIn(const TCHAR Txt[] ,const TCHAR Sub[]);
 
 static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
     if (!Sender) {
@@ -718,6 +721,44 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 					_tcsncat(TmpName, _T(")"),EXT_NAMESIZE);
         }
         Surface.DrawTextClip(w0, TextPos, TmpName, w1);
+
+        _tcsncpy(sTmp, TmpName ,EXT_NAMESIZE);
+
+
+        int Start = FindFirstIn(sTmp ,sNameFilter) ;
+
+        // redraw the found substring in different color
+        if(Start >= 0)
+        {
+          int iFilterLen = _tcslen(sNameFilter);
+          sTmp[Start]=0;
+
+          int wcol = LineHeight + Surface.GetTextWidth(sTmp);;
+          _tcsncpy(sTmp, TmpName ,EXT_NAMESIZE);
+
+          for(int i = 0; i < iFilterLen+1; i++)	{
+            sTmp[i] = sTmp[i+Start];
+       	  }
+          sTmp[iFilterLen]=0;
+          int subend = width  - w0 - w2 - Surface.GetTextWidth(sTmp); // Max Name width
+          wcol = min (wcol,w1+LineHeight);
+
+          subend = min(w1+LineHeight,wcol+Surface.GetTextWidth(sTmp));
+          subend = max(0,subend);
+
+          if(wcol < subend)
+          {
+            int h =  w0-IBLSCALE(4);
+
+            LKPen hpUnderlinePen(PEN_SOLID, IBLSCALE(2), RGB_BLACK);
+            const auto hOldPen = Surface.SelectObject(hpUnderlinePen);
+
+            Surface.DrawLine(wcol, h, subend, h);
+
+            Surface.SelectObject(hOldPen);
+          }
+        }
+
 
         // Draw Distance : right justified after waypoint Name
         _stprintf(sTmp, TEXT("%.0f%s"), WayPointSelectInfo[i].Distance, Units::GetDistanceName());
