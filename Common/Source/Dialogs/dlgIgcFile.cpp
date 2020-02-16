@@ -61,7 +61,8 @@ namespace DlgIgcFile {
                 StartupStore(_T("LookupDevice OK \n"));
                 if(nDevice == 0) {
                     StopHourglassCursor();
-                    MessageBoxX(_T("No Device"), _T("Error"), mbOk);
+                    // No Device, Error
+                    MessageBoxX(MsgToken(1537), MsgToken(266), mbOk);
                     StartHourglassCursor();
                 } else {
                     WndProperty* wp = (WndProperty*)wfDlg->FindByName(TEXT("prpDeviceList"));
@@ -71,12 +72,12 @@ namespace DlgIgcFile {
                     }
                     if(dfe) {
                         dfe->Clear();
-                        dfe->addEnumText(_T("none"));
+                        dfe->addEnumText(MsgToken(479)); // None
                     }
                     for(size_t i = 0; i < nDevice; ++i) {
                         TCHAR szDeviceName[100] = {0};
                         if(!Obex.GetDeviceName(i, szDeviceName, array_size(szDeviceName))) {
-                            _stprintf(szDeviceName, _T("Unknown device <%d>"), i);
+                            _stprintf(szDeviceName, _T("%s <%d>"), MsgToken(1538), i); // Unknown device
                         }
                         StartupStore(_T("GetDeviceName <%d><%s> \n"), i, szDeviceName);
                         if(dfe) {
@@ -108,21 +109,25 @@ namespace DlgIgcFile {
 
                         if(!Obex.SendFile(DeviceIndex, szFileFullPath)) {
                             StopHourglassCursor();
-                            MessageBoxX(_T("Send Failed"), _T("Error"), mbOk);
+                            // Send Failed, Error
+                            MessageBoxX(MsgToken(1539), MsgToken(266), mbOk);
                             StartHourglassCursor();
                         } else {
                             StopHourglassCursor();
-                            MessageBoxX(_T("File sent!"), _T("Success"), mbOk);
+                            // File sent! , Error
+                            MessageBoxX(MsgToken(1540), MsgToken(1524), mbOk);
                             StartHourglassCursor();
                         }
                     }
                 }
                 Obex.Shutdown();
             } else {
-                MessageBoxX(_T("Unsupported on this device"), _T("Error"), mbOk);
+                // "Unsupported on this device", "Error"
+                MessageBoxX(MsgToken(1534), MsgToken(266), mbOk);
             }
 #else
-            MessageBoxX(_T("Unsupported on this device"), _T("Error"), mbOk);
+            // "Unsupported on this device", "Error"
+            MessageBoxX(MsgToken(1534), MsgToken(266), mbOk);
 #endif
             StopHourglassCursor();
         }

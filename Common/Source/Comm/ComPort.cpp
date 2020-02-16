@@ -119,7 +119,7 @@ bool ComPort::StartRxThread() {
                        (unsigned) (GetPortIndex() + 1), GetPortName(), NEWLINE);
 
           // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
-          StatusMessage(mbOk, TEXT("Error"), TEXT("%s %s"), MsgToken(761), GetPortName());
+          StatusMessage(mbOk, MsgToken(266), TEXT("%s %s"), MsgToken(761), GetPortName());
           //DWORD dwError = GetLastError();
           return false;
       }

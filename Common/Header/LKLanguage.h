@@ -12,12 +12,16 @@
 #ifndef LKLANGUAGE_H
 #define	LKLANGUAGE_H
 
-#include <tchar.h>
+#include <map>
+#include "tchar.h"
+#include "Util/tstring.hpp"
 
-void LKReadLanguageFile(const TCHAR* szFileName);
+void LKReadLanguageFile();
 void LKUnloadMessage();
 
-const TCHAR *LKgethelptext(const TCHAR *TextIn);
+std::map<tstring, tstring> LoadLanguageList();
+
+tstring LKgethelptext(const TCHAR *TextIn);
 const TCHAR *LKGetText(const TCHAR *TextIn);
 const TCHAR *MsgToken(unsigned tindex);
 

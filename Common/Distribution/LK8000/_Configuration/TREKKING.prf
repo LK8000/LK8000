@@ -139,7 +139,6 @@ LKTopoZoomCat80a=10000
 LKTopoZoomCat90a=6000
 LKVarioBar=0
 LKVarioVal=0
-LanguageFile="%LOCAL_PATH%\\_Language\ENGLISH.LNG"
 LatLonUnits=0
 LiftUnits=1l
 LockSettingsInFlight=0

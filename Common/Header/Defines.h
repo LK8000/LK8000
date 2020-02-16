@@ -137,7 +137,7 @@
 #endif
 
 #define LKD_DEFAULT_POLAR   "Default.plr"
-#define LKD_DEFAULT_LANGUAGE   "ENGLISH.LNG"
+#define LKD_DEFAULT_LANGUAGE   "en"
 
 #ifdef ANDROID_VARIANT_BETA
 #define LKD_CONF	"_Configuration_beta"

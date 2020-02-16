@@ -2609,30 +2609,20 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  _tcscpy(temptext,szLanguageFile);
-  if (_tcslen(temptext)==0) {
-	_tcscpy(temptext,_T(LKD_DEFAULT_LANGUAGE));
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLanguageFile"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLanguageCode"));
   if (wp) {
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
+    DataField* dfe = wp->GetDataField();
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_LANGUAGE), _T("*" LKS_LANGUAGE));
-#ifdef LKD_SYS_LANGUAGE
-      /**
-       * Add entry from system directory not exist in data directory.
-       */
-#ifdef ANDROID      
-      dfe->ScanZipDirectory(_T(LKD_SYS_LANGUAGE), _T("*" LKS_LANGUAGE));
-#else
-      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_LANGUAGE), _T("*" LKS_LANGUAGE));
-#endif
+      const auto list = LoadLanguageList();
+      for(auto& lang : list) {
+        dfe->addEnumText(lang.first.c_str(), lang.second.c_str());
+      }
       dfe->Sort();
-#endif
-      dfe->Lookup(temptext);
+      dfe->Set(dfe->Find(szLanguageCode));
     }
     wp->RefreshDisplay();
   }
+
 
   _tcscpy(temptext,szInputFile);
   wp = (WndProperty*)wf->FindByName(TEXT("prpInputFile"));
@@ -4124,12 +4114,12 @@ int ival;
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLanguageFile"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLanguageCode"));
   if (wp) {
-    DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,szLanguageFile)) {
-      _tcscpy(szLanguageFile,temptext);
+    DataField* dfe = wp->GetDataField();
+    _tcscpy(temptext, dfe->GetAsString());
+    if (_tcscmp(temptext,szLanguageCode)) {
+      _tcscpy(szLanguageCode,temptext);
       requirerestart = true; // restart needed for language load
       // LKReadLanguageFile(); // NO GOOD. MEMORY LEAKS PENDING
     }

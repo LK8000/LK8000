@@ -286,24 +286,24 @@ void FillDataOptions()
 	SetDataOption(115, ugAltitude,       TEXT("_@M1644_"), TEXT("_@M1645_"));
 
 	// No reason to have abbreviated name, since normally it is the wp name itself
-	SetDataOption(116, ugNone, TEXT("_@M1761_"), TEXT("Atn1Brg")); // Alternate1 bearing
-	SetDataOption(117, ugNone, TEXT("_@M1762_"), TEXT("Atn2Brg")); // Alternate2 bearing
-	SetDataOption(118, ugNone, TEXT("_@M1763_"), TEXT("BstBrg"));  // BestAlternate bearing
-	SetDataOption(119, ugDistance, TEXT("_@M1764_"), TEXT("Atn1Dst")); // Alternate1 distance
-	SetDataOption(120, ugDistance, TEXT("_@M1765_"), TEXT("Atn2Dst")); // Alternate2 distance
-	SetDataOption(121, ugDistance, TEXT("_@M1766_"), TEXT("BstDst"));  // BestAlternate distance
+	SetDataOption(116, ugNone, TEXT("_@M1761_"), TEXT("_@M1512_")); // Alternate1 bearing
+	SetDataOption(117, ugNone, TEXT("_@M1762_"), TEXT("_@M1513_")); // Alternate2 bearing
+	SetDataOption(118, ugNone, TEXT("_@M1763_"), TEXT("_@M1514_"));  // BestAlternate bearing
+	SetDataOption(119, ugDistance, TEXT("_@M1764_"), TEXT("_@M1515_")); // Alternate1 distance
+	SetDataOption(120, ugDistance, TEXT("_@M1765_"), TEXT("_@M1516_")); // Alternate2 distance
+	SetDataOption(121, ugDistance, TEXT("_@M1766_"), TEXT("_@M1517_"));  // BestAlternate distance
 
 	SetDataOption(122, ugAltitude, TEXT("_@M1767_"), TEXT("_@M1768_"));  // Max Altitude reached
 	SetDataOption(123, ugAltitude, TEXT("_@M1769_"), TEXT("_@M1770_"));  // Max Height gained
 	SetDataOption(124, ugWindSpeed, TEXT("_@M1771_"), TEXT("_@M1772_")); // Head wind speed
 	SetDataOption(125, ugDistance, TEXT("_@M1507_"), TEXT("_@M1508_")); //OLC FAI triangle Distance to close
 	SetDataOption(126, ugNone, TEXT("_@M1509_"), TEXT("_@M1510_")); // OLC FAI triangle Distance close %
-	SetDataOption(127, ugNone, TEXT("Bank angle"), TEXT("_@M1197_")); // Bank
-	SetDataOption(128, ugNone, TEXT("_@M1841_"), TEXT("Atn1Rad")); // Alternate1 radial
-	SetDataOption(129, ugNone, TEXT("_@M1842_"), TEXT("Atn2Rad")); // Alternate2 radial
-	SetDataOption(130, ugNone, TEXT("_@M1287_"), TEXT("HDG")); // Heading, text is changed in lkprocess
-	SetDataOption(131, ugDistance, TEXT("_@M1843_"), TEXT("Atn1 nm")); // Alternate1 distance NMiles
-	SetDataOption(132, ugDistance, TEXT("_@M1844_"), TEXT("Atn2 nm")); // Alternate2 distance NMiles
+	SetDataOption(127, ugNone, TEXT("_@M1518_"), TEXT("_@M1197_")); // Bank
+	SetDataOption(128, ugNone, TEXT("_@M1841_"), TEXT("_@M1519_")); // Alternate1 radial
+	SetDataOption(129, ugNone, TEXT("_@M1842_"), TEXT("_@M1520_")); // Alternate2 radial
+	SetDataOption(130, ugNone, TEXT("_@M1287_"), TEXT("_@M1521_")); // Heading, text is changed in lkprocess
+	SetDataOption(131, ugDistance, TEXT("_@M1843_"), TEXT("_@M1522_")); // Alternate1 distance NMiles
+	SetDataOption(132, ugDistance, TEXT("_@M1844_"), TEXT("_@M1523_")); // Alternate2 distance NMiles
 	SetDataOption(133, ugHorizontalSpeed,TEXT("_@M2312_"), TEXT("_@M2313_")); // Speed of maximum efficiency
 	SetDataOption(134, ugNone,TEXT("_@M2314_"), TEXT("_@M2315_")); // Target Req. Efficicency
 	SetDataOption(135, ugAltitude,TEXT("_@M2323_"), TEXT("_@M2324_"));  // Altitude QNE
