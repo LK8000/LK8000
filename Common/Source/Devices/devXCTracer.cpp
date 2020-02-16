@@ -181,6 +181,10 @@ bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGP
     // e.g.:
     // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
+    if (nparams < 12) {
+        return FALSE;
+    }
+
     double alt=0, airspeed=0;
 
     if (ReadChecked(params[2], airspeed))
