@@ -401,7 +401,7 @@
 
 #define LKSIZEBUFFERTITLE	30
 #define LKSIZEBUFFERUNIT	15
-#define LKSIZEBUFFERVALUE	30
+#define LKSIZEBUFFERVALUE	50
 
 // size of a path, complete with final file name
 #define LKSIZEBUFFERPATH	150

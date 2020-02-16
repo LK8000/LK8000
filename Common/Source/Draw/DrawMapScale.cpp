@@ -91,7 +91,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     TCHAR Scale[200] = {};
     TCHAR Scale1[200] = {};
     TCHAR Scale2[200] = {};
-    TCHAR TEMP[20] = {};
+    TCHAR TEMP[40] = {};
 
 
     if (inpanmode) {
