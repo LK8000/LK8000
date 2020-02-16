@@ -36,8 +36,8 @@ static BOOL XCTracerTrue(PDeviceDescriptor_t) {
  */
 static bool
 ReadCheckedRange(TCHAR *String, unsigned &value_r, unsigned min, unsigned max) {
-    if (_tcslen(String) == 0) {
-        return false; // empty string
+    if (!String || _tcslen(String) == 0) {
+      return false; // empty or empty string
     }
 
     const double value = StrToDouble(String, nullptr);
@@ -55,8 +55,8 @@ ReadCheckedRange(TCHAR *String, unsigned &value_r, unsigned min, unsigned max) {
 /* same helper as above with params of type double */
 static bool
 ReadCheckedRange(TCHAR *String, double &value_r, double min, double max) {
-    if (_tcslen(String) == 0) {
-        return false; // empty stringg
+    if (!String || _tcslen(String) == 0) {
+      return false; // empty or empty string
     }
 
     const double value = StrToDouble(String, nullptr);
@@ -71,8 +71,8 @@ ReadCheckedRange(TCHAR *String, double &value_r, double min, double max) {
 
 static bool
 ReadChecked(TCHAR *String, double &value_r) {
-    if (_tcslen(String) == 0) {
-        return false; // empty stringg
+    if (!String || _tcslen(String) == 0) {
+        return false; // empty or empty string
     }
     value_r = StrToDouble(String, nullptr);
 
