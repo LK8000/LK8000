@@ -1825,7 +1825,6 @@
     "_@M001509_": "OLC FAI triangle Distance close %",
     "_@M001510_": "%C:",
     "_@M001511_": "B:",
-
     "_@M001512_": "Atn1Brg",
     "_@M001513_": "Atn2Brg",
     "_@M001514_": "BstBrg",
@@ -1838,9 +1837,7 @@
     "_@M001521_": "",
     "_@M001522_": "Atn1 nm",
     "_@M001523_": "Atn2 nm",
-
     "_@M001524_": "Success",
-    
     "_@M001525_": "Current Free triangle closing point",
     "_@M001526_": "no triangle closing point found!",
     "_@M001527_": "TRIP COMPUTER RESET",
@@ -1850,7 +1847,6 @@
     "_@M001531_": "Expect arrival past sunset",
     "_@M001532_": "TrueWind",
     "_@M001533_": "AutoZoom On/Off",
-    
     "_@M001534_": "Unsupported on this device",
     "_@M001535_": "Thermal Booster",
     "_@M001536_": "SIMulation menu",
@@ -1859,7 +1855,6 @@
     "_@M001539_": "Send Failed",
     "_@M001540_": "File sent!",
     "_@M001541_": "Current FAI triangle closing point",
-    
     "_@M001600_": "DISABLED",
     "_@M001601_": "Double-Click on Low-Right Corner to UNLOCK",
     "_@M001602_": "Configure Bottom Bar",
