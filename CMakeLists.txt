@@ -86,7 +86,7 @@ add_definitions(
 list(APPEND	BUILD_FLAGS
 	-Werror
 	-Wall
-	-ffast-math
+	-fno-math-errno
 	-fopenmp
 	-Wparentheses
 	-Wuninitialized
