@@ -1422,5 +1422,6 @@
     "_@M002245_": "Salvar\nAparelho",
     "_@M002246_": "Reset\nVista",
     "_@M002248_": "Não foi encontrado objeto próximo!",
-    "_@M002304_": "AVISO DE TREM DESLIGADO!"
+    "_@M002304_": "AVISO DE TREM DESLIGADO!",
+    "_@H000100_": "Define o nível de detalhe das configurações\n[Básico]: Apenas definições básicas serão mostradas.\n[Avançado]: Definições básicas e avançadas serão mostradas."
 }
