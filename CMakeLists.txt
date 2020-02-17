@@ -833,5 +833,4 @@ target_link_libraries(
     z
 	EGL
 	GLESv1_CM
-	-static-openmp
 )
