@@ -324,7 +324,7 @@
       <WndProperty Name="prpPressureHg" Caption="_@M531_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H176_">
         <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpUTCOffset" Caption="_@M758_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1177_">
+      <WndProperty Name="prpUTCOffset" Caption="_@M758_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H177_">
         <DataField Name="" DataType="double" DisplayFormat="%.2f" EditFormat="%.2f" Min="-13" Max="13" Step="0.25" OnDataAccess="OnUTCData"/>
       </WndProperty>
       <WndProperty Name="prpLocalTime" Caption="_@M402_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1"/>
