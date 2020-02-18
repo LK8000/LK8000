@@ -1184,7 +1184,7 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
                 : WndCtrlBase(Name)
 {
 
-  mHelpText = NULL;
+  mHelpText = nullptr;
 
   mCanFocus = false;
 
@@ -1235,7 +1235,7 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 WindowControl::~WindowControl(void){
   if (mHelpText) {
     free(mHelpText);
-    mHelpText = NULL;
+    mHelpText = nullptr;
   }
 }
 
@@ -1452,9 +1452,9 @@ WindowControl *WindowControl::FindByName(const TCHAR *Name) {
 void WindowControl::SetHelpText(const TCHAR *Value) {  
   if (mHelpText) {
     free(mHelpText);
-    mHelpText = NULL;
+    mHelpText = nullptr;
   }
-  if (Value) {
+  if (Value && Value[0]) {
     mHelpText = _tcsdup(Value);
   }
 }
@@ -1587,15 +1587,13 @@ int WindowControl::OnHelp() {
     if (mHelpText) {
       dlgHelpShowModal(GetWndText(), mHelpText);
       return(1);
-    } else {
-      if (mOnHelpCallback) {
-	(mOnHelpCallback)(this);
-	return(1);
-      } else {
-	return(0);
-      }
     }
-};
+    if (mOnHelpCallback) {
+      (mOnHelpCallback)(this);
+      return(1);
+    }
+    return(0);
+}
 
 void WindowControl::Paint(LKSurface& Surface) {
 
