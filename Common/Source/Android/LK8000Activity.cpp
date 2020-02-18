@@ -8,9 +8,8 @@
  */
 
 #include "LK8000Activity.h"
-#include <unordered_set>
-#include <Event/Event.h>
-#include <externs.h>
+#include "Event/Event.h"
+#include "externs.h"
 
 Java::TrivialClass LK8000Activity::cls;
 jmethodID LK8000Activity::check_permissions_method;

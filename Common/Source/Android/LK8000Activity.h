@@ -33,6 +33,7 @@ protected:
   Mutex permission_status_mutex;
   permission_t permission_status;
 
+  LK8000Activity() = delete;
 
   LK8000Activity(JNIEnv *_env, jobject _obj) :
           obj(_env, _obj), permission_status(unknown) { }
