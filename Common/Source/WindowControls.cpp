@@ -2926,12 +2926,7 @@ bool WndFrame::OnLButtonDown(const POINT& Pos) {
 
 void WndListFrame::CenterScrollCursor(void)
 {
-/*
-StartupStore(TEXT(" CenterScrollCursor.ItemInPageCount: %i %s"), mListInfo.ItemInPageCount, NEWLINE);
-StartupStore(TEXT(" CenterScrollCursor.ItemCount: %i %s"), mListInfo.ItemCount, NEWLINE);
-StartupStore(TEXT(" CenterScrollCursor.ScrollIndex: %i %s"), mListInfo.ScrollIndex, NEWLINE);
-StartupStore(TEXT(" CenterScrollCursor.ItemIndex: %i %s"), mListInfo.ItemIndex, NEWLINE);
-*/
+
 int Total    = mListInfo.ItemCount;
 int halfPage = mListInfo.ItemInPageCount/2;
 
@@ -2946,12 +2941,7 @@ int halfPage = mListInfo.ItemInPageCount/2;
 	RecalculateIndices(false);
     }
   }
-/*
-StartupStore(TEXT(" CenterScrollCursor.ItemInPageCount: %i %s"), mListInfo.ItemInPageCount, NEWLINE);
-StartupStore(TEXT(" CenterScrollCursor.ItemCount: %i %s"), mListInfo.ItemCount, NEWLINE);
-StartupStore(TEXT(" CenterScrollCursor.ScrollIndex: %i %s"), mListInfo.ScrollIndex, NEWLINE);
-StartupStore(TEXT(" CenterScrollCursor.ItemIndex: %i %s"), mListInfo.ItemIndex, NEWLINE);
-*/
+
 }
 
 void WndListFrame::SetItemIndexPos(int iValue)

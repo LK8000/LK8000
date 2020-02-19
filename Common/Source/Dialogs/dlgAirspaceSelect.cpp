@@ -452,7 +452,7 @@ TCHAR newNameFilter[NAMEFILTERLEN+1];
 LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
 CAirspace *airspace  =  dlgTextEntryShowModalAirspace(newNameFilter, NAMEFILTERLEN);
 
-int len = _tcslen(newNameFilter);
+uint len = _tcslen(newNameFilter);
 if(len <= 0)
 {
 	int i = len;
@@ -691,15 +691,37 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
         // Draw Name
         LK_tcsncpy(sTmp, AirspaceSelectInfo[i].airspace->Name(),EXT_NAMESIZE);
-        int iFilterLen = _tcslen(sNameFilter);
+
+        Surface.DrawTextClip(w0, TextPos, sTmp , w1);
+
         int Start = FindFirstIn(sTmp ,sNameFilter) ;
+
         if(Start >= 0)
         {
-          for(int i = 0; i < iFilterLen; i++)
-        	  sTmp[Start+i] = _toupper(sTmp[Start+i]);
+          int iFilterLen = _tcslen(sNameFilter);
+          sTmp[Start]=0;
+          int wcol = LineHeight + Surface.GetTextWidth(sTmp);
+          LK_tcsncpy(sTmp, AirspaceSelectInfo[i].airspace->Name(),EXT_NAMESIZE);
+          sTmp[iFilterLen]=0;
+          int subend = width  - w0 - w2 - Surface.GetTextWidth(sTmp); // Max Name width
+          wcol = min (wcol,w1+LineHeight);
+
+          subend = min(w1+LineHeight,wcol+Surface.GetTextWidth(sTmp));
+          subend = max(0,subend);
+
+          if(wcol < subend)
+          {
+            int h =  w0-IBLSCALE(4);
+
+
+            const auto hOldPen = Surface.SelectObject(LKPen_Black_N2);
+
+            Surface.DrawLine(wcol, h, subend, h);
+
+            Surface.SelectObject(hOldPen);
+          }
         }
-        
-        Surface.DrawTextClip(w0, TextPos, sTmp , w1);
+
 
         LK_tcsncpy(sTmp,  CAirspaceManager::GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type) , 4);
         const int w4 = Surface.GetTextWidth(sTmp);
