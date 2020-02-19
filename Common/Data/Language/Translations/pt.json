@@ -1209,7 +1209,7 @@
     "_@M001726_": "A SUA POSIÇÃO É DESCONHECIDA!",
     "_@M001740_": "Análise OLC",
     "_@M001741_": "REPÔR TODOS OS PERFIS DO LK8000",
-    "_@M001744_": "Velocidade Max.",
+    "_@M001744_": "Velocidade Máxima",
     "_@M001745_": "AERONAVE",
     "_@M001746_": "SISTEMA",
     "_@M001747_": "Time Gates",
@@ -1476,5 +1476,7 @@
     "_@M001611_": "1.2 Térmica",
     "_@M002188_": "Térmica Min",
     "_@M002253_": "AUTO EM TÉRMICA",
-    "_@M002469_": "Alvo EXT"
+    "_@M002469_": "Alvo EXT",
+    "_@M001748_": "Livro de registo",
+    "_@M002020_": "Alvo"
 }
