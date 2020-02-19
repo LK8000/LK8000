@@ -453,17 +453,7 @@ LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
 CAirspace *airspace  =  dlgTextEntryShowModalAirspace(newNameFilter, NAMEFILTERLEN);
 
 int len = _tcslen(newNameFilter);
-if(len <= 0)
-{
-	int i = len;
-	while (i>=0) {
-	 if (newNameFilter[i]!=_T(' ')) {
-					 break;
-	 }
-	 newNameFilter[i]=0;
-	 i--;
-	};
-};
+
 LK_tcsncpy(sNameFilter, newNameFilter, NAMEFILTERLEN);
 
 
@@ -713,8 +703,8 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
           {
             int h =  w0-IBLSCALE(4);
 
-            LKPen hpUnderlinePen(PEN_SOLID, IBLSCALE(2), RGB_BLACK);
-            const auto hOldPen = Surface.SelectObject(hpUnderlinePen);
+
+            const auto hOldPen = Surface.SelectObject(LKPen_Black_N2);
 
             Surface.DrawLine(wcol, h, subend, h);
 
@@ -743,6 +733,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
             Surface.DrawText(IBLSCALE(2), TextPos, MsgToken(466));
         }
     }
+    wf->SetTimerNotify(0, NULL);
 }
 // DrawListIndex = number of things to draw
 // ItemIndex = current selected item

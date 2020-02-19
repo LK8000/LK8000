@@ -160,22 +160,16 @@ static int WaypointDirectionCompare(const void *elem1, const void *elem2 ){
 
 static void SetWPNameCaption(const TCHAR* tFilter) {
 
-  TCHAR namfilter[NAMEFILTERLEN];
+  TCHAR namfilter[50];
   if ( _tcscmp(tFilter,_T("*")) == 0)
-	_tcsncpy(namfilter,_T("*"),NAMEFILTERLEN);
+	_tcscpy(namfilter,_T("*"));
   else {
 	if (_tcslen(tFilter) <GC_SUB_STRING_THRESHOLD)
-	{
-	 _tcsncpy(namfilter,tFilter,NAMEFILTERLEN);
-	 _tcsncat(namfilter,_T("*"),NAMEFILTERLEN);
-	}
+		_stprintf(namfilter,_T("%s*"),tFilter);
 	else
 	  {
-		if (_tcslen(tFilter) <6) {
-      _tcsncpy(namfilter,_T("*"),NAMEFILTERLEN);
-      _tcsncat(namfilter,tFilter,NAMEFILTERLEN);
-	    _tcsncat(namfilter,_T("*"),NAMEFILTERLEN);
-		}
+		if (_tcslen(tFilter) <6)
+			_stprintf(namfilter,_T("*%s*"),tFilter);
 		else {
 			_tcscpy(namfilter,_T("*"));
 			_tcsncat(namfilter,tFilter,5);
@@ -189,6 +183,7 @@ static void SetWPNameCaption(const TCHAR* tFilter) {
   wpnewName->SetCaption(namfilter);
 
 }
+
 
 unsigned int numvalidwp=0;
 
@@ -494,7 +489,7 @@ static void OnFilterNameButton(WndButton* pWnd) {
 
 
   int i= _tcslen(newNameFilter)-1;
-  while (i>0) {
+  while (i>=0) {
 	if (newNameFilter[i]!=_T(' ')) {
 		break;
 	}
