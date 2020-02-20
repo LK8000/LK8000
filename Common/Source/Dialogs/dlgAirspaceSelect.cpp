@@ -45,8 +45,11 @@ static unsigned DistanceFilterIdx=0;
 
 #define DirHDG -1
 static int *StrIndex=NULL;
-static const int DirectionFilter[] = {0, DirHDG, 360, 30, 60, 90, 120, 150, 
-                                180, 210, 240, 270, 300, 330};
+#define DirNoFilter 0
+#define DirHDG -1
+#define DirBRG  -2
+#define DirAhead -3
+static const int DirectionFilter[] = {DirNoFilter, DirHDG, DirBRG, 360, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330};
 static unsigned DirectionFilterIdx=0;
 static int lastHeading=0;
 
@@ -61,7 +64,7 @@ static int ItemIndex = -1;
 
 static AirspaceSelectInfo_t *AirspaceSelectInfo=NULL;
 
-
+extern int GetTaskBearing(void);
 
 
 static void OnEnableClicked(WndButton* pWnd)
@@ -157,11 +160,25 @@ static int AirspaceDirectionCompare(const void *elem1, const void *elem2 ){
 
   int a, a1, a2;
 
-  a = DirectionFilter[DirectionFilterIdx];
-  if (a == DirHDG){
-    a = iround(CALCULATED_INFO.Heading);
-    lastHeading = a;
+
+  switch (DirectionFilter[DirectionFilterIdx])
+  {
+
+    case DirHDG:
+    case DirAhead:
+      a = iround(CALCULATED_INFO.Heading);
+    break;
+
+    case DirBRG:
+    	a = GetTaskBearing();
+	  break;
+    case DirNoFilter:
+    default:
+      a = DirectionFilter[DirectionFilterIdx];
+    break;
   }
+
+  lastHeading = a;
 
   a1 = (int)(((const AirspaceSelectInfo_t *)elem1)->Direction - a);
   a2 = (int)(((const AirspaceSelectInfo_t *)elem2)->Direction - a);
@@ -536,25 +553,40 @@ static void OnFilterDistance(DataField *Sender,
 
 static void SetDirectionData(DataField *Sender){
 
-  TCHAR sTmp[17];
+  TCHAR sTmp[30];
 
   if (Sender == NULL){
     Sender = wpDirection->GetDataField();
   }
 
-  if (DirectionFilterIdx == 0) {
-    _stprintf(sTmp, TEXT("%c"), '*');
-  } else if (DirectionFilterIdx == 1) {
-    int a = iround(CALCULATED_INFO.Heading);
-    if (a <=0) {
-      a += 360;
-    }
-    _sntprintf(sTmp, array_size(sTmp), TEXT("HDG(%d%s)"), a, MsgToken(2179));
-  }else {
-    _sntprintf(sTmp, array_size(sTmp), TEXT("%d%s"), DirectionFilter[DirectionFilterIdx], MsgToken(2179));
-  }
 
-  sTmp[array_size(sTmp)-1] = _T('\0');
+
+	//LKTOKEN _@M1229_ "HDG"
+    int a = iround(CALCULATED_INFO.Heading);  if (a <=0)   a += 360;
+    switch (DirectionFilter[DirectionFilterIdx] )
+    {
+    	case DirNoFilter: _stprintf(sTmp, TEXT("%c"), '*');
+    	break;
+      case DirHDG:
+      	{
+      	_stprintf(sTmp, TEXT("%s(%d%s)"), MsgToken(1229), a, MsgToken(2179));  // _@1229 HDG  _@M2179 °
+      	}
+      break;
+      case DirAhead:
+      	{
+      	_stprintf(sTmp, TEXT("%s(%d%s)"), MsgToken(2470), a, MsgToken(2179)); // _@2470 Ahead  _@M2179 °
+      	}
+      break;
+      case DirBRG:
+      	{
+         a = iround(GetTaskBearing());
+      	_stprintf(sTmp, TEXT("%s(%d%s)"), MsgToken(154), a, MsgToken(2179));  // _@M154 Brg  _@M2179 °
+      	}
+      break;
+
+    	default: _stprintf(sTmp, TEXT("%d%s"), DirectionFilter[DirectionFilterIdx],MsgToken(2179));
+    	break;
+    }
 
   Sender->Set(sTmp);
 
@@ -767,18 +799,30 @@ wf->SetTimerNotify(0,NULL);
 
 
 static bool OnTimerNotify(WndForm* pWnd) {
+int a=-1;
+	switch(DirectionFilter[DirectionFilterIdx] )
+	{
+		case DirHDG:
+		 a =  iround(CALCULATED_INFO.Heading);
+    break;
 
-if (DirectionFilterIdx == 1){
-  const int a = (lastHeading - iround(CALCULATED_INFO.Heading));
-  if (abs(a) > 0){
-    UpdateList();
-    SetDirectionData(NULL);
-    wpDirection->RefreshDisplay();
+	  case DirBRG:
+     	a = GetTaskBearing();
+    break;
   }
-}
-wAirspaceList->Redraw();
 
-return true;
+  if(a >= 0)
+	{
+    if (abs(a-lastHeading) > 10)
+    {
+			lastHeading = a;
+			UpdateList();
+			SetDirectionData(NULL);
+			wpDirection->RefreshDisplay();
+			wAirspaceList->Redraw();
+		}
+	}
+  return true;
 }
 
 
@@ -879,7 +923,7 @@ void dlgAirspaceSelect(void) {
   }
   UpdateList();
 
-  wf->SetTimerNotify(5000, OnTimerNotify);
+  wf->SetTimerNotify(500, OnTimerNotify);
 
   wf->ShowModal();
 
