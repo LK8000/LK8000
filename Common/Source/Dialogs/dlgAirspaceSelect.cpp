@@ -453,17 +453,7 @@ LK_tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
 CAirspace *airspace  =  dlgTextEntryShowModalAirspace(newNameFilter, NAMEFILTERLEN);
 
 int len = _tcslen(newNameFilter);
-if(len <= 0)
-{
-	int i = len;
-	while (i>=0) {
-	 if (newNameFilter[i]!=_T(' ')) {
-					 break;
-	 }
-	 newNameFilter[i]=0;
-	 i--;
-	};
-};
+
 LK_tcsncpy(sNameFilter, newNameFilter, NAMEFILTERLEN);
 
 
@@ -713,8 +703,8 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
           {
             int h =  w0-IBLSCALE(4);
 
-            LKPen hpUnderlinePen(PEN_SOLID, IBLSCALE(2), RGB_BLACK);
-            const auto hOldPen = Surface.SelectObject(hpUnderlinePen);
+
+            const auto hOldPen = Surface.SelectObject(LKPen_Black_N2);
 
             Surface.DrawLine(wcol, h, subend, h);
 
@@ -760,7 +750,7 @@ static void OnWpListInfo(WindowControl * Sender,
 }
 
 
-static void OnWPSCloseClicked(WndButton* pWnd){
+static void OnASCloseClicked(WndButton* pWnd){
   ItemIndex = -1;
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -768,10 +758,28 @@ static void OnWPSCloseClicked(WndButton* pWnd){
       pForm->SetModalResult(mrCancel);
     }
   }
+
+wf->SetTimerNotify(0,NULL);
+
 }
 
 
 
+
+static bool OnTimerNotify(WndForm* pWnd) {
+
+if (DirectionFilterIdx == 1){
+  const int a = (lastHeading - iround(CALCULATED_INFO.Heading));
+  if (abs(a) > 0){
+    UpdateList();
+    SetDirectionData(NULL);
+    wpDirection->RefreshDisplay();
+  }
+}
+wAirspaceList->Redraw();
+
+return true;
+}
 
 
 
@@ -836,7 +844,7 @@ void dlgAirspaceSelect(void) {
 
   ((WndButton *)wf->
    FindByName(TEXT("cmdClose")))->
-    SetOnClickNotify(OnWPSCloseClicked);
+    SetOnClickNotify(OnASCloseClicked);
 
   ((WndButton *)wf->
    FindByName(TEXT("cmdSelect")))->
@@ -871,11 +879,12 @@ void dlgAirspaceSelect(void) {
   }
   UpdateList();
 
-
+  wf->SetTimerNotify(5000, OnTimerNotify);
 
   wf->ShowModal();
 
 _return:
+  wf->SetTimerNotify(0, NULL);
   if (AirspaceSelectInfo!=NULL) free(AirspaceSelectInfo);
   if (StrIndex!=NULL) free(StrIndex);
   StrIndex = NULL;

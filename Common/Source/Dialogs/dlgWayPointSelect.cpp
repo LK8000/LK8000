@@ -160,22 +160,16 @@ static int WaypointDirectionCompare(const void *elem1, const void *elem2 ){
 
 static void SetWPNameCaption(const TCHAR* tFilter) {
 
-  TCHAR namfilter[NAMEFILTERLEN];
+  TCHAR namfilter[50];
   if ( _tcscmp(tFilter,_T("*")) == 0)
-	_tcsncpy(namfilter,_T("*"),NAMEFILTERLEN);
+	_tcscpy(namfilter,_T("*"));
   else {
 	if (_tcslen(tFilter) <GC_SUB_STRING_THRESHOLD)
-	{
-	 _tcsncpy(namfilter,tFilter,NAMEFILTERLEN);
-	 _tcsncat(namfilter,_T("*"),NAMEFILTERLEN);
-	}
+		_stprintf(namfilter,_T("%s*"),tFilter);
 	else
 	  {
-		if (_tcslen(tFilter) <6) {
-      _tcsncpy(namfilter,_T("*"),NAMEFILTERLEN);
-      _tcsncat(namfilter,tFilter,NAMEFILTERLEN);
-	    _tcsncat(namfilter,_T("*"),NAMEFILTERLEN);
-		}
+		if (_tcslen(tFilter) <6)
+			_stprintf(namfilter,_T("*%s*"),tFilter);
 		else {
 			_tcscpy(namfilter,_T("*"));
 			_tcsncat(namfilter,tFilter,5);
@@ -189,6 +183,7 @@ static void SetWPNameCaption(const TCHAR* tFilter) {
   wpnewName->SetCaption(namfilter);
 
 }
+
 
 unsigned int numvalidwp=0;
 
@@ -388,9 +383,9 @@ static void UpdateList(void){
 
 		LKASSERT(WayPointSelectInfo[i].Index>=0 && WayPointSelectInfo[i].Index<(signed)WayPointList.size());
 	//	LK_tcsncpy(wname,WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
-		 _tcsncpy(wname, WayPointList[WayPointSelectInfo[i].Index].Name ,EXT_NAMESIZE);
-		 _tcsncat(wname, _T(" "),EXT_NAMESIZE);
-		 _tcsncat(wname, WayPointList[WayPointSelectInfo[i].Index].Code,EXT_NAMESIZE);
+	  _sntprintf(wname,EXT_NAMESIZE, TEXT("%s %s"),  WayPointList[WayPointSelectInfo[i].Index].Name,
+							                                     WayPointList[WayPointSelectInfo[i].Index].Code );
+
 		CharUpper(wname);
 
 		if ( _tcsstr(  wname,sTmp ) ) {
@@ -494,7 +489,7 @@ static void OnFilterNameButton(WndButton* pWnd) {
 
 
   int i= _tcslen(newNameFilter)-1;
-  while (i>0) {
+  while (i>=0) {
 	if (newNameFilter[i]!=_T(' ')) {
 		break;
 	}
@@ -712,13 +707,12 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
         int idx = WayPointSelectInfo[i].Index;
 
         // Draw Name
+			  _sntprintf(TmpName,EXT_NAMESIZE, TEXT("%s"),  WayPointList[WayPointSelectInfo[i].Index].Name);
 
-         _tcsncpy(TmpName, WayPointList[WayPointSelectInfo[i].Index].Name ,EXT_NAMESIZE);
         if( _tcslen(WayPointList[WayPointSelectInfo[i].Index].Code ) >1)
         {          
-					_tcsncat(TmpName, _T("  ("),EXT_NAMESIZE);
-					_tcsncat(TmpName, WayPointList[WayPointSelectInfo[i].Index].Code,EXT_NAMESIZE);
-					_tcsncat(TmpName, _T(")"),EXT_NAMESIZE);
+				  _sntprintf(TmpName,EXT_NAMESIZE, TEXT("%s (%s)"), WayPointList[WayPointSelectInfo[i].Index].Name,
+								                                       		 WayPointList[WayPointSelectInfo[i].Index].Code );
         }
         Surface.DrawTextClip(w0, TextPos, TmpName, w1);
 
@@ -750,8 +744,8 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
           {
             int h =  w0-IBLSCALE(4);
 
-            LKPen hpUnderlinePen(PEN_SOLID, IBLSCALE(2), RGB_BLACK);
-            const auto hOldPen = Surface.SelectObject(hpUnderlinePen);
+
+            const auto hOldPen = Surface.SelectObject(LKPen_Black_N2);
 
             Surface.DrawLine(wcol, h, subend, h);
 
@@ -950,6 +944,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 	ItemIndex = -1;
 
 _return:
+  wf->SetTimerNotify(0, NULL);
   if (WayPointSelectInfo!=NULL) free(WayPointSelectInfo);
   if (StrIndex!=NULL) free(StrIndex);
 
