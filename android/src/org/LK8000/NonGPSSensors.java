@@ -52,10 +52,11 @@ public class NonGPSSensors implements SensorEventListener, Runnable {
   // is still less than SENSOR_TYPE_ID_UPPER_BOUND, and don't forget to add
   // corresponding constants to NonGPSSensors.(cpp|hpp).
   private static final int[] SUPPORTED_SENSORS = {
-    Sensor.TYPE_ACCELEROMETER,
-    Sensor.TYPE_GYROSCOPE,
-    Sensor.TYPE_MAGNETIC_FIELD,
     Sensor.TYPE_PRESSURE,
+  // TODO : Could be used for AHRS but actualy not...
+    // Sensor.TYPE_ACCELEROMETER,
+    // Sensor.TYPE_GYROSCOPE,
+    // Sensor.TYPE_MAGNETIC_FIELD,
   // TODO: Maybe add the following sensors if we can find a use for them.
     // Sensor.TYPE_LIGHT,
     // Sensor.TYPE_PROXIMITY,
