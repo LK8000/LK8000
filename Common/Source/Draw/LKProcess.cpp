@@ -1585,20 +1585,6 @@ goto_bearing:
 			else
 				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.Altitude)))/100.0;
 
-			#if 0
-	if (DrawInfo.BaroAltitudeAvailable) {
-	StartupStore(_T(".... FL BARO: GPSAlt=%.0f BaroAlt=%.0f QNH=%.2f QNEAlt=%.0f FLAlt=%.0f FL=%d\n"),
-		DrawInfo.Altitude,DrawInfo.BaroAltitude,QNH, 
-		AltitudeToQNEAltitude(DrawInfo.BaroAltitude),
-		TOFEET*AltitudeToQNEAltitude(DrawInfo.BaroAltitude),(int)value);
-	} else {
-	StartupStore(_T(".... FL GPS: GPSAlt=%.0f BaroAlt=%.0f QNH=%.2f QNEAlt=%.0f FLAlt=%.0f FL=%d\n"),
-		DrawInfo.Altitude,DrawInfo.Altitude,QNH, 
-		AltitudeToQNEAltitude(DrawInfo.Altitude),
-		TOFEET*AltitudeToQNEAltitude(DrawInfo.Altitude),(int)value);
-	}
-			#endif
-
 			if (value>=1) {
 				valid=true;
 				_stprintf(BufferValue, TEXT("%d"),(int)value);

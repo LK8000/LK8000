@@ -9,6 +9,11 @@
 #include "externs.h"
 #include "McReady.h"
 
+static constexpr double k1 = 0.190263;
+static constexpr double inv_k1 = 1.0 / k1;
+static constexpr double k2 = 8.417286e-5;
+static constexpr double inv_k2 = 1.0 / k2;
+
 //
 // 6 march 2014 by Bruno and Paolo
 // This is to correct sinkrate adjusted for air density
@@ -39,26 +44,39 @@ double AirDensitySinkRate(double ias, double qnhaltitude, double gload) {
 }
 
 
+double AltitudeToStaticPressure(double ref, double alt) {
+  // example, alt= 100, ref=1014
+  // ps = 100203 Pa
+
+  double ps = 100.0*pow((pow(ref,k1)-k2*alt), inv_k1);
+  assert(isfinite(alt)); // bug with Android ndk r21 ( release only )
+  return ps;
+}
 
 double QNHAltitudeToStaticPressure(double alt) {
-  // http://wahiduddin.net/calc/density_altitude.htm
-  const double k1=0.190263;
-  const double k2=8.417286e-5;
-  return 100.0*pow((pow(QNH,k1)-k2*alt),1.0/k1);
-  // example, alt= 100, QNH=1014
-  // ps = 100203 Pa
+  return AltitudeToStaticPressure(QNH, alt);
 }
 
+double QNEAltitudeToStaticPressure(double alt) {
+  return AltitudeToStaticPressure(PRESSURE_STANDARD, alt);
+}
+
+double StaticPressureToAltitude(double ref, double ps) {
+  // example, ref=1014, ps=100203
+  // alt= 100
+
+  double alt = (pow(ref,k1) - pow(ps/100.0, k1))* inv_k2;
+  assert(isfinite(alt)); // bug with Android ndk r21 ( release only )
+  return alt;
+}
 
 double StaticPressureToQNHAltitude(double ps) {
-  // http://wahiduddin.net/calc/density_altitude.htm
-  const double k1=0.190263;
-  const double k2=8.417286e-5;
-  return (pow(QNH,k1) - pow(ps/100.0, k1))/k2;
-  // example, QNH=1014, ps=100203
-  // alt= 100
+  return StaticPressureToAltitude(QNH, ps);
 }
 
+double StaticPressureToQNEAltitude(double ps) {
+  return StaticPressureToAltitude(PRESSURE_STANDARD, ps);
+}
 
 // Converts altitude with QNH=1013.25 reference to QNH adjusted altitude
 double QNEAltitudeToQNHAltitude(double alt) {
@@ -66,22 +84,11 @@ double QNEAltitudeToQNHAltitude(double alt) {
   if (alt>44330){
       alt=44330;
   }
-  const double k1=0.190263;
   double ps = pow((44330.8-alt)/4946.54,1.0/k1);
   return StaticPressureToQNHAltitude(ps);
 }
 
-
-// LK convert QNH altitude to QNE altitude
-double StaticPressureToQNEAltitude(double ps) {
-  // http://wahiduddin.net/calc/density_altitude.htm
-  const double k1=0.190263;
-  const double k2=8.417286e-5;
-  return (pow(PRESSURE_STANDARD,k1) - pow(ps/100.0, k1))/k2;
-}
-
-
-double AltitudeToQNEAltitude(double alt) {
+double QNHAltitudeToQNEAltitude(double alt) {
   return StaticPressureToQNEAltitude(QNHAltitudeToStaticPressure(alt));
 }
 
@@ -95,9 +102,6 @@ double FindQNH(double alt_raw, double alt_known) {
   // already adjusted for QNH ---> the function returns the
   // QNH value to make the barometric altitude equal to the
   // alt_known value.
-
-  const double k1=0.190263;
-  const double k2=8.417286e-5;
 
   // step 1, find static pressure from device assuming it's QNH adjusted
   double psraw = QNHAltitudeToStaticPressure(alt_raw);
