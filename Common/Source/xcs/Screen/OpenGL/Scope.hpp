@@ -27,7 +27,7 @@ Copyright_License {
 #include "Features.hpp"
 #include "System.hpp"
 #include "Globals.hpp"
-
+#include <assert.h>
 /**
  * Enables and auto-disables an OpenGL capability.
  */

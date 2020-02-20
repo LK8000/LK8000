@@ -245,6 +245,7 @@ add_library( LK8000 SHARED
     Common/Source/Screen/LKWindowSurface.cpp
     Common/Source/Screen/LKBitmapSurface.cpp
     Common/Source/Screen/LKIcon.cpp
+    Common/Source/Screen//OpenGL/PolygonRenderer.cpp
 
     Common/Source/Airspace/LKAirspace.cpp
     Common/Source/Airspace/Sonar.cpp

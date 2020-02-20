@@ -849,7 +849,13 @@ SCREEN += \
 	$(SRC_SCREEN)/Sunxi/mali.cpp \
 
 endif
-	
+
+ifeq ($(OPENGL),y)
+SCREEN += \
+	$(SRC_SCREEN)/OpenGL/PolygonRenderer.cpp
+
+endif
+
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \
 	$(LIB)/Crc.cpp\

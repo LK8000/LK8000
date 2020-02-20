@@ -58,6 +58,9 @@ Copyright_License {
 #include "utils/make_unique.h"
 #include <assert.h>
 #include "utils/stl_utils.h"
+#include "utils/array_adaptor.h"
+#include "Screen/OpenGL/PolygonRenderer.h"
+
 
 AllocatedArray<RasterPoint> Canvas::vertex_buffer;
 AllocatedArray<FloatPoint> Canvas::vertex_buffer_float;
@@ -268,34 +271,37 @@ Canvas::DrawPolygon(const RasterPoint *points, unsigned num_points)
   OpenGL::solid_shader->Use();
 #endif
 
-  ScopeVertexPointer vp(points);
-
   if (!brush.IsHollow() && num_points >= 3) {
     brush.Bind();
-    
+
     std::unique_ptr<const GLBlend> blend; 
     if(!brush.IsOpaque()) {
       blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
-    
-    static AllocatedArray<GLushort> triangle_buffer;
-    unsigned idx_count = PolygonToTriangles(points, num_points,
-                                            triangle_buffer);
-    if (idx_count > 0)
-      glDrawElements(GL_TRIANGLES, idx_count, GL_UNSIGNED_SHORT,
-                     triangle_buffer.begin());
+
+    static PolygonRenderer renderer;
+    renderer.BeginPolygon();
+    renderer.BeginContour();
+
+    for(const auto& point : make_array(points, num_points)) {
+      renderer.AddVertex(point.x, point.y);
+    }
+
+    renderer.EndContour();
+    renderer.EndPolygon();
   }
 
   if (IsPenOverBrush()) {
     pen.Bind();
 
     if (pen.GetWidth() <= OpenGL::max_line_width) {
+      ScopeVertexPointer vp(points);
       glDrawArrays(GL_LINE_LOOP, 0, num_points);
     } else {
       unsigned vertices = LineToTriangles(points, num_points, vertex_buffer,
                                           pen.GetWidth(), true);
       if (vertices > 0) {
-        vp.Update(vertex_buffer.begin());
+        ScopeVertexPointer vp(vertex_buffer.begin());
         glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices);
       }
     }

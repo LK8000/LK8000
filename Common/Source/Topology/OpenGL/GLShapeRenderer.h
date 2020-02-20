@@ -12,23 +12,17 @@
 #ifndef GLSHAPERENDERER_H
 #define	GLSHAPERENDERER_H
 
-#include "Library/glutess/glutess.h"
-#include <list>
-#include <array>
-#include <vector>
-#include "Screen/Point.hpp"
-#include "Screen/LKSurface.h"
+#include "Screen/OpenGL/PolygonRenderer.h"
 #include "../ShapeSpecialRenderer.h"
 
 class Brush;
 class XShape;
 class ScreenProjection;
 
-class GLShapeRenderer final {
+class GLShapeRenderer final : protected PolygonRenderer {
 public:
-    GLShapeRenderer();
-    ~GLShapeRenderer();
-    
+    GLShapeRenderer() = default;
+
     void setClipRect(const PixelRect& rect) {
         clipRect = rect;
     }
@@ -40,27 +34,10 @@ public:
     void renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, const Brush& brush, const ScreenProjection& _Proj);
     
 private:
-    GLUtesselator* tess;
-    GLenum curr_type;
-    std::vector<FloatPoint> curr_polygon;
-    
-    typedef std::array<GLdouble,3> vertex_t;
-    std::list<vertex_t> pointers;
-    
+
     bool noLabel;
     PixelRect clipRect;
     FloatPoint curr_LabelPos;
-    
-protected:    
-  friend GLvoid GLAPIENTRY beginCallback(GLenum type, void* polygon_data);
-  friend GLvoid GLAPIENTRY endCallback(void* polygon_data);
-  friend GLvoid GLAPIENTRY combineDataCallback(GLdouble coords[3], GLdouble* vertex_data[4], GLfloat weight[4], void** dataOut, void* polygon_data);
-  friend GLvoid GLAPIENTRY vertexCallback(GLdouble *vertex, void* polygon_data);
-
-  void polygonBegin(GLenum type);
-  void polygonVertex(GLdouble *vertex);
-  void polygonCombine(GLdouble coords[3], GLdouble* vertex_data[4], GLfloat weight[4], void **dataOut);
-  void polygonEnd();    
 };
 
 #endif	/* GLSHAPERENDERER_H */

@@ -245,7 +245,7 @@ void LKSurface::Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect) {
 #else
         std::vector<RasterPoint> Clipped;
         Clipped.reserve(cpt);
-        LKGeom::ClipPolygon(ClipRect, const_array_adaptor<RasterPoint>(apt, cpt), Clipped);
+        LKGeom::ClipPolygon(ClipRect, make_array(apt, cpt), Clipped);
         if(Clipped.size() >= 3) {
             Polygon(Clipped.data(), Clipped.size());
         }
