@@ -54,6 +54,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -438,6 +439,9 @@ public class LK8000 extends Activity {
     onRuntimePermissionGrantedNative();
   }
 
+  static public int getSystemUTCOffset() {
+      return TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 1000;
+  }
 
   private native void onRuntimePermissionDenied();
   private native void onRuntimePermissionGrantedNative();

@@ -323,7 +323,7 @@
         <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
       </WndProperty>
       <WndProperty Name="prpUTCOffset" Caption="_@M758_"  X="2" Y="-1"   Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H177_">
-        <DataField Name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min="-13" Max="13" Step="0.5" OnDataAccess="OnUTCData"/>
+        <DataField Name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min="-13" Max="13" Step="0.25" OnDataAccess="OnUTCData"/>
       </WndProperty>
       <WndProperty Name="prpLocalTime" Caption="_@M401_"  X="2" Y="-1"   Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1"/>
       <WndProperty Name="prpEarthModel" Caption="_@M2391_"  X="2" Y="-1"   Width="-1" Height="22" CaptionWidth="150" Font="2">

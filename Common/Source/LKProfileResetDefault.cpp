@@ -286,7 +286,7 @@ void LKProfileResetDefault() {
 
   Handicap = 100; // Std Cirrus
 
-  UTCOffset = 0;
+  UTCOffset = GetSystemUTCOffset();
 
   AutoZoom_Config=false;
 

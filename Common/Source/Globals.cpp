@@ -505,7 +505,7 @@ void Globals_Init(void) {
   GearWarningAltitude=0;
   WaypointsOutOfRange = 1; // include by default
 
-  UTCOffset = 0;
+  UTCOffset = GetSystemUTCOffset();
   EnableThermalLocator = 1;
   EnableMultipleStartPoints = false;
   StartHeightRef = 0; // MSL

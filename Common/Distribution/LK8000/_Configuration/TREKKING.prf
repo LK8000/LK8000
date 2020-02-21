@@ -192,7 +192,6 @@ ThermalLocator=1
 TpFilter=1
 TrackBar=1
 TrailDrift=0
-UTCOffset=0
 UseCustomFonts=0
 UseUngestures=1
 UseTotalEnergy=0

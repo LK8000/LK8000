@@ -941,8 +941,8 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
     case DataField::daChange:
       ival = iround(Sender->GetAsFloat()*3600.0);
       if (UTCOffset != ival) {
-	UTCOffset = ival;
-	utcchanged = true;
+        UTCOffset = ival;
+        utcchanged = true;
       }
       SetLocalTime();
     break;

@@ -22,6 +22,10 @@ Copyright_License {
 */
 
 #include "OS/Clock.hpp"
+#ifdef ANDROID
+#include "Java/Global.hxx"
+#include "Java/Class.hxx"
+#endif
 
 #if defined(__APPLE__)
 #include <mach/mach_time.h>
@@ -141,7 +145,13 @@ MonotonicClockFloat()
 int
 GetSystemUTCOffset()
 {
-#ifdef HAVE_POSIX
+#ifdef ANDROID
+  JNIEnv* env = Java::GetEnv();
+  Java::Class cls(env, "org/LK8000/LK8000");
+  jmethodID method_id = env->GetStaticMethodID(cls, "getSystemUTCOffset", "()I");
+  return env->CallStaticIntMethod(cls.Get(),method_id);
+
+#elif defined(HAVE_POSIX)
   // XXX implement
   return 0;
 #else
