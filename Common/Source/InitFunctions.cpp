@@ -61,7 +61,7 @@ BOOL	InitInstance    (int);
 extern bool ScreenHasChanged(void);
 
 void PreloadInitialisation(bool ask) {
-  LKReadLanguageFile();
+  LKLoadLanguageFile();
 
   if (ask) {
     // Load default profile and status file: we are at an early stage
@@ -125,7 +125,7 @@ void PreloadInitialisation(bool ask) {
 
   // Interface (before interface)
   if (!ask) {
-    LKReadLanguageFile();
+    LKLoadLanguageFile();
     InputEvents::readFile();
   }
 

@@ -182,9 +182,9 @@ const TCHAR *MsgToken(unsigned index) {
   return _T("");
 }
 
-void LKReadLanguageFile() {
+void LKLoadLanguageFile() {
 
-  LKUnloadMessage();
+  LKUnloadLanguageFile();
 
 #ifdef ANDROID
   if (szLanguageCode[0] == _T('\0')) {
@@ -212,7 +212,7 @@ void LKReadLanguageFile() {
   FillDataOptions(); // Load infobox list
 }
 
-void LKUnloadMessage() {
+void LKUnloadLanguageFile() {
   std::for_each(std::begin(LKMessages), std::end(LKMessages), safe_free());
 }
 

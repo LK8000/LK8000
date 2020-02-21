@@ -4121,7 +4121,7 @@ int ival;
     if (_tcscmp(temptext,szLanguageCode)) {
       _tcscpy(szLanguageCode,temptext);
       requirerestart = true; // restart needed for language load
-      // LKReadLanguageFile(); // NO GOOD. MEMORY LEAKS PENDING
+      // LKLoadLanguageFile(); // NO GOOD. MEMORY LEAKS PENDING
     }
   }
 

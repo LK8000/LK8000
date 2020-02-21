@@ -453,7 +453,7 @@ bool Startup(const TCHAR* szCmdLine) {
   InitLK8000();
   ReadAirfieldFile();
   SetHome(false);
-  LKReadLanguageFile();
+  LKLoadLanguageFile();
 
   CreateProgressDialog(MsgToken(399));
   CAirspaceManager::Instance().ReadAirspaces();
@@ -618,7 +618,7 @@ void Shutdown() {
   LKUnloadProfileBitmaps();
   LKUnloadFixedBitmaps();
 
-  LKUnloadMessage();
+  LKUnloadLanguageFile();
   InputEvents::UnloadString();
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
