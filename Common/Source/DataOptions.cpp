@@ -298,12 +298,12 @@ void FillDataOptions()
 	SetDataOption(LK_HEADWINDSPEED, ugWindSpeed, TEXT("_@M1771_"), TEXT("_@M1772_")); // Head wind speed
 	SetDataOption(LK_OLC_FAI_CLOSE, ugDistance, TEXT("_@M1507_"), TEXT("_@M1508_")); //OLC FAI triangle Distance to close
 	SetDataOption(LK_OLC_FAI_CLOSE_PERCENT, ugNone, TEXT("_@M1509_"), TEXT("_@M1510_")); // OLC FAI triangle Distance close %
-	SetDataOption(LK_BANK_ANGLE, ugNone, TEXT("Bank angle"), TEXT("_@M1197_")); // Bank
-	SetDataOption(LK_ALTERN1_RAD, ugNone, TEXT("_@M1841_"), TEXT("Atn1Rad")); // Alternate1 radial
-	SetDataOption(LK_ALTERN2_RAD, ugNone, TEXT("_@M1842_"), TEXT("Atn2Rad")); // Alternate2 radial
-	SetDataOption(LK_HEADING, ugNone, TEXT("_@M1287_"), TEXT("HDG")); // Heading, text is changed in lkprocess
-	SetDataOption(LK_ALTERN1_DISTNM, ugDistance, TEXT("_@M1843_"), TEXT("Atn1 nm")); // Alternate1 distance NMiles
-	SetDataOption(LK_ALTERN2_DISTNM, ugDistance, TEXT("_@M1844_"), TEXT("Atn2 nm")); // Alternate2 distance NMiles
+	SetDataOption(LK_BANK_ANGLE, ugNone, TEXT("_@M1518_"), TEXT("_@M1197_")); // Bank angle
+	SetDataOption(LK_ALTERN1_RAD, ugNone, TEXT("_@M1841_"), TEXT("_@M1519_")); // Alternate1 radial
+	SetDataOption(LK_ALTERN2_RAD, ugNone, TEXT("_@M1842_"), TEXT("_@M1520_")); // Alternate2 radial
+	SetDataOption(LK_HEADING, ugNone, TEXT("_@M1287_"), TEXT("_@M1521_")); // Heading, text is changed in lkprocess
+	SetDataOption(LK_ALTERN1_DISTNM, ugDistance, TEXT("_@M1843_"), TEXT("_@M1522_")); // Alternate1 distance NMiles
+	SetDataOption(LK_ALTERN2_DISTNM, ugDistance, TEXT("_@M1844_"), TEXT("_@M1523_")); // Alternate2 distance NMiles
 	SetDataOption(LK_SPEED_ME, ugHorizontalSpeed, TEXT("_@M2312_"), TEXT("_@M2313_")); // Speed of maximum efficiency
 	SetDataOption(LK_TARGET_RE, ugNone, TEXT("_@M2314_"), TEXT("_@M2315_")); // Target Req. Efficicency
 	SetDataOption(LK_QNE, ugAltitude, TEXT("_@M2323_"), TEXT("_@M2324_")); // Altitude QNE
