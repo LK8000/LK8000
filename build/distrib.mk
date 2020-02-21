@@ -22,7 +22,6 @@ POLAR_FILES += Common/Distribution/LK8000/_Polars/_POLARS
 
 LANGUAGE_FILES = $(wildcard Common/Data/Language/Translations/*.json)
 LANGUAGE_FILES += Common/Data/Language/language.json
-LANGUAGE_FILES += Common/Data/Language/_LANGUAGE
 
 CONFIG_FILES = Common/Distribution/LK8000/_Configuration/NOTEDEMO.TXT
 

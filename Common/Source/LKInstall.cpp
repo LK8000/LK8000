@@ -254,7 +254,7 @@ bool CheckDataDir() {
 
 bool CheckLanguageDir() {
   TCHAR srcfile[MAX_PATH];
-  LocalPath(srcfile, _T(LKD_LANGUAGE), _T("_LANGUAGE"));
+  LocalPath(srcfile, _T(LKD_LANGUAGE), _T("language.json"));
   return lk::filesystem::exist(srcfile);
 }
 

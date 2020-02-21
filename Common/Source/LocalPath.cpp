@@ -206,7 +206,7 @@ const TCHAR * LKGetLocalPath(void) {
 
 #else
 
-    const TCHAR *fileToSearch = _T(LKD_LANGUAGE"\\_LANGUAGE");
+    const TCHAR *fileToSearch = _T(LKD_LANGUAGE"\\en.json");
     return LKGetPath(localpath, fileToSearch);
 
 #endif // ! ANDROID
