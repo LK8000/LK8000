@@ -926,7 +926,7 @@ int DataFieldInteger::CreateComboList(void) {
 bool DataFieldInteger::CreateKeyboard(void){
 	TCHAR szText[20];
 	_tcscpy(szText, GetAsString());
-	dlgNumEntryShowModal(szText,20, false);
+	dlgNumEntryShowModal(szText,20);
 
 	SetAsFloat((int)floor((StrToDouble(szText, nullptr)/mStep)+0.5)*mStep);
 
@@ -1072,7 +1072,7 @@ int DataFieldFloat::SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {
 bool DataFieldFloat::CreateKeyboard(void){
 	TCHAR szText[20];
 	_tcscpy(szText, GetAsString());
-	dlgNumEntryShowModal(szText,20, false);
+	dlgNumEntryShowModal(szText,20);
 
 	SetAsFloat(floor((StrToDouble(szText, nullptr)/mStep)+0.5)*mStep);
 
@@ -1104,7 +1104,7 @@ const TCHAR *DataFieldString::GetAsString(void){
 }
 
 bool DataFieldString::CreateKeyboard(void){
-	dlgTextEntryShowModal(mValue,array_size(mValue), false);
+	dlgTextEntryShowModal(mValue,array_size(mValue));
 	return true;
 }
 
@@ -2922,6 +2922,22 @@ bool WndFrame::OnLButtonDown(const POINT& Pos) {
     Redraw();
   }
   return false;
+}
+
+void WndListFrame::CenterScrollCursor(void) {
+  int Total    = mListInfo.ItemCount;
+  int halfPage = mListInfo.ItemInPageCount/2;
+
+  if( Total > mListInfo.ItemInPageCount) {
+    if( mListInfo.ItemIndex > (halfPage)) {
+      if(( mListInfo.ScrollIndex + mListInfo.ItemInPageCount) < Total) {
+        mListInfo.ScrollIndex  += halfPage;
+        mListInfo.ItemIndex    -= halfPage;
+
+        RecalculateIndices(false);
+      }
+    }
+  }
 }
 
 void WndListFrame::SetItemIndexPos(int iValue)

@@ -68,9 +68,11 @@ void dlgTaskWaypointShowModal(int itemindex, int type, bool addonly=false, bool 
 void dlgTaskOverviewShowModal(int Idx=-1);
 void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
-int  dlgTextEntryShowModal(TCHAR *text, int width=0, bool WPKeyRed= false);
-void dlgNumEntryShowModal(TCHAR *text, int width, bool );
-int  dlgTextEntryShowModalAirspace(TCHAR *text, int width);
+int  dlgTextEntryShowModal(TCHAR *text, int width);
+void dlgNumEntryShowModal(TCHAR *text, int width);
+CAirspace* dlgTextEntryShowModalAirspace(TCHAR *text, int width);
+int  dlgTextEntryShowModalWaypoint(TCHAR *text, int width);
+
 void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 void dlgWaypointEditShowModal(WAYPOINT *wpt);

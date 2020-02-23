@@ -694,7 +694,7 @@ static void OnLiveTrackerportClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerport) {
         _stprintf(Temp, _T("%d"), LiveTrackerport_Config);
-        dlgNumEntryShowModal(Temp, 100, false);
+        dlgNumEntryShowModal(Temp, 100);
         TCHAR *sz = NULL;
         LiveTrackerport_Config = _tcstol(Temp, &sz, 10);
     }

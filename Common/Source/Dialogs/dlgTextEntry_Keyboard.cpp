@@ -28,7 +28,7 @@ static TCHAR edittext[MAX_TEXTENTRY];
 
 void ReduceKeysByWaypointList(void);
 void  ReduceKeysByAirspaceList(void);
-void RemoveKeys(char *EnabledKeyString, unsigned char size);
+void RemoveKeys(const TCHAR *EnabledKeyString, unsigned int size);
 #define KEYRED_NONE     0
 #define KEYRED_WAYPOINT 1
 #define KEYRED_AIRSPACE 2
@@ -39,8 +39,8 @@ void RemoveKeys(char *EnabledKeyString, unsigned char size);
 uint8_t  KeyboardLayout =UPPERCASE;
 uint8_t  WaypointKeyRed = KEYRED_NONE;
 
- int IdenticalIndex=-1;
-
+ int IdenticalIndex=NUMRESWP;
+ CAirspace *Selairspace= NULL;
 
 static void UpdateTextboxProp(void)
 {
@@ -93,29 +93,14 @@ static void UpdateTextboxProp(void)
     wp = (WndProperty*)wf->FindByName(TEXT("prpMatch")); 
     if(WaypointKeyRed == KEYRED_NONE)
     {
-   //   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
-      {
-
-       char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyz,!+$%#/()=:*_ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@- \xD6\xDC\xC4"};
-
-        RemoveKeys((char*)Charlist , sizeof(Charlist));
-      }
+      constexpr TCHAR Charlist[]={_T("abcdefghijklmnopqrstuvwxyz,!+$%#/()=:*_ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@- \xD6\xDC\xC4")};
+      RemoveKeys(Charlist , array_size(Charlist));
       if(wp != NULL) wp->SetVisible(false);
     }
     else
     {
       if(wp != NULL) wp->SetVisible(true);
     }
-/*
-    CharUpper(szLanguageFile);
-    BOOL bGerChar = false;
-    if( _tcscmp(szLanguageFile,_T("GERMAN.LNG"))==0)
-	  bGerChar = true;
-
-    wb = (WndButton*) wf->FindByName(TEXT("prpAe")); if(wb != NULL) wb->SetVisible(bGerChar);
-    wb = (WndButton*) wf->FindByName(TEXT("prpOe")); if(wb != NULL) wb->SetVisible(bGerChar);
-    wb = (WndButton*) wf->FindByName(TEXT("prpUe")); if(wb != NULL) wb->SetVisible(bGerChar);
-*/
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("frmTextEntry_Keyboard"));
@@ -189,7 +174,9 @@ static void OnSpace(WndButton* pWnd) {
     PlayResource(TEXT("IDR_WAV_CLICK"));
     TCHAR Caption = ' ';
 
-    if(WaypointKeyRed == KEYRED_NONE) Caption = ' ';
+    if(WaypointKeyRed == KEYRED_NONE) {
+      Caption = ' ';
+    }
     if (cursor < max_width - 1) {
         edittext[cursor++] = Caption;
     }
@@ -315,7 +302,8 @@ static void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID
   wf=NULL;
 }
 
-int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
+static
+int  dlgTextEntryShowModal(TCHAR *text, int width, uint8_t WPKeyRed)
 {
 	first = false;
 	WaypointKeyRed = WPKeyRed;
@@ -323,26 +311,36 @@ int  dlgTextEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
 	return IdenticalIndex;
 }
 
-int  dlgTextEntryShowModalAirspace(TCHAR *text, int width)
-{
-        first = false;
-
-        WaypointKeyRed = KEYRED_AIRSPACE;
-        dlgTextEntryKeyboardShowModal(text, width, ScreenLandscape ? IDR_XML_TEXTENTRY_KEYBOARD_L : IDR_XML_TEXTENTRY_KEYBOARD_P);
-        return IdenticalIndex;
+int  dlgTextEntryShowModal(TCHAR *text, int width) {
+  return dlgTextEntryShowModal(text, width, KEYRED_NONE);
 }
 
-void dlgNumEntryShowModal(TCHAR *text, int width, bool WPKeyRed)
+int  dlgTextEntryShowModalWaypoint(TCHAR *text, int width) {
+  return dlgTextEntryShowModal(text, width, KEYRED_WAYPOINT);
+}
+
+CAirspace * dlgTextEntryShowModalAirspace(TCHAR *text, int width) {
+  Selairspace = nullptr;
+  dlgTextEntryShowModal(text, width, KEYRED_AIRSPACE);
+  if( _tcslen(text) <= 0) {
+    Selairspace = nullptr;
+  }
+  return  Selairspace;
+}
+
+
+
+void dlgNumEntryShowModal(TCHAR *text, int width)
 {  
-    first = true;
-	WaypointKeyRed = WPKeyRed;
+	first = true;
+	WaypointKeyRed = KEYRED_NONE;
 	dlgTextEntryKeyboardShowModal(text, width, ScreenLandscape ? IDR_XML_NUMENTRY_KEYBOARD_L : IDR_XML_NUMENTRY_KEYBOARD_P);
 }
 
 BOOL dlgKeyboard(WndProperty* theProperty){
-    BOOL Ret = FALSE;
+	BOOL Ret = FALSE;
 
-    wKeyboardPopupWndProperty = theProperty;
+	wKeyboardPopupWndProperty = theProperty;
 	DataField* pField = theProperty->GetDataField();
 	if(pField) {
 		if(pField->CreateKeyboard()){
@@ -350,7 +348,7 @@ BOOL dlgKeyboard(WndProperty* theProperty){
 			Ret = TRUE;
 		}
 	}
-    wKeyboardPopupWndProperty = nullptr;
+	wKeyboardPopupWndProperty = nullptr;
 
 	return Ret;
 }
@@ -363,29 +361,37 @@ if(Txt == NULL) return -1;
 if(Sub == NULL) return -1;
 int SubLen = _tcslen(Sub);
 int TxtLen = _tcslen(Txt);
-int Pos =  0;
-int res = -1;
 
-  while ((Pos + SubLen) <= TxtLen)
+
+if((TxtLen > 0) && (SubLen > 0))
+{
+  for ( int i =0; i <= (TxtLen-SubLen); i++ )
   {
-    res = _tcsnicmp(&Txt[Pos], Sub, SubLen);
-    if(res == 0)
-      return  Pos;
-    Pos++;
-  }
+    int j=0;
+    if(_totupper(Txt[i]) == _totupper(Sub[j]))
+    {
+      do{
+       j++;
+      } while ((_totupper(Txt[i+j]) == _totupper(Sub[j]) ) && (j < SubLen));
 
-  return -1;  // not found
+      if(j== SubLen)
+        return i;
+    }
+  }
+}
+
+return -1;  // not found
 
 }
 
 void ReduceKeysByWaypointList(void)
 {
 
-char SelList[MAX_SEL_LIST_SIZE]={""};
+TCHAR SelList[MAX_SEL_LIST_SIZE]={_T("")};
 unsigned int NumChar=0;
 
 
-char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_,!+$%#/()=:* \xD6\xDC\xC4"};
+constexpr TCHAR Charlist[]={_T("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_,!+$%#/()=:* \xD6\xDC\xC4")};
 
 
 unsigned int EqCnt=WayPointList.size();
@@ -393,97 +399,90 @@ unsigned int EqCnt=WayPointList.size();
 
 WndProperty *wp;
 TCHAR Found[EXT_SEARCH_SIZE + 1];
-SelList[0] = '\0';
 unsigned int NameLen=0;
- int Offset=0;
+int Offset=0;
 
 
 
 IdenticalIndex = -1;
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
-    RemoveKeys((char*)Charlist , sizeof(Charlist));
+    RemoveKeys(Charlist , array_size(Charlist));
   }
   else
   {
     EqCnt=0; /* reset number of found waypoints */
     NumChar =0;
+    int MinStart = EXT_SEARCH_SIZE;
     for (uint i=NUMRESWP; i< WayPointList.size(); i++)
     {
       TCHAR wname[EXT_NAMESIZE] = _T("");
-      _tcsncat( wname,WayPointList[i].Name, EXT_NAMESIZE);
+      _tcsncpy( wname,WayPointList[i].Name, EXT_NAMESIZE);
       if(_tcslen (WayPointList[i].Code) >1)
       {
-        _tcsncat( wname,_T(" ")              ,EXT_NAMESIZE);
+        _tcsncat( wname,_T(" (")             ,EXT_NAMESIZE);
         _tcsncat( wname,WayPointList[i].Code ,EXT_NAMESIZE);
+        _tcsncat( wname,_T(")")              ,EXT_NAMESIZE);
       }
 
       NameLen =  _tcslen(wname);
       Offset = 0;
-
 
       BOOL bFound = false;
       int Sart =0;
       if(NameLen >= _tcslen( edittext))
       do
       {
-	Sart =  FindFirstIn((&wname[Offset]),( edittext));
-	if( Sart != -1)  // substring found?
-	{
-	  if(!bFound) // remember first found item
-	  {
-	    IdenticalIndex = i; /* remember first found equal name */
-	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),wname );
-	    for(uint i = 0; i < cursor; i++)
-	      Found[i+Sart] =  toupper(Found[i+Sart]);
-	  }
-	  bFound = true;
-	  Sart += Offset;
-	  TCHAR newChar = (wname[cursor+Sart]);
-	  bool existing = false;
-	  uint j=0;
-	  while(( j < NumChar) && (!existing))  /* new character already in list? */
-	  {
-	    LKASSERT(j<MAX_SEL_LIST_SIZE);
-	    if(SelList[j] == (unsigned char)newChar)
-		    existing = true;
-	    j++;
-	  }
+        Sart =  FindFirstIn((&wname[Offset]),( edittext));
+        if( Sart != -1)  // substring found?st
+        {
+          bFound = true;
+          if((Sart+Offset) < MinStart)
+          {
+            MinStart = Sart+Offset;
+            IdenticalIndex = i; /* remember most left sub string  occurrence index */
+            _tcsncpy( Found,wname, EXT_NAMESIZE);
+             for(uint k = 0; k < cursor; k++)
+               Found[k+Sart] =  _totupper(Found[k+Sart]);
+          }
+          Sart += Offset;
+          TCHAR newChar = (wname[cursor+Sart]);
+          bool existing = false;
+          uint j=0;
+          while(( j < NumChar) && (!existing))  /* new character already in list? */
+          {
+            LKASSERT(j<MAX_SEL_LIST_SIZE);
+            if(SelList[j] == newChar)
+              existing = true;
+            j++;
+          }
 
-	  if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
-	  {
-	    LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-	    SelList[NumChar++] = newChar;
-	  }
-	  if((Sart +cursor) < NameLen) // place for another substring?
-	    Offset = Sart +cursor;     // search for another substring after first one
-	  else
-	    Sart = -1;
-	}
-      } while( Sart != -1 );
+          if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+          {
+            LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+            SelList[NumChar++] = newChar;
+          }
+          if((Sart +cursor) < NameLen) // place for another substring?
+            Offset = Sart +cursor;     // search for another substring after first one
+          else
+            Sart = -1;
+        }
+      }
+      while( Sart != -1 );
 
       if(bFound)
       {
-	EqCnt++;
-	LKASSERT(i<=WayPointList.size());
+        EqCnt++;
+        LKASSERT(i<=WayPointList.size());
       }
     }
 
     SelList[NumChar++] = '\0';
 
-    RemoveKeys((char*)SelList, NumChar);
+    RemoveKeys(SelList, NumChar);
+
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
-	LKASSERT(IdenticalIndex<= (int)WayPointList.size());
-
-		LKASSERT(cursor < EXT_SEARCH_SIZE);
-		LKASSERT(IdenticalIndex<=(int)WayPointList.size());
-		_sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),WayPointList[IdenticalIndex].Name);
-		if(_tcslen(WayPointList[IdenticalIndex].Code) > 1)
-		{
-			_sntprintf(Found,EXT_SEARCH_SIZE,_T("%s (%s)"),WayPointList[IdenticalIndex].Name, WayPointList[IdenticalIndex].Code);
-		}
-
-      if((wp)  &&  (EqCnt >0))
+    if((wp)  &&  (EqCnt >0))
     {
       wp->SetText(Found);
     }
@@ -512,7 +511,7 @@ void ReduceKeysByAirspaceList(void)
 TCHAR SelList[MAX_SEL_LIST_SIZE]={_T("")};
 unsigned int NumChar=0;
 
-char Charlist[MAX_SEL_LIST_SIZE]={"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_?!+$%#/()=:* \xD6\xDC\xC4"};
+constexpr TCHAR Charlist[MAX_SEL_LIST_SIZE]={_T("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@-_?!+$%#/()=:* \xD6\xDC\xC4")};
 
 
 unsigned int EqCnt=WayPointList.size();
@@ -530,7 +529,7 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
-    RemoveKeys((char*)Charlist , sizeof(Charlist));
+    RemoveKeys(Charlist , array_size(Charlist));
   }
   else
   {
@@ -540,13 +539,13 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
     CAirspaceList::const_iterator it;
 
+    int MinStart = EXT_SEARCH_SIZE;
     for (it = airspaclist.begin(); it != airspaclist.end(); ++it)
     {
-
-    if((*it)->Comment() != NULL)
-      _sntprintf(AS_Name,EXT_SEARCH_SIZE,_T("%s"),(*it)->Comment());
-    else
-      _sntprintf(AS_Name,EXT_SEARCH_SIZE, _T("%s"),(*it)->Name());
+      if((*it)->Comment() != NULL)
+        _sntprintf(AS_Name,EXT_SEARCH_SIZE,_T("%s"),(*it)->Comment());
+      else
+        _sntprintf(AS_Name,EXT_SEARCH_SIZE, _T("%s"),(*it)->Name());
 
       NameLen =  _tcslen(AS_Name);
       Offset = 0;
@@ -556,48 +555,51 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
       do
       {
-	Sart =  FindFirstIn((&AS_Name[Offset]),( edittext));
-	if( Sart != -1)  // substring found?
-	{
-	  if(!bFound) // remember first found item
-	  {
-	    _sntprintf(Found,EXT_SEARCH_SIZE,_T("%s"),AS_Name );
-	    for(uint i = 0; i < cursor; i++)
-	      Found[i+Sart] =  toupper(Found[i+Sart]);
-	  }
-	  bFound = true;
-	  Sart += Offset;
-	  TCHAR newChar = (AS_Name[cursor+Sart]);
-	  bool existing = false;
-	  uint j=0;
-	  while(( j < NumChar) && (!existing))  /* new character already in list? */
-	  {
-	    LKASSERT(j<MAX_SEL_LIST_SIZE);
-	    if(SelList[j] == (unsigned char)newChar)
-		    existing = true;
-	    j++;
-	  }
+        Sart =  FindFirstIn((&AS_Name[Offset]),( edittext));
+        if( Sart != -1)  // substring found?
+        {
+          bFound = true;
+          if((Sart+Offset) < MinStart)
+          {
+            Selairspace = (*it);
+            MinStart = Sart+Offset;
+            _tcsncpy( Found,AS_Name, EXT_SEARCH_SIZE);
+            for(uint k = 0; k < cursor; k++)
+              Found[k+Sart] =  _totupper(Found[k+Sart]);
+          }
 
-	  if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
-	  {
-	    LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
-	    SelList[NumChar++] = newChar;
-	  }
-	  if((Sart +cursor) < NameLen) // place for another substring?
-	    Offset = Sart +cursor;     // search for another substring after first one
-	  else
-	    Sart = -1;
-	}
-      } while( Sart != -1 );
+          Sart += Offset;
+          TCHAR newChar = (AS_Name[cursor+Sart]);
+          bool existing = false;
+          uint j=0;
+          while(( j < NumChar) && (!existing))  /* new character already in list? */
+          {
+            LKASSERT(j<MAX_SEL_LIST_SIZE);
+            if(SelList[j] == newChar)
+              existing = true;
+            j++;
+          }
+
+          if(!existing && (NumChar <MAX_SEL_LIST_SIZE))  /* add new character to key enable list */
+          {
+            LKASSERT(NumChar<MAX_SEL_LIST_SIZE);
+            SelList[NumChar++] = newChar;
+          }
+          if((Sart +cursor) < NameLen) // place for another substring?
+            Offset = Sart +cursor;     // search for another substring after first one
+          else
+            Sart = -1;
+        }
+      } while( Sart != -1);
 
       if(bFound)
       {
-	EqCnt++;
+	      EqCnt++;
       }
     }
 
     SelList[NumChar++] = '\0';
-    RemoveKeys((char*)SelList, NumChar);
+    RemoveKeys(SelList, NumChar);
     wp = (WndProperty*)wf->FindByName(TEXT("prpText"));
     if((wp)  &&  (EqCnt >0))
     {
@@ -616,7 +618,7 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
 
 
-void RemoveKeys(char *EnabledKeyString, unsigned char size)
+void RemoveKeys(const TCHAR *EnabledKeyString, unsigned int size)
 {
 
 bool bA=false, bB=false, bC=false, bD=false, bE=false, bF=false, bG=false, bH=false, bI=false,
@@ -639,10 +641,13 @@ BOOL bCaseDontCare = true;
     {
       for (i = 0; i < size; i++ )
       {
+
 	TCHAR Sel = EnabledKeyString[i];
-	if(bCaseDontCare) Sel = toupper(EnabledKeyString[i]);
-	switch (Sel)
-	{
+    if(bCaseDontCare) {
+      Sel = _totupper(EnabledKeyString[i]);
+    }
+
+	switch (Sel) {
 	  case 'A': bA = true; break;
 	  case 'B': bB = true; break;
 	  case 'C': bC = true; break;

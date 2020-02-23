@@ -368,7 +368,7 @@ static void OnActiveFreq(WndButton* pWnd){
 TCHAR	szFreq[20];
 _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
  TCHAR	Name[NAME_SIZE] = _T("  ???   ");
-    dlgNumEntryShowModal(szFreq,8,false);
+    dlgNumEntryShowModal(szFreq,8);
     double Frequency = StrToDouble(szFreq,NULL);
     while(Frequency > 1000.0)
 	   Frequency /=10;
@@ -397,7 +397,7 @@ static void OnPassiveFreq(WndButton* pWnd){
 TCHAR	szFreq[20] ;
 _stprintf(szFreq,  _T("%7.3f"),RadioPara.PassiveFrequency);
 TCHAR	Name[NAME_SIZE] = _T("  ???   ");
-   dlgNumEntryShowModal(szFreq,8,false);
+   dlgNumEntryShowModal(szFreq,8);
 
    double Frequency = StrToDouble(szFreq,NULL);
    while(Frequency > 1000)

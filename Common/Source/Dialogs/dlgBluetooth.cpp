@@ -39,7 +39,7 @@ namespace DlgBluetooth {
             CBtDevice * SelectedDevice = pBtHandler->GetDevice(ItemIndex);
             if (SelectedDevice && SelectedDevice->m_src == BDSRC_LOOKUP) {
                 TCHAR szPin[20] = {0};
-                dlgTextEntryShowModal(szPin, 20, false);
+                dlgTextEntryShowModal(szPin, 20);
 
                 if (!pBtHandler->Pair(SelectedDevice->m_ba, SelectedDevice->GetName().c_str(), szPin)) {
                     StartupStore(_T("Bluetooth pairing <%s> : Failed%s"), SelectedDevice->GetName().c_str(), NEWLINE);
