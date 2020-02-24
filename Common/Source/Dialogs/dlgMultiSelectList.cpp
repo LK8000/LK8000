@@ -316,7 +316,7 @@ double Distance, Bear;
       if(flarmId->type[FLARMID_SIZE_NAME-j] == ' ')
         flarmId->type[FLARMID_SIZE_NAME-j] = '\0';
     if(flarmId->freq[3] != ' ')
-      _sntprintf(Comment,MAX_LEN, TEXT("%s  %sMHz %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
+      _sntprintf(Comment,MAX_LEN, TEXT("%s  %s %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
                                             , flarmId->freq     // FLARMID_SIZE_FREQ   8    r
                                             , flarmId->name);   // FLARMID_SIZE_NAME   22 => max 52 char
     else
@@ -431,7 +431,7 @@ int j;
               WayPointList[idx].Freq[CUPSIZE_FREQ - j] = '\0';
 
       if (_tcslen(WayPointList[idx].Freq) > 2)
-        _sntprintf(text1, MAX_LEN, TEXT("%s %s MHz"), WayPointList[idx].Name,
+        _sntprintf(text1, MAX_LEN, TEXT("%s %s"), WayPointList[idx].Name,
                     WayPointList[idx].Freq);
       else
         _sntprintf(text1,MAX_LEN, TEXT("%s"), WayPointList[idx].Name);
