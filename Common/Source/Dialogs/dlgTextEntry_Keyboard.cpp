@@ -355,34 +355,31 @@ BOOL dlgKeyboard(WndProperty* theProperty){
 
 
 
+
 int FindFirstIn(const TCHAR Txt[] ,const TCHAR Sub[])
 {
 if(Txt == NULL) return -1;
 if(Sub == NULL) return -1;
 int SubLen = _tcslen(Sub);
 int TxtLen = _tcslen(Txt);
+int Pos =  0;
+int res = -1;
 
-
-if((TxtLen > 0) && (SubLen > 0))
-{
-  for ( int i =0; i <= (TxtLen-SubLen); i++ )
-  {
-    int j=0;
-    if(_totupper(Txt[i]) == _totupper(Sub[j]))
-    {
-      do{
-       j++;
-      } while ((_totupper(Txt[i+j]) == _totupper(Sub[j]) ) && (j < SubLen));
-
-      if(j== SubLen)
-        return i;
-    }
-  }
-}
-
-return -1;  // not found
+	if((TxtLen > 0) && (SubLen > 0))
+	{
+		while ((Pos + SubLen) <= TxtLen)
+		{
+			res = _tcsnicmp(&Txt[Pos], Sub, SubLen);
+			if(res == 0)
+				return  Pos;
+			Pos++;
+		}
+	}
+  return -1;  // not found
 
 }
+
+
 
 void ReduceKeysByWaypointList(void)
 {
