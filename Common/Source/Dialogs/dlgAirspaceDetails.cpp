@@ -330,7 +330,7 @@ static void SetValues(WndForm* wf) {
         wFreq->SetLeft(IBLSCALE(3));
         wFreq->SetWidth(IBLSCALE(110));
 
-        _stprintf(buffer2,_T("%7.3fMHz"),fASFrequency);
+        _stprintf(buffer2,_T("%7.3f"),fASFrequency);
         wFreq->SetCaption(buffer2);
         wFreq->Redraw();
         bRadio = true;

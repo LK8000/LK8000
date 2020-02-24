@@ -125,7 +125,7 @@ static void OnRadioFrequencyClicked(WndButton* pWnd){
 
   devPutFreqActive(Ferquency, WayPointList[SelectedWaypoint].Name);
 
-  _stprintf(szFreq,_T(" %6.3fMHz ") ,Ferquency);
+  _stprintf(szFreq,_T(" %6.3f ") ,Ferquency);
 
   DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );
   DoStatusMessage(_T(""), szFreq );
@@ -162,7 +162,7 @@ short dlgWayQuickShowModal(void){
   if (!wf) return 0;
   TCHAR buffer2[80];
   WindowControl* wFreq = wf->FindByName(TEXT("cmdRadioFreq"));
-  _stprintf(buffer2,_T("%sMHz"),WPLSEL.Freq );
+  _stprintf(buffer2,_T("%s"),WPLSEL.Freq );
   wFreq->SetCaption(buffer2);
   wFreq->Redraw();
   retStatus=0;

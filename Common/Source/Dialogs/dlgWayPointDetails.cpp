@@ -345,7 +345,7 @@ TCHAR Tmp2[20];
         LKSound(TEXT("LK_TICK.WAV"));
         _sntprintf(Tmp2, 10, _T("%s"),(TCHAR*)aCommentTextLine[ItemIndex]);
         Tmp2[10]=0;
-        _stprintf(Tmp,_T("%s%s%7.3fMHz"),Tmp2,NEWLINE,ASFrequency);
+        _stprintf(Tmp,_T("%s%s%7.3f"),Tmp2,NEWLINE,ASFrequency);
         devPutFreqActive(ASFrequency, Tmp2);
         DoStatusMessage(_T(""), Tmp );
       }
