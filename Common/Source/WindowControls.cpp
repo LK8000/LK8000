@@ -3027,6 +3027,9 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
         Redraw();
       }
     } else if (mListInfo.ItemCount > mListInfo.ItemInPageCount) {
+#ifndef UNDER_CE
+      // workaround for windows CE
+      //   https://github.com/LK8000/LK8000/issues/1350 
       const int ScrollOffset =  Pos.y - mScrollStart.y;
       const int ScrollStep = GetHeight() / mListInfo.ItemInPageCount;
       const int newIndex = Clamp(mListInfo.ScrollIndex - (ScrollOffset / ScrollStep), 0, mListInfo.ItemCount- mListInfo.ItemInPageCount) ;
@@ -3036,6 +3039,7 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
         mCaptureScroll = true;
       }
       Redraw();
+#endif
     }
   }
   return false;
