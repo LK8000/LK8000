@@ -203,7 +203,7 @@
     "_@M000195_": "Configuração",
     "_@M000196_": "Configurar Custom Keys",
     "_@M000197_": "Configurar Topologia",
-    "_@M000198_": "Confirma Exit?",
+    "_@M000198_": "Confirma Sair?",
     "_@M000199_": "Ligado",
     "_@M000200_": "Copiar",
     "_@M000201_": "Impossível abrir ficheiro IGC!",
@@ -499,7 +499,7 @@
     "_@M000524_": "Nome do Piloto",
     "_@M000525_": "Nome do piloto:",
     "_@M000526_": "Tom",
-    "_@M000527_": "Por favor, encerre o LK8000 e reinicie o seu aparelho\n",
+    "_@M000527_": "Encerre o LK8000 e reinicie o seu dispositivo.\n",
     "_@M000528_": "Ficheiro Polar",
     "_@M000529_": "Elegendo",
     "_@M000530_": "Porta",
@@ -1364,7 +1364,7 @@
     "_@M002143_": "Config. Disp. A",
     "_@M002144_": "Config. Disp. B",
     "_@M002145_": "Entrada",
-    "_@M002146_": "Saída",
+    "_@M002146_": "Sair",
     "_@M002147_": "Fora/Entrada",
     "_@M002148_": "Carro,Bicicleta & Caminhar",
     "_@M002149_": "na térmica",
@@ -1500,5 +1500,7 @@
     "_@M002097_": "Led DESL.\nBuz LIG.",
     "_@M002098_": "Led LIG.\nBuz DESL.",
     "_@M002243_": "Sonar\nDESL.",
-    "_@M002388_": "Draw XC\nDESL."
+    "_@M002388_": "Draw XC\nDESL.",
+    "_@M002073_": "Sair",
+    "_@M002416_": "Ficheiro existe\ndeseja descarregar novamente?"
 }
