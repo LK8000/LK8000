@@ -222,6 +222,14 @@ public:
         SetVisible(true);
     }
 
+    void ToScreen(POINT& pos) const {
+        ::ClientToScreen(_hWnd, &pos);
+    }
+
+    void ToClient(POINT& pos) const {
+        ::ScreenToClient(_hWnd, &pos);
+    }
+
 protected:
 
     void StartTimer(unsigned uTime /*millisecond*/) { ::SetTimer(_hWnd, 1, uTime, NULL); }

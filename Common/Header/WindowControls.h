@@ -751,7 +751,10 @@ protected:
 
     virtual void Paint(LKSurface& Surface);
 
-    virtual bool OnLButtonDownNotify(Window* pWnd, const POINT& Pos) { return OnLButtonDown(Pos); }
+#ifdef WIN32
+    bool OnLButtonDownNotify(Window* pWnd, const POINT& Pos) override;
+#endif
+
     virtual bool OnLButtonDown(const POINT& Pos);
     virtual bool OnLButtonUp(const POINT& Pos);
 
