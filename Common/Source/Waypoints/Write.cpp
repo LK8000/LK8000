@@ -38,7 +38,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 
   flags[0]=0;
 
-  if ((globalFileNum < 0) || (globalFileNum > array_size(WpFileType))) {
+  if ((globalFileNum < 0) || (globalFileNum >= (int)array_size(WpFileType))) {
     StartupStore(_T("++++++ WriteWayPoint error: impossible file index!%s"),NEWLINE);
     return;
   }
@@ -183,7 +183,7 @@ void WriteWayPointFile(FILE *fp) {
     }
   }
   // Write specific format header
-  if ((globalFileNum >= 0) && (globalFileNum < array_size(WpFileType))) { // 100208
+  if ((globalFileNum >= 0) && (globalFileNum < (int)array_size(WpFileType))) { // 100208
 	if ( WpFileType[globalFileNum] == LKW_CUP ) {
 	 fprintf(fp,"name,code,country,lat,lon,elev,style,rwdir,rwlen,freq,desc\r\n");
 	}
