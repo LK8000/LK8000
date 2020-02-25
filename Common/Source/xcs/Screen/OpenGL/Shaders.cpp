@@ -226,6 +226,15 @@ OpenGL::DeinitShaders()
 {
   delete solid_shader;
   solid_shader = nullptr;
+
+  delete texture_shader;
+  texture_shader =nullptr;
+
+  delete invert_shader;
+  invert_shader = nullptr;
+
+  delete alpha_shader;
+  alpha_shader = nullptr;  
 }
 
 void
