@@ -771,7 +771,7 @@ static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
 
           if(substart < subend) {
             int h =  LineHeight - IBLSCALE(4);
-            const auto hOldPen = Surface.SelectObject(LKPen_Black_N2);
+            const auto hOldPen = Surface.SelectObject(LKPen_Black_N1);
             Surface.DrawLine(substart, h, subend, h);
             Surface.SelectObject(hOldPen);
           }
