@@ -301,7 +301,8 @@ short dlgWayQuickShowModal(void){
       }
     }
   }
-  if(WayPointList[SelectedWaypoint].Format == LKW_VIRTUAL)
+
+  if(SelectedWaypoint < RESWP_FIRST_MARKER)
   {
     WindowControl*pWnd = wf->FindByName(TEXT("cmdTask"));
     if(pWnd) {    pWnd->SetVisible(false);}
