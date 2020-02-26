@@ -37,8 +37,6 @@
 namespace Java {
 	extern JavaVM *jvm;
 
-	void Init(JNIEnv *env);
-
 	static inline void
 	DetachCurrentThread()
 	{

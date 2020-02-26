@@ -85,8 +85,6 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
   crash_context = crashlytics_init();
 
-
-  Java::Init(env);
   Java::Object::Initialise(env);
   Java::File::Initialise(env);
 

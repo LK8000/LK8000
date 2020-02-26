@@ -31,9 +31,9 @@
 
 namespace Java {
 	JavaVM *jvm;
+}
 
-	void Init(JNIEnv *env)
-	{
-		env->GetJavaVM(&jvm);
-	}
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+	Java::jvm = vm;
+	return JNI_VERSION_1_2;
 }
