@@ -425,24 +425,13 @@ void DataField::SetEditFormat(const TCHAR *Value){
 }
 
 void DataField::CopyString(TCHAR * szbuffOut, bool bFormatted) {
-  int iLen=0;
-  if (!bFormatted) 
-  {
-    if (GetAsString() != NULL) // null leaves iLen=0
-    {
-      iLen = _tcslen(GetAsString());
-      LK_tcsncpy(szbuffOut, GetAsString(), min(iLen, ComboPopupITEMMAX-1));
-    }
+  unsigned iLen=0;
+  const TCHAR *str = bFormatted ? GetAsDisplayString() : GetAsString();
+  if (str) { // null leaves iLen=0
+    iLen = std::min<unsigned>(_tcslen(str), ComboPopupITEMMAX-1);
+    LK_tcsncpy(szbuffOut, str, iLen);
   }
-  else 
-  {
-    if (GetAsDisplayString() != NULL) 
-    {
-      iLen = _tcslen(GetAsDisplayString());
-      LK_tcsncpy(szbuffOut, GetAsDisplayString(), min(iLen, ComboPopupITEMMAX-1));
-    }
-  }
-  szbuffOut[min(iLen, ComboPopupITEMMAX-1)] = '\0';
+  szbuffOut[iLen] = '\0';
 }
 
 

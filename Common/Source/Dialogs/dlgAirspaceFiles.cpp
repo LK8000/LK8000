@@ -19,34 +19,28 @@ static WndForm *wf=NULL;
 
 
 static void getVariables(void) {
-WndProperty *wp;
-TCHAR tmp[MAX_PATH];
+  TCHAR tmp[MAX_PATH];
 
-  for (unsigned int i=0 ; i < NO_AS_FILES; i++)
-  {
+  for (unsigned int i=0 ; i < NO_AS_FILES; i++) {
     _stprintf(tmp,_T("prpFile%1u"),i+1);
-    wp = (WndProperty*)wf->FindByName(tmp);
+    WndProperty* wp = (WndProperty*)wf->FindByName(tmp);
 
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
-    	  if(dfe->GetAsDisplayString() != NULL)
-    	  {
-    		if(_tcscmp(szAirspaceFile[i], dfe->GetAsDisplayString())!= 0)
-    		{
-    	//   	  StartupStore(_T(".dfe->GetAsDisplayString(): %s %s"),dfe->GetAsDisplayString(),NEWLINE);
-    	//  	  StartupStore(_T(".        szAirspaceFile[%d]: %s %s"),i+1,szAirspaceFile[i],NEWLINE);
-              _sntprintf(szAirspaceFile[i], MAX_PATH ,_T("%s"), dfe->GetAsDisplayString());
-              AIRSPACEFILECHANGED= true;
-    		}
-    	  }
-    	  else
-    	  {
-			if ( szAirspaceFile[i][0] != '\0' ) {
-			  szAirspaceFile[i][0] = {'\0'};
-			  AIRSPACEFILECHANGED  = true;
-			}
-    	  }
+        const TCHAR* str = dfe->GetAsDisplayString();
+        if(str) {
+          if(_tcscmp(szAirspaceFile[i], str)!= 0) {
+            _tcscpy(szAirspaceFile[i], str);
+            AIRSPACEFILECHANGED= true;
+          }
+        }
+        else {
+          if ( szAirspaceFile[i][0] != '\0' ) {
+            szAirspaceFile[i][0] = {'\0'};
+            AIRSPACEFILECHANGED  = true;
+          }
+        }
       }
     }
   }

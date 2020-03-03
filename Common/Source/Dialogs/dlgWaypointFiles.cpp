@@ -19,34 +19,28 @@ static WndForm *wf=NULL;
 
 
 static void getVariables(void) {
-  WndProperty *wp;
+  TCHAR tmp[MAX_PATH];
 
-   TCHAR tmp[MAX_PATH];
-
-  for (unsigned int i=0 ; i < NO_WP_FILES; i++)
-  {
+  for (unsigned int i=0 ; i < NO_WP_FILES; i++) {
     _stprintf(tmp,_T("prpFile%1u"),i+1);
-    wp = (WndProperty*)wf->FindByName(tmp);
+    WndProperty* wp = (WndProperty*)wf->FindByName(tmp);
 
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
-    	  if(dfe->GetAsDisplayString() != NULL)
-    	  {
-
-      		if(_tcscmp(szWaypointFile[i], dfe->GetAsDisplayString()) != 0)
-      		{
-              _sntprintf(szWaypointFile[i], MAX_PATH ,_T("%s"), dfe->GetAsDisplayString());
-    	      WAYPOINTFILECHANGED = true;
-      		}
-    	  }
-    	  else
-    	  {
-			if ( szWaypointFile[i][0] != '\0' ) {
-			  szWaypointFile[i][0] = {'\0'};
-			  WAYPOINTFILECHANGED  = true;
-			}
-    	  }
+        const TCHAR* str = dfe->GetAsDisplayString();
+        if(str) {
+          if(_tcscmp(szWaypointFile[i], str)!= 0) {
+            _tcscpy(szWaypointFile[i], str);
+            WAYPOINTFILECHANGED= true;
+          }
+        }
+        else {
+          if ( szWaypointFile[i][0] != '\0' ) {
+            szWaypointFile[i][0] = {'\0'};
+            WAYPOINTFILECHANGED  = true;
+          }
+        }
       }
     }
   }
