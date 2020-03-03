@@ -755,23 +755,15 @@ bool Units::TimeToTextDown(TCHAR* text, int d) {
 
 // LK8000
 void Units::TimeToTextS(TCHAR* text, int d) {
-  int hours, mins, seconds;
   bool negative = (d<0);
   int dd = abs(d) % (3600*24);
-  hours = (dd/3600);
-  mins = (dd/60-hours*60);
-  seconds = (dd-mins*60-hours*3600);
+  int hours = (dd/3600);
+  int mins = (dd/60-hours*60);
+  int seconds = (dd-mins*60-hours*3600);
   hours = hours % 24;
   if (negative) {
-	if (hours>0) {
-		hours = -hours;
-	} else if (mins>0) {
-		mins = -mins;
-	} else {
-		seconds = -seconds;
-	}
-	_stprintf(text, TEXT("-%d:%02d:%02d"),  hours, mins, seconds);
+    _stprintf(text, TEXT("-%d:%02d:%02d"),  hours, mins, seconds);
   } else {
-	_stprintf(text, TEXT("%d:%02d:%02d"),  hours, mins, seconds);
+    _stprintf(text, TEXT("%d:%02d:%02d"),  hours, mins, seconds);
   }
 }
