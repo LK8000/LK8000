@@ -433,17 +433,19 @@ class DataFieldInteger:public DataField{
 class DataFieldFloat:public DataField{
 
   private:
-    double mValue;
     double mMin;
     double mMax;
     double mStep;
     PeriodClock mTmLastStep;
     int mSpeedup;
     int mFine;
-    TCHAR mOutBuf[OUTBUFFERSIZE+1];
 
 
   protected:
+    double mValue;
+    TCHAR mOutBuf[OUTBUFFERSIZE+1];
+
+
     double SpeedUp(bool keyup);
 
 
@@ -486,6 +488,14 @@ class DataFieldFloat:public DataField{
   double SetAsFloat(double Value) override;
   const TCHAR *SetAsString(const TCHAR *Value) override;
 
+};
+
+class DataFieldTime : public DataFieldFloat {
+public:
+  DataFieldTime(TCHAR *EditFormat, TCHAR *DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t OnDataAccess=nullptr):
+          DataFieldFloat(EditFormat, DisplayFormat, Min, Max, Default, Step, Fine, OnDataAccess) {}
+
+  const TCHAR *GetAsDisplayString(void) override;
 };
 
 #define EDITSTRINGSIZE 32

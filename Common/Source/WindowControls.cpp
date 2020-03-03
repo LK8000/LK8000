@@ -1084,6 +1084,14 @@ int DataFieldFloat::CreateComboList(void) {
 	return CreateComboListStepping();
 }
 
+const TCHAR *DataFieldTime::GetAsDisplayString(void) {
+  double hours = 0;
+  double minutes = modf(mValue, &hours);
+  _stprintf(mOutBuf, mDisplayFormat, (int)hours, (int)(std::abs(minutes)*60.));
+  return(mOutBuf);
+}
+
+
 
 //----------------------------------------------------------
 // DataField String

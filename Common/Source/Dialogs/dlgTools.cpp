@@ -597,6 +597,12 @@ void LoadChildsFromXML(WindowControl *Parent,
               (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
           );
         }
+        if (_tcsicmp(DataType, TEXT("time"))==0){
+          W->SetDataField(
+			  new DataFieldTime(EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
+              (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
+          );
+        }
 
       }
 
