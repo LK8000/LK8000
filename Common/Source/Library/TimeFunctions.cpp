@@ -10,8 +10,11 @@
 
 // simple localtime with no 24h exceeding
 int LocalTime(int utc_time) {
-  int localtime = utc_time + GetUTCOffset();
-  return (localtime % (24 * 3600));
+  int localtime = (utc_time + GetUTCOffset()) % (24 * 3600);
+  if(localtime < 0) {
+    localtime += (24 * 3600);
+  }
+  return localtime;
 }
 
 int LocalTime() {
