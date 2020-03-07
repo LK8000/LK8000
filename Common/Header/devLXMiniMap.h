@@ -20,8 +20,6 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// General LX device (parsing LXWPn sentences).
 ///
-double StaticPressureToQNEAltitude(double ps);
-double QNEAltitudeToStaticPressure(double alt);
 double CalculateQNH(double alt_qne, double alt_qnh);
 double QNHAltitudeToStaticPressureEx(double alt);
 
