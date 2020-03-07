@@ -5,7 +5,7 @@
 
    $Id$
 */
-
+#include "options.h"
 #include "externs.h"
 #include "McReady.h"
 
@@ -20,9 +20,7 @@ static constexpr double inv_k2 = 1.0 / k2;
 //
 double AirDensitySinkRate(double ias, double qnhaltitude) {
 
-    double sinkias=0;
-
-    sinkias=GlidePolar::SinkRate(ias)*AirDensityRatio(QNHAltitudeToQNEAltitude(qnhaltitude));
+    double sinkias = GlidePolar::SinkRate(ias)*AirDensityRatio(QNHAltitudeToQNEAltitude(qnhaltitude));
 
     // this can actually happen with a bad polar file loaded!
     BUGSTOP_LKASSERT(sinkias<=0);
@@ -33,10 +31,9 @@ double AirDensitySinkRate(double ias, double qnhaltitude) {
 
 double AirDensitySinkRate(double ias, double qnhaltitude, double gload) {
 
-    double w0 = GlidePolar::SinkRate(GlidePolar::polar_a,GlidePolar::polar_b,GlidePolar::polar_c,0.0,0.0,ias);
-    w0 *= AirDensityRatio(QNHAltitudeToQNEAltitude(qnhaltitude));
+    double w0 = AirDensitySinkRate(ias, qnhaltitude);
     gload = max(0.1,fabs(gload));
-    double v2 = GlidePolar::Vbestld()/max((double)GlidePolar::Vbestld()/2,ias);
+    double v2 = GlidePolar::Vbestld()/max(GlidePolar::Vbestld()/2,ias);
 
     LKASSERT(GlidePolar::bestld!=0);
     if (GlidePolar::bestld==0) return -1; // UNMANAGED
@@ -80,12 +77,7 @@ double StaticPressureToQNEAltitude(double ps) {
 
 // Converts altitude with QNH=1013.25 reference to QNH adjusted altitude
 double QNEAltitudeToQNHAltitude(double alt) {
-  // avoid overflow of double
-  if (alt>44330){
-      alt=44330;
-  }
-  double ps = pow((44330.8-alt)/4946.54,1.0/k1);
-  return StaticPressureToQNHAltitude(ps);
+  return StaticPressureToQNHAltitude(QNEAltitudeToStaticPressure(alt));
 }
 
 double QNHAltitudeToQNEAltitude(double alt) {
@@ -105,8 +97,8 @@ double FindQNH(double alt_raw, double alt_known) {
 
   // step 1, find static pressure from device assuming it's QNH adjusted
   double psraw = QNHAltitudeToStaticPressure(alt_raw);
-  // step 2, calculate QNH so that reported alt will be known alt
-  return pow(pow(psraw/100.0,k1) + k2*alt_known,1/k1);
+  // step 2, calculate QNH so that reported alt will be known alt  
+  return AltitudeToStaticPressure(psraw, alt_known);
 
   // example, QNH=1014, ps=100203
   // alt= 100
@@ -141,23 +133,83 @@ double AirDensityRatio(double qne_altitude) {
 
 // Air Density(kg/m3) from relative humidity(%), temperature(°C) and absolute pressure(Pa)
 double AirDensity( double hr, double temp, double abs_press ) {
-	return (1/(287.06*(temp+273.15)))*(abs_press - 230.617 * hr * exp((17.5043*temp)/(241.2+temp)));
+  return (1/(287.06*(temp+273.15)))*(abs_press - 230.617 * hr * exp((17.5043*temp)/(241.2+temp)));
 }
 
 // Air Speed from air density, humidity, temperature and absolute pressure
 double TrueAirSpeed( double delta_press, double hr, double temp, double abs_press ) {
-	double rho = AirDensity(hr,temp,abs_press);
-	return sqrt(2 * delta_press / rho);
+  double rho = AirDensity(hr,temp,abs_press);
+  return sqrt(2 * delta_press / rho);
 }
 
 // True Air Speed from Indicated Air Speed and QNE Altitude
 double TrueAirSpeed( double ias, double qne_altitude) {
-	double rho = AirDensity(qne_altitude);
-	return ias * sqrt(1.225 / rho);
+  double rho = AirDensity(qne_altitude);
+  return ias * sqrt(1.225 / rho);
 }
 
 // Indicated Air Speed from True Air Speed and QNE Altitude
 double IndicatedAirSpeed( double tas, double qne_altitude) {
-	double rho = AirDensity(qne_altitude);
-	return tas / sqrt(1.225 / rho);
+  double rho = AirDensity(qne_altitude);
+  return tas / sqrt(1.225 / rho);
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("pressure") {
+
+  auto Approx = [](double value) {
+    return doctest::Approx(value).epsilon(0.01);
+  };
+
+  SUBCASE("pressure to QNE") {
+    CHECK(Approx(   0.0) == StaticPressureToQNEAltitude(101325.));
+    CHECK(Approx( 540.1) == StaticPressureToQNEAltitude( 95000.));
+    CHECK(Approx( 988.1) == StaticPressureToQNEAltitude( 90000.));
+    CHECK(Approx(1948.2) == StaticPressureToQNEAltitude( 80000.));
+    CHECK(Approx(3010.9) == StaticPressureToQNEAltitude( 70000.));
+  }
+
+  SUBCASE("QNE to pressure") {
+    CHECK(Approx(101325.00) == QNEAltitudeToStaticPressure(   0.));
+    CHECK(Approx( 90970.09) == QNEAltitudeToStaticPressure( 900.));
+    CHECK(Approx( 81489.22) == QNEAltitudeToStaticPressure(1800.));
+    CHECK(Approx( 70108.54) == QNEAltitudeToStaticPressure(3000.));
+  }
+
+  double old_QNH = std::exchange(QNH, 996.);
+
+  SUBCASE("pressure to QNH") {
+    CHECK(Approx(-144.829) == StaticPressureToQNHAltitude(101325.));
+    CHECK(Approx(   0.000) == StaticPressureToQNHAltitude( 99600.));
+    CHECK(Approx( 844.860) == StaticPressureToQNHAltitude( 90000.));
+    CHECK(Approx(1804.302) == StaticPressureToQNHAltitude( 80000.));
+    CHECK(Approx(2867.575) == StaticPressureToQNHAltitude( 70000.));
+  }
+
+  SUBCASE("QNH to pressure") {
+    CHECK(Approx(99600.00) == QNHAltitudeToStaticPressure(   0.));
+    CHECK(Approx(88464.50) == QNHAltitudeToStaticPressure(1000.));
+    CHECK(Approx(78574.00) == QNHAltitudeToStaticPressure(2000.));
+    CHECK(Approx(68828.00) == QNHAltitudeToStaticPressure(3000.));
+  }
+
+  QNH = 1013.25;
+
+  SUBCASE("QNE to QNH") {
+    CHECK(doctest::Approx(1000.) == QNEAltitudeToQNHAltitude(1000.));
+    CHECK(doctest::Approx(2000.) == QNEAltitudeToQNHAltitude(2000.));
+    CHECK(doctest::Approx(3000.) == QNEAltitudeToQNHAltitude(3000.));
+  }
+
+  SUBCASE("QNH to QNE") {
+    CHECK(doctest::Approx(1000.) == QNHAltitudeToQNEAltitude(1000.));
+    CHECK(doctest::Approx(2000.) == QNHAltitudeToQNEAltitude(2000.));
+    CHECK(doctest::Approx(3000.) == QNHAltitudeToQNEAltitude(3000.));
+  }
+
+  QNH = old_QNH;
+}
+
+#endif
