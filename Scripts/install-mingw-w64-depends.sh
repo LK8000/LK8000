@@ -6,6 +6,8 @@
 # Created on Dec 14, 2016, 10:48:50 PM
 #
 
+NB_CORES=$(grep -c '^processor' /proc/cpuinfo)
+export MAKEFLAGS="-j$((NB_CORES+1)) -l${NB_CORES}"
 
 DOWNLOAD_DIR="${HOME}/tmp/download"
 SOURCE_DIR="${HOME}/tmp/source"
@@ -59,6 +61,6 @@ for TC in ${TOOLCHAINS}; do
             --prefix=${PREFIX_DIR}/${TC} \
             PKG_CONFIG_LIBDIR=${PREFIX_DIR}/${TC}/lib/pkgconfig
 
-    make && sudo make install
+    make && make install
 
 done
