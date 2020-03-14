@@ -911,7 +911,7 @@ public:
 
             for (; x < (ixs-8); x+=8) {
                 // iso band value of current pixel
-                uint16x8_t h = IsoBand(&height_row[x], zoom);
+                const int16x8_t h = IsoBand(&height_row[x], zoom);
                 vst1q_s16(&current_iso_band[x], h);
 
                 const int16x8_t h1 = vld1q_s16(&prev_iso_band[x-1]); // top left value
