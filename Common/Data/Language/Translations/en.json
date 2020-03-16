@@ -286,7 +286,7 @@
     "_@H000879_": "[Airspace Horizontal Distance]\nHorizontal distance to the SELECTED airspace. To SELECT an airspace go inside 2.4 airspace page and pull details,\nthere is a button for selection. Once selected the airspace will be monitored for distance in this infobox.\nIf no airspace is selected, OR if you are already INSIDE the airspace for this distance, --- is shown.\nIn case of flyzones, the nearest distance is calculated where you can leave that flyzone.",
     "_@H000880_": "[Ext.Batt.Bank ]\nExternal device battery bank in use, if available",
     "_@H000881_": "[Ext.Batt1.Voltage]\nExternal device battery bank 1 voltage, if available",
-    "_@H000882_": "[Ext.Batt1.Voltage]\nExternal device battery bank 2 voltage, if available",
+    "_@H000882_": "[Ext.Batt2.Voltage]\nExternal device battery bank 2 voltage, if available",
     "_@H000883_": "[Odometer]\nThe distance made since TAKEOFF, calculated each second, also while circling. This value is reset to zero at Take Off, and cannot be reset in any other way. This value is calculated just like if you were driving a car on a flat surface!",
     "_@H000884_": "[Altern QNH]\nQNH altitude with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters.",
     "_@H000885_": "[Altern AltAGL]\nAltitude above ground level with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters.",
@@ -2520,7 +2520,6 @@
     "_@M002468_": "Direction",
     "_@M002469_": "EXT Target",
     "_@M002470_": "Ahead",
-
     "_@M001903_": "heightSensitivityDm (dm)",
     "_@H001305_": "How far you have to move in dm to reset the idle timeout",
     "_@M001904_": "heightSeconds (s)",
