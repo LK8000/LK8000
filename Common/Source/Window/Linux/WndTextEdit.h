@@ -36,7 +36,21 @@ public:
     }
 
     int GetLineCount() {
-        return 1;
+        int line = 1;
+        const TCHAR* p = GetWndText();
+        if (p) {
+            while (*(p++)) {
+                if (*p == _T('\r')) {
+                    if (*(p + 1) == _T('\n')) {
+                        ++p;
+                    }
+                    ++line;
+                } else if (*p == _T('\n')) {
+                    ++line;
+                }
+            }
+        }
+        return line;
     }
 
 };
