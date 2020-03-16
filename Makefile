@@ -290,15 +290,7 @@ $(info GCC VERSION : $(GCCVERSION))
 
 
 ifeq ($(DEBUG),y)
- ifeq ($(CLANG),y)
-  OPTIMIZE  := -O0 
- else
-  ifeq ($(GCC_GTEQ_480),1)
-   OPTIMIZE  := -Og
-  else
-   OPTIMIZE  := -O0
-  endif
- endif
+ OPTIMIZE  := -O0
  OPTIMIZE  += -g3 -ggdb
 endif
 
