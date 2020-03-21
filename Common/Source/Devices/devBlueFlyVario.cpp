@@ -19,7 +19,6 @@
 #include "Baro.h"
 #include "devLK8EX1.h"
 #include "devFlyNet.h"
-#include "devFanet.h"
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
@@ -512,10 +511,6 @@ BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS
     if(_tcsncmp(TEXT("PRS "), String, 4)==0){
         return PRS(d, &String[4], pGPS);
     } 
-
-    if (FanetParseNMEA(d, String, pGPS)) {
-        return TRUE;
-    }
 
     if (LK8EX1ParseNMEA(d, String, pGPS)) {
         return TRUE;

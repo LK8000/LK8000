@@ -939,6 +939,7 @@ DRAW	:=\
 	$(DRW)/LKDrawBottomBar.cpp \
 	$(DRW)/LKDrawCpuStatsDebug.cpp \
 	$(DRW)/LKDrawFLARMTraffic.cpp \
+	$(DRW)/LKDrawFanetData.cpp \
 	$(DRW)/LKDrawInfoPage.cpp \
 	$(DRW)/LKDrawLook8000.cpp \
 	$(DRW)/LKDrawMapSpace.cpp \
@@ -1133,6 +1134,7 @@ UTILS	:=\
 
 COMMS	:=\
 	$(CMM)/LKFlarm.cpp\
+	$(CMM)/LKFanet.cpp\
 	$(CMM)/Parser.cpp\
 	$(CMM)/ComCheck.cpp\
 	$(CMM)/ComPort.cpp\
@@ -1199,6 +1201,7 @@ DEVS	:=\
 	$(DEV)/devAR620x.cpp \
 	$(DEV)/devATR833.cpp \
 	$(DEV)/devOpenVario.cpp \
+	$(DEV)/devFanet.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
