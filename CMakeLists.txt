@@ -417,6 +417,7 @@ add_library( LK8000 SHARED
     Common/Source/Draw/LKDrawBottomBar.cpp
     Common/Source/Draw/LKDrawCpuStatsDebug.cpp
     Common/Source/Draw/LKDrawFLARMTraffic.cpp
+    Common/Source/Draw/LKDrawFanetData.cpp
     Common/Source/Draw/LKDrawInfoPage.cpp
     Common/Source/Draw/LKDrawLook8000.cpp
     Common/Source/Draw/LKDrawMapSpace.cpp
@@ -602,6 +603,7 @@ add_library( LK8000 SHARED
     Common/Source/utils/hmac_sha2.cpp
 
     Common/Source/Comm/LKFlarm.cpp
+    Common/Source/Comm/LKFanet.cpp
     Common/Source/Comm/Parser.cpp
     Common/Source/Comm/ComCheck.cpp
     Common/Source/Comm/ComPort.cpp
@@ -672,6 +674,7 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devFlarm.cpp
     Common/Source/Devices/devFlarm.cpp
     Common/Source/Devices/devLX_EOS_ERA.cpp
+    Common/Source/Devices/devFanet.cpp
 
     Common/Source/Dialogs/AddCustomKeyList.cpp
     Common/Source/Dialogs/dlgAirspace.cpp

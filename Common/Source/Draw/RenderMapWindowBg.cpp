@@ -305,6 +305,9 @@ _skip_stuff:
     // Draw traffic and other specifix LK gauges
     LKDrawFLARMTraffic(Surface, DrawRect, _Proj, Orig_Aircraft);
 
+    // Draw FANET-Data on Map
+    LKDrawFanetData(Surface, DrawRect, _Proj, Orig_Aircraft);
+
     // ---------------------------------------------------
 _skip_2:
 

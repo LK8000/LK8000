@@ -658,6 +658,7 @@ private:
   static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawTerrainAbove(LKSurface& Surface, const RECT& rc);
   static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
+  static void LKDrawFanetData(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
   static void LKDrawVario(LKSurface& Surface, const RECT& rc);
 
   static bool TextInBox(LKSurface& Surface, const RECT *area, const TCHAR* Value, int x, int y, TextInBoxMode_t *Mode, bool noOverlap=false);

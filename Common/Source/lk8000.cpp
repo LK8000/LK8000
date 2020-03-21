@@ -53,6 +53,7 @@
 #include "devLXNano3.h"
 #include "devXCTracer.h"
 #include "devGPSBip.h"
+#include "devFanet.h"
 #include "InputEvents.h"
 #include "Geoid.h"
 #include "RasterTerrain.h"
@@ -516,6 +517,7 @@ bool Startup(const TCHAR* szCmdLine) {
   DevVaulter::Register();
   DevOpenVario::Register();
   DevLX_EOS_ERA::Register();
+  FanetRegister();
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<
