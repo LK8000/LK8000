@@ -6,7 +6,6 @@
 #endif // _MSC_VER > 1000
 
 #include "Flarm.h"
-#include "Fanet.h"
 #if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
 #endif
@@ -54,27 +53,6 @@ typedef struct
 //      double fIntegrator;
         int iColorIdx;
 } FLARM_TRACE;
-
-
-//
-// FANET Weatherdata
-//
-typedef struct _FANET_WEATHER
-{
-  double Latitude; //latitude
-  double Longitude; //longitude
-  float windDir; //wind-direction 0-360 Deg
-  float windSpeed; //wind-average [km/h]
-  float windGust; //windgust (2sec) [km/h]
-  float temp; //temperature [°C]
-  float hum; //humidity [%]
-  float pressure; //pressure [hPa]
-  float Battery; //charge state [%] 
-  TCHAR Name[MAXFANETNAME+1]; //name of station
-  TCHAR Cn[MAXFANETCN+1]; //ID of station (3 Bytes)
-  unsigned short Status; //status of station
-  double Time_Fix; //GPS-Time when we got the last msg
-} FANET_WEATHER;
 
 
 
@@ -160,7 +138,6 @@ typedef struct _NMEA_INFO
   FLARM_TRACE	FLARM_RingBuf[MAX_FLARM_TRACES];
   bool FLARMTRACE_bBuffFull;
   int  FLARMTRACE_iLastPtr;
-  FANET_WEATHER FANET_Weather[MAXFANETWEATHER];
 #ifdef DEVICE_SERIAL
   int HardwareId;
   int SerialNumber;
@@ -282,7 +259,6 @@ class NMEAParser {
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 };
 
-void Fanet_RefreshSlots(NMEA_INFO *pGPS);
 void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO);
 void FLARM_EmptySlot(NMEA_INFO *GPS_INFO,int i);
 void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
