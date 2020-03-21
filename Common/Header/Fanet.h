@@ -61,4 +61,26 @@ bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR (&szName)[size]) {
   return GetFanetName(ID, info, szName, size);
 }
 
+//
+// FANET Weatherdata
+//
+typedef struct _FANET_WEATHER
+{
+  double Latitude; //latitude
+  double Longitude; //longitude
+  float windDir; //wind-direction 0-360 Deg
+  float windSpeed; //wind-average [km/h]
+  float windGust; //windgust (2sec) [km/h]
+  float temp; //temperature [°C]
+  float hum; //humidity [%]
+  float pressure; //pressure [hPa]
+  float Battery; //charge state [%] 
+  TCHAR Name[MAXFANETNAME+1]; //name of station
+  TCHAR Cn[MAXFANETCN+1]; //ID of station (3 Bytes)
+  unsigned short Status; //status of station
+  double Time_Fix; //GPS-Time when we got the last msg
+} FANET_WEATHER;
+
+
+
 #endif

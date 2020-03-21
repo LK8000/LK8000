@@ -19,7 +19,6 @@
 #include "Baro.h"
 #include "devLK8EX1.h"
 #include "devFlyNet.h"
-#include "devFanet.h"
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
