@@ -48,9 +48,6 @@ static int NoFlarm = 0;
 #ifdef WEATHERST_MS
 static int NoWeatherSt = 0;
 #endif
-#ifdef WEATHERST_MS
-static int NoWeatherSt = 0;
-#endif
 
 #define MAX_AIRFILEDS 3
 #define MAX_OUTLAND   3
