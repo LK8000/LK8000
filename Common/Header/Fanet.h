@@ -75,12 +75,19 @@ typedef struct _FANET_WEATHER
   float hum; //humidity [%]
   float pressure; //pressure [hPa]
   float Battery; //charge state [%] 
-  TCHAR Name[MAXFANETNAME+1]; //name of station
-  TCHAR Cn[MAXFANETCN+1]; //ID of station (3 Bytes)
+  TCHAR Cn[MAXFANETCN]; //ID of station (3 Bytes)
   unsigned short Status; //status of station
   double Time_Fix; //GPS-Time when we got the last msg
 } FANET_WEATHER;
 
-
+//
+// FANET Weatherdata
+//
+typedef struct _FANET_NAME
+{
+  TCHAR Name[MAXFANETNAME+1]; //name of station
+  TCHAR Cn[MAXFANETCN]; //ID of station (3 Bytes)
+  double Time_Fix; //GPS-Time when we got the last msg
+} FANET_NAME;
 
 #endif
