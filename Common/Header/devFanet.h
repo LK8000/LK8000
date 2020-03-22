@@ -13,6 +13,5 @@
 #define	DEVFANET_H
 
 BOOL FanetRegister(void);
-BOOL FanetParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
 #endif	/* DEVFANETH */
