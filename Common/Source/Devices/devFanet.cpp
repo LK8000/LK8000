@@ -16,12 +16,13 @@
 #include "devFanet.h"
 #include "Fanet.h"
 #include "Parser.h"
+#include "Message.h"
+#include "Sound/Sound.h"
+#include "resource.h"
 
 static BOOL FanetParse(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
 BOOL FanetParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
-    //StartupStore(_T("... FANETParse %s"),String);
-
   (void)d;
 
   if (pGPS == NULL){
@@ -30,7 +31,6 @@ BOOL FanetParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   if(_tcsncmp(TEXT("#FNF"), String, 4)==0)
     {
-      StartupStore(_T("... FANETMsg %s"),String);
       return FanetParse(d, &String[5], pGPS);      
     }
   return FALSE;
@@ -111,6 +111,35 @@ static void payload_absolut2coord(double *lat, double *lon, uint8_t *buf)
   *lon = (double) lon_i / 46603.0d;
 }
 
+static INT FanetGetDeviceIndex(TCHAR *pCn,NMEA_INFO *pGPS, bool bEmptyIndex){
+  int iEmpyIndex = -1;
+  for (int i = 0;i < MAXFANETDEVICES;i++){
+    if (pGPS->FanetName[i].Time_Fix == 0){
+      if ((iEmpyIndex < 0) && (bEmptyIndex)){
+        iEmpyIndex = i;
+      }
+    }else if ((pGPS->FanetName[i].Cn[0] == pCn[0]) && (pGPS->FanetName[i].Cn[1] == pCn[1]) && (pGPS->FanetName[i].Cn[2] == pCn[2])){
+      //we found the right entry (same cn)
+      return i;
+    }
+  }
+  return iEmpyIndex;
+}
+
+static BOOL FanetInsertDeviceName(_FANET_NAME *fanetDevice,NMEA_INFO *pGPS){
+  int index = FanetGetDeviceIndex(fanetDevice->Cn,pGPS,true);
+  if (index < 0){
+    return FALSE;
+  }
+  pGPS->FanetName[index] = *fanetDevice; //copy data to structure
+  pGPS->FanetName[index].Time_Fix = pGPS->Time; //set time for clearing after nothing is received  
+  return TRUE;
+}
+
+
+
+
+
 static INT FanetGetWeatherIndex(FANET_WEATHER *weather,NMEA_INFO *pGPS){
   int iEmpyIndex = -1;
   for (int i = 0;i < MAXFANETWEATHER;i++){
@@ -128,21 +157,90 @@ static INT FanetGetWeatherIndex(FANET_WEATHER *weather,NMEA_INFO *pGPS){
 
 static BOOL FanetInsertWeatherData(FANET_WEATHER *weather,NMEA_INFO *pGPS){
   int index = FanetGetWeatherIndex(weather,pGPS);
-  StartupStore(_T("... FanetgetWeatheSlot %d"),index);
   if (index < 0){
     return FALSE;
   }
   pGPS->FANET_Weather[index] = *weather; //copy data to structure
   pGPS->FANET_Weather[index].Time_Fix = pGPS->Time; //set time for clearing after nothing is received  
-  StartupStore(_T("... FanetWeatherdata ready %0.f"),(float)pGPS->FANET_Weather[index].Time_Fix);
   return TRUE;
+}
+
+static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+  _FANET_NAME fanetDevice;
+  TCHAR ctemp[80];
+
+  NMEAParser::ExtractParameter(String,ctemp,0);
+  fanetDevice.Cn[0] = getByteFromHex(ctemp);
+
+  NMEAParser::ExtractParameter(String,ctemp,1);
+  fanetDevice.Cn[1] = getByteFromHex(&ctemp[0]);
+  fanetDevice.Cn[2] = getByteFromHex(&ctemp[2]);
+
+  NMEAParser::ExtractParameter(String,ctemp,5);
+  uint8_t payloadLen = getByteFromHex(ctemp);
+
+  NMEAParser::ExtractParameter(String,ctemp,6);
+  int i;
+  for (i = 0;i < payloadLen;i++){
+    if (i < MAXFANETNAME){
+      fanetDevice.Name[i] = getByteFromHex(&ctemp[i*2]);
+    }else{
+      break;
+    }    
+  }
+  fanetDevice.Name[i] = 0; //0-termination of String
+  FanetInsertDeviceName(&fanetDevice,pGPS);
+  return TRUE;
+
+}
+
+static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+  TCHAR ctemp[80];
+  TCHAR Cn[MAXFANETCN]; //ID of station (3 Bytes)
+  TCHAR MSG[80];
+  TCHAR DevId[7];
+
+  NMEAParser::ExtractParameter(String,ctemp,0);
+  _stprintf(DevId,_T("%s"),ctemp); 
+  Cn[0] = getByteFromHex(ctemp);
+
+  NMEAParser::ExtractParameter(String,ctemp,1);
+  strcat(DevId,ctemp);
+  Cn[1] = getByteFromHex(&ctemp[0]);
+  Cn[2] = getByteFromHex(&ctemp[2]);
+
+  NMEAParser::ExtractParameter(String,ctemp,5);
+  uint8_t payloadLen = getByteFromHex(ctemp);
+
+  NMEAParser::ExtractParameter(String,ctemp,6);
+  int i;
+  for (i = 1;i < payloadLen;i++){
+    if (i < 80){
+      MSG[i-1] = getByteFromHex(&ctemp[i*2]);
+    }else{
+      break;
+    }    
+  }
+  MSG[i] = 0; //0-termination of String
+	TCHAR text[300];
+	//_stprintf(text,_T("GERALD\r\n%s"), MSG);  
+  int index = FanetGetDeviceIndex(&Cn[0],pGPS,false);
+  if (index >= 0){
+    _stprintf(text,_T("%s"),pGPS->FanetName[index].Name); //we didn't found the name (name not sent jet) --> print device-id
+  }else{
+    _stprintf(text,_T("%s"),DevId); //we didn't found the name (name not sent jet) --> print device-id
+  }
+  strcat(text,_T("\r\n"));
+  strcat(text,MSG);
+  PlayResource(TEXT("IDR_WAV_DRIP")); //play sound
+  Message::AddMessage(1500, MSG_COMMS, text); // message time 1.5s
+  return TRUE;
+
 }
 
 static BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];
   FANET_WEATHER weather;
-
-  StartupStore(_T("... FanetParseType4Msg"));
 
   NMEAParser::ExtractParameter(String,ctemp,0);
   weather.Cn[0] = getByteFromHex(ctemp);
@@ -226,8 +324,11 @@ static BOOL FanetParse(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,4);
   uint8_t type = (uint8_t)StrToDouble(ctemp,NULL);
-	StartupStore(_T("... FANET parse data %s"),String);
   switch (type) {
+    case 2: //device-name
+      return FanetParseType2Msg(d, String, pGPS);
+    case 3: //Msg
+      return FanetParseType3Msg(d, String, pGPS);
     case 4: //weatherdata
       return FanetParseType4Msg(d, String, pGPS);
 
