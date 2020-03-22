@@ -139,6 +139,7 @@ typedef struct _NMEA_INFO
   bool FLARMTRACE_bBuffFull;
   int  FLARMTRACE_iLastPtr;
   FANET_WEATHER FANET_Weather[MAXFANETWEATHER];
+  FANET_NAME FanetName[MAXFANETDEVICES];
 #ifdef DEVICE_SERIAL
   int HardwareId;
   int SerialNumber;
