@@ -538,10 +538,6 @@ bool Startup(const TCHAR* szCmdLine) {
   // LKTOKEN _@M1218_ "Initialising display"
   CreateProgressDialog(MsgToken(1218));
 
-  // just about done....
-
-  DoSunEphemeris(GPS_INFO.Longitude, GPS_INFO.Latitude);
-
   // Finally ready to go
   #if TESTBENCH
   StartupStore(TEXT(".... WinMain CreateDrawingThread%s"),NEWLINE);
