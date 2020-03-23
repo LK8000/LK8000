@@ -131,7 +131,7 @@ public:
   // Set ack validity timeout according to config prameter
   void SetAckTimeout();
   // check if airspace was already acknolaged
-  bool Acknowledged(void);
+  const bool Acknowledged(void) const;
   // get nearest distance info to this airspace, returns true if distances calculated by warning system
   bool GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const;
   // get warning point coordinates, returns true if airspace has valid distances calculated

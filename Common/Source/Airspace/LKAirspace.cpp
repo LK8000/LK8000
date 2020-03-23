@@ -624,7 +624,7 @@ void CAirspaceBase::SetAckTimeout() {
     _warnacktimeout = _now + AcknowledgementTime;
 }
 
-bool  CAirspaceBase::Acknowledged(void) {
+const bool  CAirspaceBase::Acknowledged(void) const {
 	if (_warningacklevel >  awNone)
 		return true;
 	else
@@ -3603,8 +3603,11 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
         const auto oldColor = Surface.SetTextColor(TypeColor());
 
         const auto oldPen = Surface.SelectObject(FramePen);
+bool Fill = Enabled();
+if(Acknowledged())
+   Fill = false;
 
-        const auto oldBrush = Surface.SelectObject(Enabled() ? TypeBrush() : LKBrush_Hollow);
+        const auto oldBrush = Surface.SelectObject(Fill ? TypeBrush() : LKBrush_Hollow);
 
         Surface.Polygon(ptOut, Length);
 
