@@ -37,13 +37,8 @@
  *  this class exist for enforce this requirement,
  *  helper struct are made for select right value (int or double at compil time.
  */
-class ScreenScale {
+class ScreenScale final {
 public:
-
-    static void set(double scale) {
-        screen_scale_double = scale;
-        screen_scale_int = static_cast<int>(scale*radix);
-    }
 
     template<class T, bool = std::is_integral<T>::value>
     struct helper { };
@@ -67,6 +62,11 @@ public:
 protected:
 
     friend void InitLKScreen();
+
+    static void set(double scale) {
+        screen_scale_double = scale;
+        screen_scale_int = static_cast<int>(scale*radix);
+    }
 
     static double get() {
         return screen_scale_double;
