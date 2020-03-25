@@ -863,7 +863,7 @@ void UTF8DrawWaypointPictorial(LKSurface& Surface, const RECT& rc,const TCHAR *P
 void DrawMAPWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, int Style)
 {
   TCHAR Pictor[10];
-  LKColor Col =  GetUTF8WaypointSymbol((TCHAR*)&Pictor, Style);
+  LKColor Col =  GetUTF8WaypointSymbol(Pictor, Style);
   UTF8DrawWaypointPictorial( Surface, rc, Pictor ,Col);
 }
 
@@ -872,11 +872,10 @@ void UTF8WaypointPictorial(LKSurface& Surface, const RECT& rc, const WAYPOINT* w
 {
 if (wp == NULL) return;
   TCHAR Pict[10];
-  extern    LKColor GetUTF8WaypointSymbol(TCHAR* pPict, const int Style);
 
   const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
 
-  LKColor NewCol = GetUTF8WaypointSymbol((TCHAR*) &Pict, wp->Style);
+  LKColor NewCol = GetUTF8WaypointSymbol(Pict, wp->Style);
 
   const auto OldCol = Surface.SetTextColor(NewCol);
   int xtext = Surface.GetTextWidth(Pict);
