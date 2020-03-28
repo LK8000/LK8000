@@ -380,20 +380,12 @@ static void UpdateValuesSystem() {
 
 
 static void UpdateValuesTimes(void) {
-  WndProperty *wp;
   TCHAR Temp[1000];
-  double sunsettime;
-  int sunsethours;
-  int sunsetmins;
 
-  sunsettime = DoSunEphemeris(GPS_INFO.Longitude,
-                              GPS_INFO.Latitude);
-  sunsethours = (int)sunsettime;
-  sunsetmins = (int)((sunsettime-sunsethours)*60);
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSunset"));
+  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpSunset"));
   if (wp) {
-    _stprintf(Temp, TEXT("%02d:%02d"), sunsethours,sunsetmins);
+    const unsigned sunset_time = DoSunEphemeris(GPS_INFO.Longitude, GPS_INFO.Latitude);
+    Units::TimeToText(Temp, sunset_time);
     wp->SetText(Temp);
   }
 

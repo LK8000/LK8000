@@ -211,12 +211,11 @@ protected:
     const WAYPOINT& wpt = WayPointList[wpt_index];
 
     // THIS IS BUGGY IN NORTHERN EMISPHERE, TODO DISCOVER WHY
-    const double sunsettime = DoSunEphemeris( wpt.Longitude, wpt.Latitude);
+    const unsigned sunset_time = DoSunEphemeris( wpt.Longitude, wpt.Latitude);
+    const unsigned local_time = LocalTime();
+    const unsigned task_eta =  local_time + Calculated->TaskTimeToGo;
 
-    const double d1 = (Calculated->TaskTimeToGo + LocalTime()) / 3600.;
-    const double d0 = (LocalTime() / 3600.);
-
-    return (d1>sunsettime) && (d0<sunsettime);
+    return (task_eta > sunset_time) && (local_time < sunset_time);
   }
 
   void Notify(void) {
@@ -343,9 +342,7 @@ private:
 namespace {
   ConditionMonitorWind         cm_wind;
   ConditionMonitorFinalGlide   cm_finalglide;
-#if 0
   ConditionMonitorSunset       cm_sunset;
-#endif
   ConditionMonitorAATTime      cm_aattime;
   ConditionMonitorStartRules   cm_startrules;
   ConditionMonitorGlideTerrain cm_glideterrain;
@@ -354,9 +351,7 @@ namespace {
 void ConditionMonitorsUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   cm_wind.Update(Basic, Calculated);
   cm_finalglide.Update(Basic, Calculated);
-#if 0
-  cm_sunset.Update(Basic, Calculated); // it doesnt work in europe..
-#endif
+  cm_sunset.Update(Basic, Calculated);
   cm_aattime.Update(Basic, Calculated);
   cm_startrules.Update(Basic, Calculated);
   cm_glideterrain.Update(Basic, Calculated);

@@ -61,7 +61,7 @@ void WriteDeviceSettings(const int devIdx, const TCHAR *Name);
 
 WORD crcCalc(void *Buffer, size_t size);
 void ExtractDirectory(TCHAR *Dest, TCHAR *Source);
-double DoSunEphemeris(double lon, double lat);
+unsigned DoSunEphemeris(double lon, double lat);
 
 void *bsearch(void *key, void *base0, size_t nmemb, size_t size, int (*compar)(const void *elem1, const void *elem2));
 

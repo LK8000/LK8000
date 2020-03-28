@@ -360,9 +360,6 @@ static WndListFrame *wMultiSelect = NULL;
 void dlgWayPointDetailsShowModal(short mypage){
 
   TCHAR sTmp[128];
-  double sunsettime;
-  int sunsethours;
-  int sunsetmins;
   WndProperty *wp;
 
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTDETAILS_L : IDR_XML_WAYPOINTDETAILS_P);
@@ -489,12 +486,9 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   // SUNSET at waypoint
   //
-  sunsettime = DoSunEphemeris(WayPointList[SelectedWaypoint].Longitude,
-                              WayPointList[SelectedWaypoint].Latitude);
-  sunsethours = (int)sunsettime;
-  sunsetmins = (int)((sunsettime-sunsethours)*60);
-
-  _stprintf(sTmp, TEXT("%02d:%02d"), sunsethours, sunsetmins);
+  const unsigned sunset_time = DoSunEphemeris(WayPointList[SelectedWaypoint].Longitude,
+                                              WayPointList[SelectedWaypoint].Latitude);
+  Units::TimeToText(sTmp, sunset_time);
   ((WndProperty *)wf->FindByName(TEXT("prpSunset")))->SetText(sTmp);
 
 
