@@ -918,7 +918,7 @@ public:
                 const int16x8_t h2 = vld1q_s16(&prev_iso_band[x]); // top value
                 const int16x8_t h3 = vld1q_s16(&current_iso_band[x-1]); // left value
 
-                uint16x8_t mask_color = vceqq_s16(h, h1) & vceqq_s16(h, h2) & vceqq_s16(h, h3);
+                uint16x8_t mask_color = (vceqq_s16(h, h2) | vceqq_s16(h3, h1)) & vceqq_s16(h, h3);
                 uint16x8_t mask_line = vmvnq_u16(mask_color);
 
                 uint16x8_t pixel = vld1q_u16(reinterpret_cast<uint16_t*>(&(screen_row[x].value)));
@@ -938,9 +938,11 @@ public:
                 const int16_t& h2 = prev_iso_band[x]; // top value
                 const int16_t& h3 = current_iso_band[x-1]; // left value
 
-                // if one of this 4 point is in other iso band ( upper or lower than iso line )
-                // this point is a iso line.
-                screen_row[x] = (h != h1 || h != h2 || h != h3) ? GetIsoLineColor() : screen_row[x];
+
+                // apply marching squares algorithm : https://en.wikipedia.org/wiki/Marching_squares#Disambiguation_of_saddle_points
+                // 2 equal point are in same iso band, so one is above isoline and the other is bellow isoline
+                //  tips : to get thiner line we elimante case [1011, 0111, 0100 1000]
+                screen_row[x] = ((h == h2 || h3 == h1) && h == h3) ? screen_row[x] : GetIsoLineColor();
             }
 
             // swap prev & current iso band value
