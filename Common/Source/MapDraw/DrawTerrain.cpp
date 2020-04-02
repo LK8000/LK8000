@@ -22,8 +22,18 @@
 #include <utility>
 #include "../utils/make_unique.h"
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
-#include <arm_neon.h>
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__))
+ #if !GCC_OLDER_THAN(5,0)
+  #include <arm_neon.h>
+ #else
+  /**
+   * GCC 4.8 (kobo) & 4.9 (openvario) has the same problem :
+   * 
+   * ..../include/arm_neon.h:2769:57: internal compiler error: in copy_to_mode_reg, at explow.c:665
+   *    return (int16x4_t)__builtin_neon_vmaxv4hi (__a, __b, 1);
+   */
+  #warning "too old compiler, optimized terrain drawing disabled"
+ #endif
 #endif
 
 //
@@ -502,7 +512,7 @@ public:
     }
 
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
 
     // JMW: if zoomed right in (e.g. one unit is larger than terrain
     // grid), then increase the step size to be equal to the terrain
@@ -851,7 +861,8 @@ public:
         // return (std::max<int16_t>(0, height)) >> 8; // 256m
     }
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
+
 
     static
     int16x8_t IsoBand(const int16_t* gcc_restrict height, int zoom) {
@@ -900,7 +911,7 @@ public:
 
             size_t x = 1;
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
 
             static_assert((sizeof(BGRColor) == 2), "invalid color type");
 

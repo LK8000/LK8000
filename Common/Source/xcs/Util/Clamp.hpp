@@ -46,7 +46,12 @@ Clamp(const T &value, const T &min, const T &max)
        ? max : value);
 }
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !defined(OPENVARIO)
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
+
+/**
+ * don't work with gcc 4.8 and 4.9 ( kobo, openvario )
+ */
+
 #include <arm_neon.h>
 
 static inline
