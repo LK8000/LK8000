@@ -866,21 +866,34 @@ public:
 private:
 
     static
-    int16x8_t IsoBand(const int16_t* gcc_restrict height, int zoom) {
-        int16x8_t h = vld1q_s16(height);
-        h = vmaxq_s16(h, vdupq_n_s16(0));
+    int16x8_t IsoBand(int16x8_t height, int zoom) {
+        int16x8_t h = vmaxq_s16(height, vdupq_n_s16(0));
         return vshlq_s16(h, vdupq_n_s16(-(7U + zoom)));
     }
 
-/**
+    template<typename T>
+    T GetIsoLineColor(int16x8_t height) const {
+        return T{
+            GetIsoLineColor(vgetq_lane_s16(height, 0)).value.GetNativeValue(),
+            GetIsoLineColor(vgetq_lane_s16(height, 1)).value.GetNativeValue(),
+            GetIsoLineColor(vgetq_lane_s16(height, 2)).value.GetNativeValue(),
+            GetIsoLineColor(vgetq_lane_s16(height, 3)).value.GetNativeValue(),
+            GetIsoLineColor(vgetq_lane_s16(height, 4)).value.GetNativeValue(),
+            GetIsoLineColor(vgetq_lane_s16(height, 5)).value.GetNativeValue(),
+            GetIsoLineColor(vgetq_lane_s16(height, 6)).value.GetNativeValue(),
+            GetIsoLineColor(vgetq_lane_s16(height, 7)).value.GetNativeValue()
+        };
+    }
+
+    /**
      * drawIsoLinePixel : we need 2 specialisation
      *  - first is for 16bit Color ( android, openvario ... )
      *  - second is for 8bit Color ( Kobo )
      */
-    template<typename Color_t> static
+    template<typename Color_t>
     typename std::enable_if<(sizeof(Color_t) == sizeof(int16_t))>::type
-    drawIsoLinePixel(Color_t *pixel_src, uint16x8_t mask) {
-      const uint16x8_t line_color = vdupq_n_u16(GetIsoLineColor().value.GetNativeValue());
+    drawIsoLinePixel(Color_t *pixel_src, int16x8_t height, uint16x8_t mask) const {
+      uint16x8_t line_color = GetIsoLineColor<uint16x8_t>(height);
       uint16_t* screen_ptr = reinterpret_cast<uint16_t*>(pixel_src);
       uint16x8_t mask_line = vmvnq_u16(mask);
       uint16x8_t pixel = vld1q_u16(screen_ptr);
@@ -888,17 +901,17 @@ private:
       vst1q_u16(screen_ptr, pixel);
     }
 
-    template<typename Color_t> static
+    template<typename Color_t>
     typename std::enable_if<(sizeof(Color_t) == sizeof(int8_t))>::type
-    drawIsoLinePixel(Color_t *pixel_src, uint16x8_t mask) {
-        const uint8x8_t line_color = vdup_n_u8(GetIsoLineColor().value.GetNativeValue());
+    drawIsoLinePixel(Color_t *pixel_src, int16x8_t height, uint16x8_t mask) const {
+        uint8x8_t line_color = GetIsoLineColor<uint8x8_t>(height);
         uint8_t* screen_ptr = reinterpret_cast<uint8_t*>(pixel_src);
         uint8x8_t mask_color = vmovn_u16(mask);
         uint8x8_t mask_line = vmvn_u8(mask_color);
         uint8x8_t pixel = vld1_u8(screen_ptr);
         pixel = (pixel&mask_color) | (line_color&mask_line);
         vst1_u8(screen_ptr, pixel);
-    }    
+    }
 #endif
 
 public:
@@ -908,7 +921,7 @@ public:
         assert(screen_buffer && screen_buffer->GetBuffer());
 
         const double current_scale = MapWindow::zoom.Scale() / DISTANCEMODIFY;
-        if (current_scale >= 2000 || current_scale <= 100) {
+        if (current_scale >= 15000 || current_scale <= 100) {
             // No Iso line if zoom are too small or too huge
             return;
         }
@@ -945,19 +958,30 @@ public:
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
 
             // iso band value of first column
-            vst1q_s16(&prev_iso_band[0], IsoBand(height_row, zoom));
+            int16x8_t height =  vld1q_s16(height_row);
+            vst1q_s16(&prev_iso_band[0], IsoBand(height, zoom));
+
+            const int16x8_t qheight_0 = vmovq_n_s16(0);
+            const int16x8_t qheight_255 = vmovq_n_s16(255);
+            const int16x8_t qv_height_min = vmovq_n_s16(height_min);
+            const int16x8_t qv_height_scale = vmovq_n_s16(height_scale);
+
 
             for (; x < (ixs-8); x+=8) {
                 // iso band value of current pixel
-                const int16x8_t h = IsoBand(&height_row[x], zoom);
+                height =  vld1q_s16(height_row + x);
+
+                const int16x8_t h = IsoBand(height, zoom);
                 vst1q_s16(&current_iso_band[x], h);
 
                 const int16x8_t h1 = vld1q_s16(&prev_iso_band[x-1]); // top left value
                 const int16x8_t h2 = vld1q_s16(&prev_iso_band[x]); // top value
                 const int16x8_t h3 = vld1q_s16(&current_iso_band[x-1]); // left value
 
-                uint16x8_t mask_color = (vceqq_s16(h, h2) | vceqq_s16(h3, h1)) & vceqq_s16(h, h3);
-                drawIsoLinePixel(&screen_row[x], mask_color);
+                uint16x8_t mask = (vceqq_s16(h, h2) | vceqq_s16(h3, h1)) & vceqq_s16(h, h3);
+                height = (height - qv_height_min) >> qv_height_scale;
+                height = Clamp(height, qheight_0, qheight_255);
+                drawIsoLinePixel(&screen_row[x], height, mask);
             }
 #else
             // iso band value of first column
@@ -972,11 +996,13 @@ public:
                 const int16_t& h2 = prev_iso_band[x]; // top value
                 const int16_t& h3 = current_iso_band[x-1]; // left value
 
+                int16_t height = (height_row[x] - height_min) >> height_scale;
+                height = Clamp<int16_t>(height, 0, 255);
 
                 // apply marching squares algorithm : https://en.wikipedia.org/wiki/Marching_squares#Disambiguation_of_saddle_points
                 // 2 equal point are in same iso band, so one is above isoline and the other is bellow isoline
                 //  tips : to get thiner line we elimante case [1011, 0111, 0100 1000]
-                screen_row[x] = ((h == h2 || h3 == h1) && h == h3) ? screen_row[x] : GetIsoLineColor();
+                screen_row[x] = ((h == h2 || h3 == h1) && h == h3) ? screen_row[x] : GetIsoLineColor(height);
             }
 
             // swap prev & current iso band value
@@ -984,7 +1010,6 @@ public:
             std::swap(prev_iso_band, current_iso_band);
         }
     }
-
 
 private:
 
@@ -1005,8 +1030,8 @@ private:
     }
 
 
-    static constexpr BGRColor GetIsoLineColor() {
-        return BGRColor(100, 70, 26); // brown : #64461a
+    const BGRColor GetIsoLineColor(int16_t height) const {
+        return GetColor(height, -64);
     }
 
 public:
