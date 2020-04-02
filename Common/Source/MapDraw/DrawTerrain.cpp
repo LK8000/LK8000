@@ -20,6 +20,7 @@
 #include "Util/Clamp.hpp"
 #include "Asset.hpp"
 #include <utility>
+#include <type_traits>
 #include "../utils/make_unique.h"
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__))
@@ -862,7 +863,7 @@ public:
     }
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
-
+private:
 
     static
     int16x8_t IsoBand(const int16_t* gcc_restrict height, int zoom) {
@@ -870,7 +871,37 @@ public:
         h = vmaxq_s16(h, vdupq_n_s16(0));
         return vshlq_s16(h, vdupq_n_s16(-(7U + zoom)));
     }
+
+/**
+     * drawIsoLinePixel : we need 2 specialisation
+     *  - first is for 16bit Color ( android, openvario ... )
+     *  - second is for 8bit Color ( Kobo )
+     */
+    template<typename Color_t> static
+    typename std::enable_if<(sizeof(Color_t) == sizeof(int16_t))>::type
+    drawIsoLinePixel(Color_t *pixel_src, uint16x8_t mask) {
+      const uint16x8_t line_color = vdupq_n_u16(GetIsoLineColor().value.GetNativeValue());
+      uint16_t* screen_ptr = reinterpret_cast<uint16_t*>(pixel_src);
+      uint16x8_t mask_line = vmvnq_u16(mask);
+      uint16x8_t pixel = vld1q_u16(screen_ptr);
+      pixel = (pixel&mask) | (line_color&mask_line);
+      vst1q_u16(screen_ptr, pixel);
+    }
+
+    template<typename Color_t> static
+    typename std::enable_if<(sizeof(Color_t) == sizeof(int8_t))>::type
+    drawIsoLinePixel(Color_t *pixel_src, uint16x8_t mask) {
+        const uint8x8_t line_color = vdup_n_u8(GetIsoLineColor().value.GetNativeValue());
+        uint8_t* screen_ptr = reinterpret_cast<uint8_t*>(pixel_src);
+        uint8x8_t mask_color = vmovn_u16(mask);
+        uint8x8_t mask_line = vmvn_u8(mask_color);
+        uint8x8_t pixel = vld1_u8(screen_ptr);
+        pixel = (pixel&mask_color) | (line_color&mask_line);
+        vst1_u8(screen_ptr, pixel);
+    }    
 #endif
+
+public:
 
     void DrawIsoLine() {
         assert(height_buffer && height_buffer->GetBuffer());
@@ -913,10 +944,6 @@ public:
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
 
-            static_assert((sizeof(BGRColor) == 2), "invalid color type");
-
-            const uint16x8_t line_color = vdupq_n_u16(GetIsoLineColor().value.GetNativeValue());
-
             // iso band value of first column
             vst1q_s16(&prev_iso_band[0], IsoBand(height_row, zoom));
 
@@ -930,11 +957,7 @@ public:
                 const int16x8_t h3 = vld1q_s16(&current_iso_band[x-1]); // left value
 
                 uint16x8_t mask_color = (vceqq_s16(h, h2) | vceqq_s16(h3, h1)) & vceqq_s16(h, h3);
-                uint16x8_t mask_line = vmvnq_u16(mask_color);
-
-                uint16x8_t pixel = vld1q_u16(reinterpret_cast<uint16_t*>(&(screen_row[x].value)));
-                pixel = (pixel&mask_color) | (line_color&mask_line);
-                vst1q_u16(reinterpret_cast<uint16_t*>(&(screen_row[x])), pixel);
+                drawIsoLinePixel(&screen_row[x], mask_color);
             }
 #else
             // iso band value of first column
