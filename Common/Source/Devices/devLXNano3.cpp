@@ -1391,7 +1391,7 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   // e.g.:
   // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
-  double fDir,fTmp;
+  double fDir,fTmp,airspeed=0;
 
 if( !devGetAdvancedMode(d))
 {
@@ -1405,7 +1405,8 @@ if( !devGetAdvancedMode(d))
     }
     if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
     {
-      info->Speed = fTmp;
+      airspeed = fTmp/TOKPH;
+      info->IndicatedAirspeed = airspeed;
       info->AirspeedAvailable = TRUE;
     }
   }
@@ -1419,6 +1420,7 @@ if( !devGetAdvancedMode(d))
     }
     if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
     {
+      if (airspeed>0) info->IndicatedAirspeed = airspeed / AirDensityRatio(fTmp);
       UpdateBaroSource( info, 0, d,fTmp);
     }
   }
