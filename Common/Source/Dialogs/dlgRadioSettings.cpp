@@ -145,7 +145,7 @@ static void OnCloseClicked(WndButton* pWnd){
 }
 
 
-
+#define DEVICE_NAME_LEN 15
 
 static int OnRemoteUpdate(void)
 {
@@ -239,20 +239,20 @@ TCHAR Name[250];
     {
         if( ActiveRadioIndex > RESWP_END)
         {
-          _stprintf(Name,_T("%s"),WayPointList[ActiveRadioIndex].Name);
+          _sntprintf(Name,DEVICE_NAME_LEN,_T("%s"),WayPointList[ActiveRadioIndex].Name);
           if(wpnewActive)
             wpnewActive->SetCaption(Name);
-          _stprintf(Name,_T("%s"),WayPointList[ActiveRadioIndex].Freq);
+          _sntprintf(Name,DEVICE_NAME_LEN,_T("%s"),WayPointList[ActiveRadioIndex].Freq);
           if(wpnewActiveFreq)
             wpnewActiveFreq->SetCaption(Name);
         }
     }
     else
     {
-        _stprintf(Name,_T("%s"),RadioPara.ActiveName);
+        _sntprintf(Name,DEVICE_NAME_LEN,_T("%s"),RadioPara.ActiveName);
         if(wpnewActive)
           wpnewActive->SetCaption(Name);
-        _stprintf(Name,_T("%7.3f"),RadioPara.ActiveFrequency);
+        _sntprintf(Name,DEVICE_NAME_LEN,_T("%7.3f"),RadioPara.ActiveFrequency);
         if(wpnewActiveFreq)
           wpnewActiveFreq->SetCaption(Name);
     }
@@ -262,20 +262,20 @@ TCHAR Name[250];
     {
         if( PassiveRadioIndex > RESWP_END )
         {
-          _stprintf(Name,_T("%s"),WayPointList[PassiveRadioIndex].Name);
+          _sntprintf(Name,DEVICE_NAME_LEN,_T("%s"),WayPointList[PassiveRadioIndex].Name);
           if(wpnewPassive)
             wpnewPassive->SetCaption(Name);
-          _stprintf(Name,_T("%s"),WayPointList[PassiveRadioIndex].Freq);
+          _sntprintf(Name,DEVICE_NAME_LEN,_T("%s"),WayPointList[PassiveRadioIndex].Freq);
           if(wpnewPassiveFreq)
             wpnewPassiveFreq->SetCaption(Name);
         }
     }
     else
     {
-        _stprintf(Name,_T("%s"),RadioPara.PassiveName);
+        _sntprintf(Name,DEVICE_NAME_LEN,_T("%s"),RadioPara.PassiveName);
         if(wpnewPassive)
           wpnewPassive->SetCaption(Name);
-        _stprintf(Name,_T("%7.3f"),RadioPara.PassiveFrequency);
+        _sntprintf(Name,DEVICE_NAME_LEN,_T("%7.3f"),RadioPara.PassiveFrequency);
         if(wpnewPassiveFreq)
           wpnewPassiveFreq->SetCaption(Name);
     }
