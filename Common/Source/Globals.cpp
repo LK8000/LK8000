@@ -222,6 +222,8 @@ void Globals_Init(void) {
   BestAlternate = -1;
   ActiveAlternate = -1;
 
+  bAutoActive = false;
+  bAutoPassiv = false;
   GPSAltitudeOffset = 0;
   UseGeoidSeparation=false;
   PressureHg=false;

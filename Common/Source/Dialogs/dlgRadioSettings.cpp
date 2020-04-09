@@ -291,6 +291,22 @@ TCHAR Name[250];
           wpnewVol->SetCaption(Name);
         }
     }
+
+    WindowControl* wAuto = wf->FindByName(TEXT("cmdAutoActive"));
+    if(bAutoActive) {
+      wAuto->SetCaption(MsgToken(1324));   //  M1324 "B>"
+    } else  {
+      wAuto->SetCaption(_T(""));
+    }
+
+    wAuto = wf->FindByName(TEXT("cmdAutoPassive"));
+    if(bAutoPassiv) {
+      wAuto->SetCaption(MsgToken(1324));   //  M1324 "B>"
+    } else  {
+      wAuto->SetCaption(_T(""));
+    }
+
+
 return 0;
 }
 
@@ -421,6 +437,40 @@ TCHAR	Name[NAME_SIZE] = _T("  ???   ");
 
    }
    OnUpdate();
+}
+
+
+static void OnRadioActiveAutoClicked(WndButton* pWnd){
+  if(bAutoActive) {
+	  bAutoActive = false;
+  } else {
+		bAutoActive = true;
+		if ( ValidWayPoint(BestAlternate))
+		{
+			double fFreq = StrToDouble(WayPointList[BestAlternate].Freq,NULL);
+			if(ValidFrequency(fFreq))
+				devPutFreqActive(fFreq, WayPointList[BestAlternate].Name);
+			}
+		}
+  RadioPara.Changed = true;
+  OnUpdate();
+}
+
+static void OnRadioStandbyAutoClicked(WndButton* pWnd){
+
+  if(bAutoPassiv) {
+	  bAutoPassiv = false;
+  } else {
+	  bAutoPassiv = true;
+		if ( ValidWayPoint(BestAlternate))
+		{
+			double fFreq = StrToDouble(WayPointList[BestAlternate].Freq,NULL);
+			if(ValidFrequency(fFreq))
+				devPutFreqStandby(fFreq, WayPointList[BestAlternate].Name);
+		}
+  }
+  RadioPara.Changed = true;
+  OnUpdate();
 }
 
 
@@ -560,6 +610,8 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnMuteButton),
   ClickNotifyCallbackEntry(OnCancelClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
+  ClickNotifyCallbackEntry(OnRadioActiveAutoClicked),
+  ClickNotifyCallbackEntry(OnRadioStandbyAutoClicked),
   EndCallBackEntry()
 };
 
