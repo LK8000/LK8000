@@ -59,7 +59,7 @@ Copyright_License {
 #define DRAW_MOUSE_CURSOR
 #endif
 
-#ifdef USE_EGL
+#if defined(USE_EGL) &&!defined(ANDROID)
 /**
  * Support display rotation via glRotatef()?
  */
