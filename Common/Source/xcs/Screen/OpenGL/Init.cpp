@@ -372,7 +372,7 @@ OpenGL::SetupViewport(UnsignedPoint2D size)
                                   glm::vec3(0, 0, 1));
   OrientationSwap(size, display_orientation);
 #endif
-  projection_matrix = glm::ortho<float>(0, size.x, size.y, 0, -1, 1);
+  projection_matrix *= glm::ortho<float>(0, size.x, size.y, 0, -1, 1);
   UpdateShaderProjectionMatrix();
 #else
   glMatrixMode(GL_PROJECTION);
