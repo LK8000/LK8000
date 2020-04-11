@@ -160,7 +160,14 @@ ifeq ($(TARGET),OPENVARIO)
   CONFIG_ANDROID  :=n
   MINIMAL         :=n
   OPENMP          :=y
-  TARGET_HAS_MALI :=y
+  USE_EGL         :=y
+  OPENGL          :=y
+  GLES            :=y
+  GLES2           :=y
+  USE_X11         :=n
+  USE_CONSOLE     :=y
+  FULLSCREEN      :=y
+  ENABLE_MESA_KMS :=y
 endif
 
 ############# build and CPU info
