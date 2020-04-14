@@ -59,7 +59,7 @@ using namespace std::placeholders;
 //  Thankfully WinCE "critical sections" are recursive locks.
 
 // this lock is used for protect DeviceList array.
-static Mutex CritSec_Comm;
+Mutex CritSec_Comm;
 
 #ifdef ANDROID
 Mutex COMMPort_mutex; // needed for Bluetooth LE scan
@@ -764,47 +764,25 @@ BOOL devInit() {
 // Tear down methods should always succeed.
 // Called from devInit() above under LockComm
 // Also called when shutting down via devCloseAll()
-static BOOL devClose(PDeviceDescriptor_t d)
-{
-  if (d != NULL) {
-    if (d->Close != NULL) {
-      d->Close(d);
-    }
-    
-    ComPort *Com = d->Com;
-    if (Com) {
-      if(d->iSharedPort <0)  // don't close shared Ports,  these are only copies!
-      {
-        Com->Close();
-        delete Com;
-      }
-      d->Com = nullptr; // if we do that before Stop RXThread , Crash ....
+static void devClose(DeviceDescriptor_t& d) {
+  ScopeLock Lock(CritSec_Comm);
 
-    }    
+  if (d.Close) {
+    d.Close(&d);
   }
 
-  return TRUE;
+  if (d.iSharedPort < 0) { // don't close shared Ports,  these are only copies!
+    if (d.Com) {
+      d.Com->Close();
+      delete d.Com;
+    }
+  }
+  d.Com = nullptr; // if we do that before Stop RXThread , Crash ....
+  d.Status = CPS_CLOSED;
 }
 
-BOOL devCloseAll(void){
-    /* 29/10/2013 : 
-     * if RxThread wait for LockComm, It never can terminate -> Dead Lock
-     *  can appen at many time when reset comport is called ....
-     *    devRequestFlarmVersion called by NMEAParser::PFLAU is first exemple
-     * 
-     * in fact if it appens, devClose() kill RxThread after 20s timeout...
-     *  that solve the deadlock, but thread is not terminated correctly ...
-     * 
-     * Bruno.
-     */
-  for (unsigned i=0; i<NUMDEV; i++){
-    LockComm();
-    devClose(&DeviceList[i]);
-    DeviceList[i].Status=CPS_CLOSED; // 100210
-    UnlockComm();
-  }
-
-  return(TRUE);
+void devCloseAll() {
+  std::for_each(std::begin(DeviceList), std::end(DeviceList), &devClose);
 }
 
 
@@ -847,12 +825,12 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   bool  ret = FALSE;
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
+  ScopeLock lock(CritSec_Comm);
+
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if(!d) {
     return FALSE;
   }
-
-  ScopeLock lock(CritSec_Comm);
 
   d->HB=LKHearthBeats;
 

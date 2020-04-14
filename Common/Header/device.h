@@ -202,6 +202,7 @@ PDeviceDescriptor_t devX(unsigned idx) {
 	return nullptr;
 }
 
+extern Mutex CritSec_Comm;
 void LockComm();
 void UnlockComm();
 
@@ -214,7 +215,7 @@ bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName);
 void RestartCommPorts();
 
 BOOL devInit();
-BOOL devCloseAll(void);
+void devCloseAll();
 PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port);
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
 BOOL devHasBaroSource(void);

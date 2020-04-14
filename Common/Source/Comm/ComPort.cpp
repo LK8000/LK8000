@@ -25,7 +25,7 @@ ComPort::ComPort(int idx, const tstring& sName) : StopEvt(false), devIdx(idx), s
 }
 
 ComPort::~ComPort() {
-
+    assert(!ReadThread.isRunning());
 }
 
 bool ComPort::Initialize() {
@@ -82,6 +82,8 @@ void ComPort::PutChar(BYTE b) {
 }
 
 bool ComPort::StopRxThread() {
+    ScopeLock Lock(CritSec_Comm);
+
     StopEvt.set();
 
 #ifdef _DEBUG_STOP_RXTHREAD
@@ -93,11 +95,8 @@ bool ComPort::StopRxThread() {
 #ifdef _DEBUG_STOP_RXTHREAD
         StartupStore(_T("... ComPort %u StopRxThread: Wait End of thread !%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
 #endif
-        if(!ReadThread.tryJoin(20000)) {
-            StartupStore(_T("... ComPort %u StopRxThread: RX Thread forced to terminate!%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
-            // TODO : Kill Thread ??
-            return false;
-        }
+        ScopeUnlock Unlock(CritSec_Comm); // prevent deadlock
+        ReadThread.join();
     }
     StopEvt.reset();
 
