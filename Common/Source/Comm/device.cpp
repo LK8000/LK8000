@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Dialogs/dlgProgress.h"
 #include "utils/stl_utils.h"
+#include "Util/TruncateString.hpp"
 #include "BtHandler.h"
 #include "SerialPort.h"
 #include "Bluetooth/BthPort.h"
@@ -1240,17 +1241,21 @@ BOOL devPutFreqSwap() {
  * Send FreqActive cmd to all connected device.
  * @return FALSE if error on one device.
  */
+extern bool _tcsncpytrunc(TCHAR pDest[],const TCHAR *pSrc, uint num);
+extern BOOL ValidFrequency(double Freq);
+
 BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
-  if (SIMMODE) {
-    RadioPara.ActiveFrequency=  Freq;
-    _sntprintf( RadioPara.ActiveName, NAME_SIZE,_T("%s") , StationName);
-    return TRUE;
-  }
+if( ValidFrequency(Freq))
+{
+
+  RadioPara.ActiveFrequency=  Freq;
+  CopyTruncateString( RadioPara.ActiveName, NAME_SIZE, StationName);
+//  _sntprintf( RadioPara.ActiveName, NAME_SIZE,_T("%s") , StationName);
+	RadioPara.Changed = true;
   return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
-
-
-
-
+}
+else
+	return false;
 }
 
 /**
@@ -1258,13 +1263,16 @@ BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
-  if (SIMMODE) {
-     RadioPara.PassiveFrequency=  Freq;
-     _sntprintf( RadioPara.PassiveName, NAME_SIZE,_T("%s") , StationName);
-    return TRUE;
-  }
+if( ValidFrequency(Freq))
+{
+	RadioPara.PassiveFrequency=  Freq;
+//	_sntprintf( RadioPara.PassiveName, NAME_SIZE,_T("%s") , StationName);
+	CopyTruncateString( RadioPara.PassiveName,NAME_SIZE, StationName);
+	RadioPara.Changed = true;
   return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
-
+}
+else
+	return false;
 }
 #endif  // RADIO_ACTIVE        
 
