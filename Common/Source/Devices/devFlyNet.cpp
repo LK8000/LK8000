@@ -48,15 +48,7 @@ static BOOL FlyNetInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("FlyNet"));
   d->ParseNMEA = FlyNetParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = FlyNetLinkTimeout;
-  d->Declare = NULL;
-  d->IsGPSSource = NULL;
   d->IsBaroSource = FlyNetIsBaroSource;
 
   return(TRUE);

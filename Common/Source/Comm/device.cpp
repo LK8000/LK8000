@@ -463,11 +463,19 @@ void DeviceDescriptor_t::InitStruct(int i) {
     PortNumber = i;
 
     Name[0] = '\0';
-    ParseNMEA = nullptr;
-    PutMacCready = nullptr;
+
     DirectLink = nullptr;
+    ParseNMEA = nullptr;
+    ParseStream = nullptr;
+    PutMacCready = nullptr;
     PutBugs = nullptr;
     PutBallast = nullptr;
+    PutVolume = nullptr;
+    PutRadioMode = nullptr;
+    PutSquelch = nullptr;
+    PutFreqActive = nullptr;
+    StationSwap = nullptr;
+    PutFreqStandby = nullptr;
     Open = nullptr;
     Close = nullptr;
     Init = nullptr;
@@ -477,14 +485,12 @@ void DeviceDescriptor_t::InitStruct(int i) {
     IsGPSSource = nullptr;
     IsBaroSource = nullptr;
     IsRadio = nullptr;
-
-    PutVoice = nullptr;
     PutQNH = nullptr;
     OnSysTicker = nullptr;
+    PutVoice = nullptr;
+    Config = nullptr;
+    HeartBeat = nullptr;
 
-    PutVolume = nullptr;
-    PutFreqActive = nullptr;
-    PutFreqStandby = nullptr;
     Disabled = true;
 
     Status = CPS_UNUSED; // 100210
@@ -492,7 +498,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
     iSharedPort = -1;
     m_bAdvancedMode = false;
-    bNMEAOut     = false;
+    bNMEAOut = false;
 }
 
 bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {

@@ -56,17 +56,10 @@ BOOL DevVaulter::Install(PDeviceDescriptor_t d)
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = VaulterPutMacCready;
-  d->PutBugs      = NULL; // removed to prevent cirvular updates
   d->PutBallast   = VaulterPutBallast;
-  d->Open         = NULL;
-  d->Close        = NULL;
-  d->Init         = NULL;
   d->LinkTimeout  = GetTrue;
-  d->Declare      = NULL;
-  d->IsLogger     = NULL;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
-  d->DirectLink   = NULL;
   return(true);
 } // Install()
 

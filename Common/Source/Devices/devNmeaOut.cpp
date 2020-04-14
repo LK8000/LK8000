@@ -54,14 +54,6 @@ BOOL nmoInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("NmeaOut"));
   d->ParseNMEA = nmoParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
-  d->LinkTimeout = NULL;
-  d->Declare = NULL;
   d->IsLogger = nmoIsLogger;
   d->IsGPSSource = nmoIsGPSSource;
   d->IsBaroSource = nmoIsBaroSource;

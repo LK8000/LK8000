@@ -843,14 +843,6 @@ BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned e
 BOOL CDevIMI::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
-  d->ParseNMEA    = NULL;
-  d->PutMacCready = NULL;
-  d->PutBugs      = NULL;
-  d->PutBallast   = NULL;
-  d->Open         = NULL;
-  d->Close        = NULL;
-  d->Init         = NULL;
-  d->LinkTimeout  = NULL;
   d->Declare      = DeclareTask;
   d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;

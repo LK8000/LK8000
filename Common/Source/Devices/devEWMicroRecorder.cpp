@@ -252,13 +252,6 @@ BOOL EWMicroRecorderIsTrue(PDeviceDescriptor_t d){
 BOOL ewMicroRecorderInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("EW MicroRecorder"));
   d->ParseNMEA = EWMicroRecorderParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
-  d->LinkTimeout = NULL;
   d->Declare = EWMicroRecorderDeclare;
   d->IsLogger = EWMicroRecorderIsTrue;
   d->IsGPSSource = EWMicroRecorderIsTrue;

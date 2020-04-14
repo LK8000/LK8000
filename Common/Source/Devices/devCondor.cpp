@@ -64,14 +64,7 @@ static BOOL condorInstall(PDeviceDescriptor_t d){
   StartupStore(_T(". Condor device installed%s"),NEWLINE);
   _tcscpy(d->Name, TEXT("Condor"));
   d->ParseNMEA = CondorParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = CondorLinkTimeout;
-  d->Declare = NULL;
   d->IsGPSSource = CondorIsGPSSource;
   d->IsBaroSource = CondorIsBaroSource;
   DevIsCondor = true;

@@ -184,8 +184,6 @@ BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   d->PutBugs      = Nano3_PutBugs;
   d->PutBallast   = Nano3_PutBallast;
   d->Open         = Open;
-  d->Close        = NULL;
-  d->Init         = NULL;
   d->LinkTimeout  = GetTrue;
   d->Declare      = DeclareTask;
   d->IsLogger     = GetTrue;

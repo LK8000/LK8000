@@ -312,12 +312,6 @@ BOOL EWLinkTimeout(PDeviceDescriptor_t d){
 BOOL ewInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("EW Logger"));
   d->ParseNMEA = EWParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = EWLinkTimeout;
   d->Declare = EWDeclare;
   d->IsLogger = EWIsLogger;

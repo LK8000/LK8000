@@ -55,14 +55,7 @@ static BOOL IlecInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Ilec SN10"));
   d->ParseNMEA = IlecParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = IlecLinkTimeout;
-  d->Declare = NULL;
   d->IsGPSSource = IlecIsGPSSource;
   d->IsBaroSource = IlecIsBaroSource;
 

@@ -63,7 +63,6 @@ BOOL AR620xInstall(PDeviceDescriptor_t d){
   d->PutFreqActive  = AR620xPutFreqActive;
   d->PutFreqStandby = AR620xPutFreqStandby;
   d->StationSwap    = AR620xStationSwap;
-  d->ParseNMEA      = NULL;
   d->ParseStream    = AR620xParseString;
   d->PutRadioMode      = AR620xRadioMode;
   RadioPara.Enabled8_33 = TRUE;

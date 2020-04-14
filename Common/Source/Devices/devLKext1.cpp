@@ -46,15 +46,7 @@ static BOOL LK8EX1Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("LK8EX1"));
   d->ParseNMEA = LK8EX1ParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = LK8EX1LinkTimeout;
-  d->Declare = NULL;
-  d->IsGPSSource = NULL;
   d->IsBaroSource = LK8EX1IsBaroSource;
 
   return(TRUE);

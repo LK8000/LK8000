@@ -468,18 +468,12 @@ bool Startup(const TCHAR* szCmdLine) {
   // LKTOKEN _@M1217_ "Starting devices"
   // Please check that the number of devices is not exceeding NUMREGDEV in device.h
   CreateProgressDialog(MsgToken(1217));
-  #if TESTBENCH
-  StartupStore(TEXT(". Register serial devices%s"),NEWLINE);
-  #endif
+
   disRegister(); // must be first
   InternalRegister(); // must be second
   genRegister(); // must be three, since we Sort(3) in dlgConfiguration
   cai302Register();
   ewRegister();
-  #if !110101
-  atrRegister();
-  vgaRegister();
-  #endif
   CDevCAIGpsNav::Register();
   nmoRegister();
   pgRegister();

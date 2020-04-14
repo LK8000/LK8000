@@ -423,14 +423,7 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
 BOOL CDevCAIGpsNav::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
-  d->ParseNMEA    = NULL;
-  d->PutMacCready = NULL;
-  d->PutBugs      = NULL;
-  d->PutBallast   = NULL;
-  d->Open         = NULL;
-  d->Close        = NULL;
   d->Init         = Init;
-  d->LinkTimeout  = NULL;
   d->Declare      = DeclareTask;
   d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;

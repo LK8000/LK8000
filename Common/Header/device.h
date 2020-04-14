@@ -144,7 +144,7 @@ struct DeviceDescriptor_t {
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
   BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
-  BOOL (*HeartBeat)(DeviceDescriptor_t     *d);
+  BOOL (*HeartBeat)(DeviceDescriptor_t *d);
  
   bool m_bAdvancedMode;
   int iSharedPort;
@@ -177,11 +177,11 @@ typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
 void VarioWriteSettings(void);
 
-typedef	struct{
-  const TCHAR	         *Name;
-  unsigned int		 Flags;
-  BOOL   (*Installer)(PDeviceDescriptor_t d);
-} DeviceRegister_t;
+struct DeviceRegister_t {
+  const TCHAR* Name;
+  unsigned int Flags;
+  BOOL (*Installer)(PDeviceDescriptor_t d);
+};
 
 #ifdef ANDROID
 extern Mutex COMMPort_mutex; // needed for Bluetooth LE scan

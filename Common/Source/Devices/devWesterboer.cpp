@@ -167,12 +167,7 @@ static BOOL WesterboerInstall(PDeviceDescriptor_t d){
   d->PutMacCready = devWesterboerPutMacCready;
   d->PutBugs = devWesterboerPutBugs;
   d->PutBallast = devWesterboerPutBallast;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = WesterboerLinkTimeout;
-  d->Declare = NULL;
-  d->IsGPSSource = NULL;
   d->IsBaroSource =  WesterboerIsBaroSource;
 
   return(TRUE);
