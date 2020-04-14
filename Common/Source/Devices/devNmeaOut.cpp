@@ -8,61 +8,9 @@
 
 #include "externs.h"
 
-
-
-BOOL nmoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
-
-  (void) d;
-  (void) String;
-  (void) pGPS;
-
-  return FALSE;
-
-}
-
-
-BOOL nmoIsLogger(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);
-}
-
-BOOL nmoIsGPSSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);  // this is only true if GPS source is connected on VEGA.NmeaIn
-}
-
-BOOL nmoIsBaroSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);
-}
-
-BOOL nmoPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence){
-  return(FALSE);
-}
-
-BOOL nmoPutQNH(DeviceDescriptor_t *d, double NewQNH){
-  (void)NewQNH;
-  return(FALSE);
-}
-
-BOOL nmoOnSysTicker(DeviceDescriptor_t *d){
-  return(FALSE);
-}
-
-
 BOOL nmoInstall(PDeviceDescriptor_t d){
-
   _tcscpy(d->Name, TEXT("NmeaOut"));
-  d->ParseNMEA = nmoParseNMEA;
-  d->IsLogger = nmoIsLogger;
-  d->IsGPSSource = nmoIsGPSSource;
-  d->IsBaroSource = nmoIsBaroSource;
-  d->PutVoice = nmoPutVoice;
-  d->PutQNH = nmoPutQNH;
-  d->OnSysTicker = nmoOnSysTicker;
-
   return(TRUE);
-
 }
 
 

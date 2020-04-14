@@ -1246,24 +1246,20 @@ BOOL devPutFreqSwap() {
  * Send FreqActive cmd to all connected device.
  * @return FALSE if error on one device.
  */
-BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
+BOOL devPutFreqActive(double Freq, const TCHAR* StationName) {
   if (SIMMODE) {
     RadioPara.ActiveFrequency=  Freq;
     _sntprintf( RadioPara.ActiveName, NAME_SIZE,_T("%s") , StationName);
     return TRUE;
   }
   return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
-
-
-
-
 }
 
 /**
  * Send FreqStandby cmd to all connected device.
  * @return FALSE if error on one device.
  */
-BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
+BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
   if (SIMMODE) {
      RadioPara.PassiveFrequency=  Freq;
      _sntprintf( RadioPara.PassiveName, NAME_SIZE,_T("%s") , StationName);

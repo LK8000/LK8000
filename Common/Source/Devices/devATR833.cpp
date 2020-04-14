@@ -179,7 +179,7 @@ uint8_t Val = (int8_t) Squelch;
 
 
 
-BOOL ATR833PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
+BOOL ATR833PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
 static double oldFreq=0;
 if(oldFreq == Freq) return true;
 oldFreq = Freq;
@@ -200,7 +200,7 @@ uint8_t Arg[2];
 }
 
 
-BOOL ATR833PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
+BOOL ATR833PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
 uint8_t Arg[2];
 
   if(d != NULL)

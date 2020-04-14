@@ -128,9 +128,9 @@ struct DeviceDescriptor_t {
   BOOL (*PutVolume)(DeviceDescriptor_t	*d,	int Volume);
   BOOL (*PutRadioMode)(DeviceDescriptor_t	*d,	int mode);
   BOOL (*PutSquelch)(DeviceDescriptor_t	*d,	int Squelch);
-  BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	double Freq, TCHAR StationName[]);
+  BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	double Freq, const TCHAR* StationName);
   BOOL (*StationSwap)(DeviceDescriptor_t	*d);
-  BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	double Standby, TCHAR StationName[]);
+  BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	double Standby, const TCHAR* StationName);
   BOOL (*Open)(DeviceDescriptor_t *d);
   BOOL (*Close)(DeviceDescriptor_t *d);
   BOOL (*Init)(DeviceDescriptor_t	*d);
@@ -142,7 +142,7 @@ struct DeviceDescriptor_t {
   BOOL (*IsRadio)(DeviceDescriptor_t *d);
   BOOL (*PutQNH)(DeviceDescriptor_t *d, double NewQNH);
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
-  BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
+  BOOL (*PutVoice)(DeviceDescriptor_t *d, const TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
   BOOL (*HeartBeat)(DeviceDescriptor_t *d);
  
@@ -231,8 +231,8 @@ BOOL devPutVolume(int Volume);
 BOOL devPutFreqSwap();
 BOOL devPutRadioMode(int Mode);
 BOOL devPutSquelch(int Volume);
-BOOL devPutFreqActive(double Freq, TCHAR StationName[]);
-BOOL devPutFreqStandby(double Freq, TCHAR StationName[]);
+BOOL devPutFreqActive(double Freq, const TCHAR* StationName);
+BOOL devPutFreqStandby(double Freq, const TCHAR* StationName);
 BOOL devLinkTimeout(PDeviceDescriptor_t	d);
 BOOL devDeclare(PDeviceDescriptor_t	d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(PDeviceDescriptor_t d);

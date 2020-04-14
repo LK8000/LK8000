@@ -80,7 +80,7 @@ BOOL KRT2IsRadio(PDeviceDescriptor_t d){
  * Station        station Name string
  *
  *****************************************************************************/
-int  SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, TCHAR* Station)
+static int  SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, const TCHAR* Station)
 {
 unsigned int len = 8;
 unsigned int i;
@@ -201,7 +201,7 @@ BOOL KRT2PutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 
-BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
+BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
   uint8_t  szTmp[255];
 
 
@@ -220,7 +220,7 @@ BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) 
 }
 
 
-BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
+BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
   uint8_t  szTmp[255];
 
 
