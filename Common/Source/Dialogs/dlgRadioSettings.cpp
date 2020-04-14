@@ -123,6 +123,73 @@ _stprintf(szFreq,  _T("%7.3f"),Freq);
 	return minIdx;
 }
 
+/*
+according to
+https://stackoverflow.com/questions/35328529/stdstring-optimal-way-to-truncate-utf-8-at-safe-place
+
+auto FindCutPosition(const std::string &str, size_t max_size)
+{
+  assert(str.size() >= max_size, "Make sure stupidity hasn't happened.");
+  assert(str.size() > 3, "Make sure stupidity hasn't happened.");
+  max_size -= 3;
+  for(size_t pos = max_size; pos > 0; --pos)
+  {
+    unsigned char byte = static_cast<unsigned char>(str[pos]); //Perfectly valid
+    if(byte & 0xC0 != 0x80)
+      return pos;
+  }
+
+  unsigned char byte = static_cast<unsigned char>(str[0]); //Perfectly valid
+  if(byte & 0xC0 != 0x80)
+    return 0;
+
+  //If your first byte isn't even a valid UTF-8 starting point, then something terrible has happened.
+  throw bad_utf8_encoded_text(...);
+}
+*/
+
+
+int FindCutPosition(const TCHAR str[], uint max_size)
+{
+	uint len = _tcslen(str);
+
+	if(_tcslen(str)<= 3 )
+		return -1;
+  if(len < max_size)
+  {
+  	return len;
+  }
+  else
+	{
+		max_size -= 3;
+		for(size_t pos = max_size; pos >= 0; pos--)
+		{
+			unsigned char byte = static_cast<unsigned char>(str[pos]); //Perfectly valid
+			if((byte & 0xC0) != 0x80)
+				return pos;
+		}
+	}
+
+  LKASSERT(0);
+  //If your first byte isn't even a valid UTF-8 starting point, then something terrible has happened.
+ // throw bad_utf8_encoded_text(...);
+  return -1;
+}
+
+#define DEVICE_NAME_LEN (12+4)
+
+bool _tcsncpytrunc(TCHAR pDest[],const TCHAR *pSrc, uint num)
+{
+	int cut = FindCutPosition(pSrc, num);
+	pDest[0] = _T('\0');
+	if(cut >= 0)
+	{
+    _tcsncpy(pDest, pSrc, cut);
+    pDest[cut] =  _T('\0');
+	}
+
+  return true;
+}
 
 
 static void OnCancelClicked(WndButton* pWnd){
@@ -154,11 +221,12 @@ int Idx=0;
   {
     RadioPara.Changed =FALSE;
     TCHAR Name[250];
-    if(_tcscmp(_T("        "), RadioPara.ActiveName ) == 0)
+    if((_tcscmp(_T("        "), RadioPara.ActiveName ) == 0)  || ( _tcslen(RadioPara.ActiveName) == 0))
       Idx = SearchStation(RadioPara.ActiveFrequency);
     if(Idx !=0)
     {
-        _stprintf(RadioPara.ActiveName,_T("%s"),WayPointList[Idx].Name);
+
+    		_tcsncpytrunc(RadioPara.ActiveName, WayPointList[Idx].Name, NAME_SIZE);
         ActiveRadioIndex = Idx;
         if( HoldOff ==0)
         {
@@ -166,13 +234,15 @@ int Idx=0;
           devPutFreqActive(RadioPara.ActiveFrequency, WayPointList[Idx].Name);
         }
     }
+    TCHAR ActiveName[DEVICE_NAME_LEN+2];
+		_tcsncpytrunc(ActiveName,RadioPara.ActiveName, DEVICE_NAME_LEN);
     if(RadioPara.TX)
-      _stprintf(Name,_T(">%s<"),RadioPara.ActiveName);
+      _stprintf(Name,_T(">%s<"),ActiveName);
     else
       if(RadioPara.RX_active)
-        _stprintf(Name,_T("<%s>"),RadioPara.ActiveName);
+        _stprintf(Name,_T("<%s>"),ActiveName);
       else
-        _stprintf(Name,_T("[%s]"),RadioPara.ActiveName);
+        _stprintf(Name,_T("[%s]"),ActiveName);
     if(wpnewActive)
       wpnewActive->SetCaption(Name);
     _stprintf(Name,_T("%6.03f"),RadioPara.ActiveFrequency);
@@ -180,11 +250,12 @@ int Idx=0;
       wpnewActiveFreq->SetCaption(Name);
 
 
-    if(_tcscmp(_T("        "), RadioPara.PassiveName ) == 0)
-    Idx = SearchStation(RadioPara.PassiveFrequency);
+    if((_tcscmp(_T("        "), RadioPara.PassiveName ) == 0) ||( _tcslen(RadioPara.PassiveName) == 0))
+      Idx = SearchStation(RadioPara.PassiveFrequency);
     if(Idx !=0)
     {
-        _stprintf(RadioPara.PassiveName,_T("%s"),WayPointList[Idx].Name);
+
+        _tcsncpytrunc(RadioPara.PassiveName, WayPointList[Idx].Name, NAME_SIZE);
         PassiveRadioIndex = Idx;
         if( HoldOff ==0)
         {
@@ -192,10 +263,13 @@ int Idx=0;
           devPutFreqStandby(RadioPara.PassiveFrequency, WayPointList[Idx].Name);
         }
     }
+    TCHAR PassiveName[DEVICE_NAME_LEN+2];
+		_tcsncpytrunc(PassiveName, RadioPara.PassiveName   , DEVICE_NAME_LEN);
+
     if(RadioPara.RX_standy)
-      _stprintf(Name,_T("<%s>"),RadioPara.PassiveName);
+      _stprintf(Name,_T("<%s>"),PassiveName);
     else
-      _stprintf(Name,_T("[%s]"),RadioPara.PassiveName);
+      _stprintf(Name,_T("[%s]"),PassiveName);
     if(wpnewPassive)
      wpnewPassive->SetCaption(Name);
     _stprintf(Name,_T("%6.03f"),RadioPara.PassiveFrequency);
@@ -233,13 +307,13 @@ int Idx=0;
 }
 
 static int OnUpdate(void) {
-TCHAR Name[250];
+  TCHAR Name[DEVICE_NAME_LEN+2];
 
-    if((ValidWayPoint(ActiveRadioIndex)) &&0)
+    if((ValidWayPoint(ActiveRadioIndex)) )
     {
         if( ActiveRadioIndex > RESWP_END)
         {
-          _stprintf(Name,_T("%s"),WayPointList[ActiveRadioIndex].Name);
+      		_tcsncpytrunc(Name,WayPointList[ActiveRadioIndex].Name, DEVICE_NAME_LEN);
           if(wpnewActive)
             wpnewActive->SetCaption(Name);
           _stprintf(Name,_T("%s"),WayPointList[ActiveRadioIndex].Freq);
@@ -249,7 +323,8 @@ TCHAR Name[250];
     }
     else
     {
-        _stprintf(Name,_T("%s"),RadioPara.ActiveName);
+
+    		_tcsncpytrunc(Name,RadioPara.ActiveName, DEVICE_NAME_LEN);
         if(wpnewActive)
           wpnewActive->SetCaption(Name);
         _stprintf(Name,_T("%7.3f"),RadioPara.ActiveFrequency);
@@ -258,11 +333,11 @@ TCHAR Name[250];
     }
 
 
-    if((ValidWayPoint(PassiveRadioIndex)) && 0)
+    if((ValidWayPoint(PassiveRadioIndex)) )
     {
         if( PassiveRadioIndex > RESWP_END )
         {
-          _stprintf(Name,_T("%s"),WayPointList[PassiveRadioIndex].Name);
+        	_tcsncpytrunc(Name,WayPointList[PassiveRadioIndex].Name, DEVICE_NAME_LEN);
           if(wpnewPassive)
             wpnewPassive->SetCaption(Name);
           _stprintf(Name,_T("%s"),WayPointList[PassiveRadioIndex].Freq);
@@ -272,7 +347,7 @@ TCHAR Name[250];
     }
     else
     {
-        _stprintf(Name,_T("%s"),RadioPara.PassiveName);
+      	_tcsncpytrunc(Name,RadioPara.PassiveName, DEVICE_NAME_LEN);
         if(wpnewPassive)
           wpnewPassive->SetCaption(Name);
         _stprintf(Name,_T("%7.3f"),RadioPara.PassiveFrequency);
@@ -341,7 +416,7 @@ static void OnActiveButton(WndButton* pWnd){
 	return;
       }
       devPutFreqActive(Frequency, WayPointList[res].Name);
-      _stprintf(RadioPara.ActiveName,_T("%s"), WayPointList[res].Name);
+    	_tcsncpytrunc(RadioPara.ActiveName,WayPointList[res].Name, NAME_SIZE);
       RadioPara.ActiveFrequency = Frequency;
 
       ActiveRadioIndex = res;
@@ -369,7 +444,8 @@ static void OnPassiveButton(WndButton* pWnd){
       }
       devPutFreqStandby(Frequency, WayPointList[res].Name);
 
-      _stprintf(RadioPara.PassiveName,_T("%s"), WayPointList[res].Name);
+  //    _stprintf(RadioPara.PassiveName,_T("%s"), WayPointList[res].Name);
+    	_tcsncpytrunc(RadioPara.PassiveName,WayPointList[res].Name, DEVICE_NAME_LEN);
       RadioPara.PassiveFrequency = Frequency;
       PassiveRadioIndex = res;
     }
@@ -394,16 +470,14 @@ _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
       int iIdx = SearchStation(Frequency);
       if(iIdx != 0)
       {
-	_stprintf(Name,_T("%s"),WayPointList[iIdx].Name);
-	_stprintf( RadioPara.ActiveName,_T("%s"),WayPointList[iIdx].Name);
-	ActiveRadioIndex = iIdx;
+    	 	_tcsncpytrunc(RadioPara.ActiveName,WayPointList[iIdx].Name, NAME_SIZE);
+        ActiveRadioIndex = iIdx;
 
       }
       devPutFreqActive(Frequency,Name);
- 	  RadioPara.ActiveFrequency = Frequency;
-
+ 	    RadioPara.ActiveFrequency = Frequency;
       RadioPara.Changed =TRUE;
- //	 OnRemoteUpdate();
+
       OnUpdate();
     }
     OnUpdate();
@@ -422,15 +496,14 @@ TCHAR	Name[NAME_SIZE] = _T("  ???   ");
    if(ValidFrequency(Frequency))
    {
      _stprintf( RadioPara.PassiveName,_T(" "));
-      int iIdx = SearchStation(Frequency);
-      if(iIdx != 0)
-      {
-	_stprintf(Name,_T("%s"),WayPointList[iIdx].Name);
-	_stprintf( RadioPara.PassiveName,_T("%s"),WayPointList[iIdx].Name);
-	PassiveRadioIndex = iIdx;
-      }
+     int iIdx = SearchStation(Frequency);
+     if(iIdx != 0)
+     {
+			 _tcsncpytrunc(RadioPara.PassiveName,WayPointList[iIdx].Name, NAME_SIZE);
+			 PassiveRadioIndex = iIdx;
+     }
      devPutFreqStandby(Frequency,Name);
-    RadioPara.PassiveFrequency = Frequency;
+     RadioPara.PassiveFrequency = Frequency;
   //  _stprintf( RadioPara.PassiveName,_T(""));
     RadioPara.Changed =TRUE;
   // OnRemoteUpdate();
@@ -448,16 +521,21 @@ static void OnRadioActiveAutoClicked(WndButton* pWnd){
 		if ( ValidWayPoint(BestAlternate))
 		{
 			double fFreq = StrToDouble(WayPointList[BestAlternate].Freq,NULL);
-			if(ValidFrequency(fFreq))
-				devPutFreqActive(fFreq, WayPointList[BestAlternate].Name);
+
+			if(ValidFrequency(fFreq)) {
+				RadioPara.ActiveFrequency = fFreq;
+				_tcsncpytrunc(RadioPara.ActiveName ,WayPointList[BestAlternate].Name, NAME_SIZE);
+				devPutFreqActive(	RadioPara.ActiveFrequency , RadioPara.ActiveName);
 			}
 		}
+  }
   RadioPara.Changed = true;
   OnUpdate();
 }
 
-static void OnRadioStandbyAutoClicked(WndButton* pWnd){
 
+static void OnRadioStandbyAutoClicked(WndButton* pWnd)
+{
   if(bAutoPassiv) {
 	  bAutoPassiv = false;
   } else {
@@ -465,8 +543,11 @@ static void OnRadioStandbyAutoClicked(WndButton* pWnd){
 		if ( ValidWayPoint(BestAlternate))
 		{
 			double fFreq = StrToDouble(WayPointList[BestAlternate].Freq,NULL);
-			if(ValidFrequency(fFreq))
-				devPutFreqStandby(fFreq, WayPointList[BestAlternate].Name);
+			if(ValidFrequency(fFreq))			{
+				RadioPara.PassiveFrequency = fFreq;
+				_tcsncpytrunc(RadioPara.PassiveName,WayPointList[BestAlternate].Name, NAME_SIZE);
+				devPutFreqStandby(	RadioPara.PassiveFrequency, RadioPara.PassiveName);
+			}
 		}
   }
   RadioPara.Changed = true;
@@ -476,7 +557,7 @@ static void OnRadioStandbyAutoClicked(WndButton* pWnd){
 
 static void OnExchange(WndButton* pWnd){
 int tmp;
-TCHAR szTempStr[50];
+TCHAR szTempStr[NAME_SIZE];
 double fTmp;
 // if (HoldOff ==0)
  {
