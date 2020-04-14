@@ -201,7 +201,6 @@ class NMEAParser {
   static int StartDay;
 
  public:
-  static void TestRoutine(NMEA_INFO *GPS_INFO);
 
   // these routines can be used by other parsers.
   static double ParseAltitude(TCHAR *, const TCHAR *);
@@ -253,7 +252,8 @@ class NMEAParser {
   BOOL HCHDG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   // LK8000 custom special sentences, always active
   BOOL PLKAS(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  // FLARM sentances
+  
+  // FLARM sentences
   BOOL PFLAV(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAU(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
