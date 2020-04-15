@@ -128,7 +128,7 @@ ifeq ($(TARGET),LINUX)
 endif
 
 ifeq ($(TARGET),KOBO)
-  KOBO ?= /opt/kobo/arm-unknown-linux-gnueabi
+  KOBO ?= /opt/kobo-rootfs
   TARGET_IS_KOBO :=y
   CONFIG_LINUX   :=y
   CONFIG_ANDROID :=n
@@ -185,7 +185,7 @@ else ifeq ($(CONFIG_WINE),y)
  CPU    :=i586
  MCPU   := -mcpu=$(CPU)
 else ifeq ($(TARGET_IS_KOBO),y)
- TCPATH := arm-unknown-linux-gnueabi-
+ TCPATH := arm-kobo-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad
 else ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
  TCPATH := arm-linux-gnueabihf-
@@ -626,6 +626,7 @@ endif
 CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
 CPPFLAGS	+= -Wredundant-decls
 CPPFLAGS	+= -Wall -Wno-char-subscripts -fsigned-char
+CPPFLAGS	+= -Wno-psabi
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
 #CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
@@ -652,7 +653,7 @@ endif
 
 CPPFLAGS += -DPOCO_STATIC
 
-CXXFLAGS	:= -std=gnu++0x $(OPTIMIZE) $(PROFILE)
+CXXFLAGS	:= -std=gnu++17 $(OPTIMIZE) $(PROFILE)
 CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration

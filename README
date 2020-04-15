@@ -1,7 +1,6 @@
 *** WELCOME TO THE LK8000 DEVELOPMENT HUB ***
 
 THIS IS THE DEVELOPEMENT BRANCH.
-(Development of master started on October 30, 2018)
 
 ================================================================================
 = Build Targets supported                                                      =
@@ -87,3 +86,10 @@ Desktop Target ( LINUX or PC ) :
     FULLSCREEN=[y|n]
         default = "n"
 
+================================================================================
+= Prebuild toolchain                                                           =
+================================================================================
+
+Kobo & WinCE toolchain for Debian host can be found here : http://lk8000.it/toolchain/
+
+a Doker image is also available here : https://hub.docker.com/r/lk8000/lk8000/tags
