@@ -630,10 +630,10 @@ void dlgRadioSettingsShowModal(void){
 
    wf->SetTimerNotify(300, OnTimerNotify);
  //  RadioPara.Changed = true;
-
+   OnUpdate();
    wf->ShowModal();
 
-   OnUpdate();
+
     delete wf;
   }
   wf = NULL;
