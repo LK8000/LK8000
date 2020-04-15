@@ -30,7 +30,7 @@
 #include "Utils.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
-
+#include "Time/PeriodClock.hpp"
 
 BOOL m_bValues = false;
 
@@ -49,7 +49,7 @@ uint uTimeout =0;
 
 /// polynom for LX data CRC
 #define LX_CRC_POLY 0x69
-
+#define QNH_OR_ELEVATION
 TCHAR m_Filename[200];
 uint m_CurLine =0;
 
@@ -333,7 +333,6 @@ if(iNano3_GPSBaudrate ==0)
 BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
 
-  static int i=40;
   TCHAR  szTmp[MAX_NMEA_LEN];
 
 
@@ -361,24 +360,26 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
 
   PutTarget(d);
 
-  /* configure LX after 10 GPS positions */
+static char lastSec =0;
+  if( info->Second != lastSec)  // execute every second only
+	{
+   	lastSec	= info->Second;
+    if((info->Second % 10) ==0) // config every 10s (not on every xx $GPGGA as there are 10Hz GPS now
+		{
+	//	  StartupStore( _T("Config Time: %02i:%02i:%02i %s"),info->Hour  ,info->Minute   ,info->Second, NEWLINE);
+			SetupLX_Sentence(d);
+		}
+	}
+
+
   if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
   {
-    if(i++ > 10)
-    {
-      SetupLX_Sentence(d);
-      i=0;
-    }
-
-
       if(iS_SeriesTimeout-- < 0)
         devSetAdvancedMode(d,false);
 
-    static int oldQFEOff =0;
+
+#ifdef QNH_OR_ELEVATION
     static int iOldQNH   =0;
-
-
-
     int iQNH = (int)(QNH*100.0);
     if(iQNH != iOldQNH)
     {
@@ -386,8 +387,8 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
       _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,QNH,W,%i"),(int)iQNH);
       SendNmea(d,szTmp);
     }
-
-
+#else
+    static int oldQFEOff =0;
     int QFE = (int)QFEAltitudeOffset;
     if(QFE != oldQFEOff)
     {
@@ -395,6 +396,7 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
       _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
        SendNmea(d,szTmp);
     }
+#endif
   }
 #ifdef EEE
   if(iNano3_GPSBaudrate ==0)
