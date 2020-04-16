@@ -157,7 +157,7 @@ int Idx=0;
   {
     RadioPara.Changed =FALSE;
     TCHAR Name[250];
-    if((_tcscmp(_T("        "), RadioPara.ActiveName ) == 0)  || ( _tcslen(RadioPara.ActiveName) == 0))
+    if( _tcslen(RadioPara.ActiveName) == 0)
       Idx = SearchStation(RadioPara.ActiveFrequency);
     if(Idx !=0)
     {
@@ -185,7 +185,7 @@ int Idx=0;
       wpnewActiveFreq->SetCaption(Name);
 
 
-    if((_tcscmp(_T("        "), RadioPara.PassiveName ) == 0) ||( _tcslen(RadioPara.PassiveName) == 0))
+    if( _tcslen(RadioPara.PassiveName) == 0)
       Idx = SearchStation(RadioPara.PassiveFrequency);
     if(Idx !=0)
     {
@@ -243,16 +243,14 @@ static int OnUpdate(void) {
   TCHAR Name[DEVICE_NAME_LEN+8];
 
 
-	CopyTruncateString(Name, DEVICE_NAME_LEN, RadioPara.ActiveName);
 	if(wpnewActive)
-		wpnewActive->SetCaption(Name);
+		wpnewActive->SetCaption(RadioPara.ActiveName);
 	_stprintf(Name,_T("%7.3f"),RadioPara.ActiveFrequency);
 	if(wpnewActiveFreq)
 		wpnewActiveFreq->SetCaption(Name);
 
-	CopyTruncateString(Name, DEVICE_NAME_LEN, RadioPara.PassiveName);
 	if(wpnewPassive)
-		wpnewPassive->SetCaption(Name);
+		wpnewPassive->SetCaption(RadioPara.PassiveName);
 	_stprintf(Name,_T("%7.3f"),RadioPara.PassiveFrequency);
 	if(wpnewPassiveFreq)
 		wpnewPassiveFreq->SetCaption(Name);
