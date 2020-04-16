@@ -411,14 +411,14 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
             if(_tcsstr(szString, _T("\",\""))!= NULL)   // really a task! (not an option)
               FileSection = TaskTp;
 
-          TCHAR *pToken = NULL;
+          const TCHAR *pToken = NULL;
 
           int hh,mm,ss;
 
           if(FileSection !=Waypoint)
           {
             Entries = CupStringToFieldArray(szString);
-            pToken = (TCHAR*)Entries[0].c_str() ;
+            pToken = Entries[0].c_str() ;
 #if TESTBENCH
      //       for(size_t idx=0; idx < Entries.size(); idx ++)
      //         StartupStore(_T(". Task  %i %s %s"), idx, Entries[idx].c_str()  ,NEWLINE);
@@ -480,7 +480,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 		  size_t ParIdx=1;
 		  while ( ParIdx <  Entries.size() )
 		  {
-		    pToken = (TCHAR*)Entries[ParIdx++].c_str() ;
+		    pToken = Entries[ParIdx++].c_str() ;
 
 		    if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
 			// Opening of start line
@@ -533,7 +533,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                           size_t ParIdx=1;
                           while ( ParIdx <  Entries.size() )
                           {
-                            pToken = (TCHAR*)Entries[ParIdx++].c_str() ;
+                            pToken = Entries[ParIdx++].c_str() ;
 
                             if (_tcsstr(pToken, _T("Style=")) == pToken) {
                                 // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point

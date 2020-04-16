@@ -180,11 +180,10 @@ static void OnRenameClicked(WndButton* pWnd){
 }
 
 
-extern double  ExtractFrequency(TCHAR*);
+extern double  ExtractFrequency(const TCHAR*);
 extern BOOL ValidFrequency(double Freq);
 
-static void OnFlarmFreqSelectEnter(WndButton*  Sender  )
-{
+static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
     (void) Sender;
 
 #ifdef RADIO_ACTIVE
@@ -194,14 +193,14 @@ TCHAR Tmp[255];
   {
    if(RadioPara.Enabled)
    {
-      double ASFrequency = ExtractFrequency((TCHAR*)flarmId->freq);
+      double ASFrequency = ExtractFrequency(flarmId->freq);
       if(ValidFrequency(ASFrequency))
       {
         LKSound(TEXT("LK_TICK.WAV"));
         if(_tcslen(flarmId->cn) > 0)
           _tcscpy(Tmp,(TCHAR*)flarmId->cn);
         else
-        	_tcscpy(Tmp,(TCHAR*)flarmId->reg );
+          _tcscpy(Tmp,(TCHAR*)flarmId->reg );
 
         devPutFreqActive(ASFrequency, Tmp );
       }
@@ -370,7 +369,7 @@ static void SetValues(int indexid) {
 	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
 	if(wFreq)
 	{
-		double ASFrequency = ExtractFrequency((TCHAR*)flarmId->freq);
+		double ASFrequency = ExtractFrequency(flarmId->freq);
 		if((RadioPara.Enabled) && ValidFrequency(ASFrequency) )
 		{
 			_stprintf(buffer,_T("%7.3f"), ASFrequency );

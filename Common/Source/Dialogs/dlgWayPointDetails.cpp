@@ -324,7 +324,7 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-extern    double  ExtractFrequency(TCHAR*);
+extern    double  ExtractFrequency(const TCHAR*);
 
 static void OnMultiSelectEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {
@@ -339,11 +339,11 @@ TCHAR Tmp2[20];
   {
    if(RadioPara.Enabled)
    {
-     double ASFrequency = ExtractFrequency((TCHAR*)aCommentTextLine[ItemIndex]);
+     double ASFrequency = ExtractFrequency(aCommentTextLine[ItemIndex]);
       if((ASFrequency >= 118) && (ASFrequency <= 138))
       {
         LKSound(TEXT("LK_TICK.WAV"));
-        _sntprintf(Tmp2, 10, _T("%s"),(TCHAR*)aCommentTextLine[ItemIndex]);
+        _sntprintf(Tmp2, 10, _T("%s"),aCommentTextLine[ItemIndex]);
         Tmp2[10]=0;
         _stprintf(Tmp,_T("%s%s%7.3f"),Tmp2,NEWLINE,ASFrequency);
         devPutFreqActive(ASFrequency, Tmp2);

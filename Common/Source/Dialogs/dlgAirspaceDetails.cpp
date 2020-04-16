@@ -111,7 +111,7 @@ static bool OnTimer(WndForm* pWnd){
   return true;
 }
 
-double  ExtractFrequency(TCHAR *text)
+double  ExtractFrequency(const TCHAR *text)
 {
     if(text == NULL)
         return 0.0;
@@ -158,15 +158,15 @@ static void OnSetFrequency(WndButton* pWnd){
 TCHAR Tmp[255];
  if(RadioPara.Enabled)
  {
-   double ASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
+   double ASFrequency = ExtractFrequency(airspace_copy.Name());
    if(!ValidFrequency(ASFrequency))
    {
-	 ASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Comment());
+	 ASFrequency = ExtractFrequency(airspace_copy.Comment());
    }
    if(ValidFrequency(ASFrequency))
    {
      _stprintf(Tmp,_T("%7.3fMHz"),ASFrequency);
-     devPutFreqActive(ASFrequency, (TCHAR*)airspace_copy.Name());
+     devPutFreqActive(ASFrequency, airspace_copy.Name());
      DoStatusMessage(_T(""), Tmp );
    }
  }
@@ -313,10 +313,10 @@ static void SetValues(WndForm* wf) {
 
     if(RadioPara.Enabled) {
 
-	  double fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Name());
+	  double fASFrequency = ExtractFrequency(airspace_copy.Name());
 	  if(!ValidFrequency(fASFrequency))
 	  {
-		fASFrequency = ExtractFrequency((TCHAR*)airspace_copy.Comment());
+		fASFrequency = ExtractFrequency(airspace_copy.Comment());
 	  }
 	  
       if(ValidFrequency(fASFrequency)) {
@@ -477,10 +477,10 @@ static void OnDetailsClicked(WndButton* pWnd){
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
     	if(airspace->Comment() != NULL)
-  	      _sntprintf(Details,READLINE_LENGTH, _T("%s"), airspace->Comment());
+  	    _sntprintf(Details,READLINE_LENGTH, _T("%s"), airspace->Comment());
     	else
-    	  _sntprintf(Details, READLINE_LENGTH,_T("%s"), (TCHAR*)airspace->TypeName());
-  	  _sntprintf(Name,NAME_SIZE, _T("%s %s:"), (TCHAR*)airspace->TypeName(), MsgToken(231) );
+    	  _sntprintf(Details, READLINE_LENGTH,_T("%s"), airspace->TypeName());
+  	  _sntprintf(Name,NAME_SIZE, _T("%s %s:"), airspace->TypeName(), MsgToken(231) );
 
     }
 //#if TESTBENCH

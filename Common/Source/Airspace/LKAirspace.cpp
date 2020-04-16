@@ -46,7 +46,7 @@ unsigned int OutsideAirspaceCnt =0;
 #define DEBUG_AIRSPACE
 #endif
 
-extern	  double  ExtractFrequency(TCHAR*);
+extern	  double  ExtractFrequency(const TCHAR*);
 
 static const int k_nAreaCount = 17;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
@@ -776,7 +776,7 @@ void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &
 
     if( Comment()  != NULL)
     {
-      CopyTruncateString( (TCHAR*) _shared_comment.get(),iLen, comment);
+      CopyTruncateString(_shared_comment.get(),iLen, comment);
    //   StartupStore(TEXT("new _shared_comment: %s %u %s"),  Comment(), _tcslen( Comment()), NEWLINE);
     }
  }
