@@ -88,7 +88,7 @@ unsigned char MHz= (unsigned char) fFrequency;
 unsigned int kHz= (unsigned int) (fFrequency *1000.0 - MHz *1000  + 0.5);
 unsigned char Chan = (unsigned char)(kHz/5);
 
-char Airfield[10]={"   ---   "};
+char Airfield[10]={"         "};
 
 LKASSERT(Command !=NULL)
 if(Command == NULL )
@@ -453,6 +453,7 @@ LKASSERT(d !=NULL);
                 for(i=0; i < 8; i++)
                   RadioPara.ActiveName[i] =   szCommand[4+i];
                 RadioPara.ActiveName[8] =0;
+                TrimRight(RadioPara.ActiveName);
                    _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
                 processed = 13;
               }
@@ -470,6 +471,7 @@ LKASSERT(d !=NULL);
                 for(i=0; i < 8; i++)
                   RadioPara.PassiveName[i] =   szCommand[4+i];
                 RadioPara.PassiveName[8] =0;
+                TrimRight(RadioPara.PassiveName);
                 _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );
                 processed = 13;
               }
@@ -611,7 +613,7 @@ LKASSERT(d !=NULL);
   {
     if(processed> 0)
     {
-      TCHAR szMessage[180] = _T("");
+      TCHAR szMessage[250] = _T("");
       _stprintf(szMessage,_T("%s:%s "), MsgToken(2309),szTempStr);
       StartupStore(_T(" %s %s%s"), szMessage,WhatTimeIsIt(),NEWLINE);
       //DoStatusMessage(szMessage);
