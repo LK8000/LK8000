@@ -191,7 +191,9 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 static void SetValues(WndForm* wf) {
-
+  if(!wf) {
+    return;
+  }
   
   WndProperty* wp;
   WndButton *wb;
@@ -217,7 +219,6 @@ static void SetValues(WndForm* wf) {
     }
   }
   
-  if (wf!=NULL) {
 	TCHAR capbuffer[250];
 	_stprintf(capbuffer,_T("%s ("),airspace_copy.Name());
         if (airspace_copy.Enabled()) {
@@ -227,7 +228,6 @@ static void SetValues(WndForm* wf) {
         }
         _tcscat(capbuffer,_T(")")); // DISABLED
 	wf->SetCaption(capbuffer);
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
