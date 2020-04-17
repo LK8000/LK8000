@@ -183,12 +183,12 @@ void dlgIgcFileShowModal() {
             wndFileList->ResetList();
             wndFileList->Redraw();
         }
+
+        if (wfDlg->ShowModal()) {
+
+        }
+
+        delete wfDlg;
+        wfDlg = NULL;
     }
-
-    if (wfDlg->ShowModal()) {
-
-    }
-
-    delete wfDlg;
-    wfDlg = NULL;
 }
