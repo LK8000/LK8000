@@ -371,10 +371,11 @@ public:
     void Height(const RasterPoint& offset, const ScreenProjection& _Proj) {
         assert(height_buffer && height_buffer->GetBuffer());
 
-        RasterTerrain::Lock();
+        ScopeLock Lock(RasterTerrain::mutex);
+
         RasterMap* DisplayMap = RasterTerrain::TerrainMap;
         assert(DisplayMap && DisplayMap->isMapLoaded());
-        if(!DisplayMap && DisplayMap->isMapLoaded()) {
+        if(!DisplayMap || !DisplayMap->isMapLoaded()) {
             return;
         }
 
@@ -416,11 +417,9 @@ public:
 
             FillHeightBuffer(X0 - orig.x, Y0 - orig.y, X1 - orig.x, Y1 - orig.y,
                     [DisplayMap](const double &lat, const double &lon) {
-                        return DisplayMap->GetFieldFine(lat,lon);
+                          return DisplayMap->GetFieldFine(lat,lon);
                     });
         }
-
-        RasterTerrain::Unlock();
     }
 
     /**
