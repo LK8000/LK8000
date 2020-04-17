@@ -63,6 +63,79 @@ BOOL KRT2Register(void){
 
 
 
+int TCHAR2_7BitASCII(char pDest[], size_t MaxLen, TCHAR *Src)
+{
+size_t length =0;
+char Tmp[4];
+size_t l=0;
+
+	while ( l < _tcslen(Src))
+	{
+		TCHAR	unicode	= (Src[l++]);
+		if(unicode  > 127)  // KRT2 display 7bit char only
+		{
+			switch((unsigned long)unicode)
+			{
+				case _T('Ã'): strcpy(Tmp,"A"); break;
+	  		case _T('Ä'): strcpy(Tmp,"A"); break;
+				case _T('Á'): strcpy(Tmp,"A"); break;
+				case _T('Å'): strcpy(Tmp,"A"); break;
+
+				case _T('ä'): strcpy(Tmp,"a"); break;
+				case _T('á'): strcpy(Tmp,"a"); break;
+				case _T('å'): strcpy(Tmp,"a"); break;
+				case _T('ă'): strcpy(Tmp,"a"); break;
+
+				case _T('Ö'): strcpy(Tmp,"O"); break;
+				case _T('Ø'): strcpy(Tmp,"O"); break;
+
+				case _T('ö'): strcpy(Tmp,"o"); break;
+				case _T('ó'): strcpy(Tmp,"o"); break;
+				case _T('ø'): strcpy(Tmp,"o"); break;
+
+				case _T('Ñ'): strcpy(Tmp,"N"); break;
+				case _T('ñ'): strcpy(Tmp,"n"); break;
+
+				case _T('é'): strcpy(Tmp,"e"); break;
+
+				case _T('č'): strcpy(Tmp,"c"); break;
+				case _T('Č'): strcpy(Tmp,"C"); break;
+				case _T('Ç'): strcpy(Tmp,"C"); break;
+
+				case _T('ş'): strcpy(Tmp,"s"); break;
+				case _T('ß'): strcpy(Tmp,"ss"); break;
+
+				case _T('ţ'): strcpy(Tmp,"t"); break;
+
+				case _T('Ü'): strcpy(Tmp,"U"); break;
+
+				case _T('ü'): strcpy(Tmp,"u"); break;
+				case _T('µ'): strcpy(Tmp,"u"); break;
+				case _T('ų'): strcpy(Tmp,"u"); break;
+				case _T('ū'): strcpy(Tmp,"u"); break;
+
+				default:      strcpy(Tmp,"_"); break; // if we don't find a better alternative char leave it blank
+			}
+
+			for (size_t i =0; i< strlen(Tmp); i++)
+			{
+				if(length < MaxLen)
+				{
+					pDest[length++] = Tmp[i];
+				}
+			}
+		}
+		else
+		{
+			if(length < MaxLen)
+				pDest[length++] = (char) unicode;
+		}
+	  pDest[length] = '\0';
+	}
+	return length;
+
+}
+
 
 BOOL KRT2IsRadio(PDeviceDescriptor_t d){
   (void)d;
@@ -114,6 +187,10 @@ if(Command == NULL )
       Command[len++] = 'R';
     break;
   }
+
+  if(Station != NULL)
+    TCHAR2_7BitASCII( Airfield,8,(TCHAR*)Station);
+
 
   Command[len++] = MHz;
   Command[len++] = Chan;
