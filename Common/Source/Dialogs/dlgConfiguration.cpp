@@ -1798,8 +1798,8 @@ static void setVariables( WndForm *pOwner) {
             dfe->addEnumText(MsgToken(943));
             dfe->addEnumText(MsgToken(946));
         }
+        dfe->Set((int)MapWindow::GetAirSpaceFillType());
     }
-    dfe->Set((int)MapWindow::GetAirSpaceFillType());
     wp->RefreshDisplay();
   }
   
