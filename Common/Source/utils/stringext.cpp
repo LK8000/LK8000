@@ -83,9 +83,11 @@ int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
   #endif
 }
 
+#ifdef _UNICODE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts UTF-8 encoded string into Unicode encoded string.
 /// \return Unicode string size [TCHARs], -1 on conversion error (insufficient buffer e.g.)
+static
 int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
 {
   #ifndef SYS_UTF8_CONV
@@ -123,6 +125,7 @@ int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
 
   #endif
 }
+#endif
 
 namespace {
 

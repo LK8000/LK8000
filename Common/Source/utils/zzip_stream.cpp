@@ -173,7 +173,7 @@ bool zzip_stream::read_line(wchar_t *string, size_t size) {
       assert(false); // faild to convert string
     }
   } else {
-    utf2unicode(raw_string.begin(), string, size);
+    utf2TCHAR(raw_string.begin(), string, size);
   }
   return true;
 }

@@ -109,7 +109,7 @@ int wince_open (const char *path, int oflag, ...)
 	return -1;
     }
 
-    utf2unicode(path, wpath, MAX_PATH);
+    utf2TCHAR(path, wpath, MAX_PATH);
     //mbstowcs (wpath, path, path_len + 1);
 
     fileshare = FILE_SHARE_READ | FILE_SHARE_WRITE;
