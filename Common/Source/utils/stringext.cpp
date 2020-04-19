@@ -26,8 +26,6 @@
 static
 int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
 {
-  #ifndef SYS_UTF8_CONV
-
   // we will use our own UTF16->UTF8 conversion (WideCharToMultiByte(CP_UTF8)
   // is not working on some Win CE systems)
   size_t len = wcslen(unicode);
@@ -45,20 +43,6 @@ int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
   if (maxChars >= 1)
     utf[0] = '\0';
   return(-1);
-
-  #else /* just for fallback return to old code, to be removed after tests */
-
-  int res = WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf, maxChars, NULL, NULL);
-
-  if (res > 0)
-    return(res - 1);
-
-  // for safety reasons, return empty string
-  if (maxChars >= 1)
-    utf[0] = '\0';
-  return(-1);
-
-  #endif
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,8 +51,6 @@ int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
 static
 int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
 {
-  #ifndef SYS_UTF8_CONV
-
   // we will use our own UTF16->UTF8 conversion (MultiByteToWideChar(CP_UTF8)
   // is not working on some Win CE systems)
   size_t len = strlen(utf);
@@ -87,20 +69,6 @@ int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
   if (maxChars >= 1)
     unicode[0] = '\0';
   return(-1);
-
-  #else /* just for fallback return to old code, to be removed after tests */
-
-  int res = MultiByteToWideChar(CP_UTF8, 0, utf, -1, unicode, maxChars);
-
-  if (res > 0)
-    return(res - 1);
-
-  // for safety reasons, return empty string
-  if (maxChars >= 1)
-    unicode[0] = '\0';
-  return(-1);
-
-  #endif
 }
 #endif
 
