@@ -731,7 +731,7 @@ int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
   char szTmp[size+10];
   if (pSrc && pDest)
   {
-    TCHAR2usascii(pSrc , szTmp, size);
+    to_usascii(pSrc , szTmp, size);
     ascii2TCHAR(szTmp, pDest,   size) ;
     return _tcslen(pDest);
   }
@@ -911,7 +911,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
 bool DevLX_EOS_ERA::Wide2LxAscii(const TCHAR* input, int outSize, char* output){
   if (outSize == 0)
     return(false);
-  int res = TCHAR2usascii(input, output, outSize);
+  int res = to_usascii(input, output, outSize);
   // replace all non-ascii characters with '?' - LX devices is very sensitive
   // on non-ascii chars - the electronic seal can be broken
   // (unicode2usascii() should be enough, but to be sure that someone has not

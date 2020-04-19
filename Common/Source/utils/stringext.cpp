@@ -124,38 +124,39 @@ int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
   #endif
 }
 
-gcc_pure
-static std::pair<unsigned, const TCHAR *>
-NextChar(const TCHAR *p)
-{
-#ifdef _UNICODE
-  return std::make_pair(unsigned(*p), p + 1);
-#else
+namespace {
+
+gcc_pure std::pair<unsigned, const char *> 
+NextChar(const char *p) {
   return NextUTF8(p);
-#endif
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts Unicode string into US-ASCII string (writing as much as possible
-/// characters into @p ascii). Output string will always be terminated by '\0'.
-///
-/// Characters are converted into their most similar representation
-/// in US-ASCII. Nonconvertable characters are replaced by '?'.
-///
-/// Output string will always be terminated by '\0'.
-///
-/// @param unicode    input string (must be terminated with '\0')
-/// @param ascii      output buffer
-/// @param maxChars   output buffer size
-///
-/// @retval  1  all characters copied
-/// @retval -1  some characters could not be copied due to buffer size
-///
-int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize)
-{
-  auto out = array_back_inserter(ascii, outSize - 1); // size - 1 to let placeholder for '\0'
+gcc_pure std::pair<unsigned, const wchar_t *>
+NextChar(const wchar_t *p) {
+  return std::make_pair(unsigned(*p), p + 1);
+}
 
-  auto next = NextChar(unicode);
+/**
+ * Converts Unicode string into US-ASCII string (writing as much as possible
+ * characters into @p ascii). Output string will always be terminated by '\0'.
+ *
+ * Characters are converted into their most similar representation
+ * in US-ASCII. Nonconvertable characters are replaced by '?'.
+ *
+ * Output string will always be terminated by '\0'.
+ *
+ * @param unicode    input string (must be terminated with '\0')
+ * @param ascii      output buffer
+ * @param size   output buffer size
+ * 
+ * @return output string length.
+ */
+template <typename CharT>
+size_t to_usascii(const CharT *string, char *ascii, size_t size) {
+
+  auto out = array_back_inserter(ascii, size - 1); // size - 1 to let placeholder for '\0'
+
+  auto next = NextChar(string);
   while (next.first && !out.overflowed()) {
 
     if (next.first <= 127) {
@@ -172,9 +173,19 @@ int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize)
     next = NextChar(next.second);
   }
   ascii[out.length()] = '\0'; // add leading '\0'
-  return (out.overflowed() ? -1 : 1);
-} // TCHAR2usascii()
 
+  return out.length();
+}
+
+} // namespace
+
+size_t to_usascii(const char* utf8, char* ascii, size_t size) {
+  return to_usascii<char>(utf8, ascii, size);
+}
+
+size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
+  return to_usascii<wchar_t>(unicode, ascii, size);
+}
 
 
 int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars) {

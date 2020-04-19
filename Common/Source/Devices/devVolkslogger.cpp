@@ -108,25 +108,15 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
     return FALSE;
   }
 
-  TCHAR2usascii(decl->PilotName, vl.declaration.flightinfo.pilot, 66);
-  vl.declaration.flightinfo.pilot[64]='\0';
-
-  TCHAR2usascii(decl->AircraftRego, vl.declaration.flightinfo.gliderid, 8);
-  vl.declaration.flightinfo.gliderid[7]='\0';
-
-  TCHAR2usascii(decl->AircraftType, vl.declaration.flightinfo.glidertype, 13);
-  vl.declaration.flightinfo.glidertype[12]='\0';
-
-  TCHAR2usascii(decl->CompetitionID, vl.declaration.flightinfo.competitionid, 4);
-  vl.declaration.flightinfo.competitionid[3]='\0'; // BUGFIX 100331
-
-  TCHAR2usascii(decl->CompetitionClass, vl.declaration.flightinfo.competitionclass, 13);
-  vl.declaration.flightinfo.competitionclass[12]='\0'; // BUGFIX 100331
+  to_usascii(decl->PilotName, vl.declaration.flightinfo.pilot);
+  to_usascii(decl->AircraftRego, vl.declaration.flightinfo.gliderid);
+  to_usascii(decl->AircraftType, vl.declaration.flightinfo.glidertype);
+  to_usascii(decl->CompetitionID, vl.declaration.flightinfo.competitionid);
+  to_usascii(decl->CompetitionClass, vl.declaration.flightinfo.competitionclass);
 
   if (ValidWayPoint(HomeWaypoint)) {
 
-    TCHAR2usascii(WayPointList[HomeWaypoint].Name, vl.declaration.flightinfo.homepoint.name, 7);
-    vl.declaration.flightinfo.homepoint.name[6]='\0'; // BUGFIX 100331
+    to_usascii(WayPointList[HomeWaypoint].Name, vl.declaration.flightinfo.homepoint.name);
 
     vl.declaration.flightinfo.homepoint.lon =
       WayPointList[HomeWaypoint].Longitude;
@@ -239,8 +229,7 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
 BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 
   if (nturnpoints == 0) {
-    TCHAR2usascii(wp->Name, vl.declaration.task.startpoint.name, 7);
-    vl.declaration.task.startpoint.name[6] ='\0';
+    to_usascii(wp->Name, vl.declaration.task.startpoint.name);
 
     vl.declaration.task.startpoint.lon =
       wp->Longitude;
@@ -248,8 +237,7 @@ BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
       wp->Latitude;
     nturnpoints++;
   } else {
-    TCHAR2usascii(wp->Name, vl.declaration.task.turnpoints[nturnpoints-1].name, 7);
-    vl.declaration.task.turnpoints[nturnpoints-1].name[6]='\0';
+    to_usascii(wp->Name, vl.declaration.task.turnpoints[nturnpoints-1].name);
 
     vl.declaration.task.turnpoints[nturnpoints-1].lon =
       wp->Longitude;
@@ -257,8 +245,7 @@ BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
       wp->Latitude;
     nturnpoints++;
   }
-  TCHAR2usascii(wp->Name, vl.declaration.task.finishpoint.name, 7);
-  vl.declaration.task.finishpoint.name[6]='\0';
+  to_usascii(wp->Name, vl.declaration.task.finishpoint.name);
   vl.declaration.task.finishpoint.lon =
     wp->Longitude;
   vl.declaration.task.finishpoint.lat =
