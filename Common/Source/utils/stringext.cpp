@@ -170,16 +170,6 @@ size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
 int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
 #if defined(_UNICODE)
     return  unicode2utf(unicode, utf, maxChars);
-#elif defined(_MBCS)
-    wchar_t temp[maxChars];
-    size_t len = mbstowcs(temp, unicode, maxChars);
-    if(len!=(size_t)-1) {
-        return unicode2utf(temp, utf, maxChars);
-    }
-    // if error, return simple copy
-    len = std::min(_tcslen(unicode), (size_t)maxChars);
-    _tcsncpy(utf, unicode, maxChars);
-    return len;
 #else
     size_t len = std::min(_tcslen(unicode), (size_t)maxChars-1);
     _tcsncpy(utf, unicode, maxChars);
@@ -190,15 +180,10 @@ int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
 }
 
 int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
+    assert(ValidateUTF8(utf));
 #if defined(_UNICODE)
     return  utf2unicode(utf, unicode, maxChars);
-#elif defined(_MBCS)
-    wchar_t temp[maxChars];
-    memset(unicode, 0, maxChars*sizeof(TCHAR));
-    utf2unicode(utf, temp, maxChars);
-    return wcstombs(unicode, temp, maxChars);
 #else
-    assert(ValidateUTF8(utf));
     size_t len = std::min(_tcslen(utf), (size_t)maxChars);
     _tcsncpy(unicode, utf, maxChars);
     unicode[maxChars-1] = '\0';
