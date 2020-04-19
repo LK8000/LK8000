@@ -21,8 +21,8 @@ extern "C" {
 
 /*____________________________________________________________________________*/
 
-int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars);
-int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars);
+size_t TCHAR2utf(const TCHAR* string, char* utf, size_t size);
+size_t utf2TCHAR(const char* utf, TCHAR* string, size_t size);
 
 #ifdef __cplusplus
 }

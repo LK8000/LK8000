@@ -12,66 +12,10 @@
 #include <string.h>
 #include <algorithm>
 #include <assert.h>
-#include "utf8/unchecked.h"
 #include "utils/array_back_insert_iterator.h"
 #include "Util/UTF8.hpp"
 #include "unicode/unicode_to_ascii.h"
 //______________________________________________________________________________
-
-#ifdef _UNICODE
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts Unicode string into UTF-8 encoded string.
-/// \return UTF8 string size [octets], -1 on conversion error (insufficient buffer e.g.)
-static
-int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
-{
-  // we will use our own UTF16->UTF8 conversion (WideCharToMultiByte(CP_UTF8)
-  // is not working on some Win CE systems)
-  size_t len = wcslen(unicode);
-
-  auto iter = array_back_inserter(utf, maxChars - 1);
-
-  iter = utf8::unchecked::utf16to8(unicode, unicode + len, iter);
-
-  if (!iter.overflowed()) {
-    utf[iter.length()] = '\0';
-    return(iter.length());
-  }
-
-  // for safety reasons, return empty string
-  if (maxChars >= 1)
-    utf[0] = '\0';
-  return(-1);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts UTF-8 encoded string into Unicode encoded string.
-/// \return Unicode string size [TCHARs], -1 on conversion error (insufficient buffer e.g.)
-static
-int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
-{
-  // we will use our own UTF16->UTF8 conversion (MultiByteToWideChar(CP_UTF8)
-  // is not working on some Win CE systems)
-  size_t len = strlen(utf);
-
-  // first check if UTF8 is correct (utf8to16() may not be called on invalid string)
-  if (utf8::find_invalid(utf, utf + len) == (utf + len)) {
-    auto iter = array_back_inserter(unicode, maxChars - 1);
-
-    iter = utf8::unchecked::utf8to16(utf, utf + len, iter);
-
-    unicode[iter.length()] = '\0';
-    return(iter.length());
-  }
-
-  // for safety reasons, return empty string
-  if (maxChars >= 1)
-    unicode[0] = '\0';
-  return(-1);
-}
-#endif
-
 namespace {
 
 gcc_pure std::pair<unsigned, const char *> 
@@ -125,6 +69,35 @@ size_t to_usascii(const CharT *string, char *ascii, size_t size) {
   return out.length();
 }
 
+#ifdef UNICODE
+
+size_t unicode_to_utf8(const wchar_t *unicode, char *utf8, size_t size) {
+
+  const auto end = std::next(utf8, size - 1); // size - 1 to let placeholder for '\0'
+  auto out = utf8;
+  while (*unicode && out < end) {
+    out = UnicodeToUTF8(*(unicode++), out);
+  }
+  *out = '\0';
+
+  return std::distance(utf8, out);
+}
+
+size_t utf8_to_unicode(const char *utf8, wchar_t *unicode, size_t size) {
+
+  auto out = array_back_inserter(unicode, size - 1); // size - 1 to let placeholder for '\0'
+
+  auto next = NextUTF8(utf8);
+  while (next.second && !out.overflowed()) {
+    out = next.first;
+    next = NextUTF8(next.second);
+  }
+  unicode[out.length()] = L'\0';
+
+  return out.length();
+}
+#endif
+
 } // namespace
 
 size_t to_usascii(const char* utf8, char* ascii, size_t size) {
@@ -135,26 +108,26 @@ size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
   return to_usascii<wchar_t>(unicode, ascii, size);
 }
 
-int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
+size_t TCHAR2utf(const TCHAR *string, char *utf8, size_t size) {
 #if defined(_UNICODE)
-    return  unicode2utf(unicode, utf, maxChars);
+  return unicode_to_utf8(string, utf8, size);
 #else
-    size_t len = std::min(_tcslen(unicode), (size_t)maxChars-1);
-    _tcsncpy(utf, unicode, maxChars);
-    utf[maxChars-1] = '\0';
+  assert(ValidateUTF8(string));
+  _tcsncpy(utf8, string, size);
+  utf8[size - 1] = '\0';
 
-    return len;
+  return strlen(utf8);
 #endif
 }
 
-int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
-    assert(ValidateUTF8(utf));
+size_t utf2TCHAR(const char *utf8, TCHAR *string, size_t size) {
+  assert(ValidateUTF8(utf8));
+
 #if defined(_UNICODE)
-    return  utf2unicode(utf, unicode, maxChars);
+  return utf8_to_unicode(utf8, string, size);
 #else
-    size_t len = std::min(_tcslen(utf), (size_t)maxChars);
-    _tcsncpy(unicode, utf, maxChars);
-    unicode[maxChars-1] = '\0';
-    return len;
+  _tcsncpy(string, utf8, size);
+  string[size - 1] = '\0';
+  return size;
 #endif
 }
