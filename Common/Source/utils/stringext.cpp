@@ -187,18 +187,6 @@ size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
   return to_usascii<wchar_t>(unicode, ascii, size);
 }
 
-
-int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars) {
-#if defined(_UNICODE)
-    return  ascii2unicode(ascii, unicode, maxChars);
-#else
-    size_t len = std::min(_tcslen(ascii), (size_t)maxChars);
-    _tcsncpy(unicode, ascii, maxChars);
-    unicode[maxChars-1] = '\0';
-    return len;
-#endif
-}
-
 int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars) {
 #if defined(_UNICODE)
     return  unicode2ascii(unicode, ascii, maxChars);

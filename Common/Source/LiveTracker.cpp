@@ -1252,7 +1252,7 @@ static bool LiveTrack24_Radar() {
 						_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, cname);
 					} else {
 						// else probably it is the Name again, and we create a fake Cn
-						ascii2TCHAR(username.c_str(), u, 100);
+						utf2TCHAR(username.c_str(), u, 100);
 						LK_tcsncpy(cn, u, MAXFLARMCN);
 					}
 				} else {
@@ -1261,9 +1261,9 @@ static bool LiveTrack24_Radar() {
 
 			} else {
 				// Else we NEED to set a name, otherwise it will constantly search for it over and over..
-				ascii2TCHAR(username.c_str(), u, 100);
+				utf2TCHAR(username.c_str(), u, 100);
 				LK_tcsncpy(name, u, MAXFLARMNAME);
-				ascii2TCHAR(username.c_str(), u, 100);
+				utf2TCHAR(username.c_str(), u, 100);
 				LK_tcsncpy(cn, u, MAXFLARMCN);
 			}
 

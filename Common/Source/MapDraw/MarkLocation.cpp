@@ -77,9 +77,9 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
 	WayPointList[j].Visible=TRUE;
 	WayPointList[j].FarVisible=TRUE;
 
-    ascii2TCHAR(marktime, tstring,50);
+    utf2TCHAR(marktime, tstring,50);
 	_stprintf(WayPointList[j].Name,_T("MK%s%02d"),tstring,GPS_INFO.Second);
-	ascii2TCHAR(snear, tstring, 50);
+	utf2TCHAR(snear, tstring, 50);
 	TCHAR comment[60];
 	_stprintf(comment, _T("Near: %s"), tstring);
 	SetWaypointComment(WayPointList[j], comment);

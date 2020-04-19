@@ -732,7 +732,7 @@ int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
   if (pSrc && pDest)
   {
     to_usascii(pSrc , szTmp, size);
-    ascii2TCHAR(szTmp, pDest,   size) ;
+    utf2TCHAR(szTmp, pDest, size);
     return _tcslen(pDest);
   }
   return 0;
