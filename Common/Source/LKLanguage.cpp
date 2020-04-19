@@ -84,8 +84,8 @@ namespace {
         if(lang_json.is<json::object>()) {
           for (const auto &obj : lang_json.get<json::object>()) {
             if(obj.second.is<std::string>()) {
-              const tstring code = utf8_to_tstring(obj.first.c_str());
-              const tstring name = utf8_to_tstring(obj.second.get<std::string>().c_str());
+              const tstring code = utf8_to_tstring(obj.first);
+              const tstring name = utf8_to_tstring(obj.second.get<std::string>());
 
               /*
                * would be better to use std::map::emplace() instead of insert() to
@@ -158,7 +158,7 @@ tstring LKgethelptext(const TCHAR *TextIn) {
     string = lang_json.get(sToken);
   }
   if (string.is<std::string>()) {
-    sHelpString = utf8_to_tstring(string.get<std::string>().c_str());
+    sHelpString = utf8_to_tstring(string.get<std::string>());
   } else {
     StartupStore(_T(".... Unknown Text token <%s>"), TextIn);
     sHelpString = TextIn;

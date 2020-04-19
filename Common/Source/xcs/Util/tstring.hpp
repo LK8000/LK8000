@@ -21,6 +21,11 @@ tstring to_tstring(const std::string& str) {
 
 tstring utf8_to_tstring(const char* sz);
 
+inline
+tstring utf8_to_tstring(const std::string& sz) {
+  return utf8_to_tstring(sz.c_str());
+}
+
 std::string to_utf8(const wchar_t* sz);
 
 #else
@@ -40,6 +45,11 @@ const std::string& to_tstring(const std::string& str) {
 
 inline
 tstring utf8_to_tstring(const char* sz) {
+  return sz;
+}
+
+inline
+tstring utf8_to_tstring(std::string sz) {
   return sz;
 }
 
