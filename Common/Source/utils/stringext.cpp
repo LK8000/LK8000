@@ -20,18 +20,6 @@
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts ASCII string encoded in system code page into Unicode string.
-/// \return Unicode string length, -1 on conversion error
-int ascii2unicode(const char* ascii, wchar_t* unicode, int maxChars) {
-    // The conversion from ASCII to Unicode and vice versa are quite trivial. By design, the first 128 Unicode
-    // values are the same as ASCII (in fact, the first 256 are equal to ISO-8859-1).
-
-    wchar_t* end = std::copy_n(ascii, std::max(maxChars-1, (int)strlen(ascii)), unicode);
-    *end = L'\0';
-    return std::distance(unicode, end);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into ASCII encoded in system code page.
 /// \return ASCII string length, -1 on conversion error (insufficient buffer e.g.)
 int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars) {
