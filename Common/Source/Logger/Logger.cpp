@@ -570,11 +570,10 @@ void LoggerHeader(void)
   // PNAs are also PPC2003, so careful
   #ifdef PNA
     char pnamodel[MAX_PATH+1];
-    TCHAR2ascii(GlobalModelName, pnamodel, sizeof(pnamodel));
-    pnamodel[_tcslen(GlobalModelName)]='\0';
-    #ifndef LKCOMPETITION
+    TCHAR2utf(GlobalModelName, pnamodel);
+  #ifndef LKCOMPETITION
     sprintf(temp,"HFFTYFRTYPE:%s PNA %s\r\n", LKFORK,pnamodel);
-	#else
+  #else
     sprintf(temp,"HFFTYFRTYPE:%sC PNA %s\r\n", LKFORK,pnamodel);
 	#endif
   #else

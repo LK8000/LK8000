@@ -21,7 +21,6 @@ extern "C" {
 
 /*____________________________________________________________________________*/
 
-int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars);
 int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars);
 int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars);
 

@@ -248,17 +248,10 @@ void LiveTrackerInit() {
 	if (!_ws_inited && ISPARAGLIDER && LiveTrackerRadar_config)
 		LKTime_Real = 60, LKTime_Ghost = 120, LKTime_Zombie = 360;
 
-	TCHAR2ascii(LiveTrackerusr_Config, _username, 100);
-	_username[99] = 0;
-
-	TCHAR2ascii(PilotName_Config, _pilotname, 100);
-	_pilotname[99] = 0;
-
-	TCHAR2ascii(LiveTrackerpwd_Config, _password, 100);
-	_password[99] = 0;
-
-	TCHAR2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
-	_server_name[SERVERNAME_MAX - 1] = 0;
+	TCHAR2utf(LiveTrackerusr_Config, _username, 100);
+	TCHAR2utf(PilotName_Config, _pilotname, 100);
+	TCHAR2utf(LiveTrackerpwd_Config, _password, 100);
+	TCHAR2utf(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
 
 	_server_port = LiveTrackerport_Config;
 
@@ -636,9 +629,9 @@ static int GetUserIDFromServer() {
 	char password[128];
 	char rxcontent[32];
 
-	TCHAR2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
+	TCHAR2utf(LiveTrackerusr_Config, txbuf, sizeof(username));
 	UrlEncode(txbuf, username, sizeof(username));
-	TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+	TCHAR2utf(LiveTrackerpwd_Config, txbuf, sizeof(password));
 	UrlEncode(txbuf, password, sizeof(username));
 	sprintf(txbuf, "/client.php?op=login&user=%s&pass=%s", username, password);
 
@@ -688,19 +681,19 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	// 64=>"Powered flight"
 	// 17100=>"Car"
 	if (_tcslen(LiveTrackerusr_Config) > 0) {
-		TCHAR2ascii(LiveTrackerusr_Config, txbuf, std::size(txbuf));
+		TCHAR2utf(LiveTrackerusr_Config, txbuf, std::size(txbuf));
 	} else {
 		strncpy(txbuf, "guest", std::size(txbuf));
 	}
 	UrlEncode(txbuf, username, std::size(username));
 	if (_tcslen(LiveTrackerpwd_Config) > 0) {
-		TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
+		TCHAR2utf(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
 	} else {
 		strncpy(txbuf, "guest", std::size(txbuf));
 	}
 	UrlEncode(txbuf, password, std::size(password));
 #ifdef PNA
-	TCHAR2ascii(GlobalModelName, txbuf, std::size(txbuf));
+	TCHAR2utf(GlobalModelName, txbuf, std::size(txbuf));
 	UrlEncode(txbuf, phone, std::size(phone));
 #else
 #if (WINDOWSPC>0)
@@ -717,12 +710,12 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	 What is this for?
 	 else {
 	 GetBaroDeviceName(_t_barodevice, wgps);
-	 TCHAR2ascii(wgps, txbuf, sizeof(txbuf));
+	 TCHAR2utf(wgps, txbuf, sizeof(txbuf));
 	 UrlEncode(txbuf, gps, sizeof(gps));
 	 }
 	 */
 
-	TCHAR2ascii(AircraftType_Config, txbuf, std::size(txbuf));
+	TCHAR2utf(AircraftType_Config, txbuf, std::size(txbuf));
 	UrlEncode(txbuf, vehicle_name, std::size(vehicle_name));
 	vehicle_type = 8;
 	if (AircraftCategory == umParaglider)

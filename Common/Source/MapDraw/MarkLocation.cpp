@@ -43,18 +43,17 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
 
 	char marktime[10], slat[20], slon[20], snear[50];
 	Units::TimeToTextSimple(tstring,LocalTime());
-	TCHAR2ascii(tstring,marktime,10);
+	TCHAR2utf(tstring,marktime,10);
 
 	LatitudeToCUPString(lat,tstring);
-	TCHAR2ascii(tstring,slat,20);
+	TCHAR2utf(tstring,slat,20);
 	LongitudeToCUPString(lon,tstring);
-	TCHAR2ascii(tstring,slon,20);
+	TCHAR2utf(tstring,slon,20);
 
 	int j=FindNearestFarVisibleWayPoint(lon,lat,15000,WPT_UNKNOWN);
 	if (j>0) {
-        _tcscpy(tstring,WayPointList[j].Name); // Name is sized NAME_SIZE, 30, so ok with tstring[50]
-        tstring[19]='\0'; // sized 20 chars
-		TCHAR2ascii(tstring,snear,50);
+		// Name is sized NAME_SIZE, 30, so ok with tstring[50]
+		TCHAR2utf(WayPointList[j].Name,snear,50);
 	} else {
 		strcpy(snear,"unknown");
 	}

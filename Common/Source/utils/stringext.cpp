@@ -21,19 +21,6 @@
 #ifdef _UNICODE
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts Unicode string into ASCII encoded in system code page.
-/// \return ASCII string length, -1 on conversion error (insufficient buffer e.g.)
-static
-int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars) {
-    // The conversion from ASCII to Unicode and vice versa are quite trivial. By design, the first 128 Unicode
-    // values are the same as ASCII (in fact, the first 256 are equal to ISO-8859-1).
-
-    char* end = std::copy_n(unicode, std::max(maxChars-1, (int)wcslen(unicode)), ascii);
-    *end = '\0';
-    return std::distance(ascii, end);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into UTF-8 encoded string.
 /// \return UTF8 string size [octets], -1 on conversion error (insufficient buffer e.g.)
 static
@@ -178,18 +165,6 @@ size_t to_usascii(const char* utf8, char* ascii, size_t size) {
 
 size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
   return to_usascii<wchar_t>(unicode, ascii, size);
-}
-
-int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars) {
-#if defined(_UNICODE)
-    return  unicode2ascii(unicode, ascii, maxChars);
-#else
-    size_t len = std::min(_tcslen(unicode), (size_t)maxChars);
-    _tcsncpy(ascii, unicode, maxChars);
-    ascii[maxChars-1] = '\0';
-
-    return len;
-#endif
 }
 
 int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars) {
