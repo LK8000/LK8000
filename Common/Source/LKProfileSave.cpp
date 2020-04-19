@@ -37,7 +37,7 @@ void LKWriteToProfile(const char *varname, double varvalue) {
 void LKWriteToProfile(const char *varname, TCHAR *varvalue) {
 #ifdef UNICODE
   char stmp[MAX_PATH];
-  unicode2utf(varvalue, stmp, sizeof(stmp));
+  TCHAR2utf(varvalue, stmp, sizeof(stmp));
   fprintf(pfp,"%s=\"%s\"%s", varname, stmp ,PNEWLINE);
 #else
   fprintf(pfp,"%s=\"%s\"%s", varname, varvalue ,PNEWLINE);

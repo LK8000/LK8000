@@ -717,7 +717,7 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	 What is this for?
 	 else {
 	 GetBaroDeviceName(_t_barodevice, wgps);
-	 unicode2ascii(wgps, txbuf, sizeof(txbuf));
+	 TCHAR2ascii(wgps, txbuf, sizeof(txbuf));
 	 UrlEncode(txbuf, gps, sizeof(gps));
 	 }
 	 */

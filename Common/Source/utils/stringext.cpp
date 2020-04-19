@@ -43,9 +43,11 @@ int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars) {
     return std::distance(ascii, end);
 }
 
+#ifdef _UNICODE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into UTF-8 encoded string.
 /// \return UTF8 string size [octets], -1 on conversion error (insufficient buffer e.g.)
+static
 int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
 {
   #ifndef SYS_UTF8_CONV
@@ -83,7 +85,6 @@ int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
   #endif
 }
 
-#ifdef _UNICODE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts UTF-8 encoded string into Unicode encoded string.
 /// \return Unicode string size [TCHARs], -1 on conversion error (insufficient buffer e.g.)
