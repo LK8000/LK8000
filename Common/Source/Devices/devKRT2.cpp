@@ -6,7 +6,7 @@
    $Id$
 */
 
-
+#include "Util/UTF8.hpp"
 #include "externs.h"
 #include "Globals.h"
 #include "devKRT2.h"
@@ -61,77 +61,105 @@ BOOL KRT2Register(void){
 }
 
 
+size_t IsEqualTCHAR(TCHAR* pPtr,  TCHAR* pRef)
+{
+	size_t len = _tcslen(pRef);
+	StartupStore(_T("-->%u %s"),(uint)len,pRef );
+	if (_tcsncmp( pPtr, pRef, len) == 0 )
+	{
+		StartupStore(_T("%u %s==%s"),(uint)len, pPtr, pRef);
+		return	len;
+	}
+	else
+		return 0;
 
+}
+
+bool CheckLanguage(const TCHAR * lang)
+{
+	if (_tcscmp(szLanguageCode, lang) == 0)
+		return true;
+	else
+		return false;
+}
 
 int TCHAR2_7BitASCII(char pDest[], size_t MaxLen, TCHAR *Src)
 {
-size_t length =0;
-char Tmp[4];
-size_t l=0;
+size_t length =0, l=0, len=0;
+char Tmp[10];
+pDest[0] =0;
+TCHAR*  pPtr =Src;
 
-	while ( l < _tcslen(Src))
+	while ((  _tcslen(pPtr)>0) && (length < MaxLen))
 	{
-		TCHAR	unicode	= (Src[l++]);
-		if(unicode  > 127)  // KRT2 display 7bit char only
+		if(SequenceLengthUTF8(*pPtr) > 1)  // KRT2 display 7bit char only
 		{
-			switch((unsigned long)unicode)
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ö"))>0)) { strcpy(Tmp,"oe"); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ü"))>0)) { strcpy(Tmp,"ue"); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ä"))>0)) { strcpy(Tmp,"ae"); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ö"))>0)) { strcpy(Tmp,"Oe"); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ü"))>0)) { strcpy(Tmp,"Ue"); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ä"))>0)) { strcpy(Tmp,"Ae"); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ß"))>0)) { strcpy(Tmp,"ss"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ã")))>0)		{ strcpy(Tmp,"A"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ä")))>0)		{ strcpy(Tmp,"A"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Á")))>0)		{ strcpy(Tmp,"A"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Å")))>0)		{ strcpy(Tmp,"A"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ä")))>0)		{ strcpy(Tmp,"a"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("á")))>0)		{ strcpy(Tmp,"a"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("å")))>0)		{ strcpy(Tmp,"a"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ă")))>0)		{ strcpy(Tmp,"a"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ö")))>0)		{ strcpy(Tmp,"O"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ø")))>0)		{ strcpy(Tmp,"O"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ö")))>0) 	{ strcpy(Tmp,"o"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ó")))>0) 	{ strcpy(Tmp,"o"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ø")))>0) 	{ strcpy(Tmp,"o"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ñ")))>0) 	{ strcpy(Tmp,"N"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ñ")))>0) 	{ strcpy(Tmp,"n"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("é")))>0) 	{ strcpy(Tmp,"e"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("č")))>0) 	{ strcpy(Tmp,"c"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Č")))>0) 	{ strcpy(Tmp,"C"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ç")))>0) 	{ strcpy(Tmp,"C"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ş")))>0) 	{ strcpy(Tmp,"s"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ß")))>0) 	{ strcpy(Tmp,"B"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ţ")))>0) 	{ strcpy(Tmp,"t"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("Ü")))>0) 	{ strcpy(Tmp,"U"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ü")))>0) 	{ strcpy(Tmp,"u"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("µ")))>0) 	{ strcpy(Tmp,"u"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ų")))>0) 	{ strcpy(Tmp,"u"); } else
+			if ((len = IsEqualTCHAR( pPtr,(TCHAR*) _T("ū")))>0) 	{ strcpy(Tmp,"u"); } else
 			{
-				case _T('Ã'): strcpy(Tmp,"A"); break;
-	  		case _T('Ä'): strcpy(Tmp,"A"); break;
-				case _T('Á'): strcpy(Tmp,"A"); break;
-				case _T('Å'): strcpy(Tmp,"A"); break;
-
-				case _T('ä'): strcpy(Tmp,"a"); break;
-				case _T('á'): strcpy(Tmp,"a"); break;
-				case _T('å'): strcpy(Tmp,"a"); break;
-				case _T('ă'): strcpy(Tmp,"a"); break;
-
-				case _T('Ö'): strcpy(Tmp,"O"); break;
-				case _T('Ø'): strcpy(Tmp,"O"); break;
-
-				case _T('ö'): strcpy(Tmp,"o"); break;
-				case _T('ó'): strcpy(Tmp,"o"); break;
-				case _T('ø'): strcpy(Tmp,"o"); break;
-
-				case _T('Ñ'): strcpy(Tmp,"N"); break;
-				case _T('ñ'): strcpy(Tmp,"n"); break;
-
-				case _T('é'): strcpy(Tmp,"e"); break;
-
-				case _T('č'): strcpy(Tmp,"c"); break;
-				case _T('Č'): strcpy(Tmp,"C"); break;
-				case _T('Ç'): strcpy(Tmp,"C"); break;
-
-				case _T('ş'): strcpy(Tmp,"s"); break;
-				case _T('ß'): strcpy(Tmp,"ss"); break;
-
-				case _T('ţ'): strcpy(Tmp,"t"); break;
-
-				case _T('Ü'): strcpy(Tmp,"U"); break;
-
-				case _T('ü'): strcpy(Tmp,"u"); break;
-				case _T('µ'): strcpy(Tmp,"u"); break;
-				case _T('ų'): strcpy(Tmp,"u"); break;
-				case _T('ū'): strcpy(Tmp,"u"); break;
-
-				default:      strcpy(Tmp,"_"); break; // if we don't find a better alternative char leave it blank
+				strcpy(Tmp,"_"); // if we don't find a better alternative char set it to underscore blank
+				len = 1;
 			}
 
-			for (size_t i =0; i< strlen(Tmp); i++)
-			{
-				if(length < MaxLen)
-				{
-					pDest[length++] = Tmp[i];
-				}
-			}
 		}
 		else
 		{
+/*			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("stadt"))>0)) { strcpy(Tmp,"sdt "); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("dorf"))>0))  { strcpy(Tmp,"df "); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("hausen"))>0)){ strcpy(Tmp,"hsn "); } else
+			if (CheckLanguage(_T("de")) && (len = IsEqualTCHAR( pPtr,(TCHAR*) _T("heim"))>0))  { strcpy(Tmp,"hm "); } else*/
 			if(length < MaxLen)
-				pDest[length++] = (char) unicode;
+			{
+				Tmp[0] = (char) pPtr[0];
+				len = 1;
+			}
 		}
-	  pDest[length] = '\0';
+
+		for (size_t i =0; i< strlen(Tmp); i++)
+		{
+			if(length < MaxLen)
+			{
+				pDest[length++] = Tmp[i];
+			}
+		}
+		l= l + len;
+		pPtr = (TCHAR*)&Src[l];
+	  pDest[length] = 0;
 	}
+
+  StartupStore(_T("%s %s %u %u"),szLanguageCode, pDest, (uint) length,(uint) strlen(pDest) );
 	return length;
 
 }
