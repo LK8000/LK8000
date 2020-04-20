@@ -850,9 +850,9 @@ void XShapeLabel::setlabel(const char* src, bool bUTF8) {
 
     if ( bUTF8 ) {
       // from utf-8 to UNICODE
-      size_t size = strlen(src);
+      size_t size = strlen(src) + 1;
       if(size) {
-        label = (TCHAR*) malloc(size * sizeof (TCHAR) + 1);
+        label = (TCHAR*) malloc(size * sizeof (TCHAR));
         utf2TCHAR(src, label, size);
       }
     }
