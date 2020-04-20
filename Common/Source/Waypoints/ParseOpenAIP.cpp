@@ -65,7 +65,7 @@ bool ParseOpenAIP(zzip_file_ptr& file)
         free(buff);
         return false;
     }
-    utf2TCHAR(buff, szXML, size + 1);
+    from_utf8(buff, szXML, size + 1);
     free(buff);
 
     // Get 'root' node OPENAIP

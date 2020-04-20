@@ -2170,7 +2170,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
         free(buff);
         return false;
     }
-    utf2TCHAR(buff, szXML, size + 1);
+    from_utf8(buff, szXML, size + 1);
     free(buff);
 
     // Get 'root' node OPENAIP
@@ -3515,7 +3515,7 @@ void CAirspaceManager::SaveSettings() const {
 
             //Comment
             _stprintf(ubuf, TEXT(" #%s"), (*it)->Name());
-            TCHAR2utf(ubuf, buf, sizeof (buf));
+            to_utf8(ubuf, buf);
             fprintf(f, "%s", buf);
             //Newline
             fprintf(f, "\n");

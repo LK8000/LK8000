@@ -34,7 +34,7 @@ bool LoadGpxTask(LPCTSTR szFileName) {
             return false;
         }
         TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
-        utf2TCHAR(buff, szXML, size + 1);
+        from_utf8(buff, szXML, size + 1);
         free(buff);
         XMLNode rootNode = XMLNode::parseString(szXML, _T("gpx"));
         free(szXML);

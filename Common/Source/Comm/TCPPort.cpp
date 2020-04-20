@@ -94,7 +94,7 @@ bool TCPClientPort::Connect() {
 
 #ifdef UNICODE
     char szaddr[MAX_URL_LEN];
-    TCHAR2utf(GetAddress(GetPortIndex()), szaddr, MAX_URL_LEN);
+    to_utf8(GetAddress(GetPortIndex()), szaddr);
 #else
     const char* szaddr = GetAddress(GetPortIndex());
 #endif

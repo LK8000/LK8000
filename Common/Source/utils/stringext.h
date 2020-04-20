@@ -21,10 +21,20 @@ extern "C" {
 
 /*____________________________________________________________________________*/
 
-size_t TCHAR2utf(const TCHAR* string, char* utf, size_t size);
-size_t utf2TCHAR(const char* utf, TCHAR* string, size_t size);
+size_t to_utf8(const TCHAR* string, char* utf, size_t size);
+size_t from_utf8(const char* utf, TCHAR* string, size_t size);
 
 #ifdef __cplusplus
+}
+
+template<size_t size>
+size_t to_utf8(const TCHAR* string, char (&utf8)[size]) {
+   return to_utf8(string, utf8, size);
+}
+
+template<size_t size>
+size_t from_utf8(const char* utf8, TCHAR (&string)[size]) {
+   return from_utf8(utf8, string, size);
 }
 
 size_t to_usascii(const char* utf8, char* ascii, size_t size);

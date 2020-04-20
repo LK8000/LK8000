@@ -108,7 +108,7 @@ size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
   return to_usascii<wchar_t>(unicode, ascii, size);
 }
 
-size_t TCHAR2utf(const TCHAR *string, char *utf8, size_t size) {
+size_t to_utf8(const TCHAR *string, char *utf8, size_t size) {
 #if defined(_UNICODE)
   return unicode_to_utf8(string, utf8, size);
 #else
@@ -120,7 +120,7 @@ size_t TCHAR2utf(const TCHAR *string, char *utf8, size_t size) {
 #endif
 }
 
-size_t utf2TCHAR(const char *utf8, TCHAR *string, size_t size) {
+size_t from_utf8(const char *utf8, TCHAR *string, size_t size) {
   assert(ValidateUTF8(utf8));
 
 #if defined(_UNICODE)

@@ -557,7 +557,7 @@ zzip_fopen(const TCHAR* filename, zzip_char_t* mode)
 {
 #ifdef UNICODE
     char utfname[MAX_PATH*2];
-    TCHAR2utf(filename, utfname, countof(utfname));
+    to_utf8(filename, utfname, countof(utfname));
 
     return zzip_freopen (utfname, mode, 0);
 #else

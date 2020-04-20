@@ -728,11 +728,11 @@ BOOL DevLX_EOS_ERA::CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR er
 
 int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
 {
-  char szTmp[size+10];
   if (pSrc && pDest)
   {
+    char szTmp[size+10];
     to_usascii(pSrc , szTmp, size);
-    utf2TCHAR(szTmp, pDest, size);
+    from_utf8(szTmp, pDest, size);
     return _tcslen(pDest);
   }
   return 0;
