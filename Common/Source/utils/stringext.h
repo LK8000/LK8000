@@ -32,11 +32,6 @@ int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars);
 int unicode2utf(const wchar_t* unicode, char* utf, int maxChars);
 int utf2unicode(const char* utf, wchar_t* unicode, int maxChars);
 
-#ifdef _UNICODE
-int unicode2usascii(const wchar_t* unicode, char* ascii, int outSize);
-#endif
-
-
 #ifdef __cplusplus
 }
 #endif

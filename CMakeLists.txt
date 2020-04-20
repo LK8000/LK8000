@@ -86,6 +86,9 @@ add_subdirectory( Common/Source/Library/poco lib_poco )
 add_subdirectory( Common/Source/Library/glutess lib_glutess )
 
 add_library( LK8000 SHARED
+
+    Common/Source/utils/unicode/unicode_to_ascii.cpp # put it first to speedup parallel build 
+
     Common/Source/xcs/Android/Assert.cpp
     Common/Source/xcs/Android/Bitmap.cpp
     Common/Source/xcs/Android/Context.cpp

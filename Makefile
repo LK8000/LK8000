@@ -1141,6 +1141,7 @@ UTILS	:=\
 	$(SRC)/utils/zzip_stream.cpp \
 	$(SRC)/utils/TextWrapArray.cpp \
 	$(SRC)/utils/hmac_sha2.cpp \
+	$(SRC)/utils/unicode/unicode_to_ascii.cpp \
 
 
 COMMS	:=\
