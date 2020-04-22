@@ -11,6 +11,8 @@
 #include "Globals.h"
 #include "devKRT2.h"
 #include "device.h"
+#include "utils/stringext.h"
+
 
 #ifdef RADIO_ACTIVE
 
@@ -83,7 +85,6 @@ BOOL KRT2IsRadio(PDeviceDescriptor_t d){
 static int  SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, const TCHAR* Station)
 {
 unsigned int len = 8;
-unsigned int i;
 unsigned char MHz= (unsigned char) fFrequency;
 unsigned int kHz= (unsigned int) (fFrequency *1000.0 - MHz *1000  + 0.5);
 unsigned char Chan = (unsigned char)(kHz/5);
@@ -93,15 +94,7 @@ char Airfield[10]={"         "};
 LKASSERT(Command !=NULL)
 if(Command == NULL )
     return false;
-  if(Station != NULL)
-  {
-    if( len > _tcslen(Station)) {
-      len =_tcslen(Station);
-    }
-    for (i= 0; i < len ; i++) {
-      Airfield[i] = Station[i];
-    }
-   }
+
   len =0;
   Command[len++] = STX;
   switch (Active_Passive)
@@ -114,6 +107,8 @@ if(Command == NULL )
       Command[len++] = 'R';
     break;
   }
+  if((Station != NULL) && (Airfield != NULL))
+    TCHAR2usascii(Station, Airfield , 9);
 
   Command[len++] = MHz;
   Command[len++] = Chan;
