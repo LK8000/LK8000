@@ -18,7 +18,6 @@
 #include "resource.h"
 #include "LKStyle.h"
 
-static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]
 
 
@@ -177,7 +176,7 @@ short dlgWayQuickShowModal(void){
 
   TCHAR sTmp[128];
 
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P);
+  std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P));
 
   if (!wf) return 0;
   TCHAR buffer2[80];
@@ -347,10 +346,6 @@ short dlgWayQuickShowModal(void){
     if(pWnd) {    pWnd->SetVisible(false);}
   }
   wf->ShowModal();
-
-  delete wf;
-
-  wf = NULL;
 
   return retStatus;
 
