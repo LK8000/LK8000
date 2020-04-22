@@ -110,6 +110,11 @@ if(Command == NULL )
   if((Station != NULL) && (Airfield != NULL))
     TCHAR2usascii(Station, Airfield , 9);
 
+  for (int i = 0 ; i < 10; i++)
+  {
+    if((Airfield[i] < 32) || (Airfield[i] > 126))
+   	  Airfield[i] = ' ';
+  }
   Command[len++] = MHz;
   Command[len++] = Chan;
   Command[len++] = Airfield[0];
@@ -306,10 +311,11 @@ static char Command[REC_BUFSIZE];
 
 while (cnt < len)
 {
-
+ if(CommandLength == REC_BUFSIZE)
+ {
   if(String[cnt] ==STX)
     Recbuflen =0;
-
+ }
   if(Recbuflen >= REC_BUFSIZE)
     Recbuflen =0;
   LKASSERT(Recbuflen < REC_BUFSIZE);
