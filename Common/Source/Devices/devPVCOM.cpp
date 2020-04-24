@@ -223,12 +223,14 @@ BOOL PVCOMRequestAllData(PDeviceDescriptor_t d) {
   TCHAR  szTmp[255];
   _stprintf(szTmp, TEXT("$PVCOM,R,ALL"));
   PVCOMNMEAddCheckSumStrg(szTmp);
-  LockComm();
+
+  ScopeLock Lock(CritSec_Comm);
+
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
         d->Com->WriteString(szTmp);
-  UnlockComm();
+
   return(TRUE);
 }
 

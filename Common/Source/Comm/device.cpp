@@ -77,15 +77,6 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 
 int DeviceRegisterCount = 0;
 
-void LockComm() {
-  CritSec_Comm.Lock();
-}
-
-void UnlockComm() {
-  CritSec_Comm.Unlock();
-}
-
-
 /**
  * Call DeviceDescriptor_t::*func on all connected device without Argument.
  * @return FALSE if error on one device.
@@ -586,7 +577,7 @@ static bool IsIdenticalPort(int i, int j) {
 }
 
 BOOL devInit() {
-    LockComm();
+    ScopeLock Lock(CritSec_Comm);
 
     TCHAR DeviceName[DEVNAMESIZE + 1];
 
@@ -757,8 +748,6 @@ BOOL devInit() {
        }
 #endif
     }
-
-    UnlockComm();
     return (TRUE);
 }
 
@@ -952,7 +941,9 @@ BOOL devHeartBeat(PDeviceDescriptor_t d)
 
   if (SIMMODE)
     return TRUE;
-  LockComm();
+
+  ScopeLock Lock(CritSec_Comm);
+
   if (d == NULL){
     for (int i=0; i<NUMDEV; i++){
       d = &DeviceList[i];
@@ -964,8 +955,6 @@ BOOL devHeartBeat(PDeviceDescriptor_t d)
     if (d->HeartBeat != NULL)
       result = d->HeartBeat(d);
   }
-  UnlockComm();
-
   return result;
 }
 
@@ -975,7 +964,9 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
 
   if (SIMMODE)
     return TRUE;
-  LockComm();
+
+  ScopeLock Lock(CritSec_Comm);
+
   if (d == NULL){
     for (int i=0; i<NUMDEV; i++){
       d = &DeviceList[i];
@@ -987,8 +978,6 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
     if (d->LinkTimeout != NULL)
       result = d->LinkTimeout(d);
   }
-  UnlockComm();
-
   return result;
 }
 
@@ -1012,7 +1001,8 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(571));
   CreateProgressDialog(buffer);
 
-  LockComm();
+  ScopeLock Lock(CritSec_Comm);
+
   /***********************************************************/
   devDirectLink(d,true);
   /***********************************************************/
@@ -1026,8 +1016,7 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   /***********************************************************/
   devDirectLink(d,false);
   /***********************************************************/
-  UnlockComm();
-  
+ 
   CloseProgressDialog();
   
   return result;
@@ -1037,7 +1026,7 @@ BOOL devIsLogger(PDeviceDescriptor_t d)
 {
   bool result = false;
 
-  LockComm();
+  ScopeLock Lock(CritSec_Comm);
   if ((d != NULL) && (d->IsLogger != NULL)) {
     if (d->IsLogger(d)) {
       result = true;
@@ -1046,8 +1035,6 @@ BOOL devIsLogger(PDeviceDescriptor_t d)
   if ((d != NULL) && !result) {
     result |= d->nmeaParser.isFlarm;
   }
-  UnlockComm();
-
   return result;
 }
 
@@ -1089,7 +1076,7 @@ BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH)
 {
   BOOL result = FALSE;
 
-  LockComm();
+  ScopeLock Lock(CritSec_Comm);
   if (d == NULL){
     for (int i=0; i<NUMDEV; i++){
       d = &DeviceList[i];
@@ -1101,8 +1088,6 @@ BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH)
     if (d->PutQNH != NULL)
       result = d->PutQNH(d, NewQNH);
   }
-  UnlockComm();
-
   return result;
 }
 
@@ -1110,7 +1095,7 @@ BOOL devOnSysTicker(DeviceDescriptor_t *d)
 {
   BOOL result = FALSE;
 
-  LockComm();
+  ScopeLock Lock(CritSec_Comm);
   if (d == NULL){
     for (int i=0; i<NUMDEV; i++){
       d = &DeviceList[i];
@@ -1123,9 +1108,6 @@ BOOL devOnSysTicker(DeviceDescriptor_t *d)
       result = d->OnSysTicker(d);
 
   }
-
-  UnlockComm();
-
   return result;
 }
 
@@ -1149,6 +1131,7 @@ static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
 // creating a possible deadlock situation.
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 {
+  ScopeLock Lock(CritSec_Comm);
   if(d != NULL)
   {
     if(!d->Disabled)
@@ -1156,13 +1139,11 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 	  TCHAR tmp[512];
       devFormatNMEAString(tmp, 512, text);
 
-      LockComm();      
       devDirectLink(d,true);
       if (d->Com) {
         d->Com->WriteString(tmp);
       }
       devDirectLink(d,false);
-      UnlockComm();
     }
   }
 }

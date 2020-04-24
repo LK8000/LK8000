@@ -203,8 +203,6 @@ PDeviceDescriptor_t devX(unsigned idx) {
 }
 
 extern Mutex CritSec_Comm;
-void LockComm();
-void UnlockComm();
 
 void RefreshComPortList();
 

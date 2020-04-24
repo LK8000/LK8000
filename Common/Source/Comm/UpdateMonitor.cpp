@@ -29,6 +29,7 @@ double trackbearingminspeed=0; // minimal speed to use gps bearing
 static
 bool  UpdateMonitor(void)
 {
+  ScopeLock Lock(CritSec_Comm);
 
   static int lastactive=0;
   static bool  lastvalidBaro=false;
@@ -328,9 +329,7 @@ int ConnectionProcessTimer(int itimeout) {
   }
   devHeartBeat(devAll());  // Send Heartbeats every 5s to driver e.g. KeepAlive functions if needed
 
-  LockComm();
   bool gpsconnect = UpdateMonitor();
-  UnlockComm();
 
 
 //      1) we have valid fix on active device ?
