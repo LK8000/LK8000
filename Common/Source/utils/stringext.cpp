@@ -19,7 +19,6 @@
 
 //______________________________________________________________________________
 
-#ifdef _UNICODE
 /// maximum UTF-16 code convertable through utf16toAscii[] map
 static const unsigned int maxUtf16toAscii = 0x024F;
 
@@ -620,7 +619,6 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
   'Y',  // 024E ? Latin Capital Letter Y with stroke
   'y'   // 024F ? Latin Small Letter Y with stroke
 }; // utf16toAscii[]
-#endif
 
 //______________________________________________________________________________
 
@@ -780,7 +778,17 @@ int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
   #endif
 }
 
+gcc_pure
+static std::pair<unsigned, const TCHAR *>
+NextChar(const TCHAR *p)
+{
 #ifdef _UNICODE
+  return std::make_pair(unsigned(*p), p + 1);
+#else
+  return NextUTF8(p);
+#endif
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into US-ASCII string (writing as much as possible
 /// characters into @p ascii). Output string will always be terminated by '\0'.
@@ -797,31 +805,24 @@ int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
 /// @retval  1  all characters copied
 /// @retval -1  some characters could not be copied due to buffer size
 ///
-int unicode2usascii(const wchar_t* unicode, char* ascii, int outSize)
+int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize)
 {
-  wchar_t uc;
+  array_back_insert_iterator<char> out(ascii, outSize - 1); // size - 1 to let placeholder for '\0'
 
-  if (outSize == 0)
-    return(false);
+  auto next = NextChar(unicode);
+  while (next.second && !out.overflowed()) {
 
-  // decrement indeces to use more efficient pre-increments
-  unicode--;
-  ascii--;
-  while ((uc = *++unicode) != 0 && --outSize > 0)
-  {
-    if (uc <= maxUtf16toAscii)
-      *++ascii = utf16toAscii[uc];
-    else if (uc < 0xDC00 || uc > 0xDFFF)
-      *++ascii = '?';
-    else // skipping surrogate pair low item
-      ++outSize;
+    if (next.first <= maxUtf16toAscii)
+      out = utf16toAscii[next.first];
+    else if (next.first < 0xDC00 || next.first > 0xDFFF)
+      out = '?';
+
+    next = NextChar(next.second);
   }
+  ascii[out.length()] = '\0'; // add leading '\0'
+  return (out.overflowed() ? -1 : 1);
+} // TCHAR2usascii()
 
-  *++ascii = '\0';
-
-  return((uc == 0) ? 1 : -1);
-} // Wide2Ascii()
-#endif
 
 
 int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars) {
@@ -882,27 +883,6 @@ int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars){
     size_t len = std::min(_tcslen(utf), (size_t)maxChars);
     _tcsncpy(unicode, utf, maxChars);
     unicode[maxChars-1] = '\0';
-    return len;
-#endif
-}
-
-int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize) {
-#if defined(_UNICODE)
-    return  unicode2usascii(unicode, ascii, outSize);
-#elif defined(_MBCS)
-    wchar_t temp[outSize];
-    size_t len = mbstowcs(temp, unicode, outSize);
-    if(len!=(size_t)-1) {
-        return unicode2usascii(temp, ascii, outSize);
-    }
-    // if error, return simple copy
-    len = std::min(_tcslen(unicode), (size_t)outSize);
-    _tcsncpy(ascii, unicode, len);
-    return len;
-#else
-    size_t len = std::min(_tcslen(unicode), (size_t)outSize);
-    _tcsncpy(ascii, unicode, outSize);
-    ascii[outSize-1] = '\0';
     return len;
 #endif
 }
