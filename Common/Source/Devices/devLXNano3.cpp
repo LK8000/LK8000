@@ -1263,7 +1263,7 @@ BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
   }
   bool bWasInProgress = bIGC_Download ;
   bIGC_Download = false;
-  wf->SetTimerNotify(0, NULL);
+  if(wf)  wf->SetTimerNotify(0, NULL);
 #ifdef  NANO_PROGRESS_DLG
   CloseIGCProgressDialog();
 #endif
@@ -1281,7 +1281,7 @@ BOOL DevLXNanoIII::Close (PDeviceDescriptor_t d) {
 
 BOOL DevLXNanoIII::PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
-  wf->SetTimerNotify(0, NULL);
+ if(wf) wf->SetTimerNotify(0, NULL);
 bool bCRCok = NMEAParser::NMEAChecksum(sentence);
 if (!bCRCok){
     StartupStore(_T("NANO3: Checksum Error %s %s") ,sentence, NEWLINE);
@@ -1353,7 +1353,7 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
 	     bIGC_Download = true;
 	     _sntprintf(Par[6], MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
 	     SendNmea(m_pDevice, Par[6]);
-	     wf->SetTimerNotify(1000, DevLXNanoIII::OnIGCTimeout);
+	     if(wf)wf->SetTimerNotify(1000, DevLXNanoIII::OnIGCTimeout);
 	   }
          }
      }
