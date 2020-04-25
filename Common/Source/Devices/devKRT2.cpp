@@ -107,8 +107,9 @@ if(Command == NULL )
       Command[len++] = 'R';
     break;
   }
-  if((Station != NULL) && (Airfield != NULL))
-    TCHAR2usascii(Station, Airfield , 9);
+  if(Station != NULL) {
+    TCHAR2usascii(Station, Airfield, 9);
+  }
 
   for (int i = 0 ; i < 10; i++)
   {
