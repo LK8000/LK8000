@@ -25,8 +25,8 @@ set(GLM_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/glm)
 
 ExternalProject_Add (
     glm
-    URL https://github.com/g-truc/glm/releases/download/0.9.9.8/glm-0.9.9.8.zip
-    URL_HASH MD5=69895110052f0d711c9c54fbf385f6f5
+    URL https://github.com/g-truc/glm/releases/download/0.9.9.6/glm-0.9.9.6.zip
+    URL_HASH MD5=26aaac404364c494cf82d2ef12faae41
     PREFIX ${GLM_PREFIX}
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
@@ -60,6 +60,12 @@ add_definitions(
     -DGLM_FORCE_SIZE_T_LENGTH
 )
 
+if("${ANDROID_ABI}" MATCHES "arm")
+    add_definitions(
+        -DGLM_FORCE_NEON
+        -DGLM_FORCE_SILENT_WARNINGS
+    )
+endif()
 
 list(APPEND	BUILD_FLAGS
     -Werror
