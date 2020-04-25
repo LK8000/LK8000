@@ -69,9 +69,36 @@ size_t to_usascii(const CharT *string, char *ascii, size_t size) {
   return out.length();
 }
 
-#ifdef UNICODE
+template<typename CharT>
+size_t safe_copy(const CharT* gcc_restrict src, CharT* gcc_restrict dst, size_t size) {
+  assert(src && dst && size > 0); // invalid src or dst
 
-size_t unicode_to_utf8(const wchar_t *unicode, char *utf8, size_t size) {
+  char* end = std::next(dst, size - 1); // let place holder for trailing '\0'
+  char* p = dst;
+  while (p < end) {
+    if ((*p++ = *src++) == 0) {
+      break; // stop copy if null terminator is found
+    }
+  }
+
+  assert(p < end || *src == 0); // out string to small
+  *end = 0; /* granted NULL-terminate dst */
+
+  return std::distance(dst, p);
+}
+
+} // namespace
+
+size_t to_usascii(const char* utf8, char* ascii, size_t size) {
+  return to_usascii<char>(utf8, ascii, size);
+}
+
+size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
+  return to_usascii<wchar_t>(unicode, ascii, size);
+}
+
+
+size_t to_utf8(const wchar_t *unicode, char *utf8, size_t size) {
 
   const auto end = std::next(utf8, size - 1); // size - 1 to let placeholder for '\0'
   auto out = utf8;
@@ -83,7 +110,7 @@ size_t unicode_to_utf8(const wchar_t *unicode, char *utf8, size_t size) {
   return std::distance(utf8, out);
 }
 
-size_t utf8_to_unicode(const char *utf8, wchar_t *unicode, size_t size) {
+size_t from_utf8(const char *utf8, wchar_t *unicode, size_t size) {
 
   auto out = array_back_inserter(unicode, size - 1); // size - 1 to let placeholder for '\0'
 
@@ -96,38 +123,12 @@ size_t utf8_to_unicode(const char *utf8, wchar_t *unicode, size_t size) {
 
   return out.length();
 }
-#endif
 
-} // namespace
 
-size_t to_usascii(const char* utf8, char* ascii, size_t size) {
-  return to_usascii<char>(utf8, ascii, size);
+size_t to_utf8(const char *string, char *utf8, size_t size) {
+  return safe_copy(string, utf8, size);
 }
 
-size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
-  return to_usascii<wchar_t>(unicode, ascii, size);
-}
-
-size_t to_utf8(const TCHAR *string, char *utf8, size_t size) {
-#if defined(_UNICODE)
-  return unicode_to_utf8(string, utf8, size);
-#else
-  assert(ValidateUTF8(string));
-  _tcsncpy(utf8, string, size);
-  utf8[size - 1] = '\0';
-
-  return strlen(utf8);
-#endif
-}
-
-size_t from_utf8(const char *utf8, TCHAR *string, size_t size) {
-  assert(ValidateUTF8(utf8));
-
-#if defined(_UNICODE)
-  return utf8_to_unicode(utf8, string, size);
-#else
-  _tcsncpy(string, utf8, size);
-  string[size - 1] = '\0';
-  return size;
-#endif
+size_t from_utf8(const char *utf8, char *string, size_t size) {
+  return safe_copy(utf8, string, size);
 }

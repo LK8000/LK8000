@@ -12,7 +12,6 @@
 
 /*____________________________________________________________________________*/
 
-#include <tchar.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -21,19 +20,25 @@ extern "C" {
 
 /*____________________________________________________________________________*/
 
-size_t to_utf8(const TCHAR* string, char* utf, size_t size);
-size_t from_utf8(const char* utf, TCHAR* string, size_t size);
+size_t to_utf8(const wchar_t* string, char* utf, size_t size);
+size_t from_utf8(const char* utf, wchar_t* string, size_t size);
+
 
 #ifdef __cplusplus
 }
 
-template<size_t size>
-size_t to_utf8(const TCHAR* string, char (&utf8)[size]) {
+size_t to_utf8(const char* string, char* utf, size_t size);
+size_t from_utf8(const char* utf, char* string, size_t size);
+
+template<typename CharT, size_t size>
+size_t to_utf8(const CharT* string, char (&utf8)[size]) {
+   static_assert(size > 0, "invalid output size");
    return to_utf8(string, utf8, size);
 }
 
-template<size_t size>
-size_t from_utf8(const char* utf8, TCHAR (&string)[size]) {
+template<typename CharT, size_t size>
+size_t from_utf8(const char* utf8, CharT (&string)[size]) {
+   static_assert(size > 0, "invalid output size");
    return from_utf8(utf8, string, size);
 }
 
