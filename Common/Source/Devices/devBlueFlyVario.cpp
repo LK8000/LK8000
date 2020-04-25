@@ -306,6 +306,8 @@ namespace dlgBlueFlyConfig {
                             Param = Sender->GetAsInteger();
                             break;
                     }
+
+                    ScopeLock Lock(CritSec_Comm);
                     if(pDevice && pDevice->Com) {
                         Parameters.UpdateDevice(Param, pDevice->Com);
                     }
