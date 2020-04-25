@@ -564,13 +564,11 @@ public:
   ResourceLock(){
     StartupStore(TEXT(".... Enter ResourceLock%s"),NEWLINE);
     MapWindow::SuspendDrawingThread();
-    LockComm();
     StartIGCReadThread() ;
   };
   ~ResourceLock(){
     StartupStore(TEXT(".... Leave ResourceLock%s"),NEWLINE);
     StopIGCReadThread() ;
-    UnlockComm();
     MapWindow::ResumeDrawingThread();
     if(wf)wf->SetTimerNotify(0, NULL);    // reset Timer
 

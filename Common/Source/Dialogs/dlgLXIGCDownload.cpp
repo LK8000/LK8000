@@ -324,14 +324,12 @@ public:
   ResourceLock() {
     //   StartupStore(TEXT(".... Enter ResourceLock%s"),NEWLINE);
     MapWindow::SuspendDrawingThread();
-    LockComm();
 
   };
 
   ~ResourceLock() {
     //   StartupStore(TEXT(".... Leave ResourceLock%s"),NEWLINE);
 
-    UnlockComm();
     MapWindow::ResumeDrawingThread();
 
     LX_IGCReadDialog.FileList()->clear();
