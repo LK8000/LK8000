@@ -480,6 +480,7 @@ BOOL DevLXNanoIII::ShowDataValue(WndForm* wf , PDeviceDescriptor_t d ,const TCHA
   if(m_pDevice != d) return false;
   if(!m_bValues) return false;
   if(!ValueText) return false;
+  if(!wf) return false;
   WndProperty *wp;
   wp = (WndProperty*)wf->FindByName(Select);
   if (wp) {
@@ -502,6 +503,7 @@ BOOL DevLXNanoIII::ShowDataValue(WndForm* wf , PDeviceDescriptor_t d ,const TCHA
 BOOL DevLXNanoIII::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
 {
 WndProperty *wp;
+if(!wf) return false;
 wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
 int PortNum = d->PortNumber;
     StartupStore(_T(" ShowData : Device Number %i %s"),PortNum, NEWLINE);
@@ -667,7 +669,8 @@ int PortNum = d->PortNumber;
 
 static bool OnTimer(WndForm* pWnd){
   WndProperty *wp = NULL;
-  if(m_bValues)
+
+  if((wf) && (m_bValues))
   {
     wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));     if(wp) { wp->RefreshDisplay();};
     wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));    if(wp) { wp->RefreshDisplay();};
@@ -1076,7 +1079,7 @@ void DevLXNanoIII::OnCancelClicked(WndButton* pWnd){
   if(pWnd) {
       WndForm * wf = pWnd->GetParentWndForm();
       StartupStore(_T(" Nano3 OnCancel%s"), NEWLINE);
-      wf->SetModalResult(mrCancel);
+      if(wf) wf->SetModalResult(mrCancel);
   }
 }
 
@@ -1263,7 +1266,7 @@ BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
   }
   bool bWasInProgress = bIGC_Download ;
   bIGC_Download = false;
-  wf->SetTimerNotify(0, NULL);
+  if(wf)  wf->SetTimerNotify(0, NULL);
 #ifdef  NANO_PROGRESS_DLG
   CloseIGCProgressDialog();
 #endif
@@ -1281,7 +1284,7 @@ BOOL DevLXNanoIII::Close (PDeviceDescriptor_t d) {
 
 BOOL DevLXNanoIII::PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
-  wf->SetTimerNotify(0, NULL);
+ if(wf) wf->SetTimerNotify(0, NULL);
 bool bCRCok = NMEAParser::NMEAChecksum(sentence);
 if (!bCRCok){
     StartupStore(_T("NANO3: Checksum Error %s %s") ,sentence, NEWLINE);
@@ -1353,7 +1356,7 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
 	     bIGC_Download = true;
 	     _sntprintf(Par[6], MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
 	     SendNmea(m_pDevice, Par[6]);
-	     wf->SetTimerNotify(1000, DevLXNanoIII::OnIGCTimeout);
+	     if(wf)wf->SetTimerNotify(1000, DevLXNanoIII::OnIGCTimeout);
 	   }
          }
      }
