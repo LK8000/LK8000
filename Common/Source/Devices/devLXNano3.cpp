@@ -190,7 +190,7 @@ BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->Config       = Config;
-  d->DirectLink   = Nano3_DirectLink;
+  d->DirectLink   = NULL; // Nano3_DirectLink;
 
   StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
     GetName(),
@@ -463,10 +463,8 @@ CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 
 BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 {
-  if(devGetAdvancedMode(d))
-  {
-    SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,10,10,1,5,5"));
-  }
+
+  SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,10,10,1,5,5"));
   return true;
 }
 
