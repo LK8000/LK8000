@@ -819,27 +819,27 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
       _sntprintf(DeclStrings[i++], 256, TEXT("C%02d%02d%02d%02d%02d%02d000000%04d%02d"),
               // DD    MM    YY    HH    MM    SS (DD MM YY) IIII  TT
                  t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,              1, wpCount-2);
-//#ifdef TAKEOFF
+#ifdef TAKEOFF
       // TakeOff point
       if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_takeoff);
       }
-//#endif
+#endif
       // TurnPoints
       for (int ii = 0; ii < wpCount; ii++) {
         decl.WpFormat(DeclStrings[i++], lkDecl->waypoint[ii], Decl::tp_regular);
       }
 
-//#ifdef LANDING
+#ifdef LANDING
       // Landing point
       if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_landing);
       }
-//#endif
+#endif
 
       // Send complete declaration to logger
       for (int ii = 0; ii < i ; ii++){
