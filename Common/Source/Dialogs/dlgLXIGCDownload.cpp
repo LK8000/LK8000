@@ -109,6 +109,7 @@ void AddElement(TCHAR Line1[], TCHAR Line2[]) {
 
 static bool TimerUpdateList(WndForm *pWnd) {
 //static void UpdateList(void) {
+if (LX_IGCReadDialog.FileList()->size() == 0) return false;
 if(ListUpdate)
   if (LX_IGCReadDialog.SelectList() != NULL) {
     LX_IGCReadDialog.SelectList()->ResetList();
@@ -156,7 +157,7 @@ static void OnDownClicked(WndButton *pWnd) {
 
 static void OnMultiSelectListListInfo(WindowControl *Sender, WndListFrame::ListInfo_t *ListInfo) {
   (void) Sender;
-
+  if (LX_IGCReadDialog.FileList()->size() == 0) return;
   if (ListInfo->DrawIndex == -1) {
     ListInfo->ItemCount = LX_IGCReadDialog.FileList()->size();
   } else {
@@ -215,12 +216,12 @@ static void OnEnterClicked(WndButton *pWnd) {
 
 static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Surface) {
 
-  Surface.SetTextColor(RGB_BLACK);
 
 
   if (LX_IGCReadDialog.FileList()->size() == 0) return;
   if (LX_IGCReadDialog.FileList()->size() < (uint) LX_IGCReadDialog.DrawIndex()) return;
   if (LX_IGCReadDialog.DrawIndex() < LX_IGCReadDialog.FileList()->size()) {
+    Surface.SetTextColor(RGB_BLACK);
     TCHAR text1[MAX_NMEA_LEN] = {TEXT("IGC File")};
     TCHAR text2[MAX_NMEA_LEN] = {TEXT("date")};
     _sntprintf(text1, MAX_NMEA_LEN, _T("%s"),
@@ -268,6 +269,7 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
 
 static void OnIGCListEnter(WindowControl *Sender, WndListFrame::ListInfo_t *ListInfo) {
   (void) Sender;
+  if (LX_IGCReadDialog.FileList()->size() == 0) return;
   LX_IGCReadDialog.CurIndex(ListInfo->ItemIndex + ListInfo->ScrollIndex);
 
   if (LX_IGCReadDialog.CurIndex() >= LX_IGCReadDialog.FileList()->size()) {
@@ -338,7 +340,7 @@ public:
 };
 
 
-ListElement *dlgLX_IGCSelectListShowModal(DeviceDescriptor_t *d) {
+ListElement *dlgLX_IGCSelectListShowModal(void) {
 
   ResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
 
