@@ -13,8 +13,7 @@
 #include <algorithm>
 #include <assert.h>
 #include "utf8/unchecked.h"
-
-#include "utils/heapcheck.h"
+#include "utils/array_back_insert_iterator.h"
 #include "Util/UTF8.hpp"
 
 //______________________________________________________________________________
@@ -622,57 +621,6 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
 
 //______________________________________________________________________________
 
-#ifndef SYS_UTF8_CONV
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Iterator for constant size arrays (helper for utf8::utf16to8 etc).
-template <class ItemType> class array_back_insert_iterator
-: public std::iterator<std::output_iterator_tag, void, void, void, void>
-{
-  protected:
-    ItemType* array;
-    int       size;
-    int       elements;
-    bool      overflow;
-
-  public:
-    typedef ItemType container_type;
-
-    explicit array_back_insert_iterator(ItemType* _array, int _size)
-    : array(_array),
-      size(_size),
-      elements(0),
-      overflow(false)
-    {}
-
-    int length() const
-    { return elements; }
-
-    bool overflowed() const
-    { return overflow; }
-
-    array_back_insert_iterator<ItemType>& operator= (ItemType value)
-      {
-        if (elements >= size)
-          overflow = true;
-        else
-          array[elements++] = value;
-        return *this;
-      }
-
-    array_back_insert_iterator<ItemType>& operator* ()
-      { return *this; }
-
-    array_back_insert_iterator<ItemType>& operator++ ()
-      { return *this; }
-
-    array_back_insert_iterator<ItemType>& operator++ (int)
-      { return *this; }
-}; // array_back_insert_iterator
-#endif
-
-//______________________________________________________________________________
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts ASCII string encoded in system code page into Unicode string.
 /// \return Unicode string length, -1 on conversion error
@@ -708,7 +656,7 @@ int unicode2utf(const wchar_t* unicode, char* utf, int maxChars)
   // is not working on some Win CE systems)
   size_t len = wcslen(unicode);
 
-  array_back_insert_iterator<char> iter = array_back_insert_iterator<char>(utf, maxChars - 1);
+  auto iter = array_back_inserter(utf, maxChars - 1);
 
   iter = utf8::unchecked::utf16to8(unicode, unicode + len, iter);
 
@@ -750,7 +698,7 @@ int utf2unicode(const char* utf, wchar_t* unicode, int maxChars)
 
   // first check if UTF8 is correct (utf8to16() may not be called on invalid string)
   if (utf8::find_invalid(utf, utf + len) == (utf + len)) {
-    array_back_insert_iterator<wchar_t> iter(unicode, maxChars - 1);
+    auto iter = array_back_inserter(unicode, maxChars - 1);
 
     iter = utf8::unchecked::utf8to16(utf, utf + len, iter);
 
@@ -807,7 +755,7 @@ NextChar(const TCHAR *p)
 ///
 int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize)
 {
-  array_back_insert_iterator<char> out(ascii, outSize - 1); // size - 1 to let placeholder for '\0'
+  auto out = array_back_inserter(ascii, outSize - 1); // size - 1 to let placeholder for '\0'
 
   auto next = NextChar(unicode);
   while (next.first && !out.overflowed()) {
