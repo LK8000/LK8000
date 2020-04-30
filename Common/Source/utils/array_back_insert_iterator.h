@@ -18,21 +18,22 @@ protected:
   _Tp *array;
   size_t size;
   size_t elements;
-  bool overflow;
+  size_t overflow;
 
 public:
   typedef _Tp value_type;
 
   explicit array_back_insert_iterator(_Tp *_array, size_t _size)
-      : array(_array), size(_size), elements(0), overflow(false) {}
+      : array(_array), size(_size), elements(0), overflow() {}
 
   size_t length() const { return elements; }
 
   bool overflowed() const { return overflow; }
+  size_t skipped() const { return overflow; }
 
   array_back_insert_iterator<_Tp> &operator=(_Tp value) {
     if (elements >= size) {
-      overflow = true;
+      ++overflow;
     } else {
       array[elements++] = value;
     }
