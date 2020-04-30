@@ -810,7 +810,7 @@ int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize)
   array_back_insert_iterator<char> out(ascii, outSize - 1); // size - 1 to let placeholder for '\0'
 
   auto next = NextChar(unicode);
-  while (next.second && !out.overflowed()) {
+  while (next.first && !out.overflowed()) {
 
     if (next.first <= maxUtf16toAscii)
       out = utf16toAscii[next.first];
