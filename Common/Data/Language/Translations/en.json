@@ -2539,6 +2539,7 @@
     "_@M001911_": "uartPassthrough",
     "_@H001343_": "Check to pass data received by U2 into U1",
     "_@M001912_": "uart1Raw",
+    "_@H001344_": "Check to make U1 data transferred raw instead of line by line",
     "_@H001345_": "[MC:]     \nreceive or send MC setting to or from LX devices \nOFF:\t no McCready data exchange \nIN:\t receive MC from  external LX device \nOUT:\t send MC data to external LX device \nIO & OUT:\t bi-directional exchange",
     "_@H001346_": "[TARGET:] \nreceive or send Navigation TARGET information to or from LX devices \nOFF: no target data exhchange \nIN: eceive from Device \nOUT: send to device IOOUT bi-directional exchange",
     "_@H001347_": "[BAL:]    \nreceive or send Ballast setting to or from LX devices \nOFF:\t no Ballast data exchange \nIN: receive Ballast from Device \nOUT: send to device IOOUT bi-directional exchange",
