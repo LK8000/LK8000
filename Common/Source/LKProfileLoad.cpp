@@ -633,6 +633,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
 	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BAT2Dir   = (DataBiIoDir) StrTol(szItem);
 	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].POLARDir  = (DataBiIoDir) StrTol(szItem);
+  NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].DirLink  = (DataBiIoDir) StrTol(szItem);
+
 
       }
       return;

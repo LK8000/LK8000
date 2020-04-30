@@ -191,7 +191,7 @@ BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->Config       = Config;
-  d->DirectLink   = NULL; // Nano3_DirectLink;
+  d->DirectLink   = Nano3_DirectLink;
 
   StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
     GetName(),
@@ -262,6 +262,8 @@ BOOL DevLXNanoIII::Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
 {
 TCHAR  szTmp[MAX_NMEA_LEN];
 #define CHANGE_DELAY 10
+if(!IsDirInput(PortIO[d->PortNumber].DirLink))
+    return false;
 
   if(iNano3_GPSBaudrate ==0)
   {
@@ -640,9 +642,23 @@ int PortNum = d->PortNumber;
 //    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
 //    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
 
-    dfe->Set((uint) PortIO[PortNum].BAT2Dir);
+    dfe->Set((uint) PortIO[PortNum].POLARDir);
     wp->RefreshDisplay();
   }
+
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField(); dfe->Clear();
+    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken(894)); // LKTOKEN  _@M894_": "ON"
+
+    dfe->Set((uint) PortIO[PortNum].DirLink);
+
+    wp->RefreshDisplay();
+  }
+
+
   return true;
 }
 
@@ -680,6 +696,7 @@ static bool OnTimer(WndForm* pWnd){
     wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir"));   if(wp) { wp->RefreshDisplay();};
     wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));   if(wp) { wp->RefreshDisplay();};
     wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));  if(wp) { wp->RefreshDisplay();};
+    wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));if(wp) { wp->RefreshDisplay();};
   }
   return true;
 }
@@ -712,11 +729,12 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
       wBt->SetOnClickNotify(OnIGCDownloadClicked);
     }
 
-
     wBt = (WndButton *)wf->FindByName(TEXT("cmdValues"));
     if(wBt){
       wBt->SetOnClickNotify(OnValuesClicked);
     }
+
+
     ShowData(wf, d);
     wf->SetTimerNotify(100, OnTimer);
     wf->ShowModal();
@@ -727,10 +745,6 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
   }
   return TRUE;
 }
-
-
-
-
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1158,6 +1172,12 @@ void DevLXNanoIII::GetDirections(WndButton* pWnd){
         DataField* dfe = wp->GetDataField();
         PortIO[PortNum].POLARDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].DirLink =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+
     }
   }
 }
@@ -1199,6 +1219,8 @@ void DevLXNanoIII::OnValuesClicked(WndButton* pWnd) {
       ShowDataValue( wf ,m_pDevice, _T("prpBAT1Dir"),  (_T("")));
       ShowDataValue( wf ,m_pDevice, _T("prpBAT2Dir"),  (_T("")));
       ShowDataValue( wf ,m_pDevice, _T("prpPOLARDir"), (_T("")));
+      ShowDataValue( wf ,m_pDevice, _T("prpDirectLink"),(_T("")));
+
     } else {
       ShowData(wf, m_pDevice);
     }
