@@ -516,7 +516,6 @@ WndProperty *wp;
 if(!wf) return false;
 wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
 int PortNum = d->PortNumber;
-    StartupStore(_T(" ShowData : Device Number %i %s"),PortNum, NEWLINE);
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
@@ -767,7 +766,6 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
 
 
     ShowData(wf, d);
-    wf->SetTimerNotify(250, OnTimer); // update values 4 times a second
     wf->ShowModal();
     m_bValues = false;
     wf->SetTimerNotify(0, NULL);
@@ -1130,7 +1128,7 @@ void DevLXNanoIII::GetDirections(WndButton* pWnd){
     WndForm * wf = pWnd->GetParentWndForm();
     if(wf) {
     int PortNum = m_pDevice->PortNumber;
-    StartupStore(_T(" On Close : Device Number %i %s"),PortNum, NEWLINE);
+
       WndProperty *wp;
       wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
       if (wp) {
@@ -1216,9 +1214,14 @@ void DevLXNanoIII::GetDirections(WndButton* pWnd){
 void DevLXNanoIII::OnCloseClicked(WndButton* pWnd)
 {
   WndForm * wf = pWnd->GetParentWndForm();
+
   if(!m_bValues)
     GetDirections(pWnd);
-  wf->SetModalResult(mrOK);
+  if(wf)
+  {
+    wf->SetTimerNotify(0, NULL);
+    wf->SetModalResult(mrOK);
+  }
 }
 
 
@@ -1226,13 +1229,19 @@ void DevLXNanoIII::OnValuesClicked(WndButton* pWnd) {
 
   m_bValues = !m_bValues;
   WndForm * wf = pWnd->GetParentWndForm();
-  WndButton *wBt = (WndButton *) wf->FindByName(TEXT("cmdValues"));
-  if (wBt) {
-    if (!m_bValues) {
-      wBt->SetCaption(MsgToken(2467));// _@M2467_ "Values"
-    } else {
-      GetDirections(pWnd);
-      wBt->SetCaption(MsgToken(2468));//  _@M2468_ "Direction"
+  if(wf)
+  {
+    WndButton *wBt = (WndButton *) wf->FindByName(TEXT("cmdValues"));
+    if (wBt) {
+      if (m_bValues) {
+        wf->SetTimerNotify(250, OnTimer); // update values 4 times a second
+        GetDirections(pWnd);
+        wBt->SetCaption(MsgToken(2468));//  _@M2468_ "Direction"
+      } else {
+        wf->SetTimerNotify(0, NULL);    // turn Off the timer
+        wBt->SetCaption(MsgToken(2467));// _@M2467_ "Values"
+        if (wf) ShowData(wf, m_pDevice);
+      }
     }
   }
 
@@ -1252,9 +1261,6 @@ void DevLXNanoIII::OnValuesClicked(WndButton* pWnd) {
   SetDataText( _POLAR, _T(""));
   SetDataText( _DIRECT,_T(""));
 
-  if (m_bValues == false) {
-    if (wf) ShowData(wf, m_pDevice);
-  }
 }
 
 void DevLXNanoIII::OnIGCDownloadClicked(WndButton* pWnd) {
