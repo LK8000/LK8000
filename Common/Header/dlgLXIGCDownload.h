@@ -9,7 +9,7 @@
 #ifndef _DLGFLXIGCDOWNLOAD_H_
 #define _DLGFLXIGCDOWNLOAD_H_
 
-  ListElement* dlgLX_IGCSelectListShowModal(  DeviceDescriptor_t *d) ;
+  ListElement* dlgLX_IGCSelectListShowModal(  void) ;
   void AddElement(TCHAR Line1[], TCHAR Line2[]);
 
 
