@@ -26,6 +26,8 @@
 #include <functional>
 #include "resource.h"
 
+namespace { // unamed namespaces
+
 using std::placeholders::_1;
 
 enum ValueType {
@@ -62,10 +64,10 @@ public:
 
     double Min() const {
         if(Type() == TYPE_DOUBLE) {
-            return _MinHWVal / _Factor;
+            return _MinHWVal * _Factor;
         }
         if(Type() == TYPE_INT) {
-            return _MinHWVal / _Factor;
+            return _MinHWVal * _Factor;
         }
         if(Type() == TYPE_INTOFFSET) {
             return _MinHWVal + _Factor;
@@ -75,10 +77,10 @@ public:
 
     double Max() const {
         if(Type() == TYPE_DOUBLE) {
-            return _MaxHWVal / _Factor;
+            return _MaxHWVal * _Factor;
         }
         if(Type() == TYPE_INT) {
-            return _MaxHWVal / _Factor;
+            return _MaxHWVal * _Factor;
         }
         if(Type() == TYPE_INTOFFSET) {
             return _MaxHWVal + _Factor;
@@ -104,7 +106,7 @@ public:
         return ValueInt()!=0;
     }
 
-    bool IsAvailable() const { return available; }
+    bool IsAvailable(int HWVersion) const { return _MinHWVersion <= HWVersion; }
 
     void operator=(double v) {
         TCHAR szTmp[30] = {0};
@@ -205,7 +207,9 @@ public:
         _HwVersion = _tcstol(line, NULL, 10);
     }
 
-     void UpdateDevice(const CHardwareParameter& Param, ComPort* Com) const {
+    inline int GetHardwareVersion() const { return _HwVersion; }
+
+    void UpdateDevice(const CHardwareParameter& Param, ComPort* Com) const {
         if(Param.MinHwVersion() <= _HwVersion) {
             TCHAR szTmp[35] = {0};
             _stprintf(szTmp, _T("$%s %s*"), Param.Code().c_str(), Param.Value().c_str());
@@ -227,11 +231,10 @@ typedef std::map<DeviceDescriptor_t*, CHardwareParameters> Device2Parameters_t;
 Device2Parameters_t gHardwareParameters;
 
 namespace dlgBlueFlyConfig {
-    WndForm *wfDlg;
     PDeviceDescriptor_t pDevice;
     bool Init = true;
 
-    const TCHAR* lstPageName [] = { _T("1"), _T("2"), _T("3"), _T("4"), _T("5") };
+    constexpr TCHAR const * lstPageName [] = { _T("1"), _T("2"), _T("3"), _T("4"), _T("5") };
     typedef std::vector<WindowControl*> lstPageWnd_t;
     lstPageWnd_t lstPageWnd;
     unsigned CurrentPage = 0;
@@ -239,7 +242,7 @@ namespace dlgBlueFlyConfig {
     typedef std::map<DataField*, tstring> DataField2Parameter_t;
     DataField2Parameter_t AssocFieldParam;
 
-    void NextPage(int Step) {
+    void NextPage(WndForm* wfDlg, int Step) {
         if( (CurrentPage+Step) < lstPageWnd.size() )  {
             lstPageWnd[CurrentPage]->SetVisible(false);
             CurrentPage+=Step;
@@ -270,13 +273,11 @@ namespace dlgBlueFlyConfig {
     }
 
     void OnNextClicked(WndButton* pWnd) {
-        (void)pWnd;
-        NextPage(+1);
+        NextPage(pWnd->GetParentWndForm(), +1);
     }
 
     void OnPrevClicked(WndButton* pWnd) {
-        (void)pWnd;
-        NextPage(-1);
+        NextPage(pWnd->GetParentWndForm(), -1);
     }
 
     void OnParamData(DataField *Sender, DataField::DataAccessKind_t Mode) {
@@ -320,15 +321,23 @@ namespace dlgBlueFlyConfig {
         }
     }
 
+    void OnReset(WndButton* pWnd) {
+        ScopeLock Lock(CritSec_Comm);
+        if(dlgBlueFlyConfig::pDevice && dlgBlueFlyConfig::pDevice->Com) {
+            dlgBlueFlyConfig::pDevice->Com->WriteString("$RSX*\n\r");
+        }
+    }
+
     CallBackTableEntry_t CallBackTable[] = {
         ClickNotifyCallbackEntry(OnClose),
         ClickNotifyCallbackEntry(OnNextClicked),
         ClickNotifyCallbackEntry(OnPrevClicked),
+        ClickNotifyCallbackEntry(OnReset),
         DataAccessCallbackEntry(OnParamData),
         EndCallBackEntry()
     };
 
-    void FillProperty(CHardwareParameters::value_type& Val) {
+    void FillProperty(WndForm *wfDlg, int HWVersion, CHardwareParameters::value_type& Val) {
         if(!wfDlg) return;
         CHardwareParameter& Param = Val.second;
 
@@ -357,7 +366,7 @@ namespace dlgBlueFlyConfig {
                         break;
                 }
             }
-            pWnd->SetVisible(Param.IsAvailable());
+            pWnd->SetVisible(Param.IsAvailable(HWVersion));
             pWnd->RefreshDisplay();
             
         }
@@ -369,7 +378,7 @@ namespace dlgBlueFlyConfig {
         pDevice = d;
         Init = true;
 
-        wfDlg = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_BLUEFLYCONFIG_L : IDR_XML_BLUEFLYCONFIG_P);
+        WndForm *wfDlg = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_BLUEFLYCONFIG_L : IDR_XML_BLUEFLYCONFIG_P);
 
         if (wfDlg) {
             // build list of page WindowConrol*
@@ -382,7 +391,7 @@ namespace dlgBlueFlyConfig {
             if(!lstPageWnd.empty()) {
                 // Show First Page
                 CurrentPage=0;
-                NextPage(0);
+                NextPage(wfDlg, 0);
 
                 // Hide All Next Page
                 std::for_each(++lstPageWnd.begin(), lstPageWnd.end(), std::bind(&WindowControl::SetVisible, _1, false));
@@ -403,7 +412,8 @@ namespace dlgBlueFlyConfig {
             // Set Value to all WndProperty
             CHardwareParameters& HardwareParameters = gHardwareParameters[pDevice];
             AssocFieldParam.clear();
-            std::for_each(HardwareParameters.begin(), HardwareParameters.end(), std::ref(FillProperty));
+            std::for_each(HardwareParameters.begin(), HardwareParameters.end(), 
+                            std::bind(&FillProperty, wfDlg, HardwareParameters.GetHardwareVersion(), _1));
 
             Init = false;
             if (wfDlg->ShowModal()) {
@@ -412,16 +422,16 @@ namespace dlgBlueFlyConfig {
             AssocFieldParam.clear();
             lstPageWnd.clear();
             delete wfDlg;
-            wfDlg = NULL;
-            pDevice = NULL;
         }
+
+        pDevice = nullptr;
 
         return nRet;
     }
 };
 
 /**************************************************************************************************************************************************************/
-static unsigned RequestParamTimer = 10;
+unsigned RequestParamTimer = 10;
 
 BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d) {
     RequestParamTimer = 10;
@@ -492,7 +502,7 @@ BOOL BlueFlyConfig(PDeviceDescriptor_t d) {
     return FALSE;
 }
 
-static BOOL PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
+BOOL PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
 	(void)d;
 	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)))){
 		TriggerVarioUpdate();
@@ -513,8 +523,7 @@ BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS
     if(_tcsncmp(TEXT("PRS "), String, 4)==0){
         return PRS(d, &String[4], pGPS);
     } 
-
-    if (LK8EX1ParseNMEA(d, String, pGPS)) {
+    if(LK8EX1ParseNMEA(d, String, pGPS)) {
         return TRUE;
     }
     if(FlyNetParseNMEA(d, String, pGPS)) {
@@ -535,7 +544,7 @@ BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS
     return FALSE;
 }
 
-static BOOL BlueFlyInstall(PDeviceDescriptor_t d) {
+BOOL BlueFlyInstall(PDeviceDescriptor_t d) {
 
     _tcscpy(d->Name, TEXT("BlueFlyVario"));
     d->ParseNMEA = BlueFlyVarioParseNMEA;
@@ -547,6 +556,8 @@ static BOOL BlueFlyInstall(PDeviceDescriptor_t d) {
 
     return (TRUE);
 }
+
+} // unamed namespaces
 
 BOOL BlueFlyRegister(void) {
     return (devRegister(
