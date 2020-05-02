@@ -62,8 +62,6 @@ WORD crcCalc(void *Buffer, size_t size);
 void ExtractDirectory(TCHAR *Dest, TCHAR *Source);
 unsigned DoSunEphemeris(double lon, double lat);
 
-void *bsearch(void *key, void *base0, size_t nmemb, size_t size, int (*compar)(const void *elem1, const void *elem2));
-
 TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 void TrimRight(TCHAR* str);

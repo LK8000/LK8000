@@ -860,7 +860,6 @@ SCREEN += \
 endif
 
 LIBRARY	:=\
-	$(LIB)/bsearch.cpp \
 	$(LIB)/Crc.cpp\
 	$(LIB)/ColorFunctions.cpp \
 	$(LIB)/DirectoryFunctions.cpp \
