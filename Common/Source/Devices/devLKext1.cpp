@@ -13,21 +13,13 @@
 static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
 BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
-
-  (void)d;
-
-  if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
-    return FALSE;
-  }
-
-
-  if(_tcsncmp(TEXT("$LK8EX1"), String, 7)==0)
-    {
-      return LK8EX1(d, &String[8], pGPS);
+  if(_tcsncmp(TEXT("$LK8EX1"), String, 7)==0) {
+    if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
+      return FALSE;
     }
-
+    return LK8EX1(d, &String[8], pGPS);
+  }
   return FALSE;
-
 }
 
 BOOL LK8EX1IsBaroSource(PDeviceDescriptor_t d){
