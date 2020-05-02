@@ -104,7 +104,7 @@ typedef struct{
   DataBiIoDir BAT1Dir  ; // Battery 1 voltage
   DataBiIoDir BAT2Dir  ; // Battery 2 voltage
   DataBiIoDir POLARDir ; // Polar 2 voltage
-
+  DataBiIoDir DirLink  ; // Direct Link
 } DeviceIO;
 
 struct DeviceDescriptor_t {

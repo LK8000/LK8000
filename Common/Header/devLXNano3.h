@@ -112,7 +112,6 @@ class DevLXNanoIII : public DevLX
    static BOOL PutTarget(PDeviceDescriptor_t d);
 
    static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
-   static BOOL ShowDataValue(WndForm* wf , PDeviceDescriptor_t d ,const TCHAR Select[],  const TCHAR ValueText[]);
    static void GetDirections(WndButton* pWnd);
 
    static bool  OnIGCTimeout(WndForm* pWnd);

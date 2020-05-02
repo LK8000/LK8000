@@ -622,13 +622,13 @@ void LKDeviceSave(const TCHAR *szFile)
   for(int n = 0; n < NUMDEV; n++)
   {
     TCHAR szTmp[IO_PARAM_SIZE];
-    _sntprintf(szTmp,IO_PARAM_SIZE, _T("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u"),
+    _sntprintf(szTmp,IO_PARAM_SIZE, _T("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u"),
 	       (uint)PortIO[n].MCDir    ,(uint)PortIO[n].BUGDir  ,(uint)PortIO[n].BALDir   ,
 	       (uint)PortIO[n].STFDir   ,(uint)PortIO[n].WINDDir ,(uint)PortIO[n].BARODir  ,
 	       (uint)PortIO[n].VARIODir ,(uint)PortIO[n].SPEEDDir,(uint)PortIO[n].TARGETDir,
 	       (uint)PortIO[n].RADIODir ,(uint)PortIO[n].TRAFDir ,(uint)PortIO[n].GYRODir  ,
 	       (uint)PortIO[n].GFORCEDir,(uint)PortIO[n].OATDir  ,(uint)PortIO[n].BAT1Dir  ,
-	       (uint)PortIO[n].BAT2Dir  ,(uint)PortIO[n].POLARDir);
+	       (uint)PortIO[n].BAT2Dir  ,(uint)PortIO[n].POLARDir,(uint)PortIO[n].DirLink);
     char szKey[20] = ("");
     sprintf(szKey ,("%s%u"),szRegistryIOValues,n+1);
     rprintf(szKey,szTmp);
