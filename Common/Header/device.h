@@ -85,6 +85,16 @@ typedef enum
   BiDirInOut =3		 // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
 }DataBiIoDir;
 
+
+// Filter switches for different Data directions data protocol sentences using for TARGET information transfer
+typedef enum
+{
+  TP_Off  ,  // OFF    no TARGET data exchange
+  TP_VTARG,  // IN    $PLXVTARG
+  TP_GPRMB,  // OUT   $GPRMB
+}DataTP_Type;
+
+
 typedef struct{
   DataBiIoDir MCDir;     // Mac Cready
   DataBiIoDir BUGDir;    // BUG aka efficency
@@ -94,7 +104,7 @@ typedef struct{
   DataBiIoDir BARODir;   // barometric heigt
   DataBiIoDir VARIODir;  // Variometer
   DataBiIoDir SPEEDDir;  // IAS indicated airspeed
-  DataBiIoDir TARGETDir; // Navigation Target information
+  DataTP_Type R_TRGTDir; // Receive Navigation Target information protocol sentence
 
   DataBiIoDir RADIODir ; // Radio Informations Frequency etc.
   DataBiIoDir TRAFDir  ; // Traffix Information (FLARM)
@@ -105,6 +115,7 @@ typedef struct{
   DataBiIoDir BAT2Dir  ; // Battery 2 voltage
   DataBiIoDir POLARDir ; // Polar 2 voltage
   DataBiIoDir DirLink  ; // Direct Link
+  DataTP_Type T_TRGTDir; // Send Navigation Target information protocol sentence
 } DeviceIO;
 
 struct DeviceDescriptor_t {

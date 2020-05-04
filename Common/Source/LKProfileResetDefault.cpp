@@ -428,9 +428,9 @@ void LKProfileResetDefault() {
 
     PortIO[i].VARIODir = BiDirOff;
     PortIO[i].SPEEDDir = BiDirIn;
-    PortIO[i].TARGETDir= BiDirOut;
+    PortIO[i].R_TRGTDir= TP_VTARG;
 
-    PortIO[i].RADIODir = BiDirInOut;
+    PortIO[i].RADIODir  = BiDirInOut;
     PortIO[i].TRAFDir   = BiDirIn;
     PortIO[i].GYRODir   = BiDirIn;
 
@@ -441,6 +441,7 @@ void LKProfileResetDefault() {
     PortIO[i].BAT2Dir   = BiDirIn;
     PortIO[i].POLARDir  = BiDirOff;
     PortIO[i].DirLink   = BiDirOff;
+    PortIO[i].T_TRGTDir = TP_VTARG;
   }
 
 

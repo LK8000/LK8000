@@ -8,15 +8,15 @@
      <WndProperty Name="prpMCDir" Caption="_@M2447_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1345_">
         <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
       </WndProperty>  
-      <WndProperty Name="prpTARGDir" Caption="_@M2448_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1346_">
+      <WndProperty Name="prpR_TRGTDir" Caption="_@M2448_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1346_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>       
      <WndProperty Name="prpBALDir" Caption="_@M2448_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1347_">
         <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
       </WndProperty>  
-      <WndProperty Name="prpGFORCEDir" Caption="_@M2462_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1348_">
+       <WndProperty Name="prpT_TRGTDir" Caption="_@M1913_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1360_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
-      </WndProperty>               
+      </WndProperty>                     
       <WndProperty Name="prpBUGDir" Caption="_@M2449_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1349_">
         <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
       </WndProperty>  
@@ -44,15 +44,14 @@
       <WndProperty Name="prpSPEEDDir" Caption="_@M2456_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1357_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>   
-      <WndProperty Name="prpDirectLink" Caption="DIRECT" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1358_">
+      <WndProperty Name="prpGFORCEDir" Caption="_@M2462_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1348_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
-      </WndProperty>                  
+      </WndProperty>                         
        <WndProperty Name="prpVARIODir" Caption="_@M2457_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1359_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
-      </WndProperty>        
-     
-
-     
-     
+      </WndProperty>   
+      <WndProperty Name="prpDirectLink" Caption="DIRECT" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1358_">
+        <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
+      </WndProperty> 
   </WndForm>
 </PMML>
