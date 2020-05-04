@@ -82,7 +82,6 @@ void ComPort::PutChar(BYTE b) {
 }
 
 bool ComPort::StopRxThread() {
-    ScopeLock Lock(CritSec_Comm);
 
     StopEvt.set();
 
@@ -95,7 +94,9 @@ bool ComPort::StopRxThread() {
 #ifdef _DEBUG_STOP_RXTHREAD
         StartupStore(_T("... ComPort %u StopRxThread: Wait End of thread !%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
 #endif
-        ScopeUnlock Unlock(CritSec_Comm); // prevent deadlock
+        // CritSec_Comm is locked by caller and can be waited by RxThread.
+        // to prevent deadlock, CritSec_Comm must be unlocked before waiting end of thread.
+        ScopeUnlock Unlock(CritSec_Comm);
         ReadThread.join();
     }
     StopEvt.reset();
