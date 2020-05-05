@@ -1746,8 +1746,9 @@ static void setVariables( WndForm *pOwner) {
           {
 
             dwDeviceIndex[devIdx] = i;
-            ReadPortSettings(devIdx,szPort,NULL, NULL);
+
 #ifdef TESTBENCH
+            ReadPortSettings(devIdx,szPort,NULL, NULL);
             StartupStore(_T("==================================================== %s"),NEWLINE); // 091105
             StartupStore(_T("........... SetVariable Device #%i id:%i %s %s"),devIdx,  dwDeviceIndex[devIdx], deviceName1,NEWLINE); // 091105
             StartupStore(_T("........... SetVariable Port   #%i %s %s"),devIdx,  szPort,NEWLINE); // 091105
