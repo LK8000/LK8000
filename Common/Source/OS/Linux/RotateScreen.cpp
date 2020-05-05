@@ -26,12 +26,6 @@
 #include "Event/Queue.hpp"
 #endif
 
-#ifdef OPENVARIO
-#include <fstream>
-#include <regex>
-#include "OS/Process.hpp"
-#endif
-
 bool CanRotateScreen() {
 #if (defined(ENABLE_SDL) || defined(USE_EGL)) && !defined(USE_FULLSCREEN)
     return false;
@@ -143,32 +137,3 @@ ScopeLockScreen::ScopeLockScreen() :
 ScopeLockScreen::~ScopeLockScreen() {
 }
 #endif
-
-DisplayOrientation_t GetScreenOrientation() {
-
-  DisplayOrientation_t orientation = DisplayOrientation_t::DEFAULT;
-  
-#ifdef OPENVARIO
-  Run("/bin/mount", "/dev/mmcblk0p1", "/boot");
-
-  std::ifstream ifs("/boot/config.uEnv", std::ifstream::in);
-  if(ifs.is_open()) {
-    std::regex pair_regex("^(rotation)=([0-3])$");
-    std::smatch pair_match;
-    std::string line;
-    while (std::getline (ifs, line)) {
-      if (std::regex_match(line, pair_match, pair_regex)) {
-        if (pair_match.size() == 3) {
-          orientation = static_cast<DisplayOrientation_t>(strtoul(pair_match[2].str().c_str(), nullptr, 10));
-          break;
-        }
-      }
-    }
-    ifs.close();
-  }
-  Run("/bin/umount", "/boot"); 
-
-#endif
- 
-  return orientation;
-}

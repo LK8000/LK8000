@@ -30,9 +30,8 @@
 #include "DisplayOrientation.hpp"
 #include "Asset.hpp"
 
-#ifdef __linux__
+#ifdef KOBO
 #include "Hardware/RotateDisplay.hpp"
-#include "OS/RotateScreen.h"
 #endif
 
 #ifdef USE_FREETYPE
@@ -46,6 +45,7 @@
 
 #ifdef HAVE_MALI
 #include "Screen/Sunxi/mali.h"
+#include "Hardware/RotateDisplay.hpp"
 #endif
 
 #ifdef ANDROID
@@ -220,8 +220,8 @@ BOOL InitInstance()
 
   Message::Initialize(rc); // creates window, sets fonts
 
-#ifdef __linux__
-  Display::Rotate(GetScreenOrientation());
+#ifdef HAVE_MALI
+    Display::Rotate(mali::GetScreenOrientation());
 #endif
 
   MainWindow.SetVisible(true);
