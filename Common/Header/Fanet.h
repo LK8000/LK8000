@@ -61,11 +61,22 @@ bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR (&szName)[size]) {
   return GetFanetName(ID, info, szName, size);
 }
 
+typedef TCHAR Cn_t[MAXFANETCN];
+
+inline
+bool equals_Cn(const Cn_t& a, const Cn_t& b) {
+  return std::equal(std::begin(a), std::end(a), std::begin(b));
+}
+
+struct FANET_DATA {
+  double Time_Fix; //GPS-Time when we got the last msg
+  Cn_t Cn; //ID of station (3 Bytes)
+};
+
 //
 // FANET Weatherdata
 //
-typedef struct _FANET_WEATHER
-{
+struct FANET_WEATHER : public FANET_DATA {
   double Latitude; //latitude
   double Longitude; //longitude
   float windDir; //wind-direction 0-360 Deg
@@ -75,19 +86,14 @@ typedef struct _FANET_WEATHER
   float hum; //humidity [%]
   float pressure; //pressure [hPa]
   float Battery; //charge state [%] 
-  TCHAR Cn[MAXFANETCN]; //ID of station (3 Bytes)
   unsigned short Status; //status of station
-  double Time_Fix; //GPS-Time when we got the last msg
-} FANET_WEATHER;
+};
 
 //
 // FANET Weatherdata
 //
-typedef struct _FANET_NAME
-{
+struct FANET_NAME : public FANET_DATA {
   TCHAR Name[MAXFANETNAME+1]; //name of station
-  TCHAR Cn[MAXFANETCN]; //ID of station (3 Bytes)
-  double Time_Fix; //GPS-Time when we got the last msg
-} FANET_NAME;
+};
 
 #endif
