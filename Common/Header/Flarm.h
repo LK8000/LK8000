@@ -9,7 +9,7 @@
 #define FLARM_MAX_TRAFFIC	MAXNEAREST
 
 // These are always used +1 for safety
-#define	MAXFLARMNAME	10	// used by Local Ids
+#define	MAXFLARMNAME	30	// used by Local Ids
 #define MAXFLARMCN	3	// used by Local and Flarmnet, not changeble see Parser
 
 #endif

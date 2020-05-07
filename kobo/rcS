@@ -210,6 +210,11 @@ fi
 # that allow to restart on Nickel in case of crash.
 echo " " > /mnt/onboard/LK8000/kobo/start_nickel
 
+#Gereic added kobo-menu
+# finally, open the menu
+/opt/LK8000/bin/KoboMenu
+
+# just in case launching KoboMenu fails: try LK8000
 # finally, launch LK8000-KOBO
 /opt/LK8000/bin/LK8000-KOBO >> /mnt/onboard/LK8000/kobo/error.log 2>&1
 

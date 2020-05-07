@@ -20,6 +20,7 @@
 #include "Sound/Sound.h"
 #include "resource.h"
 #include "OS/ByteOrder.hpp"
+#include "Utils.h"
 
 static_assert(IsLittleEndian(), "Big-Endian Arch is not supported");
 
@@ -43,6 +44,22 @@ uint8_t getByteFromHex(const TCHAR *in) {
     digits = from_hex_digit(in[1]);
   }
   return tens * 16 + digits;
+}
+
+static void getIdFromMsg(TCHAR *String,TCHAR *cID,TCHAR *id){
+  TCHAR ctemp[10];
+  cID[0] = 0; //zero-Termination of String;
+  NMEAParser::ExtractParameter(String,ctemp,0);
+  if (_tcslen(ctemp) < 2) _tcscat(cID,_T("0"));
+  _tcscat(cID,ctemp);
+  NMEAParser::ExtractParameter(String,ctemp,1);
+  if (_tcslen(ctemp) == 2) _tcscat(cID,_T("00"));
+  if (_tcslen(ctemp) == 3) _tcscat(cID,_T("0"));
+  _tcscat(cID,ctemp);
+  id[0] = getByteFromHex(&cID[0]);
+  id[1] = getByteFromHex(&cID[2]);
+  id[2] = getByteFromHex(&cID[4]);
+
 }
 
 /* ------------------------------------------------------------------------- */
@@ -98,16 +115,11 @@ static bool FanetInsert(const _Tp& item, _Tp (&array)[size], double Time){
 }
 
 static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+  TCHAR ctemp[80];  
   FANET_NAME fanetDevice;
-  TCHAR ctemp[80];
+  TCHAR HexDevId[7];
 
-  NMEAParser::ExtractParameter(String,ctemp,0);
-  fanetDevice.Cn[0] = getByteFromHex(ctemp);
-
-  NMEAParser::ExtractParameter(String,ctemp,1);
-  fanetDevice.Cn[1] = getByteFromHex(&ctemp[0]);
-  // undefined result if _tcslen(ctemp) < 3
-  fanetDevice.Cn[2] = getByteFromHex(&ctemp[2]);
+  getIdFromMsg(String,HexDevId,fanetDevice.Cn);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
@@ -123,6 +135,12 @@ static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
     }    
   }
   fanetDevice.Name[i] = 0; //0-termination of String
+  long flarmId;
+  if (_stscanf(HexDevId, TEXT("%lx"), &flarmId) == 1){
+    if (LookupSecondaryFLARMId(flarmId) == -1){ //check, if device is already in flarm-database
+      AddFlarmLookupItem(flarmId, fanetDevice.Name, false); //add to Flarm-Database
+    }
+  }
   FanetInsert(fanetDevice, pGPS->FanetName, pGPS->Time);
   return TRUE;
 
@@ -132,17 +150,9 @@ static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   TCHAR ctemp[80];
   Cn_t Cn; //ID of station (3 Bytes)
   TCHAR MSG[80];
-  TCHAR DevId[7];
+  TCHAR HexDevId[7];
 
-  NMEAParser::ExtractParameter(String,ctemp,0);
-  _tcscpy(DevId, ctemp);
-  Cn[0] = getByteFromHex(ctemp);
-
-  NMEAParser::ExtractParameter(String,ctemp,1);
-  _tcscat(DevId, ctemp);
-  Cn[1] = getByteFromHex(&ctemp[0]);
-  // undefined result if _tcslen(ctemp) < 3
-  Cn[2] = getByteFromHex(&ctemp[2]);
+  getIdFromMsg(String,HexDevId,Cn);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
@@ -157,13 +167,13 @@ static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
       break;
     }    
   }
-  MSG[i] = 0; //0-termination of String
+  MSG[i-1] = 0; //0-termination of String
 	TCHAR text[150]; // at least (31 + 2 + 80)
   int index = FanetGetIndex(Cn,pGPS->FanetName,false);
   if (index >= 0) {
     _tcscpy(text, pGPS->FanetName[index].Name); //we didn't found the name (name not sent yet) --> print device-id
   }else {
-    _tcscpy(text, DevId); //we didn't found the name (name not sent yet) --> print device-id
+    _tcscpy(text, HexDevId); //we didn't found the name (name not sent yet) --> print device-id
   }
   _tcscat(text, _T("\r\n"));
   _tcscat(text, MSG);
@@ -174,15 +184,10 @@ static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
 
 static BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];
+  TCHAR HexDevId[7];
   FANET_WEATHER weather;
 
-  NMEAParser::ExtractParameter(String,ctemp,0);
-  weather.Cn[0] = getByteFromHex(ctemp);
-
-  NMEAParser::ExtractParameter(String,ctemp,1);
-  weather.Cn[1] = getByteFromHex(&ctemp[0]);
-  // undefined result if _tcslen(ctemp) < 3
-  weather.Cn[2] = getByteFromHex(&ctemp[2]);
+  getIdFromMsg(String,HexDevId,weather.Cn);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
