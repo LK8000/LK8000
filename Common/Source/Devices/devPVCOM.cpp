@@ -164,7 +164,7 @@ BOOL PVCOMPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 
-BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR Station[]) {
+BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* Station) {
   TCHAR  szTmp[255];
   TCHAR  StationName[255] =_T("???");;
   if(Station != NULL)
@@ -184,7 +184,7 @@ BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR Station[]) {
 }
 
 
-BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR Station[]) {
+BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* Station) {
   TCHAR  szTmp[255];
   TCHAR  StationName[255] =_T("???");;
   if(Station != NULL)
@@ -223,12 +223,14 @@ BOOL PVCOMRequestAllData(PDeviceDescriptor_t d) {
   TCHAR  szTmp[255];
   _stprintf(szTmp, TEXT("$PVCOM,R,ALL"));
   PVCOMNMEAddCheckSumStrg(szTmp);
-  LockComm();
+
+  ScopeLock Lock(CritSec_Comm);
+
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
         d->Com->WriteString(szTmp);
-  UnlockComm();
+
   return(TRUE);
 }
 

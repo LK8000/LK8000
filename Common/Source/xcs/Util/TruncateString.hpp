@@ -43,6 +43,12 @@ TCHAR *
 CopyTruncateString(TCHAR *dest, size_t dest_size, const TCHAR *src);
 #endif
 
+template<typename CharT, size_t dest_size>
+inline CharT *
+CopyTruncateString(CharT (&dest)[dest_size], const CharT *src) {
+  return CopyTruncateString(dest, dest_size, src);
+}
+
 /**
  * Copy a string to a buffer, truncating it if the buffer is not large
  * enough.  At most #truncate characters will be copied.  No partial

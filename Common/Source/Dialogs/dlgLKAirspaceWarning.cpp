@@ -94,11 +94,13 @@ static CallBackTableEntry_t CallBackTable[]={
 
 static void dlgLKAirspaceFill(WndForm* dlg)
 {
+  if(!dlg) {
+    return;
+  }
+
   if (msg.warnlevel != airspace_copy.WarningLevel()) {
     // we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
-    if(dlg) {
-      dlg->SetModalResult(mrOK);
-    }
+    dlg->SetModalResult(mrOK);
   }
 
     //Fill up dialog data

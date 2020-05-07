@@ -18,7 +18,6 @@
 #include "resource.h"
 #include "LKStyle.h"
 
-static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]
 
 
@@ -112,31 +111,50 @@ static void OnTaskClicked(WndButton* pWnd){
   }
 }
 
-
-static void OnRadioFrequencyClicked(WndButton* pWnd){
+static void SetRadioFrequency(WndButton* pWnd, bool bActive)
+{
 #ifdef RADIO_ACTIVE
 
-  TCHAR szFreq[300];
 
   double Ferquency;
   LKASSERT(SelectedWaypoint>=0);
+  LockTaskData();
   LKASSERT(ValidWayPointFast(SelectedWaypoint));
   Ferquency = StrToDouble(WayPointList[SelectedWaypoint].Freq,NULL);
+  if(bActive) {
+    devPutFreqActive(Ferquency, WayPointList[SelectedWaypoint].Name);
+  } else {
+    devPutFreqStandby(Ferquency, WayPointList[SelectedWaypoint].Name);
+  }
 
-  devPutFreqActive(Ferquency, WayPointList[SelectedWaypoint].Name);
-
-  _stprintf(szFreq,_T(" %6.3f ") ,Ferquency);
+#ifdef STATUS_RADIO   // Status Popup not realy needed
+  TCHAR szFreq[60];
+  _stprintf(szFreq,_T("Standby %6.3f ") ,Ferquency);
 
   DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );
   DoStatusMessage(_T(""), szFreq );
+
   retStatus=3;
+#endif
+
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
       pForm->SetModalResult(mrOK);
     }
   }
+  UnlockTaskData();
 #endif  // RADIO_ACTIVE
+}
+
+static void OnRadioFrequencyClicked(WndButton* pWnd){
+	SetRadioFrequency(pWnd, true);
+}
+
+
+
+static void OnRadioFrequencySBClicked(WndButton* pWnd){
+	SetRadioFrequency(pWnd, false);
 }
 
 
@@ -148,6 +166,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnCancelClicked),
   ClickNotifyCallbackEntry(OnDetailsClicked),
   ClickNotifyCallbackEntry(OnRadioFrequencyClicked),
+  ClickNotifyCallbackEntry(OnRadioFrequencySBClicked),
   OnPaintCallbackEntry(OnPaintWaypointPicto),
   EndCallBackEntry()
 };
@@ -157,14 +176,24 @@ short dlgWayQuickShowModal(void){
 
   TCHAR sTmp[128];
 
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P);
+  std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTQUICK_L : IDR_XML_WAYPOINTQUICK_P));
 
   if (!wf) return 0;
   TCHAR buffer2[80];
   WindowControl* wFreq = wf->FindByName(TEXT("cmdRadioFreq"));
-  _stprintf(buffer2,_T("%s"),WPLSEL.Freq );
+  WindowControl* wFreqSB = wf->FindByName(TEXT("cmdRadioFreqSB"));
+  if(Appearance.UTF8Pictorials)
+    _stprintf(buffer2,_T("↕ %s"),WPLSEL.Freq );
+  else
+    _stprintf(buffer2,_T(">< %s"),WPLSEL.Freq );
   wFreq->SetCaption(buffer2);
   wFreq->Redraw();
+  if(Appearance.UTF8Pictorials)
+    _stprintf(buffer2,_T("↓ %s"),WPLSEL.Freq );
+  else
+    _stprintf(buffer2,_T("< %s"),WPLSEL.Freq );
+  wFreqSB->SetCaption(buffer2);
+  wFreqSB->Redraw();
   retStatus=0;
   if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP)&& WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
         TCHAR ttmp[50];
@@ -273,7 +302,12 @@ short dlgWayQuickShowModal(void){
 
 	  pWnd = wf->FindByName(TEXT("cmdRadioFreq"));
       if(pWnd) {
-        pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
+        pWnd->SetWidth((ScreenSizeX/4)-NIBLSCALE(4));
+	    pWnd->SetLeft((ScreenSizeX/4*3)-NIBLSCALE(2));
+      }
+	  pWnd = wf->FindByName(TEXT("cmdRadioFreqSB"));
+      if(pWnd) {
+        pWnd->SetWidth((ScreenSizeX/4)-NIBLSCALE(4));
 	    pWnd->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
       }
 	} else {
@@ -293,11 +327,15 @@ short dlgWayQuickShowModal(void){
     } else {
       WindowControl* pWndCancel = wf->FindByName(TEXT("cmdCancel"));
       WindowControl* pWndFreq = wf->FindByName(TEXT("cmdRadioFreq"));
+      WindowControl* pWndFreqSB = wf->FindByName(TEXT("cmdRadioFreqSB"));
       if(pWndCancel && pWndFreq) {
         pWndCancel->SetTop(pWndFreq->GetTop());
       }
       if(pWndFreq) {
           pWndFreq->SetVisible(false);
+      }
+      if(pWndFreqSB) {
+          pWndFreqSB->SetVisible(false);
       }
     }
   }
@@ -308,10 +346,6 @@ short dlgWayQuickShowModal(void){
     if(pWnd) {    pWnd->SetVisible(false);}
   }
   wf->ShowModal();
-
-  delete wf;
-
-  wf = NULL;
 
   return retStatus;
 

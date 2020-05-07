@@ -9,8 +9,8 @@
 NB_CORES=$(grep -c '^processor' /proc/cpuinfo)
 export MAKEFLAGS="-j$((NB_CORES+1)) -l${NB_CORES}"
 
-DOWNLOAD_DIR="${HOME}/tmp/download"
-SOURCE_DIR="${HOME}/tmp/source"
+DOWNLOAD_DIR="${HOME}/tmp/download/"
+SOURCE_DIR="${HOME}/tmp/source/"
 BUILD_DIR="${HOME}/tmp/build/"
 
 TOOLCHAINS="i686-w64-mingw32 x86_64-w64-mingw32"

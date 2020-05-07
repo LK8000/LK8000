@@ -11,6 +11,7 @@
 
 //_____________________________________________________________________includes_
 
+
 #include <time.h>
 #include "externs.h"
 #include "utils/stringext.h"
@@ -30,29 +31,32 @@
 #include "Utils.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
+#include "Time/PeriodClock.hpp"
 
 
-BOOL m_bValues = false;
 
-WndForm* wf = NULL;
 extern bool UpdateQNH(const double newqnh);
 
 #define NANO_PROGRESS_DLG
 #define BLOCK_SIZE 32
 
+
 PDeviceDescriptor_t DevLXNanoIII::m_pDevice=NULL;
-BOOL DevLXNanoIII::m_bLXNavS_series = false;
-bool bIGC_Download = false;
+BOOL DevLXNanoIII::m_bShowValues = false;
+BOOL DevLXNanoIII::bIGC_Download = false;
+BOOL DevLXNanoIII::m_bDeclare = false;
 static FILE *f= NULL;
 uint uTimeout =0;
 //______________________________________________________________________defines_
 
 /// polynom for LX data CRC
 #define LX_CRC_POLY 0x69
-
-TCHAR m_Filename[200];
+#define QNH_OR_ELEVATION
+TCHAR m_Filename[64];
 uint m_CurLine =0;
 
+#define MAX_NMEA_PAR_LEN    30
+#define MAX_VAL_STR_LEN    60
 
 int iRxUpdateTime=0;
 int iNano3_RxUpdateTime=0;
@@ -70,16 +74,19 @@ BOOL Nano3_PutMacCready(PDeviceDescriptor_t d, double MacCready);
 BOOL Nano3_PutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs);
 
-NMEA_INFO localVales;
+
+
+Mutex  CritSec_LXDebugStr;
+TCHAR LxValueStr[_LAST][ MAX_VAL_STR_LEN];
 
 BOOL IsDirInput( DataBiIoDir IODir)
 {
   switch(IODir)
   {
-    case BiDirOff  : return false; break;	 // OFF    no data exchange with this data (ignore data)
-    case BiDirIn   : return true;  break;	 // IN     only reading of this data from external device
-    case BiDirOut  : return false; break;	 // OUT    only sending this data to external device
-    case BiDirInOut: return true;  break;	 // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
+    case BiDirOff  : return false; break;  // OFF    no data exchange with this data (ignore data)
+    case BiDirIn   : return true;  break;  // IN     only reading of this data from external device
+    case BiDirOut  : return false; break;  // OUT    only sending this data to external device
+    case BiDirInOut: return true;  break;  // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
   }
   return false;
 }
@@ -89,13 +96,15 @@ BOOL IsDirOutput( DataBiIoDir IODir)
 
   switch(IODir)
   {
-    case BiDirOff  : return false; break;	 // OFF    no data exchange with this data (ignore data)
-    case BiDirIn   : return false; break;	 // IN     only reading of this data from external device
-    case BiDirOut  : return true ; break;	 // OUT    only sending this data to external device
-    case BiDirInOut: return true ; break;	 // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
+    case BiDirOff  : return false; break;  // OFF    no data exchange with this data (ignore data)
+    case BiDirIn   : return false; break;  // IN     only reading of this data from external device
+    case BiDirOut  : return true ; break;  // OUT    only sending this data to external device
+    case BiDirInOut: return true ; break;  // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
   }
   return false;
 }
+
+
 
 
 //____________________________________________________________class_definitions_
@@ -168,6 +177,21 @@ bool DevLXNanoIII::Register(){
 
 
 
+
+BOOL  DevLXNanoIII::Values( PDeviceDescriptor_t d)
+{
+  bool res = false;
+
+    if(d != NULL)
+      if( Port() == d->PortNumber)
+      {
+        if( Port() >= 0)   res = true;
+      }
+
+  return res;
+
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
@@ -184,8 +208,6 @@ BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   d->PutBugs      = Nano3_PutBugs;
   d->PutBallast   = Nano3_PutBallast;
   d->Open         = Open;
-  d->Close        = NULL;
-  d->Init         = NULL;
   d->LinkTimeout  = GetTrue;
   d->Declare      = DeclareTask;
   d->IsLogger     = GetTrue;
@@ -234,25 +256,25 @@ long  StrTol(const  TCHAR *buff) {
 
 long Nano3Baudrate(int iIdx)
 {
-//	indexes are following:
-//	enum { br4800=0, br9600, br19200, br38400, br57600,
-//	br115200,br230400,br256000,br460800, br500k, br1M};
+//  indexes are following:
+//  enum { br4800=0, br9600, br19200, br38400, br57600,
+//  br115200,br230400,br256000,br460800, br500k, br1M};
 long lBaudrate = -1;
-switch (iIdx)
-{
-  case 0:  lBaudrate = 4800   ; break;
-  case 1:  lBaudrate = 9600   ; break;
-  case 2:  lBaudrate = 19200  ; break;
-  case 3:  lBaudrate = 38400  ; break;
-  case 4:  lBaudrate = 56800  ; break;
-  case 5:  lBaudrate = 115200 ; break;
-  case 6:  lBaudrate = 230400 ; break;
-  case 7:  lBaudrate = 256000 ; break;
-  case 8:  lBaudrate = 460800 ; break;
-  case 9:  lBaudrate = 500000 ; break;
-  case 10: lBaudrate = 1000000; break;
-  default: lBaudrate = -1     ; break;
-}
+  switch (iIdx)
+  {
+    case 0:  lBaudrate = 4800   ; break;
+    case 1:  lBaudrate = 9600   ; break;
+    case 2:  lBaudrate = 19200  ; break;
+    case 3:  lBaudrate = 38400  ; break;
+    case 4:  lBaudrate = 56800  ; break;
+    case 5:  lBaudrate = 115200 ; break;
+    case 6:  lBaudrate = 230400 ; break;
+    case 7:  lBaudrate = 256000 ; break;
+    case 8:  lBaudrate = 460800 ; break;
+    case 9:  lBaudrate = 500000 ; break;
+    case 10: lBaudrate = 1000000; break;
+    default: lBaudrate = -1     ; break;
+  }
 return lBaudrate;
 }
 
@@ -263,15 +285,17 @@ BOOL DevLXNanoIII::Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
 {
 TCHAR  szTmp[MAX_NMEA_LEN];
 #define CHANGE_DELAY 10
+if(!IsDirInput(PortIO[d->PortNumber].DirLink))
+    return false;
 
-if(iNano3_GPSBaudrate ==0)
-{
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,BRGPS,R"));
-  SendNmea(d,szTmp);
-  Poco::Thread::sleep(CHANGE_DELAY);
-  SendNmea(d, szTmp);
-  Poco::Thread::sleep(CHANGE_DELAY);
-}
+  if(iNano3_GPSBaudrate ==0)
+  {
+    _tcscpy(szTmp, TEXT("PLXV0,BRGPS,R"));
+    SendNmea(d,szTmp);
+    Poco::Thread::sleep(CHANGE_DELAY);
+    SendNmea(d, szTmp);
+    Poco::Thread::sleep(CHANGE_DELAY);
+  }
 
 
   if(bLinkEnable)
@@ -281,7 +305,7 @@ if(iNano3_GPSBaudrate ==0)
     #endif
     iNano3_PDABaudrate = d->Com->GetBaudrate();
 
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,CONNECTION,W,DIRECT"));
+    _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,DIRECT"));
     SendNmea(d, szTmp);
     Poco::Thread::sleep(CHANGE_DELAY);
     if((iNano3_PDABaudrate > 0) && (iNano3_GPSBaudrate >0) && (iNano3_PDABaudrate != iNano3_GPSBaudrate))
@@ -310,7 +334,7 @@ if(iNano3_GPSBaudrate ==0)
     #if TESTBENCH
     StartupStore(TEXT("LAXNav: Return from LAXNav link %s"), NEWLINE);
     #endif
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,CONNECTION,W,VSEVEN"));
+    _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,VSEVEN"));
     SendNmea(d,szTmp);
     Poco::Thread::sleep(CHANGE_DELAY);
 
@@ -334,11 +358,7 @@ if(iNano3_GPSBaudrate ==0)
 
 BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
-
-  static int i=40;
   TCHAR  szTmp[MAX_NMEA_LEN];
-
-
 
   if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
   {
@@ -351,36 +371,45 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
     {
       if(!IsDirOutput(PortIO[d->PortNumber].MCDir))
       {
-      if(fabs(Nano3_oldMC - MACCREADY)> 0.005f)
-      {
-	Nano3_PutMacCready( d,  MACCREADY);
-	Nano3_oldMC = MACCREADY;
-	Nano3_MacCreadyUpdateTimeout = 2;
-      }
+        if(fabs(Nano3_oldMC - MACCREADY)> 0.005f)
+        {
+          Nano3_PutMacCready( d,  MACCREADY);
+          Nano3_oldMC = MACCREADY;
+          Nano3_MacCreadyUpdateTimeout = 2;
+        }
       }
     }
   }
 
-  PutTarget(d);
 
-  /* configure LX after 10 GPS positions */
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
+static char lastSec =0;
+  if( !Declare() && (info->Second != lastSec))  // execute every second only if no task is declaring
   {
-    if(i++ > 10)
+    lastSec = info->Second;
+    if((info->Second % 10) ==0) // config every 10s (not on every xx $GPGGA as there are 10Hz GPS now
     {
       SetupLX_Sentence(d);
-      i=0;
     }
 
+    static int old_overindex = -1;    // call every 10s or on change
+    static int old_overmode = -1;
+    if( ( ((info->Second+5) %10) ==0) || (OvertargetMode != old_overmode) || (GetOvertargetIndex() != old_overindex))
+    {
+      PutTarget(d);
+      old_overindex = GetOvertargetIndex();;
+      old_overmode  = OvertargetMode;
+    }
+  }
 
-      if(iS_SeriesTimeout-- < 0)
-        devSetAdvancedMode(d,false);
 
-    static int oldQFEOff =0;
+  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
+  {
+    if(iS_SeriesTimeout-- < 0)
+      devSetAdvancedMode(d,false);
+
+
+#ifdef QNH_OR_ELEVATION
     static int iOldQNH   =0;
-
-
-
     int iQNH = (int)(QNH*100.0);
     if(iQNH != iOldQNH)
     {
@@ -388,8 +417,8 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
       _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,QNH,W,%i"),(int)iQNH);
       SendNmea(d,szTmp);
     }
-
-
+#else
+    static int oldQFEOff =0;
     int QFE = (int)QFEAltitudeOffset;
     if(QFE != oldQFEOff)
     {
@@ -397,11 +426,12 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
       _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
        SendNmea(d,szTmp);
     }
+#endif
   }
 #ifdef EEE
   if(iNano3_GPSBaudrate ==0)
   {
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,BRGPS,R"));
+    _tcscpy(szTmp, TEXT("PLXV0,BRGPS,R"));
     SendNmea(d,szTmp);
   }
 #endif
@@ -419,25 +449,26 @@ BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
       if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
         return PLXVS(d, sentence + 7, info);
       else
-    	if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
-    	  return PLXV0(d, sentence + 7, info);
-    	else
-          if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-            return LXWP2(d, sentence + 7, info);
+      if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
+        return PLXV0(d, sentence + 7, info);
+      else
+        if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+          return LXWP2(d, sentence + 7, info);
+        else
+          if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+            return LXWP0(d, sentence + 7, info);
           else
-            if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
-              return LXWP0(d, sentence + 7, info);
-	    else
-	      if(_tcsncmp(_T("$PLXVTARG"), sentence, 9) == 0)
-		return PLXVTARG(d, sentence + 10, info);
-	      else
-		if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-		{
-		  Nano3_bValid = true;
-		  return LXWP1(d, sentence + 7, info);
-		}
-
-
+            if(_tcsncmp(_T("$PLXVTARG"), sentence, 9) == 0)
+              return PLXVTARG(d, sentence + 10, info);
+            else
+              if(_tcsncmp(_T("$GPRMB"), sentence, 6) == 0)
+                return GPRMB(d, sentence + 7, info);
+              else
+                if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+                {
+                  Nano3_bValid = true;
+                  return LXWP1(d, sentence + 7, info);
+                }
 return false;
 } // ParseNMEA()
 
@@ -445,8 +476,6 @@ return false;
 
 BOOL DevLXNanoIII::Open( PDeviceDescriptor_t d) {
 
-
-  m_pDevice = d;
   return TRUE;
 }
 
@@ -460,51 +489,28 @@ CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 
 
 
-
 BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 {
-  if(devGetAdvancedMode(d))
-  {
-    SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,10,10,1,5,5"));
-  }
+  SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,10,10,1,5,5"));
   return true;
 }
 
 
-
-
-BOOL DevLXNanoIII::ShowDataValue(WndForm* wf , PDeviceDescriptor_t d ,const TCHAR Select[],  const TCHAR ValueText[])
+BOOL DevLXNanoIII::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
 {
-
-
-  if(m_pDevice != d) return false;
-  if(!m_bValues) return false;
-  if(!ValueText) return false;
-  WndProperty *wp;
-  wp = (WndProperty*)wf->FindByName(Select);
-  if (wp) {
-    DataField* dfe = wp->GetDataField();
-    if(dfe) {
-      dfe->Clear();
-      dfe->addEnumText(ValueText);
-      return true;
-    }
-  }
-  return false;
+  CritSec_LXDebugStr.Lock();
+  _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
+  CritSec_LXDebugStr.Unlock();
+  return true;
 }
-
-
-
-
-
 
 
 BOOL DevLXNanoIII::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
 {
 WndProperty *wp;
+if(!wf) return false;
 wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
 int PortNum = d->PortNumber;
-    StartupStore(_T(" ShowData : Device Number %i %s"),PortNum, NEWLINE);
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
@@ -514,7 +520,6 @@ int PortNum = d->PortNumber;
     dfe->Set((uint) PortIO[PortNum].MCDir);
     wp->RefreshDisplay();
   }
-
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));
   if (wp) {
@@ -544,7 +549,6 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-    
     dfe->Set((uint) PortIO[PortNum].STFDir);
     wp->RefreshDisplay();
   }
@@ -555,7 +559,6 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-
     dfe->Set((uint) PortIO[PortNum].WINDDir);
     wp->RefreshDisplay();
   }
@@ -565,7 +568,6 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-
     dfe->Set((uint) PortIO[PortNum].BARODir);
     wp->RefreshDisplay();
   }
@@ -574,7 +576,6 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-
     dfe->Set((uint) PortIO[PortNum].SPEEDDir);
     wp->RefreshDisplay();
   }
@@ -588,22 +589,31 @@ int PortNum = d->PortNumber;
     dfe->Set((uint) PortIO[PortNum].VARIODir);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTARGDir"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
-    dfe->Set((uint) PortIO[PortNum].TARGETDir);
+    dfe->addEnumText(_T("$PLXVTARG")); // "IN" = $PLXVTARG
+    dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
+    dfe->Set((uint) PortIO[PortNum].R_TRGTDir);
     wp->RefreshDisplay();
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField(); dfe->Clear();
+    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(_T("$PLXVTARG")); // "IN" = $PLXVTARG
+    dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
+    dfe->Set((uint) PortIO[PortNum].T_TRGTDir);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-
     dfe->Set((uint) PortIO[PortNum].GFORCEDir);
     wp->RefreshDisplay();
   }
@@ -612,7 +622,6 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-
     dfe->Set((uint) PortIO[PortNum].OATDir);
     wp->RefreshDisplay();
   }
@@ -622,7 +631,6 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-
     dfe->Set((uint) PortIO[PortNum].BAT1Dir);
     wp->RefreshDisplay();
   }
@@ -632,7 +640,6 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-
     dfe->Set((uint) PortIO[PortNum].BAT2Dir);
     wp->RefreshDisplay();
   }
@@ -642,62 +649,85 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
 //    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-//    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-
-    dfe->Set((uint) PortIO[PortNum].BAT2Dir);
+    dfe->Set((uint) PortIO[PortNum].POLARDir);
     wp->RefreshDisplay();
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField(); dfe->Clear();
+    dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken(894)); // LKTOKEN  _@M894_": "ON"
+    dfe->Set((uint) PortIO[PortNum].DirLink);
+    wp->RefreshDisplay();
+  }
+
   return true;
 }
 
 
 
-//SendNmea(m_pDevice, LastCommand, errBufSize, errBuf);
  bool  DevLXNanoIII::OnIGCTimeout(WndForm* pWnd){
 
-  if(m_pDevice == NULL) return false;
+  if(Device() == NULL) return false;
 
   TCHAR Command[MAX_NMEA_LEN];
   StartupStore(_T(" ******* NANO3  OnIGCTimeout resend last Block request ***** %s") , NEWLINE);
   _sntprintf(Command, MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
-  SendNmea(m_pDevice, Command);
+  SendNmea(Device(), Command);
 
   return true;
 }
 
-static bool OnTimer(WndForm* pWnd){
-  WndProperty *wp = NULL;
-  if(m_bValues)
+
+void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx)
+{
+  if(wp)
   {
-    wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));     if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));    if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir"));    if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir"));    if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir"));   if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir"));   if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir"));  if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir"));  if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpTARGDir"));   if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir")); if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir"));    if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir"));   if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));   if(wp) { wp->RefreshDisplay();};
-    wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));  if(wp) { wp->RefreshDisplay();};
+    DataField* dfe = wp->GetDataField();
+    if(dfe)
+    {
+      dfe->Clear();
+      CritSec_LXDebugStr.Lock();
+      dfe->addEnumText(LxValueStr[Idx]);
+      CritSec_LXDebugStr.Unlock();
+      wp->RefreshDisplay();
+    }
+  }
+}
+
+static bool OnTimer(WndForm* pWnd)
+{
+  WndForm * wf = pWnd->GetParentWndForm();
+  WndProperty *wp = NULL;
+
+  if(wf)
+  {
+    wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir")     ); UpdateValueTxt( wp,  _MC    );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir")    ); UpdateValueTxt( wp,  _BUGS  );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir")    ); UpdateValueTxt( wp,  _BAL   );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir")    ); UpdateValueTxt( wp,  _STF   );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir")   ); UpdateValueTxt( wp,  _WIND  );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir")   ); UpdateValueTxt( wp,  _BARO  );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir")  ); UpdateValueTxt( wp,  _VARIO );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir")  ); UpdateValueTxt( wp,  _SPEED );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir") ); UpdateValueTxt( wp,  _R_TRGT);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir") ); UpdateValueTxt( wp,  _T_TRGT);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir") ); UpdateValueTxt( wp,  _GFORCE);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir")    ); UpdateValueTxt( wp,  _OAT   );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir")   ); UpdateValueTxt( wp,  _BAT1  );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir")   ); UpdateValueTxt( wp,  _BAT2  );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir")  ); UpdateValueTxt( wp,  _POLAR );
+    wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink")); UpdateValueTxt( wp,  _DIRECT);
   }
   return true;
 }
 
 BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
-  if(m_pDevice != d) {
 
-    return FALSE;
-  }
-  m_pDevice = d;
-
-
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DEV_LXNAV_L : IDR_XML_DEV_LXNAV_P);
+  WndForm*  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DEV_LXNAV_L : IDR_XML_DEV_LXNAV_P);
   if(wf) {
-
+    Device(d);
     WndButton *wBt = NULL;
 
     wBt = (WndButton *)wf->FindByName(TEXT("cmdClose"));
@@ -705,35 +735,27 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
       wBt->SetOnClickNotify(OnCloseClicked);
     }
 
-    wBt = (WndButton *)wf->FindByName(TEXT("cmdCancel"));
-    if(wBt){
-      wBt->SetOnClickNotify(OnCancelClicked);
-    }
-
     wBt = (WndButton *)wf->FindByName(TEXT("cmdIGCDownload"));
     if(wBt){
       wBt->SetOnClickNotify(OnIGCDownloadClicked);
     }
 
-
     wBt = (WndButton *)wf->FindByName(TEXT("cmdValues"));
     if(wBt){
       wBt->SetOnClickNotify(OnValuesClicked);
     }
+    ShowValues(false);
+
     ShowData(wf, d);
-    wf->SetTimerNotify(100, OnTimer);
     wf->ShowModal();
-    m_bValues = false;
     wf->SetTimerNotify(0, NULL);
+    Device(NULL);
+
     delete wf;
     wf=NULL;
   }
   return TRUE;
 }
-
-
-
-
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -743,6 +765,8 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
 const TCHAR* DevLXNanoIII::GetName() {
   return(_T("LX Nano 3"));
 } // GetName()
+
+
 
 
 
@@ -763,7 +787,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
   Decl  decl;
   Class lxClass;
   byte t_DD, t_MM, t_YY, t_hh, t_mm, t_ss;
-  TCHAR szTmp[MAX_NMEA_LEN];
+  TCHAR buffer[128];
 
   // we will use text-defined class
   lxClass.SetName(lkDecl->CompetitionClass);
@@ -773,14 +797,14 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
 
   // set new Rx timeout
   int  orgRxTimeout;
-  bool status = SetRxTimeout(d, 2000, orgRxTimeout, errBufSize, errBuf);
+  bool status = SetRxTimeout(d, 4000, orgRxTimeout, errBufSize, errBuf);
   if (status) {
+      Declare(true);
     ShowProgress(decl_enable);
 
     // Establish connecttion and check two-way communication...
-    _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,INFO,R"));
-  	StartupStore(_T(". NANO Decl: %s %s "),   szTmp, NEWLINE);
-    status = status && SendNmea(d, szTmp, errBufSize, errBuf);
+    _stprintf(buffer, _T("PLXVC,INFO,R"));
+    status = status && DevLXNanoIII::SendNmea(d, buffer, errBufSize, errBuf);
     if (status)
       status = status && ComExpect(d, "$PLXVC,INFO,A,", 256, NULL, errBufSize, errBuf);
     Poco::Thread::sleep(300);
@@ -793,6 +817,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
       if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)){
            SetRxTimeout(d, orgRxTimeout,orgRxTimeout, status ? errBufSize : 0, errBuf);
            StartRxThread(d, status ? errBufSize : 0, errBuf);
+         Declare(false);
         return(false);
       }
       int wpCount = lkDecl->num_waypoints;
@@ -801,11 +826,11 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
       INT i = 0;
 
       // Metadata
-      _sntprintf(DeclStrings[i++], 256, TEXT("HFPLTPILOT:%s"), lkDecl->PilotName);
-      _sntprintf(DeclStrings[i++], 256, TEXT("HFGTYGGLIDERTYPE:%s"), lkDecl->AircraftType);
-      _sntprintf(DeclStrings[i++], 256, TEXT("HFGIDGLIDERID:%s"), lkDecl->AircraftRego);
-      _sntprintf(DeclStrings[i++], 256, TEXT("HFCIDCOMPETITIONID:%s"), lkDecl->CompetitionID);
-      _sntprintf(DeclStrings[i++], 256, TEXT("HFCCLCOMPETITIONCLASS:%s"), lkDecl->CompetitionClass);
+      _stprintf(DeclStrings[i++], TEXT("HFPLTPILOT:%s"), lkDecl->PilotName);
+      _stprintf(DeclStrings[i++], TEXT("HFGTYGGLIDERTYPE:%s"), lkDecl->AircraftType);
+      _stprintf(DeclStrings[i++], TEXT("HFGIDGLIDERID:%s"), lkDecl->AircraftRego);
+      _stprintf(DeclStrings[i++], TEXT("HFCIDCOMPETITIONID:%s"), lkDecl->CompetitionID);
+      _stprintf(DeclStrings[i++], TEXT("HFCCLCOMPETITIONCLASS:%s"), lkDecl->CompetitionClass);
 
       // "C" record, first line acording to IGC GNSS specification 3.6.1
       if (!GPS_INFO.NAVWarning && GPS_INFO.SatellitesUsed > 0 &&
@@ -819,40 +844,36 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
         t_DD = utc->tm_mday;   t_MM = utc->tm_mon + 1;  t_YY = utc->tm_year % 100;
         t_hh = utc->tm_hour;   t_mm = utc->tm_min;      t_ss = utc->tm_sec;
       }
-      _sntprintf(DeclStrings[i++], 256, TEXT("C%02d%02d%02d%02d%02d%02d000000%04d%02d"),
-              // DD    MM    YY    HH    MM    SS (DD MM YY) IIII  TT
-                 t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,              1, wpCount-2);
-#ifdef TAKEOFF
+      _stprintf(DeclStrings[i++], TEXT("C%02d%02d%02d%02d%02d%02d000000%04d%02d"),
+                  // DD    MM    YY    HH    MM    SS (DD MM YY) IIII  TT
+                   t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,              1, wpCount-2);
+
       // TakeOff point
       if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_takeoff);
       }
-#endif
+
       // TurnPoints
       for (int ii = 0; ii < wpCount; ii++) {
         decl.WpFormat(DeclStrings[i++], lkDecl->waypoint[ii], Decl::tp_regular);
       }
 
-#ifdef LANDING
       // Landing point
       if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_landing);
       }
-#endif
 
       // Send complete declaration to logger
       for (int ii = 0; ii < i ; ii++){
         if (status)
-          {
-          status = status && DevLXNanoIII::SendDecl(d, ii+1, i,
+          status = status && DevLXNanoIII::SendDecl(d, ii+1, totalLines,
                                    DeclStrings[ii], errBufSize, errBuf);
         StartupStore(_T(". NANO Decl: %s %s "),   DeclStrings[ii], NEWLINE);
         Poco::Thread::sleep(50);
-          }
       }
     }
     ShowProgress(decl_disable);
@@ -865,9 +886,9 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
 
   // restart RX thread (we must try that always; don't overwrite error descr)
   status = status && StartRxThread(d, status ? errBufSize : 0, errBuf);
+  Declare(false);
   return(status);
 } // DeclareTask()
-
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1008,18 +1029,33 @@ void DevLXNanoIII::Class::SetName(const TCHAR* text){
 ///
 // static
 bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]){
-  unsigned char chksum = 0;
-  unsigned int i;
+
+  ScopeLock Lock(CritSec_Comm);
+  if(!d || !d->Com) {
+    return false;
+  }
+
   char asciibuf[256];
   DevLXNanoIII::Wide2LxAscii(buf, 256, asciibuf);
-  for(i = 0; i < strlen(asciibuf); i++) chksum ^= asciibuf[i];
-  //sprintf(asciibuf, "%s*%02X\r\n", asciibuf, chksum);
-  if (!ComWrite(d, '$', errBufSize, errBuf))  return (false);
-  for(i = 0; i < strlen(asciibuf); i++)
-    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) return (false);
+  unsigned char chksum = 0;
+
+  if (!ComWrite(d, '$', errBufSize, errBuf)) {
+    return (false);
+  }
+
+  for(size_t i = 0; i < strlen(asciibuf); i++) {
+    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) {
+      return (false);
+    }
+    chksum ^= asciibuf[i];
+  }
+
   sprintf(asciibuf, "*%02X\r\n",chksum);
-  for(i = 0; i < strlen(asciibuf); i++)
-    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) return (false);
+  for(size_t i = 0; i < strlen(asciibuf); i++) {
+    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) {
+      return (false);
+    }
+  }
 
 //  StartupStore(_T("request: $%s*%02X %s "),   buf,chksum, NEWLINE);
 
@@ -1072,141 +1108,150 @@ bool DevLXNanoIII::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows
 
 
 
-void DevLXNanoIII::OnCancelClicked(WndButton* pWnd){
+
+void DevLXNanoIII::GetDirections(WndButton* pWnd){
   if(pWnd) {
-      WndForm * wf = pWnd->GetParentWndForm();
-      StartupStore(_T(" Nano3 OnCancel%s"), NEWLINE);
-      wf->SetModalResult(mrCancel);
+    WndForm * wf = pWnd->GetParentWndForm();
+    if(wf) {
+    int PortNum = Port();
+
+      WndProperty *wp;
+      wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].MCDir = (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].BUGDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+
+      wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].BALDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].STFDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].WINDDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].BARODir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].VARIODir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].SPEEDDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].R_TRGTDir =  (DataTP_Type) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].GFORCEDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].OATDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].BAT1Dir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].BAT2Dir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].POLARDir =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].DirLink =  (DataBiIoDir) dfe->GetAsInteger();
+      }
+      wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].T_TRGTDir =  (DataTP_Type) dfe->GetAsInteger();
+      }
+    }
   }
-}
-
-
-void DevLXNanoIII::GetDirections(WndButton* pWnd)
-{
-if(pWnd) {
-  WndForm * wf = pWnd->GetParentWndForm();
-  if(wf) {
-	int PortNum = m_pDevice->PortNumber;
-	StartupStore(_T(" On Close : Device Number %i %s"),PortNum, NEWLINE);
-    WndProperty *wp;
-    wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].MCDir = (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].BUGDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].BALDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].STFDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].WINDDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].BARODir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].VARIODir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].SPEEDDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpTARGDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].TARGETDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].GFORCEDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].OATDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].BAT1Dir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].BAT2Dir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));
-    if (wp) {
-	DataField* dfe = wp->GetDataField();
-	PortIO[PortNum].POLARDir =  (DataBiIoDir) dfe->GetAsInteger();
-    }
-  }
-}
 }
 
 void DevLXNanoIII::OnCloseClicked(WndButton* pWnd)
 {
-  if(!m_bValues)
+  WndForm * wf = pWnd->GetParentWndForm();
+
+  if(!ShowValues())
     GetDirections(pWnd);
-  wf->SetModalResult(mrOK);
+  if(wf)
+  {
+    wf->SetTimerNotify(0, NULL);
+    wf->SetModalResult(mrOK);
+  }
 }
 
 
 void DevLXNanoIII::OnValuesClicked(WndButton* pWnd) {
 
-
-  m_bValues = !m_bValues;
-  WndButton *wBt = (WndButton *) wf->FindByName(TEXT("cmdValues"));
-  if (wBt) {
-    if (!m_bValues) {
-      wBt->SetCaption(MsgToken(2467));// _@M2467_ "Values"
-    } else {
-      GetDirections(pWnd);
-      wBt->SetCaption(MsgToken(2468));//  _@M2468_ "Direction"
-    }
-  }
-  if (wf)
+  WndForm * wf = pWnd->GetParentWndForm();
+  if(wf)
   {
-    if (m_bValues) {
-      ShowDataValue( wf ,m_pDevice, _T("prpMCDir"),    (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpBUGDir"),   (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpBALDir"),   (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpSTFDir"),   (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpWINDDir"),  (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpBARODir"),  (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpVARIODir"), (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpSPEEDDir"), (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpTARGDir"),  (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpGFORCEDir"),(_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpOATDir"),   (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpBAT1Dir"),  (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpBAT2Dir"),  (_T("")));
-      ShowDataValue( wf ,m_pDevice, _T("prpPOLARDir"), (_T("")));
+    ShowValues (!ShowValues());
+    WndButton *wBt = (WndButton *) wf->FindByName(TEXT("cmdValues"));
+    if (wBt) {
+      if (ShowValues()) {
+        wf->SetTimerNotify(250, OnTimer); // update values 4 times a second
+        GetDirections(pWnd);
+        wBt->SetCaption(MsgToken(2468));//  _@M2468_ "Direction"
+      } else {
+        wf->SetTimerNotify(0, NULL);    // turn Off the timer
+        wBt->SetCaption(MsgToken(2467));// _@M2467_ "Values"
+        if (wf) ShowData(wf, Device());
+      }
     }
-    else
-      ShowData(wf, m_pDevice);
+    StartupStore(_T(" Nano3 CLEAR VALUES %s"), NEWLINE);
+    SetDataText( _MC,    _T(""));
+    SetDataText( _BUGS,  _T(""));
+    SetDataText( _BAL,   _T(""));
+    SetDataText( _STF,   _T(""));
+    SetDataText( _WIND,  _T(""));
+    SetDataText( _BARO,  _T(""));
+    SetDataText( _VARIO, _T(""));
+    SetDataText( _SPEED, _T(""));
+    SetDataText( _R_TRGT,_T(""));
+    SetDataText( _GFORCE,_T(""));
+    SetDataText( _OAT,   _T(""));
+    SetDataText( _BAT1,  _T(""));
+    SetDataText( _BAT2,  _T(""));
+    SetDataText( _POLAR, _T(""));
+    SetDataText( _DIRECT,_T(""));
+    SetDataText( _T_TRGT,_T(""));
   }
-};
+}
 
 void DevLXNanoIII::OnIGCDownloadClicked(WndButton* pWnd) {
 (void)pWnd;
@@ -1214,7 +1259,7 @@ LockFlightData();
 bool bInFlight    = CALCULATED_INFO.Flying;
 UnlockFlightData();
 
-  if(bInFlight)	{
+  if(bInFlight) {
     MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
     return;
   }
@@ -1222,11 +1267,9 @@ UnlockFlightData();
 
   _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,LOGBOOKSIZE,R"));
 
-  SendNmea(m_pDevice, szTmp);
+  SendNmea(Device(), szTmp);
 
-  if(m_pDevice) {
-      dlgLX_IGCSelectListShowModal(m_pDevice);
-  }
+  dlgLX_IGCSelectListShowModal();
 }
 
 
@@ -1239,13 +1282,13 @@ LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
 
   f = _tfopen( IGCFilename, TEXT("w"));
   if(f == NULL)   return false;
-  // SendNmea(m_pDevice, _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
+  // SendNmea(Device(), _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
   StartupStore(_T(" ******* NANO3  IGC Download START ***** %s") , NEWLINE);
   _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
   _sntprintf(m_Filename, array_size(m_Filename), _T("%s"),Filename);
-  SendNmea(m_pDevice, szTmp);
+  SendNmea(Device(), szTmp);
   StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
-  bIGC_Download = true;
+  IGCDownload(true);
 #ifdef  NANO_PROGRESS_DLG
   CreateIGCProgressDialog();
 #endif
@@ -1257,13 +1300,14 @@ return true;
 
 BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
 {
+
   if(f != NULL)
   {
     fclose(f); f= NULL;
   }
-  bool bWasInProgress = bIGC_Download ;
-  bIGC_Download = false;
-  wf->SetTimerNotify(0, NULL);
+  bool bWasInProgress = IGCDownload() ;
+  IGCDownload ( false );
+
 #ifdef  NANO_PROGRESS_DLG
   CloseIGCProgressDialog();
 #endif
@@ -1272,7 +1316,7 @@ BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
 
 
 BOOL DevLXNanoIII::Close (PDeviceDescriptor_t d) {
-  m_pDevice = NULL;
+  Device(NULL);
   return TRUE;
 }
 
@@ -1281,17 +1325,17 @@ BOOL DevLXNanoIII::Close (PDeviceDescriptor_t d) {
 
 BOOL DevLXNanoIII::PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
-  wf->SetTimerNotify(0, NULL);
+
 bool bCRCok = NMEAParser::NMEAChecksum(sentence);
 if (!bCRCok){
     StartupStore(_T("NANO3: Checksum Error %s %s") ,sentence, NEWLINE);
-    
+
 }
 
 if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
 {
-  TCHAR Par[10][MAX_NMEA_LEN];
-
+  TCHAR Par[10][MAX_NMEA_PAR_LEN];
+  TCHAR szCommand[MAX_NMEA_LEN];
   for(uint i=0; i < 10 ; i++)
   {
     NMEAParser::ExtractParameter(sentence,Par[i],i);
@@ -1301,10 +1345,14 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
 
   if (_tcsncmp(_T("LOGBOOKSIZE"), Par[1],11) == 0)
   {
-    _sntprintf(Par[0],MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"),(uint) (StrTol(Par[3]))+1);
-    SendNmea(d, Par[0]);
+    if( StrTol(Par[3]) > 0) // at least one file exists?
+    {
+      _sntprintf(szCommand,MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"), (unsigned int) StrTol(Par[3])+1);
+      SendNmea(d, szCommand);
+    }
   }
   else
+  {
     if (_tcsncmp(_T("LOGBOOK"), Par[1],7) == 0)  // PLXVC but not declaration = IGC File transfer
     {
       TCHAR Line[2][MAX_NMEA_LEN];
@@ -1314,52 +1362,51 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
     }
     else
     {
-      if (bIGC_Download &&(_tcsncmp(_T("FLIGHT"), Par[1],6) == 0))
+      if (IGCDownload() &&(_tcsncmp(_T("FLIGHT"), Par[1],6) == 0))
       {
+       if( bCRCok) // CRC OK?
+       {
+         if(_tcslen( Par[3]) > 0)
+           StartupStore(_T(">>>> %s %s") ,sentence, NEWLINE);
 
-	 if( bCRCok) // CRC OK?
-	 {
-	   if(_tcslen( Par[3]) > 0)
-	     StartupStore(_T(">>>> %s %s") ,sentence, NEWLINE);
+         for(uint i=0; i < (uint)_tcslen(Par[6]); i++)  {
+           fputc((char)Par[6][i],f); } fputc((char)'\n',f);
+         m_CurLine = (uint) StrTol(Par[4]);
+        uint TotalLines = (uint) StrTol(Par[5]);
+         uint uPercent = 0;
+         if(TotalLines > 0)
+           uPercent = (m_CurLine*100) / TotalLines;
+         _sntprintf(Par[1],MAX_NMEA_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
 
-	   for(uint i=0; i < (uint)_tcslen(Par[6]); i++)	{
-	     fputc((char)Par[6][i],f); } fputc((char)'\n',f);
-	   m_CurLine = (uint) StrTol(Par[4]);
-	  uint TotalLines = (uint) StrTol(Par[5]);
-	   uint uPercent = 0;
-	   if(TotalLines > 0)
-	     uPercent = (m_CurLine*100) / TotalLines;
-	   _sntprintf(Par[1],MAX_NMEA_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
-
-#ifdef NANO_PROGRESS_DLG
-	   IGCProgressDialogText(Par[1]);
-#endif
-	   if(m_CurLine == TotalLines)  // reach end of file?
-	   {
-	     if(f != NULL) { fclose(f); f= NULL; }
-	     StartupStore(_T(" ******* NANO3  IGC Download END ***** %s") , NEWLINE);
-	     bIGC_Download = false;
-	//	 MessageBoxX(  MsgToken(2406), MsgToken(2398), mbOk) ;  // // _@M2398_ "IGC Download"
-#ifdef NANO_PROGRESS_DLG
-	     CloseIGCProgressDialog();
-#endif
-	   }
-	 }  // CRC OK?
-
-         if(bIGC_Download)
+    #ifdef NANO_PROGRESS_DLG
+         IGCProgressDialogText(Par[1]);
+    #endif
+         if(m_CurLine == TotalLines)  // reach end of file?
          {
-	   if((m_CurLine % (BLOCK_SIZE)==0) || !bCRCok)
-	   {
-	     bIGC_Download = true;
-	     _sntprintf(Par[6], MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
-	     SendNmea(m_pDevice, Par[6]);
-	     wf->SetTimerNotify(1000, DevLXNanoIII::OnIGCTimeout);
-	   }
+           if(f != NULL) { fclose(f); f= NULL; }
+           StartupStore(_T(" ******* NANO3  IGC Download END ***** %s") , NEWLINE);
+           IGCDownload( false);
+      //   MessageBoxX(  MsgToken(2406), MsgToken(2398), mbOk) ;  // // _@M2398_ "IGC Download"
+    #ifdef NANO_PROGRESS_DLG
+           CloseIGCProgressDialog();
+    #endif
          }
-     }
-   }
- }
- return(true);
+       }  // CRC OK?
+
+       if(IGCDownload())
+       {
+         if((m_CurLine % (BLOCK_SIZE)==0) || !bCRCok)
+         {
+             IGCDownload( true );
+           _sntprintf(szCommand, MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
+           SendNmea(Device(), szCommand);
+         }
+       }  // if(IGCDownload())
+     }  // FLIGHT
+   }  // Not LOGBOOK
+ }  // Not LOGBOOKSIZE
+}  // if $PLXVC
+return(true);
 }
 
 
@@ -1391,62 +1438,64 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   // e.g.:
   // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
-  double fDir,fTmp;
+double fDir,fTmp,airspeed=0;
 
-if( !devGetAdvancedMode(d))
-{
-  if (ParToDouble(sentence, 1, &fTmp))
+  if( !devGetAdvancedMode(d))
   {
-
-    if(m_bValues)
-    { TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp, MAX_NMEA_LEN,_T("%5.1fkm/h ($LXWP0)"),fTmp);
-      ShowDataValue( wf ,d,_T("prpSPEEDDir"),   szTmp);
-    }
-    if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
+    if (ParToDouble(sentence, 1, &fTmp))
     {
-      info->Speed = fTmp;
-      info->AirspeedAvailable = TRUE;
+
+      if(Values(d))
+      { TCHAR szTmp[MAX_NMEA_LEN];
+        _sntprintf(szTmp, MAX_NMEA_LEN,_T("%5.1fkm/h ($LXWP0)"),fTmp);
+        SetDataText(_SPEED,   szTmp);
+      }
+      if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
+      {
+        airspeed = fTmp/TOKPH;
+        info->IndicatedAirspeed = airspeed;
+        info->AirspeedAvailable = TRUE;
+      }
+    }
+
+    if (ParToDouble(sentence, 2, &fTmp))
+    {
+      if(Values(d))
+      { TCHAR szTmp[MAX_NMEA_LEN];
+        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp);
+        SetDataText( _BARO,   szTmp);
+      }
+      if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
+      {
+        if (airspeed>0) info->IndicatedAirspeed = airspeed / AirDensityRatio(fTmp);
+        UpdateBaroSource( info, 0, d,fTmp);
+      }
+    }
+
+    if (ParToDouble(sentence, 3, &fTmp))
+    {
+      if(Values(d))
+      { TCHAR szTmp[MAX_NMEA_LEN];
+        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp/TOKPH);
+        SetDataText( _VARIO,   szTmp);
+      }
+      if(IsDirInput(PortIO[d->PortNumber].VARIODir  ))
+      {
+        info->Vario = fTmp;
+        info->VarioAvailable = TRUE;
+        TriggerVarioUpdate();
+      }
     }
   }
-
-  if (ParToDouble(sentence, 2, &fTmp))
-  {
-    if(m_bValues)
-    { TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp);
-      ShowDataValue( wf ,d,_T("prpBARODir"),   szTmp);
-    }
-    if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
-    {
-      UpdateBaroSource( info, 0, d,fTmp);
-    }
-  }
-
-  if (ParToDouble(sentence, 3, &fTmp))
-  {
-    if(m_bValues)
-    { TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp/TOKPH);
-      ShowDataValue( wf ,d, _T("prpVARIODir"),   szTmp);
-    }
-    if(IsDirInput(PortIO[d->PortNumber].VARIODir  ))
-    {
-      info->Vario = fTmp;
-      info->VarioAvailable = TRUE;
-      TriggerVarioUpdate();
-    }
-  }
-}
 
   if (ParToDouble(sentence, 10, &fDir) &&
-	ParToDouble(sentence, 11, &fTmp))
+  ParToDouble(sentence, 11, &fTmp))
   {
 
-    if(m_bValues)
+    if(Values(d))
     { TCHAR szTmp[MAX_NMEA_LEN];
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fkm/h %3.0f° ($LXWP0)"),fTmp,fDir);
-      ShowDataValue( wf ,d, _T("prpWINDDir"),   szTmp);
+      SetDataText( _WIND,   szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].WINDDir  ))
     {
@@ -1455,8 +1504,6 @@ if( !devGetAdvancedMode(d))
       info->ExternalWindAvailable = TRUE;
     }
   }
-
-
 
   return(false);
 } // LXWP0()
@@ -1484,7 +1531,7 @@ BOOL DevLXNanoIII::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* 
   // hardware version float hw version
   // license string (option to store a license of PDA SW into LX1600)
  // ParToDouble(sentence, 1, &MACCREADY);
-//	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
+//  $LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
 #ifdef DEVICE_SERIAL
 TCHAR ctemp[MAX_NMEA_LEN];
 static int NoMsg=0;
@@ -1495,7 +1542,7 @@ if(_tcslen(String) < 180)
     NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
     if(_tcslen(ctemp) < DEVNAMESIZE)
-      _stprintf(d->Name, _T("%s"),ctemp);
+      _tcsncpy(d->Name, ctemp, DEVNAMESIZE);
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,1);
@@ -1564,20 +1611,20 @@ int iTmp;
     {
       iTmp =(int) (fTmp*100.0+0.5f);
       fTmp = (double)(iTmp)/100.0;
-      if(m_bValues)
+      if(Values(d))
       {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s ($LXWP2)"),fTmp);
-	ShowDataValue( wf ,d,_T("prpMCDir"),   szTmp);
+        SetDataText( _MC,   szTmp);
       }
       Nano3_bValid = true;
       if(IsDirInput(PortIO[d->PortNumber].MCDir))
       {
-	if(fabs(MACCREADY - fTmp)> 0.001)
-	{
-	  CheckSetMACCREADY(fTmp);
-	  Nano3_MacCreadyUpdateTimeout =5;
-	}
+        if(fabs(MACCREADY - fTmp)> 0.001)
+        {
+          CheckSetMACCREADY(fTmp);
+          Nano3_MacCreadyUpdateTimeout =5;
+        }
       }
     }
   }
@@ -1593,18 +1640,18 @@ int iTmp;
     if (ParToDouble(sentence, 1, &fTmp))
     {
       double fBALPerc = CalculateBalastFromLX(fTmp);
-      if(m_bValues)
+      if(Values(d))
       {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%5.2f = %3.0f%% ($LXWP2)"),fTmp,(fBALPerc*100.0));
-	ShowDataValue( wf ,d,_T("prpBALDir"),  szTmp);
+        SetDataText(_BAL,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
       {
-	if(fabs(fBALPerc- BALLAST) > 0.01 )
-	{
-	  CheckSetBallast(fBALPerc);
-	}
+        if(fabs(fBALPerc- BALLAST) > 0.01 )
+        {
+          CheckSetBallast(fBALPerc);
+        }
       }
     }
   }
@@ -1618,21 +1665,24 @@ int iTmp;
   {
     if(ParToDouble(sentence, 2, &fTmp))
     {
-   //   double tempBugs = 100.0-(fTmp);
-   //   tempBugs /=  100.0;
-      if(m_bValues)
+      if(Values(d))
       {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"),fTmp);
-	ShowDataValue( wf ,d,_T("prpBUGDir"),  szTmp);
+        SetDataText(_BUGS,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
       {
-	if(  fabs(fTmp -BUGS) >= 0.01)
-	{
-	  CheckSetBugs(fTmp);
-	  Nano3_BugsUpdateTimeout = 5;
-	}
+        if(  fabs(fTmp -BUGS) >= 0.01)
+        {
+          fTmp = CalculateBugsFromLX(fTmp);
+          CheckSetBugs(fTmp);
+          if(  fabs(fTmp -BUGS) >= 0.01) // >= 1% difference
+          {
+            BUGS = fTmp;
+            Nano3_BugsUpdateTimeout = 5;
+          }
+        }
       }
     }
   }
@@ -1641,15 +1691,15 @@ int iTmp;
  double fa,fb,fc;
      if(ParToDouble(sentence, 3, &fa))
        if(ParToDouble(sentence, 4, &fb))
-	 if(ParToDouble(sentence, 5, &fc))
-	 {
-	    if(m_bValues)
-	    {
+   if(ParToDouble(sentence, 5, &fc))
+   {
+      if(Values(d))
+      {
           TCHAR szTmp[MAX_NMEA_LEN];
           _sntprintf(szTmp,MAX_NMEA_LEN, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
-          ShowDataValue( wf ,d, _T("prpPOLARDir"),  szTmp);
+          SetDataText(  _POLAR,  szTmp);
           //     _stprintf(szTmp, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),   POLAR[POLAR_A],   POLAR[POLAR_B],   POLAR[POLAR_C]);
-          //      ShowDataValue( wf ,_T("prpBAT2Dir"),  szTmp);
+          //      SetDataText( wf ,_BAT2,  szTmp);
         }
         /*
         if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
@@ -1740,24 +1790,24 @@ BOOL DevLXNanoIII::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 TCHAR szTmp[MAX_NMEA_LEN];
 double alt=0, airspeed=0;
 devSetAdvancedMode(d,true);
-  if((m_bValues) || (IsDirInput(PortIO[d->PortNumber].GFORCEDir)))
+  if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
   {
     double fX,fY,fZ;
     if(ParToDouble(sentence, 1, &fX) &&
       ParToDouble(sentence, 2, &fY) &&
       ParToDouble(sentence, 3, &fZ))
     {
-      if(m_bValues)
+      if(Values(d))
       {
         _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f %5.2f %5.2f ($PLXVF)"),fZ,fY,fX);
-        ShowDataValue( wf ,d, _T("prpGFORCEDir"),  szTmp);
+        SetDataText( _GFORCE,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
       {
-	info->AccelX  = fX;
-	info->AccelY  = fY;
-	info->AccelZ  = fZ;
-	info->AccelerationAvailable = true;
+        info->AccelX  = fX;
+        info->AccelY  = fY;
+        info->AccelZ  = fZ;
+        info->AccelerationAvailable = true;
       }
     }
   }
@@ -1765,12 +1815,12 @@ devSetAdvancedMode(d,true);
 
   if (ParToDouble(sentence, 5, &airspeed))
   {
-    if(m_bValues)
+    if(Values(d))
     {
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0fkm/h ($PLXVF)"),airspeed*TOKPH);
-      ShowDataValue( wf ,d,_T("prpSPEEDDir"),  szTmp);
+      SetDataText( _SPEED,  szTmp);
     }
-//	airspeed = 135.0/TOKPH;
+//  airspeed = 135.0/TOKPH;
     if(IsDirInput(PortIO[d->PortNumber].SPEEDDir ))
     {
       info->IndicatedAirspeed = airspeed;
@@ -1781,10 +1831,10 @@ devSetAdvancedMode(d,true);
 
   if (ParToDouble(sentence, 6, &alt))
   {
-    if(m_bValues)
+    if(Values(d))
     {
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.0fm ($PLXVF)"),alt);
-      ShowDataValue( wf ,d,_T("prpBARODir"),  szTmp);
+      SetDataText(_BARO,  szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].BARODir))
     {
@@ -1797,10 +1847,10 @@ devSetAdvancedMode(d,true);
 
   if (ParToDouble(sentence, 4, &alt))
   {
-    if(m_bValues)
+    if(Values(d))
     {
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s ($PLXVF)"),alt);
-      ShowDataValue( wf ,d,_T("prpVARIODir"),  szTmp);
+      SetDataText(_VARIO,  szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].VARIODir))
     {
@@ -1816,12 +1866,12 @@ devSetAdvancedMode(d,true);
   if (ParToDouble(sentence, 7, &fTmp))
   {
     int  iTmp = (int)(fTmp+0.1);
-    if(m_bValues)
+    if(Values(d))
     {
       if(iTmp == 1)
-        ShowDataValue( wf ,d,_T("prpSTFDir"),  _T("STF ($PLXVF)"));
+        SetDataText( _STF,  _T("STF ($PLXVF)"));
       else
-        ShowDataValue( wf ,d,_T("prpSTFDir"),  _T("VARIO ($PLXVF)"));
+        SetDataText( _STF,  _T("VARIO ($PLXVF)"));
     }
 
     static int  iOldVarioSwitch=0;
@@ -1830,17 +1880,17 @@ devSetAdvancedMode(d,true);
       EnableExternalTriggerCruise = true;
       if(iTmp != iOldVarioSwitch)
       {
-	iOldVarioSwitch = iTmp;
-	if(iTmp==1)
-	{
-	  ExternalTriggerCruise = true;
-	  ExternalTriggerCircling = false;
-	}
-	else
-	{
-	  ExternalTriggerCruise = false;
-	  ExternalTriggerCircling = true;
-	}
+        iOldVarioSwitch = iTmp;
+        if(iTmp==1)
+        {
+          ExternalTriggerCruise = true;
+          ExternalTriggerCircling = false;
+        }
+        else
+        {
+          ExternalTriggerCruise = false;
+          ExternalTriggerCircling = true;
+        }
       }
     }
   }
@@ -1859,10 +1909,10 @@ devSetAdvancedMode(d,true);
 iS_SeriesTimeout = 30;
   if (ParToDouble(sentence, 0, &OAT))
   {
-    if(m_bValues)
+    if(Values(d))
     {
       _sntprintf(szTmp, MAX_NMEA_LEN, _T("%3.1f°C ($PLXVS)"),OAT);
-      ShowDataValue( wf ,d,_T("prpOATDir"),  szTmp);
+      SetDataText( _OAT,  szTmp);
     }
 
     if(IsDirInput(PortIO[d->PortNumber].OATDir))
@@ -1874,10 +1924,10 @@ iS_SeriesTimeout = 30;
 
   if (ParToDouble(sentence, 2, &Batt))
   {
-    if(m_bValues)
+    if(Values(d))
     {
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV ($PLXVS)"),Batt);
-      ShowDataValue( wf ,d,_T("prpBAT1Dir"),  szTmp);
+      SetDataText( _BAT1,  szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
     {
@@ -1934,21 +1984,21 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     double fTmp;
     if(ParToDouble(sentence, 2, &fTmp))
     {
-      if(m_bValues)
+      if(Values(d))
       {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2f PLXV0"),fTmp);
-	ShowDataValue( wf ,d,_T("prpMCDir"),  szTmp);
+        SetDataText( _MC,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].MCDir))
       {
-	if(fabs(MACCREADY - fTmp)> 0.001)
-	{
-	  CheckSetMACCREADY(fTmp);
-	  iRxUpdateTime =5;
-	  StartupStore(_T("Nano3 MC: %5.2f"),fTmp);
-	  return true;
-	}
+        if(fabs(MACCREADY - fTmp)> 0.001)
+        {
+          CheckSetMACCREADY(fTmp);
+          iRxUpdateTime =5;
+          StartupStore(_T("Nano3 MC: %5.2f"),fTmp);
+          return true;
+        }
       }
     }
     return false;
@@ -1969,20 +2019,20 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     if(ParToDouble(sentence, 2, &fTmp))
     {
       double fNewBal = CalculateBalastFromLX(fTmp);
-      if(m_bValues)
+      if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp, MAX_NMEA_LEN,_T("%2.1f %3.0f PLXV0"),fTmp, fNewBal);
-        ShowDataValue( wf ,d,_T("prpBALDir"),  szTmp);
+        SetDataText(_BAL,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BALDir))
       {
-	if(fabs(BALLAST - fNewBal)> 0.001)
-	{
-	  CheckSetBallast(fNewBal);
-	  Nano3_BallastUpdateTimeout =5;
-	  return true;
-	}
-	StartupStore(_T("Nano3 BAL: %5.2f"),fTmp);
+        if(fabs(BALLAST - fNewBal)> 0.001)
+        {
+          CheckSetBallast(fNewBal);
+          Nano3_BallastUpdateTimeout =5;
+          return true;
+        }
+        StartupStore(_T("Nano3 BAL: %5.2f"),fTmp);
       }
     }
     return false;
@@ -1992,31 +2042,31 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
    ****************************************************************/
   if (_tcscmp(szTmp1,_T("BUGS"))==0)
   {
-      if(Nano3_BugsUpdateTimeout > 0)
-      {
-	Nano3_BugsUpdateTimeout--;
-        return false;
-      }
-      double fTmp;
-      if(ParToDouble(sentence, 2, &fTmp))
-      {
-	if(m_bValues)
-	{
-	  TCHAR szTmp[20];
-    _sntprintf(szTmp, array_size(szTmp), _T("%3.0f%% ($PLXV0)"),fTmp);
-	  ShowDataValue( wf ,d,_T("prpBUGDir"),  szTmp);
-	}
-	if(IsDirInput(PortIO[d->PortNumber].BUGDir))
-	{
-	  if(fabs(BUGS - fTmp)> 0.001)
-	  {
-	    Nano3_BugsUpdateTimeout =5;
-	    StartupStore(_T("Nano3 BUG: %5.2f"),fTmp);
-	    return true;
-	  }
-	}
-      }
+    if(Nano3_BugsUpdateTimeout > 0)
+    {
+        Nano3_BugsUpdateTimeout--;
       return false;
+    }
+    double fTmp;
+    if(ParToDouble(sentence, 2, &fTmp))
+    {
+      if(Values(d))
+      {
+        TCHAR szTmp[20];
+        _sntprintf(szTmp, array_size(szTmp), _T("%3.0f%% ($PLXV0)"),fTmp);
+        SetDataText(_BUGS,  szTmp);
+      }
+      if(IsDirInput(PortIO[d->PortNumber].BUGDir))
+      {
+        if(fabs(BUGS - fTmp)> 0.001)
+        {
+          Nano3_BugsUpdateTimeout =5;
+          StartupStore(_T("Nano3 BUG: %5.2f"),fTmp);
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
 
@@ -2034,16 +2084,15 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   if (_tcscmp(szTmp1,_T("POLAR"))==0)
   {
     double fLoad,fWeight,fMaxW, fEmptyW,fPilotW, fa,fb,fc;
-    if(
-            (ParToDouble(sentence, 2, &fa)) &&
-            (ParToDouble(sentence, 3, &fb)) &&
-            (ParToDouble(sentence, 4, &fc)) &&
-            (ParToDouble(sentence, 5, &fLoad)) &&
-            (ParToDouble(sentence, 6, &fWeight)) &&
-            (ParToDouble(sentence, 7, &fMaxW)) &&
-            (ParToDouble(sentence, 8, &fEmptyW)) &&
-            (ParToDouble(sentence, 9, &fPilotW))
-            )
+    if( (ParToDouble(sentence, 2, &fa)) &&
+        (ParToDouble(sentence, 3, &fb)) &&
+        (ParToDouble(sentence, 4, &fc)) &&
+        (ParToDouble(sentence, 5, &fLoad)) &&
+        (ParToDouble(sentence, 6, &fWeight)) &&
+        (ParToDouble(sentence, 7, &fMaxW)) &&
+        (ParToDouble(sentence, 8, &fEmptyW)) &&
+        (ParToDouble(sentence, 9, &fPilotW))
+      )
       StartupStore(_T("Nano3 POLAR: a:%5.2f b:%5.2f c:%5.2f L:%3.1f W:%3.1f E:%3.1f P:%3.1f"),fa,fb,fc, fLoad,fWeight,fEmptyW,fPilotW)  ;
     return true;
   }
@@ -2129,30 +2178,23 @@ return(TRUE);
 
 BOOL DevLXNanoIII::PutTarget(PDeviceDescriptor_t d)
 {
-static int old_overindex = -99;
-static int old_overmode = -99;
-int overindex = GetOvertargetIndex();
-int overmode  = OvertargetMode;
+  if(PortIO[d->PortNumber].T_TRGTDir == TP_Off) {
+    return false;
+  }
 
-if(!IsDirOutput(PortIO[d->PortNumber].TARGETDir)) return false;
+
+int overindex = GetOvertargetIndex();
+
+if(overindex < 0)               /* valid waypoint ?*/
+  return -1;
+
 
 bool bTaskpresent = false; //ValidTaskPoint(0);
 if(bTaskpresent)
   if(ValidTaskPoint(ActiveTaskPoint))
     overindex = Task[ActiveTaskPoint].Index;
 
-
-
-if(overindex < 0)               /* valid waypoint ?*/
-  return -1;
-if(overindex == old_overindex)  /* same as before */
-  if(overmode == old_overmode)  /* and same mode  */
-    return 0;
-
-
-old_overindex = overindex;
-old_overmode  = overmode;
-TCHAR  szTmp[512];
+TCHAR  szTmp[MAX_NMEA_LEN];
 
 
 int DegLat, DegLon;
@@ -2160,7 +2202,6 @@ double MinLat, MinLon;
 char NoS, EoW;
 
 if (!ValidWayPoint(overindex)) return TRUE;
-
 
 DegLat = (int)WayPointList[overindex].Latitude;
 MinLat = WayPointList[overindex].Latitude - DegLat;
@@ -2183,71 +2224,114 @@ if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
 MinLon *=60;
 
 
+TCHAR szName[MAX_VAL_STR_LEN];
+  if( 0 /*bTaskpresent*/)  {
+    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"), MsgToken(1323), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
+  } else {
+    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
+  }
 
-  if(bTaskpresent)
-  {
-    if(devGetAdvancedMode(d))
-    {
-      _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%i"),
-		  MsgToken(1323), // LKTOKEN _@M1323_ "T>"
-		  WayPointList[overindex].Name,
-		  DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-		  (int) (WayPointList[overindex].Altitude +0.5)
-             );
-      DevLXNanoIII::SendNmea(d,szTmp);
+  if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG)
+  {                                    // PLXVTARG,KOLN,4628.80   ,N ,01541.167 ,E ,268.0
+    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("PLXVTARG,%s,%02d%05.2f,%c,%03d%05.2f,%c,%i"),
+      szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW,
+      (int) (WayPointList[overindex].Altitude +0.5));
 
-#if TESTBENCH
-    StartupStore(TEXT("LXNav: %s"),szTmp);
+      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_VAL_STR_LEN);
+#ifdef TESTBENCH
+     StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
-    }
   }
   else
   {
-    if(devGetAdvancedMode(d))
-    {
-      _sntprintf( szTmp,MAX_NMEA_LEN,  TEXT("PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%i"),
-		GetOvertargetHeader(),
-		WayPointList[overindex].Name,
-		DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-		(int)(WayPointList[overindex].Altitude +0.5)
-	     );
-      DevLXNanoIII::SendNmea(d,szTmp);
+    if( PortIO[d->PortNumber].T_TRGTDir  == TP_GPRMB)
+    {               //                      GPRMB,A,,,,H>TAKEOFF,5144.78,N,00616.70,E,,,A
+      _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
+        szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
-#if TESTBENCH
-      StartupStore(TEXT("LXNav: %s"),szTmp);
-#endif
+      _tcsncat (szName, _T(" ($GPRMB)"),MAX_VAL_STR_LEN);
     }
+#ifdef TESTBENCH
+    StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
+#endif
   }
+
+  SetDataText( _T_TRGT,  szName);
+  DevLXNanoIII::SendNmea(d,szTmp);
+
 return(true);
 }
 
-BOOL DevLXNanoIII::PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+
+
+BOOL DevLXNanoIII::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
+  if(PortIO[d->PortNumber].R_TRGTDir != TP_GPRMB) {
+    return false;
+  }
+
 TCHAR  szTmp[MAX_NMEA_LEN];
-TCHAR  szTmp2[MAX_NMEA_LEN];
 
-NMEAParser::ExtractParameter(sentence,szTmp,0);
+double fTmp;
+  NMEAParser::ExtractParameter(sentence,szTmp,4);
 
-if(m_bValues)
-{
-   _sntprintf(szTmp2,MAX_NMEA_LEN, TEXT("%s ($PLXVTARG)"),szTmp);
-  ShowDataValue( wf ,d,_T("prpTARGDir"),  szTmp);
-}
 
-if(!IsDirInput(PortIO[d->PortNumber].TARGETDir))
-{
-  if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
-    Alternate2 = -1;                 // clear external =re-enable!
+    if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
+      Alternate2 = -1;                 // clear external =re-enable!
+
+
+  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
+  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
+
+  ParToDouble(sentence, 5, &fTmp);
+  double DegLat = (double)((int) (fTmp/100.0));
+  double MinLat =  fTmp- (100.0*DegLat);
+  double Latitude = DegLat+MinLat/60.0;
+  TCHAR NoS;
+  NMEAParser::ExtractParameter(sentence,&NoS,6);
+  if (NoS==_T('S')) {
+    Latitude *= -1;
+  }
+
+  ParToDouble(sentence, 7, &fTmp);
+  double DegLon =  (double) ((int) (fTmp/100.0));
+  double MinLon =  fTmp- (100.0*DegLon);
+  double Longitude = DegLon+MinLon/60.0;
+  TCHAR EoW;
+  NMEAParser::ExtractParameter(sentence,&EoW,8);
+  if (EoW==_T('W')) {
+    Longitude *= -1;
+  }
+  WayPointList[RESWP_EXT_TARGET].Latitude=Latitude;
+  WayPointList[RESWP_EXT_TARGET].Longitude=Longitude;
+  WayPointList[RESWP_EXT_TARGET].Altitude=0;  // GPRMB has no elevation information
+  Alternate2 = RESWP_EXT_TARGET;
+
+  if(Values(d))
+  {
+    _tcsncat(szTmp, _T(" ($GPRMB)"),MAX_NMEA_LEN );
+    SetDataText( _R_TRGT,  szTmp);
+  }
   return false;
 }
 
 
-_tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
-_tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
-
-
-
+BOOL DevLXNanoIII::PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+TCHAR  szTmp[MAX_NMEA_LEN];
 double fTmp;
+
+  if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG)
+     return false;
+
+  NMEAParser::ExtractParameter(sentence,szTmp,0);
+
+  if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
+    Alternate2 = -1;                 // clear external =re-enable!
+
+  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
+  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
+
   ParToDouble(sentence, 1, &fTmp);
   double DegLat = (double)((int) (fTmp/100.0));
   double MinLat =  fTmp- (100.0*DegLat);
@@ -2272,15 +2356,16 @@ double fTmp;
 
   ParToDouble(sentence, 5, &fTmp);
   WayPointList[RESWP_EXT_TARGET].Altitude=fTmp;
-
-//  StartupStore(_T("Nano3 TARGET:%s "),sentence);
-//  StartupStore(_T("Nano3 TARGET:%s lat:%f  lon:%f  Alt:%f"),WayPointList[RESWP_EXT_TARGET].Name, Latitude, Longitude,  fTmp);
-
   Alternate2 = RESWP_EXT_TARGET;
 
+  if(Values(d))
+  {
+    _tcsncat(szTmp, _T(" ($PLXVTARG)"),MAX_NMEA_LEN );
+    SetDataText( _R_TRGT,  szTmp);
+  }
   return false;
-
 }
+
 
 
 BOOL DevLXNanoIII::PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
@@ -2298,31 +2383,30 @@ TCHAR  szTmp[MAX_NMEA_LEN];
       info->SerialNumber = (int) StrToDouble(szTmp,NULL);
     }
 
-
     double Batt;
     if (ParToDouble(sentence, 7, &Batt))
     {
-      if(m_bValues)
+      if(Values(d))
       {
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV ($PLXVC_INFO)"),Batt);
-        ShowDataValue( wf ,d,_T("prpBAT1Dir"),  szTmp);
+        SetDataText(_BAT1,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
       {
-	info->ExtBatt1_Voltage = Batt;
+        info->ExtBatt1_Voltage = Batt;
       }
     }
 
     if (ParToDouble(sentence, 8, &Batt))
     {
-      if(m_bValues)
+      if(Values(d))
       {
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV (&PLXVC_INFO)"),Batt);
-        ShowDataValue( wf ,d,_T("prpBAT2Dir"),  szTmp);
+        SetDataText( _BAT2,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
       {
-	info->ExtBatt2_Voltage = Batt;
+        info->ExtBatt2_Voltage = Batt;
       }
     }
   }

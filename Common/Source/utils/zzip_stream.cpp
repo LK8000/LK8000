@@ -16,8 +16,9 @@
 #include "utils/make_unique.h"
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
-
+#include "utils/array_back_insert_iterator.h"
 #include "Util/UTF8.hpp"
+#include "Util/ConvertString.hpp"
 
 #include "Poco/Latin1Encoding.h"
 #include "Poco/TextConverter.h"
@@ -84,8 +85,7 @@ bool zzip_stream::read_line_raw(char *string, size_t size) {
     return false;
   }
 
-  char *out_it = string;
-  const char *out_end = string + size;
+  auto out_it = array_back_inserter(string, size - 1); // size - 1 to let placeholder for '\0'
 
   auto ic = sbumpc();
   if (!traits_type::not_eof(ic)) {
@@ -104,18 +104,17 @@ bool zzip_stream::read_line_raw(char *string, size_t size) {
     } else if(c == '\n') {
       break;
     } else {
-      *(out_it++) = c;
-
-      if (out_it == out_end) {
-        assert(false); // output string to small
-        return false;
-      }
+        out_it = c;
     }
     ic = sbumpc();
 
   } while (traits_type::not_eof(ic));
 
-  *(out_it) = '\0';
+  string[out_it.length()] = '\0'; // add leading '\0'
+
+  if(out_it.overflowed()) {
+    printf("read_line_raw overflow %u > %u\n", (unsigned)(out_it.length() + out_it.skipped()), (unsigned)(size - 1));
+  }
 
   if (_cs == charset::unknown && !ValidateUTF8(string)) {
     _cs = charset::latin1;
@@ -140,13 +139,13 @@ bool zzip_stream::read_line(char *string, size_t size) {
 
     Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
     converter.convert(string, strlen(string), utf8String);
-    if (utf8String.size() < (size - 1)) {
-      // copy all characters and append zero terminator.
-      (*std::copy(utf8String.begin(), utf8String.end(), string)) = '\0';
-    } else {
-      assert(false); // output string to small
-      return false;
+
+    if(utf8String.size() >= (size - 1)) {
+      printf("read_line overflow %u > %u\n", (unsigned)utf8String.size(), (unsigned)(size - 1));
     }
+
+    size_t str_len = std::min(utf8String.size(), size-1);
+    (*std::copy_n(utf8String.begin(), str_len, string)) = '\0';
   }
   return true;
 }
@@ -161,12 +160,17 @@ bool zzip_stream::read_line(wchar_t *string, size_t size) {
   }
 
   if (_cs == charset::latin1) {
-    // from Latin1 (ANSI) To UNICODE
-    int nChars = MultiByteToWideChar(CP_ACP, 0, raw_string.begin(), -1, string, size);
-    if (!nChars) {
-      // output string to small,
-      assert(false);
-      return false;
+    const ACPToWideConverter converter(raw_string.begin());
+    if(converter.IsValid()) {
+
+      if(wcslen(converter) >= (size - 1)) {
+        printf("read_line overflow %u > %u\n", (unsigned)wcslen(converter), (unsigned)(size - 1));
+      }
+
+      size_t str_len = std::min(wcslen(converter), size-1);
+      (*std::copy_n(static_cast<const TCHAR*>(converter), str_len, string)) = '\0';
+    } else {
+      assert(false); // faild to convert string
     }
   } else {
     utf2unicode(raw_string.begin(), string, size);

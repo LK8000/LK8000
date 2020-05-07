@@ -63,7 +63,6 @@ BOOL AR620xInstall(PDeviceDescriptor_t d){
   d->PutFreqActive  = AR620xPutFreqActive;
   d->PutFreqStandby = AR620xPutFreqStandby;
   d->StationSwap    = AR620xStationSwap;
-  d->ParseNMEA      = NULL;
   d->ParseStream    = AR620xParseString;
   d->PutRadioMode      = AR620xRadioMode;
   RadioPara.Enabled8_33 = TRUE;
@@ -187,7 +186,7 @@ static uint16_t CRCBitwise(uint8_t *data, size_t len)
  * Station        station Name string
  *
  *****************************************************************************/
-int  SetAR620xStation(uint8_t *Command ,int Active_Passive, double fFrequency, TCHAR* Station)
+static int  SetAR620xStation(uint8_t *Command ,int Active_Passive, double fFrequency, const TCHAR* Station)
 {
   unsigned int len = 0;
   LKASSERT(Station !=NULL)
@@ -288,7 +287,7 @@ uint8_t len;
 }
 
 
-BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
+BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
 int len;
 uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
@@ -308,7 +307,7 @@ uint8_t  szTmp[MAX_CMD_LEN];
 }
 
 
-BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
+BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
 int len;
 uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)

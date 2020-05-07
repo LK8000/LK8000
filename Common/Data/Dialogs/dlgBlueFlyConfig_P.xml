@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmBlueFly" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="BlueFlyVario" Font="2" >
+
 	<WndButton Name="cmdNext"  Caption="_@M460_" X="115" Y="238" Width="105"  Height="30" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
     <WndButton Name="cmdPrev"  Caption="_@M6_" X="5" Y="238" Width="105"  Height="30" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
     <WndButton Name="cmdClose" Caption="_@M186_" X="5" Y="270" Width="105"  Height="30" Font="2" OnClickNotify="OnClose" Tag="2" />
+
+	<WndButton Name="cmdReset"  Caption="_@M560_" X="115" Y="270" Width="105"  Height="30" Font="2" OnClickNotify="OnReset" Tag="1" />
 
     <WndFrame Name="1" X="0" Y="0" Width="235" Height="222">
 	  <WndProperty Name="BQH" Caption="_@M2158_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1271_" Keyboard="1">
@@ -58,7 +61,7 @@
       <WndProperty Name="BOM" Caption="_@M2173_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1286_">
 		<DataField DataType="enum" OnDataAccess="OnParamData"/>
 	  </WndProperty>
-      <WndProperty Name="BOF" Caption="_@M2174_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1287_" Keyboard="1">
+      <WndProperty Name="BOF" Caption="_@M2174_" CaptionWidth="120" X="2" Y="-1" Width="235" Height="22" Help="_@H1287_">
 		<DataField DataType="double" DisplayFormat="%.0f ms" EditFormat="%.0f" Step="20" OnDataAccess="OnParamData"/>
 	  </WndProperty>
 	</WndFrame>

@@ -109,6 +109,7 @@ void AddElement(TCHAR Line1[], TCHAR Line2[]) {
 
 static bool TimerUpdateList(WndForm *pWnd) {
 //static void UpdateList(void) {
+if (LX_IGCReadDialog.FileList()->size() == 0) return false;
 if(ListUpdate)
   if (LX_IGCReadDialog.SelectList() != NULL) {
     LX_IGCReadDialog.SelectList()->ResetList();
@@ -156,7 +157,7 @@ static void OnDownClicked(WndButton *pWnd) {
 
 static void OnMultiSelectListListInfo(WindowControl *Sender, WndListFrame::ListInfo_t *ListInfo) {
   (void) Sender;
-
+  if (LX_IGCReadDialog.FileList()->size() == 0) return;
   if (ListInfo->DrawIndex == -1) {
     ListInfo->ItemCount = LX_IGCReadDialog.FileList()->size();
   } else {
@@ -171,7 +172,7 @@ bool GetLXIGCFilename(TCHAR *IGCFilename, TCHAR *InFilename) {
     return false;
   TCHAR Tmp[MAX_PATH];
 
-  _sntprintf(Tmp, MAX_PATH, _T("%s"), InFilename);
+  _tcscpy(Tmp, InFilename);
   TCHAR *remaining;
   TCHAR *Filename = _tcstok_r(Tmp, TEXT(" "), &remaining);
   LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
@@ -215,18 +216,14 @@ static void OnEnterClicked(WndButton *pWnd) {
 
 static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Surface) {
 
-  Surface.SetTextColor(RGB_BLACK);
-
-
   if (LX_IGCReadDialog.FileList()->size() == 0) return;
   if (LX_IGCReadDialog.FileList()->size() < (uint) LX_IGCReadDialog.DrawIndex()) return;
   if (LX_IGCReadDialog.DrawIndex() < LX_IGCReadDialog.FileList()->size()) {
+    Surface.SetTextColor(RGB_BLACK);
     TCHAR text1[MAX_NMEA_LEN] = {TEXT("IGC File")};
     TCHAR text2[MAX_NMEA_LEN] = {TEXT("date")};
-    _sntprintf(text1, MAX_NMEA_LEN, _T("%s"),
-               LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
-    _sntprintf(text2, MAX_NMEA_LEN, _T("%s"),
-               LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line2);
+    _tcscpy(text1, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
+    _tcscpy(text2, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line2);
 
     TCHAR *remaining;    /* extract filname */
     TCHAR *IGCFilename = _tcstok_r(
@@ -234,23 +231,22 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
             &remaining);
 
     TCHAR PathAndFilename[MAX_PATH];
-    LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);   // add path
+    LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);     // add path
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
-      if (lk::filesystem::exist(PathAndFilename))               // check if file exists
+      if (lk::filesystem::exist(PathAndFilename))                // check if file exists
         _sntprintf(text1, MAX_NMEA_LEN, _T("✔ %s"), IGCFilename); // already copied
       else
-        _sntprintf(text1, MAX_NMEA_LEN, _T(" %s"), IGCFilename);// missing
+        _tcscpy(text1, IGCFilename);                             // missing
     } else {
-      if (lk::filesystem::exist(PathAndFilename))               // check if file exists
+      if (lk::filesystem::exist(PathAndFilename))                // check if file exists
         _sntprintf(text1, MAX_NMEA_LEN, _T("* %s"), IGCFilename);// already copied
       else
-        _sntprintf(text1, MAX_NMEA_LEN, _T(" %s"), IGCFilename);// missing
+        _tcscpy(text1, IGCFilename);                             // missing
     }
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),
-                    static_cast<PixelScalar>(Sender->GetHeight())
-    };
+                    static_cast<PixelScalar>(Sender->GetHeight()) };
 
     /********************
      * show text
@@ -268,6 +264,7 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
 
 static void OnIGCListEnter(WindowControl *Sender, WndListFrame::ListInfo_t *ListInfo) {
   (void) Sender;
+  if (LX_IGCReadDialog.FileList()->size() == 0) return;
   LX_IGCReadDialog.CurIndex(ListInfo->ItemIndex + ListInfo->ScrollIndex);
 
   if (LX_IGCReadDialog.CurIndex() >= LX_IGCReadDialog.FileList()->size()) {
@@ -324,14 +321,12 @@ public:
   ResourceLock() {
     //   StartupStore(TEXT(".... Enter ResourceLock%s"),NEWLINE);
     MapWindow::SuspendDrawingThread();
-    LockComm();
 
   };
 
   ~ResourceLock() {
     //   StartupStore(TEXT(".... Leave ResourceLock%s"),NEWLINE);
 
-    UnlockComm();
     MapWindow::ResumeDrawingThread();
 
     LX_IGCReadDialog.FileList()->clear();
@@ -340,7 +335,7 @@ public:
 };
 
 
-ListElement *dlgLX_IGCSelectListShowModal(DeviceDescriptor_t *d) {
+ListElement *dlgLX_IGCSelectListShowModal(void) {
 
   ResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
 

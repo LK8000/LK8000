@@ -54,18 +54,9 @@ BOOL LXV7easyInstall(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, TEXT("LXV7 easy"));
   d->ParseNMEA    = LXV7easyParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs      = NULL;
-  d->PutBallast   = NULL;
-  d->Open         = NULL;
-  d->Close        = NULL;
-  d->Init         = NULL;
   d->LinkTimeout  = isTrue;
-  d->Declare      = NULL;
-  d->IsLogger     = NULL;
   d->IsGPSSource  = isTrue;
   d->IsBaroSource = isTrue;
-  d->DirectLink   = NULL;
 
   return(TRUE);
 } 

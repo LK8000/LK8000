@@ -180,11 +180,10 @@ static void OnRenameClicked(WndButton* pWnd){
 }
 
 
+extern double  ExtractFrequency(const TCHAR*);
+extern BOOL ValidFrequency(double Freq);
 
-extern    double  ExtractFrequency(TCHAR*);
-
-static void OnFlarmFreqSelectEnter(WndButton*  Sender
-                                       ) {
+static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
     (void) Sender;
 
 #ifdef RADIO_ACTIVE
@@ -194,14 +193,16 @@ TCHAR Tmp[255];
   {
    if(RadioPara.Enabled)
    {
-      double ASFrequency = ExtractFrequency((TCHAR*)flarmId->freq);
-      if((ASFrequency >= 118) && (ASFrequency <= 138))
+      double ASFrequency = ExtractFrequency(flarmId->freq);
+      if(ValidFrequency(ASFrequency))
       {
         LKSound(TEXT("LK_TICK.WAV"));
-        _stprintf(Tmp,_T("%s  %s %7.3f"),(TCHAR*)flarmId->reg , NEWLINE  ,ASFrequency);
-        StartupStore(_T("%s"),Tmp);
-        devPutFreqActive(ASFrequency, (TCHAR*)flarmId->reg );
-        DoStatusMessage(_T(""), Tmp );
+        if(_tcslen(flarmId->cn) > 0)
+          _tcscpy(Tmp,(TCHAR*)flarmId->cn);
+        else
+          _tcscpy(Tmp,(TCHAR*)flarmId->reg );
+
+        devPutFreqActive(ASFrequency, Tmp );
       }
     }
   }
@@ -366,31 +367,23 @@ static void SetValues(int indexid) {
 	}
 
 	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
-    _stprintf(buffer,_T("%s"),flarmId->freq );
-    wFreq->SetVisible(false) ;
-	if(RadioPara.Enabled)
+	if(wFreq)
 	{
-	  double ASFrequency = ExtractFrequency((TCHAR*)flarmId->freq);
-	  if((ASFrequency >= 118) && (ASFrequency <= 138))
-	  {
-	    wFreq->SetCaption(buffer);
-        wFreq->SetVisible(true) ;
-	    wFreq->Redraw();
-	  }
-	}
-	else
-    {
-      wp = (WndProperty*)wf->FindByName(TEXT("prpFreq"));
-      if (wp) {
-        wp->SetText(buffer);
-        wp->RefreshDisplay();
-      }
-	}
-
+		double ASFrequency = ExtractFrequency(flarmId->freq);
+		if((RadioPara.Enabled) && ValidFrequency(ASFrequency) )
+		{
+			_stprintf(buffer,_T("%7.3f"), ASFrequency );
+			wFreq->SetCaption(buffer);
+			wFreq->SetVisible(true) ;
+		}
+		else
+		{
+			wFreq->SetCaption(_T(""));
+			wFreq->SetVisible(false) ;
+		}
+		wFreq->Redraw();
   }
-		
-
-
+ }
 }
 
 

@@ -336,17 +336,21 @@ void DataFieldFileReader::Dec(void){
   }
 }
 
-
-static int DataFieldFileReaderCompare(const void *elem1, 
-                                             const void *elem2 ){
-  return _tcscmp(((const DataFieldFileReaderEntry*)elem1)->mTextFile,
-                 ((const DataFieldFileReaderEntry*)elem2)->mTextFile);
-}
-
+struct DataFieldFileReaderCompare {
+  bool operator()( const DataFieldFileReaderEntry &a,
+                   const DataFieldFileReaderEntry &b ) {
+    if(a.mTextFile && b.mTextFile) {
+      return (_tcscmp(a.mTextFile, b.mTextFile) < 0);
+    }
+    return !a.mTextFile && b.mTextFile;
+  }
+};
 
 void DataFieldFileReader::Sort(int startindex){
-  qsort(fields+1+startindex, nFiles-1, sizeof(DataFieldFileReaderEntry), 
-        DataFieldFileReaderCompare);
+  auto begin = std::next(fields, startindex);
+  auto end = std::next(fields, nFiles);
+
+  std::sort(begin, end, DataFieldFileReaderCompare());
 }
 
 int DataFieldFileReader::CreateComboList(void) {

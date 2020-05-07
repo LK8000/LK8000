@@ -246,13 +246,13 @@ static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
 
             LKASSERT(szPolarFile[0]);
             extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR * ext);
-            LK_tsplitpath(szPolarFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
+            LK_tsplitpath(szPolarFile, NULL, NULL, srcfile, NULL);
 
             _stprintf(mes, _T("%s %s"), MsgToken(528), srcfile); // polar file
             RawWrite(Surface, mes, 7, 2, RGBAMBER, WTMODE_OUTLINED);
 
             LKASSERT(startProfileFile[0]);
-            LK_tsplitpath(startProfileFile, (TCHAR*) NULL, (TCHAR*) NULL, srcfile, (TCHAR*) NULL);
+            LK_tsplitpath(startProfileFile, NULL, NULL, srcfile, NULL);
             _stprintf(mes, _T("%s: %s"), MsgToken(1746), srcfile);
             RawWrite(Surface, mes, 11, 1, RGBICEWHITE, WTMODE_NORMAL);
         }

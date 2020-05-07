@@ -55,14 +55,7 @@ static BOOL CompeoInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Brauniger/Compeo 5030"));
   d->ParseNMEA = CompeoParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = CompeoLinkTimeout;
-  d->Declare = NULL;
   d->IsGPSSource = CompeoIsGPSSource;
   d->IsBaroSource = CompeoIsBaroSource;
 

@@ -67,12 +67,7 @@ BOOL DevLXV7_EXP::Install(PDeviceDescriptor_t d)
   d->PutMacCready = LXV7_EXPPutMacCready;
   d->PutBugs      = LXV7_EXPPutBugs; // removed to prevent cirvular updates
   d->PutBallast   = LXV7_EXPPutBallast;
-  d->Open         = NULL;
-  d->Close        = NULL;
-  d->Init         = NULL;
   d->LinkTimeout  = GetTrue;
-  d->Declare      = NULL;
-  d->IsLogger     = NULL;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->DirectLink   = LXV7_EXP_DirectLink;

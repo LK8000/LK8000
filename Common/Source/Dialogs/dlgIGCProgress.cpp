@@ -25,8 +25,8 @@ extern void  OnAbort_IGC_FileRead(void);
 
 static bool OnIGCProgressTimer(WndForm* pWnd);
 static bool bClose = false;
-
-TCHAR m_szTmp[50] =_T("...");
+#define MAX_STATUS_TXT_LEN  127
+TCHAR m_szTmp[MAX_STATUS_TXT_LEN] =_T("...");
 
 static bool OnIGCProgressTimer(WndForm *pWnd) {
   if (pWnd) {
@@ -140,9 +140,7 @@ void CreateIGCProgressDialog() {
 
 
 void IGCProgressDialogText(const TCHAR *text) {
-
-  _stprintf(m_szTmp, TEXT("%s"),text);
-
+	_tcsncpy(m_szTmp,text,MAX_STATUS_TXT_LEN);
 }
 
 

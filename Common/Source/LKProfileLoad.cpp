@@ -84,10 +84,6 @@ void SetProfileVariable(const char *curname, const char *curvalue, const char *l
   if (strcmp(curname,lookupname)) return;
 #ifdef UNICODE
   utf2unicode(curvalue, lookupvalue, size);
-  // REMEMBER TO CONVERT FROM UTF8 to UNICODE!!
-  // char stmp[MAX_PATH];
-  // unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
-  // fprintf(pfp,"%S=\"%s\" (TCHAR)%s", varname, stmp ,PNEWLINE);
 #else
   strncpy(lookupvalue, curvalue, size);
 #endif
@@ -625,7 +621,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
 	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].VARIODir  = (DataBiIoDir) StrTol(szItem);
 	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].SPEEDDir  = (DataBiIoDir) StrTol(szItem);
-	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].TARGETDir = (DataBiIoDir) StrTol(szItem);
+	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].R_TRGTDir = (DataTP_Type) StrTol(szItem);
 
 	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].RADIODir  = (DataBiIoDir) StrTol(szItem);
 	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].TRAFDir   = (DataBiIoDir) StrTol(szItem);
@@ -637,6 +633,9 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
 	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].BAT2Dir   = (DataBiIoDir) StrTol(szItem);
 	NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].POLARDir  = (DataBiIoDir) StrTol(szItem);
+  NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].DirLink   = (DataBiIoDir) StrTol(szItem);
+  NMEAParser::ExtractParameter(szTmp,szItem,i++); PortIO[n].T_TRGTDir = (DataTP_Type) StrTol(szItem);
+
 
       }
       return;

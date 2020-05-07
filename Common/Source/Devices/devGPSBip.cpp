@@ -58,23 +58,10 @@ BOOL Install(PDeviceDescriptor_t d){
     }
   }
 
-
   _tcscpy(d->Name, szDeviceName);
   d->ParseNMEA = ParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
-  d->LinkTimeout = NULL;
-  d->Declare = NULL;
-  d->IsLogger = NULL;
   d->IsGPSSource = GetTrue;
   d->IsBaroSource = GetTrue;
-  d->PutQNH = NULL;
-  d->OnSysTicker = NULL;
-
   return(TRUE);
 
 }

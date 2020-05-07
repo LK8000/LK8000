@@ -46,7 +46,7 @@ unsigned int OutsideAirspaceCnt =0;
 #define DEBUG_AIRSPACE
 #endif
 
-extern	  double  ExtractFrequency(TCHAR*);
+extern	  double  ExtractFrequency(const TCHAR*);
 
 static const int k_nAreaCount = 17;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
@@ -624,7 +624,7 @@ void CAirspaceBase::SetAckTimeout() {
     _warnacktimeout = _now + AcknowledgementTime;
 }
 
-bool  CAirspaceBase::Acknowledged(void) {
+bool  CAirspaceBase::Acknowledged(void) const {
 	if (_warningacklevel >  awNone)
 		return true;
 	else
@@ -776,7 +776,7 @@ void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &
 
     if( Comment()  != NULL)
     {
-      CopyTruncateString( (TCHAR*) _shared_comment.get(),iLen, comment);
+      CopyTruncateString(_shared_comment.get(),iLen, comment);
    //   StartupStore(TEXT("new _shared_comment: %s %u %s"),  Comment(), _tcslen( Comment()), NEWLINE);
     }
  }
@@ -3603,8 +3603,12 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
         const auto oldColor = Surface.SetTextColor(TypeColor());
 
         const auto oldPen = Surface.SelectObject(FramePen);
+        bool Fill = Enabled();
+        if(Acknowledged()) {
+          Fill = false;
+        };
 
-        const auto oldBrush = Surface.SelectObject(Enabled() ? TypeBrush() : LKBrush_Hollow);
+        const auto oldBrush = Surface.SelectObject(Fill ? TypeBrush() : LKBrush_Hollow);
 
         Surface.Polygon(ptOut, Length);
 

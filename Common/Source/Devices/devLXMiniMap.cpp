@@ -77,14 +77,12 @@ BOOL DevLXMiniMap::Install(PDeviceDescriptor_t d)
   d->PutBugs      = LXMiniMapPutBugs;
   d->PutBallast   = LXMiniMapPutBallast;
   d->Open         = Open;
-  d->Close        = NULL;
   d->Init         = Init;
   d->LinkTimeout  = GetTrue;
   d->Declare      = DeclareTaskMinimap;
   d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
-  d->OnSysTicker = NULL;
   d->PutQNH = LXMiniMapPutQNH;
 
   return(true);

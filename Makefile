@@ -160,7 +160,14 @@ ifeq ($(TARGET),OPENVARIO)
   CONFIG_ANDROID  :=n
   MINIMAL         :=n
   OPENMP          :=y
-  TARGET_HAS_MALI :=y
+  USE_EGL         :=y
+  OPENGL          :=y
+  GLES            :=y
+  GLES2           :=y
+  USE_X11         :=n
+  USE_CONSOLE     :=y
+  FULLSCREEN      :=y
+  ENABLE_MESA_KMS :=y
 endif
 
 ############# build and CPU info
@@ -179,6 +186,7 @@ else ifeq ($(CONFIG_WINE),y)
  MCPU   := -mcpu=$(CPU)
 else ifeq ($(TARGET_IS_KOBO),y)
  TCPATH := arm-unknown-linux-gnueabi-
+ MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad
 else ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
  TCPATH := arm-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize
@@ -282,7 +290,7 @@ FIND            :=find
 ETAGS           :=etags
 EBROWSE         :=ebrowse
 
-GCCVERSION = $(shell $(CXX) --version | grep ^$(TCPATH) | sed 's/^.* //g')
+GCCVERSION = $(shell $(CXX) -dumpversion)
 GCC_GTEQ_480 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 40800)
 GCC_GTEQ_820 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 80200)
 

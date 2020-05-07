@@ -32,7 +32,7 @@ void UpdateAnalysis(WndForm* pForm){
 
   TCHAR szPolarName[80];
   extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
-  LK_tsplitpath(szPolarFile, (TCHAR*) NULL, (TCHAR*) NULL, szPolarName, (TCHAR*) NULL);
+  LK_tsplitpath(szPolarFile, NULL, NULL, szPolarName, NULL);
 
   switch(analysis_page){
     case ANALYSIS_PAGE_BAROGRAPH:

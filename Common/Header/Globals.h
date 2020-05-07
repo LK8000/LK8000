@@ -108,6 +108,9 @@ GEXTERN int Alternate2;
 GEXTERN int BestAlternate;
 GEXTERN bool DisableBestAlternate;
 
+GEXTERN bool bAutoActive ;
+GEXTERN bool bAutoPassiv ;
+
 GEXTERN int ActiveAlternate;
 
 GEXTERN int  WaypointsOutOfRange;

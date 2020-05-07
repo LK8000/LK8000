@@ -38,7 +38,26 @@
 /// LX Nano 3 device (parsing LXWPn sentences and declaring tasks).
 ///
 
+typedef enum {
+  _MC   =0,
+  _BAL    ,
+  _BUGS   ,
+  _STF    ,
+  _WIND   ,
+  _BARO   ,
+  _SPEED  ,
+  _VARIO  ,
+  _R_TRGT ,
+  _GFORCE ,
+  _OAT    ,
+  _BAT1   ,
+  _BAT2   ,
+  _POLAR  ,
+  _DIRECT ,
+  _T_TRGT ,
 
+  _LAST
+} ValueStringIndex;
 
 class DevLXNanoIII : public DevLX
 {
@@ -106,26 +125,34 @@ class DevLXNanoIII : public DevLX
    static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
-
+   static BOOL Values(PDeviceDescriptor_t d);
+   static BOOL SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[]);
    static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
-   static BOOL ShowDataValue(WndForm* wf , PDeviceDescriptor_t d ,const TCHAR Select[],  const TCHAR ValueText[]);
    static void GetDirections(WndButton* pWnd);
+   static BOOL ShowValues(void) {return m_bShowValues;};
+   static void ShowValues(BOOL bShow) {m_bShowValues = bShow;};
+   static BOOL IGCDownload(void) {return bIGC_Download;};
+   static void IGCDownload(BOOL bDL) {bIGC_Download = bDL;};
+   static BOOL Declare(void) {return m_bDeclare;};
+   static void Declare(BOOL bDL) {m_bDeclare = bDL;};
+   static int Port(void) { if(m_pDevice) return m_pDevice->PortNumber; else return -1;};
+
+   static PDeviceDescriptor_t Device(void) {return m_pDevice;};
+   static void Device(PDeviceDescriptor_t d) {m_pDevice = d;};
 
    static bool  OnIGCTimeout(WndForm* pWnd);
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
-   static BOOL m_bLXNavS_series;
-/*
-   static BOOL m_bValues;
-   BOOL ValueDisplay(void) { return m_bValues;};
-   void ValueDisplay(BOOL val) {  m_bValues = val;};*/
-  // static TCHAR m_Filename[200];
+   static BOOL bIGC_Download ;
+   static BOOL m_bShowValues;
+   static BOOL m_bDeclare;
 
-  //  static bool PutMacCready(PDeviceDescriptor_t d, double MacCready);
+
 
   //----------------------------------------------------------------------------
   //private:

@@ -94,7 +94,7 @@ class SunEphemeris {
 
   double twam,altmax,noont,settm,riset,twpm;
 
-  int CalcSunTimes(float longit, float latit){
+  int CalcSunTimes(double longit, double latit){
 
     //    float intz;
     double tzone,d,lambda;
@@ -198,11 +198,11 @@ class SunEphemeris {
 
 };
 
-
-SunEphemeris mysun;
-
-double DoSunEphemeris(double lon, double lat) {
-
-  mysun.CalcSunTimes((float)lon, (float)lat);
-  return mysun.settm;
+/**
+ * return suset time in second
+ */
+unsigned DoSunEphemeris(double lon, double lat) {
+  SunEphemeris mysun;
+  mysun.CalcSunTimes(lon, lat);
+  return static_cast<unsigned>(mysun.settm * 3600.0);
 }

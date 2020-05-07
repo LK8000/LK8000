@@ -11,6 +11,8 @@
 #include "Globals.h"
 #include "devKRT2.h"
 #include "device.h"
+#include "utils/stringext.h"
+
 
 #ifdef RADIO_ACTIVE
 
@@ -80,28 +82,19 @@ BOOL KRT2IsRadio(PDeviceDescriptor_t d){
  * Station        station Name string
  *
  *****************************************************************************/
-int  SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, TCHAR* Station)
+static int  SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, const TCHAR* Station)
 {
 unsigned int len = 8;
-unsigned int i;
 unsigned char MHz= (unsigned char) fFrequency;
 unsigned int kHz= (unsigned int) (fFrequency *1000.0 - MHz *1000  + 0.5);
 unsigned char Chan = (unsigned char)(kHz/5);
 
-char Airfield[10]={"   ---   "};
+char Airfield[10]={"         "};
 
 LKASSERT(Command !=NULL)
 if(Command == NULL )
     return false;
-  if(Station != NULL)
-  {
-    if( len > _tcslen(Station)) {
-      len =_tcslen(Station);
-    }
-    for (i= 0; i < len ; i++) {
-      Airfield[i] = Station[i];
-    }
-   }
+
   len =0;
   Command[len++] = STX;
   switch (Active_Passive)
@@ -114,7 +107,15 @@ if(Command == NULL )
       Command[len++] = 'R';
     break;
   }
+  if(Station != NULL) {
+    TCHAR2usascii(Station, Airfield, 9);
+  }
 
+  for (int i = 0 ; i < 10; i++)
+  {
+    if((Airfield[i] < 32) || (Airfield[i] > 126))
+   	  Airfield[i] = ' ';
+  }
   Command[len++] = MHz;
   Command[len++] = Chan;
   Command[len++] = Airfield[0];
@@ -201,7 +202,7 @@ BOOL KRT2PutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 
-BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
+BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
   uint8_t  szTmp[255];
 
 
@@ -220,7 +221,7 @@ BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) 
 }
 
 
-BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
+BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
   uint8_t  szTmp[255];
 
 
@@ -311,10 +312,11 @@ static char Command[REC_BUFSIZE];
 
 while (cnt < len)
 {
-
+ if(CommandLength == REC_BUFSIZE)
+ {
   if(String[cnt] ==STX)
     Recbuflen =0;
-
+ }
   if(Recbuflen >= REC_BUFSIZE)
     Recbuflen =0;
   LKASSERT(Recbuflen < REC_BUFSIZE);
@@ -453,6 +455,7 @@ LKASSERT(d !=NULL);
                 for(i=0; i < 8; i++)
                   RadioPara.ActiveName[i] =   szCommand[4+i];
                 RadioPara.ActiveName[8] =0;
+                TrimRight(RadioPara.ActiveName);
                    _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
                 processed = 13;
               }
@@ -470,6 +473,7 @@ LKASSERT(d !=NULL);
                 for(i=0; i < 8; i++)
                   RadioPara.PassiveName[i] =   szCommand[4+i];
                 RadioPara.PassiveName[8] =0;
+                TrimRight(RadioPara.PassiveName);
                 _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );
                 processed = 13;
               }
@@ -611,7 +615,7 @@ LKASSERT(d !=NULL);
   {
     if(processed> 0)
     {
-      TCHAR szMessage[180] = _T("");
+      TCHAR szMessage[250] = _T("");
       _stprintf(szMessage,_T("%s:%s "), MsgToken(2309),szTempStr);
       StartupStore(_T(" %s %s%s"), szMessage,WhatTimeIsIt(),NEWLINE);
       //DoStatusMessage(szMessage);

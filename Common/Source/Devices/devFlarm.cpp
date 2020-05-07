@@ -39,14 +39,8 @@ BOOL CDevFlarm::Install( PDeviceDescriptor_t d ) {
   StartupStore(_T("Flarm Drvier Install %s"), NEWLINE);
 	_tcscpy(d->Name, GetName());
 	d->ParseNMEA = FlarmParse ; // ParseNMEA;
-	d->PutMacCready = NULL;
-	d->PutBugs = NULL;
-	d->PutBallast = NULL;
 	d->Open = Open;
 	d->Close = Close;
-	d->Init = NULL;
-	d->LinkTimeout = NULL;
-	d->Declare = NULL;
 	d->IsGPSSource = GetFalse;
 	d->IsBaroSource = GetTrue;
 	d->Config = Config;

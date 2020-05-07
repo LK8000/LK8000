@@ -576,8 +576,23 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 
   if (active_bestalternate_on_entry != bestalternate) {
 	BestAlternate = bestalternate;
-	if ( bestalternate >0 && ((safecalc-WayPointList[bestalternate].Altitude) >ALTERNATE_QUIETMARGIN))
+	if ( bestalternate >0 && ((safecalc-WayPointList[bestalternate].Altitude) >ALTERNATE_QUIETMARGIN)) {
 		AlertBestAlternate(1);
+	}
+
+
+		if(ValidWayPoint(BestAlternate))
+		{
+			double fFreq = StrToDouble(WayPointList[BestAlternate].Freq,NULL);
+			if(bAutoActive)			{
+				devPutFreqActive(fFreq, WayPointList[BestAlternate].Name);
+			}
+
+			if(bAutoPassiv) {
+				devPutFreqStandby(fFreq, WayPointList[BestAlternate].Name);
+			}
+		}
+
   }
 } // end of search for the holy grail
 

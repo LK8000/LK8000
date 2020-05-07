@@ -61,12 +61,7 @@ BOOL DevLX16xx::Install(PDeviceDescriptor_t d)
   d->PutMacCready = LX16xxPutMacCready;
   d->PutBugs      = LX16xxPutBugs; // removed to prevent cirvular updates
   d->PutBallast   = LX16xxPutBallast;
-  d->Open         = NULL;
-  d->Close        = NULL;
-  d->Init         = NULL;
   d->LinkTimeout  = GetTrue;
-  d->Declare      = NULL;
-  d->IsLogger     = NULL;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->DirectLink   = LX16xxDirectLink;

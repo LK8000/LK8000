@@ -63,17 +63,8 @@ BOOL b50Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = B50LinkTimeout;
-  d->Declare = NULL;
   d->IsGPSSource = B50IsGPSSource;
-
-
   d->IsGPSSource  = B50IsGPSSource;
   d->IsBaroSource = B50IsBaroSource;
   return(TRUE);

@@ -58,19 +58,11 @@ static BOOL FlytecInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Flytec/FLYSEN"));
   d->ParseNMEA = FlytecParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = FlytecLinkTimeout;
-  d->Declare = NULL;
   d->IsGPSSource = FlytecIsGPSSource;
   d->IsBaroSource = FlytecIsBaroSource;
 
   return(TRUE);
-
 }
 
 

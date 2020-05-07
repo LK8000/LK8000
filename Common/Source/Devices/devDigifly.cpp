@@ -70,14 +70,7 @@ static BOOL DigiflyInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Digifly"));
   d->ParseNMEA = DigiflyParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = DigiflyLinkTimeout;
-  d->Declare = NULL;
   d->IsGPSSource = DigiflyIsGPSSource;
   d->IsBaroSource = DigiflyIsBaroSource;
 

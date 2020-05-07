@@ -69,14 +69,7 @@ BOOL pgInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("PosiGraph Logger"));
   d->ParseNMEA = PGParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = PGLinkTimeout;
-  d->Declare = NULL;
   d->IsLogger = PGIsLogger;
   d->IsGPSSource = PGIsGPSSource;
   d->IsBaroSource = PGIsBaroSource;

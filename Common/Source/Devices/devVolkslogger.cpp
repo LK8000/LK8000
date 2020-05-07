@@ -295,12 +295,6 @@ BOOL VLLinkTimeout(PDeviceDescriptor_t d){
 BOOL vlInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Volkslogger"));
   d->ParseNMEA = VLParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs = NULL;
-  d->PutBallast = NULL;
-  d->Open = NULL;
-  d->Close = NULL;
-  d->Init = NULL;
   d->LinkTimeout = VLLinkTimeout;
   d->Declare = VLDeclare;
   d->IsLogger = VLIsLogger;

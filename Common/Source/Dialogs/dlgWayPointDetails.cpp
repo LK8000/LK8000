@@ -324,7 +324,7 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-extern    double  ExtractFrequency(TCHAR*);
+extern    double  ExtractFrequency(const TCHAR*);
 
 static void OnMultiSelectEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {
@@ -339,11 +339,11 @@ TCHAR Tmp2[20];
   {
    if(RadioPara.Enabled)
    {
-     double ASFrequency = ExtractFrequency((TCHAR*)aCommentTextLine[ItemIndex]);
+     double ASFrequency = ExtractFrequency(aCommentTextLine[ItemIndex]);
       if((ASFrequency >= 118) && (ASFrequency <= 138))
       {
         LKSound(TEXT("LK_TICK.WAV"));
-        _sntprintf(Tmp2, 10, _T("%s"),(TCHAR*)aCommentTextLine[ItemIndex]);
+        _sntprintf(Tmp2, 10, _T("%s"),aCommentTextLine[ItemIndex]);
         Tmp2[10]=0;
         _stprintf(Tmp,_T("%s%s%7.3f"),Tmp2,NEWLINE,ASFrequency);
         devPutFreqActive(ASFrequency, Tmp2);
@@ -360,9 +360,6 @@ static WndListFrame *wMultiSelect = NULL;
 void dlgWayPointDetailsShowModal(short mypage){
 
   TCHAR sTmp[128];
-  double sunsettime;
-  int sunsethours;
-  int sunsetmins;
   WndProperty *wp;
 
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_WAYPOINTDETAILS_L : IDR_XML_WAYPOINTDETAILS_P);
@@ -489,12 +486,9 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   // SUNSET at waypoint
   //
-  sunsettime = DoSunEphemeris(WayPointList[SelectedWaypoint].Longitude,
-                              WayPointList[SelectedWaypoint].Latitude);
-  sunsethours = (int)sunsettime;
-  sunsetmins = (int)((sunsettime-sunsethours)*60);
-
-  _stprintf(sTmp, TEXT("%02d:%02d"), sunsethours, sunsetmins);
+  const unsigned sunset_time = DoSunEphemeris(WayPointList[SelectedWaypoint].Longitude,
+                                              WayPointList[SelectedWaypoint].Latitude);
+  Units::TimeToText(sTmp, sunset_time);
   ((WndProperty *)wf->FindByName(TEXT("prpSunset")))->SetText(sTmp);
 
 

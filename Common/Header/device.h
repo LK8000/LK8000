@@ -85,6 +85,16 @@ typedef enum
   BiDirInOut =3		 // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
 }DataBiIoDir;
 
+
+// Filter switches for different Data directions data protocol sentences using for TARGET information transfer
+typedef enum
+{
+  TP_Off  ,  // OFF    no TARGET data exchange
+  TP_VTARG,  // IN    $PLXVTARG
+  TP_GPRMB,  // OUT   $GPRMB
+}DataTP_Type;
+
+
 typedef struct{
   DataBiIoDir MCDir;     // Mac Cready
   DataBiIoDir BUGDir;    // BUG aka efficency
@@ -94,7 +104,7 @@ typedef struct{
   DataBiIoDir BARODir;   // barometric heigt
   DataBiIoDir VARIODir;  // Variometer
   DataBiIoDir SPEEDDir;  // IAS indicated airspeed
-  DataBiIoDir TARGETDir; // Navigation Target information
+  DataTP_Type R_TRGTDir; // Receive Navigation Target information protocol sentence
 
   DataBiIoDir RADIODir ; // Radio Informations Frequency etc.
   DataBiIoDir TRAFDir  ; // Traffix Information (FLARM)
@@ -104,7 +114,8 @@ typedef struct{
   DataBiIoDir BAT1Dir  ; // Battery 1 voltage
   DataBiIoDir BAT2Dir  ; // Battery 2 voltage
   DataBiIoDir POLARDir ; // Polar 2 voltage
-
+  DataBiIoDir DirLink  ; // Direct Link
+  DataTP_Type T_TRGTDir; // Send Navigation Target information protocol sentence
 } DeviceIO;
 
 struct DeviceDescriptor_t {
@@ -128,9 +139,9 @@ struct DeviceDescriptor_t {
   BOOL (*PutVolume)(DeviceDescriptor_t	*d,	int Volume);
   BOOL (*PutRadioMode)(DeviceDescriptor_t	*d,	int mode);
   BOOL (*PutSquelch)(DeviceDescriptor_t	*d,	int Squelch);
-  BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	double Freq, TCHAR StationName[]);
+  BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	double Freq, const TCHAR* StationName);
   BOOL (*StationSwap)(DeviceDescriptor_t	*d);
-  BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	double Standby, TCHAR StationName[]);
+  BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	double Standby, const TCHAR* StationName);
   BOOL (*Open)(DeviceDescriptor_t *d);
   BOOL (*Close)(DeviceDescriptor_t *d);
   BOOL (*Init)(DeviceDescriptor_t	*d);
@@ -142,9 +153,9 @@ struct DeviceDescriptor_t {
   BOOL (*IsRadio)(DeviceDescriptor_t *d);
   BOOL (*PutQNH)(DeviceDescriptor_t *d, double NewQNH);
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
-  BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
+  BOOL (*PutVoice)(DeviceDescriptor_t *d, const TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
-  BOOL (*HeartBeat)(DeviceDescriptor_t     *d);
+  BOOL (*HeartBeat)(DeviceDescriptor_t *d);
  
   bool m_bAdvancedMode;
   int iSharedPort;
@@ -177,11 +188,11 @@ typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
 void VarioWriteSettings(void);
 
-typedef	struct{
-  const TCHAR	         *Name;
-  unsigned int		 Flags;
-  BOOL   (*Installer)(PDeviceDescriptor_t d);
-} DeviceRegister_t;
+struct DeviceRegister_t {
+  const TCHAR* Name;
+  unsigned int Flags;
+  BOOL (*Installer)(PDeviceDescriptor_t d);
+};
 
 #ifdef ANDROID
 extern Mutex COMMPort_mutex; // needed for Bluetooth LE scan
@@ -202,8 +213,7 @@ PDeviceDescriptor_t devX(unsigned idx) {
 	return nullptr;
 }
 
-void LockComm();
-void UnlockComm();
+extern Mutex CritSec_Comm;
 
 void RefreshComPortList();
 
@@ -214,7 +224,7 @@ bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName);
 void RestartCommPorts();
 
 BOOL devInit();
-BOOL devCloseAll(void);
+void devCloseAll();
 PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port);
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
 BOOL devHasBaroSource(void);
@@ -231,8 +241,8 @@ BOOL devPutVolume(int Volume);
 BOOL devPutFreqSwap();
 BOOL devPutRadioMode(int Mode);
 BOOL devPutSquelch(int Volume);
-BOOL devPutFreqActive(double Freq, TCHAR StationName[]);
-BOOL devPutFreqStandby(double Freq, TCHAR StationName[]);
+BOOL devPutFreqActive(double Freq, const TCHAR* StationName);
+BOOL devPutFreqStandby(double Freq, const TCHAR* StationName);
 BOOL devLinkTimeout(PDeviceDescriptor_t	d);
 BOOL devDeclare(PDeviceDescriptor_t	d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(PDeviceDescriptor_t d);

@@ -40,15 +40,7 @@ BOOL DevLX::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs      = NULL;
-  d->PutBallast   = NULL;
-  d->Open         = NULL;
-  d->Close        = NULL;
-  d->Init         = NULL;
   d->LinkTimeout  = GetTrue;
-  d->Declare      = NULL;
-  d->IsLogger     = NULL;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 

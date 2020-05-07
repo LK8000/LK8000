@@ -245,14 +245,6 @@ static BOOL XCTracerInstall(PDeviceDescriptor_t d) {
 
     _tcscpy(d->Name, DeviceName);
     d->ParseNMEA = XCTracerParseNMEA;
-    d->PutMacCready = NULL;
-    d->PutBugs = NULL;
-    d->PutBallast = NULL;
-    d->Open = NULL;
-    d->Close = NULL;
-    d->Init = NULL;
-    d->LinkTimeout = NULL;
-    d->Declare = NULL;
     d->IsGPSSource = XCTracerTrue;
     d->IsBaroSource = XCTracerTrue;
 

@@ -170,7 +170,7 @@ uint8_t Val = (int8_t) Squelch;
     if(!d->Disabled)
       if (d->Com)
       {
-         Send_Command( d, 0x16 , 1, &Val);
+         Send_Command( d, 0x17 , 1, &Val);
          RadioPara.Squelch = Squelch;
          if(iATR833DebugLevel) StartupStore(_T(". ATR833 Send Squelch %u %s"), Val,NEWLINE);
       }
@@ -179,7 +179,7 @@ uint8_t Val = (int8_t) Squelch;
 
 
 
-BOOL ATR833PutFreqActive(PDeviceDescriptor_t d, double Freq, TCHAR StationName[]) {
+BOOL ATR833PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
 static double oldFreq=0;
 if(oldFreq == Freq) return true;
 oldFreq = Freq;
@@ -190,16 +190,17 @@ uint8_t Arg[2];
       if (d->Com)
       {
         Arg[0] = (int) Freq;
-        Arg[1] =iround((Freq- (double)Arg[0] ) *1000.0) /5;
+        Arg[1] =((int)((Freq*1000.0)+0.5)- Arg[0]  *1000) /5;
+
         Send_Command( d, 0x13 , 2, Arg);  // Send Activ
         RadioPara.ActiveFrequency =  Freq;
-        if(iATR833DebugLevel) StartupStore(_T(". ATR833 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+        if(iATR833DebugLevel) StartupStore(_T(". ATR833 Active Station %7.3fMHz %i.%03i %s%s"), Freq, Arg[0], Arg[1]*5, StationName,NEWLINE);
       }
   return(TRUE);
 }
 
 
-BOOL ATR833PutFreqStandby(PDeviceDescriptor_t d, double Freq,  TCHAR StationName[]) {
+BOOL ATR833PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
 uint8_t Arg[2];
 
   if(d != NULL)
@@ -207,12 +208,12 @@ uint8_t Arg[2];
       if (d->Com)
       {
         Arg[0] = (int) Freq;
-        Arg[1] =iround((Freq- (double)Arg[0] ) *1000.0) /5;
+        Arg[1] =((int)((Freq*1000.0)+0.5)- Arg[0]  *1000) /5;
         Send_Command( d, 0x12 , 2, Arg);  // Send Activ      
         RadioPara.PassiveFrequency =  Freq;
         if(StationName != NULL)
           _sntprintf(RadioPara.PassiveName  ,NAME_SIZE,_T("%s"),StationName) ;
-         if(iATR833DebugLevel) StartupStore(_T(". ATR833 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+         if(iATR833DebugLevel) StartupStore(_T(". ATR833 Standby Station %7.3fMHz %i.%03i %s%s"), Freq, Arg[0] , Arg[1]*5,  StationName,NEWLINE);
       }
   return(TRUE);
 }

@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Dialogs/dlgProgress.h"
 #include "utils/stl_utils.h"
+#include "Util/TruncateString.hpp"
 #include "BtHandler.h"
 #include "SerialPort.h"
 #include "Bluetooth/BthPort.h"
@@ -59,7 +60,7 @@ using namespace std::placeholders;
 //  Thankfully WinCE "critical sections" are recursive locks.
 
 // this lock is used for protect DeviceList array.
-static Mutex CritSec_Comm;
+Mutex CritSec_Comm;
 
 #ifdef ANDROID
 Mutex COMMPort_mutex; // needed for Bluetooth LE scan
@@ -75,15 +76,6 @@ DeviceDescriptor_t *pDevPrimaryBaroSource=NULL;
 DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 
 int DeviceRegisterCount = 0;
-
-void LockComm() {
-  CritSec_Comm.Lock();
-}
-
-void UnlockComm() {
-  CritSec_Comm.Unlock();
-}
-
 
 /**
  * Call DeviceDescriptor_t::*func on all connected device without Argument.
@@ -463,11 +455,19 @@ void DeviceDescriptor_t::InitStruct(int i) {
     PortNumber = i;
 
     Name[0] = '\0';
-    ParseNMEA = nullptr;
-    PutMacCready = nullptr;
+
     DirectLink = nullptr;
+    ParseNMEA = nullptr;
+    ParseStream = nullptr;
+    PutMacCready = nullptr;
     PutBugs = nullptr;
     PutBallast = nullptr;
+    PutVolume = nullptr;
+    PutRadioMode = nullptr;
+    PutSquelch = nullptr;
+    PutFreqActive = nullptr;
+    StationSwap = nullptr;
+    PutFreqStandby = nullptr;
     Open = nullptr;
     Close = nullptr;
     Init = nullptr;
@@ -477,14 +477,12 @@ void DeviceDescriptor_t::InitStruct(int i) {
     IsGPSSource = nullptr;
     IsBaroSource = nullptr;
     IsRadio = nullptr;
-
-    PutVoice = nullptr;
     PutQNH = nullptr;
     OnSysTicker = nullptr;
+    PutVoice = nullptr;
+    Config = nullptr;
+    HeartBeat = nullptr;
 
-    PutVolume = nullptr;
-    PutFreqActive = nullptr;
-    PutFreqStandby = nullptr;
     Disabled = true;
 
     Status = CPS_UNUSED; // 100210
@@ -492,7 +490,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
     iSharedPort = -1;
     m_bAdvancedMode = false;
-    bNMEAOut     = false;
+    bNMEAOut = false;
 }
 
 bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
@@ -579,7 +577,7 @@ static bool IsIdenticalPort(int i, int j) {
 }
 
 BOOL devInit() {
-    LockComm();
+    ScopeLock Lock(CritSec_Comm);
 
     TCHAR DeviceName[DEVNAMESIZE + 1];
 
@@ -750,55 +748,31 @@ BOOL devInit() {
        }
 #endif
     }
-
-    UnlockComm();
     return (TRUE);
 }
 
 // Tear down methods should always succeed.
 // Called from devInit() above under LockComm
 // Also called when shutting down via devCloseAll()
-static BOOL devClose(PDeviceDescriptor_t d)
-{
-  if (d != NULL) {
-    if (d->Close != NULL) {
-      d->Close(d);
-    }
-    
-    ComPort *Com = d->Com;
-    if (Com) {
-      if(d->iSharedPort <0)  // don't close shared Ports,  these are only copies!
-      {
-        Com->Close();
-        delete Com;
-      }
-      d->Com = nullptr; // if we do that before Stop RXThread , Crash ....
+static void devClose(DeviceDescriptor_t& d) {
+  ScopeLock Lock(CritSec_Comm);
 
-    }    
+  if (d.Close) {
+    d.Close(&d);
   }
 
-  return TRUE;
+  if (d.iSharedPort < 0) { // don't close shared Ports,  these are only copies!
+    if (d.Com) {
+      d.Com->Close();
+      delete d.Com;
+    }
+  }
+  d.Com = nullptr; // if we do that before Stop RXThread , Crash ....
+  d.Status = CPS_CLOSED;
 }
 
-BOOL devCloseAll(void){
-    /* 29/10/2013 : 
-     * if RxThread wait for LockComm, It never can terminate -> Dead Lock
-     *  can appen at many time when reset comport is called ....
-     *    devRequestFlarmVersion called by NMEAParser::PFLAU is first exemple
-     * 
-     * in fact if it appens, devClose() kill RxThread after 20s timeout...
-     *  that solve the deadlock, but thread is not terminated correctly ...
-     * 
-     * Bruno.
-     */
-  for (unsigned i=0; i<NUMDEV; i++){
-    LockComm();
-    devClose(&DeviceList[i]);
-    DeviceList[i].Status=CPS_CLOSED; // 100210
-    UnlockComm();
-  }
-
-  return(TRUE);
+void devCloseAll() {
+  std::for_each(std::begin(DeviceList), std::end(DeviceList), &devClose);
 }
 
 
@@ -841,12 +815,12 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   bool  ret = FALSE;
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
+  ScopeLock lock(CritSec_Comm);
+
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if(!d) {
     return FALSE;
   }
-
-  ScopeLock lock(CritSec_Comm);
 
   d->HB=LKHearthBeats;
 
@@ -967,7 +941,9 @@ BOOL devHeartBeat(PDeviceDescriptor_t d)
 
   if (SIMMODE)
     return TRUE;
-  LockComm();
+
+  ScopeLock Lock(CritSec_Comm);
+
   if (d == NULL){
     for (int i=0; i<NUMDEV; i++){
       d = &DeviceList[i];
@@ -979,8 +955,6 @@ BOOL devHeartBeat(PDeviceDescriptor_t d)
     if (d->HeartBeat != NULL)
       result = d->HeartBeat(d);
   }
-  UnlockComm();
-
   return result;
 }
 
@@ -990,7 +964,9 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
 
   if (SIMMODE)
     return TRUE;
-  LockComm();
+
+  ScopeLock Lock(CritSec_Comm);
+
   if (d == NULL){
     for (int i=0; i<NUMDEV; i++){
       d = &DeviceList[i];
@@ -1002,8 +978,6 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
     if (d->LinkTimeout != NULL)
       result = d->LinkTimeout(d);
   }
-  UnlockComm();
-
   return result;
 }
 
@@ -1027,7 +1001,8 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(571));
   CreateProgressDialog(buffer);
 
-  LockComm();
+  ScopeLock Lock(CritSec_Comm);
+
   /***********************************************************/
   devDirectLink(d,true);
   /***********************************************************/
@@ -1041,8 +1016,7 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   /***********************************************************/
   devDirectLink(d,false);
   /***********************************************************/
-  UnlockComm();
-  
+ 
   CloseProgressDialog();
   
   return result;
@@ -1052,7 +1026,7 @@ BOOL devIsLogger(PDeviceDescriptor_t d)
 {
   bool result = false;
 
-  LockComm();
+  ScopeLock Lock(CritSec_Comm);
   if ((d != NULL) && (d->IsLogger != NULL)) {
     if (d->IsLogger(d)) {
       result = true;
@@ -1061,8 +1035,6 @@ BOOL devIsLogger(PDeviceDescriptor_t d)
   if ((d != NULL) && !result) {
     result |= d->nmeaParser.isFlarm;
   }
-  UnlockComm();
-
   return result;
 }
 
@@ -1104,7 +1076,7 @@ BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH)
 {
   BOOL result = FALSE;
 
-  LockComm();
+  ScopeLock Lock(CritSec_Comm);
   if (d == NULL){
     for (int i=0; i<NUMDEV; i++){
       d = &DeviceList[i];
@@ -1116,8 +1088,6 @@ BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH)
     if (d->PutQNH != NULL)
       result = d->PutQNH(d, NewQNH);
   }
-  UnlockComm();
-
   return result;
 }
 
@@ -1125,7 +1095,7 @@ BOOL devOnSysTicker(DeviceDescriptor_t *d)
 {
   BOOL result = FALSE;
 
-  LockComm();
+  ScopeLock Lock(CritSec_Comm);
   if (d == NULL){
     for (int i=0; i<NUMDEV; i++){
       d = &DeviceList[i];
@@ -1138,9 +1108,6 @@ BOOL devOnSysTicker(DeviceDescriptor_t *d)
       result = d->OnSysTicker(d);
 
   }
-
-  UnlockComm();
-
   return result;
 }
 
@@ -1164,6 +1131,7 @@ static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
 // creating a possible deadlock situation.
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 {
+  ScopeLock Lock(CritSec_Comm);
   if(d != NULL)
   {
     if(!d->Disabled)
@@ -1171,13 +1139,11 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 	  TCHAR tmp[512];
       devFormatNMEAString(tmp, 512, text);
 
-      LockComm();      
       devDirectLink(d,true);
       if (d->Com) {
         d->Com->WriteString(tmp);
       }
       devDirectLink(d,false);
-      UnlockComm();
     }
   }
 }
@@ -1240,31 +1206,33 @@ BOOL devPutFreqSwap() {
  * Send FreqActive cmd to all connected device.
  * @return FALSE if error on one device.
  */
-BOOL devPutFreqActive(double Freq, TCHAR StationName[]) {
-  if (SIMMODE) {
-    RadioPara.ActiveFrequency=  Freq;
-    _sntprintf( RadioPara.ActiveName, NAME_SIZE,_T("%s") , StationName);
-    return TRUE;
-  }
+
+extern BOOL ValidFrequency(double Freq);
+
+BOOL devPutFreqActive(double Freq, const TCHAR* StationName) {
+if( ValidFrequency(Freq))
+{
+  RadioPara.ActiveFrequency=  Freq;
+	CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
   return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
-
-
-
-
+}
+else
+	return false;
 }
 
 /**
  * Send FreqStandby cmd to all connected device.
  * @return FALSE if error on one device.
  */
-BOOL devPutFreqStandby(double Freq,TCHAR  StationName[]) {
-  if (SIMMODE) {
-     RadioPara.PassiveFrequency=  Freq;
-     _sntprintf( RadioPara.PassiveName, NAME_SIZE,_T("%s") , StationName);
-    return TRUE;
-  }
+BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
+if( ValidFrequency(Freq))
+{
+	RadioPara.PassiveFrequency=  Freq;
+	CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
   return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
-
+}
+else
+	return false;
 }
 #endif  // RADIO_ACTIVE        
 

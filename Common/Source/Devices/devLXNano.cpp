@@ -94,12 +94,6 @@ BOOL DevLXNano::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
-  d->PutMacCready = NULL;
-  d->PutBugs      = NULL;
-  d->PutBallast   = NULL;
-  d->Open         = NULL;
-  d->Close        = NULL;
-  d->Init         = NULL;
   d->LinkTimeout  = GetTrue;
   d->Declare      = DeclareTask;
   d->IsLogger     = GetTrue;
