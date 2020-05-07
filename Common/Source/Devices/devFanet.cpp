@@ -70,7 +70,8 @@ static void payload_absolut2coord(double *lat, double *lon, uint8_t *buf)
   *lon = lon_i / 46603.0;
 }
 
-static INT FanetGetDeviceIndex(TCHAR *pCn,NMEA_INFO *pGPS, bool bEmptyIndex){
+template<typename _Tp, size_t size>
+static int FanetGetIndex(const Cn_t& Cn, _Tp (&array)[size], bool bEmptyIndex){
   int iEmpyIndex = -1;
   for (size_t i = 0;i < size;i++){
     if (array[i].Time_Fix == 0){
