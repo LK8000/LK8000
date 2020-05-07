@@ -76,15 +76,9 @@ void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const Screen
 	sc_name.y -= NIBLSCALE(16);
 	sc_av = sc_name;
 
-	_tcscpy(lbuffer,_T(""));
-	//_tcscat(lbuffer,_T(":%d"),(uint8_t)round(DrawInfo.FANET_Weather[i].windSpeed));
-	size_t len = _tcslen(lbuffer);
-	_stprintf(lbuffer + len,_T("%d"),(uint8_t)round(DrawInfo.FANET_Weather[i].windSpeed));
-	_tcscat(lbuffer,_T("|"));
-	len = _tcslen(lbuffer);
-	_stprintf(lbuffer + len,_T("%d"),(uint8_t)round(DrawInfo.FANET_Weather[i].windGust));
-	//_tcscat(lbuffer,_T(":%d"),(uint8_t)round(DrawInfo.FANET_Weather[i].windGust));
-	//_tcscpy(lbuffer,_T("10|22"));
+	_stprintf(lbuffer, _T("%d|%d"), 
+					(int)round(DrawInfo.FANET_Weather[i].windSpeed), 
+					(int)round(DrawInfo.FANET_Weather[i].windGust));
 	displaymode.Border=1;
 	TextInBox(Surface, &rc, lbuffer, sc.x+tscaler, sc.y+tscaler , &displaymode, false);
 
@@ -100,8 +94,8 @@ void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const Screen
 	windsock[3].y = 80;
 	for (int q=0; q < 4; q++)
 	{
-		windsock[q].x  = (LONG) ((double)windsock[q].x * 0.17);
-		windsock[q].y  = (LONG) ((double)windsock[q].y * 0.17);
+		windsock[q].x  = (windsock[q].x * 0.17);
+		windsock[q].y  = (windsock[q].y * 0.17);
 	}
 
     PolygonRotateShift(windsock, 4, sc.x, sc.y, DrawInfo.FANET_Weather[i].windDir + 180 - DisplayAngle);
@@ -122,8 +116,8 @@ void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const Screen
 	windsock[4].y = 30;
 	for (int q=0; q < 5; q++)
 	{
-		windsock[q].x  = (LONG) ((double)windsock[q].x * 0.17);
-		windsock[q].y  = (LONG) ((double)windsock[q].y * 0.17);
+		windsock[q].x  = (windsock[q].x * 0.17);
+		windsock[q].y  = (windsock[q].y * 0.17);
 	}
 
     PolygonRotateShift(windsock, 5, sc.x, sc.y, DrawInfo.FANET_Weather[i].windDir + 180 - DisplayAngle);
@@ -144,8 +138,8 @@ void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const Screen
 	windsock[4].y = 14;
 	for (int q=0; q < 5; q++)
 	{
-		windsock[q].x  = (LONG) ((double)windsock[q].x * 0.17);
-		windsock[q].y  = (LONG) ((double)windsock[q].y * 0.17);
+		windsock[q].x  = (windsock[q].x * 0.17);
+		windsock[q].y  = (windsock[q].y * 0.17);
 	}
 
     PolygonRotateShift(windsock, 5, sc.x, sc.y, DrawInfo.FANET_Weather[i].windDir + 180 - DisplayAngle);
@@ -166,8 +160,8 @@ void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const Screen
 	windsock[4].y = -16;
 	for (int q=0; q < 5; q++)
 	{
-		windsock[q].x  = (LONG) ((double)windsock[q].x * 0.17);
-		windsock[q].y  = (LONG) ((double)windsock[q].y * 0.17);
+		windsock[q].x  = (windsock[q].x * 0.17);
+		windsock[q].y  = (windsock[q].y * 0.17);
 	}
 
     PolygonRotateShift(windsock, 5, sc.x, sc.y, DrawInfo.FANET_Weather[i].windDir + 180 - DisplayAngle);
