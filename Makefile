@@ -1207,6 +1207,7 @@ DEVS	:=\
 	$(DEV)/devAR620x.cpp \
 	$(DEV)/devATR833.cpp \
 	$(DEV)/devOpenVario.cpp \
+	$(DEV)/devLX_EOS_ERA.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
