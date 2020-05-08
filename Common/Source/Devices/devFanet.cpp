@@ -46,16 +46,23 @@ uint8_t getByteFromHex(const TCHAR *in) {
   return tens * 16 + digits;
 }
 
+static void fillpaddingZeros(TCHAR *String,TCHAR *String2,int len){
+  int size = _tcslen(String2);
+  if (size < len){
+    for (int i = size;i < len;i++){
+      _tcscat(String,_T("0"));
+    }
+  }
+  _tcscat(String,String2);
+}
+
 static void getIdFromMsg(TCHAR *String,TCHAR *cID,TCHAR *id){
   TCHAR ctemp[10];
   cID[0] = 0; //zero-Termination of String;
   NMEAParser::ExtractParameter(String,ctemp,0);
-  if (_tcslen(ctemp) < 2) _tcscat(cID,_T("0"));
-  _tcscat(cID,ctemp);
+  fillpaddingZeros(cID,ctemp,2);
   NMEAParser::ExtractParameter(String,ctemp,1);
-  if (_tcslen(ctemp) == 2) _tcscat(cID,_T("00"));
-  if (_tcslen(ctemp) == 3) _tcscat(cID,_T("0"));
-  _tcscat(cID,ctemp);
+  fillpaddingZeros(cID,ctemp,4);
   id[0] = getByteFromHex(&cID[0]);
   id[1] = getByteFromHex(&cID[2]);
   id[2] = getByteFromHex(&cID[4]);
