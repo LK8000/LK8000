@@ -413,6 +413,8 @@ void LKProfileResetDefault() {
     dwDeviceName[i][0]=_T('\0');
     szPort      [i][0]=_T('\0');
     szIpAddress [i][0]=_T('\0');
+    Replay_FileName[i][0]=_T('\0');
+    ReplaySpeed [i]   = 1;
     dwSpeedIndex[i]   = 2;
     dwBitIndex  [i]   = (BitIndex_t)bit8N1;
     dwIpPort    [i]   = 23;
