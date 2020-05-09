@@ -1160,6 +1160,7 @@ COMMS	:=\
 	$(CMM)/Bluetooth/BtHandlerWince.cpp \
 	$(CMM)/Bluetooth/BthPort.cpp \
 	$(CMM)/Obex/CObexPush.cpp \
+	$(CMM)/FilePort.cpp\
 
 
 DEVS	:=\
@@ -1297,6 +1298,7 @@ DLGS	:=\
 	$(DLG)/dlgIGCProgress.cpp \
 	$(DLG)/dlgFlarmIGCDownload.cpp \
 	$(DLG)/dlgLXIGCDownload.cpp \
+	$(DLG)/dlgNMEAReplay.cpp \
 	
 	
 SRC_FILES :=\
