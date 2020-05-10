@@ -10,13 +10,12 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
-//#include "Logger.h"
 #include "resource.h"
 
 static WndForm *wf=NULL;
 
 static void OnStopClicked(WndButton* pWnd) {
-//  ReplayLogger::Stop();
+  RestartCommPorts();
 }
 
 static void OnStartClicked(WndButton* pWnd) {
@@ -29,7 +28,7 @@ static void OnStartClicked(WndButton* pWnd) {
     _tcscpy(Replay_FileName[SelectedDevice],dfe->GetPathFile());
 
   }
-//  ReplayLogger::Start();
+  RestartCommPorts();
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
