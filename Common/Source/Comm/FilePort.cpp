@@ -96,11 +96,11 @@ size_t nRecv;
 			else
 				dwWaitTime = 10000;  //  ( 0 = 0.1Hz GPS  )
 		}	else {
-			dwWaitTime = 2;
+			dwWaitTime = 20;
 		}
 
-		if(dwWaitTime < 2)
-			dwWaitTime = 2; // avoid cpu overhead;
+		if(dwWaitTime < 20)
+			dwWaitTime = 20; // avoid cpu overhead;
 
 		if (nRecv > 0) {
 				std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&FilePort::ProcessChar, this, _1));
