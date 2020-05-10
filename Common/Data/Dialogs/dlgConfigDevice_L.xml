@@ -11,7 +11,7 @@
     <WndButton Name="cmdF" Caption="F" X="251" Y="-999" Width="50" Height="40" Font="2" Tag="2" OnClickNotify="OnF" />
 
     <WndButton Name="cmdTerminal" Caption="_@M1871_" X="3" Y="138" Width="70" Height="28" Font="2" Tag="3" OnClickNotify="OnTerminalClicked" />
-    <WndButton Name="cmdBth" Caption="Bluetooth" X="3" Y="166" Width="70" Height="28" Font="2" Tag="2" OnClickNotify="OnBthDevice"/>
+    <WndButton Name="cmdBth" Caption="Bluetooth" X="3" Y="166" Width="70" Height="28" Font="2" Tag="2" OnClickNotify="OnBthDevice"/>    
     <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="194" Width="70" Height="28" Font="2" Tag="3" />
 
     <WndFrame Name="frmCommName" Caption="_@M232_" X="0" Y="40" Width="-1" Height="98" Font="2">
@@ -20,22 +20,24 @@
       <WndProperty Name="prpComDevice1" Caption="_@M450_" X="60" Y="1" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H153_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnDeviceAData" />
       </WndProperty>
-      <WndProperty Name="prpComPort1" Caption="_@M530_" X="60" Y="-1" Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H154_">
+      <WndProperty Name="prpComPort1" Caption="_@M530_" X="60" Y="-1" Width="195" Height="22" CaptionWidth="70" Font="2" Help="_@H154_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnComPort1Data"/>
       </WndProperty>
-      <WndProperty Name="prpExtSound1" Caption="_@M2250_" X="215" Y="-999" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H240_">
+        
+      <WndProperty Name="prpExtSound1" Caption="_@M2250_" X="235" Y="-999" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H240_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
-      <WndProperty Name="prpComSpeed1" Caption="_@M135_" X="60" Y="-1" Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
+      <WndButton Name="cmdReplay" Caption="_@M285_" X="130" Y="45" Width="105" Height="22" Font="2" Tag="3" OnClickNotify="OnConfigDevReplayClicked" />  
+      <WndProperty Name="prpComSpeed1" Caption="_@M135_" X="60" Y="45" Width="155" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" />
       </WndProperty>
       <WndProperty Name="prpComBit1" Caption=" " X="215" Y="-999" Width="-1" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" />
       </WndProperty>
-      <WndProperty Name="prpComIpAddr1" Caption="IP" X="60" Y="-999" Width="220" Height="22" CaptionWidth="70" Font="2" Keyboard="1">
+      <WndProperty Name="prpComIpAddr1" Caption="IP" X="60" Y="-999" Width="240" Height="22" CaptionWidth="70" Font="2" Keyboard="1">
         <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s"/>
       </WndProperty>
-      <WndProperty Name="prpComIpPort1" Caption="Port" X="230" Y="-999" Width="-1" Height="22" CaptionWidth="30" Font="2" Keyboard="1">
+      <WndProperty Name="prpComIpPort1" Caption="Port" X="250" Y="-999" Width="-1" Height="22" CaptionWidth="30" Font="2" Keyboard="1">
         <DataField Name="" DataType="integer" DisplayFormat="%d" EditFormat="%d" Min="1" Max="65635" Step="1"/>
       </WndProperty>
       <WndProperty Name="prpStatus" Caption="_@M660_" X="60" Y="70" Width="-1" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" Keyboard="0">

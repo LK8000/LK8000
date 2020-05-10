@@ -18,6 +18,7 @@
 /*
  * General defines for LK8000
  */
+#define NMEA_REPLAY _T("NMEAReplay")
 
 #define INVALID_GR	999
 // max allowed for both signed and unsigned shorts
