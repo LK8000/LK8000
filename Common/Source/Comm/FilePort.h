@@ -47,16 +47,18 @@ public:
     unsigned long SetBaudrate(unsigned long) override { return 0U; }
     unsigned long GetBaudrate() const override {  return 0U; }
 
-    void UpdateStatus() override {};
+    void UpdateStatus() override {return;};
 
     bool Write(const void *data, size_t length) override;
-    size_t Read(void *szString, size_t size) override;
+    size_t Read(void *szString, size_t size) override {  return 0; };
+    int ReadLine(void *pString, size_t size);
 
+    Poco::Event FileStopEvt;
 protected:
 
     unsigned RxThread() override;
 
-
+    unsigned long m_dwWaitTime;
     FILE *FileStream;
 
 private:

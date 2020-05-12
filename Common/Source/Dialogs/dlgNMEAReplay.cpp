@@ -15,7 +15,17 @@
 static WndForm *wf=NULL;
 
 static void OnStopClicked(WndButton* pWnd) {
-  RestartCommPorts();
+    ReplaySpeed[SelectedDevice] = 0;
+	if(wf)
+	{
+		WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+		if(wp)
+		{
+	    wp->GetDataField()->Set(ReplaySpeed[SelectedDevice]);
+	    wp->RefreshDisplay();
+		}
+	}
+
 }
 
 static void OnStartClicked(WndButton* pWnd) {
@@ -24,9 +34,21 @@ static void OnStartClicked(WndButton* pWnd) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-
     _tcscpy(Replay_FileName[SelectedDevice],dfe->GetPathFile());
 
+  }
+  if( ReplaySpeed[SelectedDevice] ==0)
+  {
+    ReplaySpeed[SelectedDevice] = 1;
+    if(wf)
+    {
+      WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+      if(wp)
+      {
+        wp->GetDataField()->Set(ReplaySpeed[SelectedDevice]);
+        wp->RefreshDisplay();
+      }
+    }
   }
   RestartCommPorts();
 }
@@ -41,6 +63,14 @@ static void OnCloseClicked(WndButton* pWnd) {
       dfe = (DataFieldFileReader*)wp->GetDataField();
 
       _tcscpy(Replay_FileName[SelectedDevice],dfe->GetPathFile());
+
+    }
+    wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+    if (wp) {
+      DataFieldFileReader* dfe;
+      dfe = (DataFieldFileReader*)wp->GetDataField();
+
+      ReplaySpeed[SelectedDevice] = dfe->GetAsFloat();
 
     }
     WndForm * pForm = pWnd->GetParentWndForm();

@@ -37,6 +37,7 @@ TCHAR szReplayFileName [MAX_PATH];
 	}
 
 	StartupStore(_T(". FilePort  %u open file %s Port <%s> OK%s"), (unsigned)GetPortIndex() + 1, Replay_FileName[GetPortIndex()], GetPortName(), NEWLINE);
+	m_dwWaitTime =0;
 	return true;
 }
 
@@ -46,16 +47,16 @@ int FilePort::SetRxTimeout(int TimeOut) {
 return 0;
 }
 
-size_t FilePort::Read(void *pString, size_t size) {
+int FilePort::ReadLine(void *pString, size_t size) {
 char* szString = (char*)pString;
 
 	if(!FileStream) {
-			return false;
+			return -1;
 	}
 
 	if (fgets((char*) szString, size, FileStream)==NULL) {
 		szString[0] = '\0';
-		return false;
+		return -1;
 	}
 	return strlen(szString);;
 }
@@ -73,38 +74,77 @@ bool FilePort::Write(const void *data, size_t length) {
   return true;
 }
 
+/*
+void FilePort::CancelWaitEvent(void)
+{
+  StartupStore(_T(". FilePort CancelWaitEvent %u m_dwWaitTime :"), (unsigned) m_dwWaitTime );
+  m_dwWaitTime = 5;
 
+}
+*/
+//FilePort::SendSectrion()
 
 unsigned FilePort::RxThread()
 {
-unsigned long	dwWaitTime = 5;
-unsigned LineCnt =0;
+
+unsigned long dwWaitCnt = 5;
+
 char szString[MAX_NMEA_LEN];
-size_t nRecv;
+int  nRecv;
+#define  MIN_INTERVAL 10
+
+  while (!StopEvt.tryWait(MIN_INTERVAL) && FileStream ) // call every 5ms
+  {
+
+    dwWaitCnt+=MIN_INTERVAL;
+    if(dwWaitCnt >= m_dwWaitTime)
+    {
+      dwWaitCnt =0;
+      nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
+
+      if(strncmp (szString,"$GPRMC", 6) ==0) // wait until next GPS fix or at least every 25 sentences
+      {
+        if(ReplaySpeed[GetPortIndex()] ==0)
+        {
+          m_dwWaitTime = 10000000;  //  ( 0 = 0.1Hz GPS  )
+        }
+        else
+        {
+          m_dwWaitTime = 1000/ReplaySpeed[GetPortIndex()]; // x1 = 1Hz
+          if(ReplaySpeed[GetPortIndex()] >10)  // very fast replay? (skip NMEA sentences
+          {
+            long GPRMCCnt=0;
+            long LineCnt=0;
+            do
+            {
+              nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
+              LineCnt++;
+              if(strncmp (szString,"$GPRMC", 6) == 0)
+                GPRMCCnt++;
+            }
+            while ((nRecv >= 0) &&  (GPRMCCnt < ReplaySpeed[GetPortIndex()]/10) /* && (LineCnt < 500)*/);
+            m_dwWaitTime = 250;  //  ( 0 = 0.1Hz GPS  )
+          }
+        }
+      } else {
+        m_dwWaitTime = 0;
+      }
 
 
-	while (!StopEvt.tryWait(dwWaitTime) && FileStream )
-	{
-		nRecv =  Read(szString, MAX_NMEA_LEN-1);
-		UpdateStatus();
-
-		if((strncmp (szString,"$GPRMC", 6) ==0) || (LineCnt++ >= 25)) // wait until next GPS fix or at least every 25 sentences
-		{
-			LineCnt =0;
-			if(ReplaySpeed[GetPortIndex()] >0)
-				dwWaitTime = 1000/ReplaySpeed[GetPortIndex()]; // x1 = 1Hz
-			else
-				dwWaitTime = 10000;  //  ( 0 = 0.1Hz GPS  )
-		}	else {
-			dwWaitTime = 20;
-		}
-
-		if(dwWaitTime < 20)
-			dwWaitTime = 20; // avoid cpu overhead;
-
-		if (nRecv > 0) {
-				std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&FilePort::ProcessChar, this, _1));
-		}
-	}
-	return 0UL;
+      if (nRecv > 0)
+      {
+#define BYTE_FOR_BYTE
+#ifdef BYTE_FOR_BYTE
+          std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&FilePort::ProcessChar, this, _1));
+#else
+          LockFlightData();
+          devParseNMEA(GetPortIndex(), (TCHAR*)szString, &GPS_INFO);
+          UnlockFlightData();
+#endif
+          AddStatTx(nRecv);
+          UpdateStatus();
+      }
+    }
+  }
+  return 0UL;
 }
