@@ -431,5 +431,7 @@ void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
   Calculated->MaxHeightGain = 0;
 
 
+  Calculated->Odometer = 0;
+
 }
 
