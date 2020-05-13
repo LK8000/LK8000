@@ -32,8 +32,6 @@ Copyright_License {
 #ifdef USE_GLSL
 #include "Shaders.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #endif
 
 /**

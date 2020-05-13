@@ -40,6 +40,9 @@ Copyright_License {
 
 #ifdef USE_GLSL
 #include "Shaders.hpp"
+
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #endif
 
 #ifdef ANDROID
@@ -49,10 +52,6 @@ Copyright_License {
 
 #if defined(HAVE_DYNAMIC_EGL)
 #include "EGL.hpp"
-#endif
-
-#ifdef USE_GLSL
-#include <glm/gtc/matrix_transform.hpp>
 #endif
 
 #include <algorithm>

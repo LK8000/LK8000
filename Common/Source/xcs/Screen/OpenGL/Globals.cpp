@@ -25,6 +25,10 @@ Copyright_License {
 #include "Screen/OpenGL/Debug.hpp"
 #include "Point.hpp"
 
+#ifdef USE_GLSL
+#include <glm/mat4x4.hpp>
+#endif
+
 namespace OpenGL {
 #ifdef HAVE_DYNAMIC_EGL
   bool egl;
