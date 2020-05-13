@@ -117,10 +117,6 @@ extern bool LKProfileLoad(const TCHAR *szFile);
 extern bool LoadModelFromProfile(void);
 #endif
 
-#ifndef ANDROID
-Poco::NamedMutex Mutex("LOCK8000");
-#endif
-
 static bool realexitforced=false;
 
 bool Startup(const TCHAR* szCmdLine) {
@@ -618,10 +614,6 @@ void Shutdown() {
 
   main_window = nullptr;
 
-#ifndef ANDROID
-  Mutex.unlock();
-#endif
-
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated, realexitforced=%d%s"),realexitforced,NEWLINE);
   #endif
@@ -675,8 +667,15 @@ int main(int argc, char *argv[]) {
 
   // use mutex to avoid multiple instances of lk8000 be running
 #if (!((WINDOWSPC>0) && TESTBENCH)) && !defined(ANDROID)
-   if (!Mutex.tryLock()) {
-	  return(-2);
+  try {
+    Poco::NamedMutex LK8000_Mutex("LOCK8000");
+    if (!LK8000_Mutex.tryLock()) {
+      return(-2);
+    }
+  } catch (Poco::Exception& e) {
+    const tstring error = to_tstring(e.what());
+    const tstring message = to_tstring(e.message().c_str());
+    StartupStore(_T("[%s] %s\n"), error.c_str(), message.c_str());
   }
 #endif
 
