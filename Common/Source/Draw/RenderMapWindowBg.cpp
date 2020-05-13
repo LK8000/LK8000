@@ -20,9 +20,7 @@ extern unsigned int DrawTerrainTimer;
 
 
 void MapWindow::RenderOverlayGauges(LKSurface& Surface, const RECT& rc) {
-    if (IsThermalBarVisible()) {
-        DrawThermalBand(Surface, rc);
-    }
+    DrawThermalBand(Surface, rc);
     if(LKVarioBar > vBarDisabled) {
         LKDrawVario(Surface, rc);
     }
