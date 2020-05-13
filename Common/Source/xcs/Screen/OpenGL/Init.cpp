@@ -150,9 +150,13 @@ gcc_pure
 static bool
 CheckFBO()
 {
+#ifdef HAVE_GLES2
+  return true;
+#else
   return OpenGL::IsExtensionSupported(HaveGLES()
                                       ? "GL_OES_framebuffer_object"
                                       : "GL_EXT_framebuffer_object");
+#endif
 }
 
 /**
