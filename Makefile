@@ -491,7 +491,8 @@ ifeq ($(CONFIG_LINUX),y)
   CE_DEFS += -DGL_GLEXT_PROTOTYPES
 
   ifeq ($(GLES2),y)
-   CE_DEFS += -DHAVE_GLES -DHAVE_GLES2 -DUSE_GLSL
+   CE_DEFS += -DHAVE_GLES -DHAVE_GLES2 -DUSE_GLSL 
+   CE_DEFS += -DGLM_FORCE_RADIANS -DGLM_FORCE_SIZE_T_LENGTH
    ifeq ($(TARGET_IS_PI),y)
     $(eval $(call pkg-config-library,OPENGL,brcmglesv2))
     $(eval $(call pkg-config-library,GLM,glm))
