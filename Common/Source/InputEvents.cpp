@@ -2163,39 +2163,39 @@ void InputEvents::eventService(const TCHAR *misc) {
   if(!IsEmbedded()) {
     if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
       RECT w=WindowResize(320,240);
-      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
+      main_window->Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS480x272")) == 0) {
       RECT w=WindowResize(480,272);
-      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
+      main_window->Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS640x480")) == 0) {
       RECT w=WindowResize(640,480);
-      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
+      main_window->Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS800x480")) == 0) {
       RECT w=WindowResize(800,480);
-      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
+      main_window->Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS896x672")) == 0) {
       RECT w=WindowResize(896,672);
-      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
+      main_window->Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SS800x600")) == 0) {
       RECT w=WindowResize(800,600);
-      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
+      main_window->Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
     if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
-        const PixelRect Rect(MainWindow.GetClientRect());
+      const PixelRect Rect(main_window->GetClientRect());
       if (Rect.GetSize().cx==896) return;
       RECT w=WindowResize(Rect.GetSize().cy, Rect.GetSize().cx);
-      MainWindow.Resize(w.right-w.left, w.bottom-w.top);
+      main_window->Resize(w.right-w.left, w.bottom-w.top);
       return;
     }
   } else {
@@ -2847,7 +2847,7 @@ void InputEvents::eventExit(const TCHAR *misc) {
     extern bool RestartToNickel;
     RestartToNickel = false;
 #endif
-    MainWindow.Close();
+    main_window->Close();
 }
 
 void InputEvents::eventChangeTurn(const TCHAR *misc) {
@@ -3150,7 +3150,7 @@ int iOrientation = DisplayOrientation ;
 
 void SwitchToMapWindow(void)
 {
-  MainWindow.SetFocus();
+  main_window->SetFocus();
 
   if (MenuTimeOut< MenuTimeout_Config) {
 	MenuTimeOut = MenuTimeout_Config;
@@ -3211,7 +3211,7 @@ void FullScreen() {
 
   if (!MenuActive) {
 #ifdef USE_GDI
-    MainWindow.Fullscreen();
+    main_window->Fullscreen();
 #endif
   }
   MapWindow::RequestFastRefresh();

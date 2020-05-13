@@ -379,7 +379,7 @@ public:
 
   /**
    * Determines the root owner window of this Window.  This is
-   * probably a pointer to the #MainWindow instance.
+   * probably a pointer to the #main_window instance.
    */
   gcc_pure
   ContainerWindow *GetRootOwner();

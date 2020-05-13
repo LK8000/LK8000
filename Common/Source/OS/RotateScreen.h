@@ -18,7 +18,7 @@
 bool CanRotateScreen();
 
 /**
- * @brief rotate device screen or change MainWindow orientation
+ * @brief rotate device screen or change main_window orientation
  * @param rotation angle [ 90 | 180 ]
  * @return // We return true only if we need to perform a ChangeScreen inside LK (not used).
  */

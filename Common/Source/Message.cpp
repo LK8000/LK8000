@@ -81,7 +81,7 @@ void Message::Initialize(RECT rc) {
     nvisible = 0;
     rcmsg = rc; // default; message window can be full size of screen
 
-    WndMsg.Create(&MainWindow, rc);
+    WndMsg.Create(main_window.get(), rc);
 
     InitFont();
 }
@@ -121,7 +121,7 @@ void Message::Resize() {
     if (!hidden) {
         WndMsg.SetVisible(false);
 #ifndef USE_GDI
-        MainWindow.Refresh();
+        main_window->Refresh();
 #endif
     }
     hidden = true;
@@ -162,7 +162,7 @@ void Message::Resize() {
     hidden = false;
 
 #ifndef USE_GDI
-    MainWindow.Refresh();
+    main_window->Refresh();
 #endif
 
   }

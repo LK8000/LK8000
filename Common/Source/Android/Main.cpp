@@ -47,7 +47,7 @@ NativeView *native_view;
 
 IOIOHelper *ioio_helper = nullptr;
 
-extern WndMain MainWindow;
+extern WndMain* main_window;
 
 extern "C" {
   /* workaround for
@@ -144,7 +144,7 @@ Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj) {
   InitThreadDebug();
 
   OpenGL::Initialise();
-  MainWindow.RunModalLoop();
+  main_window->RunModalLoop();
 }
 
 extern "C"
@@ -195,7 +195,7 @@ Java_org_LK8000_NativeView_resizedNative(JNIEnv *env, jobject obj,
   if (event_queue == nullptr)
     return;
 
-  MainWindow.AnnounceResize({width, height});
+  main_window->AnnounceResize({width, height});
 
   event_queue->Purge(Event::RESIZE);
 
@@ -214,7 +214,7 @@ Java_org_LK8000_NativeView_pauseNative(JNIEnv *env, jobject obj)
     return false;
   }
 
-  MainWindow.Pause();
+  main_window->Pause();
 
   assert(num_textures == 0);
   assert(num_buffers == 0);
@@ -233,7 +233,7 @@ Java_org_LK8000_NativeView_resumeNative(JNIEnv *env, jobject obj)
     return;
   }
 
-  MainWindow.Resume();
+  main_window->Resume();
 }
 
 extern "C"

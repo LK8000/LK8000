@@ -88,7 +88,7 @@ bool RotateScreen(short angle) {
     event_queue->SetDisplayOrientation(orientation);
 #endif
     
-    MainWindow.CheckResize();
+    main_window->CheckResize();
     
     return true;
 }

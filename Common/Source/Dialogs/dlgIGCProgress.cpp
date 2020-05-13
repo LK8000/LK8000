@@ -35,7 +35,7 @@ static bool OnIGCProgressTimer(WndForm *pWnd) {
         wText->SetCaption(m_szTmp);
      wText->Redraw();
 #ifndef USE_GDI
-     MainWindow.Refresh();
+     main_window->Refresh();
 #endif
       }
 

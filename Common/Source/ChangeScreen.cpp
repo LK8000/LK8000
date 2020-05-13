@@ -30,7 +30,7 @@ bool ScreenHasChanged(void) {
   static bool doinit=true;
   int x=0,y=0;
 
-  const PixelRect rc(MainWindow.GetClientRect());
+  const PixelRect rc(main_window->GetClientRect());
   if (doinit) {
 
 #if (WINDOWSPC>0) || defined(__linux__)
@@ -90,7 +90,7 @@ void ReinitScreen(void) {
   //
   // Detect the current screen geometry
   //
-  const PixelRect rc(MainWindow.GetClientRect());
+  const PixelRect rc(main_window->GetClientRect());
   ScreenSizeX = rc.GetSize().cx;
   ScreenSizeY = rc.GetSize().cy;
 
@@ -113,7 +113,7 @@ void ReinitScreen(void) {
   UnlockTerrainDataGraphics();
 
   // DoInits will require new values (at least PROCESSVIRTUALKEYS)
-  MainWindow.UpdateActiveScreenZone(rc);
+  main_window->UpdateActiveScreenZone(rc);
 
   Reset_Single_DoInits(MDI_DRAWLOOK8000);
   Reset_Single_DoInits(MDI_DRAWTRI);
@@ -149,7 +149,7 @@ void ReinitScreen(void) {
 
   MapWindow::Initialize();
   MapWindow::ResumeDrawingThread();
-  MainWindow.SetToForeground();
+  main_window->SetToForeground();
 
   return;
 }

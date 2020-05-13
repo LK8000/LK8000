@@ -273,7 +273,7 @@ void SelectMapSpace(short i) {
 		MapSpaceMode!=MSM_VISUALGLIDE) {
 		InputEvents::setMode(TEXT("default"));
 	}
-    MainWindow.UnGhost();
+    main_window->UnGhost();
 }
 
 

@@ -113,7 +113,7 @@ void dlgProgress::SetProgressText(const TCHAR* szText) {
         wText->SetCaption(szText);
         wText->Redraw();
 #ifndef USE_GDI
-        MainWindow.Refresh();
+        main_window->Refresh();
 #endif
     }
 }

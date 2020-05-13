@@ -358,7 +358,7 @@ ListElement *dlgLX_IGCSelectListShowModal(void) {
        * control height must contains 2 text Line
        * Check and update Height if necessary
        */
-      LKWindowSurface windowSurface(MainWindow);
+      LKWindowSurface windowSurface(*main_window);
       LKBitmapSurface tmpSurface(windowSurface, 1, 1);
       const auto oldFont = tmpSurface.SelectObject(LX_IGCReadDialog.ListEntry()->GetFont());
       const int minHeight = 2 * tmpSurface.GetTextHeight(_T("dp")) + 2 * DLGSCALE(2);

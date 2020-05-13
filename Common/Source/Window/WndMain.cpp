@@ -215,7 +215,7 @@ void BeforeShutdown(void) {
   StartupStore(foop);
 #endif
 
-  MainWindow.PostQuit();
+  main_window->PostQuit();
 #if TESTBENCH
   StartupLogFreeRamAndStorage();
   #endif

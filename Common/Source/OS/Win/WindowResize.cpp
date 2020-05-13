@@ -20,8 +20,8 @@ RECT WindowResize(unsigned int x, unsigned int y) {
   //
   // For Windows PC we need to calculate borders
   //
-  HWND hwnd = MainWindow.Handle();
-  // if MainWindow not already exist, use default style.
+  HWND hwnd = main_window->Handle();
+  // if main_window not already exist, use default style.
   DWORD dwStyle = WS_SYSMENU|WS_SIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS|WS_VISIBLE|WS_CAPTION;
   DWORD dwExStyle = 0U;
   HMENU menu = NULL;

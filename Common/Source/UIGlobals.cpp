@@ -5,6 +5,6 @@
 SingleWindow &
 UIGlobals::GetMainWindow()
 {
-  return MainWindow;
+  return (*main_window);
 }
 #endif

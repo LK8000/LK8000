@@ -120,21 +120,21 @@ bool RotateScreen(short angle) {
   if (DISP_CHANGE_SUCCESSFUL == ChangeDisplaySettingsEx(NULL, &DeviceMode, NULL, CDS_RESET, NULL)) {
 		StartupStore(_T("... Screen Rotation successful, setting to %d x %d\n"),ScreenSizeY,ScreenSizeX);
 
-	ShowWindow(MainWindow.Handle(), SW_SHOWNORMAL);
-    BringWindowToTop(MainWindow.Handle());
+	ShowWindow(main_window->Handle(), SW_SHOWNORMAL);
+    BringWindowToTop(main_window->Handle());
 
 #ifdef HAVE_ACTIVATE_INFO
-	SHFullScreen(MainWindow.Handle(),SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
+	SHFullScreen(main_window->Handle(),SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
 #endif
 #ifdef UNDER_CE
-    SetWindowPos(MainWindow.Handle(), HWND_TOP,
+    SetWindowPos(main_window->Handle(), HWND_TOP,
                  0, 0,
                  GetSystemMetrics(SM_CXSCREEN),
                  GetSystemMetrics(SM_CYSCREEN),
                  SWP_SHOWWINDOW);
 #endif
 
-//	UpdateWindow(MainWindow); No! No WM_PAINT please!
+//	UpdateWindow(*main_window); No! No WM_PAINT please!
 
 	return true;
   } else {
@@ -152,7 +152,7 @@ ScopeLockScreen::ScopeLockScreen() :
             previous_state()
 {
 #ifndef UNDER_CE
-    HWND hwnd = MainWindow.Handle();
+    HWND hwnd = main_window->Handle();
     if(hwnd) {
         DWORD dwStyle = (DWORD)GetWindowLong(hwnd, GWL_STYLE);
         previous_state = !!(dwStyle&WS_SIZEBOX);
@@ -164,7 +164,7 @@ ScopeLockScreen::ScopeLockScreen() :
 ScopeLockScreen::~ScopeLockScreen() {
 #ifndef UNDER_CE
     if(previous_state) {
-        HWND hwnd = MainWindow.Handle();
+        HWND hwnd = main_window->Handle();
         if(hwnd) {
             DWORD dwStyle = (DWORD)GetWindowLong(hwnd, GWL_STYLE);
             SetWindowLong(hwnd, GWL_STYLE, dwStyle|WS_SIZEBOX);

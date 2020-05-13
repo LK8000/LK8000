@@ -86,6 +86,7 @@
 #include "Airspace/Sonar.h"
 #include <OS/RotateScreen.h>
 #include <dlgFlarmIGCDownload.h>
+#include "utils/make_unique.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -315,6 +316,8 @@ bool Startup(const TCHAR* szCmdLine) {
 #endif
 
   InitSineTable();
+
+  main_window = std::make_unique<WndMain>();
 
   // Perform application initialization: also ScreenGeometry and LKIBLSCALE, and Objects
   if (!InitInstance ()) {
@@ -554,7 +557,7 @@ bool Startup(const TCHAR* szCmdLine) {
   #endif
   ProgramStarted = psInitDone;
 #ifdef ENABLE_OPENGL
-  MainWindow.Invalidate();
+  main_window->Invalidate();
 #endif
   GlobalRunning = true;
 	
@@ -594,7 +597,7 @@ bool Startup(const TCHAR* szCmdLine) {
 }
 
 void Shutdown() {
-  MainWindow.Destroy();
+  main_window->Destroy();
   Message::Destroy();
 
 #if TESTBENCH
@@ -612,6 +615,8 @@ void Shutdown() {
   InputEvents::UnloadString();
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
+
+  main_window = nullptr;
 
 #ifndef ANDROID
   Mutex.unlock();
@@ -680,14 +685,12 @@ int main(int argc, char *argv[]) {
   
   std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
 
-
   if(Startup(szCmdLine)) {
     //
     // Main message loop
     //
-     MainWindow.RunModalLoop();
+     main_window->RunModalLoop();
   }
-  MainWindow.Destroy();
 
   Shutdown();
   pSaveScreen = nullptr;
