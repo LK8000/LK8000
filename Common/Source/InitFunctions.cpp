@@ -30,10 +30,6 @@
 #include "DisplayOrientation.hpp"
 #include "Asset.hpp"
 
-#ifdef KOBO
-#include "Hardware/RotateDisplay.hpp"
-#endif
-
 #ifdef USE_FREETYPE
 #include "Screen/FreeType/Init.hpp"
 #include "Screen/Init.hpp"
@@ -45,12 +41,16 @@
 
 #ifdef HAVE_MALI
 #include "Screen/Sunxi/mali.h"
-#include "Hardware/RotateDisplay.hpp"
 #endif
 
 #ifdef ANDROID
 #include "Android/Main.hpp"
 #include "Android/NativeView.hpp"
+#endif
+
+#ifdef OPENVARIO
+#include "LKInterface/CScreenOrientation.h"
+#include "Hardware/RotateDisplay.hpp"
 #endif
 
 // windows
@@ -220,8 +220,8 @@ BOOL InitInstance()
 
   Message::Initialize(rc); // creates window, sets fonts
 
-#ifdef HAVE_MALI
-    Display::Rotate(mali::GetScreenOrientation());
+#ifdef OPENVARIO
+  Display::Rotate(static_cast<DisplayOrientation_t>(CScreenOrientation::GetScreenSetting()));
 #endif
 
   main_window->SetVisible(true);

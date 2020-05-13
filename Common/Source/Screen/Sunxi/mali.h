@@ -25,12 +25,6 @@ namespace mali {
    */
   gcc_pure
   PixelSize GetScreenSize();
-  
-  /**
-   * read display Orientation in "/boot/config.uEnv"
-   */
-  gcc_pure
-  DisplayOrientation_t GetScreenOrientation();
 }
 
 #endif /* HAVE_MALI */
