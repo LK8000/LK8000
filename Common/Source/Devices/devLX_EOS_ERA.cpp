@@ -692,11 +692,13 @@ BOOL DevLX_EOS_ERA::CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR er
 
 BOOL FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
 {
+
+
   if(wp && DeclStrings)
   {
-    _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%d,%d,%s"),num,total,
-                                                             ( long)(wp->Latitude*1000.0),
-                                                             ( long)(wp->Longitude*1000.0),
+    _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),num,total,
+                                                             ( int)(wp->Latitude*60000.0),
+                                                             ( int)(wp->Longitude*60000.0),
                                                               wp->Name );
   }
 return true;
@@ -1693,6 +1695,68 @@ devSetAdvancedMode(d,true);
     if(ParToDouble(sentence, 2, &fTmp)) EOSSetMC(d, fTmp,_T("($LXDT)") );
     if(ParToDouble(sentence, 3, &fTmp)) EOSSetBAL(d, fTmp,_T("($LXDT)") );
     if(ParToDouble(sentence, 4, &fTmp)) EOSSetBUGS(d, fTmp,_T("($LXDT)") );;
+  }
+
+  if(_tcsncmp(szTmp, _T("AHRS"), 4) == 0)
+  {
+    if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
+    { bool bAHRS = false;
+      double fX,fY,fZ, fPitch, fRoll, fYaw, fSlip;
+      if(ParToDouble(sentence, 2, &fPitch))  // pitch
+        if(ParToDouble(sentence, 3, &fRoll)) // Roll
+          if(ParToDouble(sentence, 4, &fYaw)) // Yaw
+            if(ParToDouble(sentence, 5, &fSlip)) // slip
+              bAHRS = true;
+
+      if(ParToDouble(sentence, 6, &fX) &&
+         ParToDouble(sentence, 7, &fY) &&
+         ParToDouble(sentence, 8, &fZ))
+      {
+        if(Values(d))
+        {
+          if(bAHRS)
+            _sntprintf(szTmp, MAX_NMEA_LEN, _T("gZ:%5.2f gY:%5.2f gX:%5.2f Pitch:%5.2f Roll:%5.2f Yaw:%5.2f Slip:%5.2f($LXDT)"),fZ,fY,fX, fPitch, fRoll, fYaw, fSlip);
+          else
+            _sntprintf(szTmp, MAX_NMEA_LEN, _T("gZ:%5.2f gY:%5.2f gX:%5.2f($LXDT)"),fZ,fY,fX);
+          SetDataText( _GFORCE,  szTmp);
+        }
+        if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
+        {
+          info->AccelX  = fX;
+          info->AccelY  = fY;
+          info->AccelZ  = fZ;
+          info->AccelerationAvailable = true;
+          if(bAHRS)
+          {
+            info->Pitch = fPitch;
+            info->Roll  = fRoll;
+            info->GyroscopeAvailable = true;
+          }
+        }
+      }
+    }
+
+    if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
+    {
+      double fX,fY,fZ;
+      if(ParToDouble(sentence, 6, &fX) &&
+         ParToDouble(sentence, 7, &fY) &&
+         ParToDouble(sentence, 8, &fZ))
+      {
+        if(Values(d))
+        {
+          _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f %5.2f %5.2f ($PLXVF)"),fZ,fY,fX);
+          SetDataText( _GFORCE,  szTmp);
+        }
+        if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
+        {
+          info->AccelX  = fX;
+          info->AccelY  = fY;
+          info->AccelZ  = fZ;
+          info->AccelerationAvailable = true;
+        }
+      }
+    }
   }
 
   if(_tcsncmp(szTmp, _T("OK"), 2) == 0)
