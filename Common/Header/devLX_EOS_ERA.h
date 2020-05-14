@@ -18,6 +18,7 @@
 #include "devLX.h"
 #include "dlgTools.h"
 #include "Dialogs.h"
+#include "Parser.h"
 #include "WindowControls.h"
 
 
@@ -36,9 +37,6 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// LX Nano 3 device (parsing LXWPn sentences and declaring tasks).
-///
-
-
 
 class DevLX_EOS_ERA : public DevLX
 {
@@ -95,19 +93,16 @@ class DevLX_EOS_ERA : public DevLX
 
    static BOOL Open( PDeviceDescriptor_t d);
    static BOOL Close( PDeviceDescriptor_t d);
-   static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
 
    static BOOL LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
    static BOOL GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LX_EOS_ERA_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
@@ -133,7 +128,20 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL m_bShowValues;
    static BOOL m_bDeclare;
 
+   ///
+   static BOOL EOSRequestRadioInfo(PDeviceDescriptor_t d);
+   static BOOL EOSPutVolume(PDeviceDescriptor_t d, int Volume) ;
+   static BOOL EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) ;
+   static BOOL EOSPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) ;
+   static BOOL EOSPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) ;
+   static BOOL EOSStationSwap(PDeviceDescriptor_t d) ;
+   static BOOL EOSRadioMode(PDeviceDescriptor_t d, int mode) ;
 
+   static BOOL EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info );
+   static BOOL EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
+   static BOOL EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
+
+   static BOOL  CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
   //----------------------------------------------------------------------------
   //private:
@@ -208,7 +216,7 @@ class DevLX_EOS_ERA::Decl
     Decl();
 
     // Format waypoint
-    void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type);
+    void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type, int totalNum);
 
 
 }; // DevLX_EOS_ERA::Decl
