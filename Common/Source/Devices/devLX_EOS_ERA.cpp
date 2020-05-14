@@ -1735,28 +1735,13 @@ devSetAdvancedMode(d,true);
         }
       }
     }
+  }
 
-    if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
-    {
-      double fX,fY,fZ;
-      if(ParToDouble(sentence, 6, &fX) &&
-         ParToDouble(sentence, 7, &fY) &&
-         ParToDouble(sentence, 8, &fZ))
-      {
-        if(Values(d))
-        {
-          _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f %5.2f %5.2f ($PLXVF)"),fZ,fY,fX);
-          SetDataText( _GFORCE,  szTmp);
-        }
-        if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
-        {
-          info->AccelX  = fX;
-          info->AccelY  = fY;
-          info->AccelZ  = fZ;
-          info->AccelerationAvailable = true;
-        }
-      }
-    }
+  if(_tcsncmp(szTmp, _T("ERROR"), 5) == 0)  // ERROR?
+  {
+    NMEAParser::ExtractParameter(sentence, szTmp, 2);
+    DoStatusMessage(szTmp);
+    StartupStore(TEXT("LX EOS/ERA Error: %s"), szTmp);
   }
 
   if(_tcsncmp(szTmp, _T("OK"), 2) == 0)
@@ -1764,10 +1749,6 @@ devSetAdvancedMode(d,true);
 
   }
 
-  if(_tcsncmp(szTmp, _T("ERROR"), 5) == 0)
-  {
-
-  }
   return(true);
 } // LXDT()
 
