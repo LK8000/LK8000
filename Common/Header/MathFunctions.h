@@ -94,10 +94,6 @@ inline short _MulDiv<short>(short nNumber, short nNumerator, short nDenominator)
     return res;
 }
 
-inline int64_t _lround(double i) {
-    return (sizeof(long)==4) ? lround(i) : llround(i);
-}
-
 inline unsigned int CombinedDivAndMod(unsigned int &lx) {
   unsigned int ox = lx & 0xff;
   // JMW no need to check max since overflow will result in

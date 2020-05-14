@@ -14,14 +14,32 @@
 
 struct GeoPoint {
 
-    GeoPoint() {}
-    explicit GeoPoint(double lat, double lon) : latitude(lat), longitude(lon) {}
+    GeoPoint() = default;
+    GeoPoint(double lat, double lon) : latitude(lat), longitude(lon) {}
 
     GeoPoint Direct(double bearing, double distance) const;
 
     void Reverse(const GeoPoint& point, double& bearing, double& distance) const;
 
     double Distance(const GeoPoint& point) const;
+
+    bool operator== (const GeoPoint &point) const {
+        return (longitude == point.longitude && latitude == point.latitude);
+    }
+
+    GeoPoint operator- (const GeoPoint &point) const {
+        return {
+            latitude - point.latitude, 
+            longitude - point.longitude
+        };
+    }
+
+    GeoPoint operator* (double value) const {
+        return {
+            latitude * value, 
+            longitude * value
+        };
+    }
 
     double latitude;
     double longitude;
