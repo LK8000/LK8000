@@ -43,7 +43,7 @@ static void SetWaypointValues(bool first=false) {
     DataField* dfe = wp->GetDataField();
     if (first) {
       dfe->Clear();
-	  // LKTOKEN  _@M210_ = "Cylinder"
+      // LKTOKEN  _@M210_ = "Cylinder"
       dfe->addEnumText(MsgToken(210));
       // LKTOKEN  _@M590_ = "Sector"
       dfe->addEnumText(MsgToken(590));
@@ -268,8 +268,8 @@ static void SetValues(bool first) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-
-    if (first) {
+    if (dfe) {
+      dfe->Clear();
       // LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(MsgToken(210));
       // LKTOKEN  _@M393_ = "Line" 
@@ -277,17 +277,6 @@ static void SetValues(bool first) {
       if (gTaskType == TSK_DEFAULT || gTaskType == TSK_GP) {
         // LKTOKEN  _@M274_ = "FAI Sector" 
         dfe->addEnumText(MsgToken(274));
-      }
-    } else {
-      if ((gTaskType == TSK_DEFAULT || gTaskType == TSK_GP)) {
-        if (dfe->getCount() == 2) {
-          // LKTOKEN  _@M274_ = "FAI Sector"
-          dfe->addEnumText(MsgToken(274));
-        }
-      } else {
-        if (dfe->getCount() == 3) {
-          dfe->removeLastEnum();
-        }
       }
     }
     dfe->Set(FinishLine);
@@ -305,6 +294,7 @@ static void SetValues(bool first) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (first) {
+      dfe->Clear();
       // LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(MsgToken(210));
       // LKTOKEN  _@M393_ = "Line" 
@@ -346,9 +336,9 @@ static void SetValues(bool first) {
     DataField* dfe = wp->GetDataField();
     if (first) {
       dfe->Clear();
-	// LKTOKEN  _@M210_ = "Cylinder" 
+      // LKTOKEN  _@M210_ = "Cylinder" 
       dfe->addEnumText(MsgToken(210));
-	// LKTOKEN  _@M274_ = "FAI Sector" 
+      // LKTOKEN  _@M274_ = "FAI Sector" 
       dfe->addEnumText(MsgToken(274));
       dfe->addEnumText(LKGetText(TEXT("DAe 0.5/10")));
       	// LKTOKEN  _@M393_ = "Line" 
@@ -373,15 +363,15 @@ static void SetValues(bool first) {
     DataField* dfe = wp->GetDataField();
     if (first) {
       dfe->Clear();
-	// LKTOKEN  _@M418_ = "Manual" 
+      // LKTOKEN  _@M418_ = "Manual" 
       dfe->addEnumText(MsgToken(418));
-	// LKTOKEN _@M897_ "Auto"
+      // LKTOKEN _@M897_ "Auto"
       dfe->addEnumText(MsgToken(897));
-	// LKTOKEN  _@M97_ = "Arm" 
+      // LKTOKEN  _@M97_ = "Arm" 
       dfe->addEnumText(MsgToken(97));
-	// LKTOKEN  _@M96_ = "Arm start" 
+      // LKTOKEN  _@M96_ = "Arm start" 
       dfe->addEnumText(MsgToken(96));
-	// LKTOKEN  _@M1798_ = "Arm TPs" 
+      // LKTOKEN  _@M1798_ = "Arm TPs" 
       dfe->addEnumText(MsgToken(1798));
     }
     dfe->Set(AutoAdvance);
@@ -406,6 +396,7 @@ static void SetValues(bool first) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (first) {
+        dfe->Clear();
         // LKTOKEN  _@M1916_ "Default" 
         dfe->addEnumText(MsgToken(1916));
         // LKTOKEN _@M1902_ "AAT"
