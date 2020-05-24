@@ -70,7 +70,7 @@ bool equals_Cn(const Cn_t& a, const Cn_t& b) {
 
 struct FANET_DATA {
   double Time_Fix; //GPS-Time when we got the last msg
-  Cn_t Cn; //ID of station (3 Bytes)
+  long ID; //ID of station (3 Bytes)
 };
 
 //
