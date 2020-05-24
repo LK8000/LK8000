@@ -593,7 +593,13 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryIpPort5,&dwIpPort[4]);
   PREAD(sname,svalue,szRegistryIpPort6,&dwIpPort[5]);
 
-
+  TCHAR szTmp[20];
+  PREAD(sname,svalue,szRegistryFlarmID1,szTmp , 20 ); _stscanf(szTmp,TEXT("%lx"), &dwFlarmID[0]);
+  PREAD(sname,svalue,szRegistryFlarmID2,szTmp , 20 ); _stscanf(szTmp,TEXT("%lx"), &dwFlarmID[1]);
+  PREAD(sname,svalue,szRegistryFlarmID3,szTmp , 20 ); _stscanf(szTmp,TEXT("%lx"), &dwFlarmID[2]);
+  PREAD(sname,svalue,szRegistryFlarmID4,szTmp , 20 ); _stscanf(szTmp,TEXT("%lx"), &dwFlarmID[3]);
+  PREAD(sname,svalue,szRegistryFlarmID5,szTmp , 20 ); _stscanf(szTmp,TEXT("%lx"), &dwFlarmID[4]);
+  PREAD(sname,svalue,szRegistryFlarmID6,szTmp , 20 ); _stscanf(szTmp,TEXT("%lx"), &dwFlarmID[5]);
 
 #define IO_PARAM_SIZE 160
   for(int n = 0; n < NUMDEV; n++)
@@ -641,6 +647,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
       return;
     }
   }
+
 
 
   PREAD(sname,svalue,szRegistryPressureHg,&PressureHg);

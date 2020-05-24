@@ -434,6 +434,15 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, long Id)
 
 
 
+BOOL IsOwnFlarmID(long ID)
+{
+  for (int i = 0;i <  NUMDEV; i ++)
+  {
+    if(dwFlarmID[i] == ID)
+      return TRUE;
+  }
+  return FALSE;
+}
 
 BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
@@ -450,6 +459,9 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   // 5 id, 6 digit hex
   long ID;
   _stscanf(params[5],TEXT("%lx"), &ID);
+
+  if(IsOwnFlarmID(ID))
+    return FALSE;
 //  unsigned long uID = ID;
 
   flarm_slot = FLARM_FindSlot(pGPS, ID);

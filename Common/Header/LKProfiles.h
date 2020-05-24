@@ -228,6 +228,13 @@ extern const char szRegistryIpPort3[];
 extern const char szRegistryIpPort4[];
 extern const char szRegistryIpPort5[];
 extern const char szRegistryIpPort6[];
+extern const char szRegistryFlarmID1[];
+extern const char szRegistryFlarmID2[];
+extern const char szRegistryFlarmID3[];
+extern const char szRegistryFlarmID4[];
+extern const char szRegistryFlarmID5[];
+extern const char szRegistryFlarmID6[];
+
 
 extern const char szRegistryIOValues[];
 

@@ -145,59 +145,59 @@ BOOL CDevFlarm::Close (PDeviceDescriptor_t d) {
 
 
 
-
-
-
-
-
 CallBackTableEntry_t CDevFlarm::CallBackTable[]={
   EndCallBackEntry()
 };
 
 BOOL CDevFlarm::Config(PDeviceDescriptor_t d){
-        if(m_pDevice != d) {
-                StartupStore(_T("Flarm Config : Invalide device descriptor%s"), NEWLINE);
-                return FALSE;
-        }
+  if(m_pDevice != d) {
+    StartupStore(_T("Flarm Config : Invalide device descriptor%s"), NEWLINE);
+    return FALSE;
+  }
 
-        WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_DEVFLARM);
-        if(wf) {
+  WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_DEVFLARM);
+  if(wf)
+  {
 
-        WndButton *wBt = NULL;
+    WndButton *wBt = NULL;
 
-        wBt = (WndButton *)wf->FindByName(TEXT("cmdClose"));
-        if(wBt){
-                wBt->SetOnClickNotify(OnCloseClicked);
-        }
-
-
-        wBt = (WndButton *)wf->FindByName(TEXT("cmdIGCDownload"));
-        if(wBt){
-                wBt->SetOnClickNotify(OnIGCDownloadClicked);
-        }
-
-        wBt = (WndButton *)wf->FindByName(TEXT("cmdFlarmReboot"));
-        if(wBt){
-                wBt->SetOnClickNotify(OnRebootClicked);
-        }
-/*
-        WndProperty* wp;
-        wp = (WndProperty*)wf->FindByName(TEXT("prpFlarmId"));
-        if (wp) {
-        	wp->GetDataField()->SetAsString(_T("DD222"));
-
-          wp->RefreshDisplay();
-        }
-*/
+    wBt = (WndButton *)wf->FindByName(TEXT("cmdClose"));
+    if(wBt){
+      wBt->SetOnClickNotify(OnCloseClicked);
+    }
 
 
+    wBt = (WndButton *)wf->FindByName(TEXT("cmdIGCDownload"));
+    if(wBt){
+      wBt->SetOnClickNotify(OnIGCDownloadClicked);
+    }
 
-                wf->ShowModal();
+    wBt = (WndButton *)wf->FindByName(TEXT("cmdFlarmReboot"));
+    if(wBt){
+      wBt->SetOnClickNotify(OnRebootClicked);
+    }
 
-                delete wf;
-                wf=NULL;
-        }
-        return TRUE;
+    WndProperty* wp;
+    wp = (WndProperty*)wf->FindByName(TEXT("prpFlarmId"));
+    if (wp) {
+      TCHAR szFlarmID[16];
+      _stprintf(szFlarmID, _T("%06X")  ,dwFlarmID[ d->PortNumber]);
+      wp->GetDataField()->SetAsString(szFlarmID);
+      wp->RefreshDisplay();
+    }
+
+    wf->ShowModal();
+
+
+    if (wp) {
+
+      dwFlarmID[ d->PortNumber] =  strtol(wp->GetDataField()->GetAsString(), NULL, 16);
+    }
+
+    delete wf;
+    wf=NULL;
+  }
+  return TRUE;
 }
 
 

@@ -417,7 +417,7 @@ void LKProfileResetDefault() {
     dwBitIndex  [i]   = (BitIndex_t)bit8N1;
     dwIpPort    [i]   = 23;
     UseExtSound [i]   = false;
-
+    dwFlarmID   [i]   = 0x0;
     PortIO[i].MCDir    = BiDirInOut;
     PortIO[i].BUGDir   = BiDirInOut;
     PortIO[i].BALDir   = BiDirInOut;

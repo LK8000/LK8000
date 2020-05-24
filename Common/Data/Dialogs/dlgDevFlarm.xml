@@ -7,10 +7,10 @@
  <!--    
     <WndProperty Name="prpComSpeed" Caption="_@M135_"  X="90" Y="-1"  Width="250" Height="22" CaptionWidth="70" Font="2" Help="_@H155_">
       <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" />
-    </WndProperty>       
+    </WndProperty>    -->   
     <WndProperty Name="prpFlarmId" Caption="_@M2405_"  X="2" Y="-1"  Width="180" Height="22" CaptionWidth="100" Font="2" Keyboard="1" Help="_@H1300_">
       <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s"/>
     </WndProperty>        
--->    
+  
   </WndForm>
 </PMML>

@@ -617,6 +617,14 @@ void LKDeviceSave(const TCHAR *szFile)
   rprintf(szRegistryIpPort5,dwIpPort[4]);
   rprintf(szRegistryIpPort6,dwIpPort[5]);
 
+  TCHAR szTMP[20];
+  _stprintf(szTMP, _T("%06lX"), dwFlarmID[0]); rprintf( szRegistryFlarmID1, szTMP);
+  _stprintf(szTMP, _T("%06lX"), dwFlarmID[1]); rprintf( szRegistryFlarmID2, szTMP);
+  _stprintf(szTMP, _T("%06lX"), dwFlarmID[2]); rprintf( szRegistryFlarmID3, szTMP);
+  _stprintf(szTMP, _T("%06lX"), dwFlarmID[3]); rprintf( szRegistryFlarmID4, szTMP);
+  _stprintf(szTMP, _T("%06lX"), dwFlarmID[4]); rprintf( szRegistryFlarmID5, szTMP);
+  _stprintf(szTMP, _T("%06lX"), dwFlarmID[5]); rprintf( szRegistryFlarmID6, szTMP);
+
 #define IO_PARAM_SIZE 160
 
   for(int n = 0; n < NUMDEV; n++)
