@@ -365,10 +365,10 @@ int j;
 double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pWeather->Latitude,  pWeather->Longitude, &Distance, &Bear);
   _stprintf(Comment, _T("%d° %d|%d %3.1fhPa"), 
-            pWeather->pressure,
   			(int)round(pWeather->windDir), 
             (int)round(pWeather->windSpeed), 
-  			(int)round(pWeather->windGust));      
+  			(int)round(pWeather->windGust),
+            pWeather->pressure);      
   if(_tcslen(name) == 0)
     _sntprintf(text1,MAX_LEN, TEXT("%X %s"),pWeather->ID,Comment);
   else
