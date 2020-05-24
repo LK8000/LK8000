@@ -45,6 +45,9 @@ static int NoAirspace = 0;
 static int NoFlarm = 0;
 extern FlarmIdFile *file;
 #endif
+#ifdef WEATHERST_MS
+static int NoWeatherSt = 0;
+#endif
 
 #define MAX_AIRFILEDS 3
 #define MAX_OUTLAND   3
@@ -52,6 +55,7 @@ extern FlarmIdFile *file;
 #define MAX_TASK      3
 #define MAX_AIRSPACES 10
 #define MAX_FLARMS    5
+#define MAX_WEATHERST 5
 
 static void UpdateList(void) {
     wMultiSelectListList->ResetList();
@@ -225,6 +229,15 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
 
             break;
 #endif
+#ifdef WEATHERST_MS
+        case IM_WEATHERST:
+            if (NoWeatherSt < MAX_WEATHERST)
+              NoWeatherSt++;
+            else
+                full = true;
+
+            break;
+#endif
         case IM_TASK_PT:
             if (NoTaskPoints < MAX_TASK)
                 NoTaskPoints++;
@@ -339,6 +352,38 @@ double Distance, Bear;
 }
 #endif
 
+#ifdef WEATHERST_MS
+int BuildWEATHERText(FANET_WEATHER* pWeather, TCHAR* text1,TCHAR* text2,TCHAR* name)
+{
+if(pWeather == NULL) return -1;
+if(text1 == NULL) return -1;
+if(text2 == NULL) return -1;
+
+TCHAR Comment[MAX_LEN] = _T("");;
+FlarmId* flarmId ;
+int j;
+double Distance, Bear;
+  DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pWeather->Latitude,  pWeather->Longitude, &Distance, &Bear);
+  _stprintf(Comment, _T("%d° %d|%d %3.1fhPa"), 
+            pWeather->pressure,
+  			(int)round(pWeather->windDir), 
+            (int)round(pWeather->windSpeed), 
+  			(int)round(pWeather->windGust));      
+  if(_tcslen(name) == 0)
+    _sntprintf(text1,MAX_LEN, TEXT("%X %s"),pWeather->ID,Comment);
+  else
+    _sntprintf(text1,MAX_LEN, TEXT("%s %s"),name,Comment);
+
+  _sntprintf(Comment,MAX_LEN, TEXT("%d°C %d%% %d%%"), (int)round(pWeather->temp)
+                                            , (int)round(pWeather->hum)
+                                            , (int)round(pWeather->Battery));
+  _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s (%i°) %s"), Distance*DISTANCEMODIFY
+                                                          , Units::GetDistanceName()
+                                                          , (int) Bear
+                                                          , Comment);
+  return 0;
+}
+#endif
 
 
 int BuildTaskPointText(int iTaskIdx, TCHAR* text1,TCHAR* text2)
@@ -585,6 +630,36 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 #endif
             break;
 #endif // FLARM_MS
+
+#ifdef WEATHERST_MS
+            /************************************************************************************************
+             * IM_WEATHERST
+             ************************************************************************************************/
+        case IM_WEATHERST:
+            LKASSERT(Elements[i].iIdx  < MAXFANETWEATHER);
+            LKASSERT(Elements[i].iIdx  >= 0);
+            FANET_WEATHER Station;
+            TCHAR StationName[MAX_LEN];
+            StationName[0] = 0; //zero-termination of String;
+            //int stationIndex;
+            //stationIndex = -1;
+            LockFlightData();
+                memcpy( &Station, &GPS_INFO.FANET_Weather[Elements[i].iIdx], sizeof(FANET_WEATHER));
+                for (int i = 0;i < MAXFANETDEVICES;i++){
+                    if (GPS_INFO.FanetName[i].ID == GPS_INFO.FANET_Weather[Elements[i].iIdx].ID){
+                        _tcscpy(StationName, GPS_INFO.FanetName[i].Name); //copy name   
+                        break;
+                    }
+                }
+            UnlockFlightData();
+            BuildWEATHERText(&Station,text1,text2,StationName);
+            ShowTextEntries(Surface, rc,  text1, text2);
+
+            MapWindow::DrawWeatherStPicto(Surface, rc, &Station);   // draw MAP icons
+
+            break;
+
+#endif //  WEATHERST_MS
 
 #ifdef TEAM_CODE_MS
             /************************************************************************************************
@@ -837,6 +912,9 @@ ListElement* dlgMultiSelectListShowModal(void) {
     NoTaskPoints = 0;
 #ifdef FLARM_MS
     NoFlarm = 0;
+#endif
+#ifdef WEATHERST_MS
+    NoWeatherSt = 0;
 #endif
     return pResult;
 }

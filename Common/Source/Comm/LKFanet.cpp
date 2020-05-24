@@ -12,7 +12,7 @@
 
 static void emptySlot(FANET_DATA& data) {
 	data.Time_Fix = 0;
-	std::fill(std::begin(data.Cn), std::end(data.Cn), 0);
+	data.ID = 0;
 }
 
 void Fanet_RefreshSlots(NMEA_INFO *pGPS) {
