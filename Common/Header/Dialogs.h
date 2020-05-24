@@ -30,6 +30,7 @@ void StopHourglassCursor();
 #define IM_OWN_POS    9
 #define IM_ORACLE     10
 #define IM_TEAM       11
+#define IM_WEATHERST  12
 
 
 typedef	struct{

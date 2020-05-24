@@ -20,18 +20,10 @@
 
 // These are always used +1 for safety
 #define	MAXFANETNAME	30	// used by Local Ids
-#define MAXFANETCN	3	// used by Local and Flarmnet, not changeble see Parser
-
-typedef TCHAR Cn_t[MAXFANETCN];
-
-inline
-bool equals_Cn(const Cn_t& a, const Cn_t& b) {
-  return std::equal(std::begin(a), std::end(a), std::begin(b));
-}
 
 struct FANET_DATA {
   double Time_Fix; //GPS-Time when we got the last msg
-  Cn_t Cn; //ID of station (3 Bytes)
+  long ID; //ID of station (3 Bytes)
 };
 
 //

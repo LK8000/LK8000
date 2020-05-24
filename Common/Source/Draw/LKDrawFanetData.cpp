@@ -13,6 +13,107 @@
 #include "DoInits.h"
 #include "ScreenProjection.h"
 
+void MapWindow::DrawWeatherStPicto(LKSurface& Surface, const RECT& rc, FANET_WEATHER* pWeather)
+{
+	POINT windsock[8];
+	int cx = rc.right-rc.left;
+	int cy = rc.bottom-rc.top;
+	int x = rc.left + cx/2;
+	int y = rc.top + cy/2;
+	//static double zoomfact = (double)cy/NIBLSCALE(18);
+	static double zoomfact = 0.17;
+
+	const auto hpold = Surface.SelectObject(LKPen_Black_N1);
+	const auto oldfont = Surface.SelectObject(LK8MapFont);	
+    //Draw windsock
+	windsock[0].x = 0;
+	windsock[0].y = 80;
+	windsock[1].x = -25;
+	windsock[1].y = 30;
+	windsock[2].x = 25;
+	windsock[2].y = 30;
+	windsock[3].x = 0;
+	windsock[3].y = 80;
+	for (int q=0; q < 4; q++)
+	{
+		windsock[q].x  = (windsock[q].x * zoomfact);
+		windsock[q].y  = (windsock[q].y * zoomfact);
+	}
+
+    PolygonRotateShift(windsock, 4, x, y, AngleLimit360(pWeather->windDir + 180));
+    Surface.SelectObject(LK_HOLLOW_BRUSH);
+    Surface.SelectObject(LKPen_Black_N1);
+    Surface.Polygon(windsock,4);
+
+	//Draw red sock
+	windsock[0].x = 25;
+	windsock[0].y = 30;
+	windsock[1].x = -25;
+	windsock[1].y = 30;
+	windsock[2].x = -20;
+	windsock[2].y = -50;
+	windsock[3].x = 20;
+	windsock[3].y = -50;
+	windsock[4].x = 25;
+	windsock[4].y = 30;
+	for (int q=0; q < 5; q++)
+	{
+		windsock[q].x  = (windsock[q].x * zoomfact);
+		windsock[q].y  = (windsock[q].y * zoomfact);
+	}
+
+    PolygonRotateShift(windsock, 5, x, y, AngleLimit360(pWeather->windDir + 180));
+    Surface.SelectObject(LKBrush_Red);
+    Surface.SelectObject(LKPen_Black_N1);
+    Surface.Polygon(windsock,5);
+
+	//Draw white stripe 1
+	windsock[0].x = 22;
+	windsock[0].y = 14;
+	windsock[1].x = -22;
+	windsock[1].y = 14;
+	windsock[2].x = -20;
+	windsock[2].y = -2;
+	windsock[3].x = 20;
+	windsock[3].y = -2;
+	windsock[4].x = 22;
+	windsock[4].y = 14;
+	for (int q=0; q < 5; q++)
+	{
+		windsock[q].x  = (windsock[q].x * zoomfact);
+		windsock[q].y  = (windsock[q].y * zoomfact);
+	}
+
+    PolygonRotateShift(windsock, 5, x, y, AngleLimit360(pWeather->windDir + 180));
+    Surface.SelectObject(LK_WHITE_BRUSH);
+    Surface.SelectObject(LKPen_White_N1);
+    Surface.Polygon(windsock,5);
+
+	//Draw white stripe 2
+	windsock[0].x = 19;
+	windsock[0].y = -16;
+	windsock[1].x = -19;
+	windsock[1].y = -16;
+	windsock[2].x = -17;
+	windsock[2].y = -34;
+	windsock[3].x = 17;
+	windsock[3].y = -34;
+	windsock[4].x = 19;
+	windsock[4].y = -16;
+	for (int q=0; q < 5; q++)
+	{
+		windsock[q].x  = (windsock[q].x * zoomfact);
+		windsock[q].y  = (windsock[q].y * zoomfact);
+	}
+
+    PolygonRotateShift(windsock, 5, x, y, AngleLimit360(pWeather->windDir + 180));
+    Surface.SelectObject(LK_WHITE_BRUSH);
+    Surface.SelectObject(LKPen_White_N1);
+    Surface.Polygon(windsock,5);
+  Surface.SelectObject(oldfont);
+  Surface.SelectObject(hpold);
+}
+
 // This is painting traffic icons on the screen.
 void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft) {
 

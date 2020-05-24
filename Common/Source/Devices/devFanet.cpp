@@ -56,16 +56,14 @@ static void fillpaddingZeros(TCHAR *String,TCHAR *String2,int len){
   _tcscat(String,String2);
 }
 
-static void getIdFromMsg(TCHAR *String,TCHAR *cID,TCHAR *id){
+static void getIdFromMsg(TCHAR *String,TCHAR *cID,long *id){
   TCHAR ctemp[10];
   cID[0] = 0; //zero-Termination of String;
   NMEAParser::ExtractParameter(String,ctemp,0);
   fillpaddingZeros(cID,ctemp,2);
   NMEAParser::ExtractParameter(String,ctemp,1);
   fillpaddingZeros(cID,ctemp,4);
-  id[0] = getByteFromHex(&cID[0]);
-  id[1] = getByteFromHex(&cID[2]);
-  id[2] = getByteFromHex(&cID[4]);
+  _stscanf(cID, TEXT("%lx"), id); //convert HEX-String to long
 
 }
 
@@ -95,14 +93,14 @@ static void payload_absolut2coord(double *lat, double *lon, uint8_t *buf)
 }
 
 template<typename _Tp, size_t size>
-static int FanetGetIndex(const Cn_t& Cn, _Tp (&array)[size], bool bEmptyIndex){
+static int FanetGetIndex(long ID, _Tp (&array)[size], bool bEmptyIndex){
   int iEmpyIndex = -1;
   for (size_t i = 0;i < size;i++){
     if (array[i].Time_Fix == 0){
       if ((iEmpyIndex < 0) && (bEmptyIndex)){
         iEmpyIndex = i;
       }
-    } else if (equals_Cn(array[i].Cn, Cn)){
+    } else if (array[i].ID == ID){
       //we found the right entry (same cn)
       return i;
     }
@@ -112,7 +110,7 @@ static int FanetGetIndex(const Cn_t& Cn, _Tp (&array)[size], bool bEmptyIndex){
 
 template<typename _Tp, size_t size>
 static bool FanetInsert(const _Tp& item, _Tp (&array)[size], double Time){
-  int index = FanetGetIndex(item.Cn, array, true);
+  int index = FanetGetIndex(item.ID, array, true);
   if (index < 0){
     return false;
   }
@@ -126,7 +124,7 @@ static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   FANET_NAME fanetDevice;
   TCHAR HexDevId[7];
 
-  getIdFromMsg(String,HexDevId,fanetDevice.Cn);
+  getIdFromMsg(String,HexDevId,&fanetDevice.ID);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
@@ -154,6 +152,7 @@ static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
       
     }
   }
+
   FanetInsert(fanetDevice, pGPS->FanetName, pGPS->Time);
   return TRUE;
 
@@ -161,11 +160,11 @@ static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
 
 static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];
-  Cn_t Cn; //ID of station (3 Bytes)
+  long ID; //ID of station (3 Bytes)
   TCHAR MSG[80];
   TCHAR HexDevId[7];
 
-  getIdFromMsg(String,HexDevId,Cn);
+  getIdFromMsg(String,HexDevId,&ID);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
@@ -182,7 +181,7 @@ static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   }
   MSG[i-1] = 0; //0-termination of String
 	TCHAR text[150]; // at least (31 + 2 + 80)
-  int index = FanetGetIndex(Cn,pGPS->FanetName,false);
+  int index = FanetGetIndex(ID,pGPS->FanetName,false);
   if (index >= 0) {
     _tcscpy(text, pGPS->FanetName[index].Name); //we didn't found the name (name not sent yet) --> print device-id
   }else {
@@ -200,7 +199,7 @@ static BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   TCHAR HexDevId[7];
   FANET_WEATHER weather;
 
-  getIdFromMsg(String,HexDevId,weather.Cn);
+  getIdFromMsg(String,HexDevId,&weather.ID);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
