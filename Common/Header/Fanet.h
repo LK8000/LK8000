@@ -23,7 +23,7 @@
 
 struct FANET_DATA {
   double Time_Fix; //GPS-Time when we got the last msg
-  long ID; //ID of station (3 Bytes)
+  uint32_t ID; //ID of station (3 Bytes)
 };
 
 //
