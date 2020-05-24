@@ -181,7 +181,7 @@ BOOL CDevFlarm::Config(PDeviceDescriptor_t d){
     wp = (WndProperty*)wf->FindByName(TEXT("prpFlarmId"));
     if (wp) {
       TCHAR szFlarmID[16];
-      _stprintf(szFlarmID, _T("%06X")  ,dwFlarmID[ d->PortNumber]);
+      _stprintf(szFlarmID, _T("%06lX")  ,dwFlarmID[ d->PortNumber]);
       wp->GetDataField()->SetAsString(szFlarmID);
       wp->RefreshDisplay();
     }
@@ -190,8 +190,7 @@ BOOL CDevFlarm::Config(PDeviceDescriptor_t d){
 
 
     if (wp) {
-
-      dwFlarmID[ d->PortNumber] =  strtol(wp->GetDataField()->GetAsString(), NULL, 16);
+      _stscanf(wp->GetDataField()->GetAsString(),TEXT("%lx"), &dwFlarmID[ d->PortNumber] );
     }
 
     delete wf;
