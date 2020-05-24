@@ -645,9 +645,9 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             //stationIndex = -1;
             LockFlightData();
                 memcpy( &Station, &GPS_INFO.FANET_Weather[Elements[i].iIdx], sizeof(FANET_WEATHER));
-                for (int i = 0;i < MAXFANETDEVICES;i++){
-                    if (GPS_INFO.FanetName[i].ID == GPS_INFO.FANET_Weather[Elements[i].iIdx].ID){
-                        _tcscpy(StationName, GPS_INFO.FanetName[i].Name); //copy name   
+                for (int j = 0;j < MAXFANETDEVICES;j++){
+                    if (GPS_INFO.FanetName[j].ID == Station.ID){
+                        _tcscpy(StationName, GPS_INFO.FanetName[j].Name); //copy name   
                         break;
                     }
                 }
