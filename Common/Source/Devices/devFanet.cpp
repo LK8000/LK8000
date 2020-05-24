@@ -56,7 +56,7 @@ static void fillpaddingZeros(TCHAR *String,TCHAR *String2,int len){
   _tcscat(String,String2);
 }
 
-static void getIdFromMsg(TCHAR *String,TCHAR *cID,long *id){
+static void getIdFromMsg(TCHAR *String,TCHAR *cID,uint32_t *id){
   TCHAR ctemp[10];
   cID[0] = 0; //zero-Termination of String;
   NMEAParser::ExtractParameter(String,ctemp,0);
@@ -160,7 +160,7 @@ static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
 
 static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];
-  long ID; //ID of station (3 Bytes)
+  uint32_t ID; //ID of station (3 Bytes)
   TCHAR MSG[80];
   TCHAR HexDevId[7];
 
