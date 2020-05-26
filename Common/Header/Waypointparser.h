@@ -56,7 +56,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp);
 
 bool ParseCUPWayPointString(const TCHAR *String,WAYPOINT *Temp);
 bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
-bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
+bool ParseCOMPEWayPointString(const TCHAR *mTempString,WAYPOINT *Temp);
 bool WaypointInTerrainRange(WAYPOINT *List);
 bool ParseOpenAIP(zzip_file_ptr& file);
 

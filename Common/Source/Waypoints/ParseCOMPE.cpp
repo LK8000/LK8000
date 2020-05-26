@@ -16,9 +16,8 @@
 
 extern int globalFileNum;
 
-bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
+bool ParseCOMPEWayPointString(const TCHAR *String, WAYPOINT *Temp) {
   TCHAR tComment[(COMMENT_SIZE * 2) + 1]; // must be bigger than COMMENT_SIZE!
-  TCHAR tString[READLINE_LENGTH + 1];
   TCHAR tName[NAME_SIZE + 1];
 
   // int flags=0;
@@ -34,31 +33,30 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 #endif
     return false;
   }
-  LK_tcsncpy(tString, String, READLINE_LENGTH);
 
   // only handle W field, format:  W__NAME
-  if (tString[0] != 'W') {
+  if (String[0] != 'W') {
 #ifdef COMPEDEBUG
-    StartupStore(_T("COMPE IN:<%s> missing leading W%s"), tString, NEWLINE);
+    StartupStore(_T("COMPE IN:<%s> missing leading W%s"), String, NEWLINE);
 #endif
     return false;
   }
-  if (tString[1] != ' ') {
+  if (String[1] != ' ') {
 #ifdef COMPEDEBUG
-    StartupStore(_T("COMPE IN:<%s> missing space after W%s"), tString, NEWLINE);
+    StartupStore(_T("COMPE IN:<%s> missing space after W%s"), String, NEWLINE);
 #endif
     return false;
   }
 
   // W wptname
-  if (tString[2] != ' ') {
+  if (String[2] != ' ') {
     startpoint = 2; // third char
   }
   // W  wptname
-  if (tString[2] == ' ') {
-    if (tString[3] == ' ') {
+  if (String[2] == ' ') {
+    if (String[3] == ' ') {
 #ifdef COMPEDEBUG
-      StartupStore(_T("COMPE IN:<%s> missing character after W__%s"), tString,
+      StartupStore(_T("COMPE IN:<%s> missing character after W__%s"), String,
                    NEWLINE);
 #endif
       return false;
@@ -73,15 +71,15 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   Temp->FileNum = globalFileNum;
 
 #ifdef COMPEDEBUG
-  StartupStore(_T("COMPE IN:<%s>%s"), tString, NEWLINE);
+  StartupStore(_T("COMPE IN:<%s>%s"), String, NEWLINE);
 #endif
 
   // Name starts at position 3 or 4, index 2 or 3 . Search for space at the end
   // of name (<=)
   auto out = array_back_inserter(tName, array_size(tName) - 1); // size - 1 to let placeholder for '\0'
   unsigned i = startpoint;
-  while(tString[i] != _T(' ') && tString[i] != _T('\0')) {
-    out = tString[i++];
+  while(String[i] != _T(' ') && String[i] != _T('\0')) {
+    out = String[i++];
   }
   tName[out.length()] = _T('\0');
 #ifndef UNICODE
@@ -92,16 +90,16 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 
   // i now point to first space after name
 #ifdef COMPEDEBUG
-  StartupStore(_T("WP NAME size=%d: <%s>%s"), j, tName, NEWLINE);
+  StartupStore(_T("WP NAME size=%d: <%s>%s"), (int)_tcslen(tName), tName, NEWLINE);
 #endif
 
-  if (tString[++i] != _T('A')) {
+  if (String[++i] != _T('A')) {
 #ifdef COMPEDEBUG
     StartupStore(_T("Missing A field! %s"), NEWLINE);
 #endif
     return false;
   }
-  if (tString[++i] != _T(' ')) {
+  if (String[++i] != _T(' ')) {
 #ifdef COMPEDEBUG
     StartupStore(_T("Missing space after A field! %s"), NEWLINE);
 #endif
@@ -118,9 +116,9 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   // search for szDeg delimiter
   unsigned int p;
   ok = false;
-  const TCHAR *cp = _tcsstr(&(tString[i]), szDeg);
+  const TCHAR *cp = _tcsstr(&(String[i]), szDeg);
   if (cp) {
-    p = cp - tString;
+    p = cp - String;
     ok = true;
   }
   if (!ok) {
@@ -139,13 +137,13 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 #endif
     return false;
   }
-  LK_tcsncpy(tLatitude, &tString[i], p - i);
+  LK_tcsncpy(tLatitude, &String[i], p - i);
 
   i = p + _tcslen(szDeg); // skip delimiter
   // i points to NS
 
   bool north = false;
-  TCHAR tNS = tString[i];
+  TCHAR tNS = String[i];
   TCHAR NS[] = _T("NS");
   if ((tNS != NS[0]) && (tNS != NS[1])) {
 #ifdef COMPEDEBUG
@@ -160,7 +158,7 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 #endif
 
   // We are now on the space after latitude
-  if (tString[++i] != _T(' ')) {
+  if (String[++i] != _T(' ')) {
 #ifdef COMPEDEBUG
     StartupStore(_T("Missing space after latitude %s"), NEWLINE);
 #endif
@@ -170,9 +168,9 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   // we are now on the first digit of longitude
   // search for szDeg delimiter
   ok = false;
-  cp = _tcsstr(&(tString[i]), szDeg);
+  cp = _tcsstr(&(String[i]), szDeg);
   if (cp) {
-    p = cp - tString;
+    p = cp - String;
     ok = true;
   }
   if (!ok) {
@@ -190,13 +188,13 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 #endif
     return false;
   }
-  LK_tcsncpy(tLongitude, &tString[i], p - i);
+  LK_tcsncpy(tLongitude, &String[i], p - i);
 
   i = p + _tcslen(szDeg); // skip delimiter
 
   // i points to EW
   bool east = false;
-  TCHAR tEW = tString[i];
+  TCHAR tEW = String[i];
   TCHAR EW[] = _T("EW");
   if ((tEW != EW[0]) && (tEW != EW[1])) {
 #ifdef COMPEDEBUG
@@ -211,7 +209,7 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 #endif
 
   // We are now on the space after longitude
-  if (tString[++i] != _T(' ')) {
+  if (String[++i] != _T(' ')) {
 #ifdef COMPEDEBUG
     StartupStore(_T("Missing space after longitude %s"), NEWLINE);
 #endif
@@ -222,7 +220,7 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   // we are now on the first digit of DATE
   // search for space delimiter
   for (p = i, ok = false; p < slen; p++) {
-    if (tString[p] == _T(' ')) {
+    if (String[p] == _T(' ')) {
       ok = true;
       break;
     }
@@ -236,7 +234,7 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   // p points to space after DATE
   // i points to the presumed first character of TIME
   i = p + 1;
-  if (i >= slen || tString[i] == _T(' ')) {
+  if (i >= slen || String[i] == _T(' ')) {
 #ifdef COMPEDEBUG
     StartupStore(_T("No TIME found%s"), NEWLINE);
 #endif
@@ -245,7 +243,7 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   // we are now on the first digit of DATE
   // search for space delimiter
   for (p = i, ok = false; p < slen; p++) {
-    if (tString[p] == _T(' ')) {
+    if (String[p] == _T(' ')) {
       ok = true;
       break;
     }
@@ -259,7 +257,7 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   // p points to space after TIME
   // i points to the presumed first character of ALTITUDE
   i = p + 1;
-  if (i >= slen || tString[i] == _T(' ')) {
+  if (i >= slen || String[i] == _T(' ')) {
 #ifdef COMPEDEBUG
     StartupStore(_T("No ALTITUDE found%s"), NEWLINE);
 #endif
@@ -278,7 +276,7 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   // we are now on the first digit of altitude
   // search for space delimiter
   for (p = i, ok = false; p < slen; p++) {
-    if (tString[p] == _T(' ')) {
+    if (String[p] == _T(' ')) {
       ok = true;
       break;
     }
@@ -298,14 +296,14 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 #endif
     return false;
   }
-  LK_tcsncpy(tAltitude, &tString[i - 1], p - i);
+  LK_tcsncpy(tAltitude, &String[i - 1], p - i);
 
 #ifdef COMPEDEBUG
   StartupStore(_T("WP ALTITUDE : <%s>%s"), tAltitude, NEWLINE);
 #endif
 
   i = p + 1;
-  while (tString[p] != _T('\0')) {
+  while (String[p] != _T('\0')) {
     ++p;
   }
   // we are now on first char of comment
@@ -315,7 +313,7 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 #endif
     return false;
   }
-  LK_tcsncpy(tComment, &tString[i], p - i);
+  LK_tcsncpy(tComment, &String[i], p - i);
 
 #ifdef COMPEDEBUG
   StartupStore(_T("WP COMMENT : <%s>%s"), tComment, NEWLINE);
