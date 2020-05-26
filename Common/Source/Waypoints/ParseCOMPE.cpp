@@ -8,6 +8,8 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
+#include "utils/array_back_insert_iterator.h"
+#include "Util/UTF8.hpp"
 
 
 //#define COMPEDEBUG 1
@@ -18,16 +20,12 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
   TCHAR tComment[(COMMENT_SIZE * 2) + 1]; // must be bigger than COMMENT_SIZE!
   TCHAR tString[READLINE_LENGTH + 1];
   TCHAR tName[NAME_SIZE + 1];
-  unsigned int slen;
+
   // int flags=0;
   bool ok;
   unsigned int startpoint = 3; // default
 
-  unsigned int i, j;
-
-#define MAXCOMPENAME 16
-
-  slen = _tcslen(String);
+  size_t slen = _tcslen(String);
   if (slen < 65) {
 #ifdef COMPEDEBUG
     if (slen > 0) {
@@ -80,29 +78,19 @@ bool ParseCOMPEWayPointString(TCHAR *String, WAYPOINT *Temp) {
 
   // Name starts at position 3 or 4, index 2 or 3 . Search for space at the end
   // of name (<=)
-  for (i = startpoint, j = 0, ok = false; i <= startpoint + MAXCOMPENAME; i++) {
-    if (tString[i] != _T(' ')) {
-      ;
-      j++;
-      continue;
-    }
-    ok = true;
-    break;
+  auto out = array_back_inserter(tName, array_size(tName) - 1); // size - 1 to let placeholder for '\0'
+  unsigned i = startpoint;
+  while(tString[i] != _T(' ') && tString[i] != _T('\0')) {
+    out = tString[i++];
   }
-  if (j < 1) {
-#ifdef COMPEDEBUG
-    StartupStore(_T("Name is empty ! %s"), NEWLINE);
+  tName[out.length()] = _T('\0');
+#ifndef UNICODE
+  if (out.overflowed()) {
+      CropIncompleteUTF8(tName);
+  }
 #endif
-    return false;
-  }
-  if (!ok) {
-#ifdef COMPEDEBUG
-    StartupStore(_T("Name too long! %s"), NEWLINE);
-#endif
-    return false;
-  }
+
   // i now point to first space after name
-  LK_tcsncpy(tName, &tString[startpoint], j);
 #ifdef COMPEDEBUG
   StartupStore(_T("WP NAME size=%d: <%s>%s"), j, tName, NEWLINE);
 #endif
