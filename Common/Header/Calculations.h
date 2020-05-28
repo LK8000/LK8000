@@ -47,7 +47,7 @@ typedef struct _THERMAL_HISTORY
 } THERMAL_HISTORY;
 
 
-typedef struct _DERIVED_INFO
+struct DERIVED_INFO
 {
   double Vario;
   double LD;
@@ -255,7 +255,7 @@ typedef struct _DERIVED_INFO
 
   double Experimental;
   // JMW note, new items should go at the bottom of this struct before experimental!
-} DERIVED_INFO;
+};
 
 
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);

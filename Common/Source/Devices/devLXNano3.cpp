@@ -16,8 +16,7 @@
 #include "externs.h"
 #include "utils/stringext.h"
 #include "devLXNano3.h"
-
-
+#include "Calc/Vario.h"
 #include "dlgTools.h"
 #include "Dialogs.h"
 #include "WindowControls.h"
@@ -1481,9 +1480,7 @@ double fDir,fTmp,airspeed=0;
       }
       if(IsDirInput(PortIO[d->PortNumber].VARIODir  ))
       {
-        info->Vario = fTmp;
-        info->VarioAvailable = TRUE;
-        TriggerVarioUpdate();
+        UpdateVarioSource(*info, *d, fTmp);
       }
     }
   }
@@ -1854,9 +1851,7 @@ devSetAdvancedMode(d,true);
     }
     if(IsDirInput(PortIO[d->PortNumber].VARIODir))
     {
-      info->Vario = alt;
-      info->VarioAvailable = TRUE;
-      TriggerVarioUpdate();
+      UpdateVarioSource(*info, *d, alt);
     }
   }
 

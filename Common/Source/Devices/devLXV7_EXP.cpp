@@ -9,6 +9,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devLXV7_EXP.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
@@ -594,8 +595,6 @@ bool DevLXV7_EXP::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*
     info->ExternalWindAvailable = TRUE;
   }
 
-//  TriggerVarioUpdate();
-
   return(false);
 } // LXWP0()
 
@@ -845,10 +844,10 @@ bool DevLXV7_EXP::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*
         if (airspeed>0) info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
   }
 
-  if (ParToDouble(sentence, 4, &info->Vario))
+  double Vario = 0;
+  if (ParToDouble(sentence, 4, &Vario))
   {
-	info->VarioAvailable = TRUE;
-	TriggerVarioUpdate();
+    UpdateVarioSource(*info, *d, Vario);
   }
 
 

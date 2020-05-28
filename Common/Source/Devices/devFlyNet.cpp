@@ -8,12 +8,13 @@
 
 #include <externs.h>
 #include "Baro.h"
-#include <devFlyNet.h>
+#include "Calc/Vario.h"
+#include "devFlyNet.h"
 
 static BOOL _PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
 	(void)d;
 	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)))){
-		TriggerVarioUpdate();
+
 	}
 	return TRUE;
 }

@@ -834,7 +834,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
         } else if( &d2 == d) {
           // call ParseNMEAString_Internal only for master port if string are not device specific.
           if(String[0]=='$') {  // Additional "if" to find GPS strings
-            if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
+            if(d->nmeaParser.ParseNMEAString_Internal(*d, String, pGPS)) {
               //GPSCONNECT  = TRUE; // NO! 121126
               ret = TRUE;
             }

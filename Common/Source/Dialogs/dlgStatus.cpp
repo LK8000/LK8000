@@ -18,6 +18,7 @@
 #include "Event/Event.h"
 #include "resource.h"
 #include "NavFunctions.h"
+#include "Calc/Vario.h"
 
 extern BOOL extGPSCONNECT;
 
@@ -140,7 +141,7 @@ static void UpdateValuesSystem() {
   static int extGPSCONNECT_last = extGPSCONNECT;
   static bool NAVWarning_last = GPS_INFO.NAVWarning;
   static int SatellitesUsed_last = GPS_INFO.SatellitesUsed;
-  static int VarioAvailable_last = GPS_INFO.VarioAvailable;
+  static int VarioAvailable_last = VarioAvailable(GPS_INFO);
   static int FLARM_Available_last = GPS_INFO.FLARM_Available;
   static bool LoggerActive_last = LoggerActive;
   static bool DeclaredToDevice_last = DeclaredToDevice;
@@ -158,7 +159,7 @@ static void UpdateValuesSystem() {
       (extGPSCONNECT_last != extGPSCONNECT) ||
       (NAVWarning_last != GPS_INFO.NAVWarning) ||
       (SatellitesUsed_last != GPS_INFO.SatellitesUsed) ||
-      (VarioAvailable_last != GPS_INFO.VarioAvailable) ||
+      (VarioAvailable_last != VarioAvailable(GPS_INFO)) ||
       (FLARM_Available_last != GPS_INFO.FLARM_Available) ||
       (LoggerActive_last != LoggerActive) ||
       (DeclaredToDevice_last != DeclaredToDevice) ||
@@ -174,7 +175,7 @@ static void UpdateValuesSystem() {
     extGPSCONNECT_last = extGPSCONNECT;
     NAVWarning_last = GPS_INFO.NAVWarning;
     SatellitesUsed_last = GPS_INFO.SatellitesUsed;
-    VarioAvailable_last = GPS_INFO.VarioAvailable;
+    VarioAvailable_last = VarioAvailable(GPS_INFO);
     FLARM_Available_last = GPS_INFO.FLARM_Available;
     LoggerActive_last = LoggerActive;
     DeclaredToDevice_last = DeclaredToDevice;
@@ -235,7 +236,7 @@ static void UpdateValuesSystem() {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpVario"));
   if (wp) {
-    if (GPS_INFO.VarioAvailable) {
+    if (VarioAvailable(GPS_INFO)) {
 	// LKTOKEN  _@M199_ = "Connected"
 #ifdef DEVICE_SERIAL
      if(GPS_INFO.HardwareId >0)

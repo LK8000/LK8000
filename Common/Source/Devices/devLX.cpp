@@ -9,6 +9,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devLX.h"
 
 //____________________________________________________________class_definitions_
@@ -132,8 +133,10 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
     UpdateBaroSource( info, 0,d,  QNEAltitudeToQNHAltitude(alt));
   }
 
-  if (ParToDouble(sentence, 8, &info->Vario)) /* take the last value to be more recent */
-    info->VarioAvailable = TRUE;
+  double Vario = 0;
+  if (ParToDouble(sentence, 8, &Vario)) { /* take the last value to be more recent */
+    UpdateVarioSource(*info, *d, Vario);
+  }
 
   if (ParToDouble(sentence, 9, &info->MagneticHeading))
       info->MagneticHeadingAvailable=TRUE;
@@ -144,7 +147,6 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 	info->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
     info->ExternalWindAvailable = TRUE;
   }
-  TriggerVarioUpdate();
 
   return(true);
 } // LXWP0()

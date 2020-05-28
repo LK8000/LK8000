@@ -14,6 +14,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devLXMiniMap.h"
 #include "McReady.h"
 #include "InputEvents.h"
@@ -319,14 +320,14 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     }
   }
 
-  if (ParToDouble(sentence, 3, &info->Vario))
-    info->VarioAvailable = TRUE;
+  double Vario = 0;
+  if (ParToDouble(sentence, 3, &Vario)) {
+    UpdateVarioSource(*info, *d, Vario);
+  }
 
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
     info->ExternalWindAvailable = TRUE;
-
-  TriggerVarioUpdate();
 
   return(true);
 } // LXWP0()

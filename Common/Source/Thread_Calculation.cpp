@@ -12,6 +12,7 @@
 #include "FlightDataRec.h"
 #include "TraceThread.h"
 #include "Hardware/CPU.hpp"
+#include "Calc/Vario.h"
 
 #ifndef ENABLE_OPENGL
 extern bool OnFastPanning;
@@ -81,7 +82,7 @@ public:
             UnlockFlightData();
 
             DoCalculationsVario(&tmpGPS, &tmpCALCULATED);
-            if (!tmpGPS.VarioAvailable) {
+            if (!VarioAvailable(tmpGPS)) {
                 TriggerVarioUpdate(); // emulate vario update
             }
 

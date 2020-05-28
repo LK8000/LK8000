@@ -12,6 +12,7 @@
 #include "WindowControls.h"
 #include "resource.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 
 
 PDeviceDescriptor_t CDevCProbe::m_pDevice=NULL;
@@ -236,7 +237,6 @@ BOOL CDevCProbe::ParseData( tnmeastring& wiss, NMEA_INFO *pINFO ) {
 		pINFO->ExtBatt1_Voltage *= -1;
 	}
 
-	TriggerVarioUpdate();
 	return TRUE;
 }
 

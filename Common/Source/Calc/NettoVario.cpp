@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Logger.h"
 #include "McReady.h"
+#include "Calc/Vario.h"
 
 void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
@@ -35,7 +36,7 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (Basic->NettoVarioAvailable && replay_disabled) {
     Calculated->NettoVario = Basic->NettoVario;
   }
-  else if (Basic->VarioAvailable && replay_disabled) {
+  else if (VarioAvailable(*Basic) && replay_disabled) {
     Calculated->NettoVario = Basic->Vario - glider_sink_rate;
   }
   else {

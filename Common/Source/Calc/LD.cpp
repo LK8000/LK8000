@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "NavFunctions.h"
+#include "Calc/Vario.h"
 
 extern void InsertLDRotary(ldrotary_s *buf, double distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void InsertWindRotary(windrotary_s *wbuf, double speed, double track, double altitude);
@@ -103,7 +104,7 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     }
 
   // LD instantaneous from vario, updated every reading..
-  if (Basic->VarioAvailable && Basic->AirspeedAvailable 
+  if (VarioAvailable(*Basic) && Basic->AirspeedAvailable 
       && Calculated->Flying) {
     Calculated->LDvario = UpdateLD(Calculated->LDvario,
                                    Basic->IndicatedAirspeed,

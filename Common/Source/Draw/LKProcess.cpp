@@ -14,6 +14,7 @@
 #include "DoInits.h"
 #include "OS/Memory.h"
 #include "CriticalSection.h"
+#include "Calc/Vario.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -610,7 +611,7 @@ goto_bearing:
 
 		// B24
 		case LK_VARIO:
-			if (DrawInfo.VarioAvailable) {
+			if (VarioAvailable(DrawInfo)) {
 				value = LIFTMODIFY*DrawInfo.Vario;
 			} else {
 				value = LIFTMODIFY*DerivedDrawInfo.Vario;
@@ -1093,7 +1094,7 @@ goto_bearing:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			//_stprintf(BufferUnit,TEXT(""));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if (DrawInfo.AirspeedAvailable && DrawInfo.VarioAvailable) {
+			if (DrawInfo.AirspeedAvailable && VarioAvailable(DrawInfo)) {
 				value = DerivedDrawInfo.LDvario;
 				if (value <1 || value >=ALTERNATE_MAXVALIDGR )
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));

@@ -9,6 +9,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "Logger.h"
 #include "Geoid.h"
 #include "GpsWeekNumberFix.h"
@@ -188,7 +189,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
 }
 #endif
 
-BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
+BOOL NMEAParser::ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR *String, NMEA_INFO *pGPS)
 {
   TCHAR ctemp[MAX_NMEA_LEN];
   TCHAR *params[MAX_NMEA_PARAMS];
@@ -208,7 +209,7 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *pGPS)
 
       if(_tcscmp(params[0] + 1,TEXT("PTAS1"))==0)
         {
-          return PTAS1(&String[7], params + 1, n_params-1, pGPS);
+          return PTAS1(d, &String[7], params + 1, n_params-1, pGPS);
         }
 
       // FLARM sentences
@@ -904,7 +905,7 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 
 // TASMAN instruments support for Tasman Flight Pack model Fp10
-BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PTAS1(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 4) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PTAS1 sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -920,13 +921,11 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   
   pGPS->AirspeedAvailable = TRUE;
   pGPS->TrueAirspeed = vtas;
-  pGPS->VarioAvailable = TRUE;
-  pGPS->Vario = wnet;
+  UpdateVarioSource(*pGPS, d, wnet);
   UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  QNEAltitudeToQNHAltitude(baralt));
   pGPS->IndicatedAirspeed = vtas/AirDensityRatio(baralt);
  
   TASAvailable = true; // 100411 
-  TriggerVarioUpdate();
 
   return FALSE;
 }

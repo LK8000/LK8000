@@ -14,6 +14,7 @@
 #include "Screen/BrushReference.h"
 #include "Bitmaps.h"
 #include "Util/Clamp.hpp"
+#include "Calc/Vario.h"
 
 #define BOXTHICK 1
 #define PIXELSEPARATE 1
@@ -244,7 +245,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         }
 
     } else if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal == vValVarioVario) {
-        if (DrawInfo.VarioAvailable) {
+        if (VarioAvailable(DrawInfo)) {
             // UHM. I think we are not painting values correctly for knots &c.
             //vario_value = LIFTMODIFY*DrawInfo.Vario;
             vario_value = DrawInfo.Vario;
@@ -262,7 +263,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 break;
             case vValVarioSoll:
                 double ias;
-                if (DrawInfo.AirspeedAvailable && DrawInfo.VarioAvailable)
+                if (DrawInfo.AirspeedAvailable && VarioAvailable(DrawInfo))
                     ias = DrawInfo.IndicatedAirspeed;
                 else
                     ias = DerivedDrawInfo.IndicatedAirspeedEstimated;

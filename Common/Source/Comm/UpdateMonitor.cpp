@@ -10,6 +10,7 @@
 #include "externs.h"
 #include "Sound/Sound.h"
 #include "InputEvents.h"
+#include "Calc/Vario.h"
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 extern unsigned LastRMZHB;	 // common to both devA and devB, updated in Parser
@@ -128,7 +129,7 @@ bool  UpdateMonitor(void)
       // We reset some flags globally only once in case of device gone silent
       if (!dev.Disabled && !wasSilent[dev.PortNumber]) {
         GPS_INFO.AirspeedAvailable=false;
-        GPS_INFO.VarioAvailable=false;
+        ResetVarioAvailable(GPS_INFO);
         GPS_INFO.NettoVarioAvailable=false;
         GPS_INFO.AccelerationAvailable = false;
         EnableExternalTriggerCruise = false;
@@ -170,7 +171,7 @@ bool  UpdateMonitor(void)
       GPS_INFO.BaroAltitudeAvailable=FALSE;
       // We alse reset these values, just in case we are through a mux
       GPS_INFO.AirspeedAvailable=false;
-      GPS_INFO.VarioAvailable=false;
+      ResetVarioAvailable(GPS_INFO);
       GPS_INFO.NettoVarioAvailable=false;
       GPS_INFO.AccelerationAvailable = false;
       EnableExternalTriggerCruise = false;
@@ -261,7 +262,7 @@ bool  UpdateMonitor(void)
           GPS_INFO.BaroAltitudeAvailable=FALSE;
           // We alse reset these values, just in case we are through a mux
           GPS_INFO.AirspeedAvailable=false;
-          GPS_INFO.VarioAvailable=false;
+          ResetVarioAvailable(GPS_INFO);
           GPS_INFO.NettoVarioAvailable=false;
           GPS_INFO.AccelerationAvailable = false;
           EnableExternalTriggerCruise = false;
@@ -292,10 +293,10 @@ bool  UpdateMonitor(void)
   if (active != lastactive) {
 
     // we need to reset all data availabilty flags, otherwise some of them 
-    // can leave set to "true" even if new active device don't provide data
+    // can leave set to "true'" even if new active device don't provide data
     GPS_INFO.BaroAltitudeAvailable = false;
     GPS_INFO.AirspeedAvailable = false;
-    GPS_INFO.VarioAvailable = false;
+    ResetVarioAvailable(GPS_INFO);
     GPS_INFO.NettoVarioAvailable = false;
     GPS_INFO.AccelerationAvailable = false;
     GPS_INFO.TemperatureAvailable = false;

@@ -15,6 +15,7 @@
 #include "externs.h"
 #include "McReady.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devCAI302.h"
 
 extern bool UpdateQNH(const double newqnh);
@@ -619,8 +620,8 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
 
   NMEAParser::ExtractParameter(String,ctemp,7);
-  pGPS->VarioAvailable = TRUE;
-  pGPS->Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
+  double Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
+  UpdateVarioSource(*pGPS, *d, Vario);
 
   NMEAParser::ExtractParameter(String,ctemp,10);
   pGPS->MacReady = (StrToDouble(ctemp,NULL) / 10.0) * KNOTSTOMETRESSECONDS;
@@ -643,8 +644,6 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
     CheckSetBugs(pGPS->Bugs);
   else
     BugsUpdateTimeout--;
-
-  TriggerVarioUpdate();
 
   return TRUE;
 

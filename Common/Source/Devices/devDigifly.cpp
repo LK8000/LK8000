@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devDigifly.h"
 #include "MathFunctions.h"
 
@@ -140,14 +141,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-#if 1
-  pGPS->Vario = StrToDouble(ctemp,NULL)/100;
-#else
-  double newVario = StrToDouble(ctemp,NULL)/100;
-  pGPS->Vario = LowPassFilter(pGPS->Vario,newVario,0.1);
-#endif
-  pGPS->VarioAvailable = TRUE;
-
+  UpdateVarioSource(*pGPS, *d, StrToDouble(ctemp,NULL)/100);
 
   NMEAParser::ExtractParameter(String,ctemp,3);
   if (ctemp[0] != '\0') {
@@ -178,8 +172,6 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,9);
   pGPS->ExtBatt2_Voltage = StrToDouble(ctemp,NULL)/100;
 
-  TriggerVarioUpdate();
-
   return TRUE;
 }
 
@@ -205,8 +197,7 @@ static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     // Vario
     NMEAParser::ExtractParameter(String,ctemp,0);
     if (ctemp[0] != '\0') {
-        pGPS->Vario = StrToDouble(ctemp,NULL)/100;
-        pGPS->VarioAvailable = TRUE;
+        UpdateVarioSource(*pGPS, *d, StrToDouble(ctemp,NULL)/100);
     }
     // Pressure
     NMEAParser::ExtractParameter(String,ctemp,1);

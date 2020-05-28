@@ -32,6 +32,7 @@ Copyright_License {
 #include "Compiler.h"
 #include "Thread/Mutex.hpp"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "ComCheck.h"
 
 
@@ -294,12 +295,8 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
        unduly. */
     kalman_filter.Update(pressure, sensor_noise_variance);
 
-    if(pdev->nmeaParser.activeGPS) {
-      GPS_INFO.VarioAvailable = true;
-      GPS_INFO.Vario = ComputeNoncompVario(kalman_filter.GetXAbs(),
-                                           kalman_filter.GetXVel());
-    }
-
+    UpdateVarioSource(GPS_INFO, *pdev, ComputeNoncompVario(kalman_filter.GetXAbs(),
+                                                          kalman_filter.GetXVel()));
     UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100));
   }
 }

@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devLK8EX1.h"
 
 static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
@@ -125,8 +126,7 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,2);
   double va = StrToDouble(ctemp,NULL);
   if (va != 9999) {
-	pGPS->Vario = va/100;
-	pGPS->VarioAvailable = TRUE;
+    UpdateVarioSource(*pGPS, *d, va/100);
   }
 
   // OAT
@@ -143,11 +143,6 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   if (voa!=999) {
 	pGPS->ExtBatt1_Voltage = voa;
   }
-
-
-
-  // currently unused in LK, but ready for next future
-  TriggerVarioUpdate();
 
   return TRUE;
 }

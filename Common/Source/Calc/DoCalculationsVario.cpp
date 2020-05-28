@@ -6,15 +6,15 @@
    $Id$
 */
 
-#include "externs.h"
+#include "Vario.h"
 
-extern void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 void DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-    
-  Vario(Basic,Calculated);
-  NettoVario(Basic, Calculated);
-  SpeedToFly(Basic, Calculated);
+  if(Basic && Calculated) {
+    Vario(*Basic,*Calculated);
+    NettoVario(Basic, Calculated);
+    SpeedToFly(Basic, Calculated);
+  }
 }

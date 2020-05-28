@@ -8,30 +8,48 @@
 
 #include "externs.h"
 #include "Logger.h"
+#include "Calc/Vario.h"
 
+void ResetVarioAvailable(NMEA_INFO& Info) {
+  Info.VarioSourceIdx = std::numeric_limits<unsigned>::max();
+}
+
+bool VarioAvailable(const NMEA_INFO& Info) {
+  return (Info.VarioSourceIdx < std::numeric_limits<unsigned>::max());
+}
+
+void UpdateVarioSource( NMEA_INFO& Info, const DeviceDescriptor_t& d, double Vario) {
+  if((unsigned)d.PortNumber <= Info.VarioSourceIdx) {
+
+    Info.VarioSourceIdx = d.PortNumber;
+    Info.Vario = Vario;
+
+    TriggerVarioUpdate();
+  }
+}
 
 // It is called GPSVario but it is really a vario using best altitude available.. baro if possible
-void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
+void Vario(const NMEA_INFO& Info, DERIVED_INFO& Calculated)
 {
   static double LastTime = 0;
   static double LastAlt = 0;
 
-  const double myTime = Basic->Time; 
-  const double myAlt = Calculated->NavAltitude;
+  const double myTime = Info.Time; 
+  const double myAlt = Calculated.NavAltitude;
   
   const double dT = (myTime - LastTime);
   if(dT > 0) {
     const double Gain = myAlt - LastAlt;
-    Calculated->GPSVario = Gain / dT;
+    Calculated.GPSVario = Gain / dT;
   }
 
   LastTime = myTime;
   LastAlt = myAlt;
   
-  if (!Basic->VarioAvailable || ReplayLogger::IsEnabled()) {
-    Calculated->Vario = Calculated->GPSVario;
+  if (!VarioAvailable(Info) || ReplayLogger::IsEnabled()) {
+    Calculated.Vario = Calculated.GPSVario;
   } else {
     // get value from instrument
-    Calculated->Vario = Basic->Vario;
+    Calculated.Vario = Info.Vario;
   }
 }

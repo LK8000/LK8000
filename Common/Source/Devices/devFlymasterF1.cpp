@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devFlymasterF1.h"
 
 static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
@@ -134,7 +135,8 @@ static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   UpdateBaroSource( pGPS, 0,d,  	 (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69);
 
   NMEAParser::ExtractParameter(String,ctemp,1);
-  pGPS->Vario = StrToDouble(ctemp,NULL)/10.0;
+  double Vario = StrToDouble(ctemp,NULL)/10.0;
+  UpdateVarioSource(*pGPS, *d, Vario);
   // JMW vario is in dm/s
 
   NMEAParser::ExtractParameter(String,ctemp,2);
@@ -143,16 +145,6 @@ static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   pGPS->ExtBatt2_Voltage = StrToDouble(ctemp,NULL);
   NMEAParser::ExtractParameter(String,ctemp,4);
   pGPS->ExtBatt_Bank = (int)StrToDouble(ctemp,NULL);
-
-/*
-  StartupStore(_T("++++++ BATTBANK: "));
-  StartupStore(ctemp);
-  StartupStore(_T("\n"));
-*/
-
-  pGPS->VarioAvailable = TRUE;
-
-  TriggerVarioUpdate();
 
   return TRUE;
 }
