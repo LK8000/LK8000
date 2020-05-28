@@ -272,9 +272,8 @@ unsigned TTYPort::RxThread() {
     Purge();
 
     while ((_tty != -1) && !StopEvt.tryWait(dwWaitTime)) {
-
+        ScopeLock Lock(CritSec_Comm);
         UpdateStatus();
-
         int nRecv = ReadData(szString);
         if (nRecv > 0) {
             std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&TTYPort::ProcessChar, this, _1));

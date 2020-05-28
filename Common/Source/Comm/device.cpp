@@ -91,8 +91,8 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) 
 
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
-        if( !d.Disabled && d.Com && (d.*func) ) {
-          nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
+      if( !d.Disabled && d.Com && (d.*func) ) {
+        nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
       }
 
     }
@@ -114,8 +114,8 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
 
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
-        if( !d.Disabled && d.Com && (d.*func) ) {
-          nbDeviceFailed +=  (d.*func)(&d, Val1) ? 0 : 1;
+      if( !d.Disabled && d.Com && (d.*func) ) {
+        nbDeviceFailed +=  (d.*func)(&d, Val1) ? 0 : 1;
       }
     }
     return (nbDeviceFailed > 0);
@@ -135,8 +135,8 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
 
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
-        if( !d.Disabled && d.Com && (d.*func) ) {
-          nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;
+      if( !d.Disabled && d.Com && (d.*func) ) {
+        nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;
       }
 
     }
@@ -815,8 +815,6 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   bool  ret = FALSE;
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
-  ScopeLock lock(CritSec_Comm);
-
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if(!d) {
     return FALSE;
@@ -826,7 +824,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 
   // intercept device specific parser routines 
     for(DeviceDescriptor_t& d2 : DeviceList) {
-        
+
       if((d2.iSharedPort == portNum) ||  (d2.PortNumber == portNum)) {
         if ( d2.ParseNMEA && d2.ParseNMEA(d, String, pGPS) ) {
           //GPSCONNECT  = TRUE; // NO! 121126
@@ -844,9 +842,9 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
     }
 
     if(d->nmeaParser.activeGPS) {
-        
+
       for(DeviceDescriptor_t& d2 : DeviceList) {
-          
+
           if(d2.Com && !d2.Disabled && d2.bNMEAOut) { // NMEA out ! even on multiple ports
             // stream pipe, pass nmea to other device (NmeaOut)
             d2.Com->WriteString(String); // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)

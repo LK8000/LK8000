@@ -183,6 +183,8 @@ JNIEXPORT void JNICALL
 Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj, jboolean connected)
 {
   unsigned index = getDeviceIndex(env, obj);
+  ScopeLock Lock(CritSec_Comm);
+
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
     pdev->HB = LKHearthBeats;
@@ -280,8 +282,9 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
   // XXX this shouldn't be a global variable
   static SelfTimingKalmanFilter1d kalman_filter(KF_MAX_DT, KF_VAR_ACCEL);
 
-
   const unsigned int index = getDeviceIndex(env, obj);
+  ScopeLock Lock(CritSec_Comm);
+
   PDeviceDescriptor_t pdev = devX(index);
   if(pdev) {
     pdev->nmeaParser.connected = true;
@@ -295,9 +298,11 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
        unduly. */
     kalman_filter.Update(pressure, sensor_noise_variance);
 
+    LockFlightData();
     UpdateVarioSource(GPS_INFO, *pdev, ComputeNoncompVario(kalman_filter.GetXAbs(),
                                                           kalman_filter.GetXVel()));
     UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100));
+    UnlockFlightData();
   }
 }
 
@@ -306,7 +311,9 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_org_LK8000_InternalGPS_parseNMEA(JNIEnv *env, jobject instance, jstring jnmea) {
   const char* c_nmea = env->GetStringUTFChars(jnmea, 0);
+
   int index = getDeviceIndex(env, instance);
+  ScopeLock Lock(CritSec_Comm);
 
   if (ComCheck_ActivePort >= 0 && index == ComCheck_ActivePort) {
     for( auto it = c_nmea; (*it); ++it) {
