@@ -27,7 +27,7 @@ ExternalProject_Add (
         "-DANDROID_STL=${ANDROID_STL}"
         "-DANDROID_ABI=${ANDROID_ABI}"
         "-DANDROID_NDK=${ANDROID_NDK}"
-		"-DANDROID_PLATFORM=${ANDROID_PLATFORM}"
+        "-DANDROID_PLATFORM=${ANDROID_PLATFORM}"
         "-DANDROID_ARM_NEON=${ANDROID_ARM_NEON}"
         "-DCMAKE_INSTALL_PREFIX=${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}"
         "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
@@ -66,31 +66,31 @@ ExternalProject_Get_Property(boost source_dir)
 set(BOOST_INCLUDE ${source_dir})
 
 add_definitions(
-	-DBOOST_NO_IOSTREAM
-	-DBOOST_NO_IOSFWD
-	-DBOOST_NO_STRINGSTREAM
-	-DBOOST_NO_WSTREAMBUF
-	-D__linux__
-	-DHAVE_POSIX
-	-DANDROID
-	-D__STDC_FORMAT_MACROS
-	-DENABLE_OPENGL
-	-DHAVE_GLES
-	-DGL_GLEXT_PROTOTYPES
-	-DUSE_EGL
-	-DPOCO_NO_UNWINDOWS
-	-DPOCO_ANDROID
+    -DBOOST_NO_IOSTREAM
+    -DBOOST_NO_IOSFWD
+    -DBOOST_NO_STRINGSTREAM
+    -DBOOST_NO_WSTREAMBUF
+    -D__linux__
+    -DHAVE_POSIX
+    -DANDROID
+    -D__STDC_FORMAT_MACROS
+    -DENABLE_OPENGL
+    -DHAVE_GLES
+    -DGL_GLEXT_PROTOTYPES
+    -DUSE_EGL
+    -DPOCO_NO_UNWINDOWS
+    -DPOCO_ANDROID
 )
 
 
 list(APPEND	BUILD_FLAGS
-	-Werror
-	-Wall
-	-fno-math-errno
-	-fopenmp
-	-Wparentheses
-	-Wuninitialized
-	-Wredundant-decls
+    -Werror
+    -Wall
+    -fno-math-errno
+    -fopenmp
+    -Wparentheses
+    -Wuninitialized
+    -Wredundant-decls
 )
 string(REPLACE ";" " " BUILD_FLAGS "${BUILD_FLAGS}")
 
@@ -136,7 +136,7 @@ add_library( LK8000 SHARED
     Common/Source/Android/UsbSerialHelper.cpp
     Common/Source/Android/UsbSerialPort.cpp
 
-	Common/Source/Android/LK8000Activity.cpp
+    Common/Source/Android/LK8000Activity.cpp
 
     Common/Source/Window/WndMain.cpp
 
@@ -446,13 +446,13 @@ add_library( LK8000 SHARED
     Common/Source/Draw/TextInBox.cpp
     Common/Source/Draw/UpdateAndRefresh.cpp
 
-	Common/Source/Draw/Task/TaskRenderer.cpp
-	Common/Source/Draw/Task/TaskRendererCircle.cpp
-	Common/Source/Draw/Task/TaskRendererLine.cpp
-	Common/Source/Draw/Task/TaskRendererDae.cpp
-	Common/Source/Draw/Task/TaskRendererSector.cpp
-	Common/Source/Draw/Task/TaskRendererStartSector.cpp
-	Common/Source/Draw/Task/TaskRendererMgr.cpp
+    Common/Source/Draw/Task/TaskRenderer.cpp
+    Common/Source/Draw/Task/TaskRendererCircle.cpp
+    Common/Source/Draw/Task/TaskRendererLine.cpp
+    Common/Source/Draw/Task/TaskRendererDae.cpp
+    Common/Source/Draw/Task/TaskRendererSector.cpp
+    Common/Source/Draw/Task/TaskRendererStartSector.cpp
+    Common/Source/Draw/Task/TaskRendererMgr.cpp
 
     Common/Source/Draw/Multimaps/DrawMultimap.cpp
     Common/Source/Draw/Multimaps/DrawMultimap_Asp.cpp
@@ -623,8 +623,8 @@ add_library( LK8000 SHARED
 
     Common/Source/Comm/Obex/CObexPush.cpp
 
-	Common/Source/Comm/GpsWeekNumberFix.h
-	Common/Source/Comm/GpsWeekNumberFix.cpp
+    Common/Source/Comm/GpsWeekNumberFix.h
+    Common/Source/Comm/GpsWeekNumberFix.cpp
 
     Common/Source/Devices/devBase.cpp
     Common/Source/Devices/devBorgeltB50.cpp
@@ -726,7 +726,7 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgProgress.cpp
     Common/Source/Dialogs/dlgFlarmIGCDownload.cpp
     Common/Source/Dialogs/dlgIGCProgress.cpp
-	Common/Source/Dialogs/dlgLXIGCDownload.cpp
+    Common/Source/Dialogs/dlgLXIGCDownload.cpp
 
     Common/Source/Dialogs/Analysis/DrawOtherFunctions.cpp
     Common/Source/Dialogs/Analysis/DrawXYGrid.cpp
@@ -809,29 +809,18 @@ target_include_directories( LK8000 PRIVATE
     ${GEOGRAPHIC_INCLUDE}
 )
 
-target_compile_features( LK8000 PRIVATE
-	cxx_constexpr
-	cxx_auto_type
-	cxx_deleted_functions
-	cxx_defaulted_functions
-	cxx_nullptr
-	cxx_override
-	cxx_range_for
-	cxx_rvalue_references
-	cxx_static_assert
-)
-
 add_dependencies(LK8000 generate-GeographicLib)
 add_dependencies(LK8000 boost)
 
 target_link_libraries(
     LK8000
-	LK8000_POCO
-	LK8000_GLUTESS
+    LK8000_POCO
+    LK8000_GLUTESS
     ${GEOGRAPHIC_LIB}
     android
     log
     z
-	EGL
-	GLESv1_CM
+    EGL
+    GLESv1_CM
+    -static-openmp
 )
