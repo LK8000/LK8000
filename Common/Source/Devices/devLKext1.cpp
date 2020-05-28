@@ -127,8 +127,7 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   if (va != 9999) {
 	pGPS->Vario = va/100;
 	pGPS->VarioAvailable = TRUE;
-  } else
-	pGPS->VarioAvailable = FALSE;
+  }
 
   // OAT
   NMEAParser::ExtractParameter(String,ctemp,3);

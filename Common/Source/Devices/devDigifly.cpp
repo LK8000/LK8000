@@ -207,10 +207,7 @@ static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     if (ctemp[0] != '\0') {
         pGPS->Vario = StrToDouble(ctemp,NULL)/100;
         pGPS->VarioAvailable = TRUE;
-    } else {
-        pGPS->VarioAvailable = FALSE;
     }
-
     // Pressure
     NMEAParser::ExtractParameter(String,ctemp,1);
     if (ctemp[0] != '\0') {
