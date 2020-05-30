@@ -85,7 +85,7 @@
     "_@H000183_": "Définit la position de planeur sur l'écran, en pour-cent en partant du bas.",
     "_@H000184_": "Deux styles disponibles : Vectoriel ou Alternatif.\nVectoriel montrera l'orientation de la piste, la fréquence radio et d'autres informations.",
     "_@H000185_": "Définit comment afficher les étiquettes des zones posables : avec ou sans cadre et avec ou sans valeur.",
-    "_@H000186_": "Peut afficher l'altitude d'arrivée au dessus de l'altitude de sécurité ou la finesse nécessaire pour y arriver.",
+    "_@H000186_": "Peut afficher l'altitude d'arrivée au dessus de l'altitude de sécurité, la finesse nécessaire pour y arriver ou une combinaison des deux.",
     "_@H000187_": "Si ON, le bandeau et les pages seront en noir sur fond blanc et la couleur des Infoscartes sera inversée. Vous pouvez inverser cette couleur avec une touche personnalisable. OFF par défaut.",
     "_@H000188_": "Change la couleur du texte à l'écran:TOUS NOIR:Noir pour les noms et les valeurs, VALEUR BLANCHE affiche les valeurs de la carte et les aéroports entourés de blanc, et TOUS BLANCS va afficher tous les waypoints en blanc.",
     "_@H000189_": "Définit la couleur des Infoscartes, blanc par défaut, qui devient noir quand inversé. Certaines couleurs ne sont pas inversables.",
@@ -1976,5 +1976,6 @@
     "_@M002303_": "A",
     "_@M002304_": "ALERTE TRAIN DÉSACTIVÉE !",
     "_@M002336_": "Code OACI",
-    "_@H000239_": "Activez cette option si vous souhaitez enregistré certains paramètres en cours d'exécution à la sortie.\nPar exemple : la barre inférieure actuelle sélectionnée, l'état des superposition sur chaque \"multi-carte\", etc.\nValeur par défaut : désactivé."
+    "_@H000239_": "Activez cette option si vous souhaitez enregistrer certains paramètres en cours d'exécution à la sortie.\nPar exemple : la barre inférieure actuelle sélectionnée, l'état des superposition sur chaque \"multi-carte\", etc.\nValeur par défaut : désactivé.",
+    "_@M002471_": "Finesse nécessaire & Hauteur d'arrivée"
 }
