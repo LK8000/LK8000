@@ -102,9 +102,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     static SIZE compass, topbearing;
     static unsigned short fixBigInterline, unitbigoffset, unitmediumoffset;
 
-    // This is going to be the START 1/3  name replacing waypoint name when gates are running
-    static TCHAR StartGateName[12];
-
     redwarning = false;
 
     oldfont = Surface.SelectObject(LK8OverlaySmallFont);
@@ -146,11 +143,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         //
         // TIME GATES OFFSETS FOR PARAGLIDERS
         //
-        if (!ScreenLandscape) {
-            _tcscpy(StartGateName, _T("ST "));
-        } else {
-            _tcscpy(StartGateName, _T("Start "));
-        }
 
         // the mid point on the right
         yrightoffset= ((rc.bottom - BottomSize - MAPSCALE_SIZE+NIBLSCALE(2)) + COMPASS_SPACE)/2 + SizeBigFont.cy/2;
@@ -243,6 +235,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 // LKTOKEN  _@M157_ = "CLOSED"
                 _tcscpy(Buffer, MsgToken(157));
             } else {
+                const TCHAR* StartGateName = ScreenLandscape ? _T("Start ") : _T("ST ");
                 _stprintf(Buffer, _T("%s%d/%d"), StartGateName, gateinuse + 1, PGNumberOfGates);
             }
 
@@ -308,65 +301,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
         rcx = rightmargin;
 
-        if (ISGLIDER) {
-
-            if (isOverlayHidden(Overlay_RightMid)) goto _skip_glider_RightMid;
-            if (isOverlayCustom(Overlay_RightMid)) {
-                LKFormatValue(getCustomOverlay(Overlay_RightMid), true, BufferValue, BufferUnit, BufferTitle);
-            } else {
-                LKFormatGR(OverTargetIndex, false, BufferValue, BufferUnit);
-            }
-
-            Surface.SelectObject(LK8OverlayBigFont); // use this font for big values
-            rcy = yrightoffset - SizeBigFont.cy;
-            color=(redwarning&&!isOverlayCustom(Overlay_RightMid))?AMBERCOLOR:OverColorRef;
-            LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
-
-            _skip_glider_RightMid:
-
-            //
-            // RIGHT BOTTOM  AUX-3
-            // (GLIDERS) ALTITUDE DIFFERENCE  at current MC
-            //
-            if (isOverlayHidden(Overlay_RightBottom)) goto _skip_glider_RightBottom;
-            if (isOverlayCustom(Overlay_RightBottom)) {
-                LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
-            } else {
-                LKFormatAltDiff(OverTargetIndex, false, BufferValue, BufferUnit);
-            }
-
-            color=(redwarning&&!isOverlayCustom(Overlay_RightBottom))?AMBERCOLOR:OverColorRef;
-            LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
-
-            //
-            // (GLIDERS) SAFETY ALTITUDE INDICATOR
-            // For PGs there is a separate drawing, although it should be identical right now.
-            //
-
-            if (IsSafetyAltitudeInUse(OverTargetIndex)&&!isOverlayCustom(Overlay_RightBottom)) {
-                Surface.SelectObject(LK8OverlaySmallFont);
-                _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
-                        Units::GetUnitName(Units::GetUserAltitudeUnit()));
-                LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
-            }
-            _skip_glider_RightBottom: ;
-        } // ISGLIDER
-    // end of "TargetIndex" >0
-    } else {
-        // no valid "TargetIndex" for current overmode, but we print something nevertheless
-        // normally, only the T>
-        // This should never happen, as we always have a valid overmode
-
-        if (Overlay_TopLeft) {
-            Surface.SelectObject(LK8OverlayMediumFont);
-            GetOvertargetName(Buffer);
-            CharUpper(Buffer);
-            RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + SizeMediumFont.cy };
-            LKWriteText(Surface, Buffer, rcx, topmargin, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
-        }
-    }
-
-    // moved out from task paragliders stuff - this is painted on the right
+        // moved out from task paragliders stuff - this is painted on the right
         if (UseGates() && ActiveTaskPoint == 0) {
             Surface.SelectObject(LK8OverlayBigFont);
 
@@ -402,178 +337,237 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 }
             }
 
-        } else {
-            Surface.SelectObject(LK8OverlayBigFont);
-            if (isOverlayHidden(Overlay_RightMid)) goto _skip_para_RightMid;
-            if (isOverlayCustom(Overlay_RightMid))
-                LKFormatValue(getCustomOverlay(Overlay_RightMid), true, BufferValue, BufferUnit, BufferTitle);
-            else {
-                if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-                    LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
-                else
-                    LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
-            }
+            //
+            // TIME GATES:  in place of MC, print gate time
+            //
+            Surface.SelectObject(LK8OverlayGatesFont);
 
-            rcy = yrightoffset - SizeBigFont.cy;
-            rcx = rightmargin;
-            LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
-            _skip_para_RightMid:
-
-            // Altitude difference with current MC
-            if (isOverlayHidden(Overlay_RightBottom)) goto _skip_para_RightBottom;
-            if (isOverlayCustom(Overlay_RightBottom)) {
-                LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
+            if (HaveGates()) {
+                Units::TimeToText(BufferTitle, GateTime(ActiveGate));
+                _stprintf(BufferValue, _T("START %s"), BufferTitle);
             } else {
-                LKFormatAltDiff(OverTargetIndex, false, BufferValue, BufferUnit);
+                // LKTOKEN  _@M316_ = "GATES CLOSED"
+                _tcscpy(BufferValue, MsgToken(316));
             }
+            rcy = yrightoffset - SizeBigFont.cy - (SizeGatesFont.cy * 2);
+            rcx = rc.right - RIGHTMARGIN;
+            LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
 
-            color=(redwarning&&!isOverlayCustom(Overlay_RightBottom))?AMBERCOLOR:OverColorRef;
-            LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, WTMODE_OUTLINED, WTALIGN_RIGHT,color, true);
-
-            //
-            // SAFETY ALTITUDE INDICATOR (FOR PARAGLIDERS)
-            // Should be identical to that for other aircrafts, normally.
-            //
-            if (IsSafetyAltitudeInUse(OverTargetIndex)&&!isOverlayCustom(Overlay_RightBottom)) {
-                Surface.SelectObject(LK8OverlaySmallFont);
-                _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
-                        Units::GetUnitName(Units::GetUserAltitudeUnit()));
-                LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
-
+            // USE THIS SPACE FOR MESSAGES TO THE PILOT
+            rcy += SizeGatesFont.cy;
+            if (HaveGates()) {
+                if (!DerivedDrawInfo.Flying) {
+                    // LKTOKEN  _@M922_ = "NOT FLYING"
+                    _tcscpy(BufferValue, MsgToken(922));
+                } else {
+                    if (gatechrono > 0) {
+                        // IsInSector works reversed!
+                        if (PGStartOut && DerivedDrawInfo.IsInSector) {
+                            // LKTOKEN  _@M923_ = "WRONG inSIDE"
+                            _tcscpy(BufferValue, MsgToken(923));
+                        } else if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
+                            // LKTOKEN  _@M924_ = "WRONG outSIDE"
+                            _tcscpy(BufferValue, MsgToken(924));
+                        } else {
+                            // LKTOKEN  _@M921_ = "countdown"
+                            _tcscpy(BufferValue, MsgToken(921));
+                        }
+                    } else {
+                        BufferValue[0] = _T('\0');
+                        // gate is open
+                        int CloseTime = GateCloseTime();
+                        if (flipflopcount > 0) {
+                            if ((ActiveGate < (PGNumberOfGates - 1) || CloseTime < 86340) && flipflopcount == 1) {
+                                if (CloseTime < 86340) {
+                                    Units::TimeToText(BufferTitle, CloseTime);
+                                    _stprintf(BufferValue, _T("CLOSE %s"), BufferTitle);
+                                } else {
+                                    Units::TimeToText(BufferTitle, GateTime(ActiveGate + 1));
+                                    _stprintf(BufferValue, _T("NEXT %s"), BufferTitle);
+                                }
+                            } else {
+                                // IsInSector works reversed!
+                                if (PGStartOut && DerivedDrawInfo.IsInSector) {
+                                    // LKTOKEN  _@M923_ = "WRONG inSIDE"
+                                    _tcscpy(BufferValue, MsgToken(923));
+                                } else if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
+                                    // LKTOKEN  _@M924_ = "WRONG outSIDE"
+                                    _tcscpy(BufferValue, MsgToken(924));
+                                }
+                            }
+                        }
+                        if (BufferValue[0] == _T('\0')) {
+                            // LKTOKEN  _@M314_ = "GATE OPEN"
+                            _tcscpy(BufferValue, MsgToken(314));
+                        }
+                    }
+                }
+            } else {
+                // LKTOKEN  _@M925_ = "NO TSK START"
+                _tcscpy(BufferValue, MsgToken(925));
             }
-            _skip_para_RightBottom: ;
+            LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
+
+        } else {
+            if (ISGLIDER) {
+
+                if (isOverlayHidden(Overlay_RightMid)) goto _skip_glider_RightMid;
+                if (isOverlayCustom(Overlay_RightMid)) {
+                    LKFormatValue(getCustomOverlay(Overlay_RightMid), true, BufferValue, BufferUnit, BufferTitle);
+                } else {
+                    LKFormatGR(OverTargetIndex, false, BufferValue, BufferUnit);
+                }
+
+                Surface.SelectObject(LK8OverlayBigFont); // use this font for big values
+                rcy = yrightoffset - SizeBigFont.cy;
+                color=(redwarning&&!isOverlayCustom(Overlay_RightMid))?AMBERCOLOR:OverColorRef;
+                LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
+
+                _skip_glider_RightMid:
+
+                //
+                // RIGHT BOTTOM  AUX-3
+                // (GLIDERS) ALTITUDE DIFFERENCE  at current MC
+                //
+                if (isOverlayHidden(Overlay_RightBottom)) goto _skip_glider_RightBottom;
+                if (isOverlayCustom(Overlay_RightBottom)) {
+                    LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
+                } else {
+                    LKFormatAltDiff(OverTargetIndex, false, BufferValue, BufferUnit);
+                }
+
+                color=(redwarning&&!isOverlayCustom(Overlay_RightBottom))?AMBERCOLOR:OverColorRef;
+                LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
+
+                //
+                // (GLIDERS) SAFETY ALTITUDE INDICATOR
+                // For PGs there is a separate drawing, although it should be identical right now.
+                //
+
+                if (IsSafetyAltitudeInUse(OverTargetIndex)&&!isOverlayCustom(Overlay_RightBottom)) {
+                    Surface.SelectObject(LK8OverlaySmallFont);
+                    _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
+                            Units::GetUnitName(Units::GetUserAltitudeUnit()));
+                    LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
+                }
+                _skip_glider_RightBottom: ;
+            } else { // ISGLIDER
+
+                Surface.SelectObject(LK8OverlayBigFont);
+                if (isOverlayHidden(Overlay_RightMid)) goto _skip_para_RightMid;
+                if (isOverlayCustom(Overlay_RightMid))
+                    LKFormatValue(getCustomOverlay(Overlay_RightMid), true, BufferValue, BufferUnit, BufferTitle);
+                else {
+                    if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+                        LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
+                    else
+                        LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
+                }
+
+                rcy = yrightoffset - SizeBigFont.cy;
+                rcx = rightmargin;
+                LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+                _skip_para_RightMid:
+
+                // Altitude difference with current MC
+                if (isOverlayHidden(Overlay_RightBottom)) goto _skip_para_RightBottom;
+                if (isOverlayCustom(Overlay_RightBottom)) {
+                    LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
+                } else {
+                    LKFormatAltDiff(OverTargetIndex, false, BufferValue, BufferUnit);
+                }
+                color=(redwarning&&!isOverlayCustom(Overlay_RightBottom))?AMBERCOLOR:OverColorRef;
+                LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, WTMODE_OUTLINED, WTALIGN_RIGHT,color, true);
+
+                //
+                // SAFETY ALTITUDE INDICATOR (FOR PARAGLIDERS)
+                // Should be identical to that for other aircrafts, normally.
+                //
+                if (IsSafetyAltitudeInUse(GetOvertargetIndex())&&!isOverlayCustom(Overlay_RightBottom)) {
+                    Surface.SelectObject(LK8OverlaySmallFont);
+                    _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
+                            Units::GetUnitName(Units::GetUserAltitudeUnit()));
+                    LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
+
+                }
+                _skip_para_RightBottom: ;
+            } 
         } // end no UseGates()
 
 
-    //
-    // TIME GATES:  in place of MC, print gate time
-    //
-    if (UseGates() && ActiveTaskPoint == 0) {
-        Surface.SelectObject(LK8OverlayGatesFont);
+    // end of "TargetIndex" >0
+    } else {
+        // no valid "TargetIndex" for current overmode, but we print something nevertheless
+        // normally, only the T>
+        // This should never happen, as we always have a valid overmode
 
-        if (HaveGates()) {
-            Units::TimeToText(BufferTitle, GateTime(ActiveGate));
-            _stprintf(BufferValue, _T("START %s"), BufferTitle);
-        } else {
-            // LKTOKEN  _@M316_ = "GATES CLOSED"
-            _tcscpy(BufferValue, MsgToken(316));
+        if (Overlay_TopLeft) {
+            Surface.SelectObject(LK8OverlayMediumFont);
+            GetOvertargetName(Buffer);
+            CharUpper(Buffer);
+            RECT ClipRect = { rcx, topmargin, name_xmax, topmargin + SizeMediumFont.cy };
+            LKWriteText(Surface, Buffer, rcx, topmargin, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true, &ClipRect);
         }
-        rcy = yrightoffset - SizeBigFont.cy - (SizeGatesFont.cy * 2);
-        rcx = rc.right - RIGHTMARGIN;
-        LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+    }
+    if (!UseGates() || ActiveTaskPoint != 0) {
+        if ( (ISGLIDER || ISPARAGLIDER) && !isOverlayHidden(Overlay_RightTop)) {
+            //
+            // MAC CREADY VALUE
+            //
 
-        // USE THIS SPACE FOR MESSAGES TO THE PILOT
-        rcy += SizeGatesFont.cy;
-        if (HaveGates()) {
-            if (!DerivedDrawInfo.Flying) {
-                // LKTOKEN  _@M922_ = "NOT FLYING"
-                _tcscpy(BufferValue, MsgToken(922));
-            } else {
-                if (gatechrono > 0) {
-                    // IsInSector works reversed!
-                    if (PGStartOut && DerivedDrawInfo.IsInSector) {
-                        // LKTOKEN  _@M923_ = "WRONG inSIDE"
-                        _tcscpy(BufferValue, MsgToken(923));
-                    } else if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
-                        // LKTOKEN  _@M924_ = "WRONG outSIDE"
-                        _tcscpy(BufferValue, MsgToken(924));
-                    } else {
-                        // LKTOKEN  _@M921_ = "countdown"
-                        _tcscpy(BufferValue, MsgToken(921));
-                    }
-                } else {
-                    BufferValue[0] = _T('\0');
-                    // gate is open
-                    int CloseTime = GateCloseTime();
-                    if (flipflopcount > 0) {
-                        if ((ActiveGate < (PGNumberOfGates - 1) || CloseTime < 86340) && flipflopcount == 1) {
-                            if (CloseTime < 86340) {
-                                Units::TimeToText(BufferTitle, CloseTime);
-                                _stprintf(BufferValue, _T("CLOSE %s"), BufferTitle);
-                            } else {
-                                Units::TimeToText(BufferTitle, GateTime(ActiveGate + 1));
-                                _stprintf(BufferValue, _T("NEXT %s"), BufferTitle);
-                            }
-                        } else {
-                            // IsInSector works reversed!
-                            if (PGStartOut && DerivedDrawInfo.IsInSector) {
-                                // LKTOKEN  _@M923_ = "WRONG inSIDE"
-                                _tcscpy(BufferValue, MsgToken(923));
-                            } else if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
-                                // LKTOKEN  _@M924_ = "WRONG outSIDE"
-                                _tcscpy(BufferValue, MsgToken(924));
-                            }
-                        }
-                    }
-                    if (BufferValue[0] == _T('\0')) {
-                        // LKTOKEN  _@M314_ = "GATE OPEN"
-                        _tcscpy(BufferValue, MsgToken(314));
-                    }
-                }
+            Surface.SelectObject(LK8OverlayBigFont);
+            if (isOverlayCustom(Overlay_RightTop))
+                LKFormatValue(getCustomOverlay(Overlay_RightTop), true, BufferValue, BufferUnit, BufferTitle);
+            else
+                LKFormatValue(LK_MC, false, BufferValue, BufferUnit, BufferTitle);
+            LKWriteText(Surface, BufferValue, rightmargin, yMcValue, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+
+            //
+            // SAFETY MAC CREADY INDICATOR
+            //
+            extern bool IsSafetyMacCreadyInUse(int val);
+            if (!isOverlayCustom(Overlay_RightTop) && IsSafetyMacCreadyInUse(OverTargetIndex) && GlidePolar::SafetyMacCready > 0) {
+                Surface.SelectObject(LK8OverlaySmallFont);
+                _stprintf(BufferValue, _T(" %.1f %s "), GlidePolar::SafetyMacCready*LIFTMODIFY,
+                    Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
+                LKWriteBoxedText(Surface, rc, BufferValue, rightmargin, yMcSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
             }
-        } else {
-            // LKTOKEN  _@M925_ = "NO TSK START"
-            _tcscpy(BufferValue, MsgToken(925));
-        }
-        LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
-    } else if ( (ISGLIDER || ISPARAGLIDER) && !isOverlayHidden(Overlay_RightTop)) {
-        //
-        // MAC CREADY VALUE
-        //
+            //
+            // AUTO MC INDICATOR
+            //
+            if (!isOverlayHidden(Overlay_RightTop) && DerivedDrawInfo.AutoMacCready == true) {
+                Surface.SelectObject(LK8OverlayMcModeFont);
 
-        Surface.SelectObject(LK8OverlayBigFont);
-        if (isOverlayCustom(Overlay_RightTop))
-            LKFormatValue(getCustomOverlay(Overlay_RightTop), true, BufferValue, BufferUnit, BufferTitle);
-        else
-            LKFormatValue(LK_MC, false, BufferValue, BufferUnit, BufferTitle);
-        LKWriteText(Surface, BufferValue, rightmargin, yMcValue, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
-
-        //
-        // SAFETY MAC CREADY INDICATOR
-        //
-        if (!isOverlayCustom(Overlay_RightTop) && IsSafetyMacCreadyInUse(OverTargetIndex) && GlidePolar::SafetyMacCready > 0) {
-            Surface.SelectObject(LK8OverlaySmallFont);
-            _stprintf(BufferValue, _T(" %.1f %s "), GlidePolar::SafetyMacCready*LIFTMODIFY,
-                Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
-            LKWriteBoxedText(Surface, rc, BufferValue, rightmargin, yMcSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
-        }
-
-        //
-        // AUTO MC INDICATOR
-        //
-        if (!isOverlayHidden(Overlay_RightTop) && DerivedDrawInfo.AutoMacCready == true) {
-            Surface.SelectObject(LK8OverlayMcModeFont);
-
-            TCHAR amcmode[10];
-            switch (AutoMcMode) {
-                case amcFinalGlide:
-                    _tcscpy(amcmode, MsgToken(1676));
-                    break;
-                case amcAverageClimb:
-                    _tcscpy(amcmode, MsgToken(1678));
-                    break;
-                case amcFinalAndClimb:
-                    if (DerivedDrawInfo.FinalGlide)
+                TCHAR amcmode[10];
+                switch (AutoMcMode) {
+                    case amcFinalGlide:
                         _tcscpy(amcmode, MsgToken(1676));
-                    else
+                        break;
+                    case amcAverageClimb:
                         _tcscpy(amcmode, MsgToken(1678));
-                    break;
-                case amcEquivalent:
-                    _tcscpy(amcmode, MsgToken(1680));
-                    break;
-                default:
-                    _tcscpy(amcmode, _T("?"));
-                    break;
-            }
-            Surface.Rectangle( rightmargin, yMcMode, rc.right, yMcMode + SizeMcModeFont.cy);
-            LKWriteText(Surface, amcmode, rightmargin + NIBLSCALE(1), yMcMode,
-                    // We paint white on black always here, but WriteText can invert them. So we reverse.
-                    WTMODE_NORMAL, WTALIGN_LEFT, INVERTCOLORS?RGB_WHITE:RGB_BLACK, true);
+                        break;
+                    case amcFinalAndClimb:
+                        if (DerivedDrawInfo.FinalGlide)
+                            _tcscpy(amcmode, MsgToken(1676));
+                        else
+                            _tcscpy(amcmode, MsgToken(1678));
+                        break;
+                    case amcEquivalent:
+                        _tcscpy(amcmode, MsgToken(1680));
+                        break;
+                    default:
+                        _tcscpy(amcmode, _T("?"));
+                        break;
+                }
+                Surface.Rectangle( rightmargin, yMcMode, rc.right, yMcMode + SizeMcModeFont.cy);
+                LKWriteText(Surface, amcmode, rightmargin + NIBLSCALE(1), yMcMode,
+                        // We paint white on black always here, but WriteText can invert them. So we reverse.
+                        WTMODE_NORMAL, WTALIGN_LEFT, INVERTCOLORS?RGB_WHITE:RGB_BLACK, true);
 
-        } // AutoMacCready true AUTO MC INDICATOR
-    } // overlay RighTop
-
+            } // AutoMacCready true AUTO MC INDICATOR
+        } // overlay RighTop
+    }
     short yoffset=0;
     if (OverlayClock && Overlay_TopRight && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
 
@@ -611,12 +605,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             Surface.SelectObject(MapScaleFont);
             LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, rcy+yoffset+unitbigoffset, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
         }
-   } // LeftTop
+    } // LeftTop
 
-   //
-   // LEFT MID
-   //
-   if (!isOverlayHidden(Overlay_LeftMid)) {
+    //
+    // LEFT MID
+    //
+    if (!isOverlayHidden(Overlay_LeftMid)) {
         if (isOverlayCustom(Overlay_LeftMid)) {
             LKFormatValue(getCustomOverlay(Overlay_LeftMid), true, BufferValue, BufferUnit, BufferTitle);
         } else {
@@ -721,6 +715,4 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     Surface.SelectObject(oldpen);
     Surface.SelectObject(oldbrush);
     Surface.SelectObject(oldfont);
-
-
 }
