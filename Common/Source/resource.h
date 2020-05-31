@@ -111,5 +111,5 @@
 #define IDR_XML_IGC_PROGRESS_L      699
 #define IDR_XML_DEV_LXNAV_P         700
 #define IDR_XML_DEV_LXNAV_L         701
-
+#define IDR_XML_WEATHERSTDETAILS    702
 

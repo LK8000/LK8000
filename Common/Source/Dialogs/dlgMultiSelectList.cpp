@@ -133,6 +133,12 @@ void dlgAddMultiSelectListDetailsDialog(int Index) {
             wf->SetTimerNotify(0,NULL);
             break;
 #endif
+#ifdef WEATHERST_MS
+        case IM_WEATHERST:
+            wf->SetTimerNotify(0,NULL);
+            InputEvents::processPopupDetails(InputEvents::PopupWeatherSt,Elements[Index].iIdx);
+            break;
+#endif
         case IM_AIRSPACE:
             wf->SetTimerNotify(0,NULL);
             LKASSERT(Elements[Index].ptr);
@@ -364,11 +370,21 @@ FlarmId* flarmId ;
 int j;
 double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pWeather->Latitude,  pWeather->Longitude, &Distance, &Bear);
-  _stprintf(Comment, _T("%d° %d|%d %3.1fhPa"), 
+  float press = pWeather->pressure;
+  if (PressureHg){
+    press /= TOHPA;
+    _stprintf(Comment, _T("%d° %d|%d %3.3finHg"), 
   			(int)round(pWeather->windDir), 
-            (int)round(pWeather->windSpeed), 
-  			(int)round(pWeather->windGust),
-            pWeather->pressure);      
+            (int)round(pWeather->windSpeed*SPEEDMODIFY), 
+  			(int)round(pWeather->windGust*SPEEDMODIFY),
+            press);      
+  }else{
+    _stprintf(Comment, _T("%d° %d|%d %3.1fhPa"), 
+  			(int)round(pWeather->windDir), 
+            (int)round(pWeather->windSpeed*SPEEDMODIFY), 
+  			(int)round(pWeather->windGust*SPEEDMODIFY),
+            press);      
+  }
   if(_tcslen(name) == 0)
     _sntprintf(text1,MAX_LEN, TEXT("%X %s"),pWeather->ID,Comment);
   else

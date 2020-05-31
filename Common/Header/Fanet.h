@@ -33,8 +33,8 @@ struct FANET_WEATHER : public FANET_DATA {
   double Latitude; //latitude
   double Longitude; //longitude
   float windDir; //wind-direction 0-360 Deg
-  float windSpeed; //wind-average [km/h]
-  float windGust; //windgust (2sec) [km/h]
+  float windSpeed; //wind-average [m/s]
+  float windGust; //windgust (2sec) [m/s]
   float temp; //temperature [°C]
   float hum; //humidity [%]
   float pressure; //pressure [hPa]
