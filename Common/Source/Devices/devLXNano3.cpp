@@ -1376,7 +1376,7 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
          uint uPercent = 0;
          if(TotalLines > 0)
            uPercent = (m_CurLine*100) / TotalLines;
-         _sntprintf(Par[1],MAX_NMEA_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
+         _sntprintf(Par[1], MAX_NMEA_PAR_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
 
     #ifdef NANO_PROGRESS_DLG
          IGCProgressDialogText(Par[1]);
