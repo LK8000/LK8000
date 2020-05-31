@@ -229,10 +229,12 @@ static BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
     if (!((msg[index++] >> 7) & 0x01)){
       weather.windSpeed /= 5;
     }
+    weather.windSpeed /= 3.6; //convert to m/s
     weather.windGust = (float)(msg[index] & 0x7F);
     if (!((msg[index++] >> 7) & 0x01)) {
       weather.windGust /= 5;
     }
+    weather.windGust /= 3.6; //convert to m/s
   }else{
     weather.windDir = 0;
     weather.windSpeed = 0;

@@ -730,6 +730,7 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgFlarmIGCDownload.cpp
     Common/Source/Dialogs/dlgIGCProgress.cpp
 	Common/Source/Dialogs/dlgLXIGCDownload.cpp
+    Common/Source/Dialogs/dlgWeatherStDetails.cpp
 
     Common/Source/Dialogs/Analysis/DrawOtherFunctions.cpp
     Common/Source/Dialogs/Analysis/DrawXYGrid.cpp

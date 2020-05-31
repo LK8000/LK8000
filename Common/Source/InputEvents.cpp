@@ -930,6 +930,10 @@ void InputEvents::processPopupDetails_real() {
                 // Do not update Traffic while in details mode, max 10m
                 dlgBasicSettingsShowModal();
                 break;
+            case PopupWeatherSt:
+                // Do not update Traffic while in details mode, max 10m
+                dlgWeatherStDetails(event.index);
+                break;
             default:
                 LKASSERT(false);
                 break;

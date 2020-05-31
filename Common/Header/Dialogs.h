@@ -94,6 +94,7 @@ void dlgAirspaceFilesShowModal(void);
 void dlgWaypointFilesShowModal(void);
 void dlgMultimapsShowModal(void);
 void dlgIgcFileShowModal(void);
+void dlgWeatherStDetails(int indexid);
 
 void dlgRadioSettingsShowModal(void);
 #ifndef NO_BLUETOOTH
