@@ -32,6 +32,8 @@
 #define RIGHTMARGIN   NIBLSCALE(2) // spacing on right border
 #define MAPSCALE_SIZE NIBLSCALE(46)
 
+namespace {
+
 // For Overlay we use :  0       : Hidden
 //                       1       : Default
 //                       >= 1000 : Custom LKValue+1000
@@ -39,6 +41,24 @@
 constexpr bool isOverlayHidden(int Overlay) {return (Overlay==0);}
 constexpr bool isOverlayCustom(int Overlay) {return (Overlay>=1000);}
 constexpr int  getCustomOverlay(int Overlay) {return (Overlay-1000);}
+
+
+int GetTargetIndex() {
+    if (UseGates() && ActiveTaskPoint == 0) {
+        // if running a task, use the task index normally
+        if (ValidTaskPoint(ActiveTaskPoint) != false) {
+            if (DoOptimizeRoute())
+                return RESWP_OPTIMIZED;
+            else
+                return Task[ActiveTaskPoint].Index;
+        }
+    } else {
+        return GetOvertargetIndex();
+    }
+    return -1;
+}
+
+}
 
 /*
  * Draw Text Overlay.
@@ -58,7 +78,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     TCHAR BufferValue[LKSIZEBUFFERVALUE];
     TCHAR BufferUnit[LKSIZEBUFFERUNIT];
     TCHAR BufferTitle[LKSIZEBUFFERTITLE];
-    int index = -1;
     double Value;
     short rcx, rcy;
     bool redwarning;
@@ -185,18 +204,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     // TARGET NAME
     //
 
-    if (UseGates() && ActiveTaskPoint == 0) {
-        // if running a task, use the task index normally
-        if (ValidTaskPoint(ActiveTaskPoint) != false) {
-            if (DoOptimizeRoute())
-                index = RESWP_OPTIMIZED;
-            else
-                index = Task[ActiveTaskPoint].Index;
-        } else
-            index = -1;
-    } else {
-        index = GetOvertargetIndex();
-    }
+
 
     if (IsMultimapOverlaysGauges() && MapWindow::ThermalBarDrawn) {
         rcx = leftmargin + NIBLSCALE(40);
@@ -204,15 +212,17 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         rcx = leftmargin;
     }
 
+    int OverTargetIndex = GetTargetIndex();
+
     // Waypoint name and distance
     Surface.SelectObject(LK8OverlayMediumFont);
 
-    if (index >= 0) {
+    if (OverTargetIndex >= 0) {
         // OVERTARGET reswp not using redwarning because Reachable is not calculated
-        if (index <= RESWP_END)
+        if (OverTargetIndex <= RESWP_END)
             redwarning = false;
         else {
-            if (WayPointCalc[index].AltArriv[AltArrivMode] > 0 && !WayPointList[index].Reachable)
+            if (WayPointCalc[OverTargetIndex].AltArriv[AltArrivMode] > 0 && !WayPointList[OverTargetIndex].Reachable)
                 redwarning = true;
             else
                 redwarning = false;
@@ -255,47 +265,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle);
         } else {
             if (!Overlay_TopRight) goto _skip_TopRight;
-            switch (OvertargetMode) {
-                case OVT_TASK:
-                    // Using FormatDist will give PGs 3 decimal units on overlay only
-                    // because changing FormatValue to 3 digits would bring them also
-                    // on bottom bar, and there is no space for 1.234km on the bottom bar.
-                    if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())
-                        LKFormatDist(RESWP_OPTIMIZED, true, BufferValue, BufferUnit);
-                    else
-                        LKFormatDist(index, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_TASKCENTER:
-                    LKFormatDist(index, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_BALT:
-                    LKFormatDist(BestAlternate, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_ALT1:
-                    LKFormatDist(Alternate1, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_ALT2:
-                    LKFormatDist(Alternate2, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_HOME:
-                    LKFormatDist(HomeWaypoint, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_THER:
-                    LKFormatDist(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_MATE:
-                    LKFormatDist(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_XC:
-                    LKFormatDist(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
-                break;
-                case OVT_FLARM:
-                    LKFormatDist(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
-                    break;
-                default:
-                    LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-            }
+            // Using FormatDist will give PGs 3 decimal units on overlay only
+            // because changing FormatValue to 3 digits would bring them also
+            // on bottom bar, and there is no space for 1.234km on the bottom bar.
+            LKFormatDist(OverTargetIndex, false, BufferValue, BufferUnit);
         }
 
         if ( !OverlayClock && ScreenLandscape && (!((gTaskType==TSK_GP) && UseGates()))) {
@@ -320,43 +293,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         if (!Overlay_TopMid) goto _skip_TopMid;
 
         if (!ISGAAIRCRAFT) {
-            switch (OvertargetMode) {
-                case OVT_TASK:
-                    // Do not use FormatBrgDiff for TASK, could be AAT! (??)
-                    LKFormatBrgDiff(index, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_TASKCENTER:
-                    LKFormatBrgDiff(index, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_BALT:
-                    LKFormatBrgDiff(BestAlternate, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_ALT1:
-                    LKFormatBrgDiff(Alternate1, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_ALT2:
-                    LKFormatBrgDiff(Alternate2, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_HOME:
-                    LKFormatBrgDiff(HomeWaypoint, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_THER:
-                    LKFormatBrgDiff(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_MATE:
-                    LKFormatBrgDiff(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_XC:
-                    LKFormatBrgDiff(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_FLARM:
-                    LKFormatBrgDiff(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
-                    break;
-                default:
-                    LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-            }
-
+            LKFormatBrgDiff(OverTargetIndex, false, BufferValue, BufferUnit);
             Surface.SelectObject(LK8OverlayMediumFont); // restore previously selected font
             LKWriteText(Surface, BufferValue, topbearing.cx,  topbearing.cy, WTMODE_OUTLINED, WTALIGN_CENTER, OverColorRef, true);
         }
@@ -374,43 +311,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         if (ISGLIDER) {
 
             if (isOverlayHidden(Overlay_RightMid)) goto _skip_glider_RightMid;
-            if (isOverlayCustom(Overlay_RightMid))
+            if (isOverlayCustom(Overlay_RightMid)) {
                 LKFormatValue(getCustomOverlay(Overlay_RightMid), true, BufferValue, BufferUnit, BufferTitle);
-            else
-            switch (OvertargetMode) {
-                case OVT_TASK:
-                    LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_TASKCENTER:
-                    LKFormatValue(LK_NEXT_CENTER_GR, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_BALT:
-                    LKFormatValue(LK_BESTALTERN_GR, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_ALT1:
-                    LKFormatValue(LK_ALTERN1_GR, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_ALT2:
-                    LKFormatValue(LK_ALTERN2_GR, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_HOME:
-                    LKFormatGR(HomeWaypoint, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_THER:
-                    LKFormatGR(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_MATE:
-                    LKFormatGR(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_XC:
-                    LKFormatGR(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_FLARM:
-                    LKFormatGR(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
-                    break;
-                default:
-                    LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
+            } else {
+                LKFormatGR(OverTargetIndex, false, BufferValue, BufferUnit);
             }
 
             Surface.SelectObject(LK8OverlayBigFont); // use this font for big values
@@ -425,44 +329,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             // (GLIDERS) ALTITUDE DIFFERENCE  at current MC
             //
             if (isOverlayHidden(Overlay_RightBottom)) goto _skip_glider_RightBottom;
-            if (isOverlayCustom(Overlay_RightBottom))
+            if (isOverlayCustom(Overlay_RightBottom)) {
                 LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
-            else
-            switch (OvertargetMode) {
-                case OVT_TASK:
-                    LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_TASKCENTER:
-                    LKFormatValue(LK_NEXT_CENTER_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_BALT:
-                    LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_ALT1:
-                    LKFormatValue(LK_ALTERN1_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_ALT2:
-                    LKFormatValue(LK_ALTERN2_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_HOME:
-                    LKFormatAltDiff(HomeWaypoint, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_THER:
-                    LKFormatAltDiff(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_MATE:
-                    LKFormatAltDiff(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_XC:
-                    LKFormatAltDiff(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_FLARM:
-                    LKFormatAltDiff(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
-                    break;
-                default:
-                    LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
+            } else {
+                LKFormatAltDiff(OverTargetIndex, false, BufferValue, BufferUnit);
             }
+
             color=(redwarning&&!isOverlayCustom(Overlay_RightBottom))?AMBERCOLOR:OverColorRef;
             LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, WTMODE_OUTLINED, WTALIGN_RIGHT, color, true);
 
@@ -471,7 +343,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             // For PGs there is a separate drawing, although it should be identical right now.
             //
 
-            if (IsSafetyAltitudeInUse(index)&&!isOverlayCustom(Overlay_RightBottom)) {
+            if (IsSafetyAltitudeInUse(OverTargetIndex)&&!isOverlayCustom(Overlay_RightBottom)) {
                 Surface.SelectObject(LK8OverlaySmallFont);
                 _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
                         Units::GetUnitName(Units::GetUserAltitudeUnit()));
@@ -479,9 +351,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             }
             _skip_glider_RightBottom: ;
         } // ISGLIDER
-    // end of index>0
+    // end of "TargetIndex" >0
     } else {
-        // no valid index for current overmode, but we print something nevertheless
+        // no valid "TargetIndex" for current overmode, but we print something nevertheless
         // normally, only the T>
         // This should never happen, as we always have a valid overmode
 
@@ -549,44 +421,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
             // Altitude difference with current MC
             if (isOverlayHidden(Overlay_RightBottom)) goto _skip_para_RightBottom;
-            if (isOverlayCustom(Overlay_RightBottom))
+            if (isOverlayCustom(Overlay_RightBottom)) {
                 LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
-            else
-            switch (OvertargetMode) {
-                case OVT_TASK:
-                    LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_TASKCENTER:
-                    LKFormatValue(LK_NEXT_CENTER_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_BALT:
-                    LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_ALT1:
-                    LKFormatValue(LK_ALTERN1_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_ALT2:
-                    LKFormatValue(LK_ALTERN2_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
-                case OVT_HOME:
-                    LKFormatAltDiff(HomeWaypoint, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_THER:
-                    LKFormatAltDiff(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_MATE:
-                    LKFormatAltDiff(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
-                    break;
-                case OVT_XC:
-                    LKFormatAltDiff(RESWP_FAIOPTIMIZED, false, BufferValue, BufferUnit);
-                    break;
-                case OVT_FLARM:
-                    LKFormatAltDiff(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
-                    break;
-                default:
-                    LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-                    break;
+            } else {
+                LKFormatAltDiff(OverTargetIndex, false, BufferValue, BufferUnit);
             }
+
             color=(redwarning&&!isOverlayCustom(Overlay_RightBottom))?AMBERCOLOR:OverColorRef;
             LKWriteText(Surface, BufferValue, rcx, yrightoffset - fixBigInterline, WTMODE_OUTLINED, WTALIGN_RIGHT,color, true);
 
@@ -594,7 +434,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             // SAFETY ALTITUDE INDICATOR (FOR PARAGLIDERS)
             // Should be identical to that for other aircrafts, normally.
             //
-            if (IsSafetyAltitudeInUse(GetOvertargetIndex())&&!isOverlayCustom(Overlay_RightBottom)) {
+            if (IsSafetyAltitudeInUse(OverTargetIndex)&&!isOverlayCustom(Overlay_RightBottom)) {
                 Surface.SelectObject(LK8OverlaySmallFont);
                 _stprintf(BufferValue, _T(" + %.0f %s "), SAFETYALTITUDEARRIVAL / 10 * ALTITUDEMODIFY,
                         Units::GetUnitName(Units::GetUserAltitudeUnit()));
@@ -677,8 +517,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         }
         LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
-    } else
-    if ( (ISGLIDER || ISPARAGLIDER) && !isOverlayHidden(Overlay_RightTop)) {
+    } else if ( (ISGLIDER || ISPARAGLIDER) && !isOverlayHidden(Overlay_RightTop)) {
         //
         // MAC CREADY VALUE
         //
@@ -693,7 +532,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         //
         // SAFETY MAC CREADY INDICATOR
         //
-        if (!isOverlayCustom(Overlay_RightTop) && IsSafetyMacCreadyInUse(GetOvertargetIndex()) && GlidePolar::SafetyMacCready > 0) {
+        if (!isOverlayCustom(Overlay_RightTop) && IsSafetyMacCreadyInUse(OverTargetIndex) && GlidePolar::SafetyMacCready > 0) {
             Surface.SelectObject(LK8OverlaySmallFont);
             _stprintf(BufferValue, _T(" %.1f %s "), GlidePolar::SafetyMacCready*LIFTMODIFY,
                 Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
