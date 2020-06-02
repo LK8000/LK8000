@@ -583,7 +583,7 @@ void Globals_Init(void) {
   szLanguageCode[0] = TEXT('\0');
 
   szPolarFile[0] = TEXT('\0');
-
+  szPolarName[0] = TEXT('\0');
   for(unsigned int i = 0; i < NO_AS_FILES; i++)
     szAirspaceFile[i][0] = TEXT('\0');
   for(unsigned int i = 0; i < NO_WP_FILES; i++)

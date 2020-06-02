@@ -66,6 +66,7 @@
 #include "devLXV7easy.h"
 #include "ComCheck.h"
 #include "devOpenVario.h"
+#include "devLX_EOS_ERA.h"
 
 #include "TraceThread.h"
 #include "Poco/NamedEvent.h"
@@ -513,6 +514,7 @@ bool Startup(const TCHAR* szCmdLine) {
 #endif  // RADIO_ACTIVE
   DevVaulter::Register();
   DevOpenVario::Register();
+  DevLX_EOS_ERA::Register();
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<

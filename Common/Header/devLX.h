@@ -16,6 +16,28 @@
 
 //___________________________________________________________class_declarations_
 
+
+typedef enum {
+  _MC   =0,
+  _BAL    ,
+  _BUGS   ,
+  _STF    ,
+  _WIND   ,
+  _BARO   ,
+  _SPEED  ,
+  _VARIO  ,
+  _R_TRGT ,
+  _GFORCE ,
+  _OAT    ,
+  _BAT1   ,
+  _BAT2   ,
+  _POLAR  ,
+  _DIRECT ,
+  _T_TRGT ,
+
+  _LAST
+} ValueStringIndex;
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// General LX device (parsing LXWPn sentences).
 ///

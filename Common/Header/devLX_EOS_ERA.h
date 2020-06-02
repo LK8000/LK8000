@@ -3,21 +3,22 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: devLXNano3.h,v 1.1 2015/12/15 10:35:29 root Exp root $
+   $Id: DevLX_EOS_ERA.h,v 1.1 2015/12/15 10:35:29 root Exp root $
 */
 
 //__Version_1.0____________________________________________Vladimir Fux 12/2015_
 
 //__________________________________________________________compilation_control_
 
-#ifndef __DEVLXNANO3_H_
-#define __DEVLXNANO3_H_
+#ifndef __DevLX_EOS_ERA_H_
+#define __DevLX_EOS_ERA_H_
 
 //_____________________________________________________________________includes_
 
 #include "devLX.h"
 #include "dlgTools.h"
 #include "Dialogs.h"
+#include "Parser.h"
 #include "WindowControls.h"
 
 
@@ -29,17 +30,23 @@
 // #############################################################################
 // *****************************************************************************
 //
-//   DevLXNanoIII
+//   DevLX_EOS_ERA
 //
 // *****************************************************************************
 // #############################################################################
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// LX Nano 3 device (parsing LXWPn sentences and declaring tasks).
-///
 
+#define I_MC     0
+#define I_BAL    1
+#define I_BUGS   2
+#define I_BRIGHT 3
+#define I_V_VOL  4
+#define I_S_VOL  5
+#define I_SIGNAL 6
 
-class DevLXNanoIII : public DevLX
+class DevLX_EOS_ERA : public DevLX
 {
   //----------------------------------------------------------------------------
   public:
@@ -67,7 +74,7 @@ class DevLXNanoIII : public DevLX
     //..........................................................................
 
     /// Protected only constructor - class should not be instantiated.
-    DevLXNanoIII() {}
+    DevLX_EOS_ERA() {}
 
     /// Installs device specific handlers.
     static BOOL Install(PDeviceDescriptor_t d);
@@ -94,20 +101,17 @@ class DevLXNanoIII : public DevLX
 
    static BOOL Open( PDeviceDescriptor_t d);
    static BOOL Close( PDeviceDescriptor_t d);
-   static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
 
    static BOOL LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
    static BOOL GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
+   static BOOL LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
    static BOOL Values(PDeviceDescriptor_t d);
@@ -131,20 +135,37 @@ class DevLXNanoIII : public DevLX
    static BOOL bIGC_Download ;
    static BOOL m_bShowValues;
    static BOOL m_bDeclare;
+   static double m_fBAK[NUMDEV][I_SIGNAL+1];
 
+   static double* GetBuffer(PDeviceDescriptor_t d){return &m_fBAK[d->PortNumber][0];};
+   static BOOL EOSPutMacCready(PDeviceDescriptor_t d, double MacCready);
+   static BOOL EOSPutBallast(PDeviceDescriptor_t d, double Ballast);
+   static BOOL EOSPutBugs(PDeviceDescriptor_t d, double Bugs);
+   static BOOL EOSRequestRadioInfo(PDeviceDescriptor_t d);
+   static BOOL EOSPutVolume(PDeviceDescriptor_t d, int Volume) ;
+   static BOOL EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) ;
+   static BOOL EOSPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) ;
+   static BOOL EOSPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) ;
+   static BOOL EOSStationSwap(PDeviceDescriptor_t d) ;
+   static BOOL EOSRadioMode(PDeviceDescriptor_t d, int mode) ;
 
+   static BOOL EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info );
+   static BOOL EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
+   static BOOL EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
+
+   static BOOL  CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
   //----------------------------------------------------------------------------
   //private:
 
 
-}; // DevLXNanoIII
+}; // DevLX_EOS_ERA
 
 
 // #############################################################################
 // *****************************************************************************
 //
-//   DevLXNanoIII::Decl
+//   DevLX_EOS_ERA::Decl
 //
 // *****************************************************************************
 // #############################################################################
@@ -156,7 +177,7 @@ class DevLXNanoIII : public DevLX
 
 
 
-class DevLXNanoIII::Decl
+class DevLX_EOS_ERA::Decl
 {
   //----------------------------------------------------------------------------
   public:
@@ -207,17 +228,17 @@ class DevLXNanoIII::Decl
     Decl();
 
     // Format waypoint
-    void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type);
+    void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type, int totalNum);
 
 
-}; // DevLXNanoIII::Decl
+}; // DevLX_EOS_ERA::Decl
 
 
 
 // #############################################################################
 // *****************************************************************************
 //
-//   DevLXNanoIII::Class
+//   DevLX_EOS_ERA::Class
 //
 // *****************************************************************************
 // #############################################################################
@@ -226,7 +247,7 @@ class DevLXNanoIII::Decl
 /// LX task declaration data - competition class.
 /// This data are byte-by-byte sent to device.
 ///
-class DevLXNanoIII::Class
+class DevLX_EOS_ERA::Class
 {
   //----------------------------------------------------------------------------
   public:
@@ -243,8 +264,8 @@ class DevLXNanoIII::Class
     void SetName(const TCHAR* text);
 
 
-}; // DevLXNanoIII::Class
+}; // DevLX_EOS_ERA::Class
 
 //______________________________________________________________________________
 
-#endif // __DEVLXNano3_H_
+#endif // __DevLX_EOS_ERA_H_
