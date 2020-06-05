@@ -1190,15 +1190,18 @@ UnlockFlightData();
 
 
 
-bool  DevLX_EOS_ERA::OnStartIGC_FileRead(TCHAR Filename[]) {
-TCHAR szTmp[MAX_NMEA_LEN];
+ bool  DevLX_EOS_ERA::OnStartIGC_FileRead(TCHAR Filename[]) {
+
 TCHAR IGCFilename[MAX_PATH];
 LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
 
   f = _tfopen( IGCFilename, TEXT("w"));
   if(f == NULL)   return false;
+  fclose(f);
   // SendNmea(Device(), _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
   StartupStore(_T(" ******* LX_EOS_ERA  IGC Download START ***** %s") , NEWLINE);
+  /*
+   * TCHAR szTmp[MAX_NMEA_LEN];
   _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
   _sntprintf(m_Filename, array_size(m_Filename), _T("%s"),Filename);
   SendNmea(Device(), szTmp);
@@ -1206,7 +1209,7 @@ LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
   IGCDownload(true);
 #ifdef  NANO_PROGRESS_DLG
   CreateIGCProgressDialog();
-#endif
+#endif*/
 return true;
 
 }
@@ -1705,7 +1708,7 @@ static int iNoFlights=0;
   }
   else
   if(_tcsncmp(szTmp, _T("FLIGHT_INFO"), 11) == 0)
-  { TCHAR FileName[50]= _T("FileName"), Pilot[50]= _T(""),Takeoff[50]= _T(""),Date[50]= _T(""),Landing[50]= _T(""),Type[50]= _T(""), Reg[50]= _T("");
+  { TCHAR FileName[50]= _T("FileName"), Pilot[50]= _T(""),Surname[50]= _T(""), Takeoff[50]= _T(""),Date[50]= _T(""),Landing[50]= _T(""),Type[50]= _T(""), Reg[50]= _T("");
     StartupStore(TEXT("FLIGHT_INFO %s"), sentence);
 
     NMEAParser::ExtractParameter(sentence, Date     ,2);int  iNo = _ttoi(Date);
@@ -1714,10 +1717,11 @@ static int iNoFlights=0;
     NMEAParser::ExtractParameter(sentence, Takeoff  ,5);
     NMEAParser::ExtractParameter(sentence, Landing  ,6);
     NMEAParser::ExtractParameter(sentence, Pilot    ,7);
+    NMEAParser::ExtractParameter(sentence, Surname  ,8);
     NMEAParser::ExtractParameter(sentence, Type     ,9);
     NMEAParser::ExtractParameter(sentence, Reg      ,10);
     TCHAR Line[2][MAX_NMEA_LEN];
-    _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s %s %s %s %s"),FileName,Date, Pilot, Reg, Type);
+    _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s %s %s  %s %s"),FileName, Pilot,Surname, Reg, Type);
     _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) "), Date ,Takeoff ,Landing);
     AddElement(Line[0], Line[1]);
     if(iNo < iNoFlights)
@@ -1730,7 +1734,7 @@ static int iNoFlights=0;
   if(_tcsncmp(szTmp, _T("ERROR"), 5) == 0)  // ERROR?
   {
     NMEAParser::ExtractParameter(sentence, szTmp, 2);
-    DoStatusMessage(szTmp);
+    DoStatusMessage(TEXT("LX EOS/ERA Error: %s"), szTmp);
     StartupStore(TEXT("LX EOS/ERA Error: %s"), szTmp);
   }
   else
