@@ -286,9 +286,8 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
       Task[idxTP].Index = -1;
     }
 
-#define DEBUG_TASK_LOAD
+//#define DEBUG_TASK_LOAD
 #ifdef DEBUG_TASK_LOAD
-#include "Globals.h"
   int i =0;
   while ( Task[i].Index  >=0)
   {
