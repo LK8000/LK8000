@@ -115,8 +115,9 @@ bool LKSurface::Attach(Canvas* pCanvas) {
 }
 
 Canvas* LKSurface::Detach() {
-    return _pCanvas;
+    Canvas* p = _pCanvas;
     _pCanvas = nullptr;
+    return p;
 }
 
 
