@@ -257,104 +257,47 @@ public:
 bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoint)
 {
   std::vector<tstring>  Entries =   CupStringToFieldArray(szTaskSteing);
-  bool bTakeOff = true;
-  bool bLoadComplet = true;
+
 
   size_t Idx =0;
   size_t idxTP = 0;
-  TCHAR TpCode[NAME_SIZE + 1];
 
-  WAYPOINT* WPtoAdd=NULL;
 
-  while (bLoadComplet && (Idx < (Entries.size()))) {
+    for (uint i =0; i < Entries.size() ; i++)
+    {
+      mapCode2Waypoint_t::iterator It = mapWaypoint.find(Entries[Idx++].c_str());
+      if(It != mapWaypoint.end())
+      {
+        int ix = FindOrAddWaypoint(&(It->second),true);  // first try to find airfield
+        if(ix < 0)
+          ix= FindOrAddWaypoint(&(It->second),false); // not found try if waypoint exist
 
-      if (idxTP < MAXTASKPOINTS) {
-          _sntprintf(TpCode,NAME_SIZE, _T("%s"), Entries[Idx++].c_str() );
-	  mapCode2Waypoint_t::iterator It = mapWaypoint.find(TpCode);
-	    if(!ISGAAIRCRAFT)
-	    {
-	        if (It != mapWaypoint.end())
-		{
-
-		  if (bTakeOff) {
-		      // skip TakeOff Set At Home Waypoint
-		      int ix = FindOrAddWaypoint(&(It->second),false);
-		      if (ix>=0) {
-  #if 0 // REMOVE
-			  // We must not change HomeWaypoint without user knowing!
-			  // The takeoff and homewaypoint are independent from task.
-			  // In addition, this is a bug because on next run the index is invalid
-			  // and we have no more HowWaypoint!
-			  HomeWaypoint = ix;
-  #endif
-			  bTakeOff = false;
-		      } else {
-		        BUGSTOP_LKASSERT(0); // .. else is unmanaged, TODO
-		      }
-		  } else {
-
-		    if(Idx < Entries.size())
-		    {
-		      if( _tcscmp(Entries[Idx].c_str(), TpCode) !=0) // doublets?
-		      {
-			int ix =  FindOrAddWaypoint(&(It->second),false);
-			if (ix>=0) Task[idxTP++].Index = ix;
-
-		      }
-		    }
-		  }
-
-	      } else {
-
-		  // An invalid takeoff, probably a "???" , which we ignore
-		  // in any case bTakeOff now is false
-		  bTakeOff=false;
-
-	      }
-	  } else { //ISGAIRRCRAFT
-	      if(It != mapWaypoint.end()) {
-		  if(WPtoAdd!=NULL) {
-		      //add what we found in previous cycle: it was not the last one
-		      int ix = FindOrAddWaypoint(WPtoAdd,false);
-		      if (ix>=0) {
-		        Task[idxTP++].Index = ix;
-		      } else {
-		        BUGSTOP_LKASSERT(0); // .. else is unmanaged, TODO
-		      }
-		      StartupStore(_T("....... bTakeOff: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
-		  }
-		  if (bTakeOff) { //it's the first: may be we have a corresponding airfield
-		      //look for departure airfield and add it
-		      int ix = FindOrAddWaypoint(&(It->second),true);
-		      if (ix>=0) {
-			  Task[idxTP++].Index = ix;
-			  StartupStore(_T("....... bTakeOff: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
-			  bTakeOff = false;
-		      } else {
-		        BUGSTOP_LKASSERT(0); // .. else is unmanaged, TODO
-		      }
-		  } else WPtoAdd=&(It->second); //store it for next cycle (may be it is the last one)
-	      }
-	  }
-      } else {
-	  bLoadComplet = false;
+        if(ix >= 0)
+        {
+          if (idxTP < MAXTASKPOINTS)       // space left
+          {
+            Task[idxTP++].Index = ix;
+            if(idxTP > 1)
+              if(Task[idxTP-1].Index  == Task[idxTP-2].Index )  // not the same as before?
+                idxTP--;
+          }
+        }
       }
+      Task[idxTP].Index = -1;
+    }
+
+//#define DEBUG_TASK_LOAD
+#ifdef DEBUG_TASK_LOAD
+  int i =0;
+  while ( Task[i].Index  >=0)
+  {
+    StartupStore(_T(".......Taskpoint: %u %s\n"),(unsigned)(i), WayPointList[Task[i].Index].Name );
+    i++;
   }
-  if(ISGAAIRCRAFT) { //For GA: check if we have an airport corresponding to the last WP
-      if(WPtoAdd!=NULL) { //if we have the last one (probably an airfield) still to add...
-	  if(idxTP<MAXTASKPOINTS) {
-	      int ix=FindOrAddWaypoint(WPtoAdd,true); //look for arrival airport and add it
-	      if (ix>=0) {
-		  Task[idxTP++].Index= ix;
-		  StartupStore(_T("....... ISGAAIRCRAFT: %u %i \n"),(unsigned)(idxTP-1), Task[idxTP-1].Index );
-	      } else {
-	        BUGSTOP_LKASSERT(0); // .. else is unmanaged, TODO
-	      }
-	  }
-	  else bLoadComplet=false;
-      }
-  }
-   return bLoadComplet;
+#endif
+
+
+  return (idxTP > 0);e;
 }
 
 
@@ -449,9 +392,9 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
             else
             {
                 TaskValid = true;
-        	TaskFound = true;
-        	SectorType=SECTOR;  // normal sector by default if no other ObsZone parameter
-        	AATEnabled = false; // racing task by default, if AAT will overwrite this
+                TaskFound = true;
+                SectorType=SECTOR;  // normal sector by default if no other ObsZone parameter
+                AATEnabled = false; // racing task by default, if AAT will overwrite this
 
                 if(Entries[0].size() == 0)
                 {
@@ -463,7 +406,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                 {
                   StartupStore(_T(". read Task %s %s"), Entries[0].c_str()  ,NEWLINE);
                   if(TaskLine != NULL)
-		    _tcscpy(TaskLine, szString );
+		              _tcscpy(TaskLine, szString );
                 }
 
 
@@ -572,11 +515,11 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                             SectorType=DAe;    // the only similar sectortype in LK
 
                         if( TmpZone.mLine) // line has priority (Start & Finish) if multiple definitions
-			{
-			  TmpZone.mA1 = 90;
-			  TmpZone.mA2 = 0;
-			  TmpZone.mA12 =0;
-			}
+                        {
+                          TmpZone.mA1 = 90;
+                          TmpZone.mA2 = 0;
+                          TmpZone.mA12 =0;
+                        }
                         TmpZone.UpdateTask();
                     }
                 }
