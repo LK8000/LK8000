@@ -169,6 +169,7 @@ Mateusz Pusz
 Alberto Realis-Luc
 Kalman Rozsahegyi
 Karim Trojette
+Mana Coste
 
 LK8000 Project Copyrights:
 
@@ -189,6 +190,7 @@ Alberto Realis-Luc
 Tony Tarsi
 Kalman Rozsahegyi
 Karim Trojette
+Mana Coste
 
 
 Graphics by Jiri Bergman
