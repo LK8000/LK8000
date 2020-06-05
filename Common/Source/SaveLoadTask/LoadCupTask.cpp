@@ -270,7 +270,7 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
       {
         int ix = FindOrAddWaypoint(&(It->second),true);  // first try to find airfield
         if(ix < 0)
-          ix= FindOrAddWaypoint(&(It->second),true); // not found try if waypoint exist
+          ix= FindOrAddWaypoint(&(It->second),false); // not found try if waypoint exist
 
         if(ix >= 0)
         {
@@ -297,10 +297,7 @@ bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoin
 #endif
 
 
-if(idxTP > 0)
-  return true;
-else
-  return false;
+  return (idxTP > 0);e;
 }
 
 
