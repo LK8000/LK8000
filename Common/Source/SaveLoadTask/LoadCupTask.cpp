@@ -24,9 +24,6 @@
 
 int dlgTaskSelectListShowModal(void) ;
 
-static WndForm *wf = NULL;
-static WndListFrame *wTaskSelectListList = NULL;
-static WndOwnerDrawFrame *wTaskSelectListListEntry = NULL;
 #define MAX_TASKS 100
 TCHAR* szTaskStrings[MAX_TASKS];
 
@@ -665,36 +662,42 @@ static void OnCloseClicked(WndButton* pWnd) {
 }
 
 
-static void UpdateList(void) {
-  wTaskSelectListList->ResetList();
-  wTaskSelectListList->Redraw();
+static void UpdateList(WndListFrame* pList) {
+  pList->ResetList();
+  pList->Redraw();
 }
 
-static void OnUpClicked(WndButton* Sender) {
+static void SelectItem(WndForm* pForm, int index) {
+  WndListFrame* pList = (WndListFrame*)pForm->FindByName(TEXT("frmMultiSelectListList"));
+  if(pList) {
+    pList->SetItemIndexPos(index);
+    pList->Redraw();
+  }
+  WndOwnerDrawFrame* pListEntry = (WndOwnerDrawFrame*) pForm->FindByName(TEXT("frmMultiSelectListListEntry"));
+  if(pListEntry) {
+      pListEntry->SetFocus();
+  }
+}
+
+static void OnUpClicked(WndButton* pWnd) {
   if (TaskIndex > 0) {
       TaskIndex--;
   } else {
       LKASSERT(iNO_Tasks>0);
       TaskIndex = (iNO_Tasks - 1);
   }
-  wTaskSelectListList->SetItemIndexPos(TaskIndex);
-  wTaskSelectListList->Redraw();
-  wTaskSelectListListEntry->SetFocus();
+  SelectItem(pWnd->GetParentWndForm(), TaskIndex);
 }
 
 static void OnDownClicked(WndButton* pWnd) {
-
-  (void)pWnd;
-
   if (TaskIndex < (iNO_Tasks - 1)) {
       TaskIndex++;
   } else {
       TaskIndex = 0;
   }
-  wTaskSelectListList->SetItemIndexPos(TaskIndex);
-  wTaskSelectListList->Redraw();
-  wTaskSelectListListEntry->SetFocus();
+  SelectItem(pWnd->GetParentWndForm(), TaskIndex);
 }
+
 
 
 
@@ -758,9 +761,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
 
 
-static void OnTaskSelectListListEnter(WindowControl * Sender,
-    WndListFrame::ListInfo_t *ListInfo) {
-  (void) Sender;
+static void OnTaskSelectListListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo) {
 
   TaskIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
   if (TaskIndex >= iNO_Tasks) {
@@ -789,47 +790,49 @@ static CallBackTableEntry_t TaskCallBackTable[] = {
 };
 
 
-int dlgTaskSelectListShowModal(void) {
+int dlgTaskSelectListShowModal() {
 
   TaskIndex = -1;
 
-  if (iNO_Tasks == 0) return mrCancel;
+  if (iNO_Tasks == 0) {
+    return mrCancel;
+  }
 
+  std::unique_ptr<WndForm> pForm(dlgLoadFromXML(TaskCallBackTable, ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P));
+  if (!pForm) {
+    return mrCancel;
+  }
 
-  wf = dlgLoadFromXML(TaskCallBackTable, ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
+  WndListFrame* pList = (WndListFrame*)pForm->FindByName(TEXT("frmMultiSelectListList"));
+  if(pList) {
+    pList->SetBorderKind(BORDERLEFT);
+    pList->SetEnterCallback(OnTaskSelectListListEnter);
+  }
 
-  if (!wf)   return mrCancel;
+  WndOwnerDrawFrame* pListEntry = (WndOwnerDrawFrame*) pForm->FindByName(TEXT("frmMultiSelectListListEntry"));
+  if(pListEntry) {
+    /*
+    * control height must contains 2 text Line
+    * Check and update Height if necessary
+    */
+    LKWindowSurface windowSurface(*main_window);
+    LKBitmapSurface tmpSurface(windowSurface, 1, 1);
+    const auto oldFont = tmpSurface.SelectObject(pListEntry->GetFont());
+    const int minHeight = 2 * tmpSurface.GetTextHeight(_T("dp")) + 2 * DLGSCALE(2);
+    tmpSurface.SelectObject(oldFont);
 
-  wTaskSelectListList = (WndListFrame*) wf->FindByName(TEXT("frmMultiSelectListList"));
-  LKASSERT(wTaskSelectListList != NULL);
-  wTaskSelectListList->SetBorderKind(BORDERLEFT);
-  wTaskSelectListList->SetEnterCallback(OnTaskSelectListListEnter);
+    const int wHeight = pListEntry->GetHeight();
+    if(minHeight > wHeight) {
+      pListEntry->SetHeight(minHeight);
+    }
+    pListEntry->SetCanFocus(true);
+  }
 
-  wTaskSelectListListEntry = (WndOwnerDrawFrame*) wf->FindByName(TEXT("frmMultiSelectListListEntry"));
-  if(wTaskSelectListListEntry) {
-      /*
-       * control height must contains 2 text Line
-       * Check and update Height if necessary
-       */
-      LKWindowSurface windowSurface(*main_window);
-      LKBitmapSurface tmpSurface(windowSurface, 1, 1);
-      const auto oldFont = tmpSurface.SelectObject(wTaskSelectListListEntry->GetFont());
-      const int minHeight = 2 * tmpSurface.GetTextHeight(_T("dp")) + 2 * DLGSCALE(2);
-      tmpSurface.SelectObject(oldFont);
-      const int wHeight = wTaskSelectListListEntry->GetHeight();
-      if(minHeight > wHeight) {
-          wTaskSelectListListEntry->SetHeight(minHeight);
-      }
-      wTaskSelectListListEntry->SetCanFocus(true);
-  } else LKASSERT(0);
+  if(pList) {
+    UpdateList(pList);
+  }
 
-  UpdateList();
-
-  int result = wf->ShowModal();
-  wTaskSelectListList->Redraw();
-  delete wf;
-
-  wf = NULL;
+  int result = pForm->ShowModal();
 
   iNO_Tasks = 0;
 
