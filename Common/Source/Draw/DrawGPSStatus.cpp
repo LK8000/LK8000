@@ -27,7 +27,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
   if (!extGPSCONNECT) {
 
     oldfont=Surface.SelectObject(LK8TargetFont);
-    TextInBoxMode_t TextInBoxMode = {0};
+    TextInBoxMode_t TextInBoxMode = {};
     TextInBoxMode.Color = RGB_WHITE;
     TextInBoxMode.NoSetFont=1;
     TextInBoxMode.AlligneCenter = 1;
@@ -63,7 +63,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc)
   } else
     if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
     oldfont=Surface.SelectObject(LK8TargetFont); // 100210
-    TextInBoxMode_t TextInBoxMode = {0};
+    TextInBoxMode_t TextInBoxMode = {};
     TextInBoxMode.Color = RGB_WHITE;
     TextInBoxMode.NoSetFont=1;
     TextInBoxMode.AlligneCenter = 1;
@@ -81,7 +81,7 @@ goto_DrawLockModeStatus:
     else
       Surface.SelectObject(LK8MediumFont);
 
-    TextInBoxMode_t TextInBoxModeL = {0};
+    TextInBoxMode_t TextInBoxModeL = {};
     TextInBoxModeL.Color = RGB_WHITE;
     TextInBoxModeL.NoSetFont=1;
     TextInBoxModeL.AlligneCenter = 1;

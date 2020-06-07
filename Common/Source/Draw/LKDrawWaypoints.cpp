@@ -250,7 +250,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 	int bestwp=-1;
 	TCHAR Buffer[LKSIZEBUFFER];
 	TCHAR Buffer2[NAME_SIZE+1]; // size must be > size of waypoint name or waypoint code or max of resizer values
-	TextInBoxMode_t TextDisplayMode = {0};
+	TextInBoxMode_t TextDisplayMode = {};
 
 	constexpr size_t label_resizer[] = {
 		NAME_SIZE + 1,   // DISPLAYNAME 0

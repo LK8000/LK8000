@@ -2780,7 +2780,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
     static int step = 0;
     static double bearing = 0;
     static double interest_radius = 0;
-    static rectObj bounds = {0};
+    static rectObj bounds = {};
     static double lon = 0;
     static double lat = 0;
 

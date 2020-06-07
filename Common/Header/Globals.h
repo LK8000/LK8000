@@ -487,8 +487,7 @@ GEXTERN double Experimental2;
 Start_t StartPoints;
 TaskStats_t TaskStats;
 Radio_t RadioPara ;
-Task_t Task = {{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0
-,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0}};
+Task_t Task = {};
 
 std::vector<WAYPOINT> WayPointList;
 std::vector<WPCALC> WayPointCalc;

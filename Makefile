@@ -623,7 +623,7 @@ endif
 # CPPFLAGS	+= -DNO_DASH_LINES 
 
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type
-CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
+CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized -Wmissing-field-initializers
 CPPFLAGS	+= -Wredundant-decls
 CPPFLAGS	+= -Wall -Wno-char-subscripts -fsigned-char
 CPPFLAGS	+= -Wno-psabi

@@ -851,7 +851,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
         t_hh = GPS_INFO.Hour;  t_mm = GPS_INFO.Minute;  t_ss = GPS_INFO.Second;
       } else { // use system time
         time_t sysTime = time(NULL);
-        struct tm tm_temp = {0};
+        struct tm tm_temp = {};
         struct tm* utc = gmtime_r(&sysTime, &tm_temp);
         t_DD = utc->tm_mday;   t_MM = utc->tm_mon + 1;  t_YY = utc->tm_year % 100;
         t_hh = utc->tm_hour;   t_mm = utc->tm_min;      t_ss = utc->tm_sec;

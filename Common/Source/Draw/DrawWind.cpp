@@ -56,7 +56,7 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
 
     _stprintf(sTmp, _T("%d"), iround(DerivedDrawInfo.WindSpeed * SPEEDMODIFY));
 
-    TextInBoxMode_t TextInBoxMode = {0};
+    TextInBoxMode_t TextInBoxMode = {};
     TextInBoxMode.AlligneCenter = true;   // { 16 | 32 }; // JMW test {2 | 16};
     TextInBoxMode.WhiteBorder = true;
     TextInBoxMode.NoSetFont = true; // font alredy set for calc text size.

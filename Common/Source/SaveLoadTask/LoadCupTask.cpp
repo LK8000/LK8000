@@ -315,7 +315,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 
 
   memset(szString, 0, sizeof (szString)); // clear Temp Buffer
-  WAYPOINT newPoint = {0};
+  WAYPOINT newPoint = {};
 
 
   enum {

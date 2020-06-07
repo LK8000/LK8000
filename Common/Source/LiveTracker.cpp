@@ -806,7 +806,7 @@ static bool SendGPSPointPacket(unsigned int *packet_id,
 // Leonardo Live Tracker (www.livetrack24.com) data exchange thread
 static void LiveTrackerThread() {
 	int tracker_fsm = 0;
-	livetracker_point_t sendpoint = { 0 };
+	livetracker_point_t sendpoint = {};
 	bool sendpoint_valid = false;
 	bool sendpoint_processed = false;
 	bool sendpoint_processed_old = false;
@@ -1196,7 +1196,7 @@ static bool LiveTrack24_Radar() {
 
 		time_t rawtime = lastTM;
 		struct tm * ptm;
-        struct tm tm_temp = {0};
+        struct tm tm_temp = {};
         ptm = gmtime_r(&rawtime, &tm_temp);
 		int Time_Fix = (ptm->tm_hour * 3600 + ptm->tm_min * 60 + ptm->tm_sec);
 		if (Time_Fix > GPS_INFO.Time)
@@ -1663,7 +1663,7 @@ static bool SendGPSPointPacket2(unsigned int *packet_id) {
 static void LiveTrackerThread2() {
 
 	int tracker_fsm = 0;
-	livetracker_point_t sendpoint = { 0 };
+	livetracker_point_t sendpoint = {};
 	bool sendpoint_processed = false;
 	bool packet_processed = false;
 

@@ -1044,9 +1044,9 @@ if(SPLITSCREEN_FACTOR >0)
 	  PositionTopView[i].right  = x + iTouchAreaSize;
 	  PositionTopView[i].top    = y - iTouchAreaSize;
 	  PositionTopView[i].bottom = y + iTouchAreaSize;
-	  TextInBoxMode_t displaymode = {1};
-	  displaymode.NoSetFont = 1;
-	  displaymode.Border=1;
+	  TextInBoxMode_t displaymode = {};
+	  displaymode.NoSetFont = true;
+	  displaymode.Border = true;
 
 
       if(fx > sTopDia.fXMin )  /* sing sight ? */
@@ -1241,9 +1241,9 @@ if(bSideview)
 	PositionSideView[i].right  = x  + iTouchAreaSize;
 	PositionSideView[i].top    = hy - iTouchAreaSize;
 	PositionSideView[i].bottom = hy + iTouchAreaSize;
-	TextInBoxMode_t displaymode = {1};
-	displaymode.NoSetFont = 1;
-	displaymode.Border=1;
+	TextInBoxMode_t displaymode = {};
+	displaymode.NoSetFont = true;
+	displaymode.Border = true;
     if(fx > sTopDia.fXMin )  /* in sight ? */
     if(fx < sTopDia.fXMax )
 	if(fFlarmAlt < sDia.fYMax )

@@ -23,7 +23,7 @@ void MapWindow::DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, cons
   //double h,dh;
   TCHAR hbuf[10];
   static bool doinit=true;
-  static TextInBoxMode_t tmode = {0};
+  static TextInBoxMode_t tmode = {};
   bool wrotevalue=false;
 
   if (doinit) {

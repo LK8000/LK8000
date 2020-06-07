@@ -311,7 +311,7 @@ bool ReplayLogger::UpdateInternal(void) {
   static CatmullRomInterpolator cli;
 
   time_t rawtime;
-  struct tm tm_temp= {0};
+  struct tm tm_temp= {};
   struct tm * timeinfo;
   time (&rawtime);
   timeinfo = gmtime_r(&rawtime, &tm_temp);

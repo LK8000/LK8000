@@ -319,7 +319,7 @@ void SerialPort::CancelWaitEvent() {
 
 void SerialPort::UpdateStatus() {
     DWORD dwErrors = 0;
-    COMSTAT comStat = {0};
+    COMSTAT comStat = {};
     if(hPort != INVALID_HANDLE_VALUE) {
         ClearCommError(hPort, &dwErrors, &comStat);
         if (dwErrors & CE_FRAME) {

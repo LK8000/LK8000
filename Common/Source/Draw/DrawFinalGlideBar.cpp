@@ -311,7 +311,7 @@ _skipout:
         Surface.GetTextSize(Value, &TextSize);
         GlideBarOffset = std::max<int>(GlideBarOffset, TextSize.cx+NIBLSCALE(1))+1; 
 
-        TextInBoxMode_t TextInBoxMode = {0};
+        TextInBoxMode_t TextInBoxMode = {};
         TextInBoxMode.Border = true; //={1|8};
         TextInBoxMode.Reachable = false;
         TextInBoxMode.NoSetFont = true;

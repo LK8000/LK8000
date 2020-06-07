@@ -99,7 +99,7 @@ bool TCPClientPort::Connect() {
     const char* szaddr = GetAddress(GetPortIndex());
 #endif
     char IPadr[16];
-    SOCKADDR_IN sin = { 0 };
+    SOCKADDR_IN sin = {};
     if(hostname_to_ip(szaddr,IPadr ) == 0)  // convert URL to IP address
       sin.sin_addr.s_addr = inet_addr(IPadr);
     else
@@ -179,7 +179,7 @@ bool TCPServerPort::Connect() {
         return false;
     }
 
-    SOCKADDR_IN sin = { 0 };
+    SOCKADDR_IN sin = {};
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
     sin.sin_port = htons(GetPort(GetPortIndex()));
     sin.sin_family = AF_INET;
@@ -278,7 +278,7 @@ bool UDPServerPort::Connect() {
         // if failed, socket still in blocking mode, it's big problem
     }
 
-    SOCKADDR_IN sin = { 0 };
+    SOCKADDR_IN sin = {};
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
     sin.sin_port = htons(GetPort(GetPortIndex()));
     sin.sin_family = AF_INET;
@@ -324,7 +324,7 @@ bool UDPServerPort::Write(const void *data, size_t size) {
 	}
     // if no client sended data yet we try to send to the default Android AP ( 192.168.43.1 ) on port 8000 for LKNET
     if ( mSAddressClient.sin_port == 0 ) {
-        SOCKADDR_IN sDefault = { 0 };
+        SOCKADDR_IN sDefault = {};
         sDefault.sin_addr.s_addr = inet_addr("192.168.43.1");
         sDefault.sin_port = htons(8000);
         sDefault.sin_family = AF_INET;

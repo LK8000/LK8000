@@ -70,7 +70,7 @@ static int	iRectangleSize = 4;
 
 //  double dX, dY;
 
-  TextInBoxMode_t displaymode = {0};
+  TextInBoxMode_t displaymode = {};
   displaymode.NoSetFont = 1;
 
   #if 0

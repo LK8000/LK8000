@@ -19,7 +19,7 @@ bool AddWaypoint(WAYPOINT& Waypoint) {
         // WAYPOINT struct contains pointer to malloc string,
         // ownership of this string is transfered to WayPointList
         // Reset all content by security
-        Waypoint = {0};
+        Waypoint = {};
 
     } catch (std::exception& e) {
         const tstring what = to_tstring(e.what());

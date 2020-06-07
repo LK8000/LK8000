@@ -155,7 +155,7 @@ void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const Screen
 
   const auto hpold = Surface.SelectObject(LKPen_Black_N1);
 
-  TextInBoxMode_t displaymode = {0};
+  TextInBoxMode_t displaymode = {};
   displaymode.NoSetFont = 1;
   const auto oldfont = Surface.SelectObject(LK8MapFont);
 

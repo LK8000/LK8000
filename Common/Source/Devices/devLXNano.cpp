@@ -308,7 +308,7 @@ bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBu
   else
   { // use system time
     time_t sysTime = time(NULL);
-    tm tm_temp = {0};
+    tm tm_temp = {};
     struct tm* utc = gmtime_r(&sysTime, &tm_temp);
 
     task.di = utc->tm_mday;

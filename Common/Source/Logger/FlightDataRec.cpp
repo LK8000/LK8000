@@ -147,7 +147,7 @@ void InitFlightDataRecorder() {
   } 
 
   time_t sysTime = time(nullptr);
-  struct tm tm_temp = {0};
+  struct tm tm_temp = {};
   struct tm* utc = gmtime_r(&sysTime, &tm_temp);
 
   // FROM NOW ON, we can write on the file and on LK exit we must close the file.
@@ -250,7 +250,7 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   nextHB=LKHearthBeats+2;       // 2hz to 1hz
 
   time_t sysTime = time(nullptr);
-  struct tm tm_temp = {0};
+  struct tm tm_temp = {};
   struct tm* utc = gmtime_r(&sysTime, &tm_temp);
   
   int idx=0;

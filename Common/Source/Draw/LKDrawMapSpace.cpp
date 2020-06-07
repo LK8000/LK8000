@@ -28,7 +28,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 
   BrushReference hB;
 
-  TextInBoxMode_t TextDisplayMode = {0};
+  TextInBoxMode_t TextDisplayMode = {};
   TCHAR Buffer[LKSIZEBUFFERLARGE*2];
 #ifdef DRAWLKSTATUS
   bool dodrawlkstatus=false;

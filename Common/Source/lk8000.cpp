@@ -386,7 +386,7 @@ bool Startup(const TCHAR* szCmdLine) {
 
   time_t  linux_time;
   linux_time = time(0);
-  tm utc_tm = {0};
+  tm utc_tm = {};
   struct tm *pda_time;
   pda_time = gmtime_r(&linux_time, &utc_tm);
   GPS_INFO.Time  = pda_time->tm_hour*3600+pda_time->tm_min*60+pda_time->tm_sec;

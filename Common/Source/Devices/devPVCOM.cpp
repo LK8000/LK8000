@@ -389,7 +389,7 @@ bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
 
 bool PVCOM_ProcessPEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info)
 {
-  TSpaceInfo data = {0};
+  TSpaceInfo data = {};
   unsigned fieldIdx = 0;
   bool status = true;
   double value;

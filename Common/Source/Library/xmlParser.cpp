@@ -313,7 +313,7 @@ static TCHAR FindNonWhiteSpace(XML *pXML)
 // pcbToken contains the number of characters that have been read.
 static NextToken GetNextToken(XML *pXML, int *pcbToken, enum TokenTypeTag *pType)
 {
-    NextToken        result = { 0 };
+    NextToken        result = {};
     LPCTSTR           lpXML;
     TCHAR            ch;
     TCHAR            chTemp;

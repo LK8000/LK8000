@@ -72,8 +72,14 @@ list(APPEND	BUILD_FLAGS
     -Wall
     -fno-math-errno
     -fopenmp
+    -fsigned-char
+    -Wunused-label 
+    -Wunused-variable 
+    -Wunused-value 
+    -Wuninitialized 
+    -Wmissing-field-initializers
+    -Wno-char-subscripts 
     -Wparentheses
-    -Wuninitialized
     -Wredundant-decls
 )
 string(REPLACE ";" " " BUILD_FLAGS "${BUILD_FLAGS}")

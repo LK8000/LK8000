@@ -47,8 +47,7 @@ protected:
 class UDPServerPort : public SocketPort {
 public:
 
-	UDPServerPort(int idx, const tstring& sName) : SocketPort(idx, sName) {
-		mSAddressClient =  { 0 };
+	UDPServerPort(int idx, const tstring& sName) : SocketPort(idx, sName), mSAddressClient() {
 	}
 
     int SetRxTimeout(int TimeOut) override { return 0; }
