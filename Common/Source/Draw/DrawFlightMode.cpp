@@ -322,7 +322,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   else
   {
    short i=ModeType[LKMODE_MAP]-1;
-   if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CRUISE)) i = UTF_CROUISE;
+ //  if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CRUISE)) i = UTF_CROUISE;
    if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) i = UTF_THERMALING;
    if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_FINAL_GLIDE)) i = UTF_FINALGLIDE;
    
