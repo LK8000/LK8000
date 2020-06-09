@@ -185,7 +185,7 @@ _nomoredeclutter:
 
   //
   // Stuff for MAPTRK only (M1)
-  if (MapSpaceMode==MSM_MAPTRK) {
+  if ((MapSpaceMode==MSM_MAPTRK) || (MapSpaceMode==MSM_MAPWPT) ) {
 	if(IsMultimapTerrain() || IsMultimapTopology() ) {
 		if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid)
 			DrawGlideThroughTerrain(Surface, rct, _Proj);
