@@ -1,5 +1,5 @@
 {
-    "_@H000100_": "[deprecated]",
+    "_@H000100_": "",
     "_@H000101_": "The name of the file containing TOPOLOGY, and only optionally also terrain, waypoints, airspaces.\nThe .LKM is really a ZIP file, renamed. If you change suffix to ZIP you can open it and change contents.\nMap files are located inside the _Maps subfolder.",
     "_@H000102_": "The name of the file containing digital elevation terrain data, normally a .DEM file.\nThis file is inside _Maps subfolder.",
     "_@H000103_": "[deprecated]",
