@@ -861,8 +861,8 @@ LKColor GetUTF8WaypointSymbol(TCHAR* pPict, const int Style)
       Col = RGB_BLACK;
     break;
     case STYLE_THERMAL:
-      _tcscpy(pPict, MsgToken(2376));   // _@M2376_ "♨"
-      Col = LKColor(210,105,30);
+      _tcscpy(pPict, MsgToken(2376));   // _@M2376_ "☁️"
+      Col = RGB_LIGHTBLUE;
     break;
 
     case STYLE_MARKER:

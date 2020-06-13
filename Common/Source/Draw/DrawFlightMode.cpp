@@ -15,6 +15,9 @@
 
 extern bool FastZoom; // QUICKDRAW
 
+#define UTF_THERMALING 11
+#define UTF_CRUISE     12 
+#define UTF_FINALGLIDE 13
 static constexpr unsigned mmUTF8Symbol[] = {
     2350, // _@M2350_ "Ⓜ"
     2351, // _@M2351_ "①"
@@ -27,6 +30,10 @@ static constexpr unsigned mmUTF8Symbol[] = {
     2358, // _@M2358_ "⑧"
     2359, // _@M2359_ "⑨"
     2360, // _@M2360_ "⑩"
+    2376, // _@M2376_ "☁️"    // THERMALING
+    2384, // _@M2384_ "✈"    // CRUISE
+    2377, // _@M2377_ "⚑"    // FINALGLIDE
+    
 };
 
 static constexpr LKColor mmUTF8Color[] = {
@@ -34,13 +41,16 @@ static constexpr LKColor mmUTF8Color[] = {
     LKColor(0,255,127),  // "①"
     LKColor(205,0,0),    // "②"
     LKColor(255,130,71), // "③"
-    LKColor(255,165,0),  // "④"
-    LKColor(255,130,71), // "⑤"
+    LKColor(255,195,0),  // "④"
+    LKColor(255,30,171), // "⑤"
     LKColor(82,82,82),   // "⑥"
     RGB_DARKBLUE,        // "⑦"
     RGB_BLACK,           // "⑧"
     RGB_BLACK,           // "⑨"
     RGB_BLACK,           // "⑩"
+    RGB_LIGHTBLUE,       // "☁️"    // THERMALING
+    RGB_YELLOW,          // "✈"    // CROUISE
+    RGB_GREEN,           // "⚑"    // FINALGLIDE
 };
 
 static_assert(array_size(mmUTF8Color) == array_size(mmUTF8Symbol), "invalide array size");
@@ -62,17 +72,18 @@ static std::pair<const LKColor, const TCHAR*> GetUTF8MultimapSymbol(unsigned Num
 
 
 void UTF8DrawMultimapSymbol(LKSurface& Surface, const RasterPoint& pos, const PixelSize& size, int Number)
-{
+{  
     const auto Pict = GetUTF8MultimapSymbol(Number);
-
     const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
-    const auto OldColor = Surface.SetTextColor(Pict.first);
 
-    PixelRect textRect(pos, size);
-    Surface.DrawText(Pict.second, &textRect, DT_CENTER|DT_VCENTER|DT_CALCRECT);
-    const PixelSize newSize = textRect.GetSize();
-    textRect.Offset((newSize.cx - size.cx) / 2, - ((newSize.cy - size.cy) / 2));
-    Surface.DrawText(Pict.second, &textRect, DT_CENTER|DT_VCENTER);
+    LKColor Color  = Pict.first;
+    PixelRect textRect(pos.x - 0.2f*size.cx , pos.y- 0.2f*size.cy, pos.x + size.cx,  pos.y +  size.cy);
+    
+    if(!INVERTCOLORS) Color = Color.MixColors( RGB_BLACK,  0.6f );  // make a little darker for white background
+    
+    const auto OldColor = Surface.SetTextColor(Color);
+ 
+    Surface.DrawText(Pict.second, &textRect, DT_CENTER|DT_VCENTER );
 
     Surface.SelectObject(OldFont);
     Surface.SetTextColor(OldColor);
@@ -221,6 +232,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   if(Appearance.UTF8Pictorials == false) {
 
     if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) {
+   
         ptmpBitmap = &hClimb;
     } else {
         //short i=Get_Current_Multimap_Type()-1;
@@ -302,6 +314,10 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   else
   {
    short i=ModeType[LKMODE_MAP]-1;
+   //if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CRUISE)) i = UTF_CROUISE;
+   if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) i = UTF_THERMALING;
+   if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_FINAL_GLIDE)) i = UTF_FINALGLIDE;
+
    UTF8DrawMultimapSymbol( Surface, mmPoint, mmNewSize, i);
   }
   //
