@@ -4,30 +4,33 @@ THIS IS THE DEVELOPEMENT BRANCH.
 (Development of master started on October 30, 2018)
 
 ================================================================================
-= Build Target                                                                 =
+= Build Targets supported                                                      =
 ================================================================================
 
 TARGET=[PPC2003|PNA|PC|PCX64|LINUX|KOBO|PI]
 
-for Linux build, if "install" is added to command line, LK8000-LINUX and all file 
-needed for run software are installed into $HOME/LK8000
+for a Linux build, if "install" is added to the command line, LK8000-LINUX and 
+all files needed to run the software will be installed into $HOME/LK8000
+
+for a PC build, add "distrib" to the command line and all files needed to run 
+the softwre will be installed into LK8000/Distrib/PC/LK8000
 
 ================================================================================
-= Build Option                                                                 =
+= Build Options supported                                                      =
 ================================================================================
 
-All Target :
+All Targets :
 
     DEBUG=[y|n]  
         default = "n"
-        if y is specified, no optimzation is made and debug info are include.
+        if y is specified, no optimzation is made and debug info are included.
 
 --------------------------------------------------------------------------------
 LINUX Target :
 
     OPENGL=[y|n]
        default = "y" if libgl is available
-       if "n" is is specified, libSDL with Memory rendering is used.
+       if "n" is specified, libSDL with Memory rendering is used.
 
     USE_EGL=[y|n]
        default = "y" if "libgl" and "libegl" are available
@@ -49,7 +52,7 @@ LINUX Target :
 Do you want LINUX greyscaled like on Kobo? 
 $make -j4 TARGET=LINUX OPENGL=n GREYSCALE=y DITHER=y clean
 $make -j4 TARGET=LINUX OPENGL=n GREYSCALE=y DITHER=y install
-Notice the "clean" will also remove the Distrib folder. That is needed
+Notice the "clean" that will also remove the Distrib folder, which is needed
 to rebuild bitmaps for use without opengl
 
 --------------------------------------------------------------------------------
