@@ -19,10 +19,10 @@
 
 #define MAX_FLARM_ANSWER_LEN  640  // FLARM Docu does not tell the max. answer len
                                    // The max. ever received length on IGC read was 485, so 640 seem to be a good value
-#define GC_BLK_RECTIMEOUT     10000
+#define GC_BLK_RECTIMEOUT     750
 #define GC_IDLETIME           10
-#define REC_TIMEOUT           1000 // receive timeout in ms
-
+#define REC_TIMEOUT           750 // receive timeout in ms
+#define MAX_RETRY             1
 #define LST_STRG_LEN          100
 #define STATUS_TXT_LEN        100
 #define PRPGRESS_DLG
@@ -127,6 +127,7 @@ uint16_t i;
 uint16_t CRC=0;
 uint8_t blk[8];
 
+if (d== NULL) return;
 
   blk[0] = lowbyte (8 +blocksize);  // length
   blk[1] = highbyte(8 +blocksize);  // length
@@ -366,7 +367,7 @@ if(IGCFileList.size() == 0) return;
       }
 	      /************************************************************/
      ThreadState =  START_DOWNLOAD_STATE;        // start thread IGC download
-     if(wf) wf->SetTimerNotify(600, OnTimer); // check for end of download every 100ms
+     if(wf) wf->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
   #ifdef PRPGRESS_DLG
   CreateIGCProgressDialog();
   #endif
@@ -620,7 +621,7 @@ bAbort = false;
     } else LKASSERT(0);
     UpdateList();
 
-	wf->SetTimerNotify(600, OnTimer); // check for end of download every 600ms
+	wf->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
     wf->ShowModal();
     delete wf;
     wf = NULL;
@@ -645,13 +646,31 @@ static FILE *file_ptr= NULL;
 static int TimeCnt =0;
 static uint16_t Sequence;
 static uint8_t retrys = 0;
-
+static uint8_t TimeOutFactor =1;
 uint8_t   pByteBlk[MAX_FLARM_ANSWER_LEN];
 pByteBlk[0] = IGC_FileIndex;
 uint16_t  blocksize=1;
 uint16_t RecSequence;
 uint8_t RecCommand;
 uint8_t err  = REC_NO_ERROR ;
+
+static int OldThreadState = IDLE_STATE;
+
+
+  if( OldThreadState == ThreadState)  // state watchdog
+  {
+    if (TimeCnt++ > 15000/GC_IDLETIME) // no state change for 15s ?
+    {
+      ThreadState = ABORT_STATE;      // abort!
+      StartupStore(TEXT("STATE WATCHDOG timeout after %ums in State %i"), TimeCnt*GC_IDLETIME,ThreadState);
+    }
+  }
+  else
+  {
+    OldThreadState = ThreadState;  // remember new state
+    TimeCnt=0;
+  }
+
 
   if(bAbort)
   {
@@ -723,11 +742,10 @@ uint8_t err  = REC_NO_ERROR ;
     if( ThreadState ==  SELECTRECORD_STATE_TX)
     {
       if(deb_) StartupStore(TEXT("RECORD_STATE_TX "));
-      retrys=0;
-      TimeCnt =0;
       pByteBlk[0] =IGCFileList.size();
       SendBinBlock(d, Sequence++, SELECTRECORD, &pByteBlk[0], 1);
       ThreadState = SELECTRECORD_STATE_RX;
+      DownloadError = REC_NO_ERROR;
     }
 
     /****************************  SELECTRECORD_STATE_RX    ************************************/
@@ -735,13 +753,16 @@ uint8_t err  = REC_NO_ERROR ;
     {
       if(!BlockReceived())
       {
-	if(deb_)  StartupStore(TEXT("SELECTRECORD_STATE_RX %ums"), TimeCnt*GC_IDLETIME);
-	if(TimeCnt++ > (1000/GC_IDLETIME))
-	{
-	  err = REC_TIMEOUT_ERROR;
-	  ThreadState = SELECTRECORD_STATE_TX;
-	  if(retrys++ > 4)
-	    ThreadState = ABORT_STATE;
+        if(deb_) StartupStore(TEXT("SELECTRECORD_STATE_RX %ums"), TimeCnt*GC_IDLETIME);
+        if(TimeCnt > (GC_BLK_RECTIMEOUT/GC_IDLETIME))
+        {
+          err = REC_TIMEOUT_ERROR;
+          ThreadState = SELECTRECORD_STATE_TX;
+          if(retrys++ > MAX_RETRY)
+          {
+            ThreadState = ABORT_STATE;
+            err = REC_TIMEOUT_ERROR;
+          }
 	}
 	return 0; // no data? leave thread and wait for next call
       }
@@ -750,14 +771,18 @@ uint8_t err  = REC_NO_ERROR ;
 	ThreadState  = READRECORD_STATE_TX;
       else
 	ThreadState = ALL_RECEIVED_STATE;
+      
+      if(err)  
+        ThreadState = ABORT_STATE;
+      else
+      retrys =0;
+
     }
 
-    /******************************  READRECORD_STATE_RX     ************************************/
+    /******************************  READRECORD_STATE_TX     ************************************/
     if( ThreadState ==  READRECORD_STATE_TX)
     {
       if(deb_)  StartupStore(TEXT("READRECORD_STATE_RX "));
-      retrys=0;
-      TimeCnt =0;
       SendBinBlock(d, Sequence++, GETRECORDINFO, NULL, 0);
 
       ThreadState = READRECORD_STATE_RX;
@@ -767,17 +792,27 @@ uint8_t err  = REC_NO_ERROR ;
     {
       if(!BlockReceived())
       {
-	if(deb_) StartupStore(TEXT("READRECORD_STATE_RX %ums"), TimeCnt*GC_IDLETIME);
-	if(TimeCnt++ > (1000/GC_IDLETIME))
-	{
-	      err = REC_TIMEOUT_ERROR;
-	      ThreadState = READRECORD_STATE_TX;
-	      if(retrys++ > 4)
+        if(deb_) StartupStore(TEXT("READRECORD_STATE_RX %ums"), TimeCnt*GC_IDLETIME);
+        if(TimeCnt > (GC_BLK_RECTIMEOUT/GC_IDLETIME))
+        {
+          err = REC_TIMEOUT_ERROR;
+          ThreadState = READRECORD_STATE_TX;
+          if(retrys++ > MAX_RETRY)
+          {
 		ThreadState = ABORT_STATE;
+            err = REC_TIMEOUT_ERROR;
 	}
+        }
+       
 	return 0; // no data? leave thread and wait for next call
       }
       err = RecBinBlock(d, &RecSequence, &RecCommand, &pByteBlk[0], &blocksize, REC_TIMEOUT);
+      if(err)  
+      {
+        ThreadState = ABORT_STATE;
+        return 0;
+      }
+      retrys = 0;
       pByteBlk[blocksize++] = 0;
       if(RecCommand == ACK)
       {
@@ -840,6 +875,7 @@ uint8_t err  = REC_NO_ERROR ;
 	  if(deb_) StartupStore(TEXT("delete incomplete IGC File: %s "),IGCFilename);
 	}
       }
+      if(!err)
       DownloadError =  REC_ABORTED;
       ThreadState =  IDLE_STATE;
     }
@@ -865,10 +901,15 @@ uint8_t err  = REC_NO_ERROR ;
       err = RecBinBlock(d,  &RecSequence, &RecCommand, &pByteBlk[0], &blocksize, REC_TIMEOUT);
 
       if(err != REC_NO_ERROR)
-	err =  IGC_RECEIVE_ERROR;
-      ThreadState =  READ_STATE_TX;
+      {
+	    err =  IGC_RECEIVE_ERROR;
+        ThreadState = ABORT_STATE;      
+      }
+      else
+        ThreadState =  READ_STATE_TX;
       Sequence =0;
       retrys =0;
+      TimeOutFactor = 1;
     }
 
     /******READ STATE TX *******************************************************************************/
@@ -877,7 +918,6 @@ uint8_t err  = REC_NO_ERROR ;
       blocksize = 0;
       ThreadState = READ_STATE_RX;
       SendBinBlock(d,  Sequence,  GETIGCDATA, &pByteBlk[0], 0);
-      TimeCnt =0;
     }
 
     /******READ STATE RX *******************************************************************************/
@@ -885,21 +925,37 @@ uint8_t err  = REC_NO_ERROR ;
     {
       if(!BlockReceived())
       {
-	if(TimeCnt++ > (GC_BLK_RECTIMEOUT/GC_IDLETIME))
+        if(TimeCnt > (TimeOutFactor*GC_BLK_RECTIMEOUT/GC_IDLETIME))  // Time factor needed fo the very last Flarm Answer only, which need far longer
+        {         
+          if(retrys++ > MAX_RETRY)
 	{
 	  err = REC_TIMEOUT_ERROR;
-	  if(retrys++ > 4)
+            DownloadError = err;
 	    ThreadState = ABORT_STATE;
+            StartupStore(TEXT("%u%% Block:%u  Abort while wait for answer time:%ums  Size:%uByte"),pByteBlk[2],Sequence, TimeCnt*GC_IDLETIME,blocksize    );
+          }
 	  else
+          {     
 	    ThreadState = READ_STATE_TX;
+            StartupStore(TEXT("%u%% Block:%u timeout :%ums while wating for answer request Block again %i. time"),pByteBlk[2],Sequence ,TimeCnt*GC_IDLETIME , retrys);
 	}
 	return 0; // no data? leave thread and wait for next call
       }
       Sequence++;
       retrys =0;
-      err = RecBinBlock(d,  &RecSequence, &RecCommand, &pByteBlk[0], &blocksize,10* REC_TIMEOUT);
+      
+      if(!err) err = RecBinBlock(d,  &RecSequence, &RecCommand, &pByteBlk[0], &blocksize, REC_TIMEOUT);
+      if(err) 
+      {
+        ThreadState = ABORT_STATE;
+        StartupStore(TEXT("%u%% Block:%u  Abort after read time:%ums  Size:%uByte"),pByteBlk[2],Sequence, TimeCnt*GC_IDLETIME,blocksize    );
+      }
+      else
       ThreadState = READ_STATE_TX;
 
+      if( pByteBlk[2] > 50) // if more that 50% read, increase TimeOutFactor 
+        TimeOutFactor = 100000/GC_BLK_RECTIMEOUT; // reading last FLARM sentences takes up to 8s, for whatever reason
+        
       if(err==REC_NO_ERROR)
 	_sntprintf(szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), pByteBlk[2], IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
 
@@ -920,6 +976,7 @@ uint8_t err  = REC_NO_ERROR ;
 
       if (RecCommand != ACK)
 	ThreadState = CLOSE_STATE;
+
     }
     /******CLOSE ON ERROR *********************************************************************************/
     if(err != REC_NO_ERROR) ThreadState = CLOSE_STATE;
@@ -934,9 +991,7 @@ uint8_t err  = REC_NO_ERROR ;
       if(err != REC_NO_ERROR)
       {
 	_sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("Error Code:%u"), err);
-	if(DownloadError ==REC_NO_ERROR)  // no prvious error=
-	  DownloadError = err;
-	err = REC_NO_ERROR;
+    //    err = REC_NO_ERROR;
       }
       else
       {
@@ -946,6 +1001,9 @@ uint8_t err  = REC_NO_ERROR ;
 
     }
   }  // if(d)
+if(err)
+  if(DownloadError== REC_NO_ERROR)  // no prvious error=
+    DownloadError = err;
 return 0;
 }
 
