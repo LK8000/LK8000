@@ -99,14 +99,16 @@ bool BlockReceived(void)
 
 uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
 {
-
+#define IDLE_SLEEPTIME 10
   uint16_t TimeCnt =0;
   uint8_t Tmp;
   while(OutCnt == InCnt)
   {
-    Poco::Thread::sleep(1);
+    TimeCnt+= IDLE_SLEEPTIME;  
+    Poco::Thread::sleep(IDLE_SLEEPTIME);
     Poco::Thread::Thread::yield();
-    if(TimeCnt++ > Timeout)
+
+    if(TimeCnt > Timeout)
     {
       {StartupStore(TEXT("REC_TIMEOUT_ERROR" ));}
       return REC_TIMEOUT_ERROR;
@@ -228,8 +230,10 @@ UnlockFlightData();
 
 	if(!bFlarmActive)	{
 	  MessageBoxX(MsgToken(2401), MsgToken(2397), mbOk);
+#ifdef NO_FAKE_FLARM
 	  return;
-	}
+#endif
+     }
 	if(m_pDevice) {
 	  dlgIGCSelectListShowModal(m_pDevice);
 	}

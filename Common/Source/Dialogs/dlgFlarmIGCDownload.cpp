@@ -19,9 +19,9 @@
 
 #define MAX_FLARM_ANSWER_LEN  640  // FLARM Docu does not tell the max. answer len
                                    // The max. ever received length on IGC read was 485, so 640 seem to be a good value
-#define GC_BLK_RECTIMEOUT     750
-#define GC_IDLETIME           10
-#define REC_TIMEOUT           750 // receive timeout in ms
+#define GC_BLK_RECTIMEOUT     1000
+#define GC_IDLETIME           100
+#define REC_TIMEOUT           1000 // receive timeout in ms
 #define MAX_RETRY             1
 #define LST_STRG_LEN          100
 #define STATUS_TXT_LEN        100
@@ -163,7 +163,8 @@ if (d== NULL) return;
   }
 
   if(deb_)StartupStore(TEXT("\r\n===="));
- Poco::Thread::sleep(10);
+  Poco::Thread::sleep(10);
+  Poco::Thread::yield();
 }
 
 
@@ -698,12 +699,13 @@ static int OldThreadState = IDLE_STATE;
     if( ThreadState ==  PING_STATE_TX)
     {
       if(deb_) StartupStore(TEXT("PING "));
-
+#ifdef NO_FAKE_FLARM
       if( retrys++ >= 15)
       {
         ThreadState = ERROR_STATE;
         return 0;
       }
+#endif      
       ListElementType NewElement;
       _sntprintf(NewElement.Line1, LST_STRG_LEN, _T("        PING Flarm %u/15"), retrys);
       _tcscpy(NewElement.Line2, _T("        ... "));
@@ -1041,6 +1043,7 @@ protected:
         ReadFlarmIGCFile( CDevFlarm::GetDevice(), IGC_DLIndex);
       }
       Poco::Thread::sleep(GC_IDLETIME);
+      Poco::Thread::yield();
     }
   }
 };
