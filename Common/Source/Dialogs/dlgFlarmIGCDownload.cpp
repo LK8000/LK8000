@@ -19,10 +19,10 @@
 
 #define MAX_FLARM_ANSWER_LEN  640  // FLARM Docu does not tell the max. answer len
                                    // The max. ever received length on IGC read was 485, so 640 seem to be a good value
-#define GC_BLK_RECTIMEOUT     750
+#define GC_BLK_RECTIMEOUT     1000
 #define GC_IDLETIME           10
-#define REC_TIMEOUT           750 // receive timeout in ms
-#define MAX_RETRY             1
+#define REC_TIMEOUT           1000 // receive timeout in ms
+#define MAX_RETRY             3
 #define LST_STRG_LEN          100
 #define STATUS_TXT_LEN        100
 #define PRPGRESS_DLG
@@ -367,7 +367,7 @@ if(IGCFileList.size() == 0) return;
       }
 	      /************************************************************/
      ThreadState =  START_DOWNLOAD_STATE;        // start thread IGC download
-     if(wf) wf->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
+     if(wf) wf->SetTimerNotify(600, OnTimer); // check for end of download every 250ms
   #ifdef PRPGRESS_DLG
   CreateIGCProgressDialog();
   #endif
@@ -621,7 +621,7 @@ bAbort = false;
     } else LKASSERT(0);
     UpdateList();
 
-	wf->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
+	wf->SetTimerNotify(600, OnTimer); // check for end of download every 250ms
     wf->ShowModal();
     delete wf;
     wf = NULL;
@@ -782,7 +782,7 @@ static int OldThreadState = IDLE_STATE;
     /******************************  READRECORD_STATE_TX     ************************************/
     if( ThreadState ==  READRECORD_STATE_TX)
     {
-      if(deb_)  StartupStore(TEXT("READRECORD_STATE_RX "));
+      if(deb_)  StartupStore(TEXT("READRECORD_STATE_TX "));
       SendBinBlock(d, Sequence++, GETRECORDINFO, NULL, 0);
 
       ThreadState = READRECORD_STATE_RX;
@@ -942,18 +942,31 @@ static int OldThreadState = IDLE_STATE;
         }
         return 0; 
       }
-      Sequence++;
+      
+
       retrys =0;
       
-      if(!err) err = RecBinBlock(d,  &RecSequence, &RecCommand, &pByteBlk[0], &blocksize, REC_TIMEOUT);
+      if(!err) err = RecBinBlock(d,  &RecSequence, &RecCommand, &pByteBlk[0], &blocksize, REC_TIMEOUT);      
+
+      ThreadState = READ_STATE_TX;
+      static int CRCErrorCnt = 0;
       if(err) 
       {
-        ThreadState = ABORT_STATE;
-        StartupStore(TEXT("%u%% Block:%u  Abort after read time:%ums  Size:%uByte"),pByteBlk[2],Sequence, TimeCnt*GC_IDLETIME,blocksize    );
+        if(err /*== REC_CRC_ERROR*/ )
+        { 
+          StartupStore(TEXT("%u%% Block:%u  CRC Error, retry Block %u. time, delay:%ums  "),pByteBlk[2],Sequence, CRCErrorCnt+1, TimeCnt*GC_IDLETIME    );
+          if(CRCErrorCnt++ > MAX_RETRY)           // don't retry for ever
+            ThreadState = ABORT_STATE;
+        }
+        else
+        { 
+          ThreadState = ABORT_STATE;
+          StartupStore(TEXT("%u%% Block:%u  Abort after read time:%ums  Size:%uByte"),pByteBlk[2],Sequence, TimeCnt*GC_IDLETIME,blocksize    );
+        }
+        return 0;
       }
-      else
-       ThreadState = READ_STATE_TX;
-
+      CRCErrorCnt=0;
+      Sequence++;
       if( pByteBlk[2] > 50) // if more that 50% read, increase TimeOutFactor 
         TimeOutFactor = 100000/GC_BLK_RECTIMEOUT; // reading last FLARM sentences takes up to 8s, for whatever reason
         
