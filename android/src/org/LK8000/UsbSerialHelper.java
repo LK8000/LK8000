@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.felhr.usbserial.UsbSerialDevice;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +68,32 @@ public class UsbSerialHelper extends BroadcastReceiver {
         return _instance.listDevices();
     }
 
+    private static long[] supported_ids = createTable(
+            createDevice(0x16D0, 0x0BA9), // GPSBip
+            createDevice(0x0403, 0x6015), // Digifly AIR (FT X-Series)
+            createDevice(0x0483, 0x5740), // SoftRF Dongle
+
+            createDevice(0x0403, 0x6001), // FT232AM, FT232BM, FT232R FT245R,
+            createDevice(0x0403, 0x6010), // FT2232D, FT2232H
+            createDevice(0x0403, 0x6011), // FT4232H
+            createDevice(0x0403, 0x6014), // FT232H
+
+            createDevice(0x067B, 0x2303) // PL2303
+    );
+
+    static long createDevice(int vendorId, int productId) {
+        return ((long) vendorId) << 32 | (productId & 0xFFFF_FFFFL);
+    }
+
+    static long[] createTable(long... entries) {
+        Arrays.sort(entries);
+        return entries;
+    }
+
+    static boolean exists(long[] devices, int vendorId, int productId) {
+        return Arrays.binarySearch(devices, createDevice(vendorId, productId)) >= 0;
+    }
+
     @Override
     public synchronized void onReceive(Context context, Intent intent) {
         synchronized (this) {
@@ -89,9 +116,9 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
                     UsbSerialPort port = _PendingConnection.get(device);
                     _PendingConnection.remove(device);
-                    if(port != null) {
+                    if (port != null) {
                         UsbManager usbmanager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-                        if(usbmanager != null) {
+                        if (usbmanager != null) {
                             port.open(usbmanager);
                         }
                     }
@@ -102,12 +129,14 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
     private void AddAvailable(UsbDevice device) {
         if (device != null && UsbSerialDevice.isSupported(device)) {
-            // we only support known devices to avoid ghost port problem
-            if ( ( device.getVendorId() == 5840 && device.getProductId() ==  2985 ) ||      // GPSBip
-                 ( device.getVendorId() == 1027 && device.getProductId() == 24597 ) ||      // Digifly AIR
-                 ( device.getVendorId() == 1155 && device.getProductId() == 22336 )) {    // SoftRF Dongle
-                Log.v(TAG,"UsbDevice Found : " + device);
+            int vid = device.getVendorId();
+            int pid = device.getProductId();
+
+            if (exists(supported_ids, vid, pid)) {
+                Log.v(TAG, "UsbDevice Found : " + device);
                 _AvailableDevices.put(device.getDeviceName(), device);
+            } else {
+                Log.v(TAG, "Unsupported UsbDevice : " + device);
             }
         }
     }

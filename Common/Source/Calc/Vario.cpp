@@ -15,7 +15,7 @@ void ResetVarioAvailable(NMEA_INFO& Info) {
 }
 
 bool VarioAvailable(const NMEA_INFO& Info) {
-  return (Info.VarioSourceIdx < std::numeric_limits<unsigned>::max());
+  return (!ReplayLogger::IsEnabled()) && (Info.VarioSourceIdx < std::numeric_limits<unsigned>::max());
 }
 
 void UpdateVarioSource( NMEA_INFO& Info, const DeviceDescriptor_t& d, double Vario) {
