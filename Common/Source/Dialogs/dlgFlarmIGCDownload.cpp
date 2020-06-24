@@ -60,7 +60,7 @@ unsigned int IGC_DrawListIndex=0;
 bool bAbort = false;
 bool bFLARM_BinMode = false;
 int DownloadError =REC_NO_ERROR;     // global error variable
-
+bool Filling = false;
 
 typedef struct
 {
@@ -341,6 +341,8 @@ TCHAR Tmp[MAX_PATH];
 
 static void OnEnterClicked(WndButton* pWnd) {
 TCHAR Tmp[MAX_PATH ];
+
+if(Filling) return;
 if(IGCFileList.size() == 0) return;
     (void)pWnd;
 
@@ -586,7 +588,7 @@ StartupStore(TEXT(".... StartIGCReadThread%s"),NEWLINE);
 
 bShowMsg = false;
 bAbort = false;
-
+Filling = true;
   /*************************************************/
   ThreadState =  OPEN_BIN_STATE;
   /*************************************************/
@@ -770,8 +772,9 @@ static int OldThreadState = IDLE_STATE;
       if(RecCommand == ACK)
         ThreadState  = READRECORD_STATE_TX;
       else
+      {
         ThreadState = ALL_RECEIVED_STATE;
-      
+      }
       if(err)  
         ThreadState = ABORT_STATE;
       else
@@ -845,6 +848,7 @@ static int OldThreadState = IDLE_STATE;
     if( ThreadState ==  ALL_RECEIVED_STATE)
     {
       if(deb_) StartupStore(TEXT("ALL_RECEIVED_STATE"));
+      Filling = false;
       ThreadState =  IDLE_STATE;
     }
     /******************************  ERROR_STATE     ************************************/
@@ -952,7 +956,7 @@ static int OldThreadState = IDLE_STATE;
       static int CRCErrorCnt = 0;
       if(err) 
       {
-        if(err /*== REC_CRC_ERROR*/ )
+        if(err)
         { 
           StartupStore(TEXT("%u%% Block:%u  CRC Error, retry Block %u. time, delay:%ums  "),pByteBlk[2],Sequence, CRCErrorCnt+1, TimeCnt*GC_IDLETIME    );
           if(CRCErrorCnt++ > MAX_RETRY)           // don't retry for ever
