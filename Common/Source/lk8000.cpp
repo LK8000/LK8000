@@ -87,6 +87,7 @@
 #include <OS/RotateScreen.h>
 #include <dlgFlarmIGCDownload.h>
 #include "utils/make_unique.h"
+#include "Calc/Vario.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -350,7 +351,7 @@ bool Startup(const TCHAR* szCmdLine) {
   memset( &(CALCULATED_INFO), 0,sizeof(CALCULATED_INFO));
   memset( &SnailTrail[0],0,TRAILSIZE*sizeof(SNAIL_POINT));
   memset( &LongSnailTrail[0],0,(LONGTRAILSIZE+1)*sizeof(LONG_SNAIL_POINT));
-
+  ResetVarioAvailable(GPS_INFO);
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
   OpenGeoid();
