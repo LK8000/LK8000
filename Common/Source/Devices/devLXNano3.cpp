@@ -30,6 +30,7 @@
 #include "Utils.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
+#include "McReady.h"
 #include "Time/PeriodClock.hpp"
 
 
@@ -647,7 +648,7 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-//    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO[PortNum].POLARDir);
     wp->RefreshDisplay();
   }
@@ -1695,18 +1696,27 @@ int iTmp;
           TCHAR szTmp[MAX_NMEA_LEN];
           _sntprintf(szTmp,MAX_NMEA_LEN, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
           SetDataText(  _POLAR,  szTmp);
-          //     _stprintf(szTmp, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),   POLAR[POLAR_A],   POLAR[POLAR_B],   POLAR[POLAR_C]);
-          //      SetDataText( wf ,_BAT2,  szTmp);
-        }
-        /*
-        if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
-        {
-          POLAR[POLAR_A] = fa;
-          POLAR[POLAR_B] = fb;
-          POLAR[POLAR_C] = fc;
-        }
-        */
       }
+      if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
+      {
+        extern bool PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]);
+
+        double v;
+        for (int i=0; i < 3; i++)
+        {
+          v=POLARV[i]/100;
+          POLARLD[i] = -(fa*v*v + fb*v + fc);
+#ifdef TESTBENCH
+          TCHAR szTmp[MAX_NMEA_LEN];
+          _sntprintf(szTmp,MAX_NMEA_LEN, _T("V[%i]:%5.0f    s[%i]:%6.2f  ($LXWP2)"),i,POLARV[i],i,POLARLD[i] );
+          StartupStore(TEXT("Polar: %s"), szTmp);
+#endif
+        }
+        _sntprintf (szPolarName ,80, _T("%s"), d->Name );
+        PolarWinPilot2XCSoar(POLARV, POLARLD, WW);
+        GlidePolar::SetBallast();
+      }
+    }
 
 
 
