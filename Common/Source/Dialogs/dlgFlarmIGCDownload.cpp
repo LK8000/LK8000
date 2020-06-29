@@ -57,7 +57,6 @@ unsigned int IGC_DLIndex = 0;  // selected File download index
 unsigned int IGC_CurIndex = 0; // selected File index
 unsigned int IGC_DrawListIndex = 0;
 bool bAbort = false;
-bool bFLARM_BinMode = false;
 int DownloadError = REC_NO_ERROR; // global error variable
 
 typedef struct {
@@ -567,22 +566,12 @@ void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
     if (deb_)
       StartupStore(TEXT("EXIT & RESET"));
     SendBinBlock(d, Sequence, EXIT, NULL, 0);
-    bFLARM_BinMode = false;
+    SetBinaryModeFlag(false);
     StartupStore(TEXT("$PFLAR,0*55\r\n"));
     d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
     if (deb_)
       StartupStore(TEXT("$PFLAR,0*55\r\n"));
   }
-}
-
-bool IsInBinaryMode(void) { 
-  return bFLARM_BinMode; 
-}
-
-bool SetBinaryModeFlag(bool bBinMode) {
-  bool OldVal = bFLARM_BinMode;
-  bFLARM_BinMode = bBinMode;
-  return OldVal;
 }
 
 class ResourceLock {
@@ -704,7 +693,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
       if (deb_)
         StartupStore(TEXT("$PFLAX\r "));
       ThreadState = PING_STATE_TX;
-      bFLARM_BinMode = true;
+      SetBinaryModeFlag(true);
       return 0;
     }
 
