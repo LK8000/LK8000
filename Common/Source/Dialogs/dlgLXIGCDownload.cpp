@@ -190,11 +190,11 @@ static void OnEnterClicked(WndButton *pWnd) {
   }
   if (LX_IGCReadDialog.FileList()->size() < (uint) LX_IGCReadDialog.CurIndex()) return;
   LX_IGCReadDialog.DownloadIndex(LX_IGCReadDialog.CurIndex());
+  TCHAR szTmp[MAX_NMEA_LEN];
+  _tcscpy(szTmp, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
 
   TCHAR *remaining;
-  TCHAR *IGCFilename = _tcstok_r(
-          LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DownloadIndex()).Line1, TEXT(" "),
-          &remaining);
+  TCHAR *IGCFilename = _tcstok_r( szTmp, TEXT(" "), &remaining);
 
   _stprintf(Tmp, _T("%s %s ?"), MsgToken(2404), IGCFilename);
   if (MessageBoxX(Tmp, MsgToken(2404), mbYesNo) == IdYes)  // _@2404 "Download"
@@ -220,29 +220,28 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
   if (LX_IGCReadDialog.FileList()->size() < (uint) LX_IGCReadDialog.DrawIndex()) return;
   if (LX_IGCReadDialog.DrawIndex() < LX_IGCReadDialog.FileList()->size()) {
     Surface.SetTextColor(RGB_BLACK);
+    TCHAR szTmp[MAX_NMEA_LEN] ;
     TCHAR text1[MAX_NMEA_LEN] = {TEXT("IGC File")};
     TCHAR text2[MAX_NMEA_LEN] = {TEXT("date")};
+    _tcscpy(szTmp, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
     _tcscpy(text1, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
     _tcscpy(text2, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line2);
 
     TCHAR *remaining;    /* extract filname */
     TCHAR *IGCFilename = _tcstok_r(
-            LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1, TEXT(" "),
+        szTmp, TEXT(" "),
             &remaining);
 
     TCHAR PathAndFilename[MAX_PATH];
     LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);     // add path
+    _sntprintf(text1, MAX_NMEA_LEN, _T("%s"),text1);     // missing
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-        _sntprintf(text1, MAX_NMEA_LEN, _T("✔ %s"), IGCFilename); // already copied
-      else
-        _tcscpy(text1, IGCFilename);                             // missing
+        _sntprintf(text1, MAX_NMEA_LEN, _T("✔ %s"), text1); // already copied
     } else {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-        _sntprintf(text1, MAX_NMEA_LEN, _T("* %s"), IGCFilename);// already copied
-      else
-        _tcscpy(text1, IGCFilename);                             // missing
+       _sntprintf(text1, MAX_NMEA_LEN, _T("* %s"), text1);// already copied
     }
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),
