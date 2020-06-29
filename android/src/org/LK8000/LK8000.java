@@ -110,17 +110,9 @@ public class LK8000 extends Activity {
 
     IOIOHelper.onCreateContext(this);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR)
-      // Bluetooth suppoert was added in Android 2.0 "Eclair"
-      BluetoothHelper.Initialize(this);
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
-      // the DownloadManager was added in Android 2.3 "Gingerbread"
-      DownloadUtil.Initialise(getApplicationContext());
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-      UsbSerialHelper.Initialise(this);
-    }
+    BluetoothHelper.Initialize(this);
+    DownloadUtil.Initialise(getApplicationContext());
+    UsbSerialHelper.Initialise(this);
 
     SoundUtil.Initialise();
 
@@ -301,13 +293,8 @@ public class LK8000 extends Activity {
       batteryReceiver = null;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
-      DownloadUtil.Deinitialise(getApplicationContext());
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-      UsbSerialHelper.Deinitialise(this);
-    }
-
+    DownloadUtil.Deinitialise(getApplicationContext());
+    UsbSerialHelper.Deinitialise(this);
     SoundUtil.Deinitialise();
 
     if (nativeView != null) {
