@@ -580,13 +580,11 @@ class ResourceLock {
 public:
   ResourceLock() {
     StartupStore(TEXT(".... Enter ResourceLock%s"), NEWLINE);
-    MapWindow::SuspendDrawingThread();
     StartIGCReadThread();
   };
   ~ResourceLock() {
     StartupStore(TEXT(".... Leave ResourceLock%s"), NEWLINE);
     StopIGCReadThread();
-    MapWindow::ResumeDrawingThread();
     if (wf)
       wf->SetTimerNotify(0, NULL); // reset Timer
 
