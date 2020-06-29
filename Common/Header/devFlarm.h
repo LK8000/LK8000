@@ -25,6 +25,7 @@ class WndButton;
 #define IGC_RECEIVE_ERROR 6
 #define REC_NO_DEVICE     7
 #define REC_NOMSG         8
+#define REC_INVALID_SIZE  9
 
 typedef union{
   uint16_t val;

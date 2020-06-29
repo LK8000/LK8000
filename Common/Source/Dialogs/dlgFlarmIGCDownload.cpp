@@ -75,8 +75,6 @@ bool bShowMsg = false;
 
 void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
                   uint8_t *pBlock, uint16_t blocksize);
-uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command,
-                    uint8_t *pBlock, uint16_t *blocksize, uint16_t Timeout);
 
 uint16_t crc_update(uint16_t crc, uint8_t data) {
 
@@ -193,8 +191,9 @@ uint8_t RecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) {
   return error;
 }
 
-uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command,
-                    uint8_t *pBlock, uint16_t *blocksize, uint16_t Timeout) {
+template<size_t size>
+static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command,
+                    uint8_t (&pBlock)[size], uint16_t *blocksize, uint16_t Timeout) {
   uint8_t error = REC_NO_ERROR;
   uint8_t inchar;
   uint8_t Version;
@@ -224,6 +223,11 @@ uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command,
   error = RecChar16(d, blocksize, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
+  }
+
+  if ((*blocksize) > size) {
+    StartupStore(TEXT("RecBinBlock : Invalid Block Size %u"), *blocksize);
+    return REC_INVALID_SIZE;
   }
 
   CRC_calc = crc_update16(CRC_calc, *blocksize);
@@ -732,8 +736,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         }
         return 0; // no data? leave thread and wait for next call
       }
-      err = RecBinBlock(d, &RecSequence, &RecCommand, &pByteBlk[0], &blocksize,
-                        REC_TIMEOUT);
+      err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
       ThreadState = PING_STATE_TX;
       if (err == REC_NO_ERROR) {
         retrys = 0;
@@ -770,8 +773,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         }
         return 0; // no data? leave thread and wait for next call
       }
-      err = RecBinBlock(d, &RecSequence, &RecCommand, &pByteBlk[0], &blocksize,
-                        REC_TIMEOUT);
+      err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
       if (RecCommand == ACK)
         ThreadState = READRECORD_STATE_TX;
       else
@@ -809,8 +811,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
 
         return 0; // no data? leave thread and wait for next call
       }
-      err = RecBinBlock(d, &RecSequence, &RecCommand, &pByteBlk[0], &blocksize,
-                        REC_TIMEOUT);
+      err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
       if (err) {
         ThreadState = ABORT_STATE;
         return 0;
@@ -941,8 +942,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
       if (deb_)
         StartupStore(_T("%s"), szStatusText);
       SendBinBlock(d, Sequence++, SELECTRECORD, &IGC_FileIndex, 1);
-      err = RecBinBlock(d, &RecSequence, &RecCommand, &pByteBlk[0], &blocksize,
-                        REC_TIMEOUT);
+      err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
 
       if (err != REC_NO_ERROR) {
         err = IGC_RECEIVE_ERROR;
@@ -991,8 +991,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
       retrys = 0;
 
       if (!err)
-        err = RecBinBlock(d, &RecSequence, &RecCommand, &pByteBlk[0],
-                          &blocksize, REC_TIMEOUT);
+        err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
       if (err) {
         ThreadState = ABORT_STATE;
         StartupStore(
@@ -1053,7 +1052,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
                    MsgToken(2406)); // _@M2406_ "IGC File download complete!"
       }
       if (deb_)
-        StartupStore(_T("IGC downlload complete"));
+        StartupStore(_T("IGC download complete"));
     }
   } // if(d)
   if (err)
