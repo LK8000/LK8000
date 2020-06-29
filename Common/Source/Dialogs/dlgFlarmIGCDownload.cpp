@@ -29,23 +29,25 @@
 #define PRPGRESS_DLG
 #define deb_ (0) // debug output switch
 
-#define IDLE_STATE 0
-#define OPEN_BIN_STATE 1
-#define PING_STATE_RX 2
-#define PING_STATE_TX 3
-#define READ_STATE_RX 4
-#define READ_STATE_TX 5
-#define SELECTRECORD_STATE_TX 6
-#define SELECTRECORD_STATE_RX 7
-#define READRECORD_STATE_TX 8
-#define READRECORD_STATE_RX 9
-#define START_DOWNLOAD_STATE 10
-#define ABORT_STATE 11
-#define ERROR_STATE 12
-#define ALL_RECEIVED_STATE 13
-#define CLOSE_STATE 14
+enum thread_state {
+  IDLE_STATE,
+  OPEN_BIN_STATE,
+  PING_STATE_RX,
+  PING_STATE_TX,
+  READ_STATE_RX,
+  READ_STATE_TX,
+  SELECTRECORD_STATE_TX,
+  SELECTRECORD_STATE_RX,
+  READRECORD_STATE_TX,
+  READRECORD_STATE_RX,
+  START_DOWNLOAD_STATE,
+  ABORT_STATE,
+  ERROR_STATE,
+  ALL_RECEIVED_STATE,
+  CLOSE_STATE
+};
 
-static volatile int ThreadState = IDLE_STATE;
+static volatile thread_state ThreadState = IDLE_STATE;
 static bool OnTimer(WndForm *pWnd);
 
 static WndListFrame *wIGCSelectListList = NULL;
@@ -668,7 +670,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
   uint8_t RecCommand;
   uint8_t err = REC_NO_ERROR;
 
-  static int OldThreadState = IDLE_STATE;
+  static thread_state OldThreadState = IDLE_STATE;
 
   if (OldThreadState == ThreadState) // state watchdog
   {
@@ -1090,6 +1092,8 @@ protected:
   Poco::Thread Thread;
 
   void run() {
+    if (deb_)
+      StartupStore(TEXT("IGC Thread Started !"));
 
     while (!bStop) {
       if (ThreadState != IDLE_STATE) {
@@ -1098,6 +1102,10 @@ protected:
       Poco::Thread::sleep(GC_IDLETIME);
       Poco::Thread::yield();
     }
+
+    if (deb_)
+      StartupStore(TEXT("IGC Thread Stopped !"));
+
   }
 };
 
