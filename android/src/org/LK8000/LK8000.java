@@ -43,8 +43,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.provider.Settings;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.ndk.CrashlyticsNdk;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -55,8 +53,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
-
-import io.fabric.sdk.android.Fabric;
 
 import com.onyx.android.sdk.api.device.epd.EpdController;
 
@@ -79,14 +75,6 @@ public class LK8000 extends Activity {
       serviceClass = MyService.class;
 
     super.onCreate(savedInstanceState);
-
-//    Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
-    Fabric fabric = new Fabric.Builder(this).debuggable(true).kits(
-            new Crashlytics(),
-            new CrashlyticsNdk()
-    ).build();
-
-    Fabric.with(fabric);
 
     Log.d(TAG, "ABI=" + Build.CPU_ABI);
     Log.d(TAG, "PRODUCT=" + Build.PRODUCT);
