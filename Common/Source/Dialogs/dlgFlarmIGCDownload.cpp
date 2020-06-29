@@ -69,7 +69,6 @@ std::vector<ListElementType> IGCFileList;
 
 int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_Index);
 
-static WndForm *wf = NULL;
 ListElement *pIGCResult = NULL;
 TCHAR szStatusText[STATUS_TXT_LEN];
 
@@ -356,10 +355,17 @@ bool GetIGCFilename(TCHAR *IGCFilename, int Idx) {
 }
 
 static void OnEnterClicked(WndButton *pWnd) {
+  if(!pWnd) {
+    return;
+  }
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if(!pForm) {
+    return;
+  }
+
   TCHAR Tmp[MAX_PATH];
   if (IGCFileList.size() == 0)
     return;
-  (void)pWnd;
 
   if (IGC_CurIndex >= IGCFileList.size()) {
     IGC_CurIndex = IGCFileList.size() - 1;
@@ -386,8 +392,7 @@ static void OnEnterClicked(WndButton *pWnd) {
     }
     /************************************************************/
     ThreadState = START_DOWNLOAD_STATE; // start thread IGC download
-    if (wf)
-      wf->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
+    pForm->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
 #ifdef PRPGRESS_DLG
     CreateIGCProgressDialog();
 #endif
@@ -472,8 +477,7 @@ static void OnCloseClicked(WndButton *pWnd) {
       if (pWnd) {
         WndForm *pForm = pWnd->GetParentWndForm();
         if (pForm) {
-          if (wf)
-            wf->SetTimerNotify(0, NULL); // reset Timer
+          pForm->SetTimerNotify(0, NULL); // reset Timer
           pForm->SetModalResult(mrCancel);
         }
       }
@@ -494,8 +498,7 @@ static bool OnTimer(WndForm *pWnd) {
 #ifdef PRPGRESS_DLG
         CloseIGCProgressDialog();
 #endif
-        if (wf)
-          wf->SetTimerNotify(0, NULL); // reset Timer
+        pForm->SetTimerNotify(0, NULL); // reset Timer
         if (bShowMsg) {
           switch (DownloadError) {
           case REC_NO_ERROR:
@@ -572,7 +575,9 @@ void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
   }
 }
 
-bool IsInBinaryMode(void) { return bFLARM_BinMode; }
+bool IsInBinaryMode(void) { 
+  return bFLARM_BinMode; 
+}
 
 bool SetBinaryModeFlag(bool bBinMode) {
   bool OldVal = bFLARM_BinMode;
@@ -589,9 +594,6 @@ public:
   ~ResourceLock() {
     StartupStore(TEXT(".... Leave ResourceLock%s"), NEWLINE);
     StopIGCReadThread();
-    if (wf)
-      wf->SetTimerNotify(0, NULL); // reset Timer
-
     IGCFileList.clear();
   }
 };
@@ -607,9 +609,9 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
   /*************************************************/
   ThreadState = OPEN_BIN_STATE;
   /*************************************************/
-  wf = dlgLoadFromXML(IGCCallBackTable, ScreenLandscape
+  std::unique_ptr<WndForm> wf(dlgLoadFromXML(IGCCallBackTable, ScreenLandscape
                                             ? IDR_XML_MULTISELECTLIST_L
-                                            : IDR_XML_MULTISELECTLIST_P);
+                                            : IDR_XML_MULTISELECTLIST_P));
 
   if (wf) {
     WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdClose"));
@@ -645,8 +647,6 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
 
     wf->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
     wf->ShowModal();
-    delete wf;
-    wf = NULL;
   }
   DownloadError = REC_NOMSG; // don't show an error msg on initialisation
   LeaveBinModeWithReset(d);  // reset Flarm after leaving dialog
