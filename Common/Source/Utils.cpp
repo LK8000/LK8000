@@ -318,7 +318,7 @@ double CalculateBalastFromLX(double Factor)
 	if(TotalAvailableBallast == 0)
 		TotalAvailableBallast = 1;
 
-	return ((Factor-1) * (WEIGHTS[0] +WEIGHTS[1] +  GlidePolar::WeightOffset))/ TotalAvailableBallast;
+	return ((Factor-1.0) * (WEIGHTS[0] +WEIGHTS[1] +  GlidePolar::WeightOffset))/ (TotalAvailableBallast+0.5);
 }
 
 double CalculateLXBugs(double Bugs)

@@ -670,6 +670,8 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devVaulter.cpp
     Common/Source/Devices/devOpenVario.cpp
     Common/Source/Devices/devFlarm.cpp
+    Common/Source/Devices/devFlarm.cpp
+    Common/Source/Devices/devLX_EOS_ERA.cpp
 
     Common/Source/Dialogs/AddCustomKeyList.cpp
     Common/Source/Dialogs/dlgAirspace.cpp

@@ -41,6 +41,15 @@ void WeightOffset(double wload) {
 
 bool PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]) {
 
+  POLARV[0] = dPOLARV[0];
+  POLARV[1] = dPOLARV[1];
+  POLARV[2] = dPOLARV[2];
+  POLARLD[0] = dPOLARW[0];
+  POLARLD[1] = dPOLARW[1];
+  POLARLD[2] = dPOLARW[2];
+  WW[0]  = ww[0];
+  WW[1]  = ww[1];
+
   const double v1 = dPOLARV[0]/3.6; 
   const double v2 = dPOLARV[1]/3.6; 
   const double v3 = dPOLARV[2]/3.6;
