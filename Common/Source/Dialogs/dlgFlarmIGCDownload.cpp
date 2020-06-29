@@ -152,31 +152,32 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
     SendEscChar(d, pBlock[i]);
   }
 
-  if (deb_)
+  if (deb_) {
     StartupStore(TEXT("\r\n===="));
+  }
   Poco::Thread::sleep(10);
   Poco::Thread::yield();
 }
 
 uint8_t RecChar8(DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
   uint8_t Tmp;
-  uint8_t err;
-  err = RecChar(d, &Tmp, Timeout);
-
-  if (!err) {
+  uint8_t err = RecChar(d, &Tmp, Timeout);
+  if (err != REC_NO_ERROR) {
     if (Tmp == ESCAPE) {
       err = RecChar(d, &Tmp, Timeout);
-      if (Tmp == ESC_ESC) {
-        Tmp = 0x78;
-        if (deb_) {
-          StartupStore(TEXT("ESC_ESC"));
-        };
-      }
-      if (Tmp == ESC_START) {
-        Tmp = 0x73;
-        if (deb_) {
-          StartupStore(TEXT("ESC_START"));
-        };
+      if (err != REC_NO_ERROR) {
+        if (Tmp == ESC_ESC) {
+          Tmp = ESCAPE;
+          if (deb_) {
+            StartupStore(TEXT("ESC_ESC"));
+          }
+        }
+        if (Tmp == ESC_START) {
+          Tmp = STARTFRAME;
+          if (deb_) {
+            StartupStore(TEXT("ESC_START"));
+          }
+        }
       }
     }
   }
@@ -187,8 +188,9 @@ uint8_t RecChar8(DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
 uint8_t RecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) {
   ConvUnion tmp;
   bool error = RecChar8(d, &(tmp.byte[0]), Timeout);
-  if (error == REC_NO_ERROR)
+  if (error == REC_NO_ERROR) {
     error = RecChar8(d, &(tmp.byte[1]), Timeout);
+  }
   *inchar = tmp.val;
   return error;
 }
@@ -200,90 +202,90 @@ uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command,
   uint8_t Version;
   uint16_t CRC_in, CRC_calc = 0;
 
+  PeriodClock clock;
+  clock.Update();
   do {
-    error = RecChar(d, &inchar, Timeout);
-
-    if (error) {
-      if (deb_)
-        StartupStore(TEXT("STARTFRAME timeout!"));
-      if (error)
-        return error;
+    if(clock.Check(Timeout)) {
+      error = REC_TIMEOUT_ERROR;
+    } else {
+      error = RecChar(d, &inchar, Timeout);
     }
-  } while ((inchar != STARTFRAME) && !error);
-
-  if (!error) {
-    if (deb_)
-      StartupStore(TEXT("STARTFRAME OK!"));
-  } else {
-    if (deb_)
+  } while ((inchar != STARTFRAME) && (error == REC_NO_ERROR));
+  
+  if(error != REC_NO_ERROR) {
+    if (deb_) {
       StartupStore(TEXT("STARTFRAME fail!"));
+    }
+    return error;
   }
 
-  error |= RecChar16(d, blocksize, Timeout);
-  CRC_calc = crc_update16(CRC_calc, *blocksize);
-  {
-    if (deb_)
-      StartupStore(TEXT("Block Size %u"), *blocksize);
-  }
-  if (error != REC_NO_ERROR)
-    return error;
-  error |= RecChar8(d, &Version, Timeout);
-  CRC_calc = crc_update(CRC_calc, Version);
-  {
-    if (deb_)
-      StartupStore(TEXT("Block Ver %u"), Version);
-  }
-  if (error != REC_NO_ERROR)
-    return error;
-  error |= RecChar16(d, Sequence, Timeout);
-  CRC_calc = crc_update16(CRC_calc, *Sequence);
-  {
-    if (deb_)
-      StartupStore(TEXT("Block Seq %u"), *Sequence);
-  }
-  if (error != REC_NO_ERROR)
-    return error;
-  error |= RecChar8(d, Command, Timeout);
-  CRC_calc = crc_update(CRC_calc, *Command);
-  {
-    if (deb_)
-      StartupStore(TEXT("Block Cmd %02X"), *Command);
-  }
-  if (error != REC_NO_ERROR)
-    return error;
-  error |= RecChar16(d, &CRC_in, Timeout);
-  {
-    if (deb_)
-      StartupStore(TEXT("Block CRC %04X"), CRC_in);
-  }
-  if (error != REC_NO_ERROR)
-    return error;
   if (deb_) {
+    StartupStore(TEXT("STARTFRAME OK!"));
+  }
+                    
+  error = RecChar16(d, blocksize, Timeout);
+  if (error != REC_NO_ERROR) {
+    return error;
+  }
+
+  CRC_calc = crc_update16(CRC_calc, *blocksize);
+  if (deb_) {
+    StartupStore(TEXT("Block Size %u"), *blocksize);
+  }
+
+  error = RecChar8(d, &Version, Timeout);
+  if (error != REC_NO_ERROR) {
+    return error;
+  }
+  CRC_calc = crc_update(CRC_calc, Version);
+  if (deb_) {
+    StartupStore(TEXT("Block Ver %u"), Version);
+  }
+  error = RecChar16(d, Sequence, Timeout);
+  if (error != REC_NO_ERROR) {
+    return error;
+  }
+  CRC_calc = crc_update16(CRC_calc, *Sequence);
+  if (deb_) {
+    StartupStore(TEXT("Block Seq %u"), *Sequence);
+  }
+  error = RecChar8(d, Command, Timeout);
+  if (error != REC_NO_ERROR) {
+    return error;
+  }
+  CRC_calc = crc_update(CRC_calc, *Command);
+  if (deb_) {
+    StartupStore(TEXT("Block Cmd %02X"), *Command);
+  }
+  error = RecChar16(d, &CRC_in, Timeout);
+  if (error != REC_NO_ERROR) {
+    return error;
+  }
+  if (deb_) {
+    StartupStore(TEXT("Block CRC %04X"), CRC_in);
     StartupStore(TEXT("Header  received!"));
   }
 
-  if (*blocksize > 8)
+  if (*blocksize > 8) {
     for (uint16_t i = 0; i < (*blocksize - 8); i++) {
-      error |= RecChar8(d, &inchar, Timeout);
+      error = RecChar8(d, &inchar, Timeout);
       if (error != REC_NO_ERROR) {
         StartupStore(TEXT("Rec Block Body error: %u!"), error);
         return error;
       }
       pBlock[i] = inchar;
       CRC_calc = crc_update(CRC_calc, pBlock[i]);
-      if (error)
-        return error;
-      //    if(deb_) { StartupStore(TEXT("Block[%u]  %02X" ),i, pBlock[i]);}
     }
+  }
   *blocksize -= 8;
   if (CRC_calc != CRC_in) {
-    StartupStore(TEXT("Rec Block CRC error!"));
     error = REC_CRC_ERROR;
+    StartupStore(TEXT("Rec Block CRC error!"));
   } else {
-    if (error)
-      StartupStore(TEXT("Rec Block error  received!"));
-    else if (deb_)
-      StartupStore(TEXT("Rec Block received OK!"));
+    error = REC_NO_ERROR;
+    if (deb_) {
+      StartupStore(TEXT("Rec Block received!"));
+    }
   }
   return error;
 }
@@ -456,7 +458,9 @@ static void OnIGCListEnter(WindowControl *Sender,
   }
 }
 
-void StopIGCRead(void) { bAbort = true; }
+void StopIGCRead(void) {
+  bAbort = true; 
+}
 
 static void OnCloseClicked(WndButton *pWnd) {
   StopIGCRead();
