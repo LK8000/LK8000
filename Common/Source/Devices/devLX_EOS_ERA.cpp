@@ -1647,7 +1647,7 @@ static int iNoFlights=0;
   { TCHAR FileName[50]= _T("FileName"), Pilot[50]= _T(""),Surname[50]= _T(""), Takeoff[50]= _T(""),Date[50]= _T(""),Landing[50]= _T(""),Type[50]= _T(""), Reg[50]= _T("");
     StartupStore(TEXT("FLIGHT_INFO %s"), sentence);
 
-    NMEAParser::ExtractParameter(sentence, Date     ,2);int  iNo = _ttoi(Date);
+    NMEAParser::ExtractParameter(sentence, Date     ,2);int  iNo = (int) StrToDouble(Date,nullptr);
     NMEAParser::ExtractParameter(sentence, FileName ,3 );
     NMEAParser::ExtractParameter(sentence, Date     ,4);
     NMEAParser::ExtractParameter(sentence, Takeoff  ,5);
