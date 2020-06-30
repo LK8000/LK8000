@@ -15,7 +15,9 @@
 #include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
 #include "dlgFlarmIGCDownload.h"
-
+#include <queue>
+#include "Thread/Mutex.hpp"
+#include "Thread/Cond.hpp"
 
 
 
@@ -49,98 +51,92 @@ BOOL CDevFlarm::Install( PDeviceDescriptor_t d ) {
 	return(TRUE);
 }
 
+namespace {
+  std::queue<uint8_t> buffered_data;
+  Mutex mutex;
+  Cond cond;
+  bool bFLARM_BinMode = false;
+}
 
-uint8_t RingBuff[REC_BUFFERSIZE+1];
-volatile  uint16_t InCnt=0;
-volatile  uint16_t OutCnt=0;
-static bool recEnable = true;
-
-
-
-BOOL CDevFlarm::FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
-{
-  if(IsInBinaryMode ())
-  {
-    if (_tcsncmp(_T("$PFLAU"), sentence, 6) == 0)
-    {
-	  StartupStore(TEXT("$PFLAU detected, disable binary mode!" ));
-	  SetBinaryModeFlag (false);
+BOOL CDevFlarm::FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
+  if (IsInBinaryMode()) {
+    if (_tcsncmp(_T("$PFLAU"), sentence, 6) == 0) {
+      StartupStore(TEXT("$PFLAU detected, disable binary mode!" ));
+      SetBinaryModeFlag(false);
     }
+    return true; // ignore all data ...
   }
   return false;
 }
 
+BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO) {
+  if ((!d) || (!String) || (!len)) {
+    return FALSE;
+  }
 
-BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
-{
-if(d == NULL) return 0;
-if(String == NULL) return 0;
-if(len == 0) return 0;
+  ScopeLock lock(mutex);
 
-int cnt=0;
+  if (!IsInBinaryMode()) {
+    return FALSE;
+  }
 
-if(recEnable)
-  while (cnt < len)
-  {
-    RingBuff[InCnt++] = (TCHAR) String[cnt++];
-    InCnt %= REC_BUFFERSIZE;
-  } //  (cnt < len)
+  for (int i = 0; i < len; i++) {
+    buffered_data.push(String[i]);
+  }
+  cond.Broadcast();
 
-return  true;
+  return  true;
 }
 
-bool BlockReceived(void)
-{
-	if(OutCnt == InCnt)
-	  return false;
-	else
-	 return true;
+/**
+ * return true if received data is available.
+ */
+bool BlockReceived() {
+  ScopeLock lock(mutex);
+  return (!buffered_data.empty());
 }
 
-uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout)
-{
-#define IDLE_SLEEPTIME 10
-  uint16_t TimeCnt =0;
-  uint8_t Tmp;
-  while(OutCnt == InCnt)
-  {
-    TimeCnt+= IDLE_SLEEPTIME;  
-    Poco::Thread::sleep(IDLE_SLEEPTIME);
-    Poco::Thread::Thread::yield();
+bool IsInBinaryMode() {
+  ScopeLock lock(mutex);
+  return bFLARM_BinMode;
+}
 
-    if(TimeCnt > Timeout)
-    {
-      {StartupStore(TEXT("REC_TIMEOUT_ERROR" ));}
+bool SetBinaryModeFlag(bool bBinMode) {
+  ScopeLock lock(mutex);
+  bool OldVal = bFLARM_BinMode;
+  bFLARM_BinMode = bBinMode;
+  if(!bFLARM_BinMode) {
+    // same as clear() but free allocated memory.
+    buffered_data = std::queue<uint8_t>();
+  }
+  return OldVal;
+}
+
+uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
+  ScopeLock lock(mutex);
+
+  while(buffered_data.empty()) {
+    if(!cond.Wait(mutex, Timeout)) {
       return REC_TIMEOUT_ERROR;
     }
   }
-  Tmp = RingBuff[OutCnt++];
-  OutCnt %= REC_BUFFERSIZE;
-  if(inchar)
-    *inchar = Tmp;
-
+  if(inchar) {
+    *inchar = buffered_data.back();
+  }
+  buffered_data.pop();
   return REC_NO_ERROR;
 }
 
-
-
 BOOL CDevFlarm::Open( PDeviceDescriptor_t d) {
 	m_pDevice = d;
-
 	return TRUE;
 }
 
 BOOL CDevFlarm::Close (PDeviceDescriptor_t d) {
-
-  LockFlightData();
-  if(IsInBinaryMode()) // if FLARM in Bin Modet?
-  {
-    if(d != NULL)
-	  FlarmReboot(d);
+  if(IsInBinaryMode()) { // if FLARM is in Binary Mode?
+    FlarmReboot(d);
   }
-  UnlockFlightData();
   m_pDevice = NULL;
-
   return TRUE;
 }
 
@@ -252,11 +248,6 @@ void CDevFlarm::OnRebootClicked(WndButton* pWnd) {
 BOOL CDevFlarm::FlarmReboot(PDeviceDescriptor_t d) {
     if (d && d->Com) {
         LeaveBinModeWithReset(d);
-        d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
-        StartupStore(TEXT("$PFLAR,0*55\r\n"));
-        LockFlightData();
-        GPS_INFO.FLARM_Available = false;
-        UnlockFlightData();
     }
     return TRUE;
 }
