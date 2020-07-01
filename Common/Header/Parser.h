@@ -15,6 +15,7 @@
 
 struct DeviceDescriptor_t;
 
+
 #if USESWITCHES
 typedef struct _SWITCH_INFO
 {
