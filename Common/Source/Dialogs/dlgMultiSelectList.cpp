@@ -366,8 +366,6 @@ if(text1 == NULL) return -1;
 if(text2 == NULL) return -1;
 
 TCHAR Comment[MAX_LEN] = _T("");;
-FlarmId* flarmId ;
-int j;
 double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pWeather->Latitude,  pWeather->Longitude, &Distance, &Bear);
   float press = pWeather->pressure;
