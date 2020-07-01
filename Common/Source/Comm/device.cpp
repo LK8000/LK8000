@@ -17,6 +17,7 @@
 #include "TCPPort.h"
 #include "devPVCOM.h"
 #include <functional>
+#include "Calc/Vario.h"
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -594,6 +595,7 @@ BOOL devInit() {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
+    ResetVarioAvailable(GPS_INFO);
 
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);

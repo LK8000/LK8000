@@ -328,6 +328,8 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   LockTaskData();
   ClearTask();
 
+  std::map<tstring, size_t> cup_header;
+
   bool TaskValid = false;
   FileSection = none;
   int i=0;
@@ -338,6 +340,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
           if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
               (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
               FileSection = Waypoint;
+              cup_header = CupStringToHeader(szString);
               continue;
           } else if ((FileSection == Waypoint) && (_tcscmp(szString, _T("-----Related Tasks-----")) == 0)) {
               FileSection = TaskTp;
@@ -369,7 +372,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 
           case Waypoint:
             memset(&newPoint, 0, sizeof(newPoint));
-            if (ParseCUPWayPointString(szString, &newPoint)) {
+            if (ParseCUPWayPointString(cup_header, szString, &newPoint)) {
                 mapWaypoint[newPoint.Name] = newPoint;
             }
             break;

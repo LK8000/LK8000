@@ -19,7 +19,7 @@
 static WndForm *wf=NULL;
 static WndListFrame *wTTYList=NULL;
 static WndOwnerDrawFrame *wTTYListEntry = NULL;
-
+static TCHAR TxText[MAX_NMEA_LEN] =_T("");
 static TCHAR tmps[100];
 TCHAR* DeviceName(int dev)
 {
@@ -203,7 +203,7 @@ TCHAR  szCheck[254];
 
 
 static void OnSendClicked(WndButton* pWnd) {
-TCHAR TxText[200] =_T("");
+
 WndForm* pOwner = pWnd->GetParentWndForm();
 WndProperty* wp = NULL;
   if(pOwner)
@@ -211,24 +211,21 @@ WndProperty* wp = NULL;
 
   if(wp)
   {
+    TCHAR Tmp[MAX_NMEA_LEN+6] =_T(""); // additional space for the checksum
     short active=ComCheck_ActivePort; // can change in thread
-    _tcsncpy(TxText, wp->GetDataField()->GetAsString(),190);
+    _tcsncpy(Tmp, wp->GetDataField()->GetAsString(),MAX_NMEA_LEN);
+     Tmp[MAX_NMEA_LEN-1]= '\0';
+    _tcsncpy(TxText,Tmp,MAX_NMEA_LEN);
 
-//	  TxText[0] = '$';
-    AddCheckSumStrg(TxText);
+
+    AddCheckSumStrg(Tmp);
 
     if((ComCheck_ActivePort >= 0) && (DeviceList[active].Com))
     {
-      DeviceList[active].Com->WriteString(TxText);
+      DeviceList[active].Com->WriteString(Tmp);
       ComCheck_AddText(_T("\r\n > "));
-      ComCheck_AddText(TxText);
+      ComCheck_AddText(Tmp);
     }
-    else
-	  _tcsncpy(TxText, MsgToken(2392),190);  // _@M2392_ "Error: Port not opened!"
-
-    wp->GetDataField()->Set(TxText);
-    wp->RefreshDisplay();
-/*  ((WndButton *)wf->FindByName(TEXT("cmdSendButton")))->SetCaption(  TxText	);*/
   }
 }
 
@@ -261,6 +258,12 @@ void dlgTerminal(int portnumber) {
   OnPortClicked(NULL);
 
 
+  if(wf)
+  {
+	WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpSendText"));
+    wp->GetDataField()->Set(TxText);
+    wp->RefreshDisplay();
+  }
 
   wf->ShowModal();
 

@@ -25,6 +25,8 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
   WAYPOINT new_waypoint {};
   int nLineNumber=0;
 
+  std::map<tstring, size_t> cup_header;
+
   CreateProgressDialog(MsgToken(903)); // Loading Waypoints File...
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
@@ -74,6 +76,7 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 		(_tcsncmp(_T("Title,Code,Country"),nTemp2String,18) == 0)  // 100314
 	) {
 		StartupStore(_T(". Waypoint file %d format: SeeYou"),globalFileNum);
+		cup_header = CupStringToHeader(nTemp2String);
 		fempty=false;
 		fileformat=LKW_CUP;
 		break;
@@ -176,7 +179,7 @@ goto_inloop:
 		if ( _tcsncmp(_T("-----Related Tasks"),nTemp2String,18)==0) {
 			break;
 		}
-		if (ParseCUPWayPointString(nTemp2String, &new_waypoint)) {
+		if (ParseCUPWayPointString(cup_header, nTemp2String, &new_waypoint)) {
 			if ( (_tcscmp(new_waypoint.Name, LKGetText(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint.Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 				assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);

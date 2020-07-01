@@ -30,41 +30,11 @@ import android.view.MotionEvent;
  */
 abstract class DifferentTouchInput {
   public static DifferentTouchInput getInstance() {
-    if (Build.VERSION.SDK_INT < 8)
-      /* up to Android 2.1 Eclair */
-      return SingleTouchInput.Holder.sInstance;
-    else
-      /* Android 2.2 Froyo or newer */
-      return MultiTouchInput.Holder.sInstance;
+    /* Android 2.2 Froyo or newer */
+    return MultiTouchInput.Holder.sInstance;
   }
 
   public abstract void process(final MotionEvent event);
-
-  /**
-   * Implementation for Android versions that are not capable of
-   * MultiTouch.
-   */
-  private static class SingleTouchInput extends DifferentTouchInput {
-    private static class Holder {
-      private static final SingleTouchInput sInstance = new SingleTouchInput();
-    }
-
-    public void process(final MotionEvent event) {
-      switch (event.getAction()) {
-      case MotionEvent.ACTION_DOWN:
-        EventBridge.onMouseDown((int)event.getX(), (int)event.getY());
-        break;
-
-      case MotionEvent.ACTION_UP:
-        EventBridge.onMouseUp((int)event.getX(), (int)event.getY());
-        break;
-
-      case MotionEvent.ACTION_MOVE:
-        EventBridge.onMouseMove((int)event.getX(), (int)event.getY());
-        break;
-      }
-    }
-  }
 
   /**
    * Implementation for Android versions with MultiTouch support.
