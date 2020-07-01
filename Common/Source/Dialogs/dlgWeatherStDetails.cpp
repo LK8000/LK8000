@@ -46,12 +46,7 @@ void dlgWeatherStDetails(int indexid) {
   StationName[0] = 0; //zero-termination of String;
   LockFlightData();
   memcpy( &Station, &GPS_INFO.FANET_Weather[indexid], sizeof(FANET_WEATHER));
-  for (int j = 0;j < MAXFANETDEVICES;j++){
-    if (GPS_INFO.FanetName[j].ID == Station.ID){
-        _tcscpy(StationName, GPS_INFO.FanetName[j].Name); //copy name   
-        break;
-    }
-  }
+  GetFanetName(Station.ID, GPS_INFO, StationName);
   UnlockFlightData();
 
   TCHAR caption[MAX_LEN];

@@ -13,6 +13,7 @@
 #define _FANET_H
 
 #include <iterator>
+struct NMEA_INFO;
 
 //
 #define MAXFANETWEATHER 10 //max. FANET-Weatherstation to display
@@ -48,5 +49,16 @@ struct FANET_WEATHER : public FANET_DATA {
 struct FANET_NAME : public FANET_DATA {
   TCHAR Name[MAXFANETNAME+1]; //name of station
 };
+
+/**
+ * to get Name from ID, return false and empty szName if not found
+ */
+bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR* szName, size_t size);
+
+template<size_t size>
+bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR (&szName)[size]) {
+  static_assert(size > (MAXFANETNAME+1), "out string too small");
+  return GetFanetName(ID, info, szName, size);
+}
 
 #endif
