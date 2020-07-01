@@ -93,7 +93,7 @@ static void payload_absolut2coord(double *lat, double *lon, uint8_t *buf)
 }
 
 template<typename _Tp, size_t size>
-static int FanetGetIndex(long ID, _Tp (&array)[size], bool bEmptyIndex){
+static int FanetGetIndex(uint32_t ID, _Tp (&array)[size], bool bEmptyIndex){
   int iEmpyIndex = -1;
   for (size_t i = 0;i < size;i++){
     if (array[i].Time_Fix == 0){
