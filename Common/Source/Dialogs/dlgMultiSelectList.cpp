@@ -661,12 +661,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             //stationIndex = -1;
             LockFlightData();
                 memcpy( &Station, &GPS_INFO.FANET_Weather[Elements[i].iIdx], sizeof(FANET_WEATHER));
-                for (int j = 0;j < MAXFANETDEVICES;j++){
-                    if (GPS_INFO.FanetName[j].ID == Station.ID){
-                        _tcscpy(StationName, GPS_INFO.FanetName[j].Name); //copy name   
-                        break;
-                    }
-                }
+                GetFanetName(Station.ID, GPS_INFO, StationName);
             UnlockFlightData();
             BuildWEATHERText(&Station,text1,text2,StationName);
             ShowTextEntries(Surface, rc,  text1, text2);

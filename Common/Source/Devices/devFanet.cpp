@@ -119,6 +119,16 @@ static bool FanetInsert(const _Tp& item, _Tp (&array)[size], double Time){
   return true;
 }
 
+bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR* szName, size_t size) {
+  int index = FanetGetIndex(ID, info.FanetName, false);
+  if (index >= 0) {
+    _tcsncpy(szName, info.FanetName[index].Name, size);
+    return true;
+  }
+  szName[0] = _T('\0'); // empty out string if name not found.
+  return false;
+}
+
 static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];  
   FANET_NAME fanetDevice;
@@ -181,11 +191,8 @@ static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   }
   MSG[i-1] = 0; //0-termination of String
 	TCHAR text[150]; // at least (31 + 2 + 80)
-  int index = FanetGetIndex(ID,pGPS->FanetName,false);
-  if (index >= 0) {
-    _tcscpy(text, pGPS->FanetName[index].Name); //we didn't found the name (name not sent yet) --> print device-id
-  }else {
-    _tcscpy(text, HexDevId); //we didn't found the name (name not sent yet) --> print device-id
+  if(!GetFanetName(ID, *pGPS, text)) {
+    _tcscpy(text, HexDevId); // no name, use ID
   }
   _tcscat(text, _T("\r\n"));
   _tcscat(text, MSG);
