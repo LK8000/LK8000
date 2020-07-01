@@ -58,6 +58,7 @@ typedef struct
 } FLARM_TRACE;
 
 
+
 #if USESWITCHES
 typedef struct _SWITCH_INFO
 {
