@@ -15,6 +15,7 @@
 #include "OS/Memory.h"
 #include "CriticalSection.h"
 #include "Calc/Vario.h"
+#include "LKInterface.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -2054,17 +2055,17 @@ olc_score:
 				_tcscpy(BufferTitle, MsgToken(1645));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-      
+
 			if ( ValidWayPoint(HomeWaypoint) != false ) {
-        value=WayPointCalc[HomeWaypoint].AltArriv[AltArrivMode]*ALTITUDEMODIFY;
-        if ( value > ALTDIFFLIMIT ) {
-          valid=true;
-          _stprintf(BufferValue,TEXT("%+1.0f"), value);
-        }
+				value=WayPointCalc[HomeWaypoint].AltArriv[AltArrivMode]*ALTITUDEMODIFY;
+				if ( value > ALTDIFFLIMIT ) {
+					valid=true;
+					_stprintf(BufferValue,TEXT("%+1.0f"), value);
+				}
 			}
-      if (!valid)
+			if (!valid)
 				_stprintf(BufferValue,_T(NULLLONG));
-        
+
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
@@ -2914,7 +2915,31 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1014));
 			break;
 
-		// B150
+		// B150 Multi Target QNH Arrival
+		// QNH arrival altitude at the currently selected Multitarget. This is a QNH altitude, not a height
+		// above ground. Does not include safety height. Can be negative
+		case LK_MULTI_TARGET_QNH_ARRIV:
+			ivalue = GetOvertargetIndex(); // Current Multitarget
+			if(ivalue > 0) {
+				value = WayPointCalc[ivalue].AltArriv[AltArrivMode]; // Arrival Height
+				value += WayPointList[ivalue].Altitude; // add altitude of waypoint/target
+				if(IsSafetyAltitudeInUse(ivalue)) {
+					value += (SAFETYALTITUDEARRIVAL / 10); // add safety altitude if in use for that target
+				}
+				value *= ALTITUDEMODIFY; // convert to user altitude Unit
+			}
+			else {
+				value = 0;
+				valid = false;
+			}
+			_stprintf(BufferValue, TEXT("%d"),int(value));
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			// LKTOKEN _@M002472_ = "MultiTarget QNH Arrival", _@M002473_ = "MTgtArr"
+			_tcscpy(BufferTitle, MsgToken(2473));
+			valid = true;
+			break;
+
+		// B242
 		case LK_TARGET_ALT:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2932,7 +2957,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B151
+		// B243
 		// DO NOT USE RELATIVE ALTITUDE: when not real time, it won't change in respect to our position!!!
 		// This is negative when target is below us because it represent a remote position
 		case LK_TARGET_ALTDIFF:
@@ -2952,7 +2977,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B152
+		// B244
 		case LK_TARGET_VARIO:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2972,7 +2997,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1194));
 			break;
 
-		// B153
+		// B245
 		case LK_TARGET_AVGVARIO:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -2992,7 +3017,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1189));
 			break;
 
-		// B154
+		// B246
 		case LK_TARGET_ALTARRIV:
 			_stprintf(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1188_ = "Arr"
@@ -3016,7 +3041,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B155
+		// B247
 		case LK_TARGET_GR:
 			_stprintf(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1187_ = "ReqE"
@@ -3040,7 +3065,7 @@ lkfin_ete:
 			}
 			break;
 
-		// B156
+		// B248
 		case LK_TARGET_EIAS:
 			// LKTOKEN  _@M1186_ = "eIAS"
 			_tcscpy(BufferTitle, MsgToken(1186));
@@ -3056,7 +3081,7 @@ lkfin_ete:
 			break;
 
 
-		// B157 Distance from the start sector, always available also after start
+		// B249 Distance from the start sector, always available also after start
 		case LK_START_DIST:
 			if ( ValidTaskPoint(0) && ValidTaskPoint(1) ) { // if real task
 				if((ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())&& ActiveTaskPoint == 0) {
@@ -3096,7 +3121,7 @@ lkfin_ete:
 			_tcscpy(BufferTitle, MsgToken(1192));
 			break;
 
-		// B166
+		// B250
 		case LK_NEXT_CENTER_ALTDIFF:
 			_stprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
@@ -3121,7 +3146,7 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
-		// B167
+		// B251
 		case LK_NEXT_CENTER_GR:
 			_stprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
@@ -3146,7 +3171,7 @@ lkfin_ete:
 			}
             UnlockTaskData();
 			break;
-        // B168
+        // B252
         case LK_START_SPEED:
             valid = false;
             value = 0;
