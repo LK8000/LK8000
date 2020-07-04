@@ -219,6 +219,8 @@ void FillDataOptions()
 	SetDataOption(LK_EXP1, ugNone, TEXT("_@M1177_"), TEXT("_@M1178_"));
 	// LKTOKEN  _@M1179_ = "_Experimental2", _@M1180_ = "Exp2"
 	SetDataOption(LK_EXP2, ugNone, TEXT("_@M1179_"), TEXT("_@M1180_"));
+	// LKTOKEN  _@M2472_ = "MultiTarget QNH Arrival", _@M2473_ = "MTgtArr"
+	SetDataOption(LK_MULTI_TARGET_QNH_ARRIV, ugAltitude, TEXT("_@M2472_"), TEXT("_@M2473_"));
 
 	// Distance OLC
 	SetDataOption(LK_OLC_CLASSIC_DIST, ugNone, TEXT("_@M1455_"), TEXT("_@M1456_"));
@@ -324,7 +326,7 @@ void FillDataOptions()
 
 
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
-	static_assert(LK_XC_MEAN_SPEED < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
+	static_assert(LK_MULTI_TARGET_QNH_ARRIV < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
 
 
 	// Fill all null string pointer with empty string, avoid to check all time is used.
