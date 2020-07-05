@@ -213,7 +213,8 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
 
     for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
 
-        if ((*it)->DrawStyle() == adsHidden) {
+        if (((*it)->DrawStyle() == adsHidden) ||
+             ((*it)->Top()->Altitude <= 0)){
           continue;
         }
 
