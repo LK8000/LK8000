@@ -58,7 +58,7 @@ unsigned int IGC_CurIndex = 0; // selected File index
 unsigned int IGC_DrawListIndex = 0;
 bool bAbort = false;
 int DownloadError = REC_NO_ERROR; // global error variable
-
+bool bFilled = false;
 typedef struct {
   TCHAR Line1[LST_STRG_LEN];
   TCHAR Line2[LST_STRG_LEN];
@@ -354,7 +354,9 @@ bool GetIGCFilename(TCHAR *IGCFilename, int Idx) {
 }
 
 static void OnEnterClicked(WndButton *pWnd) {
-  if(!pWnd) {
+  
+
+  if((!pWnd) || (!bFilled)){
     return;
   }
   WndForm* pForm = pWnd->GetParentWndForm();
@@ -410,6 +412,9 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender,
   if (IGC_DrawListIndex < IGCFileList.size()) {
     TCHAR IGCFilename[MAX_PATH];
     TCHAR FileExist[5] = _T("");
+    TCHAR text1[180] = {TEXT("IGC File")};
+    TCHAR text2[180] = {TEXT("date")};   
+    _tcscpy(text1, IGCFileList.at(IGC_DrawListIndex).Line1);
     if (GetIGCFilename(IGCFilename, IGC_DrawListIndex)) {
       if (lk::filesystem::exist(IGCFilename)) // file exists
       {
@@ -417,12 +422,11 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender,
           _tcscpy(FileExist, _T("✔")); // check! already copied
         else
           _tcscpy(FileExist, _T("*")); // * already copied
-      }
+        _stprintf(text1, _T("%s %s"), FileExist,IGCFileList.at(IGC_DrawListIndex).Line1);   
+      }   
     }
-    TCHAR text1[180] = {TEXT("IGC File")};
-    TCHAR text2[180] = {TEXT("date")};
-    _stprintf(text1, _T("%s %s"), FileExist,
-              IGCFileList.at(IGC_DrawListIndex).Line1);
+
+
     _stprintf(text2, _T("%s"), IGCFileList.at(IGC_DrawListIndex).Line2);
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
 
@@ -456,7 +460,8 @@ static void OnIGCListEnter(WindowControl *Sender,
       WndForm *pForm = Sender->GetParentWndForm();
       if (pForm) {
         IGC_DLIndex = IGC_CurIndex;
-        OnEnterClicked(NULL);
+        OnEnterClicked( (WndButton *)pForm->FindByName(TEXT("cmdEnter")));
+
       }
     }
   }
@@ -594,7 +599,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
 
   bShowMsg = false;
   bAbort = false;
-
+  bFilled = false;
   /*************************************************/
   ThreadState = OPEN_BIN_STATE;
   /*************************************************/
@@ -869,6 +874,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
     /******************************  ALL_RECEIVED_STATE
      * *********************************/
     if (ThreadState == ALL_RECEIVED_STATE) {
+      bFilled = true;
       if (deb_)
         StartupStore(TEXT("ALL_RECEIVED_STATE"));
       ThreadState = IDLE_STATE;
