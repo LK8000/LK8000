@@ -22,6 +22,7 @@
       // good value
 #define GC_BLK_RECTIMEOUT 1000
 #define GC_IDLETIME 100
+#define GC_TIMER_INTERVAL 750
 #define REC_TIMEOUT 1000 // receive timeout in ms
 #define MAX_RETRY 1
 #define LST_STRG_LEN 100
@@ -151,7 +152,7 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
   if (deb_) {
     StartupStore(TEXT("\r\n===="));
   }
-  Poco::Thread::sleep(10);
+  Poco::Thread::sleep(GC_IDLETIME);
   Poco::Thread::yield();
 }
 
@@ -393,7 +394,7 @@ static void OnEnterClicked(WndButton *pWnd) {
     }
     /************************************************************/
     ThreadState = START_DOWNLOAD_STATE; // start thread IGC download
-    pForm->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
+    pForm->SetTimerNotify(GC_TIMER_INTERVAL, OnTimer); // check for end of download every 250ms
 #ifdef PRPGRESS_DLG
     CreateIGCProgressDialog();
 #endif
@@ -639,7 +640,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
     }
     UpdateList();
 
-    wf->SetTimerNotify(250, OnTimer); // check for end of download every 250ms
+    wf->SetTimerNotify(GC_TIMER_INTERVAL, OnTimer); // check for end of download every 250ms
     wf->ShowModal();
   }
   DownloadError = REC_NOMSG; // don't show an error msg on initialisation
