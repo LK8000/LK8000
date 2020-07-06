@@ -121,7 +121,7 @@ uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
     }
   }
   if(inchar) {
-    *inchar = buffered_data.back();
+    *inchar = buffered_data.front();
   }
   buffered_data.pop();
   return REC_NO_ERROR;

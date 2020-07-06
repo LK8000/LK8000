@@ -27,6 +27,7 @@ class WndButton;
 #define REC_NOMSG         8
 #define REC_INVALID_SIZE  9
 
+#define NO_FAKE_FLARM
 typedef union{
   uint16_t val;
   uint8_t byte[2];

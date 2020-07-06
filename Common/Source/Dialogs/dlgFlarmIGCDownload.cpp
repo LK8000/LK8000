@@ -158,10 +158,10 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
 uint8_t RecChar8(DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
   uint8_t Tmp;
   uint8_t err = RecChar(d, &Tmp, Timeout);
-  if (err != REC_NO_ERROR) {
+  if (err == REC_NO_ERROR) {
     if (Tmp == ESCAPE) {
       err = RecChar(d, &Tmp, Timeout);
-      if (err != REC_NO_ERROR) {
+      if (err == REC_NO_ERROR) {
         if (Tmp == ESC_ESC) {
           Tmp = ESCAPE;
           if (deb_) {
@@ -202,16 +202,12 @@ static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *C
   PeriodClock clock;
   clock.Update();
   do {
-    if(clock.Check(Timeout)) {
-      error = REC_TIMEOUT_ERROR;
-    } else {
       error = RecChar(d, &inchar, Timeout);
-    }
   } while ((inchar != STARTFRAME) && (error == REC_NO_ERROR));
-  
+
   if(error != REC_NO_ERROR) {
     if (deb_) {
-      StartupStore(TEXT("STARTFRAME fail!"));
+      StartupStore(TEXT("STARTFRAME fail! Error code:%i"),error);
     }
     return error;
   }
