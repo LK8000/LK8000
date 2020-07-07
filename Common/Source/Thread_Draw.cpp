@@ -342,6 +342,7 @@ void MapWindow::CreateDrawingThread(void)
 void MapWindow::SuspendDrawingThread(void)
 {
   LockTerrainDataGraphics();
+  assert(THREADRUNNING);
   THREADRUNNING = FALSE;
   UnlockTerrainDataGraphics();
 }

@@ -16,8 +16,6 @@
 class WindowControl;
 class WndButton;
 
-#define REC_BUFFERSIZE 512
-
 #define REC_NO_ERROR      0
 #define REC_TIMEOUT_ERROR 1
 #define REC_CRC_ERROR     2
@@ -27,7 +25,9 @@ class WndButton;
 #define IGC_RECEIVE_ERROR 6
 #define REC_NO_DEVICE     7
 #define REC_NOMSG         8
+#define REC_INVALID_SIZE  9
 
+#define NO_FAKE_FLARM
 typedef union{
   uint16_t val;
   uint8_t byte[2];
@@ -55,7 +55,9 @@ typedef union{
 #define lowbyte(a)   ((a) & 0xFF)
 
 uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout);
-bool BlockReceived(void);
+bool BlockReceived();
+bool IsInBinaryMode();
+bool SetBinaryModeFlag(bool bBinMode);
 
 class CDevFlarm : public DevBase
 {
