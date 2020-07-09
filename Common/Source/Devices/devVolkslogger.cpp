@@ -123,7 +123,7 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   TCHAR2usascii(decl->CompetitionClass, vl.declaration.flightinfo.competitionclass, 13);
   vl.declaration.flightinfo.competitionclass[12]='\0'; // BUGFIX 100331
 
-  if (ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
+  if (ValidWayPoint(HomeWaypoint)) {
 
     TCHAR2usascii(WayPointList[HomeWaypoint].Name, vl.declaration.flightinfo.homepoint.name, 7);
     vl.declaration.flightinfo.homepoint.name[6]='\0'; // BUGFIX 100331
