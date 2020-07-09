@@ -611,27 +611,26 @@ int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
 
 BOOL FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
 {
+  if(DeclStrings)
+  {
+    int  lat =0; 
+    int  lon =0; 
+    TCHAR Name[60] =_T("");
+    if(wp)
+    {
+      lat = ( int)(wp->Latitude*60000.0);
+      lon = (int) (wp->Longitude*60000.0);  
+      DeviceASCIIConvert(Name, (TCHAR*)wp->Name,20) ;  
+    }
 
-if(DeclStrings)
-{
-  if(wp)
-  {
-    TCHAR Name[60];
-    DeviceASCIIConvert(Name, (TCHAR*)wp->Name,20) ;  
-    _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),num,total+2,
-                                                             ( int)(wp->Latitude*60000.0),
-                                                             ( int)(wp->Longitude*60000.0),
-                                                             Name );
+      _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),num,
+                                                               total+2,
+                                                               lat,
+                                                               lon,
+                                                               Name );
+    return true;
   }
-  else
-  {
-    _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,"),num,total+2,
-                                                             ( int)(0),
-                                                             ( int)(0)
-                                                              );
-  }
-}
-return true;
+return false;
 }
 
 
