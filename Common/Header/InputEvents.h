@@ -26,6 +26,7 @@ public:
     PopupOracle,
     PopupTeam,
     PopupBasic,
+    PopupWeatherSt,
   } PopupType;
 
 

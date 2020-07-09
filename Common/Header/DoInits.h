@@ -56,6 +56,7 @@
 	MDI_DRAWTASK,			// screen change
 	MDI_CALCLOGGING,		// generic reset
 	MDI_DRAWHSI,			// screen change
+	MDI_DRAWFANETDATA,			// FanetData init
 	MDI_LAST_DOINIT,
  } MDI_t;
 

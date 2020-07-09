@@ -133,6 +133,7 @@
 #define ORACLE_MS
 #define TEAM_CODE_MS
 #define FLARM_MS
+#define WEATHERST_MS
 
 // ----------------------------------------------------------------------------------------
 //

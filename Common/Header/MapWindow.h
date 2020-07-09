@@ -563,6 +563,7 @@ class MapWindow {
   static void DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc);
   static void DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp);
   static void DrawFlarmPicto(LKSurface& hDC, const RECT& rc, FLARM_TRAFFIC*);
+  static void DrawWeatherStPicto(LKSurface& Surface, const RECT& rc, FANET_WEATHER* pWeather);
   static void DrawAircraft(LKSurface& Surface, const POINT& Orig);
  private:
   static void DrawAHRS(LKSurface& Surface, const RECT& rc);
@@ -658,6 +659,7 @@ private:
   static void DrawGlideThroughTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawTerrainAbove(LKSurface& Surface, const RECT& rc);
   static void LKDrawFLARMTraffic(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
+  static void LKDrawFanetData(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
   static void LKDrawVario(LKSurface& Surface, const RECT& rc);
 
   static bool TextInBox(LKSurface& Surface, const RECT *area, const TCHAR* Value, int x, int y, TextInBoxMode_t *Mode, bool noOverlap=false);

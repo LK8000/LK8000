@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Type="Dialog" X="5" Y="5" Width="240" Height="200" Caption="_@M376_" Font="2" >
+    <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="2" Width="75"  Height="32" Font="2" Tag="0" OnClickNotify="OnCloseClicked" />
+    <WndProperty Name="prpBearing" Caption="_@M154_" X="2" Y="40"  Width="120" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpDistance" Caption="_@M2_" X="110" Y="40"  Width="142" Height="22" CaptionWidth="40" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpWSpeed" Caption="_@M1052_" X="2" Y="62"  Width="240" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpWBearing" Caption="_@M1054_" X="2" Y="84"  Width="240" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpTemp" Caption="_@M701_" X="2" Y="106"  Width="240" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpHum" Caption="_@M1100_" X="2" Y="128"  Width="240" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpBaro" Caption="_@M531_" X="2" Y="150"  Width="240" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpCharge" Caption="_@M1132_" X="2" Y="172"  Width="240" Height="22" CaptionWidth="120" Font="2" ReadOnly="1" />            
+  </WndForm>
+</PMML>

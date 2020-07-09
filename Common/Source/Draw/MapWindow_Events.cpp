@@ -82,6 +82,21 @@ start_search:
     }
 #endif
 
+#ifdef WEATHERST_MS
+  LockFlightData();
+  for (size_t i = 0;i < MAXFANETWEATHER;i++){
+    if (GPS_INFO.FANET_Weather[i].Time_Fix != 0){
+      DistanceBearing(lat,lon, GPS_INFO.FANET_Weather[i].Latitude, GPS_INFO.FANET_Weather[i].Longitude, &Dist, NULL);
+      //StartupStore(_T("%s Dist=%6.0f\n"), GPS_INFO.FANET_Weather[i].Name   ,Dist);
+      if(Dist < dyn_range/* 5*range*/) {
+        StartupStore(_T("Inside=%6.0f\n"),dyn_range);  
+        dlgAddMultiSelectListItem((long*)&GPS_INFO.FANET_Weather[i],i, IM_WEATHERST, Dist);    
+      }
+    }
+  }  
+  UnlockFlightData();
+#endif
+
     int  HorDist=0, Bearing=0, VertDist=0;
     CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, (int)(dyn_range/2));
 

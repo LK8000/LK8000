@@ -77,6 +77,7 @@ public:
             // make local copy before editing...
             LockFlightData();
             FLARM_RefreshSlots(&GPS_INFO);
+            Fanet_RefreshSlots(&GPS_INFO); //refresh slots of FANET
             memcpy(&tmpGPS, &GPS_INFO, sizeof (NMEA_INFO));
             memcpy(&tmpCALCULATED, &CALCULATED_INFO, sizeof (DERIVED_INFO));
             UnlockFlightData();

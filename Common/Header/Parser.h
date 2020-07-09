@@ -6,6 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Flarm.h"
+#include "Fanet.h"
 #if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
 #endif
@@ -55,7 +56,6 @@ typedef struct
 //      double fIntegrator;
         int iColorIdx;
 } FLARM_TRACE;
-
 
 
 #if USESWITCHES
@@ -142,6 +142,8 @@ struct NMEA_INFO
   FLARM_TRACE	FLARM_RingBuf[MAX_FLARM_TRACES];
   bool FLARMTRACE_bBuffFull;
   int  FLARMTRACE_iLastPtr;
+  FANET_WEATHER FANET_Weather[MAXFANETWEATHER];
+  FANET_NAME FanetName[MAXFANETDEVICES];
 #ifdef DEVICE_SERIAL
   int HardwareId;
   int SerialNumber;
@@ -263,6 +265,7 @@ class NMEAParser {
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 };
 
+void Fanet_RefreshSlots(NMEA_INFO *pGPS);
 void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO);
 void FLARM_EmptySlot(NMEA_INFO *GPS_INFO,int i);
 void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
