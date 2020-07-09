@@ -98,6 +98,7 @@ GEXTERN int numInfoWindows;
 // waypoint data
 GEXTERN int HomeWaypoint;
 GEXTERN bool TakeOffWayPoint;
+GEXTERN bool DeclTakeoffLanding; 
 
 // TODO check
 //force Airfields home to be HomeWaypoint if an H flag in waypoints file is not available..

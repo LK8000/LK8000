@@ -158,6 +158,7 @@ extern const char szRegistryGpsAltitudeOffset[];
 extern const char szRegistryHandicap[];
 extern const char szRegistryHideUnits[];
 extern const char szRegistryHomeWaypoint[];
+extern const char szRegistryDeclTakeOffLanding[];
 extern const char szRegistryInputFile[];
 extern const char szRegistryIphoneGestures[];
 extern const char szRegistryLKMaxLabels[];

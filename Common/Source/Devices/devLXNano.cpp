@@ -331,7 +331,7 @@ bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBu
     decl.SetWaypoint(lkDecl.waypoint[i], Decl::tp_regular, i + 1);
 
   // add Home as Takeoff and Landing
-  if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint))
+  if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding)
   {
     decl.SetWaypoint(&WayPointList[HomeWaypoint], Decl::tp_takeoff, 0);
     decl.SetWaypoint(&WayPointList[HomeWaypoint], Decl::tp_landing, wpCount + 1);

@@ -252,6 +252,7 @@ const char szRegistryGpsAltitudeOffset[] = "GpsAltitudeOffset1";
 const char szRegistryHandicap[] = "Handicap1";
 const char szRegistryHideUnits[] = "HideUnits";
 const char szRegistryHomeWaypoint[] = "HomeWaypoint1b";
+const char szRegistryDeclTakeOffLanding [] = "DeclareTakeoffLanding";
 const char szRegistryInputFile[] = "InputFile";
 const char szRegistryIphoneGestures[] = "IphoneGestures1";
 const char szRegistryLKMaxLabels[] = "LKMaxLabels";

@@ -214,6 +214,7 @@ void Globals_Init(void) {
 
   HomeWaypoint = -1;
   TakeOffWayPoint=false;
+  DeclTakeoffLanding=false;
   AirfieldsHomeWaypoint = -1;
 
   // Alternates

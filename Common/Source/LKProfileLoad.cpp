@@ -425,6 +425,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryHandicap,&Handicap);
   PREAD(sname,svalue,szRegistryHideUnits,&HideUnits);
   PREAD(sname,svalue,szRegistryHomeWaypoint,&HomeWaypoint);
+  PREAD(sname,svalue,szRegistryDeclTakeOffLanding,&DeclTakeoffLanding);
 
   // InfoType
   for (int i=0;i<MAXINFOWINDOWS;i++) {
