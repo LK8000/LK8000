@@ -225,6 +225,7 @@ void LKProfileSave(const TCHAR *szFile)
 //  rprintf(szRegistryHandicap,Handicap);
   rprintf(szRegistryHideUnits,HideUnits);
   rprintf(szRegistryHomeWaypoint,HomeWaypoint);
+  rprintf(szRegistryDeclTakeOffLanding,DeclTakeoffLanding);
 
   // InfoType for infoboxes configuration
   for (int i=0;i<MAXINFOWINDOWS;i++) rprintf(szRegistryDisplayType[i], InfoType[i]);

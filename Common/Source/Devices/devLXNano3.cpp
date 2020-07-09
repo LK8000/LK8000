@@ -849,7 +849,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
                    t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,              1, wpCount-2);
 
       // TakeOff point
-      if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
+      if ((HomeWaypoint >= 0) && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_takeoff);
@@ -861,7 +861,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
       }
 
       // Landing point
-      if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
+      if ((HomeWaypoint >= 0) && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_landing);

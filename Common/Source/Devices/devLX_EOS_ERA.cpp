@@ -611,17 +611,26 @@ int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
 
 BOOL FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
 {
-TCHAR Name[60];
-DeviceASCIIConvert(Name, (TCHAR*)wp->Name,20) ;
-
-  if(wp && DeclStrings)
+  if(DeclStrings)
   {
-    _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),num,total+2,
-                                                             ( int)(wp->Latitude*60000.0),
-                                                             ( int)(wp->Longitude*60000.0),
-                                                             Name );
+    int  lat =0; 
+    int  lon =0; 
+    TCHAR Name[60] =_T("");
+    if(wp)
+    {
+      lat = ( int)(wp->Latitude*60000.0);
+      lon = (int) (wp->Longitude*60000.0);  
+      DeviceASCIIConvert(Name, (TCHAR*)wp->Name,20) ;  
+    }
+
+      _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),num,
+                                                               total+2,
+                                                               lat,
+                                                               lon,
+                                                               Name );
+    return true;
   }
-return true;
+return false;
 }
 
 
@@ -687,9 +696,16 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
   int num=0;
 
   int dir=0,autonxt=1,isline=0,a1=45,a2=45,a21=5000,r1=5000,r2=500, elev = WayPointList[HomeWaypoint].Altitude;
-  FormatTP( (TCHAR*) &DeclStrings[i++], num , wpCount, &WayPointList[HomeWaypoint]);  // Takeoff
 
-  num++;
+  WAYPOINT* pTakeOff = NULL;
+  if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding)
+  {
+    pTakeOff = &WayPointList[HomeWaypoint];
+  }
+  FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Takeoff
+
+  
+
   for (int ii = 0; ii < wpCount; ii++)
   {
     FormatTP( (TCHAR*) &DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
@@ -709,9 +725,9 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
     _stprintf(DeclStrings[i++], TEXT("LXDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
     num++;
   }
-  FormatTP( (TCHAR*) &DeclStrings[i++], num , wpCount,  &WayPointList[HomeWaypoint]);   // Landing
 
-  num++;
+  FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
+
 
   // Send complete declaration to logger
   int  orgRxTimeout;
