@@ -174,7 +174,7 @@ void InstallSystem() {
   #else
   UNUSED(fontdir);
   // this is not working correctly on PNA, it is reporting Windows Fonts even with another value in regkey
-  SHGetSpecialFolderPath(MainWindow.Handle(), dstdir, CSIDL_FONTS, false);
+  SHGetSpecialFolderPath(main_window->Handle(), dstdir, CSIDL_FONTS, false);
   if ( _tcslen(dstdir) <5 ) {
 	_stprintf(tbuf,_T("------ PROBLEM: cannot locate the Fonts folder, got string:<%s>%s"),dstdir,NEWLINE);
 	StartupStore(tbuf);

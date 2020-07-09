@@ -17,6 +17,7 @@
 #include "TCPPort.h"
 #include "devPVCOM.h"
 #include <functional>
+#include "Calc/Vario.h"
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -91,8 +92,8 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) 
 
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
-        if( !d.Disabled && d.Com && (d.*func) ) {
-          nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
+      if( !d.Disabled && d.Com && (d.*func) ) {
+        nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
       }
 
     }
@@ -114,8 +115,8 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
 
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
-        if( !d.Disabled && d.Com && (d.*func) ) {
-          nbDeviceFailed +=  (d.*func)(&d, Val1) ? 0 : 1;
+      if( !d.Disabled && d.Com && (d.*func) ) {
+        nbDeviceFailed +=  (d.*func)(&d, Val1) ? 0 : 1;
       }
     }
     return (nbDeviceFailed > 0);
@@ -135,8 +136,8 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _
 
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
-        if( !d.Disabled && d.Com && (d.*func) ) {
-          nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;
+      if( !d.Disabled && d.Com && (d.*func) ) {
+        nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;
       }
 
     }
@@ -315,8 +316,8 @@ void RefreshComPortList() {
         portok = false;
       }
       if(portok) {
-        char path[MAX_PATH];
-        snprintf(path, sizeof(path), "/dev/%s", namelist[i]->d_name);
+        char path[512]; // at least MAX_NAME + prefix size
+        sprintf(path, "/dev/%s", namelist[i]->d_name);
         if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
           COMMPort.push_back(path);
         }
@@ -330,10 +331,10 @@ void RefreshComPortList() {
   n = scandir("/dev/serial/by-id", &namelist, 0, alphasort);
   if(n != -1) {
     for (int i = 0; i < n; ++i) {
-      char path[1024];
-      snprintf(path, sizeof(path), "/dev/serial/by-id/%s", namelist[i]->d_name);
+      char path[512]; // at least MAX_NAME + prefix size
+      sprintf(path, "/dev/serial/by-id/%s", namelist[i]->d_name);
       if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
-        snprintf(path, sizeof(path), "id:%s", namelist[i]->d_name);
+        sprintf(path, "id:%s", namelist[i]->d_name);
         COMMPort.push_back(path);
       }
       free(namelist[i]);
@@ -594,6 +595,7 @@ BOOL devInit() {
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
 
+    ResetVarioAvailable(GPS_INFO);
 
     for (unsigned i = 0; i < NUMDEV; i++) {
         DeviceList[i].InitStruct(i);
@@ -815,8 +817,6 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   bool  ret = FALSE;
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
-  ScopeLock lock(CritSec_Comm);
-
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if(!d) {
     return FALSE;
@@ -826,7 +826,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 
   // intercept device specific parser routines 
     for(DeviceDescriptor_t& d2 : DeviceList) {
-        
+
       if((d2.iSharedPort == portNum) ||  (d2.PortNumber == portNum)) {
         if ( d2.ParseNMEA && d2.ParseNMEA(d, String, pGPS) ) {
           //GPSCONNECT  = TRUE; // NO! 121126
@@ -834,7 +834,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
         } else if( &d2 == d) {
           // call ParseNMEAString_Internal only for master port if string are not device specific.
           if(String[0]=='$') {  // Additional "if" to find GPS strings
-            if(d->nmeaParser.ParseNMEAString_Internal(String, pGPS)) {
+            if(d->nmeaParser.ParseNMEAString_Internal(*d, String, pGPS)) {
               //GPSCONNECT  = TRUE; // NO! 121126
               ret = TRUE;
             }
@@ -844,9 +844,9 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
     }
 
     if(d->nmeaParser.activeGPS) {
-        
+
       for(DeviceDescriptor_t& d2 : DeviceList) {
-          
+
           if(d2.Com && !d2.Disabled && d2.bNMEAOut) { // NMEA out ! even on multiple ports
             // stream pipe, pass nmea to other device (NmeaOut)
             d2.Com->WriteString(String); // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
@@ -1198,7 +1198,7 @@ BOOL devPutRadioMode(int mode) {
 BOOL devPutFreqSwap() {
   return for_all_device(&DeviceDescriptor_t::StationSwap);
 
-}  
+}
 
 
 

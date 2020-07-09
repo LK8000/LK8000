@@ -36,18 +36,15 @@
 #include "Screen/OpenGL/Texture.hpp"
 #include "Screen/OpenGL/Buffer.hpp"
 #include "UsbSerialHelper.h"
-#include "Android/crashlytics.h"
 
 unsigned android_api_level;
-
-crashlytics_context_t* crash_context = nullptr;
 
 Context *context;
 NativeView *native_view;
 
 IOIOHelper *ioio_helper = nullptr;
 
-extern WndMain MainWindow;
+extern WndMain* main_window;
 
 extern "C" {
   /* workaround for
@@ -81,9 +78,6 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
                                             jint sdk_version, jstring product, jstring language)
 {
   android_api_level = sdk_version;
-
-
-  crash_context = crashlytics_init();
 
   Java::Object::Initialise(env);
   Java::File::Initialise(env);
@@ -144,7 +138,7 @@ Java_org_LK8000_NativeView_runNative(JNIEnv *env, jobject obj) {
   InitThreadDebug();
 
   OpenGL::Initialise();
-  MainWindow.RunModalLoop();
+  main_window->RunModalLoop();
 }
 
 extern "C"
@@ -182,8 +176,6 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   AndroidBitmap::Deinitialise(env);
   Environment::Deinitialise(env);
   NativeView::Deinitialise(env);
-
-   crashlytics_free(&crash_context);
 }
 
 extern "C"
@@ -195,7 +187,7 @@ Java_org_LK8000_NativeView_resizedNative(JNIEnv *env, jobject obj,
   if (event_queue == nullptr)
     return;
 
-  MainWindow.AnnounceResize({width, height});
+  main_window->AnnounceResize({width, height});
 
   event_queue->Purge(Event::RESIZE);
 
@@ -214,7 +206,7 @@ Java_org_LK8000_NativeView_pauseNative(JNIEnv *env, jobject obj)
     return false;
   }
 
-  MainWindow.Pause();
+  main_window->Pause();
 
   assert(num_textures == 0);
   assert(num_buffers == 0);
@@ -233,7 +225,7 @@ Java_org_LK8000_NativeView_resumeNative(JNIEnv *env, jobject obj)
     return;
   }
 
-  MainWindow.Resume();
+  main_window->Resume();
 }
 
 extern "C"

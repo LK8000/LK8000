@@ -34,7 +34,7 @@ Copyright_License {
 #include "Compiler.h"
 
 #ifdef USE_GLSL
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 #endif
 
 #include <tchar.h>

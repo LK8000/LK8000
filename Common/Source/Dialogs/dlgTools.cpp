@@ -65,7 +65,7 @@ MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool
   int ButtonCount = 0;
   int i,x,y,d,w,h,dY;
   MsgReturn_t res;
-  RECT rc = MainWindow.GetClientRect();
+  RECT rc = main_window->GetClientRect();
 
   if (wfullscreen) {
 	Width = rc.right;
@@ -380,7 +380,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, unsigned resID) {
     GetDefaultWindowControlProps(&xNode, Name, &X, &Y, &Width, &Height, &Popup,
                                  &Font, sTmp);
     if (!Popup) {
-      const RECT rc = MainWindow.GetClientRect();
+      const RECT rc = main_window->GetClientRect();
 
       Width=rc.right;
       Height=rc.bottom;

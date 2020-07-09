@@ -25,9 +25,9 @@ Copyright_License {
 #include "Program.hpp"
 #include "Globals.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
-
 #include <stdio.h>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace OpenGL {
   GLProgram *solid_shader;

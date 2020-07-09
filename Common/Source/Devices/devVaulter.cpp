@@ -9,6 +9,8 @@
 #include "externs.h"
 #include "devVaulter.h"
 #include "LKInterface.h"
+#include "Baro.h"
+#include "Calc/Vario.h"
 
 int iVaulter_RxUpdateTime=0;
 double oldVaulterMC = MACCREADY;
@@ -243,8 +245,7 @@ bool DevVaulter::PITV4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
   double  tmp=0;
   if (ParToDouble(sentence, 0, &tmp))
   {
-    info->Vario = tmp;
-    info->VarioAvailable = true;
+    UpdateVarioSource(*info, *d, tmp);
   }
   if (ParToDouble(sentence, 1, &tmp))
   {

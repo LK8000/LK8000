@@ -21,6 +21,8 @@ import android.os.Build;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
+import java.util.Arrays;
+
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 public final class UsbSerialPort implements AndroidPort {
@@ -106,8 +108,9 @@ public final class UsbSerialPort implements AndroidPort {
     }
 
     @Override
-    public int write(byte[] data, int length) {
-        return 0;
+    public synchronized int write(byte[] data, int length) {
+        _SerialPort.write(Arrays.copyOf(data, length));
+        return length;
     }
 
     private UsbSerialInterface.UsbReadCallback _ReadCallback = new UsbSerialInterface.UsbReadCallback() {

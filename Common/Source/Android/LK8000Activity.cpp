@@ -46,9 +46,9 @@ void LK8000Activity::PermissionGranted() {
 
 LK8000Activity::permission_t LK8000Activity::WaitPermission() {
   if(event_queue) {
-    EventLoop loop(*event_queue, MainWindow);
+    EventLoop loop(*event_queue, *main_window);
     Event event;
-    while (MainWindow.IsDefined() && loop.Get(event)) {
+    while (main_window->IsDefined() && loop.Get(event)) {
       loop.Dispatch(event);
       const ScopeLock lock(permission_status_mutex);
       if(permission_status != unknown) {

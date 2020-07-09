@@ -33,7 +33,6 @@ Copyright_License {
 #include "Shapes.hpp"
 #include "Program.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
 #endif
 
 #ifdef HAVE_OES_DRAW_TEXTURE

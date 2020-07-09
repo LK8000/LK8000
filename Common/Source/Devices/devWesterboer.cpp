@@ -11,7 +11,7 @@
 #include "devWesterboer.h"
 #include "InputEvents.h"
 #include "Baro.h"
-
+#include "Calc/Vario.h"
 
 #define VW_BIDIRECTIONAL
 static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
@@ -242,8 +242,8 @@ if(_tcslen(String) < 180)
 #endif
   // instant vario
   NMEAParser::ExtractParameter(String,ctemp,1);
-  pGPS->Vario = StrToDouble(ctemp,NULL)/10;
-  pGPS->VarioAvailable = TRUE;
+  double Vario = StrToDouble(ctemp,NULL)/10;
+  UpdateVarioSource(*pGPS, *d, Vario);
 
   // netto vario
   NMEAParser::ExtractParameter(String,ctemp,3);
@@ -298,9 +298,6 @@ if(_tcslen(String) < 180)
   NMEAParser::ExtractParameter(String,ctemp,11);
   pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL)/10;
   pGPS->TemperatureAvailable=TRUE;
-
-
-  TriggerVarioUpdate();
 
   return TRUE;
 }

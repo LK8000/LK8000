@@ -67,6 +67,7 @@
 #include "devLXV7easy.h"
 #include "ComCheck.h"
 #include "devOpenVario.h"
+#include "devLX_EOS_ERA.h"
 
 #include "TraceThread.h"
 #include "Poco/NamedEvent.h"
@@ -87,6 +88,8 @@
 #include "Airspace/Sonar.h"
 #include <OS/RotateScreen.h>
 #include <dlgFlarmIGCDownload.h>
+#include "utils/make_unique.h"
+#include "Calc/Vario.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -115,10 +118,6 @@ extern void PreloadInitialisation(bool ask);
 extern bool LKProfileLoad(const TCHAR *szFile);
 #ifdef PNA
 extern bool LoadModelFromProfile(void);
-#endif
-
-#ifndef ANDROID
-Poco::NamedMutex Mutex("LOCK8000");
 #endif
 
 static bool realexitforced=false;
@@ -317,6 +316,8 @@ bool Startup(const TCHAR* szCmdLine) {
 
   InitSineTable();
 
+  main_window = std::make_unique<WndMain>();
+
   // Perform application initialization: also ScreenGeometry and LKIBLSCALE, and Objects
   if (!InitInstance ()) {
     StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
@@ -352,7 +353,7 @@ bool Startup(const TCHAR* szCmdLine) {
   memset( &(CALCULATED_INFO), 0,sizeof(CALCULATED_INFO));
   memset( &SnailTrail[0],0,TRAILSIZE*sizeof(SNAIL_POINT));
   memset( &LongSnailTrail[0],0,(LONGTRAILSIZE+1)*sizeof(LONG_SNAIL_POINT));
-
+  ResetVarioAvailable(GPS_INFO);
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
   OpenGeoid();
@@ -516,6 +517,7 @@ bool Startup(const TCHAR* szCmdLine) {
   DevVaulter::Register();
   DevOpenVario::Register();
   FanetRegister();
+  DevLX_EOS_ERA::Register();
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<
@@ -556,7 +558,7 @@ bool Startup(const TCHAR* szCmdLine) {
   #endif
   ProgramStarted = psInitDone;
 #ifdef ENABLE_OPENGL
-  MainWindow.Invalidate();
+  main_window->Invalidate();
 #endif
   GlobalRunning = true;
 	
@@ -596,7 +598,7 @@ bool Startup(const TCHAR* szCmdLine) {
 }
 
 void Shutdown() {
-  MainWindow.Destroy();
+  main_window->Destroy();
   Message::Destroy();
 
 #if TESTBENCH
@@ -615,9 +617,7 @@ void Shutdown() {
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
 
-#ifndef ANDROID
-  Mutex.unlock();
-#endif
+  main_window = nullptr;
 
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated, realexitforced=%d%s"),realexitforced,NEWLINE);
@@ -672,8 +672,15 @@ int main(int argc, char *argv[]) {
 
   // use mutex to avoid multiple instances of lk8000 be running
 #if (!((WINDOWSPC>0) && TESTBENCH)) && !defined(ANDROID)
-   if (!Mutex.tryLock()) {
-	  return(-2);
+  try {
+    Poco::NamedMutex LK8000_Mutex("LOCK8000");
+    if (!LK8000_Mutex.tryLock()) {
+      return(-2);
+    }
+  } catch (Poco::Exception& e) {
+    const tstring error = to_tstring(e.what());
+    const tstring message = to_tstring(e.message().c_str());
+    StartupStore(_T("[%s] %s\n"), error.c_str(), message.c_str());
   }
 #endif
 
@@ -682,14 +689,12 @@ int main(int argc, char *argv[]) {
   
   std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
 
-
   if(Startup(szCmdLine)) {
     //
     // Main message loop
     //
-     MainWindow.RunModalLoop();
+     main_window->RunModalLoop();
   }
-  MainWindow.Destroy();
 
   Shutdown();
   pSaveScreen = nullptr;

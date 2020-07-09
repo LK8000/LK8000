@@ -898,7 +898,7 @@ ListElement* dlgMultiSelectListShowModal(void) {
          * control height must contains 2 text Line 
          * Check and update Height if necessary
          */
-        LKWindowSurface windowSurface(MainWindow);
+        LKWindowSurface windowSurface(*main_window);
         LKBitmapSurface tmpSurface(windowSurface, 1, 1);
 
         const auto oldFont = tmpSurface.SelectObject(wMultiSelectListListEntry->GetFont());

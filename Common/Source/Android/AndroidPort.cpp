@@ -168,13 +168,13 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
 
     if(running) {
         const char *string_data = static_cast<const char *>(data);
-
+        ScopeLock Lock(CritSec_Comm);
         std::for_each(string_data,
                       string_data + length,
                       std::bind(&AndroidPort::ProcessChar, this, _1));
 
         AddStatRx(length);
-        
+
     } else {
         ScopeLock lock(mutex);
         const uint8_t *src_data = static_cast<const uint8_t *>(data);

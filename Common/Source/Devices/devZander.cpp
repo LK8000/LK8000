@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devZander.h"
 
 static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS);
@@ -121,7 +122,7 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 
   NMEAParser::ExtractParameter(String,ctemp,1);
   wnet = (StrToDouble(ctemp,NULL)-10000)/100; // cm/s
-  apGPS->Vario = wnet;
+  UpdateVarioSource(*apGPS, *d, wnet);
 
 
   if (apGPS->BaroAltitudeAvailable)
@@ -135,9 +136,6 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
   apGPS->AirspeedAvailable = TRUE;
   apGPS->TrueAirspeed = vtas;
   apGPS->IndicatedAirspeed = vias;
-  apGPS->VarioAvailable = TRUE;
-
-  TriggerVarioUpdate();
 
   return TRUE;
 }

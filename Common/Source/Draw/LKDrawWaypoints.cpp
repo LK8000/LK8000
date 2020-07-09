@@ -365,6 +365,13 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			  	_stprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
 	        break;
 
+	        case avGR_Altitude :
+			  if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
+				_stprintf(Buffer, TEXT("%s:%d/%d"), Buffer2, (int)WayPointCalc[i].GR, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+			  else
+				_stprintf(Buffer, TEXT("%s:%d/%d%s"), Buffer2, (int)WayPointCalc[i].GR, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+			  break;
+
 		  }
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
@@ -394,7 +401,14 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			else
 				_stprintf(Buffer, TEXT("%d:%d%s"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
 		  } else
-			_stprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
+		  	if ( ArrivalValue == (ArrivalValue_t) avGR )
+				_stprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
+			else  // only choice left is ( ArrivalValue == (ArrivalValue_t) avGR_Altitude )
+				if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
+					_stprintf(Buffer, TEXT("%d:%d/%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR), (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+				else
+					_stprintf(Buffer, TEXT("%d:%d/%d%s"), WayPointList[i].Number, (int)(WayPointCalc[i].GR), (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
 			  TextDisplayMode.WhiteBold = 0;
@@ -427,12 +441,23 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 				     WayPointList[i].Name,
 				     (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
 				     sAltUnit);
-
-
 		  } else
-			    _stprintf(Buffer, TEXT("%s:%d"),
+		  if ( ArrivalValue == (ArrivalValue_t) avGR )
+			  _stprintf(Buffer, TEXT("%s:%d"),
 				     WayPointList[i].Name,
 				     (int)(WayPointCalc[i].GR));
+		  else  // only choice left is ( ArrivalValue == (ArrivalValue_t) avGR_Altitude )
+		  if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
+			  _stprintf(Buffer, TEXT("%s:%d/%d"),
+			  		 WayPointList[i].Name,
+			  		 (int)(WayPointCalc[i].GR),
+			  		 (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+		  else
+			  _stprintf(Buffer, TEXT("%s:%d/%d%s"),
+			  		 WayPointList[i].Name,
+					 (int)(WayPointCalc[i].GR),
+					 (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
+					 sAltUnit);
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.Border = 1;
@@ -476,6 +501,18 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			  _stprintf(Buffer, TEXT("%d"),
 				   (int)(WayPointCalc[i].GR) );
 		    break;
+
+		  	case avGR_Altitude:
+			  if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
+				_stprintf(Buffer, TEXT("%d/%d"),
+				   (int)(WayPointCalc[i].GR),
+				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+			  else
+				_stprintf(Buffer, TEXT("%d/%d%s"),
+				   (int)(WayPointCalc[i].GR),
+				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
+				   sAltUnit);
+			  break;
 
 		    default: Buffer[0] = '\0';
 		    break;
@@ -824,8 +861,8 @@ LKColor GetUTF8WaypointSymbol(TCHAR* pPict, const int Style)
       Col = RGB_BLACK;
     break;
     case STYLE_THERMAL:
-      _tcscpy(pPict, MsgToken(2376));   // _@M2376_ "♨"
-      Col = LKColor(210,105,30);
+      _tcscpy(pPict, MsgToken(2376));   // _@M2376_ "☁️"
+      Col = RGB_LIGHTBLUE;
     break;
 
     case STYLE_MARKER:

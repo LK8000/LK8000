@@ -191,8 +191,8 @@ unsigned SocketPort::RxThread() {
 
     while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(dwWaitTime)) {
 
+        ScopeLock Lock(CritSec_Comm);
         UpdateStatus();
-
         int nRecv = ReadData(szString);
         if (nRecv > 0) {
             std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&SocketPort::ProcessChar, this, _1));

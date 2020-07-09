@@ -97,7 +97,7 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"7"
-#define LKRELEASE	"1n"
+#define LKRELEASE	"1o"
 
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
@@ -736,6 +736,7 @@
 #define LK_XC_PREDICTED_DIST     147     // Additional Contest combined closure distance
 #define LK_XC_MEAN_SPEED     148     // Additional Contest mean speed
 #define LK_TIMETASK          149     // elapsed time since task start
+#define LK_MULTI_TARGET_QNH_ARRIV   150 // QNH arrival at Multi Target selected
 
 // The following values are not available for custom configuration
 

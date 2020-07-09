@@ -40,7 +40,7 @@ Copyright_License {
 #ifdef USE_GLSL
 #include "Shaders.hpp"
 #include "Program.hpp"
-
+#include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #else

@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devCompeo.h"
 
 static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
@@ -109,8 +110,7 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
    UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(palt));
 
   NMEAParser::ExtractParameter(String,ctemp,4);
-  pGPS->Vario = StrToDouble(ctemp,NULL);
-  pGPS->VarioAvailable = TRUE;
+  UpdateVarioSource(*pGPS, *d, StrToDouble(ctemp,NULL));
 
   NMEAParser::ExtractParameter(String,ctemp,8);
   if (ctemp[0] != '\0') { // 100209
@@ -127,9 +127,6 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 		pGPS->AirspeedAvailable = FALSE;
   } else
 		pGPS->AirspeedAvailable = FALSE;
-
-
-  TriggerVarioUpdate();
 
   return TRUE;
 }

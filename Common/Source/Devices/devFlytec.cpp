@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devFlytec.h"
 #include "Parser.h"
 
@@ -194,7 +195,8 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
   // VARIO
   NMEAParser::ExtractParameter(String,ctemp,12+offset);
-  pGPS->Vario = StrToDouble(ctemp,NULL)/100;
+  double Vario = StrToDouble(ctemp,NULL)/100;
+  UpdateVarioSource(*pGPS, *d, Vario);
 
   // TAS
   NMEAParser::ExtractParameter(String,ctemp,13+offset);
@@ -221,12 +223,6 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,18+offset);
   pGPS->ExtBatt2_Voltage = StrToDouble(ctemp,NULL)+1000;
 
-
-
-  pGPS->VarioAvailable = TRUE;
-
-  // currently unused in LK, but ready for next future
-  TriggerVarioUpdate();
   TriggerGPSUpdate();
 
   return TRUE;

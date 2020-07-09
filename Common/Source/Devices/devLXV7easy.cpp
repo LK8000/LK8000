@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devBase.h"
 #include "devLXV7easy.h"
 
@@ -178,9 +179,9 @@ bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
         if (airspeed>0) info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
     }
 
-    if (ParToDouble(sentence, 4, &info->Vario)) {
-	info->VarioAvailable = TRUE;
-	TriggerVarioUpdate();
+    double Vario = 0;
+    if (ParToDouble(sentence, 4, &Vario)) {
+        UpdateVarioSource(*info, *d, Vario);
     }
 
     return(true);

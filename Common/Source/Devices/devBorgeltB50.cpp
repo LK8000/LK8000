@@ -7,14 +7,12 @@
 */
 
 #include "externs.h"
-
 #include "devBorgeltB50.h"
-
-
+#include "Calc/Vario.h"
 
 BOOL bBaroAvailable = FALSE;
 
-BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PBB50(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
 extern BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
@@ -23,7 +21,7 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
 
   if(_tcsncmp(TEXT("$PBB50"), String, 6)==0)
-    return PBB50(&String[7], pGPS);
+    return PBB50(d, &String[7], pGPS);
   else
     if(_tcsncmp(TEXT("$PGCS"), String, 5)==0)
     {
@@ -113,7 +111,7 @@ CHK = standard NMEA checksum
 
 */
 
-BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
+BOOL PBB50(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   // $PBB50,100,0,10,1,10000,0,1,0,20*4A..
   // $PBB50,0,.0,.0,0,0,1.07,0,-228*58
   // $PBB50,14,-.2,.0,196,0,.92,0,-228*71
@@ -164,10 +162,8 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *pGPS) {
   pGPS->AirspeedAvailable = TRUE;
   pGPS->IndicatedAirspeed = vias;
   pGPS->TrueAirspeed = vtas;
-  pGPS->VarioAvailable = TRUE;
-  pGPS->Vario = wnet;
 
-  TriggerVarioUpdate();
+  UpdateVarioSource(*pGPS, *d, wnet);
 
   return FALSE;
 }

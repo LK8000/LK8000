@@ -65,7 +65,7 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 . changes SFC (surface) to GND (ground) trigraph
 
-. Add Terrain contour line for zoom level between 2km and 100m
+. Add Terrain contour line ( disabled by default )
 
 . Fix map scale indicator length
 
@@ -74,6 +74,12 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 . updated World Magnetic Model (WMM2020)
 
 . Fix Next ETE calculation in Glider Mode
+
+. Support for conection to multiple vario
+
+. Updated LX Nano III driver
+
+. Updated BlueFlyVario driver
 
 . lot of minor bug fix and improvement
 
@@ -169,6 +175,7 @@ Mateusz Pusz
 Alberto Realis-Luc
 Kalman Rozsahegyi
 Karim Trojette
+Mana Coste
 
 LK8000 Project Copyrights:
 
@@ -189,6 +196,7 @@ Alberto Realis-Luc
 Tony Tarsi
 Kalman Rozsahegyi
 Karim Trojette
+Mana Coste
 
 
 Graphics by Jiri Bergman

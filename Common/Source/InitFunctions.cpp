@@ -30,10 +30,6 @@
 #include "DisplayOrientation.hpp"
 #include "Asset.hpp"
 
-#ifdef KOBO
-#include "Hardware/RotateDisplay.hpp"
-#endif
-
 #ifdef USE_FREETYPE
 #include "Screen/FreeType/Init.hpp"
 #include "Screen/Init.hpp"
@@ -45,7 +41,6 @@
 
 #ifdef HAVE_MALI
 #include "Screen/Sunxi/mali.h"
-#include "Hardware/RotateDisplay.hpp"
 #endif
 
 #ifdef ANDROID
@@ -53,8 +48,13 @@
 #include "Android/NativeView.hpp"
 #endif
 
+#ifdef OPENVARIO
+#include "LKInterface/CScreenOrientation.h"
+#include "Hardware/RotateDisplay.hpp"
+#endif
+
 // windows
-WndMain MainWindow; // Main Window singleton
+std::unique_ptr<WndMain> main_window; // Main Window singleton
 
 BOOL	InitInstance    (int);
 
@@ -199,11 +199,11 @@ BOOL InitInstance()
   StartupStore(TEXT(". Create main window%s"),NEWLINE);
   #endif
 
-  if(!MainWindow.Create(WindowSize)) {
+  if(!main_window->Create(WindowSize)) {
       StartupStore(TEXT(". FAILURE: Create main window%s"),NEWLINE);
       return FALSE;
   }
-  const PixelRect rc(MainWindow.GetClientRect());
+  const PixelRect rc(main_window->GetClientRect());
   ScreenSizeX = rc.GetSize().cx;
   ScreenSizeY = rc.GetSize().cy;
   ScreenHasChanged();
@@ -220,11 +220,11 @@ BOOL InitInstance()
 
   Message::Initialize(rc); // creates window, sets fonts
 
-#ifdef HAVE_MALI
-    Display::Rotate(mali::GetScreenOrientation());
+#ifdef OPENVARIO
+  Display::Rotate(static_cast<DisplayOrientation_t>(CScreenOrientation::GetScreenSetting()));
 #endif
 
-  MainWindow.SetVisible(true);
+  main_window->SetVisible(true);
 
   return TRUE;
 }

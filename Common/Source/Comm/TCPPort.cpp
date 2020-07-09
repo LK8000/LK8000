@@ -305,6 +305,7 @@ unsigned UDPServerPort::RxThread() {
 		socklen_t slen = sizeof(mSAddressClient);
 		_Buff_t szString;
 		if ((nRecv = recvfrom(mSocket, szString, sizeof(szString), 0, (struct sockaddr *) &mSAddressClient, &slen)) != -1)  {
+			ScopeLock Lock(CritSec_Comm);
 			UpdateStatus();
 			if (nRecv > 0) {
 				std::for_each(std::begin(szString), std::next(szString, nRecv), std::bind(&UDPServerPort::ProcessChar, this, _1));

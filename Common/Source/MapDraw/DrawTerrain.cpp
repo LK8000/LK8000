@@ -956,7 +956,7 @@ public:
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
 
-            // iso band value of first column
+            // iso-band value of first column
             int16x8_t height =  vld1q_s16(height_row);
             vst1q_s16(&prev_iso_band[0], IsoBand(height, zoom));
 
@@ -999,8 +999,8 @@ public:
                 height = Clamp<int16_t>(height, 0, 255);
 
                 // apply marching squares algorithm : https://en.wikipedia.org/wiki/Marching_squares#Disambiguation_of_saddle_points
-                // 2 equal point are in same iso band, so one is above isoline and the other is bellow isoline
-                //  tips : to get thiner line we elimante case [1011, 0111, 0100 1000]
+                // 2 equal point are in same iso band, so one is above iso-line and the other is bellow iso-line
+                //  tips : to get thinner line we eliminate case [1011, 0111, 0100 1000]
                 screen_row[x] = ((h == h2 || h3 == h1) && h == h3) ? screen_row[x] : GetIsoLineColor(height);
             }
 

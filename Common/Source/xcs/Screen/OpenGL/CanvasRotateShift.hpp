@@ -32,8 +32,6 @@ Copyright_License {
 #ifdef USE_GLSL
 #include "Shaders.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #endif
 
 /**
@@ -50,7 +48,7 @@ public:
 #ifdef USE_GLSL
     glm::mat4 matrix = glm::rotate(glm::translate(glm::mat4(1),
                                                   glm::vec3(pos.x, pos.y, 0)),
-                                   GLfloat(angle.Degrees()),
+                                   GLfloat(angle.Radians()),
                                    glm::vec3(0, 0, 1));
     float gl_scale = scale / 100.f;
     if (Layout::ScaleSupported())

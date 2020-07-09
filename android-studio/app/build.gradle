@@ -1,32 +1,25 @@
 buildscript {
     repositories {
         google()
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.31.2'
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
 repositories {
     google()
-    maven { url 'https://maven.fabric.io/public' }
 }
 
 android {
     compileSdkVersion 28
-    ndkVersion "20.1.5948944"
+    ndkVersion "21.2.6472646"
 
     defaultConfig {
         applicationId "org.lk8000"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 60
-        versionName "7.1n"
+        versionCode 61
+        versionName "7.1o"
         setProperty("archivesBaseName", "LK8000-$versionName")
         manifestPlaceholders = [
                 applicationLabel: "@string/app_name",
@@ -128,24 +121,13 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
-        transitive = true
-    }
-    implementation('com.crashlytics.sdk.android:crashlytics-ndk:2.1.1@aar') {
-        transitive = true
-    }
     implementation 'com.android.support:support-compat:28.0.0'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'
-    implementation 'com.github.felHR85:UsbSerial:6.0.5'
+    implementation 'com.github.felHR85:UsbSerial:6.1.0'
 
     implementation 'com.onyx.android.sdk:epdcontroller:0.1.0'
-}
-
-crashlytics {
-    enableNdk true
-    manifestPath '../../android/AndroidManifest.xml'
 }
 
 clean() {

@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devIlec.h"
 
 extern bool UpdateQNH(const double newqnh);
@@ -89,7 +90,8 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 	UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(StrToDouble(ctemp, NULL)));
 
 	NMEAParser::ExtractParameter(String,ctemp,2);
-	pGPS->Vario = StrToDouble(ctemp,NULL);
+	double Vario = StrToDouble(ctemp,NULL);
+	UpdateVarioSource(*pGPS, *d, Vario);
 
 	NMEAParser::ExtractParameter(String,ctemp,3); // wind direction, integer
 	double wfrom;
@@ -127,9 +129,6 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 	} else	pGPS->ExternalWindAvailable = FALSE;
 
-
-	pGPS->VarioAvailable = TRUE;
-	TriggerVarioUpdate();
 	return TRUE;
   }
 

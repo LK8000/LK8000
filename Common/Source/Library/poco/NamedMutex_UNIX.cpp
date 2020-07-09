@@ -98,7 +98,7 @@ NamedMutexImpl::NamedMutexImpl(const std::string& name):
 	{
 		_semid = semget(key, 1, 0);
 	}
-	else throw SystemException("cannot create named mutex (semget() failed)", _name);
+	else throw SystemException("cannot create named mutex (semget() failed)", _name, errno);
 #endif // defined(sun) || defined(__APPLE__) || defined(__osf__) || defined(__QNX__) || defined(_AIX)
 }
 

@@ -9,8 +9,9 @@
 
 #include "externs.h"
 #include "devOpenVario.h"
+#include "Baro.h"
+#include "Calc/Vario.h"
 
-extern bool UpdateBaroSource(NMEA_INFO* pGPS, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
 BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready);
@@ -160,12 +161,10 @@ BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
     const char& type = szTmp1[0];
     switch (type) {
       case 'E':
-        info->Vario = value;
-        info->VarioAvailable = TRUE;
+        UpdateVarioSource(*info, *d, value);
         if (OV_DebugLevel > 0) {
           StartupStore(TEXT(" OpenVario Vario :%5.2fm/s"), value);
         }
-        TriggerVarioUpdate();
         break;
 
       case 'P':

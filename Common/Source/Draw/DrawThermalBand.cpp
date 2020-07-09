@@ -12,6 +12,10 @@
 void MapWindow::DrawThermalBand(LKSurface& Surface, const RECT& rc)
 {
   ThermalBarDrawn=false;
+  if (!IsThermalBarVisible()) {
+    return;
+  }
+
   POINT GliderBand[6] = { {0,0},{23,0},{22,0},{24,0},{0,0}, {0,0} };
 
   #if 0  

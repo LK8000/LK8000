@@ -559,6 +559,7 @@ GEXTERN double POLAR[POLARSIZE];
 GEXTERN double WEIGHTS[POLARSIZE];
 GEXTERN double POLARV[POLARSIZE];
 GEXTERN double POLARLD[POLARSIZE];
+GEXTERN double WW[2];
 
 GEXTERN int BallastSecsToEmpty;
 GEXTERN bool BallastTimerActive;
@@ -835,6 +836,7 @@ GEXTERN LKFont   LK8PanelUnitFont;
 // File names and paths
 //
 GEXTERN TCHAR szPolarFile[MAX_PATH];
+GEXTERN TCHAR szPolarName[80];
 GEXTERN TCHAR szAirspaceFile[NO_AS_FILES][MAX_PATH];
 GEXTERN TCHAR szWaypointFile[NO_WP_FILES][MAX_PATH];
 GEXTERN TCHAR szAdditionalWaypointFile[MAX_PATH];

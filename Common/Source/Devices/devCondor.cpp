@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "devCondor.h"
 
 
@@ -143,10 +144,10 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   UpdateBaroSource( pGPS, 0,d,  QNEAltitudeToQNHAltitude(alt));
 
   NMEAParser::ExtractParameter(String,ctemp,3);
-  pGPS->Vario = StrToDouble(ctemp,NULL);
+  double Vario = StrToDouble(ctemp,NULL);
+  UpdateVarioSource(*pGPS, *d, Vario);
 
   pGPS->AirspeedAvailable = TRUE;
-  pGPS->VarioAvailable = TRUE;
 
   // we don't use heading for wind calculation since... wind is already calculated in condor!!
   NMEAParser::ExtractParameter(String,ctemp,11);

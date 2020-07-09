@@ -7,10 +7,11 @@
 */
 
 #include "externs.h"
+#include "Vario.h"
 
 void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
-  if (Basic->AirspeedAvailable && Basic->VarioAvailable  
+  if (Basic->AirspeedAvailable && VarioAvailable(*Basic)  
       && (!Calculated->Circling)) {
 
     int vi = iround(Basic->IndicatedAirspeed);

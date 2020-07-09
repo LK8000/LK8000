@@ -30,20 +30,14 @@
     </activity>
 
     <service android:name=".MyService"/>
-      <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="fc98b7c6e410fe9b228914ce5fa5c4a140204056" />
-    </application>
-
-  <uses-sdk tools:overrideLibrary="com.felhr.usbserial, com.crashlytics.android.ndk" />
-
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
+  </application>
 
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.BLUETOOTH" />
   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>

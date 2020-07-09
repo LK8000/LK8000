@@ -503,10 +503,7 @@ BOOL BlueFlyConfig(PDeviceDescriptor_t d) {
 }
 
 BOOL PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
-	(void)d;
-	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)))){
-		TriggerVarioUpdate();
-	}
+	UpdateBaroSource(_INFO, 0, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)));
 	return TRUE;
 }
 

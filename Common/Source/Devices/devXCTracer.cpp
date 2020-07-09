@@ -15,7 +15,8 @@
 
 #include <externs.h>
 #include "Baro.h"
-#include <nmeaistream.h>
+#include "Calc/Vario.h"
+#include "nmeaistream.h"
 
 static const TCHAR DeviceName[] = TEXT("XCTracer");
 
@@ -138,8 +139,8 @@ static BOOL XTRC(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INF
             pGPS->TrackBearing = AngleLimit360(StrToDouble(params[12], nullptr)); // course
         }
 
-        pGPS->Vario = StrToDouble(params[13], nullptr); // climbrate
-        pGPS->VarioAvailable = TRUE;
+        double Vario = StrToDouble(params[13], nullptr); // climbrate
+        UpdateVarioSource(*pGPS, *d, Vario);
 
         const double abs_press = StrToDouble(params[17], nullptr); // rawpressure
         UpdateBaroSource(pGPS, 0, d, StaticPressureToQNHAltitude(abs_press * 100));
@@ -205,9 +206,9 @@ bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGP
     }
 
     for(int i = 4; i <= 9; ++i) {
-        if (ReadChecked(params[i], pGPS->Vario)) { /* take the last value to be more recent */
-            pGPS->VarioAvailable = TRUE;
-            TriggerVarioUpdate();
+        double Vario = 0;
+        if (ReadChecked(params[i], Vario)) { /* take the last value to be more recent */
+            UpdateVarioSource(*pGPS, *d, Vario);
         }
     }
 

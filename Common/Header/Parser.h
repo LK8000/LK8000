@@ -11,6 +11,8 @@
 #include "lkgpsapi.h"
 #endif
 
+struct DeviceDescriptor_t;
+
 typedef struct _FLARM_TRAFFIC
 {
   double Latitude;
@@ -76,7 +78,7 @@ typedef struct _SWITCH_INFO
 } SWITCH_INFO;
 #endif
 
-typedef struct _NMEA_INFO
+struct NMEA_INFO
 {
 
   double Latitude;
@@ -105,10 +107,12 @@ typedef struct _NMEA_INFO
   BOOL ExternalWindAvailable;
   double ExternalWindSpeed;
   double ExternalWindDirection;
-  BOOL VarioAvailable;
   BOOL NettoVarioAvailable;
   BOOL AirspeedAvailable;
+
+  unsigned VarioSourceIdx;
   double Vario;
+
   double NettoVario;
   double Ballast;
   double Bugs;
@@ -164,7 +168,7 @@ typedef struct _NMEA_INFO
   double Pitch;
   double Roll;
 
-} NMEA_INFO;
+};
 
 double TimeModify(NMEA_INFO* pGPS, int& StartDay);
 double TimeModify(const TCHAR* FixTime, NMEA_INFO* info, int& StartDay);
@@ -176,7 +180,7 @@ class NMEAParser {
 			      char *String,int len, NMEA_INFO *GPS_INFO);
   void Reset();
 
-  BOOL ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO);
+  BOOL ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 
   bool IsValidBaroSource() {
@@ -249,7 +253,7 @@ class NMEAParser {
   BOOL WP2(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 
   // Additional sentences
-  BOOL PTAS1(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
+  BOOL PTAS1(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
   // Garmin magnetic compass
   BOOL HCHDG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   // LK8000 custom special sentences, always active

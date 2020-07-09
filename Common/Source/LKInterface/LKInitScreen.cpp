@@ -114,7 +114,7 @@ int GetScreenDensity(void);
 void InitLKScreen() {
 
 #if (WINDOWSPC>0) || defined(__linux__)
-    const PixelRect Rect(MainWindow.GetClientRect());
+    const PixelRect Rect(main_window->GetClientRect());
     ScreenSizeX = Rect.GetSize().cx;
     ScreenSizeY = Rect.GetSize().cy;
 #else

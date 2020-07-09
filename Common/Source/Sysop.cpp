@@ -121,7 +121,7 @@ bool Sysop(TCHAR *command) {
          if (esx>200 && esx<4000 && esy>200 && esy<4000) {
             StartupStore(_T(". SYSOP change screen resolution to %d x %d%s"),esx,esy,NEWLINE);
             RECT w=WindowResize(esx,esy);
-            MainWindow.Resize(w.right-w.left, w.bottom-w.top);
+            main_window->Resize(w.right-w.left, w.bottom-w.top);
             return true; // exit dialogs!
          } else
             StartupStore(_T(". SYSOP invalid change screen resolution %d x %d%s"),esx,esy,NEWLINE);

@@ -11,6 +11,7 @@
 #include "devLX16xx.h"
 #include "LKInterface.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
 #include "Utils.h"
 
 int iLX16xx_RxUpdateTime=0;
@@ -346,11 +347,10 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
       UpdateBaroSource( info, 0,d, QNEAltitudeToQNHAltitude(alt));
     }
 
-  if (ParToDouble(sentence, 3, &info->Vario))
-    info->VarioAvailable = TRUE;
-  else
-    info->VarioAvailable = FALSE;
-
+  double Vario = 0;
+  if (ParToDouble(sentence, 3, &Vario)) {
+    UpdateVarioSource(*info, *d, Vario);
+  }
 
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
@@ -358,7 +358,6 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
     info->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
     info->ExternalWindAvailable = TRUE;
   }
-  TriggerVarioUpdate();
 
   return(true);
 } // LXWP0()

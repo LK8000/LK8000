@@ -35,6 +35,9 @@ Copyright_License {
 #include <stdint.h>
 enum class DisplayOrientation_t : uint8_t;
 #endif
+#ifdef USE_GLSL
+#include <glm/mat4x4.hpp>
+#endif
 
 class GLTexture;
 class GLFrameBuffer;
