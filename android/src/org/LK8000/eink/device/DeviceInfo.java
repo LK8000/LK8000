@@ -11,11 +11,12 @@ import java.util.Iterator;
 
 import android.os.Build;
 
-@SuppressWarnings({"CanBeFinal", "WhileLoopReplaceableByForEach"})
+@SuppressWarnings({ "CanBeFinal", "WhileLoopReplaceableByForEach" })
 
 public class DeviceInfo {
 
-    public enum EinkDevice {
+	public enum EinkDevice
+	{
         UNKNOWN,
         BOYUE_T61,
         BOYUE_T62,
@@ -31,180 +32,149 @@ public class DeviceInfo {
         NOOK_V520,
     }
 
-    public enum BugDevice {
+	public enum BugDevice
+	{
         NONE,
         SONY_RP1,
         EMULATOR,
     }
 
-    public static final String PRODUCT;
-    public static final boolean EINK_FREESCALE;
-    public static final boolean EINK_ROCKCHIP;
-    public static final boolean EINK_SUPPORT;
-    public static final boolean EINK_FULL_SUPPORT;
+	public static final String PRODUCT;
+	public static final boolean EINK_FREESCALE;
+	public static final boolean EINK_ROCKCHIP;
+	public static final boolean EINK_SUPPORT;
+	public static final boolean EINK_FULL_SUPPORT;
 
+	private static final String MANUFACTURER;
+	private static final String BRAND;
+	private static final String MODEL;
+	private static final String DEVICE;
+	private static final boolean BOYUE_T61;
+	private static final boolean BOYUE_T62;
+	private static final boolean BOYUE_T80S;
+	private static final boolean BOYUE_T80D;
+	private static final boolean BOYUE_T78D;
+	private static final boolean BOYUE_T103D;
+	private static final boolean CREMA;
+	private static final boolean ONYX_C67;
+	private static final boolean ENERGY;
+	private static final boolean INKBOOK;
+	private static final boolean TOLINO;
+	private static final boolean NOOK_V520;
 
-    private static final String MANUFACTURER;
-    private static final String BRAND;
-    private static final String MODEL;
-    private static final String DEVICE;
-    private static final boolean BOYUE_T61;
-    private static final boolean BOYUE_T62;
-    private static final boolean BOYUE_T80S;
-    private static final boolean BOYUE_T80D;
-    private static final boolean BOYUE_T78D;
-    private static final boolean BOYUE_T103D;
-    private static final boolean CREMA;
-    private static final boolean ONYX_C67;
-    private static final boolean ENERGY;
-    private static final boolean INKBOOK;
-    private static final boolean TOLINO;
-    private static final boolean NOOK_V520;
+	private static final boolean IS_BOYUE;
 
-    private static final boolean IS_BOYUE;
+	// default values for generic devices.
+	static EinkDevice EINK = EinkDevice.UNKNOWN;
 
-    // default values for generic devices.
-    static EinkDevice EINK = EinkDevice.UNKNOWN;
+	static {
+		// --------------- device probe --------------- //
+		HashMap<EinkDevice, Boolean> deviceMap = new HashMap<>();
 
-    static {
-        // --------------- device probe --------------- //
-        HashMap<EinkDevice, Boolean> deviceMap = new HashMap<>();
+		// we use the standard android build properties for device identification
+		MANUFACTURER = getBuildField("MANUFACTURER");
+		BRAND = getBuildField("BRAND");
+		MODEL = getBuildField("MODEL");
+		DEVICE = getBuildField("DEVICE");
+		PRODUCT = getBuildField("PRODUCT");
 
-        // we use the standard android build properties for device identification
-        MANUFACTURER = getBuildField("MANUFACTURER");
-        BRAND = getBuildField("BRAND");
-        MODEL = getBuildField("MODEL");
-        DEVICE = getBuildField("DEVICE");
-        PRODUCT = getBuildField("PRODUCT");
+		IS_BOYUE = MANUFACTURER.toLowerCase().contentEquals("boeye")
+				|| MANUFACTURER.toLowerCase().contentEquals("boyue")
+				|| MANUFACTURER.toLowerCase().contentEquals("alfapilot");
 
-        IS_BOYUE = MANUFACTURER.toLowerCase().contentEquals("boeye") ||
-            MANUFACTURER.toLowerCase().contentEquals("boyue")        || 
-            MANUFACTURER.toLowerCase().contentEquals("alfapilot");
+		// Boyue T62, manufacturer uses both "boeye" and "boyue" ids.
+		if (PRODUCT.toLowerCase().startsWith("alfapilot")) {
+			/* alfapilot is boyue T62-F */
+			BOYUE_T62 = IS_BOYUE;
+		} else {
+			BOYUE_T62 = IS_BOYUE && (PRODUCT.toLowerCase().startsWith("t62") || MODEL.contentEquals("rk30sdk"))
+					&& DEVICE.toLowerCase().startsWith("t62");
+		}
 
-        // Boyue T62, manufacturer uses both "boeye" and "boyue" ids.
-        if( PRODUCT.toLowerCase().startsWith("alfapilot")){
-            /* alfapilot is boyue T62-F */
-            BOYUE_T62 = IS_BOYUE;}
-        else{
-             BOYUE_T62 = IS_BOYUE
-                && (PRODUCT.toLowerCase().startsWith("t62") || MODEL.contentEquals("rk30sdk"))
-                && DEVICE.toLowerCase().startsWith("t62");
-        }
+		deviceMap.put(EinkDevice.BOYUE_T62, BOYUE_T62);
 
+		// Boyue T61, uses RK3066 chipset
+		BOYUE_T61 = IS_BOYUE && (PRODUCT.toLowerCase().startsWith("t61") || MODEL.contentEquals("rk30sdk"))
+				&& DEVICE.toLowerCase().startsWith("t61");
+		deviceMap.put(EinkDevice.BOYUE_T61, BOYUE_T61);
 
-        deviceMap.put(EinkDevice.BOYUE_T62, BOYUE_T62);
+		// Boyue Likebook Plus
+		BOYUE_T80S = IS_BOYUE && PRODUCT.toLowerCase().contentEquals("t80s");
+		deviceMap.put(EinkDevice.BOYUE_T80S, BOYUE_T80S);
 
-        // Boyue T61, uses RK3066 chipset
-        BOYUE_T61 = IS_BOYUE
-                && ( PRODUCT.toLowerCase().startsWith("t61") || MODEL.contentEquals("rk30sdk") )
-                && DEVICE.toLowerCase().startsWith("t61");
-        deviceMap.put(EinkDevice.BOYUE_T61, BOYUE_T61);
+		// Boyue Likebook Mars
+		BOYUE_T80D = IS_BOYUE && PRODUCT.toLowerCase().contentEquals("t80d");
+		deviceMap.put(EinkDevice.BOYUE_T80D, BOYUE_T80D);
 
-        // Boyue Likebook Plus
-        BOYUE_T80S = IS_BOYUE
-                && PRODUCT.toLowerCase().contentEquals("t80s");
-        deviceMap.put(EinkDevice.BOYUE_T80S, BOYUE_T80S);
+		// Boyue Likebook Muses
+		BOYUE_T78D = IS_BOYUE && PRODUCT.toLowerCase().contentEquals("t78d");
+		deviceMap.put(EinkDevice.BOYUE_T78D, BOYUE_T78D);
 
-        // Boyue Likebook Mars
-        BOYUE_T80D = IS_BOYUE
-                && PRODUCT.toLowerCase().contentEquals("t80d");
-        deviceMap.put(EinkDevice.BOYUE_T80D, BOYUE_T80D);
+		// Boyue Likebook Mimas
+		BOYUE_T103D = IS_BOYUE && PRODUCT.toLowerCase().contentEquals("t103d");
+		deviceMap.put(EinkDevice.BOYUE_T103D, BOYUE_T103D);
 
-        // Boyue Likebook Muses
-        BOYUE_T78D = IS_BOYUE
-                && PRODUCT.toLowerCase().contentEquals("t78d");
-        deviceMap.put(EinkDevice.BOYUE_T78D, BOYUE_T78D);
+		// Crema Note (1010P)
+		CREMA = BRAND.toLowerCase().contentEquals("crema") && PRODUCT.toLowerCase().contentEquals("note");
+		deviceMap.put(EinkDevice.CREMA, CREMA);
 
-        // Boyue Likebook Mimas
-        BOYUE_T103D = IS_BOYUE
-                && PRODUCT.toLowerCase().contentEquals("t103d");
-        deviceMap.put(EinkDevice.BOYUE_T103D, BOYUE_T103D);
+		// Onyx C67
+		ONYX_C67 = MANUFACTURER.toLowerCase().contentEquals("onyx")
+				&& (PRODUCT.toLowerCase().startsWith("c67") || MODEL.contentEquals("rk30sdk"))
+				&& DEVICE.toLowerCase().startsWith("c67");
+		deviceMap.put(EinkDevice.ONYX_C67, ONYX_C67);
 
-        // Crema Note (1010P)
-        CREMA = BRAND.toLowerCase().contentEquals("crema")
-                && PRODUCT.toLowerCase().contentEquals("note");
-        deviceMap.put(EinkDevice.CREMA, CREMA);
+		// Energy Sistem eReaders. Tested on Energy Ereader Pro 4
+		ENERGY = (BRAND.toLowerCase().contentEquals("energysistem")
+				|| BRAND.toLowerCase().contentEquals("energy_sistem")) && MODEL.toLowerCase().startsWith("ereader");
+		deviceMap.put(EinkDevice.ENERGY, ENERGY);
 
-        // Onyx C67
-        ONYX_C67 = MANUFACTURER.toLowerCase().contentEquals("onyx")
-                && ( PRODUCT.toLowerCase().startsWith("c67") || MODEL.contentEquals("rk30sdk") )
-                && DEVICE.toLowerCase().startsWith("c67");
-        deviceMap.put(EinkDevice.ONYX_C67, ONYX_C67);
+		// Artatech Inkbook Prime/Prime HD.
+		INKBOOK = MANUFACTURER.toLowerCase().contentEquals("artatech") && BRAND.toLowerCase().contentEquals("inkbook")
+				&& MODEL.toLowerCase().startsWith("prime");
+		deviceMap.put(EinkDevice.INKBOOK, INKBOOK);
 
-        // Energy Sistem eReaders. Tested on Energy Ereader Pro 4
-        ENERGY = (BRAND.toLowerCase().contentEquals("energysistem") ||
-                BRAND.toLowerCase().contentEquals("energy_sistem"))
-                && MODEL.toLowerCase().startsWith("ereader");
-        deviceMap.put(EinkDevice.ENERGY, ENERGY);
+		// Tolino
+		TOLINO = (BRAND.toLowerCase().contentEquals("tolino") && (MODEL.toLowerCase().contentEquals("imx50_rdp")))
+				|| (MODEL.toLowerCase().contentEquals("tolino") && (DEVICE.toLowerCase().contentEquals("tolino_vision2")
+						|| DEVICE.toLowerCase().contentEquals("ntx_6sl")));
+		deviceMap.put(EinkDevice.TOLINO, TOLINO);
 
-        // Artatech Inkbook Prime/Prime HD.
-        INKBOOK = MANUFACTURER.toLowerCase().contentEquals("artatech")
-                && BRAND.toLowerCase().contentEquals("inkbook")
-                && MODEL.toLowerCase().startsWith("prime");
-        deviceMap.put(EinkDevice.INKBOOK, INKBOOK);
+		// Nook Glowlight 3
+		NOOK_V520 = MANUFACTURER.toLowerCase().contentEquals("barnesandnoble")
+				&& MODEL.toLowerCase().contentEquals("bnrv520");
+		deviceMap.put(EinkDevice.NOOK_V520, NOOK_V520);
 
-        // Tolino
-        TOLINO = (BRAND.toLowerCase().contentEquals("tolino") && (MODEL.toLowerCase().contentEquals("imx50_rdp")))
-                || (MODEL.toLowerCase().contentEquals("tolino")
-                && (DEVICE.toLowerCase().contentEquals("tolino_vision2") || DEVICE.toLowerCase().contentEquals("ntx_6sl")));
-        deviceMap.put(EinkDevice.TOLINO, TOLINO);
+		// find current eink device.
+		Iterator<EinkDevice> einkIter = deviceMap.keySet().iterator();
+		while (einkIter.hasNext()) {
+			EinkDevice eink = einkIter.next();
+			Boolean flag = deviceMap.get(eink);
+			if ((flag != null) && flag) {
+				EINK = eink;
+			}
+		}
 
-        // Nook Glowlight 3
-        NOOK_V520 = MANUFACTURER.toLowerCase().contentEquals("barnesandnoble")
-                && MODEL.toLowerCase().contentEquals("bnrv520");
-        deviceMap.put(EinkDevice.NOOK_V520, NOOK_V520);
+		// freescale epd driver
+		EINK_FREESCALE = (CREMA || TOLINO || NOOK_V520);
 
+		// rockchip epd driver
+		EINK_ROCKCHIP = (BOYUE_T61 || BOYUE_T62 || BOYUE_T78D || BOYUE_T80D || BOYUE_T103D || ENERGY || INKBOOK
+				|| ONYX_C67);
 
-        // find current eink device.
-        Iterator<EinkDevice> einkIter = deviceMap.keySet().iterator();
-        while (einkIter.hasNext()) {
-            EinkDevice eink = einkIter.next();
-            Boolean flag = deviceMap.get(eink);
-            if ((flag != null) && flag) {
-                EINK = eink;
-            }
-        }
+		// basic eink support
+		EINK_SUPPORT = (EINK_FREESCALE || EINK_ROCKCHIP);
 
+		// full eink support
+		EINK_FULL_SUPPORT = (CREMA || TOLINO);
 
-        // freescale epd driver
-        EINK_FREESCALE = (
-            CREMA ||
-            TOLINO ||
-            NOOK_V520
-        );
+	}
 
-        // rockchip epd driver
-        EINK_ROCKCHIP = (
-            BOYUE_T61 ||
-            BOYUE_T62 ||
-            BOYUE_T78D ||
-            BOYUE_T80D ||
-            BOYUE_T103D ||
-            ENERGY ||
-            INKBOOK ||
-            ONYX_C67
-        );
-
-        // basic eink support
-        EINK_SUPPORT = (
-            EINK_FREESCALE ||
-            EINK_ROCKCHIP
-        );
-
-        // full eink support
-        EINK_FULL_SUPPORT = (
-            CREMA ||
-            TOLINO
-        );
-
-
-    }
-
-    private static String getBuildField(String fieldName) {
-        try {
-            return (String)Build.class.getField(fieldName).get(null);
-        } catch (Exception e) {
-            return "";
-        }
-    }
+	private static String getBuildField(String fieldName) {
+		try {
+			return (String) Build.class.getField(fieldName).get(null);
+		} catch (Exception e) {
+			return "";
+		}
+	}
 }

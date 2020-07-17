@@ -5,9 +5,8 @@ package org.LK8000.eink.device;
 
 public interface EPDController {
 
-    void setEpdMode(android.view.View targetView,
-                    int mode, long delay,
-                    int x, int y, int width, int height, String epdMode);
+	void setEpdMode(android.view.View targetView, int mode, long delay, int x, int y, int width, int height,
+			String epdMode);
 
-    public String getDefault();
+	public String getDefault();
 }

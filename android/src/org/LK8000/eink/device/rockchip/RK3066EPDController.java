@@ -6,16 +6,14 @@ package org.LK8000.eink.device.rockchip;
 import org.LK8000.eink.device.EPDController;
 
 public class RK3066EPDController extends RK30xxEPDController implements EPDController {
-    @Override
-    public void setEpdMode(android.view.View targetView,
-                           int mode, long delay,
-                           int x, int y, int width, int height, String epdMode)
-    {
-        requestEpdMode(targetView, epdMode);
-    }
+	@Override
+	public void setEpdMode(android.view.View targetView, int mode, long delay, int x, int y, int width, int height,
+			String epdMode) {
+		requestEpdMode(targetView, epdMode);
+	}
 
-    @Override
-    public String getDefault() {
-        return DEFAULT;
-    }
+	@Override
+	public String getDefault() {
+		return DEFAULT;
+	}
 }

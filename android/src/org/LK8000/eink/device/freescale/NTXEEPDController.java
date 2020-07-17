@@ -30,35 +30,26 @@ package org.LK8000.eink.device.freescale;
 import java.util.Locale;
 import android.util.Log;
 
-
 /* This abstract class is copied and used on einkTest.
    Suppress some warnings to avoid distractions */
 
-@SuppressWarnings ({
-    "JavaReflectionMemberAccess",
-    "UnusedReturnValue",
-    "WeakerAccess",
-    "unused" })
+@SuppressWarnings({ "JavaReflectionMemberAccess", "UnusedReturnValue", "WeakerAccess", "unused" })
 
 public abstract class NTXEEPDController {
-    private static final String TAG = "epd";
+	private static final String TAG = "epd";
 
-    public static boolean requestEpdMode(android.view.View view,
-                                         int mode, long delay,
-                                         int x, int y, int width, int height) {
-        try {
-            Class.forName("android.view.View").getMethod("postInvalidateDelayed",
-                    Long.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE
-                ).invoke(view, delay, x, y, width, height, mode
-            );
+	public static boolean requestEpdMode(android.view.View view, int mode, long delay, int x, int y, int width,
+			int height) {
+		try {
+			Class.forName("android.view.View").getMethod("postInvalidateDelayed", Long.TYPE, Integer.TYPE, Integer.TYPE,
+					Integer.TYPE, Integer.TYPE, Integer.TYPE).invoke(view, delay, x, y, width, height, mode);
 
-            Log.i(TAG, String.format(Locale.US,
-                "requested eink refresh, type: %d x:%d y:%d w:%d h:%d",
-                mode, x, y, width, height));
-            return true;
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-            return false;
-        }
-    }
+			Log.i(TAG, String.format(Locale.US, "requested eink refresh, type: %d x:%d y:%d w:%d h:%d", mode, x, y,
+					width, height));
+			return true;
+		} catch (Exception e) {
+			Log.e(TAG, e.toString());
+			return false;
+		}
+	}
 }

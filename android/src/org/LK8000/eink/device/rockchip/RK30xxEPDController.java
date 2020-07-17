@@ -13,22 +13,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-
 /* This abstract class is copied and used on einkTest.
    Suppress some warnings to avoid distractions */
 
-@SuppressWarnings ({
-        "CanBeFinal",
-        "JavaReflectionMemberAccess",
-        "UnusedReturnValue",
-        "WeakerAccess",
-        "unchecked",
-        "unused" })
+@SuppressWarnings({ "CanBeFinal", "JavaReflectionMemberAccess", "UnusedReturnValue", "WeakerAccess", "unchecked",
+		"unused" })
 
-public abstract class RK30xxEPDController
-{
-    enum EINK_MODE
-    {
+public abstract class RK30xxEPDController {
+	enum EINK_MODE
+	{
         EPD_AUTO,
         EPD_FULL,
         EPD_A2,
@@ -48,89 +41,87 @@ public abstract class RK30xxEPDController
         EPD_POWEROFF
     }
 
-    public static final String EPD_NULL = "EPD_NULL";
-    public static final String EPD_AUTO = "EPD_AUTO";
-    public static final String EPD_FULL = "EPD_FULL";
-    public static final String EPD_A2 = "EPD_A2";
-    public static final String EPD_PART = "EPD_PART";
-    public static final String EPD_FULL_DITHER = "EPD_FULL_DITHER";
-    public static final String EPD_RESET = "EPD_RESET";
-    public static final String EPD_BLACK_WHITE = "EPD_BLACK_WHITE";
-    public static final String EPD_TEXT = "EPD_TEXT";
-    public static final String EPD_BLOCK = "EPD_BLOCK";
-    public static final String EPD_FULL_WIN = "EPD_FULL_WIN";
-    public static final String EPD_OED_PART = "EPD_OED_PART";
-    public static final String EPD_DIRECT_PART = "EPD_DIRECT_PART";
-    public static final String EPD_DIRECT_A2 = "EPD_DIRECT_A2";
-    public static final String EPD_STANDBY = "EPD_STANDBY";
-    public static final String EPD_POWEROFF = "EPD_POWEROFF";
-    public static final String DEFAULT = "EPD_A2";
+	public static final String EPD_NULL = "EPD_NULL";
+	public static final String EPD_AUTO = "EPD_AUTO";
+	public static final String EPD_FULL = "EPD_FULL";
+	public static final String EPD_A2 = "EPD_A2";
+	public static final String EPD_PART = "EPD_PART";
+	public static final String EPD_FULL_DITHER = "EPD_FULL_DITHER";
+	public static final String EPD_RESET = "EPD_RESET";
+	public static final String EPD_BLACK_WHITE = "EPD_BLACK_WHITE";
+	public static final String EPD_TEXT = "EPD_TEXT";
+	public static final String EPD_BLOCK = "EPD_BLOCK";
+	public static final String EPD_FULL_WIN = "EPD_FULL_WIN";
+	public static final String EPD_OED_PART = "EPD_OED_PART";
+	public static final String EPD_DIRECT_PART = "EPD_DIRECT_PART";
+	public static final String EPD_DIRECT_A2 = "EPD_DIRECT_A2";
+	public static final String EPD_STANDBY = "EPD_STANDBY";
+	public static final String EPD_POWEROFF = "EPD_POWEROFF";
+	public static final String DEFAULT = "EPD_A2";
 
-    protected static Class<Enum> eInkEnum;
-    protected static Method updateEpdMethod1;
-    protected static Method updateEpdMethod2;
-    protected static Field isInA2;
+	protected static Class<Enum> eInkEnum;
+	protected static Method updateEpdMethod1;
+	protected static Method updateEpdMethod2;
+	protected static Field isInA2;
 
-    private static final String TAG = "epd";
+	private static final String TAG = "epd";
 
-    static {
-        try {
-            eInkEnum = (Class<Enum>) Class.forName("android.view.View$EINK_MODE");
-            updateEpdMethod1 = View.class.getMethod("requestEpdMode", eInkEnum);
-            updateEpdMethod2 = View.class.getMethod("requestEpdMode", eInkEnum, boolean.class);
-            isInA2 = View.class.getDeclaredField("mIsInA2");
-            isInA2.setAccessible(true);
+	static {
+		try {
+			eInkEnum = (Class<Enum>) Class.forName("android.view.View$EINK_MODE");
+			updateEpdMethod1 = View.class.getMethod("requestEpdMode", eInkEnum);
+			updateEpdMethod2 = View.class.getMethod("requestEpdMode", eInkEnum, boolean.class);
+			isInA2 = View.class.getDeclaredField("mIsInA2");
+			isInA2.setAccessible(true);
 
-        } catch (ClassNotFoundException e) {
-            Log.e(TAG, e.toString());
-        } catch (NoSuchMethodException e) {
-            Log.e(TAG, e.toString());
-        } catch (NoSuchFieldException e) {
-            Log.e(TAG, e.toString());
-        }
-    }
+		} catch (ClassNotFoundException e) {
+			Log.e(TAG, e.toString());
+		} catch (NoSuchMethodException e) {
+			Log.e(TAG, e.toString());
+		} catch (NoSuchFieldException e) {
+			Log.e(TAG, e.toString());
+		}
+	}
 
-    public static boolean isInA2(View view)
-    {
-        try {
-            boolean value = (Boolean)isInA2.get(view);
-            Log.d(TAG, "isInA2 : " + value);
-            return value;
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.toString());
-            return false;
-        }
-    }
+	public static boolean isInA2(View view) {
+		try {
+			boolean value = (Boolean) isInA2.get(view);
+			Log.d(TAG, "isInA2 : " + value);
+			return value;
+		} catch (IllegalAccessException e) {
+			Log.e(TAG, e.toString());
+			return false;
+		}
+	}
 
-    public static boolean requestEpdMode(View view, String mode) {
+	public static boolean requestEpdMode(View view, String mode) {
 
-        try {
-            updateEpdMethod1.invoke(view, stringToEnum(mode));
-            return true;
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.toString());
-            return false;
-        } catch (InvocationTargetException e) {
-            Log.e(TAG, e.toString());
-            return false;
-        }
-    }
+		try {
+			updateEpdMethod1.invoke(view, stringToEnum(mode));
+			return true;
+		} catch (IllegalAccessException e) {
+			Log.e(TAG, e.toString());
+			return false;
+		} catch (InvocationTargetException e) {
+			Log.e(TAG, e.toString());
+			return false;
+		}
+	}
 
-    public static boolean requestEpdMode(View view, String mode, boolean flag) {
-        try {
-            updateEpdMethod2.invoke(view, stringToEnum(mode), flag);
-            return true;
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.toString());
-            return false;
-        } catch (InvocationTargetException e) {
-            Log.e(TAG, e.toString());
-            return false;
-        }
-    }
+	public static boolean requestEpdMode(View view, String mode, boolean flag) {
+		try {
+			updateEpdMethod2.invoke(view, stringToEnum(mode), flag);
+			return true;
+		} catch (IllegalAccessException e) {
+			Log.e(TAG, e.toString());
+			return false;
+		} catch (InvocationTargetException e) {
+			Log.e(TAG, e.toString());
+			return false;
+		}
+	}
 
-    public static Object stringToEnum(String str)
-    {
-        return Enum.valueOf(eInkEnum, str);
-    }
+	public static Object stringToEnum(String str) {
+		return Enum.valueOf(eInkEnum, str);
+	}
 }
