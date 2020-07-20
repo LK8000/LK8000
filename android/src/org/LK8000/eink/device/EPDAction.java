@@ -2,19 +2,19 @@ package org.LK8000.eink.device;
 
 import android.view.View;
 
-public class EPDbutton implements View.OnClickListener {
+public class EPDAction implements View.OnClickListener {
 
 	static final EPDController epd = EPDFactory.getEPDController();
 
 	private String mode;
 
-	public EPDbutton(String mode) {
+	public EPDAction(String mode) {
 
 		this.mode = mode;
 
 	}
 
-	public EPDbutton() {
+	public EPDAction() {
 
 		this.mode = epd.getDefault();
 
