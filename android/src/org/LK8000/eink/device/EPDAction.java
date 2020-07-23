@@ -1,5 +1,7 @@
 package org.LK8000.eink.device;
 
+import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 public class EPDAction implements View.OnClickListener {
@@ -24,6 +26,9 @@ public class EPDAction implements View.OnClickListener {
 	public void onClick(View v) {
 
 		View rootView = v.getRootView();
+
+		Log.d("EPDAction", "set EPDMode=" + this.mode);
+
 		epd.setEpdMode(rootView, 0, 0, 0, 0, 0, 0, this.mode);
 
 	}
@@ -31,7 +36,8 @@ public class EPDAction implements View.OnClickListener {
 	public void setEPDMode(View v) {
 
 		View rootView = v.getRootView();
-		epd.setEpdMode(v, 0, 0, 0, 0, 0, 0, epd.getDefault());
+		Log.d("EPDAction", "set EPDMode=" + this.mode+v.toString());
+		epd.setEpdMode(v, 0, 0, 0, 0, 0, 0, this.mode);
 
 	}
 
