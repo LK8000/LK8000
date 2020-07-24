@@ -110,6 +110,8 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
    static BOOL GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
    static BOOL LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
@@ -151,6 +153,8 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info );
    static BOOL EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
    static BOOL EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
+   static BOOL EOSSetSTF(PDeviceDescriptor_t d,int iTmp, const TCHAR *info);
+   
 
    static BOOL  CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 

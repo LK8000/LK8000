@@ -263,10 +263,31 @@ static char lastSec =0;
       old_overindex = GetOvertargetIndex();;
       old_overmode  = OvertargetMode;
     }
+    if( ((info->Second+2) %4) ==0) 
+      SendNmea(d, TEXT("LXDT,GET,SENS"));
+    if( ((info->Second+4) %4) ==0) 
+      SendNmea(d, TEXT("LXDT,GET,NAVIGATE,0"));    
   }
 
+  if(IsDirOutput(PortIO[d->PortNumber].STFDir))
+  {
 
- 
+    bool circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
+    static  int   Thermalmode = -1; 
+    if((circling != (bool)Thermalmode) || (Thermalmode <0))
+    {
+      if(circling)
+      {
+        SendNmea(d, TEXT("LXDT,SET,SC_VAR,0")); 
+        Thermalmode = 1;
+      }
+      else
+      {
+        SendNmea(d, TEXT("LXDT,SET,SC_VAR,1"));
+        Thermalmode = 0;
+      }
+    }
+  }
 
     if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
       return FALSE;
@@ -428,7 +449,7 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(_T("$PLXVTARG")); // "IN" = $PLXVTARG
+    dfe->addEnumText(_T("$LXDT,GET,NAVIGATE")); // "IN" = $PLXVTARG
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
     dfe->Set((uint) PortIO[PortNum].R_TRGTDir);
     wp->RefreshDisplay();
@@ -438,7 +459,7 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(_T("$PLXVTARG")); // "IN" = $PLXVTARG
+    dfe->addEnumText(_T("$LXDT,SET,NAVIGATE")); // "IN" = $PLXVTARG
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
     dfe->Set((uint) PortIO[PortNum].T_TRGTDir);
     wp->RefreshDisplay();
@@ -1381,6 +1402,46 @@ bool ret = false;
   return ret;
 }
 
+
+
+BOOL DevLX_EOS_ERA::EOSSetSTF(PDeviceDescriptor_t d,int  iTmp, const TCHAR *info)
+{
+bool ret = false;
+
+
+  if(Values(d))
+  {
+    TCHAR szTmp[MAX_NMEA_LEN];
+    if(iTmp > 0)
+      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("STF %s"), info);
+    else
+      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("VARIO %s"), info);      
+    SetDataText(_STF,  szTmp);
+  }
+  if(IsDirInput(PortIO[d->PortNumber].STFDir  ))
+  {
+    static int  iOldVarioSwitch=-1;
+    if(iTmp != iOldVarioSwitch)
+    {
+      iOldVarioSwitch = iTmp;
+      if(iTmp==1)
+      {
+        ExternalTriggerCruise = true;
+        ExternalTriggerCircling = false;
+         MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
+      }
+      else
+      {
+        ExternalTriggerCruise = false;
+        ExternalTriggerCircling = true;
+        MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING);        
+      }
+    }
+  }
+
+  return ret;
+}
+
 BOOL DevLX_EOS_ERA::EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info)
 {
 bool ret = false;
@@ -1642,9 +1703,10 @@ static int iNoFlights=0;
     if(ParToDouble(sentence, 2, &fTmp)) {EOSSetMC(d, fTmp,_T("($LXDT)") );}
     if(ParToDouble(sentence, 3, &fTmp)) {EOSSetBAL(d, fTmp,_T("($LXDT)") );}
     if(ParToDouble(sentence, 4, &fTmp)) {EOSSetBUGS(d, fTmp,_T("($LXDT)") );}
-    if(ParToDouble(sentence, 5, &fTmp)) {}
-    if(ParToDouble(sentence, 6, &fTmp)) {}
-    if(ParToDouble(sentence, 7, &fTmp)) {}
+    if(ParToDouble(sentence, 5, &fTmp)) {}  // Screen brightness in percent
+    if(ParToDouble(sentence, 6, &fTmp)) {}  // Variometer volume in percent
+    if(ParToDouble(sentence, 7, &fTmp)) {}  // SC volume in percent
+    if(ParToDouble(sentence, 8, &fTmp)) {}  // QNH in hPa (NEW)
     LX_EOS_ERA_bValid = true;
  
   }
@@ -1683,10 +1745,62 @@ static int iNoFlights=0;
     }
   }
   else
+  if(_tcsncmp(szTmp, _T("SENS"), 4) == 0)  // Sensor Data?
+  {
+     if(ParToDouble(sentence, 2, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
+       _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
+       SetDataText(_OAT,  szTmp);
+       if(IsDirInput(PortIO[d->PortNumber].OATDir))
+       {
+         info->OutsideAirTemperature = fTmp;
+	     info->TemperatureAvailable  = TRUE;
+       }
+     }
+     if(ParToDouble(sentence, 3, &fTmp)) { // main power supply voltage
+       _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
+       SetDataText(_BAT1,  szTmp);
+       if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
+       {
+         info->ExtBatt1_Voltage = fTmp;	
+       }
+     }
+     if(ParToDouble(sentence, 4, &fTmp)) { // Backup battery voltage
+       _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
+       SetDataText(_BAT2,  szTmp);
+       if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
+       {
+         info->ExtBatt2_Voltage = fTmp;	
+       }
+     }
+     NMEAParser::ExtractParameter(sentence, szTmp, 5); 
+     {  // Current flap setting
+     }
+     NMEAParser::ExtractParameter(sentence, szTmp, 6);
+     { // Recommended flap setting
+     }
+     if(ParToDouble(sentence, 7, &fTmp)) {  // Current landing gear position (0 = out, 1 = inside, left empty if gear input not configured)
+     }
+     if(ParToDouble(sentence, 8, &fTmp)) {  // SC/Vario mode (0 = Vario, 1 = SC)
+       EOSSetSTF(d, (int)fTmp,_T(" ($LXDT,SENS)"));
+     }
+  }
+  else
+  if(_tcsncmp(szTmp, _T("SC_VAR"), 6) == 0)  // Vario / STF
+  {
+    if(ParToDouble(sentence, 2, &fTmp)) {
+      EOSSetSTF(d, (int)fTmp,_T(" ($LXDT,SC_VAR)") );
+    }
+  }
+  else
+  if(_tcsncmp(szTmp, _T("NAVIGATE"), 7) == 0)  // Navigation Target
+  {
+    GetTarget( d, sentence,  info);    
+  }
+
   if(_tcsncmp(szTmp, _T("ERROR"), 5) == 0)  // ERROR?
   {
     NMEAParser::ExtractParameter(sentence, szTmp, 2);
-    DoStatusMessage(TEXT("LX EOS/ERA Error: %s"), szTmp);
+    DoStatusMessage(TEXT("LX EOS/ERA Error:"), szTmp, false);
     StartupStore(TEXT("LX EOS/ERA Error: %s"), szTmp);
   }
   else
@@ -1866,12 +1980,29 @@ TCHAR szName[MAX_VAL_STR_LEN];
   }
 
   if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG)
-  {                                    // PLXVTARG,KOLN,4628.80   ,N ,01541.167 ,E ,268.0
-    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("PLXVTARG,%s,%02d%05.2f,%c,%03d%05.2f,%c,%i"),
-      szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-      (int) (WayPointList[overindex].Altitude +0.5));
-
-      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_VAL_STR_LEN);
+  {                                  
+    int rwdir = 0; 
+    int landable =0;
+    int apt =0;
+    if((WayPointList[overindex].Flags && AIRPORT)> 0) {
+      rwdir = WayPointList[overindex].RunwayDir;
+      apt   = 1;
+    }
+    if((WayPointList[overindex].Flags && LANDPOINT)> 0) landable = 1;
+     apt = 1;
+    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,NAVIGATE,%i,%s,%i,%i,%i,%i,%s,%i"),
+      apt,
+      szName, 
+      (int) (WayPointList[overindex].Latitude * 60000.0), 
+      (int) (WayPointList[overindex].Longitude* 60000.0),
+      (int) (WayPointList[overindex].Altitude +0.5),
+      landable,
+      WayPointList[overindex].Freq ,
+      rwdir
+    );
+    
+ //   $LXDT,SET,NAVIGATE,0,MARIBOR,2788794,941165,267,1,119.200,14*2A<CR><LF>
+      _tcsncat (szName, _T(" ($LXDT,SET,NAVIGATE)"),MAX_VAL_STR_LEN);
 #ifdef TESTBENCH
      StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
@@ -1885,6 +2016,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
 
       _tcsncat (szName, _T(" ($GPRMB)"),MAX_VAL_STR_LEN);
     }
+   
 #ifdef TESTBENCH
     StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
@@ -1895,6 +2027,51 @@ TCHAR szName[MAX_VAL_STR_LEN];
 
 return(true);
 }
+
+
+BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+  if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG) {
+    return false;
+  }
+
+TCHAR  szTmp[MAX_NMEA_LEN];
+
+double fTmp;
+  NMEAParser::ExtractParameter(sentence,szTmp,3);
+
+
+    if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
+      Alternate2 = -1;                 // clear external =re-enable!
+
+  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
+  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
+
+
+  ParToDouble(sentence, 4, &fTmp);
+  WayPointList[RESWP_EXT_TARGET].Latitude= fTmp/60000;
+  ParToDouble(sentence, 5, &fTmp);
+  WayPointList[RESWP_EXT_TARGET].Longitude= fTmp/60000;
+  ParToDouble(sentence, 6, &fTmp);
+  WayPointList[RESWP_EXT_TARGET].Altitude= fTmp; 
+  Alternate2 = RESWP_EXT_TARGET;
+//  ParToDouble(sentence, 7, &fTmp);  // distance
+//  ParToDouble(sentence, 8, &fTmp);  // bearing
+  
+  ParToDouble(sentence, 9, &fTmp);
+  if( fTmp > 0 )
+    WayPointList[RESWP_EXT_TARGET].Flags = LANDPOINT;
+  else
+    WayPointList[RESWP_EXT_TARGET].Flags =0;
+  
+  if(Values(d))
+  {
+    _tcsncat(szTmp, _T(" ($LXDT)"),MAX_NMEA_LEN );
+    SetDataText( _R_TRGT,  szTmp);
+  }
+  return false;
+}
+
 
 
 
