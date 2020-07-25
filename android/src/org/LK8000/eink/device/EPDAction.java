@@ -36,8 +36,8 @@ public class EPDAction implements View.OnClickListener {
 	public void setEPDMode(View v) {
 
 		View rootView = v.getRootView();
-		Log.d("EPDAction", "set EPDMode=" + this.mode+v.toString());
-		epd.setEpdMode(v, 0, 0, 0, 0, 0, 0, this.mode);
+		Log.d("EPDAction", "set EPDMode=" + this.mode+rootView.toString());
+		epd.setEpdMode(rootView, 0, 0, 0, 0, 0, 0, this.mode);
 
 	}
 
