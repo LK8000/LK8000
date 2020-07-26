@@ -1988,7 +1988,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
     if((WayPointList[overindex].Flags & LANDPOINT)> 0) 
     {
       landable = 1;
-      rwdir    = (WayPointList[overindex].RunwayDir;
+      rwdir    = WayPointList[overindex].RunwayDir;
     }
 
     _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,NAVIGATE,%i,%s,%i,%i,%i,%i,%s,%i"),
