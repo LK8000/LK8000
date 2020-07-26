@@ -405,6 +405,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
     dfe->Set((uint) PortIO[PortNum].STFDir);
     wp->RefreshDisplay();
   }
@@ -1983,15 +1984,15 @@ TCHAR szName[MAX_VAL_STR_LEN];
   {                                  
     int rwdir = 0; 
     int landable =0;
-    int apt =0;
-    if((WayPointList[overindex].Flags && AIRPORT)> 0) {
-      rwdir = WayPointList[overindex].RunwayDir;
-      apt   = 1;
+
+    if((WayPointList[overindex].Flags & LANDPOINT)> 0) 
+    {
+      landable = 1;
+      rwdir    = WayPointList[overindex].RunwayDir;
     }
-    if((WayPointList[overindex].Flags && LANDPOINT)> 0) landable = 1;
-     apt = 1;
+
     _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,NAVIGATE,%i,%s,%i,%i,%i,%i,%s,%i"),
-      apt,
+      1,
       szName, 
       (int) (WayPointList[overindex].Latitude * 60000.0), 
       (int) (WayPointList[overindex].Longitude* 60000.0),
