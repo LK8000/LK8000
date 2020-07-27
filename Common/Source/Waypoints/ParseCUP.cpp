@@ -21,17 +21,17 @@ enum class CSVState {
 
 std::map<tstring, size_t> CupStringToHeader(const TCHAR *row) {
   const std::map<tstring, tstring> alias = {
-    { _T("Title"),       _T("name") },
-    { _T("Code"),        _T("code") },
-    { _T("Country"),     _T("country") },
-    { _T("Latitude"),    _T("lat") },
-    { _T("Longitude"),   _T("lon") },
-    { _T("Elevation"),   _T("elev") },
-    { _T("Style"),       _T("style") },
-    { _T("Direction"),   _T("rwdir") },
-    { _T("Length"),      _T("rwlen") },
-    { _T("Frequency"),   _T("freq") },
-    { _T("Description"), _T("desc") }
+    { _T("title"),       _T("name") },
+    { _T("code"),        _T("code") },
+    { _T("country"),     _T("country") },
+    { _T("latitude"),    _T("lat") },
+    { _T("longitude"),   _T("lon") },
+    { _T("elevation"),   _T("elev") },
+    { _T("style"),       _T("style") },
+    { _T("direction"),   _T("rwdir") },
+    { _T("length"),      _T("rwlen") },
+    { _T("frequency"),   _T("freq") },
+    { _T("description"), _T("desc") }
   };
 
   std::map<tstring, size_t> header;
@@ -106,9 +106,9 @@ namespace {
   class cup_line {
   public:
     cup_line(const std::map<tstring, size_t>& _Headers, std::vector<tstring>&& _Entries) 
-          : Headers(_Headers), Entries(std::forward<std::vector<tstring>>(_Entries)) {}
+          : empty(), Headers(_Headers), Entries(std::forward<std::vector<tstring>>(_Entries)) {}
 
-    const tstring& operator[](const TCHAR* Name) {
+    const tstring& operator[](const TCHAR* Name) const {
       auto it = Headers.find(Name);
       if(it != Headers.end()) {
         return Entries[it->second];
@@ -121,7 +121,7 @@ namespace {
     }
 
   private:
-    const tstring empty = _T("");
+    const tstring empty;
     const std::map<tstring, size_t>& Headers;
     const std::vector<tstring> Entries;
   };
