@@ -266,7 +266,18 @@ static char lastSec =0;
     if( ((info->Second+2) %4) ==0) 
       SendNmea(d, TEXT("LXDT,GET,SENS"));
     if( ((info->Second+4) %4) ==0) 
-      SendNmea(d, TEXT("LXDT,GET,NAVIGATE,0"));    
+      SendNmea(d, TEXT("LXDT,GET,NAVIGATE,0"));
+    
+    static double oldQNH= -1.0;
+    if(IsDirOutput(PortIO[d->PortNumber].QNHDir))
+    {      
+      if(fabs( oldQNH - QNH) > 0.1)   
+      { TCHAR szTmp[MAX_NMEA_LEN];
+        _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%4u"),(int) QNH );
+        SendNmea(d, szTmp);
+        oldQNH = QNH;
+      }
+    }
   }
 
   if(IsDirOutput(PortIO[d->PortNumber].STFDir))
@@ -365,8 +376,20 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
 {
 WndProperty *wp;
 if(!wf) return false;
-wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
 int PortNum = d->PortNumber;
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField(); dfe->Clear();
+    dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->Set((uint) PortIO[PortNum].MCDir);
+    wp->RefreshDisplay();
+  }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
@@ -518,6 +541,7 @@ int PortNum = d->PortNumber;
     dfe->Set((uint) PortIO[PortNum].DirLink);
     wp->RefreshDisplay();
   }
+  
 
   return true;
 }
@@ -545,6 +569,7 @@ static bool OnTimer(WndForm* pWnd)
 
   if(wf)
   {
+    wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir")    ); UpdateValueTxt( wp,  _QNH   );
     wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir")     ); UpdateValueTxt( wp,  _MC    );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir")    ); UpdateValueTxt( wp,  _BUGS  );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir")    ); UpdateValueTxt( wp,  _BAL   );
@@ -560,7 +585,7 @@ static bool OnTimer(WndForm* pWnd)
     wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir")   ); UpdateValueTxt( wp,  _BAT1  );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir")   ); UpdateValueTxt( wp,  _BAT2  );
     wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir")  ); UpdateValueTxt( wp,  _POLAR );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink")); UpdateValueTxt( wp,  _DIRECT);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink")); UpdateValueTxt( wp,  _DIRECT);    
   }
   return true;
 }
@@ -1009,6 +1034,12 @@ void DevLX_EOS_ERA::GetDirections(WndButton* pWnd){
     int PortNum = Port();
 
       WndProperty *wp;
+      
+      wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].QNHDir = (DataBiIoDir) dfe->GetAsInteger();
+      }     
       wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
@@ -1126,7 +1157,7 @@ void DevLX_EOS_ERA::OnValuesClicked(WndButton* pWnd) {
         if (wf) ShowData(wf, Device());
       }
     }
-
+    SetDataText( _QNH,   _T(""));
     SetDataText( _MC,    _T(""));
     SetDataText( _BUGS,  _T(""));
     SetDataText( _BAL,   _T(""));
@@ -1142,7 +1173,7 @@ void DevLX_EOS_ERA::OnValuesClicked(WndButton* pWnd) {
     SetDataText( _BAT2,  _T(""));
     SetDataText( _POLAR, _T(""));
     SetDataText( _DIRECT,_T(""));
-    SetDataText( _T_TRGT,_T(""));
+    SetDataText( _T_TRGT,_T(""));    
     SendNmea(Device(),_T("LXDT,GET,MC_BAL"));  // request new data
   }
 
@@ -1708,6 +1739,18 @@ static int iNoFlights=0;
     if(ParToDouble(sentence, 6, &fTmp)) {}  // Variometer volume in percent
     if(ParToDouble(sentence, 7, &fTmp)) {}  // SC volume in percent
     if(ParToDouble(sentence, 8, &fTmp)) {}  // QNH in hPa (NEW)
+
+    if(IsDirInput(PortIO[d->PortNumber].QNHDir))
+    { 
+      static double oldQNH = -1;
+      if ( fabs( oldQNH - fTmp) > 0.1)
+      {
+        UpdateQNH( fTmp);
+        oldQNH = fTmp;
+      }
+    }  
+    NMEAParser::ExtractParameter(sentence, szTmp, 8);
+    SetDataText( _QNH,   szTmp);
     LX_EOS_ERA_bValid = true;
  
   }
