@@ -273,7 +273,7 @@ static char lastSec =0;
     {      
       if(fabs( oldQNH - QNH) > 0.1)   
       { TCHAR szTmp[MAX_NMEA_LEN];
-        _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%4u"),(int) QNH );
+        _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%4u"),(int) (QNH+0.5) );
         SendNmea(d, szTmp);
         oldQNH = QNH;
       }
@@ -1738,21 +1738,21 @@ static int iNoFlights=0;
     if(ParToDouble(sentence, 5, &fTmp)) {}  // Screen brightness in percent
     if(ParToDouble(sentence, 6, &fTmp)) {}  // Variometer volume in percent
     if(ParToDouble(sentence, 7, &fTmp)) {}  // SC volume in percent
-    if(ParToDouble(sentence, 8, &fTmp)) {}  // QNH in hPa (NEW)
-
-    if(IsDirInput(PortIO[d->PortNumber].QNHDir))
-    { 
-      static double oldQNH = -1;
-      if ( fabs( oldQNH - fTmp) > 0.1)
-      {
-        UpdateQNH( fTmp);
-        oldQNH = fTmp;
-      }
-    }  
-    NMEAParser::ExtractParameter(sentence, szTmp, 8);
-    SetDataText( _QNH,   szTmp);
-    LX_EOS_ERA_bValid = true;
- 
+    if(ParToDouble(sentence, 8, &fTmp))   // QNH in hPa (NEW)
+    {
+      if(IsDirInput(PortIO[d->PortNumber].QNHDir))
+      { 
+        _stprintf( szTmp, _T("%4.0f hPa"),fTmp);      
+        SetDataText( _QNH,   szTmp);
+        static double oldQNH = -1;
+        if ( fabs( oldQNH - fTmp) > 0.1)
+        {
+          UpdateQNH( fTmp);
+          oldQNH = fTmp;
+        }
+      }  
+    }
+    LX_EOS_ERA_bValid = true;    
   }
   else
   if(_tcsncmp(szTmp, _T("FLIGHTS_NO"), 10) == 0)

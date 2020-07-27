@@ -509,8 +509,19 @@ BOOL DevLXNanoIII::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
 {
 WndProperty *wp;
 if(!wf) return false;
-wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
+
 int PortNum = d->PortNumber;
+   wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField(); dfe->Clear();
+    dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
+  //  dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
+ //   dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->Set((uint) PortIO[PortNum].QNHDir);
+    wp->RefreshDisplay();
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
@@ -703,6 +714,7 @@ static bool OnTimer(WndForm* pWnd)
 
   if(wf)
   {
+    wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir")    ); UpdateValueTxt( wp,  _QNH   );    
     wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir")     ); UpdateValueTxt( wp,  _MC    );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir")    ); UpdateValueTxt( wp,  _BUGS  );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir")    ); UpdateValueTxt( wp,  _BAL   );
@@ -1233,7 +1245,9 @@ void DevLXNanoIII::OnValuesClicked(WndButton* pWnd) {
         if (wf) ShowData(wf, Device());
       }
     }
+    
     StartupStore(_T(" Nano3 CLEAR VALUES %s"), NEWLINE);
+    SetDataText( _QNH,   _T(""));    
     SetDataText( _MC,    _T(""));
     SetDataText( _BUGS,  _T(""));
     SetDataText( _BAL,   _T(""));
@@ -1970,9 +1984,15 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   NMEAParser::ExtractParameter(sentence,szTmp1,0);
   if  (_tcscmp(szTmp1,_T("QNH"))==0)
   {
+    
     NMEAParser::ExtractParameter(sentence,szTmp2,2);
-    UpdateQNH((StrToDouble(szTmp2,NULL))/100.0);
-    StartupStore(_T("Nano3 QNH: %s"),szTmp2);
+    double newQNH = StrToDouble(szTmp2,NULL)/100.0;
+    SetDataText( _QNH,   szTmp2);
+    if(IsDirInput(PortIO[d->PortNumber].QNHDir))
+    {
+      UpdateQNH(newQNH);
+      StartupStore(_T("Nano3 QNH: %s"),szTmp2);
+    }
     return true;
   }
 
