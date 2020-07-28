@@ -67,29 +67,26 @@ static void getIdFromMsg(TCHAR *String,TCHAR *cID,uint32_t *id){
 
 }
 
-/* ------------------------------------------------------------------------- */
 /*
- *  Created on: 06 Dec 2017
- *      Author: Linar Yusupov
+ * Convert 24bit signed integer to int32_t
  */
-static void payload_absolut2coord(double *lat, double *lon, uint8_t *buf)
-{
-  int32_t lat_i = 0;
-  int32_t lon_i = 0;
+static int32_t to_int32_t(const uint8_t *buf) {
+  int32_t value;
+  ((uint8_t*)&value)[0] = buf[0];
+  ((uint8_t*)&value)[1] = buf[1];
+  ((uint8_t*)&value)[2] = buf[2];
+  ((uint8_t*)&value)[3] = ((buf[2]&0x80) ? 0xFF : 0x00); // Sign extension
+  return value;
+}
 
-  if(buf == NULL || lat == NULL || lon == NULL)
+/*
+ * Convert 6Byte buffer to Latitude/longitude
+ */
+static void payload_absolut2coord(double &lat, double &lon, const uint8_t *buf) {
+  if(buf == nullptr)
     return;
-
-  ((uint8_t*)&lat_i)[0] = buf[0];
-  ((uint8_t*)&lat_i)[1] = buf[1];
-  ((uint8_t*)&lat_i)[2] = buf[2];
-
-  ((uint8_t*)&lon_i)[0] = buf[3];
-  ((uint8_t*)&lon_i)[1] = buf[4];
-  ((uint8_t*)&lon_i)[2] = buf[5];
-
-  *lat = lat_i / 93206.0;
-  *lon = lon_i / 46603.0;
+  lat = to_int32_t(&buf[0]) / 93206.0;
+  lon = to_int32_t(&buf[3]) / 46603.0;
 }
 
 template<typename _Tp, size_t size>
@@ -210,7 +207,7 @@ static BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
-  uint8_t msg[payloadLen]; // unchecked buffer overlow in the following code if payloadLen < 17...
+  uint8_t msg[payloadLen]; // unchecked buffer overflow in the following code if payloadLen < 17...
   NMEAParser::ExtractParameter(String,ctemp,6);
   for (int i = 0;i < payloadLen;i++) {
     // undefined result if _tcslen(ctemp) < (payloadLen*2)
@@ -221,7 +218,7 @@ static BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   if (msg[0] & 0x01){ //check extended header
     ++index;
   }
-  payload_absolut2coord(&weather.Latitude,&weather.Longitude,&msg[index]);
+  payload_absolut2coord(weather.Latitude,weather.Longitude,&msg[index]);
   index+=6;
   if ((msg[0] >> 6) & 0x01){
     //Temperature (+1byte in 0.5 degree, 2-Complement)
