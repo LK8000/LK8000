@@ -3148,6 +3148,8 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("GA Relative"));
     dfe->addEnumText(TEXT("LiteAlps"));
     dfe->addEnumText(TEXT("Low Hills"));
+    dfe->addEnumText(TEXT("Low Alps color e-ink"));
+    dfe->addEnumText(TEXT("Low Alps gray e-ink"));
     dfe->Set(TerrainRamp_Config);
     wp->RefreshDisplay();
   }

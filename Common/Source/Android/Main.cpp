@@ -107,11 +107,13 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   event_queue = new EventQueue();
 
 
-#ifdef __arm__
+#if defined __arm__ || defined __aarch64__
   // Android eInk devices support
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "Poke_Pro");
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "C68");
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "yotaphone2");
+  is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "HLTE203T");
+  is_eink_colored = is_eink_colored || StringIsEqual(native_view->GetProduct(), "HLTE203T");
 #endif
 
 

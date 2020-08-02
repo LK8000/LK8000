@@ -28,8 +28,8 @@ Copyright_License {
 
 extern bool has_cursor_keys;
 
-#ifdef __arm__
-extern bool is_nook, is_dithered;
+#if defined __arm__ || defined __aarch64__
+extern bool is_nook, is_dithered, is_eink_colored;
 #endif
 
 /**

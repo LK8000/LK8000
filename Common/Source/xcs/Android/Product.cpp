@@ -30,10 +30,11 @@ Copyright_License {
 
 bool has_cursor_keys;
 
-#ifdef __arm__
+#if defined __arm__ || defined __aarch64__
 
 bool is_nook = false; 
 bool is_dithered = false;
+bool is_eink_colored = false;
 
 bool
 IsGalaxyTab22()

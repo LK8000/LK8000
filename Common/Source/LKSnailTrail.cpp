@@ -93,7 +93,7 @@ void SnailTrail_Create(void) {
   iSnailSizes[15]= tmpsize;
 
 
-  if (!IsDithered()) {
+  if (!IsDithered()||IsEinkColored()) {
 
     // COLORED SNAIL TRAIL
     //
