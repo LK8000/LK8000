@@ -273,7 +273,7 @@
 #define LKMAXBACKGROUNDS        10
 
 // Number of color ramp available for draw terrain
-#define NUMRAMPS        16
+#define NUMRAMPS        18
 
 // Task format version
 #define LKTASKVERSION	'3'
