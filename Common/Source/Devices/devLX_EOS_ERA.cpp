@@ -441,7 +441,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
     dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
-    dfe->Set((uint) PortIO[PortNum].prpQNHDir);
+    dfe->Set((uint) PortIO[PortNum].QNHDir);
     wp->RefreshDisplay();
   }
   
