@@ -735,10 +735,11 @@
 #define LK_XC_CLOSURE_PERC       146     // Additional Contest combined closure %
 #define LK_XC_PREDICTED_DIST     147     // Additional Contest combined closure distance
 #define LK_XC_MEAN_SPEED     148     // Additional Contest mean speed
-
 #define LK_TIMETASK          149     // elapsed time since task start
 #define LK_MTG_QNH_ARRIV   150 // QNH arrival at Multi Target selected
 #define LK_MTG_BRG_DIFF             151  // Multitarget Bearing difference
+#define LK_ALTERN1_QNH_ARRIV   152 // QNH arrival at Alternate 1
+
 // The following values are not available for custom configuration
 
 #define LK_WIND			    233		//

@@ -2966,6 +2966,21 @@ lkfin_ete:
 			valid = true;
 			break;
 
+		// B152 QNH Arrival at Alternate 1
+		case LK_ALTERN1_QNH_ARRIV:
+			value = WayPointCalc[Alternate1].AltArriv[AltArrivMode]; // Arrival Height
+			value += WayPointList[Alternate1].Altitude; // add altitude of waypoint/target
+			if(IsSafetyAltitudeInUse(Alternate1)) {
+				value += (SAFETYALTITUDEARRIVAL / 10); // add safety altitude if in use for that target
+			}
+			value *= ALTITUDEMODIFY; // convert to user altitude Unit
+			_stprintf(BufferValue, TEXT("%d"),int(value));
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			// LKTOKEN  _@M002478_ = "Alternate1 QNH Arrival", _@M002479_ = "Alt1QNH",
+			_tcscpy(BufferTitle, MsgToken(2479));
+			valid=true;
+			break;
+
 		// B242
 		case LK_TARGET_ALT:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
