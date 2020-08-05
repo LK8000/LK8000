@@ -25,7 +25,8 @@
 #include "dlgIGCProgress.h"
 #include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
-#include "dlgLXIGCDownload.h"
+#include "devLX_EOS_ERA.h"
+#include "dlgEOSIGCDownload.h"
 #include "externs.h"
 #include "Baro.h"
 #include "Utils.h"
@@ -34,15 +35,16 @@
 #include "McReady.h"
 #include "Time/PeriodClock.hpp"
 #include "Calc/Vario.h"
-
-static FILE *f= NULL;
+#include <queue>
+#include "Thread/Mutex.hpp"
+#include "Thread/Cond.hpp"
 
 unsigned int uiEOSDebugLevel = 1;
 extern bool UpdateQNH(const double newqnh);
 
 #define NANO_PROGRESS_DLG
 #define BLOCK_SIZE 32
-
+#define _deb (0)
 
 PDeviceDescriptor_t DevLX_EOS_ERA::m_pDevice=NULL;
 BOOL DevLX_EOS_ERA::m_bShowValues = false;
@@ -159,6 +161,8 @@ BOOL  DevLX_EOS_ERA::Values( PDeviceDescriptor_t d)
 
 }
 
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
@@ -190,6 +194,7 @@ BOOL DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->PutFreqStandby = EOSPutFreqStandby;
   d->StationSwap    = EOSStationSwap;
   d->PutRadioMode   = EOSRadioMode;
+  d->ParseStream    = EOSParseStream;
 
   StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
     GetName(),
@@ -199,38 +204,85 @@ BOOL DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
 } // Install()
 
 
+namespace {
+  std::queue<uint8_t> EOSbuffered_data;
+  Mutex EOSmutex;
+  Cond EOScond;
+  bool bEOSBinMode= false;
+}
 
-extern long  StrTol(const  TCHAR *buff) ;
+bool EOSBlockReceived() {
+  ScopeLock lock(EOSmutex);
+  return (!EOSbuffered_data.empty());
+}
+  
+bool IsEOSInBinaryMode() {
+  ScopeLock lock(EOSmutex);
+  return bEOSBinMode;
+}
 
-
-long LX_EOS_ERABaudrate(int iIdx)
-{
-//  indexes are following:
-//  enum { br4800=0, br9600, br19200, br38400, br57600,
-//  br115200,br230400,br256000,br460800, br500k, br1M};
-long lBaudrate = -1;
-  switch (iIdx)
-  {
-    case 0:  lBaudrate = 4800   ; break;
-    case 1:  lBaudrate = 9600   ; break;
-    case 2:  lBaudrate = 19200  ; break;
-    case 3:  lBaudrate = 38400  ; break;
-    case 4:  lBaudrate = 56800  ; break;
-    case 5:  lBaudrate = 115200 ; break;
-    case 6:  lBaudrate = 230400 ; break;
-    case 7:  lBaudrate = 256000 ; break;
-    case 8:  lBaudrate = 460800 ; break;
-    case 9:  lBaudrate = 500000 ; break;
-    case 10: lBaudrate = 1000000; break;
-    default: lBaudrate = -1     ; break;
+bool SetEOSBinaryModeFlag(bool bBinMode) {
+  ScopeLock lock(EOSmutex);
+  bool OldVal = bEOSBinMode;
+  bEOSBinMode = bBinMode;
+  if(!bEOSBinMode) {
+    // same as clear() but free allocated memory.
+    EOSbuffered_data = std::queue<uint8_t>();
   }
-return lBaudrate;
+  return OldVal;
+}
+
+
+
+BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO) {
+  if ((!d) || (!String) || (!len)) {
+    return FALSE;
+  }
+  
+    if (!IsEOSInBinaryMode()) {
+    return FALSE;
+  }
+
+  ScopeLock lock(EOSmutex);
+
+  for (int i = 0; i < len; i++) {
+    EOSbuffered_data.push((uint8_t)String[i]);
+  }
+  EOScond.Broadcast();
+
+  return  true;
 }
 
 
 
 
+uint8_t EOSRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
+  ScopeLock lock(EOSmutex);
 
+  while(EOSbuffered_data.empty()) {
+    if(!EOScond.Wait(EOSmutex, Timeout)) 
+    {
+      return REC_TIMEOUT_ERROR;
+    }
+  }
+  if(inchar) {
+    *inchar = EOSbuffered_data.front();
+   
+  }
+  EOSbuffered_data.pop();
+
+  return REC_NO_ERROR;
+}
+
+uint8_t EOSRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) {
+  ConvUnion tmp;
+  int error = EOSRecChar(d, &(tmp.byte[0]), Timeout);
+  if (error == REC_NO_ERROR) {
+    error = EOSRecChar(d, &(tmp.byte[1]), Timeout);
+  }
+  *inchar = tmp.val;
+  return error;
+}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWPn sentences.
 ///
@@ -246,6 +298,9 @@ return lBaudrate;
 BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
  if (Declare()) return false ;  // do not configure during declaration
+ 
+ 
+ if( IsEOSInBinaryMode()) return false;
 static char lastSec =0;
   if( /*!Declare() &&*/ (info->Second != lastSec))  // execute every second only if no task is declaring
   {
@@ -267,13 +322,14 @@ static char lastSec =0;
       SendNmea(d, TEXT("LXDT,GET,SENS"));
     if( ((info->Second+4) %4) ==0) 
       SendNmea(d, TEXT("LXDT,GET,NAVIGATE,0"));
-    
+
     static double oldQNH= -1.0;
+
     if(IsDirOutput(PortIO[d->PortNumber].QNHDir))
     {      
-      if(fabs( oldQNH - QNH) > 0.1)   
+      if(fabs( oldQNH - QNH) > 0.9)   
       { TCHAR szTmp[MAX_NMEA_LEN];
-        _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%4u"),(int) (QNH+0.5) );
+        _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%4u"),(int) (QNH) );
         SendNmea(d, szTmp);
         oldQNH = QNH;
       }
@@ -349,7 +405,9 @@ BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
  if (Declare()) return false ;  // do not configure during declaration
   if((i++%2)==0)
   {
-    SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,LXDT,1,LXBC,1,GPRMB,5"));
+    SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
+
+    SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));      
   }
   else
     if(!LX_EOS_ERA_bValid)
@@ -385,7 +443,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
     dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
-    dfe->Set((uint) PortIO[PortNum].MCDir);
+    dfe->Set((uint) PortIO[PortNum].QNHDir);
     wp->RefreshDisplay();
   }
   
@@ -1189,23 +1247,20 @@ UnlockFlightData();
     MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
     return;
   }
-
+    SendNmea(Device(), _T("LXDT,SET,BC_INT,AHRS,0.0,SENS,0.0"));    
+      Poco::Thread::sleep(50);
     SendNmea(Device(), _T("LXDT,GET,FLIGHTS_NO"));
-
-    dlgLX_IGCSelectListShowModal();
+      Poco::Thread::sleep(50);
+    dlgEOSIGCSelectListShowModal();
 }
 
 
 
 
- bool  DevLX_EOS_ERA::OnStartIGC_FileRead(TCHAR Filename[]) {
+ bool  DevLX_EOS_ERA::OnStartIGC_FileRead(TCHAR Filename[], uint16_t uiNo) {
 
-TCHAR IGCFilename[MAX_PATH];
-LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
 
-  f = _tfopen( IGCFilename, TEXT("w"));
-  if(f == NULL)   return false;
-  fclose(f);
+  
   // SendNmea(Device(), _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
   StartupStore(_T(" ******* LX_EOS_ERA  IGC Download START ***** %s") , NEWLINE);
   /*
@@ -1215,9 +1270,11 @@ LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
   SendNmea(Device(), szTmp);
   StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
   IGCDownload(true);
-#ifdef  NANO_PROGRESS_DLG
-  CreateIGCProgressDialog();
-#endif*/
+   */
+#define  EOS_PROGRESS_DLG
+#ifdef  EOS_PROGRESS_DLG
+ // CreateIGCProgressDialog();
+#endif
 return true;
 
 }
@@ -1227,14 +1284,10 @@ return true;
 BOOL DevLX_EOS_ERA::AbortLX_IGC_FileRead(void)
 {
 
-  if(f != NULL)
-  {
-    fclose(f); f= NULL;
-  }
   bool bWasInProgress = IGCDownload() ;
   IGCDownload ( false );
 
-#ifdef  NANO_PROGRESS_DLG
+#ifdef  EOS_PROGRESS_DLG
   CloseIGCProgressDialog();
 #endif
   return bWasInProgress;
@@ -1268,8 +1321,8 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
   //
   // 0 loger_stored : [Y|N] (not used in LX1600)
-  // 1 IAS [km/h] ----> Condor uses TAS!
-  // 2 baroaltitude [m]
+  // 1 TAS [km/h]  TAS!
+  // 2 true Altitude [m] (already QNH corrected!!!)
   // 3-8 vario values [m/s] (last 6 measurements in last second)
   // 9 heading of plane (not used in LX1600)
   // 10 windcourse [deg] (not used in LX1600)
@@ -1293,7 +1346,7 @@ double fDir,fTmp,airspeed=0;
       if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
       {
         airspeed = fTmp/TOKPH;
-        info->IndicatedAirspeed = airspeed;
+        info->TrueAirspeed = airspeed;
         info->AirspeedAvailable = TRUE;
       }
     }
@@ -1731,7 +1784,7 @@ static int iNoFlights=0;
   else
   if(_tcsncmp(szTmp, _T("MC_BAL"), 6) == 0)
   {
-    StartupStore(TEXT("MC_BAL %s"), sentence);
+    if(_deb)  StartupStore(TEXT("MC_BAL %s"), sentence);
     if(ParToDouble(sentence, 2, &fTmp)) {EOSSetMC(d, fTmp,_T("($LXDT)") );}
     if(ParToDouble(sentence, 3, &fTmp)) {EOSSetBAL(d, fTmp,_T("($LXDT)") );}
     if(ParToDouble(sentence, 4, &fTmp)) {EOSSetBUGS(d, fTmp,_T("($LXDT)") );}
@@ -1760,6 +1813,7 @@ static int iNoFlights=0;
     if(ParToDouble(sentence, 2, &fTmp)) iNoFlights =(int) (fTmp+0.05);
     if(iNoFlights > 0)
     {
+      EOSListFilled(false);
       _sntprintf(szTmp, MAX_NMEA_LEN, _T("LXDT,GET,FLIGHT_INFO,%i"),1);
       SendNmea(d,szTmp);
     }
@@ -1778,15 +1832,20 @@ static int iNoFlights=0;
     NMEAParser::ExtractParameter(sentence, Surname  ,8);
     NMEAParser::ExtractParameter(sentence, Type     ,9);
     NMEAParser::ExtractParameter(sentence, Reg      ,10);
+    ParToDouble(sentence, 15, &fTmp);
+    uint32_t filesize = (uint32_t)fTmp;
+    
     TCHAR Line[2][MAX_NMEA_LEN];
     _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s %s %s  %s %s"),FileName, Pilot,Surname, Reg, Type);
-    _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) "), Date ,Takeoff ,Landing);
-    AddElement(Line[0], Line[1]);
+    _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), Date ,Takeoff ,Landing,filesize/1024);
+    AddEOSElement(Line[0], Line[1], filesize );
     if(iNo < iNoFlights)
     {
       _sntprintf(szTmp, MAX_NMEA_LEN, _T("LXDT,GET,FLIGHT_INFO,%i"),iNo+1);
       SendNmea(d,szTmp);
     }
+    else
+      EOSListFilled(true);
   }
   else
   if(_tcsncmp(szTmp, _T("SENS"), 4) == 0)  // Sensor Data?
@@ -1923,8 +1982,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,%.1f,,,,,"), MacCready);
   StartupStore(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
- /* Poco::Thread::sleep(REQ_DEADTIME);
-  SendNmea(d,_T("LXDT,GET,MC_BAL"));*/
+
 return true;
 
 }
@@ -1940,8 +1998,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,%.0f,,,,"),GlidePolar::BallastLitres);
   StartupStore(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
- /* Poco::Thread::sleep(REQ_DEADTIME);
-  SendNmea(d,_T("LXDT,GET,MC_BAL"));*/
+
 
 
 return(TRUE);
@@ -1959,9 +2016,7 @@ BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,,%.0f,,,"),fLXBugs);
   StartupStore(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
-  /*
-  Poco::Thread::sleep(REQ_DEADTIME);
-  SendNmea(d,_T("LXDT,GET,MC_BAL"));*/
+
 
 
 return(TRUE);
