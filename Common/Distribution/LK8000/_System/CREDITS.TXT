@@ -166,16 +166,18 @@ Other developers:
 Tobias Bieniek
 Eric Carden
 Oren Cohen
+Mana Coste
+Gerald Eichler
 Vladimir Fux
 Jozef Hartinger
 Max Kellermann
 Kuba Kubrynski
+Alessandro Magnolo
 Richard Pecl
 Mateusz Pusz
 Alberto Realis-Luc
 Kalman Rozsahegyi
 Karim Trojette
-Mana Coste
 
 LK8000 Project Copyrights:
 
@@ -186,17 +188,19 @@ Paolo Ventafridda
 Tobias Bieniek
 Eric Carden
 Oren Cohen
+Mana Coste
+Gerald Eichler
 Jozef Hartinger
 Max Kellermann
 Kuba Kubrynski
 Shachar Liberman
+Alessandro Magnolo
 Richard Pecl
 Mateusz Pusz
 Alberto Realis-Luc
 Tony Tarsi
 Kalman Rozsahegyi
 Karim Trojette
-Mana Coste
 
 
 Graphics by Jiri Bergman
