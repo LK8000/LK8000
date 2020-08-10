@@ -1535,12 +1535,15 @@ bool ret = false;
   if(Values(d))
   {
     TCHAR szTmp[MAX_NMEA_LEN];
-    _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[2]*100.0), info);
-    SetDataText(_BAL,  szTmp);
+    if(WEIGHTS[2] > 0)
+    {
+      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[2]*100.0), info);
+      SetDataText(_BAL,  szTmp);
+    }
   }
   if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
   {
-    if(fabs(fTmp- GlidePolar::BallastLitres) > 1 )
+    if((fabs(fTmp- GlidePolar::BallastLitres) > 1 )  &&   (WEIGHTS[2] > 0))
     {
       GlidePolar::BallastLitres = fTmp;
       BALLAST =  GlidePolar::BallastLitres / WEIGHTS[2];
@@ -1832,8 +1835,9 @@ static int iNoFlights=0;
     NMEAParser::ExtractParameter(sentence, Surname  ,8);
     NMEAParser::ExtractParameter(sentence, Type     ,9);
     NMEAParser::ExtractParameter(sentence, Reg      ,10);
-    ParToDouble(sentence, 15, &fTmp);
-    uint32_t filesize = (uint32_t)fTmp;
+     uint32_t filesize  = 0;
+    if (ParToDouble(sentence, 15, &fTmp))
+       filesize = (uint32_t)fTmp;
     
     TCHAR Line[2][MAX_NMEA_LEN];
     _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s %s %s  %s %s"),FileName, Pilot,Surname, Reg, Type);
