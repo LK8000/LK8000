@@ -1302,6 +1302,7 @@ DLGS	:=\
 	$(DLG)/dlgIGCProgress.cpp \
 	$(DLG)/dlgFlarmIGCDownload.cpp \
 	$(DLG)/dlgLXIGCDownload.cpp \
+	$(DLG)/dlgEOSIGCDownload.cpp \
 	$(DLG)/dlgWeatherStDetails.cpp \
 	
 	

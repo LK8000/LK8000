@@ -116,6 +116,7 @@ typedef struct{
   DataBiIoDir POLARDir ; // Polar 2 voltage
   DataBiIoDir DirLink  ; // Direct Link
   DataTP_Type T_TRGTDir; // Send Navigation Target information protocol sentence
+  DataBiIoDir QNHDir   ; // QNH data exchange
 } DeviceIO;
 
 struct DeviceDescriptor_t {

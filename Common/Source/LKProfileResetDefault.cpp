@@ -442,6 +442,7 @@ void LKProfileResetDefault() {
     PortIO[i].POLARDir  = BiDirOff;
     PortIO[i].DirLink   = BiDirOff;
     PortIO[i].T_TRGTDir = TP_VTARG;
+    PortIO[i].QNHDir    = BiDirInOut;
   }
 
 
