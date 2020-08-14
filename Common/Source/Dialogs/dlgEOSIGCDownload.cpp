@@ -21,7 +21,7 @@
   
 #define LST_STRG_LEN          100
 #define STATUS_TXT_LEN        100
-#define GC_IDLETIME           4
+#define GC_IDLETIME           1
 #define GC_TIMER_INTERVAL     750
 
 #define deb_                  (0)  // debug output switch
@@ -478,8 +478,8 @@ ConvUnion FLightNo;
   if (deb_) {
     StartupStore(TEXT("\r\n===="));
   }
-  Poco::Thread::sleep(GC_IDLETIME);
-  Poco::Thread::yield();
+//  Poco::Thread::sleep(GC_IDLETIME);
+//  Poco::Thread::yield();
 }
 
 
@@ -502,7 +502,7 @@ ConvUnion BlkNo;
   if (deb_) StartupStore(TEXT("=== RecBinBlock : "));
   cnt = 0;
   do {
-      error = EOSRecChar(d, &bRecByte, 500);
+      error = EOSRecChar(d, &bRecByte, 1000);
       // expect ACK within next 2048 char
       if((cnt++) > 2048) {
         StartupStore(TEXT("ACK Timeout "));
@@ -614,8 +614,8 @@ protected:
 
       ReadEOS_IGCFile(DevLX_EOS_ERA::GetDevice(), EOS_IGCReadDialog.DownloadIndex());
 
-      Poco::Thread::sleep(GC_IDLETIME);
-      Poco::Thread::yield();
+//      Poco::Thread::sleep(GC_IDLETIME);
+//      Poco::Thread::yield();
     }
     SetEOSBinaryModeFlag(false);
     if (deb_)

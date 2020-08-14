@@ -239,10 +239,29 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t *d, char *String, int len,
     return FALSE;
   }
   
-    if (!IsEOSInBinaryMode()) {
-    return FALSE;
-  }
-
+  static BOOL slowdown = false;
+    if (!IsEOSInBinaryMode()) {    
+      if(slowdown)
+      {
+         SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
+         SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));
+         SendNmea( d, _T("LXDT,GET,BC_INT"));
+         StartupStore(TEXT("NMEA SLOWDOWN OFF!!"));      
+          slowdown = false;
+      }       
+      return FALSE;      
+   }
+  
+ if(!slowdown)
+      {
+         SendNmea(d, TEXT("PFLX0,LXWP0,0,LXWP1,0,LXWP2,0,LXWP3,0,GPRMB,0"));
+          SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.0,SENS,0.0"));
+          SendNmea( d, _T("LXDT,GET,BC_INT"));
+          StartupStore(TEXT("NMEA SLOWDOWN ON!!"));      
+          slowdown = true;
+      }    
+   
+   
   ScopeLock lock(EOSmutex);
 
   for (int i = 0; i < len; i++) {
@@ -260,6 +279,9 @@ uint8_t EOSRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
   ScopeLock lock(EOSmutex);
 
   while(EOSbuffered_data.empty()) {
+    Poco::Thread::sleep(1);
+    Poco::Thread::yield();
+
     if(!EOScond.Wait(EOSmutex, Timeout)) 
     {
       return REC_TIMEOUT_ERROR;
@@ -319,7 +341,8 @@ static char lastSec =0;
       old_overmode  = OvertargetMode;
     }
     if( ((info->Second+2) %4) ==0) 
-      SendNmea(d, TEXT("LXDT,GET,SENS"));
+     SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));
+   /*   SendNmea(d, TEXT("LXDT,GET,SENS"));*/
     if( ((info->Second+4) %4) ==0) 
       SendNmea(d, TEXT("LXDT,GET,NAVIGATE,0"));
 
