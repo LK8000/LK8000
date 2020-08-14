@@ -861,9 +861,30 @@ goto_bearing:
 
 		// B38
 		case LK_MTG_BRG:
-			goto lk_empty;
-			break;
+			_stprintf(BufferValue,_T(NULLLONG));
+			if (lktitle)				
+  // LKTOKEN "_@M001698_": "Multitarget Bearing",
+ //  LKTOKEN "_@M001699_": "BrgMtg",              
+				_tcscpy(BufferTitle, MsgToken(1699));
+			else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			ivalue = GetOvertargetIndex(); // Current Multitarget
+			if(ivalue > 0) {
+			value = WayPointCalc[ivalue].Bearing;  //Bearing;
 
+
+              valid=true;
+              
+              if (value > 1)
+                  _stprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken(2179));
+              else if (value < -1)
+                  _stprintf(BufferValue, TEXT("%2.0f%s"), -value, MsgToken(2179));
+              else
+                  _stprintf(BufferValue, TEXT("0%s"), MsgToken(2179));
+           }
+                  else   valid=false;
+			break;
+            
 		// B39
 		case LK_TIME_LOCAL:
 			Units::TimeToText(BufferValue, LocalTime());
@@ -3213,7 +3234,7 @@ lkfin_ete:
 
 		// B254
 		case LK_EMPTY:
-lk_empty:
+//lk_empty:
 			_tcscpy(BufferValue, TEXT(""));
 			_tcscpy(BufferUnit, TEXT(""));
 			_tcscpy(BufferTitle, TEXT(""));
