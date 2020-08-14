@@ -737,7 +737,7 @@
 #define LK_XC_MEAN_SPEED     148     // Additional Contest mean speed
 #define LK_TIMETASK          149     // elapsed time since task start
 #define LK_MULTI_TARGET_QNH_ARRIV   150 // QNH arrival at Multi Target selected
-
+#define LK_MTG_BRG_DIFF             151  // Multitarget Bearing difference
 // The following values are not available for custom configuration
 
 #define LK_WIND			    233		//

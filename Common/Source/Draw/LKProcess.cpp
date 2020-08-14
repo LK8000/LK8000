@@ -997,44 +997,57 @@ goto_bearing:
 			break;
 		// B47
 		case LK_BRGDIFF:
+		case LK_MTG_BRG_DIFF:
+            index =0;
 			_stprintf(BufferValue,_T(NULLMEDIUM)); // 091221
-			if (lktitle)
-				// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
-				_tcscpy(BufferTitle, MsgToken(1096));
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
-				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveTaskPoint].Index;
-				if (index>=0) {
-					// THIS WOULD SET BEARING while circling
-					// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-					if (true)
-					{
-						if (AATEnabled && !DoOptimizeRoute())
-							value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
-						else
-							value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
-						valid=true;
-						if (value < -180.0)
-							value += 360.0;
-						else
-							if (value > 180.0)
-								value -= 360.0;
-                        if (value > 30)
-                          _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
-                        else if (value > 2)
-                            _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2185));
-                        else if (value < -30)
-                            _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
-                        else if (value < -2)
-                            _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2184), - value, MsgToken(2179));
-                        else
-                            _stprintf(BufferValue, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
-					}
-					else goto goto_bearing;
-				}
-			}
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+            if(lkindex == LK_MTG_BRG_DIFF)
+            {
+              // LKTOKEN  _@M2576_ = "Multitarget Bearing Difference", _@M2577_ = "DiffMtg"
+              if (lktitle)
+				 _tcscpy(BufferTitle, MsgToken(2577));
+              index = GetOvertargetIndex();
+            }
+            else
+              if ( ValidTaskPoint(ActiveTaskPoint) != false ) 
+              {
+                 if (lktitle)
+                  // LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+                    _tcscpy(BufferTitle, MsgToken(1096));
+
+                  if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+                  else index = Task[ActiveTaskPoint].Index;
+              } 
+
+            if (index>=0) {
+                // THIS WOULD SET BEARING while circling
+                // if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+                if (true)
+                {
+                    if (AATEnabled && !DoOptimizeRoute())
+                        value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
+                    else
+                        value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
+                    valid=true;
+                    if (value < -180.0)
+                        value += 360.0;
+                    else
+                        if (value > 180.0)
+                            value -= 360.0;
+                    if (value > 30)
+                      _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
+                    else if (value > 2)
+                        _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2185));
+                    else if (value < -30)
+                        _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
+                    else if (value < -2)
+                        _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2184), - value, MsgToken(2179));
+                    else
+                        _stprintf(BufferValue, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
+                }
+                else goto goto_bearing;
+            }
+
 			break;
 
 
