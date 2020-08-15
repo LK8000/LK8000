@@ -194,7 +194,7 @@ static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   _tcscat(text, _T("\r\n"));
   _tcscat(text, MSG);
   PlayResource(TEXT("IDR_WAV_DRIP")); //play sound
-  Message::AddMessage(1500, MSG_COMMS, text); // message time 1.5s
+  Message::AddMessage(10000, MSG_COMMS, text); // message time 10s
   return TRUE;
 }
 
