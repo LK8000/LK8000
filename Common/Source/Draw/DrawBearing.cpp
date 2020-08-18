@@ -36,7 +36,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
     }
     LockTaskData();
 
-    if ( DoOptimizeRoute() || ((ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1))) {
+    if (UseAATTarget() && ( DoOptimizeRoute() || ((ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1))) ) {
       targetLat = Task[ActiveTaskPoint].AATTargetLat;
       targetLon = Task[ActiveTaskPoint].AATTargetLon; 
     } else {
