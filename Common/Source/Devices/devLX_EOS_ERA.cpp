@@ -50,6 +50,7 @@ PDeviceDescriptor_t DevLX_EOS_ERA::m_pDevice=NULL;
 BOOL DevLX_EOS_ERA::m_bShowValues = false;
 BOOL DevLX_EOS_ERA::bIGC_Download = false;
 BOOL DevLX_EOS_ERA::m_bDeclare = false;
+BOOL DevLX_EOS_ERA::m_bRadioEnabled = true;
 
 uint uEOS_ERA_Timeout =0;
 #define TIMEOUTCHECK
@@ -187,7 +188,7 @@ BOOL DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->Config       = Config;
   d->DirectLink   = NULL;
 
-  d->IsRadio        = GetTrue;
+  d->IsRadio        = EOSRadioEnabled;
   d->PutVolume      = EOSPutVolume;
   d->PutSquelch     = EOSPutSquelch;
   d->PutFreqActive  = EOSPutFreqActive;
@@ -1801,6 +1802,7 @@ static int iNoFlights=0;
   NMEAParser::ExtractParameter(sentence, szTmp, 1);  // Command?
   if(_tcsncmp(szTmp, _T("RADIO"), 5) == 0)
   {
+    m_bRadioEnabled = true;
     if(ParToDouble(sentence, 2, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.ActiveFrequency  = fTmp;
     if(ParToDouble(sentence, 3, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.PassiveFrequency = fTmp;
     if(ParToDouble(sentence, 4, &fTmp)) RadioPara.Volume  = (int) fTmp;
@@ -1930,8 +1932,15 @@ static int iNoFlights=0;
   if(_tcsncmp(szTmp, _T("ERROR"), 5) == 0)  // ERROR?
   {
     NMEAParser::ExtractParameter(sentence, szTmp, 2);
-    DoStatusMessage(TEXT("LX EOS/ERA Error:"), szTmp, false);
-    StartupStore(TEXT("LX EOS/ERA Error: %s"), szTmp);
+    if(_tcsncmp(szTmp, _T("Radio not enabled"), 17) == 0)  
+    {
+      m_bRadioEnabled = false;
+    }
+    else
+    {
+      DoStatusMessage(TEXT("LX EOS/ERA Error:"), szTmp, false);
+      StartupStore(TEXT("LX EOS/ERA Error: %s"), szTmp);
+    }
   }
   else
   if(_tcsncmp(szTmp, _T("OK"), 2) == 0)
@@ -2256,14 +2265,14 @@ double fTmp;
 
 BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(PDeviceDescriptor_t d)
 {
-
+  if(!EOSRadioEnabled(d)) return false;
   Poco::Thread::sleep(50);
   SendNmea(d,(TCHAR*)_T("LXDT,GET,RADIO"));
   return true;
 }
 
 BOOL DevLX_EOS_ERA::EOSPutVolume(PDeviceDescriptor_t d, int Volume) {
-
+  if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,,%i,,,"),Volume)  ;
   SendNmea(d,szTmp);
@@ -2277,7 +2286,7 @@ BOOL DevLX_EOS_ERA::EOSPutVolume(PDeviceDescriptor_t d, int Volume) {
 
 
 BOOL DevLX_EOS_ERA::EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) {
-
+ if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,,,%i,,"),Squelch)  ;
   SendNmea(d,szTmp);
@@ -2290,7 +2299,7 @@ BOOL DevLX_EOS_ERA::EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 BOOL DevLX_EOS_ERA::EOSPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
-
+ if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"),Freq)  ;
   SendNmea(d,szTmp);
@@ -2305,7 +2314,7 @@ BOOL DevLX_EOS_ERA::EOSPutFreqActive(PDeviceDescriptor_t d, double Freq, const T
 
 
 BOOL DevLX_EOS_ERA::EOSPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
-
+ if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,%7.3f,,,,"),Freq)  ;
   SendNmea(d,szTmp);
@@ -2321,7 +2330,7 @@ BOOL DevLX_EOS_ERA::EOSPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const
 
 BOOL DevLX_EOS_ERA::EOSStationSwap(PDeviceDescriptor_t d) {
 
-
+ if(!EOSRadioEnabled(d)) return false;
   SendNmea(d,_T("LXDT,SET,R_SWITCH"));
 
   EOSRequestRadioInfo(d);
@@ -2333,7 +2342,7 @@ BOOL DevLX_EOS_ERA::EOSStationSwap(PDeviceDescriptor_t d) {
 
 
 BOOL DevLX_EOS_ERA::EOSRadioMode(PDeviceDescriptor_t d, int mode) {
-
+ if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,R_DUAL,%i"),mode);
   SendNmea(d,(TCHAR*)szTmp);
