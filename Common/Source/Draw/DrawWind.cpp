@@ -78,7 +78,7 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   }
   
   LKBrush ArrowBrush;  ArrowBrush.Create(OverColorRef);
-  const auto hpOld = Surface.SelectObject( LKPen_Black_N2);
+  const auto hpOld = Surface.SelectObject( LKPen_Black_N1);
 
   const auto hbOld = Surface.SelectObject(ArrowBrush);
   Surface.Polygon(ArrowL,array_size(ArrowL));
