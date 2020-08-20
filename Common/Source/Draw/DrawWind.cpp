@@ -24,12 +24,18 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   Start.y = Orig.y;
   Start.x = Orig.x;
 
-  POINT Arrow[] = { 
+  POINT ArrowL[] = { 
       {0,-20}, 
-      {-6,-26-wmag}, {0,-20-wmag}, {6,-26-wmag}, 
+      {0,-20-wmag}, {6,-26-wmag}, 
       {0,-20}
   };
-  PolygonRotateShift(Arrow, array_size(Arrow), Start.x, Start.y, angle);
+  POINT ArrowR[] = { 
+      {0,-20}, 
+      {-6,-26-wmag}, {0,-20-wmag},
+      {0,-20}
+  };  
+  PolygonRotateShift(ArrowL, array_size(ArrowL), Start.x, Start.y, angle);
+  PolygonRotateShift(ArrowR, array_size(ArrowR), Start.x, Start.y, angle);
 
   POINT Tail[] = {
       {0,-20}, 
@@ -62,7 +68,7 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
       IBLSCALE(8) + tSize.cx/2,
       IBLSCALE(-24)
     };  
-    if (Arrow[1].y>=Arrow[3].y) {
+    if (ArrowR[1].y>=ArrowR[3].y) {
         pt.x *= (-1);
     }
     
@@ -70,9 +76,19 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
     TextInBox(Surface, &rc, sTmp, pt.x, pt.y, &TextInBoxMode);
     Surface.SelectObject(oldFont);
   }
-  const auto hpOld = Surface.SelectObject(LKPen_Black_N2);
-  const auto hbOld = Surface.SelectObject(LKBrush_Grey);
-  Surface.Polygon(Arrow,array_size(Arrow));
+  
+  LKBrush ArrowBrush;  ArrowBrush.Create(OverColorRef);
+  const auto hpOld = Surface.SelectObject( LKPen_Black_N1);
+
+  const auto hbOld = Surface.SelectObject(ArrowBrush);
+  Surface.Polygon(ArrowL,array_size(ArrowL));
+
+  if(OverColorRef==RGB_SBLACK)
+    Surface.SelectObject(LKBrush_White);
+  else
+    Surface.SelectObject(LKBrush_Black);
+
+  Surface.Polygon(ArrowR,array_size(ArrowR));
 
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);
