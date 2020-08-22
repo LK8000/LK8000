@@ -59,6 +59,28 @@ static double GetNextETE(const DERIVED_INFO& info) {
 	return value;
 } 
 
+static bool TurnpointQnhArrival(int TpIndex, double &value, TCHAR *BufferValue, TCHAR *BufferUnit) {
+	bool valid = false;
+
+	if(ValidWayPoint(TpIndex)) {
+		value = WayPointCalc[TpIndex].AltArriv[AltArrivMode]; // Arrival Height
+		value += WayPointList[TpIndex].Altitude; // add altitude of waypoint/target
+		if(IsSafetyAltitudeInUse(TpIndex)) {
+			value += (SAFETYALTITUDEARRIVAL / 10); // add safety altitude if in use for that target
+		}
+		// even though this is a valid waypoint, if arrival below waypoint altitue, 
+		// then valid = false so that set Amber color to get attention of user
+		valid = (value >= WayPointList[TpIndex].Altitude); 
+		value *= ALTITUDEMODIFY; // convert to user altitude Unit		
+		_stprintf(BufferValue, TEXT("%d"), int(value));
+	} else {
+		// could be e.g. if display Alternate 1 QNH arr, but no Alternate 1 is defined
+		_stprintf(BufferValue,_T(NULLMEDIUM));
+		value = 0;
+	}
+	_stprintf(BufferUnit, TEXT("%s"), (Units::GetAltitudeName()));
+	return valid;
+}
 
 //
 // CAREFUL CAREFUL CAREFUL here:
@@ -2946,39 +2968,16 @@ lkfin_ete:
 		// QNH arrival altitude at the currently selected Multitarget. This is a QNH altitude, not a height
 		// above ground. Does not include safety height. Can be negative
 		case LK_MTG_QNH_ARRIV:
-			ivalue = GetOvertargetIndex(); // Current Multitarget
-			if(ivalue > 0) {
-				value = WayPointCalc[ivalue].AltArriv[AltArrivMode]; // Arrival Height
-				value += WayPointList[ivalue].Altitude; // add altitude of waypoint/target
-				if(IsSafetyAltitudeInUse(ivalue)) {
-					value += (SAFETYALTITUDEARRIVAL / 10); // add safety altitude if in use for that target
-				}
-				value *= ALTITUDEMODIFY; // convert to user altitude Unit
-			}
-			else {
-				value = 0;
-				valid = false;
-			}
-			_stprintf(BufferValue, TEXT("%d"),int(value));
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			valid = TurnpointQnhArrival(GetOvertargetIndex(), value, BufferValue, BufferUnit);
 			// LKTOKEN _@M002472_ = "MultiTarget QNH Arrival", _@M002473_ = "MTgtArr"
 			_tcscpy(BufferTitle, MsgToken(2473));
-			valid = true;
 			break;
 
 		// B152 QNH Arrival at Alternate 1
 		case LK_ALTERN1_QNH_ARRIV:
-			value = WayPointCalc[Alternate1].AltArriv[AltArrivMode]; // Arrival Height
-			value += WayPointList[Alternate1].Altitude; // add altitude of waypoint/target
-			if(IsSafetyAltitudeInUse(Alternate1)) {
-				value += (SAFETYALTITUDEARRIVAL / 10); // add safety altitude if in use for that target
-			}
-			value *= ALTITUDEMODIFY; // convert to user altitude Unit
-			_stprintf(BufferValue, TEXT("%d"),int(value));
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			valid = TurnpointQnhArrival(Alternate1, value, BufferValue, BufferUnit);
 			// LKTOKEN  _@M002478_ = "Alternate1 QNH Arrival", _@M002479_ = "Alt1QNH",
 			_tcscpy(BufferTitle, MsgToken(2479));
-			valid=true;
 			break;
 
 		// B242
