@@ -17,7 +17,7 @@
 #endif // _MSC_VER > 1000
 
 // Number of InfoBoxes
-#define NUMDATAOPTIONS_MAX                      152
+#define NUMDATAOPTIONS_MAX                      153
 
 
 #define DISTANCE_ROUNDING 20.0

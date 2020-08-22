@@ -737,7 +737,7 @@
 #define LK_XC_MEAN_SPEED     148     // Additional Contest mean speed
 #define LK_TIMETASK          149     // elapsed time since task start
 #define LK_MULTI_TARGET_QNH_ARRIV   150 // QNH arrival at Multi Target selected
-#define LK_ALTERN1_ARRIV_QNH   151 // QNH arrival at Alternate 1
+#define LK_ALTERN1_QNH_ARRIV   151 // QNH arrival at Alternate 1
 
 // The following values are not available for custom configuration
 
