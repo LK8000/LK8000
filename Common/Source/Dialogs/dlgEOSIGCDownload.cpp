@@ -21,10 +21,10 @@
   
 #define LST_STRG_LEN          100
 #define STATUS_TXT_LEN        100
-#define GC_IDLETIME           1
+#define GC_IDLETIME           10
 #define GC_TIMER_INTERVAL     750
 
-#define deb_                  (0)  // debug output switch
+#define deb_                  (1)  // debug output switch
 
  Mutex DLmutex;
 
@@ -478,8 +478,6 @@ ConvUnion FLightNo;
   if (deb_) {
     StartupStore(TEXT("\r\n===="));
   }
-//  Poco::Thread::sleep(GC_IDLETIME);
-//  Poco::Thread::yield();
 }
 
 
@@ -502,9 +500,9 @@ ConvUnion BlkNo;
   if (deb_) StartupStore(TEXT("=== RecBinBlock : "));
   cnt = 0;
   do {
-      error = EOSRecChar(d, &bRecByte, 1000);
-      // expect ACK within next 2048 char
-      if((cnt++) > 2048) {
+      error = EOSRecChar(d, &bRecByte, 500);
+      // expect ACK within next 40 char
+      if((cnt++) > 512) {
         StartupStore(TEXT("ACK Timeout "));
         return REC_TIMEOUT_ERROR; 
       }
@@ -614,8 +612,8 @@ protected:
 
       ReadEOS_IGCFile(DevLX_EOS_ERA::GetDevice(), EOS_IGCReadDialog.DownloadIndex());
 
-//      Poco::Thread::sleep(GC_IDLETIME);
-//      Poco::Thread::yield();
+      Poco::Thread::sleep(GC_IDLETIME);
+      Poco::Thread::yield();
     }
     SetEOSBinaryModeFlag(false);
     if (deb_)
@@ -699,7 +697,12 @@ uint16_t error= REC_NO_ERROR;
     break;  
     
     case READRECORD_STATE_RX: 
-      if(EOSBlockReceived())
+      if(!EOSBlockReceived())
+      {
+         Poco::Thread::sleep(GC_IDLETIME);
+        Poco::Thread::yield();
+      }
+      else
       {uint16_t Bytes;
         error = RecBinBlock(d, pf_IGCFile, BlockNo, &Bytes);
         BytesRead += Bytes;

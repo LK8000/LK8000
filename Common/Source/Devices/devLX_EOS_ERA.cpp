@@ -245,22 +245,23 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t *d, char *String, int len,
       if(slowdown)
       {
          SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
+
          SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));
-         SendNmea( d, _T("LXDT,GET,BC_INT"));
-         StartupStore(TEXT("NMEA SLOWDOWN OFF!!"));      
-          slowdown = false;
+      //   SendNmea( d, _T("LXDT,GET,BC_INT"));
+        StartupStore(TEXT("NMEA SLOWDOWN OFF!!"));      
+        slowdown = false;
       }       
       return FALSE;      
    }
   
- if(!slowdown)
-      {
-         SendNmea(d, TEXT("PFLX0,LXWP0,0,LXWP1,0,LXWP2,0,LXWP3,0,GPRMB,0"));
-          SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.0,SENS,0.0"));
-          SendNmea( d, _T("LXDT,GET,BC_INT"));
-          StartupStore(TEXT("NMEA SLOWDOWN ON!!"));      
-          slowdown = true;
-      }    
+  if(!slowdown)
+  {
+     SendNmea(d, TEXT("PFLX0,LXWP0,100,LXWP1,100,LXWP2,100,LXWP3,100,GPRMB,100"));      
+     SendNmea( d, _T("LXDT,SET,BC_INT,ALL,0.0"));
+
+     StartupStore(TEXT("NMEA SLOWDOWN"));
+     slowdown = true;
+  }    
    
    
   ScopeLock lock(EOSmutex);
@@ -341,9 +342,8 @@ static char lastSec =0;
       old_overindex = GetOvertargetIndex();;
       old_overmode  = OvertargetMode;
     }
-    if( ((info->Second+2) %4) ==0) 
-     SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));
-   /*   SendNmea(d, TEXT("LXDT,GET,SENS"));*/
+    if( ((info->Second+2) %4) ==0)
+      SendNmea(d, TEXT("LXDT,GET,SENS"));
     if( ((info->Second+4) %4) ==0) 
       SendNmea(d, TEXT("LXDT,GET,NAVIGATE,0"));
 
@@ -427,6 +427,7 @@ BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
 #ifdef TIMEOUTCHECK
   static int i=0;
  if (Declare()) return false ;  // do not configure during declaration
+  if(IsEOSInBinaryMode()) return false;
   if((i++%2)==0)
   {
     SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
@@ -1879,42 +1880,7 @@ static int iNoFlights=0;
   else
   if(_tcsncmp(szTmp, _T("SENS"), 4) == 0)  // Sensor Data?
   {
-     if(ParToDouble(sentence, 2, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
-       _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
-       SetDataText(_OAT,  szTmp);
-       if(IsDirInput(PortIO[d->PortNumber].OATDir))
-       {
-         info->OutsideAirTemperature = fTmp;
-	     info->TemperatureAvailable  = TRUE;
-       }
-     }
-     if(ParToDouble(sentence, 3, &fTmp)) { // main power supply voltage
-       _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
-       SetDataText(_BAT1,  szTmp);
-       if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
-       {
-         info->ExtBatt1_Voltage = fTmp;	
-       }
-     }
-     if(ParToDouble(sentence, 4, &fTmp)) { // Backup battery voltage
-       _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
-       SetDataText(_BAT2,  szTmp);
-       if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
-       {
-         info->ExtBatt2_Voltage = fTmp;	
-       }
-     }
-     NMEAParser::ExtractParameter(sentence, szTmp, 5); 
-     {  // Current flap setting
-     }
-     NMEAParser::ExtractParameter(sentence, szTmp, 6);
-     { // Recommended flap setting
-     }
-     if(ParToDouble(sentence, 7, &fTmp)) {  // Current landing gear position (0 = out, 1 = inside, left empty if gear input not configured)
-     }
-     if(ParToDouble(sentence, 8, &fTmp)) {  // SC/Vario mode (0 = Vario, 1 = SC)
-       EOSSetSTF(d, (int)fTmp,_T(" ($LXDT,SENS)"));
-     }
+    SENS(d, sentence,  info, 2);
   }
   else
   if(_tcsncmp(szTmp, _T("SC_VAR"), 6) == 0)  // Vario / STF
@@ -1956,12 +1922,60 @@ static int iNoFlights=0;
 
 
 
+
+BOOL DevLX_EOS_ERA::SENS(PDeviceDescriptor_t d,  const TCHAR* sentence, NMEA_INFO* info, int ParNo)
+{ 
+TCHAR szTmp[MAX_NMEA_LEN];
+double fTmp;
+
+  if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
+    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
+    SetDataText(_OAT,  szTmp);
+    if(IsDirInput(PortIO[d->PortNumber].OATDir))
+    {
+      info->OutsideAirTemperature = fTmp;
+      info->TemperatureAvailable  = TRUE;
+    }
+  }
+  if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage
+    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
+    SetDataText(_BAT1,  szTmp);
+    if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
+    {
+      info->ExtBatt1_Voltage = fTmp;	
+    }
+  }
+  if(ParToDouble(sentence, ParNo++, &fTmp)) { // Backup battery voltage
+    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
+    SetDataText(_BAT2,  szTmp);
+    if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
+    {
+      info->ExtBatt2_Voltage = fTmp;	
+    }
+  }
+  NMEAParser::ExtractParameter(sentence, szTmp, ParNo++); 
+  {  // Current flap setting
+  }
+  NMEAParser::ExtractParameter(sentence, szTmp, ParNo++);
+  { // Recommended flap setting
+  }
+  if(ParToDouble(sentence, ParNo++, &fTmp)) {  // Current landing gear position (0 = out, 1 = inside, left empty if gear input not configured)
+  }
+  if(ParToDouble(sentence, ParNo++, &fTmp)) {  // SC/Vario mode (0 = Vario, 1 = SC)
+    EOSSetSTF(d, (int)fTmp,_T(" ($LXDT,SENS)"));
+  }
+  return true;
+}
+
 BOOL DevLX_EOS_ERA::LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 TCHAR szTmp[MAX_NMEA_LEN];
 
 devSetAdvancedMode(d,true);
-
+if(_tcsncmp(sentence, _T("SENS"), 4) == 0)
+{  
+  SENS(d,  sentence,  info,1);
+}
 
 if(_tcsncmp(sentence, _T("AHRS"), 4) == 0)
 {
