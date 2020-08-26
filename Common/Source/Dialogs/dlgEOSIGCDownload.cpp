@@ -21,10 +21,15 @@
   
 #define LST_STRG_LEN          100
 #define STATUS_TXT_LEN        100
+#ifdef KOBO
 #define GC_IDLETIME           10
+#else
+#define GC_IDLETIME           2
+#endif
+
 #define GC_TIMER_INTERVAL     750
 
-#define deb_                  (1)  // debug output switch
+#define deb_                  (0)  // debug output switch
 
  Mutex DLmutex;
 
