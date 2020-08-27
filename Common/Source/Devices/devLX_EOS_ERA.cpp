@@ -51,7 +51,7 @@ BOOL DevLX_EOS_ERA::m_bShowValues = false;
 BOOL DevLX_EOS_ERA::bIGC_Download = false;
 BOOL DevLX_EOS_ERA::m_bDeclare = false;
 BOOL DevLX_EOS_ERA::m_bRadioEnabled = true;
-
+BOOL DevLX_EOS_ERA::m_bTriggered = false;
 uint uEOS_ERA_Timeout =0;
 #define TIMEOUTCHECK
 
@@ -1262,6 +1262,8 @@ void DevLX_EOS_ERA::OnValuesClicked(WndButton* pWnd) {
 
 }
 
+
+
 void DevLX_EOS_ERA::OnIGCDownloadClicked(WndButton* pWnd) {
 (void)pWnd;
 LockFlightData();
@@ -1272,6 +1274,7 @@ UnlockFlightData();
     MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
     return;
   }
+m_bTriggered = true;
     SendNmea(Device(), _T("LXDT,SET,BC_INT,AHRS,0.0,SENS,0.0"));    
       Poco::Thread::sleep(50);
     SendNmea(Device(), _T("LXDT,GET,FLIGHTS_NO"));
@@ -1840,7 +1843,8 @@ static int iNoFlights=0;
   if(_tcsncmp(szTmp, _T("FLIGHTS_NO"), 10) == 0)
   {
     if(ParToDouble(sentence, 2, &fTmp)) iNoFlights =(int) (fTmp+0.05);
-    if(iNoFlights > 0)
+    if((iNoFlights > 0)
+      && m_bTriggered)  // call next if triggerd from here only
     {
       EOSListFilled(false);
       _sntprintf(szTmp, MAX_NMEA_LEN, _T("LXDT,GET,FLIGHT_INFO,%i"),1);
@@ -1869,13 +1873,16 @@ static int iNoFlights=0;
     _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s %s %s  %s %s"),FileName, Pilot,Surname, Reg, Type);
     _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), Date ,Takeoff ,Landing,filesize/1024);
     AddEOSElement(Line[0], Line[1], filesize );
-    if(iNo < iNoFlights)
+    if((iNo < iNoFlights) && m_bTriggered)
     {
       _sntprintf(szTmp, MAX_NMEA_LEN, _T("LXDT,GET,FLIGHT_INFO,%i"),iNo+1);
       SendNmea(d,szTmp);
     }
     else
+    {
       EOSListFilled(true);
+      m_bTriggered = false;
+    }
   }
   else
   if(_tcsncmp(szTmp, _T("SENS"), 4) == 0)  // Sensor Data?

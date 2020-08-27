@@ -166,7 +166,7 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL m_bShowValues;
    static BOOL m_bDeclare;
    static BOOL m_bRadioEnabled;
-
+   static BOOL m_bTriggered;
 
    static BOOL EOSRadioEnabled(PDeviceDescriptor_t d) { return m_bRadioEnabled;};
    static BOOL EOSPutMacCready(PDeviceDescriptor_t d, double MacCready);
