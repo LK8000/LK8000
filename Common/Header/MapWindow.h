@@ -513,6 +513,8 @@ class MapWindow {
   static void SuspendDrawingThread(void);
   static void ResumeDrawingThread(void);
 
+  static LKColor GetOutlineColor(LKColor color);
+
   static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
   static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 

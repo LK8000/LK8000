@@ -40,6 +40,10 @@ constexpr auto ColorOutLine = lookup_table<LKColor, std::pair<LKColor, bool>>({
 });
 
 
+LKColor MapWindow::GetOutlineColor(LKColor color) {
+    return ColorOutLine.get(color, {RGB_BLACK, true}).first;
+}
+
 //
 // invertable is used coped with LKTextBlack: if both are active, then text is forced reversed
 //

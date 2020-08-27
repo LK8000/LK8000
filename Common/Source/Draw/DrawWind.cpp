@@ -11,7 +11,6 @@
 #include "ScreenGeometry.h"
 
 void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const RECT& rc) {
-  POINT Start;
   TCHAR sTmp[12];
 
   if (DerivedDrawInfo.WindSpeed<1) {
@@ -20,9 +19,6 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
 
   int wmag = iround(4.0*DerivedDrawInfo.WindSpeed);
   double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
-
-  Start.y = Orig.y;
-  Start.x = Orig.x;
 
   POINT ArrowL[] = { 
       {0,-20}, 
@@ -34,15 +30,15 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
       {-6,-26-wmag}, {0,-20-wmag},
       {0,-20}
   };  
-  PolygonRotateShift(ArrowL, std::size(ArrowL), Start.x, Start.y, angle);
-  PolygonRotateShift(ArrowR, std::size(ArrowR), Start.x, Start.y, angle);
+  PolygonRotateShift(ArrowL, std::size(ArrowL), Orig.x, Orig.y, angle);
+  PolygonRotateShift(ArrowR, std::size(ArrowR), Orig.x, Orig.y, angle);
 
   POINT Tail[] = {
-      {0,-20}, 
+      {0,-20-wmag}, 
       {0,-26-min(20,wmag)*3}
   };
 
-  PolygonRotateShift(Tail, std::size(Tail), Start.x, Start.y, angle);
+  PolygonRotateShift(Tail, std::size(Tail), Orig.x, Orig.y, angle);
   
   // optionally draw dashed line for wind arrow
 #ifdef NO_DASH_LINE
@@ -72,7 +68,7 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
         pt.x *= (-1);
     }
     
-    protateshift(pt, angle, Start.x, Start.y);
+    protateshift(pt, angle, Orig.x, Orig.y);
     TextInBox(Surface, &rc, sTmp, pt.x, pt.y, &TextInBoxMode);
     Surface.SelectObject(oldFont);
   }
@@ -83,12 +79,10 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   const auto hbOld = Surface.SelectObject(ArrowBrush);
   Surface.Polygon(ArrowL,std::size(ArrowL));
 
-  if(OverColorRef==RGB_SBLACK)
-    Surface.SelectObject(LKBrush_White);
-  else
-    Surface.SelectObject(LKBrush_Black);
+  LKBrush ArrowOutlineBrush; ArrowOutlineBrush.Create(GetOutlineColor(OverColorRef));
+  Surface.SelectObject(ArrowOutlineBrush);
 
-  Surface.Polygon(ArrowR,std::size(ArrowR));
+  Surface.Polygon(ArrowR, std::size(ArrowR));
 
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);
