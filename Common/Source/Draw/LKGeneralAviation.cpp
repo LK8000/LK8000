@@ -24,7 +24,7 @@ void drawOutlineText(LKSurface& Surface, int x, int y, const TCHAR * textBuffer)
 	Surface.DrawText(x +1, y +1, textBuffer);
 	Surface.DrawText(x -1, y   , textBuffer);
 	Surface.DrawText(x   , y +1, textBuffer);
-	Surface.SetTextColor(RGB_WHITE);
+	Surface.SetTextColor(OverColorRef);
 	Surface.DrawText(x, y, textBuffer);
 }
 
@@ -70,7 +70,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 		};
 
 		Surface.Polyline(hdgPointer,7);
-		Surface.SelectObject(LKPen_White_N2);
+		Surface.SelectObject(LKPen_Red_N1);
 		Surface.Polyline(hdgPointer,7);
 	}
 
@@ -81,7 +81,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	// Draw black part of the compass arc
 	Surface.SelectObject(LKPen_Black_N5);
 	Surface.DrawArc(AircraftPos.x, AircraftPos.y,radius, rc, leftArc, rightArc);
-
+  LKPen OverlayPen;  OverlayPen.Create(PEN_SOLID, NIBLSCALE(3), OverColorRef );
 	// Draw the dents around the circle
 	const int step = ScreenLandscape ? 10 : 5;
 	const int bigStep = ScreenLandscape ? 30 : 10;
@@ -125,13 +125,15 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 		};
 		Surface.SelectObject(LKPen_Black_N5);
 		Surface.Polyline(dent,2);
-		Surface.SelectObject(LKPen_White_N2);
+		Surface.SelectObject(OverlayPen);
 		Surface.Polyline(dent,2);
 	}
 
-	// Draw white part of the compass arc
-	Surface.SelectObject(LKPen_White_N2);
+	// Draw overlay part of the compass arc
+  
+	LKPen* oldPen = (LKPen* )Surface.SelectObject(OverlayPen);
 	Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, leftArc, rightArc);
+    Surface.SelectObject(oldPen);
 
 	// Draw rate of turn indication on the compass
 	if (DerivedDrawInfo.TurnRate != 0) {
