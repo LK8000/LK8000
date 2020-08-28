@@ -56,8 +56,7 @@ static constexpr LKColor mmUTF8Color[] = {
 static_assert(array_size(mmUTF8Color) == array_size(mmUTF8Symbol), "invalide array size");
 
 static std::pair<const LKColor, const TCHAR*> GetUTF8MultimapSymbol(unsigned Number) {
-    assert(Number < array_size(mmUTF8Symbol));
-
+if(Number >= array_size(mmUTF8Symbol)) Number = 11;
     const unsigned symbol_idx = Number < array_size(mmUTF8Symbol) ? Number : 0;
     const TCHAR* symbol = MsgToken(mmUTF8Symbol[symbol_idx]);
 
