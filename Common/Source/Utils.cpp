@@ -175,6 +175,15 @@ void SetOverColorRef() {
             OverColorRef = RGB_MAGENTA;
             break;
     }
+
+ //   OverColorOutRef = OverColorRef.ContrastTextColor();
+
+    if(OverColorRef.Brightness() < 34)  // brightness belo 34%
+      OverColorOutRef = RGB_WHITE;
+    else
+      OverColorOutRef = RGB_BLACK;      
+
+
 }
 
 bool CheckClubVersion() {

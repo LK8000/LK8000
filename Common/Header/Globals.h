@@ -186,6 +186,7 @@ GEXTERN short OutlinedTp;
 GEXTERN short OutlinedTp_Config;
 GEXTERN int  OverColor;
 GEXTERN LKColor OverColorRef;
+GEXTERN LKColor OverColorOutRef;
 GEXTERN int TpFilter;
 GEXTERN short MapBox;
 GEXTERN short GlideBarMode;

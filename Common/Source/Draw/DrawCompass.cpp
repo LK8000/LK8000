@@ -60,13 +60,18 @@ void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double ang
       lastRcTop = rc.top;
     }
 
-    const auto hpOld = Surface.SelectObject(LKPen_Black_N1);
+    const auto hpOld = Surface.SelectObject(LKPen_Black_N0);
     LKBrush ArrowBrush;  ArrowBrush.Create(OverColorRef);
     const auto hbOld = Surface.SelectObject(ArrowBrush);
     Surface.Polygon(ArrowL,4);
     
-    LKColor ShaddowCol = RGB_BLACK;
-    ShaddowCol = ShaddowCol.MixColors(OverColorRef, 0.4);   
+    static LKColor ShaddowCol = RGB_GREY;
+    static LKColor OverlayColor  = RGB_GREY;
+    if(OverlayColor != OverColorRef) 
+    {
+      ShaddowCol = ShaddowCol.MixColors(OverColorRef, 0.6);   
+      OverlayColor = OverColorRef;
+    }
     LKBrush ShaddowArrowBrush; 
     ShaddowArrowBrush.Create(ShaddowCol); 
     Surface.SelectObject(ShaddowArrowBrush);
@@ -75,6 +80,7 @@ void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double ang
    
     Surface.SelectObject(hbOld);
     Surface.SelectObject(hpOld);
+    ShaddowArrowBrush.Release();
 
 }
 
