@@ -44,7 +44,7 @@ LKColor LKColor::ChangeBrightness(double fBrightFact) const {
 
 uint8_t LKColor::Brightness(void) const {
 #ifdef GREYSCALE
-  return 0;
+  return 100;
 #else
   uint32_t  sum =      Red() + Green()+ Blue()  ;
   sum *= 100;
