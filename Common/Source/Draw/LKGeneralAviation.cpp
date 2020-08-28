@@ -19,7 +19,10 @@ void drawOutlineText(LKSurface& Surface, int x, int y, const TCHAR * textBuffer)
 #ifdef USE_FREETYPE
 #warning "to slow, rewrite using freetype outline"
 #endif
-	Surface.SetTextColor(RGB_BLACK);
+
+ 
+	Surface.SetTextColor(OverColorOutRef);
+
 	Surface.DrawText(x -1, y -1, textBuffer);
 	Surface.DrawText(x +1, y +1, textBuffer);
 	Surface.DrawText(x -1, y   , textBuffer);
@@ -36,6 +39,8 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 		MapWindow::mode.autoNorthUP() ||
 		MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
 	) return;
+    BOOL WhiteOutline = true;
+    if (OverColorOutRef != RGB_WHITE) WhiteOutline = false; 
 
 	// The aircraft symbol must be horizontally in the center
 	LKASSERT(AircraftPos.x == rc.right/2);
@@ -51,13 +56,16 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	const int screenOrientYoffset = ScreenLandscape ? 0 : 44;
 	const int brgYoffset = textSize.cy + screenOrientYoffset;
 	drawOutlineText(Surface, AircraftPos.x - halfBrgSize, screenOrientYoffset, textBuffer);
-
+    LKPen OverlayPen;
+    OverlayPen.Create(PEN_SOLID, NIBLSCALE(1), OverColorRef );
 	// Calculate compass radius: consider the offset below heading pointer
 	const int radius = AircraftPos.y - brgYoffset - 12;
 
 	// Draw heading pointer on the top of the compass
-	const auto oldpen=Surface.SelectObject(LKPen_Black_N3);
-	{
+
+     
+	const auto oldpen=Surface.SelectObject(WhiteOutline ? LKPen_White_N3 : LKPen_Black_N3 );
+	
 		const int deciBrgSize = textSize.cx/10;
 		const POINT hdgPointer[7] = {
 				{AircraftPos.x - halfBrgSize - 5, brgYoffset - 5},
@@ -70,18 +78,18 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 		};
 
 		Surface.Polyline(hdgPointer,7);
-		Surface.SelectObject(LKPen_Red_N1);
+		Surface.SelectObject(OverlayPen);
 		Surface.Polyline(hdgPointer,7);
-	}
-
+	OverlayPen.Release();
+    OverlayPen.Create(PEN_SOLID, NIBLSCALE(3), OverColorRef );
 	// Calculate the angle covered by the compass on each side
 	const int rightArc = ScreenLandscape ? 60 : (ScreenSize == ss272x480 || ScreenSize == ss480x800 ? 25 : 30) ;
 	const int leftArc = (int)AngleLimit360(-rightArc);
 
 	// Draw black part of the compass arc
-	Surface.SelectObject(LKPen_Black_N5);
+	Surface.SelectObject(WhiteOutline ? LKPen_White_N5 : LKPen_Black_N5);
 	Surface.DrawArc(AircraftPos.x, AircraftPos.y,radius, rc, leftArc, rightArc);
-  LKPen OverlayPen;  OverlayPen.Create(PEN_SOLID, NIBLSCALE(3), OverColorRef );
+  
 	// Draw the dents around the circle
 	const int step = ScreenLandscape ? 10 : 5;
 	const int bigStep = ScreenLandscape ? 30 : 10;
@@ -123,7 +131,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 			{ AircraftPos.x + (int)(radius     * sinus), AircraftPos.y - (int)(radius     * cosinus) },
 			{ AircraftPos.x + (int)(tickLength * sinus), AircraftPos.y - (int)(tickLength * cosinus) }
 		};
-		Surface.SelectObject(LKPen_Black_N5);
+		Surface.SelectObject(WhiteOutline ? LKPen_White_N5 : LKPen_Black_N5);
 		Surface.Polyline(dent,2);
 		Surface.SelectObject(OverlayPen);
 		Surface.Polyline(dent,2);
@@ -153,4 +161,5 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	Surface.SetTextColor(RGB_BLACK);
 	Surface.SelectObject(oldpen);
 	Surface.SelectObject(oldfont);
+    OverlayPen.Release();
 }

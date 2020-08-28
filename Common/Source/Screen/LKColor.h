@@ -21,7 +21,7 @@ public:
     LKColor ContrastTextColor() const;
     LKColor ChangeBrightness(double fBrightFact) const;
     LKColor MixColors(const LKColor& Color2, double fFact1) const;
-
+    uint8_t Brightness(void) const ;
     constexpr LKColor(uint8_t r, uint8_t g, uint8_t b) : Color(r,g,b) {}
     constexpr LKColor(Color _color) : Color(_color) {}
 

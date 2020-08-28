@@ -40,6 +40,16 @@ LKColor LKColor::ChangeBrightness(double fBrightFact) const {
 #endif
 }
 
+
+
+uint8_t LKColor::Brightness(void) const {
+  uint32_t  sum =      Red() + Green()+ Blue()  ;
+  sum *= 100;
+  sum /= (3*255);
+  return (uint8_t)sum;
+}
+
+
 LKColor LKColor::MixColors(const LKColor& Color2, double fFact1) const {
 
     double fFact2 = 1.0f - fFact1;
