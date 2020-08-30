@@ -365,14 +365,14 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 };
 
 
-class ResourceLock {
+class EOSResourceLock {
 public:
-  ResourceLock() {
-    StartupStore(TEXT(".... Enter ResourceLock%s"), NEWLINE);
+  EOSResourceLock() {
+  StartupStore(TEXT(".... Enter ResourceLock EOS   %s"), NEWLINE);
     StartEOS_IGCReadThread();
       MapWindow::SuspendDrawingThread();
   };
-  ~ResourceLock() {
+  ~EOSResourceLock() {
     StartupStore(TEXT(".... Leave ResourceLock%s"), NEWLINE);
     StopEOS_IGCReadThread();
     EOS_IGCReadDialog.FileList()->clear();
@@ -383,7 +383,7 @@ public:
 
 ListElement *dlgEOSIGCSelectListShowModal(void) {
 
-  ResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
+  EOSResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
 
   ListElement *pIGCResult = NULL;
 

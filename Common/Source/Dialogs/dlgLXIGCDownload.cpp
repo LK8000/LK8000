@@ -317,15 +317,15 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 };
 
 
-class ResourceLock {
+class LXResourceLock {
 public:
-  ResourceLock() {
+  LXResourceLock() {
     //   StartupStore(TEXT(".... Enter ResourceLock%s"),NEWLINE);
     MapWindow::SuspendDrawingThread();
 
   };
 
-  ~ResourceLock() {
+  ~LXResourceLock() {
     //   StartupStore(TEXT(".... Leave ResourceLock%s"),NEWLINE);
 
     MapWindow::ResumeDrawingThread();
@@ -338,7 +338,7 @@ public:
 
 ListElement *dlgLX_IGCSelectListShowModal(void) {
 
-  ResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
+  LXResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
 
   ListElement *pIGCResult = NULL;
 
