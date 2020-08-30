@@ -139,7 +139,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 
 	// Draw overlay part of the compass arc
   
-	LKPen* oldPen = (LKPen* )Surface.SelectObject(OverlayPen);
+	const auto oldPen = Surface.SelectObject(OverlayPen);
 	Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, leftArc, rightArc);
     Surface.SelectObject(oldPen);
 
