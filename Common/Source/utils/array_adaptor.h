@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Bruno de Lacheisserie
+/* Copyright (c) 2018-2020, Bruno de Lacheisserie
  * All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without
