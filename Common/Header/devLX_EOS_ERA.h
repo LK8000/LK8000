@@ -141,6 +141,7 @@ class DevLX_EOS_ERA : public DevLX
 
    static BOOL LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
    static BOOL Values(PDeviceDescriptor_t d);
@@ -164,8 +165,10 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL bIGC_Download ;
    static BOOL m_bShowValues;
    static BOOL m_bDeclare;
+   static BOOL m_bRadioEnabled;
+   static BOOL m_bTriggered;
 
-
+   static BOOL EOSRadioEnabled(PDeviceDescriptor_t d) { return m_bRadioEnabled;};
    static BOOL EOSPutMacCready(PDeviceDescriptor_t d, double MacCready);
    static BOOL EOSPutBallast(PDeviceDescriptor_t d, double Ballast);
    static BOOL EOSPutBugs(PDeviceDescriptor_t d, double Bugs);

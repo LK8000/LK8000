@@ -580,13 +580,13 @@ void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
   }
 }
 
-class ResourceLock {
+class FlarmResourceLock {
 public:
-  ResourceLock() {
-    StartupStore(TEXT(".... Enter ResourceLock%s"), NEWLINE);
+  FlarmResourceLock() {
+    StartupStore(TEXT(".... Enter ResourceLock FLARM%s"), NEWLINE);
     StartIGCReadThread();
   };
-  ~ResourceLock() {
+  ~FlarmResourceLock() {
     StartupStore(TEXT(".... Leave ResourceLock%s"), NEWLINE);
     StopIGCReadThread();
     IGCFileList.clear();
@@ -595,7 +595,7 @@ public:
 
 ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
 
-  ResourceLock ResourceGuard; // simply need to exist for recource Lock/Unlock
+  FlarmResourceLock ResourceGuard; // simply need to exist for recource Lock/Unlock
   StartupStore(TEXT(".... StartIGCReadThread%s"), NEWLINE);
 
   bShowMsg = false;

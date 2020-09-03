@@ -21,7 +21,12 @@
   
 #define LST_STRG_LEN          100
 #define STATUS_TXT_LEN        100
-#define GC_IDLETIME           4
+#ifdef KOBO
+#define GC_IDLETIME           10
+#else
+#define GC_IDLETIME           2
+#endif
+
 #define GC_TIMER_INTERVAL     750
 
 #define deb_                  (0)  // debug output switch
@@ -360,14 +365,14 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 };
 
 
-class ResourceLock {
+class EOSResourceLock {
 public:
-  ResourceLock() {
-    StartupStore(TEXT(".... Enter ResourceLock%s"), NEWLINE);
+  EOSResourceLock() {
+  StartupStore(TEXT(".... Enter ResourceLock EOS   %s"), NEWLINE);
     StartEOS_IGCReadThread();
       MapWindow::SuspendDrawingThread();
   };
-  ~ResourceLock() {
+  ~EOSResourceLock() {
     StartupStore(TEXT(".... Leave ResourceLock%s"), NEWLINE);
     StopEOS_IGCReadThread();
     EOS_IGCReadDialog.FileList()->clear();
@@ -378,7 +383,7 @@ public:
 
 ListElement *dlgEOSIGCSelectListShowModal(void) {
 
-  ResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
+  EOSResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
 
   ListElement *pIGCResult = NULL;
 
@@ -478,8 +483,6 @@ ConvUnion FLightNo;
   if (deb_) {
     StartupStore(TEXT("\r\n===="));
   }
-  Poco::Thread::sleep(GC_IDLETIME);
-  Poco::Thread::yield();
 }
 
 
@@ -503,8 +506,8 @@ ConvUnion BlkNo;
   cnt = 0;
   do {
       error = EOSRecChar(d, &bRecByte, 500);
-      // expect ACK within next 2048 char
-      if((cnt++) > 2048) {
+      // expect ACK within next 40 char
+      if((cnt++) > 512) {
         StartupStore(TEXT("ACK Timeout "));
         return REC_TIMEOUT_ERROR; 
       }
@@ -699,7 +702,12 @@ uint16_t error= REC_NO_ERROR;
     break;  
     
     case READRECORD_STATE_RX: 
-      if(EOSBlockReceived())
+      if(!EOSBlockReceived())
+      {
+         Poco::Thread::sleep(GC_IDLETIME);
+        Poco::Thread::yield();
+      }
+      else
       {uint16_t Bytes;
         error = RecBinBlock(d, pf_IGCFile, BlockNo, &Bytes);
         BytesRead += Bytes;
