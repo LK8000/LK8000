@@ -6,43 +6,39 @@
    $Id$
 */
 
+#include "utils/lookup_table.h"
 #include "externs.h"
 #include "RGB.h"
-#include <iterator>
-#include <functional>
-
-using std::placeholders::_1;
 
 // TextColor -> Inverted TextColor
-typedef std::pair<LKColor, LKColor> Color2Color_t;
-static const Color2Color_t ColorInvert [] = {
-    std::make_pair(RGB_WHITE, RGB_BLACK),
-    std::make_pair(RGB_BLACK, RGB_WHITE),
-    std::make_pair(RGB_SBLACK, RGB_SWHITE),
-    std::make_pair(RGB_SWHITE, RGB_SBLACK),
-    std::make_pair(RGB_LIGHTGREEN, RGB_DARKGREEN),
-    std::make_pair(RGB_LIGHTRED, RGB_DARKRED),
-    std::make_pair(RGB_LIGHTYELLOW, RGB_DARKYELLOW),
-    std::make_pair(RGB_AMBER, RGB_ORANGE),
-    std::make_pair(RGB_PETROL, RGB_ICEWHITE)
-};
+constexpr auto ColorInvert = lookup_table<LKColor, LKColor>({
+  {RGB_WHITE, RGB_BLACK},
+  {RGB_BLACK, RGB_WHITE},
+  {RGB_SBLACK, RGB_SWHITE},
+  {RGB_SWHITE, RGB_SBLACK},
+  {RGB_LIGHTGREEN, RGB_DARKGREEN},
+  {RGB_LIGHTRED, RGB_DARKRED},
+  {RGB_LIGHTYELLOW, RGB_DARKYELLOW},
+  {RGB_AMBER, RGB_ORANGE},
+  {RGB_PETROL, RGB_ICEWHITE}
+});
 
 // TextColor -> (OutlineColor , MoreOutline)
-typedef std::pair<LKColor, std::pair<LKColor, bool> > Color2Outline_t;
-static const Color2Outline_t ColorOutLine [] = {
-    std::make_pair(RGB_BLACK, std::make_pair(RGB_WHITE, false)),
-    std::make_pair(RGB_SWHITE, std::make_pair(RGB_SBLACK, true)),
-    std::make_pair(RGB_SBLACK, std::make_pair(RGB_SWHITE, false)),
-    std::make_pair(RGB_DARKBLUE, std::make_pair(RGB_WHITE, false)),
-    std::make_pair(RGB_GREEN, std::make_pair(RGB_BLACK, true)),
-    std::make_pair(RGB_PETROL, std::make_pair(RGB_WHITE, false)),
-    std::make_pair(RGB_DARKGREY, std::make_pair(RGB_WHITE, false)),
-    std::make_pair(RGB_VDARKGREY, std::make_pair(RGB_WHITE, false)),
-    std::make_pair(RGB_DARKGREEN, std::make_pair(RGB_WHITE, false)),
-    std::make_pair(RGB_ICEWHITE, std::make_pair(RGB_DARKBLUE, true)),
-    std::make_pair(RGB_WHITENOREV, std::make_pair(RGB_BLACK, true)),
-    std::make_pair(RGB_AMBERNOREV, std::make_pair(RGB_BLACK, true))
-};
+constexpr auto ColorOutLine = lookup_table<LKColor, std::pair<LKColor, bool>>({
+  {RGB_BLACK, {RGB_WHITE, false}},
+  {RGB_SWHITE, {RGB_SBLACK, true}},
+  {RGB_SBLACK, {RGB_SWHITE, false}},
+  {RGB_DARKBLUE, {RGB_WHITE, false}},
+  {RGB_GREEN, {RGB_BLACK, true}},
+  {RGB_PETROL, {RGB_WHITE, false}},
+  {RGB_DARKGREY, {RGB_WHITE, false}},
+  {RGB_VDARKGREY, {RGB_WHITE, false}},
+  {RGB_DARKGREEN, {RGB_WHITE, false}},
+  {RGB_ICEWHITE, {RGB_DARKBLUE, true}},
+  {RGB_WHITENOREV, {RGB_BLACK, true}},
+  {RGB_AMBERNOREV, {RGB_BLACK, true}}
+});
+
 
 //
 // invertable is used coped with LKTextBlack: if both are active, then text is forced reversed
@@ -57,14 +53,7 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
     LKColor textColor = rgb_text;
     // by default, LK8000 is white on black, i.e. inverted
     if ((!INVERTCOLORS) || (LKTextBlack && invertable)) {
-        const Color2Color_t* It = std::find_if(std::begin(ColorInvert), std::end(ColorInvert),
-                                                std::bind(
-                                                    std::equal_to< Color2Color_t::first_type >(),
-                                                    std::bind(&Color2Color_t::first, _1), textColor));
-
-        if (It != std::end(ColorInvert)) {
-            textColor = It->second;
-        }
+        textColor = ColorInvert.get(textColor);
     }
 
     switch (align) {
@@ -76,8 +65,6 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
             y -= tsize.cy / 2;
             break;
     }
-    //rgb_text=RGB_MAGENTA;
-    bool moreoutline = false;
 
     Surface.SetBackgroundTransparent();
 
@@ -87,22 +74,16 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
         // black outline requires more width, to gain contrast.
         //
 
-        const Color2Outline_t* It = std::find_if(std::begin(ColorOutLine), std::end(ColorOutLine),
-                                                    std::bind(
-                                                        std::equal_to<Color2Outline_t::first_type>(),
-                                                        std::bind(&Color2Outline_t::first, _1), textColor));
-        if (It != std::end(ColorOutLine)) {
-            // Here we invert colors, looking at the foreground. The trick is that the foreground
-            // colour is slightly different white to white, in order to understand how to invert it
-            // correctly!
-            Surface.SetTextColor(It->second.first);
-            moreoutline = It->second.second;
-        } else {
-            // this is the default also for white text. Normally we are writing on a
-            // not-too-light background
-            Surface.SetTextColor(RGB_BLACK);
-            moreoutline = true;
-        }
+        // {RGB_BLACK, true} is the default also for white text. Normally we are writing on a
+        // not-too-light background
+
+        auto color_pair = ColorOutLine.get(textColor, {RGB_BLACK, true});
+
+        // Here we invert colors, looking at the foreground. The trick is that the foreground
+        // colour is slightly different white to white, in order to understand how to invert it
+        // correctly!
+        Surface.SetTextColor(color_pair.first);
+        bool moreoutline = color_pair.second;
 
         //
         // Simplified, shadowing better and faster
