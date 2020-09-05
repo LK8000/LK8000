@@ -79,12 +79,13 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 int DeviceRegisterCount = 0;
 
 /**
- * Call DeviceDescriptor_t::*func on all connected device without Argument.
+ * Call DeviceDescriptor_t::*func on all connected device.
  * @return FALSE if error on one device.
- * 
+ *
  * TODO : report witch device failed (useless still return value are never used).
  */
-BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) {
+template<typename ...Args>
+BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, Args...), Args... args) {
     if (SIMMODE) {
       return TRUE;
     }
@@ -93,53 +94,8 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) 
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
       if( !d.Disabled && d.Com && (d.*func) ) {
-        nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
+        nbDeviceFailed +=  (d.*func)(&d, args...) ? 0 : 1;
       }
-
-    }
-    return (nbDeviceFailed > 0);
-}
-
-/**
- * Call DeviceDescriptor_t::*func on all connected device with one Argument.
- * @return FALSE if error on one device.
- * 
- * TODO : report witch device failed (useless still return value are never used).
- */
-template<typename _Arg1>
-BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _Arg1), _Arg1 Val1) {
-    if (SIMMODE) {
-      return TRUE;
-    }
-    unsigned nbDeviceFailed = 0;
-
-    ScopeLock Lock(CritSec_Comm);
-    for( DeviceDescriptor_t& d : DeviceList) {
-      if( !d.Disabled && d.Com && (d.*func) ) {
-        nbDeviceFailed +=  (d.*func)(&d, Val1) ? 0 : 1;
-      }
-    }
-    return (nbDeviceFailed > 0);
-}
-/**
- * Call DeviceDescriptor_t::*func on all connected device with two Argument.
- * @return FALSE if error on one device.
- * 
- * TODO : report witch device failed (useless still return value are never used).
- */
-template<typename _Arg1, typename _Arg2>
-BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _Arg1, _Arg2), _Arg1 Val1, _Arg2 Val2) {
-    if (SIMMODE) {
-      return TRUE;
-    }
-    unsigned nbDeviceFailed = 0;
-
-    ScopeLock Lock(CritSec_Comm);
-    for( DeviceDescriptor_t& d : DeviceList) {
-      if( !d.Disabled && d.Com && (d.*func) ) {
-        nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;
-      }
-
     }
     return (nbDeviceFailed > 0);
 }
