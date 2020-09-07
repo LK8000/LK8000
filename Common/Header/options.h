@@ -128,7 +128,6 @@
 #define  FLARM_PICTO_THREADSAFE
 #endif
 
-#define RADIO_ACTIVE
 #define OWN_POS_MS
 #define ORACLE_MS
 #define TEAM_CODE_MS

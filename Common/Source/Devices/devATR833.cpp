@@ -12,10 +12,6 @@
 #include "devATR833.h"
 #include "device.h"
 
-#ifdef RADIO_ACTIVE
-
-
-
 #define FRAME_LEN      0x04
 #define HEADER_LEN     0x03
 #define COMMAND_IDX    0x02
@@ -577,4 +573,3 @@ int Idx=0;
   }  // case
   return processed;  /* return the number of converted characters */
 }
-#endif  // RADIO_ACTIVE

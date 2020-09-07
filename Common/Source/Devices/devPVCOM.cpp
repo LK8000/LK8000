@@ -13,11 +13,7 @@
 #include "device.h"
 #include "devBase.h"
 
-#ifdef RADIO_ACTIVE
-
 bool PVCOM_ProcessPEYI(PDeviceDescriptor_t d, const TCHAR *, NMEA_INFO *);
-
-
 
 void ReplaceNMEAControlChars(TCHAR *String)
 {
@@ -459,6 +455,3 @@ static bool TRI_on = false;
    }
   return status;
 }
-
-
-#endif  // RADIO_ACTIVE

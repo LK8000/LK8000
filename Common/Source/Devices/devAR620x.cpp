@@ -12,7 +12,6 @@
 #include "devAR620x.h"
 #include "device.h"
 
-#ifdef RADIO_ACTIVE
 #define RoundFreq(a) ((int)((a)*1000.0+0.5)/1000.0)
 #define Freq2Idx(a)  (int)(((a)-118.0) * 3040/(137.00-118.0)+0.5)
 #define BIT(n) (1 << (n))
@@ -583,4 +582,3 @@ LKASSERT(d !=NULL);
 
   return processed;  /* return the number of converted characters */
 }
-#endif  // RADIO_ACTIVE

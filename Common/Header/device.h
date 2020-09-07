@@ -12,11 +12,7 @@
 #define DEVNAMESIZE  32
 #define	NUMDEV		 6
 
-#ifdef RADIO_ACTIVE
 #define	NUMREGDEV	 45 // Max number of registered devices
-#else
-#define	NUMREGDEV	 41 // Max number of registered devices
-#endif // RADIO_ACTIVE
 
 #define	devA()	    (&DeviceList[0])
 #define	devB()	    (&DeviceList[1])

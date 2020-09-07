@@ -20,8 +20,6 @@
 #include "NavFunctions.h"
 #include "Util/TruncateString.hpp"
 
-#ifdef RADIO_ACTIVE
-//extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
 static WndButton *wpnewActive     = NULL;
@@ -637,5 +635,3 @@ void dlgRadioSettingsShowModal(void){
   wf = NULL;
   return ;
 }
-
-#endif  // RADIO_ACTIVE

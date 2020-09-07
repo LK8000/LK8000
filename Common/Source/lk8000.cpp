@@ -333,7 +333,6 @@ bool Startup(const TCHAR* szCmdLine) {
   }
 #endif
 
-#ifdef RADIO_ACTIVE
   memset( &(RadioPara), 0, sizeof(Radio_t));
   RadioPara.Volume = 6;
   RadioPara.Squelch = 3;
@@ -342,7 +341,6 @@ bool Startup(const TCHAR* szCmdLine) {
   RadioPara.ActiveFrequency  = 118.00;
   RadioPara.PassiveFrequency = 118.00;
   RadioPara.Enabled8_33      = true;
-#endif  // RADIO_ACTIVE
 
   // Initialise main blackboard data
 
@@ -508,12 +506,10 @@ bool Startup(const TCHAR* szCmdLine) {
   DevLXNanoIII::Register();
   XCTracerRegister();
   GPSBipRegister ();
-#ifdef RADIO_ACTIVE
   PVCOMRegister();
   KRT2Register();
   AR620xRegister();
   ATR833Register();
-#endif  // RADIO_ACTIVE
   DevVaulter::Register();
   DevOpenVario::Register();
   DevLX_EOS_ERA::Register();

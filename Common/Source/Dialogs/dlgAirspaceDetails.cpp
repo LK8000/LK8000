@@ -153,9 +153,8 @@ double  ExtractFrequency(const TCHAR *text)
 }
 
 static void OnSetFrequency(WndButton* pWnd){
-(void)pWnd;
-#ifdef RADIO_ACTIVE
-TCHAR Tmp[255];
+
+ TCHAR Tmp[255];
  if(RadioPara.Enabled)
  {
    double ASFrequency = ExtractFrequency(airspace_copy.Name());
@@ -170,7 +169,7 @@ TCHAR Tmp[255];
      DoStatusMessage(_T(""), Tmp );
    }
  }
-#endif  // RADIO_ACTIVE        
+
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -305,8 +304,6 @@ static void SetValues(WndForm* wf) {
     }
   }
 
-#ifdef  RADIO_ACTIVE
-
   WindowControl* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
   if (wFreq) {
     bool bRadio = false;
@@ -339,12 +336,6 @@ static void SetValues(WndForm* wf) {
     wFreq->SetVisible(bRadio);
   }
 
-#else
-  WndProperty* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
-  if (wFreq) {
-    wFreq->Hide();
-  }
-#endif  // RADIO_ACTIVE        
   // ONLY for DIAGNOSTICS- ENABLE ALSO XML
   #if 0
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarnLevel"));

@@ -154,12 +154,10 @@ void ComPort::ProcessChar(char c) {
         ComCheck_AddChar(c);
     }
 
-#ifdef RADIO_ACTIVE
     if(/*RadioPara.Enabled && */devParseStream(devIdx, &c, 1, &GPS_INFO)) {
         // if this port is used for stream device, leave immediately.
   //       don't return mayby more devices on one Port (shared Port)
     }
-#endif // RADIO_ACTIVE
 
     // last char need to be reserved for '\0' for avoid buffer overflow
     // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.

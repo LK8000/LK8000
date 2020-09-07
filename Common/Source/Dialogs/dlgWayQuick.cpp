@@ -113,9 +113,6 @@ static void OnTaskClicked(WndButton* pWnd){
 
 static void SetRadioFrequency(WndButton* pWnd, bool bActive)
 {
-#ifdef RADIO_ACTIVE
-
-
   double Ferquency;
   LKASSERT(SelectedWaypoint>=0);
   LockTaskData();
@@ -144,7 +141,6 @@ static void SetRadioFrequency(WndButton* pWnd, bool bActive)
     }
   }
   UnlockTaskData();
-#endif  // RADIO_ACTIVE
 }
 
 static void OnRadioFrequencyClicked(WndButton* pWnd){
@@ -238,11 +234,7 @@ short dlgWayQuickShowModal(void){
   }
   wf->SetCaption(sTmp);
 
-#ifdef RADIO_ACTIVE
-    const bool bRadioFreq = (_tcstol(WayPointList[SelectedWaypoint].Freq, nullptr, 10) > 0) && RadioPara.Enabled;
-#else
-    const bool bRadioFreq = false;
-#endif // RADIO_ACTIVE
+  const bool bRadioFreq = (_tcstol(WayPointList[SelectedWaypoint].Freq, nullptr, 10) > 0) && RadioPara.Enabled;
 
   if (ScreenLandscape) {
     PixelScalar left = 0;

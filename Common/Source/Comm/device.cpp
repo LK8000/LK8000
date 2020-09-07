@@ -43,9 +43,7 @@
 #endif
 
 
-#ifdef RADIO_ACTIVE
 bool devDriverActivated(const TCHAR *DeviceName) ;
-#endif    
     
 using namespace std::placeholders;
 
@@ -542,11 +540,8 @@ BOOL devInit() {
     TCHAR Port[MAX_PATH] = {_T('\0')};
     unsigned SpeedIndex = 2U;
     BitIndex_t BitIndex = bit8N1;
-#ifdef RADIO_ACTIVE
-     RadioPara.Enabled = false;
-     if(SIMMODE)
-       RadioPara.Enabled = true;
-#endif
+
+    RadioPara.Enabled = (SIMMODE);
 
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
@@ -695,7 +690,7 @@ BOOL devInit() {
             delete Com;
             DeviceList[i].Status = CPS_OPENKO;
         }
-#ifdef RADIO_ACTIVE
+
        if(devIsRadio(&DeviceList[i])) {
           RadioPara.Enabled = true;
           StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
@@ -704,7 +699,7 @@ BOOL devInit() {
           RadioPara.Enabled = true;
           StartupStore(_T(".  RADIO  %c  PVCOM over  shared <%s>%s"), (_T('A') + i),  Port, NEWLINE);
        }
-#endif
+
     }
     return (TRUE);
 }
@@ -1104,9 +1099,6 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
   }
 }
 
-
-#ifdef RADIO_ACTIVE
-
 bool devDriverActivated(const TCHAR *DeviceName) {
   for(int i=0; i <NUMDEV; i++) {
     if ((_tcscmp(dwDeviceName[i], DeviceName) == 0)) {
@@ -1190,7 +1182,6 @@ if( ValidFrequency(Freq))
 else
 	return false;
 }
-#endif  // RADIO_ACTIVE        
 
 
 static BOOL 

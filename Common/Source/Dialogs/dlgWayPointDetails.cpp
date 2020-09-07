@@ -328,13 +328,9 @@ extern    double  ExtractFrequency(const TCHAR*);
 
 static void OnMultiSelectEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {
-    (void) Sender;
-
-
-#ifdef RADIO_ACTIVE
-int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-TCHAR Tmp[255];
-TCHAR Tmp2[20];
+  int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+  TCHAR Tmp[255];
+  TCHAR Tmp2[20];
   if(ItemIndex >=0)
   {
    if(RadioPara.Enabled)
@@ -351,8 +347,6 @@ TCHAR Tmp2[20];
       }
     }
   }
-#endif  // RADIO_ACTIVE
-
 }
 
 static WndListFrame *wMultiSelect = NULL;

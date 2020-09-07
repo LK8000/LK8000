@@ -184,11 +184,7 @@ extern double  ExtractFrequency(const TCHAR*);
 extern BOOL ValidFrequency(double Freq);
 
 static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
-    (void) Sender;
-
-#ifdef RADIO_ACTIVE
-
-TCHAR Tmp[255];
+  TCHAR Tmp[255];
   if(flarmId != NULL)
   {
    if(RadioPara.Enabled)
@@ -206,8 +202,6 @@ TCHAR Tmp[255];
       }
     }
   }
-#endif  // RADIO_ACTIVE
-
 }
 
 

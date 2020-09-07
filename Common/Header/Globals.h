@@ -42,7 +42,6 @@
   extern void Globals_Init(void);
 #endif
 
-#ifdef RADIO_ACTIVE
 typedef struct _Radio_t
 {
 	double ActiveFrequency;    //active station frequency
@@ -63,7 +62,6 @@ typedef struct _Radio_t
 	BOOL lowBAT;               // Battery low flag                  (TRUE = Batt low)
 	BOOL TXtimeout;            // Timeout while transmission (2Min)
 }Radio_t;
-#endif  // RADIO_ACTIVE
 
 GEXTERN bool MenuActive GEXTFALSE;
 GEXTERN Poco::Event dataTriggerEvent;
@@ -488,9 +486,7 @@ GEXTERN double Experimental2;
 // task data
 Start_t StartPoints;
 TaskStats_t TaskStats;
-#ifdef RADIO_ACTIVE
 Radio_t RadioPara ;
-#endif  // RADIO_ACTIVE
 Task_t Task = {{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0
 ,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0}};
 
@@ -502,9 +498,7 @@ std::vector<WPCALC> WayPointCalc;
 extern Start_t StartPoints;
 extern Task_t Task;
 extern TaskStats_t TaskStats;
-#ifdef RADIO_ACTIVE
 extern Radio_t RadioPara ;
-#endif  // RADIO_ACTIVE
 extern std::vector<WAYPOINT> WayPointList;
 extern std::vector<WPCALC> WayPointCalc;
 #endif

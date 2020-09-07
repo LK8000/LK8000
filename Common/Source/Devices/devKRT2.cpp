@@ -13,9 +13,6 @@
 #include "device.h"
 #include "utils/stringext.h"
 
-
-#ifdef RADIO_ACTIVE
-
 #define min(X,Y) ((X) < (Y) ? : (X) : (Y))
 #define BIT(n) (1 << (n))
 
@@ -625,4 +622,3 @@ LKASSERT(d !=NULL);
 
   return processed;  /* return the number of converted characters */
 }
-#endif  // RADIO_ACTIVE
