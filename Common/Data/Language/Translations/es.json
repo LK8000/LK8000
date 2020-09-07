@@ -1247,5 +1247,6 @@
     "_@H000106_": "[obsoleto]",
     "_@H000104_": "[obsoleto]",
     "_@H000103_": "[obsoleto]",
-    "_@H000100_": "[obsoleto]"
+    "_@H000100_": "[obsoleto]",
+    "_@H001252_": "Incluso si ha reconocido un espacio aéreo, después de este tiempo volverán a activarse las alarmas.\nDe forma tal que será avisado nuevamente cuando vuele de regreso a casa y cruce un espacio aéreo que había cruzado en la mañana, por ejemplo!\nPredeterminado, después de 15 minutos se rearmarán las alarmas de espacios aéreos."
 }
