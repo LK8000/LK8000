@@ -150,7 +150,7 @@ TopWindow::Pause()
   event_queue->Push(Event::PAUSE);
 
   const ScopeLock lock(paused_mutex);
-  while (!paused)
+  while (running && !paused)
     paused_cond.Wait(paused_mutex);
 }
 
@@ -244,12 +244,27 @@ TopWindow::OnEvent(const Event &event)
 int
 TopWindow::RunEventLoop()
 {
+  {
+    ScopeLock protect(paused_mutex);
+    assert(!running);
+    running = true;
+  }
+
   Refresh();
 
   EventLoop loop(*event_queue, *this);
   Event event;
   while (IsDefined() && loop.Get(event))
     loop.Dispatch(event);
+
+  {
+    ScopeLock protect(paused_mutex);
+    assert(running);
+    running = false;
+    /* wake up the Android Activity thread, just in case it's waiting
+       inside Pause() */
+    paused_cond.Signal();
+  }
 
   return 0;
 }
