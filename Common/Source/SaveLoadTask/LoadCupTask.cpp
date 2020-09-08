@@ -309,7 +309,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   bool bLastInvalid=true;
   std::vector<tstring> Entries;
   TCHAR szString[READLINE_LENGTH + 1];
-  TCHAR szTmp[READLINE_LENGTH + 1];
 
 
   szString[READLINE_LENGTH] = _T('\0');
@@ -328,7 +327,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   LockTaskData();
   ClearTask();
 
-  std::map<tstring, size_t> cup_header;
+  cup_header_t cup_header;
 
   bool TaskValid = false;
   FileSection = none;
@@ -336,7 +335,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   if (stream) {
       while (stream.read_line(szString)) {
 
-	  _tcsncpy(szTmp,szString,READLINE_LENGTH);
           if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
               (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
               FileSection = Waypoint;
