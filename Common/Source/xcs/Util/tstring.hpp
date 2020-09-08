@@ -3,6 +3,8 @@
 
 #include <math.h>
 #include <string>
+#include <algorithm>
+#include "Util/CharUtil.hpp"
 
 #ifdef _UNICODE
 #include <tchar.h>
@@ -29,5 +31,17 @@ tstring utf8_to_tstring(const char* sz) {
 
 tstring &
 trim_inplace(tstring &s);
+
+
+/**
+ * Convert ASCII character (0x00..0x7f) to lower case.
+ * it ignores the system locale.
+ */
+inline
+tstring to_lower_ascii(const tstring& source) {
+    tstring lower_text;
+    std::transform(source.begin(), source.end(), std::back_inserter(lower_text), ToLowerASCII);
+    return lower_text;
+}
 
 #endif
