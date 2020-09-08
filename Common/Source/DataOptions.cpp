@@ -8,34 +8,32 @@
 
 #include "externs.h"
 
-
 //
 // LK Infobox list
 // Included by lk temporarily, only with CUTIBOX
 //
-bool SetDataOption( int index, UnitGroup_t UnitGroup, const TCHAR *Description, const TCHAR *Title)
-{
-	LKASSERT(index<NUMDATAOPTIONS_MAX);
-	if (index>=NUMDATAOPTIONS_MAX) return false;
+static
+bool SetDataOption(int index, UnitGroup_t UnitGroup, const TCHAR *Description, const TCHAR *Title) {
+	LKASSERT(index < NUMDATAOPTIONS_MAX);
+	if (index >= NUMDATAOPTIONS_MAX) {
+		return false;
+	}
 
 	Data_Options[index] = {
 		UnitGroup,
 		LKGetText(Description),
 		LKGetText(Title)
 	};
-	if (NumDataOptions<=index) NumDataOptions=index+1; //No. of items = max index+1
-
+	if (NumDataOptions <= index) {
+		NumDataOptions = index + 1; //No. of items = max index+1
+	}
 	return true;
 }
 
+void FillDataOptions() {
 
-
-void FillDataOptions()
-{
-
-	 // cleanup array, mandatory for avoid to have pointer to freed string.
-	 std::fill(std::begin(Data_Options), std::end(Data_Options), DATAOPTIONS{});
-
+	// cleanup array, mandatory for avoid to have pointer to freed string.
+	std::fill(std::begin(Data_Options), std::end(Data_Options), DATAOPTIONS{});
 
 	// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt"
 	SetDataOption(LK_HNAV, ugAltitude, TEXT("_@M1001_"), TEXT("_@M1002_"));
@@ -191,7 +189,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1149_ = "Task Covered distance", _@M1150_ = "TskCov"
 	SetDataOption(LK_TASK_DISTCOV, ugDistance, TEXT("_@M1149_"), TEXT("_@M1150_"));
 	// LKTOKEN  _@M1151_ = "Alternate1 Arrival", _@M1152_ = "Atn1Arr"
-	SetDataOption(LK_ALTERNATESARRIV, ugAltitude, TEXT("_@M1151_"), TEXT("_@M1152_"));
+	SetDataOption(LK_ALTERN1_ARRIV, ugAltitude, TEXT("_@M1151_"), TEXT("_@M1152_"));
 	// LKTOKEN  _@M1153_ = "Alternate2 Arrival", _@M1154_ = "Atn2Arr"
 	SetDataOption(LK_ALTERN2_ARRIV, ugAltitude, TEXT("_@M1153_"), TEXT("_@M1154_"));
 	// LKTOKEN  _@M1155_ = "BestAlternate Arrival", _@M1156_ = "BAtnArr"
@@ -333,7 +331,7 @@ void FillDataOptions()
 	// Fill all null string pointer with empty string, avoid to check all time is used.
 	for(auto& tag : Data_Options) {
 		if(!tag.Description) {
-	    	tag.Description = _T("");
+			tag.Description = _T("");
 		}
 		if(!tag.Title) {
 			tag.Title = _T("");
