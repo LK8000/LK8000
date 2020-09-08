@@ -27,29 +27,47 @@ MapWaypointLabel_t* SortedWaypointLabelList[200];
 size_t MapWaypointLabelListCount=0;
 void DrawMAPWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, int Style);
 
-inline bool MapWaypointLabelListCompare(const MapWaypointLabel_t* elem1, const MapWaypointLabel_t* elem2 ){
-  // Now sorts elements in task preferentially.
-  return (elem1->AltArivalAGL < elem2->AltArivalAGL);
-}
+struct MapWaypointLabelListCompare {
+	bool operator()(const MapWaypointLabel_t* elem1, const MapWaypointLabel_t* elem2 ) {
+		// landable first
+		if(elem1->isLandable && !elem2->isLandable) {
+			return true;
+		}
+		if(!elem1->isLandable && elem2->isLandable) {
+			return false;
+		}
 
+		// thermal last
+		if(elem1->isThermal && !elem2->isThermal) {
+			return false;
+		}
+		if(!elem1->isThermal && elem2->isThermal) {
+			return true;
+		}
 
-void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y,
+		// otherwise sort by arrival height
+		return (elem1->AltArivalAGL < elem2->AltArivalAGL);
+	}
+};
+
+static
+void MapWaypointLabelAdd(const TCHAR *Name, const RasterPoint& pos,
 			 const TextInBoxMode_t *Mode,
-			 const int AltArivalAGL, const bool inTask, const bool isLandable, const bool isAirport,
-			 const bool isExcluded,  const int index, const short style){
+			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, 
+			 bool isThermal, bool isExcluded,  int index, short style){
 
   if (MapWaypointLabelListCount >= array_size(MapWaypointLabelList)-1) return;
 
   MapWaypointLabel_t* E = &MapWaypointLabelList[MapWaypointLabelListCount];
 
   _tcscpy(E->Name, Name);
-  E->Pos.x = X;
-  E->Pos.y = Y;
+  E->Pos = pos;
   memcpy((void*)&(E->Mode), Mode, sizeof(TextInBoxMode_t));     // E->Mode = Mode;
   E->AltArivalAGL = AltArivalAGL;
   E->inTask = inTask;
   E->isLandable = isLandable;
   E->isAirport  = isAirport;
+  E->isThermal  = isThermal;
   E->isExcluded = isExcluded;
   E->index = index;
   E->style = style;
@@ -86,8 +104,6 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
   MapWaypointLabelListCount = 0;
 
   int arrivalcutoff=0, foundairport=0;
-  bool isairport;
-  bool islandpoint;
 
   // setting decluttericons will not paint outlanding, and use minrunway to declutter even more
   bool decluttericons=false;
@@ -210,27 +226,23 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
   for(i=0;i<WayPointList.size();i++) {
 
-      if(WayPointList[i].Visible )
-	{
+	if(WayPointList[i].Visible) {
 
-	    bool irange = false;
-	    bool intask = false;
-	    bool islandable;	// isairport+islandpoint
-	    bool excluded=false;
-	    bool dowrite;
-
-	    intask = WaypointInTask(i);
-	    dowrite = intask; // initially set only for intask
 	    memset((void*)&TextDisplayMode, 0, sizeof(TextDisplayMode));
 
-	    // airports are also landpoints. should be better handled
-	    isairport=((WayPointList[i].Flags & AIRPORT) == AIRPORT);
-	    islandpoint=((WayPointList[i].Flags & LANDPOINT) == LANDPOINT);
+	    bool excluded=false;
 
-	islandable=WayPointCalc[i].IsLandable;
+	    bool intask = WaypointInTask(i);
+	    bool dowrite = intask; // initially set only for intask
+
+	    // airports are also landpoints. should be better handled
+	    bool isairport = ((WayPointList[i].Flags & AIRPORT) == AIRPORT);
+	    bool islandpoint = ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT);
+	    bool islandable = WayPointCalc[i].IsLandable;
+		bool isthermal = (WayPointList[i].Style == STYLE_THERMAL);
 
 	    // always in range if MapScale <=10
-	    irange = inrange;
+	    bool irange = inrange;
 
 	    if(MapWindow::zoom.RealScale() > 20) {
 	      irange=false;
@@ -564,20 +576,20 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
                 MapWaypointLabelAdd(
                         Buffer,
-                        LabelPos.x,
-                        LabelPos.y,
+                        LabelPos,
                         &TextDisplayMode,
                         (int) (WayPointList[i].AltArivalAGL * ALTITUDEMODIFY),
-                        intask, islandable, isairport, excluded, i, WayPointList[i].Style);
+                        intask, islandable, isairport, isthermal, excluded, i, WayPointList[i].Style);
             }
           }
 	    } // end if intask
 
-	     { ; }
 	} // if visible
     } // for all waypoints
 
-  std::sort( &SortedWaypointLabelList[0], &SortedWaypointLabelList[MapWaypointLabelListCount], MapWaypointLabelListCompare );
+  std::sort( std::begin(SortedWaypointLabelList), 
+  			 std::next(SortedWaypointLabelList, MapWaypointLabelListCount), 
+			 MapWaypointLabelListCompare());
 
   // now draw task/landable waypoints in order of range (closest last)
   // writing unconditionally
