@@ -32,10 +32,30 @@
 #include <cstddef>
 #include <utility>
 
+// TODO : remove this when all compiler will be upgraded to support c++14
 #if __cpp_constexpr >= 201304
   #define cxx14_constexpr  constexpr
+  namespace cxx14 = std;
 #else
   #define cxx14_constexpr
+
+  namespace cxx14 {
+
+    template <size_t...>
+    struct index_sequence { };
+
+    template<size_t I, size_t... N>
+    struct make_index_sequence_t : make_index_sequence_t<I-1u, I-1u, N...> { };
+
+    template<size_t... N>
+    struct make_index_sequence_t<0, N...> { 
+      typedef index_sequence<N ...> type;
+    };
+
+    template<size_t I>
+    struct make_index_sequence : make_index_sequence_t<I>::type { };
+  }
+
 #endif
 
 template <typename key_type, typename mapped_type, size_t size> 
@@ -46,8 +66,9 @@ private:
   const value_type _data[size];
 
 public:
-  constexpr lookup_table_t(const value_type (&data)[size]) noexcept
-      : _data(data) {
+  template<size_t... I>
+  constexpr lookup_table_t(const value_type (&data)[size], cxx14::index_sequence<I...>) noexcept
+      : _data{{data[I].first, data[I].second}...} {
   }
 
   /**
@@ -81,7 +102,7 @@ public:
 template <typename key_type, typename mapped_type, size_t size>
 constexpr lookup_table_t<key_type, mapped_type, size>
 lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
-  return lookup_table_t<key_type, mapped_type, size>(data);
+  return lookup_table_t<key_type, mapped_type, size>(data, cxx14::make_index_sequence<size>());
 }
 
 #endif // _utils_lookup_table_h_
