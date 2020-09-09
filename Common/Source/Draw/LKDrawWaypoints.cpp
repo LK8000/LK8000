@@ -50,11 +50,13 @@ struct MapWaypointLabelListCompare {
 	}
 };
 
-static
-void MapWaypointLabelAdd(const TCHAR *Name, const RasterPoint& pos,
+template<size_t size>
+static void MapWaypointLabelAdd(const TCHAR (&Name)[size], const RasterPoint& pos,
 			 const TextInBoxMode_t *Mode,
 			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, 
 			 bool isThermal, bool isExcluded,  int index, short style){
+
+  static_assert(array_size(MapWaypointLabelList->Name) >= size, "possible buffer overflow" );
 
   if (MapWaypointLabelListCount >= array_size(MapWaypointLabelList)-1) return;
 
@@ -87,7 +89,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
   unsigned int i;
   int bestwp=-1;
   TCHAR Buffer[LKSIZEBUFFER];
-  TCHAR Buffer2[LKSIZEBUFFER];
+  TCHAR Buffer2[NAME_SIZE+1]; // size must be > size of waypoint name or waypoint code or max of resizer values
   TCHAR sAltUnit[LKSIZEBUFFERUNIT];
   TextInBoxMode_t TextDisplayMode = {0};
 
@@ -349,7 +351,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			_tcscpy(Buffer2,WayPointList[i].Code);
 		} else {
 		  if (DisplayTextType == DISPLAYNAME) {
-			 _tcscpy(Buffer2,WayPointList[i].Name);
+			 _stprintf(Buffer2,_T("%s"), WayPointList[i].Name);
 		  } else {
 			CopyTruncateString(Buffer2, array_size(Buffer2), WayPointList[i].Name, resizer[DisplayTextType]);
 		  }

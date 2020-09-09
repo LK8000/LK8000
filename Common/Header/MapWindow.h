@@ -235,7 +235,7 @@ typedef struct {
 
 
 typedef struct{
-  TCHAR Name[NAME_SIZE+1];
+  TCHAR Name[LKSIZEBUFFER];
   POINT Pos;
   TextInBoxMode_t Mode;
   int AltArivalAGL;
