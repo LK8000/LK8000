@@ -19,7 +19,7 @@
 #include "Draw/ScreenProjection.h"
 #include "Util/TruncateString.hpp"
 #include "Asset.hpp"
-
+#include "utils/array_adaptor.h"
 
 MapWaypointLabel_t MapWaypointLabelList[200];
 MapWaypointLabel_t* SortedWaypointLabelList[200];
@@ -29,32 +29,43 @@ void DrawMAPWaypointPictoUTF8(LKSurface& Surface, const RECT& rc, int Style);
 
 struct MapWaypointLabelListCompare {
 	bool operator()(const MapWaypointLabel_t* elem1, const MapWaypointLabel_t* elem2 ) {
-		// landable first
-		if(elem1->isLandable && !elem2->isLandable) {
+		// in task first
+		if(elem1->inTask && !elem2->inTask) {
 			return true;
 		}
-		if(!elem1->isLandable && elem2->isLandable) {
+		if(!elem1->inTask && elem2->inTask) {
 			return false;
 		}
 
-		// thermal last
-		if(elem1->isThermal && !elem2->isThermal) {
-			return false;
-		}
-		if(!elem1->isThermal && elem2->isThermal) {
-			return true;
-		}
+		if(!elem1->inTask && !elem2->inTask) {
+			// if both are not in task, landable become first
+			if(elem1->isLandable && !elem2->isLandable) {
+				return true;
+			}
+			if(!elem1->isLandable && elem2->isLandable) {
+				return false;
+			}
 
-		// otherwise sort by arrival height
-		return (elem1->AltArivalAGL < elem2->AltArivalAGL);
+			if(!elem1->isLandable && !elem2->isLandable) {
+				// if both are not landable, thermal will be be last
+				if(elem1->isThermal && !elem2->isThermal) {
+					return false;
+				}
+				if(!elem1->isThermal && elem2->isThermal) {
+					return true;
+				}
+			}
+		}
+		// otherwise sort by arrival height (higher first)
+		return (elem1->AltArivalAGL > elem2->AltArivalAGL);
 	}
 };
 
 template<size_t size>
 static void MapWaypointLabelAdd(const TCHAR (&Name)[size], const RasterPoint& pos,
 			 const TextInBoxMode_t *Mode,
-			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, 
-			 bool isThermal, bool isExcluded,  int index, short style){
+			 int AltArivalAGL, bool inTask, bool isLandable, 
+			 bool isThermal,  int index, short style){
 
   static_assert(array_size(MapWaypointLabelList->Name) >= size, "possible buffer overflow" );
 
@@ -68,9 +79,7 @@ static void MapWaypointLabelAdd(const TCHAR (&Name)[size], const RasterPoint& po
   E->AltArivalAGL = AltArivalAGL;
   E->inTask = inTask;
   E->isLandable = isLandable;
-  E->isAirport  = isAirport;
   E->isThermal  = isThermal;
-  E->isExcluded = isExcluded;
   E->index = index;
   E->style = style;
 
@@ -548,12 +557,6 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
 	      } // end intask/irange/dowrite
 
-    if (MapWindow::zoom.RealScale()<20 && islandable && dowrite) {
-	  const RasterPoint ScreenPt =  _Proj.ToRasterPoint(WayPointList[i].Latitude, WayPointList[i].Longitude);
-      TextInBox(Surface, &rc, Buffer, ScreenPt.x+IBLSCALE(4), ScreenPt.y, &TextDisplayMode, true);
-      dowrite=false; // do not pass it along
-    }
-
 		// Do not show takeoff for gliders, check TakeOffWayPoint
 		if (i==RESWP_TAKEOFF) {
 			if (TakeOffWayPoint) {
@@ -581,7 +584,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
                         LabelPos,
                         &TextDisplayMode,
                         (int) (WayPointList[i].AltArivalAGL * ALTITUDEMODIFY),
-                        intask, islandable, isairport, isthermal, excluded, i, WayPointList[i].Style);
+                        intask, islandable, isthermal, i, WayPointList[i].Style);
             }
           }
 	    } // end if intask
@@ -593,53 +596,18 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
   			 std::next(SortedWaypointLabelList, MapWaypointLabelListCount), 
 			 MapWaypointLabelListCompare());
 
-  // now draw task/landable waypoints in order of range (closest last)
-  // writing unconditionally
-
-  for (int j=MapWaypointLabelListCount-1; j>=0; j--){
-
-    MapWaypointLabel_t *E = SortedWaypointLabelList[j];
-
-    // draws if they are in task unconditionally,
-    // otherwise, does comparison
-    if ( E->inTask || (E->isLandable && !E->isExcluded) ) {
-    const LKIcon* pWptBmp = NULL;
-
-	TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y+NIBLSCALE(1), &(E->Mode), false);
-
-	// At low zoom, dont print the bitmap because drawn task would make it look offsetted
-	if(MapWindow::zoom.RealScale() > 2) continue;
-
-    // If we are at low zoom, use a dot for icons, so we dont clutter the screen
-    if(MapWindow::zoom.RealScale() > 1) {
-	if (BlackScreen)
-		pWptBmp = &hInvSmall;
-	else
-		pWptBmp = &hSmall;
-    } else {
-	if (BlackScreen)
-		pWptBmp = &hInvTurnPoint;
-	else
-		pWptBmp = &hTurnPoint;
-    }
-    if(pWptBmp) {
-        // TODO
-        const unsigned IconSize = (UseHiresBitmap ? iround(IBLSCALE(10.0)) : 20); 
-        pWptBmp->Draw(Surface, E->Pos.x-IconSize/2,E->Pos.y-IconSize/2,IconSize,IconSize);
-    }
-    } // wp in task
-  } // for all waypoint, searching for those in task
-
   // now draw normal waypoints in order of range (furthest away last)
   // without writing over each other (or the task ones)
   for (size_t j=0; j<MapWaypointLabelListCount; j++) {
     MapWaypointLabel_t *E = SortedWaypointLabelList[j];
 
-    if (!E->inTask && !E->isLandable ) {
-      const LKIcon* pWptBmp = NULL;
-
-      if ( TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y+NIBLSCALE(1), &(E->Mode), true) == true) {
-
+	if (! TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y+NIBLSCALE(1), &(E->Mode), true)) {
+		continue;
+	}
+	if(E->isLandable) {
+		continue; // don't draw icon, already done in previous loop...
+	}	
+	const LKIcon* pWptBmp = NULL;
 	// If we are at low zoom, use a dot for icons, so we dont clutter the screen
 	if(MapWindow::zoom.RealScale() > 4) {
 		if (BlackScreen)
@@ -754,10 +722,7 @@ turnpoint:
 
         DrawMAPWaypointPictoUTF8( Surface, rctmp, E->style);
       }
-      }
-    }
   }
-
 } // end DrawWaypoint
 
 

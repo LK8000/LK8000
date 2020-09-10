@@ -241,9 +241,7 @@ typedef struct{
   int AltArivalAGL;
   bool inTask;
   bool isLandable; // VENTA5
-  bool isAirport; // VENTA5
   bool isThermal;
-  bool isExcluded;
   int  index;
   short style;
 }MapWaypointLabel_t;
