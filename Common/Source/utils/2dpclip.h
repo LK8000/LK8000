@@ -343,7 +343,7 @@ namespace LKGeom {
 
     template<typename polygon_in, typename polygon_out, typename Urect>
     inline void ClipPolygon(const Urect& ClipRect, const polygon_in& inPoly, polygon_out& outPoly) {
-        typedef typename polygon_in::value_type Upoint;
+        typedef typename std::remove_const<typename polygon_in::value_type>::type Upoint;
         
         const Upoint TopLeft = (Upoint) {ClipRect.left, ClipRect.top};
         const Upoint BottomRight =  (Upoint){ClipRect.right, ClipRect.bottom};
