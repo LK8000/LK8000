@@ -33,6 +33,7 @@ import android.location.OnNmeaMessageListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -46,12 +47,11 @@ public class InternalGPS
   private static Handler handler;
 
   /**
-   * Global initialization of the class.  Must be called from the main
-   * event thread, because the Handler object must be bound to that
-   * thread.
+   * Global initialization of the class.
    */
   public static void Initialize() {
-    handler = new Handler();
+    // Handler object must be bound to MainThread
+    handler = new Handler(Looper.getMainLooper());
   }
 
   /** the index of this device in the global list */
@@ -122,7 +122,8 @@ public class InternalGPS
       Log.d(TAG, "Subscribing to GPS updates.");
 
       try {
-        locationManager.requestLocationUpdates(locationProvider,1000, 0, this);
+        // Must be Bound to MainThread
+        locationManager.requestLocationUpdates(locationProvider,1000, 0, this, Looper.getMainLooper());
       } catch (IllegalArgumentException e) {
       /* this exception was recorded on the Android Market, message
          was: "provider=gps" - no idea what that means */
@@ -139,7 +140,8 @@ public class InternalGPS
         if(listener_N == null) {
           listener_N = (nmea, timestamp) -> InternalGPS.this.parseNMEA(nmea);
         }
-        locationManager.addNmeaListener(listener_N);
+        // Must be Bound to MainThread
+        locationManager.addNmeaListener(listener_N, new Handler(Looper.getMainLooper()));
       }
 
       setConnectedSafe(true); // waiting for fix
@@ -200,8 +202,4 @@ public class InternalGPS
   @Override public void onLocationChanged(Location newLocation) {
   }
 
-  /** from LocationListener (unused) */
-  @Override public void onStatusChanged(String provider, int status,
-                                        Bundle extras) {
-  }
 }
