@@ -55,8 +55,8 @@ uint uTimeout =0;
 TCHAR m_Filename[64];
 uint m_CurLine =0;
 
-#define MAX_NMEA_PAR_LEN    30
-#define MAX_VAL_STR_LEN    60
+
+
 
 int iRxUpdateTime=0;
 int iNano3_RxUpdateTime=0;
@@ -77,7 +77,7 @@ BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs);
 
 
 Mutex  CritSec_LXDebugStr;
-TCHAR LxValueStr[_LAST][ MAX_VAL_STR_LEN];
+TCHAR LxValueStr[_LAST][ MAX_NMEA_LEN];
 
 BOOL IsDirInput( DataBiIoDir IODir)
 {
@@ -499,7 +499,7 @@ BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 BOOL DevLXNanoIII::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
 {
   CritSec_LXDebugStr.Lock();
-  _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
+  _tcsncpy(LxValueStr[Idx] , ValueText, MAX_NMEA_LEN);
   CritSec_LXDebugStr.Unlock();
   return true;
 }
@@ -1348,17 +1348,15 @@ if (!bCRCok){
 
 if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
 {
-  TCHAR Par[10][MAX_NMEA_PAR_LEN];
-  TCHAR szCommand[MAX_NMEA_LEN];
-  for(uint i=0; i < 10 ; i++)
-  {
-    NMEAParser::ExtractParameter(sentence,Par[i],i);
-  }
+  TCHAR Par[10][MAX_NMEA_LEN];
+  TCHAR* szCommand= Par[0];
+  NMEAParser::ExtractParameter(sentence,Par[1],1);
+
   if (_tcsncmp(_T("INFO"), Par[1],4) == 0)
     return PLXVC_INFO(d,sentence,info);
 
   if (_tcsncmp(_T("LOGBOOKSIZE"), Par[1],11) == 0)
-  {
+  { NMEAParser::ExtractParameter(sentence,Par[3],3);
     if( StrTol(Par[3]) > 0) // at least one file exists?
     {
       _sntprintf(szCommand,MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"), (unsigned int) StrTol(Par[3])+1);
@@ -1367,6 +1365,10 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
   }
   else
   {
+    for(uint i=2; i < 10 ; i++)
+    {
+     NMEAParser::ExtractParameter(sentence,Par[i],i);
+    }
     if (_tcsncmp(_T("LOGBOOK"), Par[1],7) == 0)  // PLXVC but not declaration = IGC File transfer
     {
       TCHAR Line[2][MAX_NMEA_LEN];
@@ -1390,7 +1392,7 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
          uint uPercent = 0;
          if(TotalLines > 0)
            uPercent = (m_CurLine*100) / TotalLines;
-         _sntprintf(Par[1], MAX_NMEA_PAR_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
+         _sntprintf(Par[1], MAX_NMEA_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
 
     #ifdef NANO_PROGRESS_DLG
          IGCProgressDialogText(Par[1]);
@@ -2249,11 +2251,11 @@ if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
 MinLon *=60;
 
 
-TCHAR szName[MAX_VAL_STR_LEN];
+TCHAR szName[MAX_NMEA_LEN];
   if( 0 /*bTaskpresent*/)  {
-    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"), MsgToken(1323), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
+    _sntprintf( szName, MAX_NMEA_LEN,_T("%s%s"), MsgToken(1323), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
   } else {
-    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
+    _sntprintf( szName, MAX_NMEA_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
   }
 
   if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG)
@@ -2262,7 +2264,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
       szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW,
       (int) (WayPointList[overindex].Altitude +0.5));
 
-      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_NMEA_LEN);
 #ifdef TESTBENCH
      StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
@@ -2274,7 +2276,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
       _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
         szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
-      _tcsncat (szName, _T(" ($GPRMB)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($GPRMB)"),MAX_NMEA_LEN);
     }
 #ifdef TESTBENCH
     StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
