@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -182,13 +183,13 @@ public class LK8000 extends Activity {
     finish();
   }
 
-  final Handler quitHandler = new Handler() {
+  final Handler quitHandler = new Handler(Looper.getMainLooper()) {
     public void handleMessage(Message msg) {
       quit();
     }
   };
 
-  final Handler errorHandler = new Handler() {
+  final Handler errorHandler = new Handler(Looper.getMainLooper()) {
     public void handleMessage(Message msg) {
       nativeView = null;
       TextView tv = new TextView(LK8000.this);
