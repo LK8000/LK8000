@@ -31,7 +31,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 /**
  * All this Service implementation does is put itself in foreground.
