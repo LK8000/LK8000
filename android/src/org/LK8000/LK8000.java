@@ -355,16 +355,26 @@ public class LK8000 extends Activity {
   /**
    * Permissions that need to be explicitly requested from end user.
    */
-  private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
-          Manifest.permission.BLUETOOTH,
-          Manifest.permission.BLUETOOTH_ADMIN,
-          Manifest.permission.WRITE_EXTERNAL_STORAGE,
-          Manifest.permission.ACCESS_FINE_LOCATION,
-          Manifest.permission.WAKE_LOCK,
-          Manifest.permission.INTERNET,
-          Manifest.permission.ACCESS_NETWORK_STATE,
-          Manifest.permission.VIBRATE
-  };
+  static final ArrayList<String> REQUIRED_SDK_PERMISSIONS = new ArrayList<>();
+
+  {
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH_ADMIN);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_FINE_LOCATION);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.WAKE_LOCK);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.INTERNET);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_NETWORK_STATE);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.VIBRATE);
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.FOREGROUND_SERVICE);
+    }
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    }
+  }
+
 
   /**
    * Checks the dynamically-controlled permissions and requests missing permissions from end user.
@@ -384,9 +394,11 @@ public class LK8000 extends Activity {
               .toArray(new String[missingPermissions.size()]);
       ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
     } else {
-      final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+      final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.size()];
       Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
-      onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+      final String[] permissions = REQUIRED_SDK_PERMISSIONS
+              .toArray(new String[REQUIRED_SDK_PERMISSIONS.size()]);
+      onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, permissions,
               grantResults);
     }
   }

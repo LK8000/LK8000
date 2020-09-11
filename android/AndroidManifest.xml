@@ -6,7 +6,8 @@
 
   <application android:icon="${applicationIcon}"
                android:label="${applicationLabel}"
-               tools:replace="android:label">
+               tools:replace="android:label"
+               android:requestLegacyExternalStorage="true">
 
     <activity android:name=".LK8000"
               android:theme="@style/SplashTheme"
