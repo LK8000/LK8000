@@ -440,6 +440,24 @@ protected:
 public:
   void Pause();
   void Resume();
+
+  void OnStartEventLoop();
+  void OnStopEventLoop();
+
+  class ScopeRunningEventLoop {
+  public:
+    ScopeRunningEventLoop(TopWindow& main) : _main(main) {
+      _main.OnStartEventLoop();
+    }
+
+    ~ScopeRunningEventLoop() {
+      _main.OnStopEventLoop();
+    }
+  private:
+    TopWindow& _main;
+  };
+
+
 #endif
 
 public:

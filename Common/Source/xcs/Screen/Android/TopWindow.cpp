@@ -241,14 +241,30 @@ TopWindow::OnEvent(const Event &event)
   return false;
 }
 
+
+void
+TopWindow::OnStartEventLoop()
+{
+  ScopeLock protect(paused_mutex);
+  assert(!running);
+  running = true;
+}
+
+void
+TopWindow::OnStopEventLoop()
+{
+  ScopeLock protect(paused_mutex);
+  assert(running);
+  running = false;
+  /* wake up the Android Activity thread, just in case it's waiting
+     inside Pause() */
+  paused_cond.Signal();
+}
+
 int
 TopWindow::RunEventLoop()
 {
-  {
-    ScopeLock protect(paused_mutex);
-    assert(!running);
-    running = true;
-  }
+  ScopeRunningEventLoop Running(*this);
 
   Refresh();
 
@@ -256,15 +272,6 @@ TopWindow::RunEventLoop()
   Event event;
   while (IsDefined() && loop.Get(event))
     loop.Dispatch(event);
-
-  {
-    ScopeLock protect(paused_mutex);
-    assert(running);
-    running = false;
-    /* wake up the Android Activity thread, just in case it's waiting
-       inside Pause() */
-    paused_cond.Signal();
-  }
 
   return 0;
 }

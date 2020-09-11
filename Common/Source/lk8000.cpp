@@ -328,6 +328,8 @@ bool Startup(const TCHAR* szCmdLine) {
   LK8000Activity* activity = LK8000Activity::Get();
   assert(activity);
   if(activity) {
+    TopWindow::ScopeRunningEventLoop Running(*main_window);
+
     activity->RequestPermission();
     activity->WaitPermission();
   }

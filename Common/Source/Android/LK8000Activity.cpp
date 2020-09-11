@@ -45,7 +45,7 @@ void LK8000Activity::PermissionGranted() {
 }
 
 LK8000Activity::permission_t LK8000Activity::WaitPermission() {
-  if(event_queue) {
+  if(event_queue && main_window) {
     EventLoop loop(*event_queue, *main_window);
     Event event;
     while (main_window->IsDefined() && loop.Get(event)) {
