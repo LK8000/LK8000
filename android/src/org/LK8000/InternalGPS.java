@@ -202,4 +202,17 @@ public class InternalGPS
   @Override public void onLocationChanged(Location newLocation) {
   }
 
+  /**
+   * from LocationListener (unused)
+   *
+   * This method was deprecated in API level 29.
+   * This callback will never be invoked on Android Q and above.
+   *
+   * stiil minSDK is < 30 don't remove this to avoid "AbstractMethodError"
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public void onStatusChanged(String provider, int status, Bundle extras) {
+  }
+
 }
