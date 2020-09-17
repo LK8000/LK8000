@@ -12,10 +12,6 @@
  *  THIS FILE IS INCLUDED AUTOMATICALLY BY DEFINES.H
  */
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 // Number of InfoBoxes
 #define NUMDATAOPTIONS_MAX                      153
 
