@@ -999,8 +999,8 @@
     "_@M000750_": "Filtre Pt de Virage",
     "_@M000753_": "INCONNU !",
     "_@M000754_": "DEBLOQUE",
-    "_@M000755_": "UTILISATION ALTI. BARO DU",
-    "_@M000756_": "ALTI BAROMETRIQUE DU",
+    "_@M000755_": "UTILISATION ALTI. BARO DU:",
+    "_@M000756_": "UTLISATION ALTI BAROMETRIQUE DU:",
     "_@M000757_": "UTILISE ALTI GPS",
     "_@M000758_": "Fuseau Horaire",
     "_@M000759_": "Impossible de changer la config des ports",
@@ -1189,7 +1189,7 @@
     "_@M000967_": "Modifs Zones Aéro",
     "_@M000968_": "Pour cette fois-ci",
     "_@M000969_": "Permanent",
-    "_@M000970_": "GPS : POINT FIXE NON VALIDE",
+    "_@M000970_": "GPS : POSITION NON VALIDE",
     "_@M000971_": "GPS : Pas de Port Com",
     "_@M000972_": "GPS : Aucune donnée reçue",
     "_@M000973_": "GPS absent",
@@ -1926,5 +1926,9 @@
     "_@H000239_": "Activez cette option si vous souhaitez enregistrer certains paramètres en cours d'exécution à la sortie.\nPar exemple : la barre inférieure actuelle sélectionnée, l'état des superposition sur chaque \"multi-carte\", etc.\nValeur par défaut : désactivé.",
     "_@M002471_": "Finesse nécessaire & Hauteur d'arrivée",
     "_@M002472_": "Altitude d'arrivée QNH de la cible Multi-cible sélectionnée",
-    "_@M002473_": "TgtQNH"
+    "_@M002473_": "TgtQNH",
+    "_@H000920_": "[Dégagement 2 distance]\nDistance du dégagement 2",
+    "_@H000919_": "[Dégagement 1 distance]\nDistance du dégagement 1",
+    "_@H000888_": "Pas d'aide disponible sur cet article !",
+    "_@H000240_": "Permet d'envoyer le son sur le dispositif externe, si le dispositif interne ne gère pas le son.\nDemandez plus d'informations à votre distributeur"
 }
