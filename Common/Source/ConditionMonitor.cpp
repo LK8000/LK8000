@@ -203,7 +203,17 @@ public:
 protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-    if (!ValidTaskPoint(ActiveTaskPoint) || !Calculated->Flying) {
+
+    // TaskTimeToGo is not valid until task start.
+    if(!Calculated->ValidStart) {
+      return false;
+    }
+
+    if(Calculated->TaskTimeToGo > 0 && Calculated->TaskTimeToGo < ERROR_TIME) {
+      return false;
+    }
+
+    if (!Calculated->Flying || !ValidTaskPoint(ActiveTaskPoint)) {
       return false;
     }
 
