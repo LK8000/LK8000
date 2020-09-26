@@ -109,7 +109,7 @@ public:
 				     sizeof(address));
 	}
 
-	SocketAddress::size_type GetSize() {
+	constexpr SocketAddress::size_type GetSize() const {
 		return sizeof(address);
 	}
 
