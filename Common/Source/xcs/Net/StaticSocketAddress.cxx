@@ -40,6 +40,19 @@
 #include <netdb.h>
 #endif
 
+StaticSocketAddress::StaticSocketAddress() {
+#ifdef WIN32
+	WSADATA data;
+	WSAStartup(MAKEWORD(2,2), &data);
+#endif
+}
+
+StaticSocketAddress::~StaticSocketAddress() {
+#ifdef WIN32
+	WSACleanup();
+#endif
+}
+
 StaticSocketAddress &
 StaticSocketAddress::operator=(SocketAddress other)
 {
@@ -48,19 +61,37 @@ StaticSocketAddress::operator=(SocketAddress other)
 	return *this;
 }
 
-#ifndef _WIN32_WCE
 
 bool
 StaticSocketAddress::Lookup(const char *host, const char *service, int socktype)
 {
+#if defined(_WIN32_WCE) && _WIN32_WCE < 0x0500
+
+	struct hostent* h = gethostbyname(host);
+	if(!h) {
+		return false;
+	}
+
+	static_assert(sizeof(sockaddr) == sizeof(sockaddr_in), "invalid struct size");
+	struct sockaddr sockaddr_to;
+	struct sockaddr_in *to = (struct sockaddr_in *)&sockaddr_to;
+	to->sin_family = h->h_addrtype;
+	to->sin_port = htons(strtol(service, nullptr, 10));
+	memcpy(&(to->sin_addr.s_addr), h->h_addr, h->h_length);
+
+	(*this) = SocketAddress(&sockaddr_to, sizeof(sockaddr));
+
+#else
+
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = socktype;
 
 	struct addrinfo *ai;
-	if (getaddrinfo(host, service, &hints, &ai) != 0)
+	if (getaddrinfo(host, service, &hints, &ai) != 0) {
 		return false;
+	}
 
 	size = ai->ai_addrlen;
 	assert(size_t(size) <= sizeof(address));
@@ -68,7 +99,8 @@ StaticSocketAddress::Lookup(const char *host, const char *service, int socktype)
 	memcpy(reinterpret_cast<void *>(&address),
 	       reinterpret_cast<void *>(ai->ai_addr), size);
 	freeaddrinfo(ai);
+#endif
+
 	return true;
 }
 
-#endif

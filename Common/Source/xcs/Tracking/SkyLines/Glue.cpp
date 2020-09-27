@@ -28,7 +28,9 @@ Copyright_License {
 #include "NMEA/Info.h"
 #include "NMEA/Derived.h"
 #include "Net/State.hpp"
-#include "Net/IPv4Address.hxx"
+#include "Net/StaticSocketAddress.hxx"
+#include "Util/StaticString.hpp"
+#include "OS/ByteOrder.hpp"
 #include "Geographic/GeoPoint.h"
 #ifdef HAVE_POSIX
 #include "IO/Async/GlobalIOThread.hpp"
@@ -196,12 +198,18 @@ SkyLinesTracking::Glue::SetSettings(const Settings &settings)
 {
   if (settings.cloud_enabled == TriState::TRUE && settings.cloud_key != 0) {
     cloud_client.SetKey(settings.cloud_key);
-    if (!cloud_client.IsDefined())
-      // TODO: change hard-coded IP address to "cloud.xcsoar.net"
-      cloud_client.Open(IPv4Address(138, 201, 185, 127,
-                                    Client::GetDefaultPort()));
-  } else
+    if (!cloud_client.IsDefined()) {
+      NarrowString<32> service;
+      service.UnsafeFormat("%u", Client::GetDefaultPort());
+
+      StaticSocketAddress address;
+      if (address.Lookup("cloud.xcsoar.net", service, SOCK_DGRAM)) {
+        cloud_client.Open(address);
+      }
+    }
+  } else {
     cloud_client.Close();
+  }
 
   if (!settings.enabled || settings.key == 0) {
     delete queue;
@@ -214,9 +222,15 @@ SkyLinesTracking::Glue::SetSettings(const Settings &settings)
 
   interval = settings.interval;
 
-  if (!client.IsDefined())
-    // TODO: fix hard-coded IP address:
-    client.Open(IPv4Address(95, 128, 34, 172, Client::GetDefaultPort()));
+  if (!client.IsDefined()) {
+    NarrowString<32> service;
+    service.UnsafeFormat("%u", Client::GetDefaultPort());
+
+    StaticSocketAddress address;
+    if (address.Lookup("tracking.skylines.aero", service, SOCK_DGRAM)) {
+      client.Open(address);
+    }
+  }
 
 #ifdef HAVE_SKYLINES_TRACKING_HANDLER
   traffic_enabled = settings.traffic_enabled;

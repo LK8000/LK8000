@@ -47,7 +47,8 @@ private:
 	struct sockaddr_storage address;
 
 public:
-	StaticSocketAddress() = default;
+	StaticSocketAddress();
+	~StaticSocketAddress();
 
 	StaticSocketAddress &operator=(SocketAddress other);
 
@@ -100,9 +101,7 @@ public:
 		return !(*this == other);
 	}
 
-#ifndef _WIN32_WCE
 	bool Lookup(const char *host, const char *service, int socktype);
-#endif
 };
 
 #endif
