@@ -495,6 +495,9 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 				break; // else work normally
 		}
 
+		if(idx==RESWP_OPTIMIZED) {
+			dowrite = DoOptimizeRoute();
+		}
 
 		// here come both turnpoints and landables..
 		if( intask || irange || dowrite) {  // irange always set when MapScale <=10
@@ -565,10 +568,6 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			} else {
 				dowrite=false;
 			}
-		}
-
-		if(idx==RESWP_OPTIMIZED) {
-			dowrite = DoOptimizeRoute();
 		}
 
 		if (dowrite) {
