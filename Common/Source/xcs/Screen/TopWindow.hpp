@@ -170,7 +170,7 @@ class TopWindow : public ContainerWindow {
    * then the Android Activity thread should not wait for
    * #paused_cond, to avoid deadlocks.
    */
-  bool running = false;
+  unsigned running = 0U;
 
   /**
    * Is the application currently paused?  While this flag is set, no
@@ -443,20 +443,6 @@ public:
 
   void OnStartEventLoop();
   void OnStopEventLoop();
-
-  class ScopeRunningEventLoop {
-  public:
-    ScopeRunningEventLoop(TopWindow& main) : _main(main) {
-      _main.OnStartEventLoop();
-    }
-
-    ~ScopeRunningEventLoop() {
-      _main.OnStopEventLoop();
-    }
-  private:
-    TopWindow& _main;
-  };
-
 
 #endif
 

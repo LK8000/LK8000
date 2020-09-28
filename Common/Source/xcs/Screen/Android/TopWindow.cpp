@@ -246,8 +246,7 @@ void
 TopWindow::OnStartEventLoop()
 {
   ScopeLock protect(paused_mutex);
-  assert(!running);
-  running = true;
+  ++running;
 }
 
 void
@@ -255,7 +254,7 @@ TopWindow::OnStopEventLoop()
 {
   ScopeLock protect(paused_mutex);
   assert(running);
-  running = false;
+  --running;
   /* wake up the Android Activity thread, just in case it's waiting
      inside Pause() */
   paused_cond.Signal();
@@ -264,8 +263,6 @@ TopWindow::OnStopEventLoop()
 int
 TopWindow::RunEventLoop()
 {
-  ScopeRunningEventLoop Running(*this);
-
   Refresh();
 
   EventLoop loop(*event_queue, *this);
