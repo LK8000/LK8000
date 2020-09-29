@@ -12,12 +12,13 @@
 #include "Calc/Vario.h"
 
 void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-
+if (SIMMODE)
+{
   if (!Calculated->Flying) {
     Calculated->NettoVario = 0.0;
     return;
   }
-
+}
   // get load factor
   const double GLoad = (Basic->AccelerationAvailable)
           ? fabs(Basic->AccelZ)
