@@ -2561,8 +2561,8 @@
     "_@H001358_": "DIRECT \nEn-/Disable the direct Link to pass logger task declarations to the Logger\nOFF: If a logger is included in the LX device (e.g. LX S100) \nON: for external logger connected to the LX devce (e.g. LX V7 ",
     "_@H001359_": "VARIO  \nEn-/Disable variometer value reception from external LX device",
     "_@H001360_": "T-TRGT (Transmit Target)\nsend Navigation TARGET waypoint information to LX compatible devices. The navigation target can be send by $PLXVTARG or $GPRMB sentences of the protocol.\nOFF: no target data transmission \n$PLXVTARG: send to device using $PLXVTARG protocol sentences\n$GPRMB: send to device using $GPRMB protocol sentences. If possible at the remote device we recomend to use $PLXVTARG because it includes the target elevation.",
-    "_@M002574_": "No Device found",
-    "_@M002575_": "Wrong Block answer",
-    "_@M002576_": "Multitarget Bearing Diff ",
-    "_@M002577_": "DiffMtg"  
+    "_@M002474_": "No Device found",
+    "_@M002475_": "Wrong Block answer",
+    "_@M002476_": "Multitarget Bearing Diff ",
+    "_@M002477_": "DiffMtg"  
 }

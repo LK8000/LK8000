@@ -820,10 +820,10 @@ static bool OnTimer(WndForm *pWnd) {
             _tcscpy(Tmp, MsgToken(2411));
             break; // _@M2411_ "Error: Block invalid"
           case REC_NO_DEVICE:
-            _tcscpy(Tmp, MsgToken(2575));
+            _tcscpy(Tmp, MsgToken(2475));
             break; // _@M2401_ "No Device found"
           case REC_WRONG_BLOCK: 
-             _tcscpy(Tmp, MsgToken(2574)); // _@M2574_ "wrong block received"
+             _tcscpy(Tmp, MsgToken(2474)); // _@M2474_ "wrong block received"
             break;
           default:            
             _tcscpy(Tmp, MsgToken(2412));

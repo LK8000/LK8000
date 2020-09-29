@@ -1003,9 +1003,9 @@ goto_bearing:
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
             if(lkindex == LK_MTG_BRG_DIFF)
             {
-              // LKTOKEN  _@M2576_ = "Multitarget Bearing Difference", _@M2577_ = "DiffMtg"
+              // LKTOKEN  _@M2476_ = "Multitarget Bearing Difference", _@M2477_ = "DiffMtg"
               if (lktitle)
-				 _tcscpy(BufferTitle, MsgToken(2577));
+				 _tcscpy(BufferTitle, MsgToken(2477));
               index = GetOvertargetIndex();
             }
             else

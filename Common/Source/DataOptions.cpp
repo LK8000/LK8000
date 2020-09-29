@@ -113,8 +113,8 @@ void FillDataOptions() {
 	SetDataOption(LK_GLOAD, ugNone, TEXT("_@M1075_"), TEXT("_@M1076_"));
 	// LKTOKEN  _@M1699_ =  "Multitarget Bearing"  "_@M001699_": "BrgMtg",
 	SetDataOption(LK_MTG_BRG, ugNone, TEXT("_@M1698_"), TEXT("_@M1699_"));
-	// LKTOKEN  _@M2576_ = "Multitarget Bearing Difference   "_@M002577_": "DiffMtg",
-	SetDataOption(LK_MTG_BRG_DIFF, ugNone, TEXT("_@M2576_"), TEXT("_@M2577_"));      
+	// LKTOKEN  _@M2476_ = "Multitarget Bearing Difference   "_@M002477_": "DiffMtg",
+	SetDataOption(LK_MTG_BRG_DIFF, ugNone, TEXT("_@M2476_"), TEXT("_@M2477_"));      
 	// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
 	SetDataOption(LK_TIME_LOCAL, ugNone, TEXT("_@M1079_"), TEXT("_@M1080_"));
 	// LKTOKEN  _@M1081_ = "Time UTC", _@M1082_ = "UTC"

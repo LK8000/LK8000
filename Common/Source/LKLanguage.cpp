@@ -59,11 +59,16 @@ namespace {
       for (const auto &obj : lang_json.get<json::object>()) {
         // get the item index number
         const unsigned index = GetTextIndex(obj.first, 'M');
-        if (index < array_size(LKMessages) && !LKMessages[index]) {
-          if(obj.second.is<std::string>()) {
-            const tstring value = utf8_to_tstring(obj.second.get<std::string>().c_str());
-            LKMessages[index] = _tcsdup(value.c_str());
+        if (index < array_size(LKMessages)) {
+          if(!LKMessages[index]) {
+            if(obj.second.is<std::string>()) {
+              const tstring value = utf8_to_tstring(obj.second.get<std::string>().c_str());
+              LKMessages[index] = _tcsdup(value.c_str());
+            }
           }
+        } else {
+          // invalid token or LKMessages array too small.
+          assert(index == std::numeric_limits<unsigned>::max());
         }
       }
     }
