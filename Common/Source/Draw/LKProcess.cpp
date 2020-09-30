@@ -89,7 +89,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   bool		valid=false;
 
 
-  const TCHAR* varformat = (LIFTMODIFY==TOFEETPERMINUTE) ? TEXT("%%+.0f") : TEXT("%%+0.1f");
+  const TCHAR* varformat = (LIFTMODIFY==TOFEETPERMINUTE) ? TEXT("%+.0f") : TEXT("%+0.1f");
 
 
 	_tcscpy(BufferValue,_T(""));
