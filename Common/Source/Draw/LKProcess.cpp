@@ -78,10 +78,9 @@ static double GetNextETE(const DERIVED_INFO& info) {
 //
 bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle) {
 
-  static int	index=-1;
-  static double value;
-  static int	ivalue;
-  static TCHAR	varformat[10];
+  int	index=-1;
+  double value;
+  int	ivalue;
 
    BOOL bFAI ;
    double fDist ;
@@ -89,15 +88,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   // By default, invalid return value. Set it to true after assigning value in cases
   bool		valid=false;
 
-  if (DoInit[MDI_LKPROCESS]) {
 
-	if (LIFTMODIFY==TOFEETPERMINUTE)
-		_stprintf(varformat,TEXT("%%+.0f"));
-	else
-		_stprintf(varformat,TEXT("%%+0.1f"));
-
-	DoInit[MDI_LKPROCESS]=false;
-  }
+  const TCHAR* varformat = (LIFTMODIFY==TOFEETPERMINUTE) ? TEXT("%%+.0f") : TEXT("%%+0.1f");
 
 
 	_tcscpy(BufferValue,_T(""));
@@ -2262,7 +2254,7 @@ olc_score:
 			fTogo =DISTANCEMODIFY*CContestMgr::Instance().GetClosingPointDist();
 			if(fTogo >0)
 			{
-				if (value>99)
+				if (fTogo>99)
 					_stprintf(BufferValue, TEXT("%.0f"),fTogo);
 				else
 					_stprintf(BufferValue, TEXT("%.1f"),fTogo);
@@ -2666,6 +2658,7 @@ olc_score:
         break;
 
       case LK_XC_CLOSURE_DIST:
+	    ivalue = CContestMgr::TYPE_XC;
         _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
         _stprintf(BufferUnit, TEXT("%s"),Units::GetDistanceName());
         if (CContestMgr::Instance().GetXCTriangleClosureDistance() == 0)
