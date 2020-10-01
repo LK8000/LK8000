@@ -1975,7 +1975,7 @@
     "_@H000811_": "[Distância Próximo]\nA distância até ao waypoint actualmente seleccionado. Para tasks AAT, esta é a distância até ao alvo dentro do sector AAT.",
     "_@H000812_": "[Altitude Chegada Próximo]\nA altitude de chegada na altitude do próximo waypoint, calculada para o MC actual, NÃO utiliza o SafetyMC e não utiliza a altitude de segurança se não for um ponto de aterragem, a não ser que esteja configurado para o fazer.",
     "_@H000813_": "[Altitude Necessária Próximo]\nAltitude necessária para alcançar o próximo turnpoint, com o MC actual.",
-    "_@H000814_": "[Próximo Waypoint]\nO nome do ponto de viragem actualmente seleccionado.  Quando esta infobox está activa, usando as teclas de cursor acima/abaixo selecciona o próximo/anterior turnpoint na task.\n(Apenas na tela de toque/PC) Pressionar a tecla Enter traz os detalhes do waypoint.",
+    "_@H000814_": "[Próximo Waypoint]\nO nome do ponto de viragem atualmente selecionado.  Quando esta infobox está ativa, usando as teclas de cursor acima/abaixo seleciona o próximo/anterior turnpoint na task.\n(Apenas no ecrã de toque/PC) Pressionar a tecla Enter traz os detalhes do waypoint.",
     "_@H000815_": "[Altitude Chegada Final]\nAltitude de chegada no turnpoint final da task em relação à altitude de chegada de segurança.",
     "_@H000816_": "[Altitude Necessária Final]\nAltitude necessária para terminar a task.",
     "_@H000817_": "[Velocidade Média Task]\nVelocidade média do percurso durante a task actual, compensada pela altitude.",
