@@ -14,7 +14,7 @@
 #include "utils/zzip_stream.h"
 
 void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
-  TCHAR UName[100];
+  TCHAR UName[NAME_SIZE + 1];
   TCHAR NameA[100];
   TCHAR NameB[100];
   TCHAR NameC[100];
