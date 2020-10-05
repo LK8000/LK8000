@@ -66,6 +66,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
        // They have to be draw later, because inside border area have to be in correct color,
        // not the color of the bigger airspace above this small one.
       for (itr=airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
+         if(!(((*itr)->Top()->Base == abMSL) && ((*itr)->Top()->Altitude <= 0))) {
           if ((*itr)->DrawStyle() == adsFilled) {
             airspace_type = (*itr)->Type();
             if (!found) {
@@ -78,10 +79,12 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
             hdcbuffer.SelectObject(hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
             (*itr)->Draw(hdcbuffer, true);
             (*itr)->Draw(hdcMask, false);
+          }
         }
       }//for
     } else {
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+         if(!(((*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))) {
           if ((*it)->DrawStyle() == adsFilled) {
             airspace_type = (*it)->Type();
             if (!found) {
@@ -93,6 +96,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
             // get brush, can be solid or a 1bpp bitmap
             TempSurface.SelectObject(hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
             (*it)->Draw(TempSurface, true);
+          }
         }
       }//for
     }
@@ -117,19 +121,22 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
-          airspace_type = (*it)->Type();
-          if (!found) {
-            ClearAirSpace(true, rc);
-            found = true;
+          if(!(((*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))) {
+            airspace_type = (*it)->Type();
+            if (!found) {
+              ClearAirSpace(true, rc);
+              found = true;
+            }
+
+            if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
+              TempSurface.SelectObject(LK_BLACK_PEN);
+            } else {
+              TempSurface.SelectObject(hAirspacePens[airspace_type]);
+            }
+            if(((*it)->DrawStyle()==adsDisabled))
+              TempSurface.SelectObject(LKPen_Grey_N1);
+            (*it)->Draw(TempSurface, false);
           }
-          if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
-            TempSurface.SelectObject(LK_BLACK_PEN);
-          } else {
-            TempSurface.SelectObject(hAirspacePens[airspace_type]);
-          }
-		  if(((*it)->DrawStyle()==adsDisabled))
-		    TempSurface.SelectObject(LKPen_Grey_N1);
-          (*it)->Draw(TempSurface, false);
         }
       }//for
     }
