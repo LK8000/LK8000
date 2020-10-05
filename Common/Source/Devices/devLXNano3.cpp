@@ -2252,11 +2252,8 @@ MinLon *=60;
 
 
 TCHAR szName[MAX_NMEA_LEN];
-  if( 0 /*bTaskpresent*/)  {
-    _sntprintf( szName, MAX_NMEA_LEN,_T("%s%s"), MsgToken(1323), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
-  } else {
-    _sntprintf( szName, MAX_NMEA_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
-  }
+
+  _sntprintf( szName, MAX_NMEA_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
 
   if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG)
   {                                    // PLXVTARG,KOLN,4628.80   ,N ,01541.167 ,E ,268.0
@@ -2264,7 +2261,7 @@ TCHAR szName[MAX_NMEA_LEN];
       szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW,
       (int) (WayPointList[overindex].Altitude +0.5));
 
-      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_NMEA_LEN);
+      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_NMEA_LEN - sizeof(szName));
 #ifdef TESTBENCH
      StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
@@ -2276,7 +2273,7 @@ TCHAR szName[MAX_NMEA_LEN];
       _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
         szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
-      _tcsncat (szName, _T(" ($GPRMB)"),MAX_NMEA_LEN);
+      _tcsncat (szName, _T(" ($GPRMB)"),MAX_NMEA_LEN-sizeof(szName));
     }
 #ifdef TESTBENCH
     StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
@@ -2336,7 +2333,7 @@ double fTmp;
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($GPRMB)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($GPRMB)"),MAX_NMEA_LEN- sizeof(szTmp) );
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;
@@ -2387,7 +2384,7 @@ double fTmp;
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($PLXVTARG)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($PLXVTARG)"),MAX_NMEA_LEN - sizeof(szTmp));
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;
