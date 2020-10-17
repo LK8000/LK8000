@@ -2945,7 +2945,7 @@ lkfin_ete:
 		// B150 Multi Target QNH Arrival
 		// QNH arrival altitude at the currently selected Multitarget. This is a QNH altitude, not a height
 		// above ground. Does not include safety height. Can be negative
-		case LK_MULTI_TARGET_QNH_ARRIV:
+		case LK_MTG_QNH_ARRIV:
 			ivalue = GetOvertargetIndex(); // Current Multitarget
 			if(ivalue > 0) {
 				value = WayPointCalc[ivalue].AltArriv[AltArrivMode]; // Arrival Height
