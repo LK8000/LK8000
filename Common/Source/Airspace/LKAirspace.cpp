@@ -27,6 +27,7 @@
 
 #include "Topology/shapelib/mapserver.h"
 #include "utils/zzip_stream.h"
+#include "picojson.h"
 
 #ifdef _WGS84
 #include <GeographicLib/GeodesicLine.hpp>
@@ -765,21 +766,8 @@ void CAirspaceBase::ResetWarnings() {
 void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
     CopyTruncateString(_name, NAME_SIZE, name);
 
-
- if (comment != NULL)
- {
-	int iLen = min(READLINE_LENGTH,(int) _tcslen(comment)+1);
-    if( _tcslen(comment) > 1)
-    {
-      _shared_comment = std::shared_ptr<TCHAR>(new TCHAR[iLen+2], std::default_delete<TCHAR[]>());                    
-    }
-
-    if( Comment()  != NULL)
-    {
-      CopyTruncateString(_shared_comment.get(),iLen, comment);
-   //   StartupStore(TEXT("new _shared_comment: %s %u %s"),  Comment(), _tcslen( Comment()), NEWLINE);
-    }
- }
+    // always allocate string to avoid unchecked nullptr exception
+    _shared_comment = std::shared_ptr<TCHAR>(_tcsdup(comment?comment:_T("")), free);
 	
     _type = type;
     memcpy(&_base, &base, sizeof (_base));
@@ -1618,6 +1606,17 @@ bool CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points) {
     return points.size() > MIN_AS_SIZE;
 }
 
+
+static void AppendComment(tstring& Comment, const TCHAR* str) {
+    if(!Comment.empty()) {
+        if(Comment.back() != _T('\n')) {
+            Comment += _T("\n");    
+        }
+        Comment += _T("\n");
+    }
+    Comment += str;
+}
+
 // Reading and parsing OpenAir airspace file
 bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
@@ -1628,16 +1627,13 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     }    
 
   
-    TCHAR *Comment;
-    int nSize;
     TCHAR Text[READLINE_LENGTH + 1];
     TCHAR sTmp[READLINE_LENGTH + 1];
-    TCHAR *p;
     int linecount = 0;
     int parsing_state = 0;
     CAirspace *newairspace = NULL;
     // Variables to store airspace parameters
-    TCHAR ASComment[READLINE_LENGTH + 1] = {0};
+    tstring ASComment;
     TCHAR Name[NAME_SIZE +1] = {0};
     CPoint2DArray points;
     double Radius = 0;
@@ -1658,35 +1654,91 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
     while (stream.read_line(Text)) {
         ++linecount;
-        p = Text;
-        //Skip whitespaces
-        while (*p != 0 && isspace(*p)) p++;
-        if (*p == 0) continue;
-        //Skip comment lines
-        if (*p == '*') continue;
-  //      CharUpper(p);
-        // Strip comments and newline chars from end of line
-        Comment = _tcschr(p, _T('*'));
+        TCHAR* p = Text;
+        while (*p != 0 && isspace(*p)) {
+            p++; // Skip whitespaces
+        }
+        if (*p == 0) {
+            continue; // ignore empty string
+        }
+
+        if (*p == '*') {
+            //  comment lines
+            ++p; // Skip '*'
+            // http://pascal.bazile.free.fr/paraglidingFolder/divers/GPS/OpenAir-Format/index.htm
+            if(_tcsstr(p, _T("ADescr ")) == p) {
+                // *ADescr - The 'full description' (*) of the air zone
+                //      as officially provided by SIA-France via its website;
+                //      or in the accompanying booklets for ICAO air maps
+                AppendComment(ASComment, (p+_tcslen(_T("ADescr "))));
+            } else if(_tcsstr(p, _T("AActiv ")) == p) {
+                // *AActiv - Additional information concerning the 'activation methods' (*) of the area concerned
+                //      as officially provided by SIA-France via its website;
+                //      or in the accompanying booklets for ICAO air charts
+                AppendComment(ASComment, (p+_tcslen(_T("AActiv "))));
+            } else if(_tcsstr(p, _T("AMhz ")) == p) {
+                // *AMzh - The 'list of radio frequencies' associated with the air zone and in the frequency band [118.00 to 136.00 Mhz].
+                if(!ASComment.empty()) {
+                    if(ASComment.back() != _T('\n')) {
+                        ASComment += _T("\n");    
+                    }
+                    ASComment += _T("\n");
+                }
+                p += _tcslen(_T("AMhz "));
+
+                
+                picojson::value value;
+                std::string err = picojson::parse(value, to_utf8(p));
+                if (err.empty() && value.is<picojson::object>()) {
+                    std::string str_radio;
+                    const picojson::value::object& object = value.get<picojson::object>();
+                    for(const auto& pair : object) {
+                        str_radio += pair.first + " : ";
+                        if(pair.second.is<picojson::array>()) {
+                            for(const auto& value : pair.second.get<picojson::array>()) {
+                                str_radio += value.get<std::string>();
+                                str_radio += "\n";
+                            }
+                        } else if(pair.second.is<std::string>()) {
+                            str_radio += pair.second.get<std::string>();
+                        } else {
+                            str_radio += pair.second.serialize();
+                        }
+                    }
+                    AppendComment(ASComment, utf8_to_tstring(str_radio.c_str()).c_str());
+                } else {
+                    // data is not a valid json, put it "as is" in Comment.
+                    AppendComment(ASComment, p);
+                }
+#if 0
+            } else if(_tcsstr(p, _T("AExSAT ")) == p) {
+                //*AExSAT - A calculated binary indicator 'Except SATurday': 'Yes' specifying that the zone cannot be activated on Saturday
+                bool b = (_tcscmp(p+_tcslen(_T("AExSAT ")), _T("Yes")) == 0);
+                // TODO : disable automaticaly after valid GPS fix received ?
+            } else if(_tcsstr(p, _T("AExSUN ")) == p) {
+                //*AExSUN - Binary indicator 'Except SUNday': 'Yes' specifying that the zone cannot be activated on Sunday
+                bool b = (_tcscmp(p+_tcslen(_T("AExSUN ")), _T("Yes")) == 0);
+                // TODO : disable automaticaly after valid GPS fix received ?
+            } else if(_tcsstr(p, _T("AExHOL ")) == p) {
+                //*AExHOL - Binary indicator 'Except HOLiday': 'Yes' specifying that the zone cannot be activated on public holidays
+                bool b = (_tcscmp(p+_tcslen(_T("AExHOL ")), _T("Yes")) == 0);
+                // TODO : Ask to User if this day is Holiday
+            } else if(_tcsstr(p, _T("ASeeNOTAM ")) == p) {
+                //*ASeeNOTAM - Binary indicator 'See NOTAM': 'Yes' specifying that the zone can be activated by NOTAM
+                bool b = (_tcscmp(p+_tcslen(_T("ASeeNOTAM ")), _T("Yes")) == 0);
+                // TODO :
+#endif
+            }
+            continue;
+        }
+
+        // Strip comments from end of line
+        TCHAR* Comment = _tcschr(p, _T('*'));
         if (Comment != NULL) {
             *Comment = _T('\0'); // Truncate line
-            nSize = Comment - p; // Reset size
-            if (nSize < 3)
-                continue; // Ensure newline removal won't fail
         }
-        nSize = _tcslen(p);
-        if (nSize<=0) {
-           StartupStore(_T("**** CRITICAL, FillAirspacesFromOpenAir (1) nSize=%d%s"),nSize,NEWLINE);
-           continue;
-        }
-        if (p[nSize - 1] == _T('\n')) {
-           p[--nSize] = _T('\0');
-           if (nSize==0) {
-              StartupStore(_T("**** CRITICAL, FillAirspacesFromOpenAir (2) nSize=%d%s"),nSize,NEWLINE);
-              continue;
-           }
-        }
-        if (p[nSize - 1] == _T('\r')) {
-           p[--nSize] = _T('\0');
+        if (*p == 0) {  // always false, but do not remove in case of code change.
+            continue; // ignore empty string
         }
 
         //    StartupStore(TEXT(".  %s%s"),p,NEWLINE);
@@ -1713,7 +1765,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             }
                             if(newairspace) {
                               if (InsideMap) {
-                                newairspace->Init(Name, Type, Base, Top, flyzone, ASComment);
+                                newairspace->Init(Name, Type, Base, Top, flyzone, ASComment.c_str());
 
                                 { // Begin Lock
                                     ScopeLock guard(_csairspaces);
@@ -1761,11 +1813,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         	Name[0] = {0};
                             CopyTruncateString(Name, NAME_SIZE-1, p);
 
-                            ASComment[0] = {0};
-                            if( _tcslen(p) > 15)
-                            {
-                              CopyTruncateString(ASComment, LINE_LEN-1, p);
-                              ASComment[LINE_LEN - 1]= {0};
+                            ASComment = _T("");
+                            if( _tcslen(p) > 15) {
+                              ASComment += p;
                             }
                         }
                         break;
@@ -1986,7 +2036,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
         if(InsideMap)
         {
           if(newairspace) {
-            newairspace->Init(Name, Type, Base, Top, flyzone , ASComment   );
+            newairspace->Init(Name, Type, Base, Top, flyzone , ASComment.c_str());
             { // Begin Lock
               ScopeLock guard(_csairspaces);
               _airspaces.push_back(newairspace);
