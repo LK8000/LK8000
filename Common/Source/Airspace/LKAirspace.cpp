@@ -801,8 +801,6 @@ _radius(Airspace_Radius) {
         _geopoints.emplace_back(pt.latitude, pt.longitude);
     }
 
-    _screenpoints.reserve(_geopoints.size());
-    _screenpoints_clipped.reserve(_geopoints.size());
     AirspaceAGLLookup(Center_Latitude, Center_Longitude, &_base.Altitude, &_top.Altitude);
 }
 
@@ -907,6 +905,8 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
             const GeoToScreen<RasterPointList::value_type> ToScreen(_Proj);
 
             // no need clipping we can calc screen pos directly inside _screenpoints_clipped
+            _screenpoints_clipped.reserve(_geopoints.size());
+
             std::transform(
                     std::begin(_geopoints), std::end(_geopoints),
                     std::back_inserter(_screenpoints_clipped),
@@ -924,6 +924,8 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
             const GeoToScreen<ScreenPointList::value_type> ToScreen(_Proj);
 
             // clipping is need calc screen pos in temp array
+            _screenpoints.reserve(_geopoints.size());
+
             std::transform(
                     std::begin(_geopoints), std::end(_geopoints),
                     std::back_inserter(_screenpoints),
@@ -938,6 +940,8 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
 
             PixelRect MaxRect(rcDraw);
             MaxRect.Grow(300); // add space for inner airspace border, avoid artefact on screen border.
+
+            _screenpoints_clipped.reserve(_screenpoints.size());
 
             LKGeom::ClipPolygon(MaxRect, _screenpoints, _screenpoints_clipped);
         }
@@ -981,9 +985,6 @@ void CAirspace::Draw(LKSurface& Surface, bool fill) const {
 CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points) 
     : CAirspace(std::forward<CPoint2DArray>(Area_Points))
 {
-    _screenpoints.reserve(_geopoints.size());
-    _screenpoints_clipped.reserve(_geopoints.size());
-
     CalcBounds();
     AirspaceAGLLookup((_bounds.miny + _bounds.maxy) / 2.0, (_bounds.minx + _bounds.maxx) / 2.0, &_base.Altitude, &_top.Altitude);
 }
