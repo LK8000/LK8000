@@ -14,6 +14,8 @@ tstring to_tstring( const char* sz);
 
 tstring utf8_to_tstring(const char* sz);
 
+std::string to_utf8(const wchar_t* sz);
+
 #else
 typedef std::string tstring;
 
@@ -24,6 +26,11 @@ tstring to_tstring( const char* sz) {
 
 inline
 tstring utf8_to_tstring(const char* sz) {
+  return sz;
+}
+
+inline
+std::string to_utf8(const char* sz) {
   return sz;
 }
 
