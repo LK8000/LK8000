@@ -101,10 +101,10 @@ namespace {
             }
           }
         } else {
-          StartupStore(_T("language : %s <%s>"), szFilePath , to_tstring(lang_json.to_str().c_str()).c_str());
+          StartupStore(_T("language : %s <%s>"), szFilePath , to_tstring(lang_json.to_str()).c_str());
         }
       } else {
-        StartupStore(_T("language : %s"), to_tstring(error.c_str()).c_str());
+        StartupStore(_T("language : %s"), to_tstring(error).c_str());
       }
     }
   }

@@ -12,6 +12,12 @@ typedef std::wstring tstring;
 
 tstring to_tstring( const char* sz);
 
+inline
+tstring to_tstring(const std::string& str) {
+  return to_tstring(str.c_str());
+}
+
+
 tstring utf8_to_tstring(const char* sz);
 
 std::string to_utf8(const wchar_t* sz);
@@ -23,6 +29,12 @@ inline
 tstring to_tstring( const char* sz) {
   return sz;
 }
+
+inline
+const std::string& to_tstring(const std::string& str) {
+  return str;
+}
+
 
 inline
 tstring utf8_to_tstring(const char* sz) {
