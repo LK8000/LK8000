@@ -4,50 +4,6 @@ project(assembler C CXX ASM)
 
 include(ExternalProject)
 
-set(GEOGRAPHIC_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/GeographicLib)
-set(GEOGRAPHIC_INCLUDE ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}/include)
-set(GEOGRAPHIC_LIB ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}/lib/libGeographic.a)
-
-if (CMAKE_HOST_WIN32)
-    # WORKARROUND : GeographicLib build system use WIN32 system variable for detect if tools like chmod is available
-    # WIN32 is always false with NDK
-    set(GEOGRAPHIC_WIN32 -DWIN32:BOOL=ON)
-else ()
-    set(GEOGRAPHIC_WIN32 )
-endif ()
-
-ExternalProject_Add (
-    GeographicLib
-    URL https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.50.1.tar.gz
-    URL_HASH MD5=e73a703da71380bd6bfd2d6eab75e0a4
-    PREFIX ${GEOGRAPHIC_PREFIX}
-    BINARY_DIR ${GEOGRAPHIC_PREFIX}/build/${ANDROID_ABI}
-    INSTALL_DIR ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}
-    CMAKE_ARGS
-        "-DANDROID_STL=${ANDROID_STL}"
-        "-DANDROID_ABI=${ANDROID_ABI}"
-        "-DANDROID_NDK=${ANDROID_NDK}"
-        "-DANDROID_PLATFORM=${ANDROID_PLATFORM}"
-        "-DANDROID_ARM_NEON=${ANDROID_ARM_NEON}"
-        "-DCMAKE_INSTALL_PREFIX=${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}"
-        "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
-        "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-        "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
-        "-DGEOGRAPHICLIB_LIB_TYPE=STATIC"
-        ${GEOGRAPHIC_WIN32}
-)
-
-add_custom_command (
-    OUTPUT ${GEOGRAPHIC_LIB}
-    DEPENDS GeographicLib
-    VERBATIM
-)
-
-add_custom_target(
-    generate-GeographicLib
-    DEPENDS ${GEOGRAPHIC_LIB}
-)
-
 set(BOOST_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/boost)
 
 ExternalProject_Add (
@@ -804,6 +760,9 @@ set_source_files_properties (
      PROPERTIES OBJECT_DEPENDS "${data_files}"
 )
 
+add_dependencies(LK8000 boost)
+
+find_package (geographiclib REQUIRED CONFIG)
 
 target_include_directories( LK8000 PRIVATE
     Common/Header/linuxcompat
@@ -813,17 +772,12 @@ target_include_directories( LK8000 PRIVATE
     Common/Source/xcs
     ./
     ${BOOST_INCLUDE}
-    ${GEOGRAPHIC_INCLUDE}
 )
 
-add_dependencies(LK8000 generate-GeographicLib)
-add_dependencies(LK8000 boost)
-
-target_link_libraries(
-    LK8000
+target_link_libraries(LK8000 PRIVATE
     LK8000_POCO
     LK8000_GLUTESS
-    ${GEOGRAPHIC_LIB}
+	geographiclib::geographiclib
     android
     log
     z

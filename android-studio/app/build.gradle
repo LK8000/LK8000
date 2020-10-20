@@ -8,10 +8,14 @@ apply plugin: 'com.android.application'
 
 repositories {
     google()
+    maven {
+        url  "https://dl.bintray.com/brunotl/prefab-library"
+    }
 }
 
 android {
     compileSdkVersion 30
+    buildToolsVersion "30.0.2"
     ndkVersion "21.3.6528147"
 
     defaultConfig {
@@ -29,7 +33,7 @@ android {
         externalNativeBuild {
             cmake {
                 // Passes optional arguments to CMake.
-                arguments "-DANDROID_ARM_NEON=TRUE"
+                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_shared"
 
                 // Sets a flag to enable format macro constants for the C compiler.
                 cFlags "-D__STDC_FORMAT_MACROS"
@@ -38,6 +42,9 @@ android {
                 cppFlags "-fexceptions", "-frtti", "-std=c++17"
             }
         }
+    }
+    buildFeatures {
+        prefab true
     }
     sourceSets {
         main {
@@ -121,13 +128,15 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.core:core:1.3.1'
+    implementation 'androidx.core:core:1.3.2'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
     implementation 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'
     implementation 'com.github.felHR85:UsbSerial:6.1.0'
 
     implementation 'com.onyx.android.sdk:epdcontroller:0.1.0'
+
+    implementation 'com.karney.android.ndk:geographiclib:1.50.1'
 }
 
 clean() {
