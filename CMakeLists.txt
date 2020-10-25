@@ -4,23 +4,6 @@ project(assembler C CXX ASM)
 
 include(ExternalProject)
 
-set(BOOST_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/boost)
-
-ExternalProject_Add (
-    boost
-    URL https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.zip
-    URL_HASH SHA256=caf36d7c13b3d8ce62282a64a695113945a13b0f1796a45160726d04295f95ed
-    PREFIX ${BOOST_PREFIX}
-    UPDATE_COMMAND ""
-    PATCH_COMMAND ""
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-)
-
-ExternalProject_Get_Property(boost source_dir)
-set(BOOST_INCLUDE ${source_dir})
-
 set(GLM_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/glm)
 
 ExternalProject_Add (
@@ -812,11 +795,29 @@ set_source_files_properties (
      PROPERTIES OBJECT_DEPENDS "${data_files}"
 )
 
-add_dependencies(LK8000 boost)
 add_dependencies(LK8000 glm)
 
 find_package (geographiclib REQUIRED CONFIG)
 find_package(oboe REQUIRED CONFIG)
+
+find_package (boost_config REQUIRED CONFIG)
+find_package (boost_type_traits REQUIRED CONFIG)
+find_package (boost_preprocessor REQUIRED CONFIG)
+find_package (boost_core REQUIRED CONFIG)
+find_package (boost_io REQUIRED CONFIG)
+find_package (boost_assert REQUIRED CONFIG)
+find_package (boost_tuple REQUIRED CONFIG)
+find_package (boost_exception REQUIRED CONFIG)
+find_package (boost_throw_exception REQUIRED CONFIG)
+find_package (boost_integer REQUIRED CONFIG)
+find_package (boost_container_hash REQUIRED CONFIG)
+find_package (boost_utility REQUIRED CONFIG)
+find_package (boost_detail REQUIRED CONFIG)
+find_package (boost_static_assert REQUIRED CONFIG)
+find_package (boost_move REQUIRED CONFIG)
+find_package (boost_predef REQUIRED CONFIG)
+find_package (boost_intrusive REQUIRED CONFIG)
+find_package (boost_container REQUIRED CONFIG)
 
 target_include_directories( LK8000 PRIVATE
     Common/Header/linuxcompat
@@ -825,7 +826,6 @@ target_include_directories( LK8000 PRIVATE
     Common/Source
     Common/Source/xcs
     ./
-    ${BOOST_INCLUDE}
     ${GLM_INCLUDE}
 )
 
@@ -833,7 +833,25 @@ target_link_libraries(LK8000 PRIVATE
     LK8000_POCO
     LK8000_GLUTESS
 	geographiclib::geographiclib
-    oboe::oboe
+	oboe::oboe
+	boost_config::boost_config
+	boost_type_traits::boost_type_traits
+	boost_preprocessor::boost_preprocessor
+	boost_core::boost_core
+	boost_io::boost_io
+	boost_assert::boost_assert
+	boost_tuple::boost_tuple
+	boost_exception::boost_exception
+	boost_throw_exception::boost_throw_exception
+	boost_integer::boost_integer
+	boost_container_hash::boost_container_hash
+	boost_utility::boost_utility
+	boost_detail::boost_detail
+	boost_static_assert::boost_static_assert
+	boost_move::boost_move
+	boost_predef::boost_predef
+	boost_intrusive::boost_intrusive
+	boost_container::boost_container
     android
     log
     z
