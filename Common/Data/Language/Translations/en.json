@@ -345,7 +345,8 @@
     "_@H000947_": "[XC Triangle predicted distance]\nDistance to close the best scored contest triangle ( FAI or FREE ) in km\nThis data is available only if an additional XC Contest Engine is activate in System menu n 22",
     "_@H000948_": "[XC mean speed]\nCross country mean speed calculated on three turnpoints\nThis data is available only if an additional XC Contest Engine is activate in System menu n 22",
     "_@H000949_": "[Task Elapsed Time]\nElapsed time since task start",
-    "_@H000950_": "[QNH Arrival]\nDisplays the QNH arrival altitude (absolute altitude, not height above ground) at the Multitarget currently selected using current MC. As such doesn't include safety height and can be negative.",
+    "_@H000950_": "[QNH Arrival]\nDisplays the QNH arrival altitude (absolute altitude, not height above ground) at the Multitarget currently selected using current MC. As such doesn't include safety height and can be negative, or positive but below ground level.",
+    "_@H000951_": "[Atn1 QNH Arrival]\nDisplays the QNH arrival altitude (absolute altitude, not height above ground) at Alternate 1 using current MC. As such doesn't include safety height and can be negative, or positive but below ground level.",
     "_@H001200_": "[Airspace area filling]\nAirspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.\n[Outlines only] there will be only lines on airspace area borders\n[Pattern] airspace area will be filled with selected pattern of selected color\n[Pattern, borders only] airspace border area will be filled with selected pattern of selected color (warning, see below)\n[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) .\n[Semi-Transparent, borders only] airspace border area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) (warning, see below)\nTransparency may not be available on some hardware devices.\nDrawing airspace borders only can slow down devices with high screen resolution or slow processor. Use with caution!",
     "_@H001201_": "[Opacity of semi-transparent airspace]\nDefines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.",
     "_@H001202_": "[Bottom Bar Opacity]\nDefines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .\nNormally the bar is black with white text, and can be reverted to white with black text on it.\nSetting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.\nSome combinations of opacity and reverse colors may not be suitable to navigation, but there are\ninfinite combinations to choose from.\nUsing 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.\nAnother famous 8000 instrument is using 75% opacity.\nDefault is 60%.\nATTENTION: some devices do not support opacity control. In this case, opacity has no effect\nand the bottom bar will be always full black or full white.",
@@ -2564,5 +2565,7 @@
     "_@M002474_": "No Device found",
     "_@M002475_": "Wrong Block answer",
     "_@M002476_": "Multitarget Bearing Diff ",
-    "_@M002477_": "DiffMtg"  
+    "_@M002477_": "DiffMtg",
+    "_@M002478_": "Alternate1 QNH arrival",
+    "_@M002479_": "Atn1QNH"
 }
