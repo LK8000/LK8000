@@ -9,6 +9,7 @@
 #ifdef _UNICODE
 #include <tchar.h>
 typedef std::wstring tstring;
+typedef std::wstring_view tstring_view;
 
 tstring to_tstring( const char* sz);
 
@@ -24,6 +25,7 @@ std::string to_utf8(const wchar_t* sz);
 
 #else
 typedef std::string tstring;
+typedef std::string_view tstring_view;
 
 inline
 tstring to_tstring( const char* sz) {
