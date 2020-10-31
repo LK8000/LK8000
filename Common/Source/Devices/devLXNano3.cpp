@@ -2262,7 +2262,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
       szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW,
       (int) (WayPointList[overindex].Altitude +0.5));
 
-      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($PLXVTARG)"),std::size(szName) - _tcslen(szName));
 #ifdef TESTBENCH
      StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
@@ -2274,7 +2274,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
       _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
         szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
-      _tcsncat (szName, _T(" ($GPRMB)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
     }
 #ifdef TESTBENCH
     StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
@@ -2334,7 +2334,7 @@ double fTmp;
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($GPRMB)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($GPRMB)"), std::size(szTmp) - _tcslen(szTmp));
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;
@@ -2385,7 +2385,7 @@ double fTmp;
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($PLXVTARG)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($PLXVTARG)"), std::size(szTmp) - _tcslen(szTmp));
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;

@@ -2158,7 +2158,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
     );
     
  //   $LXDT,SET,NAVIGATE,0,MARIBOR,2788794,941165,267,1,119.200,14*2A<CR><LF>
-      _tcsncat (szName, _T(" ($LXDT,SET,NAVIGATE)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($LXDT,SET,NAVIGATE)"), std::size(szName) - _tcslen(szName));
 #ifdef TESTBENCH
      StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
@@ -2170,7 +2170,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
       _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
         szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
-      _tcsncat (szName, _T(" ($GPRMB)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
     }
    
 #ifdef TESTBENCH
@@ -2222,7 +2222,7 @@ double fTmp;
   
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($LXDT)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($LXDT)"), std::size(szTmp) - _tcslen(szTmp));
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;
@@ -2276,7 +2276,7 @@ double fTmp;
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($GPRMB)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($GPRMB)"), std::size(szTmp) - _tcslen(szTmp));
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;

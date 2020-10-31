@@ -627,6 +627,7 @@ CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
 CPPFLAGS	+= -Wredundant-decls
 CPPFLAGS	+= -Wall -Wno-char-subscripts -fsigned-char
 CPPFLAGS	+= -Wno-psabi
+CPPFLAGS	+= -Werror=stringop-overflow
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
 #CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor

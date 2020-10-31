@@ -417,9 +417,9 @@ IdenticalIndex = -1;
       _tcsncpy( wname,WayPointList[i].Name, EXT_NAMESIZE);
       if(_tcslen (WayPointList[i].Code) >1)
       {
-        _tcsncat( wname,_T(" (")             ,EXT_NAMESIZE);
-        _tcsncat( wname,WayPointList[i].Code ,EXT_NAMESIZE);
-        _tcsncat( wname,_T(")")              ,EXT_NAMESIZE);
+        _tcsncat( wname,_T(" (")             , std::size(wname) - _tcslen(wname));
+        _tcsncat( wname,WayPointList[i].Code , std::size(wname) - _tcslen(wname));
+        _tcsncat( wname,_T(")")              , std::size(wname) - _tcslen(wname));
       }
 
       NameLen =  _tcslen(wname);
