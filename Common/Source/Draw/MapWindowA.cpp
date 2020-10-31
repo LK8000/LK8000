@@ -16,7 +16,7 @@
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Scope.hpp"
-#include "utils/make_unique.h"
+#include <memory>
 #endif
 
 using std::placeholders::_1;

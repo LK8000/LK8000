@@ -88,7 +88,7 @@
 #include "Airspace/Sonar.h"
 #include <OS/RotateScreen.h>
 #include <dlgFlarmIGCDownload.h>
-#include "utils/make_unique.h"
+#include <memory>
 #include "Calc/Vario.h"
 
 #ifdef __linux__

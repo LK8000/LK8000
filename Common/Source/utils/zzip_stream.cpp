@@ -13,7 +13,7 @@
 
 #include <cstring>
 
-#include "utils/make_unique.h"
+#include <memory>
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
 #include "utils/array_back_insert_iterator.h"

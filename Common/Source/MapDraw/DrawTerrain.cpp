@@ -21,7 +21,7 @@
 #include "Asset.hpp"
 #include <utility>
 #include <type_traits>
-#include "../utils/make_unique.h"
+#include <memory>
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__))
  #if !GCC_OLDER_THAN(5,0)

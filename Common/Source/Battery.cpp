@@ -71,7 +71,7 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo) {
 #ifdef KOBO
 #include "OS/FileUtil.hpp"
 #include "Hardware/CPU.hpp"
-#include "utils/make_unique.h"
+#include <memory>
 
 std::unique_ptr<ScopeLockCPU> cpu;
 

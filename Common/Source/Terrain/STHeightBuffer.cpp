@@ -7,7 +7,7 @@
  */
 
 #include "STHeightBuffer.h"
-#include "utils/make_unique.h"
+#include <memory>
 
 CSTHeightBuffer::CSTHeightBuffer(size_t w, size_t h)
         : data(std::make_unique<int16_t[]>(w * h)),

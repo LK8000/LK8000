@@ -55,7 +55,7 @@ Copyright_License {
 #include "Util/UTF8.hpp"
 #endif
 
-#include "utils/make_unique.h"
+#include <memory>
 #include <assert.h>
 #include "utils/stl_utils.h"
 #include "utils/array_adaptor.h"

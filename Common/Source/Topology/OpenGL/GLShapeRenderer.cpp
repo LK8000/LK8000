@@ -12,7 +12,6 @@
 #include "GLShapeRenderer.h"
 
 #include <memory>
-#include "utils/make_unique.h"
 #include "utils/array_adaptor.h"
 
 #include "Screen/OpenGL/Scope.hpp"

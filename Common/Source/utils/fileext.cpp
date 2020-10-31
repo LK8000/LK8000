@@ -11,7 +11,7 @@
 #include "fileext.h"
 #include "stringext.h"
 
-#include "utils/make_unique.h"
+#include <memory>
 
 extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
 
