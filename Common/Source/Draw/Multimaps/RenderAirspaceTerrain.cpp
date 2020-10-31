@@ -297,7 +297,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 1].y = CalcHeightCoordinat(0, psDiag); //iBottom;
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 2] = apTerrainPolygon[0];
 
-    static_assert(array_size(apTerrainPolygon) >= AIRSPACE_SCANSIZE_X + 3, "wrong array size");
+    static_assert(std::size(apTerrainPolygon) >= AIRSPACE_SCANSIZE_X + 3, "wrong array size");
     Surface.Polygon(apTerrainPolygon, AIRSPACE_SCANSIZE_X + 3);
 
     Surface.SelectObject(oldPen);

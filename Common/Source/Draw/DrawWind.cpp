@@ -34,15 +34,15 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
       {-6,-26-wmag}, {0,-20-wmag},
       {0,-20}
   };  
-  PolygonRotateShift(ArrowL, array_size(ArrowL), Start.x, Start.y, angle);
-  PolygonRotateShift(ArrowR, array_size(ArrowR), Start.x, Start.y, angle);
+  PolygonRotateShift(ArrowL, std::size(ArrowL), Start.x, Start.y, angle);
+  PolygonRotateShift(ArrowR, std::size(ArrowR), Start.x, Start.y, angle);
 
   POINT Tail[] = {
       {0,-20}, 
       {0,-26-min(20,wmag)*3}
   };
 
-  PolygonRotateShift(Tail, array_size(Tail), Start.x, Start.y, angle);
+  PolygonRotateShift(Tail, std::size(Tail), Start.x, Start.y, angle);
   
   // optionally draw dashed line for wind arrow
 #ifdef NO_DASH_LINE
@@ -81,14 +81,14 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   const auto hpOld = Surface.SelectObject( LKPen_Black_N1);
 
   const auto hbOld = Surface.SelectObject(ArrowBrush);
-  Surface.Polygon(ArrowL,array_size(ArrowL));
+  Surface.Polygon(ArrowL,std::size(ArrowL));
 
   if(OverColorRef==RGB_SBLACK)
     Surface.SelectObject(LKBrush_White);
   else
     Surface.SelectObject(LKBrush_Black);
 
-  Surface.Polygon(ArrowR,array_size(ArrowR));
+  Surface.Polygon(ArrowR,std::size(ArrowR));
 
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);

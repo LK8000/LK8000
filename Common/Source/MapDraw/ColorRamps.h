@@ -48,7 +48,7 @@ const COLORRAMP terrain_shadow[] = {
     {63, {16, 32, 32}}  // Low Alps gray e-ink
 };
 
-static_assert(array_size(terrain_shadow) == NUMRAMPS, "invalid terrain_shadow");
+static_assert(std::size(terrain_shadow) == NUMRAMPS, "invalid terrain_shadow");
 
 const COLORRAMP terrain_highlight[] = {
     {255, {0, 0, 0}},
@@ -71,7 +71,7 @@ const COLORRAMP terrain_highlight[] = {
     {255, {0, 0, 0}}  // Low Alps gray e-ink
     };
 
-static_assert(array_size(terrain_highlight) == NUMRAMPS, "invalid terrain_highlight");
+static_assert(std::size(terrain_highlight) == NUMRAMPS, "invalid terrain_highlight");
 
 // LK Use shading for terrain modes
 const bool terrain_doshading[] = {
@@ -95,7 +95,7 @@ const bool terrain_doshading[] = {
     1  // Low Alps gray e-ink
 };
 
-static_assert(array_size(terrain_doshading) == NUMRAMPS, "invalid terrain_doshading");
+static_assert(std::size(terrain_doshading) == NUMRAMPS, "invalid terrain_doshading");
 
 // LK Use minimal altitude normalizer for terrain modes
 const bool terrain_minalt[NUMRAMPS] = {
@@ -119,7 +119,7 @@ const bool terrain_minalt[NUMRAMPS] = {
     1  // Low Alps gray e-ink
 };
 
-static_assert(array_size(terrain_minalt) == NUMRAMPS, "invalid terrain_minalt");
+static_assert(std::size(terrain_minalt) == NUMRAMPS, "invalid terrain_minalt");
 
 const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
     {
@@ -481,4 +481,4 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
     },
 };
 
-static_assert(array_size(terrain_colors) == NUMRAMPS, "invalid terrain_colors");
+static_assert(std::size(terrain_colors) == NUMRAMPS, "invalid terrain_colors");

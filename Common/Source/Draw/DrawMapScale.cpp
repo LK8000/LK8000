@@ -85,7 +85,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     Surface.FillRect(&ScaleLineBck[2], LKBrush_Black);
 
     const auto hpOld = Surface.SelectObject(LKPen_White_N0);
-    Surface.Polyline(ScaleLine, array_size(ScaleLine));
+    Surface.Polyline(ScaleLine, std::size(ScaleLine));
     Surface.SelectObject(hpOld);
 
     TCHAR Scale[200] = {};
@@ -233,7 +233,7 @@ _skip2:
     if (inpanmode) {
 
 	TCHAR sCoordinate[32]={0};
-	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, array_size(sCoordinate)-1);
+	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, std::size(sCoordinate)-1);
 	_tcscat(Scale, sCoordinate);
 	_tcscat(Scale, _T(" "));
     }

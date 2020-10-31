@@ -368,7 +368,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, unsigned resID) {
   FontMap[2] = MapWindowBoldFont;
   FontMap[3] = CDIWindowFont;
   FontMap[4] = CDIWindowFont;
-  static_assert(array_size(FontMap)>4, " invalide \"FontMap\" size");
+  static_assert(std::size(FontMap)>4, " invalide \"FontMap\" size");
 
   if (!xNode.isEmpty()){
     int X,Y,Width,Height,Popup,Font;

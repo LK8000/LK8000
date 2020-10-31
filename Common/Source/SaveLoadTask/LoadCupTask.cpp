@@ -732,7 +732,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
       // remove all quotations "
       const TCHAR* szSrc = szTaskStrings[TaskDrawListIndex];
-      size_t MaxSize = std::min(array_size(text), _tcslen(szSrc));
+      size_t MaxSize = std::min(std::size(text), _tcslen(szSrc));
       TCHAR* out_end = std::remove_copy_if(szSrc, std::next(szSrc, MaxSize),
               std::begin(text), [](TCHAR c) { return c == _T('"'); });
       (*out_end) = _T('\0');

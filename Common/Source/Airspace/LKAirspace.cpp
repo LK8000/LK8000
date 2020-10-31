@@ -826,7 +826,7 @@ void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const {
     md5.Update((const unsigned char*) &_center.longitude, sizeof (_center.longitude));
     md5.Update((const unsigned char*) &_radius, sizeof (_radius));
     md5.Final();
-    memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, array_size(md5.digestChars)));
+    memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, std::size(md5.digestChars)));
 }
 
 // Check if the given coordinate is inside the airspace
@@ -1019,7 +1019,7 @@ void CAirspace_Area::Hash(char *hashout, int maxbufsize) const {
         md5.Update((unsigned char*) &dtemp, sizeof (dtemp));
     }
     md5.Final();
-    memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, array_size(md5.digestChars)));
+    memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, std::size(md5.digestChars)));
 }
 
 ///////////////////////////////////////////////////
@@ -2512,7 +2512,7 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
         const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
         AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const {
 
-    const int iMaxNoAs = array_size(airspacetype);
+    const int iMaxNoAs = std::size(airspacetype);
 
     int iNoFoundAS = 0; // number of found airspaces in scan line
     unsigned int iSelAS = 0; // current selected airspace for processing

@@ -77,7 +77,7 @@ Text2Event[Text2Event_count++] = { TEXT("ModeType"), &eventModeType };
 Text2Event[Text2Event_count++] = { TEXT("ShowMultiselect"), &eventShowMultiselect };
 Text2Event[Text2Event_count++] = { TEXT("ChangeNettoVario"), &eventChangeNettoVario };
 Text2Event[Text2Event_count++] = { TEXT("Wifi"), &eventWifi };
-assert(Text2Event_count < array_size(Text2Event));
+assert(Text2Event_count < std::size(Text2Event));
 
 
 memset(Text2GCE, 0, sizeof(Text2GCE));
@@ -107,12 +107,12 @@ Text2GCE[GCE_COUNT] = TEXT("COUNT");
 // Check for missing item
 assert(std::find(std::begin(Text2GCE), std::end(Text2GCE), nullptr) == std::end(Text2GCE));
 // Check for array overrun
-static_assert(GCE_COUNT < array_size(Text2GCE), "invalid Text2GCE array size"); 
+static_assert(GCE_COUNT < std::size(Text2GCE), "invalid Text2GCE array size"); 
 
 
 Text2NE[NE_COUNT] = TEXT("COUNT");
 // Check for missing item
 assert(std::find(std::begin(Text2NE), std::end(Text2NE), nullptr) == std::end(Text2NE));
 // Check no array overrun
-static_assert(NE_COUNT < array_size(Text2NE), "invalid Text2NE array size");
+static_assert(NE_COUNT < std::size(Text2NE), "invalid Text2NE array size");
 

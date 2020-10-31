@@ -27,7 +27,7 @@ const char *const szRegistryDisplayType[] = {
         "Info12",
         "Info13"
 };
-static_assert(array_size(InfoType) == array_size(szRegistryDisplayType),
+static_assert(std::size(InfoType) == std::size(szRegistryDisplayType),
               "invalid array size");
 
 const char *const szRegistryColour[] = {
@@ -51,7 +51,7 @@ const char *const szRegistryColour[] = {
         "Colour17",
         "Colour18"
 };
-static_assert(array_size(MapWindow::iAirspaceColour) == array_size(szRegistryColour),
+static_assert(std::size(MapWindow::iAirspaceColour) == std::size(szRegistryColour),
               "invalid array size");
 
 
@@ -77,7 +77,7 @@ const char * const szRegistryBrush[] = {
         "Brush17",
         "Brush18"
 };
-static_assert(array_size(MapWindow::iAirspaceBrush) == array_size(szRegistryBrush),
+static_assert(std::size(MapWindow::iAirspaceBrush) == std::size(szRegistryBrush),
               "invalid array size");
 #endif
 
@@ -102,7 +102,7 @@ const char *const szRegistryAirspaceMode[] = {
         "AirspaceMode17",
         "AirspaceMode18"
 };
-static_assert(array_size(MapWindow::iAirspaceMode) == array_size(szRegistryAirspaceMode),
+static_assert(std::size(MapWindow::iAirspaceMode) == std::size(szRegistryAirspaceMode),
               "invalid array size");
 
 const char szRegistryAcknowledgementTime[] = "AcknowledgementTime1";
@@ -124,7 +124,7 @@ const char *const szRegistryAirspaceFile[] = {
         "AirspaceFile8",
         "AirspaceFile9"
 };
-static_assert(array_size(szAirspaceFile) == array_size(szRegistryAirspaceFile),
+static_assert(std::size(szAirspaceFile) == std::size(szRegistryAirspaceFile),
               "invalid array size");
 
 
@@ -382,7 +382,7 @@ const char *const szRegistryWayPointFile[] = {
         "WPFile8",
         "WPFile9"
 };
-static_assert(array_size(szWaypointFile) == array_size(szRegistryWayPointFile),
+static_assert(std::size(szWaypointFile) == std::size(szRegistryWayPointFile),
               "invalid array size");
 
 const char szRegistryWaypointsOutOfRange[] = "WaypointsOutOfRange2";

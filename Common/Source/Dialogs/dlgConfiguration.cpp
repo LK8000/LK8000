@@ -130,11 +130,11 @@ const ConfigPageNames_t ConfigPageNames[4][NUMOFCONFIGPAGES] = {
     },
 };
 
-static_assert(array_size(config_page) == array_size(ConfigPageNames), "invalid array size");
-static_assert(array_size(wConfig) == array_size(ConfigPageNames[0]), "invalid array size");
-static_assert(array_size(wConfig) == array_size(ConfigPageNames[1]), "invalid array size");
-static_assert(array_size(wConfig) == array_size(ConfigPageNames[2]), "invalid array size");
-static_assert(array_size(wConfig) == array_size(ConfigPageNames[2]), "invalid array size");
+static_assert(std::size(config_page) == std::size(ConfigPageNames), "invalid array size");
+static_assert(std::size(wConfig) == std::size(ConfigPageNames[0]), "invalid array size");
+static_assert(std::size(wConfig) == std::size(ConfigPageNames[1]), "invalid array size");
+static_assert(std::size(wConfig) == std::size(ConfigPageNames[2]), "invalid array size");
+static_assert(std::size(wConfig) == std::size(ConfigPageNames[2]), "invalid array size");
 
 
 static WndButton *buttonPilotName=NULL;
@@ -312,7 +312,7 @@ if(!pOwner) return;
 
 
 static void NextPage(int Step){
-    LKASSERT((size_t)configMode<array_size(config_page));
+    LKASSERT((size_t)configMode<std::size(config_page));
     config_page[configMode] += Step;
 
     if (configMode==CONFIGMODE_SYSTEM && !EngineeringMenu) { 
@@ -323,8 +323,8 @@ static void NextPage(int Step){
         if (config_page[configMode]<0) { config_page[configMode]=numPages-1; }
     }
 
-    LKASSERT((size_t)configMode < array_size(ConfigPageNames));
-    LKASSERT((size_t)config_page[configMode] < array_size(ConfigPageNames[0]));
+    LKASSERT((size_t)configMode < std::size(ConfigPageNames));
+    LKASSERT((size_t)config_page[configMode] < std::size(ConfigPageNames[0]));
     
     const ConfigPageNames_t* current = ConfigPageNames[configMode];
     const TCHAR* szCaption = LKGetText(current[config_page[configMode]].szCpation);
@@ -339,7 +339,7 @@ static void NextPage(int Step){
         buttonPaste->SetVisible(current[config_page[configMode]].CopyPaste);
     }
 
-    for (short i = 0; i < (short)array_size(wConfig); ++i) {
+    for (short i = 0; i < (short)std::size(wConfig); ++i) {
         if (wConfig[i]) {
             wConfig[i]->SetVisible(config_page[configMode] == i);
         }
@@ -351,7 +351,7 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
 
   // const TCHAR * DevicePropName[] = {_T("prpComPort1")};
   // check if all array have same size ( compil time check );
-  // static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
+  // static_assert(std::size(DeviceList) == std::size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
 
   if(!pOwner)
     return;
@@ -392,8 +392,8 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComIpAddr1"));
   if (wp) {
     if (_tcscmp(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString()) != 0) {
-      _tcsncpy(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString(), array_size(szIpAddress[SelectedDevice]));
-      szIpAddress[SelectedDevice][array_size(szIpAddress[SelectedDevice])-1] = _T('\0');
+      _tcsncpy(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString(), std::size(szIpAddress[SelectedDevice]));
+      szIpAddress[SelectedDevice][std::size(szIpAddress[SelectedDevice])-1] = _T('\0');
       COMPORTCHANGED = true;
     }
   }
@@ -1224,10 +1224,10 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
     /*
-    static_assert(array_size(DeviceList) == array_size(PortPropName[0]), "PortPropName array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(prpExtSound), "prpExtSound array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(prpIpAddr[0]), "prpIpAddr array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(prpIpPort[0]), "prpIpPort array size need to be same of DeviceList array size");
+    static_assert(std::size(DeviceList) == std::size(PortPropName[0]), "PortPropName array size need to be same of DeviceList array size");
+    static_assert(std::size(DeviceList) == std::size(prpExtSound), "prpExtSound array size need to be same of DeviceList array size");
+    static_assert(std::size(DeviceList) == std::size(prpIpAddr[0]), "prpIpAddr array size need to be same of DeviceList array size");
+    static_assert(std::size(DeviceList) == std::size(prpIpPort[0]), "prpIpPort array size need to be same of DeviceList array size");
 */
 #ifdef DISABLEEXTAUDIO    
     bool bManageExtAudio = false;
@@ -1721,8 +1721,8 @@ static void setVariables( WndForm *pOwner) {
       LPCTSTR DeviceName = devRegisterGetName(i);
       dfe->addEnumText(DeviceName);
 
-      static_assert(array_size(dwDeviceIndex) ==  array_size(dwDeviceName), "Invalid array size");
-      for (unsigned j=0; j< array_size(dwDeviceName); j++) {
+      static_assert(std::size(dwDeviceIndex) ==  std::size(dwDeviceName), "Invalid array size");
+      for (unsigned j=0; j< std::size(dwDeviceName); j++) {
         LPCTSTR DeviceName = devRegisterGetName(i);
         if (_tcscmp(DeviceName, dwDeviceName[j]) == 0) {
           dwDeviceIndex[j] = i;
@@ -3440,7 +3440,7 @@ void dlgConfigurationShowModal(short mode){
       { IDR_XML_CONFIGDEVICE_P }
   };
   
-  static_assert(array_size(dlgTemplate_L) == array_size(dlgTemplate_P), "check array size");
+  static_assert(std::size(dlgTemplate_L) == std::size(dlgTemplate_P), "check array size");
   
   StartHourglassCursor();
 
@@ -3448,7 +3448,7 @@ void dlgConfigurationShowModal(short mode){
     RefreshComPortList();
   }
 
-  if(configMode >= 0 && configMode < (int)array_size(dlgTemplate_L)) {
+  if(configMode >= 0 && configMode < (int)std::size(dlgTemplate_L)) {
     
     auto dlgTemplate = (ScreenLandscape ? dlgTemplate_L[configMode] : dlgTemplate_P[configMode]);
   
@@ -3479,7 +3479,7 @@ void dlgConfigurationShowModal(short mode){
 
   reset_wConfig();
 
-  for(size_t i = 0; i < array_size(ConfigPageNames[configMode]); i++) {
+  for(size_t i = 0; i < std::size(ConfigPageNames[configMode]); i++) {
       wConfig[i]    = (WndFrame *)wf->FindByName(ConfigPageNames[configMode][i].szName);
       numPages += wConfig[i]?1:0;
   }
@@ -4803,7 +4803,7 @@ void InitDlgDevice(WndForm *pWndForm) {
   const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES + 1))) / MAXNUMDEVICES;
   unsigned int lx = SPACEBORDER; // count from 0
 
-  static_assert(MAXNUMDEVICES == array_size(DeviceList), "wrong array size");
+  static_assert(MAXNUMDEVICES == std::size(DeviceList), "wrong array size");
 
   for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
     TCHAR szWndName[5];

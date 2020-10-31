@@ -44,11 +44,11 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   const decltype(Calculated->GlideFootPrint) GlideFootPrint_Test = {};
   
 #ifdef ENABLE_OPENGL
-  static_assert(array_size(GlideFootPrint_Test) == NUMTERRAINSWEEPS +2, "#GlideFootPrint invalid array size");
+  static_assert(std::size(GlideFootPrint_Test) == NUMTERRAINSWEEPS +2, "#GlideFootPrint invalid array size");
   // first point is current poisition
   *(out++) = (pointObj){Basic->Longitude,Basic->Latitude};
 #else
-  static_assert(array_size(GlideFootPrint_Test) == NUMTERRAINSWEEPS +1, "#GlideFootPrint invalid array size");
+  static_assert(std::size(GlideFootPrint_Test) == NUMTERRAINSWEEPS +1, "#GlideFootPrint invalid array size");
 #endif
   
   if(FinalGlideTerrain) {

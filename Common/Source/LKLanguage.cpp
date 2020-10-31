@@ -59,7 +59,7 @@ namespace {
       for (const auto &obj : lang_json.get<json::object>()) {
         // get the item index number
         const unsigned index = GetTextIndex(obj.first, 'M');
-        if (index < array_size(LKMessages)) {
+        if (index < std::size(LKMessages)) {
           if(!LKMessages[index]) {
             if(obj.second.is<std::string>()) {
               const tstring value = utf8_to_tstring(obj.second.get<std::string>().c_str());
@@ -172,7 +172,7 @@ tstring LKgethelptext(const TCHAR *TextIn) {
 // return TextIn if token is not valid
 const TCHAR *LKGetText(const TCHAR *TextIn) {
   const unsigned index = GetTextIndex(TextIn, 'M');
-  if (index < array_size(LKMessages) && LKMessages[index]) {
+  if (index < std::size(LKMessages) && LKMessages[index]) {
     return LKMessages[index];
   }
   return TextIn;
@@ -181,7 +181,7 @@ const TCHAR *LKGetText(const TCHAR *TextIn) {
 /// Direct token access, with range check, faster than LKGetText
 // return empty string if token is not found
 const TCHAR *MsgToken(unsigned index) {
-  if (index < array_size(LKMessages) && LKMessages[index]) {
+  if (index < std::size(LKMessages) && LKMessages[index]) {
     return LKMessages[index];
   }
   return _T("");

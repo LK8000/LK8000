@@ -199,13 +199,13 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   PREAD(sname,svalue,szRegistryAircraftCategory, &AircraftCategory);
-  PREAD(sname,svalue,szRegistryAircraftRego, &*AircraftRego_Config, array_size(AircraftRego_Config));
-  PREAD(sname,svalue,szRegistryAircraftType, &*AircraftType_Config, array_size(AircraftType_Config));
+  PREAD(sname,svalue,szRegistryAircraftRego, &*AircraftRego_Config, std::size(AircraftRego_Config));
+  PREAD(sname,svalue,szRegistryAircraftType, &*AircraftType_Config, std::size(AircraftType_Config));
   if (matchedstring) {
       return;
   }
 
-  PREAD(sname,svalue,szRegistryAirfieldFile, &*szAirfieldFile, array_size(szAirfieldFile));
+  PREAD(sname,svalue,szRegistryAirfieldFile, &*szAirfieldFile, std::size(szAirfieldFile));
   if (matchedstring) {
     RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szAirfieldFile);
     RemoveFilePathPrefix(_T(LKD_WAYPOINTS), szAirfieldFile);
@@ -214,7 +214,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   for(unsigned int i = 0; i < NO_AS_FILES; i++)
   {
-    PREAD(sname,svalue,szRegistryAirspaceFile[i], &*szAirspaceFile[i], array_size(szAirspaceFile[i]));
+    PREAD(sname,svalue,szRegistryAirspaceFile[i], &*szAirspaceFile[i], std::size(szAirspaceFile[i]));
     if (matchedstring) { // every 10 or so PREADs we check for quick return
       RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szAirspaceFile[i]);
       RemoveFilePathPrefix(_T(LKD_AIRSPACES), szAirspaceFile[i]);
@@ -331,8 +331,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   PREAD(sname,svalue,szRegistryClipAlt,&ClipAltitude);
-  PREAD(sname,svalue,szRegistryCompetitionClass,&*CompetitionClass_Config, array_size(CompetitionClass_Config));
-  PREAD(sname,svalue,szRegistryCompetitionID,&*CompetitionID_Config, array_size(CompetitionID_Config));
+  PREAD(sname,svalue,szRegistryCompetitionClass,&*CompetitionClass_Config, std::size(CompetitionClass_Config));
+  PREAD(sname,svalue,szRegistryCompetitionID,&*CompetitionID_Config, std::size(CompetitionID_Config));
   PREAD(sname,svalue,szRegistryConfBB0,&ConfBB0);
   PREAD(sname,svalue,szRegistryConfBB1,&ConfBB1);
   PREAD(sname,svalue,szRegistryConfBB2,&ConfBB2);
@@ -383,12 +383,12 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   PREAD(sname,svalue,szRegistryDebounceTimeout,&debounceTimeout);
   PREAD(sname,svalue,szRegistryDeclutterMode,&DeclutterMode);
-  PREAD(sname,svalue,szRegistryDeviceA,&dwDeviceName[0][0], array_size(dwDeviceName[0]));
-  PREAD(sname,svalue,szRegistryDeviceB,&dwDeviceName[1][0], array_size(dwDeviceName[1]));
-  PREAD(sname,svalue,szRegistryDeviceC,&dwDeviceName[2][0], array_size(dwDeviceName[2]));
-  PREAD(sname,svalue,szRegistryDeviceD,&dwDeviceName[3][0], array_size(dwDeviceName[3]));
-  PREAD(sname,svalue,szRegistryDeviceE,&dwDeviceName[4][0], array_size(dwDeviceName[4]));
-  PREAD(sname,svalue,szRegistryDeviceF,&dwDeviceName[5][0], array_size(dwDeviceName[5]));
+  PREAD(sname,svalue,szRegistryDeviceA,&dwDeviceName[0][0], std::size(dwDeviceName[0]));
+  PREAD(sname,svalue,szRegistryDeviceB,&dwDeviceName[1][0], std::size(dwDeviceName[1]));
+  PREAD(sname,svalue,szRegistryDeviceC,&dwDeviceName[2][0], std::size(dwDeviceName[2]));
+  PREAD(sname,svalue,szRegistryDeviceD,&dwDeviceName[3][0], std::size(dwDeviceName[3]));
+  PREAD(sname,svalue,szRegistryDeviceE,&dwDeviceName[4][0], std::size(dwDeviceName[4]));
+  PREAD(sname,svalue,szRegistryDeviceF,&dwDeviceName[5][0], std::size(dwDeviceName[5]));
   PREAD(sname,svalue,szRegistryDisableAutoLogger,&DisableAutoLogger);
   PREAD(sname,svalue,szRegistryLiveTrackerInterval,&LiveTrackerInterval);
   PREAD(sname,svalue,szRegistryLiveTrackerRadar_config,&LiveTrackerRadar_config);
@@ -434,7 +434,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
   if (matchedstring) return;
 
-  PREAD(sname,svalue,szRegistryInputFile,&*szInputFile, array_size(szInputFile));
+  PREAD(sname,svalue,szRegistryInputFile,&*szInputFile, std::size(szInputFile));
   if (matchedstring) { // every 10 or so PREADs we check for quick return
     RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szInputFile);
     RemoveFilePathPrefix(_T(LKD_CONF), szInputFile);
@@ -473,7 +473,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryLKVarioBar,&LKVarioBar);
   PREAD(sname,svalue,szRegistryLKVarioVal,&LKVarioVal);
   if (matchedstring) return;
-  PREAD(sname,svalue,szRegistryLanguageCode,&*szLanguageCode, array_size(szLanguageCode));
+  PREAD(sname,svalue,szRegistryLanguageCode,&*szLanguageCode, std::size(szLanguageCode));
   if (matchedstring) {
     return;
   }
@@ -492,7 +492,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
     return;
   }
   
-  PREAD(sname,svalue,szRegistryMapFile,&*szMapFile, array_size(szMapFile));
+  PREAD(sname,svalue,szRegistryMapFile,&*szMapFile, std::size(szMapFile));
   if (matchedstring) {
     RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szMapFile);
     RemoveFilePathPrefix(_T(LKD_MAPS), szMapFile);
@@ -523,14 +523,14 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
 
  // PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);
-  PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config, array_size(PilotName_Config));
-  PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config, array_size(LiveTrackersrv_Config));
+  PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config, std::size(PilotName_Config));
+  PREAD(sname,svalue,szRegistryLiveTrackersrv,&*LiveTrackersrv_Config, std::size(LiveTrackersrv_Config));
   PREAD(sname,svalue,szRegistryLiveTrackerport,&LiveTrackerport_Config);
-  PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config, array_size(LiveTrackerusr_Config));
-  PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config, array_size(LiveTrackerpwd_Config));
+  PREAD(sname,svalue,szRegistryLiveTrackerusr,&*LiveTrackerusr_Config, std::size(LiveTrackerusr_Config));
+  PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config, std::size(LiveTrackerpwd_Config));
   if (matchedstring) return;
 
-  PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile, array_size(szPolarFile));
+  PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile, std::size(szPolarFile));
   if (matchedstring) {
     RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szPolarFile);
     RemoveFilePathPrefix(_T(LKD_POLARS), szPolarFile);
@@ -573,19 +573,19 @@ void LKParseProfileString(const char *sname, const char *svalue) {
         return;
     }
   /***************************************************/
-  PREAD(sname,svalue,szRegistryPort1Name ,szPort[0]     , array_size(szPort[0])     );
-  PREAD(sname,svalue,szRegistryPort2Name ,szPort[1]     , array_size(szPort[1])     );
-  PREAD(sname,svalue,szRegistryPort3Name ,szPort[2]     , array_size(szPort[2])     );
-  PREAD(sname,svalue,szRegistryPort4Name ,szPort[3]     , array_size(szPort[3])     );
-  PREAD(sname,svalue,szRegistryPort5Name ,szPort[4]     , array_size(szPort[4])     );
-  PREAD(sname,svalue,szRegistryPort6Name ,szPort[5]     , array_size(szPort[5])     );
+  PREAD(sname,svalue,szRegistryPort1Name ,szPort[0]     , std::size(szPort[0])     );
+  PREAD(sname,svalue,szRegistryPort2Name ,szPort[1]     , std::size(szPort[1])     );
+  PREAD(sname,svalue,szRegistryPort3Name ,szPort[2]     , std::size(szPort[2])     );
+  PREAD(sname,svalue,szRegistryPort4Name ,szPort[3]     , std::size(szPort[3])     );
+  PREAD(sname,svalue,szRegistryPort5Name ,szPort[4]     , std::size(szPort[4])     );
+  PREAD(sname,svalue,szRegistryPort6Name ,szPort[5]     , std::size(szPort[5])     );
 
-  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress[0], array_size(szIpAddress[0]));
-  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress[1], array_size(szIpAddress[1]));
-  PREAD(sname,svalue,szRegistryIpAddress3,szIpAddress[2], array_size(szIpAddress[2]));
-  PREAD(sname,svalue,szRegistryIpAddress4,szIpAddress[3], array_size(szIpAddress[3]));
-  PREAD(sname,svalue,szRegistryIpAddress5,szIpAddress[4], array_size(szIpAddress[4]));
-  PREAD(sname,svalue,szRegistryIpAddress6,szIpAddress[5], array_size(szIpAddress[5]));
+  PREAD(sname,svalue,szRegistryIpAddress1,szIpAddress[0], std::size(szIpAddress[0]));
+  PREAD(sname,svalue,szRegistryIpAddress2,szIpAddress[1], std::size(szIpAddress[1]));
+  PREAD(sname,svalue,szRegistryIpAddress3,szIpAddress[2], std::size(szIpAddress[2]));
+  PREAD(sname,svalue,szRegistryIpAddress4,szIpAddress[3], std::size(szIpAddress[3]));
+  PREAD(sname,svalue,szRegistryIpAddress5,szIpAddress[4], std::size(szIpAddress[4]));
+  PREAD(sname,svalue,szRegistryIpAddress6,szIpAddress[5], std::size(szIpAddress[5]));
 
   PREAD(sname,svalue,szRegistryIpPort1,&dwIpPort[0]);
   PREAD(sname,svalue,szRegistryIpPort2,&dwIpPort[1]);
@@ -706,7 +706,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (matchedstring) {
     return;
   }
-  PREAD(sname,svalue,szRegistryTerrainFile,szTerrainFile, array_size(szTerrainFile));
+  PREAD(sname,svalue,szRegistryTerrainFile,szTerrainFile, std::size(szTerrainFile));
   if (matchedstring) {
     RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szTerrainFile);
     RemoveFilePathPrefix(_T(LKD_MAPS), szTerrainFile);
@@ -749,7 +749,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   for(unsigned int i = 0; i < NO_WP_FILES; i++)
   {
-    PREAD(sname,svalue,szRegistryWayPointFile[i],szWaypointFile[i], array_size(szWaypointFile[i]));
+    PREAD(sname,svalue,szRegistryWayPointFile[i],szWaypointFile[i], std::size(szWaypointFile[i]));
     if (matchedstring) {
       RemoveFilePathPrefix(_T("%LOCAL_PATH%"), szWaypointFile[i]);
       RemoveFilePathPrefix(_T(LKD_WAYPOINTS), szWaypointFile[i]);

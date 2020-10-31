@@ -1042,10 +1042,10 @@ void AdditionalHeaders(void) {
 
 
     char tmpString[MAXHLINE + 1];
-    char tmps[MAXHLINE + 1 + array_size(HFREMARK)];
+    char tmps[MAXHLINE + 1 + std::size(HFREMARK)];
     tmpString[MAXHLINE] = '\0';
 
-    while(size_t nbRead = fread(tmpString, sizeof(tmpString[0]), array_size(tmpString) - 1U, stream)) {
+    while(size_t nbRead = fread(tmpString, sizeof(tmpString[0]), std::size(tmpString) - 1U, stream)) {
         tmpString[nbRead] = '\0';
         char* pTmp = strpbrk(tmpString, "\r\n");
         while(pTmp && (((*pTmp) == '\r') || ((*pTmp) == '\n'))) {

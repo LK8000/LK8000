@@ -973,13 +973,13 @@ void VLAPI_DATA::DECLARATION::get(DBB *dbb) {
   char plt3[17] = {};
   char plt4[17] = {};
   if ((p = dbb->fdf_findfield(FLDPLT1))>=0)
-    strncpy(plt1,(char*)(dbb->fdf+p+2), array_size(plt1) - 1);
+    strncpy(plt1,(char*)(dbb->fdf+p+2), std::size(plt1) - 1);
   if ((p = dbb->fdf_findfield(FLDPLT2))>=0)
-    strncpy(plt2,(char*)(dbb->fdf+p+2), array_size(plt2) - 1);
+    strncpy(plt2,(char*)(dbb->fdf+p+2), std::size(plt2) - 1);
   if ((p = dbb->fdf_findfield(FLDPLT3))>=0)
-    strncpy(plt3,(char*)(dbb->fdf+p+2), array_size(plt3) - 1);
+    strncpy(plt3,(char*)(dbb->fdf+p+2), std::size(plt3) - 1);
   if ((p = dbb->fdf_findfield(FLDPLT4))>=0)
-    strncpy(plt4,(char*)(dbb->fdf+p+2), array_size(plt4) - 1);
+    strncpy(plt4,(char*)(dbb->fdf+p+2), std::size(plt4) - 1);
 
   flightinfo.pilot[0] = 0;
   strcat(flightinfo.pilot,plt1);
@@ -987,13 +987,13 @@ void VLAPI_DATA::DECLARATION::get(DBB *dbb) {
   strcat(flightinfo.pilot,plt3);
   strcat(flightinfo.pilot,plt4);
   if ((p = dbb->fdf_findfield(FLDGTY))>=0)
-    strncpy(flightinfo.glidertype,(char*)(dbb->fdf+p+2), array_size(flightinfo.glidertype) - 1);
+    strncpy(flightinfo.glidertype,(char*)(dbb->fdf+p+2), std::size(flightinfo.glidertype) - 1);
   if ((p = dbb->fdf_findfield(FLDGID))>=0)
-    strncpy(flightinfo.gliderid,(char*)(dbb->fdf+p+2), array_size(flightinfo.gliderid) - 1);
+    strncpy(flightinfo.gliderid,(char*)(dbb->fdf+p+2), std::size(flightinfo.gliderid) - 1);
   if ((p = dbb->fdf_findfield(FLDCCL))>=0)
-    strncpy(flightinfo.competitionclass,(char*)(dbb->fdf+p+2), array_size(flightinfo.competitionclass) - 1);
+    strncpy(flightinfo.competitionclass,(char*)(dbb->fdf+p+2), std::size(flightinfo.competitionclass) - 1);
   if ((p = dbb->fdf_findfield(FLDCID))>=0)
-    strncpy(flightinfo.competitionid,(char*)(dbb->fdf+p+2), array_size(flightinfo.competitionid) - 1);
+    strncpy(flightinfo.competitionid,(char*)(dbb->fdf+p+2), std::size(flightinfo.competitionid) - 1);
   if ((p = dbb->fdf_findfield(FLDTKF))>=0)
     flightinfo.homepoint.get((byte *)(dbb->fdf+p+2));
 

@@ -26,7 +26,7 @@ void ReadWayPoints(void)
     InitVirtualWaypoints();	// 091103
 
     globalFileNum = 0;
-    static_assert(array_size(szWaypointFile) == array_size(WpFileType), "invalid array size");
+    static_assert(std::size(szWaypointFile) == std::size(WpFileType), "invalid array size");
 
     for( TCHAR* szFile : szWaypointFile) {
 

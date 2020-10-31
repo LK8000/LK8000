@@ -204,7 +204,7 @@ extern DeviceDescriptor_t *pDevSecondaryBaroSource;
 
 inline 
 PDeviceDescriptor_t devX(unsigned idx) {
-	if(idx < array_size(DeviceList)) {
+	if(idx < std::size(DeviceList)) {
 		return &DeviceList[idx];
 	}
 	return nullptr;

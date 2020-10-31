@@ -1294,7 +1294,7 @@ m_bTriggered = true;
   /*
    * TCHAR szTmp[MAX_NMEA_LEN];
   _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
-  _sntprintf(m_Filename, array_size(m_Filename), _T("%s"),Filename);
+  _sntprintf(m_Filename, std::size(m_Filename), _T("%s"),Filename);
   SendNmea(Device(), szTmp);
   StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
   IGCDownload(true);

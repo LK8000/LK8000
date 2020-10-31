@@ -524,7 +524,7 @@ const TCHAR *AngleToWindRose(int angle) {
    * tricks : for avoid rounding error with fixed point calculation, we use 360*4 for full circle instead of 360
    *   like that, slot_size = 90 instead of 22.5 and slot_offset = 45 instead of 11.25
    */  
-  constexpr unsigned slot_size = 360 * 4 / array_size(windrose); // 22.5° for each sector
+  constexpr unsigned slot_size = 360 * 4 / std::size(windrose); // 22.5° for each sector
   constexpr unsigned slot_offset = slot_size / 2; // 11.25° offset 
   
   const unsigned index = ((angle * 4 + slot_offset) / slot_size) & 0x000F;

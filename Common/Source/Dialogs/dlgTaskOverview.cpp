@@ -470,7 +470,7 @@ static void OnSaveClicked(WndButton* pWnd){
   if (file_index>0) {
 	// file already exists! ask if want to overwrite
         TCHAR sTmp[500];
-	_sntprintf(sTmp, array_size(sTmp), TEXT("%s: '%s'"),
+	_sntprintf(sTmp, std::size(sTmp), TEXT("%s: '%s'"),
 	// LKTOKEN  _@M696_ = "Task file already exists"
 		MsgToken(696),
 		dfe->GetAsString());

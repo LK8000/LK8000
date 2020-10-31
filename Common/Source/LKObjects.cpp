@@ -135,12 +135,12 @@ void LKObjects_Create() {
 
   SnailTrail_Create();
 
-  for (unsigned i=0; i<array_size(MapWindow::hAirspaceBrushes); ++i) {
+  for (unsigned i=0; i<std::size(MapWindow::hAirspaceBrushes); ++i) {
 #ifdef HAVE_HATCHED_BRUSH
-      static_assert(array_size(MapWindow::hAirspaceBrushes) == array_size(hAirspaceBitmap), "Array Size error");
+      static_assert(std::size(MapWindow::hAirspaceBrushes) == std::size(hAirspaceBitmap), "Array Size error");
       MapWindow::hAirspaceBrushes[i].Create(hAirspaceBitmap[i]);
 #else
-      static_assert(array_size(MapWindow::hAirspaceBrushes) == array_size(MapWindow::Colours), "Array Size error");
+      static_assert(std::size(MapWindow::hAirspaceBrushes) == std::size(MapWindow::Colours), "Array Size error");
       MapWindow::hAirspaceBrushes[i].Create(MapWindow::Colours[i].WithAlpha(0xFF/2));
 #endif
   }

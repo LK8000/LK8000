@@ -76,7 +76,7 @@ bool ParseCOMPEWayPointString(const TCHAR *String, WAYPOINT *Temp) {
 
   // Name starts at position 3 or 4, index 2 or 3 . Search for space at the end
   // of name (<=)
-  auto out = array_back_inserter(tName, array_size(tName) - 1); // size - 1 to let placeholder for '\0'
+  auto out = array_back_inserter(tName, std::size(tName) - 1); // size - 1 to let placeholder for '\0'
   unsigned i = startpoint;
   while(String[i] != _T(' ') && String[i] != _T('\0')) {
     out = String[i++];

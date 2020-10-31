@@ -223,9 +223,9 @@ namespace {
 				 int AltArivalAGL, bool inTask, bool isLandable, 
 				 bool isThermal,  int index, short style){
 
-		static_assert(array_size(MapWaypointLabelList->Name) >= size, "possible buffer overflow" );
+		static_assert(std::size(MapWaypointLabelList->Name) >= size, "possible buffer overflow" );
 
-		if (MapWaypointLabelListCount >= array_size(MapWaypointLabelList)-1) return;
+		if (MapWaypointLabelListCount >= std::size(MapWaypointLabelList)-1) return;
 
 		MapWaypointLabel_t* E = &MapWaypointLabelList[MapWaypointLabelListCount];
 
@@ -523,7 +523,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			} else if (DisplayTextType == DISPLAYNUMBER) {
 				_stprintf(Buffer2, _T("%d"),tp.Number);
 			} else if(intask || (DisplayTextType != DISPLAYNAMEIFINTASK)) {
-				CopyTruncateString(Buffer2, array_size(Buffer2), tp.Name, label_resizer[DisplayTextType]);
+				CopyTruncateString(Buffer2, std::size(Buffer2), tp.Name, label_resizer[DisplayTextType]);
 			}
 
 			if (draw_alt) {

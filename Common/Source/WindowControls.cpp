@@ -1105,7 +1105,7 @@ const TCHAR *DataFieldString::GetAsString(void){
 }
 
 bool DataFieldString::CreateKeyboard(void){
-	dlgTextEntryShowModal(mValue,array_size(mValue));
+	dlgTextEntryShowModal(mValue,std::size(mValue));
 	return true;
 }
 

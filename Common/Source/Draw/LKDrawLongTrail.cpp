@@ -20,7 +20,7 @@ typedef RasterPoint ScreenPoint;
 #endif
 
 void MapWindow::LKDrawLongTrail( LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
-    static ScreenPoint snail_polyline[array_size(LongSnailTrail)+1]; // +1 for last point of "normal" snail trail
+    static ScreenPoint snail_polyline[std::size(LongSnailTrail)+1]; // +1 for last point of "normal" snail trail
 
     if (TrailActive != 3) return; // only when full trail is selected
     if (iLongSnailNext < 2) return; // no reason to draw a single point

@@ -76,7 +76,7 @@ namespace DlgIgcFile {
                     }
                     for(size_t i = 0; i < nDevice; ++i) {
                         TCHAR szDeviceName[100] = {0};
-                        if(!Obex.GetDeviceName(i, szDeviceName, array_size(szDeviceName))) {
+                        if(!Obex.GetDeviceName(i, szDeviceName, std::size(szDeviceName))) {
                             _stprintf(szDeviceName, _T("%s <%d>"), MsgToken(1538), i); // Unknown device
                         }
                         StartupStore(_T("GetDeviceName <%d><%s> \n"), i, szDeviceName);

@@ -11,11 +11,6 @@
 #include <cstddef>
 #include <algorithm>
 
-template<typename T, size_t N>
-constexpr size_t array_size(T (&array)[N])  {
-	return N;
-}
-
 struct safe_delete {
 	template <typename T>
 	void operator()(T*& p) {

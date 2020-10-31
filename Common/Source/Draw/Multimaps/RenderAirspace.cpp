@@ -93,7 +93,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
     unsigned short getsideviewpage = GetSideviewPage();
     LKASSERT(getsideviewpage < NO_SIDEVIEW_PAGES);
-    static_assert(array_size(fZOOMScale) == NUMBER_OF_SHARED_MULTIMAPS, "wrong array size");
+    static_assert(std::size(fZOOMScale) == NUMBER_OF_SHARED_MULTIMAPS, "wrong array size");
 
     if (Current_Multimap_SizeY != *iSplit) {
         Current_Multimap_SizeY = *iSplit;

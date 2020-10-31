@@ -731,7 +731,7 @@ void devCloseAll() {
 
 PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port){
 
-  if(Port < array_size(DeviceList)) {
+  if(Port < std::size(DeviceList)) {
     return &DeviceList[Port];
   }
   return nullptr;

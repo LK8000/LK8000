@@ -58,10 +58,10 @@ void StartupStore(const TCHAR *Str, ...)
 
   va_list ap;
   va_start(ap, Str);
-  _vsntprintf(buf, array_size(buf), Str, ap);
+  _vsntprintf(buf, std::size(buf), Str, ap);
   va_end(ap);
 
-  buf[array_size(buf) -1] = _T('\0'); // grant string is null terminated.
+  buf[std::size(buf) -1] = _T('\0'); // grant string is null terminated.
 
   TrimRight(buf);
 

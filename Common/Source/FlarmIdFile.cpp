@@ -102,7 +102,7 @@ void FlarmIdFile::GetAsString(FILE* hFile, int charCount, TCHAR *res)
   fread(bytes, 1, bytesToRead, (FILE*)hFile);
 
   TCHAR *curChar = res;
-  for (unsigned z = 0; z < bytesToRead && (z+1) < array_size(bytes) ; z += 2)
+  for (unsigned z = 0; z < bytesToRead && (z+1) < std::size(bytes) ; z += 2)
     {
       char tmp[3];
       tmp[0] = bytes[z];

@@ -655,8 +655,8 @@ static int GetUserIDFromServer() {
 static bool SendStartOfTrackPacket(unsigned int *packet_id,
 		unsigned int *session_id, int userid) {
 
-	char username[array_size(LiveTrackerusr_Config)]; 
-	char password[array_size(LiveTrackerpwd_Config)];
+	char username[std::size(LiveTrackerusr_Config)]; 
+	char password[std::size(LiveTrackerpwd_Config)];
 
 	char txbuf[500];
 	char rxbuf[32];
@@ -688,31 +688,31 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	// 64=>"Powered flight"
 	// 17100=>"Car"
 	if (_tcslen(LiveTrackerusr_Config) > 0) {
-		TCHAR2ascii(LiveTrackerusr_Config, txbuf, array_size(txbuf));
+		TCHAR2ascii(LiveTrackerusr_Config, txbuf, std::size(txbuf));
 	} else {
-		strncpy(txbuf, "guest", array_size(txbuf));
+		strncpy(txbuf, "guest", std::size(txbuf));
 	}
-	UrlEncode(txbuf, username, array_size(username));
+	UrlEncode(txbuf, username, std::size(username));
 	if (_tcslen(LiveTrackerpwd_Config) > 0) {
 		TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
 	} else {
-		strncpy(txbuf, "guest", array_size(txbuf));
+		strncpy(txbuf, "guest", std::size(txbuf));
 	}
-	UrlEncode(txbuf, password, array_size(password));
+	UrlEncode(txbuf, password, std::size(password));
 #ifdef PNA
-	TCHAR2ascii(GlobalModelName, txbuf, array_size(txbuf));
-	UrlEncode(txbuf, phone, array_size(phone));
+	TCHAR2ascii(GlobalModelName, txbuf, std::size(txbuf));
+	UrlEncode(txbuf, phone, std::size(phone));
 #else
 #if (WINDOWSPC>0)
-	UrlEncode("PC", phone, array_size(phone));
+	UrlEncode("PC", phone, std::size(phone));
 #else
-	UrlEncode("PDA", phone, array_size(phone));
+	UrlEncode("PDA", phone, std::size(phone));
 #endif
 #endif
 	if (SIMMODE)
-		UrlEncode("SIMULATED", gps, array_size(gps));
+		UrlEncode("SIMULATED", gps, std::size(gps));
 	else
-		UrlEncode("GENERIC", gps, array_size(gps));
+		UrlEncode("GENERIC", gps, std::size(gps));
 	/*
 	 What is this for?
 	 else {
@@ -722,8 +722,8 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	 }
 	 */
 
-	TCHAR2ascii(AircraftType_Config, txbuf, array_size(txbuf));
-	UrlEncode(txbuf, vehicle_name, array_size(vehicle_name));
+	TCHAR2ascii(AircraftType_Config, txbuf, std::size(txbuf));
+	UrlEncode(txbuf, vehicle_name, std::size(vehicle_name));
 	vehicle_type = 8;
 	if (AircraftCategory == umParaglider)
 		vehicle_type = 1;
@@ -1469,7 +1469,7 @@ static int GetUserIDFromServer2() {
 	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, txbuf, rxcontent,
 			sizeof(rxcontent));
 	if (rxlen > 0) {
-		rxcontent[std::min<unsigned>(rxlen, array_size(rxcontent)-1)] = 0;
+		rxcontent[std::min<unsigned>(rxlen, std::size(rxcontent)-1)] = 0;
 
 		std::vector<std::string> strings;
 
@@ -1638,7 +1638,7 @@ static bool SendGPSPointPacket2(unsigned int *packet_id) {
 	const std::string command = stringStream.str();
 	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, command.c_str(), rxbuf, sizeof(rxbuf));
 	if (rxlen > 0) {
-		rxbuf[std::min<unsigned>(rxlen, array_size(rxbuf)-1)] = 0;
+		rxbuf[std::min<unsigned>(rxlen, std::size(rxbuf)-1)] = 0;
 
 		std::vector<std::string> strings;
 

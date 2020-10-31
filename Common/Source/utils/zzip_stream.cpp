@@ -70,7 +70,7 @@ int zzip_stream::underflow() {
   assert(gptr() == egptr());
 
   // read next chunk
-  zzip_ssize_t read_size = zzip_read(_fp, _buffer, array_size(_buffer));
+  zzip_ssize_t read_size = zzip_read(_fp, _buffer, std::size(_buffer));
   if (read_size <= 0) {
     return traits_type::eof();
   } else {

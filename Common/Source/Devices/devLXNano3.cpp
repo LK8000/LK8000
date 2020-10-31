@@ -1299,7 +1299,7 @@ LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
   // SendNmea(Device(), _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
   StartupStore(_T(" ******* NANO3  IGC Download START ***** %s") , NEWLINE);
   _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
-  _sntprintf(m_Filename, array_size(m_Filename), _T("%s"),Filename);
+  _sntprintf(m_Filename, std::size(m_Filename), _T("%s"),Filename);
   SendNmea(Device(), szTmp);
   StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
   IGCDownload(true);
@@ -2078,7 +2078,7 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       if(Values(d))
       {
         TCHAR szTmp[20];
-        _sntprintf(szTmp, array_size(szTmp), _T("%3.0f%% ($PLXV0)"),fTmp);
+        _sntprintf(szTmp, std::size(szTmp), _T("%3.0f%% ($PLXV0)"),fTmp);
         SetDataText(_BUGS,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BUGDir))

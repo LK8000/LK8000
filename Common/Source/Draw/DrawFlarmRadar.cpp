@@ -686,7 +686,7 @@ static double oldSplit = 0;
 
 
 
-#define NUMAIRCRAFTPTS (array_size(AircraftTop))
+#define NUMAIRCRAFTPTS (std::size(AircraftTop))
 POINT AircraftTop[] = {
   { 1,-6},
   {2,-1},

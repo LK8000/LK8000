@@ -161,7 +161,7 @@ Topology::Topology(const TCHAR* shpname) {
   in_scale = false;
 
   // filename aleady points to _MAPS subdirectory!
-  TCHAR2utf(shpname, filename, array_size(filename));
+  TCHAR2utf(shpname, filename, std::size(filename));
 
   Open();
 }

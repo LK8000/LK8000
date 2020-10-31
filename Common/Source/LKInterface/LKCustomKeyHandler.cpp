@@ -563,5 +563,5 @@ CustomKeyLabel[65]=2395;        // Device E Config
 CustomKeyLabel[66]=2396;        // Device F Config
 CustomKeyLabel[67]=2307;        // Radio Settings _@M2307_ "Radio Settings"
 
-static_assert(67 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
+static_assert(67 < std::size(CustomKeyLabel), "invalid CustomKeyLabel array size");
 }

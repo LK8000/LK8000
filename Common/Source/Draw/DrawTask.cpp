@@ -115,7 +115,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
                 for(POINT& pt : track) {
                     protateshift(pt, LineBrg, center_x, center_y);
                 }
-                Surface.Polygon(track, array_size(track));
+                Surface.Polygon(track, std::size(track));
             }
        break;
         case CONE:
@@ -420,11 +420,11 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
               const double angle = atan2(Vect.y,Vect.x) * RAD_TO_DEG;
 
               ScreenClosestPoint(Pt1, Pt2, Orig_Aircraft, &p_p, NIBLSCALE(25));
-              PolygonRotateShift(Arrow, array_size(Arrow), p_p.x, p_p.y, angle);
+              PolygonRotateShift(Arrow, std::size(Arrow), p_p.x, p_p.y, angle);
 
               Surface.SelectObject(ArrowBrush);
               Surface.SelectObject(ArrowPen);
-              Surface.Polygon(Arrow, array_size(Arrow), rc);
+              Surface.Polygon(Arrow, std::size(Arrow), rc);
             }
 
         }

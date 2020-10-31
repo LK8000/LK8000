@@ -288,7 +288,7 @@ void InputEvents::readFile() {
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
 	  LKASSERT(mode_id >= 0);
-          LKASSERT(mode_id < (int)array_size(Key2Event));
+          LKASSERT(mode_id < (int)std::size(Key2Event));
 
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
@@ -307,7 +307,7 @@ void InputEvents::readFile() {
 	    const int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (ikey > 0) {
 #ifdef USE_GDI
-            LKASSERT(ikey < (int)array_size(Key2Event[mode_id]));
+            LKASSERT(ikey < (int)std::size(Key2Event[mode_id]));
             Key2Event[mode_id][ikey] = event_id;
 #else
             if(event_id > 0) {
@@ -520,8 +520,8 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
 // without taking up more data - but when loading from file must copy string
 void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, int event_id) {
 
-    static_assert(MAX_MODE == array_size(ModeLabel), "wrong array size" );
-    static_assert(MAX_LABEL == array_size(ModeLabel[0]), "wrong array size" );
+    static_assert(MAX_MODE == std::size(ModeLabel), "wrong array size" );
+    static_assert(MAX_LABEL == std::size(ModeLabel[0]), "wrong array size" );
 
     unsigned LabelIdx = MenuId -1;
 
@@ -610,7 +610,7 @@ void InputEvents::setMode(const TCHAR *mode) {
 void InputEvents::drawButtons(int Mode) {
     if (!(ProgramStarted == psNormalOp)) return;
 
-    for (unsigned i = 0; i < array_size(ModeLabel[Mode]); i++) {
+    for (unsigned i = 0; i < std::size(ModeLabel[Mode]); i++) {
       ButtonLabel::SetLabelText( i+1, ModeLabel[Mode][i].label );
     }
 
@@ -645,7 +645,7 @@ bool InputEvents::processButton(unsigned MenuId) {
 
     int thismode = getModeID();
     unsigned i = MenuId - 1;
-    LKASSERT(i < array_size(ModeLabel[thismode])); // Invalid MenuId
+    LKASSERT(i < std::size(ModeLabel[thismode])); // Invalid MenuId
 
     int lastMode = thismode;
 
@@ -679,7 +679,7 @@ bool InputEvents::processKey(int KeyID) {
 
   // get current mode
   unsigned mode = InputEvents::getModeID();
-  if(mode >= array_size(Key2Event)) {
+  if(mode >= std::size(Key2Event)) {
     mode = 0;
   }
 
@@ -729,7 +729,7 @@ bool InputEvents::processKey(int KeyID) {
     #endif
 
 
-    for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
+    for (unsigned i = 0; i < std::size(ModeLabel[mode]); ++i) {
       if (ModeLabel[mode][i].event == event_id) {
         MenuId = i + 1;
         if (HasKeyboard()) {
@@ -3473,7 +3473,7 @@ void InputEvents::triggerSelectedButton()
   const int thismode = getModeID();
   const unsigned MenuId = SelectedButtonId;
   const unsigned i = MenuId - 1;
-  if( i < array_size(ModeLabel[thismode])) {
+  if( i < std::size(ModeLabel[thismode])) {
     const int lastMode = thismode;
 
     if (ButtonLabel::IsEnabled(MenuId)) {

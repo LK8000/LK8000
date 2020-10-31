@@ -191,7 +191,7 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
             hpOld = Surface.SelectObject(hpFinalGlideAbove);
             hbOld = Surface.SelectObject(LKBrush_Green);
         }
-        Surface.Polygon(GlideBar, array_size(GlideBar));
+        Surface.Polygon(GlideBar, std::size(GlideBar));
 
         // in case of invalid bar because finish mode with real task but no valid start, we skip
         if (invalidbar) {
@@ -210,7 +210,7 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
                 Surface.SelectObject(LKBrush_Hollow);
             }
             if (Offset != Offset0) {
-                Surface.Polygon(GlideBar0, array_size(GlideBar0));
+                Surface.Polygon(GlideBar0, std::size(GlideBar0));
             }
 
 

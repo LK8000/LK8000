@@ -94,7 +94,7 @@ static void UpdateTextboxProp(void)
     if(WaypointKeyRed == KEYRED_NONE)
     {
       constexpr TCHAR Charlist[]={_T("abcdefghijklmnopqrstuvwxyz,!+$%#/()=:*_ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.@- \xD6\xDC\xC4")};
-      RemoveKeys(Charlist , array_size(Charlist));
+      RemoveKeys(Charlist , std::size(Charlist));
       if(wp != NULL) wp->SetVisible(false);
     }
     else
@@ -404,7 +404,7 @@ int Offset=0;
 IdenticalIndex = -1;
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
-    RemoveKeys(Charlist , array_size(Charlist));
+    RemoveKeys(Charlist , std::size(Charlist));
   }
   else
   {
@@ -526,7 +526,7 @@ TCHAR AS_Name[EXT_SEARCH_SIZE+1];
 
   if(cursor < GC_SUB_STRING_THRESHOLD/*1*/)   /* enable all keys if no char entered */
   {
-    RemoveKeys(Charlist , array_size(Charlist));
+    RemoveKeys(Charlist , std::size(Charlist));
   }
   else
   {
