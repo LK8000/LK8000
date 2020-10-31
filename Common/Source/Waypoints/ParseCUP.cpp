@@ -25,7 +25,7 @@ cup_header_t CupStringToHeader(const TCHAR *row) {
   this "alias" table is required to maintain backward compatibility 
   with cup files header used by "soaringspot.com" and "soaringweb.org"
 */
-  const auto alias = lookup_table<tstring, tstring>({
+  constexpr auto alias = lookup_table<tstring_view, tstring_view>({
     { _T("title"),       _T("name") },
 //    { _T("code"),        _T("code") },
 //    { _T("country"),     _T("country") },
@@ -43,7 +43,7 @@ cup_header_t CupStringToHeader(const TCHAR *row) {
   const auto entries = CupStringToFieldArray(row);
   for (size_t i = 0; i < entries.size(); ++i) {
     const tstring lower_text = to_lower_ascii(entries[i]);
-    header[alias.get(lower_text)] = i;
+    header[tstring(alias.get(lower_text))] = i;
   }
   return header;
 }
