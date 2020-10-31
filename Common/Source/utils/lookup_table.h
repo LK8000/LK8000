@@ -32,32 +32,6 @@
 #include <cstddef>
 #include <utility>
 
-// TODO : remove this when all compiler will be upgraded to support c++14
-#if __cpp_constexpr >= 201304
-  #define cxx14_constexpr  constexpr
-  namespace cxx14 = std;
-#else
-  #define cxx14_constexpr
-
-  namespace cxx14 {
-
-    template <size_t...>
-    struct index_sequence { };
-
-    template<size_t I, size_t... N>
-    struct make_index_sequence_t : make_index_sequence_t<I-1u, I-1u, N...> { };
-
-    template<size_t... N>
-    struct make_index_sequence_t<0, N...> { 
-      typedef index_sequence<N ...> type;
-    };
-
-    template<size_t I>
-    struct make_index_sequence : make_index_sequence_t<I>::type { };
-  }
-
-#endif
-
 template <typename key_type, typename mapped_type, size_t size> 
 class lookup_table_t {
 private:
@@ -67,14 +41,14 @@ private:
 
 public:
   template<size_t... I>
-  constexpr lookup_table_t(const value_type (&data)[size], cxx14::index_sequence<I...>) noexcept
+  constexpr lookup_table_t(const value_type (&data)[size], std::index_sequence<I...>) noexcept
       : _data{{data[I].first, data[I].second}...} {
   }
 
   /**
    * return @def_value if @key is not inside table.
    */
-  inline cxx14_constexpr
+  inline constexpr
   mapped_type get(key_type key, const mapped_type &def_value) const {
     for (const auto &item : _data) {
       if (item.first == key) {
@@ -88,7 +62,7 @@ public:
    * if @key_type and @mapped_type as same type, return @key if @key is not inside table.
    */
   template <typename T = mapped_type>
-  inline cxx14_constexpr 
+  inline constexpr 
   typename std::enable_if<std::is_same<key_type, T>::value, T>::type
   get(key_type key) const {
     return get(key, key);
@@ -102,7 +76,7 @@ public:
 template <typename key_type, typename mapped_type, size_t size>
 constexpr lookup_table_t<key_type, mapped_type, size>
 lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
-  return lookup_table_t<key_type, mapped_type, size>(data, cxx14::make_index_sequence<size>());
+  return lookup_table_t<key_type, mapped_type, size>(data, std::make_index_sequence<size>());
 }
 
 #endif // _utils_lookup_table_h_
