@@ -58,7 +58,6 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
   int nDC3 = TempSurface.SaveState();
 
   if (GetAirSpaceFillType() != asp_fill_border_only) {
-    if (1) {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     if (borders_only) {
        // Draw in reverse order!
@@ -66,7 +65,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
        // They have to be draw later, because inside border area have to be in correct color,
        // not the color of the bigger airspace above this small one.
       for (itr=airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
-          if ((*itr)->DrawStyle() == adsFilled) {
+          if ((*itr)->Visible() && (*itr)->DrawStyle() == adsFilled) {
             airspace_type = (*itr)->Type();
             if (!found) {
               ClearAirSpace(true, rc);
@@ -82,7 +81,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
       }//for
     } else {
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-          if ((*it)->DrawStyle() == adsFilled) {
+          if ((*itr)->Visible() && (*it)->DrawStyle() == adsFilled) {
             airspace_type = (*it)->Type();
             if (!found) {
               ClearAirSpace(true, rc);
@@ -95,7 +94,6 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
             (*it)->Draw(TempSurface, true);
         }
       }//for
-    }
     }
   }
 
@@ -114,9 +112,9 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
   }
 
     if (1) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if ((*it)->DrawStyle()) {
+        if ((*itr)->Visible() && (*it)->DrawStyle()) {
           airspace_type = (*it)->Type();
           if (!found) {
             ClearAirSpace(true, rc);
@@ -124,11 +122,11 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
           }
           if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only)  ^ (asp_selected_flash && (*it)->Selected()) ) {
             TempSurface.SelectObject(LK_BLACK_PEN);
-          } else {
+          } else if(((*it)->DrawStyle()==adsDisabled)) {
+            TempSurface.SelectObject(LKPen_Grey_N1);
+          } else  {
             TempSurface.SelectObject(hAirspacePens[airspace_type]);
           }
-		  if(((*it)->DrawStyle()==adsDisabled))
-		    TempSurface.SelectObject(LKPen_Grey_N1);
           (*it)->Draw(TempSurface, false);
         }
       }//for

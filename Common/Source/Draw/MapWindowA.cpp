@@ -117,7 +117,7 @@ DrawAirSpaceBorders(Surface, rc);
        // They have to be draw later, because inside border area have to be in correct color,
        // not the color of the bigger airspace above this small one.
       for (itr=airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
-            if ((*itr)->DrawStyle() == adsFilled) {
+            if ((*itr)->Visible() && (*itr)->DrawStyle() == adsFilled) {
               airspace_type = (*itr)->Type();
               if (!found) {
                 found = true;
@@ -132,7 +132,7 @@ DrawAirSpaceBorders(Surface, rc);
     } else {
        // Draw in direct order!
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-            if ((*it)->DrawStyle() == adsFilled) {
+            if ((*itr)->Visible() && (*it)->DrawStyle() == adsFilled) {
               airspace_type = (*it)->Type();
               if (!found) {
                 found = true;
@@ -170,28 +170,27 @@ DrawAirSpaceBorders(Surface, rc);
   if(0)
 #endif
     if (1) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if ((*it)->DrawStyle()) {
-		  airspace_type = (*it)->Type();
+      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+      for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        if ((*itr)->Visible()) {
+          airspace_type = (*it)->Type();
 #if ASPOUTLINE
-if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
+          if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
 #else
-if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_selected_flash && (*it)->Selected()) ) {
+            if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_selected_flash && (*it)->Selected()) ) {
 #endif
-			Surface.SelectObject(LK_BLACK_PEN);
-		  } else
-		   if(  (*it)->DrawStyle()==adsDisabled)   {
-			Surface.SelectObject(LKPen_Grey_N2);
-		   } else {
-			Surface.SelectObject(hAirspacePens[airspace_type]);
-		  }
+              Surface.SelectObject(LK_BLACK_PEN);
+            } else if(  (*it)->DrawStyle()==adsDisabled) {
+              Surface.SelectObject(LKPen_Grey_N2);
+            } else {
+              Surface.SelectObject(hAirspacePens[airspace_type]);
+            }
 #ifndef AIRSPACE_BORDER
-   (*it)->Draw(hdc, rc, false);
+            (*it)->Draw(hdc, rc, false);
 #endif
+          }
         }
-	}//for
-    }
+      } //for
 
   // restore original PEN
   Surface.SelectObject(hOrigPen);
@@ -213,9 +212,8 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
 
     for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
 
-        if (((*it)->DrawStyle() == adsHidden) ||
-          ((  (*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))){
-          continue;  // don't draw on map if hidden or upper limit is on sea level or below
+        if (!(*it)->Visible()) {
+          continue;
         }
 
         const int airspace_type = (*it)->Type();

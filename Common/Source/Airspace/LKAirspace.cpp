@@ -211,6 +211,17 @@ bool CAirspaceBase::IsAltitudeInside(int alt, int agl, int extension) const {
             );
 }
 
+/**
+ * return true if airspace should be visible on map
+ */
+bool CAirspaceBase::Visible() const {
+    if ((Top()->Base == abMSL) && (Top()->Altitude <= 0)) {  
+        // don't draw on map if upper limit is on sea level or below
+        return false;
+    }
+    return DrawStyle();
+}
+
 // Step1:
 // warning calculation, set initial states, etc.
 
