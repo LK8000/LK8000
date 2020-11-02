@@ -22,7 +22,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
        * draw underlying aispaces first (reverse order) with bigger pen
        * *********************************************************************/
       for (CAirspaceList::const_reverse_iterator it=airspaces_to_draw.rbegin(); it != airspaces_to_draw.rend(); ++it) {
-        if(!(((*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))) 
+        if(!(*it)->Is0mMSL()) 
         {  // don't draw on map if upper limit is on sea level or below
           if ((*it)->DrawStyle()) {
 
@@ -45,7 +45,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
        ***********************************************************************/
 
       for (CAirspaceList::const_iterator it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if(!(((*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))) 
+        if(!(*it)->Is0mMSL())  
         {  // don't draw on map if upper limit is on sea level or below
           if ((*it)->DrawStyle() ) {
             if ( asp_selected_flash && (*it)->Selected() ) {

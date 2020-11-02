@@ -117,7 +117,7 @@ DrawAirSpaceBorders(Surface, rc);
        // They have to be draw later, because inside border area have to be in correct color,
        // not the color of the bigger airspace above this small one.
       for (itr=airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
-         if(!(((*itr)->Top()->Base == abMSL) && ((*itr)->Top()->Altitude <= 0))) {
+         if(!((*itr)->Is0mMSL())) {
             if ((*itr)->DrawStyle() == adsFilled) {
               airspace_type = (*itr)->Type();
               if (!found) {
@@ -134,7 +134,7 @@ DrawAirSpaceBorders(Surface, rc);
     } else {
        // Draw in direct order!
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-         if(!(((*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))) {
+         if(!(*it)->Is0mMSL())  {
             if ((*it)->DrawStyle() == adsFilled) {
               airspace_type = (*it)->Type();
               if (!found) {
@@ -218,7 +218,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
     for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
 
         if (((*it)->DrawStyle() == adsHidden) ||
-          ((  (*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))){
+          ((*it)->Is0mMSL()) ){
           continue;  // don't draw on map if hidden or upper limit is on sea level or below
         }
 

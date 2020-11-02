@@ -287,7 +287,7 @@ public:
 
     static void ResetSideviewNearestInstance() { _sideview_nearest_instance = NULL; }
     static CAirspace* GetSideviewNearestInstance() { return _sideview_nearest_instance; }
-
+    BOOL Is0mMSL(void){return((Top()->Base == abMSL) && (Top()->Altitude <= 0));}
 protected:
     // polygon points : circular airspace are also stored like polygon because that avoid to calculate geographic coordinate for each drawing
     // previous version draw circular airspace using circle, but it's wrong, circle in geographic coordinate are ellipsoid in screen coordinate.
