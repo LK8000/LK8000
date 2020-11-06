@@ -30,7 +30,9 @@
                  android:resource="@xml/usb_device_filter" />
     </activity>
 
-    <service android:name=".MyService"/>
+    <service android:name=".MyService"
+        android:foregroundServiceType="location|connectedDevice"/>
+
   </application>
 
   <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />

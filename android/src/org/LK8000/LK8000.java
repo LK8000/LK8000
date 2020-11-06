@@ -60,11 +60,6 @@ import com.onyx.android.sdk.api.device.epd.EpdController;
 public class LK8000 extends Activity {
   private static final String TAG = "LK8000";
 
-  /**
-   * Hack: this is set by onCreate(), to support the "testing"
-   * package.
-   */
-  protected static Class<?> serviceClass;
   private static NativeView nativeView;
 
   PowerManager.WakeLock wakeLock;
@@ -72,9 +67,6 @@ public class LK8000 extends Activity {
   BatteryReceiver batteryReceiver;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
-    if (serviceClass == null)
-      serviceClass = MyService.class;
-
     super.onCreate(savedInstanceState);
 
     Log.d(TAG, "ABI=" + Build.CPU_ABI);
@@ -173,7 +165,7 @@ public class LK8000 extends Activity {
     nativeView = null;
 
     Log.d(TAG, "stopping service");
-    stopService(new Intent(this, serviceClass));
+    stopService(new Intent(this, MyService.class));
 
     TextView tv = new TextView(LK8000.this);
     tv.setText("Shutting down LK8000...");
@@ -264,7 +256,7 @@ public class LK8000 extends Activity {
   @Override protected void onResume() {
     super.onResume();
 
-    Intent intent = new Intent(this, serviceClass);
+    Intent intent = new Intent(this, MyService.class);
 
     try {
       // startForegroundService was introduced in Android Oreo (API 26).
