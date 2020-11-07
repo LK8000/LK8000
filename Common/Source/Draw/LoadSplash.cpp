@@ -16,78 +16,69 @@
 #define IMG_EXT "PNG"
 #endif
 
+namespace {
+
+    void setFileSuffix(TCHAR* Out, PixelSize size) {
+        if(ScreenLandscape && size.cx > size.cy) {
+            _stprintf(Out, _T("_%03dx%03d." IMG_EXT), size.cx, size.cy);
+        } else {
+            _stprintf(Out, _T("_%03dx%03d." IMG_EXT), size.cy, size.cx);
+        }
+    }
+
+    LKBitmap LoadSplashBitmap(const TCHAR *path) {
+        LKBitmap bitmap;
+#ifdef ANDROID
+        bitmap.LoadAssetsFile(path);
+#else
+        bitmap.LoadFromFile(path);
+#endif
+        return bitmap;
+    }
+ 
+} // namespace
+
 LKBitmap LoadSplash(const TCHAR *splashfile) {
 
-#ifdef ANDROID
-    const TCHAR* sDir = _T(LKD_BITMAPS);
-#else
-    TCHAR sDir[MAX_PATH];
-    SystemPath(sDir,_T(LKD_BITMAPS));
-#endif
-
-
     TCHAR srcfile[MAX_PATH];
+#ifdef ANDROID
+    _tcscpy(srcfile, _T(LKD_BITMAPS DIRSEP) );
+#else
+    SystemPath(srcfile,_T(LKD_BITMAPS DIRSEP));
+#endif
+    TCHAR* pSuffixStart = srcfile + _tcslen(srcfile); // end of path
+    _tcscpy(pSuffixStart, splashfile); // add filename
+    pSuffixStart += _tcslen(pSuffixStart);
 
     LKBitmap hWelcomeBitmap;
 
+
     // first look for lkstart_480x272.bmp for example
-    _stprintf(srcfile,_T("%s" DIRSEP "%s_%s." IMG_EXT),sDir, splashfile,GetSizeSuffix() );
-#ifdef ANDROID
-    hWelcomeBitmap.LoadAssetsFile(srcfile);
-#else
-    hWelcomeBitmap.LoadFromFile(srcfile);
-#endif
+    setFileSuffix(pSuffixStart, {ScreenSizeX, ScreenSizeY});
+    hWelcomeBitmap = LoadSplashBitmap(srcfile);
 
     if (!hWelcomeBitmap.IsDefined()) {
-        if (ScreenLandscape) {
-            if (ScreenSizeX > 800) {
-                _stprintf(srcfile, _T("%s" DIRSEP "%s_1920x1080." IMG_EXT), sDir, splashfile);
-#ifdef ANDROID
-                hWelcomeBitmap.LoadAssetsFile(srcfile);
-#else
-                hWelcomeBitmap.LoadFromFile(srcfile);
-#endif
-            }
-        }else {
-            if (ScreenSizeX > 480) {
-                _stprintf(srcfile, _T("%s" DIRSEP "%s_1080x1920." IMG_EXT), sDir, splashfile);
-#ifdef ANDROID
-                hWelcomeBitmap.LoadAssetsFile(srcfile);
-#else
-                hWelcomeBitmap.LoadFromFile(srcfile);
-#endif
-            }
+        if ((ScreenLandscape && ScreenSizeX > 800) || ScreenSizeX > 480) {
+            setFileSuffix(pSuffixStart, {1920, 1080});
+            hWelcomeBitmap = LoadSplashBitmap(srcfile);
         }
     }
 
     if (!hWelcomeBitmap.IsDefined()) {
         switch(ScreenGeometry) {
-            case SCREEN_GEOMETRY_43:
-            if (ScreenLandscape)
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_640x480." IMG_EXT),sDir, splashfile );
-            else
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x640." IMG_EXT),sDir, splashfile );
+        case SCREEN_GEOMETRY_43:
+            setFileSuffix(pSuffixStart, {640, 480});
 	        break;
 	    case SCREEN_GEOMETRY_53:
-            if (ScreenLandscape)
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_800x480." IMG_EXT),sDir, splashfile );
-            else
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x800." IMG_EXT),sDir, splashfile );
-                break;
+            setFileSuffix(pSuffixStart, {800, 480});
+            break;
 	    case SCREEN_GEOMETRY_169:
-            if (ScreenLandscape)
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_480x272." IMG_EXT),sDir, splashfile );
-            else
-                _stprintf(srcfile,_T("%s" DIRSEP "%s_272x480." IMG_EXT),sDir, splashfile );
-                break;
+            setFileSuffix(pSuffixStart, {480, 272});
+            break;
 	    default:
 	        break;
 	    }
-#ifdef ANDROID
-        hWelcomeBitmap.LoadAssetsFile(srcfile);
-#else
-        hWelcomeBitmap.LoadFromFile(srcfile);
-#endif
+        hWelcomeBitmap = LoadSplashBitmap(srcfile);
     }
 
     return hWelcomeBitmap;

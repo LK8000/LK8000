@@ -189,7 +189,6 @@ bool	InitLDRotary(ldrotary_s *buf);
 void	InitWindRotary(windrotary_s *wbuf);
 
 void	SetOverColorRef();
-TCHAR*  GetSizeSuffix(void);
 void	LKRunStartEnd(bool);
 
 bool	LockMode(short lmode);

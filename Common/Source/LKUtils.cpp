@@ -126,13 +126,6 @@ void ToggleBaroAltitude() {
 
 }
 
-TCHAR * GetSizeSuffix(void) {
-  static TCHAR suffixname[12];
-  _stprintf(suffixname,_T("%03dx%03d"),ScreenSizeX,ScreenSizeY);
-  return(suffixname);
-}
-
-
 void LKRunStartEnd(bool start) {
 #ifdef WIN32
   if (start) {
