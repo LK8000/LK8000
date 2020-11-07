@@ -2093,8 +2093,8 @@ void InputEvents::eventService(const TCHAR *misc) {
 	Message::AddMessage(60000, 1, mbuf);
 	TCHAR sLongitude[16];
 	TCHAR sLatitude[16];
-	Units::LongitudeToString(GPS_INFO.Longitude, sLongitude, sizeof(sLongitude)-1);
-	Units::LatitudeToString(GPS_INFO.Latitude, sLatitude, sizeof(sLatitude)-1);
+	Units::LongitudeToString(GPS_INFO.Longitude, sLongitude);
+	Units::LatitudeToString(GPS_INFO.Latitude, sLatitude);
 	_stprintf(mbuf,_T("%s %s"), sLatitude, sLongitude);
 	Message::AddMessage(60000, 1, mbuf);
 	Message::Unlock();

@@ -107,11 +107,11 @@ bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer,
 		LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, Latitude, Longitude );
 		_sntprintf(Buffer, size, _T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
 	} else {
-		TCHAR sLongitude[16] = {0};
-		TCHAR sLatitude[16] = {0};
+		TCHAR sLongitude[16];
+		TCHAR sLatitude[16];
 
-		Units::LongitudeToString(Longitude, sLongitude, sizeof(sLongitude)-1);
-		Units::LatitudeToString(Latitude, sLatitude, sizeof(sLatitude)-1);
+		Units::LongitudeToString(Longitude, sLongitude);
+		Units::LatitudeToString(Latitude, sLatitude);
 
 		_sntprintf(Buffer,size,_T("%s  %s"), sLatitude, sLongitude);
 	}
@@ -120,13 +120,12 @@ bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer,
 
 
 bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
-  (void)size;
+
   TCHAR EW[] = TEXT("WE");
   int dd, mm, ss;
 
   int sign = Longitude<0 ? 0 : 1;
   Longitude = fabs(Longitude);
-
 
   switch(CoordinateFormat){
     case cfDDMMSS:
@@ -145,7 +144,7 @@ bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
           dd++;
           mm -= 60;
         }
-      _stprintf(Buffer, TEXT("%c%03d%s%02d'%02d\""), EW[sign], dd, MsgToken(2179), mm, ss);
+      _sntprintf(Buffer, size, TEXT("%c%03d%s%02d'%02d\""), EW[sign], dd, MsgToken(2179), mm, ss);
     break;
     case cfDDMMSSss:
       dd = (int)Longitude;
@@ -157,10 +156,10 @@ bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
     case cfDDMMmmm:
       dd = (int)Longitude;
       Longitude = (Longitude - dd) * 60.0;
-      _stprintf(Buffer, TEXT("%c%03d%s%06.3f'"), EW[sign], dd, MsgToken(2179), Longitude);
+      _sntprintf(Buffer, size, TEXT("%c%03d%s%06.3f'"), EW[sign], dd, MsgToken(2179), Longitude);
     break;
     case cfDDdddd:
-      _stprintf(Buffer, TEXT("%c%08.4f%s"), EW[sign], Longitude, MsgToken(2179));
+      _sntprintf(Buffer, size, TEXT("%c%08.4f%s"), EW[sign], Longitude, MsgToken(2179));
     break;
     case cfUTM:
 	_tcscpy(Buffer,_T(""));
@@ -176,7 +175,6 @@ bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
 
 
 bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
-  (void)size;
   TCHAR EW[] = TEXT("SN");
   int dd, mm, ss;
 
@@ -198,22 +196,22 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
         dd++;
         mm -= 60;
       }
-      _stprintf(Buffer, TEXT("%c%02d%s%02d'%02d\""), EW[sign], dd, MsgToken(2179), mm, ss);
+      _sntprintf(Buffer, size, TEXT("%c%02d%s%02d'%02d\""), EW[sign], dd, MsgToken(2179), mm, ss);
     break;
     case cfDDMMSSss:
       dd = (int)Latitude;
       Latitude = (Latitude - dd) * 60.0;
       mm = (int)(Latitude);
       Latitude = (Latitude - mm) * 60.0;
-      _stprintf(Buffer, TEXT("%c%02d%s%02d'%05.2f\""), EW[sign], dd, MsgToken(2179), mm, Latitude);
+      _sntprintf(Buffer, size, TEXT("%c%02d%s%02d'%05.2f\""), EW[sign], dd, MsgToken(2179), mm, Latitude);
     break;
     case cfDDMMmmm:
       dd = (int)Latitude;
       Latitude = (Latitude - dd) * 60.0;
-      _stprintf(Buffer, TEXT("%c%02d%s%06.3f'"), EW[sign], dd, MsgToken(2179), Latitude);
+      _sntprintf(Buffer, size, TEXT("%c%02d%s%06.3f'"), EW[sign], dd, MsgToken(2179), Latitude);
     break;
     case cfDDdddd:
-      _stprintf(Buffer, TEXT("%c%07.4f%s"), EW[sign], Latitude, MsgToken(2179));
+      _sntprintf(Buffer, size, TEXT("%c%07.4f%s"), EW[sign], Latitude, MsgToken(2179));
     break;
     case cfUTM:
 	_tcscpy(Buffer,_T(""));

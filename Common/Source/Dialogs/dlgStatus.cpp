@@ -436,10 +436,10 @@ static void UpdateValuesFlight(void) {
   TCHAR Temp[1000];
   double bearing;
   double distance;
-  TCHAR sCoordinate[32]={0};
+  TCHAR sCoordinate[33]={0};
   TCHAR sBaroDevice[32]={0};
 
-  Units::CoordinateToString(GPS_INFO.Longitude, GPS_INFO.Latitude, sCoordinate, sizeof(sCoordinate)-1);
+  Units::CoordinateToString(GPS_INFO.Longitude, GPS_INFO.Latitude, sCoordinate);
 
   wp = (WndProperty *)wf->FindByName(TEXT("prpCoordinate"));
   if(wp) {

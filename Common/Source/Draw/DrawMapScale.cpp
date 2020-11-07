@@ -231,11 +231,8 @@ _skip2:
 
     //if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) ) {
     if (inpanmode) {
-
-	TCHAR sCoordinate[32]={0};
-	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, std::size(sCoordinate)-1);
-	_tcscat(Scale, sCoordinate);
-	_tcscat(Scale, _T(" "));
+        Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), Scale);
+        _tcscat(Scale, _T(" "));
     }
     double mapScale=Units::ToSysDistance(zoom.Scale());
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units

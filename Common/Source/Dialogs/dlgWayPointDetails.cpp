@@ -460,10 +460,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   // Lat and Lon
   //
-  Units::CoordinateToString(
-		  WayPointList[SelectedWaypoint].Longitude,
-		  WayPointList[SelectedWaypoint].Latitude,
-		  sTmp, sizeof(sTmp)-1);
+  Units::CoordinateToString(WayPointList[SelectedWaypoint].Longitude, WayPointList[SelectedWaypoint].Latitude, sTmp);
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpCoordinate")));
   LKASSERT(wp);
