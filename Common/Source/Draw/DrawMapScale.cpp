@@ -89,7 +89,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     Surface.SelectObject(hpOld);
 
     TCHAR Scale[200] = {};
-    TCHAR Scale1[200] = {};
+    TCHAR Scale1[100] = {};
     TCHAR Scale2[200] = {};
     TCHAR TEMP[40] = {};
 
@@ -236,7 +236,7 @@ _skip2:
     }
     double mapScale=Units::ToSysDistance(zoom.Scale());
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
-    Units::FormatUserMapScale(NULL, mapScale, Scale1, sizeof(Scale1)/sizeof(Scale1[0]));
+    Units::FormatUserMapScale(NULL, mapScale, Scale1, std::size(Scale1));
     _tcscat(Scale,Scale1);
 
     SIZE tsize;
