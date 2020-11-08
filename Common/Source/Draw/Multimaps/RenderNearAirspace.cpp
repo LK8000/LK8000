@@ -538,9 +538,9 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         else
             bLeft = true;
 
-        Units::FormatUserDistance(iABS_AS_HorDistance, buffer, 7);
-        _stprintf(text, _T(" %s"), buffer);
-        Surface.GetTextSize(text, &tsize);
+        _tcscpy(text, _T(" "));
+        Units::FormatUserDistance(iABS_AS_HorDistance, text + 1, 7);
+        Surface.GetTextSize(text, &tsize); 
 
         if ((GPSalt - sDia.fYMin /*-calc_terrainalt */) < 300)
             TxXPt.y = CalcHeightCoordinat(GPSalt, &sDia) - tsize.cy;
@@ -569,8 +569,9 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         #else
         Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
         #endif
-        Units::FormatUserAltitude((double) abs(iAS_VertDistance), buffer, 7);
-        _stprintf(text, _T(" %s"), buffer);
+
+        _tcscpy(text, _T(" "));
+        Units::FormatUserAltitude((double) abs(iAS_VertDistance), text + 1, 7);
         Surface.GetTextSize(text, &tsize);
 
         if (bLeft)
