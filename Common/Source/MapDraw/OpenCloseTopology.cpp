@@ -32,20 +32,19 @@ void OpenTopology() {
   LKTopo=0;
   LKWaterTopology=false;
 
-  LockTerrainDataGraphics();
-
-  std::fill(std::begin(TopoStore), std::end(TopoStore), nullptr);
-
-     // Topology is inside the LKM map file
   LocalPath(Directory, _T(LKD_MAPS), szMapFile);
-  if (Directory[0]== _T('\0')) {
-    UnlockTerrainDataGraphics();
+  _tcscat(Directory, _T("/"));
+  // Look for the file within the map zip file...
+  int ret = _sntprintf(szFile, MAX_PATH, _T("%stopology.tpl"), Directory);
+  if(ret >= (MAX_PATH-1)) {
+    StartupStore(_T(". Invalid topology path : <%s>"), szFile);
     return;
   }
 
-  // Look for the file within the map zip file...
-  _tcscat(Directory,TEXT("/"));
-  _stprintf(szFile, _T("%stopology.tpl"), Directory);
+
+  LockTerrainDataGraphics();
+
+  std::fill(std::begin(TopoStore), std::end(TopoStore), nullptr);
 
   // Ready to open the file now..
   zzip_stream stream(szFile, "rt");
@@ -58,12 +57,12 @@ void OpenTopology() {
 
   TCHAR ctemp[80];
   TCHAR TempString[READLINE_LENGTH+1];
-  TCHAR ShapeName[50];
+  TCHAR ShapeName[80];
   double ShapeRange;
   long ShapeIcon;
   long ShapeField;
-  TCHAR wShapeFilename[MAX_PATH];
-  TCHAR wCPGFilename[MAX_PATH];
+  TCHAR wShapeFilename[std::size(Directory) + std::size(ShapeName) + 3];
+  TCHAR wCPGFilename[std::size(Directory) + std::size(ShapeName) + 3];
   TCHAR *Stop;
   int numtopo = 0;
   int shapeIndex=0;
