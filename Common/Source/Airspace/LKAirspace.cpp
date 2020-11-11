@@ -1265,12 +1265,12 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
 
 void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
     const TCHAR *Stop = NULL;
-    TCHAR sTmp[128];
+    TCHAR sTmp[128] = {};
     TCHAR *pWClast = NULL;
     const TCHAR *pToken;
     bool fHasUnit = false;
 
-    LK_tcsncpy(sTmp, Text, sizeof (sTmp) / sizeof (sTmp[0]) - 1);
+    _tcsncpy(sTmp, Text, std::size(sTmp)-1);
 
     CharUpper(sTmp);
 
