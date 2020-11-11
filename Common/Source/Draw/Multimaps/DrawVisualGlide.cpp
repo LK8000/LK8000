@@ -80,7 +80,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
         if (numboxrows > 3) numboxrows = 3;
     }
 
-    TCHAR tmpT[30];
+    TCHAR tmpT[70];
 
     line1Font = LK8VisualTopFont;
     line2Font = LK8VisualBotFont;
@@ -369,8 +369,8 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
             bcolor.Create(rgbcolor);
         }
 
-        TCHAR line2[40], line3[40];
         TCHAR value[40], unit[30];
+        TCHAR line2[140], line3[50];
         TCHAR name[NAME_SIZE + 1];
         double ar = (WayPointCalc[wp].AltArriv[AltArrivMode] * ALTITUDEMODIFY);
         _tcscpy(name, WayPointList[wp].Name);
