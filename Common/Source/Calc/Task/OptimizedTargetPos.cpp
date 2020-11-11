@@ -11,6 +11,7 @@
 #include "Waypointparser.h"
 #include "NavFunctions.h"
 #include "PGTask/PGTaskMgr.h"
+#include "Util/UTF8.hpp"
 
 PGTaskMgr gPGTask; // This Is Shared ressource, never use without Locking Task Data ( LockTaskData()/UnlockTaskData() )!
 
@@ -33,8 +34,12 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveTaskPoint].AATTargetLon;
 	WayPointList[RESWP_OPTIMIZED].Altitude = Task[ActiveTaskPoint].AATTargetAltitude;
 
-	_sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[stdwp].Name);
-    WayPointList[RESWP_OPTIMIZED].Name[NAME_SIZE] = _T('\0');
+    int ret = _sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[stdwp].Name);
+    if(ret >= (NAME_SIZE - 1)) {
+#ifndef UNICODE
+      CropIncompleteUTF8(WayPointList[RESWP_OPTIMIZED].Name);
+#endif
+    }
 
 	UnlockTaskData();
 }
