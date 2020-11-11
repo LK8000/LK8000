@@ -10,6 +10,7 @@
 #include "CriticalSection.h"
 #include "Waypointparser.h"
 #include "NavFunctions.h"
+#include "Util/UTF8.hpp"
 
 /*
  * Used by Alternates and BestAlternate
@@ -25,9 +26,13 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
     WayPointList[RESWP_OPTIMIZED].Latitude  = Task[ActiveTaskPoint].AATTargetLat;
     WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveTaskPoint].AATTargetLon;
     WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[Task[ActiveTaskPoint].Index].Altitude;
-	WaypointAltitudeFromTerrain(&WayPointList[RESWP_OPTIMIZED]);
-	_sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[Task[ActiveTaskPoint].Index].Name);
-    WayPointList[RESWP_OPTIMIZED].Name[NAME_SIZE] = _T('\0');
+    WaypointAltitudeFromTerrain(&WayPointList[RESWP_OPTIMIZED]);
+    int ret = _sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[Task[ActiveTaskPoint].Index].Name);
+    if(ret >= (NAME_SIZE - 1)) {
+#ifndef UNICODE
+      CropIncompleteUTF8(WayPointList[RESWP_OPTIMIZED].Name);
+#endif
+    }
   }
 
   // handle virtual wps as alternates
