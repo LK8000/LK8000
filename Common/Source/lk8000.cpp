@@ -351,8 +351,10 @@ bool Startup(const TCHAR* szCmdLine) {
   ClearTask();
   memset( &(GPS_INFO), 0, sizeof(GPS_INFO));
   memset( &(CALCULATED_INFO), 0,sizeof(CALCULATED_INFO));
-  memset( &SnailTrail[0],0,TRAILSIZE*sizeof(SNAIL_POINT));
-  memset( &LongSnailTrail[0],0,(LONGTRAILSIZE+1)*sizeof(LONG_SNAIL_POINT));
+
+  memset( SnailTrail, 0, sizeof(SnailTrail));
+  memset( LongSnailTrail, 0, sizeof(LongSnailTrail));
+
   ResetVarioAvailable(GPS_INFO);
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
