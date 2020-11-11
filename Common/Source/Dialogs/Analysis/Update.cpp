@@ -323,7 +323,7 @@ void UpdateAnalysis(WndForm* pForm){
           }
         }
 
-        TCHAR timeTempStr[120];
+        TCHAR timeTempStr[30];
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
         _stprintf(timeStr, _T("T: %s\r\n"), timeTempStr);
