@@ -886,6 +886,9 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
 
     // Check Visibility : faster first
     bool is_visible =(iAirspaceMode[_type] % 2 == 1); // airspace class disabled ?
+    if(is_visible) {
+        is_visible = !((_top.Base == abMSL) && (_top.Altitude <= 0));
+    }
     if(is_visible) { // no need to msRectOverlap if airspace is not visible
         is_visible = msRectOverlap(&_bounds, &screenbounds_latlon);
     }
