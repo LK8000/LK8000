@@ -174,8 +174,6 @@ public:
   int Selected() const { return _selected; }
   void Selected(bool selected) { _selected = selected; }
 
-  bool Visible() const;
-
   int LastCalculatedHDistance() const { return _hdistance; }            // Get last calculated horizontal distance (LKCalculations.cpp / DoAirspaces())
   int LastCalculatedVDistance() const { return _vdistance; }            // Get last calculated vertical distance (LKCalculations.cpp / DoAirspaces())
   int LastCalculatedBearing() const { return _bearing; }                // Get last calculated bearing (LKCalculations.cpp / DoAirspaces())
