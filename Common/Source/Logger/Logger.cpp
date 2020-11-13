@@ -418,7 +418,7 @@ void StartLogger()
 
       if (!LoggerShortName) {
         // Long file name
-        _stprintf(szFLoggerFileName,
+        _sntprintf(szFLoggerFileName, std::size(szFLoggerFileName),
                  TEXT("%s%s%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
                  path, _T(DIRSEP),
                  GPS_INFO.Year,
@@ -437,7 +437,7 @@ void StartLogger()
         cmonth = NumToIGCChar(GPS_INFO.Month);
         cday = NumToIGCChar(GPS_INFO.Day);
         cflight = NumToIGCChar(i);
-        _stprintf(szFLoggerFileName,
+        _sntprintf(szFLoggerFileName, std::size(szFLoggerFileName),
                  TEXT("%s%s%c%c%cX%c%c%c%c.IGC"),
                  path, _T(DIRSEP),
                  cyear,
@@ -457,8 +457,7 @@ void StartLogger()
 
   igc_writer_ptr = std::make_unique<igc_file_writer>(szFLoggerFileName, LoggerGActive());
 
-  StartupStore(_T(". Logger Started %s  File <%s>%s"),
-	WhatTimeIsIt(), szFLoggerFileName,NEWLINE);
+  StartupStore(_T(". Logger Started %s  File <%s>"), WhatTimeIsIt(), szFLoggerFileName);
 }
 
 
