@@ -13,8 +13,8 @@
 #include "device.h"
 #include "utils/stringext.h"
 
-#define min(X,Y) ((X) < (Y) ? : (X) : (Y))
-#define BIT(n) (1 << (n))
+
+namespace {
 
 #define ACTIVE_STATION  1
 #define PASSIVE_STATION 0
@@ -27,40 +27,11 @@
 //#define RESEND_ON_NAK       /* switch for command retry on transmission fail  */
 
 
-int KRT2_Convert_Answer(DeviceDescriptor_t *d, char *szCommand, int len);
-
 #ifdef TESTBENCH
 int uiKRT2DebugLevel = 1;
 #else
 int uiKRT2DebugLevel = 0;
 #endif
-
-BOOL KRT2Install(PDeviceDescriptor_t d){
-
-  _tcscpy(d->Name, TEXT("Dittel KRT2"));
-  d->IsRadio        = KRT2IsRadio;
-  d->PutVolume      = KRT2PutVolume;
-  d->PutSquelch     = KRT2PutSquelch;
-  d->PutFreqActive  = KRT2PutFreqActive;
-  d->PutFreqStandby = KRT2PutFreqStandby;
-  d->StationSwap    = KRT2StationSwap;
-  d->ParseNMEA      = NULL;
-  d->ParseStream    = KRT2ParseString;
-  d->PutRadioMode      = KRT2RadioMode;
-  return(TRUE);
-
-}
-
-BOOL KRT2Register(void){
-  return(devRegister(
-    TEXT("Dittel KRT2"),
-    (1l << dfRadio),
-    KRT2Install
-  ));
-}
-
-
-
 
 
 BOOL KRT2IsRadio(PDeviceDescriptor_t d){
@@ -279,88 +250,6 @@ BOOL KRT2RadioMode(PDeviceDescriptor_t d, int mode) {
       }
   return(TRUE);
 }
-
-
-BOOL KRT2RequestAllData(PDeviceDescriptor_t d) {
-/*  TCHAR  szTmp[255];
-
-  LockComm();
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-        d->Com->WriteString(szTmp);
-  UnlockComm();*/
-  return(TRUE);
-}
-
-
-BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
-//(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info)
-{
-if(d == NULL) return 0;
-if(String == NULL) return 0;
-if(len == 0) return 0;
-
-#define REC_BUFSIZE 128
-int cnt=0;
-static uint16_t Recbuflen =0;
-static uint16_t CommandLength=REC_BUFSIZE;
-static char Command[REC_BUFSIZE];
-
-while (cnt < len)
-{
- if(CommandLength == REC_BUFSIZE)
- {
-  if(String[cnt] ==STX)
-    Recbuflen =0;
- }
-  if(Recbuflen >= REC_BUFSIZE)
-    Recbuflen =0;
-  LKASSERT(Recbuflen < REC_BUFSIZE);
-
-  if(uiKRT2DebugLevel ==2) StartupStore(_T(". KRT2   Raw Input: Recbuflen:%u  0x%02X %c %s"),  Recbuflen,(uint8_t)String[cnt] ,String[cnt] ,NEWLINE);
-  Command[Recbuflen++] =(char) String[cnt++];
-  if(Recbuflen == 1)
-  {
-    switch (Command[0])
-    {
-      case 'S': CommandLength = 1; break;
-      case ACK: CommandLength = 1; break;
-      case NAK: CommandLength = 1; break;
-      default: break;
-    }
-  }
-
-  if(Recbuflen == 2)
-  {
-    switch(Command[1])
-    {
-      case 'U': CommandLength = 13; break;
-      case 'R': CommandLength = 13; break;
-      case 'A': CommandLength = 6;  break;
-      case 'C': CommandLength = 2;  break;
-      case 'O': CommandLength = 2;  break;
-      case 'o': CommandLength = 2;  break;
-      default : CommandLength = 2;  break;
-    }
-  }
-
-   if(Recbuflen == (CommandLength) ) // all received
-   {
-     if(uiKRT2DebugLevel ==2)	 StartupStore(_T("================ %s") ,NEWLINE);
-     if(uiKRT2DebugLevel ==2) for(int i=0; i < (CommandLength);i++)   StartupStore(_T(". KRT2   Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
-     if(uiKRT2DebugLevel ==2)  StartupStore(_T(". KRT2  Process Command %u  %s") ,CommandLength ,NEWLINE);
-     KRT2_Convert_Answer(d, Command, CommandLength);
-     RadioPara.Changed = true;
-     Recbuflen = 0;
-     CommandLength = REC_BUFSIZE;
-   }
-} //  (cnt < len)
-return  RadioPara.Changed;
-}
-
-
-
 
 /*****************************************************************************
  * this function converts a KRT answer sting to a NMEA answer
@@ -621,4 +510,95 @@ LKASSERT(d !=NULL);
 
 
   return processed;  /* return the number of converted characters */
+}
+
+
+BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
+{
+  if(d == NULL) return 0;
+  if(String == NULL) return 0;
+  if(len == 0) return 0;
+
+  #define REC_BUFSIZE 128
+  int cnt=0;
+  static uint16_t Recbuflen =0;
+  static uint16_t CommandLength=REC_BUFSIZE;
+  static char Command[REC_BUFSIZE];
+
+  while (cnt < len)
+  {
+    if(CommandLength == REC_BUFSIZE)
+    {
+      if(String[cnt] ==STX)
+        Recbuflen =0;
+    }
+    if(Recbuflen >= REC_BUFSIZE)
+      Recbuflen =0;
+    LKASSERT(Recbuflen < REC_BUFSIZE);
+
+  if(uiKRT2DebugLevel ==2) StartupStore(_T(". KRT2   Raw Input: Recbuflen:%u  0x%02X %c %s"),  Recbuflen,(uint8_t)String[cnt] ,String[cnt] ,NEWLINE);
+    Command[Recbuflen++] =(char) String[cnt++];
+    if(Recbuflen == 1)
+    {
+      switch (Command[0])
+      {
+        case 'S': CommandLength = 1; break;
+        case ACK: CommandLength = 1; break;
+        case NAK: CommandLength = 1; break;
+        default: break;
+      }
+    }
+
+    if(Recbuflen == 2)
+    {
+      switch(Command[1])
+      {
+        case 'U': CommandLength = 13; break;
+        case 'R': CommandLength = 13; break;
+        case 'A': CommandLength = 6;  break;
+        case 'C': CommandLength = 2;  break;
+        case 'O': CommandLength = 2;  break;
+        case 'o': CommandLength = 2;  break;
+        default : CommandLength = 2;  break;
+      }
+    }
+
+    if(Recbuflen == (CommandLength) ) // all received
+    {
+      if(uiKRT2DebugLevel ==2)	 StartupStore(_T("================ %s") ,NEWLINE);
+      if(uiKRT2DebugLevel ==2) for(int i=0; i < (CommandLength);i++)   StartupStore(_T(". KRT2   Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
+      if(uiKRT2DebugLevel ==2)  StartupStore(_T(". KRT2  Process Command %u  %s") ,CommandLength ,NEWLINE);
+      KRT2_Convert_Answer(d, Command, CommandLength);
+      RadioPara.Changed = true;
+      Recbuflen = 0;
+      CommandLength = REC_BUFSIZE;
+    }
+  } //  (cnt < len)
+  return  RadioPara.Changed;
+}
+
+
+
+BOOL KRT2Install(PDeviceDescriptor_t d){
+  _tcscpy(d->Name, TEXT("Dittel KRT2"));
+  d->IsRadio        = KRT2IsRadio;
+  d->PutVolume      = KRT2PutVolume;
+  d->PutSquelch     = KRT2PutSquelch;
+  d->PutFreqActive  = KRT2PutFreqActive;
+  d->PutFreqStandby = KRT2PutFreqStandby;
+  d->StationSwap    = KRT2StationSwap;
+  d->ParseStream    = KRT2ParseString;
+  d->PutRadioMode   = KRT2RadioMode;
+  return TRUE;
+}
+
+} // namespace
+
+
+BOOL KRT2Register(void){
+  return(devRegister(
+    TEXT("Dittel KRT2"),
+    (1l << dfRadio),
+    KRT2Install
+  ));
 }
