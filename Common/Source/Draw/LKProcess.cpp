@@ -1788,22 +1788,18 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if (NearestAirspaceHDist >0) {
-				value = DISTANCEMODIFY*NearestAirspaceHDist;
 
-				if (NearestAirspaceHDist<1000) {
-					_stprintf(BufferValue, TEXT("%1.3f"),value);
-				} else {
-					_stprintf(BufferValue, TEXT("%1.1f"),value);
-				}
+			value = fabs(DISTANCEMODIFY*NearestAirspaceHDist);
 
-				_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-				valid = true;
+			if (value < 1.0) {
+				_stprintf(BufferValue, TEXT("%1.3f"),value);
 			} else {
-				valid=false;
-				_stprintf(BufferValue, TEXT(NULLMEDIUM));
-				_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+				_stprintf(BufferValue, TEXT("%1.1f"),value);
 			}
+
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+			valid = (NearestAirspaceHDist > 0);
+
 			break;
 
 
@@ -2092,6 +2088,9 @@ olc_score:
 				valid=false;
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			}
+			if(NearestAirspaceVDist < 0)
+			  valid=false;
+
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
