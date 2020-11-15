@@ -230,7 +230,7 @@ bool TTYPort::Close() {
     return true;
 }
 
-bool TTYPort::Write(const void *data, size_t length) {
+bool TTYPort::Write(const void *data, size_t size) {
     struct timeval timeout;
     fd_set writefs;
     timeout.tv_sec = _Timeout / 1000;
@@ -248,7 +248,7 @@ bool TTYPort::Write(const void *data, size_t length) {
 
     if ((iResult != -1) && FD_ISSET(_tty, &writefs)) {
         // socket ready, Write data.
-        iResult = write(_tty, (const char*) data, length);
+        iResult = write(_tty, (const char*) data, size);
         if (iResult > 0) {
             AddStatTx(iResult);
             return true;

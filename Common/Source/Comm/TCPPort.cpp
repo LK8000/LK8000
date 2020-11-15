@@ -315,7 +315,7 @@ unsigned UDPServerPort::RxThread() {
 	return 0U;
 }
 
-bool UDPServerPort::Write(const void *data, size_t length) {
+bool UDPServerPort::Write(const void *data, size_t size) {
 
 	if (mSocket == INVALID_SOCKET) {
 	        unsigned dwError = WSAGetLastError();
@@ -328,10 +328,10 @@ bool UDPServerPort::Write(const void *data, size_t length) {
         sDefault.sin_addr.s_addr = inet_addr("192.168.43.1");
         sDefault.sin_port = htons(8000);
         sDefault.sin_family = AF_INET;
-        return sendto(mSocket, (const char *)data, length, 0, (sockaddr*)&sDefault, sizeof(sDefault));
+        return sendto(mSocket, (const char *)data, size, 0, (sockaddr*)&sDefault, sizeof(sDefault));
     }
     else
-    	return sendto(mSocket, (const char *)data, length, 0, (sockaddr*)&mSAddressClient, sizeof(mSAddressClient));
+    	return sendto(mSocket, (const char *)data, size, 0, (sockaddr*)&mSAddressClient, sizeof(mSAddressClient));
 }
 
 

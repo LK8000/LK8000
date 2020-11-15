@@ -120,7 +120,7 @@ bool SocketPort::Close() {
     return true;
 }
 
-bool SocketPort::Write(const void *data, size_t length) {
+bool SocketPort::Write(const void *data, size_t size) {
     if(mSocket == INVALID_SOCKET) {
         return false; // socket not connect,that can happen with TCPServer Port.
     }
@@ -150,7 +150,7 @@ bool SocketPort::Write(const void *data, size_t length) {
         const int flags = 0;
 #endif
         
-        iResult = send(mSocket, (const char*) data, length, flags);
+        iResult = send(mSocket, (const char*) data, size, flags);
         if (iResult > 0) {
             AddStatTx(iResult);
             return true;

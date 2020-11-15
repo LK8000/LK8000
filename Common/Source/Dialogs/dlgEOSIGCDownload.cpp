@@ -474,10 +474,10 @@ ConvUnion FLightNo;
 
       for (uint16_t i =0; i < byteCount; i ++)
       {
-        d->Com->PutChar( m_datagram[i]);
+        d->Com->Write( m_datagram[i]);
         m_byCrc= CRC_Update(m_byCrc, m_datagram[i]);
       }
-      d->Com->PutChar(m_byCrc);
+      d->Com->Write(m_byCrc);
        if (deb_) StartupStore(TEXT("Send CRC: %02X"),(uint8_t) m_byCrc); 
 
   if (deb_) {

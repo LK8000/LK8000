@@ -99,15 +99,15 @@ void SendEscChar(DeviceDescriptor_t *d, uint8_t byte) {
   if (d && d->Com)
     switch (byte) {
     case ESCAPE:
-      d->Com->PutChar(ESCAPE);
-      d->Com->PutChar(ESC_ESC);
+      d->Com->Write(ESCAPE);
+      d->Com->Write(ESC_ESC);
       break;
     case STARTFRAME:
-      d->Com->PutChar(ESCAPE);
-      d->Com->PutChar(ESC_START);
+      d->Com->Write(ESCAPE);
+      d->Com->Write(ESC_START);
       break;
     default:
-      d->Com->PutChar(byte);
+      d->Com->Write(byte);
       break;
     }
 }
@@ -128,7 +128,7 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
   blk[4] = highbyte(Sequence);      // sequence
   blk[5] = Command;
 
-  d->Com->PutChar(STARTFRAME);
+  d->Com->Write(STARTFRAME);
   for (i = 0; i < 6; i++) {
     CRC = crc_update(CRC, blk[i]);
   }

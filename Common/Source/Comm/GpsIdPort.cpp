@@ -138,7 +138,7 @@ unsigned long GpsIdPort::GetBaudrate() const {
     return 0U;
 }
 
-bool GpsIdPort::Write(const void *data, size_t length) {
+bool GpsIdPort::Write(const void *data, size_t size) {
     LKASSERT(FALSE);
     return false;
 }

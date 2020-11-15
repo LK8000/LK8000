@@ -91,7 +91,7 @@ VLA_ERROR VLA_SYS::serial_close_port()
 /** serial output of single character to the VL */
 VLA_ERROR VLA_SYS::serial_out(const byte outbyte)
 {
-  device->Com->PutChar(outbyte);
+  device->Com->Write(outbyte);
   return VLA_ERR_NOERR;
 }
 

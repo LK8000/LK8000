@@ -56,7 +56,7 @@ protected:
     bool Connect() override;
 
     unsigned RxThread() override;
-    bool Write(const void *data, size_t length) override;
+    bool Write(const void *data, size_t size) override;
 
 	SOCKADDR_IN mSAddressClient;
 

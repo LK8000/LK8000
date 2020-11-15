@@ -77,10 +77,6 @@ int ComPort::GetChar() {
     return EOF;
 }
 
-void ComPort::PutChar(BYTE b) {
-    Write(&b, sizeof (b));
-}
-
 bool ComPort::StopRxThread() {
 
     StopEvt.set();

@@ -360,14 +360,14 @@ void SerialPort::UpdateStatus() {
     }
 }
 
-bool SerialPort::Write(const void *data, size_t length) {
+bool SerialPort::Write(const void *data, size_t size) {
     DWORD written;
 
     if (hPort == INVALID_HANDLE_VALUE) {
         return (false);
     }
 
-    if (!WriteFile(hPort, data, length, &written, NULL) || written != length) {
+    if (!WriteFile(hPort, data, size, &written, NULL) || written != size) {
         // WriteFile failed, report error
         AddStatErrTx(1);
         return (false);
