@@ -39,7 +39,7 @@ bool SerialPort::Initialize() {
     TCHAR sysPortName[20];
     DCB PortDCB;
 
-#if (WINDOWSPC>0)
+#ifndef UNDER_CE
     // Do not use COMn , use \\.\COMnn  on PC version
     _stprintf(sysPortName, _T("\\\\.\\%s"), GetPortName());
 #else
@@ -70,7 +70,7 @@ bool SerialPort::Initialize() {
     PortDCB.DCBlength = sizeof (DCB);
     // Get the default port setting information.
     if (GetCommState(hPort, &PortDCB)==0) {
-	StartupStore(_T("... ComPort %u GetCommState failed, error=%lu%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
+        StartupStore(_T("... ComPort %u GetCommState failed, error=%lu%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
         // @M759 = Unable to Change Settings on Port
         StatusMessage(mbOk, NULL, TEXT("%s %s"), MsgToken(759), GetPortName());
         goto failed;
@@ -151,11 +151,12 @@ failed:
         }
         hPort = INVALID_HANDLE_VALUE;
 
-#if (WINDOWSPC>0) || NEWCOMM // 091206
+#ifdef UNDER_CE
+        if (_PollingMode) {
+            Poco::Thread::sleep(2000);
+        }
+#else
         Poco::Thread::sleep(2000); // needed for windows bug
-#endif
-#if !(WINDOWSPC>0)
-        if (_PollingMode) Poco::Thread::sleep(2000);
 #endif
     }
     return false;
@@ -262,19 +263,18 @@ bool SerialPort::Close() {
     bool Ret = ComPort::Close(); // NOTICE: Ret is unused here, because Close is always returning true
     if (hPort != INVALID_HANDLE_VALUE) {
         // Close the communication port.
-#ifdef _DEBUG_STOP_RXTHREAD
-        StartupStore(_T("... ComPort %d StopRxThread: Close Serial Port file handle !%s"), GetPortIndex() + 1, NEWLINE);
-#endif
         if (!CloseHandle(hPort)) {
             DWORD dwError = GetLastError();
             StartupStore(_T("... ComPort %u close failed, error=%lu%s"), GetPortIndex() + 1, dwError, NEWLINE);
             Ret = false;
         } else {
-#if (WINDOWSPC>0) || NEWCOMM // 091206
+
+#ifdef UNDER_CE
+            if (_PollingMode) {
+                Poco::Thread::sleep(2000);
+            }
+#else
             Poco::Thread::sleep(2000); // needed for windows bug
-#endif
-#if !(WINDOWSPC>0)
-            if (_PollingMode) Poco::Thread::sleep(2000);
 #endif
             hPort = INVALID_HANDLE_VALUE;
             StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
@@ -299,44 +299,20 @@ void SerialPort::Purge() {
 
 // This is not accessing I/O buffers at all. We do this on close.
 void SerialPort::DirtyPurge() {
-#if 0
-    if(hPort != INVALID_HANDLE_VALUE) {
-        PurgeComm(hPort, PURGE_TXABORT | PURGE_RXABORT);
-    }
-#endif
+
 }
 
 void SerialPort::CancelWaitEvent() {
-#if (WINDOWSPC>0) || NEWCOMM  // 091206
-
-#else
+#ifdef UNDER_CE
     if(hPort != INVALID_HANDLE_VALUE) {
-	#if 0
-        Flush();
-
-        // setting the comm event mask with the same value
-        SetCommMask(hPort, _dwMask); // will cancel any
-                                     // WaitCommEvent!  this is a
-                                     // documented CE trick to
-                                     // cancel the WaitCommEvent
-	#else
-	#ifdef _DEBUG_STOP_RXTHREAD
-	StartupStore(_T("... SerialPort CancelWaitEvent: doing DirtyPurge\n"));
-	#endif
-	DirtyPurge();
-	#ifdef _DEBUG_STOP_RXTHREAD
-	StartupStore(_T("... SerialPort CancelWaitEvent: DirtyPurge OK\n"));
-	#endif
-	if (!_PollingMode) {
-		#ifdef _DEBUG_STOP_RXTHREAD
-		StartupStore(_T("... SerialPort CancelWaitEvent: doing SetCommMask\n"));
-		#endif
-		SetCommMask(hPort, _dwMask); // will cancel any WaitCommEvent
-		#ifdef _DEBUG_STOP_RXTHREAD
-		StartupStore(_T("... SerialPort CancelWaitEvent: SetCommMask OK\n"));
-		#endif
-	}
-	#endif
+        DirtyPurge();
+        if (!_PollingMode) {
+            // setting the comm event mask with the same value
+            SetCommMask(hPort, _dwMask); // will cancel any
+                                        // WaitCommEvent!  this is a
+                                        // documented CE trick to
+                                        // cancel the WaitCommEvent
+        }
     }
 #endif
 }
@@ -347,7 +323,6 @@ void SerialPort::UpdateStatus() {
     if(hPort != INVALID_HANDLE_VALUE) {
         ClearCommError(hPort, &dwErrors, &comStat);
         if (dwErrors & CE_FRAME) {
-            //StartupStore(_T("... Com port %d, dwErrors=%ld FRAME (old status=%d)\n"),
             SetPortStatus(CPS_EFRAME);
             AddStatErrRx(1);
             valid_frames = 0;
@@ -379,58 +354,46 @@ bool SerialPort::Write(const void *data, size_t size) {
 }
 
 unsigned SerialPort::RxThread() {
-#if ( (WINDOWSPC == 0)) && !NEWCOMM	// 100222
-    DWORD dwCommModemStatus = 0;
-    // Specify a set of events to be monitored for the port.
-#endif
     DWORD dwBytesTransferred = 0; // 091117 initialized variables
     _Buff_t szString;
 
     Purge();
-#if TRACETHREAD
-    StartupStore(_T("##############  PORT=%d threadid=%d\n"), GetPortIndex(), GetCurrentThreadId());
-    if (GetPortIndex() = 0) _THREADID_PORT1 = GetCurrentThreadId();
-    if (GetPortIndex() = 1) _THREADID_PORT2 = GetCurrentThreadId();
-    if (GetPortIndex() != 1 && GetPortIndex() != 2) _THREADID_UNKNOWNPORT = GetCurrentThreadId();
-#endif
+
+
+#ifdef UNDER_CE
+    DWORD dwCommModemStatus = 0;
+
     // Specify a set of events to be monitored for the port.
     _dwMask = EV_RXFLAG | EV_CTS | EV_DSR | EV_RING | EV_RXCHAR;
-
-#if ( (WINDOWSPC == 0)) && !NEWCOMM
-    SetCommMask(hPort, _dwMask);
-#endif
-#if (WINDOWSPC<1)
-    if (!_PollingMode) SetCommMask(hPort, _dwMask);
+    if (!_PollingMode) {
+        SetCommMask(hPort, _dwMask);
+    }
 #endif
 
     while ((hPort != INVALID_HANDLE_VALUE) && !StopEvt.tryWait(0)) {
-//        GetThreadTimes(hReadThread, &CreationTime, &ExitTime, &StartKernelTime, &StartUserTime);
 
         UpdateStatus();
 
-#if (WINDOWSPC>0) || NEWCOMM // 091206
-        // PC version does BUSY WAIT
-        Poco::Thread::sleep(50); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
-#else
-        if (_PollingMode)
+#ifdef UNDER_CE
+        if (_PollingMode) {
             Poco::Thread::sleep(100);
-        else
+        } else {
             // Wait for an event to occur for the port.
             if (!WaitCommEvent(hPort, &dwCommModemStatus, 0)) {
-            // error reading from port
-            Poco::Thread::sleep(100);
+                // error reading from port
+                Poco::Thread::sleep(100);
+            }
         }
+#else
+        // PC version does BUSY WAIT
+        Poco::Thread::sleep(50); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
 #endif
 
-        // Re-specify the set of events to be monitored for the port.
-        //    SetCommMask(hPort, dwMask1);
-
-        // #if (WINDOWSPC == 0) 091206
-#if ( (WINDOWSPC == 0)) && !NEWCOMM
+#ifdef UNDER_CE
         if (_PollingMode || (dwCommModemStatus & EV_RXFLAG) || (dwCommModemStatus & EV_RXCHAR)) // Do this only for non-PC
 #endif
         {
-            // Loop for waiting for the data.
+            // Loop to wait for the data.
             do {
                 // Read the data from the serial port.
                 dwBytesTransferred = ReadData(szString);
@@ -457,7 +420,7 @@ unsigned SerialPort::RxThread() {
         Poco::Thread::sleep(5);
 
         // Retrieve modem control-register values.
-#if ((WINDOWSPC == 0))
+#ifdef UNDER_CE
         if (!_PollingMode) {
             // this is causing problems on PC BT, apparently. Setting Polling will not call this, but it is a bug
             GetCommModemStatus(hPort, &dwCommModemStatus);
