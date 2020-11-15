@@ -237,7 +237,6 @@ if(len == 0)          return 0;
 //char szAnswer[180];
 TCHAR szTempStr[180] = _T("");
 
-double  fTmp  =0.0;
 int processed=0;
 
 static int counter =0;
@@ -350,12 +349,8 @@ static int counter =0;
           case 'C':
             if(len >= 2)
             {
-              fTmp =   RadioPara.ActiveFrequency;
-              RadioPara.ActiveFrequency = RadioPara.PassiveFrequency;
-              RadioPara.PassiveFrequency=  fTmp;
-              _tcscpy( szTempStr,  RadioPara.ActiveName);
-              _tcscpy(  RadioPara.ActiveName, RadioPara.PassiveName);
-              _tcscpy(  RadioPara.PassiveName, szTempStr);
+              std::swap(RadioPara.ActiveFrequency, RadioPara.PassiveFrequency);
+              std::swap(RadioPara.ActiveName, RadioPara.PassiveName);
               _stprintf(szTempStr,_T("Swap "));
             }
           break;
