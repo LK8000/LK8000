@@ -16,9 +16,6 @@
 
 namespace {
 
-#define ACTIVE_STATION  1
-#define PASSIVE_STATION 0
-
 constexpr uint8_t STX = 0x02; /* STX Command prefix hex code                  */
 constexpr uint8_t ACK = 0x06; /* acknolage hex code                           */
 constexpr uint8_t NAK = 0x15; /* not acknolage hex code                       */
@@ -53,7 +50,7 @@ BOOL OpenClose(PDeviceDescriptor_t d) {
  * Station        station Name string
  *
  *****************************************************************************/
-int SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, const TCHAR* Station)
+int SetKRT2Station(uint8_t *Command, uint8_t slot, double fFrequency, const TCHAR* Station)
 {
   auto MHz = static_cast<uint8_t>(fFrequency);
   auto kHz = static_cast<uint32_t>(fFrequency *1000.0 - MHz *1000  + 0.5);
@@ -65,18 +62,7 @@ int SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, cons
   if(Command == NULL )
     return false;
 
-  unsigned len =0;
-  Command[len++] = STX;
-  switch (Active_Passive)
-  {
-    case ACTIVE_STATION:
-      Command[len++] = 'U';
-    break;
-    default:
-    case PASSIVE_STATION:
-      Command[len++] = 'R';
-    break;
-  }
+
   if(Station != NULL) {
     TCHAR2usascii(Station, Airfield, 9);
   }
@@ -86,6 +72,10 @@ int SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, cons
     if((Airfield[i] < 32) || (Airfield[i] > 126))
    	  Airfield[i] = ' ';
   }
+
+  unsigned len =0;
+  Command[len++] = STX;
+  Command[len++] = slot;
   Command[len++] = MHz;
   Command[len++] = Chan;
   Command[len++] = Airfield[0];
@@ -96,7 +86,7 @@ int SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, cons
   Command[len++] = Airfield[5];
   Command[len++] = Airfield[6];
   Command[len++] = Airfield[7];
-  Command[len++] =MHz ^ Chan ;
+  Command[len++] = MHz ^ Chan ;
 
   return len;
 }
@@ -174,7 +164,7 @@ BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationN
   if(d && !d->Disabled && d->Com)
   {
     uint8_t szTmp[255];
-    int len =SetKRT2Station(szTmp ,ACTIVE_STATION, Freq, StationName);
+    int len =SetKRT2Station(szTmp, 'U', Freq, StationName);
     d->Com->Write(szTmp, len);
     RadioPara.ActiveFrequency=  Freq;
     if(StationName != NULL)
@@ -190,7 +180,8 @@ BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* Statio
   if(d && !d->Disabled && d->Com)
   {
     uint8_t szTmp[255];
-    int len = SetKRT2Station(szTmp ,PASSIVE_STATION, Freq, StationName);
+
+    int len = SetKRT2Station(szTmp, 'R', Freq, StationName);
     d->Com->Write(szTmp, len);
 
     RadioPara.PassiveFrequency =  Freq;
