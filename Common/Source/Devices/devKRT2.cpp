@@ -163,12 +163,11 @@ BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationN
 
   if(d && !d->Disabled && d->Com)
   {
-    uint8_t szTmp[255];
+    uint8_t szTmp[25];
+
     int len =SetKRT2Station(szTmp, 'U', Freq, StationName);
     d->Com->Write(szTmp, len);
-    RadioPara.ActiveFrequency=  Freq;
-    if(StationName != NULL)
-      _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),StationName) ;
+
     if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
   }
   return(TRUE);
@@ -179,14 +178,11 @@ BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* Statio
 
   if(d && !d->Disabled && d->Com)
   {
-    uint8_t szTmp[255];
+    uint8_t szTmp[25];
 
     int len = SetKRT2Station(szTmp, 'R', Freq, StationName);
     d->Com->Write(szTmp, len);
 
-    RadioPara.PassiveFrequency =  Freq;
-    if(StationName != NULL)
-      _sntprintf(RadioPara.PassiveName , NAME_SIZE ,_T("%s"),StationName) ;
     if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
   }
   return(TRUE);
