@@ -376,17 +376,17 @@ unsigned SerialPort::RxThread() {
 
 #ifdef UNDER_CE
         if (_PollingMode) {
-            Poco::Thread::sleep(100);
+            Poco::Thread::sleep(5);
         } else {
             // Wait for an event to occur for the port.
             if (!WaitCommEvent(hPort, &dwCommModemStatus, 0)) {
                 // error reading from port
-                Poco::Thread::sleep(100);
+                Poco::Thread::sleep(5);
             }
         }
 #else
         // PC version does BUSY WAIT
-        Poco::Thread::sleep(50); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
+        Poco::Thread::sleep(5); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
 #endif
 
 #ifdef UNDER_CE
@@ -395,18 +395,16 @@ unsigned SerialPort::RxThread() {
         {
             // Loop to wait for the data.
             do {
+                ScopeLock Lock(CritSec_Comm);
                 // Read the data from the serial port.
                 dwBytesTransferred = ReadData(szString);
                 if (dwBytesTransferred > 0) {
-                    if (ProgramStarted >= psNormalOp) { // ignore everything until started
-                        ScopeLock Lock(CritSec_Comm);
-                        std::for_each(std::begin(szString), std::begin(szString) + dwBytesTransferred, std::bind(&SerialPort::ProcessChar, this, _1));
-                    }
+                    std::for_each(std::begin(szString), std::begin(szString) + dwBytesTransferred, std::bind(&SerialPort::ProcessChar, this, _1));
                 } else {
                     dwBytesTransferred = 0;
                 }
 
-                Poco::Thread::sleep(5); // JMW20070515: give port some time to
+                Poco::Thread::sleep(1); // JMW20070515: give port some time to
                 // fill... prevents ReadFile from causing the
                 // thread to take up too much CPU
 
@@ -415,9 +413,6 @@ unsigned SerialPort::RxThread() {
                 }
             } while (dwBytesTransferred != 0);
         }
-
-        // give port some time to fill
-        Poco::Thread::sleep(5);
 
         // Retrieve modem control-register values.
 #ifdef UNDER_CE

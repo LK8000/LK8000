@@ -170,7 +170,6 @@ bool SocketPort::Write(const void *data, size_t size) {
 }
 
 unsigned SocketPort::RxThread() {
-    unsigned dwWaitTime = 0;
     _Buff_t szString;
     Purge();
     
@@ -189,16 +188,13 @@ unsigned SocketPort::RxThread() {
         // if failed, socket still in blocking mode, it's big problem
     }
 
-    while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(dwWaitTime)) {
+    while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
 
         ScopeLock Lock(CritSec_Comm);
         UpdateStatus();
         int nRecv = ReadData(szString);
         if (nRecv > 0) {
             std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&SocketPort::ProcessChar, this, _1));
-            dwWaitTime = 5; // avoid cpu overhead;
-        } else {
-            dwWaitTime = 50; // if no more data wait 50ms ( max data rate 20Hz )
         }
     }
 

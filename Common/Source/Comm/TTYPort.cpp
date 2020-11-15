@@ -267,19 +267,15 @@ bool TTYPort::Write(const void *data, size_t size) {
 }
 
 unsigned TTYPort::RxThread() {
-    long dwWaitTime = 0;
     _Buff_t szString;
     Purge();
 
-    while ((_tty != -1) && !StopEvt.tryWait(dwWaitTime)) {
+    while ((_tty != -1) && !StopEvt.tryWait(5)) {
         ScopeLock Lock(CritSec_Comm);
         UpdateStatus();
         int nRecv = ReadData(szString);
         if (nRecv > 0) {
             std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&TTYPort::ProcessChar, this, _1));
-            dwWaitTime = 5; // avoid cpu overhead;
-        } else {
-            dwWaitTime = 50; // if no more data wait 50ms ( max data rate 20Hz )
         }
     }
 
