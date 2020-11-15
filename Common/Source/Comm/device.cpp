@@ -1173,14 +1173,13 @@ else
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
-if( ValidFrequency(Freq))
-{
-	RadioPara.PassiveFrequency=  Freq;
-	CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
-  return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
-}
-else
-	return false;
+  if( ValidFrequency(Freq)) {
+	  RadioPara.PassiveFrequency=  Freq;
+	  CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
+    return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
+  } else {
+	  return false;
+  }
 }
 
 
