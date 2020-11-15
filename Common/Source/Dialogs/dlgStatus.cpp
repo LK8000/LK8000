@@ -239,22 +239,17 @@ static void UpdateValuesSystem() {
     if (VarioAvailable(GPS_INFO)) {
 	// LKTOKEN  _@M199_ = "Connected"
 #ifdef DEVICE_SERIAL
-     if(GPS_INFO.HardwareId >0)
+     if(DeviceList[ GPS_INFO.VarioSourceIdx ].HardwareId >0)
      {
 	  TCHAR sDevice[32]={0};
-		if((pDevSecondaryBaroSource != NULL))
-           if(!(pDevSecondaryBaroSource->Disabled))
-           {
-             _stprintf(sDevice, TEXT("%s"), pDevSecondaryBaroSource->Name  );
-           }
 
 		if((pDevPrimaryBaroSource != NULL))
            if(!(pDevPrimaryBaroSource->Disabled))
            {
-             _stprintf(sDevice, TEXT("%s"), pDevPrimaryBaroSource->Name );
+             _stprintf(sDevice, TEXT("%s"), DeviceList[ GPS_INFO.VarioSourceIdx ].Name );
            }
 
-	  _stprintf(Temp,TEXT("%s (%i)"),sDevice, GPS_INFO.HardwareId);
+	  _stprintf(Temp,TEXT("%s (%i)"),sDevice, DeviceList[ GPS_INFO.VarioSourceIdx ].HardwareId);
 		wp->SetText(Temp);
      }
      else

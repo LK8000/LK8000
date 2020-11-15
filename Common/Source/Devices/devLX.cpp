@@ -179,7 +179,7 @@ TCHAR ctemp[180];
 static int NoMsg=0;
 static int oldSerial=0;
 if(_tcslen(String) < 180)
-  if((( pGPS->SerialNumber == 0)  || ( pGPS->SerialNumber != oldSerial)) && (NoMsg < 5))
+  if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
@@ -188,23 +188,23 @@ if(_tcslen(String) < 180)
     StartupStore(_T(". %s\n"),ctemp);
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
-	pGPS->SerialNumber= (int)StrToDouble(ctemp,NULL);
-	oldSerial = pGPS->SerialNumber;
-	_stprintf(ctemp, _T("%s Serial Number %i"), d->Name, pGPS->SerialNumber);
+	d->SerialNumber= (int)StrToDouble(ctemp,NULL);
+	oldSerial = d->SerialNumber;
+	_stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
 	StartupStore(_T(". %s\n"),ctemp);
 
 	NMEAParser::ExtractParameter(String,ctemp,2);
-	pGPS->SoftwareVer= StrToDouble(ctemp,NULL);
-	_stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, pGPS->SoftwareVer);
+	d->SoftwareVer= StrToDouble(ctemp,NULL);
+	_stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
 	StartupStore(_T(". %s\n"),ctemp);
 
 	NMEAParser::ExtractParameter(String,ctemp,3);
-    pGPS->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-	_stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(pGPS->HardwareId)/10.0);
+    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
+	_stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
 	StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, pGPS->SerialNumber);
+    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
     DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  pGPS->SoftwareVer, (double)(pGPS->HardwareId)/10.0);
+    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
     DoStatusMessage(ctemp);
   }
   // nothing to do

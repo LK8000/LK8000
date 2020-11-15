@@ -19,7 +19,8 @@ bool VarioAvailable(const NMEA_INFO& Info) {
 }
 
 void UpdateVarioSource( NMEA_INFO& Info, const DeviceDescriptor_t& d, double Vario) {
-  if((unsigned)d.PortNumber <= Info.VarioSourceIdx) {
+  if((unsigned)d.PortNumber <= Info.VarioSourceIdx) 
+  {
 
     Info.VarioSourceIdx = d.PortNumber;
     Info.Vario = Vario;
