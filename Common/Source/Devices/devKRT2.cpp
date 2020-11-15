@@ -32,11 +32,16 @@ int uiKRT2DebugLevel = 0;
 #endif
 
 
-BOOL KRT2IsRadio(PDeviceDescriptor_t d){
-  (void)d;
+BOOL KRT2IsRadio(PDeviceDescriptor_t d) {
   return(TRUE);
 }
 
+bool device_found = false; 
+
+BOOL OpenClose(PDeviceDescriptor_t d) {
+  device_found = false;
+  return TRUE;
+}
 
 
 /*****************************************************************************
@@ -247,33 +252,17 @@ TCHAR szTempStr[180] = _T("");
 
 double  fTmp  =0.0;
 int processed=0;
-static int iDetected = 0;
-static bool bFound = false;
 
 static int counter =0;
 
-int i;
-
     if(szCommand[0] == 'S')
     {
-      uint8_t Cmd[] = { 'x' };
-      d->Com->Write(Cmd, std::size(Cmd));
+      d->Com->Write('x');
 
       if(uiKRT2DebugLevel) StartupStore(_T("KRT2 heartbeat: #%i %s"),counter++ ,NEWLINE);
-      if(bFound == false)
-      {
-        bFound = true;
-        iDetected++;
-        if(iDetected < 10)
-          DoStatusMessage(LKGetText(TEXT("RADIO DETECTED"))); // RADIO DETECTED
-        else
-            if(iDetected == 10)
-               DoStatusMessage(LKGetText(TEXT("Radio Message disabled")));
-
-      }
-      else
-      {
-       //   bFound = false;
+      if(!device_found) {
+        device_found = true;
+        DoStatusMessage(LKGetText(TEXT("RADIO DETECTED"))); // RADIO DETECTED
       }
       processed++;
     }
@@ -334,7 +323,7 @@ int i;
               else
               {
                 RadioPara.PassiveFrequency =  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
-                for(i=0; i < 8; i++)
+                for(unsigned i=0; i < 8; i++)
                   RadioPara.PassiveName[i] =   szCommand[4+i];
                 RadioPara.PassiveName[8] =0;
                 TrimRight(RadioPara.PassiveName);
@@ -559,6 +548,10 @@ BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GP
 
 BOOL KRT2Install(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Dittel KRT2"));
+
+  d->Open = OpenClose;
+  d->Close = OpenClose;
+
   d->IsRadio        = KRT2IsRadio;
   d->PutVolume      = KRT2PutVolume;
   d->PutSquelch     = KRT2PutSquelch;
