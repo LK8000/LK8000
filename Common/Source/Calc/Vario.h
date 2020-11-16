@@ -19,6 +19,8 @@ void ResetVarioAvailable(NMEA_INFO& Info);
 
 bool VarioAvailable(const NMEA_INFO& Info);
 
+const DeviceDescriptor_t* getVarioDevice(const NMEA_INFO& Info);
+
 void Vario(const NMEA_INFO& Info, DERIVED_INFO& Calculated);
 
 #endif // _CALC_VARIO_H_

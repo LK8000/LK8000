@@ -18,9 +18,17 @@ bool VarioAvailable(const NMEA_INFO& Info) {
   return (!ReplayLogger::IsEnabled()) && (Info.VarioSourceIdx < std::numeric_limits<unsigned>::max());
 }
 
+const DeviceDescriptor_t* getVarioDevice(const NMEA_INFO& Info) {
+  if (VarioAvailable(Info)) {
+    if (Info.VarioSourceIdx < std::size(DeviceList)) {
+      return &DeviceList[Info.VarioSourceIdx];
+    }
+  }
+  return nullptr;
+}
+
 void UpdateVarioSource( NMEA_INFO& Info, const DeviceDescriptor_t& d, double Vario) {
-  if((unsigned)d.PortNumber <= Info.VarioSourceIdx) 
-  {
+  if((unsigned)d.PortNumber <= Info.VarioSourceIdx) {
 
     Info.VarioSourceIdx = d.PortNumber;
     Info.Vario = Vario;
