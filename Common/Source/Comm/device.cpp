@@ -446,6 +446,12 @@ void DeviceDescriptor_t::InitStruct(int i) {
     iSharedPort = -1;
     m_bAdvancedMode = false;
     bNMEAOut = false;
+
+#ifdef DEVICE_SERIAL
+    HardwareId = 0;
+    SerialNumber = 0;
+    SoftwareVer = 0;
+#endif
 }
 
 bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
