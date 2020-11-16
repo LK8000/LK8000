@@ -1828,7 +1828,7 @@ static int iNoFlights=0;
       if(IsDirInput(PortIO[d->PortNumber].QNHDir))
       { 
         _stprintf( szTmp, _T("%4.0f hPa"),fTmp);      
-        SetDataText( _QNH,   szTmp);
+        if(Values(d)) SetDataText( _QNH,   szTmp);
         static double oldQNH = -1;
         if ( fabs( oldQNH - fTmp) > 0.1)
         {
@@ -1937,7 +1937,7 @@ double fTmp;
 
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
-    SetDataText(_OAT,  szTmp);
+     if(Values(d)) SetDataText(_OAT,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].OATDir))
     {
       info->OutsideAirTemperature = fTmp;
@@ -1946,7 +1946,7 @@ double fTmp;
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
-    SetDataText(_BAT1,  szTmp);
+    if(Values(d)) SetDataText(_BAT1,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
     {
       info->ExtBatt1_Voltage = fTmp;	
@@ -1954,7 +1954,7 @@ double fTmp;
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Backup battery voltage
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
-    SetDataText(_BAT2,  szTmp);
+     if(Values(d)) SetDataText(_BAT2,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
     {
       info->ExtBatt2_Voltage = fTmp;	
@@ -2178,7 +2178,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
 #endif
   }
 
-  SetDataText( _T_TRGT,  szName);
+  if(Values(d)) SetDataText( _T_TRGT,  szName);
   DevLX_EOS_ERA::SendNmea(d,szTmp);
 
 return(true);
