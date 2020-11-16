@@ -309,3 +309,12 @@ void lk::filesystem::fixPath(TCHAR* szPath) {
         sz = _tcsstr(sz, _T("\\"));
     }
 }
+
+size_t lk::filesystem::getFileSize(const TCHAR* szPath) {
+    struct stat st;
+    if (stat(szPath, &st) < 0 || !S_ISREG(st.st_mode)) {
+        return 0;
+    }
+
+    return st.st_size;
+}

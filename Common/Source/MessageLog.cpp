@@ -16,6 +16,8 @@
 #include <android/log.h>
 #endif
 
+constexpr size_t MAX_LOG_SIZE = 1024*1024; // 1MB
+
 /**
  * it's for debug build only.
  *  - file are cleared by first use.
@@ -72,15 +74,24 @@ void StartupStore(const TCHAR *Str, ...)
 #endif
   
 
-  FILE *startupStoreFile = NULL;
   static TCHAR szFileName[MAX_PATH];
   static bool initialised = false;
   if (!initialised) {
-	LocalPath(szFileName, TEXT(LKF_RUNLOG));
-	initialised = true;
+    LocalPath(szFileName, TEXT(LKF_RUNLOG));
+
+    // rotate log
+    size_t filesize = lk::filesystem::getFileSize(szFileName);
+    if(filesize > MAX_LOG_SIZE) {
+      TCHAR szFileNameOld[MAX_PATH];
+      LocalPath(szFileNameOld, TEXT(LKF_RUNLOG ".old"));
+      lk::filesystem::deleteFile(szFileNameOld);
+      lk::filesystem::moveFile(szFileName, szFileNameOld);
+    }
+
+    initialised = true;
   }
 
-  startupStoreFile = _tfopen(szFileName, TEXT("ab+"));
+  FILE* startupStoreFile = _tfopen(szFileName, TEXT("ab+"));
   if (startupStoreFile != NULL) {
 #ifdef UNICODE
     /* each codepoints can be encoded in one to four bytes.
