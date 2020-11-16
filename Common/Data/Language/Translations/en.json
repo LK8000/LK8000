@@ -1747,6 +1747,8 @@
     "_@M001355_": "BATTERY LEVEL VERY LOW!",
     "_@M001356_": "BATTERY LEVEL LOW!",
     "_@M001357_": "BATTERY WARNINGS DISABLED",
+    "_@M001358_": "RADIO DETECTED",
+
     "_@M001400_": "Task declaration",
     "_@M001401_": "Enabling declaration mode",
     "_@M001402_": "Disabling declaration mode",

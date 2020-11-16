@@ -248,7 +248,7 @@ static int counter =0;
       if(uiKRT2DebugLevel) StartupStore(_T("KRT2 heartbeat: #%i %s"),counter++ ,NEWLINE);
       if(!device_found) {
         device_found = true;
-        DoStatusMessage(LKGetText(TEXT("RADIO DETECTED"))); // RADIO DETECTED
+        DoStatusMessage(MsgToken(1358)); // RADIO DETECTED
       }
       processed++;
     }
