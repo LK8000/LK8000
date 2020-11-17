@@ -19,7 +19,7 @@
 namespace {
 
     void setFileSuffix(TCHAR* Out, PixelSize size) {
-        if(ScreenLandscape && size.cx > size.cy) {
+        if(ScreenLandscape || size.cx < size.cy) {
             _stprintf(Out, _T("_%03dx%03d." IMG_EXT), size.cx, size.cy);
         } else {
             _stprintf(Out, _T("_%03dx%03d." IMG_EXT), size.cy, size.cx);
