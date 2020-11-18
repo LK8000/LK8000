@@ -108,7 +108,7 @@ typedef struct {
 } XMLClear;
 
 // Structure for XML attribute.
-typedef struct {
+typedef struct XMLAttribute {
     LPTSTR lpszName; LPTSTR lpszValue;
     operator bool () { return (lpszName != NULL && lpszValue != NULL); }
 } XMLAttribute;
