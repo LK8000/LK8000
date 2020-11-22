@@ -146,7 +146,8 @@ double TrueAirSpeed( double delta_press, double hr, double temp, double abs_pres
 double HexStrToDouble(TCHAR *Source, TCHAR **Stop);
 
 // Fast convert from Hex string To integer
-int HexStrToInt(TCHAR *Source);
+uint8_t HexDigit(TCHAR c);
+int HexStrToInt(const TCHAR *Source);
 
 ///////////////////////////////////////////////////////////////////////
 // Extract H, M, S from string like "HH:MM:SS"
