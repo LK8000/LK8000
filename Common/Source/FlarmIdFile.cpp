@@ -51,6 +51,10 @@ FlarmIdFile::FlarmIdFile(void)
 
 FlarmIdFile::~FlarmIdFile(void)
 {
+  for(auto& item : flarmIds) {
+    delete item.second;
+  }
+  flarmIds.clear();
 }
 
 void FlarmIdFile::GetItem(FILE* hFile, FlarmId *flarmId)
