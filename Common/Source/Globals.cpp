@@ -443,8 +443,6 @@ void Globals_Init(void) {
   _tcscpy(NearestAirspaceName,_T(""));
   _tcscpy(NearestAirspaceVName,_T(""));
 
-  // FlarmNetCount=0; BUG 120606 this cannot be done here, it is already done by class init!
-
   //Airspace Warnings
   AIRSPACEWARNINGS = TRUE;
   WarningTime = 60;

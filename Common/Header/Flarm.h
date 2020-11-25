@@ -56,6 +56,7 @@ struct FLARM_TRACE {
 };
 
 struct NMEA_INFO;
+struct FlarmId;
 
 void CheckBackTarget(NMEA_INFO &Info, int slot);
 void UpdateFlarmTarget(NMEA_INFO &Info);
@@ -63,13 +64,13 @@ void UpdateFlarmTarget(NMEA_INFO &Info);
 void OpenFLARMDetails();
 void CloseFLARMDetails();
 
-TCHAR* LookupFLARMCn(uint32_t RadioId);
+const TCHAR* LookupFLARMCn(uint32_t RadioId);
 
-TCHAR* LookupFLARMDetails(uint32_t RadioId);
+const TCHAR* LookupFLARMDetails(uint32_t RadioId);
 uint32_t LookupFLARMDetails(TCHAR *cn);
 
 bool AddFlarmLookupItem(uint32_t RadioId, TCHAR *name, bool saveFile);
 
-int LookupSecondaryFLARMId(uint32_t RadioId);
+const FlarmId* LookupFlarmId(uint32_t RadioId);
 
 #endif

@@ -44,7 +44,6 @@ static int NoAirspace = 0;
 #ifdef FLARM_MS
 #include "FlarmIdFile.h"
 static int NoFlarm = 0;
-extern FlarmIdFile *file;
 #endif
 #ifdef WEATHERST_MS
 static int NoWeatherSt = 0;
@@ -319,22 +318,17 @@ if(text1 == NULL) return -1;
 if(text2 == NULL) return -1;
 
 TCHAR Comment[MAX_LEN] = _T("");;
-FlarmId* flarmId ;
-int j;
-double Distance, Bear;
+
+  double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pFlarm->Latitude,  pFlarm->Longitude, &Distance, &Bear);
   if(_tcscmp(pFlarm->Name,_T("?")) ==0)
     _sntprintf(text1,MAX_LEN, TEXT("%X"), pFlarm->RadioId);
   else
     _sntprintf(text1,MAX_LEN, TEXT("[%s] %X"),pFlarm->Name, pFlarm->RadioId);
 
-  flarmId = file->GetFlarmIdItem(pFlarm->RadioId);
+  const FlarmId* flarmId = LookupFlarmId(pFlarm->RadioId);
   if(flarmId != NULL)
   {
-
-    for(j=1; j < (FLARMID_SIZE_NAME-1); j++)
-      if(flarmId->type[FLARMID_SIZE_NAME-j] == ' ')
-        flarmId->type[FLARMID_SIZE_NAME-j] = '\0';
     if(flarmId->freq[3] != ' ')
       _sntprintf(Comment,MAX_LEN, TEXT("%s  %s %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
                                             , flarmId->freq     // FLARMID_SIZE_FREQ   8    r

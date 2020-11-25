@@ -16,14 +16,12 @@
 #include "Sound/Sound.h"
 #include "Radio.h"
 
-extern FlarmIdFile *file;
-
 static WndForm *wf=NULL;
 static void SetValues(int indexid);
 
 static int SelectedTraffic;
 static WndButton *buttonTarget=NULL;
-FlarmId* flarmId = NULL;
+const FlarmId* flarmId = nullptr;
 static void OnTargetClicked(WndButton* pWnd) {
 
   if (SelectedTraffic<0 || SelectedTraffic>MAXTRAFFIC) {
@@ -344,7 +342,7 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  flarmId = file->GetFlarmIdItem(LKTraffic[indexid].RadioId);
+  flarmId = LookupFlarmId(LKTraffic[indexid].RadioId);
   if (flarmId != NULL) {
 	wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
 	if (wp) {

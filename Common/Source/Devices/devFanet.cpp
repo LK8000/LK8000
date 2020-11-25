@@ -147,10 +147,9 @@ static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
     }    
   }
   fanetDevice.Name[i] = 0; //0-termination of String
-  long flarmId;
-  if (_stscanf(HexDevId, TEXT("%lx"), &flarmId) == 1){
-    if (LookupSecondaryFLARMId(flarmId) == -1){ //check, if device is already in flarm-database
-      AddFlarmLookupItem(flarmId, fanetDevice.Name, false); //add to Flarm-Database
+  uint32_t flarmId; 
+  if (_stscanf(HexDevId, TEXT("%x"), &flarmId) == 1){
+    if (AddFlarmLookupItem(flarmId, fanetDevice.Name, true)) { //check, if device is already in flarm-database
       int flarm_slot = FLARM_FindSlot(pGPS, flarmId); //check if Flarm is already in List
       if (flarm_slot>=0) {
         pGPS->FLARM_Traffic[flarm_slot].UpdateNameFlag = true;

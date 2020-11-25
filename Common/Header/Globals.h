@@ -310,8 +310,6 @@ GEXTERN unsigned LKHearthBeats;
 // number of reporting messages from Portmonitor.
 GEXTERN int PortMonitorMessages;
 
-GEXTERN int FlarmNetCount;
-
 // Copy of runtime traffic for instant use
 GEXTERN FLARM_TRAFFIC LKTraffic[FLARM_MAX_TRAFFIC];
 

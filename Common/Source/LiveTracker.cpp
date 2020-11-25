@@ -1227,12 +1227,12 @@ static bool LiveTrack24_Radar() {
 			auto& cn = GPS_INFO.FLARM_Traffic[flarm_slot].Cn;
 
 			GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
-			TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
+			const TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
 			if (fname) {
 				LK_tcsncpy(name,fname,MAXFLARMNAME);
 				//  Now we have the name, so lookup also for the Cn
 				// This will return either real Cn or Name, again
-				TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
+				const TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
 				if (cname) {
 					int cnamelen=_tcslen(cname);
 					if (cnamelen<=MAXFLARMCN) {

@@ -976,9 +976,7 @@ double scl = xtick;
 
 		_tcscpy(asFLARMPos[i].szGliderType,_T(""));
 
-		extern FlarmIdFile *file;
-		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].RadioId);
-
+		const FlarmId* flarmId = LookupFlarmId(LKTraffic[i].RadioId);
 		if(flarmId!= NULL) {
 		  LK_tcsncpy(asFLARMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
 		}
