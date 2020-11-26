@@ -1,18 +1,32 @@
-[![License: GPL-2.0](
-   https://img.shields.io/github/license/LK8000/LK8000.svg)](
-   https://github.com/LK8000/LK8000/blob/master/LICENSE)
+<center>
+
+# WELCOME TO THE LK8000 DEVELOPMENT HUB
+
 [![Website: www.lk8000.it](
    https://img.shields.io/badge/website-www.lk8000.it-blue)](
    https://www.lk8000.it)
 [![Forum: postfrontal.com](
    https://img.shields.io/badge/forum-postfrontal.com-blue)](
    https://www.postfrontal.com/forum/default.asp?CAT_ID=11)
+[![License: GPL-2.0](
+   https://img.shields.io/github/license/LK8000/LK8000.svg)](
+   https://github.com/LK8000/LK8000/blob/master/LICENSE)
+
 [![Translation status](
    https://hosted.weblate.org/widgets/lk8000/-/svg-badge.svg)](
    https://hosted.weblate.org/engage/lk8000/)
 
-# WELCOME TO THE LK8000 DEVELOPMENT HUB
-THIS IS THE DEVELOPEMENT BRANCH.
+[![GitHub Stable](
+   https://img.shields.io/github/release/LK8000/LK8000?label=Stable)](
+   https://github.com/LK8000/LK8000/releases/latest)
+[![GitHub Beta](
+   https://img.shields.io/github/v/tag/LK8000/LK8000?label=Beta)](
+   https://github.com/LK8000/LK8000/releases)
+
+[![GitHub Downloads](
+   https://img.shields.io/github/downloads/LK8000/LK8000/total)](
+   https://github.com/LK8000/LK8000/releases)
+</center>
 
 ---
 ## Build Targets supported
