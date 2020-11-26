@@ -22,6 +22,7 @@ Copyright_License {
 */
 
 #ifndef XCSOAR_OS_SLEEP_H
+#define XCSOAR_OS_SLEEP_H
 
 #ifdef WIN32
 
@@ -44,4 +45,4 @@ Sleep(unsigned ms)
 
 #endif /* !WIN32 */
 
-#endif
+#endif // XCSOAR_OS_SLEEP_H
