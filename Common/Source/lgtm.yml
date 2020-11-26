@@ -1,0 +1,25 @@
+# LGTM configuration file for C++ analysis
+extraction:
+  cpp:
+    prepare:
+      packages:
+        - libzzip-dev
+        - libfreetype6-dev
+        - libboost-dev
+        - libpng-dev
+        - libgeographic-dev
+        - xsltproc
+        - imagemagick
+        - ttf-dejavu
+        - zip
+        - libgl1-mesa-dev
+        - libegl1-mesa-dev
+        - libx11-dev
+        - libasound2-dev
+        - libsndfile1-dev
+    configure:
+      command:
+        - make clean
+    index:
+      build_command: 
+        - make
