@@ -1456,7 +1456,7 @@ TCHAR ctemp[MAX_NMEA_LEN];
 static int NoMsg=0;
 static int oldSerial=0;
 if(_tcslen(String) < 180)
-  if((( pGPS->SerialNumber == 0)  || ( pGPS->SerialNumber != oldSerial)) && (NoMsg < 5))
+  if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
     NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
@@ -1465,23 +1465,23 @@ if(_tcslen(String) < 180)
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,1);
-    pGPS->SerialNumber= (int)StrToDouble(ctemp,NULL);
-    oldSerial = pGPS->SerialNumber;
-    _stprintf(ctemp, _T("%s Serial Number %i"), d->Name, pGPS->SerialNumber);
+    d->SerialNumber= (int)StrToDouble(ctemp,NULL);
+    oldSerial = d->SerialNumber;
+    _stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,2);
-    pGPS->SoftwareVer= StrToDouble(ctemp,NULL);
-    _stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, pGPS->SoftwareVer);
+    d->SoftwareVer= StrToDouble(ctemp,NULL);
+    _stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,3);
-    pGPS->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-    _stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(pGPS->HardwareId)/10.0);
+    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
+    _stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
     StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, pGPS->SerialNumber);
+    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
     DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  pGPS->SoftwareVer, (double)(pGPS->HardwareId)/10.0);
+    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
     DoStatusMessage(ctemp);
   }
   // nothing to do
@@ -1828,7 +1828,7 @@ static int iNoFlights=0;
       if(IsDirInput(PortIO[d->PortNumber].QNHDir))
       { 
         _stprintf( szTmp, _T("%4.0f hPa"),fTmp);      
-        SetDataText( _QNH,   szTmp);
+        if(Values(d)) SetDataText( _QNH,   szTmp);
         static double oldQNH = -1;
         if ( fabs( oldQNH - fTmp) > 0.1)
         {
@@ -1937,7 +1937,7 @@ double fTmp;
 
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
-    SetDataText(_OAT,  szTmp);
+     if(Values(d)) SetDataText(_OAT,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].OATDir))
     {
       info->OutsideAirTemperature = fTmp;
@@ -1946,7 +1946,7 @@ double fTmp;
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
-    SetDataText(_BAT1,  szTmp);
+    if(Values(d)) SetDataText(_BAT1,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
     {
       info->ExtBatt1_Voltage = fTmp;	
@@ -1954,7 +1954,7 @@ double fTmp;
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Backup battery voltage
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
-    SetDataText(_BAT2,  szTmp);
+     if(Values(d)) SetDataText(_BAT2,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
     {
       info->ExtBatt2_Voltage = fTmp;	
@@ -2178,7 +2178,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
 #endif
   }
 
-  SetDataText( _T_TRGT,  szName);
+  if(Values(d)) SetDataText( _T_TRGT,  szName);
   DevLX_EOS_ERA::SendNmea(d,szTmp);
 
 return(true);

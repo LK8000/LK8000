@@ -167,7 +167,11 @@ struct DeviceDescriptor_t {
   unsigned ErrTx;
   // Com ports hearth beats, based on LKHearthBeats
   unsigned HB;
-  
+#ifdef DEVICE_SERIAL
+  int HardwareId;
+  int SerialNumber;
+  double SoftwareVer;
+#endif
   NMEAParser nmeaParser;
 //  DeviceIO PortIO[NUMDEV];
   void InitStruct(int i);

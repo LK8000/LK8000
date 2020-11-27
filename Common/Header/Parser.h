@@ -144,11 +144,7 @@ struct NMEA_INFO
   int  FLARMTRACE_iLastPtr;
   FANET_WEATHER FANET_Weather[MAXFANETWEATHER];
   FANET_NAME FanetName[MAXFANETDEVICES];
-#ifdef DEVICE_SERIAL
-  int HardwareId;
-  int SerialNumber;
-  double SoftwareVer;
-#endif
+
   #if LOGFRECORD
   int SatelliteIDs[MAXSATELLITES];
   #endif

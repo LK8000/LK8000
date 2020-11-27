@@ -221,12 +221,12 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 
 if(_tcslen(String) < 180)
-  if(((pGPS->SerialNumber == 0) || (oldSerial != SerialNumber)) && (NoMsg < 5))
+  if(((d->SerialNumber == 0) || (oldSerial != SerialNumber)) && (NoMsg < 5))
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
-    pGPS->HardwareId= (int)StrToDouble(ctemp,NULL);
-    switch (pGPS->HardwareId)
+    d->HardwareId= (int)StrToDouble(ctemp,NULL);
+    switch (d->HardwareId)
     {
       case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
       case 22:  _tcscpy(d->Name, TEXT("VW1020")); break;
@@ -235,7 +235,7 @@ if(_tcslen(String) < 180)
     }
 	StartupStore(_T(". %s\n"),ctemp);
 	_stprintf(ctemp, _T("%s  DETECTED"), d->Name);
-	oldSerial = pGPS->SerialNumber;
+	oldSerial = d->SerialNumber;
 	DoStatusMessage(ctemp);
 	StartupStore(_T(". %s\n"),ctemp);
   }
@@ -464,12 +464,12 @@ TCHAR ctemp[180];
 static int NoMsg=0;
 
 if(_tcslen(String) < 180)
-  if(((pGPS->SerialNumber == 0) || (oldSerial	!= SerialNumber)) && (NoMsg < 5))
+  if(((d->SerialNumber == 0) || (oldSerial	!= SerialNumber)) && (NoMsg < 5))
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
-    pGPS->HardwareId= (int)StrToDouble(ctemp,NULL);
-    switch (pGPS->HardwareId)
+    d->HardwareId= (int)StrToDouble(ctemp,NULL);
+    switch (d->HardwareId)
     {
       case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
       case 22:  _tcscpy(d->Name, TEXT("VW1020")); break;
@@ -480,21 +480,21 @@ if(_tcslen(String) < 180)
 
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
-	pGPS->SerialNumber= (int)StrToDouble(ctemp,NULL);
-	SerialNumber = pGPS->SerialNumber;
+	d->SerialNumber= (int)StrToDouble(ctemp,NULL);
+	SerialNumber = d->SerialNumber;
 
 	NMEAParser::ExtractParameter(String,ctemp,2);
 	int Year = (int)(StrToDouble(ctemp,NULL));
 
 	NMEAParser::ExtractParameter(String,ctemp,3);
-	pGPS->SoftwareVer= StrToDouble(ctemp,NULL)/100.0;
+	d->SoftwareVer= StrToDouble(ctemp,NULL)/100.0;
 
 
 
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, pGPS->SerialNumber);
+    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
     DoStatusMessage(ctemp);
 	StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("SW Ver:%3.2f  HW Ver:%i "),  pGPS->SoftwareVer, Year);
+    _stprintf(ctemp, _T("SW Ver:%3.2f  HW Ver:%i "),  d->SoftwareVer, Year);
     DoStatusMessage(ctemp);
 	StartupStore(_T(". %s\n"),ctemp);
 	oldSerial	=SerialNumber;

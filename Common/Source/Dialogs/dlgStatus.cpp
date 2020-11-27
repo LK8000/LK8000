@@ -236,32 +236,18 @@ static void UpdateValuesSystem() {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpVario"));
   if (wp) {
-    if (VarioAvailable(GPS_INFO)) {
-	// LKTOKEN  _@M199_ = "Connected"
+    const DeviceDescriptor_t* dev = getVarioDevice(GPS_INFO);
+    if(dev) {
+      const TCHAR* devName = dev->Name;
 #ifdef DEVICE_SERIAL
-     if(GPS_INFO.HardwareId >0)
-     {
-	  TCHAR sDevice[32]={0};
-		if((pDevSecondaryBaroSource != NULL))
-           if(!(pDevSecondaryBaroSource->Disabled))
-           {
-             _stprintf(sDevice, TEXT("%s"), pDevSecondaryBaroSource->Name  );
-           }
-
-		if((pDevPrimaryBaroSource != NULL))
-           if(!(pDevPrimaryBaroSource->Disabled))
-           {
-             _stprintf(sDevice, TEXT("%s"), pDevPrimaryBaroSource->Name );
-           }
-
-	  _stprintf(Temp,TEXT("%s (%i)"),sDevice, GPS_INFO.HardwareId);
-		wp->SetText(Temp);
-     }
-     else
+      if(dev->HardwareId > 0) {
+        _stprintf(Temp,TEXT("%s (%i)"),dev->Name, dev->HardwareId);
+        devName = Temp;
+      }
 #endif
-	   wp->SetText(MsgToken(199));
+      wp->SetText(devName);
     } else {
-	// LKTOKEN  _@M240_ = "Disconnected"
+      // LKTOKEN  _@M240_ = "Disconnected"
       wp->SetText(MsgToken(240));
     }
     wp->RefreshDisplay();
