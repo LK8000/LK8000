@@ -151,7 +151,6 @@ static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   if (_stscanf(HexDevId, TEXT("%lx"), &flarmId) == 1){
     if (LookupSecondaryFLARMId(flarmId) == -1){ //check, if device is already in flarm-database
       AddFlarmLookupItem(flarmId, fanetDevice.Name, false); //add to Flarm-Database
-      extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
       int flarm_slot = FLARM_FindSlot(pGPS, flarmId); //check if Flarm is already in List
       if (flarm_slot>=0) {
         pGPS->FLARM_Traffic[flarm_slot].UpdateNameFlag = true;

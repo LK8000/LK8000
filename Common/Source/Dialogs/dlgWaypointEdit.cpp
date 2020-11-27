@@ -17,12 +17,9 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "Util/UTF8.hpp"
-
+#include "Library/Utm.h"
 
 using namespace std::placeholders;
-
-extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
-extern void UtmToLatLonWGS84 (int utmXZone, char utmYZone, double easting, double northing, double& lat, double& lon);
 
 static WAYPOINT *global_wpt=NULL;
 

@@ -10,7 +10,6 @@
 #include "externs.h"
 #include "FlarmCalculations.h"
 
-extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
 extern void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
 extern FlarmCalculations flarmCalculations;
 

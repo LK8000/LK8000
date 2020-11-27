@@ -460,6 +460,57 @@ void StartLogger()
   StartupStore(_T(". Logger Started %s  File <%s>"), WhatTimeIsIt(), szFLoggerFileName);
 }
 
+//
+// Paolo+Durval: feed external headers to LK for PNAdump software
+//
+#define MAXHLINE 100
+#define EXTHFILE	"COMPE.CNF"
+//#define DEBUGHFILE	1
+static void AdditionalHeaders(void) {
+
+    TCHAR pathfilename[MAX_PATH + 1];
+    LocalPath(pathfilename, _T(LKD_LOGS), _T(EXTHFILE));
+
+    if (!lk::filesystem::exist(pathfilename)) {
+#if DEBUGHFILE
+        StartupStore(_T("... No additional headers file <%s>\n"), pathfilename);
+#endif
+        return;
+    }
+
+#if DEBUGHFILE
+    StartupStore(_T("... HFILE <%s> FOUND\n"), pathfilename);
+#endif
+
+    FILE* stream = _tfopen(pathfilename, _T("rb"));
+    if (!stream) {
+        StartupStore(_T("... ERROR, extHFILE <%s> not found!%s"), pathfilename, NEWLINE);
+        return;
+    }
+
+
+    char tmpString[MAXHLINE + 1];
+    char tmps[MAXHLINE + 1 + std::size(HFREMARK)];
+    tmpString[MAXHLINE] = '\0';
+
+    while(size_t nbRead = fread(tmpString, sizeof(tmpString[0]), std::size(tmpString) - 1U, stream)) {
+        tmpString[nbRead] = '\0';
+        char* pTmp = strpbrk(tmpString, "\r\n");
+        while(pTmp && (((*pTmp) == '\r') || ((*pTmp) == '\n'))) {
+            (*pTmp++) = '\0';
+        }
+        fseek(stream, -1 * (&tmpString[nbRead] - pTmp) ,SEEK_CUR);
+
+        size_t len = strlen(tmpString);
+        if ((len < 2) || (tmpString[0] != '$')) {
+            continue;
+        }
+
+        sprintf(tmps, HFREMARK, &tmpString[1]);
+        IGCWriteRecord(tmps);
+    }
+    fclose(stream);
+}
 
 //
 // This is called by Calc/Task thread, after calling StartLogger
@@ -599,7 +650,6 @@ void LoggerHeader(void)
   }
 
 
-  extern void AdditionalHeaders(void);
   AdditionalHeaders();
 
 }
@@ -1010,55 +1060,3 @@ bool LoggerGActive() {
 #endif
 }
 
-//
-// Paolo+Durval: feed external headers to LK for PNAdump software
-//
-#define MAXHLINE 100
-#define EXTHFILE	"COMPE.CNF"
-//#define DEBUGHFILE	1
-
-void AdditionalHeaders(void) {
-
-    TCHAR pathfilename[MAX_PATH + 1];
-    LocalPath(pathfilename, _T(LKD_LOGS), _T(EXTHFILE));
-
-    if (!lk::filesystem::exist(pathfilename)) {
-#if DEBUGHFILE
-        StartupStore(_T("... No additional headers file <%s>\n"), pathfilename);
-#endif
-        return;
-    }
-
-#if DEBUGHFILE
-    StartupStore(_T("... HFILE <%s> FOUND\n"), pathfilename);
-#endif
-
-    FILE* stream = _tfopen(pathfilename, _T("rb"));
-    if (!stream) {
-        StartupStore(_T("... ERROR, extHFILE <%s> not found!%s"), pathfilename, NEWLINE);
-        return;
-    }
-
-
-    char tmpString[MAXHLINE + 1];
-    char tmps[MAXHLINE + 1 + std::size(HFREMARK)];
-    tmpString[MAXHLINE] = '\0';
-
-    while(size_t nbRead = fread(tmpString, sizeof(tmpString[0]), std::size(tmpString) - 1U, stream)) {
-        tmpString[nbRead] = '\0';
-        char* pTmp = strpbrk(tmpString, "\r\n");
-        while(pTmp && (((*pTmp) == '\r') || ((*pTmp) == '\n'))) {
-            (*pTmp++) = '\0';
-        }
-        fseek(stream, -1 * (&tmpString[nbRead] - pTmp) ,SEEK_CUR);
-
-        size_t len = strlen(tmpString);
-        if ((len < 2) || (tmpString[0] != '$')) {
-            continue;
-        }
-
-        sprintf(tmps, HFREMARK, &tmpString[1]);
-        IGCWriteRecord(tmps);
-    }
-    fclose(stream);
-}

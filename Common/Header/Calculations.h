@@ -385,6 +385,7 @@ bool CheckSafetyAltitudeApplies(const int wpindex);
 double GetSafetyAltitude(const int wpindex);
 short GetVisualGlideRatio(const double arrival, const double gr);
 bool IsSafetyAltitudeInUse(const int wpindex);
+bool IsSafetyMacCreadyInUse(const int wpindex);
 
 void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 

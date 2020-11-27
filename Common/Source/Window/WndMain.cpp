@@ -35,10 +35,8 @@
 #include "Draw/ScreenProjection.h"
 
 #include "Airspace/Sonar.h"
-#include <OS/RotateScreen.h>
-
-extern bool ScreenHasChanged(void);
-extern void ReinitScreen(void);
+#include "OS/RotateScreen.h"
+#include "ChangeScreen.h"
 
 WndMain::WndMain() : WndMainBase(), _MouseButtonDown(), _isRunning() {
 }
@@ -87,9 +85,6 @@ void BeforeShutdown(void) {
 
   // LKTOKEN _@M1221_ "Shutdown, saving profile..."
   CreateProgressDialog(MsgToken(1221));
-  extern void LKAircraftSave(const TCHAR *szFile);
-  extern void LKPilotSave(const TCHAR *szFile);
-  extern void LKDeviceSave(const TCHAR *szFile);
   LKPilotSave(defaultPilotFile);
   LKAircraftSave(defaultAircraftFile);
   LKProfileSave(defaultProfileFile);
@@ -254,7 +249,9 @@ void WndMain::OnDestroy() {
 
 bool WndMain::OnSize(int cx, int cy) {
     MapWindow::_OnSize(cx, cy);
-	if (ScreenHasChanged()) ReinitScreen();
+	if (ScreenHasChanged()) {
+        ReinitScreen();
+    } 
     return true;
 }
 

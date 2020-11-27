@@ -1713,8 +1713,6 @@ int iTmp;
       }
       if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
       {
-        extern bool PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]);
-
         double v;
         for (int i=0; i < 3; i++)
         {

@@ -662,6 +662,8 @@ GEXTERN unsigned short CustomMenu8;
 GEXTERN unsigned short CustomMenu9;
 GEXTERN unsigned short CustomMenu10;
 
+void Reset_CustomMenu();
+
 GEXTERN bool OverlayClock;
 GEXTERN bool UseTwoLines;
 GEXTERN bool EnableSoundModes;

@@ -12,7 +12,7 @@
 #include "Modeltype.h"
 #include "LKInterface.h"
 #include "Asset.hpp"
-
+#include "Multimap.h"
 
 //
 // Set all default values for configuration.
@@ -469,13 +469,8 @@ void LKProfileResetDefault() {
   UseUngestures=true;
 
   // This is also reset by global init, but never mind. Done twice.
-  extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
-
-  extern void Reset_Multimap_Flags(void);
   Reset_Multimap_Flags();
-
-  extern void Reset_Multimap_Mode(void);
   Reset_Multimap_Mode();
 
    UseWindRose=false;	// use wind rose (ex: NNE) for wind direction, instead of degrees

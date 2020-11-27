@@ -14,7 +14,26 @@
 #include "Asset.hpp"
 using std::placeholders::_1;
 
+static short ApplySnailResize(short defaultsize,short change) {
 
+  if (change!=MAXSNAILRESIZE) {
+      int psign=1; short i;
+      if (change>MAXSNAILRESIZE) {
+          psign=1;
+          i=change-MAXSNAILRESIZE; // 6>>1 , 10>>5
+      } else {
+          psign=-1;
+          i=MAXSNAILRESIZE-change; // 0>>5 , 4>>1
+      }
+      unsigned int u=  (double)(defaultsize*i) / 8.0; 
+      short newsize=defaultsize + (u*psign);
+      if (newsize<1) newsize=1;
+      
+      return newsize;
+  }
+
+  return defaultsize;
+}
 
 void SnailTrail_Create(void) {
 
@@ -38,8 +57,7 @@ void SnailTrail_Create(void) {
   LKColor      hSnailColours[NUMSNAILCOLORS+1];
 
   extern float ScreenPixelRatio;
-  extern short ApplySnailResize(short defaultsize, short change);
-
+  
   int tmpsize= iround(SNAIL_SIZE0 * ScreenPixelRatio);
   #ifdef TESTBENCH
   StartupStore(_T(". SNAIL[0]=%d ratio=%f\n"),tmpsize,ScreenPixelRatio);
@@ -172,26 +190,3 @@ void SnailTrail_Delete(void) {
   std::for_each(std::begin(MapWindow::hSnailPens), std::end(MapWindow::hSnailPens), std::bind(&LKPen::Release, _1) );
 
 }
-
-
-short ApplySnailResize(short defaultsize,short change) {
-
-  if (change!=MAXSNAILRESIZE) {
-      int psign=1; short i;
-      if (change>MAXSNAILRESIZE) {
-          psign=1;
-          i=change-MAXSNAILRESIZE; // 6>>1 , 10>>5
-      } else {
-          psign=-1;
-          i=MAXSNAILRESIZE-change; // 0>>5 , 4>>1
-      }
-      unsigned int u=  (double)(defaultsize*i) / 8.0; 
-      short newsize=defaultsize + (u*psign);
-      if (newsize<1) newsize=1;
-      
-      return newsize;
-  }
-
-  return defaultsize;
-}
-

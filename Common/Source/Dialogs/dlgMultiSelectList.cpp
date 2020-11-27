@@ -21,6 +21,7 @@
 #include "Dialogs.h"
 #include "Asset.hpp"
 #include "Util/TruncateString.hpp"
+#include "Library/Utm.h"
 
 #define MAX_LEN 80
 #define MAX_LIST_ITEMS 25
@@ -543,8 +544,6 @@ double fFact = fabs(pTraf->Average30s + 5.0) /10.0;
 if(fFact > 1.0 ) fFact = 1.0; else
   if(fFact < 0.0 ) fFact = 0.0;
 LKColor BaseColor = RGB_GREEN ;
-extern  LKColor MixColors(const LKColor& Color2, double fFact1) ;
-
 if (IsDithered()) {
   BaseColor = RGB_BLACK;
 } else {
@@ -712,7 +711,6 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
              {
                int utmzone; char utmchar;
                double easting, northing;
-               extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
                LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
                _sntprintf(text2,MAX_LEN,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
              }

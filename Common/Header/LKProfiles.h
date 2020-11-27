@@ -387,4 +387,7 @@ void LKProfileInitRuntime();
 bool LKProfileLoad(const TCHAR *szFile);
 void LKProfileSave(const TCHAR *szFile);
 
+void LKAircraftSave(const TCHAR *szFile);
+void LKPilotSave(const TCHAR *szFile);
+void LKDeviceSave(const TCHAR *szFile);
 #endif // _LKPROFILES_H

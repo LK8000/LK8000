@@ -18,10 +18,6 @@ static WndForm *wf=NULL;
 static short profilemode=0;
 static TCHAR profilesuffix[10];
 
-extern void LKAircraftSave(const TCHAR *szFile);
-extern void LKPilotSave(const TCHAR *szFile);
-extern void LKDeviceSave(const TCHAR *szFile);
-
 static void OnSaveExistingClicked(WndButton* pWnd) {
 
   int file_index;

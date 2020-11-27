@@ -27,6 +27,8 @@
 //#define MINSPEED	GlidePolar::Vminsink()*TOKPH
 #define STALLSPEED	GlidePolar::Vminsink()*TOKPH*0.6
 
+extern void SimFlarmTraffic(long id, double offset);
+
 // WE DONT USE LANDING, CRASHING AND FULL STALL SIMULATION NOW
 // #define SIMLANDING	1
 
@@ -57,9 +59,7 @@ void LKSimulator(void) {
   double tdistance, tbearing;
   double thermalstrength=0, sinkstrength=0;
 
-  extern void SimFlarmTraffic(long id, double offset);
-
-  if (doinit) {
+    if (doinit) {
 	if (counter++<4) {
 		UnlockFlightData();
 		return;
@@ -165,7 +165,6 @@ void LKSimulator(void) {
 		SimFlarmTraffic(0xdd8a43,0);
 
 		// update relative altitude for ghost/zombie traffic
-		extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
 		int flarmslot=FLARM_FindSlot(&GPS_INFO, 0xdd8a42);
 		if (flarmslot>=0)
 			GPS_INFO.FLARM_Traffic[flarmslot].RelativeAltitude = GPS_INFO.FLARM_Traffic[flarmslot].Altitude - GPS_INFO.Altitude;

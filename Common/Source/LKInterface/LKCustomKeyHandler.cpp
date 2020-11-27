@@ -295,7 +295,6 @@ passthrough:
 		return true;
 	case ckCustomMenu1:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		extern void dlgCustomMenuShowModal(void);
 		InputEvents::eventMode(_T("MYMODE"));
 		return true;
 	case ckTaskCalc:

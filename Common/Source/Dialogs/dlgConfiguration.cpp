@@ -47,7 +47,6 @@
 using namespace std::placeholders;
 
 extern void UpdateAircraftConfig(void);
-extern void dlgCustomMenuShowModal(void);
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
 void UpdateComPortSetting(WndForm* pOwner, size_t idx, const TCHAR* szPortName);
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
@@ -613,10 +612,12 @@ static void OnAircraftTypeClicked(WndButton* pWnd) {
 }
 
 static void OnTerminalClicked(WndButton* pWnd) {
-    extern void dlgTerminal(int portnum);
     dlgTerminal(SelectedDevice);
     UpdateDeviceEntries(pWnd->GetParentWndForm(), SelectedDevice);
 }
+
+extern bool SysOpMode;
+extern bool Sysop(TCHAR *command);
 
 static void OnPilotNameClicked(WndButton* pWnd) {
     TCHAR Temp[100];
@@ -627,12 +628,8 @@ static void OnPilotNameClicked(WndButton* pWnd) {
         //
         // ACCESS TO SYSOP MODE 
         //
-        extern bool SysOpMode;
-        extern bool Sysop(TCHAR *command);
-        #define SYSOPW "OPSYS"
-
         if (!SysOpMode) {
-           if (!_tcscmp(Temp,_T(SYSOPW))) {
+           if (!_tcscmp(Temp,_T("OPSYS"))) {
               _tcscpy(Temp,_T("SYSOP"));
               Sysop(Temp); // activate sysop mode and exit dialog
               if(pWnd) {
@@ -786,7 +783,6 @@ static void OnSetInfoPagesClicked(WndButton* pWnd) {
 }
 
 static void OnSetOverlaysClicked(WndButton* pWnd) {
-    extern void dlgOverlaysShowModal(void);
     dlgOverlaysShowModal();
 }
 
@@ -984,10 +980,9 @@ static void OnWaypointNewClicked(WndButton* pWnd){
   edit_waypoint.Flags = 0;
   edit_waypoint.Comment=(TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 
-  extern void MSG_NotEnoughMemory(void);
   if (edit_waypoint.Comment == (TCHAR *)NULL) {
-	MSG_NotEnoughMemory();
-	return;
+    OutOfMemory(_T(__FILE__), __LINE__);
+    return;
   }
   _tcscpy(edit_waypoint.Comment,_T(""));
 
@@ -3416,6 +3411,41 @@ static bool OnUser(WndForm * pWndForm, unsigned id) {
 
 #endif
 
+
+
+//
+// Setup device dialogs fine tuning
+//
+static void InitDlgDevice(WndForm *pWndForm) {
+
+  if(!pWndForm) {
+    LKASSERT(0);
+    return;
+  }
+
+  // spacing between buttons and left&right
+  const unsigned int SPACEBORDER = DLGSCALE(2);
+  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES + 1))) / MAXNUMDEVICES;
+  unsigned int lx = SPACEBORDER; // count from 0
+
+  static_assert(MAXNUMDEVICES == std::size(DeviceList), "wrong array size");
+
+  for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
+    TCHAR szWndName[5];
+    _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
+    WindowControl * pWnd = pWndForm->FindByName(szWndName);
+    if(pWnd) {
+      pWnd->SetWidth(w);
+      pWnd->SetLeft(lx);
+      ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
+      ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
+      if(i==0) OnA((WndButton*)pWnd);
+      lx += w + SPACEBORDER;
+    }
+  }
+}
+
+
 void dlgConfigurationShowModal(short mode){
 
   WndProperty *wp;
@@ -3506,7 +3536,6 @@ void dlgConfigurationShowModal(short mode){
 //         ShowWindowControl(wf, _T("prpExtSound2"), false);
         }
 #endif
-     extern void InitDlgDevice(WndForm *wf);
      InitDlgDevice(wf);
 
 
@@ -4787,35 +4816,3 @@ void UpdateAircraftConfig(void){
   }
 }
 
-
-//
-// Setup device dialogs fine tuning
-//
-void InitDlgDevice(WndForm *pWndForm) {
-
-  if(!pWndForm) {
-    LKASSERT(0);
-    return;
-  }
-
-  // spacing between buttons and left&right
-  const unsigned int SPACEBORDER = DLGSCALE(2);
-  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES + 1))) / MAXNUMDEVICES;
-  unsigned int lx = SPACEBORDER; // count from 0
-
-  static_assert(MAXNUMDEVICES == std::size(DeviceList), "wrong array size");
-
-  for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
-    TCHAR szWndName[5];
-    _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
-    WindowControl * pWnd = pWndForm->FindByName(szWndName);
-    if(pWnd) {
-      pWnd->SetWidth(w);
-      pWnd->SetLeft(lx);
-      ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
-      ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
-      if(i==0) OnA((WndButton*)pWnd);
-      lx += w + SPACEBORDER;
-    }
-  }
-}

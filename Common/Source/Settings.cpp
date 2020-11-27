@@ -16,6 +16,7 @@
 #include "AirfieldDetails.h"
 #include "Dialogs/dlgProgress.h"
 #include "Dialogs.h"
+#include "ChangeScreen.h"
 
 void SettingsEnter() {
   MenuActive = true;
@@ -147,7 +148,6 @@ void SettingsLeave() {
 	main_window->SetFocus();
   }
 
-  extern void ReinitScreen(void);
   if (FONTSCHANGED || SNAILCHANGED || AIRCRAFTTYPECHANGED) {
       ReinitScreen();
   }

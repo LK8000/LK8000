@@ -8,6 +8,7 @@
  *
  */
 #include "externs.h"
+#include "../CpuLoad.h"
 
 #ifdef USE_LOADAVG_CPU
 

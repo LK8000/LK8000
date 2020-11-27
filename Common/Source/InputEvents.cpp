@@ -35,6 +35,7 @@
 #include "Sound/Sound.h"
 #include "OS/RotateScreen.h"
 #include "Time/PeriodClock.hpp"
+#include "Library/Utm.h"
 
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
@@ -919,7 +920,6 @@ void InputEvents::processPopupDetails_real() {
                 break;
             case PopupOracle:
                 // Do not update Traffic while in details mode, max 10m
-                extern void dlgOracleShowModal(void);
                 dlgOracleShowModal();
                 break;
             case PopupTeam:
@@ -2003,18 +2003,16 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("TASKSTART")) == 0) {
-	extern void TaskStartMessage(void);
-	TaskStartMessage();
+    TaskStartMessage();
     LKSound(_T("LK_TASKSTART.WAV"));
-	return;
+    return;
   }
 
   if (_tcscmp(misc, TEXT("TASKFINISH")) == 0) {
 
-	extern void TaskFinishMessage(void);
-	TaskFinishMessage();
+    TaskFinishMessage();
     LKSound(_T("LK_TASKFINISH.WAV"));
-	return;
+    return;
   }
 
   if (_tcscmp(misc, TEXT("TASKNEXTWAYPOINT")) == 0) {
@@ -2082,7 +2080,6 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("UTMPOS")) == 0) {
-	extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
 	int utmzone; char utmchar;
 	double easting, northing;
 	TCHAR mbuf[80];
@@ -2102,7 +2099,6 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("ORACLE")) == 0) {
-	extern void dlgOracleShowModal(void);
 	if (GPS_INFO.NAVWarning) {
 		DoStatusMessage(MsgToken(1702)); // Oracle wants gps fix
 		return;
@@ -2270,10 +2266,9 @@ void InputEvents::eventService(const TCHAR *misc) {
 	ToggleMultimapOverlays();
 	return;
   }
-  extern void ToggleDrawTaskFAI(void);
   if (_tcscmp(misc, TEXT("TASKFAI")) == 0) {
-	ToggleDrawTaskFAI();
-	return;
+    ToggleDrawTaskFAI();
+    return;
   }
 
   if (_tcscmp(misc, TEXT("DRAWXC")) == 0) {
@@ -2312,9 +2307,8 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("TERMINAL")) == 0) {
-        extern void dlgTerminal(int portnumber);
-	dlgTerminal(0);
-	return;
+    dlgTerminal(0);
+    return;
   }
 
   if (_tcscmp(misc, TEXT("DEFTASK")) == 0) {

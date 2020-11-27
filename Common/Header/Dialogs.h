@@ -97,6 +97,11 @@ void dlgIgcFileShowModal(void);
 void dlgWeatherStDetails(int indexid);
 
 void dlgRadioSettingsShowModal(void);
+void dlgOracleShowModal();
+void dlgTerminal(int portnum);
+void dlgOverlaysShowModal(void);
+void dlgCustomMenuShowModal(void);
+
 #ifndef NO_BLUETOOTH
 namespace DlgBluetooth {
     void Show();

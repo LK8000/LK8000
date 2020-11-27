@@ -50,7 +50,7 @@
 #include "md5.h"
 #include "NavFunctions.h"
 
-extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
+
 extern void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
 
 #ifdef KOBO

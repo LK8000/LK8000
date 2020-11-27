@@ -213,7 +213,6 @@ bool UseContestEngine(void) {
 }
 
 
-extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
 
 //
 // Returns the LKW extension index of the incoming suffix, or -1
@@ -382,10 +381,11 @@ void TaskFinishMessage(void) {
 
 }
 
-extern void MSG_NotEnoughMemory(void);
 void OutOfMemory(const TCHAR *where, int line) {
 
   StartupStore(_T(">>> OUT OF MEMORY in <%s> line %d%s"),where,line,NEWLINE);
-  MSG_NotEnoughMemory();
-
+ 
+  DoStatusMessage(
+    MsgToken(1663),  // NOT ENOUGH MEMORY
+    MsgToken(1662));  // SYSTEM ERROR  
 }

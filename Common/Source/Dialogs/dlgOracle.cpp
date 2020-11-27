@@ -63,8 +63,6 @@ static bool OnTimerNotify(WndForm* pWnd) {
 
 void dlgOracleShowModal(void){
 
-  SHOWTHREAD(_T("dlgOracleShowModal"));
-
   WndForm* wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_ORACLE_L : IDR_XML_ORACLE_P);
   if (!wf) {
     return;

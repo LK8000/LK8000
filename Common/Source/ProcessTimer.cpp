@@ -14,7 +14,7 @@
 
 extern int ConnectionProcessTimer(int itimeout);
 extern void CommonProcessTimer(void);
-
+extern void LKSimulator(void);
 //
 // This is called at 2Hz from WndProc TIMER, which is set to 500ms by WndProc CREATE
 // This is only for FLY mode.  THIS IS NOT CALLED FOR SIM MODE, remember.
@@ -60,7 +60,6 @@ void SIMProcessTimer(void)
   if (!ReplayLogger::Update()) {
 	if (i%2==0) return;
 	// Process timer is run at 2hz, so this is bringing it back to 1hz
-	extern void LKSimulator(void);
 	LKSimulator();
   }
 

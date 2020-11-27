@@ -11,6 +11,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "resource.h"
+#include "Multimap.h"
 
 static WndForm *wf=NULL;
 
@@ -92,7 +93,6 @@ static void setVariables(void) {
 static void OnResetClicked(WndButton* pWnd){
 
   WndProperty *wp;
-  extern void Reset_Multimap_Mode(void);
   Reset_Multimap_Mode();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap1"));

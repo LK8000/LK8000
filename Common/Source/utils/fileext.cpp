@@ -13,9 +13,6 @@
 
 #include <memory>
 
-extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
-
-
 //______________________________________________________________________________
 
 

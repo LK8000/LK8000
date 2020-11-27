@@ -658,11 +658,8 @@ void Globals_Init(void) {
   // This is a runtime only variable, by default disabled. Must be enabled by customkey
   UseWindRose=false;	// use wind rose (ex: NNE) for wind direction, instead of degrees
 
-  extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
-
   Reset_Multimap_Flags();
-  extern void Reset_Multimap_Mode(void);
   Reset_Multimap_Mode();
 
   Trip_Moving_Time=0;
@@ -720,7 +717,7 @@ void Globals_Init(void) {
 }
 
 
-void Reset_CustomMenu(void) {
+void Reset_CustomMenu() {
 	CustomMenu1  = ckForceLanding;			// Landscape: 1st on top right
 	CustomMenu2  = ckForceFreeFlightRestart;
 	CustomMenu3  = ckResetTripComputer;

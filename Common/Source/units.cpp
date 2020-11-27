@@ -15,7 +15,7 @@
 
 
 #include "externs.h"
-
+#include "Library/Utm.h"
 
 CoordinateFormats_t Units::CoordinateFormat;
 
@@ -96,8 +96,6 @@ void Units::LatitudeToDMS(double Latitude,
   }
   *north = (sign==1);
 }
-
-extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
 
 bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer, size_t size) {
 	if(CoordinateFormat == cfUTM) {

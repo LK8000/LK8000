@@ -226,7 +226,6 @@ public:
         }
         error = false;
 
-        extern unsigned int TerrainQuantization();
         dtquant = TerrainQuantization();
         LKASSERT(dtquant>=1);
 

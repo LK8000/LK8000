@@ -10,12 +10,6 @@
 #include "externs.h"
 #include "Dialogs.h"
 
-void MSG_NotEnoughMemory(void) {
-  DoStatusMessage(
-    MsgToken(1663),  // NOT ENOUGH MEMORY
-    MsgToken(1662));  // SYSTEM ERROR
-}
-
 #if USELKASSERT
 void MSG_ASSERTION(int line, const TCHAR *filename) {
 

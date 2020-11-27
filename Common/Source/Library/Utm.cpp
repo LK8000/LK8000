@@ -27,6 +27,7 @@
 // I have cleaned it up on Nov 29th 2009 - Paolo Ventafridda
 
 #include <math.h>
+#include "Utm.h"
 #include "LKAssert.h"
 
 // Some constants used by these functions.
