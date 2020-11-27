@@ -2403,11 +2403,12 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
   NMEAParser::ExtractParameter(sentence,szTmp,0);
   {
+#ifdef DEVICE_SERIAL     
     NMEAParser::ExtractParameter(sentence,szTmp,5);
     {
       d->SerialNumber = (int) StrToDouble(szTmp,NULL);
     }
-
+#endif      
     double Batt;
     if (ParToDouble(sentence, 7, &Batt))
     {
