@@ -953,9 +953,11 @@ label_TRI:
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 #endif
-	_tcscpy(BufferTitle, MsgToken(915)); // NOT FOR IFR USAGE
+	
+	// NOT FOR IFR USAGE
 	Surface.SelectObject(LK8PanelSmallFont);
-	LKWriteText(Surface,  BufferTitle, qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
+	LKWriteText(Surface, MsgToken(915), qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
+
 #endif // not in LKCOMPETITION
 	goto label_End; // End of TRI
 
