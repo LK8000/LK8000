@@ -207,7 +207,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
   gStartSectorRenderer.CalculateScreenPosition(screenbounds_latlon, _Proj);
   gTaskSectorRenderer.CalculateScreenPosition(screenbounds_latlon, _Proj);
 
-  if (AATEnabled && !DoOptimizeRoute()) {
+  if (gTaskType == TSK_AAT) {
 		if(ValidTaskPoint(ActiveTaskPoint)) {
 			TASKSTATS_POINT& StatPt =  TaskStats[ActiveTaskPoint];
 			for (int j=0; j<MAXISOLINES; j++) {

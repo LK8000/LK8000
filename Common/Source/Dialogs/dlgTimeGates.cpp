@@ -57,7 +57,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->Set(PGOptimizeRoute);
+    dfe->Set(TskOptimizeRoute);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGNumberOfGates"));
@@ -120,15 +120,11 @@ void dlgTimeGatesShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
-    if (PGOptimizeRoute != (wp->GetDataField()->GetAsBoolean())) {
-      PGOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
+    if (TskOptimizeRoute != (wp->GetDataField()->GetAsBoolean())) {
+      TskOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
       changed = true;
 
-      if (ISPARAGLIDER) {
-	    if(PGOptimizeRoute) {
-		  changed = !AATEnabled;
-		  AATEnabled = true;
-	    }
+      if (gTaskType==TSK_GP) {
         ClearOptimizedTargetPos();
 	  }
 	}

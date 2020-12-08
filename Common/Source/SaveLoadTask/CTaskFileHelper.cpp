@@ -279,16 +279,13 @@ void CTaskFileHelper::LoadOptions(XMLNode node) {
             GetAttribute(node, _T("type"), szAttr);
             if (szAttr) {
                 if (_tcscmp(szAttr, _T("AAT")) == 0) {
-                    AATEnabled = true;
-                    PGOptimizeRoute = false;
+                    gTaskType = TSK_AAT;
                     LoadOptionAAT(nodeOpt);
                 } else if (_tcscmp(szAttr, _T("Race")) == 0) {
-                    AATEnabled = true;
-                    PGOptimizeRoute = true;
+                    gTaskType = TSK_GP;
                     LoadOptionRace(nodeOpt);
                 } else if (_tcscmp(szAttr, _T("Default")) == 0) {
-                    AATEnabled = false;
-                    PGOptimizeRoute = false;
+                    gTaskType = TSK_DEFAULT;
                     LoadOptionDefault(nodeOpt);
                 }
             }
@@ -422,7 +419,7 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
 
     ///////////////////////////////////////////////////////////////
     // TODO : this code is temporary before rewriting task system
-    if (AATEnabled || DoOptimizeRoute()) {
+    if (UseAATTarget()) {
         if (ValidTaskPoint(mFinishIndex)) {
             switch (Task[mFinishIndex].AATType) {
                 case CIRCLE:
@@ -724,21 +721,26 @@ bool CTaskFileHelper::SaveOption(XMLNode node) {
             break;
     }
 
-    if (AATEnabled && !PGOptimizeRoute) { // AAT Task
+    switch (gTaskType) {
+        case TSK_AAT:
+            // AAT Task
         SetAttribute(node, _T("type"), _T("AAT"));
         if (!SaveOptionAAT(OptNode)) {
             return false;
         }
-    } else if (AATEnabled && PGOptimizeRoute) { // Paraglider optimized Task
+            break;
+        case TSK_GP: // Paraglider optimized Task
         SetAttribute(node, _T("type"), _T("Race"));
         if (!SaveOptionRace(OptNode)) {
             return false;
         }
-    } else { // default Task
+            break;
+        default: // default Task
         SetAttribute(node, _T("type"), _T("Default"));
         if (!SaveOptionDefault(OptNode)) {
             return false;
         }
+            break;
     }
 
     if (!SaveTaskRule(OptNode.AddChild(ToString(_T("rules")), false))) {
@@ -945,7 +947,7 @@ bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const
     LKASSERT(ValidWayPoint(TaskPt.Index));
     SetAttribute(node, _T("name"), WayPointList[TaskPt.Index].Name);
 
-    if (AATEnabled || DoOptimizeRoute()) {
+    if (UseAATTarget()) {
         int Type; double Radius;
         GetTaskSectorParameter(idx, &Type, &Radius);
         switch (Type) {
@@ -995,7 +997,7 @@ bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const
                 break;
         }
 
-        if (AATEnabled && !DoOptimizeRoute()) {
+        if (gTaskType == TSK_AAT) {
             SetAttribute(node, _T("lock"), TaskPt.AATTargetLocked);
             if (TaskPt.AATTargetLocked) {
                 SetAttribute(node, _T("target-lat"), TaskPt.AATTargetLat);

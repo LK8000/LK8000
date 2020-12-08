@@ -5,6 +5,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+/////////////////
+// Task Type
+#define TSK_DEFAULT     0
+#define TSK_AAT         1
+#define TSK_GP          2 // Race To Goal in PG Mode
+/////////////////
 
 #define CIRCLE 0
 #define SECTOR 1

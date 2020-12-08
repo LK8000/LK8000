@@ -245,9 +245,8 @@ passthrough:
 		return true;
 	case ckOptimizeRoute:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		PGOptimizeRoute=!PGOptimizeRoute;
-		if (ISPARAGLIDER && PGOptimizeRoute) {
-			AATEnabled = true;
+		TskOptimizeRoute=!TskOptimizeRoute;
+		if(gTaskType==TSK_GP) {
             ClearOptimizedTargetPos();
 		}
 		return true;

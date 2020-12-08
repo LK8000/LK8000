@@ -819,7 +819,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
   _stprintf(DeclStrings[i++], TEXT("LXDT,SET,PILOT,%s,%s"),(PilotName), (PilotSurName));
   _stprintf(DeclStrings[i++], TEXT("LXDT,SET,GLIDER,%s,%s,%s,%s"), AircraftType, AircraftReg, AircraftCompID, AircraftClass);
 
-  if(AATEnabled)
+  if(UseAATTarget())
     _stprintf(DeclStrings[i++], TEXT("LXDT,SET,TSK_PAR,0,0,%02i:%02i"), (int)AATTaskLength/60,  (int)(AATTaskLength-((int)(AATTaskLength/60)*60)));
   else
     _stprintf(DeclStrings[i++], TEXT("LXDT,SET,TSK_PAR,0,0,00:00"));

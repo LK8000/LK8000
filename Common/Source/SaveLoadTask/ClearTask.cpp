@@ -18,7 +18,7 @@ void ClearTask(void) {
   LockTaskData();
   TaskModified = true;
   TargetModified = true;
-  if (ISPARAGLIDER) PGOptimizeRoute = PGOptimizeRoute_Config;
+  TskOptimizeRoute = TskOptimizeRoute_Config;
   LastTaskFileName[0] = _T('\0');
   ActiveTaskPoint = -1;
 

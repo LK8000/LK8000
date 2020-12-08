@@ -38,7 +38,7 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
       Calculated->ZoomDistance = Calculated->WaypointDistance;
 
-      if (AATEnabled
+      if (UseAATTarget()
 	  && (ActiveTaskPoint>0) && 
           ValidTaskPoint(ActiveTaskPoint+1)) {
 
@@ -62,7 +62,7 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
         // JMW set waypoint bearing to start direction if in start sector
 
-        if (AATEnabled) {
+        if (UseAATTarget()) {
           w1lat = Task[ActiveTaskPoint+1].AATTargetLat;
           w1lon = Task[ActiveTaskPoint+1].AATTargetLon;
         } else {

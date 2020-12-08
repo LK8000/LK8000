@@ -36,7 +36,7 @@ int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;
 int SecType = SectorType;
 int width = center_x-2;
-const auto oldbrush = Surface.SelectObject(AATEnabled
+const auto oldbrush = Surface.SelectObject(UseAATTarget()
                                            ? LKBrush_LightGrey
                                            : LKBrush_Hollow);
 const auto oldpen = Surface.SelectObject(hpStartFinishThin);
@@ -88,7 +88,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
              FinishRadial);
             break;
         case DAe:
-            if (!AATEnabled) { // this Type exist only if not AAT task
+            if (!UseAATTarget()) { // this Type exist only if not AAT task
                 // JMW added german rules
                 Surface.DrawCircle(center_x, center_y, width/8, true);
 
@@ -119,7 +119,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
             }
        break;
         case CONE:
-            if (DoOptimizeRoute()) {
+            if (gTaskType==TSK_GP) {
 
                 int radius = width-2;
                 Surface.DrawCircle(center_x, center_y, radius, true);
@@ -248,7 +248,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 				}
 			} else { // normal sector
 
-				if(SectorType == LINE && !AATEnabled && ISGAAIRCRAFT) { // this Type exist only if not AAT task
+				if(SectorType == LINE && (gTaskType != TSK_AAT) && ISGAAIRCRAFT) { // this Type exist only if not AAT task
 					double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
 					const int length=IBLSCALE(14); //Make intermediate WP lines always of the same size independent by zoom level
 
@@ -273,8 +273,8 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 		}
 	}
 
-    // Draw Iso Line
-	if (AATEnabled && !DoOptimizeRoute()) {
+	// Draw Iso Line
+    if (gTaskType==TSK_AAT) {
 		// ELSE HERE IS *** AAT ***
 		// JMW added iso lines
 
@@ -353,7 +353,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
         task_polyline.push_back(ToScreen(wpt.Latitude, wpt.Longitude));
     }
     
-    if(AATEnabled) {
+    if(UseAATTarget()) {
         
 #ifdef NO_DASH_LINES
         LKPen ThinPen(PEN_SOLID, ScreenThinSize, taskcolor);

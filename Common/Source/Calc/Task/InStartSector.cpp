@@ -116,7 +116,7 @@ bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int &index, BOOL 
   isInSector &= in_height;
 
   // PGStartOut only Valid if Start is Cylindre.
-  if (ISPARAGLIDER && StartLine==0 && PGStartOut) { // 100509
+  if (gTaskType==TSK_GP && StartLine==0 && PGStartOut) { // 100509
   	// we crossed the start if we were outside sector and now we are in.
 	*CrossedStart = !LastInSector && isInSector;
   } else {

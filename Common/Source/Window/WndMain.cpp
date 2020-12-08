@@ -123,7 +123,6 @@ void BeforeShutdown(void) {
   #endif
 
   LockTaskData();
-  AATEnabled = FALSE;
   CloseWayPoints();
   UnlockTaskData();
 

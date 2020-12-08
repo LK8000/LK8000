@@ -266,7 +266,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryClimbZoom,ClimbZoom);
   rprintf(szRegistryCruiseZoom,CruiseZoom);
   rprintf(szRegistryMaxAutoZoom,MaxAutoZoom);
-  rprintf(szRegistryPGOptimizeRoute,PGOptimizeRoute_Config);
+  rprintf(szRegistryTskOptimizeRoute,TskOptimizeRoute_Config);
   rprintf(szRegistryGliderSymbol,GliderSymbol);
 
 // >> Moved to PilotFile <<
