@@ -127,6 +127,20 @@ extern const char szRegistryDeviceC[];
 extern const char szRegistryDeviceD[];
 extern const char szRegistryDeviceE[];
 extern const char szRegistryDeviceF[];
+extern const char szRegistryReplayFileA[];
+extern const char szRegistryReplayFileB[];
+extern const char szRegistryReplayFileC[];
+extern const char szRegistryReplayFileD[];
+extern const char szRegistryReplayFileE[];
+extern const char szRegistryReplayFileF[];
+
+extern const char szRegistryReplaySpeedA[];
+extern const char szRegistryReplaySpeedB[];
+extern const char szRegistryReplaySpeedC[];
+extern const char szRegistryReplaySpeedD[];
+extern const char szRegistryReplaySpeedE[];
+extern const char szRegistryReplaySpeedF[];
+
 extern const char szRegistryDisableAutoLogger[];
 extern const char szRegistryLiveTrackerInterval[];
 extern const char szRegistryLiveTrackerRadar_config[];

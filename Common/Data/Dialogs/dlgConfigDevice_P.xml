@@ -21,12 +21,11 @@
 
       <WndProperty Name="prpExtSound1" Caption="_@M2250_" X="60" Y="-1" Width="179" Height="18" CaptionWidth="80" Font="2" Help="_@H240_">
         <DataField Name="" DataType="boolean"/>
-      </WndProperty>
-
-      <WndProperty Name="prpComSpeed1" Caption="_@M135_" X="60" Y="-1" Width="140" Height="22" CaptionWidth="80" Font="2" Help="_@H155_">
+      </WndProperty> 
+      <WndButton Name="cmdReplay" Caption="_@M285_" X="140" Y="65" Width="98" Height="22" Font="2" Tag="3" OnClickNotify="OnConfigDevReplayClicked" />
+      <WndProperty Name="prpComSpeed1" Caption="_@M135_" X="60" Y="65" Width="140" Height="22" CaptionWidth="80" Font="2" Help="_@H155_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
-
       <WndProperty Name="prpComBit1" Caption=" " X="200" Y="-999" Width="33" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
@@ -53,7 +52,7 @@
     </WndProperty>
 
     <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="258" Width="58" Height="45" Font="2" Tag="2" />
-    <WndButton Name="cmdBth" Caption="Bluetooth" X="60" Y="-999" Width="58" Height="45" Font="2" Tag="2" OnClickNotify="OnBthDevice" />
+    <WndButton Name="cmdBth" Caption="Bluetooth" X="60" Y="-999" Width="58" Height="45" Font="2" Tag="2" OnClickNotify="OnBthDevice" />    
     <WndButton Name="cmdConfigDev" Caption="_@M2414_" X="120" Y="-999" Width="58" Height="45" Font="2" Tag="2" OnClickNotify="OnConfigDevClicked" />
     <WndButton Name="cmdTerminal" Caption="_@M1871_" X="180" Y="-999" Width="58" Height="45" Font="2" Tag="2" OnClickNotify="OnTerminalClicked" />
 
