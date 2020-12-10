@@ -4,12 +4,12 @@ path_classifiers:
   library:
     - Common/Header/libzzip
     - Common/Header/Poco
-    - Common/Source/Library\cpp-mmf
-    - Common/Source/Library\glutess
-    - Common/Source/Library\poco
-    - Common/Source/Library\zlib
-    - Common/Source/Library\zzip
-    - Common/Source/Library\newuoa.h
+    - Common/Source/Library/cpp-mmf
+    - Common/Source/Library/glutess
+    - Common/Source/Library/poco
+    - Common/Source/Library/zlib
+    - Common/Source/Library/zzip
+    - Common/Source/Library/newuoa.h
 
   test:
     - Common/Test
