@@ -186,7 +186,7 @@ TCHAR  szCheck[254];
    return -1;
  }
 
-  if ( _tcscmp(szStrg,"$$$") == 0)  { // sent "$$$" probably for puting a RN42 BT chip in command mode
+  if ( _tcscmp(szStrg,_T("$$$")) == 0)  { // sent "$$$" probably for puting a RN42 BT chip in command mode
     _tcscat(szStrg,_T("\r\n"));
     return -1;
   }
