@@ -99,34 +99,35 @@ while(!bStop) {
 */
 unsigned FilePort::RxThread()
 {
-
-unsigned long dwWaitCnt = 5;
 PeriodClock Timer;
-
 char szString[MAX_NMEA_LEN];
 int  nRecv;
-#define  MIN_INTERVAL 10
 
-  while (!StopEvt.tryWait(MIN_INTERVAL) && FileStream ) // call every 5ms
+  while (!StopEvt.tryWait(5) /*&&  FileStream */) // call every 5ms
   {
 
-    dwWaitCnt+=MIN_INTERVAL;
-    if(dwWaitCnt >= m_dwWaitTime)
-    {
-      dwWaitCnt =0;
+#define THRESHOLD 10  // max 10Hz GPS Map refresh
+  
       nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
+   
+      if(!FileStream) // end of File?
+      {
+        Close();      // restart file
+        Initialize();
+      }
 
       if(strncmp (szString,"$GPRMC", 6) ==0) // wait until next GPS fix or at least every 25 sentences
       {
         if(ReplaySpeed[GetPortIndex()] ==0)
         {
-          m_dwWaitTime = 10000000;  //  ( 0 = 0.1Hz GPS  )
+          m_dwWaitTime = 10000;  //  ( 0 = 0.1Hz GPS  )
         }
         else
         {
-          m_dwWaitTime = 1000/ReplaySpeed[GetPortIndex()]; // x1 = 1Hz
-          if(ReplaySpeed[GetPortIndex()] >10)  // very fast replay? (skip NMEA sentences
-          {
+          if(ReplaySpeed[GetPortIndex()] <THRESHOLD)  
+            m_dwWaitTime = 1000/ReplaySpeed[GetPortIndex()]; // up to 10Hz
+          else
+          {  // very fast replay? (skip NMEA sentences
             long GPRMCCnt=0;
             long LineCnt=0;
             do
@@ -134,21 +135,27 @@ int  nRecv;
               nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
               LineCnt++;
               if(strncmp (szString,"$GPRMC", 6) == 0)
+              {
+                LineCnt =0;
                 GPRMCCnt++;
+              }
             }
-            while ((nRecv >= 0) &&  (GPRMCCnt < ReplaySpeed[GetPortIndex()]/10) /* && (LineCnt < 500)*/);
-            m_dwWaitTime = 250;  //  ( 0 = 0.1Hz GPS  )
+            while ((nRecv >= 0) &&  (GPRMCCnt < ReplaySpeed[GetPortIndex()]/THRESHOLD) && (LineCnt < 50));
+            m_dwWaitTime = 1000/THRESHOLD;  //  ( 0 = 0.1Hz GPS  )
           }
         }
-      } else {
-        m_dwWaitTime = 0;
+
+        unsigned ms = std::clamp<unsigned>(m_dwWaitTime - Timer.ElapsedUpdate(), 1U, 100000U);
+        Poco::Thread::sleep(ms); // needed for windows bug
+        Timer.Update();
+
       }
 
 
       if (nRecv > 0)
       {
-#define BYTE_FOR_BYTE
-#ifdef BYTE_FOR_BYTE
+#define BYTE_BY_BYTE
+#ifdef BYTE_BY_BYTE
           std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&FilePort::ProcessChar, this, _1));
 #else
           LockFlightData();
@@ -159,6 +166,6 @@ int  nRecv;
           UpdateStatus();
       }
     }
-  }
+  
   return 0UL;
 }
