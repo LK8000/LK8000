@@ -219,6 +219,20 @@ const char szRegistryDeviceC[] = "DeviceC";
 const char szRegistryDeviceD[] = "DeviceD";
 const char szRegistryDeviceE[] = "DeviceE";
 const char szRegistryDeviceF[] = "DeviceF";
+const char szRegistryReplayFileA[] = "ReplayFileA";
+const char szRegistryReplayFileB[] = "ReplayFileB";
+const char szRegistryReplayFileC[] = "ReplayFileC";
+const char szRegistryReplayFileD[] = "ReplayFileD";
+const char szRegistryReplayFileE[] = "ReplayFileE";
+const char szRegistryReplayFileF[] = "ReplayFileF";
+
+extern const char szRegistryReplaySpeedA[]= "ReplaSpeedA";
+extern const char szRegistryReplaySpeedB[]= "ReplaSpeedB";
+extern const char szRegistryReplaySpeedC[]= "ReplaSpeedC";
+extern const char szRegistryReplaySpeedD[]= "ReplaSpeedD";
+extern const char szRegistryReplaySpeedE[]= "ReplaSpeedE";
+extern const char szRegistryReplaySpeedF[]= "ReplaSpeedF";
+
 const char szRegistryDisableAutoLogger[] = "DisableAutoLogger";
 const char szRegistryLiveTrackerInterval[] = "LiveTrackerInterval";
 const char szRegistryLiveTrackerRadar_config[] = "LiveTrackerRadar_config";

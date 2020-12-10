@@ -389,6 +389,21 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryDeviceD,&dwDeviceName[3][0], std::size(dwDeviceName[3]));
   PREAD(sname,svalue,szRegistryDeviceE,&dwDeviceName[4][0], std::size(dwDeviceName[4]));
   PREAD(sname,svalue,szRegistryDeviceF,&dwDeviceName[5][0], std::size(dwDeviceName[5]));
+  
+  PREAD(sname,svalue,szRegistryReplayFileA, &Replay_FileName[0][0], std::size(Replay_FileName[0]));
+  PREAD(sname,svalue,szRegistryReplayFileB, &Replay_FileName[1][0], std::size(Replay_FileName[1]));
+  PREAD(sname,svalue,szRegistryReplayFileC, &Replay_FileName[2][0], std::size(Replay_FileName[2]));
+  PREAD(sname,svalue,szRegistryReplayFileD, &Replay_FileName[3][0], std::size(Replay_FileName[3]));
+  PREAD(sname,svalue,szRegistryReplayFileE, &Replay_FileName[4][0], std::size(Replay_FileName[4]));
+  PREAD(sname,svalue,szRegistryReplayFileF, &Replay_FileName[5][0], std::size(Replay_FileName[5]));
+
+  PREAD(sname,svalue,szRegistryReplaySpeedA, &ReplaySpeed[0]);
+  PREAD(sname,svalue,szRegistryReplaySpeedB, &ReplaySpeed[1]);
+  PREAD(sname,svalue,szRegistryReplaySpeedC, &ReplaySpeed[2]);
+  PREAD(sname,svalue,szRegistryReplaySpeedD, &ReplaySpeed[3]);
+  PREAD(sname,svalue,szRegistryReplaySpeedE, &ReplaySpeed[4]);
+  PREAD(sname,svalue,szRegistryReplaySpeedF, &ReplaySpeed[5]);
+
   PREAD(sname,svalue,szRegistryDisableAutoLogger,&DisableAutoLogger);
   PREAD(sname,svalue,szRegistryLiveTrackerInterval,&LiveTrackerInterval);
   PREAD(sname,svalue,szRegistryLiveTrackerRadar_config,&LiveTrackerRadar_config);

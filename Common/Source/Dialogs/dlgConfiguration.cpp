@@ -1296,8 +1296,9 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     bool bBt = ((_tcslen(szPortName) > 3) && ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || (_tcsncmp(szPortName, _T("Bluetooth Server"), 3) == 0)));
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
+    bool bFileReplay = (_tcscmp(szPortName, NMEA_REPLAY)    == 0);
     bool bUDPServer = (_tcscmp(szPortName, _T("UDPServer")) == 0);
-    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || ( DeviceList[SelectedDevice].iSharedPort>=0 ));
+    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || bFileReplay || ( DeviceList[SelectedDevice].iSharedPort>=0 ));
     if(bCOM)
     {
       ShowWindowControl(wf, TEXT("prpComPort1"), true);
@@ -1315,6 +1316,8 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
       ShowWindowControl(wf, TEXT("prpComIpAddr1"), bTCPClient);
       ShowWindowControl(wf, TEXT("prpComIpPort1"),  bTCPClient || bTCPServer || bUDPServer);
     }
+
+    ShowWindowControl(wf, TEXT("cmdReplay"), bFileReplay);
 
     // Manage external sounds only if necessary
     if (bManageExtAudio) {
@@ -1352,6 +1355,10 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
 }
 
 
+extern void dlgNMEAReplayShowModal(void);
+static void OnConfigDevReplayClicked(WndButton* pWnd){
+	dlgNMEAReplayShowModal();
+}
 
 
 
@@ -1418,6 +1425,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnE),
   ClickNotifyCallbackEntry(OnF),
   ClickNotifyCallbackEntry(OnConfigDevClicked),
+  ClickNotifyCallbackEntry(OnConfigDevReplayClicked),
   ClickNotifyCallbackEntry(OnNextDevice),
   ClickNotifyCallbackEntry(OnTerminalClicked),
   EndCallBackEntry()
