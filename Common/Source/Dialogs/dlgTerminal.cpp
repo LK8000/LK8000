@@ -185,7 +185,13 @@ TCHAR  szCheck[254];
    _tcscat(szStrg,_T("\r\n"));
    return -1;
  }
- iCheckSum = szStrg[1];
+
+  if ( _tcscmp(szStrg,"$$$") == 0)  { // sent "$$$" probably for puting a RN42 BT chip in command mode
+    _tcscat(szStrg,_T("\r\n"));
+    return -1;
+  }
+
+  iCheckSum = szStrg[1];
   for (i=2; i < (int)_tcslen(szStrg); i++)
   {
 	 if(szStrg[i] == '*')
