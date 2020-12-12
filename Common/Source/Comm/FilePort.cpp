@@ -84,18 +84,50 @@ void FilePort::CancelWaitEvent(void)
 */
 //FilePort::SendSectrion()
 
+
+
+
+
+ int32_t GGA_RMC_seconds(const char *StrTime)
+{int32_t Hour=0,Minute=0,Second=0, sec;
+
+  if (_istdigit(StrTime[0]) && _istdigit(StrTime[1])) {
+      Hour = (StrTime[0] - '0')*10 + (StrTime[1] - '0');
+  }
+  if (_istdigit(StrTime[2]) && _istdigit(StrTime[3])) {
+      Minute = (StrTime[2] - '0')*10 + (StrTime[3] - '0');
+  }
+  if (_istdigit(StrTime[4]) && _istdigit(StrTime[5])) {
+      Second = (StrTime[4] - '0')*10 + (StrTime[5] - '0');
+  }
+//  StartupStore(_T("...... RMC_seconds %s =====> %02ih%02im%02is%s"),StrTime, Hour, Minute, Second,NEWLINE);
+  sec = Hour*3600L+ Minute * 60L + Second;
+//  StartupStore(TEXT("RMC_seconds =====> %d %s"), sec, NEWLINE);
+return sec; 
+}
+
+
+
 unsigned FilePort::RxThread()
 {
 
 PeriodClock Timer;
 
 char szString[MAX_NMEA_LEN];
+char szRef[MAX_NMEA_LEN]="$GPGGA";
+
+
 int  nRecv;
+int32_t LastTimeSeconds=0;
+int32_t TimeInSeconds=0;
 
-  while (!StopEvt.tryWait(5) /*&&  FileStream */) // call every 5ms
+
+int32_t i_skip = 1;
+  int32_t ms =0;
+  while (!StopEvt.tryWait(5) && FileStream ) // call every 5ms
   {
-
-#define THRESHOLD 10  // max 10Hz GPS Map refresh
+    int32_t speed = ReplaySpeed[GetPortIndex()];
+#define THRESHOLD 10 // max 10Hz GPS Map refresh
   
       nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
    
@@ -105,39 +137,48 @@ int  nRecv;
         Initialize();
       }
 
-      if(strncmp (szString,"$GPRMC", 6) ==0) // wait until next GPS fix or at least every 25 sentences
+      if( strncmp (szString,szRef, 6) ==0)
       {
-        if(ReplaySpeed[GetPortIndex()] ==0)
+        TimeInSeconds = GGA_RMC_seconds(&szString[7]);
+         
+        if(speed ==0)
         {
           m_dwWaitTime = 10000;  //  ( 0 = 0.1Hz GPS  )
+          i_skip = 1;
         }
         else
         {
-          if(ReplaySpeed[GetPortIndex()] <THRESHOLD)  
-            m_dwWaitTime = 1000/ReplaySpeed[GetPortIndex()]; // up to 10Hz
+          if(speed <= THRESHOLD)  
+          {
+            m_dwWaitTime = 1000/speed; // up to 10Hz
+            i_skip = 1;
+          }
           else
-          {  // very fast replay? (skip NMEA sentences
-            long GPRMCCnt=0;
-            long LineCnt=0;
-            do
-            {
-              nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
-              LineCnt++;
-              if(strncmp (szString,"$GPRMC", 6) == 0)
-              {
-                LineCnt =0;
-                GPRMCCnt++;
-              }
-            }
-            while ((nRecv >= 0) &&  (GPRMCCnt < ReplaySpeed[GetPortIndex()]/THRESHOLD) && (LineCnt < 50));
-            m_dwWaitTime = 1000/THRESHOLD;  //  ( 0 = 0.1Hz GPS  )
+          {
+            m_dwWaitTime = 1000/5;  //  ( 5Hz refresh  )
+            i_skip = speed/5;       // skip all data in between      
           }
         }
+                   
+        long LineCnt=0;
+        while ((nRecv >= 0) && ((TimeInSeconds-LastTimeSeconds) < i_skip ) && (LineCnt < (i_skip *10)))
+        {
+          nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
+          LineCnt++;
+          if( strncmp (szString,szRef, 6) ==0)
+          {
+            TimeInSeconds = GGA_RMC_seconds(&szString[7]);
+          }
+         
+        }
 
-        unsigned ms = std::clamp<unsigned>(m_dwWaitTime - Timer.ElapsedUpdate(), 1U, 100000U);
-        Poco::Thread::sleep(ms); // needed for windows bug
-        Timer.Update();
-
+        ms = m_dwWaitTime - Timer.ElapsedUpdate();         
+        if((ms > 0)&&(ms < 10000))
+        {
+          Poco::Thread::sleep(ms); 
+          Timer.Update();
+        }    
+        LastTimeSeconds = TimeInSeconds;     
       }
 
 
@@ -154,6 +195,7 @@ int  nRecv;
           AddStatTx(nRecv);
           UpdateStatus();
       }
+       
     }
   
   return 0UL;
