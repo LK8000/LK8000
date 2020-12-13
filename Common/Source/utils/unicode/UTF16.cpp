@@ -68,3 +68,50 @@ UnicodeToUTF16(unsigned ch, uint16_t *q) {
 	}
 	return q;
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("UTF16") {
+
+	constexpr uint16_t utf16[] = {
+		0xD835, 0xDFF6,
+		0x0020,
+		0xD835, 0xDFF7,
+		0x0020,
+		0xD835, 0xDFF8,
+		0
+	};
+
+	constexpr uint32_t utf32[] = { 
+		0x0001D7F6, 
+		0x00000020,
+		0x0001D7F7, 
+		0x00000020,
+		0x0001D7F8, 
+		0 
+	};
+
+	SUBCASE("NextUTF16") {
+		auto next_utf32 = utf32;
+		auto next_utf16 = NextUTF16(utf16);
+		while(next_utf16.first) {
+			CHECK(next_utf16.first == *(next_utf32++));
+			next_utf16 = NextUTF16(next_utf16.second);
+		}
+	}
+
+	SUBCASE("UnicodeToUTF16") {
+		uint16_t utf16_pair[2] = {};
+		UnicodeToUTF16(utf32[0], utf16_pair);
+		CHECK_EQ(utf16_pair[0], utf16[0]);
+		CHECK_EQ(utf16_pair[1], utf16[1]);
+
+		utf16_pair[0] = 0; utf16_pair[1] = 0;
+		UnicodeToUTF16(utf32[1], utf16_pair);
+		CHECK_EQ(utf16_pair[0], utf16[2]);
+		CHECK_EQ(utf16_pair[1], 0);
+	}
+}
+
+#endif

@@ -184,6 +184,14 @@
     #endif
 #endif
 
+#if defined(TESTBENCH) || !defined(NDEBUG)
+#  if !__has_include(<doctest/doctest.h>)
+#    define DOCTEST_CONFIG_DISABLE
+#  endif
+#else
+#    define DOCTEST_CONFIG_DISABLE
+#endif
+
 // #define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
                       // enough to warrant detection of the start of free flight)
                       // Eric Carden, 6/28/12

@@ -5,6 +5,14 @@
 
    $Id: lk8000.cpp,v 1.1 2010/12/15 11:30:56 root Exp root $
 */
+
+#include "options.h"
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#  define DOCTEST_CONFIG_IMPLEMENT
+#  include <doctest/doctest.h>
+#endif
+
 #include "externs.h"
 #include "LKInterface.h"
 #include "resource.h"
@@ -580,6 +588,14 @@ int main(int argc, char *argv[]) {
   SoundGlobalInit InitSound;
   
   std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
+
+#ifndef DOCTEST_CONFIG_DISABLE
+  doctest::Context test_context(argc, argv);
+  int test_ret = test_context.run();
+  if(test_context.shouldExit()) {
+    return test_ret;
+  }
+#endif  
 
   if(Startup(szCmdLine)) {
     //

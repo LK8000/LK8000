@@ -6,6 +6,8 @@
    $Id$
 */
 
+#include "Compiler.h"
+#include "options.h"
 #include <ctype.h>
 #include "tchar.h"
 
@@ -100,3 +102,34 @@ double CUPToLon(const TCHAR *str) {
   // error
   return invalid_angle;
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("CUPToLatLon") {
+
+	SUBCASE("CUPToLat") {
+		CHECK(CUPToLat("4555.5555N") == doctest::Approx(45.925925).epsilon(0.0000001));
+		CHECK(CUPToLat("4555.0S") == doctest::Approx(-45.916667).epsilon(0.0000001));
+		CHECK(CUPToLat("955.0S") == -9999);
+		CHECK(CUPToLat("9555.55x") == -9999);
+		CHECK(CUPToLat("9555.55") == -9999);
+		CHECK(CUPToLat("9555") == -9999);
+		CHECK(CUPToLat("955") == -9999);
+		CHECK(CUPToLat("") == -9999);
+		CHECK(CUPToLat(nullptr) == -9999);
+	}
+
+	SUBCASE("CUPToLon") {
+		CHECK(CUPToLon("12555.5555E") == doctest::Approx(125.925925).epsilon(0.0000001));
+		CHECK(CUPToLon("04555.0W") == doctest::Approx(-45.916667).epsilon(0.0000001));
+		CHECK(CUPToLon("9555.0S") == -9999);
+		CHECK(CUPToLon("95555.55x") == -9999);
+		CHECK(CUPToLon("99555.55") == -9999);
+		CHECK(CUPToLon("9555") == -9999);
+		CHECK(CUPToLon("955") == -9999);
+		CHECK(CUPToLon("") == -9999);
+		CHECK(CUPToLon(nullptr) == -9999);
+	}
+}
+#endif
