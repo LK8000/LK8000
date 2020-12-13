@@ -16,7 +16,7 @@ using namespace std::placeholders;
 
 FilePort::FilePort (int idx, const tstring& sName) : ComPort(idx, sName)
 {
-// not yet needed
+  FileStream = NULL;
 }
 
 FilePort::~FilePort() {
@@ -74,77 +74,129 @@ bool FilePort::Write(const void *data, size_t length) {
   return true;
 }
 
-/*
-void FilePort::CancelWaitEvent(void)
-{
-  StartupStore(_T(". FilePort CancelWaitEvent %u m_dwWaitTime :"), (unsigned) m_dwWaitTime );
-  m_dwWaitTime = 5;
 
+
+ int32_t GGA_RMC_seconds(const char *StrTime)
+{int32_t Hour=0,Minute=0,Second=0, sec;
+
+  if (_istdigit(StrTime[0]) && _istdigit(StrTime[1])) {
+      Hour = (StrTime[0] - '0')*10 + (StrTime[1] - '0');
+  }
+  if (_istdigit(StrTime[2]) && _istdigit(StrTime[3])) {
+      Minute = (StrTime[2] - '0')*10 + (StrTime[3] - '0');
+  }
+  if (_istdigit(StrTime[4]) && _istdigit(StrTime[5])) {
+      Second = (StrTime[4] - '0')*10 + (StrTime[5] - '0');
+  }
+//  StartupStore(_T("...... RMC_seconds %s =====> %02ih%02im%02is%s"),StrTime, Hour, Minute, Second,NEWLINE);
+  sec = Hour*3600L+ Minute * 60L + Second;
+//  StartupStore(TEXT("RMC_seconds =====> %d %s"), sec, NEWLINE);
+return sec; 
 }
-*/
-//FilePort::SendSectrion()
+
+
 
 unsigned FilePort::RxThread()
 {
 
-unsigned long dwWaitCnt = 5;
+PeriodClock Timer;
 
 char szString[MAX_NMEA_LEN];
-int  nRecv;
-#define  MIN_INTERVAL 10
+char szRef[3][MAX_NMEA_LEN]= {{"nosync"},{"$GPRMC"}, {"$GPGGA"}};
 
-  while (!StopEvt.tryWait(MIN_INTERVAL) && FileStream ) // call every 5ms
+
+int  nRecv =0;
+int32_t LastTimeSeconds=0;
+int32_t TimeInSeconds=0;
+
+
+int32_t i_skip = 1;
+  int32_t ms =0;
+  while (!StopEvt.tryWait(5) /*&& FileStream*/ ) 
   {
+    int32_t speed = ReplaySpeed[GetPortIndex()];
+#define THRESHOLD 10 // max 10Hz GPS Map refresh
 
-    dwWaitCnt+=MIN_INTERVAL;
-    if(dwWaitCnt >= m_dwWaitTime)
+    nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
+
+    if(speed == 0)  
+      m_dwWaitTime = 10000;  //  ( 0 = 0.1Hz GPS  )
+    else
+      m_dwWaitTime = 1000/speed; // default factor as Hz
+
+    if(ReplaySync[GetPortIndex()] == 0) // Timer only?
     {
-      dwWaitCnt =0;
-      nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
-
-      if(strncmp (szString,"$GPRMC", 6) ==0) // wait until next GPS fix or at least every 25 sentences
+      ms = m_dwWaitTime - Timer.ElapsedUpdate();
+      if((ms > 0)&&(ms < 10000))
       {
-        if(ReplaySpeed[GetPortIndex()] ==0)
+        Poco::Thread::sleep(ms); 
+        Timer.Update();
+      }
+      LastTimeSeconds = TimeInSeconds;     
+    }
+    else
+    {
+      if( strncmp (szString,szRef[ReplaySync[GetPortIndex()]], 6) ==0)
+      {
+        TimeInSeconds = GGA_RMC_seconds(&szString[7]);
+
+        if(speed ==0)
         {
-          m_dwWaitTime = 10000000;  //  ( 0 = 0.1Hz GPS  )
+          i_skip = 1;
         }
         else
         {
-          m_dwWaitTime = 1000/ReplaySpeed[GetPortIndex()]; // x1 = 1Hz
-          if(ReplaySpeed[GetPortIndex()] >10)  // very fast replay? (skip NMEA sentences
+          if(speed <= THRESHOLD)  
           {
-            long GPRMCCnt=0;
-            long LineCnt=0;
-            do
-            {
-              nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
-              LineCnt++;
-              if(strncmp (szString,"$GPRMC", 6) == 0)
-                GPRMCCnt++;
-            }
-            while ((nRecv >= 0) &&  (GPRMCCnt < ReplaySpeed[GetPortIndex()]/10) /* && (LineCnt < 500)*/);
-            m_dwWaitTime = 250;  //  ( 0 = 0.1Hz GPS  )
+            m_dwWaitTime = 1000/speed; // up to 10Hz
+            i_skip = 1;
+          }
+          else
+          {
+            m_dwWaitTime = 1000/5;  //  ( 5Hz refresh  )
+            i_skip = speed/5;       // skip all data in between      
           }
         }
-      } else {
-        m_dwWaitTime = 0;
-      }
 
+        long LineCnt=0;
+        while ((nRecv >= 0) && ((TimeInSeconds-LastTimeSeconds) < i_skip ) && (LineCnt < (i_skip *50)))
+        {
+          nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
+          LineCnt++;
+          if( strncmp (szString,szRef[ReplaySync[GetPortIndex()]], 6) ==0)
+          {
+            LineCnt =0;
+            TimeInSeconds = GGA_RMC_seconds(&szString[7]);
+          }
+        }
 
-      if (nRecv > 0)
-      {
-#define BYTE_FOR_BYTE
-#ifdef BYTE_FOR_BYTE
-          std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&FilePort::ProcessChar, this, _1));
-#else
-          LockFlightData();
-          devParseNMEA(GetPortIndex(), (TCHAR*)szString, &GPS_INFO);
-          UnlockFlightData();
-#endif
-          AddStatTx(nRecv);
-          UpdateStatus();
+        ms = m_dwWaitTime - Timer.ElapsedUpdate();         
+        if((ms > 0)&&(ms < 10000))
+        {
+          Poco::Thread::sleep(ms); 
+          Timer.Update();
+        }
+        LastTimeSeconds = TimeInSeconds;     
       }
     }
+
+
+    if (nRecv > 0)
+    {
+      if( RawByteData[GetPortIndex()])
+      {
+        std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&FilePort::ProcessChar, this, _1));
+      }
+      else
+      {
+        LockFlightData();
+        devParseNMEA(GetPortIndex(), (TCHAR*)szString, &GPS_INFO);
+        UnlockFlightData();
+      }
+      AddStatTx(nRecv);
+      UpdateStatus();
+    }
   }
+
   return 0UL;
 }

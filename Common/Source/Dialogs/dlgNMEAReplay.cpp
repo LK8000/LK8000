@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: dlgLoggerReplay.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
+ 
 */
 
 #include "externs.h"
@@ -18,12 +18,12 @@ static void OnStopClicked(WndButton* pWnd) {
     ReplaySpeed[SelectedDevice] = 0;
 	if(wf)
 	{
-		WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
-		if(wp)
-		{
+	  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+	  if(wp)
+	  {
 	    wp->GetDataField()->Set(ReplaySpeed[SelectedDevice]);
 	    wp->RefreshDisplay();
-		}
+	  }
 	}
 
 }
@@ -100,18 +100,21 @@ static void OnRateData(DataField *Sender, DataField::DataAccessKind_t Mode){
 }
 
 
+
+
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnStopClicked),
   ClickNotifyCallbackEntry(OnStartClicked),
   DataAccessCallbackEntry(OnRateData),
   ClickNotifyCallbackEntry(OnCloseClicked),
+
   EndCallBackEntry()
 };
 
 
 void dlgNMEAReplayShowModal(){
 
-  wf = dlgLoadFromXML(CallBackTable, IDR_XML_LOGGERREPLAY);
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_NMEAREPLAY);
 
   WndProperty* wp;
 
@@ -132,9 +135,40 @@ void dlgNMEAReplayShowModal(){
       }
       wp->RefreshDisplay();
     }
+    wp = (WndProperty*)wf->FindByName(TEXT("prpRaw"));
+    if (wp) {      
+      wp->GetDataField()->Set(  RawByteData[SelectedDevice] );
+      wp->RefreshDisplay();
+    }      
 
+    wp = (WndProperty*)wf->FindByName(TEXT("prpSyncNMEA"));
+    if (wp) {
+      DataField* dfe = wp->GetDataField();
+      dfe->addEnumText(MsgToken (2482)); //       
+      dfe->addEnumText(_T("$PGRMC")); // 
+      dfe->addEnumText(_T("$GPGGA")); // 
+     
+      dfe->Set( ReplaySync[SelectedDevice]);
+      wp->RefreshDisplay();
+  }
+      
     wf->ShowModal();
 
+    
+    wp = (WndProperty*)wf->FindByName(TEXT("prpRaw"));
+    if (wp) {
+      if (RawByteData[SelectedDevice] != wp->GetDataField()->GetAsBoolean()) {
+        RawByteData[SelectedDevice] = (int) wp->GetDataField()->GetAsBoolean();
+      }
+    }
+    
+    wp = (WndProperty*)wf->FindByName(TEXT("prpSyncNMEA"));
+    if (wp) {
+      if (ReplaySync[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
+        ReplaySync[SelectedDevice] = wp->GetDataField()->GetAsInteger();
+      }
+    }
+        
     delete wf;
   }
   wf = NULL;

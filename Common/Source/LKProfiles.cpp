@@ -219,19 +219,33 @@ const char szRegistryDeviceC[] = "DeviceC";
 const char szRegistryDeviceD[] = "DeviceD";
 const char szRegistryDeviceE[] = "DeviceE";
 const char szRegistryDeviceF[] = "DeviceF";
-const char szRegistryReplayFileA[] = "ReplayFileA";
-const char szRegistryReplayFileB[] = "ReplayFileB";
-const char szRegistryReplayFileC[] = "ReplayFileC";
-const char szRegistryReplayFileD[] = "ReplayFileD";
-const char szRegistryReplayFileE[] = "ReplayFileE";
-const char szRegistryReplayFileF[] = "ReplayFileF";
+const char szRegistryReplayFileA[] = "NMEA_Replay_FileA";
+const char szRegistryReplayFileB[] = "NMEA_Replay_FileB";
+const char szRegistryReplayFileC[] = "NMEA_Replay_FileC";
+const char szRegistryReplayFileD[] = "NMEA_Replay_FileD";
+const char szRegistryReplayFileE[] = "NMEA_Replay_FileE";
+const char szRegistryReplayFileF[] = "NMEA_Replay_FileF";
 
-extern const char szRegistryReplaySpeedA[]= "ReplaSpeedA";
-extern const char szRegistryReplaySpeedB[]= "ReplaSpeedB";
-extern const char szRegistryReplaySpeedC[]= "ReplaSpeedC";
-extern const char szRegistryReplaySpeedD[]= "ReplaSpeedD";
-extern const char szRegistryReplaySpeedE[]= "ReplaSpeedE";
-extern const char szRegistryReplaySpeedF[]= "ReplaSpeedF";
+extern const char szRegistryReplaySpeedA[]= "NMEA_Replay_SpeedA";
+extern const char szRegistryReplaySpeedB[]= "NMEA_Replay_SpeedB";
+extern const char szRegistryReplaySpeedC[]= "NMEA_Replay_SpeedC";
+extern const char szRegistryReplaySpeedD[]= "NMEA_Replay_SpeedD";
+extern const char szRegistryReplaySpeedE[]= "NMEA_Replay_SpeedE";
+extern const char szRegistryReplaySpeedF[]= "NMEA_Replay_SpeedF";
+
+extern const char szRegistryReplayRawA[]= "NMEA_Replay_RawA";
+extern const char szRegistryReplayRawB[]= "NMEA_Replay_RawB";
+extern const char szRegistryReplayRawC[]= "NMEA_Replay_RawC";
+extern const char szRegistryReplayRawD[]= "NMEA_Replay_RawD";
+extern const char szRegistryReplayRawE[]= "NMEA_Replay_RawE";
+extern const char szRegistryReplayRawF[]= "NMEA_Replay_RawF";
+
+extern const char szRegistryReplaySyncA[]= "NMEA_Replay_SyncA";
+extern const char szRegistryReplaySyncB[]= "NMEA_Replay_SyncB";
+extern const char szRegistryReplaySyncC[]= "NMEA_Replay_SyncC";
+extern const char szRegistryReplaySyncD[]= "NMEA_Replay_SyncD";
+extern const char szRegistryReplaySyncE[]= "NMEA_Replay_SyncE";
+extern const char szRegistryReplaySyncF[]= "NMEA_Replay_SyncF";
 
 const char szRegistryDisableAutoLogger[] = "DisableAutoLogger";
 const char szRegistryLiveTrackerInterval[] = "LiveTrackerInterval";

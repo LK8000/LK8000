@@ -2576,5 +2576,11 @@
     "_@M001915_": "Race To Goal / Min Time",
     "_@M001916_": "Default",
     "_@M001917_": "Task Type",
-    "_@M001918_": "AAT"
+    "_@M001918_": "AAT",
+
+    "_@M002480_": "Raw Data",
+    "_@M002481_": "Sync on",
+    "_@M002482_": "Timer",
+    "_@M002483_": "NMEA Replay"
+
 }

@@ -853,6 +853,8 @@ GEXTERN unsigned dwIpPort[NUMDEV];
 GEXTERN TCHAR dwDeviceName[NUMDEV][DEVNAMESIZE+1];
 GEXTERN TCHAR Replay_FileName[NUMDEV][LKSIZEBUFFERPATH+1];
 GEXTERN int ReplaySpeed[NUMDEV];
+GEXTERN bool RawByteData[NUMDEV];
+GEXTERN int ReplaySync[NUMDEV];
 GEXTERN bool UseExtSound[NUMDEV];
 GEXTERN double LastFlarmCommandTime;
 GEXTERN bool  DevIsCondor;

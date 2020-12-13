@@ -660,7 +660,20 @@ void LKDeviceSave(const TCHAR *szFile)
   rprintf(szRegistryReplaySpeedE,ReplaySpeed[4]);
   rprintf(szRegistryReplaySpeedF,ReplaySpeed[5]);
 
-
+  rprintf(szRegistryReplayRawA,RawByteData[0]);
+  rprintf(szRegistryReplayRawB,RawByteData[1]);
+  rprintf(szRegistryReplayRawC,RawByteData[2]);
+  rprintf(szRegistryReplayRawD,RawByteData[3]);
+  rprintf(szRegistryReplayRawE,RawByteData[4]);
+  rprintf(szRegistryReplayRawF,RawByteData[5]);
+  
+  rprintf(szRegistryReplaySyncA,ReplaySync[0]);
+  rprintf(szRegistryReplaySyncB,ReplaySync[1]);
+  rprintf(szRegistryReplaySyncC,ReplaySync[2]);
+  rprintf(szRegistryReplaySyncD,ReplaySync[3]);
+  rprintf(szRegistryReplaySyncE,ReplaySync[4]);
+  rprintf(szRegistryReplaySyncF,ReplaySync[5]);
+    
 
   rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
   rprintf(szRegistryPollingMode,PollingMode);
