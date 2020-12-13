@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string>
 #include <algorithm>
+#include <iterator>
 #include "Util/CharUtil.hpp"
 
 #ifdef _UNICODE
