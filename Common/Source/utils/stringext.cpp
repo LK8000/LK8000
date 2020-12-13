@@ -15,17 +15,57 @@
 #include "utils/array_back_insert_iterator.h"
 #include "Util/UTF8.hpp"
 #include "unicode/unicode_to_ascii.h"
+#include "unicode/UTF16.h"
 //______________________________________________________________________________
 namespace {
 
-gcc_pure std::pair<unsigned, const char *> 
-NextChar(const char *p) {
+/**
+ * @param p utf-8 string
+ */
+template<typename Tp, 
+         typename std::enable_if_t<std::is_same<Tp, char>::value>* = nullptr>
+std::pair<unsigned, const Tp *>
+NextChar(const Tp *p) {
   return NextUTF8(p);
 }
 
-gcc_pure std::pair<unsigned, const wchar_t *>
-NextChar(const wchar_t *p) {
+/**
+ * @param p utf-16 string
+ */
+template<typename Tp, 
+         typename std::enable_if_t<sizeof(Tp) == sizeof(uint16_t)>* = nullptr>
+std::pair<unsigned, const Tp *>
+NextChar(const Tp *p) {
+  auto pair = NextUTF16((uint16_t*)p);
+  const Tp* next = reinterpret_cast<const Tp*>(pair.second);
+  return std::make_pair<unsigned, const Tp *>(std::move(pair.first), std::move(next));
+}
+
+/**
+ * @param p utf-32 string
+ */
+template<typename Tp, 
+         typename std::enable_if_t<sizeof(Tp) == sizeof(uint32_t)>* = nullptr>
+std::pair<unsigned, const Tp *>
+NextChar(const Tp *p) {
   return std::make_pair(unsigned(*p), p + 1);
+}
+
+/**
+ * this 2 template function allow Compiler to choose right encoding for wchar_t* string
+ *   depending of sizeof wchar_t (utf16 for 2 bytes, utf32 for 4 bytes)
+ */
+template<typename Tp, 
+         typename std::enable_if_t<sizeof(Tp) == sizeof(uint16_t)>* = nullptr>
+Tp* UnicodeToWChar(unsigned ch, Tp* q) {
+  return reinterpret_cast<Tp*>(UnicodeToUTF16(ch, reinterpret_cast<uint16_t*>(q)));
+}
+
+template<typename Tp, 
+         typename std::enable_if_t<sizeof(Tp) == sizeof(uint32_t)>* = nullptr>
+Tp* UnicodeToWChar(unsigned ch, Tp* q) {
+  (*q++) = ch;
+  return q;
 }
 
 /**
@@ -48,7 +88,7 @@ size_t to_usascii(const CharT *string, char *ascii, size_t size) {
 
   auto out = array_back_inserter(ascii, size - 1); // size - 1 to let placeholder for '\0'
 
-  auto next = NextChar(string);
+  auto next = NextChar<CharT>(string);
   while (next.first && !out.overflowed()) {
 
     if (next.first <= 127) {
@@ -62,7 +102,7 @@ size_t to_usascii(const CharT *string, char *ascii, size_t size) {
       }
     }
 
-    next = NextChar(next.second);
+    next = NextChar<CharT>(next.second);
   }
   ascii[out.length()] = '\0'; // add leading '\0'
 
@@ -102,26 +142,30 @@ size_t to_utf8(const wchar_t *unicode, char *utf8, size_t size) {
 
   const auto end = std::next(utf8, size - 1); // size - 1 to let placeholder for '\0'
   auto out = utf8;
-  while (*unicode && out < end) {
-    out = UnicodeToUTF8(*(unicode++), out);
+
+  auto next = NextChar<wchar_t>(unicode);
+  while (next.first && out < end) {
+    out = UnicodeToUTF8(next.first, out);
+    next = NextChar<wchar_t>(next.second);
   }
-  *out = '\0';
+  *out = '\0'; // add leading '\0'
 
   return std::distance(utf8, out);
 }
 
 size_t from_utf8(const char *utf8, wchar_t *unicode, size_t size) {
 
-  auto out = array_back_inserter(unicode, size - 1); // size - 1 to let placeholder for '\0'
+  const auto end = std::next(unicode, size - 1); // size - 1 to let placeholder for '\0'
+  auto out = unicode;
 
   auto next = NextUTF8(utf8);
-  while (next.second && !out.overflowed()) {
-    out = next.first;
+  while (next.first && out < end) {
+    out = UnicodeToWChar(next.first, out);
     next = NextUTF8(next.second);
   }
-  unicode[out.length()] = L'\0';
+  *out = '\0'; // add leading '\0'
 
-  return out.length();
+  return std::distance(unicode, out);
 }
 
 
