@@ -21,6 +21,24 @@ ExternalProject_Add (
 ExternalProject_Get_Property(boost source_dir)
 set(BOOST_INCLUDE ${source_dir})
 
+set(GLM_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/glm)
+
+ExternalProject_Add (
+    glm
+    URL https://github.com/g-truc/glm/releases/download/0.9.9.6/glm-0.9.9.6.zip
+    URL_HASH MD5=26aaac404364c494cf82d2ef12faae41
+    PREFIX ${GLM_PREFIX}
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+)
+
+ExternalProject_Get_Property(glm source_dir)
+set(GLM_INCLUDE ${source_dir})
+
+
 add_definitions(
     -DBOOST_NO_IOSTREAM
     -DBOOST_NO_IOSFWD
@@ -32,12 +50,22 @@ add_definitions(
     -D__STDC_FORMAT_MACROS
     -DENABLE_OPENGL
     -DHAVE_GLES
+    -DHAVE_GLES2
+    -DUSE_GLSL
     -DGL_GLEXT_PROTOTYPES
     -DUSE_EGL
     -DPOCO_NO_UNWINDOWS
     -DPOCO_ANDROID
+    -DGLM_FORCE_RADIANS
+    -DGLM_FORCE_SIZE_T_LENGTH
 )
 
+if("${ANDROID_ABI}" MATCHES "arm")
+    add_definitions(
+        -DGLM_FORCE_NEON
+        -DGLM_FORCE_SILENT_WARNINGS
+    )
+endif()
 
 list(APPEND	BUILD_FLAGS
     -Werror
@@ -151,6 +179,7 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Screen/OpenGL/Shapes.cpp
     Common/Source/xcs/Screen/OpenGL/Surface.cpp
     Common/Source/xcs/Screen/OpenGL/Triangulate.cpp
+    Common/Source/xcs/Screen/OpenGL/Shaders.cpp
 
     Common/Source/xcs/Util/tstring.cpp
     Common/Source/xcs/Util/ConvertString.cpp
@@ -761,6 +790,7 @@ set_source_files_properties (
 )
 
 add_dependencies(LK8000 boost)
+add_dependencies(LK8000 glm)
 
 find_package (geographiclib REQUIRED CONFIG)
 
@@ -772,6 +802,7 @@ target_include_directories( LK8000 PRIVATE
     Common/Source/xcs
     ./
     ${BOOST_INCLUDE}
+    ${GLM_INCLUDE}
 )
 
 target_link_libraries(LK8000 PRIVATE
@@ -782,6 +813,6 @@ target_link_libraries(LK8000 PRIVATE
     log
     z
     EGL
-    GLESv1_CM
+    GLESv2
     -static-openmp
 )

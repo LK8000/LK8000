@@ -125,8 +125,11 @@ class NativeView extends SurfaceView
     thread.start();
   }
 
+  private static int EGL_OPENGL_ES2_BIT = 4;
+
   private static EGLConfig chooseEglConfig(EGL10 egl, EGLDisplay display)
     throws EGLException {
+
     int[] num_config = new int[1];
     int[] configSpec = new int[]{
       EGL10.EGL_STENCIL_SIZE, 1,  /* Don't change this position in array! */
@@ -135,6 +138,8 @@ class NativeView extends SurfaceView
       EGL10.EGL_BLUE_SIZE, 4,
       EGL10.EGL_ALPHA_SIZE, 0,
       EGL10.EGL_DEPTH_SIZE, 0,
+      EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+      EGL10.EGL_SURFACE_TYPE, EGL10.EGL_WINDOW_BIT,
       EGL10.EGL_NONE
     };
 
