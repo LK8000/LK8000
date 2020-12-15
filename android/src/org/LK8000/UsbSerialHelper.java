@@ -78,6 +78,8 @@ public class UsbSerialHelper extends BroadcastReceiver {
             createDevice(0x0403, 0x6011), // FT4232H
             createDevice(0x0403, 0x6014), // FT232H
 
+            createDevice(0x10C4, 0xEA60), // CP210x
+
             createDevice(0x067B, 0x2303) // PL2303
     );
 
