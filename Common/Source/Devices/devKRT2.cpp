@@ -64,7 +64,7 @@ int SetKRT2Station(uint8_t *Command, uint8_t slot, double fFrequency, const TCHA
 
 
   if(Station != NULL) {
-    TCHAR2usascii(Station, Airfield, 9);
+    to_usascii(Station, Airfield);
   }
 
   for (int i = 0 ; i < 10; i++)

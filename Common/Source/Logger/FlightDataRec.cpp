@@ -165,17 +165,18 @@ void InitFlightDataRecorder() {
 
   for( i = 0;  i < NO_ENTRYS; i++)
   {
-	TCHAR2utf(FDR[i].szName, sbuf, sizeof(sbuf));
-	if(FDR[i].abLog > 0)
-		fprintf(FlightDataRecorderFile,"%30s recording enabled\r",sbuf);
+    if(FDR[i].abLog > 0) {
+      to_utf8(FDR[i].szName, sbuf);
+      fprintf(FlightDataRecorderFile,"%30s recording enabled\r",sbuf);
+    }
   }
   fprintf(FlightDataRecorderFile,"\r");
 
   for( i = 0;  i < NO_ENTRYS; i++)
   {
-	TCHAR2utf(FDR[i].szName, sbuf, sizeof(sbuf));
 	if(FDR[i].aiCheckInterval > 0)
 	{
+		to_utf8(FDR[i].szName, sbuf);
 		if( FDR[i].aiMaxWarnings > 0)
 		{
 		  fprintf(FlightDataRecorderFile,"%30s range (%4.2f .. %4.2f) warning every %is, max. %i warnings\r",

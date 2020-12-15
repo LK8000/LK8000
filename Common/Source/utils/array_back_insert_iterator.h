@@ -40,6 +40,14 @@ public:
     return *this;
   }
 
+  /** @value: null terminated array to insert. */
+  array_back_insert_iterator<_Tp> &operator=(const _Tp *value) {
+    while (*value) {
+      (*this) = *(value++);
+    }
+    return *this;
+  }
+
   array_back_insert_iterator<_Tp> &operator*() { return *this; }
 
   array_back_insert_iterator<_Tp> &operator++() { return *this; }
@@ -48,10 +56,10 @@ public:
 };
 
 /**
- * convenience function template that constructs a array_back_insert_iterator for 
- * the C array with the type deduced from the type of the argument.
- * 
- * @array: begining of array 
+ * convenience function template that constructs a array_back_insert_iterator
+ * for the C array with the type deduced from the type of the argument.
+ *
+ * @array: begining of array
  * @size: max number element to insert
  */
 template <class _Tp>

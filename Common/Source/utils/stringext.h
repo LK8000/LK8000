@@ -12,7 +12,7 @@
 
 /*____________________________________________________________________________*/
 
-#include <tchar.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,25 +20,35 @@ extern "C" {
 
 /*____________________________________________________________________________*/
 
-int ascii2TCHAR(const char* ascii, TCHAR* unicode, int maxChars);
-int TCHAR2ascii(const TCHAR* unicode, char* ascii, int maxChars);
-int TCHAR2utf(const TCHAR* unicode, char* utf, int maxChars);
-int utf2TCHAR(const char* utf, TCHAR* unicode, int maxChars);
-
-int TCHAR2usascii(const TCHAR* unicode, char* ascii, int outSize);
-
-int ascii2unicode(const char* ascii, wchar_t* unicode, int maxChars);
-int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars);
-int unicode2utf(const wchar_t* unicode, char* utf, int maxChars);
-int utf2unicode(const char* utf, wchar_t* unicode, int maxChars);
-
-#ifdef _UNICODE
-int unicode2usascii(const wchar_t* unicode, char* ascii, int outSize);
-#endif
+size_t to_utf8(const wchar_t* string, char* utf, size_t size);
+size_t from_utf8(const char* utf, wchar_t* string, size_t size);
 
 
 #ifdef __cplusplus
 }
-#endif
 
+size_t to_utf8(const char* string, char* utf, size_t size);
+size_t from_utf8(const char* utf, char* string, size_t size);
+
+template<typename CharT, size_t size>
+size_t to_utf8(const CharT* string, char (&utf8)[size]) {
+   static_assert(size > 0, "invalid output size");
+   return to_utf8(string, utf8, size);
+}
+
+template<typename CharT, size_t size>
+size_t from_utf8(const char* utf8, CharT (&string)[size]) {
+   static_assert(size > 0, "invalid output size");
+   return from_utf8(utf8, string, size);
+}
+
+size_t to_usascii(const char* utf8, char* ascii, size_t size);
+size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size);
+
+template<typename CharT, size_t size>
+size_t to_usascii(const CharT* source, char (&ascii)[size]) {
+  return to_usascii(source, ascii, size);
+}
+
+#endif /* __cplusplus */
 #endif /* __stringext_h__ */

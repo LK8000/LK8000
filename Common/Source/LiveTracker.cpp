@@ -248,17 +248,10 @@ void LiveTrackerInit() {
 	if (!_ws_inited && ISPARAGLIDER && LiveTrackerRadar_config)
 		LKTime_Real = 60, LKTime_Ghost = 120, LKTime_Zombie = 360;
 
-	TCHAR2ascii(LiveTrackerusr_Config, _username, 100);
-	_username[99] = 0;
-
-	TCHAR2ascii(PilotName_Config, _pilotname, 100);
-	_pilotname[99] = 0;
-
-	TCHAR2ascii(LiveTrackerpwd_Config, _password, 100);
-	_password[99] = 0;
-
-	TCHAR2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
-	_server_name[SERVERNAME_MAX - 1] = 0;
+	to_utf8(LiveTrackerusr_Config, _username);
+	to_utf8(PilotName_Config, _pilotname);
+	to_utf8(LiveTrackerpwd_Config, _password);
+	to_utf8(LiveTrackersrv_Config, _server_name);
 
 	_server_port = LiveTrackerport_Config;
 
@@ -636,10 +629,10 @@ static int GetUserIDFromServer() {
 	char password[128];
 	char rxcontent[32];
 
-	TCHAR2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
-	UrlEncode(txbuf, username, sizeof(username));
-	TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
-	UrlEncode(txbuf, password, sizeof(username));
+	to_utf8(LiveTrackerusr_Config, txbuf);
+	UrlEncode(txbuf, username, std::size(username));
+	to_utf8(LiveTrackerpwd_Config, txbuf);
+	UrlEncode(txbuf, password, std::size(password));
 	sprintf(txbuf, "/client.php?op=login&user=%s&pass=%s", username, password);
 
 	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxcontent,
@@ -688,19 +681,19 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	// 64=>"Powered flight"
 	// 17100=>"Car"
 	if (_tcslen(LiveTrackerusr_Config) > 0) {
-		TCHAR2ascii(LiveTrackerusr_Config, txbuf, std::size(txbuf));
+		to_utf8(LiveTrackerusr_Config, txbuf);
 	} else {
 		strncpy(txbuf, "guest", std::size(txbuf));
 	}
 	UrlEncode(txbuf, username, std::size(username));
 	if (_tcslen(LiveTrackerpwd_Config) > 0) {
-		TCHAR2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
+		to_utf8(LiveTrackerpwd_Config, txbuf);
 	} else {
 		strncpy(txbuf, "guest", std::size(txbuf));
 	}
 	UrlEncode(txbuf, password, std::size(password));
 #ifdef PNA
-	TCHAR2ascii(GlobalModelName, txbuf, std::size(txbuf));
+	to_utf8(GlobalModelName, txbuf);
 	UrlEncode(txbuf, phone, std::size(phone));
 #else
 #if (WINDOWSPC>0)
@@ -717,12 +710,12 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	 What is this for?
 	 else {
 	 GetBaroDeviceName(_t_barodevice, wgps);
-	 unicode2ascii(wgps, txbuf, sizeof(txbuf));
+	 to_utf8(wgps, txbuf);
 	 UrlEncode(txbuf, gps, sizeof(gps));
 	 }
 	 */
 
-	TCHAR2ascii(AircraftType_Config, txbuf, std::size(txbuf));
+	to_utf8(AircraftType_Config, txbuf);
 	UrlEncode(txbuf, vehicle_name, std::size(vehicle_name));
 	vehicle_type = 8;
 	if (AircraftCategory == umParaglider)
@@ -1230,14 +1223,13 @@ static bool LiveTrack24_Radar() {
 		CheckBackTarget(&GPS_INFO, flarm_slot);
 
 		if (newtraffic) {
-			TCHAR u[100];
 			GPS_INFO.FLARM_Traffic[flarm_slot].ID = userID;
 			GPS_INFO.FLARM_Traffic[flarm_slot].RelativeNorth = 2;
 			GPS_INFO.FLARM_Traffic[flarm_slot].RelativeEast = 2;
 			GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel = 0;
 			GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate = 0;
-			TCHAR *name = GPS_INFO.FLARM_Traffic[flarm_slot].Name;
-			TCHAR *cn = GPS_INFO.FLARM_Traffic[flarm_slot].Cn;
+			auto& name = GPS_INFO.FLARM_Traffic[flarm_slot].Name;
+			auto& cn = GPS_INFO.FLARM_Traffic[flarm_slot].Cn;
 
 			GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
 			TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
@@ -1252,8 +1244,7 @@ static bool LiveTrack24_Radar() {
 						_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, cname);
 					} else {
 						// else probably it is the Name again, and we create a fake Cn
-						ascii2TCHAR(username.c_str(), u, 100);
-						LK_tcsncpy(cn, u, MAXFLARMCN);
+						from_utf8(username.c_str(), cn);
 					}
 				} else {
 					_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, _T("Err"));
@@ -1261,10 +1252,8 @@ static bool LiveTrack24_Radar() {
 
 			} else {
 				// Else we NEED to set a name, otherwise it will constantly search for it over and over..
-				ascii2TCHAR(username.c_str(), u, 100);
-				LK_tcsncpy(name, u, MAXFLARMNAME);
-				ascii2TCHAR(username.c_str(), u, 100);
-				LK_tcsncpy(cn, u, MAXFLARMCN);
+				from_utf8(username.c_str(), name);
+				from_utf8(username.c_str(), cn);
 			}
 
 

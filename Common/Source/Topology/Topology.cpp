@@ -161,7 +161,7 @@ Topology::Topology(const TCHAR* shpname) {
   in_scale = false;
 
   // filename aleady points to _MAPS subdirectory!
-  TCHAR2utf(shpname, filename, std::size(filename));
+  to_utf8(shpname, filename);
 
   Open();
 }
@@ -853,7 +853,7 @@ void XShapeLabel::setlabel(const char* src, bool bUTF8) {
       size_t size = strlen(src) + 1;
       if(size) {
         label = (TCHAR*) malloc(size * sizeof (TCHAR));
-        utf2TCHAR(src, label, size);
+        from_utf8(src, label, size);
       }
     }
     else {

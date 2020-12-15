@@ -365,7 +365,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
   const WAYPOINT &wp = *decl.waypoint[idx];
 
   // set name
-  TCHAR2usascii(wp.Name, imiWp.name, sizeof(imiWp.name));
+  to_usascii(wp.Name, imiWp.name);
 
   // set latitude
   TAngle a;
@@ -739,19 +739,19 @@ bool CDevIMI::DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl,
   memset(&imiDecl, 0, sizeof(imiDecl));
 
   // idecl.date ignored - will be set by FR
-  TCHAR2usascii(decl.PilotName,        imiDecl.header.plt, sizeof(imiDecl.header.plt));
+  to_usascii(decl.PilotName,        imiDecl.header.plt);
   // decl.header.db1Year = year; decl.header.db1Month = month; decl.header.db1Day = day;
-  TCHAR2usascii(decl.AircraftType,     imiDecl.header.gty, sizeof(imiDecl.header.gty));
-  TCHAR2usascii(decl.AircraftRego,     imiDecl.header.gid, sizeof(imiDecl.header.gid));
-  TCHAR2usascii(decl.CompetitionID,    imiDecl.header.cid, sizeof(imiDecl.header.cid));
-  TCHAR2usascii(decl.CompetitionClass, imiDecl.header.ccl, sizeof(imiDecl.header.ccl));
+  to_usascii(decl.AircraftType,     imiDecl.header.gty);
+  to_usascii(decl.AircraftRego,     imiDecl.header.gid);
+  to_usascii(decl.CompetitionID,    imiDecl.header.cid);
+  to_usascii(decl.CompetitionClass, imiDecl.header.ccl);
   // strncpy(decl.header.clb, idecl.clb, sizeof(decl.header.clb));
   // strncpy(decl.header.sit, idecl.sit, sizeof(decl.header.sit));
   // strncpy(decl.header.cm2, idecl.cm2, sizeof(decl.header.cm2));
   // decl.header.db2Year = year; decl.header.db2Month = month; decl.header.db2Day = day;
   TCHAR tskName[IMIDECL_TASK_NAME_LENGTH];
   TaskFileName(IMIDECL_TASK_NAME_LENGTH, tskName);
-  TCHAR2usascii(tskName, imiDecl.header.tskName, sizeof(imiDecl.header.tskName));
+  to_usascii(tskName, imiDecl.header.tskName);
   // decl.header.tskYear = year; decl.header.tskMonth = month; decl.header.tskDay = day;
   // decl.header.tskNumber = MIN(9999, idecl.tskNumber);
 

@@ -99,7 +99,7 @@ void StartupStore(const TCHAR *Str, ...)
     */
     const size_t buff_size = (_tcslen(buf) * 4) + 1;
     char sbuf[buff_size]; 
-    size_t i = TCHAR2utf(buf, sbuf, buff_size);
+    size_t i = to_utf8(buf, sbuf, buff_size);
 #else
     char* sbuf = buf; // string are already utf-8 encoded, no need to convert.
     size_t i = strlen(sbuf);
