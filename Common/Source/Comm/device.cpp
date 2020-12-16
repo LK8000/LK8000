@@ -1120,6 +1120,7 @@ bool devDriverActivated(const TCHAR *DeviceName) {
  * @return FALSE if error on one device.
  */
 BOOL devPutVolume(int Volume) {
+  RadioPara.Changed = true;    
   return for_all_device(&DeviceDescriptor_t::PutVolume, Volume);
 
 }
@@ -1130,6 +1131,7 @@ BOOL devPutVolume(int Volume) {
  * @return FALSE if error on one device.
  */
 BOOL devPutSquelch(int Squelch) {
+  RadioPara.Changed = true;    
   return for_all_device(&DeviceDescriptor_t::PutSquelch, Squelch);
 
 }    
@@ -1142,6 +1144,7 @@ BOOL devPutSquelch(int Squelch) {
  * @return FALSE if error on one device.
  */
 BOOL devPutRadioMode(int mode) {
+  RadioPara.Changed = true;    
   return for_all_device(&DeviceDescriptor_t::PutRadioMode, mode);
 }
 
@@ -1150,6 +1153,7 @@ BOOL devPutRadioMode(int mode) {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqSwap() {
+  RadioPara.Changed = true;    
   return for_all_device(&DeviceDescriptor_t::StationSwap);
 
 }
@@ -1168,6 +1172,7 @@ if( ValidFrequency(Freq))
 {
   RadioPara.ActiveFrequency=  Freq;
 	CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
+  RadioPara.Changed = true;    
   return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
 }
 else
@@ -1181,6 +1186,7 @@ else
 BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
   if( ValidFrequency(Freq)) {
 	  RadioPara.PassiveFrequency=  Freq;
+      RadioPara.Changed = true;
 	  CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
     return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
   } else {
