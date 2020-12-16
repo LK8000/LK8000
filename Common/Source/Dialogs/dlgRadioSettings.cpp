@@ -153,7 +153,7 @@ static int OnRemoteUpdate(void)
 int Idx=0;
   if(RadioPara.Changed)
   {
-    RadioPara.Changed =FALSE;
+
     TCHAR Name[250];
     if( _tcslen(RadioPara.ActiveName) == 0)
       Idx = SearchStation(RadioPara.ActiveFrequency);
@@ -232,6 +232,9 @@ int Idx=0;
           _stprintf(Name,_T("[Dual On]"));
         if(wpnewDual)
               wpnewDual->SetCaption(Name);
+
+      RadioPara.Changed =FALSE;
+      StartupStore(TEXT("Radio:   OnRemoteUpdate:%s"),NEWLINE);
       return 1;
     }
     return 0;
