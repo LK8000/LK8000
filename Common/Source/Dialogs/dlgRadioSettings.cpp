@@ -150,22 +150,12 @@ static void OnCloseClicked(WndButton* pWnd){
 
 static int OnRemoteUpdate(void)
 {
-int Idx=0;
+
   if(RadioPara.Changed)
   {
 
     TCHAR Name[250];
-    if( _tcslen(RadioPara.ActiveName) == 0)
-      Idx = SearchStation(RadioPara.ActiveFrequency);
-    if(Idx !=0)
-    {
-        ActiveRadioIndex = Idx;
-        if( HoldOff ==0)
-        {
-          HoldOff = HOLDOFF_TIME;
-          devPutFreqActive(RadioPara.ActiveFrequency, WayPointList[Idx].Name);
-        }
-    }
+ 
     TCHAR ActiveName[DEVICE_NAME_LEN+8];
 		CopyTruncateString(ActiveName, DEVICE_NAME_LEN, RadioPara.ActiveName);
 
@@ -181,19 +171,7 @@ int Idx=0;
     _stprintf(Name,_T("%6.03f"),RadioPara.ActiveFrequency);
     if(wpnewActiveFreq)
       wpnewActiveFreq->SetCaption(Name);
-
-
-    if( _tcslen(RadioPara.PassiveName) == 0)
-      Idx = SearchStation(RadioPara.PassiveFrequency);
-    if(Idx !=0)
-    {
-        PassiveRadioIndex = Idx;
-        if( HoldOff ==0)
-        {
-          HoldOff = HOLDOFF_TIME;
-          devPutFreqStandby(RadioPara.PassiveFrequency, WayPointList[Idx].Name);
-        }
-    }
+   
     TCHAR PassiveName[DEVICE_NAME_LEN+8];
 		CopyTruncateString(PassiveName, DEVICE_NAME_LEN, RadioPara.PassiveName );
 

@@ -12,7 +12,7 @@
 #include "devKRT2.h"
 #include "device.h"
 #include "utils/stringext.h"
-
+#include "Util/TruncateString.hpp"
 
 namespace {
 
@@ -221,6 +221,46 @@ BOOL KRT2RadioMode(PDeviceDescriptor_t d, int mode) {
   return(TRUE);
 }
 
+
+
+int SearchStation(double Freq)
+{
+int i;
+TCHAR	szFreq[8] ;
+_stprintf(szFreq,  _T("%7.3f"),Freq);
+	double minDist =9999999;
+	int minIdx=0;
+  //  LKASSERT(numvalidwp<=NumberOfWayPoints);
+	double fDist, fBear;
+	for (i=0; i<(int)WayPointList.size(); i++)
+	{
+                      LKASSERT(ValidWayPointFast(i));
+	 //   LKASSERT(numvalidwp<=NumberOfWayPoints);
+
+	    if (WayPointList[i].Latitude!=RESWP_INVALIDNUMBER)
+	    {
+
+	      DistanceBearing(GPS_INFO.Latitude,
+	                      GPS_INFO.Longitude,
+	                      WayPointList[i].Latitude,
+	                      WayPointList[i].Longitude,
+	                      &fDist,
+	                      &fBear);
+	      if(fabs(Freq -   StrToDouble(WayPointList[i].Freq,NULL)) < 0.001)
+	        if(fDist < minDist)
+	        {
+		  minDist = fDist;
+		  minIdx =i;
+	        }
+	    }
+	}
+
+	return minIdx;
+}
+
+
+#define DEVICE_NAME_LEN 12
+
 /*****************************************************************************
  * this function converts a KRT answer sting to a NMEA answer
  *
@@ -280,6 +320,7 @@ static int counter =0;
       processed++;
       if(len > 1)
       {
+        int Idx =0;
         processed++;
         switch (szCommand[1])
         {
@@ -295,6 +336,13 @@ static int counter =0;
                   RadioPara.ActiveName[i] =   szCommand[4+i];
                 RadioPara.ActiveName[8] =0;
                 TrimRight(RadioPara.ActiveName);
+                if( _tcslen(RadioPara.ActiveName) == 0)
+                   Idx = SearchStation(RadioPara.ActiveFrequency);
+                if(Idx !=0)
+                {
+                  CopyTruncateString( RadioPara.ActiveName, DEVICE_NAME_LEN, WayPointList[Idx].Name);
+                  devPutFreqActive(RadioPara.ActiveFrequency, RadioPara.ActiveName);
+                }                
                    _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
                 processed = 13;
               }
@@ -313,6 +361,14 @@ static int counter =0;
                   RadioPara.PassiveName[i] =   szCommand[4+i];
                 RadioPara.PassiveName[8] =0;
                 TrimRight(RadioPara.PassiveName);
+                if( _tcslen(RadioPara.PassiveName) == 0)
+                   Idx = SearchStation(RadioPara.PassiveFrequency);
+                if(Idx !=0)
+                {
+                  CopyTruncateString( RadioPara.PassiveName, DEVICE_NAME_LEN, WayPointList[Idx].Name);
+                  devPutFreqStandby(RadioPara.PassiveFrequency, RadioPara.PassiveName);
+                } 
+
                 _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );
                 processed = 13;
               }
