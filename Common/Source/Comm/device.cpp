@@ -1191,7 +1191,7 @@ BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
 	  RadioPara.PassiveFrequency=  Freq;
       RadioPara.Changed = true;
 #if TESTBENCH  
-      StartupStore(TEXT("Radio:   devPutFreqActive %s %7.3f %s"),StationName,Freq,NEWLINE); 
+      StartupStore(TEXT("Radio:   devPutFreqStandby %s %7.3f %s"),StationName,Freq,NEWLINE); 
 #endif       
 	  CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
     return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
