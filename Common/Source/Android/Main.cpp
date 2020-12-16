@@ -112,6 +112,8 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "Poke_Pro");
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "C68");
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "yotaphone2");
+  is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "alfapilot");
+
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "HLTE203T");
   is_eink_colored = is_eink_colored || StringIsEqual(native_view->GetProduct(), "HLTE203T");
 #endif

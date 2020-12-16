@@ -46,12 +46,6 @@ void SettingsLeave() {
 
   SwitchToMapWindow();
 
-  // Locking everything here prevents the calculation thread from running,
-  // while shared data is potentially reloaded.
-
-  LockFlightData();
-  LockTaskData();
-
   MenuActive = false;
 
   // 101020 LKmaps contain only topology , so no need to force total reload!
@@ -82,34 +76,31 @@ void SettingsLeave() {
   }
 
   if((WAYPOINTFILECHANGED) || (AIRFIELDFILECHANGED)) {
-	#if TESTBENCH
-	StartupStore(_T(".... WAYPOINT OR AIRFIELD CHANGED from configuration\n"));
-	#endif
-	SaveDefaultTask(); //@ 101020 BUGFIX
-	ClearTask();
-	ReadWayPoints();
-	StartupStore(_T(". RELOADED %d WAYPOINTS + %u virtuals%s"),(unsigned)WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
-	SetHome(true); // force home reload
+    #if TESTBENCH
+    StartupStore(_T(".... WAYPOINT OR AIRFIELD CHANGED from configuration\n"));
+    #endif
+    LockTaskData();
 
-	if (WAYPOINTFILECHANGED) {
-		#if TESTBENCH
-		StartupStore(_T(".... WAYPOINTFILECHANGED from configuration\n"));
-		#endif
-		SaveRecentList();
-		LoadRecentList();
-		RangeLandableNumber=0;
-		RangeAirportNumber=0;
-		RangeTurnpointNumber=0;
-		CommonNumber=0;
-		SortedNumber=0;
-		// SortedTurnpointNumber=0; 101222
-		LastDoRangeWaypointListTime=0;
-		LKForceDoCommon=true;
-		LKForceDoNearest=true;
-		LKForceDoRecent=true;
-		// LKForceDoNearestTurnpoint=true; 101222
-	}
-	InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //@ BUGFIX 101020
+    SaveRecentList();
+    SaveDefaultTask(); //@ 101020 BUGFIX
+    ClearTask();
+    ReadWayPoints();
+    StartupStore(_T(". RELOADED %d WAYPOINTS + %u virtuals%s"),(unsigned)WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
+    SetHome(true); // force home reload
+    LoadRecentList();
+    RangeLandableNumber=0;
+    RangeAirportNumber=0;
+    RangeTurnpointNumber=0;
+    CommonNumber=0;
+    SortedNumber=0;
+    LastDoRangeWaypointListTime=0;
+    LKForceDoCommon=true;
+    LKForceDoNearest=true;
+    LKForceDoRecent=true;
+
+    UnlockTaskData();
+
+    InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //@ BUGFIX 101020
   }
 
   if (TOPOLOGYFILECHANGED) {
@@ -151,9 +142,6 @@ void SettingsLeave() {
   if (FONTSCHANGED || SNAILCHANGED || AIRCRAFTTYPECHANGED) {
       ReinitScreen();
   }
-
-  UnlockTaskData();
-  UnlockFlightData();
 
   if(!SIMMODE && COMPORTCHANGED) {
       #if TESTBENCH
