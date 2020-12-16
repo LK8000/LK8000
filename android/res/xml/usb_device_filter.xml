@@ -5,6 +5,7 @@
   <usb-device vendor-id="5840" product-id="2985" class="2" />  <!-- GPSBip -->
   <usb-device vendor-id="1027" product-id="24597" class="2" />  <!-- Digifly AIR (FT X-Series)-->
   <usb-device vendor-id="1155" product-id="22336" class="2" />  <!-- SoftRF Dongle -->
+  <usb-device vendor-id="9114" product-id="32809" class="2" />  <!-- SoftRF Badge -->
 
   <usb-device vendor-id="1027" product-id="24577" /> <!-- FT232AM, FT232BM, FT232R FT245R -->
   <usb-device vendor-id="1027" product-id="24592" /> <!-- FT2232D, FT2232H -->
