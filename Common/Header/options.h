@@ -82,7 +82,7 @@
 				// the problem during alpha stages.
 				// Normally these conditions should not exist
 
-//#define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD
+#define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD
 				// FOR DEVELOPMENT VERSIONS. CAN BE USED FOR SPECIAL BETAs,
 				// but normally should not be used for public releases.
 //#define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
