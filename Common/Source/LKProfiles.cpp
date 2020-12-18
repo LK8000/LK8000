@@ -475,7 +475,9 @@ const char szRegistryOverlay_LeftDown[] = "Overlay_LeftDown";
 const char szRegistryOverlay_RightTop[] = "Overlay_RightTop";
 const char szRegistryOverlay_RightMid[] = "Overlay_RightMid";
 const char szRegistryOverlay_RightBottom[] = "Overlay_RightBottom";
+const char szRegistryOverlay_Title[] = "Overlay_Title";
 const char szRegistryAdditionalContestRule[] = "Additional_Contest_Rule";
+
 #ifdef _WGS84
 const char szRegistry_earth_model_wgs84[] = "earth_model_wgs84";
 #endif

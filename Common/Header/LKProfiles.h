@@ -375,6 +375,7 @@ extern const char szRegistryOverlay_RightTop[];
 extern const char szRegistryOverlay_RightMid[];
 extern const char szRegistryOverlay_RightBottom[];
 extern const char szRegistryAdditionalContestRule[];
+extern const char szRegistryOverlay_Title[];
 
 #ifdef _WGS84
 extern const char szRegistry_earth_model_wgs84[];
