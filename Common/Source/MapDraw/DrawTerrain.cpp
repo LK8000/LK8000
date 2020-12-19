@@ -855,8 +855,8 @@ public:
 
     static
     int16_t IsoBand(int16_t height, int zoom) {
-        //return (std::max<int16_t>(0, height)) >> 6; // 64m, can't be smaller to avoid uint8_t overflow.
-        return (std::max<int16_t>(0, height)) >> (7 + zoom); // 128m
+        return (std::max<int16_t>(0, height)) >> (6 + zoom); // 64m, can't be smaller to avoid uint8_t overflow.
+        // return (std::max<int16_t>(0, height)) >> (7 + zoom); // 128m
         // return (std::max<int16_t>(0, height)) >> 8; // 256m
     }
 
@@ -866,7 +866,7 @@ private:
     static
     int16x8_t IsoBand(int16x8_t height, int zoom) {
         int16x8_t h = vmaxq_s16(height, vdupq_n_s16(0));
-        return vshlq_s16(h, vdupq_n_s16(-(7U + zoom)));
+        return vshlq_s16(h, vdupq_n_s16(-(6 + zoom)));
     }
 
     template<typename T>
@@ -925,7 +925,7 @@ public:
         }
 
 
-        int zoom = ((current_scale >= 750) ? 1 : 0 );
+        int zoom = ((current_scale >= 3500) ? 2 : ((current_scale >= 1000) ? 1 : 0 ));
 
 
         const size_t ixs = height_buffer->GetWidth();
