@@ -136,11 +136,11 @@ static void setVariables(void) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(491)); // OFF
     dfe->addEnumText(MsgToken(2090)); // Default
-    /*
+    
     for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
-    dfe->Sort(2);*/
+    dfe->Sort(2);
     if ( Overlay_RightTop < 2 )
       dfe->Set(Overlay_RightTop);
     else
@@ -152,10 +152,10 @@ static void setVariables(void) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(491)); // OFF
     dfe->addEnumText(MsgToken(2090)); // Default
- /*   for (int i=0; i<NumDataOptions; i++) {
+   for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
-    dfe->Sort(2);*/
+    dfe->Sort(2);
     if ( Overlay_RightMid < 2 )
       dfe->Set(Overlay_RightMid);
     else
@@ -167,10 +167,10 @@ static void setVariables(void) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken(491)); // OFF
     dfe->addEnumText(MsgToken(2090)); // Default
- /*   for (int i=0; i<NumDataOptions; i++) {
+   for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(LKGetText(Data_Options[i].Description));
     }
-    dfe->Sort(2);*/
+    dfe->Sort(2);
     if ( Overlay_RightBottom < 2 )
       dfe->Set(Overlay_RightBottom);
     else
