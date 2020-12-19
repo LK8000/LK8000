@@ -812,8 +812,8 @@ public:
         assert(height_buffer && height_buffer->GetBuffer() );
         assert(screen_buffer && screen_buffer->GetBuffer() );
 
-        size_t ixs = height_buffer->GetWidth();
-        size_t iys = height_buffer->GetHeight();
+        const size_t ixs = height_buffer->GetWidth();
+        const size_t iys = height_buffer->GetHeight();
 
 #if defined(_OPENMP)
         #pragma omp parallel for
