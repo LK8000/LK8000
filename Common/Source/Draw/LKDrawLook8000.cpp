@@ -808,11 +808,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
           cy = topmargin;
         }
         LKWriteText(Surface, BufferValue, cx, cy,
-                WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);          
+                WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);     
+        /*
         if(Overlay_Title){
           Surface.SelectObject(LK8OverlaySmallFont);                
           LKWriteText(Surface, BufferTitle, cx , cy, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
-        }          
+        } */         
  
     }
 
