@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmSetOverlays" Type="Dialog" X="0" Y="0" Width="240" Height="240" Caption="_@M2079_" Font="2" >
-    <WndProperty Name="prpTopLeft" Caption="_@M1891_" X="5" Y="-999" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpTopLeft" Caption="_@M1891_" X="5" Y="-999" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpTopMid" Caption="_@M1892_" X="5" Y="-1" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpTopMid" Caption="_@M1892_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpTopRight" Caption="_@M1893_" X="5" Y="-999" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpTopRight" Caption="_@M1893_" X="5" Y="-999" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpRightTop" Caption="_@M1894_" X="5" Y="-1" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpRightTop" Caption="_@M1894_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpRightMid" Caption="_@M1895_" X="5" Y="-1" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpRightMid" Caption="_@M1895_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpRightBottom" Caption="_@M1896_" X="5" Y="-1" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpRightBottom" Caption="_@M1896_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpLeftTop" Caption="_@M1897_" X="5" Y="-1" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpLeftTop" Caption="_@M1897_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpLeftMid" Caption="_@M1898_" X="5" Y="-1" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpLeftMid" Caption="_@M1898_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpLeftBottom" Caption="_@M1899_" X="5" Y="-1" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpLeftBottom" Caption="_@M1899_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
-    <WndProperty Name="prpLeftDown" Caption="_@M1900_" X="5" Y="-1" Width="-1" Height="20" CaptionWidth="110" Font="2" Help="_@H1293_">
+    <WndProperty Name="prpLeftDown" Caption="_@M1900_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
+      <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
+    </WndProperty>
+    <WndProperty Name="prpOvTitle" Caption="_@M2026_" X="5" Y="-1" Width="-1" Height="19" CaptionWidth="110" Font="2" Help="_@H1293_">
       <DataField Name="" DataType="enum" Min="0" Max="30" Step="1" />
     </WndProperty>
     <WndButton  Caption="_@M186_" X="130" Y="195" Width="105" Height="20" Font="2" OnClickNotify="OnCloseClicked" Tag="1"/>

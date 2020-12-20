@@ -692,6 +692,7 @@ void Globals_Init(void) {
   Overlay_RightTop=1;
   Overlay_RightMid=1;
   Overlay_RightBottom=1;
+  Overlay_Title= true;
 
   FontMapWaypoint=MAXFONTRESIZE;
   FontMapTopology=MAXFONTRESIZE;
