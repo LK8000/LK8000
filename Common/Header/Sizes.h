@@ -13,7 +13,7 @@
  */
 
 // Number of InfoBoxes
-#define NUMDATAOPTIONS_MAX                      154
+#define NUMDATAOPTIONS_MAX                      156
 
 
 #define DISTANCE_ROUNDING 20.0
