@@ -1470,6 +1470,8 @@ goto_bearing:
 		case LK_ALTERN2_GR:
 		// B69
 		case LK_BESTALTERN_GR:
+        // 153
+        case LK_HOME_GR:		
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			if (lktitle) {
 				switch (lkindex) {
@@ -1485,7 +1487,10 @@ goto_bearing:
 						// LKTOKEN  _@M1137_ = "Alternate2 Req.Efficiency", _@M1138_ = "Atn2.E"
 						_tcscpy(BufferTitle, MsgToken(1138));
 						break;
-
+					case LK_HOME_GR:
+						// LKTOKEN  _@M2490_ = Home Req.Efficiency", _@M2491_ = "Home.E"
+						_tcscpy(BufferTitle, MsgToken(2491));
+						break;
 					default:
 						_stprintf(BufferTitle, TEXT("Atn%d.E"), lkindex-LK_ALTERNATESGR+1);
 						break;
@@ -1502,6 +1507,9 @@ goto_bearing:
 					break;
 				case LK_BESTALTERN_GR:
 					index=BestAlternate;
+					break;
+				case LK_HOME_GR:
+					index=HomeWaypoint;
 					break;
 				default:
 					index=0;
@@ -1537,6 +1545,10 @@ goto_bearing:
 					break;
 				case LK_BESTALTERN_GR:
 					if ( ValidWayPoint(BestAlternate) ) value=WayPointCalc[BestAlternate].GR;
+					else value=INVALID_GR;
+					break;
+				case LK_HOME_GR:
+					if ( ValidWayPoint(HomeWaypoint) ) value=WayPointCalc[HomeWaypoint].GR;
 					else value=INVALID_GR;
 					break;
 				default:
@@ -2489,7 +2501,8 @@ olc_score:
 					LKFormatValue(LK_ALTERN2_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_HOME:
-					LKFormatGR(HomeWaypoint, false, BufferValue, BufferUnit);
+                    LKFormatValue(LK_HOME_GR, false, BufferValue, BufferUnit, BufferTitle);
+				//	LKFormatGR(HomeWaypoint, false, BufferValue, BufferUnit);
 					break;
 				case OVT_THER:
 					LKFormatGR(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);

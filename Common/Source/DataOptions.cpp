@@ -178,6 +178,8 @@ void FillDataOptions() {
 	SetDataOption(LK_ALTERN2_GR, ugNone, TEXT("_@M1137_"), TEXT("_@M1138_"));
 	// LKTOKEN  _@M1139_ = "BestAltern Req.Efficiency", _@M1140_ = "BAtn.E"
 	SetDataOption(LK_BESTALTERN_GR, ugNone, TEXT("_@M1139_"), TEXT("_@M1140_"));
+	// LKTOKEN  _@M2490_ = "Home Req.Efficiency", _@M2491_ = "Home.E"
+	SetDataOption(LK_HOME_GR, ugNone, TEXT("_@M2490_"), TEXT("_@M2491_"));
 	// LKTOKEN  _@M1141_ = "Altitude QFE", _@M1142_ = "QFE"
 	SetDataOption(LK_QFE, ugAltitude, TEXT("_@M1141_"), TEXT("_@M1142_"));
 	// LKTOKEN  _@M1143_ = "Average Efficiency", _@M1144_ = "E.Avg"

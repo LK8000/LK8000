@@ -739,6 +739,7 @@
 #define LK_MTG_QNH_ARRIV   150 // QNH arrival at Multi Target selected
 #define LK_MTG_BRG_DIFF             151  // Multitarget Bearing difference
 #define LK_ALTERN1_QNH_ARRIV   152 // QNH arrival at Alternate 1
+#define LK_HOME_GR             153 // required efficency to home 
 
 // The following values are not available for custom configuration
 
