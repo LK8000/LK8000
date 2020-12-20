@@ -179,6 +179,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         yMcTitle = yMcValue + SizeSmallFont.cy;
         yMcUnit  = yMcValue + SizeMcModeFont.cy;       
         yMcSafety= yMcValue + fixBigInterline -1 - (SizeSmallFont.cy+BOXEDYMARGIN);
+        yMcMode  = yMcValue + (SizeBigFont.cy -SizeMcModeFont.cy)/2;
 
         yRightMid     =  yrightoffset - SizeBigFont.cy + fixBigInterline;
         yRightMidTitle=  yRightMid + SizeSmallFont.cy;
@@ -188,7 +189,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         yRightBtmTitle = yRightBtm   + SizeSmallFont.cy;
         yRightBtmUnit  = yRightBtm   + SizeMcModeFont.cy;
         yDistUnit= topmargin + SizeMediumFont.cy + unitmediumoffset;
-        yAltSafety= yrightoffset  - fixBigInterline + SizeBigFont.cy - fixBigInterline -1;
+        yAltSafety= yrightoffset  - fixBigInterline + SizeSmallFont.cy +SizeBigFont.cy - fixBigInterline -1;
         yLeftWind =  rc.bottom - BottomSize - SizeMediumFont.cy - NIBLSCALE(2);
 
 
