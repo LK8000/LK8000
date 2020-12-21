@@ -1320,15 +1320,15 @@ goto_bearing:
 			}
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
-            {
+			{
 				// LKTOKEN  _@M1121_ = "Home Distance", _@M1122_ = "HomeDis"
 				_tcscpy(BufferTitle, MsgToken(1122));
 				if (lkindex == LK_HOME_DISTNM)
 				{
-			  	  _tcscpy(BufferUnit, TEXT("nm"));
-			  	  _tcscpy(BufferTitle, MsgToken(2493));
+					_tcscpy(BufferUnit, TEXT("nm"));
+					_tcscpy(BufferTitle, MsgToken(2493));
 				}
-            }
+			}
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1482,9 +1482,9 @@ goto_bearing:
 		case LK_ALTERN2_GR:
 		// B69
 		case LK_BESTALTERN_GR:
-        // 153
-        case LK_HOME_GR:
-		    bShowWPname = true;
+		// 153
+		case LK_HOME_GR:
+			bShowWPname = true;
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			if (lktitle) {
 				switch (lkindex) {
