@@ -340,7 +340,6 @@ class DataFieldFileReader: public DataField {
   void addFile(const TCHAR *fname, const TCHAR *fpname);
   
   
-  static bool checkFilter(const TCHAR *fname, const TCHAR* filter);
   int GetNumFiles(void);
 
   int GetAsInteger(void) override;
@@ -368,19 +367,43 @@ class DataFieldFileReader: public DataField {
   void Sort(int startindex=0) override;
 
   gcc_nonnull_all
-  void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
+  void ScanDirectoryTop(const TCHAR *subdir, const TCHAR **suffix_filters, size_t filter_count);
+
+  template <size_t filter_count> gcc_nonnull_all
+  void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *(&suffix_filters)[filter_count]) {
+    ScanDirectoryTop(subdir, suffix_filters, filter_count);
+  }
 
   gcc_nonnull_all
-  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
+  void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter) {
+    const TCHAR* suffix_filters[] = { filter };
+    ScanDirectoryTop(subdir, suffix_filters);
+  }
+
+  gcc_nonnull_all
+  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR **suffix_filters, size_t filter_count);
+
+  template <size_t filter_count> gcc_nonnull_all
+  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR *(&suffix_filters)[filter_count]) {
+    ScanSystemDirectoryTop(subdir, suffix_filters, filter_count);
+  }
+
+  gcc_nonnull_all
+  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR *filter) {
+    const TCHAR* suffix_filters[] = { filter };
+    ScanSystemDirectoryTop(subdir, suffix_filters);
+  }
+
+
+protected:
 
 #ifdef ANDROID
   gcc_nonnull_all
-  void ScanZipDirectory(const TCHAR *subdir, const TCHAR *filter);
+  void ScanZipDirectory(const TCHAR *subdir, const TCHAR **suffix_filters, size_t filter_count);
 #endif
- protected:
 
   gcc_nonnull_all
-  BOOL ScanDirectories(const TCHAR *sPath, const TCHAR* subdir, const TCHAR *filter);
+  BOOL ScanDirectories(const TCHAR *sPath, const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count);
 
 };
 

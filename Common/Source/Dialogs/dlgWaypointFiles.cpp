@@ -82,11 +82,14 @@ static void setVariables(WndForm * pForm) {
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
-        dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_WINPILOT));
-        dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_XCSOAR));
-        dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_CUP));
-        dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_WP_COMPE));
-        dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_OPENAIP));
+        const TCHAR* suffix_filters[] = {
+          _T(LKS_WP_WINPILOT),
+          _T(LKS_WP_XCSOAR),
+          _T(LKS_WP_CUP),
+          _T(LKS_WP_COMPE),
+          _T(LKS_OPENAIP),
+        };
+        dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), suffix_filters);
         dfe->Lookup(szWaypointFile[i]);
       }
       _sntprintf(tmp,100,_T("%s %1u "), MsgToken(2341),i+1);  // _@M2341_ "Waypoint File"

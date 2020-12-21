@@ -29,6 +29,7 @@
 #include "Asset.hpp"
 #include "ScreenGeometry.h"
 #include "Util/Clamp.hpp"
+#include "utils/array_adaptor.h"
 
 #ifndef USE_GDI
 #include "Screen/SubCanvas.hpp"
@@ -119,29 +120,53 @@ int DataFieldFileReader::SetAsInteger(int Value){
 }
 
 
-void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
+void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) { // 091101
   
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   LocalPath(buffer, subdir);
-  ScanDirectories(buffer,_T(""), filter);
+  ScanDirectories(buffer,_T(""), suffix_filters, filter_count);
   Sort();
-
 }
 
-void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
+void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) { // 091101
   
+#ifndef ANDROID
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   SystemPath(buffer, subdir);
-  ScanDirectories(buffer,_T(""), filter);
+  ScanDirectories(buffer,_T(""), suffix_filters, filter_count);
+#else
+  ScanZipDirectory(subdir, suffix_filters, filter_count);
+#endif
   Sort();
-
 }
 
+static
+bool checkFilter(const TCHAR* filename,  const TCHAR **suffix_filters, size_t filter_count) {
+  size_t filename_size = _tcslen(filename);
+  
+  for (const TCHAR* suffix : array_adaptor(suffix_filters, filter_count)) {
+
+    if(!suffix || !suffix[0]) {
+      return true;
+    }
+
+    size_t suffix_size = _tcslen(suffix);
+    if(filename_size < suffix_size) {
+      continue;
+    }
+
+    const TCHAR* filename_suffix = &filename[filename_size - suffix_size];
+    if (_tcsicmp(filename_suffix, suffix) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 #ifdef ANDROID
-void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* filter) { // 091101
+void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) { // 091101
 
-  static zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
+  const zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
   zzip_error_t zzipError;
 
   tstring sRootPath = LKGetSystemPath();
@@ -159,7 +184,7 @@ void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* fil
     while(zzip_dir_read(dir, &dirent)) {
 
       if( _tcsnicmp(subdir, dirent.d_name, subdir_size) == 0) {
-        if(checkFilter(dirent.d_name, filter)) {
+        if(checkFilter(dirent.d_name, suffix_filters, filter_count)) {
 
           TCHAR* szFileName = _tcsrchr(dirent.d_name, _T('/'))+1;
           if(GetLabelIndex(szFileName) <= 0) {
@@ -178,11 +203,11 @@ void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* fil
 #endif
 
 
-BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdir, const TCHAR* filter) {
+BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) {
 
     assert(sPath);
     assert(subdir);
-    assert(filter);
+    assert(suffix_filters);
 
     TCHAR FileName[MAX_PATH];
 
@@ -205,8 +230,8 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdi
             }
             _tcscat(FileName, It.getName());
 
-            ScanDirectories(sPath, FileName, filter);
-        } else if(checkFilter(It.getName(), filter)) {
+            ScanDirectories(sPath, FileName, suffix_filters, filter_count);
+        } else if(checkFilter(It.getName(), suffix_filters, filter_count)) {
 
             _tcscpy(FileName, subdir);
             if(_tcslen(FileName) > 0) {
@@ -254,40 +279,6 @@ const TCHAR* DataFieldFileReader::GetPathFile(void) const {
   }
   return TEXT("\0");
 }
-
-
-bool DataFieldFileReader::checkFilter(const TCHAR *filename,
-				      const TCHAR *filter) {
-  const TCHAR *ptr;
-  TCHAR upfilter[MAX_PATH];
-  // checks if the filename matches the filter exactly
-
-  if (!filter || (_tcslen(filter+1)==0)) {
-    // invalid or short filter, pass
-    return true;
-  }
-
-  _tcscpy(upfilter,filter+1);
-
-  // check if trailing part of filter (*.exe => .exe) matches end
-  ptr = _tcsstr(filename, upfilter);
-  if (ptr) {
-    if (_tcslen(ptr)==_tcslen(upfilter)) {
-      return true;
-    }
-  }
-
-  CharUpper(upfilter);
-  ptr = _tcsstr(filename, upfilter);
-  if (ptr) {
-    if (_tcslen(ptr)==_tcslen(upfilter)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 
 void DataFieldFileReader::addFile(const TCHAR *Text, 
 				  const TCHAR *PText) {

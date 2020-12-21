@@ -82,8 +82,11 @@ static void setVariables(WndForm * pForm) {
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
-        dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_AIRSPACES));
-        dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), _T("*" LKS_OPENAIP));
+        const TCHAR* suffix_filters[] = {
+          _T(LKS_AIRSPACES),
+          _T(LKS_OPENAIP)
+        };
+        dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), suffix_filters);
         dfe->Lookup(szAirspaceFile[i]);
       }
       _sntprintf(tmp,100, _T("%s %1u "), MsgToken(2339),i+1);  // _@M2339_ "Airspace File "

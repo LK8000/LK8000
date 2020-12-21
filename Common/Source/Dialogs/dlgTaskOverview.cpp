@@ -657,9 +657,12 @@ void dlgTaskOverviewShowModal(int Idx){
     wp->SetVisible(false);
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_TSK));
-      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_CUP));
-      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_GPX));
+      const TCHAR* suffix_filters[] = {
+        _T(LKS_TSK),
+        _T(LKS_WP_CUP),
+        _T(LKS_WP_GPX)
+      };
+      dfe->ScanDirectoryTop(_T(LKD_TASKS), suffix_filters);
     }
     wp->RefreshDisplay();
   }

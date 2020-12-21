@@ -2500,7 +2500,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF),_T("*" LKS_PILOT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF),_T(LKS_PILOT));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2509,7 +2509,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_AIRCRAFT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_AIRCRAFT));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2518,7 +2518,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_DEVICE));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_DEVICE));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2533,17 +2533,12 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_POLARS), _T("*" LKS_POLARS)); //091101
+      dfe->ScanDirectoryTop(_T(LKD_POLARS), _T(LKS_POLARS)); //091101
 #ifdef LKD_SYS_POLAR
       /**
        * Add entry from system directory not exist in data directory.
        */
-#ifdef ANDROID
-      dfe->ScanZipDirectory(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
-#else
-      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
-#endif
-      dfe->Sort();
+      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_POLAR), _T(LKS_POLARS));
 #endif
       dfe->Lookup(temptext);
     }
@@ -2576,8 +2571,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" LKS_MAPS));
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" XCS_MAPS));
+      const TCHAR* suffix_filters[] = {
+        _T(LKS_MAPS),
+        _T(XCS_MAPS)
+      };
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), suffix_filters);
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2588,7 +2586,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" LKS_TERRAINDEM));
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T(LKS_TERRAINDEM));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2599,7 +2597,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_AIRFIELDS));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T(LKS_AIRFIELDS));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2625,7 +2623,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_INPUT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_INPUT));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
