@@ -177,7 +177,9 @@ class DataField{
   ComboList* GetCombo(void) { return &mComboList;}
   virtual int SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {return SetAsInteger(iDataFieldIndex);};
   void CopyString(TCHAR * szStringOut, bool bFormatted);
-  bool SupportCombo;  // all Types dataField support combolist except DataFieldString.
+
+  bool SupportCombo = false;  // all Types dataField support combolist except DataFieldString.
+
   protected:
     DataAccessCallback_t mOnDataAccess;
     TCHAR mEditFormat[FORMATSIZE+1];
@@ -298,33 +300,24 @@ class DataFieldEnum: public DataField {
 
 #define DFE_MAX_FILES 300
 
-typedef struct {
-  TCHAR *mTextFile;
-  TCHAR *mTextPathFile;
-} DataFieldFileReaderEntry;
-
 class DataFieldFileReader: public DataField {
+public:
 
+  struct Entry {
+    TCHAR *mLabel;
+    TCHAR *mFilePath;
+  };
+ 
  private:
-  unsigned int nFiles;
-  unsigned int mValue;
-  DataFieldFileReaderEntry fields[DFE_MAX_FILES];
 
-  public:
-  DataFieldFileReader(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr):
-      DataField(EditFormat, DisplayFormat, OnDataAccess){
-      mValue = 0;
-      fields[0].mTextFile= NULL;
-      fields[0].mTextPathFile= NULL; // first entry always exists and is blank
-      nFiles = 1;
+  typedef std::vector<Entry> file_list_t;
 
-      SupportCombo=true;
-      (mOnDataAccess)(this, daGet);
+  file_list_t::size_type mValue = 0;
+  file_list_t file_list = {{nullptr, nullptr}}; // initialize with first blank entry
 
-    };
-    ~DataFieldFileReader() {
-		Clear();
-	}
+ public:
+  DataFieldFileReader(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
+  ~DataFieldFileReader();
 
 	void Clear() override;
 
