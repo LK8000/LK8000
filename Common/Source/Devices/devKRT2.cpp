@@ -295,7 +295,13 @@ static int counter =0;
                   RadioPara.ActiveName[i] =   szCommand[4+i];
                 RadioPara.ActiveName[8] =0;
                 TrimRight(RadioPara.ActiveName);
-                   _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
+                if( _tcslen(RadioPara.ActiveName) == 0)
+                {
+                  int Idx = SearchNearestStationWithFreqency(RadioPara.ActiveFrequency);
+                  if(Idx > 0)
+                    devPutFreqActive(RadioPara.ActiveFrequency, WayPointList[Idx].Name);
+                }
+                _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
                 processed = 13;
               }
             } else processed=0;
@@ -313,6 +319,13 @@ static int counter =0;
                   RadioPara.PassiveName[i] =   szCommand[4+i];
                 RadioPara.PassiveName[8] =0;
                 TrimRight(RadioPara.PassiveName);
+                if( _tcslen(RadioPara.PassiveName) == 0)
+                {
+                   int Idx = SearchNearestStationWithFreqency(RadioPara.PassiveFrequency);
+                  if(Idx > 0)
+                     devPutFreqStandby(RadioPara.PassiveFrequency, WayPointList[Idx].Name);
+                }
+
                 _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );
                 processed = 13;
               }

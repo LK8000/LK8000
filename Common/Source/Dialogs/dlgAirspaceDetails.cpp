@@ -17,7 +17,6 @@
 #include "LKObjects.h"
 #include "Sound/Sound.h"
 #include "resource.h"
-extern BOOL ValidFrequency(double Freq);
 
 static CAirspaceBase airspace_copy;
 static void OnDetailsClicked(WndButton* pWnd);
@@ -111,46 +110,6 @@ static bool OnTimer(WndForm* pWnd){
   return true;
 }
 
-double  ExtractFrequency(const TCHAR *text)
-{
-    if(text == NULL)
-        return 0.0;
- double fFreq = 0.0;
- int iTxtlen = (int)_tcslen(text);
- int i,Mhz=0,kHz=0;
- for (i=0; i < iTxtlen; i++)
- {
-   if (text[i] == '1')
-   {
-     Mhz  = _tcstol(&text[i], nullptr, 10);
-	 if(Mhz >= 118)
-	   if(Mhz <= 138)
-	         if((i+3) < iTxtlen)
-	         {
-		       if((text[i+3] == '.') || (text[i+3] == ','))
-		       {
-		    	 kHz =0;
-		    	 if((i+4) < iTxtlen)
-			       if((text[i+4] >= '0') && (text[i+4] <= '9'))
-			    	   kHz += (text[i+4]-'0') * 100;
-
-		    	 if((i+5) < iTxtlen)
-			       if((text[i+5] >= '0') && (text[i+5] <= '9'))
-			    	   kHz += (text[i+5]-'0') * 10;
-
-		    	 if((i+6) < iTxtlen)
-			       if((text[i+6] >= '0') && (text[i+6] <= '9'))
-			    	   kHz += (text[i+6]-'0');
-
-		    	 fFreq = (double) Mhz+ (double)kHz/1000.0f;
-		    	 return fFreq;
-		       }
-	         }
-	   }
-   }
-
- return fFreq;
-}
 
 static void OnSetFrequency(WndButton* pWnd){
 

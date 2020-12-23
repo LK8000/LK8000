@@ -4,6 +4,8 @@
 
 void xXY_Brg_Rng(double X_1, double Y_1, double X_2, double Y_2, double *Bearing, double *Range);
 
+double StraightDistance(double lat1, double lon1, double lat2, double lon2);
+
 void DistanceBearing(double lat1, double lon1,
                      double lat2, double lon2,
                      double *Distance, double *Bearing);
