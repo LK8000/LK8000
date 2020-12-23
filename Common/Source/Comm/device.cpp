@@ -587,7 +587,7 @@ BOOL devInit() {
         DeviceList[i].iSharedPort =-1;
         for(uint j = 0; j < i ; j++) {
             if( (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) != 0)
-            		&& (!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
+                 && (!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
                 devInit(&DeviceList[i]);
                 DeviceList[i].iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);

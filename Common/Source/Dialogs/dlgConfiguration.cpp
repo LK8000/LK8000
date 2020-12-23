@@ -1323,8 +1323,6 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     if (bManageExtAudio) {
         ShowWindowControl(wf,  TEXT("prpExtSound1"), !bHide);
     }
-
-
     }
     TCHAR StateText[255];
     _tcscpy(StateText,_T(""));

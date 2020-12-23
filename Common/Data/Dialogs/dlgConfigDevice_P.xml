@@ -26,6 +26,7 @@
       <WndProperty Name="prpComSpeed1" Caption="_@M135_" X="60" Y="65" Width="140" Height="22" CaptionWidth="80" Font="2" Help="_@H155_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
+
       <WndProperty Name="prpComBit1" Caption=" " X="200" Y="-999" Width="33" Height="22" CaptionWidth="1" Font="2" Help="_@H156_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>

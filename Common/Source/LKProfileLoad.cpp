@@ -383,7 +383,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   PREAD(sname,svalue,szRegistryDebounceTimeout,&debounceTimeout);
   PREAD(sname,svalue,szRegistryDeclutterMode,&DeclutterMode);
-
   PREAD(sname,svalue,szRegistryDeviceA,&dwDeviceName[0][0], std::size(dwDeviceName[0]));
   PREAD(sname,svalue,szRegistryDeviceB,&dwDeviceName[1][0], std::size(dwDeviceName[1]));
   PREAD(sname,svalue,szRegistryDeviceC,&dwDeviceName[2][0], std::size(dwDeviceName[2]));
