@@ -1547,7 +1547,7 @@
     "_@M001155_": "BestAlternate Arrival",
     "_@M001156_": "BAtnArr",
     "_@M001157_": "Home Radial",
-    "_@M001158_": "Radial",
+    "_@M001158_": "Home Rad",
     "_@M001159_": "Airspace Horizontal Dist",
     "_@M001160_": "ArSpcH",
     "_@M001161_": "Ext.Batt.Bank",
@@ -2569,6 +2569,13 @@
     "_@M002477_": "DiffMtg",
     "_@M002478_": "Alternate1 QNH arrival",
     "_@M002479_": "Atn1QNH",
+    "_@M002490_": "Home Req.Efficiency",
+    "_@M002491_": "Home.E",
+    "_@M002492_": "Home dist.nm",
+    "_@M002493_": "Home nm",
+    "_@M002494_": "Home bearing",
+    "_@M002495_": "Home brg",
+
 
     "_@H001361_": "[Task Type]\n[Default]\n[AAT]\nEnables AAT tasks. When enabled, the AAT observation parameters can be set for each turnpoint.\n[Grand Prix / Race To Goal]\nCommon Task Type for Paraglider or Grand Prix Task Type for Glider.",
 
