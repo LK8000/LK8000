@@ -324,7 +324,6 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-extern    double  ExtractFrequency(const TCHAR*);
 
 static void OnMultiSelectEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {

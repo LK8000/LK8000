@@ -180,8 +180,8 @@ static void OnRenameClicked(WndButton* pWnd){
 }
 
 
-extern double  ExtractFrequency(const TCHAR*);
-extern BOOL ValidFrequency(double Freq);
+
+
 
 static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
   TCHAR Tmp[255];

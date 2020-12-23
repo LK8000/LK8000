@@ -1066,6 +1066,7 @@ CALC	:=\
 	$(CLC)/windstore.cpp 	\
 	$(CLC)/WindEKF.cpp 	\
 	$(CLC)/WindKalman.cpp 	\
+	$(CLC)/Radio.cpp \
 
 
 TASK	:=\
