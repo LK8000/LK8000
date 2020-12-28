@@ -245,15 +245,10 @@ void RefreshComPortList() {
 #endif
 #endif
     
-#if defined(__linux__) && !defined(ANDROID)
+#ifdef HAVE_POSIX
   
   struct dirent **namelist;
-  int n;
-  if (IsKobo()) {
-    n = scandir("/dev", &namelist, 0, alphasort);//need test
-  } else {  
-    n = scandir("/sys/class/tty", &namelist, 0, alphasort); //which is faster than /dev/
-  }
+  int n = scandir("/dev", &namelist, 0, alphasort);//need test
   if (n != -1){
     for (int i = 0; i < n; ++i) {
       bool portok = true;
@@ -296,22 +291,27 @@ void RefreshComPortList() {
     free(namelist);
   }
 
+#endif
+
 #ifdef KOBO
+
   if(KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
     if(std::find_if(COMMPort.begin(), COMMPort.end(), std::bind(&COMMPortItem_t::IsSamePort, _1, _T("/dev/ttyGS0"))) == COMMPort.end()) {
       COMMPort.push_back(_T("/dev/ttyGS0"));
     }
   }
-#elif TESTBENCH
+
+#elif defined(TESTBENCH) && defined (__linux__)
+
   if(lk::filesystem::exist(_T("/lk"))) {
     COMMPort.push_back(_T("/lk/ptycom1"));
     COMMPort.push_back(_T("/lk/ptycom2"));
     COMMPort.push_back(_T("/lk/ptycom3"));
     COMMPort.push_back(_T("/lk/ptycom4"));
   }
-#endif
 
 #endif
+
 
 #ifndef NO_BLUETOOTH
     CBtHandler* pBtHandler = CBtHandler::Get();
