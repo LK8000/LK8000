@@ -2522,7 +2522,7 @@
     "_@M002467_": "Values",
     "_@M002468_": "Direction",
     "_@M002469_": "EXT Target",
-    "_@M002470_": "Ahead",
+    "_@M002470_": "[deprecated]",
     "_@M002471_": "EfficiencyReq & ArrivalAltitude",
     "_@M002472_": "QNH Arrival at Multitarget currently selected",
     "_@M002473_": "TgtQNH",

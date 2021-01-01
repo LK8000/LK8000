@@ -1020,14 +1020,12 @@ static void OnWaypointNewClicked(WndButton* pWnd){
 }
 
 
-static void OnWaypointEditClicked(WndButton* pWnd){
-
-  int res;
+static void OnWaypointEditClicked(WndButton* pWnd) {
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
 	return;
   }
-  res = dlgWayPointSelect();
+  int res = dlgSelectWaypoint();
   if (res != -1){
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE) {      // 100212
@@ -1087,13 +1085,12 @@ static void OnWaypointSaveClicked(WndButton* pWnd) {
     AskWaypointSave();
 }
 
-static void OnWaypointDeleteClicked(WndButton* pWnd){
-  int res;
+static void OnWaypointDeleteClicked(WndButton* pWnd) {
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
 	return;
   }
-  res = dlgWayPointSelect();
+  int res = dlgSelectWaypoint();
   if (res > RESWP_END) { // 100212
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE ) { // 100212
@@ -3514,8 +3511,6 @@ void dlgConfigurationShowModal(short mode){
       numPages += wConfig[i]?1:0;
   }
   std::fill(std::begin(cpyInfoBox), std::end(cpyInfoBox), -1);
-
-  wf->FilterAdvanced(1); // useless, we dont use advanced options anymore TODO remove
 
   setVariables(wf);
 

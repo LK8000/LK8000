@@ -17,6 +17,7 @@
 #include "LKObjects.h"
 #include <tchar.h>
 #include <string.h>
+#include <functional>
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
@@ -664,7 +665,7 @@ class WindowControl : public WndCtrlBase {
 
     WindowControl *FindByName(const TCHAR *Name);
 
-    void FilterAdvanced(bool advanced);
+    void ForEachChild(std::function<void(WindowControl*)> visitor);
 
 protected:
 

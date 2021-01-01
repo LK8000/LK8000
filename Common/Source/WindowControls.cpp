@@ -1432,17 +1432,6 @@ void WindowControl::AddClient(WindowControl *Client) {
     mClients.push_back(Client);
 }
 
-// 110411 This is always set true because we don't use UserLevel anymore
-
-void WindowControl::FilterAdvanced(bool advanced) {
-    if (_tcsstr(GetWndText(), TEXT("*")) != NULL) {
-        SetVisible(advanced);
-    }
-    for (WindowControl* w : mClients) {
-        w->FilterAdvanced(advanced);
-    }
-}
-
 WindowControl *WindowControl::FindByName(const TCHAR *Name) {
     if(Name) {
         if (_tcscmp(GetWndName(), Name) == 0) {
@@ -1458,6 +1447,15 @@ WindowControl *WindowControl::FindByName(const TCHAR *Name) {
     }
     return (NULL);
 }
+
+
+void WindowControl::ForEachChild(std::function<void(WindowControl*)> visitor) {
+  for (WindowControl* w : mClients) {
+    visitor(w);
+    w->ForEachChild(visitor);
+  }
+}
+
 
 void WindowControl::SetHelpText(const TCHAR *Value) {  
   if (mHelpText) {

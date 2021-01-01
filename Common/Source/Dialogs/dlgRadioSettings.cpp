@@ -303,7 +303,7 @@ static void OnActiveButton(WndButton* pWnd){
 
   if (HoldOff ==0)
   {
-    int res = dlgWayPointSelect(0, 90.0, 1, 3);
+    int res = dlgSelectWaypoint(1, 3);
     if(res > RESWP_END )
     if(ValidWayPoint(res))
     {
@@ -328,7 +328,7 @@ static void OnActiveButton(WndButton* pWnd){
 static void OnPassiveButton(WndButton* pWnd){
   if (HoldOff ==0)
   {
-   int res = dlgWayPointSelect(0, 90.0, 1,3);
+   int res = dlgSelectWaypoint(1, 3);
 
    if(res > RESWP_END )
      if(ValidWayPoint(res))

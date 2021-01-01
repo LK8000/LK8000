@@ -3,6 +3,9 @@
 
 #include "Flarm.h"
 #include "Fanet.h"
+#include "Geographic/GeoPoint.h"
+#include "Util/ScopeExit.hxx"
+
 #if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
 #endif
@@ -161,6 +164,9 @@ struct NMEA_INFO
   double Roll;
 
 };
+
+
+GeoPoint GetCurrentPosition(const NMEA_INFO& Info);
 
 double TimeModify(NMEA_INFO* pGPS, int& StartDay);
 double TimeModify(const TCHAR* FixTime, NMEA_INFO* info, int& StartDay);

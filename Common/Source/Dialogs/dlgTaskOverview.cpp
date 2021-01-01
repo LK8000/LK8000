@@ -287,7 +287,7 @@ static void OnTaskListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Li
 			}
 		}
 
-		int res = dlgWayPointSelect();
+		int res = dlgSelectWaypoint();
 		if (ValidWayPoint(res)){
 
 			LockTaskData();

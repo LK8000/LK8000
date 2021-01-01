@@ -138,9 +138,8 @@ static void OnCloseClicked(WndButton* pWnd){
 }
 
 
-static void OnLookupClicked(WndButton* pWnd){
-  (void)pWnd;
-  dlgAirspaceSelect();
+static void OnLookupClicked(WndButton* pWnd) {
+  dlgSelectAirspace();
 }
 
 
