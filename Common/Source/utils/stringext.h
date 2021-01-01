@@ -13,6 +13,8 @@
 /*____________________________________________________________________________*/
 
 #include <stddef.h>
+#include <wctype.h>
+#include <ctype.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,6 +51,17 @@ template<typename CharT, size_t size>
 size_t to_usascii(const CharT* source, char (&ascii)[size]) {
   return to_usascii(source, ascii, size);
 }
+
+inline wchar_t to_lower(wchar_t c) {
+  return towlower(c);
+}
+
+inline char to_lower(char c) {
+  return tolower(c);
+}
+
+const char* ci_search_substr(const char* string, const char* sub_string);
+const wchar_t* ci_search_substr(const wchar_t* string, const wchar_t* sub_string);
 
 #endif /* __cplusplus */
 #endif /* __stringext_h__ */
