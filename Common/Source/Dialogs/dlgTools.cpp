@@ -230,19 +230,16 @@ void GetDefaultWindowControlProps(XMLNode *Node, TCHAR *Name, int *X, int *Y, in
 
 }
 
-void *CallBackLookup(CallBackTableEntry_t *LookUpTable, TCHAR *Name){
-
-  int i;
-
-  if (LookUpTable!=NULL && Name!=NULL && Name[0]!= '\0')
-    for (i=0; LookUpTable[i].Ptr != NULL; i++){
-      if (_tcscmp(LookUpTable[i].Name, Name) == 0){
-        return(LookUpTable[i].Ptr);
+template<typename function_t>
+function_t CallBackLookup(CallBackTableEntry_t *LookUpTable, TCHAR *Name){
+  if (LookUpTable && Name && Name[0]) {
+    for (size_t i = 0; LookUpTable[i].Name; i++) {
+      if (_tcscmp(LookUpTable[i].Name, Name) == 0) {
+        return std::get<function_t>(LookUpTable[i].callback);
       }
     }
-
-  return(NULL);
-
+  }
+  return nullptr;
 }
 
 void LoadChildsFromXML(WindowControl *Parent, CallBackTableEntry_t *LookUpTable, XMLNode *Node, int Font);
@@ -501,12 +498,10 @@ void LoadChildsFromXML(WindowControl *Parent,
       WC = W =
         new WndProperty(Parent, Name, Caption, X, Y,
                         Width, Height, CaptionWidth,
-                        (WndProperty::DataChangeCallback_t)
-                        CallBackLookup(LookUpTable, DataNotifyCallback),
+                        CallBackLookup<WndProperty::DataChangeCallback_t>(LookUpTable, DataNotifyCallback),
                         MultiLine);
 
-      W->SetOnHelpCallback((WindowControl::OnHelpCallback_t)
-                           CallBackLookup(LookUpTable, OnHelpCallback));
+      W->SetOnHelpCallback(CallBackLookup<WindowControl::OnHelpCallback_t>(LookUpTable, OnHelpCallback));
 
       W->SetHelpText(StringToStringDflt(
                      childNode.getAttribute(TEXT("Help")),
@@ -559,48 +554,43 @@ void LoadChildsFromXML(WindowControl *Parent,
 
         if (_tcsicmp(DataType, TEXT("enum"))==0){
           W->SetDataField(
-                          new DataFieldEnum(EditFormat, DisplayFmt, false,
-                                            (DataField::DataAccessCallback_t)
-                                            CallBackLookup(LookUpTable,
-                                                           OnDataAccess))
-          );
+              new DataFieldEnum(EditFormat, DisplayFmt, false,
+                    CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess)));
         }
         if (_tcsicmp(DataType, TEXT("filereader"))==0){
           W->SetDataField(
-                          new DataFieldFileReader(EditFormat,
-                                                  DisplayFmt,
-                                                  (DataField::DataAccessCallback_t)
-                                                  CallBackLookup(LookUpTable, OnDataAccess))
+              new DataFieldFileReader(EditFormat, DisplayFmt,
+                    CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         }
         if (_tcsicmp(DataType, TEXT("boolean"))==0){
           W->SetDataField(
-            new DataFieldBoolean(EditFormat, DisplayFmt, false, MsgToken(958), MsgToken(959), // ON OFF
-              (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
+              new DataFieldBoolean(EditFormat, DisplayFmt, false, MsgToken(958), MsgToken(959), // ON OFF
+                    CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         }
         if (_tcsicmp(DataType, TEXT("double"))==0){
           W->SetDataField(
-			  new DataFieldFloat(EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
-              (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
+			        new DataFieldFloat(EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
+                    CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         }
         if (_tcsicmp(DataType, TEXT("integer"))==0){
           W->SetDataField(
-                          new DataFieldInteger(EditFormat, DisplayFmt, (int)Min, (int)Max, (int)0, (int)Step,
-              (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
+              new DataFieldInteger(EditFormat, DisplayFmt, (int)Min, (int)Max, (int)0, (int)Step,
+                    CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         }
         if (_tcsicmp(DataType, TEXT("string"))==0){
           W->SetDataField(
-            new DataFieldString(EditFormat, DisplayFmt, TEXT(""),
-              (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
+              new DataFieldString(EditFormat, DisplayFmt, TEXT(""),
+                    CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         }
         if (_tcsicmp(DataType, TEXT("time"))==0){
           W->SetDataField(
-			  new DataFieldTime(EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
-              (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
+      			  new DataFieldTime(EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
+                    CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         }
 
@@ -615,8 +605,7 @@ void LoadChildsFromXML(WindowControl *Parent,
        _tcscpy(ClickCallback, StringToStringDflt(childNode.getAttribute(TEXT("OnClickNotify")), TEXT("")));
 
       WC = new WndButton(Parent, Name, Caption, X, Y, Width, Height,
-               (WndButton::ClickNotifyCallback_t)
-                         CallBackLookup(LookUpTable, ClickCallback));
+                      CallBackLookup<WndButton::ClickNotifyCallback_t>(LookUpTable, ClickCallback));
 
       Caption[0] = '\0';
 
@@ -629,7 +618,7 @@ void LoadChildsFromXML(WindowControl *Parent,
       _tcscpy(PaintCallback, StringToStringDflt(childNode.getAttribute(TEXT("OnPaint")), TEXT("")));
 
       WC = new WndOwnerDrawFrame(Parent, Name, X, Y, Width, Height,
-               (WndOwnerDrawFrame::OnPaintCallback_t) CallBackLookup(LookUpTable, PaintCallback));
+                      CallBackLookup<WndOwnerDrawFrame::OnPaintCallback_t>(LookUpTable, PaintCallback));
 
     }else
 
@@ -650,7 +639,7 @@ void LoadChildsFromXML(WindowControl *Parent,
       _tcscpy(ListCallback, StringToStringDflt(childNode.getAttribute(TEXT("OnListInfo")), TEXT("")));
 
       WC = new WndListFrame(Parent, Name, X, Y, Width, Height,
-               (WndListFrame::OnListCallback_t) CallBackLookup(LookUpTable, ListCallback));
+                    CallBackLookup<WndListFrame::OnListCallback_t>(LookUpTable, ListCallback));
 
       LoadChildsFromXML(WC, LookUpTable, &childNode, ParentFont);  // recursivly create dialog
 

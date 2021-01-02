@@ -107,7 +107,7 @@ class DataField{
      daSpecial,
     }DataAccessKind_t;
 
-    typedef void (*DataAccessCallback_t)(DataField * Sender, DataAccessKind_t Mode);
+    using DataAccessCallback_t = std::function<void(DataField*, DataAccessKind_t)>;
 
     DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
     virtual ~DataField(void){};
@@ -557,7 +557,7 @@ class WindowControl : public WndCtrlBase {
     friend class WndForm;
     friend class WndProperty;
  public:
-    typedef void (*OnHelpCallback_t)(WindowControl * Sender);
+    using OnHelpCallback_t = std::function<void(WindowControl*)>;
 
   private:
 
@@ -738,12 +738,10 @@ class WndListFrame:public WndFrame{
       int ItemInPageCount;
     }ListInfo_t;
 
-    typedef void (*OnListCallback_t)(WindowControl * Sender, ListInfo_t *ListInfo);
+    using OnListCallback_t = std::function<void(WindowControl*, ListInfo_t*)>;
 
     WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
-                 int Width, int Height,
-                 void (*OnListCallback)(WindowControl * Sender,
-                                        ListInfo_t *ListInfo));
+                 int Width, int Height, OnListCallback_t OnListCallback);
 
     virtual bool OnMouseMove(const POINT& Pos);
     bool OnItemKeyDown(WindowControl *Sender, unsigned KeyCode);
@@ -812,8 +810,7 @@ private:
 class WndOwnerDrawFrame:public WndFrame{
 
   public:
-
-    typedef void (*OnPaintCallback_t)(WindowControl * Sender, LKSurface& Surface);
+    using OnPaintCallback_t = std::function<void(WindowControl*, LKSurface&)>;
 
     WndOwnerDrawFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, int Width, int Height, OnPaintCallback_t OnPaintCallback):
       WndFrame(Owner, Name, X, Y, Width, Height)
@@ -844,10 +841,10 @@ extern WindowControl *LastFocusControl;
 
 class WndForm:public WindowControl{
 
-    typedef bool (*OnTimerNotify_t)(WndForm* pWnd);
-    typedef bool (*OnKeyDownNotify_t)(WndForm* pWnd, unsigned KeyCode);
-    typedef bool (*OnKeyUpNotify_t)(WndForm* pWnd, unsigned KeyCode);
-    typedef bool (*OnUser_t)(WndForm* pWndForm, unsigned id);
+    using OnTimerNotify_t = std::function<bool(WndForm*)>;
+    using OnKeyDownNotify_t = std::function<bool(WndForm*, unsigned)>;
+    using OnKeyUpNotify_t = std::function<bool(WndForm*, unsigned)>;
+    using OnUser_t = std::function<bool(WndForm*, unsigned)>;
 
   protected:
 
@@ -981,7 +978,7 @@ typedef struct _LEDCOLORRAMP
 
 class WndButton:public WindowControl{
   public:
-    typedef void (*ClickNotifyCallback_t)(WndButton* pWnd);
+    using ClickNotifyCallback_t = std::function<void(WndButton*)>;
 
   private:
 
@@ -1023,7 +1020,7 @@ class WndButton:public WindowControl{
 
 class WndProperty:public WindowControl{
   public:
-    typedef int (*DataChangeCallback_t)(WindowControl * Sender, int Mode, int Value);
+    using DataChangeCallback_t = std::function<int(WindowControl*, int, int)>;
 
   private:
 

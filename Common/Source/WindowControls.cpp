@@ -1200,7 +1200,7 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 
   mReadOnly = false;
 
-  mOnHelpCallback = NULL;
+  mOnHelpCallback = nullptr;
 
   mOwner = Owner?Owner->GetClientArea():NULL;
   // setup Master Window (the owner of all)
