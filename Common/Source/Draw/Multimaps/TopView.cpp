@@ -257,7 +257,7 @@ _nomoredeclutter:
   // M3 has sideview always on, so wont apply here, and no need to check
   if (Current_Multimap_SizeY==SIZE4) {
     RECT rc = rct;
-    rc.Grow(0, BottomSize);
+    rc.bottom += BottomSize;
 	DrawMapScale(Surface,rc,_Proj);
   }
 
