@@ -222,6 +222,7 @@ BOOL ATR833StationSwap(PDeviceDescriptor_t d) {
       {
         Send_Command( d, 0x11 , 0, NULL);  // Send Activ
         if(iATR833DebugLevel) StartupStore(_T(". ATR833 send station swap %s"), NEWLINE);
+        ATR833RequestAllData(d); // Ensure all data is current
       }
   return(TRUE);
 }
@@ -256,8 +257,18 @@ BOOL ATR833_KeepAlive(PDeviceDescriptor_t d) {
            StartupStore(_T("ATR833 No Response !%s"),  NEWLINE);
            if(MsgCnt++ < 10) DoStatusMessage( _T(" ATR833"), MsgToken(959)); // ATR833T OFF
          }
-         Send_Command( d, 0x10 , 0, NULL);  // Send Keep alive
-         if(iATR833DebugLevel==2)  StartupStore(_T("ATR833 ====== Keep Alive ====== %s"),  NEWLINE);
+         static uint8_t Alternate = 0;
+         if((Alternate++ % 2) == 0)      
+         {
+           Send_Command( d, 0x10 , 0, NULL);  // Send Keep alive
+           if(iATR833DebugLevel==2)  StartupStore(_T("ATR833 ====== Keep Alive ====== %s"),  NEWLINE);         
+         }
+         else 
+         {
+           ATR833RequestAllData(d); // Ensure all data is current
+           if(iATR833DebugLevel==2)  StartupStore(_T("ATR833 ====== request data ====== %s"),  NEWLINE);         
+         }
+
       }
   return(TRUE);
 }
@@ -432,6 +443,7 @@ int Idx=0;
     break;
     /*****************************************************************************************/
     case 0x11:               // Swap Frequency
+      ATR833RequestAllData(d); // Ensure standby frequency is current before swapping
       RadioPara.Changed = true;
        fTmp =  RadioPara.PassiveFrequency;
       RadioPara.PassiveFrequency =  RadioPara.ActiveFrequency;
