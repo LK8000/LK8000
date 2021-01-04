@@ -53,7 +53,7 @@ enum thread_state {
 
 class thread_state_with_timer final {
 private:
-  thread_state m_state=IDLE_STATE;
+  thread_state m_state = IDLE_STATE;
   PeriodClock timer;
       
 public:
@@ -67,12 +67,12 @@ public:
   }
 
   // to get current state
-  virtual thread_state state(void) const {
+  thread_state state() const {
     return m_state;
   }
 
   // to get the number of milliseconds elapsed since the last state change
-  virtual int get_elapsed_time() const {
+  int get_elapsed_time() const {
     return timer.Elapsed();
   }
 
@@ -82,7 +82,7 @@ public:
   }
 };
 
-thread_state_with_timer FlarmReadIGC;
+static thread_state_with_timer FlarmReadIGC;
 
 
 
