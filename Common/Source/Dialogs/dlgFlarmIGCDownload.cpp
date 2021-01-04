@@ -533,7 +533,7 @@ static bool OnTimer(WndForm *pWnd) {
   if (pWnd) {
     WndForm *pForm = pWnd->GetParentWndForm();
     if (pForm) {
-      pForm->SetTimerNotify(NULL, 0);
+      pForm->SetTimerNotify(0, nullptr);
       UpdateList();
       if (FlarmReadIGC.state() == IDLE_STATE) {
         WndButton *wb = (WndButton *)pForm->FindByName(TEXT("cmdClose"));
