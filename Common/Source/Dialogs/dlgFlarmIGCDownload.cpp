@@ -756,9 +756,6 @@ bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
 }
 
 int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
-  static Mutex mutex;
-  ScopeLock Lock(mutex);
-
   if (d == NULL)
     return 0; 
   static uint32_t TotalSize =0;
