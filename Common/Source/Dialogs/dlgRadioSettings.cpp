@@ -89,7 +89,11 @@ static int OnRemoteUpdate(void)
       if(RadioPara.RX_active)
         _stprintf(Name,_T("<%s>"),ActiveName);
       else
-        _stprintf(Name,_T("[%s]"),ActiveName);
+        if(RadioPara.ActiveValid)
+          _stprintf(Name,_T("[%s]"),ActiveName);
+        else
+          _stprintf(Name,_T("%s"),ActiveName);
+      
     if(wpnewActive)
       wpnewActive->SetCaption(Name);
     _stprintf(Name,_T("%6.03f"),RadioPara.ActiveFrequency);
@@ -102,7 +106,11 @@ static int OnRemoteUpdate(void)
     if(RadioPara.RX_standy)
       _stprintf(Name,_T("<%s>"),PassiveName);
     else
-      _stprintf(Name,_T("[%s]"),PassiveName);
+      if(RadioPara.PassiveValid)
+        _stprintf(Name,_T("[%s]"),PassiveName);
+      else
+        _stprintf(Name,_T("%s"),PassiveName);
+    
     if(wpnewPassive)
      wpnewPassive->SetCaption(Name);
     _stprintf(Name,_T("%6.03f"),RadioPara.PassiveFrequency);
@@ -121,17 +129,33 @@ static int OnRemoteUpdate(void)
         lVolume =  RadioPara.Volume;
         if(wpnewVol)
         {
-      if(VolMode == VOL)
-            _stprintf(Name,_T("V[%i]"),RadioPara.Volume);
-      else
-        _stprintf(Name,_T("S [%i]"),RadioPara.Squelch);
+          if(VolMode == VOL)
+          {
+            if(RadioPara.VolValid)
+              _stprintf(Name,_T("V[%i]"),RadioPara.Volume);
+            else
+              _stprintf(Name,_T("V %i"),RadioPara.Volume);
+          }
+          else
+          {
+            if(RadioPara.SqValid)
+              _stprintf(Name,_T("S [%i]"),RadioPara.Squelch);
+            else
+              _stprintf(Name,_T("S %i"),RadioPara.Squelch);
+          }
           wpnewVol->SetCaption(Name);
         }
 
         if(RadioPara.Dual)
-          _stprintf(Name,_T("[Dual Off]"));
+          if(RadioPara.DualValid)
+            _stprintf(Name,_T("[Dual Off]"));
+          else
+            _stprintf(Name,_T("Dual Off"));
         else
-          _stprintf(Name,_T("[Dual On]"));
+          if(RadioPara.DualValid) 
+            _stprintf(Name,_T("[Dual On]"));
+          else
+            _stprintf(Name,_T("Dual On"));            
         if(wpnewDual)
               wpnewDual->SetCaption(Name);
 
