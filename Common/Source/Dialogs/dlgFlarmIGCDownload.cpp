@@ -29,7 +29,13 @@
 #define LST_STRG_LEN      100
 #define STATUS_TXT_LEN    100
 #define PRPGRESS_DLG
-#define deb_              (0) // debug output switch
+
+//#define deb_
+#ifdef deb_
+  #define deb_Log(...) StartupStore(__VA_ARGS__)
+#else
+  #define deb_Log(...)
+#endif
 
 enum thread_state {
   IDLE_STATE,
@@ -184,9 +190,8 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
     SendEscChar(d, pBlock[i]);
   }
 
-  if (deb_) {
-    StartupStore(TEXT("\r\n===="));
-  }
+  deb_Log(TEXT("\r\n===="));
+
   Poco::Thread::sleep(GC_IDLETIME);
   Poco::Thread::yield();
 }
@@ -200,15 +205,11 @@ uint8_t RecChar8(DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
       if (err == REC_NO_ERROR) {
         if (Tmp == ESC_ESC) {
           Tmp = ESCAPE;
-          if (deb_) {
-            StartupStore(TEXT("ESC_ESC"));
-          }
+          deb_Log(TEXT("ESC_ESC"));
         }
         if (Tmp == ESC_START) {
           Tmp = STARTFRAME;
-          if (deb_) {
-            StartupStore(TEXT("ESC_START"));
-          }
+          deb_Log(TEXT("ESC_START"));
         }
       }
     }
@@ -242,15 +243,11 @@ static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *C
   } while ((inchar != STARTFRAME) && (error == REC_NO_ERROR));
 
   if(error != REC_NO_ERROR) {
-    if (deb_) {
-      StartupStore(TEXT("STARTFRAME fail! Error code:%i"),error);
-    }
+    deb_Log(TEXT("STARTFRAME fail! Error code:%i"),error);
     return error;
   }
 
-  if (deb_) {
-    StartupStore(TEXT("STARTFRAME OK!"));
-  }
+  deb_Log(TEXT("STARTFRAME OK!"));
                     
   error = RecChar16(d, blocksize, Timeout);
   if (error != REC_NO_ERROR) {
@@ -263,42 +260,36 @@ static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *C
   }
 
   CRC_calc = crc_update16(CRC_calc, *blocksize);
-  if (deb_) {
-    StartupStore(TEXT("Block Size %u"), *blocksize);
-  }
+  deb_Log(TEXT("Block Size %u"), *blocksize);
 
   error = RecChar8(d, &Version, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
   CRC_calc = crc_update(CRC_calc, Version);
-  if (deb_) {
-    StartupStore(TEXT("Block Ver %u"), Version);
-  }
+  deb_Log(TEXT("Block Ver %u"), Version);
+
   error = RecChar16(d, Sequence, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
   CRC_calc = crc_update16(CRC_calc, *Sequence);
-  if (deb_) {
-    StartupStore(TEXT("Block Seq %u"), *Sequence);
-  }
+  deb_Log(TEXT("Block Seq %u"), *Sequence);
+
   error = RecChar8(d, Command, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
   CRC_calc = crc_update(CRC_calc, *Command);
-  if (deb_) {
-    StartupStore(TEXT("Block Cmd %02X"), *Command);
-  }
+  deb_Log(TEXT("Block Cmd %02X"), *Command);
+
   error = RecChar16(d, &CRC_in, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
-  if (deb_) {
-    StartupStore(TEXT("Block CRC %04X"), CRC_in);
-    StartupStore(TEXT("Header  received!"));
-  }
+
+  deb_Log(TEXT("Block CRC %04X"), CRC_in);
+  deb_Log(TEXT("Header  received!"));
 
   if (*blocksize > 8) {
     for (uint16_t i = 0; i < (*blocksize - 8); i++) {
@@ -317,9 +308,7 @@ static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *C
     StartupStore(TEXT("Rec Block CRC error!"));
   } else {
     error = REC_NO_ERROR;
-    if (deb_) {
-      StartupStore(TEXT("Rec Block received!"));
-    }
+    deb_Log(TEXT("Rec Block received!"));
   }
   return error;
 }
@@ -607,14 +596,12 @@ void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
     GPS_INFO.FLARM_Available = false;
     UnlockFlightData();
 
-    if (deb_)
-      StartupStore(TEXT("EXIT & RESET"));
+    deb_Log(TEXT("EXIT & RESET"));
     SendBinBlock(d, Sequence, EXIT, NULL, 0);
     SetBinaryModeFlag(false);
     StartupStore(TEXT("$PFLAR,0*55\r\n"));
     d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
-    if (deb_)
-      StartupStore(TEXT("$PFLAR,0*55\r\n"));
+    deb_Log(TEXT("$PFLAR,0*55\r\n"));
   }
 }
 
@@ -624,7 +611,8 @@ public:
     MapWindow::SuspendDrawingThread();
     StartupStore(TEXT(".... Enter ResourceLock FLARM%s"), NEWLINE);
     StartIGCReadThread();
-  };
+  }
+
   ~FlarmResourceLock() {
     StartupStore(TEXT(".... Leave ResourceLock%s"), NEWLINE);
     StopIGCReadThread();
@@ -693,8 +681,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
 void EnterBinMode(DeviceDescriptor_t *d)
 {
   d->Com->WriteString(TEXT("$PFLAX\r\n")); // set to binary
-  if (deb_)
-    StartupStore(TEXT("$PFLAX\r "));
+  deb_Log(TEXT("$PFLAX\r "));
   FlarmReadIGC.state(PING_STATE_TX);
   SetBinaryModeFlag(true);
   Poco::Thread::sleep(100);
@@ -710,8 +697,9 @@ bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
   ListElementType NewElement;
   for (uint16_t i = 0; i < blocksize - 2; i++)
     TempString[i] = (TCHAR)pByteBlk[i + 2];
-  if (deb_)
-    StartupStore(TEXT("> %s "), TempString);
+
+  deb_Log(TEXT("> %s "), TempString);
+
   TCHAR empty[3] = _T("");
   TCHAR *remaining = NULL;
   TCHAR *Filename = _tcstok_r(TempString, TEXT("|"), &remaining);
@@ -790,14 +778,15 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
 
         /*******************  PING_STATE_TX  ********************************/
         case PING_STATE_TX:
-          if (deb_)
-            StartupStore(TEXT("PING "));
+          deb_Log(TEXT("PING "));
+
 #ifdef NO_FAKE_FLARM
           if (retrys++ >= 15) {
             FlarmReadIGC.state(ERROR_STATE);
             return 0;
           }
 #endif
+
           ListElementType NewElement;
           _sntprintf(NewElement.Line1, LST_STRG_LEN, _T("        PING Flarm %u/15"),
                      retrys);
@@ -811,8 +800,8 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         /********************  PING_STATE_RX **********************************/
         case PING_STATE_RX:
           if (!BlockReceived()) {
-            if (deb_)
-              StartupStore(TEXT("WAIT FOR PING ANSWER %ums"),
+
+            deb_Log(TEXT("WAIT FOR PING ANSWER %ums"),
                             FlarmReadIGC.get_elapsed_time());
             if (FlarmReadIGC.check_timeout(1000)) {
               err = REC_TIMEOUT_ERROR;
@@ -832,8 +821,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         break;
         /*******************  SELECTRECORD_STATE_TX ***************************/
         case SELECTRECORD_STATE_TX:
-          if (deb_)
-            StartupStore(TEXT("RECORD_STATE_TX "));
+          deb_Log(TEXT("RECORD_STATE_TX "));
           pByteBlk[0] = IGCFileList.size();
           SendBinBlock(d, Sequence++, SELECTRECORD, &pByteBlk[0], 1);
           FlarmReadIGC.state( SELECTRECORD_STATE_RX);
@@ -843,8 +831,8 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         /*******************  SELECTRECORD_STATE_RX ***************************/
         case SELECTRECORD_STATE_RX:		
           if (!BlockReceived()) {
-            if (deb_)
-              StartupStore(TEXT("SELECTRECORD_STATE_RX %ums"),
+
+            deb_Log(TEXT("SELECTRECORD_STATE_RX %ums"),
                             FlarmReadIGC.get_elapsed_time());
 
             if  (FlarmReadIGC.check_timeout(GC_BLK_RECTIMEOUT)) 
@@ -872,8 +860,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         break;
         /******************  READRECORD_STATE_TX ******************************/
         case READRECORD_STATE_TX:
-          if (deb_)
-            StartupStore(TEXT("READRECORD_STATE_RX "));
+          deb_Log(TEXT("READRECORD_STATE_RX "));
           SendBinBlock(d, Sequence, GETRECORDINFO, NULL, 0);
 
           FlarmReadIGC.state( READRECORD_STATE_RX);
@@ -881,8 +868,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         /******************  READRECORD_STATE_RX ******************************/
         case READRECORD_STATE_RX:
           if (!BlockReceived()) {
-            if (deb_)
-              StartupStore(TEXT("READRECORD_STATE_RX %ums"),  FlarmReadIGC.get_elapsed_time());
+            deb_Log(TEXT("READRECORD_STATE_RX %ums"),  FlarmReadIGC.get_elapsed_time());
 
             if  (FlarmReadIGC.check_timeout(GC_BLK_RECTIMEOUT)) 
             {
@@ -920,15 +906,13 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         /*******************  ALL_RECEIVED_STATE *****************************/
         case ALL_RECEIVED_STATE:		
           bFilled = true;
-          if (deb_)
-            StartupStore(TEXT("ALL_RECEIVED_STATE"));
+          deb_Log(TEXT("ALL_RECEIVED_STATE"));
           FlarmReadIGC.state( IDLE_STATE);
         break;
 
       /**********************  ERROR_STATE *********************************/
         case ERROR_STATE:		                    
-          if (deb_)
-            StartupStore(TEXT("ERROR_STATE"));
+          deb_Log(TEXT("ERROR_STATE"));
    //   ListElementType NewElement;
           _tcscpy(NewElement.Line1, _T("        Error:"));
           _sntprintf(NewElement.Line2, LST_STRG_LEN, _T("         %s"),
@@ -941,8 +925,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
 
         /*********************  ABORT STATE ***********************************/
         case ABORT_STATE:
-          if (deb_)
-            StartupStore(TEXT("ABORT_STATE"));
+          deb_Log(TEXT("ABORT_STATE"));
           if (file_ptr != NULL) // file incomplete?
           {
             fclose(file_ptr);
@@ -953,8 +936,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
               lk::filesystem::deleteFile(
                   IGCFilename); // delete incomplete file (after abort) to prevent
                                 // "file exists warning
-              if (deb_)
-                StartupStore(TEXT("delete incomplete IGC File: %s "), IGCFilename);
+              deb_Log(TEXT("delete incomplete IGC File: %s "), IGCFilename);
             }
           }
           if (!err)
@@ -977,8 +959,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
              so we must re-enable it in case user waited too long to start download
           */
           EnterBinMode(d);
-          if (deb_)
-            StartupStore(TEXT("START_DOWNLOAD_STATE: %s"),
+          deb_Log(TEXT("START_DOWNLOAD_STATE: %s"),
                          IGCFileList.at(IGC_FileIndex).Line1);
           if (file_ptr) {
             fclose(file_ptr);
@@ -996,8 +977,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),
                      IGCFileList.at(IGC_FileIndex).Line1);
           
-          if (deb_)
-            StartupStore(_T("%s"), szStatusText);
+          deb_Log(_T("%s"), szStatusText);
    
           SendBinBlock(d, Sequence, SELECTRECORD, &IGC_FileIndex, 1);
           bShowMsg = true;
@@ -1111,8 +1091,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
             }
 
           FlarmReadIGC.state( IDLE_STATE);
-          if (deb_)
-            StartupStore(TEXT("IDLE_STATE"));
+          deb_Log(TEXT("IDLE_STATE"));
           if (err != REC_NO_ERROR) {
             _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("Error Code:%u"), err);
             //    err = REC_NO_ERROR;
@@ -1120,8 +1099,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
             _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"),
                        MsgToken(2406)); // _@M2406_ "IGC File download complete!"
           }
-          if (deb_)
-            StartupStore(_T("IGC download complete"));
+          deb_Log(_T("IGC download complete"));
         break;
         /********************************************************************/
       } // case
@@ -1165,8 +1143,7 @@ protected:
   Poco::Thread Thread;
 
   void run() {
-    if (deb_)
-      StartupStore(TEXT("IGC Thread Started !"));
+    deb_Log(TEXT("IGC Thread Started !"));
  
     
 
@@ -1177,8 +1154,7 @@ protected:
       Poco::Thread::sleep(GC_IDLETIME);
       Poco::Thread::yield();
     }
-    if (deb_)
-      StartupStore(TEXT("IGC Thread Stopped !"));
+    deb_Log(TEXT("IGC Thread Stopped !"));
 
   }
 };
@@ -1186,13 +1162,11 @@ protected:
 IGCReadThread IGCReadThreadThreadInstance;
 
 void StartIGCReadThread() {
-  if (deb_)
-    StartupStore(TEXT("Start IGC Thread !"));
+  deb_Log(TEXT("Start IGC Thread !"));
   IGCReadThreadThreadInstance.Start();
 }
 
 void StopIGCReadThread() {
-  if (deb_)
-    StartupStore(TEXT("Stop IGC Thread !"));
+  deb_Log(TEXT("Stop IGC Thread !"));
   IGCReadThreadThreadInstance.Stop();
 }
