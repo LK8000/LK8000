@@ -284,12 +284,14 @@ static int counter =0;
         switch (szCommand[1])
         {
           case 'U':
+            RadioPara.ActiveValid = false;
             if(len >= 13)
             {
               if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.ActiveValid = true;
                 RadioPara.ActiveFrequency=  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
                 for(unsigned i=0; i < 8; i++)
                   RadioPara.ActiveName[i] =   szCommand[4+i];
@@ -308,12 +310,14 @@ static int counter =0;
           break;
 
           case 'R':
+            RadioPara.PassiveValid = false;
             if(len >= 13)
             {
               if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.PassiveValid = true;
                 RadioPara.PassiveFrequency =  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
                 for(unsigned i=0; i < 8; i++)
                   RadioPara.PassiveName[i] =   szCommand[4+i];
@@ -333,12 +337,17 @@ static int counter =0;
           break;
 
           case 'A':
+            RadioPara.VolValid = false;
+            RadioPara.SqValid = false;
             if(len >= 6)
             {
               if( szCommand[5] != (szCommand[3]+ szCommand[4]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.VolValid = true;
+                RadioPara.SqValid = true;
+
                 if(RadioPara.Volume != (int)szCommand[2])
                 {
                   RadioPara.Volume = (int)szCommand[2];
@@ -360,6 +369,8 @@ static int counter =0;
             } else processed =0;
           break;
           case 'C':
+            RadioPara.ActiveValid = false;
+            RadioPara.PassiveValid = false;
             if(len >= 2)
             {
               std::swap(RadioPara.ActiveFrequency, RadioPara.PassiveFrequency);
@@ -368,15 +379,19 @@ static int counter =0;
             }
           break;
           case 'O':
+            RadioPara.DualValid = false;
             if(len >= 2)
             {
+              RadioPara.DualValid = true;
              RadioPara.Dual = true;
              _stprintf(szTempStr,_T("Dual ON "));
             }
           break;
           case 'o':
+            RadioPara.DualValid = false;
             if(len >= 2)
             {
+              RadioPara.DualValid = true;
              RadioPara.Dual = false;
              _stprintf(szTempStr,_T("Dual OFF "));
 

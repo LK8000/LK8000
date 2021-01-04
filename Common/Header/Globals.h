@@ -61,6 +61,12 @@ typedef struct _Radio_t
 	BOOL RX_standy;            // Radio reception on passive        (standby) station
 	BOOL lowBAT;               // Battery low flag                  (TRUE = Batt low)
 	BOOL TXtimeout;            // Timeout while transmission (2Min)
+	BOOL ActiveValid;          // active Frequency received flag
+	BOOL PassiveValid;         // standy Frequency received flag
+	BOOL VolValid;             // Volume received flag
+	BOOL SqValid;              // Squelch received flag
+	BOOL DualValid;            // Dual received flag
+        
 }Radio_t;
 
 GEXTERN bool MenuActive GEXTFALSE;

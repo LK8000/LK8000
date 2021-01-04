@@ -451,7 +451,8 @@ int Idx=0;
 
       Idx = SearchNearestStationWithFreqency(RadioPara.PassiveFrequency);
       CopyPassiveStationNameByIndex(Idx);
-
+      RadioPara.ActiveValid = false;
+      RadioPara.PassiveValid = false;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Swap %s"),    NEWLINE);
       processed  = 1;
     break;
@@ -464,7 +465,7 @@ int Idx=0;
       CopyPassiveStationNameByIndex(Idx);
 
       if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.PassiveName, NEWLINE);
-
+      RadioPara.PassiveValid = true;
       RadioPara.Changed = true;
       processed  = 3;
     break;
@@ -478,6 +479,7 @@ int Idx=0;
       if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.ActiveName, NEWLINE);
 
       RadioPara.Changed = true;
+      RadioPara.ActiveValid = true;
       processed  = 3;
     break;
     /*****************************************************************************************/
@@ -489,6 +491,7 @@ int Idx=0;
     case 0x16:               // Volume
       RadioPara.Volume = szCommand[1] ;
       RadioPara.Changed = true;
+      RadioPara.VolValid = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Volume %i %s"),   RadioPara.Volume, NEWLINE);
       processed  = 2;
     break;
@@ -496,6 +499,7 @@ int Idx=0;
     case 0x17:               // Squelch
       RadioPara.Squelch = szCommand[1] ;
       RadioPara.Changed = true;
+      RadioPara.SqValid = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Squelch %i %s"),   RadioPara.Squelch, NEWLINE);
       processed  = 2;
     break;
@@ -510,6 +514,7 @@ int Idx=0;
     case 0x19:               // Dual
       RadioPara.Dual = szCommand[1] ;
       RadioPara.Changed = true;
+      RadioPara.DualValid = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Dual %i %s"),   RadioPara.Dual, NEWLINE);
       processed  = 2;
     break;
@@ -550,6 +555,11 @@ int Idx=0;
         RadioPara.Enabled8_33  = true;
       RadioPara.Dual = szCommand[12];
       RadioPara.Changed = true;
+      RadioPara.ActiveValid  = true;
+      RadioPara.PassiveValid = true;
+      RadioPara.VolValid     = true;
+      RadioPara.SqValid      = true;
+      RadioPara.DualValid    = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 received all Data %s"),  NEWLINE);
 
       _stprintf(szTempStr,_T("ATR833 Active: %7.3fMHz"),  RadioPara.ActiveFrequency );
