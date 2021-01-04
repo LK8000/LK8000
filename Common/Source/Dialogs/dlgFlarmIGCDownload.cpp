@@ -599,8 +599,8 @@ void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
     deb_Log(TEXT("EXIT & RESET"));
     SendBinBlock(d, Sequence, EXIT, NULL, 0);
     SetBinaryModeFlag(false);
-    StartupStore(TEXT("$PFLAR,0*55\r\n"));
-    d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
+ 
+    d->Com->WriteString("$PFLAR,0*55\r\n");
     deb_Log(TEXT("$PFLAR,0*55\r\n"));
   }
 }
@@ -680,7 +680,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
 
 void EnterBinMode(DeviceDescriptor_t *d)
 {
-  d->Com->WriteString(TEXT("$PFLAX\r\n")); // set to binary
+  d->Com->WriteString("$PFLAX\r\n"); // set to binary
   deb_Log(TEXT("$PFLAX\r "));
   FlarmReadIGC.state(PING_STATE_TX);
   SetBinaryModeFlag(true);
