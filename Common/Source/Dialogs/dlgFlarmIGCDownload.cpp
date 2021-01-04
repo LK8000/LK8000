@@ -50,7 +50,42 @@ enum thread_state {
   CLOSE_STATE
 };
 
-static volatile thread_state ThreadState = IDLE_STATE;
+
+class thread_state_with_timer final {
+private:
+  thread_state m_state=IDLE_STATE;
+  PeriodClock timer;
+      
+public:
+
+  // to change state
+  void state(thread_state v) {
+    if(m_state != v) {
+      timer.Update();
+      m_state = v;
+    }
+  }
+
+  // to get current state
+  virtual thread_state state(void) const {
+    return m_state;
+  }
+
+  // to get the number of milliseconds elapsed since the last state change
+  virtual int get_elapsed_time() const {
+    return timer.Elapsed();
+  }
+
+  // to check whether the specified duration (in ms) has passed since the last state change
+  bool check_timeout(unsigned duration) const {
+    return timer.Check(duration);
+  }
+};
+
+thread_state_with_timer FlarmReadIGC;
+
+
+
 static bool OnTimer(WndForm *pWnd);
 
 static WndListFrame *wIGCSelectListList = NULL;
@@ -390,12 +425,12 @@ static void OnEnterClicked(WndButton *pWnd) {
         if (MessageBoxX(MsgToken(2416), MsgToken(2398), mbYesNo) ==
             IdNo) // _@M2416_ "File already exits\n download anyway?"
         {
-          ThreadState = IDLE_STATE;
+          FlarmReadIGC.state(IDLE_STATE);
           return;
         }
     }
     /************************************************************/
-    ThreadState = START_DOWNLOAD_STATE; // start thread IGC download
+    FlarmReadIGC.state(START_DOWNLOAD_STATE); // start thread IGC download
     pForm->SetTimerNotify(GC_TIMER_INTERVAL, OnTimer); // check for end of download every 250ms
 #ifdef PRPGRESS_DLG
     CreateIGCProgressDialog();
@@ -476,7 +511,7 @@ void StopIGCRead(void) {
 
 static void OnCloseClicked(WndButton *pWnd) {
   StopIGCRead();
-  if (ThreadState == IDLE_STATE) {
+  if (FlarmReadIGC.state() == IDLE_STATE) {
     if (MessageBoxX(MsgToken(2413), MsgToken(2403), mbYesNo) ==
         IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot
                // now?"
@@ -500,7 +535,7 @@ static bool OnTimer(WndForm *pWnd) {
     if (pForm) {
       pForm->SetTimerNotify(NULL, 0);
       UpdateList();
-      if (ThreadState == IDLE_STATE) {
+      if (FlarmReadIGC.state() == IDLE_STATE) {
         WndButton *wb = (WndButton *)pForm->FindByName(TEXT("cmdClose"));
         wb->SetCaption(MsgToken(186)); // _@M186_ "Close"
 #ifdef PRPGRESS_DLG
@@ -609,7 +644,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
   bAbort = false;
   bFilled = false;
   /*************************************************/
-  ThreadState = OPEN_BIN_STATE;
+  FlarmReadIGC.state(OPEN_BIN_STATE);
   /*************************************************/
   std::unique_ptr<WndForm> wf(dlgLoadFromXML(IGCCallBackTable, ScreenLandscape
                                             ? IDR_XML_MULTISELECTLIST_L
@@ -653,7 +688,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
   DownloadError = REC_NOMSG; // don't show an error msg on initialisation
   LeaveBinModeWithReset(d);  // reset Flarm after leaving dialog
 
-  ThreadState = IDLE_STATE;
+  FlarmReadIGC.state(IDLE_STATE);
   return pIGCResult;
 }
 
@@ -662,7 +697,7 @@ void EnterBinMode(DeviceDescriptor_t *d)
   d->Com->WriteString(TEXT("$PFLAX\r\n")); // set to binary
   if (deb_)
     StartupStore(TEXT("$PFLAX\r "));
-  ThreadState = PING_STATE_TX;
+  FlarmReadIGC.state(PING_STATE_TX);
   SetBinaryModeFlag(true);
   Poco::Thread::sleep(100);
 }
@@ -728,7 +763,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
     return 0; 
   static uint32_t TotalSize =0;
   static FILE *file_ptr = NULL;
-  static int TimeCnt = 0;
+
   static uint16_t Sequence;
   static uint8_t retrys = 0;
   static uint8_t TimeOutFactor = 1;
@@ -741,19 +776,14 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
 
 
   if (bAbort) {
-    ThreadState = ABORT_STATE;
+    FlarmReadIGC.state(ABORT_STATE);
     bAbort = false;
   }
 
-  if (ThreadState == IDLE_STATE)
-  {
-    TimeCnt =0;
-    return 0;
-  }
 
   if (d != NULL)
   {
-    switch(ThreadState)
+    switch(FlarmReadIGC.state())
     {
         case IDLE_STATE:
         break;
@@ -761,7 +791,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         case OPEN_BIN_STATE:
           retrys = 0;
           EnterBinMode(d);
-          ThreadState = PING_STATE_TX;
+          FlarmReadIGC.state(PING_STATE_TX);
         break;
 
         /*******************  PING_STATE_TX  ********************************/
@@ -770,7 +800,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
             StartupStore(TEXT("PING "));
 #ifdef NO_FAKE_FLARM
           if (retrys++ >= 15) {
-            ThreadState = ERROR_STATE;
+            FlarmReadIGC.state(ERROR_STATE);
             return 0;
           }
 #endif
@@ -781,28 +811,27 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           IGCFileList.clear();
           IGCFileList.push_back(NewElement);
           SendBinBlock(d, Sequence++, PING, NULL, 0);
-          TimeCnt = 0;
 
-          ThreadState = PING_STATE_RX;
+          FlarmReadIGC.state(PING_STATE_RX);
         break;
         /********************  PING_STATE_RX **********************************/
         case PING_STATE_RX:
           if (!BlockReceived()) {
             if (deb_)
               StartupStore(TEXT("WAIT FOR PING ANSWER %ums"),
-                           TimeCnt * GC_IDLETIME);
-            if (TimeCnt > (1000 / GC_IDLETIME)) {
+                            FlarmReadIGC.get_elapsed_time());
+            if (FlarmReadIGC.check_timeout(1000)) {
               err = REC_TIMEOUT_ERROR;
-              ThreadState = PING_STATE_TX;
+              FlarmReadIGC.state(PING_STATE_TX);
             }
           }
           else
           {
             err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-            ThreadState = PING_STATE_TX;
+            FlarmReadIGC.state( PING_STATE_TX);
             if (err == REC_NO_ERROR) {
               retrys = 0;
-              ThreadState = SELECTRECORD_STATE_TX;
+              FlarmReadIGC.state( SELECTRECORD_STATE_TX);
               IGCFileList.clear(); // empty list
             }
           }
@@ -813,7 +842,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
             StartupStore(TEXT("RECORD_STATE_TX "));
           pByteBlk[0] = IGCFileList.size();
           SendBinBlock(d, Sequence++, SELECTRECORD, &pByteBlk[0], 1);
-          ThreadState = SELECTRECORD_STATE_RX;
+          FlarmReadIGC.state( SELECTRECORD_STATE_RX);
           DownloadError = REC_NO_ERROR;
         break;
 
@@ -822,11 +851,13 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           if (!BlockReceived()) {
             if (deb_)
               StartupStore(TEXT("SELECTRECORD_STATE_RX %ums"),
-                           TimeCnt * GC_IDLETIME);
-            if (TimeCnt > (GC_BLK_RECTIMEOUT / GC_IDLETIME)) {
-              ThreadState = SELECTRECORD_STATE_TX;
+                            FlarmReadIGC.get_elapsed_time());
+
+            if  (FlarmReadIGC.check_timeout(GC_BLK_RECTIMEOUT)) 
+            {
+              FlarmReadIGC.state( SELECTRECORD_STATE_TX);
               if (retrys++ > MAX_RETRY) {
-                ThreadState = ABORT_STATE;
+                FlarmReadIGC.state( ABORT_STATE);
                 err = REC_TIMEOUT_ERROR;
               }
             }
@@ -835,12 +866,12 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           {
             err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
             if (RecCommand == ACK)
-              ThreadState = READRECORD_STATE_TX;
+              FlarmReadIGC.state( READRECORD_STATE_TX);
             else
-              ThreadState = ALL_RECEIVED_STATE;
+              FlarmReadIGC.state( ALL_RECEIVED_STATE);
 
             if (err)
-              ThreadState = ABORT_STATE;
+              FlarmReadIGC.state( ABORT_STATE);
             else
               retrys = 0;
           }
@@ -851,18 +882,20 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
             StartupStore(TEXT("READRECORD_STATE_RX "));
           SendBinBlock(d, Sequence, GETRECORDINFO, NULL, 0);
 
-          ThreadState = READRECORD_STATE_RX;
+          FlarmReadIGC.state( READRECORD_STATE_RX);
         break;
         /******************  READRECORD_STATE_RX ******************************/
         case READRECORD_STATE_RX:
           if (!BlockReceived()) {
             if (deb_)
-              StartupStore(TEXT("READRECORD_STATE_RX %ums"), TimeCnt * GC_IDLETIME);
-            if (TimeCnt > (GC_BLK_RECTIMEOUT / GC_IDLETIME)) {
+              StartupStore(TEXT("READRECORD_STATE_RX %ums"),  FlarmReadIGC.get_elapsed_time());
+
+            if  (FlarmReadIGC.check_timeout(GC_BLK_RECTIMEOUT)) 
+            {
               err = REC_TIMEOUT_ERROR;
-              ThreadState = READRECORD_STATE_TX;
+              FlarmReadIGC.state( READRECORD_STATE_TX);
               if (retrys++ > MAX_RETRY) {
-                ThreadState = ABORT_STATE;
+                FlarmReadIGC.state( ABORT_STATE);
                 err = REC_TIMEOUT_ERROR;
               }
             }
@@ -871,7 +904,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           {
             err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
             if (err) {
-              ThreadState = ABORT_STATE;
+              FlarmReadIGC.state( ABORT_STATE);
                StartupStore(TEXT("err: %u in READRECORD_STATE_RX"), err);
             }
             else
@@ -884,9 +917,9 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
               }
 
               if (RecCommand != ACK)
-                ThreadState = ALL_RECEIVED_STATE;
+                FlarmReadIGC.state( ALL_RECEIVED_STATE);
               else
-                ThreadState = SELECTRECORD_STATE_TX;
+                FlarmReadIGC.state( SELECTRECORD_STATE_TX);
             }
           }
         break;
@@ -895,7 +928,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           bFilled = true;
           if (deb_)
             StartupStore(TEXT("ALL_RECEIVED_STATE"));
-          ThreadState = IDLE_STATE;
+          FlarmReadIGC.state( IDLE_STATE);
         break;
 
       /**********************  ERROR_STATE *********************************/
@@ -908,7 +941,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
                      MsgToken(2401)); // _@M2401_ "No Device found"
           IGCFileList.clear();
           IGCFileList.push_back(NewElement);
-          ThreadState = IDLE_STATE;
+          FlarmReadIGC.state( IDLE_STATE);
           err = REC_NO_DEVICE;
         break;
 
@@ -932,7 +965,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           }
           if (!err)
             err = REC_ABORTED;
-          ThreadState = IDLE_STATE;
+          FlarmReadIGC.state( IDLE_STATE);
         break;
 
         /******************* START_DOWNLOAD_STATE *****************************/
@@ -941,7 +974,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           TotalSize =0;
           if (IGCFileList.size() < IGC_FileIndex)
           {
-            ThreadState = PING_STATE_TX;
+            FlarmReadIGC.state( PING_STATE_TX);
             return 0;
           }
           /*
@@ -976,7 +1009,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
           bShowMsg = true;
           retrys = 0;
           TimeOutFactor = 1;          
-          ThreadState = DOWNLOAD_START_ANS;
+          FlarmReadIGC.state( DOWNLOAD_START_ANS);
         break;
          /*************************** DOWNLOAD_START_ANS **********************/      
         case DOWNLOAD_START_ANS:
@@ -985,9 +1018,9 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
             err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
             if (err != REC_NO_ERROR) {
               err = IGC_RECEIVE_ERROR;
-              ThreadState = ABORT_STATE;
+              FlarmReadIGC.state( ABORT_STATE);
             } else
-              ThreadState = READ_STATE_TX;
+              FlarmReadIGC.state( READ_STATE_TX);
           }
         break;
 
@@ -995,29 +1028,28 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         case READ_STATE_TX:
           blocksize = 0;
           DownloadError = REC_NO_ERROR;
-          ThreadState = READ_STATE_RX;
           SendBinBlock(d, Sequence, GETIGCDATA, &pByteBlk[0], 0);  
+          FlarmReadIGC.state( READ_STATE_RX);
         break;
         /************************** READ STATE RX *****************************/
         case READ_STATE_RX:
           if (!BlockReceived()) {
-            if (TimeCnt > (TimeOutFactor * GC_BLK_RECTIMEOUT /
-                           GC_IDLETIME)) // Time factor needed for the very last
-                                         // Flarm Answer only, which need far longer
+            if(FlarmReadIGC.check_timeout(TimeOutFactor*GC_BLK_RECTIMEOUT))
             {
               if (retrys++ > MAX_RETRY) {
                 err = REC_TIMEOUT_ERROR;
-              DownloadError = err;
-              ThreadState = ABORT_STATE;
-              StartupStore(TEXT("%u%% %u Blocks Abort while wait for answer "
+                DownloadError = err;
+
+                StartupStore(TEXT("%u%% Abort after %u Blocks, while wait for answer "
                                 "time:%ums  Size:%uByte"),
-                           pByteBlk[2], Sequence, TimeCnt * GC_IDLETIME,
-                           blocksize);
+                           pByteBlk[2], Sequence, FlarmReadIGC.get_elapsed_time(),
+                           TotalSize);
+                FlarmReadIGC.state( ABORT_STATE);              
               } else {
-                ThreadState = READ_STATE_TX;
-                StartupStore(TEXT("%u%% %u Blocks%u timeout :%ums while waiting for "
-                                  "answer request Block again %i. time"),
-                             pByteBlk[2], Sequence,TotalSize,  TimeCnt * GC_IDLETIME, retrys);
+
+                StartupStore(TEXT("%u%% %u. timeout %ums at Block %u (%u Bytes), request Block again!"),
+                             pByteBlk[2], retrys, FlarmReadIGC.get_elapsed_time(), Sequence ,TotalSize );
+                FlarmReadIGC.state( READ_STATE_TX);
               }
             }
           }
@@ -1029,16 +1061,16 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
               if (retrys++ > MAX_RETRY) {
                 DownloadError = err;
                 StartupStore(
-                 TEXT("%u%% Block Error:%u seq%u  Abort after %u trys read time:%ums  Size:%uByte"),
-                  pByteBlk[2],err, Sequence,retrys, TimeCnt * GC_IDLETIME, TotalSize);
-                ThreadState = ABORT_STATE;
+                 TEXT("%u%% Block Error:%u Block %u  Abort after %u retrys read time:%ums  Size: %u Bytes"),
+                  pByteBlk[2],err, Sequence,retrys,  FlarmReadIGC.get_elapsed_time() , TotalSize);
+                FlarmReadIGC.state( ABORT_STATE);
               }
               else
               {
                 StartupStore(
-                  TEXT("%u%% Block Error:%u seq%u  retry %i after read time:%ums  Size:%uByte"),
-                  pByteBlk[2],err, Sequence,retrys, TimeCnt * GC_IDLETIME, TotalSize);              
-                  ThreadState = READ_STATE_TX;
+                  TEXT("%u%% Block Error:%u Block %u retry #%i after read time:%ums  Size:%u Bytes"),
+                  pByteBlk[2],err, Sequence,retrys,  FlarmReadIGC.get_elapsed_time() , TotalSize);              
+                  FlarmReadIGC.state( READ_STATE_TX);
               }
             } else
             {                
@@ -1046,8 +1078,6 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
               Sequence++;
               TotalSize += blocksize;
              
-              ThreadState = READ_STATE_TX;
-
               if (pByteBlk[2] > 50) // if more that 50% read, increase TimeOutFactor
                 TimeOutFactor =
                     WATCHDOG_TIMEOUT / GC_BLK_RECTIMEOUT; // reading last FLARM sentences takes up
@@ -1061,8 +1091,8 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
               if (abs((int)pByteBlk[2] - prevPercent) >= 5) 
               {
                 prevPercent =  pByteBlk[2];
-                StartupStore(TEXT("%u%% %u Block (%u Bytes)  Response time:%ums  Total:%u Byte"),
-                             pByteBlk[2], Sequence, blocksize, TimeCnt * GC_IDLETIME, TotalSize);
+                StartupStore(TEXT("%u%% %u. Block (%u Bytes)  Response time:%ums  Total:%u Bytes"),
+                             pByteBlk[2], Sequence, blocksize,  FlarmReadIGC.get_elapsed_time() , TotalSize);
               }
               for (int i = 0; i < blocksize - 3; i++) {
                 if (file_ptr)
@@ -1070,9 +1100,10 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
                 if (pByteBlk[3 + i] == EOF_)
                   RecCommand = EOF_;
               }
-
+              
+              FlarmReadIGC.state( READ_STATE_TX);
               if (RecCommand == EOF_)
-                ThreadState = CLOSE_STATE;
+                FlarmReadIGC.state( CLOSE_STATE);
               
             }
           }
@@ -1085,7 +1116,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
               file_ptr = NULL;
             }
 
-          ThreadState = IDLE_STATE;
+          FlarmReadIGC.state( IDLE_STATE);
           if (deb_)
             StartupStore(TEXT("IDLE_STATE"));
           if (err != REC_NO_ERROR) {
@@ -1102,22 +1133,13 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
       } // case
     }	// if(d)
 
-  static thread_state OldThreadState = IDLE_STATE;
-
-  if (OldThreadState == ThreadState) // state watchdog
-  {
-
-    if (TimeCnt++ >= (WATCHDOG_TIMEOUT / GC_IDLETIME)) // no state change for a longer time ?
-    {
-    
+    if(FlarmReadIGC.check_timeout(WATCHDOG_TIMEOUT))// no state change for a longer time ?
+    {    
       StartupStore(TEXT("STATE WATCHDOG timeout after %ums in State %i"),
-                   TimeCnt * GC_IDLETIME, ThreadState);
-      ThreadState = ABORT_STATE; // abort!
+                   FlarmReadIGC.get_elapsed_time() , FlarmReadIGC.state());
+      FlarmReadIGC.state( ABORT_STATE); // abort!
     }
-  } else {
-    OldThreadState = ThreadState; // remember new state
-    TimeCnt = 0;
-  }
+ 
   if (err)
     if (DownloadError == REC_NO_ERROR) // no previous error=
       DownloadError = err;
@@ -1156,7 +1178,7 @@ protected:
     
 
     while (!bStop) {
-      if (ThreadState != IDLE_STATE) {
+      if (FlarmReadIGC.state() != IDLE_STATE) {
         ReadFlarmIGCFile(CDevFlarm::GetDevice(), IGC_DLIndex);
       }
       Poco::Thread::sleep(GC_IDLETIME);
