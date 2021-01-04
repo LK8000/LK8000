@@ -104,8 +104,6 @@ typedef struct {
 
 std::vector<ListElementType> IGCFileList;
 
-int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_Index);
-
 ListElement *pIGCResult = NULL;
 TCHAR szStatusText[STATUS_TXT_LEN];
 
@@ -755,6 +753,7 @@ bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
   return true;
 }
 
+static
 int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
   if (d == NULL)
     return 0; 
