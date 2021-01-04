@@ -777,8 +777,6 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
   }
 
 
-  if (d != NULL)
-  {
     switch(FlarmReadIGC.state())
     {
         case IDLE_STATE:
@@ -1127,7 +1125,6 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
         break;
         /********************************************************************/
       } // case
-    }	// if(d)
 
     if(FlarmReadIGC.check_timeout(WATCHDOG_TIMEOUT))// no state change for a longer time ?
     {    
