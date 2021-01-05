@@ -298,8 +298,7 @@ _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
     }
     else
     {
-      int iIdx = SearchNearestStationWithFreqency(Frequency);
-      CopyActiveStationNameByIndex(iIdx);
+      UpdateStationName(RadioPara.ActiveName, Frequency);
       devPutFreqActive(Frequency,RadioPara.ActiveName);
       OnUpdate();
     }
@@ -322,8 +321,7 @@ _stprintf(szFreq,  _T("%7.3f"),RadioPara.PassiveFrequency);
     }
     else
     {
-      int iIdx = SearchNearestStationWithFreqency(Frequency);
-      CopyPassiveStationNameByIndex(iIdx);
+      UpdateStationName(RadioPara.PassiveName, Frequency);
       devPutFreqStandby(Frequency,RadioPara.PassiveName);
       OnUpdate();
     }

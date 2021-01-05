@@ -484,7 +484,6 @@ uint32_t ulState;
 
 int processed=0;
 
-int Idx=0;
 LKASSERT(szCommand !=NULL);
 LKASSERT(d !=NULL);
 
@@ -541,8 +540,7 @@ LKASSERT(d !=NULL);
         sFrequency.intVal8[1] = szCommand[4] ;
         sFrequency.intVal8[0] = szCommand[5] ;
         RadioPara.ActiveFrequency =  Idx2Freq(sFrequency.intVal16);
-        Idx = SearchNearestStationWithFreqency(RadioPara.ActiveFrequency);
-        CopyActiveStationNameByIndex(Idx);
+        UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency);
 
         if(iAR620DebugLevel ) StartupStore(_T("AR620x <AF %u  %7.3f%s"), sFrequency.intVal16, RadioPara.ActiveFrequency ,NEWLINE);
 
@@ -550,8 +548,7 @@ LKASSERT(d !=NULL);
         sFrequency.intVal8[0] = szCommand[7] ;
         RadioPara.PassiveValid = true;
         RadioPara.PassiveFrequency =  Idx2Freq(sFrequency.intVal16);
-        Idx = SearchNearestStationWithFreqency(RadioPara.PassiveFrequency);
-        CopyPassiveStationNameByIndex(Idx);				
+        UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency);
 
         if(iAR620DebugLevel ) StartupStore(_T("AR620x <PF: %u %7.3f%s"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
         RadioPara.Changed = true;

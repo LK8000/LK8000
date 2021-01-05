@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "Radio.h"
 #include "Util/TruncateString.hpp"
 
 
@@ -109,12 +110,12 @@ static double LatLonDistance(GeoPoint a, GeoPoint b)
 }
 
 
-int SearchNearestStationWithFreqency(double Freq)
-{
+bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], double Frequency) {
+
 	double minDist = 9999999;
-	int minIdx = -1;
+	int idx = -1;
 	
-	if(!ValidFrequency( Freq))
+	if(!ValidFrequency(Frequency))
 		return 0;
 
 	LockFlightData();
@@ -130,24 +131,27 @@ int SearchNearestStationWithFreqency(double Freq)
 
 		if(wpt.Freq[0]) { // ignore TP with empty frequency
 			double fWpFreq = StrToDouble(wpt.Freq, nullptr);
-			if(fabs(Freq - fWpFreq ) < 0.001)
+			if(fabs(Frequency - fWpFreq ) < 0.001)
 			{
 				double fDist = LatLonDistance(cur_pos, GeoPoint(wpt.Latitude, wpt.Longitude));
 				if(fDist < minDist)
 				{
 					minDist = fDist;
-					minIdx =i;
+					idx =i;
 				}
 			}
 		}
 	}
+
+	_tcscpy(Name, (idx >= 0) ? WayPointList[idx].Name : _T(""));
+
 	UnlockTaskData();		
 
-	return minIdx;
+	return (idx >= 0);
 }
 
 
-int SearchNearestStation()
+static int SearchNearestStation()
 {
 	double minDist = 9999999;
 	int minIdx = -1;
@@ -199,38 +203,4 @@ int SearchBestStation()
 		Idx = SearchNearestStation(); // OK, then search for the nearest with radio!
 	}
 	return Idx;
-}
-
-
-BOOL CopyActiveStationNameByIndex( int Idx)
-{
-BOOL 	ret = false;
-	if((Idx > 0) && ValidWayPoint(Idx)) {
-		LockTaskData();			
-		CopyTruncateString(RadioPara.ActiveName, NAME_SIZE ,WayPointList[Idx].Name);
-		UnlockTaskData();	
-		ret = true;
-	}
-	else
-	{
-		_tcscpy(RadioPara.ActiveName , TEXT(""));
-	}
-return ret;
-}
-
-
-BOOL CopyPassiveStationNameByIndex( int Idx)
-{
-BOOL 	ret = false;
-	if((Idx > 0) && ValidWayPoint(Idx)) {
-		LockTaskData();			
-		CopyTruncateString(RadioPara.PassiveName, NAME_SIZE ,WayPointList[Idx].Name);
-		UnlockTaskData();	
-		ret = true;
-	}
-	else
-  {
-		_tcscpy(RadioPara.PassiveName , TEXT(""));
-	}
-return ret;
 }
