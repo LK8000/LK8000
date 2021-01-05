@@ -372,23 +372,13 @@ static void OnRadioStandbyAutoClicked(WndButton* pWnd){
 
 
 static void OnExchange(WndButton* pWnd){
-int tmp;
-TCHAR szTempStr[NAME_SIZE+1];
-double fTmp;
-// if (HoldOff ==0)
- {
-   tmp =   ActiveRadioIndex;
-   ActiveRadioIndex = PassiveRadioIndex;
-   PassiveRadioIndex = tmp;
-   devPutFreqSwap();
-    fTmp =   RadioPara.ActiveFrequency;
-    RadioPara.ActiveFrequency = RadioPara.PassiveFrequency;
-    RadioPara.PassiveFrequency=  fTmp;
-    _tcscpy( szTempStr,  RadioPara.ActiveName);
-    _tcscpy(  RadioPara.ActiveName, RadioPara.PassiveName);
-    _tcscpy(  RadioPara.PassiveName, szTempStr);
-    OnUpdate();
-  }
+  devPutFreqSwap();
+ 
+  std::swap(ActiveRadioIndex, PassiveRadioIndex);
+  std::swap(RadioPara.ActiveFrequency, RadioPara.PassiveFrequency);
+  std::swap(RadioPara.ActiveName, RadioPara.PassiveName);
+
+  OnUpdate();
 }
 
 static void SendVolSq(void){
