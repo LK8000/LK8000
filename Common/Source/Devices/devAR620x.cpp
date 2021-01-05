@@ -11,6 +11,7 @@
 #include "Globals.h"
 #include "devAR620x.h"
 #include "device.h"
+#include "Radio.h"
 
 #define RoundFreq(a) ((int)((a)*1000.0+0.5)/1000.0)
 #define Freq2Idx(a)  (int)(((a)-118.0) * 3040/(137.00-118.0)+0.5)

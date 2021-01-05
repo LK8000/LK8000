@@ -11,6 +11,7 @@
 #include "Globals.h"
 #include "devATR833.h"
 #include "device.h"
+#include "Radio.h"
 
 #define FRAME_LEN      0x04
 #define HEADER_LEN     0x03

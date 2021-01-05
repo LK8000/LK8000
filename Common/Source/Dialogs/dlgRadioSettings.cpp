@@ -19,6 +19,7 @@
 #include "resource.h"
 #include "NavFunctions.h"
 #include "Util/TruncateString.hpp"
+#include "Radio.h"
 
 static WndForm *wf=NULL;
 
