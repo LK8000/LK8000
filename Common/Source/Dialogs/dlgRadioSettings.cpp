@@ -23,16 +23,12 @@
 
 static WndForm *wf=NULL;
 
-static WndButton *wpnewActive     = NULL;
-static WndButton *wpnewActiveFreq = NULL;
-static WndButton *wpnewPassive    = NULL;
-static WndButton *wpnewPassiveFreq= NULL;
-static WndButton *wpnewDual       = NULL;
-static WndButton  *wpnewVolDwn  = NULL;
-static WndButton  *wpnewVolUp  = NULL;
-static WndButton  *wpnewExChg  = NULL;
-static WndButton *wpnewVol = NULL;
-//static WndProperty *wpVolume;
+static WndButton *wpnewActive = nullptr;
+static WndButton *wpnewActiveFreq = nullptr;
+static WndButton *wpnewPassive = nullptr;
+static WndButton *wpnewPassiveFreq= nullptr;
+static WndButton *wpnewDual = nullptr;
+static WndButton *wpnewVol= nullptr;
 
 static int ActiveRadioIndex=-1;
 static int PassiveRadioIndex=-1;
@@ -59,18 +55,6 @@ static void OnCancelClicked(WndButton* pWnd){
     }
   }
 }
-
-
-static void OnCloseClicked(WndButton* pWnd){
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
-      pForm->SetModalResult(mrOK);
-    }
-  }
-}
-
-
 
 
 static int OnRemoteUpdate(void)
@@ -493,7 +477,6 @@ static bool OnTimerNotify(WndForm* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-
   ClickNotifyCallbackEntry(OnDualButton),
   ClickNotifyCallbackEntry(OnActiveButton),
   ClickNotifyCallbackEntry(OnActiveFreq),
@@ -501,9 +484,11 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnPassiveButton),
   ClickNotifyCallbackEntry(OnMuteButton),
   ClickNotifyCallbackEntry(OnCancelClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnRadioActiveAutoClicked),
   ClickNotifyCallbackEntry(OnRadioStandbyAutoClicked),
+  ClickNotifyCallbackEntry(OnExchange),
+  ClickNotifyCallbackEntry(OnVolUpButton),
+  ClickNotifyCallbackEntry(OnVolDownButton),
   EndCallBackEntry()
 };
 
@@ -511,59 +496,44 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgRadioSettingsShowModal(void){
   SHOWTHREAD(_T("dlgRadioSettingsShowModal"));
 
-//  WndProperty *wp;
-//  int ival;
 
-    wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOSETTINGS );
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOSETTINGS );
   if (!wf) return;
 
   VolMode = VOL; // start with volume
 
-  if (wf) {
-    wpnewActive = (WndButton*)wf->FindByName(TEXT("cmdActive"));
-    LKASSERT( wpnewActive !=NULL);
-    wpnewActive->SetOnClickNotify(OnActiveButton);
+  wpnewActive = (WndButton*)wf->FindByName(TEXT("cmdActive"));
+  LKASSERT( wpnewActive !=NULL);
 
-    wpnewActiveFreq = (WndButton*)wf->FindByName(TEXT("cmdActiveFreq"));
-    LKASSERT( wpnewActiveFreq !=NULL);
-    wpnewActiveFreq->SetOnClickNotify(OnActiveFreq);
+  wpnewActiveFreq = (WndButton*)wf->FindByName(TEXT("cmdActiveFreq"));
+  LKASSERT( wpnewActiveFreq !=NULL);
 
-    wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdPassive"));
-    LKASSERT(   wpnewPassive   !=NULL)
-    wpnewPassive->SetOnClickNotify(OnPassiveButton);
+  wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdPassive"));
+  LKASSERT(   wpnewPassive   !=NULL)
 
-    wpnewPassiveFreq = (WndButton*)wf->FindByName(TEXT("cmdPassiveFreq"));
-    LKASSERT(   wpnewPassiveFreq   !=NULL)
-    wpnewPassiveFreq->SetOnClickNotify(OnPassiveFreq);
+  wpnewPassiveFreq = (WndButton*)wf->FindByName(TEXT("cmdPassiveFreq"));
+  LKASSERT(   wpnewPassiveFreq   !=NULL)
 
-   wpnewVol  = (WndButton*)wf->FindByName(TEXT("cmdVol"));
-    LKASSERT(   wpnewVol   !=NULL)
-    wpnewVol->SetOnClickNotify(OnMuteButton);
+  wpnewVol  = (WndButton*)wf->FindByName(TEXT("cmdVol"));
+  LKASSERT(   wpnewVol   !=NULL)
 
-   wpnewDual  = (WndButton*)wf->FindByName(TEXT("cmdDual"));
-   LKASSERT(   wpnewDual   !=NULL)
-   wpnewDual->SetOnClickNotify(OnDualButton);
+  wpnewDual  = (WndButton*)wf->FindByName(TEXT("cmdDual"));
+  LKASSERT(   wpnewDual   !=NULL)
 
-   wpnewVolDwn = ((WndButton *)wf->FindByName(TEXT("cmdVolDown")));
-   LKASSERT(   wpnewVolDwn   !=NULL)
-   wpnewVolDwn->SetOnClickNotify(OnVolDownButton);
+  wf->SetTimerNotify(300, OnTimerNotify);
 
-   wpnewVolUp =     ((WndButton *)wf->FindByName(TEXT("cmdVolUp")));
-   LKASSERT(   wpnewVolUp   !=NULL)
-   wpnewVolUp->SetOnClickNotify(OnVolUpButton);
-
-   wpnewExChg  =        ((WndButton *)wf->FindByName(TEXT("cmdXchange")));
-   LKASSERT(   wpnewExChg    !=NULL)
-   wpnewExChg ->SetOnClickNotify(OnExchange);
-
-   wf->SetTimerNotify(300, OnTimerNotify);
- //  RadioPara.Changed = true;
-   OnUpdate();
-   wf->ShowModal();
+  OnUpdate();
+  wf->ShowModal();
 
 
-    delete wf;
-  }
-  wf = NULL;
-  return ;
+  wpnewActive = nullptr;
+  wpnewActiveFreq = nullptr;
+  wpnewPassive = nullptr;
+  wpnewPassiveFreq = nullptr;
+  wpnewDual = nullptr;
+  wpnewVol = nullptr;
+
+  delete wf;
+  wf = nullptr;
+
 }
