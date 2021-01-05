@@ -68,86 +68,86 @@ static int OnRemoteUpdate(void)
     TCHAR ActiveName[DEVICE_NAME_LEN+8];
 		CopyTruncateString(ActiveName, DEVICE_NAME_LEN, RadioPara.ActiveName);
 
-    if(RadioPara.TX)
+    if(RadioPara.TX) {
       _stprintf(Name,_T(">%s<"),ActiveName);
-    else
-      if(RadioPara.RX_active)
-        _stprintf(Name,_T("<%s>"),ActiveName);
-      else
-        if(RadioPara.ActiveValid)
-          _stprintf(Name,_T("[%s]"),ActiveName);
-        else
-          _stprintf(Name,_T("%s"),ActiveName);
-      
+    } else if(RadioPara.RX_active) {
+      _stprintf(Name,_T("<%s>"),ActiveName);
+    } else if(RadioPara.ActiveValid) {
+      _stprintf(Name,_T("[%s]"),ActiveName);
+    } else {
+      _stprintf(Name,_T("%s"),ActiveName);
+    }
+
     if(wpnewActive)
       wpnewActive->SetCaption(Name);
     _stprintf(Name,_T("%6.03f"),RadioPara.ActiveFrequency);
     if(wpnewActiveFreq)
       wpnewActiveFreq->SetCaption(Name);
-   
+
     TCHAR PassiveName[DEVICE_NAME_LEN+8];
 		CopyTruncateString(PassiveName, DEVICE_NAME_LEN, RadioPara.PassiveName );
 
-    if(RadioPara.RX_standy)
+    if(RadioPara.RX_standy) {
       _stprintf(Name,_T("<%s>"),PassiveName);
-    else
-      if(RadioPara.PassiveValid)
-        _stprintf(Name,_T("[%s]"),PassiveName);
-      else
-        _stprintf(Name,_T("%s"),PassiveName);
-    
-    if(wpnewPassive)
-     wpnewPassive->SetCaption(Name);
-    _stprintf(Name,_T("%6.03f"),RadioPara.PassiveFrequency);
-    if(wpnewPassiveFreq)
-     wpnewPassiveFreq->SetCaption(Name);
-/*
-        if( lSquelch !=  RadioPara.Squelch)
-        {
-              VolMode = SQL;
-              SqCnt =0;
-        }
-*/
-        if( lVolume !=  RadioPara.Volume)
-              VolMode = VOL;
-        lSquelch =  RadioPara.Squelch;
-        lVolume =  RadioPara.Volume;
-        if(wpnewVol)
-        {
-          if(VolMode == VOL)
-          {
-            if(RadioPara.VolValid)
-              _stprintf(Name,_T("V[%i]"),RadioPara.Volume);
-            else
-              _stprintf(Name,_T("V %i"),RadioPara.Volume);
-          }
-          else
-          {
-            if(RadioPara.SqValid)
-              _stprintf(Name,_T("S [%i]"),RadioPara.Squelch);
-            else
-              _stprintf(Name,_T("S %i"),RadioPara.Squelch);
-          }
-          wpnewVol->SetCaption(Name);
-        }
-
-        if(RadioPara.Dual)
-          if(RadioPara.DualValid)
-            _stprintf(Name,_T("[Dual Off]"));
-          else
-            _stprintf(Name,_T("Dual Off"));
-        else
-          if(RadioPara.DualValid) 
-            _stprintf(Name,_T("[Dual On]"));
-          else
-            _stprintf(Name,_T("Dual On"));            
-        if(wpnewDual)
-              wpnewDual->SetCaption(Name);
-
-      RadioPara.Changed =FALSE;
-      return 1;
+    } else if(RadioPara.PassiveValid) {
+      _stprintf(Name,_T("[%s]"),PassiveName);
+    } else {
+      _stprintf(Name,_T("%s"),PassiveName);
     }
-    return 0;
+
+    if(wpnewPassive) {
+      wpnewPassive->SetCaption(Name);
+    }
+    _stprintf(Name,_T("%6.03f"),RadioPara.PassiveFrequency);
+    if(wpnewPassiveFreq) {
+      wpnewPassiveFreq->SetCaption(Name);
+    }
+
+
+    if( lVolume !=  RadioPara.Volume) {
+      VolMode = VOL;
+    }
+
+    lSquelch =  RadioPara.Squelch;
+    lVolume =  RadioPara.Volume;
+    if(wpnewVol) {
+      if(VolMode == VOL) {
+        if(RadioPara.VolValid) {
+          _stprintf(Name,_T("V [%i]"),RadioPara.Volume);
+        } else {
+          _stprintf(Name,_T("V %i"),RadioPara.Volume);
+        }
+      } else {
+        if(RadioPara.SqValid) {
+          _stprintf(Name,_T("S [%i]"),RadioPara.Squelch);
+        } else {
+          _stprintf(Name,_T("S %i"),RadioPara.Squelch);
+        }
+      }
+      wpnewVol->SetCaption(Name);
+    }
+
+    if(wpnewDual) {
+      if(RadioPara.Dual) {
+        if(RadioPara.DualValid) {
+          _stprintf(Name,_T("[Dual Off]"));
+        } else {
+          _stprintf(Name,_T("Dual Off"));
+        }
+      } else {
+        if(RadioPara.DualValid) {
+          _stprintf(Name,_T("[Dual On]"));
+        } else {
+          _stprintf(Name,_T("Dual On"));
+        }
+      }
+      wpnewDual->SetCaption(Name);
+    }
+
+    RadioPara.Changed =FALSE;
+    return 1;
+  }
+  return 0;
 }
 
 static int OnUpdate(void) {
@@ -278,47 +278,48 @@ static void OnPassiveButton(WndButton* pWnd){
 
 
 static void OnActiveFreq(WndButton* pWnd){
-TCHAR	szFreq[20];
-_stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
+  TCHAR	szFreq[20];
+  _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
 
-    dlgNumEntryShowModal(szFreq,8);
-    double Frequency = StrToDouble(szFreq,NULL);
-    while(Frequency > 1000.0)
-	   Frequency /=10;
-    if(!ValidFrequency(Frequency))
-    {        
-      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
-    }
-    else
-    {
-      UpdateStationName(RadioPara.ActiveName, Frequency);
-      devPutFreqActive(Frequency,RadioPara.ActiveName);
-      OnUpdate();
-    }
+  dlgNumEntryShowModal(szFreq,8);
 
+  double Frequency = StrToDouble(szFreq, nullptr);
+  while(Frequency > 1000.0)
+    Frequency /=10;
+
+  if(!ValidFrequency(Frequency))
+  {
+    MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
+  }
+  else
+  {
+    UpdateStationName(RadioPara.ActiveName, Frequency);
+    devPutFreqActive(Frequency,RadioPara.ActiveName);
+    OnUpdate();
+  }
 }
 
+
 static void OnPassiveFreq(WndButton* pWnd){
-TCHAR	szFreq[20] ;
-_stprintf(szFreq,  _T("%7.3f"),RadioPara.PassiveFrequency);
+  TCHAR	szFreq[20] ;
+  _stprintf(szFreq,  _T("%7.3f"),RadioPara.PassiveFrequency);
 
-   dlgNumEntryShowModal(szFreq,8);
+  dlgNumEntryShowModal(szFreq,8);
 
-   double Frequency = StrToDouble(szFreq,NULL);
-   while(Frequency > 1000)
-	   Frequency /=10;
+  double Frequency = StrToDouble(szFreq, nullptr);
+  while(Frequency > 1000)
+    Frequency /=10;
 
-    if(!ValidFrequency(Frequency))
-    {        
-      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
-    }
-    else
-    {
-      UpdateStationName(RadioPara.PassiveName, Frequency);
-      devPutFreqStandby(Frequency,RadioPara.PassiveName);
-      OnUpdate();
-    }
-   
+  if(!ValidFrequency(Frequency))
+  {
+    MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
+  }
+  else
+  {
+    UpdateStationName(RadioPara.PassiveName, Frequency);
+    devPutFreqStandby(Frequency,RadioPara.PassiveName);
+    OnUpdate();
+  }
 }
 
 
