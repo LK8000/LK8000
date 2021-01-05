@@ -262,6 +262,7 @@ static void OnPassiveButton(WndButton* pWnd){
         OnUpdate();
         HoldOff = HOLDOFF_TIME;
       }
+      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
     }
   }
 }
