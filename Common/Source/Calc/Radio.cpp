@@ -92,28 +92,47 @@ int i,Mhz=0,kHz=0;
  return fFreq;
 }
 
+/**
+ * Distance in ° between two geographical position
+ * 
+ * using it to compare tp distance is an aproximation and  is valid 
+ *   only to fast solve conflict between to TP with same frequency 
+ * 
+ * if needed to improve precision dlat calculation can be replaced by
+ *   double dlat =  cos(a.latitude * PI/180) * (a.latitude - b.latitude)
+ */
+static double LatLonDistance(GeoPoint a, GeoPoint b)
+{
+	double dla = a.latitude - b.latitude;
+	double dlo = a.longitude - b.longitude;
+	return sqrt(dla*dla + dlo*dlo);
+}
+
+
 int SearchNearestStationWithFreqency(double Freq)
 {
-	double fDist, minDist =9999999;
-	double fWpFreq;
-	int minIdx=0;
+	double minDist = 9999999;
+	int minIdx = -1;
 	
-  if(!ValidFrequency( Freq))
+	if(!ValidFrequency( Freq))
 		return 0;
+
+	LockFlightData();
+	GeoPoint cur_pos(GPS_INFO.Latitude, GPS_INFO.Longitude);
+	UnlockFlightData();
+
+	LockTaskData();
 	for (size_t i = NUMRESWP; i < WayPointList.size(); ++i)
 	{
-		LockTaskData();		
-		LKASSERT(ValidWayPointFast(i));
-		if (WayPointList[i].Latitude!=RESWP_INVALIDNUMBER)
-		{
-	
-			fWpFreq = StrToDouble(WayPointList[i].Freq,NULL);
-			if(fabs(Freq - fWpFreq )< 0.001)
-			{					
-				fDist = StraightDistance(GPS_INFO.Latitude,
-																 GPS_INFO.Longitude,
-																 WayPointList[i].Latitude,
-																 WayPointList[i].Longitude);
+		const WAYPOINT& wpt = WayPointList[i];
+
+		assert(wpt.Latitude != RESWP_INVALIDNUMBER);
+
+		if(wpt.Freq[0]) { // ignore TP with empty frequency
+			double fWpFreq = StrToDouble(wpt.Freq, nullptr);
+			if(fabs(Freq - fWpFreq ) < 0.001)
+			{
+				double fDist = LatLonDistance(cur_pos, GeoPoint(wpt.Latitude, wpt.Longitude));
 				if(fDist < minDist)
 				{
 					minDist = fDist;
@@ -121,32 +140,34 @@ int SearchNearestStationWithFreqency(double Freq)
 				}
 			}
 		}
-		UnlockTaskData();		
 	}
+	UnlockTaskData();		
+
 	return minIdx;
 }
 
 
-int SearchNearestStation(void)
+int SearchNearestStation()
 {
-	double fDist, minDist =9999999;
-	double fWpFreq;
-	int minIdx=0;
+	double minDist = 9999999;
+	int minIdx = -1;
 	
+	LockFlightData();
+	GeoPoint cur_pos(GPS_INFO.Latitude, GPS_INFO.Longitude);
+	UnlockFlightData();
 
+	LockTaskData();			
 	for (size_t i = NUMRESWP; i < WayPointList.size(); ++i)
 	{
-		LockTaskData();			
-		LKASSERT(ValidWayPointFast(i));
-		if (WayPointList[i].Latitude!=RESWP_INVALIDNUMBER)
-		{
-			fWpFreq = StrToDouble(WayPointList[i].Freq,NULL);
-      if(ValidFrequency( fWpFreq))
+		const WAYPOINT& wpt = WayPointList[i];
+
+		assert(wpt.Latitude != RESWP_INVALIDNUMBER);
+
+		if(wpt.Freq[0]) { // ignore TP with empty frequency
+			double fWpFreq = StrToDouble(wpt.Freq, nullptr);
+			if(ValidFrequency( fWpFreq))
 			{					
-				fDist = StraightDistance(GPS_INFO.Latitude,
-																 GPS_INFO.Longitude,
-																 WayPointList[i].Latitude,
-																 WayPointList[i].Longitude);
+				double fDist = LatLonDistance(cur_pos, GeoPoint(wpt.Latitude, wpt.Longitude));
 				if(fDist < minDist)
 				{
 					minDist = fDist;
@@ -154,26 +175,30 @@ int SearchNearestStation(void)
 				}
 			}
 		}
-		UnlockTaskData();	
 	}
+	UnlockTaskData();	
+
 	return minIdx;
 }
 
 
-int SearchBestStation(void)
+int SearchBestStation()
 {
-int Idx = BestAlternate;    // begin with Best alternate
-double fFreq=0.0;
+	int Idx = BestAlternate;    // begin with Best alternate
+	double fFreq=0.0;
 
-	if(ValidWayPoint(Idx)) {
+	LockTaskData();
+	if(ValidWayPointFast(Idx)) 
+	{
 		fFreq = StrToDouble(WayPointList[Idx].Freq,NULL);
 	}
+	UnlockTaskData();
 
 	if(!ValidFrequency(fFreq))	// best alternate does not have a radio?
 	{
 		Idx = SearchNearestStation(); // OK, then search for the nearest with radio!
 	}
-return Idx;
+	return Idx;
 }
 
 
