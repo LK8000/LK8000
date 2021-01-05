@@ -31,6 +31,7 @@ TCHAR m_szTmp[MAX_STATUS_TXT_LEN] =_T("...");
 
 static bool OnIGCProgressTimer(WndForm *pWnd) {
   if (pWnd) {
+      pWnd->SetTimerNotify(0, NULL); 
       WindowControl *wText = pWnd->FindByName(TEXT("frmIGCText"));
       if (wText) {
         wText->SetCaption(m_szTmp);
@@ -38,6 +39,7 @@ static bool OnIGCProgressTimer(WndForm *pWnd) {
 #ifndef USE_GDI
      main_window->Refresh();
 #endif
+        pWnd->SetTimerNotify(500, OnIGCProgressTimer); 
       }
 
     if (bClose)
