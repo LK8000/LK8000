@@ -110,6 +110,19 @@ void VLA_XFR::set_databaud(int32 db) {
   case 115200L :
     databaudidx = 5;
     break;
+  case 230400L :
+    databaudidx = 6;
+    break;
+  case 460800L :
+    databaudidx = 7;
+    break;
+  case 500000L :
+    databaudidx = 8;
+    break;
+  case 1000000L :
+    databaudidx = 9;
+    break;
+    
   default     :
     databaudidx = 1;
     break;

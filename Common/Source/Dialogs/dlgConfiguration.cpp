@@ -1665,7 +1665,9 @@ static void setVariables( WndForm *pOwner) {
 
 
   const TCHAR *tSpeed[] = {TEXT("1200"),TEXT("2400"),TEXT("4800"),TEXT("9600"),
-			     TEXT("19200"),TEXT("38400"),TEXT("57600"),TEXT("115200")};
+                           TEXT("19200"),TEXT("38400"),TEXT("57600"),
+                           TEXT("115200"),TEXT("230400"),TEXT("460800"),
+                           TEXT("500000"),TEXT("1000000")};
 
   TCHAR szPort[MAX_PATH];
   

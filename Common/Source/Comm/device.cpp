@@ -66,7 +66,8 @@ Mutex COMMPort_mutex; // needed for Bluetooth LE scan
 #endif
 COMMPort_t COMMPort;
 
-static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200};
+static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200,
+                                      230400,460800,500000,1000000};
 
 DeviceRegister_t   DeviceRegister[NUMREGDEV];
 DeviceDescriptor_t DeviceList[NUMDEV];
