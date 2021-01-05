@@ -240,7 +240,7 @@ static void OnActiveButton(WndButton* pWnd){
       double  Frequency = StrToDouble(WayPointList[res].Freq,NULL);
       if(!ValidFrequency(Frequency))
       {
-        MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/chanal input!",
+        MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
       }
       else
       {
@@ -267,7 +267,7 @@ static void OnPassiveButton(WndButton* pWnd){
       double Frequency = StrToDouble(WayPointList[res].Freq,NULL);
       if(!ValidFrequency(Frequency))
       {
-        MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //    "_@M002490_": "Invalid radio frequency/chanal input!",
+        MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
       }
       else
       { 
@@ -294,7 +294,7 @@ _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
 	   Frequency /=10;
     if(!ValidFrequency(Frequency))
     {        
-      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/chanal input!",
+      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
     }
     else
     {
@@ -318,7 +318,7 @@ _stprintf(szFreq,  _T("%7.3f"),RadioPara.PassiveFrequency);
 
     if(!ValidFrequency(Frequency))
     {        
-      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //    "_@M002490_": "Invalid radio frequency/chanal input!",
+      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
     }
     else
     {
