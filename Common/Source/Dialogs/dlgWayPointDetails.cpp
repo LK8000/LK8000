@@ -20,7 +20,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "Sound/Sound.h"
-
+#include "Radio.h"
 
 static int page=0;
 static WndForm *wf=NULL;

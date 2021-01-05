@@ -28,6 +28,7 @@
 #include "Topology/shapelib/mapserver.h"
 #include "utils/zzip_stream.h"
 #include "picojson.h"
+#include "Radio.h"
 
 #ifdef _WGS84
 #include <GeographicLib/GeodesicLine.hpp>

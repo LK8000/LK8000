@@ -12,7 +12,7 @@
 #include "devKRT2.h"
 #include "device.h"
 #include "utils/stringext.h"
-
+#include "Radio.h"
 
 namespace {
 

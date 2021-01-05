@@ -38,6 +38,7 @@
 #include <queue>
 #include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
+#include "Radio.h"
 
 unsigned int uiEOSDebugLevel = 1;
 extern bool UpdateQNH(const double newqnh);
