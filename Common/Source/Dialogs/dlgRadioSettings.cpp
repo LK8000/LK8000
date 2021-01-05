@@ -214,27 +214,32 @@ TCHAR Name[250];
 
 
 static void OnActiveButton(WndButton* pWnd){
-
   if (HoldOff ==0)
   {
+    bool valid = false;
+
+    double  Frequency = 0;
+    TCHAR Name[NAME_SIZE+1];
+
     int res = dlgWayPointSelect(0, 90.0, 1, 3);
-    if(res > RESWP_END )
-    if(ValidWayPoint(res))
-    {
-      double  Frequency = StrToDouble(WayPointList[res].Freq,NULL);
-      if(!ValidFrequency(Frequency))
-      {
-        MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
+
+    LockTaskData();
+    if(ValidNotResWayPoint(res)) {
+      Frequency = StrToDouble(WayPointList[res].Freq, nullptr);
+      if(ValidFrequency(Frequency)) {
+        _tcscpy(Name, WayPointList[res].Name);
+        valid = true;
       }
-      else
-      {
-        devPutFreqActive(Frequency, WayPointList[res].Name);
-    	_tcscpy(RadioPara.ActiveName, WayPointList[res].Name);
-        RadioPara.ActiveFrequency = Frequency;
-        ActiveRadioIndex = res;  
-        OnUpdate();
-        HoldOff = HOLDOFF_TIME;
-      }
+    }
+    UnlockTaskData();
+
+    if(valid) {
+      devPutFreqActive(Frequency, Name);
+      ActiveRadioIndex = res;
+      OnUpdate();
+      HoldOff = HOLDOFF_TIME;
+    } else {
+      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
     }
   }
 }
@@ -243,29 +248,33 @@ static void OnActiveButton(WndButton* pWnd){
 static void OnPassiveButton(WndButton* pWnd){
   if (HoldOff ==0)
   {
-   int res = dlgWayPointSelect(0, 90.0, 1,3);
+    bool valid = false;
 
-   if(res > RESWP_END )
-     if(ValidWayPoint(res))
-    {
-      double Frequency = StrToDouble(WayPointList[res].Freq,NULL);
-      if(!ValidFrequency(Frequency))
-      {
-        MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
+    double  Frequency = 0;
+    TCHAR Name[NAME_SIZE+1];
+
+    int res = dlgWayPointSelect(0, 90.0, 1, 3);
+
+    LockTaskData();
+    if(ValidNotResWayPoint(res)) {
+      Frequency = StrToDouble(WayPointList[res].Freq, nullptr);
+      if(ValidFrequency(Frequency)) {
+        _tcscpy(Name, WayPointList[res].Name);
+        valid = true;
       }
-      else
-      { 
-        devPutFreqStandby(Frequency, WayPointList[res].Name);
-        _tcscpy(RadioPara.PassiveName, WayPointList[res].Name);
-        RadioPara.PassiveFrequency = Frequency;
-        PassiveRadioIndex = res;
-        OnUpdate();
-        HoldOff = HOLDOFF_TIME;
-      }
+    }
+    UnlockTaskData();
+
+    if(valid) {
+      devPutFreqStandby(Frequency, Name);
+      PassiveRadioIndex = res;
+      OnUpdate();
+      HoldOff = HOLDOFF_TIME;
+    } else {
+      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
     }
   }
 }
-
 
 
 static void OnActiveFreq(WndButton* pWnd){
@@ -314,38 +323,48 @@ _stprintf(szFreq,  _T("%7.3f"),RadioPara.PassiveFrequency);
 
 
 static void OnRadioActiveAutoClicked(WndButton* pWnd){
+  bAutoActive = !bAutoActive;
   if(bAutoActive) {
-	  bAutoActive = false;
-  } else {
-		bAutoActive = true;
+    bool valid = false;
+    double  Frequency = 0;
+    TCHAR Name[NAME_SIZE+1];
 
+    LockTaskData();
+    int Idx = SearchBestStation();
+    if ( ValidWayPointFast(Idx)) {
+      Frequency = StrToDouble(WayPointList[Idx].Freq, nullptr);
+      _tcscpy(Name, WayPointList[Idx].Name);
+      valid = true;
+    }
+    UnlockTaskData();
 
-	int Idx = SearchBestStation();
-	if ( ValidWayPoint(Idx))
-	{
-		double fFreq = StrToDouble(WayPointList[Idx].Freq,NULL);
-		devPutFreqActive(	fFreq , WayPointList[Idx].Name);
-	}
-
+    if(valid) {
+      devPutFreqActive(Frequency, Name);
+    }
   }
   OnUpdate();
 }
 
 
-static void OnRadioStandbyAutoClicked(WndButton* pWnd)
-{
+static void OnRadioStandbyAutoClicked(WndButton* pWnd){
+  bAutoPassiv = !bAutoPassiv;
   if(bAutoPassiv) {
-	  bAutoPassiv = false;
-  } else {
-	  bAutoPassiv = true;
-		
-	int Idx = SearchBestStation();
-	if ( ValidWayPoint(Idx))
-	{
-		double fFreq = StrToDouble(WayPointList[Idx].Freq,NULL);
-		devPutFreqStandby(	fFreq , WayPointList[Idx].Name);
-	}
+    bool valid = false;
+    double  Frequency = 0;
+    TCHAR Name[NAME_SIZE+1];
 
+    LockTaskData();
+    int Idx = SearchBestStation();
+    if ( ValidWayPointFast(Idx)) {
+      Frequency = StrToDouble(WayPointList[Idx].Freq, nullptr);
+      _tcscpy(Name, WayPointList[Idx].Name);
+      valid = true;
+    }
+    UnlockTaskData();
+
+    if(valid) {
+      devPutFreqStandby(Frequency, Name);
+    }
   }
   OnUpdate();
 }
