@@ -588,7 +588,7 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
     ClickNotifyCallbackEntry(OnDownClicked),
     EndCallBackEntry()};
 
-void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
+void LeaveBinMode(DeviceDescriptor_t *d) {
   if (d != NULL) {
     int Sequence = 0;
 
@@ -596,12 +596,18 @@ void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
     GPS_INFO.FLARM_Available = false;
     UnlockFlightData();
 
-    deb_Log(TEXT("EXIT & RESET"));
+    deb_Log(TEXT("Flarm exit BIN mode!"));
     SendBinBlock(d, Sequence, EXIT, NULL, 0);
     SetBinaryModeFlag(false);
- 
+
+  }
+}
+
+void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
+  if (d != NULL) {
+    LeaveBinMode(d); 
     d->Com->WriteString("$PFLAR,0*55\r\n");
-    deb_Log(TEXT("$PFLAR,0*55\r\n"));
+    deb_Log(TEXT("Flarm Reset!\r\n"));	
   }
 }
 
@@ -672,7 +678,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
     wf->ShowModal();
   }
   DownloadError = REC_NOMSG; // don't show an error msg on initialisation
-  LeaveBinModeWithReset(d);  // reset Flarm after leaving dialog
+  LeaveBinMode(d);  //  Flarm exit BIN mode
 
   FlarmReadIGC.state(IDLE_STATE);
   return pIGCResult;
