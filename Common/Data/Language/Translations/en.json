@@ -2569,7 +2569,7 @@
     "_@M002477_": "DiffMtg",
     "_@M002478_": "Alternate1 QNH arrival",
     "_@M002479_": "Atn1QNH",
-    "_@M002490_": "Invalid radio frequency/chanal input!",
+    "_@M002490_": "Invalid radio frequency/channel input!",
     "_@M002491_": "Input Error",  
 
     "_@H001361_": "[Task Type]\n[Default]\n[AAT]\nEnables AAT tasks. When enabled, the AAT observation parameters can be set for each turnpoint.\n[Grand Prix / Race To Goal]\nCommon Task Type for Paraglider or Grand Prix Task Type for Glider.",
