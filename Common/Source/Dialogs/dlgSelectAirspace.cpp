@@ -61,7 +61,7 @@ struct AirspaceInfo_t : public ObjectAdaptor_t {
 
 class dlgSelectAirspace_t final : public dlgSelectObject  {
 public:
-  const unsigned GetTypeCount() const override {
+  unsigned GetTypeCount() const override {
     //Need to count + 2 because 0 is no-filter and (count + 1) is Disabled
     return AIRSPACECLASSCOUNT + 2;
   }

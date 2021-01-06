@@ -100,7 +100,7 @@ public:
 
   array_info_t& GetArrayInfo() { return array_info; }
 
-  virtual const unsigned GetTypeCount() const = 0;
+  virtual unsigned GetTypeCount() const = 0;
   virtual const TCHAR* GetTypeLabel(unsigned type) const = 0;
 
   virtual int GetTypeWidth(LKSurface& Surface) = 0; // size of type column in list (0 if no column type)

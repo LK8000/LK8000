@@ -100,7 +100,7 @@ public:
     }
   }
 
-  const unsigned GetTypeCount() const override {
+  unsigned GetTypeCount() const override {
     return 4 + NO_WP_FILES;
   }
 
