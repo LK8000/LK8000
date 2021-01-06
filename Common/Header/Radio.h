@@ -9,12 +9,13 @@
 #ifndef __RADIO_H__
 #define __RADIO_H__
 
+#include "Sizes.h"
+
 BOOL ValidFrequency(double Freq);
 double ExtractFrequency(const TCHAR *text);
-int SearchNearestStationWithFreqency(double Freq);
-int SearchNearestStation(void);
-int SearchBestStation(void);
 
-BOOL CopyActiveStationNameByIndex( int Idx);
-BOOL CopyPassiveStationNameByIndex( int Idx);
+bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], double Frequency);
+
+int SearchBestStation();
+
 #endif

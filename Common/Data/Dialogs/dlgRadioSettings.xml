@@ -3,15 +3,15 @@
   <WndForm Name="frmRadioSettingRegular" Type="Dialog" X="5" Y="5" Width="230" Height="220" Caption="_@M2307_" Popup="1" Font="2" >  
     <WndButton Caption="_@M186_" X="10" Y="160" Width="210"  Height="32" Font="2" OnClickNotify="OnCancelClicked"/>
     <WndButton Name="cmdAutoActive" Caption="_@M1324_" X="10" Y="5" Width="25"  Height="32" Font="2" OnClickNotify="OnRadioActiveAutoClicked"/>
-    <WndButton Name="cmdActive" Caption="*" X="32" Y="5" Width="135"  Height="32" Font="2" />
-    <WndButton Name="cmdActiveFreq" Caption="*" X="160" Y="5" Width="60"  Height="32" Font="2" />
-    <WndButton Name="cmdXchange" Caption="X" X="30" Y="45" Width="70"  Height="32" Font="2" />
-    <WndButton Name="cmdDual" Caption="Dual" X="130" Y="45" Width="70"  Height="32" Font="2" />
+    <WndButton Name="cmdActive" Caption="*" X="32" Y="5" Width="135"  Height="32" Font="2" OnClickNotify="OnActiveButton"/>
+    <WndButton Name="cmdActiveFreq" Caption="*" X="160" Y="5" Width="60"  Height="32" Font="2" OnClickNotify="OnActiveFreq"/>
+    <WndButton Name="cmdXchange" Caption="X" X="30" Y="45" Width="70"  Height="32" Font="2" OnClickNotify="OnExchange"/>
+    <WndButton Name="cmdDual" Caption="Dual" X="130" Y="45" Width="70"  Height="32" Font="2" OnClickNotify="OnDualButton"/>
     <WndButton Name="cmdAutoPassive" Caption="_@M1324_" X="10" Y="85" Width="25"  Height="32" Font="2" OnClickNotify="OnRadioStandbyAutoClicked"/>
-    <WndButton Name="cmdPassive" Caption="*" X="32" Y="85" Width="135"  Height="32" Font="2" />
-    <WndButton Name="cmdPassiveFreq" Caption="*" X="160" Y="85" Width="60"  Height="32" Font="2" />
-    <WndButton Name="cmdVolDown" Caption="-" X="30" Y="125" Width="50"  Height="32" Font="2" />
-    <WndButton Name="cmdVol" Caption="" X="90" Y="125" Width="50"  Height="32" Font="2" />
-    <WndButton Name="cmdVolUp" Caption="+" X="150" Y="125" Width="50"  Height="32" Font="2" />
+    <WndButton Name="cmdPassive" Caption="*" X="32" Y="85" Width="135"  Height="32" Font="2" OnClickNotify="OnPassiveButton"/>
+    <WndButton Name="cmdPassiveFreq" Caption="*" X="160" Y="85" Width="60"  Height="32" Font="2" OnClickNotify="OnPassiveFreq"/>
+    <WndButton Name="cmdVolDown" Caption="-" X="30" Y="125" Width="50"  Height="32" Font="2" OnClickNotify="OnVolDownButton"/>
+    <WndButton Name="cmdVol" Caption="" X="90" Y="125" Width="50"  Height="32" Font="2" OnClickNotify="OnMuteButton"/>
+    <WndButton Name="cmdVolUp" Caption="+" X="150" Y="125" Width="50"  Height="32" Font="2" OnClickNotify="OnVolUpButton"/>
   </WndForm>
 </PMML>

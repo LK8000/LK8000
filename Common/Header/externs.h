@@ -51,7 +51,6 @@
 #include "LKLanguage.h"
 #include "Window/WndMain.h"
 #include "LKCpu.h"
-#include "Radio.h"
 
 // Include header for heap allocation checking
 // #include "utils/heapcheck.h"

@@ -14,6 +14,7 @@
 #include "FlarmIdFile.h"
 #include "resource.h"
 #include "Sound/Sound.h"
+#include "Radio.h"
 
 extern FlarmIdFile *file;
 

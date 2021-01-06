@@ -17,6 +17,7 @@
 #include "LKObjects.h"
 #include "Sound/Sound.h"
 #include "resource.h"
+#include "Radio.h"
 
 static CAirspaceBase airspace_copy;
 static void OnDetailsClicked(WndButton* pWnd);
