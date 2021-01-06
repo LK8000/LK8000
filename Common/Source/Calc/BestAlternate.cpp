@@ -14,6 +14,7 @@
 #include "Sound/Sound.h"
 #include "CriticalSection.h"
 #include "NavFunctions.h"
+#include "Radio.h"
 
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
 

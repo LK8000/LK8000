@@ -12,7 +12,7 @@
 #include "devKRT2.h"
 #include "device.h"
 #include "utils/stringext.h"
-
+#include "Radio.h"
 
 namespace {
 
@@ -299,9 +299,10 @@ static int counter =0;
                 TrimRight(RadioPara.ActiveName);
                 if( _tcslen(RadioPara.ActiveName) == 0)
                 {
-                  int Idx = SearchNearestStationWithFreqency(RadioPara.ActiveFrequency);
-                  if(Idx > 0)
-                    devPutFreqActive(RadioPara.ActiveFrequency, WayPointList[Idx].Name);
+                  if (UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency)) 
+                  {
+                    devPutFreqActive(RadioPara.ActiveFrequency, RadioPara.ActiveName);
+                  }
                 }
                 _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
                 processed = 13;
@@ -325,9 +326,10 @@ static int counter =0;
                 TrimRight(RadioPara.PassiveName);
                 if( _tcslen(RadioPara.PassiveName) == 0)
                 {
-                   int Idx = SearchNearestStationWithFreqency(RadioPara.PassiveFrequency);
-                  if(Idx > 0)
-                     devPutFreqStandby(RadioPara.PassiveFrequency, WayPointList[Idx].Name);
+                  if (UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency)) 
+                  {
+                    devPutFreqStandby(RadioPara.ActiveFrequency, RadioPara.PassiveName);
+                  }
                 }
 
                 _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );

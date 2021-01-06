@@ -18,6 +18,8 @@
 #include "devPVCOM.h"
 #include <functional>
 #include "Calc/Vario.h"
+#include "Radio.h"
+
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
