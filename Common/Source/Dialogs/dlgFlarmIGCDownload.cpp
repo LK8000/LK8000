@@ -473,21 +473,18 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender,
 
 static void OnIGCListEnter(WindowControl *Sender,
                            WndListFrame::ListInfo_t *ListInfo) {
-  (void)Sender;
+
   IGC_CurIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 
   if (IGC_CurIndex >= IGCFileList.size()) {
     IGC_CurIndex = IGCFileList.size() - 1;
   }
 
-  if (IGC_CurIndex >= 0) {
-    if (Sender) {
-      WndForm *pForm = Sender->GetParentWndForm();
-      if (pForm) {
-        IGC_DLIndex = IGC_CurIndex;
-        OnEnterClicked( (WndButton *)pForm->FindByName(TEXT("cmdEnter")));
-
-      }
+  if (Sender) {
+    WndForm *pForm = Sender->GetParentWndForm();
+    if (pForm) {
+      IGC_DLIndex = IGC_CurIndex;
+      OnEnterClicked( (WndButton *)pForm->FindByName(TEXT("cmdEnter")));
     }
   }
 }
