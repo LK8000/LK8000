@@ -235,7 +235,12 @@ function_t CallBackLookup(CallBackTableEntry_t *LookUpTable, TCHAR *Name){
   if (LookUpTable && Name && Name[0]) {
     for (size_t i = 0; LookUpTable[i].Name; i++) {
       if (_tcscmp(LookUpTable[i].Name, Name) == 0) {
-        return std::get<function_t>(LookUpTable[i].callback);
+        try {
+          return std::get<function_t>(LookUpTable[i].callback);
+        } catch (std::bad_variant_access& e) {
+          StartupStore(_T("CallBackLookup(\"%s\"): %s"), Name, to_tstring(e.what()).c_str());
+          assert(false);
+        }
       }
     }
   }
