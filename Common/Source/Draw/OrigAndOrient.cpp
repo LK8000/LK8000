@@ -123,7 +123,7 @@ void MapWindow::CalculateOrigin(const RECT& rc, POINT *Orig) {
 		}
 	} else {
 		// 100924 if we are in north up autorient, position the glider in middle screen
-		if (zoom.Scale() >= AutoOrientScale) {
+		if (zoom.Scale() > AutoOrientScale) {
 			Orig->x = (rc.left + rc.right)/2;
 			Orig->y=((rc.bottom-BottomSize)+rc.top)/2;
 		} else {
@@ -142,7 +142,7 @@ void MapWindow::CalculateOrigin(const RECT& rc, POINT *Orig) {
 void MapWindow::SetAutoOrientation() {
 
   // 1.4 because of correction if mapscale reported on screen in MapWindow2
-  if (MapWindow::zoom.Scale() >= AutoOrientScale) {
+  if (MapWindow::zoom.Scale() > AutoOrientScale) {
     MapWindow::mode.setAutoNorthUP(true);
   } else {
 	  MapWindow::mode.setAutoNorthUP(false);
