@@ -243,7 +243,7 @@ static CallBackTableEntry_t CallBackTable[] = {
   ClickNotifyCallbackEntry(OnShift),
   ClickNotifyCallbackEntry(OnDate),
   ClickNotifyCallbackEntry(OnTime),
-  OnHelpCallbackEntry(OnHelpClicked),
+  ClickNotifyCallbackEntry(OnHelpClicked),
   EndCallBackEntry()
 };
 
