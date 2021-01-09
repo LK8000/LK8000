@@ -57,7 +57,10 @@ double  ExtractFrequency(const TCHAR *text)
 
 	double fFreq = 0.0;
 	size_t iTxtlen = _tcslen(text);
-
+	
+	if(iTxtlen < 3)
+		return 0.0;
+	
 	for (size_t i = 0; i < (iTxtlen - 3); i++)
 	{
 		if (text[i] == '1')
