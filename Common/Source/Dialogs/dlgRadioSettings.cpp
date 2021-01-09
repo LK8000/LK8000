@@ -221,7 +221,7 @@ static void OnActiveButton(WndButton* pWnd){
     if(res > RESWP_END )
     if(ValidWayPoint(res))
     {
-      double  Frequency = StrToDouble(WayPointList[res].Freq,NULL);
+      double  Frequency = ExtractFrequency(WayPointList[res].Freq);
       if(!ValidFrequency(Frequency))
       {
         MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
@@ -248,7 +248,7 @@ static void OnPassiveButton(WndButton* pWnd){
    if(res > RESWP_END )
      if(ValidWayPoint(res))
     {
-      double Frequency = StrToDouble(WayPointList[res].Freq,NULL);
+      double Frequency = ExtractFrequency(WayPointList[res].Freq);
       if(!ValidFrequency(Frequency))
       {
         MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
@@ -262,7 +262,6 @@ static void OnPassiveButton(WndButton* pWnd){
         OnUpdate();
         HoldOff = HOLDOFF_TIME;
       }
-      MessageBoxX(MsgToken(2490), MsgToken(2494), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
     }
   }
 }
@@ -275,7 +274,7 @@ static void OnActiveFreq(WndButton* pWnd){
 
   dlgNumEntryShowModal(szFreq,8);
 
-  double Frequency = StrToDouble(szFreq, nullptr);
+  double Frequency = ExtractFrequency(szFreq);
   while(Frequency > 1000.0)
     Frequency /=10;
 
@@ -298,9 +297,8 @@ static void OnPassiveFreq(WndButton* pWnd){
 
   dlgNumEntryShowModal(szFreq,8);
 
-  double Frequency = StrToDouble(szFreq, nullptr);
-  while(Frequency > 1000)
-    Frequency /=10;
+  double Frequency = ExtractFrequency(szFreq);
+
 
   if(!ValidFrequency(Frequency))
   {
@@ -325,7 +323,7 @@ static void OnRadioActiveAutoClicked(WndButton* pWnd){
 	int Idx = SearchBestStation();
 	if ( ValidWayPoint(Idx))
 	{
-		double fFreq = StrToDouble(WayPointList[Idx].Freq,NULL);
+		double fFreq = ExtractFrequency(WayPointList[Idx].Freq);
 		devPutFreqActive(	fFreq , WayPointList[Idx].Name);
 	}
 
@@ -344,7 +342,7 @@ static void OnRadioStandbyAutoClicked(WndButton* pWnd)
 	int Idx = SearchBestStation();
 	if ( ValidWayPoint(Idx))
 	{
-		double fFreq = StrToDouble(WayPointList[Idx].Freq,NULL);
+		double fFreq = ExtractFrequency(WayPointList[Idx].Freq);
 		devPutFreqStandby(	fFreq , WayPointList[Idx].Name);
 	}
 
