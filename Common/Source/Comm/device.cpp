@@ -18,6 +18,8 @@
 #include "devPVCOM.h"
 #include <functional>
 #include "Calc/Vario.h"
+#include "Radio.h"
+
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -1121,6 +1123,7 @@ bool devDriverActivated(const TCHAR *DeviceName) {
  * @return FALSE if error on one device.
  */
 BOOL devPutVolume(int Volume) {
+  RadioPara.VolValid = false;
   return for_all_device(&DeviceDescriptor_t::PutVolume, Volume);
 
 }
@@ -1131,6 +1134,7 @@ BOOL devPutVolume(int Volume) {
  * @return FALSE if error on one device.
  */
 BOOL devPutSquelch(int Squelch) {
+  RadioPara.SqValid = false;
   return for_all_device(&DeviceDescriptor_t::PutSquelch, Squelch);
 
 }    
@@ -1143,6 +1147,7 @@ BOOL devPutSquelch(int Squelch) {
  * @return FALSE if error on one device.
  */
 BOOL devPutRadioMode(int mode) {
+  RadioPara.DualValid = false;
   return for_all_device(&DeviceDescriptor_t::PutRadioMode, mode);
 }
 
@@ -1151,6 +1156,8 @@ BOOL devPutRadioMode(int mode) {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqSwap() {
+  RadioPara.ActiveValid = false;
+  RadioPara.PassiveValid = false;
   return for_all_device(&DeviceDescriptor_t::StationSwap);
 
 }
@@ -1162,13 +1169,13 @@ BOOL devPutFreqSwap() {
  * @return FALSE if error on one device.
  */
 
-extern BOOL ValidFrequency(double Freq);
 
 BOOL devPutFreqActive(double Freq, const TCHAR* StationName) {
 if( ValidFrequency(Freq))
 {
+  RadioPara.ActiveValid = false;
   RadioPara.ActiveFrequency=  Freq;
-	CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
+  CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
   return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
 }
 else
@@ -1180,12 +1187,14 @@ else
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
-  if( ValidFrequency(Freq)) {
-	  RadioPara.PassiveFrequency=  Freq;
-	  CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
+if( ValidFrequency(Freq))
+{
+    RadioPara.PassiveValid = false;
+    RadioPara.PassiveFrequency=  Freq;
+    CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
     return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
   } else {
-	  return false;
+    return false;
   }
 }
 

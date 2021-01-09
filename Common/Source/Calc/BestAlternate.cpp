@@ -14,6 +14,7 @@
 #include "Sound/Sound.h"
 #include "CriticalSection.h"
 #include "NavFunctions.h"
+#include "Radio.h"
 
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
 
@@ -580,20 +581,25 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		AlertBestAlternate(1);
 	}
 
+	if(bAutoActive || bAutoPassiv) // auto frequency selection?
+	{
+		int Idx = SearchBestStation();
+		if(ValidWayPoint(Idx)) {
 
-		if(ValidWayPoint(BestAlternate))
-		{
-			double fFreq = StrToDouble(WayPointList[BestAlternate].Freq,NULL);
-			if(bAutoActive)			{
-				devPutFreqActive(fFreq, WayPointList[BestAlternate].Name);
+			double fFreq = StrToDouble(WayPointList[Idx].Freq,NULL);
+			if(bAutoActive)	{
+				if(devPutFreqActive(fFreq, WayPointList[Idx].Name))
+					RadioPara.Changed = true;
 			}
 
 			if(bAutoPassiv) {
-				devPutFreqStandby(fFreq, WayPointList[BestAlternate].Name);
+				if(devPutFreqStandby(fFreq, WayPointList[Idx].Name))
+					RadioPara.Changed = true;
 			}
 		}
+	}
 
-  }
+	}
 } // end of search for the holy grail
 
 

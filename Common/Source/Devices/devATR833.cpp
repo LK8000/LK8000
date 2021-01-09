@@ -11,6 +11,7 @@
 #include "Globals.h"
 #include "devATR833.h"
 #include "device.h"
+#include "Radio.h"
 
 #define FRAME_LEN      0x04
 #define HEADER_LEN     0x03
@@ -405,8 +406,6 @@ static uint8_t  converted[REC_BUFSIZE];
 return RadioPara.Changed;
 }
 
-extern int SearchStation(double Freq);
-
 
 
 /*****************************************************************************
@@ -426,8 +425,7 @@ TCHAR szTempStr[180] = _T("");
 uint16_t processed=0;
 LKASSERT(szCommand !=NULL);
 LKASSERT(d !=NULL);
- double fTmp;
-int Idx=0;
+
   switch (szCommand[0])
   {  
     case 0x10:               // keep alive
@@ -445,15 +443,10 @@ int Idx=0;
     case 0x11:               // Swap Frequency
       ATR833RequestAllData(d); // Ensure standby frequency is current before swapping
       RadioPara.Changed = true;
-       fTmp =  RadioPara.PassiveFrequency;
-      RadioPara.PassiveFrequency =  RadioPara.ActiveFrequency;
-      RadioPara.ActiveFrequency = fTmp;
-      Idx = SearchStation(RadioPara.ActiveFrequency);
-      if(Idx != 0)
-        _sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
-      Idx = SearchStation(RadioPara.PassiveFrequency);
-      if(Idx != 0)
-        _sntprintf(RadioPara.PassiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
+      std::swap(RadioPara.PassiveFrequency, RadioPara.ActiveFrequency);
+      std::swap(RadioPara.PassiveName, RadioPara.ActiveName);
+      RadioPara.ActiveValid = false;
+      RadioPara.PassiveValid = false;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Swap %s"),    NEWLINE);
       processed  = 1;
     break;
@@ -462,11 +455,10 @@ int Idx=0;
       RadioPara.PassiveFrequency = (double)szCommand[1] +(((double) szCommand[2] * 5.0) / 1000.0);
       _stprintf(szTempStr,_T("ATR833 Passive: %7.3fMHz"),  RadioPara.PassiveFrequency );
       if (iATR833DebugLevel)  StartupStore(_T("%s %s"),szTempStr, NEWLINE);
-      Idx = SearchStation(RadioPara.PassiveFrequency);
-      if(Idx != 0) _sntprintf(RadioPara.PassiveName,NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
-      else RadioPara.PassiveName[0] = _T('\0');
-      if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.PassiveName, NEWLINE);
+      UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency);
 
+      if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.PassiveName, NEWLINE);
+      RadioPara.PassiveValid = true;
       RadioPara.Changed = true;
       processed  = 3;
     break;
@@ -474,12 +466,11 @@ int Idx=0;
     case 0x13:               // Active Frequency
       RadioPara.ActiveFrequency = (double) szCommand[1] +(((double) szCommand[2] * 5.0) /1000.0);
       _stprintf(szTempStr,_T("ATR833 Active:  %7.3fMHz"),  RadioPara.ActiveFrequency );
-      Idx = SearchStation(RadioPara.ActiveFrequency);
-      if(Idx != 0)_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
-      else RadioPara.ActiveName[0] = _T('\0');
+      UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency);
       if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.ActiveName, NEWLINE);
 
       RadioPara.Changed = true;
+      RadioPara.ActiveValid = true;
       processed  = 3;
     break;
     /*****************************************************************************************/
@@ -491,6 +482,7 @@ int Idx=0;
     case 0x16:               // Volume
       RadioPara.Volume = szCommand[1] ;
       RadioPara.Changed = true;
+      RadioPara.VolValid = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Volume %i %s"),   RadioPara.Volume, NEWLINE);
       processed  = 2;
     break;
@@ -498,6 +490,7 @@ int Idx=0;
     case 0x17:               // Squelch
       RadioPara.Squelch = szCommand[1] ;
       RadioPara.Changed = true;
+      RadioPara.SqValid = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Squelch %i %s"),   RadioPara.Squelch, NEWLINE);
       processed  = 2;
     break;
@@ -512,6 +505,7 @@ int Idx=0;
     case 0x19:               // Dual
       RadioPara.Dual = szCommand[1] ;
       RadioPara.Changed = true;
+      RadioPara.DualValid = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Dual %i %s"),   RadioPara.Dual, NEWLINE);
       processed  = 2;
     break;
@@ -552,19 +546,22 @@ int Idx=0;
         RadioPara.Enabled8_33  = true;
       RadioPara.Dual = szCommand[12];
       RadioPara.Changed = true;
+      RadioPara.ActiveValid  = true;
+      RadioPara.PassiveValid = true;
+      RadioPara.VolValid     = true;
+      RadioPara.SqValid      = true;
+      RadioPara.DualValid    = true;
       if (iATR833DebugLevel) StartupStore(_T("ATR833 received all Data %s"),  NEWLINE);
 
       _stprintf(szTempStr,_T("ATR833 Active: %7.3fMHz"),  RadioPara.ActiveFrequency );
-      Idx = SearchStation(RadioPara.ActiveFrequency);
-      if(Idx != 0)_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
-      else RadioPara.ActiveName[0] = _T('\0');
+      UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency);
+
       if (iATR833DebugLevel)StartupStore(_T("%s %s %s"),szTempStr,RadioPara.ActiveName, NEWLINE);
 
 
       _stprintf(szTempStr,_T("ATR833 Passive: %7.3fMHz"),  RadioPara.PassiveFrequency );
-      Idx = SearchStation(RadioPara.PassiveFrequency);
-      if(Idx != 0) _sntprintf(RadioPara.PassiveName,NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
-      else RadioPara.PassiveName[0] = _T('\0');
+      UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency);
+
       if (iATR833DebugLevel)  StartupStore(_T("%s %s %s"),szTempStr,RadioPara.PassiveName, NEWLINE);
 
       if (iATR833DebugLevel) StartupStore(_T("ATR833 Volume %i %s"),   RadioPara.Volume, NEWLINE);

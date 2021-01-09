@@ -14,6 +14,7 @@
 #include "FlarmIdFile.h"
 #include "resource.h"
 #include "Sound/Sound.h"
+#include "Radio.h"
 
 extern FlarmIdFile *file;
 
@@ -180,8 +181,8 @@ static void OnRenameClicked(WndButton* pWnd){
 }
 
 
-extern double  ExtractFrequency(const TCHAR*);
-extern BOOL ValidFrequency(double Freq);
+
+
 
 static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
   TCHAR Tmp[255];

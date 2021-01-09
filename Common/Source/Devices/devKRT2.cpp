@@ -12,7 +12,7 @@
 #include "devKRT2.h"
 #include "device.h"
 #include "utils/stringext.h"
-
+#include "Radio.h"
 
 namespace {
 
@@ -284,35 +284,54 @@ static int counter =0;
         switch (szCommand[1])
         {
           case 'U':
+            RadioPara.ActiveValid = false;
             if(len >= 13)
             {
               if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.ActiveValid = true;
                 RadioPara.ActiveFrequency=  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
                 for(unsigned i=0; i < 8; i++)
                   RadioPara.ActiveName[i] =   szCommand[4+i];
                 RadioPara.ActiveName[8] =0;
                 TrimRight(RadioPara.ActiveName);
-                   _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
+                if( _tcslen(RadioPara.ActiveName) == 0)
+                {
+                  if (UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency)) 
+                  {
+                    devPutFreqActive(RadioPara.ActiveFrequency, RadioPara.ActiveName);
+                  }
+                }
+                _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
                 processed = 13;
               }
             } else processed=0;
           break;
 
           case 'R':
+            RadioPara.PassiveValid = false;
             if(len >= 13)
             {
               if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.PassiveValid = true;
                 RadioPara.PassiveFrequency =  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
                 for(unsigned i=0; i < 8; i++)
                   RadioPara.PassiveName[i] =   szCommand[4+i];
                 RadioPara.PassiveName[8] =0;
                 TrimRight(RadioPara.PassiveName);
+                if( _tcslen(RadioPara.PassiveName) == 0)
+                {
+                  if (UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency)) 
+                  {
+                    devPutFreqStandby(RadioPara.ActiveFrequency, RadioPara.PassiveName);
+                  }
+                }
+
                 _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );
                 processed = 13;
               }
@@ -320,12 +339,17 @@ static int counter =0;
           break;
 
           case 'A':
+            RadioPara.VolValid = false;
+            RadioPara.SqValid = false;
             if(len >= 6)
             {
               if( szCommand[5] != (szCommand[3]+ szCommand[4]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.VolValid = true;
+                RadioPara.SqValid = true;
+
                 if(RadioPara.Volume != (int)szCommand[2])
                 {
                   RadioPara.Volume = (int)szCommand[2];
@@ -347,6 +371,8 @@ static int counter =0;
             } else processed =0;
           break;
           case 'C':
+            RadioPara.ActiveValid = false;
+            RadioPara.PassiveValid = false;
             if(len >= 2)
             {
               std::swap(RadioPara.ActiveFrequency, RadioPara.PassiveFrequency);
@@ -355,15 +381,19 @@ static int counter =0;
             }
           break;
           case 'O':
+            RadioPara.DualValid = false;
             if(len >= 2)
             {
+              RadioPara.DualValid = true;
              RadioPara.Dual = true;
              _stprintf(szTempStr,_T("Dual ON "));
             }
           break;
           case 'o':
+            RadioPara.DualValid = false;
             if(len >= 2)
             {
+              RadioPara.DualValid = true;
              RadioPara.Dual = false;
              _stprintf(szTempStr,_T("Dual OFF "));
 
