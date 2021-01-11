@@ -213,6 +213,7 @@ GEXTERN short Overlay_LeftDown;
 GEXTERN short Overlay_RightTop;
 GEXTERN short Overlay_RightMid;
 GEXTERN short Overlay_RightBottom;
+GEXTERN bool  Overlay_Title;
 
 #ifdef _WGS84
 GEXTERN bool earth_model_wgs84;

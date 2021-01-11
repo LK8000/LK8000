@@ -431,6 +431,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryOverlay_RightTop, Overlay_RightTop);
   rprintf(szRegistryOverlay_RightMid, Overlay_RightMid);
   rprintf(szRegistryOverlay_RightBottom, Overlay_RightBottom);
+  rprintf(szRegistryOverlay_Title, Overlay_Title);
 
   rprintf(szRegistryAdditionalContestRule, AdditionalContestRule);
 
