@@ -130,7 +130,7 @@ void dlgNMEAReplayShowModal(){
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
-        dfe->ScanDirectoryTop(_T(LKD_LOGS), _T("*" LKS_TXT));
+        dfe->ScanDirectoryTop(_T(LKD_LOGS),TEXT(LKS_TXT));
         dfe->Lookup(Replay_FileName[SelectedDevice]);
       }
       wp->RefreshDisplay();
