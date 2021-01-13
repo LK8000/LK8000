@@ -110,4 +110,4 @@
 #define IDR_XML_DEV_LXNAV_P         700
 #define IDR_XML_DEV_LXNAV_L         701
 #define IDR_XML_WEATHERSTDETAILS    702
-
+#define IDR_XML_NMEAREPLAY          703

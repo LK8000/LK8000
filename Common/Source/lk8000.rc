@@ -160,7 +160,8 @@ IDR_XML_IGC_PROGRESS_L  XMLDIALOG                "../Data/Dialogs/dlgIGCProgress
 IDR_XML_IGC_PROGRESS_P  XMLDIALOG                "../Data/Dialogs/dlgIGCProgress_P.xml"
 IDR_XML_DEV_LXNAV_L     XMLDIALOG                "../Data/Dialogs/dlgDevLXNav_L.xml"
 IDR_XML_DEV_LXNAV_P     XMLDIALOG                "../Data/Dialogs/dlgDevLXNav_P.xml"
-IDR_XML_WEATHERSTDETAILS XMLDIALOG                "../Data/Dialogs/dlgWeatherSt.xml"
+IDR_XML_WEATHERSTDETAILS XMLDIALOG               "../Data/Dialogs/dlgWeatherSt.xml"
+IDR_XML_NMEAREPLAY      XMLDIALOG                "../Data/Dialogs/dlgNMEAReplay.xml"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -1167,6 +1167,7 @@ COMMS	:=\
 	$(CMM)/Bluetooth/BtHandlerWince.cpp \
 	$(CMM)/Bluetooth/BthPort.cpp \
 	$(CMM)/Obex/CObexPush.cpp \
+	$(CMM)/FilePort.cpp\
 
 
 DEVS	:=\
@@ -1309,6 +1310,7 @@ DLGS	:=\
 	$(DLG)/dlgLXIGCDownload.cpp \
 	$(DLG)/dlgEOSIGCDownload.cpp \
 	$(DLG)/dlgWeatherStDetails.cpp \
+	$(DLG)/dlgNMEAReplay.cpp \
 	
 	
 SRC_FILES :=\

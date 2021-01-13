@@ -12,6 +12,7 @@
 #include "Util/TruncateString.hpp"
 #include "BtHandler.h"
 #include "SerialPort.h"
+#include "FilePort.h"
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
 #include "TCPPort.h"
@@ -330,7 +331,8 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("TCPClient"));
     COMMPort.push_back(_T("TCPServer"));
     COMMPort.push_back(_T("UDPServer"));
-
+    if(EngineeringMenu)
+      COMMPort.push_back(NMEA_REPLAY);
 #ifdef ANDROID
 
   JNIEnv *env = Java::GetEnv();
@@ -588,7 +590,8 @@ BOOL devInit() {
 
         DeviceList[i].iSharedPort =-1;
         for(uint j = 0; j < i ; j++) {
-            if((!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
+            if( (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) != 0)
+                 && (!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
                 devInit(&DeviceList[i]);
                 DeviceList[i].iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
@@ -667,6 +670,8 @@ BOOL devInit() {
 #ifdef ANDROID
             Com = new UsbSerialPort(i, &Port[4], dwSpeed[SpeedIndex], BitIndex);
 #endif
+        } else  if (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) == 0) {
+        	Com = new FilePort(i, NMEA_REPLAY);
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
         }

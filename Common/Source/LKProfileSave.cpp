@@ -646,6 +646,34 @@ void LKDeviceSave(const TCHAR *szFile)
   rprintf(szRegistryUseExtSound5,UseExtSound[4]);
   rprintf(szRegistryUseExtSound6,UseExtSound[5]);
 
+  rprintf(szRegistryReplayFileA ,Replay_FileName[0]);
+  rprintf(szRegistryReplayFileB ,Replay_FileName[1]);
+  rprintf(szRegistryReplayFileC ,Replay_FileName[2]);
+  rprintf(szRegistryReplayFileD ,Replay_FileName[3]);
+  rprintf(szRegistryReplayFileE ,Replay_FileName[4]);
+  rprintf(szRegistryReplayFileF ,Replay_FileName[5]);
+
+  rprintf(szRegistryReplaySpeedA,ReplaySpeed[0]);
+  rprintf(szRegistryReplaySpeedB,ReplaySpeed[1]);
+  rprintf(szRegistryReplaySpeedC,ReplaySpeed[2]);
+  rprintf(szRegistryReplaySpeedD,ReplaySpeed[3]);
+  rprintf(szRegistryReplaySpeedE,ReplaySpeed[4]);
+  rprintf(szRegistryReplaySpeedF,ReplaySpeed[5]);
+
+  rprintf(szRegistryReplayRawA,RawByteData[0]);
+  rprintf(szRegistryReplayRawB,RawByteData[1]);
+  rprintf(szRegistryReplayRawC,RawByteData[2]);
+  rprintf(szRegistryReplayRawD,RawByteData[3]);
+  rprintf(szRegistryReplayRawE,RawByteData[4]);
+  rprintf(szRegistryReplayRawF,RawByteData[5]);
+  
+  rprintf(szRegistryReplaySyncA,ReplaySync[0]);
+  rprintf(szRegistryReplaySyncB,ReplaySync[1]);
+  rprintf(szRegistryReplaySyncC,ReplaySync[2]);
+  rprintf(szRegistryReplaySyncD,ReplaySync[3]);
+  rprintf(szRegistryReplaySyncE,ReplaySync[4]);
+  rprintf(szRegistryReplaySyncF,ReplaySync[5]);
+
   rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
   rprintf(szRegistryPollingMode,PollingMode);
   rprintf(szRegistryCheckSum,CheckSum);
