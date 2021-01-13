@@ -310,7 +310,7 @@ void FillDataOptions() {
 	SetDataOption(LK_HEADING, ugNone, TEXT("_@M1287_"), TEXT("_@M1521_")); // Heading, text is changed in lkprocess
 	SetDataOption(LK_ALTERN1_DISTNM, ugDistance, TEXT("_@M1843_"), TEXT("_@M1522_")); // Alternate1 distance NMiles
 	SetDataOption(LK_ALTERN2_DISTNM, ugDistance, TEXT("_@M1844_"), TEXT("_@M1523_")); // Alternate2 distance NMiles
-	SetDataOption(LK_HOME_DISTNM, ugDistance, TEXT("_@M2492_"), TEXT("_@M2493_")); //  home distance NMiles
+	SetDataOption(LK_HOME_ALT_UNIT, ugDistance, TEXT("_@M2492_"), TEXT("_@M2493_")); //  home distance alternate unit
 	SetDataOption(LK_SPEED_ME, ugHorizontalSpeed, TEXT("_@M2312_"), TEXT("_@M2313_")); // Speed of maximum efficiency
 	SetDataOption(LK_TARGET_RE, ugNone, TEXT("_@M2314_"), TEXT("_@M2315_")); // Target Req. Efficicency
 	SetDataOption(LK_QNE, ugAltitude, TEXT("_@M2323_"), TEXT("_@M2324_")); // Altitude QNE

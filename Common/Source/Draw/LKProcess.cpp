@@ -1300,13 +1300,26 @@ goto_bearing:
 			break;
 		// B60
 		case LK_HOME_DIST:
-		case LK_HOME_DISTNM:
+		case LK_HOME_ALT_UNIT:
 			if (HomeWaypoint>=0) {
 				if ( ValidWayPoint(HomeWaypoint) != false ) {
 					value=DerivedDrawInfo.HomeDistance*DISTANCEMODIFY;
-					if (lkindex == LK_HOME_DISTNM)
-						value=DerivedDrawInfo.HomeDistance*TONAUTICALMILES;
+					_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 
+					if (lkindex == LK_HOME_ALT_UNIT)
+					{
+						if ( Units::GetUserDistanceUnit() == unNauticalMiles ||
+							Units::GetUserDistanceUnit() == unStatuteMiles ) 
+						{
+							value=DerivedDrawInfo.HomeDistance*TOKILOMETER;
+							_stprintf(BufferUnit, TEXT("%s"),Units::GetUnitName( unKiloMeter ));					
+						}
+						else
+						{
+							value=DerivedDrawInfo.HomeDistance*TONAUTICALMILES;
+							_stprintf(BufferUnit, TEXT("%s"),Units::GetUnitName( unNauticalMiles ));								
+						}
+					}
 					valid=true;
 					if (value>99)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -1318,12 +1331,14 @@ goto_bearing:
 			} else {
 				_stprintf(BufferValue, TEXT(NULLMEDIUM)); // 091221
 			}
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+
+			
+			
 			if (lktitle)
 			{
 				// LKTOKEN  _@M1121_ = "Home Distance", _@M1122_ = "HomeDis"
 				_tcscpy(BufferTitle, MsgToken(1122));
-				if (lkindex == LK_HOME_DISTNM)
+				if (lkindex == LK_HOME_ALT_UNIT)
 				{
 					_tcscpy(BufferUnit, TEXT("nm"));
 					_tcscpy(BufferTitle, MsgToken(2493));
