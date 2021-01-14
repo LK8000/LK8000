@@ -108,8 +108,7 @@ size_t to_usascii(const CharT *string, char *ascii, size_t size) {
   return out.length();
 }
 
-template<typename CharT>
-size_t safe_copy(const CharT* gcc_restrict src, CharT* gcc_restrict dst, size_t size) {
+size_t safe_copy(const char* gcc_restrict src, char* gcc_restrict dst, size_t size) {
   assert(src && dst && size > 0); // invalid src or dst
 
   char* end = std::next(dst, size - 1); // let place holder for trailing '\0'
@@ -119,9 +118,11 @@ size_t safe_copy(const CharT* gcc_restrict src, CharT* gcc_restrict dst, size_t 
       break; // stop copy if null terminator is found
     }
   }
-
-  assert(p < end || *src == 0); // out string to small
   *end = 0; /* granted NULL-terminate dst */
+
+  if(p >= end && *src != 0) {
+    CropIncompleteUTF8(dst);
+  }
 
   return std::distance(dst, p);
 }
