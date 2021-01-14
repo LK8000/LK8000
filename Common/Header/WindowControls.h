@@ -110,7 +110,7 @@ class DataField{
 
     using DataAccessCallback_t = std::function<void(DataField*, DataAccessKind_t)>;
 
-    DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
+    DataField(const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
     virtual ~DataField(void){};
 
 	virtual void Clear();
@@ -205,7 +205,7 @@ class DataFieldBoolean:public DataField{
     TCHAR mTextFalse[FORMATSIZE+1];
 
   public:
-    DataFieldBoolean(const TCHAR *EditFormat, const TCHAR *DisplayFormat, int Default, const TCHAR *TextTrue, const TCHAR *TextFalse, DataAccessCallback_t OnDataAccess):
+    DataFieldBoolean(const char *EditFormat, const char *DisplayFormat, int Default, const TCHAR *TextTrue, const TCHAR *TextFalse, DataAccessCallback_t OnDataAccess):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
 		  if (Default) {mValue=true;} else {mValue=false;}
       _tcscpy(mTextTrue, TextTrue);
@@ -255,10 +255,9 @@ class DataFieldEnum: public DataField {
     std::vector<DataFieldEnumEntry> mEntries;
 
   public:
-    DataFieldEnum(const TCHAR *EditFormat,
-		  const TCHAR *DisplayFormat,
-		  int Default,
-		  DataAccessCallback_t OnDataAccess = nullptr):
+    DataFieldEnum(const char *EditFormat, const char *DisplayFormat,
+      int Default,
+      DataAccessCallback_t OnDataAccess = nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       SupportCombo=true;
 
@@ -317,7 +316,7 @@ public:
   file_list_t file_list = {{nullptr, nullptr}}; // initialize with first blank entry
 
  public:
-  DataFieldFileReader(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
+  DataFieldFileReader(const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
   ~DataFieldFileReader();
 
 	void Clear() override;
@@ -419,7 +418,7 @@ class DataFieldInteger:public DataField{
   protected:
     int SpeedUp(bool keyup);
   public:
-    DataFieldInteger(TCHAR *EditFormat, TCHAR *DisplayFormat, int Min, int Max, int Default, int Step, DataAccessCallback_t OnDataAccess=nullptr):
+    DataFieldInteger(const char* EditFormat, const char* DisplayFormat, int Min, int Max, int Default, int Step, DataAccessCallback_t OnDataAccess=nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       mMin = Min;
       mMax = Max;
@@ -473,7 +472,7 @@ class DataFieldFloat:public DataField{
 
 
   public:
-    DataFieldFloat(TCHAR *EditFormat, TCHAR *DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t OnDataAccess=nullptr):
+    DataFieldFloat(const char* EditFormat, const char* DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t OnDataAccess=nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       mMin = Min;
       mMax = Max;
@@ -515,7 +514,7 @@ class DataFieldFloat:public DataField{
 
 class DataFieldTime : public DataFieldFloat {
 public:
-  DataFieldTime(TCHAR *EditFormat, TCHAR *DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t OnDataAccess=nullptr):
+  DataFieldTime(const char* EditFormat, const char* DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t OnDataAccess=nullptr):
           DataFieldFloat(EditFormat, DisplayFormat, Min, Max, Default, Step, Fine, OnDataAccess) {}
 
   const TCHAR *GetAsDisplayString(void) override;
@@ -529,7 +528,7 @@ class DataFieldString:public DataField{
     TCHAR mValue[EDITSTRINGSIZE];
 
   public:
-    DataFieldString(const TCHAR *EditFormat, const TCHAR *DisplayFormat, const TCHAR *Default, DataAccessCallback_t OnDataAccess=nullptr):
+    DataFieldString(const char *EditFormat, const char *DisplayFormat, const TCHAR *Default, DataAccessCallback_t OnDataAccess=nullptr):
       DataField(EditFormat, DisplayFormat, OnDataAccess){
       _tcscpy(mValue, Default);
       SupportCombo=false;

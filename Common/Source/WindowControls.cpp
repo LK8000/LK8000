@@ -30,6 +30,7 @@
 #include "ScreenGeometry.h"
 #include "Util/Clamp.hpp"
 #include "utils/array_adaptor.h"
+#include "utils/stringext.h"
 
 #ifndef USE_GDI
 #include "Screen/SubCanvas.hpp"
@@ -92,7 +93,7 @@ static bool KeyTimer(bool isdown, unsigned thekey) {
 }
 
 
-DataFieldFileReader::DataFieldFileReader(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess):
+DataFieldFileReader::DataFieldFileReader(const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess):
   DataField(EditFormat, DisplayFormat, OnDataAccess){
 
   SupportCombo=true;
@@ -403,11 +404,13 @@ void DataField::SetData(void){
     (void) Mode;
   }
 
-DataField::DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess){
+DataField::DataField(const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess) {
   mUsageCounter=0;
   mOnDataAccess = OnDataAccess;
-  _tcscpy(mEditFormat, EditFormat);
-  _tcscpy(mDisplayFormat, DisplayFormat);
+  
+  from_utf8(EditFormat, mEditFormat);
+  from_utf8(DisplayFormat, mDisplayFormat);
+  
   SetDisableSpeedUp(false);
   SetDetachGUI(false); // disable dispaly of inc/dec/change values
 

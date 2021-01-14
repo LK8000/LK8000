@@ -554,8 +554,8 @@ ifeq ($(CONFIG_WIN32),y)
  #all win32 Targe are unicode
  CE_DEFS += -DUNICODE -D_UNICODE -DWIN32
  #use UNICODE for xml dialog template, avoid runtime convertion from utf8 to unicode.
- DLG-ENCODING := UTF-16LE
- 	
+ DLG-ENCODING := UTF-8
+	
  ifeq ($(CONFIG_PC),y)
   CE_DEFS +=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
   CE_DEFS +=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 -DMSOFT
