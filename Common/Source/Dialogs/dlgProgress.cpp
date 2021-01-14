@@ -71,13 +71,15 @@ dlgProgress::~dlgProgress() {
 }
 
 void dlgProgress::SetProgressText(const TCHAR* szText) {
-    WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
-    if(wText) {
-        wText->SetCaption(szText);
-        wText->Redraw();
+    if(_WndForm) {
+        WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
+        if(wText) {
+            wText->SetCaption(szText);
+            wText->Redraw();
 #ifndef USE_GDI
-        main_window->Refresh();
+            main_window->Refresh();
 #endif
+        }
     }
 }
 
