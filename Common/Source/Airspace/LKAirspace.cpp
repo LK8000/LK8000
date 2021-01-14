@@ -29,6 +29,7 @@
 #include "picojson.h"
 #include "Radio.h"
 #include "Library/rapidxml/rapidxml.hpp"
+#include "utils/tokenizer.h"
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_node = rapidxml::xml_node<char>;
@@ -1260,24 +1261,22 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
 }
 
 void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
-    const TCHAR *Stop = NULL;
-    TCHAR sTmp[128] = {};
-    TCHAR *pWClast = NULL;
-    const TCHAR *pToken;
+    TCHAR sTmp[128];
     bool fHasUnit = false;
 
     _tcsncpy(sTmp, Text, std::size(sTmp)-1);
 
     CharUpper(sTmp);
 
-    pToken = _tcstok_r(sTmp, TEXT(" "), &pWClast);
+    lk::tokenizer<TCHAR> tok(sTmp);
+    const TCHAR* pToken = tok.Next({_T(' ')}, true);
 
     Alt->Altitude = 0;
     Alt->FL = 0;
     Alt->AGL = 0;
     Alt->Base = abUndef;
 
-    while ((pToken != NULL) && (*pToken != '\0')) {
+    while ((pToken) && (*pToken != '\0')) {
 
         //BugFix 110922
         //Malformed alt causes the parser to read wrong altitude, for example on line  AL FL65 (MNM ALT 5500ft)
@@ -1285,6 +1284,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
         if ((Alt->Base != abUndef) && (fHasUnit) && ((Alt->Altitude != 0) || (Alt->FL != 0) || (Alt->AGL != 0))) break;
 
         if (isdigit(*pToken)) {
+            const TCHAR *Stop = nullptr;
             double d = StrToDouble(pToken, &Stop);
             if (Alt->Base == abFL) {
                 Alt->FL = d;
@@ -1370,8 +1370,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
             Alt->Altitude = 50000;
         }
 
-        pToken = _tcstok_r(NULL, TEXT(" \t"), &pWClast);
-
+        pToken = tok.Next({_T(' '), _T('\t')}, true);
     }
 
     if (!fHasUnit && (Alt->Base != abFL)) {
@@ -2347,31 +2346,28 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
 
         // Polygon point list
         CPoint2DArray points;
-        char* remaining;
-        char* point = strtok_r(polygon_node->value(),",",&remaining);
+        lk::tokenizer<char> tokPoint(polygon_node->value());
+        char* point = tokPoint.Next({','});
         bool InsideMap = !( WaypointsOutOfRange > 1); // exclude?
         bool error = (point==nullptr);
         while(point!=nullptr && !error) {
-            char* other;
-            char* coord=strtok_r(point," ",&other);
+            lk::tokenizer<char> tokCoord(point);
+            char* coord=tokCoord.Next({' '}, true);
             if ((error=(coord==nullptr))) break;
             double lon=strtod(coord,nullptr); // Beware that here the longitude comes first!
             if ((error=(lon<-180 || lon>180))) break;
-            coord=strtok_r(nullptr," ",&other);
+            coord=tokCoord.Next({' '}, true);
             if ((error=(coord==nullptr))) break;
             double lat=strtod(coord,nullptr);
             if ((error=(lat<-90 || lat>90))) break;
 
-            if(!InsideMap)
-            {
-
-              if (RasterTerrain::WaypointIsInTerrainRange(lat,lon))
-              {
+            if(!InsideMap) {
+              if (RasterTerrain::WaypointIsInTerrainRange(lat,lon)) {
                 InsideMap = true;
-              } else {};
+              }
             }
             AddGeodesicLine(points, lat, lon);
-            point = strtok_r(nullptr,",",&remaining);
+            point = tokPoint.Next({','});
         }
 
         if(!InsideMap) {

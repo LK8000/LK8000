@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
+#include "utils/tokenizer.h"
 
 
 static int CheckFlags(TCHAR *temp);
@@ -20,7 +21,6 @@ extern int globalFileNum;
 int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 {
   TCHAR *Number;
-  TCHAR *pWClast = NULL;
   TCHAR *pToken;
   TCHAR TempString[READLINE_LENGTH];
 
@@ -34,13 +34,15 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 
   Temp->FileNum = globalFileNum;
 
+  lk::tokenizer<TCHAR> tok(TempString);
+
   // ExtractParameter(TempString,ctemp,0);
-  if ((pToken = _tcstok_r(TempString, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = tok.Next({_T(',')})) == NULL)
     return FALSE;
   Temp->Number = _tcstol(pToken, &Number, 10);
 
   //ExtractParameter(TempString,ctemp,1); //Latitude
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = tok.Next({_T(',')})) == NULL)
     return FALSE;
   Temp->Latitude = CalculateAngle(pToken);
 
@@ -50,7 +52,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
     }
 
   //ExtractParameter(TempString,ctemp,2); //Longitude
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = tok.Next({_T(',')})) == NULL)
     return FALSE;
   Temp->Longitude  = CalculateAngle(pToken);
   if((Temp->Longitude  > 180) || (Temp->Longitude  < -180))
@@ -59,7 +61,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
     }
 
   //ExtractParameter(TempString,ctemp,3); //Altitude
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = tok.Next({_T(',')})) == NULL)
     return FALSE;
   Temp->Altitude = ReadAltitude(pToken);
   if (Temp->Altitude == -9999){
@@ -67,12 +69,12 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
   }
 
   //ExtractParameter(TempString,ctemp,4); //Flags
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL)
+  if ((pToken = tok.Next({_T(',')})) == NULL)
     return FALSE;
   Temp->Flags = CheckFlags(pToken);
 
   //ExtractParameter(TempString,ctemp,5); // Name
-  if ((pToken = _tcstok_r(NULL, TEXT(",\n\r"), &pWClast)) == NULL)
+  if ((pToken = tok.Next({_T(',')})) == NULL)
     return FALSE;
 
   // guard against overrun
@@ -92,7 +94,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 
   //ExtractParameter(TempString,ctemp,6); // Comment
   // DAT Comment
-  if ((pToken = _tcstok_r(NULL, TEXT("\n\r"), &pWClast)) != NULL) {
+  if ((pToken = tok.Next({_T(',')})) != NULL) {
     SetWaypointComment(*Temp, pToken);
   } else {
     SetWaypointComment(*Temp, _T(""));

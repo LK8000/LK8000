@@ -8,6 +8,7 @@
 #include "externs.h"
 #include "LKProfiles.h"
 #include "ScreenGeometry.h"
+#include "utils/tokenizer.h"
 
 #ifndef DEFAULT_QUALITY
 #define DEFAULT_QUALITY 0
@@ -110,7 +111,7 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 #define propGetFontSettingsMAX_SIZE 128
   TCHAR Buffer[propGetFontSettingsMAX_SIZE+1]; // RLD need a buffer (not sz) for strtok_r w/ gcc optimized ARM920
 
-  TCHAR *pWClast, *pToken;
+  TCHAR *pToken;
   LOGFONT lfTmp;
   LK_tcsncpy(Buffer, Buffer1, propGetFontSettingsMAX_SIZE);
     // FontDescription of format:
@@ -126,27 +127,29 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
   LKASSERT(lplf != NULL);
   memset ((void *)&lfTmp, 0, sizeof (LOGFONT));
 
-  if ((pToken = _tcstok_r(Buffer, TEXT(","), &pWClast)) == NULL) return;
+  lk::tokenizer<TCHAR> tok(Buffer);
+
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfHeight = _tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfWidth = _tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfEscapement = _tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfOrientation = _tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfWeight = _tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfItalic = (unsigned char)_tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfUnderline = (unsigned char)_tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfStrikeOut = (unsigned char)_tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfCharSet = (unsigned char)_tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfOutPrecision = (unsigned char)_tcstol(pToken, NULL, 10);
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfClipPrecision = (unsigned char)_tcstol(pToken, NULL, 10);
 
   // FIXFONTS possible multiplier for FT_Set_Pixel in place of Set_Char_Size
@@ -161,13 +164,13 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
   // CLEARTYPE_QUALITY       5
   // CLEARTYPE_COMPAT_QUALITY 6
 
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   ApplyClearType(&lfTmp);
 
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
   lfTmp.lfPitchAndFamily = (unsigned char)_tcstol(pToken, NULL, 10);
 
-  if ((pToken = _tcstok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  if ((pToken = tok.Next({_T(',')})) == NULL) return;
 
   _tcscpy(lfTmp.lfFaceName, pToken);
 

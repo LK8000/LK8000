@@ -36,6 +36,7 @@
 #include "OS/RotateScreen.h"
 #include "Time/PeriodClock.hpp"
 #include "Library/Utm.h"
+#include "utils/tokenizer.h"
 
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
@@ -266,10 +267,6 @@ void InputEvents::readFile() {
 	  && (_tcscmp(d_mode, TEXT("")) != 0)		//
 	  ) {
 
-	TCHAR *token;
-
-	// For each mode
-	token = _tcstok(d_mode, TEXT(" "));
 
 	// General errors - these should be true
 	LKASSERT(d_location >= 0);
@@ -284,7 +281,10 @@ void InputEvents::readFile() {
 	// ASSERT(_tcslen(d_type) < 1024);
 	// ASSERT(_tcslen(d_label) < 1024);
 
-	while( token != NULL ) {
+	// For each mode
+	lk::tokenizer<TCHAR> tok(d_mode);
+	const TCHAR* token = tok.Next(TEXT(" "), true);
+	while( token ) {
 
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
@@ -335,7 +335,7 @@ void InputEvents::readFile() {
 
 	  }
 
-	  token = _tcstok( NULL, TEXT(" "));
+	  token = tok.Next(TEXT(" "), true);
 	}
 
       }
