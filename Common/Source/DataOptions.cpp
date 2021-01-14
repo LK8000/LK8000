@@ -178,6 +178,8 @@ void FillDataOptions() {
 	SetDataOption(LK_ALTERN2_GR, ugNone, TEXT("_@M1137_"), TEXT("_@M1138_"));
 	// LKTOKEN  _@M1139_ = "BestAltern Req.Efficiency", _@M1140_ = "BAtn.E"
 	SetDataOption(LK_BESTALTERN_GR, ugNone, TEXT("_@M1139_"), TEXT("_@M1140_"));
+	// LKTOKEN  _@M2484_ = "Home Req.Efficiency", _@M2485_ = "Home.E"
+	SetDataOption(LK_HOME_GR, ugNone, TEXT("_@M2484_"), TEXT("_@M2485_"));
 	// LKTOKEN  _@M1141_ = "Altitude QFE", _@M1142_ = "QFE"
 	SetDataOption(LK_QFE, ugAltitude, TEXT("_@M1141_"), TEXT("_@M1142_"));
 	// LKTOKEN  _@M1143_ = "Average Efficiency", _@M1144_ = "E.Avg"
@@ -291,6 +293,7 @@ void FillDataOptions() {
 	// No reason to have abbreviated name, since normally it is the wp name itself
 	SetDataOption(LK_ALTERN1_BRG, ugNone, TEXT("_@M1761_"), TEXT("Atn1Brg")); // Alternate1 bearing
 	SetDataOption(LK_ALTERN2_BRG, ugNone, TEXT("_@M1762_"), TEXT("Atn2Brg")); // Alternate2 bearing
+	SetDataOption(LK_HOME_BRG, ugNone, TEXT("_@M2488_"), TEXT("_@M2489_")); // Home bearing
 	SetDataOption(LK_BESTALTERN_BRG, ugNone, TEXT("_@M1763_"), TEXT("BstBrg")); // BestAlternate bearing
 	SetDataOption(LK_ALTERN1_DIST, ugDistance, TEXT("_@M1764_"), TEXT("Atn1Dst")); // Alternate1 distance
 	SetDataOption(LK_ALTERN2_DIST, ugDistance, TEXT("_@M1765_"), TEXT("Atn2Dst")); // Alternate2 distance
@@ -307,6 +310,7 @@ void FillDataOptions() {
 	SetDataOption(LK_HEADING, ugNone, TEXT("_@M1287_"), TEXT("_@M1521_")); // Heading, text is changed in lkprocess
 	SetDataOption(LK_ALTERN1_DISTNM, ugDistance, TEXT("_@M1843_"), TEXT("_@M1522_")); // Alternate1 distance NMiles
 	SetDataOption(LK_ALTERN2_DISTNM, ugDistance, TEXT("_@M1844_"), TEXT("_@M1523_")); // Alternate2 distance NMiles
+	SetDataOption(LK_HOME_DISTNM, ugDistance, TEXT("_@M2486_"), TEXT("_@M2487_")); //  home distance NMiles
 	SetDataOption(LK_SPEED_ME, ugHorizontalSpeed, TEXT("_@M2312_"), TEXT("_@M2313_")); // Speed of maximum efficiency
 	SetDataOption(LK_TARGET_RE, ugNone, TEXT("_@M2314_"), TEXT("_@M2315_")); // Target Req. Efficicency
 	SetDataOption(LK_QNE, ugAltitude, TEXT("_@M2323_"), TEXT("_@M2324_")); // Altitude QNE

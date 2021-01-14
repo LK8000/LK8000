@@ -107,6 +107,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
    BOOL bFAI ;
    double fDist ;
    double fTogo ;
+   bool  bShowWPname = true;
   // By default, invalid return value. Set it to true after assigning value in cases
   bool		valid=false;
 
@@ -1299,9 +1300,13 @@ goto_bearing:
 			break;
 		// B60
 		case LK_HOME_DIST:
+		case LK_HOME_DISTNM:
 			if (HomeWaypoint>=0) {
 				if ( ValidWayPoint(HomeWaypoint) != false ) {
 					value=DerivedDrawInfo.HomeDistance*DISTANCEMODIFY;
+					if (lkindex == LK_HOME_DISTNM)
+						value=DerivedDrawInfo.HomeDistance*TONAUTICALMILES;
+
 					valid=true;
 					if (value>99)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -1315,8 +1320,15 @@ goto_bearing:
 			}
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
+			{
 				// LKTOKEN  _@M1121_ = "Home Distance", _@M1122_ = "HomeDis"
 				_tcscpy(BufferTitle, MsgToken(1122));
+				if (lkindex == LK_HOME_DISTNM)
+				{
+					_tcscpy(BufferUnit, TEXT("nm"));
+					_tcscpy(BufferTitle, MsgToken(2493));
+				}
+			}
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1470,6 +1482,9 @@ goto_bearing:
 		case LK_ALTERN2_GR:
 		// B69
 		case LK_BESTALTERN_GR:
+		// 153
+		case LK_HOME_GR:
+			bShowWPname = true;
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			if (lktitle) {
 				switch (lkindex) {
@@ -1485,7 +1500,11 @@ goto_bearing:
 						// LKTOKEN  _@M1137_ = "Alternate2 Req.Efficiency", _@M1138_ = "Atn2.E"
 						_tcscpy(BufferTitle, MsgToken(1138));
 						break;
-
+					case LK_HOME_GR:
+						// LKTOKEN  _@M2484_ = Home Req.Efficiency", _@M2485_ = "Home.E"
+						_tcscpy(BufferTitle, MsgToken(2485));
+						bShowWPname = false;
+						break;
 					default:
 						_stprintf(BufferTitle, TEXT("Atn%d.E"), lkindex-LK_ALTERNATESGR+1);
 						break;
@@ -1503,12 +1522,15 @@ goto_bearing:
 				case LK_BESTALTERN_GR:
 					index=BestAlternate;
 					break;
+				case LK_HOME_GR:
+					index=HomeWaypoint;
+					break;
 				default:
 					index=0;
 					break;
 			}
 
-			if(ValidWayPoint(index))
+			if(ValidWayPoint(index) && bShowWPname)
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
@@ -1537,6 +1559,10 @@ goto_bearing:
 					break;
 				case LK_BESTALTERN_GR:
 					if ( ValidWayPoint(BestAlternate) ) value=WayPointCalc[BestAlternate].GR;
+					else value=INVALID_GR;
+					break;
+				case LK_HOME_GR:
+					if ( ValidWayPoint(HomeWaypoint) ) value=WayPointCalc[HomeWaypoint].GR;
 					else value=INVALID_GR;
 					break;
 				default:
@@ -2123,8 +2149,11 @@ olc_score:
 		case LK_ALTERN2_BRG:
 		// B118
 		case LK_BESTALTERN_BRG:
+		// B155
+		case LK_HOME_BRG:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			bShowWPname = true;
 			switch(lkindex) {
 				case LK_ALTERN1_BRG:
 					index=Alternate1;
@@ -2135,12 +2164,16 @@ olc_score:
 				case LK_BESTALTERN_BRG:
 					index=BestAlternate;
 					break;
+				case LK_HOME_BRG:
+					index=AirfieldsHomeWaypoint;
+					bShowWPname = false;
+					break;
 				default:
 					index=0;
 					break;
 			}
 
-			if(ValidWayPoint(index))
+			if(ValidWayPoint(index) && bShowWPname)
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
@@ -2489,7 +2522,7 @@ olc_score:
 					LKFormatValue(LK_ALTERN2_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_HOME:
-					LKFormatGR(HomeWaypoint, false, BufferValue, BufferUnit);
+                    LKFormatValue(LK_HOME_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_THER:
 					LKFormatGR(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
