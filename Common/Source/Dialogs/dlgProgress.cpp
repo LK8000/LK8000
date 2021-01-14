@@ -30,7 +30,7 @@ public:
 private:
 
     void OnSplashPaint(WindowControl * Sender, LKSurface& Surface);
-    void OnProgressPaint(WindowControl * Sender, LKSurface& Surface);
+    static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface);
 
     std::unique_ptr<WndForm> _WndForm;
     LKBitmap _SplashBitmap;
@@ -45,7 +45,7 @@ dlgProgress::dlgProgress() {
 
     CallBackTableEntry_t CallBackTable[] = {
         make_OnPaintCallback("OnSplashPaint", std::bind(&dlgProgress::OnSplashPaint, this, _1, _2)),
-        make_OnPaintCallback("OnProgressPaint", std::bind(&dlgProgress::OnProgressPaint, this, _1, _2)),
+        make_OnPaintCallback("OnProgressPaint", dlgProgress::OnProgressPaint),
         EndCallBackEntry()
     };
 
