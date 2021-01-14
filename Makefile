@@ -1065,6 +1065,7 @@ CALC	:=\
 	$(CLC)/windstore.cpp 	\
 	$(CLC)/WindEKF.cpp 	\
 	$(CLC)/WindKalman.cpp 	\
+	$(CLC)/Radio.cpp \
 
 
 TASK	:=\
@@ -1166,6 +1167,7 @@ COMMS	:=\
 	$(CMM)/Bluetooth/BtHandlerWince.cpp \
 	$(CMM)/Bluetooth/BthPort.cpp \
 	$(CMM)/Obex/CObexPush.cpp \
+	$(CMM)/FilePort.cpp\
 
 
 DEVS	:=\
@@ -1227,6 +1229,9 @@ VOLKS	:=\
 
 
 DLGS	:=\
+	$(DLG)/dlgSelectObject.cpp \
+	$(DLG)/dlgSelectAirspace.cpp \
+	$(DLG)/dlgSelectWaypoint.cpp \
 	$(DLG)/AddCustomKeyList.cpp \
 	$(DLG)/dlgAirspace.cpp \
 	$(DLG)/dlgAirspaceFiles.cpp \
@@ -1236,7 +1241,6 @@ DLGS	:=\
 	$(DLG)/dlgMultiSelectList.cpp \
 	$(DLG)/dlgAirspaceDetails.cpp \
 	$(DLG)/dlgAirspacePatterns.cpp \
-	$(DLG)/dlgAirspaceSelect.cpp \
 	$(DLG)/dlgBasicSettings.cpp \
 	$(DLG)/dlgBottomBar.cpp \
 	$(DLG)/dlgChecklist.cpp \
@@ -1274,7 +1278,6 @@ DLGS	:=\
 	$(DLG)/dlgWayPointDetails.cpp \
 	$(DLG)/dlgWayQuick.cpp \
 	$(DLG)/dlgWaypointEdit.cpp \
-	$(DLG)/dlgWayPointSelect.cpp \
 	$(DLG)/dlgWaypointOutOfTerrain.cpp \
 	$(DLG)/dlgWindSettings.cpp \
 	$(DLG)/Analysis/DrawOtherFunctions.cpp \
@@ -1307,6 +1310,7 @@ DLGS	:=\
 	$(DLG)/dlgLXIGCDownload.cpp \
 	$(DLG)/dlgEOSIGCDownload.cpp \
 	$(DLG)/dlgWeatherStDetails.cpp \
+	$(DLG)/dlgNMEAReplay.cpp \
 	
 	
 SRC_FILES :=\

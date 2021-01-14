@@ -528,6 +528,7 @@ add_library( LK8000 SHARED
     Common/Source/Calc/windstore.cpp
     Common/Source/Calc/WindEKF.cpp
     Common/Source/Calc/WindKalman.cpp
+    Common/Source/Calc/Radio.cpp
 
     Common/Source/Calc/Task/AATCalculateIsoLines.cpp
     Common/Source/Calc/Task/AATDistance.cpp
@@ -670,6 +671,9 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devLX_EOS_ERA.cpp
     Common/Source/Devices/devFanet.cpp
 
+    Common/Source/Dialogs/dlgSelectObject.cpp
+    Common/Source/Dialogs/dlgSelectAirspace.cpp
+    Common/Source/Dialogs/dlgSelectWaypoint.cpp
     Common/Source/Dialogs/AddCustomKeyList.cpp
     Common/Source/Dialogs/dlgAirspace.cpp
     Common/Source/Dialogs/dlgAirspaceFiles.cpp
@@ -679,7 +683,6 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgMultiSelectList.cpp
     Common/Source/Dialogs/dlgAirspaceDetails.cpp
     Common/Source/Dialogs/dlgAirspacePatterns.cpp
-    Common/Source/Dialogs/dlgAirspaceSelect.cpp
     Common/Source/Dialogs/dlgBasicSettings.cpp
     Common/Source/Dialogs/dlgBottomBar.cpp
     Common/Source/Dialogs/dlgChecklist.cpp
@@ -717,7 +720,6 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgWayPointDetails.cpp
     Common/Source/Dialogs/dlgWayQuick.cpp
     Common/Source/Dialogs/dlgWaypointEdit.cpp
-    Common/Source/Dialogs/dlgWayPointSelect.cpp
     Common/Source/Dialogs/dlgWaypointOutOfTerrain.cpp
     Common/Source/Dialogs/dlgWindSettings.cpp
     Common/Source/Dialogs/dlgBluetooth.cpp

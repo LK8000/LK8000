@@ -61,6 +61,12 @@ typedef struct _Radio_t
 	BOOL RX_standy;            // Radio reception on passive        (standby) station
 	BOOL lowBAT;               // Battery low flag                  (TRUE = Batt low)
 	BOOL TXtimeout;            // Timeout while transmission (2Min)
+	BOOL ActiveValid;          // active Frequency received flag
+	BOOL PassiveValid;         // standy Frequency received flag
+	BOOL VolValid;             // Volume received flag
+	BOOL SqValid;              // Squelch received flag
+	BOOL DualValid;            // Dual received flag
+        
 }Radio_t;
 
 GEXTERN bool MenuActive GEXTFALSE;
@@ -207,6 +213,7 @@ GEXTERN short Overlay_LeftDown;
 GEXTERN short Overlay_RightTop;
 GEXTERN short Overlay_RightMid;
 GEXTERN short Overlay_RightBottom;
+GEXTERN bool  Overlay_Title;
 
 #ifdef _WGS84
 GEXTERN bool earth_model_wgs84;
@@ -850,6 +857,10 @@ GEXTERN unsigned dwBitIndex[NUMDEV];
 GEXTERN TCHAR szIpAddress[NUMDEV][MAX_URL_LEN];
 GEXTERN unsigned dwIpPort[NUMDEV];
 GEXTERN TCHAR dwDeviceName[NUMDEV][DEVNAMESIZE+1];
+GEXTERN TCHAR Replay_FileName[NUMDEV][LKSIZEBUFFERPATH+1];
+GEXTERN int ReplaySpeed[NUMDEV];
+GEXTERN bool RawByteData[NUMDEV];
+GEXTERN int ReplaySync[NUMDEV];
 GEXTERN bool UseExtSound[NUMDEV];
 GEXTERN double LastFlarmCommandTime;
 GEXTERN bool  DevIsCondor;

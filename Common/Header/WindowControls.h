@@ -17,6 +17,7 @@
 #include "LKObjects.h"
 #include <tchar.h>
 #include <string.h>
+#include <functional>
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
@@ -107,7 +108,7 @@ class DataField{
      daSpecial,
     }DataAccessKind_t;
 
-    typedef void (*DataAccessCallback_t)(DataField * Sender, DataAccessKind_t Mode);
+    using DataAccessCallback_t = std::function<void(DataField*, DataAccessKind_t)>;
 
     DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
     virtual ~DataField(void){};
@@ -177,7 +178,9 @@ class DataField{
   ComboList* GetCombo(void) { return &mComboList;}
   virtual int SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {return SetAsInteger(iDataFieldIndex);};
   void CopyString(TCHAR * szStringOut, bool bFormatted);
-  bool SupportCombo;  // all Types dataField support combolist except DataFieldString.
+
+  bool SupportCombo = false;  // all Types dataField support combolist except DataFieldString.
+
   protected:
     DataAccessCallback_t mOnDataAccess;
     TCHAR mEditFormat[FORMATSIZE+1];
@@ -298,33 +301,24 @@ class DataFieldEnum: public DataField {
 
 #define DFE_MAX_FILES 300
 
-typedef struct {
-  TCHAR *mTextFile;
-  TCHAR *mTextPathFile;
-} DataFieldFileReaderEntry;
-
 class DataFieldFileReader: public DataField {
+public:
 
+  struct Entry {
+    TCHAR *mLabel;
+    TCHAR *mFilePath;
+  };
+ 
  private:
-  unsigned int nFiles;
-  unsigned int mValue;
-  DataFieldFileReaderEntry fields[DFE_MAX_FILES];
 
-  public:
-  DataFieldFileReader(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr):
-      DataField(EditFormat, DisplayFormat, OnDataAccess){
-      mValue = 0;
-      fields[0].mTextFile= NULL;
-      fields[0].mTextPathFile= NULL; // first entry always exists and is blank
-      nFiles = 1;
+  typedef std::vector<Entry> file_list_t;
 
-      SupportCombo=true;
-      (mOnDataAccess)(this, daGet);
+  file_list_t::size_type mValue = 0;
+  file_list_t file_list = {{nullptr, nullptr}}; // initialize with first blank entry
 
-    };
-    ~DataFieldFileReader() {
-		Clear();
-	}
+ public:
+  DataFieldFileReader(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
+  ~DataFieldFileReader();
 
 	void Clear() override;
 
@@ -340,7 +334,6 @@ class DataFieldFileReader: public DataField {
   void addFile(const TCHAR *fname, const TCHAR *fpname);
   
   
-  static bool checkFilter(const TCHAR *fname, const TCHAR* filter);
   int GetNumFiles(void);
 
   int GetAsInteger(void) override;
@@ -368,19 +361,43 @@ class DataFieldFileReader: public DataField {
   void Sort(int startindex=0) override;
 
   gcc_nonnull_all
-  void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
+  void ScanDirectoryTop(const TCHAR *subdir, const TCHAR **suffix_filters, size_t filter_count);
+
+  template <size_t filter_count> gcc_nonnull_all
+  void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *(&suffix_filters)[filter_count]) {
+    ScanDirectoryTop(subdir, suffix_filters, filter_count);
+  }
 
   gcc_nonnull_all
-  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR *filter);
+  void ScanDirectoryTop(const TCHAR *subdir, const TCHAR *filter) {
+    const TCHAR* suffix_filters[] = { filter };
+    ScanDirectoryTop(subdir, suffix_filters);
+  }
+
+  gcc_nonnull_all
+  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR **suffix_filters, size_t filter_count);
+
+  template <size_t filter_count> gcc_nonnull_all
+  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR *(&suffix_filters)[filter_count]) {
+    ScanSystemDirectoryTop(subdir, suffix_filters, filter_count);
+  }
+
+  gcc_nonnull_all
+  void ScanSystemDirectoryTop(const TCHAR *subdir, const TCHAR *filter) {
+    const TCHAR* suffix_filters[] = { filter };
+    ScanSystemDirectoryTop(subdir, suffix_filters);
+  }
+
+
+protected:
 
 #ifdef ANDROID
   gcc_nonnull_all
-  void ScanZipDirectory(const TCHAR *subdir, const TCHAR *filter);
+  void ScanZipDirectory(const TCHAR *subdir, const TCHAR **suffix_filters, size_t filter_count);
 #endif
- protected:
 
   gcc_nonnull_all
-  BOOL ScanDirectories(const TCHAR *sPath, const TCHAR* subdir, const TCHAR *filter);
+  BOOL ScanDirectories(const TCHAR *sPath, const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count);
 
 };
 
@@ -541,7 +558,7 @@ class WindowControl : public WndCtrlBase {
     friend class WndForm;
     friend class WndProperty;
  public:
-    typedef void (*OnHelpCallback_t)(WindowControl * Sender);
+    using OnHelpCallback_t = std::function<void(WindowControl*)>;
 
   private:
 
@@ -648,7 +665,7 @@ class WindowControl : public WndCtrlBase {
 
     WindowControl *FindByName(const TCHAR *Name);
 
-    void FilterAdvanced(bool advanced);
+    void ForEachChild(std::function<void(WindowControl*)> visitor);
 
 protected:
 
@@ -722,12 +739,10 @@ class WndListFrame:public WndFrame{
       int ItemInPageCount;
     }ListInfo_t;
 
-    typedef void (*OnListCallback_t)(WindowControl * Sender, ListInfo_t *ListInfo);
+    using OnListCallback_t = std::function<void(WindowControl*, ListInfo_t*)>;
 
     WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
-                 int Width, int Height,
-                 void (*OnListCallback)(WindowControl * Sender,
-                                        ListInfo_t *ListInfo));
+                 int Width, int Height, OnListCallback_t OnListCallback);
 
     virtual bool OnMouseMove(const POINT& Pos);
     bool OnItemKeyDown(WindowControl *Sender, unsigned KeyCode);
@@ -796,8 +811,7 @@ private:
 class WndOwnerDrawFrame:public WndFrame{
 
   public:
-
-    typedef void (*OnPaintCallback_t)(WindowControl * Sender, LKSurface& Surface);
+    using OnPaintCallback_t = std::function<void(WindowControl*, LKSurface&)>;
 
     WndOwnerDrawFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, int Width, int Height, OnPaintCallback_t OnPaintCallback):
       WndFrame(Owner, Name, X, Y, Width, Height)
@@ -828,10 +842,10 @@ extern WindowControl *LastFocusControl;
 
 class WndForm:public WindowControl{
 
-    typedef bool (*OnTimerNotify_t)(WndForm* pWnd);
-    typedef bool (*OnKeyDownNotify_t)(WndForm* pWnd, unsigned KeyCode);
-    typedef bool (*OnKeyUpNotify_t)(WndForm* pWnd, unsigned KeyCode);
-    typedef bool (*OnUser_t)(WndForm* pWndForm, unsigned id);
+    using OnTimerNotify_t = std::function<bool(WndForm*)>;
+    using OnKeyDownNotify_t = std::function<bool(WndForm*, unsigned)>;
+    using OnKeyUpNotify_t = std::function<bool(WndForm*, unsigned)>;
+    using OnUser_t = std::function<bool(WndForm*, unsigned)>;
 
   protected:
 
@@ -965,7 +979,7 @@ typedef struct _LEDCOLORRAMP
 
 class WndButton:public WindowControl{
   public:
-    typedef void (*ClickNotifyCallback_t)(WndButton* pWnd);
+    using ClickNotifyCallback_t = std::function<void(WndButton*)>;
 
   private:
 
@@ -1007,7 +1021,7 @@ class WndButton:public WindowControl{
 
 class WndProperty:public WindowControl{
   public:
-    typedef int (*DataChangeCallback_t)(WindowControl * Sender, int Mode, int Value);
+    using DataChangeCallback_t = std::function<int(WindowControl*, int, int)>;
 
   private:
 

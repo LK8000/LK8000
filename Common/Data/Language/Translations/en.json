@@ -2522,7 +2522,7 @@
     "_@M002467_": "Values",
     "_@M002468_": "Direction",
     "_@M002469_": "EXT Target",
-    "_@M002470_": "Ahead",
+    "_@M002470_": "[deprecated]",
     "_@M002471_": "EfficiencyReq & ArrivalAltitude",
     "_@M002472_": "QNH Arrival at Multitarget currently selected",
     "_@M002473_": "TgtQNH",
@@ -2563,12 +2563,17 @@
     "_@H001358_": "DIRECT \nEn-/Disable the direct Link to pass logger task declarations to the Logger\nOFF: If a logger is included in the LX device (e.g. LX S100) \nON: for external logger connected to the LX devce (e.g. LX V7 ",
     "_@H001359_": "VARIO  \nEn-/Disable variometer value reception from external LX device",
     "_@H001360_": "T-TRGT (Transmit Target)\nsend Navigation TARGET waypoint information to LX compatible devices. The navigation target can be send by $PLXVTARG or $GPRMB sentences of the protocol.\nOFF: no target data transmission \n$PLXVTARG: send to device using $PLXVTARG protocol sentences\n$GPRMB: send to device using $GPRMB protocol sentences. If possible at the remote device we recomend to use $PLXVTARG because it includes the target elevation.",
+    "_@H001361_": "[Task Type]\n[Default]\n[AAT]\nEnables AAT tasks. When enabled, the AAT observation parameters can be set for each turnpoint.\n[Grand Prix / Race To Goal]\nCommon Task Type for Paraglider or Grand Prix Task Type for Glider.",    
+    "_@H001362_": "Raw Data:\n[ON] replay byte by byte\n\n[OFF] replay 1 NMEA sencence per line in file",    
+    "_@H001363_": "Sync on:\n[Timer] simple delay without time syncrhronisation\n[$GPRMC] synchronize replay time on $GPRMC sentence\n[$GPGGA] synchronize replay time on $GPGGA sentence",        
+    
     "_@M002474_": "No Device found",
     "_@M002475_": "Wrong Block answer",
     "_@M002476_": "Multitarget Bearing Diff ",
     "_@M002477_": "DiffMtg",
     "_@M002478_": "Alternate1 QNH arrival",
     "_@M002479_": "Atn1QNH",
+
     "_@M002480_": "Home Req.Efficiency",
     "_@M002481_": "Home.E",
     "_@M002482_": "Home Dist. Altern. unit",
@@ -2576,12 +2581,20 @@
     "_@M002484_": "Home bearing",
     "_@M002485_": "Home brg",
 
+    "_@M002490_": "Invalid radio frequency/channel input!",
+    "_@M002491_": "Input Error",  
 
-    "_@H001361_": "[Task Type]\n[Default]\n[AAT]\nEnables AAT tasks. When enabled, the AAT observation parameters can be set for each turnpoint.\n[Grand Prix / Race To Goal]\nCommon Task Type for Paraglider or Grand Prix Task Type for Glider.",
+
 
     "_@M001914_": "Grand Prix",
     "_@M001915_": "Race To Goal / Min Time",
     "_@M001916_": "Default",
     "_@M001917_": "Task Type",
-    "_@M001918_": "AAT"
+    "_@M001918_": "AAT",
+
+    "_@M002480_": "Raw Data",
+    "_@M002481_": "Sync on",
+    "_@M002482_": "Timer",
+    "_@M002483_": "NMEA Replay"
+
 }

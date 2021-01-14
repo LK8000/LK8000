@@ -217,22 +217,22 @@ void dlgProfilesShowModal(short mode){
 	  switch (profilemode) {
 		case 0:
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_PRF));
-            dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_PRF));
+            dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PRF));
 			break;
 		case 1:
 			wf->SetCaption(MsgToken(1784)); // Aircraft profiles
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_PILOT));
-            dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_PILOT));
+            dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PILOT));
 			break;
 		case 2:
 			wf->SetCaption(MsgToken(1783)); // Pilot profiles
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_AIRCRAFT));
-            dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_AIRCRAFT));
+            dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_AIRCRAFT));
 			break;
 		case 3:
 			wf->SetCaption(MsgToken(1819)); // Device profiles
 			_stprintf(profilesuffix,_T("%s"),_T(LKS_DEVICE));
-            dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_DEVICE));
+            dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_DEVICE));
 			break;
 		default:
 			return;

@@ -117,7 +117,7 @@ static void OnCancelClicked(WndButton* pWnd){
 static CallBackTableEntry_t CallBackTable[]={
   OnListCallbackEntry(OnComboPopupListInfo),
   OnPaintCallbackEntry(OnPaintComboPopupListItem),
-  OnHelpCallbackEntry(OnHelpClicked),
+  ClickNotifyCallbackEntry(OnHelpClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnCancelClicked),
   EndCallBackEntry()

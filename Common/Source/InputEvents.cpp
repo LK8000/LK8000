@@ -1441,7 +1441,7 @@ void InputEvents::eventWaypointDetails(const TCHAR *misc) {
     PopupWaypointDetails();
   } else {
     if (_tcscmp(misc, TEXT("select")) == 0) {
-      int res = dlgWayPointSelect();
+      int res = dlgSelectWaypoint();
 
       if (res != -1) {
 	    SelectedWaypoint = res;

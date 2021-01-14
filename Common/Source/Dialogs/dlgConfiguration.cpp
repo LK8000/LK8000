@@ -1020,14 +1020,12 @@ static void OnWaypointNewClicked(WndButton* pWnd){
 }
 
 
-static void OnWaypointEditClicked(WndButton* pWnd){
-
-  int res;
+static void OnWaypointEditClicked(WndButton* pWnd) {
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
 	return;
   }
-  res = dlgWayPointSelect();
+  int res = dlgSelectWaypoint();
   if (res != -1){
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE) {      // 100212
@@ -1087,13 +1085,12 @@ static void OnWaypointSaveClicked(WndButton* pWnd) {
     AskWaypointSave();
 }
 
-static void OnWaypointDeleteClicked(WndButton* pWnd){
-  int res;
+static void OnWaypointDeleteClicked(WndButton* pWnd) {
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
 	return;
   }
-  res = dlgWayPointSelect();
+  int res = dlgSelectWaypoint();
   if (res > RESWP_END) { // 100212
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE ) { // 100212
@@ -1296,8 +1293,9 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     bool bBt = ((_tcslen(szPortName) > 3) && ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || (_tcsncmp(szPortName, _T("Bluetooth Server"), 3) == 0)));
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
+    bool bFileReplay = (_tcscmp(szPortName, NMEA_REPLAY)    == 0);
     bool bUDPServer = (_tcscmp(szPortName, _T("UDPServer")) == 0);
-    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || ( DeviceList[SelectedDevice].iSharedPort>=0 ));
+    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || bFileReplay || ( DeviceList[SelectedDevice].iSharedPort>=0 ));
     if(bCOM)
     {
       ShowWindowControl(wf, TEXT("prpComPort1"), true);
@@ -1315,6 +1313,8 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
       ShowWindowControl(wf, TEXT("prpComIpAddr1"), bTCPClient);
       ShowWindowControl(wf, TEXT("prpComIpPort1"),  bTCPClient || bTCPServer || bUDPServer);
     }
+
+    ShowWindowControl(wf, TEXT("cmdReplay"), bFileReplay);
 
     // Manage external sounds only if necessary
     if (bManageExtAudio) {
@@ -1346,10 +1346,16 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
 
 
   static void OnConfigDevClicked(WndButton* pWnd){
-//   if(DeviceList[SelectedDevice])
      if(DeviceList[SelectedDevice].Config)
        DeviceList[SelectedDevice].Config(&DeviceList[SelectedDevice]);
 }
+
+
+extern void dlgNMEAReplayShowModal(void);
+static void OnConfigDevReplayClicked(WndButton* pWnd){
+	dlgNMEAReplayShowModal();
+}
+
 
 
 
@@ -1418,6 +1424,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnE),
   ClickNotifyCallbackEntry(OnF),
   ClickNotifyCallbackEntry(OnConfigDevClicked),
+  ClickNotifyCallbackEntry(OnConfigDevReplayClicked),
   ClickNotifyCallbackEntry(OnNextDevice),
   ClickNotifyCallbackEntry(OnTerminalClicked),
   EndCallBackEntry()
@@ -1665,7 +1672,9 @@ static void setVariables( WndForm *pOwner) {
 
 
   const TCHAR *tSpeed[] = {TEXT("1200"),TEXT("2400"),TEXT("4800"),TEXT("9600"),
-			     TEXT("19200"),TEXT("38400"),TEXT("57600"),TEXT("115200")};
+                           TEXT("19200"),TEXT("38400"),TEXT("57600"),
+                           TEXT("115200"),TEXT("230400"),TEXT("460800"),
+                           TEXT("500000"),TEXT("1000000")};
 
   TCHAR szPort[MAX_PATH];
   
@@ -2500,7 +2509,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF),_T("*" LKS_PILOT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF),_T(LKS_PILOT));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2509,7 +2518,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_AIRCRAFT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_AIRCRAFT));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2518,7 +2527,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_DEVICE));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_DEVICE));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2533,17 +2542,12 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_POLARS), _T("*" LKS_POLARS)); //091101
+      dfe->ScanDirectoryTop(_T(LKD_POLARS), _T(LKS_POLARS)); //091101
 #ifdef LKD_SYS_POLAR
       /**
        * Add entry from system directory not exist in data directory.
        */
-#ifdef ANDROID
-      dfe->ScanZipDirectory(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
-#else
-      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
-#endif
-      dfe->Sort();
+      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_POLAR), _T(LKS_POLARS));
 #endif
       dfe->Lookup(temptext);
     }
@@ -2576,8 +2580,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" LKS_MAPS));
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" XCS_MAPS));
+      const TCHAR* suffix_filters[] = {
+        _T(LKS_MAPS),
+        _T(XCS_MAPS)
+      };
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), suffix_filters);
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2588,7 +2595,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" LKS_TERRAINDEM));
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T(LKS_TERRAINDEM));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2599,7 +2606,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_AIRFIELDS));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T(LKS_AIRFIELDS));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2625,7 +2632,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_INPUT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_INPUT));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -3514,8 +3521,6 @@ void dlgConfigurationShowModal(short mode){
       numPages += wConfig[i]?1:0;
   }
   std::fill(std::begin(cpyInfoBox), std::end(cpyInfoBox), -1);
-
-  wf->FilterAdvanced(1); // useless, we dont use advanced options anymore TODO remove
 
   setVariables(wf);
 

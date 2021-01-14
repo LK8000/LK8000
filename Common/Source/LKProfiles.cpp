@@ -219,6 +219,34 @@ const char szRegistryDeviceC[] = "DeviceC";
 const char szRegistryDeviceD[] = "DeviceD";
 const char szRegistryDeviceE[] = "DeviceE";
 const char szRegistryDeviceF[] = "DeviceF";
+const char szRegistryReplayFileA[] = "NMEA_Replay_FileA";
+const char szRegistryReplayFileB[] = "NMEA_Replay_FileB";
+const char szRegistryReplayFileC[] = "NMEA_Replay_FileC";
+const char szRegistryReplayFileD[] = "NMEA_Replay_FileD";
+const char szRegistryReplayFileE[] = "NMEA_Replay_FileE";
+const char szRegistryReplayFileF[] = "NMEA_Replay_FileF";
+
+extern const char szRegistryReplaySpeedA[]= "NMEA_Replay_SpeedA";
+extern const char szRegistryReplaySpeedB[]= "NMEA_Replay_SpeedB";
+extern const char szRegistryReplaySpeedC[]= "NMEA_Replay_SpeedC";
+extern const char szRegistryReplaySpeedD[]= "NMEA_Replay_SpeedD";
+extern const char szRegistryReplaySpeedE[]= "NMEA_Replay_SpeedE";
+extern const char szRegistryReplaySpeedF[]= "NMEA_Replay_SpeedF";
+
+extern const char szRegistryReplayRawA[]= "NMEA_Replay_RawA";
+extern const char szRegistryReplayRawB[]= "NMEA_Replay_RawB";
+extern const char szRegistryReplayRawC[]= "NMEA_Replay_RawC";
+extern const char szRegistryReplayRawD[]= "NMEA_Replay_RawD";
+extern const char szRegistryReplayRawE[]= "NMEA_Replay_RawE";
+extern const char szRegistryReplayRawF[]= "NMEA_Replay_RawF";
+
+extern const char szRegistryReplaySyncA[]= "NMEA_Replay_SyncA";
+extern const char szRegistryReplaySyncB[]= "NMEA_Replay_SyncB";
+extern const char szRegistryReplaySyncC[]= "NMEA_Replay_SyncC";
+extern const char szRegistryReplaySyncD[]= "NMEA_Replay_SyncD";
+extern const char szRegistryReplaySyncE[]= "NMEA_Replay_SyncE";
+extern const char szRegistryReplaySyncF[]= "NMEA_Replay_SyncF";
+
 const char szRegistryDisableAutoLogger[] = "DisableAutoLogger";
 const char szRegistryLiveTrackerInterval[] = "LiveTrackerInterval";
 const char szRegistryLiveTrackerRadar_config[] = "LiveTrackerRadar_config";
@@ -475,6 +503,7 @@ const char szRegistryOverlay_LeftDown[] = "Overlay_LeftDown";
 const char szRegistryOverlay_RightTop[] = "Overlay_RightTop";
 const char szRegistryOverlay_RightMid[] = "Overlay_RightMid";
 const char szRegistryOverlay_RightBottom[] = "Overlay_RightBottom";
+const char szRegistryOverlay_Title[] = "Overlay_Title";
 const char szRegistryAdditionalContestRule[] = "Additional_Contest_Rule";
 #ifdef _WGS84
 const char szRegistry_earth_model_wgs84[] = "earth_model_wgs84";

@@ -81,9 +81,6 @@
     binfile IDR_XML_WAYPOINTDETAILS_L, Common/Data/Dialogs/dlgWayPointDetails_L.xml
     binfile IDR_XML_WAYPOINTDETAILS_P, Common/Data/Dialogs/dlgWayPointDetails_P.xml
 
-    binfile IDR_XML_WAYPOINTSELECT_L, Common/Data/Dialogs/dlgWayPointSelect_L.xml
-    binfile IDR_XML_WAYPOINTSELECT_P, Common/Data/Dialogs/dlgWayPointSelect_P.xml
-
     binfile IDR_XML_WAYPOINTQUICK_L, Common/Data/Dialogs/dlgWayQuick_L.xml
     binfile IDR_XML_WAYPOINTQUICK_P, Common/Data/Dialogs/dlgWayQuick_P.xml
 
@@ -108,8 +105,8 @@
     binfile IDR_XML_HELP_L, Common/Data/Dialogs/dlgHelp_L.xml
     binfile IDR_XML_HELP_P, Common/Data/Dialogs/dlgHelp_P.xml
 
-    binfile IDR_XML_AIRSPACESELECT_P, Common/Data/Dialogs/dlgAirspaceSelect_P.xml
-    binfile IDR_XML_AIRSPACESELECT_L, Common/Data/Dialogs/dlgAirspaceSelect_L.xml
+    binfile IDR_XML_SELECTOBJECT_P, Common/Data/Dialogs/dlgSelectObject_P.xml
+    binfile IDR_XML_SELECTOBJECT_L, Common/Data/Dialogs/dlgSelectObject_L.xml
 
     binfile IDR_XML_COMBOPICKER_L, Common/Data/Dialogs/dlgComboPicker_L.xml
     binfile IDR_XML_COMBOPICKER_P, Common/Data/Dialogs/dlgComboPicker_P.xml
@@ -175,3 +172,4 @@
     binfile IDR_XML_DEV_LXNAV_L, Common/Data/Dialogs/dlgDevLXNav_L.xml
     binfile IDR_XML_DEV_LXNAV_P, Common/Data/Dialogs/dlgDevLXNav_P.xml
     binfile IDR_XML_WEATHERSTDETAILS, Common/Data/Dialogs/dlgWeatherSt.xml
+    binfile IDR_XML_NMEAREPLAY, Common/Data/Dialogs/dlgNMEAReplay.xml

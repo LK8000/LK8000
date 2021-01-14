@@ -28,6 +28,13 @@ extern int NAVWarn(TCHAR c);
 extern double trackbearingminspeed; // minimal speed to use gps bearing, init by UpdateMonitor
 void CheckBackTarget(int flarmslot);
 
+GeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
+  LockFlightData();
+  AtScopeExit() {
+    UnlockFlightData(); // to unlock after return...
+  };
+  return { GPS_INFO.Latitude, GPS_INFO.Longitude };
+}
 
 unsigned LastRMZHB=0;	 // common to both devA and devB.
 int NMEAParser::StartDay = -1;

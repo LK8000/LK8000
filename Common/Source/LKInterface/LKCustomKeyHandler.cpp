@@ -468,7 +468,7 @@ passthrough:
 
     case ckAirspaceLookup:
         PlayResource(TEXT("IDR_WAV_CLICK"));
-        dlgAirspaceSelect();
+        dlgSelectAirspace();
         return true;
     case  ckRadioDlg:
         PlayResource(TEXT("IDR_WAV_CLICK"));

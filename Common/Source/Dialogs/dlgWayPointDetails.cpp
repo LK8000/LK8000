@@ -20,7 +20,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "Sound/Sound.h"
-
+#include "Radio.h"
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -324,7 +324,6 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-extern    double  ExtractFrequency(const TCHAR*);
 
 static void OnMultiSelectEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {

@@ -269,6 +269,11 @@ public:
     virtual void Draw(LKSurface& Surface, bool fill) const;
     // Calculate nearest horizontal distance and bearing to the airspace from a given point
     virtual double Range(const double &longitude, const double &latitude, double &bearing) const  = 0;
+
+    double Range(const GeoPoint& position, double &bearing) const {
+      return Range(position.longitude, position.latitude, bearing);
+    }
+
     // Calculate unique hash code for this airspace
     virtual void Hash(char *hashout, int maxbufsize) const = 0;
 

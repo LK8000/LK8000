@@ -17,6 +17,7 @@ using GeographicLib::Geodesic;
 const std::runtime_error err(std::string("")); // requiered for avoid link error with mingw 5.4.0
 #endif
 
+
 void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
                      double *Distance, double *Bearing) {
 

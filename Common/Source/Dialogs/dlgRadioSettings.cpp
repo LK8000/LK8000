@@ -19,19 +19,16 @@
 #include "resource.h"
 #include "NavFunctions.h"
 #include "Util/TruncateString.hpp"
+#include "Radio.h"
 
 static WndForm *wf=NULL;
 
-static WndButton *wpnewActive     = NULL;
-static WndButton *wpnewActiveFreq = NULL;
-static WndButton *wpnewPassive    = NULL;
-static WndButton *wpnewPassiveFreq= NULL;
-static WndButton *wpnewDual       = NULL;
-static WndButton  *wpnewVolDwn  = NULL;
-static WndButton  *wpnewVolUp  = NULL;
-static WndButton  *wpnewExChg  = NULL;
-static WndButton *wpnewVol = NULL;
-//static WndProperty *wpVolume;
+static WndButton *wpnewActive = nullptr;
+static WndButton *wpnewActiveFreq = nullptr;
+static WndButton *wpnewPassive = nullptr;
+static WndButton *wpnewPassiveFreq= nullptr;
+static WndButton *wpnewDual = nullptr;
+static WndButton *wpnewVol= nullptr;
 
 static int ActiveRadioIndex=-1;
 static int PassiveRadioIndex=-1;
@@ -45,82 +42,6 @@ static int HoldOff = 0;
 static unsigned char VolMode  = 0;
 static unsigned char lVolume  = 6;
 static unsigned char lSquelch = 3;
-
-BOOL ValidFrequency(double Freq)
-{
-BOOL Valid =FALSE;
-int Frac = 	(int)(Freq*1000.0+0.05) - 100*((int) (Freq *10.0+0.05));
-
-  if(Freq >= 118.0)
-    if(Freq <= 137.0)
-      switch(Frac)
-      {
-        case 0:
-        case 25:
-        case 50:
-        case 75:
-          Valid = TRUE;
-        break;
-
-        case 5:
-        case 10:
-        case 15:
-        case 30:
-        case 35:
-        case 40:
-        case 55:
-        case 60:
-        case 65:
-        case 80:
-        case 85:
-        case 90:
-          if(RadioPara.Enabled8_33)
-            Valid = TRUE;
-        break;
-
-        default:
-        break;
-      }
-
-
-  return Valid;
-}
-
-
-int SearchStation(double Freq)
-{
-int i;
-TCHAR	szFreq[8] ;
-_stprintf(szFreq,  _T("%7.3f"),Freq);
-	double minDist =9999999;
-	int minIdx=0;
-  //  LKASSERT(numvalidwp<=NumberOfWayPoints);
-	double fDist, fBear;
-	for (i=0; i<(int)WayPointList.size(); i++)
-	{
-                      LKASSERT(ValidWayPointFast(i));
-	 //   LKASSERT(numvalidwp<=NumberOfWayPoints);
-
-	    if (WayPointList[i].Latitude!=RESWP_INVALIDNUMBER)
-	    {
-
-	      DistanceBearing(GPS_INFO.Latitude,
-	                      GPS_INFO.Longitude,
-	                      WayPointList[i].Latitude,
-	                      WayPointList[i].Longitude,
-	                      &fDist,
-	                      &fBear);
-	      if(fabs(Freq -   StrToDouble(WayPointList[i].Freq,NULL)) < 0.001)
-	        if(fDist < minDist)
-	        {
-		  minDist = fDist;
-		  minIdx =i;
-	        }
-	    }
-	}
-
-	return minIdx;
-}
 
 
 
@@ -136,119 +57,112 @@ static void OnCancelClicked(WndButton* pWnd){
 }
 
 
-static void OnCloseClicked(WndButton* pWnd){
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
-      pForm->SetModalResult(mrOK);
-    }
-  }
-}
-
-
-
-
 static int OnRemoteUpdate(void)
 {
-int Idx=0;
+
   if(RadioPara.Changed)
   {
-    RadioPara.Changed =FALSE;
+
     TCHAR Name[250];
-    if( _tcslen(RadioPara.ActiveName) == 0)
-      Idx = SearchStation(RadioPara.ActiveFrequency);
-    if(Idx !=0)
-    {
-        ActiveRadioIndex = Idx;
-        if( HoldOff ==0)
-        {
-          HoldOff = HOLDOFF_TIME;
-          devPutFreqActive(RadioPara.ActiveFrequency, WayPointList[Idx].Name);
-        }
-    }
+ 
     TCHAR ActiveName[DEVICE_NAME_LEN+8];
 		CopyTruncateString(ActiveName, DEVICE_NAME_LEN, RadioPara.ActiveName);
 
-    if(RadioPara.TX)
+    if(RadioPara.TX) {
       _stprintf(Name,_T(">%s<"),ActiveName);
-    else
-      if(RadioPara.RX_active)
-        _stprintf(Name,_T("<%s>"),ActiveName);
-      else
-        _stprintf(Name,_T("[%s]"),ActiveName);
+    } else if(RadioPara.RX_active) {
+      _stprintf(Name,_T("<%s>"),ActiveName);
+    } else if(RadioPara.ActiveValid) {
+      _stprintf(Name,_T("[%s]"),ActiveName);
+    } else {
+      _stprintf(Name,_T("%s"),ActiveName);
+    }
+
     if(wpnewActive)
       wpnewActive->SetCaption(Name);
     _stprintf(Name,_T("%6.03f"),RadioPara.ActiveFrequency);
     if(wpnewActiveFreq)
       wpnewActiveFreq->SetCaption(Name);
 
-
-    if( _tcslen(RadioPara.PassiveName) == 0)
-      Idx = SearchStation(RadioPara.PassiveFrequency);
-    if(Idx !=0)
-    {
-        PassiveRadioIndex = Idx;
-        if( HoldOff ==0)
-        {
-          HoldOff = HOLDOFF_TIME;
-          devPutFreqStandby(RadioPara.PassiveFrequency, WayPointList[Idx].Name);
-        }
-    }
     TCHAR PassiveName[DEVICE_NAME_LEN+8];
 		CopyTruncateString(PassiveName, DEVICE_NAME_LEN, RadioPara.PassiveName );
 
-    if(RadioPara.RX_standy)
+    if(RadioPara.RX_standy) {
       _stprintf(Name,_T("<%s>"),PassiveName);
-    else
+    } else if(RadioPara.PassiveValid) {
       _stprintf(Name,_T("[%s]"),PassiveName);
-    if(wpnewPassive)
-     wpnewPassive->SetCaption(Name);
-    _stprintf(Name,_T("%6.03f"),RadioPara.PassiveFrequency);
-    if(wpnewPassiveFreq)
-     wpnewPassiveFreq->SetCaption(Name);
-/*
-        if( lSquelch !=  RadioPara.Squelch)
-        {
-              VolMode = SQL;
-              SqCnt =0;
-        }
-*/
-        if( lVolume !=  RadioPara.Volume)
-              VolMode = VOL;
-        lSquelch =  RadioPara.Squelch;
-        lVolume =  RadioPara.Volume;
-        if(wpnewVol)
-        {
-      if(VolMode == VOL)
-            _stprintf(Name,_T("V[%i]"),RadioPara.Volume);
-      else
-        _stprintf(Name,_T("S [%i]"),RadioPara.Squelch);
-          wpnewVol->SetCaption(Name);
-        }
-
-        if(RadioPara.Dual)
-          _stprintf(Name,_T("[Dual Off]"));
-        else
-          _stprintf(Name,_T("[Dual On]"));
-        if(wpnewDual)
-              wpnewDual->SetCaption(Name);
-      return 1;
+    } else {
+      _stprintf(Name,_T("%s"),PassiveName);
     }
-    return 0;
+
+    if(wpnewPassive) {
+      wpnewPassive->SetCaption(Name);
+    }
+    _stprintf(Name,_T("%6.03f"),RadioPara.PassiveFrequency);
+    if(wpnewPassiveFreq) {
+      wpnewPassiveFreq->SetCaption(Name);
+    }
+
+
+    if( lVolume !=  RadioPara.Volume) {
+      VolMode = VOL;
+    }
+
+    lSquelch =  RadioPara.Squelch;
+    lVolume =  RadioPara.Volume;
+    if(wpnewVol) {
+      if(VolMode == VOL) {
+        if(RadioPara.VolValid) {
+          _stprintf(Name,_T("V [%i]"),RadioPara.Volume);
+        } else {
+          _stprintf(Name,_T("V %i"),RadioPara.Volume);
+        }
+      } else {
+        if(RadioPara.SqValid) {
+          _stprintf(Name,_T("S [%i]"),RadioPara.Squelch);
+        } else {
+          _stprintf(Name,_T("S %i"),RadioPara.Squelch);
+        }
+      }
+      wpnewVol->SetCaption(Name);
+    }
+
+    if(wpnewDual) {
+      if(RadioPara.Dual) {
+        if(RadioPara.DualValid) {
+          _stprintf(Name,_T("[Dual Off]"));
+        } else {
+          _stprintf(Name,_T("Dual Off"));
+        }
+      } else {
+        if(RadioPara.DualValid) {
+          _stprintf(Name,_T("[Dual On]"));
+        } else {
+          _stprintf(Name,_T("Dual On"));
+        }
+      }
+      wpnewDual->SetCaption(Name);
+    }
+
+    RadioPara.Changed =FALSE;
+    return 1;
+  }
+  return 0;
 }
 
 static int OnUpdate(void) {
   TCHAR Name[DEVICE_NAME_LEN+8];
 
-
-	if(wpnewActive)
-		wpnewActive->SetCaption(RadioPara.ActiveName);
+	CopyTruncateString(Name, DEVICE_NAME_LEN, RadioPara.ActiveName);
+	if(wpnewActive) 
+		wpnewActive->SetCaption(Name);
 	_stprintf(Name,_T("%7.3f"),RadioPara.ActiveFrequency);
 	if(wpnewActiveFreq)
 		wpnewActiveFreq->SetCaption(Name);
 
+	CopyTruncateString(Name, DEVICE_NAME_LEN, RadioPara.PassiveName);		
 	if(wpnewPassive)
-		wpnewPassive->SetCaption(RadioPara.PassiveName);
+		wpnewPassive->SetCaption(Name);
 	_stprintf(Name,_T("%7.3f"),RadioPara.PassiveFrequency);
 	if(wpnewPassiveFreq)
 		wpnewPassiveFreq->SetCaption(Name);
@@ -303,24 +217,25 @@ static void OnActiveButton(WndButton* pWnd){
 
   if (HoldOff ==0)
   {
-    int res = dlgWayPointSelect(0, 90.0, 1, 3);
+    int res = dlgSelectWaypoint(1, 3);
     if(res > RESWP_END )
     if(ValidWayPoint(res))
     {
-      double  Frequency = StrToDouble(WayPointList[res].Freq,NULL);
+      double  Frequency = ExtractFrequency(WayPointList[res].Freq);
       if(!ValidFrequency(Frequency))
       {
-   // 	DoStatusMessage(_T("No valid Frequency!") );
-	return;
+        MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
       }
-      devPutFreqActive(Frequency, WayPointList[res].Name);
+      else
+      {
+        devPutFreqActive(Frequency, WayPointList[res].Name);
     	_tcscpy(RadioPara.ActiveName, WayPointList[res].Name);
-      RadioPara.ActiveFrequency = Frequency;
-
-      ActiveRadioIndex = res;
+        RadioPara.ActiveFrequency = Frequency;
+        ActiveRadioIndex = res;  
+        OnUpdate();
+        HoldOff = HOLDOFF_TIME;
+      }
     }
-    OnUpdate();
-    HoldOff = HOLDOFF_TIME;
   }
 }
 
@@ -328,74 +243,73 @@ static void OnActiveButton(WndButton* pWnd){
 static void OnPassiveButton(WndButton* pWnd){
   if (HoldOff ==0)
   {
-   int res = dlgWayPointSelect(0, 90.0, 1,3);
+   int res = dlgSelectWaypoint(1, 3);
 
    if(res > RESWP_END )
      if(ValidWayPoint(res))
     {
-      double Frequency = StrToDouble(WayPointList[res].Freq,NULL);
-      if(Frequency < 100.0)
+      double Frequency = ExtractFrequency(WayPointList[res].Freq);
+      if(!ValidFrequency(Frequency))
       {
-     //    DoStatusMessage(_T("No valid Frequency!") );
-        return;
+        MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
       }
-      devPutFreqStandby(Frequency, WayPointList[res].Name);
-
-
-      _tcscpy(RadioPara.PassiveName, WayPointList[res].Name);
-      RadioPara.PassiveFrequency = Frequency;
-      PassiveRadioIndex = res;
+      else
+      { 
+        devPutFreqStandby(Frequency, WayPointList[res].Name);
+        _tcscpy(RadioPara.PassiveName, WayPointList[res].Name);
+        RadioPara.PassiveFrequency = Frequency;
+        PassiveRadioIndex = res;
+        OnUpdate();
+        HoldOff = HOLDOFF_TIME;
+      }
     }
-    OnUpdate();
-    HoldOff = HOLDOFF_TIME;
   }
 }
 
 
 
 static void OnActiveFreq(WndButton* pWnd){
-TCHAR	szFreq[20];
-_stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
- TCHAR	Name[NAME_SIZE+1] = _T("  ???   ");
-    dlgNumEntryShowModal(szFreq,8);
-    double Frequency = StrToDouble(szFreq,NULL);
-    while(Frequency > 1000.0)
-	   Frequency /=10;
-    if(ValidFrequency(Frequency))
-    {
-      int iIdx = SearchStation(Frequency);
-      if(iIdx != 0)
-      {
-    	 	_tcscpy(Name, WayPointList[iIdx].Name);
-        ActiveRadioIndex = iIdx;
+  TCHAR	szFreq[20];
+  _stprintf(szFreq, _T("%7.3f"),RadioPara.ActiveFrequency);
 
-      }
-      devPutFreqActive(Frequency,Name);
-    }
+  dlgNumEntryShowModal(szFreq,8);
+
+  double Frequency = ExtractFrequency(szFreq);
+  while(Frequency > 1000.0)
+    Frequency /=10;
+
+  if(!ValidFrequency(Frequency))
+  {
+    MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
+  }
+  else
+  {
+    UpdateStationName(RadioPara.ActiveName, Frequency);
+    devPutFreqActive(Frequency,RadioPara.ActiveName);
     OnUpdate();
+  }
 }
 
+
 static void OnPassiveFreq(WndButton* pWnd){
-TCHAR	szFreq[20] ;
-_stprintf(szFreq,  _T("%7.3f"),RadioPara.PassiveFrequency);
-TCHAR	Name[NAME_SIZE+1] = _T("  ???   ");
-   dlgNumEntryShowModal(szFreq,8);
+  TCHAR	szFreq[20] ;
+  _stprintf(szFreq,  _T("%7.3f"),RadioPara.PassiveFrequency);
 
-   double Frequency = StrToDouble(szFreq,NULL);
-   while(Frequency > 1000)
-	   Frequency /=10;
+  dlgNumEntryShowModal(szFreq,8);
 
-   if(ValidFrequency(Frequency))
-   {
-     int iIdx = SearchStation(Frequency);
-     if(iIdx != 0)
-     {
-     	 _tcscpy(Name, WayPointList[iIdx].Name);
-			 PassiveRadioIndex = iIdx;
-     }
-     devPutFreqStandby(Frequency,Name);
-   }
-   OnUpdate();
+  double Frequency = ExtractFrequency(szFreq);
+
+
+  if(!ValidFrequency(Frequency))
+  {
+    MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
+  }
+  else
+  {
+    UpdateStationName(RadioPara.PassiveName, Frequency);
+    devPutFreqStandby(Frequency,RadioPara.PassiveName);
+    OnUpdate();
+  }
 }
 
 
@@ -404,14 +318,15 @@ static void OnRadioActiveAutoClicked(WndButton* pWnd){
 	  bAutoActive = false;
   } else {
 		bAutoActive = true;
-		if ( ValidWayPoint(BestAlternate))
-		{
-			double fFreq = StrToDouble(WayPointList[BestAlternate].Freq,NULL);
 
-			if(ValidFrequency(fFreq)) {
-				devPutFreqActive(	fFreq , WayPointList[BestAlternate].Name);
-			}
-		}
+
+	int Idx = SearchBestStation();
+	if ( ValidWayPoint(Idx))
+	{
+		double fFreq = ExtractFrequency(WayPointList[Idx].Freq);
+		devPutFreqActive(	fFreq , WayPointList[Idx].Name);
+	}
+
   }
   OnUpdate();
 }
@@ -423,36 +338,27 @@ static void OnRadioStandbyAutoClicked(WndButton* pWnd)
 	  bAutoPassiv = false;
   } else {
 	  bAutoPassiv = true;
-		if ( ValidWayPoint(BestAlternate))
-		{
-			double fFreq = StrToDouble(WayPointList[BestAlternate].Freq,NULL);
-			if(ValidFrequency(fFreq))	{
-				devPutFreqStandby(	fFreq, WayPointList[BestAlternate].Name);
-			}
-		}
+		
+	int Idx = SearchBestStation();
+	if ( ValidWayPoint(Idx))
+	{
+		double fFreq = ExtractFrequency(WayPointList[Idx].Freq);
+		devPutFreqStandby(	fFreq , WayPointList[Idx].Name);
+	}
+
   }
   OnUpdate();
 }
 
 
 static void OnExchange(WndButton* pWnd){
-int tmp;
-TCHAR szTempStr[NAME_SIZE+1];
-double fTmp;
-// if (HoldOff ==0)
- {
-   tmp =   ActiveRadioIndex;
-   ActiveRadioIndex = PassiveRadioIndex;
-   PassiveRadioIndex = tmp;
-   devPutFreqSwap();
-    fTmp =   RadioPara.ActiveFrequency;
-    RadioPara.ActiveFrequency = RadioPara.PassiveFrequency;
-    RadioPara.PassiveFrequency=  fTmp;
-    _tcscpy( szTempStr,  RadioPara.ActiveName);
-    _tcscpy(  RadioPara.ActiveName, RadioPara.PassiveName);
-    _tcscpy(  RadioPara.PassiveName, szTempStr);
-    OnUpdate();
-  }
+  devPutFreqSwap();
+ 
+  std::swap(ActiveRadioIndex, PassiveRadioIndex);
+  std::swap(RadioPara.ActiveFrequency, RadioPara.PassiveFrequency);
+  std::swap(RadioPara.ActiveName, RadioPara.PassiveName);
+
+  OnUpdate();
 }
 
 static void SendVolSq(void){
@@ -561,7 +467,6 @@ static bool OnTimerNotify(WndForm* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-
   ClickNotifyCallbackEntry(OnDualButton),
   ClickNotifyCallbackEntry(OnActiveButton),
   ClickNotifyCallbackEntry(OnActiveFreq),
@@ -569,9 +474,11 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnPassiveButton),
   ClickNotifyCallbackEntry(OnMuteButton),
   ClickNotifyCallbackEntry(OnCancelClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnRadioActiveAutoClicked),
   ClickNotifyCallbackEntry(OnRadioStandbyAutoClicked),
+  ClickNotifyCallbackEntry(OnExchange),
+  ClickNotifyCallbackEntry(OnVolUpButton),
+  ClickNotifyCallbackEntry(OnVolDownButton),
   EndCallBackEntry()
 };
 
@@ -579,59 +486,44 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgRadioSettingsShowModal(void){
   SHOWTHREAD(_T("dlgRadioSettingsShowModal"));
 
-//  WndProperty *wp;
-//  int ival;
 
-    wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOSETTINGS );
+  wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOSETTINGS );
   if (!wf) return;
 
   VolMode = VOL; // start with volume
 
-  if (wf) {
-    wpnewActive = (WndButton*)wf->FindByName(TEXT("cmdActive"));
-    LKASSERT( wpnewActive !=NULL);
-    wpnewActive->SetOnClickNotify(OnActiveButton);
+  wpnewActive = (WndButton*)wf->FindByName(TEXT("cmdActive"));
+  LKASSERT( wpnewActive !=NULL);
 
-    wpnewActiveFreq = (WndButton*)wf->FindByName(TEXT("cmdActiveFreq"));
-    LKASSERT( wpnewActiveFreq !=NULL);
-    wpnewActiveFreq->SetOnClickNotify(OnActiveFreq);
+  wpnewActiveFreq = (WndButton*)wf->FindByName(TEXT("cmdActiveFreq"));
+  LKASSERT( wpnewActiveFreq !=NULL);
 
-    wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdPassive"));
-    LKASSERT(   wpnewPassive   !=NULL)
-    wpnewPassive->SetOnClickNotify(OnPassiveButton);
+  wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdPassive"));
+  LKASSERT(   wpnewPassive   !=NULL)
 
-    wpnewPassiveFreq = (WndButton*)wf->FindByName(TEXT("cmdPassiveFreq"));
-    LKASSERT(   wpnewPassiveFreq   !=NULL)
-    wpnewPassiveFreq->SetOnClickNotify(OnPassiveFreq);
+  wpnewPassiveFreq = (WndButton*)wf->FindByName(TEXT("cmdPassiveFreq"));
+  LKASSERT(   wpnewPassiveFreq   !=NULL)
 
-   wpnewVol  = (WndButton*)wf->FindByName(TEXT("cmdVol"));
-    LKASSERT(   wpnewVol   !=NULL)
-    wpnewVol->SetOnClickNotify(OnMuteButton);
+  wpnewVol  = (WndButton*)wf->FindByName(TEXT("cmdVol"));
+  LKASSERT(   wpnewVol   !=NULL)
 
-   wpnewDual  = (WndButton*)wf->FindByName(TEXT("cmdDual"));
-   LKASSERT(   wpnewDual   !=NULL)
-   wpnewDual->SetOnClickNotify(OnDualButton);
+  wpnewDual  = (WndButton*)wf->FindByName(TEXT("cmdDual"));
+  LKASSERT(   wpnewDual   !=NULL)
 
-   wpnewVolDwn = ((WndButton *)wf->FindByName(TEXT("cmdVolDown")));
-   LKASSERT(   wpnewVolDwn   !=NULL)
-   wpnewVolDwn->SetOnClickNotify(OnVolDownButton);
+  wf->SetTimerNotify(300, OnTimerNotify);
 
-   wpnewVolUp =     ((WndButton *)wf->FindByName(TEXT("cmdVolUp")));
-   LKASSERT(   wpnewVolUp   !=NULL)
-   wpnewVolUp->SetOnClickNotify(OnVolUpButton);
-
-   wpnewExChg  =        ((WndButton *)wf->FindByName(TEXT("cmdXchange")));
-   LKASSERT(   wpnewExChg    !=NULL)
-   wpnewExChg ->SetOnClickNotify(OnExchange);
-
-   wf->SetTimerNotify(300, OnTimerNotify);
- //  RadioPara.Changed = true;
-   OnUpdate();
-   wf->ShowModal();
+  OnUpdate();
+  wf->ShowModal();
 
 
-    delete wf;
-  }
-  wf = NULL;
-  return ;
+  wpnewActive = nullptr;
+  wpnewActiveFreq = nullptr;
+  wpnewPassive = nullptr;
+  wpnewPassiveFreq = nullptr;
+  wpnewDual = nullptr;
+  wpnewVol = nullptr;
+
+  delete wf;
+  wf = nullptr;
+
 }

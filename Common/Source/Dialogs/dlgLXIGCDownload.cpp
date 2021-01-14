@@ -264,7 +264,7 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
 
 
 static void OnIGCListEnter(WindowControl *Sender, WndListFrame::ListInfo_t *ListInfo) {
-  (void) Sender;
+
   if (LX_IGCReadDialog.FileList()->size() == 0) return;
   LX_IGCReadDialog.CurIndex(ListInfo->ItemIndex + ListInfo->ScrollIndex);
 
@@ -273,13 +273,11 @@ static void OnIGCListEnter(WindowControl *Sender, WndListFrame::ListInfo_t *List
   }
 
 
-  if (LX_IGCReadDialog.CurIndex() >= 0) {
-    if (Sender) {
-      WndForm *pForm = Sender->GetParentWndForm();
-      if (pForm) {
-        LX_IGCReadDialog.DownloadIndex(LX_IGCReadDialog.CurIndex());
-        OnEnterClicked(NULL);
-      }
+  if (Sender) {
+    WndForm *pForm = Sender->GetParentWndForm();
+    if (pForm) {
+      LX_IGCReadDialog.DownloadIndex(LX_IGCReadDialog.CurIndex());
+      OnEnterClicked(NULL);
     }
   }
 }

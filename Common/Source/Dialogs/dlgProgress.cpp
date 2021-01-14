@@ -17,18 +17,77 @@
 #include "resource.h"
 #include "Draw/LoadSplash.h"
 
-static LKBitmap SplashBitmap;
+class dlgProgress final {
+public:
+    dlgProgress();
+    ~dlgProgress();
 
-static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
-    if(!SplashBitmap) {
-        SplashBitmap = LoadSplash(_T("LKSTART"));
+    dlgProgress( const dlgProgress& ) = delete;
+    dlgProgress& operator=( const dlgProgress& ) = delete;    
+
+    void SetProgressText(const TCHAR* szText);
+
+private:
+
+    void OnSplashPaint(WindowControl * Sender, LKSurface& Surface);
+    void OnProgressPaint(WindowControl * Sender, LKSurface& Surface);
+
+    std::unique_ptr<WndForm> _WndForm;
+    LKBitmap _SplashBitmap;
+};
+
+dlgProgress::dlgProgress() {
+
+    _SplashBitmap = LoadSplash(_T("LKSTART"));
+
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+
+    CallBackTableEntry_t CallBackTable[] = {
+        make_OnPaintCallback(_T("OnSplashPaint"), std::bind(&dlgProgress::OnSplashPaint, this, _1, _2)),
+        make_OnPaintCallback(_T("OnProgressPaint"), std::bind(&dlgProgress::OnProgressPaint, this, _1, _2)),
+        EndCallBackEntry()
+    };
+
+    _WndForm.reset(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_PROGRESS_L : IDR_XML_PROGRESS_P));
+    if(_WndForm) {
+        WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 
+        if(wSplash) {
+            wSplash->SetWidth(_WndForm->GetWidth());
+            wSplash->SetHeight(_WndForm->GetHeight());
+        }
+        WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
+        if(wText) {
+            wText->SetWidth(_WndForm->GetWidth());
+            wText->SetTop(_WndForm->GetHeight() - wText->GetHeight());
+        }
+        _WndForm->Show();
+        _WndForm->Redraw();
     }
-    DrawSplash(Surface, Sender->GetClientRect(), SplashBitmap);
 }
 
-static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
+dlgProgress::~dlgProgress() {
+
+}
+
+void dlgProgress::SetProgressText(const TCHAR* szText) {
+    WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
+    if(wText) {
+        wText->SetCaption(szText);
+        wText->Redraw();
+#ifndef USE_GDI
+        main_window->Refresh();
+#endif
+    }
+}
+
+void dlgProgress::OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
+    DrawSplash(Surface, Sender->GetClientRect(), _SplashBitmap);
+}
+
+void dlgProgress::OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
   RECT PrintAreaR = Sender->GetClientRect();
-    
+
   const auto oldFont = Surface.SelectObject(MapWindowBoldFont);
 
   Surface.FillRect(&PrintAreaR, LKBrush_Petrol);
@@ -53,77 +112,20 @@ static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface) {
   Surface.SetBackgroundTransparent();
 
   InflateRect(&PrintAreaR, -NIBLSCALE(2), -NIBLSCALE(2));
-  
+
   const TCHAR* text = Sender->GetCaption();
   Surface.DrawText(text, &PrintAreaR, DT_VCENTER|DT_SINGLELINE);
 
   Surface.SelectObject(ohB);
   Surface.SelectObject(ohP);
   Surface.SelectObject(oldFont);
-   
 }
 
-CallBackTableEntry_t CallBackTable[] = {
-    OnPaintCallbackEntry(OnSplashPaint),
-    OnPaintCallbackEntry(OnProgressPaint),
-    EndCallBackEntry()
-};
-
-class dlgProgress final  {
-public:
-    dlgProgress();
-    ~dlgProgress();
-    
-    dlgProgress( const dlgProgress& ) = delete;
-    dlgProgress& operator=( const dlgProgress& ) = delete;    
-
-    void SetProgressText(const TCHAR* szText);
-
-private:
-    WndForm* _WndForm;
-};
-
-dlgProgress::dlgProgress() {
-    
-    _WndForm = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_PROGRESS_L : IDR_XML_PROGRESS_P);
-    LKASSERT(_WndForm);
-    if(_WndForm) {
-        WindowControl* wSplash = _WndForm->FindByName(TEXT("frmSplash")); 
-        if(wSplash) {
-            wSplash->SetWidth(_WndForm->GetWidth());
-            wSplash->SetHeight(_WndForm->GetHeight());
-        }
-        WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
-        if(wText) {
-            wText->SetWidth(_WndForm->GetWidth());
-            wText->SetTop(_WndForm->GetHeight() - wText->GetHeight());
-        }
-        _WndForm->Show();
-        _WndForm->Redraw();
-    }
-}
-
-dlgProgress::~dlgProgress() {
-    delete _WndForm; 
-}
-
-void dlgProgress::SetProgressText(const TCHAR* szText) {
-    WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
-    if(wText) {
-        wText->SetCaption(szText);
-        wText->Redraw();
-#ifndef USE_GDI
-        main_window->Refresh();
-#endif
-    }
-}
-
-static dlgProgress* pWndProgress = NULL;
+static dlgProgress* pWndProgress = nullptr;
 
 void CloseProgressDialog() {
     delete pWndProgress;
-    pWndProgress = NULL;
-    SplashBitmap.Release();
+    pWndProgress = nullptr;
 }
 
 void CreateProgressDialog(const TCHAR* text) {
@@ -134,4 +136,3 @@ void CreateProgressDialog(const TCHAR* text) {
         pWndProgress->SetProgressText(text);
     }
 }
-

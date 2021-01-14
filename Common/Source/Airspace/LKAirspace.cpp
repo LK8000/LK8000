@@ -28,6 +28,7 @@
 #include "Topology/shapelib/mapserver.h"
 #include "utils/zzip_stream.h"
 #include "picojson.h"
+#include "Radio.h"
 
 #ifdef _WGS84
 #include <GeographicLib/GeodesicLine.hpp>
@@ -47,7 +48,6 @@ unsigned int OutsideAirspaceCnt =0;
 #define DEBUG_AIRSPACE
 #endif
 
-extern	  double  ExtractFrequency(const TCHAR*);
 
 static const int k_nAreaCount = 17;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {

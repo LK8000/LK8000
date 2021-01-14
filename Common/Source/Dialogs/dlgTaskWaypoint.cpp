@@ -589,9 +589,8 @@ static void OnTaskType(DataField *Sender, DataField::DataAccessKind_t Mode) {
 
 
 
-static void OnSelectClicked(WndButton* pWnd){
-  int res;
-  res = dlgWayPointSelect();
+static void OnSelectClicked(WndButton* pWnd) {
+  int res = dlgSelectWaypoint();
   if (res != -1){
     SelectedWaypoint = res;    
     LKASSERT(twItemIndex>=0);

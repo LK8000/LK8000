@@ -8,11 +8,10 @@
 //______________________________________________________________________________
 
 #include "stringext.h"
-#include <math.h>
-#include <string.h>
+#include <cassert>
+#include <string_view>
 #include <algorithm>
-#include <assert.h>
-#include "utils/array_back_insert_iterator.h"
+#include "array_back_insert_iterator.h"
 #include "Util/UTF8.hpp"
 #include "unicode/unicode_to_ascii.h"
 #include "unicode/UTF16.h"
@@ -127,6 +126,32 @@ size_t safe_copy(const CharT* gcc_restrict src, CharT* gcc_restrict dst, size_t 
   return std::distance(dst, p);
 }
 
+template<typename CharT>
+CharT* ci_search_substr(CharT* string, CharT* sub_string) {
+  
+  auto ci_equal = [](CharT ch1, CharT ch2) {
+    return to_lower(ch1) == to_lower(ch2);
+  };
+
+  std::basic_string_view<CharT> str2(sub_string);
+  if (str2.empty()) {
+    return nullptr;
+  }
+
+  std::basic_string_view<CharT> str1(string);
+  if (str1.empty()) {
+    return nullptr;
+  }
+
+  auto it = std::search(std::begin(str1), std::end(str1), 
+                        std::begin(str2), std::end(str2), ci_equal);
+  
+  if (it != std::end(str1)) {
+    return it;
+  }
+  return nullptr;
+}
+
 } // namespace
 
 size_t to_usascii(const char* utf8, char* ascii, size_t size) {
@@ -175,4 +200,13 @@ size_t to_utf8(const char *string, char *utf8, size_t size) {
 
 size_t from_utf8(const char *utf8, char *string, size_t size) {
   return safe_copy(utf8, string, size);
+}
+
+
+const char* ci_search_substr(const char* string, const char* sub_string) {
+  return ci_search_substr<const char>(string, sub_string);
+}
+
+const wchar_t* ci_search_substr(const wchar_t* string, const wchar_t* sub_string) {
+  return ci_search_substr<const wchar_t>(string, sub_string);
 }

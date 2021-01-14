@@ -38,6 +38,7 @@
 #include <queue>
 #include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
+#include "Radio.h"
 
 unsigned int uiEOSDebugLevel = 1;
 extern bool UpdateQNH(const double newqnh);
@@ -1787,7 +1788,6 @@ BOOL DevLX_EOS_ERA::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
 } // LXWP4()
 
 
-extern BOOL ValidFrequency(double Freq);
 
 BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {

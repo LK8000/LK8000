@@ -12,12 +12,15 @@
 #include "Util/TruncateString.hpp"
 #include "BtHandler.h"
 #include "SerialPort.h"
+#include "FilePort.h"
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
 #include "TCPPort.h"
 #include "devPVCOM.h"
 #include <functional>
 #include "Calc/Vario.h"
+#include "Radio.h"
+
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -66,7 +69,8 @@ Mutex COMMPort_mutex; // needed for Bluetooth LE scan
 #endif
 COMMPort_t COMMPort;
 
-static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200};
+static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200,
+                                      230400,460800,500000,1000000};
 
 DeviceRegister_t   DeviceRegister[NUMREGDEV];
 DeviceDescriptor_t DeviceList[NUMDEV];
@@ -245,15 +249,10 @@ void RefreshComPortList() {
 #endif
 #endif
     
-#if defined(__linux__) && !defined(ANDROID)
+#ifdef HAVE_POSIX
   
   struct dirent **namelist;
-  int n;
-  if (IsKobo()) {
-    n = scandir("/dev", &namelist, 0, alphasort);//need test
-  } else {  
-    n = scandir("/sys/class/tty", &namelist, 0, alphasort); //which is faster than /dev/
-  }
+  int n = scandir("/dev", &namelist, 0, alphasort);//need test
   if (n != -1){
     for (int i = 0; i < n; ++i) {
       bool portok = true;
@@ -296,22 +295,27 @@ void RefreshComPortList() {
     free(namelist);
   }
 
+#endif
+
 #ifdef KOBO
+
   if(KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
     if(std::find_if(COMMPort.begin(), COMMPort.end(), std::bind(&COMMPortItem_t::IsSamePort, _1, _T("/dev/ttyGS0"))) == COMMPort.end()) {
       COMMPort.push_back(_T("/dev/ttyGS0"));
     }
   }
-#elif TESTBENCH
+
+#elif defined(TESTBENCH) && defined (__linux__)
+
   if(lk::filesystem::exist(_T("/lk"))) {
     COMMPort.push_back(_T("/lk/ptycom1"));
     COMMPort.push_back(_T("/lk/ptycom2"));
     COMMPort.push_back(_T("/lk/ptycom3"));
     COMMPort.push_back(_T("/lk/ptycom4"));
   }
-#endif
 
 #endif
+
 
 #ifndef NO_BLUETOOTH
     CBtHandler* pBtHandler = CBtHandler::Get();
@@ -327,7 +331,8 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("TCPClient"));
     COMMPort.push_back(_T("TCPServer"));
     COMMPort.push_back(_T("UDPServer"));
-
+    if(EngineeringMenu)
+      COMMPort.push_back(NMEA_REPLAY);
 #ifdef ANDROID
 
   JNIEnv *env = Java::GetEnv();
@@ -585,7 +590,8 @@ BOOL devInit() {
 
         DeviceList[i].iSharedPort =-1;
         for(uint j = 0; j < i ; j++) {
-            if((!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
+            if( (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) != 0)
+                 && (!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
                 devInit(&DeviceList[i]);
                 DeviceList[i].iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
@@ -664,6 +670,8 @@ BOOL devInit() {
 #ifdef ANDROID
             Com = new UsbSerialPort(i, &Port[4], dwSpeed[SpeedIndex], BitIndex);
 #endif
+        } else  if (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) == 0) {
+        	Com = new FilePort(i, NMEA_REPLAY);
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
         }
@@ -1120,6 +1128,7 @@ bool devDriverActivated(const TCHAR *DeviceName) {
  * @return FALSE if error on one device.
  */
 BOOL devPutVolume(int Volume) {
+  RadioPara.VolValid = false;
   return for_all_device(&DeviceDescriptor_t::PutVolume, Volume);
 
 }
@@ -1130,6 +1139,7 @@ BOOL devPutVolume(int Volume) {
  * @return FALSE if error on one device.
  */
 BOOL devPutSquelch(int Squelch) {
+  RadioPara.SqValid = false;
   return for_all_device(&DeviceDescriptor_t::PutSquelch, Squelch);
 
 }    
@@ -1142,6 +1152,7 @@ BOOL devPutSquelch(int Squelch) {
  * @return FALSE if error on one device.
  */
 BOOL devPutRadioMode(int mode) {
+  RadioPara.DualValid = false;
   return for_all_device(&DeviceDescriptor_t::PutRadioMode, mode);
 }
 
@@ -1150,6 +1161,8 @@ BOOL devPutRadioMode(int mode) {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqSwap() {
+  RadioPara.ActiveValid = false;
+  RadioPara.PassiveValid = false;
   return for_all_device(&DeviceDescriptor_t::StationSwap);
 
 }
@@ -1161,13 +1174,13 @@ BOOL devPutFreqSwap() {
  * @return FALSE if error on one device.
  */
 
-extern BOOL ValidFrequency(double Freq);
 
 BOOL devPutFreqActive(double Freq, const TCHAR* StationName) {
 if( ValidFrequency(Freq))
 {
+  RadioPara.ActiveValid = false;
   RadioPara.ActiveFrequency=  Freq;
-	CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
+  CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
   return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
 }
 else
@@ -1179,12 +1192,14 @@ else
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
-  if( ValidFrequency(Freq)) {
-	  RadioPara.PassiveFrequency=  Freq;
-	  CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
+if( ValidFrequency(Freq))
+{
+    RadioPara.PassiveValid = false;
+    RadioPara.PassiveFrequency=  Freq;
+    CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
     return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
   } else {
-	  return false;
+    return false;
   }
 }
 

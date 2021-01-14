@@ -123,4 +123,7 @@ void SaveDefaultTask(void);
 const WAYPOINT* TaskWayPoint(size_t idx);
 
 void ReverseTask();
+
+int GetTaskBearing();
+
 #endif
