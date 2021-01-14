@@ -16,7 +16,6 @@
 #include "Geographic/GeoPoint.h"
 
 class ScreenProjection;
-struct XMLNode;
 
 // changed by AlphaLima since we have a second airspace view to next waypoint,
 // the waypoint can be much more far away (e.g.  167km for a 500km FAI triangle)
@@ -424,11 +423,19 @@ typedef struct _AirspaceWarningMessage
 // Warning message queue
 typedef std::deque<AirspaceWarningMessage> AirspaceWarningMessageList;
 
+namespace rapidxml { 
+  // Forward declarations
+  template<class Ch> class xml_node;
+}
+
 //
 // AIRSPACE MANAGER CLASS
 //
 class CAirspaceManager
 {
+    
+  using xml_node = class rapidxml::xml_node<char>;
+
 public:
   static CAirspaceManager& Instance() { return _instance; }
 
@@ -547,7 +554,7 @@ private:
 #endif
 
   bool FillAirspacesFromOpenAIP(const TCHAR* szFile);
-  bool ReadAltitudeOpenAIP(XMLNode & node, AIRSPACE_ALT *Alt) const;
+  bool ReadAltitudeOpenAIP(const xml_node* node, AIRSPACE_ALT *Alt) const;
 
   //Airspace setting save/restore functions
   void SaveSettings() const;
