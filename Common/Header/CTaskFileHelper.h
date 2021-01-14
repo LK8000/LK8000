@@ -13,14 +13,19 @@
 #define	CTASKFILEHELPER_H
 
 #include "externs.h"
-#include "xmlParser.h"
 #include "Util/tstring.hpp"
+
+// Forward declarations
+namespace rapidxml { 
+  template<class Ch> class xml_node;
+}
 
 class CTaskFileHelper final {
 public:
-    CTaskFileHelper();
-    ~CTaskFileHelper();
-    
+    using xml_node = class rapidxml::xml_node<char>;
+
+    CTaskFileHelper() = default;
+
     CTaskFileHelper( const CTaskFileHelper& ) = delete;
     CTaskFileHelper& operator=( const CTaskFileHelper& ) = delete;    
 
@@ -28,42 +33,42 @@ public:
     bool Save(const TCHAR* szFileName);
 
 protected:
-    bool SaveOption(XMLNode node);
+    bool SaveOption(xml_node* node);
 
-    bool SaveOptionAAT(XMLNode node);
-    bool SaveOptionRace(XMLNode node);
-    bool SaveOptionDefault(XMLNode node);
-    bool SaveTimeGate(XMLNode node);
-    bool SaveTaskRule(XMLNode node);
+    bool SaveOptionAAT(xml_node* node);
+    bool SaveOptionRace(xml_node* node);
+    bool SaveOptionDefault(xml_node* node);
+    bool SaveTimeGate(xml_node* node);
+    bool SaveTaskRule(xml_node* node);
 
-    bool SaveTaskPointList(XMLNode node);
-    bool SaveStartPointList(XMLNode node);
-    bool SaveWayPointList(XMLNode node);
+    bool SaveTaskPointList(xml_node* node);
+    bool SaveStartPointList(xml_node* node);
+    bool SaveWayPointList(xml_node* node);
 
-    bool SaveTaskPoint(XMLNode node, const unsigned long idx, const TASK_POINT& TaskPt);
-    bool SaveStartPoint(XMLNode node, const START_POINT& StartPt);
-    bool SaveWayPoint(XMLNode node, const WAYPOINT& WayPoint);
+    bool SaveTaskPoint(xml_node* node, const unsigned long idx, const TASK_POINT& TaskPt);
+    bool SaveStartPoint(xml_node* node, const START_POINT& StartPt);
+    bool SaveWayPoint(xml_node* node, const WAYPOINT& WayPoint);
 
-    void LoadOptions(XMLNode node);
-    void LoadOptionAAT(XMLNode node);
-    void LoadOptionRace(XMLNode node);
-    void LoadOptionDefault(XMLNode node);
+    void LoadOptions(const xml_node* node);
+    void LoadOptionAAT(const xml_node* node);
+    void LoadOptionRace(const xml_node* node);
+    void LoadOptionDefault(const xml_node* node);
 
-    void LoadTimeGate(XMLNode node);
-    void LoadRules(XMLNode node);
+    void LoadTimeGate(const xml_node* node);
+    void LoadRules(const xml_node* node);
 
-    bool LoadTaskPointList(XMLNode node);
-    bool LoadStartPointList(XMLNode node);
-    void LoadWayPointList(XMLNode node, TCHAR *firstWPname, TCHAR *lastWPname);
+    bool LoadTaskPointList(const xml_node* node);
+    bool LoadStartPointList(const xml_node* node);
+    void LoadWayPointList(const xml_node* node, const TCHAR *firstWPname, const TCHAR *lastWPname);
 
-    bool LoadTaskPoint(XMLNode node);
-    bool LoadStartPoint(XMLNode node);
-    void LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *lastWPname);
+    bool LoadTaskPoint(const xml_node* node);
+    bool LoadStartPoint(const xml_node* node);
+    void LoadWayPoint(const xml_node* node, const TCHAR *firstWPname, const TCHAR *lastWPname);
 
 private:
     std::set<size_t> mWayPointToSave;
     std::map<tstring, size_t> mWayPointLoaded;
-    unsigned mFinishIndex;
+    unsigned mFinishIndex = {};
 };
 
 #endif	/* CTASKFILEHELPER_H */

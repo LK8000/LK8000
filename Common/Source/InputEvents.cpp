@@ -2577,7 +2577,7 @@ void InputEvents::eventTaskLoad(const TCHAR *misc) {
         if(_tcscmp(wextension,_T(LKS_TSK))==0) {
             CTaskFileHelper helper;
             if(!helper.Load(szFileName)) {
-
+              // TODO: display error
             }
         }
     }
