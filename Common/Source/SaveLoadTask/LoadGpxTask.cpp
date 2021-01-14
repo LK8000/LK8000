@@ -11,114 +11,148 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-#include "xmlParser.h"
 #include "utils/stringext.h"
 #include "LKStyle.h"
-#include <string>
+#include "utils/openzip.h"
+#include "Util/ScopeExit.hxx"
+#include "Library/rapidxml/rapidxml.hpp"
+// #define TASK_DETAILS
+
+using xml_document = rapidxml::xml_document<char>;
+using xml_node = rapidxml::xml_node<char>;
+using xml_attribute = rapidxml::xml_attribute<char>;
 
 bool LoadGpxTask(LPCTSTR szFileName) {
     LockTaskData();
-    StartupStore(_T(". LoadGpxTask : <%s>%s"), szFileName, NEWLINE);
+    AtScopeExit() {
+        UnlockTaskData();
+    };
+
+    StartupStore(_T(". LoadGpxTask : <%s>"), szFileName);
     ClearTask();
-    FILE* stream = _tfopen(szFileName, TEXT("rb"));
+
+    zzip_file_ptr stream(openzip(szFileName, "rt"));
     if(stream) {
-        fseek(stream, 0, SEEK_END); // seek to end of file
-        long size = ftell(stream); // get current file pointer
-        fseek(stream, 0, SEEK_SET); // seek back to beginning of file
-        char * buff = (char*) calloc(size + 1, sizeof (char));
-        long nRead = fread(buff, sizeof (char), size, stream);
-        fclose(stream);
-        if(nRead != size) {
-            free(buff);
-            UnlockTaskData();
+
+        zzip_off_t size = zzip_seek(stream, 0, SEEK_END); // seek to end of file and get file size
+        if(size <= 0) {
             return false;
         }
-        TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
-        from_utf8(buff, szXML, size + 1);
-        free(buff);
-        XMLNode rootNode = XMLNode::parseString(szXML, _T("gpx"));
-        free(szXML);
-        if(rootNode) {
-            if(rootNode.isEmpty()) {
-                UnlockTaskData();
-                return false;
-            }
-            //TODO: here we load just the first route may be there are others routes in the GPX file...
-            XMLNode routeNode=rootNode.getChildNode(TEXT("rte"));
-            if(routeNode.isEmpty()) { //ERROR no route found in GPX file
-                UnlockTaskData();
-                return false;
-            }
-            int numWPnodes=routeNode.nChildNode(); //count number of XML nodes inside <rte> </rte>
-            int numOfWPs=routeNode.nChildNode(TEXT("rtept")); //count number of WPs in the route
-            if(numOfWPs<1 || numOfWPs>MAXTASKPOINTS) { //ERROR: no WPs at all or too many WPs found in route in GPX file
-                UnlockTaskData();
-                return false;
-            }
-            LPCTSTR dataStr=NULL;
-            double lat;
-            XMLNode WPnode,detailNode;
-            WAYPOINT newPoint;
-            for(int i=0,idx=0;i<numWPnodes;i++) {
-                memset(&newPoint, 0, sizeof (newPoint));
-                WPnode=routeNode.getChildNode(i);
-                if(_tcscmp(WPnode.getName(),TEXT("rtept"))==0) {
-                    dataStr=WPnode.getAttribute(TEXT("lat"));
-                    if(!dataStr) { //ERROR: WP without latitude
-                        ClearTask();
-                        UnlockTaskData();
-                        return false;
-                    }
-                    lat=_tcstod(dataStr,NULL);
-                    dataStr=WPnode.getAttribute(TEXT("lon"));
-                    if(!dataStr) { //ERROR: WP without longitude
-                        ClearTask();
-                        UnlockTaskData();
-                        return false;
-                    }
-                    memset(&newPoint, 0, sizeof (newPoint));
-                    newPoint.Latitude=lat;
-                    newPoint.Longitude=_tcstod(dataStr,NULL);
-                    detailNode=WPnode.getChildNode(TEXT("ele"),0);
-                    if(detailNode) {
-                        dataStr=detailNode.getText(0);
-                        if(dataStr) newPoint.Altitude=_tcstod(dataStr,NULL);
-                    }
-                    detailNode=WPnode.getChildNode(TEXT("name"),0);
-                    if(detailNode) {
-                        dataStr=detailNode.getText(0);
-                        if(dataStr) _tcscpy(newPoint.Name, dataStr);
-                    }
-                    detailNode=WPnode.getChildNode(TEXT("cmt"),0);
-                    if(detailNode) {
-                        SetWaypointComment(newPoint, detailNode.getText(0));
-                    }
-#ifdef TASK_DETAILS
-                    detailNode=WPnode.getChildNode(TEXT("desc"),0);
-                    if(detailNode) {
-                        SetWaypointDetails(newPoint, detailNode.getText(0));
-                    }
-#else
-                    newPoint.Details=nullptr;
-#endif
-                    newPoint.Format=LKW_GPX;
-                    newPoint.Style=STYLE_NORMAL;
-                    if (idx==0) newPoint.Flags = START;
-                    else if (idx==numOfWPs-1) newPoint.Flags = FINISH;
-                    else newPoint.Flags = TURNPOINT + WAYPOINTFLAG;
+        zzip_seek(stream, 0, SEEK_SET); // seek back to beginning of file
 
-                    int ix =FindOrAddWaypoint(&newPoint,ISGAAIRCRAFT && (idx==0 || idx==numOfWPs-1)); //if GA check widely if we have already depart and dest airports
-                    if (ix>=0) Task[idx++].Index=ix;
+        std::unique_ptr<char[]> buff(new (std::nothrow) char[size+1]);
+        if(!buff) {
+            return false;
+        }
+
+        // Read the file
+        zzip_ssize_t nRead = zzip_read(stream, buff.get(), size);
+        // fread can return -1...
+        if (nRead < 0) {
+            StartupStore(_T(". LoadGpxTask, fread failure!"));
+            return false;
+        }
+        if(nRead != size) {
+            StartupStore(TEXT(".. Not able to buffer."));
+            return false;
+        }
+        buff[nRead]= '\0';
+
+        xml_document xmldoc;
+        try {
+            constexpr int Flags = rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace;
+            xmldoc.parse<Flags>(buff.get());
+        } catch (rapidxml::parse_error& e) {
+            StartupStore(TEXT(".. GPX parse failed : %s"), to_tstring(e.what()).c_str());
+            return false;
+        }
+
+        xml_node* rootNode = xmldoc.first_node("gpx");
+        if(rootNode) {
+            //TODO: here we load just the first route may be there are others routes in the GPX file...
+            xml_node* routeNode = rootNode->first_node("rte");
+            if(!routeNode) { //ERROR no route found in GPX file
+                return false;
+            }
+
+            WAYPOINT newPoint;
+            int idx = 0;
+            xml_node* WPnode = routeNode->first_node("rtept");
+            if(WPnode) do {
+                memset(&newPoint, 0, sizeof(newPoint));
+
+                xml_attribute* lat = WPnode->first_attribute("lat");
+                if(lat && lat->value()) {
+                    newPoint.Latitude = strtod(lat->value(), nullptr);
+                } else {
+                    ClearTask();
+                    return false;
+                }
+
+                xml_attribute* lon = WPnode->first_attribute("lon");
+                if(lon && lon->value()) {
+                    newPoint.Longitude = strtod(lon->value(), nullptr);
+                } else {
+                    ClearTask();
+                    return false;
+                }
+
+                xml_node* ele = WPnode->first_node("ele");
+                if(ele && ele->value()) {
+                    newPoint.Altitude = strtod(ele->value(), nullptr);
+                }
+
+                xml_node* name = WPnode->first_node("name");
+                if(name && name->value()) {
+                    from_utf8(name->value(), newPoint.Name);
+                }
+
+                xml_node* comment = WPnode->first_node("cmt");
+                if(comment && comment->value()) {
+                    size_t len = strlen(comment->value())+1;
+                    newPoint.Comment = (TCHAR*) malloc(len * sizeof(TCHAR));
+                    from_utf8(comment->value(), newPoint.Comment, len);
+                }
+
 #ifdef TASK_DETAILS
-                    if (newPoint.Details) {
-                        free(newPoint.Details);
-                    }
+                xml_node* detail = WPnode->first_node("desc");
+                if(detail && detail->value()) {
+                    size_t len = strlen(detail->value())+1;
+                    newPoint.Details = (TCHAR*) malloc(len * sizeof(TCHAR));
+                    from_utf8(detail->value(), newPoint.Details, len);
+                }
+#else
+                newPoint.Details = nullptr;
 #endif
-                    if (newPoint.Comment) {
-                        free(newPoint.Comment);
-                    }
-                } //if(rtept)
-            } //for(each node in rtept)
+
+                WPnode = WPnode->next_sibling("rtept");
+
+                newPoint.Format=LKW_GPX;
+                newPoint.Style=STYLE_NORMAL;
+
+                if (idx==0) {
+                    newPoint.Flags = START;
+                } else if (!WPnode) {
+                    newPoint.Flags = FINISH;
+                } else {
+                    newPoint.Flags = TURNPOINT + WAYPOINTFLAG;
+                }
+
+                int ix =FindOrAddWaypoint(&newPoint,ISGAAIRCRAFT && (idx==0 || !WPnode)); //if GA check widely if we have already depart and dest airports
+                if (ix>=0) {
+                    Task[idx++].Index=ix;
+                }
+
+#ifdef TASK_DETAILS
+                if (newPoint.Details) {
+                    free(newPoint.Details);
+                }
+#endif
+
+                if (newPoint.Comment) {
+                    free(newPoint.Comment);
+                }
+            } while(WPnode); //for(each node in rtept)
         } //if(rootNode)
     } //if(stream)
     if(ISGAAIRCRAFT) { //Set task options for GA aircraft
@@ -144,6 +178,5 @@ bool LoadGpxTask(LPCTSTR szFileName) {
     TaskModified = false;
     TargetModified = false;
     _tcscpy(LastTaskFileName, szFileName);
-    UnlockTaskData();
     return true;
 }
