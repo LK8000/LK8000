@@ -38,7 +38,7 @@ namespace {
 //                       1       : Default
 //                       >= 1000 : Custom LKValue+1000
 //
-constexpr bool isOverlayDefault(int Overlay) {return (Overlay==1);}
+//constexpr bool isOverlayDefault(int Overlay) {return (Overlay==1);}
 constexpr bool isOverlayHidden(int Overlay) {return (Overlay==0);}
 constexpr bool isOverlayCustom(int Overlay) {return (Overlay>=1000);}
 constexpr int  getCustomOverlay(int Overlay) {return (Overlay-1000);}
