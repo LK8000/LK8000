@@ -15,6 +15,7 @@
 #include "dlgTools.h"
 #include "resource.h"
 #include "dlgFlarmIGCDownload.h"
+#include "utils/tokenizer.h"
 
 #define MAX_FLARM_ANSWER_LEN 640 
       // FLARM Docu does not tell the max. answer len
@@ -372,10 +373,12 @@ bool GetIGCFilename(TCHAR *IGCFilename, int Idx) {
   TCHAR Tmp[MAX_PATH];
 
   _tcscpy(Tmp, IGCFileList.at(Idx).Line1);
-  TCHAR *remaining;
-  TCHAR *Filename = _tcstok_r(Tmp, TEXT(" "), &remaining);
-  LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
-  return true;
+  TCHAR *Filename = lk::tokenizer<TCHAR>(Tmp).Next(TEXT(" "));
+  if(Filename) {
+    LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
+    return true;
+  }
+  return false;
 }
 
 static void OnEnterClicked(WndButton *pWnd) {
@@ -704,28 +707,28 @@ bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
   deb_Log(TEXT("> %s "), TempString);
 
   TCHAR empty[3] = _T("");
-  TCHAR *remaining = NULL;
-  TCHAR *Filename = _tcstok_r(TempString, TEXT("|"), &remaining);
+  lk::tokenizer<TCHAR> tok(TempString);
+  TCHAR *Filename = tok.Next({_T('|')});
   if (Filename == NULL) {
     Filename = empty;
   };
-  TCHAR *Date = _tcstok_r(NULL, TEXT("|"), &remaining);
+  TCHAR *Date = tok.Next({_T('|')});
   if (Date == NULL) {
     Date = empty;
   };
-  TCHAR *Takeoff = _tcstok_r(NULL, TEXT("|"), &remaining);
+  TCHAR *Takeoff = tok.Next({_T('|')});
   if (Takeoff == NULL) {
     Takeoff = empty;
   };
-  TCHAR *Duration = _tcstok_r(NULL, TEXT("|"), &remaining);
+  TCHAR *Duration = tok.Next({_T('|')});
   if (Duration == NULL) {
     Duration = empty;
   };
-  TCHAR *Pilot = _tcstok_r(NULL, TEXT("|"), &remaining);
+  TCHAR *Pilot = tok.Next({_T('|')});
   if (Pilot == NULL) {
     Pilot = empty;
   };
-  TCHAR *CN = _tcstok_r(NULL, TEXT("|"), &remaining);
+  TCHAR *CN = tok.Next({_T('|')});
   if (CN == NULL) {
     CN = empty;
   };

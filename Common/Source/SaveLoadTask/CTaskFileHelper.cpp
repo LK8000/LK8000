@@ -19,29 +19,41 @@
 #include "Waypointparser.h"
 #include "Util/UTF8.hpp"
 #include "CriticalSection.h"
+#include "utils/openzip.h"
+
+#include <fstream>
+#include "Library/rapidxml/rapidxml.hpp"
+#include "Library/rapidxml/rapidxml_print.hpp"
 
 
 extern void RenameIfVirtual(const unsigned int i);
 extern bool FullResetAsked;
 
+namespace {
 
-LPTSTR AllocFormat(LPCTSTR fmt, ...) {
-    int n;
+using xml_node = rapidxml::xml_node<char>;
+using xml_attribute = rapidxml::xml_attribute<char>;
+using xml_document = rapidxml::xml_document<char>;
+using node_type = rapidxml::node_type;
+
+char* AllocFormat(xml_document* doc, const char* fmt, ...) {
+    assert(doc);
+    if(doc == nullptr) {
+        throw std::runtime_error("AllocFormat : 'doc' must be not null");
+    }
+
     int size = 50; /* Guess we need no more than 100 bytes. */
-    LPTSTR p;
-    LPTSTR np;
     va_list ap;
 
-    if ((p = (LPTSTR) malloc(size * sizeof (TCHAR))) == NULL)
-        return NULL;
+    char* p = doc->allocate_string(nullptr, size);
 
     while (1) {
         /* Try to print in the allocated space. */
         va_start(ap, fmt);
-        n = _vsntprintf(p, size, fmt, ap);
+        int n = vsnprintf(p, size, fmt, ap);
         va_end(ap);
 
-        /* If that worked, return the string. */
+        /* If that work, return the string. */
         if (n > -1 && n < size)
             return p;
 
@@ -51,127 +63,144 @@ LPTSTR AllocFormat(LPCTSTR fmt, ...) {
         else /* glibc 2.0 */
             size *= 2; /* twice the old size */
 
-        if ((np = (LPTSTR) realloc(p, size * sizeof (TCHAR))) == NULL) {
-            LKASSERT(np);
-            free(p);
-            return NULL;
+        char* np = doc->allocate_string(nullptr, size);
+        if (np == nullptr) {
+            return nullptr;
         } else {
             p = np;
         }
     }
 }
 
-inline LPTSTR ToString(unsigned ulong) {
-    return AllocFormat(_T("%u"), ulong);
+char* ToString(xml_document* doc, unsigned ulong) {
+    return AllocFormat(doc, "%u", ulong);
 }
 
-inline LPTSTR ToString(LPCTSTR szString) {
-    return AllocFormat(_T("%s"), szString);
-}
-
-inline LPTSTR ToString(double dVal) {
-    return AllocFormat(_T("%f"), dVal);
-}
-
-inline LPTSTR ToString(int iVal) {
-    return AllocFormat(_T("%d"), iVal);
-}
-
-inline LPTSTR ToString(bool bVal) {
-    return AllocFormat(_T("%s"), bVal ? _T("true") : _T("false"));
-}
-
-inline void FromString(LPCTSTR szVal, unsigned& ulong) {
-    TCHAR * sz = NULL;
-    if (szVal) {
-        ulong = _tcstoul(szVal, &sz, 10);
+char* ToString(xml_document* doc, const char* szString) {
+    if(doc == nullptr) {
+        throw std::runtime_error("ToString : 'doc' must be not null");
     }
+    return doc->allocate_string(szString);
 }
 
-inline void FromString(LPCTSTR szVal, LPCTSTR& szString) {
-    szString = szVal;
-}
+#ifdef UNICODE
 
-inline void FromString(LPCTSTR szVal, double& dVal) {
-    TCHAR * sz = NULL;
-    if (szVal) {
-        dVal = _tcstod(szVal, &sz);
+char* ToString(xml_document* doc, const wchar_t* szString) {
+    if(doc == nullptr) {
+        throw std::runtime_error("ToString : 'doc' must be not null");
     }
+    return doc->allocate_string(to_utf8(szString).c_str());
 }
 
-inline void FromString(LPCTSTR szVal, int& iVal) {
-    TCHAR * sz = NULL;
-    if (szVal) {
-        iVal = _tcstol(szVal, &sz, 10);
+#endif
+
+char* ToString(xml_document* doc, double dVal) {
+    return AllocFormat(doc, "%f", dVal);
+}
+
+char* ToString(xml_document* doc, int iVal) {
+    return AllocFormat(doc, "%d", iVal);
+}
+
+char* ToString(xml_document* doc, bool bVal) {
+    if(doc == nullptr) {
+        throw std::runtime_error("ToString : 'doc' must be not null");
     }
+    return doc->allocate_string(bVal ? "true" : "false");
 }
 
-inline void FromString(LPCTSTR szVal, short& iVal) {
-    TCHAR * sz = NULL;
-    if (szVal) {
-        iVal = _tcstol(szVal, &sz, 10);
-    }
-}
-
-inline void FromString(LPCTSTR szVal, bool& bVal) {
-    if (szVal) {
-        bVal = (_tcscmp(szVal, _T("true")) == 0);
-    }
-}
-
-#define SetAttribute(node, name, val) if(!node.AddAttribute(ToString(name), ToString(val))) { return false; } 
-#define GetAttribute(node, name, val) FromString(node.getAttribute(name, 0), val)
-
-bool getFirstTaskWayPointName(XMLNode node, TCHAR *firstWPname) {
+template<typename T>
+void SetAttribute(xml_node* node, const char* name, const T val) {
     if(node) {
-        XMLNode WPnode = node.getChildNode(_T("point"),0);
-        if(WPnode) {
-            unsigned idx = MAXTASKPOINTS;
-            GetAttribute(WPnode, _T("idx"), idx);
-            if(idx==0) {
-                LPCTSTR first=NULL;
-                GetAttribute(WPnode, _T("name"),first);
-                if(first) {
-                    if(_tcslen(first)<=NAME_SIZE) {
-                        _tcscpy(firstWPname,first);
-                        return true;
-                    }
-                }
-            }
+        xml_document* doc = node->document();
+        char* string = ToString(doc, val);
+        node->append_attribute(doc->allocate_attribute(name, string));
+    } else {
+        throw std::runtime_error("SetAttribute : node must be not null");
+    }
+}
+
+xml_node* AddNode(xml_node* parent, const char* name) {
+    if (parent) {
+        xml_document* doc = parent->document();
+        if(doc) {
+            xml_node* node = doc->allocate_node(node_type::node_element, name);
+            parent->append_node(node);
+            return node;
+        }
+    }
+    return nullptr;
+}
+
+
+void FromString(const char* szVal, unsigned& ulong) {
+    ulong = szVal ? strtoul(szVal, nullptr, 10) : 0U;
+}
+
+template<size_t size>
+void FromString(const char* szVal, TCHAR(&szString)[size]) {
+    from_utf8(szVal, szString);
+}
+
+void FromString(const char* szVal, double& dVal) {
+    dVal = szVal ? strtod(szVal, nullptr) : 0.;
+}
+
+void FromString(const char* szVal, int& iVal) {
+    iVal = szVal ? strtol(szVal, nullptr, 10) : 0;
+}
+
+void FromString(const char* szVal, short& iVal) {
+    iVal = szVal ? strtol(szVal, nullptr, 10) : 0;
+}
+
+void FromString(const char* szVal, bool& bVal) {
+    bVal = (szVal && (strcmp(szVal, "true") == 0));
+}
+
+const char* GetAttribute(const xml_node* node, const char* name) {
+    if(node) {
+        xml_attribute* attribute = node->first_attribute(name);
+        if (attribute) {
+            return attribute->value();
+        }
+    }
+    return "";
+}
+
+template<typename T>
+void GetAttribute(const xml_node* node, const char* name, T& val) {
+    FromString(GetAttribute(node, name), val);
+}
+
+
+template<size_t size>
+bool getFirstTaskWayPointName(const xml_node* node, TCHAR (&firstWPname)[size]) {
+    if(node) {
+        xml_node* first = node->first_node("point");
+        if(first) {
+            GetAttribute(first, "name", firstWPname);
+            return true;
         }
     }
     return false;
 }
 
-bool getLastTaskWayPointName(XMLNode node, TCHAR *lastWPname) {
+template<size_t size>
+bool getLastTaskWayPointName(const xml_node* node, TCHAR (&lastWPname)[size]) {
     if(node) {
-        int numOfWPs=node.nChildNode(_T("point")); //count number of WPs in the route
-        if(numOfWPs>=2) {
-            XMLNode WPnode = node.getChildNode(_T("point"),numOfWPs-1);
-            if(WPnode) {
-                unsigned idx = MAXTASKPOINTS;
-                GetAttribute(WPnode, _T("idx"), idx);
-                if(idx==(unsigned long)(numOfWPs-1)) {
-                    LPCTSTR last=NULL;
-                    GetAttribute(WPnode, _T("name"),last);
-                    if(last) {
-                        if(_tcslen(last)<=NAME_SIZE) {
-                            _tcscpy(lastWPname,last);
-                            return true;
-                        }
-                    }
-                }
-            }
+        xml_node* first = node->first_node("point");
+        xml_node* last = node->last_node("point");
+        if(first != last) {
+            GetAttribute(last, "name", lastWPname);
+            return true;
         }
     }
     return false;
 }
 
-CTaskFileHelper::CTaskFileHelper() : mFinishIndex() {
-}
+} // namespace
 
-CTaskFileHelper::~CTaskFileHelper() {
-}
 
 bool CTaskFileHelper::Load(const TCHAR* szFileName) {
     CScopeLock LockTask(LockTaskData, UnlockTaskData);
@@ -191,59 +220,53 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
         _tcscpy(taskFileName, szFileName);
     }
 
+    try {
 
-    FILE* stream = _tfopen(taskFileName, TEXT("rb"));
-    if (stream) {
-        fseek(stream, 0, SEEK_END); // seek to end of file
-        long size = ftell(stream); // get current file pointer
-        fseek(stream, 0, SEEK_SET); // seek back to beginning of file
-
-        char * buff = (char*) calloc(size + 1, sizeof (char));
-        long nRead = fread(buff, sizeof (char), size, stream);
-        if (nRead != size) {
-            fclose(stream);
-            free(buff);
-            return false;
-        }
-        fclose(stream);
-#ifdef UNICODE
-        TCHAR * szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
-        from_utf8(buff, szXML, size + 1);
-        free(buff);
-#else
-        TCHAR * szXML = buff;
-        if(!ValidateUTF8(szXML)) {
-            StartupStore(_T(".. error : Invalid file encoding") NEWLINE);
-            free(szXML);
-            return false;
-        }
-#endif
-        XMLNode rootNode = XMLNode::parseString(szXML, _T("lk-task"));
-
-        if (rootNode) {
-            LoadOptions(rootNode);
-
-            if(ISGAAIRCRAFT) {
-                TCHAR firstWPname[NAME_SIZE+1];
-                TCHAR lastWPname[NAME_SIZE+1];
-                XMLNode taskNode=rootNode.getChildNode(_T("taskpoints"),0);
-                bool gotFirstWPname=getFirstTaskWayPointName(taskNode,firstWPname);
-                bool gotLastWPname=getLastTaskWayPointName(taskNode,lastWPname);
-                LoadWayPointList(rootNode.getChildNode(_T("waypoints"), 0),gotFirstWPname?firstWPname:NULL,gotLastWPname?lastWPname:NULL);
-            } else
-                LoadWayPointList(rootNode.getChildNode(_T("waypoints"), 0),NULL,NULL);
-
-            if (!LoadTaskPointList(rootNode.getChildNode(_T("taskpoints"), 0))) {
-                free(szXML);
+        zzip_file_ptr stream(openzip(taskFileName, "rt"));
+        if (stream) {
+            zzip_seek(stream, 0, SEEK_END); // seek to end of file
+            long size = zzip_tell(stream); // get current file pointer
+            zzip_seek(stream, 0, SEEK_SET); // seek back to beginning of file
+            auto buff = std::make_unique<char[]>(size + 1);
+            zzip_ssize_t nRead = zzip_read(stream, buff.get(), size);
+            if (nRead != size) {
                 return false;
             }
-            if (!LoadStartPointList(rootNode.getChildNode(_T("startpoints"), 0))) {
-                free(szXML);
-                return false;
+            buff[nRead] = '\0';
+
+            constexpr int Flags = rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace;
+
+            xml_document xmldoc;
+            xmldoc.parse<Flags>(buff.get());
+            const xml_node* rootNode = xmldoc.first_node("lk-task");
+            if (rootNode) {
+                LoadOptions(rootNode);
+
+                if(ISGAAIRCRAFT) {
+                    TCHAR firstWPname[NAME_SIZE+1];
+                    TCHAR lastWPname[NAME_SIZE+1];
+
+                    const xml_node* taskNode = rootNode->first_node("taskpoints");
+
+                    bool gotFirstWPname = getFirstTaskWayPointName(taskNode, firstWPname);
+                    bool gotLastWPname = getLastTaskWayPointName(taskNode, lastWPname);
+
+                    LoadWayPointList(rootNode->first_node("waypoints"), (gotFirstWPname?firstWPname:nullptr), (gotLastWPname?lastWPname:nullptr));
+                } else {
+                    LoadWayPointList(rootNode->first_node("waypoints"), nullptr, nullptr);
+                }
+
+                if (!LoadTaskPointList(rootNode->first_node("taskpoints"))) {
+                    return false;
+                }
+                if (!LoadStartPointList(rootNode->first_node("startpoints"))) {
+                    return false;
+                }
             }
         }
-
-        free(szXML);
+    } catch (std::exception& e) {
+        StartupStore(_T("LoadTask : %s"), to_tstring(e.what()).c_str());
+        return false;
     }
 
     RefreshTask();
@@ -256,146 +279,140 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
     return true;
 }
 
-void CTaskFileHelper::LoadOptions(XMLNode node) {
+void CTaskFileHelper::LoadOptions(const xml_node* node) {
     if (node) {
-        XMLNode nodeOpt = node.getChildNode(_T("options"));
+        const xml_node* nodeOpt = node->first_node("options");
         if (nodeOpt) {
-            LPCTSTR szAttr = NULL;
-            GetAttribute(nodeOpt, _T("auto-advance"), szAttr);
+            const char* szAttr = GetAttribute(nodeOpt, "auto-advance");
             if (szAttr) {
-                if (_tcscmp(szAttr, _T("Manual")) == 0) {
+                if (strcmp(szAttr, "Manual") == 0) {
                     AutoAdvance = 0;
-                } else if (_tcscmp(szAttr, _T("Auto")) == 0) {
+                } else if (strcmp(szAttr, "Auto") == 0) {
                     AutoAdvance = 1;
-                } else if (_tcscmp(szAttr, _T("Arm")) == 0) {
+                } else if (strcmp(szAttr, "Arm") == 0) {
                     AutoAdvance = 2;
-                } else if (_tcscmp(szAttr, _T("ArmStart")) == 0) {
+                } else if (strcmp(szAttr, "ArmStart") == 0) {
                     AutoAdvance = 3;
-                } else if (_tcscmp(szAttr, _T("ArmTPs")) == 0) {
+                } else if (strcmp(szAttr, "ArmTPs") == 0) {
                     AutoAdvance = 4;
                 }
             }
 
-            GetAttribute(node, _T("type"), szAttr);
-            if (szAttr) {
-                if (_tcscmp(szAttr, _T("AAT")) == 0) {
+            const char* szType = GetAttribute(node, "type");
+            if (szType) {
+                if (strcmp(szType, "AAT") == 0) {
                     gTaskType = TSK_AAT;
                     LoadOptionAAT(nodeOpt);
-                } else if (_tcscmp(szAttr, _T("Race")) == 0) {
+                } else if (strcmp(szType, "Race") == 0) {
                     gTaskType = TSK_GP;
                     LoadOptionRace(nodeOpt);
-                } else if (_tcscmp(szAttr, _T("Default")) == 0) {
+                } else if (strcmp(szType, "Default") == 0) {
                     gTaskType = TSK_DEFAULT;
                     LoadOptionDefault(nodeOpt);
                 }
             }
-            LoadRules(nodeOpt.getChildNode(_T("rules"), 0));
+            LoadRules(nodeOpt->first_node("rules"));
         }
     }
 }
 
-void CTaskFileHelper::LoadOptionAAT(XMLNode node) {
+void CTaskFileHelper::LoadOptionAAT(const xml_node* node) {
     if (node) {
-        GetAttribute(node, _T("length"), AATTaskLength);
+        GetAttribute(node, "length", AATTaskLength);
     }
 }
 
-void CTaskFileHelper::LoadOptionRace(XMLNode node) {
+void CTaskFileHelper::LoadOptionRace(const xml_node* node) {
     if (node) {
-        LoadTimeGate(node.getChildNode(_T("time-gate"), 0));
+        LoadTimeGate(node->first_node("time-gate"));
     }
     // SS Turnpoint
     // ESS Turnpoint
 }
 
-void CTaskFileHelper::LoadTimeGate(XMLNode node) {
+void CTaskFileHelper::LoadTimeGate(const xml_node* node) {
     if (node) {
-        GetAttribute(node, _T("number"), PGNumberOfGates);
-        LPCTSTR szTime = NULL;
-        GetAttribute(node, _T("open-time"), szTime);
+        GetAttribute(node, "number", PGNumberOfGates);
+        TCHAR szTime[50];
+        GetAttribute(node, "open-time", szTime);
         StrToTime(szTime, &PGOpenTimeH, &PGOpenTimeM);
-        GetAttribute(node, _T("close-time"), szTime);
+        GetAttribute(node, "close-time", szTime);
         StrToTime(szTime, &PGCloseTimeH, &PGCloseTimeM);
-        GetAttribute(node, _T("interval-time"), PGGateIntervalTime);
+        GetAttribute(node, "interval-time", PGGateIntervalTime);
     } else {
         PGNumberOfGates = 0;
     }
-    InitActiveGate();
-    
+    InitActiveGate();    
 }
 
-void CTaskFileHelper::LoadOptionDefault(XMLNode node) {
+void CTaskFileHelper::LoadOptionDefault(const xml_node* node) {
     if (node) {
-        XMLNode nodeStart = node.getChildNode(_T("start"), 0);
+        const xml_node* nodeStart = node->first_node("start");
         if (nodeStart) {
-            LPCTSTR szType = NULL;
-            GetAttribute(nodeStart, _T("type"), szType);
+            const char* szType = GetAttribute(nodeStart, "type");
             if (szType) {
-                if (_tcscmp(szType, _T("circle")) == 0) {
+                if (strcmp(szType, "circle") == 0) {
                     StartLine = 0;
-                } else if (_tcscmp(szType, _T("line")) == 0) {
+                } else if (strcmp(szType, "line") == 0) {
                     StartLine = 1;
-                } else if (_tcscmp(szType, _T("sector")) == 0) {
+                } else if (strcmp(szType, "sector") == 0) {
                     StartLine = 2;
                 }
             }
-            GetAttribute(nodeStart, _T("radius"), StartRadius);
+            GetAttribute(nodeStart, "radius", StartRadius);
         }
 
-        XMLNode nodeFinish = node.getChildNode(_T("finish"), 0);
+        const xml_node* nodeFinish = node->first_node("finish");
         if (nodeFinish) {
-            LPCTSTR szType = NULL;
-            GetAttribute(nodeFinish, _T("type"), szType);
+            const char* szType = GetAttribute(nodeStart, "type");
             if (szType) {
-                if (_tcscmp(szType, _T("circle")) == 0) {
+                if (strcmp(szType, "circle") == 0) {
                     FinishLine = 0;
-                } else if (_tcscmp(szType, _T("line")) == 0) {
+                } else if (strcmp(szType, "line") == 0) {
                     FinishLine = 1;
-                } else if (_tcscmp(szType, _T("sector")) == 0) {
+                } else if (strcmp(szType, "sector") == 0) {
                     FinishLine = 2;
                 }
             }
-            GetAttribute(nodeFinish, _T("radius"), FinishRadius);
+            GetAttribute(nodeFinish, "radius", FinishRadius);
         }
 
-        XMLNode nodeSector = node.getChildNode(_T("sector"), 0);
+        const xml_node* nodeSector = node->first_node("sector");
         if (nodeSector) {
-            LPCTSTR szType = NULL;
-            GetAttribute(nodeSector, _T("type"), szType);
-            if (_tcscmp(szType, _T("circle")) == 0) {
+            const char* szType = GetAttribute(nodeSector, "type");
+            if (strcmp(szType, "circle") == 0) {
                 SectorType = CIRCLE;
-            } else if (_tcscmp(szType, _T("sector")) == 0) {
+            } else if (strcmp(szType, "sector") == 0) {
                 SectorType = SECTOR;
-            } else if (_tcscmp(szType, _T("DAe")) == 0) {
+            } else if (strcmp(szType, "DAe") == 0) {
                 SectorType = DAe;
-            } else if (_tcscmp(szType, _T("line")) == 0) {
+            } else if (strcmp(szType, "line") == 0) {
                 SectorType = LINE;
             }
-            GetAttribute(nodeSector, _T("radius"), SectorRadius);
+            GetAttribute(nodeSector, "radius", SectorRadius);
         }
     }
 }
 
-void CTaskFileHelper::LoadRules(XMLNode node) {
+void CTaskFileHelper::LoadRules(const xml_node* node) {
     if (node) {
-        XMLNode nodeFinish = node.getChildNode(_T("finish"), 0);
+        const xml_node* nodeFinish = node->first_node("finish");
         if (nodeFinish) {
-            GetAttribute(nodeFinish, _T("fai-height"), EnableFAIFinishHeight);
-            GetAttribute(nodeFinish, _T("min-height"), FinishMinHeight);
+            GetAttribute(nodeFinish, "fai-height", EnableFAIFinishHeight);
+            GetAttribute(nodeFinish, "min-height", FinishMinHeight);
         }
-        XMLNode nodeStart = node.getChildNode(_T("start"), 0);
+        const xml_node* nodeStart = node->first_node("start");
         if (nodeStart) {
-            GetAttribute(nodeStart, _T("max-height"), StartMaxHeight);
-            GetAttribute(nodeStart, _T("max-height-margin"), StartMaxHeightMargin);
-            GetAttribute(nodeStart, _T("max-speed"), StartMaxSpeed);
-            GetAttribute(nodeStart, _T("max-speed-margin"), StartMaxSpeedMargin);
+            GetAttribute(nodeStart, "max-height", StartMaxHeight);
+            GetAttribute(nodeStart, "max-height-margin", StartMaxHeightMargin);
+            GetAttribute(nodeStart, "max-speed", StartMaxSpeed);
+            GetAttribute(nodeStart, "max-speed-margin", StartMaxSpeedMargin);
 
-            LPCTSTR szAttr = NULL;
-            GetAttribute(nodeStart, _T("height-ref"), szAttr);
+            const char* szAttr = GetAttribute(nodeStart, "height-ref");
             if (szAttr) {
-                if (_tcscmp(szAttr, _T("AGL")) == 0) {
+                if (strcmp(szAttr, "AGL") == 0) {
                     StartHeightRef = 0;
-                } else if (_tcscmp(szAttr, _T("ASL")) == 0) {
+                } else if (strcmp(szAttr, "ASL") == 0) {
                     StartHeightRef = 1;
                 }
             }
@@ -403,16 +420,15 @@ void CTaskFileHelper::LoadRules(XMLNode node) {
     }
 }
 
-bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
+bool CTaskFileHelper::LoadTaskPointList(const xml_node* node) {
     mFinishIndex = 0;
     if (node) {
-        int i = 0;
-        XMLNode nodePoint = node.getChildNode(_T("point"), &i);
+        const xml_node* nodePoint = node->first_node("point");
         while (nodePoint) {
             if (!LoadTaskPoint(nodePoint)) {
                 return false;
             }
-            nodePoint = node.getChildNode(_T("point"), &i);
+            nodePoint = nodePoint->next_sibling("point");
         }
     }
 
@@ -477,38 +493,36 @@ bool CTaskFileHelper::LoadTaskPointList(XMLNode node) {
     return true;
 }
 
-bool CTaskFileHelper::LoadStartPointList(XMLNode node) {
+bool CTaskFileHelper::LoadStartPointList(const xml_node* node) {
     if (node) {
-        int i = 0;
-        XMLNode nodePoint = node.getChildNode(_T("point"), &i);
+        const xml_node* nodePoint = node->first_node("point");
         while (nodePoint) {
             if (!LoadStartPoint(nodePoint)) {
                 return false;
             }
-            nodePoint = node.getChildNode(_T("point"), &i);
+            nodePoint = nodePoint->next_sibling("point");
         }
         EnableMultipleStartPoints = ValidStartPoint(0);
     }
     return true;
 }
 
-void CTaskFileHelper::LoadWayPointList(XMLNode node, TCHAR *firstWPname, TCHAR *lastWPname) {
+void CTaskFileHelper::LoadWayPointList(const xml_node* node, const TCHAR *firstWPname, const TCHAR *lastWPname) {
     if (node) {
-        int i = 0;
-        XMLNode nodePoint = node.getChildNode(_T("point"), &i);
+        const xml_node* nodePoint = node->first_node("point");
         while (nodePoint) {
-            LoadWayPoint(nodePoint,firstWPname,lastWPname);
-            nodePoint = node.getChildNode(_T("point"), &i);
+            LoadWayPoint(nodePoint, firstWPname, lastWPname);
+            nodePoint = nodePoint->next_sibling("point");
         }
     }
 }
 
-bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
+bool CTaskFileHelper::LoadTaskPoint(const xml_node* node) {
     if (node) {
         unsigned idx = MAXTASKPOINTS;
-        GetAttribute(node, _T("idx"), idx);
-        LPCTSTR szName = NULL;
-        GetAttribute(node, _T("name"), szName);
+        GetAttribute(node, "idx", idx);
+        TCHAR szName[NAME_SIZE+1];
+        GetAttribute(node, "name", szName);
         if (idx >= MAXTASKPOINTS || szName == NULL) {
             return false; // invalide TaskPoint index
         }
@@ -526,50 +540,49 @@ bool CTaskFileHelper::LoadTaskPoint(XMLNode node) {
 
         mFinishIndex = std::max(mFinishIndex, idx);
 
-        LPCTSTR szType = NULL;
-        GetAttribute(node, _T("type"), szType);
+        const char* szType = GetAttribute(node, "type");
         if (szType) {
-            if (_tcscmp(szType, _T("circle")) == 0) {
+            if (strcmp(szType, "circle") == 0) {
                 Task[idx].AATType = CIRCLE;
-                GetAttribute(node, _T("radius"), Task[idx].AATCircleRadius);
-                GetAttribute(node, _T("Exit"), Task[idx].OutCircle);
-            } else if (_tcscmp(szType, _T("sector")) == 0) {
+                GetAttribute(node, "radius", Task[idx].AATCircleRadius);
+                GetAttribute(node, "Exit", Task[idx].OutCircle);
+            } else if (strcmp(szType, "sector") == 0) {
                 Task[idx].AATType = SECTOR;
-                GetAttribute(node, _T("radius"), Task[idx].AATSectorRadius);
-                GetAttribute(node, _T("start-radial"), Task[idx].AATStartRadial);
-                GetAttribute(node, _T("end-radial"), Task[idx].AATFinishRadial);
-            } else if (_tcscmp(szType, _T("line")) == 0) {
+                GetAttribute(node, "radius", Task[idx].AATSectorRadius);
+                GetAttribute(node, "start-radial", Task[idx].AATStartRadial);
+                GetAttribute(node, "end-radial", Task[idx].AATFinishRadial);
+            } else if (strcmp(szType, "line") == 0) {
                 Task[idx].AATType = LINE;
-                GetAttribute(node, _T("radius"), Task[idx].AATCircleRadius);
-            } else if (_tcscmp(szType, _T("DAe")) == 0) {
+                GetAttribute(node, "radius", Task[idx].AATCircleRadius);
+            } else if (strcmp(szType, "DAe") == 0) {
                 Task[idx].AATType = DAe; // not Used in AAT and PGTask
-            } else if (_tcscmp(szType, _T("cone")) == 0) {
+            } else if (strcmp(szType, "cone") == 0) {
                 Task[idx].AATType = CONE; // Only Used in PGTask
-                GetAttribute(node, _T("base"), Task[idx].PGConeBase);
-                GetAttribute(node, _T("radius"), Task[idx].PGConeBaseRadius);
-                GetAttribute(node, _T("slope"), Task[idx].PGConeSlope);
+                GetAttribute(node, "base", Task[idx].PGConeBase);
+                GetAttribute(node, "radius", Task[idx].PGConeBaseRadius);
+                GetAttribute(node, "slope", Task[idx].PGConeSlope);
                 Task[idx].OutCircle = false;
-            } else if (_tcscmp(szType, _T("ess_circle")) == 0) {
+            } else if (strcmp(szType, "ess_circle") == 0) {
                 Task[idx].AATType = ESS_CIRCLE;
-                GetAttribute(node, _T("radius"), Task[idx].AATCircleRadius);
-                GetAttribute(node, _T("Exit"), Task[idx].OutCircle);
+                GetAttribute(node, "radius", Task[idx].AATCircleRadius);
+                GetAttribute(node, "Exit", Task[idx].OutCircle);
             }
         }
-        GetAttribute(node, _T("lock"), Task[idx].AATTargetLocked);
-        GetAttribute(node, _T("target-lat"), Task[idx].AATTargetLat);
-        GetAttribute(node, _T("target-lon"), Task[idx].AATTargetLon);
-        GetAttribute(node, _T("offset-radius"), Task[idx].AATTargetOffsetRadius);
-        GetAttribute(node, _T("offset-radial"), Task[idx].AATTargetOffsetRadial);
+        GetAttribute(node, "lock", Task[idx].AATTargetLocked);
+        GetAttribute(node, "target-lat", Task[idx].AATTargetLat);
+        GetAttribute(node, "target-lon", Task[idx].AATTargetLon);
+        GetAttribute(node, "offset-radius", Task[idx].AATTargetOffsetRadius);
+        GetAttribute(node, "offset-radial", Task[idx].AATTargetOffsetRadial);
     }
     return true;
 }
 
-bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
+bool CTaskFileHelper::LoadStartPoint(const xml_node* node) {
     if (node) {
         unsigned idx = MAXSTARTPOINTS;
-        GetAttribute(node, _T("idx"), idx);
-        LPCTSTR szName = NULL;
-        GetAttribute(node, _T("name"), szName);
+        GetAttribute(node, "idx", idx);
+        TCHAR szName[NAME_SIZE+1];
+        GetAttribute(node, "name", szName);
 
         if (idx >= MAXSTARTPOINTS || szName == NULL) {
             return false; // invalide TaskPoint index
@@ -590,19 +603,13 @@ bool CTaskFileHelper::LoadStartPoint(XMLNode node) {
     return true;
 }
 
-void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *lastWPname) {
-    LPCTSTR szAttr = NULL;
+void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPname, const TCHAR *lastWPname) {
     WAYPOINT newPoint;
     memset(&newPoint, 0, sizeof (newPoint));
 
-    GetAttribute(node, _T("code"), szAttr);
-    if (szAttr) {
-        _tcscpy(newPoint.Code, szAttr);
-    }
-    GetAttribute(node, _T("name"), szAttr);
-    if (szAttr) {
-        _tcscpy(newPoint.Name, szAttr);
-    }
+    GetAttribute(node, "code", newPoint.Code);
+    GetAttribute(node, "name", newPoint.Name);
+
     bool lookupAirfield=false;
     if(ISGAAIRCRAFT) {
         if(firstWPname) {
@@ -612,28 +619,24 @@ void CTaskFileHelper::LoadWayPoint(XMLNode node, TCHAR *firstWPname, TCHAR *last
             if(_tcscmp(newPoint.Name,lastWPname)==0) lookupAirfield=true;
         }
     }
-    GetAttribute(node, _T("latitude"), newPoint.Latitude);
-    GetAttribute(node, _T("longitude"), newPoint.Longitude);
-    GetAttribute(node, _T("altitude"), newPoint.Altitude);
-    GetAttribute(node, _T("flags"), newPoint.Flags);
-    GetAttribute(node, _T("comment"), szAttr);
-    SetWaypointComment(newPoint, szAttr);
+    GetAttribute(node, "latitude", newPoint.Latitude);
+    GetAttribute(node, "longitude", newPoint.Longitude);
+    GetAttribute(node, "altitude", newPoint.Altitude);
+    GetAttribute(node, "flags", newPoint.Flags);
+
+    const char* comment = GetAttribute(node, "comment");
+    SetWaypointComment(newPoint, utf8_to_tstring(comment).c_str());
+
 #if TASK_DETAILS
-    GetAttribute(node, _T("details"), szAttr);
+    GetAttribute(node, "details", szAttr);
     SetWaypointDetails(newPoint, szAttr);
 #endif
-    GetAttribute(node, _T("format"), newPoint.Format);
-    GetAttribute(node, _T("freq"), szAttr);
-    if (szAttr) {
-        _tcscpy(newPoint.Freq, szAttr);
-    }
-    GetAttribute(node, _T("runwayLen"), newPoint.RunwayLen);
-    GetAttribute(node, _T("runwayDir"), newPoint.RunwayDir);
-    GetAttribute(node, _T("country"), szAttr);
-    if (szAttr) {
-        _tcscpy(newPoint.Country, szAttr);
-    }
-    GetAttribute(node, _T("style"), newPoint.Style);
+    GetAttribute(node, "format", newPoint.Format);
+    GetAttribute(node, "freq", newPoint.Freq);
+    GetAttribute(node, "runwayLen", newPoint.RunwayLen);
+    GetAttribute(node, "runwayDir", newPoint.RunwayDir);
+    GetAttribute(node, "country", newPoint.Country);
+    GetAttribute(node, "style", newPoint.Style);
 
     // NOTICE: we must consider that FindOrAdd can return -1
     int ix = FindOrAddWaypoint(&newPoint,lookupAirfield);
@@ -658,113 +661,113 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
     CScopeLock LockTask(LockTaskData, UnlockTaskData);
     StartupStore(_T(". SaveTask : saving <%s>%s"), szFileName, NEWLINE);
     
-    XMLNode topNode = XMLNode::createXMLTopNode();
-    XMLNode rootNode = topNode.AddChild(ToString(_T("lk-task")), false);
+    try {
+        xml_document doc;
+        xml_node* decl = doc.allocate_node(node_type::node_declaration);
+        decl->append_attribute(doc.allocate_attribute("version", "1.0"));
+        decl->append_attribute(doc.allocate_attribute("encoding", "utf-8"));
+        doc.append_node(decl);
 
-    if (!SaveOption(rootNode)) {
-        return false;
-    }
+        xml_node* rootNode = doc.allocate_node(node_type::node_element, "lk-task");
+        doc.append_node(rootNode);
 
-    if (!SaveTaskPointList(rootNode.AddChild(ToString(_T("taskpoints")), false))) {
-        return false;
-    }
-    if (EnableMultipleStartPoints && ValidStartPoint(0)) {
-        if (!SaveStartPointList(rootNode.AddChild(ToString(_T("startpoints")), false))) {
+        if (!SaveOption(rootNode)) {
             return false;
         }
-    }
-    if (!SaveWayPointList(rootNode.AddChild(ToString(_T("waypoints")), false))) {
+
+
+
+        if (!SaveTaskPointList(AddNode(rootNode, "taskpoints"))) {
+            return false;
+        }
+        if (EnableMultipleStartPoints && ValidStartPoint(0)) {
+            if (!SaveStartPointList(AddNode(rootNode, "startpoints"))) {
+                return false;
+            }
+        }
+
+        if (!SaveWayPointList(AddNode(rootNode, "waypoints"))) {
+            return false;
+        }
+
+        std::ofstream file_out(szFileName);
+        rapidxml::print(std::ostream_iterator<char>(file_out), doc);
+        file_out.close();
+    } catch (std::exception& e) {
+        StartupStore(_T("SaveTask : %s"), to_tstring(e.what()).c_str());
         return false;
     }
-
-    bool bSuccess = false;
-    int ContentSize = 0;
-    LPTSTR szContent = topNode.createXMLString(1, &ContentSize);
-    Utf8File file;
-    if (file.Open(szFileName, Utf8File::io_create)) {
-        file.WriteLn(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
-        file.WriteLn(szContent);
-        file.Close();
-
-        bSuccess = true;
-    }
-    free(szContent);
-
-    return bSuccess;
+    return true;
 }
 
-bool CTaskFileHelper::SaveOption(XMLNode node) {
+bool CTaskFileHelper::SaveOption(xml_node* node) {
     if (!node) {
         return false;
     }
 
-    XMLNode OptNode = node.AddChild(ToString(_T("options")), false);
-    if (!OptNode) {
-        return false;
-    }
-
+    xml_node* OptNode = AddNode(node, "options");
     switch (AutoAdvance) {
         case 0:
-            SetAttribute(OptNode, _T("auto-advance"), _T("Manual"));
+            SetAttribute(OptNode, "auto-advance", "Manual");
             break;
         case 1:
-            SetAttribute(OptNode, _T("auto-advance"), _T("Auto"));
+            SetAttribute(OptNode, "auto-advance", "Auto");
             break;
         case 2:
-            SetAttribute(OptNode, _T("auto-advance"), _T("Arm"));
+            SetAttribute(OptNode, "auto-advance", "Arm");
             break;
         case 3:
-            SetAttribute(OptNode, _T("auto-advance"), _T("ArmStart"));
+            SetAttribute(OptNode, "auto-advance", "ArmStart");
             break;
         case 4:
-            SetAttribute(OptNode, _T("auto-advance"), _T("ArmTPs"));
+            SetAttribute(OptNode, "auto-advance", "ArmTPs");
             break;
     }
 
     switch (gTaskType) {
         case TSK_AAT:
             // AAT Task
-        SetAttribute(node, _T("type"), _T("AAT"));
+        SetAttribute(node, "type", "AAT");
         if (!SaveOptionAAT(OptNode)) {
             return false;
         }
             break;
         case TSK_GP: // Paraglider optimized Task
-        SetAttribute(node, _T("type"), _T("Race"));
+        SetAttribute(node, "type", "Race");
         if (!SaveOptionRace(OptNode)) {
             return false;
         }
             break;
         default: // default Task
-        SetAttribute(node, _T("type"), _T("Default"));
+        SetAttribute(node, "type", "Default");
         if (!SaveOptionDefault(OptNode)) {
             return false;
         }
             break;
     }
 
-    if (!SaveTaskRule(OptNode.AddChild(ToString(_T("rules")), false))) {
+    if (!SaveTaskRule(AddNode(node, "rules"))) {
         return false;
     }
 
     return true;
 }
 
-bool CTaskFileHelper::SaveOptionAAT(XMLNode node) {
+bool CTaskFileHelper::SaveOptionAAT(xml_node* node) {
     if (!node) {
         return false;
     }
-    SetAttribute(node, _T("length"), AATTaskLength);
+    SetAttribute(node, "length", AATTaskLength);
 
     return true;
 }
 
-bool CTaskFileHelper::SaveOptionRace(XMLNode node) {
+bool CTaskFileHelper::SaveOptionRace(xml_node* node) {
     if (!node) {
         return false;
     }
     if (PGNumberOfGates > 0) {
-        if (!SaveTimeGate(node.AddChild(ToString(_T("time-gate")), false))) {
+        if (!SaveTimeGate(AddNode(node, "time-gate"))) {
             return false;
         }
     }
@@ -772,64 +775,64 @@ bool CTaskFileHelper::SaveOptionRace(XMLNode node) {
     return true;
 }
 
-bool CTaskFileHelper::SaveOptionDefault(XMLNode node) {
+bool CTaskFileHelper::SaveOptionDefault(xml_node* node) {
     if (!node) {
         return false;
     }
 
-    XMLNode nodeStart = node.AddChild(ToString(_T("start")), false);
+    xml_node* nodeStart = AddNode(node, "start");
     if (nodeStart) {
         switch (StartLine) {
             case 0: //circle
-                SetAttribute(nodeStart, _T("type"), _T("circle"));
+                SetAttribute(nodeStart, "type", "circle");
                 break;
             case 1: //line
-                SetAttribute(nodeStart, _T("type"), _T("line"));
+                SetAttribute(nodeStart, "type", "line");
                 break;
             case 2: //sector
-                SetAttribute(nodeStart, _T("type"), _T("sector"));
+                SetAttribute(nodeStart, "type", "sector");
                 break;
         }
-        SetAttribute(nodeStart, _T("radius"), StartRadius);
+        SetAttribute(nodeStart, "radius", StartRadius);
     } else {
         return false;
     }
 
-    XMLNode nodeFinish = node.AddChild(ToString(_T("finish")), false);
+    xml_node* nodeFinish = AddNode(node, "finish");
     if (nodeFinish) {
         switch (FinishLine) {
             case 0: //circle
-                SetAttribute(nodeFinish, _T("type"), _T("circle"));
+                SetAttribute(nodeFinish, "type", "circle");
                 break;
             case 1: //line
-                SetAttribute(nodeFinish, _T("type"), _T("line"));
+                SetAttribute(nodeFinish, "type", "line");
                 break;
             case 2: //sector
-                SetAttribute(nodeFinish, _T("type"), _T("sector"));
+                SetAttribute(nodeFinish, "type", "sector");
                 break;
         }
-        SetAttribute(nodeFinish, _T("Radius"), FinishRadius);
+        SetAttribute(nodeFinish, "Radius", FinishRadius);
     } else {
         return false;
     }
 
-    XMLNode nodeSector = node.AddChild(ToString(_T("sector")), false);
+    xml_node* nodeSector = AddNode(node, "sector");
     if (nodeSector) {
         switch (SectorType) {
             case CIRCLE: //circle
-                SetAttribute(nodeSector, _T("type"), _T("circle"));
-                SetAttribute(nodeSector, _T("Radius"), SectorRadius);
+                SetAttribute(nodeSector, "type", "circle");
+                SetAttribute(nodeSector, "Radius", SectorRadius);
                 break;
             case SECTOR: //sector
-                SetAttribute(nodeSector, _T("type"), _T("sector"));
-                SetAttribute(nodeSector, _T("Radius"), SectorRadius);
+                SetAttribute(nodeSector, "type", "sector");
+                SetAttribute(nodeSector, "Radius", SectorRadius);
                 break;
             case DAe: //DAe
-                SetAttribute(nodeSector, _T("type"), _T("DAe"));
+                SetAttribute(nodeSector, "type", "DAe");
                 break;
             case LINE: //line
-                SetAttribute(nodeSector, _T("type"), _T("line"));
-                SetAttribute(nodeSector, _T("Radius"), SectorRadius);
+                SetAttribute(nodeSector, "type", "line");
+                SetAttribute(nodeSector, "Radius", SectorRadius);
                 break;
                 
         }
@@ -840,69 +843,59 @@ bool CTaskFileHelper::SaveOptionDefault(XMLNode node) {
     return true;
 }
 
-bool CTaskFileHelper::SaveTimeGate(XMLNode node) {
+bool CTaskFileHelper::SaveTimeGate(xml_node* node) {
     if (!node) {
         return false;
     }
 
-    SetAttribute(node, _T("number"), PGNumberOfGates);
+    SetAttribute(node, "number", PGNumberOfGates);
 
-    if(!node.AddAttribute(ToString(_T("open-time")), AllocFormat(_T("%02d:%02d"), PGOpenTimeH, PGOpenTimeM))) { 
-        return false; 
-    }
+    xml_document* doc = node->document();
 
-	if(!node.AddAttribute(ToString(_T("close-time")), AllocFormat(_T("%02d:%02d"), PGCloseTimeH, PGCloseTimeM))) { 
-        return false; 
-    }
+    char* open = AllocFormat(doc, "%02d:%02d", PGOpenTimeH, PGOpenTimeM);
+    SetAttribute(node, "open-time", open);
+
+    char* close = AllocFormat(doc, "%02d:%02d", PGCloseTimeH, PGCloseTimeM);
+    SetAttribute(node, "open-time", close);
     
-    SetAttribute(node, _T("interval-time"), PGGateIntervalTime);
+    SetAttribute(node, "interval-time", PGGateIntervalTime);
 
     return true;
 }
 
-bool CTaskFileHelper::SaveTaskRule(XMLNode node) {
+bool CTaskFileHelper::SaveTaskRule(xml_node* node) {
     if (!node) {
         return false;
     }
 
-    XMLNode FinishNode = node.AddChild(ToString(_T("finish")), false);
-    if (!FinishNode) {
-        return false;
-    }
-    SetAttribute(FinishNode, _T("fai-height"), EnableFAIFinishHeight);
-    SetAttribute(FinishNode, _T("min-height"), FinishMinHeight);
+    xml_node* FinishNode = AddNode(node, "finish");
+    SetAttribute(FinishNode, "fai-height", EnableFAIFinishHeight);
+    SetAttribute(FinishNode, "min-height", FinishMinHeight);
 
-    XMLNode StartNode = node.AddChild(ToString(_T("start")), false);
-    if (!StartNode) {
-        return false;
-    }
-    SetAttribute(StartNode, _T("max-height"), StartMaxHeight);
-    SetAttribute(StartNode, _T("max-height-margin"), StartMaxHeightMargin);
-    SetAttribute(StartNode, _T("max-speed"), StartMaxSpeed);
-    SetAttribute(StartNode, _T("max-speed-margin"), StartMaxSpeedMargin);
+    xml_node* StartNode = AddNode(node, "start");
+    SetAttribute(StartNode, "max-height", StartMaxHeight);
+    SetAttribute(StartNode, "max-height-margin", StartMaxHeightMargin);
+    SetAttribute(StartNode, "max-speed", StartMaxSpeed);
+    SetAttribute(StartNode, "max-speed-margin", StartMaxSpeedMargin);
     switch (StartHeightRef) {
         case 0:
-            SetAttribute(StartNode, _T("height-ref"), _T("AGL"));
+            SetAttribute(StartNode, "height-ref", "AGL");
             break;
         case 1:
-            SetAttribute(StartNode, _T("height-ref"), _T("ASL"));
+            SetAttribute(StartNode, "height-ref", "ASL");
             break;
     }
     return true;
 }
 
-bool CTaskFileHelper::SaveTaskPointList(XMLNode node) {
+bool CTaskFileHelper::SaveTaskPointList(xml_node* node) {
     if (!node) {
         return false;
     }
 
     for (unsigned i = 0; ValidTaskPoint(i); ++i) {
-        XMLNode PointNode = node.AddChild(ToString(_T("point")), false);
-        if (!PointNode) {
-            return false;
-        }
-
-        SetAttribute(PointNode, _T("idx"), i);
+        xml_node* PointNode = AddNode(node, "point");
+        SetAttribute(PointNode, "idx", i);
 
         RenameIfVirtual(i); // TODO: check code is unique ?
 
@@ -913,17 +906,13 @@ bool CTaskFileHelper::SaveTaskPointList(XMLNode node) {
     return true;
 }
 
-bool CTaskFileHelper::SaveStartPointList(XMLNode node) {
+bool CTaskFileHelper::SaveStartPointList(xml_node* node) {
     if (!node) {
         return false;
     }
     for (unsigned i = 0; ValidStartPoint(i); ++i) {
-        XMLNode PointNode = node.AddChild(ToString(_T("point")), false);
-        if (!PointNode) {
-            return false;
-        }
-
-        SetAttribute(PointNode, _T("idx"), i);
+        xml_node* PointNode = AddNode(node, "point");
+        SetAttribute(PointNode, "idx", i);
 
         RenameIfVirtual(i); // TODO: check code is unique ?
 
@@ -934,61 +923,61 @@ bool CTaskFileHelper::SaveStartPointList(XMLNode node) {
     return true;
 }
 
-bool CTaskFileHelper::SaveWayPointList(XMLNode node) {
+bool CTaskFileHelper::SaveWayPointList(xml_node* node) {
     for (std::set<size_t>::const_iterator it = mWayPointToSave.begin(); it != mWayPointToSave.end(); ++it) {
-        if (!SaveWayPoint(node.AddChild(ToString(_T("point")), false), WayPointList[*it])) {
+        if (!SaveWayPoint(AddNode(node, "point"), WayPointList[*it])) {
             return false;
         }
     }
     return true;
 }
 
-bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const TASK_POINT& TaskPt) {
+bool CTaskFileHelper::SaveTaskPoint(xml_node* node, const unsigned long idx, const TASK_POINT& TaskPt) {
     LKASSERT(ValidWayPoint(TaskPt.Index));
-    SetAttribute(node, _T("name"), WayPointList[TaskPt.Index].Name);
+    SetAttribute(node, "name", WayPointList[TaskPt.Index].Name);
 
     if (UseAATTarget()) {
         int Type; double Radius;
         GetTaskSectorParameter(idx, &Type, &Radius);
         switch (Type) {
             case CIRCLE:
-                SetAttribute(node, _T("type"), _T("circle"));
-                SetAttribute(node, _T("radius"), Radius);
+                SetAttribute(node, "type", "circle");
+                SetAttribute(node, "radius", Radius);
                 if (DoOptimizeRoute()) {
                     if(idx==0) {
-                        SetAttribute(node, _T("Exit"), PGStartOut?_T("false"):_T("true"));
+                        SetAttribute(node, "Exit", PGStartOut?_T("false"):_T("true"));
                     } else {
-                        SetAttribute(node, _T("Exit"), TaskPt.OutCircle?_T("true"):_T("false"));
+                        SetAttribute(node, "Exit", TaskPt.OutCircle?_T("true"):_T("false"));
                     }
                 }
                 break;
             case SECTOR:
-                SetAttribute(node, _T("type"), _T("sector"));
-                SetAttribute(node, _T("radius"), Radius);
-                SetAttribute(node, _T("start-radial"), TaskPt.AATStartRadial);
-                SetAttribute(node, _T("end-radial"), TaskPt.AATFinishRadial);
+                SetAttribute(node, "type", "sector");
+                SetAttribute(node, "radius", Radius);
+                SetAttribute(node, "start-radial", TaskPt.AATStartRadial);
+                SetAttribute(node, "end-radial", TaskPt.AATFinishRadial);
                 break;
             case LINE:
-                SetAttribute(node, _T("type"), _T("line"));
-                SetAttribute(node, _T("radius"), Radius);
+                SetAttribute(node, "type", "line");
+                SetAttribute(node, "radius", Radius);
                 break;
             case DAe: // not Used in AAT and PGTask
                 LKASSERT(false);
                 break;
             case CONE:
-                SetAttribute(node, _T("type"), _T("cone"));
-                SetAttribute(node, _T("base"), TaskPt.PGConeBase);
-                SetAttribute(node, _T("radius"), TaskPt.PGConeBaseRadius);
-                SetAttribute(node, _T("slope"), TaskPt.PGConeSlope);
+                SetAttribute(node, "type", "cone");
+                SetAttribute(node, "base", TaskPt.PGConeBase);
+                SetAttribute(node, "radius", TaskPt.PGConeBaseRadius);
+                SetAttribute(node, "slope", TaskPt.PGConeSlope);
                 break;
             case ESS_CIRCLE:
-                SetAttribute(node, _T("type"), _T("ess_circle"));
-                SetAttribute(node, _T("radius"), Radius);
+                SetAttribute(node, "type", "ess_circle");
+                SetAttribute(node, "radius", Radius);
                 if (DoOptimizeRoute()) {
                     if(idx==0) {
-                        SetAttribute(node, _T("Exit"), PGStartOut?_T("false"):_T("true"));
+                        SetAttribute(node, "Exit", PGStartOut?_T("false"):_T("true"));
                     } else {
-                        SetAttribute(node, _T("Exit"), TaskPt.OutCircle?_T("true"):_T("false"));
+                        SetAttribute(node, "Exit", TaskPt.OutCircle?_T("true"):_T("false"));
                     }
                 }    
                 break;
@@ -998,59 +987,59 @@ bool CTaskFileHelper::SaveTaskPoint(XMLNode node, const unsigned long idx, const
         }
 
         if (gTaskType == TSK_AAT) {
-            SetAttribute(node, _T("lock"), TaskPt.AATTargetLocked);
+            SetAttribute(node, "lock", TaskPt.AATTargetLocked);
             if (TaskPt.AATTargetLocked) {
-                SetAttribute(node, _T("target-lat"), TaskPt.AATTargetLat);
-                SetAttribute(node, _T("target-lon"), TaskPt.AATTargetLon);
+                SetAttribute(node, "target-lat", TaskPt.AATTargetLat);
+                SetAttribute(node, "target-lon", TaskPt.AATTargetLon);
             }
-            SetAttribute(node, _T("offset-radius"), TaskPt.AATTargetOffsetRadius);
-            SetAttribute(node, _T("offset-radial"), TaskPt.AATTargetOffsetRadial);
+            SetAttribute(node, "offset-radius", TaskPt.AATTargetOffsetRadius);
+            SetAttribute(node, "offset-radial", TaskPt.AATTargetOffsetRadial);
         }
     }
     mWayPointToSave.insert(TaskPt.Index);
     return true;
 }
 
-bool CTaskFileHelper::SaveStartPoint(XMLNode node, const START_POINT& StartPt) {
+bool CTaskFileHelper::SaveStartPoint(xml_node* node, const START_POINT& StartPt) {
     LKASSERT(ValidWayPoint(StartPt.Index));
-    SetAttribute(node, _T("name"), (LPCTSTR)(WayPointList[StartPt.Index].Name));
+    SetAttribute(node, "name", (LPCTSTR)(WayPointList[StartPt.Index].Name));
 
     mWayPointToSave.insert(StartPt.Index);
     return true;
 }
 
-bool CTaskFileHelper::SaveWayPoint(XMLNode node, const WAYPOINT& WayPoint) {
-    SetAttribute(node, _T("name"), WayPoint.Name);
-    SetAttribute(node, _T("latitude"), WayPoint.Latitude);
-    SetAttribute(node, _T("longitude"), WayPoint.Longitude);
-    SetAttribute(node, _T("altitude"), WayPoint.Altitude);
-    SetAttribute(node, _T("flags"), WayPoint.Flags);
+bool CTaskFileHelper::SaveWayPoint(xml_node* node, const WAYPOINT& WayPoint) {
+    SetAttribute(node, "name", WayPoint.Name);
+    SetAttribute(node, "latitude", WayPoint.Latitude);
+    SetAttribute(node, "longitude", WayPoint.Longitude);
+    SetAttribute(node, "altitude", WayPoint.Altitude);
+    SetAttribute(node, "flags", WayPoint.Flags);
     if (_tcslen(WayPoint.Code) > 0) {
-        SetAttribute(node, _T("code"), (LPCTSTR)(WayPoint.Code));
+        SetAttribute(node, "code", (LPCTSTR)(WayPoint.Code));
     }
     if (WayPoint.Comment && _tcslen(WayPoint.Comment) > 0) {
-        SetAttribute(node, _T("comment"), WayPoint.Comment);
+        SetAttribute(node, "comment", WayPoint.Comment);
     }
 #if TASK_DETAILS
     if (WayPoint.Details && _tcslen(WayPoint.Details) > 0) {
-        SetAttribute(node, _T("details"), WayPoint.Details);
+        SetAttribute(node, "details", WayPoint.Details);
     }
 #endif
-    SetAttribute(node, _T("format"), WayPoint.Format);
+    SetAttribute(node, "format", WayPoint.Format);
     if (_tcslen(WayPoint.Freq) > 0) {
-        SetAttribute(node, _T("freq"), WayPoint.Freq);
+        SetAttribute(node, "freq", WayPoint.Freq);
     }
     if (WayPoint.RunwayLen > 0) {
-        SetAttribute(node, _T("runwayLen"), WayPoint.RunwayLen);
+        SetAttribute(node, "runwayLen", WayPoint.RunwayLen);
     }
     if (WayPoint.RunwayLen > 0) {
-        SetAttribute(node, _T("runwayDir"), WayPoint.RunwayDir);
+        SetAttribute(node, "runwayDir", WayPoint.RunwayDir);
     }
     if (_tcslen(WayPoint.Country) > 0) {
-        SetAttribute(node, _T("country"), WayPoint.Country);
+        SetAttribute(node, "country", WayPoint.Country);
     }
     if (WayPoint.Style > 0) {
-        SetAttribute(node, _T("style"), WayPoint.Style);
+        SetAttribute(node, "style", WayPoint.Style);
     }
     return true;
 }

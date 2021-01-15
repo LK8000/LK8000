@@ -395,10 +395,10 @@ inline ConstBuffer<void> GetNamedResource(const TCHAR* szName) {
     return ConstBuffer<void>::Null();
 }
 
-inline const TCHAR* GetNamedResourceString(const TCHAR* szName) {
+inline const char* GetNamedResourceString(const TCHAR* szName) {
     const ConstBuffer<void>& Resource = GetNamedResource(szName);
-    const TCHAR* szText = static_cast<const TCHAR*>(Resource.data);
-    assert(_tcslen(szText) == (Resource.size/sizeof(TCHAR)));
+    const char* szText = static_cast<const char*>(Resource.data);
+    assert(strlen(szText) == (Resource.size/sizeof(char)));
     return szText;
 }
 

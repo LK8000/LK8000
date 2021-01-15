@@ -553,8 +553,6 @@ ifeq ($(CONFIG_WIN32),y)
  CE_DEFS += -DUSE_GDI
  #all win32 Targe are unicode
  CE_DEFS += -DUNICODE -D_UNICODE -DWIN32
- #use UNICODE for xml dialog template, avoid runtime convertion from utf8 to unicode.
- DLG-ENCODING := UTF-16LE
  	
  ifeq ($(CONFIG_PC),y)
   CE_DEFS +=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
@@ -873,7 +871,6 @@ LIBRARY	:=\
 	$(LIB)/StringFunctions.cpp\
 	$(LIB)/TimeFunctions.cpp\
 	$(LIB)/Utm.cpp \
-	$(LIB)/xmlParser.cpp \
 	$(LIB)/cpp-mmf/memory_mapped_file.cpp \
 
 

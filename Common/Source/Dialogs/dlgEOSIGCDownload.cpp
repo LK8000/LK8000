@@ -15,7 +15,7 @@
 #include "devLX_EOS_ERA.h"
 #include "dlgEOSIGCDownload.h"
 #include "dlgIGCProgress.h"
-
+#include "utils/tokenizer.h"
 
 #define EOS_PRPGRESS_DLG    
   
@@ -207,12 +207,13 @@ bool GetEOSIGCFilename(TCHAR *IGCFilename, TCHAR *InFilename) {
   TCHAR Tmp[MAX_PATH];
 
   _tcscpy(Tmp, InFilename);
-  TCHAR *remaining;
-  TCHAR *Filename = _tcstok_r(Tmp, TEXT(" "), &remaining);
-  LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
-  return true;
+  TCHAR *Filename = lk::tokenizer<TCHAR>(Tmp).Next({_T(' ')});
+  if(Filename) {
+    LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
+    return true;
+  }
+  return false;
 }
-
 
 static void OnEnterClicked(WndButton *pWnd) {
     (void) pWnd;
@@ -241,9 +242,7 @@ static void OnEnterClicked(WndButton *pWnd) {
   _tcscpy(szTmp, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.CurIndex()).Line1);
   
 
-  
-  TCHAR *remaining;
-  TCHAR *IGCFilename = _tcstok_r( szTmp, TEXT(" "), &remaining);
+  TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next(TEXT(" "));
   _tcscat(IGCFilename, _T(".IGC"));  
   _tcscpy(DownoadIGCFilename, IGCFilename);
   _stprintf(Tmp, _T("%s %s ?"), MsgToken(2404), IGCFilename);
@@ -284,10 +283,8 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
     _tcscpy(text1, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.DrawIndex()).Line1);
     _tcscpy(text2, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.DrawIndex()).Line2);
 
-    TCHAR *remaining;    /* extract filname */
-    TCHAR *IGCFilename = _tcstok_r(
-        szTmp, TEXT(" "),
-            &remaining);
+    /* extract filname */
+    TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next(TEXT(" "));
 
     TCHAR PathAndFilename[MAX_PATH];
     _tcscat(IGCFilename, _T(".IGC"));

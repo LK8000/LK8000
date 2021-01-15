@@ -57,8 +57,6 @@ WORD crcCalc(void *Buffer, size_t size);
 void ExtractDirectory(TCHAR *Dest, TCHAR *Source);
 unsigned DoSunEphemeris(double lon, double lat);
 
-TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
-TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 void TrimRight(TCHAR* str);
 
 void SaveRegistryToFile(const TCHAR* szFile);

@@ -21,6 +21,7 @@
 #include "resource.h"
 #include "InputEvents.h"
 #include "Util/UTF8.hpp"
+#include "utils/tokenizer.h"
 
 int dlgTaskSelectListShowModal(void) ;
 
@@ -560,7 +561,7 @@ TCHAR szString[READLINE_LENGTH + 1];
 
   iNO_Tasks=0;
 
-  SaveDefaultTask(); // save current task for restore if no task load
+  SaveDefaultTask(); // save current task to restore if no task load
   while(LoadCupTaskSingle(szFileName,szString, iNO_Tasks)&&( iNO_Tasks < MAX_TASKS ))
   {
     LockTaskData();
@@ -608,16 +609,17 @@ TCHAR szString[READLINE_LENGTH + 1];
   InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //  restore old task
   dlgTaskSelectListShowModal();
   if((TaskIndex >= 0) && (TaskIndex < MAX_TASKS))
-  {     TCHAR file_name[180];
-        TCHAR *pWClast = NULL;
-        TCHAR * pToken = strsep_r(szTaskStrings[TaskIndex], TEXT(","), &pWClast) ;  // extract taskname
-        if((pToken) && (_tcslen (pToken)>1))
-	  _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken(891), pToken ); // Clear old task and load taskname
-        else
+  {
+      TCHAR file_name[180];
+      const TCHAR * pToken = lk::tokenizer<TCHAR>(szTaskStrings[TaskIndex]).Next({_T(',')});
+      if((pToken) && (_tcslen (pToken)>1)) {
+          _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken(891), pToken ); // Clear old task and load taskname
+      } else {
           _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken(891), MsgToken(907)); // Clear old task and load task
-	if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdYes) {
-	  LoadCupTaskSingle(szFileName,szString, TaskIndex); // load new task
-	}
+      }
+      if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdYes) {
+          LoadCupTaskSingle(szFileName,szString, TaskIndex); // load new task
+      }
   }
 
 
@@ -724,8 +726,6 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
   Surface.SetTextColor(RGB_BLACK);
   if (TaskDrawListIndex < iNO_Tasks)  {
-      TCHAR *pWClast = NULL;
-      TCHAR *pWClast2 = NULL;
       TCHAR text[180] = {TEXT("empty")};
       TCHAR text1[180] = {TEXT("empty")};
       TCHAR text2[180] = {TEXT("empty")};
@@ -740,14 +740,16 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
       CropIncompleteUTF8(text);
 #endif
 
-      TCHAR* pToken = strsep_r(text, TEXT(","), &pWClast);
-      _tcscpy(text1, pToken );
-      if(*text1 == '\0') {
-        _tcscpy(text1, _T("???") );
+      lk::tokenizer<TCHAR> tok(text);
+      TCHAR* pToken = tok.Next({_T(',')});
+      if(pToken) {
+        _tcscpy(text1, pToken);
+        if(*text1 == '\0') {
+          _tcscpy(text1, _T("???") );
+        }
+        tok.Next({_T(',')}); // remove takeof point
+        _tcscpy(text2, tok.Remaining());
       }
-      strsep_r(pWClast, TEXT(","), &pWClast2) ;  // remove takeof point
-      _tcscpy(text2, pWClast2);
-
       /********************
        * show text
        ********************/

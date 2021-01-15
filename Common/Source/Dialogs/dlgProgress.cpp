@@ -30,7 +30,7 @@ public:
 private:
 
     void OnSplashPaint(WindowControl * Sender, LKSurface& Surface);
-    void OnProgressPaint(WindowControl * Sender, LKSurface& Surface);
+    static void OnProgressPaint(WindowControl * Sender, LKSurface& Surface);
 
     std::unique_ptr<WndForm> _WndForm;
     LKBitmap _SplashBitmap;
@@ -44,8 +44,8 @@ dlgProgress::dlgProgress() {
     using std::placeholders::_2;
 
     CallBackTableEntry_t CallBackTable[] = {
-        make_OnPaintCallback(_T("OnSplashPaint"), std::bind(&dlgProgress::OnSplashPaint, this, _1, _2)),
-        make_OnPaintCallback(_T("OnProgressPaint"), std::bind(&dlgProgress::OnProgressPaint, this, _1, _2)),
+        make_OnPaintCallback("OnSplashPaint", std::bind(&dlgProgress::OnSplashPaint, this, _1, _2)),
+        make_OnPaintCallback("OnProgressPaint", dlgProgress::OnProgressPaint),
         EndCallBackEntry()
     };
 
@@ -71,13 +71,15 @@ dlgProgress::~dlgProgress() {
 }
 
 void dlgProgress::SetProgressText(const TCHAR* szText) {
-    WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
-    if(wText) {
-        wText->SetCaption(szText);
-        wText->Redraw();
+    if(_WndForm) {
+        WindowControl* wText = _WndForm->FindByName(TEXT("frmText")); 
+        if(wText) {
+            wText->SetCaption(szText);
+            wText->Redraw();
 #ifndef USE_GDI
-        main_window->Refresh();
+            main_window->Refresh();
 #endif
+        }
     }
 }
 

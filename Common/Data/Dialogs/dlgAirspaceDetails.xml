@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Type="Dialog" X="1" Y="1" Width="238" Height="238" Caption="_@M65_" Font="2" PopUp="1" >
+  <WndForm Type="Dialog" X="1" Y="1" Width="238" Height="238" Caption="_@M65_" Font="2" Popup="1" >
     <WndButton Name="cmdFly" Caption="_@M1270_" X="2" Y="2" Width="80"  Height="38" Font="2" Tag="0" OnClickNotify="OnFlyClicked" />
     <WndButton Name="cmdAcknowledge" Caption="_@M1283_" X="91" Y="-999" Width="-2"  Height="38" Font="2" Tag="0" OnClickNotify="OnAcknowledgeClicked" />
     <WndProperty Name="prpType" Caption="_@M752_" X="2" Y="-1"  Width="-2" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />

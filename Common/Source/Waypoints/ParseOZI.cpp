@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
+#include "utils/tokenizer.h"
 
 
 extern int globalFileNum;
@@ -30,20 +31,17 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 
 	_tcscpy(TempString, String);
 
-	// strtok_r skip empty field, It's not compatible with OziExplorer Waypoint File Version 1.1
-	// use strsep_r instead of ( cf. Utils.h )
-
 	TCHAR *pToken = NULL;
 
-	TCHAR *pWClast = TempString;
+	lk::tokenizer<TCHAR> tok(TempString);
 
 
 	//	Field 1 : Number - this is the location in the array (max 1000), must be unique, usually start at 1 and increment. Can be set to -1 (minus 1) and the number will be auto generated.
-	if ((pToken = strsep_r(TempString, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 2 : Name - the waypoint name, use the correct length name to suit the GPS type.
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	// guard against overrun
@@ -57,7 +55,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	_tcscpy(Temp->Name, pToken);
 
 	//	Field 3 : Latitude - decimal degrees.
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	Temp->Latitude = (double)StrToDouble(pToken, nullptr);
@@ -67,7 +65,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	}
 
 	//	Field 4 : Longitude - decimal degrees.
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	Temp->Longitude  = (double)StrToDouble(pToken, nullptr);
@@ -75,31 +73,31 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 		return false;
 	}
 	//	Field 5 : Date - see Date Format below, if blank a preset date will be used
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 6 : Symbol - 0 to number of symbols in GPS
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 7 : Status - always set to 1
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 8 : Map Display Format
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 9 : Foreground Color (RGB value)
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 10 : Background Color (RGB value)
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 11 : Description (max 40), no commas
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
     if (_tcslen(pToken) >0 ) {
@@ -112,19 +110,19 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
     }
 
 	//	Field 12 : Pointer Direction
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 13 : Garmin Display Format
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 14 : Proximity Distance - 0 is off any other number is valid
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	//	Field 15 : Altitude - in feet (-777 if not valid)
-	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
 	Temp->Altitude = (double)StrToDouble(pToken, nullptr)/TOFEET;

@@ -348,7 +348,6 @@ add_library( LK8000 SHARED
     Common/Source/Library/StringFunctions.cpp
     Common/Source/Library/TimeFunctions.cpp
     Common/Source/Library/Utm.cpp
-    Common/Source/Library/xmlParser.cpp
 
     Common/Source/Library/cpp-mmf/memory_mapped_file.cpp
 
