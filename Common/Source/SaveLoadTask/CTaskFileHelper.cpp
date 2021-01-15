@@ -523,7 +523,7 @@ bool CTaskFileHelper::LoadTaskPoint(const xml_node* node) {
         GetAttribute(node, "idx", idx);
         TCHAR szName[NAME_SIZE+1];
         GetAttribute(node, "name", szName);
-        if (idx >= MAXTASKPOINTS || szName == NULL) {
+        if (idx >= MAXTASKPOINTS) {
             return false; // invalide TaskPoint index
         }
         std::map<tstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
@@ -584,7 +584,7 @@ bool CTaskFileHelper::LoadStartPoint(const xml_node* node) {
         TCHAR szName[NAME_SIZE+1];
         GetAttribute(node, "name", szName);
 
-        if (idx >= MAXSTARTPOINTS || szName == NULL) {
+        if (idx >= MAXSTARTPOINTS) {
             return false; // invalide TaskPoint index
         }
         std::map<tstring, size_t>::const_iterator it = mWayPointLoaded.find(szName);
