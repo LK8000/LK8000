@@ -612,6 +612,7 @@ add_library( LK8000 SHARED
     Common/Source/Comm/UpdateQNH.cpp
     Common/Source/Comm/UtilsParser.cpp
     Common/Source/Comm/device.cpp
+    Common/Source/Comm/FilePort.cpp
 
     Common/Source/Comm/Bluetooth/BtHandler.cpp
     Common/Source/Comm/Bluetooth/BtHandlerWince.cpp
@@ -744,6 +745,7 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/Analysis/StyleLine.cpp
     Common/Source/Dialogs/Analysis/Update.cpp
     Common/Source/Dialogs/Analysis/dlgStatistics.cpp
+    Common/Source/Dialogs/dlgNMEAReplay.cpp
 
     Common/Source/Dialogs/Task/AdjustAATTargets.cpp
     Common/Source/Dialogs/Task/InsertWaypoint.cpp
