@@ -21,10 +21,6 @@ public:
     PGSectorTaskPt(ProjPt&& point);
     
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
-    
-protected:
-
 };
 
 #endif	/* PGSECTORTASKPT_H */
-

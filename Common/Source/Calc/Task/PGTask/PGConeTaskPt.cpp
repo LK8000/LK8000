@@ -31,12 +31,12 @@ double PGConeTaskPt::ConeRadius(double Alt, double AltBase, double Slope, double
 }
 
 void PGConeTaskPt::UpdateTaskPoint(size_t idx, TASK_POINT& TskPt ) const {
-	if(TskPt.AATCircleRadius != m_Radius) {
-		TskPt.AATCircleRadius = m_Radius;
+    if(TskPt.AATCircleRadius != m_Radius) {
+        TskPt.AATCircleRadius = m_Radius;
         
         const WAYPOINT& TaskWpt = WayPointList[TskPt.Index];
         const GeoPoint center(TaskWpt.Latitude, TaskWpt.Longitude);
 
         gTaskSectorRenderer.SetCircle(idx, center, TskPt.AATCircleRadius);
-	}
+    }
 }

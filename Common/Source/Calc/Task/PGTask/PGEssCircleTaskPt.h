@@ -24,4 +24,3 @@ public:
 };
 
 #endif /* PGESSCIRCLE_H */
-

@@ -12,8 +12,7 @@
 #include "PGLineTaskPt.h"
 
 PGLineTaskPt::PGLineTaskPt(ProjPt&& point)
-    : PGTaskPt(std::forward<ProjPt>(point)), m_dAB() {
-}
+    : PGTaskPt(std::forward<ProjPt>(point)) { }
 
 void PGLineTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     //  Fail if either line segment is zero-length.
