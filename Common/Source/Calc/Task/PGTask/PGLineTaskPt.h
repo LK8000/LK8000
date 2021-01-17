@@ -33,7 +33,7 @@ protected:
 
     // Internal Temp Var;
     ProjPt m_AB;
-    double m_dAB;
+    ProjPt::scalar_type m_dAB;
 };
 
 #endif	/* PGLINETASKPT_H */

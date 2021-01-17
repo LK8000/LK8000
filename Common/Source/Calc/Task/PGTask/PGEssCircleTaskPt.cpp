@@ -15,7 +15,7 @@ PGEssCicrcleTaskPt::PGEssCicrcleTaskPt(ProjPt&& point) : PGCicrcleTaskPt(std::fo
 }
 
 void PGEssCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
-    PGCicrcleTaskPt::Optimize(prev, ProjPt::null, Alt);
+    PGCicrcleTaskPt::Optimize(prev, ProjPt(0.,0.), Alt);
 }
 
 

@@ -23,12 +23,12 @@ public:
     }
 
     double operator()(int n, double *theta) const {
-        ProjPt optPoint(m_cur.m_X + m_radius * cos(*theta), m_cur.m_Y + m_radius * sin(*theta));
+        ProjPt optPoint(m_cur.x + m_radius * cos(*theta), m_cur.y + m_radius * sin(*theta));
 
         ProjPt a = m_prev - optPoint;
         ProjPt b = m_next - optPoint;
 
-        return a.length() + b.length();
+        return Length(a) + Length(b);
     }
 private:
     const ProjPt& m_prev;
@@ -42,12 +42,12 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Al
         return;
     }
 
-    if (!m_Optimized) {
+    if (IsNull(m_Optimized)) {
         // first run : init m_Optimized with center ...
         m_Optimized = m_Center;
     }
 
-    if (!CrossPoint(prev, next ? next : m_Center, m_Optimized)) {
+    if (!CrossPoint(prev, IsNull(next) ? m_Center : next, m_Optimized)) {
         OptimizedDistance Fmin(prev, m_Center, next, m_Radius);
         double x0 = 0;
         double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin, PI, 0.01 / m_Radius);
@@ -57,7 +57,7 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Al
 
             x0 = (std::min(d1, d2) == d1) ? x0 : x1;
         }
-        m_Optimized = ProjPt(m_Center.m_X + m_Radius * cos(x0), m_Center.m_Y + m_Radius * sin(x0));
+        m_Optimized = ProjPt(m_Center.x + m_Radius * cos(x0), m_Center.y + m_Radius * sin(x0));
     }
 }
 
@@ -66,14 +66,14 @@ bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt&
     ProjPt B = next - m_Center;
     if(A == B) {
         // Next and prev is same point -> ignore next...
-        B = ProjPt::null;
+        B = ProjPt(0, 0);
     }
-    ProjPt A2(A.m_X * A.m_X, A.m_Y * A.m_Y);
-    ProjPt B2(B.m_X * B.m_X, B.m_Y * B.m_Y);
-    double R2 = (m_Radius * m_Radius);
+    ProjPt A2(A.x * A.x, A.y * A.y);
+    ProjPt B2(B.x * B.x, B.y * B.y);
+    ProjPt::scalar_type R2 = (m_Radius * m_Radius);
 
-    bool PrevOutside = (A2.m_X + A2.m_Y) > R2;
-    bool NextOutside = (B2.m_X + B2.m_Y) > R2;
+    bool PrevOutside = (A2.x + A2.y) > R2;
+    bool NextOutside = (B2.x + B2.y) > R2;
 
     if (!PrevOutside && !NextOutside) {
         return false; // no cross point
@@ -81,25 +81,25 @@ bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt&
 
     ProjPt AB = B - A;
 
-    double a = (AB.m_X * AB.m_X) + (AB.m_Y * AB.m_Y);
-    double b = 2 * ((AB.m_X * A.m_X) + (AB.m_Y * A.m_Y));
-    double c = A2.m_X + A2.m_Y - R2;
+    ProjPt::scalar_type a = (AB.x * AB.x) + (AB.y * AB.y);
+    ProjPt::scalar_type b = 2 * ((AB.x * A.x) + (AB.y * A.y));
+    ProjPt::scalar_type c = A2.x + A2.y - R2;
 
     double bb4ac = (b * b) -(4 * a * c);
-    if (bb4ac < 0.0) {
+    if (bb4ac < 0) {
         return false;
     }
 
     bool bCrossPoint = false;
-    double k = 0.0;
-    if (bb4ac == 0.0) {
+    double k = 0;
+    if (bb4ac == 0) {
         LKASSERT(a);
         // one point
         k = -b / (2 * a);
         bCrossPoint = true;
     }
 
-    if (bb4ac > 0.0) {
+    if (bb4ac > 0) {
         // Two point, 
         if ((PrevOutside && m_bExit) || (!PrevOutside && NextOutside)) {
             LKASSERT(a);
@@ -114,8 +114,8 @@ bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt&
 
     if (bCrossPoint) {
         ProjPt O = prev + ((next - prev) * k);
-        if (dot_product((next - prev), O - prev) > 0.0 &&
-                dot_product((prev - next), O - next) > 0.0) {
+        if (DotProduct((next - prev), O - prev) > 0 &&
+                DotProduct((prev - next), O - next) > 0) {
             optimized = O;
             return true;
         }
