@@ -11,31 +11,9 @@
 
 #include "PGTaskPt.h"
 #include "PGCircleTaskPt.h"
-#include "Library/newuoa.h"
 
 PGCicrcleTaskPt::PGCicrcleTaskPt(ProjPt&& point) 
     : PGTaskPt(std::forward<ProjPt>(point)) { }
-
-class OptimizedDistance {
-public:
-
-    OptimizedDistance(const ProjPt& prev, const ProjPt& cur, const ProjPt& next, const double radius) : m_prev(prev), m_cur(cur), m_next(next), m_radius(radius) {
-    }
-
-    double operator()(int n, double *theta) const {
-        ProjPt optPoint(m_cur.x + m_radius * cos(*theta), m_cur.y + m_radius * sin(*theta));
-
-        ProjPt a = m_prev - optPoint;
-        ProjPt b = m_next - optPoint;
-
-        return Length(a) + Length(b);
-    }
-private:
-    const ProjPt& m_prev;
-    const ProjPt& m_cur;
-    const ProjPt& m_next;
-    const double m_radius;
-};
 
 void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     if(m_Radius == 0.0){
@@ -47,17 +25,26 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Al
         m_Optimized = m_Center;
     }
 
-    if (!CrossPoint(prev, IsNull(next) ? m_Center : next, m_Optimized)) {
-        OptimizedDistance Fmin(prev, m_Center, next, m_Radius);
-        double x0 = 0;
-        double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin, PI, 0.01 / m_Radius);
-        if (m_bExit) {
-            double x1 = x0 + PI;
-            double d2 = min_newuoa<double, OptimizedDistance > (1, &x1, Fmin, PI, 0.01 / m_Radius);
+    const auto& a = prev;
+    const auto& b = IsNull(next) ? m_Center : next;
 
-            x0 = (std::min(d1, d2) == d1) ? x0 : x1;
+    if (!CrossPoint(a, b, m_Optimized)) {
+
+        ProjPt::scalar_type ao = Distance(a, m_Optimized);
+        ProjPt::scalar_type bo = Distance(b, m_Optimized);
+        ProjPt::scalar_type t = ao / (ao + bo);
+
+        const auto k = ((b - a) * t) + a;
+        ProjPt::scalar_type kc = Distance<ProjPt>(k, m_Center);
+
+        // Project k on to the radius of c
+        if(kc == 0.0) {
+            // The default direction is eastwards (90 degrees)
+            m_Optimized = m_Center;
+            m_Optimized.x += m_Radius;
+        } else {
+            m_Optimized = ((((k - m_Center) * m_Radius) / kc) + m_Center);
         }
-        m_Optimized = ProjPt(m_Center.x + m_Radius * cos(x0), m_Center.y + m_Radius * sin(x0));
     }
 }
 
