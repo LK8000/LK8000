@@ -274,7 +274,7 @@ static void OnActiveFreq(WndButton* pWnd){
 
   dlgNumEntryShowModal(szFreq,8);
 
-  double Frequency = ExtractFrequency(szFreq);
+  double Frequency = StrToDouble(szFreq, nullptr);
   while(Frequency > 1000.0)
     Frequency /=10;
 
@@ -297,7 +297,9 @@ static void OnPassiveFreq(WndButton* pWnd){
 
   dlgNumEntryShowModal(szFreq,8);
 
-  double Frequency = ExtractFrequency(szFreq);
+  double Frequency = StrToDouble(szFreq, nullptr);
+  while(Frequency > 1000.0)
+    Frequency /=10;
 
 
   if(!ValidFrequency(Frequency))
