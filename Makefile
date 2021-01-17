@@ -1393,6 +1393,7 @@ SRC_FILES :=\
 	$(SRC)/Utils.cpp		\
 	$(SRC)/WindowControls.cpp \
 	$(SRC)/Geographic/GeoPoint.cpp \
+	$(SRC)/Geographic/TransverseMercator.cpp \
 	\
 	$(LKINTER) \
 	$(LIBRARY) \
