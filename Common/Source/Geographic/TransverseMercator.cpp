@@ -62,7 +62,7 @@ TransverseMercator::TransverseMercator(const GeoPoint& center)
 // Local Grid to Lat/Lon conversion
 //====================================
 
-GeoPoint TransverseMercator::Reverse(double N, double E) const {
+GeoPoint TransverseMercator::Reverse(Point2D<double> position) const {
 
 #ifdef _WGS84
   const DATUM& Datum = earth_model_wgs84 ? Datum_WGS84 : Datum_FAI;
@@ -90,7 +90,7 @@ GeoPoint TransverseMercator::Reverse(double N, double E) const {
   //================
   // http://www.linz.govt.nz/geodetic/conversion-coordinates/projection-conversions/transverse-mercator-preliminary-computations#lbl1
 
-  double N1 = N - N0;
+  double N1 = position.y - N0;
   double m = m0 + N1 / k0;
   double n = (a - b) / (a + b);
 
@@ -102,7 +102,7 @@ GeoPoint TransverseMercator::Reverse(double N, double E) const {
   double nu = a / sqrt(1 - e2 * sin(s) * sin(s));
   double ps = nu / r;
   double t = tan(s);
-  double E1 = E - E0;
+  double E1 = position.x - E0;
   double x = E1 / (k0 * nu);
 
 
@@ -128,7 +128,7 @@ GeoPoint TransverseMercator::Reverse(double N, double E) const {
 // Lat/Lon to Local Grid conversion
 //====================================
 
-void TransverseMercator::Forward(const GeoPoint& position, double& N, double& E) const {
+Point2D<double> TransverseMercator::Forward(const GeoPoint& position) const {
   // Datum data for Lat/Lon to TM conversion
 
 #ifdef _WGS84
@@ -173,12 +173,15 @@ void TransverseMercator::Forward(const GeoPoint& position, double& N, double& E)
   double K3 = k0 * o * o * o * o * n * slat1 * clat1 * clat1sq / 24 * (4 * ps * ps + ps - t * t) / 24;
   double K4 = k0 * o * o * o * o * o * o * n * slat1 * clat1sq * clat1sq * clat1 * (8 * ps * ps * ps * ps * (11 - (24 * t * t)) - 28 * ps * ps * ps * (1 - 6 * t * t) + ps * ps * (1 - 32 * t * t) - ps * 2 * t * t + t * t * t * t) / 720;
   double K5 = k0 * o * o * o * o * o * o * o * o * n * slat1 * clat1sq * clat1sq * clat1sq * clat1 * (1385 - 311 * t * t * 543 * t * t * t * t - t * t * t * t * t) / 40320;
-  // ING north
-  N = N0 + K1 + K2 + K3 + K4 + K5;
 
   double K6 = o * o * clat1sq * (ps - t * t) / 6;
   double K7 = o * o * o * o * clat1sq * clat1sq * (4 * ps * ps * ps * (1 - 6 * t * t) + ps * ps * (1 + 8 * t * t) - ps * 2 * t * t + t * t * t * t) / 120;
   double K8 = o * o * o * o * o * o * clat1sq * clat1sq * clat1sq * (61 - 479 * t * t + 179 * t * t * t * t - t * t * t * t * t * t);
-  // ING east
-  E = E0 + k0 * n * o * clat1 * (1 + K6 + K7 + K8);
+
+  return {
+    // ING east (x)
+    E0 + k0 * n * o * clat1 * (1 + K6 + K7 + K8),
+    // ING north (y)
+    N0 + K1 + K2 + K3 + K4 + K5
+  };
 }

@@ -6,14 +6,19 @@
 #define GEOGRAPHIC_TRANSVERSEMERCATOR_H
 
 #include "GeoPoint.h"
+#include "Math/Point2D.hpp"
 
 class TransverseMercator final {
 public:
   TransverseMercator() = delete;
   explicit TransverseMercator(const GeoPoint& center);
 
-  GeoPoint Reverse(double N, double E) const;
-  void Forward(const GeoPoint& position, double& N, double& E) const;
+  /**
+   * Point2D is used to store flat coordinate
+   *  by convention we 'x' is 'E' and y is 'N'
+   */
+  GeoPoint Reverse(Point2D<double> position) const;
+  Point2D<double> Forward(const GeoPoint& position) const;
 
 protected:
   const double lat0;

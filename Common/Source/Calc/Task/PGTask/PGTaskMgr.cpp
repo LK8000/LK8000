@@ -99,10 +99,7 @@ void PGTaskMgr::Initialize() {
 void PGTaskMgr::AddCircle(int TskIdx) {
     assert(m_Projection);
 
-    const GeoPoint geo_center(WayPointList[Task[TskIdx].Index].Latitude, WayPointList[Task[TskIdx].Index].Longitude);
-    ProjPt center;
-    m_Projection->Forward(geo_center, center.y, center.x);
-
+    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
     PGCicrcleTaskPt *pTskPt = new PGCicrcleTaskPt(std::forward<ProjPt>(center));
 
     if (TskIdx == 0) {
@@ -121,11 +118,7 @@ void PGTaskMgr::AddCircle(int TskIdx) {
 void PGTaskMgr::AddEssCircle(int TskIdx) {
     assert(m_Projection);
 
-    ProjPt center;
-    m_Projection->Forward(GetTurnpointPosition(TskIdx),
-                          center.y,
-                          center.x);
-
+    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
     PGEssCicrcleTaskPt *pTskPt = new PGEssCicrcleTaskPt(std::forward<ProjPt>(center));
 
 
@@ -148,11 +141,7 @@ void PGTaskMgr::AddLine(int TskIdx) {
         return;
     }
 
-    ProjPt center;
-    m_Projection->Forward(GetTurnpointPosition(TskIdx),
-                          center.y,
-                          center.x);
-
+    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
     PGLineTaskPt *pTskPt = new PGLineTaskPt(std::forward<ProjPt>(center));
 
     double radius = 0;
@@ -179,10 +168,7 @@ void PGTaskMgr::AddLine(int TskIdx) {
     // Calc Cross Dir Vector
     ProjPt InB, OutB;
     if (ValidTaskPoint(NextIdx)) {
-        m_Projection->Forward(GetTurnpointPosition(TskIdx),
-                              OutB.y,
-                              OutB.x);
-
+        OutB = m_Projection->Forward(GetTurnpointPosition(TskIdx));
         OutB = OutB - pTskPt->m_Center;
 
         ProjPt::scalar_type d = Length(OutB);
@@ -232,11 +218,7 @@ void PGTaskMgr::AddLine(int TskIdx) {
 void PGTaskMgr::AddSector(int TskIdx) {
     assert(m_Projection);
 
-    ProjPt center;
-    m_Projection->Forward(GetTurnpointPosition(TskIdx),
-                          center.y,
-                          center.x);
-
+    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
     PGSectorTaskPt *pTskPt = new PGSectorTaskPt(std::forward<ProjPt>(center));
 
     //TODO : Handle Sector Turn Point
@@ -247,11 +229,7 @@ void PGTaskMgr::AddSector(int TskIdx) {
 void PGTaskMgr::AddCone(int TskIdx) {
     assert(m_Projection);
 
-    ProjPt center;
-    m_Projection->Forward(GetTurnpointPosition(TskIdx),
-                          center.y,
-                          center.x);
-
+    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
     PGConeTaskPt *pTskPt = new PGConeTaskPt(std::forward<ProjPt>(center));    
 
     pTskPt->m_Slope = Task[TskIdx].PGConeSlope;
@@ -271,9 +249,7 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     assert(m_Projection);
 
     GeoPoint prev_position(Basic->Latitude, Basic->Longitude);
-
-    ProjPt PrevPos;
-    m_Projection->Forward(prev_position, PrevPos.y, PrevPos.x);
+    ProjPt PrevPos = m_Projection->Forward(prev_position);
     
     double NextAltitude = Basic->Altitude;
     for (size_t i = ActiveTaskPoint; i < m_Task.size(); ++i) {
@@ -306,7 +282,7 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 GeoPoint PGTaskMgr::getOptimized(const int i) const {
     assert(m_Projection);
-    return m_Projection->Reverse(m_Task[i]->getOptimized().y, m_Task[i]->getOptimized().x);
+    return m_Projection->Reverse(m_Task[i]->getOptimized());
 }
 
 void PGTaskMgr::UpdateTaskPoint(const int i, TASK_POINT& TskPt ) const {
