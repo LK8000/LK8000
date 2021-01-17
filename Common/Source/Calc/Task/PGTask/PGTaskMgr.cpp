@@ -283,10 +283,5 @@ void PGTaskMgr::UpdateTaskPoint(const int i, TASK_POINT& TskPt ) const {
 
     UpdateTargetAltitude(TskPt);
 
-    if(m_Task[i]->UpdateTaskPoint(TskPt)) {
-        const WAYPOINT& TaskWpt = WayPointList[TskPt.Index];
-        const GeoPoint center(TaskWpt.Latitude, TaskWpt.Longitude);
-
-        gTaskSectorRenderer.SetCircle(i, center, TskPt.AATCircleRadius);
-    }
+    m_Task[i]->UpdateTaskPoint(i, TskPt);
 }

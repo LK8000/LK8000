@@ -53,7 +53,7 @@ public:
      */
     virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) = 0;
     
-    virtual bool UpdateTaskPoint(TASK_POINT& TskPt ) const;
+    virtual void UpdateTaskPoint(size_t idx, TASK_POINT& TskPt ) const {};
 
 protected:
     const ProjPt m_Center;

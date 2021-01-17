@@ -10,6 +10,7 @@
  */
 
 #include "PGConeTaskPt.h"
+#include "Draw/Task/TaskRendererMgr.h"
 
 PGConeTaskPt::PGConeTaskPt(ProjPt&& point) 
     : PGCicrcleTaskPt(std::forward<ProjPt>(point)) { }
@@ -29,10 +30,13 @@ double PGConeTaskPt::ConeRadius(double Alt, double AltBase, double Slope, double
     return std::max(0.0, (( Alt - AltBase ) * Slope) + RadiusBase);
 }
 
-bool PGConeTaskPt::UpdateTaskPoint(TASK_POINT& TskPt ) const {
+void PGConeTaskPt::UpdateTaskPoint(size_t idx, TASK_POINT& TskPt ) const {
 	if(TskPt.AATCircleRadius != m_Radius) {
 		TskPt.AATCircleRadius = m_Radius;
-		return true;
+        
+        const WAYPOINT& TaskWpt = WayPointList[TskPt.Index];
+        const GeoPoint center(TaskWpt.Latitude, TaskWpt.Longitude);
+
+        gTaskSectorRenderer.SetCircle(idx, center, TskPt.AATCircleRadius);
 	}
-	return false;
 }
