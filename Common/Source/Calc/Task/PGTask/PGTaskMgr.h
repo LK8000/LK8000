@@ -12,15 +12,14 @@
 #ifndef PGTASKMGR_H_
 #define PGTASKMGR_H_
 
+#include <vector> // vector
+#include <memory> // unique_ptr
 #include "PGTaskPt.h"
-#include "vector"
-
-class TransverseMercator;
+#include "Geographic/TransverseMercator.h"
 
 class PGTaskMgr final {
 public:
-    PGTaskMgr();
-    virtual ~PGTaskMgr();
+    PGTaskMgr() = default;
 
     void Initialize();
     void Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -34,15 +33,14 @@ public:
 protected:
     GeoPoint  getOptimized(const int i) const;
 
-protected:
     void AddCircle(int TpIndex);
     void AddLine(int TpIndex);
     void AddSector(int TpIndex);
     void AddCone(int TpIndex);
     void AddEssCircle(int TpIndex);
 
-    typedef std::vector<PGTaskPt*> Task_t;
-    Task_t m_Task;
+    typedef std::unique_ptr<PGTaskPt> PGTaskPt_ptr;
+    std::vector<PGTaskPt_ptr> m_Task;
     std::unique_ptr<TransverseMercator> m_Projection;
 };
 

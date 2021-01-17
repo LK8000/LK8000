@@ -9,6 +9,7 @@
  * Created on 11 sept. 2012
  */
 
+#include <type_traits>
 #include "PGTaskMgr.h"
 #include "externs.h"
 #include "AATDistance.h"
@@ -30,25 +31,22 @@
 
 namespace {
 
-  inline
-  GeoPoint GetTurnpointPosition(size_t idx) {
-      return GeoPoint(WayPointList[Task[idx].Index].Latitude,
-              WayPointList[Task[idx].Index].Longitude);
-  }
+    inline
+    GeoPoint GetTurnpointPosition(size_t idx) {
+        return GeoPoint(WayPointList[Task[idx].Index].Latitude,
+                WayPointList[Task[idx].Index].Longitude);
+    }
+
+    template<typename T> inline
+    std::unique_ptr<T> getPGTaskPt(const TransverseMercator* pProjection, size_t idx) {
+        static_assert(std::is_base_of<PGTaskPt, T>::value, "T must inherit from PGTaskPt");
+        return std::make_unique<T>(pProjection->Forward(GetTurnpointPosition(idx)));
+    }
+
 } // namespace
-
-PGTaskMgr::PGTaskMgr() {
-
-}
-
-PGTaskMgr::~PGTaskMgr() {
-    std::for_each(m_Task.begin(), m_Task.end(), safe_delete());
-    m_Task.clear();
-}
 
 void PGTaskMgr::Initialize() {
 
-    std::for_each(m_Task.begin(), m_Task.end(), safe_delete());
     m_Task.clear();
 
     // build Mercator Reference Grid
@@ -99,8 +97,7 @@ void PGTaskMgr::Initialize() {
 void PGTaskMgr::AddCircle(int TskIdx) {
     assert(m_Projection);
 
-    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
-    PGCicrcleTaskPt *pTskPt = new PGCicrcleTaskPt(std::forward<ProjPt>(center));
+    auto pTskPt = getPGTaskPt<PGCicrcleTaskPt>(m_Projection.get(), TskIdx);
 
     if (TskIdx == 0) {
         pTskPt->m_Radius = StartRadius;
@@ -112,15 +109,13 @@ void PGTaskMgr::AddCircle(int TskIdx) {
 
     pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
 
-    m_Task.push_back(pTskPt);
+    m_Task.emplace_back(std::move(pTskPt));
 }
 
 void PGTaskMgr::AddEssCircle(int TskIdx) {
     assert(m_Projection);
 
-    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
-    PGEssCicrcleTaskPt *pTskPt = new PGEssCicrcleTaskPt(std::forward<ProjPt>(center));
-
+    auto pTskPt = getPGTaskPt<PGEssCicrcleTaskPt>(m_Projection.get(), TskIdx);
 
     if (TskIdx == 0) {
         pTskPt->m_Radius = StartRadius;
@@ -132,7 +127,7 @@ void PGTaskMgr::AddEssCircle(int TskIdx) {
 
     pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
 
-    m_Task.push_back(pTskPt);
+    m_Task.emplace_back(std::move(pTskPt));
 }
 
 void PGTaskMgr::AddLine(int TskIdx) {
@@ -141,8 +136,7 @@ void PGTaskMgr::AddLine(int TskIdx) {
         return;
     }
 
-    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
-    PGLineTaskPt *pTskPt = new PGLineTaskPt(std::forward<ProjPt>(center));
+    auto pTskPt = getPGTaskPt<PGLineTaskPt>(m_Projection.get(), TskIdx);
 
     double radius = 0;
     if (TskIdx == 0) {
@@ -212,25 +206,21 @@ void PGTaskMgr::AddLine(int TskIdx) {
         pTskPt->m_LineEnd = pTskPt->m_Center - u; // end of line
     }
 
-    m_Task.push_back(pTskPt);
+    m_Task.emplace_back(std::move(pTskPt));
 }
 
 void PGTaskMgr::AddSector(int TskIdx) {
     assert(m_Projection);
 
-    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
-    PGSectorTaskPt *pTskPt = new PGSectorTaskPt(std::forward<ProjPt>(center));
+    m_Task.emplace_back(getPGTaskPt<PGSectorTaskPt>(m_Projection.get(), TskIdx));
 
-    //TODO : Handle Sector Turn Point
-    
-    m_Task.push_back(pTskPt);
+	//TODO : Handle Sector Turn Point
 }
 
 void PGTaskMgr::AddCone(int TskIdx) {
     assert(m_Projection);
 
-    ProjPt center = m_Projection->Forward(GetTurnpointPosition(TskIdx));
-    PGConeTaskPt *pTskPt = new PGConeTaskPt(std::forward<ProjPt>(center));    
+    auto pTskPt = getPGTaskPt<PGConeTaskPt>(m_Projection.get(), TskIdx);
 
     pTskPt->m_Slope = Task[TskIdx].PGConeSlope;
     pTskPt->m_AltBase = Task[TskIdx].PGConeBase;
@@ -239,7 +229,7 @@ void PGTaskMgr::AddCone(int TskIdx) {
     pTskPt->m_bExit = false;
 //    pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
 
-    m_Task.push_back(pTskPt);
+    m_Task.emplace_back(std::move(pTskPt));
 }
 
 void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
