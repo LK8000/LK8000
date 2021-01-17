@@ -87,7 +87,8 @@ inline double vector_angle(const ProjPt& v, const ProjPt& w) {
 class PGTaskPt {
     friend class PGTaskMgr;
 public:
-    PGTaskPt();
+    PGTaskPt() = delete;
+    PGTaskPt(ProjPt&& point);
     virtual ~PGTaskPt();
 
     inline const ProjPt& getOptimized() const {
@@ -108,7 +109,7 @@ public:
     virtual bool UpdateTaskPoint(TASK_POINT& TskPt ) const;
 
 protected:
-    ProjPt m_Center;
+    const ProjPt m_Center;
     ProjPt m_Optimized;
 };
 

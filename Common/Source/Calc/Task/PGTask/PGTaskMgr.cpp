@@ -119,12 +119,13 @@ void PGTaskMgr::Initialize() {
 }
 
 void PGTaskMgr::AddCircle(int TskIdx) {
-    PGCicrcleTaskPt *pTskPt = new PGCicrcleTaskPt;
-
+    ProjPt center;
     LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
             deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
-            pTskPt->m_Center.m_Y,
-            pTskPt->m_Center.m_X);
+            center.m_Y,
+            center.m_X);
+
+    PGCicrcleTaskPt *pTskPt = new PGCicrcleTaskPt(std::forward<ProjPt>(center));
 
     if (TskIdx == 0) {
         pTskPt->m_Radius = StartRadius;
@@ -140,12 +141,14 @@ void PGTaskMgr::AddCircle(int TskIdx) {
 }
 
 void PGTaskMgr::AddEssCircle(int TskIdx) {
-    PGCicrcleTaskPt *pTskPt = new PGEssCicrcleTaskPt;
-
+    ProjPt center;
     LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
             deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
-            pTskPt->m_Center.m_Y,
-            pTskPt->m_Center.m_X);
+            center.m_Y,
+            center.m_X);
+
+    PGEssCicrcleTaskPt *pTskPt = new PGEssCicrcleTaskPt(std::forward<ProjPt>(center));
+
 
     if (TskIdx == 0) {
         pTskPt->m_Radius = StartRadius;
@@ -161,13 +164,13 @@ void PGTaskMgr::AddEssCircle(int TskIdx) {
 }
 
 void PGTaskMgr::AddLine(int TskIdx) {
-
-    PGLineTaskPt *pTskPt = new PGLineTaskPt;
-
+    ProjPt center;
     LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
             deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
-            pTskPt->m_Center.m_Y,
-            pTskPt->m_Center.m_X);
+            center.m_Y,
+            center.m_X);
+
+    PGLineTaskPt *pTskPt = new PGLineTaskPt(std::forward<ProjPt>(center));
 
     double radius = 0;
     if (TskIdx == 0) {
@@ -245,12 +248,13 @@ void PGTaskMgr::AddLine(int TskIdx) {
 }
 
 void PGTaskMgr::AddSector(int TskIdx) {
-    PGSectorTaskPt *pTskPt = new PGSectorTaskPt;
-
+    ProjPt center;
     LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
             deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
-            pTskPt->m_Center.m_Y,
-            pTskPt->m_Center.m_X);
+            center.m_Y,
+            center.m_X);
+
+    PGSectorTaskPt *pTskPt = new PGSectorTaskPt(std::forward<ProjPt>(center));
 
     //TODO : Handle Sector Turn Point
     
@@ -258,12 +262,13 @@ void PGTaskMgr::AddSector(int TskIdx) {
 }
 
 void PGTaskMgr::AddCone(int TskIdx) {
-    PGConeTaskPt *pTskPt = new PGConeTaskPt;
-
+    ProjPt center;
     LatLon2Grid(deg2rad(WayPointList[Task[TskIdx].Index].Latitude),
             deg2rad(WayPointList[Task[TskIdx].Index].Longitude),
-            pTskPt->m_Center.m_Y,
-            pTskPt->m_Center.m_X);
+            center.m_Y,
+            center.m_X);
+
+    PGConeTaskPt *pTskPt = new PGConeTaskPt(std::forward<ProjPt>(center));    
 
     pTskPt->m_Slope = Task[TskIdx].PGConeSlope;
     pTskPt->m_AltBase = Task[TskIdx].PGConeBase;

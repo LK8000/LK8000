@@ -11,14 +11,7 @@
 
 #include "PGTaskPt.h"
 
-PGTaskPt::PGTaskPt() {
+PGTaskPt::PGTaskPt(ProjPt&& point)
+    : m_Center(std::forward<ProjPt>(point)) { }
 
-}
-
-PGTaskPt::~PGTaskPt() {
-
-}
-
-bool PGTaskPt::UpdateTaskPoint(TASK_POINT& TskPt ) const {
-	return false;
-}
+PGTaskPt::~PGTaskPt() { }

@@ -11,10 +11,8 @@
 
 #include "PGLineTaskPt.h"
 
-PGLineTaskPt::PGLineTaskPt(): m_dAB() {
-}
-
-PGLineTaskPt::~PGLineTaskPt() {
+PGLineTaskPt::PGLineTaskPt(ProjPt&& point)
+    : PGTaskPt(std::forward<ProjPt>(point)), m_dAB() {
 }
 
 void PGLineTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {

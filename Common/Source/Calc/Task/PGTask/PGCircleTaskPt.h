@@ -17,16 +17,16 @@
 class PGCicrcleTaskPt : public PGTaskPt {
     friend class PGTaskMgr;
 public:
-    PGCicrcleTaskPt();
-    virtual ~PGCicrcleTaskPt();
+    PGCicrcleTaskPt() = delete;
+    PGCicrcleTaskPt(ProjPt&& point);
 
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 
 protected: 
     bool CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized);
 
-    double m_Radius;
-    bool m_bExit;
+    double m_Radius = 0;
+    bool m_bExit = false;
 };
 
 #endif	/* PGCICRCLETASKPT_H */

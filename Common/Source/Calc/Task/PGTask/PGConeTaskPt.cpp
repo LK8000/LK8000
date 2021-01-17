@@ -11,13 +11,8 @@
 
 #include "PGConeTaskPt.h"
 
-PGConeTaskPt::PGConeTaskPt() {
-
-}
-
-PGConeTaskPt::~PGConeTaskPt() {
-
-}
+PGConeTaskPt::PGConeTaskPt(ProjPt&& point) 
+    : PGCicrcleTaskPt(std::forward<ProjPt>(point)) { }
 
 void PGConeTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
 

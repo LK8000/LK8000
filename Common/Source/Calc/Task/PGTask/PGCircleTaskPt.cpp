@@ -13,11 +13,8 @@
 #include "PGCircleTaskPt.h"
 #include "Library/newuoa.h"
 
-PGCicrcleTaskPt::PGCicrcleTaskPt() : m_Radius(0), m_bExit(false) {
-}
-
-PGCicrcleTaskPt::~PGCicrcleTaskPt() {
-}
+PGCicrcleTaskPt::PGCicrcleTaskPt(ProjPt&& point) 
+    : PGTaskPt(std::forward<ProjPt>(point)) { }
 
 class OptimizedDistance {
 public:
@@ -44,7 +41,7 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Al
     if(m_Radius == 0.0){
         return;
     }
-    
+
     if (!m_Optimized) {
         // first run : init m_Optimized with center ...
         m_Optimized = m_Center;
@@ -106,7 +103,7 @@ bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt&
         // Two point, 
         if ((PrevOutside && m_bExit) || (!PrevOutside && NextOutside)) {
             LKASSERT(a);
-            k = (-b + sqrt(bb4ac)) / (2 * a); // ouput : prev ouside && Exit TP || prev inside && next outside
+            k = (-b + sqrt(bb4ac)) / (2 * a); // output : prev outside && Exit TP || prev inside && next outside
             bCrossPoint = true;
         } else {
             LKASSERT(a);

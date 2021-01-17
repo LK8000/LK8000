@@ -17,8 +17,8 @@
 class PGLineTaskPt : public PGTaskPt {
     friend class PGTaskMgr;
 public:
-    PGLineTaskPt();
-    virtual ~PGLineTaskPt();
+    PGLineTaskPt() = delete;
+    PGLineTaskPt(ProjPt&& point);
 
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 

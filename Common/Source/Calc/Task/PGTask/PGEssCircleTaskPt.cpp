@@ -11,10 +11,7 @@
 
 #include "PGEssCircleTaskPt.h"
 
-PGEssCicrcleTaskPt::PGEssCicrcleTaskPt() {
-}
-
-PGEssCicrcleTaskPt::~PGEssCicrcleTaskPt() {
+PGEssCicrcleTaskPt::PGEssCicrcleTaskPt(ProjPt&& point) : PGCicrcleTaskPt(std::forward<ProjPt>(point)) {
 }
 
 void PGEssCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {

@@ -17,8 +17,8 @@
 class PGSectorTaskPt : public PGTaskPt {
     friend class PGTaskMgr;
 public:
-    PGSectorTaskPt();
-    virtual ~PGSectorTaskPt();
+    PGSectorTaskPt() = delete;
+    PGSectorTaskPt(ProjPt&& point);
     
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
     
