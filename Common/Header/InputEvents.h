@@ -47,9 +47,12 @@ public:
   static bool processGlideComputer(int);
   static void processPopupDetails(PopupType type, int index);
   static void DoQueuedEvents(void);
-  static void processGo(int event_id);
-  static int  makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int next = 0);
-  static void makeLabel(int mode_id, const TCHAR *label, unsigned MenuId, int event_id);
+  static void processGo(unsigned event_id);
+
+  static unsigned  makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, unsigned next = 0);
+  static void clearEvents();
+
+  static void makeLabel(int mode_id, const TCHAR *label, unsigned MenuId, unsigned event_id);
 
   static void drawButtons(int Mode);
 

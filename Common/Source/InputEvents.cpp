@@ -45,7 +45,6 @@
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25
 #define MAX_KEY 255
-#define MAX_EVENTS 2048  // max number of menu events items
 #define MAX_TEXT2EVENTS_COUNT  256
 #define MAX_LABEL NUMBUTTONLABELS
 
@@ -60,9 +59,9 @@ static int mode_map_count = 0;
 // Key to Event - Keys (per mode) mapped to events
 #ifndef USE_GDI
 // Some linux keycode are defined on 4 Byte, use map instead of array.
-static std::map<int,int> Key2Event[MAX_MODE];
+static std::map<int,unsigned> Key2Event[MAX_MODE];
 #else
-static int Key2Event[MAX_MODE][MAX_KEY];
+static unsigned Key2Event[MAX_MODE][MAX_KEY];
 #endif
 
 // Glide Computer Events
@@ -72,20 +71,19 @@ static int GC2Event[MAX_MODE][GCE_COUNT];
 static int N2Event[MAX_MODE][NE_COUNT];
 
 // Events - What do you want to DO
-typedef struct {
+struct Event_t {
   pt2Event event; // Which function to call (can be any, but should be here)
   const TCHAR *misc;    // Parameters
-  int next;       // Next in event list - eg: Macros
-} EventSTRUCT;
+  unsigned next_event_id;       // Next in event list - eg: Macros
+};
 
-static EventSTRUCT Events[MAX_EVENTS];	 // the menu events items
-static int Events_count=0;				// How many have we defined
+static std::vector<Event_t> Events;	 // the menu events items
 
 // Labels - defined per mode
-typedef struct {
+struct ModeLabelSTRUCT {
   const TCHAR *label;
-  int event;
-} ModeLabelSTRUCT;
+  unsigned event_id;
+} ;
 
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
 std::list<TCHAR*> LabelGarbage;
@@ -253,10 +251,10 @@ void InputEvents::readFile() {
 #else
       memset(&Key2Event, 0, sizeof(Key2Event));
 #endif
+      InputEvents::clearEvents(); 
+
       memset(&GC2Event, 0, sizeof(GC2Event));
-      memset(&Events, 0, sizeof(Events));
       memset(&ModeLabel, 0, sizeof(ModeLabel));
-      Events_count = 0;
     }
 
     // Check valid line? If not valid, assume next record (primative, but works ok!)
@@ -404,9 +402,9 @@ void InputEvents::readFile() {
     }
 
   } // end while
-  #ifdef TESTBENCH
-  StartupStore(_T("... Loaded %d Menu Events (Max is %d)%s"),Events_count,MAX_EVENTS,NEWLINE);
-  #endif
+#ifdef TESTBENCH
+  StartupStore(_T("... Loaded %u Menu Events\n"), (unsigned)Events.size());
+#endif
 #endif
 }
 
@@ -502,24 +500,24 @@ int InputEvents::findNE(const TCHAR *data) {
 // Create EVENT Entry
 // NOTE: String must already be copied (allows us to use literals
 // without taking up more data - but when loading from file must copy string
-int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int next) {
-  if (Events_count >= MAX_EVENTS){
-    LKASSERT(0);
-    return 0;
-  }
-  Events_count++;	// NOTE - Starts at 1 - 0 is a noop
-  Events[Events_count].event = event;
-  Events[Events_count].misc = misc;
-  Events[Events_count].next = next;
-
-  return Events_count;
+unsigned InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, unsigned next) {
+  Events.push_back({event, misc, next});
+  return Events.size()-1;
 }
+
+void InputEvents::clearEvents() {
+  // first Event must be null Event, all time.
+  Events = {
+    {&eventNull, TEXT(""), 0}
+  };
+}
+
 
 
 // Make a new label (add to the end each time)
 // NOTE: String must already be copied (allows us to use literals
 // without taking up more data - but when loading from file must copy string
-void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, int event_id) {
+void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, unsigned event_id) {
 
     static_assert(MAX_MODE == std::size(ModeLabel), "wrong array size" );
     static_assert(MAX_LABEL == std::size(ModeLabel[0]), "wrong array size" );
@@ -534,7 +532,7 @@ void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, in
         }
 
         ModeLabel[mode_id][LabelIdx].label = label;
-        ModeLabel[mode_id][LabelIdx].event = event_id;
+        ModeLabel[mode_id][LabelIdx].event_id = event_id;
     } else {
         LKASSERT(0);
     }
@@ -656,7 +654,7 @@ bool InputEvents::processButton(unsigned MenuId) {
 	PlayResource(TEXT("IDR_WAV_CLICK"));
 
 	if (ButtonLabel::IsEnabled(MenuId)) {
-		processGo(ModeLabel[thismode][i].event);
+		processGo(ModeLabel[thismode][i].event_id);
 	}
 
 	// update button text, macro may change the label
@@ -686,7 +684,7 @@ bool InputEvents::processKey(int KeyID) {
 
 #ifndef USE_GDI
 
-  int event_id = 0;
+  unsigned event_id = 0;
 
   auto It = Key2Event[mode].find(KeyID);
   if(It != Key2Event[mode].end()) {
@@ -709,7 +707,7 @@ bool InputEvents::processKey(int KeyID) {
     return false;
 
   // Which key - can be defined locally or at default (fall back to default)
-  int event_id = Key2Event[mode][KeyID];
+  unsigned event_id = Key2Event[mode][KeyID];
   if (event_id == 0) {
     // go with default key..
     event_id = Key2Event[0][KeyID];
@@ -731,7 +729,7 @@ bool InputEvents::processKey(int KeyID) {
 
 
     for (unsigned i = 0; i < std::size(ModeLabel[mode]); ++i) {
-      if (ModeLabel[mode][i].event == event_id) {
+      if (ModeLabel[mode][i].event_id == event_id) {
         MenuId = i + 1;
         if (HasKeyboard()) {
           SelectedButtonId = MenuId;
@@ -976,21 +974,22 @@ bool InputEvents::processGlideComputer_real(int gce_id) {
 extern int MenuTimeOut;
 
 // EXECUTE an Event - lookup event handler and call back - no return
-void InputEvents::processGo(int eventid) {
-  if (!(ProgramStarted==psNormalOp)) return;
+void InputEvents::processGo(unsigned event_id) {
+  if (ProgramStarted!=psNormalOp) {
+    return;
+  }
 
   // evnentid 0 is special for "noop" - otherwise check event
   // exists (pointer to function)
-  BUGSTOP_LKASSERT(eventid<=Events_count);
-  if (eventid>0 && eventid<=Events_count) {  // should be ok the =
-    if (Events[eventid].event) {
-      Events[eventid].event(Events[eventid].misc);
+  if (event_id < Events.size()) {
+    const Event_t& event = Events[event_id];
+    if (event.event) {
+      event.event(event.misc);
       MenuTimeOut = 0;
     }
-    if (Events[eventid].next > 0)
-      InputEvents::processGo(Events[eventid].next);
+    if (event.next_event_id > 0)
+      InputEvents::processGo(event.next_event_id);
   }
-  return;
 }
 
 // -----------------------------------------------------------------------
@@ -3473,7 +3472,7 @@ void InputEvents::triggerSelectedButton()
     const int lastMode = thismode;
 
     if (ButtonLabel::IsEnabled(MenuId)) {
-      processGo(ModeLabel[thismode][i].event);
+      processGo(ModeLabel[thismode][i].event_id);
     }
 
     // update button text, macro may change the label
