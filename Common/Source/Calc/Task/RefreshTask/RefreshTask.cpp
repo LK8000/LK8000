@@ -142,7 +142,7 @@ void RefreshTask(void) {
         WayPointList[i].InTask = true;
       }
     }
-    if (HomeWaypoint>=0) {
+    if (ValidWayPointFast(HomeWaypoint)) {
       WayPointList[HomeWaypoint].InTask = true;
     }
     for (i=0; i<MAXTASKPOINTS; i++) {
