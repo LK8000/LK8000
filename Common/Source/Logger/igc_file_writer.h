@@ -13,8 +13,8 @@
 #define _LOGGER_IGC_FILE_WRITER_H_
 
 #include "Compiler.h"
-#include "md5.h"
 #include "tchar.h"
+#include "md5.h"
 
 class igc_file_writer final {
 
@@ -27,7 +27,7 @@ class igc_file_writer final {
 
 public:
 
-  explicit igc_file_writer(const TCHAR *file, bool grecord);
+  igc_file_writer(const TCHAR *file, bool grecord);
 
   template <size_t size> 
   bool append(const char (&data)[size]) {
@@ -39,14 +39,14 @@ private:
   bool append(const char *data, size_t size);
 
   const TCHAR *file_path; /** full path of target igc file */
-
-  int next_record_position; /** position of G record */
   const bool add_grecord; /** true if G record must be added to file */
 
-  MD5_Base md5_a;
-  MD5_Base md5_b;
-  MD5_Base md5_c;
-  MD5_Base md5_d;
+  long next_record_position = 0; /** position of G record */
+
+  MD5_Base md5_a = {0x63e54c01, 0x25adab89, 0x44baecfe, 0x60f25476};
+  MD5_Base md5_b = {0x41e24d03, 0x23b8ebea, 0x4a4bfc9e, 0x640ed89a};
+  MD5_Base md5_c = {0x61e54e01, 0x22cdab89, 0x48b20cfe, 0x62125476};
+  MD5_Base md5_d = {0xc1e84fe8, 0x21d1c28a, 0x438e1a12, 0x6c250aee};
 };
 
 #endif //_LOGGER_IGC_FILE_WRITER_H_
