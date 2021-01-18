@@ -224,8 +224,8 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       BUGSTOP_LKASSERT(dt!=0);
       if (dt==0) dt=1;
       double vthis = (Calculated->LegDistanceCovered-dr_last)/dt;
-      vthis /= AirDensityRatio(QNHAltitudeToQNEAltitude(Basic->Altitude));
-      
+      vthis = IndicatedAirSpeed(vthis, QNHAltitudeToQNEAltitude(Basic->Altitude));
+
       dr_last = Calculated->LegDistanceCovered;
       double ttg = max(1.0, Calculated->LegTimeToGo);
       //      double Vav = d0/max(1.0,t0); 

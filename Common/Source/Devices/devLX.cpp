@@ -126,11 +126,13 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
   if (ParToDouble(sentence, 2, &alt))
   {
     if (airspeed>0) {
-      LKASSERT(AirDensityRatio(alt)!=0);
-      info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
+      info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
     }
-
     UpdateBaroSource( info, 0,d,  QNEAltitudeToQNHAltitude(alt));
+  } else {
+    if (airspeed>0) {
+      info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, QNHAltitudeToQNEAltitude(info->Altitude));
+    }
   }
 
   double Vario = 0;

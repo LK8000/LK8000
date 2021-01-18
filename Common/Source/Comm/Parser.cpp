@@ -864,8 +864,9 @@ BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   }
   
   double vias=StrToDouble(params[0],NULL)/10.0;
-  if (vias >1) {
-    pGPS->TrueAirspeed = vias*AirDensityRatio(QNHAltitudeToQNEAltitude(pGPS->Altitude));
+  if (vias > 1) {
+    double qne_altitude = QNHAltitudeToQNEAltitude(pGPS->Altitude);
+    pGPS->TrueAirspeed = TrueAirSpeed(vias, qne_altitude);
     pGPS->IndicatedAirspeed = vias;
   } else {
     pGPS->TrueAirspeed = 0;
@@ -919,18 +920,17 @@ BOOL NMEAParser::PTAS1(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **param
     // max index used is 3...
     return FALSE;
   }
-  
-  double wnet,baralt,vtas;
 
-  wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
-  baralt = (StrToDouble(params[2],NULL)-2000)/TOFEET;
-  vtas = StrToDouble(params[3],NULL)/TOKNOTS;
+  double wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
+  double qne_altitude = (StrToDouble(params[2],NULL)-2000)/TOFEET;
+  double vtas = StrToDouble(params[3],NULL)/TOKNOTS;
   
   pGPS->AirspeedAvailable = TRUE;
   pGPS->TrueAirspeed = vtas;
+  pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);
+
   UpdateVarioSource(*pGPS, d, wnet);
-  UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  QNEAltitudeToQNHAltitude(baralt));
-  pGPS->IndicatedAirspeed = vtas/AirDensityRatio(baralt);
+  UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  QNEAltitudeToQNHAltitude(qne_altitude));
  
   TASAvailable = true; // 100411 
 

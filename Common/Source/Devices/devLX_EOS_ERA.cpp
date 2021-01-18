@@ -1389,7 +1389,9 @@ double fDir,fTmp,airspeed=0;
       }
       if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
       {
-        if (airspeed>0) info->IndicatedAirspeed = airspeed / AirDensityRatio(fTmp);
+        if (airspeed > 0) {
+          info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, fTmp);
+        }
         UpdateBaroSource( info, 0, d,fTmp);
       }
     }

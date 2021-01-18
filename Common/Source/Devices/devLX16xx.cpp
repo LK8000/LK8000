@@ -342,8 +342,10 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
   else
     if (ParToDouble(sentence, 2, &alt))
     {
-	LX16xxAlt = (int) alt;
-      if (airspeed>0) info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
+      LX16xxAlt = (int) alt;
+      if (airspeed>0) {
+        info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
+      }
       UpdateBaroSource( info, 0,d, QNEAltitudeToQNHAltitude(alt));
     }
 

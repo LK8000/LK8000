@@ -298,13 +298,13 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     airspeed /= TOKPH;
     info->TrueAirspeed = airspeed;
     info->AirspeedAvailable = TRUE;
-
-
   }
 
   if (ParToDouble(sentence, 2, &alt))
   {
-    if (airspeed>0) info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
+    if (airspeed>0) {
+      info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
+    }
 
     if (d == pDevPrimaryBaroSource)
     {

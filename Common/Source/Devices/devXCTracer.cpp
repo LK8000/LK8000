@@ -172,7 +172,7 @@ bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGP
     //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
     //
     // 1 logger_stored : [Y|N] (not used XCTracer)
-    // 2 IAS [km/h]
+    // 2 TAS [km/h]
     // 3 baroaltitude [m]
     // 4-9 vario values [m/s] (only first are available in XCTracer)
     // 10 heading of plane
@@ -186,23 +186,28 @@ bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGP
         return FALSE;
     }
 
-    double alt=0, airspeed=0;
+    double QneAltitude = 0;
+    double TrueAirSpeed = 0;
+    bool AirspeedAvailable = false;
 
-    if (ReadChecked(params[2], airspeed))
+    if (ReadChecked(params[2], TrueAirSpeed))
     {
-        airspeed /= TOKPH;
-        pGPS->TrueAirspeed = airspeed;
-        pGPS->AirspeedAvailable = TRUE;
+        TrueAirSpeed /= TOKPH;
+        AirspeedAvailable = TRUE;
+        pGPS->TrueAirspeed = TrueAirSpeed;
+        pGPS->AirspeedAvailable = AirspeedAvailable;
     }
 
-    if (ReadChecked(params[3], alt))
-    {
-        if (airspeed>0) {
-            LKASSERT(AirDensityRatio(alt)!=0);
-            pGPS->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
+    if (ReadChecked(params[3], QneAltitude)) {
+        UpdateBaroSource(pGPS, 0,d,  QNEAltitudeToQNHAltitude(QneAltitude));
+    } else {
+        if (AirspeedAvailable) {
+            QneAltitude = QNHAltitudeToQNEAltitude(pGPS->Altitude);
         }
+    }
 
-        UpdateBaroSource(pGPS, 0,d,  QNEAltitudeToQNHAltitude(alt));
+    if (AirspeedAvailable) {
+        pGPS->IndicatedAirspeed = IndicatedAirSpeed(TrueAirSpeed, QneAltitude);
     }
 
     for(int i = 4; i <= 9; ++i) {
