@@ -190,10 +190,12 @@ template<size_t size>
 bool getLastTaskWayPointName(const xml_node* node, TCHAR (&lastWPname)[size]) {
     if(node) {
         xml_node* first = node->first_node("point");
-        xml_node* last = node->last_node("point");
-        if(first != last) {
-            GetAttribute(last, "name", lastWPname);
-            return true;
+        if(first) {
+            xml_node* last = node->last_node("point");
+            if(first != last) {
+                GetAttribute(last, "name", lastWPname);
+                return true;
+            }
         }
     }
     return false;
