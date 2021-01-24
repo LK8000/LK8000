@@ -137,6 +137,7 @@ dependencies {
     implementation 'com.onyx.android.sdk:epdcontroller:0.1.0'
 
     implementation 'com.karney.android.ndk:geographiclib:1.50.1'
+    implementation "com.google.oboe:oboe:1.5.0"
 }
 
 clean() {

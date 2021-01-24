@@ -132,6 +132,10 @@ add_library( LK8000 SHARED
 
     Common/Source/Android/LK8000Activity.cpp
 
+    Common/Source/Android/Vario/OscillatorSquare.h
+    Common/Source/Android/Vario/VarioPlayer.h
+    Common/Source/Android/Vario/VarioPlayer.cpp
+
     Common/Source/Window/WndMain.cpp
 
     Common/Source/xcs/Event/Shared/Timer.cpp
@@ -806,6 +810,7 @@ add_dependencies(LK8000 boost)
 add_dependencies(LK8000 glm)
 
 find_package (geographiclib REQUIRED CONFIG)
+find_package(oboe REQUIRED CONFIG)
 
 target_include_directories( LK8000 PRIVATE
     Common/Header/linuxcompat
@@ -822,6 +827,7 @@ target_link_libraries(LK8000 PRIVATE
     LK8000_POCO
     LK8000_GLUTESS
 	geographiclib::geographiclib
+    oboe::oboe
     android
     log
     z
