@@ -275,7 +275,8 @@ void dlgSelectObject::OnPaintListItem(WindowControl * Sender, LKSurface& Surface
     info.DrawPicto(Surface, PictoRect);
 
     // Draw Name
-    Surface.DrawTextClip(w0, TextPos, info.Name() , w1);
+    Surface.SelectObject(Sender->GetFont());
+    Surface.DrawTextClip(w0, TextPos, info.Name() , w1); 
 
     const TCHAR* filter = GetNameFilter();
 
