@@ -58,9 +58,11 @@ void InternalPort::thread_run() {
         if (!internal_sensors) {
             continue;
         }
-        PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
-        if (d && d->IsBaroSource && d->IsBaroSource(d)) {
-            internal_sensors->InitialiseVarioSound();
+        if(EnableAudioVario) {
+            PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
+            if (d && d->IsBaroSource && d->IsBaroSource(d)) {
+                internal_sensors->InitialiseVarioSound();
+            }
         }
     }
     internal_sensors->DeinitialiseVarioSound();

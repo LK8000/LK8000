@@ -716,6 +716,8 @@ void Globals_Init(void) {
   SnailScale=MAXSNAILRESIZE;
   TerrainWhiteness=1;
 
+  EnableAudioVario = false;
+
   // ^ ADD NEW GLOBALS up here ^
   // ---------------------------
 

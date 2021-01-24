@@ -441,7 +441,7 @@ void LKProfileSave(const TCHAR *szFile)
 #endif
 
   rprintf(szRegistryAutoContrast,AutoContrast);
-  
+  rprintf(szRegistryEnableAudioVario, EnableAudioVario);
 
 
 

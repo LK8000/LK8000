@@ -1001,6 +1001,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   PREAD(sname,svalue,szRegistryAutoContrast,&AutoContrast);
   if (matchedstring) return;
 
+  PREAD(sname, svalue, szRegistryEnableAudioVario, &EnableAudioVario);
+  if (matchedstring) return;
 
   if (SaveRuntime) if(!IsEmbedded()) {
     extern bool CommandResolution;

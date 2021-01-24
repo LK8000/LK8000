@@ -509,3 +509,4 @@ const char szRegistryAdditionalContestRule[] = "Additional_Contest_Rule";
 const char szRegistry_earth_model_wgs84[] = "earth_model_wgs84";
 #endif
 const char szRegistrySoundSwitch[] = "SoundSwitch";
+const char szRegistryEnableAudioVario[] = "EnableAudioVario";

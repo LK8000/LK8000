@@ -521,6 +521,8 @@ void LKProfileResetDefault() {
   AutoContrast=true;
   TerrainWhiteness=1;
 
+  EnableAudioVario = false;
+
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 
 }
