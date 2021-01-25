@@ -127,8 +127,8 @@ Distance(P a, P b)
 }
 
 template<typename P, typename RT=typename P::scalar_type,
-        typename std::enable_if<std::is_arithmetic<decltype(P::x)>::value, int>::type = 0,
-        typename std::enable_if<std::is_arithmetic<decltype(P::y)>::value, int>::type = 0>
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::x)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::y)>>>
 inline 
 RT Length(P p) 
 {
@@ -136,9 +136,9 @@ RT Length(P p)
 }
 
 template<typename P, typename V,
-        typename std::enable_if<std::is_arithmetic<decltype(P::x)>::value, int>::type = 0,
-        typename std::enable_if<std::is_arithmetic<decltype(P::y)>::value, int>::type = 0,
-        typename std::enable_if<std::is_arithmetic<V>::value, int>::type = 0>
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::x)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::y)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<V>>>
 constexpr inline
 P operator*(P point, V value)
 {
@@ -146,9 +146,9 @@ P operator*(P point, V value)
 }
 
 template<typename P, typename V,
-        typename std::enable_if<std::is_arithmetic<decltype(P::x)>::value, int>::type = 0,
-        typename std::enable_if<std::is_arithmetic<decltype(P::y)>::value, int>::type = 0,
-        typename std::enable_if<std::is_arithmetic<V>::value, int>::type = 0>
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::x)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::y)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<V>>>
 constexpr inline
 P operator/(P point, V value)
 {
