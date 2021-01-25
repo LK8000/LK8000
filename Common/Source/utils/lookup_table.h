@@ -32,7 +32,7 @@
 #include <cstddef>
 #include <utility>
 
-template <typename key_type, typename mapped_type, size_t size> 
+template<typename key_type, typename mapped_type, size_t size>
 class lookup_table_t {
 private:
   typedef std::pair<const key_type, const mapped_type> value_type; 
@@ -61,10 +61,10 @@ public:
   /**
    * if @key_type and @mapped_type as same type, return @key if @key is not inside table.
    */
-  template <typename T = mapped_type>
-  inline constexpr 
-  typename std::enable_if<std::is_same<key_type, T>::value, T>::type
-  get(key_type key) const {
+  template<typename T = mapped_type,
+           typename=std::enable_if_t<std::is_same_v<key_type, T>>>
+  inline constexpr
+  T get(key_type key) const {
     return get(key, key);
   }
 };
@@ -73,7 +73,7 @@ public:
  * convenience function template that constructs a lookup_table_t 
  * whith size deduced from argument
  */
-template <typename key_type, typename mapped_type, size_t size>
+template<typename key_type, typename mapped_type, size_t size>
 constexpr lookup_table_t<key_type, mapped_type, size>
 lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
   return lookup_table_t<key_type, mapped_type, size>(data, std::make_index_sequence<size>());
