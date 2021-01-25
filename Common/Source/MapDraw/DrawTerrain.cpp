@@ -889,7 +889,7 @@ private:
      *  - second is for 8bit Color ( Kobo )
      */
     template<typename Color_t>
-    typename std::enable_if<(sizeof(Color_t) == sizeof(int16_t))>::type
+    std::enable_if_t<(sizeof(Color_t) == sizeof(int16_t))>
     drawIsoLinePixel(Color_t *pixel_src, int16x8_t height, uint16x8_t mask) const {
       uint16x8_t line_color = GetIsoLineColor<uint16x8_t>(height);
       uint16_t* screen_ptr = reinterpret_cast<uint16_t*>(pixel_src);
@@ -900,7 +900,7 @@ private:
     }
 
     template<typename Color_t>
-    typename std::enable_if<(sizeof(Color_t) == sizeof(int8_t))>::type
+    std::enable_if_t<(sizeof(Color_t) == sizeof(int8_t))>
     drawIsoLinePixel(Color_t *pixel_src, int16x8_t height, uint16x8_t mask) const {
         uint8x8_t line_color = GetIsoLineColor<uint8x8_t>(height);
         uint8_t* screen_ptr = reinterpret_cast<uint8_t*>(pixel_src);
@@ -979,7 +979,7 @@ public:
                 uint16x8_t mask = (vceqq_s16(h, h2) | vceqq_s16(h3, h1)) & vceqq_s16(h, h3);
                 height = (height - qv_height_min) >> qv_height_scale;
                 height = Clamp(height, qheight_0, qheight_255);
-                drawIsoLinePixel(&screen_row[x], height, mask);
+                drawIsoLinePixel<BGRColor>(&screen_row[x], height, mask);
             }
 #else
             // iso band value of first column
