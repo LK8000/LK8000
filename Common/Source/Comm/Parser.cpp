@@ -369,26 +369,7 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
 
 BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-
-  #if LOGFRECORD
-  int iSatelliteCount =0;
-
-  if (!activeGPS) return TRUE;
-
-  // satellites are in items 4-15 of GSA string (4-15 is 1-indexed)
-  // but 1st item in string is not passed, so start at item 3
-  for (int i = 0; i < MAXSATELLITES; i++)
-  {
-    if (3+i < (int) nparams) {
-      pGPS->SatelliteIDs[i] = (int)(StrToDouble(params[2+i], NULL)); // 2 because params is 0-index
-      if (pGPS->SatelliteIDs[i] > 0)
-	iSatelliteCount ++;
-    }
-  }
   return TRUE;
-  #else
-  return TRUE;
-  #endif
 }
 
 // we need to parse GLL as well because it can mark the start of a new quantum data

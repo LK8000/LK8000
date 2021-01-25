@@ -36,10 +36,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double dtSnail = 2.0;
   double dtStats = 60.0;
 
-  #if LOGFRECORD
-  double dtFRecord = 270; // 4.5 minutes (required minimum every 5)
-  #endif
-
   if (DoInit[MDI_CALCLOGGING]) {
 	SnailLastTime=0;
 	LogLastTime=0;
@@ -68,11 +64,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if(Basic->Time <= StatsLastTime) {
     StatsLastTime = Basic->Time;
   }
-  #if LOGFRECORD
-  if(Basic->Time <= GetFRecordLastTime()) {
-    SetFRecordLastTime(Basic->Time);
-  }
-  #endif
 
   // draw snail points more often in circling mode
   if (Calculated->Circling) {
@@ -153,20 +144,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     // Remarks: LogPoint is also checking that there is a valid fix to proceed
 
   } // time has advanced enough: >= LOGINTERVAL
-
-  #if LOGFRECORD
-  if (Basic->Time - GetFRecordLastTime() >= dtFRecord)
-  {
-    if (LogFRecord(Basic->SatelliteIDs,false))
-    {  // need F record every 5 minutes
-       // so if write fails or constellation is invalid, don't update timer and try again next cycle
-      SetFRecordLastTime(GetFRecordLastTime() + dtFRecord);
-      // the FRecordLastTime is reset when the logger restarts so it is always at the start of the file
-      if (GetFRecordLastTime() < Basic->Time-dtFRecord)
-        SetFRecordLastTime(Basic->Time-dtFRecord);
-    }
-  }
-  #endif
 
   // 120812 For car/trekking mode, log snailpoint only if at least 5m were made in the dtSnail time
   if (ISCAR) {

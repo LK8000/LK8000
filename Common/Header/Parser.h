@@ -144,10 +144,6 @@ struct NMEA_INFO
   FANET_WEATHER FANET_Weather[MAXFANETWEATHER];
   FANET_NAME FanetName[MAXFANETDEVICES];
 
-  #if LOGFRECORD
-  int SatelliteIDs[MAXSATELLITES];
-  #endif
-
   double SupplyBatteryVoltage;
 
   #if USESWITCHES

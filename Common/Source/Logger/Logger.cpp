@@ -21,10 +21,6 @@
 #include <memory>
 // #define DEBUG_LOGGER	1
 
-//
-// v6 NOTICE: WE DO NOT USE LOGFRECORD AT ALL
-//
-
 #ifdef _UNICODE
     #define A_RECORD                "A%s%C%C%C\r\n"
     #define HFPLTPILOT              "HFPLTPILOT:%S\r\n"
@@ -67,30 +63,6 @@ static int IGCCharToNum(TCHAR c) {
 
 static TCHAR szFLoggerFileName[MAX_PATH+1] = TEXT("\0"); // final IGC name
 
-#if LOGFRECORD
-static double FRecordLastTime = 0;
-static char szLastFRecord[MAX_IGC_BUFF];
-#endif
-
-#if LOGFRECORD
-void SetFRecordLastTime(double dTime)
-{ FRecordLastTime=dTime; }
-
-double GetFRecordLastTime(void)
-{ return FRecordLastTime; }
-
-void ResetFRecord_Internal(void)
-{
-    for (int iFirst = 0; iFirst < MAX_IGC_BUFF; iFirst++)
-      szLastFRecord[iFirst]=0;
-}
-void ResetFRecord(void)
-{
-  SetFRecordLastTime(0);
-  ResetFRecord_Internal();
-}
-#endif
-
 int EW_count = 0;
 int NumLoggerBuffered = 0;
 
@@ -107,9 +79,6 @@ typedef struct LoggerBuffer {
   short Hour;
   short Minute;
   short Second;
-  #if LOGFRECORD
-  int SatelliteIDs[MAXSATELLITES];
-  #endif
 } LoggerBuffer_T;
 
 static LoggerBuffer_T FirstPoint;
@@ -143,14 +112,8 @@ void StopLogger(void) {
 // of QNE altitude, which is what we have been doing up to v4 in any case. It cant be worst.
 // In all other cases, the pressure altitude will be saved, and out IGC logger replay is converting it
 // to the desired QNH altitude back.
-#if LOGFRECORD
-static void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
-                      double BaroAltitude, short Hour, short Minute, short Second,
-                      int SatelliteIDs[]) {
-#else
 static void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
                       double BaroAltitude, short Hour, short Minute, short Second) {
-#endif
 
   LKASSERT(NumLoggerBuffered<=MAX_LOGGER_BUFFER);
   if (NumLoggerBuffered== MAX_LOGGER_BUFFER) {
@@ -172,11 +135,6 @@ static void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
   LoggerBuffer[NumLoggerBuffered-1].Year = GPS_INFO.Year;
   LoggerBuffer[NumLoggerBuffered-1].Month = GPS_INFO.Month;
   LoggerBuffer[NumLoggerBuffered-1].Day = GPS_INFO.Day;
-
-  #if LOGFRECORD
-  for (int iSat=0; iSat < MAXSATELLITES; iSat++)
-    LoggerBuffer[NumLoggerBuffered-1].SatelliteIDs[iSat]=SatelliteIDs[iSat];
-  #endif
 
   // This is the first point that will be output to file.
   // Declaration must happen before this, so must save this time.
@@ -241,24 +199,9 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
               int iHour, int iMin, int iSec) {
   if (!LoggerActive) {
     if (!GPS_INFO.NAVWarning) {
-      #if LOGFRECORD
-      LogPointToBuffer(Latitude, Longitude, Altitude, BaroAltitude,
-                       iHour, iMin, iSec,
-                       GPS_INFO.SatelliteIDs); // no problem for wrong sats in case
-      #else
       LogPointToBuffer(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude, iHour, iMin, iSec);
-      #endif
     }
   } else if (NumLoggerBuffered && !GPS_INFO.NAVWarning) {
-
-    #if LOGFRECORD
-    LogFRecordToFile(LoggerBuffer[0].SatelliteIDs,  // write FRec before cached BRecs
-                   LoggerBuffer[0].Hour,
-                   LoggerBuffer[0].Minute,
-                   LoggerBuffer[0].Second,
-                   true);
-    #endif
-
     LKASSERT(NumLoggerBuffered<=MAX_LOGGER_BUFFER); // because we check i<
     for (int i=0; i<NumLoggerBuffered; i++) {
       LogPointToFile(LoggerBuffer[i].Latitude,
@@ -276,92 +219,6 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
                    iHour, iMin, iSec);
   }
 }
-
-//
-// v6 NOTICE: WE DO NOT USE LOGFRECORD AT ALL
-//
-#if LOGFRECORD
-bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second, bool bAlways)
-{ // bAlways forces write when completing header for restart
-  // only writes record if constallation has changed unless bAlways set
-  #if (TESTBENCH && DEBUG_LOGGER)
-  #else
-  if (SIMMODE) return true;
-  #endif
-  char szFRecord[MAX_IGC_BUFF];
-  static bool bFirst = true;
-  int eof=0;
-  int iNumberSatellites=0;
-  bool bRetVal = false;
-
-  if (bFirst)
-  {
-    bFirst = false;
-    ResetFRecord_Internal();
-  }
-
-
-  sprintf(szFRecord,"F%02d%02d%02d", Hour, Minute, Second);
-  eof=7;
-
-  for (int i=0; i < MAXSATELLITES; i++)
-  {
-    if (SatelliteIDs[i] > 0)
-    {
-      sprintf(szFRecord+eof, "%02d",SatelliteIDs[i]);
-      eof +=2;
-      iNumberSatellites++;
-    }
-  }
-  sprintf(szFRecord+ eof,"\r\n");
-
-  // only write F Record if it has changed since last time
-  // check every 4.5 minutes to see if it's changed.  Transient changes are not tracked.
-  if (!bAlways
-        && strcmp(szFRecord + 7, szLastFRecord + 7) == 0
-        && strlen(szFRecord) == strlen(szLastFRecord) )
-  { // constellation has not changed
-      if (iNumberSatellites >=3)
-        bRetVal=true;  // if the last FRecord had 3+ sats, then return true
-                      //  and this causes 5-minute counter to reset
-      else
-        bRetVal=false;  // non-2d fix, don't reset 5-minute counter so
-                        // we keep looking for changed constellations
-  }
-  else
-  { // constellation has changed
-    if (IGCWriteRecord(szFRecord))
-    {
-      strcpy(szLastFRecord, szFRecord);
-      if (iNumberSatellites >=3)
-        bRetVal=true;  // if we log an FRecord with a 3+ sats, then return true
-                      //  and this causes 5-minute counter to reset
-      else
-        bRetVal=false;  // non-2d fix, log it, and don't reset 5-minute counter so
-                        // we keep looking for changed constellations
-    }
-    else
-    {  // IGCwrite failed
-      bRetVal = false;
-    }
-
-  }
-  return bRetVal;
-
-}
-
-
-bool LogFRecord(int SatelliteIDs[], bool bAlways )
-{
-  if (LoggerActive || bAlways)
-    {
-      return LogFRecordToFile(SatelliteIDs,
-			      GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second, bAlways);
-    }
-  else
-    return false;  // track whether we succussfully write it, else we retry
-}
-#endif // LOGFRECORD
 
 static bool IsAlphaNum (TCHAR c) {
   if (((c >= _T('A'))&&(c <= _T('Z')))

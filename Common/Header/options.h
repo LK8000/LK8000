@@ -162,10 +162,6 @@
 //  #define OWN_POS_MS		// button to trigger basic settings
 //  #define ORACLE_MS		// button to trigger oracle
 
-
-// Use F Record in IGC log files- not needed really
-// #define LOGFRECORD	1
-
 // do not add screen points if closer than 5pix to the previous
 //#define LKASP_REMOVE_NEAR_POINTS		1
 
