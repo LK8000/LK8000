@@ -63,29 +63,23 @@ static int IGCCharToNum(TCHAR c) {
 
 static TCHAR szFLoggerFileName[MAX_PATH+1] = TEXT("\0"); // final IGC name
 
-int EW_count = 0;
-int NumLoggerBuffered = 0;
-
-#define MAX_LOGGER_BUFFER 60
-
-typedef struct LoggerBuffer {
-  double Latitude;
-  double Longitude;
-  double Altitude;
-  double BaroAltitude;
-  short Day;
-  short Month;
-  short Year;
-  short Hour;
-  short Minute;
-  short Second;
-} LoggerBuffer_T;
-
-static LoggerBuffer_T FirstPoint;
-static LoggerBuffer_T LoggerBuffer[MAX_LOGGER_BUFFER];
-
-
 namespace {
+
+  struct LoggerBuffer_T {
+    double Latitude;
+    double Longitude;
+    double Altitude;
+    double BaroAltitude;
+    short Day;
+    short Month;
+    short Year;
+    short Hour;
+    short Minute;
+    short Second;
+  };
+
+  constexpr size_t max_buffer = 60;
+  std::list<LoggerBuffer_T> LoggerBuffer;
 
   // singleton instance of igc file writer
   //  created by StartLogger
@@ -100,9 +94,9 @@ namespace {
 }
 
 void StopLogger(void) {
-    igc_writer_ptr.reset();
+    igc_writer_ptr = nullptr;
     LoggerActive = false;
-    NumLoggerBuffered = 0;
+    LoggerBuffer.clear();
 }
 
 // BaroAltitude in this case is a QNE altitude (aka pressure altitude)
@@ -115,30 +109,18 @@ void StopLogger(void) {
 static void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
                       double BaroAltitude, short Hour, short Minute, short Second) {
 
-  LKASSERT(NumLoggerBuffered<=MAX_LOGGER_BUFFER);
-  if (NumLoggerBuffered== MAX_LOGGER_BUFFER) {
-    for (int i= 0; i< NumLoggerBuffered-1; i++) {
-      LKASSERT((i+1)<MAX_LOGGER_BUFFER);
-      LoggerBuffer[i]= LoggerBuffer[i+1];
-    }
-  } else {
-    NumLoggerBuffered++;
+  if (LoggerBuffer.size() >= max_buffer) {
+    LoggerBuffer.pop_front();
   }
-  LKASSERT((NumLoggerBuffered-1)>=0);
-  LoggerBuffer[NumLoggerBuffered-1].Latitude = Latitude;
-  LoggerBuffer[NumLoggerBuffered-1].Longitude = Longitude;
-  LoggerBuffer[NumLoggerBuffered-1].Altitude = Altitude;
-  LoggerBuffer[NumLoggerBuffered-1].BaroAltitude = BaroAltitude;
-  LoggerBuffer[NumLoggerBuffered-1].Hour = Hour;
-  LoggerBuffer[NumLoggerBuffered-1].Minute = Minute;
-  LoggerBuffer[NumLoggerBuffered-1].Second = Second;
-  LoggerBuffer[NumLoggerBuffered-1].Year = GPS_INFO.Year;
-  LoggerBuffer[NumLoggerBuffered-1].Month = GPS_INFO.Month;
-  LoggerBuffer[NumLoggerBuffered-1].Day = GPS_INFO.Day;
 
-  // This is the first point that will be output to file.
-  // Declaration must happen before this, so must save this time.
-  FirstPoint = LoggerBuffer[0];
+  LoggerBuffer.push_back({
+    Latitude, Longitude,
+    Altitude, BaroAltitude,
+    static_cast<short>(GPS_INFO.Day), 
+    static_cast<short>(GPS_INFO.Month), 
+    static_cast<short>(GPS_INFO.Year),
+    Hour, Minute, Second,
+  });
 }
 
 
@@ -153,10 +135,10 @@ static void LogPointToFile(double Latitude, double Longitude, double Altitude,
 
   // pending rounding error from millisecond timefix in RMC sentence?
   if (Second>=60||Second<0) {
-	#if TESTBENCH
-	StartupStore(_T("... WRONG TIMEFIX FOR LOGGER, seconds=%d, fix skipped\n"),Second);
-	#endif
-	return;
+    #if TESTBENCH
+    StartupStore(_T("... WRONG TIMEFIX FOR LOGGER, seconds=%d, fix skipped\n"),Second);
+    #endif
+    return;
   }
 
   // v5: very old bug since v2: Netherlands can have negative altitudes!
@@ -167,97 +149,64 @@ static void LogPointToFile(double Latitude, double Longitude, double Altitude,
   DegLat = (int)Latitude;
   MinLat = Latitude - DegLat;
   NoS = 'N';
-  if((MinLat<0) || ((MinLat==0) && (DegLat<0)))
-    {
-      NoS = 'S';
-      DegLat *= -1; MinLat *= -1;
-    }
+  if((MinLat<0) || ((MinLat==0) && (DegLat<0))) {
+    NoS = 'S';
+    DegLat *= -1; MinLat *= -1;
+  }
   MinLat *= 60;
   MinLat *= 1000;
 
   DegLon = (int)Longitude ;
   MinLon = Longitude  - DegLon;
   EoW = 'E';
-  if((MinLon<0) || ((MinLon==0) && (DegLon<0)))
-    {
-      EoW = 'W';
-      DegLon *= -1; MinLon *= -1;
-    }
+  if((MinLon<0) || ((MinLon==0) && (DegLon<0))) {
+    EoW = 'W';
+    DegLon *= -1; MinLon *= -1;
+  }
   MinLon *=60;
   MinLon *= 1000;
 
   sprintf(szBRecord,"B%02d%02d%02d%02d%05.0f%c%03d%05.0f%cA%05d%05d\r\n",
           Hour, Minute, Second,
           DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-          (int)BaroAltitude,Clamp<int>(Altitude,0,99999));
+          (int)BaroAltitude, Clamp<int>(Altitude,0,99999));
 
   IGCWriteRecord(szBRecord);
 }
 
 
-void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAltitude,
-              int iHour, int iMin, int iSec) {
-  if (!LoggerActive) {
-    if (!GPS_INFO.NAVWarning) {
-      LogPointToBuffer(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude, iHour, iMin, iSec);
-    }
-  } else if (NumLoggerBuffered && !GPS_INFO.NAVWarning) {
-    LKASSERT(NumLoggerBuffered<=MAX_LOGGER_BUFFER); // because we check i<
-    for (int i=0; i<NumLoggerBuffered; i++) {
-      LogPointToFile(LoggerBuffer[i].Latitude,
-                     LoggerBuffer[i].Longitude,
-                     LoggerBuffer[i].Altitude,
-                     LoggerBuffer[i].BaroAltitude,
-                     LoggerBuffer[i].Hour,
-                     LoggerBuffer[i].Minute,
-                     LoggerBuffer[i].Second);
-    }
-    NumLoggerBuffered = 0;
-  }
-  if (LoggerActive && !GPS_INFO.NAVWarning) {
-    LogPointToFile(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude,
-                   iHour, iMin, iSec);
-  }
-}
-
 static bool IsAlphaNum (TCHAR c) {
-  if (((c >= _T('A'))&&(c <= _T('Z')))
-      ||((c >= _T('a'))&&(c <= _T('z')))
-      ||((c >= _T('0'))&&(c <= _T('9')))) {
-    return true;
-  } else {
-    return false;
-  }
+  return ( ((c >= _T('A')) && (c <= _T('Z')))
+        || ((c >= _T('a')) && (c <= _T('z')))
+        || ((c >= _T('0')) && (c <= _T('9'))));
 }
 
-void StartLogger()
-{
+void StartLogger() {
 
   SHOWTHREAD(_T("StartLogger"));
 
-  int i;
   TCHAR path[MAX_PATH+1];
   TCHAR cAsset[3];
 
   // strAsset is initialized with DUM.
   if (_tcslen(PilotName_Config)>0) {
-	strAssetNumber[0]= IsAlphaNum(PilotName_Config[0]) ? PilotName_Config[0] : _T('A');
-	strAssetNumber[1]= IsAlphaNum(PilotName_Config[1]) ? PilotName_Config[1] : _T('A');
+    strAssetNumber[0]= IsAlphaNum(PilotName_Config[0]) ? PilotName_Config[0] : _T('A');
+    strAssetNumber[1]= IsAlphaNum(PilotName_Config[1]) ? PilotName_Config[1] : _T('A');
   } else {
-	strAssetNumber[0]= _T('D');
-	strAssetNumber[1]= _T('U');
+    strAssetNumber[0]= _T('D');
+    strAssetNumber[1]= _T('U');
   }
   if (_tcslen(AircraftType_Config)>0) {
-	strAssetNumber[2]= IsAlphaNum(AircraftType_Config[0]) ? AircraftType_Config[0] : _T('A');
+    strAssetNumber[2]= IsAlphaNum(AircraftType_Config[0]) ? AircraftType_Config[0] : _T('A');
   } else {
-	strAssetNumber[2]= _T('M');
+    strAssetNumber[2]= _T('M');
   }
   strAssetNumber[0]= _totupper(strAssetNumber[0]);
   strAssetNumber[1]= _totupper(strAssetNumber[1]);
   strAssetNumber[2]= _totupper(strAssetNumber[2]);
   strAssetNumber[3]= _T('\0');
 
-  for (i=0; i < 3; i++) { // chars must be legal in file names
+  for (int i = 0; i < 3; i++) { // chars must be legal in file names
     cAsset[i] = IsAlphaNum(strAssetNumber[i]) ? strAssetNumber[i] : _T('A');
   }
 
@@ -267,15 +216,14 @@ void StartLogger()
     SaveDefaultTask();
   }
 
-  for(i=1;i<99;i++)
-    {
-      // 2003-12-31-XXX-987-01.IGC
-      // long filename form of IGC file.
-      // XXX represents manufacturer code
+  for(int i = 1; i < 99; i++) {
+    // 2003-12-31-XXX-987-01.IGC
+    // long filename form of IGC file.
+    // XXX represents manufacturer code
 
-      if (!LoggerShortName) {
-        // Long file name
-        _sntprintf(szFLoggerFileName, std::size(szFLoggerFileName),
+    if (!LoggerShortName) {
+      // Long file name
+      _sntprintf(szFLoggerFileName, std::size(szFLoggerFileName),
                  TEXT("%s%s%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
                  path, _T(DIRSEP),
                  GPS_INFO.Year,
@@ -287,14 +235,14 @@ void StartLogger()
                  cAsset[2],
                  i);
 
-      } else {
-        // Short file name
-        TCHAR cyear, cmonth, cday, cflight;
-        cyear = NumToIGCChar((int)GPS_INFO.Year % 10);
-        cmonth = NumToIGCChar(GPS_INFO.Month);
-        cday = NumToIGCChar(GPS_INFO.Day);
-        cflight = NumToIGCChar(i);
-        _sntprintf(szFLoggerFileName, std::size(szFLoggerFileName),
+    } else {
+      // Short file name
+      TCHAR cyear, cmonth, cday, cflight;
+      cyear = NumToIGCChar((int)GPS_INFO.Year % 10);
+      cmonth = NumToIGCChar(GPS_INFO.Month);
+      cday = NumToIGCChar(GPS_INFO.Day);
+      cflight = NumToIGCChar(i);
+      _sntprintf(szFLoggerFileName, std::size(szFLoggerFileName),
                  TEXT("%s%s%c%c%cX%c%c%c%c.IGC"),
                  path, _T(DIRSEP),
                  cyear,
@@ -305,14 +253,12 @@ void StartLogger()
                  cAsset[2],
                  cflight);
 
-      } // end if
+    } // end if
 
-      if(!lk::filesystem::exist(szFLoggerFileName)) {
-        break;
-      }
+    if(!lk::filesystem::exist(szFLoggerFileName)) {
+      break;
+    }
   } // end while
-
-  igc_writer_ptr = std::make_unique<igc_file_writer>(szFLoggerFileName, LoggerGActive());
 
   StartupStore(_T(". Logger Started %s  File <%s>"), WhatTimeIsIt(), szFLoggerFileName);
 }
@@ -369,11 +315,7 @@ static void AdditionalHeaders(void) {
     fclose(stream);
 }
 
-//
-// This is called by Calc/Task thread, after calling StartLogger
-//
-void LoggerHeader(void)
-{
+static void LoggerHeader() {
   char datum[]= "HFDTM100GPSDATUM:WGS-84\r\n";
   char temp[300];
 
@@ -510,22 +452,45 @@ void LoggerHeader(void)
 
 }
 
+static void AddDeclaration(double Latitude, double Longitude, TCHAR *ID) {
 
-void StartDeclaration(int ntp)
-{
-  // TODO bug: this is causing problems with some analysis software
-  // maybe it's because the date and location fields are bogus
-  char start[] = "C0000000N00000000ETAKEOFF\r\n";
+  char IDString[MAX_PATH];
+  to_usascii(ID, IDString);
+
+  int DegLat = Latitude;
+  double MinLat = Latitude - DegLat;
+  char NoS = 'N';
+  if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0))) {
+    NoS = 'S';
+    DegLat *= -1; 
+    MinLat *= -1;
+  }
+  MinLat *= 60;
+  MinLat *= 1000;
+
+  int DegLon = Longitude ;
+  double MinLon = Longitude  - DegLon;
+  char EoW = 'E';
+  if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0))) {
+    EoW = 'W';
+    DegLon *= -1; 
+    MinLon *= -1;
+  }
+  MinLon *=60;
+  MinLon *= 1000;
+
+  char szCRecord[500];
+  sprintf(szCRecord,"C%02d%05.0f%c%03d%05.0f%c%s\r\n",
+	  DegLat, MinLat, NoS, DegLon, MinLon, EoW, IDString);
+
+  IGCWriteRecord(szCRecord);
+}
+
+static void StartDeclaration(int ntp) {
+
   char temp[100];
 
-  if (NumLoggerBuffered==0) {
-    FirstPoint.Year = GPS_INFO.Year;
-    FirstPoint.Month = GPS_INFO.Month;
-    FirstPoint.Day = GPS_INFO.Day;
-    FirstPoint.Hour = GPS_INFO.Hour;
-    FirstPoint.Minute = GPS_INFO.Minute;
-    FirstPoint.Second = GPS_INFO.Second;
-  }
+  const auto& FirstPoint = LoggerBuffer.front();
 
   // JMW added task start declaration line
 
@@ -533,15 +498,15 @@ void StartDeclaration(int ntp)
 
   // IGC GNSS specification 3.6.1
   sprintf(temp,
-	  "C%02d%02d%02d%02d%02d%02d0000000000%02d\r\n",
-	  // DD  MM  YY  HH  MM  SS  DD  MM  YY IIII TT
-	  FirstPoint.Day,
-	  FirstPoint.Month,
-	  FirstPoint.Year % 100,
-	  FirstPoint.Hour,
-	  FirstPoint.Minute,
-	  FirstPoint.Second,
-	  ntp-2);
+      "C%02d%02d%02d%02d%02d%02d0000000000%02d\r\n",
+      // DD  MM  YY  HH  MM  SS  DD  MM  YY IIII TT
+      FirstPoint.Day,
+      FirstPoint.Month,
+      FirstPoint.Year % 100,
+      FirstPoint.Hour,
+      FirstPoint.Minute,
+      FirstPoint.Second,
+      ntp-2);
 
   IGCWriteRecord(temp);
   // takeoff line
@@ -549,95 +514,80 @@ void StartDeclaration(int ntp)
 
   // Use homewaypoint as default takeoff and landing position. Better than an empty field!
   if (ValidWayPoint(HomeWaypoint)) {
-	TCHAR wname[NAME_SIZE+1];
-	_stprintf(wname,_T("%s"),WayPointList[HomeWaypoint].Name);
-	wname[8]='\0';
-	AddDeclaration(WayPointList[HomeWaypoint].Latitude, WayPointList[HomeWaypoint].Longitude, wname);
-  } else
-	IGCWriteRecord(start);
-
+    AddDeclaration(
+      WayPointList[Task[HomeWaypoint].Index].Latitude, 
+      WayPointList[Task[HomeWaypoint].Index].Longitude,
+      WayPointList[Task[HomeWaypoint].Index].Name);
+  } else {
+    // TODO bug: this is causing problems with some analysis software
+    // maybe it's because the date and location fields are bogus
+    IGCWriteRecord("C0000000N00000000ETAKEOFF\r\n");
+  }
 }
 
-
-void EndDeclaration(void)
-{
-  // TODO bug: this is causing problems with some analysis software
-  // maybe it's because the date and location fields are bogus
-  char start[] = "C0000000N00000000ELANDING\r\n";
-
+static void EndDeclaration() {
   // Use homewaypoint as default takeoff and landing position. Better than an empty field!
   if (ValidWayPoint(HomeWaypoint)) {
-	TCHAR wname[NAME_SIZE+1];
-	_stprintf(wname,_T("%s"),WayPointList[HomeWaypoint].Name);
-	wname[8]='\0';
-	AddDeclaration(WayPointList[HomeWaypoint].Latitude, WayPointList[HomeWaypoint].Longitude, wname);
-  } else
-	IGCWriteRecord(start);
-}
-
-void AddDeclaration(double Latitude, double Longitude, TCHAR *ID)
-{
-  char szCRecord[500];
-
-  char IDString[MAX_PATH];
-  int i;
-
-  int DegLat, DegLon;
-  double MinLat, MinLon;
-  char NoS, EoW;
-
-  TCHAR tmpstring[MAX_PATH];
-  _tcscpy(tmpstring, ID);
-  CharUpper(tmpstring);
-  for(i=0;i<(int)_tcslen(tmpstring);i++)
-    {
-      IDString[i] = (char)tmpstring[i];
-    }
-  IDString[i] = '\0';
-
-  DegLat = (int)Latitude;
-  MinLat = Latitude - DegLat;
-  NoS = 'N';
-  if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
-    {
-      NoS = 'S';
-      DegLat *= -1; MinLat *= -1;
-    }
-  MinLat *= 60;
-  MinLat *= 1000;
-
-  DegLon = (int)Longitude ;
-  MinLon = Longitude  - DegLon;
-  EoW = 'E';
-  if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
-    {
-      EoW = 'W';
-      DegLon *= -1; MinLon *= -1;
-    }
-  MinLon *=60;
-  MinLon *= 1000;
-
-  sprintf(szCRecord,"C%02d%05.0f%c%03d%05.0f%c%s\r\n",
-	  DegLat, MinLat, NoS, DegLon, MinLon, EoW, IDString);
-
-  IGCWriteRecord(szCRecord);
-}
-
-
-// This is bad, useless, and now removed
-void LoggerNote(const TCHAR *text) {
-  return;
-  /* NOT THREAD SAFE
-  if (LoggerActive) {
-
-    char fulltext[500];
-    sprintf(fulltext, "LPLT%S\r\n", text);
-    IGCWriteRecord(fulltext);
-
+    AddDeclaration(
+      WayPointList[Task[HomeWaypoint].Index].Latitude, 
+      WayPointList[Task[HomeWaypoint].Index].Longitude,
+      WayPointList[Task[HomeWaypoint].Index].Name );
+  } else {
+    // TODO bug: this is causing problems with some analysis software
+    // maybe it's because the date and location fields are bogus
+    IGCWriteRecord("C0000000N00000000ELANDING\r\n");
   }
-  */
 }
 
+
+void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAltitude,
+              int iHour, int iMin, int iSec) {
+
+  if (GPS_INFO.NAVWarning) {
+    // don't log invalid fix
+    return;
+  }
+
+  if(LoggerActive && !igc_writer_ptr) {
+    // start Logger
+    if(!LoggerBuffer.empty()) {
+      // only start logger after first valid fix
+
+      igc_writer_ptr = std::make_unique<igc_file_writer>(szFLoggerFileName, LoggerGActive());
+
+      LoggerHeader();
+
+      LockTaskData();
+
+      int ntp=0;
+      for ( ; ValidTaskPointFast(ntp); ++ntp);
+
+      StartDeclaration(ntp);
+      for (unsigned i = 0; ValidTaskPointFast(i); ++i) {
+        AddDeclaration(
+          WayPointList[Task[i].Index].Latitude, 
+          WayPointList[Task[i].Index].Longitude,
+          WayPointList[Task[i].Index].Name );
+      }
+      EndDeclaration();
+
+      UnlockTaskData();
+
+      for (const auto & point : LoggerBuffer) {
+        LogPointToFile(point.Latitude, point.Longitude,
+                      point.Altitude, point.BaroAltitude,
+                      point.Hour, point.Minute, point.Second);
+      }
+      LoggerBuffer = std::list<LoggerBuffer_T>(); //used instead of clear to deallocate.
+    }
+  }
+
+  if (igc_writer_ptr) {
+    LogPointToFile(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude, iHour, iMin, iSec);
+  } else {
+    LogPointToBuffer(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude, iHour, iMin, iSec);
+  }
+}
 
 bool DeclaredToDevice = false;
 

@@ -2489,9 +2489,6 @@ void InputEvents::eventLogger(const TCHAR *misc) {
     } else {
       DoStatusMessage(MsgToken(863)); // Logger OFF
     }
-  } else if (_tcsncmp(misc, TEXT("note"), 4)==0) {
-    // add note to logger file if available..
-    LoggerNote(misc+4);
   }
 }
 

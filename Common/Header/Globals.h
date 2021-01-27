@@ -577,7 +577,6 @@ GEXTERN int TrailLock;
 
 // Logger
 GEXTERN bool LoggerActive;
-GEXTERN bool IGCWriteLock;
 
 // user controls/parameters
 GEXTERN double MACCREADY;

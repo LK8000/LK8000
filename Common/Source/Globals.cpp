@@ -525,8 +525,6 @@ void Globals_Init(void) {
   LiveTrackerInterval = 0;
   LiveTrackerStart_config  = 1;
 
-  IGCWriteLock=false; // workaround, but not a real solution
-
   AutoWindMode_Config= D_AUTOWIND_CIRCLING;
   AutoWindMode= AutoWindMode_Config;
   EnableTrailDrift_Config = false;

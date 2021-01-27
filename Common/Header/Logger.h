@@ -4,11 +4,7 @@
 void StartLogger(void);
 void LogPoint(double Latitude, double Longitude, double Altitude,
               double BaroAltitude, int iHour, int iMin, int iSec);
-void AddDeclaration(double Lattitude, double Longditude, TCHAR *ID);
-void StartDeclaration(int numturnpoints);
-void EndDeclaration(void);
-void LoggerHeader(void);
-void LoggerNote(const TCHAR *text);
+
 void LoggerDeviceDeclare();
 
 void UpdateLogBook(bool welandedforsure);
