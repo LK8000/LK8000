@@ -42,7 +42,6 @@
 	MDI_DRAWVARIO,			// screen change
 	MDI_GETOVERTARGETHEADER,	// language change
 	MDI_PROCESSVIRTUALKEY,		// screen change
-	MDI_CHECKLABELBLOCK,		// screen change
 	MDI_LOOKABLEND,			// screen change, drawlook ablend
 	MDI_MAPWPVECTORS,		// screen change
 	MDI_FLARMRADAR,			// screen change

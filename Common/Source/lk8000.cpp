@@ -614,8 +614,6 @@ void Shutdown() {
 
   LKUnloadLanguageFile();
   InputEvents::UnloadString();
-  // This is freeing char *slot in TextInBox
-  MapWindow::FreeSlot();
 
   main_window = nullptr;
 

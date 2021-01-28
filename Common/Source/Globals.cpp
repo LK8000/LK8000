@@ -262,7 +262,7 @@ void Globals_Init(void) {
   FontRenderer=0;
   LockModeStatus=false;
   ArrivalValue=0;
-  NewMapDeclutter=0;
+  NewMapDeclutter=dmLow;
   SonarWarning=1;
   SonarWarning_Config=1;
   Shading=1;

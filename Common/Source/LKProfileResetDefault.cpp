@@ -192,7 +192,7 @@ void LKProfileResetDefault() {
 
   OverColor = (OverColor_t)OcBlack;
 
-  DeclutterMode = (DeclutterMode_t)dmHigh;
+  DeclutterMode = dmHigh;
 
   // full size overlay by default
   OverlaySize = 0;
@@ -250,7 +250,7 @@ void LKProfileResetDefault() {
   ArrivalValue = (ArrivalValue_t)avAltitude;
 
   // 1 is showing all airports and declutter only unneeded outlandings
-  NewMapDeclutter = 1;
+  NewMapDeclutter = dmLow;
 
   AverEffTime = (AverEffTime_t)ae30seconds;
 

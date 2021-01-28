@@ -24,6 +24,7 @@
 #include "ScreenGeometry.h"
 #include "utils/stringext.h"
 #include <functional>
+#include "Utils.h"
 
 #ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"
@@ -627,30 +628,21 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 
       case(MS_SHAPE_POINT):{
 
-        bool dobitmap=false;
-        if (scaleCategory<90 || (MapWindow::zoom.RealScale()<2)) dobitmap=true;
-        // first a latlon overlap check, only approximated because of fastcosine in latlon2screen
         if (checkVisible(*shape, screenRect))
           for (int tt = 0; tt < shape->numlines; tt++) {
             const lineObj &line = shape->line[tt];
-			for (int jj=0; jj< line.numpoints; jj++) {
+            for (int jj=0; jj< line.numpoints; jj++) {
                 const pointObj &point = line.point[jj];
                 if(msPointInRect(&point, &screenRect)) {
                     const POINT sc = _Proj.ToRasterPoint(point.y, point.x);
-                    if (dobitmap) {
-                        // bugfix 101212 missing case for scaleCategory 0 (markers)
-                        if (scaleCategory == 0 ||
-                            cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
-                            MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
-                        }
-                    } else {
-                        cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc);
+                    if (cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
+                        MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
                     }
                 }
-			}
-		}
-	  }
-	  break;
+            }
+          }
+        }
+      break;
 
     case(MS_SHAPE_LINE):
 
@@ -775,40 +767,35 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 
 // Print topology labels
 bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const {
-  if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
-
-    //Do not waste time with null labels
-    int size = _tcslen(label);
-    if(size <= 0) {
+    if (!label || !label[0]) {
         return false;
     }
 
-	SIZE tsize;
-	RECT brect;
-	Surface.GetTextSize(label, &tsize);
+    if ( (GetMultimap_Labels() != MAPLABELS_ALLON) && (GetMultimap_Labels() != MAPLABELS_ONLYTOPO) ) {
+        return false;
+    }
 
-	// shift label from center point of shape
-	x+= NIBLSCALE(2);
-	y+= NIBLSCALE(2);
-	brect.left = x-NIBLSCALE(3);
-	brect.right = brect.left+tsize.cx+NIBLSCALE(3);
-	brect.top = y-NIBLSCALE(3);
-	brect.bottom = brect.top+tsize.cy+NIBLSCALE(3);
+    // shift label from center point of shape
+    x += NIBLSCALE(2);
+    y += NIBLSCALE(2);
 
-	if ( DeclutterMode != (DeclutterMode_t)dmDisabled ) {
-		if (!MapWindow::checkLabelBlock(&brect)) return false;
-	}
+    if( x > ClipRect.right || y > ClipRect.bottom) {
+        return false;
+    }
 
-	// Do not print outside boundaries of Draw area
-	if (brect.bottom>=ClipRect.bottom ||
-		brect.top<=ClipRect.top ||
-		brect.left<=ClipRect.left ||
-		brect.right>=ClipRect.right) return false;
+    PixelSize tsize;
+    Surface.GetTextSize(label, &tsize);
 
-    renderer.Add({x, y}, label);
-	return true; // 101016
-  }
-  return false; // 101016
+    const PixelRect brect = {
+        { x - NIBLSCALE(3), y - NIBLSCALE(3) },
+        { tsize.cx + NIBLSCALE(3), tsize.cy + NIBLSCALE(3) }
+    };
+
+    if (MapWindow::checkLabelBlock(brect, ClipRect)) {
+        renderer.Add({x, y}, label);
+        return true; // 101016
+    }
+    return false; // 101016
 }
 
 
