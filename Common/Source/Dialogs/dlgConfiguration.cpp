@@ -3355,6 +3355,14 @@ wp->RefreshDisplay();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAndroidAudioVario"));
+  if (wp) {
+#ifndef ANDROID
+    wp->SetVisible(false);
+#endif
+    wp->GetDataField()->Set(EnableAudioVario);
+    wp->RefreshDisplay();
+  }
 
   for (int i=0; i<4; i++) {
     for (int j=0; j<8; j++) {
@@ -4694,6 +4702,10 @@ int ival;
   wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu")); // VENTA9
   if (wp) EngineeringMenu = wp->GetDataField()->GetAsBoolean();
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAndroidAudioVario"));
+  if (wp) {
+    EnableAudioVario = wp->GetDataField()->GetAsBoolean();
+  }
 
  UpdateAircraftConfig();
 

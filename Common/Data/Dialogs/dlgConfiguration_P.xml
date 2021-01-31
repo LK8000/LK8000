@@ -488,20 +488,23 @@
       <WndProperty Name="prpAutoSoundVolume" Caption="_@M110_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H212_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
-	  <WndProperty Name="prpAndroidScreenOrientation" Caption="_@M2330_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1297_">
+      <WndProperty Name="prpAndroidAudioVario" Caption="_@M1919_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1364_">
+        <DataField Name="" DataType="boolean" />
+      </WndProperty>
+      <WndProperty Name="prpAndroidScreenOrientation" Caption="_@M2330_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1297_">
         <DataField Name="" DataType="enum" Min="0" Max="1" Step="1" />
       </WndProperty>
       <WndProperty Name="prpFontRenderer" Caption="_@M954_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1203_">
         <DataField Name="" DataType="enum"/>
-      </WndProperty>
-      <WndProperty Name="prpEngineeringMenu" Caption="_@M260_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H213_">
-        <DataField Name="" DataType="boolean"/>
       </WndProperty>
       <WndProperty Name="prpUseUngestures" Caption="_@M1792_"  X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1260_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
       <WndProperty Name="prpAdditionalContestRule" Caption="_@M2279_"  X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1299_">
         <DataField Name="" DataType="enum"/>
+      </WndProperty>
+      <WndProperty Name="prpEngineeringMenu" Caption="_@M260_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H213_">
+        <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
     <WndFrame Name="frmSpecials2" X="1" Y="0" Width="-1" Height="222" Font="2">

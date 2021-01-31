@@ -929,6 +929,9 @@ GEXTERN int iFlarmDirection;
 
 GEXTERN bool SonarWarning;
 GEXTERN bool SonarWarning_Config;
+
+GEXTERN bool EnableAudioVario;
+
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.

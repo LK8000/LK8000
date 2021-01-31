@@ -13,6 +13,8 @@
 #include <externs.h>
 #include <Comm/NullComPort.h>
 
+#include <thread>
+
 class InternalSensors;
 
 class InternalPort : public NullComPort {
@@ -30,10 +32,16 @@ public:
     bool Initialize() override;
     bool Close() override;
 
+    void CancelWaitEvent() override;
+
 private:
+    void thread_run();
 
-    InternalSensors* internal_sensors;
+    InternalSensors* internal_sensors = nullptr;
 
+    std::thread thread_status;
+    std::mutex mutex_status;
+    std::condition_variable cv_status;
 };
 
 

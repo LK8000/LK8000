@@ -34,7 +34,7 @@ Copyright_License {
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "ComCheck.h"
-
+#include "Android/Vario/VarioPlayer.h"
 
 
 Java::TrivialClass InternalSensors::gps_cls, InternalSensors::sensors_cls;
@@ -165,6 +165,20 @@ void InternalSensors::getSubscribableSensors(JNIEnv* env, jobject sensors_obj) {
   env->ReleaseIntArrayElements(ss_arr, ss_arr_elems, 0);
 }
 
+
+static Mutex vario_player_mutex;
+static std::unique_ptr<VarioPlayer> vario_player;
+
+void InternalSensors::InitialiseVarioSound() {
+  ScopeLock lock(vario_player_mutex);
+  vario_player = std::make_unique<VarioPlayer>();
+}
+
+void InternalSensors::DeinitialiseVarioSound() {
+  ScopeLock lock(vario_player_mutex);
+  vario_player = nullptr;
+}
+
 /*
  * From here to end: C++ functions called by Java to export GPS and sensor
  * information into XCSoar C++ code.
@@ -293,6 +307,9 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
     pdev->HB = LKHearthBeats;
     if(!pdev->IsBaroSource) {
       pdev->IsBaroSource = &IsBaroSource;
+      if (pdev->Com) {
+        pdev->Com->CancelWaitEvent();
+      }
     }
 
     /* Kalman filter updates are also protected by the CommPort
@@ -300,10 +317,19 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
        unduly. */
     kalman_filter.Update(pressure, sensor_noise_variance);
 
+    double vario = ComputeNoncompVario(kalman_filter.GetXAbs(), kalman_filter.GetXVel());
+    double qnh_altitude = StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100);
+
+    {
+      ScopeLock lock(vario_player_mutex);
+      if(vario_player) {
+        vario_player->SetVz(vario);
+      }
+    }
+
     LockFlightData();
-    UpdateVarioSource(GPS_INFO, *pdev, ComputeNoncompVario(kalman_filter.GetXAbs(),
-                                                          kalman_filter.GetXVel()));
-    UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100));
+    UpdateVarioSource(GPS_INFO, *pdev, vario);
+    UpdateBaroSource(&GPS_INFO, 0, pdev, qnh_altitude);
     UnlockFlightData();
   }
 }
