@@ -412,7 +412,6 @@ add_library( LK8000 SHARED
     Common/Source/Draw/DrawWind.cpp
     Common/Source/Draw/Draw_Primitives.cpp
     Common/Source/Draw/LKDrawBottomBar.cpp
-    Common/Source/Draw/LKDrawCpuStatsDebug.cpp
     Common/Source/Draw/LKDrawFLARMTraffic.cpp
     Common/Source/Draw/LKDrawFanetData.cpp
     Common/Source/Draw/LKDrawInfoPage.cpp

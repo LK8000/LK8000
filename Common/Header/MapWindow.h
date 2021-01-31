@@ -617,11 +617,7 @@ class MapWindow {
   static void LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKUpdateOlc(void);
 
-#ifdef DRAWDEBUG
-  static void DrawDebug(HDC hdc, const RECT rc);
-#endif
   static void DrawWelcome8000(LKSurface& Surface, const RECT& rc);
-  static void DrawLKStatus(LKSurface& Surface, const RECT& rc);
   static void DrawFlightMode(LKSurface& Surface, const RECT& rc);
   static void DrawGPSStatus(LKSurface& Surface, const RECT& rc);
   static void DrawFunctions1HZ(LKSurface& Surface, const RECT& rc);

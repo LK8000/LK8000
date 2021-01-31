@@ -944,7 +944,6 @@ DRAW	:=\
 	$(DRW)/DrawWind.cpp \
 	$(DRW)/Draw_Primitives.cpp \
 	$(DRW)/LKDrawBottomBar.cpp \
-	$(DRW)/LKDrawCpuStatsDebug.cpp \
 	$(DRW)/LKDrawFLARMTraffic.cpp \
 	$(DRW)/LKDrawFanetData.cpp \
 	$(DRW)/LKDrawInfoPage.cpp \
