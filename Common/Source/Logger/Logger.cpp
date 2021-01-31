@@ -452,7 +452,7 @@ static void LoggerHeader() {
 
 }
 
-static void AddDeclaration(double Latitude, double Longitude, TCHAR *ID) {
+static void AddDeclaration(double Latitude, double Longitude, const TCHAR *ID) {
 
   char IDString[MAX_PATH];
   to_usascii(ID, IDString);
@@ -514,10 +514,8 @@ static void StartDeclaration(int ntp) {
 
   // Use homewaypoint as default takeoff and landing position. Better than an empty field!
   if (ValidWayPoint(HomeWaypoint)) {
-    AddDeclaration(
-      WayPointList[Task[HomeWaypoint].Index].Latitude, 
-      WayPointList[Task[HomeWaypoint].Index].Longitude,
-      WayPointList[Task[HomeWaypoint].Index].Name);
+    const WAYPOINT& wp = WayPointList[HomeWaypoint];
+    AddDeclaration(wp.Latitude, wp.Longitude, wp.Name);
   } else {
     // TODO bug: this is causing problems with some analysis software
     // maybe it's because the date and location fields are bogus
@@ -528,10 +526,8 @@ static void StartDeclaration(int ntp) {
 static void EndDeclaration() {
   // Use homewaypoint as default takeoff and landing position. Better than an empty field!
   if (ValidWayPoint(HomeWaypoint)) {
-    AddDeclaration(
-      WayPointList[Task[HomeWaypoint].Index].Latitude, 
-      WayPointList[Task[HomeWaypoint].Index].Longitude,
-      WayPointList[Task[HomeWaypoint].Index].Name );
+    const WAYPOINT& wp = WayPointList[HomeWaypoint];
+    AddDeclaration(wp.Latitude, wp.Longitude, wp.Name);
   } else {
     // TODO bug: this is causing problems with some analysis software
     // maybe it's because the date and location fields are bogus
@@ -564,10 +560,8 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
 
       StartDeclaration(ntp);
       for (unsigned i = 0; ValidTaskPointFast(i); ++i) {
-        AddDeclaration(
-          WayPointList[Task[i].Index].Latitude, 
-          WayPointList[Task[i].Index].Longitude,
-          WayPointList[Task[i].Index].Name );
+        const WAYPOINT& wp = WayPointList[Task[i].Index];
+        AddDeclaration(wp.Latitude, wp.Longitude, wp.Name);
       }
       EndDeclaration();
 
