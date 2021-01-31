@@ -160,7 +160,7 @@ void FromString(const char* szVal, bool& bVal) {
 
 const char* GetAttribute(const xml_node* node, const char* name) {
     if(node) {
-        xml_attribute* attribute = node->first_attribute(name);
+        xml_attribute* attribute = node->first_attribute(name, 0, false);
         if (attribute) {
             return attribute->value();
         }
@@ -813,7 +813,7 @@ bool CTaskFileHelper::SaveOptionDefault(xml_node* node) {
                 SetAttribute(nodeFinish, "type", "sector");
                 break;
         }
-        SetAttribute(nodeFinish, "Radius", FinishRadius);
+        SetAttribute(nodeFinish, "radius", FinishRadius);
     } else {
         return false;
     }
@@ -823,18 +823,18 @@ bool CTaskFileHelper::SaveOptionDefault(xml_node* node) {
         switch (SectorType) {
             case CIRCLE: //circle
                 SetAttribute(nodeSector, "type", "circle");
-                SetAttribute(nodeSector, "Radius", SectorRadius);
+                SetAttribute(nodeSector, "radius", SectorRadius);
                 break;
             case SECTOR: //sector
                 SetAttribute(nodeSector, "type", "sector");
-                SetAttribute(nodeSector, "Radius", SectorRadius);
+                SetAttribute(nodeSector, "radius", SectorRadius);
                 break;
             case DAe: //DAe
                 SetAttribute(nodeSector, "type", "DAe");
                 break;
             case LINE: //line
                 SetAttribute(nodeSector, "type", "line");
-                SetAttribute(nodeSector, "Radius", SectorRadius);
+                SetAttribute(nodeSector, "radius", SectorRadius);
                 break;
                 
         }
