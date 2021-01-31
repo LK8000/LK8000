@@ -288,8 +288,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
         if ( !OverlayClock && ScreenLandscape && (!((gTaskType==TSK_GP) && UseGates()))) {
             _stprintf(BufferValue + _tcslen(BufferValue), _T(" %s"), BufferUnit);
-             Surface.GetTextSize(BufferValue, &TextSize);
-            LKWriteText(Surface, BufferValue, compass.cx+TextSize.cx, topmargin, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+            LKWriteText(Surface, BufferValue, compass.cx, topmargin, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
             if(Overlay_Title){
               Surface.GetTextSize(BufferValue, &TextSize);
               int dx = TextSize.cx+ NIBLSCALE(2);
