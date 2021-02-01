@@ -946,12 +946,6 @@ static const double PI = (4*atan(1));
 #define MAX_FLARM_TRACES	5000
 
 //
-// LOGGER
-//
-// Dummy asset id for a dummy igc logger
-#define LOGGER_ASSET_ID	"DUM"
-
-//
 // TextInBox and LKDrawWaypoint
 #define WPCIRCLESIZE        2
 

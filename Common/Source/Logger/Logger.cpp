@@ -22,15 +22,15 @@
 #include <deque>
 // #define DEBUG_LOGGER	1
 
+#define A_RECORD                "A%s%c%c%c\r\n"
+
 #ifdef _UNICODE
-    #define A_RECORD                "A%s%C%C%C\r\n"
     #define HFPLTPILOT              "HFPLTPILOT:%S\r\n"
     #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%S\r\n"
     #define HFGIDGLIDERID           "HFGIDGLIDERID:%S\r\n"
     #define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%S\r\n"
     #define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%S\r\n"
 #else
-    #define A_RECORD                "A%s%c%c%c\r\n"
     #define HFPLTPILOT              "HFPLTPILOT:%s\r\n"
     #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%s\r\n"
     #define HFGIDGLIDERID           "HFGIDGLIDERID:%s\r\n"
@@ -66,26 +66,30 @@ static TCHAR szFLoggerFileName[MAX_PATH+1] = TEXT("\0"); // final IGC name
 
 namespace {
 
-  struct LoggerBuffer_T {
-    double Latitude;
-    double Longitude;
-    double Altitude;
-    double BaroAltitude;
-    short Day;
-    short Month;
-    short Year;
-    short Hour;
-    short Minute;
-    short Second;
+  struct LoggerBuffer_t {
+    double latitude;
+    double longitude;
+    int gps_altitude; // 5 digit [0 : 99999] m
+    int qnh_altitude; // 5 digit [-9999 : 99999] m
+    int ground_speed; // 5 digit [0 : 99999] cm/h
+    int track; // 3 digit [0 : 360]°
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
   };
 
   constexpr size_t max_buffer = 60;
-  std::deque<LoggerBuffer_T> LoggerBuffer;
+  std::deque<LoggerBuffer_t> LoggerBuffer;
 
   // singleton instance of igc file writer
   //  created by StartLogger
   //  deleted by StopLogger
   std::unique_ptr<igc_file_writer> igc_writer_ptr;
+
+  char strAssetNumber[4] = "DUM";
 
   template<size_t size>
   bool IGCWriteRecord(const char (&szIn)[size]) {
@@ -100,77 +104,53 @@ void StopLogger(void) {
     LoggerBuffer.clear();
 }
 
-// BaroAltitude in this case is a QNE altitude (aka pressure altitude)
-// Some few instruments are sending only a cooked QNH altitude, without the relative QNH.
-// (If we had QNH in that case, we would save real QNE altitude in GPS_INFO.BaroAltitude)
-// There is nothing we can do about it, in these few cases: we shall log a QNH altitude instead
-// of QNE altitude, which is what we have been doing up to v4 in any case. It cant be worst.
-// In all other cases, the pressure altitude will be saved, and out IGC logger replay is converting it
-// to the desired QNH altitude back.
-static void LogPointToBuffer(double Latitude, double Longitude, double Altitude,
-                      double BaroAltitude, short Hour, short Minute, short Second) {
+static void LogPointToBuffer(const LoggerBuffer_t& point) {
 
   if (LoggerBuffer.size() >= max_buffer) {
     LoggerBuffer.pop_front();
   }
-
-  LoggerBuffer.push_back({
-    Latitude, Longitude,
-    Altitude, BaroAltitude,
-    static_cast<short>(GPS_INFO.Day), 
-    static_cast<short>(GPS_INFO.Month), 
-    static_cast<short>(GPS_INFO.Year),
-    Hour, Minute, Second,
-  });
+  LoggerBuffer.push_back(point);
 }
 
 
-static void LogPointToFile(double Latitude, double Longitude, double Altitude,
-                    double BaroAltitude, short Hour, short Minute, short Second)
-{
-  char szBRecord[500];
-
-  int DegLat, DegLon;
-  double MinLat, MinLon;
-  char NoS, EoW;
-
-  // pending rounding error from millisecond timefix in RMC sentence?
-  if (Second>=60||Second<0) {
-    #if TESTBENCH
-    StartupStore(_T("... WRONG TIMEFIX FOR LOGGER, seconds=%d, fix skipped\n"),Second);
-    #endif
+static void LogPointToFile(const LoggerBuffer_t& point) {
+  if(!igc_writer_ptr) {
     return;
   }
 
-  // v5: very old bug since v2: Netherlands can have negative altitudes!
-  //if ((Altitude<0) && (BaroAltitude<0)) return;
-  //Altitude = max(0.0,Altitude);
-  //BaroAltitude = max(0.0,BaroAltitude);
+  char NoS = (point.latitude > 0) ? 'N' : 'S';
+  double latitude = std::abs(point.latitude);
+  int DegLat = latitude;
+  int MinLat = (latitude - DegLat) * 60. * 10000.;
 
-  DegLat = (int)Latitude;
-  MinLat = Latitude - DegLat;
-  NoS = 'N';
-  if((MinLat<0) || ((MinLat==0) && (DegLat<0))) {
-    NoS = 'S';
-    DegLat *= -1; MinLat *= -1;
-  }
-  MinLat *= 60;
-  MinLat *= 1000;
+  char EoW = (point.longitude > 0) ? 'E' : 'W';
+  double longitude = std::abs(point.longitude);
+  int DegLon = longitude;
+  int MinLon = (longitude - DegLon) * 60. * 10000.;
 
-  DegLon = (int)Longitude ;
-  MinLon = Longitude  - DegLon;
-  EoW = 'E';
-  if((MinLon<0) || ((MinLon==0) && (DegLon<0))) {
-    EoW = 'W';
-    DegLon *= -1; MinLon *= -1;
-  }
-  MinLon *=60;
-  MinLon *= 1000;
+  char szBRecord[64];
 
-  sprintf(szBRecord,"B%02d%02d%02d%02d%05.0f%c%03d%05.0f%cA%05d%05d\r\n",
-          Hour, Minute, Second,
-          DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-          (int)BaroAltitude, Clamp<int>(Altitude,0,99999));
+  /*
+   * NoS/EoW and 6th digit of lat/lon was swaped after printf
+   */
+  sprintf(szBRecord, 
+            "B%02d%02d%02d" 
+            "%02d%06d"
+            "%03d%06d"
+            "A%05d%05d"
+            "%c%c"
+            "%05d%03d\r\n",
+            point.hour, point.minute, point.second,
+            DegLat, MinLat,
+            DegLon, MinLon,
+            point.qnh_altitude, point.gps_altitude,
+            NoS, EoW,
+            point.ground_speed, point.track);
+
+  // move LAD and N/S to right place
+  std::swap(szBRecord[35], szBRecord[14]);
+  // move LOD and E/W to right place
+  std::swap(szBRecord[36], szBRecord[23]);
 
   IGCWriteRecord(szBRecord);
 }
@@ -186,31 +166,21 @@ void StartLogger() {
 
   SHOWTHREAD(_T("StartLogger"));
 
-  TCHAR path[MAX_PATH+1];
-  TCHAR cAsset[3];
-
-  // strAsset is initialized with DUM.
   if (_tcslen(PilotName_Config)>0) {
-    strAssetNumber[0]= IsAlphaNum(PilotName_Config[0]) ? PilotName_Config[0] : _T('A');
-    strAssetNumber[1]= IsAlphaNum(PilotName_Config[1]) ? PilotName_Config[1] : _T('A');
+    strAssetNumber[0] = IsAlphaNum(PilotName_Config[0]) ? _totupper(PilotName_Config[0]) : 'A';
+    strAssetNumber[1] = IsAlphaNum(PilotName_Config[1]) ? _totupper(PilotName_Config[1]) : 'A';
   } else {
-    strAssetNumber[0]= _T('D');
-    strAssetNumber[1]= _T('U');
+    strAssetNumber[0] = 'D';
+    strAssetNumber[1] = 'U';
   }
   if (_tcslen(AircraftType_Config)>0) {
-    strAssetNumber[2]= IsAlphaNum(AircraftType_Config[0]) ? AircraftType_Config[0] : _T('A');
+    strAssetNumber[2] = IsAlphaNum(AircraftType_Config[0]) ? _totupper(AircraftType_Config[0]) : 'A';
   } else {
-    strAssetNumber[2]= _T('M');
+    strAssetNumber[2] = 'M';
   }
-  strAssetNumber[0]= _totupper(strAssetNumber[0]);
-  strAssetNumber[1]= _totupper(strAssetNumber[1]);
-  strAssetNumber[2]= _totupper(strAssetNumber[2]);
-  strAssetNumber[3]= _T('\0');
+  strAssetNumber[3] = '\0';
 
-  for (int i = 0; i < 3; i++) { // chars must be legal in file names
-    cAsset[i] = IsAlphaNum(strAssetNumber[i]) ? strAssetNumber[i] : _T('A');
-  }
-
+  TCHAR path[MAX_PATH+1];
   LocalPath(path,TEXT(LKD_LOGS));
 
   if (TaskModified) {
@@ -231,9 +201,9 @@ void StartLogger() {
                  GPS_INFO.Month,
                  GPS_INFO.Day,
                  _T(LOGGER_MANUFACTURER),
-                 cAsset[0],
-                 cAsset[1],
-                 cAsset[2],
+                 strAssetNumber[0],
+                 strAssetNumber[1],
+                 strAssetNumber[2],
                  i);
 
     } else {
@@ -249,9 +219,9 @@ void StartLogger() {
                  cyear,
                  cmonth,
                  cday,
-                 cAsset[0],
-                 cAsset[1],
-                 cAsset[2],
+                 strAssetNumber[0],
+                 strAssetNumber[1],
+                 strAssetNumber[2],
                  cflight);
 
     } // end if
@@ -321,13 +291,6 @@ static void LoggerHeader() {
   char temp[300];
 
   // Flight recorder ID number MUST go first..
-
-  // Do one more check on %C because if one is 0 the string will not be closed by newline
-  // resulting in a wrong header!
-  strAssetNumber[0]= IsAlphaNum(strAssetNumber[0]) ? strAssetNumber[0] : _T('A');
-  strAssetNumber[1]= IsAlphaNum(strAssetNumber[1]) ? strAssetNumber[1] : _T('A');
-  strAssetNumber[2]= IsAlphaNum(strAssetNumber[0]) ? strAssetNumber[2] : _T('A');
-
   sprintf(temp,
 	  A_RECORD,
 	  LOGGER_MANUFACTURER,
@@ -448,9 +411,32 @@ static void LoggerHeader() {
      IGCWriteRecord(temp);
   }
 
-
   AdditionalHeaders();
 
+
+  // I Record
+  // LAD : The last places of decimal minutes of latitude, where latitude is recorded to a greater precision than the
+  //       three decimal minutes that are in the main body of the B record. The fourth and any further decimal places of minutes
+  //       are recorded as an extension to the B record, their position in each B record line being specified in the I record. (AL8)
+
+  // LOD : The last places of decimal minutes of longitude, where longitude is recorded to a greater precision than the 
+  //       three decimal minutes that are in the main body of the Brecord. The fourth and any further decimal places of minutes 
+  //       are recorded as an extension to the B record, their position in each B record line being specified in the I record.(AL8)
+
+  // GSP : Groundspeed, five numbers in centimetres per hour(AL8)
+
+  // TRT : Track True. Three numbers based on degrees clockwise from 000 for north(AL8)
+
+  // TODO : add if available :
+  // VAR : Uncompensated variometer (non-total energy) vertical speed in metres and decimal metres. If negative, use negative 
+  //       sign before the numbers.(AL8)
+
+  IGCWriteRecord("I" "04"
+                 "3636" "LAD"
+                 "3737" "LOD"
+                 "3842" "GSP"
+                 "4345" "TRT"
+                 "\r\n");
 }
 
 static void AddDeclaration(double Latitude, double Longitude, const TCHAR *ID) {
@@ -458,30 +444,18 @@ static void AddDeclaration(double Latitude, double Longitude, const TCHAR *ID) {
   char IDString[MAX_PATH];
   to_usascii(ID, IDString);
 
-  int DegLat = Latitude;
-  double MinLat = Latitude - DegLat;
-  char NoS = 'N';
-  if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0))) {
-    NoS = 'S';
-    DegLat *= -1; 
-    MinLat *= -1;
-  }
-  MinLat *= 60;
-  MinLat *= 1000;
+  char NoS = (Latitude > 0) ? 'N' : 'S';
+  double latitude = std::abs(Latitude);
+  int DegLat = latitude;
+  int MinLat = (latitude - DegLat) * 60. * 1000.;
 
-  int DegLon = Longitude ;
-  double MinLon = Longitude  - DegLon;
-  char EoW = 'E';
-  if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0))) {
-    EoW = 'W';
-    DegLon *= -1; 
-    MinLon *= -1;
-  }
-  MinLon *=60;
-  MinLon *= 1000;
+  char EoW = (Longitude > 0) ? 'E' : 'W';
+  double longitude = std::abs(Longitude);
+  int DegLon = longitude;
+  int MinLon = (longitude - DegLon) * 60. * 1000.;
 
   char szCRecord[500];
-  sprintf(szCRecord,"C%02d%05.0f%c%03d%05.0f%c%s\r\n",
+  sprintf(szCRecord,"C%02d%05d%c%03d%05d%c%s\r\n",
 	  DegLat, MinLat, NoS, DegLon, MinLon, EoW, IDString);
 
   IGCWriteRecord(szCRecord);
@@ -501,12 +475,12 @@ static void StartDeclaration(int ntp) {
   sprintf(temp,
       "C%02d%02d%02d%02d%02d%02d0000000000%02d\r\n",
       // DD  MM  YY  HH  MM  SS  DD  MM  YY IIII TT
-      FirstPoint.Day,
-      FirstPoint.Month,
-      FirstPoint.Year % 100,
-      FirstPoint.Hour,
-      FirstPoint.Minute,
-      FirstPoint.Second,
+      FirstPoint.day,
+      FirstPoint.month,
+      FirstPoint.year % 100,
+      FirstPoint.hour,
+      FirstPoint.minute,
+      FirstPoint.second,
       ntp-2);
 
   IGCWriteRecord(temp);
@@ -537,11 +511,18 @@ static void EndDeclaration() {
 }
 
 
-void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAltitude,
-              int iHour, int iMin, int iSec) {
+void LogPoint(const NMEA_INFO& info) {
 
-  if (GPS_INFO.NAVWarning) {
+  if (info.NAVWarning) {
     // don't log invalid fix
+    return;
+  }
+
+  // pending rounding error from millisecond timefix in RMC sentence?
+  if (info.Second >= 60 || info.Second < 0) {
+#if TESTBENCH
+    StartupStore(_T("... WRONG TIMEFIX FOR LOGGER, seconds=%d, fix skipped\n"),info.Second);
+#endif
     return;
   }
 
@@ -569,18 +550,35 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
       UnlockTaskData();
 
       for (const auto & point : LoggerBuffer) {
-        LogPointToFile(point.Latitude, point.Longitude,
-                      point.Altitude, point.BaroAltitude,
-                      point.Hour, point.Minute, point.Second);
+        LogPointToFile(point);
       }
-      LoggerBuffer = std::deque<LoggerBuffer_T>(); //used instead of clear to deallocate.
+      LoggerBuffer = std::deque<LoggerBuffer_t>(); //used instead of clear to deallocate.
     }
   }
 
+  // BaroAltitude in this case is a QNE altitude (aka pressure altitude)
+  // Some few instruments are sending only a cooked QNH altitude, without the relative QNH.
+  // (If we had QNH in that case, we would save real QNE altitude in GPS_INFO.BaroAltitude)
+  // There is nothing we can do about it, in these few cases: we shall log a QNH altitude instead
+  // of QNE altitude, which is what we have been doing up to v4 in any case. It cant be worst.
+  // In all other cases, the pressure altitude will be saved, and out IGC logger replay is converting it
+  // to the desired QNH altitude back.
+
+  LoggerBuffer_t point = {
+    info.Latitude, 
+    info.Longitude,
+    Clamp<int>(((GPSAltitudeOffset == 0) ? info.Altitude : 0) * TOMETER, 0, 99999),
+    Clamp<int>((info.BaroAltitudeAvailable ? QNHAltitudeToQNEAltitude(info.BaroAltitude) : 0)  * TOMETER, -9999, 99999),
+    Clamp<int>(info.Speed * TOKPH * 100, 0, 99999),
+    static_cast<int>(AngleLimit360(info.TrackBearing)),
+    info.Year, info.Month, info.Day,
+    info.Hour, info.Minute, info.Second
+  };
+
   if (igc_writer_ptr) {
-    LogPointToFile(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude, iHour, iMin, iSec);
+    LogPointToFile(point);
   } else {
-    LogPointToBuffer(Latitude, Longitude, GPSAltitudeOffset==0?Altitude:0, BaroAltitude, iHour, iMin, iSec);
+    LogPointToBuffer(point);
   }
 }
 

@@ -87,9 +87,6 @@ GEXTERN TCHAR	GlobalModelName[MAX_PATH];
 
 GEXTERN BYTE RUN_MODE;
 
-// asset/registration data
-GEXTERN TCHAR strAssetNumber[MAX_ASSETIDSTRING];
-
 // infoboxes
 GEXTERN int  InfoType[MAXINFOWINDOWS];
 

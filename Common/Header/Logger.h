@@ -2,8 +2,7 @@
 #define AFX_LOGGER_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
 void StartLogger(void);
-void LogPoint(double Latitude, double Longitude, double Altitude,
-              double BaroAltitude, int iHour, int iMin, int iSec);
+void LogPoint(const NMEA_INFO& info);
 
 void LoggerDeviceDeclare();
 

@@ -111,19 +111,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   //
   if (Basic->Time - LogLastTime >= LOGINTERVAL) {
     LogLastTime = Basic->Time;
-    double balt = -1;
-    if (Basic->BaroAltitudeAvailable) {
-      balt = QNHAltitudeToQNEAltitude(Basic->BaroAltitude);
-      // check for balt validity are NOT performed in logpoint functions anymore
-      if (balt<-1000||balt>15000) {
-        balt = Basic->BaroAltitude;
-      }
-    } else {
-      balt = 0;
-    }
-
     // Remarks: LogPoint is also checking that there is a valid fix to proceed
-    LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt, Basic->Hour, Basic->Minute, Basic->Second);
+    LogPoint(*Basic);
   } // time has advanced enough: >= LOGINTERVAL
 
   // 120812 For car/trekking mode, log snailpoint only if at least 5m were made in the dtSnail time
