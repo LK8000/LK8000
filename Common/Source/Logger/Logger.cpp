@@ -98,14 +98,11 @@ namespace {
 
 }
 
-void StopLogger(void) {
-    igc_writer_ptr = nullptr;
-    LoggerActive = false;
-    LoggerBuffer.clear();
+void StopLogger() {
+  LoggerActive = false;
 }
 
 static void LogPointToBuffer(const LoggerBuffer_t& point) {
-
   if (LoggerBuffer.size() >= max_buffer) {
     LoggerBuffer.pop_front();
   }
@@ -114,9 +111,6 @@ static void LogPointToBuffer(const LoggerBuffer_t& point) {
 
 
 static void LogPointToFile(const LoggerBuffer_t& point) {
-  if(!igc_writer_ptr) {
-    return;
-  }
 
   char NoS = (point.latitude > 0) ? 'N' : 'S';
   double latitude = std::abs(point.latitude);
@@ -166,14 +160,14 @@ void StartLogger() {
 
   SHOWTHREAD(_T("StartLogger"));
 
-  if (_tcslen(PilotName_Config)>0) {
+  if (_tcslen(PilotName_Config) > 2) {
     strAssetNumber[0] = IsAlphaNum(PilotName_Config[0]) ? _totupper(PilotName_Config[0]) : 'A';
     strAssetNumber[1] = IsAlphaNum(PilotName_Config[1]) ? _totupper(PilotName_Config[1]) : 'A';
   } else {
     strAssetNumber[0] = 'D';
     strAssetNumber[1] = 'U';
   }
-  if (_tcslen(AircraftType_Config)>0) {
+  if (_tcslen(AircraftType_Config) > 0) {
     strAssetNumber[2] = IsAlphaNum(AircraftType_Config[0]) ? _totupper(AircraftType_Config[0]) : 'A';
   } else {
     strAssetNumber[2] = 'M';
@@ -195,33 +189,21 @@ void StartLogger() {
     if (!LoggerShortName) {
       // Long file name
       _sntprintf(szFLoggerFileName, std::size(szFLoggerFileName),
-                 TEXT("%s%s%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
-                 path, _T(DIRSEP),
-                 GPS_INFO.Year,
-                 GPS_INFO.Month,
-                 GPS_INFO.Day,
-                 _T(LOGGER_MANUFACTURER),
-                 strAssetNumber[0],
-                 strAssetNumber[1],
-                 strAssetNumber[2],
-                 i);
+                 TEXT("%s" DIRSEP "%04d-%02d-%02d-" LOGGER_MANUFACTURER "-%c%c%c-%02d.IGC"),
+                 path, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day,
+                 strAssetNumber[0], strAssetNumber[1], strAssetNumber[2], i);
 
     } else {
       // Short file name
-      TCHAR cyear, cmonth, cday, cflight;
-      cyear = NumToIGCChar((int)GPS_INFO.Year % 10);
-      cmonth = NumToIGCChar(GPS_INFO.Month);
-      cday = NumToIGCChar(GPS_INFO.Day);
-      cflight = NumToIGCChar(i);
+      TCHAR cyear = NumToIGCChar((int)GPS_INFO.Year % 10);
+      TCHAR cmonth = NumToIGCChar(GPS_INFO.Month);
+      TCHAR cday = NumToIGCChar(GPS_INFO.Day);
+      TCHAR cflight = NumToIGCChar(i);
       _sntprintf(szFLoggerFileName, std::size(szFLoggerFileName),
-                 TEXT("%s%s%c%c%cX%c%c%c%c.IGC"),
-                 path, _T(DIRSEP),
-                 cyear,
-                 cmonth,
-                 cday,
-                 strAssetNumber[0],
-                 strAssetNumber[1],
-                 strAssetNumber[2],
+                 TEXT("%s" DIRSEP "%c%c%cX%c%c%c%c.IGC"),
+                 path,
+                 cyear, cmonth, cday,
+                 strAssetNumber[0], strAssetNumber[1], strAssetNumber[2],
                  cflight);
 
     } // end if
@@ -230,6 +212,8 @@ void StartLogger() {
       break;
     }
   } // end while
+
+  LoggerActive = true;
 
   StartupStore(_T(". Logger Started %s  File <%s>"), WhatTimeIsIt(), szFLoggerFileName);
 }
@@ -510,6 +494,38 @@ static void EndDeclaration() {
   }
 }
 
+static void LoggerTask() {
+  LockTaskData();
+
+  int ntp=0;
+  for ( ; ValidTaskPointFast(ntp); ++ntp);
+
+  StartDeclaration(ntp);
+  for (unsigned i = 0; ValidTaskPointFast(i); ++i) {
+    const WAYPOINT& wp = WayPointList[Task[i].Index];
+    AddDeclaration(wp.Latitude, wp.Longitude, wp.Name);
+  }
+  EndDeclaration();
+
+  UnlockTaskData();
+}
+
+static void internal_StartLogger() {
+  igc_writer_ptr = std::make_unique<igc_file_writer>(szFLoggerFileName, LoggerGActive());
+
+  LoggerHeader();
+  LoggerTask();
+
+  for (const auto & point : LoggerBuffer) {
+    LogPointToFile(point);
+  }
+  LoggerBuffer = std::deque<LoggerBuffer_t>(); //used instead of clear to deallocate.
+}
+
+static void internal_StopLogger() {
+  igc_writer_ptr = nullptr;
+  LoggerBuffer.clear();
+}
 
 void LogPoint(const NMEA_INFO& info) {
 
@@ -527,33 +543,16 @@ void LogPoint(const NMEA_INFO& info) {
   }
 
   if(LoggerActive && !igc_writer_ptr) {
-    // start Logger
+    // start Logger requested
     if(!LoggerBuffer.empty()) {
       // only start logger after first valid fix
-
-      igc_writer_ptr = std::make_unique<igc_file_writer>(szFLoggerFileName, LoggerGActive());
-
-      LoggerHeader();
-
-      LockTaskData();
-
-      int ntp=0;
-      for ( ; ValidTaskPointFast(ntp); ++ntp);
-
-      StartDeclaration(ntp);
-      for (unsigned i = 0; ValidTaskPointFast(i); ++i) {
-        const WAYPOINT& wp = WayPointList[Task[i].Index];
-        AddDeclaration(wp.Latitude, wp.Longitude, wp.Name);
-      }
-      EndDeclaration();
-
-      UnlockTaskData();
-
-      for (const auto & point : LoggerBuffer) {
-        LogPointToFile(point);
-      }
-      LoggerBuffer = std::deque<LoggerBuffer_t>(); //used instead of clear to deallocate.
+      internal_StartLogger();
     }
+  }
+
+  if(!LoggerActive && igc_writer_ptr) {
+    // stop Logger requested
+    internal_StopLogger();
   }
 
   // BaroAltitude in this case is a QNE altitude (aka pressure altitude)

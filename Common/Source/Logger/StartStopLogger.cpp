@@ -43,8 +43,6 @@ void guiStartLogger(bool noAsk) {
 
 	if (LoggerClearFreeSpace()) {
 		StartLogger();
-
-		LoggerActive = true; // start logger now
 	} else {
 		// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!"
 		// LKTOKEN  _@M404_ = "Logger Error"
