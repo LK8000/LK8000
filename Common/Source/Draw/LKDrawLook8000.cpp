@@ -311,6 +311,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             LKWriteText(Surface, BufferValue, dx, topmargin, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
 
           } else {
+            yDistUnit= topmargin + SizeMediumFont.cy + unitmediumoffset;
             LKWriteText(Surface, BufferValue, dx ,dy, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
             Surface.GetTextSize(BufferValue, &TextSize);
             dx = rcx + TextSize.cx + NIBLSCALE(2);
