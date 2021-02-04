@@ -99,7 +99,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     static SIZE SizeUnitFont;
     static int name_xmax;
 
-    static int yrightoffset, yMcSafety, yMcValue, yMcMode, yDistUnit, yAltSafety, yLeftWind;
+    static int yrightoffset, yMcSafety, yMcValue, yMcMode, yAltSafety, yLeftWind;
     static int yMcTitle ;
     static int yMcUnit;
 
@@ -188,7 +188,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         yRightBtm      = yrightoffset + fixBigInterline;
         yRightBtmTitle = yRightBtm   + SizeSmallFont.cy;
         yRightBtmUnit  = yRightBtm   + SizeMcModeFont.cy;
-        yDistUnit= topmargin + SizeMediumFont.cy + unitmediumoffset;
         yAltSafety= yrightoffset  - fixBigInterline + SizeSmallFont.cy +SizeBigFont.cy - fixBigInterline -1;
         yLeftWind =  rc.bottom - BottomSize - SizeMediumFont.cy - NIBLSCALE(2);
 
@@ -287,29 +286,39 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         }
 
         if ( !OverlayClock && ScreenLandscape && (!((gTaskType==TSK_GP) && UseGates()))) {
-            _stprintf(BufferValue + _tcslen(BufferValue), _T(" %s"), BufferUnit);
-            LKWriteText(Surface, BufferValue, compass.cx, topmargin, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
-            if(Overlay_Title){
-              Surface.GetTextSize(BufferValue, &TextSize);
-              int dx = TextSize.cx+ NIBLSCALE(2);
-              Surface.SelectObject(LK8OverlaySmallFont);     
-              LKWriteText(Surface, BufferTitle, compass.cx-dx, topmargin-SizeSmallFont.cy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+            int dx = compass.cx ;
+            int yDistUnit= topmargin + unitmediumoffset;
+            if((!HideUnits) || Overlay_Title) {
+                Surface.SelectObject(MapScaleFont);
+                Surface.GetTextSize(BufferUnit, &TextSize);
+                dx = dx - TextSize.cx+ NIBLSCALE(2);
             }
+            if (!HideUnits) {
+                LKWriteText(Surface, BufferUnit, dx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+            }
+            if(Overlay_Title) {
+                Surface.SelectObject(LK8OverlaySmallFont);
+                LKWriteText(Surface, BufferTitle, dx, yDistUnit-SizeSmallFont.cy/2, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+            }
+            Surface.SelectObject(LK8OverlayMediumFont);
+            LKWriteText(Surface, BufferValue, dx, topmargin, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+
         } else {
-            LKWriteText(Surface, BufferValue, rcx , topmargin + SizeMediumFont.cy, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
+            int dx = rcx;
+            int dy = topmargin + SizeMediumFont.cy;
+            int yDistUnit= topmargin + SizeMediumFont.cy + unitmediumoffset;
+            LKWriteText(Surface, BufferValue, dx ,dy, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
             Surface.GetTextSize(BufferValue, &TextSize);
+            dx = rcx + TextSize.cx + NIBLSCALE(2);
             if (!HideUnits) {
                 Surface.SelectObject(MapScaleFont);
-                LKWriteText(Surface, BufferUnit, rcx + TextSize.cx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                LKWriteText(Surface, BufferUnit, dx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
-            if(Overlay_Title){
-              Surface.GetTextSize(BufferValue, &TextSize);
-              int dx = TextSize.cx+ NIBLSCALE(2);
-              Surface.SelectObject(LK8OverlaySmallFont);
-              LKWriteText(Surface, BufferTitle, rcx-dx, yDistUnit-SizeSmallFont.cy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);  
+            if(Overlay_Title) {
+                Surface.SelectObject(LK8OverlaySmallFont);
+                LKWriteText(Surface, BufferTitle,  dx , yDistUnit -SizeSmallFont.cy/2, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);  
             }
         }
-
         _skip_TopRight:
 
         //
