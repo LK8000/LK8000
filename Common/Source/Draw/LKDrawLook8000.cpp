@@ -297,7 +297,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
               LKWriteText(Surface, BufferUnit, dx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
             if(Overlay_Title) {
-              Surface.GetTextSize(BufferValue, &TextSize);
               Surface.SelectObject(LK8OverlaySmallFont);
               LKWriteText(Surface, BufferTitle, dx, yDistUnit-SizeSmallFont.cy/2, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
