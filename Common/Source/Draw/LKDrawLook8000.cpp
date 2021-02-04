@@ -99,7 +99,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     static SIZE SizeUnitFont;
     static int name_xmax;
 
-    static int yrightoffset, yMcSafety, yMcValue, yMcMode, yDistUnit, yAltSafety, yLeftWind;
+    static int yrightoffset, yMcSafety, yMcValue, yMcMode, yAltSafety, yLeftWind;
     static int yMcTitle ;
     static int yMcUnit;
 
@@ -188,7 +188,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         yRightBtm      = yrightoffset + fixBigInterline;
         yRightBtmTitle = yRightBtm   + SizeSmallFont.cy;
         yRightBtmUnit  = yRightBtm   + SizeMcModeFont.cy;
-        yDistUnit= topmargin + SizeMediumFont.cy + unitmediumoffset;
         yAltSafety= yrightoffset  - fixBigInterline + SizeSmallFont.cy +SizeBigFont.cy - fixBigInterline -1;
         yLeftWind =  rc.bottom - BottomSize - SizeMediumFont.cy - NIBLSCALE(2);
 
@@ -292,7 +291,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
           if ( !OverlayClock && ScreenLandscape && (!((gTaskType==TSK_GP) && UseGates()))) {
             dx = compass.cx ;
-            yDistUnit= topmargin + unitmediumoffset;
+            int yDistUnit= topmargin + unitmediumoffset;
             if((!HideUnits) || Overlay_Title)
             {
               Surface.SelectObject(MapScaleFont);
@@ -311,7 +310,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             LKWriteText(Surface, BufferValue, dx, topmargin, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
 
           } else {
-            yDistUnit= topmargin + SizeMediumFont.cy + unitmediumoffset;
+            int yDistUnit= topmargin + SizeMediumFont.cy + unitmediumoffset;
             LKWriteText(Surface, BufferValue, dx ,dy, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
             Surface.GetTextSize(BufferValue, &TextSize);
             dx = rcx + TextSize.cx + NIBLSCALE(2);
