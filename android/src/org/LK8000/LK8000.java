@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.MotionEvent;
@@ -93,6 +94,15 @@ public class LK8000 extends Activity {
                  "error=" + Loader.error);
       setContentView(tv);
       return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      AudioManager myAudioMgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+      final String sampleRateStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+      final int sampleRate = Integer.parseInt(sampleRateStr);
+      final String framesPerBurstStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+      final int framesPerBurst = Integer.parseInt(framesPerBurstStr);
+      setDefaultStreamValues(sampleRate, framesPerBurst);
     }
 
     initialiseNative();
@@ -426,4 +436,5 @@ public class LK8000 extends Activity {
   private native void initialiseNative();
   private native void deinitialiseNative();
 
+  private static native void setDefaultStreamValues(int SampleRate, int FramesPerBurst);
 }

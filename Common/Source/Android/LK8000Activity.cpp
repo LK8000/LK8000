@@ -10,6 +10,7 @@
 #include "LK8000Activity.h"
 #include "Event/Event.h"
 #include "externs.h"
+#include <oboe/Oboe.h>
 
 Java::TrivialClass LK8000Activity::cls;
 jmethodID LK8000Activity::check_permissions_method;
@@ -100,4 +101,14 @@ Java_org_LK8000_LK8000_onRuntimePermissionGrantedNative(JNIEnv *env, jobject obj
   if(LK8000Activity::Get()) {
     LK8000Activity::Get()->PermissionGranted();
   }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+gcc_visibility_default
+Java_org_LK8000_LK8000_setDefaultStreamValues(JNIEnv *env, jclass type,
+                                              jint sampleRate, jint framesPerBurst) {
+
+  oboe::DefaultStreamValues::SampleRate = sampleRate;
+  oboe::DefaultStreamValues::FramesPerBurst = framesPerBurst;
 }
