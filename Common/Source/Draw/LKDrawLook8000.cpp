@@ -289,16 +289,16 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             int dx = compass.cx ;
             int yDistUnit= topmargin + unitmediumoffset;
             if((!HideUnits) || Overlay_Title) {
-              Surface.SelectObject(MapScaleFont);
-              Surface.GetTextSize(BufferUnit, &TextSize);
-              dx = dx - TextSize.cx+ NIBLSCALE(2);
+                Surface.SelectObject(MapScaleFont);
+                Surface.GetTextSize(BufferUnit, &TextSize);
+                dx = dx - TextSize.cx+ NIBLSCALE(2);
             }
             if (!HideUnits) {
-              LKWriteText(Surface, BufferUnit, dx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                LKWriteText(Surface, BufferUnit, dx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
             if(Overlay_Title) {
-              Surface.SelectObject(LK8OverlaySmallFont);
-              LKWriteText(Surface, BufferTitle, dx, yDistUnit-SizeSmallFont.cy/2, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                Surface.SelectObject(LK8OverlaySmallFont);
+                LKWriteText(Surface, BufferTitle, dx, yDistUnit-SizeSmallFont.cy/2, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
             Surface.SelectObject(LK8OverlayMediumFont);
             LKWriteText(Surface, BufferValue, dx, topmargin, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
@@ -311,12 +311,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             Surface.GetTextSize(BufferValue, &TextSize);
             dx = rcx + TextSize.cx + NIBLSCALE(2);
             if (!HideUnits) {
-              Surface.SelectObject(MapScaleFont);
-              LKWriteText(Surface, BufferUnit, dx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                Surface.SelectObject(MapScaleFont);
+                LKWriteText(Surface, BufferUnit, dx, yDistUnit, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
             }
             if(Overlay_Title) {
-              Surface.SelectObject(LK8OverlaySmallFont);
-              LKWriteText(Surface, BufferTitle,  dx , yDistUnit -SizeSmallFont.cy/2, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);  
+                Surface.SelectObject(LK8OverlaySmallFont);
+                LKWriteText(Surface, BufferTitle,  dx , yDistUnit -SizeSmallFont.cy/2, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);  
             }
         }
         _skip_TopRight:
