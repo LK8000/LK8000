@@ -401,7 +401,7 @@ void LoadChildsFromXML(WindowControl *Parent,
 
       W->SetReadOnly(ReadOnly != 0);
 
-      W->SetUseKeyboard(AttributeToLong(*child, "keyboard", 0));
+      W->SetUseKeyboard(AttributeToLong(*child, "Keyboard", 0));
 
       xml_node* dataFieldNode = child->first_node("DataField");
       if (dataFieldNode) {

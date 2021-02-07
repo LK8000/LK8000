@@ -289,10 +289,10 @@
       <WndProperty Name="prpAlarmTakeoffSafety" Caption="_@M1794_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1261_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="500" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpAlarmGearWarning" Caption="_@M1829_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1269_" keyboard="1">
+      <WndProperty Name="prpAlarmGearWarning" Caption="_@M1829_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1269_" Keyboard="1">
         <DataField name="" DataType="enum"  Min="0" Max="3" Step="1" OnDataAccess="OnGearWarningModeChange"/>
       </WndProperty> 
-      <WndProperty Name="prpAlarmGearAltitude" Caption="_@M1830_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1270_" keyboard="1">
+      <WndProperty Name="prpAlarmGearAltitude" Caption="_@M1830_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1270_" Keyboard="1">
         <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="5000" Step="1"/>
       </WndProperty>       
       <WndProperty Name="prpSonarWarning" Caption="_@M1870_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1290_">
