@@ -2596,6 +2596,8 @@
     "_@M002480_": "Raw Data",
     "_@M002481_": "Sync on",
     "_@M002482_": "Timer",
-    "_@M002483_": "NMEA Replay"
+    "_@M002483_": "NMEA Replay",
+
+    "_@M002484_": "Active/Standby Select"
 
 }

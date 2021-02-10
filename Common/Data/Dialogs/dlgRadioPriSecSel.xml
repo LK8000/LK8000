@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
+  <WndForm Name="frmRadioPriSecSel" Type="Dialog" X="5" Y="5" Width="230" Height="230" Caption="_@M2484_" Popup="1" Font="2" >      
+    <WndButton Name="cmdSelActive" Caption="*" X="10" Y="5" Width="210"  Height="40" Font="2" OnClickNotify="OnSelActiveButton"/>
+    <WndButton Name="cmdSelPassive" Caption="*" X="10" Y="50" Width="210"  Height="40" Font="2" OnClickNotify="OnSelPassiveButton"/>
+    <WndButton Caption="_@M186_" X="40" Y="95" Width="150"  Height="40" Font="2" OnClickNotify="OnCancelClicked"/>
+  </WndForm>
+</PMML>

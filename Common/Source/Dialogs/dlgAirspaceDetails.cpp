@@ -114,7 +114,7 @@ static bool OnTimer(WndForm* pWnd){
 
 static void OnSetFrequency(WndButton* pWnd){
 
- TCHAR Tmp[255];
+
  if(RadioPara.Enabled)
  {
    double ASFrequency = ExtractFrequency(airspace_copy.Name());
@@ -124,9 +124,8 @@ static void OnSetFrequency(WndButton* pWnd){
    }
    if(ValidFrequency(ASFrequency))
    {
-     _stprintf(Tmp,_T("%7.3fMHz"),ASFrequency);
-     devPutFreqActive(ASFrequency, airspace_copy.Name());
-     DoStatusMessage(_T(""), Tmp );
+     OnCloseClicked(pWnd);
+     dlgRadioPriSecSelShowModal(airspace_copy.Name(), ASFrequency);
    }
  }
 

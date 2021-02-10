@@ -162,6 +162,7 @@ IDR_XML_DEV_LXNAV_L     XMLDIALOG                "../Data/Dialogs/dlgDevLXNav_L.
 IDR_XML_DEV_LXNAV_P     XMLDIALOG                "../Data/Dialogs/dlgDevLXNav_P.xml"
 IDR_XML_WEATHERSTDETAILS XMLDIALOG               "../Data/Dialogs/dlgWeatherSt.xml"
 IDR_XML_NMEAREPLAY      XMLDIALOG                "../Data/Dialogs/dlgNMEAReplay.xml"
+IDR_XML_RADIOPRISECSEL  XMLDIALOG                "../Data/Dialogs/dlgRadioPriSecSel.xml"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -328,8 +328,7 @@ static CallBackTableEntry_t CallBackTable[]={
 static void OnMultiSelectEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {
   int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-  TCHAR Tmp[255];
-  TCHAR Tmp2[20];
+
   if(ItemIndex >=0)
   {
    if(RadioPara.Enabled)
@@ -338,11 +337,7 @@ static void OnMultiSelectEnter(WindowControl * Sender,
       if((ASFrequency >= 118) && (ASFrequency <= 138))
       {
         LKSound(TEXT("LK_TICK.WAV"));
-        _sntprintf(Tmp2, 10, _T("%s"),aCommentTextLine[ItemIndex]);
-        Tmp2[10]=0;
-        _stprintf(Tmp,_T("%s%s%7.3f"),Tmp2,NEWLINE,ASFrequency);
-        devPutFreqActive(ASFrequency, Tmp2);
-        DoStatusMessage(_T(""), Tmp );
+        dlgRadioPriSecSelShowModal(aCommentTextLine[ItemIndex], ASFrequency);
       }
     }
   }

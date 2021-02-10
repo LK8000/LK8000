@@ -199,7 +199,7 @@ static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
         else
           _tcscpy(Tmp,(TCHAR*)flarmId->reg );
 
-        devPutFreqActive(ASFrequency, Tmp );
+				 dlgRadioPriSecSelShowModal(Tmp, ASFrequency);
       }
     }
   }
