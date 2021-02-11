@@ -80,7 +80,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgRadioPriSecSelShowModal(const TCHAR*  pName, double Freq){
 SHOWTHREAD(_T("dlgRadioPriSecSelShowModal"));
   
-TCHAR Name[SHORT_DEVICE_NAME_LEN+10];
+TCHAR Name[SHORT_DEVICE_NAME_LEN+30];
 WndForm *wf=NULL;
 WndButton *wpnewActive = nullptr;
 WndButton *wpnewPassive = nullptr;
