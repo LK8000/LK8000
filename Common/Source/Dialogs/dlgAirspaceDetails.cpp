@@ -120,7 +120,7 @@ static void OnSetFrequency(WndButton* pWnd){
    double ASFrequency = ExtractFrequency(airspace_copy.Name());
    if(!ValidFrequency(ASFrequency))
    {
-	 ASFrequency = ExtractFrequency(airspace_copy.Comment());
+     ASFrequency = ExtractFrequency(airspace_copy.Comment());
    }
    if(ValidFrequency(ASFrequency))
    {
