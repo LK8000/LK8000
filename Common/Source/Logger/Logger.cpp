@@ -24,19 +24,11 @@
 
 #define A_RECORD                "A%s%c%c%c\r\n"
 
-#ifdef _UNICODE
-    #define HFPLTPILOT              "HFPLTPILOT:%S\r\n"
-    #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%S\r\n"
-    #define HFGIDGLIDERID           "HFGIDGLIDERID:%S\r\n"
-    #define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%S\r\n"
-    #define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%S\r\n"
-#else
-    #define HFPLTPILOT              "HFPLTPILOT:%s\r\n"
-    #define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%s\r\n"
-    #define HFGIDGLIDERID           "HFGIDGLIDERID:%s\r\n"
-    #define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%s\r\n"
-    #define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%s\r\n"
-#endif
+#define HFPLTPILOT              "HFPLTPILOT:%s\r\n"
+#define HFGTYGLIDERTYPE         "HFGTYGLIDERTYPE:%s\r\n"
+#define HFGIDGLIDERID           "HFGIDGLIDERID:%s\r\n"
+#define HFCCLCOMPETITIONCLASS   "HFCCLCOMPETITIONCLASS:%s\r\n"
+#define HFCIDCOMPETITIONID      "HFCIDCOMPETITIONID:%s\r\n"
 #define HFREMARK                "HFREMARK:%s\r\n"
 
 #define LOGGER_MANUFACTURER	"XLK"
@@ -271,7 +263,6 @@ static void AdditionalHeaders(void) {
 }
 
 static void LoggerHeader() {
-  char datum[]= "HFDTM100GPSDATUM:WGS-84\r\n";
   char temp[300];
 
   // Flight recorder ID number MUST go first..
@@ -289,106 +280,74 @@ static void LoggerHeader() {
 	  GPS_INFO.Year % 100);
   IGCWriteRecord(temp);
 
+  char ascii_tmp[100];
+
   // Example: Hanna.Reitsch
-  sprintf(temp,HFPLTPILOT, PilotName_Config);
+  to_usascii(PilotName_Config, ascii_tmp);
+  sprintf(temp,HFPLTPILOT, ascii_tmp);
   IGCWriteRecord(temp);
 
   // Example: DG-300
-  sprintf(temp,HFGTYGLIDERTYPE, AircraftType_Config);
+  to_usascii(AircraftType_Config, ascii_tmp);
+  sprintf(temp,HFGTYGLIDERTYPE, ascii_tmp);
   IGCWriteRecord(temp);
 
   // Example: D-7176
-  sprintf(temp,HFGIDGLIDERID, AircraftRego_Config);
+  to_usascii(AircraftRego_Config, ascii_tmp);
+  sprintf(temp,HFGIDGLIDERID, ascii_tmp);
   IGCWriteRecord(temp);
 
   // 110117 TOCHECK: maybe a 8 char limit is needed.
-  sprintf(temp,HFCCLCOMPETITIONCLASS, CompetitionClass_Config);
+  to_usascii(CompetitionClass_Config, ascii_tmp);
+  sprintf(temp,HFCCLCOMPETITIONCLASS, ascii_tmp);
   IGCWriteRecord(temp);
 
-  sprintf(temp,HFCIDCOMPETITIONID, CompetitionID_Config);
+  to_usascii(CompetitionID_Config, ascii_tmp);
+  sprintf(temp,HFCIDCOMPETITIONID, ascii_tmp);
   IGCWriteRecord(temp);
 
-    #ifndef LKCOMPETITION
-  sprintf(temp,"HFFTYFRTYPE:%s\r\n", LKFORK); // default
-    #else
-  sprintf(temp,"HFFTYFRTYPE:%sC\r\n", LKFORK); // default
-    #endif
+#ifdef LKCOMPETITION
+  constexpr const char* competition_indicator = "C";
+#else
+  constexpr const char* competition_indicator = "";
+#endif
 
-  // PNAs are also PPC2003, so careful
-  #ifdef PNA
-    char pnamodel[MAX_PATH+1];
-    to_utf8(GlobalModelName, pnamodel);
-  #ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:%s PNA %s\r\n", LKFORK,pnamodel);
-  #else
-    sprintf(temp,"HFFTYFRTYPE:%sC PNA %s\r\n", LKFORK,pnamodel);
-	#endif
-  #else
+#if defined(PPC2002)
+  constexpr const char* model_name = " PPC2002";
+#elif defined(PPC2003)
+  constexpr const char* model_name = " PPC2003";
+#elif defined(PNA)
+  char model_name[200];
+  to_usascii(GlobalModelName, ascii_tmp);
+  sprintf(model_name," PNA %s", ascii_tmp);
+#elif defined(ANDROID)
+  // TODO : get real model name : native_view->GetProduct()
+  constexpr const char* model_name = " ANDROID";
+#elif defined(KOBO)
+  constexpr const char* model_name = " KOBO";
+#elif defined(WINDOWSPC)
+  constexpr const char* model_name = " WINDOWSPC";
+#elif defined(__linux__)
+  constexpr const char* model_name = " LINUX";
+#else
+  constexpr const char* model_name = " UNKNOWN";
+#endif
 
-  #ifdef PPC2002
-	#ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:%s PPC2002\r\n", LKFORK);
-	#else
-    sprintf(temp,"HFFTYFRTYPE:%sC PPC2002\r\n", LKFORK);
-	#endif
-  #endif
-  // PNA is also PPC2003..
-  #ifdef PPC2003
-	#ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:%s PPC2003\r\n", LKFORK);
-	#else
-    sprintf(temp,"HFFTYFRTYPE:%sC PPC2003\r\n", LKFORK);
-	#endif
-  #endif
-
-  #endif
-
-  #ifdef __linux__
-	#ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:%s LINUX\r\n", LKFORK);
-	#else
-    sprintf(temp,"HFFTYFRTYPE:%sC LINUX\r\n", LKFORK);
-	#endif
-  #endif
-// Kobo & android AFTER __linux__
-  #ifdef ANDROID
-    #ifndef LKCOMPETITION
-      sprintf(temp,"HFFTYFRTYPE:%s ANDROID\r\n", LKFORK);
-    #else
-      sprintf(temp,"HFFTYFRTYPE:%sC ANDROID\r\n", LKFORK);
-    #endif
-  #endif
-  #ifdef KOBO
-	#ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:%s KOBO\r\n", LKFORK);
-	#else
-    sprintf(temp,"HFFTYFRTYPE:%sC KOBO\r\n", LKFORK);
-	#endif
-  #endif
-  #ifdef WINDOWSPC
-	#ifndef LKCOMPETITION
-    sprintf(temp,"HFFTYFRTYPE:%s WINDOWSPC\r\n", LKFORK);
-	#else
-    sprintf(temp,"HFFTYFRTYPE:%sC WINDOWSPC\r\n", LKFORK);
-	#endif
-  #endif
-
-
+  sprintf(temp, "HFFTYFRTYPE:" LKFORK "%s%s\r\n", competition_indicator, model_name);
   IGCWriteRecord(temp);
 
-  #ifndef LKCOMPETITION
-  sprintf(temp,"HFRFWFIRMWAREVERSION:%s.%s\r\n", LKVERSION, LKRELEASE);
-  #else
-  sprintf(temp,"HFRFWFIRMWAREVERSION:%s.%s.COMPETITION\r\n", LKVERSION, LKRELEASE);
-  #endif
-  IGCWriteRecord(temp);
+#ifdef LKCOMPETITION
+  IGCWriteRecord("HFRFWFIRMWAREVERSION:" LKVERSION "." LKRELEASE "." COMPETITION "\r\n");
+#else
+  IGCWriteRecord("HFRFWFIRMWAREVERSION:" LKVERSION "." LKRELEASE "\r\n");
+#endif
 
   IGCWriteRecord("HFALGALTGPS:GEO\r\n");
   if(GPS_INFO.BaroAltitudeAvailable) {
     IGCWriteRecord("HFALPALTPRESSURE:ISA\r\n");
   }
 
-  IGCWriteRecord(datum);
+  IGCWriteRecord("HFDTM100GPSDATUM:WGS-84\r\n");
 
   if (GPSAltitudeOffset != 0) {
      sprintf(temp,"HFGPSALTITUDEOFFSET: %+.0f\r\n", GPSAltitudeOffset);
