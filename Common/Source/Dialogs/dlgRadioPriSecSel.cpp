@@ -82,8 +82,7 @@ SHOWTHREAD(_T("dlgRadioPriSecSelShowModal"));
   
 TCHAR Name[SHORT_DEVICE_NAME_LEN+30];
 WndForm *wf=NULL;
-WndButton *wpnewActive = nullptr;
-WndButton *wpnewPassive = nullptr;
+
 
   Frequency = Freq;
   CopyTruncateString(StationName, SHORT_DEVICE_NAME_LEN, pName);		
@@ -92,6 +91,9 @@ WndButton *wpnewPassive = nullptr;
   if (!wf) return;
 
 
+#ifdef RENAME_BUTTONS
+WndButton *wpnewActive = nullptr;
+WndButton *wpnewPassive = nullptr; 
   wpnewActive  = (WndButton*)wf->FindByName(TEXT("cmdSelActive"));
   LKASSERT(   wpnewActive   !=NULL)
 
@@ -113,7 +115,11 @@ WndButton *wpnewPassive = nullptr;
 
 	if(wpnewPassive) 
 		wpnewPassive->SetCaption(Name);
-
+#else
+	 _stprintf(Name,_T("%7.3f    %s"), Freq, StationName);
+	 wf->FindByName(TEXT("frmRadioPriSecSel"))->SetCaption(Name);	
+#endif
+		
   wf->ShowModal();
   delete wf;
 
