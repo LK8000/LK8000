@@ -981,11 +981,6 @@ static const double PI = (4*atan(1));
 #define NOTANYPAN	(!MapWindow::mode.AnyPan())
 #define INPAN		(MapWindow::mode.Is(MapWindow::Mode::MODE_PAN))
 
-
-
-// For debugging and trace tests
-#define IMHERE	StartupStore(_T(">>> %s:%u\n"), _T(__FILE__), __LINE__);
-
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif
