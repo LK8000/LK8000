@@ -456,7 +456,7 @@ int InputEvents::findKey(const TCHAR *data) {
 // Create EVENT Entry
 // NOTE: String must already be copied (allows us to use literals
 // without taking up more data - but when loading from file must copy string
-unsigned InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, unsigned next) {
+unsigned InputEvents::makeEvent(pt2Event event, const TCHAR *misc, unsigned next) {
   Events.push_back({event, misc, next});
   return Events.size()-1;
 }

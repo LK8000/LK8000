@@ -85,7 +85,7 @@ public:
   static void DoQueuedEvents(void);
   static void processGo(unsigned event_id);
 
-  static unsigned  makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, unsigned next = 0);
+  static unsigned  makeEvent(pt2Event event, const TCHAR *misc, unsigned next = 0);
   static void clearEvents();
 
   static void makeLabel(int mode_id, const TCHAR *label, unsigned MenuId, unsigned event_id);
