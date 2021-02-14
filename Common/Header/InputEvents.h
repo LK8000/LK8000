@@ -12,6 +12,40 @@
 
 typedef void (*pt2Event)(const TCHAR *);
 
+// GCE = Glide Computer Event
+enum gc_event : uint8_t {
+  GCE_COMMPORT_RESTART,
+  GCE_FLARM_NOTRAFFIC,
+  GCE_FLARM_TRAFFIC,
+  GCE_FLIGHTMODE_CLIMB,
+  GCE_FLIGHTMODE_CRUISE,
+  GCE_FLIGHTMODE_FINALGLIDE,
+  GCE_FLIGHTMODE_FINALGLIDE_TERRAIN,
+  GCE_FLIGHTMODE_FINALGLIDE_ABOVE,
+  GCE_FLIGHTMODE_FINALGLIDE_BELOW,
+  GCE_LANDING,
+  GCE_STARTUP_REAL,
+  GCE_STARTUP_SIMULATOR,
+  GCE_TAKEOFF,
+  GCE_TASK_NEXTWAYPOINT,
+  GCE_TASK_START,
+  GCE_TASK_FINISH,
+  GCE_TEAM_POS_REACHED,
+  GCE_ARM_READY,
+  GCE_TASK_CONFIRMSTART,
+  GCE_POPUP_MULTISELECT,
+  GCE_WAYPOINT_DETAILS_SCREEN,
+  GCE_COUNT			// How many we have for arrays etc
+};
+
+// NE = NMEA Events (hard coded triggered events from the NMEA processor)
+// NMEA Events are Not Used, leave in code only for allow reuse in futur.
+enum nmea_event : uint8_t {
+  NE_DUMMY,
+  NE_COUNT // How many we have for arrays etc
+};
+
+
 class InputEvents {
 private:
   static double getIncStep(const TCHAR *misc, double step);
@@ -38,9 +72,11 @@ public:
   static TCHAR* getMode();
   static int getModeID();
   static int findKey(const TCHAR *data);
-  static int findGCE(const TCHAR *data);
-  static int findNE(const TCHAR *data);
-  static pt2Event findEvent(const TCHAR *);
+
+  static gc_event findGCE(const TCHAR *data);
+  static nmea_event findNE(const TCHAR *data);
+  static pt2Event findEvent(const TCHAR *data);
+
   static bool processKey(int key);
   static bool processNmea(int key);
   static bool processButton(unsigned MenuId);
@@ -158,39 +194,5 @@ public:
   static bool processNmea_real(int key);
   static void processPopupDetails_real();
 };
-
-
-// GCE = Glide Computer Event
-enum {
-  GCE_COMMPORT_RESTART,
-  GCE_FLARM_NOTRAFFIC,
-  GCE_FLARM_TRAFFIC,
-  GCE_FLIGHTMODE_CLIMB,
-  GCE_FLIGHTMODE_CRUISE,
-  GCE_FLIGHTMODE_FINALGLIDE,
-  GCE_FLIGHTMODE_FINALGLIDE_TERRAIN,
-  GCE_FLIGHTMODE_FINALGLIDE_ABOVE,
-  GCE_FLIGHTMODE_FINALGLIDE_BELOW,
-  GCE_LANDING,
-  GCE_STARTUP_REAL,
-  GCE_STARTUP_SIMULATOR,
-  GCE_TAKEOFF,
-  GCE_TASK_NEXTWAYPOINT,
-  GCE_TASK_START,
-  GCE_TASK_FINISH,
-  GCE_TEAM_POS_REACHED,
-  GCE_ARM_READY,
-  GCE_TASK_CONFIRMSTART,
-  GCE_POPUP_MULTISELECT,
-  GCE_WAYPOINT_DETAILS_SCREEN,
-  GCE_COUNT			// How many we have for arrays etc
-};
-
-// NE = NMEA Events (hard coded triggered events from the NMEA processor)
-// NMEA Events are Not Used, leave in code only for allow reuse in futur.
-enum {
-  NE_COUNT // How many we have for arrays etc
-};
-
 
 #endif

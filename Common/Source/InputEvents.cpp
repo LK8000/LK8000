@@ -117,12 +117,6 @@ PeriodClock LastActiveSelectMode;
 // This is set when multimaps are calling MMCONF menu.
 bool IsMultimapConfigShown=false;
 
-// Mapping text names of events to the real thing
-const TCHAR *Text2GCE[GCE_COUNT+1];
-
-// Mapping text names of events to the real thing
-const TCHAR *Text2NE[NE_COUNT+1];
-
 static Mutex  CritSec_EventQueue;
 
 static PeriodClock myPeriodClock;
@@ -143,7 +137,6 @@ void InputEvents::readFile() {
   // Get defaults
   if (!InitONCE) {
 	#include "InputEvents_LK8000.cpp"
-	#include "InputEvents_Text2Event.cpp"
     InitONCE = true;
   }
 
@@ -307,17 +300,18 @@ void InputEvents::readFile() {
 #endif
 
         }
-	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
-	    int iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
-	    if (iikey >= 0 && iikey < GCE_COUNT)
+	    // Make gce (Glide Computer Event)
+	    gc_event iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    if (iikey < GCE_COUNT) {
 	      GC2Event[mode_id][iikey] = event_id;
-
-	    // Make ne (NMEA Event)
+	    }
 	  } else if (_tcscmp(d_type, TEXT("ne")) == 0) { 		// NE - NMEA Event
-	    int iiikey = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
-	    if (iiikey >= 0 && iiikey < NE_COUNT)
+	    // Make ne (NMEA Event)
+	    nmea_event iiikey = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
+	    if (iiikey < NE_COUNT) {
 	      N2Event[mode_id][iiikey] = event_id;
+	    }
 	  } else if (_tcscmp(d_type, TEXT("label")) == 0)	{	// label only - no key associated (label can still be touch screen)
 	    // Nothing to do here...
 
@@ -458,24 +452,6 @@ int InputEvents::findKey(const TCHAR *data) {
   else
     return 0;
 
-}
-
-int InputEvents::findGCE(const TCHAR *data) {
-  int i;
-  for (i = 0; i < GCE_COUNT; i++) {
-    if (_tcscmp(data, Text2GCE[i]) == 0)
-      return i;
-  }
-  return -1;
-}
-
-int InputEvents::findNE(const TCHAR *data) {
-  int i;
-  for (i = 0; i < NE_COUNT; i++) {
-    if (_tcscmp(data, Text2NE[i]) == 0)
-      return i;
-  }
-  return -1;
 }
 
 // Create EVENT Entry
@@ -3741,8 +3717,49 @@ namespace {
     DELARE_EVENT(ChangeNettoVario),
     DELARE_EVENT(Wifi),
   });
+
+  #define DELARE_GCE(Name) { _T(#Name), GCE_ ## Name }
+
+  const auto Text2GCE = lookup_table<tstring_view, gc_event>({
+    DELARE_GCE(COMMPORT_RESTART),
+    DELARE_GCE(FLARM_NOTRAFFIC),
+    DELARE_GCE(FLARM_TRAFFIC),
+    DELARE_GCE(FLIGHTMODE_CLIMB),
+    DELARE_GCE(FLIGHTMODE_CRUISE),
+    DELARE_GCE(FLIGHTMODE_FINALGLIDE),
+    DELARE_GCE(FLIGHTMODE_FINALGLIDE_TERRAIN),
+    DELARE_GCE(FLIGHTMODE_FINALGLIDE_ABOVE),
+    DELARE_GCE(FLIGHTMODE_FINALGLIDE_BELOW),
+    DELARE_GCE(LANDING),
+    DELARE_GCE(STARTUP_REAL),
+    DELARE_GCE(STARTUP_SIMULATOR),
+    DELARE_GCE(TAKEOFF),
+    DELARE_GCE(TASK_NEXTWAYPOINT),
+    DELARE_GCE(TASK_START),
+    DELARE_GCE(TASK_FINISH),
+    DELARE_GCE(TEAM_POS_REACHED),
+    DELARE_GCE(ARM_READY),
+    DELARE_GCE(TASK_CONFIRMSTART),
+    DELARE_GCE(POPUP_MULTISELECT),
+    DELARE_GCE(WAYPOINT_DETAILS_SCREEN)
+  });
+
+  #define DELARE_NE(Name) { _T(#Name), NE_ ## Name }
+
+  const auto Text2NE = lookup_table<tstring_view, nmea_event>({
+    DELARE_NE(DUMMY) // to avoid empty initializer list error.
+  });
+
 }
 
 pt2Event InputEvents::findEvent(const TCHAR *data) {
   return Text2Event.get(data, &eventNull);
+}
+
+gc_event InputEvents::findGCE(const TCHAR *data) {
+  return Text2GCE.get(data, GCE_COUNT);
+}
+
+nmea_event InputEvents::findNE(const TCHAR *data) {
+  return Text2NE.get(data, NE_COUNT);
 }
