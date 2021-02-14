@@ -19,6 +19,7 @@
 #include <time.h>
 #include "igc_file_writer.h"
 #include <memory>
+#include <deque>
 // #define DEBUG_LOGGER	1
 
 #ifdef _UNICODE
@@ -79,7 +80,7 @@ namespace {
   };
 
   constexpr size_t max_buffer = 60;
-  std::list<LoggerBuffer_T> LoggerBuffer;
+  std::deque<LoggerBuffer_T> LoggerBuffer;
 
   // singleton instance of igc file writer
   //  created by StartLogger
@@ -572,7 +573,7 @@ void LogPoint(double Latitude, double Longitude, double Altitude, double BaroAlt
                       point.Altitude, point.BaroAltitude,
                       point.Hour, point.Minute, point.Second);
       }
-      LoggerBuffer = std::list<LoggerBuffer_T>(); //used instead of clear to deallocate.
+      LoggerBuffer = std::deque<LoggerBuffer_T>(); //used instead of clear to deallocate.
     }
   }
 
