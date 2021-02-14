@@ -38,7 +38,7 @@
 #include "Library/Utm.h"
 #include "utils/tokenizer.h"
 #include "utils/lookup_table.h"
-
+#include <type_traits>
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 
@@ -89,11 +89,10 @@ struct ModeLabelSTRUCT {
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
 std::list<TCHAR*> LabelGarbage;
 
-#define MAX_GCE_QUEUE 10
-static int GCE_Queue[MAX_GCE_QUEUE];
-#define MAX_NMEA_QUEUE 10
-static int NMEA_Queue[MAX_NMEA_QUEUE];
-
+namespace {
+  std::deque<gc_event> gce_queue;
+  std::deque<nmea_event> nmea_queue;
+}
 
 // popup object details event queue data.
 typedef struct {
@@ -131,8 +130,8 @@ void InputEvents::readFile() {
   {
     ScopeLock Lock(CritSec_EventQueue);
     // clear the GCE and NMEA queues
-    std::fill(std::begin(GCE_Queue), std::end(GCE_Queue), -1);
-    std::fill(std::begin(NMEA_Queue), std::end(NMEA_Queue), -1);
+    gce_queue.clear();
+    nmea_queue.clear();
   }
   // Get defaults
   if (!InitONCE) {
@@ -711,58 +710,73 @@ bool InputEvents::processKey(int KeyID) {
 }
 
 
-bool InputEvents::processNmea(int ne_id) {
+bool InputEvents::processNmea(nmea_event ne_id) {
   // add an event to the bottom of the queue
   ScopeLock Lock(CritSec_EventQueue);
-  for (int i=0; i< MAX_NMEA_QUEUE; i++) {
-    if (NMEA_Queue[i]== -1) {
-      NMEA_Queue[i]= ne_id;
-      break;
-    }
-  }
-
+  nmea_queue.push_back(ne_id);
   return true; // ok.
 }
 
-/*
-  InputEvent::processNmea(TCHAR* data)
-  Take hard coded inputs from NMEA processor.
-  Return = TRUE if we have a valid key match
-*/
-bool InputEvents::processNmea_real(int ne_id) {
-  if (!(ProgramStarted==psNormalOp)) return false;
-  int event_id = 0;
 
-  // Valid input ?
-  if ((ne_id < 0) || (ne_id >= NE_COUNT))
-    return false;
+bool InputEvents::processGlideComputer(gc_event gce_id) {
+  // add an event to the bottom of the queue
+  ScopeLock Lock(CritSec_EventQueue);
+  gce_queue.push_back(gce_id);
+  return true; // ok.
+}
+
+
+namespace {
+
+template<typename id_to_event_t, typename event_id_t>
+void processEvent(const id_to_event_t& id_to_event, event_id_t id) {
+
+  static_assert(std::is_unsigned_v<std::underlying_type_t<event_id_t>>, "event_id_t must be signed");
+
+  if (ProgramStarted != psNormalOp) {
+    return;
+  }
+
+  int event_id = 0;
 
   // get current mode
   int mode = InputEvents::getModeID();
-
-  // Which key - can be defined locally or at default (fall back to default)
-  event_id = N2Event[mode][ne_id];
-  if (event_id == 0) {
-    // go with default key..
-    event_id = N2Event[0][ne_id];
+  if (id < std::size(id_to_event[mode])) {
+    // Which key - can be defined locally or at default (fall back to default)
+    event_id = id_to_event[mode][id];
+    if (event_id == 0) {
+      // go with default key...
+      event_id = id_to_event[0][id];
+    }
   }
 
   if (event_id > 0) {
     InputEvents::processGo(event_id);
-    return true;
   }
-
-  return false;
 }
 
 
-// This should be called ONLY by the GUI thread.
-void InputEvents::DoQueuedEvents(void) {
-  static bool blockqueue = false;
-  int GCE_Queue_copy[MAX_GCE_QUEUE];
-  int NMEA_Queue_copy[MAX_NMEA_QUEUE];
-  int i;
+template<typename event_queue_t, typename id_to_event_t>
+void ProcessQueue(event_queue_t& event_queue, const id_to_event_t& id_to_event) {
 
+  using event_id_t = typename event_queue_t::value_type;
+
+  ScopeLock Lock(CritSec_EventQueue);
+  while(!event_queue.empty()) {
+    event_id_t event_id = event_queue.front();
+    event_queue.pop_front();
+    {
+      ScopeUnlock Unlock(CritSec_EventQueue);
+      processEvent<id_to_event_t, event_id_t>(id_to_event, event_id);
+    }
+  }
+}
+
+} // namespace
+
+// This should be called ONLY by the GUI thread.
+void InputEvents::DoQueuedEvents() {
+  static bool blockqueue = false;
   if (blockqueue) return;
   // prevent this being re-entered by gui thread while
   // still processing
@@ -774,52 +788,16 @@ void InputEvents::DoQueuedEvents(void) {
   processPopupDetails_real();
 
   if (RepeatWindCalc>0) { // 100203
-	RepeatWindCalc=0;
-	InputEvents::eventCalcWind(_T("AUTO"));
-	//dlgBasicSettingsShowModal();
+    RepeatWindCalc=0;
+    InputEvents::eventCalcWind(_T("AUTO"));
   }
 
-  { // Begin Lock
-    // copy and flush the queue first, blocking
-    ScopeLock Lock(CritSec_EventQueue);
-
-    for (i=0; i<MAX_GCE_QUEUE; i++) {
-      GCE_Queue_copy[i]= GCE_Queue[i];
-      GCE_Queue[i]= -1;
-    }
-    for (i=0; i<MAX_NMEA_QUEUE; i++) {
-      NMEA_Queue_copy[i]= NMEA_Queue[i];
-      NMEA_Queue[i]= -1;
-    }
-  } // End Lock
-
-  // process each item in the queue
-  for (i=0; i< MAX_GCE_QUEUE; i++) {
-    if (GCE_Queue_copy[i]!= -1) {
-      processGlideComputer_real(GCE_Queue_copy[i]);
-    }
-  }
-  for (i=0; i< MAX_NMEA_QUEUE; i++) {
-    if (NMEA_Queue_copy[i]!= -1) {
-      processNmea_real(NMEA_Queue_copy[i]);
-    }
-  }
+  ProcessQueue(gce_queue, GC2Event);
+  ProcessQueue(nmea_queue, N2Event);
 
   blockqueue = false; // ok, ready to go on.
 }
 
-
-bool InputEvents::processGlideComputer(int gce_id) {
-  // add an event to the bottom of the queue
-  ScopeLock Lock(CritSec_EventQueue);
-  for (int i=0; i< MAX_GCE_QUEUE; i++) {
-    if (GCE_Queue[i]== -1) {
-      GCE_Queue[i]= gce_id;
-      break;
-    }
-  }
-  return true; // ok.
-}
 
 void InputEvents::processPopupDetails(PopupType type, int index) {
     ScopeLock Lock(CritSec_EventQueue);
@@ -896,37 +874,6 @@ void InputEvents::processPopupDetails_real() {
     }
 }
 
-/*
-  InputEvents::processGlideComputer
-  Take virtual inputs from a Glide Computer to do special events
-*/
-bool InputEvents::processGlideComputer_real(int gce_id) {
-  if (!(ProgramStarted==psNormalOp)) return false;
-  int event_id = 0;
-
-  // TODO feature: Log glide computer events to IGC file
-
-  // Valid input ?
-  if ((gce_id < 0) || (gce_id >= GCE_COUNT))
-    return false;
-
-  // get current mode
-  int mode = InputEvents::getModeID();
-
-  // Which key - can be defined locally or at default (fall back to default)
-  event_id = GC2Event[mode][gce_id];
-  if (event_id == 0) {
-    // go with default key..
-    event_id = GC2Event[0][gce_id];
-  }
-
-  if (event_id > 0) {
-    InputEvents::processGo(event_id);
-    return true;
-  }
-
-  return false;
-}
 
 extern int MenuTimeOut;
 

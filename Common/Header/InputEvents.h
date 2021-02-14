@@ -78,9 +78,9 @@ public:
   static pt2Event findEvent(const TCHAR *data);
 
   static bool processKey(int key);
-  static bool processNmea(int key);
+  static bool processNmea(nmea_event ne_id);
   static bool processButton(unsigned MenuId);
-  static bool processGlideComputer(int);
+  static bool processGlideComputer(gc_event gce_id);
   static void processPopupDetails(PopupType type, int index);
   static void DoQueuedEvents(void);
   static void processGo(unsigned event_id);
@@ -190,8 +190,6 @@ public:
   static void eventMinimapKey(const TCHAR *misc);
 
  private:
-  static bool processGlideComputer_real(int);
-  static bool processNmea_real(int key);
   static void processPopupDetails_real();
 };
 
