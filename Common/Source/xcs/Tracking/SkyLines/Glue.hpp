@@ -26,6 +26,7 @@ Copyright_License {
 
 #include "Client.hpp"
 #include "Time/GPSClock.hpp"
+#include <memory>
 
 struct DERIVED_INFO;
 
@@ -47,7 +48,7 @@ class Glue {
 
   bool roaming;
 
-  Queue *queue;
+  std::unique_ptr<Queue> queue;
 
   Client cloud_client;
   GPSClock cloud_clock;

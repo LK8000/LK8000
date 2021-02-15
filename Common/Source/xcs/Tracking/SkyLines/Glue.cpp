@@ -57,7 +57,6 @@ SkyLinesTracking::Glue::Glue()
 
 SkyLinesTracking::Glue::~Glue()
 {
-  delete queue;
 }
 
 inline bool
@@ -96,8 +95,8 @@ SkyLinesTracking::Glue::SendFixes(const NMEA_INFO &basic)
   if (!IsConnected()) {
     if (clock.CheckAdvance(basic.Time, fixed(interval))) {
       /* queue the packet, send it later */
-      if (queue == nullptr)
-        queue = new Queue();
+      if (!queue)
+        queue = std::make_unique<Queue>();
       queue->Push(ToFix(client.GetKey(), basic));
     }
 
@@ -114,7 +113,6 @@ SkyLinesTracking::Glue::SendFixes(const NMEA_INFO &basic)
 
       queue->Pop();
       if (queue->IsEmpty()) {
-        delete queue;
         queue = nullptr;
         break;
       }
@@ -212,7 +210,6 @@ SkyLinesTracking::Glue::SetSettings(const Settings &settings)
   }
 
   if (!settings.enabled || settings.key == 0) {
-    delete queue;
     queue = nullptr;
     client.Close();
     return;
