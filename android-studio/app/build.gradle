@@ -8,9 +8,6 @@ apply plugin: 'com.android.application'
 
 repositories {
     google()
-    maven {
-        url  "https://dl.bintray.com/brunotl/prefab-library"
-    }
 }
 
 android {
@@ -136,7 +133,7 @@ dependencies {
 
     implementation 'com.onyx.android.sdk:epdcontroller:0.1.0'
 
-    implementation 'com.karney.android.ndk:geographiclib:1.50.1'
+    implementation 'com.github.brunotl:geographiclib-prefab:1.51.0'
     implementation "com.google.oboe:oboe:1.5.0"
 }
 
