@@ -18,6 +18,7 @@
 void MapWindow::RequestFastRefresh() {
 
 #ifdef ENABLE_OPENGL
+  assert(main_window);
   main_window->Redraw(MapRect);
 #else
   drawTriggerEvent.set();
@@ -27,11 +28,7 @@ void MapWindow::RequestFastRefresh() {
 
 void MapWindow::RefreshMap() {
   MapDirty = true;
-#ifdef ENABLE_OPENGL
-  main_window->Redraw(MapRect);
-#else
-  drawTriggerEvent.set();
-#endif
+  RequestFastRefresh();
 }
 
 
