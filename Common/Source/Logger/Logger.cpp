@@ -21,6 +21,10 @@
 #include "igc_file_writer.h"
 #include <memory>
 #include <deque>
+#ifdef ANDROID
+  #include "Android\AndroidFileUtils.h"
+#endif
+
 // #define DEBUG_LOGGER	1
 
 #define A_RECORD                "A%s%c%c%c\r\n"
@@ -497,6 +501,10 @@ static void internal_StartLogger() {
   }
   LoggerBuffer = std::deque<LoggerBuffer_t>(); //used instead of clear to deallocate.
 
+#ifdef ANDROID
+  // required to make file available to Android StorageManager without reboot device.
+  AndroidFileUtils::UpdateMediaStore(szLoggerFilePath);
+#endif
 
   StartupStore(_T(". Logger Started %s  File <%s>"), WhatTimeIsIt(), szLoggerFilePath);
 }

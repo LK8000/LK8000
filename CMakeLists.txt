@@ -136,6 +136,9 @@ add_library( LK8000 SHARED
     Common/Source/Android/Vario/VarioPlayer.h
     Common/Source/Android/Vario/VarioPlayer.cpp
 
+    Common/Source/Android/AndroidFileUtils.h
+    Common/Source/Android/AndroidFileUtils.cpp
+
     Common/Source/Window/WndMain.cpp
 
     Common/Source/xcs/Event/Shared/Timer.cpp
