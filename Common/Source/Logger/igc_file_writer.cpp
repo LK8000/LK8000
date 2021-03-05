@@ -11,6 +11,7 @@
 
 #include "igc_file_writer.h"
 #include <cstdio>
+#include <cassert>
 
 namespace {
   // return c if valid char for IGC files
@@ -44,10 +45,11 @@ igc_file_writer::igc_file_writer(const TCHAR *file, bool grecord)
 
 bool igc_file_writer::append(const char *data, size_t size) {
 
-  FILE *stream = _tfopen(file_path, _T("rb+"));
+  FILE *stream = _tfopen(file_path.c_str(), _T("rb+"));
   if (!stream) {
-    stream = _tfopen(file_path, _T("wb"));
+    stream = _tfopen(file_path.c_str(), _T("wb"));
   }
+  assert(stream); // invalid file path or missing right on target directory ?
   if (stream) {
     fseek(stream, next_record_position, SEEK_SET);
 

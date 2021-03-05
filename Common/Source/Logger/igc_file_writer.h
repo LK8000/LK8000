@@ -14,6 +14,7 @@
 
 #include "Compiler.h"
 #include "tchar.h"
+#include "Util/tstring.hpp"
 #include "md5.h"
 
 class igc_file_writer final {
@@ -38,7 +39,7 @@ public:
 private:
   bool append(const char *data, size_t size);
 
-  const TCHAR *file_path; /** full path of target igc file */
+  const tstring file_path; /** full path of target igc file */
   const bool add_grecord; /** true if G record must be added to file */
 
   long next_record_position = 0; /** position of G record */

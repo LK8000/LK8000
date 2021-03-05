@@ -466,30 +466,30 @@ static void LoggerTask() {
 
 static void internal_StartLogger() {
   const asset_id_t asset_id = GetAssetCode();
-  const LoggerBuffer_t& point = LoggerBuffer.front();
+  const LoggerBuffer_t& first_point = LoggerBuffer.front();
 
-  TCHAR szFLoggerFileName[MAX_PATH + 1];
-  LocalPath(szFLoggerFileName, TEXT(LKD_LOGS));
+  TCHAR szLoggerFilePath[MAX_PATH + 1];
+  LocalPath(szLoggerFilePath, TEXT(LKD_LOGS));
 
-  TCHAR* filename = szFLoggerFileName + _tcslen(szFLoggerFileName);
+  TCHAR* filename = szLoggerFilePath + _tcslen(szLoggerFilePath);
   *(filename++) = (*DIRSEP);
-  size_t filename_size = std::distance(filename, std::end(szFLoggerFileName));
+  size_t filename_size = std::distance(filename, std::end(szLoggerFilePath));
 
   for(int i = 1; i < 99; i++) {
     if (LoggerShortName) {
-      GetShortFileName(filename, filename_size, point, asset_id, i);
+      GetShortFileName(filename, filename_size, first_point, asset_id, i);
     } else {
-      GetLongFileName(filename, filename_size, point, asset_id, i);
+      GetLongFileName(filename, filename_size, first_point, asset_id, i);
     }
 
-    if(!lk::filesystem::exist(szFLoggerFileName)) {
+    if(!lk::filesystem::exist(szLoggerFilePath)) {
       break;
     }
   }
 
-  igc_writer_ptr = std::make_unique<igc_file_writer>(szFLoggerFileName, LoggerGActive());
+  igc_writer_ptr = std::make_unique<igc_file_writer>(szLoggerFilePath, LoggerGActive());
 
-  LoggerHeader(point, asset_id);
+  LoggerHeader(first_point, asset_id);
   LoggerTask();
 
   for (const auto & point : LoggerBuffer) {
@@ -497,7 +497,8 @@ static void internal_StartLogger() {
   }
   LoggerBuffer = std::deque<LoggerBuffer_t>(); //used instead of clear to deallocate.
 
-  StartupStore(_T(". Logger Started %s  File <%s>"), WhatTimeIsIt(), szFLoggerFileName);
+
+  StartupStore(_T(". Logger Started %s  File <%s>"), WhatTimeIsIt(), szLoggerFilePath);
 }
 
 static void internal_StopLogger() {
