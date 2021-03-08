@@ -179,12 +179,12 @@ short dlgWayQuickShowModal(void){
   TCHAR buffer2[80];
   WindowControl* wFreq = wf->FindByName(TEXT("cmdRadioFreq"));
   WindowControl* wFreqSB = wf->FindByName(TEXT("cmdRadioFreqSB"));
-  _stprintf(buffer2,_T("%s %s"),	SEL_ACTIVE_SYMBOL(Appearance.UTF8Pictorials), WPLSEL.Freq );
+  _stprintf(buffer2,_T("%s %s"), GetActiveStationSymbol(Appearance.UTF8Pictorials), WPLSEL.Freq );
 
   wFreq->SetCaption(buffer2);
   wFreq->Redraw();
 
-  _stprintf(buffer2,_T("%s %s"),	SEL_STANDBY_SYMBOL(Appearance.UTF8Pictorials), WPLSEL.Freq );
+  _stprintf(buffer2,_T("%s %s"), GetStandyStationSymbol(Appearance.UTF8Pictorials), WPLSEL.Freq );
 
   wFreqSB->SetCaption(buffer2);
   wFreqSB->Redraw();

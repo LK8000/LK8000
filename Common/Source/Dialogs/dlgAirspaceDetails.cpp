@@ -315,7 +315,7 @@ static void SetValues(WndForm* wf) {
         wSeqFreq->SetWidth(IBLSCALE(75));
 				
 
-		_stprintf(buffer2,_T("%s %7.3f"),SEL_ACTIVE_SYMBOL(Appearance.UTF8Pictorials), fASFrequency);
+		_stprintf(buffer2,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
 
 			
 		wFreq->SetCaption(buffer2);
@@ -323,7 +323,7 @@ static void SetValues(WndForm* wf) {
 
 
 
-				_stprintf(buffer2,_T("%s %7.3f"),SEL_STANDBY_SYMBOL(Appearance.UTF8Pictorials), fASFrequency);
+				_stprintf(buffer2,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
 
 				wSeqFreq->SetCaption(buffer2);
 				wSeqFreq->Redraw();

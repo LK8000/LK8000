@@ -203,3 +203,21 @@ int SearchBestStation()
 	}
 	return Idx;
 }
+
+
+TCHAR* GetActiveStationSymbol(bool utf8_symbol) 
+{
+	if(utf8_symbol)
+		return((TCHAR*)ACTIVE_SYMBOL_UTF8) ;
+	else
+	 return((TCHAR*)ACTIVE_SYMBOL);
+}
+
+TCHAR* GetStandyStationSymbol(bool utf8_symbol) 
+{
+	if(utf8_symbol)
+		return((TCHAR*)STANDBY_SYMBOL_UTF8) ;
+	else
+	 return((TCHAR*)STANDBY_SYMBOL);
+}
+//#define SEL_STANDBY_SYMBOL(a) (a)?(STANDBY_SYMBOL_UTF8 ) :(STANDBY_SYMBOL)

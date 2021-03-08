@@ -391,7 +391,7 @@ static void SetValues(int indexid) {
 	{
 		if(bValidFreq )
 		{	
-			_stprintf(buffer,_T("%s %7.3f"),SEL_ACTIVE_SYMBOL(Appearance.UTF8Pictorials), ASFrequency);	
+			_stprintf(buffer,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), ASFrequency);	
 			wFreq->SetCaption(buffer);
 			wFreq->SetVisible(true) ;
 		}
@@ -408,7 +408,7 @@ static void SetValues(int indexid) {
 	{
 		if(bValidFreq )
 		{			
-			_stprintf(buffer,_T("%s %7.3f"),SEL_STANDBY_SYMBOL(Appearance.UTF8Pictorials), ASFrequency);
+			_stprintf(buffer,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), ASFrequency);
 		wSecFreq->SetCaption(buffer);
 		wSecFreq->SetVisible(true) ;
 	}

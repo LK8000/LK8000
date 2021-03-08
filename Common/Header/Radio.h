@@ -24,6 +24,7 @@ int SearchBestStation();
 #define STANDBY_SYMBOL      _T("v")
 #define STANDBY_SYMBOL_UTF8 _T("↓")
 
-#define SEL_ACTIVE_SYMBOL(a) (a)?(ACTIVE_SYMBOL_UTF8) :(ACTIVE_SYMBOL)
-#define SEL_STANDBY_SYMBOL(a) (a)?(STANDBY_SYMBOL_UTF8 ) :(STANDBY_SYMBOL)
+TCHAR* GetActiveStationSymbol(bool utf8_symbol) ;
+TCHAR* GetStandyStationSymbol(bool utf8_symbol) ;
+
 #endif
