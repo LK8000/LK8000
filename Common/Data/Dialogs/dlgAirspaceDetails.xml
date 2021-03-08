@@ -12,7 +12,8 @@
       
     <WndProperty Name="prpTop" Caption="_@M729_" X="2" Y="-998"  Width="-2" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpBase" Caption="_@M128_" X="2" Y="-1"  Width="-2" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
-    <WndButton Name="cmdSFrequency" Caption="Frequency" X="113" Y="-998" Width="1"  Height="38" Font="2" Tag="0" OnClickNotify="OnSetFrequency" />
+    <WndButton Name="cmdSecFrequency" Caption="Frequency" X="113" Y="-998" Width="1"  Height="38" Font="2" Tag="0" OnClickNotify="OnSetSecFrequency" />    
+    <WndButton Name="cmdSFrequency" Caption="Frequency" X="113" Y="-999" Width="1"  Height="38" Font="2" Tag="0" OnClickNotify="OnSetFrequency" />
     <WndButton Name="cmdClose" Caption="_@M156_" X="2" Y="-999" Width="-2"  Height="38" Font="2" Tag="0" OnClickNotify="OnCloseClicked" />
     <!-- Only for diagnostics
 <WndProperty Name="prpWarnLevel" Caption="_@M1263_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
