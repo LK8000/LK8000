@@ -97,10 +97,7 @@ WndButton *wpnewPassive = nullptr;
   wpnewActive  = (WndButton*)wf->FindByName(TEXT("cmdSelActive"));
   LKASSERT(   wpnewActive   !=NULL)
 
-  if(Appearance.UTF8Pictorials)
-    _stprintf(Name,_T("↕ %7.3f    %s"), Freq, StationName);
-  else
-    _stprintf(Name,_T(">< %7.3f    %s"), Freq, StationName);
+  _stprintf(Name,_T("%s %7.3f    %s"),SEL_ACTIVE_SYMBOL(Appearance.UTF8Pictorials),  Freq, StationName);
 
 
 	if(wpnewActive) 
@@ -108,10 +105,8 @@ WndButton *wpnewPassive = nullptr;
 
   wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdSelPassive"));
   LKASSERT(   wpnewPassive   !=NULL)
-  if(Appearance.UTF8Pictorials)
-    _stprintf(Name,_T("↓ %7.3f    %s"), Freq, StationName);	
-  else
-    _stprintf(Name,_T("< %7.3f    %s"), Freq, StationName);	
+
+  _stprintf(Name,_T("%s %7.3f    %s"),SEL_STANDBY_SYMBOL(Appearance.UTF8Pictorials), Freq, StationName);
 
 	if(wpnewPassive) 
 		wpnewPassive->SetCaption(Name);

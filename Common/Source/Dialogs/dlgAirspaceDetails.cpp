@@ -314,27 +314,24 @@ static void SetValues(WndForm* wf) {
         wSeqFreq->SetLeft(IBLSCALE(3));
         wSeqFreq->SetWidth(IBLSCALE(75));
 				
-       if(Appearance.UTF8Pictorials)
-         _stprintf(buffer2,_T("↕ %7.3f"), fASFrequency);
-       else
-         _stprintf(buffer2,_T("X %7.3f"), fASFrequency);
-			
-        wFreq->SetCaption(buffer2);
-        wFreq->Redraw();
-				
 
-       if(Appearance.UTF8Pictorials)
-         _stprintf(buffer2,_T("↓ %7.3f"), fASFrequency);
-       else
-         _stprintf(buffer2,_T("< %7.3f"), fASFrequency);
+		_stprintf(buffer2,_T("%s %7.3f"),SEL_ACTIVE_SYMBOL(Appearance.UTF8Pictorials), fASFrequency);
+
 			
+		wFreq->SetCaption(buffer2);
+		wFreq->Redraw();
+
+
+
+				_stprintf(buffer2,_T("%s %7.3f"),SEL_STANDBY_SYMBOL(Appearance.UTF8Pictorials), fASFrequency);
+
 				wSeqFreq->SetCaption(buffer2);
 				wSeqFreq->Redraw();
-        bRadio = true;
-      }
-    }
-    wFreq->SetVisible(bRadio);
-  }
+				bRadio = true;
+		}
+	}
+	wFreq->SetVisible(bRadio);
+}
 	
 	
 

@@ -380,6 +380,8 @@ static void SetValues(int indexid) {
 		wp->RefreshDisplay();
 	}
 
+
+	
 	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
 	double ASFrequency = ExtractFrequency(flarmId->freq);
 	bool bValidFreq = false;
@@ -388,12 +390,8 @@ static void SetValues(int indexid) {
 	if(wFreq)
 	{
 		if(bValidFreq )
-		{			
-		if(Appearance.UTF8Pictorials)
-			_stprintf(buffer,_T("↕ %7.3f"), ASFrequency);
-		else
-			_stprintf(buffer,_T(">< %7.3f"), ASFrequency);
-			
+		{	
+			_stprintf(buffer,_T("%s %7.3f"),SEL_ACTIVE_SYMBOL(Appearance.UTF8Pictorials), ASFrequency);	
 			wFreq->SetCaption(buffer);
 			wFreq->SetVisible(true) ;
 		}
@@ -410,11 +408,7 @@ static void SetValues(int indexid) {
 	{
 		if(bValidFreq )
 		{			
-		if(Appearance.UTF8Pictorials)
-			_stprintf(buffer,_T("↓ %7.3f"), ASFrequency);
-		else
-			_stprintf(buffer,_T("< %7.3f"), ASFrequency);
-			
+			_stprintf(buffer,_T("%s %7.3f"),SEL_STANDBY_SYMBOL(Appearance.UTF8Pictorials), ASFrequency);
 		wSecFreq->SetCaption(buffer);
 		wSecFreq->SetVisible(true) ;
 	}
