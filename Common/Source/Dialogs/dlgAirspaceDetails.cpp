@@ -288,18 +288,18 @@ static void SetValues(WndForm* wf) {
   }
 
   WindowControl* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
-	WindowControl* wSeqFreq = wf->FindByName(TEXT("cmdSecFrequency"));
+  WindowControl* wSeqFreq = wf->FindByName(TEXT("cmdSecFrequency"));
   if (wFreq) {
     bool bRadio = false;
 
     if(RadioPara.Enabled) {
 
-	  double fASFrequency = ExtractFrequency(airspace_copy.Name());
-	  if(!ValidFrequency(fASFrequency))
-	  {
-		  fASFrequency = ExtractFrequency(airspace_copy.Comment());
-	  }
-	  
+      double fASFrequency = ExtractFrequency(airspace_copy.Name());
+      if(!ValidFrequency(fASFrequency))
+      {
+        fASFrequency = ExtractFrequency(airspace_copy.Comment());
+      }
+
       if(ValidFrequency(fASFrequency)) {
 
         WindowControl* wClose = wf->FindByName(TEXT("cmdClose"));
@@ -307,35 +307,35 @@ static void SetValues(WndForm* wf) {
           wClose->SetLeft(IBLSCALE(155));
           wClose->SetWidth(IBLSCALE(80));
         }
-				
-				wFreq->SetLeft(IBLSCALE(78));
-		    wFreq->SetWidth(IBLSCALE(75));
+
+        wFreq->SetLeft(IBLSCALE(78));
+        wFreq->SetWidth(IBLSCALE(75));
 
         wSeqFreq->SetLeft(IBLSCALE(3));
         wSeqFreq->SetWidth(IBLSCALE(75));
-				
-
-		_stprintf(buffer2,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
-
-			
-		wFreq->SetCaption(buffer2);
-		wFreq->Redraw();
 
 
+        _stprintf(buffer2,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
 
-				_stprintf(buffer2,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
 
-				wSeqFreq->SetCaption(buffer2);
-				wSeqFreq->Redraw();
-				bRadio = true;
-		}
-	}
-	wFreq->SetVisible(bRadio);
+        wFreq->SetCaption(buffer2);
+        wFreq->Redraw();
+
+
+
+        _stprintf(buffer2,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
+
+        wSeqFreq->SetCaption(buffer2);
+        wSeqFreq->Redraw();
+        bRadio = true;
+      }
+    }
+    wFreq->SetVisible(bRadio);
 }
-	
-	
 
-	
+
+
+
 
   // ONLY for DIAGNOSTICS- ENABLE ALSO XML
   #if 0

@@ -390,15 +390,15 @@ static void SetValues(int indexid) {
 	if(wFreq)
 	{
 		if(bValidFreq )
-		{	
+		{
 			_stprintf(buffer,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), ASFrequency);	
 			wFreq->SetCaption(buffer);
 			wFreq->SetVisible(true) ;
 		}
 		else
 		{
-		wFreq->SetCaption(_T(""));
-		wFreq->SetVisible(false) ;
+			wFreq->SetCaption(_T(""));
+			wFreq->SetVisible(false) ;
 		}
 	}
 	
@@ -407,19 +407,19 @@ static void SetValues(int indexid) {
 	if(wSecFreq)
 	{
 		if(bValidFreq )
-		{			
+		{
 			_stprintf(buffer,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), ASFrequency);
-		wSecFreq->SetCaption(buffer);
-		wSecFreq->SetVisible(true) ;
+			wSecFreq->SetCaption(buffer);
+			wSecFreq->SetVisible(true) ;
+		}
+		else
+		{
+			wSecFreq->SetCaption(_T(""));
+			wSecFreq->SetVisible(false);
+		}
+		wSecFreq->Redraw();
 	}
-	else
-	{
-		wSecFreq->SetCaption(_T(""));
-		wSecFreq->SetVisible(false);
-	}
-	wSecFreq->Redraw();
-  }
- }
+}
 }
 
 
