@@ -420,29 +420,7 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-  (void)pGPS;
-  (void)String;
-  (void)params;
-  (void)nparams;
-  /* we calculate all this stuff now 
-  TCHAR ctemp[MAX_NMEA_LEN];
-
-  pGPS->NAVWarning = NAVWarn(params[0][0]);
-
-  pGPS->CrossTrackError = NAUTICALMILESTOMETRES * StrToDouble(params[1], NULL);
-  pGPS->CrossTrackError = LeftOrRight(pGPS->CrossTrackError,params[2][0]);
-
-  _tcscpy(ctemp, params[4]);
-  ctemp[WAY_POINT_ID_SIZE] = '\0';
-  _tcscpy(pGPS->WaypointID,ctemp);
-
-  pGPS->WaypointDistance = NAUTICALMILESTOMETRES * StrToDouble(params[9], NULL);
-  pGPS->WaypointBearing = StrToDouble(params[10], NULL);
-  pGPS->WaypointSpeed = KNOTSTOMETRESSECONDS * StrToDouble(params[11], NULL);
-  */
-
   return TRUE;
-
 } // END RMB
 
 

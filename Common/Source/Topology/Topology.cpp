@@ -964,19 +964,7 @@ void Topology::SearchNearest(const rectObj& bounds) {
 	   case(MS_SHAPE_LINE):
 /*
 			for (int tt = 0; tt < shape->numlines; tt ++) {
-
-				int minx = rc.right;
-				int miny = rc.bottom;
-				int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
-
-				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize, 1);
-				for (int jj=0; jj< msize; jj++) {
-					if (pt[jj].x<=minx) {
-						minx = pt[jj].x;
-						miny = pt[jj].y;
-					}
-				}
-
+				//  right implementation is in #msDistancePointToShape, but this don't use great circle ditance.
 				cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y);
 			}
 */
