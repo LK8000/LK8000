@@ -233,7 +233,7 @@ void InputEvents::readFile() {
 #else
       memset(&Key2Event, 0, sizeof(Key2Event));
 #endif
-      InputEvents::clearEvents(); 
+      clearEvents(); 
 
       memset(&GC2Event, 0, sizeof(GC2Event));
       memset(&ModeLabel, 0, sizeof(ModeLabel));
@@ -280,7 +280,7 @@ void InputEvents::readFile() {
 		  LabelGarbage.push_back(new_label);
 	    }
 	    LKASSERT(new_label!=NULL);
-	    InputEvents::makeLabel(mode_id, new_label, d_location, event_id);
+	    makeLabel(mode_id, new_label, d_location, event_id);
 	  }
 
 	  // Make key (Keyboard input)
@@ -580,7 +580,7 @@ TCHAR* InputEvents::getMode() {
 }
 
 int InputEvents::getModeID() {
-  return InputEvents::mode2int(InputEvents::getMode(), false);
+  return mode2int(getMode(), false);
 }
 
 // -----------------------------------------------------------------------
@@ -633,7 +633,7 @@ bool InputEvents::processKey(int KeyID) {
   }
 
   // get current mode
-  unsigned mode = InputEvents::getModeID();
+  unsigned mode = getModeID();
   if(mode >= std::size(Key2Event)) {
     mode = 0;
   }
@@ -695,7 +695,7 @@ bool InputEvents::processKey(int KeyID) {
     }
 
     if (MenuId == 0 || ButtonLabel::IsEnabled(MenuId)) {
-      InputEvents::processGo(event_id);
+      processGo(event_id);
     }
 
     // experimental: update button text, macro may change the value
@@ -789,7 +789,7 @@ void InputEvents::DoQueuedEvents() {
 
   if (RepeatWindCalc>0) { // 100203
     RepeatWindCalc=0;
-    InputEvents::eventCalcWind(_T("AUTO"));
+    eventCalcWind(_T("AUTO"));
   }
 
   ProcessQueue(gce_queue, GC2Event);
@@ -892,7 +892,7 @@ void InputEvents::processGo(unsigned event_id) {
       MenuTimeOut = 0;
     }
     if (event.next_event_id > 0)
-      InputEvents::processGo(event.next_event_id);
+      processGo(event.next_event_id);
   }
 }
 
@@ -1261,7 +1261,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
 //  This is used to activate menus/submenus of buttons
 void InputEvents::eventMode(const TCHAR *misc) {
   LKASSERT(misc != NULL);
-  InputEvents::setMode(misc);
+  setMode(misc);
 
 #ifdef USE_GDI
   // trigger redraw of screen to reduce blank area under windows
@@ -1947,7 +1947,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 		ActiveTaskPoint=0;
 		StartTask(&GPS_INFO,&CALCULATED_INFO, true, true);
 		// GCE_TASK_START does not work here, why?
-		InputEvents::eventService(_T("TASKSTART"));
+		eventService(_T("TASKSTART"));
 	}
 	return;
   }
