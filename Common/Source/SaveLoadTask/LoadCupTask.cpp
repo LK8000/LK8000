@@ -250,55 +250,38 @@ public:
     }
 };
 
+namespace {
 
+using field_iterator = std::vector<tstring>::const_iterator;
 
-bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoint)
-{
-  std::vector<tstring>  Entries =   CupStringToFieldArray(szTaskSteing);
+bool ConvertStringToTask(field_iterator begin, field_iterator end, mapCode2Waypoint_t &mapWaypoint) {
+    size_t idxTP = 0;
 
-
-  size_t Idx =0;
-  size_t idxTP = 0;
-
-
-    for (uint i =0; i < Entries.size() ; i++)
-    {
-      mapCode2Waypoint_t::iterator It = mapWaypoint.find(Entries[Idx++].c_str());
-      if(It != mapWaypoint.end())
-      {
-        int ix = FindOrAddWaypoint(&(It->second),true);  // first try to find airfield
-        if(ix < 0)
-          ix= FindOrAddWaypoint(&(It->second),false); // not found try if waypoint exist
-
-        if(ix >= 0)
-        {
-          if (idxTP < MAXTASKPOINTS)       // space left
-          {
-            Task[idxTP++].Index = ix;
-            if(idxTP > 1)
-              if(Task[idxTP-1].Index  == Task[idxTP-2].Index )  // not the same as before?
-                idxTP--;
-          }
+    std::for_each(begin, end, [&](const auto& code) {
+        if (idxTP >= MAXTASKPOINTS) {
+            return;
         }
-      }
-      Task[idxTP].Index = -1;
-    }
-
-//#define DEBUG_TASK_LOAD
-#ifdef DEBUG_TASK_LOAD
-  int i =0;
-  while ( Task[i].Index  >=0)
-  {
-    StartupStore(_T(".......Taskpoint: %u %s\n"),(unsigned)(i), WayPointList[Task[i].Index].Name );
-    i++;
-  }
-#endif
-
-
-  return (idxTP > 0);
+        mapCode2Waypoint_t::iterator It = mapWaypoint.find(code);
+        if (It != mapWaypoint.end()) {
+            int ix = FindOrAddWaypoint(&(It->second), true);  // first try to find airfield
+            if (ix < 0) {
+                ix = FindOrAddWaypoint(&(It->second), false); // not found try if waypoint exist
+            }
+            if (ix >= 0) { // valid TP
+                Task[idxTP++].Index = ix;
+                if (idxTP > 1) {
+                    if (Task[idxTP - 1].Index == Task[idxTP - 2].Index) {  // not the same as before?
+                        --idxTP;
+                    }
+                }
+            }
+        }
+    });
+    Task[idxTP].Index = -1;
+    return (idxTP > 0);
 }
 
-
+} // namespace
 
 bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskIndex) {
 
@@ -408,9 +391,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 		              _tcscpy(TaskLine, szString );
                 }
 
-
-
-                bLoadComplet = ConvertStringToTask( szString, mapWaypoint);
+                bLoadComplet = ConvertStringToTask( std::next(Entries.begin()), Entries.end(), mapWaypoint);
                 FileSection = Option;
               }
             break;
