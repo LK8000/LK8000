@@ -2969,7 +2969,8 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
     CAirspaceList::const_iterator it;
     ScopeLock guard(_csairspaces);
     for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-        if ((*it)->DrawStyle()) {
+        if ((*it)->DrawStyle() || (((*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))) 
+        {
             (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
             if (HorDist < searchrange) {
                 res.push_back(*it);
