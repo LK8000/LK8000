@@ -863,6 +863,26 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
     return distance;
 }
 
+
+template<typename ScreenPointList>
+static void CalculateScreenPolygon(const ScreenProjection &_Proj, const CPoint2DArray& geopoints, ScreenPointList& screenpoints) {
+    using ScreenPoint = typename ScreenPointList::value_type;
+
+    const GeoToScreen<ScreenPoint> ToScreen(_Proj);
+
+    screenpoints.reserve(geopoints.size());
+    std::transform(
+            std::begin(geopoints), std::end(geopoints),
+            std::back_inserter(screenpoints),
+            std::ref(ToScreen));
+
+    // close polygon if needed
+    if(screenpoints.front() != screenpoints.back()) {
+        screenpoints.push_back(screenpoints.front());
+    }
+}
+
+
 // Calculate screen coordinates for drawing
 void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
 
@@ -909,38 +929,11 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
         bool need_clipping = !msRectContained(&_bounds, &screenbounds_latlon);
 
         if(!need_clipping) {
-
-            const GeoToScreen<RasterPointList::value_type> ToScreen(_Proj);
-
-            // no need clipping we can calc screen pos directly inside _screenpoints_clipped
-            _screenpoints_clipped.reserve(_geopoints.size());
-
-            std::transform(
-                    std::begin(_geopoints), std::end(_geopoints),
-                    std::back_inserter(_screenpoints_clipped),
-                    std::ref(ToScreen));
-
-            // close polygon if needed
-            if(_screenpoints_clipped.front() != _screenpoints_clipped.back()) {
-                _screenpoints_clipped.push_back(_screenpoints_clipped.front());
-            }
-
+            // clipping is not needed : calculate screen position directly into _screenpoints_clipped
+            CalculateScreenPolygon(_Proj, _geopoints, _screenpoints_clipped);
         } else {
-
-            const GeoToScreen<ScreenPointList::value_type> ToScreen(_Proj);
-
-            // clipping is need calc screen pos in temp array
-            _screenpoints.reserve(_geopoints.size());
-
-            std::transform(
-                    std::begin(_geopoints), std::end(_geopoints),
-                    std::back_inserter(_screenpoints),
-                    std::ref(ToScreen));
-
-            // close polygon if needed
-            if(_screenpoints.front() != _screenpoints.back()) {
-                _screenpoints.push_back(_screenpoints.front());
-            }
+            // clipping is needed : calculate screen position into temp array
+            CalculateScreenPolygon(_Proj, _geopoints, _screenpoints);
 
             PixelRect MaxRect(rcDraw);
             MaxRect.Grow(300); // add space for inner airspace border, avoid artefact on screen border.
