@@ -490,49 +490,22 @@ void LKDeviceSave(const TCHAR *szFile) {
     return;
   }
 
-  write_settings(szRegistryDeviceA, dwDeviceName[0]);
-  write_settings(szRegistryDeviceB, dwDeviceName[1]);
-  write_settings(szRegistryDeviceC, dwDeviceName[2]);
-  write_settings(szRegistryDeviceD, dwDeviceName[3]);
-  write_settings(szRegistryDeviceE, dwDeviceName[4]);
-  write_settings(szRegistryDeviceF, dwDeviceName[5]);
-
-  write_settings(szRegistryPort1Name, szPort[0]);
-  write_settings(szRegistryPort2Name, szPort[1]);
-  write_settings(szRegistryPort3Name, szPort[2]);
-  write_settings(szRegistryPort4Name, szPort[3]);
-  write_settings(szRegistryPort5Name, szPort[4]);
-  write_settings(szRegistryPort6Name, szPort[5]);
-
-  write_settings(szRegistrySpeed1Index, dwSpeedIndex[0]);
-  write_settings(szRegistrySpeed2Index, dwSpeedIndex[1]);
-  write_settings(szRegistrySpeed3Index, dwSpeedIndex[2]);
-  write_settings(szRegistrySpeed4Index, dwSpeedIndex[3]);
-  write_settings(szRegistrySpeed5Index, dwSpeedIndex[4]);
-  write_settings(szRegistrySpeed6Index, dwSpeedIndex[5]);
-
-  write_settings(szRegistryBit1Index, dwBitIndex[0]);
-  write_settings(szRegistryBit2Index, dwBitIndex[1]);
-  write_settings(szRegistryBit3Index, dwBitIndex[2]);
-  write_settings(szRegistryBit4Index, dwBitIndex[3]);
-  write_settings(szRegistryBit5Index, dwBitIndex[4]);
-  write_settings(szRegistryBit6Index, dwBitIndex[5]);
-
-  write_settings(szRegistryIpAddress1, szIpAddress[0]);
-  write_settings(szRegistryIpAddress2, szIpAddress[1]);
-  write_settings(szRegistryIpAddress3, szIpAddress[2]);
-  write_settings(szRegistryIpAddress4, szIpAddress[3]);
-  write_settings(szRegistryIpAddress5, szIpAddress[4]);
-  write_settings(szRegistryIpAddress6, szIpAddress[5]);
-
-  write_settings(szRegistryIpPort1, dwIpPort[0]);
-  write_settings(szRegistryIpPort2, dwIpPort[1]);
-  write_settings(szRegistryIpPort3, dwIpPort[2]);
-  write_settings(szRegistryIpPort4, dwIpPort[3]);
-  write_settings(szRegistryIpPort5, dwIpPort[4]);
-  write_settings(szRegistryIpPort6, dwIpPort[5]);
-
   for (int n = 0; n < NUMDEV; n++) {
+
+    write_settings(szRegistryDevice[n], dwDeviceName[n]);
+    write_settings(szRegistryPortName[n], szPort[n]);
+    write_settings(szRegistrySpeedIndex[n], dwSpeedIndex[n]);
+    write_settings(szRegistryBitIndex[n], dwBitIndex[n]);
+    write_settings(szRegistryIpAddress[n], szIpAddress[n]);
+    write_settings(szRegistryIpPort[n], dwIpPort[n]);
+
+    write_settings(szRegistryUseExtSound[n], UseExtSound[n]);
+
+    write_settings(szRegistryReplayFile[n], Replay_FileName[n]);
+    write_settings(szRegistryReplaySpeed[n], ReplaySpeed[n]);
+    write_settings(szRegistryReplayRaw[n], RawByteData[n]);  
+    write_settings(szRegistryReplaySync[n], ReplaySync[n]);
+
     TCHAR szTmp[IO_PARAM_SIZE];
     _sntprintf(szTmp,IO_PARAM_SIZE, _T("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u"),
 	       (uint)PortIO[n].MCDir    ,(uint)PortIO[n].BUGDir  ,(uint)PortIO[n].BALDir   ,
@@ -544,45 +517,10 @@ void LKDeviceSave(const TCHAR *szFile) {
 	       (uint)PortIO[n].T_TRGTDir,(uint)PortIO[n].QNHDir
 	     );
 
-    char szKey[20] = ("");
+    char szKey[20];
     sprintf(szKey, ("%s%u"), szRegistryIOValues, n + 1);
     write_settings(szKey, szTmp);
   }
-
-  write_settings(szRegistryUseExtSound1, UseExtSound[0]);
-  write_settings(szRegistryUseExtSound2, UseExtSound[1]);
-  write_settings(szRegistryUseExtSound3, UseExtSound[2]);
-  write_settings(szRegistryUseExtSound4, UseExtSound[3]);
-  write_settings(szRegistryUseExtSound5, UseExtSound[4]);
-  write_settings(szRegistryUseExtSound6, UseExtSound[5]);
-
-  write_settings(szRegistryReplayFileA ,Replay_FileName[0]);
-  write_settings(szRegistryReplayFileB ,Replay_FileName[1]);
-  write_settings(szRegistryReplayFileC ,Replay_FileName[2]);
-  write_settings(szRegistryReplayFileD ,Replay_FileName[3]);
-  write_settings(szRegistryReplayFileE ,Replay_FileName[4]);
-  write_settings(szRegistryReplayFileF ,Replay_FileName[5]);
-
-  write_settings(szRegistryReplaySpeedA,ReplaySpeed[0]);
-  write_settings(szRegistryReplaySpeedB,ReplaySpeed[1]);
-  write_settings(szRegistryReplaySpeedC,ReplaySpeed[2]);
-  write_settings(szRegistryReplaySpeedD,ReplaySpeed[3]);
-  write_settings(szRegistryReplaySpeedE,ReplaySpeed[4]);
-  write_settings(szRegistryReplaySpeedF,ReplaySpeed[5]);
-
-  write_settings(szRegistryReplayRawA,RawByteData[0]);
-  write_settings(szRegistryReplayRawB,RawByteData[1]);
-  write_settings(szRegistryReplayRawC,RawByteData[2]);
-  write_settings(szRegistryReplayRawD,RawByteData[3]);
-  write_settings(szRegistryReplayRawE,RawByteData[4]);
-  write_settings(szRegistryReplayRawF,RawByteData[5]);
-  
-  write_settings(szRegistryReplaySyncA,ReplaySync[0]);
-  write_settings(szRegistryReplaySyncB,ReplaySync[1]);
-  write_settings(szRegistryReplaySyncC,ReplaySync[2]);
-  write_settings(szRegistryReplaySyncD,ReplaySync[3]);
-  write_settings(szRegistryReplaySyncE,ReplaySync[4]);
-  write_settings(szRegistryReplaySyncF,ReplaySync[5]);
 
   write_settings(szRegistryUseGeoidSeparation, UseGeoidSeparation);
   write_settings(szRegistryPollingMode, PollingMode);

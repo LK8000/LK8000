@@ -50,11 +50,7 @@ bool LKProfileLoad(const TCHAR *szFile) {
   }
 
   if (!IsEmbedded()) {
-    if (_tcscmp(defaultProfileFile, szFile) == 0) {
-      isDefaultProfile = true;
-    } else {
-      isDefaultProfile = false;
-    }
+    isDefaultProfile = (_tcscmp(defaultProfileFile, szFile) == 0);
   }
 
   bool found = false;
@@ -206,12 +202,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryBarOpacity, BarOpacity)) return;
   if (settings::read(sname, svalue, szRegistryBestWarning, BestWarning)) return;
   if (settings::read(sname, svalue, szRegistryBgMapColor, BgMapColor_Config)) return;
-  if (settings::read(sname, svalue, szRegistryBit1Index, dwBitIndex[0])) return;
-  if (settings::read(sname, svalue, szRegistryBit2Index, dwBitIndex[1])) return;
-  if (settings::read(sname, svalue, szRegistryBit3Index, dwBitIndex[2])) return;
-  if (settings::read(sname, svalue, szRegistryBit4Index, dwBitIndex[3])) return;
-  if (settings::read(sname, svalue, szRegistryBit5Index, dwBitIndex[4])) return;
-  if (settings::read(sname, svalue, szRegistryBit6Index, dwBitIndex[5])) return;
 
   if (settings::read(sname, svalue, szRegistryBugs, BUGS_Config)) {
     BUGS_Config /= 100;
@@ -283,40 +273,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   if (settings::read(sname, svalue, szRegistryDebounceTimeout, debounceTimeout)) return;
   if (settings::read(sname, svalue, szRegistryDeclutterMode, DeclutterMode)) return;
-  if (settings::read(sname, svalue, szRegistryDeviceA, dwDeviceName[0])) return;
-  if (settings::read(sname, svalue, szRegistryDeviceB, dwDeviceName[1])) return;
-  if (settings::read(sname, svalue, szRegistryDeviceC, dwDeviceName[2])) return;
-  if (settings::read(sname, svalue, szRegistryDeviceD, dwDeviceName[3])) return;
-  if (settings::read(sname, svalue, szRegistryDeviceE, dwDeviceName[4])) return;
-  if (settings::read(sname, svalue, szRegistryDeviceF, dwDeviceName[5])) return;
-
-  if (settings::read(sname, svalue, szRegistryReplayFileA, Replay_FileName[0])) return;
-  if (settings::read(sname, svalue, szRegistryReplayFileB, Replay_FileName[1])) return;
-  if (settings::read(sname, svalue, szRegistryReplayFileC, Replay_FileName[2])) return;
-  if (settings::read(sname, svalue, szRegistryReplayFileD, Replay_FileName[3])) return;
-  if (settings::read(sname, svalue, szRegistryReplayFileE, Replay_FileName[4])) return;
-  if (settings::read(sname, svalue, szRegistryReplayFileF, Replay_FileName[5])) return;
-
-  if (settings::read(sname, svalue, szRegistryReplaySpeedA, ReplaySpeed[0])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySpeedB, ReplaySpeed[1])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySpeedC, ReplaySpeed[2])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySpeedD, ReplaySpeed[3])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySpeedE, ReplaySpeed[4])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySpeedF, ReplaySpeed[5])) return;
-
-  if (settings::read(sname, svalue, szRegistryReplayRawA, RawByteData[0])) return;
-  if (settings::read(sname, svalue, szRegistryReplayRawB, RawByteData[1])) return;
-  if (settings::read(sname, svalue, szRegistryReplayRawC, RawByteData[2])) return;
-  if (settings::read(sname, svalue, szRegistryReplayRawD, RawByteData[3])) return;
-  if (settings::read(sname, svalue, szRegistryReplayRawE, RawByteData[4])) return;
-  if (settings::read(sname, svalue, szRegistryReplayRawF, RawByteData[5])) return;
-
-  if (settings::read(sname, svalue, szRegistryReplaySyncA, ReplaySync[0])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySyncB, ReplaySync[1])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySyncC, ReplaySync[2])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySyncD, ReplaySync[3])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySyncE, ReplaySync[4])) return;
-  if (settings::read(sname, svalue, szRegistryReplaySyncF, ReplaySync[5])) return;
 
   if (settings::read(sname, svalue, szRegistryDisableAutoLogger, DisableAutoLogger)) return;
   if (settings::read(sname, svalue, szRegistryLiveTrackerInterval, LiveTrackerInterval)) return;
@@ -497,29 +453,23 @@ void LKParseProfileString(const char *sname, const char *svalue) {
     return;
   }
   /***************************************************/
-  if (settings::read(sname, svalue, szRegistryPort1Name, szPort[0])) return;
-  if (settings::read(sname, svalue, szRegistryPort2Name, szPort[1])) return;
-  if (settings::read(sname, svalue, szRegistryPort3Name, szPort[2])) return;
-  if (settings::read(sname, svalue, szRegistryPort4Name, szPort[3])) return;
-  if (settings::read(sname, svalue, szRegistryPort5Name, szPort[4])) return;
-  if (settings::read(sname, svalue, szRegistryPort6Name, szPort[5])) return;
-
-  if (settings::read(sname, svalue, szRegistryIpAddress1, szIpAddress[0])) return;
-  if (settings::read(sname, svalue, szRegistryIpAddress2, szIpAddress[1])) return;
-  if (settings::read(sname, svalue, szRegistryIpAddress3, szIpAddress[2])) return;
-  if (settings::read(sname, svalue, szRegistryIpAddress4, szIpAddress[3])) return;
-  if (settings::read(sname, svalue, szRegistryIpAddress5, szIpAddress[4])) return;
-  if (settings::read(sname, svalue, szRegistryIpAddress6, szIpAddress[5])) return;
-
-  if (settings::read(sname, svalue, szRegistryIpPort1, dwIpPort[0])) return;
-  if (settings::read(sname, svalue, szRegistryIpPort2, dwIpPort[1])) return;
-  if (settings::read(sname, svalue, szRegistryIpPort3, dwIpPort[2])) return;
-  if (settings::read(sname, svalue, szRegistryIpPort4, dwIpPort[3])) return;
-  if (settings::read(sname, svalue, szRegistryIpPort5, dwIpPort[4])) return;
-  if (settings::read(sname, svalue, szRegistryIpPort6, dwIpPort[5])) return;
-
 
   for (int n = 0; n < NUMDEV; n++) {
+
+    if (settings::read(sname, svalue, szRegistryDevice[n], dwDeviceName[n])) return;
+    if (settings::read(sname, svalue, szRegistryPortName[n], szPort[n])) return;
+    if (settings::read(sname, svalue, szRegistrySpeedIndex[n], dwSpeedIndex[n])) return;
+    if (settings::read(sname, svalue, szRegistryBitIndex[n], dwBitIndex[n])) return;
+    if (settings::read(sname, svalue, szRegistryIpAddress[n], szIpAddress[n])) return;
+    if (settings::read(sname, svalue, szRegistryIpPort[n], dwIpPort[n])) return;
+    
+    if (settings::read(sname, svalue, szRegistryUseExtSound[n], UseExtSound[n])) return;
+
+    if (settings::read(sname, svalue, szRegistryReplayFile[n], Replay_FileName[n])) return;
+    if (settings::read(sname, svalue, szRegistryReplaySpeed[n], ReplaySpeed[n])) return;
+    if (settings::read(sname, svalue, szRegistryReplayRaw[n], RawByteData[n])) return;
+    if (settings::read(sname, svalue, szRegistryReplaySync[n], ReplaySync[n])) return;
+
     int i = 0;
 
     TCHAR szTmp[IO_PARAM_SIZE] = _T("");
@@ -611,12 +561,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryIsoLine, IsoLine_Config)) return;
   if (settings::read(sname, svalue, szRegistrySnailTrail, TrailActive_Config)) return;
   if (settings::read(sname, svalue, szRegistrySnailScale, SnailScale)) return;
-  if (settings::read(sname, svalue, szRegistrySpeed1Index, dwSpeedIndex[0])) return;
-  if (settings::read(sname, svalue, szRegistrySpeed2Index, dwSpeedIndex[1])) return;
-  if (settings::read(sname, svalue, szRegistrySpeed3Index, dwSpeedIndex[2])) return;
-  if (settings::read(sname, svalue, szRegistrySpeed4Index, dwSpeedIndex[3])) return;
-  if (settings::read(sname, svalue, szRegistrySpeed5Index, dwSpeedIndex[4])) return;
-  if (settings::read(sname, svalue, szRegistrySpeed6Index, dwSpeedIndex[5])) return;
   if (settings::read(sname, svalue, szRegistrySpeedUnitsValue, SpeedUnit_Config)) return;
   if (settings::read(sname, svalue, szRegistryStartHeightRef, StartHeightRef)) return;
   if (settings::read(sname, svalue, szRegistryStartLine, StartLine)) return;
@@ -657,12 +601,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   if (settings::read(sname, svalue, szRegistryUseGeoidSeparation, UseGeoidSeparation)) return;
-  if (settings::read(sname, svalue, szRegistryUseExtSound1, UseExtSound[0])) return;
-  if (settings::read(sname, svalue, szRegistryUseExtSound2, UseExtSound[1])) return;
-  if (settings::read(sname, svalue, szRegistryUseExtSound3, UseExtSound[2])) return;
-  if (settings::read(sname, svalue, szRegistryUseExtSound4, UseExtSound[3])) return;
-  if (settings::read(sname, svalue, szRegistryUseExtSound5, UseExtSound[4])) return;
-  if (settings::read(sname, svalue, szRegistryUseExtSound6, UseExtSound[5])) return;
 
   if (settings::read(sname, svalue, szRegistryUseUngestures, UseUngestures)) return;
   if (settings::read(sname, svalue, szRegistryUseTotalEnergy, UseTotalEnergy_Config)) return;
