@@ -137,6 +137,10 @@ struct GeoToScreen final {
         return _Proj.ToScreen<ScreenPoint>(pt);
     }
 
+    ScreenPoint operator()(const CPoint2D& pt) const {
+        return _Proj.ToScreen<ScreenPoint>({pt.Latitude(), pt.Longitude()});
+    }
+
     const ScreenProjection& _Proj;
 };
 
