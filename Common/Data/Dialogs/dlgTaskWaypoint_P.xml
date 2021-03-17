@@ -7,86 +7,86 @@
     <WndButton Name="butDetails" Caption="_@M231_" X="90" Y="0" Width="80" Height="22" Font="2" OnClickNotify="OnDetailsClicked"/>
     <WndButton Name="butDown" Caption="_@M440_" X="90" Y="25" Width="80" Height="22" Font="2" OnClickNotify="OnMoveAfterClicked"/>
     <WndButton Name="butUp" Caption="_@M441_" X="90" Y="50" Width="80" Height="22" Font="2" OnClickNotify="OnMoveBeforeClicked"/>
-    
-    
-    <WndButton Name="butPrev" Caption="_@M6_" X="20" Y="310" Width="90" Height="25" Font="2" OnClickNotify="OnPrevClicked"/>
-    <WndButton Name="butNext" Caption="_@M460_" X="130" Y="310" Width="90" Height="25" Font="2" OnClickNotify="OnNextClicked"/>
-    
-        
-    <WndFrame Name="frmStart" X="0" Y="85" Width="240" Height="220" Font="2">
-      <WndProperty Name="prpTaskStartLine" Caption="_@M656_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H500_">
-        <DataField name="" DataType="enum" Min="0" Max="50" Step="1"/>
+    <WndButton Name="frmMoveTurnpoint" Caption="_@M444_" X="175" Y="50" Width="60" Height="22" Font="2" OnClickNotify="OnMoveClicked"/>    
+
+    <WndFrame Name="frmStart"        X="0" Y="85" Width="240" Height="185" Font="2">
+      <WndProperty Name="prpTaskStartLine" Caption="_@M656_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H500_">
+        <DataField name="" DataType="enum"/>
       </WndProperty>
-      <WndProperty Name="prpTaskStartRadius" Caption="_@M650_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H501_" Keyboard="1">
+      <WndProperty Name="prpTaskStartRadius" Caption="_@M650_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H501_" Keyboard="1">
         <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="100" Step="0.01"/>
       </WndProperty>
-      <WndProperty Name="prpEnableMultipleStartPoints" Caption="_@M86_" X="2" Y="-1"  Width="240" Height="22" CaptionWidth="150" Font="2" ReadOnly="0" Help="_@H502_">
+      <WndProperty Name="prpEnableMultipleStartPoints" Caption="_@M86_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="120" Font="2" ReadOnly="0" Help="_@H502_">
         <DataField name="" DataType="boolean" ReadOnly="0" OnDataAccess="OnTaskType"/>
       </WndProperty>
-      <WndButton  Name="EditStartPoints" Caption="_@M250_"    X="20" Y="-1" Width="200"  Height="22" Font="2" OnClickNotify="OnStartPointClicked"/>
-      <WndProperty Name="prpTaskType" Caption="_@M1917_" X="2" Y="-1"  Width="240" Height="22" CaptionWidth="150" Font="2" ReadOnly="0" Help="_@H1361_">
-        <DataField name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnTaskType"/>
+      <WndButton  Name="EditStartPoints" Caption="_@M250_" X="40" Y="-1" Width="160"  Height="22" Font="2" OnClickNotify="OnStartPointClicked"/>
+      <WndProperty Name="prpTaskType"    Caption="_@M1917_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" ReadOnly="0" Help="_@H1361_">
+        <DataField name="" DataType="enum" OnDataAccess="OnTaskType"/>
       </WndProperty>
-      <WndProperty Name="prpMinTime" Caption="_@M41_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" ReadOnly="0" Help="_@H504_" Keyboard="1">
+      <WndProperty Name="prpMinTime"     Caption="_@M41_"   X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" ReadOnly="0" Help="_@H504_" Keyboard="1">
         <DataField name="" DataType="double" DisplayFormat="%.0f min" Min="0" Max="600" Step="1" EditFormat="%.0f"/>
       </WndProperty>
-      <WndProperty Name="prpAutoAdvance" Caption="_@M112_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H507_">
-        <DataField name="" DataType="enum" Min="0" Max="50" Step="1"/>
+      <WndProperty Name="prpAutoAdvance" Caption="_@M112_"  X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H507_">
+        <DataField name="" DataType="enum" />
       </WndProperty>
-      <WndButton Name="butRules" Caption="_@M690_" X="150" Y="-1" Width="80" Height="22" Font="2" OnClickNotify="OnTaskRulesClicked"/>
+      <WndButton Name="butRules" Caption="_@M690_" X="40" Y="-1" Width="160" Height="22" Font="2" OnClickNotify="OnTaskRulesClicked"/>
     </WndFrame>
-    <WndFrame Name="frmTurnpoint" X="0" Y="85" Width="240" Height="220" Font="2">
-      <WndProperty Name="prpTaskFAISector" Caption="_@M589_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H505_">
-        <DataField name="" DataType="enum" Min="0" Max="50" Step="1"/>
+    <WndFrame Name="frmTurnpoint"    X="0" Y="85" Width="240" Height="185" Font="2">
+      <WndProperty Name="prpTaskFAISector" Caption="_@M589_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H505_">
+        <DataField name="" DataType="enum" />
       </WndProperty>
-      <WndProperty Name="prpTaskSectorRadius" Caption="_@M587_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H506_" Keyboard="1">
+      <WndProperty Name="prpTaskSectorRadius" Caption="_@M587_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H506_" Keyboard="1">
         <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01"/>
       </WndProperty>	 
     </WndFrame>
-    <WndFrame Name="frmAATTurnpoint" X="0" Y="85" Width="240" Height="220" Font="2">
-      <WndProperty Name="prpAATType" Caption="_@M752_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H508_">
-        <DataField name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnTaskType"/>
+    <WndFrame Name="frmAATTurnpoint" X="0" Y="85" Width="240" Height="185" Font="2">
+      <WndProperty Name="prpAATType" Caption="_@M752_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H508_">
+        <DataField name="" DataType="enum" OnDataAccess="OnTaskType" />
       </WndProperty>
-      <WndFrame Name="frmCircle" X="0" Y="24" Width="240" Height="198">
-        <WndProperty Name="prpAATCircleRadius" Caption="_@M171_" X="2" Y="2" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H509_" Keyboard="1">
+      <WndFrame Name="frmCircle" X="0" Y="23" Width="240" Height="198">
+        <WndProperty Name="prpAATCircleRadius" Caption="_@M171_" X="2" Y="2" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H509_" Keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01"/>
         </WndProperty>
-        <WndProperty Name="prpOutCircle" Caption="_@M2147_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@HXXX_">
-          <DataField name="" DataType="enum" Min="0" Max="50" Step="1"/>
+        <WndProperty Name="prpOutCircle" Caption="_@M2147_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@HXXX_">
+          <DataField name="" DataType="enum" />
         </WndProperty>
       </WndFrame>
-      <WndFrame Name="frmSector" X="0" Y="24" Width="240" Height="198">
-        <WndProperty Name="prpAATSectorRadius" Caption="_@M587_" X="2" Y="2" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H510_" Keyboard="1">
+      <WndFrame Name="frmSector" X="0" Y="23" Width="240" Height="198">
+        <WndProperty Name="prpAATSectorRadius" Caption="_@M587_" X="2" Y="2" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H510_" Keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01"/>
         </WndProperty>
-        <WndProperty Name="prpAATStartRadial" Caption="_@M648_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H511_" Keyboard="1">
+        <WndProperty Name="prpAATStartRadial" Caption="_@M648_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H511_" Keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="0" Max="360" Step="1"/>
         </WndProperty>
-        <WndProperty Name="prpAATFinishRadial" Caption="_@M294_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H512_" Keyboard="1">
+        <WndProperty Name="prpAATFinishRadial" Caption="_@M294_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H512_" Keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="0" Max="360" Step="1"/>
         </WndProperty>
       </WndFrame>
-      <WndFrame Name="frmCone" X="0" Y="24" Width="240" Height="198">
-        <WndProperty Name="prpConeSlope" Caption="_@M2176_" X="2" Y="2" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H1288_" Keyboard="1">
+      <WndFrame Name="frmCone" X="0" Y="23" Width="240" Height="198">
+        <WndProperty Name="prpConeSlope" Caption="_@M2176_" X="2" Y="2" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H1288_" Keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.1f / 1" EditFormat="%.2f" Min="0" Max="500" Step="0.1" />
         </WndProperty>
-        <WndProperty Name="prpConeBase" Caption="_@M2177_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H1289_" Keyboard="1">
+        <WndProperty Name="prpConeBase" Caption="_@M2177_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H1289_" Keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.0f %s AMSL" EditFormat="%.0f" Min="-10000" Max="10000" Step="1" />
         </WndProperty>
-        <WndProperty Name="prpConeRadius" Caption="_@M2178_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H1291_" Keyboard="1">
+        <WndProperty Name="prpConeRadius" Caption="_@M2178_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H1291_" Keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01" />
         </WndProperty>
       </WndFrame>
     </WndFrame>
-    <WndFrame Name="frmFinish" X="0" Y="85" Width="240" Height="220" Font="2">
-      <WndProperty Name="prpTaskFinishLine" Caption="_@M298_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H513_">
-        <DataField name="" DataType="enum" Min="0" Max="50" Step="1"/>
+    <WndFrame Name="frmFinish"       X="0" Y="85" Width="240" Height="185" Font="2">
+      <WndProperty Name="prpTaskFinishLine" Caption="_@M298_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H513_">
+        <DataField name="" DataType="enum" />
       </WndProperty>
-      <WndProperty Name="prpTaskFinishRadius" Caption="_@M296_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="110" Font="2" Help="_@H514_" Keyboard="1">
+      <WndProperty Name="prpTaskFinishRadius" Caption="_@M296_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H514_" Keyboard="1">
         <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01"/>
       </WndProperty>
     </WndFrame>
+
     <WndOwnerDrawFrame Name="frmTaskPointPicto" X="185" Y="3" Width="45" Height="45" Font="2" OnPaint="OnTaskPointPicto"/>
-    <WndButton Name="frmMoveTurnpoint" Caption="_@M444_" X="175" Y="50" Width="60" Height="22" Font="2" OnClickNotify="OnMoveClicked"/>    
+
+    <WndButton Name="butPrev" Caption="_@M6_"   X="20"  Y="270" Width="90" Height="25" Font="2" OnClickNotify="OnPrevClicked"/>
+    <WndButton Name="butNext" Caption="_@M460_" X="130" Y="270" Width="90" Height="25" Font="2" OnClickNotify="OnNextClicked"/>
+
   </WndForm>
 </PMML>
