@@ -335,6 +335,7 @@ add_library( LK8000 SHARED
     Common/Source/SaveLoadTask/SaveTask.cpp
     Common/Source/SaveLoadTask/LoadCupTask.cpp
     Common/Source/SaveLoadTask/LoadGpxTask.cpp
+    Common/Source/SaveLoadTask/LoadXCTrackTask.cpp
 
     Common/Source/LKInterface/LKCustomKeyHandler.cpp
     Common/Source/LKInterface/LKInit.cpp

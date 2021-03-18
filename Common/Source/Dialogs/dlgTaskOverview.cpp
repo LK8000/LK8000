@@ -544,6 +544,8 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
               bOK = LoadCupTask(szFilePath);
           } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
               bOK = LoadGpxTask(szFilePath);
+          } else if (_tcsicmp(wextension,_T(LKS_XCTSK))==0) {
+              bOK = LoadXctrackTaskFile(szFilePath);
           }
           if(!bOK) {
               MessageBoxX(MsgToken(467),_T(" "), mbOk);
@@ -660,7 +662,8 @@ void dlgTaskOverviewShowModal(int Idx){
       const TCHAR* suffix_filters[] = {
         _T(LKS_TSK),
         _T(LKS_WP_CUP),
-        _T(LKS_WP_GPX)
+        _T(LKS_WP_GPX),
+        _T(LKS_XCTSK)
       };
       dfe->ScanDirectoryTop(_T(LKD_TASKS), suffix_filters);
     }

@@ -89,6 +89,7 @@ void guiToggleLogger(bool noAsk = false);
 
 bool LoadCupTask(LPCTSTR FileName);
 bool LoadGpxTask(LPCTSTR FileName);
+bool LoadXctrackTaskFile(const TCHAR* szFilePath);
 void SaveTask(const TCHAR *FileName);
 void DefaultTask(void);
 void ClearTask(void);

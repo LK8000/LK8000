@@ -1382,6 +1382,7 @@ SRC_FILES :=\
 	$(SRC)/SaveLoadTask/SaveTask.cpp\
 	$(SRC)/SaveLoadTask/LoadCupTask.cpp\
 	$(SRC)/SaveLoadTask/LoadGpxTask.cpp\
+	$(SRC)/SaveLoadTask/LoadXCTrackTask.cpp\
 	$(SRC)/Settings.cpp\
 	$(SRC)/Sysop.cpp\
 	$(SRC)/Thread_Calculation.cpp\

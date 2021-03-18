@@ -161,6 +161,7 @@
  * LK8000 suffixes - Do not change them, uncompleted work 091001
  */
 #define LKS_TSK		".lkt"
+#define LKS_XCTSK   ".xctsk"
 #define LKS_LOG		".log"
 #define LKS_TXT		".txt"
 #define LKS_PRF		".prf"
