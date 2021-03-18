@@ -47,6 +47,7 @@ import android.util.Log;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -57,6 +58,8 @@ import java.util.List;
 import java.util.TimeZone;
 
 import com.onyx.android.sdk.api.device.epd.EpdController;
+
+import org.LK8000.QRCode.QRCodeScannerActivity;
 
 public class LK8000 extends Activity {
   private static final String TAG = "LK8000";
@@ -437,4 +440,29 @@ public class LK8000 extends Activity {
   private native void deinitialiseNative();
 
   private static native void setDefaultStreamValues(int SampleRate, int FramesPerBurst);
+
+  private final int SCAN_QRCODE = 0;
+
+  void scanQRCode() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      Intent intent = new Intent(this, QRCodeScannerActivity.class);
+      startActivityForResult(intent, SCAN_QRCODE);
+    }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == SCAN_QRCODE) {
+      if (resultCode == Activity.RESULT_OK && data != null) {
+        String data_string = data.getStringExtra("data");
+        if (data_string != null) {
+          loadQRCodeData(data_string);
+        }
+      }
+    }
+  }
+
+  private static native void loadQRCodeData(String data_string);
+
 }

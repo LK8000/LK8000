@@ -4,6 +4,8 @@
           package="org.LK8000"
           android:installLocation="auto">
 
+  <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.camera2, androidx.camera.lifecycle, androidx.camera.core" />
+
   <application android:icon="${applicationIcon}"
                android:label="${applicationLabel}"
                tools:replace="android:label"
@@ -34,6 +36,8 @@
     <service android:name=".MyService"
         android:foregroundServiceType="location|connectedDevice"/>
 
+    <activity android:name=".QRCode.QRCodeScannerActivity"
+        android:theme="@style/QrCodeTheme"/>
   </application>
 
 
@@ -48,6 +52,9 @@
 
   <!-- required since Android 9 / targetSdkVersion 28 -->
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+  <!-- requiered to scan QRCode -->
+  <uses-permission android:name="android.permission.CAMERA" />
 
   <!-- reason: ioio.lib.bluetooth has a targetSdkVersion < 4 -->
   <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />

@@ -17,6 +17,7 @@
 class LK8000Activity {
   static Java::TrivialClass cls;
   static jmethodID check_permissions_method;
+  static jmethodID scan_qrcode_method;
   static LK8000Activity* activity_instance;
 
 
@@ -53,6 +54,8 @@ public:
 
   void PermissionDenied();
   void PermissionGranted();
+
+  void ScanQRCode();
 
 };
 

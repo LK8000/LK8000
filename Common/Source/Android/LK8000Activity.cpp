@@ -11,9 +11,12 @@
 #include "Event/Event.h"
 #include "externs.h"
 #include <oboe/Oboe.h>
+#include <Form/Form.hpp>
+#include "Java/String.hxx"
 
 Java::TrivialClass LK8000Activity::cls;
 jmethodID LK8000Activity::check_permissions_method;
+jmethodID LK8000Activity::scan_qrcode_method;
 
 LK8000Activity* LK8000Activity::activity_instance = nullptr;
 
@@ -22,6 +25,9 @@ void LK8000Activity::Initialise(JNIEnv *env, jobject obj) {
   assert(cls.IsDefined());
   check_permissions_method = env->GetMethodID(cls, "checkPermissions", "()V");
   assert(check_permissions_method);
+
+  scan_qrcode_method = env->GetMethodID(cls, "scanQRCode", "()V");
+  assert(scan_qrcode_method);
 
   assert(activity_instance == nullptr); // memory leak;
   activity_instance = new LK8000Activity(env, obj);
@@ -71,6 +77,11 @@ void LK8000Activity::RequestPermission() {
   Java::GetEnv()->CallVoidMethod(obj, check_permissions_method);
 }
 
+void LK8000Activity::ScanQRCode() {
+  Java::GetEnv()->CallVoidMethod(obj, scan_qrcode_method);
+}
+
+
 extern "C"
 JNIEXPORT void JNICALL
 gcc_visibility_default
@@ -111,4 +122,11 @@ Java_org_LK8000_LK8000_setDefaultStreamValues(JNIEnv *env, jclass type,
 
   oboe::DefaultStreamValues::SampleRate = sampleRate;
   oboe::DefaultStreamValues::FramesPerBurst = framesPerBurst;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_LK8000_LK8000_loadQRCodeData(JNIEnv *env, jclass clazz, jstring data_string) {
+  const std::string data = Java::String::ToString(env, data_string);
+  // TODO : Load Data
 }
