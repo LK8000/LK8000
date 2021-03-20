@@ -15,6 +15,12 @@
 #define CONE   4 // Only Used In PG Optimized Task
 #define ESS_CIRCLE   5 // Only Used In PG Optimized Task
 
+/**
+ * use to notify dlgTaskOverview about task change outside of dialog...
+ */
+constexpr unsigned UM_UPDATE_TASK_OVERVIEW = 2;
+
+
 typedef struct _START_POINT
 {
   int Index;
@@ -90,6 +96,7 @@ void guiToggleLogger(bool noAsk = false);
 bool LoadCupTask(LPCTSTR FileName);
 bool LoadGpxTask(LPCTSTR FileName);
 bool LoadXctrackTaskFile(const TCHAR* szFilePath);
+bool LoadXctrackTaskString(const char* begin, const char* end);
 void SaveTask(const TCHAR *FileName);
 void DefaultTask(void);
 void ClearTask(void);
