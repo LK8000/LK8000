@@ -46,7 +46,7 @@ NativeView *native_view;
 
 IOIOHelper *ioio_helper = nullptr;
 
-extern WndMain* main_window;
+extern std::unique_ptr<WndMain> main_window;
 
 extern "C" {
   /* workaround for
