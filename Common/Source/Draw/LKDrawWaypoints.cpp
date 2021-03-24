@@ -363,7 +363,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 					}
 				} else if ( tpc.IsOutlanding ) {
 					// outlanding
-					if (!tp.Reachable) {
+					if (tp.Reachable) {
 						pWptBmp = &hBmpFieldReachable;
 						// get the outlanding as bestwp only if no other choice
 						if (foundairport == 0) {
