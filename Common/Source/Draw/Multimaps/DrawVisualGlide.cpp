@@ -393,14 +393,14 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 
             case 2:
                 // 2 lines: waypoint name + altdiff
-                LKFormatAltDiff(wp, false, value, unit);
+                LKFormatAltDiff(wp, value, unit);
                 // Should we print also the GR?
                 if ((ar >= -9999 && ar <= 9999) && (WayPointCalc[wp].GR < MAXEFFICIENCYSHOW)) {
                     if (ar >= -999 && ar <= 999)
                         _stprintf(line2, _T("%s   "), value);
                     else
                         _stprintf(line2, _T("%s  "), value);
-                    LKFormatGR(wp, false, value, unit);
+                    LKFormatGR(wp, value, unit);
                     _tcscat(line2, value);
                 } else {
                     _stprintf(line2, _T("%s   ---"), value);
@@ -411,21 +411,21 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 
             case 3:
                 // 3 lines: waypoint name + dist + altdiff
-                LKFormatDist(wp, false, value, unit);
+                LKFormatDist(wp, value, unit);
                 _stprintf(line2, _T("%s%s"), value, unit);
 
-                LKFormatBrgDiff(wp, false, value, unit);
+                LKFormatBrgDiff(wp, value, unit);
                 _stprintf(tmpT, _T(" %s%s"), value, unit);
                 _tcscat(line2, tmpT);
 
-                LKFormatAltDiff(wp, false, value, unit);
+                LKFormatAltDiff(wp, value, unit);
                 // Should we print also the GR?
                 if ((ar >= -9999 && ar <= 9999) && (WayPointCalc[wp].GR < MAXEFFICIENCYSHOW)) {
                     if (ar >= -999 && ar <= 999)
                         _stprintf(line3, _T("%s   "), value);
                     else
                         _stprintf(line3, _T("%s  "), value);
-                    LKFormatGR(wp, false, value, unit);
+                    LKFormatGR(wp, value, unit);
                     _tcscat(line3, value);
                 } else {
                     _stprintf(line3, _T("%s   ---"), value);

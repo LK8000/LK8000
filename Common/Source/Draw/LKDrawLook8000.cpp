@@ -282,7 +282,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             // Using FormatDist will give PGs 3 decimal units on overlay only
             // because changing FormatValue to 3 digits would bring them also
             // on bottom bar, and there is no space for 1.234km on the bottom bar.
-            LKFormatDist(OverTargetIndex, false, BufferValue, BufferUnit);
+            LKFormatDist(OverTargetIndex, BufferValue, BufferUnit);
         }
 
         if ( !OverlayClock && ScreenLandscape && (!((gTaskType==TSK_GP) && UseGates()))) {
@@ -327,7 +327,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         if (!Overlay_TopMid) goto _skip_TopMid;
 
         if (!ISGAAIRCRAFT) {
-            LKFormatBrgDiff(OverTargetIndex, false, BufferValue, BufferUnit);
+            LKFormatBrgDiff(OverTargetIndex, BufferValue, BufferUnit);
             Surface.SelectObject(LK8OverlayMediumFont); // restore previously selected font
             LKWriteText(Surface, BufferValue, topbearing.cx,  topbearing.cy, WTMODE_OUTLINED, WTALIGN_CENTER, OverColorRef, true);
         }
@@ -458,7 +458,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     LKFormatValue(getCustomOverlay(Overlay_RightMid), true, BufferValue, BufferUnit, BufferTitle);
                 } else {
                    _tcscpy(BufferTitle, _T(""));
-                    LKFormatGR(OverTargetIndex, false, BufferValue, BufferUnit);
+                    LKFormatGR(OverTargetIndex, BufferValue, BufferUnit);
                 }
                 rcy = yrightoffset - SizeBigFont.cy;
                 if (!HideUnits) {
@@ -494,7 +494,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
                 } else {
                   _tcscpy(BufferTitle, _T(""));
-                  LKFormatAltDiff(OverTargetIndex, false, BufferValue, BufferUnit);
+                  LKFormatAltDiff(OverTargetIndex, BufferValue, BufferUnit);
                 }
 
                 if (!HideUnits) {
@@ -570,7 +570,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 if (isOverlayCustom(Overlay_RightBottom)) {
                     LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle);
                 } else {
-                    LKFormatAltDiff(OverTargetIndex, true, BufferValue, BufferUnit);
+                    LKFormatAltDiff(OverTargetIndex, BufferValue, BufferUnit);
                 }
 
                 rcy = yrightoffset - SizeBigFont.cy;

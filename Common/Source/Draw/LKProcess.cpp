@@ -2525,16 +2525,16 @@ olc_score:
                     LKFormatValue(LK_HOME_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_THER:
-					LKFormatGR(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
+					LKFormatGR(RESWP_LASTTHERMAL, BufferValue, BufferUnit);
 					break;
 				case OVT_MATE:
-					LKFormatGR(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
+					LKFormatGR(RESWP_TEAMMATE, BufferValue, BufferUnit);
 					break;
                 case OVT_XC:
-                    LKFormatGR(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
+                    LKFormatGR(RESWP_FAIOPTIMIZED, BufferValue, BufferUnit);
                     break;
 				case OVT_FLARM:
-					LKFormatGR(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
+					LKFormatGR(RESWP_FLARMTARGET, BufferValue, BufferUnit);
 					break;
 				default:
 					LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
@@ -3316,25 +3316,28 @@ lk_error:
   return valid;
 }
 
+static int GetValidWayPointIndex(int wpindex) {
+    if (wpindex <= RESWP_END) {
+        if (ValidResWayPoint(wpindex)) {
+            return wpindex;
+        }
+    } else {
+        if (ValidWayPointFast(wpindex)) {
+            return wpindex;
+        }
+    }
+    return -1;
+}
+
 // simple format distance value for a given index. BufferTitle always NULLed
 // wpindex is a WayPointList index
-// wpvirtual true means virtual waypoint, and relative special checks
-
-void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+void MapWindow::LKFormatDist(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
   CScopeLock Lock(LockTaskData, UnlockTaskData);
 
-  static int	index;
-  static double value;
-  
-  index=-1;
+  int index = GetValidWayPointIndex(wpindex);
 
-  if (wpvirtual) {
-	if ( ValidResWayPoint(wpindex) ) index = wpindex;
-  } else {
-	if ( ValidWayPointFast(wpindex) ) index = wpindex;
-  }
   if (index>=0) {
-	value=WayPointCalc[index].Distance*DISTANCEMODIFY;
+	double value=WayPointCalc[index].Distance*DISTANCEMODIFY;
 	if (value<0.001) value=0;
 	if (value>99 || value==0)
 		_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -3352,81 +3355,52 @@ void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *Buf
 	_stprintf(BufferValue, TEXT(NULLMEDIUM));
   }
   _stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-  return;
 }
 
 // DO NOT use this for AAT values! 
-void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
   CScopeLock Lock(LockTaskData, UnlockTaskData);
-    
-  static int	index;
-  static double value;
 
-  index=-1;
+  int index = GetValidWayPointIndex(wpindex);
 
-  if (wpvirtual) {
-	if ( ValidResWayPoint(wpindex) ) index = wpindex;
-  } else {
-	if ( ValidWayPointFast(wpindex) ) index = wpindex;
-  }
-  _tcscpy(BufferValue,_T(NULLMEDIUM)); 
+  _tcscpy(BufferValue,_T(NULLMEDIUM));
   _tcscpy(BufferUnit,_T(""));
   if (index>=0) {
-	// THIS is forcing bearing while circling
-	// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-	if (true) {
-		// Warning, for AAT this should be WaypointBearing, so do not use it!
-		value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
-		if (value < -180.0)
-			value += 360.0;
-		else
-			if (value > 180.0)
-				value -= 360.0;
-        if (value > 30)
-          _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
+    // Warning, for AAT this should be WaypointBearing, so do not use it!
+    double value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
+    if (value < -180.0)
+        value += 360.0;
+    else
+        if (value > 180.0)
+            value -= 360.0;
+    if (value > 30)
+      _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
+    else
+      if (value > 2)
+        _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2185));
+      else
+        if (value < -30)
+          _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
         else
-          if (value > 2)
-            _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2185));
+          if (value < -2)
+            _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2184), - value, MsgToken(2179));
           else
-            if (value < -30)
-              _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
-            else
-              if (value < -2)
-                _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2184), - value, MsgToken(2179));
-              else
-                _stprintf(BufferValue, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
-	} else {
-		// while circling, print simple bearing
-		value = WayPointCalc[index].Bearing;
-		if (value > 1)
-			_stprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken(2179));
-		else if (value < -1)
-            _stprintf(BufferValue, TEXT("%2.0f%s"), -value, MsgToken(2179));
-        else
-            _stprintf(BufferValue, TEXT("0%s"), MsgToken(2179));
-	}
+            _stprintf(BufferValue, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
   }
 }
 
 
-void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+void MapWindow::LKFormatGR(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
   CScopeLock Lock(LockTaskData, UnlockTaskData);
-    
-  static int	index;
-  static double value;
 
-  index=-1;
+  int index = GetValidWayPointIndex(wpindex);
 
-  if (wpvirtual) {
-	if ( ValidResWayPoint(wpindex) ) index = wpindex;
-  } else {
-	if ( ValidWayPointFast(wpindex) ) index = wpindex;
-  }
-  _tcscpy(BufferValue,_T(NULLMEDIUM)); 
+  _tcscpy(BufferValue,_T(NULLMEDIUM));
   _tcscpy(BufferUnit,_T(""));
 
+  double value;
   if (index>=0) {
 	value=WayPointCalc[index].GR;
   } else {
@@ -3442,23 +3416,16 @@ void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *Buffe
   }
 }
 
-void MapWindow::LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+void MapWindow::LKFormatAltDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
   CScopeLock Lock(LockTaskData, UnlockTaskData);
-    
-  static int	index;
-  static double value;
-  
-  index=-1;
 
-  if (wpvirtual) {
-	if ( ValidResWayPoint(wpindex) ) index = wpindex;
-  } else {
-	if ( ValidWayPointFast(wpindex) ) index = wpindex;
-  }
-  _tcscpy(BufferValue,_T(NULLMEDIUM)); 
+  int index = GetValidWayPointIndex(wpindex);
+
+  _tcscpy(BufferValue,_T(NULLMEDIUM));
   _stprintf(BufferUnit, _T("%s"),(Units::GetAltitudeName()));
 
+  double value;
   if (index>=0) {
 	value=WayPointCalc[index].AltArriv[AltArrivMode]*ALTITUDEMODIFY;
   } else {
