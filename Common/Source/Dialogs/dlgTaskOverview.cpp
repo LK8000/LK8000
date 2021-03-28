@@ -235,6 +235,19 @@ static void OverviewRefreshTask(WndForm* pWnd) {
     wTaskList->ResetList();
     wTaskList->SetItemIndex(SelectedItem);
   }
+
+  EnableMultipleStartPoints = (gTaskType != TSK_GP);
+
+  WindowControl *wTimeGates = pWnd->FindByName(TEXT("cmdTimegates"));
+  if (wTimeGates) {
+    wTimeGates->SetVisible(gTaskType == TSK_GP);
+  }
+
+  WindowControl *wDelete = pWnd->FindByName(TEXT("cmdDelete"));
+  if (wDelete) {
+    wDelete->SetVisible(gTaskType != TSK_GP);
+  }
+
   UpdateCaption(pWnd);
   UnlockTaskData();
 }
@@ -629,19 +642,6 @@ void dlgTaskOverviewShowModal(int Idx){
 
   if (!wf) return;
 
-  WndButton *wb = (WndButton*)wf->FindByName(TEXT("cmdTimegates"));
-  if (wb) wb->SetVisible(false);
-
-  if (gTaskType == TSK_GP) {
-    EnableMultipleStartPoints = false;
-    if (wb) { 
-      wb->SetVisible(true);
-    }
-    wb = (WndButton*)wf->FindByName(TEXT("cmdDelete"));
-    if (wb) {
-      wb->SetVisible(false);
-    }
-  }
 
   UpdateCaption(wf);
 
