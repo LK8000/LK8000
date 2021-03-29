@@ -380,10 +380,8 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 				}
 
 				if(pWptBmp) {
-					// TODO : use real IconSize instead of hardcoded value
-					const unsigned IconSize = (UseHiresBitmap ? iround(IBLSCALE(10.0)) : 20); 
 					const RasterPoint ScreenPt =  _Proj.ToRasterPoint(tp.Latitude, tp.Longitude);
-					pWptBmp->Draw(Surface, ScreenPt.x-IconSize/2, ScreenPt.y-IconSize/2, IconSize,IconSize);
+					DrawBitmapIn(Surface, ScreenPt, *pWptBmp);
 				}
     		}
   		} // for all waypoints
@@ -609,8 +607,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			}
 
 			if(pWptBmp) {
-				const unsigned IconSize = (UseHiresBitmap ? IBLSCALE(10) : 20);
-				pWptBmp->Draw(Surface, E->Pos.x - IconSize/2, E->Pos.y - IconSize/2, IconSize, IconSize);
+			    DrawBitmapIn(Surface, E->Pos, *pWptBmp);
 			}
 		}
 		else {
