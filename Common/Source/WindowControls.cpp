@@ -132,16 +132,14 @@ int DataFieldFileReader::SetAsInteger(int Value){
 }
 
 
-void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) { // 091101
-  
+void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count, size_t sort_start_index) { // 091101
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   LocalPath(buffer, subdir);
   ScanDirectories(buffer,_T(""), suffix_filters, filter_count);
-  Sort();
+  Sort(sort_start_index);
 }
 
-void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) { // 091101
-  
+void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count, size_t sort_start_index) { // 091101
 #ifndef ANDROID
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   SystemPath(buffer, subdir);
@@ -149,7 +147,7 @@ void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHA
 #else
   ScanZipDirectory(subdir, suffix_filters, filter_count);
 #endif
-  Sort();
+  Sort(sort_start_index);
 }
 
 static
