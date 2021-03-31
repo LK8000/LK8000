@@ -22,7 +22,7 @@
 #include <memory>
 #include <deque>
 #ifdef ANDROID
-  #include "Android\AndroidFileUtils.h"
+  #include "Android/AndroidFileUtils.h"
 #endif
 
 // #define DEBUG_LOGGER	1
