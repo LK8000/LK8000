@@ -90,31 +90,29 @@ WndForm *wf=NULL;
   wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOPRISECSEL );
   if (!wf) return;
 
-#define RENAME_BUTTONS
-#ifdef RENAME_BUTTONS
-WndButton *wpnewActive = nullptr;
-WndButton *wpnewPassive = nullptr; 
+
+  WndOwnerDrawFrame* frm  = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStationText"));
+  LKASSERT(  frm  !=NULL)
+  if(frm) frm->SetCaption(StationName);	
+
+  WndOwnerDrawFrame* frmFreq  = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStationFreq"));
+  _stprintf(Name,_T("%7.3f"),  Freq);
+  LKASSERT( frmFreq !=NULL)
+  if(frmFreq) frmFreq->SetCaption(Name);
+
+
+  WndButton *wpnewActive = nullptr;
+  WndButton *wpnewPassive = nullptr; 
   wpnewActive  = (WndButton*)wf->FindByName(TEXT("cmdSelActive"));
   LKASSERT(   wpnewActive   !=NULL)
-
-  _stprintf(Name,_T("%s %7.3f    %s"),GetActiveStationSymbol(Appearance.UTF8Pictorials),  Freq, StationName);
-
   if(wpnewActive) 
-    wpnewActive->SetCaption(Name);
+    wpnewActive->SetCaption((TCHAR*)GetActiveStationSymbol(Appearance.UTF8Pictorials));
 
   wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdSelPassive"));
   LKASSERT(   wpnewPassive   !=NULL)
-
-  _stprintf(Name,_T("%s %7.3f    %s"),GetStandyStationSymbol(Appearance.UTF8Pictorials), Freq, StationName);
-
   if(wpnewPassive) 
-    wpnewPassive->SetCaption(Name);
-#else
-    _stprintf(Name,_T("%7.3f    %s"), Freq, StationName);
-    wf->FindByName(TEXT("frmRadioPriSecSel"))->SetCaption(Name);	
-#endif
+    wpnewPassive->SetCaption(GetStandyStationSymbol(Appearance.UTF8Pictorials));
 
   wf->ShowModal();
   delete wf;
-
 }

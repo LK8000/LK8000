@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
-  <WndForm Name="frmRadioPriSecSel" Type="Dialog" X="5" Y="5" Width="230" Height="230" Caption="_@M2492_" Popup="1" Font="2" >      
-    <WndButton Name="cmdSelActive" Caption="_@M2493_" X="10" Y="5" Width="210"  Height="40" Font="2" OnClickNotify="OnSelActiveButton"/>
-    <WndButton Name="cmdSelPassive" Caption="_@M2494_" X="10" Y="50" Width="210"  Height="40" Font="2" OnClickNotify="OnSelPassiveButton"/>
- <!--   <WndButton Caption="_@M186_" X="40" Y="95" Width="150"  Height="40" Font="2" OnClickNotify="OnCancelClicked"/> -->
+  <WndForm Name="frmRadioPriSecSel" Type="Dialog" X="5" Y="5" Width="230" Height="180" Caption="_@M2492_" Popup="1" Font="2" >      
+    <WndOwnerDrawFrame Name="frmStationText" X="60" Y="15" Width="200" Height="35" Font="2" OnPaint="OnProgressPaint" />
+    <WndOwnerDrawFrame Name="frmStationFreq" X="90" Y="55" Width="80" Height="35" Font="2" OnPaint="OnProgressPaint" />
+    <WndButton Name="cmdSelPassive" Caption="_@M2494_" X="20" Y="50" Width="50"  Height="40" Font="2" OnClickNotify="OnSelPassiveButton"/>    
+    <WndButton Name="cmdSelActive" Caption="_@M2493_" X="160" Y="50" Width="50"  Height="40" Font="2" OnClickNotify="OnSelActiveButton"/>
+
+    <WndButton Caption="_@M186_" X="30" Y="100" Width="170"  Height="40" Font="2" OnClickNotify="OnCancelClicked"/> 
   </WndForm>
 </PMML>

@@ -333,8 +333,8 @@ static void OnMultiSelectEnter(WindowControl * Sender,
   {
    if(RadioPara.Enabled)
    {
-     double ASFrequency = ExtractFrequency(aCommentTextLine[ItemIndex]);
-      if((ASFrequency >= 118) && (ASFrequency <= 138))
+     double ASFrequency = ExtractFrequency(aCommentTextLine[ItemIndex]); 
+      if( ValidFrequency(ASFrequency))
       {
         LKSound(TEXT("LK_TICK.WAV"));
         dlgRadioPriSecSelShowModal(aCommentTextLine[ItemIndex], ASFrequency);
