@@ -50,7 +50,7 @@ BOOL ValidFrequency(double Freq)
 	return Valid;
 }
 
-double  ExtractFrequency(const TCHAR *text)
+double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len)
 {
 	if(text == nullptr)
 		return 0.0;
@@ -84,12 +84,19 @@ double  ExtractFrequency(const TCHAR *text)
 							kHz += (text[i+6]-'0');
 
 					fFreq = (double)Mhz + (double)kHz / 1000.0;
+					*start = i;
+					*len = 7;
 				}
 			}
 		}
 	}
 
 	return fFreq;
+}
+
+double  ExtractFrequency(const TCHAR *text)
+{ size_t pos, len;
+	return  ExtractFrequencyPos(text, &pos,&len);
 }
 
 /**
@@ -205,19 +212,19 @@ int SearchBestStation()
 }
 
 
-TCHAR* GetActiveStationSymbol(bool utf8_symbol) 
+const TCHAR* GetActiveStationSymbol(bool utf8_symbol) 
 {
 	if(utf8_symbol)
-		return((TCHAR*)ACTIVE_SYMBOL_UTF8) ;
+		return(ACTIVE_SYMBOL_UTF8) ;
 	else
-		return((TCHAR*)ACTIVE_SYMBOL);
+		return(ACTIVE_SYMBOL);
 }
 
-TCHAR* GetStandyStationSymbol(bool utf8_symbol) 
+const TCHAR* GetStandyStationSymbol(bool utf8_symbol) 
 {
 	if(utf8_symbol)
-		return((TCHAR*)STANDBY_SYMBOL_UTF8) ;
+		return(STANDBY_SYMBOL_UTF8) ;
 	else
-		return((TCHAR*)STANDBY_SYMBOL);
+		return(STANDBY_SYMBOL);
 }
 //#define SEL_STANDBY_SYMBOL(a) (a)?(STANDBY_SYMBOL_UTF8 ) :(STANDBY_SYMBOL)

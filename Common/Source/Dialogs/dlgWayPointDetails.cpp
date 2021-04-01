@@ -141,6 +141,8 @@ static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface)
   if (CommentDrawListIndex < (int)aCommentTextLine.size()){
       LKASSERT(CommentDrawListIndex>=0);
       const TCHAR* szText = aCommentTextLine[CommentDrawListIndex];
+      size_t pos, len;
+      double ASFrequency = ExtractFrequencyPos(szText, &pos, &len); 
       Surface.SetTextColor(RGB_BLACK);
       Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
   }

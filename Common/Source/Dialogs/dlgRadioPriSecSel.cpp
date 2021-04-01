@@ -106,7 +106,7 @@ WndForm *wf=NULL;
   wpnewActive  = (WndButton*)wf->FindByName(TEXT("cmdSelActive"));
   LKASSERT(   wpnewActive   !=NULL)
   if(wpnewActive) 
-    wpnewActive->SetCaption((TCHAR*)GetActiveStationSymbol(Appearance.UTF8Pictorials));
+    wpnewActive->SetCaption(GetActiveStationSymbol(Appearance.UTF8Pictorials));
 
   wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdSelPassive"));
   LKASSERT(   wpnewPassive   !=NULL)
