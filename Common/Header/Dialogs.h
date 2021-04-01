@@ -107,7 +107,7 @@ void dlgOracleShowModal();
 void dlgTerminal(int portnum);
 void dlgOverlaysShowModal(void);
 void dlgCustomMenuShowModal(void);
-
+void dlgRadioPriSecSelShowModal(const TCHAR*  pName, double Freq);
 #ifndef NO_BLUETOOTH
 namespace DlgBluetooth {
     void Show();

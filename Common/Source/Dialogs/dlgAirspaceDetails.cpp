@@ -114,19 +114,41 @@ static bool OnTimer(WndForm* pWnd){
 
 static void OnSetFrequency(WndButton* pWnd){
 
- TCHAR Tmp[255];
+
  if(RadioPara.Enabled)
  {
    double ASFrequency = ExtractFrequency(airspace_copy.Name());
    if(!ValidFrequency(ASFrequency))
    {
-	 ASFrequency = ExtractFrequency(airspace_copy.Comment());
+     ASFrequency = ExtractFrequency(airspace_copy.Comment());
    }
    if(ValidFrequency(ASFrequency))
    {
-     _stprintf(Tmp,_T("%7.3fMHz"),ASFrequency);
      devPutFreqActive(ASFrequency, airspace_copy.Name());
-     DoStatusMessage(_T(""), Tmp );
+   }
+ }
+
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
+} 
+
+static void OnSetSecFrequency(WndButton* pWnd){
+
+
+ if(RadioPara.Enabled)
+ {
+   double ASFrequency = ExtractFrequency(airspace_copy.Name());
+   if(!ValidFrequency(ASFrequency))
+   {
+     ASFrequency = ExtractFrequency(airspace_copy.Comment());
+   }
+   if(ValidFrequency(ASFrequency))
+   {
+     devPutFreqStandby(ASFrequency, airspace_copy.Name());
    }
  }
 
@@ -145,6 +167,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnSelectClicked),
   ClickNotifyCallbackEntry(OnSetFrequency),
+  ClickNotifyCallbackEntry(OnSetSecFrequency),
   OnPaintCallbackEntry(OnPaintAirspacePicto),
   EndCallBackEntry()
 };
@@ -227,16 +250,16 @@ static void SetValues(WndForm* wf) {
   if (wp) {
     Units::FormatUserDistance(abs(hdist), buffer, 20);
     if (inside) {
-	  // LKTOKEN  _@M359_ = "Inside" 
+     // LKTOKEN  _@M359_ = "Inside" 
       wp->SetCaption(MsgToken(359));
     }
     if (hdist < 0) {
-	  // LKTOKEN _@M1257_ "to leave"
-	  _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken(2179), MsgToken(1257));
+     // LKTOKEN _@M1257_ "to leave"
+    _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken(2179), MsgToken(1257));
     } else {
-	  // LKTOKEN _@M1258_ "to enter"
-	  _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken(2179), MsgToken(1258));
-	}
+    // LKTOKEN _@M1258_ "to enter"
+    _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken(2179), MsgToken(1258));
+    }
     wp->SetText(buffer2);
     wp->RefreshDisplay();
   }
@@ -246,82 +269,86 @@ static void SetValues(WndForm* wf) {
   {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
-  	if(airspace->Comment() != NULL)
-  	{
-      if(_tcslen(airspace->Comment()) > 10 )    
+    if(airspace->Comment() != NULL)
+    {
+      if(_tcslen(airspace->Comment()) < 10 )
       {
         WindowControl* wSelect = wf->FindByName(TEXT("cmdSelect"));
         if(wSelect) {
-          wSelect->SetLeft(IBLSCALE(155));
-          wSelect->SetWidth(IBLSCALE(80));
+          wSelect->SetLeft(IBLSCALE(80));
+          wSelect->SetWidth(IBLSCALE(155));
         }
-
-        wDetails->SetLeft(IBLSCALE(80));
-        wDetails->SetWidth(IBLSCALE(75));
-        wDetails->Enable(true);
+        wDetails->Enable(false);
       }
-      else wDetails->Enable(false);
+      else wDetails->Enable(true);
     }
   }
 
   WindowControl* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
-  if (wFreq) {
+  WindowControl* wSeqFreq = wf->FindByName(TEXT("cmdSecFrequency"));
+  if (wFreq && wSeqFreq) {
     bool bRadio = false;
 
     if(RadioPara.Enabled) {
 
-	  double fASFrequency = ExtractFrequency(airspace_copy.Name());
-	  if(!ValidFrequency(fASFrequency))
-	  {
-		fASFrequency = ExtractFrequency(airspace_copy.Comment());
-	  }
-	  
+      double fASFrequency = ExtractFrequency(airspace_copy.Name());
+      if(!ValidFrequency(fASFrequency))
+      {
+        fASFrequency = ExtractFrequency(airspace_copy.Comment());
+      }
+
       if(ValidFrequency(fASFrequency)) {
 
         WindowControl* wClose = wf->FindByName(TEXT("cmdClose"));
         if(wClose) {
-          wClose->SetLeft(IBLSCALE(115));
-          wClose->SetWidth(IBLSCALE(120));
+          wClose->SetLeft(IBLSCALE(155));
+          wClose->SetWidth(IBLSCALE(80));
         }
 
-        wFreq->SetLeft(IBLSCALE(3));
-        wFreq->SetWidth(IBLSCALE(110));
-
-        _stprintf(buffer2,_T("%7.3f"),fASFrequency);
+        _stprintf(buffer2,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
         wFreq->SetCaption(buffer2);
         wFreq->Redraw();
+
+        _stprintf(buffer2,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
+        wSeqFreq->SetCaption(buffer2);
+        wSeqFreq->Redraw();
         bRadio = true;
       }
     }
     wFreq->SetVisible(bRadio);
-  }
+    wSeqFreq->SetVisible(bRadio);
+}
+
+
+
+
 
   // ONLY for DIAGNOSTICS- ENABLE ALSO XML
   #if 0
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarnLevel"));
   if (wp) {
-	  switch (airspace_copy.WarningLevel()) {
-		default:
-		  // LKTOKEN _@M765_ "Unknown"
-		  wp->SetText(MsgToken(765));
-		  break;
-		  
-		case awNone:
-		  // LKTOKEN _@M479_ "None"
-  		  wp->SetText(MsgToken(479));
-		  break;
+    switch (airspace_copy.WarningLevel()) {
+    default:
+      // LKTOKEN _@M765_ "Unknown"
+      wp->SetText(MsgToken(765));
+      break;
+      
+    case awNone:
+      // LKTOKEN _@M479_ "None"
+      wp->SetText(MsgToken(479));
+      break;
 
-		case awYellow:
-			// LKTOKEN _@M1255_ "YELLOW WARNING"
-			wp->SetText(MsgToken(1255));
-		  break;
-		
-		case awRed:
-			// LKTOKEN _@M1256_ "RED WARNING"
-			wp->SetText(MsgToken(1256));
-		  break;
-	  }//sw
-	  wp->RefreshDisplay();
+    case awYellow:
+      // LKTOKEN _@M1255_ "YELLOW WARNING"
+      wp->SetText(MsgToken(1255));
+      break;
+
+    case awRed:
+      // LKTOKEN _@M1256_ "RED WARNING"
+      wp->SetText(MsgToken(1256));
+      break;
+      }//sw
+      wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAckLevel"));

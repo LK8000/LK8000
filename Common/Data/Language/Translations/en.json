@@ -2099,6 +2099,14 @@
     "_@M001900_": "Left Corner",
     "_@M001901_": "POWER OFF",
     "_@M001902_": "X>\nXC Close",
+
+    "_@M001914_": "Grand Prix",
+    "_@M001915_": "Race To Goal / Min Time",
+    "_@M001916_": "Default",
+    "_@M001917_": "Task Type",
+    "_@M001918_": "AAT",
+    "_@M001919_": "Audio Vario",
+
     "_@M002001_": "Zoom\nin",
     "_@M002002_": "Zoom\nout",
     "_@M002003_": "Whats\nhere?",
@@ -2575,6 +2583,11 @@
     "_@M002478_": "Alternate1 QNH arrival",
     "_@M002479_": "Atn1QNH",
 
+    "_@M002480_": "Raw Data",
+    "_@M002481_": "Sync on",
+    "_@M002482_": "Timer",
+    "_@M002483_": "NMEA Replay",
+
     "_@M002484_": "Home Req.Efficiency",
     "_@M002485_": "Home.E",
     "_@M002486_": "Home dist.nm",
@@ -2585,17 +2598,8 @@
     "_@M002490_": "Invalid radio frequency/channel input!",
     "_@M002491_": "Input Error",  
 
-
-    "_@M001914_": "Grand Prix",
-    "_@M001915_": "Race To Goal / Min Time",
-    "_@M001916_": "Default",
-    "_@M001917_": "Task Type",
-    "_@M001918_": "AAT",
-    "_@M001919_": "Audio Vario",
-
-    "_@M002480_": "Raw Data",
-    "_@M002481_": "Sync on",
-    "_@M002482_": "Timer",
-    "_@M002483_": "NMEA Replay"
+    "_@M002492_": "Active/Standby Select",
+    "_@M002493_": "Active Station",
+    "_@M002494_": "Standby Station"
 
 }

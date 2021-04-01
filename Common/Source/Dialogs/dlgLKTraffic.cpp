@@ -198,14 +198,32 @@ static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
           _tcscpy(Tmp,(TCHAR*)flarmId->cn);
         else
           _tcscpy(Tmp,(TCHAR*)flarmId->reg );
-
-        devPutFreqActive(ASFrequency, Tmp );
+        devPutFreqActive( ASFrequency, Tmp);
       }
     }
   }
 }
 
 
+static void OnFlarmSecFreqSelectEnter(WndButton*  Sender) {
+  TCHAR Tmp[255];
+  if(flarmId != NULL)
+  {
+   if(RadioPara.Enabled)
+   {
+      double ASFrequency = ExtractFrequency(flarmId->freq);
+      if(ValidFrequency(ASFrequency))
+      {
+        LKSound(TEXT("LK_TICK.WAV"));
+        if(_tcslen(flarmId->cn) > 0)
+          _tcscpy(Tmp,(TCHAR*)flarmId->cn);
+        else
+          _tcscpy(Tmp,(TCHAR*)flarmId->reg );
+        devPutFreqStandby( ASFrequency, Tmp);
+      }
+    }
+  }
+}
 
 static void OnCloseClicked(WndButton * pWnd) {
   if(pWnd) {
@@ -221,6 +239,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnTargetClicked),
   ClickNotifyCallbackEntry(OnFlarmFreqSelectEnter),
+  ClickNotifyCallbackEntry(OnFlarmSecFreqSelectEnter),
   EndCallBackEntry()
 };
 
@@ -361,13 +380,18 @@ static void SetValues(int indexid) {
 		wp->RefreshDisplay();
 	}
 
+
+	
 	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
+	double ASFrequency = ExtractFrequency(flarmId->freq);
+	bool bValidFreq = false;
+	if((RadioPara.Enabled) && ValidFrequency(ASFrequency) )
+		bValidFreq = true;
 	if(wFreq)
 	{
-		double ASFrequency = ExtractFrequency(flarmId->freq);
-		if((RadioPara.Enabled) && ValidFrequency(ASFrequency) )
+		if(bValidFreq )
 		{
-			_stprintf(buffer,_T("%7.3f"), ASFrequency );
+			_stprintf(buffer,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), ASFrequency);	
 			wFreq->SetCaption(buffer);
 			wFreq->SetVisible(true) ;
 		}
@@ -376,9 +400,26 @@ static void SetValues(int indexid) {
 			wFreq->SetCaption(_T(""));
 			wFreq->SetVisible(false) ;
 		}
-		wFreq->Redraw();
-  }
- }
+	}
+	
+	WindowControl* wSecFreq= wf->FindByName(TEXT("cmdSecFreq"));	
+	
+	if(wSecFreq)
+	{
+		if(bValidFreq )
+		{
+			_stprintf(buffer,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), ASFrequency);
+			wSecFreq->SetCaption(buffer);
+			wSecFreq->SetVisible(true) ;
+		}
+		else
+		{
+			wSecFreq->SetCaption(_T(""));
+			wSecFreq->SetVisible(false);
+		}
+		wSecFreq->Redraw();
+	}
+}
 }
 
 

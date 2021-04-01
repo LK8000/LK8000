@@ -1307,6 +1307,7 @@ DLGS	:=\
 	$(DLG)/dlgEOSIGCDownload.cpp \
 	$(DLG)/dlgWeatherStDetails.cpp \
 	$(DLG)/dlgNMEAReplay.cpp \
+	$(DLG)/dlgRadioPriSecSel.cpp \
 	
 	
 SRC_FILES :=\

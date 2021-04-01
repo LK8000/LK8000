@@ -739,6 +739,7 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgLXIGCDownload.cpp
     Common/Source/Dialogs/dlgWeatherStDetails.cpp
     Common/Source/Dialogs/dlgEOSIGCDownload.cpp
+    Common/Source/Dialogs/dlgRadioPriSecSel.cpp
 
     Common/Source/Dialogs/Analysis/DrawOtherFunctions.cpp
     Common/Source/Dialogs/Analysis/DrawXYGrid.cpp
