@@ -52,8 +52,8 @@ BOOL ValidFrequency(double Freq)
 
 double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len)
 {
-*start =0;
-*len =0;
+	if(start) *start =0;
+	if(len)*len =0;
 	if(text == nullptr)
 		return 0.0;
 
@@ -86,8 +86,8 @@ double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len)
 							kHz += (text[i+6]-'0');
 
 					fFreq = (double)Mhz + (double)kHz / 1000.0;
-					*start = i;
-					*len = 7;
+					if(start) *start = i;
+					if(len) *len = 7;
 				}
 			}
 		}

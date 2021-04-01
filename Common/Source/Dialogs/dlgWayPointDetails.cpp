@@ -146,7 +146,7 @@ static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface)
     Surface.SetTextColor(RGB_BLACK);
     Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
 
-    if((Freq > 0) && (pos < 255))
+    if((Freq > 0) && ((pos+len) < 255))
     {
       TCHAR sTmp[255];	
 
@@ -161,7 +161,7 @@ static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface)
       if(substart < subend) 
       {
         int h =  Surface.GetTextHeight(sTmp) - IBLSCALE(1);
-        const auto hOldPen = Surface.SelectObject(LKPen_Black_N2);
+        const auto hOldPen = Surface.SelectObject(LKPen_Black_N1);
         Surface.DrawLine(substart, h, subend, h);
 
         Surface.SelectObject(hOldPen);
