@@ -52,6 +52,8 @@ BOOL ValidFrequency(double Freq)
 
 double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len)
 {
+*start =0;
+*len =0;
 	if(text == nullptr)
 		return 0.0;
 

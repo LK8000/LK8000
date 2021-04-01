@@ -139,12 +139,34 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   if (CommentDrawListIndex < (int)aCommentTextLine.size()){
-      LKASSERT(CommentDrawListIndex>=0);
-      const TCHAR* szText = aCommentTextLine[CommentDrawListIndex];
-      size_t pos, len;
-      double ASFrequency = ExtractFrequencyPos(szText, &pos, &len); 
-      Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
+    LKASSERT(CommentDrawListIndex>=0);
+    const TCHAR* szText = aCommentTextLine[CommentDrawListIndex];
+    size_t pos, len;
+    double Freq = ExtractFrequencyPos(szText, &pos, &len); 
+    Surface.SetTextColor(RGB_BLACK);
+    Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
+
+    if((Freq > 0) && (pos < 255))
+    {
+      TCHAR sTmp[255];	
+
+      LK_tcsncpy(sTmp, aCommentTextLine[CommentDrawListIndex], pos+len);
+      sTmp[pos+len] = 0;
+      const int subend = Surface.GetTextWidth(sTmp);
+
+      // size of the text is start of underline
+      sTmp[pos] = 0;
+      const int substart =  Surface.GetTextWidth(sTmp);
+
+      if(substart < subend) 
+      {
+        int h =  Surface.GetTextHeight(sTmp) - IBLSCALE(1);
+        const auto hOldPen = Surface.SelectObject(LKPen_Black_N2);
+        Surface.DrawLine(substart, h, subend, h);
+
+        Surface.SelectObject(hOldPen);
+      }
+    }
   }
 }
 
