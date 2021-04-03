@@ -38,7 +38,7 @@ Copyright_License {
 struct NMEA_INFO;
 struct DERIVED_INFO;
 
-class TrackingGlue final
+class TrackingGlue
 #if defined(HAVE_SKYLINES_TRACKING_HANDLER)
   : private SkyLinesTracking::Handler
 #endif
@@ -63,7 +63,7 @@ public:
 
 
 #ifdef HAVE_SKYLINES_TRACKING_HANDLER
-private:
+protected:
   /* virtual methods from SkyLinesTracking::Handler */
   void OnTraffic(uint32_t pilot_id, unsigned time_of_day_ms,
                  const GeoPoint &location, int altitude) override;

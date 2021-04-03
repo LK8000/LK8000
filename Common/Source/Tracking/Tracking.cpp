@@ -2,7 +2,7 @@
 #include <cassert>
 #include <memory>
 #include "Tracking.h"
-#include "Tracking/TrackingGlue.hpp"
+#include "SkylinesGlue.h"
 #include "NMEA/Info.h"
 #include "NMEA/Derived.h"
 #include "LiveTrack24.h"
@@ -23,7 +23,7 @@ namespace tracking {
 
     namespace {
         // private global;
-        std::unique_ptr<TrackingGlue> skylines_glue;
+        std::unique_ptr<SkylinesGlue> skylines_glue;
         platform tracking_platform = platform::none;
 
         // key used to save/load setting from pref files
@@ -63,15 +63,18 @@ namespace tracking {
                 LiveTrackerInit();
                 break;
             case platform::skylines_aero:
-                skylines_glue = std::make_unique<TrackingGlue>();
+                skylines_glue = std::make_unique<SkylinesGlue>();
 
                 TrackingSettings tracking_settings;
                 tracking_settings.SetDefaults();
 
                 tracking_settings.skylines.interval = interval;
                 tracking_settings.skylines.enabled = (interval > 0);
-                // TODO : tracking_settings.skylines.traffic_enabled = radar_config;
                 tracking_settings.skylines.key = hex_to_uint64(usr_config);
+
+                tracking_settings.skylines.traffic_enabled = radar_config;
+                tracking_settings.skylines.near_traffic_enabled = radar_config;
+
                 skylines_glue->SetSettings(tracking_settings);
                 break;
             default:

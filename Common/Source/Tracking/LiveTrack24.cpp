@@ -1237,7 +1237,7 @@ static bool LiveTrack24_Radar() {
 				if (cname) {
 					int cnamelen=_tcslen(cname);
 					if (cnamelen<=MAXFLARMCN) {
-						_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, cname);
+						_tcscpy(cn, cname);
 					} else {
 						// else probably it is the Name again, and we create a fake Cn
 						from_utf8(username.c_str(), cn);

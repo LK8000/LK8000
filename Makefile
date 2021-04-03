@@ -1315,6 +1315,7 @@ DLGS	:=\
 TRACKING := \
 	$(SRC_TRACKING)/LiveTrack24.cpp \
 	$(SRC_TRACKING)/Tracking.cpp \
+	$(SRC_TRACKING)/SkylinesGlue.cpp \
 	$(SRC)/xcs/Tracking/SkyLines/Client.cpp \
 	$(SRC)/xcs/Tracking/SkyLines/Glue.cpp \
 	$(SRC)/xcs/Tracking/SkyLines/Key.cpp \
