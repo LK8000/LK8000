@@ -1,3 +1,14 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   dlgSelectObject.h
+ * Author: Bruno de Lacheisserie
+ *
+ * Created on 15 January 2021
+ */
+
 #include "externs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
