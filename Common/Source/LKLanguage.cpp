@@ -22,6 +22,8 @@ extern void FillDataOptions();
 
 namespace {
 
+  constexpr auto InvalidTextIndex = std::numeric_limits<unsigned>::max();
+
   constexpr size_t MAX_MESSAGES = 2500; // Max number of MSG items
   TCHAR *LKMessages[MAX_MESSAGES] = {};
 
@@ -34,20 +36,17 @@ namespace {
       unsigned index = 0;
       for (unsigned int i = 3; i < size - 1; i++) {
         if (!isdigit(key[i])) {
-          // invalid token
-          return std::numeric_limits<unsigned>::max();
+          return InvalidTextIndex;
         }
         index = (index * 10U) + (key[i] - '0');
       }
       return index;
     }
-    return std::numeric_limits<unsigned>::max();
+    return InvalidTextIndex;
   }
 
   unsigned GetTextIndex(const TCHAR *key, char type) {
-    return (key
-        ? GetTextIndex(key, _tcslen(key), type)
-        : std::numeric_limits<unsigned>::max());
+    return key ? GetTextIndex(key, _tcslen(key), type) : InvalidTextIndex;
   }
 
   unsigned GetTextIndex(const std::string &key, char type) {
@@ -68,7 +67,7 @@ namespace {
           }
         } else {
           // invalid token or LKMessages array too small.
-          assert(index == std::numeric_limits<unsigned>::max());
+          assert(index == InvalidTextIndex);
         }
       }
     }
@@ -87,24 +86,16 @@ namespace {
               const tstring code = utf8_to_tstring(obj.first);
               const tstring name = utf8_to_tstring(obj.second.get<std::string>());
 
-              /*
-               * would be better to use std::map::emplace() instead of insert() to
-               * avoid intermediate pair construction, but "emplace" does not exist
-               * in gcc 4.6.3 ( used for WinCE target )
-               *
-               *  language.emplace(std::piecewise_construct,
-               *                   std::forward_as_tuple(code),
-               *                   std::forward_as_tuple(name));
-               */
-
-              language.insert(std::make_pair(code, name));
+              language.emplace(std::piecewise_construct,
+                               std::forward_as_tuple(code),
+                               std::forward_as_tuple(name));
             }
           }
         } else {
           StartupStore(_T("language : %s <%s>"), szFilePath , to_tstring(lang_json.to_str()).c_str());
         }
       } else {
-        StartupStore(_T("language : %s"), to_tstring(error).c_str());
+        StartupStore(_T("language : %s <%s>"), szFilePath, to_tstring(error).c_str());
       }
     }
   }
