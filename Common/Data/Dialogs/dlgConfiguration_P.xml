@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmConfiguration" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M195_" Font="2" >
-    <WndButton Name="cmdNext"  Caption="_@M460_" X="115" Y="238" Width="105"  Height="30" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
-    <WndButton Name="cmdPrev"  Caption="_@M6_" X="5" Y="238" Width="105"  Height="30" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
-    <WndButton Name="cmdClose" Caption="_@M186_" X="5" Y="270" Width="105"  Height="30" Font="2" Tag="2" />
-    <WndButton Name="cmdCopy" Caption="_@M200_" X="5" Y="206" Width="105"  Height="30" Font="2" />
-    <WndButton Name="cmdPaste" Caption="_@M521_" X="115" Y="206" Width="105"  Height="30" Font="2" />
+  <WndForm Name="frmConfiguration" Type="Dialog" X="0"   Y="0"   Width="240" Height="320" Caption="_@M195_" Font="2" >
+
+    <WndButton Name="cmdNext"  Caption="_@M460_" X="122" Y="238" Width="114" Height="30" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
+    <WndButton Name="cmdPrev"  Caption="_@M6_"   X="4"   Y="238" Width="114" Height="30" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
+    <WndButton Name="cmdClose" Caption="_@M186_" X="4"   Y="270" Width="114" Height="30" Font="2" Tag="2" />
+    <WndButton Name="cmdCopy"  Caption="_@M200_" X="4"   Y="206" Width="114" Height="30" Font="2" />
+    <WndButton Name="cmdPaste" Caption="_@M521_" X="122" Y="206" Width="114" Height="30" Font="2" />
+
     <WndFrame Name="frmSite" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpMapFile" Caption="_@M420_" X="1" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H101_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>
@@ -29,10 +31,11 @@
       </WndProperty>
       <WndButton Name="cmdLKMapOpen"  Caption="_@M2328_" X="1" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnLKMapOpenClicked" />
     </WndFrame>
+
     <WndFrame Name="frmAirspace" X="1" Y="0" Width="-1" Height="222" Font="2">
-      <WndButton Name="cmdAirspaceWarningParams"  Caption="_@M1274_" X="2" Y="2" Width="70"  Height="22" Font="2" OnClickNotify="OnAirspaceWarningParamsClicked" />
-      <WndButton Name="cmdAirspaceColours"  Caption="_@M189_" X="72" Y="2" Width="70"  Height="22" Font="2" OnClickNotify="OnAirspaceColoursClicked" />
-      <WndButton Name="cmdAirspaceMode"  Caption="_@M286_" X="142" Y="2" Width="70"  Height="22" Font="2" OnClickNotify="OnAirspaceModeClicked" />
+      <WndButton Name="cmdAirspaceWarningParams" Caption="_@M1274_" X="3"   Y="2" Width="76"  Height="22" Font="2" OnClickNotify="OnAirspaceWarningParamsClicked" />
+      <WndButton Name="cmdAirspaceColours"       Caption="_@M189_"  X="82"  Y="2" Width="76"  Height="22" Font="2" OnClickNotify="OnAirspaceColoursClicked" />
+      <WndButton Name="cmdAirspaceMode"          Caption="_@M286_"  X="161" Y="2" Width="76"  Height="22" Font="2" OnClickNotify="OnAirspaceModeClicked" />
 
       <WndProperty Name="prpAirspaceDisplay" Caption="_@M67_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1250_">
         <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1" OnDataAccess="OnAirspaceDisplay"/>
@@ -53,11 +56,12 @@
         <DataField name="" DataType="enum" OnDataAccess="OnAspPermModified"/>
       </WndProperty>	  	  
     </WndFrame>
+
     <WndFrame Name="frmTerrain" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpTerrainRamp" Caption="_@M703_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H119_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
-    <WndProperty Name="prpAutoContrast" Caption="_@M981_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1296_">
+      <WndProperty Name="prpAutoContrast" Caption="_@M981_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1296_">
         <DataField Name="" DataType="boolean" OnDataAccess="OnAutoContrastChange"/>
       </WndProperty>
       <WndProperty Name="prpTerrainContrast" Caption="_@M704_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H117_">
@@ -80,6 +84,7 @@
         <DataField Name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min="0" Max="100" Step="1"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmDisplay" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpWaypointLabels" Caption="_@M379_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H123_">
         <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
@@ -112,8 +117,8 @@
 
 
     </WndFrame>
-    <WndFrame Name="frmInfoBoxCruise" X="0" Y="0" Width="235" Height="202" Font="2">
 
+    <WndFrame Name="frmInfoBoxCruise" X="0" Y="0" Width="235" Height="202" Font="2">
       <WndProperty Name="prpInfoBoxCruise0" Caption="1" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="20" Font="2" OnHelp="OnInfoBoxHelp">
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
@@ -139,8 +144,8 @@
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
     </WndFrame>
-    <WndFrame Name="frmInfoBoxCircling" X="0" Y="0" Width="235" Height="202" Font="2">
 
+    <WndFrame Name="frmInfoBoxCircling" X="0" Y="0" Width="235" Height="202" Font="2">
       <WndProperty Name="prpInfoBoxCircling0" Caption="1" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="20" Font="2" OnHelp="OnInfoBoxHelp">
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
@@ -166,8 +171,8 @@
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
     </WndFrame>
-    <WndFrame Name="frmInfoBoxFinalGlide" X="0" Y="0" Width="235" Height="202" Font="2">
 
+    <WndFrame Name="frmInfoBoxFinalGlide" X="0" Y="0" Width="235" Height="202" Font="2">
       <WndProperty Name="prpInfoBoxFinalGlide0" Caption="1" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="20" Font="2" OnHelp="OnInfoBoxHelp">
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
@@ -193,8 +198,8 @@
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
     </WndFrame>
-    <WndFrame Name="frmInfoBoxAuxiliary" X="0" Y="0" Width="235" Height="202" Font="2">
 
+    <WndFrame Name="frmInfoBoxAuxiliary" X="0" Y="0" Width="235" Height="202" Font="2">
       <WndProperty Name="prpInfoBoxAux0" Caption="1" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="20" Font="2" OnHelp="OnInfoBoxHelp">
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
@@ -220,6 +225,7 @@
         <DataField Name="" DataType="enum"  Min="0" Max="100" Step="1"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmSafety" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpSafetyAltitudeArrival" Caption="_@M576_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H133_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="10000" Step="1"/>
@@ -246,8 +252,8 @@
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
-    <WndFrame Name="frmFinalGlide" X="1" Y="0" Width="-1" Height="222" Font="2">
 
+    <WndFrame Name="frmFinalGlide" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpAutoWind" Caption="_@M114_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H139_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
@@ -279,6 +285,7 @@
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmAlarms" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpAlarmMaxAltitude1" Caption="_@M1647_" X="2" Y="-1" Width="233" Height="22" CaptionWidth="150" Font="2" Help="_@H1253_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="30000" Step="1"/>
@@ -302,6 +309,7 @@
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmUnits" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpUnitsSpeed" Caption="_@M61_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H170_">
         <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
@@ -332,16 +340,18 @@
         <DataField Name="" DataType="enum"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmInterface" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpMenuTimeout" Caption="_@M434_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H182_">
         <DataField Name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min="1" Max="120" Step="1"/>
       </WndProperty>
-      <WndButton Name="cmdSetCustomKeys" Caption="_@M196_" X="70" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetCustomKeysClicked" />
-      <WndButton Name="cmdSetCustomMenu" Caption="_@M1788_" X="70" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetCustomMenuClicked" />
-      <WndButton Name="cmdSetInfoPages" Caption="_@M1603_" X="70" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetInfoPagesClicked" />
-      <WndButton Name="cmdSetBottomBar" Caption="_@M1602_" X="70" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetBottomBarClicked" />
-      <WndButton Name="cmdSetMultimaps" Caption="_@M1822_" X="70" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnMultimapsClicked" />
+      <WndButton Name="cmdSetCustomKeys" Caption="_@M196_"  X="35" Y="45" Width="-35"  Height="22" Font="2" OnClickNotify="OnSetCustomKeysClicked" />
+      <WndButton Name="cmdSetCustomMenu" Caption="_@M1788_" X="35" Y="-1" Width="-35"  Height="22" Font="2" OnClickNotify="OnSetCustomMenuClicked" />
+      <WndButton Name="cmdSetInfoPages"  Caption="_@M1603_" X="35" Y="-1" Width="-35"  Height="22" Font="2" OnClickNotify="OnSetInfoPagesClicked" />
+      <WndButton Name="cmdSetBottomBar"  Caption="_@M1602_" X="35" Y="-1" Width="-35"  Height="22" Font="2" OnClickNotify="OnSetBottomBarClicked" />
+      <WndButton Name="cmdSetMultimaps"  Caption="_@M1822_" X="35" Y="-1" Width="-35"  Height="22" Font="2" OnClickNotify="OnMultimapsClicked" />
     </WndFrame>
+
     <WndFrame Name="frmAppearance" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpGliderScreenPosition" Caption="_@M327_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H183_">
         <DataField Name="" DataType="double" DisplayFormat="%.0f %%" EditFormat="%.0f" Min="10" Max="70" Step="1"/>
@@ -374,41 +384,39 @@
         <DataField Name="" DataType="enum"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmFonts" X="1" Y="0" Width="-1" Height="222" Font="2">
-     <WndProperty Name="prpOverlayTarget" Caption="_@M1886_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+      <WndProperty Name="prpOverlayTarget" Caption="_@M1886_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpOverlayValues" Caption="_@M1887_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontMapWaypoint" Caption="_@M1880_" X="0" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontSymbols" Caption="_@M2385_" X="0" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontMapTopology" Caption="_@M1881_" X="0" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontInfopage1L" Caption="_@M1882_" X="0" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontBottomBar" Caption="_@M1883_" X="0" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontVisualGlide" Caption="_@M1888_" X="0" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpUseTwoLines" Caption="_@M1885_" X="0" Y="-997" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1292_">
         <DataField Name="" DataType="boolean" />
       </WndProperty>
-
-
-
     </WndFrame>
-    <WndFrame Name="frmVarioAppearance" X="1" Y="0" Width="-1" Height="222" Font="2">
-       <WndButton Name="cmdSetOverlays" Caption="_@M195_" X="70" Y="1" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetOverlaysClicked" />
 
+    <WndFrame Name="frmVarioAppearance" X="1" Y="0" Width="-1" Height="222" Font="2">
+      <WndButton Name="cmdSetOverlays" Caption="_@M195_" X="70" Y="1" Width="-1"  Height="22" Font="2" OnClickNotify="OnSetOverlaysClicked" />
       <WndProperty Name="prpOverlayClock" Caption="_@M615_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H237_">
         <DataField Name="" DataType="enum" Min="0" Max="3" Step="1" />
       </WndProperty>
@@ -434,6 +442,7 @@
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmTask" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpAutoAdvance" Caption="_@M111_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H200_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
@@ -461,6 +470,7 @@
       </WndProperty>
       <WndButton Name="cmdTaskRules" Caption="_@M690_" X="70" Y="-1" Width="-1"  Height="30" Font="2" OnClickNotify="OnTaskRulesClicked" />
     </WndFrame>
+
     <WndFrame Name="frmLogger" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpLoggerShortName" Caption="_@M611_" X="1" Y="1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H207_">
         <DataField Name="" DataType="boolean"/>
@@ -469,12 +479,14 @@
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmWaypointEdit" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndButton Name="cmdWaypointNew" Caption="_@M459_" X="50" Y="-1" Width="150"  Height="28" Font="2" Tag="4" OnClickNotify="OnWaypointNewClicked" />
       <WndButton Name="cmdWaypointEdit" Caption="_@M252_" X="50" Y="-1" Width="150"  Height="28" Font="2" Tag="4" OnClickNotify="OnWaypointEditClicked" />
       <WndButton Name="cmdWaypointSave" Caption="_@M583_" X="50" Y="-1" Width="150"  Height="28" Font="2" Tag="4" OnClickNotify="OnWaypointSaveClicked" />
       <WndButton Name="cmdWaypointDelete" Caption="_@M230_" X="50" Y="-1" Width="150"  Height="28" Font="2" Tag="4" OnClickNotify="OnWaypointDeleteClicked" />
     </WndFrame>
+
     <WndFrame Name="frmSpecials1" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpSaveRuntime" Caption="_@M2305_" X="0" Y="1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H239_">
         <DataField Name="" DataType="boolean"/>
@@ -507,6 +519,7 @@
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmSpecials2" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpClimbZoom" Caption="_@M170_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H214_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
@@ -530,6 +543,7 @@
         <DataField Name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min="1" Max="100" Step="0.5"/>
       </WndProperty>
     </WndFrame>
+
     <WndFrame Name="frmEngineering1" X="1" Y="0" Width="-1" Height="222" Font="1">
       <WndProperty Name="prpDebounceTimeout" Caption="_@M220_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H221_">
         <DataField Name="" DataType="double" DisplayFormat="%.0f ms" EditFormat="%.0f" Min="0" Max="1000" Step="25"/>
@@ -547,5 +561,6 @@
         <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="-1000" Max="1000" Step="1"/>
       </WndProperty>
     </WndFrame>
+
   </WndForm>
 </PMML>
