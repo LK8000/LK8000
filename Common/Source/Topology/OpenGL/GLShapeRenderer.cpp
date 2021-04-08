@@ -37,9 +37,9 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
 
   brush.Bind();
 
-  std::unique_ptr<const GLBlend> blend; 
+  std::unique_ptr<const ScopeAlphaBlend> blend;
   if(!brush.IsOpaque()) {
-    blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    blend = std::make_unique<const ScopeAlphaBlend>();
   }
 
   curr_LabelPos.x = clipRect.right;

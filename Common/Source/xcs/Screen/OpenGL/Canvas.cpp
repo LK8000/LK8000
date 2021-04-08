@@ -74,9 +74,9 @@ Canvas::DrawFilledRectangle(int left, int top, int right, int bottom,
 
   color.Bind();
 
-  std::unique_ptr<const GLBlend> blend; 
+  std::unique_ptr<const ScopeAlphaBlend> blend;
   if(!color.IsOpaque()) {
-      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      blend = std::make_unique<const ScopeAlphaBlend>();
   }
 
 #ifdef HAVE_GLES
@@ -138,7 +138,7 @@ Canvas::OutlineRectangleGL(int left, int top, int right, int bottom)
 void
 Canvas::FadeToWhite(GLubyte alpha)
 {
-  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  const ScopeAlphaBlend blend;
   const Color color(0xff, 0xff, 0xff, alpha);
   Clear(color);
 }
@@ -146,7 +146,7 @@ Canvas::FadeToWhite(GLubyte alpha)
 void
 Canvas::FadeToWhite(PixelRect rc, GLubyte alpha)
 {
-  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  const ScopeAlphaBlend blend;
   const Color color(0xff, 0xff, 0xff, alpha);
   DrawFilledRectangle(rc.left, rc.right, rc.right, rc.bottom, color);
 }
@@ -273,9 +273,9 @@ Canvas::DrawPolygon(const RasterPoint *points, unsigned num_points)
   if (!brush.IsHollow() && num_points >= 3) {
     brush.Bind();
 
-    std::unique_ptr<const GLBlend> blend; 
+    std::unique_ptr<const ScopeAlphaBlend> blend;
     if(!brush.IsOpaque()) {
-      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      blend = std::make_unique<const ScopeAlphaBlend>();
     }
 
     static PolygonRenderer renderer;
@@ -319,9 +319,9 @@ Canvas::DrawTriangleFan(const RasterPoint *points, unsigned num_points)
   OpenGL::solid_shader->Use();
 #endif
 
-  std::unique_ptr<const GLBlend> blend;
+  std::unique_ptr<const ScopeAlphaBlend> blend;
   if(!brush.IsOpaque()) {
-    blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    blend = std::make_unique<const ScopeAlphaBlend>();
   }
 
   ScopeVertexPointer vp(points);
@@ -329,9 +329,9 @@ Canvas::DrawTriangleFan(const RasterPoint *points, unsigned num_points)
   if (!brush.IsHollow() && num_points >= 3) {
     brush.Bind();
 
-    std::unique_ptr<const GLBlend> blend;
+    std::unique_ptr<const ScopeAlphaBlend> blend;
     if(!brush.IsOpaque()) {
-      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      blend = std::make_unique<const ScopeAlphaBlend>();
     }
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, num_points);
@@ -367,9 +367,9 @@ Canvas::DrawTriangleFan(const FloatPoint *points, unsigned num_points)
     ScopeVertexPointer vp(points);
 
     brush.Bind();
-    std::unique_ptr<const GLBlend> blend;
+    std::unique_ptr<const ScopeAlphaBlend> blend;
     if(!brush.IsOpaque()) {
-      blend = std::make_unique<const GLBlend>(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      blend = std::make_unique<const ScopeAlphaBlend>();
     }
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, num_points);
@@ -793,7 +793,7 @@ Canvas::DrawText(int x, int y, const TCHAR *text)
   const GLEnable<GL_TEXTURE_2D> scope;
 #endif
 
-  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  const ScopeAlphaBlend blend;
 
   texture->Bind();
   texture->Draw(x, y);
@@ -827,7 +827,7 @@ Canvas::DrawTransparentText(int x, int y, const TCHAR *text)
   const GLEnable<GL_TEXTURE_2D> scope;
 #endif
 
-  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  const ScopeAlphaBlend blend;
 
   texture->Bind();
   texture->Draw(x, y);
@@ -868,7 +868,7 @@ Canvas::DrawClippedText(int x, int y,
   const GLEnable<GL_TEXTURE_2D> scope;
 #endif
 
-  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  const ScopeAlphaBlend blend;
 
   texture->Bind();
   texture->Draw(x, y, width, height, 0, 0, width, height);
@@ -1027,7 +1027,7 @@ Canvas::StretchMono(int dest_x, int dest_y,
   OpenGL::glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 
-  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  const ScopeAlphaBlend blend;
 
   GLTexture &texture = *src.GetNative();
   texture.Bind();
