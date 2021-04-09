@@ -10,7 +10,7 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
-[version 7.3.1]
+[version 7.3.2]
 . Improved Terrain isoline drawing
 . Updated igc file download from flarm device
 . Fix map scale position for 100% TopView in Multimaps (#1520)
