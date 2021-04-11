@@ -63,7 +63,7 @@ double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len)
 	if(iTxtlen < 3)
 		return 0.0;
 	
-	for (size_t i = 0; i < (iTxtlen - 3); i++)
+	for (size_t i = 0; i < (iTxtlen - 4); i++)
 	{
 		if (text[i] == '1')
 		{
@@ -72,22 +72,17 @@ double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len)
 			{
 				if((text[i+3] == '.') || (text[i+3] == ','))
 				{
-					int kHz = 0;
-					if((i+4) < iTxtlen)
-						if((text[i+4] >= '0') && (text[i+4] <= '9'))
-							kHz += (text[i+4]-'0') * 100;
+					int kHz = _tcstol(&text[i+4], nullptr, 10);
 
-					if((i+5) < iTxtlen)
-						if((text[i+5] >= '0') && (text[i+5] <= '9'))
-							kHz += (text[i+5]-'0') * 10;
-
-					if((i+6) < iTxtlen)
-						if((text[i+6] >= '0') && (text[i+6] <= '9'))
-							kHz += (text[i+6]-'0');
 
 					fFreq = (double)Mhz + (double)kHz / 1000.0;
 					if(start) *start = i;
-					if(len) *len = 7;
+					if(len) 
+					{
+						*len = iTxtlen-i;
+						if(*len >7) *len = 7;
+					}
+					if(ValidFrequency(fFreq)) return fFreq;
 				}
 			}
 		}
