@@ -91,7 +91,7 @@ static int	iRectangleSize = 4;
 		continue;
 	}
 
-	if ( (DrawInfo.FLARM_Traffic[i].ID !=0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) ) {
+	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) ) {
 
 
 		double target_lon;

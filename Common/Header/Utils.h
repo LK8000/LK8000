@@ -113,11 +113,11 @@ void DeInitCustomHardware(void);
 
 void OpenFLARMDetails();
 void CloseFLARMDetails();
-TCHAR* LookupFLARMCn(long id);
-TCHAR* LookupFLARMDetails(long id);
-int LookupFLARMDetails(TCHAR *cn);
-bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile);
-int LookupSecondaryFLARMId(int id);
+TCHAR* LookupFLARMCn(uint32_t RadioId);
+TCHAR* LookupFLARMDetails(uint32_t RadioId);
+uint32_t LookupFLARMDetails(TCHAR *cn);
+bool AddFlarmLookupItem(uint32_t RadioId, TCHAR *name, bool saveFile);
+int LookupSecondaryFLARMId(uint32_t RadioId);
 
 double QNHAltitudeToStaticPressure(double alt);
 double StaticPressureToQNHAltitude(double ps);

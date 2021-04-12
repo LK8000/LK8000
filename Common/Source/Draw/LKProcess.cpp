@@ -2906,7 +2906,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					// get values
@@ -2929,7 +2929,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 						value = LKTraffic[LKTargetIndex].Bearing -  DrawInfo.TrackBearing;
@@ -2963,7 +2963,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 						value = LKTraffic[LKTargetIndex].Bearing;
@@ -2983,7 +2983,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 			    _stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					value=SPEEDMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Speed;
@@ -3017,7 +3017,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					value=ALTITUDEMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude;
@@ -3037,7 +3037,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					value=ALTITUDEMODIFY*(DerivedDrawInfo.NavAltitude-DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude)*-1;
@@ -3056,7 +3056,7 @@ lkfin_ete:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 				} else {
@@ -3076,7 +3076,7 @@ lkfin_ete:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 			} else {
-	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+				if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 				} else {
@@ -3098,7 +3098,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+				if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 
@@ -3123,7 +3123,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					value=LKTraffic[LKTargetIndex].GR;

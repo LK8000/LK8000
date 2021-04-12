@@ -27,7 +27,7 @@
 //#define MINSPEED	GlidePolar::Vminsink()*TOKPH
 #define STALLSPEED	GlidePolar::Vminsink()*TOKPH*0.6
 
-extern void SimFlarmTraffic(long id, double offset);
+extern void SimFlarmTraffic(uint32_t RadioId, double offset);
 
 // WE DONT USE LANDING, CRASHING AND FULL STALL SIMULATION NOW
 // #define SIMLANDING	1

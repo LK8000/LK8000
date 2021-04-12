@@ -137,7 +137,7 @@ void Fanet_RefreshSlots(NMEA_INFO *pGPS);
 void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO);
 void FLARM_EmptySlot(NMEA_INFO *GPS_INFO,int i);
 void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
-int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
+int FLARM_FindSlot(NMEA_INFO *GPS_INFO, uint32_t RadioId);
 
 extern bool EnableLogNMEA;
 void LogNMEA(TCHAR* text, int);

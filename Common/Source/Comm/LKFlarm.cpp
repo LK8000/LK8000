@@ -34,7 +34,7 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
 	#endif
 
 	for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
-		if (pGPS->FLARM_Traffic[i].ID>0) {
+		if (pGPS->FLARM_Traffic[i].RadioId > 0) {
 
 			if ( pGPS->Time< pGPS->FLARM_Traffic[i].Time_Fix) {
 				// time gone back to to Replay mode?
@@ -172,7 +172,7 @@ void FLARM_EmptySlot(NMEA_INFO *pGPS,int i) {
 #endif
 
   if (i<0 || i>=FLARM_MAX_TRAFFIC) return;
-  pGPS->FLARM_Traffic[i].ID= 0;
+  pGPS->FLARM_Traffic[i].RadioId = 0;
   pGPS->FLARM_Traffic[i].Name[0] = 0;
   pGPS->FLARM_Traffic[i].Cn[0] = 0;
   pGPS->FLARM_Traffic[i].Speed=0;
@@ -343,13 +343,13 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 
 
-int FLARM_FindSlot(NMEA_INFO *pGPS, long Id)
+int FLARM_FindSlot(NMEA_INFO *pGPS, uint32_t RadioId)
 {
   int i;
   for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
 
 	// find position in existing slot
-	if (Id==pGPS->FLARM_Traffic[i].ID) {
+	if (RadioId == pGPS->FLARM_Traffic[i].RadioId) {
 		//#ifdef DEBUG_LKT
 		//StartupStore(_T("... FindSlot ID=%lx found in slot %d\n"),Id,i);
 		//#endif
@@ -359,7 +359,7 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, long Id)
   }
   // not found, so try to find an empty slot
   for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
-	if (pGPS->FLARM_Traffic[i].ID<=0) { // 100327 <= was ==
+	if (pGPS->FLARM_Traffic[i].RadioId<=0) { // 100327 <= was ==
 		// this is a new target
 		#ifdef DEBUG_LKT
 		StartupStore(_T("... FLARM ID=%lx assigned NEW SLOT=%d\n"),Id,i);
@@ -370,7 +370,7 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, long Id)
   // remove a zombie to make place
   int toremove=-1;
   for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
-	if ( (pGPS->FLARM_Traffic[i].ID>0) && (pGPS->FLARM_Traffic[i].Status==LKT_ZOMBIE) &&
+	if ( (pGPS->FLARM_Traffic[i].RadioId>0) && (pGPS->FLARM_Traffic[i].Status==LKT_ZOMBIE) &&
 		(!pGPS->FLARM_Traffic[i].Locked) ) { 
 		// if this is the first zombie, assign it and continue searching
 		if (toremove==-1) {
@@ -395,7 +395,7 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, long Id)
   // remove a ghost to make place
   toremove=-1;
   for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
-	if ( (pGPS->FLARM_Traffic[i].ID>0) && (pGPS->FLARM_Traffic[i].Status==LKT_GHOST) &&
+	if ( (pGPS->FLARM_Traffic[i].RadioId>0) && (pGPS->FLARM_Traffic[i].Status==LKT_GHOST) &&
 		(!pGPS->FLARM_Traffic[i].Locked) ) { 
 		// if this is the first ghost, assign it and continue searching
 		if (toremove==-1) {
@@ -441,11 +441,9 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   isFlarm = true;
 
   // 5 id, 6 digit hex
-  long ID;
-  _stscanf(params[5],TEXT("%lx"), &ID);
-//  unsigned long uID = ID;
+  uint32_t RadioId = _tcstoul(params[5], nullptr, 16);
 
-  flarm_slot = FLARM_FindSlot(pGPS, ID);
+  flarm_slot = FLARM_FindSlot(pGPS, RadioId);
   if (flarm_slot<0) {
     // no more slots available,
 	#ifdef DEBUG_LKT
@@ -491,7 +489,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	  &RelativeEast, //   2
 	  &RelativeAltitude, //  3
 	  &pGPS->FLARM_Traffic[flarm_slot].IDType, // unsigned short     4
-	  &pGPS->FLARM_Traffic[flarm_slot].ID, // 6 char hex
+	  &pGPS->FLARM_Traffic[flarm_slot].RadioId, // 6 char hex
 	  &pGPS->FLARM_Traffic[flarm_slot].TrackBearing, // double       6
 	  &pGPS->FLARM_Traffic[flarm_slot].TurnRate, // double           7
 	  &pGPS->FLARM_Traffic[flarm_slot].Speed, // double              8 m/s
@@ -511,7 +509,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 
   pGPS->FLARM_Traffic[flarm_slot].Average30s = flarmCalculations.Average30s(
-	  pGPS->FLARM_Traffic[flarm_slot].ID,
+	  pGPS->FLARM_Traffic[flarm_slot].RadioId,
 	  pGPS->Time,
 	  pGPS->FLARM_Traffic[flarm_slot].Altitude);
 
@@ -529,13 +527,13 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	#endif
 
 	pGPS->FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
-	TCHAR *fname = LookupFLARMDetails(pGPS->FLARM_Traffic[flarm_slot].ID);
+	TCHAR *fname = LookupFLARMDetails(pGPS->FLARM_Traffic[flarm_slot].RadioId);
 	if (fname) {
 		LK_tcsncpy(name,fname,MAXFLARMNAME);
 
 		//  Now we have the name, so lookup also for the Cn
 		// This will return either real Cn or Name, again
-		TCHAR *cname = LookupFLARMCn(pGPS->FLARM_Traffic[flarm_slot].ID);
+		TCHAR *cname = LookupFLARMCn(pGPS->FLARM_Traffic[flarm_slot].RadioId);
 		if (cname) {
 			int cnamelen=_tcslen(cname);
 			if (cnamelen<=MAXFLARMCN) {
@@ -623,7 +621,7 @@ void UpdateFlarmTarget(NMEA_INFO &Info) {
 		wpt.Altitude   = trf.Altitude;
 
 		if (_tcslen(trf.Name) <= 1) {
-			_stprintf(wpt.Name,_T("%0x"),trf.ID);
+			_stprintf(wpt.Name,_T("%0x"),trf.RadioId);
 		} else {
 			_tcscpy(wpt.Name, trf.Name);
 		}

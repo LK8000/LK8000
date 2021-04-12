@@ -617,7 +617,7 @@ switch(LKevent)
 		  {
 		    for (int j = 0; j < FLARM_MAX_TRAFFIC; j++ ) {
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
-			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
+			  if(LKTraffic[aiSortArray[i]].RadioId == LKTraffic[j].RadioId)
 			  {
 #ifdef FLARM_MS
 			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
@@ -977,7 +977,7 @@ double scl = xtick;
 		_tcscpy(asFLARMPos[i].szGliderType,_T(""));
 
 		extern FlarmIdFile *file;
-		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].ID);
+		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].RadioId);
 
 		if(flarmId!= NULL) {
 		  LK_tcsncpy(asFLARMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);

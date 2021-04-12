@@ -1153,7 +1153,7 @@ static bool LiveTrack24_Radar() {
 		double alt = (*iter).get("alt").get<double>();
 		double sog = (*iter).get("sog").get<double>() / 3.6;
 		int lastTM = (*iter).get("lastTM").get<double>();
-		int userID = (*iter).get("userID").get<double>();
+		uint32_t userID = (*iter).get("userID").get<double>();
 		//		double agl = (*iter).get("sog").get<double>();
 		//		int isFlight = (*iter).get("isFlight").get<double>();
 		std::string username = (*iter).get("username").get<std::string>();
@@ -1223,19 +1223,19 @@ static bool LiveTrack24_Radar() {
 		CheckBackTarget(&GPS_INFO, flarm_slot);
 
 		if (newtraffic) {
-			GPS_INFO.FLARM_Traffic[flarm_slot].ID = userID;
+			GPS_INFO.FLARM_Traffic[flarm_slot].RadioId = userID;
 			GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel = 0;
 			GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate = 0;
 			auto& name = GPS_INFO.FLARM_Traffic[flarm_slot].Name;
 			auto& cn = GPS_INFO.FLARM_Traffic[flarm_slot].Cn;
 
 			GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
-			TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
+			TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
 			if (fname) {
 				LK_tcsncpy(name,fname,MAXFLARMNAME);
 				//  Now we have the name, so lookup also for the Cn
 				// This will return either real Cn or Name, again
-				TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
+				TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
 				if (cname) {
 					int cnamelen=_tcslen(cname);
 					if (cnamelen<=MAXFLARMCN) {

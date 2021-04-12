@@ -43,7 +43,7 @@ bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    memcpy(LKTraffic, Basic->FLARM_Traffic, sizeof(LKTraffic));
    //UnlockFlightData();
 
-   if (LKTARG.ID <=0) return false;
+   if (LKTARG.RadioId <= 0) return false;
 
    DistanceBearing(Basic->Latitude, Basic->Longitude, 
 		LKTARG.Latitude, LKTARG.Longitude,

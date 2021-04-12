@@ -155,7 +155,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 		if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 			ontarget=false;
 		} else {
-			if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+			if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <=0) {
 				ontarget=false;
 			} else {
 				ontarget=true;
@@ -271,7 +271,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				}
 				//TCHAR status[80];
 				if (_tcslen(pTarget->Name) == 1) {
-					_stprintf(Buffer,_T("%0x"),(unsigned)pTarget->ID);
+					_stprintf(Buffer,_T("%0x"),pTarget->RadioId);
 				} else {
 					_stprintf(Buffer,_T("%s"),pTarget->Name);
 				}

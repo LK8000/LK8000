@@ -21,6 +21,7 @@
 #define MAXFLARMCN	3	// used by Local and Flarmnet, not changeble see Parser
 
 struct FLARM_TRAFFIC {
+    uint32_t RadioId;
     double Latitude;
     double Longitude;
     double TrackBearing;
@@ -28,7 +29,6 @@ struct FLARM_TRAFFIC {
     double Altitude;
     double TurnRate;
     double ClimbRate;
-    int ID;
     TCHAR Name[MAXFLARMNAME+1];
     TCHAR Cn[MAXFLARMCN+1];
     unsigned short IDType;

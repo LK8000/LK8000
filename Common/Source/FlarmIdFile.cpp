@@ -123,12 +123,13 @@ void FlarmIdFile::GetAsString(FILE* hFile, int charCount, TCHAR *res)
   *curChar = 0;
 
 }
-FlarmId* FlarmIdFile::GetFlarmIdItem(long id)
+FlarmId* FlarmIdFile::GetFlarmIdItem(uint32_t RadioId)
 {
-  FlarmIdMap::iterator iterFind = flarmIds.find(id);
+  // TODO : replace by insert to avoid to find element 2 time...
+  FlarmIdMap::iterator iterFind = flarmIds.find(RadioId);
   if( iterFind != flarmIds.end() )
     {
-      return flarmIds[id];
+      return flarmIds[RadioId];
     }
 
   return NULL;
@@ -151,11 +152,6 @@ FlarmId* FlarmIdFile::GetFlarmIdItem(TCHAR *cn)
   return NULL;
 }
 
-long FlarmId::GetId()
-{
-  unsigned int res;
-
-  _stscanf(id, TEXT("%6x"), &res);
-
-  return res;
-};
+uint32_t FlarmId::GetId() {
+  return _tcstoul(id, nullptr, 16);
+}

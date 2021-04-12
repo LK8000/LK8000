@@ -20,7 +20,7 @@ FlarmCalculations::~FlarmCalculations(void)
 }
 
 
-double FlarmCalculations::Average30s(long flarmId, double curTime, double curAltitude)
+double FlarmCalculations::Average30s(uint32_t RadioId, double curTime, double curAltitude)
 {
-  return averageCalculatorMap[flarmId].GetAverage(curTime, curAltitude);
+  return averageCalculatorMap[RadioId].GetAverage(curTime, curAltitude);
 }

@@ -36,7 +36,7 @@ double SimNewSpeed(const double speed) {
 // >>>>> This is accessing directly the GPS_INFO main struct, writing inside it. <<<<<
 // Called by LKSimulator, already locking FlightData . No worry.
 //
-void SimFlarmTraffic(long ID, double offset)
+void SimFlarmTraffic(uint32_t RadioId, double offset)
 {
   int flarm_slot = 0;
   bool newtraffic=false;
@@ -45,7 +45,7 @@ void SimFlarmTraffic(long ID, double offset)
   LastFlarmCommandTime=GPS_INFO.Time; // useless really, we dont call UpdateMonitor from SIM
   
 
-  flarm_slot = FLARM_FindSlot(&GPS_INFO, ID);
+  flarm_slot = FLARM_FindSlot(&GPS_INFO, RadioId);
 
   if (flarm_slot<0) return;
   if ( GPS_INFO.FLARM_Traffic[flarm_slot].Status == LKT_EMPTY) {
@@ -80,7 +80,7 @@ void SimFlarmTraffic(long ID, double offset)
 
 	GPS_INFO.FLARM_Traffic[flarm_slot].TrackBearing= (double) (rand()%358);
 	GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel=0;
-	GPS_INFO.FLARM_Traffic[flarm_slot].ID=ID;
+	GPS_INFO.FLARM_Traffic[flarm_slot].RadioId = RadioId;
 	GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate=0;
 	GPS_INFO.FLARM_Traffic[flarm_slot].Speed= SimNewSpeed(GPS_INFO.Speed);
 
@@ -93,7 +93,7 @@ void SimFlarmTraffic(long ID, double offset)
 
   //
   GPS_INFO.FLARM_Traffic[flarm_slot].Average30s = flarmCalculations.Average30s(
-	  GPS_INFO.FLARM_Traffic[flarm_slot].ID,
+	  GPS_INFO.FLARM_Traffic[flarm_slot].RadioId,
 	  GPS_INFO.Time,
 	  GPS_INFO.FLARM_Traffic[flarm_slot].Altitude);
 
@@ -111,13 +111,13 @@ void SimFlarmTraffic(long ID, double offset)
 	#endif
 
 	GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
-	TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
+	TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
 	if (fname) {
 		LK_tcsncpy(name,fname,MAXFLARMNAME);
 
 		//  Now we have the name, so lookup also for the Cn
 		// This will return either real Cn or Name, again
-		TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
+		TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
 		if (cname) {
 			int cnamelen=_tcslen(cname);
 			if (cnamelen<=MAXFLARMCN) {

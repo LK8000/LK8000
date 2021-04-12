@@ -10,9 +10,9 @@ class FlarmCalculations
 public:
   FlarmCalculations(void);
   ~FlarmCalculations(void);
-  double Average30s(long flarmId, double curTime, double curAltitude);
+  double Average30s(uint32_t RadioId, double curTime, double curAltitude);
 private:
-  typedef std::map<long, ClimbAverageCalculator<30> > AverageCalculatorMap;
+  typedef std::map<uint32_t, ClimbAverageCalculator<30> > AverageCalculatorMap;
   AverageCalculatorMap averageCalculatorMap;
 };
 

@@ -324,11 +324,11 @@ int j;
 double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pFlarm->Latitude,  pFlarm->Longitude, &Distance, &Bear);
   if(_tcscmp(pFlarm->Name,_T("?")) ==0)
-    _sntprintf(text1,MAX_LEN, TEXT("%X"), pFlarm->ID);
+    _sntprintf(text1,MAX_LEN, TEXT("%X"), pFlarm->RadioId);
   else
-    _sntprintf(text1,MAX_LEN, TEXT("[%s] %X"),pFlarm->Name, pFlarm->ID);
+    _sntprintf(text1,MAX_LEN, TEXT("[%s] %X"),pFlarm->Name, pFlarm->RadioId);
 
-  flarmId = file->GetFlarmIdItem(pFlarm->ID);
+  flarmId = file->GetFlarmIdItem(pFlarm->RadioId);
   if(flarmId != NULL)
   {
 

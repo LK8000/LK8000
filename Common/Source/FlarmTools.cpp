@@ -16,7 +16,7 @@ int NumberOfFLARMNames = 0;
 
 
 typedef struct {
-  long ID;
+  uint32_t RadioId;
   TCHAR Name[MAXFLARMNAME+1];
 } FLARM_Names_t;
 
@@ -85,7 +85,7 @@ void SaveFLARMDetails(void)
   FILE * stream = _tfopen(filename,_T("wt"));
   if(stream) {
     for (int z = 0; z < NumberOfFLARMNames; z++) {
-      _ftprintf(stream, TEXT("%lx=%s\n"), FLARM_Names[z].ID,FLARM_Names[z].Name);
+      _ftprintf(stream, TEXT("%x=%s\n"), FLARM_Names[z].RadioId, FLARM_Names[z].Name);
     }
     fclose(stream);
     StartupStore(_T("... Saved %d FLARM names%s"),NumberOfFLARMNames,NEWLINE);
@@ -95,11 +95,11 @@ void SaveFLARMDetails(void)
 }
 
 
-int LookupSecondaryFLARMId(int id)
+int LookupSecondaryFLARMId(uint32_t RadioId)
 {
   for (int i=0; i<NumberOfFLARMNames; i++)
     {
-      if (FLARM_Names[i].ID == id)
+      if (FLARM_Names[i].RadioId == RadioId)
 	{
 	  return i;
 	}
@@ -120,17 +120,17 @@ int LookupSecondaryFLARMId(TCHAR *cn)
 }
 
 // returns Name or Cn to be used
-TCHAR* LookupFLARMCn(long id) {
+TCHAR* LookupFLARMCn(uint32_t RadioId) {
 
   // try to find flarm from userFile
-  int index = LookupSecondaryFLARMId(id);
+  int index = LookupSecondaryFLARMId(RadioId);
   if (index != -1)
     {
       return FLARM_Names[index].Name;
     }
 
   // try to find flarm from FLARMNet.org File
-  FlarmId* flarmId = file->GetFlarmIdItem(id);
+  FlarmId* flarmId = file->GetFlarmIdItem(RadioId);
   if (flarmId != NULL)
     {
       return flarmId->cn;
@@ -138,17 +138,17 @@ TCHAR* LookupFLARMCn(long id) {
   return NULL;
 }
 
-TCHAR* LookupFLARMDetails(long id) {
+TCHAR* LookupFLARMDetails(uint32_t RadioId) {
 
   // try to find flarm from userFile
-  int index = LookupSecondaryFLARMId(id);
+  int index = LookupSecondaryFLARMId(RadioId);
   if (index != -1)
     {
       return FLARM_Names[index].Name;
     }
 
   // try to find flarm from FLARMNet.org File
-  FlarmId* flarmId = file->GetFlarmIdItem(id);
+  FlarmId* flarmId = file->GetFlarmIdItem(RadioId);
   if (flarmId != NULL)
     {
       // return flarmId->cn;
@@ -158,13 +158,13 @@ TCHAR* LookupFLARMDetails(long id) {
 }
 
 // Used by TeamCode, to select a CN and get back the Id
-int LookupFLARMDetails(TCHAR *cn)
+uint32_t LookupFLARMDetails(TCHAR *cn)
 {
   // try to find flarm from userFile
   int index = LookupSecondaryFLARMId(cn);
   if (index != -1)
     {
-      return FLARM_Names[index].ID;
+      return FLARM_Names[index].RadioId;
     }
 
   // try to find flarm from FLARMNet.org File
@@ -176,9 +176,9 @@ int LookupFLARMDetails(TCHAR *cn)
   return 0;
 }
 
-bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile) {
+bool AddFlarmLookupItem(uint32_t RadioId, TCHAR *name, bool saveFile) {
     bool bRet = false;
-    int index = LookupSecondaryFLARMId(id);
+    int index = LookupSecondaryFLARMId(RadioId);
 
 #ifdef DEBUG_LKT
     StartupStore(_T("... LookupSecondary id=%d result index=%d\n"), id, index);
@@ -191,7 +191,7 @@ bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile) {
     }
 
     if(index != -1) {
-        FLARM_Names[index].ID = id;
+        FLARM_Names[index].RadioId = RadioId;
         LK_tcsncpy(FLARM_Names[index].Name, name, MAXFLARMNAME);
         bRet = true;
     }

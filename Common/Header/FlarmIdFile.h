@@ -21,11 +21,11 @@ public:
   TCHAR reg[FLARMID_SIZE_REG+1];
   TCHAR cn[MAXFLARMCN+1];
   TCHAR freq[FLARMID_SIZE_FREQ+1];
-  long GetId();
+  uint32_t GetId();
 };
 
 typedef FlarmId* FlarmIdptr;
-typedef std::map< long, FlarmIdptr > FlarmIdMap;
+typedef std::map<uint32_t, FlarmIdptr > FlarmIdMap;
 
 
 class FlarmIdFile
@@ -35,9 +35,9 @@ private:
   void GetAsString(FILE* hFile, int charCount, TCHAR *res);
   void GetItem(FILE* hFile, FlarmId *flarmId);
 public:
-  FlarmIdFile(void);
-  ~FlarmIdFile(void);
-  FlarmId* GetFlarmIdItem(long id);
+  FlarmIdFile();
+  ~FlarmIdFile();
+  FlarmId* GetFlarmIdItem(uint32_t RadioId);
   FlarmId* GetFlarmIdItem(TCHAR *cn);
 };
 

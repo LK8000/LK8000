@@ -31,7 +31,7 @@ static void OnTargetClicked(WndButton* pWnd) {
 	DoStatusMessage(_T("ERR-126 invalid TARGET traffic"));
 	return;
   }
-  if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].ID <1 ) {
+  if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].RadioId < 1) {
 	DoStatusMessage(MsgToken(879)); // SORRY TARGET JUST DISAPPEARED
 	return;
   }
@@ -64,7 +64,7 @@ static void OnTargetClicked(WndButton* pWnd) {
   mbYesNo) == IdYes) {
 #endif
 	// one more check for existance
-	if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].ID <1 ) {
+	if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].RadioId < 1 ) {
 		DoStatusMessage(MsgToken(883)); // TARGET DISAPPEARED!
 		return;
 	}
@@ -98,7 +98,7 @@ static void OnRenameClicked(WndButton* pWnd){
 	DoStatusMessage(_T("ERR-126 invalid traffic"));
 	return;
   }
-  if ( LKTraffic[SelectedTraffic].ID <1 ) {
+  if ( LKTraffic[SelectedTraffic].RadioId < 1 ) {
 	StartupStore(_T("--- Invalid traffic selected to rename, invalid ID%s"),NEWLINE);
 	DoStatusMessage(_T("ERR-127 invalid traffic"));
 	return;
@@ -148,7 +148,7 @@ static void OnRenameClicked(WndButton* pWnd){
 	GPS_INFO.FLARM_Traffic[SelectedTraffic].UpdateNameFlag=true;
 	// This will create the local flarmid entry, but won't update the structure in GPS_INFO
 	// until a new PFLAA arrives from this ID. 
-	AddFlarmLookupItem(GPS_INFO.FLARM_Traffic[SelectedTraffic].ID, newName, true);
+	AddFlarmLookupItem(GPS_INFO.FLARM_Traffic[SelectedTraffic].RadioId, newName, true);
 	UnlockFlightData();
 
 	#ifdef DEBUG_LKT
@@ -244,7 +244,7 @@ static void SetValues(int indexid) {
 	// DoStatusMessage(_T("ERR-216 INVALID INDEXID"));
 	return;
   }
-  if ( LKTraffic[indexid].ID <=0 || LKTraffic[indexid].Status <LKT_REAL) {
+  if ( LKTraffic[indexid].RadioId <=0 || LKTraffic[indexid].Status <LKT_REAL) {
 	StartupStore(_T("--- LK setvalues invalid indexid=%d%s"),indexid,NEWLINE);
 	// DoStatusMessage(_T("ERR-217 INVALID INDEXID"));
 	return;
@@ -255,7 +255,7 @@ static void SetValues(int indexid) {
 	wlen=_tcslen(LKTraffic[indexid].Name);
 	// a ? probably
 	if (wlen==1) {
-		_stprintf(buffer,_T("%06x"),LKTraffic[indexid].ID);
+		_stprintf(buffer,_T("%06x"),LKTraffic[indexid].RadioId);
 		buffer[MAXFLARMNAME]='\0';
 	} else {
 		LK_tcsncpy(buffer,LKTraffic[indexid].Name,MAXFLARMNAME);
@@ -344,7 +344,7 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  flarmId = file->GetFlarmIdItem(LKTraffic[indexid].ID);
+  flarmId = file->GetFlarmIdItem(LKTraffic[indexid].RadioId);
   if (flarmId != NULL) {
 	wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
 	if (wp) {

@@ -663,7 +663,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                 InputEvents::processPopupDetails(InputEvents::PopupThermal, i);
             }
             if (MSMTRAFFIC) {
-                if ((i < 0) || (i >= MAXTRAFFIC) || (LKTraffic[i].ID <= 0)) {
+                if ((i < 0) || (i >= MAXTRAFFIC) || (LKTraffic[i].RadioId <= 0)) {
 #if 0 // selection while waiting for data ready
                     if (LKNumTraffic > 0)
                         DoStatusMessage(_T("ERR-045 Invalid selection"));
@@ -1094,14 +1094,14 @@ _KeepOldAirspacesValues:
         } // MSMTHERMALS
 
         if (MSMTRAFFIC) {
-            if ((rli >= 0) && (LKTraffic[rli].ID > 0)) {
+            if ((rli >= 0) && (LKTraffic[rli].RadioId > 0)) {
 
                 // Traffic name
                 int wlen = _tcslen(LKTraffic[rli].Name);
 
                 // if name is unknown then it is a '?'
                 if (wlen == 1) {
-                    _stprintf(Buffer, _T("%06x"), (unsigned) LKTraffic[rli].ID);
+                    _stprintf(Buffer, _T("%06x"), (unsigned) LKTraffic[rli].RadioId);
                     Buffer[s_maxnlname[curmapspace]] = '\0';
                 } else {
                     // if XY I-ABCD  doesnt fit..
@@ -1194,7 +1194,7 @@ _KeepOldAirspacesValues:
             }
 
 
-            if ((rli >= 0) && (LKTraffic[rli].ID > 0)) {
+            if ((rli >= 0) && (LKTraffic[rli].RadioId > 0)) {
                 drawn_items_onpage++;
                 if (LKTraffic[rli].Status == LKT_REAL) {
                     rcolor = RGB_WHITE;
