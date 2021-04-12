@@ -216,24 +216,114 @@ double FLARM_EastingToLongitude = 0.0;
 
 BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-TCHAR Temp[80];
+/*
+	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf
 
-//$PFLAV,A,3.00,5.04,alps20110919_*5C
-//StartupStore(_T("FLARM PFLAV received: %s"), String);
-//ParToDouble(String, 1, &pGPS->FLARM_HW_Version);
-//ParToDouble(String, 2, &pGPS->FLARM_SW_Version);
+	PFLAV,<QueryType>,<HwVersion>,<SwVersion>,<ObstVersion>
+	
+	Meaning: 
+		Version information after startup, allow at least 20s after power-on. 
+		It is recommended to pass version information to the 3rd party product user.
 
-ExtractParameter(String, Temp,1); _stscanf(Temp,TEXT("%lf"), &pGPS->FLARM_HW_Version);
-ExtractParameter(String, Temp,2); _stscanf(Temp,TEXT("%lf"), &pGPS->FLARM_SW_Version);
-ExtractParameter(String, Temp,3);
-StartupStore(_T("FLARM  found SW:%4.2f  HW:%4.2f  OBS:%s%s"),pGPS->FLARM_SW_Version,pGPS->FLARM_HW_Version,Temp, NEWLINE);
+	Input / Output: 
+		bidirectional, i.e. can be requested also
 
-return true;
+	Availability on the extension port: 
+		always available, no configuration
+
+	Availability on the data port: 
+		always available, no configuration
+
+	Periodicity: 
+		sent once after startup and completion of self-test and sent when requested
+
+	Values:
+		<QueryType> 
+			R = request FLARM to send version, disregard other fields then
+ 			A = FLARM sends version (requested and spontaneous)
+
+		<HwVersion> 
+			String with up to 6 characters (only numbers and one decimal point)
+
+		<SwVersion> 
+			String with up to 6 characters (only numbers and one decimal point)
+
+		<ObstVersion> 
+			String with up to 18 characters (any character, no special structure), 
+			field is empty when no obstacle database is present
+
+	Example:
+		$PFLAV,R
+		$PFLAV,A,2.01,5.00,ALPS 13FEB2006 2.96*
+
+		FLARM is asked on its versions and returns that it has h/w version 2.01, s/w version 5.00 and an obstacle database named ‘ALPS 13FEB2006 2.96’.
+
+	Example:
+		$PFLAV,A,2.00,2.01,*
+
+		FLARM reports that it has h/w version 2.00, s/w version 2.01, but that there is no obstacle database present. 
+
+*/
+
+	TCHAR Temp[80];
+
+	ExtractParameter(String, Temp,1); _stscanf(Temp,TEXT("%lf"), &pGPS->FLARM_HW_Version);
+	ExtractParameter(String, Temp,2); _stscanf(Temp,TEXT("%lf"), &pGPS->FLARM_SW_Version);
+	ExtractParameter(String, Temp,3);
+	StartupStore(_T("FLARM  found SW:%4.2f  HW:%4.2f  OBS:%s"), pGPS->FLARM_SW_Version, pGPS->FLARM_HW_Version, Temp);
+
+	return true;
 }
 
 
 BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+/*
+	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf
+
+	PFLAU,<RX>,<TX>,<GPS>,<Power>,<AlarmLevel>,<RelativeBearing>,<AlarmType>,<RelativeVertical>,<RelativeDistance>
+
+	<RX>
+				Number of devices with unique ID's currently physically received regardless of the
+				horizontal or vertical separation, an integer from 0 to 99.
+				Because the processing might be based on extrapolated historical data, <Rx>
+				might be lower than the number of aircraft in range, i.e. there might be other traffic
+				around (even if the number is zero).
+				Do not expect to receive <Rx> PFLAA sentences, because the number of aircraft
+				being processed might be higher or lower.
+	<TX> 
+				Transmission status, 1 (hex31) for OK and 0 (hex30) for no transmission
+	<GPS>
+				GPS status: 0 (hex30) for no GPS reception, 2 (hex32) for 3d-fix when moving and
+				1 (hex31) for 3d-fix on ground, i.e. not airborne. If <GPS> goes to 0, FLARM does
+				not operate as warning device, nevertheless wait for some seconds to issue any
+				warning to 3rd party application's users.
+	<Power> 
+				Power status, 1 (hex31) for OK and 0 (hex30) for under- or over-voltage
+	<AlarmLevel>
+				Alarm level as assessed by FLARM
+				0 = no alarm (used for no-alarm traffic information)
+				1 = low-level alarm
+				2 = important alarm
+				3 = urgent alarm
+	<RelativeBearing>
+				Relative bearing in degrees from the own position and true ground track to the
+				intruder's / obstacle's position, an integer from -180 to 180. Positive values are
+				clockwise. 0° indicates that the object is exactly ahead.
+	<AlarmType>
+				Type of alarm as assessed by FLARM
+				0 = aircraft traffic (used for no-alarm traffic information)
+				1 = silent aircraft alarm (displayed but no alarm tone)
+				2 = aircraft alarm
+				3 = obstacle alarm
+	<RelativeVertical>
+				Relative vertical separation in Meter above own position, negative values indicate
+				the other aircraft is lower, signed integer. Some distance-dependent random noise
+				is applied to altitude data if the privacy for the target is active.
+				<RelativeDistance> Relative horizontal distance in m, unsigned integer. 
+*/
+
+
   static int old_flarm_rx = 0;
   static bool sayflarmavailable=true; // 100325
   static bool conflict=false;
@@ -430,6 +520,69 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, uint32_t RadioId)
 
 BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
+/*
+	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf
+
+	Periodicity: 
+			sent when available and port Baud rate is sufficient, can be sent several times per second with
+			information on several (but maybe not all) targets around. 
+
+	PFLAA,<AlarmLevel>,<RelativeNorth>,<RelativeEast>,<RelativeVertical>,<IDType>,<ID>,<Track>,<TurnRate>,<GroundSpeed>,<ClimbRate>,<Type>
+
+	<AlarmLevel>
+				Alarm level as assessed by FLARM
+				0 = no alarm (pure traffic, limited to 2km range and 500m altitude difference)
+				1 = low-level alarm
+				2 = important alarm
+				3 = urgent alarm
+	<RelativeNorth> 
+				Relative position in Meter true north from own position, signed integer
+	<RelativeEast> 
+				Relative position in Meter true east from own position, signed integer
+	<RelativeVertical>
+				Relative vertical separation in Meter above own position, negative values indicate
+				the other aircraft is lower, signed integer. Some distance-dependent random noise
+				is applied to altitude data if the privacy for the target is active.
+	<ID-Type>
+				Defines the interpretation of the following field <ID>
+				0 = stateless random-hopping pseudo-ID (chosen by FLARM)
+				1 = official ICAO aircraft address
+				2 = stable FLARM pseudo-ID (chosen by FLARM)
+	<ID>
+				6-digit hex value (e.g. "5A77B1") as configured in the target's PFLAC,ID sentence.
+				The interpretation is delivered in <ID-Type>
+	<Track> 
+				The target's true ground track in degrees. Integer between 0 and 359. The value 0
+				indicates a true north track. This field is empty if the privacy for the target is active.
+	<TurnRate> 
+				The target's turn rate. Positive values indicate a clockwise turn. Signed decimal
+				value in °/s. Currently omitted. Field is empty if the privacy for the target is active.
+	<GroundSpeed> 
+				The target's ground speed. Decimal value in m/s. The field is set to 0 to indicate
+				the aircraft is not moving, i.e. on ground. This field is empty if the privacy for the
+				target is active while the target is airborne.
+	<ClimbRate> 
+				The target's climb rate. Positive values indicate a climbing aircraft. Signed decimal
+				value in m/s. This field is empty if the privacy for the target is active.
+	<Type> 
+				Up to two hex characters showing the object type
+				0 = unknown
+				1 = glider
+				2 = tow plane
+				3 = helicopter
+				4 = parachute
+				5 = drop plane
+				6 = fixed hang-glider
+				7 = soft para-glider
+				8 = powered aircraft
+				9 = jet aircraft
+				A = UFO
+				B = balloon
+				C = blimp, zeppelin
+				D = UAV
+				F = static
+*/
+
   if(nparams < 6) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PFLAA sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 5...
