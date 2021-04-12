@@ -28,9 +28,6 @@ struct FLARM_TRAFFIC {
     double Altitude;
     double TurnRate;
     double ClimbRate;
-    double RelativeNorth;
-    double RelativeEast;
-    double RelativeAltitude;
     int ID;
     TCHAR Name[MAXFLARMNAME+1];
     TCHAR Cn[MAXFLARMCN+1];

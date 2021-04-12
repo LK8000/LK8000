@@ -74,8 +74,6 @@ void SimFlarmTraffic(long ID, double offset)
 
   // If first time seen this traffic, place it nearby
   if ( newtraffic ) {
-	GPS_INFO.FLARM_Traffic[flarm_slot].RelativeNorth=2;
-	GPS_INFO.FLARM_Traffic[flarm_slot].RelativeEast=2;
 	GPS_INFO.FLARM_Traffic[flarm_slot].Latitude  = SimNewCoordinate(GPS_INFO.Latitude, offset);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude = SimNewCoordinate(GPS_INFO.Longitude,offset);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude = SimNewAltitude(GPS_INFO.Altitude);
@@ -92,7 +90,6 @@ void SimFlarmTraffic(long ID, double offset)
 	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude += (double)((rand()%16384)/10000000.0)*(rand()>(RAND_MAX/2)?1:-1);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude += (double)(rand()%14)*(rand()>(RAND_MAX/2)?1:-1);
   }
-  GPS_INFO.FLARM_Traffic[flarm_slot].RelativeAltitude = GPS_INFO.FLARM_Traffic[flarm_slot].Altitude - GPS_INFO.Altitude;
 
   //
   GPS_INFO.FLARM_Traffic[flarm_slot].Average30s = flarmCalculations.Average30s(

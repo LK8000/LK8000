@@ -163,12 +163,6 @@ void LKSimulator(void) {
 		SimFlarmTraffic(0xdd8951,0);
 		SimFlarmTraffic(0xdd8944,0);
 		SimFlarmTraffic(0xdd8a43,0);
-
-		// update relative altitude for ghost/zombie traffic
-		int flarmslot=FLARM_FindSlot(&GPS_INFO, 0xdd8a42);
-		if (flarmslot>=0)
-			GPS_INFO.FLARM_Traffic[flarmslot].RelativeAltitude = GPS_INFO.FLARM_Traffic[flarmslot].Altitude - GPS_INFO.Altitude;
-
 	}
   }
 

@@ -1224,8 +1224,6 @@ static bool LiveTrack24_Radar() {
 
 		if (newtraffic) {
 			GPS_INFO.FLARM_Traffic[flarm_slot].ID = userID;
-			GPS_INFO.FLARM_Traffic[flarm_slot].RelativeNorth = 2;
-			GPS_INFO.FLARM_Traffic[flarm_slot].RelativeEast = 2;
 			GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel = 0;
 			GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate = 0;
 			auto& name = GPS_INFO.FLARM_Traffic[flarm_slot].Name;
@@ -1284,8 +1282,6 @@ static bool LiveTrack24_Radar() {
 		GPS_INFO.FLARM_Traffic[flarm_slot].Altitude = alt;
 		GPS_INFO.FLARM_Traffic[flarm_slot].Speed = sog;
 		GPS_INFO.FLARM_Traffic[flarm_slot].TrackBearing = TrackBearing; // to be replaced by Livetrack24 cog
-		GPS_INFO.FLARM_Traffic[flarm_slot].RelativeAltitude =
-				GPS_INFO.FLARM_Traffic[flarm_slot].Altitude - GPS_INFO.Altitude;
 		GPS_INFO.FLARM_Traffic[flarm_slot].Average30s = Average30s;
 
 		if (flarm_slot == LKTargetIndex) {

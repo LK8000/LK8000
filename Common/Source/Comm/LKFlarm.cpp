@@ -183,9 +183,6 @@ void FLARM_EmptySlot(NMEA_INFO *pGPS,int i) {
   pGPS->FLARM_Traffic[i].Altitude=0;
   pGPS->FLARM_Traffic[i].Status = LKT_EMPTY;
   pGPS->FLARM_Traffic[i].AlarmLevel=0;
-  pGPS->FLARM_Traffic[i].RelativeNorth=0;
-  pGPS->FLARM_Traffic[i].RelativeEast=0;
-  pGPS->FLARM_Traffic[i].RelativeAltitude=0;
   pGPS->FLARM_Traffic[i].IDType=0;
   pGPS->FLARM_Traffic[i].TrackBearing=0;
   pGPS->FLARM_Traffic[i].TurnRate=0;
@@ -489,12 +486,14 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   //StartupStore(_T("PFLAA: %s%s"),nString,NEWLINE);
   //#endif
 
+  double RelativeNorth, RelativeEast, RelativeAltitude;
+
   _stscanf(nString,
 	  TEXT("%hu,%lf,%lf,%lf,%hu,%x,%lf,%lf,%lf,%lf,%hu"),
 	  &pGPS->FLARM_Traffic[flarm_slot].AlarmLevel, // unsigned short 0
-	  &pGPS->FLARM_Traffic[flarm_slot].RelativeNorth, //  1	
-	  &pGPS->FLARM_Traffic[flarm_slot].RelativeEast, //   2
-	  &pGPS->FLARM_Traffic[flarm_slot].RelativeAltitude, //  3
+	  &RelativeNorth, //  1
+	  &RelativeEast, //   2
+	  &RelativeAltitude, //  3
 	  &pGPS->FLARM_Traffic[flarm_slot].IDType, // unsigned short     4
 	  &pGPS->FLARM_Traffic[flarm_slot].ID, // 6 char hex
 	  &pGPS->FLARM_Traffic[flarm_slot].TrackBearing, // double       6
@@ -503,17 +502,15 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	  &pGPS->FLARM_Traffic[flarm_slot].ClimbRate, // double          9 m/s
 	  &pGPS->FLARM_Traffic[flarm_slot].Type); // unsigned short     10
   // 1 relativenorth, meters  
-  pGPS->FLARM_Traffic[flarm_slot].Latitude = 
-    pGPS->FLARM_Traffic[flarm_slot].RelativeNorth *FLARM_NorthingToLatitude + pGPS->Latitude;
+  pGPS->FLARM_Traffic[flarm_slot].Latitude = RelativeNorth *FLARM_NorthingToLatitude + pGPS->Latitude;
   // 2 relativeeast, meters
-  pGPS->FLARM_Traffic[flarm_slot].Longitude = 
-    pGPS->FLARM_Traffic[flarm_slot].RelativeEast *FLARM_EastingToLongitude + pGPS->Longitude;
+  pGPS->FLARM_Traffic[flarm_slot].Longitude = RelativeEast *FLARM_EastingToLongitude + pGPS->Longitude;
 
   // we need to compare with BARO altitude FLARM relative Alt difference!
   if (pGPS->BaroAltitude>0) // just to be sure
-	pGPS->FLARM_Traffic[flarm_slot].Altitude = pGPS->FLARM_Traffic[flarm_slot].RelativeAltitude + pGPS->BaroAltitude;
+	pGPS->FLARM_Traffic[flarm_slot].Altitude = RelativeAltitude + pGPS->BaroAltitude;
   else
-	pGPS->FLARM_Traffic[flarm_slot].Altitude = pGPS->FLARM_Traffic[flarm_slot].RelativeAltitude + pGPS->Altitude;
+	pGPS->FLARM_Traffic[flarm_slot].Altitude = RelativeAltitude + pGPS->Altitude;
 
 
 

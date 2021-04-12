@@ -961,7 +961,7 @@ double scl = xtick;
 		fLon          =  LKTraffic[i].Longitude;
 		fLat          =  LKTraffic[i].Latitude;
 		fFlarmBearing =  LKTraffic[i].TrackBearing;
-		fFlarmAlt     =  LKTraffic[i].RelativeAltitude;
+		fFlarmAlt     =  LKTraffic[i].Altitude -  DrawInfo.Altitude;
 		DistanceBearing( GPSlat, GPSlon, fLat,  fLon, &fFlarmDist, &fDistBearing);
 
 		fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
