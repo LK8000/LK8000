@@ -498,9 +498,9 @@ BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 
 BOOL DevLXNanoIII::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
 {
-  CritSec_LXDebugStr.Lock();
+  CritSec_LXDebugStr.lock();
   _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
-  CritSec_LXDebugStr.Unlock();
+  CritSec_LXDebugStr.unlock();
   return true;
 }
 
@@ -699,9 +699,9 @@ void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx)
     if(dfe)
     {
       dfe->Clear();
-      CritSec_LXDebugStr.Lock();
+      CritSec_LXDebugStr.lock();
       dfe->addEnumText(LxValueStr[Idx]);
-      CritSec_LXDebugStr.Unlock();
+      CritSec_LXDebugStr.unlock();
       wp->RefreshDisplay();
     }
   }

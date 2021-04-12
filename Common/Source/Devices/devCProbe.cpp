@@ -71,13 +71,13 @@ inline double int24toDouble(int v) {
 
 void CDevCProbe::LockDeviceData(){
 	if(m_pCritSec_DeviceData) {
-		m_pCritSec_DeviceData->Lock();
+		m_pCritSec_DeviceData->lock();
 	}
 }
 
 void CDevCProbe::UnlockDeviceData(){
 	if(m_pCritSec_DeviceData) {
-		m_pCritSec_DeviceData->Unlock();
+		m_pCritSec_DeviceData->unlock();
 	}
 }
 

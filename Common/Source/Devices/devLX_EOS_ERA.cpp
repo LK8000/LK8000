@@ -449,9 +449,9 @@ BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
 
 BOOL DevLX_EOS_ERA::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
 {
-  CritSec_LXDebugStr.Lock();
+  CritSec_LXDebugStr.lock();
   _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
-  CritSec_LXDebugStr.Unlock();
+  CritSec_LXDebugStr.unlock();
   return true;
 }
 

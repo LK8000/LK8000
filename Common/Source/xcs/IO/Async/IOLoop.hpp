@@ -147,11 +147,11 @@ public:
   }
 
   void Lock() {
-    mutex.Lock();
+    mutex.lock();
   }
 
   void Unlock() {
-    mutex.Unlock();
+    mutex.unlock();
   }
 
   void WaitUntilNotRunning() {

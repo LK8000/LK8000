@@ -102,11 +102,11 @@ void Message::Destroy() {
 
 
 void Message::Lock() {
-  CritSec_Messages.Lock();
+  CritSec_Messages.lock();
 }
 
 void Message::Unlock() {
-  CritSec_Messages.Unlock();
+  CritSec_Messages.unlock();
 }
 
 

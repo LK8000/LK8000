@@ -15,23 +15,17 @@
 #include "Poco/Mutex.h"
 #include "Poco/ScopedLock.h"
 #include "Poco/ScopedUnlock.h"
-#include "Poco/Condition.h"
 
-class Mutex : protected Poco::Mutex {
-    friend class Poco::Condition;
-    friend class Poco::ScopedLock<Mutex>;
-    friend class Poco::ScopedUnlock<Mutex>;
-public:
-    Mutex() {} 
-
-    inline void Lock() { 
-        Poco::Mutex::lock(); 
-    }
-    
-    inline void Unlock() { 
-        Poco::Mutex::unlock(); 
+// template adaptor to make Poco::Mutex and Poco::FastMutex conform to C++ named requirements 'Lockable'
+template<typename BaseMutex>
+struct LockableMutex : BaseMutex {
+    bool try_lock() {
+        return BaseMutex::tryLock();
     }
 };
+
+using Mutex = LockableMutex<Poco::Mutex>;
+using FastMutex = LockableMutex<Poco::FastMutex>;
 
 class ScopeLock : public Poco::ScopedLock<Mutex> {
 public:

@@ -133,9 +133,9 @@ EventQueue::Wait(Event &event)
       return true;
 
     while (events.empty()) {
-      mutex.Unlock();
+      mutex.unlock();
       Poll();
-      mutex.Lock();
+      mutex.lock();
       if (quit)
         return false;
 
