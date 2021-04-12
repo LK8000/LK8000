@@ -261,14 +261,15 @@ BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 		FLARM reports that it has h/w version 2.00, s/w version 2.01, but that there is no obstacle database present. 
 
 */
+	if(nparams > 3) {
+		pGPS->FLARM_HW_Version = _tcstod(params[1], nullptr);
+		pGPS->FLARM_SW_Version = _tcstod(params[2], nullptr);
 
-	TCHAR Temp[80];
-
-	ExtractParameter(String, Temp,1); _stscanf(Temp,TEXT("%lf"), &pGPS->FLARM_HW_Version);
-	ExtractParameter(String, Temp,2); _stscanf(Temp,TEXT("%lf"), &pGPS->FLARM_SW_Version);
-	ExtractParameter(String, Temp,3);
-	StartupStore(_T("FLARM  found SW:%4.2f  HW:%4.2f  OBS:%s"), pGPS->FLARM_SW_Version, pGPS->FLARM_HW_Version, Temp);
-
+		StartupStore(_T("FLARM  found SW:%4.2f  HW:%4.2f  OBS:%s"),
+					pGPS->FLARM_SW_Version,
+					pGPS->FLARM_HW_Version,
+					params[3]);
+	}
 	return true;
 }
 
