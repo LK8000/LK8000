@@ -27,17 +27,8 @@ struct LockableMutex : BaseMutex {
 using Mutex = LockableMutex<Poco::Mutex>;
 using FastMutex = LockableMutex<Poco::FastMutex>;
 
-class ScopeLock : public Poco::ScopedLock<Mutex> {
-public:
-    ScopeLock(Mutex& m) : Poco::ScopedLock<Mutex>(m) { }
-
-};
-
-class ScopeUnlock : public Poco::ScopedUnlock<Mutex> {
-public:
-    ScopeUnlock(Mutex& m) : Poco::ScopedUnlock<Mutex>(m) { }
-
-};
+using ScopeLock = Poco::ScopedLock<Mutex>;
+using ScopeUnlock = Poco::ScopedUnlock<Mutex>;
 
 #endif	/* MUTEX_HPP */
 
