@@ -743,17 +743,17 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 // Warn about an old locked zombie back visible
 // Attention, do not use sounds from Rx Thread.. deadlocks pending. So NO ext sounds here.
 void CheckBackTarget(NMEA_INFO &Info, int slot) {
-  if ( Info.FLARM_Traffic[slot].Locked ) return;
+  if ( !Info.FLARM_Traffic[slot].Locked ) return;
   if ( Info.FLARM_Traffic[slot].Status != LKT_ZOMBIE ) return;
 
   // if more than 15 minutes ago, warn pilot with full message and sound
   if ( (Info.Time - Info.FLARM_Traffic[slot].Time_Fix) >=900) {
-	// LKTOKEN  _@M674_ = "TARGET BACK VISIBLE" 
-	DoStatusMessage(MsgToken(674));
-        if (!UseExtSound1 && !UseExtSound2) LKSound(_T("TARGVISIBLE.WAV"));
+    // LKTOKEN  _@M674_ = "TARGET BACK VISIBLE" 
+    DoStatusMessage(MsgToken(674));
+    if (!UseExtSound1 && !UseExtSound2) LKSound(_T("TARGVISIBLE.WAV"));
   } else {
-	// otherwise a simple sound
-	if (!UseExtSound1 && !UseExtSound2) PlayResource(TEXT("IDR_WAV_DRIP"));
+    // otherwise a simple sound
+    if (!UseExtSound1 && !UseExtSound2) PlayResource(TEXT("IDR_WAV_DRIP"));
   }
 }
 
