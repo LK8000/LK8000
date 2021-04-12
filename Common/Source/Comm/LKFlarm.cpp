@@ -15,9 +15,6 @@
 
 FlarmCalculations flarmCalculations;
 
-
-void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
-
 //#define DEBUG_LKT	1
 
 
@@ -606,7 +603,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   }
 
   // before changing timefix, see if it was an old target back locked in!
-  CheckBackTarget(pGPS, flarm_slot);
+  CheckBackTarget(*pGPS, flarm_slot);
   // and then set time of fix to current time
   pGPS->FLARM_Traffic[flarm_slot].Time_Fix = pGPS->Time;
 
@@ -745,12 +742,12 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 // Warn about an old locked zombie back visible
 // Attention, do not use sounds from Rx Thread.. deadlocks pending. So NO ext sounds here.
-void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot) {
-  if ( pGPS->FLARM_Traffic[flarmslot].Locked ) return;
-  if ( pGPS->FLARM_Traffic[flarmslot].Status != LKT_ZOMBIE ) return;
+void CheckBackTarget(NMEA_INFO &Info, int slot) {
+  if ( Info.FLARM_Traffic[slot].Locked ) return;
+  if ( Info.FLARM_Traffic[slot].Status != LKT_ZOMBIE ) return;
 
   // if more than 15 minutes ago, warn pilot with full message and sound
-  if ( (pGPS->Time - pGPS->FLARM_Traffic[flarmslot].Time_Fix) >=900) {
+  if ( (Info.Time - Info.FLARM_Traffic[slot].Time_Fix) >=900) {
 	// LKTOKEN  _@M674_ = "TARGET BACK VISIBLE" 
 	DoStatusMessage(MsgToken(674));
         if (!UseExtSound1 && !UseExtSound2) LKSound(_T("TARGVISIBLE.WAV"));

@@ -26,7 +26,6 @@ extern double MixedFormatToDegrees(double mixed);
 extern int NAVWarn(TCHAR c);
 
 extern double trackbearingminspeed; // minimal speed to use gps bearing, init by UpdateMonitor
-void CheckBackTarget(int flarmslot);
 
 GeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
   LockFlightData();

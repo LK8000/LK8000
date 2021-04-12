@@ -50,9 +50,6 @@
 #include "md5.h"
 #include "NavFunctions.h"
 
-
-extern void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
-
 #ifdef KOBO
 #include "Kobo/System.hpp"
 #endif
@@ -1220,7 +1217,7 @@ static bool LiveTrack24_Radar() {
 			newtraffic = true;
 		}
 		// before changing timefix, see if it was an old target back locked in!
-		CheckBackTarget(&GPS_INFO, flarm_slot);
+		CheckBackTarget(GPS_INFO, flarm_slot);
 
 		if (newtraffic) {
 			GPS_INFO.FLARM_Traffic[flarm_slot].RadioId = userID;

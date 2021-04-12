@@ -10,7 +10,6 @@
 #include "externs.h"
 #include "FlarmCalculations.h"
 
-extern void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
 extern FlarmCalculations flarmCalculations;
 
 // #define DEBUG_SIMLKT
@@ -53,7 +52,7 @@ void SimFlarmTraffic(uint32_t RadioId, double offset)
   }
 
   // before changing timefix, see if it was an old target back locked in!
-  CheckBackTarget(&GPS_INFO, flarm_slot);
+  CheckBackTarget(GPS_INFO, flarm_slot);
   // and then set time of fix to current time
   GPS_INFO.FLARM_Traffic[flarm_slot].Time_Fix = GPS_INFO.Time;
 
