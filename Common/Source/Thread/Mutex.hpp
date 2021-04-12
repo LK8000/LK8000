@@ -30,5 +30,14 @@ using FastMutex = LockableMutex<Poco::FastMutex>;
 using ScopeLock = Poco::ScopedLock<Mutex>;
 using ScopeUnlock = Poco::ScopedUnlock<Mutex>;
 
+/**
+ * Call the Function within Mutex lock.
+ */
+template<class _Mutex, class Function>
+decltype(auto) WithLock(_Mutex& m, Function&& f) {
+    Poco::ScopedLock<_Mutex> lock(m);
+    return f();
+}
+
 #endif	/* MUTEX_HPP */
 
