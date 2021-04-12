@@ -48,10 +48,6 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
 					#endif
 					LKTargetIndex=-1;
 					LKTargetType=LKT_TYPE_NONE;
-					// reset Virtual waypoint in any case
-					WayPointList[RESWP_FLARMTARGET].Latitude   = RESWP_INVALIDNUMBER;
-					WayPointList[RESWP_FLARMTARGET].Longitude  = RESWP_INVALIDNUMBER;
-					WayPointList[RESWP_FLARMTARGET].Altitude   = RESWP_INVALIDNUMBER;
 				}
 				FLARM_EmptySlot(pGPS,i);
 				continue;
@@ -591,14 +587,6 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	pGPS->FLARM_Traffic[flarm_slot].Altitude);
   #endif
 
-  //  update Virtual Waypoint for target FLARM
-  if (flarm_slot == LKTargetIndex) {
-	WayPointList[RESWP_FLARMTARGET].Latitude   = pGPS->FLARM_Traffic[LKTargetIndex].Latitude;
-	WayPointList[RESWP_FLARMTARGET].Longitude  = pGPS->FLARM_Traffic[LKTargetIndex].Longitude;
-	WayPointList[RESWP_FLARMTARGET].Altitude   = pGPS->FLARM_Traffic[LKTargetIndex].Altitude;
-  }
-
-
   return FALSE;
 }
 
@@ -621,4 +609,31 @@ void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot) {
   }
 }
 
+void UpdateFlarmTarget(NMEA_INFO &Info) {
+	ScopeLock Lock(CritSec_TaskData);
+	
+	assert(RESWP_FLARMTARGET < WayPointList.size()); // Bug in Waypoint Loading ?
 
+	WAYPOINT& wpt = WayPointList[RESWP_FLARMTARGET];
+	
+	if (static_cast<size_t>(LKTargetIndex) < std::size(Info.FLARM_Traffic)) {
+		FLARM_TRAFFIC& trf = Info.FLARM_Traffic[LKTargetIndex];
+		wpt.Latitude   = trf.Latitude;
+		wpt.Longitude  = trf.Longitude;
+		wpt.Altitude   = trf.Altitude;
+
+		if (_tcslen(trf.Name) <= 1) {
+			_stprintf(wpt.Name,_T("%0x"),trf.ID);
+		} else {
+			_tcscpy(wpt.Name, trf.Name);
+		}
+
+	} else {
+		if(wpt.Latitude != RESWP_INVALIDNUMBER) {
+			wpt.Latitude = RESWP_INVALIDNUMBER;
+			wpt.Longitude = RESWP_INVALIDNUMBER;
+			wpt.Altitude = RESWP_INVALIDNUMBER;
+			wpt.Name[0] = '\0';
+		}
+	}
+}

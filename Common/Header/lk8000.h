@@ -11,6 +11,7 @@
 
 #include "Sizes.h"
 #include <stdint.h>
+#include "Thread/Mutex.hpp"
 
 typedef struct _DATAOPTIONS
 {
@@ -22,8 +23,11 @@ typedef struct _DATAOPTIONS
 
 extern void UnlockFlightData();
 extern void LockFlightData();
+
+extern Mutex  CritSec_TaskData;
 extern void UnlockTaskData();
 extern void LockTaskData();
+
 extern void UnlockTerrainDataGraphics();
 extern void LockTerrainDataGraphics();
 extern void TriggerGPSUpdate();

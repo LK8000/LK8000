@@ -1283,16 +1283,6 @@ static bool LiveTrack24_Radar() {
 		GPS_INFO.FLARM_Traffic[flarm_slot].Speed = sog;
 		GPS_INFO.FLARM_Traffic[flarm_slot].TrackBearing = TrackBearing; // to be replaced by Livetrack24 cog
 		GPS_INFO.FLARM_Traffic[flarm_slot].Average30s = Average30s;
-
-		if (flarm_slot == LKTargetIndex) {
-			WayPointList[RESWP_FLARMTARGET].Latitude =
-					GPS_INFO.FLARM_Traffic[flarm_slot].Latitude;
-			WayPointList[RESWP_FLARMTARGET].Longitude =
-					GPS_INFO.FLARM_Traffic[flarm_slot].Longitude;
-			WayPointList[RESWP_FLARMTARGET].Altitude =
-					GPS_INFO.FLARM_Traffic[flarm_slot].Altitude;
-		}
-
 	}
 
 	return true;

@@ -154,13 +154,5 @@ void SimFlarmTraffic(long ID, double offset)
 		#endif
 	}
   }
-
-  //  update Virtual Waypoint for target FLARM
-  if (flarm_slot == LKTargetIndex) {
-	WayPointList[RESWP_FLARMTARGET].Latitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Latitude;
-	WayPointList[RESWP_FLARMTARGET].Longitude  = GPS_INFO.FLARM_Traffic[LKTargetIndex].Longitude;
-	WayPointList[RESWP_FLARMTARGET].Altitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Altitude;
-  }
-
 }
 

@@ -48,10 +48,6 @@ static void OnTargetClicked(WndButton* pWnd) {
 	UnlockFlightData();
 	LKTargetIndex=-1;
 	LKTargetType=LKT_TYPE_NONE;
-	WayPointList[RESWP_FLARMTARGET].Latitude   = RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_FLARMTARGET].Longitude  = RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_FLARMTARGET].Altitude   = RESWP_INVALIDNUMBER;
-	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name,_T(RESWP_FLARMTARGET_NAME) );
 	DoStatusMessage(MsgToken(882)); // TARGET RELEASED
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -84,18 +80,7 @@ static void OnTargetClicked(WndButton* pWnd) {
 	DoStatusMessage(MsgToken(675));
 	LKTargetIndex=SelectedTraffic;
 	LKTargetType=LKT_TYPE_MASTER;
-
-	// Remember that we need to update the virtual waypoint constantly when we receive FLARM data of target
-	// Probably name is not updated if changed from Flarm menu...
 	OvertargetMode=OVT_FLARM;
-	WayPointList[RESWP_FLARMTARGET].Latitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Latitude;
-	WayPointList[RESWP_FLARMTARGET].Longitude  = GPS_INFO.FLARM_Traffic[LKTargetIndex].Longitude;
-	WayPointList[RESWP_FLARMTARGET].Altitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Altitude;
-	if (_tcslen(GPS_INFO.FLARM_Traffic[LKTargetIndex].Name) == 1) {
-		_stprintf(WayPointList[RESWP_FLARMTARGET].Name,_T("%0x"),GPS_INFO.FLARM_Traffic[LKTargetIndex].ID);
-	} else {
-		_stprintf(WayPointList[RESWP_FLARMTARGET].Name,_T("%s"),GPS_INFO.FLARM_Traffic[LKTargetIndex].Name);
-	}
 	SetModeType(LKMODE_TRF, IM_TARGET);
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();

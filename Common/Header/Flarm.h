@@ -55,4 +55,8 @@ struct FLARM_TRACE {
     int iColorIdx;
 };
 
+struct NMEA_INFO;
+
+void UpdateFlarmTarget(NMEA_INFO &Info);
+
 #endif
