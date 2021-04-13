@@ -569,159 +569,92 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 				F = static
 */
 
-	if(nparams < 6) {
-		TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PFLAA sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
+	if(nparams < 11) {
+		TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PFLAA sentence, nparams=%u"),(unsigned)nparams));
 		// max index used is 5...
 		return FALSE;
 	}
-  
-	int flarm_slot = 0;
 
 	setFlarmAvailable(pGPS);
 
 	// 5 id, 6 digit hex
 	uint32_t RadioId = _tcstoul(params[5], nullptr, 16);
 
-	flarm_slot = FLARM_FindSlot(pGPS, RadioId);
-	if (flarm_slot<0) {
+	int flarm_slot = FLARM_FindSlot(pGPS, RadioId);
+	if (flarm_slot < 0) {
 		// no more slots available,
-#ifdef DEBUG_LKT
-		StartupStore(_T("... NO SLOTS for Flarm traffic, too many ids!%s"),NEWLINE);
-#endif
+		DebugLog(_T("... NO SLOTS for Flarm traffic, too many ids!"));
 		return FALSE;
 	}
 
 	// before changing timefix, see if it was an old target back locked in!
 	CheckBackTarget(*pGPS, flarm_slot);
-	// and then set time of fix to current time
-	pGPS->FLARM_Traffic[flarm_slot].Time_Fix = pGPS->Time;
 
-	TCHAR nString[MAX_NMEA_LEN+1];
-	unsigned int i, j;
-	for (i=0, j=0; i<_tcslen(String); i++) {
-		// if not a comma, copy and proceed
-		if (String[i] != _T(',')) {
-			nString[j++]=String[i];
-			continue;
-		}
-		// there was a comma, but the next one is not a comma, so ok..
-		if (String[i+1] != _T(',') ) {
-			nString[j++]=String[i];
-			continue;
-		}
-		// We have a bad ,, case that scanf cannot bear with, so we add a 0
-		nString[j++] = String[i];
-		nString[j++] = _T('0');
-	}
-	nString[j]=_T('\0');
+	FLARM_TRAFFIC& traffic = pGPS->FLARM_Traffic[flarm_slot];
 
-	double RelativeNorth, RelativeEast, RelativeAltitude;
+	traffic.RadioId = RadioId;
+	traffic.Time_Fix = pGPS->Time;
 
-	_stscanf(nString,
-		TEXT("%hu,%lf,%lf,%lf,%hu,%x,%lf,%lf,%lf,%lf,%hu"),
-		&pGPS->FLARM_Traffic[flarm_slot].AlarmLevel, // unsigned short 0
-		&RelativeNorth, //  1
-		&RelativeEast, //   2
-		&RelativeAltitude, //  3
-		&pGPS->FLARM_Traffic[flarm_slot].IDType, // unsigned short     4
-		&pGPS->FLARM_Traffic[flarm_slot].RadioId, // 6 char hex
-		&pGPS->FLARM_Traffic[flarm_slot].TrackBearing, // double       6
-		&pGPS->FLARM_Traffic[flarm_slot].TurnRate, // double           7
-		&pGPS->FLARM_Traffic[flarm_slot].Speed, // double              8 m/s
-		&pGPS->FLARM_Traffic[flarm_slot].ClimbRate, // double          9 m/s
-		&pGPS->FLARM_Traffic[flarm_slot].Type); // unsigned short     10
+	traffic.AlarmLevel = _tcstoul(params[0], nullptr, 10);
+
+	double RelativeNorth = _tcstod(params[1], nullptr);
+	double RelativeEast = _tcstod(params[2], nullptr);
+	double RelativeAltitude = _tcstod(params[3], nullptr);
+
+	traffic.IDType = _tcstoul(params[4], nullptr, 10);
+
+	traffic.TrackBearing = _tcstod(params[6], nullptr);
+	traffic.TurnRate = _tcstod(params[7], nullptr);
+	traffic.Speed = _tcstod(params[8], nullptr);
+	traffic.ClimbRate = _tcstod(params[9], nullptr);
+	traffic.Type = _tcstoul(params[4], nullptr, 10);
 
 	UpdateFlarmScale(pGPS);
 
 	// 1 relativenorth, meters  
-	pGPS->FLARM_Traffic[flarm_slot].Latitude = RelativeNorth * FLARM_NorthingToLatitude + pGPS->Latitude;
+	traffic.Latitude = RelativeNorth * FLARM_NorthingToLatitude + pGPS->Latitude;
 	// 2 relativeeast, meters
-	pGPS->FLARM_Traffic[flarm_slot].Longitude = RelativeEast * FLARM_EastingToLongitude + pGPS->Longitude;
+	traffic.Longitude = RelativeEast * FLARM_EastingToLongitude + pGPS->Longitude;
 
 	// we need to compare with BARO altitude FLARM relative Alt difference!
 	if (pGPS->BaroAltitude>0) // just to be sure
-		pGPS->FLARM_Traffic[flarm_slot].Altitude = RelativeAltitude + pGPS->BaroAltitude;
+		traffic.Altitude = RelativeAltitude + pGPS->BaroAltitude;
 	else
-		pGPS->FLARM_Traffic[flarm_slot].Altitude = RelativeAltitude + pGPS->Altitude;
+		traffic.Altitude = RelativeAltitude + pGPS->Altitude;
 
+	traffic.Average30s = flarmCalculations.Average30s(traffic.RadioId, pGPS->Time, traffic.Altitude);
 
-
-	pGPS->FLARM_Traffic[flarm_slot].Average30s = flarmCalculations.Average30s(
-		pGPS->FLARM_Traffic[flarm_slot].RadioId,
-		pGPS->Time,
-		pGPS->FLARM_Traffic[flarm_slot].Altitude);
-
-	TCHAR *name = pGPS->FLARM_Traffic[flarm_slot].Name;
-	//TCHAR *cn = pGPS->FLARM_Traffic[flarm_slot].Cn;
 	// If there is no name yet, or if we have a pending update event..
-	if (!_tcslen(name) || pGPS->FLARM_Traffic[flarm_slot].UpdateNameFlag ) {
-
-#ifdef DEBUG_LKT
-		if (pGPS->FLARM_Traffic[flarm_slot].UpdateNameFlag ) {
-			StartupStore(_T("... UpdateNameFlag for slot %d\n"),flarm_slot);
-		} else {
-			StartupStore(_T("... First lookup name for slot %d\n"),flarm_slot);
-		}
-#endif
-
-		pGPS->FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
-		const TCHAR *fname = LookupFLARMDetails(pGPS->FLARM_Traffic[flarm_slot].RadioId);
+	if (!traffic.Name[0] || traffic.UpdateNameFlag) {
+		traffic.UpdateNameFlag = false; // clear flag first
+		const TCHAR *fname = LookupFLARMDetails(traffic.RadioId);
 		if (fname) {
-			LK_tcsncpy(name,fname,MAXFLARMNAME);
+			LK_tcsncpy(traffic.Name, fname, MAXFLARMNAME);
 
 			//  Now we have the name, so lookup also for the Cn
 			// This will return either real Cn or Name, again
-			const TCHAR *cname = LookupFLARMCn(pGPS->FLARM_Traffic[flarm_slot].RadioId);
+			const TCHAR *cname = LookupFLARMCn(traffic.RadioId);
 			if (cname) {
-				int cnamelen=_tcslen(cname);
-				if (cnamelen<=MAXFLARMCN) {
-					_tcscpy( pGPS->FLARM_Traffic[flarm_slot].Cn, cname);
+				int cnamelen = _tcslen(cname);
+				if (cnamelen <= MAXFLARMCN) {
+					_tcscpy(traffic.Cn, cname);
 				} else {
 					// else probably it is the Name again, and we create a fake Cn
-					pGPS->FLARM_Traffic[flarm_slot].Cn[0]=cname[0];
-					pGPS->FLARM_Traffic[flarm_slot].Cn[1]=cname[cnamelen-2];
-					pGPS->FLARM_Traffic[flarm_slot].Cn[2]=cname[cnamelen-1];
-					pGPS->FLARM_Traffic[flarm_slot].Cn[3]=_T('\0');
+					traffic.Cn[0] = cname[0];
+					traffic.Cn[1] = cname[cnamelen-2];
+					traffic.Cn[2] = cname[cnamelen-1];
+					traffic.Cn[3] = _T('\0');
 				}
 			} else {
-				_tcscpy( pGPS->FLARM_Traffic[flarm_slot].Cn, _T("Err"));
+				_tcscpy(traffic.Cn, _T("Err"));
 			}
 
-#ifdef DEBUG_LKT
-			StartupStore(_T("... PFLAA Name to FlarmSlot=%d ID=%lx Name=<%s> Cn=<%s>\n"),
-				flarm_slot,
-				pGPS->FLARM_Traffic[flarm_slot].ID,
-				pGPS->FLARM_Traffic[flarm_slot].Name,
-				pGPS->FLARM_Traffic[flarm_slot].Cn);
-#endif
 		} else {
 			// Else we NEED to set a name, otherwise it will constantly search for it over and over..
-			name[0]=_T('?');
-			name[1]=_T('\0');
-			pGPS->FLARM_Traffic[flarm_slot].Cn[0]=_T('?');
-			pGPS->FLARM_Traffic[flarm_slot].Cn[1]=_T('\0');
-
-#ifdef DEBUG_LKT
-			StartupStore(_T("... New FlarmSlot=%d ID=%lx with no name, assigned a \"?\"\n"),
-				flarm_slot,
-				pGPS->FLARM_Traffic[flarm_slot].ID);
-#endif
+			_tcscpy(traffic.Name, _T("?"));
+			_tcscpy(traffic.Cn, _T("?"));
 		}
 	}
-
-#ifdef DEBUG_LKT
-	StartupStore(_T("... PFLAA pGPS slot=%d ID=%lx name=<%s> cn=<%s> rAlt=%.0f Track=%.0f Speed=%.0f Climb=%.1f Baro=%f FlAlt=%f\n"),
-		flarm_slot,
-		pGPS->FLARM_Traffic[flarm_slot].ID,
-		pGPS->FLARM_Traffic[flarm_slot].Name,
-		pGPS->FLARM_Traffic[flarm_slot].Cn,
-		pGPS->FLARM_Traffic[flarm_slot].RelativeAltitude,
-		pGPS->FLARM_Traffic[flarm_slot].TrackBearing,
-		pGPS->FLARM_Traffic[flarm_slot].Speed,
-		pGPS->FLARM_Traffic[flarm_slot].ClimbRate,
-		pGPS->BaroAltitude,
-		pGPS->FLARM_Traffic[flarm_slot].Altitude);
-#endif
 
 	return FALSE;
 }
