@@ -335,6 +335,9 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 				<RelativeDistance> Relative horizontal distance in m, unsigned integer. 
 */
 
+	if (nparams < 5U) {
+		return false;
+	}
 
 	static int old_flarm_rx = 0;
 	static bool conflict=false;
@@ -364,17 +367,13 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 	setFlarmAvailable(pGPS);
 
-	unsigned short power;
-	_stscanf(String,
-		TEXT("%hu,%hu,%hu,%hu,%hu"),
-		&pGPS->FLARM_RX, // number of received FLARM devices
-		&pGPS->FLARM_TX, // Transmit status
-		&pGPS->FLARM_GPS, // GPS status
-		&power, // <Power> : unused
-		&pGPS->FLARM_AlarmLevel); // Alarm level of FLARM (0-3)
+	pGPS->FLARM_RX = _tcstoul(params[0], nullptr, 10); // number of received FLARM devices
+	pGPS->FLARM_TX = _tcstoul(params[1], nullptr, 10); // Transmit status
+	pGPS->FLARM_GPS = _tcstoul(params[2], nullptr, 10); // GPS status
+
+	pGPS->FLARM_AlarmLevel = _tcstoul(params[4], nullptr, 10); // Alarm level of FLARM (0-3)
 
 	// process flarm updates
-
 	if ((pGPS->FLARM_RX) && (old_flarm_rx==0)) {
 		// traffic has appeared..
 		InputEvents::processGlideComputer(GCE_FLARM_TRAFFIC);
