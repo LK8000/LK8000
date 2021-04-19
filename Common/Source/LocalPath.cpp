@@ -297,8 +297,8 @@ void LocalPath(TCHAR* buffer, const TCHAR* file) {
  * * some file are loaded from LocalPath or SystemPath
  *   ( in v6 Polar and language )
  *
- *  this fonction remove Prefix from path.
- *  requiered for compatibilty with old config file
+ *  this function remove Prefix from path.
+ *  required for compatibility with old config file
  */
 void RemoveFilePathPrefix(const TCHAR* szPrefix, TCHAR* szFilePath) {
     const TCHAR* ptr = _tcsstr(szFilePath, szPrefix);
