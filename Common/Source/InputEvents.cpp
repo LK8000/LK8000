@@ -127,12 +127,12 @@ void InputEvents::readFile() {
   StartupStore(TEXT("... Loading input events file%s"),NEWLINE);
   #endif
 
-  {
-    ScopeLock Lock(CritSec_EventQueue);
+  WithLock(CritSec_EventQueue, [&]() {
     // clear the GCE and NMEA queues
     gce_queue.clear();
     nmea_queue.clear();
-  }
+  });
+
   // Get defaults
   if (!InitONCE) {
 	#include "InputEvents_LK8000.cpp"
@@ -765,10 +765,9 @@ void ProcessQueue(event_queue_t& event_queue, const id_to_event_t& id_to_event) 
   while(!event_queue.empty()) {
     event_id_t event_id = event_queue.front();
     event_queue.pop_front();
-    {
-      ScopeUnlock Unlock(CritSec_EventQueue);
-      processEvent<id_to_event_t, event_id_t>(id_to_event, event_id);
-    }
+
+    ScopeUnlock Unlock(CritSec_EventQueue);
+    processEvent<id_to_event_t, event_id_t>(id_to_event, event_id);
   }
 }
 
@@ -807,17 +806,14 @@ void InputEvents::processPopupDetails(PopupType type, int index) {
 // show details for each object queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
 void InputEvents::processPopupDetails_real() {
 
-    while(1) {
-        PopupEvent_t event;
-        { // Begin Lock
-            ScopeLock Lock(CritSec_EventQueue);
-            if(!PopupEventQueue.empty()) {
-                event = PopupEventQueue.front();
-                PopupEventQueue.pop_front(); // remove object event from fifo
-            } else {
-                break; // no more queued event, out from loop.
-            }
-        } // End Lock
+    ScopeLock Lock(CritSec_EventQueue);
+    while (!PopupEventQueue.empty()) {
+
+        PopupEvent_t event = PopupEventQueue.front();
+        PopupEventQueue.pop_front(); // remove object event from fifo
+
+        ScopeUnlock Unlock(CritSec_EventQueue);
+
 
         switch(event.type) {
             case PopupWaypoint:
