@@ -39,8 +39,6 @@
 #include "AndroidFileUtils.h"
 #include "NetUtil.h"
 
-unsigned android_api_level;
-
 Context *context;
 NativeView *native_view;
 
@@ -77,10 +75,8 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
                                             jobject _context,
                                             jint width, jint height,
                                             jint xdpi, jint ydpi,
-                                            jint sdk_version, jstring product, jstring language)
+                                            jstring product, jstring language)
 {
-  android_api_level = sdk_version;
-
   Java::Object::Initialise(env);
   Java::File::Initialise(env);
 
