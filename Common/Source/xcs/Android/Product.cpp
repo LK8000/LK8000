@@ -36,14 +36,4 @@ bool is_nook = false;
 bool is_dithered = false;
 bool is_eink_colored = false;
 
-bool
-IsGalaxyTab22()
-{
-  assert(native_view);
-
-  return android_api_level == 8 &&
-    (StringIsEqual(native_view->GetProduct(), "GT-P1000") ||
-     StringIsEqual(native_view->GetProduct(), "GT-P1010"));
-}
-
 #endif
