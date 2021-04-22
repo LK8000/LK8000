@@ -62,7 +62,7 @@ ToAbsolutePathChecked(JNIEnv *env, jobject file)
   if (file == nullptr)
     return nullptr;
 
-  jstring path = Java::File::getAbsolutePath(env, file);
+  jstring path = Java::File::GetAbsolutePath(env, file);
   env->DeleteLocalRef(file);
   return path;
 }

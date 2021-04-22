@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Max Kellermann <max@duempel.org>
+ * Copyright 2010-2021 Max Kellermann <max.kellermann@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,23 +31,39 @@
 #define JAVA_FILE_HXX
 
 #include "Object.hxx"
+#include "String.hxx"
 
 #include <jni.h>
 
 namespace Java {
-	/**
-	 * Wrapper for a java.io.File object.
-	 */
-	class File : public LocalObject {
-		static jmethodID getAbsolutePath_method;
 
-	public:
-		static void Initialise(JNIEnv *env);
+/**
+ * Wrapper for a java.io.File object.
+ */
+class File : public LocalObject {
+	static jmethodID getAbsolutePath_method;
 
-		static jstring getAbsolutePath(JNIEnv *env, jobject file) {
-			return (jstring)env->CallObjectMethod(file, getAbsolutePath_method);
-		}
-	};
-}
+public:
+	using LocalObject::LocalObject;
+
+	gcc_nonnull_all
+	static void Initialise(JNIEnv *env) noexcept;
+
+	gcc_nonnull_all
+	static jstring GetAbsolutePath(JNIEnv *env, jobject file) noexcept {
+		return (jstring)env->CallObjectMethod(file,
+						      getAbsolutePath_method);
+	}
+
+	String GetAbsolutePath() const noexcept {
+		return {GetEnv(), GetAbsolutePath(GetEnv(), Get())};
+	}
+
+	String GetAbsolutePathChecked() const noexcept {
+		return *this ? GetAbsolutePath() : nullptr;
+	}
+};
+
+} // namespace Java
 
 #endif
