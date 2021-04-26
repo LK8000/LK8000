@@ -30,6 +30,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
     private ActivityQrcodeScannerBinding binding;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    private int lensFacing = CameraSelector.LENS_FACING_BACK;
 
 
     @Override
@@ -39,6 +40,13 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+
+        binding.switchCamera.setOnClickListener((view) -> {
+            lensFacing = (CameraSelector.LENS_FACING_FRONT == lensFacing)
+                    ? CameraSelector.LENS_FACING_BACK
+                    : CameraSelector.LENS_FACING_FRONT;
+            requestCamera();
+        });
 
         requestCamera();
     }
@@ -84,7 +92,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
 
         CameraSelector cameraSelector =
                 new CameraSelector.Builder()
-                        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                        .requireLensFacing(lensFacing)
                         .build();
 
         preview.setSurfaceProvider(binding.imagePreviewView.getSurfaceProvider());
