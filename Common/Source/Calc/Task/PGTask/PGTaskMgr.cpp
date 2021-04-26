@@ -247,7 +247,7 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         // Calc Arrival Altitude
         const GeoPoint position = getOptimized(i);
         double Distance, Bearing;
-        prev_position.Reverse(position, Distance, Bearing);
+        prev_position.Reverse(position, Bearing, Distance);
         double GrndAlt = AltitudeFromTerrain(position.latitude, position.longitude);
         if(NextAltitude > GrndAlt) {
             NextAltitude  -= GlidePolar::MacCreadyAltitude( MACCREADY, Distance, Bearing, Calculated->WindSpeed, Calculated->WindBearing, 0, 0, true, 0);
