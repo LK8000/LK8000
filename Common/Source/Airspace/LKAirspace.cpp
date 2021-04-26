@@ -1751,7 +1751,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             if (Name[0] != '\0') { // FIX: do not add airspaces with no name defined.
                                 if (Radius > 0) {
                                     // Last one was a circle
-                                    newairspace = new (std::nothrow) CAirspace_Circle(Longitude, Latitude, Radius);
+                                    newairspace = new (std::nothrow) CAirspace_Circle(Latitude, Longitude, Radius);
                                 } else {
                                     // Last one was an area
                                     if (CorrectGeoPoints(points)) { // Skip it if we don't have minimum 3 points
@@ -1914,8 +1914,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++;
                         Radius = StrToDouble(p, NULL);
                         Radius = (Radius * NAUTICALMILESTOMETRES);
-                        Latitude = CenterX;
-                        Longitude = CenterY;
+                        Longitude = CenterX;
+                        Latitude = CenterY;
 
                         if(!InsideMap) {
                           if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
