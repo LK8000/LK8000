@@ -9,6 +9,7 @@
   <application android:icon="${applicationIcon}"
                android:label="${applicationLabel}"
                tools:replace="android:label"
+               android:hasFragileUserData="true"
                android:requestLegacyExternalStorage="true">
 
     <activity android:name=".LK8000"
@@ -45,6 +46,12 @@
         android:theme="@style/QrCodeTheme"/>
   </application>
 
+  <queries>
+    <package android:name="org.lk8000.debug" />
+    <package android:name="org.lk8000.beta" />
+    <package android:name="org.lk8000.test" />
+    <package android:name="org.lk8000.lkmap" />
+  </queries>
 
   <uses-permission android:name="android.permission.BLUETOOTH" />
   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />

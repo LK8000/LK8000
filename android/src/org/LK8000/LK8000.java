@@ -99,6 +99,8 @@ public class LK8000 extends Activity {
       return;
     }
 
+    LKDistribution.copyLKDistribution(this.getApplication(), false);
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       AudioManager myAudioMgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
       final String sampleRateStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
@@ -365,7 +367,6 @@ public class LK8000 extends Activity {
   {
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH_ADMIN);
-    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_FINE_LOCATION);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.WAKE_LOCK);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.INTERNET);
@@ -424,8 +425,6 @@ public class LK8000 extends Activity {
   }
 
   private void onRuntimePermissionGranted() {
-    LKDistribution.copyLKDistribution(this.getApplication(), false);
-
     onRuntimePermissionGrantedNative();
   }
 

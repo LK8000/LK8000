@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId "org.lk8000"
         minSdkVersion 16
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 72
         versionName "7.3.2"
         setProperty("archivesBaseName", "LK8000-$versionName")
@@ -68,14 +68,6 @@ android {
             debuggable true
             jniDebuggable true
             renderscriptDebuggable true
-
-            externalNativeBuild {
-                cmake {
-                    cFlags "-DANDROID_VARIANT_DEBUG"
-                    cppFlags "-DANDROID_VARIANT_DEBUG"
-                }
-            }
-
         }
         beta {
             initWith(buildTypes.release)
@@ -90,13 +82,6 @@ android {
                     res.srcDirs = ["src/main/res",
                                    "../../android/res",
                                    "../../android/res_beta"]
-                }
-            }
-
-            externalNativeBuild {
-                cmake {
-                    cFlags "-DANDROID_VARIANT_BETA"
-                    cppFlags "-DANDROID_VARIANT_BETA"
                 }
             }
         }

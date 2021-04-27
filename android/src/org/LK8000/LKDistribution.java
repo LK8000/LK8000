@@ -1,16 +1,3 @@
-package org.LK8000;
-
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.os.Environment;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.channels.FileChannel;
-
 /*
  * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
  * Released under GNU/GPL License v.2
@@ -22,184 +9,185 @@ import java.nio.channels.FileChannel;
  *
  */
 
+package org.LK8000;
+
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.os.Environment;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static org.LK8000.FileUtils.closeStream;
+import static org.LK8000.FileUtils.copyDirectory;
+import static org.LK8000.FileUtils.copyFile;
+import static org.LK8000.FileUtils.deleteDirectory;
+import static org.LK8000.FileUtils.isEmptyDirectory;
+
 public class LKDistribution {
 
-    public static void createDirectoryToExternalStorageIfAbsent(String strDir) {
-        File f = new File(Environment.getExternalStorageDirectory(), java.io.File.separator + strDir);
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-    }
-
-    public static void copyDirectoryToExternalStorage(Context context,String inDir, String outDir, boolean overWrite) {
-        String[] files = null;
+    private static void copyDirectoryToExternalStorage(Context context, String inDir, String outDir, boolean overWrite) {
         AssetManager assetManager = context.getAssets();
-        try {
-            files = assetManager.list( inDir);
-            for (String filename : files) {
-                copyFileToExternalStorage(context, inDir + "/" + filename, outDir + "/" + filename ,overWrite);
 
+        try {
+            String[] list = assetManager.list(inDir);
+            if (list != null) {
+                for (String filename : list) {
+                    copyFileToExternalStorage(context, inDir + "/" + filename, outDir + "/" + filename, overWrite);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private static boolean isOtherVersionInstalled(Context context) {
+        PackageManager pm = context.getPackageManager();
+        final String[] list = {
+                "org.lk8000.debug",
+                "org.lk8000.beta",
+                "org.lk8000.test"
+        };
+        boolean result = false;
+        for (String name : list) {
+            if (!name.equals(BuildConfig.APPLICATION_ID)) {
+                result |= isOtherVersionInstalled(pm, name);
+            }
+        }
+        return result;
+    }
+
+    private static boolean isOtherVersionInstalled(PackageManager pm, String packageName) {
+        try {
+            PackageInfo packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_META_DATA);
+            return packageInfo != null;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static File getLegacyStorage() {
+        return new File(Environment.getExternalStorageDirectory(), "LK8000/");
+    }
+
+    static class RecentFilter implements FileUtils.Filter {
+        @Override
+        public boolean apply(File src, File dst) {
+            if (dst.exists()) {
+                // don't overwrite newer file.
+                return dst.lastModified() < src.lastModified();
+            }
+            return true;
+        }
+    }
+
+    static class LegacyFilter extends RecentFilter {
+        @Override
+        public boolean apply(File src, File dst) {
+            if (src.isDirectory()) {
+                // _Configuration_xxxx will be copied later.
+                return !src.getName().startsWith("_Configuration");
+            }
+            if (src.getName().equalsIgnoreCase("runtime.log")) {
+                return false; // ignore runtime
+            }
+            return super.apply(src, dst);
+        }
+    }
+
+    final static FileUtils.Filter legacyFilter = new LegacyFilter();
+    final static FileUtils.Filter recentFilter = new RecentFilter();
 
     public static void copyLKDistribution(Context context, boolean force) {
 
-        String configurationDirectory = "_Configuration";
+        final File externalStorage = context.getExternalFilesDir(null);
+        final File legacyStorage = getLegacyStorage();
+        final File dstConfig = new File(externalStorage, "_Configuration");
 
+        if (!dstConfig.exists() && !isEmptyDirectory(legacyStorage)) {
+            // copy all files to external private directory
+            //  excluding config directory
+            copyDirectory(legacyStorage, externalStorage, legacyFilter);
 
-        if (BuildConfig.BUILD_TYPE.equals("beta") ) {
-            configurationDirectory = "_Configuration_beta";
-            if ( configurationDirIsEmpty("/LK8000/" + configurationDirectory)  ) {
-                if ( distributionDirExist("LK8000/_Configuration"))  {
-                    copyDirectory(Environment.getExternalStorageDirectory() + "/LK8000/_Configuration",
-                            Environment.getExternalStorageDirectory() + "/LK8000/" + configurationDirectory);
-                }
-                else {
-                    createDirectoryToExternalStorageIfAbsent("LK8000/" + configurationDirectory);
-                }
+            // move only current version directory "_Configuration"
+            if (BuildConfig.BUILD_TYPE.equals("beta")) {
+                moveConfig(dstConfig, "_Configuration_beta");
+            } else if (BuildConfig.BUILD_TYPE.equals("debug")) {
+                moveConfig(dstConfig, "_Configuration_debug");
+            } else {
+                moveConfig(dstConfig, "_Configuration");
+            }
+
+            boolean deleteAll = true;
+            if (isOtherVersionInstalled(context)) {
+                /*
+                 * delete legacy storage only if all other installed version
+                 * have already moved it's configuration files
+                 */
+                boolean otherExists = new File(legacyStorage, "_Configuration_beta").exists();
+                otherExists |=  new File(legacyStorage, "_Configuration_debug").exists();
+                otherExists |=  new File(legacyStorage, "_Configuration").exists();
+
+                deleteAll = !otherExists;
+            }
+
+            // if all other version has already moved there files we can delete the wall legacy folder.
+            if (deleteAll) {
+                deleteDirectory(legacyStorage);
             }
         }
-        else if (BuildConfig.BUILD_TYPE.equals("debug") ) {
-            configurationDirectory = "_Configuration_debug";
-            if ( configurationDirIsEmpty("/LK8000/" + configurationDirectory)  ) {
-                if ( distributionDirExist("LK8000/_Configuration"))  {
-                    copyDirectory(Environment.getExternalStorageDirectory() + "/LK8000/_Configuration",
-                            Environment.getExternalStorageDirectory() + "/LK8000/" + configurationDirectory);
-                }
-                else {
-                    createDirectoryToExternalStorageIfAbsent("LK8000/" + configurationDirectory);
-                }
-            }
-        }
 
-        createDirectoryToExternalStorageIfAbsent("LK8000/" + configurationDirectory);
-        createDirectoryToExternalStorageIfAbsent("LK8000");
-        createDirectoryToExternalStorageIfAbsent("LK8000/_Maps");
-        createDirectoryToExternalStorageIfAbsent("LK8000/_Airspaces");
-        createDirectoryToExternalStorageIfAbsent("LK8000/_Waypoints");
-        createDirectoryToExternalStorageIfAbsent("LK8000/_Logger");
-        createDirectoryToExternalStorageIfAbsent("LK8000/_Tasks");
-        createDirectoryToExternalStorageIfAbsent("LK8000/_Polars");
-
-
-
-        File f = new File(Environment.getExternalStorageDirectory(), "LK8000/" + configurationDirectory + "/DEFAULT_PROFILE.prf");
+        // copy from assets to private external storage
+        File f = new File(externalStorage, "_Configuration/DEFAULT_PROFILE.prf");
         boolean default_exist = f.exists();
-        if (!default_exist || force ) {
-            copyFileToExternalStorage(context, "distribution/configuration/DEMO.prf", "LK8000/" + configurationDirectory + "/DEFAULT_PROFILE.prf", false); // never forse DEFAULT_PROFILE.prf
-            copyDirectoryToExternalStorage(context, "distribution/configuration", "LK8000/" + configurationDirectory, force);
-            copyDirectoryToExternalStorage(context, "distribution/maps", "LK8000/_Maps", force);
-            copyDirectoryToExternalStorage(context, "distribution/waypoints", "LK8000/_Waypoints", force);
-            copyDirectoryToExternalStorage(context, "distribution/airspaces", "LK8000/_Airspaces", force);
-            copyDirectoryToExternalStorage(context, "distribution/logger", "LK8000/_Logger", force);
-            copyDirectoryToExternalStorage(context, "distribution/tasks", "LK8000/_Tasks", force);
-            copyDirectoryToExternalStorage(context, "distribution/polars", "LK8000/_Polars", force);
+        if (!default_exist || force) {
+            // never force DEFAULT_PROFILE.prf
+            copyFileToExternalStorage(context, "distribution/configuration/DEMO.prf", "_Configuration/DEFAULT_PROFILE.prf", false);
+            copyDirectoryToExternalStorage(context, "distribution/configuration", "_Configuration", force);
+            copyDirectoryToExternalStorage(context, "distribution/maps", "_Maps", force);
+            copyDirectoryToExternalStorage(context, "distribution/waypoints", "_Waypoints", force);
+            copyDirectoryToExternalStorage(context, "distribution/airspaces", "_Airspaces", force);
+            copyDirectoryToExternalStorage(context, "distribution/logger", "_Logger", force);
+            copyDirectoryToExternalStorage(context, "distribution/tasks", "_Tasks", force);
+            copyDirectoryToExternalStorage(context, "distribution/polars", "_Polars", force);
         }
     }
 
-    private static void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while ((read = in.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
-        }
+    private static void moveConfig(File dstConfig, String config) {
+        final File srcConfig = new File(getLegacyStorage(), config);
+        copyDirectory(srcConfig, dstConfig, recentFilter);
+        deleteDirectory(srcConfig);
     }
 
-    public static void copyFileToExternalStorage(Context context, String inFileName, String outFileName,boolean overWrite) {
-        if ( !overWrite   ) {
-            File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + outFileName);
-            if(file.exists())
-                return;
-        }
+    public static void copyFileToExternalStorage(Context context, String inFileName, String outFileName, boolean overWrite) {
         AssetManager assetManager = context.getAssets();
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            in = assetManager.open(  inFileName);
-            out = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/" + outFileName);
-            copyFile(in, out);
-            in.close();
-            in = null;
-            out.flush();
-            out.close();
-            out = null;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    private static void copyDirectory(String srcDir, String dstDir) {
-
-        try {
-            File src = new File(srcDir);
-            File dst = new File(dstDir);
-
-            String files[] = src.list();
-            int filesLength = files.length;
-            for (int i = 0; i < filesLength; i++) {
-                File src1 = new File(src, files[i]);
-                File dst1 =new File(dst, files[i]);
-                copyFile(src1, dst1);
-
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private static void copyFile(File sourceFile, File destFile) throws IOException {
-        if (!destFile.getParentFile().exists())
-            destFile.getParentFile().mkdirs();
-
-        if (!destFile.exists()) {
-            destFile.createNewFile();
+        File outFile = new File(context.getExternalFilesDir(null), outFileName);
+        if (!overWrite && outFile.exists()) {
+            return;
         }
 
-        FileChannel source = null;
-        FileChannel destination = null;
+        File parentDir = outFile.getParentFile();
+        if (parentDir.exists() || parentDir.mkdirs()) {
 
-        try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = assetManager.open(inFileName);
+                out = new FileOutputStream(outFile);
+                copyFile(in, out);
+                out.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                closeStream(in);
+                closeStream(out);
             }
         }
     }
-
-
-    private  static  boolean distributionDirExist(String extpath)
-    {
-        String dir_path =  Environment.getExternalStorageDirectory() + "/" + extpath;
-        boolean ret = false;
-        File dir = new File(dir_path);
-        if(dir.exists() && dir.isDirectory())
-            ret = true;
-        return ret;
-    }
-
-    private  static  boolean configurationDirIsEmpty(String extpath)
-    {
-        String dir_path =  Environment.getExternalStorageDirectory() + "/" + extpath;
-        File dir = new File(dir_path);
-        if(dir.exists() && dir.isDirectory()) {
-            String[] files = dir.list();
-            return (files == null || files.length == 0);
-        }
-        return true;
-    }
-
-
 }

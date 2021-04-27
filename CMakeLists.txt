@@ -82,7 +82,6 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Android/Assert.cpp
     Common/Source/xcs/Android/Bitmap.cpp
     Common/Source/xcs/Android/Context.cpp
-    Common/Source/xcs/Android/Environment.cpp
     Common/Source/xcs/Android/NativeView.cpp
     Common/Source/xcs/Android/Product.cpp
     Common/Source/xcs/Android/TextUtil.cpp

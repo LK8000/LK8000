@@ -18,7 +18,6 @@
 #include "Android/SoundUtil.hpp"
 #include "Android/TextUtil.hpp"
 #include "Android/Context.hpp"
-#include "Android/Environment.hpp"
 #include "Android/InternalSensors.hpp"
 #include "Android/NativePortListener.hpp"
 #include "Android/NativeInputListener.hpp"
@@ -81,7 +80,6 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   Java::File::Initialise(env);
 
   NativeView::Initialise(env);
-  Environment::Initialise(env);
   AndroidBitmap::Initialise(env);
   InternalSensors::Initialise(env);
   NativePortListener::Initialise(env);
@@ -180,7 +178,6 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   SoundUtil::Deinitialise(env);
   InternalSensors::Deinitialise(env);
   AndroidBitmap::Deinitialise(env);
-  Environment::Deinitialise(env);
   NativeView::Deinitialise(env);
 }
 

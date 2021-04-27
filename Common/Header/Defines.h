@@ -140,16 +140,7 @@
 #define LKD_DEFAULT_POLAR   "Default.plr"
 #define LKD_DEFAULT_LANGUAGE   "en"
 
-#ifdef ANDROID_VARIANT_BETA
-#define LKD_CONF	"_Configuration_beta"
-#else
-#ifdef ANDROID_VARIANT_DEBUG
-#define LKD_CONF	"_Configuration_debug"
-#else
 #define LKD_CONF	"_Configuration"
-#endif
-#endif
-
 #define LKD_TASKS	"_Tasks"
 #define LKD_WAYPOINTS	"_Waypoints"
 #define LKD_POLARS	"_Polars"
