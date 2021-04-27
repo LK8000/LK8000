@@ -44,6 +44,19 @@
 
     <activity android:name=".QRCode.QRCodeScannerActivity"
         android:theme="@style/QrCodeTheme"/>
+
+    <provider
+        android:name=".AllFilesDocumentsProvider"
+        android:authorities="${applicationId}.allfiles"
+        android:enabled="@bool/isAtLeastKitKat"
+        android:exported="true"
+        android:grantUriPermissions="true"
+        android:permission="android.permission.MANAGE_DOCUMENTS">
+      <intent-filter>
+        <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+      </intent-filter>
+    </provider>
+
   </application>
 
   <queries>

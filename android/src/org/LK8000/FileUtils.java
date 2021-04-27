@@ -2,14 +2,20 @@ package org.LK8000;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
-import android.util.Log;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.DocumentsContract;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -121,5 +127,52 @@ public class FileUtils {
         while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
         }
+    }
+
+    public static String getDocumentType(final File file) throws FileNotFoundException {
+        if (file.isDirectory()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                return DocumentsContract.Document.MIME_TYPE_DIR;
+            } else {
+                return "vnd.android.document/directory";
+            }
+        }
+        if (file.getName().equalsIgnoreCase("runtime.log")) {
+            return "text/plain";
+        }
+
+        final String extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
+        final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        if (mime != null) {
+            return mime;
+        }
+
+        if (extension.equalsIgnoreCase("igc")) {
+            return "application/vnd.fai.igc";
+        }
+
+        if (extension.equalsIgnoreCase("cup")) {
+            return "application/vnd.naviter.seeyou.cup";
+        }
+
+        if (extension.equalsIgnoreCase("wpt")) {
+            try {
+                FileReader reader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String header = bufferedReader.readLine();
+                bufferedReader.close();
+                reader.close();
+                if (header.contains("OziExplorer Waypoint File")) {
+                    return "application/vnd.oziexplorer.wpt";
+                }
+            } catch (IOException ignore) {
+            }
+        }
+
+        if (extension.equalsIgnoreCase("gpx")) {
+            return "application/gpx+xml";
+        }
+
+        return "application/octet-stream";
     }
 }
