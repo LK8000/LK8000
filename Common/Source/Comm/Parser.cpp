@@ -879,18 +879,24 @@ BOOL NMEAParser::PTAS1(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **param
     return FALSE;
   }
 
-  double wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
-  double qne_altitude = (StrToDouble(params[2],NULL)-2000)/TOFEET;
-  double vtas = StrToDouble(params[3],NULL)/TOKNOTS;
-  
-  pGPS->AirspeedAvailable = TRUE;
-  pGPS->TrueAirspeed = vtas;
-  pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);
+  if(*params[0] != _T('\0')) {
+    double wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
+    UpdateVarioSource(*pGPS, d, wnet);
+  }
 
-  UpdateVarioSource(*pGPS, d, wnet);
-  UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  QNEAltitudeToQNHAltitude(qne_altitude));
- 
-  TASAvailable = true; // 100411 
+  if(*params[2] != _T('\0')) {
+    double qne_altitude = (StrToDouble(params[2],NULL)-2000)/TOFEET;
+    UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  QNEAltitudeToQNHAltitude(qne_altitude));
+
+    if(*params[3] != _T('\0')) {
+      double vtas = StrToDouble(params[3],NULL)/TOKNOTS;
+      pGPS->AirspeedAvailable = TRUE;
+      pGPS->TrueAirspeed = vtas;
+      pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);
+    }
+
+    TASAvailable = true; // 100411
+  }
 
   return FALSE;
 }
