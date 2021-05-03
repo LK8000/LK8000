@@ -91,8 +91,7 @@ public class LK8000 extends Activity {
 
     if (!Loader.loaded) {
       TextView tv = new TextView(this);
-      tv.setText("Failed to load the native LK8000 libary.\n" +
-                 "Report this problem to us, and include the following information:\n" +
+      tv.setText(getString(R.string.error_native_library) + "\n" +
                  "ABI=" + Build.CPU_ABI + "\n" +
                  "PRODUCT=" + Build.PRODUCT + "\n" +
                  "FINGERPRINT=" + Build.FINGERPRINT + "\n" +
@@ -144,7 +143,7 @@ public class LK8000 extends Activity {
     enableImmersiveModeIfSupported();
 
     TextView tv = new TextView(this);
-    tv.setText("Loading LK8000...");
+    tv.setText(R.string.loading);
     setContentView(tv);
 
     batteryReceiver = new BatteryReceiver();
@@ -185,7 +184,7 @@ public class LK8000 extends Activity {
     stopService(new Intent(this, MyService.class));
 
     TextView tv = new TextView(LK8000.this);
-    tv.setText("Shutting down LK8000...");
+    tv.setText(R.string.quit);
     setContentView(tv);
 
     Log.d(TAG, "finish()");
@@ -218,8 +217,7 @@ public class LK8000 extends Activity {
     Log.d(TAG, "getExternalStorageState() = " + state);
     if (!Environment.MEDIA_MOUNTED.equals(state)) {
       TextView tv = new TextView(this);
-      tv.setText("External storage is not available (state='" + state
-                 + "').  Please turn off USB storage.");
+      tv.setText(R.string.error_external_storage);
       setContentView(tv);
       return;
     }
