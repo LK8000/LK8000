@@ -24,42 +24,44 @@ package org.LK8000;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
-import android.view.MotionEvent;
+import android.os.Message;
+import android.os.PowerManager;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.os.Build;
-import android.os.Environment;
-import android.os.PowerManager;
-import android.os.Handler;
-import android.os.Message;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.util.Log;
-import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.onyx.android.sdk.api.device.epd.EpdController;
+
+import org.LK8000.QRCode.QRCodeScannerActivity;
+
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
-
-import com.onyx.android.sdk.api.device.epd.EpdController;
-
-import org.LK8000.QRCode.QRCodeScannerActivity;
 
 public class LK8000 extends Activity {
   private static final String TAG = "LK8000";
@@ -464,4 +466,23 @@ public class LK8000 extends Activity {
 
   private static native void loadQRCodeData(String data_string);
 
+  void shareFile(String path) {
+    try {
+      Context context = getApplicationContext();
+      File file = new File(path);
+      String mimeType = FileUtils.getDocumentType(file);
+      Uri uri = LKFileProvider.getUriForFile(context, file);
+
+      Intent sendIntent = new Intent(Intent.ACTION_SEND);
+      sendIntent.setDataAndType(uri, mimeType);
+      sendIntent.putExtra(Intent.EXTRA_STREAM, LKFileProvider.getUriForFile(context, file));
+      sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+      startActivity(Intent.createChooser(sendIntent, null));
+
+    } catch (Exception e) {
+      // Todo: display user friendly error
+      e.printStackTrace();
+    }
+  }
 }

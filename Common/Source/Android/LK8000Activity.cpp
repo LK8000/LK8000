@@ -17,6 +17,7 @@
 Java::TrivialClass LK8000Activity::cls;
 jmethodID LK8000Activity::check_permissions_method;
 jmethodID LK8000Activity::scan_qrcode_method;
+jmethodID LK8000Activity::share_file_method;
 
 LK8000Activity* LK8000Activity::activity_instance = nullptr;
 
@@ -28,6 +29,9 @@ void LK8000Activity::Initialise(JNIEnv *env, jobject obj) {
 
   scan_qrcode_method = env->GetMethodID(cls, "scanQRCode", "()V");
   assert(scan_qrcode_method);
+
+  share_file_method = env->GetMethodID(cls, "shareFile", "(Ljava/lang/String;)V");
+  assert(share_file_method);
 
   assert(activity_instance == nullptr); // memory leak;
   activity_instance = new LK8000Activity(env, obj);
@@ -79,6 +83,13 @@ void LK8000Activity::RequestPermission() {
 
 void LK8000Activity::ScanQRCode() {
   Java::GetEnv()->CallVoidMethod(obj, scan_qrcode_method);
+}
+
+void LK8000Activity::ShareFile(const char *path) {
+  JNIEnv *env = Java::GetEnv();
+
+  Java::String stringPath(env, path);
+  env->CallVoidMethod(obj, share_file_method, stringPath.Get());
 }
 
 
