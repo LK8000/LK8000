@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">zh</string>
+    <string name="upgrade_storage">"LK8000正在将您的数据（%1$d MB）从目录 LK8000/ to Android/data/%2$s!/files/ Google会要求您这样做，以改善您的隐私。"</string>
 </resources>

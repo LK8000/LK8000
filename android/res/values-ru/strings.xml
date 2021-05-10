@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">ru</string>
+    <string name="upgrade_storage">"LK8000 копирует данные (%1$d MB) из папки LK8000/ в Android/data/%2$s!/files/.\n\nЭто является требованием компании Google в рамках улучшения защиты персональных данных."</string>
 </resources>

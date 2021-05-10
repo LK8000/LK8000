@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayDeque;
 import java.util.Objects;
 
 public class FileUtils {
@@ -174,5 +175,26 @@ public class FileUtils {
         }
 
         return "application/octet-stream";
+    }
+
+    public static long directorySize(File file) {
+        long result = 0;
+
+        ArrayDeque<File> dirStack = new ArrayDeque<>();
+        dirStack.push(file);
+        while(!dirStack.isEmpty()) {
+            File dirCurrent = dirStack.pop();
+            File[] fileList = dirCurrent.listFiles();
+            if (fileList != null) {
+                for(File f: fileList) {
+                    if(f.isDirectory()) {
+                        dirStack.push(f);
+                    } else {
+                        result += f.length();
+                    }
+                }
+            }
+        }
+        return result;
     }
 }

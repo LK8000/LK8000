@@ -100,8 +100,6 @@ public class LK8000 extends Activity {
       return;
     }
 
-    LKDistribution.copyLKDistribution(this.getApplication(), false);
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       AudioManager myAudioMgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
       final String sampleRateStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
@@ -221,6 +219,8 @@ public class LK8000 extends Activity {
       setContentView(tv);
       return;
     }
+
+    LKDistribution.copyLKDistribution(this, false);
 
     nativeView = new NativeView(this, quitHandler, errorHandler);
     setContentView(nativeView);

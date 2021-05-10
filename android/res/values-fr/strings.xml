@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">fr</string>
+    <string name="upgrade_storage">"LK8000 déplace vos données (%1$d Mo) du répertoire LK8000/ vers Android/data/%2$s!/files/.\n\nCette opération est requise par Google dans le cadre d'un effort visant à améliorer votre confidentialité."</string>
 </resources>

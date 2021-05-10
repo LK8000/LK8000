@@ -16,6 +16,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Environment;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +29,7 @@ import static org.LK8000.FileUtils.closeStream;
 import static org.LK8000.FileUtils.copyDirectory;
 import static org.LK8000.FileUtils.copyFile;
 import static org.LK8000.FileUtils.deleteDirectory;
+import static org.LK8000.FileUtils.directorySize;
 import static org.LK8000.FileUtils.isEmptyDirectory;
 
 public class LKDistribution {
@@ -109,7 +112,17 @@ public class LKDistribution {
         final File legacyStorage = getLegacyStorage();
         final File dstConfig = new File(externalStorage, "_Configuration");
 
+
+        // no need to ask for runtime permission, already
         if (!dstConfig.exists() && !isEmptyDirectory(legacyStorage)) {
+
+            long size = directorySize(legacyStorage) / 1024 / 1024;
+            String msg = context.getString(R.string.upgrade_storage, size, BuildConfig.APPLICATION_ID);
+
+            Toast toast = Toast.makeText(context, msg, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+
             // copy all files to external private directory
             //  excluding config directory
             copyDirectory(legacyStorage, externalStorage, legacyFilter);
