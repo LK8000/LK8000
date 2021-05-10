@@ -185,7 +185,7 @@
     "_@H000835_": "[Pourcentage montée]\nPourcentage du temps passé à enrouler. C'est valeur est remise à zéro à chaque nouveau départ.",
     "_@H000836_": "[Temps de Vol]\nTemps passé depuis que le décollage a été détecté.",
     "_@H000837_": "[G Accélération]\nFacteur de charge : Nombre de G percu. Info transmise par un appareil externe. Cette valeur peut être négative lorsqu'on pousse sur le manche.",
-    "_@H000838_": "[Multitarget BRG]\nCap vers le prochain waypoint sélectionné dans le menu multi-cible.",
+    "_@H000838_": "[Multitarget BRG]\nCap vers le  point de virage sélectionné dans le menu multi-cible.",
     "_@H000839_": "[Heure locale]\nHeure locale : transmise via le GPS et convertie en fonction du fuseau horaire.",
     "_@H000840_": "[Heure UTC]\nHeure TU transmise par le GPS.",
     "_@H000841_": "[Temps pour finir le circuit]\nTemps estimé pour finir le circuit. Se base sur les performance idéales de croisière et de montée compte tenu du MC affiché.",
