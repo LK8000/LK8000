@@ -35,11 +35,12 @@ bool InternalPort::Initialize() {
 
 bool InternalPort::Close() {
     InternalSensors* p = internal_sensors;
-    {
-        std::unique_lock<std::mutex> lock(mutex_status);
+
+    WithLock(mutex_status, [&]() {
         internal_sensors = nullptr;
         cv_status.notify_all();
-    }
+    });
+
     delete p;
 
     thread_status.join();
