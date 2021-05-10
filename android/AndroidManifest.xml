@@ -6,6 +6,41 @@
 
   <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.camera2, androidx.camera.lifecycle, androidx.camera.core" />
 
+  <uses-permission android:name="android.permission.BLUETOOTH" />
+  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+
+  <!-- required until Android 4.3 -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
+
+  <!-- required since Android 9 / targetSdkVersion 28 -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+  <!-- required to scan QRCode -->
+  <uses-permission android:name="android.permission.CAMERA" />
+
+  <!-- reason: ioio.lib.bluetooth has a targetSdkVersion < 4 -->
+  <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
+
+  <!-- Tell the system this app requires OpenGL ES 2.0. -->
+  <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+
+  <!-- Disable implicit requirements -->
+  <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+  <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+  <uses-feature android:name="android.hardware.location" android:required="false" />
+  <uses-feature android:name="android.hardware.location.network" android:required="false" />
+  <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+  <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
+  <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+  <!-- Allow installation on faked touchscreen -->
+  <uses-feature android:name="android.hardware.faketouch" android:required="false" />
+
   <application android:icon="${applicationIcon}"
                android:label="${applicationLabel}"
                tools:replace="android:label"
@@ -76,36 +111,4 @@
     <package android:name="org.lk8000.lkmap" />
   </queries>
 
-  <uses-permission android:name="android.permission.BLUETOOTH" />
-  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-  <uses-permission android:name="android.permission.WAKE_LOCK"/>
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-  <uses-permission android:name="android.permission.VIBRATE"/>
-
-  <!-- required since Android 9 / targetSdkVersion 28 -->
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-
-  <!-- requiered to scan QRCode -->
-  <uses-permission android:name="android.permission.CAMERA" />
-
-  <!-- reason: ioio.lib.bluetooth has a targetSdkVersion < 4 -->
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
-
-  <!-- Tell the system this app requires OpenGL ES 2.0. -->
-  <uses-feature android:glEsVersion="0x00020000" android:required="true" />
-
-  <!-- Disable implicit requirements -->
-  <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
-  <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
-  <uses-feature android:name="android.hardware.location" android:required="false"/>
-  <uses-feature android:name="android.hardware.location.network" android:required="false"/>
-  <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
-  <uses-feature android:name="android.hardware.usb.accessory" android:required="false"/>
-  <uses-feature android:name="android.hardware.camera" android:required="false"/>
-
-  <!-- Allow installation on faked touchscreen -->
-  <uses-feature android:name="android.hardware.faketouch" android:required="false"/>
 </manifest>
