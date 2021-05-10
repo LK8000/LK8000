@@ -208,7 +208,7 @@ public class InternalGPS
    * This method was deprecated in API level 29.
    * This callback will never be invoked on Android Q and above.
    *
-   * stiil minSDK is < 30 don't remove this to avoid "AbstractMethodError"
+   * still minSDK is < 30 don't remove this to avoid "AbstractMethodError"
    */
   @Override
   @SuppressWarnings("deprecation")
