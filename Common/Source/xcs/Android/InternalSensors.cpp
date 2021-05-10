@@ -301,39 +301,48 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
   // XXX this shouldn't be a global variable
   static SelfTimingKalmanFilter1d kalman_filter(KF_MAX_DT, KF_VAR_ACCEL);
 
-  const unsigned int index = getDeviceIndex(env, obj);
-  ScopeLock Lock(CritSec_Comm);
+  try {
+    const unsigned int index = getDeviceIndex(env, obj);
 
-  PDeviceDescriptor_t pdev = devX(index);
-  if(pdev) {
-    pdev->nmeaParser.connected = true;
-    pdev->HB = LKHearthBeats;
-    if(!pdev->IsBaroSource) {
-      pdev->IsBaroSource = &IsBaroSource;
-      if (pdev->Com) {
-        pdev->Com->CancelWaitEvent();
-      }
-    }
+    double vario = WithLock(CritSec_Comm, [index, pressure, sensor_noise_variance]() {
 
-    /* Kalman filter updates are also protected by the CommPort
-       mutex. These should not take long; we won't hog the mutex
-       unduly. */
-    kalman_filter.Update(pressure, sensor_noise_variance);
+        PDeviceDescriptor_t pdev = devX(index);
+        if (!pdev) {
+          throw std::runtime_error("invalid device index");
+        }
+        pdev->nmeaParser.connected = true;
+        pdev->HB = LKHearthBeats;
+        if (!pdev->IsBaroSource) {
+          pdev->IsBaroSource = &IsBaroSource;
+          if (pdev->Com) {
+            pdev->Com->CancelWaitEvent();
+          }
+        }
 
-    double vario = ComputeNoncompVario(kalman_filter.GetXAbs(), kalman_filter.GetXVel());
-    double qnh_altitude = StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100);
+        /* Kalman filter updates are also protected by the CommPort
+           mutex. These should not take long; we won't hog the mutex
+           unduly. */
+        kalman_filter.Update(pressure, sensor_noise_variance);
 
-    {
-      ScopeLock lock(vario_player_mutex);
-      if(vario_player) {
-        vario_player->SetVz(vario);
-      }
-    }
+        double vario = ComputeNoncompVario(kalman_filter.GetXAbs(), kalman_filter.GetXVel());
+        double qnh_altitude = StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100);
 
-    LockFlightData();
-    UpdateVarioSource(GPS_INFO, *pdev, vario);
-    UpdateBaroSource(&GPS_INFO, 0, pdev, qnh_altitude);
-    UnlockFlightData();
+        LockFlightData();
+        UpdateVarioSource(GPS_INFO, *pdev, vario);
+        UpdateBaroSource(&GPS_INFO, 0, pdev, qnh_altitude);
+        UnlockFlightData();
+
+        return vario;
+    });
+
+    WithLock(vario_player_mutex, [&]() {
+        if (vario_player) {
+          vario_player->SetVz(vario);
+        }
+    });
+
+  } catch (std::runtime_error& e) {
+    StartupStore(_T("setBarometricPressure: %s"), to_tstring(e.what()).c_str());
   }
 }
 
