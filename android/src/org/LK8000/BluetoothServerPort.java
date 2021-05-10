@@ -24,6 +24,9 @@ Copyright_License {
 package org.LK8000;
 
 import java.util.UUID;
+import java.util.Collection;
+import java.util.Set;
+import java.util.LinkedList;
 import java.io.IOException;
 import android.util.Log;
 import android.bluetooth.BluetoothAdapter;
@@ -95,14 +98,14 @@ final class BluetoothServerPort extends MultiPort
     }
   }
 
-  @Override public synchronized void close() {
+  @Override public void close() {
     closeServerSocket();
 
     /* ensure that run() has finished before calling
        MultiPort.close() */
     try {
       thread.join();
-    } catch (InterruptedException ignored) {
+    } catch (InterruptedException e) {
     }
 
     super.close();
