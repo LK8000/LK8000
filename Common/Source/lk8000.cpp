@@ -292,15 +292,6 @@ bool Startup(const TCHAR* szCmdLine) {
 
   InstallSystem();
 
-  // These directories are needed if missing, as LK can run also with no maps and no waypoints..
-  CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
-  CreateDirectoryIfAbsent(TEXT(LKD_CONF));
-  CreateDirectoryIfAbsent(TEXT(LKD_TASKS));
-  CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
-  CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
-  CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
-  CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
-
   LocalPath(defaultProfileFile, _T(LKD_CONF), _T(LKPROFILE));
   _tcscpy(startProfileFile, defaultProfileFile);
   LocalPath(defaultAircraftFile,_T(LKD_CONF), _T(LKAIRCRAFT));
@@ -334,6 +325,15 @@ bool Startup(const TCHAR* szCmdLine) {
     main_window->OnStopEventLoop();
   }
 #endif
+
+  // These directories are needed if missing, as LK can run also with no maps and no waypoints..
+  CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
+  CreateDirectoryIfAbsent(TEXT(LKD_CONF));
+  CreateDirectoryIfAbsent(TEXT(LKD_TASKS));
+  CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
+  CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
+  CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
+  CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
 
   memset( &(RadioPara), 0, sizeof(Radio_t));
   RadioPara.Volume = 6;

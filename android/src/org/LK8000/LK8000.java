@@ -220,8 +220,6 @@ public class LK8000 extends Activity {
       return;
     }
 
-    LKDistribution.copyLKDistribution(this, false);
-
     nativeView = new NativeView(this, quitHandler, errorHandler);
     setContentView(nativeView);
     // Receive keyboard events
@@ -425,6 +423,8 @@ public class LK8000 extends Activity {
   }
 
   private void onRuntimePermissionGranted() {
+    LKDistribution.copyLKDistribution(this, false);
+
     onRuntimePermissionGrantedNative();
   }
 

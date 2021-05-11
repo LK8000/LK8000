@@ -5,6 +5,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
@@ -36,7 +37,9 @@ public class FileUtils {
         try {
             if (directory.isDirectory()) {
                 for (File child : Objects.requireNonNull(directory.listFiles())) {
-                    deleteDirectory(child);
+                    if (!deleteDirectory(child)) {
+                        Log.d("failed to delete: ", child.getAbsolutePath());
+                    };
                 }
             }
             return directory.delete();

@@ -8,5 +8,8 @@
   <string name="quit">Shutting down LK8000…</string>
   <string name="error_external_storage">External storage is not available, Please turn off USB storage.</string>
   <string name="error_native_library">Failed to load the native LK8000 library.\nReport this problem to us, and include the following information:\n</string>
-  <string name="upgrade_storage">LK8000 is moving your data (%1$d MB) from the directory LK8000/ to Android/data/%2$s/files/.\n\n This is required by Google as part of an effort to improve your privacy.\n\nPlease wait, the migration can take a few minutes.</string>
+  <string name="upgrade_storage">LK8000 is moving your data (%1$d MB) from the directory LK8000/ to Android/data/%2$s/files/. This is required by Google as part of an effort to improve your privacy.
+  Please wait, the migration can take a few minutes.</string>
+  <string name="close">Close</string>
+  <string name="warning">Warning !</string>
 </resources>

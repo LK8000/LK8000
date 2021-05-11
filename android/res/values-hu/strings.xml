@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">hu</string>
-    <string name="upgrade_storage">"Az LK8000 áthelyezi adatait (%1$dMB) a LK8000/ könyvtárból a Android/data/%2$s!/files/ könyvtárba.\n\nEzt a Google előírja az adatvédelem javításának részeként."</string>
+    <string name="upgrade_storage">"Az LK8000 áthelyezi adatait (%1$dMB) a LK8000/ könyvtárból a Android/data/%2$s/files/ könyvtárba.\n\nEzt a Google előírja az adatvédelem javításának részeként."</string>
 </resources>

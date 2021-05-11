@@ -11,13 +11,17 @@
 
 package org.LK8000;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -106,7 +110,7 @@ public class LKDistribution {
     final static FileUtils.Filter legacyFilter = new LegacyFilter();
     final static FileUtils.Filter recentFilter = new RecentFilter();
 
-    public static void copyLKDistribution(Context context, boolean force) {
+    public static void copyLKDistribution(Context   context, boolean force) {
 
         final File externalStorage = context.getExternalFilesDir(null);
         final File legacyStorage = getLegacyStorage();
@@ -117,11 +121,18 @@ public class LKDistribution {
         if (!dstConfig.exists() && !isEmptyDirectory(legacyStorage)) {
 
             long size = directorySize(legacyStorage) / 1024 / 1024;
-            String msg = context.getString(R.string.upgrade_storage, size, BuildConfig.APPLICATION_ID);
 
-            Toast toast = Toast.makeText(context, msg, Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
+            ContextCompat.getMainExecutor(context).execute(()  -> {
+                String msg = context.getString(R.string.upgrade_storage, size, BuildConfig.APPLICATION_ID);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.warning)
+                        .setPositiveButton(R.string.close, ((dialog, which) -> {}))
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setMessage(msg)
+                        .create()
+                        .show();
+            });
 
             // copy all files to external private directory
             //  excluding config directory
@@ -174,7 +185,9 @@ public class LKDistribution {
     private static void moveConfig(File dstConfig, String config) {
         final File srcConfig = new File(getLegacyStorage(), config);
         copyDirectory(srcConfig, dstConfig, recentFilter);
-        deleteDirectory(srcConfig);
+        if (!deleteDirectory(srcConfig)) {
+            Log.d("failed to delete: ", srcConfig.getAbsolutePath());
+        }
     }
 
     public static void copyFileToExternalStorage(Context context, String inFileName, String outFileName, boolean overWrite) {
