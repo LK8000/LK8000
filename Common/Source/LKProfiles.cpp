@@ -166,12 +166,6 @@ const char szRegistryBallastSecsToEmpty[] = "BallastSecsToEmpty1";
 const char szRegistryBarOpacity[] = "BarOpacity";
 const char szRegistryBestWarning[] = "BestWarning";
 const char szRegistryBgMapColor[] = "BgMapColor";
-const char szRegistryBit1Index[] = "Bit1Index";
-const char szRegistryBit2Index[] = "Bit2Index";
-const char szRegistryBit3Index[] = "Bit3Index";
-const char szRegistryBit4Index[] = "Bit4Index";
-const char szRegistryBit5Index[] = "Bit5Index";
-const char szRegistryBit6Index[] = "Bit6Index";
 const char szRegistryBugs[] = "Bugs";
 const char szRegistryCheckSum[] = "CheckSum1";
 const char szRegistryCircleZoom[] = "CircleZoom";
@@ -213,39 +207,51 @@ const char szRegistryCustomKeyModeRight[] = "CustomKeyModeRight";
 const char szRegistryCustomKeyTime[] = "CustomKeyTime";
 const char szRegistryDebounceTimeout[] = "DebounceTimeout1";
 const char szRegistryDeclutterMode[] = "DeclutterMode";
-const char szRegistryDeviceA[] = "DeviceA";
-const char szRegistryDeviceB[] = "DeviceB";
-const char szRegistryDeviceC[] = "DeviceC";
-const char szRegistryDeviceD[] = "DeviceD";
-const char szRegistryDeviceE[] = "DeviceE";
-const char szRegistryDeviceF[] = "DeviceF";
-const char szRegistryReplayFileA[] = "NMEA_Replay_FileA";
-const char szRegistryReplayFileB[] = "NMEA_Replay_FileB";
-const char szRegistryReplayFileC[] = "NMEA_Replay_FileC";
-const char szRegistryReplayFileD[] = "NMEA_Replay_FileD";
-const char szRegistryReplayFileE[] = "NMEA_Replay_FileE";
-const char szRegistryReplayFileF[] = "NMEA_Replay_FileF";
 
-extern const char szRegistryReplaySpeedA[]= "NMEA_Replay_SpeedA";
-extern const char szRegistryReplaySpeedB[]= "NMEA_Replay_SpeedB";
-extern const char szRegistryReplaySpeedC[]= "NMEA_Replay_SpeedC";
-extern const char szRegistryReplaySpeedD[]= "NMEA_Replay_SpeedD";
-extern const char szRegistryReplaySpeedE[]= "NMEA_Replay_SpeedE";
-extern const char szRegistryReplaySpeedF[]= "NMEA_Replay_SpeedF";
+const char* szRegistryReplayFile[] = {
+        "NMEA_Replay_FileA",
+        "NMEA_Replay_FileB",
+        "NMEA_Replay_FileC",
+        "NMEA_Replay_FileD",
+        "NMEA_Replay_FileE",
+        "NMEA_Replay_FileF"
+};
 
-extern const char szRegistryReplayRawA[]= "NMEA_Replay_RawA";
-extern const char szRegistryReplayRawB[]= "NMEA_Replay_RawB";
-extern const char szRegistryReplayRawC[]= "NMEA_Replay_RawC";
-extern const char szRegistryReplayRawD[]= "NMEA_Replay_RawD";
-extern const char szRegistryReplayRawE[]= "NMEA_Replay_RawE";
-extern const char szRegistryReplayRawF[]= "NMEA_Replay_RawF";
+static_assert(std::size(Replay_FileName) == std::size(szRegistryReplayFile),
+              "invalid array size");
 
-extern const char szRegistryReplaySyncA[]= "NMEA_Replay_SyncA";
-extern const char szRegistryReplaySyncB[]= "NMEA_Replay_SyncB";
-extern const char szRegistryReplaySyncC[]= "NMEA_Replay_SyncC";
-extern const char szRegistryReplaySyncD[]= "NMEA_Replay_SyncD";
-extern const char szRegistryReplaySyncE[]= "NMEA_Replay_SyncE";
-extern const char szRegistryReplaySyncF[]= "NMEA_Replay_SyncF";
+const char* szRegistryReplaySpeed[] = {
+        "NMEA_Replay_SpeedA",
+        "NMEA_Replay_SpeedB",
+        "NMEA_Replay_SpeedC",
+        "NMEA_Replay_SpeedD",
+        "NMEA_Replay_SpeedE",
+        "NMEA_Replay_SpeedF"
+};
+
+static_assert(std::size(ReplaySpeed) == std::size(szRegistryReplaySpeed), "invalid array size");
+
+const char* szRegistryReplayRaw[] = {
+        "NMEA_Replay_RawA",
+        "NMEA_Replay_RawB",
+        "NMEA_Replay_RawC",
+        "NMEA_Replay_RawD",
+        "NMEA_Replay_RawE",
+        "NMEA_Replay_RawF"
+};
+
+static_assert(std::size(RawByteData) == std::size(szRegistryReplayRaw), "invalid array size");
+
+const char* szRegistryReplaySync[] = {
+        "NMEA_Replay_SyncA",
+        "NMEA_Replay_SyncB",
+        "NMEA_Replay_SyncC",
+        "NMEA_Replay_SyncD",
+        "NMEA_Replay_SyncE",
+        "NMEA_Replay_SyncF"
+};
+
+static_assert(std::size(ReplaySync) == std::size(szRegistryReplaySync), "invalid array size");
 
 const char szRegistryDisableAutoLogger[] = "DisableAutoLogger";
 const char szRegistryLiveTrackerInterval[] = "LiveTrackerInterval";
@@ -329,25 +335,74 @@ const char szRegistryPolarFile[] = "PolarFile1";
 const char szRegistryPollingMode[] = "PollingMode";
 const char szRegistryPort1Index[] = "PortIndex";
 const char szRegistryPort2Index[] = "Port2Index";
-const char szRegistryPort1Name[] = "Port1Name";
-const char szRegistryPort2Name[] = "Port2Name";
-const char szRegistryPort3Name[] = "Port3Name";
-const char szRegistryPort4Name[] = "Port4Name";
-const char szRegistryPort5Name[] = "Port5Name";
-const char szRegistryPort6Name[] = "Port6Name";
-const char szRegistryIpAddress1[] = "IpAddress1";
-const char szRegistryIpAddress2[] = "IpAddress2";
-const char szRegistryIpAddress3[] = "IpAddress3";
-const char szRegistryIpAddress4[] = "IpAddress4";
-const char szRegistryIpAddress5[] = "IpAddress5";
-const char szRegistryIpAddress6[] = "IpAddress6";
+
+const char* szRegistryDevice[] = {
+        "DeviceA",
+        "DeviceB",
+        "DeviceC",
+        "DeviceD",
+        "DeviceE",
+        "DeviceF"
+};
+
+static_assert(std::size(dwDeviceName) == std::size(szRegistryDevice), "invalid array size");
+
+const char* szRegistryPortName[] = {
+        "Port1Name",
+        "Port2Name",
+        "Port3Name",
+        "Port4Name",
+        "Port5Name",
+        "Port6Name"
+};
+
+static_assert(std::size(szPort) == std::size(szRegistryPortName), "invalid array size");
+
+const char* szRegistrySpeedIndex[] = {
+        "SpeedIndex",
+        "Speed2Index",
+        "Speed3Index",
+        "Speed4Index",
+        "Speed5Index",
+        "Speed6Index"
+};
+
+static_assert(std::size(dwSpeedIndex) == std::size(szRegistrySpeedIndex), "invalid array size");
+
+const char* szRegistryBitIndex[] = {
+        "Bit1Index",
+        "Bit2Index",
+        "Bit3Index",
+        "Bit4Index",
+        "Bit5Index",
+        "Bit6Index"
+};
+
+static_assert(std::size(dwBitIndex) == std::size(szRegistryBitIndex), "invalid array size");
+
+const char* szRegistryIpAddress[] = {
+        "IpAddress1",
+        "IpAddress2",
+        "IpAddress3",
+        "IpAddress4",
+        "IpAddress5",
+        "IpAddress6"
+};
+
+static_assert(std::size(szIpAddress) == std::size(szRegistryIpAddress), "invalid array size");
+
+const char* szRegistryIpPort[] = {
+        "IpPort1",
+        "IpPort2",
+        "IpPort3",
+        "IpPort4",
+        "IpPort5",
+        "IpPort6"
+};
+
+static_assert(std::size(dwIpPort) == std::size(szRegistryIpPort), "invalid array size");
+
 const char szRegistryIOValues[] = "Val_IO_Dir";
-const char szRegistryIpPort1[] = "IpPort1";
-const char szRegistryIpPort2[] = "IpPort2";
-const char szRegistryIpPort3[] = "IpPort3";
-const char szRegistryIpPort4[] = "IpPort4";
-const char szRegistryIpPort5[] = "IpPort5";
-const char szRegistryIpPort6[] = "IpPort6";
 const char szRegistryPressureHg[] = "PressureHg";
 const char szRegistrySafetyAltitudeArrival[] = "SafetyAltitudeArrival1";
 const char szRegistrySafetyAltitudeMode[] = "SafetyAltitudeMode";
@@ -361,12 +416,6 @@ const char szRegistryShading[] = "Shading";
 const char szRegistryIsoLine[] = "IsoLine";
 const char szRegistrySnailTrail[] = "SnailTrail";
 const char szRegistrySnailScale[] = "SnailScale";
-const char szRegistrySpeed1Index[] = "SpeedIndex";
-const char szRegistrySpeed2Index[] = "Speed2Index";
-const char szRegistrySpeed3Index[] = "Speed3Index";
-const char szRegistrySpeed4Index[] = "Speed4Index";
-const char szRegistrySpeed5Index[] = "Speed5Index";
-const char szRegistrySpeed6Index[] = "Speed6Index";
 const char szRegistrySpeedUnitsValue[] = "SpeedUnits";
 const char szRegistryStartHeightRef[] = "StartHeightRef";
 const char szRegistryStartLine[] = "StartLine";
@@ -389,12 +438,19 @@ const char szRegistryTrackBar[] = "TrackBar";
 const char szRegistryTrailDrift[] = "TrailDrift";
 const char szRegistryUTCOffset[] = "UTCOffset";
 const char szRegistryUseGeoidSeparation[] = "UseGeoidSeparation";
-const char szRegistryUseExtSound1[] = "UseExtSound1";
-const char szRegistryUseExtSound2[] = "UseExtSound2";
-const char szRegistryUseExtSound3[] = "UseExtSound3";
-const char szRegistryUseExtSound4[] = "UseExtSound4";
-const char szRegistryUseExtSound5[] = "UseExtSound5";
-const char szRegistryUseExtSound6[] = "UseExtSound6";
+
+const char* szRegistryUseExtSound[] = {
+        "UseExtSound1",
+        "UseExtSound2",
+        "UseExtSound3",
+        "UseExtSound4",
+        "UseExtSound5",
+        "UseExtSound6"
+};
+
+static_assert(std::size(UseExtSound) == std::size(szRegistryUseExtSound),
+              "invalid array size");
+
 const char szRegistryUseUngestures[] = "UseUngestures";
 const char szRegistryUseTotalEnergy[] = "UseTotalEnergy";
 const char szRegistryWarningTime[] = "WarnTime";
