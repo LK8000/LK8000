@@ -17,12 +17,23 @@
 #include "Util/Clamp.hpp"
 #include "Settings/read.h"
 
+extern bool CommandResolution;
+
+namespace {
+
 void LKParseProfileString(const char *sname, const char *svalue);
 
 constexpr int nMaxValueValueSize = MAX_PATH * 2 + 6;    // max regkey name is 256 chars + " = "
+bool isDefaultProfile = false; // needed to avoid screensize changes from custom profiles on PC
 
-static bool isDefaultProfile = false; // needed to avoid screensize changes from custom profiles on PC
-extern bool CommandResolution;
+using unique_file_ptr = std::unique_ptr<FILE, decltype(&fclose)>;
+
+unique_file_ptr make_unique_file(const TCHAR* filename, const TCHAR * flags) {
+  return unique_file_ptr(_tfopen(filename, flags), &fclose);
+}
+
+}
+
 
 //
 // Returns true if at least one value was found,
@@ -48,7 +59,7 @@ bool LKProfileLoad(const TCHAR *szFile) {
 
   bool found = false;
 
-  FILE *fp = _tfopen(szFile, TEXT("rb"));
+  unique_file_ptr fp = make_unique_file(szFile, TEXT("rb"));
   if (!fp) {
     StartupStore(_T(".... LoadProfile <%s> open failed%s"), szFile, NEWLINE);
     return false;
@@ -59,7 +70,7 @@ bool LKProfileLoad(const TCHAR *szFile) {
   char value[nMaxValueValueSize];
 
   // UTF8 file
-  while (fgets(inval, nMaxValueValueSize, fp)) {
+  while (fgets(inval, nMaxValueValueSize, fp.get())) {
 
     if (sscanf(inval, "%[^#=\r\n ]=\"%[^\r\n\"]\"[\r\n]", name, value) == 2) {
       if (strlen(name) > 0) {
@@ -80,13 +91,11 @@ bool LKProfileLoad(const TCHAR *szFile) {
     // else crlf, or comment, or invalid line
     // else StartupStore(_T("...... PARSE INVALID: <%S>\n"),inval);
   }
-
-  fclose(fp);
   return found;
 }
 
 
-using std::max;
+namespace {
 
 #define IO_PARAM_SIZE 160
 
@@ -848,6 +857,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 #endif
 }
 
+} // namespace
 
 void ReadDeviceSettings(const int devIdx, TCHAR *Name) {
   Name[0] = '\0';
