@@ -33,6 +33,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "ContestMgr.h"
+#include "Tracking/Tracking.h"
 
 #ifdef ANDROID
 #include <jni.h>
@@ -667,9 +668,9 @@ if(wf)
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
   if (wp)
   {
-    if (LiveTrackerStart_config != wp->GetDataField()->GetAsInteger())
+    if (tracking::start_config != wp->GetDataField()->GetAsInteger())
     {
-      LiveTrackerStart_config = (int)wp->GetDataField()->GetAsInteger();
+        tracking::start_config = wp->GetDataField()->GetAsInteger();
       requirerestart = true;
 
     }
@@ -680,9 +681,9 @@ if(wf)
 static void OnLiveTrackersrvClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackersrv) {
-        _tcscpy(Temp, LiveTrackersrv_Config);
+        _tcscpy(Temp, tracking::server_config);
         dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(LiveTrackersrv_Config, Temp);
+        _tcscpy(tracking::server_config, Temp);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -690,10 +691,9 @@ static void OnLiveTrackersrvClicked(WndButton* pWnd) {
 static void OnLiveTrackerportClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerport) {
-        _stprintf(Temp, _T("%d"), LiveTrackerport_Config);
+        _stprintf(Temp, _T("%d"), tracking::port_config);
         dlgNumEntryShowModal(Temp, 100);
-        TCHAR *sz = NULL;
-        LiveTrackerport_Config = _tcstol(Temp, &sz, 10);
+        tracking::port_config = _tcstol(Temp, nullptr, 10);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -701,9 +701,9 @@ static void OnLiveTrackerportClicked(WndButton* pWnd) {
 static void OnLiveTrackerusrClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerusr) {
-        _tcscpy(Temp, LiveTrackerusr_Config);
+        _tcscpy(Temp, tracking::usr_config);
         dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(LiveTrackerusr_Config, Temp);
+        _tcscpy(tracking::usr_config, Temp);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -711,9 +711,9 @@ static void OnLiveTrackerusrClicked(WndButton* pWnd) {
 static void OnLiveTrackerpwdClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerpwd) {
-        _tcscpy(Temp, LiveTrackerpwd_Config);
+        _tcscpy(Temp, tracking::pwd_config);
         dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(LiveTrackerpwd_Config, Temp);
+        _tcscpy(tracking::pwd_config, Temp);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -2416,14 +2416,14 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    wp->GetDataField()->SetAsInteger(LiveTrackerInterval);
+    wp->GetDataField()->SetAsInteger(tracking::interval);
     wp->GetDataField()->SetUnits(TEXT("sec"));
     wp->RefreshDisplay();
   }
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
-    wp->GetDataField()->Set(LiveTrackerRadar_config);
+    wp->GetDataField()->Set(tracking::radar_config);
     wp->RefreshDisplay();
   }
 
@@ -2433,7 +2433,7 @@ DataField* dfe = wp->GetDataField();
 	DataField* dfe = wp->GetDataField();
 	dfe->addEnumText(MsgToken(2334));	// LKTOKEN   _@M2334_ "In flight only (default)"
 	dfe->addEnumText(MsgToken(2335));	// LKTOKEN  _@M2335_ "permanent (test purpose)"
-    dfe->Set(LiveTrackerStart_config);
+    dfe->Set(tracking::start_config);
     wp->RefreshDisplay();
   }
 
@@ -3609,16 +3609,16 @@ void dlgConfigurationShowModal(short mode){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    if (LiveTrackerInterval != wp->GetDataField()->GetAsInteger()) {
-      LiveTrackerInterval = (wp->GetDataField()->GetAsInteger());
+    if (tracking::interval != wp->GetDataField()->GetAsInteger()) {
+        tracking::interval = (wp->GetDataField()->GetAsInteger());
       requirerestart = true;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
-    if (LiveTrackerRadar_config != wp->GetDataField()->GetAsBoolean()) {
-      LiveTrackerRadar_config = wp->GetDataField()->GetAsBoolean();
+    if (tracking::radar_config != wp->GetDataField()->GetAsBoolean()) {
+        tracking::radar_config = wp->GetDataField()->GetAsBoolean();
       requirerestart = true;
     }
   }

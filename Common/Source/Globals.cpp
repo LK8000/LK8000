@@ -13,6 +13,7 @@
 #include "Modeltype.h"
 #include "LKInterface.h"
 #include "Multimap.h"
+#include "Tracking/Tracking.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -518,8 +519,6 @@ void Globals_Init(void) {
   TrailActive = 1; // long
   TrailActive_Config = 1; // long
   DisableAutoLogger = false;
-  LiveTrackerInterval = 0;
-  LiveTrackerStart_config  = 1;
 
   AutoWindMode_Config= D_AUTOWIND_CIRCLING;
   AutoWindMode= AutoWindMode_Config;
@@ -620,10 +619,9 @@ void Globals_Init(void) {
 
   // Logger
   PilotName_Config[0]=_T('\0');
-  LiveTrackersrv_Config[0]=_T('\0');
-  LiveTrackerport_Config=80;
-  LiveTrackerusr_Config[0]=_T('\0');
-  LiveTrackerpwd_Config[0]=_T('\0');
+
+  tracking::ResetSettings();
+
   AircraftType_Config[0]=_T('\0');
   AircraftRego_Config[0]=_T('\0');
   CompetitionClass_Config[0]=_T('\0');

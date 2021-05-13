@@ -41,6 +41,7 @@ WPT=$(SRC)/Waypoints
 RSC=$(SRC)/Resources
 SRC_SCREEN=$(SRC)/Screen
 SRC_WINDOW=$(SRC)/Window
+SRC_TRACKING=$(SRC)/Tracking
 
 
 ifeq ($(TARGET),)
@@ -711,9 +712,11 @@ endif
 
 ifeq ($(CONFIG_WIN32),y)
  ifeq ($(CONFIG_PC),y)
-  LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid -lGeographic
+  LDLIBS := -Wl,-Bstatic -lstdc++ -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid -lGeographic
  else
-  LDLIBS := -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lcommctrl -lole32 -loleaut32 -luuid
+  LDLIBS := -Wl,-Bstatic -lstdc++ 
+  LDLIBS += -Wl,-Bdynamic -lcommctrl -lole32 -loleaut32 -luuid
+
   ifeq ($(GCC_GTEQ_820),1) 
     LDLIBS += -Wl,-Bstatic -latomic
   endif
@@ -1308,8 +1311,26 @@ DLGS	:=\
 	$(DLG)/dlgWeatherStDetails.cpp \
 	$(DLG)/dlgNMEAReplay.cpp \
 	$(DLG)/dlgRadioPriSecSel.cpp \
-	
-	
+
+TRACKING := \
+	$(SRC_TRACKING)/LiveTrack24.cpp \
+	$(SRC_TRACKING)/Tracking.cpp \
+	$(SRC_TRACKING)/SkylinesGlue.cpp \
+	$(SRC)/xcs/Tracking/SkyLines/Client.cpp \
+	$(SRC)/xcs/Tracking/SkyLines/Glue.cpp \
+	$(SRC)/xcs/Tracking/SkyLines/Key.cpp \
+	$(SRC)/xcs/Tracking/SkyLines/Assemble.cpp \
+	$(SRC)/xcs/Tracking/TrackingGlue.cpp \
+	$(SRC)/xcs/Tracking/TrackingSettings.cpp \
+	\
+	$(SRC)/xcs/Util/CRC.cpp \
+	$(SRC)/xcs/Net/AllocatedSocketAddress.cpp \
+	$(SRC)/xcs/Net/IPv4Address.cpp \
+	$(SRC)/xcs/Net/SocketAddress.cpp \
+	$(SRC)/xcs/Net/SocketDescriptor.cpp \
+	$(SRC)/xcs/Net/State.cpp \
+	$(SRC)/xcs/Net/StaticSocketAddress.cpp \
+
 SRC_FILES :=\
 	$(WINDOW) \
 	$(SCREEN) \
@@ -1337,7 +1358,6 @@ SRC_FILES :=\
 	$(SRC)/InitFunctions.cpp\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/lk8000.cpp\
-	$(SRC)/LiveTracker.cpp \
 	$(SRC)/Airspace/LKAirspace.cpp	\
 	$(SRC)/Airspace/Sonar.cpp	\
 	$(SRC)/LKInstall.cpp 		\
@@ -1396,6 +1416,7 @@ SRC_FILES :=\
 	$(SRC)/Geographic/GeoPoint.cpp \
 	$(SRC)/Geographic/TransverseMercator.cpp \
 	\
+	$(TRACKING) \
 	$(LKINTER) \
 	$(LIBRARY) \
 	$(WAYPT) \
@@ -1681,6 +1702,12 @@ $(BIN)/%.o: $(SRC)/%.c
 	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
 $(BIN)/%.o: $(SRC)/%.cpp
+	@$(NQ)echo "  CXX     $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
+	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
+
+$(BIN)/%.o: $(SRC)/%.cxx
 	@$(NQ)echo "  CXX     $@"
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<

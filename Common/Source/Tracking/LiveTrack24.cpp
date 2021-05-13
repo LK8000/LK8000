@@ -37,9 +37,10 @@
 #include <sstream>
 #include <time.h>
 #include <zlib.h>
-
+#include <string>
 #include "externs.h"
-#include "LiveTracker.h"
+#include "Tracking.h"
+#include "LiveTrack24.h"
 #include "LiveTrack24APIKey.h"
 #include "utils/stringext.h"
 #include "Poco/Event.h"
@@ -221,12 +222,12 @@ static char* UrlEncode(const char *szText, char* szDst, int bufsize) {
 
 // Init Live Tracker services, if available
 void LiveTrackerInit() {
-	if (((LiveTrackerInterval == 0) 
+	if (((tracking::interval == 0)
 #ifndef TESTBENCH	     // if not compiled as testbench
 	     || (SIMMODE)    // disable tracking for simulation mode
 #endif	     
 	    )
-			&& (!LiveTrackerRadar_config || !EnableFLARMMap)) {
+			&& (!tracking::radar_config || !EnableFLARMMap)) {
 		// If livetracker is not enabled at startup, we do nothing,
 		// but in this case LK must be restarted, if user enables it!
 #if TESTBENCH
@@ -242,22 +243,22 @@ void LiveTrackerInit() {
 #endif // KOBO
 
 	// If we are using LiveTrack24 RADAR let's increase ghost and zombie times. ( maybe remove ISPARAGLIDER ? )
-	if (!_ws_inited && ISPARAGLIDER && LiveTrackerRadar_config)
+	if (!_ws_inited && ISPARAGLIDER && tracking::radar_config)
 		LKTime_Real = 60, LKTime_Ghost = 120, LKTime_Zombie = 360;
 
-	to_utf8(LiveTrackerusr_Config, _username);
+	to_utf8(tracking::usr_config, _username);
 	to_utf8(PilotName_Config, _pilotname);
-	to_utf8(LiveTrackerpwd_Config, _password);
-	to_utf8(LiveTrackersrv_Config, _server_name);
+	to_utf8(tracking::pwd_config, _password);
+	to_utf8(tracking::server_config, _server_name);
 
-	_server_port = LiveTrackerport_Config;
+	_server_port = tracking::port_config;
 
 	//Init winsock if available
 	if (InitWinsock()) {
 		_ws_inited = true;
 
 		// Create a thread for sending data to the server
-		if (LiveTrackerInterval != 0) {
+		if (tracking::interval != 0) {
 			std::string snu = std::string(_server_name);
 			transform(snu.begin(), snu.end(), snu.begin(), ::toupper);
 			if (snu.compare("WWW.LIVETRACK24.COM") == 0) {
@@ -268,20 +269,20 @@ void LiveTrackerInit() {
 				StartupStore(
 						TEXT(
 								". LiveTracker API V2 will use server %s if available.%s"),
-						LiveTrackersrv_Config, NEWLINE);
+						tracking::server_config, NEWLINE);
 			} else {
 				_ThreadTracker.start(_ThreadTargetTracker);
 				_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
 				StartupStore(
 						TEXT(
 								". LiveTracker API V1 will use server %s if available.%s"),
-						LiveTrackersrv_Config, NEWLINE);
+						tracking::server_config, NEWLINE);
 			}
 
 		}
 
 		// Create a thread fo getting radar data from livetrack24.com
-		if (LiveTrackerRadar_config && EnableFLARMMap) {
+		if (tracking::radar_config && EnableFLARMMap) {
 			_ThreadRadar.start(_ThreadTargetRadar);
 			_ThreadRadar.setPriority(Poco::Thread::PRIO_NORMAL);
 			StartupStore(TEXT(". LiveTracker Radar Enabled.%s"), NEWLINE);
@@ -322,7 +323,7 @@ void LiveTrackerShutdown() {
 void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	if (!_inited)
 		return;               // Do nothing if not inited
-	if (LiveTrackerInterval == 0)
+	if (tracking::interval == 0)
 		return; // Disabled
 	if (Basic.NAVWarning)
 		return;      // Do not log if no gps fix
@@ -334,7 +335,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 
 	//Check if sending needed (time interval)
 	if (Basic.Time >= logtime) {
-		logtime = (int) Basic.Time + LiveTrackerInterval;
+		logtime = (int) Basic.Time + tracking::interval;
 		if (logtime >= 86400)
 			logtime -= 86400;
 	} else
@@ -354,7 +355,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	livetracker_point_t newpoint;
 
 	newpoint.unix_timestamp = t_of_day;
-	if(LiveTrackerStart_config == 0) {
+	if(tracking::start_config == 0) {
 		newpoint.flying = Calculated.Flying;
 	} else {
 		newpoint.flying = true;
@@ -374,7 +375,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	{
 		ScopeLock guard(_t_mutex);
 		// Half hour FIFO must be enough
-		if (_t_points.size() > static_cast<size_t>(1800 / LiveTrackerInterval)) {
+		if (_t_points.size() > static_cast<size_t>(1800 / tracking::interval)) {
 			// points in queue are full, drop oldest point
 			_t_points.pop_front();
 		}
@@ -626,9 +627,9 @@ static int GetUserIDFromServer() {
 	char password[128];
 	char rxcontent[32];
 
-	to_utf8(LiveTrackerusr_Config, txbuf);
+	to_utf8(tracking::usr_config, txbuf);
 	UrlEncode(txbuf, username, std::size(username));
-	to_utf8(LiveTrackerpwd_Config, txbuf);
+	to_utf8(tracking::pwd_config, txbuf);
 	UrlEncode(txbuf, password, std::size(password));
 	sprintf(txbuf, "/client.php?op=login&user=%s&pass=%s", username, password);
 
@@ -645,8 +646,8 @@ static int GetUserIDFromServer() {
 static bool SendStartOfTrackPacket(unsigned int *packet_id,
 		unsigned int *session_id, int userid) {
 
-	char username[std::size(LiveTrackerusr_Config)]; 
-	char password[std::size(LiveTrackerpwd_Config)];
+	char username[std::size(tracking::usr_config)]; 
+	char password[std::size(tracking::pwd_config)];
 
 	char txbuf[500];
 	char rxbuf[32];
@@ -677,14 +678,14 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	// 8=>"Glider"
 	// 64=>"Powered flight"
 	// 17100=>"Car"
-	if (_tcslen(LiveTrackerusr_Config) > 0) {
-		to_utf8(LiveTrackerusr_Config, txbuf);
+	if (_tcslen(tracking::usr_config) > 0) {
+		to_utf8(tracking::usr_config, txbuf);
 	} else {
 		strncpy(txbuf, "guest", std::size(txbuf));
 	}
 	UrlEncode(txbuf, username, std::size(username));
-	if (_tcslen(LiveTrackerpwd_Config) > 0) {
-		to_utf8(LiveTrackerpwd_Config, txbuf);
+	if (_tcslen(tracking::pwd_config) > 0) {
+		to_utf8(tracking::pwd_config, txbuf);
 	} else {
 		strncpy(txbuf, "guest", std::size(txbuf));
 	}
@@ -731,7 +732,7 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 			"/track.php?leolive=2&sid=%u&pid=1&client=%s&v=%s%s&user=%s&pass=%s&phone=%s&gps=%s&trk1=%u&vtype=%u&vname=%s",
 			*session_id,
 			LKFORK, LKVERSION, LKRELEASE, username, password, phone, gps,
-			LiveTrackerInterval, vehicle_type, vehicle_name);
+			tracking::interval, vehicle_type, vehicle_name);
 
 	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf, sizeof(rxbuf));
 	if (rxlen == 2 && rxbuf[0] == 'O' && rxbuf[1] == 'K') {
@@ -1236,7 +1237,7 @@ static bool LiveTrack24_Radar() {
 				if (cname) {
 					int cnamelen=_tcslen(cname);
 					if (cnamelen<=MAXFLARMCN) {
-						_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, cname);
+						_tcscpy(cn, cname);
 					} else {
 						// else probably it is the Name again, and we create a fake Cn
 						from_utf8(username.c_str(), cn);
@@ -1729,4 +1730,3 @@ static void LiveTrackerThread2() {
 
 	_t_end = true;
 }
-

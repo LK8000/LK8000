@@ -254,9 +254,6 @@ const char* szRegistryReplaySync[] = {
 static_assert(std::size(ReplaySync) == std::size(szRegistryReplaySync), "invalid array size");
 
 const char szRegistryDisableAutoLogger[] = "DisableAutoLogger";
-const char szRegistryLiveTrackerInterval[] = "LiveTrackerInterval";
-const char szRegistryLiveTrackerRadar_config[] = "LiveTrackerRadar_config";
-const char szRegistryLiveTrackerStart_config[] = "LiveTrackerStart_config";
 const char szRegistryDisplayText[] = "DisplayText2";
 const char szRegistryDisplayUpValue[] = "DisplayUp";
 const char szRegistryDistanceUnitsValue[] = "DistanceUnits";
@@ -327,10 +324,6 @@ const char szRegistryMaxAutoZoom[] = "MaxAutoZoom";
 const char szRegistryTskOptimizeRoute[] = "TskOptimizeRoute";
 const char szRegistryGliderSymbol[] = "GliderSymbol";
 const char szRegistryPilotName[] = "PilotName1";
-const char szRegistryLiveTrackersrv[] = "LiveTrackersrv";
-const char szRegistryLiveTrackerport[] = "LiveTrackerport";
-const char szRegistryLiveTrackerusr[] = "LiveTrackerusr";
-const char szRegistryLiveTrackerpwd[] = "LiveTrackerpwd";
 const char szRegistryPolarFile[] = "PolarFile1";
 const char szRegistryPollingMode[] = "PollingMode";
 const char szRegistryPort1Index[] = "PortIndex";

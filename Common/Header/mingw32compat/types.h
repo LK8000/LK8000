@@ -12,6 +12,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <windows.h>
 #include <tchar.h>
 
 #endif /* TYPES_H */

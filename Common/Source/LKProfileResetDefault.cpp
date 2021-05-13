@@ -13,6 +13,7 @@
 #include "LKInterface.h"
 #include "Asset.hpp"
 #include "Multimap.h"
+#include "Tracking/Tracking.h"
 
 //
 // Set all default values for configuration.
@@ -379,9 +380,6 @@ void LKProfileResetDefault() {
 
   DisableAutoLogger = false;
 
-  LiveTrackerInterval = 0;
-  LiveTrackerRadar_config = false;
-  LiveTrackerStart_config = 0;
   // empty or demo versions
   //szAirspaceFile[0] = TEXT('\0');
   //szWaypointFile[0] = TEXT('\0');
@@ -455,10 +453,8 @@ void LKProfileResetDefault() {
 #endif
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
-  _tcscpy(LiveTrackersrv_Config,_T("www.livetrack24.com"));
-  LiveTrackerport_Config = 80;
-  _tcscpy(LiveTrackerusr_Config,_T("LK8000"));
-  _tcscpy(LiveTrackerpwd_Config,_T(""));
+
+  tracking::ResetSettings();
 
   _tcscpy(AircraftType_Config,_T("CIRRUS-STD"));
   _tcscpy(AircraftRego_Config,_T("D-1900"));

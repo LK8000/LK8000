@@ -78,6 +78,7 @@ typedef char	_TCHAR;
 #define	_tcstod		strtod
 #define	_tcstol		strtol
 #define _tcstoul	strtoul
+#define _tcstoull	strtoull
 #define	_itot		_itoa
 #define	_ltot		_ltoa
 #define	_ultot		_ultoa
