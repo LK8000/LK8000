@@ -47,7 +47,6 @@ bool LKProfileLoad(const TCHAR *szFile) {
   }
 
   bool found = false;
-  int j;
 
   FILE *fp = _tfopen(szFile, TEXT("rb"));
   if (!fp) {
@@ -67,9 +66,8 @@ bool LKProfileLoad(const TCHAR *szFile) {
         LKParseProfileString(name, value);
         found = true;
       }
-    } else if (sscanf(inval, "%[^#=\r\n ]=%d[\r\n]", name, &j) == 2) {
+    } else if (sscanf(inval, "%[^#=\r\n ]=%[^\r\n][\r\n]", name, value) == 2) {
       if (strlen(name) > 0) {
-        sprintf(value, "%d", j);
         LKParseProfileString(name, value);
         found = true;
       }
