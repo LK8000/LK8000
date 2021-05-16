@@ -11,6 +11,7 @@
 
 package org.LK8000;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -18,8 +19,6 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
@@ -110,59 +109,62 @@ public class LKDistribution {
     final static FileUtils.Filter legacyFilter = new LegacyFilter();
     final static FileUtils.Filter recentFilter = new RecentFilter();
 
-    public static void copyLKDistribution(Context   context, boolean force) {
+    public static void copyLKDistribution(Context context, boolean force) {
 
         final File externalStorage = context.getExternalFilesDir(null);
-        final File legacyStorage = getLegacyStorage();
         final File dstConfig = new File(externalStorage, "_Configuration");
 
+        final int result = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            final File legacyStorage = getLegacyStorage();
+            // no need to ask for runtime permission, already done by previous version
+            if (!dstConfig.exists() && !isEmptyDirectory(legacyStorage)) {
 
-        // no need to ask for runtime permission, already
-        if (!dstConfig.exists() && !isEmptyDirectory(legacyStorage)) {
+                long size = directorySize(legacyStorage) / 1024 / 1024;
 
-            long size = directorySize(legacyStorage) / 1024 / 1024;
+                ContextCompat.getMainExecutor(context).execute(() -> {
+                    String msg = context.getString(R.string.upgrade_storage, size, BuildConfig.APPLICATION_ID);
 
-            ContextCompat.getMainExecutor(context).execute(()  -> {
-                String msg = context.getString(R.string.upgrade_storage, size, BuildConfig.APPLICATION_ID);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle(R.string.warning)
+                            .setPositiveButton(R.string.close, ((dialog, which) -> {
+                            }))
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setMessage(msg)
+                            .create()
+                            .show();
+                });
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle(R.string.warning)
-                        .setPositiveButton(R.string.close, ((dialog, which) -> {}))
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setMessage(msg)
-                        .create()
-                        .show();
-            });
+                // copy all files to external private directory
+                //  excluding config directory
+                copyDirectory(legacyStorage, externalStorage, legacyFilter);
 
-            // copy all files to external private directory
-            //  excluding config directory
-            copyDirectory(legacyStorage, externalStorage, legacyFilter);
+                // move only current version directory "_Configuration"
+                if (BuildConfig.BUILD_TYPE.equals("beta")) {
+                    moveConfig(dstConfig, "_Configuration_beta");
+                } else if (BuildConfig.BUILD_TYPE.equals("debug")) {
+                    moveConfig(dstConfig, "_Configuration_debug");
+                } else {
+                    moveConfig(dstConfig, "_Configuration");
+                }
 
-            // move only current version directory "_Configuration"
-            if (BuildConfig.BUILD_TYPE.equals("beta")) {
-                moveConfig(dstConfig, "_Configuration_beta");
-            } else if (BuildConfig.BUILD_TYPE.equals("debug")) {
-                moveConfig(dstConfig, "_Configuration_debug");
-            } else {
-                moveConfig(dstConfig, "_Configuration");
-            }
+                boolean deleteAll = true;
+                if (isOtherVersionInstalled(context)) {
+                    /*
+                     * delete legacy storage only if all other installed version
+                     * have already moved it's configuration files
+                     */
+                    boolean otherExists = new File(legacyStorage, "_Configuration_beta").exists();
+                    otherExists |= new File(legacyStorage, "_Configuration_debug").exists();
+                    otherExists |= new File(legacyStorage, "_Configuration").exists();
 
-            boolean deleteAll = true;
-            if (isOtherVersionInstalled(context)) {
-                /*
-                 * delete legacy storage only if all other installed version
-                 * have already moved it's configuration files
-                 */
-                boolean otherExists = new File(legacyStorage, "_Configuration_beta").exists();
-                otherExists |=  new File(legacyStorage, "_Configuration_debug").exists();
-                otherExists |=  new File(legacyStorage, "_Configuration").exists();
+                    deleteAll = !otherExists;
+                }
 
-                deleteAll = !otherExists;
-            }
-
-            // if all other version has already moved there files we can delete the wall legacy folder.
-            if (deleteAll) {
-                deleteDirectory(legacyStorage);
+                // if all other version has already moved there files we can delete the wall legacy folder.
+                if (deleteAll) {
+                    deleteDirectory(legacyStorage);
+                }
             }
         }
 

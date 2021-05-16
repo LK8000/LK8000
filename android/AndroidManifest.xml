@@ -14,8 +14,8 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.VIBRATE" />
 
-  <!-- required until Android 4.3 -->
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
+  <!-- required until Android 4.3 and to upgrade to scoped storage on newer -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <!-- required since Android 9 / targetSdkVersion 28 -->
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

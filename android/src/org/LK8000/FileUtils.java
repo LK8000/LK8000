@@ -35,11 +35,14 @@ public class FileUtils {
 
     public static boolean deleteDirectory(File directory) {
         try {
+            if(!directory.exists()) {
+                return true;
+            }
             if (directory.isDirectory()) {
                 for (File child : Objects.requireNonNull(directory.listFiles())) {
                     if (!deleteDirectory(child)) {
                         Log.d("failed to delete: ", child.getAbsolutePath());
-                    };
+                    }
                 }
             }
             return directory.delete();
