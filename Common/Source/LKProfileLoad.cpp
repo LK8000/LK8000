@@ -74,7 +74,7 @@ bool LKProfileLoad(const TCHAR *szFile) {
         LKParseProfileString(name, value);
         found = true;
       }
-    } else if (sscanf(inval, "%[^#=\r\n ]=%[^\r\n][\r\n]", name, value) == 2) {
+    } else if (sscanf(inval, "%[^#=\r\n ]=%[^\r\n\"][\r\n]", name, value) == 2) {
       if (strlen(name) > 0) {
         LKParseProfileString(name, value);
         found = true;
