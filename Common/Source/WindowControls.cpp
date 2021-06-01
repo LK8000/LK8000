@@ -1944,7 +1944,6 @@ void WndForm::SetFont(FontReference Value){
 }
 
 void WndForm::Show() {
-    ScopeLockScreen LockScreen;
     main_window->UnGhost();
     
     WindowControl::Show();
