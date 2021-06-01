@@ -2132,7 +2132,7 @@
     "_@M002468_": "Richtung",
     "_@H000239_": "Nach aktivieren dieser Option werden viele Konfigurationsparameter die zur Laufzeit geändert wurden permanent gespeichert (zum Beispiel die Auswahl der Multimaps). \nGerade für Anfänger ist es jedoch sinvoll mit den Standardeinstellungen wieder zu starten, \ndaher ist diese Option standardmäßig DEAKTIVIERT.",
     "_@H000240_": "Erlaube Klänge auf externen Geräten abzuspielen falls sie nicht intern verarbeitet werden können (z.B. KOBO)\nFrage den Hersteller des Gerätes inwieweit dies unterstützt wird",
-    "_@H000867_": "[Atn1.GZ]\nGleitzahl zur Ankunftshöhe über dem gewählten alternativen Wegpunkt, ohne Gesamtenergie-Korrektur.\nÜber 200 wird nichts angezeigt, zwischen 100 und 200 wird eine  ganze Zahl angezeigt, zwischen 1 und 99  wird eine Dezimalzahl angezeigt.",
+    "_@H000867_": "[Atn1.GZ]\nGleitzahl zur Ankunftshöhe über dem gewählten alternativen Wegpunkt, ohne Gesamtenergie-Korrektur.\nÜber 200 wird nichts angezeigt, zwischen 100 und 200 wird eine ganze Zahl angezeigt, zwischen 1 und 99 wird eine Dezimalzahl angezeigt.",
     "_@H000888_": "Kein Hilfetext vorhanden!",
     "_@H000916_": "[Atn1.Plg]\nPeilung zum Wegpunkt Alternative 1",
     "_@H000917_": "[Atn2.Plg]\nPeilung zum Wegpunkt Alternative 2",
