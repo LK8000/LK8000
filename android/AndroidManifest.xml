@@ -4,7 +4,7 @@
           package="org.LK8000"
           android:installLocation="auto">
 
-  <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.camera2, androidx.camera.lifecycle, androidx.camera.core" />
+  <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.camera2, androidx.camera.lifecycle, androidx.camera.core, com.onyx.android.sdk.device" />
 
   <uses-permission android:name="android.permission.BLUETOOTH" />
   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />

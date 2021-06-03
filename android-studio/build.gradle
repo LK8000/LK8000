@@ -4,7 +4,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
@@ -17,8 +16,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
         maven { url "https://jitpack.io" }
+        maven { url "http://repo.boox.com/repository/maven-public/" }
     }
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile) {

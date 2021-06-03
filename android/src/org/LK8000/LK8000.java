@@ -53,6 +53,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.onyx.android.sdk.api.device.epd.EpdController;
+import com.onyx.android.sdk.api.device.epd.UpdateMode;
 
 import org.LK8000.QRCode.QRCodeScannerActivity;
 
@@ -85,8 +86,11 @@ public class LK8000 extends Activity {
 
 
     try {
-      // change Onyx eInk device to 'A2' update mode
-      EpdController.applyApplicationFastMode(getApplicationInfo().packageName, true, true);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        // change Onyx eInk device to 'A2' update mode
+        EpdController.clearApplicationFastMode();
+        EpdController.applyApplicationFastMode(LK8000.class.getSimpleName(), true, true, UpdateMode.ANIMATION_QUALITY, Integer.MAX_VALUE);
+      }
     } catch (Exception ignored) { }
 
     if (!Loader.loaded) {

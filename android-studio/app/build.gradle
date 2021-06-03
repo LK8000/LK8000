@@ -117,7 +117,7 @@ dependencies {
 
     implementation 'com.github.felHR85:UsbSerial:6.1.0'
 
-    implementation 'com.onyx.android.sdk:epdcontroller:0.1.0'
+    implementation 'com.onyx.android.sdk:onyxsdk-device:1.1.9'
 
     implementation 'com.github.brunotl:geographiclib-prefab:1.51.0'
 
