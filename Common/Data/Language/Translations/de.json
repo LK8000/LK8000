@@ -660,7 +660,6 @@
     "_@M000338_": "Hochalpen",
     "_@M000339_": "Hoch",
     "_@M000340_": "Großer Kontrast",
-    "_@M000341_": "HighScore Stil",
     "_@M000342_": "Höher",
     "_@M000343_": "INNEN(Ausflug)",
     "_@M000344_": "UNGENAUER KURS ODER ZU STARKER WIND",
@@ -930,7 +929,6 @@
     "_@M000630_": "Geschätzte Geschw",
     "_@M000631_": "Verbleibende Geschw",
     "_@M000632_": "Geschw",
-    "_@M000633_": "Bundesliga",
     "_@M000636_": "Abflug trotzdem",
     "_@M000637_": "Starte Logger",
     "_@M000638_": "Abflughöhe",
@@ -998,7 +996,6 @@
     "_@M000706_": "Terrain (DEM)",
     "_@M000707_": "Mindesthöhe üG",
     "_@M000709_": "Terrain\nAUS",
-    "_@M000710_": "Texteingabestil",
     "_@M000712_": "Thermikhöhenprofil",
     "_@M000713_": "Zentrierhife (Orbiter)",
     "_@M000714_": "Höhe Aufwind",
@@ -1356,7 +1353,6 @@
     "_@M001126_": "AATdZ",
     "_@M001127_": "Steigen gesamt [St.ges]",
     "_@M001128_": "St.ges",
-    "_@M001129_": "Distanz Vario [DVario]",
     "_@M001131_": "Batteriestand % [Batt %]",
     "_@M001132_": "Batt %",
     "_@M001133_": "Aufgabe erf. GZ [A_erfGZ]",
@@ -2206,5 +2202,4 @@
     "_@M002454_": "Innerhalb & Außerhalb",
     "_@H001291_": "Konischer ESS Basis Radius",
     "_@M000003_": "VG",
-    "_@M001238_": "[deprecated]"
 }
