@@ -2083,7 +2083,8 @@ void WndButton::Paint(LKSurface& Surface){
 
   WindowControl::Paint(Surface);
 
-  RECT rc = GetClientRect();
+  const PixelRect rcClient(GetClientRect());
+  PixelRect rc = rcClient;
   InflateRect(&rc, -2, -2); // todo border width
 
   Surface.DrawPushButton(rc, mDown);
@@ -2145,7 +2146,6 @@ void WndButton::Paint(LKSurface& Surface){
     Surface.SetBackgroundTransparent();
 
     const auto oldFont = Surface.SelectObject(GetFont());
-    const RECT rcClient = GetClientRect();
     rc = rcClient;
     InflateRect(&rc, -2, -2); // todo border width
 
@@ -2162,6 +2162,10 @@ void WndButton::Paint(LKSurface& Surface){
         | DT_WORDBREAK // mCaptionStyle // | DT_CALCRECT
       );
 
+      if(!rcClient.IsInside(rc.GetTopLeft()) || !rcClient.IsInside(rc.GetBottomRight())) {
+        TestLog(_T("Warning : Text too long <%s>"), szCaption);
+      }
+
       mLastDrawTextHeight = rc.bottom - rc.top;
       // DoTo optimize
       rc = rcClient;
@@ -2171,7 +2175,12 @@ void WndButton::Paint(LKSurface& Surface){
 
     }
 
-    rc.top += ((GetHeight()-4-mLastDrawTextHeight)/2);
+
+    unsigned height = GetHeight();
+    unsigned offset = ((GetHeight()-4-mLastDrawTextHeight)/2);
+    if (offset < height) {
+      rc.top += offset;
+    }
 
     Surface.DrawText(szCaption, &rc,
         DT_EXPANDTABS
