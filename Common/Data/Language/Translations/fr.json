@@ -10,7 +10,7 @@
     "_@H000118_": "Définit la luminosité (blancheur) du rendu du terrain.  Ceci contrôle l'éclairage moyen du terrain.",
     "_@H000119_": "Définit l'échelle de couleur utilisée pour le rendu terrain.",
     "_@H000120_": "Active/désactive les effets d'ombres/pentes sur la carte. Vous pouvez aussi choisir cette action à partir du menu affichage.\nNéanmoins, si cet effet est désactivé ici, il le sera définitivement, et il ne sera plus possible de le faire à partir du menu Affichage.",
-    "_@H000121_": "Couleur à afficher s'il n'y a pas de fichier Relief. Notez qu'il faudra faire des choix différents si vous utilisez ou non l'affichage des réseaux.",
+    "_@H000121_": "Couleur à afficher s'il n'y a pas de fichier de topographie. Notez que les couleurs choisies n'ont pas le même effet selon la présence ou pas de topographie.",
     "_@H000122_": "Limite le nombre total d'étiquettes affichables sur la carte, en prenant en compte les données de relief, les terrains vachables et les point de passages.\nLe filtre d'affichage veille déjà à ne pas superposer les étiquettes sur la carte. Ce réglage est utile pour accélérer l'affichage de la carte si vous avez un très grand nombre de nom à afficher et un CPU un peu lent. Normalement, vous pouvez laisser cette valeur à 70 par défaut.",
     "_@H000123_": "Définit comment chaque étiquette de waypoint est affichée :\n[Nom] Nom complet\n[Position] Affiche le numéro du point.\n[Aucun] Aucun nom n'est affiché.\n[Nom si dans le circuit] Nom du point, uniquement s'il fait partie du circuit actif ainsi que votre base.\n[3 Lettres] Affiche les 3 premières lettres du nom.\n[5 lettres] Affiche les 5 premières lettres du nom.\n[Code OACI] Code OACI des aéroports (exemple : CDG pour Paris Charles de Gaulle).",
     "_@H000124_": "Définit la longueur de la trace derrière le planeur",
@@ -2337,5 +2337,6 @@
     "_@M002406_": "Téléchargement du fichier IGC terminé !",
     "_@M002405_": "Identifiant du FLARM :",
     "_@M002404_": "Téléchargement",
-    "_@M002403_": "Réinitialisation FLARM"
+    "_@M002403_": "Réinitialisation FLARM",
+    "_@M000772_": "V atteinte"
 }
