@@ -1,5 +1,5 @@
 {
-    "_@H000101_": "Le nom du fichier contenant la TOPOLOGIE, et aussi, seulement en option, le terrain, les waypoints, les espaces aériens. \nLe fichier .LKM est en fait un fichier .ZIP renommé. Si vous renommez l'extension '.LKM ' en '.ZIP' vous pouvez l'ouvrir et en modifier le contenu.\nLes fichiers cartes se trouvent dans le sous-répertoire '_Maps'.",
+    "_@H000101_": "Le nom du fichier contenant la TOPOGRAPHIE, et aussi, seulement en option, le terrain, les waypoints, les espaces aériens. \nLe fichier .LKM est en fait un fichier .ZIP renommé. Si vous renommez l'extension '.LKM ' en '.ZIP' vous pouvez l'ouvrir et en modifier le contenu.\nLes fichiers cartes se trouvent dans le sous-répertoire '_Maps'.",
     "_@H000102_": "Le nom du fichier contenant les données numériques d'altitude du relief, un fichier de type .DEM.\nCe fichier se situe dans le sous-répertoire '_Maps'.",
     "_@H000105_": "Le nom du fichier d'espace aérien principal.\nLes fichiers airspaces sont dans le sous-répertoire '_airspaces'.",
     "_@H000107_": "Pour chaque aérodrome, vous pouvez rajouter des informations supplémentaires à l'intérieur de ce fichier situé dans le sous-répertoire '_Waypoints'.\nIci, vous pouvez changer ce nom de fichier par défaut en quelque chose d'autre.",
