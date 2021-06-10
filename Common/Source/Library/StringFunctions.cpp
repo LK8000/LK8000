@@ -436,7 +436,7 @@ const TCHAR *AngleToWindRose(int angle) {
 void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec) {
     LKASSERT(Hour && Min);
     TCHAR* sz = NULL;
-    if (szString) {
+    if (szString && szString[0]) {
         *Hour = Clamp<int>(_tcstol(szString, &sz, 10), 0, 23);
         if (*sz == _T(':')) {
             *Min = Clamp<int>(_tcstol(sz + 1, &sz, 10), 0, 59);
