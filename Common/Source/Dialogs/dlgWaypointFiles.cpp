@@ -92,8 +92,6 @@ static void setVariables(WndForm * pForm) {
         dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), suffix_filters);
         dfe->Lookup(szWaypointFile[i]);
       }
-      _sntprintf(tmp,100,_T("%s %1u "), MsgToken(2341),i+1);  // _@M2341_ "Waypoint File"
-      wp->SetCaption(tmp);
       wp->RefreshDisplay();
     }
   }

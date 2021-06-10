@@ -89,8 +89,6 @@ static void setVariables(WndForm * pForm) {
         dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), suffix_filters);
         dfe->Lookup(szAirspaceFile[i]);
       }
-      _sntprintf(tmp,100, _T("%s %1u "), MsgToken(2339),i+1);  // _@M2339_ "Airspace File "
-      wp->SetCaption(tmp);
       wp->RefreshDisplay();
     }
   }
