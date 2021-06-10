@@ -349,12 +349,12 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
  * require valid json object
  */
 bool LoadXctrackTask(const json::value& task_json) {
+  ClearTask();
+
   LockTaskData();
   AtScopeExit() {
     UnlockTaskData();
   };
-
-  ClearTask();
 
   gTaskType=TSK_GP;
   TskOptimizeRoute=true;
