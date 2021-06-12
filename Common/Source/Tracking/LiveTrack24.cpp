@@ -75,9 +75,10 @@ static bool _t_radar_run = false;             // Thread run
 static bool _t_radar_end = false;             // Thread end
 
 // Globals for Tracking API V2
-static std::string pwt = ""; // Password tokef for API V2
-static int sid = 0;
-static int userid = -1;
+static std::string v2_pwt = ""; // Password token for API V2
+static int v2_sid = 0;
+static int v2_userid = -1;
+
 static const std::string mapGBase64Index =
 		"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ()";
 static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -262,8 +263,8 @@ void LiveTrackerInit() {
 			std::string snu = std::string(_server_name);
 			transform(snu.begin(), snu.end(), snu.begin(), ::toupper);
 			if (snu.compare("WWW.LIVETRACK24.COM") == 0) {
-				sid = createSID();
-				pwt = passwordToken(std::string(_password), toString(sid));
+				v2_sid = createSID();
+				v2_pwt = passwordToken(std::string(_password), toString(v2_sid));
 				_ThreadTracker.start(_ThreadTargetTracker2);
 				_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
 				StartupStore(
@@ -1467,8 +1468,8 @@ static bool SendEndOfTrackPacket2(unsigned int *packet_id) {
 
 	std::ostringstream stringStream;
 	stringStream << "/api/t/lt/trackEnd/";
-	stringStream << appKey << "/1.0/LK8000" << "/" << sid << "/" << userid
-			<< "/" << pwt << "/";
+	stringStream << appKey << "/1.0/LK8000" << "/" << v2_sid << "/" << v2_userid
+			<< "/" << v2_pwt << "/";
 	stringStream << "0" << "/99/" << (*packet_id) + 1 << "/";
 	stringStream << "0/0";
 
@@ -1594,9 +1595,9 @@ static bool SendGPSPointPacket2(unsigned int *packet_id) {
 	stringStream << "/api/d/lt/track/";
 	stringStream << appKey << "/";
 	stringStream << LKVERSION << "." << LKRELEASE  << "/" << DeviceID << "/";
-	stringStream << sid << "/";				// SID
-	stringStream << userid << "/";				// UserID
-	stringStream << pwt << "/";					// Password Token
+	stringStream << v2_sid << "/";				// SID
+	stringStream << v2_userid << "/";				// UserID
+	stringStream << v2_pwt << "/";					// Password Token
 	stringStream << "9";   					// Privacy
 	stringStream << "/0/"; 					//TrackCategory
 	stringStream << (*packet_id) + 1 << "/"; 	// PacketID
@@ -1693,9 +1694,9 @@ static void LiveTrackerThread2() {
 				break;
 			case 1:
 				// Get User ID
-				userid = GetUserIDFromServer2();
+				v2_userid = GetUserIDFromServer2();
 				sendpoint_processed = false;
-				if (userid >= 0)
+				if (v2_userid >= 0)
 					tracker_fsm++;
 				break;
 			case 2:
