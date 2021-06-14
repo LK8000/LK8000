@@ -10,6 +10,12 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.6]
+. updated french translation
+. fix empty setting loading regression
+. show pan menu from fullscreen pan mode
+. fix invalid timegate close time on xctrack task loading 
+
 [version 7.3.5]
 . Fix missing overlay when no target turnpoint is selected
 
