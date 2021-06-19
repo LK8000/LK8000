@@ -2362,5 +2362,7 @@
     "_@H001298_": "[Mode de suivi]\nIci, vous pouvez sélectionner la manière dont vous souhaitez être suivi.\nEn vol uniquement :\nLe suivi commence après le décollage et se termine après la détection de l'atterrissage.\nPermanent:\nsuivi tant que le LK8000 fonctionne et dispose d'un signal GPS valide.\nRecommandé en vol uniquement car il transfère les informations de décollage et d'atterrissage pour un journal correct. (part défaut)\ntandis que 'Permanent' peut être utilisé pour tester vos paramètres de suivi au sol. (Remarque : le suivi repose sur une position GPS valide)",
     "_@H000934_": "[Finesse Cible requ]\nFinesse requise vers l'objectif actuel",
     "_@M002491_": "Erreur de saisie",
-    "_@M002490_": "Saisie Canal/Fréquence radio invalide !"
+    "_@M002490_": "Saisie Canal/Fréquence radio invalide !",
+    "_@H001352_": "BAT1\nActive/Désactive la réception des donnée Battery1 en provenance d'un périphérique externe\nOFF : Ignore la donnée\nIN : obtient la donnée de l'appareil LX",
+    "_@H001351_": "VENT\nreçoit ou envoi l'état du commutateur de navigation STF (Sollfahrt)\nOFF: LK8000 et l'appareil LX ont un contrôle STF distinct\nIN : le mode LK8000 STF/Circling est piloté par l'appareil LX\nOUT: LK8000 change le l'état du commutateur STF (si permit et possible, nécessite un bouton-poussoir ou un commutateur STF en position ouverte)"
 }
