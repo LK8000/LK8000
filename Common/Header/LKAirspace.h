@@ -381,7 +381,7 @@ protected:
 class CAirspace_Circle: public CAirspace
 {
 public:
-  CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius);
+  CAirspace_Circle(const GeoPoint &Center, double Radius);
   ~CAirspace_Circle() {}
 
   // Check if a point horizontally inside in this airspace

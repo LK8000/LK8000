@@ -784,11 +784,10 @@ void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &
 // CAIRSPACE_CIRCLE CLASS
 //
 
-CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius) :
-CAirspace(),
-_center(Center_Latitude, Center_Longitude),
-_radius(Airspace_Radius) {
-//	_comment =NULL;
+CAirspace_Circle::CAirspace_Circle(const GeoPoint &Center, const double Radius) 
+    : CAirspace(), _center(Center), _radius(Radius) 
+{
+
     _bounds.minx = _center.longitude;
     _bounds.maxx = _center.longitude;
     _bounds.miny = _center.latitude;
@@ -806,7 +805,7 @@ _radius(Airspace_Radius) {
         _geopoints.emplace_back(pt.latitude, pt.longitude);
     }
 
-    AirspaceAGLLookup(Center_Latitude, Center_Longitude, &_base.Altitude, &_top.Altitude);
+    AirspaceAGLLookup(Center.latitude, Center.longitude, &_base.Altitude, &_top.Altitude);
 }
 
 // Dumps object instance to Runtime.log
@@ -1634,8 +1633,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     TCHAR Name[NAME_SIZE +1] = {0};
     CPoint2DArray points;
     double Radius = 0;
-    double Latitude = 0;
-    double Longitude = 0;
+    GeoPoint Center;
     int Type = 0;
     unsigned int skiped_cnt =0;
     unsigned int accept_cnt =0;
@@ -1751,7 +1749,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             if (Name[0] != '\0') { // FIX: do not add airspaces with no name defined.
                                 if (Radius > 0) {
                                     // Last one was a circle
-                                    newairspace = new (std::nothrow) CAirspace_Circle(Latitude, Longitude, Radius);
+                                    newairspace = new (std::nothrow) CAirspace_Circle(Center, Radius);
                                 } else {
                                     // Last one was an area
                                     if (CorrectGeoPoints(points)) { // Skip it if we don't have minimum 3 points
@@ -1778,8 +1776,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
                             Name[0] = '\0';
                             Radius = 0;
-                            Longitude = 0;
-                            Latitude = 0;
+                            Center = {0, 0};
                             points.clear();
                             Type = 0;
                             Base.Base = abUndef;
@@ -1914,9 +1911,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++;
                         Radius = StrToDouble(p, NULL);
                         Radius = (Radius * NAUTICALMILESTOMETRES);
-                        Longitude = CenterX;
-                        Latitude = CenterY;
-
+                        Center = { CenterY, CenterX };
                         if(!InsideMap) {
                           if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
                             InsideMap = true;
@@ -2019,7 +2014,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
         LKASSERT(!newairspace);
         if (Radius > 0) {
             // Last one was a circle
-            newairspace = new (std::nothrow) CAirspace_Circle(Latitude, Longitude, Radius);
+            newairspace = new (std::nothrow) CAirspace_Circle(Center, Radius);
         } else {
             // Last one was an area
             if (CorrectGeoPoints(points)) { // Skip it if we dont have minimum 3 points
