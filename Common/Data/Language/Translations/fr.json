@@ -1952,7 +1952,7 @@
     "_@H000917_": "[Cap de Dégagement 2]\nCap sur le point de dégagement 2",
     "_@H000916_": "[Cap de Dégagement 1]\nCap vers le point de dégagement 1",
     "_@H000867_": "[Dégagement 1]\nFinesse pour arriver à la hauteur d'arrivée au-dessus du waypoint de dégagement sélectionné .  Ceci n'est pas corrigé pour l'énergie totale.\nAu dessus de 200 rien n'est affiché, entre 100 et 200 un nombre entier est affiché, entre 1 et 99 un nombre décimal est affiché.",
-    "_@M002462_": "G-FORCE",
+    "_@M002462_": "Facteur de charge",
     "_@M002452_": "DANS",
     "_@M002453_": "A l'éxtérieur",
     "_@M002250_": "Son Ext.",
