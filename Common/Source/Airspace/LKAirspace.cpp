@@ -2019,7 +2019,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
         LKASSERT(!newairspace);
         if (Radius > 0) {
             // Last one was a circle
-            newairspace = new (std::nothrow) CAirspace_Circle(Longitude, Latitude, Radius);
+            newairspace = new (std::nothrow) CAirspace_Circle(Latitude, Longitude, Radius);
         } else {
             // Last one was an area
             if (CorrectGeoPoints(points)) { // Skip it if we dont have minimum 3 points
