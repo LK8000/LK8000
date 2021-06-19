@@ -6,6 +6,7 @@
 
 extern NMEA_INFO GPS_INFO;
 extern Mutex CritSec_FlightData;
+extern double LastFlarmCommandTime;
 
 #ifdef HAVE_SKYLINES_TRACKING_HANDLER
 
@@ -27,8 +28,10 @@ void SkylinesGlue::OnTraffic(uint32_t pilot_id, unsigned time_of_day_ms,
 
     const ScopeLock protect(CritSec_FlightData);
 
-    GPS_INFO.FLARM_Available = true;
 	double Time_Fix = GPS_INFO.Time;
+
+    GPS_INFO.FLARM_Available = true;
+    LastFlarmCommandTime = Time_Fix;
 
     int flarm_slot = FLARM_FindSlot(&GPS_INFO, pilot_id);
     if (flarm_slot < 0) {
@@ -41,12 +44,9 @@ void SkylinesGlue::OnTraffic(uint32_t pilot_id, unsigned time_of_day_ms,
     // before changing timefix, see if it was an old target back locked in!
     CheckBackTarget(GPS_INFO, flarm_slot);
 
-
     double Average30s = 0;
     double TrackBearing = 0;
     double Speed = 0;
-    double deltaH = 0;
-    double deltaT = 0;
 
     if (newtraffic) {
         Traffic.RadioId = pilot_id;
@@ -56,7 +56,7 @@ void SkylinesGlue::OnTraffic(uint32_t pilot_id, unsigned time_of_day_ms,
 
     } else {
 
-        deltaT = Time_Fix - Traffic.Time_Fix;
+        double deltaT = Time_Fix - Traffic.Time_Fix;
         if (deltaT > 0) {
             double Distance = 0;
             double Bearing = 0;
@@ -65,7 +65,7 @@ void SkylinesGlue::OnTraffic(uint32_t pilot_id, unsigned time_of_day_ms,
                             location.latitude, location.longitude,
                             &Distance, &Bearing);
 
-            deltaH = altitude - Traffic.Altitude;
+            double deltaH = altitude - Traffic.Altitude;
             TrackBearing = Bearing;
             Speed = Distance / deltaT;
             Average30s = deltaH / deltaT;

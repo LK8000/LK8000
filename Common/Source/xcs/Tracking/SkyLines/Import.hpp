@@ -43,7 +43,7 @@ ImportAngle(int32_t src)
 constexpr ::GeoPoint
 ImportGeoPoint(SkyLinesTracking::GeoPoint src)
 {
-  return ::GeoPoint(ImportAngle(src.longitude), ImportAngle(src.latitude));
+  return ::GeoPoint(ImportAngle(src.latitude), ImportAngle(src.longitude));
 }
 
 } /* namespace SkyLinesTracking */

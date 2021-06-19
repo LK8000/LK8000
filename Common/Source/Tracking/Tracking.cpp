@@ -10,6 +10,10 @@
 #include "Settings/read.h"
 #include "Settings/write.h"
 
+extern int LKTime_Real;
+extern int LKTime_Ghost;
+extern int LKTime_Zombie;
+
 namespace tracking {
 
     int  interval; // sending position interval (sec)
@@ -76,6 +80,13 @@ namespace tracking {
                 tracking_settings.skylines.near_traffic_enabled = radar_config;
 
                 skylines_glue->SetSettings(tracking_settings);
+                if (radar_config) {
+                    LKTime_Real = 90;
+                    LKTime_Ghost = 180;
+                    LKTime_Zombie = 360;
+                }
+
+
                 break;
             default:
                 assert(false);
