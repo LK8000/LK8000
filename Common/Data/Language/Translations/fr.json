@@ -2338,7 +2338,7 @@
     "_@M002403_": "Réinitialisation FLARM",
     "_@M000772_": "V ach",
     "_@M002427_": "Temps écoulé sur circuit",
-    "_@H001350_": "TAE    \nActive/désactive la réception de la valeur TAE (Température de l'Air Extérieur) en provenance d'un appareil externe",
+    "_@H001350_": "TAE\nActive/désactive la réception de la valeur TAE (Température de l'Air Extérieur) en provenance d'un appareil externe",
     "_@H001349_": "INSECTES\nreçoit ou envoi la configuration des données INSECTES (dégradation des performances du planeur en %) vers ou depuis les appareils LX\nOFF : pas d'échange de données\nIN : recevoir de l'appareil\nOUT : échange bidirectionnel IOOUT envoyé à l'appareil",
     "_@H001348_": "GYRO\nActive/Désactive la réception des donnée gyroscopiques à partir d'un équipement externe\nOFF : pas de réception de données Gyro\nIN : réception des données gyroscopiques en provenance de l'équipement externe ",
     "_@H001347_": "RES\nreçoit  ou envoi la configuration des réservoirs  des équipements LX\nOFF : pas d'échange de données des réservoirs\nIN : reçoit l'information des réservoirs à partir del'appareil\nOUT : échange bidirectionnel IOOUT envoyé au périphérique",
