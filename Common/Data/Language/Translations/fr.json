@@ -2372,5 +2372,8 @@
     "_@H001358_": "DIRECT\nActive/Désactive le lien direct qui permet de  transmettre les déclarations des circuits au Logger\nOFF : si un enregistreur est incorporé dans l'appareil LX (par exemple LX S100)\nON : pour un enregistreur externe connecté à l'appareil LX (par exemple LX V7 ",
     "_@H001357_": "VITESSE\nAct-/Désactive la réception de la Vitesse indiquée (IAS) en provenance d'un appareil LX externe",
     "_@H001356_": "POLAIRE\nActive/Désactive la réception des coefficients de la polaire à partir d'un appareil LX externe (pas encore pris en charge)",
-    "_@H001355_": "BARO\nActive/Désactive la réception des données barométriques en provenance d'un appareil LX externe\n  OFF : ne pas réceptionner\nON : réceptionne les données barométriques de l'appareil LX externe"
+    "_@H001355_": "BARO\nActive/Désactive la réception des données barométriques en provenance d'un appareil LX externe\n  OFF : ne pas réceptionner\nON : réceptionne les données barométriques de l'appareil LX externe",
+    "_@H001364_": "Audio Vario:\n  uniquement disponible sur les équipements Android avec capteur de pression barométrique incorporé",
+    "_@H001363_": "Synchronisation sur :\n[Timer] retard simple sans synchronisation horaire\n[$GPRMC] synchronise le temps de relecture sur une instruction $GPRMC\n[$GPGGA] synchronise le temps de relecture sur une instruction $GPGGA",
+    "_@H001362_": "Données brutes:\n[ON] rejoue octet par octet\n[OFF] relit 1 instruction NMEA par ligne dans le fichier"
 }
