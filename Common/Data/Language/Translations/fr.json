@@ -2364,5 +2364,6 @@
     "_@M002491_": "Erreur de saisie",
     "_@M002490_": "Saisie Canal/Fréquence radio invalide !",
     "_@H001352_": "BAT1\nActive/Désactive la réception des donnée Battery1 en provenance d'un périphérique externe\nOFF : Ignore la donnée\nIN : obtient la donnée de l'appareil LX",
-    "_@H001351_": "VENT\nreçoit ou envoi l'état du commutateur de navigation STF (Sollfahrt)\nOFF: LK8000 et l'appareil LX ont un contrôle STF distinct\nIN : le mode LK8000 STF/Circling est piloté par l'appareil LX\nOUT: LK8000 change le l'état du commutateur STF (si permit et possible, nécessite un bouton-poussoir ou un commutateur STF en position ouverte)"
+    "_@H001351_": "VENT\nreçoit ou envoi l'état du commutateur de navigation STF (Sollfahrt)\nOFF: LK8000 et l'appareil LX ont un contrôle STF distinct\nIN : le mode LK8000 STF/Circling est piloté par l'appareil LX\nOUT: LK8000 change le l'état du commutateur STF (si permit et possible, nécessite un bouton-poussoir ou un commutateur STF en position ouverte)",
+    "_@H001353_": "VENT\nreçoit ou envoi les informations du vent, OFF : ne prend pas l'information du vent de l'appareil LX, ON : reçoit l'information du vent. Pour le calcul, le vent externe est utilisé dans LK8000 uniquement lorsqu'il est paramétré dans la configuration du vent"
 }
