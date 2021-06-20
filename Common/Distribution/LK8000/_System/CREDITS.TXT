@@ -10,6 +10,11 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.7]
+. Fix OpenAir aispace loading
+. Fix Skylines.Aero flarm traffic
+. Fix Flight Time Caclculation
+
 [version 7.3.6]
 . updated french translation
 . fix empty setting loading regression
@@ -18,7 +23,6 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 [version 7.3.5]
 . Fix missing overlay when no target turnpoint is selected
-
 
 [version 7.3.4]
 . $PTAS1 NMEA sentence ; ignore empty field
