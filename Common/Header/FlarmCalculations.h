@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <map>
+#include <stdint.h>
 #include "ClimbAverageCalculator.h"
 
 class FlarmCalculations
