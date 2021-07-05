@@ -185,7 +185,7 @@ bool DevVaulter::PITV3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
 //  3 280.2 Kurs (Grad, bezogen auf rechtweisend Nord)
 //  4 33.0 Angezeigte Geschwindigkeit (m/s)
 //  5 1.1 Lastenvielfaches (g)
-  double alt=0, tmp=0;
+  double tmp=0;
 
   if (ParToDouble(sentence, 0, &tmp))
   {
@@ -206,7 +206,8 @@ bool DevVaulter::PITV3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
   {
     bVaulterValid = true;
     info->IndicatedAirspeed = tmp;
-    info->TrueAirspeed = tmp * AirDensityRatio(alt);;
+    double qne_altitude = QNHAltitudeToQNEAltitude(info->Altitude);
+    info->TrueAirspeed = TrueAirSpeed(tmp, qne_altitude);
     info->AirspeedAvailable = TRUE;
   }
 

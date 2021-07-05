@@ -42,13 +42,12 @@
   extern void Globals_Init(void);
 #endif
 
-#ifdef RADIO_ACTIVE
 typedef struct _Radio_t
 {
 	double ActiveFrequency;    //active station frequency
 	double PassiveFrequency;   // passive (or standby) station frequency
-	TCHAR PassiveName[NAME_SIZE] ;    // passive (or standby) station name
-	TCHAR ActiveName[NAME_SIZE] ;     //active station name
+	TCHAR PassiveName[NAME_SIZE + 1] ;    // passive (or standby) station name
+	TCHAR ActiveName[NAME_SIZE + 1] ;     //active station name
 	int Volume ;               // Radio Volume
 	int Squelch ;              // Radio Squelch
 	int Vox ;                  // Radio Intercom Volume
@@ -62,8 +61,13 @@ typedef struct _Radio_t
 	BOOL RX_standy;            // Radio reception on passive        (standby) station
 	BOOL lowBAT;               // Battery low flag                  (TRUE = Batt low)
 	BOOL TXtimeout;            // Timeout while transmission (2Min)
+	BOOL ActiveValid;          // active Frequency received flag
+	BOOL PassiveValid;         // standy Frequency received flag
+	BOOL VolValid;             // Volume received flag
+	BOOL SqValid;              // Squelch received flag
+	BOOL DualValid;            // Dual received flag
+        
 }Radio_t;
-#endif  // RADIO_ACTIVE
 
 GEXTERN bool MenuActive GEXTFALSE;
 GEXTERN Poco::Event dataTriggerEvent;
@@ -83,9 +87,6 @@ GEXTERN TCHAR	GlobalModelName[MAX_PATH];
 
 GEXTERN BYTE RUN_MODE;
 
-// asset/registration data
-GEXTERN TCHAR strAssetNumber[MAX_ASSETIDSTRING];
-
 // infoboxes
 GEXTERN int  InfoType[MAXINFOWINDOWS];
 
@@ -98,6 +99,7 @@ GEXTERN int numInfoWindows;
 // waypoint data
 GEXTERN int HomeWaypoint;
 GEXTERN bool TakeOffWayPoint;
+GEXTERN bool DeclTakeoffLanding; 
 
 // TODO check
 //force Airfields home to be HomeWaypoint if an H flag in waypoints file is not available..
@@ -208,6 +210,7 @@ GEXTERN short Overlay_LeftDown;
 GEXTERN short Overlay_RightTop;
 GEXTERN short Overlay_RightMid;
 GEXTERN short Overlay_RightBottom;
+GEXTERN bool  Overlay_Title;
 
 #ifdef _WGS84
 GEXTERN bool earth_model_wgs84;
@@ -231,8 +234,8 @@ GEXTERN int LKVarioBar;
 // This is the value to be used for painting the bar
 GEXTERN int LKVarioVal;
 
-GEXTERN bool PGOptimizeRoute;
-GEXTERN bool PGOptimizeRoute_Config;
+GEXTERN bool TskOptimizeRoute;
+GEXTERN bool TskOptimizeRoute_Config;
 GEXTERN short  GliderSymbol;
 
 GEXTERN short OverlaySize;
@@ -306,8 +309,6 @@ GEXTERN TCHAR LANDINGWP_Name[NAME_SIZE+1];
 GEXTERN unsigned LKHearthBeats;
 // number of reporting messages from Portmonitor.
 GEXTERN int PortMonitorMessages;
-
-GEXTERN int FlarmNetCount;
 
 // Copy of runtime traffic for instant use
 GEXTERN FLARM_TRAFFIC LKTraffic[FLARM_MAX_TRAFFIC];
@@ -487,11 +488,8 @@ GEXTERN double Experimental2;
 // task data
 Start_t StartPoints;
 TaskStats_t TaskStats;
-#ifdef RADIO_ACTIVE
 Radio_t RadioPara ;
-#endif  // RADIO_ACTIVE
-Task_t Task = {{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0
-,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0}};
+Task_t Task = {};
 
 std::vector<WAYPOINT> WayPointList;
 std::vector<WPCALC> WayPointCalc;
@@ -501,9 +499,7 @@ std::vector<WPCALC> WayPointCalc;
 extern Start_t StartPoints;
 extern Task_t Task;
 extern TaskStats_t TaskStats;
-#ifdef RADIO_ACTIVE
 extern Radio_t RadioPara ;
-#endif  // RADIO_ACTIVE
 extern std::vector<WAYPOINT> WayPointList;
 extern std::vector<WPCALC> WayPointCalc;
 #endif
@@ -522,7 +518,7 @@ GEXTERN double StartRadius;
 GEXTERN int FinishLine;
 GEXTERN double FinishRadius;
 GEXTERN double AATTaskLength;
-GEXTERN BOOL AATEnabled;
+GEXTERN int gTaskType GEXTZERO;
 GEXTERN bool EnableFAIFinishHeight;
 GEXTERN unsigned FinishMinHeight;
 GEXTERN unsigned StartMaxHeight;
@@ -576,7 +572,6 @@ GEXTERN int TrailLock;
 
 // Logger
 GEXTERN bool LoggerActive;
-GEXTERN bool IGCWriteLock;
 
 // user controls/parameters
 GEXTERN double MACCREADY;
@@ -667,6 +662,8 @@ GEXTERN unsigned short CustomMenu8;
 GEXTERN unsigned short CustomMenu9;
 GEXTERN unsigned short CustomMenu10;
 
+void Reset_CustomMenu();
+
 GEXTERN bool OverlayClock;
 GEXTERN bool UseTwoLines;
 GEXTERN bool EnableSoundModes;
@@ -732,9 +729,6 @@ GEXTERN TCHAR TeamFlarmCNTarget[4]; // CN of the glider to track
 GEXTERN int TeamFlarmIdTarget;    // FlarmId of the glider to track
 
 GEXTERN bool DisableAutoLogger;
-GEXTERN int LiveTrackerInterval;
-GEXTERN bool LiveTrackerRadar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
-GEXTERN int LiveTrackerStart_config;  // Livetracking only in flight or always
 
 GEXTERN int AdditionalContestRule;  	// Enum to Rules to use for the addition contest CContestMgr::ContestRule
 
@@ -854,6 +848,10 @@ GEXTERN unsigned dwBitIndex[NUMDEV];
 GEXTERN TCHAR szIpAddress[NUMDEV][MAX_URL_LEN];
 GEXTERN unsigned dwIpPort[NUMDEV];
 GEXTERN TCHAR dwDeviceName[NUMDEV][DEVNAMESIZE+1];
+GEXTERN TCHAR Replay_FileName[NUMDEV][LKSIZEBUFFERPATH+1];
+GEXTERN int ReplaySpeed[NUMDEV];
+GEXTERN bool RawByteData[NUMDEV];
+GEXTERN int ReplaySync[NUMDEV];
 GEXTERN bool UseExtSound[NUMDEV];
 GEXTERN double LastFlarmCommandTime;
 GEXTERN bool  DevIsCondor;
@@ -868,10 +866,6 @@ GEXTERN unsigned AltitudeUnit_Config;
 
 // Logger
 GEXTERN TCHAR PilotName_Config[100];
-GEXTERN TCHAR LiveTrackersrv_Config[100];
-GEXTERN int LiveTrackerport_Config;
-GEXTERN TCHAR LiveTrackerusr_Config[100];
-GEXTERN TCHAR LiveTrackerpwd_Config[100];
 GEXTERN TCHAR AircraftType_Config[50];
 GEXTERN TCHAR AircraftRego_Config[50];
 GEXTERN TCHAR CompetitionClass_Config[50];
@@ -922,6 +916,9 @@ GEXTERN int iFlarmDirection;
 
 GEXTERN bool SonarWarning;
 GEXTERN bool SonarWarning_Config;
+
+GEXTERN bool EnableAudioVario;
+
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.

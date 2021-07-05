@@ -29,6 +29,8 @@
 #include "Asset.hpp"
 #include "ScreenGeometry.h"
 #include "Util/Clamp.hpp"
+#include "utils/array_adaptor.h"
+#include "utils/stringext.h"
 
 #ifndef USE_GDI
 #include "Screen/SubCanvas.hpp"
@@ -91,21 +93,32 @@ static bool KeyTimer(bool isdown, unsigned thekey) {
 }
 
 
+DataFieldFileReader::DataFieldFileReader(const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess):
+  DataField(EditFormat, DisplayFormat, OnDataAccess){
 
+  SupportCombo=true;
+  (mOnDataAccess)(this, daGet);
+}
+
+DataFieldFileReader::~DataFieldFileReader() {
+  Clear();
+}
 
 void DataFieldFileReader::Clear() {
-    for (unsigned int i=1; i<nFiles; i++) {
-      if (fields[i].mTextFile) {
-        free(fields[i].mTextFile);
-        fields[i].mTextFile= NULL;
+  for (Entry& entry : file_list) {
+    if(entry.mLabel) {
+      if (entry.mLabel) {
+        free(entry.mLabel);
+        entry.mLabel = nullptr;
       }
-      if (fields[i].mTextPathFile) {
-        free(fields[i].mTextPathFile);
-        fields[i].mTextPathFile= NULL;
+      if (entry.mFilePath) {
+        free(entry.mFilePath);
+        entry.mFilePath = nullptr;
       }
     }
-    nFiles = 1;
-    mValue = 0;
+  }
+  file_list.resize(1); // preserve first blank entry
+  mValue = 0;
 }
 
 int DataFieldFileReader::GetAsInteger(void){
@@ -119,29 +132,51 @@ int DataFieldFileReader::SetAsInteger(int Value){
 }
 
 
-void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
-  
+void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count, size_t sort_start_index) { // 091101
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   LocalPath(buffer, subdir);
-  ScanDirectories(buffer,_T(""), filter);
-  Sort();
-
+  ScanDirectories(buffer,_T(""), suffix_filters, filter_count);
+  Sort(sort_start_index);
 }
 
-void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR* filter) { // 091101
-  
+void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count, size_t sort_start_index) { // 091101
+#ifndef ANDROID
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   SystemPath(buffer, subdir);
-  ScanDirectories(buffer,_T(""), filter);
-  Sort();
-
+  ScanDirectories(buffer,_T(""), suffix_filters, filter_count);
+#else
+  ScanZipDirectory(subdir, suffix_filters, filter_count);
+#endif
+  Sort(sort_start_index);
 }
 
+static
+bool checkFilter(const TCHAR* filename,  const TCHAR **suffix_filters, size_t filter_count) {
+  size_t filename_size = _tcslen(filename);
+  
+  for (const TCHAR* suffix : array_adaptor(suffix_filters, filter_count)) {
+
+    if(!suffix || !suffix[0]) {
+      return true;
+    }
+
+    size_t suffix_size = _tcslen(suffix);
+    if(filename_size < suffix_size) {
+      continue;
+    }
+
+    const TCHAR* filename_suffix = &filename[filename_size - suffix_size];
+    if (_tcsicmp(filename_suffix, suffix) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 #ifdef ANDROID
-void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* filter) { // 091101
+void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) { // 091101
 
-  static zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
+  const zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
   zzip_error_t zzipError;
 
   tstring sRootPath = LKGetSystemPath();
@@ -159,7 +194,7 @@ void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* fil
     while(zzip_dir_read(dir, &dirent)) {
 
       if( _tcsnicmp(subdir, dirent.d_name, subdir_size) == 0) {
-        if(checkFilter(dirent.d_name, filter)) {
+        if(checkFilter(dirent.d_name, suffix_filters, filter_count)) {
 
           TCHAR* szFileName = _tcsrchr(dirent.d_name, _T('/'))+1;
           if(GetLabelIndex(szFileName) <= 0) {
@@ -178,11 +213,11 @@ void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR* fil
 #endif
 
 
-BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdir, const TCHAR* filter) {
+BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) {
 
     assert(sPath);
     assert(subdir);
-    assert(filter);
+    assert(suffix_filters);
 
     TCHAR FileName[MAX_PATH];
 
@@ -205,8 +240,8 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdi
             }
             _tcscat(FileName, It.getName());
 
-            ScanDirectories(sPath, FileName, filter);
-        } else if(checkFilter(It.getName(), filter)) {
+            ScanDirectories(sPath, FileName, suffix_filters, filter_count);
+        } else if(checkFilter(It.getName(), suffix_filters, filter_count)) {
 
             _tcscpy(FileName, subdir);
             if(_tcslen(FileName) > 0) {
@@ -223,105 +258,72 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdi
 }
 
 int DataFieldFileReader::GetLabelIndex(const TCHAR* label) {
-  for (unsigned i=1; i<nFiles; i++) {
-    // if (_tcscmp(Text,fields[i].mTextPathFile)==0) { 091126
-    if (_tcsicmp(label,fields[i].mTextFile)==0) {
-      return i;
-    }
+  auto compare_label = [&](const Entry& entry) { 
+    return entry.mLabel && (_tcsicmp(label, entry.mLabel) == 0);
+  };
+
+  auto it = std::find_if(file_list.begin(), file_list.end(), compare_label);
+  if(it != file_list.end()) {
+    return std::distance(file_list.begin(), it);
   }
   return -1;
 }
 
-bool DataFieldFileReader::Lookup(const TCHAR *Text) {
+bool DataFieldFileReader::Lookup(const TCHAR *Path) {
   mValue = 0;
-  for (unsigned i=1; i<nFiles; i++) {    
-    // if (_tcscmp(Text,fields[i].mTextPathFile)==0) { 091126
-    if (_tcsicmp(Text,fields[i].mTextPathFile)==0) {
-      mValue = i;
-      return true;
-    }
+
+  auto compare_path = [Path](const Entry& entry) { 
+    return entry.mFilePath && (_tcsicmp(Path, entry.mFilePath) == 0);
+  };
+
+  auto it = std::find_if(file_list.begin(), file_list.end(), compare_path);
+  if(it != file_list.end()) {
+    mValue = std::distance(file_list.begin(), it);
+    return true;
   }
   return false;
 }
 
 int DataFieldFileReader::GetNumFiles(void) {
-  return nFiles;
+  return file_list.size();
 }
 
 const TCHAR* DataFieldFileReader::GetPathFile(void) const {
-  if ((mValue<=nFiles)&&(mValue)) {
-    return fields[mValue].mTextPathFile;
+  const TCHAR* path = nullptr;
+  
+  if ((mValue < file_list.size())) {
+    path = file_list[mValue].mFilePath;
   }
-  return TEXT("\0");
+  return path ? path : _T(""); // always return valid pointer
 }
 
 
-bool DataFieldFileReader::checkFilter(const TCHAR *filename,
-				      const TCHAR *filter) {
-  const TCHAR *ptr;
-  TCHAR upfilter[MAX_PATH];
-  // checks if the filename matches the filter exactly
-
-  if (!filter || (_tcslen(filter+1)==0)) {
-    // invalid or short filter, pass
-    return true;
-  }
-
-  _tcscpy(upfilter,filter+1);
-
-  // check if trailing part of filter (*.exe => .exe) matches end
-  ptr = _tcsstr(filename, upfilter);
-  if (ptr) {
-    if (_tcslen(ptr)==_tcslen(upfilter)) {
-      return true;
-    }
-  }
-
-  CharUpper(upfilter);
-  ptr = _tcsstr(filename, upfilter);
-  if (ptr) {
-    if (_tcslen(ptr)==_tcslen(upfilter)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-
-void DataFieldFileReader::addFile(const TCHAR *Text, 
-				  const TCHAR *PText) {
-  // TODO enhancement: remove duplicates?
-  if (nFiles<DFE_MAX_FILES) {
-    fields[nFiles].mTextFile = _tcsdup(Text);
-    fields[nFiles].mTextPathFile = _tcsdup(PText);
-
-    nFiles++;
-  }
+void DataFieldFileReader::addFile(const TCHAR *fname, const TCHAR *fpname) {
+  file_list.push_back({_tcsdup(fname), _tcsdup(fpname)});
 }
 
 
 const TCHAR *DataFieldFileReader::GetAsString(void) {
-  if (mValue<nFiles) {
-    return(fields[mValue].mTextFile);
-  } else {
-    return NULL;
-  }
+  const TCHAR* label = nullptr;
+
+  if (mValue < file_list.size()) {
+    label = file_list[mValue].mLabel;
+  } 
+  return label ? label : _T(""); // always return valid pointer
 }
 
 void DataFieldFileReader::Set(int Value){
-  if (Value<=(int)nFiles) {
+  if (static_cast<file_list_t::size_type>(Value) < file_list.size()) {
     mValue = Value;
-  }
-  if (Value<0) {
+  } else {
     mValue = 0;
   }
 }
 
 
 void DataFieldFileReader::Inc(void){
-  if (mValue<nFiles-1) {
-    mValue++;
+  if (mValue < file_list.size() - 1) {
+    ++mValue;
     // (mOnDataAccess)(this, daChange); 091126
     if (!GetDetachGUI()) (mOnDataAccess)(this, daChange);
   }
@@ -329,41 +331,43 @@ void DataFieldFileReader::Inc(void){
 
 
 void DataFieldFileReader::Dec(void){
-  if (mValue>0) {
-    mValue--;
+  if (mValue > 0) {
+    --mValue;
     // (mOnDataAccess)(this, daChange); 091126
     if (!GetDetachGUI()) (mOnDataAccess)(this, daChange);
   }
 }
 
-struct DataFieldFileReaderCompare {
-  bool operator()( const DataFieldFileReaderEntry &a,
-                   const DataFieldFileReaderEntry &b ) {
-    if(a.mTextFile && b.mTextFile) {
-      return (_tcscmp(a.mTextFile, b.mTextFile) < 0);
+namespace {
+  struct DataFieldFileReaderCompare {
+    using Entry = DataFieldFileReader::Entry;
+    bool operator()( const Entry &a, const Entry &b ) {
+      if(a.mLabel && b.mLabel) {
+        return _tcscmp(a.mLabel, b.mLabel) < 0;
+      }
+      return !a.mLabel && b.mLabel;
     }
-    return !a.mTextFile && b.mTextFile;
-  }
-};
+  };
+}
 
 void DataFieldFileReader::Sort(int startindex){
-  auto begin = std::next(fields, startindex);
-  auto end = std::next(fields, nFiles);
+  auto begin = std::next(file_list.begin(), startindex);
+  auto end = file_list.end();
 
   std::sort(begin, end, DataFieldFileReaderCompare());
 }
 
 int DataFieldFileReader::CreateComboList(void) {
-  unsigned int i=0;
-  for (i=0; i < nFiles; i++){
-    mComboList.ComboPopupItemList[i] = mComboList.CreateItem(
-                                          i, 
-                                          i,
-                                          fields[i].mTextFile,
-                                          fields[i].mTextFile);
+  assert(file_list.size() < std::size(mComboList.ComboPopupItemList));
+  size_t file_count = std::min(file_list.size(), std::size(mComboList.ComboPopupItemList));
+
+  for (size_t i = 0; i < file_count; i++){
+    const Entry& entry = file_list[i];
+    mComboList.ComboPopupItemList[i] = mComboList.CreateItem(i, i, entry.mFilePath, entry.mLabel);
   }
-  mComboList.ComboPopupItemCount=i;
-  mComboList.PropertyDataFieldIndexSaved = (mValue < i) ? mValue : 0;
+
+  mComboList.ComboPopupItemCount = file_count;
+  mComboList.PropertyDataFieldIndexSaved = (mValue < file_count) ? mValue : 0;
   return mComboList.ComboPopupItemCount;
 }
 
@@ -398,11 +402,13 @@ void DataField::SetData(void){
     (void) Mode;
   }
 
-DataField::DataField(const TCHAR *EditFormat, const TCHAR *DisplayFormat, DataAccessCallback_t OnDataAccess){
+DataField::DataField(const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess) {
   mUsageCounter=0;
   mOnDataAccess = OnDataAccess;
-  _tcscpy(mEditFormat, EditFormat);
-  _tcscpy(mDisplayFormat, DisplayFormat);
+  
+  from_utf8(EditFormat, mEditFormat);
+  from_utf8(DisplayFormat, mDisplayFormat);
+  
   SetDisableSpeedUp(false);
   SetDetachGUI(false); // disable dispaly of inc/dec/change values
 
@@ -573,6 +579,10 @@ int DataFieldEnum::Find(const TCHAR *Text) {
     return it->index;
   }
   return -1;
+}
+
+void DataFieldEnum::removeLastEnum() {
+  mEntries.pop_back();
 }
 
 const TCHAR *DataFieldEnum::GetAsString(void) {
@@ -1105,7 +1115,7 @@ const TCHAR *DataFieldString::GetAsString(void){
 }
 
 bool DataFieldString::CreateKeyboard(void){
-	dlgTextEntryShowModal(mValue,array_size(mValue));
+	dlgTextEntryShowModal(mValue,std::size(mValue));
 	return true;
 }
 
@@ -1191,7 +1201,7 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 
   mReadOnly = false;
 
-  mOnHelpCallback = NULL;
+  mOnHelpCallback = nullptr;
 
   mOwner = Owner?Owner->GetClientArea():NULL;
   // setup Master Window (the owner of all)
@@ -1423,17 +1433,6 @@ void WindowControl::AddClient(WindowControl *Client) {
     mClients.push_back(Client);
 }
 
-// 110411 This is always set true because we don't use UserLevel anymore
-
-void WindowControl::FilterAdvanced(bool advanced) {
-    if (_tcsstr(GetWndText(), TEXT("*")) != NULL) {
-        SetVisible(advanced);
-    }
-    for (WindowControl* w : mClients) {
-        w->FilterAdvanced(advanced);
-    }
-}
-
 WindowControl *WindowControl::FindByName(const TCHAR *Name) {
     if(Name) {
         if (_tcscmp(GetWndName(), Name) == 0) {
@@ -1449,6 +1448,15 @@ WindowControl *WindowControl::FindByName(const TCHAR *Name) {
     }
     return (NULL);
 }
+
+
+void WindowControl::ForEachChild(std::function<void(WindowControl*)> visitor) {
+  for (WindowControl* w : mClients) {
+    visitor(w);
+    w->ForEachChild(visitor);
+  }
+}
+
 
 void WindowControl::SetHelpText(const TCHAR *Value) {  
   if (mHelpText) {
@@ -1936,7 +1944,6 @@ void WndForm::SetFont(FontReference Value){
 }
 
 void WndForm::Show() {
-    ScopeLockScreen LockScreen;
     main_window->UnGhost();
     
     WindowControl::Show();
@@ -2076,7 +2083,8 @@ void WndButton::Paint(LKSurface& Surface){
 
   WindowControl::Paint(Surface);
 
-  RECT rc = GetClientRect();
+  const PixelRect rcClient(GetClientRect());
+  PixelRect rc = rcClient;
   InflateRect(&rc, -2, -2); // todo border width
 
   Surface.DrawPushButton(rc, mDown);
@@ -2138,7 +2146,6 @@ void WndButton::Paint(LKSurface& Surface){
     Surface.SetBackgroundTransparent();
 
     const auto oldFont = Surface.SelectObject(GetFont());
-    const RECT rcClient = GetClientRect();
     rc = rcClient;
     InflateRect(&rc, -2, -2); // todo border width
 
@@ -2155,6 +2162,10 @@ void WndButton::Paint(LKSurface& Surface){
         | DT_WORDBREAK // mCaptionStyle // | DT_CALCRECT
       );
 
+      if(!rcClient.IsInside(rc.GetTopLeft()) || !rcClient.IsInside(rc.GetBottomRight())) {
+        TestLog(_T("Warning : Text too long <%s>"), szCaption);
+      }
+
       mLastDrawTextHeight = rc.bottom - rc.top;
       // DoTo optimize
       rc = rcClient;
@@ -2164,7 +2175,12 @@ void WndButton::Paint(LKSurface& Surface){
 
     }
 
-    rc.top += ((GetHeight()-4-mLastDrawTextHeight)/2);
+
+    unsigned height = GetHeight();
+    unsigned offset = ((GetHeight()-4-mLastDrawTextHeight)/2);
+    if (offset < height) {
+      rc.top += offset;
+    }
 
     Surface.DrawText(szCaption, &rc,
         DT_EXPANDTABS

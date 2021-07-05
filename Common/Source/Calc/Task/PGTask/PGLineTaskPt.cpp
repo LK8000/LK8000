@@ -11,11 +11,8 @@
 
 #include "PGLineTaskPt.h"
 
-PGLineTaskPt::PGLineTaskPt(): m_dAB() {
-}
-
-PGLineTaskPt::~PGLineTaskPt() {
-}
+PGLineTaskPt::PGLineTaskPt(ProjPt&& point)
+    : PGTaskPt(std::forward<ProjPt>(point)) { }
 
 void PGLineTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     //  Fail if either line segment is zero-length.
@@ -34,26 +31,26 @@ void PGLineTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) 
         return;
     }
 
-    if (!m_AB) {
+    if (IsNull(m_AB)) {
         // First Run, this change only if Task is modified
         m_AB = m_LineEnd - m_LineBegin;
-        m_dAB = m_AB.length();
+        m_dAB = Length(m_AB);
     }
 
-    if (next) {
-        OptimizeRegular(prev, next);
-    } else {
+    if (IsNull(next)) {
         OptimizeGoal(prev);
+    } else {
+        OptimizeRegular(prev, next);
     }
 }
 
 void PGLineTaskPt::OptimizeGoal(const ProjPt& prev) {
     ProjPt AC = prev - m_LineBegin;
-    double theta = vector_angle(m_AB, AC);
+    double theta = VectorAngle(m_AB, AC);
     if (theta >= PI / 2) {
         m_Optimized = m_LineBegin;
     } else {
-        double b = cos(theta) * AC.length();
+        ProjPt::scalar_type b = cos(theta) * Length(AC);
         if (b < m_dAB) {
             LKASSERT(m_dAB);
             LKASSERT(b);
@@ -74,23 +71,23 @@ void PGLineTaskPt::OptimizeRegular(const ProjPt& prev, const ProjPt& next) {
 
     //  (2) Rotate the system so that point B is on the positive X axis.
     LKASSERT(m_dAB);
-    theCos = B.m_X / m_dAB;
-    theSin = B.m_Y / m_dAB;
-    newX = C.m_X * theCos + C.m_Y*theSin;
-    C.m_Y = C.m_Y * theCos - C.m_X*theSin;
-    C.m_X = newX;
-    newX = D.m_X * theCos + D.m_Y*theSin;
-    D.m_Y = D.m_Y * theCos - D.m_X*theSin;
-    D.m_X = newX;
+    theCos = B.x / m_dAB;
+    theSin = B.y / m_dAB;
+    newX = C.x * theCos + C.y*theSin;
+    C.y = C.y * theCos - C.x*theSin;
+    C.x = newX;
+    newX = D.x * theCos + D.y*theSin;
+    D.y = D.y * theCos - D.x*theSin;
+    D.x = newX;
 
     //  if segment C-D doesn't cross line A-B Use Symmetrical point of D.
-    if ((C.m_Y < 0. && D.m_Y < 0.) || (C.m_Y >= 0. && D.m_Y >= 0.)) {
-        D.m_Y *= -1;
+    if ((C.y < 0. && D.y < 0.) || (C.y >= 0. && D.y >= 0.)) {
+        D.y *= -1;
     }
 
     //  (3) Discover the position of the intersection point along line A-B.
-    LKASSERT(D.m_Y - C.m_Y);
-    ABpos = D.m_X + (C.m_X - D.m_X) * D.m_Y / (D.m_Y - C.m_Y);
+    LKASSERT(D.y - C.y);
+    ABpos = D.x + (C.x - D.x) * D.y / (D.y - C.y);
 
     //  if segment C-D crosses line A-B outside of segment A-B return nearest endpoint
     if (ABpos < 0.) {
@@ -104,6 +101,6 @@ void PGLineTaskPt::OptimizeRegular(const ProjPt& prev, const ProjPt& next) {
     }
 
     //  (4) Apply the discovered position to line A-B in the original coordinate system.
-    m_Optimized.m_X = m_LineBegin.m_X + ABpos*theCos;
-    m_Optimized.m_Y = m_LineBegin.m_Y + ABpos*theSin;
+    m_Optimized.x = m_LineBegin.x + ABpos*theCos;
+    m_Optimized.y = m_LineBegin.y + ABpos*theSin;
 }

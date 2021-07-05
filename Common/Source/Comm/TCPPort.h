@@ -47,8 +47,7 @@ protected:
 class UDPServerPort : public SocketPort {
 public:
 
-	UDPServerPort(int idx, const tstring& sName) : SocketPort(idx, sName) {
-		mSAddressClient =  { 0 };
+	UDPServerPort(int idx, const tstring& sName) : SocketPort(idx, sName), mSAddressClient() {
 	}
 
     int SetRxTimeout(int TimeOut) override { return 0; }
@@ -56,7 +55,7 @@ protected:
     bool Connect() override;
 
     unsigned RxThread() override;
-    bool Write(const void *data, size_t length) override;
+    bool Write(const void *data, size_t size) override;
 
 	SOCKADDR_IN mSAddressClient;
 

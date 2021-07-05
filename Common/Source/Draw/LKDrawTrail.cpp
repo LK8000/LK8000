@@ -22,14 +22,14 @@ typedef RasterPoint ScreenPoint;
 
 void MapWindow::LKDrawTrail(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
 
-    static ScreenPoint snail_polyline[array_size(SnailTrail)];
+    static ScreenPoint snail_polyline[std::size(SnailTrail)];
     
     if (!TrailActive) return;
 
     const double display_time = DrawInfo.Time;
     const bool use_colors = (MapWindow::zoom.RealScale() < 2); // 1.5 is also quite good;
 
-    static_assert(array_size(SnailTrail) == TRAILSIZE, "Invalid SnailTrail size");
+    static_assert(std::size(SnailTrail) == TRAILSIZE, "Invalid SnailTrail size");
     //  Trail size
     int num_trail_max = TRAILSIZE;
     if (TrailActive == 2) {

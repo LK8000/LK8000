@@ -1,19 +1,9 @@
 #if !defined(AFX_LOGGER_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_LOGGER_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-
 void StartLogger(void);
-void LogPoint(double Latitude, double Longitude, double Altitude,
-              double BaroAltitude, int iHour, int iMin, int iSec);
-void AddDeclaration(double Lattitude, double Longditude, TCHAR *ID);
-void StartDeclaration(int numturnpoints);
-void EndDeclaration(void);
-void LoggerHeader(void);
-void LoggerNote(const TCHAR *text);
+void LogPoint(const NMEA_INFO& info);
+
 void LoggerDeviceDeclare();
 
 void UpdateLogBook(bool welandedforsure);
@@ -54,13 +44,5 @@ bool LoggerGActive();
 
 
 #define MAX_IGC_BUFF 255
-
-#if LOGFRECORD
-bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second, bool bAlways);
-bool LogFRecord(int SatelliteIDs[], bool bAlways ) ;
-void SetFRecordLastTime(double dTime);
-double GetFRecordLastTime(void);
-void ResetFRecord(void);
-#endif
 
 #endif

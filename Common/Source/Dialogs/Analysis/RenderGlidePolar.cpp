@@ -124,7 +124,7 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
       SIZE tsize = {0,0};
       SIZE vsize = {0,0};
 
-      for(unsigned i = 0; i<array_size(text); ++i) {
+      for(unsigned i = 0; i<std::size(text); ++i) {
         SIZE sizeTmp;
         Surface.GetTextSize(text[i], &sizeTmp);
         tsize.cx = std::max(tsize.cx, sizeTmp.cx);
@@ -140,12 +140,12 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
           rc.right-tsize.cx-vsize.cx-IBLSCALE(4),
           rc.top,
           rc.right-IBLSCALE(4),
-          rc.top+tsize.cy*(int)array_size(text)
+          rc.top+tsize.cy*(int)std::size(text)
       };
 
       Surface.FillRect(&blockR, (INVERTCOLORS || IsDithered())?LKBrush_White:LKBrush_Black);
 
-      for(unsigned i = 0; i<array_size(text); ++i) {
+      for(unsigned i = 0; i<std::size(text); ++i) {
         Surface.DrawText(blockR.left, blockR.top+tsize.cy*i, text[i]);
         Surface.DrawText(blockR.left+tsize.cx, rc.top+tsize.cy*i, value[i]);
       }

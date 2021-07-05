@@ -52,24 +52,30 @@ class XShapeLabel: public XShape {
   }
 
   virtual void clear();
-  void setlabel(const char* src,bool bUTF8);
+
+  enum charset {
+      unknown, // used for detect charset using content
+      utf8,    // utf8 detected : -> convert 
+      latin1   // latin1 (invalid utf8 code point detected) -> convert to utf8
+  };
+
+
+  void setlabel(const char* src, charset& csLabel);
 
   virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const;
   virtual bool nearestItem(int category, double lon, double lat);
-
 
 protected:
   TCHAR *label;
 };
 
 
-class Topology {
+class Topology final {
+  Topology() = delete;
 
  public:
-  Topology(const TCHAR* shpname);
-  Topology() {};
-
-  virtual ~Topology();
+  Topology(const TCHAR* shpname, int field1);
+  ~Topology();
 
   void Open();
   void Close();
@@ -96,8 +102,8 @@ class Topology {
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);
 
-  virtual void removeShape(const int i);
-  virtual XShape* addShape(const int i);
+  void removeShape(const int i);
+  XShape* addShape(const int i);
 
  protected:
 
@@ -109,7 +115,14 @@ class Topology {
   LKIcon hBitmap;
   shapefileObj shpfile;
   bool shapefileopen;
+
+  bool initCache_0();
+  bool initCache_1();
+#ifdef USE_TOPOLOGY_CACHE_LEVEL2
+  bool initCache_2();
+#endif  
   void initCache();
+
   int cache_mode;
   XShape **shps;
   rectObj* shpBounds;
@@ -117,18 +130,11 @@ class Topology {
   bool in_scale_last;
 
   char filename[MAX_PATH];
-};
-
-class TopologyLabel: public Topology {
- public:
-  TopologyLabel(const TCHAR* shpname, INT field1);
-  virtual ~TopologyLabel();
-  virtual XShape* addShape(const int i);
-  void setField(int i);
   int field;
-  bool bUTF8;
 
+  XShapeLabel::charset csLabel;
 };
+
 
 /**
  * Thread class used by "Oracle" for find Topology Item nearest to current position.

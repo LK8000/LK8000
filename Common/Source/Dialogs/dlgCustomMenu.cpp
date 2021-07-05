@@ -95,7 +95,6 @@ static void setVariables(void) {
 static void OnResetClicked(WndButton* pWnd){
 
   WndProperty *wp;
-  extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomMenu1"));

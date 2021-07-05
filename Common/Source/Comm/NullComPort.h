@@ -32,7 +32,7 @@ public:
 
     void UpdateStatus() override { };
 
-    bool Write(const void *data, size_t length) override { return true; };
+    bool Write(const void *data, size_t size) override { return true; };
     size_t Read(void *szString, size_t size) override { return 0U; };
 protected:
     unsigned RxThread() override { assert(false); return 0U; }

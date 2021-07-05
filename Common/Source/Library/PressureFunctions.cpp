@@ -149,3 +149,15 @@ double TrueAirSpeed( double delta_press, double hr, double temp, double abs_pres
 	double rho = AirDensity(hr,temp,abs_press);
 	return sqrt(2 * delta_press / rho);
 }
+
+// True Air Speed from Indicated Air Speed and QNE Altitude
+double TrueAirSpeed( double ias, double qne_altitude) {
+	double rho = AirDensity(qne_altitude);
+	return ias * sqrt(1.225 / rho);
+}
+
+// Indicated Air Speed from True Air Speed and QNE Altitude
+double IndicatedAirSpeed( double tas, double qne_altitude) {
+	double rho = AirDensity(qne_altitude);
+	return tas / sqrt(1.225 / rho);
+}

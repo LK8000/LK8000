@@ -67,8 +67,7 @@ static void OnStartPointListEnter(WindowControl * Sender,
     while(ValidStartPoint(ItemIndex++)) { }
   }
   if (ItemIndex>=0) {
-    int res;
-    res = dlgWayPointSelect();
+    int res = dlgSelectWaypoint();
     if (res>=0) {
       // TODO bug: don't add it if it's already present!
       LockTaskData();

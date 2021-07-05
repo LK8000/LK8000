@@ -36,10 +36,9 @@ void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int 
   }
 }
 
-int HexStrToInt(TCHAR *Source){
-
-	static const size_t digit_table_symbol_count = 256;
-	static const unsigned char digit_table[digit_table_symbol_count] = {
+uint8_t HexDigit(TCHAR c) {
+	constexpr size_t digit_table_symbol_count = 256;
+	constexpr uint8_t digit_table[digit_table_symbol_count] = {
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x00 - 0x07
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x08 - 0x0F
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x10 - 0x17
@@ -52,14 +51,14 @@ int HexStrToInt(TCHAR *Source){
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x48 - 0x4F
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x50 - 0x57
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x58 - 0x5F
-		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x60 - 0x67
+		0xFF, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0xFF, // 0x60 - 0x67
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x68 - 0x6F
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x70 - 0x77
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x78 - 0x7F
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x80 - 0x87
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x88 - 0x8F
-		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x0A, // 0x90 - 0x97
-		0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0xFF, 0xFF, 0xFF, // 0x98 - 0x9F
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x90 - 0x97
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x98 - 0x9F
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0xA0 - 0xA7
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0xA8 - 0xAF
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0xB0 - 0xB7
@@ -73,10 +72,13 @@ int HexStrToInt(TCHAR *Source){
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0xF0 - 0xF7
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF  // 0xF8 - 0xFF
 	};
+	return digit_table[static_cast<uint8_t>(c)];
+}
 
+int HexStrToInt(const TCHAR *Source) {
 	int nOut=0;
-	while(1){
-		const unsigned int digit = static_cast<unsigned int>(digit_table[static_cast<unsigned char>(*Source++)]);
+	while(1) {
+		const unsigned int digit = HexDigit(*Source++);
 		if (0xFF == digit)
 			break;
 		nOut = ((nOut << 4)&0xFFFFFFF0)|digit;
@@ -216,109 +218,6 @@ _hexstrtodouble_return:
   } else {
     return Sum;
   }
-}
-
-
-
-
-TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
-// "s" MUST be a pointer to an array, not to a string!!!
-// (ARM92, Win emulator cause access violation if not)
-
-  const TCHAR *spanp;
-	int   c, sc;
-	TCHAR *tok;
-
-
-	if (s == NULL && (s = *lasts) == NULL)
-		return (NULL);
-
-	/*
-	 * Skip (span) leading delimiters (s += strspn(s, delim), sort of).
-	 */
-
-cont:
-	c = *s++;
-	for (spanp = delim; (sc = *spanp++) != 0;) {
-		if (c == sc)
-			goto cont;
-	}
-
-	if (c == 0) {		/* no non-delimiter characters */
-		*lasts = NULL;
-		return (NULL);
-	}
-	tok = s - 1;
-
-	/*
-	 * Scan token (scan for delimiters: s += strcspn(s, delim), sort of).
-	 * Note that delim must have one NUL; we stop if we see that, too.
-	 */
-	for (;;) {
-		c = *s++;
-		spanp = delim;
-		do {
-			if ((sc = *spanp++) == c) {
-				if (c == 0)
-					s = NULL;
-				else
-					s[-1] = 0;  // causes access violation in some configs if s is a pointer instead of an array
-				*lasts = s;
-				return (tok);
-			}
-		} while (sc != 0);
-	}
-	/* NOTREACHED */
-}
-
-// Same As strtok_r but not skeep leading delimiter ...
-TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts){
-// "s" MUST be a pointer to an array, not to a string!!!
-// (ARM92, Win emulator cause access violation if not)
-
-	const TCHAR *spanp;
-	int   c, sc;
-	TCHAR *tok = NULL;
-
-
-	if (s == NULL && (s = *lasts) == NULL)
-		return (NULL);
-
-	// return empty string if s start with delimiter
-	c = *s++;
-	for (spanp = delim; (sc = *spanp++) != 0;) {
-		if (c == sc) {
-			*lasts = s;
-			s[-1] = 0;
-			return (s - 1);
-		}
-	}
-
-	if (c == 0) {		/* no non-delimiter characters */
-		*lasts = NULL;
-		return (NULL);
-	}
-	tok = s - 1;
-
-	/*
-	 * Scan token (scan for delimiters: s += strcspn(s, delim), sort of).
-	 * Note that delim must have one NUL; we stop if we see that, too.
-	 */
-	for (;;) {
-		c = *s++;
-		spanp = delim;
-		do {
-			if ((sc = *spanp++) == c) {
-				if (c == 0)
-					s = NULL;
-				else
-					s[-1] = 0;  // causes access violation in some configs if s is a pointer instead of an array
-				*lasts = s;
-				return (tok);
-			}
-		} while (sc != 0);
-	}
-	/* NOTREACHED */
 }
 
 // Trim trailing space
@@ -524,7 +423,7 @@ const TCHAR *AngleToWindRose(int angle) {
    * tricks : for avoid rounding error with fixed point calculation, we use 360*4 for full circle instead of 360
    *   like that, slot_size = 90 instead of 22.5 and slot_offset = 45 instead of 11.25
    */  
-  constexpr unsigned slot_size = 360 * 4 / array_size(windrose); // 22.5° for each sector
+  constexpr unsigned slot_size = 360 * 4 / std::size(windrose); // 22.5° for each sector
   constexpr unsigned slot_offset = slot_size / 2; // 11.25° offset 
   
   const unsigned index = ((angle * 4 + slot_offset) / slot_size) & 0x000F;
@@ -537,7 +436,7 @@ const TCHAR *AngleToWindRose(int angle) {
 void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec) {
     LKASSERT(Hour && Min);
     TCHAR* sz = NULL;
-    if (szString) {
+    if (szString && szString[0]) {
         *Hour = Clamp<int>(_tcstol(szString, &sz, 10), 0, 23);
         if (*sz == _T(':')) {
             *Min = Clamp<int>(_tcstol(sz + 1, &sz, 10), 0, 59);

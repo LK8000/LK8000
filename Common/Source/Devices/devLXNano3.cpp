@@ -498,9 +498,9 @@ BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 
 BOOL DevLXNanoIII::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
 {
-  CritSec_LXDebugStr.Lock();
+  CritSec_LXDebugStr.lock();
   _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
-  CritSec_LXDebugStr.Unlock();
+  CritSec_LXDebugStr.unlock();
   return true;
 }
 
@@ -509,8 +509,19 @@ BOOL DevLXNanoIII::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
 {
 WndProperty *wp;
 if(!wf) return false;
-wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
+
 int PortNum = d->PortNumber;
+   wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField(); dfe->Clear();
+    dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
+  //  dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
+ //   dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->Set((uint) PortIO[PortNum].QNHDir);
+    wp->RefreshDisplay();
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
@@ -688,9 +699,9 @@ void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx)
     if(dfe)
     {
       dfe->Clear();
-      CritSec_LXDebugStr.Lock();
+      CritSec_LXDebugStr.lock();
       dfe->addEnumText(LxValueStr[Idx]);
-      CritSec_LXDebugStr.Unlock();
+      CritSec_LXDebugStr.unlock();
       wp->RefreshDisplay();
     }
   }
@@ -703,6 +714,7 @@ static bool OnTimer(WndForm* pWnd)
 
   if(wf)
   {
+    wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir")    ); UpdateValueTxt( wp,  _QNH   );    
     wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir")     ); UpdateValueTxt( wp,  _MC    );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir")    ); UpdateValueTxt( wp,  _BUGS  );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir")    ); UpdateValueTxt( wp,  _BAL   );
@@ -839,7 +851,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
         t_hh = GPS_INFO.Hour;  t_mm = GPS_INFO.Minute;  t_ss = GPS_INFO.Second;
       } else { // use system time
         time_t sysTime = time(NULL);
-        struct tm tm_temp = {0};
+        struct tm tm_temp = {};
         struct tm* utc = gmtime_r(&sysTime, &tm_temp);
         t_DD = utc->tm_mday;   t_MM = utc->tm_mon + 1;  t_YY = utc->tm_year % 100;
         t_hh = utc->tm_hour;   t_mm = utc->tm_min;      t_ss = utc->tm_sec;
@@ -849,7 +861,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
                    t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,              1, wpCount-2);
 
       // TakeOff point
-      if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
+      if ((HomeWaypoint >= 0) && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_takeoff);
@@ -861,7 +873,7 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
       }
 
       // Landing point
-      if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint)) {
+      if ((HomeWaypoint >= 0) && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
         decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing);
       } else {
         decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_landing);
@@ -911,11 +923,11 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
 bool DevLXNanoIII::Wide2LxAscii(const TCHAR* input, int outSize, char* output){
   if (outSize == 0)
     return(false);
-  int res = TCHAR2usascii(input, output, outSize);
+  int res = to_usascii(input, output, outSize);
   // replace all non-ascii characters with '?' - LX devices is very sensitive
   // on non-ascii chars - the electronic seal can be broken
-  // (unicode2usascii() should be enough, but to be sure that someone has not
-  // incorrectly changed unicode2usascii())
+  // (to_usascii() should be enough, but to be sure that someone has not
+  // incorrectly changed to_usascii())
   output--;
   while (*++output != '\0') {
     if (*output < 32 || *output > 126) *output = '?';
@@ -1233,7 +1245,9 @@ void DevLXNanoIII::OnValuesClicked(WndButton* pWnd) {
         if (wf) ShowData(wf, Device());
       }
     }
+    
     StartupStore(_T(" Nano3 CLEAR VALUES %s"), NEWLINE);
+    SetDataText( _QNH,   _T(""));    
     SetDataText( _MC,    _T(""));
     SetDataText( _BUGS,  _T(""));
     SetDataText( _BAL,   _T(""));
@@ -1285,7 +1299,7 @@ LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
   // SendNmea(Device(), _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
   StartupStore(_T(" ******* NANO3  IGC Download START ***** %s") , NEWLINE);
   _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
-  _sntprintf(m_Filename, array_size(m_Filename), _T("%s"),Filename);
+  _sntprintf(m_Filename, std::size(m_Filename), _T("%s"),Filename);
   SendNmea(Device(), szTmp);
   StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
   IGCDownload(true);
@@ -1467,7 +1481,9 @@ double fDir,fTmp,airspeed=0;
       }
       if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
       {
-        if (airspeed>0) info->IndicatedAirspeed = airspeed / AirDensityRatio(fTmp);
+        if (airspeed>0) {
+          info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, fTmp);
+        }
         UpdateBaroSource( info, 0, d,fTmp);
       }
     }
@@ -1535,7 +1551,7 @@ TCHAR ctemp[MAX_NMEA_LEN];
 static int NoMsg=0;
 static int oldSerial=0;
 if(_tcslen(String) < 180)
-  if((( pGPS->SerialNumber == 0)  || ( pGPS->SerialNumber != oldSerial)) && (NoMsg < 5))
+  if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
     NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
@@ -1544,23 +1560,23 @@ if(_tcslen(String) < 180)
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,1);
-    pGPS->SerialNumber= (int)StrToDouble(ctemp,NULL);
-    oldSerial = pGPS->SerialNumber;
-    _stprintf(ctemp, _T("%s Serial Number %i"), d->Name, pGPS->SerialNumber);
+    d->SerialNumber= (int)StrToDouble(ctemp,NULL);
+    oldSerial = d->SerialNumber;
+    _stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,2);
-    pGPS->SoftwareVer= StrToDouble(ctemp,NULL);
-    _stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, pGPS->SoftwareVer);
+    d->SoftwareVer= StrToDouble(ctemp,NULL);
+    _stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,3);
-    pGPS->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-    _stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(pGPS->HardwareId)/10.0);
+    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
+    _stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
     StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, pGPS->SerialNumber);
+    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
     DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  pGPS->SoftwareVer, (double)(pGPS->HardwareId)/10.0);
+    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
     DoStatusMessage(ctemp);
   }
   // nothing to do
@@ -1699,8 +1715,6 @@ int iTmp;
       }
       if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
       {
-        extern bool PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]);
-
         double v;
         for (int i=0; i < 3; i++)
         {
@@ -1846,8 +1860,9 @@ devSetAdvancedMode(d,true);
     if(IsDirInput(PortIO[d->PortNumber].BARODir))
     {
       UpdateBaroSource( info, 0, d, QNEAltitudeToQNHAltitude(alt));
-      if (  info->IndicatedAirspeed>0)
-        info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
+      if (airspeed>0) {
+        info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
+      }
     }
   }
 
@@ -1970,9 +1985,15 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   NMEAParser::ExtractParameter(sentence,szTmp1,0);
   if  (_tcscmp(szTmp1,_T("QNH"))==0)
   {
+    
     NMEAParser::ExtractParameter(sentence,szTmp2,2);
-    UpdateQNH((StrToDouble(szTmp2,NULL))/100.0);
-    StartupStore(_T("Nano3 QNH: %s"),szTmp2);
+    double newQNH = StrToDouble(szTmp2,NULL)/100.0;
+    SetDataText( _QNH,   szTmp2);
+    if(IsDirInput(PortIO[d->PortNumber].QNHDir))
+    {
+      UpdateQNH(newQNH);
+      StartupStore(_T("Nano3 QNH: %s"),szTmp2);
+    }
     return true;
   }
 
@@ -2058,7 +2079,7 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       if(Values(d))
       {
         TCHAR szTmp[20];
-        _sntprintf(szTmp, array_size(szTmp), _T("%3.0f%% ($PLXV0)"),fTmp);
+        _sntprintf(szTmp, std::size(szTmp), _T("%3.0f%% ($PLXV0)"),fTmp);
         SetDataText(_BUGS,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BUGDir))
@@ -2242,7 +2263,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
       szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW,
       (int) (WayPointList[overindex].Altitude +0.5));
 
-      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($PLXVTARG)"),std::size(szName) - _tcslen(szName));
 #ifdef TESTBENCH
      StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
@@ -2254,7 +2275,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
       _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
         szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
-      _tcsncat (szName, _T(" ($GPRMB)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
     }
 #ifdef TESTBENCH
     StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
@@ -2314,7 +2335,7 @@ double fTmp;
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($GPRMB)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($GPRMB)"), std::size(szTmp) - _tcslen(szTmp));
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;
@@ -2365,7 +2386,7 @@ double fTmp;
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($PLXVTARG)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($PLXVTARG)"), std::size(szTmp) - _tcslen(szTmp));
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;
@@ -2383,11 +2404,12 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
   NMEAParser::ExtractParameter(sentence,szTmp,0);
   {
+#ifdef DEVICE_SERIAL     
     NMEAParser::ExtractParameter(sentence,szTmp,5);
     {
-      info->SerialNumber = (int) StrToDouble(szTmp,NULL);
+      d->SerialNumber = (int) StrToDouble(szTmp,NULL);
     }
-
+#endif      
     double Batt;
     if (ParToDouble(sentence, 7, &Batt))
     {

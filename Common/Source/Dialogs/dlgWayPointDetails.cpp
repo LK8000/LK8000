@@ -20,7 +20,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "Sound/Sound.h"
-
+#include "Radio.h"
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -139,10 +139,34 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface){
   (void)Sender;
   if (CommentDrawListIndex < (int)aCommentTextLine.size()){
-      LKASSERT(CommentDrawListIndex>=0);
-      const TCHAR* szText = aCommentTextLine[CommentDrawListIndex];
-      Surface.SetTextColor(RGB_BLACK);
-      Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
+    LKASSERT(CommentDrawListIndex>=0);
+    const TCHAR* szText = aCommentTextLine[CommentDrawListIndex];
+    size_t pos, len;
+    double Freq = ExtractFrequencyPos(szText, &pos, &len); 
+    Surface.SetTextColor(RGB_BLACK);
+    Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
+
+    if((Freq > 0) && ((pos+len) < 255))
+    {
+      TCHAR sTmp[255];	
+
+      LK_tcsncpy(sTmp, aCommentTextLine[CommentDrawListIndex], pos+len);
+      sTmp[pos+len] = 0;
+      const int subend = Surface.GetTextWidth(sTmp);
+
+      // size of the text is start of underline
+      sTmp[pos] = 0;
+      const int substart =  Surface.GetTextWidth(sTmp);
+
+      if(substart < subend) 
+      {
+        int h =  Surface.GetTextHeight(sTmp) - IBLSCALE(1);
+        const auto hOldPen = Surface.SelectObject(LKPen_Black_N1);
+        Surface.DrawLine(substart, h, subend, h);
+
+        Surface.SelectObject(hOldPen);
+      }
+    }
   }
 }
 
@@ -324,35 +348,23 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-extern    double  ExtractFrequency(const TCHAR*);
 
 static void OnMultiSelectEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {
-    (void) Sender;
+  int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 
-
-#ifdef RADIO_ACTIVE
-int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-TCHAR Tmp[255];
-TCHAR Tmp2[20];
   if(ItemIndex >=0)
   {
    if(RadioPara.Enabled)
    {
-     double ASFrequency = ExtractFrequency(aCommentTextLine[ItemIndex]);
-      if((ASFrequency >= 118) && (ASFrequency <= 138))
+     double ASFrequency = ExtractFrequency(aCommentTextLine[ItemIndex]); 
+      if( ValidFrequency(ASFrequency))
       {
         LKSound(TEXT("LK_TICK.WAV"));
-        _sntprintf(Tmp2, 10, _T("%s"),aCommentTextLine[ItemIndex]);
-        Tmp2[10]=0;
-        _stprintf(Tmp,_T("%s%s%7.3f"),Tmp2,NEWLINE,ASFrequency);
-        devPutFreqActive(ASFrequency, Tmp2);
-        DoStatusMessage(_T(""), Tmp );
+        dlgRadioPriSecSelShowModal(aCommentTextLine[ItemIndex], ASFrequency);
       }
     }
   }
-#endif  // RADIO_ACTIVE
-
 }
 
 static WndListFrame *wMultiSelect = NULL;
@@ -466,10 +478,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   // Lat and Lon
   //
-  Units::CoordinateToString(
-		  WayPointList[SelectedWaypoint].Longitude,
-		  WayPointList[SelectedWaypoint].Latitude,
-		  sTmp, sizeof(sTmp)-1);
+  Units::CoordinateToString(WayPointList[SelectedWaypoint].Longitude, WayPointList[SelectedWaypoint].Latitude, sTmp);
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpCoordinate")));
   LKASSERT(wp);

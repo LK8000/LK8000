@@ -9,25 +9,8 @@
 #if !defined(AFX_CALCULATIONS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_CALCULATIONS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "Topology/shapelib/mapserver.h"
-
-#define NUMTHERMALBUCKETS 10
-#define MAX_THERMAL_SOURCES 20
-
-typedef struct _THERMAL_SOURCE_INFO
-{
-  POINT Screen;
-  double Latitude;
-  double Longitude;
-  double GroundHeight;
-  double LiftRate;
-  bool Visible;
-  double Time;
-} THERMAL_SOURCE_INFO;
+#include "NMEA/Info.h"
+#include "NMEA/Derived.h"
 
 typedef struct _THERMAL_HISTORY
 {
@@ -47,215 +30,6 @@ typedef struct _THERMAL_HISTORY
 } THERMAL_HISTORY;
 
 
-struct DERIVED_INFO
-{
-  double Vario;
-  double LD;
-  double CruiseLD;
-  double AverageLD;
-  double VMacCready;
-  double Average30s;
-  double BestCruiseTrack;
-  double AverageThermal;
-  double ThermalGain;
-  double LastThermalAverage;
-  double LastThermalGain;
-  double LastThermalTime;
-  double ClimbStartLat;
-  double ClimbStartLong;
-  double ClimbStartAlt;
-  double ClimbStartTime;
-  double CruiseStartLat;
-  double CruiseStartLong;
-  double CruiseStartAlt;
-  double CruiseStartTime;
-  double WindSpeed;
-  double WindBearing;
-  double Bearing;
-  double TerrainAlt;
-  bool   TerrainValid;
-  double Heading;
-  double AltitudeAGL;
-  bool   Circling;
-  bool   FinalGlide;
-  bool   AutoMacCready;
-  bool   Flying;
-  bool	 FreeFlying;	// set true when powerless flight is detected. Always true for paragliders.
-  double NextAltitudeRequired;
-  double NextAltitudeRequired0; // mc=0
-  double NextAltitudeDifference;
-  double NextAltitudeDifference0; // difference with mc=0 
-  double FinalAltitudeRequired;
-  double FinalAltitudeDifference;
-  double TaskDistanceToGo;
-  double TaskDistanceCovered;
-  double TaskTimeToGo;
-  double TaskStartTime;
-  double TaskElapsedTime;
-  double TaskSpeed;
-  double TaskSpeedInstantaneous;
-  double TaskAltitudeRequired;
-  double TaskAltitudeDifference;
-  double TaskAltitudeDifference0; // difference with mc=0
-  double TaskAltitudeRequiredFromStart;
-  double LegDistanceToGo;
-  double LegDistanceCovered;
-  double LegCrossTrackError;
-  double LegActualTrueCourse;
-  double LegTimeToGo;
-  double LegStartTime;
-  double LegSpeed;
-  double NextLatitude;
-  double NextLongitude;
-  double NextAltitude;
-  double NextAltitudeAGL;
-  double AATMaxDistance;
-  double AATMinDistance;
-  double AATTargetDistance;
-  double AATTimeToGo;
-  double AATMaxSpeed;
-  double AATTargetSpeed;
-  double AATMinSpeed;
-  double PercentCircling;
-
-  double TerrainWarningLongitude;
-  double TerrainWarningLatitude;
-  double ObstacleDistance;
-  double ObstacleHeight;
-  double ObstacleAltReqd;
-  double ObstacleAltArriv;
-
-  double FarObstacle_Lat;
-  double FarObstacle_Lon;
-  double FarObstacle_Dist;
-
-  double FarObstacle_Height;
-  double FarObstacle_AltReqd;
-  double FarObstacle_AltArriv;
-
-  double Odometer;
-  // Paolo Ventafridda: recalcuated value with no strange assumptions. These values are trustable.
-  double LKTaskETE;
-  double EqMc; // equivalent MacCready
-
-  // JMW moved calculated waypoint info here
-
-  double WaypointBearing;
-  double WaypointDistance;
-  double WaypointSpeed; 
-
-  // JMW thermal band data
-  double MaxThermalHeight;
-  int    ThermalProfileN[NUMTHERMALBUCKETS];
-  double ThermalProfileW[NUMTHERMALBUCKETS];
-
-  double NettoVario;
-
-  // Current flap
-  TCHAR Flaps[MAXFLAPSNAME+1];
-
-  // optimum speed to fly instantaneously
-  double VOpt; 
-
-  // Maximum efficiency speed to fly
-  double Vme;
-
-  // JMW estimated track bearing at next time step
-  double NextTrackBearing;
-
-  // JMW energy height excess to slow to best glide speed
-  double EnergyHeight;
-
-  // Turn rate in global coordinates
-  double TurnRate;
-  
-  // reflects whether aircraft is in a start/finish/aat/turn sector
-  bool IsInSector; 
-  bool IsInAirspace;
-
-  // detects when glider is on ground for several seconds
-  bool OnGround;
-
-  double NavAltitude;
-  bool ValidStart;
-  double TaskStartSpeed;
-  double TaskStartAltitude;
-  bool ValidFinish;
-
-  double LDvario;
-
-  double ThermalEstimate_Longitude;
-  double ThermalEstimate_Latitude;
-  double ThermalEstimate_W;
-  double ThermalEstimate_R;
-
-  THERMAL_SOURCE_INFO ThermalSources[MAX_THERMAL_SOURCES];
-
-#ifdef ENABLE_OPENGL
-  pointObj GlideFootPrint[NUMTERRAINSWEEPS+2];
-#else
-  pointObj GlideFootPrint[NUMTERRAINSWEEPS+1];
-#endif
-  pointObj GlideFootPrint2[NUMTERRAINSWEEPS+1];  
-
-  bool GlideFootPrint_valid; // true if #GlideFootPrint well calculated
-  bool GlideFootPrint2_valid; // true if #GlideFootPrint2 well calculated
-
-  TCHAR OwnTeamCode[10];
-  double TeammateBearing;
-  double TeammateRange;
-  double TeammateLatetude;
-  double TeammateLongitude;
-  double FlightTime;
-  double TakeOffTime;
-  double FreeFlightStartTime;
-  double FreeFlightStartQNH;
-  double FreeFlightStartQFE;
-
-  double AverageClimbRate[MAXAVERAGECLIMBRATESIZE];
-  long AverageClimbRateN[MAXAVERAGECLIMBRATESIZE];
-
-  double HomeDistance;
-  double HomeRadial; 
-  
-
-  double ZoomDistance;
-  double TaskSpeedAchieved;
-  double TrueAirspeedEstimated;
-  double IndicatedAirspeedEstimated;
-
-  double timeCruising;
-  double timeCircling;
-
-  double MinAltitude;
-  double MaxAltitude;
-  double MaxHeightGain;
-
-  double HeadWind;
-
-  // Turn rate in wind coordinates
-  double GPSVario;
-  double TurnRateWind;
-  double BankAngle;
-  double PitchAngle;
-  double TaskTimeToGoTurningNow;
-  double TotalHeightClimb;
-  double GliderSinkRate;
-  double Gload;
-  double Essing;
-  double TerrainBase; // lowest height within glide range
-  double GRFinish;	// GRadient to final destination, 090203
-			// Note: we don't need GRNext since this value is used when going to a landing
-			// point, which is always a final glide.
-			
-  double TaskAltitudeArrival; // this is estimated task arrival height above ground
-  BOOL   TaskFAI;             // Ist Task FAI ?
-  double TaskTotalDistance;   // total Task Distance
-  double TaskFAIDistance;     // FAI Task distance if Task is FAI (can be different to Total when start on leg)
-
-  double Experimental;
-  // JMW note, new items should go at the bottom of this struct before experimental!
-};
 
 
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
@@ -277,13 +51,16 @@ void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 double GetAzimuth(void);
-unsigned int GetWpChecksum(unsigned int);
-bool SaveRecentList();
-bool LoadRecentList();
-void ResetRecentList();
+
 void ResetTask(bool showConfirmMsg);
-void InsertRecentList(int newwp);
-void RemoveRecentList(int newwp);
+
+void SaveRecentList();
+void LoadRecentList();
+void InsertRecentList(int wp_idx);
+void RemoveRecentList(int wp_idx);
+void ResetRecentList();
+
+
 double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int thepoint); // VENTA3
 double GetCurrentEfficiency(DERIVED_INFO *Calculated, short effmode);
 
@@ -385,6 +162,7 @@ bool CheckSafetyAltitudeApplies(const int wpindex);
 double GetSafetyAltitude(const int wpindex);
 short GetVisualGlideRatio(const double arrival, const double gr);
 bool IsSafetyAltitudeInUse(const int wpindex);
+bool IsSafetyMacCreadyInUse(const int wpindex);
 
 void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 

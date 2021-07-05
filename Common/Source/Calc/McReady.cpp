@@ -121,7 +121,7 @@ void GlidePolar::SetBallast() {
 }
 
 inline double GlidePolar::_SinkRateFast(const double &MC, const unsigned &v) {
-    if(iSAFETYSPEED >= array_size(_sinkratecache)){
+    if(iSAFETYSPEED >= std::size(_sinkratecache)){
         iSAFETYSPEED = 0; // avoid buffer overflow
     }
     BUGSTOP_LKASSERT(iSAFETYSPEED > 8U);
@@ -524,7 +524,7 @@ double GlidePolar::SinkRate(double a,double b, double c,
 
 
 double GlidePolar::FindSpeedForSinkRate(double w) {
-  if(iSAFETYSPEED >= array_size(_sinkratecache)){
+  if(iSAFETYSPEED >= std::size(_sinkratecache)){
       iSAFETYSPEED = 0.; // avoid buffer overflow
       LKASSERT(FALSE); //
   }

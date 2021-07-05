@@ -10,13 +10,16 @@
  */
 
 #include "igc_file_writer.h"
+#include <cstdio>
+#include <cassert>
 
 namespace {
-  // returns 1 if valid char for IGC files
+  // return c if valid char for IGC files
+  // return space if not.
   char clean_igc_char(char c) {
-    if ((c >= 0x20 && c <= 0x7E && c != 0x0D && c != 0x0A && c != 0x24 &&
-        c != 0x2A && c != 0x2C && c != 0x21 && c != 0x5C && c != 0x5E &&
-        c != 0x7E)) {
+    if (c >= 0x20 && c <= 0x7E && c != 0x24 &&
+        c != 0x2A && c != 0x2C && c != 0x21 &&
+        c != 0x5C && c != 0x5E && c != 0x7E) {
       return c;
     }
     return ' ';
@@ -35,19 +38,18 @@ namespace {
 } // namespace
 
 igc_file_writer::igc_file_writer(const TCHAR *file, bool grecord)
-    : file_path(file), next_record_position(), add_grecord(grecord),
-      md5_a(0x63e54c01, 0x25adab89, 0x44baecfe, 0x60f25476),
-      md5_b(0x41e24d03, 0x23b8ebea, 0x4a4bfc9e, 0x640ed89a),
-      md5_c(0x61e54e01, 0x22cdab89, 0x48b20cfe, 0x62125476),
-      md5_d(0xc1e84fe8, 0x21d1c28a, 0x438e1a12, 0x6c250aee) {}
+    : file_path(file), add_grecord(grecord) {
+
+}
 
 
 bool igc_file_writer::append(const char *data, size_t size) {
 
-  FILE *stream = _tfopen(file_path, _T("rb+"));
+  FILE *stream = _tfopen(file_path.c_str(), _T("rb+"));
   if (!stream) {
-    stream = _tfopen(file_path, _T("wb"));
+    stream = _tfopen(file_path.c_str(), _T("wb"));
   }
+  assert(stream); // invalid file path or missing right on target directory ?
   if (stream) {
     fseek(stream, next_record_position, SEEK_SET);
 

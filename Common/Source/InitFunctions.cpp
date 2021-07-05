@@ -18,17 +18,13 @@
 #include "Bitmaps.h"
 #include "LKObjects.h"
 #include "DoInits.h"
-
-#ifdef USE_FREETYPE
-#include "Screen/FreeType/Init.hpp"
-#endif
-
 #include "Event/Globals.hpp"
 #include "Event/Queue.hpp"
 #include "Screen/Debug.hpp"
 #include "Screen/Font.hpp"
 #include "DisplayOrientation.hpp"
 #include "Asset.hpp"
+#include "ChangeScreen.h"
 
 #ifdef USE_FREETYPE
 #include "Screen/FreeType/Init.hpp"
@@ -57,8 +53,6 @@
 std::unique_ptr<WndMain> main_window; // Main Window singleton
 
 BOOL	InitInstance    (int);
-
-extern bool ScreenHasChanged(void);
 
 void PreloadInitialisation(bool ask) {
   LKLoadLanguageFile();

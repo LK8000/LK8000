@@ -18,6 +18,7 @@
 /*
  * General defines for LK8000
  */
+#define NMEA_REPLAY _T("NMEAReplay")
 
 #define INVALID_GR	999
 // max allowed for both signed and unsigned shorts
@@ -97,7 +98,7 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"7"
-#define LKRELEASE	"1o"
+#define LKRELEASE	"3.7"
 
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
@@ -139,16 +140,7 @@
 #define LKD_DEFAULT_POLAR   "Default.plr"
 #define LKD_DEFAULT_LANGUAGE   "en"
 
-#ifdef ANDROID_VARIANT_BETA
-#define LKD_CONF	"_Configuration_beta"
-#else
-#ifdef ANDROID_VARIANT_DEBUG
-#define LKD_CONF	"_Configuration_debug"
-#else
 #define LKD_CONF	"_Configuration"
-#endif
-#endif
-
 #define LKD_TASKS	"_Tasks"
 #define LKD_WAYPOINTS	"_Waypoints"
 #define LKD_POLARS	"_Polars"
@@ -160,6 +152,7 @@
  * LK8000 suffixes - Do not change them, uncompleted work 091001
  */
 #define LKS_TSK		".lkt"
+#define LKS_XCTSK   ".xctsk"
 #define LKS_LOG		".log"
 #define LKS_TXT		".txt"
 #define LKS_PRF		".prf"
@@ -273,10 +266,10 @@
 #define LKMAXBACKGROUNDS        10
 
 // Number of color ramp available for draw terrain
-#define NUMRAMPS        16
+#define NUMRAMPS        18
 
 // Task format version
-#define LKTASKVERSION	'3'
+#define LKTASKVERSION	'4'
 // How many chars at the beginning of file are reserved
 #define LKPREAMBOLSIZE	50
 
@@ -736,7 +729,12 @@
 #define LK_XC_PREDICTED_DIST     147     // Additional Contest combined closure distance
 #define LK_XC_MEAN_SPEED     148     // Additional Contest mean speed
 #define LK_TIMETASK          149     // elapsed time since task start
-#define LK_MULTI_TARGET_QNH_ARRIV   150 // QNH arrival at Multi Target selected
+#define LK_MTG_QNH_ARRIV   150 // QNH arrival at Multi Target selected
+#define LK_MTG_BRG_DIFF             151  // Multitarget Bearing difference
+#define LK_ALTERN1_QNH_ARRIV   152 // QNH arrival at Alternate 1
+#define LK_HOME_GR             153 // required efficency to home 
+#define LK_HOME_DISTNM         154 // distance to home nm 
+#define LK_HOME_BRG            155 // bearing to home 
 
 // The following values are not available for custom configuration
 
@@ -934,16 +932,6 @@ static const double PI = (4*atan(1));
 #define MAPLABELS_END           3       // mark limit
 
 
-//
-// FLARM STUFF
-//
-#define MAX_FLARM_TRACES	5000
-
-//
-// LOGGER
-//
-// Dummy asset id for a dummy igc logger
-#define LOGGER_ASSET_ID	"DUM"
 
 //
 // TextInBox and LKDrawWaypoint
@@ -966,7 +954,7 @@ static const double PI = (4*atan(1));
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
 #define TASKINDEX       Task[ActiveTaskPoint].Index
 
-#define ACTIVE_WP_IS_AAT_AREA (AATEnabled && (ActiveTaskPoint > 0) \
+#define ACTIVE_WP_IS_AAT_AREA (UseAATTarget() && (ActiveTaskPoint > 0) \
                               && ValidTaskPoint(ActiveTaskPoint + 1))
 
 #define DONTDRAWTHEMAP  (!MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP)
@@ -974,11 +962,6 @@ static const double PI = (4*atan(1));
 #define QUICKDRAW	(FastZoom || MapWindow::zoom.BigZoom())
 #define NOTANYPAN	(!MapWindow::mode.AnyPan())
 #define INPAN		(MapWindow::mode.Is(MapWindow::Mode::MODE_PAN))
-
-
-
-// For debugging and trace tests
-#define IMHERE	StartupStore(_T(">>> %s:%u\n"), _T(__FILE__), __LINE__);
 
 #ifndef MAX_PATH
 #define MAX_PATH 260

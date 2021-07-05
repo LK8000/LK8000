@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">cs</string>
+    <string name="upgrade_storage">"LK8000 přesouvá vaše data (%1$d MB) z adresáře LK8000/ do Android/data/%2$s/files/.\n\nJe to tak vyžadováno Googlem - součást snahy zvýšit vaše soukromí."</string>
 </resources>

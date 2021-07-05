@@ -67,7 +67,7 @@ void AATDistance::AddPoint(double longitude, double latitude,
   bool was_entered = has_entered[taskwaypoint];
   has_entered[taskwaypoint] = true;
 
-  if (!AATEnabled || DoOptimizeRoute()) return; // nothing else to do for non-AAT tasks
+  if (gTaskType != TSK_AAT) return; // nothing else to do for non-AAT tasks
 
   LockTaskData();
 

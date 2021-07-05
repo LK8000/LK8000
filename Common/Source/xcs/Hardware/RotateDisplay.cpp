@@ -27,7 +27,7 @@ Copyright_License {
 #ifdef ANDROID
 #include "Android/Main.hpp"
 #include "Android/NativeView.hpp"
-#include "Android/Product.hpp"
+#include "Product.hpp"
 #endif
 
 #ifdef KOBO
@@ -186,15 +186,11 @@ Display::Rotate(DisplayOrientation_t orientation)
     break;
 
   case DisplayOrientation_t::REVERSE_PORTRAIT:
-    android_orientation = IsGalaxyTab22() ?
-                          NativeView::ScreenOrientation::REVERSE_PORTRAIT_GT :
-                          NativeView::ScreenOrientation::REVERSE_PORTRAIT;
+    android_orientation = NativeView::ScreenOrientation::REVERSE_PORTRAIT;
     break;
 
   case DisplayOrientation_t::REVERSE_LANDSCAPE:
-    android_orientation = IsGalaxyTab22() ?
-                          NativeView::ScreenOrientation::REVERSE_LANDSCAPE_GT :
-                          NativeView::ScreenOrientation::REVERSE_LANDSCAPE;
+    android_orientation = NativeView::ScreenOrientation::REVERSE_LANDSCAPE;
     break;
 
   default:

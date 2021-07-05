@@ -59,8 +59,8 @@ private:
   bool read_line_raw(char* string, size_t size);
 
   enum charset {
-      detect,  // initial value : used for detect utf8 BOM
-      unknown, // used for detect charset using content ( only if BOM not found on first line )
+      detect,  // initial value : used to detect utf8 BOM
+      unknown, // used to detect charset using content ( only if BOM not found on first line )
       utf8,    // utf8 detected : -> convert
       latin1   // latin1 (invalid utf8 code point detected) -> convert to utf8
   };
@@ -69,7 +69,7 @@ private:
   zzip_file_ptr _fp;
 
   char_type _buffer[1024];
-  std::string utf8String; // temporary member used for convert Latin1 to utf8
+  std::string utf8String; // temporary member used to convert Latin1 to utf8
 };
 
 #endif /* ZZIP_FILE_H */

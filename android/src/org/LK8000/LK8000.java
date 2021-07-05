@@ -24,46 +24,49 @@ package org.LK8000;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.KeyEvent;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.TextView;
-import android.os.Build;
-import android.os.Environment;
-import android.os.PowerManager;
-import android.os.Handler;
-import android.os.Message;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.media.AudioManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.onyx.android.sdk.api.device.epd.EpdController;
+import com.onyx.android.sdk.api.device.epd.UpdateMode;
+
+import org.LK8000.QRCode.QRCodeScannerActivity;
+
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
-import com.onyx.android.sdk.api.device.epd.EpdController;
-
 public class LK8000 extends Activity {
   private static final String TAG = "LK8000";
 
-  /**
-   * Hack: this is set by onCreate(), to support the "testing"
-   * package.
-   */
-  protected static Class<?> serviceClass;
   private static NativeView nativeView;
 
   PowerManager.WakeLock wakeLock;
@@ -71,9 +74,6 @@ public class LK8000 extends Activity {
   BatteryReceiver batteryReceiver;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
-    if (serviceClass == null)
-      serviceClass = MyService.class;
-
     super.onCreate(savedInstanceState);
 
     Log.d(TAG, "ABI=" + Build.CPU_ABI);
@@ -86,20 +86,31 @@ public class LK8000 extends Activity {
 
 
     try {
-      // change Onyx eInk device to 'A2' update mode
-      EpdController.applyApplicationFastMode(getApplicationInfo().packageName, true, true);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        // change Onyx eInk device to 'A2' update mode
+        EpdController.clearApplicationFastMode();
+        EpdController.applyApplicationFastMode(LK8000.class.getSimpleName(), true, true, UpdateMode.ANIMATION_QUALITY, Integer.MAX_VALUE);
+      }
     } catch (Exception ignored) { }
 
     if (!Loader.loaded) {
       TextView tv = new TextView(this);
-      tv.setText("Failed to load the native LK8000 libary.\n" +
-                 "Report this problem to us, and include the following information:\n" +
+      tv.setText(getString(R.string.error_native_library) + "\n" +
                  "ABI=" + Build.CPU_ABI + "\n" +
                  "PRODUCT=" + Build.PRODUCT + "\n" +
                  "FINGERPRINT=" + Build.FINGERPRINT + "\n" +
                  "error=" + Loader.error);
       setContentView(tv);
       return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      AudioManager myAudioMgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+      final String sampleRateStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+      final int sampleRate = Integer.parseInt(sampleRateStr);
+      final String framesPerBurstStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+      final int framesPerBurst = Integer.parseInt(framesPerBurstStr);
+      setDefaultStreamValues(sampleRate, framesPerBurst);
     }
 
     initialiseNative();
@@ -134,7 +145,7 @@ public class LK8000 extends Activity {
     enableImmersiveModeIfSupported();
 
     TextView tv = new TextView(this);
-    tv.setText("Loading LK8000...");
+    tv.setText(R.string.loading);
     setContentView(tv);
 
     batteryReceiver = new BatteryReceiver();
@@ -172,23 +183,23 @@ public class LK8000 extends Activity {
     nativeView = null;
 
     Log.d(TAG, "stopping service");
-    stopService(new Intent(this, serviceClass));
+    stopService(new Intent(this, MyService.class));
 
     TextView tv = new TextView(LK8000.this);
-    tv.setText("Shutting down LK8000...");
+    tv.setText(R.string.quit);
     setContentView(tv);
 
     Log.d(TAG, "finish()");
     finish();
   }
 
-  final Handler quitHandler = new Handler() {
+  final Handler quitHandler = new Handler(Looper.getMainLooper()) {
     public void handleMessage(Message msg) {
       quit();
     }
   };
 
-  final Handler errorHandler = new Handler() {
+  final Handler errorHandler = new Handler(Looper.getMainLooper()) {
     public void handleMessage(Message msg) {
       nativeView = null;
       TextView tv = new TextView(LK8000.this);
@@ -208,8 +219,7 @@ public class LK8000 extends Activity {
     Log.d(TAG, "getExternalStorageState() = " + state);
     if (!Environment.MEDIA_MOUNTED.equals(state)) {
       TextView tv = new TextView(this);
-      tv.setText("External storage is not available (state='" + state
-                 + "').  Please turn off USB storage.");
+      tv.setText(R.string.error_external_storage);
       setContentView(tv);
       return;
     }
@@ -263,7 +273,7 @@ public class LK8000 extends Activity {
   @Override protected void onResume() {
     super.onResume();
 
-    Intent intent = new Intent(this, serviceClass);
+    Intent intent = new Intent(this, MyService.class);
 
     try {
       // startForegroundService was introduced in Android Oreo (API 26).
@@ -354,16 +364,22 @@ public class LK8000 extends Activity {
   /**
    * Permissions that need to be explicitly requested from end user.
    */
-  private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
-          Manifest.permission.BLUETOOTH,
-          Manifest.permission.BLUETOOTH_ADMIN,
-          Manifest.permission.WRITE_EXTERNAL_STORAGE,
-          Manifest.permission.ACCESS_FINE_LOCATION,
-          Manifest.permission.WAKE_LOCK,
-          Manifest.permission.INTERNET,
-          Manifest.permission.ACCESS_NETWORK_STATE,
-          Manifest.permission.VIBRATE
-  };
+  static final ArrayList<String> REQUIRED_SDK_PERMISSIONS = new ArrayList<>();
+
+  {
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH_ADMIN);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_FINE_LOCATION);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.WAKE_LOCK);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.INTERNET);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_NETWORK_STATE);
+    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.VIBRATE);
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.FOREGROUND_SERVICE);
+    }
+  }
+
 
   /**
    * Checks the dynamically-controlled permissions and requests missing permissions from end user.
@@ -383,9 +399,11 @@ public class LK8000 extends Activity {
               .toArray(new String[missingPermissions.size()]);
       ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
     } else {
-      final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+      final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.size()];
       Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
-      onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+      final String[] permissions = REQUIRED_SDK_PERMISSIONS
+              .toArray(new String[REQUIRED_SDK_PERMISSIONS.size()]);
+      onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, permissions,
               grantResults);
     }
   }
@@ -409,7 +427,7 @@ public class LK8000 extends Activity {
   }
 
   private void onRuntimePermissionGranted() {
-    LKDistribution.copyLKDistribution(this.getApplication(), false);
+    LKDistribution.copyLKDistribution(this, false);
 
     onRuntimePermissionGrantedNative();
   }
@@ -424,4 +442,49 @@ public class LK8000 extends Activity {
   private native void initialiseNative();
   private native void deinitialiseNative();
 
+  private static native void setDefaultStreamValues(int SampleRate, int FramesPerBurst);
+
+  private final int SCAN_QRCODE = 0;
+
+  void scanQRCode() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      Intent intent = new Intent(this, QRCodeScannerActivity.class);
+      startActivityForResult(intent, SCAN_QRCODE);
+    }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == SCAN_QRCODE) {
+      if (resultCode == Activity.RESULT_OK && data != null) {
+        String data_string = data.getStringExtra("data");
+        if (data_string != null) {
+          loadQRCodeData(data_string);
+        }
+      }
+    }
+  }
+
+  private static native void loadQRCodeData(String data_string);
+
+  void shareFile(String path) {
+    try {
+      Context context = getApplicationContext();
+      File file = new File(path);
+      String mimeType = FileUtils.getDocumentType(file);
+      Uri uri = LKFileProvider.getUriForFile(context, file);
+
+      Intent sendIntent = new Intent(Intent.ACTION_SEND);
+      sendIntent.setDataAndType(uri, mimeType);
+      sendIntent.putExtra(Intent.EXTRA_STREAM, LKFileProvider.getUriForFile(context, file));
+      sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+      startActivity(Intent.createChooser(sendIntent, null));
+
+    } catch (Exception e) {
+      // Todo: display user friendly error
+      e.printStackTrace();
+    }
+  }
 }

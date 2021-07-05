@@ -2,9 +2,12 @@
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="LXNav Config" Popup="1" Font="2" >   
     <WndButton Name="cmdClose"       Caption="_@M186_"     X="2" Y="1"  Width="110"  Height="28" Font="2" Tag="3" />
-    <WndButton Name="cmdIGCDownload" Caption="_@M2398_"    X="120" Y="1" Width="110"  Height="28" Font="2" Tag="3" />                          
-    <WndButton Name="cmdValues" Caption="_@M2467_"    X="120" Y="-1" Width="110"  Height="28" Font="2" Tag="3"  />
-  
+    <WndButton Name="cmdIGCDownload" Caption="_@M2398_"    X="130" Y="1" Width="110"  Height="28" Font="2" Tag="3" />                          
+    <WndButton Name="cmdValues" Caption="_@M2467_"    X="130" Y="-1" Width="110"  Height="28" Font="2" Tag="3"  />
+    
+      <WndProperty Name="prpQNHDir" Caption="QNH" X="2" Y="35" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1345_">
+        <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
+      </WndProperty>  
      <WndProperty Name="prpMCDir" Caption="_@M2447_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1345_">
         <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
       </WndProperty> 

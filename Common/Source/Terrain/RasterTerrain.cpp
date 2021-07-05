@@ -108,11 +108,11 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
 
 
 void RasterTerrain::Lock(void) {
-  mutex.Lock();
+  mutex.lock();
 }
 
 void RasterTerrain::Unlock(void) {
-  mutex.Unlock();
+  mutex.unlock();
 }
 
 short RasterTerrain::GetTerrainHeight(const double &Latitude,

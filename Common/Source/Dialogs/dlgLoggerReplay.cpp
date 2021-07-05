@@ -86,7 +86,7 @@ void dlgLoggerReplayShowModal(void){
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
-        dfe->ScanDirectoryTop(_T(LKD_LOGS), _T("*" LKS_IGC));
+        dfe->ScanDirectoryTop(_T(LKD_LOGS), _T(LKS_IGC));
         dfe->Lookup(ReplayLogger::GetFilename());
       }
       wp->RefreshDisplay();

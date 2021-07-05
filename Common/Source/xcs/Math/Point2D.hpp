@@ -126,4 +126,33 @@ Distance(P a, P b)
   return std::sqrt( ((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y)) );
 }
 
+template<typename P, typename RT=typename P::scalar_type,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::x)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::y)>>>
+inline 
+RT Length(P p) 
+{
+  return sqrt((p.x * p.x) + (p.y * p.y));
+}
+
+template<typename P, typename V,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::x)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::y)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<V>>>
+constexpr inline
+P operator*(P point, V value)
+{
+  return { point.x * value, point.y * value };
+}
+
+template<typename P, typename V,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::x)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::y)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<V>>>
+constexpr inline
+P operator/(P point, V value)
+{
+  return { point.x / value, point.y / value };
+}
+
 #endif

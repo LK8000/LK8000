@@ -30,8 +30,8 @@ void	UnselectMapSpace(short i);
 int	GetInfoboxType(int i);
 int	GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode);
 
-extern int GetOvertargetIndex(void);
-extern void GetOvertargetName(TCHAR *overtargetname);
+int GetOvertargetIndex();
+void GetOvertargetName(TCHAR *overtargetname);
 extern TCHAR * GetOvertargetHeader(void);
 extern void RotateOvertarget(void);
 

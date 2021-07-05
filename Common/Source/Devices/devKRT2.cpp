@@ -12,25 +12,15 @@
 #include "devKRT2.h"
 #include "device.h"
 #include "utils/stringext.h"
+#include "Radio.h"
 
+namespace {
 
-#ifdef RADIO_ACTIVE
-
-#define min(X,Y) ((X) < (Y) ? : (X) : (Y))
-#define BIT(n) (1 << (n))
-
-#define ACTIVE_STATION  1
-#define PASSIVE_STATION 0
-
-#define ACTIVE          1   /* index for active radio data set                */
-#define SHADDOW         0   /* index for shaddowed radio data set             */
-#define STX             0x02  /* STX Command prefix hex code                  */
-#define ACK             0x6   /* acknolage hex code                           */
-#define NAK             0x15  /* not acknolage hex code                       */
+constexpr uint8_t STX = 0x02; /* STX Command prefix hex code                  */
+constexpr uint8_t ACK = 0x06; /* acknolage hex code                           */
+constexpr uint8_t NAK = 0x15; /* not acknolage hex code                       */
 //#define RESEND_ON_NAK       /* switch for command retry on transmission fail  */
 
-
-int KRT2_Convert_Answer(DeviceDescriptor_t *d, char *szCommand, int len);
 
 #ifdef TESTBENCH
 int uiKRT2DebugLevel = 1;
@@ -38,39 +28,17 @@ int uiKRT2DebugLevel = 1;
 int uiKRT2DebugLevel = 0;
 #endif
 
-BOOL KRT2Install(PDeviceDescriptor_t d){
 
-  _tcscpy(d->Name, TEXT("Dittel KRT2"));
-  d->IsRadio        = KRT2IsRadio;
-  d->PutVolume      = KRT2PutVolume;
-  d->PutSquelch     = KRT2PutSquelch;
-  d->PutFreqActive  = KRT2PutFreqActive;
-  d->PutFreqStandby = KRT2PutFreqStandby;
-  d->StationSwap    = KRT2StationSwap;
-  d->ParseNMEA      = NULL;
-  d->ParseStream    = KRT2ParseString;
-  d->PutRadioMode      = KRT2RadioMode;
-  return(TRUE);
-
-}
-
-BOOL KRT2Register(void){
-  return(devRegister(
-    TEXT("Dittel KRT2"),
-    (1l << dfRadio),
-    KRT2Install
-  ));
-}
-
-
-
-
-
-BOOL KRT2IsRadio(PDeviceDescriptor_t d){
-  (void)d;
+BOOL KRT2IsRadio(PDeviceDescriptor_t d) {
   return(TRUE);
 }
 
+bool device_found = false; 
+
+BOOL OpenClose(PDeviceDescriptor_t d) {
+  device_found = false;
+  return TRUE;
+}
 
 
 /*****************************************************************************
@@ -82,33 +50,21 @@ BOOL KRT2IsRadio(PDeviceDescriptor_t d){
  * Station        station Name string
  *
  *****************************************************************************/
-static int  SetKRT2Station(uint8_t *Command ,int Active_Passive, double fFrequency, const TCHAR* Station)
+int SetKRT2Station(uint8_t *Command, uint8_t slot, double fFrequency, const TCHAR* Station)
 {
-unsigned int len = 8;
-unsigned char MHz= (unsigned char) fFrequency;
-unsigned int kHz= (unsigned int) (fFrequency *1000.0 - MHz *1000  + 0.5);
-unsigned char Chan = (unsigned char)(kHz/5);
+  auto MHz = static_cast<uint8_t>(fFrequency);
+  auto kHz = static_cast<uint32_t>(fFrequency *1000.0 - MHz *1000  + 0.5);
+  auto Chan = static_cast<uint8_t>(kHz/5);
 
-char Airfield[10]={"         "};
+  char Airfield[10]={"         "};
 
-LKASSERT(Command !=NULL)
-if(Command == NULL )
+  LKASSERT(Command !=NULL)
+  if(Command == NULL )
     return false;
 
-  len =0;
-  Command[len++] = STX;
-  switch (Active_Passive)
-  {
-    case ACTIVE_STATION:
-      Command[len++] = 'U';
-    break;
-    default:
-    case PASSIVE_STATION:
-      Command[len++] = 'R';
-    break;
-  }
+
   if(Station != NULL) {
-    TCHAR2usascii(Station, Airfield, 9);
+    to_usascii(Station, Airfield);
   }
 
   for (int i = 0 ; i < 10; i++)
@@ -116,6 +72,10 @@ if(Command == NULL )
     if((Airfield[i] < 32) || (Airfield[i] > 126))
    	  Airfield[i] = ' ';
   }
+
+  unsigned len =0;
+  Command[len++] = STX;
+  Command[len++] = slot;
   Command[len++] = MHz;
   Command[len++] = Chan;
   Command[len++] = Airfield[0];
@@ -126,7 +86,7 @@ if(Command == NULL )
   Command[len++] = Airfield[5];
   Command[len++] = Airfield[6];
   Command[len++] = Airfield[7];
-  Command[len++] =MHz ^ Chan ;
+  Command[len++] = MHz ^ Chan ;
 
   return len;
 }
@@ -146,10 +106,10 @@ if(Command == NULL )
  *****************************************************************************/
 int  SetKRT2Audio(uint8_t *Command ,int Vol, int Squelch, int Vox)
 {
-LKASSERT(Command !=NULL)
-if(Command == NULL )
-    return false;
-int len =0;
+  LKASSERT(Command !=NULL)
+  if(Command == NULL )
+      return false;
+  int len =0;
   Command[len++] = STX;
   Command[len++] = 'A';
   Command[len++] = (unsigned char)Vol;
@@ -163,20 +123,18 @@ int len =0;
 
 
 BOOL KRT2PutVolume(PDeviceDescriptor_t d, int Volume) {
-  uint8_t  szTmp[255];
-  int  len;
 
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        if(( len = SetKRT2Audio(szTmp ,Volume ,  RadioPara.Squelch, RadioPara.Vox) ) >0)
-        {
-          d->Com->Write(szTmp,len);
-          if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Volume  %i%s"), Volume,NEWLINE);
-          RadioPara.Volume = Volume;
-        }
-      }
+  if(d && !d->Disabled && d->Com)
+  {
+    uint8_t  szTmp[255];
+    int len = SetKRT2Audio(szTmp, Volume,  RadioPara.Squelch, RadioPara.Vox);
+    if(len > 0)
+    {
+      d->Com->Write(szTmp, len);
+      if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Volume  %i%s"), Volume,NEWLINE);
+      RadioPara.Volume = Volume;
+    }
+  }
   return(TRUE);
 }
 
@@ -184,186 +142,84 @@ BOOL KRT2PutVolume(PDeviceDescriptor_t d, int Volume) {
 
 
 BOOL KRT2PutSquelch(PDeviceDescriptor_t d, int Squelch) {
-  uint8_t  szTmp[255];
-  int  len;
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        if(( len = SetKRT2Audio(szTmp ,RadioPara.Volume ,  Squelch, RadioPara.Vox) ) >0)
-        {
-          d->Com->Write(szTmp,len);
-          if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Squelch  %i%s"), Squelch,NEWLINE);
-          RadioPara.Squelch = Squelch;
-        }
-      }
+
+  if(d && !d->Disabled && d->Com)
+  {
+    uint8_t  szTmp[255];
+    int  len  = SetKRT2Audio(szTmp, RadioPara.Volume,  Squelch, RadioPara.Vox);
+    if(len > 0)
+    {
+      d->Com->Write(szTmp,len);
+      if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Squelch  %i%s"), Squelch,NEWLINE);
+      RadioPara.Squelch = Squelch;
+    }
+  }
   return(TRUE);
 }
 
 
 
 BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
-  uint8_t  szTmp[255];
 
+  if(d && !d->Disabled && d->Com)
+  {
+    uint8_t szTmp[25];
 
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        int len =SetKRT2Station(szTmp ,ACTIVE_STATION, Freq, StationName);
-        d->Com->Write(szTmp, len);
-        RadioPara.ActiveFrequency=  Freq;
-        if(StationName != NULL)
-          _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),StationName) ;
-        if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
-      }
+    int len =SetKRT2Station(szTmp, 'U', Freq, StationName);
+    d->Com->Write(szTmp, len);
+
+    if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+  }
   return(TRUE);
 }
 
 
 BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
-  uint8_t  szTmp[255];
 
+  if(d && !d->Disabled && d->Com)
+  {
+    uint8_t szTmp[25];
 
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        int len = SetKRT2Station(szTmp ,PASSIVE_STATION, Freq, StationName);
-        d->Com->Write(szTmp, len);
+    int len = SetKRT2Station(szTmp, 'R', Freq, StationName);
+    d->Com->Write(szTmp, len);
 
-        RadioPara.PassiveFrequency =  Freq;
-        if(StationName != NULL)
-          _sntprintf(RadioPara.PassiveName , NAME_SIZE ,_T("%s"),StationName) ;
-        if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
-      }
+    if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+  }
   return(TRUE);
 }
 
 
 BOOL KRT2StationSwap(PDeviceDescriptor_t d) {
-  uint8_t  szTmp[5];
-
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-      {
-    	int len =0;
-    	szTmp[len++] = STX;
-    	szTmp[len++] = 'C';
-        d->Com->Write(szTmp, len);
-        if(uiKRT2DebugLevel) StartupStore(_T(". KRT2  station swap %s"), NEWLINE);
-      }
+  if(d && !d->Disabled && d->Com)
+  {
+    uint8_t szTmp[] = { STX, 'C' }; 
+    d->Com->Write(szTmp, std::size(szTmp));
+    if(uiKRT2DebugLevel) StartupStore(_T(". KRT2  station swap %s"), NEWLINE);
+  }
   return(TRUE);
 }
 
 
 BOOL KRT2RadioMode(PDeviceDescriptor_t d, int mode) {
-  uint8_t  szTmp[5];
-  int len =0;
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-      {
-        if( mode > 0  )
-        {
-          szTmp[len++] = STX;
-          szTmp[len++] = 'O';  // turn Dual Mode On
-          if(uiKRT2DebugLevel) StartupStore(_T(". KRT2  Dual on %s"), NEWLINE);
-        }
-        else
-        {
-          szTmp[len++] = STX;
-          szTmp[len++] = 'o';     // turn Dual Mode Off
-          if(uiKRT2DebugLevel) StartupStore(_T(". KRT2  Dual off %s"), NEWLINE);
-        }
-
-        d->Com->Write(szTmp,len);
-      }
-  return(TRUE);
-}
-
-
-BOOL KRT2RequestAllData(PDeviceDescriptor_t d) {
-/*  TCHAR  szTmp[255];
-
-  LockComm();
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-        d->Com->WriteString(szTmp);
-  UnlockComm();*/
-  return(TRUE);
-}
-
-
-BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
-//(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info)
-{
-if(d == NULL) return 0;
-if(String == NULL) return 0;
-if(len == 0) return 0;
-
-#define REC_BUFSIZE 128
-int cnt=0;
-static uint16_t Recbuflen =0;
-static uint16_t CommandLength=REC_BUFSIZE;
-static char Command[REC_BUFSIZE];
-
-while (cnt < len)
-{
- if(CommandLength == REC_BUFSIZE)
- {
-  if(String[cnt] ==STX)
-    Recbuflen =0;
- }
-  if(Recbuflen >= REC_BUFSIZE)
-    Recbuflen =0;
-  LKASSERT(Recbuflen < REC_BUFSIZE);
-
-  if(uiKRT2DebugLevel ==2) StartupStore(_T(". KRT2   Raw Input: Recbuflen:%u  0x%02X %c %s"),  Recbuflen,(uint8_t)String[cnt] ,String[cnt] ,NEWLINE);
-  Command[Recbuflen++] =(char) String[cnt++];
-  if(Recbuflen == 1)
+  if(d && !d->Disabled && d->Com)
   {
-    switch (Command[0])
+    if( mode > 0  )
     {
-      case 'S': CommandLength = 1; break;
-      case ACK: CommandLength = 1; break;
-      case NAK: CommandLength = 1; break;
-      default: break;
+      uint8_t Cmd[] = { STX, 'O' };   // turn Dual Mode On
+      d->Com->Write(Cmd, std::size(Cmd));
+
+      if(uiKRT2DebugLevel) StartupStore(_T(". KRT2  Dual on %s"), NEWLINE);
+    }
+    else
+    {
+      uint8_t Cmd[] = { STX, 'o' };   // turn Dual Mode Off
+      d->Com->Write(Cmd, std::size(Cmd));
+
+      if(uiKRT2DebugLevel) StartupStore(_T(". KRT2  Dual off %s"), NEWLINE);
     }
   }
-
-  if(Recbuflen == 2)
-  {
-    switch(Command[1])
-    {
-      case 'U': CommandLength = 13; break;
-      case 'R': CommandLength = 13; break;
-      case 'A': CommandLength = 6;  break;
-      case 'C': CommandLength = 2;  break;
-      case 'O': CommandLength = 2;  break;
-      case 'o': CommandLength = 2;  break;
-      default : CommandLength = 2;  break;
-    }
-  }
-
-   if(Recbuflen == (CommandLength) ) // all received
-   {
-     if(uiKRT2DebugLevel ==2)	 StartupStore(_T("================ %s") ,NEWLINE);
-     if(uiKRT2DebugLevel ==2) for(int i=0; i < (CommandLength);i++)   StartupStore(_T(". KRT2   Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
-     if(uiKRT2DebugLevel ==2)  StartupStore(_T(". KRT2  Process Command %u  %s") ,CommandLength ,NEWLINE);
-     KRT2_Convert_Answer(d, Command, CommandLength);
-     RadioPara.Changed = true;
-     Recbuflen = 0;
-     CommandLength = REC_BUFSIZE;
-   }
-} //  (cnt < len)
-return  RadioPara.Changed;
+  return(TRUE);
 }
-
-
-
 
 /*****************************************************************************
  * this function converts a KRT answer sting to a NMEA answer
@@ -373,7 +229,7 @@ return  RadioPara.Changed;
  * szCommand      KRT2 binary code to be converted
  * len            length of the KRT2 binary code to be converted
  ****************************************************************************/
-int KRT2_Convert_Answer(DeviceDescriptor_t *d, char *szCommand, int len)
+int KRT2_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len)
 {
 if(d == NULL) return 0;
 if(szCommand == NULL) return 0;
@@ -381,35 +237,18 @@ if(len == 0)          return 0;
 //char szAnswer[180];
 TCHAR szTempStr[180] = _T("");
 
-double  fTmp  =0.0;
 int processed=0;
-static int iDetected = 0;
-static bool bFound = false;
 
 static int counter =0;
 
-int i;
-LKASSERT(szCommand !=NULL);
-LKASSERT(d !=NULL);
-
     if(szCommand[0] == 'S')
     {
-      if(uiKRT2DebugLevel) StartupStore(_T("KRT2 heartbeat: #%i %s"),counter++ ,NEWLINE);
-      d->Com->WriteString(_T("x"));
-      if(bFound == false)
-      {
-        bFound = true;
-        iDetected++;
-        if(iDetected < 10)
-          DoStatusMessage(LKGetText(TEXT("RADIO DETECTED"))); // RADIO DETECTED
-        else
-            if(iDetected == 10)
-               DoStatusMessage(LKGetText(TEXT("Radio Message disabled")));
+      d->Com->Write('x');
 
-      }
-      else
-      {
-       //   bFound = false;
+      if(uiKRT2DebugLevel) StartupStore(_T("KRT2 heartbeat: #%i %s"),counter++ ,NEWLINE);
+      if(!device_found) {
+        device_found = true;
+        DoStatusMessage(MsgToken(1358)); // RADIO DETECTED
       }
       processed++;
     }
@@ -445,35 +284,54 @@ LKASSERT(d !=NULL);
         switch (szCommand[1])
         {
           case 'U':
+            RadioPara.ActiveValid = false;
             if(len >= 13)
             {
               if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.ActiveValid = true;
                 RadioPara.ActiveFrequency=  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
-                for(i=0; i < 8; i++)
+                for(unsigned i=0; i < 8; i++)
                   RadioPara.ActiveName[i] =   szCommand[4+i];
                 RadioPara.ActiveName[8] =0;
                 TrimRight(RadioPara.ActiveName);
-                   _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
+                if( _tcslen(RadioPara.ActiveName) == 0)
+                {
+                  if (UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency)) 
+                  {
+                    devPutFreqActive(RadioPara.ActiveFrequency, RadioPara.ActiveName);
+                  }
+                }
+                _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
                 processed = 13;
               }
             } else processed=0;
           break;
 
           case 'R':
+            RadioPara.PassiveValid = false;
             if(len >= 13)
             {
               if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.PassiveValid = true;
                 RadioPara.PassiveFrequency =  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
-                for(i=0; i < 8; i++)
+                for(unsigned i=0; i < 8; i++)
                   RadioPara.PassiveName[i] =   szCommand[4+i];
                 RadioPara.PassiveName[8] =0;
                 TrimRight(RadioPara.PassiveName);
+                if( _tcslen(RadioPara.PassiveName) == 0)
+                {
+                  if (UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency)) 
+                  {
+                    devPutFreqStandby(RadioPara.ActiveFrequency, RadioPara.PassiveName);
+                  }
+                }
+
                 _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );
                 processed = 13;
               }
@@ -481,12 +339,17 @@ LKASSERT(d !=NULL);
           break;
 
           case 'A':
+            RadioPara.VolValid = false;
+            RadioPara.SqValid = false;
             if(len >= 6)
             {
               if( szCommand[5] != (szCommand[3]+ szCommand[4]))
                 DoStatusMessage(_T("Checksum Fail"));
               else
               {
+                RadioPara.VolValid = true;
+                RadioPara.SqValid = true;
+
                 if(RadioPara.Volume != (int)szCommand[2])
                 {
                   RadioPara.Volume = (int)szCommand[2];
@@ -508,27 +371,29 @@ LKASSERT(d !=NULL);
             } else processed =0;
           break;
           case 'C':
+            RadioPara.ActiveValid = false;
+            RadioPara.PassiveValid = false;
             if(len >= 2)
             {
-              fTmp =   RadioPara.ActiveFrequency;
-              RadioPara.ActiveFrequency = RadioPara.PassiveFrequency;
-              RadioPara.PassiveFrequency=  fTmp;
-              _tcscpy( szTempStr,  RadioPara.ActiveName);
-              _tcscpy(  RadioPara.ActiveName, RadioPara.PassiveName);
-              _tcscpy(  RadioPara.PassiveName, szTempStr);
+              std::swap(RadioPara.ActiveFrequency, RadioPara.PassiveFrequency);
+              std::swap(RadioPara.ActiveName, RadioPara.PassiveName);
               _stprintf(szTempStr,_T("Swap "));
             }
           break;
           case 'O':
+            RadioPara.DualValid = false;
             if(len >= 2)
             {
+              RadioPara.DualValid = true;
              RadioPara.Dual = true;
              _stprintf(szTempStr,_T("Dual ON "));
             }
           break;
           case 'o':
+            RadioPara.DualValid = false;
             if(len >= 2)
             {
+              RadioPara.DualValid = true;
              RadioPara.Dual = false;
              _stprintf(szTempStr,_T("Dual OFF "));
 
@@ -625,4 +490,98 @@ LKASSERT(d !=NULL);
 
   return processed;  /* return the number of converted characters */
 }
-#endif  // RADIO_ACTIVE
+
+
+BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
+{
+  if(d == NULL) return 0;
+  if(String == NULL) return 0;
+  if(len == 0) return 0;
+
+  #define REC_BUFSIZE 128
+  int cnt=0;
+  static uint16_t Recbuflen =0;
+  static uint16_t CommandLength=REC_BUFSIZE;
+  static uint8_t Command[REC_BUFSIZE];
+
+  while (cnt < len)
+  {
+    if(CommandLength == REC_BUFSIZE)
+    {
+      if(String[cnt] ==STX)
+        Recbuflen =0;
+    }
+    if(Recbuflen >= REC_BUFSIZE)
+      Recbuflen =0;
+    LKASSERT(Recbuflen < REC_BUFSIZE);
+
+  if(uiKRT2DebugLevel ==2) StartupStore(_T(". KRT2   Raw Input: Recbuflen:%u  0x%02X %c %s"),  Recbuflen,(uint8_t)String[cnt] ,String[cnt] ,NEWLINE);
+    Command[Recbuflen++] =(char) String[cnt++];
+    if(Recbuflen == 1)
+    {
+      switch (Command[0])
+      {
+        case 'S': CommandLength = 1; break;
+        case ACK: CommandLength = 1; break;
+        case NAK: CommandLength = 1; break;
+        default: break;
+      }
+    }
+
+    if(Recbuflen == 2)
+    {
+      switch(Command[1])
+      {
+        case 'U': CommandLength = 13; break;
+        case 'R': CommandLength = 13; break;
+        case 'A': CommandLength = 6;  break;
+        case 'C': CommandLength = 2;  break;
+        case 'O': CommandLength = 2;  break;
+        case 'o': CommandLength = 2;  break;
+        default : CommandLength = 2;  break;
+      }
+    }
+
+    if(Recbuflen == (CommandLength) ) // all received
+    {
+      if(uiKRT2DebugLevel ==2)	 StartupStore(_T("================ %s") ,NEWLINE);
+      if(uiKRT2DebugLevel ==2) for(int i=0; i < (CommandLength);i++)   StartupStore(_T(". KRT2   Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
+      if(uiKRT2DebugLevel ==2)  StartupStore(_T(". KRT2  Process Command %u  %s") ,CommandLength ,NEWLINE);
+      KRT2_Convert_Answer(d, Command, CommandLength);
+      RadioPara.Changed = true;
+      Recbuflen = 0;
+      CommandLength = REC_BUFSIZE;
+    }
+  } //  (cnt < len)
+  return  RadioPara.Changed;
+}
+
+
+
+BOOL KRT2Install(PDeviceDescriptor_t d){
+  _tcscpy(d->Name, TEXT("Dittel KRT2"));
+
+  d->Open = OpenClose;
+  d->Close = OpenClose;
+
+  d->IsRadio        = KRT2IsRadio;
+  d->PutVolume      = KRT2PutVolume;
+  d->PutSquelch     = KRT2PutSquelch;
+  d->PutFreqActive  = KRT2PutFreqActive;
+  d->PutFreqStandby = KRT2PutFreqStandby;
+  d->StationSwap    = KRT2StationSwap;
+  d->ParseStream    = KRT2ParseString;
+  d->PutRadioMode   = KRT2RadioMode;
+  return TRUE;
+}
+
+} // namespace
+
+
+BOOL KRT2Register(void){
+  return(devRegister(
+    TEXT("Dittel KRT2"),
+    (1l << dfRadio),
+    KRT2Install
+  ));
+}

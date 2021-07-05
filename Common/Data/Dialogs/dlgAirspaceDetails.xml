@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Type="Dialog" X="1" Y="1" Width="238" Height="238" Caption="_@M65_" Font="2" PopUp="1" >
+  <WndForm Type="Dialog" X="1" Y="1" Width="238" Height="238" Caption="_@M65_" Font="2" Popup="1" >
     <WndButton Name="cmdFly" Caption="_@M1270_" X="2" Y="2" Width="80"  Height="38" Font="2" Tag="0" OnClickNotify="OnFlyClicked" />
     <WndButton Name="cmdAcknowledge" Caption="_@M1283_" X="91" Y="-999" Width="-2"  Height="38" Font="2" Tag="0" OnClickNotify="OnAcknowledgeClicked" />
     <WndProperty Name="prpType" Caption="_@M752_" X="2" Y="-1"  Width="-2" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpRange" Caption="_@M543_" X="2" Y="-1"  Width="-2" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
  	<WndOwnerDrawFrame Name="frmAirspacePicto"     X="2" Y="-1" Width="80" Height="38" Font="2"  OnPaint="OnPaintAirspacePicto"/>  
-    <WndButton Name="cmdDetails" Caption="_@M231_" X="-1" Y="-999" Width="1" Height="38" Font="2" Tag="0" OnClickNotify="OnDetailsClicked" />	
-    <WndButton Name="cmdSelect" Caption="_@M1654_" X="80" Y="-999" Width="155" Height="38" Font="2" Tag="0" OnClickNotify="OnSelectClicked" />	
+    <WndButton Name="cmdDetails" Caption="_@M231_" X="80" Y="-999" Width="75" Height="38" Font="2" Tag="0" OnClickNotify="OnDetailsClicked" />	
+    <WndButton Name="cmdSelect" Caption="_@M1654_" X="155" Y="-999" Width="80" Height="38" Font="2" Tag="0" OnClickNotify="OnSelectClicked" />	
     
       
     <WndProperty Name="prpTop" Caption="_@M729_" X="2" Y="-998"  Width="-2" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
     <WndProperty Name="prpBase" Caption="_@M128_" X="2" Y="-1"  Width="-2" Height="22" CaptionWidth="70" Font="2" ReadOnly="1" />
-    <WndButton Name="cmdSFrequency" Caption="Frequency" X="113" Y="-998" Width="1"  Height="38" Font="2" Tag="0" OnClickNotify="OnSetFrequency" />
+    <WndButton Name="cmdSecFrequency" Caption="Frequency" X="3" Y="-998" Width="75"  Height="38" Font="2" Tag="0" OnClickNotify="OnSetSecFrequency" />    
+    <WndButton Name="cmdSFrequency" Caption="Frequency" X="78" Y="-999" Width="75"  Height="38" Font="2" Tag="0" OnClickNotify="OnSetFrequency" />
     <WndButton Name="cmdClose" Caption="_@M156_" X="2" Y="-999" Width="-2"  Height="38" Font="2" Tag="0" OnClickNotify="OnCloseClicked" />
     <!-- Only for diagnostics
 <WndProperty Name="prpWarnLevel" Caption="_@M1263_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />

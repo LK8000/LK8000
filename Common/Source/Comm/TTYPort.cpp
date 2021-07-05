@@ -53,7 +53,11 @@ speed_t DecodeBaudrate(int speed) {
         {19200, B19200},
         {38400, B38400},
         {57600, B57600},
-        {115200, B115200}
+        {115200, B115200},
+        {230400, B230400},
+        {460800, B460800},
+        {500000, B500000},
+        {1000000, B1000000}
     };
 
     speed_t BaudRate = B9600;
@@ -230,7 +234,7 @@ bool TTYPort::Close() {
     return true;
 }
 
-bool TTYPort::Write(const void *data, size_t length) {
+bool TTYPort::Write(const void *data, size_t size) {
     struct timeval timeout;
     fd_set writefs;
     timeout.tv_sec = _Timeout / 1000;
@@ -248,7 +252,7 @@ bool TTYPort::Write(const void *data, size_t length) {
 
     if ((iResult != -1) && FD_ISSET(_tty, &writefs)) {
         // socket ready, Write data.
-        iResult = write(_tty, (const char*) data, length);
+        iResult = write(_tty, (const char*) data, size);
         if (iResult > 0) {
             AddStatTx(iResult);
             return true;
@@ -267,19 +271,15 @@ bool TTYPort::Write(const void *data, size_t length) {
 }
 
 unsigned TTYPort::RxThread() {
-    long dwWaitTime = 0;
     _Buff_t szString;
     Purge();
 
-    while ((_tty != -1) && !StopEvt.tryWait(dwWaitTime)) {
+    while ((_tty != -1) && !StopEvt.tryWait(5)) {
         ScopeLock Lock(CritSec_Comm);
         UpdateStatus();
         int nRecv = ReadData(szString);
         if (nRecv > 0) {
             std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&TTYPort::ProcessChar, this, _1));
-            dwWaitTime = 5; // avoid cpu overhead;
-        } else {
-            dwWaitTime = 50; // if no more data wait 50ms ( max data rate 20Hz )
         }
     }
 

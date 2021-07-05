@@ -23,7 +23,6 @@ void frotatescale(float &xin, float &yin, const float &angle, const float &scale
 void irotate(int &xin, int &yin, const double &angle);
 void irotatescale(int &xin, int &yin, const double &angle, const double &scale, double &x, double &y);
 
-void protate(POINT &pin, const double &angle);
 void protateshift(POINT &pin, const double &angle, const int &x, const int &y);
 
 double AngleLimit360(double theta);
@@ -92,10 +91,6 @@ inline short _MulDiv<short>(short nNumber, short nNumerator, short nDenominator)
     res *= nNumerator;
     res /= nDenominator;
     return res;
-}
-
-inline int64_t _lround(double i) {
-    return (sizeof(long)==4) ? lround(i) : llround(i);
 }
 
 inline unsigned int CombinedDivAndMod(unsigned int &lx) {

@@ -9,13 +9,6 @@
 #ifndef SIDEVIEW_H
 #define SIDEVIEW_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-
-
-
 #define SV_BORDER_Y NIBLSCALE (10)
 
 #define ENABLE_ALL_AS_FOR_SIDEVIEW

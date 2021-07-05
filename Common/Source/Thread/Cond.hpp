@@ -15,8 +15,7 @@
 #include "Thread/Mutex.hpp"
 #include "Poco/Condition.h"
 
-/// Exists only for avoids to change xcs original code...
-// unimplemented, never used so no linker error
+/// Exists only to avoids to change xcs original code...
 class Cond : protected Poco::Condition {
 public:
     Cond() {}

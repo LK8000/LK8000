@@ -36,6 +36,9 @@ class GLShader {
 public:
   explicit GLShader(GLenum type):id(glCreateShader(type)) {}
 
+  GLShader(const GLShader &) = delete;
+  GLShader &operator=(const GLShader &) = delete;
+
   ~GLShader() {
     glDeleteShader(id);
   }

@@ -16,7 +16,7 @@
 #include "McReady.h"
 #include "Util/UTF8.hpp"
 #include "Asset.hpp"
-
+#include "OS/CpuLoad.h"
 
 extern void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col);
 
@@ -648,8 +648,6 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		}
 		break;
 	case BM_SYS:
-
-		extern int CpuSummary();
 		cpusummary=CpuSummary();
 		_tcscpy(BufferTitle,_T("CPU"));
 

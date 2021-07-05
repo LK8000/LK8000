@@ -13,7 +13,7 @@
 
 #include <cstring>
 
-#include "utils/make_unique.h"
+#include <memory>
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
 #include "utils/array_back_insert_iterator.h"
@@ -70,7 +70,7 @@ int zzip_stream::underflow() {
   assert(gptr() == egptr());
 
   // read next chunk
-  zzip_ssize_t read_size = zzip_read(_fp, _buffer, array_size(_buffer));
+  zzip_ssize_t read_size = zzip_read(_fp, _buffer, std::size(_buffer));
   if (read_size <= 0) {
     return traits_type::eof();
   } else {
@@ -173,7 +173,7 @@ bool zzip_stream::read_line(wchar_t *string, size_t size) {
       assert(false); // faild to convert string
     }
   } else {
-    utf2unicode(raw_string.begin(), string, size);
+    from_utf8(raw_string.begin(), string, size);
   }
   return true;
 }

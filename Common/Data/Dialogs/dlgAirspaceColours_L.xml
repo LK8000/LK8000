@@ -3,7 +3,7 @@
   <WndForm Name="frmAirspaceColours" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M593_" Font="2"  >
     <WndFrame X="0" Y="0" Width="100" Height="20" Font="2" />
     <WndButton   Name="cmdClose" Caption="_@M186_"    X="2" Y="2" Width="98"  Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
-    <WndListFrame Name="frmAirspaceColoursList" X="102" Y="0" Width="-2" Height="222" Font="2" OnListInfo="OnAirspaceColoursListInfo">
+    <WndListFrame Name="frmAirspaceColoursList" X="102" Y="1" Width="-1" Height="-1" Font="2" OnListInfo="OnAirspaceColoursListInfo">
       <WndOwnerDrawFrame Name="frmAirspaceColoursListEntry" X="2" Y="2" Width="-2" Height="18" Font="2"  OnPaint="OnAirspaceColoursPaintListItem"/>
     </WndListFrame>
   </WndForm>

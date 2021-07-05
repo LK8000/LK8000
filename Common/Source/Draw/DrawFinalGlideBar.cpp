@@ -191,7 +191,7 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
             hpOld = Surface.SelectObject(hpFinalGlideAbove);
             hbOld = Surface.SelectObject(LKBrush_Green);
         }
-        Surface.Polygon(GlideBar, array_size(GlideBar));
+        Surface.Polygon(GlideBar, std::size(GlideBar));
 
         // in case of invalid bar because finish mode with real task but no valid start, we skip
         if (invalidbar) {
@@ -210,7 +210,7 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
                 Surface.SelectObject(LKBrush_Hollow);
             }
             if (Offset != Offset0) {
-                Surface.Polygon(GlideBar0, array_size(GlideBar0));
+                Surface.Polygon(GlideBar0, std::size(GlideBar0));
             }
 
 
@@ -311,7 +311,7 @@ _skipout:
         Surface.GetTextSize(Value, &TextSize);
         GlideBarOffset = std::max<int>(GlideBarOffset, TextSize.cx+NIBLSCALE(1))+1; 
 
-        TextInBoxMode_t TextInBoxMode = {0};
+        TextInBoxMode_t TextInBoxMode = {};
         TextInBoxMode.Border = true; //={1|8};
         TextInBoxMode.Reachable = false;
         TextInBoxMode.NoSetFont = true;

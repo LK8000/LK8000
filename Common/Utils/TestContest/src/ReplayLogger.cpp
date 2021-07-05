@@ -411,7 +411,6 @@ void CReplayLogger::Start()
   if(_enabled) {
     Stop();
   }
-  //  NumLoggerBuffered = 0;
   //  flightstats.Reset();
   if(!UpdateInternal()) {
     // MessageBoxX(
@@ -431,7 +430,6 @@ void CReplayLogger::Stop()
     // LockFlightData();
     // GPS_INFO.Speed = 0;
     // //    GPS_INFO.Time = 0;
-    // NumLoggerBuffered = 0;
     // UnlockFlightData();
   }
   _enabled = false;

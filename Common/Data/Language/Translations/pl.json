@@ -646,7 +646,6 @@
     "_@M000338_": "Wysokie Alpy",
     "_@M000339_": "Wysoki",
     "_@M000340_": "Wysoki Kontrast",
-    "_@M000341_": "Styl HighScore",
     "_@M000342_": "Większy",
     "_@M000343_": "Na zewnątrz",
     "_@M000344_": "NIEDOKŁADNOŚĆ KIERUNKU LUB ZBYT MOCNY WIATR",
@@ -995,7 +994,6 @@
     "_@M000707_": "Wysokość terenu",
     "_@M000708_": "Teren",
     "_@M000709_": "Teren\nWYŁ",
-    "_@M000710_": "Styl wprow. tekstu",
     "_@M000711_": "Tekst:",
     "_@M000712_": "Pasek komina",
     "_@M000713_": "Orbiter komina",
@@ -1803,9 +1801,7 @@
     "_@M002336_": "kod ICAO",
     "_@M002337_": "Zarządzanie\nStrefami",
     "_@M002338_": "Pliki stref",
-    "_@M002339_": "Plik stref",
     "_@M002340_": "Pliki PZtów",
-    "_@M002341_": "Plik PZtów",
     "_@M002342_": "Plik",
     "_@M002343_": "uwzg. PZty i Strefy",
     "_@M002344_": "wyklucz PZty i Strefy",
@@ -1817,6 +1813,5 @@
     "_@M002415_": "Pobieranie pliku IGC przerwane!",
     "_@M002416_": "Plik już istnieje\nmimo tego pobierać?",
     "_@M002417_": "Przerwać pobieranie?",
-    "_@M002418_": "Ta opcja nie jest dostępna podczas lotu!",
-    "_@M002470_": "Naprzód"
+    "_@M002418_": "Ta opcja nie jest dostępna podczas lotu!"
 }

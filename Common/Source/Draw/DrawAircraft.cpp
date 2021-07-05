@@ -73,16 +73,16 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             hbPAircraftSolidBg = (IsDithered() ? LK_BLACK_BRUSH : LKBrush_Blue);
          }
 
-         PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
-         PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
+         PolygonRotateShift(AircraftInner, std::size(AircraftInner), Orig.x, Orig.y, angle);
+         PolygonRotateShift(AircraftOuter, std::size(AircraftOuter), Orig.x, Orig.y, angle);
 
          Surface.SelectObject(LK_WHITE_PEN);
          Surface.SelectObject(hbPAircraftSolid);
 
-         Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
+         Surface.Polygon(AircraftOuter, std::size(AircraftOuter));
 
          Surface.SelectObject(hbPAircraftSolidBg);
-         Surface.Polygon(AircraftInner, array_size(AircraftInner));
+         Surface.Polygon(AircraftInner, std::size(AircraftInner));
 
          break;
       }
@@ -102,16 +102,16 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             { -16, 3 }, { -16, 0 }, { -8, -1 }, { -2, -1 }, { -2, -3 }, { -1, -6 }, { 2, -6 }
             };
 
-         PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
-         PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
+         PolygonRotateShift(AircraftInner, std::size(AircraftInner), Orig.x, Orig.y, angle);
+         PolygonRotateShift(AircraftOuter, std::size(AircraftOuter), Orig.x, Orig.y, angle);
 
          Surface.SelectObject(LK_NULL_PEN);
 
          Surface.SelectObject(IsDithered() ? LKBrush_Grey : LK_BLACK_BRUSH);
-         Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
+         Surface.Polygon(AircraftOuter, std::size(AircraftOuter));
 
          Surface.SelectObject(IsDithered() ? LK_BLACK_BRUSH : LK_WHITE_BRUSH);
-         Surface.Polygon(AircraftInner, array_size(AircraftInner));
+         Surface.Polygon(AircraftInner, std::size(AircraftInner));
 
          break;
       }
@@ -133,16 +133,16 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             { 1, -5 }
             };
 
-         PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
-         PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
+         PolygonRotateShift(AircraftInner, std::size(AircraftInner), Orig.x, Orig.y, angle);
+         PolygonRotateShift(AircraftOuter, std::size(AircraftOuter), Orig.x, Orig.y, angle);
 
          Surface.SelectObject(LK_NULL_PEN);
 
          Surface.SelectObject(IsDithered() ? LKBrush_Grey : LK_BLACK_BRUSH);
-         Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
+         Surface.Polygon(AircraftOuter, std::size(AircraftOuter));
 
          Surface.SelectObject(IsDithered() ? LK_BLACK_BRUSH : LK_WHITE_BRUSH);
-         Surface.Polygon(AircraftInner, array_size(AircraftInner));
+         Surface.Polygon(AircraftInner, std::size(AircraftInner));
 
          break;
       }
@@ -157,12 +157,12 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             { 11, 2 }, { 5, 3 }, { -5, 3 }
             };
 
-         PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
+         PolygonRotateShift(AircraftInner, std::size(AircraftInner), Orig.x, Orig.y, angle);
 
          Surface.SelectObject(LK_WHITE_PEN);
          Surface.SelectObject(LK_BLACK_BRUSH);
 
-         Surface.Polygon(AircraftInner, array_size(AircraftInner));
+         Surface.Polygon(AircraftInner, std::size(AircraftInner));
 
          break;
       }
@@ -177,12 +177,12 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
             { -1, -3 }, { 1, -3 }
             };
 
-         PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
+         PolygonRotateShift(AircraftInner, std::size(AircraftInner), Orig.x, Orig.y, angle);
 
          Surface.SelectObject(LK_WHITE_PEN);
          Surface.SelectObject(LK_BLACK_BRUSH);
 
-         Surface.Polygon(AircraftInner, array_size(AircraftInner));
+         Surface.Polygon(AircraftInner, std::size(AircraftInner));
 
          break;
       }
@@ -207,13 +207,13 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
          Surface.SelectObject(LK_NULL_PEN);
 
          Surface.SelectObject(IsDithered() ? LKBrush_Grey : LK_BLACK_BRUSH);
-         PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
-         Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
+         PolygonRotateShift(AircraftOuter, std::size(AircraftOuter), Orig.x, Orig.y, angle);
+         Surface.Polygon(AircraftOuter, std::size(AircraftOuter));
 
 
          Surface.SelectObject(IsDithered() ? LK_BLACK_BRUSH : LK_WHITE_BRUSH);
-         PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
-         Surface.Polygon(AircraftInner, array_size(AircraftInner));
+         PolygonRotateShift(AircraftInner, std::size(AircraftInner), Orig.x, Orig.y, angle);
+         Surface.Polygon(AircraftInner, std::size(AircraftInner));
 
 
          break;
@@ -234,12 +234,12 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
 
          Surface.SelectObject(LK_NULL_PEN);
          Surface.SelectObject(IsDithered() ? LKBrush_Grey : LK_BLACK_BRUSH);
-         PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
-         Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
+         PolygonRotateShift(AircraftOuter, std::size(AircraftOuter), Orig.x, Orig.y, angle);
+         Surface.Polygon(AircraftOuter, std::size(AircraftOuter));
 
          Surface.SelectObject(IsDithered() ? LK_BLACK_BRUSH : LKBrush_Yellow);
-         PolygonRotateShift(AircraftInner, array_size(AircraftInner), Orig.x, Orig.y, angle);
-         Surface.Polygon(AircraftInner, array_size(AircraftInner));
+         PolygonRotateShift(AircraftInner, std::size(AircraftInner), Orig.x, Orig.y, angle);
+         Surface.Polygon(AircraftInner, std::size(AircraftInner));
 
          break;
       }
@@ -255,10 +255,10 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
            { 2, -6 }
        };
 
-       PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
+       PolygonRotateShift(AircraftOuter, std::size(AircraftOuter), Orig.x, Orig.y, angle);
        Surface.SelectObject(LK_NULL_PEN);
        Surface.SelectObject(LK_BLACK_BRUSH);
-       Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
+       Surface.Polygon(AircraftOuter, std::size(AircraftOuter));
        break;
      }
        //
@@ -271,10 +271,10 @@ void MapWindow::DrawAircraft(LKSurface& Surface, const POINT& Orig) {
            { 2, 12 }, { 6, 12 }, { 6, 15 }, { -5, 15 }, { -5, 12 }, { -1, 12 }, { -1, 7 }, { -2, 3 },
            { -16, 3 }, { -16, 0 }, { -8, -1 }, { -2, -1 }, { -2, -3 }, { -1, -6 }, { 2, -6 }
        };
-       PolygonRotateShift(AircraftOuter, array_size(AircraftOuter), Orig.x, Orig.y, angle);
+       PolygonRotateShift(AircraftOuter, std::size(AircraftOuter), Orig.x, Orig.y, angle);
        Surface.SelectObject(LK_NULL_PEN);
        Surface.SelectObject(LK_BLACK_BRUSH);
-       Surface.Polygon(AircraftOuter, array_size(AircraftOuter));
+       Surface.Polygon(AircraftOuter, std::size(AircraftOuter));
        break;
      }
 

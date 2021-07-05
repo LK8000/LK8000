@@ -17,8 +17,8 @@
 class PGLineTaskPt : public PGTaskPt {
     friend class PGTaskMgr;
 public:
-    PGLineTaskPt();
-    virtual ~PGLineTaskPt();
+    PGLineTaskPt() = delete;
+    PGLineTaskPt(ProjPt&& point);
 
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 
@@ -26,14 +26,14 @@ protected:
     void OptimizeGoal(const ProjPt& prev);
     void OptimizeRegular(const ProjPt& prev, const ProjPt& next);
 
-    ProjPt m_LineBegin;
-    ProjPt m_LineEnd;
+    ProjPt m_LineBegin = {0, 0};
+    ProjPt m_LineEnd = {0, 0};
 
-    ProjPt m_DirVector;
+    ProjPt m_DirVector = {0, 0};
 
     // Internal Temp Var;
-    ProjPt m_AB;
-    double m_dAB;
+    ProjPt m_AB = {0, 0};
+    ProjPt::scalar_type m_dAB = {};
 };
 
 #endif	/* PGLINETASKPT_H */

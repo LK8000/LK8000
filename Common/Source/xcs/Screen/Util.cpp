@@ -23,14 +23,14 @@ Copyright_License {
 
 #include "Screen/Util.hpp"
 #include "Screen/Canvas.hpp"
-#include "Util/Macros.hpp"
 #include "Math/FastMath.h"
+#include <iterator>
 
 gcc_const
 static RasterPoint
 CirclePoint(int x, int y, int radius, unsigned angle)
 {
-  assert(angle < ARRAY_SIZE(ISINETABLE));
+  assert(angle < std::size(ISINETABLE));
 
   return RasterPoint(x + ISINETABLE[angle] * radius / 1024,
                      y - ISINETABLE[(angle + 1024) & 0xfff] * radius / 1024);
@@ -41,8 +41,8 @@ segment_poly(RasterPoint* pt, const int x, const int y,
              const int radius, const unsigned istart, const unsigned iend,
              unsigned &npoly, const bool forward=true)
 {
-  assert(istart < ARRAY_SIZE(ISINETABLE));
-  assert(iend < ARRAY_SIZE(ISINETABLE));
+  assert(istart < std::size(ISINETABLE));
+  assert(iend < std::size(ISINETABLE));
 
   // add start node
   pt[npoly++] = CirclePoint(x, y, radius, istart);
@@ -103,7 +103,7 @@ Segment(Canvas &canvas, int x, int y, unsigned radius,
 
   segment_poly(pt, x, y, radius, istart, iend, npoly);
 
-  assert(npoly <= ARRAY_SIZE(pt));
+  assert(npoly <= std::size(pt));
   if (npoly)
     canvas.DrawTriangleFan(pt, npoly);
 
@@ -127,7 +127,7 @@ Annulus(Canvas &canvas, int x, int y, unsigned radius,
   segment_poly(pt, x, y, radius, istart, iend, npoly);
   segment_poly(pt, x, y, inner_radius, iend, istart, npoly, false);
 
-  assert(npoly < ARRAY_SIZE(pt));
+  assert(npoly < std::size(pt));
   if (npoly)
     canvas.DrawPolygon(pt, npoly);
 
@@ -151,7 +151,7 @@ KeyHole(Canvas &canvas, int x, int y, unsigned radius,
   segment_poly(pt, x, y, radius, istart, iend, npoly);
   segment_poly(pt, x, y, inner_radius, iend, istart, npoly);
 
-  assert(npoly < ARRAY_SIZE(pt));
+  assert(npoly < std::size(pt));
   if (npoly)
     canvas.DrawPolygon(pt, npoly);
 
@@ -170,7 +170,7 @@ RoundRect(Canvas &canvas, int left, int top,
   segment_poly(pt, right - radius, bottom - radius, radius, 1024, 2047, npoly);
   segment_poly(pt, left + radius, bottom - radius, radius, 2048, 3071, npoly);
 
-  assert(npoly < ARRAY_SIZE(pt));
+  assert(npoly < std::size(pt));
   if (npoly)
     canvas.DrawPolygon(pt, npoly);
 }

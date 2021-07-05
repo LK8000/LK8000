@@ -35,6 +35,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Looper;
 import android.util.Log;
 import android.os.SystemClock;
 
@@ -117,12 +118,11 @@ public class NonGPSSensors implements SensorEventListener, Runnable {
   private final int index;
 
   /**
-   * Global initialization of the class.  Must be called from the main
-   * event thread, because the Handler object must be bound to that
-   * thread.
+   * Global initialization of the class.
+   * Handler object is bound to MainThread
    */
   public static void Initialize() {
-    handler_ = new Handler();
+    handler_ = new Handler(Looper.getMainLooper());
   }
 
   NonGPSSensors(Context context, int _index) {

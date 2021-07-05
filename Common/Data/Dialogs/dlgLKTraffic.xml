@@ -16,6 +16,7 @@
     <WndProperty Name="prpAirfield" Caption="_@M62_" X="2" Y="-1"  Width="250" Height="22" CaptionWidth="55" Font="2" ReadOnly="1" />
     <WndProperty Name="prpType" Caption="_@M752_" X="2" Y="-1"  Width="250" Height="22" CaptionWidth="55" Font="2" ReadOnly="1" />
     <WndProperty Name="prpFreq" Caption="_@M308_" X="2" Y="-1"  Width="250" Height="22" CaptionWidth="55" Font="2" ReadOnly="1" />
-    <WndButton Name="cmdFreq" Caption="_@M308_" X="57" Y="195"  Width="195" Height="22" CFont="2"  Tag="0"  OnClickNotify="OnFlarmFreqSelectEnter"/>
+    <WndButton Name="cmdSecFreq" Caption="_@M308_" X="57" Y="193"  Width="98" Height="22" CFont="2"  Tag="0"  OnClickNotify="OnFlarmSecFreqSelectEnter"/>
+    <WndButton Name="cmdFreq" Caption="_@M308_" X="154" Y="193"  Width="98" Height="22" CFont="2"  Tag="0"  OnClickNotify="OnFlarmFreqSelectEnter"/>
   </WndForm>
 </PMML>

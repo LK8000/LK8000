@@ -26,17 +26,17 @@
 #endif
 
 bool lk::filesystem::exist(const TCHAR* szPath) {
-    struct stat path_stat = {0};
+    struct stat path_stat = {};
     return !::stat(szPath, &path_stat);
 }
 
 bool lk::filesystem::isDirectory(const TCHAR* szPath) {
-    struct stat path_stat = {0};
+    struct stat path_stat = {};
     return (!::stat(szPath, &path_stat) && S_ISDIR(path_stat.st_mode));
 }
 
 bool lk::filesystem::isFile(const TCHAR* szPath) {
-    struct stat path_stat = {0};
+    struct stat path_stat = {};
     return (!::stat(szPath, &path_stat) && !(S_ISDIR(path_stat.st_mode)));
 }
 
@@ -74,7 +74,7 @@ bool lk::filesystem::copyFile(const TCHAR* szSrc, const TCHAR* szDst, bool overw
         return false;
     }
     // get size of source
-    struct stat stat_source = {0};
+    struct stat stat_source = {};
     fstat(source, &stat_source);
 
     int dest = open(szDst, O_WRONLY | O_CREAT | (overwrite ? O_TRUNC : 0), stat_source.st_mode);
@@ -308,4 +308,13 @@ void lk::filesystem::fixPath(TCHAR* szPath) {
         (*sz) = _T('/');
         sz = _tcsstr(sz, _T("\\"));
     }
+}
+
+size_t lk::filesystem::getFileSize(const TCHAR* szPath) {
+    struct stat st;
+    if (stat(szPath, &st) < 0 || !S_ISREG(st.st_mode)) {
+        return 0;
+    }
+
+    return st.st_size;
 }

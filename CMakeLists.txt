@@ -4,57 +4,13 @@ project(assembler C CXX ASM)
 
 include(ExternalProject)
 
-set(GEOGRAPHIC_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/GeographicLib)
-set(GEOGRAPHIC_INCLUDE ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}/include)
-set(GEOGRAPHIC_LIB ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}/lib/libGeographic.a)
-
-if (CMAKE_HOST_WIN32)
-    # WORKARROUND : GeographicLib build system use WIN32 system variable for detect if tools like chmod is available
-    # WIN32 is always false with NDK
-    set(GEOGRAPHIC_WIN32 -DWIN32:BOOL=ON)
-else ()
-    set(GEOGRAPHIC_WIN32 )
-endif ()
+set(GLM_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/glm)
 
 ExternalProject_Add (
-    GeographicLib
-    URL https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.50.1.tar.gz
-    URL_HASH MD5=e73a703da71380bd6bfd2d6eab75e0a4
-    PREFIX ${GEOGRAPHIC_PREFIX}
-    BINARY_DIR ${GEOGRAPHIC_PREFIX}/build/${ANDROID_ABI}
-    INSTALL_DIR ${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}
-    CMAKE_ARGS
-        "-DANDROID_STL=${ANDROID_STL}"
-        "-DANDROID_ABI=${ANDROID_ABI}"
-        "-DANDROID_NDK=${ANDROID_NDK}"
-        "-DANDROID_PLATFORM=${ANDROID_PLATFORM}"
-        "-DANDROID_ARM_NEON=${ANDROID_ARM_NEON}"
-        "-DCMAKE_INSTALL_PREFIX=${GEOGRAPHIC_PREFIX}/lib/${ANDROID_ABI}"
-        "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
-        "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-        "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
-        "-DGEOGRAPHICLIB_LIB_TYPE=STATIC"
-        ${GEOGRAPHIC_WIN32}
-)
-
-add_custom_command (
-    OUTPUT ${GEOGRAPHIC_LIB}
-    DEPENDS GeographicLib
-    VERBATIM
-)
-
-add_custom_target(
-    generate-GeographicLib
-    DEPENDS ${GEOGRAPHIC_LIB}
-)
-
-set(BOOST_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/boost)
-
-ExternalProject_Add (
-    boost
-    URL https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.zip
-    URL_HASH SHA256=8c20440aaba21dd963c0f7149517445f50c62ce4eb689df2b5544cc89e6e621e
-    PREFIX ${BOOST_PREFIX}
+    glm
+    URL https://github.com/g-truc/glm/releases/download/0.9.9.6/glm-0.9.9.6.zip
+    URL_HASH MD5=26aaac404364c494cf82d2ef12faae41
+    PREFIX ${GLM_PREFIX}
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     CONFIGURE_COMMAND ""
@@ -62,8 +18,9 @@ ExternalProject_Add (
     INSTALL_COMMAND ""
 )
 
-ExternalProject_Get_Property(boost source_dir)
-set(BOOST_INCLUDE ${source_dir})
+ExternalProject_Get_Property(glm source_dir)
+set(GLM_INCLUDE ${source_dir})
+
 
 add_definitions(
     -DBOOST_NO_IOSTREAM
@@ -76,20 +33,36 @@ add_definitions(
     -D__STDC_FORMAT_MACROS
     -DENABLE_OPENGL
     -DHAVE_GLES
+    -DHAVE_GLES2
+    -DUSE_GLSL
     -DGL_GLEXT_PROTOTYPES
     -DUSE_EGL
     -DPOCO_NO_UNWINDOWS
     -DPOCO_ANDROID
+    -DGLM_FORCE_RADIANS
+    -DGLM_FORCE_SIZE_T_LENGTH
 )
 
+if("${ANDROID_ABI}" MATCHES "arm")
+    add_definitions(
+        -DGLM_FORCE_NEON
+        -DGLM_FORCE_SILENT_WARNINGS
+    )
+endif()
 
 list(APPEND	BUILD_FLAGS
     -Werror
     -Wall
     -fno-math-errno
     -fopenmp
+    -fsigned-char
+    -Wunused-label 
+    -Wunused-variable 
+    -Wunused-value 
+    -Wuninitialized 
+    -Wmissing-field-initializers
+    -Wno-char-subscripts 
     -Wparentheses
-    -Wuninitialized
     -Wredundant-decls
 )
 string(REPLACE ";" " " BUILD_FLAGS "${BUILD_FLAGS}")
@@ -102,10 +75,13 @@ add_subdirectory( Common/Source/Library/poco lib_poco )
 add_subdirectory( Common/Source/Library/glutess lib_glutess )
 
 add_library( LK8000 SHARED
+
+    Common/Source/utils/unicode/unicode_to_ascii.cpp # put it first to speedup parallel build 
+    Common/Source/utils/unicode/UTF16.cpp
+
     Common/Source/xcs/Android/Assert.cpp
     Common/Source/xcs/Android/Bitmap.cpp
     Common/Source/xcs/Android/Context.cpp
-    Common/Source/xcs/Android/Environment.cpp
     Common/Source/xcs/Android/NativeView.cpp
     Common/Source/xcs/Android/Product.cpp
     Common/Source/xcs/Android/TextUtil.cpp
@@ -136,7 +112,16 @@ add_library( LK8000 SHARED
     Common/Source/Android/UsbSerialHelper.cpp
     Common/Source/Android/UsbSerialPort.cpp
 
+    Common/Source/Android/NetUtil.cpp
+
     Common/Source/Android/LK8000Activity.cpp
+
+    Common/Source/Android/Vario/OscillatorSquare.h
+    Common/Source/Android/Vario/VarioPlayer.h
+    Common/Source/Android/Vario/VarioPlayer.cpp
+
+    Common/Source/Android/AndroidFileUtils.h
+    Common/Source/Android/AndroidFileUtils.cpp
 
     Common/Source/Window/WndMain.cpp
 
@@ -195,6 +180,7 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Screen/OpenGL/Shapes.cpp
     Common/Source/xcs/Screen/OpenGL/Surface.cpp
     Common/Source/xcs/Screen/OpenGL/Triangulate.cpp
+    Common/Source/xcs/Screen/OpenGL/Shaders.cpp
 
     Common/Source/xcs/Util/tstring.cpp
     Common/Source/xcs/Util/ConvertString.cpp
@@ -274,7 +260,6 @@ add_library( LK8000 SHARED
     Common/Source/InitFunctions.cpp
     Common/Source/InputEvents.cpp
     Common/Source/lk8000.cpp
-    Common/Source/LiveTracker.cpp
     Common/Source/LKInstall.cpp
     Common/Source/LKLanguage.cpp
     Common/Source/LKObjects.cpp
@@ -331,6 +316,7 @@ add_library( LK8000 SHARED
     Common/Source/SaveLoadTask/SaveTask.cpp
     Common/Source/SaveLoadTask/LoadCupTask.cpp
     Common/Source/SaveLoadTask/LoadGpxTask.cpp
+    Common/Source/SaveLoadTask/LoadXCTrackTask.cpp
 
     Common/Source/LKInterface/LKCustomKeyHandler.cpp
     Common/Source/LKInterface/LKInit.cpp
@@ -340,7 +326,6 @@ add_library( LK8000 SHARED
     Common/Source/LKInterface/VirtualKeys.cpp
     Common/Source/LKInterface/CScreenOrientation.cpp
 
-    Common/Source/Library/bsearch.cpp
     Common/Source/Library/Crc.cpp
     Common/Source/Library/ColorFunctions.cpp
     Common/Source/Library/DirectoryFunctions.cpp
@@ -354,7 +339,6 @@ add_library( LK8000 SHARED
     Common/Source/Library/StringFunctions.cpp
     Common/Source/Library/TimeFunctions.cpp
     Common/Source/Library/Utm.cpp
-    Common/Source/Library/xmlParser.cpp
 
     Common/Source/Library/cpp-mmf/memory_mapped_file.cpp
 
@@ -415,7 +399,6 @@ add_library( LK8000 SHARED
     Common/Source/Draw/DrawWind.cpp
     Common/Source/Draw/Draw_Primitives.cpp
     Common/Source/Draw/LKDrawBottomBar.cpp
-    Common/Source/Draw/LKDrawCpuStatsDebug.cpp
     Common/Source/Draw/LKDrawFLARMTraffic.cpp
     Common/Source/Draw/LKDrawFanetData.cpp
     Common/Source/Draw/LKDrawInfoPage.cpp
@@ -534,6 +517,7 @@ add_library( LK8000 SHARED
     Common/Source/Calc/windstore.cpp
     Common/Source/Calc/WindEKF.cpp
     Common/Source/Calc/WindKalman.cpp
+    Common/Source/Calc/Radio.cpp
 
     Common/Source/Calc/Task/AATCalculateIsoLines.cpp
     Common/Source/Calc/Task/AATDistance.cpp
@@ -618,6 +602,7 @@ add_library( LK8000 SHARED
     Common/Source/Comm/UpdateQNH.cpp
     Common/Source/Comm/UtilsParser.cpp
     Common/Source/Comm/device.cpp
+    Common/Source/Comm/FilePort.cpp
 
     Common/Source/Comm/Bluetooth/BtHandler.cpp
     Common/Source/Comm/Bluetooth/BtHandlerWince.cpp
@@ -676,6 +661,9 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devLX_EOS_ERA.cpp
     Common/Source/Devices/devFanet.cpp
 
+    Common/Source/Dialogs/dlgSelectObject.cpp
+    Common/Source/Dialogs/dlgSelectAirspace.cpp
+    Common/Source/Dialogs/dlgSelectWaypoint.cpp
     Common/Source/Dialogs/AddCustomKeyList.cpp
     Common/Source/Dialogs/dlgAirspace.cpp
     Common/Source/Dialogs/dlgAirspaceFiles.cpp
@@ -685,7 +673,6 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgMultiSelectList.cpp
     Common/Source/Dialogs/dlgAirspaceDetails.cpp
     Common/Source/Dialogs/dlgAirspacePatterns.cpp
-    Common/Source/Dialogs/dlgAirspaceSelect.cpp
     Common/Source/Dialogs/dlgBasicSettings.cpp
     Common/Source/Dialogs/dlgBottomBar.cpp
     Common/Source/Dialogs/dlgChecklist.cpp
@@ -723,7 +710,6 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgWayPointDetails.cpp
     Common/Source/Dialogs/dlgWayQuick.cpp
     Common/Source/Dialogs/dlgWaypointEdit.cpp
-    Common/Source/Dialogs/dlgWayPointSelect.cpp
     Common/Source/Dialogs/dlgWaypointOutOfTerrain.cpp
     Common/Source/Dialogs/dlgWindSettings.cpp
     Common/Source/Dialogs/dlgBluetooth.cpp
@@ -731,8 +717,10 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgProgress.cpp
     Common/Source/Dialogs/dlgFlarmIGCDownload.cpp
     Common/Source/Dialogs/dlgIGCProgress.cpp
-	Common/Source/Dialogs/dlgLXIGCDownload.cpp
+    Common/Source/Dialogs/dlgLXIGCDownload.cpp
     Common/Source/Dialogs/dlgWeatherStDetails.cpp
+    Common/Source/Dialogs/dlgEOSIGCDownload.cpp
+    Common/Source/Dialogs/dlgRadioPriSecSel.cpp
 
     Common/Source/Dialogs/Analysis/DrawOtherFunctions.cpp
     Common/Source/Dialogs/Analysis/DrawXYGrid.cpp
@@ -748,6 +736,7 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/Analysis/StyleLine.cpp
     Common/Source/Dialogs/Analysis/Update.cpp
     Common/Source/Dialogs/Analysis/dlgStatistics.cpp
+    Common/Source/Dialogs/dlgNMEAReplay.cpp
 
     Common/Source/Dialogs/Task/AdjustAATTargets.cpp
     Common/Source/Dialogs/Task/InsertWaypoint.cpp
@@ -776,9 +765,62 @@ add_library( LK8000 SHARED
     Common/Source/Sound/Android/Sound.cpp
 
     Common/Source/Geographic/GeoPoint.cpp
+    Common/Source/Geographic/TransverseMercator.cpp
 
     Common/Source/Resource/resource_data.S
     Common/Source/Resource/resource_xml.S
+
+	Common/Source/Tracking/LiveTrack24.cpp
+	Common/Source/Tracking/Tracking.cpp
+    Common/Source/Tracking/SkylinesGlue.cpp
+
+    Common/Source/xcs/Util/CRC.cpp
+    Common/Source/xcs/Util/CRC.hpp
+
+	Common/Source/xcs/Tracking/SkyLines/Client.hpp
+    Common/Source/xcs/Tracking/SkyLines/Client.cpp
+    Common/Source/xcs/Tracking/SkyLines/Data.hpp
+    Common/Source/xcs/Tracking/SkyLines/Export.hpp
+    Common/Source/xcs/Tracking/SkyLines/Features.hpp
+	Common/Source/xcs/Tracking/SkyLines/Glue.hpp
+    Common/Source/xcs/Tracking/SkyLines/Glue.cpp
+    Common/Source/xcs/Tracking/SkyLines/Handler.hpp
+    Common/Source/xcs/Tracking/SkyLines/Import.hpp
+	Common/Source/xcs/Tracking/SkyLines/Key.hpp
+	Common/Source/xcs/Tracking/SkyLines/Key.cpp
+    Common/Source/xcs/Tracking/SkyLines/Protocol.hpp
+    Common/Source/xcs/Tracking/SkyLines/Queue.hpp
+    Common/Source/xcs/Tracking/SkyLines/Settings.hpp
+	Common/Source/xcs/Tracking/SkyLines/Assemble.hpp
+	Common/Source/xcs/Tracking/SkyLines/Assemble.cpp
+
+	Common/Source/xcs/Tracking/Features.hpp
+	Common/Source/xcs/Tracking/TrackingGlue.hpp
+	Common/Source/xcs/Tracking/TrackingGlue.cpp
+	Common/Source/xcs/Tracking/TrackingSettings.hpp
+	Common/Source/xcs/Tracking/TrackingSettings.cpp
+
+	Common/Source/xcs/IO/Async/GlobalIOThread.hpp
+	Common/Source/xcs/IO/Async/GlobalIOThread.cpp
+	Common/Source/xcs/IO/Async/IOThread.hpp
+	Common/Source/xcs/IO/Async/IOThread.cpp
+
+	Common/Source/xcs/Time/GPSClock.hpp
+
+	Common/Source/xcs/Net/AllocatedSocketAddress.cxx
+	Common/Source/xcs/Net/AllocatedSocketAddress.hxx
+	Common/Source/xcs/Net/Features.hxx
+	Common/Source/xcs/Net/IPv4Address.cxx
+	Common/Source/xcs/Net/IPv4Address.hxx
+	Common/Source/xcs/Net/SocketAddress.cxx
+	Common/Source/xcs/Net/SocketAddress.hxx
+	Common/Source/xcs/Net/SocketDescriptor.cpp
+	Common/Source/xcs/Net/SocketDescriptor.hpp
+	Common/Source/xcs/Net/SocketError.hpp
+	Common/Source/xcs/Net/State.cpp
+	Common/Source/xcs/Net/State.hpp
+	Common/Source/xcs/Net/StaticSocketAddress.cxx
+	Common/Source/xcs/Net/StaticSocketAddress.hxx
 )
 
 # resource_xml.S dependencies
@@ -803,6 +845,29 @@ set_source_files_properties (
      PROPERTIES OBJECT_DEPENDS "${data_files}"
 )
 
+add_dependencies(LK8000 glm)
+
+find_package (geographiclib REQUIRED CONFIG)
+find_package(oboe REQUIRED CONFIG)
+
+find_package (boost_config REQUIRED CONFIG)
+find_package (boost_type_traits REQUIRED CONFIG)
+find_package (boost_preprocessor REQUIRED CONFIG)
+find_package (boost_core REQUIRED CONFIG)
+find_package (boost_io REQUIRED CONFIG)
+find_package (boost_assert REQUIRED CONFIG)
+find_package (boost_tuple REQUIRED CONFIG)
+find_package (boost_exception REQUIRED CONFIG)
+find_package (boost_throw_exception REQUIRED CONFIG)
+find_package (boost_integer REQUIRED CONFIG)
+find_package (boost_container_hash REQUIRED CONFIG)
+find_package (boost_utility REQUIRED CONFIG)
+find_package (boost_detail REQUIRED CONFIG)
+find_package (boost_static_assert REQUIRED CONFIG)
+find_package (boost_move REQUIRED CONFIG)
+find_package (boost_predef REQUIRED CONFIG)
+find_package (boost_intrusive REQUIRED CONFIG)
+find_package (boost_container REQUIRED CONFIG)
 
 target_include_directories( LK8000 PRIVATE
     Common/Header/linuxcompat
@@ -811,22 +876,36 @@ target_include_directories( LK8000 PRIVATE
     Common/Source
     Common/Source/xcs
     ./
-    ${BOOST_INCLUDE}
-    ${GEOGRAPHIC_INCLUDE}
+    ${GLM_INCLUDE}
 )
 
-add_dependencies(LK8000 generate-GeographicLib)
-add_dependencies(LK8000 boost)
-
-target_link_libraries(
-    LK8000
+target_link_libraries(LK8000 PRIVATE
     LK8000_POCO
     LK8000_GLUTESS
-    ${GEOGRAPHIC_LIB}
+	geographiclib::geographiclib
+	oboe::oboe
+	boost_config::boost_config
+	boost_type_traits::boost_type_traits
+	boost_preprocessor::boost_preprocessor
+	boost_core::boost_core
+	boost_io::boost_io
+	boost_assert::boost_assert
+	boost_tuple::boost_tuple
+	boost_exception::boost_exception
+	boost_throw_exception::boost_throw_exception
+	boost_integer::boost_integer
+	boost_container_hash::boost_container_hash
+	boost_utility::boost_utility
+	boost_detail::boost_detail
+	boost_static_assert::boost_static_assert
+	boost_move::boost_move
+	boost_predef::boost_predef
+	boost_intrusive::boost_intrusive
+	boost_container::boost_container
     android
     log
     z
     EGL
-    GLESv1_CM
+    GLESv2
     -static-openmp
 )

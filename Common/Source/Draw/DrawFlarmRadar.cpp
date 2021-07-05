@@ -617,7 +617,7 @@ switch(LKevent)
 		  {
 		    for (int j = 0; j < FLARM_MAX_TRAFFIC; j++ ) {
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
-			  if(LKTraffic[aiSortArray[i]].ID == LKTraffic[j].ID)
+			  if(LKTraffic[aiSortArray[i]].RadioId == LKTraffic[j].RadioId)
 			  {
 #ifdef FLARM_MS
 			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
@@ -686,7 +686,7 @@ static double oldSplit = 0;
 
 
 
-#define NUMAIRCRAFTPTS (array_size(AircraftTop))
+#define NUMAIRCRAFTPTS (std::size(AircraftTop))
 POINT AircraftTop[] = {
   { 1,-6},
   {2,-1},
@@ -961,7 +961,7 @@ double scl = xtick;
 		fLon          =  LKTraffic[i].Longitude;
 		fLat          =  LKTraffic[i].Latitude;
 		fFlarmBearing =  LKTraffic[i].TrackBearing;
-		fFlarmAlt     =  LKTraffic[i].RelativeAltitude;
+		fFlarmAlt     =  LKTraffic[i].Altitude -  DrawInfo.Altitude;
 		DistanceBearing( GPSlat, GPSlon, fLat,  fLon, &fFlarmDist, &fDistBearing);
 
 		fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
@@ -976,9 +976,7 @@ double scl = xtick;
 
 		_tcscpy(asFLARMPos[i].szGliderType,_T(""));
 
-		extern FlarmIdFile *file;
-		FlarmId* flarmId = file->GetFlarmIdItem(LKTraffic[i].ID);
-
+		const FlarmId* flarmId = LookupFlarmId(LKTraffic[i].RadioId);
 		if(flarmId!= NULL) {
 		  LK_tcsncpy(asFLARMPos[i].szGliderType,flarmId->type,FLARMID_SIZE_NAME);
 		}
@@ -1044,9 +1042,9 @@ if(SPLITSCREEN_FACTOR >0)
 	  PositionTopView[i].right  = x + iTouchAreaSize;
 	  PositionTopView[i].top    = y - iTouchAreaSize;
 	  PositionTopView[i].bottom = y + iTouchAreaSize;
-	  TextInBoxMode_t displaymode = {1};
-	  displaymode.NoSetFont = 1;
-	  displaymode.Border=1;
+	  TextInBoxMode_t displaymode = {};
+	  displaymode.NoSetFont = true;
+	  displaymode.Border = true;
 
 
       if(fx > sTopDia.fXMin )  /* sing sight ? */
@@ -1241,9 +1239,9 @@ if(bSideview)
 	PositionSideView[i].right  = x  + iTouchAreaSize;
 	PositionSideView[i].top    = hy - iTouchAreaSize;
 	PositionSideView[i].bottom = hy + iTouchAreaSize;
-	TextInBoxMode_t displaymode = {1};
-	displaymode.NoSetFont = 1;
-	displaymode.Border=1;
+	TextInBoxMode_t displaymode = {};
+	displaymode.NoSetFont = true;
+	displaymode.Border = true;
     if(fx > sTopDia.fXMin )  /* in sight ? */
     if(fx < sTopDia.fXMax )
 	if(fFlarmAlt < sDia.fYMax )

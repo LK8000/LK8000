@@ -16,6 +16,10 @@
 #include "CTaskFileHelper.h"
 #include "resource.h"
 
+#ifdef ANDROID
+#include "Android/LK8000Activity.h"
+#endif
+
 extern void ResetTaskWaypoint(int j);
 
 static bool showAdvanced= false;
@@ -102,14 +106,14 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
                 WayPointList[Task[i].Index].Name,
                 (WayPointList[Task[i].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
 
-      if (AATEnabled &&  ValidTaskPoint(i+1) && (i>0)) {
+      if (UseAATTarget() && ValidTaskPoint(i+1) && (i>0)) {
         if (Task[i].AATType==0 || Task[i].AATType==3) {
           _stprintf(sTmp, TEXT("%.1f %s"),
                     Task[i].AATCircleRadius*DISTANCEMODIFY, wpName);
         } else {
-          if(Task[i].AATType==2 && DoOptimizeRoute()) {
-             _stprintf(sTmp, TEXT("%.1f/1 %s"),
-                    Task[i].PGConeSlope,wpName);
+          if(Task[i].AATType==2 && (gTaskType==TSK_GP)) {
+             _stprintf(sTmp, TEXT("%s %.1f/1"),
+                    wpName, Task[i].PGConeSlope);
           } else {
              _stprintf(sTmp, TEXT("%.1f %s"),
                     Task[i].AATSectorRadius*DISTANCEMODIFY,wpName);
@@ -152,7 +156,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
       int Hours = (Minutes/60);
       Minutes = Minutes - (Hours*60);
 
-      if (!AATEnabled || ISPARAGLIDER) {
+      if (gTaskType!=TSK_AAT) {
         // LKTOKEN  _@M735_ = "Total:"
         Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken(735));
         _stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""),lengthtotal*DISTANCEMODIFY, Units::GetDistanceName());
@@ -235,6 +239,19 @@ static void OverviewRefreshTask(WndForm* pWnd) {
     wTaskList->ResetList();
     wTaskList->SetItemIndex(SelectedItem);
   }
+
+  EnableMultipleStartPoints = (gTaskType != TSK_GP);
+
+  WindowControl *wTimeGates = pWnd->FindByName(TEXT("cmdTimegates"));
+  if (wTimeGates) {
+    wTimeGates->SetVisible(gTaskType == TSK_GP);
+  }
+
+  WindowControl *wDelete = pWnd->FindByName(TEXT("cmdDelete"));
+  if (wDelete) {
+    wDelete->SetVisible(gTaskType != TSK_GP);
+  }
+
   UpdateCaption(pWnd);
   UnlockTaskData();
 }
@@ -287,7 +304,7 @@ static void OnTaskListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Li
 			}
 		}
 
-		int res = dlgWayPointSelect();
+		int res = dlgSelectWaypoint();
 		if (ValidWayPoint(res)){
 
 			LockTaskData();
@@ -301,7 +318,7 @@ static void OnTaskListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Li
 			} else if (isfinish) {
 				dlgTaskWaypointShowModal(ItemIndex, 2, true); // finish waypoint
 			} else {
-				if (AATEnabled || DoOptimizeRoute()) {
+				if (UseAATTarget()) {
 					// only need to set properties for finish
 					dlgTaskWaypointShowModal(ItemIndex, 1, true); // normal waypoint
 				}
@@ -470,7 +487,7 @@ static void OnSaveClicked(WndButton* pWnd){
   if (file_index>0) {
 	// file already exists! ask if want to overwrite
         TCHAR sTmp[500];
-	_sntprintf(sTmp, array_size(sTmp), TEXT("%s: '%s'"),
+	_sntprintf(sTmp, std::size(sTmp), TEXT("%s: '%s'"),
 	// LKTOKEN  _@M696_ = "Task file already exists"
 		MsgToken(696),
 		dfe->GetAsString());
@@ -506,46 +523,67 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
 
   int file_index = dfe->GetAsInteger();
   LPCTSTR szFileName = dfe->GetPathFile();
-  LPCTSTR wextension = _tcsrchr(szFileName, _T('.'));
-    
-  if (file_index>0) {
-	if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1) &&   (_tcsicmp(wextension,_T(LKS_WP_CUP))!=0)) {
-		_stprintf(file_name, TEXT("%s '%s' ?"), MsgToken(891), dfe->GetAsString()); // Clear old task and load
-		if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
-			return;
-		}
-	}
 
+#ifdef ANDROID
+  if (_tcscmp(szFileName, _T("QRCODE")) == 0) {
 
-      if(wextension) {
-
-          TCHAR szFilePath[MAX_PATH];
-          LocalPath(szFilePath, _T(LKD_TASKS), szFileName);
-
-          bool bOK = false;
-          if(_tcsicmp(wextension,_T(LKS_TSK))==0) {
-              CTaskFileHelper helper;
-              bOK = helper.Load(szFilePath);
-          }
-          else if (_tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
-              bOK = LoadCupTask(szFilePath);
-          } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
-              bOK = LoadGpxTask(szFilePath);
-          }
-          if(!bOK) {
-              MessageBoxX(MsgToken(467),_T(" "), mbOk);
-              return;
-          }
-          OverviewRefreshTask(pForm);
-          UpdateFilePointer(pForm);
-          UpdateCaption(pForm);
+    bool load_task = true;
+    if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
+      TCHAR msg[180];
+      _sntprintf(msg,180, TEXT("%s %s ?"), MsgToken(891), MsgToken(907)); // Clear old task and load task
+      if (MessageBoxX(msg, _T(" "), mbYesNo) != IdYes) {
+        load_task = false;
       }
-  } else {
-  	// LKTOKEN  _@M467_ = "No Task to load"
-  	MessageBoxX(MsgToken(467),_T(" "), mbOk);
-  	return;
     }
 
+    if (load_task) {
+      LK8000Activity* activity = LK8000Activity::Get();
+      assert(activity);
+      if(activity) {
+        activity->ScanQRCode();
+        return;
+      }
+    }
+    return;
+  }
+#endif
+
+  LPCTSTR wextension = _tcsrchr(szFileName, _T('.'));
+
+  if (file_index>0) {
+    if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1) && (_tcsicmp(wextension,_T(LKS_WP_CUP))!=0)) {
+      _stprintf(file_name, TEXT("%s '%s' ?"), MsgToken(891), dfe->GetAsString()); // Clear old task and load
+      if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
+        return;
+      }
+    }
+
+    if(wextension) {
+      TCHAR szFilePath[MAX_PATH];
+      LocalPath(szFilePath, _T(LKD_TASKS), szFileName);
+
+      bool bOK = false;
+      if(_tcsicmp(wextension,_T(LKS_TSK))==0) {
+        bOK = CTaskFileHelper().Load(szFilePath);
+      }
+      else if (_tcsicmp(wextension,_T(LKS_WP_CUP))==0) {
+        bOK = LoadCupTask(szFilePath);
+      } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
+        bOK = LoadGpxTask(szFilePath);
+      } else if (_tcsicmp(wextension,_T(LKS_XCTSK))==0) {
+        bOK = LoadXctrackTaskFile(szFilePath);
+      }
+      if(!bOK) {
+        MessageBoxX(MsgToken(467),_T(" "), mbOk);
+      }
+      OverviewRefreshTask(pForm);
+      UpdateFilePointer(pForm);
+      UpdateCaption(pForm);
+    }
+  } else {
+    // LKTOKEN  _@M467_ = "No Task to load"
+    MessageBoxX(MsgToken(467),_T(" "), mbOk);
+  }
 }
 
 
@@ -593,6 +631,17 @@ static void OnAdvancedClicked(WndButton* Sender){
   UpdateAdvanced(pForm->FindByName(TEXT("frmAdvanced")));
 }
 
+static bool OnUser(WndForm * pWndForm, unsigned id) {
+  switch (id) {
+    case UM_UPDATE_TASK_OVERVIEW:
+      OverviewRefreshTask(pWndForm);
+      UpdateFilePointer(pWndForm);
+      UpdateCaption(pWndForm);
+      return true;
+  }
+  return false;
+}
+
 static CallBackTableEntry_t CallBackTable[]={
   OnPaintCallbackEntry(OnTaskPaintListItem),
   OnListCallbackEntry(OnTaskListInfo),
@@ -629,16 +678,7 @@ void dlgTaskOverviewShowModal(int Idx){
 
   if (!wf) return;
 
-  WndButton *wb = (WndButton*)wf->FindByName(TEXT("cmdTimegates"));
-  if (wb) wb->SetVisible(false);
-
-  if (ISPARAGLIDER) {
-	if (PGOptimizeRoute) AATEnabled=true; // force it on
-        EnableMultipleStartPoints=false;
-        if (wb) wb->SetVisible(true);
-	wb = (WndButton*)wf->FindByName(TEXT("cmdDelete"));
-	if (wb) wb->SetVisible(false);
-  }
+  wf->SetOnUser(OnUser);
 
   UpdateCaption(wf);
 
@@ -654,9 +694,17 @@ void dlgTaskOverviewShowModal(int Idx){
     wp->SetVisible(false);
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_TSK));
-      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_CUP));
-      dfe->ScanDirectoryTop(_T(LKD_TASKS), _T("*" LKS_WP_GPX));
+      const TCHAR* suffix_filters[] = {
+        _T(LKS_TSK),
+        _T(LKS_WP_CUP),
+        _T(LKS_WP_GPX),
+        _T(LKS_XCTSK)
+      };
+      dfe->Clear();
+#ifdef ANDROID      
+      dfe->addFile(_T("< Scan QRCode >"), _T("QRCODE"));
+#endif
+      dfe->ScanDirectoryTop(_T(LKD_TASKS), suffix_filters, dfe->GetNumFiles());
     }
     wp->RefreshDisplay();
   }

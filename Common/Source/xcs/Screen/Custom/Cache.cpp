@@ -191,8 +191,8 @@ struct RenderedText {
  */
 static Mutex text_cache_mutex;
     
-void TextCache::Lock() { text_cache_mutex.Lock(); }
-void TextCache::Unlock() { text_cache_mutex.Unlock(); }
+void TextCache::Lock() { text_cache_mutex.lock(); }
+void TextCache::Unlock() { text_cache_mutex.unlock(); }
 #endif
 
 static Cache<TextCacheKey, PixelSize, 1024u, TextCacheKey::Hash> size_cache;

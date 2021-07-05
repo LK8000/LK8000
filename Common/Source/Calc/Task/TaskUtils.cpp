@@ -9,6 +9,7 @@
 #include "externs.h"
 #include <iterator>
 #include "NavFunctions.h"
+#include "Util/ScopeExit.hxx"
 
 bool TaskModified = false;
 bool TargetModified = false;
@@ -49,7 +50,7 @@ int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
     }
     else
     {
-      if(AATEnabled || DoOptimizeRoute())
+      if(UseAATTarget())
       {
         LKASSERT(ValidTaskPoint(TskIdx)); // could be -1
 	*SecType = Task[TskIdx].AATType;
@@ -333,4 +334,25 @@ void ReverseTask() {
 	ResetTask(false); // Reset the task without showing the message about task reset
 	RefreshTask(); //Recalculate the task
 	DoStatusMessage(MsgToken(1853)); // LKTOKEN  _@M1853_ "TASK REVERSED"
+}
+
+int GetTaskBearing() {
+  LockTaskData();
+  AtScopeExit() {
+    UnlockTaskData();
+  };
+
+  if ( ValidTaskPointFast(ActiveTaskPoint) != false ) {
+    int index = Task[ActiveTaskPoint].Index;
+    if (index>=0) {
+
+      int value = UseAATTarget() 
+              ? CALCULATED_INFO.WaypointBearing
+              : WayPointCalc[index].Bearing;
+
+      return AngleLimit360(value);
+    }
+  }
+
+  return 0;
 }

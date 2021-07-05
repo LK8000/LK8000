@@ -27,6 +27,17 @@ Copyright_License {
 #include "../Timer.hpp"
 #include "Screen/TopWindow.hpp"
 
+EventLoop::EventLoop(EventQueue &_queue, TopWindow &_top_window)
+    :queue(_queue), top_window(_top_window), bulk(true)
+{
+  top_window.OnStartEventLoop();
+}
+
+EventLoop::~EventLoop()
+{
+  top_window.OnStopEventLoop();
+}
+
 bool
 EventLoop::Get(Event &event)
 {

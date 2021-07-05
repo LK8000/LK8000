@@ -26,6 +26,8 @@ namespace lk {
         bool moveFile(const TCHAR* szSrc, const TCHAR* szDst);
         bool deleteFile(const TCHAR* szPath);
 
+        size_t getFileSize(const TCHAR* szPath);
+
         inline bool isDots(const TCHAR* szName) {
             return ((_tcscmp(szName, _T(".")) == 0) || (_tcscmp(szName, _T("..")) == 0));
         }

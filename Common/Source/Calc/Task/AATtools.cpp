@@ -17,7 +17,7 @@ extern AATDistance aatdistance;
 void AddAATPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int taskwaypoint) {
   bool insector = false;
   if (taskwaypoint>0) {
-    if (AATEnabled) {
+    if (UseAATTarget()) {
       insector = InAATTurnSector(Basic->Longitude,
                                  Basic->Latitude, taskwaypoint, Basic->Altitude);
     } else {

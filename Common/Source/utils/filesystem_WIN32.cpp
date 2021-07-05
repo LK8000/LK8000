@@ -203,3 +203,13 @@ void lk::filesystem::fixPath(TCHAR* szPath) {
         sz = _tcsstr(sz, _T("/"));
     }
 }
+
+size_t lk::filesystem::getFileSize(const TCHAR* szPath) {
+    WIN32_FILE_ATTRIBUTE_DATA data;
+    if (!GetFileAttributesEx(szPath, GetFileExInfoStandard, &data) ||
+            (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
+        return 0;
+    }
+
+    return data.nFileSizeLow | (uint64_t(data.nFileSizeHigh) << 32);
+}

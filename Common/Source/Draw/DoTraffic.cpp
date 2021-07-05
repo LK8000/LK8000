@@ -74,7 +74,7 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    LKNumTraffic=0;
    for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
-	if ( LKTraffic[i].ID <=0 ) continue;
+	if (LKTraffic[i].RadioId <= 0) continue;
 	LKNumTraffic++;
 	DistanceBearing(Basic->Latitude, Basic->Longitude, 
 		LKTraffic[i].Latitude, LKTraffic[i].Longitude,
@@ -95,7 +95,7 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    // We know there is at least one traffic..
    for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
 
-	if ( LKTraffic[i].ID <=0 ) continue;
+	if ( LKTraffic[i].RadioId <= 0 ) continue;
 
 	switch (SortedMode[MSM_TRAFFIC]) {
 		case 0:	

@@ -245,9 +245,8 @@ passthrough:
 		return true;
 	case ckOptimizeRoute:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		PGOptimizeRoute=!PGOptimizeRoute;
-		if (ISPARAGLIDER && PGOptimizeRoute) {
-			AATEnabled = true;
+		TskOptimizeRoute=!TskOptimizeRoute;
+		if(gTaskType==TSK_GP) {
             ClearOptimizedTargetPos();
 		}
 		return true;
@@ -295,7 +294,6 @@ passthrough:
 		return true;
 	case ckCustomMenu1:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		extern void dlgCustomMenuShowModal(void);
 		InputEvents::eventMode(_T("MYMODE"));
 		return true;
 	case ckTaskCalc:
@@ -470,7 +468,7 @@ passthrough:
 
     case ckAirspaceLookup:
         PlayResource(TEXT("IDR_WAV_CLICK"));
-        dlgAirspaceSelect();
+        dlgSelectAirspace();
         return true;
     case  ckRadioDlg:
         PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -563,5 +561,5 @@ CustomKeyLabel[65]=2395;        // Device E Config
 CustomKeyLabel[66]=2396;        // Device F Config
 CustomKeyLabel[67]=2307;        // Radio Settings _@M2307_ "Radio Settings"
 
-static_assert(67 < array_size(CustomKeyLabel), "invalid CustomKeyLabel array size");
+static_assert(67 < std::size(CustomKeyLabel), "invalid CustomKeyLabel array size");
 }

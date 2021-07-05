@@ -41,7 +41,7 @@ void CalculateTaskSectors(int Idx) {
                     LKASSERT(false);
             }
         } else if (ValidTaskPointFast(Idx + 1)) {
-            if (!AATEnabled && !DoOptimizeRoute()) {
+            if (gTaskType == TSK_DEFAULT) {
                 // normal turnpoint sector
                 SectorBearing = TaskPt.Bisector;
 
@@ -100,7 +100,7 @@ void CalculateTaskSectors(int Idx) {
                     LKASSERT(false);
             }
         }
-        if (!AATEnabled) {
+        if (!UseAATTarget()) {
             /** this initialise AAT sector
              * maybe bad idea, because if you disable/enable AAT that override previous Values ...
              */

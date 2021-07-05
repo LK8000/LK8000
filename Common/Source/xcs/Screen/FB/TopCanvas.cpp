@@ -315,6 +315,7 @@ TopCanvas::Flip()
     epd_update_marker,
     TEMP_USE_AMBIENT,
     enable_dither ? EPDC_FLAG_FORCE_MONOCHROME : 0,
+    {}
   };
  
   if(unghost) {

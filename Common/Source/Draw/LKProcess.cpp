@@ -59,6 +59,28 @@ static double GetNextETE(const DERIVED_INFO& info) {
 	return value;
 } 
 
+static bool TurnpointQnhArrival(int TpIndex, double &value, TCHAR *BufferValue, TCHAR *BufferUnit) {
+	bool valid = false;
+
+	if(ValidWayPoint(TpIndex)) {
+		value = WayPointCalc[TpIndex].AltArriv[AltArrivMode]; // Arrival Height
+		value += WayPointList[TpIndex].Altitude; // add altitude of waypoint/target
+		if(IsSafetyAltitudeInUse(TpIndex)) {
+			value += (SAFETYALTITUDEARRIVAL / 10); // add safety altitude if in use for that target
+		}
+		// even though this is a valid waypoint, if arrival below waypoint altitue, 
+		// then valid = false so that set Amber color to get attention of user
+		valid = (value >= WayPointList[TpIndex].Altitude); 
+		value *= ALTITUDEMODIFY; // convert to user altitude Unit		
+		_stprintf(BufferValue, TEXT("%d"), int(value));
+	} else {
+		// could be e.g. if display Alternate 1 QNH arr, but no Alternate 1 is defined
+		_stprintf(BufferValue,_T(NULLMEDIUM));
+		value = 0;
+	}
+	_stprintf(BufferUnit, TEXT("%s"), (Units::GetAltitudeName()));
+	return valid;
+}
 
 //
 // CAREFUL CAREFUL CAREFUL here:
@@ -78,26 +100,19 @@ static double GetNextETE(const DERIVED_INFO& info) {
 //
 bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle) {
 
-  static int	index=-1;
-  static double value;
-  static int	ivalue;
-  static TCHAR	varformat[10];
+  int	index=-1;
+  double value;
+  int	ivalue;
 
    BOOL bFAI ;
    double fDist ;
    double fTogo ;
+   bool  bShowWPname = true;
   // By default, invalid return value. Set it to true after assigning value in cases
   bool		valid=false;
 
-  if (DoInit[MDI_LKPROCESS]) {
 
-	if (LIFTMODIFY==TOFEETPERMINUTE)
-		_stprintf(varformat,TEXT("%%+.0f"));
-	else
-		_stprintf(varformat,TEXT("%%+0.1f"));
-
-	DoInit[MDI_LKPROCESS]=false;
-  }
+  const TCHAR* varformat = (LIFTMODIFY==TOFEETPERMINUTE) ? TEXT("%+.0f") : TEXT("%+0.1f");
 
 
 	_tcscpy(BufferValue,_T(""));
@@ -175,7 +190,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if (index>=0) {
 goto_bearing:
 					// we could use only waypointbearing, but lets keep them separated anyway
-					if (AATEnabled)
+					if (UseAATTarget())
 						value=DerivedDrawInfo.WaypointBearing;
 					else
 						value = WayPointCalc[index].Bearing;
@@ -685,7 +700,7 @@ goto_bearing:
 				status = 0; // black
 			}
 #endif
-			if (ValidTaskPoint(ActiveTaskPoint) && AATEnabled && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
+			if (ValidTaskPoint(ActiveTaskPoint) && UseAATTarget() && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
 
 				Units::TimeToText(BufferValue, (int)DerivedDrawInfo.AATTimeToGo);
 				valid=true;
@@ -698,7 +713,7 @@ goto_bearing:
 		case LK_AA_DISTMAX:
 		// B29
 		case LK_AA_DISTMIN:
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_DISTMAX )
@@ -725,7 +740,7 @@ goto_bearing:
 		case LK_AA_SPEEDMAX:
 		// B31
 		case LK_AA_SPEEDMIN:
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() && DerivedDrawInfo.AATTimeToGo>=1 ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_SPEEDMAX )
@@ -861,9 +876,30 @@ goto_bearing:
 
 		// B38
 		case LK_MTG_BRG:
-			goto lk_empty;
-			break;
+			_stprintf(BufferValue,_T(NULLLONG));
+			if (lktitle)				
+  // LKTOKEN "_@M001698_": "Multitarget Bearing",
+ //  LKTOKEN "_@M001699_": "BrgMtg",              
+				_tcscpy(BufferTitle, MsgToken(1699));
+			else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			ivalue = GetOvertargetIndex(); // Current Multitarget
+			if(ivalue > 0) {
+			value = WayPointCalc[ivalue].Bearing;  //Bearing;
 
+
+              valid=true;
+              
+              if (value > 1)
+                  _stprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken(2179));
+              else if (value < -1)
+                  _stprintf(BufferValue, TEXT("%2.0f%s"), -value, MsgToken(2179));
+              else
+                  _stprintf(BufferValue, TEXT("0%s"), MsgToken(2179));
+           }
+                  else   valid=false;
+			break;
+            
 		// B39
 		case LK_TIME_LOCAL:
 			Units::TimeToText(BufferValue, LocalTime());
@@ -976,44 +1012,57 @@ goto_bearing:
 			break;
 		// B47
 		case LK_BRGDIFF:
+		case LK_MTG_BRG_DIFF:
+            index =0;
 			_stprintf(BufferValue,_T(NULLMEDIUM)); // 091221
-			if (lktitle)
-				// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
-				_tcscpy(BufferTitle, MsgToken(1096));
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
-				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveTaskPoint].Index;
-				if (index>=0) {
-					// THIS WOULD SET BEARING while circling
-					// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-					if (true)
-					{
-						if (AATEnabled && !DoOptimizeRoute())
-							value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
-						else
-							value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
-						valid=true;
-						if (value < -180.0)
-							value += 360.0;
-						else
-							if (value > 180.0)
-								value -= 360.0;
-                        if (value > 30)
-                          _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
-                        else if (value > 2)
-                            _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2185));
-                        else if (value < -30)
-                            _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
-                        else if (value < -2)
-                            _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2184), - value, MsgToken(2179));
-                        else
-                            _stprintf(BufferValue, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
-					}
-					else goto goto_bearing;
-				}
-			}
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+            if(lkindex == LK_MTG_BRG_DIFF)
+            {
+              // LKTOKEN  _@M2476_ = "Multitarget Bearing Difference", _@M2477_ = "DiffMtg"
+              if (lktitle)
+				 _tcscpy(BufferTitle, MsgToken(2477));
+              index = GetOvertargetIndex();
+            }
+            else
+              if ( ValidTaskPoint(ActiveTaskPoint) != false ) 
+              {
+                 if (lktitle)
+                  // LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+                    _tcscpy(BufferTitle, MsgToken(1096));
+
+					if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+					else index = Task[ActiveTaskPoint].Index;
+              } 
+
+            if (index>=0) {
+                // THIS WOULD SET BEARING while circling
+                // if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+                if (true)
+                {
+					if (gTaskType==TSK_AAT)
+                        value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
+                    else
+                        value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
+                    valid=true;
+                    if (value < -180.0)
+                        value += 360.0;
+                    else
+                        if (value > 180.0)
+                            value -= 360.0;
+                    if (value > 30)
+                      _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
+                    else if (value > 2)
+                        _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2185));
+                    else if (value < -30)
+                        _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
+                    else if (value < -2)
+                        _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2184), - value, MsgToken(2179));
+                    else
+                        _stprintf(BufferValue, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
+                }
+                else goto goto_bearing;
+            }
+
 			break;
 
 
@@ -1051,7 +1100,7 @@ goto_bearing:
 
 		// B51
 		case LK_AA_TARG_DIST:
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value = DISTANCEMODIFY*DerivedDrawInfo.AATTargetDistance ;
@@ -1073,7 +1122,7 @@ goto_bearing:
 
 		// B52
 		case LK_AA_TARG_SPEED:
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
+			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() && DerivedDrawInfo.AATTimeToGo>=1 ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.AATTargetSpeed;
@@ -1251,9 +1300,13 @@ goto_bearing:
 			break;
 		// B60
 		case LK_HOME_DIST:
+		case LK_HOME_DISTNM:
 			if (HomeWaypoint>=0) {
 				if ( ValidWayPoint(HomeWaypoint) != false ) {
 					value=DerivedDrawInfo.HomeDistance*DISTANCEMODIFY;
+					if (lkindex == LK_HOME_DISTNM)
+						value=DerivedDrawInfo.HomeDistance*TONAUTICALMILES;
+
 					valid=true;
 					if (value>99)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -1267,8 +1320,15 @@ goto_bearing:
 			}
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
+			{
 				// LKTOKEN  _@M1121_ = "Home Distance", _@M1122_ = "HomeDis"
 				_tcscpy(BufferTitle, MsgToken(1122));
+				if (lkindex == LK_HOME_DISTNM)
+				{
+					_tcscpy(BufferUnit, TEXT("nm"));
+					_tcscpy(BufferTitle, MsgToken(2493));
+				}
+			}
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1304,7 +1364,7 @@ goto_bearing:
 			_stprintf(BufferUnit,_T("h"));
 			// TODO This is in the wrong place, should be moved to calc thread! 090916
 			double dd;
-			if (AATEnabled && ValidTaskPoint(ActiveTaskPoint)) {
+			if (UseAATTarget() && ValidTaskPoint(ActiveTaskPoint)) {
 				dd = DerivedDrawInfo.TaskTimeToGo;
 				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveTaskPoint>0)) {
 					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
@@ -1422,6 +1482,9 @@ goto_bearing:
 		case LK_ALTERN2_GR:
 		// B69
 		case LK_BESTALTERN_GR:
+		// 153
+		case LK_HOME_GR:
+			bShowWPname = true;
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			if (lktitle) {
 				switch (lkindex) {
@@ -1437,7 +1500,11 @@ goto_bearing:
 						// LKTOKEN  _@M1137_ = "Alternate2 Req.Efficiency", _@M1138_ = "Atn2.E"
 						_tcscpy(BufferTitle, MsgToken(1138));
 						break;
-
+					case LK_HOME_GR:
+						// LKTOKEN  _@M2484_ = Home Req.Efficiency", _@M2485_ = "Home.E"
+						_tcscpy(BufferTitle, MsgToken(2485));
+						bShowWPname = false;
+						break;
 					default:
 						_stprintf(BufferTitle, TEXT("Atn%d.E"), lkindex-LK_ALTERNATESGR+1);
 						break;
@@ -1455,12 +1522,15 @@ goto_bearing:
 				case LK_BESTALTERN_GR:
 					index=BestAlternate;
 					break;
+				case LK_HOME_GR:
+					index=HomeWaypoint;
+					break;
 				default:
 					index=0;
 					break;
 			}
 
-			if(ValidWayPoint(index))
+			if(ValidWayPoint(index) && bShowWPname)
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
@@ -1489,6 +1559,10 @@ goto_bearing:
 					break;
 				case LK_BESTALTERN_GR:
 					if ( ValidWayPoint(BestAlternate) ) value=WayPointCalc[BestAlternate].GR;
+					else value=INVALID_GR;
+					break;
+				case LK_HOME_GR:
+					if ( ValidWayPoint(HomeWaypoint) ) value=WayPointCalc[HomeWaypoint].GR;
 					else value=INVALID_GR;
 					break;
 				default:
@@ -1740,22 +1814,18 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if (NearestAirspaceHDist >0) {
-				value = DISTANCEMODIFY*NearestAirspaceHDist;
 
-				if (NearestAirspaceHDist<1000) {
-					_stprintf(BufferValue, TEXT("%1.3f"),value);
-				} else {
-					_stprintf(BufferValue, TEXT("%1.1f"),value);
-				}
+			value = fabs(DISTANCEMODIFY*NearestAirspaceHDist);
 
-				_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-				valid = true;
+			if (value < 1.0) {
+				_stprintf(BufferValue, TEXT("%1.3f"),value);
 			} else {
-				valid=false;
-				_stprintf(BufferValue, TEXT(NULLMEDIUM));
-				_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+				_stprintf(BufferValue, TEXT("%1.1f"),value);
 			}
+
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+			valid = (NearestAirspaceHDist > 0);
+
 			break;
 
 
@@ -2044,6 +2114,9 @@ olc_score:
 				valid=false;
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			}
+			if(NearestAirspaceVDist < 0)
+			  valid=false;
+
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
@@ -2076,8 +2149,11 @@ olc_score:
 		case LK_ALTERN2_BRG:
 		// B118
 		case LK_BESTALTERN_BRG:
+		// B155
+		case LK_HOME_BRG:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			bShowWPname = true;
 			switch(lkindex) {
 				case LK_ALTERN1_BRG:
 					index=Alternate1;
@@ -2088,12 +2164,16 @@ olc_score:
 				case LK_BESTALTERN_BRG:
 					index=BestAlternate;
 					break;
+				case LK_HOME_BRG:
+					index=AirfieldsHomeWaypoint;
+					bShowWPname = false;
+					break;
 				default:
 					index=0;
 					break;
 			}
 
-			if(ValidWayPoint(index))
+			if(ValidWayPoint(index) && bShowWPname)
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
@@ -2228,7 +2308,7 @@ olc_score:
 			fTogo =DISTANCEMODIFY*CContestMgr::Instance().GetClosingPointDist();
 			if(fTogo >0)
 			{
-				if (value>99)
+				if (fTogo>99)
 					_stprintf(BufferValue, TEXT("%.0f"),fTogo);
 				else
 					_stprintf(BufferValue, TEXT("%.1f"),fTogo);
@@ -2442,19 +2522,19 @@ olc_score:
 					LKFormatValue(LK_ALTERN2_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_HOME:
-					LKFormatGR(HomeWaypoint, false, BufferValue, BufferUnit);
+                    LKFormatValue(LK_HOME_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_THER:
-					LKFormatGR(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
+					LKFormatGR(RESWP_LASTTHERMAL, BufferValue, BufferUnit);
 					break;
 				case OVT_MATE:
-					LKFormatGR(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
+					LKFormatGR(RESWP_TEAMMATE, BufferValue, BufferUnit);
 					break;
                 case OVT_XC:
-                    LKFormatGR(RESWP_FAIOPTIMIZED, true, BufferValue, BufferUnit);
+                    LKFormatGR(RESWP_FAIOPTIMIZED, BufferValue, BufferUnit);
                     break;
 				case OVT_FLARM:
-					LKFormatGR(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
+					LKFormatGR(RESWP_FLARMTARGET, BufferValue, BufferUnit);
 					break;
 				default:
 					LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
@@ -2488,7 +2568,7 @@ olc_score:
 			valid=true;
           }
         } else if (ValidTaskPoint(ActiveTaskPoint + 1)) {
-          if (!AATEnabled && !DoOptimizeRoute()) {
+          if (!UseAATTarget()) {
             if(SectorType == CIRCLE) {
               value = Distance - SectorRadius;
               valid=true;
@@ -2632,6 +2712,7 @@ olc_score:
         break;
 
       case LK_XC_CLOSURE_DIST:
+	    ivalue = CContestMgr::TYPE_XC;
         _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
         _stprintf(BufferUnit, TEXT("%s"),Units::GetDistanceName());
         if (CContestMgr::Instance().GetXCTriangleClosureDistance() == 0)
@@ -2825,7 +2906,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					// get values
@@ -2848,7 +2929,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 						value = LKTraffic[LKTargetIndex].Bearing -  DrawInfo.TrackBearing;
@@ -2882,7 +2963,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 						value = LKTraffic[LKTargetIndex].Bearing;
@@ -2902,7 +2983,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 			    _stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					value=SPEEDMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Speed;
@@ -2918,25 +2999,17 @@ lkfin_ete:
 		// B150 Multi Target QNH Arrival
 		// QNH arrival altitude at the currently selected Multitarget. This is a QNH altitude, not a height
 		// above ground. Does not include safety height. Can be negative
-		case LK_MULTI_TARGET_QNH_ARRIV:
-			ivalue = GetOvertargetIndex(); // Current Multitarget
-			if(ivalue > 0) {
-				value = WayPointCalc[ivalue].AltArriv[AltArrivMode]; // Arrival Height
-				value += WayPointList[ivalue].Altitude; // add altitude of waypoint/target
-				if(IsSafetyAltitudeInUse(ivalue)) {
-					value += (SAFETYALTITUDEARRIVAL / 10); // add safety altitude if in use for that target
-				}
-				value *= ALTITUDEMODIFY; // convert to user altitude Unit
-			}
-			else {
-				value = 0;
-				valid = false;
-			}
-			_stprintf(BufferValue, TEXT("%d"),int(value));
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+		case LK_MTG_QNH_ARRIV:
+			valid = TurnpointQnhArrival(GetOvertargetIndex(), value, BufferValue, BufferUnit);
 			// LKTOKEN _@M002472_ = "MultiTarget QNH Arrival", _@M002473_ = "MTgtArr"
 			_tcscpy(BufferTitle, MsgToken(2473));
-			valid = true;
+			break;
+
+		// B152 QNH Arrival at Alternate 1
+		case LK_ALTERN1_QNH_ARRIV:
+			valid = TurnpointQnhArrival(Alternate1, value, BufferValue, BufferUnit);
+			// LKTOKEN  _@M002478_ = "Alternate1 QNH Arrival", _@M002479_ = "Alt1QNH",
+			_tcscpy(BufferTitle, MsgToken(2479));
 			break;
 
 		// B242
@@ -2944,7 +3017,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					value=ALTITUDEMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude;
@@ -2964,7 +3037,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					value=ALTITUDEMODIFY*(DerivedDrawInfo.NavAltitude-DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude)*-1;
@@ -2983,7 +3056,7 @@ lkfin_ete:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 				} else {
@@ -3003,7 +3076,7 @@ lkfin_ete:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 			} else {
-	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+				if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 				} else {
@@ -3025,7 +3098,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+				if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 
@@ -3050,7 +3123,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-                if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+                if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					value=LKTraffic[LKTargetIndex].GR;
@@ -3213,7 +3286,7 @@ lkfin_ete:
 
 		// B254
 		case LK_EMPTY:
-lk_empty:
+//lk_empty:
 			_tcscpy(BufferValue, TEXT(""));
 			_tcscpy(BufferUnit, TEXT(""));
 			_tcscpy(BufferTitle, TEXT(""));
@@ -3243,25 +3316,28 @@ lk_error:
   return valid;
 }
 
+static int GetValidWayPointIndex(int wpindex) {
+    if (wpindex <= RESWP_END) {
+        if (ValidResWayPoint(wpindex)) {
+            return wpindex;
+        }
+    } else {
+        if (ValidWayPointFast(wpindex)) {
+            return wpindex;
+        }
+    }
+    return -1;
+}
+
 // simple format distance value for a given index. BufferTitle always NULLed
 // wpindex is a WayPointList index
-// wpvirtual true means virtual waypoint, and relative special checks
-
-void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+void MapWindow::LKFormatDist(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
   CScopeLock Lock(LockTaskData, UnlockTaskData);
 
-  static int	index;
-  static double value;
-  
-  index=-1;
+  int index = GetValidWayPointIndex(wpindex);
 
-  if (wpvirtual) {
-	if ( ValidResWayPoint(wpindex) ) index = wpindex;
-  } else {
-	if ( ValidWayPointFast(wpindex) ) index = wpindex;
-  }
   if (index>=0) {
-	value=WayPointCalc[index].Distance*DISTANCEMODIFY;
+	double value=WayPointCalc[index].Distance*DISTANCEMODIFY;
 	if (value<0.001) value=0;
 	if (value>99 || value==0)
 		_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -3279,81 +3355,52 @@ void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *Buf
 	_stprintf(BufferValue, TEXT(NULLMEDIUM));
   }
   _stprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-  return;
 }
 
 // DO NOT use this for AAT values! 
-void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
   CScopeLock Lock(LockTaskData, UnlockTaskData);
-    
-  static int	index;
-  static double value;
 
-  index=-1;
+  int index = GetValidWayPointIndex(wpindex);
 
-  if (wpvirtual) {
-	if ( ValidResWayPoint(wpindex) ) index = wpindex;
-  } else {
-	if ( ValidWayPointFast(wpindex) ) index = wpindex;
-  }
-  _tcscpy(BufferValue,_T(NULLMEDIUM)); 
+  _tcscpy(BufferValue,_T(NULLMEDIUM));
   _tcscpy(BufferUnit,_T(""));
   if (index>=0) {
-	// THIS is forcing bearing while circling
-	// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-	if (true) {
-		// Warning, for AAT this should be WaypointBearing, so do not use it!
-		value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
-		if (value < -180.0)
-			value += 360.0;
-		else
-			if (value > 180.0)
-				value -= 360.0;
-        if (value > 30)
-          _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
+    // Warning, for AAT this should be WaypointBearing, so do not use it!
+    double value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
+    if (value < -180.0)
+        value += 360.0;
+    else
+        if (value > 180.0)
+            value -= 360.0;
+    if (value > 30)
+      _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2183));
+    else
+      if (value > 2)
+        _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2185));
+      else
+        if (value < -30)
+          _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
         else
-          if (value > 2)
-            _stprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken(2179), MsgToken(2185));
+          if (value < -2)
+            _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2184), - value, MsgToken(2179));
           else
-            if (value < -30)
-              _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2182), -value, MsgToken(2179));
-            else
-              if (value < -2)
-                _stprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken(2184), - value, MsgToken(2179));
-              else
-                _stprintf(BufferValue, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
-	} else {
-		// while circling, print simple bearing
-		value = WayPointCalc[index].Bearing;
-		if (value > 1)
-			_stprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken(2179));
-		else if (value < -1)
-            _stprintf(BufferValue, TEXT("%2.0f%s"), -value, MsgToken(2179));
-        else
-            _stprintf(BufferValue, TEXT("0%s"), MsgToken(2179));
-	}
+            _stprintf(BufferValue, TEXT("%s%s"), MsgToken(2182), MsgToken(2183));
   }
 }
 
 
-void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+void MapWindow::LKFormatGR(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
   CScopeLock Lock(LockTaskData, UnlockTaskData);
-    
-  static int	index;
-  static double value;
 
-  index=-1;
+  int index = GetValidWayPointIndex(wpindex);
 
-  if (wpvirtual) {
-	if ( ValidResWayPoint(wpindex) ) index = wpindex;
-  } else {
-	if ( ValidWayPointFast(wpindex) ) index = wpindex;
-  }
-  _tcscpy(BufferValue,_T(NULLMEDIUM)); 
+  _tcscpy(BufferValue,_T(NULLMEDIUM));
   _tcscpy(BufferUnit,_T(""));
 
+  double value;
   if (index>=0) {
 	value=WayPointCalc[index].GR;
   } else {
@@ -3369,23 +3416,16 @@ void MapWindow::LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *Buffe
   }
 }
 
-void MapWindow::LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
+void MapWindow::LKFormatAltDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
   CScopeLock Lock(LockTaskData, UnlockTaskData);
-    
-  static int	index;
-  static double value;
-  
-  index=-1;
 
-  if (wpvirtual) {
-	if ( ValidResWayPoint(wpindex) ) index = wpindex;
-  } else {
-	if ( ValidWayPointFast(wpindex) ) index = wpindex;
-  }
-  _tcscpy(BufferValue,_T(NULLMEDIUM)); 
+  int index = GetValidWayPointIndex(wpindex);
+
+  _tcscpy(BufferValue,_T(NULLMEDIUM));
   _stprintf(BufferUnit, _T("%s"),(Units::GetAltitudeName()));
 
+  double value;
   if (index>=0) {
 	value=WayPointCalc[index].AltArriv[AltArrivMode]*ALTITUDEMODIFY;
   } else {

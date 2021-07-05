@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmProgress" Type="Dialog" X="0" Y="0" Width="320" Height="240" Font="2" BackColor="0" Caption="" >
-    <WndOwnerDrawFrame Name="frmSplash" X="0" Y="0" Width="320" Height="210" Font="0" OnPaint="OnSplashPaint" />
+    <WndOwnerDrawFrame Name="frmSplash" X="0" Y="0" Width="320" Height="205" Font="0" OnPaint="OnSplashPaint" />
     <WndOwnerDrawFrame Name="frmText" X="0" Y="205" Width="320" Height="35" Font="0" OnPaint="OnProgressPaint" />
   </WndForm>
 </PMML>

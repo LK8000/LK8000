@@ -41,6 +41,7 @@ WPT=$(SRC)/Waypoints
 RSC=$(SRC)/Resources
 SRC_SCREEN=$(SRC)/Screen
 SRC_WINDOW=$(SRC)/Window
+SRC_TRACKING=$(SRC)/Tracking
 
 
 ifeq ($(TARGET),)
@@ -128,7 +129,7 @@ ifeq ($(TARGET),LINUX)
 endif
 
 ifeq ($(TARGET),KOBO)
-  KOBO ?= /opt/kobo/arm-unknown-linux-gnueabi
+  KOBO ?= /opt/kobo-rootfs
   TARGET_IS_KOBO :=y
   CONFIG_LINUX   :=y
   CONFIG_ANDROID :=n
@@ -185,7 +186,7 @@ else ifeq ($(CONFIG_WINE),y)
  CPU    :=i586
  MCPU   := -mcpu=$(CPU)
 else ifeq ($(TARGET_IS_KOBO),y)
- TCPATH := arm-unknown-linux-gnueabi-
+ TCPATH := arm-kobo-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad
 else ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
  TCPATH := arm-linux-gnueabihf-
@@ -553,8 +554,6 @@ ifeq ($(CONFIG_WIN32),y)
  CE_DEFS += -DUSE_GDI
  #all win32 Targe are unicode
  CE_DEFS += -DUNICODE -D_UNICODE -DWIN32
- #use UNICODE for xml dialog template, avoid runtime convertion from utf8 to unicode.
- DLG-ENCODING := UTF-16LE
  	
  ifeq ($(CONFIG_PC),y)
   CE_DEFS +=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
@@ -623,9 +622,11 @@ endif
 # CPPFLAGS	+= -DNO_DASH_LINES 
 
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type
-CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
+CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized -Wmissing-field-initializers
 CPPFLAGS	+= -Wredundant-decls
 CPPFLAGS	+= -Wall -Wno-char-subscripts -fsigned-char
+CPPFLAGS	+= -Wno-psabi
+CPPFLAGS	+= -Werror=stringop-overflow
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
 #CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
@@ -652,7 +653,7 @@ endif
 
 CPPFLAGS += -DPOCO_STATIC
 
-CXXFLAGS	:= -std=gnu++0x $(OPTIMIZE) $(PROFILE)
+CXXFLAGS	:= -std=gnu++17 $(OPTIMIZE) $(PROFILE)
 CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration
@@ -711,9 +712,11 @@ endif
 
 ifeq ($(CONFIG_WIN32),y)
  ifeq ($(CONFIG_PC),y)
-  LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lole32 -loleaut32 -luuid -lGeographic
+  LDLIBS := -Wl,-Bstatic -lstdc++ -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid -lGeographic
  else
-  LDLIBS := -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lcommctrl -lole32 -loleaut32 -luuid
+  LDLIBS := -Wl,-Bstatic -lstdc++ 
+  LDLIBS += -Wl,-Bdynamic -lcommctrl -lole32 -loleaut32 -luuid
+
   ifeq ($(GCC_GTEQ_820),1) 
     LDLIBS += -Wl,-Bstatic -latomic
   endif
@@ -858,7 +861,6 @@ SCREEN += \
 endif
 
 LIBRARY	:=\
-	$(LIB)/bsearch.cpp \
 	$(LIB)/Crc.cpp\
 	$(LIB)/ColorFunctions.cpp \
 	$(LIB)/DirectoryFunctions.cpp \
@@ -872,7 +874,6 @@ LIBRARY	:=\
 	$(LIB)/StringFunctions.cpp\
 	$(LIB)/TimeFunctions.cpp\
 	$(LIB)/Utm.cpp \
-	$(LIB)/xmlParser.cpp \
 	$(LIB)/cpp-mmf/memory_mapped_file.cpp \
 
 
@@ -946,7 +947,6 @@ DRAW	:=\
 	$(DRW)/DrawWind.cpp \
 	$(DRW)/Draw_Primitives.cpp \
 	$(DRW)/LKDrawBottomBar.cpp \
-	$(DRW)/LKDrawCpuStatsDebug.cpp \
 	$(DRW)/LKDrawFLARMTraffic.cpp \
 	$(DRW)/LKDrawFanetData.cpp \
 	$(DRW)/LKDrawInfoPage.cpp \
@@ -1064,6 +1064,7 @@ CALC	:=\
 	$(CLC)/windstore.cpp 	\
 	$(CLC)/WindEKF.cpp 	\
 	$(CLC)/WindKalman.cpp 	\
+	$(CLC)/Radio.cpp \
 
 
 TASK	:=\
@@ -1139,6 +1140,8 @@ UTILS	:=\
 	$(SRC)/utils/zzip_stream.cpp \
 	$(SRC)/utils/TextWrapArray.cpp \
 	$(SRC)/utils/hmac_sha2.cpp \
+	$(SRC)/utils/unicode/unicode_to_ascii.cpp \
+	$(SRC)/utils/unicode/UTF16.cpp \
 
 
 COMMS	:=\
@@ -1163,6 +1166,7 @@ COMMS	:=\
 	$(CMM)/Bluetooth/BtHandlerWince.cpp \
 	$(CMM)/Bluetooth/BthPort.cpp \
 	$(CMM)/Obex/CObexPush.cpp \
+	$(CMM)/FilePort.cpp\
 
 
 DEVS	:=\
@@ -1210,8 +1214,8 @@ DEVS	:=\
 	$(DEV)/devAR620x.cpp \
 	$(DEV)/devATR833.cpp \
 	$(DEV)/devOpenVario.cpp \
-	$(DEV)/devFanet.cpp \
 	$(DEV)/devLX_EOS_ERA.cpp \
+	$(DEV)/devFanet.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
@@ -1224,6 +1228,9 @@ VOLKS	:=\
 
 
 DLGS	:=\
+	$(DLG)/dlgSelectObject.cpp \
+	$(DLG)/dlgSelectAirspace.cpp \
+	$(DLG)/dlgSelectWaypoint.cpp \
 	$(DLG)/AddCustomKeyList.cpp \
 	$(DLG)/dlgAirspace.cpp \
 	$(DLG)/dlgAirspaceFiles.cpp \
@@ -1233,7 +1240,6 @@ DLGS	:=\
 	$(DLG)/dlgMultiSelectList.cpp \
 	$(DLG)/dlgAirspaceDetails.cpp \
 	$(DLG)/dlgAirspacePatterns.cpp \
-	$(DLG)/dlgAirspaceSelect.cpp \
 	$(DLG)/dlgBasicSettings.cpp \
 	$(DLG)/dlgBottomBar.cpp \
 	$(DLG)/dlgChecklist.cpp \
@@ -1271,7 +1277,6 @@ DLGS	:=\
 	$(DLG)/dlgWayPointDetails.cpp \
 	$(DLG)/dlgWayQuick.cpp \
 	$(DLG)/dlgWaypointEdit.cpp \
-	$(DLG)/dlgWayPointSelect.cpp \
 	$(DLG)/dlgWaypointOutOfTerrain.cpp \
 	$(DLG)/dlgWindSettings.cpp \
 	$(DLG)/Analysis/DrawOtherFunctions.cpp \
@@ -1302,9 +1307,30 @@ DLGS	:=\
 	$(DLG)/dlgIGCProgress.cpp \
 	$(DLG)/dlgFlarmIGCDownload.cpp \
 	$(DLG)/dlgLXIGCDownload.cpp \
+	$(DLG)/dlgEOSIGCDownload.cpp \
 	$(DLG)/dlgWeatherStDetails.cpp \
-	
-	
+	$(DLG)/dlgNMEAReplay.cpp \
+	$(DLG)/dlgRadioPriSecSel.cpp \
+
+TRACKING := \
+	$(SRC_TRACKING)/LiveTrack24.cpp \
+	$(SRC_TRACKING)/Tracking.cpp \
+	$(SRC_TRACKING)/SkylinesGlue.cpp \
+	$(SRC)/xcs/Tracking/SkyLines/Client.cpp \
+	$(SRC)/xcs/Tracking/SkyLines/Glue.cpp \
+	$(SRC)/xcs/Tracking/SkyLines/Key.cpp \
+	$(SRC)/xcs/Tracking/SkyLines/Assemble.cpp \
+	$(SRC)/xcs/Tracking/TrackingGlue.cpp \
+	$(SRC)/xcs/Tracking/TrackingSettings.cpp \
+	\
+	$(SRC)/xcs/Util/CRC.cpp \
+	$(SRC)/xcs/Net/AllocatedSocketAddress.cpp \
+	$(SRC)/xcs/Net/IPv4Address.cpp \
+	$(SRC)/xcs/Net/SocketAddress.cpp \
+	$(SRC)/xcs/Net/SocketDescriptor.cpp \
+	$(SRC)/xcs/Net/State.cpp \
+	$(SRC)/xcs/Net/StaticSocketAddress.cpp \
+
 SRC_FILES :=\
 	$(WINDOW) \
 	$(SCREEN) \
@@ -1332,7 +1358,6 @@ SRC_FILES :=\
 	$(SRC)/InitFunctions.cpp\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/lk8000.cpp\
-	$(SRC)/LiveTracker.cpp \
 	$(SRC)/Airspace/LKAirspace.cpp	\
 	$(SRC)/Airspace/Sonar.cpp	\
 	$(SRC)/LKInstall.cpp 		\
@@ -1378,6 +1403,7 @@ SRC_FILES :=\
 	$(SRC)/SaveLoadTask/SaveTask.cpp\
 	$(SRC)/SaveLoadTask/LoadCupTask.cpp\
 	$(SRC)/SaveLoadTask/LoadGpxTask.cpp\
+	$(SRC)/SaveLoadTask/LoadXCTrackTask.cpp\
 	$(SRC)/Settings.cpp\
 	$(SRC)/Sysop.cpp\
 	$(SRC)/Thread_Calculation.cpp\
@@ -1388,7 +1414,9 @@ SRC_FILES :=\
 	$(SRC)/Utils.cpp		\
 	$(SRC)/WindowControls.cpp \
 	$(SRC)/Geographic/GeoPoint.cpp \
+	$(SRC)/Geographic/TransverseMercator.cpp \
 	\
+	$(TRACKING) \
 	$(LKINTER) \
 	$(LIBRARY) \
 	$(WAYPT) \
@@ -1674,6 +1702,12 @@ $(BIN)/%.o: $(SRC)/%.c
 	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
 $(BIN)/%.o: $(SRC)/%.cpp
+	@$(NQ)echo "  CXX     $@"
+	$(Q)$(MKDIR) $(dir $@)
+	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
+	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
+
+$(BIN)/%.o: $(SRC)/%.cxx
 	@$(NQ)echo "  CXX     $@"
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<

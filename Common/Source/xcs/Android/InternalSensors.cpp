@@ -34,7 +34,7 @@ Copyright_License {
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "ComCheck.h"
-
+#include "Android/Vario/VarioPlayer.h"
 
 
 Java::TrivialClass InternalSensors::gps_cls, InternalSensors::sensors_cls;
@@ -125,6 +125,8 @@ bool InternalSensors::subscribedToSensor(int id) const {
 }
 
 void InternalSensors::cancelAllSensorSubscriptions() {
+  ScopeUnlock unlock(CritSec_Comm); // workaround to solve deadlock on restart ComPort.
+
   JNIEnv* env = Java::GetEnv();
   env->CallVoidMethod(obj_NonGPSSensors_.Get(),
                       mid_sensors_cancelAllSensorSubscriptions_);
@@ -138,6 +140,9 @@ InternalSensors* InternalSensors::create(JNIEnv* env, Context* context,
   // Construct InternalGPS object.
   jobject gps_obj =
     env->NewObject(gps_cls, gps_ctor_id, context->Get(), index);
+  if (Java::DiscardException(env))
+    return nullptr;
+
   assert(gps_obj != nullptr);
 
   // Construct NonGPSSensors object.
@@ -161,6 +166,20 @@ void InternalSensors::getSubscribableSensors(JNIEnv* env, jobject sensors_obj) {
   jint* ss_arr_elems = env->GetIntArrayElements(ss_arr, nullptr);
   subscribable_sensors_.assign(ss_arr_elems, ss_arr_elems + ss_arr_size);
   env->ReleaseIntArrayElements(ss_arr, ss_arr_elems, 0);
+}
+
+
+static Mutex vario_player_mutex;
+static std::unique_ptr<VarioPlayer> vario_player;
+
+void InternalSensors::InitialiseVarioSound() {
+  ScopeLock lock(vario_player_mutex);
+  vario_player = std::make_unique<VarioPlayer>();
+}
+
+void InternalSensors::DeinitialiseVarioSound() {
+  ScopeLock lock(vario_player_mutex);
+  vario_player = nullptr;
 }
 
 /*
@@ -282,27 +301,48 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
   // XXX this shouldn't be a global variable
   static SelfTimingKalmanFilter1d kalman_filter(KF_MAX_DT, KF_VAR_ACCEL);
 
-  const unsigned int index = getDeviceIndex(env, obj);
-  ScopeLock Lock(CritSec_Comm);
+  try {
+    const unsigned int index = getDeviceIndex(env, obj);
 
-  PDeviceDescriptor_t pdev = devX(index);
-  if(pdev) {
-    pdev->nmeaParser.connected = true;
-    pdev->HB = LKHearthBeats;
-    if(!pdev->IsBaroSource) {
-      pdev->IsBaroSource = &IsBaroSource;
-    }
+    double vario = WithLock(CritSec_Comm, [index, pressure, sensor_noise_variance]() {
 
-    /* Kalman filter updates are also protected by the CommPort
-       mutex. These should not take long; we won't hog the mutex
-       unduly. */
-    kalman_filter.Update(pressure, sensor_noise_variance);
+        PDeviceDescriptor_t pdev = devX(index);
+        if (!pdev) {
+          throw std::runtime_error("invalid device index");
+        }
+        pdev->nmeaParser.connected = true;
+        pdev->HB = LKHearthBeats;
+        if (!pdev->IsBaroSource) {
+          pdev->IsBaroSource = &IsBaroSource;
+          if (pdev->Com) {
+            pdev->Com->CancelWaitEvent();
+          }
+        }
 
-    LockFlightData();
-    UpdateVarioSource(GPS_INFO, *pdev, ComputeNoncompVario(kalman_filter.GetXAbs(),
-                                                          kalman_filter.GetXVel()));
-    UpdateBaroSource(&GPS_INFO, 0, pdev, StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100));
-    UnlockFlightData();
+        /* Kalman filter updates are also protected by the CommPort
+           mutex. These should not take long; we won't hog the mutex
+           unduly. */
+        kalman_filter.Update(pressure, sensor_noise_variance);
+
+        double vario = ComputeNoncompVario(kalman_filter.GetXAbs(), kalman_filter.GetXVel());
+        double qnh_altitude = StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100);
+
+        LockFlightData();
+        UpdateVarioSource(GPS_INFO, *pdev, vario);
+        UpdateBaroSource(&GPS_INFO, 0, pdev, qnh_altitude);
+        UnlockFlightData();
+
+        return vario;
+    });
+
+    WithLock(vario_player_mutex, [&]() {
+        if (vario_player) {
+          vario_player->SetVz(vario);
+        }
+    });
+
+  } catch (std::runtime_error& e) {
+    StartupStore(_T("setBarometricPressure: %s"), to_tstring(e.what()).c_str());
   }
 }
 

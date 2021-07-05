@@ -18,8 +18,12 @@
 #include "utils/stl_utils.h"
 #include "resource.h"
 
+#ifdef ANDROID
+#include "Android/LK8000Activity.h"
+#endif
+
 namespace DlgIgcFile {
-    WndForm *wfDlg = NULL;
+    WndForm *wfDlg = nullptr;
     typedef std::vector<tstring> FileList_t;
     FileList_t FileList;
     size_t DrawListIndex = (~0);
@@ -76,7 +80,7 @@ namespace DlgIgcFile {
                     }
                     for(size_t i = 0; i < nDevice; ++i) {
                         TCHAR szDeviceName[100] = {0};
-                        if(!Obex.GetDeviceName(i, szDeviceName, array_size(szDeviceName))) {
+                        if(!Obex.GetDeviceName(i, szDeviceName, std::size(szDeviceName))) {
                             _stprintf(szDeviceName, _T("%s <%d>"), MsgToken(1538), i); // Unknown device
                         }
                         StartupStore(_T("GetDeviceName <%d><%s> \n"), i, szDeviceName);
@@ -124,6 +128,17 @@ namespace DlgIgcFile {
             } else {
                 // "Unsupported on this device", "Error"
                 MessageBoxX(MsgToken(1534), MsgToken(266), mbOk);
+            }
+#elif defined(ANDROID)
+
+            LK8000Activity *activity = LK8000Activity::Get();
+            if (activity) {
+
+                auto It = std::next(FileList.begin(), ItemIndex);
+                TCHAR szFileFullPath[MAX_PATH];
+                LocalPath(szFileFullPath, _T(LKD_LOGS), It->c_str());
+
+                activity->ShareFile(szFileFullPath);
             }
 #else
             // "Unsupported on this device", "Error"
@@ -189,6 +204,6 @@ void dlgIgcFileShowModal() {
         }
 
         delete wfDlg;
-        wfDlg = NULL;
+        wfDlg = nullptr;
     }
 }

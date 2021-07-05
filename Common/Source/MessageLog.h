@@ -24,6 +24,19 @@ void DebugStore(const char *Str, ...)
 void StartupStore(const TCHAR *Str, ...)
         gcc_printf(1,2) gcc_nonnull(1);
 
+#if defined(TESTBENCH) || !defined(NDEBUG)
+  #define TestLog(...) StartupStore(__VA_ARGS__)
+#else
+  #define TestLog(...)
+#endif
+
+#ifndef NDEBUG
+  #define DebugLog(...) StartupStore(__VA_ARGS__)
+#else
+  #define DebugLog(...)
+#endif
+
+
 tstring toHexString(const void* data, size_t size);
 
 void StartupLogFreeRamAndStorage();

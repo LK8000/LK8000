@@ -25,7 +25,7 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
   WAYPOINT new_waypoint {};
   int nLineNumber=0;
 
-  std::map<tstring, size_t> cup_header;
+  cup_header_t cup_header;
 
   CreateProgressDialog(MsgToken(903)); // Loading Waypoints File...
 

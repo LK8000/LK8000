@@ -12,11 +12,20 @@
 		</xsl:element>
 	</xsl:template>
 
-	<!-- copy all element and attribut -->
-	<xsl:template match="@*|node()">
-		<xsl:copy>
-			<xsl:apply-templates select="@*|node()"/>
-		</xsl:copy>
+	<!-- Remove empty attribut -->
+	<xsl:template match="@*">
+		<xsl:if test="string-length(.)>0">
+			<xsl:copy/>
+		</xsl:if>
+	</xsl:template>
+
+	<!-- copy all element -->
+	<xsl:template match="node()">
+		<xsl:if test="count(descendant::text()[string-length(normalize-space(.))>0] | @*[string-length(.)>0])">
+			<xsl:copy>
+				<xsl:apply-templates select="@*|node()"/>
+			</xsl:copy>
+		</xsl:if>
 	</xsl:template>
 
 	<!-- remove unneeded space -->

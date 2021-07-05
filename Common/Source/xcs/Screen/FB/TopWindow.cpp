@@ -29,7 +29,6 @@ Copyright_License {
 #include "Event/Globals.hpp"
 
 #ifdef DRAW_MOUSE_CURSOR
-#include "Util/Macros.hpp"
 #include "Screen/Layout.hpp"
 #endif
 
@@ -87,7 +86,7 @@ TopWindow::OnPaint(Canvas &canvas)
 
   canvas.SelectBlackPen();
   canvas.SelectWhiteBrush();
-  canvas.DrawTriangleFan(p, ARRAY_SIZE(p));
+  canvas.DrawTriangleFan(p, std::size(p));
 }
 #endif
 

@@ -12,21 +12,27 @@
 #include "Waypointparser.h"
 #include "utils/stringext.h"
 #include "utils/openzip.h"
-#include "xmlParser.h"
 #include <sstream>
 #include "LKStyle.h"
 #include "Util/TruncateString.hpp"
+#include "Library/rapidxml/rapidxml.hpp"
 
 extern int globalFileNum;
 
-bool ParseAirports(XMLNode &airportsNode);
-bool ParseNavAids(XMLNode &navAidsNode);
-bool ParseHotSpots(XMLNode &hotSpotsNode);
-bool GetGeolocation(XMLNode &parentNode, double &lat, double &lon, double &alt);
-bool GetContent(XMLNode &parentNode, LPCTSTR tagName, LPCTSTR &outputString);
-bool GetAttribute(XMLNode &node, LPCTSTR attributeName, LPCTSTR &outputString);
-bool GetValue(XMLNode &parentNode, LPCTSTR tagName, double &value);
-bool GetMeasurement(XMLNode &parentNode, LPCTSTR tagName, char expectedUnit, double &value);
+namespace {
+    using xml_document = rapidxml::xml_document<char>;
+    using xml_node = rapidxml::xml_node<char>;
+    using xml_attribute = rapidxml::xml_attribute<char>;
+}
+
+static bool ParseAirports(const xml_node* airportsNode);
+static bool ParseNavAids(const xml_node* navAidsNode);
+static bool ParseHotSpots(const xml_node* hotSpotsNode);
+static bool GetGeolocation(const xml_node* parentNode, double &lat, double &lon, double &alt);
+static bool GetContent(const xml_node* parentNode, const char* tagName, const char* &outputString);
+static bool GetAttribute(const xml_node* parentNode, const char* attributeName, const char* &outputString);
+static bool GetValue(const xml_node* parentNode, const char* tagName, double &value);
+static bool GetMeasurement(const xml_node* parentNode, const char* tagName, char expectedUnit, double &value);
 
 bool ParseOpenAIP(zzip_file_ptr& file)
 {
@@ -38,97 +44,88 @@ bool ParseOpenAIP(zzip_file_ptr& file)
        return false;
     }
     zzip_seek(file, 0, SEEK_SET); // seek back to beginning of file
-    char* buff = (char*) calloc(size + 1, sizeof(char));
+
+    std::unique_ptr<char[]> buff(new (std::nothrow) char[size+1]);
     if(buff==nullptr) {
         StartupStore(TEXT(".. Failed to allocate buffer to read OpenAIP waypoints file.%s"), NEWLINE);
         return false;
     }
+    memset(buff.get(),0,size+1);
 
     // Read the file
-    long nRead = zzip_fread(buff, sizeof (char), size, file);
+    long nRead = zzip_fread(buff.get(), sizeof (char), size, file);
     // fread can return -1...
     if (nRead < 0) {
        StartupStore(_T(". ParseOpenAIP, fread failure!%s"),NEWLINE);
-       free(buff);
        return false;
     }
     if(nRead != size) {
         StartupStore(TEXT(".. Not able to buffer all airspace file.%s"), NEWLINE);
-        free(buff);
         return false;
     }
 
-    // Convert from UTF8
-    TCHAR* szXML = (TCHAR*) calloc(size + 1, sizeof (TCHAR));
-    if(szXML==nullptr) {
-        StartupStore(TEXT(".. Not able to allocate memory to convert from UTF8.%s"), NEWLINE);
-        free(buff);
+    xml_document xmldoc;
+    try {
+        constexpr int Flags = rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace;
+        xmldoc.parse<Flags>(buff.get());
+    } catch (rapidxml::parse_error& e) {
+        StartupStore(TEXT(".. OPENAIP parse failed : %s"), to_tstring(e.what()).c_str());
         return false;
     }
-    utf2TCHAR(buff, szXML, size + 1);
-    free(buff);
-
+    
     // Get 'root' node OPENAIP
-    XMLNode rootNode = XMLNode::parseString(szXML, _T("OPENAIP"));
-    free(szXML);
-    if(rootNode.isEmpty()) {
+    const xml_node* root_node = xmldoc.first_node("OPENAIP");    
+    if(!root_node) {
         StartupStore(TEXT(".. OPENAIP tag not found.%s"), NEWLINE);
         return false;
     }
 
     // Check version of OpenAIP format
-    LPCTSTR dataStr=rootNode.getAttribute(TEXT("DATAFORMAT"));
-    if(dataStr==nullptr || _tcstod(dataStr,nullptr) != 1.1) {
+    const xml_attribute* data_format = root_node->first_attribute("DATAFORMAT");
+    if(!data_format || strtod(data_format->value(), nullptr) != 1.1) {
         StartupStore(TEXT(".. DATAFORMAT attribute missing or not at the expected version: 1.1.%s"), NEWLINE);
         return false;
     }
 
     bool wptFound=false;
     // Look for the 'root' of airports: WAYPOINTS tag
-    XMLNode node=rootNode.getChildNode(TEXT("WAYPOINTS"));
-    if(!node.isEmpty()) {
+    const xml_node* waypoints_node = root_node->first_node("WAYPOINTS");
+    if(waypoints_node) {
         StartupStore(TEXT(".. Found airports waypoints.%s"), NEWLINE);
-        wptFound=ParseAirports(node);
+        wptFound=ParseAirports(waypoints_node);
     }
 
     // Look for the 'root' of navigation aids: NAVAIDS tag
-    node=rootNode.getChildNode(TEXT("NAVAIDS"));
-    if(!node.isEmpty()) {
+    const xml_node* navaids_node = root_node->first_node("NAVAIDS");
+    if(navaids_node) {
         StartupStore(TEXT(".. Found navigation aids waypoints.%s"), NEWLINE);
-        wptFound=wptFound || ParseNavAids(node);
+        wptFound=wptFound || ParseNavAids(navaids_node);
     }
 
     // Look for the 'root' of hot spots: HOTSPOTS tag
-    node=rootNode.getChildNode(TEXT("HOTSPOTS"));
-    if(!node.isEmpty()) {
+    const xml_node* hotspots_node = root_node->first_node("HOTSPOTS");
+    if(hotspots_node) {
         StartupStore(TEXT(".. Found hot spots waypoints.%s"), NEWLINE);
-        wptFound=wptFound || ParseHotSpots(node);
+        wptFound=wptFound || ParseHotSpots(hotspots_node);
     }
 
-    if(!wptFound) StartupStore(TEXT(".. Waypoints of any kind not found in this OpenAIP file.%s"), NEWLINE);
+    if(!wptFound) {
+      StartupStore(TEXT(".. Waypoints of any kind not found in this OpenAIP file.%s"), NEWLINE);
+    }
     return wptFound;
 }
 
-bool ParseAirports(XMLNode &airportsNode)
+bool ParseAirports(const xml_node* airportsNode)
 {
-    int numOfAirports=airportsNode.nChildNode(TEXT("AIRPORT")); //count number of airports in the file
-    if(numOfAirports<1) {
-        StartupStore(TEXT(".. Expected to find at least one AIRPORT tag inside WAYPOINTS tag.%s"), NEWLINE);
-        return false;
+    if(!airportsNode) {
+      return false;
     }
-    if(numOfAirports!=airportsNode.nChildNode()) {
-        StartupStore(TEXT(".. Expected to find only AIRPORT tags inside WAYPOINTS tag.%s"), NEWLINE);
-        return false;
-    } else StartupStore(TEXT(".. OpenAIP waypoints file contains: %u airports.%s"), (unsigned)numOfAirports, NEWLINE);
+          
+    for( const xml_node* AirportNode = airportsNode->first_node("AIRPORT"); AirportNode; AirportNode = AirportNode->next_sibling("AIRPORT")) {
 
-    bool return_success = true;
-    XMLNode AirportNode;
-    LPCTSTR dataStr=nullptr;
-    for(int i=0;i<numOfAirports && return_success;i++) {
-        AirportNode=airportsNode.getChildNode(i);
+        const char* dataStr = nullptr;
+        if(!GetAttribute(AirportNode,"TYPE",dataStr)) continue;
 
-        // Skip not valid AIRPORT tags and TYPE attributes
-        if(!GetAttribute(AirportNode,TEXT("TYPE"),dataStr)) continue;
 
         // Prepare the new waypoint
         WAYPOINT new_waypoint;
@@ -146,26 +143,26 @@ bool ParseAirports(XMLNode &airportsNode)
 
         switch(dataStr[0]) {
         case 'A':
-            if (_tcsicmp(dataStr,_T("AF_CIVIL"))==0)            comments<<"Civil Airfield"<<std::endl;
-            else if(_tcsicmp(dataStr,_T("AF_MIL_CIVIL"))==0)    comments<<"Civil and Military Airport"<<std::endl;
-            else if(_tcsicmp(dataStr,_T("APT"))==0)             comments<<"Airport resp. Airfield IFR"<<std::endl;
-            else if(_tcsicmp(dataStr,_T("AD_CLOSED"))==0)       comments<<"CLOSED Airport"<<std::endl;
-            else if(_tcsicmp(dataStr,_T("AD_MIL"))==0)          comments<<"Military Airport"<<std::endl;
-            else if(_tcsicmp(dataStr,_T("AF_WATER"))==0)        { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Waterfield"<<std::endl; }
+            if (strcasecmp(dataStr, "AF_CIVIL")==0)            comments<<"Civil Airfield"<<std::endl;
+            else if(strcasecmp(dataStr, "AF_MIL_CIVIL")==0)    comments<<"Civil and Military Airport"<<std::endl;
+            else if(strcasecmp(dataStr, "APT")==0)             comments<<"Airport resp. Airfield IFR"<<std::endl;
+            else if(strcasecmp(dataStr, "AD_CLOSED")==0)       comments<<"CLOSED Airport"<<std::endl;
+            else if(strcasecmp(dataStr, "AD_MIL")==0)          comments<<"Military Airport"<<std::endl;
+            else if(strcasecmp(dataStr, "AF_WATER")==0)        { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Waterfield"<<std::endl; }
             break;
         case 'G':
-            if(_tcsicmp(dataStr,_T("GLIDING"))==0)              { new_waypoint.Style=STYLE_GLIDERSITE; comments<<"Glider site"<<std::endl; }
+            if(strcasecmp(dataStr, "GLIDING")==0)              { new_waypoint.Style=STYLE_GLIDERSITE; comments<<"Glider site"<<std::endl; }
             break;
         case 'H':
             if(!ISGAAIRCRAFT) continue; // Consider heliports only for GA aircraft
-            if (_tcsicmp(dataStr,_T("HELI_CIVIL"))==0)          { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<"Civil Heliport"<<std::endl; }
-            else if(_tcsicmp(dataStr,_T("HELI_MIL"))==0)        { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<"Military Heliport"<<std::endl; }
+            if (strcasecmp(dataStr, "HELI_CIVIL")==0)          { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<"Civil Heliport"<<std::endl; }
+            else if(strcasecmp(dataStr, "HELI_MIL")==0)        { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<"Military Heliport"<<std::endl; }
             break;
         case 'I':
-            if(_tcsicmp(dataStr,_T("INTL_APT"))==0)             comments<<"International Airport"<<std::endl;
+            if(strcasecmp(dataStr, "INTL_APT")==0)             comments<<"International Airport"<<std::endl;
             break;
         case 'L':
-            if(_tcsicmp(dataStr,_T("LIGHT_AIRCRAFT"))==0)       { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Ultralight site"<<std::endl; }
+            if(strcasecmp(dataStr, "LIGHT_AIRCRAFT")==0)       { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Ultralight site"<<std::endl; }
             break;
         default:
             continue;
@@ -174,39 +171,36 @@ bool ParseAirports(XMLNode &airportsNode)
         if(new_waypoint.Style==-1) continue;
 
         // Country
-        if(GetContent(AirportNode, TEXT("COUNTRY"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Country, dataStr, CUPSIZE_COUNTRY);
-            if (_tcslen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
+        if(GetContent(AirportNode, "COUNTRY", dataStr)) {
+            from_utf8(dataStr, new_waypoint.Country);
+            if (strlen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
         }
 
         // Name
-        if(GetContent(AirportNode, TEXT("NAME"), dataStr)) {
-            CopyTruncateString(new_waypoint.Name, NAME_SIZE, dataStr );
+        if(GetContent(AirportNode, "NAME", dataStr)) {
+            from_utf8(dataStr, new_waypoint.Name);
         } else continue;
 
         // ICAO code
-        if(GetContent(AirportNode, TEXT("ICAO"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Code, dataStr, CUPSIZE_CODE);
-            if(_tcslen(dataStr)>CUPSIZE_CODE) new_waypoint.Code[CUPSIZE_CODE]=_T('\0');
+        if(GetContent(AirportNode, "ICAO", dataStr)) {
+            from_utf8(dataStr, new_waypoint.Code);
+            if(strlen(dataStr)>CUPSIZE_CODE) new_waypoint.Code[CUPSIZE_CODE]=_T('\0');
         }
 
         // Geolocation
         if(!GetGeolocation(AirportNode, new_waypoint.Latitude, new_waypoint.Longitude, new_waypoint.Altitude)) continue;
 
         //Radio frequencies: if more than one just take the first "communication"
-        int numOfNodes=AirportNode.nChildNode(TEXT("RADIO"));
-        XMLNode node, subNode;
-        bool found=false, toWrite(numOfNodes==1);
-        for(int j=0;j<numOfNodes;j++) {
-            node=AirportNode.getChildNode(TEXT("RADIO"),j);
-            LPCTSTR type=nullptr;
-            if(GetAttribute(node,TEXT("CATEGORY"),dataStr) && GetContent(node,TEXT("TYPE"),type)) {
-                LPCTSTR freq=nullptr;
-                if(!GetContent(node, TEXT("FREQUENCY"), freq)) continue;
-                switch(dataStr[0]) { //AlphaLima
+        bool found=false, toWrite = true;
+        for( const xml_node* node = AirportNode->first_node("RADIO"); node; node = node->next_sibling("RADIO")) {        
+            const char* type=nullptr;
+            if(GetAttribute(node,"CATEGORY",dataStr) && GetContent(node,"TYPE",type)) {
+                const char* freq=nullptr;
+                if(!GetContent(node, "FREQUENCY", freq)) continue;
+                switch(dataStr[0]) {
                 case 'C': //COMMUNICATION Frequency used for communication
-                    comments <<type<< " "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
-                    if(!found) toWrite=true;
+                    comments<<"Comm "<<type<<": "<<freq<<" MHz "<<std::endl;
+                    if(!found) toWrite=false;
                     break;
                 case 'I': //INFORMATION Frequency to automated information service
                     comments <<type<< " "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
@@ -220,34 +214,34 @@ bool ParseAirports(XMLNode &airportsNode)
                 default:
                     continue;
                 }
-                if(toWrite) {
-                    LK_tcsncpy(new_waypoint.Freq, freq, CUPSIZE_FREQ);
-                    if (_tcslen(freq)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
-                    toWrite=false;
-                    found=true;
+                if(!found) {
+                    from_utf8(freq, new_waypoint.Freq);
+                    if (strlen(freq)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
+                    if(!toWrite) {
+                      found=true;
+                    }
                 }
             }
         }
+
+
 
         // Runways: take the longest one
         double maxlength=0, maxdir=0;
         short maxstyle=STYLE_AIRFIELDGRASS;
 
         // For each runway...
-        numOfNodes=AirportNode.nChildNode(TEXT("RWY"));
-        for(int k=0;k<numOfNodes;k++) {
-            node=AirportNode.getChildNode(TEXT("RWY"),k);
-
+        for( const xml_node* node = AirportNode->first_node("RWY"); node; node = node->next_sibling("RWY")) {        
             // Consider only active runways
-            if(!GetAttribute(node,TEXT("OPERATIONS"),dataStr) || _tcsicmp(dataStr,_T("ACTIVE"))!=0) continue;
+            if(!GetAttribute(node,"OPERATIONS",dataStr) || strcasecmp(dataStr,"ACTIVE")!=0) continue;
 
             // Get runway name
-            LPCTSTR name=nullptr;
-            if(!GetContent(node, TEXT("NAME"), name)) continue;
+            const char* name=nullptr;
+            if(!GetContent(node, "NAME", name)) continue;
 
             // Get surface type
-            LPCTSTR surface=nullptr;
-            if(!GetContent(node, TEXT("SFC"), surface)) continue;
+            const char* surface=nullptr;
+            if(!GetContent(node, "SFC", surface)) continue;
             short style=surface[0]=='A' || surface[0]=='C' ? STYLE_AIRFIELDSOLID : STYLE_AIRFIELDGRASS; // Default grass
             /*switch(surface[0]) {
             case 'A': // ASPH Asphalt
@@ -272,12 +266,12 @@ bool ParseAirports(XMLNode &airportsNode)
 
             // Runway length
             double length=0;
-            if(!GetMeasurement(node,TEXT("LENGTH"),'M',length)) continue;
+            if(!GetMeasurement(node,"LENGTH",'M',length)) continue;
 
             // Runway direction
-            subNode=node.getChildNode(TEXT("DIRECTION"),0);
-            if(!GetAttribute(subNode,TEXT("TC"),dataStr)) continue;
-            double dir=_tcstod(dataStr,nullptr);
+            const xml_node* subNode = node->first_node("DIRECTION");
+            if(!GetAttribute(subNode,"TC",dataStr)) continue;
+            double dir=strtod(dataStr,nullptr);
 
             // Add runway to comments
             comments<<name<<" "<<surface<<" "<<length<<"m "<<dir<<MsgToken(2179)<<std::endl;
@@ -305,40 +299,32 @@ bool ParseAirports(XMLNode &airportsNode)
                 // ownership of this 2 pointer has benn transfered to WaypointList
                 new_waypoint.Details = nullptr;
                 new_waypoint.Comment = nullptr;
-            } else {
-                return_success = false;
             }
-        } 
-        free(new_waypoint.Comment);
-        free(new_waypoint.Details);
-        new_waypoint.Details = nullptr;
-        new_waypoint.Comment = nullptr;
+        }
+        if(new_waypoint.Comment) { 
+            free(new_waypoint.Comment);
+            new_waypoint.Comment = nullptr;
+        }
+        if(new_waypoint.Details) {
+            free(new_waypoint.Details);
+            new_waypoint.Details = nullptr;
+        }
     }
-    return return_success;
+    return true;
 }
 
-bool ParseNavAids(XMLNode &navAidsNode)
+bool ParseNavAids(const xml_node* navAidsNode)
 {
-    int numOfNavAids=navAidsNode.nChildNode(TEXT("NAVAID")); //count number of navaids in the file
-    if(numOfNavAids<1) {
-        StartupStore(TEXT(".. Expected to find at least one NAVAID tag inside NAVAIDS tag.%s"), NEWLINE);
-        return false;
+    if(!navAidsNode) {
+      return false;
     }
-    if(numOfNavAids!=navAidsNode.nChildNode()) {
-        StartupStore(TEXT(".. Expected to find only NAVAID tags inside NAVAIDS tag.%s"), NEWLINE);
-        return false;
-    } else StartupStore(TEXT(".. OpenAIP nav aids file contains: %u nav aids.%s"), (unsigned)numOfNavAids, NEWLINE);
+        
+    for( const xml_node* NavAidNode = navAidsNode->first_node("NAVAID"); NavAidNode; NavAidNode = NavAidNode->next_sibling("NAVAID")) {
 
-    XMLNode NavAidNode;
-    LPCTSTR dataStr=nullptr;
-
-    bool return_success = true;
-
-    for(int i=0;i<numOfNavAids && return_success ;i++) {
-        NavAidNode=navAidsNode.getChildNode(i);
+        const char* dataStr=nullptr;
 
         // Skip not valid NAVAID tags and TYPE attributes
-        if(!GetAttribute(NavAidNode,TEXT("TYPE"),dataStr)) continue;
+        if(!GetAttribute(NavAidNode,"TYPE",dataStr)) continue;
 
         // Prepare the new waypoint
         WAYPOINT new_waypoint;
@@ -355,16 +341,16 @@ bool ParseNavAids(XMLNode &navAidsNode)
 
         switch(dataStr[0]) {
         case 'D': //STYLE_VOR //
-            if(_tcsicmp(dataStr,_T("DME"))==0 || _tcsicmp(dataStr,_T("DVOR"))==0 || _tcsicmp(dataStr,_T("DVOR-DME"))==0 || _tcsicmp(dataStr,_T("DVORTAC"))==0) new_waypoint.Style=STYLE_VOR;
+            if(strcasecmp(dataStr,"DME")==0 || strcasecmp(dataStr,"DVOR")==0 || strcasecmp(dataStr,"DVOR-DME")==0 || strcasecmp(dataStr,"DVORTAC")==0) new_waypoint.Style=STYLE_VOR;
             break;
         case 'N':
-            if(_tcsicmp(dataStr,_T("NDB"))==0) new_waypoint.Style=STYLE_NDB;
+            if(strcasecmp(dataStr,"NDB")==0) new_waypoint.Style=STYLE_NDB;
             break;
         case 'V':
-            if(_tcsicmp(dataStr,_T("VOR"))==0 || _tcsicmp(dataStr,_T("VOR-DME"))==0 || _tcsicmp(dataStr,_T("VORTAC"))==0) new_waypoint.Style=STYLE_VOR;
+            if(strcasecmp(dataStr,"VOR")==0 || strcasecmp(dataStr,"VOR-DME")==0 || strcasecmp(dataStr,"VORTAC")==0) new_waypoint.Style=STYLE_VOR;
             break;
         case 'T':
-            if(_tcsicmp(dataStr,_T("TACAN"))==0) new_waypoint.Style=STYLE_VOR;
+            if(strcasecmp(dataStr,"TACAN")==0) new_waypoint.Style=STYLE_VOR;
             break;
         default:
             continue;
@@ -376,44 +362,42 @@ bool ParseNavAids(XMLNode &navAidsNode)
         comments<<dataStr<<std::endl;
 
         // Country
-        if(GetContent(NavAidNode, TEXT("COUNTRY"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Country, dataStr, CUPSIZE_COUNTRY);
-            if (_tcslen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
+        if(GetContent(NavAidNode, "COUNTRY", dataStr)) {
+            from_utf8(dataStr, new_waypoint.Country);
+            if (strlen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
         }
 
         // Name
-        if(GetContent(NavAidNode, TEXT("NAME"), dataStr)) {
-            CopyTruncateString(new_waypoint.Name, NAME_SIZE, dataStr );
+        if(GetContent(NavAidNode, "NAME", dataStr)) {
+            from_utf8(dataStr, new_waypoint.Name);
         } else continue;
 
         // Navigational aid ID
-        if(GetContent(NavAidNode, TEXT("ID"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Code, dataStr, CUPSIZE_CODE);
-            if(_tcslen(dataStr)>CUPSIZE_CODE) new_waypoint.Code[CUPSIZE_CODE]=_T('\0');
+        if(GetContent(NavAidNode, "ID", dataStr)) {
+            from_utf8(dataStr, new_waypoint.Code);
+            if(strlen(dataStr)>CUPSIZE_CODE) new_waypoint.Code[CUPSIZE_CODE]=_T('\0');
         }
 
         // Geolocation
         if(!GetGeolocation(NavAidNode, new_waypoint.Latitude, new_waypoint.Longitude, new_waypoint.Altitude)) continue;
 
         //Radio frequency
-        XMLNode node=NavAidNode.getChildNode(TEXT("RADIO"));
-        if(node.isEmpty()) continue;
-        if(!GetContent(node, TEXT("FREQUENCY"), dataStr)) continue;
-        comments << "Frequency: " << dataStr << (new_waypoint.Style != STYLE_NDB ? " MHz" : " kHz");
-        LK_tcsncpy(new_waypoint.Freq, dataStr, CUPSIZE_FREQ);
-        if (_tcslen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
-        if(GetContent(node, TEXT("CHANNEL"), dataStr)) comments<<" Channel: "<<dataStr;
+        const xml_node* node=NavAidNode->first_node("RADIO");
+        if(!GetContent(node, "FREQUENCY", dataStr)) continue;
+        comments<<"Frequency: "<<dataStr<<" MHz";
+        from_utf8(dataStr, new_waypoint.Freq);
+        if (strlen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
+        if(GetContent(node, "CHANNEL", dataStr)) comments<<" Channel: "<<dataStr;
         comments<<std::endl;
 
         // Parameters
-        node=NavAidNode.getChildNode(TEXT("PARAMS"));
-        if(node.isEmpty()) continue;
+        node = NavAidNode->first_node("PARAMS");
         double value=0;
-        if(GetValue(node,TEXT("RANGE"),value)) comments<<"Range: "<<value<<" NM ";
-        if(GetValue(node,TEXT("DECLINATION"),value)) comments<<"Declination: "<<value<<MsgToken(2179);
-        if(GetContent(node,TEXT("ALIGNEDTOTRUENORTH"),dataStr)) {
-            if(_tcsicmp(dataStr,_T("TRUE"))==0) comments<<" True north";
-            else if(_tcsicmp(dataStr,_T("FALSE"))==0) comments<<" Magnetic north";
+        if(GetValue(node,"RANGE",value)) comments<<"Range: "<<value<<" NM ";
+        if(GetValue(node,"DECLINATION",value)) comments<<"Declination: "<<value<<MsgToken(2179);
+        if(GetContent(node,"ALIGNEDTOTRUENORTH",dataStr)) {
+            if(strcasecmp(dataStr,"TRUE")==0) comments<<" True north";
+            else if(strcasecmp(dataStr,"TRUE")==0) comments<<" Magnetic north";
         }
 
         // Add the comments
@@ -425,45 +409,39 @@ bool ParseNavAids(XMLNode &navAidsNode)
                 // ownership of this 2 pointer has been transfered to WaypointList
                 new_waypoint.Details = nullptr;
                 new_waypoint.Comment = nullptr;
-            } else {
-                return_success = false;
             } 
-        } 
-        free(new_waypoint.Comment);
-        free(new_waypoint.Details);
-        new_waypoint.Details = nullptr;
-        new_waypoint.Comment = nullptr;
+        }
+        if(new_waypoint.Comment) { 
+            free(new_waypoint.Comment);
+            new_waypoint.Comment = nullptr;
+        }
+        if(new_waypoint.Details) {
+            free(new_waypoint.Details);
+            new_waypoint.Details = nullptr;
+        }
     } // end of for each nav aid
-    return return_success;
+    return true;
 }
 
-bool ParseHotSpots(XMLNode &hotSpotsNode) {
-    int numOfHotSpots=hotSpotsNode.nChildNode(TEXT("HOTSPOT")); //count number of hotspots in the file
-    if(numOfHotSpots<1) {
-        StartupStore(TEXT(".. Expected to find at least one HOTSPOT tag inside HOTSPOTS tag.%s"), NEWLINE);
-        return false;
-    }
-    if(numOfHotSpots!=hotSpotsNode.nChildNode()) {
-        StartupStore(TEXT(".. Expected to find only HOTSPOT tags inside HOTSPOTS tag.%s"), NEWLINE);
-        return false;
-    } else StartupStore(TEXT(".. OpenAIP hot spots file contains: %u hot spots.%s"), (unsigned)numOfHotSpots, NEWLINE);
+bool ParseHotSpots(const xml_node* hotSpotsNode) {
 
-    bool return_success = true;
-    XMLNode HotSpotNode;
-    LPCTSTR dataStr=nullptr;
-    for(int i=0;i<numOfHotSpots && return_success;i++) {
-        HotSpotNode=hotSpotsNode.getChildNode(i);
+    if(!hotSpotsNode) {
+      return false;
+    }
+    
+    for( const xml_node* HotSpotNode = hotSpotsNode->first_node("HOTSPOT"); HotSpotNode; HotSpotNode = HotSpotNode->next_sibling("HOTSPOT")) {
+        const char* dataStr=nullptr;
 
         // Skip not valid HOTSPOT tags and TYPE attributes
-        if(!GetAttribute(HotSpotNode,TEXT("TYPE"),dataStr)) continue;
+        if(!GetAttribute(HotSpotNode,"TYPE",dataStr)) continue;
 
         // Thermal type
         switch(dataStr[0]) {
         case 'A':
-            if(_tcsicmp(dataStr,_T("ARTIFICIAL"))!=0) continue;
+            if(strcasecmp(dataStr,"ARTIFICIAL")!=0) continue;
             break;
         case 'N':
-            if(_tcsicmp(dataStr,_T("NATURAL"))!=0) continue;
+            if(strcasecmp(dataStr,"NATURAL")!=0) continue;
             break;
         default:
             continue;
@@ -474,16 +452,13 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
         comments<<dataStr;
 
         // Aircraftcategories: if glider ignore small thermals for paragliders
-        XMLNode node=HotSpotNode.getChildNode(TEXT("AIRCRAFTCATEGORIES"));
-        if(!node.isEmpty()) {
-            int numOfCategories=node.nChildNode(TEXT("AIRCRAFTCATEGORY"));
-            if(numOfCategories!=node.nChildNode()) continue;
+        const xml_node* node=HotSpotNode->first_node("AIRCRAFTCATEGORIES");
+        if(node) {
             bool gliders=false, hangGliders=false /*, paraGliders=false*/;
-            for(int j=0;j<numOfCategories;j++) {
-                XMLNode subNode=node.getChildNode(j);
-                if(!subNode.isEmpty()  && (dataStr=subNode.getText(0))!=nullptr && dataStr[0]!='\0') {
-                    if(_tcsicmp(dataStr,_T("GLIDER"))==0) gliders=true;
-                    else if(_tcsicmp(dataStr,_T("HANG_GLIDER"))==0) hangGliders=true;
+            for( const xml_node* subNode = node->first_node("AIRCRAFTCATEGORY"); subNode; subNode = subNode->next_sibling("AIRCRAFTCATEGORY")) {
+                if(subNode  && (dataStr=subNode->value())!=nullptr && dataStr[0]!='\0') {
+                    if(strcasecmp(dataStr,"GLIDER")==0) gliders=true;
+                    else if(strcasecmp(dataStr,"HANG_GLIDER")==0) hangGliders=true;
                     //else if(_tcsicmp(dataStr,_T("PARAGLIDER"))==0) paraGliders=true;
                 }
             }
@@ -502,14 +477,14 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
         new_waypoint.Style = STYLE_THERMAL; // default style: thermal
 
         // Country
-        if(GetContent(HotSpotNode, TEXT("COUNTRY"), dataStr)) {
-            LK_tcsncpy(new_waypoint.Country, dataStr, CUPSIZE_COUNTRY);
-            if (_tcslen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
+        if(GetContent(HotSpotNode, "COUNTRY", dataStr)) {
+            from_utf8(dataStr, new_waypoint.Country);
+            if (strlen(dataStr)>3) new_waypoint.Country[3]= _T('\0');
         }
 
         // Name
-        if(GetContent(HotSpotNode, TEXT("NAME"), dataStr)) {
-            CopyTruncateString(new_waypoint.Name, NAME_SIZE, dataStr );
+        if(GetContent(HotSpotNode, "NAME", dataStr)) {
+            from_utf8(dataStr, new_waypoint.Name);
         } else continue;
 
         // Geolocation
@@ -517,15 +492,15 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
 
         // Reliability
         double reliability=0;
-        if(!GetValue(HotSpotNode,TEXT("RELIABILITY"),reliability)) continue;
+        if(!GetValue(HotSpotNode,"RELIABILITY",reliability)) continue;
         comments<<" "<<reliability*100<<"% ";
 
         // Occourrence
-        if(!GetContent(HotSpotNode,TEXT("OCCURRENCE"),dataStr)) continue;
+        if(!GetContent(HotSpotNode,"OCCURRENCE",dataStr)) continue;
         comments<<dataStr<<std::endl;
 
         // Comment
-        if(GetContent(HotSpotNode,TEXT("COMMENT"),dataStr)) comments<<dataStr;
+        if(GetContent(HotSpotNode,"COMMENT",dataStr)) comments<<dataStr;
 
         // Add the comments
         SetWaypointComment(new_waypoint, comments.str().c_str());
@@ -536,53 +511,81 @@ bool ParseHotSpots(XMLNode &hotSpotsNode) {
                 // ownership of this 2 pointer has been transfered to WaypointList
                 new_waypoint.Details = nullptr;
                 new_waypoint.Comment = nullptr;
-            } else {
-                return_success = false;
             } 
-        } 
-        free(new_waypoint.Comment);
-        free(new_waypoint.Details);
-        new_waypoint.Details = nullptr;
-        new_waypoint.Comment = nullptr;
+        }
+        if(new_waypoint.Comment) {
+            free(new_waypoint.Comment);
+            new_waypoint.Comment = nullptr;
+        }
+        if(new_waypoint.Details) {
+            free(new_waypoint.Details);
+            new_waypoint.Details = nullptr;
+        }
     } // end of for each nav aid
-    return return_success;
+    return true;
 }
 
-bool GetGeolocation(XMLNode &parentNode, double &lat, double &lon, double &alt) {
-    XMLNode node=parentNode.getChildNode(TEXT("GEOLOCATION"));
-    if(!node.isEmpty()) {
-        if(!GetValue(node,TEXT("LAT"),lat) || lat<-90  || lat>90 ) return false;
-        if(!GetValue(node,TEXT("LON"),lon) || lon<-180 || lon>180) return false;
-        if(!GetMeasurement(node,TEXT("ELEV"),'M',alt)) return false;
+bool GetGeolocation(const xml_node* parentNode, double &lat, double &lon, double &alt) {
+    if(!parentNode) {
+      return false;
+    }
+    const xml_node* node=parentNode->first_node("GEOLOCATION");
+    if(node) {
+        if(!GetValue(node,"LAT",lat) || lat<-90  || lat>90 ) return false;
+        if(!GetValue(node,"LON",lon) || lon<-180 || lon>180) return false;
+        if(!GetMeasurement(node,"ELEV",'M',alt)) return false;
         return true;
     }
     return false;
 }
 
-bool GetContent(XMLNode &parentNode, LPCTSTR tagName, LPCTSTR &outputString) {
-    XMLNode node=parentNode.getChildNode(tagName);
-    return (!node.isEmpty() && (outputString=node.getText(0))!=nullptr && outputString[0]!='\0');
+bool GetContent(const xml_node *parentNode, const char* tagName, const char* &outputString) {
+    if(!parentNode) {
+      return false;
+    }
+    xml_node* node = parentNode->first_node(tagName);
+    if(!node) {
+      return false;
+    }
+    outputString = node->value();
+    return (outputString && outputString[0] != '\0');
 }
 
-bool GetAttribute(XMLNode &node, LPCTSTR attributeName, LPCTSTR &outputString) {
-    return (!node.isEmpty() && (outputString=node.getAttribute(attributeName))!=nullptr && outputString[0]!='\0');
+bool GetAttribute(const xml_node*node, const char* attributeName, const char* &outputString) {
+    if(!node) {
+      return false;
+    }
+    const xml_attribute * attr = node->first_attribute(attributeName);
+    if(!attr) {
+      return false;
+    }
+    outputString = attr->value();
+    return (outputString && outputString[0] != '\0');
 }
 
-bool GetValue(XMLNode &parentNode, LPCTSTR tagName, double &value) {
-    LPCTSTR dataStr=nullptr;
+bool GetValue(const xml_node* parentNode, const char* tagName, double &value) {
+    if(!parentNode) {
+      return false;
+    }
+    const char* dataStr=nullptr;
     if(GetContent(parentNode, tagName, dataStr)) {
-        value=_tcstod(dataStr,nullptr);
+        value=strtod(dataStr,nullptr);
         return true;
     }
     return false;
 }
 
-bool GetMeasurement(XMLNode &parentNode, LPCTSTR tagName, char expectedUnit, double &value) {
-    XMLNode node=parentNode.getChildNode(tagName);
-    LPCTSTR dataStr = nullptr;
-    if(GetAttribute(node,TEXT("UNIT"),dataStr) && _tcslen(dataStr)==1 && dataStr[0]==expectedUnit && (dataStr=node.getText(0))!=nullptr && dataStr[0]!='\0') {
-        value = _tcstod(dataStr,nullptr);
-        return true;
+bool GetMeasurement(const xml_node* parentNode, const char* tagName, char expectedUnit, double &value) {
+    if(!parentNode) {
+      return false;
+    }
+    const xml_node* node=parentNode->first_node(tagName);
+    if(node) {
+      const char* dataStr = nullptr;
+      if(GetAttribute(node,"UNIT",dataStr) && strlen(dataStr)==1 && dataStr[0]==expectedUnit && (dataStr=node->value())!=nullptr && dataStr[0]!='\0') {
+          value = strtod(dataStr,nullptr);
+          return true;
+      }
     }
     return false;
 }

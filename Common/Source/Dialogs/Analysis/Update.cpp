@@ -33,7 +33,6 @@ void UpdateAnalysis(WndForm* pForm){
 
   if(_tcslen(szPolarName) ==0)
   {
-    extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
     LK_tsplitpath(szPolarFile, NULL, NULL, szPolarName, NULL);
   }
   switch(analysis_page){
@@ -188,7 +187,7 @@ void UpdateAnalysis(WndForm* pForm){
    {
       TCHAR timetext1[100];
       TCHAR timetext2[100];
-      if (AATEnabled) {
+      if (UseAATTarget()) {
         Units::TimeToText(timetext1, (int)CALCULATED_INFO.TaskTimeToGo);
         Units::TimeToText(timetext2, (int)CALCULATED_INFO.AATTimeToGo);
 
@@ -323,7 +322,7 @@ void UpdateAnalysis(WndForm* pForm){
           }
         }
 
-        TCHAR timeTempStr[120];
+        TCHAR timeTempStr[30];
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
         _stprintf(timeStr, _T("T: %s\r\n"), timeTempStr);

@@ -238,7 +238,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
     double w1lon = WayPointList[Task[i+1].Index].Longitude;
     double w0lat = WayPointList[Task[i].Index].Latitude;
     double w0lon = WayPointList[Task[i].Index].Longitude;
-    if (AATEnabled) {
+    if (UseAATTarget()) {
       if (ValidTaskPoint(i+1)) {
         w1lat = Task[i+1].AATTargetLat;
         w1lon = Task[i+1].AATTargetLon;

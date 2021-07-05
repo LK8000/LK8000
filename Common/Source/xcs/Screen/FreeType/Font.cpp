@@ -57,29 +57,6 @@ extern FT_Library ft_library;
 #include <functional>
 #include <assert.h>
 
-/*
- * LK8000 options
- */
-
-// Kerning requires bitmap OR operation, which may result in slower speed.
-//
-#define USE_KERNING
-#ifdef USE_KERNING
-// Light kerning limits 64 subpixels regression into previous glyph
-// Notice that we can get a kerning delta equivalent to the horiBearingX, which means
-// the glyphs are very near, and may be in contact. 
-#define LIGHT_KERNING
-#endif
-
-// Assuming we are always in-grid we can avoid to do roundings to 64 before rendering.
-// For our case, metrics are returning 26.6 values always .
-//
-#define ALWAYS_GRIDDED
-#ifndef ALWAYS_GRIDDED
-#define FIX_HINTING
-#endif
-
-
 #ifndef ENABLE_OPENGL
 /**
  * libfreetype is not thread-safe; this global Mutex is used to
@@ -110,25 +87,17 @@ IsMono()
 
 gcc_const
 static inline FT_Long
-FT_FLOOR(FT_Long x)
+FT_FLOOR(FT_Long x) 
 {
-  #ifdef ALWAYS_GRIDDED
   return x >> 6;
-  #else
-  return (x & -64) / 64;
-  #endif
 }
 
 
 gcc_const
 static inline FT_Long
-FT_CEIL(FT_Long x)
+FT_CEIL(FT_Long x) 
 {
-  #ifdef ALWAYS_GRIDDED
   return x >> 6;
-  #else
-  return ((x + 63) & -64) / 64;
-  #endif
 }
 
 
@@ -192,8 +161,9 @@ Font::LoadFile(const char *file, UPixelScalar ptsize, bool bold, bool italic)
   if (ptsize>1000) {
       ptsize-=1000;
       demibold=true;
-  } else
+  } else {
       demibold=false;
+  }
 
   // Paolo: in order to get back desired ppts we must ask for 62, not 64
   FT_Error error = ::FT_Set_Char_Size(new_face, 0, ptsize<<6, 0, 62);
@@ -283,15 +253,10 @@ Font::TextSize(const TCHAR *text) const
 #endif
 
   const FT_Face face = this->face;
-#ifdef USE_KERNING
   const bool use_kerning = FT_HAS_KERNING(face);
   unsigned prev_index = 0;
-#endif
 
   int x = 0;
-#ifdef FIX_HINTING
-  FT_Pos prev_rsb_delta=0;
-#endif
 
 #ifndef ENABLE_OPENGL
   const ScopeLock protect(freetype_mutex);
@@ -316,46 +281,17 @@ Font::TextSize(const TCHAR *text) const
       continue;
 
     glyph = face->glyph;
-    #if (defined LIGHT_KERNING) || !(defined USE_KERNING)
-    const FT_Glyph_Metrics metrics = glyph->metrics;
-    #endif
 
-#ifdef USE_KERNING
     if (use_kerning && x) {
       if (prev_index != 0) {
         FT_Vector delta;
         FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
-        #ifdef LIGHT_KERNING
-        if (-delta.x <= metrics.horiBearingX)
-            x += delta.x ;
-        else
-            x -= (metrics.horiBearingX +64);
-        #else
         x += delta.x ;
-        #endif
       }
     }
     prev_index = i;
-#endif
 
-
-#ifdef FIX_HINTING
-    if (prev_rsb_delta - glyph->lsb_delta >= 32 )
-        x -= 64;
-    else if ( prev_rsb_delta - glyph->lsb_delta < -32 )
-        x += 64;
-
-    prev_rsb_delta = glyph->rsb_delta;
-#endif
-
-
-#ifdef USE_KERNING
     x += glyph->advance.x;
-#else
-    x += (metrics.width > metrics.horiAdvance ? metrics.width : metrics.horiAdvance);
-#endif
-
-
   }
 
   if(glyph) {
@@ -411,11 +347,7 @@ RenderGlyph(uint8_t *buffer, unsigned buffer_width, unsigned buffer_height,
   for (const uint8_t *end = src + height * pitch;
        src != end; src += pitch, buffer += buffer_width) {
     // with Kerning, Glyph can overlapp previous, so, we need merge bitmap.
-#ifdef USE_KERNING
       std::transform(src, src + width, buffer, buffer, std::bit_or<uint8_t>());
-#else
-      std::copy(src, src + width, buffer);
-#endif
   }
 }
 
@@ -456,8 +388,9 @@ RenderGlyph(uint8_t *buffer, size_t width, size_t height,
     ConvertMono(bitmap, glyph->bitmap);
     RenderGlyph(buffer, width, height, bitmap, x, y);
     delete[] bitmap.buffer;
-  } else
+  } else {
     RenderGlyph(buffer, width, height, glyph->bitmap, x, y);
+  }
 }
 
 //
@@ -489,24 +422,15 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
   uint8_t *buffer = (uint8_t *)_buffer;
   std::fill_n(buffer, BufferSize(size), 0);
 
-  const FT_Face face = this->face;
-  const FT_GlyphSlot glyph = face->glyph;
-
-#ifdef USE_KERNING
-  bool use_kerning = FT_HAS_KERNING(face);
   unsigned prev_index = 0;
-#endif
 
   int x = 0;
-#ifdef FIX_HINTING
-  FT_Pos prev_rsb_delta=0;
-#endif
-
 
 #ifndef ENABLE_OPENGL
   const ScopeLock protect(freetype_mutex);
 #endif
 
+  bool use_kerning = FT_HAS_KERNING(face);
 
   while (true) {
     const auto n = NextChar(text);
@@ -524,55 +448,33 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
     if (error)
       continue;
 
-    const FT_Glyph_Metrics metrics = glyph->metrics;
-
-#ifdef USE_KERNING
     if (use_kerning && x) {
       if (prev_index != 0) {
         FT_Vector delta;
         FT_Get_Kerning(face, prev_index, i, ft_kerning_default, &delta);
-        #ifdef LIGHT_KERNING
-        if (-delta.x <= metrics.horiBearingX)
-            x += delta.x ;
-        else
-            x -= (metrics.horiBearingX + 64);
-        #else
-            x += delta.x;
-        #endif
+        x += delta.x;
       }
     }
     prev_index = i;
-#endif
 
-
-#ifdef FIX_HINTING
-    if (prev_rsb_delta - glyph->lsb_delta >= 32 )
-        x -= 64;// >> 6;
-    else if ( prev_rsb_delta - glyph->lsb_delta < -32 )
-        x += 64;// >> 6;
-
-    prev_rsb_delta = glyph->rsb_delta;
-#endif
-
+    const FT_GlyphSlot& glyph = face->glyph;
     error = FT_Render_Glyph(glyph, render_mode);
     if (error)
       continue;
+
+    const FT_Glyph_Metrics& metrics = glyph->metrics;
+
     /* 
      *  32,  0  = Microsoft GDI weight=600 (64=32)
      */
-    if (demibold) FT_Bitmap_Embolden(ft_library,&glyph->bitmap, 32,0);
+    if (demibold) {
+      FT_Bitmap_Embolden(ft_library,&glyph->bitmap, 32,0);
+    }
 
     RenderGlyph((uint8_t *)buffer, size.cx, size.cy,
-#ifdef USE_KERNING
         glyph, (x >> 6)+glyph->bitmap_left , ascent_height - FT_FLOOR(metrics.horiBearingY));
 
     x += glyph->advance.x; // equivalent to metrics.horiAdvance
-#else
-        glyph, (x + metrics.horiBearingX ) >> 6 , ascent_height - FT_FLOOR(metrics.horiBearingY));
-
-    x += (metrics.width > metrics.horiAdvance ? metrics.width : metrics.horiAdvance);
-#endif
-
   }
 }
 

@@ -46,7 +46,7 @@ double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int twp) {
   }
 
   if (twp==FinalWayPoint) {
-    if (EnableFAIFinishHeight && !AATEnabled) {
+    if (EnableFAIFinishHeight && !UseAATTarget()) {
       // maximum allowed loss of height in order to conform to FAI rules
       double maxHeightLoss = min(1000.0,
                                  (Calculated->TaskDistanceCovered+Calculated->TaskDistanceToGo) * 0.01);

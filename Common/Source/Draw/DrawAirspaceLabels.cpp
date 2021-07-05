@@ -31,7 +31,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const Scr
           AirspaceWarningDrawStyle_t vlabeldrawstyle, hlabeldrawstyle;
           bool distances_ready = (*it)->GetWarningPoint(lon, lat, hlabeldrawstyle, vdist, vlabeldrawstyle);
           TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
-          TextInBoxMode_t TextDisplayMode = {0};
+          TextInBoxMode_t TextDisplayMode = {};
           bool hlabel_draws = false;
           bool vlabel_draws = false;
           

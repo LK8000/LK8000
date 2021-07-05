@@ -235,14 +235,13 @@ typedef struct {
 
 
 typedef struct{
-  TCHAR Name[NAME_SIZE+1];
+  TCHAR Name[LKSIZEBUFFER];
   POINT Pos;
   TextInBoxMode_t Mode;
   int AltArivalAGL;
   bool inTask;
   bool isLandable; // VENTA5
-  bool isAirport; // VENTA5
-  bool isExcluded;
+  bool isThermal;
   int  index;
   short style;
 }MapWaypointLabel_t;
@@ -514,11 +513,13 @@ class MapWindow {
   static void SuspendDrawingThread(void);
   static void ResumeDrawingThread(void);
 
+  static LKColor GetOutlineColor(LKColor color);
+
   static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
   static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
-  static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
+  static void LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
 
   static bool IsMapFullScreen();
   static bool ChangeDrawRect(const RECT rectarea);
@@ -610,17 +611,13 @@ class MapWindow {
   static void WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
                                 short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
   // static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
-  static void LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
+  static void LKFormatDist(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
   // static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
-  static void LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
-  static void LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
+  static void LKFormatGR(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
+  static void LKFormatAltDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKUpdateOlc(void);
 
-#ifdef DRAWDEBUG
-  static void DrawDebug(HDC hdc, const RECT rc);
-#endif
   static void DrawWelcome8000(LKSurface& Surface, const RECT& rc);
-  static void DrawLKStatus(LKSurface& Surface, const RECT& rc);
   static void DrawFlightMode(LKSurface& Surface, const RECT& rc);
   static void DrawGPSStatus(LKSurface& Surface, const RECT& rc);
   static void DrawFunctions1HZ(LKSurface& Surface, const RECT& rc);
@@ -783,24 +780,9 @@ private:
   static void FillScaleListForEngineeringUnits(void);
 
 
-
-
- public:
-	static void FreeSlot();
 private:
-  // How many slots in screen, divided by horizontal blocks on vertical positions
-  // How many parts of vertical screens we are using. H=480 mean 48 pixel sized slots
-  // Each slot should contain MapWindowLogFont Hsize with some margin.
-  #define SCREENVSLOTS	10
-  // Max number of labels in each vblock
-  #define MAXVLABELBLOCKS 15
-  // total labels printed so far
-  static int nLabelBlocks;
-  static int nVLabelBlocks[SCREENVSLOTS+1];
-  static RECT LabelBlockCoords[SCREENVSLOTS+1][MAXVLABELBLOCKS+1];
-  static char *slot;
-
   static void StoreRestoreFullscreen(bool);
+
  public:
 
   static double GetApproxScreenRange(void);
@@ -814,11 +796,30 @@ private:
   static int TargetPanIndex;
   static void ClearAirSpace(bool fill, const RECT& rc);
 
+ //----------------------
+ /// map label declutering
+ private:
+  /// to store list of label coordinate already printed in vertical slot
+  using slot_t = std::vector<PixelRect>;
+  
+  /// vertical slot list, vertical slot size is "ScreenSizeY / 8"
+  // for ScreenSizeY = 480px each slot size is 60px
+  using LabelBlockCoords_t = std::array<slot_t, 9>;
+  static LabelBlockCoords_t LabelBlockCoords;
+
+  static int nLabelBlocks; // count of label already printed;
+
  public:
-  static bool checkLabelBlock(RECT *rc);
-  static void ResetLabelDeclutter(void);
-  static void SaturateLabelDeclutter(void);
-  static void SetDeclutterIcon(RECT *drect);
+  /// return true if @rc not overlap with previously checked rect.
+  static bool checkLabelBlock(const RECT& rc, const RECT& clipRect);
+  /// remove all previously checked rect
+  static void ResetLabelDeclutter();
+  /// after calling this, #checkLabelBlock() always return false.
+  // call reset for revert to normal state.
+  static void SaturateLabelDeclutter();
+ //----------------------
+
+
   static bool RenderTimeAvailable();
   static bool TargetMoved(double &longitude, double &latitude);
 

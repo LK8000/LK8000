@@ -39,14 +39,16 @@ LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires = false) {
 #else
     TCHAR sDir[MAX_PATH];
     SystemPath(sDir,TEXT(LKD_BITMAPS));
-    _stprintf(srcfile,_T("%s" DIRSEP "%s%s." IMG_EXT),sDir, sName, Hires?_T("_H"):_T(""));
-
-    bool success = hBmp.LoadFromFile(srcfile);
+    int ret = _sntprintf(srcfile, MAX_PATH, _T("%s" DIRSEP "%s%s." IMG_EXT), sDir, sName, Hires?_T("_H"):_T(""));
+    bool success = (ret < (MAX_PATH - 1)); // path too long ? 
+    if(success) { 
+        success = hBmp.LoadFromFile(srcfile);
+    }
 #endif
     if (!success) {
         auto ib = setMissingBitmap.insert(srcfile);
         if(ib.second) {
-            StartupStore(_T(".... Failed to load file : <%s>%s"), srcfile, NEWLINE);
+            StartupStore(_T(".... Failed to load file : <%s>"), srcfile);
         }
         hBmp.LoadFromResource(MAKEINTRESOURCE(IDB_EMPTY));
         ++Bitmaps_Errors;

@@ -50,7 +50,7 @@ bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     w0lat = WayPointList[Task[i+1].Index].Latitude;
     w0lon = WayPointList[Task[i+1].Index].Longitude;
     
-    if (AATEnabled) {
+    if (UseAATTarget()) {
       w1lat = Task[i].AATTargetLat;
       w1lon = Task[i].AATTargetLon;
       

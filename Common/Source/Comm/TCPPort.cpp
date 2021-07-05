@@ -94,12 +94,12 @@ bool TCPClientPort::Connect() {
 
 #ifdef UNICODE
     char szaddr[MAX_URL_LEN];
-    TCHAR2ascii(GetAddress(GetPortIndex()), szaddr, MAX_URL_LEN);
+    to_utf8(GetAddress(GetPortIndex()), szaddr);
 #else
     const char* szaddr = GetAddress(GetPortIndex());
 #endif
     char IPadr[16];
-    SOCKADDR_IN sin = { 0 };
+    SOCKADDR_IN sin = {};
     if(hostname_to_ip(szaddr,IPadr ) == 0)  // convert URL to IP address
       sin.sin_addr.s_addr = inet_addr(IPadr);
     else
@@ -179,7 +179,7 @@ bool TCPServerPort::Connect() {
         return false;
     }
 
-    SOCKADDR_IN sin = { 0 };
+    SOCKADDR_IN sin = {};
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
     sin.sin_port = htons(GetPort(GetPortIndex()));
     sin.sin_family = AF_INET;
@@ -278,7 +278,7 @@ bool UDPServerPort::Connect() {
         // if failed, socket still in blocking mode, it's big problem
     }
 
-    SOCKADDR_IN sin = { 0 };
+    SOCKADDR_IN sin = {};
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
     sin.sin_port = htons(GetPort(GetPortIndex()));
     sin.sin_family = AF_INET;
@@ -315,7 +315,7 @@ unsigned UDPServerPort::RxThread() {
 	return 0U;
 }
 
-bool UDPServerPort::Write(const void *data, size_t length) {
+bool UDPServerPort::Write(const void *data, size_t size) {
 
 	if (mSocket == INVALID_SOCKET) {
 	        unsigned dwError = WSAGetLastError();
@@ -324,14 +324,14 @@ bool UDPServerPort::Write(const void *data, size_t length) {
 	}
     // if no client sended data yet we try to send to the default Android AP ( 192.168.43.1 ) on port 8000 for LKNET
     if ( mSAddressClient.sin_port == 0 ) {
-        SOCKADDR_IN sDefault = { 0 };
+        SOCKADDR_IN sDefault = {};
         sDefault.sin_addr.s_addr = inet_addr("192.168.43.1");
         sDefault.sin_port = htons(8000);
         sDefault.sin_family = AF_INET;
-        return sendto(mSocket, (const char *)data, length, 0, (sockaddr*)&sDefault, sizeof(sDefault));
+        return sendto(mSocket, (const char *)data, size, 0, (sockaddr*)&sDefault, sizeof(sDefault));
     }
     else
-    	return sendto(mSocket, (const char *)data, length, 0, (sockaddr*)&mSAddressClient, sizeof(mSAddressClient));
+    	return sendto(mSocket, (const char *)data, size, 0, (sockaddr*)&mSAddressClient, sizeof(mSAddressClient));
 }
 
 

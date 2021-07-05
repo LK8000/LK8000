@@ -20,6 +20,7 @@ extern void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 // Reminder: to gain accuracy we cannot rely on the internal timers in Hz because
 // they are only approximated.
 //
+static
 void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static unsigned int steady=0;
   static double steady_start_time=0;
@@ -34,7 +35,7 @@ void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	Trip_Moving_Time=0;
 	steady_start_time=0;
 	old_trip_steady_time=0;
-	if (ISCAR) Calculated->FlightTime = 0; // see later in DetecStartTime also
+	if (ISCAR) Calculated->FlightTime = 0; // see later in FlightDuration also
 	Calculated->Odometer = 0;
 	Calculated->TakeOffTime = Basic->Time;
 	if (ISCAR) LKSW_ResetLDRotary=true;
@@ -76,46 +77,19 @@ void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
 }
 
-
-int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  // we want this to display landing time until next takeoff
-
-  static int starttime = -1;
-  static int lastflighttime = -1;
-
-  // The DetectStartTime is called BEFORE we call TripTimes, which will take care of 
-  // resetting to false the LKSW switch.
-  if (LKSW_ResetTripComputer && ISCAR) {
-	starttime=-1;
-	lastflighttime=-1;
-  }
-
+static
+int FlightDuration(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+  static double FlightTime = 0;
+  /*
+   * Flight duration only depends of TakeoffTime and CurrentTime
+   *
+   * To display flight time until next takeoff after landing, duration
+   * is only updated when flying.
+   */
   if (Calculated->Flying) {
-    if (starttime == -1) {
-      // hasn't been started yet
-
-      starttime = (int)Basic->Time;
-
-      lastflighttime = -1;
-    }
-    return (int)Basic->Time-starttime;
-
-  } else {
-
-    if (lastflighttime == -1) {
-      // hasn't been stopped yet
-      if (starttime>=0) {
-        lastflighttime = (int)Basic->Time-starttime;
-      } else {
-        return 0; // no last flight time
-      }
-      // reset for next takeoff
-      starttime = -1;
-    }
+    FlightTime = Basic->Time - Calculated->TakeOffTime;
   }
-
-  // return last flighttime if it exists
-  return max(0,lastflighttime);
+  return FlightTime;
 }
 
 
@@ -152,21 +126,14 @@ _noreset:
 
   LastTime = Basic->Time;
 
-  double t = DetectStartTime(Basic, Calculated);
-  if (t>0) {
-	Calculated->FlightTime = t;
-  } 
-  #if 0
-  else {
-	if (Calculated->Flying) {
-		StartupStore(_T("... negative start time=%f\n"),t);
-	}
-  }
-  #endif
 
   TakeoffLanding(Basic, Calculated);
 
-  if (ISCAR) TripTimes(Basic, Calculated);
+  Calculated->FlightTime = FlightDuration(Basic, Calculated);
+
+  if (ISCAR) {
+    TripTimes(Basic, Calculated);
+  }
 
   return true;
 }

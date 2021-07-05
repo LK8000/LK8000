@@ -116,10 +116,10 @@ unsigned long AndroidPort::GetBaudrate() const {
     return 0;
 }
 
-bool AndroidPort::Write(const void *data, size_t length) {
+bool AndroidPort::Write(const void *data, size_t size) {
     if(bridge) {
         const char *p = (const char *)data;
-        const char *end = p + length;
+        const char *end = p + size;
 
         while (p < end) {
             int nbytes = bridge->write(Java::GetEnv(), p, end - p);

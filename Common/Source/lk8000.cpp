@@ -57,7 +57,7 @@
 #include "InputEvents.h"
 #include "Geoid.h"
 #include "RasterTerrain.h"
-#include "LiveTracker.h"
+#include "Tracking/LiveTrack24.h"
 
 #include "LKObjects.h"
 #include "Bitmaps.h"
@@ -88,8 +88,10 @@
 #include "Airspace/Sonar.h"
 #include <OS/RotateScreen.h>
 #include <dlgFlarmIGCDownload.h>
-#include "utils/make_unique.h"
+#include <memory>
 #include "Calc/Vario.h"
+#include "IO/Async/GlobalIOThread.hpp"
+#include "Tracking/Tracking.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -292,15 +294,6 @@ bool Startup(const TCHAR* szCmdLine) {
 
   InstallSystem();
 
-  // These directories are needed if missing, as LK can run also with no maps and no waypoints..
-  CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
-  CreateDirectoryIfAbsent(TEXT(LKD_CONF));
-  CreateDirectoryIfAbsent(TEXT(LKD_TASKS));
-  CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
-  CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
-  CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
-  CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
-
   LocalPath(defaultProfileFile, _T(LKD_CONF), _T(LKPROFILE));
   _tcscpy(startProfileFile, defaultProfileFile);
   LocalPath(defaultAircraftFile,_T(LKD_CONF), _T(LKAIRCRAFT));
@@ -328,12 +321,22 @@ bool Startup(const TCHAR* szCmdLine) {
   LK8000Activity* activity = LK8000Activity::Get();
   assert(activity);
   if(activity) {
+    main_window->OnStartEventLoop();
     activity->RequestPermission();
     activity->WaitPermission();
+    main_window->OnStopEventLoop();
   }
 #endif
 
-#ifdef RADIO_ACTIVE
+  // These directories are needed if missing, as LK can run also with no maps and no waypoints..
+  CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
+  CreateDirectoryIfAbsent(TEXT(LKD_CONF));
+  CreateDirectoryIfAbsent(TEXT(LKD_TASKS));
+  CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
+  CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
+  CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
+  CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
+
   memset( &(RadioPara), 0, sizeof(Radio_t));
   RadioPara.Volume = 6;
   RadioPara.Squelch = 3;
@@ -342,7 +345,6 @@ bool Startup(const TCHAR* szCmdLine) {
   RadioPara.ActiveFrequency  = 118.00;
   RadioPara.PassiveFrequency = 118.00;
   RadioPara.Enabled8_33      = true;
-#endif  // RADIO_ACTIVE
 
   // Initialise main blackboard data
 
@@ -351,8 +353,10 @@ bool Startup(const TCHAR* szCmdLine) {
   ClearTask();
   memset( &(GPS_INFO), 0, sizeof(GPS_INFO));
   memset( &(CALCULATED_INFO), 0,sizeof(CALCULATED_INFO));
-  memset( &SnailTrail[0],0,TRAILSIZE*sizeof(SNAIL_POINT));
-  memset( &LongSnailTrail[0],0,(LONGTRAILSIZE+1)*sizeof(LONG_SNAIL_POINT));
+
+  memset( SnailTrail, 0, sizeof(SnailTrail));
+  memset( LongSnailTrail, 0, sizeof(LongSnailTrail));
+
   ResetVarioAvailable(GPS_INFO);
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
@@ -384,7 +388,7 @@ bool Startup(const TCHAR* szCmdLine) {
 
   time_t  linux_time;
   linux_time = time(0);
-  tm utc_tm = {0};
+  tm utc_tm = {};
   struct tm *pda_time;
   pda_time = gmtime_r(&linux_time, &utc_tm);
   GPS_INFO.Time  = pda_time->tm_hour*3600+pda_time->tm_min*60+pda_time->tm_sec;
@@ -508,16 +512,14 @@ bool Startup(const TCHAR* szCmdLine) {
   DevLXNanoIII::Register();
   XCTracerRegister();
   GPSBipRegister ();
-#ifdef RADIO_ACTIVE
   PVCOMRegister();
   KRT2Register();
   AR620xRegister();
   ATR833Register();
-#endif  // RADIO_ACTIVE
   DevVaulter::Register();
   DevOpenVario::Register();
-  FanetRegister();
   DevLX_EOS_ERA::Register();
+  FanetRegister();
   // REPETITION REMINDER ..
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<
@@ -527,7 +529,9 @@ bool Startup(const TCHAR* szCmdLine) {
   // we need devInit for all devices. Missing initialization otherwise.
   devInit();
 
-  LiveTrackerInit();
+  InitialiseIOThread();
+  tracking::Initialize(tracking::GetPlatform());
+
   InitFlightDataRecorder();
 
   // re-set polar in case devices need the data
@@ -614,8 +618,6 @@ void Shutdown() {
 
   LKUnloadLanguageFile();
   InputEvents::UnloadString();
-  // This is freeing char *slot in TextInBox
-  MapWindow::FreeSlot();
 
   main_window = nullptr;
 

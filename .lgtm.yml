@@ -1,0 +1,43 @@
+# LGTM configuration file for C++ analysis
+
+path_classifiers:
+  library:
+    - Common/Header/libzzip
+    - Common/Header/Poco
+    - Common/Source/Library/cpp-mmf
+    - Common/Source/Library/glutess
+    - Common/Source/Library/poco
+    - Common/Source/Library/zlib
+    - Common/Source/Library/zzip
+    - Common/Source/Library/newuoa.h
+
+  test:
+    - Common/Test
+
+  utils:
+    - Common/Utils
+
+extraction:
+  cpp:
+    prepare:
+      packages:
+        - libzzip-dev
+        - libfreetype6-dev
+        - libboost-dev
+        - libpng-dev
+        - libgeographic-dev
+        - xsltproc
+        - imagemagick
+        - ttf-dejavu
+        - zip
+        - libgl1-mesa-dev
+        - libegl1-mesa-dev
+        - libx11-dev
+        - libasound2-dev
+        - libsndfile1-dev
+    configure:
+      command:
+        - make clean
+    index:
+      build_command: 
+        - make

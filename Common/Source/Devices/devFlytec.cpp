@@ -10,7 +10,6 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "devFlytec.h"
-#include "Parser.h"
 
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
@@ -84,7 +83,6 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {
 
   TCHAR ctemp[80];
-  double vtas;
   static int offset=-1;
 
   d->nmeaParser.connected = true;
@@ -190,8 +188,8 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
   // HBAR 1013.25
   NMEAParser::ExtractParameter(String,ctemp,11+offset);
-  double palt=StrToDouble(ctemp,NULL);
-  UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(palt));
+  double qne_altitude = StrToDouble(ctemp,NULL);
+  UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(qne_altitude));
 
   // VARIO
   NMEAParser::ExtractParameter(String,ctemp,12+offset);
@@ -200,13 +198,10 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
   // TAS
   NMEAParser::ExtractParameter(String,ctemp,13+offset);
-  vtas=StrToDouble(ctemp,NULL)/10;
-  pGPS->IndicatedAirspeed = vtas/AirDensityRatio(palt);
+  double vtas = StrToDouble(ctemp,NULL) / 10;
+  pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);
   pGPS->TrueAirspeed = vtas;
-  if (pGPS->IndicatedAirspeed >0)
-	pGPS->AirspeedAvailable = TRUE;
-  else
-	pGPS->AirspeedAvailable = FALSE;
+  pGPS->AirspeedAvailable = (pGPS->IndicatedAirspeed >0);
 
   // ignore n.14 airspeed source
 

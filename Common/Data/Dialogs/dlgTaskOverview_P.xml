@@ -5,23 +5,21 @@
     <WndButton Name="cmdClear"   Caption="_@M180_" X="61"  Y="1" Width="60" Height="22" Font="2" OnClickNotify="OnClearClicked"/>
     <WndButton Name="cmdCalc"    Caption="_@M160_" X="121" Y="1" Width="60" Height="22" Font="2" OnClickNotify="OnCalcClicked" Tag="4" />
     <WndButton Name="cmdDeclare" Caption="_@M222_" X="181" Y="1" Width="59" Height="22" Font="2" OnClickNotify="OnDeclareClicked"/>
-<!--    	
-    <WndProperty Name="prpAATEst" Caption="_@M247_" X="1" Y="24"  Width="120" Height="22" CaptionWidth="45" Font="2" ReadOnly="1">
-      <DataField DataType="double" DisplayFormat="%.0fmin" EditFormat="%.0f" ReadOnly="1"/>
-    </WndProperty>
--->    
-    <WndButton Name="cmdTimegates" Caption="_@M1747_" X="149" Y="24" Width="90" Height="22" Font="2" OnClickNotify="OnTimegatesClicked"/>
-    <WndButton Name="cmdDelete"    Caption="_@M230_"  X="149" Y="24" Width="90" Height="22" Font="2" OnClickNotify="OnDeleteClicked"/>
-    <WndButton Name="cmdAnalysis" Caption="_@M93_"  X="1"   Y="47" Width="120" Height="22" Font="2" OnClickNotify="OnAnalysisClicked"/>
-    <WndButton Name="cmdReverse" Caption="_@M1851_"  X="1"   Y="24" Width="120" Height="22" Font="2" OnClickNotify="OnReverseClicked"/>    
-    <WndButton Name="cmdLoad"     Caption="_@M398_" X="121" Y="47" Width="60" Height="22" Font="2" OnClickNotify="OnLoadClicked"/>
-    <WndButton Name="cmdSave"     Caption="_@M583_" X="181" Y="47" Width="59" Height="22" Font="2" OnClickNotify="OnSaveClicked"/>
+  
+    <WndButton Name="cmdReverse"   Caption="_@M1851_" X="1"   Y="24" Width="120" Height="22" Font="2" OnClickNotify="OnReverseClicked"/>    
+    <WndButton Name="cmdTimegates" Caption="_@M1747_" X="121" Y="24" Width="119" Height="22" Font="2" OnClickNotify="OnTimegatesClicked"/>
+    <WndButton Name="cmdDelete"    Caption="_@M230_"  X="121" Y="24" Width="119" Height="22" Font="2" OnClickNotify="OnDeleteClicked"/>
+    <WndButton Name="cmdAnalysis"  Caption="_@M93_"   X="1"   Y="47" Width="120" Height="22" Font="2" OnClickNotify="OnAnalysisClicked"/>
+    <WndButton Name="cmdLoad"      Caption="_@M398_"  X="121" Y="47" Width="60" Height="22" Font="2" OnClickNotify="OnLoadClicked"/>
+    <WndButton Name="cmdSave"      Caption="_@M583_"  X="181" Y="47" Width="59" Height="22" Font="2" OnClickNotify="OnSaveClicked"/>
+
     <WndListFrame Name="frmTaskList" X="1" Y="-1" Width="-1" Height="-1" Font="2" OnListInfo="OnTaskListInfo">
       <WndOwnerDrawFrame Name="frmTaskListEntry" X="2" Y="2" Width="-2" Height="25" Font="2" OnPaint="OnTaskPaintListItem"/>
     </WndListFrame>
+
     <!-- Hidden -->
     <WndProperty Name="prpFile" Caption="_@M285_"   X="106" Y="-2"  Width="10" Height="10" CaptionWidth="0" Font="2" Help="">
-      <DataField DataType="filereader" Min="0" Max="200" Step="1"/>
+      <DataField DataType="filereader" />
     </WndProperty>
     <!-- -->
   </WndForm>

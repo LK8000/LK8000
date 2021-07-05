@@ -12,85 +12,69 @@
 #include "Sound/Sound.h"
 
 // return current overtarget waypoint index, or -1 if not available
-int GetOvertargetIndex(void) {
-  int index;
-  switch (OvertargetMode) {
+int GetOvertargetIndex() {
+	int index = -1;
+	switch (OvertargetMode) {
 	case OVT_TASK: // task
-		if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
-			if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())
-				index=RESWP_OPTIMIZED;
-			else {
-				index = Task[ActiveTaskPoint].Index;
-			}
-			if ( index >=0 ) return index;
+		if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) {
+			index = RESWP_OPTIMIZED;
+
+		} else if ( ValidTaskPoint(ActiveTaskPoint)) {
+			index = Task[ActiveTaskPoint].Index;
 		}
-		return -1;
 		break;
 	case OVT_TASKCENTER: // task Center
-		if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
-            return Task[ActiveTaskPoint].Index;
-        }
-		return -1;
+		if ( ValidTaskPoint(ActiveTaskPoint)) {
+			index = Task[ActiveTaskPoint].Index;
+		}
 		break;
 	case OVT_ALT1: // alternate 1
-		if ( ValidWayPoint(Alternate1) != false ) {
+		if ( ValidWayPoint(Alternate1)) {
 			index = Alternate1;
-			if ( index >=0 ) return index;
 		}
-		return -1;
 		break;
 	case OVT_ALT2: // alternate 2
-		if ( ValidWayPoint(Alternate2) != false ) {
+		if ( ValidWayPoint(Alternate2)) {
 			index = Alternate2;
-			if ( index >=0 ) return index;
 		}
-		return -1;
 		break;
 	case OVT_BALT: // bestalternate
-		if ( ValidWayPoint(BestAlternate) != false ) {
+		if ( ValidWayPoint(BestAlternate)) {
 			index = BestAlternate;
-			if ( index >=0 ) return index;
 		}
-		return -1;
 		break;
 	case OVT_HOME: // home waypoint
 		if (ValidWayPoint(HomeWaypoint)) {
 			index = HomeWaypoint;
-			if ( index >=0 ) return index;
 		}
-		return -1;
 		break;
-
 	case OVT_THER:
-		index=RESWP_LASTTHERMAL;
-		if (ValidResWayPoint(index)) return index;
-		return -1;
+		if (ValidResWayPoint(RESWP_LASTTHERMAL)) {
+			index = RESWP_LASTTHERMAL;
+		} 
 		break;
-
 	case OVT_MATE:
-		index=RESWP_TEAMMATE;
-		if (ValidResWayPoint(index)) return index;
-		return -1;
+		if (ValidResWayPoint(RESWP_TEAMMATE)) {
+			index = RESWP_TEAMMATE;
+		}
 		break;
-
 	case OVT_XC:
-		index=RESWP_FAIOPTIMIZED;
-	    if (ValidResWayPoint(index)) return index;
-	    return -1;
-	    break;
+		if (ValidResWayPoint(RESWP_FAIOPTIMIZED)) {
+			index = RESWP_FAIOPTIMIZED;
+		}
+		break;
 
 	case OVT_FLARM:
-		index=RESWP_FLARMTARGET;
-		if (ValidResWayPoint(index)) return index;
-		return -1;
+		if (ValidResWayPoint(RESWP_FLARMTARGET)) {
+			index = RESWP_FLARMTARGET;
+		}
 		break;
-
 
 	// 4: home, 5: traffic, 6: mountain pass, last thermal, etc.
 	default:
-		return -1;
 		break;
-  }
+	}
+	return index;
 }
 
 // return current overtarget waypoint name with leading identifier, even if empty

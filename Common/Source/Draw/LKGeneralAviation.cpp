@@ -19,12 +19,14 @@ void drawOutlineText(LKSurface& Surface, int x, int y, const TCHAR * textBuffer)
 #ifdef USE_FREETYPE
 #warning "to slow, rewrite using freetype outline"
 #endif
-	Surface.SetTextColor(RGB_BLACK);
+
+	Surface.SetTextColor(MapWindow::GetOutlineColor(OverColorRef));
+
 	Surface.DrawText(x -1, y -1, textBuffer);
 	Surface.DrawText(x +1, y +1, textBuffer);
 	Surface.DrawText(x -1, y   , textBuffer);
 	Surface.DrawText(x   , y +1, textBuffer);
-	Surface.SetTextColor(RGB_WHITE);
+	Surface.SetTextColor(OverColorRef);
 	Surface.DrawText(x, y, textBuffer);
 }
 
@@ -52,34 +54,40 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	const int brgYoffset = textSize.cy + screenOrientYoffset;
 	drawOutlineText(Surface, AircraftPos.x - halfBrgSize, screenOrientYoffset, textBuffer);
 
+
+	LKPen OverlayPen(PEN_SOLID, NIBLSCALE(1), OverColorRef);
+	LKPen OutlinePen(PEN_SOLID, NIBLSCALE(3), GetOutlineColor(OverColorRef));
+
 	// Calculate compass radius: consider the offset below heading pointer
 	const int radius = AircraftPos.y - brgYoffset - 12;
 
 	// Draw heading pointer on the top of the compass
-	const auto oldpen=Surface.SelectObject(LKPen_Black_N3);
-	{
-		const int deciBrgSize = textSize.cx/10;
-		const POINT hdgPointer[7] = {
-				{AircraftPos.x - halfBrgSize - 5, brgYoffset - 5},
-				{AircraftPos.x - halfBrgSize - 5, brgYoffset + 2},
-				{AircraftPos.x - deciBrgSize    , brgYoffset + 2},
-				{AircraftPos.x                  , brgYoffset + 7},
-				{AircraftPos.x + deciBrgSize    , brgYoffset + 2},
-				{AircraftPos.x + halfBrgSize + 5, brgYoffset + 2},
-				{AircraftPos.x + halfBrgSize + 5, brgYoffset - 5}
-		};
 
-		Surface.Polyline(hdgPointer,7);
-		Surface.SelectObject(LKPen_White_N2);
-		Surface.Polyline(hdgPointer,7);
-	}
+	const auto oldpen=Surface.SelectObject(OutlinePen);
+
+	const int deciBrgSize = textSize.cx/10;
+	const POINT hdgPointer[7] = {
+			{AircraftPos.x - halfBrgSize - 5, brgYoffset - 5},
+			{AircraftPos.x - halfBrgSize - 5, brgYoffset + 2},
+			{AircraftPos.x - deciBrgSize    , brgYoffset + 2},
+			{AircraftPos.x                  , brgYoffset + 7},
+			{AircraftPos.x + deciBrgSize    , brgYoffset + 2},
+			{AircraftPos.x + halfBrgSize + 5, brgYoffset + 2},
+			{AircraftPos.x + halfBrgSize + 5, brgYoffset - 5}
+	};
+
+	Surface.Polyline(hdgPointer,7);
+	Surface.SelectObject(OverlayPen);
+	Surface.Polyline(hdgPointer,7);
 
 	// Calculate the angle covered by the compass on each side
 	const int rightArc = ScreenLandscape ? 60 : (ScreenSize == ss272x480 || ScreenSize == ss480x800 ? 25 : 30) ;
 	const int leftArc = (int)AngleLimit360(-rightArc);
 
-	// Draw black part of the compass arc
-	Surface.SelectObject(LKPen_Black_N5);
+	OverlayPen.Create(PEN_SOLID, NIBLSCALE(2), OverColorRef);
+	OutlinePen.Create(PEN_SOLID, NIBLSCALE(5), GetOutlineColor(OverColorRef));
+
+	Surface.SelectObject(OutlinePen);
 	Surface.DrawArc(AircraftPos.x, AircraftPos.y,radius, rc, leftArc, rightArc);
 
 	// Draw the dents around the circle
@@ -123,15 +131,17 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 			{ AircraftPos.x + (int)(radius     * sinus), AircraftPos.y - (int)(radius     * cosinus) },
 			{ AircraftPos.x + (int)(tickLength * sinus), AircraftPos.y - (int)(tickLength * cosinus) }
 		};
-		Surface.SelectObject(LKPen_Black_N5);
+		Surface.SelectObject(OutlinePen);
 		Surface.Polyline(dent,2);
-		Surface.SelectObject(LKPen_White_N2);
+		Surface.SelectObject(OverlayPen);
 		Surface.Polyline(dent,2);
 	}
 
-	// Draw white part of the compass arc
-	Surface.SelectObject(LKPen_White_N2);
+	// Draw overlay part of the compass arc
+
+	const auto oldPen = Surface.SelectObject(OverlayPen);
 	Surface.DrawArc(AircraftPos.x, AircraftPos.y, radius, rc, leftArc, rightArc);
+	Surface.SelectObject(oldPen);
 
 	// Draw rate of turn indication on the compass
 	if (DerivedDrawInfo.TurnRate != 0) {

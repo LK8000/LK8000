@@ -27,6 +27,8 @@ Copyright_License {
 #include "Java/Class.hxx"
 #include "Java/String.hxx"
 
+#include <android/api-level.h>
+
 namespace NativeLeScanCallback {
   static Java::TrivialClass cls;
   static jmethodID ctor;
@@ -55,7 +57,8 @@ Java_org_LK8000_NativeLeScanCallback_onLeScan(JNIEnv *env, jobject obj,
 void
 NativeLeScanCallback::Initialise(JNIEnv *env)
 {
-  if (android_api_level < 18 ||
+
+  if (android_get_device_api_level()  < __ANDROID_API_J_MR2__ ||
       !cls.FindOptional(env, "org/LK8000/NativeLeScanCallback"))
     /* Bluetooth LE not supported on this Android version */
     return;

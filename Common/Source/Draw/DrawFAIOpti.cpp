@@ -817,10 +817,10 @@ void MapWindow::DrawXC(LKSurface &Surface, const RECT &rc, const ScreenProjectio
   std::vector<ScreenPoint> triangle_polyline;
 
   for ( unsigned int i = 1 ; i< iSize-1 ; i++ ) {
-    const ScreenPoint Pos = ToScreen(points[i].Latitude(), points[i].Longitude());
+    const ScreenPoint Pos = ToScreen(points[i]);
     triangle_polyline.push_back(Pos);
   }
-  const ScreenPoint Pos = ToScreen(points[1].Latitude(), points[1].Longitude());
+  const ScreenPoint Pos = ToScreen(points[1]);
   triangle_polyline.push_back(Pos);
 
   double nextXCRadius = 0;   // the next circle radius to get a better XC scoring coefficient. 0 if we can not increase the scoring coefficient.

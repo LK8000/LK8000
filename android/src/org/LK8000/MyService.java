@@ -22,16 +22,19 @@
 
 package org.LK8000;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
-import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
+
+import androidx.core.app.NotificationCompat;
 
 /**
  * All this Service implementation does is put itself in foreground.
@@ -50,19 +53,6 @@ import android.support.v4.app.NotificationCompat;
 public class MyService extends Service {
   private static final String TAG = "LK8000";
 
-  /**
-   * Hack: this is set by onCreate(), to support the "testing"
-   * package.
-   */
-  protected static Class<?> mainActivityClass;
-
-  @Override public void onCreate() {
-    if (mainActivityClass == null)
-      mainActivityClass = LK8000.class;
-
-    super.onCreate();
-  }
-
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
 
     /* add an icon to the notification area while LK8000 runs, to
@@ -70,11 +60,11 @@ public class MyService extends Service {
 
     final String CHANNEL_ID = getApplicationContext().getPackageName() + "_NotificationChannel";
 
-    NotificationManager manager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      NotificationManager manager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
       // Support for Android Oreo: Notification Channels
       NotificationChannel channel = manager.getNotificationChannel(CHANNEL_ID);
-      if(channel == null) {
+      if (channel == null) {
         channel = new NotificationChannel(
                 CHANNEL_ID,
                 "LK8000",
@@ -84,22 +74,27 @@ public class MyService extends Service {
       }
     }
 
-    Intent intent2 = new Intent(this, mainActivityClass);
+    Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), getApplicationInfo().icon);
+
+    Intent notificationIntent = new Intent(this, LK8000.class);
     PendingIntent contentIntent =
-      PendingIntent.getActivity(this, 0, intent2, 0);
+            PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-    NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID);
-    notification.setSmallIcon(R.drawable.notification_icon);
-    notification.setLargeIcon(BitmapFactory.decodeResource( getResources(), getApplicationInfo().icon));
-    notification.setContentTitle("LK8000 is running");
-    notification.setContentText("Touch to open");
-    notification.setContentIntent(contentIntent);
-    notification.setWhen(System.currentTimeMillis());
-    notification.setShowWhen(false);
-    notification.setOngoing(true);
-    notification.setOnlyAlertOnce(true);
+    Notification notification =
+            new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentIntent(contentIntent)
+                    .setSmallIcon(R.drawable.notification_icon)
+                    .setLargeIcon(largeIcon)
+                    .setContentTitle("LK8000 is running")
+                    .setContentText("Touch to open")
+                    .setWhen(System.currentTimeMillis())
+                    .setShowWhen(false)
+                    .setOngoing(true)
+                    .setOnlyAlertOnce(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .build();
 
-    startForeground(1, notification.build());
+    startForeground(1, notification);
 
     /* We want this service to continue running until it is explicitly
        stopped, so return sticky */

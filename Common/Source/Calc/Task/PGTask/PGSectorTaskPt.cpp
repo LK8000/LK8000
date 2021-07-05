@@ -11,14 +11,11 @@
 
 #include "PGSectorTaskPt.h"
 
-PGSectorTaskPt::PGSectorTaskPt() {
-}
-
-PGSectorTaskPt::~PGSectorTaskPt() {
-}
+PGSectorTaskPt::PGSectorTaskPt(ProjPt&& point)
+    : PGTaskPt(std::forward<ProjPt>(point)) { }
 
 void PGSectorTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     m_Optimized = m_Center;
-    
+   
     //TODO : optimize Sector Turn Point
 }

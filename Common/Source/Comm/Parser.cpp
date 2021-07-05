@@ -26,8 +26,14 @@ extern double MixedFormatToDegrees(double mixed);
 extern int NAVWarn(TCHAR c);
 
 extern double trackbearingminspeed; // minimal speed to use gps bearing, init by UpdateMonitor
-void CheckBackTarget(int flarmslot);
 
+GeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
+  LockFlightData();
+  AtScopeExit() {
+    UnlockFlightData(); // to unlock after return...
+  };
+  return { GPS_INFO.Latitude, GPS_INFO.Longitude };
+}
 
 unsigned LastRMZHB=0;	 // common to both devA and devB.
 int NMEAParser::StartDay = -1;
@@ -362,26 +368,7 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
 
 BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-
-  #if LOGFRECORD
-  int iSatelliteCount =0;
-
-  if (!activeGPS) return TRUE;
-
-  // satellites are in items 4-15 of GSA string (4-15 is 1-indexed)
-  // but 1st item in string is not passed, so start at item 3
-  for (int i = 0; i < MAXSATELLITES; i++)
-  {
-    if (3+i < (int) nparams) {
-      pGPS->SatelliteIDs[i] = (int)(StrToDouble(params[2+i], NULL)); // 2 because params is 0-index
-      if (pGPS->SatelliteIDs[i] > 0)
-	iSatelliteCount ++;
-    }
-  }
   return TRUE;
-  #else
-  return TRUE;
-  #endif
 }
 
 // we need to parse GLL as well because it can mark the start of a new quantum data
@@ -432,29 +419,7 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
-  (void)pGPS;
-  (void)String;
-  (void)params;
-  (void)nparams;
-  /* we calculate all this stuff now 
-  TCHAR ctemp[MAX_NMEA_LEN];
-
-  pGPS->NAVWarning = NAVWarn(params[0][0]);
-
-  pGPS->CrossTrackError = NAUTICALMILESTOMETRES * StrToDouble(params[1], NULL);
-  pGPS->CrossTrackError = LeftOrRight(pGPS->CrossTrackError,params[2][0]);
-
-  _tcscpy(ctemp, params[4]);
-  ctemp[WAY_POINT_ID_SIZE] = '\0';
-  _tcscpy(pGPS->WaypointID,ctemp);
-
-  pGPS->WaypointDistance = NAUTICALMILESTOMETRES * StrToDouble(params[9], NULL);
-  pGPS->WaypointBearing = StrToDouble(params[10], NULL);
-  pGPS->WaypointSpeed = KNOTSTOMETRESSECONDS * StrToDouble(params[11], NULL);
-  */
-
   return TRUE;
-
 } // END RMB
 
 
@@ -857,8 +822,9 @@ BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   }
   
   double vias=StrToDouble(params[0],NULL)/10.0;
-  if (vias >1) {
-    pGPS->TrueAirspeed = vias*AirDensityRatio(QNHAltitudeToQNEAltitude(pGPS->Altitude));
+  if (vias > 1) {
+    double qne_altitude = QNHAltitudeToQNEAltitude(pGPS->Altitude);
+    pGPS->TrueAirspeed = TrueAirSpeed(vias, qne_altitude);
     pGPS->IndicatedAirspeed = vias;
   } else {
     pGPS->TrueAirspeed = 0;
@@ -912,20 +878,25 @@ BOOL NMEAParser::PTAS1(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **param
     // max index used is 3...
     return FALSE;
   }
-  
-  double wnet,baralt,vtas;
 
-  wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
-  baralt = (StrToDouble(params[2],NULL)-2000)/TOFEET;
-  vtas = StrToDouble(params[3],NULL)/TOKNOTS;
-  
-  pGPS->AirspeedAvailable = TRUE;
-  pGPS->TrueAirspeed = vtas;
-  UpdateVarioSource(*pGPS, d, wnet);
-  UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  QNEAltitudeToQNHAltitude(baralt));
-  pGPS->IndicatedAirspeed = vtas/AirDensityRatio(baralt);
- 
-  TASAvailable = true; // 100411 
+  if(*params[0] != _T('\0')) {
+    double wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
+    UpdateVarioSource(*pGPS, d, wnet);
+  }
+
+  if(*params[2] != _T('\0')) {
+    double qne_altitude = (StrToDouble(params[2],NULL)-2000)/TOFEET;
+    UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  QNEAltitudeToQNHAltitude(qne_altitude));
+
+    if(*params[3] != _T('\0')) {
+      double vtas = StrToDouble(params[3],NULL)/TOKNOTS;
+      pGPS->AirspeedAvailable = TRUE;
+      pGPS->TrueAirspeed = vtas;
+      pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);
+    }
+
+    TASAvailable = true; // 100411
+  }
 
   return FALSE;
 }

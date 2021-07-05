@@ -10,20 +10,16 @@
  */
 
 #include "PGConeTaskPt.h"
+#include "Draw/Task/TaskRendererMgr.h"
 
-PGConeTaskPt::PGConeTaskPt() {
-
-}
-
-PGConeTaskPt::~PGConeTaskPt() {
-
-}
+PGConeTaskPt::PGConeTaskPt(ProjPt&& point) 
+    : PGCicrcleTaskPt(std::forward<ProjPt>(point)) { }
 
 void PGConeTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
 
     m_Radius = ConeRadius(Alt, m_AltBase, m_Slope, m_RadiusBase);
     if(m_Radius > 0.0) {
-        PGCicrcleTaskPt::Optimize(prev, ProjPt::null, Alt);
+        PGCicrcleTaskPt::Optimize(prev, ProjPt(0, 0), Alt);
     }
     else {
         m_Optimized = m_Center;
@@ -34,10 +30,13 @@ double PGConeTaskPt::ConeRadius(double Alt, double AltBase, double Slope, double
     return std::max(0.0, (( Alt - AltBase ) * Slope) + RadiusBase);
 }
 
-bool PGConeTaskPt::UpdateTaskPoint(TASK_POINT& TskPt ) const {
-	if(TskPt.AATCircleRadius != m_Radius) {
-		TskPt.AATCircleRadius = m_Radius;
-		return true;
-	}
-	return false;
+void PGConeTaskPt::UpdateTaskPoint(size_t idx, TASK_POINT& TskPt ) const {
+    if(TskPt.AATCircleRadius != m_Radius) {
+        TskPt.AATCircleRadius = m_Radius;
+        
+        const WAYPOINT& TaskWpt = WayPointList[TskPt.Index];
+        const GeoPoint center(TaskWpt.Latitude, TaskWpt.Longitude);
+
+        gTaskSectorRenderer.SetCircle(idx, center, TskPt.AATCircleRadius);
+    }
 }

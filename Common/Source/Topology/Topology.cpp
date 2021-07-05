@@ -23,7 +23,9 @@
 #include "NavFunctions.h"
 #include "ScreenGeometry.h"
 #include "utils/stringext.h"
+#include "Util/UTF8.hpp"
 #include <functional>
+#include "Utils.h"
 
 #ifdef ENABLE_OPENGL
 #include "OpenGL/GLShapeRenderer.h"
@@ -146,7 +148,7 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 
 }
 
-Topology::Topology(const TCHAR* shpname) {
+Topology::Topology(const TCHAR* shpname, int field1) {
   memset((void*)&shpfile, 0 ,sizeof(shpfile));
   shapefileopen = false;
   triggerUpdateCache = false;
@@ -160,104 +162,138 @@ Topology::Topology(const TCHAR* shpname) {
 
   in_scale = false;
 
+  field = field1;
+  csLabel = XShapeLabel::unknown;
+
   // filename aleady points to _MAPS subdirectory!
-  TCHAR2utf(shpname, filename, array_size(filename));
+  to_utf8(shpname, filename);
 
   Open();
 }
 
+bool Topology::initCache_0() {
+  cache_mode = 0;
 
-void Topology::initCache()
-{
+#ifdef DEBUG_TFC
+  StartupStore(_T("Topology cache using mode 0%s"), NEWLINE);
+#endif  
+  return true;
+}
+
+// Using bounds array in memory
+
+bool Topology::initCache_1() {
+  cache_mode = 1;
+
+#ifdef DEBUG_TFC
+  StartupStore(_T(". Topology cache using mode 1%s"), NEWLINE);
+#endif
+  
+  shpBounds = (rectObj*) malloc(sizeof (rectObj) * shpfile.numshapes);
+  if (shpBounds == NULL) {
+    //Fallback to mode 0
+    StartupStore(_T("------ WARN Topology,  malloc failed shpBounds, fallback to mode0%s"), NEWLINE);
+    return initCache_0();
+  }
+  // Get bounds for each shape from shapefile
+  rectObj *prect;
+  int retval;
+  for (int i = 0; i < shpfile.numshapes; i++) {
+    prect = &shpBounds[i];
+    retval = msSHPReadBounds(shpfile.hSHP, i, prect);
+    if (retval) {
+      StartupStore(_T("------ WARN Topology, shape bounds reading failed, fallback to mode0%s"), NEWLINE);
+      // Cleanup
+      free(shpBounds);
+      shpBounds = NULL;
+      return initCache_0();
+    }
+  }//for  
+  return true;
+}
+
+#ifdef USE_TOPOLOGY_CACHE_LEVEL2
+
+// Using shape array in memory
+bool Topology::initCache_2() {
+  cache_mode = 2;
+
+#ifdef DEBUG_TFC
+  StartupStore(_T(". Topology cache using mode 2%s"), NEWLINE);
+#endif
+  
+  shpBounds = nullptr;
+  shps = (XShape**) malloc(sizeof (XShape*) * shpfile.numshapes);
+  if (!shps) {
+    //Fallback to mode 0
+    StartupStore(_T("------ WARN Topology,  malloc failed shps, fallback to mode 0"));
+    return initCache_0();
+  }
+  // Load all shapes to shps
+  for (int i = 0; i < shpfile.numshapes; i++) {
+    if (!(shps[i] = addShape(i))) {
+      StartupStore(_T("------ WARN Topology,  addShape failed for shps[%d], fallback to mode 1"), i);
+      // Cleanup
+      while (--i) {
+        delete(shps[i]);
+      }
+      free(shps);
+      shps = nullptr;
+      return initCache_1();
+    }
+  }
+  return true;
+}
+#endif
+
+
+void Topology::initCache() {
   //Selecting caching scenarios based on available memory and topo size
   // Unfortunatelly I don't find a suitable algorithm to estimate the loaded
   // shapefile's memory footprint so we never choose mode2. KR
-  // v5 note by Paolo: mode2 had a critical bug in delete, so good we did not use it
+
   size_t free_size = CheckFreeRam();
-  size_t bounds_size = sizeof(rectObj)*shpfile.numshapes;
+  size_t bounds_size = sizeof(rectObj) * shpfile.numshapes;
 
   //Cache mode selection based on available memory
   cache_mode = 0;
-  free_size -= 10000*1024;		// Safe: if we don't have enough memory we use mode0
-  if (free_size>bounds_size) cache_mode = 1;
 
-  // TESTING ONLY, mode override
-  //cache_mode = 2;
+  free_size -= 10 * 1024 * 1024;  // Safe: if we more than have 10MB of free memory can try mode 1
+  if (free_size > bounds_size) {
+    cache_mode = 1;
+  }
+
+#ifdef USE_TOPOLOGY_CACHE_LEVEL2
+  bounds_size = sizeof(rectObj) + sizeof(XShapeLabel) * shpfile.numshapes;
+  free_size -= 40 * 1024 * 1024; // Safe: if we more than have 50MB of free memory we can try mode 2
+  if (free_size > bounds_size) {
+    cache_mode = 2;
+  }
+#endif
 
   shpBounds = NULL;
   shps = NULL;
   in_scale_last = false;
 
-  for (int i=0; i<shpfile.numshapes; i++) shpCache[i] = NULL;
+  for (int i = 0; i < shpfile.numshapes; i++) {
+    shpCache[i] = NULL;
+  }
 
   //StartupStore(_T("... Topology InitCache mode: %d  (free_size=%ld  bounds_size=%ld)\n"),cache_mode,free_size,bounds_size);
 
   switch (cache_mode) {
-	default:
-	case 0:
-		// Original
-		#ifdef DEBUG_TFC
-		StartupStore(_T("Topology cache using mode 0%s"), NEWLINE);
-		#endif
-		break;
-
-	case 1:
-		// Using bounds array in memory
-		#ifdef DEBUG_TFC
-		StartupStore(_T(". Topology cache using mode 1%s"), NEWLINE);
-		#endif
-		shpBounds = (rectObj*)malloc(sizeof(rectObj)*shpfile.numshapes);
-		if (shpBounds == NULL) {
-			//Fallback to mode 0
-			StartupStore(_T("------ WARN Topology,  malloc failed shpBounds, fallback to mode0%s"), NEWLINE);
-			cache_mode = 0;
-			break;
-		}
-		// Get bounds for each shape from shapefile
-		rectObj *prect;
-		int retval;
-		for (int i=0; i<shpfile.numshapes; i++) {
-			prect = &shpBounds[i];
-			retval = msSHPReadBounds(shpfile.hSHP, i, prect);
-			if (retval) {
-				StartupStore(_T("------ WARN Topology, shape bounds reading failed, fallback to mode0%s"), NEWLINE);
-				// Cleanup
-				free(shpBounds);
-				shpBounds=NULL;
-				cache_mode = 0;
-				break;
-			}
-		}//for
-		break;
-
-#if 0 // buggy
-	case 2:
-		// Using shape array in memory
-		#ifdef DEBUG_TFC
-		StartupStore(_T(". Topology cache using mode 2%s"), NEWLINE);
-		#endif
-		shpBounds = NULL;
-		shps = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
-		if (shps == NULL) {
-			//Fallback to mode 0
-			StartupStore(_T("------ WARN Topology,  malloc failed shps, fallback to mode0%s"), NEWLINE);
-			cache_mode = 0;
-			break;
-		}
-		// Load all shapes to shps
-		for (int i=0; i<shpfile.numshapes; i++) {
-			if ( (shps[i] = addShape(i)) == NULL ) {
-				StartupStore(_T("------ WARN Topology,  addShape failed for shps[%d], fallback to mode0%s"), i, NEWLINE);
-				// Cleanup
-				for (int j=0; j<i; j++) delete(shps[i]); // BUG, should be using j not i
-				free(shps);
-				shps=NULL;
-				cache_mode = 0;
-				break;
-			}
-		}
+    default:
+    case 0:
+      initCache_0();
+      break;
+    case 1:
+      initCache_1();
+      break;
+#ifdef USE_TOPOLOGY_CACHE_LEVEL2
+    case 2:
+      initCache_2();
+      break;
 #endif
-
   } //sw
 }
 
@@ -276,7 +312,7 @@ void Topology::Open() {
     initCache();
     shapefileopen = true;
   } else {
-	StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
+    StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
   }
 }
 
@@ -291,9 +327,9 @@ void Topology::Close() {
       free(shpBounds); shpBounds = NULL;
     }
     if (shps) {
-	  for (int i=0; i<shpfile.numshapes; i++) {
-		if (shps[i]) delete shps[i];
-	  }
+      for (int i=0; i<shpfile.numshapes; i++) {
+        delete shps[i];
+      }
       free(shps); shps = NULL;
     }
     msShapefileClose(&shpfile);
@@ -484,10 +520,20 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 
 XShape* Topology::addShape(const int i) {
-  XShape* theshape = new XShape();
-  LKASSERT(theshape);
-  theshape->load(&shpfile,i);
-  return theshape;
+  if(field < 0) {
+    XShape* theshape = new(std::nothrow) XShape();
+    if(theshape) {
+      theshape->load(&shpfile,i);
+    }
+    return theshape;
+  } else {  
+    XShapeLabel* theshape = new(std::nothrow) XShapeLabel();
+    if(theshape) {
+      theshape->load(&shpfile,i);
+      theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field), csLabel);
+    }
+    return theshape;
+  }
 }
 
 
@@ -495,7 +541,7 @@ XShape* Topology::addShape(const int i) {
 void Topology::removeShape(const int i) {
   if (shpCache[i]) {
     delete shpCache[i];
-    shpCache[i]= NULL;
+    shpCache[i]= nullptr;
   }
 }
 
@@ -627,30 +673,21 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 
       case(MS_SHAPE_POINT):{
 
-        bool dobitmap=false;
-        if (scaleCategory<90 || (MapWindow::zoom.RealScale()<2)) dobitmap=true;
-        // first a latlon overlap check, only approximated because of fastcosine in latlon2screen
         if (checkVisible(*shape, screenRect))
           for (int tt = 0; tt < shape->numlines; tt++) {
             const lineObj &line = shape->line[tt];
-			for (int jj=0; jj< line.numpoints; jj++) {
+            for (int jj=0; jj< line.numpoints; jj++) {
                 const pointObj &point = line.point[jj];
                 if(msPointInRect(&point, &screenRect)) {
                     const POINT sc = _Proj.ToRasterPoint(point.y, point.x);
-                    if (dobitmap) {
-                        // bugfix 101212 missing case for scaleCategory 0 (markers)
-                        if (scaleCategory == 0 ||
-                            cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
-                            MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
-                        }
-                    } else {
-                        cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc);
+                    if (cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
+                        MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
                     }
                 }
-			}
-		}
-	  }
-	  break;
+            }
+          }
+        }
+      break;
 
     case(MS_SHAPE_LINE):
 
@@ -690,29 +727,6 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   }
   Surface.SelectObject(hpOld);
   Surface.SelectObject(hfOld);
-}
-
-TopologyLabel::TopologyLabel(const TCHAR* shpname, int field1):Topology(shpname),bUTF8()
-{
-  setField(max(0,field1));
-};
-
-TopologyLabel::~TopologyLabel()
-{
-}
-
-
-void TopologyLabel::setField(int i) {
-  field = i;
-}
-
-XShape* TopologyLabel::addShape(const int i) {
-
-  XShapeLabel* theshape = new XShapeLabel();
-  LKASSERT(theshape);
-  theshape->load(&shpfile,i);
-  theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field),bUTF8);
-  return theshape;
 }
 
 bool XShapeLabel::nearestItem(int category, double lon, double lat) {
@@ -775,44 +789,39 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 
 // Print topology labels
 bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const {
-  if (label && ((GetMultimap_Labels()==MAPLABELS_ALLON)||(GetMultimap_Labels()==MAPLABELS_ONLYTOPO))) {
-
-    //Do not waste time with null labels
-    int size = _tcslen(label);
-    if(size <= 0) {
+    if (!label || !label[0]) {
         return false;
     }
 
-	SIZE tsize;
-	RECT brect;
-	Surface.GetTextSize(label, &tsize);
+    if ( (GetMultimap_Labels() != MAPLABELS_ALLON) && (GetMultimap_Labels() != MAPLABELS_ONLYTOPO) ) {
+        return false;
+    }
 
-	// shift label from center point of shape
-	x+= NIBLSCALE(2);
-	y+= NIBLSCALE(2);
-	brect.left = x-NIBLSCALE(3);
-	brect.right = brect.left+tsize.cx+NIBLSCALE(3);
-	brect.top = y-NIBLSCALE(3);
-	brect.bottom = brect.top+tsize.cy+NIBLSCALE(3);
+    // shift label from center point of shape
+    x += NIBLSCALE(2);
+    y += NIBLSCALE(2);
 
-	if ( DeclutterMode != (DeclutterMode_t)dmDisabled ) {
-		if (!MapWindow::checkLabelBlock(&brect)) return false;
-	}
+    if( x > ClipRect.right || y > ClipRect.bottom) {
+        return false;
+    }
 
-	// Do not print outside boundaries of Draw area
-	if (brect.bottom>=ClipRect.bottom ||
-		brect.top<=ClipRect.top ||
-		brect.left<=ClipRect.left ||
-		brect.right>=ClipRect.right) return false;
+    PixelSize tsize;
+    Surface.GetTextSize(label, &tsize);
 
-    renderer.Add({x, y}, label);
-	return true; // 101016
-  }
-  return false; // 101016
+    const PixelRect brect = {
+        { x - NIBLSCALE(3), y - NIBLSCALE(3) },
+        { tsize.cx + NIBLSCALE(3), tsize.cy + NIBLSCALE(3) }
+    };
+
+    if (MapWindow::checkLabelBlock(brect, ClipRect)) {
+        renderer.Add({x, y}, label);
+        return true; // 101016
+    }
+    return false; // 101016
 }
 
 
-void XShapeLabel::setlabel(const char* src, bool bUTF8) {
+void XShapeLabel::setlabel(const char* src, charset& csLabel) {
   // Case1 : NULL or not informative label, we show the shape without label
   if (
       (src == NULL) ||
@@ -848,15 +857,16 @@ void XShapeLabel::setlabel(const char* src, bool bUTF8) {
 
 #ifdef UNICODE
 
-    if ( bUTF8 ) {
+    if ( (csLabel != latin1 || csLabel == utf8) && ValidateUTF8(src) ) {
       // from utf-8 to UNICODE
       size_t size = strlen(src) + 1;
       if(size) {
         label = (TCHAR*) malloc(size * sizeof (TCHAR));
-        utf2TCHAR(src, label, size);
+        from_utf8(src, label, size);
       }
     }
     else {
+      csLabel = latin1;
       // from Latin1 (ANSI) To UNICODE
       int nChars = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
       if (nChars) {
@@ -871,11 +881,12 @@ void XShapeLabel::setlabel(const char* src, bool bUTF8) {
 #else
 
 
-    if ( bUTF8 ) {
+    if ( (csLabel != latin1 || csLabel == utf8) && ValidateUTF8(src) ) {
       // do simple copy 
       label = strdup(src);
     }
     else {
+      csLabel = latin1;
       std::string utf8String;
 
       Poco::Latin1Encoding Latin1Encoding;
@@ -910,8 +921,6 @@ void XShapeLabel::clear() {
     label= NULL;
   }
 }
-
-// //////////////////////////////////////////////////////////////
 
 void Topology::SearchNearest(const rectObj& bounds) {
 
@@ -955,19 +964,7 @@ void Topology::SearchNearest(const rectObj& bounds) {
 	   case(MS_SHAPE_LINE):
 /*
 			for (int tt = 0; tt < shape->numlines; tt ++) {
-
-				int minx = rc.right;
-				int miny = rc.bottom;
-				int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
-
-				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize, 1);
-				for (int jj=0; jj< msize; jj++) {
-					if (pt[jj].x<=minx) {
-						minx = pt[jj].x;
-						miny = pt[jj].y;
-					}
-				}
-
+				//  right implementation is in #msDistancePointToShape, but this don't use great circle ditance.
 				cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y);
 			}
 */

@@ -38,7 +38,8 @@
 */
 
 
-
+#ifndef _magfield_h_
+#define _magfield_h_
 
 /* Convert date to Julian day    1950-2049 */
 unsigned long int yymmdd_to_julian_days( int yy, int mm, int dd );
@@ -58,3 +59,7 @@ N and E lat and long are positive, S and W negative
 double SGMagVar( double lat, double lon, double h, long dat );
 
 
+/* return Magenetic vartion of current position in degree */
+double CalculateMagneticVariation();
+
+#endif // _magfield_h_

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
+  <WndForm Type="Dialog" X="0" Y="0" Width="320" Height="240" Font="2" >
+    <WndFrame X="20" Y="0" Width="91" Height="22" Font="2" Caption="_@M287_" />
+
+    <WndButton Name="cmdName" Caption="*" X="2" Y="17" Width="93"  Height="22" Font="2" OnClickNotify="OnFilterName" />
+
+    <WndProperty Name="prpFltDistance"  Caption="_@M245_"  X="2" Y="-1"  Width="93" Height="38" CaptionWidth="0" Font="2" >
+      <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnFilterDistance"/>
+    </WndProperty>
+
+    <WndProperty Name="prpFltDirection" Caption="_@M238_" X="2" Y="-1"  Width="93" Height="38" CaptionWidth="0" Font="2" >
+      <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnFilterDirection"/>
+    </WndProperty>
+
+    <WndProperty Name="prpFltType" Caption="_@M752_" X="2" Y="-1"  Width="93" Height="38" CaptionWidth="0" Font="2" >
+      <DataField Name="" DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnFilterType"/>
+    </WndProperty>
+
+    <WndButton Name="cmdSelect" Caption="_@M595_" X="2" Y="160" Width="93"  Height="28" Font="2" Tag="3" OnClickNotify="OnSelectClicked" />
+    <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="192" Width="93"  Height="28" Font="2" Tag="3" OnClickNotify="OnCloseClicked" />
+
+    <WndListFrame Name="frmList" X="97" Y="1" Width="-2" Height="-1" Font="2" OnListInfo="OnWpListInfo">
+      <WndOwnerDrawFrame Name="frmListEntry" X="2" Y="2" Width="-2" Height="24" Font="2"  OnPaint="OnPaintListItem"/>
+    </WndListFrame>
+  </WndForm>
+</PMML>

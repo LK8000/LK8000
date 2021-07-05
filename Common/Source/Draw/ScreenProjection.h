@@ -19,36 +19,27 @@
 class ScreenProjection final {
 public:
     ScreenProjection();
-    ~ScreenProjection();
-    
+
     inline
     RasterPoint ToRasterPoint(double lat, double lon) const {
-        const int64_t Y = _lround((_PanLat - lat) * _Zoom);
-        const int64_t X = _lround((_PanLon - lon) * fastcosine(lat) * _Zoom);
-
-        assert( static_cast<double>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024) > std::numeric_limits<RasterPoint::scalar_type>::min());
-        assert( static_cast<double>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024) < std::numeric_limits<RasterPoint::scalar_type>::max());
-        
-        assert( static_cast<double>(_Origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024) > std::numeric_limits<RasterPoint::scalar_type>::min());
-        assert( static_cast<double>(_Origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024) < std::numeric_limits<RasterPoint::scalar_type>::max());
-
-        return RasterPoint{
-            static_cast<RasterPoint::scalar_type>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024),
-            static_cast<RasterPoint::scalar_type>(_Origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024)
-        };        
+        return ToScreen<RasterPoint>({lat, lon});
     }
-    
-    inline 
-    FloatPoint ToFloatPoint(double lat, double lon) const {
-        typedef FloatPoint::scalar_type scalar_type;
 
-        const scalar_type Y = (_PanLat - lat) * _Zoom;
-        const scalar_type X = (_PanLon - lon) * fastcosine(lat) * _Zoom;
+    template <typename ScreenPoint>
+    ScreenPoint ToScreen(const GeoPoint& pt) const {
+        using scalar_type = decltype(ScreenPoint::x);
 
-        return FloatPoint{
-            static_cast<scalar_type>(_Origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024),
-            static_cast<scalar_type>(_Origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024)
-        };        
+        assert(!Overflow<scalar_type>(pt)); // undefined result
+
+        const GeoPoint diff = (geo_origin - pt) * _Zoom;
+
+        const auto Y = to_scalar<scalar_type>(diff.latitude);
+        const auto X = to_scalar<scalar_type>(diff.longitude * fastcosine(pt.latitude));
+
+        return ScreenPoint{
+            static_cast<scalar_type>(screen_origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024),
+            static_cast<scalar_type>(screen_origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024)
+        };
     }
 
     inline
@@ -64,59 +55,90 @@ public:
 
 protected:
     double GetPixelSize() const;
-    
-protected:
-    double _PanLat;
-    double _PanLon;
+
+    /* geographic center of projection
+     * usually aircraft position in wgs84 geographic coordinate
+     */
+    GeoPoint geo_origin;  
+
+    /*
+     * position of geographic projection center on screen. 
+     */
+    RasterPoint screen_origin;
+
     double _Zoom;
     double _Angle;
-    RasterPoint _Origin;
+
     short _CosAngle;
     short _SinAngle;
+
+private:
+
+    template<typename scalar_type>
+    using integral_t = std::enable_if_t<std::is_integral_v<scalar_type>, scalar_type>;
+
+    template<typename scalar_type>
+    using floating_point_t = std::enable_if_t<std::is_floating_point_v<scalar_type>, scalar_type>;
+
+    // helper to convert double to scalar type
+    template<typename scalar_type>
+    static floating_point_t<scalar_type> to_scalar(double value) {
+        return value;
+    }
+
+    template<typename scalar_type>
+    static integral_t<scalar_type> to_scalar(double value) {
+        return lround(value);
+    }
+
+    /**
+     * @return true if geo to screen projection overflow the screen point coordinate type
+     *   that can happen with OpenGL ES renderer because screen coordinate is stored in int16_t
+     *   to avoid that, object outside screen bounding box must be clipped/filtered in
+     *   geographic coordinate before, ( or must be draw using FloatPoint instead of RasterPoint)
+     *
+     * this is specialization for integral type only.
+     */
+    template<typename scalar_type, integral_t<scalar_type>* = nullptr>
+    bool Overflow(const GeoPoint& pt) const {
+        using numeric_limits = std::numeric_limits<scalar_type>;
+        FloatPoint screen_point = ToScreen<FloatPoint>(pt);
+        return (screen_point.x < numeric_limits::min()
+             || screen_point.x > numeric_limits::max()
+             || screen_point.y < numeric_limits::min()
+             || screen_point.y > numeric_limits::max());
+    }
+
+    /*
+     * this is specialization for floating point type to avoid recursive call.
+     */
+    template<typename scalar_type, floating_point_t<scalar_type>* = nullptr>
+    bool Overflow(const GeoPoint& pt) const {
+        return false;
+    }
 };
 
-
-template<typename T>
+template<typename ScreenPoint>
 struct GeoToScreen final {
     GeoToScreen(const ScreenProjection& Proj) : _Proj(Proj) {}
 
     GeoToScreen(const GeoToScreen&) = delete;
     GeoToScreen(GeoToScreen&&) = delete;
 
-    template<typename U = T>
-    typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
-    operator()(double lat, double lon) const {
-        return _Proj.ToRasterPoint(lat, lon);
+    ScreenPoint operator()(double lat, double lon) const {
+        return _Proj.ToScreen<ScreenPoint>({lat, lon});
     }
 
-    template<typename U = T>
-    typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
-    operator()(double lat, double lon) const {
-        return _Proj.ToFloatPoint(lat, lon);
-    }
-		
-    template<typename U = T>
-    typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
-    operator()(const pointObj& pt) const {
-        return _Proj.ToRasterPoint(pt.y, pt.x);
+    ScreenPoint operator()(const pointObj& pt) const {
+        return _Proj.ToScreen<ScreenPoint>({pt.y, pt.x});
     }
 
-    template<typename U = T>
-    typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
-    operator()(const pointObj& pt) const {
-        return _Proj.ToFloatPoint(pt.y, pt.x);
+    ScreenPoint operator()(const GeoPoint& pt) const {
+        return _Proj.ToScreen<ScreenPoint>(pt);
     }
 
-    template<typename U = T>
-    typename std::enable_if<std::is_same<U, RasterPoint>::value, T>::type
-    operator()(const GeoPoint& pt) const {
-        return _Proj.ToRasterPoint(pt.latitude, pt.longitude);
-    }
-
-    template<typename U = T>
-    typename std::enable_if<std::is_same<U, FloatPoint>::value, T>::type
-    operator()(const GeoPoint& pt) const {
-        return _Proj.ToFloatPoint(pt.latitude, pt.longitude);
+    ScreenPoint operator()(const CPoint2D& pt) const {
+        return _Proj.ToScreen<ScreenPoint>({pt.Latitude(), pt.Longitude()});
     }
 
     const ScreenProjection& _Proj;

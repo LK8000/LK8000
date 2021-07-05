@@ -128,13 +128,13 @@ Draw(Canvas &canvas)
   
   const double Scale = (double)rc.GetSize().cx / (double)bird_size.cx;
   
-  RasterPoint polygon[array_size(bird_polygon)] = {};
+  RasterPoint polygon[std::size(bird_polygon)] = {};
   std::transform(std::begin(bird_polygon), std::end(bird_polygon), std::begin(polygon), [Scale, rc, text2_size, text2_pos]( const RasterPoint& pt ) {
       return RasterPoint(pt.x*Scale + rc.left, pt.y*Scale + text2_pos.y + text2_size.cy);
   });
   
   canvas.SelectBlackBrush();
-  canvas.DrawPolygon(polygon, array_size(polygon));
+  canvas.DrawPolygon(polygon, std::size(polygon));
 }
 
 int main(int argc, char** argv) {

@@ -34,7 +34,7 @@ typedef enum {
   _POLAR  ,
   _DIRECT ,
   _T_TRGT ,
-
+  _QNH    ,
   _LAST
 } ValueStringIndex;
 

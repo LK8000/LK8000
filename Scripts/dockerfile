@@ -1,18 +1,16 @@
-FROM debian:stable-slim
+FROM debian:buster-slim
 
 # Install common prerequisites
 RUN apt-get update && \
         apt-get install -y --no-install-recommends \
                 sudo wget ca-certificates bash-completion \
                 git-core openssh-client pkg-config build-essential \
-                xsltproc imagemagick ttf-dejavu fakeroot zip \
+                xsltproc imagemagick ttf-dejavu fakeroot zip python \
                 libzzip-dev libboost-dev libfreetype6-dev libpng-dev libgeographic-dev \
                 libgl1-mesa-dev libegl1-mesa-dev libx11-dev \
                 libsdl2-dev libsdl2-mixer-dev \
                 libasound2-dev libsndfile1-dev \
-                mingw-w64 \
-                python \
-                texinfo bison flex libmpc-dev libmpfr-dev libgmp-dev && \
+                mingw-w64 libfl2 && \
         apt-get clean && \
         rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* /var/log/*
 
@@ -24,12 +22,12 @@ RUN ./install-mingw-w64-depends.sh && \
 
 # Install KOBO toolchain
 WORKDIR /tmp/kobo
-RUN wget http://max.kellermann.name/download/xcsoar/devel/x-tools/x-tools-arm-amd64-2013-12-11.tar.xz && \
-        tar -xJf x-tools-arm-amd64-2013-12-11.tar.xz && \
-        mv x-tools/arm-unknown-linux-gnueabi /opt/arm-unknown-linux-gnueabi && \
+RUN wget http://lk8000.it/toolchain/arm-kobo-linux-gnueabihf-8.3.buster.x86_64.tar.xz && \
+        tar -xJf arm-kobo-linux-gnueabihf-8.3.buster.x86_64.tar.xz && \
+        mv arm-kobo-linux-gnueabihf /opt/arm-kobo-linux-gnueabihf && \
         rm -rf /tmp/kobo
 
-ENV PATH=$PATH:/opt/arm-unknown-linux-gnueabi/bin
+ENV PATH=$PATH:/opt/arm-kobo-linux-gnueabihf/bin
 
 #build KOBO library dependencies
 ADD install-kobo-depends.sh /tmp/kobo/install-kobo-depends.sh
@@ -39,14 +37,12 @@ RUN BUILD_DIR=/tmp/kobo && \
 
 # Install WinCE toolchain
 WORKDIR /tmp/WinCE
-RUN git clone --recurse-submodules https://github.com/MaxKellermann/cegcc-build
-
-WORKDIR /tmp/WinCE/cegcc-output
-RUN /tmp/WinCE/cegcc-build/build.sh --prefix=/opt/arm-mingw32ce && \
+RUN wget http://lk8000.it/toolchain/arm-mingw32ce-9.3.0.buster.x86_64.tar.xz && \
+        tar -xJf arm-mingw32ce-9.3.0.buster.x86_64.tar.xz && \
+        mv arm-mingw32ce /opt/arm-mingw32ce && \
         rm -rf /tmp/WinCE
 
 ENV PATH=$PATH:/opt/arm-mingw32ce/bin
-
 
 # add compiler user
 RUN adduser --disabled-password --gecos '' compiler

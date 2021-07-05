@@ -11,8 +11,8 @@
 #include "Globals.h"
 #include "devAR620x.h"
 #include "device.h"
+#include "Radio.h"
 
-#ifdef RADIO_ACTIVE
 #define RoundFreq(a) ((int)((a)*1000.0+0.5)/1000.0)
 #define Freq2Idx(a)  (int)(((a)-118.0) * 3040/(137.00-118.0)+0.5)
 #define BIT(n) (1 << (n))
@@ -204,11 +204,13 @@ static int  SetAR620xStation(uint8_t *Command ,int Active_Passive, double fFrequ
   switch (Active_Passive)
   {
     case ACTIVE_STATION:
+         RadioPara.ActiveValid = false;
          ActiveFreqIdx.intVal16 = Frq2Idx(fFrequency);
          if(iAR620DebugLevel) StartupStore(_T(">AF:%u  %7.3f%s"), ActiveFreqIdx.intVal16, fFrequency, NEWLINE);
     break;
     default:
     case PASSIVE_STATION:
+        RadioPara.PassiveValid = false;
         PassiveFreqIdx.intVal16 =  Frq2Idx(fFrequency);
         if(iAR620DebugLevel) StartupStore(_T(">PF:%u  %7.3f%s"), PassiveFreqIdx.intVal16, fFrequency,NEWLINE);
     break;
@@ -251,6 +253,7 @@ int len;
         if(iAR620DebugLevel) StartupStore(_T(". AR620x Volume  %i%s"), Volume,NEWLINE);
         RadioPara.Volume = Volume;
       }
+  RadioPara.VolValid = false;
   return(TRUE);
 #else
   return false;
@@ -283,6 +286,7 @@ uint8_t len;
         RadioPara.Squelch = Squelch;
       }
 #endif
+  RadioPara.SqValid = false;
   return(TRUE);
 }
 
@@ -303,6 +307,7 @@ uint8_t  szTmp[MAX_CMD_LEN];
 
 
       }
+  RadioPara.ActiveValid = false;
   return(TRUE);
 }
 
@@ -321,6 +326,7 @@ uint8_t  szTmp[MAX_CMD_LEN];
           _sntprintf(RadioPara.PassiveName, NAME_SIZE  ,_T("%s"),StationName) ;
         if(iAR620DebugLevel) StartupStore(_T(". AR620x Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
       }
+  RadioPara.PassiveValid = false;
   return(TRUE);
 }
 
@@ -347,6 +353,8 @@ uint8_t  szTmp[MAX_CMD_LEN];
         szTmp [len++] = CRC.intVal8[0];
         SendCommand(d, szTmp,len);
       }
+  RadioPara.ActiveValid = false;
+  RadioPara.PassiveValid = false;
   return(TRUE);
 }
 
@@ -381,6 +389,7 @@ uint8_t  szTmp[MAX_CMD_LEN];
         szTmp [len++] = CRC.intVal8[0];
         SendCommand(d, szTmp,len);
       }
+  RadioPara.DualValid = false;
   return(TRUE);
 }
 
@@ -455,10 +464,9 @@ return  RadioPara.Changed;
 }
 
 
-extern int SearchStation(double Freq);
 
 /*****************************************************************************
- * this function converts a KRT answer sting to a NMEA answer
+ * this function converts a AR620x answer 
  *
  * szAnswer       NMEA Answer
  * Answerlen      number of valid characters in the NMEA answerstring
@@ -471,19 +479,11 @@ if(d == NULL) return 0;
 if(szCommand == NULL) return 0;
 if(len == 0)          return 0;
 
-static uint16_t uiLastChannelCRC =0;
-static uint16_t uiVolumeCRC      =0;
-static uint16_t uiVersionCRC     =0;
-static uint16_t uiStatusCRC      =0;
-static uint16_t uiSquelchCRC     =0;
-static uint16_t uiRxStatusCRC    =0;
-#ifdef RADIO_VOLTAGE
-static uint16_t uiVoltageCRC     =0;
+
 uint32_t ulState;
-#endif
+
 int processed=0;
 
-int Idx=0;
 LKASSERT(szCommand !=NULL);
 LKASSERT(d !=NULL);
 
@@ -491,33 +491,30 @@ LKASSERT(d !=NULL);
   switch ((unsigned char)(szCommand[3] & 0x7F))
   {
     case 0:
-      if(uiVersionCRC!= CRC)  {
-         uiVersionCRC = CRC;
-       }
+
     break;
 
     case 3:
-      if(uiVolumeCRC != CRC){
-        uiVolumeCRC = CRC;
+
         RadioPara.Changed = true;
+        RadioPara.VolValid = true;
         RadioPara.Volume = (50-(int)szCommand[4])/5;
         if(iAR620DebugLevel )  StartupStore(_T("AR620x Volume %u  %s") , RadioPara.Volume  ,NEWLINE);
-      }
+
     break;
 
     case 4:
-      if(uiSquelchCRC!= CRC){
-        uiSquelchCRC = CRC;
+
         RadioPara.Changed = true;
         RadioPara.Squelch = (int)(szCommand[4]-6)/2+1;  // 6 + (Squelch-1)*2
         if(iAR620DebugLevel )  StartupStore(_T("AR620x Squelch %u  %s") , RadioPara.Squelch  ,NEWLINE);
-      }
+
     break;
 
     case 12:
-      if(uiStatusCRC != CRC){
-        uiStatusCRC = CRC;
+
         RadioPara.Changed = true;
+        RadioPara.DualValid = true;
         sStatus.intVal8[1] = szCommand[4] ;
         sStatus.intVal8[0] = szCommand[5] ;
         if(sStatus.intVal16 & DAUL)
@@ -525,43 +522,39 @@ LKASSERT(d !=NULL);
         else
          RadioPara.Dual = false;
         if(iAR620DebugLevel )  StartupStore(_T("AR620x Dual %u  %s") , RadioPara.Dual  ,NEWLINE);
-      }
+      
     break;
 #ifdef RADIO_VOLTAGE
     case 21:
-      if(uiVoltageCRC != CRC) {
-        uiVoltageCRC = CRC;
+
         GPS_INFO.ExtBatt2_Voltage =   8.5 + szCommand[4] *0.1;
         RadioPara.Changed = true;
         if(iAR620DebugLevel  == 2)   StartupStore(_T("AR620x Supply Voltage: %4.1fV %s"),  GPS_INFO.ExtBatt2_Voltage  ,NEWLINE);
-      }
+
     break;
 #endif           
     case 22:
-      if(uiLastChannelCRC != CRC) {
-        uiLastChannelCRC = CRC;
+
         RadioPara.Changed = true;
+        RadioPara.ActiveValid = true;
         sFrequency.intVal8[1] = szCommand[4] ;
         sFrequency.intVal8[0] = szCommand[5] ;
         RadioPara.ActiveFrequency =  Idx2Freq(sFrequency.intVal16);
-        Idx = SearchStation(RadioPara.ActiveFrequency);
-        if(Idx != 0)   _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),WayPointList[Idx].Name);
-        else _sntprintf(RadioPara.PassiveName , NAME_SIZE,_T("  ???   "));
+        UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency);
+
         if(iAR620DebugLevel ) StartupStore(_T("AR620x <AF %u  %7.3f%s"), sFrequency.intVal16, RadioPara.ActiveFrequency ,NEWLINE);
 
         sFrequency.intVal8[1] = szCommand[6];
         sFrequency.intVal8[0] = szCommand[7] ;
+        RadioPara.PassiveValid = true;
         RadioPara.PassiveFrequency =  Idx2Freq(sFrequency.intVal16);
-        Idx = SearchStation(RadioPara.PassiveFrequency);
-        if(Idx != 0)  _sntprintf(RadioPara.PassiveName, NAME_SIZE ,_T("%s"),WayPointList[Idx].Name);
-        else _sntprintf(RadioPara.PassiveName , NAME_SIZE,_T("  ???   "));
+        UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency);
+
         if(iAR620DebugLevel ) StartupStore(_T("AR620x <PF: %u %7.3f%s"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
         RadioPara.Changed = true;
-      }
+      
     break;
     case 64:
-      if(uiRxStatusCRC != CRC) {
-          uiRxStatusCRC = CRC;
 
           ulState = szCommand[4] << 24 | szCommand[5] << 16 | szCommand[6] << 8 | szCommand[7];
         RadioPara.TX        = ((ulState & (BIT(5)| BIT(6))) > 0) ? true : false;
@@ -575,7 +568,7 @@ LKASSERT(d !=NULL);
         if(iAR620DebugLevel ) if(RadioPara.RX_active) StartupStore(_T("AR620x Rx Active  %s") , NEWLINE);
         if(iAR620DebugLevel ) if(RadioPara.RX_standy) StartupStore(_T("AR620x Rx Passive %s") , NEWLINE);
         if(iAR620DebugLevel ) if(RadioPara.TX)        StartupStore(_T("AR620x Tx  %s")        , NEWLINE);
-      }
+
     break;
     default:
     break;
@@ -583,4 +576,3 @@ LKASSERT(d !=NULL);
 
   return processed;  /* return the number of converted characters */
 }
-#endif  // RADIO_ACTIVE

@@ -22,7 +22,7 @@
 void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
 
     if (WayPointList.empty()) return;
-    if (!AATEnabled) return;
+    if (!UseAATTarget()) return;
 
     LockTaskData(); // protect from external task changes
 #ifdef USE_GDI

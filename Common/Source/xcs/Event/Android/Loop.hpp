@@ -39,10 +39,10 @@ class EventLoop {
   bool bulk;
 
 public:
-  EventLoop(EventQueue &_queue, TopWindow &_top_window)
-    :queue(_queue), top_window(_top_window), bulk(true) {}
-
+  EventLoop(EventQueue &_queue, TopWindow &_top_window);
   EventLoop(const EventLoop &) = delete;
+
+  ~EventLoop();
 
   bool Get(Event &event);
   void Dispatch(const Event &event);

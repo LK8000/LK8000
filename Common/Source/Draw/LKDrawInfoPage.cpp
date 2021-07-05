@@ -155,7 +155,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 		if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 			ontarget=false;
 		} else {
-			if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
+			if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <=0) {
 				ontarget=false;
 			} else {
 				ontarget=true;
@@ -271,7 +271,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				}
 				//TCHAR status[80];
 				if (_tcslen(pTarget->Name) == 1) {
-					_stprintf(Buffer,_T("%0x"),(unsigned)pTarget->ID);
+					_stprintf(Buffer,_T("%0x"),pTarget->RadioId);
 				} else {
 					_stprintf(Buffer,_T("%s"),pTarget->Name);
 				}
@@ -953,9 +953,11 @@ label_TRI:
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 #endif
-	_tcscpy(BufferTitle, MsgToken(915)); // NOT FOR IFR USAGE
+	
+	// NOT FOR IFR USAGE
 	Surface.SelectObject(LK8PanelSmallFont);
-	LKWriteText(Surface,  BufferTitle, qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
+	LKWriteText(Surface, MsgToken(915), qcolumn[8],qrow[12], WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
+
 #endif // not in LKCOMPETITION
 	goto label_End; // End of TRI
 

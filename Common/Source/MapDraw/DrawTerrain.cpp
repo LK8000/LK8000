@@ -21,7 +21,7 @@
 #include "Asset.hpp"
 #include <utility>
 #include <type_traits>
-#include "../utils/make_unique.h"
+#include <memory>
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__))
  #if !GCC_OLDER_THAN(5,0)
@@ -226,7 +226,6 @@ public:
         }
         error = false;
 
-        extern unsigned int TerrainQuantization();
         dtquant = TerrainQuantization();
         LKASSERT(dtquant>=1);
 
@@ -813,8 +812,8 @@ public:
         assert(height_buffer && height_buffer->GetBuffer() );
         assert(screen_buffer && screen_buffer->GetBuffer() );
 
-        size_t ixs = height_buffer->GetWidth();
-        size_t iys = height_buffer->GetHeight();
+        const size_t ixs = height_buffer->GetWidth();
+        const size_t iys = height_buffer->GetHeight();
 
 #if defined(_OPENMP)
         #pragma omp parallel for
@@ -856,8 +855,8 @@ public:
 
     static
     int16_t IsoBand(int16_t height, int zoom) {
-        //return (std::max<int16_t>(0, height)) >> 6; // 64m, can't be smaller to avoid uint8_t overflow.
-        return (std::max<int16_t>(0, height)) >> (7 + zoom); // 128m
+        return (std::max<int16_t>(0, height)) >> (6 + zoom); // 64m, can't be smaller to avoid uint8_t overflow.
+        // return (std::max<int16_t>(0, height)) >> (7 + zoom); // 128m
         // return (std::max<int16_t>(0, height)) >> 8; // 256m
     }
 
@@ -867,7 +866,7 @@ private:
     static
     int16x8_t IsoBand(int16x8_t height, int zoom) {
         int16x8_t h = vmaxq_s16(height, vdupq_n_s16(0));
-        return vshlq_s16(h, vdupq_n_s16(-(7U + zoom)));
+        return vshlq_s16(h, vdupq_n_s16(-(6 + zoom)));
     }
 
     template<typename T>
@@ -890,7 +889,7 @@ private:
      *  - second is for 8bit Color ( Kobo )
      */
     template<typename Color_t>
-    typename std::enable_if<(sizeof(Color_t) == sizeof(int16_t))>::type
+    std::enable_if_t<(sizeof(Color_t) == sizeof(int16_t))>
     drawIsoLinePixel(Color_t *pixel_src, int16x8_t height, uint16x8_t mask) const {
       uint16x8_t line_color = GetIsoLineColor<uint16x8_t>(height);
       uint16_t* screen_ptr = reinterpret_cast<uint16_t*>(pixel_src);
@@ -901,7 +900,7 @@ private:
     }
 
     template<typename Color_t>
-    typename std::enable_if<(sizeof(Color_t) == sizeof(int8_t))>::type
+    std::enable_if_t<(sizeof(Color_t) == sizeof(int8_t))>
     drawIsoLinePixel(Color_t *pixel_src, int16x8_t height, uint16x8_t mask) const {
         uint8x8_t line_color = GetIsoLineColor<uint8x8_t>(height);
         uint8_t* screen_ptr = reinterpret_cast<uint8_t*>(pixel_src);
@@ -926,7 +925,7 @@ public:
         }
 
 
-        int zoom = ((current_scale >= 750) ? 1 : 0 );
+        int zoom = ((current_scale >= 3500) ? 2 : ((current_scale >= 1000) ? 1 : 0 ));
 
 
         const size_t ixs = height_buffer->GetWidth();
@@ -980,7 +979,7 @@ public:
                 uint16x8_t mask = (vceqq_s16(h, h2) | vceqq_s16(h3, h1)) & vceqq_s16(h, h3);
                 height = (height - qv_height_min) >> qv_height_scale;
                 height = Clamp(height, qheight_0, qheight_255);
-                drawIsoLinePixel(&screen_row[x], height, mask);
+                drawIsoLinePixel<BGRColor>(&screen_row[x], height, mask);
             }
 #else
             // iso band value of first column

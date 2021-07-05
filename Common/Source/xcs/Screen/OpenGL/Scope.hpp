@@ -41,6 +41,9 @@ public:
   ~GLEnable() {
     ::glDisable(cap);
   }
+  
+  GLEnable(const GLEnable &) = delete;
+  GLEnable &operator=(const GLEnable &) = delete;  
 };
 
 class GLBlend : public GLEnable<GL_BLEND> {
@@ -55,6 +58,15 @@ public:
     ::glBlendColor(0, 0, 0, alpha);
   }
 #endif
+};
+
+/**
+ * Enable alpha blending with source's alpha value (the most common
+ * variant of GL_BLEND).
+ */
+class ScopeAlphaBlend : GLBlend {
+public:
+  ScopeAlphaBlend() noexcept:GLBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) {}
 };
 
 class GLScissor : public GLEnable<GL_SCISSOR_TEST> {

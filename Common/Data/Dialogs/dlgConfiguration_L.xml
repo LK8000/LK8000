@@ -289,10 +289,10 @@
       <WndProperty Name="prpAlarmTakeoffSafety" Caption="_@M1794_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1261_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="500" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpAlarmGearWarning" Caption="_@M1829_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1269_" keyboard="1">
+      <WndProperty Name="prpAlarmGearWarning" Caption="_@M1829_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1269_" Keyboard="1">
         <DataField name="" DataType="enum"  Min="0" Max="3" Step="1" OnDataAccess="OnGearWarningModeChange"/>
       </WndProperty> 
-      <WndProperty Name="prpAlarmGearAltitude" Caption="_@M1830_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1270_" keyboard="1">
+      <WndProperty Name="prpAlarmGearAltitude" Caption="_@M1830_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1270_" Keyboard="1">
         <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0" Max="5000" Step="1"/>
       </WndProperty>       
       <WndProperty Name="prpSonarWarning" Caption="_@M1870_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1290_">
@@ -372,38 +372,35 @@
         <DataField Name="" DataType="enum"/>
       </WndProperty>
     </WndFrame>
-
     <WndFrame Name="frmFonts" X="70" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpOverlayTarget" Caption="_@M1886_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpOverlayValues" Caption="_@M1887_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontMapWaypoint" Caption="_@M1880_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontSymbols" Caption="_@M2385_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontMapTopology" Caption="_@M1881_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontInfopage1L" Caption="_@M1882_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontBottomBar" Caption="_@M1883_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpFontVisualGlide" Caption="_@M1888_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" >
-   <DataField Name="" DataType="enum"/>
+        <DataField Name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpUseTwoLines" Caption="_@M1885_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1292_">
         <DataField Name="" DataType="boolean" />
       </WndProperty>
-
     </WndFrame>
-
     <WndFrame Name="frmVarioAppearance" X="70" Y="0" Width="-1" Height="222" Font="2">
       <WndButton Name="cmdSetOverlays" Caption="_@M195_" X="70" Y="1" Width="-1"  Height="30" Font="2" OnClickNotify="OnSetOverlaysClicked" />
       <WndProperty Name="prpOverlayClock" Caption="_@M615_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H237_">
@@ -485,20 +482,23 @@
       <WndProperty Name="prpAutoSoundVolume" Caption="_@M110_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H212_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
-	  <WndProperty Name="prpAndroidScreenOrientation" Caption="_@M2330_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1297_">
+	    <WndProperty Name="prpAndroidAudioVario" Caption="_@M1919_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1364_">
+        <DataField Name="" DataType="boolean" />
+      </WndProperty>
+	    <WndProperty Name="prpAndroidScreenOrientation" Caption="_@M2330_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1297_">
         <DataField Name="" DataType="enum" Min="0" Max="1" Step="1" />
       </WndProperty>
       <WndProperty Name="prpFontRenderer" Caption="_@M954_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1203_">
         <DataField Name="" DataType="enum"/>
-      </WndProperty>
-      <WndProperty Name="prpEngineeringMenu" Caption="_@M260_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H213_">
-        <DataField Name="" DataType="boolean"/>
       </WndProperty>
       <WndProperty Name="prpUseUngestures" Caption="_@M1792_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1260_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
       <WndProperty Name="prpAdditionalContestRule" Caption="_@M2279_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1299_">
         <DataField Name="" DataType="enum"/>
+      </WndProperty>
+      <WndProperty Name="prpEngineeringMenu" Caption="_@M260_"  X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H213_">
+        <DataField Name="" DataType="boolean"/>
       </WndProperty>
     </WndFrame>
     <WndFrame Name="frmSpecials2" X="70" Y="0" Width="-1" Height="222" Font="2">

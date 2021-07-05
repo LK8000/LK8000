@@ -14,6 +14,7 @@
 #include "OS/Sleep.h"
 #include "devLXNano3.h"
 #include "dlgLXIGCDownload.h"
+#include "utils/tokenizer.h"
 
 
 #define LST_STRG_LEN          100
@@ -173,11 +174,14 @@ bool GetLXIGCFilename(TCHAR *IGCFilename, TCHAR *InFilename) {
   TCHAR Tmp[MAX_PATH];
 
   _tcscpy(Tmp, InFilename);
-  TCHAR *remaining;
-  TCHAR *Filename = _tcstok_r(Tmp, TEXT(" "), &remaining);
-  LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
-  return true;
+  TCHAR *Filename = lk::tokenizer<TCHAR>(Tmp).Next({_T(' ')});
+  if(Filename) {
+    LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
+    return true;
+  }
+  return false;
 }
+
 
 
 static void OnEnterClicked(WndButton *pWnd) {
@@ -193,8 +197,7 @@ static void OnEnterClicked(WndButton *pWnd) {
   TCHAR szTmp[MAX_NMEA_LEN];
   _tcscpy(szTmp, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
 
-  TCHAR *remaining;
-  TCHAR *IGCFilename = _tcstok_r( szTmp, TEXT(" "), &remaining);
+  TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next({_T(' ')});
 
   _stprintf(Tmp, _T("%s %s ?"), MsgToken(2404), IGCFilename);
   if (MessageBoxX(Tmp, MsgToken(2404), mbYesNo) == IdYes)  // _@2404 "Download"
@@ -227,10 +230,8 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
     _tcscpy(text1, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
     _tcscpy(text2, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line2);
 
-    TCHAR *remaining;    /* extract filname */
-    TCHAR *IGCFilename = _tcstok_r(
-        szTmp, TEXT(" "),
-            &remaining);
+    /* extract filname */
+    TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next(TEXT(" "));
 
     TCHAR PathAndFilename[MAX_PATH];
    
@@ -264,7 +265,7 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
 
 
 static void OnIGCListEnter(WindowControl *Sender, WndListFrame::ListInfo_t *ListInfo) {
-  (void) Sender;
+
   if (LX_IGCReadDialog.FileList()->size() == 0) return;
   LX_IGCReadDialog.CurIndex(ListInfo->ItemIndex + ListInfo->ScrollIndex);
 
@@ -273,13 +274,11 @@ static void OnIGCListEnter(WindowControl *Sender, WndListFrame::ListInfo_t *List
   }
 
 
-  if (LX_IGCReadDialog.CurIndex() >= 0) {
-    if (Sender) {
-      WndForm *pForm = Sender->GetParentWndForm();
-      if (pForm) {
-        LX_IGCReadDialog.DownloadIndex(LX_IGCReadDialog.CurIndex());
-        OnEnterClicked(NULL);
-      }
+  if (Sender) {
+    WndForm *pForm = Sender->GetParentWndForm();
+    if (pForm) {
+      LX_IGCReadDialog.DownloadIndex(LX_IGCReadDialog.CurIndex());
+      OnEnterClicked(NULL);
     }
   }
 }
@@ -317,15 +316,15 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
 };
 
 
-class ResourceLock {
+class LXResourceLock {
 public:
-  ResourceLock() {
+  LXResourceLock() {
     //   StartupStore(TEXT(".... Enter ResourceLock%s"),NEWLINE);
     MapWindow::SuspendDrawingThread();
 
   };
 
-  ~ResourceLock() {
+  ~LXResourceLock() {
     //   StartupStore(TEXT(".... Leave ResourceLock%s"),NEWLINE);
 
     MapWindow::ResumeDrawingThread();
@@ -338,7 +337,7 @@ public:
 
 ListElement *dlgLX_IGCSelectListShowModal(void) {
 
-  ResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
+  LXResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
 
   ListElement *pIGCResult = NULL;
 

@@ -113,8 +113,28 @@ public:
 
   static bool CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer, size_t size);
 
+  template<size_t size>
+  static bool CoordinateToString(double Longitude, double Latitude, TCHAR (&Buffer)[size]) {
+    static_assert(size >= 33, "output Buffer size must be >= 33");
+    return CoordinateToString(Longitude, Latitude, Buffer, size);
+  }
+
   static bool LongitudeToString(double Longitude, TCHAR *Buffer, size_t size);
+
+  template<size_t size>
+  static bool LongitudeToString(double Longitude, TCHAR (&Buffer)[size]) {
+    static_assert(size >= 16, "output Buffer size must be >= 16");
+    return LongitudeToString(Longitude, Buffer, size);
+  }
+
   static bool LatitudeToString(double Latitude, TCHAR *Buffer, size_t size);
+
+  template<size_t size>
+  static bool LatitudeToString(double Latitude, TCHAR (&Buffer)[size]) {
+    static_assert(size >= 16, "output Buffer size must be >= 16");
+    return LatitudeToString(Latitude, Buffer, size);
+  }
+
 
   static void NotifyUnitChanged(void);
 

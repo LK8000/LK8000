@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "magfield.h"
 
 
 void InitWindRotary(windrotary_s *buf) {
@@ -521,7 +521,6 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 
   double tas=(iaspeed*TOKPH)*(1+0.02*(averaltitude/0.328/1000));
 
-  extern double CalculateMagneticVariation();
   double magvar=CalculateMagneticVariation();
 
   // use true heading instead of magnetic heading

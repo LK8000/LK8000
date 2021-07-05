@@ -36,10 +36,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double dtSnail = 2.0;
   double dtStats = 60.0;
 
-  #if LOGFRECORD
-  double dtFRecord = 270; // 4.5 minutes (required minimum every 5)
-  #endif
-
   if (DoInit[MDI_CALCLOGGING]) {
 	SnailLastTime=0;
 	LogLastTime=0;
@@ -68,11 +64,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if(Basic->Time <= StatsLastTime) {
     StatsLastTime = Basic->Time;
   }
-  #if LOGFRECORD
-  if(Basic->Time <= GetFRecordLastTime()) {
-    SetFRecordLastTime(Basic->Time);
-  }
-  #endif
 
   // draw snail points more often in circling mode
   if (Calculated->Circling) {
@@ -101,12 +92,13 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   Time_last=Basic->Time;
 
   if (timepassed>0 && ((distance/timepassed)>300.0) ) {
-	if (maxerrlog>0) {
-                if (SIMMODE && maxerrlog<MAXERRDOLOG)
-		   StartupStore(_T("... DoLogging: at %s distance jumped too much, %f in %fs!\n"),WhatTimeIsIt(),distance,timepassed);
-		maxerrlog--;
-	}
-	return;
+    if (maxerrlog>0) {
+      if (SIMMODE && maxerrlog<MAXERRDOLOG) {
+        StartupStore(_T("... DoLogging: at %s distance jumped too much, %f in %fs!\n"),WhatTimeIsIt(),distance,timepassed);
+      }
+      maxerrlog--;
+    }
+    return;
   }
 
   Latitude_last = Basic->Latitude;
@@ -119,74 +111,28 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   //
   if (Basic->Time - LogLastTime >= LOGINTERVAL) {
     LogLastTime = Basic->Time;
-    double balt = -1;
-    if (Basic->BaroAltitudeAvailable) {
-      balt = QNHAltitudeToQNEAltitude(Basic->BaroAltitude);
-      // check for balt validity are NOT performed in logpoint functions anymore
-      if (balt<-1000||balt>15000) balt=Basic->BaroAltitude;
-    } else {
-      balt = 0;
-    }
-
-    // 110723 this is not a solution, only a workaround.
-    // Problem is that different threads are using indirectly IGCWrite in Logger.cpp
-    // That function as an internal sort-of locking, which probably may be much better
-    // to remove, resulting currently in data loss inside IGC.
-    // Since at takeoff calculation and main thread are using IGCWrite, we want to be sure
-    // that the initial declaration is completed before proceeding with F and B records here!
-    if (IGCWriteLock) {
-	unsigned short loop=0;
-	while (++loop<50) {
-		Poco::Thread::sleep(10); //  500 ms delay max
-		if (!IGCWriteLock) break;
-	}
-	if (IGCWriteLock) {
-		if (maxerrlog>0) StartupStore(_T("..... LogPoint failed, IGCWriteLock %s!%s"),WhatTimeIsIt(),NEWLINE);
-	} else {
-		if (maxerrlog>0) StartupStore(_T("..... LogPoint delayed by IGCWriteLock, ok.%s"),NEWLINE);
-		LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt, Basic->Hour, Basic->Minute, Basic->Second);
-	}
-	maxerrlog--;
-    } else
-	LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt, Basic->Hour, Basic->Minute, Basic->Second);
-
     // Remarks: LogPoint is also checking that there is a valid fix to proceed
-
+    LogPoint(*Basic);
   } // time has advanced enough: >= LOGINTERVAL
-
-  #if LOGFRECORD
-  if (Basic->Time - GetFRecordLastTime() >= dtFRecord)
-  {
-    if (LogFRecord(Basic->SatelliteIDs,false))
-    {  // need F record every 5 minutes
-       // so if write fails or constellation is invalid, don't update timer and try again next cycle
-      SetFRecordLastTime(GetFRecordLastTime() + dtFRecord);
-      // the FRecordLastTime is reset when the logger restarts so it is always at the start of the file
-      if (GetFRecordLastTime() < Basic->Time-dtFRecord)
-        SetFRecordLastTime(Basic->Time-dtFRecord);
-    }
-  }
-  #endif
 
   // 120812 For car/trekking mode, log snailpoint only if at least 5m were made in the dtSnail time
   if (ISCAR) {
-
-	// if 5 seconds have passed.. (no circling mode in car mode)
-	if ( (Basic->Time - SnailLastTime) >= dtSnail) {
-		DistanceBearing(Basic->Latitude, Basic->Longitude, Latitude_snailed, Longitude_snailed, &distance, NULL);
-		// and distance made is at least 5m (moving average 3.6kmh)
-		if (distance>5) {
-			AddSnailPoint(Basic, Calculated);
-			SnailLastTime += dtSnail;
-			if (SnailLastTime< Basic->Time-dtSnail) {
-				SnailLastTime = Basic->Time-dtSnail;
-			}
-			Latitude_snailed = Basic->Latitude;
-			Longitude_snailed = Basic->Longitude;
-		}
-	}
-	// else do not log, and do not update snailtime, so we shall be here every second until at least 10m are made
-	goto _afteriscar;
+    // if 5 seconds have passed.. (no circling mode in car mode)
+    if ( (Basic->Time - SnailLastTime) >= dtSnail) {
+      DistanceBearing(Basic->Latitude, Basic->Longitude, Latitude_snailed, Longitude_snailed, &distance, NULL);
+      // and distance made is at least 5m (moving average 3.6kmh)
+      if (distance>5) {
+        AddSnailPoint(Basic, Calculated);
+        SnailLastTime += dtSnail;
+        if (SnailLastTime< Basic->Time-dtSnail) {
+          SnailLastTime = Basic->Time-dtSnail;
+        }
+        Latitude_snailed = Basic->Latitude;
+        Longitude_snailed = Basic->Longitude;
+      }
+    }
+    // else do not log, and do not update snailtime, so we shall be here every second until at least 10m are made
+    goto _afteriscar;
   }
 
   if (Basic->Time - SnailLastTime >= dtSnail) {

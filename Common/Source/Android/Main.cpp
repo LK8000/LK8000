@@ -18,7 +18,6 @@
 #include "Android/SoundUtil.hpp"
 #include "Android/TextUtil.hpp"
 #include "Android/Context.hpp"
-#include "Android/Environment.hpp"
 #include "Android/InternalSensors.hpp"
 #include "Android/NativePortListener.hpp"
 #include "Android/NativeInputListener.hpp"
@@ -36,15 +35,15 @@
 #include "Screen/OpenGL/Texture.hpp"
 #include "Screen/OpenGL/Buffer.hpp"
 #include "UsbSerialHelper.h"
-
-unsigned android_api_level;
+#include "AndroidFileUtils.h"
+#include "NetUtil.h"
 
 Context *context;
 NativeView *native_view;
 
 IOIOHelper *ioio_helper = nullptr;
 
-extern WndMain* main_window;
+extern std::unique_ptr<WndMain> main_window;
 
 extern "C" {
   /* workaround for
@@ -75,15 +74,12 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
                                             jobject _context,
                                             jint width, jint height,
                                             jint xdpi, jint ydpi,
-                                            jint sdk_version, jstring product, jstring language)
+                                            jstring product, jstring language)
 {
-  android_api_level = sdk_version;
-
   Java::Object::Initialise(env);
   Java::File::Initialise(env);
 
   NativeView::Initialise(env);
-  Environment::Initialise(env);
   AndroidBitmap::Initialise(env);
   InternalSensors::Initialise(env);
   NativePortListener::Initialise(env);
@@ -92,6 +88,8 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   BluetoothHelper::Initialise(env);
   NativeLeScanCallback::Initialise(env);
   UsbSerialHelper::Initialise(env);
+  AndroidFileUtils::Initialise(env);
+  NetUtil::Initialise(env);
 
   const bool have_ioio = IOIOHelper::Initialise(env);
 
@@ -107,11 +105,15 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   event_queue = new EventQueue();
 
 
-#ifdef __arm__
+#if defined __arm__ || defined __aarch64__
   // Android eInk devices support
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "Poke_Pro");
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "C68");
   is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "yotaphone2");
+  is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "alfapilot");
+
+  is_dithered = is_dithered || StringIsEqual(native_view->GetProduct(), "HLTE203T");
+  is_eink_colored = is_eink_colored || StringIsEqual(native_view->GetProduct(), "HLTE203T");
 #endif
 
 
@@ -158,6 +160,8 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   delete ioio_helper;
   ioio_helper = nullptr;
 
+  NetUtil::Deinitialise(env);
+  AndroidFileUtils::Deinitialise(env);
   TextUtil::Deinitialise(env);
   OpenGL::Deinitialise();
   ScreenDeinitialized();
@@ -174,7 +178,6 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   SoundUtil::Deinitialise(env);
   InternalSensors::Deinitialise(env);
   AndroidBitmap::Deinitialise(env);
-  Environment::Deinitialise(env);
   NativeView::Deinitialise(env);
 }
 

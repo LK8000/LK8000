@@ -25,7 +25,6 @@ Copyright_License {
 #include "Screen/Custom/TopCanvas.hpp"
 #include "Event/Globals.hpp"
 #include "Event/Poll/Queue.hpp"
-#include "Util/Macros.hpp"
 
 #include <X11/Xatom.h>
 
@@ -70,7 +69,7 @@ TopWindow::CreateNative(const TCHAR *text, PixelSize size,
     XChangeProperty(x_display, x_window,
                     XInternAtom(x_display, "_NET_WM_STATE", false),
                     XA_ATOM, 32, PropModeReplace,
-                    (const unsigned char *)atoms, ARRAY_SIZE(atoms));
+                    (const unsigned char *)atoms, std::size(atoms));
   }
 
   /* receive "Close" button clicks from the window manager */

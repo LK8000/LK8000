@@ -11,7 +11,6 @@
 #include "ScreenGeometry.h"
 
 void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const RECT& rc) {
-  POINT Start;
   TCHAR sTmp[12];
 
   if (DerivedDrawInfo.WindSpeed<1) {
@@ -21,22 +20,25 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   int wmag = iround(4.0*DerivedDrawInfo.WindSpeed);
   double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
 
-  Start.y = Orig.y;
-  Start.x = Orig.x;
-
-  POINT Arrow[] = { 
+  POINT ArrowL[] = { 
       {0,-20}, 
-      {-6,-26-wmag}, {0,-20-wmag}, {6,-26-wmag}, 
+      {0,-20-wmag}, {6,-26-wmag}, 
       {0,-20}
   };
-  PolygonRotateShift(Arrow, array_size(Arrow), Start.x, Start.y, angle);
+  POINT ArrowR[] = { 
+      {0,-20}, 
+      {-6,-26-wmag}, {0,-20-wmag},
+      {0,-20}
+  };  
+  PolygonRotateShift(ArrowL, std::size(ArrowL), Orig.x, Orig.y, angle);
+  PolygonRotateShift(ArrowR, std::size(ArrowR), Orig.x, Orig.y, angle);
 
   POINT Tail[] = {
-      {0,-20}, 
+      {0,-20-wmag}, 
       {0,-26-min(20,wmag)*3}
   };
 
-  PolygonRotateShift(Tail, array_size(Tail), Start.x, Start.y, angle);
+  PolygonRotateShift(Tail, std::size(Tail), Orig.x, Orig.y, angle);
   
   // optionally draw dashed line for wind arrow
 #ifdef NO_DASH_LINE
@@ -50,7 +52,7 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
 
     _stprintf(sTmp, _T("%d"), iround(DerivedDrawInfo.WindSpeed * SPEEDMODIFY));
 
-    TextInBoxMode_t TextInBoxMode = {0};
+    TextInBoxMode_t TextInBoxMode = {};
     TextInBoxMode.AlligneCenter = true;   // { 16 | 32 }; // JMW test {2 | 16};
     TextInBoxMode.WhiteBorder = true;
     TextInBoxMode.NoSetFont = true; // font alredy set for calc text size.
@@ -62,17 +64,25 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
       IBLSCALE(8) + tSize.cx/2,
       IBLSCALE(-24)
     };  
-    if (Arrow[1].y>=Arrow[3].y) {
+    if (ArrowR[1].y>=ArrowR[3].y) {
         pt.x *= (-1);
     }
     
-    protateshift(pt, angle, Start.x, Start.y);
+    protateshift(pt, angle, Orig.x, Orig.y);
     TextInBox(Surface, &rc, sTmp, pt.x, pt.y, &TextInBoxMode);
     Surface.SelectObject(oldFont);
   }
-  const auto hpOld = Surface.SelectObject(LKPen_Black_N2);
-  const auto hbOld = Surface.SelectObject(LKBrush_Grey);
-  Surface.Polygon(Arrow,array_size(Arrow));
+  
+  LKBrush ArrowBrush;  ArrowBrush.Create(OverColorRef);
+  const auto hpOld = Surface.SelectObject( LKPen_Black_N1);
+
+  const auto hbOld = Surface.SelectObject(ArrowBrush);
+  Surface.Polygon(ArrowL,std::size(ArrowL));
+
+  LKBrush ArrowOutlineBrush; ArrowOutlineBrush.Create(GetOutlineColor(OverColorRef));
+  Surface.SelectObject(ArrowOutlineBrush);
+
+  Surface.Polygon(ArrowR, std::size(ArrowR));
 
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);

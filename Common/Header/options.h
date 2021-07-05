@@ -82,14 +82,17 @@
 				// the problem during alpha stages.
 				// Normally these conditions should not exist
 
-//#define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD
+#define TESTBENCH	1	// THIS IS USING MORE MESSAGES, DOING MORE CHECKS, AND IT IS GOOD
 				// FOR DEVELOPMENT VERSIONS. CAN BE USED FOR SPECIAL BETAs,
 				// but normally should not be used for public releases.
 //#define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
 				// For TESTBENCH and beta versions this should be always ENABLED.
 				// Only in official stable versions it should be disabled.
 
-
+#if !defined(UNDER_CE)
+// Enable Topology Cache 2 (full topology in memory)
+  #define USE_TOPOLOGY_CACHE_LEVEL2
+#endif
  //
  // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
  // When expire date is reached, unnecessary old stuff can be removed, even if commented
@@ -128,7 +131,6 @@
 #define  FLARM_PICTO_THREADSAFE
 #endif
 
-#define RADIO_ACTIVE
 #define OWN_POS_MS
 #define ORACLE_MS
 #define TEAM_CODE_MS
@@ -162,10 +164,6 @@
 //  #define TEAM_CODE_MS		// button to trigger team code
 //  #define OWN_POS_MS		// button to trigger basic settings
 //  #define ORACLE_MS		// button to trigger oracle
-
-
-// Use F Record in IGC log files- not needed really
-// #define LOGFRECORD	1
 
 // do not add screen points if closer than 5pix to the previous
 //#define LKASP_REMOVE_NEAR_POINTS		1

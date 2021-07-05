@@ -308,7 +308,7 @@ bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBu
   else
   { // use system time
     time_t sysTime = time(NULL);
-    tm tm_temp = {0};
+    tm tm_temp = {};
     struct tm* utc = gmtime_r(&sysTime, &tm_temp);
 
     task.di = utc->tm_mday;
@@ -331,7 +331,7 @@ bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBu
     decl.SetWaypoint(lkDecl.waypoint[i], Decl::tp_regular, i + 1);
 
   // add Home as Takeoff and Landing
-  if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint))
+  if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding)
   {
     decl.SetWaypoint(&WayPointList[HomeWaypoint], Decl::tp_takeoff, 0);
     decl.SetWaypoint(&WayPointList[HomeWaypoint], Decl::tp_landing, wpCount + 1);
@@ -424,12 +424,12 @@ bool DevLXNano::Wide2LxAscii(const TCHAR* input, int outSize, char* output)
   if (outSize == 0)
     return(false);
 
-  int res = TCHAR2usascii(input, output, outSize);
+  int res = to_usascii(input, output, outSize);
 
   // replace all non-ascii characters with '?' - LX Colibri is very sensitive
   // on non-ascii chars - the electronic seal can be broken
-  // (unicode2usascii() should be enough, but to be sure that someone has not
-  // incorrectly changed unicode2usascii())
+  // (to_usascii() should be enough, but to be sure that someone has not
+  // incorrectly changed to_usascii())
   output--;
   while (*++output != '\0')
   {

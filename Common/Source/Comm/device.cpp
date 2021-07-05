@@ -12,12 +12,15 @@
 #include "Util/TruncateString.hpp"
 #include "BtHandler.h"
 #include "SerialPort.h"
+#include "FilePort.h"
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
 #include "TCPPort.h"
 #include "devPVCOM.h"
 #include <functional>
 #include "Calc/Vario.h"
+#include "Radio.h"
+
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -43,9 +46,7 @@
 #endif
 
 
-#ifdef RADIO_ACTIVE
 bool devDriverActivated(const TCHAR *DeviceName) ;
-#endif    
     
 using namespace std::placeholders;
 
@@ -68,7 +69,8 @@ Mutex COMMPort_mutex; // needed for Bluetooth LE scan
 #endif
 COMMPort_t COMMPort;
 
-static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200};
+static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200,
+                                      230400,460800,500000,1000000};
 
 DeviceRegister_t   DeviceRegister[NUMREGDEV];
 DeviceDescriptor_t DeviceList[NUMDEV];
@@ -79,12 +81,13 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 int DeviceRegisterCount = 0;
 
 /**
- * Call DeviceDescriptor_t::*func on all connected device without Argument.
+ * Call DeviceDescriptor_t::*func on all connected device.
  * @return FALSE if error on one device.
- * 
+ *
  * TODO : report witch device failed (useless still return value are never used).
  */
-BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) {
+template<typename ...Args>
+BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, Args...), Args... args) {
     if (SIMMODE) {
       return TRUE;
     }
@@ -93,53 +96,8 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d)) 
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
       if( !d.Disabled && d.Com && (d.*func) ) {
-        nbDeviceFailed +=  (d.*func)(&d) ? 0 : 1;
+        nbDeviceFailed +=  (d.*func)(&d, args...) ? 0 : 1;
       }
-
-    }
-    return (nbDeviceFailed > 0);
-}
-
-/**
- * Call DeviceDescriptor_t::*func on all connected device with one Argument.
- * @return FALSE if error on one device.
- * 
- * TODO : report witch device failed (useless still return value are never used).
- */
-template<typename _Arg1>
-BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _Arg1), _Arg1 Val1) {
-    if (SIMMODE) {
-      return TRUE;
-    }
-    unsigned nbDeviceFailed = 0;
-
-    ScopeLock Lock(CritSec_Comm);
-    for( DeviceDescriptor_t& d : DeviceList) {
-      if( !d.Disabled && d.Com && (d.*func) ) {
-        nbDeviceFailed +=  (d.*func)(&d, Val1) ? 0 : 1;
-      }
-    }
-    return (nbDeviceFailed > 0);
-}
-/**
- * Call DeviceDescriptor_t::*func on all connected device with two Argument.
- * @return FALSE if error on one device.
- * 
- * TODO : report witch device failed (useless still return value are never used).
- */
-template<typename _Arg1, typename _Arg2>
-BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, _Arg1, _Arg2), _Arg1 Val1, _Arg2 Val2) {
-    if (SIMMODE) {
-      return TRUE;
-    }
-    unsigned nbDeviceFailed = 0;
-
-    ScopeLock Lock(CritSec_Comm);
-    for( DeviceDescriptor_t& d : DeviceList) {
-      if( !d.Disabled && d.Com && (d.*func) ) {
-        nbDeviceFailed +=  (d.*func)(&d, Val1, Val2) ? 0 : 1;
-      }
-
     }
     return (nbDeviceFailed > 0);
 }
@@ -291,15 +249,10 @@ void RefreshComPortList() {
 #endif
 #endif
     
-#if defined(__linux__) && !defined(ANDROID)
+#ifdef HAVE_POSIX
   
   struct dirent **namelist;
-  int n;
-  if (IsKobo()) {
-    n = scandir("/dev", &namelist, 0, alphasort);//need test
-  } else {  
-    n = scandir("/sys/class/tty", &namelist, 0, alphasort); //which is faster than /dev/
-  }
+  int n = scandir("/dev", &namelist, 0, alphasort);//need test
   if (n != -1){
     for (int i = 0; i < n; ++i) {
       bool portok = true;
@@ -342,22 +295,27 @@ void RefreshComPortList() {
     free(namelist);
   }
 
+#endif
+
 #ifdef KOBO
+
   if(KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
     if(std::find_if(COMMPort.begin(), COMMPort.end(), std::bind(&COMMPortItem_t::IsSamePort, _1, _T("/dev/ttyGS0"))) == COMMPort.end()) {
       COMMPort.push_back(_T("/dev/ttyGS0"));
     }
   }
-#elif TESTBENCH
+
+#elif defined(TESTBENCH) && defined (__linux__)
+
   if(lk::filesystem::exist(_T("/lk"))) {
     COMMPort.push_back(_T("/lk/ptycom1"));
     COMMPort.push_back(_T("/lk/ptycom2"));
     COMMPort.push_back(_T("/lk/ptycom3"));
     COMMPort.push_back(_T("/lk/ptycom4"));
   }
-#endif
 
 #endif
+
 
 #ifndef NO_BLUETOOTH
     CBtHandler* pBtHandler = CBtHandler::Get();
@@ -373,7 +331,8 @@ void RefreshComPortList() {
     COMMPort.push_back(_T("TCPClient"));
     COMMPort.push_back(_T("TCPServer"));
     COMMPort.push_back(_T("UDPServer"));
-
+    if(EngineeringMenu)
+      COMMPort.push_back(NMEA_REPLAY);
 #ifdef ANDROID
 
   JNIEnv *env = Java::GetEnv();
@@ -492,6 +451,12 @@ void DeviceDescriptor_t::InitStruct(int i) {
     iSharedPort = -1;
     m_bAdvancedMode = false;
     bNMEAOut = false;
+
+#ifdef DEVICE_SERIAL
+    HardwareId = 0;
+    SerialNumber = 0;
+    SoftwareVer = 0;
+#endif
 }
 
 bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
@@ -586,11 +551,8 @@ BOOL devInit() {
     TCHAR Port[MAX_PATH] = {_T('\0')};
     unsigned SpeedIndex = 2U;
     BitIndex_t BitIndex = bit8N1;
-#ifdef RADIO_ACTIVE
-     RadioPara.Enabled = false;
-     if(SIMMODE)
-       RadioPara.Enabled = true;
-#endif
+
+    RadioPara.Enabled = (SIMMODE);
 
     pDevPrimaryBaroSource = NULL;
     pDevSecondaryBaroSource = NULL;
@@ -628,7 +590,8 @@ BOOL devInit() {
 
         DeviceList[i].iSharedPort =-1;
         for(uint j = 0; j < i ; j++) {
-            if((!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
+            if( (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) != 0)
+                 && (!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
                 devInit(&DeviceList[i]);
                 DeviceList[i].iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
@@ -707,6 +670,8 @@ BOOL devInit() {
 #ifdef ANDROID
             Com = new UsbSerialPort(i, &Port[4], dwSpeed[SpeedIndex], BitIndex);
 #endif
+        } else  if (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) == 0) {
+        	Com = new FilePort(i, NMEA_REPLAY);
         } else {
             Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
         }
@@ -739,7 +704,7 @@ BOOL devInit() {
             delete Com;
             DeviceList[i].Status = CPS_OPENKO;
         }
-#ifdef RADIO_ACTIVE
+
        if(devIsRadio(&DeviceList[i])) {
           RadioPara.Enabled = true;
           StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
@@ -748,7 +713,7 @@ BOOL devInit() {
           RadioPara.Enabled = true;
           StartupStore(_T(".  RADIO  %c  PVCOM over  shared <%s>%s"), (_T('A') + i),  Port, NEWLINE);
        }
-#endif
+
     }
     return (TRUE);
 }
@@ -780,7 +745,7 @@ void devCloseAll() {
 
 PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port){
 
-  if(Port < array_size(DeviceList)) {
+  if(Port < std::size(DeviceList)) {
     return &DeviceList[Port];
   }
   return nullptr;
@@ -1148,9 +1113,6 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
   }
 }
 
-
-#ifdef RADIO_ACTIVE
-
 bool devDriverActivated(const TCHAR *DeviceName) {
   for(int i=0; i <NUMDEV; i++) {
     if ((_tcscmp(dwDeviceName[i], DeviceName) == 0)) {
@@ -1166,6 +1128,7 @@ bool devDriverActivated(const TCHAR *DeviceName) {
  * @return FALSE if error on one device.
  */
 BOOL devPutVolume(int Volume) {
+  RadioPara.VolValid = false;
   return for_all_device(&DeviceDescriptor_t::PutVolume, Volume);
 
 }
@@ -1176,6 +1139,7 @@ BOOL devPutVolume(int Volume) {
  * @return FALSE if error on one device.
  */
 BOOL devPutSquelch(int Squelch) {
+  RadioPara.SqValid = false;
   return for_all_device(&DeviceDescriptor_t::PutSquelch, Squelch);
 
 }    
@@ -1188,6 +1152,7 @@ BOOL devPutSquelch(int Squelch) {
  * @return FALSE if error on one device.
  */
 BOOL devPutRadioMode(int mode) {
+  RadioPara.DualValid = false;
   return for_all_device(&DeviceDescriptor_t::PutRadioMode, mode);
 }
 
@@ -1196,6 +1161,8 @@ BOOL devPutRadioMode(int mode) {
  * @return FALSE if error on one device.
  */
 BOOL devPutFreqSwap() {
+  RadioPara.ActiveValid = false;
+  RadioPara.PassiveValid = false;
   return for_all_device(&DeviceDescriptor_t::StationSwap);
 
 }
@@ -1207,13 +1174,13 @@ BOOL devPutFreqSwap() {
  * @return FALSE if error on one device.
  */
 
-extern BOOL ValidFrequency(double Freq);
 
 BOOL devPutFreqActive(double Freq, const TCHAR* StationName) {
 if( ValidFrequency(Freq))
 {
+  RadioPara.ActiveValid = false;
   RadioPara.ActiveFrequency=  Freq;
-	CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
+  CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
   return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
 }
 else
@@ -1227,14 +1194,14 @@ else
 BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
 if( ValidFrequency(Freq))
 {
-	RadioPara.PassiveFrequency=  Freq;
-	CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
-  return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
+    RadioPara.PassiveValid = false;
+    RadioPara.PassiveFrequency=  Freq;
+    CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
+    return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
+  } else {
+    return false;
+  }
 }
-else
-	return false;
-}
-#endif  // RADIO_ACTIVE        
 
 
 static BOOL 

@@ -72,11 +72,14 @@ public class UsbSerialHelper extends BroadcastReceiver {
             createDevice(0x16D0, 0x0BA9), // GPSBip
             createDevice(0x0403, 0x6015), // Digifly AIR (FT X-Series)
             createDevice(0x0483, 0x5740), // SoftRF Dongle
+            createDevice(0x239A, 0x8029), // SoftRF Badge
 
             createDevice(0x0403, 0x6001), // FT232AM, FT232BM, FT232R FT245R,
             createDevice(0x0403, 0x6010), // FT2232D, FT2232H
             createDevice(0x0403, 0x6011), // FT4232H
             createDevice(0x0403, 0x6014), // FT232H
+
+            createDevice(0x10C4, 0xEA60), // CP210x
 
             createDevice(0x067B, 0x2303) // PL2303
     );

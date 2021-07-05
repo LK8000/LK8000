@@ -31,7 +31,7 @@
 // #define DEBUG_LKALARMS	1
 
 
-static_assert(array_size(LKalarms) == MAXLKALARMS, "Wrong MAXLKALARMS and LKalarms array");
+static_assert(std::size(LKalarms) == MAXLKALARMS, "Wrong MAXLKALARMS and LKalarms array");
 
 void InitAlarms(void) {
   for ( auto &alarm : LKalarms) {

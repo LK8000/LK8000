@@ -14,6 +14,7 @@
 #include "Asset.hpp"
 #include "NavFunctions.h"
 #include "Calc/Vario.h"
+#include "Tracking/Tracking.h"
 
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
@@ -26,6 +27,8 @@
 
 //#define MINSPEED	GlidePolar::Vminsink()*TOKPH
 #define STALLSPEED	GlidePolar::Vminsink()*TOKPH*0.6
+
+extern void SimFlarmTraffic(uint32_t RadioId, double offset);
 
 // WE DONT USE LANDING, CRASHING AND FULL STALL SIMULATION NOW
 // #define SIMLANDING	1
@@ -57,9 +60,7 @@ void LKSimulator(void) {
   double tdistance, tbearing;
   double thermalstrength=0, sinkstrength=0;
 
-  extern void SimFlarmTraffic(long id, double offset);
-
-  if (doinit) {
+    if (doinit) {
 	if (counter++<4) {
 		UnlockFlightData();
 		return;
@@ -79,7 +80,7 @@ void LKSimulator(void) {
 	ThLatitude=GPS_INFO.Latitude-0.022;
 	ThLongitude=GPS_INFO.Longitude-0.033;
 
-	if (EnableFLARMMap && !LiveTrackerRadar_config ) {
+	if (EnableFLARMMap && !tracking::radar_config ) {
 		srand(MonotonicClockMS());
 		SimFlarmTraffic(0xdd8951,22.0+(double)(rand() % 32));
 		SimFlarmTraffic(0xdd8944,31.0+(double)(rand() % 32));
@@ -148,7 +149,7 @@ void LKSimulator(void) {
 
   // We cannot use doinit for flarm, because it could be enabled from configuration AFTER startup,
   // and it must work all the way the same in order not to confuse users.
-  if (EnableFLARMMap && !LiveTrackerRadar_config ) {
+  if (EnableFLARMMap && !tracking::radar_config ) {
 	if (!flarmwasinit) {
 		srand(MonotonicClockMS());
 		// Add a poker of traffic for the boys
@@ -163,13 +164,6 @@ void LKSimulator(void) {
 		SimFlarmTraffic(0xdd8951,0);
 		SimFlarmTraffic(0xdd8944,0);
 		SimFlarmTraffic(0xdd8a43,0);
-
-		// update relative altitude for ghost/zombie traffic
-		extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
-		int flarmslot=FLARM_FindSlot(&GPS_INFO, 0xdd8a42);
-		if (flarmslot>=0)
-			GPS_INFO.FLARM_Traffic[flarmslot].RelativeAltitude = GPS_INFO.FLARM_Traffic[flarmslot].Altitude - GPS_INFO.Altitude;
-
 	}
   }
 

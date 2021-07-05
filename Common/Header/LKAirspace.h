@@ -1,9 +1,6 @@
 #if !defined(AFX_LKAIRSPACE_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_LKAIRSPACE_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include "Thread/Mutex.hpp"
 #include "Point2D.h"
@@ -19,7 +16,6 @@
 #include "Geographic/GeoPoint.h"
 
 class ScreenProjection;
-struct XMLNode;
 
 // changed by AlphaLima since we have a second airspace view to next waypoint,
 // the waypoint can be much more far away (e.g.  167km for a 500km FAI triangle)
@@ -272,6 +268,11 @@ public:
     virtual void Draw(LKSurface& Surface, bool fill) const;
     // Calculate nearest horizontal distance and bearing to the airspace from a given point
     virtual double Range(const double &longitude, const double &latitude, double &bearing) const  = 0;
+
+    double Range(const GeoPoint& position, double &bearing) const {
+      return Range(position.longitude, position.latitude, bearing);
+    }
+
     // Calculate unique hash code for this airspace
     virtual void Hash(char *hashout, int maxbufsize) const = 0;
 
@@ -380,7 +381,7 @@ protected:
 class CAirspace_Circle: public CAirspace
 {
 public:
-  CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius);
+  CAirspace_Circle(const GeoPoint &Center, double Radius);
   ~CAirspace_Circle() {}
 
   // Check if a point horizontally inside in this airspace
@@ -422,11 +423,19 @@ typedef struct _AirspaceWarningMessage
 // Warning message queue
 typedef std::deque<AirspaceWarningMessage> AirspaceWarningMessageList;
 
+namespace rapidxml { 
+  // Forward declarations
+  template<class Ch> class xml_node;
+}
+
 //
 // AIRSPACE MANAGER CLASS
 //
 class CAirspaceManager
 {
+    
+  using xml_node = class rapidxml::xml_node<char>;
+
 public:
   static CAirspaceManager& Instance() { return _instance; }
 
@@ -545,7 +554,7 @@ private:
 #endif
 
   bool FillAirspacesFromOpenAIP(const TCHAR* szFile);
-  bool ReadAltitudeOpenAIP(XMLNode & node, AIRSPACE_ALT *Alt) const;
+  bool ReadAltitudeOpenAIP(const xml_node* node, AIRSPACE_ALT *Alt) const;
 
   //Airspace setting save/restore functions
   void SaveSettings() const;

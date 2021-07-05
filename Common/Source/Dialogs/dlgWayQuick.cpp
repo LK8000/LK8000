@@ -17,6 +17,7 @@
 #include "NavFunctions.h"
 #include "resource.h"
 #include "LKStyle.h"
+#include "Radio.h"
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
@@ -113,9 +114,6 @@ static void OnTaskClicked(WndButton* pWnd){
 
 static void SetRadioFrequency(WndButton* pWnd, bool bActive)
 {
-#ifdef RADIO_ACTIVE
-
-
   double Ferquency;
   LKASSERT(SelectedWaypoint>=0);
   LockTaskData();
@@ -144,7 +142,6 @@ static void SetRadioFrequency(WndButton* pWnd, bool bActive)
     }
   }
   UnlockTaskData();
-#endif  // RADIO_ACTIVE
 }
 
 static void OnRadioFrequencyClicked(WndButton* pWnd){
@@ -182,16 +179,13 @@ short dlgWayQuickShowModal(void){
   TCHAR buffer2[80];
   WindowControl* wFreq = wf->FindByName(TEXT("cmdRadioFreq"));
   WindowControl* wFreqSB = wf->FindByName(TEXT("cmdRadioFreqSB"));
-  if(Appearance.UTF8Pictorials)
-    _stprintf(buffer2,_T("↕ %s"),WPLSEL.Freq );
-  else
-    _stprintf(buffer2,_T(">< %s"),WPLSEL.Freq );
+  _stprintf(buffer2,_T("%s %s"), GetActiveStationSymbol(Appearance.UTF8Pictorials), WPLSEL.Freq );
+
   wFreq->SetCaption(buffer2);
   wFreq->Redraw();
-  if(Appearance.UTF8Pictorials)
-    _stprintf(buffer2,_T("↓ %s"),WPLSEL.Freq );
-  else
-    _stprintf(buffer2,_T("< %s"),WPLSEL.Freq );
+
+  _stprintf(buffer2,_T("%s %s"), GetStandyStationSymbol(Appearance.UTF8Pictorials), WPLSEL.Freq );
+
   wFreqSB->SetCaption(buffer2);
   wFreqSB->Redraw();
   retStatus=0;
@@ -238,11 +232,7 @@ short dlgWayQuickShowModal(void){
   }
   wf->SetCaption(sTmp);
 
-#ifdef RADIO_ACTIVE
-    const bool bRadioFreq = (_tcstol(WayPointList[SelectedWaypoint].Freq, nullptr, 10) > 0) && RadioPara.Enabled;
-#else
-    const bool bRadioFreq = false;
-#endif // RADIO_ACTIVE
+  const bool bRadioFreq = (_tcstol(WayPointList[SelectedWaypoint].Freq, nullptr, 10) > 0) && RadioPara.Enabled;
 
   if (ScreenLandscape) {
     PixelScalar left = 0;

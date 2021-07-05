@@ -60,11 +60,8 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         mag = isqrt4((unsigned long)(x0*x0*100+y0*y0*100))/10.0;
         Calculated->TrueAirspeedEstimated = mag;
     }
-    const double rho_rat = AirDensityRatio(QNHAltitudeToQNEAltitude(Basic->Altitude));
-    LKASSERT(rho_rat !=0 );
-    if (rho_rat != 0) {
-        Calculated->IndicatedAirspeedEstimated = Calculated->TrueAirspeedEstimated / rho_rat;
-    }    
+    double qne_altitude = QNHAltitudeToQNEAltitude(Basic->Altitude);
+    Calculated->IndicatedAirspeedEstimated = IndicatedAirSpeed(Calculated->TrueAirspeedEstimated, qne_altitude);
     
     // estimate bank angle (assuming balanced turn)
     double angle = atan(DEG_TO_RAD*Calculated->TurnRateWind*

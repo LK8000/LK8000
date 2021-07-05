@@ -28,24 +28,8 @@ Copyright_License {
 
 extern bool has_cursor_keys;
 
-#ifdef __arm__
-extern bool is_nook, is_dithered;
-#endif
-
-/**
- * Returns whether the application is running on Galaxy Tab with Android 2.2
- */
-#ifdef __arm__
-gcc_const
-bool
-IsGalaxyTab22();
-#else
-constexpr
-static inline bool
-IsGalaxyTab22()
-{
-  return false;
-}
+#if defined __arm__ || defined __aarch64__
+extern bool is_nook, is_dithered, is_eink_colored;
 #endif
 
 /**

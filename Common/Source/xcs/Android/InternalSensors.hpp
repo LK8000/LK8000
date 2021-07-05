@@ -52,11 +52,11 @@ class InternalSensors {
   static jmethodID mid_sensors_subscribedToSensor_;
   static jmethodID mid_sensors_cancelAllSensorSubscriptions_;
 
-public:
+ public:
   static bool Initialise(JNIEnv *env);
   static void Deinitialise(JNIEnv *env);
 
- private:
+private:
   // Java objects working with the GPS and the other sensors respectively.
   Java::GlobalObject obj_InternalGPS_;
   Java::GlobalObject obj_NonGPSSensors_;
@@ -64,7 +64,8 @@ public:
 
   InternalSensors(JNIEnv* env, jobject gps_obj, jobject sensors_obj);
   void getSubscribableSensors(JNIEnv* env, jobject sensors_obj);
- public:
+
+public:
   ~InternalSensors();
 
   /* Sensor type identifier constants for use with subscription
@@ -88,6 +89,9 @@ public:
   gcc_malloc
   static InternalSensors *create(JNIEnv* env, Context* native_view,
                                unsigned int index);
+
+  void InitialiseVarioSound();
+  void DeinitialiseVarioSound();
 };
 
 #endif

@@ -53,12 +53,12 @@ static constexpr LKColor mmUTF8Color[] = {
     RGB_GREEN,           // "⚑"    // FINALGLIDE
 };
 
-static_assert(array_size(mmUTF8Color) == array_size(mmUTF8Symbol), "invalide array size");
+static_assert(std::size(mmUTF8Color) == std::size(mmUTF8Symbol), "invalide array size");
 
 static std::pair<const LKColor, const TCHAR*> GetUTF8MultimapSymbol(unsigned Number) {
-    assert(Number < array_size(mmUTF8Symbol));
+    assert(Number < std::size(mmUTF8Symbol));
 
-    const unsigned symbol_idx = Number < array_size(mmUTF8Symbol) ? Number : 0;
+    const unsigned symbol_idx = Number < std::size(mmUTF8Symbol) ? Number : 0;
     const TCHAR* symbol = MsgToken(mmUTF8Symbol[symbol_idx]);
 
     LKColor color = mmUTF8Color[symbol_idx];

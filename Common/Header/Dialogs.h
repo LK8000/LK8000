@@ -1,10 +1,6 @@
 #if !defined(AFX_DIALOGS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_DIALOGS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "options.h"
 #include "Enums.h"
 class CAirspace;
@@ -44,7 +40,9 @@ typedef	struct{
 } ListElement;
 
 
-int dlgWayPointSelect(double lon=0.0, double lat=90.0, int type=-1, int FilterNear=0);
+int dlgSelectWaypoint(int type=-1, int FilterNear=0);
+void dlgSelectAirspace();
+
 int dlgAirspaceColoursShowModal(void);
 ListElement* dlgMultiSelectListShowModal(void);
 void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance);
@@ -69,15 +67,23 @@ void dlgTaskWaypointShowModal(int itemindex, int type, bool addonly=false, bool 
 void dlgTaskOverviewShowModal(int Idx=-1);
 void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
-int  dlgTextEntryShowModal(TCHAR *text, int width);
+
+struct key_filter_interface {
+  virtual const TCHAR* GetLabel() const = 0;
+  virtual bool isHiddenKey(TCHAR c) const = 0;
+  
+  virtual unsigned GetMatchCount() const = 0;
+  virtual const TCHAR* GetMatchText() const = 0;
+
+  virtual void Update(const TCHAR* text) = 0;
+};
+
+void dlgTextEntryShowModal(TCHAR *text, int width, key_filter_interface* filter = nullptr);
 void dlgNumEntryShowModal(TCHAR *text, int width);
-CAirspace* dlgTextEntryShowModalAirspace(TCHAR *text, int width);
-int  dlgTextEntryShowModalWaypoint(TCHAR *text, int width);
 
 void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 void dlgWaypointEditShowModal(WAYPOINT *wpt);
-void dlgAirspaceSelect(void);
 void dlgTarget(int TaskPoint = -1);
 bool dlgTaskRules(void);
 
@@ -97,6 +103,11 @@ void dlgIgcFileShowModal(void);
 void dlgWeatherStDetails(int indexid);
 
 void dlgRadioSettingsShowModal(void);
+void dlgOracleShowModal();
+void dlgTerminal(int portnum);
+void dlgOverlaysShowModal(void);
+void dlgCustomMenuShowModal(void);
+void dlgRadioPriSecSelShowModal(const TCHAR*  pName, double Freq);
 #ifndef NO_BLUETOOTH
 namespace DlgBluetooth {
     void Show();

@@ -64,7 +64,7 @@ public:
 
     double Min() const {
         if(Type() == TYPE_DOUBLE) {
-            return _MinHWVal * _Factor;
+            return _MinHWVal / _Factor;
         }
         if(Type() == TYPE_INT) {
             return _MinHWVal * _Factor;
@@ -77,7 +77,7 @@ public:
 
     double Max() const {
         if(Type() == TYPE_DOUBLE) {
-            return _MaxHWVal * _Factor;
+            return _MaxHWVal / _Factor;
         }
         if(Type() == TYPE_INT) {
             return _MaxHWVal * _Factor;
@@ -97,7 +97,7 @@ public:
         if(Type() == TYPE_INTOFFSET) {
             val += _Factor;
         } else {
-            val /= _Factor;
+            val *= _Factor;
         }
         return val;
     }
@@ -119,7 +119,7 @@ public:
         if(Type() == TYPE_INTOFFSET) {
             _stprintf(szTmp, _T("%d"), (int)(v - _Factor));
         } else {
-            _stprintf(szTmp, _T("%d"), (int)(v * _Factor));
+            _stprintf(szTmp, _T("%d"), (int)(v / _Factor));
         }
         _Value = szTmp;
     }

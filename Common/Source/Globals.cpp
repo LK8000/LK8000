@@ -13,6 +13,7 @@
 #include "Modeltype.h"
 #include "LKInterface.h"
 #include "Multimap.h"
+#include "Tracking/Tracking.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -77,8 +78,6 @@ void Globals_Init(void) {
 
 
 //  _tcscpy(LK8000_Version,_T("")); // No, this is initialised by lk8000 on startup as the first thing
-
-  _tcscpy(strAssetNumber,_T(LOGGER_ASSET_ID));
 
   ProgramStarted = psInitInProgress;
 
@@ -214,6 +213,7 @@ void Globals_Init(void) {
 
   HomeWaypoint = -1;
   TakeOffWayPoint=false;
+  DeclTakeoffLanding=false;
   AirfieldsHomeWaypoint = -1;
 
   // Alternates
@@ -261,7 +261,7 @@ void Globals_Init(void) {
   FontRenderer=0;
   LockModeStatus=false;
   ArrivalValue=0;
-  NewMapDeclutter=0;
+  NewMapDeclutter=dmLow;
   SonarWarning=1;
   SonarWarning_Config=1;
   Shading=1;
@@ -304,9 +304,10 @@ void Globals_Init(void) {
   BestWarning=false;
   ThermalBar=0;
   TrackBar=false;
-  PGOptimizeRoute=true;
-  PGOptimizeRoute_Config=true;
+  TskOptimizeRoute=true;
+  TskOptimizeRoute_Config=true;
   GliderSymbol = 0; // Default
+
   WindCalcSpeed=0;
   WindCalcTime=WCALC_TIMEBACK;
   RepeatWindCalc=false;
@@ -443,8 +444,6 @@ void Globals_Init(void) {
   _tcscpy(NearestAirspaceName,_T(""));
   _tcscpy(NearestAirspaceVName,_T(""));
 
-  // FlarmNetCount=0; BUG 120606 this cannot be done here, it is already done by class init!
-
   //Airspace Warnings
   AIRSPACEWARNINGS = TRUE;
   WarningTime = 60;
@@ -492,7 +491,6 @@ void Globals_Init(void) {
   RealActiveWaypoint = -1;
   // Assigned Area Task
   AATTaskLength = 120;
-  AATEnabled = FALSE;
   FinishMinHeight = 0;
   StartMaxHeight = 0;
   StartMaxSpeed = 0;
@@ -521,10 +519,6 @@ void Globals_Init(void) {
   TrailActive = 1; // long
   TrailActive_Config = 1; // long
   DisableAutoLogger = false;
-  LiveTrackerInterval = 0;
-  LiveTrackerStart_config  = 1;
-
-  IGCWriteLock=false; // workaround, but not a real solution
 
   AutoWindMode_Config= D_AUTOWIND_CIRCLING;
   AutoWindMode= AutoWindMode_Config;
@@ -603,6 +597,10 @@ void Globals_Init(void) {
     dwDeviceName[i][0]=_T('\0');
     szPort      [i][0]=_T('\0');
     szIpAddress [i][0]=_T('\0');
+    Replay_FileName [i][0]=_T('\0');
+    ReplaySpeed[i]   = 1;
+    RawByteData [i]   = true;  // byte by byte
+    ReplaySync  [i]   = 0;      // Timer Sync
     dwSpeedIndex[i]   = 2;
     dwBitIndex  [i]   = (BitIndex_t)bit8N1;
     dwIpPort    [i]   = 23;
@@ -621,10 +619,9 @@ void Globals_Init(void) {
 
   // Logger
   PilotName_Config[0]=_T('\0');
-  LiveTrackersrv_Config[0]=_T('\0');
-  LiveTrackerport_Config=80;
-  LiveTrackerusr_Config[0]=_T('\0');
-  LiveTrackerpwd_Config[0]=_T('\0');
+
+  tracking::ResetSettings();
+
   AircraftType_Config[0]=_T('\0');
   AircraftRego_Config[0]=_T('\0');
   CompetitionClass_Config[0]=_T('\0');
@@ -657,11 +654,8 @@ void Globals_Init(void) {
   // This is a runtime only variable, by default disabled. Must be enabled by customkey
   UseWindRose=false;	// use wind rose (ex: NNE) for wind direction, instead of degrees
 
-  extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
-
   Reset_Multimap_Flags();
-  extern void Reset_Multimap_Mode(void);
   Reset_Multimap_Mode();
 
   Trip_Moving_Time=0;
@@ -694,6 +688,7 @@ void Globals_Init(void) {
   Overlay_RightTop=1;
   Overlay_RightMid=1;
   Overlay_RightBottom=1;
+  Overlay_Title= true;
 
   FontMapWaypoint=MAXFONTRESIZE;
   FontMapTopology=MAXFONTRESIZE;
@@ -713,13 +708,15 @@ void Globals_Init(void) {
   SnailScale=MAXSNAILRESIZE;
   TerrainWhiteness=1;
 
+  EnableAudioVario = false;
+
   // ^ ADD NEW GLOBALS up here ^
   // ---------------------------
 
 }
 
 
-void Reset_CustomMenu(void) {
+void Reset_CustomMenu() {
 	CustomMenu1  = ckForceLanding;			// Landscape: 1st on top right
 	CustomMenu2  = ckForceFreeFlightRestart;
 	CustomMenu3  = ckResetTripComputer;

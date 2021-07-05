@@ -56,6 +56,8 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	}
   }
 
+  UpdateFlarmTarget(*Basic);
+
   Heading(Basic, Calculated);
   DistanceToNext(Basic, Calculated);
   DistanceToHome(Basic, Calculated);
