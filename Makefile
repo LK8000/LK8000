@@ -1214,7 +1214,6 @@ DEVS	:=\
 	$(DEV)/devAR620x.cpp \
 	$(DEV)/devATR833.cpp \
 	$(DEV)/devOpenVario.cpp \
-	$(DEV)/devFanet.cpp \
 	$(DEV)/devLX_EOS_ERA.cpp \
 	$(DEV)/devFanet.cpp \
 

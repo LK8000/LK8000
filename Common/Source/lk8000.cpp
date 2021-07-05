@@ -518,7 +518,6 @@ bool Startup(const TCHAR* szCmdLine) {
   ATR833Register();
   DevVaulter::Register();
   DevOpenVario::Register();
-  FanetRegister();
   DevLX_EOS_ERA::Register();
   FanetRegister();
   // REPETITION REMINDER ..
