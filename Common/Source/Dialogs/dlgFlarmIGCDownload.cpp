@@ -15,20 +15,28 @@
 #include "dlgTools.h"
 #include "resource.h"
 #include "dlgFlarmIGCDownload.h"
+#include "utils/tokenizer.h"
 
 #define MAX_FLARM_ANSWER_LEN 640 
       // FLARM Docu does not tell the max. answer len
       // The max. ever received length on IGC read was 485, so 640 seem to be a
       // good value
+#define WATCHDOG_TIMEOUT  15000
 #define GC_BLK_RECTIMEOUT 1000
-#define GC_IDLETIME 100
-#define GC_TIMER_INTERVAL 750
-#define REC_TIMEOUT 1000 // receive timeout in ms
-#define MAX_RETRY 1
-#define LST_STRG_LEN 100
-#define STATUS_TXT_LEN 100
+#define GC_IDLETIME       10
+#define GC_TIMER_INTERVAL 500
+#define REC_TIMEOUT       1000 // receive timeout in ms
+#define MAX_RETRY         3
+#define LST_STRG_LEN      100
+#define STATUS_TXT_LEN    100
 #define PRPGRESS_DLG
-#define deb_ (0) // debug output switch
+
+//#define deb_
+#ifdef deb_
+  #define deb_Log(...) StartupStore(__VA_ARGS__)
+#else
+  #define deb_Log(...)
+#endif
 
 enum thread_state {
   IDLE_STATE,
@@ -42,13 +50,49 @@ enum thread_state {
   READRECORD_STATE_TX,
   READRECORD_STATE_RX,
   START_DOWNLOAD_STATE,
+  DOWNLOAD_START_ANS,
   ABORT_STATE,
   ERROR_STATE,
   ALL_RECEIVED_STATE,
   CLOSE_STATE
 };
 
-static volatile thread_state ThreadState = IDLE_STATE;
+
+class thread_state_with_timer final {
+private:
+  thread_state m_state = IDLE_STATE;
+  PeriodClock timer;
+      
+public:
+
+  // to change state
+  void state(thread_state v) {
+    if(m_state != v) {
+      timer.Update();
+      m_state = v;
+    }
+  }
+
+  // to get current state
+  thread_state state() const {
+    return m_state;
+  }
+
+  // to get the number of milliseconds elapsed since the last state change
+  int get_elapsed_time() const {
+    return timer.Elapsed();
+  }
+
+  // to check whether the specified duration (in ms) has passed since the last state change
+  bool check_timeout(unsigned duration) const {
+    return timer.Check(duration);
+  }
+};
+
+static thread_state_with_timer FlarmReadIGC;
+
+
+
 static bool OnTimer(WndForm *pWnd);
 
 static WndListFrame *wIGCSelectListList = NULL;
@@ -66,8 +110,6 @@ typedef struct {
 } ListElementType;
 
 std::vector<ListElementType> IGCFileList;
-
-int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_Index);
 
 ListElement *pIGCResult = NULL;
 TCHAR szStatusText[STATUS_TXT_LEN];
@@ -99,15 +141,15 @@ void SendEscChar(DeviceDescriptor_t *d, uint8_t byte) {
   if (d && d->Com)
     switch (byte) {
     case ESCAPE:
-      d->Com->PutChar(ESCAPE);
-      d->Com->PutChar(ESC_ESC);
+      d->Com->Write(ESCAPE);
+      d->Com->Write(ESC_ESC);
       break;
     case STARTFRAME:
-      d->Com->PutChar(ESCAPE);
-      d->Com->PutChar(ESC_START);
+      d->Com->Write(ESCAPE);
+      d->Com->Write(ESC_START);
       break;
     default:
-      d->Com->PutChar(byte);
+      d->Com->Write(byte);
       break;
     }
 }
@@ -128,7 +170,7 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
   blk[4] = highbyte(Sequence);      // sequence
   blk[5] = Command;
 
-  d->Com->PutChar(STARTFRAME);
+  d->Com->Write(STARTFRAME);
   for (i = 0; i < 6; i++) {
     CRC = crc_update(CRC, blk[i]);
   }
@@ -149,9 +191,8 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
     SendEscChar(d, pBlock[i]);
   }
 
-  if (deb_) {
-    StartupStore(TEXT("\r\n===="));
-  }
+  deb_Log(TEXT("\r\n===="));
+
   Poco::Thread::sleep(GC_IDLETIME);
   Poco::Thread::yield();
 }
@@ -165,15 +206,11 @@ uint8_t RecChar8(DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
       if (err == REC_NO_ERROR) {
         if (Tmp == ESC_ESC) {
           Tmp = ESCAPE;
-          if (deb_) {
-            StartupStore(TEXT("ESC_ESC"));
-          }
+          deb_Log(TEXT("ESC_ESC"));
         }
         if (Tmp == ESC_START) {
           Tmp = STARTFRAME;
-          if (deb_) {
-            StartupStore(TEXT("ESC_START"));
-          }
+          deb_Log(TEXT("ESC_START"));
         }
       }
     }
@@ -207,15 +244,11 @@ static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *C
   } while ((inchar != STARTFRAME) && (error == REC_NO_ERROR));
 
   if(error != REC_NO_ERROR) {
-    if (deb_) {
-      StartupStore(TEXT("STARTFRAME fail! Error code:%i"),error);
-    }
+    deb_Log(TEXT("STARTFRAME fail! Error code:%i"),error);
     return error;
   }
 
-  if (deb_) {
-    StartupStore(TEXT("STARTFRAME OK!"));
-  }
+  deb_Log(TEXT("STARTFRAME OK!"));
                     
   error = RecChar16(d, blocksize, Timeout);
   if (error != REC_NO_ERROR) {
@@ -228,42 +261,36 @@ static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *C
   }
 
   CRC_calc = crc_update16(CRC_calc, *blocksize);
-  if (deb_) {
-    StartupStore(TEXT("Block Size %u"), *blocksize);
-  }
+  deb_Log(TEXT("Block Size %u"), *blocksize);
 
   error = RecChar8(d, &Version, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
   CRC_calc = crc_update(CRC_calc, Version);
-  if (deb_) {
-    StartupStore(TEXT("Block Ver %u"), Version);
-  }
+  deb_Log(TEXT("Block Ver %u"), Version);
+
   error = RecChar16(d, Sequence, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
   CRC_calc = crc_update16(CRC_calc, *Sequence);
-  if (deb_) {
-    StartupStore(TEXT("Block Seq %u"), *Sequence);
-  }
+  deb_Log(TEXT("Block Seq %u"), *Sequence);
+
   error = RecChar8(d, Command, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
   CRC_calc = crc_update(CRC_calc, *Command);
-  if (deb_) {
-    StartupStore(TEXT("Block Cmd %02X"), *Command);
-  }
+  deb_Log(TEXT("Block Cmd %02X"), *Command);
+
   error = RecChar16(d, &CRC_in, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
-  if (deb_) {
-    StartupStore(TEXT("Block CRC %04X"), CRC_in);
-    StartupStore(TEXT("Header  received!"));
-  }
+
+  deb_Log(TEXT("Block CRC %04X"), CRC_in);
+  deb_Log(TEXT("Header  received!"));
 
   if (*blocksize > 8) {
     for (uint16_t i = 0; i < (*blocksize - 8); i++) {
@@ -282,9 +309,7 @@ static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *C
     StartupStore(TEXT("Rec Block CRC error!"));
   } else {
     error = REC_NO_ERROR;
-    if (deb_) {
-      StartupStore(TEXT("Rec Block received!"));
-    }
+    deb_Log(TEXT("Rec Block received!"));
   }
   return error;
 }
@@ -348,10 +373,12 @@ bool GetIGCFilename(TCHAR *IGCFilename, int Idx) {
   TCHAR Tmp[MAX_PATH];
 
   _tcscpy(Tmp, IGCFileList.at(Idx).Line1);
-  TCHAR *remaining;
-  TCHAR *Filename = _tcstok_r(Tmp, TEXT(" "), &remaining);
-  LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
-  return true;
+  TCHAR *Filename = lk::tokenizer<TCHAR>(Tmp).Next(TEXT(" "));
+  if(Filename) {
+    LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
+    return true;
+  }
+  return false;
 }
 
 static void OnEnterClicked(WndButton *pWnd) {
@@ -376,7 +403,7 @@ static void OnEnterClicked(WndButton *pWnd) {
     return;
   IGC_DLIndex = IGC_CurIndex;
   bAbort = false;
-  bShowMsg = true;
+  bShowMsg = false;
   _stprintf(Tmp, _T("%s %s ?"), MsgToken(2404),
             IGCFileList.at(IGC_DLIndex).Line1);
   if (MessageBoxX(Tmp, MsgToken(2404), mbYesNo) == IdYes) // _@2404 "Download"
@@ -388,12 +415,12 @@ static void OnEnterClicked(WndButton *pWnd) {
         if (MessageBoxX(MsgToken(2416), MsgToken(2398), mbYesNo) ==
             IdNo) // _@M2416_ "File already exits\n download anyway?"
         {
-          ThreadState = IDLE_STATE;
+          FlarmReadIGC.state(IDLE_STATE);
           return;
         }
     }
     /************************************************************/
-    ThreadState = START_DOWNLOAD_STATE; // start thread IGC download
+    FlarmReadIGC.state(START_DOWNLOAD_STATE); // start thread IGC download
     pForm->SetTimerNotify(GC_TIMER_INTERVAL, OnTimer); // check for end of download every 250ms
 #ifdef PRPGRESS_DLG
     CreateIGCProgressDialog();
@@ -449,21 +476,18 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender,
 
 static void OnIGCListEnter(WindowControl *Sender,
                            WndListFrame::ListInfo_t *ListInfo) {
-  (void)Sender;
+
   IGC_CurIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 
   if (IGC_CurIndex >= IGCFileList.size()) {
     IGC_CurIndex = IGCFileList.size() - 1;
   }
 
-  if (IGC_CurIndex >= 0) {
-    if (Sender) {
-      WndForm *pForm = Sender->GetParentWndForm();
-      if (pForm) {
-        IGC_DLIndex = IGC_CurIndex;
-        OnEnterClicked( (WndButton *)pForm->FindByName(TEXT("cmdEnter")));
-
-      }
+  if (Sender) {
+    WndForm *pForm = Sender->GetParentWndForm();
+    if (pForm) {
+      IGC_DLIndex = IGC_CurIndex;
+      OnEnterClicked( (WndButton *)pForm->FindByName(TEXT("cmdEnter")));
     }
   }
 }
@@ -474,7 +498,7 @@ void StopIGCRead(void) {
 
 static void OnCloseClicked(WndButton *pWnd) {
   StopIGCRead();
-  if (ThreadState == IDLE_STATE) {
+  if (FlarmReadIGC.state() == IDLE_STATE) {
     if (MessageBoxX(MsgToken(2413), MsgToken(2403), mbYesNo) ==
         IdYes) // _@M2413_ "FLARM need reboot for normal operation\n reboot
                // now?"
@@ -496,8 +520,9 @@ static bool OnTimer(WndForm *pWnd) {
   if (pWnd) {
     WndForm *pForm = pWnd->GetParentWndForm();
     if (pForm) {
+      pForm->SetTimerNotify(0, nullptr);
       UpdateList();
-      if (ThreadState == IDLE_STATE) {
+      if (FlarmReadIGC.state() == IDLE_STATE) {
         WndButton *wb = (WndButton *)pForm->FindByName(TEXT("cmdClose"));
         wb->SetCaption(MsgToken(186)); // _@M186_ "Close"
 #ifdef PRPGRESS_DLG
@@ -536,6 +561,7 @@ static bool OnTimer(WndForm *pWnd) {
             _tcscpy(Tmp, MsgToken(2412));
             break; // _@M2412_ "Error: unknown"
           }
+          bShowMsg = false;
           if (MessageBoxX(Tmp, MsgToken(2398), mbOk) ==
               IdYes) // _@M2406_ "Error: communication timeout"Reboot"
           {
@@ -546,6 +572,7 @@ static bool OnTimer(WndForm *pWnd) {
 #ifdef PRPGRESS_DLG
         IGCProgressDialogText(szStatusText); // update progress dialog text
 #endif
+        pForm->SetTimerNotify(GC_TIMER_INTERVAL, OnTimer); // recall if not idle
       }
     }
   }
@@ -561,7 +588,7 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
     ClickNotifyCallbackEntry(OnDownClicked),
     EndCallBackEntry()};
 
-void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
+void LeaveBinMode(DeviceDescriptor_t *d) {
   if (d != NULL) {
     int Sequence = 0;
 
@@ -569,40 +596,47 @@ void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
     GPS_INFO.FLARM_Available = false;
     UnlockFlightData();
 
-    if (deb_)
-      StartupStore(TEXT("EXIT & RESET"));
+    deb_Log(TEXT("Flarm exit BIN mode!"));
     SendBinBlock(d, Sequence, EXIT, NULL, 0);
     SetBinaryModeFlag(false);
-    StartupStore(TEXT("$PFLAR,0*55\r\n"));
-    d->Com->WriteString(TEXT("$PFLAR,0*55\r\n"));
-    if (deb_)
-      StartupStore(TEXT("$PFLAR,0*55\r\n"));
+
   }
 }
 
-class ResourceLock {
+void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
+  if (d != NULL) {
+    LeaveBinMode(d); 
+    d->Com->WriteString("$PFLAR,0*55\r\n");
+    deb_Log(TEXT("Flarm Reset!\r\n"));	
+  }
+}
+
+class FlarmResourceLock {
 public:
-  ResourceLock() {
-    StartupStore(TEXT(".... Enter ResourceLock%s"), NEWLINE);
+  FlarmResourceLock() {
+    MapWindow::SuspendDrawingThread();
+    StartupStore(TEXT(".... Enter ResourceLock FLARM%s"), NEWLINE);
     StartIGCReadThread();
-  };
-  ~ResourceLock() {
+  }
+
+  ~FlarmResourceLock() {
     StartupStore(TEXT(".... Leave ResourceLock%s"), NEWLINE);
     StopIGCReadThread();
     IGCFileList.clear();
+    MapWindow::ResumeDrawingThread();
   }
 };
 
 ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
 
-  ResourceLock ResourceGuard; // simply need to exist for recource Lock/Unlock
+  FlarmResourceLock ResourceGuard; // simply need to exist for recource Lock/Unlock
   StartupStore(TEXT(".... StartIGCReadThread%s"), NEWLINE);
 
   bShowMsg = false;
   bAbort = false;
   bFilled = false;
   /*************************************************/
-  ThreadState = OPEN_BIN_STATE;
+  FlarmReadIGC.state(OPEN_BIN_STATE);
   /*************************************************/
   std::unique_ptr<WndForm> wf(dlgLoadFromXML(IGCCallBackTable, ScreenLandscape
                                             ? IDR_XML_MULTISELECTLIST_L
@@ -644,19 +678,82 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
     wf->ShowModal();
   }
   DownloadError = REC_NOMSG; // don't show an error msg on initialisation
-  LeaveBinModeWithReset(d);  // reset Flarm after leaving dialog
+  LeaveBinMode(d);  //  Flarm exit BIN mode
 
-  ThreadState = IDLE_STATE;
+  FlarmReadIGC.state(IDLE_STATE);
   return pIGCResult;
 }
 
+void EnterBinMode(DeviceDescriptor_t *d)
+{
+  d->Com->WriteString("$PFLAX\r\n"); // set to binary
+  deb_Log(TEXT("$PFLAX\r "));
+  FlarmReadIGC.state(PING_STATE_TX);
+  SetBinaryModeFlag(true);
+  Poco::Thread::sleep(100);
+}
+
+
+bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
+{
+  if(blocksize >=MAX_FLARM_ANSWER_LEN)
+    return false;
+
+  TCHAR TempString[255];
+  ListElementType NewElement;
+  for (uint16_t i = 0; i < blocksize - 2; i++)
+    TempString[i] = (TCHAR)pByteBlk[i + 2];
+
+  deb_Log(TEXT("> %s "), TempString);
+
+  TCHAR empty[3] = _T("");
+  lk::tokenizer<TCHAR> tok(TempString);
+  TCHAR *Filename = tok.Next({_T('|')});
+  if (Filename == NULL) {
+    Filename = empty;
+  };
+  TCHAR *Date = tok.Next({_T('|')});
+  if (Date == NULL) {
+    Date = empty;
+  };
+  TCHAR *Takeoff = tok.Next({_T('|')});
+  if (Takeoff == NULL) {
+    Takeoff = empty;
+  };
+  TCHAR *Duration = tok.Next({_T('|')});
+  if (Duration == NULL) {
+    Duration = empty;
+  };
+  TCHAR *Pilot = tok.Next({_T('|')});
+  if (Pilot == NULL) {
+    Pilot = empty;
+  };
+  TCHAR *CN = tok.Next({_T('|')});
+  if (CN == NULL) {
+    CN = empty;
+  };
+  _stprintf(NewElement.Line1, _T("%s (%s  [%5s])"), Filename, Date,
+            Takeoff);
+  _stprintf(NewElement.Line2, _T("%s"), Duration);
+  if (Pilot) {
+    _tcscat(NewElement.Line2, _T(" "));
+    _tcscat(NewElement.Line2, Pilot);
+  };
+  if (CN) {
+    _tcscat(NewElement.Line2, _T(" "));
+    _tcscat(NewElement.Line2, CN);
+  };
+  IGCFileList.push_back(NewElement);
+  return true;
+}
+
+static
 int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
-
   if (d == NULL)
-    return 0;
-
+    return 0; 
+  static uint32_t TotalSize =0;
   static FILE *file_ptr = NULL;
-  static int TimeCnt = 0;
+
   static uint16_t Sequence;
   static uint8_t retrys = 0;
   static uint8_t TimeOutFactor = 1;
@@ -664,402 +761,364 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
   pByteBlk[0] = IGC_FileIndex;
   uint16_t blocksize = 1;
   uint16_t RecSequence;
-  uint8_t RecCommand;
+  uint8_t RecCommand=NACK;
   uint8_t err = REC_NO_ERROR;
 
-  static thread_state OldThreadState = IDLE_STATE;
-
-  if (OldThreadState == ThreadState) // state watchdog
-  {
-    if (TimeCnt++ > 15000 / GC_IDLETIME) // no state change for 15s ?
-    {
-      ThreadState = ABORT_STATE; // abort!
-      StartupStore(TEXT("STATE WATCHDOG timeout after %ums in State %i"),
-                   TimeCnt * GC_IDLETIME, ThreadState);
-    }
-  } else {
-    OldThreadState = ThreadState; // remember new state
-    TimeCnt = 0;
-  }
 
   if (bAbort) {
-    ThreadState = ABORT_STATE;
+    FlarmReadIGC.state(ABORT_STATE);
     bAbort = false;
   }
 
-  if (ThreadState == IDLE_STATE)
-    return 0;
 
-  if (d != NULL) {
-    /******************************  OPEN_BIN_STATE
-     * ************************************/
-    if (ThreadState == OPEN_BIN_STATE) {
-      retrys = 0;
-      d->Com->WriteString(TEXT("$PFLAX\r\n")); // set to binary
-      if (deb_)
-        StartupStore(TEXT("$PFLAX\r "));
-      ThreadState = PING_STATE_TX;
-      SetBinaryModeFlag(true);
-      return 0;
-    }
+  switch(FlarmReadIGC.state())
+  {
+      case IDLE_STATE:
+      break;
+      /********************  OPEN_BIN_STATE ******************************/
+      case OPEN_BIN_STATE:
+        retrys = 0;
+        EnterBinMode(d);
+        FlarmReadIGC.state(PING_STATE_TX);
+      break;
 
-    /******************************  PING_STATE_TX
-     * ************************************/
-    if (ThreadState == PING_STATE_TX) {
-      if (deb_)
-        StartupStore(TEXT("PING "));
+      /*******************  PING_STATE_TX  ********************************/
+      case PING_STATE_TX:
+        deb_Log(TEXT("PING "));
+
 #ifdef NO_FAKE_FLARM
-      if (retrys++ >= 15) {
-        ThreadState = ERROR_STATE;
-        return 0;
-      }
+        if (retrys++ >= 15) {
+          FlarmReadIGC.state(ERROR_STATE);
+          return 0;
+        }
 #endif
-      ListElementType NewElement;
-      _sntprintf(NewElement.Line1, LST_STRG_LEN, _T("        PING Flarm %u/15"),
-                 retrys);
-      _tcscpy(NewElement.Line2, _T("        ... "));
-      IGCFileList.clear();
-      IGCFileList.push_back(NewElement);
-      SendBinBlock(d, Sequence++, PING, NULL, 0);
-      TimeCnt = 0;
 
-      ThreadState = PING_STATE_RX;
-    }
-    /******************************  PING_STATE_RX
-     * ************************************/
-    if (ThreadState == PING_STATE_RX) {
-      if (!BlockReceived()) {
-        if (deb_)
-          StartupStore(TEXT("WAIT FOR PING ANSWER %ums"),
-                       TimeCnt * GC_IDLETIME);
-        if (TimeCnt > (1000 / GC_IDLETIME)) {
-          err = REC_TIMEOUT_ERROR;
-          ThreadState = PING_STATE_TX;
-        }
-        return 0; // no data? leave thread and wait for next call
-      }
-      err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-      ThreadState = PING_STATE_TX;
-      if (err == REC_NO_ERROR) {
-        retrys = 0;
-        ThreadState = SELECTRECORD_STATE_TX;
-        IGCFileList.clear(); // empty list
-      }
-      return 0;
-    }
-    /******************************  SELECTRECORD_STATE_TX
-     * ************************************/
-    if (ThreadState == SELECTRECORD_STATE_TX) {
-      if (deb_)
-        StartupStore(TEXT("RECORD_STATE_TX "));
-      pByteBlk[0] = IGCFileList.size();
-      SendBinBlock(d, Sequence++, SELECTRECORD, &pByteBlk[0], 1);
-      ThreadState = SELECTRECORD_STATE_RX;
-      DownloadError = REC_NO_ERROR;
-    }
-
-    /****************************  SELECTRECORD_STATE_RX
-     * ************************************/
-    if (ThreadState == SELECTRECORD_STATE_RX) {
-      if (!BlockReceived()) {
-        if (deb_)
-          StartupStore(TEXT("SELECTRECORD_STATE_RX %ums"),
-                       TimeCnt * GC_IDLETIME);
-        if (TimeCnt > (GC_BLK_RECTIMEOUT / GC_IDLETIME)) {
-          err = REC_TIMEOUT_ERROR;
-          ThreadState = SELECTRECORD_STATE_TX;
-          if (retrys++ > MAX_RETRY) {
-            ThreadState = ABORT_STATE;
-            err = REC_TIMEOUT_ERROR;
-          }
-        }
-        return 0; // no data? leave thread and wait for next call
-      }
-      err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-      if (RecCommand == ACK)
-        ThreadState = READRECORD_STATE_TX;
-      else
-        ThreadState = ALL_RECEIVED_STATE;
-
-      if (err)
-        ThreadState = ABORT_STATE;
-      else
-        retrys = 0;
-    }
-
-    /******************************  READRECORD_STATE_TX
-     * ************************************/
-    if (ThreadState == READRECORD_STATE_TX) {
-      if (deb_)
-        StartupStore(TEXT("READRECORD_STATE_RX "));
-      SendBinBlock(d, Sequence++, GETRECORDINFO, NULL, 0);
-
-      ThreadState = READRECORD_STATE_RX;
-    }
-    /******************************  READRECORD_STATE_RX
-     * ************************************/
-    if (ThreadState == READRECORD_STATE_RX) {
-      if (!BlockReceived()) {
-        if (deb_)
-          StartupStore(TEXT("READRECORD_STATE_RX %ums"), TimeCnt * GC_IDLETIME);
-        if (TimeCnt > (GC_BLK_RECTIMEOUT / GC_IDLETIME)) {
-          err = REC_TIMEOUT_ERROR;
-          ThreadState = READRECORD_STATE_TX;
-          if (retrys++ > MAX_RETRY) {
-            ThreadState = ABORT_STATE;
-            err = REC_TIMEOUT_ERROR;
-          }
-        }
-
-        return 0; // no data? leave thread and wait for next call
-      }
-      err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-      if (err) {
-        ThreadState = ABORT_STATE;
-        return 0;
-      }
-      retrys = 0;
-      pByteBlk[blocksize++] = 0;
-      if (RecCommand == ACK) {
-        TCHAR TempString[255];
         ListElementType NewElement;
-        for (uint16_t i = 0; i < blocksize - 2; i++)
-          TempString[i] = (TCHAR)pByteBlk[i + 2];
-        if (deb_)
-          StartupStore(TEXT("> %s "), TempString);
-        TCHAR empty[3] = _T("");
-        TCHAR *remaining = NULL;
-        TCHAR *Filename = _tcstok_r(TempString, TEXT("|"), &remaining);
-        if (Filename == NULL) {
-          Filename = empty;
-        };
-        TCHAR *Date = _tcstok_r(NULL, TEXT("|"), &remaining);
-        if (Date == NULL) {
-          Date = empty;
-        };
-        TCHAR *Takeoff = _tcstok_r(NULL, TEXT("|"), &remaining);
-        if (Takeoff == NULL) {
-          Takeoff = empty;
-        };
-        TCHAR *Duration = _tcstok_r(NULL, TEXT("|"), &remaining);
-        if (Duration == NULL) {
-          Duration = empty;
-        };
-        TCHAR *Pilot = _tcstok_r(NULL, TEXT("|"), &remaining);
-        if (Pilot == NULL) {
-          Pilot = empty;
-        };
-        TCHAR *CN = _tcstok_r(NULL, TEXT("|"), &remaining);
-        if (CN == NULL) {
-          CN = empty;
-        };
-        _stprintf(NewElement.Line1, _T("%s (%s  [%5s])"), Filename, Date,
-                  Takeoff);
-        _stprintf(NewElement.Line2, _T("%s"), Duration);
-        if (Pilot) {
-          _tcscat(NewElement.Line2, _T(" "));
-          _tcscat(NewElement.Line2, Pilot);
-        };
-        if (CN) {
-          _tcscat(NewElement.Line2, _T(" "));
-          _tcscat(NewElement.Line2, CN);
-        };
+        _sntprintf(NewElement.Line1, LST_STRG_LEN, _T("        PING Flarm %u/15"),
+                    retrys);
+        _tcscpy(NewElement.Line2, _T("        ... "));
+        IGCFileList.clear();
         IGCFileList.push_back(NewElement);
-      }
+        SendBinBlock(d, Sequence++, PING, NULL, 0);
 
-      if (RecCommand != ACK)
-        ThreadState = ALL_RECEIVED_STATE;
-      else
-        ThreadState = SELECTRECORD_STATE_TX;
-    }
-    /******************************  ALL_RECEIVED_STATE
-     * *********************************/
-    if (ThreadState == ALL_RECEIVED_STATE) {
-      bFilled = true;
-      if (deb_)
-        StartupStore(TEXT("ALL_RECEIVED_STATE"));
-      ThreadState = IDLE_STATE;
-    }
-    /******************************  ERROR_STATE
-     * ************************************/
-    if (ThreadState == ERROR_STATE) {
-      if (deb_)
-        StartupStore(TEXT("ERROR_STATE"));
-      ListElementType NewElement;
-      _tcscpy(NewElement.Line1, _T("        Error:"));
-      _sntprintf(NewElement.Line2, LST_STRG_LEN, _T("         %s"),
-                 MsgToken(2401)); // _@M2401_ "No Device found"
-      IGCFileList.clear();
-      IGCFileList.push_back(NewElement);
-      ThreadState = IDLE_STATE;
-      err = REC_NO_DEVICE;
-    }
-    /******************************  ABORT STATE
-     * ************************************/
-    if (ThreadState == ABORT_STATE) {
-      if (deb_)
-        StartupStore(TEXT("ABORT_STATE"));
-      if (file_ptr != NULL) // file incomplete?
-      {
-        fclose(file_ptr);
-        file_ptr = NULL;
+        FlarmReadIGC.state(PING_STATE_RX);
+      break;
+      /********************  PING_STATE_RX **********************************/
+      case PING_STATE_RX:
+        if (!BlockReceived()) {
+
+          deb_Log(TEXT("WAIT FOR PING ANSWER %ums"),
+                          FlarmReadIGC.get_elapsed_time());
+          if (FlarmReadIGC.check_timeout(1000)) {
+            err = REC_TIMEOUT_ERROR;
+            FlarmReadIGC.state(PING_STATE_TX);
+          }
+        }
+        else
+        {
+          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
+          FlarmReadIGC.state( PING_STATE_TX);
+          if (err == REC_NO_ERROR) {
+            retrys = 0;
+            FlarmReadIGC.state( SELECTRECORD_STATE_TX);
+            IGCFileList.clear(); // empty list
+          }
+        }
+      break;
+      /*******************  SELECTRECORD_STATE_TX ***************************/
+      case SELECTRECORD_STATE_TX:
+        deb_Log(TEXT("RECORD_STATE_TX "));
+        pByteBlk[0] = IGCFileList.size();
+        SendBinBlock(d, Sequence++, SELECTRECORD, &pByteBlk[0], 1);
+        FlarmReadIGC.state( SELECTRECORD_STATE_RX);
+        DownloadError = REC_NO_ERROR;
+      break;
+
+      /*******************  SELECTRECORD_STATE_RX ***************************/
+      case SELECTRECORD_STATE_RX:		
+        if (!BlockReceived()) {
+
+          deb_Log(TEXT("SELECTRECORD_STATE_RX %ums"),
+                          FlarmReadIGC.get_elapsed_time());
+
+          if  (FlarmReadIGC.check_timeout(GC_BLK_RECTIMEOUT)) 
+          {
+            FlarmReadIGC.state( SELECTRECORD_STATE_TX);
+            if (retrys++ > MAX_RETRY) {
+              FlarmReadIGC.state( ABORT_STATE);
+              err = REC_TIMEOUT_ERROR;
+            }
+          }
+        }
+        else
+        {
+          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
+          if (RecCommand == ACK)
+            FlarmReadIGC.state( READRECORD_STATE_TX);
+          else
+            FlarmReadIGC.state( ALL_RECEIVED_STATE);
+
+          if (err)
+            FlarmReadIGC.state( ABORT_STATE);
+          else
+            retrys = 0;
+        }
+      break;
+      /******************  READRECORD_STATE_TX ******************************/
+      case READRECORD_STATE_TX:
+        deb_Log(TEXT("READRECORD_STATE_RX "));
+        SendBinBlock(d, Sequence, GETRECORDINFO, NULL, 0);
+
+        FlarmReadIGC.state( READRECORD_STATE_RX);
+      break;
+      /******************  READRECORD_STATE_RX ******************************/
+      case READRECORD_STATE_RX:
+        if (!BlockReceived()) {
+          deb_Log(TEXT("READRECORD_STATE_RX %ums"),  FlarmReadIGC.get_elapsed_time());
+
+          if  (FlarmReadIGC.check_timeout(GC_BLK_RECTIMEOUT)) 
+          {
+            err = REC_TIMEOUT_ERROR;
+            FlarmReadIGC.state( READRECORD_STATE_TX);
+            if (retrys++ > MAX_RETRY) {
+              FlarmReadIGC.state( ABORT_STATE);
+              err = REC_TIMEOUT_ERROR;
+            }
+          }
+        }
+        else
+        {
+          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
+          if (err) {
+            FlarmReadIGC.state( ABORT_STATE);
+            StartupStore(TEXT("err: %u in READRECORD_STATE_RX"), err);
+          }
+          else
+          {
+            retrys = 0;
+            Sequence++;
+            pByteBlk[blocksize++] = 0;
+            if (RecCommand == ACK) {
+              FormatListEntry( pByteBlk, blocksize);
+            }
+
+            if (RecCommand != ACK)
+              FlarmReadIGC.state( ALL_RECEIVED_STATE);
+            else
+              FlarmReadIGC.state( SELECTRECORD_STATE_TX);
+          }
+        }
+      break;
+      /*******************  ALL_RECEIVED_STATE *****************************/
+      case ALL_RECEIVED_STATE:		
+        bFilled = true;
+        deb_Log(TEXT("ALL_RECEIVED_STATE"));
+        FlarmReadIGC.state( IDLE_STATE);
+      break;
+
+    /**********************  ERROR_STATE *********************************/
+      case ERROR_STATE:		                    
+        deb_Log(TEXT("ERROR_STATE"));
+  //   ListElementType NewElement;
+        _tcscpy(NewElement.Line1, _T("        Error:"));
+        _sntprintf(NewElement.Line2, LST_STRG_LEN, _T("         %s"),
+                    MsgToken(2401)); // _@M2401_ "No Device found"
+        IGCFileList.clear();
+        IGCFileList.push_back(NewElement);
+        FlarmReadIGC.state( IDLE_STATE);
+        err = REC_NO_DEVICE;
+      break;
+
+      /*********************  ABORT STATE ***********************************/
+      case ABORT_STATE:
+        deb_Log(TEXT("ABORT_STATE"));
+        if (file_ptr != NULL) // file incomplete?
+        {
+          fclose(file_ptr);
+          file_ptr = NULL;
+
+          TCHAR IGCFilename[MAX_PATH];
+          if (GetIGCFilename(IGCFilename, IGC_FileIndex)) {
+            lk::filesystem::deleteFile(
+                IGCFilename); // delete incomplete file (after abort) to prevent
+                              // "file exists warning
+            deb_Log(TEXT("delete incomplete IGC File: %s "), IGCFilename);
+          }
+        }
+        if (!err)
+          err = REC_ABORTED;
+        FlarmReadIGC.state( IDLE_STATE);
+      break;
+
+      /******************* START_DOWNLOAD_STATE *****************************/
+      case START_DOWNLOAD_STATE:
+        Sequence = 0;
+        TotalSize =0;
+        if (IGCFileList.size() < IGC_FileIndex)
+        {
+          FlarmReadIGC.state( PING_STATE_TX);
+          return 0;
+        }
+        /*
+            we must resend the binary mode command before a new IGC file donwload,
+            because PowerFlarm automatcally return from binary mode after a while
+            so we must re-enable it in case user waited too long to start download
+        */
+        EnterBinMode(d);
+        deb_Log(TEXT("START_DOWNLOAD_STATE: %s"),
+                        IGCFileList.at(IGC_FileIndex).Line1);
+        if (file_ptr) {
+          fclose(file_ptr);
+          file_ptr = NULL;
+        }
+        err = REC_NO_ERROR;
 
         TCHAR IGCFilename[MAX_PATH];
-        if (GetIGCFilename(IGCFilename, IGC_FileIndex)) {
-          lk::filesystem::deleteFile(
-              IGCFilename); // delete incomplete file (after abort) to prevent
-                            // "file exists warning
-          if (deb_)
-            StartupStore(TEXT("delete incomplete IGC File: %s "), IGCFilename);
-        }
-      }
-      if (!err)
-        err = REC_ABORTED;
-      ThreadState = IDLE_STATE;
-    }
-    /****** START_DOWNLOAD_STATE
-     * ************************************************************************/
-    if (ThreadState == START_DOWNLOAD_STATE) {
-      Sequence = 0;
-      if (IGCFileList.size() < IGC_FileIndex)
-        return 0;
+        GetIGCFilename(IGCFilename, IGC_FileIndex);
+        file_ptr = _tfopen(IGCFilename, TEXT("w"));
+        if (file_ptr == NULL) {
+          err = FILE_OPEN_ERROR;
+        } // #define FILE_OPEN_ERROR 5
 
-      if (deb_)
-        StartupStore(TEXT("START_DOWNLOAD_STATE: %s"),
-                     IGCFileList.at(IGC_FileIndex).Line1);
-      if (file_ptr) {
-        fclose(file_ptr);
-        file_ptr = NULL;
-      }
-      err = REC_NO_ERROR;
-
-      TCHAR IGCFilename[MAX_PATH];
-      GetIGCFilename(IGCFilename, IGC_FileIndex);
-      file_ptr = _tfopen(IGCFilename, TEXT("w"));
-      if (file_ptr == NULL) {
-        err = FILE_OPEN_ERROR;
-      } // #define FILE_OPEN_ERROR 5
-
-      _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),
-                 IGCFileList.at(IGC_FileIndex).Line1);
-      if (deb_)
-        StartupStore(_T("%s"), szStatusText);
-      SendBinBlock(d, Sequence++, SELECTRECORD, &IGC_FileIndex, 1);
-      err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-
-      if (err != REC_NO_ERROR) {
-        err = IGC_RECEIVE_ERROR;
-        ThreadState = ABORT_STATE;
-      } else
-        ThreadState = READ_STATE_TX;
-      Sequence = 0;
-      retrys = 0;
-      TimeOutFactor = 1;
-    }
-
-    /******READ STATE TX
-     * *******************************************************************************/
-    if (ThreadState == READ_STATE_TX) {
-      blocksize = 0;
-      ThreadState = READ_STATE_RX;
-      SendBinBlock(d, Sequence, GETIGCDATA, &pByteBlk[0], 0);
-    }
-
-    /******READ STATE RX
-     * *******************************************************************************/
-    if (ThreadState == READ_STATE_RX) {
-      if (!BlockReceived()) {
-        if (TimeCnt > (TimeOutFactor * GC_BLK_RECTIMEOUT /
-                       GC_IDLETIME)) // Time factor needed fo the very last
-                                     // Flarm Answer only, which need far longer
+        _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),
+                    IGCFileList.at(IGC_FileIndex).Line1);
+        
+        deb_Log(_T("%s"), szStatusText);
+  
+        SendBinBlock(d, Sequence, SELECTRECORD, &IGC_FileIndex, 1);
+        bShowMsg = true;
+        retrys = 0;
+        TimeOutFactor = 1;          
+        FlarmReadIGC.state( DOWNLOAD_START_ANS);
+      break;
+        /*************************** DOWNLOAD_START_ANS **********************/      
+      case DOWNLOAD_START_ANS:
+        if (BlockReceived()) 
         {
-          if (retrys++ > MAX_RETRY) {
-            err = REC_TIMEOUT_ERROR;
-            DownloadError = err;
-            ThreadState = ABORT_STATE;
-            StartupStore(TEXT("%u%% Block:%u  Abort while wait for answer "
+          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
+          if (err != REC_NO_ERROR) {
+            err = IGC_RECEIVE_ERROR;
+            FlarmReadIGC.state( ABORT_STATE);
+          } else
+            FlarmReadIGC.state( READ_STATE_TX);
+        }
+      break;
+
+        /*************************** READ STATE TX ***************************/
+      case READ_STATE_TX:
+        blocksize = 0;
+        DownloadError = REC_NO_ERROR;
+        SendBinBlock(d, Sequence, GETIGCDATA, &pByteBlk[0], 0);  
+        FlarmReadIGC.state( READ_STATE_RX);
+      break;
+      /************************** READ STATE RX *****************************/
+      case READ_STATE_RX:
+        if (!BlockReceived()) {
+          if(FlarmReadIGC.check_timeout(TimeOutFactor*GC_BLK_RECTIMEOUT))
+          {
+            if (retrys++ > MAX_RETRY) {
+              err = REC_TIMEOUT_ERROR;
+              DownloadError = err;
+
+              StartupStore(TEXT("%u%% Abort after %u Blocks, while wait for answer "
                               "time:%ums  Size:%uByte"),
-                         pByteBlk[2], Sequence, TimeCnt * GC_IDLETIME,
-                         blocksize);
-          } else {
-            ThreadState = READ_STATE_TX;
-            StartupStore(TEXT("%u%% Block:%u timeout :%ums while wating for "
-                              "answer request Block again %i. time"),
-                         pByteBlk[2], Sequence, TimeCnt * GC_IDLETIME, retrys);
+                          pByteBlk[2], Sequence, FlarmReadIGC.get_elapsed_time(),
+                          TotalSize);
+              FlarmReadIGC.state( ABORT_STATE);              
+            } else {
+
+              StartupStore(TEXT("%u%% %u. timeout %ums at Block %u (%u Bytes), request Block again!"),
+                            pByteBlk[2], retrys, FlarmReadIGC.get_elapsed_time(), Sequence ,TotalSize );
+              FlarmReadIGC.state( READ_STATE_TX);
+            }
           }
         }
-        return 0;
-      }
-      Sequence++;
-      retrys = 0;
+        else
+        {
+          RecCommand = NACK;
+          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize,TimeOutFactor * REC_TIMEOUT);
+          if (err) {
+            if (retrys++ > MAX_RETRY) {
+              DownloadError = err;
+              StartupStore(
+                TEXT("%u%% Block Error:%u Block %u  Abort after %u retrys read time:%ums  Size: %u Bytes"),
+                pByteBlk[2],err, Sequence,retrys,  FlarmReadIGC.get_elapsed_time() , TotalSize);
+              FlarmReadIGC.state( ABORT_STATE);
+            }
+            else
+            {
+              StartupStore(
+                TEXT("%u%% Block Error:%u Block %u retry #%i after read time:%ums  Size:%u Bytes"),
+                pByteBlk[2],err, Sequence,retrys,  FlarmReadIGC.get_elapsed_time() , TotalSize);              
+                FlarmReadIGC.state( READ_STATE_TX);
+            }
+          } else
+          {                
+            retrys  =0;
+            Sequence++;
+            TotalSize += blocksize;
+            
+            if (pByteBlk[2] > 50) // if more that 50% read, increase TimeOutFactor
+              TimeOutFactor =
+                  WATCHDOG_TIMEOUT / GC_BLK_RECTIMEOUT; // reading last FLARM sentences takes up
+                                          // to 8s, for whatever reason
 
-      if (!err)
-        err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-      if (err) {
-        ThreadState = ABORT_STATE;
-        StartupStore(
-            TEXT("%u%% Block:%u  Abort after read time:%ums  Size:%uByte"),
-            pByteBlk[2], Sequence, TimeCnt * GC_IDLETIME, blocksize);
-      } else
-        ThreadState = READ_STATE_TX;
+              _sntprintf(
+                  szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."), MsgToken(2400),
+                  pByteBlk[2],
+                  IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
+            static int  prevPercent =0; 
+            if (abs((int)pByteBlk[2] - prevPercent) >= 5) 
+            {
+              prevPercent =  pByteBlk[2];
+              StartupStore(TEXT("%u%% %u. Block (%u Bytes)  Response time:%ums  Total:%u Bytes"),
+                            pByteBlk[2], Sequence, blocksize,  FlarmReadIGC.get_elapsed_time() , TotalSize);
+            }
+            for (int i = 0; i < blocksize - 3; i++) {
+              if (file_ptr)
+                fputc(pByteBlk[3 + i], file_ptr);
+              if (pByteBlk[3 + i] == EOF_)
+                RecCommand = EOF_;
+            }
+            
+            FlarmReadIGC.state( READ_STATE_TX);
+            if (RecCommand == EOF_)
+              FlarmReadIGC.state( CLOSE_STATE);
+            
+          }
+        }
+      break;
 
-      if (pByteBlk[2] > 50) // if more that 50% read, increase TimeOutFactor
-        TimeOutFactor =
-            100000 / GC_BLK_RECTIMEOUT; // reading last FLARM sentences takes up
-                                        // to 8s, for whatever reason
+      /************************* CLOSE STATE *********************************/		
+      case CLOSE_STATE:
+        if (file_ptr) {
+          fclose(file_ptr);
+          file_ptr = NULL;
+        }
 
-      if (err == REC_NO_ERROR)
-        _sntprintf(
-            szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."), MsgToken(2400),
-            pByteBlk[2],
-            IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
+        FlarmReadIGC.state( IDLE_STATE);
+        deb_Log(TEXT("IDLE_STATE"));
+        if (err != REC_NO_ERROR) {
+          _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("Error Code:%u"), err);
+          //    err = REC_NO_ERROR;
+        } else {
+          _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"),
+                      MsgToken(2406)); // _@M2406_ "IGC File download complete!"
+        }
+        deb_Log(_T("IGC download complete"));
+      break;
+      /********************************************************************/
+    } // case
 
-      if ((Sequence % 10) == 0) {
-        StartupStore(TEXT("%u%% Block:%u  Response time:%ums  Size:%uByte"),
-                     pByteBlk[2], Sequence, TimeCnt * GC_IDLETIME, blocksize);
-      }
-      for (int i = 0; i < blocksize - 3; i++) {
-        if (file_ptr)
-          fputc(pByteBlk[3 + i], file_ptr);
-        if (pByteBlk[3 + i] == EOF_)
-          RecCommand = EOF_;
-      }
-
-      if (err)
-        ThreadState = CLOSE_STATE;
-
-      if (RecCommand != ACK)
-        ThreadState = CLOSE_STATE;
+    if(FlarmReadIGC.check_timeout(WATCHDOG_TIMEOUT))// no state change for a longer time ?
+    {    
+      StartupStore(TEXT("STATE WATCHDOG timeout after %ums in State %i"),
+                   FlarmReadIGC.get_elapsed_time() , FlarmReadIGC.state());
+      FlarmReadIGC.state( ABORT_STATE); // abort!
     }
-    /******CLOSE ON ERROR
-     * *********************************************************************************/
-    if (err != REC_NO_ERROR)
-      ThreadState = CLOSE_STATE;
-
-    /******CLOSE STATE
-     * *********************************************************************************/
-    if (ThreadState == CLOSE_STATE) {
-      if (file_ptr) {
-        fclose(file_ptr);
-        file_ptr = NULL;
-      }
-
-      ThreadState = IDLE_STATE;
-      if (deb_)
-        StartupStore(TEXT("IDLE_STATE"));
-      if (err != REC_NO_ERROR) {
-        _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("Error Code:%u"), err);
-        //    err = REC_NO_ERROR;
-      } else {
-        _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"),
-                   MsgToken(2406)); // _@M2406_ "IGC File download complete!"
-      }
-      if (deb_)
-        StartupStore(_T("IGC download complete"));
-    }
-  } // if(d)
+ 
   if (err)
-    if (DownloadError == REC_NO_ERROR) // no prvious error=
+    if (DownloadError == REC_NO_ERROR) // no previous error=
       DownloadError = err;
   return 0;
 }
@@ -1067,6 +1126,9 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
 class IGCReadThread : public Poco::Runnable {
 public:
   void Start() {
+
+
+ 
     if (!Thread.isRunning()) {
       bStop = false;
       Thread.start(*this);
@@ -1077,6 +1139,8 @@ public:
     if (Thread.isRunning()) {
       bStop = true;
       Thread.join();
+
+  
     }
   }
 
@@ -1085,19 +1149,18 @@ protected:
   Poco::Thread Thread;
 
   void run() {
-    if (deb_)
-      StartupStore(TEXT("IGC Thread Started !"));
+    deb_Log(TEXT("IGC Thread Started !"));
+ 
+    
 
     while (!bStop) {
-      if (ThreadState != IDLE_STATE) {
+      if (FlarmReadIGC.state() != IDLE_STATE) {
         ReadFlarmIGCFile(CDevFlarm::GetDevice(), IGC_DLIndex);
       }
       Poco::Thread::sleep(GC_IDLETIME);
       Poco::Thread::yield();
     }
-
-    if (deb_)
-      StartupStore(TEXT("IGC Thread Stopped !"));
+    deb_Log(TEXT("IGC Thread Stopped !"));
 
   }
 };
@@ -1105,13 +1168,11 @@ protected:
 IGCReadThread IGCReadThreadThreadInstance;
 
 void StartIGCReadThread() {
-  if (deb_)
-    StartupStore(TEXT("Start IGC Thread !"));
+  deb_Log(TEXT("Start IGC Thread !"));
   IGCReadThreadThreadInstance.Start();
 }
 
 void StopIGCReadThread() {
-  if (deb_)
-    StartupStore(TEXT("Stop IGC Thread !"));
+  deb_Log(TEXT("Stop IGC Thread !"));
   IGCReadThreadThreadInstance.Stop();
 }

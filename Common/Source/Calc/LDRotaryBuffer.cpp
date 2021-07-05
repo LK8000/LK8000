@@ -282,7 +282,7 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
 
 		// We use GPS altitude to be sure that the tas is correct, we dont know in fact
 		// if qnh is correct, while gps is generally accurate for the purpose.
-		avertas=averias*AirDensityRatio(QNHAltitudeToQNEAltitude(Basic->Altitude));
+		avertas = TrueAirSpeed(averias, QNHAltitudeToQNEAltitude(Basic->Altitude));
 		// This is just to be sure we are not using an impossible part of the polar
 		if (avertas>(GlidePolar::Vminsink()-8.3) && (avertas>0)) { // minsink - 30km/h
 

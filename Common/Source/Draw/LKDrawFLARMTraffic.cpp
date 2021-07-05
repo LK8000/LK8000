@@ -70,7 +70,7 @@ static int	iRectangleSize = 4;
 
 //  double dX, dY;
 
-  TextInBoxMode_t displaymode = {0};
+  TextInBoxMode_t displaymode = {};
   displaymode.NoSetFont = 1;
 
   #if 0
@@ -91,7 +91,7 @@ static int	iRectangleSize = 4;
 		continue;
 	}
 
-	if ( (DrawInfo.FLARM_Traffic[i].ID !=0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) ) {
+	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) ) {
 
 
 		double target_lon;

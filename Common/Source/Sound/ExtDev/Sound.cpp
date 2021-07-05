@@ -67,8 +67,8 @@ void PlayExtSound(sound_code_t sound_code) {
     if (!nmeaStr.empty()) {
         for(unsigned i = 0; i < NUMDEV; ++i) {
             
-            static_assert(array_size(UseExtSound) == NUMDEV, "invalid array size");
-            static_assert(array_size(DeviceList) == NUMDEV, "invalid array size");
+            static_assert(std::size(UseExtSound) == NUMDEV, "invalid array size");
+            static_assert(std::size(DeviceList) == NUMDEV, "invalid array size");
             
             if (UseExtSound[i]) {
                 devWriteNMEAString(&DeviceList[i], nmeaStr.c_str());

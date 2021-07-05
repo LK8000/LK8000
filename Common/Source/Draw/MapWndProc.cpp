@@ -527,7 +527,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
         }
 
         if (mode.Is(Mode::MODE_TARGET_PAN)) {
-            if (AATEnabled) {
+            if (UseAATTarget()) {
                 _Proj.Screen2LonLat(Pos, Xlat, Ylat);
                 LockTaskData();
                 targetMoved = true;

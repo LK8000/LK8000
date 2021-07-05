@@ -1,6 +1,6 @@
 #!/bin/sh
 # 
-# File:   arm-tool-install.sh
+# File:   install-kobo-depends.sh
 # Author: Bruno de Lacheisserie
 #
 # Created on Jan 1, 2015, 6:39:30 PM
@@ -9,9 +9,9 @@
 set -ex
 
 
-[ -z "$TC"] && TC=arm-unknown-linux-gnueabi
+[ -z "$TC"] && TC=arm-kobo-linux-gnueabihf
 [ -z "$BUILD_DIR" ] && BUILD_DIR=$HOME/tmp
-[ -z "$TARGET_DIR" ] && TARGET_DIR=/opt/kobo/arm-unknown-linux-gnueabi
+[ -z "$TARGET_DIR" ] && TARGET_DIR=/opt/kobo-rootfs
 
 if [ command -v ${TC}-gcc >/dev/null ]; then
     echo "error : ${TC} toolchain not available"
@@ -25,12 +25,15 @@ export MAKEFLAGS="-j$((NB_CORES+1)) -l${NB_CORES}"
 cd ${BUILD_DIR}
 
 
+BUILD_FLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad"
+
+
 # install zlib ( 1.2.11 - 2017-01-15)
 [ ! -f zlib-1.2.11.tar.gz ] && wget http://zlib.net/zlib-1.2.11.tar.gz
 [ -d zlib-1.2.11 ] && rm -rf zlib-1.2.11
 tar -xvzf zlib-1.2.11.tar.gz
 cd zlib-1.2.11
-CC=$TC-gcc CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
+CC=$TC-gcc CFLAGS=$BUILD_FLAGS \
 ./configure --prefix=$TARGET_DIR
 make all && make install
 cd ..
@@ -42,30 +45,26 @@ cd ..
 tar -xvzf v0.13.69.tar.gz 
 mkdir zzipbuild
 cd zzipbuild
-CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
+CFLAGS="$BUILD_FLAGS" \
 ../zziplib-0.13.69/configure --host=$TC --target=$TC --prefix=$TARGET_DIR --with-zlib
 make all && make install
 cd ..
 
-# install boostlib ( 1.69.0 - 2018-12-12 )
-[ ! -f boost_1_69_0.tar.gz ] && wget https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz
-[ -d boost_1_69_0 ] && rm -rf boost_1_69_0
-tar xzf boost_1_69_0.tar.gz
-cd boost_1_69_0
+# install boostlib ( 1.72.0 - 2019-12-11 )
+[ ! -f boost_1_72_0.tar.gz ] && wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz
+[ -d boost_1_72_0 ] && rm -rf boost_1_72_0
+tar xzf boost_1_72_0.tar.gz
+cd boost_1_72_0
 ./bootstrap.sh
-echo "using gcc : arm : $TC-g++ : cxxflags=-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations ;" > user-config.jam
-./bjam toolset=gcc-arm \
+echo "using gcc : arm : $TC-g++ : cxxflags=$BUILD_FLAGS ;" > user-config.jam
+./b2 toolset=gcc-arm \
+           -q -d1 \
            variant=release \
            link=shared \
            runtime-link=shared \
            --prefix=$TARGET_DIR \
-           --without-python \
-           --without-context \
-           --without-coroutine \
-           --without-fiber \
            --address-model=32 \
-           --without-mpi \
-           --without-graph_parallel \
+           --with-headers \
            -sZLIB_SOURCE="$BUILD_DIR/zlib-1.2.11" \
            -sZLIB_INCLUDE="$TARGET_DIR\include" \
            -sZLIB_LIBPATH="$TARGET_DIR\lib" \
@@ -86,7 +85,7 @@ cd libpng-build
     AR=$TC-ar \
     STRIP=$TC-strip \
     RANLIB=$TC-ranlib \
-    CPPFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations -I$TARGET_DIR/include" \
+    CPPFLAGS="$BUILD_FLAGS -I$TARGET_DIR/include" \
     LDFLAGS="-L$TARGET_DIR/lib" \
     --prefix=$TARGET_DIR \
     --enable-arm-neon
@@ -100,7 +99,7 @@ cd ..
 tar xzf freetype-2.10.1.tar.gz
 mkdir freetype-build
 cd freetype-build
-CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
+CFLAGS=$BUILD_FLAGS \
 LDFLAGS="-L$TARGET_DIR/lib"  \
 ../freetype-2.10.1/configure \
     --host=$TC \
@@ -118,7 +117,7 @@ cd ..
 tar xzf GeographicLib-1.50.1.tar.gz
 mkdir GeographicLib-build
 cd GeographicLib-build
-CFLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad -ffast-math -funsafe-math-optimizations -funsafe-loop-optimizations" \
+CFLAGS=$BUILD_FLAGS \
 LDFLAGS="-L$TARGET_DIR/lib"  \
 ../GeographicLib-1.50.1/configure \
     --host=$TC \

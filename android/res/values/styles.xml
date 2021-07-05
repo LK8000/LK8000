@@ -8,4 +8,6 @@
         <item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item>
     </style>
 
+    <style name="QrCodeTheme" parent="Theme.AppCompat">
+    </style>
 </resources>

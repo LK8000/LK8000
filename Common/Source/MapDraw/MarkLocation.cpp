@@ -43,18 +43,17 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
 
 	char marktime[10], slat[20], slon[20], snear[50];
 	Units::TimeToTextSimple(tstring,LocalTime());
-	TCHAR2ascii(tstring,marktime,10);
+	to_utf8(tstring,marktime);
 
 	LatitudeToCUPString(lat,tstring);
-	TCHAR2ascii(tstring,slat,20);
+	to_utf8(tstring,slat);
 	LongitudeToCUPString(lon,tstring);
-	TCHAR2ascii(tstring,slon,20);
+	to_utf8(tstring,slon);
 
 	int j=FindNearestFarVisibleWayPoint(lon,lat,15000,WPT_UNKNOWN);
 	if (j>0) {
-        _tcscpy(tstring,WayPointList[j].Name); // Name is sized NAME_SIZE, 30, so ok with tstring[50]
-        tstring[19]='\0'; // sized 20 chars
-		TCHAR2ascii(tstring,snear,50);
+		// Name is sized NAME_SIZE, 30, so ok with tstring[50]
+		to_utf8(WayPointList[j].Name,snear);
 	} else {
 		strcpy(snear,"unknown");
 	}
@@ -77,9 +76,9 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
 	WayPointList[j].Visible=TRUE;
 	WayPointList[j].FarVisible=TRUE;
 
-    ascii2TCHAR(marktime, tstring,50);
+    from_utf8(marktime, tstring);
 	_stprintf(WayPointList[j].Name,_T("MK%s%02d"),tstring,GPS_INFO.Second);
-	ascii2TCHAR(snear, tstring, 50);
+	from_utf8(snear, tstring);
 	TCHAR comment[60];
 	_stprintf(comment, _T("Near: %s"), tstring);
 	SetWaypointComment(WayPointList[j], comment);

@@ -15,35 +15,29 @@
 #include "Poco/Mutex.h"
 #include "Poco/ScopedLock.h"
 #include "Poco/ScopedUnlock.h"
-#include "Poco/Condition.h"
 
-class Mutex : protected Poco::Mutex {
-    friend class Poco::Condition;
-    friend class Poco::ScopedLock<Mutex>;
-    friend class Poco::ScopedUnlock<Mutex>;
-public:
-    Mutex() {} 
-
-    inline void Lock() { 
-        Poco::Mutex::lock(); 
-    }
-    
-    inline void Unlock() { 
-        Poco::Mutex::unlock(); 
+// template adaptor to make Poco::Mutex and Poco::FastMutex conform to C++ named requirements 'Lockable'
+template<typename BaseMutex>
+struct LockableMutex : BaseMutex {
+    bool try_lock() {
+        return BaseMutex::tryLock();
     }
 };
 
-class ScopeLock : public Poco::ScopedLock<Mutex> {
-public:
-    ScopeLock(Mutex& m) : Poco::ScopedLock<Mutex>(m) { }
+using Mutex = LockableMutex<Poco::Mutex>;
+using FastMutex = LockableMutex<Poco::FastMutex>;
 
-};
+using ScopeLock = Poco::ScopedLock<Mutex>;
+using ScopeUnlock = Poco::ScopedUnlock<Mutex>;
 
-class ScopeUnlock : public Poco::ScopedUnlock<Mutex> {
-public:
-    ScopeUnlock(Mutex& m) : Poco::ScopedUnlock<Mutex>(m) { }
-
-};
+/**
+ * Call the Function within Mutex lock.
+ */
+template<class _Mutex, class Function>
+decltype(auto) WithLock(_Mutex& m, Function&& f) {
+    Poco::ScopedLock<_Mutex> lock(m);
+    return f();
+}
 
 #endif	/* MUTEX_HPP */
 

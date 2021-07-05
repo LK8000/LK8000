@@ -146,9 +146,9 @@ IOLoop::HandleReady(File *ready)
 
     const auto handler = ready->handler;
 
-    mutex.Unlock();
+    mutex.unlock();
     bool result = ready->handler->OnFileEvent(ready->fd, mask);
-    mutex.Lock();
+    mutex.lock();
 
     if (!result && ready->mask != 0 && ready->handler == handler) {
       ready->mask = 0;
@@ -173,9 +173,9 @@ IOLoop::Wait(int timeout_ms)
     Update();
   }
 
-  mutex.Unlock();
+  mutex.unlock();
   poll.Wait(timeout_ms);
-  mutex.Lock();
+  mutex.lock();
 }
 
 void

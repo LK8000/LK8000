@@ -87,7 +87,7 @@ constexpr struct {
     {4,4},{0,0},{0,1},{0,2},
     {0,3},{1,0},{2,0},{3,0}
 };
-static_assert(NUMBUTTONLABELS == array_size(LandscapeLayout), "Check array size");
+static_assert(NUMBUTTONLABELS == std::size(LandscapeLayout), "Check array size");
 
 constexpr unsigned LandscapeMenuOrder[] = {
     1, 2, 3, 4, 
@@ -95,7 +95,7 @@ constexpr unsigned LandscapeMenuOrder[] = {
     5, 16, 15, 14,
     10, 11, 12, 13
 };
-static_assert(NUMBUTTONLABELS == array_size(LandscapeMenuOrder), "Check array size");
+static_assert(NUMBUTTONLABELS == std::size(LandscapeMenuOrder), "Check array size");
 
 /* Portrait :
  * 
@@ -126,7 +126,7 @@ constexpr struct {
     {5,3},{0,0},{0,1},{0,2},
     {0,3},{1,0},{2,0},{3,0}
 };
-static_assert(NUMBUTTONLABELS == array_size(PortraitLayout), "Check array size");
+static_assert(NUMBUTTONLABELS == std::size(PortraitLayout), "Check array size");
 
 constexpr unsigned PortraitMenuOrder[] = {
     13, 5, 6, 7, 
@@ -134,7 +134,7 @@ constexpr unsigned PortraitMenuOrder[] = {
     2, 1, 16, 15,
     14, 10, 11, 12
 };
-static_assert(NUMBUTTONLABELS == array_size(PortraitMenuOrder), "Check array size");
+static_assert(NUMBUTTONLABELS == std::size(PortraitMenuOrder), "Check array size");
 
 
 PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
@@ -255,7 +255,7 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
         }
 
         TCHAR s[100];
-        bool greyed = ExpandMacros(text, s, array_size(s));
+        bool greyed = ExpandMacros(text, s, std::size(s));
         if (greyed) {
             currentButton.SetTextColor(LKColor(0x80, 0x80, 0x80));
             currentButton.EnableMenu(false);

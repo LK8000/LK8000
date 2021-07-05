@@ -35,7 +35,10 @@
 #include "Sound/Sound.h"
 #include "OS/RotateScreen.h"
 #include "Time/PeriodClock.hpp"
-
+#include "Library/Utm.h"
+#include "utils/tokenizer.h"
+#include "utils/lookup_table.h"
+#include <type_traits>
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 
@@ -43,7 +46,6 @@
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25
 #define MAX_KEY 255
-#define MAX_EVENTS 2048  // max number of menu events items
 #define MAX_TEXT2EVENTS_COUNT  256
 #define MAX_LABEL NUMBUTTONLABELS
 
@@ -58,9 +60,9 @@ static int mode_map_count = 0;
 // Key to Event - Keys (per mode) mapped to events
 #ifndef USE_GDI
 // Some linux keycode are defined on 4 Byte, use map instead of array.
-static std::map<int,int> Key2Event[MAX_MODE];
+static std::map<int,unsigned> Key2Event[MAX_MODE];
 #else
-static int Key2Event[MAX_MODE][MAX_KEY];
+static unsigned Key2Event[MAX_MODE][MAX_KEY];
 #endif
 
 // Glide Computer Events
@@ -70,29 +72,27 @@ static int GC2Event[MAX_MODE][GCE_COUNT];
 static int N2Event[MAX_MODE][NE_COUNT];
 
 // Events - What do you want to DO
-typedef struct {
+struct Event_t {
   pt2Event event; // Which function to call (can be any, but should be here)
   const TCHAR *misc;    // Parameters
-  int next;       // Next in event list - eg: Macros
-} EventSTRUCT;
+  unsigned next_event_id;       // Next in event list - eg: Macros
+};
 
-static EventSTRUCT Events[MAX_EVENTS];	 // the menu events items
-static int Events_count=0;				// How many have we defined
+static std::vector<Event_t> Events;	 // the menu events items
 
 // Labels - defined per mode
-typedef struct {
+struct ModeLabelSTRUCT {
   const TCHAR *label;
-  int event;
-} ModeLabelSTRUCT;
+  unsigned event_id;
+} ;
 
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
 std::list<TCHAR*> LabelGarbage;
 
-#define MAX_GCE_QUEUE 10
-static int GCE_Queue[MAX_GCE_QUEUE];
-#define MAX_NMEA_QUEUE 10
-static int NMEA_Queue[MAX_NMEA_QUEUE];
-
+namespace {
+  std::deque<gc_event> gce_queue;
+  std::deque<nmea_event> nmea_queue;
+}
 
 // popup object details event queue data.
 typedef struct {
@@ -116,20 +116,6 @@ PeriodClock LastActiveSelectMode;
 // This is set when multimaps are calling MMCONF menu.
 bool IsMultimapConfigShown=false;
 
-// Mapping text names of events to the real thing
-typedef struct {
-  const TCHAR *text;
-  pt2Event event;
-} Text2EventSTRUCT;
-Text2EventSTRUCT Text2Event[MAX_TEXT2EVENTS_COUNT];
-size_t Text2Event_count=0;
-
-// Mapping text names of events to the real thing
-const TCHAR *Text2GCE[GCE_COUNT+1];
-
-// Mapping text names of events to the real thing
-const TCHAR *Text2NE[NE_COUNT+1];
-
 static Mutex  CritSec_EventQueue;
 
 static PeriodClock myPeriodClock;
@@ -141,19 +127,15 @@ void InputEvents::readFile() {
   StartupStore(TEXT("... Loading input events file%s"),NEWLINE);
   #endif
 
-  {
-    ScopeLock Lock(CritSec_EventQueue);
+  WithLock(CritSec_EventQueue, [&]() {
     // clear the GCE and NMEA queues
-    std::fill(std::begin(GCE_Queue), std::end(GCE_Queue), -1);
-    std::fill(std::begin(NMEA_Queue), std::end(NMEA_Queue), -1);
-  }
+    gce_queue.clear();
+    nmea_queue.clear();
+  });
+
   // Get defaults
   if (!InitONCE) {
 	#include "InputEvents_LK8000.cpp"
-	#include "InputEvents_Text2Event.cpp"
-        #ifdef TESTBENCH
-        StartupStore(_T("... Loaded %d Text2Event (max is %u)%s"),(unsigned)Text2Event_count,MAX_TEXT2EVENTS_COUNT,NEWLINE);
-        #endif
     InitONCE = true;
   }
 
@@ -251,10 +233,10 @@ void InputEvents::readFile() {
 #else
       memset(&Key2Event, 0, sizeof(Key2Event));
 #endif
+      clearEvents(); 
+
       memset(&GC2Event, 0, sizeof(GC2Event));
-      memset(&Events, 0, sizeof(Events));
       memset(&ModeLabel, 0, sizeof(ModeLabel));
-      Events_count = 0;
     }
 
     // Check valid line? If not valid, assume next record (primative, but works ok!)
@@ -265,10 +247,6 @@ void InputEvents::readFile() {
 	  && (_tcscmp(d_mode, TEXT("")) != 0)		//
 	  ) {
 
-	TCHAR *token;
-
-	// For each mode
-	token = _tcstok(d_mode, TEXT(" "));
 
 	// General errors - these should be true
 	LKASSERT(d_location >= 0);
@@ -283,12 +261,15 @@ void InputEvents::readFile() {
 	// ASSERT(_tcslen(d_type) < 1024);
 	// ASSERT(_tcslen(d_label) < 1024);
 
-	while( token != NULL ) {
+	// For each mode
+	lk::tokenizer<TCHAR> tok(d_mode);
+	const TCHAR* token = tok.Next(TEXT(" "), true);
+	while( token ) {
 
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
 	  LKASSERT(mode_id >= 0);
-          LKASSERT(mode_id < (int)array_size(Key2Event));
+          LKASSERT(mode_id < (int)std::size(Key2Event));
 
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
@@ -299,7 +280,7 @@ void InputEvents::readFile() {
 		  LabelGarbage.push_back(new_label);
 	    }
 	    LKASSERT(new_label!=NULL);
-	    InputEvents::makeLabel(mode_id, new_label, d_location, event_id);
+	    makeLabel(mode_id, new_label, d_location, event_id);
 	  }
 
 	  // Make key (Keyboard input)
@@ -307,7 +288,7 @@ void InputEvents::readFile() {
 	    const int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (ikey > 0) {
 #ifdef USE_GDI
-            LKASSERT(ikey < (int)array_size(Key2Event[mode_id]));
+            LKASSERT(ikey < (int)std::size(Key2Event[mode_id]));
             Key2Event[mode_id][ikey] = event_id;
 #else
             if(event_id > 0) {
@@ -318,23 +299,24 @@ void InputEvents::readFile() {
 #endif
 
         }
-	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
-	    int iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
-	    if (iikey >= 0 && iikey < GCE_COUNT)
+	    // Make gce (Glide Computer Event)
+	    gc_event iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    if (iikey < GCE_COUNT) {
 	      GC2Event[mode_id][iikey] = event_id;
-
-	    // Make ne (NMEA Event)
+	    }
 	  } else if (_tcscmp(d_type, TEXT("ne")) == 0) { 		// NE - NMEA Event
-	    int iiikey = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
-	    if (iiikey >= 0 && iiikey < NE_COUNT)
+	    // Make ne (NMEA Event)
+	    nmea_event iiikey = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
+	    if (iiikey < NE_COUNT) {
 	      N2Event[mode_id][iiikey] = event_id;
+	    }
 	  } else if (_tcscmp(d_type, TEXT("label")) == 0)	{	// label only - no key associated (label can still be touch screen)
 	    // Nothing to do here...
 
 	  }
 
-	  token = _tcstok( NULL, TEXT(" "));
+	  token = tok.Next(TEXT(" "), true);
 	}
 
       }
@@ -403,9 +385,9 @@ void InputEvents::readFile() {
     }
 
   } // end while
-  #ifdef TESTBENCH
-  StartupStore(_T("... Loaded %d Menu Events (Max is %d)%s"),Events_count,MAX_EVENTS,NEWLINE);
-  #endif
+#ifdef TESTBENCH
+  StartupStore(_T("... Loaded %u Menu Events\n"), (unsigned)Events.size());
+#endif
 #endif
 }
 
@@ -471,57 +453,30 @@ int InputEvents::findKey(const TCHAR *data) {
 
 }
 
-pt2Event InputEvents::findEvent(const TCHAR *data) {
-  LKASSERT(Text2Event_count<MAX_TEXT2EVENTS_COUNT);
-  for (size_t i = 0; i < Text2Event_count; i++) {
-    if (_tcscmp(data, Text2Event[i].text) == 0)
-      return Text2Event[i].event;
-  }
-  return NULL;
-}
-
-int InputEvents::findGCE(const TCHAR *data) {
-  int i;
-  for (i = 0; i < GCE_COUNT; i++) {
-    if (_tcscmp(data, Text2GCE[i]) == 0)
-      return i;
-  }
-  return -1;
-}
-
-int InputEvents::findNE(const TCHAR *data) {
-  int i;
-  for (i = 0; i < NE_COUNT; i++) {
-    if (_tcscmp(data, Text2NE[i]) == 0)
-      return i;
-  }
-  return -1;
-}
-
 // Create EVENT Entry
 // NOTE: String must already be copied (allows us to use literals
 // without taking up more data - but when loading from file must copy string
-int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int next) {
-  if (Events_count >= MAX_EVENTS){
-    LKASSERT(0);
-    return 0;
-  }
-  Events_count++;	// NOTE - Starts at 1 - 0 is a noop
-  Events[Events_count].event = event;
-  Events[Events_count].misc = misc;
-  Events[Events_count].next = next;
-
-  return Events_count;
+unsigned InputEvents::makeEvent(pt2Event event, const TCHAR *misc, unsigned next) {
+  Events.push_back({event, misc, next});
+  return Events.size()-1;
 }
+
+void InputEvents::clearEvents() {
+  // first Event must be null Event, all time.
+  Events = {
+    {&eventNull, TEXT(""), 0}
+  };
+}
+
 
 
 // Make a new label (add to the end each time)
 // NOTE: String must already be copied (allows us to use literals
 // without taking up more data - but when loading from file must copy string
-void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, int event_id) {
+void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, unsigned event_id) {
 
-    static_assert(MAX_MODE == array_size(ModeLabel), "wrong array size" );
-    static_assert(MAX_LABEL == array_size(ModeLabel[0]), "wrong array size" );
+    static_assert(MAX_MODE == std::size(ModeLabel), "wrong array size" );
+    static_assert(MAX_LABEL == std::size(ModeLabel[0]), "wrong array size" );
 
     unsigned LabelIdx = MenuId -1;
 
@@ -533,7 +488,7 @@ void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, in
         }
 
         ModeLabel[mode_id][LabelIdx].label = label;
-        ModeLabel[mode_id][LabelIdx].event = event_id;
+        ModeLabel[mode_id][LabelIdx].event_id = event_id;
     } else {
         LKASSERT(0);
     }
@@ -610,7 +565,7 @@ void InputEvents::setMode(const TCHAR *mode) {
 void InputEvents::drawButtons(int Mode) {
     if (!(ProgramStarted == psNormalOp)) return;
 
-    for (unsigned i = 0; i < array_size(ModeLabel[Mode]); i++) {
+    for (unsigned i = 0; i < std::size(ModeLabel[Mode]); i++) {
       ButtonLabel::SetLabelText( i+1, ModeLabel[Mode][i].label );
     }
 
@@ -625,7 +580,7 @@ TCHAR* InputEvents::getMode() {
 }
 
 int InputEvents::getModeID() {
-  return InputEvents::mode2int(InputEvents::getMode(), false);
+  return mode2int(getMode(), false);
 }
 
 // -----------------------------------------------------------------------
@@ -645,7 +600,7 @@ bool InputEvents::processButton(unsigned MenuId) {
 
     int thismode = getModeID();
     unsigned i = MenuId - 1;
-    LKASSERT(i < array_size(ModeLabel[thismode])); // Invalid MenuId
+    LKASSERT(i < std::size(ModeLabel[thismode])); // Invalid MenuId
 
     int lastMode = thismode;
 
@@ -655,7 +610,7 @@ bool InputEvents::processButton(unsigned MenuId) {
 	PlayResource(TEXT("IDR_WAV_CLICK"));
 
 	if (ButtonLabel::IsEnabled(MenuId)) {
-		processGo(ModeLabel[thismode][i].event);
+		processGo(ModeLabel[thismode][i].event_id);
 	}
 
 	// update button text, macro may change the label
@@ -678,14 +633,14 @@ bool InputEvents::processKey(int KeyID) {
   }
 
   // get current mode
-  unsigned mode = InputEvents::getModeID();
-  if(mode >= array_size(Key2Event)) {
+  unsigned mode = getModeID();
+  if(mode >= std::size(Key2Event)) {
     mode = 0;
   }
 
 #ifndef USE_GDI
 
-  int event_id = 0;
+  unsigned event_id = 0;
 
   auto It = Key2Event[mode].find(KeyID);
   if(It != Key2Event[mode].end()) {
@@ -708,7 +663,7 @@ bool InputEvents::processKey(int KeyID) {
     return false;
 
   // Which key - can be defined locally or at default (fall back to default)
-  int event_id = Key2Event[mode][KeyID];
+  unsigned event_id = Key2Event[mode][KeyID];
   if (event_id == 0) {
     // go with default key..
     event_id = Key2Event[0][KeyID];
@@ -729,8 +684,8 @@ bool InputEvents::processKey(int KeyID) {
     #endif
 
 
-    for (unsigned i = 0; i < array_size(ModeLabel[mode]); ++i) {
-      if (ModeLabel[mode][i].event == event_id) {
+    for (unsigned i = 0; i < std::size(ModeLabel[mode]); ++i) {
+      if (ModeLabel[mode][i].event_id == event_id) {
         MenuId = i + 1;
         if (HasKeyboard()) {
           SelectedButtonId = MenuId;
@@ -740,7 +695,7 @@ bool InputEvents::processKey(int KeyID) {
     }
 
     if (MenuId == 0 || ButtonLabel::IsEnabled(MenuId)) {
-      InputEvents::processGo(event_id);
+      processGo(event_id);
     }
 
     // experimental: update button text, macro may change the value
@@ -755,58 +710,72 @@ bool InputEvents::processKey(int KeyID) {
 }
 
 
-bool InputEvents::processNmea(int ne_id) {
+bool InputEvents::processNmea(nmea_event ne_id) {
   // add an event to the bottom of the queue
   ScopeLock Lock(CritSec_EventQueue);
-  for (int i=0; i< MAX_NMEA_QUEUE; i++) {
-    if (NMEA_Queue[i]== -1) {
-      NMEA_Queue[i]= ne_id;
-      break;
-    }
-  }
-
+  nmea_queue.push_back(ne_id);
   return true; // ok.
 }
 
-/*
-  InputEvent::processNmea(TCHAR* data)
-  Take hard coded inputs from NMEA processor.
-  Return = TRUE if we have a valid key match
-*/
-bool InputEvents::processNmea_real(int ne_id) {
-  if (!(ProgramStarted==psNormalOp)) return false;
-  int event_id = 0;
 
-  // Valid input ?
-  if ((ne_id < 0) || (ne_id >= NE_COUNT))
-    return false;
+bool InputEvents::processGlideComputer(gc_event gce_id) {
+  // add an event to the bottom of the queue
+  ScopeLock Lock(CritSec_EventQueue);
+  gce_queue.push_back(gce_id);
+  return true; // ok.
+}
+
+
+namespace {
+
+template<typename id_to_event_t, typename event_id_t>
+void processEvent(const id_to_event_t& id_to_event, event_id_t id) {
+
+  static_assert(std::is_unsigned_v<std::underlying_type_t<event_id_t>>, "event_id_t must be signed");
+
+  if (ProgramStarted != psNormalOp) {
+    return;
+  }
+
+  int event_id = 0;
 
   // get current mode
   int mode = InputEvents::getModeID();
-
-  // Which key - can be defined locally or at default (fall back to default)
-  event_id = N2Event[mode][ne_id];
-  if (event_id == 0) {
-    // go with default key..
-    event_id = N2Event[0][ne_id];
+  if (id < std::size(id_to_event[mode])) {
+    // Which key - can be defined locally or at default (fall back to default)
+    event_id = id_to_event[mode][id];
+    if (event_id == 0) {
+      // go with default key...
+      event_id = id_to_event[0][id];
+    }
   }
 
   if (event_id > 0) {
     InputEvents::processGo(event_id);
-    return true;
   }
-
-  return false;
 }
 
 
-// This should be called ONLY by the GUI thread.
-void InputEvents::DoQueuedEvents(void) {
-  static bool blockqueue = false;
-  int GCE_Queue_copy[MAX_GCE_QUEUE];
-  int NMEA_Queue_copy[MAX_NMEA_QUEUE];
-  int i;
+template<typename event_queue_t, typename id_to_event_t>
+void ProcessQueue(event_queue_t& event_queue, const id_to_event_t& id_to_event) {
 
+  using event_id_t = typename event_queue_t::value_type;
+
+  ScopeLock Lock(CritSec_EventQueue);
+  while(!event_queue.empty()) {
+    event_id_t event_id = event_queue.front();
+    event_queue.pop_front();
+
+    ScopeUnlock Unlock(CritSec_EventQueue);
+    processEvent<id_to_event_t, event_id_t>(id_to_event, event_id);
+  }
+}
+
+} // namespace
+
+// This should be called ONLY by the GUI thread.
+void InputEvents::DoQueuedEvents() {
+  static bool blockqueue = false;
   if (blockqueue) return;
   // prevent this being re-entered by gui thread while
   // still processing
@@ -818,52 +787,16 @@ void InputEvents::DoQueuedEvents(void) {
   processPopupDetails_real();
 
   if (RepeatWindCalc>0) { // 100203
-	RepeatWindCalc=0;
-	InputEvents::eventCalcWind(_T("AUTO"));
-	//dlgBasicSettingsShowModal();
+    RepeatWindCalc=0;
+    eventCalcWind(_T("AUTO"));
   }
 
-  { // Begin Lock
-    // copy and flush the queue first, blocking
-    ScopeLock Lock(CritSec_EventQueue);
-
-    for (i=0; i<MAX_GCE_QUEUE; i++) {
-      GCE_Queue_copy[i]= GCE_Queue[i];
-      GCE_Queue[i]= -1;
-    }
-    for (i=0; i<MAX_NMEA_QUEUE; i++) {
-      NMEA_Queue_copy[i]= NMEA_Queue[i];
-      NMEA_Queue[i]= -1;
-    }
-  } // End Lock
-
-  // process each item in the queue
-  for (i=0; i< MAX_GCE_QUEUE; i++) {
-    if (GCE_Queue_copy[i]!= -1) {
-      processGlideComputer_real(GCE_Queue_copy[i]);
-    }
-  }
-  for (i=0; i< MAX_NMEA_QUEUE; i++) {
-    if (NMEA_Queue_copy[i]!= -1) {
-      processNmea_real(NMEA_Queue_copy[i]);
-    }
-  }
+  ProcessQueue(gce_queue, GC2Event);
+  ProcessQueue(nmea_queue, N2Event);
 
   blockqueue = false; // ok, ready to go on.
 }
 
-
-bool InputEvents::processGlideComputer(int gce_id) {
-  // add an event to the bottom of the queue
-  ScopeLock Lock(CritSec_EventQueue);
-  for (int i=0; i< MAX_GCE_QUEUE; i++) {
-    if (GCE_Queue[i]== -1) {
-      GCE_Queue[i]= gce_id;
-      break;
-    }
-  }
-  return true; // ok.
-}
 
 void InputEvents::processPopupDetails(PopupType type, int index) {
     ScopeLock Lock(CritSec_EventQueue);
@@ -873,17 +806,14 @@ void InputEvents::processPopupDetails(PopupType type, int index) {
 // show details for each object queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
 void InputEvents::processPopupDetails_real() {
 
-    while(1) {
-        PopupEvent_t event;
-        { // Begin Lock
-            ScopeLock Lock(CritSec_EventQueue);
-            if(!PopupEventQueue.empty()) {
-                event = PopupEventQueue.front();
-                PopupEventQueue.pop_front(); // remove object event from fifo
-            } else {
-                break; // no more queued event, out from loop.
-            }
-        } // End Lock
+    ScopeLock Lock(CritSec_EventQueue);
+    while (!PopupEventQueue.empty()) {
+
+        PopupEvent_t event = PopupEventQueue.front();
+        PopupEventQueue.pop_front(); // remove object event from fifo
+
+        ScopeUnlock Unlock(CritSec_EventQueue);
+
 
         switch(event.type) {
             case PopupWaypoint:
@@ -919,7 +849,6 @@ void InputEvents::processPopupDetails_real() {
                 break;
             case PopupOracle:
                 // Do not update Traffic while in details mode, max 10m
-                extern void dlgOracleShowModal(void);
                 dlgOracleShowModal();
                 break;
             case PopupTeam:
@@ -941,56 +870,26 @@ void InputEvents::processPopupDetails_real() {
     }
 }
 
-/*
-  InputEvents::processGlideComputer
-  Take virtual inputs from a Glide Computer to do special events
-*/
-bool InputEvents::processGlideComputer_real(int gce_id) {
-  if (!(ProgramStarted==psNormalOp)) return false;
-  int event_id = 0;
-
-  // TODO feature: Log glide computer events to IGC file
-
-  // Valid input ?
-  if ((gce_id < 0) || (gce_id >= GCE_COUNT))
-    return false;
-
-  // get current mode
-  int mode = InputEvents::getModeID();
-
-  // Which key - can be defined locally or at default (fall back to default)
-  event_id = GC2Event[mode][gce_id];
-  if (event_id == 0) {
-    // go with default key..
-    event_id = GC2Event[0][gce_id];
-  }
-
-  if (event_id > 0) {
-    InputEvents::processGo(event_id);
-    return true;
-  }
-
-  return false;
-}
 
 extern int MenuTimeOut;
 
 // EXECUTE an Event - lookup event handler and call back - no return
-void InputEvents::processGo(int eventid) {
-  if (!(ProgramStarted==psNormalOp)) return;
+void InputEvents::processGo(unsigned event_id) {
+  if (ProgramStarted!=psNormalOp) {
+    return;
+  }
 
   // evnentid 0 is special for "noop" - otherwise check event
   // exists (pointer to function)
-  BUGSTOP_LKASSERT(eventid<=Events_count);
-  if (eventid>0 && eventid<=Events_count) {  // should be ok the =
-    if (Events[eventid].event) {
-      Events[eventid].event(Events[eventid].misc);
+  if (event_id < Events.size()) {
+    const Event_t& event = Events[event_id];
+    if (event.event) {
+      event.event(event.misc);
       MenuTimeOut = 0;
     }
-    if (Events[eventid].next > 0)
-      InputEvents::processGo(Events[eventid].next);
+    if (event.next_event_id > 0)
+      processGo(event.next_event_id);
   }
-  return;
 }
 
 // -----------------------------------------------------------------------
@@ -1358,7 +1257,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
 //  This is used to activate menus/submenus of buttons
 void InputEvents::eventMode(const TCHAR *misc) {
   LKASSERT(misc != NULL);
-  InputEvents::setMode(misc);
+  setMode(misc);
 
 #ifdef USE_GDI
   // trigger redraw of screen to reduce blank area under windows
@@ -1441,7 +1340,7 @@ void InputEvents::eventWaypointDetails(const TCHAR *misc) {
     PopupWaypointDetails();
   } else {
     if (_tcscmp(misc, TEXT("select")) == 0) {
-      int res = dlgWayPointSelect();
+      int res = dlgSelectWaypoint();
 
       if (res != -1) {
 	    SelectedWaypoint = res;
@@ -1452,7 +1351,9 @@ void InputEvents::eventWaypointDetails(const TCHAR *misc) {
 }
 
 void InputEvents::eventTimeGates(const TCHAR *misc) {
+    if (gTaskType==TSK_GP) {
 	dlgTimeGatesShowModal();
+}
 }
 
 void InputEvents::eventMyMenu(const TCHAR *misc) {
@@ -2003,18 +1904,16 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("TASKSTART")) == 0) {
-	extern void TaskStartMessage(void);
-	TaskStartMessage();
+    TaskStartMessage();
     LKSound(_T("LK_TASKSTART.WAV"));
-	return;
+    return;
   }
 
   if (_tcscmp(misc, TEXT("TASKFINISH")) == 0) {
 
-	extern void TaskFinishMessage(void);
-	TaskFinishMessage();
+    TaskFinishMessage();
     LKSound(_T("LK_TASKFINISH.WAV"));
-	return;
+    return;
   }
 
   if (_tcscmp(misc, TEXT("TASKNEXTWAYPOINT")) == 0) {
@@ -2044,7 +1943,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 		ActiveTaskPoint=0;
 		StartTask(&GPS_INFO,&CALCULATED_INFO, true, true);
 		// GCE_TASK_START does not work here, why?
-		InputEvents::eventService(_T("TASKSTART"));
+		eventService(_T("TASKSTART"));
 	}
 	return;
   }
@@ -2082,7 +1981,6 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("UTMPOS")) == 0) {
-	extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
 	int utmzone; char utmchar;
 	double easting, northing;
 	TCHAR mbuf[80];
@@ -2093,8 +1991,8 @@ void InputEvents::eventService(const TCHAR *misc) {
 	Message::AddMessage(60000, 1, mbuf);
 	TCHAR sLongitude[16];
 	TCHAR sLatitude[16];
-	Units::LongitudeToString(GPS_INFO.Longitude, sLongitude, sizeof(sLongitude)-1);
-	Units::LatitudeToString(GPS_INFO.Latitude, sLatitude, sizeof(sLatitude)-1);
+	Units::LongitudeToString(GPS_INFO.Longitude, sLongitude);
+	Units::LatitudeToString(GPS_INFO.Latitude, sLatitude);
 	_stprintf(mbuf,_T("%s %s"), sLatitude, sLongitude);
 	Message::AddMessage(60000, 1, mbuf);
 	Message::Unlock();
@@ -2102,7 +2000,6 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("ORACLE")) == 0) {
-	extern void dlgOracleShowModal(void);
 	if (GPS_INFO.NAVWarning) {
 		DoStatusMessage(MsgToken(1702)); // Oracle wants gps fix
 		return;
@@ -2270,10 +2167,9 @@ void InputEvents::eventService(const TCHAR *misc) {
 	ToggleMultimapOverlays();
 	return;
   }
-  extern void ToggleDrawTaskFAI(void);
   if (_tcscmp(misc, TEXT("TASKFAI")) == 0) {
-	ToggleDrawTaskFAI();
-	return;
+    ToggleDrawTaskFAI();
+    return;
   }
 
   if (_tcscmp(misc, TEXT("DRAWXC")) == 0) {
@@ -2312,9 +2208,8 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("TERMINAL")) == 0) {
-        extern void dlgTerminal(int portnumber);
-	dlgTerminal(0);
-	return;
+    dlgTerminal(0);
+    return;
   }
 
   if (_tcscmp(misc, TEXT("DEFTASK")) == 0) {
@@ -2494,9 +2389,6 @@ void InputEvents::eventLogger(const TCHAR *misc) {
     } else {
       DoStatusMessage(MsgToken(863)); // Logger OFF
     }
-  } else if (_tcsncmp(misc, TEXT("note"), 4)==0) {
-    // add note to logger file if available..
-    LoggerNote(misc+4);
   }
 }
 
@@ -2581,7 +2473,7 @@ void InputEvents::eventTaskLoad(const TCHAR *misc) {
         if(_tcscmp(wextension,_T(LKS_TSK))==0) {
             CTaskFileHelper helper;
             if(!helper.Load(szFileName)) {
-
+              // TODO: display error
             }
         }
     }
@@ -2701,10 +2593,9 @@ void InputEvents::eventSetup(const TCHAR *misc) {
   } else if (_tcscmp(misc,TEXT("System"))==0){
     SystemConfiguration(0);
   } else if (_tcscmp(misc,TEXT("Radio"))==0){
-#ifdef RADIO_ACTIVE
-      if(RadioPara.Enabled)
-    dlgRadioSettingsShowModal();
-#endif  // RADIO_ACTIVE
+    if(RadioPara.Enabled) {
+      dlgRadioSettingsShowModal();
+    }
   } else if (_tcscmp(misc,TEXT("Aircraft"))==0){
     SystemConfiguration(2);
   } else if (_tcscmp(misc,TEXT("Pilot"))==0){
@@ -3205,7 +3096,11 @@ void HideMenu() {
 
 void ShowMenu() {
   PlayResource(TEXT("IDR_WAV_CLICK"));
-  InputEvents::setMode(TEXT("Menu"));
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_PAN)) {
+    InputEvents::setMode(_T("pan"));
+  } else {
+    InputEvents::setMode(_T("Menu"));
+  }
   MenuTimeOut = 0;
 }
 
@@ -3474,11 +3369,11 @@ void InputEvents::triggerSelectedButton()
   const int thismode = getModeID();
   const unsigned MenuId = SelectedButtonId;
   const unsigned i = MenuId - 1;
-  if( i < array_size(ModeLabel[thismode])) {
+  if( i < std::size(ModeLabel[thismode])) {
     const int lastMode = thismode;
 
     if (ButtonLabel::IsEnabled(MenuId)) {
-      processGo(ModeLabel[thismode][i].event);
+      processGo(ModeLabel[thismode][i].event_id);
     }
 
     // update button text, macro may change the label
@@ -3687,4 +3582,131 @@ void InputEvents::eventModeType(const TCHAR *misc) {
 
 void InputEvents::eventShowMultiselect(const TCHAR*) {
     dlgMultiSelectListShowModal();
+}
+
+namespace {
+
+  #define DELARE_EVENT(Name) { _T(#Name), &InputEvents::event ## Name }
+  // Mapping text names of events to the real thing
+
+  const auto Text2Event = lookup_table<tstring_view, pt2Event>({
+    DELARE_EVENT(AbortTask),
+    DELARE_EVENT(AdjustForecastTemperature),
+    DELARE_EVENT(AdjustWaypoint),
+    DELARE_EVENT(Analysis),
+    DELARE_EVENT(ArmAdvance),
+    DELARE_EVENT(Ballast),
+    DELARE_EVENT(Bugs),
+    DELARE_EVENT(Calculator),
+    DELARE_EVENT(Checklist),
+    DELARE_EVENT(DLLExecute),
+    DELARE_EVENT(FlightMode),
+    DELARE_EVENT(Logger),
+    DELARE_EVENT(MacCready),
+    DELARE_EVENT(MarkLocation),
+    DELARE_EVENT(Mode),
+    DELARE_EVENT(NearestAirspaceDetails),
+    DELARE_EVENT(NearestWaypointDetails),
+    DELARE_EVENT(Null),
+    DELARE_EVENT(Pan),
+    DELARE_EVENT(PlaySound),
+    DELARE_EVENT(ProfileLoad),
+    DELARE_EVENT(ProfileSave),
+    DELARE_EVENT(RepeatStatusMessage),
+    DELARE_EVENT(Run),
+    DELARE_EVENT(ScreenModes),
+    DELARE_EVENT(SendNMEA),
+    DELARE_EVENT(SendNMEAPort1),
+    DELARE_EVENT(SendNMEAPort2),
+    DELARE_EVENT(Setup),
+    DELARE_EVENT(SnailTrail),
+    DELARE_EVENT(VisualGlide),
+    DELARE_EVENT(AirSpace),
+    DELARE_EVENT(Sounds),
+    DELARE_EVENT(Status),
+    DELARE_EVENT(StatusMessage),
+    DELARE_EVENT(TaskLoad),
+    DELARE_EVENT(TaskSave),
+    DELARE_EVENT(TerrainTopology),
+    DELARE_EVENT(WaypointDetails),
+    DELARE_EVENT(Wind),
+    DELARE_EVENT(Zoom),
+    DELARE_EVENT(DeclutterLabels),
+    DELARE_EVENT(Exit),
+    DELARE_EVENT(Beep),
+    DELARE_EVENT(UserDisplayModeForce),
+    DELARE_EVENT(AirspaceDisplayMode),
+    DELARE_EVENT(AutoLogger),
+    DELARE_EVENT(MyMenu),
+    DELARE_EVENT(AddWaypoint),
+    DELARE_EVENT(Orientation),
+    DELARE_EVENT(CalcWind),
+    DELARE_EVENT(InvertColor),
+    DELARE_EVENT(ChangeBack),
+    DELARE_EVENT(ResetTask),
+    DELARE_EVENT(ResetQFE),
+    DELARE_EVENT(RestartCommPorts),
+    DELARE_EVENT(MoveGlider),
+    DELARE_EVENT(ActiveMap),
+    DELARE_EVENT(ChangeWindCalcSpeed),
+    DELARE_EVENT(TimeGates),
+    DELARE_EVENT(ChangeMultitarget),
+    DELARE_EVENT(BaroAltitude),
+    DELARE_EVENT(ChangeHGPS),
+    DELARE_EVENT(ChangeGS),
+    DELARE_EVENT(ChangeTurn),
+    DELARE_EVENT(Service),
+    DELARE_EVENT(MinimapKey),
+    DELARE_EVENT(InfoStripe),
+    DELARE_EVENT(InfoPage),
+    DELARE_EVENT(ModeType),
+    DELARE_EVENT(ShowMultiselect),
+    DELARE_EVENT(ChangeNettoVario),
+    DELARE_EVENT(Wifi),
+  });
+
+  #define DELARE_GCE(Name) { _T(#Name), GCE_ ## Name }
+
+  const auto Text2GCE = lookup_table<tstring_view, gc_event>({
+    DELARE_GCE(COMMPORT_RESTART),
+    DELARE_GCE(FLARM_NOTRAFFIC),
+    DELARE_GCE(FLARM_TRAFFIC),
+    DELARE_GCE(FLIGHTMODE_CLIMB),
+    DELARE_GCE(FLIGHTMODE_CRUISE),
+    DELARE_GCE(FLIGHTMODE_FINALGLIDE),
+    DELARE_GCE(FLIGHTMODE_FINALGLIDE_TERRAIN),
+    DELARE_GCE(FLIGHTMODE_FINALGLIDE_ABOVE),
+    DELARE_GCE(FLIGHTMODE_FINALGLIDE_BELOW),
+    DELARE_GCE(LANDING),
+    DELARE_GCE(STARTUP_REAL),
+    DELARE_GCE(STARTUP_SIMULATOR),
+    DELARE_GCE(TAKEOFF),
+    DELARE_GCE(TASK_NEXTWAYPOINT),
+    DELARE_GCE(TASK_START),
+    DELARE_GCE(TASK_FINISH),
+    DELARE_GCE(TEAM_POS_REACHED),
+    DELARE_GCE(ARM_READY),
+    DELARE_GCE(TASK_CONFIRMSTART),
+    DELARE_GCE(POPUP_MULTISELECT),
+    DELARE_GCE(WAYPOINT_DETAILS_SCREEN)
+  });
+
+  #define DELARE_NE(Name) { _T(#Name), NE_ ## Name }
+
+  const auto Text2NE = lookup_table<tstring_view, nmea_event>({
+    DELARE_NE(DUMMY) // to avoid empty initializer list error.
+  });
+
+}
+
+pt2Event InputEvents::findEvent(const TCHAR *data) {
+  return Text2Event.get(data, &eventNull);
+}
+
+gc_event InputEvents::findGCE(const TCHAR *data) {
+  return Text2GCE.get(data, GCE_COUNT);
+}
+
+nmea_event InputEvents::findNE(const TCHAR *data) {
+  return Text2NE.get(data, NE_COUNT);
 }

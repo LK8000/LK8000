@@ -11,10 +11,7 @@
 #include "fileext.h"
 #include "stringext.h"
 
-#include "utils/make_unique.h"
-
-extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
-
+#include <memory>
 
 //______________________________________________________________________________
 
@@ -143,14 +140,7 @@ void Utf8File::WriteLn(const TCHAR* unicode) {
     const size_t max_char = _tcslen(unicode) * 4 + 1;
     std::unique_ptr<char[]> utf = std::make_unique<char[]>(max_char);
     char* cstr = utf.get();
-    
-    // (conversion and file error is ignored now, maybe in future it should
-    // throw exception)
-    if (TCHAR2utf(unicode, cstr, max_char) < 0 && !convErReported) {
-      StartupStore(_T("Invalid WC-UTF8 conversion for '%s'\n"), path);
-      convErReported = true;
-    }
-    
+    to_utf8(unicode, cstr, max_char);
 #else
     const char* cstr = unicode;
 #endif

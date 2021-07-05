@@ -38,7 +38,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 
   flags[0]=0;
 
-  if ((globalFileNum < 0) || (globalFileNum >= (int)array_size(WpFileType))) {
+  if ((globalFileNum < 0) || (globalFileNum >= (int)std::size(WpFileType))) {
     StartupStore(_T("++++++ WriteWayPoint error: impossible file index!%s"),NEWLINE);
     return;
   }
@@ -183,7 +183,7 @@ void WriteWayPointFile(FILE *fp) {
     }
   }
   // Write specific format header
-  if ((globalFileNum >= 0) && (globalFileNum < (int)array_size(WpFileType))) { // 100208
+  if ((globalFileNum >= 0) && (globalFileNum < (int)std::size(WpFileType))) { // 100208
 	if ( WpFileType[globalFileNum] == LKW_CUP ) {
 	 fprintf(fp,"name,code,country,lat,lon,elev,style,rwdir,rwlen,freq,desc\r\n");
 	}
@@ -222,7 +222,7 @@ void WriteWayPointFile(FILE *fp) {
 void WaypointWriteFiles(void) {
     LockTaskData();
 
-    static_assert(array_size(szWaypointFile) == array_size(WpFileType), "invalid array size");
+    static_assert(std::size(szWaypointFile) == std::size(WpFileType), "invalid array size");
 
     globalFileNum = 0;
     for( TCHAR* szFile : szWaypointFile) {

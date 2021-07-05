@@ -28,12 +28,8 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
 
   BrushReference hB;
 
-  TextInBoxMode_t TextDisplayMode = {0};
+  TextInBoxMode_t TextDisplayMode = {};
   TCHAR Buffer[LKSIZEBUFFERLARGE*2];
-#ifdef DRAWLKSTATUS
-  bool dodrawlkstatus=false;
-#endif
-
 
   if (!IsDithered()) {
     if (MapSpaceMode == MSM_WELCOME) {
@@ -81,10 +77,6 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
     Surface.SelectObject(OldBrush);
   }
 
-
-#ifdef DRAWLKSTATUS
-  if (LKevent==LKEVENT_NEWRUN) dodrawlkstatus=true;
-#endif
 
   // We are entering mapspacemodes with no initial check on configured subpages.
   // Thus we need to ensure that the page is really available, or find the first valid.
@@ -182,9 +174,5 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
     TextInBox(Surface, &rc, Buffer, (rc.right+rc.left)/2, NIBLSCALE(50) , &TextDisplayMode, false);
     break;
   }
-#ifdef DRAWLKSTATUS
-  // no need to clear dodrawlkstatus, it is already reset at each run
-  if (dodrawlkstatus) DrawLKStatus(hdc, rc);
-#endif
   Surface.SelectObject(oldfont);
 }

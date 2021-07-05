@@ -130,24 +130,24 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
 
   DevIsCondor=true;
 
-  double alt, airspeed, wspeed, wfrom;
+  double airspeed, wspeed, wfrom;
 
   NMEAParser::ExtractParameter(String,ctemp,1);
   airspeed = StrToDouble(ctemp,NULL)/TOKPH;
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-  alt = StrToDouble(ctemp,NULL);
+  double QneAltitude = StrToDouble(ctemp,NULL);
 
-  pGPS->IndicatedAirspeed = airspeed/AirDensityRatio(alt);
+  pGPS->IndicatedAirspeed = IndicatedAirSpeed(airspeed, QneAltitude);
   pGPS->TrueAirspeed = airspeed;
+  pGPS->AirspeedAvailable = TRUE;
 
-  UpdateBaroSource( pGPS, 0,d,  QNEAltitudeToQNHAltitude(alt));
+  UpdateBaroSource( pGPS, 0,d,  QNEAltitudeToQNHAltitude(QneAltitude));
 
   NMEAParser::ExtractParameter(String,ctemp,3);
   double Vario = StrToDouble(ctemp,NULL);
   UpdateVarioSource(*pGPS, *d, Vario);
 
-  pGPS->AirspeedAvailable = TRUE;
 
   // we don't use heading for wind calculation since... wind is already calculated in condor!!
   NMEAParser::ExtractParameter(String,ctemp,11);

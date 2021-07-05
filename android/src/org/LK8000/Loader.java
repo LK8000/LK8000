@@ -33,6 +33,8 @@ public class Loader {
 
   static {
     try {
+      System.loadLibrary("c++_shared");
+      System.loadLibrary("oboe");
       System.loadLibrary("LK8000");
       loaded = true;
     } catch (UnsatisfiedLinkError e) {

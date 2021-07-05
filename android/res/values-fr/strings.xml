@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">fr</string>
+    <string name="upgrade_storage">LK8000 déplace vos données (%1$d Mo) du répertoire LK8000/ vers Android/data/%2$s/files/.
+\nCette opération est requise par Google dans le cadre d\'un effort visant à améliorer votre confidentialité.
+\nVeuillez patienter, la migration peut prendre quelques minutes.</string>
+    <string name="warning">Attention !</string>
+    <string name="close">Fermer</string>
+    <string name="quit">Arrêt du LK8000…</string>
+    <string name="loading">Chargement de LK8000…</string>
+    <string name="error_external_storage">Le stockage externe n\'est pas disponible, veuillez désactiver le stockage USB.</string>
+    <string name="error_native_library">Échec du chargement de la bibliothèque native LK8000.
+\nSignalez-nous ce problème en incluant les informations suivantes :
+\n</string>
 </resources>

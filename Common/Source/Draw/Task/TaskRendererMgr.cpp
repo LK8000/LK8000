@@ -21,7 +21,7 @@ TaskRendererMgr gTaskSectorRenderer;
 TaskRendererMgr gStartSectorRenderer;
 
 TaskRendererMgr::TaskRendererMgr() {
-    _renderer_list.reserve(array_size(Task));
+    _renderer_list.reserve(std::size(Task));
 }
 
 TaskRendererMgr::~TaskRendererMgr() {

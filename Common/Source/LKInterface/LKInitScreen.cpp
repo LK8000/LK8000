@@ -242,7 +242,6 @@ void InitLKScreen() {
     StartupStore(_T("..... AircraftMenuSize = %d" NEWLINE), AircraftMenuSize);
     StartupStore(_T("..... CompassMenuSize  = %d" NEWLINE), CompassMenuSize);
 
-    extern unsigned int TerrainQuantization();
     StartupStore(_T("..... TerrainQuantiz.  = %d" NEWLINE), TerrainQuantization());
 #endif  
 } // End of LKInitScreen

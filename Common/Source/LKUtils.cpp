@@ -126,13 +126,6 @@ void ToggleBaroAltitude() {
 
 }
 
-TCHAR * GetSizeSuffix(void) {
-  static TCHAR suffixname[12];
-  _stprintf(suffixname,_T("%03dx%03d"),ScreenSizeX,ScreenSizeY);
-  return(suffixname);
-}
-
-
 void LKRunStartEnd(bool start) {
 #ifdef WIN32
   if (start) {
@@ -220,7 +213,6 @@ bool UseContestEngine(void) {
 }
 
 
-extern void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
 
 //
 // Returns the LKW extension index of the incoming suffix, or -1
@@ -306,10 +298,14 @@ void MasterTimeReset(void) {
 #endif // MasterTimeReset
 }
 
+bool UseAATTarget() {
+    return (gTaskType == TSK_AAT) || (gTaskType == TSK_GP);
+}
+
 bool DoOptimizeRoute() {
 
-  if (AircraftCategory != (AircraftCategory_t)umParaglider) return false;
-  if (!PGOptimizeRoute) return false;
+  if (gTaskType!=TSK_GP) return false;
+  if (!TskOptimizeRoute) return false;
 
   if (!ValidTaskPoint(0) || !ValidTaskPoint(1)) return false;
   if (!ValidTaskPoint(ActiveTaskPoint)) return false;
@@ -389,10 +385,11 @@ void TaskFinishMessage(void) {
 
 }
 
-extern void MSG_NotEnoughMemory(void);
 void OutOfMemory(const TCHAR *where, int line) {
 
   StartupStore(_T(">>> OUT OF MEMORY in <%s> line %d%s"),where,line,NEWLINE);
-  MSG_NotEnoughMemory();
-
+ 
+  DoStatusMessage(
+    MsgToken(1663),  // NOT ENOUGH MEMORY
+    MsgToken(1662));  // SYSTEM ERROR  
 }

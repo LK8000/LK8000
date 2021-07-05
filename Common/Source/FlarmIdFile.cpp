@@ -1,157 +1,124 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
-   See CREDITS.TXT file for authors and copyrights
-
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ */
 
 #include "externs.h"
 #include "FlarmIdFile.h"
-#include "DoInits.h"
-#include "utils/stl_utils.h"
+#include "utils/array_back_insert_iterator.h"
+#include "utils/zzip_stream.h"
+#include <iostream>
 
+namespace {
 
-FlarmIdFile::FlarmIdFile(void)
-{
-  TCHAR flarmIdFileName[MAX_PATH] = TEXT("\0");
+std::string::const_iterator GetAsString(std::string::const_iterator it, size_t size, TCHAR *res) {
 
-  LocalPath(flarmIdFileName, _T(LKD_CONF), _T(LKF_FLARMNET));
-
-  FILE*	hFile = _tfopen(flarmIdFileName, TEXT("rt"));
-  if (hFile == NULL) {
-    LocalPath(flarmIdFileName, _T(LKD_CONF), _T("data.fln"));
-	hFile = _tfopen(flarmIdFileName, TEXT("rt"));
-	if (hFile == NULL) return;
+  auto out = array_back_inserter(res, size - 1); // size - 1 to let placeholder for '\0'
+  for(unsigned i = 0; i < (size -1); ++i) {
+    out = (HexDigit(*(it++)) << 4) | HexDigit(*(it++));
   }
+  *out = _T('\0');
 
-  fseek (hFile , 0 , SEEK_END);
-  long int fileLength = ftell (hFile);
-  fseek (hFile , 7 , SEEK_SET);
-
-  int itemCount = 0;
-
-  while( ( fileLength - ftell(hFile)) > 87) {
-	FlarmId *flarmId = new FlarmId;
-
-	_tcscpy(flarmId->id,_T(""));
-	_tcscpy(flarmId->name,_T(""));
-	_tcscpy(flarmId->airfield,_T(""));
-	_tcscpy(flarmId->type,_T(""));
-	_tcscpy(flarmId->reg,_T(""));
-	_tcscpy(flarmId->cn,_T(""));
-	_tcscpy(flarmId->freq,_T(""));
-
-	GetItem(hFile, flarmId);
-	flarmIds[flarmId->GetId()] = flarmId;
-	itemCount++;
+  // remove trailing whitespace
+  TCHAR* end = res + size - 1;
+  while ((--end) >= res && _istspace(*end)) {
+    *end = _T('\0');
   }
-  FlarmNetCount=itemCount;
-  fclose(hFile);
+  return it;
 }
 
-FlarmIdFile::~FlarmIdFile(void)
-{
-}
+} // namespace
 
-void FlarmIdFile::GetItem(FILE* hFile, FlarmId *flarmId)
-{
-  GetAsString(hFile, FLARMID_SIZE_ID-1, flarmId->id);
-  GetAsString(hFile, FLARMID_SIZE_NAME-1, flarmId->name);
-  GetAsString(hFile, FLARMID_SIZE_AIRFIELD-1, flarmId->airfield);
-  GetAsString(hFile, FLARMID_SIZE_TYPE-1, flarmId->type);
-  GetAsString(hFile, FLARMID_SIZE_REG-1, flarmId->reg);
-  GetAsString(hFile, MAXFLARMCN, flarmId->cn);
-  GetAsString(hFile, FLARMID_SIZE_FREQ-1, flarmId->freq);
-  //SetFilePointer(hFile, 1, NULL, FILE_CURRENT) ;
-
-  int i = 0;
-  while(i < FLARMID_SIZE_REG && flarmId->reg[i] != 0) {
-      if (flarmId->reg[i] == _T(' ')) flarmId->reg[i] = 0;
-      i++;
+FlarmId::FlarmId(const std::string& string) {
+  if(string.length() != 172) {
+    throw std::runtime_error("invalid flarmnet record");
   }
 
-  i = 0;
-  while(i < MAXFLARMCN && flarmId->cn[i] != 0) {
-      if (flarmId->cn[i] == _T(' ')) flarmId->cn[i] = 0;
-      i++;
-  }
+  auto it = string.begin();
+  it = GetAsString(it, FLARMID_SIZE_ID, id);
+  it = GetAsString(it, FLARMID_SIZE_NAME, name);
+  it = GetAsString(it, FLARMID_SIZE_AIRFIELD, airfield);
+  it = GetAsString(it, FLARMID_SIZE_TYPE, type);
+  it = GetAsString(it, FLARMID_SIZE_REG, reg);
+  it = GetAsString(it, FLARMID_SIZE_CN, cn);
+  it = GetAsString(it, FLARMID_SIZE_FREQ, freq);
+
 
   // Add a valid CN if missing. Ex: D-6543 = D43
-  if (_tcslen(flarmId->cn) == 0 ) {
-	int reglen=_tcslen(flarmId->reg);
-	if (reglen >=3) {
-		flarmId->cn[0] = flarmId->reg[0];
-		flarmId->cn[1] = flarmId->reg[reglen-2];
-		flarmId->cn[2] = flarmId->reg[reglen-1];
-		flarmId->cn[3] = _T('\0');
-	}
+  if (_tcslen(cn) == 0 ) {
+    int reglen=_tcslen(reg);
+    if (reglen >=3) {
+      cn[0] = reg[0];
+      cn[1] = reg[reglen-2];
+      cn[2] = reg[reglen-1];
+      cn[3] = _T('\0');
+    }
+  }
+}
+
+
+
+FlarmIdFile::FlarmIdFile() {
+
+  TCHAR flarmIdFileName[MAX_PATH] = _T("");
+  LocalPath(flarmIdFileName, _T(LKD_CONF), _T(LKF_FLARMNET));
+
+  /*
+   * we can't use std::ifstream due to lack of unicode file name in mingw32
+   */
+  zzip_stream file(flarmIdFileName, "rt");
+  if (!file) {
+    LocalPath(flarmIdFileName, _T(LKD_CONF), _T("data.fln"));
+    file.open(flarmIdFileName, "rt");
+  }
+  if (!file) {
+    return;
   }
 
-  fseek((FILE*)hFile, 1, SEEK_CUR);
-}
 
+  std::string src_line;
+  src_line.reserve(173);
 
-
-void FlarmIdFile::GetAsString(FILE* hFile, int charCount, TCHAR *res)
-{
-  LKASSERT((charCount * 2)<=100);
-  unsigned bytesToRead = std::min(charCount * 2, 100);
-
-  char bytes[100];
-
-  fread(bytes, 1, bytesToRead, (FILE*)hFile);
-
-  TCHAR *curChar = res;
-  for (unsigned z = 0; z < bytesToRead && (z+1) < array_size(bytes) ; z += 2)
-    {
-      char tmp[3];
-      tmp[0] = bytes[z];
-      tmp[1] = bytes[z+1];
-      tmp[2] = 0;
-
-      int i;
-      sscanf(tmp, "%2x", &i);
-
-      *curChar = (unsigned char)i;
-      curChar ++;
-
+  std::istream stream(&file);
+  std::getline(stream, src_line); // skip first line
+  while (std::getline(stream, src_line)) {
+    try {
+      FlarmId *flarmId = new FlarmId(src_line);
+      auto ib = flarmIds.insert(std::make_pair(flarmId->GetId(), flarmId));
+      if (!ib.second) {
+        assert(false); // duplicated id ! invalid file ?
+        delete flarmId;
+      }
+    } catch (std::runtime_error& e) {
+      StartupStore(_T("%s"), to_tstring(e.what()).c_str());
     }
-  *curChar = 0;
-
-}
-FlarmId* FlarmIdFile::GetFlarmIdItem(long id)
-{
-  FlarmIdMap::iterator iterFind = flarmIds.find(id);
-  if( iterFind != flarmIds.end() )
-    {
-      return flarmIds[id];
-    }
-
-  return NULL;
+  }
 }
 
-FlarmId* FlarmIdFile::GetFlarmIdItem(TCHAR *cn)
-{
-  FlarmId *itemTemp = NULL;
-  FlarmIdMap::iterator iterFind = flarmIds.begin();
-  while( iterFind != flarmIds.end() )
-    {
-      itemTemp = (FlarmId*)(iterFind->second );
-      if(_tcscmp(itemTemp->cn, cn) == 0)
-	{
-	  return itemTemp;
-	}
-      ++iterFind;
-    }
-
-  return NULL;
+FlarmIdFile::~FlarmIdFile() {
+  flarmIds.clear();
 }
 
-long FlarmId::GetId()
-{
-  unsigned int res;
+const FlarmId* FlarmIdFile::GetFlarmIdItem(uint32_t id) const {
+  auto it = flarmIds.find(id);
+  if (it != flarmIds.end()) {
+    return it->second.get();
+  }
+  return nullptr;
+}
 
-  _stscanf(id, TEXT("%6x"), &res);
+const FlarmId* FlarmIdFile::GetFlarmIdItem(const TCHAR *cn) const {
+  auto it = std::find_if(std::begin(flarmIds), std::end(flarmIds), [&](auto& item) {
+    return (_tcscmp(item.second->cn, cn) == 0);
+  });
 
-  return res;
-};
+  if (it != flarmIds.end()) {
+    return it->second.get();
+  }
+  return nullptr;
+}
+
+uint32_t FlarmId::GetId() const {
+  return _tcstoul(id, nullptr, 16);
+}

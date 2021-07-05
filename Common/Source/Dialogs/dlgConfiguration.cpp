@@ -33,6 +33,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "ContestMgr.h"
+#include "Tracking/Tracking.h"
 
 #ifdef ANDROID
 #include <jni.h>
@@ -47,7 +48,6 @@
 using namespace std::placeholders;
 
 extern void UpdateAircraftConfig(void);
-extern void dlgCustomMenuShowModal(void);
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
 void UpdateComPortSetting(WndForm* pOwner, size_t idx, const TCHAR* szPortName);
 void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
@@ -130,11 +130,11 @@ const ConfigPageNames_t ConfigPageNames[4][NUMOFCONFIGPAGES] = {
     },
 };
 
-static_assert(array_size(config_page) == array_size(ConfigPageNames), "invalid array size");
-static_assert(array_size(wConfig) == array_size(ConfigPageNames[0]), "invalid array size");
-static_assert(array_size(wConfig) == array_size(ConfigPageNames[1]), "invalid array size");
-static_assert(array_size(wConfig) == array_size(ConfigPageNames[2]), "invalid array size");
-static_assert(array_size(wConfig) == array_size(ConfigPageNames[2]), "invalid array size");
+static_assert(std::size(config_page) == std::size(ConfigPageNames), "invalid array size");
+static_assert(std::size(wConfig) == std::size(ConfigPageNames[0]), "invalid array size");
+static_assert(std::size(wConfig) == std::size(ConfigPageNames[1]), "invalid array size");
+static_assert(std::size(wConfig) == std::size(ConfigPageNames[2]), "invalid array size");
+static_assert(std::size(wConfig) == std::size(ConfigPageNames[2]), "invalid array size");
 
 
 static WndButton *buttonPilotName=NULL;
@@ -312,7 +312,7 @@ if(!pOwner) return;
 
 
 static void NextPage(int Step){
-    LKASSERT((size_t)configMode<array_size(config_page));
+    LKASSERT((size_t)configMode<std::size(config_page));
     config_page[configMode] += Step;
 
     if (configMode==CONFIGMODE_SYSTEM && !EngineeringMenu) { 
@@ -323,8 +323,8 @@ static void NextPage(int Step){
         if (config_page[configMode]<0) { config_page[configMode]=numPages-1; }
     }
 
-    LKASSERT((size_t)configMode < array_size(ConfigPageNames));
-    LKASSERT((size_t)config_page[configMode] < array_size(ConfigPageNames[0]));
+    LKASSERT((size_t)configMode < std::size(ConfigPageNames));
+    LKASSERT((size_t)config_page[configMode] < std::size(ConfigPageNames[0]));
     
     const ConfigPageNames_t* current = ConfigPageNames[configMode];
     const TCHAR* szCaption = LKGetText(current[config_page[configMode]].szCpation);
@@ -339,7 +339,7 @@ static void NextPage(int Step){
         buttonPaste->SetVisible(current[config_page[configMode]].CopyPaste);
     }
 
-    for (short i = 0; i < (short)array_size(wConfig); ++i) {
+    for (short i = 0; i < (short)std::size(wConfig); ++i) {
         if (wConfig[i]) {
             wConfig[i]->SetVisible(config_page[configMode] == i);
         }
@@ -351,7 +351,7 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
 
   // const TCHAR * DevicePropName[] = {_T("prpComPort1")};
   // check if all array have same size ( compil time check );
-  // static_assert(array_size(DeviceList) == array_size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
+  // static_assert(std::size(DeviceList) == std::size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
 
   if(!pOwner)
     return;
@@ -392,8 +392,8 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComIpAddr1"));
   if (wp) {
     if (_tcscmp(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString()) != 0) {
-      _tcsncpy(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString(), array_size(szIpAddress[SelectedDevice]));
-      szIpAddress[SelectedDevice][array_size(szIpAddress[SelectedDevice])-1] = _T('\0');
+      _tcsncpy(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString(), std::size(szIpAddress[SelectedDevice]));
+      szIpAddress[SelectedDevice][std::size(szIpAddress[SelectedDevice])-1] = _T('\0');
       COMPORTCHANGED = true;
     }
   }
@@ -613,10 +613,12 @@ static void OnAircraftTypeClicked(WndButton* pWnd) {
 }
 
 static void OnTerminalClicked(WndButton* pWnd) {
-    extern void dlgTerminal(int portnum);
     dlgTerminal(SelectedDevice);
     UpdateDeviceEntries(pWnd->GetParentWndForm(), SelectedDevice);
 }
+
+extern bool SysOpMode;
+extern bool Sysop(TCHAR *command);
 
 static void OnPilotNameClicked(WndButton* pWnd) {
     TCHAR Temp[100];
@@ -627,12 +629,8 @@ static void OnPilotNameClicked(WndButton* pWnd) {
         //
         // ACCESS TO SYSOP MODE 
         //
-        extern bool SysOpMode;
-        extern bool Sysop(TCHAR *command);
-        #define SYSOPW "OPSYS"
-
         if (!SysOpMode) {
-           if (!_tcscmp(Temp,_T(SYSOPW))) {
+           if (!_tcscmp(Temp,_T("OPSYS"))) {
               _tcscpy(Temp,_T("SYSOP"));
               Sysop(Temp); // activate sysop mode and exit dialog
               if(pWnd) {
@@ -670,9 +668,9 @@ if(wf)
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
   if (wp)
   {
-    if (LiveTrackerStart_config != wp->GetDataField()->GetAsInteger())
+    if (tracking::start_config != wp->GetDataField()->GetAsInteger())
     {
-      LiveTrackerStart_config = (int)wp->GetDataField()->GetAsInteger();
+        tracking::start_config = wp->GetDataField()->GetAsInteger();
       requirerestart = true;
 
     }
@@ -683,9 +681,9 @@ if(wf)
 static void OnLiveTrackersrvClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackersrv) {
-        _tcscpy(Temp, LiveTrackersrv_Config);
+        _tcscpy(Temp, tracking::server_config);
         dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(LiveTrackersrv_Config, Temp);
+        _tcscpy(tracking::server_config, Temp);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -693,10 +691,9 @@ static void OnLiveTrackersrvClicked(WndButton* pWnd) {
 static void OnLiveTrackerportClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerport) {
-        _stprintf(Temp, _T("%d"), LiveTrackerport_Config);
+        _stprintf(Temp, _T("%d"), tracking::port_config);
         dlgNumEntryShowModal(Temp, 100);
-        TCHAR *sz = NULL;
-        LiveTrackerport_Config = _tcstol(Temp, &sz, 10);
+        tracking::port_config = _tcstol(Temp, nullptr, 10);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -704,9 +701,9 @@ static void OnLiveTrackerportClicked(WndButton* pWnd) {
 static void OnLiveTrackerusrClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerusr) {
-        _tcscpy(Temp, LiveTrackerusr_Config);
+        _tcscpy(Temp, tracking::usr_config);
         dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(LiveTrackerusr_Config, Temp);
+        _tcscpy(tracking::usr_config, Temp);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -714,9 +711,9 @@ static void OnLiveTrackerusrClicked(WndButton* pWnd) {
 static void OnLiveTrackerpwdClicked(WndButton* pWnd) {
     TCHAR Temp[100];
     if (buttonLiveTrackerpwd) {
-        _tcscpy(Temp, LiveTrackerpwd_Config);
+        _tcscpy(Temp, tracking::pwd_config);
         dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(LiveTrackerpwd_Config, Temp);
+        _tcscpy(tracking::pwd_config, Temp);
     }
     UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -786,7 +783,6 @@ static void OnSetInfoPagesClicked(WndButton* pWnd) {
 }
 
 static void OnSetOverlaysClicked(WndButton* pWnd) {
-    extern void dlgOverlaysShowModal(void);
     dlgOverlaysShowModal();
 }
 
@@ -984,10 +980,9 @@ static void OnWaypointNewClicked(WndButton* pWnd){
   edit_waypoint.Flags = 0;
   edit_waypoint.Comment=(TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
 
-  extern void MSG_NotEnoughMemory(void);
   if (edit_waypoint.Comment == (TCHAR *)NULL) {
-	MSG_NotEnoughMemory();
-	return;
+    OutOfMemory(_T(__FILE__), __LINE__);
+    return;
   }
   _tcscpy(edit_waypoint.Comment,_T(""));
 
@@ -1025,14 +1020,12 @@ static void OnWaypointNewClicked(WndButton* pWnd){
 }
 
 
-static void OnWaypointEditClicked(WndButton* pWnd){
-
-  int res;
+static void OnWaypointEditClicked(WndButton* pWnd) {
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
 	return;
   }
-  res = dlgWayPointSelect();
+  int res = dlgSelectWaypoint();
   if (res != -1){
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE) {      // 100212
@@ -1092,13 +1085,12 @@ static void OnWaypointSaveClicked(WndButton* pWnd) {
     AskWaypointSave();
 }
 
-static void OnWaypointDeleteClicked(WndButton* pWnd){
-  int res;
+static void OnWaypointDeleteClicked(WndButton* pWnd) {
   if (CheckClubVersion()) {
 	ClubForbiddenMsg();
 	return;
   }
-  res = dlgWayPointSelect();
+  int res = dlgSelectWaypoint();
   if (res > RESWP_END) { // 100212
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE ) { // 100212
@@ -1224,10 +1216,10 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
     /*
-    static_assert(array_size(DeviceList) == array_size(PortPropName[0]), "PortPropName array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(prpExtSound), "prpExtSound array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(prpIpAddr[0]), "prpIpAddr array size need to be same of DeviceList array size");
-    static_assert(array_size(DeviceList) == array_size(prpIpPort[0]), "prpIpPort array size need to be same of DeviceList array size");
+    static_assert(std::size(DeviceList) == std::size(PortPropName[0]), "PortPropName array size need to be same of DeviceList array size");
+    static_assert(std::size(DeviceList) == std::size(prpExtSound), "prpExtSound array size need to be same of DeviceList array size");
+    static_assert(std::size(DeviceList) == std::size(prpIpAddr[0]), "prpIpAddr array size need to be same of DeviceList array size");
+    static_assert(std::size(DeviceList) == std::size(prpIpPort[0]), "prpIpPort array size need to be same of DeviceList array size");
 */
 #ifdef DISABLEEXTAUDIO    
     bool bManageExtAudio = false;
@@ -1301,8 +1293,9 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     bool bBt = ((_tcslen(szPortName) > 3) && ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || (_tcsncmp(szPortName, _T("Bluetooth Server"), 3) == 0)));
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
+    bool bFileReplay = (_tcscmp(szPortName, NMEA_REPLAY)    == 0);
     bool bUDPServer = (_tcscmp(szPortName, _T("UDPServer")) == 0);
-    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || ( DeviceList[SelectedDevice].iSharedPort>=0 ));
+    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || bFileReplay || ( DeviceList[SelectedDevice].iSharedPort>=0 ));
     if(bCOM)
     {
       ShowWindowControl(wf, TEXT("prpComPort1"), true);
@@ -1320,6 +1313,8 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
       ShowWindowControl(wf, TEXT("prpComIpAddr1"), bTCPClient);
       ShowWindowControl(wf, TEXT("prpComIpPort1"),  bTCPClient || bTCPServer || bUDPServer);
     }
+
+    ShowWindowControl(wf, TEXT("cmdReplay"), bFileReplay);
 
     // Manage external sounds only if necessary
     if (bManageExtAudio) {
@@ -1351,10 +1346,16 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
 
 
   static void OnConfigDevClicked(WndButton* pWnd){
-//   if(DeviceList[SelectedDevice])
      if(DeviceList[SelectedDevice].Config)
        DeviceList[SelectedDevice].Config(&DeviceList[SelectedDevice]);
 }
+
+
+extern void dlgNMEAReplayShowModal(void);
+static void OnConfigDevReplayClicked(WndButton* pWnd){
+	dlgNMEAReplayShowModal();
+}
+
 
 
 
@@ -1423,6 +1424,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnE),
   ClickNotifyCallbackEntry(OnF),
   ClickNotifyCallbackEntry(OnConfigDevClicked),
+  ClickNotifyCallbackEntry(OnConfigDevReplayClicked),
   ClickNotifyCallbackEntry(OnNextDevice),
   ClickNotifyCallbackEntry(OnTerminalClicked),
   EndCallBackEntry()
@@ -1670,7 +1672,9 @@ static void setVariables( WndForm *pOwner) {
 
 
   const TCHAR *tSpeed[] = {TEXT("1200"),TEXT("2400"),TEXT("4800"),TEXT("9600"),
-			     TEXT("19200"),TEXT("38400"),TEXT("57600"),TEXT("115200")};
+                           TEXT("19200"),TEXT("38400"),TEXT("57600"),
+                           TEXT("115200"),TEXT("230400"),TEXT("460800"),
+                           TEXT("500000"),TEXT("1000000")};
 
   TCHAR szPort[MAX_PATH];
   
@@ -1721,8 +1725,8 @@ static void setVariables( WndForm *pOwner) {
       LPCTSTR DeviceName = devRegisterGetName(i);
       dfe->addEnumText(DeviceName);
 
-      static_assert(array_size(dwDeviceIndex) ==  array_size(dwDeviceName), "Invalid array size");
-      for (unsigned j=0; j< array_size(dwDeviceName); j++) {
+      static_assert(std::size(dwDeviceIndex) ==  std::size(dwDeviceName), "Invalid array size");
+      for (unsigned j=0; j< std::size(dwDeviceName); j++) {
         LPCTSTR DeviceName = devRegisterGetName(i);
         if (_tcscmp(DeviceName, dwDeviceName[j]) == 0) {
           dwDeviceIndex[j] = i;
@@ -2412,14 +2416,14 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    wp->GetDataField()->SetAsInteger(LiveTrackerInterval);
+    wp->GetDataField()->SetAsInteger(tracking::interval);
     wp->GetDataField()->SetUnits(TEXT("sec"));
     wp->RefreshDisplay();
   }
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
-    wp->GetDataField()->Set(LiveTrackerRadar_config);
+    wp->GetDataField()->Set(tracking::radar_config);
     wp->RefreshDisplay();
   }
 
@@ -2429,7 +2433,7 @@ DataField* dfe = wp->GetDataField();
 	DataField* dfe = wp->GetDataField();
 	dfe->addEnumText(MsgToken(2334));	// LKTOKEN   _@M2334_ "In flight only (default)"
 	dfe->addEnumText(MsgToken(2335));	// LKTOKEN  _@M2335_ "permanent (test purpose)"
-    dfe->Set(LiveTrackerStart_config);
+    dfe->Set(tracking::start_config);
     wp->RefreshDisplay();
   }
 
@@ -2505,7 +2509,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF),_T("*" LKS_PILOT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF),_T(LKS_PILOT));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2514,7 +2518,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_AIRCRAFT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_AIRCRAFT));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2523,7 +2527,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_DEVICE));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_DEVICE));
       dfe->Set(0);
     }
     wp->RefreshDisplay();
@@ -2538,17 +2542,12 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_POLARS), _T("*" LKS_POLARS)); //091101
+      dfe->ScanDirectoryTop(_T(LKD_POLARS), _T(LKS_POLARS)); //091101
 #ifdef LKD_SYS_POLAR
       /**
        * Add entry from system directory not exist in data directory.
        */
-#ifdef ANDROID
-      dfe->ScanZipDirectory(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
-#else
-      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_POLAR), _T("*" LKS_POLARS));
-#endif
-      dfe->Sort();
+      dfe->ScanSystemDirectoryTop(_T(LKD_SYS_POLAR), _T(LKS_POLARS));
 #endif
       dfe->Lookup(temptext);
     }
@@ -2581,8 +2580,11 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" LKS_MAPS));
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" XCS_MAPS));
+      const TCHAR* suffix_filters[] = {
+        _T(LKS_MAPS),
+        _T(XCS_MAPS)
+      };
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), suffix_filters);
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2593,7 +2595,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T("*" LKS_TERRAINDEM));
+      dfe->ScanDirectoryTop(_T(LKD_MAPS), _T(LKS_TERRAINDEM));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2604,7 +2606,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T("*" LKS_AIRFIELDS));
+      dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS), _T(LKS_AIRFIELDS));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2630,7 +2632,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
-      dfe->ScanDirectoryTop(_T(LKD_CONF), _T("*" LKS_INPUT));
+      dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_INPUT));
       dfe->Lookup(temptext);
     }
     wp->RefreshDisplay();
@@ -2863,7 +2865,7 @@ DataField* dfe = wp->GetDataField();
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
-        dfe->Set(PGOptimizeRoute_Config);
+        dfe->Set(TskOptimizeRoute_Config);
     }
     wp->RefreshDisplay();
   }
@@ -3148,6 +3150,8 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("GA Relative"));
     dfe->addEnumText(TEXT("LiteAlps"));
     dfe->addEnumText(TEXT("Low Hills"));
+    dfe->addEnumText(TEXT("Low Alps color e-ink"));
+    dfe->addEnumText(TEXT("Low Alps gray e-ink"));
     dfe->Set(TerrainRamp_Config);
     wp->RefreshDisplay();
   }
@@ -3351,6 +3355,14 @@ wp->RefreshDisplay();
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAndroidAudioVario"));
+  if (wp) {
+#ifndef ANDROID
+    wp->SetVisible(false);
+#endif
+    wp->GetDataField()->Set(EnableAudioVario);
+    wp->RefreshDisplay();
+  }
 
   for (int i=0; i<4; i++) {
     for (int j=0; j<8; j++) {
@@ -3414,6 +3426,41 @@ static bool OnUser(WndForm * pWndForm, unsigned id) {
 
 #endif
 
+
+
+//
+// Setup device dialogs fine tuning
+//
+static void InitDlgDevice(WndForm *pWndForm) {
+
+  if(!pWndForm) {
+    LKASSERT(0);
+    return;
+  }
+
+  // spacing between buttons and left&right
+  const unsigned int SPACEBORDER = DLGSCALE(2);
+  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES + 1))) / MAXNUMDEVICES;
+  unsigned int lx = SPACEBORDER; // count from 0
+
+  static_assert(MAXNUMDEVICES == std::size(DeviceList), "wrong array size");
+
+  for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
+    TCHAR szWndName[5];
+    _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
+    WindowControl * pWnd = pWndForm->FindByName(szWndName);
+    if(pWnd) {
+      pWnd->SetWidth(w);
+      pWnd->SetLeft(lx);
+      ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
+      ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
+      if(i==0) OnA((WndButton*)pWnd);
+      lx += w + SPACEBORDER;
+    }
+  }
+}
+
+
 void dlgConfigurationShowModal(short mode){
 
   WndProperty *wp;
@@ -3438,7 +3485,7 @@ void dlgConfigurationShowModal(short mode){
       { IDR_XML_CONFIGDEVICE_P }
   };
   
-  static_assert(array_size(dlgTemplate_L) == array_size(dlgTemplate_P), "check array size");
+  static_assert(std::size(dlgTemplate_L) == std::size(dlgTemplate_P), "check array size");
   
   StartHourglassCursor();
 
@@ -3446,7 +3493,7 @@ void dlgConfigurationShowModal(short mode){
     RefreshComPortList();
   }
 
-  if(configMode >= 0 && configMode < (int)array_size(dlgTemplate_L)) {
+  if(configMode >= 0 && configMode < (int)std::size(dlgTemplate_L)) {
     
     auto dlgTemplate = (ScreenLandscape ? dlgTemplate_L[configMode] : dlgTemplate_P[configMode]);
   
@@ -3477,13 +3524,11 @@ void dlgConfigurationShowModal(short mode){
 
   reset_wConfig();
 
-  for(size_t i = 0; i < array_size(ConfigPageNames[configMode]); i++) {
+  for(size_t i = 0; i < std::size(ConfigPageNames[configMode]); i++) {
       wConfig[i]    = (WndFrame *)wf->FindByName(ConfigPageNames[configMode][i].szName);
       numPages += wConfig[i]?1:0;
   }
   std::fill(std::begin(cpyInfoBox), std::end(cpyInfoBox), -1);
-
-  wf->FilterAdvanced(1); // useless, we dont use advanced options anymore TODO remove
 
   setVariables(wf);
 
@@ -3504,7 +3549,6 @@ void dlgConfigurationShowModal(short mode){
 //         ShowWindowControl(wf, _T("prpExtSound2"), false);
         }
 #endif
-     extern void InitDlgDevice(WndForm *wf);
      InitDlgDevice(wf);
 
 
@@ -3565,16 +3609,16 @@ void dlgConfigurationShowModal(short mode){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    if (LiveTrackerInterval != wp->GetDataField()->GetAsInteger()) {
-      LiveTrackerInterval = (wp->GetDataField()->GetAsInteger());
+    if (tracking::interval != wp->GetDataField()->GetAsInteger()) {
+        tracking::interval = (wp->GetDataField()->GetAsInteger());
       requirerestart = true;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
-    if (LiveTrackerRadar_config != wp->GetDataField()->GetAsBoolean()) {
-      LiveTrackerRadar_config = wp->GetDataField()->GetAsBoolean();
+    if (tracking::radar_config != wp->GetDataField()->GetAsBoolean()) {
+        tracking::radar_config = wp->GetDataField()->GetAsBoolean();
       requirerestart = true;
     }
   }
@@ -4323,14 +4367,10 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
   if (wp) {
-    if (PGOptimizeRoute_Config != (wp->GetDataField()->GetAsBoolean())) {
-      PGOptimizeRoute_Config = (wp->GetDataField()->GetAsBoolean());
-      PGOptimizeRoute = PGOptimizeRoute_Config;
+    if (TskOptimizeRoute != (wp->GetDataField()->GetAsBoolean())) {
+      TskOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
 
-      if (ISPARAGLIDER) {
-	    if(PGOptimizeRoute) {
-		  AATEnabled = true;
-	    }
+      if (gTaskType==TSK_GP) {
         ClearOptimizedTargetPos();
 	  }
 	}
@@ -4662,6 +4702,10 @@ int ival;
   wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu")); // VENTA9
   if (wp) EngineeringMenu = wp->GetDataField()->GetAsBoolean();
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAndroidAudioVario"));
+  if (wp) {
+    EnableAudioVario = wp->GetDataField()->GetAsBoolean();
+  }
 
  UpdateAircraftConfig();
 
@@ -4738,8 +4782,6 @@ void UpdateAircraftConfig(void){
         (wp->GetDataField()->GetAsInteger());
       requirerestart = true;
       AIRCRAFTTYPECHANGED=true;
-
-        if (ISPARAGLIDER) AATEnabled=TRUE; // NOT SURE THIS IS NEEDED ANYMORE. 
     }
   }
 
@@ -4785,35 +4827,3 @@ void UpdateAircraftConfig(void){
   }
 }
 
-
-//
-// Setup device dialogs fine tuning
-//
-void InitDlgDevice(WndForm *pWndForm) {
-
-  if(!pWndForm) {
-    LKASSERT(0);
-    return;
-  }
-
-  // spacing between buttons and left&right
-  const unsigned int SPACEBORDER = DLGSCALE(2);
-  const unsigned int w = (pWndForm->GetWidth() - (SPACEBORDER * (MAXNUMDEVICES + 1))) / MAXNUMDEVICES;
-  unsigned int lx = SPACEBORDER; // count from 0
-
-  static_assert(MAXNUMDEVICES == array_size(DeviceList), "wrong array size");
-
-  for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
-    TCHAR szWndName[5];
-    _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
-    WindowControl * pWnd = pWndForm->FindByName(szWndName);
-    if(pWnd) {
-      pWnd->SetWidth(w);
-      pWnd->SetLeft(lx);
-      ((WndButton*)pWnd)->LedSetMode(LEDMODE_OFFGREEN);
-      ((WndButton*)pWnd)->LedSetOnOff(!DeviceList[i].Disabled);
-      if(i==0) OnA((WndButton*)pWnd);
-      lx += w + SPACEBORDER;
-    }
-  }
-}

@@ -99,34 +99,28 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 */
 
   TCHAR ctemp[80];
-  double vtas, vias;
 
   NMEAParser::ExtractParameter(String,ctemp,0);
   pGPS->Altitude = StrToDouble(ctemp,NULL);
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-  double palt=StrToDouble(ctemp,NULL);
+  double QneAltitude = StrToDouble(ctemp,NULL);
 
-   UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(palt));
+  UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(QneAltitude));
 
   NMEAParser::ExtractParameter(String,ctemp,4);
   UpdateVarioSource(*pGPS, *d, StrToDouble(ctemp,NULL));
 
   NMEAParser::ExtractParameter(String,ctemp,8);
   if (ctemp[0] != '\0') { // 100209
-	// we store m/s  , so we convert it from kmh
-	vias = StrToDouble(ctemp,NULL)/3.6;
-	pGPS->IndicatedAirspeed = vias;
-	// Check if zero?
-	vtas = vias*AirDensityRatio(palt);
-	pGPS->TrueAirspeed = vtas;
-
-	if (pGPS->IndicatedAirspeed >0)
-		pGPS->AirspeedAvailable = TRUE;
-	else
-		pGPS->AirspeedAvailable = FALSE;
-  } else
-		pGPS->AirspeedAvailable = FALSE;
+    // we store m/s  , so we convert it from kmh
+    pGPS->IndicatedAirspeed = StrToDouble(ctemp,NULL) / TOKPH;
+    pGPS->TrueAirspeed = TrueAirSpeed(pGPS->IndicatedAirspeed, QneAltitude);
+    pGPS->AirspeedAvailable = (pGPS->IndicatedAirspeed >0);
+  } else {
+    pGPS->AirspeedAvailable = FALSE;
+  }
+  TriggerVarioUpdate();
 
   return TRUE;
 }

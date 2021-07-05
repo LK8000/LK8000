@@ -117,7 +117,7 @@ BOOL PBB50(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   // $PBB50,14,-.2,.0,196,0,.92,0,-228*71
 
   double vtas, vias, wnet;
-  TCHAR ctemp[80];
+  TCHAR ctemp[MAX_NMEA_LEN];
 
   NMEAParser::ExtractParameter(String,ctemp,0);
   vtas = StrToDouble(ctemp,NULL)/TOKNOTS;

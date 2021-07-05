@@ -17,11 +17,10 @@
 class PGEssCicrcleTaskPt : public PGCicrcleTaskPt {
     friend class PGTaskMgr; 
 public:
-    PGEssCicrcleTaskPt();
-    virtual ~PGEssCicrcleTaskPt();
+    PGEssCicrcleTaskPt() = delete;
+    PGEssCicrcleTaskPt(ProjPt&& point);
     
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 };
 
 #endif /* PGESSCIRCLE_H */
-

@@ -147,7 +147,7 @@ void InitFlightDataRecorder() {
   } 
 
   time_t sysTime = time(nullptr);
-  struct tm tm_temp = {0};
+  struct tm tm_temp = {};
   struct tm* utc = gmtime_r(&sysTime, &tm_temp);
 
   // FROM NOW ON, we can write on the file and on LK exit we must close the file.
@@ -165,17 +165,18 @@ void InitFlightDataRecorder() {
 
   for( i = 0;  i < NO_ENTRYS; i++)
   {
-	TCHAR2utf(FDR[i].szName, sbuf, sizeof(sbuf));
-	if(FDR[i].abLog > 0)
-		fprintf(FlightDataRecorderFile,"%30s recording enabled\r",sbuf);
+    if(FDR[i].abLog > 0) {
+      to_utf8(FDR[i].szName, sbuf);
+      fprintf(FlightDataRecorderFile,"%30s recording enabled\r",sbuf);
+    }
   }
   fprintf(FlightDataRecorderFile,"\r");
 
   for( i = 0;  i < NO_ENTRYS; i++)
   {
-	TCHAR2utf(FDR[i].szName, sbuf, sizeof(sbuf));
 	if(FDR[i].aiCheckInterval > 0)
 	{
+		to_utf8(FDR[i].szName, sbuf);
 		if( FDR[i].aiMaxWarnings > 0)
 		{
 		  fprintf(FlightDataRecorderFile,"%30s range (%4.2f .. %4.2f) warning every %is, max. %i warnings\r",
@@ -249,7 +250,7 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   nextHB=LKHearthBeats+2;       // 2hz to 1hz
 
   time_t sysTime = time(nullptr);
-  struct tm tm_temp = {0};
+  struct tm tm_temp = {};
   struct tm* utc = gmtime_r(&sysTime, &tm_temp);
   
   int idx=0;

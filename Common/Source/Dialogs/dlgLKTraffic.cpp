@@ -14,15 +14,14 @@
 #include "FlarmIdFile.h"
 #include "resource.h"
 #include "Sound/Sound.h"
-
-extern FlarmIdFile *file;
+#include "Radio.h"
 
 static WndForm *wf=NULL;
 static void SetValues(int indexid);
 
 static int SelectedTraffic;
 static WndButton *buttonTarget=NULL;
-FlarmId* flarmId = NULL;
+const FlarmId* flarmId = nullptr;
 static void OnTargetClicked(WndButton* pWnd) {
 
   if (SelectedTraffic<0 || SelectedTraffic>MAXTRAFFIC) {
@@ -30,7 +29,7 @@ static void OnTargetClicked(WndButton* pWnd) {
 	DoStatusMessage(_T("ERR-126 invalid TARGET traffic"));
 	return;
   }
-  if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].ID <1 ) {
+  if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].RadioId < 1) {
 	DoStatusMessage(MsgToken(879)); // SORRY TARGET JUST DISAPPEARED
 	return;
   }
@@ -47,10 +46,6 @@ static void OnTargetClicked(WndButton* pWnd) {
 	UnlockFlightData();
 	LKTargetIndex=-1;
 	LKTargetType=LKT_TYPE_NONE;
-	WayPointList[RESWP_FLARMTARGET].Latitude   = RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_FLARMTARGET].Longitude  = RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_FLARMTARGET].Altitude   = RESWP_INVALIDNUMBER;
-	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name,_T(RESWP_FLARMTARGET_NAME) );
 	DoStatusMessage(MsgToken(882)); // TARGET RELEASED
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -67,7 +62,7 @@ static void OnTargetClicked(WndButton* pWnd) {
   mbYesNo) == IdYes) {
 #endif
 	// one more check for existance
-	if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].ID <1 ) {
+	if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].RadioId < 1 ) {
 		DoStatusMessage(MsgToken(883)); // TARGET DISAPPEARED!
 		return;
 	}
@@ -83,18 +78,7 @@ static void OnTargetClicked(WndButton* pWnd) {
 	DoStatusMessage(MsgToken(675));
 	LKTargetIndex=SelectedTraffic;
 	LKTargetType=LKT_TYPE_MASTER;
-
-	// Remember that we need to update the virtual waypoint constantly when we receive FLARM data of target
-	// Probably name is not updated if changed from Flarm menu...
 	OvertargetMode=OVT_FLARM;
-	WayPointList[RESWP_FLARMTARGET].Latitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Latitude;
-	WayPointList[RESWP_FLARMTARGET].Longitude  = GPS_INFO.FLARM_Traffic[LKTargetIndex].Longitude;
-	WayPointList[RESWP_FLARMTARGET].Altitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Altitude;
-	if (_tcslen(GPS_INFO.FLARM_Traffic[LKTargetIndex].Name) == 1) {
-		_stprintf(WayPointList[RESWP_FLARMTARGET].Name,_T("%0x"),GPS_INFO.FLARM_Traffic[LKTargetIndex].ID);
-	} else {
-		_stprintf(WayPointList[RESWP_FLARMTARGET].Name,_T("%s"),GPS_INFO.FLARM_Traffic[LKTargetIndex].Name);
-	}
 	SetModeType(LKMODE_TRF, IM_TARGET);
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -112,7 +96,7 @@ static void OnRenameClicked(WndButton* pWnd){
 	DoStatusMessage(_T("ERR-126 invalid traffic"));
 	return;
   }
-  if ( LKTraffic[SelectedTraffic].ID <1 ) {
+  if ( LKTraffic[SelectedTraffic].RadioId < 1 ) {
 	StartupStore(_T("--- Invalid traffic selected to rename, invalid ID%s"),NEWLINE);
 	DoStatusMessage(_T("ERR-127 invalid traffic"));
 	return;
@@ -162,7 +146,7 @@ static void OnRenameClicked(WndButton* pWnd){
 	GPS_INFO.FLARM_Traffic[SelectedTraffic].UpdateNameFlag=true;
 	// This will create the local flarmid entry, but won't update the structure in GPS_INFO
 	// until a new PFLAA arrives from this ID. 
-	AddFlarmLookupItem(GPS_INFO.FLARM_Traffic[SelectedTraffic].ID, newName, true);
+	AddFlarmLookupItem(GPS_INFO.FLARM_Traffic[SelectedTraffic].RadioId, newName, true);
 	UnlockFlightData();
 
 	#ifdef DEBUG_LKT
@@ -180,15 +164,11 @@ static void OnRenameClicked(WndButton* pWnd){
 }
 
 
-extern double  ExtractFrequency(const TCHAR*);
-extern BOOL ValidFrequency(double Freq);
+
+
 
 static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
-    (void) Sender;
-
-#ifdef RADIO_ACTIVE
-
-TCHAR Tmp[255];
+  TCHAR Tmp[255];
   if(flarmId != NULL)
   {
    if(RadioPara.Enabled)
@@ -201,16 +181,32 @@ TCHAR Tmp[255];
           _tcscpy(Tmp,(TCHAR*)flarmId->cn);
         else
           _tcscpy(Tmp,(TCHAR*)flarmId->reg );
-
-        devPutFreqActive(ASFrequency, Tmp );
+        devPutFreqActive( ASFrequency, Tmp);
       }
     }
   }
-#endif  // RADIO_ACTIVE
-
 }
 
 
+static void OnFlarmSecFreqSelectEnter(WndButton*  Sender) {
+  TCHAR Tmp[255];
+  if(flarmId != NULL)
+  {
+   if(RadioPara.Enabled)
+   {
+      double ASFrequency = ExtractFrequency(flarmId->freq);
+      if(ValidFrequency(ASFrequency))
+      {
+        LKSound(TEXT("LK_TICK.WAV"));
+        if(_tcslen(flarmId->cn) > 0)
+          _tcscpy(Tmp,(TCHAR*)flarmId->cn);
+        else
+          _tcscpy(Tmp,(TCHAR*)flarmId->reg );
+        devPutFreqStandby( ASFrequency, Tmp);
+      }
+    }
+  }
+}
 
 static void OnCloseClicked(WndButton * pWnd) {
   if(pWnd) {
@@ -226,6 +222,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnTargetClicked),
   ClickNotifyCallbackEntry(OnFlarmFreqSelectEnter),
+  ClickNotifyCallbackEntry(OnFlarmSecFreqSelectEnter),
   EndCallBackEntry()
 };
 
@@ -245,7 +242,7 @@ static void SetValues(int indexid) {
 	// DoStatusMessage(_T("ERR-216 INVALID INDEXID"));
 	return;
   }
-  if ( LKTraffic[indexid].ID <=0 || LKTraffic[indexid].Status <LKT_REAL) {
+  if ( LKTraffic[indexid].RadioId <=0 || LKTraffic[indexid].Status <LKT_REAL) {
 	StartupStore(_T("--- LK setvalues invalid indexid=%d%s"),indexid,NEWLINE);
 	// DoStatusMessage(_T("ERR-217 INVALID INDEXID"));
 	return;
@@ -256,7 +253,7 @@ static void SetValues(int indexid) {
 	wlen=_tcslen(LKTraffic[indexid].Name);
 	// a ? probably
 	if (wlen==1) {
-		_stprintf(buffer,_T("%06x"),LKTraffic[indexid].ID);
+		_stprintf(buffer,_T("%06x"),LKTraffic[indexid].RadioId);
 		buffer[MAXFLARMNAME]='\0';
 	} else {
 		LK_tcsncpy(buffer,LKTraffic[indexid].Name,MAXFLARMNAME);
@@ -345,7 +342,7 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  flarmId = file->GetFlarmIdItem(LKTraffic[indexid].ID);
+  flarmId = LookupFlarmId(LKTraffic[indexid].RadioId);
   if (flarmId != NULL) {
 	wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
 	if (wp) {
@@ -366,13 +363,18 @@ static void SetValues(int indexid) {
 		wp->RefreshDisplay();
 	}
 
+
+	
 	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
+	double ASFrequency = ExtractFrequency(flarmId->freq);
+	bool bValidFreq = false;
+	if((RadioPara.Enabled) && ValidFrequency(ASFrequency) )
+		bValidFreq = true;
 	if(wFreq)
 	{
-		double ASFrequency = ExtractFrequency(flarmId->freq);
-		if((RadioPara.Enabled) && ValidFrequency(ASFrequency) )
+		if(bValidFreq )
 		{
-			_stprintf(buffer,_T("%7.3f"), ASFrequency );
+			_stprintf(buffer,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), ASFrequency);	
 			wFreq->SetCaption(buffer);
 			wFreq->SetVisible(true) ;
 		}
@@ -381,9 +383,26 @@ static void SetValues(int indexid) {
 			wFreq->SetCaption(_T(""));
 			wFreq->SetVisible(false) ;
 		}
-		wFreq->Redraw();
-  }
- }
+	}
+	
+	WindowControl* wSecFreq= wf->FindByName(TEXT("cmdSecFreq"));	
+	
+	if(wSecFreq)
+	{
+		if(bValidFreq )
+		{
+			_stprintf(buffer,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), ASFrequency);
+			wSecFreq->SetCaption(buffer);
+			wSecFreq->SetVisible(true) ;
+		}
+		else
+		{
+			wSecFreq->SetCaption(_T(""));
+			wSecFreq->SetVisible(false);
+		}
+		wSecFreq->Redraw();
+	}
+}
 }
 
 
@@ -430,7 +449,7 @@ void dlgLKTrafficDetails(int indexid) {
 		break;
   }
   Units::TimeToTextDown(tpas,(int)(GPS_INFO.Time - LKTraffic[indexid].Time_Fix));
-  TCHAR caption[80];
+  TCHAR caption[120];
   _stprintf(caption,_T("%s (%s\" old)"),status,tpas);
 
   wf->SetCaption(caption);

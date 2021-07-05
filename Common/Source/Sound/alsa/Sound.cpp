@@ -19,14 +19,12 @@
 #define PCM_DEVICE "default"
 
 static bool bSoundFile = false; // this is true only if "_System/_Sounds" directory exists.
-static TCHAR szSoundPath[MAX_PATH] = {}; // path of Sound file, initialized by  #SoundGlobalInit end never change;
 static snd_pcm_t *pcm_handle = nullptr;
 
 SoundGlobalInit::SoundGlobalInit() {
 
     TCHAR srcfile[MAX_PATH];
-    SystemPath(szSoundPath, TEXT(LKD_SOUNDS));
-    _stprintf(srcfile, TEXT("%s%s_SOUNDS"), szSoundPath, _T(DIRSEP));
+    SystemPath(srcfile, TEXT(LKD_SOUNDS), TEXT("_SOUNDS"));
     if (lk::filesystem::exist(srcfile)) {
         bSoundFile = true;
     } else {
@@ -39,7 +37,7 @@ SoundGlobalInit::SoundGlobalInit() {
         StartupStore(_T("failed to open PCM device <%s>") NEWLINE, snd_strerror(pcmrc));
         pcm_handle = nullptr;
     }
-    
+
     if(!pcm_handle) {
         StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!") NEWLINE);
     }
@@ -102,11 +100,11 @@ void LKSound(const TCHAR *lpName) {
         return;
     }
 
-    TCHAR infilename[MAX_PATH];
-    _stprintf(infilename, _T("%s%s%s"), szSoundPath, _T(DIRSEP), lpName);
+    TCHAR srcfile[MAX_PATH];
+    SystemPath(srcfile, TEXT(LKD_SOUNDS), lpName);
 
     SF_INFO sfinfo = {};
-    SNDFILE* infile = sf_open(infilename, SFM_READ, &sfinfo);
+    SNDFILE* infile = sf_open(srcfile, SFM_READ, &sfinfo);
     if (infile) {
         alsa_play(infile, sfinfo);
         sf_close(infile);

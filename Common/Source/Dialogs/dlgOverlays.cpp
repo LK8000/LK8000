@@ -37,6 +37,16 @@ static void setVariables(void) {
 	dfe->Set(Overlay_TopLeft);
 	wp->RefreshDisplay();
   }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOvTitle"));
+  if (wp) {
+	DataField* dfe = wp->GetDataField();
+        dfe->addEnumText(MsgToken(491)); // OFF
+        dfe->addEnumText(MsgToken(894)); // ON
+	dfe->Set(Overlay_Title);
+	wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
@@ -172,7 +182,6 @@ static void setVariables(void) {
 static void OnResetClicked(WndButton* pWnd){
 
   WndProperty *wp;
-  extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
@@ -266,6 +275,9 @@ void dlgOverlaysShowModal(void){
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
   if (wp) Overlay_TopLeft = (wp->GetDataField()->GetAsInteger());
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOvTitle"));
+  if (wp) Overlay_Title =  (wp->GetDataField()->GetAsInteger());
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
   if (wp) Overlay_TopMid = (wp->GetDataField()->GetAsInteger());
 
@@ -337,6 +349,8 @@ void dlgOverlaysShowModal(void){
     else
       Overlay_RightBottom = dataField+1000-2; // Custom overlay have a code LKValue+1000
   }
+  
+
 
   delete wf;
   wf = NULL;

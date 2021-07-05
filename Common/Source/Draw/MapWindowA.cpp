@@ -16,7 +16,7 @@
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Scope.hpp"
-#include "utils/make_unique.h"
+#include <memory>
 #endif
 
 using std::placeholders::_1;
@@ -214,8 +214,8 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
     for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
 
         if (((*it)->DrawStyle() == adsHidden) ||
-             ((*it)->Top()->Altitude <= 0)){
-          continue;
+          ((  (*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))){
+          continue;  // don't draw on map if hidden or upper limit is on sea level or below
         }
 
         const int airspace_type = (*it)->Type();

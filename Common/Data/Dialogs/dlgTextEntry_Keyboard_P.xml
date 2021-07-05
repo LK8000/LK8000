@@ -1,106 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M251_" Font="2" >
-    <WndProperty Name="prpText"  Caption="_@M711_"   X="2" Y="2" Width="218" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
-	<WndProperty Name="prpMatch"  Caption="Match:"   X="0" Y="265" Width="120"  Height="35"  CaptionWidth="120" Font="2" ReadOnly="1" />
-	<WndButton   Name="prpShift" Caption="Shift" X="0" Y="265" Width="50"  Height="35" Font="2" OnClickNotify="OnShift"/> 
-    <WndButton   Caption="_@M228_"    X="200" Y="2" Width="40"  Height="22" Font="2" OnClickNotify="OnDel"/>
-    <WndButton  Name="prpA" Caption="A"    X="0" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpB" Caption="B"    X="40" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpC" Caption="C"    X="80" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpD" Caption="D"    X="120" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpE" Caption="E"    X="160" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpF" Caption="F"    X="200" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+<PMML version="3.0"
+  xmlns="http://www.dmg.org/PMML-3-0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M251_" Font="2">
+    <WndProperty Name="prpText" Caption="_@M711_" X="2" Y="2" Width="218" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpMatch" Caption="Match:" X="0" Y="265" Width="120" Height="35" CaptionWidth="120" Font="2" ReadOnly="1" />
 
-    <WndButton  Name="prpG" Caption="G"    X="0" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpH" Caption="H"    X="40" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpI" Caption="I"    X="80" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpJ" Caption="J"    X="120" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpK" Caption="K"    X="160" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpL" Caption="L"    X="200" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prpShift" Caption="Shift" X="0" Y="265" Width="50" Height="35" Font="2" OnClickNotify="OnShift"/>
 
-    <WndButton  Name="prpM" Caption="M"    X="0" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpN" Caption="N"    X="40" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpO" Caption="O"    X="80" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpP" Caption="P"    X="120" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpQ" Caption="Q"    X="160" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpR" Caption="R"    X="200" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpS" Caption="S"    X="0" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpT" Caption="T"    X="40" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpU" Caption="U"    X="80" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpV" Caption="V"    X="120" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpW" Caption="W"    X="160" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpX" Caption="X"    X="200" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Caption="_@M228_" X="200" Y="2" Width="40" Height="22" Font="2" OnClickNotify="OnDel"/>
 
-    <WndButton  Name="prpY" Caption="Y"    X="0" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpZ" Caption="Z"    X="40" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpDot" Caption="."    X="80" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_Dot" Caption=":"    X="80" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prpMin" Caption="-"    X="120" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_Min" Caption="_"    X="120" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
- <!--   <WndButton  Name="prpUn" Caption="_"    X="160" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/> -->
-    <WndButton  Name="prpAt" Caption="@"    X="200" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_At" Caption="*"    X="200" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp1" Caption="1"    X="0" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp2" Caption="2"    X="40" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp3" Caption="3"    X="80" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp4" Caption="4"    X="120" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp5" Caption="5"    X="160" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp6" Caption="6"    X="200" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_A" Caption="A" X="0" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_B" Caption="B" X="40" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_C" Caption="C" X="80" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_D" Caption="D" X="120" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_E" Caption="E" X="160" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_F" Caption="F" X="200" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
 
-    <WndButton  Name="prp7" Caption="7"    X="0" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp8" Caption="8"    X="40" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp9"  Caption="9"    X="80" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp0" Caption="0"    X="120" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    
-    <WndButton  Name="prp_A" Caption="a"    X="0" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_B" Caption="b"    X="40" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_C" Caption="c"    X="80" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_D" Caption="d"    X="120" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_E" Caption="e"    X="160" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_F" Caption="f"    X="200" Y="25" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_G" Caption="G" X="0" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_H" Caption="H" X="40" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_I" Caption="I" X="80" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_J" Caption="J" X="120" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_K" Caption="K" X="160" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_L" Caption="L" X="200" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
 
-    <WndButton  Name="prp_G" Caption="g"    X="0" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_H" Caption="h"    X="40" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_I" Caption="i"    X="80" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_J" Caption="j"    X="120" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_K" Caption="k"    X="160" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_L" Caption="l"    X="200" Y="60" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_M" Caption="M" X="0" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_N" Caption="N" X="40" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_O" Caption="O" X="80" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_P" Caption="P" X="120" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_Q" Caption="Q" X="160" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_R" Caption="R" X="200" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_S" Caption="S" X="0" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_T" Caption="T" X="40" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_U" Caption="U" X="80" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_V" Caption="V" X="120" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_W" Caption="W" X="160" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_X" Caption="X" X="200" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
 
-    <WndButton  Name="prp_M" Caption="m"    X="0" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_N" Caption="n"    X="40" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_O" Caption="o"    X="80" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_P" Caption="p"    X="120" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_Q" Caption="q"    X="160" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_R" Caption="r"    X="200" Y="95" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_S" Caption="s"    X="0" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_T" Caption="t"    X="40" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_U" Caption="u"    X="80" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_V" Caption="v"    X="120" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_W" Caption="w"    X="160" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_X" Caption="x"    X="200" Y="130" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_Y" Caption="Y" X="0" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_Z" Caption="Z" X="40" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
 
-    <WndButton  Name="prp_Y" Caption="y"    X="0" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_Z" Caption="z"    X="40" Y="165" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_Dot" Caption="." X="80" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_Dot" Caption=":" X="80" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_Min" Caption="-" X="120" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_Min" Caption="_" X="120" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
 
-    <WndButton  Name="prp_1" Caption="!"    X="0" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_2" Caption="+"    X="40" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_3" Caption="$"    X="80" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_4" Caption="%"    X="120" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_5" Caption="#"    X="160" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_6" Caption="/"    X="200" Y="200" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_At" Caption="@" X="200" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_At" Caption="*" X="200" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_1" Caption="1" X="0" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_2" Caption="2" X="40" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_3" Caption="3" X="80" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_4" Caption="4" X="120" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_5" Caption="5" X="160" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_6" Caption="6" X="200" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
 
-    <WndButton  Name="prp_7" Caption="("    X="0" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_8" Caption=")"    X="40" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_9"  Caption="="    X="80" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    <WndButton  Name="prp_0" Caption=","    X="120" Y="230" Width="40"  Height="35" Font="2" OnClickNotify="OnKey"/>
-    
-    
-    <WndButton  Name="prpSpace"  Caption="_@M831_"    X="160" Y="230" Width="80"  Height="35" Font="2" OnClickNotify="OnSpace"/>
+    <WndButton Name="prp_upper_7" Caption="7" X="0" Y="230" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_8" Caption="8" X="40" Y="230" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_9" Caption="9" X="80" Y="230" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_upper_0" Caption="0" X="120" Y="230" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
 
-    <WndButton  Name="prpDate" Caption="_@M219_"    X="50" Y="265" Width="40"  Height="35" Font="2" OnClickNotify="OnDate"/>
-    <WndButton  Name="prpTime" Caption="_@M720_"    X="90" Y="265" Width="40"  Height="35" Font="2" OnClickNotify="OnTime"/>
-    <WndButton  Name="prpClear" Caption="_@M180_" X="130" Y="265" Width="50"  Height="35" Font="2" OnClickNotify="OnClear"/>
-    <WndButton  Name="prpOk" Caption="Ok"   X="180" Y="265" Width="60"  Height="35" Font="2" OnClickNotify="OnOk"/>
+    <WndButton Name="prp_lower_A" Caption="a" X="0" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_B" Caption="b" X="40" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_C" Caption="c" X="80" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_D" Caption="d" X="120" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_E" Caption="e" X="160" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_F" Caption="f" X="200" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+
+    <WndButton Name="prp_lower_G" Caption="g" X="0" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_H" Caption="h" X="40" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_I" Caption="i" X="80" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_J" Caption="j" X="120" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_K" Caption="k" X="160" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_L" Caption="l" X="200" Y="60" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+
+    <WndButton Name="prp_lower_M" Caption="m" X="0" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_N" Caption="n" X="40" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_O" Caption="o" X="80" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_P" Caption="p" X="120" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_Q" Caption="q" X="160" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_R" Caption="r" X="200" Y="95" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_S" Caption="s" X="0" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_T" Caption="t" X="40" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_U" Caption="u" X="80" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_V" Caption="v" X="120" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_W" Caption="w" X="160" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_X" Caption="x" X="200" Y="130" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+
+    <WndButton Name="prp_lower_Y" Caption="y" X="0" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_Z" Caption="z" X="40" Y="165" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+
+    <WndButton Name="prp_lower_1" Caption="!" X="0" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_2" Caption="+" X="40" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_3" Caption="$" X="80" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_4" Caption="%" X="120" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_5" Caption="#" X="160" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_6" Caption="/" X="200" Y="200" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+
+    <WndButton Name="prp_lower_7" Caption="(" X="0" Y="230" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_8" Caption=")" X="40" Y="230" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_9" Caption="=" X="80" Y="230" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+    <WndButton Name="prp_lower_0" Caption="," X="120" Y="230" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
+
+    <WndButton Name="prpSpace" Caption="_@M831_" X="160" Y="230" Width="80" Height="35" Font="2" OnClickNotify="OnSpace"/>
+
+    <WndButton Name="prpDate" Caption="_@M219_" X="50" Y="265" Width="40" Height="35" Font="2" OnClickNotify="OnDate"/>
+    <WndButton Name="prpTime" Caption="_@M720_" X="90" Y="265" Width="40" Height="35" Font="2" OnClickNotify="OnTime"/>
+    <WndButton Name="prpClear" Caption="_@M180_" X="130" Y="265" Width="50" Height="35" Font="2" OnClickNotify="OnClear"/>
+    <WndButton Name="prpOk" Caption="Ok" X="180" Y="265" Width="60" Height="35" Font="2" OnClickNotify="OnOk"/>
   </WndForm>
 </PMML>

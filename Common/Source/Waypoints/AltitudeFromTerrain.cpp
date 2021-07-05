@@ -33,7 +33,7 @@ void WaypointAltitudeFromTerrain(WAYPOINT* Temp) {
 
 void UpdateTargetAltitude(TASK_POINT& TskPt) {
     TskPt.AATTargetAltitude = AltitudeFromTerrain(TskPt.AATTargetLat, TskPt.AATTargetLon);
-    if(!DoOptimizeRoute() && AATEnabled) {
+    if(!DoOptimizeRoute() && UseAATTarget()) {
         // for AAT task, use center Alt if target point alt is less than center...
         TskPt.AATTargetAltitude = std::max(WayPointList[TskPt.Index].Altitude, TskPt.AATTargetAltitude);
     }

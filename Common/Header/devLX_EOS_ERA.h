@@ -46,6 +46,32 @@
 #define I_S_VOL  5
 #define I_SIGNAL 6
 
+
+
+#define REC_NO_ERROR      0
+#define REC_TIMEOUT_ERROR 1
+#define REC_CRC_ERROR     2
+#define REC_ABORTED       3
+#define FILENAME_ERROR    4
+#define FILE_OPEN_ERROR   5
+#define IGC_RECEIVE_ERROR 6
+#define REC_NO_DEVICE     7
+#define REC_NOMSG         8
+#define REC_INVALID_SIZE  9
+#define REC_WRONG_BLOCK  10
+#define REC_ZERO_BLOCK   11
+
+
+
+
+
+void StartEOS_IGCReadThread(void) ;
+void StopEOS_IGCReadThread(void) ;
+bool SetEOSBinaryModeFlag(bool ) ;
+
+uint8_t EOSRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) ;
+uint8_t EOSRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) ;
+bool EOSBlockReceived(void);
 class DevLX_EOS_ERA : public DevLX
 {
   //----------------------------------------------------------------------------
@@ -59,7 +85,7 @@ class DevLX_EOS_ERA : public DevLX
     /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
     static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
     static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[]);
-    static bool OnStartIGC_FileRead(TCHAR Filename[]) ;
+    static bool OnStartIGC_FileRead(TCHAR Filename[], uint16_t) ;
     static BOOL AbortLX_IGC_FileRead(void);
 
   //----------------------------------------------------------------------------
@@ -92,7 +118,8 @@ class DevLX_EOS_ERA : public DevLX
     static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
 
    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
-
+   static BOOL EOSParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+   
    static BOOL Config(PDeviceDescriptor_t d);
    static void OnCloseClicked(WndButton* pWnd);
    static void OnCancelClicked(WndButton* pWnd);
@@ -110,8 +137,11 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
    static BOOL GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
    static BOOL LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
    static BOOL Values(PDeviceDescriptor_t d);
@@ -135,8 +165,10 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL bIGC_Download ;
    static BOOL m_bShowValues;
    static BOOL m_bDeclare;
+   static BOOL m_bRadioEnabled;
+   static BOOL m_bTriggered;
 
-
+   static BOOL EOSRadioEnabled(PDeviceDescriptor_t d) { return m_bRadioEnabled;};
    static BOOL EOSPutMacCready(PDeviceDescriptor_t d, double MacCready);
    static BOOL EOSPutBallast(PDeviceDescriptor_t d, double Ballast);
    static BOOL EOSPutBugs(PDeviceDescriptor_t d, double Bugs);
@@ -151,6 +183,8 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info );
    static BOOL EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
    static BOOL EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
+   static BOOL EOSSetSTF(PDeviceDescriptor_t d,int iTmp, const TCHAR *info);
+   
 
    static BOOL  CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 

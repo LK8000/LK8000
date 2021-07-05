@@ -1,3 +1,17 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2
+ * See CREDITS.TXT file for authors and copyrights
+ *  
+ * File:   CalcTask.h
+ * Author: Paolo Ventafrida
+ * 
+ * Created on 27 march 2012
+ */
+
+#ifndef _calc_task_h_
+#define _calc_task_h_
+
 
 extern void AddAATPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int taskwaypoint);
 extern double AATCloseBearing(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -26,4 +40,4 @@ extern void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double t
 extern void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_maccready);
 extern bool ValidFinish(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
-
+#endif // _calc_task_h_

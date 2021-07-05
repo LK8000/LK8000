@@ -48,7 +48,7 @@ void MD5_Base::Update( const unsigned char *input, unsigned int inputLen)
 // Writes to digestRaw
 void MD5::Final()
 {
-  assert(array_size(digestChars) == (array_size(resbuf) * 2 + 1));
+  assert(std::size(digestChars) == (std::size(resbuf) * 2 + 1));
   static constexpr char Digit[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
   
   md5_finish_ctx(&context, resbuf);

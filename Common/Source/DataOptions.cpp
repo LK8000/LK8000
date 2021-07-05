@@ -8,34 +8,32 @@
 
 #include "externs.h"
 
-
 //
 // LK Infobox list
 // Included by lk temporarily, only with CUTIBOX
 //
-bool SetDataOption( int index, UnitGroup_t UnitGroup, const TCHAR *Description, const TCHAR *Title)
-{
-	LKASSERT(index<NUMDATAOPTIONS_MAX);
-	if (index>=NUMDATAOPTIONS_MAX) return false;
+static
+bool SetDataOption(int index, UnitGroup_t UnitGroup, const TCHAR *Description, const TCHAR *Title) {
+	LKASSERT(index < NUMDATAOPTIONS_MAX);
+	if (index >= NUMDATAOPTIONS_MAX) {
+		return false;
+	}
 
 	Data_Options[index] = {
 		UnitGroup,
 		LKGetText(Description),
 		LKGetText(Title)
 	};
-	if (NumDataOptions<=index) NumDataOptions=index+1; //No. of items = max index+1
-
+	if (NumDataOptions <= index) {
+		NumDataOptions = index + 1; //No. of items = max index+1
+	}
 	return true;
 }
 
+void FillDataOptions() {
 
-
-void FillDataOptions()
-{
-
-	 // cleanup array, mandatory for avoid to have pointer to freed string.
-	 std::fill(std::begin(Data_Options), std::end(Data_Options), DATAOPTIONS{});
-
+	// cleanup array, mandatory for avoid to have pointer to freed string.
+	std::fill(std::begin(Data_Options), std::end(Data_Options), DATAOPTIONS{});
 
 	// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt"
 	SetDataOption(LK_HNAV, ugAltitude, TEXT("_@M1001_"), TEXT("_@M1002_"));
@@ -113,9 +111,10 @@ void FillDataOptions()
 	SetDataOption(LK_TIMEFLIGHT, ugNone, TEXT("_@M1073_"), TEXT("_@M1074_"));
 	// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
 	SetDataOption(LK_GLOAD, ugNone, TEXT("_@M1075_"), TEXT("_@M1076_"));
-
-	SetDataOption(LK_MTG_BRG, ugNone, TEXT("_@M1698_"), TEXT("_@M1699_")); // MTG BRG
-
+	// LKTOKEN  _@M1699_ =  "Multitarget Bearing"  "_@M001699_": "BrgMtg",
+	SetDataOption(LK_MTG_BRG, ugNone, TEXT("_@M1698_"), TEXT("_@M1699_"));
+	// LKTOKEN  _@M2476_ = "Multitarget Bearing Difference   "_@M002477_": "DiffMtg",
+	SetDataOption(LK_MTG_BRG_DIFF, ugNone, TEXT("_@M2476_"), TEXT("_@M2477_"));      
 	// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
 	SetDataOption(LK_TIME_LOCAL, ugNone, TEXT("_@M1079_"), TEXT("_@M1080_"));
 	// LKTOKEN  _@M1081_ = "Time UTC", _@M1082_ = "UTC"
@@ -179,6 +178,8 @@ void FillDataOptions()
 	SetDataOption(LK_ALTERN2_GR, ugNone, TEXT("_@M1137_"), TEXT("_@M1138_"));
 	// LKTOKEN  _@M1139_ = "BestAltern Req.Efficiency", _@M1140_ = "BAtn.E"
 	SetDataOption(LK_BESTALTERN_GR, ugNone, TEXT("_@M1139_"), TEXT("_@M1140_"));
+	// LKTOKEN  _@M2484_ = "Home Req.Efficiency", _@M2485_ = "Home.E"
+	SetDataOption(LK_HOME_GR, ugNone, TEXT("_@M2484_"), TEXT("_@M2485_"));
 	// LKTOKEN  _@M1141_ = "Altitude QFE", _@M1142_ = "QFE"
 	SetDataOption(LK_QFE, ugAltitude, TEXT("_@M1141_"), TEXT("_@M1142_"));
 	// LKTOKEN  _@M1143_ = "Average Efficiency", _@M1144_ = "E.Avg"
@@ -190,7 +191,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1149_ = "Task Covered distance", _@M1150_ = "TskCov"
 	SetDataOption(LK_TASK_DISTCOV, ugDistance, TEXT("_@M1149_"), TEXT("_@M1150_"));
 	// LKTOKEN  _@M1151_ = "Alternate1 Arrival", _@M1152_ = "Atn1Arr"
-	SetDataOption(LK_ALTERNATESARRIV, ugAltitude, TEXT("_@M1151_"), TEXT("_@M1152_"));
+	SetDataOption(LK_ALTERN1_ARRIV, ugAltitude, TEXT("_@M1151_"), TEXT("_@M1152_"));
 	// LKTOKEN  _@M1153_ = "Alternate2 Arrival", _@M1154_ = "Atn2Arr"
 	SetDataOption(LK_ALTERN2_ARRIV, ugAltitude, TEXT("_@M1153_"), TEXT("_@M1154_"));
 	// LKTOKEN  _@M1155_ = "BestAlternate Arrival", _@M1156_ = "BAtnArr"
@@ -220,7 +221,9 @@ void FillDataOptions()
 	// LKTOKEN  _@M1179_ = "_Experimental2", _@M1180_ = "Exp2"
 	SetDataOption(LK_EXP2, ugNone, TEXT("_@M1179_"), TEXT("_@M1180_"));
 	// LKTOKEN  _@M2472_ = "MultiTarget QNH Arrival", _@M2473_ = "MTgtArr"
-	SetDataOption(LK_MULTI_TARGET_QNH_ARRIV, ugAltitude, TEXT("_@M2472_"), TEXT("_@M2473_"));
+	SetDataOption(LK_MTG_QNH_ARRIV, ugAltitude, TEXT("_@M2472_"), TEXT("_@M2473_"));
+	// LKTOKEN  _@M2478_ = "Alternate 1 QNH Arrival", _@M2479_ = "Alt1QNH"
+	SetDataOption(LK_ALTERN1_QNH_ARRIV, ugAltitude, TEXT("_@M2474_"), TEXT("_@M2475_"));
 
 	// Distance OLC
 	SetDataOption(LK_OLC_CLASSIC_DIST, ugNone, TEXT("_@M1455_"), TEXT("_@M1456_"));
@@ -290,6 +293,7 @@ void FillDataOptions()
 	// No reason to have abbreviated name, since normally it is the wp name itself
 	SetDataOption(LK_ALTERN1_BRG, ugNone, TEXT("_@M1761_"), TEXT("Atn1Brg")); // Alternate1 bearing
 	SetDataOption(LK_ALTERN2_BRG, ugNone, TEXT("_@M1762_"), TEXT("Atn2Brg")); // Alternate2 bearing
+	SetDataOption(LK_HOME_BRG, ugNone, TEXT("_@M2488_"), TEXT("_@M2489_")); // Home bearing
 	SetDataOption(LK_BESTALTERN_BRG, ugNone, TEXT("_@M1763_"), TEXT("BstBrg")); // BestAlternate bearing
 	SetDataOption(LK_ALTERN1_DIST, ugDistance, TEXT("_@M1764_"), TEXT("Atn1Dst")); // Alternate1 distance
 	SetDataOption(LK_ALTERN2_DIST, ugDistance, TEXT("_@M1765_"), TEXT("Atn2Dst")); // Alternate2 distance
@@ -306,6 +310,7 @@ void FillDataOptions()
 	SetDataOption(LK_HEADING, ugNone, TEXT("_@M1287_"), TEXT("_@M1521_")); // Heading, text is changed in lkprocess
 	SetDataOption(LK_ALTERN1_DISTNM, ugDistance, TEXT("_@M1843_"), TEXT("_@M1522_")); // Alternate1 distance NMiles
 	SetDataOption(LK_ALTERN2_DISTNM, ugDistance, TEXT("_@M1844_"), TEXT("_@M1523_")); // Alternate2 distance NMiles
+	SetDataOption(LK_HOME_DISTNM, ugDistance, TEXT("_@M2486_"), TEXT("_@M2487_")); //  home distance NMiles
 	SetDataOption(LK_SPEED_ME, ugHorizontalSpeed, TEXT("_@M2312_"), TEXT("_@M2313_")); // Speed of maximum efficiency
 	SetDataOption(LK_TARGET_RE, ugNone, TEXT("_@M2314_"), TEXT("_@M2315_")); // Target Req. Efficicency
 	SetDataOption(LK_QNE, ugAltitude, TEXT("_@M2323_"), TEXT("_@M2324_")); // Altitude QNE
@@ -326,13 +331,13 @@ void FillDataOptions()
 
 
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
-	static_assert(LK_MULTI_TARGET_QNH_ARRIV < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
+	static_assert(LK_ALTERN1_QNH_ARRIV < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
 
 
 	// Fill all null string pointer with empty string, avoid to check all time is used.
 	for(auto& tag : Data_Options) {
 		if(!tag.Description) {
-	    	tag.Description = _T("");
+			tag.Description = _T("");
 		}
 		if(!tag.Title) {
 			tag.Title = _T("");

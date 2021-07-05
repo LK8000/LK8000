@@ -13,7 +13,7 @@
 
 // ALL TIME VALUES ARE IN SECONDS! 
 bool UseGates() {
-  if (!ISPARAGLIDER ) return(false);
+  if (!(gTaskType==TSK_GP) ) return(false);
   if (PGNumberOfGates>0) {
 	if (ValidTaskPoint(0) && ValidTaskPoint(1)) {
 		return(true);
@@ -147,9 +147,9 @@ void AlertGateOpen(int gate) {
   TCHAR tag[100] ={0};
   if (gate == (PGNumberOfGates-1)) {
 	// LKTOKEN  _@M372_ = "LAST GATE IS OPEN"
-	_tcsncpy(tag,MsgToken(372), array_size(tag)-1);
+	_tcsncpy(tag,MsgToken(372), std::size(tag)-1);
   } else {
-	_sntprintf(tag, array_size(tag)-1, _T("%s %d of %d %s"),
+	_sntprintf(tag, std::size(tag)-1, _T("%s %d of %d %s"),
 	// LKTOKEN  _@M315_ = "GATE" 
 		MsgToken(315),
 		gate+1, PGNumberOfGates,

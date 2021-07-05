@@ -35,7 +35,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
      *  Number of brick for positive value is defined by this array size.
      */
     static const double positive_vario_step[] = {0.05, 0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00, 3.50, 4.50, 5.00, 6.00, 7.00};
-    static const unsigned positive_brick_count = array_size(positive_vario_step);
+    static const unsigned positive_brick_count = std::size(positive_vario_step);
 
     static BrushReference positiveBrush[positive_brick_count];
     static PixelRect positiveBricks[positive_brick_count];
@@ -45,7 +45,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
      *  Number of brick for negative value is defined by this array size.
      */
     static const double negative_vario_step[] = {-0.05, -0.25, -0.50, -0.75, -1.00, -1.25, -1.50, -1.75, -2.00, -2.50, -3.00, -3.50, -4.50, -5.00, -6.00, -7.00};
-    static const unsigned negative_brick_count = array_size(negative_vario_step);
+    static const unsigned negative_brick_count = std::size(negative_vario_step);
 
     static BrushReference negativeBrush[negative_brick_count];
     static PixelRect negativeBricks[negative_brick_count];
@@ -93,7 +93,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 std::fill(std::begin(positiveBrush), std::end(positiveBrush), forgroundBrush);
                 std::fill(std::begin(negativeBrush), std::end(negativeBrush), forgroundBrush);
                 
-                static_assert(array_size(positiveBrush)> 15, "\"positiveBrush\" size must be greater than 15, check \"positive_vario_step\" size");
+                static_assert(std::size(positiveBrush)> 15, "\"positiveBrush\" size must be greater than 15, check \"positive_vario_step\" size");
                 
                 positiveBrush[15] = redBrush;
                 positiveBrush[14] = redBrush;
@@ -129,7 +129,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 negativeBrush[14] = forgroundBrush;
                 negativeBrush[15] = forgroundBrush;
 
-                static_assert(array_size(negativeBrush)> 15, "\"negativeBrush\" size must be greater than 15, check \"negative_vario_step\" size");
+                static_assert(std::size(negativeBrush)> 15, "\"negativeBrush\" size must be greater than 15, check \"negative_vario_step\" size");
 
                 break;
             case vBarVarioMono:
@@ -332,7 +332,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         // Draw MacCready Indicator
         const auto step_iterator = std::upper_bound(std::begin(positive_vario_step), std::end(positive_vario_step), mc_value);
         const size_t mc_brick_idx = std::distance(std::begin(positive_vario_step), step_iterator);
-        if (mc_brick_idx > 1 && mc_brick_idx < array_size(positiveBricks)) {
+        if (mc_brick_idx > 1 && mc_brick_idx < std::size(positiveBricks)) {
             const PixelRect& brc_next = positiveBricks[mc_brick_idx];
             const PixelRect& brc_Prev = positiveBricks[mc_brick_idx-1];
             

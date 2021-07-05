@@ -1,44 +1,52 @@
 #ifndef FLARMIDFILE_H
 #define FLARMIDFILE_H
 
-#include <map>
-#include <stdio.h>
+#include <memory>
+#include <unordered_map>
+#include "tchar.h"
 
-#define FLARMID_SIZE_ID		7
-#define FLARMID_SIZE_NAME	22
-#define FLARMID_SIZE_AIRFIELD	22
-#define FLARMID_SIZE_TYPE	22
-#define FLARMID_SIZE_REG	8
-#define FLARMID_SIZE_FREQ	8
+constexpr size_t FLARMID_SIZE_ID = 7;
+constexpr size_t FLARMID_SIZE_NAME = 22;
+constexpr size_t FLARMID_SIZE_AIRFIELD = 22;
+constexpr size_t FLARMID_SIZE_TYPE = 22;
+constexpr size_t FLARMID_SIZE_REG	= 8;
+constexpr size_t FLARMID_SIZE_CN = (MAXFLARMCN + 1);
+constexpr size_t FLARMID_SIZE_FREQ = 8;
 
-class FlarmId
-{
-public:
-  TCHAR id[FLARMID_SIZE_ID+1];
-  TCHAR name[FLARMID_SIZE_NAME+1];
-  TCHAR airfield[FLARMID_SIZE_AIRFIELD+1];
-  TCHAR type[FLARMID_SIZE_TYPE+1];
-  TCHAR reg[FLARMID_SIZE_REG+1];
-  TCHAR cn[MAXFLARMCN+1];
-  TCHAR freq[FLARMID_SIZE_FREQ+1];
-  long GetId();
+
+struct FlarmId {
+  explicit FlarmId(const std::string& string);
+
+  TCHAR id[FLARMID_SIZE_ID] = _T("");
+  TCHAR name[FLARMID_SIZE_NAME] = _T("");
+  TCHAR airfield[FLARMID_SIZE_AIRFIELD] = _T("");
+  TCHAR type[FLARMID_SIZE_TYPE] = _T("");
+  TCHAR reg[FLARMID_SIZE_REG] = _T("");
+  TCHAR cn[FLARMID_SIZE_CN] = _T("");
+  TCHAR freq[FLARMID_SIZE_FREQ] = _T("");
+
+  uint32_t GetId() const;
 };
 
-typedef FlarmId* FlarmIdptr;
-typedef std::map< long, FlarmIdptr > FlarmIdMap;
+typedef std::unique_ptr<FlarmId> FlarmId_ptr;
+typedef std::unordered_map<uint32_t, FlarmId_ptr> FlarmIdMap;
 
 
 class FlarmIdFile
 {
 private:
   FlarmIdMap flarmIds;
-  void GetAsString(FILE* hFile, int charCount, TCHAR *res);
-  void GetItem(FILE* hFile, FlarmId *flarmId);
+
 public:
-  FlarmIdFile(void);
-  ~FlarmIdFile(void);
-  FlarmId* GetFlarmIdItem(long id);
-  FlarmId* GetFlarmIdItem(TCHAR *cn);
+  FlarmIdFile();
+  ~FlarmIdFile();
+
+  size_t Count() const {
+    return flarmIds.size();
+  }
+
+  const FlarmId* GetFlarmIdItem(uint32_t id) const;
+  const FlarmId* GetFlarmIdItem(const TCHAR *cn) const;
 };
 
 #endif

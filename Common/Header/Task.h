@@ -1,10 +1,12 @@
 #if !defined(AFX_TASK_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_TASK_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
+/////////////////
+// Task Type
+#define TSK_DEFAULT     0
+#define TSK_AAT         1
+#define TSK_GP          2 // Race To Goal in PG Mode
+/////////////////
 
 #define CIRCLE 0
 #define SECTOR 1
@@ -12,6 +14,12 @@
 #define LINE   3 // only Used for Save Start and Finish Type in xml file.
 #define CONE   4 // Only Used In PG Optimized Task
 #define ESS_CIRCLE   5 // Only Used In PG Optimized Task
+
+/**
+ * use to notify dlgTaskOverview about task change outside of dialog...
+ */
+constexpr unsigned UM_UPDATE_TASK_OVERVIEW = 2;
+
 
 typedef struct _START_POINT
 {
@@ -87,6 +95,8 @@ void guiToggleLogger(bool noAsk = false);
 
 bool LoadCupTask(LPCTSTR FileName);
 bool LoadGpxTask(LPCTSTR FileName);
+bool LoadXctrackTaskFile(const TCHAR* szFilePath);
+bool LoadXctrackTaskString(const char* begin, const char* end);
 void SaveTask(const TCHAR *FileName);
 void DefaultTask(void);
 void ClearTask(void);
@@ -121,4 +131,7 @@ void SaveDefaultTask(void);
 const WAYPOINT* TaskWayPoint(size_t idx);
 
 void ReverseTask();
+
+int GetTaskBearing();
+
 #endif

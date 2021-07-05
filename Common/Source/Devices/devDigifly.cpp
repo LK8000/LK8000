@@ -157,7 +157,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 	vias = StrToDouble(ctemp,NULL)/3.6;
 
 	if (vias >1) {
-		vtas = vias*AirDensityRatio(altqne);
+		vtas = TrueAirSpeed(vias, altqne);
 		pGPS->TrueAirspeed = vtas;
 		pGPS->IndicatedAirspeed = vias;
 		pGPS->AirspeedAvailable = TRUE;
@@ -218,11 +218,13 @@ static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     // airspeed
     NMEAParser::ExtractParameter(String,ctemp,3);
     if (ctemp[0] != '\0') {
-        pGPS->TrueAirspeed = StrToDouble(ctemp,NULL) / 3600 * 1000;
-        pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(QNHAltitudeToQNEAltitude(pGPS->Altitude));
+        pGPS->TrueAirspeed = StrToDouble(ctemp,NULL) / TOKPH;
+        pGPS->IndicatedAirspeed = IndicatedAirSpeed(pGPS->TrueAirspeed, QNHAltitudeToQNEAltitude(pGPS->Altitude));
+        pGPS->AirspeedAvailable = true;
     } else {
         pGPS->TrueAirspeed = 0;
         pGPS->IndicatedAirspeed = 0;
+        pGPS->AirspeedAvailable = false;
     }
 
     // temperature

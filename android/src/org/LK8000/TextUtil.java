@@ -64,11 +64,12 @@ public class TextUtil {
 
 
     paint = new Paint(paint_flags);
-    paint.setTypeface(tf);
     paint.setTextSize(textSize);
-    if ((style & Typeface.ITALIC) != 0 && !tf.isItalic())
-      paint.setTextSkewX((float) -0.2);
-
+    if(tf != null) {
+      paint.setTypeface(tf);
+      if ((style & Typeface.ITALIC) != 0 && !tf.isItalic())
+        paint.setTextSkewX((float) -0.2);
+    }
     metrics = paint.getFontMetricsInt();
   }
 

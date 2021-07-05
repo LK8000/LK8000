@@ -54,7 +54,7 @@ void ComCheck_AddChar(TCHAR c) {
     }
 #endif
 
-    const unsigned MaxLineSize = array_size(ComCheckBuffer[ComCheck_LastLine])-1;
+    const unsigned MaxLineSize = std::size(ComCheckBuffer[ComCheck_LastLine])-1;
             
     if (ComCheck_Reset>=0) {
         ComCheck_Init();

@@ -41,26 +41,26 @@ static constexpr KeyMap altair_key_map[] = {
   { VK_F7, '8' },
   { VK_F8, '9' },
   { VK_F9, '0' },
-  { 0 }
+  { 0, '\0' }
 };
 
 static constexpr KeyMap hp31x_key_map[] = {
   { VK_F12, VK_ESCAPE },
-  { 0 }
+  { 0, '\0' }
 };
 
 static constexpr KeyMap medion_p5_key_map[] = {
   { VK_F6, VK_UP }, // + key = pg up
   { VK_F7, VK_DOWN }, // - key = pg down
   { VK_F8, VK_RETURN }, // middle key = enter
-  { 0 }
+  { 0, '\0' }
 };
 
 static constexpr KeyMap nokia_500_key_map[] = {
   { 0xc1, VK_RETURN }, // middle key = enter
   { 0xc5, VK_UP }, // + key = pg down
   { 0xc6, VK_DOWN }, // - key = pg up
-  { 0 }
+  { 0, '\0' }
 };
 
 static constexpr KeyMap pn_6000_key_map[] = {
@@ -70,7 +70,7 @@ static constexpr KeyMap pn_6000_key_map[] = {
   { VK_F2, KEY_APP4 }, // Back key minus
   { VK_F11, VK_F1 }, // Upper silver key LONG press
   { VK_F13, VK_F2 }, // Lower silver key LONG press
-  { 0 }
+  { 0, '\0' }
 };
 
 static constexpr KeyMap lx_mm_key_map[] = {
@@ -89,7 +89,7 @@ static constexpr KeyMap lx_mm_key_map[] = {
   { ' ', VK_MENU }, // press rotary knop (left buttom)
   { VK_UP, VK_DOWN }, // Invert direction of rotation
   { VK_DOWN, VK_UP }, // of the UP/DOWN rotary knob
-  { 0 }
+  { 0, '\0' }
 };
 
 gcc_const

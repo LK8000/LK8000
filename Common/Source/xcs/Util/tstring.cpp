@@ -41,4 +41,13 @@ tstring utf8_to_tstring(const char* sz) {
 //  return static_cast<TCHAR*>(converter);
 }
 
+std::string to_utf8(const wchar_t* tsz) {
+  std::string sz;
+  const WideToUTF8Converter converter(tsz);
+  if(converter.IsValid()) {
+    sz = converter;
+  }
+  return sz;
+}
+
 #endif

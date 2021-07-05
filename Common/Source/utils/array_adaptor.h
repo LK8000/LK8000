@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Bruno de Lacheisserie
+/* Copyright (c) 2018-2020, Bruno de Lacheisserie
  * All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without
@@ -30,20 +30,43 @@
 #define	ARRAY_ADAPTOR_H
 
 template <typename T>
-class const_array_adaptor {
+class array_adaptor {
 public:
+    typedef T value_type;
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    typedef value_type* iterator;
+    typedef const value_type* const_iterator;
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
-    typedef T value_type;
-    typedef const T &const_reference;
-    typedef const T *pointer;
+    typedef std::reverse_iterator<iterator>	      reverse_iterator;
+    typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
 
     template<std::size_t size>
-    const_array_adaptor(T(&array)[size]) : _begin(array), _end(array+size) { }
+    array_adaptor(T(&array)[size]) : _begin(array), _end(array+size) { }
 
-    const_array_adaptor(const T* array, size_type size) : _begin(array), _end(array+size) { }
+    array_adaptor(const iterator array, size_type size) : _begin(array), _end(array+size) { }
 
-    const_array_adaptor(const T* begin, const T* end) : _begin(begin), _end(end) { }
+    array_adaptor(const iterator begin, const iterator end) : _begin(begin), _end(end) { }
+
+
+    iterator begin() {
+        return _begin;
+    }
+
+    iterator end() {
+        return _end;
+    }
+
+    const_iterator begin() const {
+        return _begin;
+    }
+
+    const_iterator end() const {
+        return _end;
+    }
 
     constexpr size_type size() const {
         return std::distance(begin(), end());
@@ -58,26 +81,32 @@ public:
     }
 
     const_reference front() const {
-        return *_begin;
+        return *begin();
     }
 
     const_reference back() const {
-        return *(_end-1);
+        return *(end() - 1);
     }
 
-    //iterator
-    typedef const T* const_iterator;
-
-    const_iterator begin() const {
-        return _begin;
+    reference operator[](size_type i) {
+        return _begin[i];
     }
 
-    const_iterator end() const {
-        return _end;
+    reference front() {
+        return *begin();
     }
 
-    // reverse iterator
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    reference back() {
+        return *(end() - 1);
+    }
+
+    reverse_iterator rbegin() {
+        return reverse_iterator(end());
+    }
+
+    reverse_iterator rend() {
+        return reverse_iterator(begin());
+    }
 
     const_reverse_iterator rbegin() const {
         return const_reverse_iterator(end());
@@ -87,25 +116,24 @@ public:
         return const_reverse_iterator(begin());
     }
 
-
 protected:
-    const pointer _begin;
-    const pointer _end;
+    const iterator _begin;
+    const iterator _end;
 };
 
 template <typename T>
-const_array_adaptor<T> make_array(const T* array, size_t size) {
-    return const_array_adaptor<T>(array, size);
+array_adaptor<T> make_array(T* array, size_t size) {
+    return array_adaptor<T>(array, size);
 }
 
 template <typename T, std::size_t size>
-const_array_adaptor<T> make_array(T(&array)[size]) {
-    return const_array_adaptor<T>(array, size);
+array_adaptor<T> make_array(T(&array)[size]) {
+    return array_adaptor<T>(array, size);
 }
 
 template <typename T>
-const_array_adaptor<T> make_array(const T* begin, const T* end) {
-    return const_array_adaptor<T>(begin, end);
+array_adaptor<T> make_array(T* begin, T* end) {
+    return array_adaptor<T>(begin, end);
 }
 
 #endif	/* ARRAY_ADAPTOR_H */

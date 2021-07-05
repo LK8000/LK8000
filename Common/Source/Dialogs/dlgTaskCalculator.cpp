@@ -74,7 +74,7 @@ static void RefreshCalculator(void) {
   // update outputs
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATTime"));
   if (wp) {
-    if (!AATEnabled) {
+    if (!(gTaskType==TSK_AAT)) {
       wp->SetVisible(false);
     } else {
       wp->GetDataField()->SetAsFloat(AATTaskLength);
@@ -84,7 +84,7 @@ static void RefreshCalculator(void) {
 
   double d1 = (CALCULATED_INFO.TaskDistanceToGo
 	       +CALCULATED_INFO.TaskDistanceCovered);
-  if (AATEnabled && (d1==0.0)) {
+  if (gTaskType==TSK_AAT && (d1==0.0)) {
     d1 = CALCULATED_INFO.AATTargetDistance;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
@@ -110,7 +110,7 @@ static void RefreshCalculator(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
   if (wp) {
     wp->RefreshDisplay();
-    if (!AATEnabled || !ValidTaskPoint(ActiveTaskPoint+1)) {
+    if (gTaskType!=TSK_AAT || !ValidTaskPoint(ActiveTaskPoint+1)) {
       wp->SetVisible(false);
     } else {
       wp->SetVisible(true);
@@ -156,7 +156,7 @@ static void DoOptimise(void) {
   double RangeLast= Range;
   double deltaTlast = 0;
   int steps = 0;
-  if (!AATEnabled) return;
+  if (gTaskType!=TSK_AAT) return;
 
   LockFlightData();
   LockTaskData();
@@ -328,7 +328,7 @@ void dlgTaskCalculatorShowModal(void){
 
   RefreshCalculator();
 
-  if (!AATEnabled || !ValidTaskPoint(ActiveTaskPoint+1)) {
+  if ((gTaskType!=TSK_AAT) || !ValidTaskPoint(ActiveTaskPoint+1)) {
     ((WndButton *)wf->FindByName(TEXT("Optimise")))->SetVisible(false);
   }
   if (!ValidTaskPoint(ActiveTaskPoint)) {

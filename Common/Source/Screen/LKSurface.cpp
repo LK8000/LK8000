@@ -827,7 +827,7 @@ void LKSurface::Segment(long x, long y, int radius, const RECT& rc, double start
       pt[1].x = x + (long) (radius * fastsine(start));
       pt[1].y = y - (long) (radius * fastcosine(start));
       
-      Polyline(pt, array_size(pt), rc);
+      Polyline(pt, std::size(pt), rc);
       
     } else {
       RasterPoint pt[68];
@@ -868,7 +868,7 @@ void LKSurface::Segment(long x, long y, int radius, const RECT& rc, double start
       pt[npoly].y = y;
       npoly++;
       
-      assert(npoly <= (int)array_size(pt));
+      assert(npoly <= (int)std::size(pt));
       
       Polygon(pt, npoly, rc);
     }

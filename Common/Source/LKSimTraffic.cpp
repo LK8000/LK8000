@@ -10,8 +10,6 @@
 #include "externs.h"
 #include "FlarmCalculations.h"
 
-extern int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id);
-extern void CheckBackTarget(NMEA_INFO *pGPS, int flarmslot);
 extern FlarmCalculations flarmCalculations;
 
 // #define DEBUG_SIMLKT
@@ -37,7 +35,7 @@ double SimNewSpeed(const double speed) {
 // >>>>> This is accessing directly the GPS_INFO main struct, writing inside it. <<<<<
 // Called by LKSimulator, already locking FlightData . No worry.
 //
-void SimFlarmTraffic(long ID, double offset)
+void SimFlarmTraffic(uint32_t RadioId, double offset)
 {
   int flarm_slot = 0;
   bool newtraffic=false;
@@ -46,7 +44,7 @@ void SimFlarmTraffic(long ID, double offset)
   LastFlarmCommandTime=GPS_INFO.Time; // useless really, we dont call UpdateMonitor from SIM
   
 
-  flarm_slot = FLARM_FindSlot(&GPS_INFO, ID);
+  flarm_slot = FLARM_FindSlot(&GPS_INFO, RadioId);
 
   if (flarm_slot<0) return;
   if ( GPS_INFO.FLARM_Traffic[flarm_slot].Status == LKT_EMPTY) {
@@ -54,7 +52,7 @@ void SimFlarmTraffic(long ID, double offset)
   }
 
   // before changing timefix, see if it was an old target back locked in!
-  CheckBackTarget(&GPS_INFO, flarm_slot);
+  CheckBackTarget(GPS_INFO, flarm_slot);
   // and then set time of fix to current time
   GPS_INFO.FLARM_Traffic[flarm_slot].Time_Fix = GPS_INFO.Time;
 
@@ -75,15 +73,13 @@ void SimFlarmTraffic(long ID, double offset)
 
   // If first time seen this traffic, place it nearby
   if ( newtraffic ) {
-	GPS_INFO.FLARM_Traffic[flarm_slot].RelativeNorth=2;
-	GPS_INFO.FLARM_Traffic[flarm_slot].RelativeEast=2;
 	GPS_INFO.FLARM_Traffic[flarm_slot].Latitude  = SimNewCoordinate(GPS_INFO.Latitude, offset);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude = SimNewCoordinate(GPS_INFO.Longitude,offset);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude = SimNewAltitude(GPS_INFO.Altitude);
 
 	GPS_INFO.FLARM_Traffic[flarm_slot].TrackBearing= (double) (rand()%358);
 	GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel=0;
-	GPS_INFO.FLARM_Traffic[flarm_slot].ID=ID;
+	GPS_INFO.FLARM_Traffic[flarm_slot].RadioId = RadioId;
 	GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate=0;
 	GPS_INFO.FLARM_Traffic[flarm_slot].Speed= SimNewSpeed(GPS_INFO.Speed);
 
@@ -93,11 +89,10 @@ void SimFlarmTraffic(long ID, double offset)
 	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude += (double)((rand()%16384)/10000000.0)*(rand()>(RAND_MAX/2)?1:-1);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude += (double)(rand()%14)*(rand()>(RAND_MAX/2)?1:-1);
   }
-  GPS_INFO.FLARM_Traffic[flarm_slot].RelativeAltitude = GPS_INFO.FLARM_Traffic[flarm_slot].Altitude - GPS_INFO.Altitude;
 
   //
   GPS_INFO.FLARM_Traffic[flarm_slot].Average30s = flarmCalculations.Average30s(
-	  GPS_INFO.FLARM_Traffic[flarm_slot].ID,
+	  GPS_INFO.FLARM_Traffic[flarm_slot].RadioId,
 	  GPS_INFO.Time,
 	  GPS_INFO.FLARM_Traffic[flarm_slot].Altitude);
 
@@ -115,13 +110,13 @@ void SimFlarmTraffic(long ID, double offset)
 	#endif
 
 	GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
-	TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
+	const TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
 	if (fname) {
 		LK_tcsncpy(name,fname,MAXFLARMNAME);
 
 		//  Now we have the name, so lookup also for the Cn
 		// This will return either real Cn or Name, again
-		TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
+		const TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
 		if (cname) {
 			int cnamelen=_tcslen(cname);
 			if (cnamelen<=MAXFLARMCN) {
@@ -158,13 +153,5 @@ void SimFlarmTraffic(long ID, double offset)
 		#endif
 	}
   }
-
-  //  update Virtual Waypoint for target FLARM
-  if (flarm_slot == LKTargetIndex) {
-	WayPointList[RESWP_FLARMTARGET].Latitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Latitude;
-	WayPointList[RESWP_FLARMTARGET].Longitude  = GPS_INFO.FLARM_Traffic[LKTargetIndex].Longitude;
-	WayPointList[RESWP_FLARMTARGET].Altitude   = GPS_INFO.FLARM_Traffic[LKTargetIndex].Altitude;
-  }
-
 }
 

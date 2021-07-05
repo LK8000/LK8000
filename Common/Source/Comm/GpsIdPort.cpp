@@ -40,7 +40,7 @@ bool GpsIdPort::Initialize() {
     }
     SetPortStatus(CPS_OPENOK);
 
-    GPS_DEVICE dev = {0};
+    GPS_DEVICE dev = {};
     GPSResetData(dev);
     GPSGetDeviceState(&dev);
     StartupStore(_T("GPSID : DeviceState: %lX, ServiceState: %lX%s"), dev.dwDeviceState, dev.dwServiceState, NEWLINE);
@@ -70,14 +70,14 @@ void GpsIdPort::UpdateStatus() {
 unsigned GpsIdPort::RxThread() {
     DWORD rc = 0;
     const int nh = 2;
-    HANDLE handles[nh] = {0};
+    HANDLE handles[nh] = {};
     handles[0] = _hLoc;
     handles[1] = _hState;
 
-    GPS_POSITION loc = {0};
+    GPS_POSITION loc = {};
     GPSResetData(loc);
 
-    GPS_DEVICE dev = {0};
+    GPS_DEVICE dev = {};
     GPSResetData(dev);
 
     bool listen = true;
@@ -138,7 +138,7 @@ unsigned long GpsIdPort::GetBaudrate() const {
     return 0U;
 }
 
-bool GpsIdPort::Write(const void *data, size_t length) {
+bool GpsIdPort::Write(const void *data, size_t size) {
     LKASSERT(FALSE);
     return false;
 }

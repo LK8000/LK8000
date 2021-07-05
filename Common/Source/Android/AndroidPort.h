@@ -40,7 +40,7 @@ public:
     unsigned long SetBaudrate(unsigned long) override;
     unsigned long GetBaudrate() const  override;
 
-    bool Write(const void *data, size_t length) override;
+    bool Write(const void *data, size_t size) override;
     size_t Read(void *szString, size_t size) override;
 
 protected:

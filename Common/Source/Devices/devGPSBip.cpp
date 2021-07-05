@@ -25,7 +25,7 @@ static const TCHAR* DeviceNameList[] = {
 };
 
 static
-std::array<DeviceDescriptor_t, array_size(DeviceNameList)> DeviceDesciptorList;
+std::array<DeviceDescriptor_t, std::size(DeviceNameList)> DeviceDesciptorList;
 
 
 static
@@ -46,7 +46,7 @@ BOOL GetTrue(DeviceDescriptor_t *d) {
 static
 BOOL Install(PDeviceDescriptor_t d){
 
-  LKASSERT(DeviceDesciptorList.size() == array_size(DeviceNameList));
+  LKASSERT(DeviceDesciptorList.size() == std::size(DeviceNameList));
   auto ItOut = std::begin(DeviceDesciptorList);
   for(auto DevName : DeviceNameList) {
     DeviceRegister_t* pDev = std::find_if(&DeviceRegister[0], &DeviceRegister[DeviceRegisterCount], std::bind(&devNameCompare, _1, DevName));

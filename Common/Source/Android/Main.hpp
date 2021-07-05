@@ -16,7 +16,6 @@ class NativeView;
 class Context;
 class IOIOHelper;
 
-extern unsigned android_api_level;
 extern Context *context;
 extern NativeView *native_view;
 

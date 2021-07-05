@@ -109,7 +109,7 @@ int wince_open (const char *path, int oflag, ...)
 	return -1;
     }
 
-    utf2unicode(path, wpath, MAX_PATH);
+    from_utf8(path, wpath, MAX_PATH);
     //mbstowcs (wpath, path, path_len + 1);
 
     fileshare = FILE_SHARE_READ | FILE_SHARE_WRITE;
@@ -134,7 +134,7 @@ int winpc_open(zzip_char_t* filename, int flags, ...)
 #ifdef UNICODE
 
   TCHAR wpath[MAX_PATH];
-  utf2TCHAR(filename, wpath, MAX_PATH);
+  from_utf8(filename, wpath, MAX_PATH);
 
   return(_topen(wpath, flags));
 #else

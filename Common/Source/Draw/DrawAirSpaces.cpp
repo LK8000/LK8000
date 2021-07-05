@@ -58,7 +58,6 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
   int nDC3 = TempSurface.SaveState();
 
   if (GetAirSpaceFillType() != asp_fill_border_only) {
-    if (1) {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     if (borders_only) {
        // Draw in reverse order!
@@ -96,7 +95,6 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
         }
       }//for
     }
-    }
   }
 
   // draw it again, just the outlines
@@ -114,7 +112,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
   }
 
     if (1) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
           airspace_type = (*it)->Type();
@@ -127,8 +125,9 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
           } else {
             TempSurface.SelectObject(hAirspacePens[airspace_type]);
           }
-		  if(((*it)->DrawStyle()==adsDisabled))
-		    TempSurface.SelectObject(LKPen_Grey_N1);
+          if(((*it)->DrawStyle()==adsDisabled)) {
+            TempSurface.SelectObject(LKPen_Grey_N1);
+          }
           (*it)->Draw(TempSurface, false);
         }
       }//for

@@ -11,11 +11,6 @@
 #include <cstddef>
 #include <algorithm>
 
-template<typename T, size_t N>
-constexpr size_t array_size(T (&array)[N])  {
-	return N;
-}
-
 struct safe_delete {
 	template <typename T>
 	void operator()(T*& p) {
@@ -54,31 +49,5 @@ struct safe_free {
 		}
 	}
 };
-
-#if __cplusplus < 201402L
-namespace std {
-  /**
-   *  @brief  Return a reverse iterator pointing to the last element of
-   *          the array.
-   *  @param  __arr  Array.
-   */
-  template<typename _Tp, size_t _Nm>
-    inline reverse_iterator<_Tp*>
-    rbegin(_Tp (&__arr)[_Nm])
-    { return reverse_iterator<_Tp*>(__arr + _Nm); }
-
-  /**
-   *  @brief  Return a reverse iterator pointing one past the first element of
-   *          the array.
-   *  @param  __arr  Array.
-   */
-  template<typename _Tp, size_t _Nm>
-    inline reverse_iterator<_Tp*>
-    rend(_Tp (&__arr)[_Nm])
-    { return reverse_iterator<_Tp*>(__arr); }
-}
-
-#endif
-
 
 #endif // stl_utils_h__

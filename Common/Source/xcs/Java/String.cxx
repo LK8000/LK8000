@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Max Kellermann <max@duempel.org>
+ * Copyright 2010-2021 Max Kellermann <max.kellermann@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,7 +33,7 @@
 
 char *
 Java::String::CopyTo(JNIEnv *env, jstring value,
-		     char *buffer, size_t max_size)
+		     char *buffer, size_t max_size) noexcept
 {
 	const char *p = env->GetStringUTFChars(value, nullptr);
 	if (p == nullptr)
@@ -45,7 +45,7 @@ Java::String::CopyTo(JNIEnv *env, jstring value,
 }
 
 std::string
-Java::String::ToString(JNIEnv *env, jstring s)
+Java::String::ToString(JNIEnv *env, jstring s) noexcept
 {
 	assert(env != nullptr);
 	assert(s != nullptr);

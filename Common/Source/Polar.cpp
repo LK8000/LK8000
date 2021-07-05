@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include "utils/openzip.h"
 #include "utils/zzip_stream.h"
+#include "Utils.h"
 
 // This is calculating the weight difference for the chosen wingloading
 // Remember that polar files have a weight indicated that includes the pilot..
@@ -39,7 +40,7 @@ void WeightOffset(double wload) {
 }
 
 
-bool PolarWinPilot2XCSoar(double dPOLARV[3], double dPOLARW[3], double ww[2]) {
+bool PolarWinPilot2XCSoar(double (&dPOLARV)[3], double (&dPOLARW)[3], double (&ww)[2]) {
 
   POLARV[0] = dPOLARV[0];
   POLARV[1] = dPOLARV[1];

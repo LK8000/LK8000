@@ -36,9 +36,9 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
     }
     LockTaskData();
 
-    if (AATEnabled && ( DoOptimizeRoute() || ((ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1))) ) {
+    if (UseAATTarget() && ( DoOptimizeRoute() || ((ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1))) ) {
       targetLat = Task[ActiveTaskPoint].AATTargetLat;
-      targetLon = Task[ActiveTaskPoint].AATTargetLon;
+      targetLon = Task[ActiveTaskPoint].AATTargetLon; 
     } else {
       targetLat = WayPointList[Task[ActiveTaskPoint].Index].Latitude;
       targetLon = WayPointList[Task[ActiveTaskPoint].Index].Longitude;
@@ -56,7 +56,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
       for (int i=ActiveTaskPoint+1; i<MAXTASKPOINTS; i++) {
         if (ValidTaskPoint(i)) {
 
-          if (AATEnabled && ValidTaskPoint(i+1)) {
+          if (UseAATTarget() && ValidTaskPoint(i+1)) {
             targetLat = Task[i].AATTargetLat;
             targetLon = Task[i].AATTargetLon;
           } else {
@@ -75,7 +75,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
     }
   }
 
-  if (AATEnabled) {
+  if (UseAATTarget()) {
     // draw symbol at target, makes it easier to see
     LockTaskData();
     if(mode.Is(Mode::MODE_TARGET_PAN)) {

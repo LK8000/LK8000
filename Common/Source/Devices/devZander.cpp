@@ -115,23 +115,16 @@ static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 {
   TCHAR ctemp[80];
-  double vtas, wnet, vias;
 
   NMEAParser::ExtractParameter(String,ctemp,0);
-  vtas = StrToDouble(ctemp,NULL)/3.6;
+  double vtas = StrToDouble(ctemp,NULL)/3.6;
 
   NMEAParser::ExtractParameter(String,ctemp,1);
-  wnet = (StrToDouble(ctemp,NULL)-10000)/100; // cm/s
+  double wnet = (StrToDouble(ctemp,NULL)-10000)/100; // cm/s
   UpdateVarioSource(*apGPS, *d, wnet);
 
-
-  if (apGPS->BaroAltitudeAvailable)
-  {
-    vias = vtas/AirDensityRatio(QNHAltitudeToQNEAltitude(apGPS->BaroAltitude));
-
-  } else {
-    vias = 0.0;
-  }
+  double qnh_altitude = (apGPS->BaroAltitudeAvailable) ? apGPS->BaroAltitude : apGPS->Altitude;
+  double vias = IndicatedAirSpeed(vtas, QNHAltitudeToQNEAltitude(qnh_altitude));
 
   apGPS->AirspeedAvailable = TRUE;
   apGPS->TrueAirspeed = vtas;

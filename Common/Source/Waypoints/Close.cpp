@@ -7,29 +7,27 @@
 */
 
 #include "externs.h"
-#include "Waypointparser.h"
-#include <functional>
-using std::placeholders::_1;
 
 int WaypointOutOfTerrainRangeDontAskAgain = -1;
 
-
 void CloseWayPoints() {
-  #if TESTBENCH
-  StartupStore(TEXT(". CloseWayPoints%s"),NEWLINE);
-  #endif
-  if(!WayPointList.empty()) { // we must free also RESWps comments!
-	#if TESTBENCH
-	StartupStore(TEXT(". Waypoint list was not empty, closing.%s"),NEWLINE);
-	#endif
 
-    // 2 loop, It's not optimized, but it's not a problem here.
-    // we can avoid that 2 loop using std::string for Detail & Comment WAYPOINT members
-    std::for_each(WayPointList.begin(), WayPointList.end(), std::bind(&free, std::bind(&WAYPOINT::Details, _1)));
-    std::for_each(WayPointList.begin(), WayPointList.end(), std::bind(&free, std::bind(&WAYPOINT::Comment, _1)));
+  ClearTask();
+
+  for(WAYPOINT &wp :WayPointList) {
+    if(wp.Details) {
+      free(wp.Details);
+      wp.Details = nullptr;
+    }
+    if(wp.Comment) {
+      free(wp.Comment);
+      wp.Comment = nullptr;
+    }
   }
-  WayPointList.clear(); // we must force realloc also for RESWPs
-  WayPointCalc.clear();
+
+  // tips : this is same as clear() but force to free allocated memory...
+  WayPointList = std::vector<WAYPOINT>();
+  WayPointCalc = std::vector<WPCALC>();
 
   WaypointOutOfTerrainRangeDontAskAgain = WaypointsOutOfRange;
 }

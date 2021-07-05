@@ -29,7 +29,7 @@ Copyright_License {
 #include "Util/DebugFlag.hpp"
 #include "Screen/OpenGL/Surface.hpp"
 #include "Screen/OpenGL/Scope.hpp"
-#include <utils/make_unique.h>
+#include <memory>
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
 #include <stdint.h>

@@ -59,9 +59,16 @@ output.map
 /android-studio/app/Thirdparty/
 /android-studio/app/release/
 /android-studio/app/build/
+/android-studio/app/beta/
 /android-thirdparty/
 /.vs/
 /Common/Test/.vs/
 /Common/Test/out/
 /Common/Utils/language-convert/.vs/
 /Common/Utils/language-convert/out/
+/Common/Utils/test_tools/build/
+/Common/Utils/test_tools/.vscode/
+/Common/Utils/test_tools/.vs/
+/Common/Utils/test_tools/out/
+/Common/Utils/test_tools/CMakeSettings.json
+/cov-int/

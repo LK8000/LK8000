@@ -87,9 +87,9 @@ void LKProfileInitRuntime() {
 
 
   if ( ISPARAGLIDER ) {
-	if(PGOptimizeRoute)	AATEnabled=true;
+  	gTaskType=TSK_GP;
   } else {
-	AATEnabled=FALSE;
+	gTaskType=TSK_DEFAULT;
   }
 
   if ( ISPARAGLIDER || ISCAR ) {

@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: dlgAirspaceSelectList.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
+   $Id: dlgSelectAirspaceList.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
  */
 
 #include "externs.h"
@@ -21,6 +21,7 @@
 #include "Dialogs.h"
 #include "Asset.hpp"
 #include "Util/TruncateString.hpp"
+#include "Library/Utm.h"
 
 #define MAX_LEN 80
 #define MAX_LIST_ITEMS 25
@@ -43,7 +44,9 @@ static int NoAirspace = 0;
 #ifdef FLARM_MS
 #include "FlarmIdFile.h"
 static int NoFlarm = 0;
-extern FlarmIdFile *file;
+#endif
+#ifdef WEATHERST_MS
+static int NoWeatherSt = 0;
 #endif
 #ifdef WEATHERST_MS
 static int NoWeatherSt = 0;
@@ -164,7 +167,7 @@ void dlgAddMultiSelectListDetailsDialog(int Index) {
                 if (Elements[Index].iIdx == iLastTaskPoint)
                     dlgTaskWaypointShowModal(Elements[Index].iIdx, 2, false, true);
                 else {
-                    if ((AATEnabled) && (CALCULATED_INFO.Flying) && (!IsMultiMapNoMain())) {
+                    if ((UseAATTarget()) && (CALCULATED_INFO.Flying) && (!IsMultiMapNoMain())) {
                         wf->SetModalResult(mrOK);
                         wf->SetVisible(false);
                         dlgTarget(Elements[Index].iIdx);
@@ -318,22 +321,17 @@ if(text1 == NULL) return -1;
 if(text2 == NULL) return -1;
 
 TCHAR Comment[MAX_LEN] = _T("");;
-FlarmId* flarmId ;
-int j;
-double Distance, Bear;
+
+  double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pFlarm->Latitude,  pFlarm->Longitude, &Distance, &Bear);
   if(_tcscmp(pFlarm->Name,_T("?")) ==0)
-    _sntprintf(text1,MAX_LEN, TEXT("%X"), pFlarm->ID);
+    _sntprintf(text1,MAX_LEN, TEXT("%X"), pFlarm->RadioId);
   else
-    _sntprintf(text1,MAX_LEN, TEXT("[%s] %X"),pFlarm->Name, pFlarm->ID);
+    _sntprintf(text1,MAX_LEN, TEXT("[%s] %X"),pFlarm->Name, pFlarm->RadioId);
 
-  flarmId = file->GetFlarmIdItem(pFlarm->ID);
+  const FlarmId* flarmId = LookupFlarmId(pFlarm->RadioId);
   if(flarmId != NULL)
   {
-
-    for(j=1; j < (FLARMID_SIZE_NAME-1); j++)
-      if(flarmId->type[FLARMID_SIZE_NAME-j] == ' ')
-        flarmId->type[FLARMID_SIZE_NAME-j] = '\0';
     if(flarmId->freq[3] != ' ')
       _sntprintf(Comment,MAX_LEN, TEXT("%s  %s %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
                                             , flarmId->freq     // FLARMID_SIZE_FREQ   8    r
@@ -439,7 +437,7 @@ if (iTaskIdx == 0) {
          double SecRadius = 0;
 
          SecRadius = SectorRadius;
-         if (AATEnabled) {
+         if (UseAATTarget()) {
              if (Task[iTaskIdx].AATType == SECTOR)
                  SecRadius = Task[iTaskIdx].AATSectorRadius;
              else
@@ -543,8 +541,6 @@ double fFact = fabs(pTraf->Average30s + 5.0) /10.0;
 if(fFact > 1.0 ) fFact = 1.0; else
   if(fFact < 0.0 ) fFact = 0.0;
 LKColor BaseColor = RGB_GREEN ;
-extern  LKColor MixColors(const LKColor& Color2, double fFact1) ;
-
 if (IsDithered()) {
   BaseColor = RGB_BLACK;
 } else {
@@ -712,7 +708,6 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
              {
                int utmzone; char utmchar;
                double easting, northing;
-               extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
                LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
                _sntprintf(text2,MAX_LEN,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
              }

@@ -39,7 +39,7 @@ static void OnOKClicked(WndButton* pWnd) {
 }
 
 static void MoveTarget(double adjust_angle) {
-  if (!AATEnabled) return;
+  if (gTaskType!=TSK_AAT) return;
   if (target_point==0) return;
   if (!ValidTaskPoint(target_point)) return;
   if (!ValidTaskPoint(target_point+1)) return;
@@ -129,7 +129,7 @@ static void MoveTarget(double adjust_angle) {
 
 
 static void MoveTarget(double target_longitude, double target_latitude) {
-  if (!AATEnabled) return;
+  if (gTaskType!=TSK_AAT) return;
   if (target_point==0) return;
   if (!ValidTaskPoint(target_point)) return;
   if (!ValidTaskPoint(target_point+1)) return;
@@ -248,7 +248,7 @@ static void RefreshCalculator(void) {
   RefreshTaskStatistics();
   target_point = max(target_point,ActiveTaskPoint);
 
-  bool nodisplay = !AATEnabled
+  bool nodisplay = gTaskType!=TSK_AAT 
     || (target_point==0)
     || !ValidTaskPoint(target_point+1);
 
@@ -328,7 +328,7 @@ static void RefreshCalculator(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATDelta"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(dd-AATTaskLength);
-    if (AATEnabled) {
+    if (gTaskType==TSK_AAT) {
       wp->SetVisible(true);
     } else {
       wp->SetVisible(false);

@@ -22,6 +22,8 @@ extern void FillDataOptions();
 
 namespace {
 
+  constexpr auto InvalidTextIndex = std::numeric_limits<unsigned>::max();
+
   constexpr size_t MAX_MESSAGES = 2500; // Max number of MSG items
   TCHAR *LKMessages[MAX_MESSAGES] = {};
 
@@ -34,20 +36,17 @@ namespace {
       unsigned index = 0;
       for (unsigned int i = 3; i < size - 1; i++) {
         if (!isdigit(key[i])) {
-          // invalid token
-          return std::numeric_limits<unsigned>::max();
+          return InvalidTextIndex;
         }
         index = (index * 10U) + (key[i] - '0');
       }
       return index;
     }
-    return std::numeric_limits<unsigned>::max();
+    return InvalidTextIndex;
   }
 
   unsigned GetTextIndex(const TCHAR *key, char type) {
-    return (key
-        ? GetTextIndex(key, _tcslen(key), type)
-        : std::numeric_limits<unsigned>::max());
+    return key ? GetTextIndex(key, _tcslen(key), type) : InvalidTextIndex;
   }
 
   unsigned GetTextIndex(const std::string &key, char type) {
@@ -59,11 +58,16 @@ namespace {
       for (const auto &obj : lang_json.get<json::object>()) {
         // get the item index number
         const unsigned index = GetTextIndex(obj.first, 'M');
-        if (index < array_size(LKMessages) && !LKMessages[index]) {
-          if(obj.second.is<std::string>()) {
-            const tstring value = utf8_to_tstring(obj.second.get<std::string>().c_str());
-            LKMessages[index] = _tcsdup(value.c_str());
+        if (index < std::size(LKMessages)) {
+          if(!LKMessages[index]) {
+            if(obj.second.is<std::string>()) {
+              const tstring value = utf8_to_tstring(obj.second.get<std::string>().c_str());
+              LKMessages[index] = _tcsdup(value.c_str());
+            }
           }
+        } else {
+          // invalid token or LKMessages array too small.
+          assert(index == InvalidTextIndex);
         }
       }
     }
@@ -79,27 +83,19 @@ namespace {
         if(lang_json.is<json::object>()) {
           for (const auto &obj : lang_json.get<json::object>()) {
             if(obj.second.is<std::string>()) {
-              const tstring code = utf8_to_tstring(obj.first.c_str());
-              const tstring name = utf8_to_tstring(obj.second.get<std::string>().c_str());
+              const tstring code = utf8_to_tstring(obj.first);
+              const tstring name = utf8_to_tstring(obj.second.get<std::string>());
 
-              /*
-               * would be better to use std::map::emplace() instead of insert() to
-               * avoid intermediate pair construction, but "emplace" does not exist
-               * in gcc 4.6.3 ( used for WinCE target )
-               *
-               *  language.emplace(std::piecewise_construct,
-               *                   std::forward_as_tuple(code),
-               *                   std::forward_as_tuple(name));
-               */
-
-              language.insert(std::make_pair(code, name));
+              language.emplace(std::piecewise_construct,
+                               std::forward_as_tuple(code),
+                               std::forward_as_tuple(name));
             }
           }
         } else {
-          StartupStore(_T("language : %s <%s>"), szFilePath , to_tstring(lang_json.to_str().c_str()).c_str());
+          StartupStore(_T("language : %s <%s>"), szFilePath , to_tstring(lang_json.to_str()).c_str());
         }
       } else {
-        StartupStore(_T("language : %s"), to_tstring(error.c_str()).c_str());
+        StartupStore(_T("language : %s <%s>"), szFilePath, to_tstring(error).c_str());
       }
     }
   }
@@ -153,7 +149,7 @@ tstring LKgethelptext(const TCHAR *TextIn) {
     string = lang_json.get(sToken);
   }
   if (string.is<std::string>()) {
-    sHelpString = utf8_to_tstring(string.get<std::string>().c_str());
+    sHelpString = utf8_to_tstring(string.get<std::string>());
   } else {
     StartupStore(_T(".... Unknown Text token <%s>"), TextIn);
     sHelpString = TextIn;
@@ -167,7 +163,7 @@ tstring LKgethelptext(const TCHAR *TextIn) {
 // return TextIn if token is not valid
 const TCHAR *LKGetText(const TCHAR *TextIn) {
   const unsigned index = GetTextIndex(TextIn, 'M');
-  if (index < array_size(LKMessages) && LKMessages[index]) {
+  if (index < std::size(LKMessages) && LKMessages[index]) {
     return LKMessages[index];
   }
   return TextIn;
@@ -176,7 +172,7 @@ const TCHAR *LKGetText(const TCHAR *TextIn) {
 /// Direct token access, with range check, faster than LKGetText
 // return empty string if token is not found
 const TCHAR *MsgToken(unsigned index) {
-  if (index < array_size(LKMessages) && LKMessages[index]) {
+  if (index < std::size(LKMessages) && LKMessages[index]) {
     return LKMessages[index];
   }
   return _T("");

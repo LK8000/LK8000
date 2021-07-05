@@ -616,7 +616,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   pGPS->TrueAirspeed = (StrToDouble(ctemp,NULL) / 100.0);
   // if qnhalt is zero, IAS is the TAS, more or less, so no problems
-  pGPS->IndicatedAirspeed = pGPS->TrueAirspeed / AirDensityRatio(QNHAltitudeToQNEAltitude(qnhalt));
+  pGPS->IndicatedAirspeed = IndicatedAirSpeed(pGPS->TrueAirspeed, QNHAltitudeToQNEAltitude(qnhalt));
 
 
   NMEAParser::ExtractParameter(String,ctemp,7);

@@ -29,7 +29,7 @@ Copyright_License {
 #ifdef ENABLE_OPENGL
 #include "Screen/Point.hpp"
 #include "OpenGL/Scissor.hpp"
-#include <utils/make_unique.h>
+#include <memory>
 #endif
 
 /**

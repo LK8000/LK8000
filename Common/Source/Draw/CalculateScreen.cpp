@@ -207,7 +207,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
   gStartSectorRenderer.CalculateScreenPosition(screenbounds_latlon, _Proj);
   gTaskSectorRenderer.CalculateScreenPosition(screenbounds_latlon, _Proj);
 
-  if (AATEnabled && !DoOptimizeRoute()) {
+  if (gTaskType == TSK_AAT) {
 		if(ValidTaskPoint(ActiveTaskPoint)) {
 			TASKSTATS_POINT& StatPt =  TaskStats[ActiveTaskPoint];
 			for (int j=0; j<MAXISOLINES; j++) {
@@ -232,7 +232,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
 }
 
 void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj) {
-    static_assert(Groundline.size() == array_size(DerivedDrawInfo.GlideFootPrint), "wrong array size");
+    static_assert(Groundline.size() == std::size(DerivedDrawInfo.GlideFootPrint), "wrong array size");
 
     typedef decltype(Groundline) array_t;
     typedef array_t::value_type point_t;
@@ -260,7 +260,7 @@ void MapWindow::CalculateScreenPositionsGroundline(const ScreenProjection& _Proj
 #endif
     }
 
-    static_assert(Groundline2.size() == array_size(DerivedDrawInfo.GlideFootPrint2), "wrong array size");
+    static_assert(Groundline2.size() == std::size(DerivedDrawInfo.GlideFootPrint2), "wrong array size");
 
     if (DerivedDrawInfo.GlideFootPrint2_valid) {
         // show next-WP line

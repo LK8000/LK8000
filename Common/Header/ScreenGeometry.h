@@ -94,5 +94,7 @@ int DLGSCALE(int x) {
     return IBLSCALE(x);
 }
 
+unsigned int TerrainQuantization();
+
 
 #endif

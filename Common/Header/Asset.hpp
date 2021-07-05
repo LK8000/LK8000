@@ -23,10 +23,19 @@ static inline
 bool IsDithered() {
 #ifdef DITHER
     return true;
-#elif defined(ANDROID) && defined(__arm__)
+#elif defined(ANDROID) && (defined(__arm__) || defined(__aarch64__))
     return is_dithered;
 #else
     return false;
+#endif
+}
+
+static inline
+bool IsEinkColored() {
+#if defined(ANDROID) && (defined(__arm__)||defined(__aarch64__))
+        return is_eink_colored;
+#else
+        return false;
 #endif
 }
 

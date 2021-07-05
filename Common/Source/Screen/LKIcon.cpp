@@ -63,7 +63,7 @@ void LKIcon::Draw(LKSurface& Surface, const int x, const int y, const int cx, co
   const GLEnable<GL_TEXTURE_2D> scope;
   OpenGL::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 #endif
-  const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  const ScopeAlphaBlend blend;
 
   GLTexture &texture = *_bitmap.GetNative();
   texture.Bind();

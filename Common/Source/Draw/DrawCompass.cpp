@@ -7,60 +7,39 @@
 */
 
 #include "externs.h"
-#include "DoInits.h"
 #include "LKObjects.h"
 #include "ScreenGeometry.h"
 
-void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double angle)
-{
-  POINT Start;
+void MapWindow::DrawCompass(LKSurface& Surface, const RECT& rc, const double angle) {
 
-    static double lastDisplayAngle = 9999.9;
-    static int lastRcRight = 0, lastRcTop = 0;
-    static POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
+    POINT ArrowL[] = { {0,-11}, {-5,9}, {0,3}, {0,-11} };
+    POINT ArrowR[] = { {0,-11}, { 5,9}, {0,3}, {0,-11} };
 
-    if (DoInit[MDI_COMPASS]) {
-	lastRcRight=0;
-	lastRcTop=0;
-	DoInit[MDI_COMPASS]=false;
-    }
+    const POINT Start = {
+        rc.right - NIBLSCALE(11),
+        rc.top + NIBLSCALE(11)
+    };
 
-    if (lastDisplayAngle != angle || lastRcRight != rc.right || lastRcTop != rc.top){
+    // North arrow
+    PolygonRotateShift(ArrowL, std::size(ArrowL), Start.x, Start.y, -angle);
+    PolygonRotateShift(ArrowR, std::size(ArrowR), Start.x, Start.y, -angle);
 
-      Arrow[0].x  = 0;
-      Arrow[0].y  = -11;
-      Arrow[1].x  = -5;
-      Arrow[1].y  = 9;
-      Arrow[2].x  = 0;
-      Arrow[2].y  = 3;
-      Arrow[3].x  = 5;
-      Arrow[3].y  = 9;
-      Arrow[4].x  = 0;
-      Arrow[4].y  = -11;
 
-	// no more clock, no need to have different compass position
-	Start.y = rc.top + NIBLSCALE(11); 
-	Start.x = rc.right - NIBLSCALE(11);
+    LKBrush CompassBrush;
+    CompassBrush.Create(OverColorRef);
 
-      // North arrow
-      PolygonRotateShift(Arrow, 5, Start.x, Start.y, 
-                         -angle);
+    const auto hpOld = Surface.SelectObject(LKPen_Black_N0);
+    const auto hbOld = Surface.SelectObject(CompassBrush);
 
-      lastDisplayAngle = angle;
-      lastRcRight = rc.right;
-      lastRcTop = rc.top;
-    }
+    Surface.Polygon(ArrowL,std::size(ArrowL));
 
-    const auto hpOld = Surface.SelectObject(LKPen_Black_N2);
-    const auto hbOld = Surface.SelectObject(LKBrush_White);
-    Surface.Polygon(Arrow,5);
+    LKBrush CompassShaddowBrush;
+    CompassShaddowBrush.Create(RGB_GREY.MixColors(OverColorRef, 0.6));
 
-    Surface.SelectObject(LKPen_Black_N1);
-    Surface.Polygon(Arrow,5);
+    Surface.SelectObject(CompassShaddowBrush);
+
+    Surface.Polygon(ArrowR,std::size(ArrowL));
 
     Surface.SelectObject(hbOld);
     Surface.SelectObject(hpOld);
-
 }
-
-

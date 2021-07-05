@@ -14,11 +14,11 @@ Mutex  CritSec_TerrainDataCalculations;
 Mutex  CritSec_TaskData;
 
 void LockTaskData() {
-  CritSec_TaskData.Lock();
+  CritSec_TaskData.lock();
 }
 
 void UnlockTaskData() {
-  CritSec_TaskData.Unlock();
+  CritSec_TaskData.unlock();
 }
 
 /*
@@ -26,11 +26,11 @@ void UnlockTaskData() {
  * and FLARM data inside GPS_INFO of course
  */
 void LockFlightData() {
-  CritSec_FlightData.Lock();
+  CritSec_FlightData.lock();
 }
 
 void UnlockFlightData() {
-  CritSec_FlightData.Unlock();
+  CritSec_FlightData.unlock();
 }
 
 void CheckAndLockFlightData() {
@@ -43,9 +43,9 @@ void CheckAndUnlockFlightData() {
 
 
 void LockTerrainDataGraphics() {
-  CritSec_TerrainDataGraphics.Lock();
+  CritSec_TerrainDataGraphics.lock();
 }
 
 void UnlockTerrainDataGraphics() {
-  CritSec_TerrainDataGraphics.Unlock();
+  CritSec_TerrainDataGraphics.unlock();
 }

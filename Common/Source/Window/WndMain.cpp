@@ -25,7 +25,6 @@
 #include "RGB.h"
 #include "LKProfiles.h"
 #include "Logger.h"
-#include "LiveTracker.h"
 #include "FlightDataRec.h"
 
 #include "Event/Event.h"
@@ -35,10 +34,10 @@
 #include "Draw/ScreenProjection.h"
 
 #include "Airspace/Sonar.h"
-#include <OS/RotateScreen.h>
-
-extern bool ScreenHasChanged(void);
-extern void ReinitScreen(void);
+#include "OS/RotateScreen.h"
+#include "ChangeScreen.h"
+#include "IO/Async/GlobalIOThread.hpp"
+#include "Tracking/Tracking.h"
 
 WndMain::WndMain() : WndMainBase(), _MouseButtonDown(), _isRunning() {
 }
@@ -87,9 +86,6 @@ void BeforeShutdown(void) {
 
   // LKTOKEN _@M1221_ "Shutdown, saving profile..."
   CreateProgressDialog(MsgToken(1221));
-  extern void LKAircraftSave(const TCHAR *szFile);
-  extern void LKPilotSave(const TCHAR *szFile);
-  extern void LKDeviceSave(const TCHAR *szFile);
   LKPilotSave(defaultPilotFile);
   LKAircraftSave(defaultAircraftFile);
   LKProfileSave(defaultProfileFile);
@@ -128,8 +124,6 @@ void BeforeShutdown(void) {
   #endif
 
   LockTaskData();
-  Task[0].Index = -1;  ActiveTaskPoint = -1;
-  AATEnabled = FALSE;
   CloseWayPoints();
   UnlockTaskData();
 
@@ -145,7 +139,9 @@ void BeforeShutdown(void) {
   RasterTerrain::CloseTerrain();
   UnlockTerrainDataGraphics();
 
-  LiveTrackerShutdown();
+  tracking::DeInitialize();
+  DeinitialiseIOThread();
+
   CloseFlightDataRecorder();
 
   // Stop COM devices
@@ -255,7 +251,9 @@ void WndMain::OnDestroy() {
 
 bool WndMain::OnSize(int cx, int cy) {
     MapWindow::_OnSize(cx, cy);
-	if (ScreenHasChanged()) ReinitScreen();
+	if (ScreenHasChanged()) {
+        ReinitScreen();
+    } 
     return true;
 }
 

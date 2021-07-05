@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "../CpuLoad.h"
 
 #if (WINDOWSPC>0)
 //typedef DWORD (_stdcall *GetIdleTimeProc) (void);

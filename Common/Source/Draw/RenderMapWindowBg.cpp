@@ -102,9 +102,6 @@ QuickRedraw:
 
         //
         DrawBottomBar(Surface, rc);
-#ifdef DRAWDEBUG
-        DrawDebug(hdc, rc);
-#endif
         // no need to do SelectObject as at the bottom of function
         return;
     }
@@ -347,9 +344,4 @@ _skip_2:
         DrawMapScale(Surface, rc, _Proj); // unused BigZoom
         DrawCompass(Surface, rc, DisplayAngle);
     }
-
-#ifdef DRAWDEBUG
-    DrawDebug(hdc, rc);
-#endif
-
 }

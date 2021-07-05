@@ -21,6 +21,7 @@
 #include "resource.h"
 #include "InputEvents.h"
 #include "Util/UTF8.hpp"
+#include "utils/tokenizer.h"
 
 int dlgTaskSelectListShowModal(void) ;
 
@@ -249,55 +250,38 @@ public:
     }
 };
 
+namespace {
 
+using field_iterator = std::vector<tstring>::const_iterator;
 
-bool ConvertStringToTask( LPCTSTR szTaskSteing,   mapCode2Waypoint_t &mapWaypoint)
-{
-  std::vector<tstring>  Entries =   CupStringToFieldArray(szTaskSteing);
+bool ConvertStringToTask(field_iterator begin, field_iterator end, mapCode2Waypoint_t &mapWaypoint) {
+    size_t idxTP = 0;
 
-
-  size_t Idx =0;
-  size_t idxTP = 0;
-
-
-    for (uint i =0; i < Entries.size() ; i++)
-    {
-      mapCode2Waypoint_t::iterator It = mapWaypoint.find(Entries[Idx++].c_str());
-      if(It != mapWaypoint.end())
-      {
-        int ix = FindOrAddWaypoint(&(It->second),true);  // first try to find airfield
-        if(ix < 0)
-          ix= FindOrAddWaypoint(&(It->second),false); // not found try if waypoint exist
-
-        if(ix >= 0)
-        {
-          if (idxTP < MAXTASKPOINTS)       // space left
-          {
-            Task[idxTP++].Index = ix;
-            if(idxTP > 1)
-              if(Task[idxTP-1].Index  == Task[idxTP-2].Index )  // not the same as before?
-                idxTP--;
-          }
+    std::for_each(begin, end, [&](const auto& code) {
+        if (idxTP >= MAXTASKPOINTS) {
+            return;
         }
-      }
-      Task[idxTP].Index = -1;
-    }
-
-//#define DEBUG_TASK_LOAD
-#ifdef DEBUG_TASK_LOAD
-  int i =0;
-  while ( Task[i].Index  >=0)
-  {
-    StartupStore(_T(".......Taskpoint: %u %s\n"),(unsigned)(i), WayPointList[Task[i].Index].Name );
-    i++;
-  }
-#endif
-
-
-  return (idxTP > 0);
+        mapCode2Waypoint_t::iterator It = mapWaypoint.find(code);
+        if (It != mapWaypoint.end()) {
+            int ix = FindOrAddWaypoint(&(It->second), true);  // first try to find airfield
+            if (ix < 0) {
+                ix = FindOrAddWaypoint(&(It->second), false); // not found try if waypoint exist
+            }
+            if (ix >= 0) { // valid TP
+                Task[idxTP++].Index = ix;
+                if (idxTP > 1) {
+                    if (Task[idxTP - 1].Index == Task[idxTP - 2].Index) {  // not the same as before?
+                        --idxTP;
+                    }
+                }
+            }
+        }
+    });
+    Task[idxTP].Index = -1;
+    return (idxTP > 0);
 }
 
-
+} // namespace
 
 bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskIndex) {
 
@@ -309,14 +293,13 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   bool bLastInvalid=true;
   std::vector<tstring> Entries;
   TCHAR szString[READLINE_LENGTH + 1];
-  TCHAR szTmp[READLINE_LENGTH + 1];
 
 
   szString[READLINE_LENGTH] = _T('\0');
 
 
   memset(szString, 0, sizeof (szString)); // clear Temp Buffer
-  WAYPOINT newPoint = {0};
+  WAYPOINT newPoint = {};
 
 
   enum {
@@ -328,7 +311,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   LockTaskData();
   ClearTask();
 
-  std::map<tstring, size_t> cup_header;
+  cup_header_t cup_header;
 
   bool TaskValid = false;
   FileSection = none;
@@ -336,7 +319,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   if (stream) {
       while (stream.read_line(szString)) {
 
-	  _tcsncpy(szTmp,szString,READLINE_LENGTH);
           if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
               (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
               FileSection = Waypoint;
@@ -394,7 +376,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                 TaskValid = true;
                 TaskFound = true;
                 SectorType=SECTOR;  // normal sector by default if no other ObsZone parameter
-                AATEnabled = false; // racing task by default, if AAT will overwrite this
+                gTaskType = TSK_DEFAULT; // racing task by default, if AAT will overwrite this
 
                 if(Entries[0].size() == 0)
                 {
@@ -409,9 +391,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 		              _tcscpy(TaskLine, szString );
                 }
 
-
-
-                bLoadComplet = ConvertStringToTask( szString, mapWaypoint);
+                bLoadComplet = ConvertStringToTask( std::next(Entries.begin()), Entries.end(), mapWaypoint);
                 FileSection = Option;
               }
             break;
@@ -501,7 +481,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                                 TmpZone.mA12 = _tcstod(pToken + 4, &sz);
                             } else if (_tcsstr(pToken, _T("AAT=")) == pToken) {
                                 // AAT
-                        	AATEnabled = true;
+                        	      gTaskType = TSK_AAT;
                                 if( _tcstod(pToken + 4, &sz) > 0) // AAT = 1?
                                   SectorType=CIRCLE;
                             } else if (_tcsstr(pToken, _T("Line=")) == pToken) {
@@ -562,7 +542,7 @@ TCHAR szString[READLINE_LENGTH + 1];
 
   iNO_Tasks=0;
 
-  SaveDefaultTask(); // save current task for restore if no task load
+  SaveDefaultTask(); // save current task to restore if no task load
   while(LoadCupTaskSingle(szFileName,szString, iNO_Tasks)&&( iNO_Tasks < MAX_TASKS ))
   {
     LockTaskData();
@@ -591,7 +571,7 @@ TCHAR szString[READLINE_LENGTH + 1];
     {
       if(bClosedTask)
       {
-          if (AATEnabled)
+          if (gTaskType == TSK_AAT)
               _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M699_ "Task"
           else if (CALCULATED_INFO.TaskFAI)
               _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken(2432), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
@@ -610,16 +590,17 @@ TCHAR szString[READLINE_LENGTH + 1];
   InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //  restore old task
   dlgTaskSelectListShowModal();
   if((TaskIndex >= 0) && (TaskIndex < MAX_TASKS))
-  {     TCHAR file_name[180];
-        TCHAR *pWClast = NULL;
-        TCHAR * pToken = strsep_r(szTaskStrings[TaskIndex], TEXT(","), &pWClast) ;  // extract taskname
-        if((pToken) && (_tcslen (pToken)>1))
-	  _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken(891), pToken ); // Clear old task and load taskname
-        else
+  {
+      TCHAR file_name[180];
+      const TCHAR * pToken = lk::tokenizer<TCHAR>(szTaskStrings[TaskIndex]).Next({_T(',')});
+      if((pToken) && (_tcslen (pToken)>1)) {
+          _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken(891), pToken ); // Clear old task and load taskname
+      } else {
           _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken(891), MsgToken(907)); // Clear old task and load task
-	if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdYes) {
-	  LoadCupTaskSingle(szFileName,szString, TaskIndex); // load new task
-	}
+      }
+      if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdYes) {
+          LoadCupTaskSingle(szFileName,szString, TaskIndex); // load new task
+      }
   }
 
 
@@ -726,15 +707,13 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
 
   Surface.SetTextColor(RGB_BLACK);
   if (TaskDrawListIndex < iNO_Tasks)  {
-      TCHAR *pWClast = NULL;
-      TCHAR *pWClast2 = NULL;
       TCHAR text[180] = {TEXT("empty")};
       TCHAR text1[180] = {TEXT("empty")};
       TCHAR text2[180] = {TEXT("empty")};
 
       // remove all quotations "
       const TCHAR* szSrc = szTaskStrings[TaskDrawListIndex];
-      size_t MaxSize = std::min(array_size(text), _tcslen(szSrc));
+      size_t MaxSize = std::min(std::size(text), _tcslen(szSrc));
       TCHAR* out_end = std::remove_copy_if(szSrc, std::next(szSrc, MaxSize),
               std::begin(text), [](TCHAR c) { return c == _T('"'); });
       (*out_end) = _T('\0');
@@ -742,14 +721,16 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
       CropIncompleteUTF8(text);
 #endif
 
-      TCHAR* pToken = strsep_r(text, TEXT(","), &pWClast);
-      _tcscpy(text1, pToken );
-      if(*text1 == '\0') {
-        _tcscpy(text1, _T("???") );
+      lk::tokenizer<TCHAR> tok(text);
+      TCHAR* pToken = tok.Next({_T(',')});
+      if(pToken) {
+        _tcscpy(text1, pToken);
+        if(*text1 == '\0') {
+          _tcscpy(text1, _T("???") );
+        }
+        tok.Next({_T(',')}); // remove takeof point
+        _tcscpy(text2, tok.Remaining());
       }
-      strsep_r(pWClast, TEXT(","), &pWClast2) ;  // remove takeof point
-      _tcscpy(text2, pWClast2);
-
       /********************
        * show text
        ********************/

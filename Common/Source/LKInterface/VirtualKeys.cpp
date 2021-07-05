@@ -234,7 +234,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			// Long press in center screen bottom bar
 			if (keytime>=CustomKeyTime) {
 				PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-				extern void ReinitScreen(void);
 				ReinitScreen();
 				return 0;
 			}

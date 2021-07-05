@@ -9,10 +9,8 @@
 #if !defined(AFX_UTILS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_UTILS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
+struct FlarmId;
 
 extern bool LockSettingsInFlight;
 extern bool LoggerShortName;
@@ -29,7 +27,6 @@ void StoreType(int Index,int InfoType);
 
 
 void SectorEndPoint(double StartLat, double StartLon, double  Radial, double Dist, double *EndLat, double *EndLon);
-bool ReadWinPilotPolar(void);
 void ConvertFlightLevels(void);
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc);
 void ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index);
@@ -63,10 +60,6 @@ WORD crcCalc(void *Buffer, size_t size);
 void ExtractDirectory(TCHAR *Dest, TCHAR *Source);
 unsigned DoSunEphemeris(double lon, double lat);
 
-void *bsearch(void *key, void *base0, size_t nmemb, size_t size, int (*compar)(const void *elem1, const void *elem2));
-
-TCHAR *_tcstok_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
-TCHAR *strsep_r(TCHAR *s, const TCHAR *delim, TCHAR **lasts);
 void TrimRight(TCHAR* str);
 
 void SaveRegistryToFile(const TCHAR* szFile);
@@ -97,6 +90,8 @@ void RemoveFilePathPrefix(const TCHAR* szPrefix, TCHAR* szFilePath) gcc_nonnull_
 const TCHAR *LKGetLocalPath(void);
 const TCHAR *LKGetSystemPath(void);
 
+void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
+
 void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);
 #if 0
 int propGetScaleList(double *List, size_t Size);
@@ -111,19 +106,13 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine);
 bool CheckRectOverlap(const RECT *rc1, const RECT *rc2);
 int MeasureCPULoad();
 
-TCHAR* GetWinPilotPolarInternalName(int i);
 void WeightOffset(double wload);
+bool PolarWinPilot2XCSoar(double (&dPOLARV)[3], double (&dPOLARW)[3], double (&ww)[2]);
+bool ReadWinPilotPolar(void);
+
 
 void InitCustomHardware(void);
 void DeInitCustomHardware(void);
-
-void OpenFLARMDetails();
-void CloseFLARMDetails();
-TCHAR* LookupFLARMCn(long id);
-TCHAR* LookupFLARMDetails(long id);
-int LookupFLARMDetails(TCHAR *cn);
-bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile);
-int LookupSecondaryFLARMId(int id);
 
 double QNHAltitudeToStaticPressure(double alt);
 double StaticPressureToQNHAltitude(double ps);
@@ -142,11 +131,14 @@ double AirDensity(double hr, double temp, double absp);
 double AirDensitySinkRate(double ias, double qnhaltitude);
 double AirDensitySinkRate(double ias, double qnhaltitude, double gload);
 double TrueAirSpeed( double delta_press, double hr, double temp, double abs_press );
+double TrueAirSpeed( double ias, double qne_altitude);
+double IndicatedAirSpeed( double tas, double qne_altitude);
 
 double HexStrToDouble(TCHAR *Source, TCHAR **Stop);
 
 // Fast convert from Hex string To integer
-int HexStrToInt(TCHAR *Source);
+uint8_t HexDigit(TCHAR c);
+int HexStrToInt(const TCHAR *Source);
 
 ///////////////////////////////////////////////////////////////////////
 // Extract H, M, S from string like "HH:MM:SS"
@@ -173,6 +165,7 @@ void CheckAltitudeAlarms(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated)
 void MasterTimeReset(void);
 bool DoOptimizeRoute(void);
 const TCHAR* WhatTimeIsIt(void);
+bool UseAATTarget(void);
 void OutOfMemory(const TCHAR *where, int line);
 
 void CreateDirectoryIfAbsent(const TCHAR *filename);
@@ -189,7 +182,6 @@ bool	InitLDRotary(ldrotary_s *buf);
 void	InitWindRotary(windrotary_s *wbuf);
 
 void	SetOverColorRef();
-TCHAR*  GetSizeSuffix(void);
 void	LKRunStartEnd(bool);
 
 bool	LockMode(short lmode);
@@ -208,6 +200,11 @@ bool   IsThermalBarVisible(void);
 
 extern bool CheckClubVersion(void);
 extern void ClubForbiddenMsg(void);
+
+void TaskStartMessage(void);
+void TaskFinishMessage(void);
+
+void ToggleDrawTaskFAI(void);
 
 #if USELKASSERT
 void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars,

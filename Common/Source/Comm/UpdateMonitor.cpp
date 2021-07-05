@@ -34,7 +34,7 @@ bool  UpdateMonitor(void)
 
   static int lastactive=0;
   static bool  lastvalidBaro=false;
-  static bool wasSilent[array_size(DeviceList)] = { false };
+  static bool wasSilent[std::size(DeviceList)] = { false };
 
   int active = -1;
   // find first valid GPS
@@ -105,7 +105,7 @@ bool  UpdateMonitor(void)
       continue;
     }
 
-    LKASSERT((unsigned)dev.PortNumber < array_size(wasSilent));
+    LKASSERT((unsigned)dev.PortNumber < std::size(wasSilent));
     if ((LKHearthBeats-dev.HB)>10 ) {
 #ifdef DEBUGNPM
       StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u" NEWLINE), dev.PortNumber, LKHearthBeats, dev.HB);
@@ -145,7 +145,7 @@ bool  UpdateMonitor(void)
   }
 
 #ifdef DEBUGNPM
-  if (invalidGps==array_size(DeviceList)) {
+  if (invalidGps==std::size(DeviceList)) {
     StartupStore(_T("... GPS no gpsValid available on any port, active=%d @%s" NEWLINE),active,WhatTimeIsIt());
   }
   if (invalidBaro>0) {

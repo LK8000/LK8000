@@ -36,7 +36,7 @@ bool sound_table::init() {
 		 StartupStore(_T("...Loading default Sound Table : %s" ), NEWLINE );
 		 for (int i=DEFAULT;i<last;i++) {
 			 TCHAR str[200]; // Nmea string can have max (200 - soundCodeSize - 1)
-			 str[array_size(str)-1] = _T('\0');  // added make sure the string is terminated
+			 str[std::size(str)-1] = _T('\0');  // added make sure the string is terminated
 			 _stprintf(str,"LKALARM,%d", i);
 			 set((sound_code_t)i,str);
 		 }
@@ -46,8 +46,8 @@ bool sound_table::init() {
 
 
     TCHAR str[200]; // Nmea string can have max (200 - soundCodeSize - 1) 
-    str[array_size(str)-1] = _T('\0');  // added make sure the string is terminated
-    while ( (_fgetts(str, array_size(str)-1, fp))!=NULL) {
+    str[std::size(str)-1] = _T('\0');  // added make sure the string is terminated
+    while ( (_fgetts(str, std::size(str)-1, fp))!=NULL) {
         if (str[0]==_T('#')) continue; // skip comments
         
         TCHAR * ptrCode = str;

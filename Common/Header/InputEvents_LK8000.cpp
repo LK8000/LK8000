@@ -48,8 +48,8 @@
 
 /* default Mode : No Menu */
 
-int event_id_null = InputEvents::makeEvent(&eventNull, TEXT(""), 0);
-int mode_id_default = InputEvents::mode2int(TEXT("default"), true);
+unsigned event_id_null = InputEvents::makeEvent(&eventNull, TEXT(""), 0);
+unsigned mode_id_default = InputEvents::mode2int(TEXT("default"), true);
 makeLabel(mode_id_default,TEXT(""),1,event_id_null);
 makeLabel(mode_id_default,TEXT(""),2,event_id_null);
 makeLabel(mode_id_default,TEXT(""),3,event_id_null);

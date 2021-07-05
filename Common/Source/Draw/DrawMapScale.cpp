@@ -85,11 +85,11 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     Surface.FillRect(&ScaleLineBck[2], LKBrush_Black);
 
     const auto hpOld = Surface.SelectObject(LKPen_White_N0);
-    Surface.Polyline(ScaleLine, array_size(ScaleLine));
+    Surface.Polyline(ScaleLine, std::size(ScaleLine));
     Surface.SelectObject(hpOld);
 
     TCHAR Scale[200] = {};
-    TCHAR Scale1[200] = {};
+    TCHAR Scale1[100] = {};
     TCHAR Scale2[200] = {};
     TCHAR TEMP[40] = {};
 
@@ -231,15 +231,12 @@ _skip2:
 
     //if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) ) {
     if (inpanmode) {
-
-	TCHAR sCoordinate[32]={0};
-	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, array_size(sCoordinate)-1);
-	_tcscat(Scale, sCoordinate);
-	_tcscat(Scale, _T(" "));
+        Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), Scale);
+        _tcscat(Scale, _T(" "));
     }
     double mapScale=Units::ToSysDistance(zoom.Scale());
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
-    Units::FormatUserMapScale(NULL, mapScale, Scale1, sizeof(Scale1)/sizeof(Scale1[0]));
+    Units::FormatUserMapScale(NULL, mapScale, Scale1, std::size(Scale1));
     _tcscat(Scale,Scale1);
 
     SIZE tsize;

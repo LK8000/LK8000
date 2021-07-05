@@ -30,19 +30,10 @@ Copyright_License {
 
 bool has_cursor_keys;
 
-#ifdef __arm__
+#if defined __arm__ || defined __aarch64__
 
 bool is_nook = false; 
 bool is_dithered = false;
-
-bool
-IsGalaxyTab22()
-{
-  assert(native_view);
-
-  return android_api_level == 8 &&
-    (StringIsEqual(native_view->GetProduct(), "GT-P1000") ||
-     StringIsEqual(native_view->GetProduct(), "GT-P1010"));
-}
+bool is_eink_colored = false;
 
 #endif

@@ -12,11 +12,7 @@
 #define DEVNAMESIZE  32
 #define	NUMDEV		 6
 
-#ifdef RADIO_ACTIVE
 #define	NUMREGDEV	 45 // Max number of registered devices
-#else
-#define	NUMREGDEV	 41 // Max number of registered devices
-#endif // RADIO_ACTIVE
 
 #define	devA()	    (&DeviceList[0])
 #define	devB()	    (&DeviceList[1])
@@ -116,6 +112,7 @@ typedef struct{
   DataBiIoDir POLARDir ; // Polar 2 voltage
   DataBiIoDir DirLink  ; // Direct Link
   DataTP_Type T_TRGTDir; // Send Navigation Target information protocol sentence
+  DataBiIoDir QNHDir   ; // QNH data exchange
 } DeviceIO;
 
 struct DeviceDescriptor_t {
@@ -170,7 +167,11 @@ struct DeviceDescriptor_t {
   unsigned ErrTx;
   // Com ports hearth beats, based on LKHearthBeats
   unsigned HB;
-  
+#ifdef DEVICE_SERIAL
+  int HardwareId;
+  int SerialNumber;
+  double SoftwareVer;
+#endif
   NMEAParser nmeaParser;
 //  DeviceIO PortIO[NUMDEV];
   void InitStruct(int i);
@@ -207,7 +208,7 @@ extern DeviceDescriptor_t *pDevSecondaryBaroSource;
 
 inline 
 PDeviceDescriptor_t devX(unsigned idx) {
-	if(idx < array_size(DeviceList)) {
+	if(idx < std::size(DeviceList)) {
 		return &DeviceList[idx];
 	}
 	return nullptr;

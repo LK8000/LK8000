@@ -2,7 +2,7 @@
 Copyright_License {
 
   XCSoar Glide Computer - http://www.xcsoar.org/
-  Copyright (C) 2000-2016 The XCSoar Project
+  Copyright (C) 2000-2021 The XCSoar Project
   A detailed list of copyright holders can be found in the file "AUTHORS".
 
   This program is free software; you can redistribute it and/or
@@ -23,9 +23,33 @@ Copyright_License {
 
 #include "Context.hpp"
 #include "Java/Class.hxx"
-#include "Java/String.hxx"
+#include "Java/File.hxx"
 
-jobject
+Java::String
+Context::GetExternalFilesDir(JNIEnv *env) noexcept
+{
+  Java::Class cls{env, env->GetObjectClass(Get())};
+  jmethodID method = env->GetMethodID(cls, "getExternalFilesDir",
+                                      "(Ljava/lang/String;)Ljava/io/File;");
+  assert(method);
+
+  Java::File dir{env, env->CallObjectMethod(Get(), method, nullptr)};
+  return { env, Java::File::GetAbsolutePath(env, dir.Get()) };
+}
+
+Java::String
+Context::GetExternalCacheDir(JNIEnv *env) noexcept
+{
+  Java::Class cls{env, env->GetObjectClass(Get())};
+  jmethodID method = env->GetMethodID(cls, "getExternalCacheDir",
+                                      "()Ljava/io/File;");
+  assert(method);
+
+  Java::File dir{env, env->CallObjectMethod(Get(), method)};
+  return dir.GetAbsolutePathChecked();
+}
+
+Java::LocalObject
 Context::GetSystemService(JNIEnv *env, jstring name)
 {
   assert(env != nullptr);
@@ -36,10 +60,10 @@ Context::GetSystemService(JNIEnv *env, jstring name)
                                       "(Ljava/lang/String;)Ljava/lang/Object;");
   assert(method);
 
-  return env->CallObjectMethod(Get(), method, name);
+  return {env, env->CallObjectMethod(Get(), method, name)};
 }
 
-jobject
+Java::LocalObject
 Context::GetSystemService(JNIEnv *env, const char *name)
 {
   assert(env != nullptr);
@@ -49,7 +73,7 @@ Context::GetSystemService(JNIEnv *env, const char *name)
   return GetSystemService(env, name2);
 }
 
-jobject
+Java::LocalObject
 Context::GetVibrator(JNIEnv *env)
 {
   return GetSystemService(env, "vibrator");

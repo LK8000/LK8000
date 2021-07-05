@@ -14,14 +14,7 @@
 #include "resource.h"
 
 
-static WndForm *wf=NULL;
-
-static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo);
-static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface);
-
 WndProperty * wComboPopupWndProperty;
-WindowControl * wComboPopupListEntry;
-WndListFrame *wComboPopupListFrame;
 DataField * ComboPopupDataField = NULL;
 ComboList * ComboListPopup=NULL;
 
@@ -57,13 +50,10 @@ static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface
 
 static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo)
 { // callback function for the ComboPopup
-  (void)Sender;
-  if (ListInfo->DrawIndex == -1){ // initialize
-
+  if (ListInfo->DrawIndex == -1) { // initialize
     ListInfo->ItemCount = ComboListPopup->ComboPopupItemCount;
     ListInfo->ScrollIndex = 0;
     ListInfo->ItemIndex = ComboListPopup->PropertyDataFieldIndexSaved;
-
   }
   else {
     ComboListPopup->ComboPopupDrawListIndex = ListInfo->DrawIndex + ListInfo->ScrollIndex;
@@ -71,20 +61,16 @@ static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_
   }
 }
 
-
-static void OnHelpClicked(WindowControl * Sender){
-  (void)Sender;
-  if (ComboListPopup->ComboPopupItemIndex >=0) {
-
-    int iDataIndex = ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemIndex]->DataFieldIndex;
-    ComboPopupDataField->SetFromCombo(iDataIndex,
-      ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupItemIndex]->StringValue);
+static void OnHelpClicked(WindowControl * Sender) {
+  int idx = ComboListPopup->ComboPopupItemIndex;  
+  if (idx >=0) {
+    const ComboListEntry_t* pItem = ComboListPopup->ComboPopupItemList[idx];
+    ComboPopupDataField->SetFromCombo(pItem->DataFieldIndex, pItem->StringValue);
   }
-
   wComboPopupWndProperty->OnHelp();
 }
 
-static void OnCloseClicked(WndButton* pWnd){
+static void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -93,8 +79,8 @@ static void OnCloseClicked(WndButton* pWnd){
   }
 }
 
-static void OnComboPopupListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo)
-{ // double-click on item -- NOT in callback table because added manually
+static void OnComboPopupListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo) {
+  // double-click on item -- NOT in callback table because added manually
   if(Sender) {
     WndForm * pForm = Sender->GetParentWndForm();
     if(pForm) {
@@ -104,9 +90,9 @@ static void OnComboPopupListEnter(WindowControl * Sender, WndListFrame::ListInfo
 }
 
 static void OnCancelClicked(WndButton* pWnd){
-  ComboListPopup->ComboPopupItemIndex= -1;
+  ComboListPopup->ComboPopupItemIndex = -1;
   if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
+    WndForm* pForm = pWnd->GetParentWndForm();
     if(pForm) {
       pForm->SetModalResult(mrCancel);
     }
@@ -117,7 +103,7 @@ static void OnCancelClicked(WndButton* pWnd){
 static CallBackTableEntry_t CallBackTable[]={
   OnListCallbackEntry(OnComboPopupListInfo),
   OnPaintCallbackEntry(OnPaintComboPopupListItem),
-  OnHelpCallbackEntry(OnHelpClicked),
+  ClickNotifyCallbackEntry(OnHelpClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
   ClickNotifyCallbackEntry(OnCancelClicked),
   EndCallBackEntry()
@@ -146,29 +132,32 @@ int dlgComboPicker(WndProperty* theProperty){
     LKASSERT(theProperty!=NULL);
     wComboPopupWndProperty = theProperty;
 
-    wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_COMBOPICKER_L : IDR_XML_COMBOPICKER_P);
+    std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_COMBOPICKER_L : IDR_XML_COMBOPICKER_P));
 
     if (!wf) return -1;
 
     wf->SetCaption(theProperty->GetCaption());
 
-    wComboPopupListFrame = (WndListFrame*)wf->FindByName(TEXT("frmComboPopupList"));
-    LKASSERT(wComboPopupListFrame!=NULL);
-    wComboPopupListFrame->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT|BORDERBOTTOM);
-    wComboPopupListFrame->SetEnterCallback(OnComboPopupListEnter);
 
     // allow item to be focused / hightlighted
-    wComboPopupListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmComboPopupListEntry"));
-    LKASSERT(wComboPopupListEntry!=NULL);
-    wComboPopupListEntry->SetCanFocus(true);
+    WindowControl* wComboPopupListEntry = wf->FindByName(TEXT("frmComboPopupListEntry"));
+    if (wComboPopupListEntry) {
+      wComboPopupListEntry->SetCanFocus(true);
+    }
 
     ComboPopupDataField = wComboPopupWndProperty->GetDataField();
-    ComboListPopup = ComboPopupDataField->GetCombo();
     LKASSERT(ComboPopupDataField!=NULL);
+    ComboPopupDataField->CreateComboList();   
+    ComboListPopup = ComboPopupDataField->GetCombo();
 
-    ComboPopupDataField->CreateComboList();
-    wComboPopupListFrame->ResetList();
-    wComboPopupListFrame->SetItemIndex(ComboListPopup->PropertyDataFieldIndexSaved);
+    auto wComboPopupListFrame = dynamic_cast<WndListFrame*>(wf->FindByName(TEXT("frmComboPopupList")));
+    if (wComboPopupListFrame) {
+      wComboPopupListFrame->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT|BORDERBOTTOM);
+      wComboPopupListFrame->SetEnterCallback(OnComboPopupListEnter);
+      wComboPopupListFrame->ResetList();
+      wComboPopupListFrame->SetItemIndex(ComboListPopup->PropertyDataFieldIndexSaved);
+    }
+
     if (bInitialPage) { // save values for "Cancel" from first page only
       bInitialPage=false;
       iSavedInitialDataIndex=ComboListPopup->ComboPopupItemList[ComboListPopup->PropertyDataFieldIndexSaved]->DataFieldIndex;
@@ -236,10 +225,6 @@ int dlgComboPicker(WndProperty* theProperty){
 
     wComboPopupWndProperty->RefreshDisplay();
     ComboListPopup->FreeComboPopupItemList();
-
-    delete wf;
-
-    wf = NULL;
 
   } // loop reopen combo if <<More>> << LESS>> picked
 

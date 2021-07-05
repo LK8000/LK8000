@@ -17,13 +17,13 @@
 class PGConeTaskPt : public PGCicrcleTaskPt {
     friend class PGTaskMgr;
 public:
-    PGConeTaskPt();
-    virtual ~PGConeTaskPt();
+    PGConeTaskPt() = delete;
+    PGConeTaskPt(ProjPt&& point);
 
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
-    bool UpdateTaskPoint(TASK_POINT& TskPt ) const override;
+    void UpdateTaskPoint(size_t idx, TASK_POINT& TskPt ) const override;
 
-	static double ConeRadius(double Alt, double AltBase, double Slope, double RadiusBase);
+    static double ConeRadius(double Alt, double AltBase, double Slope, double RadiusBase);
 
 protected:
     double m_Slope;

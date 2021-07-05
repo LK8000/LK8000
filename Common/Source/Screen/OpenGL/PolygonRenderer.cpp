@@ -11,6 +11,7 @@
 
 #include "PolygonRenderer.h"
 #include <assert.h>
+#include <cstdio>
 #include "Screen/OpenGL/VertexPointer.hpp"
 
 GLvoid GLAPIENTRY beginCallback(GLenum type, void* polygon_data) {

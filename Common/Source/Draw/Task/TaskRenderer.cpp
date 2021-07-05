@@ -41,7 +41,7 @@ void TaskRenderer::CalculateScreenPosition(const rectObj &screenbounds, const Sc
     _ScreenPoints.clear();
     _Visible = msRectOverlap(&_bounds, &screenbounds);
     if (_Visible) {
-        _ScreenPoints.reserve(_GeoPoints.size() + 1); // +1 for close polygon
+        _ScreenPoints.reserve(_GeoPoints.size() + 1); // +1 to close polygon
 
         const GeoPoint& first = _GeoPoints.front();
         _ScreenPoints.push_back(ToScreen(first));

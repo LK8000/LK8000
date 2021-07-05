@@ -14,6 +14,7 @@
 #include "InputEvents.h"
 #include "ScreenGeometry.h"
 #include "Asset.hpp"
+#include "Util/TruncateString.hpp"
 
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 
@@ -662,7 +663,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                 InputEvents::processPopupDetails(InputEvents::PopupThermal, i);
             }
             if (MSMTRAFFIC) {
-                if ((i < 0) || (i >= MAXTRAFFIC) || (LKTraffic[i].ID <= 0)) {
+                if ((i < 0) || (i >= MAXTRAFFIC) || (LKTraffic[i].RadioId <= 0)) {
 #if 0 // selection while waiting for data ready
                     if (LKNumTraffic > 0)
                         DoStatusMessage(_T("ERR-045 Invalid selection"));
@@ -1015,16 +1016,12 @@ _KeepOldAirspacesValues:
         if (MSMTHERMALS) {
             if ((rli >= 0) && (CopyThermalHistory[rli].Valid == true)) {
 
-                LK_tcsncpy(Buffer, CopyThermalHistory[rli].Name, s_maxnlname[curmapspace]);
-
+                TCHAR* pOut = Buffer1[i][curpage];
                 if (IsThermalMultitarget(rli)) {
-                    TCHAR buffer2[40];
-                    _stprintf(buffer2, _T(">%s"), Buffer);
-                    _tcscpy(Buffer, buffer2);
+                    _tcscpy(pOut, _T(">"));
+                    pOut += _tcslen(pOut);
                 }
-                CharUpper(Buffer);
-
-                _tcscpy(Buffer1[i][curpage], Buffer);
+                CopyTruncateString(pOut, s_maxnlname[curmapspace], CopyThermalHistory[rli].Name);
 
                 // Distance
                 value = CopyThermalHistory[rli].Distance*DISTANCEMODIFY;
@@ -1097,14 +1094,14 @@ _KeepOldAirspacesValues:
         } // MSMTHERMALS
 
         if (MSMTRAFFIC) {
-            if ((rli >= 0) && (LKTraffic[rli].ID > 0)) {
+            if ((rli >= 0) && (LKTraffic[rli].RadioId > 0)) {
 
                 // Traffic name
                 int wlen = _tcslen(LKTraffic[rli].Name);
 
                 // if name is unknown then it is a '?'
                 if (wlen == 1) {
-                    _stprintf(Buffer, _T("%06x"), (unsigned) LKTraffic[rli].ID);
+                    _stprintf(Buffer, _T("%06x"), (unsigned) LKTraffic[rli].RadioId);
                     Buffer[s_maxnlname[curmapspace]] = '\0';
                 } else {
                     // if XY I-ABCD  doesnt fit..
@@ -1126,17 +1123,18 @@ _KeepOldAirspacesValues:
                     }
                     CharUpper(Buffer);
                 }
+
+                TCHAR* pOut = Buffer1[i][curpage];
                 if (LKTraffic[rli].Locked) {
-                    TCHAR buf2[LKSIZEBUFFERLARGE];
-                    _stprintf(buf2, _T("*%s"), Buffer);
-                    buf2[s_maxnlname[curmapspace]] = '\0';
-                    _tcscpy(Buffer, buf2);
+                    _tcscpy(pOut, _T("*"));
+                    pOut += _tcslen(pOut);
                 }
+                CopyTruncateString(pOut, s_maxnlname[curmapspace], Buffer);
+
 #ifdef DEBUG_LKT_DRAWTRAFFIC
                 StartupStore(_T(".. Traffic[%d] Name=<%s> Id=<%0x> Status=%d Named:<%s>\n"), rli, LKTraffic[rli].Name,
                         LKTraffic[rli].ID, LKTraffic[rli].Status, Buffer);
 #endif
-                _tcscpy(Buffer1[i][curpage], Buffer);
 
                 // Distance
                 value = LKTraffic[rli].Distance*DISTANCEMODIFY;
@@ -1196,7 +1194,7 @@ _KeepOldAirspacesValues:
             }
 
 
-            if ((rli >= 0) && (LKTraffic[rli].ID > 0)) {
+            if ((rli >= 0) && (LKTraffic[rli].RadioId > 0)) {
                 drawn_items_onpage++;
                 if (LKTraffic[rli].Status == LKT_REAL) {
                     rcolor = RGB_WHITE;

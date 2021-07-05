@@ -12,7 +12,8 @@
 #include "Modeltype.h"
 #include "LKInterface.h"
 #include "Asset.hpp"
-
+#include "Multimap.h"
+#include "Tracking/Tracking.h"
 
 //
 // Set all default values for configuration.
@@ -138,7 +139,7 @@ void LKProfileResetDefault() {
 
   AircraftCategory = 0;
 
-  AATEnabled=FALSE;
+  gTaskType=TSK_DEFAULT;
 
   CheckSum = 1;
 
@@ -192,7 +193,7 @@ void LKProfileResetDefault() {
 
   OverColor = (OverColor_t)OcBlack;
 
-  DeclutterMode = (DeclutterMode_t)dmHigh;
+  DeclutterMode = dmHigh;
 
   // full size overlay by default
   OverlaySize = 0;
@@ -241,8 +242,8 @@ void LKProfileResetDefault() {
 
   TrackBar=1;
 
-  PGOptimizeRoute=true;
-  PGOptimizeRoute_Config = true;
+  TskOptimizeRoute=true;
+  TskOptimizeRoute_Config = true;
   GliderSymbol = 0;  // Default depending on mode type
 
   GlideBarMode = (GlideBarMode_t)gbDisabled;
@@ -250,7 +251,7 @@ void LKProfileResetDefault() {
   ArrivalValue = (ArrivalValue_t)avAltitude;
 
   // 1 is showing all airports and declutter only unneeded outlandings
-  NewMapDeclutter = 1;
+  NewMapDeclutter = dmLow;
 
   AverEffTime = (AverEffTime_t)ae30seconds;
 
@@ -379,9 +380,6 @@ void LKProfileResetDefault() {
 
   DisableAutoLogger = false;
 
-  LiveTrackerInterval = 0;
-  LiveTrackerRadar_config = false;
-  LiveTrackerStart_config = 0;
   // empty or demo versions
   //szAirspaceFile[0] = TEXT('\0');
   //szWaypointFile[0] = TEXT('\0');
@@ -413,6 +411,10 @@ void LKProfileResetDefault() {
     dwDeviceName[i][0]=_T('\0');
     szPort      [i][0]=_T('\0');
     szIpAddress [i][0]=_T('\0');
+    Replay_FileName[i][0]=_T('\0');
+    RawByteData [i]   = true;  // process raw data
+    ReplaySync  [i]   = 0;  // Timer Sync
+    ReplaySpeed [i]   = 1;
     dwSpeedIndex[i]   = 2;
     dwBitIndex  [i]   = (BitIndex_t)bit8N1;
     dwIpPort    [i]   = 23;
@@ -442,6 +444,7 @@ void LKProfileResetDefault() {
     PortIO[i].POLARDir  = BiDirOff;
     PortIO[i].DirLink   = BiDirOff;
     PortIO[i].T_TRGTDir = TP_VTARG;
+    PortIO[i].QNHDir    = BiDirInOut;
   }
 
 
@@ -450,10 +453,8 @@ void LKProfileResetDefault() {
 #endif
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
-  _tcscpy(LiveTrackersrv_Config,_T("www.livetrack24.com"));
-  LiveTrackerport_Config = 80;
-  _tcscpy(LiveTrackerusr_Config,_T("LK8000"));
-  _tcscpy(LiveTrackerpwd_Config,_T(""));
+
+  tracking::ResetSettings();
 
   _tcscpy(AircraftType_Config,_T("CIRRUS-STD"));
   _tcscpy(AircraftRego_Config,_T("D-1900"));
@@ -468,13 +469,8 @@ void LKProfileResetDefault() {
   UseUngestures=true;
 
   // This is also reset by global init, but never mind. Done twice.
-  extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
-
-  extern void Reset_Multimap_Flags(void);
   Reset_Multimap_Flags();
-
-  extern void Reset_Multimap_Mode(void);
   Reset_Multimap_Mode();
 
    UseWindRose=false;	// use wind rose (ex: NNE) for wind direction, instead of degrees
@@ -520,6 +516,8 @@ void LKProfileResetDefault() {
 
   AutoContrast=true;
   TerrainWhiteness=1;
+
+  EnableAudioVario = false;
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 

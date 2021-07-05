@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "LKStyle.h"
-
+#include "utils/lookup_table.h"
 
 extern int globalFileNum;
 
@@ -19,32 +19,31 @@ enum class CSVState {
     QuotedQuote,
 };
 
-std::map<tstring, size_t> CupStringToHeader(const TCHAR *row) {
-  const std::map<tstring, tstring> alias = {
-    { _T("Title"),       _T("name") },
-    { _T("Code"),        _T("code") },
-    { _T("Country"),     _T("country") },
-    { _T("Latitude"),    _T("lat") },
-    { _T("Longitude"),   _T("lon") },
-    { _T("Elevation"),   _T("elev") },
-    { _T("Style"),       _T("style") },
-    { _T("Direction"),   _T("rwdir") },
-    { _T("Length"),      _T("rwlen") },
-    { _T("Frequency"),   _T("freq") },
-    { _T("Description"), _T("desc") }
-  };
+cup_header_t CupStringToHeader(const TCHAR *row) {
 
-  std::map<tstring, size_t> header;
+/* 
+  this "alias" table is required to maintain backward compatibility 
+  with cup files header used by "soaringspot.com" and "soaringweb.org"
+*/
+  constexpr auto alias = lookup_table<tstring_view, tstring_view>({
+    { _T("title"),       _T("name") },
+//    { _T("code"),        _T("code") },
+//    { _T("country"),     _T("country") },
+    { _T("latitude"),    _T("lat") },
+    { _T("longitude"),   _T("lon") },
+    { _T("elevation"),   _T("elev") },
+//    { _T("style"),       _T("style") },
+    { _T("direction"),   _T("rwdir") },
+    { _T("length"),      _T("rwlen") },
+    { _T("frequency"),   _T("freq") },
+    { _T("description"), _T("desc") }
+  });
+
+  cup_header_t header;
   const auto entries = CupStringToFieldArray(row);
   for (size_t i = 0; i < entries.size(); ++i) {
-    const tstring& text = entries[i];
-    tstring lower_text;
-    std::transform(text.begin(), text.end(), std::back_inserter(lower_text), ::tolower);
-    auto it = alias.find(lower_text);
-    if (it != alias.end()) {
-      lower_text = it->second;
-    }
-    header[lower_text] = i;
+    const tstring lower_text = to_lower_ascii(entries[i]);
+    header[tstring(alias.get(lower_text))] = i;
   }
   return header;
 }
@@ -105,10 +104,10 @@ std::vector<tstring> CupStringToFieldArray(const TCHAR *row) {
 namespace {
   class cup_line {
   public:
-    cup_line(const std::map<tstring, size_t>& _Headers, std::vector<tstring>&& _Entries) 
-          : Headers(_Headers), Entries(std::forward<std::vector<tstring>>(_Entries)) {}
+    cup_line(const cup_header_t& _Headers, std::vector<tstring>&& _Entries) 
+          : empty(), Headers(_Headers), Entries(std::forward<std::vector<tstring>>(_Entries)) {}
 
-    const tstring& operator[](const TCHAR* Name) {
+    const tstring& operator[](const TCHAR* Name) const {
       auto it = Headers.find(Name);
       if(it != Headers.end()) {
         return Entries[it->second];
@@ -121,14 +120,14 @@ namespace {
     }
 
   private:
-    const tstring empty = _T("");
-    const std::map<tstring, size_t>& Headers;
+    const tstring empty;
+    const cup_header_t& Headers;
     const std::vector<tstring> Entries;
   };
 }
 
 //#define CUPDEBUG
-bool ParseCUPWayPointString(const std::map<tstring, size_t>& cup_header, const TCHAR *String,WAYPOINT *Temp)
+bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,WAYPOINT *Temp)
 {
   int flags=0;
   bool ishome=false; // 100310

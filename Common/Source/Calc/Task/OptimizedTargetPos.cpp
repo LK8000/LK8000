@@ -11,6 +11,7 @@
 #include "Waypointparser.h"
 #include "NavFunctions.h"
 #include "PGTask/PGTaskMgr.h"
+#include "Util/UTF8.hpp"
 
 PGTaskMgr gPGTask; // This Is Shared ressource, never use without Locking Task Data ( LockTaskData()/UnlockTaskData() )!
 
@@ -33,8 +34,12 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveTaskPoint].AATTargetLon;
 	WayPointList[RESWP_OPTIMIZED].Altitude = Task[ActiveTaskPoint].AATTargetAltitude;
 
-	_sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[stdwp].Name);
-    WayPointList[RESWP_OPTIMIZED].Name[NAME_SIZE] = _T('\0');
+    int ret = _sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[stdwp].Name);
+    if(ret >= (NAME_SIZE - 1)) {
+#ifndef UNICODE
+      CropIncompleteUTF8(WayPointList[RESWP_OPTIMIZED].Name);
+#endif
+    }
 
 	UnlockTaskData();
 }
@@ -42,16 +47,17 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 // Clear PG
 void ClearOptimizedTargetPos() {
 
-	if (!DoOptimizeRoute())
+	if (!(gTaskType==TSK_GP))
 		return;
 
 	LockTaskData();
-
+    if(!WayPointList.empty()) {
 	WayPointList[RESWP_OPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_OPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_OPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
 	// name will be assigned by function dynamically
 	_tcscpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
+    }
 
 	for(int i = 0; ValidWayPoint(Task[i].Index); ++i) {
 		Task[i].AATTargetLat = WayPointList[Task[i].Index].Latitude;

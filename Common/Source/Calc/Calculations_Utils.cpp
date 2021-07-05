@@ -57,33 +57,6 @@ void ResetTask(bool showConfirmMsg) {
 }
 
 
-
-
-unsigned int GetWpChecksum(unsigned int index) { //@ 101018
-
-  int clon, clat, csum;
-
-  if (index<NUMRESWP || index > WayPointList.size()) {
-        // it is ok to insert a reserved wp in the history, but not to save it. 
-        // So we get this error, which is not an error for reswp..
-        if (index>=NUMRESWP)
-	    StartupStore(_T("...... Impossible waypoint number=%d for Checksum%s"),index,NEWLINE);
-
-	return 0;
-  }
-
-  clon=(int)WayPointList[index].Longitude;
-  clat=(int)WayPointList[index].Latitude;
-  if (clon<0) clon*=-1;
-  if (clat<0) clat*=-1;
-
-  csum= WayPointList[index].Name[0] + ((int)WayPointList[index].Altitude*100) + (clat*1000*clon);
-
-  return csum;
-}
-
-
-
 //
 // Notice: GR should not consider total energy. This is a mere geometric value.
 // 

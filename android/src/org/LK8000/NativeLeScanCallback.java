@@ -26,7 +26,7 @@ package org.LK8000;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 /**
  * An #BluetoothAdapter.LeScanCallback implementation that passes
