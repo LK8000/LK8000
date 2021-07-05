@@ -219,3 +219,4 @@ PRODUCT=`/bin/kobo_config.sh`;
 [ $PRODUCT != trilogy ] && PREFIX=$PRODUCT-
 
 zcat /etc/images/$PREFIX\ghostbuster.raw.gz | /usr/local/Kobo/pickel showpic
+
