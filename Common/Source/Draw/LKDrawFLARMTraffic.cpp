@@ -88,7 +88,9 @@ static int	iRectangleSize = 4;
 		i=FLARM_MAX_TRAFFIC;
 		continue;
 	}
-	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) && (abs(DrawInfo.FLARM_Traffic[i].Speed) < 0.001) ) {
+	
+	//first draw max. 10 Flarm-Objects on Ground (black dot)
+	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) && (DrawInfo.FLARM_Traffic[i].Speed == 0 ) ) {
 		double target_lon;
 		double target_lat;
 
@@ -119,7 +121,9 @@ static int	iRectangleSize = 4;
 		if (_tcslen(lbuffer)>0)
 		TextInBox(Surface, &rc, lbuffer, sc.x+tscaler, sc.y+tscaler, &displaymode, false);
 		// Aircraft is on ground			  
-		Surface.SelectObject(LKPen_Green_N1);
+		//Surface.SelectObject(LKPen_Green_N1);
+		//Surface.SelectObject(LKPen_Black_N1);
+		Surface.SelectObject(LKBrush_Black);
 		Surface.DrawCircle(sc.x,  sc.y, iCircleSize, rc, true );
 	}
   }
@@ -132,7 +136,7 @@ static int	iRectangleSize = 4;
 		continue;
 	}
 
-	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) && (abs(DrawInfo.FLARM_Traffic[i].Speed) >= 0.001)){
+	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) && (DrawInfo.FLARM_Traffic[i].Speed > 0)){
 
 
 		double target_lon;

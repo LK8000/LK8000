@@ -953,7 +953,7 @@ double scl = xtick;
 	}
 	for (int i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
-	  if (LKTraffic[i].Status != LKT_EMPTY)
+	  if ((LKTraffic[i].Status != LKT_EMPTY) && (LKTraffic[i].Speed > 0) )
 	  {
 		/*************************************************************************
 		 * calculate positions
@@ -1490,7 +1490,7 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
     if(iVarioIdx < 0) iVarioIdx =0;
     if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
 	const auto oldb = Surface.SelectObject(*variobrush[iVarioIdx]);
-
+  if (pTraf->Speed > 0){
 	    switch (pTraf->Status) { // 100321
 		  case LKT_GHOST:
 			Surface.Rectangle(x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
@@ -1503,6 +1503,10 @@ static double zoomfact = (double)cy/NIBLSCALE(18);
 			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360(  pTraf->TrackBearing ));
 			Surface.Polygon(Triangle,5);
 	    }
+  }else{
+    Surface.SelectObject(LKBrush_Black);
+    Surface.DrawCircle(x, y, iCircleSize, rc, true );
+  }
 		Surface.SelectObject(oldb);
 }
 // This is painting traffic icons on the screen.
