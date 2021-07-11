@@ -1,6 +1,6 @@
 /*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
+   Released under GNU/GPL License v.2 or later
    See CREDITS.TXT file for authors and copyrights
 
    $Id: AirfieldDetails.cpp,v 8.3 2010/12/10 22:13:23 root Exp root $

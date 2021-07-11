@@ -1,6 +1,6 @@
 /*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
+   Released under GNU/GPL License v.2 or later
    See CREDITS.TXT file for authors and copyrights
 
    $Id: dlgWeatherStDetails.cpp,v 1.0 2020/05/30 20:08:00 root Exp root $

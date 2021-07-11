@@ -1,6 +1,6 @@
 /*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
+   Released under GNU/GPL License v.2 or later
    See CREDITS.TXT file for authors and copyrights
 
    $Id: LKSimulator.cpp,v 1.2 2010/12/11 19:34:01 root Exp root $

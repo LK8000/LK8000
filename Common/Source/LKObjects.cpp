@@ -1,6 +1,6 @@
 /*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
+   Released under GNU/GPL License v.2 or later
    See CREDITS.TXT file for authors and copyrights
 
    $Id: LKObjects.cpp,v 1.1 2010/12/11 19:21:43 root Exp root $
