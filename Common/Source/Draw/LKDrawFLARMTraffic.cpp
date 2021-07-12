@@ -82,8 +82,53 @@ static int	iRectangleSize = 4;
 
 
   const auto oldfont = Surface.SelectObject(LK8MapFont);
+  painted=0;
+  for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
+	if (painted>=10) {
+		i=FLARM_MAX_TRAFFIC;
+		continue;
+	}
+	
+	//first draw max. 10 Flarm-Objects on Ground (black dot)
+	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) && (DrawInfo.FLARM_Traffic[i].Speed == 0 ) ) {
+		double target_lon;
+		double target_lat;
 
-  for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
+		target_lon = DrawInfo.FLARM_Traffic[i].Longitude;
+		target_lat = DrawInfo.FLARM_Traffic[i].Latitude;
+
+		if (!PointVisible(target_lon, target_lat)) {
+			// StartupStore(_T("... This traffic is not visible on map with current zoom%s"),NEWLINE);
+			continue;
+		}
+
+		painted++;
+
+		POINT sc, sc_name, sc_av;
+		sc = _Proj.ToRasterPoint(target_lat, target_lon);
+
+		sc_name = sc;
+
+		sc_name.y -= NIBLSCALE(16);
+		sc_av = sc_name;
+
+		_tcscpy(lbuffer,_T(""));
+		if (DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
+			_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
+		}
+		displaymode.Border=1;
+
+		if (_tcslen(lbuffer)>0)
+		TextInBox(Surface, &rc, lbuffer, sc.x+tscaler, sc.y+tscaler, &displaymode, false);
+		// Aircraft is on ground			  
+		//Surface.SelectObject(LKPen_Green_N1);
+		//Surface.SelectObject(LKPen_Black_N1);
+		Surface.SelectObject(LKBrush_Black);
+		Surface.DrawCircle(sc.x,  sc.y, iCircleSize, rc, true );
+	}
+  }
+  painted=0;
+  for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
 
 	// limit to 10 icons map traffic
 	if (painted>=10) {
@@ -91,7 +136,7 @@ static int	iRectangleSize = 4;
 		continue;
 	}
 
-	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) ) {
+	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) && (DrawInfo.FLARM_Traffic[i].Speed > 0)){
 
 
 		double target_lon;
@@ -196,24 +241,22 @@ static int	iRectangleSize = 4;
 		   * calculate climb color
 		   *************************************************************************/
 
-		  int iVarioIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s  -0.5)+NO_VARIO_COLORS/2;
-		  if(iVarioIdx < 0) iVarioIdx =0;
-		  if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
-		  Surface.SelectObject(*variobrush[iVarioIdx]);
-
-		  switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
+		int iVarioIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s  -0.5)+NO_VARIO_COLORS/2;
+		if(iVarioIdx < 0) iVarioIdx =0;
+		if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
+		Surface.SelectObject(*variobrush[iVarioIdx]);
+		switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
 			case LKT_GHOST:
 				Surface.Rectangle(sc.x-iRectangleSize,  sc.y-iRectangleSize,sc.x+iRectangleSize, sc.y+iRectangleSize);
 				break;
 			case LKT_ZOMBIE:
-				Surface.DrawCircle(sc.x,  sc.x, iCircleSize, rc, true );
+				Surface.DrawCircle(sc.x,  sc.y, iCircleSize, rc, true );
 				break;
 			default:
 				PolygonRotateShift(Arrow, 5, sc.x, sc.y, DrawInfo.FLARM_Traffic[i].TrackBearing - DisplayAngle);
 				Surface.Polygon(Arrow,5);
 				break;
-		  }
-
+		}
 	}
   }
 
