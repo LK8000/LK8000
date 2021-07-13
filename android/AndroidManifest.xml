@@ -41,9 +41,8 @@
   <!-- Allow installation on faked touchscreen -->
   <uses-feature android:name="android.hardware.faketouch" android:required="false" />
 
-  <application android:icon="${applicationIcon}"
-               android:label="${applicationLabel}"
-               tools:replace="android:label"
+  <application android:icon="@drawable/icon"
+               android:label="@string/app_name"
                android:hasFragileUserData="true"
                android:requestLegacyExternalStorage="true">
 

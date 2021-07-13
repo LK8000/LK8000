@@ -12,10 +12,6 @@ android {
         versionCode 77
         versionName "7.3.7"
         setProperty("archivesBaseName", "LK8000-$versionName")
-        manifestPlaceholders = [
-                applicationLabel: "@string/app_name",
-                applicationIcon: "@drawable/icon"
-        ]
 
         externalNativeBuild {
             cmake {
@@ -54,17 +50,6 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
-            manifestPlaceholders = [
-                    applicationLabel: "@string/app_name_debug",
-                    applicationIcon: "@drawable/icon_debug"
-            ]
-            sourceSets {
-                debug {
-                    res.srcDirs = ["src/main/res",
-                                   "../../android/res",
-                                   "../../android/res_debug"]
-                }
-            }
             debuggable true
             jniDebuggable true
             renderscriptDebuggable true
@@ -73,17 +58,6 @@ android {
             initWith(buildTypes.release)
 
             applicationIdSuffix ".test"
-            manifestPlaceholders = [
-                    applicationLabel: "@string/app_name_beta",
-                    applicationIcon: "@drawable/icon_beta"
-            ]
-            sourceSets {
-                beta {
-                    res.srcDirs = ["src/main/res",
-                                   "../../android/res",
-                                   "../../android/res_beta"]
-                }
-            }
         }
     }
     externalNativeBuild {
