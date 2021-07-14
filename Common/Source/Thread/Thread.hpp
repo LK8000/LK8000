@@ -1,6 +1,11 @@
-//
-// Created by Bruno on 18/03/2019.
-//
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File:   Thread.hpp
+ * Author: Bruno de Lacheisserie
+ */
 
 #ifndef _THREAD_THREAD_HPP_
 #define _THREAD_THREAD_HPP_

@@ -9,8 +9,8 @@
  * Created on March 3, 2015, 2:20 PM
  */
 
-#ifndef MUTEX_HPP
-#define	MUTEX_HPP
+#ifndef _THREAD_MUTEX_HPP_
+#define	_THREAD_MUTEX_HPP_
 
 #include "Poco/Mutex.h"
 #include "Poco/ScopedLock.h"
@@ -39,5 +39,4 @@ decltype(auto) WithLock(_Mutex& m, Function&& f) {
     return f();
 }
 
-#endif	/* MUTEX_HPP */
-
+#endif	/* _THREAD_MUTEX_HPP_ */

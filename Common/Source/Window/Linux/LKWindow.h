@@ -3,7 +3,7 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  *
- * File:   Window.h
+ * File:   LKWindow.h
  * Author: Bruno de Lacheisserie
  *
  * Created on 9 novembre 2014, 14:49

@@ -9,17 +9,15 @@
  * Created on March 3, 2015
  */
 
-#ifndef COND_HPP
-#define	COND_HPP
+#ifndef _THREAD_COND_HPP_
+#define	_THREAD_COND_HPP_
 
 #include "Thread/Mutex.hpp"
 #include "Poco/Condition.h"
 
-/// Exists only to avoids to change xcs original code...
 class Cond : protected Poco::Condition {
 public:
-    Cond() {}
-    ~Cond() {}
+    Cond() = default;
 
     inline
     void Wait(Mutex &mutex) {
@@ -42,6 +40,4 @@ public:
     }
 };
 
-
-#endif	/* COND_HPP */
-
+#endif	/* _THREAD_COND_HPP_ */

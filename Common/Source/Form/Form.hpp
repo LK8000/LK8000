@@ -3,7 +3,6 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  *
- *
  * File:   Form.hpp
  * Author: Bruno de Lacheisserie
  *

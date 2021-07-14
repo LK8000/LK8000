@@ -1,6 +1,10 @@
-/* 
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
  * File:   WndTextLabel.h
- * Author: user
+ * Author: Bruno de Lacheisserie
  *
  * Created on December 16, 2014, 10:09 PM
  */

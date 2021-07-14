@@ -9,8 +9,9 @@
  * Created on March 3, 2015
  */
 
-#ifndef HANDLE_HPP
-#define	HANDLE_HPP
+#ifndef _THREAD_HANDLE_HPP_
+#define	_THREAD_HANDLE_HPP_
+
 #include "Poco/Thread.h"
 
 class ThreadHandle {
@@ -25,5 +26,4 @@ private:
     Poco::Thread* _thread;
 };
 
-#endif	/* HANDLE_HPP */
-
+#endif	/* _THREAD_HANDLE_HPP_ */
