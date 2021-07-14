@@ -50,11 +50,11 @@ CFLAGS="$BUILD_FLAGS" \
 make all && make install
 cd ..
 
-# install boostlib ( 1.72.0 - 2019-12-11 )
-[ ! -f boost_1_72_0.tar.gz ] && wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz
-[ -d boost_1_72_0 ] && rm -rf boost_1_72_0
-tar xzf boost_1_72_0.tar.gz
-cd boost_1_72_0
+# install boostlib ( 1.76.0 - 2021-04-13 )
+[ ! -f boost_1_76_0.tar.gz ] && wget https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz
+[ -d boost_1_76_0 ] && rm -rf boost_1_76_0
+tar xzf boost_1_76_0.tar.gz
+cd boost_1_76_0
 ./bootstrap.sh
 echo "using gcc : arm : $TC-g++ : cxxflags=$BUILD_FLAGS ;" > user-config.jam
 ./b2 toolset=gcc-arm \
