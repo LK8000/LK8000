@@ -92,16 +92,16 @@ cd libpng-build
 make && make install
 cd ..
 
-# install freetype2 ( 2.10.1 - 2019-07-01 )
-[ ! -f freetype-2.10.1.tar.gz ] && wget https://download.savannah.gnu.org/releases/freetype/freetype-2.10.1.tar.gz
-[ -d freetype-2.10.1 ] && rm -rf freetype-2.10.1
+# install freetype2 ( 2.10.4 - 2020-10-19 )
+[ ! -f freetype-2.10.4.tar.gz ] && wget https://download.savannah.gnu.org/releases/freetype/freetype-2.10.4.tar.gz
+[ -d freetype-2.10.4 ] && rm -rf freetype-2.10.4
 [ -d freetype-build ] && rm -rf freetype-build
-tar xzf freetype-2.10.1.tar.gz
+tar xzf freetype-2.10.4.tar.gz
 mkdir freetype-build
 cd freetype-build
 CFLAGS=$BUILD_FLAGS \
 LDFLAGS="-L$TARGET_DIR/lib"  \
-../freetype-2.10.1/configure \
+../freetype-2.10.4/configure \
     --host=$TC \
     --target=$TC \
     --prefix=$TARGET_DIR \
@@ -110,16 +110,16 @@ LDFLAGS="-L$TARGET_DIR/lib"  \
 make && make install
 cd ..
 
-# install Geographiclib ( 1.50.1 -  2019-12-13 )
-[ ! -f GeographicLib-1.50.1.tar.gz ] && wget https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.50.1.tar.gz
-[ -d GeographicLib-1.50.1 ] && rm -rf GeographicLib-1.50.1
+# install Geographiclib ( 1.52 -  2021-06-21 )
+[ ! -f GeographicLib-1.52.tar.gz ] && wget https://netcologne.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.52.tar.gz
+[ -d GeographicLib-1.52 ] && rm -rf GeographicLib-1.52
 [ -d GeographicLib-build ] && rm -rf GeographicLib-build
-tar xzf GeographicLib-1.50.1.tar.gz
+tar xzf GeographicLib-1.52.tar.gz
 mkdir GeographicLib-build
 cd GeographicLib-build
 CFLAGS=$BUILD_FLAGS \
 LDFLAGS="-L$TARGET_DIR/lib"  \
-../GeographicLib-1.50.1/configure \
+../GeographicLib-1.52/configure \
     --host=$TC \
     --prefix=$TARGET_DIR \
     PKG_CONFIG_LIBDIR=$TARGET_DIR/lib/pkgconfig
