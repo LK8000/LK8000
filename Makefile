@@ -292,7 +292,6 @@ ETAGS           :=etags
 EBROWSE         :=ebrowse
 
 GCCVERSION = $(shell $(CXX) -dumpversion)
-GCC_GTEQ_480 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 40800)
 GCC_GTEQ_820 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 80200)
 
 $(info GCC VERSION : $(GCCVERSION))
@@ -641,10 +640,8 @@ endif
 
 ifeq ($(CONFIG_PC),y)
  CPPFLAGS	+= -D_WINDOWS -DWIN32 -DCECORE $(UNICODE)
-
-ifeq ($(GCC_GTEQ_480),1)
-    CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
- endif
+ CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
+ CPPFLAGS	+= -D__USE_MINGW_ANSI_STDIO=0
 endif
 
 ifeq ($(DMALLOC),y)
