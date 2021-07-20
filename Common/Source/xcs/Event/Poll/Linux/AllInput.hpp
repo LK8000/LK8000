@@ -41,7 +41,7 @@ struct Event;
  * (/dev/input/event*).  It uses inotify to detect new/stale devices.
  */
 class AllLinuxInputDevices final
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
   : private FileEventHandler
 #endif
 {
@@ -61,7 +61,7 @@ class AllLinuxInputDevices final
 
   std::list<Device> devices;
 
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
   FileDescriptor inotify_fd;
 #endif
 
@@ -69,7 +69,7 @@ public:
   explicit AllLinuxInputDevices(IOLoop &_io_loop, EventQueue &_queue,
                                 MergeMouse &_merge)
     :io_loop(_io_loop), queue(_queue), merge(_merge)
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
     , inotify_fd(FileDescriptor::Undefined())
 #endif
     {}
@@ -90,7 +90,7 @@ private:
 
   void Add(const char *name);
 
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
   void Remove(const char *name);
   void Read();
 

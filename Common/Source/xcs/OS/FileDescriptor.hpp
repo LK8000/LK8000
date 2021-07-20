@@ -37,9 +37,6 @@
 #include <sys/types.h>
 
 #ifdef __linux__
-#define HAVE_EVENTFD
-#define HAVE_SIGNALFD
-#define HAVE_INOTIFY
 #include <signal.h>
 #endif
 
@@ -119,15 +116,11 @@ public:
   }
 #endif
 
-#ifdef HAVE_EVENTFD
+#ifdef __linux__
   bool CreateEventFD(unsigned initval=0);
-#endif
 
-#ifdef HAVE_SIGNALFD
   bool CreateSignalFD(const sigset_t *mask);
-#endif
 
-#ifdef HAVE_INOTIFY
   bool CreateInotify();
 #endif
 

@@ -40,15 +40,11 @@
 #include <poll.h>
 #endif
 
-#if defined(HAVE_EVENTFD) && !defined(__BIONIC__)
+#ifdef __linux__
+#ifndef __BIONIC__
 #include <sys/eventfd.h>
-#endif
-
-#if defined(HAVE_SIGNALFD) && !defined(__BIONIC__)
 #include <sys/signalfd.h>
 #endif
-
-#ifdef HAVE_INOTIFY
 #include <sys/inotify.h>
 #endif
 
@@ -127,7 +123,7 @@ FileDescriptor::SetBlocking()
 
 #endif
 
-#ifdef HAVE_EVENTFD
+#ifdef __linux__
 
 bool
 FileDescriptor::CreateEventFD(unsigned initval)
@@ -144,7 +140,7 @@ FileDescriptor::CreateEventFD(unsigned initval)
 
 #endif
 
-#ifdef HAVE_SIGNALFD
+#ifdef __linux__
 
 bool
 FileDescriptor::CreateSignalFD(const sigset_t *mask)
@@ -164,7 +160,7 @@ FileDescriptor::CreateSignalFD(const sigset_t *mask)
 
 #endif
 
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
 
 bool
 FileDescriptor::CreateInotify()

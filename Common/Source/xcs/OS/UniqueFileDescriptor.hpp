@@ -100,15 +100,9 @@ public:
   static bool CreatePipe(FileDescriptor &r, FileDescriptor &w);
 #endif
 
-#ifdef HAVE_EVENTFD
+#ifdef __linux__
   using FileDescriptor::CreateEventFD;
-#endif
-
-#ifdef HAVE_SIGNALFD
   using FileDescriptor::CreateSignalFD;
-#endif
-
-#ifdef HAVE_INOTIFY
   using FileDescriptor::CreateInotify;
 #endif
 

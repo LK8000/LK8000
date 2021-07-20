@@ -33,7 +33,7 @@ Copyright_License {
 bool
 AllLinuxInputDevices::Open()
 {
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
   if (!inotify_fd.CreateInotify())
     return false;
 
@@ -65,7 +65,7 @@ AllLinuxInputDevices::Close()
 {
   devices.clear();
 
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
   if (inotify_fd.IsDefined()) {
     io_loop.Remove(inotify_fd);
     inotify_fd.Close();
@@ -96,7 +96,7 @@ AllLinuxInputDevices::Add(const char *name)
   if (!CheckName(name))
     return;
 
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
   auto i = FindByName(name);
   if (i != devices.end())
     /* already have that one */
@@ -111,7 +111,7 @@ AllLinuxInputDevices::Add(const char *name)
     devices.pop_back();
 }
 
-#ifdef HAVE_INOTIFY
+#ifdef __linux__
 
 void
 AllLinuxInputDevices::Remove(const char *name)
