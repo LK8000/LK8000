@@ -42,14 +42,18 @@ class EGLUtil {
       : defaultValue;
   }
 
-  static int colorDistance(EGL10 egl, EGLDisplay display, EGLConfig config,
-                            int want_r, int want_g, int want_b, int want_a ) {
+  static int configDistance(EGL10 egl, EGLDisplay display, EGLConfig config,
+                            int want_r, int want_g, int want_b, int want_a,
+                            int want_depth, int want_stencil) {
       int r = getConfigAttrib(egl, display, config, EGL10.EGL_RED_SIZE, 0);
       int g = getConfigAttrib(egl, display, config, EGL10.EGL_GREEN_SIZE, 0);
       int b = getConfigAttrib(egl, display, config, EGL10.EGL_BLUE_SIZE, 0);
       int a = getConfigAttrib(egl, display, config, EGL10.EGL_ALPHA_SIZE, 0);
+      int d = getConfigAttrib(egl, display, config, EGL10.EGL_DEPTH_SIZE, 0);
+      int s = getConfigAttrib(egl, display, config, EGL10.EGL_STENCIL_SIZE, 0);
       return Math.abs(r - want_r) + Math.abs(g - want_g) +
-        Math.abs(b - want_b) + Math.abs(a - want_a);
+        Math.abs(b - want_b) + Math.abs(a - want_a) +
+        Math.abs(d - want_depth) + Math.abs(s - want_stencil);
   }
 
   static EGLConfig findClosestConfig(EGL10 egl, EGLDisplay display,
@@ -59,17 +63,10 @@ class EGLUtil {
                                      int want_depth, int want_stencil) {
     EGLConfig closestConfig = null;
     int closestDistance = 1000;
-    for(EGLConfig config : configs) {
-      int d = getConfigAttrib(egl, display, config, EGL10.EGL_DEPTH_SIZE, 0);
-      int s = getConfigAttrib(egl, display, config, EGL10.EGL_STENCIL_SIZE, 0);
-
-      // We need at least DepthSize and StencilSize bits
-      if (d < want_depth && s < want_stencil) {
-          continue;
-      }
-
-      // We want an *closest* match for red/green/blue/alpha
-      int distance = colorDistance(egl, display, config, want_r, want_g, want_b, want_a);
+    for (EGLConfig config : configs) {
+      int distance = configDistance(egl, display, config,
+                                    want_r, want_g, want_b, want_a,
+                                    want_depth, want_stencil);
       if (distance < closestDistance) {
         closestDistance = distance;
         closestConfig = config;
