@@ -953,7 +953,7 @@ double scl = xtick;
 	}
 	for (int i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
-	  if (LKTraffic[i].Status != LKT_EMPTY)
+	  if ((LKTraffic[i].Status != LKT_EMPTY) && (LKTraffic[i].Speed > 0) )
 	  {
 		/*************************************************************************
 		 * calculate positions
@@ -1463,6 +1463,11 @@ void MapWindow::DrawFlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC
 //
 void MapWindow::DrawFlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf)
 {
+  if (pTraf->Speed <= 0) {
+    // do not draw flarm picto for static object 
+    return;
+  }
+
 	static POINT Arrow[5];
 int cx = rc.right-rc.left;
 int cy = rc.bottom-rc.top;

@@ -83,6 +83,48 @@ static int	iRectangleSize = 4;
 
   const auto oldfont = Surface.SelectObject(LK8MapFont);
 
+  //first draw max. 10 Flarm-Objects on Ground (black dot)
+  //so that the ground-objects are in background of the flying-objects
+  for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
+    if (painted>=10) {
+      i=FLARM_MAX_TRAFFIC;
+      continue;
+    }
+
+    if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) && (DrawInfo.FLARM_Traffic[i].Speed == 0 ) ) {
+
+      double target_lon = DrawInfo.FLARM_Traffic[i].Longitude;
+      double target_lat = DrawInfo.FLARM_Traffic[i].Latitude;
+
+      if (!PointVisible(target_lon, target_lat)) {
+        // StartupStore(_T("... This traffic is not visible on map with current zoom%s"),NEWLINE);
+        continue;
+      }
+
+      painted++;
+
+      POINT sc = _Proj.ToRasterPoint(target_lat, target_lon);
+      _tcscpy(lbuffer,_T(""));
+      if (DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
+        _tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
+      }
+      displaymode.Border=1;
+
+      if (_tcslen(lbuffer)>0) {
+        TextInBox(Surface, &rc, lbuffer, sc.x+tscaler, sc.y+tscaler, &displaymode, false);
+      }
+      // Aircraft is on ground        
+      Surface.SelectObject(LKBrush_Black);
+      Surface.DrawCircle(sc.x,  sc.y, iCircleSize, rc, true );
+    }
+  }
+
+  //next we draw up to 10 flying objects (speed > 0)
+  //at the moment no priority.
+  /*TODO:    
+    create a Buddy-List, which will be prefered to other objects (The Buddy(Friends) should be prefered displayed)
+    create a sorting depending on Buddy, dist (maybe we can use the existing Flarm-id-List as Buddy-List)
+  */
   for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
 
 	// limit to 10 icons map traffic
@@ -91,8 +133,7 @@ static int	iRectangleSize = 4;
 		continue;
 	}
 
-	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) ) {
-
+	if ( (DrawInfo.FLARM_Traffic[i].RadioId != 0) && (DrawInfo.FLARM_Traffic[i].Status != LKT_ZOMBIE) && (DrawInfo.FLARM_Traffic[i].Speed > 0)){
 
 		double target_lon;
 		double target_lat;
