@@ -10,6 +10,13 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.8]
+. Updated task optimizer
+. Show black circle for static Flarm-Objects
+. Remove "onyxsdk-device" library to solve FOSS licence conflict
+. fix NMEA parser to handle valid fix reported without satellite in use
+. fix QRCode scan crash on Android 7.0 and older
+
 [version 7.3.7]
 . Fix OpenAir aispace loading
 . Fix Skylines.Aero flarm traffic
