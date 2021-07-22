@@ -50,9 +50,11 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Al
         // first run : init m_Optimized with center ...
         m_Optimized = m_Center;
     }
+    const auto& a = prev;
+    const auto& b = IsNull(next) ? m_Center : next;
 
-    if (!CrossPoint(prev, IsNull(next) ? m_Center : next, m_Optimized)) {
-        OptimizedDistance Fmin(prev, m_Center, next, m_Radius);
+    if (!CrossPoint(a, b, m_Optimized)) {
+        OptimizedDistance Fmin(a, m_Center, b, m_Radius);
         double x0 = 0;
         double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin, PI, 0.01 / m_Radius);
         if (m_bExit) {
