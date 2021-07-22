@@ -244,8 +244,14 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
         
         // Optimize
-        if ((i + 1) < m_Task.size()) {
-            m_Task[i]->Optimize(PrevPos, m_Task[i + 1]->getOptimized(), NextAltitude);
+        const auto& CurrPos = m_Task[i]->getCenter();
+        size_t next = i + 1;
+        while (next < m_Task.size() && CurrPos == m_Task[next]->getOptimized()) {
+            ++next;
+        }
+        
+        if (next < m_Task.size()) {
+            m_Task[i]->Optimize(PrevPos, m_Task[next]->getOptimized(), NextAltitude);
         } else {
             m_Task[i]->Optimize(PrevPos, ProjPt(0, 0), NextAltitude);
         }
