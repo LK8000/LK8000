@@ -33,13 +33,13 @@ public:
 protected:
     GeoPoint  getOptimized(const int i) const;
 
-    void AddCircle(int TpIndex);
-    void AddLine(int TpIndex);
+    void AddCircle(int TpIndex, double Radius);
+    void AddLine(int TpIndex, double Radius);
     void AddSector(int TpIndex);
     void AddCone(int TpIndex);
-    void AddEssCircle(int TpIndex);
+    void AddEssCircle(int TpIndex, double Radius);
 
-    typedef std::unique_ptr<PGTaskPt> PGTaskPt_ptr;
+    using PGTaskPt_ptr = std::unique_ptr<PGTaskPt>;
     std::vector<PGTaskPt_ptr> m_Task;
     std::unique_ptr<TransverseMercator> m_Projection;
 };

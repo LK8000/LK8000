@@ -31,121 +31,107 @@
 
 namespace {
 
-    inline
     GeoPoint GetTurnpointPosition(size_t idx) {
-        return GeoPoint(WayPointList[Task[idx].Index].Latitude,
-                WayPointList[Task[idx].Index].Longitude);
+        const auto& tp = WayPointList[Task[idx].Index];
+        return GeoPoint(tp.Latitude, tp.Longitude);
     }
 
-    template<typename T> inline
-    std::unique_ptr<T> getPGTaskPt(const TransverseMercator* pProjection, size_t idx) {
-        static_assert(std::is_base_of<PGTaskPt, T>::value, "T must inherit from PGTaskPt");
+    /**
+     * T must inherit from PGTaskPt
+     */
+    template<typename T>
+    std::enable_if_t<std::is_base_of_v<PGTaskPt, T>, std::unique_ptr<T>>
+    getPGTaskPt(const TransverseMercator* pProjection, size_t idx) {
         return std::make_unique<T>(pProjection->Forward(GetTurnpointPosition(idx)));
     }
 
 } // namespace
 
 void PGTaskMgr::Initialize() {
-
     m_Task.clear();
+    size_t tp_count = ValidTaskPointFast(0) ? 1 : 0;
+
+    if(tp_count == 0) {
+        // empty task
+        return;
+    }
+
 
     // build Mercator Reference Grid
     // find center of Task
-    double minlat = 0.0, minlon = 0.0, maxlat = 0.0, maxlon = 0.0;
-    for (int curwp = 0; ValidTaskPoint(curwp); ++curwp) {
-        if (curwp == 0) {
-            maxlat = minlat = WayPointList[Task[curwp].Index].Latitude;
-            maxlon = minlon = WayPointList[Task[curwp].Index].Longitude;
-        } else {
-            minlat = std::min(minlat, WayPointList[Task[curwp].Index].Latitude);
-            maxlat = std::max(maxlat, WayPointList[Task[curwp].Index].Latitude);
+    double minlat = WayPointList[Task[0].Index].Latitude;
+    double maxlat = minlat;
+    double minlon = WayPointList[Task[0].Index].Longitude;
+    double maxlon = minlon;
 
-            minlon = std::min(minlon, WayPointList[Task[curwp].Index].Longitude);
-            maxlon = std::max(maxlon, WayPointList[Task[curwp].Index].Longitude);
-        }
+    for (; ValidTaskPointFast(tp_count); ++tp_count) {
+        const auto& tp = WayPointList[Task[tp_count].Index];
+
+        minlat = std::min(minlat, tp.Latitude);
+        maxlat = std::max(maxlat, tp.Latitude);
+
+        minlon = std::min(minlon, tp.Longitude);
+        maxlon = std::max(maxlon, tp.Longitude);
     }
 
     const GeoPoint center((minlat + maxlat) / 2, (minlon + maxlon) / 2);
     m_Projection = std::make_unique<TransverseMercator>(center);
 
     // build task point list
-    for (int curwp = 0; ValidTaskPoint(curwp); ++curwp) {
+    for (int curwp = 0; ValidTaskPointFast(curwp); ++curwp) {
         int TpType = 0;
         double Radius;
         GetTaskSectorParameter(curwp, &TpType, &Radius);
         switch (TpType) {
             case CIRCLE:
-                AddCircle(curwp);
+                AddCircle(curwp, Radius);
                 break;
             case SECTOR:
             case DAe:
                 AddSector(curwp);
                 break;
             case LINE:
-                AddLine(curwp);
+                AddLine(curwp, Radius);
                 break;
             case CONE:
                 AddCone(curwp);
                 break;
             case ESS_CIRCLE:
-                AddEssCircle(curwp);
+                AddEssCircle(curwp, Radius);
                 break;
         }
     }
 }
 
-void PGTaskMgr::AddCircle(int TskIdx) {
+void PGTaskMgr::AddCircle(int TskIdx, double Radius) {
     assert(m_Projection);
 
     auto pTskPt = getPGTaskPt<PGCicrcleTaskPt>(m_Projection.get(), TskIdx);
 
-    if (TskIdx == 0) {
-        pTskPt->m_Radius = StartRadius;
-    } else if (ValidTaskPoint(TskIdx + 1)) {
-        pTskPt->m_Radius = (Task[TskIdx].AATCircleRadius);
-    } else {
-        pTskPt->m_Radius = FinishRadius;
-    }
-
+    pTskPt->m_Radius = Radius;
     pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
 
     m_Task.emplace_back(std::move(pTskPt));
 }
 
-void PGTaskMgr::AddEssCircle(int TskIdx) {
+void PGTaskMgr::AddEssCircle(int TskIdx, double Radius) {
     assert(m_Projection);
 
     auto pTskPt = getPGTaskPt<PGEssCicrcleTaskPt>(m_Projection.get(), TskIdx);
 
-    if (TskIdx == 0) {
-        pTskPt->m_Radius = StartRadius;
-    } else if (ValidTaskPoint(TskIdx + 1)) {
-        pTskPt->m_Radius = (Task[TskIdx].AATCircleRadius);
-    } else {
-        pTskPt->m_Radius = FinishRadius;
-    }
-
+    pTskPt->m_Radius = Radius;
     pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
 
     m_Task.emplace_back(std::move(pTskPt));
 }
 
-void PGTaskMgr::AddLine(int TskIdx) {
+void PGTaskMgr::AddLine(int TskIdx, double Radius) {
     assert(m_Projection);
     if(!m_Projection) {
         return;
     }
 
     auto pTskPt = getPGTaskPt<PGLineTaskPt>(m_Projection.get(), TskIdx);
-
-    double radius = 0;
-    if (TskIdx == 0) {
-        radius = StartRadius;
-    } else if (ValidTaskPoint(TskIdx + 1)) {
-        radius = (Task[TskIdx].AATCircleRadius);
-    } else {
-        radius = FinishRadius;
-    }
 
     // Find prev Tp not same as current.
     int PrevIdx = TskIdx - 1;
@@ -161,7 +147,7 @@ void PGTaskMgr::AddLine(int TskIdx) {
 
     // Calc Cross Dir Vector
     ProjPt InB, OutB;
-    if (ValidTaskPoint(NextIdx)) {
+    if (ValidTaskPointFast(NextIdx)) {
         OutB = m_Projection->Forward(GetTurnpointPosition(TskIdx));
         OutB = OutB - pTskPt->m_Center;
 
@@ -200,7 +186,7 @@ void PGTaskMgr::AddLine(int TskIdx) {
         u.x = pTskPt->m_DirVector.x * cos(PI / 2) - pTskPt->m_DirVector.y * sin(PI / 2);
         u.y = pTskPt->m_DirVector.x * sin(PI / 2) + pTskPt->m_DirVector.y * cos(PI / 2);
 
-        u = u * radius;
+        u = u * Radius;
 
         pTskPt->m_LineBegin = pTskPt->m_Center + u; // begin of line
         pTskPt->m_LineEnd = pTskPt->m_Center - u; // end of line
