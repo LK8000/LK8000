@@ -550,7 +550,6 @@ add_library( LK8000 SHARED
     Common/Source/Calc/Task/RefreshTask/CalculateTaskSectors.cpp
     Common/Source/Calc/Task/RefreshTask/RefreshTask.cpp
 
-    Common/Source/Calc/Task/PGTask/PGTaskPt.cpp
     Common/Source/Calc/Task/PGTask/PGCircleTaskPt.cpp
     Common/Source/Calc/Task/PGTask/PGLineTaskPt.cpp
     Common/Source/Calc/Task/PGTask/PGTaskMgr.cpp

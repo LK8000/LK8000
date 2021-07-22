@@ -35,8 +35,8 @@ class PGTaskPt {
     friend class PGTaskMgr;
 public:
     PGTaskPt() = delete;
-    PGTaskPt(ProjPt&& point);
-    virtual ~PGTaskPt();
+    PGTaskPt(ProjPt&& point) : m_Center(std::forward<ProjPt>(point)) { };
+    virtual ~PGTaskPt() {};
 
     inline const ProjPt& getOptimized() const {
         return IsNull(m_Optimized) ? m_Center : m_Optimized;

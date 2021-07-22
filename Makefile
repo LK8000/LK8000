@@ -1094,7 +1094,6 @@ TASK	:=\
 	$(TSK)/RefreshTask/CalculateAATTaskSectors.cpp\
 	$(TSK)/RefreshTask/CalculateTaskSectors.cpp\
 	$(TSK)/RefreshTask/RefreshTask.cpp\
-	$(TSK)/PGTask/PGTaskPt.cpp\
 	$(TSK)/PGTask/PGCircleTaskPt.cpp\
 	$(TSK)/PGTask/PGLineTaskPt.cpp\
 	$(TSK)/PGTask/PGTaskMgr.cpp\
