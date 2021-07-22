@@ -15,6 +15,8 @@ dolang
 /LK8000-PPC2002-ns.exe
 /LK8000-PPC2003.exe
 /LK8000-PPC2003-ns.exe
+/LK8000-PPC2003X-ns.exe
+/LK8000-PPC2003X.exe
 /LK8000-CUBIE
 /LK8000-CUBIE-ns
 /LK8000-CUBIE_debug
@@ -51,6 +53,7 @@ output.map
 /PC-install.zip
 /PNA-install.zip
 /PPC2003-install.zip
+/PPC2003X-install.zip
 /PPC2002-install.zip
 /LINUX-install.zip
 /android-studio/app/fabric.properties
