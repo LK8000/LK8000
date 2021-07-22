@@ -703,6 +703,10 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	return TRUE;
   }
 
+  // some device don't send sat in use count, set it to "-1" if fix is valid and sat in use is 0
+  if(gpsValid && (nSatellites == 0)) {
+    nSatellites = -1; // unknown count but valid fix !
+  }
   pGPS->SatellitesUsed = nSatellites; // 091208
   pGPS->NAVWarning = !gpsValid; // 091208
 
