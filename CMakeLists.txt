@@ -4,7 +4,7 @@ project(assembler C CXX ASM)
 
 include(ExternalProject)
 
-set(GLM_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/glm)
+set(GLM_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/${ANDROID_ABI}/glm)
 
 ExternalProject_Add (
     glm
