@@ -125,6 +125,7 @@ task syncAsset(type: Sync) {
     preserve {
         include "bitmaps/**"
     }
+    duplicatesStrategy "WARN"
 }
 task syncAssetLanguages(type: Sync) {
     from "../../Common/Data/Language/Translations",
@@ -145,6 +146,7 @@ task syncAssetSounds(type: Sync) {
     into "src/main/assets/sounds"
     include "*.wav",
             "*.WAV"
+    duplicatesStrategy "WARN"
 }
 task syncAssetFonts(type: Sync) {
     from "../../Common/Data/Fonts"
