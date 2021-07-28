@@ -14,6 +14,7 @@
 #include "FFVLTracking.h"
 #include "NMEA/Info.h"
 #include "http_session.h"
+#include "../Thread/Mutex.hpp"
 #include "../Thread/Thread.hpp"
 
 FFVLTracking::FFVLTracking(std::string user_key)
