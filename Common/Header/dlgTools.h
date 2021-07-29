@@ -24,7 +24,7 @@ using callback_variant = std::variant<
 
 struct CallBackTableEntry_t {
   const char *Name;
-  callback_variant callback;
+  const callback_variant callback;
 };
 
 inline CallBackTableEntry_t
@@ -76,6 +76,6 @@ make_DataAccessCallback(const char* Name, DataField::DataAccessCallback_t callba
 
 #define EndCallBackEntry()          { nullptr, nullptr }
 
-WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, unsigned resID);
+WndForm *dlgLoadFromXML(const CallBackTableEntry_t *LookUpTable, unsigned resID);
 
 #endif // __DLGTOOLS_H

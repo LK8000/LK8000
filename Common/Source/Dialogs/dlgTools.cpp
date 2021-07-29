@@ -278,7 +278,7 @@ void GetDefaultWindowControlProps(const xml_node& Node, TCHAR (&Name)[64], int& 
 
 
 template<typename function_t>
-function_t CallBackLookup(CallBackTableEntry_t *LookUpTable, const char* Name){
+function_t CallBackLookup(const CallBackTableEntry_t *LookUpTable, const char* Name){
   if (LookUpTable && Name && Name[0]) {
     for (size_t i = 0; LookUpTable[i].Name; i++) {
       if (strcmp(LookUpTable[i].Name, Name) == 0) {
@@ -354,7 +354,7 @@ FontReference GetFontRef(unsigned id) {
 }
 
 void LoadChildsFromXML(WindowControl *Parent,
-                       CallBackTableEntry_t *LookUpTable,
+                       const CallBackTableEntry_t *LookUpTable,
                        const xml_node& node,
                        int ParentFont) {
 
@@ -523,7 +523,7 @@ void LoadChildsFromXML(WindowControl *Parent,
 
 } // namespace
 
-WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, unsigned resID) {
+WndForm *dlgLoadFromXML(const CallBackTableEntry_t *LookUpTable, unsigned resID) {
 
   WndForm* theForm = nullptr;
   std::string xml_string = xmlLoadFromResource(MAKEINTRESOURCE(resID));
