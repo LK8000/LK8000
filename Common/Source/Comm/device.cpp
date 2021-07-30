@@ -367,10 +367,8 @@ void RefreshComPortList() {
     }
 
     if(UsbSerialHelper::isEnabled(env)) {
-      jobjectArray jdevices = UsbSerialHelper::list(env);
-      if (jdevices) {
-        Java::LocalRef<jobjectArray> devices(env, jdevices);
-
+      Java::LocalRef<jobjectArray> devices = UsbSerialHelper::list(env);
+      if (devices) {
         const jsize device_count = env->GetArrayLength(devices);
         for (jsize i = 0; i < device_count; ++i) {
 

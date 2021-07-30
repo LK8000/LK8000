@@ -56,21 +56,19 @@ PortBridge* UsbSerialHelper::connectDevice(JNIEnv *env, const char *name, unsign
   }
 
   Java::String name2(env, name);
-  jobject obj = env->CallStaticObjectMethod(cls, connect_method, name2.Get(), (int)baud);
+  Java::LocalObject obj = {env, env->CallStaticObjectMethod(cls, connect_method, name2.Get(), (int)baud)};
   Java::RethrowException(env);
   if (obj == nullptr)
     return nullptr;
 
-  PortBridge *bridge = new PortBridge(env, obj);
-  env->DeleteLocalRef(obj);
-  return bridge;
+  return new PortBridge(obj);
 }
 
-jobjectArray
+Java::LocalRef<jobjectArray>
 UsbSerialHelper::list(JNIEnv *env) {
   if (!cls.IsDefined()) {
     return nullptr;
   }
 
-  return (jobjectArray)env->CallStaticObjectMethod(cls, list_method);
+  return {env, (jobjectArray)env->CallStaticObjectMethod(cls, list_method)};
 }

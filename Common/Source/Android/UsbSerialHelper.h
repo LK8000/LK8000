@@ -34,8 +34,7 @@ namespace UsbSerialHelper {
   /**
    * Returns a list of connected usb devices.
    */
-  gcc_malloc
-  jobjectArray list(JNIEnv *env);
+  Java::LocalRef<jobjectArray> list(JNIEnv *env);
 
   PortBridge* connectDevice(JNIEnv *env, const char *name, unsigned baud);
 
