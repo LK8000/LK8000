@@ -65,27 +65,23 @@ PortBridge::PortBridge(JNIEnv *env, jobject obj)
 void
 PortBridge::setListener(JNIEnv *env, PortListener *_listener)
 {
-  jobject listener = _listener != nullptr
-    ? NativePortListener::Create(env, *_listener)
-    : nullptr;
-
-  env->CallVoidMethod(Get(), setListener_method, listener);
-
-  if (listener != nullptr)
-    env->DeleteLocalRef(listener);
+  if (_listener) {
+    Java::LocalObject listener = NativePortListener::Create(env, *_listener);
+    env->CallVoidMethod(Get(), setListener_method, listener.Get());
+  } else {
+    env->CallVoidMethod(Get(), setListener_method, nullptr);
+  }
 }
 
 void
 PortBridge::setInputListener(JNIEnv *env, DataHandler *handler)
 {
-  jobject listener = handler != nullptr
-    ? NativeInputListener::Create(env, *handler)
-    : nullptr;
-
-  env->CallVoidMethod(Get(), setInputListener_method, listener);
-
-  if (listener != nullptr)
-    env->DeleteLocalRef(listener);
+  if (handler) {
+    Java::LocalObject listener = NativeInputListener::Create(env, *handler);
+    env->CallVoidMethod(Get(), setInputListener_method, listener.Get());
+  } else {
+    env->CallVoidMethod(Get(), setInputListener_method, nullptr);
+  }
 }
 
 int

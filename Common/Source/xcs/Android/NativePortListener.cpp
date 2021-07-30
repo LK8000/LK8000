@@ -25,6 +25,7 @@ Copyright_License {
 #include "Device/Port/Listener.hpp"
 #include "Java/Class.hxx"
 #include "Java/String.hxx"
+#include "Java/Env.hxx"
 
 #include <stddef.h>
 
@@ -43,7 +44,7 @@ Java_org_LK8000_NativePortListener_portStateChanged(JNIEnv *env, jobject obj)
     /* not yet set */
     return;
 
-  PortListener &listener = *(PortListener *)(void *)ptr;
+  PortListener &listener = *(reinterpret_cast<PortListener *>(ptr));
   listener.PortStateChanged();
 }
 
@@ -57,7 +58,7 @@ Java_org_LK8000_NativePortListener_portError(JNIEnv *env, jobject obj,
     /* not yet set */
     return;
 
-  PortListener &listener = *(PortListener *)(void *)ptr;
+  PortListener &listener = *(reinterpret_cast<PortListener *>(ptr));
   listener.PortError(Java::String::ToString(env, msg).c_str());
 }
 
@@ -76,10 +77,9 @@ NativePortListener::Deinitialise(JNIEnv *env)
   cls.Clear(env);
 }
 
-jobject
+Java::LocalObject
 NativePortListener::Create(JNIEnv *env, PortListener &listener)
 {
   assert(cls != nullptr);
-
-  return env->NewObject(cls, ctor, (jlong)&listener);
+  return NewObjectRethrow(env, cls, ctor, (jlong)&listener);
 }

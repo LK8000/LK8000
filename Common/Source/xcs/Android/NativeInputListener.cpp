@@ -24,6 +24,7 @@ Copyright_License {
 #include "NativeInputListener.hpp"
 #include "IO/DataHandler.hpp"
 #include "Java/Class.hxx"
+#include "Java/Env.hxx"
 
 #include <stddef.h>
 
@@ -65,12 +66,10 @@ NativeInputListener::Deinitialise(JNIEnv *env)
   cls.Clear(env);
 }
 
-jobject
+Java::LocalObject
 NativeInputListener::Create(JNIEnv *env, DataHandler &handler)
 {
   assert(cls != nullptr);
 
-  jobject obj = env->NewObject(cls, ctor, (jlong)&handler);
-  Java::RethrowException(env);
-  return obj;
+  return NewObjectRethrow(env, cls, ctor, (jlong)&handler);
 }

@@ -24,7 +24,7 @@ Copyright_License {
 #ifndef XCSOAR_ANDROID_NATIVE_PORT_LISTENER_HPP
 #define XCSOAR_ANDROID_NATIVE_PORT_LISTENER_HPP
 
-#include <jni.h>
+#include "Java/Object.hxx"
 
 class PortListener;
 
@@ -36,7 +36,7 @@ namespace NativePortListener {
    * Create a Java NativePortListener instance.  It is not bound to a
    * handler yet; call Set() to do this.
    */
-  jobject Create(JNIEnv *env, PortListener &listener);
+  Java::LocalObject Create(JNIEnv *env, PortListener &listener);
 }
 
 #endif
