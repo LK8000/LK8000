@@ -108,11 +108,7 @@ class GlobalRef {
 	T value;
 
 public:
-	/**
-	 * Constructs an uninitialized object.  The method
-	 * set() must be called before it is destructed.
-	 */
-	GlobalRef() = default;
+	GlobalRef() = delete;
 
 	GlobalRef(JNIEnv *env, T _value) noexcept {
 		assert(env != nullptr);
@@ -121,23 +117,15 @@ public:
 		value = static_cast<T>(env->NewGlobalRef(_value));
 	}
 
+	GlobalRef(const LocalRef<T> &src) noexcept
+					:GlobalRef(src.GetEnv(), src.Get()) {}
+
 	~GlobalRef() noexcept {
 		GetEnv()->DeleteGlobalRef(value);
 	}
 
 	GlobalRef(const GlobalRef &other) = delete;
 	GlobalRef &operator=(const GlobalRef &other) = delete;
-
-	/**
-	 * Sets the object, ignoring the previous value.  This
-	 * is only allowed once after the default constructor
-	 * was used.
-	 */
-	void Set(JNIEnv *env, T _value) noexcept {
-		assert(_value != nullptr);
-
-		value = static_cast<T>(env->NewGlobalRef(_value));
-	}
 
 	T Get() const noexcept {
 		return value;
