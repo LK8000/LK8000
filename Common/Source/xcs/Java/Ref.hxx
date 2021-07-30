@@ -32,8 +32,6 @@
 
 #include "Global.hxx"
 
-#include <jni.h>
-
 #include <cassert>
 #include <utility>
 
@@ -116,13 +114,11 @@ public:
 	 */
 	GlobalRef() = default;
 
-	GlobalRef(JNIEnv *env, T _value) noexcept
-		:value(_value)
-	{
+	GlobalRef(JNIEnv *env, T _value) noexcept {
 		assert(env != nullptr);
-		assert(value != nullptr);
+		assert(_value != nullptr);
 
-		value = (T)env->NewGlobalRef(value);
+		value = static_cast<T>(env->NewGlobalRef(_value));
 	}
 
 	~GlobalRef() noexcept {
@@ -140,7 +136,7 @@ public:
 	void Set(JNIEnv *env, T _value) noexcept {
 		assert(_value != nullptr);
 
-		value = (T)env->NewGlobalRef(_value);
+		value = static_cast<T>(env->NewGlobalRef(_value));
 	}
 
 	T Get() const noexcept {
