@@ -27,11 +27,8 @@ Copyright_License {
 #include "Android/Bitmap.hpp"
 #include "Android/NativeView.hpp"
 #include "Android/Main.hpp"
-#include "ResourceId.hpp"
-
-#ifdef ANDROID
 #include "Android/android_drawable.h"
-#endif
+#include "ResourceId.hpp"
 
 Bitmap::Bitmap(ResourceId id)
 {
@@ -39,16 +36,13 @@ Bitmap::Bitmap(ResourceId id)
 }
 
 Bitmap::Bitmap(Bitmap &&src)
-  :bmp(src.bmp),
+  :bmp(std::exchange(src.bmp, nullptr)),
    type(src.type),
-   texture(src.texture),
+   texture(std::exchange(src.texture, nullptr)),
    size(src.size),
    interpolation(src.interpolation),
    flipped(src.flipped)
 {
-  src.bmp = nullptr;
-  src.texture = nullptr;
-
   if (IsDefined()) {
     RemoveSurfaceListener(src);
     AddSurfaceListener(*this);
@@ -86,7 +80,7 @@ find_resource_name(unsigned id)
   return nullptr;
 }
 
-static jobject
+static Java::LocalObject
 LoadResourceBitmap(ResourceId id)
 {
   const char *name = find_resource_name((unsigned)id);
@@ -97,14 +91,14 @@ LoadResourceBitmap(ResourceId id)
 }
 
 bool
-Bitmap::Set(JNIEnv *env, jobject _bmp, Type _type)
+Bitmap::Set(const Java::LocalObject &_bmp, Type _type)
 {
   assert(bmp == nullptr);
-  assert(_bmp != nullptr);
+  assert(_bmp);
+
+  JNIEnv *env = _bmp.GetEnv();
 
   bmp = env->NewGlobalRef(_bmp);
-  env->DeleteLocalRef(_bmp);
-
   type = _type;
 
   size.cx = AndroidBitmap::GetWidth(env, bmp);
@@ -145,11 +139,11 @@ Bitmap::Load(ResourceId id, Type _type)
 
   Reset();
 
-  auto *new_bmp = LoadResourceBitmap(id);
+  Java::LocalObject new_bmp = LoadResourceBitmap(id);
   if (new_bmp == nullptr)
     return false;
 
-  return Set(Java::GetEnv(), new_bmp, _type);
+  return Set(new_bmp, _type);
 }
 
 bool
@@ -167,11 +161,11 @@ Bitmap::LoadAssetsFile(const TCHAR *name) {
 
   Reset();
 
-  auto *new_bmp = native_view->loadAssetsBitmap(name);
+  auto new_bmp = native_view->loadAssetsBitmap(name);
   if (new_bmp == nullptr)
     return false;
 
-  return Set(Java::GetEnv(), new_bmp, Type::STANDARD);
+  return Set(new_bmp, Type::STANDARD);
 }
 
 bool
@@ -181,11 +175,11 @@ Bitmap::LoadFile(const TCHAR *path)
 
   Reset();
 
-  auto *new_bmp = native_view->loadFileBitmap(path);
+  auto new_bmp = native_view->loadFileBitmap(path);
   if (new_bmp == nullptr)
     return false;
 
-  return Set(Java::GetEnv(), new_bmp, Type::STANDARD);
+  return Set(new_bmp, Type::STANDARD);
 }
 
 void

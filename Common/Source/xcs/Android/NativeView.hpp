@@ -148,30 +148,28 @@ public:
     return env->CallIntMethod(obj, getScreenOrientationID);
   }
 
-  jobject loadResourceBitmap(const char *name) {
+  Java::LocalObject loadResourceBitmap(const char *name) {
     Java::String name2(env, name);
-    return env->CallObjectMethod(obj, loadResourceBitmap_method, name2.Get());
+    return { env, env->CallObjectMethod(obj, loadResourceBitmap_method, name2.Get()) };
   }
 
-  jobject loadAssetsBitmap(const char *name) {
+  Java::LocalObject loadAssetsBitmap(const char *name) {
     Java::String name2(env, name);
-    return env->CallObjectMethod(obj, loadAssetsBitmap_method, name2.Get());
+    return { env, env->CallObjectMethod(obj, loadAssetsBitmap_method, name2.Get()) };
   }
 
-  jobject loadFileBitmap(const char *path) {
+  Java::LocalObject loadFileBitmap(const char *path) {
     Java::String path2(env, path);
-    return env->CallObjectMethod(obj, loadFileBitmap_method, path2.Get());
+    return { env, env->CallObjectMethod(obj, loadFileBitmap_method, path2.Get()) };
   }
 
   bool bitmapToTexture(jobject bmp, bool alpha, jint *result) {
-    jintArray result2 = env->NewIntArray(5);
+    Java::LocalRef<jintArray> intArray = {env, env->NewIntArray(5) };
 
     bool success = env->CallBooleanMethod(obj, bitmapToTexture_method,
-                                          bmp, alpha, result2);
+                                          bmp, alpha, intArray.Get());
     if (success)
-      env->GetIntArrayRegion(result2, 0, 5, result);
-
-    env->DeleteLocalRef(result2);
+      env->GetIntArrayRegion(intArray.Get(), 0, 5, result);
 
     return success;
   }

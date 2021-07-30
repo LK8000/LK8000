@@ -71,7 +71,7 @@ class NativeView extends SurfaceView
 
   final Handler quitHandler, errorHandler;
 
-  Resources resources;
+  final Resources resources;
 
   final boolean hasKeyboard;
 

@@ -33,7 +33,7 @@ Copyright_License {
 
 #ifdef ANDROID
 #include "Screen/OpenGL/Surface.hpp"
-#include <jni.h>
+#include "Java/Object.hxx"
 #endif
 
 #ifdef USE_GDI
@@ -216,7 +216,7 @@ public:
 
 #ifdef ANDROID
 private:
-  bool Set(JNIEnv *env, jobject _bmp, Type _type);
+  bool Set(const Java::LocalObject& _bmp, Type _type);
   bool MakeTexture();
 
   /* from GLSurfaceListener */
