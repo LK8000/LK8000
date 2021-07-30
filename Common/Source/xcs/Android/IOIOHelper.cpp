@@ -63,7 +63,7 @@ IOIOHelper::openUart(JNIEnv *env, unsigned ID, unsigned baud)
   if (obj == nullptr)
     return nullptr;
 
-  return new PortBridge(env, obj);
+  return new PortBridge(obj);
 }
 
 IOIOHelper::IOIOHelper(JNIEnv *env)
