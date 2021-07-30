@@ -50,6 +50,8 @@ public:
    */
   static void Initialise(JNIEnv *env);
 
+  PortBridge(const Java::LocalObject& obj);
+
   PortBridge(JNIEnv *env, jobject obj);
 
   ~PortBridge() {

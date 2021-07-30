@@ -116,7 +116,7 @@ BluetoothHelper::GetNameFromAddress(JNIEnv *env, const char *address)
   return j.first->second.c_str();
 }
 
-jobjectArray
+Java::LocalRef<jobjectArray>
 BluetoothHelper::list(JNIEnv *env)
 {
   if (!cls.IsDefined())
@@ -124,7 +124,7 @@ BluetoothHelper::list(JNIEnv *env)
 
   /* call BluetoothHelper.connect() */
 
-  return (jobjectArray)env->CallStaticObjectMethod(cls, list_method);
+  return {env, (jobjectArray)env->CallStaticObjectMethod(cls, list_method)};
 }
 
 bool
@@ -133,20 +133,19 @@ BluetoothHelper::HasLe(JNIEnv *env)
   return cls.IsDefined() && env->GetStaticBooleanField(cls, hasLe_field);
 }
 
-jobject
+Java::LocalObject
 BluetoothHelper::StartLeScan(JNIEnv *env, LeScanCallback &_cb)
 {
   assert(HasLe(env));
 
-  jobject cb = NativeLeScanCallback::Create(env, _cb);
+  Java::LocalObject cb = NativeLeScanCallback::Create(env, _cb);
   if (cb == nullptr) {
     env->ExceptionClear();
     return nullptr;
   }
 
-  if (!env->CallStaticBooleanMethod(cls, startLeScan_method, cb)) {
+  if (!env->CallStaticBooleanMethod(cls, startLeScan_method, cb.Get())) {
     env->ExceptionClear();
-    env->DeleteLocalRef(cb);
     return nullptr;
   }
 
@@ -154,12 +153,11 @@ BluetoothHelper::StartLeScan(JNIEnv *env, LeScanCallback &_cb)
 }
 
 void
-BluetoothHelper::StopLeScan(JNIEnv *env, jobject cb)
+BluetoothHelper::StopLeScan(const Java::LocalObject& cb)
 {
+  JNIEnv *env = cb.GetEnv();
   assert(HasLe(env));
-
-  env->CallStaticVoidMethod(cls, stopLeScan_method, cb);
-  env->DeleteLocalRef(cb);
+  env->CallStaticVoidMethod(cls, stopLeScan_method, cb.Get());
 }
 
 PortBridge *
@@ -171,16 +169,13 @@ BluetoothHelper::connect(JNIEnv *env, const char *address)
   /* call BluetoothHelper.connect() */
 
   const Java::String address2(env, address);
-  jobject obj = env->CallStaticObjectMethod(cls, connect_method,
-                                            context->Get(), address2.Get());
+  Java::LocalObject obj = {env, env->CallStaticObjectMethod(cls, connect_method,
+                                            context->Get(), address2.Get())};
   Java::RethrowException(env);
   if (obj == nullptr)
     return nullptr;
 
-  PortBridge *helper = new PortBridge(env, obj);
-  env->DeleteLocalRef(obj);
-
-  return helper;
+  return new PortBridge(obj);
 }
 
 PortBridge *
@@ -189,13 +184,10 @@ BluetoothHelper::createServer(JNIEnv *env)
   if (!cls.IsDefined())
     throw std::runtime_error("Bluetooth not available");
 
-  jobject obj = env->CallStaticObjectMethod(cls, createServer_method);
+  Java::LocalObject obj = {env, env->CallStaticObjectMethod(cls, createServer_method)};
   Java::RethrowException(env);
   if (obj == nullptr)
     return nullptr;
 
-  PortBridge *helper = new PortBridge(env, obj);
-  env->DeleteLocalRef(obj);
-
-  return helper;
+  return new PortBridge(obj);
 }

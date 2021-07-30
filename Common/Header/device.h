@@ -29,7 +29,7 @@ public:
 	{
 	}
 
-	inline COMMPortItem_t(const tstring&& szName, const tstring&& szLabel) :
+	inline COMMPortItem_t(tstring&& szName, tstring&& szLabel) :
 			_sName(szName), _sLabel(szLabel)
 	{
 	}

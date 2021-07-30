@@ -50,7 +50,7 @@ Java_org_LK8000_NativeLeScanCallback_onLeScan(JNIEnv *env, jobject obj,
     Java::String::CopyTo(env, _name, name, sizeof(name));
   }
 
-  LeScanCallback &cb = *(LeScanCallback *)(void *)ptr;
+  LeScanCallback &cb = *(reinterpret_cast<LeScanCallback*>(ptr));
   cb.OnLeScan(address, name);
 }
 
@@ -73,12 +73,12 @@ NativeLeScanCallback::Deinitialise(JNIEnv *env)
   cls.ClearOptional(env);
 }
 
-jobject
+Java::LocalObject
 NativeLeScanCallback::Create(JNIEnv *env, LeScanCallback &cb)
 {
   if (!cls.IsDefined())
     /* Bluetooth LE not supported on this Android version */
     return nullptr;
 
-  return env->NewObject(cls, ctor, (jlong)&cb);
+  return {env, env->NewObject(cls, ctor, (jlong)&cb)};
 }

@@ -24,6 +24,7 @@ Copyright_License {
 #ifndef XCSOAR_ANDROID_BLUETOOTH_HELPER_HPP
 #define XCSOAR_ANDROID_BLUETOOTH_HELPER_HPP
 
+#include "Java/Object.hxx"
 #include "Compiler.h"
 
 #include <jni.h>
@@ -52,8 +53,7 @@ namespace BluetoothHelper {
   /**
    * Returns a list of all bonded devices.
    */
-  gcc_malloc
-  jobjectArray list(JNIEnv *env);
+  Java::LocalRef<jobjectArray> list(JNIEnv *env);
 
   /**
    * Does the device support Bluetooth LE?
@@ -65,7 +65,7 @@ namespace BluetoothHelper {
    * Start scanning for Bluetooth LE devices.  Call StopLeScan() with
    * the returned value when you're done.  Returns nullptr on error.
    */
-  jobject StartLeScan(JNIEnv *env, LeScanCallback &cb);
+  Java::LocalObject StartLeScan(JNIEnv *env, LeScanCallback &cb);
 
   /**
    * Stop scanning for Bluetooth LE devices.
@@ -73,7 +73,7 @@ namespace BluetoothHelper {
    * @param cb the return value of StartLeScan(); the local reference
    * will be deleted by this function
    */
-  void StopLeScan(JNIEnv *env, jobject cb);
+  void StopLeScan(const Java::LocalObject& cb);
 
   gcc_malloc
   PortBridge *connect(JNIEnv *env, const char *address);

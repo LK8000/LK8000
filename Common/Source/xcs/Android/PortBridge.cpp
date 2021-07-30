@@ -54,6 +54,9 @@ PortBridge::Initialise(JNIEnv *env)
   write_method = env->GetMethodID(cls, "write", "([BI)I");
 }
 
+PortBridge::PortBridge(const Java::LocalObject& obj)
+  : PortBridge(obj.GetEnv(), obj.Get()) {}
+
 PortBridge::PortBridge(JNIEnv *env, jobject obj)
   : Java::GlobalObject(env, obj)
   , write_buffer(env, env->NewByteArray(write_buffer_size)) { }

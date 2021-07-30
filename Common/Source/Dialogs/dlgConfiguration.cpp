@@ -3380,19 +3380,17 @@ static void OnLeScan(WndForm* pWndForm, const char *address, const char *name) {
 
   std::stringstream prefixed_address_stream;
   prefixed_address_stream << "BT:" << address;
-  const std::string prefixed_address(prefixed_address_stream.str());
+  std::string prefixed_address = prefixed_address_stream.str();
 
-  COMMPort_t::const_iterator It = std::find_if(COMMPort.begin(),
-                                               COMMPort.end(),
-                                               std::bind(&COMMPortItem_t::IsSamePort, _1,
-                                                         prefixed_address.c_str()));
+  auto it = std::find_if(COMMPort.begin(), COMMPort.end(), [&](const auto& item) {
+      return item.IsSamePort(prefixed_address.c_str());
+  });
 
-  if (It == COMMPort.end()) {
+  if (it == COMMPort.end()) {
     std::stringstream prefixed_name_stream;
     prefixed_name_stream << "BT:" << ((strlen(name)>0)? name : address);
-    const std::string prefixed_name(prefixed_name_stream.str());
 
-    COMMPort.push_back(COMMPortItem_t(std::move(prefixed_address), std::move(prefixed_name)));
+    COMMPort.emplace_back(std::move(prefixed_address), prefixed_name_stream.str());
   }
   if(pWndForm) {
     pWndForm->SendUser(UPDATE_COM_PORT);
@@ -3513,7 +3511,7 @@ void dlgConfigurationShowModal(short mode){
   std::unique_ptr<BluetoothLeScan> BluetoothLeScanPtr;
   if(configMode==CONFIGMODE_DEVICE) {
     // Start Bluetooth LE device scan before Open Dialog
-    BluetoothLeScanPtr.reset(new BluetoothLeScan(wf, OnLeScan));
+    BluetoothLeScanPtr = std::make_unique<BluetoothLeScan>(wf, OnLeScan);
   }
 #endif
 
@@ -3581,8 +3579,8 @@ void dlgConfigurationShowModal(short mode){
   wf->ShowModal();
 
 #ifdef ANDROID
-    // stop LE Scaner first aftar dialog close
-    BluetoothLeScanPtr.reset();
+    // stop LE Scanner first dialog close
+    BluetoothLeScanPtr = nullptr;
 #endif
 
 #ifdef _WGS84

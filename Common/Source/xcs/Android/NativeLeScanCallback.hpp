@@ -24,7 +24,7 @@ Copyright_License {
 #ifndef XCSOAR_ANDROID_NATIVE_LE_SCAN_CALLBACK_HPP
 #define XCSOAR_ANDROID_NATIVE_LE_SCAN_CALLBACK_HPP
 
-#include <jni.h>
+#include "Java/Object.hxx"
 
 class LeScanCallback;
 
@@ -35,7 +35,7 @@ namespace NativeLeScanCallback {
   void Initialise(JNIEnv *env);
   void Deinitialise(JNIEnv *env);
 
-  jobject Create(JNIEnv *env, LeScanCallback &cb);
+  Java::LocalObject Create(JNIEnv *env, LeScanCallback &cb);
 }
 
 #endif
