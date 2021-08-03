@@ -450,7 +450,7 @@
       <WndProperty Name="prpTaskStartLine" Caption="_@M655_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H201_">
         <DataField Name="" DataType="enum"  Min="0" Max="50" Step="1"/>
       </WndProperty>
-      <WndProperty Name="prpTaskStartRadius" Caption="_@M649_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="1000" Font="2" Help="_@H202_" Keyboard="1">
+      <WndProperty Name="prpTaskStartRadius" Caption="_@M649_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H202_" Keyboard="1">
         <DataField Name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="1000" Step="0.01" />
       </WndProperty>
       <WndProperty Name="prpTaskFAISector" Caption="_@M588_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H203_">
