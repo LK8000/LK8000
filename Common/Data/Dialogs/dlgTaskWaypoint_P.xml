@@ -14,7 +14,7 @@
         <DataField name="" DataType="enum"/>
       </WndProperty>
       <WndProperty Name="prpTaskStartRadius" Caption="_@M650_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H501_" Keyboard="1">
-        <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="100" Step="0.01"/>
+        <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="1000" Step="0.01"/>
       </WndProperty>
       <WndProperty Name="prpEnableMultipleStartPoints" Caption="_@M86_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="120" Font="2" ReadOnly="0" Help="_@H502_">
         <DataField name="" DataType="boolean" ReadOnly="0" OnDataAccess="OnTaskType"/>
